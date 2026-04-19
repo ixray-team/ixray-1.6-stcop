@@ -119,10 +119,10 @@ void xrServer::AttachNewClient			(IClient* CL)
 	{
         SV_Client			= CL;
 		CL->flags.bLocal	= 1;
-		SendTo_LL( SV_Client->ID, &msgConfig, sizeof(msgConfig), net_flags(TRUE,TRUE,TRUE,TRUE) );
+		SendTo_LL( SV_Client->ID, &msgConfig, sizeof(msgConfig), net_flags(true,true,true,true) );
 	} else
 	{
-		SendTo_LL				(CL->ID,&msgConfig,sizeof(msgConfig), net_flags(TRUE, TRUE, TRUE, TRUE));
+		SendTo_LL				(CL->ID,&msgConfig,sizeof(msgConfig), net_flags(true, true, true, true));
 		Server_Client_Check		(CL); 
 	}
 

@@ -4,7 +4,7 @@
 
 CTheoraSurface::CTheoraSurface()
 {
-	ready				= FALSE;
+	ready				= false;
 	// streams
 	m_rgb				= 0;
 	m_alpha				= 0;
@@ -17,9 +17,9 @@ CTheoraSurface::CTheoraSurface()
 	sdl_yuv_overlay		= 0;
 #endif
 	// controls
-	playing				= FALSE;
-	looped				= FALSE;
-	bShaderYUV2RGB		= TRUE;
+	playing				= false;
+	looped				= false;
+	bShaderYUV2RGB		= true;
 	prefetch			= -2;
 }
 
@@ -46,7 +46,7 @@ bool CTheoraSurface::Valid()
 
 void CTheoraSurface::Play(bool _looped, u32 _time)		
 {	
-	playing				= TRUE;
+	playing				= true;
 	looped				= _looped;
 	tm_start			= _time;
 	prefetch			= -2;
@@ -55,7 +55,7 @@ void CTheoraSurface::Play(bool _looped, u32 _time)
 bool CTheoraSurface::Update(u32 _time)
 {
 	VERIFY				(Valid());
-	bool redraw			= FALSE;
+	bool redraw			= false;
 	
 	if(prefetch<0) //fake. first updated frame is data loading
 	{
@@ -80,7 +80,7 @@ bool CTheoraSurface::Update(u32 _time)
 			}else
 			{
 				Stop	();
-				return	FALSE;
+				return	false;
 			}
 		}
 		if (m_rgb)		redraw|=m_rgb->Decode	(tm_play);
@@ -92,7 +92,7 @@ bool CTheoraSurface::Update(u32 _time)
 
 bool CTheoraSurface::Load(const char* fname)
 {
-	VERIFY				(FALSE==ready);
+	VERIFY				(false==ready);
 	m_rgb				= new CTheoraStream();
 	bool res			= m_rgb->Load(fname);
 	if (res){
@@ -106,7 +106,7 @@ bool CTheoraSurface::Load(const char* fname)
 		xr_strconcat(alpha,alpha,"#alpha",ext);
 		if (FS.exist(alpha)){
 			m_alpha		= new CTheoraStream	();
-			if (!m_alpha->Load(alpha))	res = FALSE;
+			if (!m_alpha->Load(alpha))	res = false;
 		}
 	}
 	if (res){
@@ -127,7 +127,7 @@ bool CTheoraSurface::Load(const char* fname)
 #ifdef SDL_OUTPUT
 		open_sdl_video	();
 #endif
-		ready			= TRUE;
+		ready			= true;
 	}else{
 		xr_delete		(m_rgb);
 		xr_delete		(m_alpha);

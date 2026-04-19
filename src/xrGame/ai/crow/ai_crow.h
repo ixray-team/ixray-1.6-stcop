@@ -112,8 +112,8 @@ public:
 			void	init						();
 	virtual bool	net_Spawn					( CSE_Abstract* DC );
 	virtual void	net_Destroy					();
-	virtual bool	renderable_ShadowGenerate	()			{ return FALSE;	}
-	virtual bool	renderable_ShadowReceive	()			{ return FALSE;	}
+	virtual bool	renderable_ShadowGenerate	()			{ return false;	}
+	virtual bool	renderable_ShadowReceive	()			{ return false;	}
 	virtual void	renderable_Render			();
 	virtual void	shedule_Update				(u32 DT);
 	virtual void	UpdateCL					();

@@ -38,7 +38,7 @@ bool CLevel::net_Start	( const char* op_server, const char* op_client )
 	PROF_EVENT("CLevel::net_Start");
 	object_factory();
 
-	net_start_result_total				= TRUE;
+	net_start_result_total				= true;
 
 	pApp->LoadBegin				();
 
@@ -150,7 +150,7 @@ bool CLevel::net_start1				()
 
 			if (id<0) {
 				Msg("! Can't find level: %s", map_data.m_name.c_str());
-				net_start_result_total	= FALSE;
+				net_start_result_total	= false;
 				return true;
 			}
 		}
@@ -250,8 +250,8 @@ bool CLevel::net_start5				()
 	{
 		NET_Packet		NP;
 		NP.w_begin		(M_CLIENTREADY);
-		Game().local_player->net_Export(NP, TRUE);
-		Send			(NP,net_flags(TRUE,TRUE));
+		Game().local_player->net_Export(NP, true);
+		Send			(NP,net_flags(true,true));
 
 		if (OnClient() && Server)
 		{
@@ -362,7 +362,7 @@ void CLevel::InitializeClientGame	(NET_Packet& P)
 	game					= smart_cast<game_cl_GameState*> ( NEW_INSTANCE ( clsid ) );
 	game->set_type_name		(game_type_name);
 	game->Init				();
-	m_bGameConfigStarted	= TRUE;
+	m_bGameConfigStarted	= true;
 
 #if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || \
 	defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)

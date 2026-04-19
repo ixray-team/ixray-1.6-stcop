@@ -93,7 +93,7 @@ static void UpdateBoosterProgress(CUIStatic* indicator, const SBooster& booster)
 #include "../Include/xrRender/Kinematics.h"
 
 using namespace InventoryUtilities;
-//bool		g_old_style_ui_hud			= FALSE;
+//bool		g_old_style_ui_hud			= false;
 const u32	g_clWhite					= 0xffffffff;
 
 #define		DEFAULT_MAP_SCALE			1.f

@@ -53,14 +53,14 @@ void CObjectHandler::reload			(const char* section)
 bool CObjectHandler::net_Spawn		(CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC))
-		return					(FALSE);
+		return					(false);
 
 	CSE_Abstract				*abstract = static_cast<CSE_Abstract*>(DC);
 	CSE_ALifeTraderAbstract		*trader = smart_cast<CSE_ALifeTraderAbstract*>(abstract);
 	VERIFY						(trader);
 
 	m_infinite_ammo				= !!trader->m_trader_flags.test(CSE_ALifeTraderAbstract::eTraderFlagInfiniteAmmo);
-	return						(TRUE);
+	return						(true);
 }
 
 void CObjectHandler::OnItemTake		(CInventoryItem *inventory_item)

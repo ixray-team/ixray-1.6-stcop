@@ -19,7 +19,7 @@ public:
 
 
 	virtual		void				OnCreate				(u16 id_who);
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = FALSE);
+	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = false);
 	virtual		void				OnDetach				(u16 eid_who, u16 eid_what);
 
 	// Main
@@ -35,7 +35,7 @@ public:
 	virtual		bool				load_game				(NET_Packet &net_packet, ClientID sender);
 	virtual		void				reload_game				(NET_Packet &net_packet, ClientID sender);
 	virtual		void				switch_distance			(NET_Packet &net_packet, ClientID sender);
-	virtual		bool				CanHaveFriendlyFire		()	{return FALSE;}
+	virtual		bool				CanHaveFriendlyFire		()	{return false;}
 	virtual		void				teleport_object			(NET_Packet &packet, u16 id);
 	virtual		void				add_restriction			(NET_Packet &packet, u16 id);
 	virtual		void				remove_restriction		(NET_Packet &packet, u16 id);

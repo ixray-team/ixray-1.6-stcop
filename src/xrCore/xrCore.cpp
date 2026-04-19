@@ -93,7 +93,7 @@ void xrCore::_initialize	(const char* _ApplicationName, xrLogger::LogCallback cb
 
 		flags |= CLocatorAPI::flScanAppRoot;
 
-		FS._initialize		(flags,0,fs_fname);
+		FS._initialize		(flags,nullptr,fs_fname);
 		BuildId             = build_id;
 		Msg					("'%s' build %d, %s\n","xrCore",build_id, build_date);
 		EFS._initialize		();
@@ -156,7 +156,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvRese
 	case DLL_PROCESS_DETACH:
 		break;
 	}
-    return TRUE;
+    return true;
 }
 #endif
 #endif

@@ -26,8 +26,8 @@ public:
 	INetLog(const char* sFileName, u32 dwStartTime);
 	~INetLog();	
 
-	void		LogPacket(u32 Time, NET_Packet* pPacket, bool IsIn = FALSE);
-	void		LogData(u32 Time, void* data, u32 size, bool IsIn = FALSE);
+	void		LogPacket(u32 Time, NET_Packet* pPacket, bool IsIn = false);
+	void		LogData(u32 Time, void* data, u32 size, bool IsIn = false);
 };
 
 /*

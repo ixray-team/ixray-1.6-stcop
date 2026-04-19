@@ -16,7 +16,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 	case DLL_PROCESS_DETACH:
 		break;
 	}
-    return TRUE;
+    return true;
 }
 
 void	FillSecretKey(char* SecretKey)

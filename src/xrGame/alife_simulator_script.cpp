@@ -211,7 +211,7 @@ CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, const char*
 	packet.w_stringZ					(section);
 	
 	CSE_Abstract						*item = self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent,false);
-	item->Spawn_Write					(packet,FALSE);
+	item->Spawn_Write					(packet,false);
 	self_->server().FreeID				(item->ID,0);
 	F_entity_Destroy					(item);
 
@@ -288,7 +288,7 @@ CSE_Abstract *CALifeSimulator__spawn_ammo		(CALifeSimulator *self_, const char* 
 	THROW								(ammo->m_boxSize >= ammo_to_spawn);
 	ammo->a_elapsed						= (u16)ammo_to_spawn;
 
-	item->Spawn_Write					(packet,FALSE);
+	item->Spawn_Write					(packet,false);
 	self_->server().FreeID				(item->ID,0);
 	F_entity_Destroy					(item);
 
@@ -329,7 +329,7 @@ void CALifeSimulator__release(CALifeSimulator* self_, CSE_Abstract* object, bool
 	packet.w_u32(Level().timeServer());
 	packet.w_u16(GE_DESTROY);
 	packet.w_u16(object->ID);
-	Level().Send(packet, net_flags(TRUE, TRUE));
+	Level().Send(packet, net_flags(true, true));
 }
 
 void CALifeSimulator__release2(CALifeSimulator *self, CSE_Abstract *object)
@@ -426,7 +426,7 @@ CSE_Abstract* reprocess_spawn(CALifeSimulator* self, CSE_Abstract* object)
 	packet.w_begin(M_SPAWN);
 	packet.w_stringZ(object->s_name);
 
-	object->Spawn_Write(packet, FALSE);
+	object->Spawn_Write(packet, false);
 	self->server().FreeID(object->ID, 0);
 	F_entity_Destroy(object);
 

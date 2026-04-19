@@ -9,7 +9,7 @@ CBlender_deffer_aref::CBlender_deffer_aref(bool _lmapped) : lmapped(_lmapped) {
 	oAREF.value = 200;
 	oAREF.min = 0;
 	oAREF.max = 255;
-	oBlend.value = FALSE;
+	oBlend.value = false;
 	description.version = 1;
 }
 CBlender_deffer_aref::~CBlender_deffer_aref() {}
@@ -36,8 +36,8 @@ void	CBlender_deffer_aref::Compile(CBlender_Compile& C) {
 			case SE_R2_NORMAL_LQ:
 			uber_deffer(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_base", "forward_base", false, 0, true);
 
-			C.PassSET_ZB(TRUE, FALSE);
-			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
+			C.PassSET_ZB(true, false);
+			C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
 
 			C.r_Sampler("s_material", r2_material);
 			C.r_Sampler("env_s0", r2_T_envs0);
@@ -63,7 +63,7 @@ void	CBlender_deffer_aref::Compile(CBlender_Compile& C) {
 			break;
 			case SE_R2_SHADOW:
 			RImplementation.addShaderOption("USE_AREF", "1");
-			C.r_Pass("shadow_base", "shadow_base", FALSE);
+			C.r_Pass("shadow_base", "shadow_base", false);
 			C.r_Sampler("s_base", C.L_textures[0]);
 			C.r_End();
 			break;

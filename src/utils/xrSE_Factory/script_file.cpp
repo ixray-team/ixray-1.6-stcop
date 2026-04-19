@@ -44,7 +44,7 @@ void CScriptFile::RemoveAllBreakPoints()
 	m_breakPoints.clear();
 
 //	CProject* pProject = ((CMainFrame*)AfxGetMainWnd())->GetProject();
-//	pProject->SetModifiedFlag(TRUE);
+//	pProject->SetModifiedFlag(true);
 }
 
 void CScriptFile::AddBreakPoint(int nLine)
@@ -56,7 +56,7 @@ void CScriptFile::AddBreakPoint(int nLine)
 		m_nMaxBreakPoint = nLine;
 
 //	CProject* pProject = ((CMainFrame*)AfxGetMainWnd())->GetProject();
-//	pProject->SetModifiedFlag(TRUE);
+//	pProject->SetModifiedFlag(true);
 }
 
 void CScriptFile::RemoveBreakPoint(int nLine)
@@ -89,7 +89,7 @@ void CScriptFile::RemoveBreakPoint(int nLine)
 	}
 */
 //	CProject* pProject = ((CMainFrame*)AfxGetMainWnd())->GetProject();
-//	pProject->SetModifiedFlag(TRUE);
+//	pProject->SetModifiedFlag(true);
 }
 
 int CScriptFile::GetNextDebugLine(int nLine)
@@ -136,9 +136,9 @@ int CScriptFile::GetNearestDebugLine(int nLine)
 bool CScriptFile::PositionBreakPoints()
 {
 	if ( !CDbgLuaHelper::LoadDebugLines(this) )
-		return FALSE;
+		return false;
 
-/*	bool bModified = FALSE;
+/*	bool bModified = false;
 	POSITION pos = m_breakPoints.GetStartPosition();
 	int nLine, nTemp, nNearest;
 	while (pos != NULL)
@@ -148,19 +148,19 @@ bool CScriptFile::PositionBreakPoints()
 		if ( nNearest == 0 )
 		{
 			m_breakPoints.erase(nLine);
-			bModified = TRUE;
+			bModified = true;
 		}
 		else if ( nLine != nNearest )
 		{
 			m_breakPoints.erase(nLine);
-			m_breakPoints[nNearest] = TRUE;
-			bModified = TRUE;
+			m_breakPoints[nNearest] = true;
+			bModified = true;
 		}
 	}
 
 	return bModified;
 */
-	return TRUE;
+	return true;
 }
 
 const char* CScriptFile::GetName()
@@ -214,7 +214,7 @@ void CScriptFile::SetBreakPointsIn(CLuaEditor *pEditor)
 bool CScriptFile::HasFile(CString strPathName)
 {
 	if(!m_strPathName.CompareNoCase(strPathName))
-		return TRUE;
+		return true;
 
 	//should actually search using the luasearch path
 	DWORD n=MAX_PATH;
@@ -223,8 +223,8 @@ bool CScriptFile::HasFile(CString strPathName)
 	sFullPath.ReleaseBuffer();
 
 	if(!m_strPathName.CompareNoCase(sFullPath))
-		return TRUE;
-	return FALSE;
+		return true;
+	return false;
 }
 
 */
@@ -254,7 +254,7 @@ bool CProjectFile::Load(CArchive &ar)
 		m_breakPoints[nLine] = 1;
 	}
 
-	return TRUE;
+	return true;
 }
 
 bool CProjectFile::Save(CArchive &ar)
@@ -274,7 +274,7 @@ bool CProjectFile::Save(CArchive &ar)
 		ar << nLine;
 	}
 
-	return TRUE;
+	return true;
 }
 
 
@@ -283,10 +283,10 @@ bool CProjectFile::IsModified()
 	WIN32_FILE_ATTRIBUTE_DATA sourceFile, compiledFile;
 
 	if (! ::GetFileAttributesEx(m_strPathName, GetFileExInfoStandard, &sourceFile) )
-		return TRUE;
+		return true;
 
 	if (! ::GetFileAttributesEx(GetOutputPathNameExt(), GetFileExInfoStandard, &compiledFile) )
-		return TRUE;
+		return true;
 
 	ULARGE_INTEGER sourceTime, compiledTime;
 	sourceTime.LowPart = sourceFile.ftLastWriteTime.dwLowDateTime;
@@ -315,10 +315,10 @@ bool CProjectFile::Compile()
 	if ( !strOutput.IsEmpty() )
 	{
 		pOutput->Write(strOutput);
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
 void CProjectFile::DeleteIntermediateFiles()

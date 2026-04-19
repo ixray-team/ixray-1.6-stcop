@@ -30,7 +30,7 @@ public:
 	object& operator=(const object & other) = delete;
 
 	virtual void		Load							(const char* section);
-	virtual bool		feel_touch_on_contact			(CObject *)				{ return FALSE; }
+	virtual bool		feel_touch_on_contact			(CObject *)				{ return false; }
 	virtual bool		use								(CGameObject* who_use)	{ return false; }
 	virtual bool		net_Spawn						(CSE_Abstract* DC);
 	virtual void		UpdateCL						();

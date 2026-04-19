@@ -59,13 +59,13 @@ BOOLEAN nanosleep(LONGLONG ns) {
 	LARGE_INTEGER li;
 
 	if (!(timer = CreateWaitableTimer(NULL, TRUE, NULL))) {
-		return FALSE;
+		return false;
     }
 
 	li.QuadPart = -ns;
-	if (!SetWaitableTimer(timer, &li, 0, NULL, NULL, FALSE)) {
+	if (!SetWaitableTimer(timer, &li, 0, NULL, NULL, false)) {
 		CloseHandle(timer);
-		return FALSE;
+		return false;
 	}
 
 	WaitForSingleObject(timer, INFINITE);

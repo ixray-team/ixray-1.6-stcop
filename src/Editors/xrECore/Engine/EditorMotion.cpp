@@ -47,7 +47,7 @@ st_BoneMotion* CSMotion::FindBoneMotion(shared_str name)
 {
     for (BoneMotionIt bm_it = bone_mots.begin(); bm_it != bone_mots.end(); bm_it++)
         if (bm_it->name.equal(name)) return &*bm_it;
-    return 0;
+    return nullptr;
 }
 
 void CSMotion::add_empty_motion(shared_str const& bone_id)

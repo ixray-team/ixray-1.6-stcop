@@ -78,12 +78,12 @@ public:
 	virtual SGameMtl* GetMaterialByID(int ID)
 	{
 		GameMtlIt it = GetMaterialItByID(ID);
-		return materials.end() != it ? *it : 0;
+		return materials.end() != it ? *it : nullptr;
 	}
 	virtual SGameMtl* GetMaterial(const char* name)
 	{
 		GameMtlIt it = GetMaterialIt(name);
-		return materials.end() != it ? *it : 0;
+		return materials.end() != it ? *it : nullptr;
 	}
 	virtual u16				GetMaterialIdx(int ID) { GameMtlIt it = GetMaterialItByID(ID); VERIFY(materials.end() != it); return (u16)(it - materials.begin()); }
 	virtual u16				GetMaterialIdx(const char* name) { GameMtlIt it = GetMaterialIt(name); VERIFY(materials.end() != it); return (u16)(it - materials.begin()); }
@@ -100,8 +100,8 @@ public:
 	const char*				MtlPairToName(int mtl0, int mtl1);
 	void				NameToMtlPair(const char* name, int& mtl0, int& mtl1);
 	void				MtlNameToMtlPair(const char* name, int& mtl0, int& mtl1);
-	SGameMtlPair* CreateMaterialPair(int m0, int m1, SGameMtlPair* parent = 0);
-	SGameMtlPair* AppendMaterialPair(int m0, int m1, SGameMtlPair* parent = 0);
+	SGameMtlPair* CreateMaterialPair(int m0, int m1, SGameMtlPair* parent = nullptr);
+	SGameMtlPair* AppendMaterialPair(int m0, int m1, SGameMtlPair* parent = nullptr);
 	void				RemoveMaterialPair(const char* name);
 	void				RemoveMaterialPair(GameMtlPairIt rem_it);
 	void				RemoveMaterialPair(int mtl);

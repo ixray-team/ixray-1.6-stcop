@@ -402,7 +402,7 @@ CSE_ALifeObject::CSE_ALifeObject			(const char* caSection) : CSE_Abstract(caSect
 #ifdef XRSE_FACTORY_EXPORTS
 	fp_data.inc					();
 #endif // XRSE_FACTORY_EXPORTS
-	m_flags.set					(flOfflineNoMove,FALSE);
+	m_flags.set					(flOfflineNoMove,false);
 	seed						(u32(CPU::QPC() & 0xffffffff));
 }
 
@@ -433,7 +433,7 @@ bool CSE_ALifeObject::move_offline			() const
 
 void CSE_ALifeObject::move_offline			(bool value)
 {
-	m_flags.set					(flOfflineNoMove,!value ? TRUE : FALSE);
+	m_flags.set					(flOfflineNoMove,!value ? true : false);
 }
 
 bool CSE_ALifeObject::visible_for_map		() const
@@ -443,7 +443,7 @@ bool CSE_ALifeObject::visible_for_map		() const
 
 void CSE_ALifeObject::visible_for_map		(bool value)
 {
-	m_flags.set					(flVisibleForMap,value ? TRUE : FALSE);
+	m_flags.set					(flVisibleForMap,value ? true : false);
 }
 
 void CSE_ALifeObject::STATE_Write			(NET_Packet &tNetPacket)
@@ -786,8 +786,8 @@ void CSE_ALifeDynamicObjectVisual::FillProps	(const char* pref, PropItemVec& ite
 ////////////////////////////////////////////////////////////////////////////
 CSE_ALifePHSkeletonObject::CSE_ALifePHSkeletonObject(const char* caSection) : CSE_ALifeDynamicObjectVisual(caSection),CSE_PHSkeleton(caSection)
 {
-	m_flags.set					(flUseSwitches,FALSE);
-	m_flags.set					(flSwitchOffline,FALSE);
+	m_flags.set					(flUseSwitches,false);
+	m_flags.set					(flSwitchOffline,false);
 }
 
 CSE_ALifePHSkeletonObject::~CSE_ALifePHSkeletonObject()
@@ -851,11 +851,11 @@ void CSE_ALifePHSkeletonObject::FillProps(const char* pref, PropItemVec& items)
 ////////////////////////////////////////////////////////////////////////////
 CSE_ALifeSpaceRestrictor::CSE_ALifeSpaceRestrictor	(const char* caSection) : CSE_ALifeDynamicObject(caSection)
 {
-	m_flags.set					(flUseSwitches,FALSE);
+	m_flags.set					(flUseSwitches,false);
 	m_space_restrictor_type		= RestrictionSpace::eDefaultRestrictorTypeNone;
-	m_flags.set					(flUsedAI_Locations,FALSE);
-	m_spawn_flags.set			(flSpawnDestroyOnSpawn,FALSE);
-	m_flags.set					(flCheckForSeparator,TRUE);
+	m_flags.set					(flUsedAI_Locations,false);
+	m_spawn_flags.set			(flSpawnDestroyOnSpawn,false);
+	m_flags.set					(flCheckForSeparator,true);
 }
 
 CSE_ALifeSpaceRestrictor::~CSE_ALifeSpaceRestrictor	()
@@ -986,7 +986,7 @@ CSE_ALifeLevelChanger::CSE_ALifeLevelChanger(const char* caSection) : CSE_ALifeS
 #ifdef XRSE_FACTORY_EXPORTS
 	fp_data.inc					();
 #endif // XRSE_FACTORY_EXPORTS
-	m_bSilentMode				= FALSE;
+	m_bSilentMode				= false;
 }
 
 CSE_ALifeLevelChanger::~CSE_ALifeLevelChanger()\
@@ -1081,9 +1081,9 @@ CSE_ALifeObjectPhysic::CSE_ALifeObjectPhysic(const char* caSection) : CSE_ALifeD
 	if(pSettings->line_exist(caSection,"fixed_bones"))
 		fixed_bones		= pSettings->r_string(caSection,"fixed_bones");
 
-	m_flags.set					(flUseSwitches,FALSE);
-	m_flags.set					(flSwitchOffline,FALSE);
-	m_flags.set					(flUsedAI_Locations,FALSE);
+	m_flags.set					(flUseSwitches,false);
+	m_flags.set					(flSwitchOffline,false);
+	m_flags.set					(flUsedAI_Locations,false);
 	
 #ifdef XRGAME_EXPORTS
 	m_freeze_time				= Device.dwTimeGlobal;
@@ -1161,7 +1161,7 @@ const	u32		CSE_ALifeObjectPhysic::random_limit				= 40;
 const	u32		CSE_ALifeObjectPhysic::m_update_delta_time		= 0;
 #endif // #ifdef DEBUG
 
-//if TRUE, then object sends update packet
+//if true, then object sends update packet
 bool CSE_ALifeObjectPhysic::Net_Relevant()
 {
 	if (!freezed)
@@ -1169,26 +1169,26 @@ bool CSE_ALifeObjectPhysic::Net_Relevant()
 #ifdef XRGAME_EXPORTS
 #ifdef DEBUG	//this block of code is only for test
 		if (Device.dwTimeGlobal < (m_last_update_time + m_update_delta_time))
-			return FALSE;
+			return false;
 #endif
 #endif
-		return		TRUE;
+		return		true;
 	}
 
 #ifdef XRGAME_EXPORTS
 	if (Device.dwTimeGlobal >= (m_freeze_time + m_freeze_delta_time))
-		return		FALSE;
+		return		false;
 #endif
 	if (!prev_freezed)
 	{
 		prev_freezed = true;	//i.e. freezed
-		return		TRUE;
+		return		true;
 	}
 
 	if (m_relevent_random.randI(random_limit))
-		return		FALSE;
+		return		false;
 
-	return			TRUE;
+	return			true;
 }
 
 void CSE_ALifeObjectPhysic::UPDATE_Read		(NET_Packet	&tNetPacket)
@@ -1398,8 +1398,8 @@ CSE_ALifeObjectHangingLamp::CSE_ALifeObjectHangingLamp(const char* caSection) : 
 	color						= 0xffffffff;
 	brightness					= 1.f;
 	m_health					= 100.f;
-	m_flags.set					(flUseSwitches,FALSE);
-	m_flags.set					(flSwitchOffline,FALSE);
+	m_flags.set					(flUseSwitches,false);
+	m_flags.set					(flSwitchOffline,false);
 
 	m_virtual_size				= 0.1f;
 	m_ambient_radius			= 10.f;
@@ -1671,8 +1671,8 @@ bool CSE_ALifeObjectHangingLamp::match_configuration() const
 
 CSE_ALifeObjectProjector::CSE_ALifeObjectProjector(const char* caSection) : CSE_ALifeDynamicObjectVisual(caSection)
 {
-	m_flags.set					(flUseSwitches,FALSE);
-	m_flags.set					(flSwitchOffline,FALSE);
+	m_flags.set					(flUseSwitches,false);
+	m_flags.set					(flSwitchOffline,false);
 }
 
 CSE_ALifeObjectProjector::~CSE_ALifeObjectProjector()
@@ -1770,9 +1770,9 @@ u32	 CSE_ALifeSchedulable::ef_detector_type	() const
 
 CSE_ALifeHelicopter::CSE_ALifeHelicopter	(const char* caSection) : CSE_ALifeDynamicObjectVisual(caSection), CSE_Motion(),CSE_PHSkeleton(caSection)
 {
-	m_flags.set					(flUseSwitches,		FALSE);
-	m_flags.set					(flSwitchOffline,	FALSE);
-	m_flags.set					(flInteractive,		FALSE);
+	m_flags.set					(flUseSwitches,		false);
+	m_flags.set					(flSwitchOffline,	false);
+	m_flags.set					(flInteractive,		false);
 }
 
 CSE_ALifeHelicopter::~CSE_ALifeHelicopter	()
@@ -1867,8 +1867,8 @@ CSE_ALifeCar::CSE_ALifeCar				(const char* caSection) : CSE_ALifeDynamicObjectVi
 
 	if (pSettings->section_exist(caSection) && pSettings->line_exist(caSection,"visual"))
 		set_visual				(pSettings->r_string(caSection,"visual"));
-	m_flags.set					(flUseSwitches,FALSE);
-	m_flags.set					(flSwitchOffline,FALSE);
+	m_flags.set					(flUseSwitches,false);
+	m_flags.set					(flSwitchOffline,false);
 	health						=1.0f;
 }
 
@@ -2070,8 +2070,8 @@ void CSE_ALifeCar::FillProps				(const char* pref, PropItemVec& values)
 CSE_ALifeObjectBreakable::CSE_ALifeObjectBreakable	(const char* caSection) : CSE_ALifeDynamicObjectVisual(caSection)
 {
 	m_health					= 1.f;
-	m_flags.set					(flUseSwitches,FALSE);
-	m_flags.set					(flSwitchOffline,FALSE);
+	m_flags.set					(flUseSwitches,false);
+	m_flags.set					(flSwitchOffline,false);
 }
 
 CSE_ALifeObjectBreakable::~CSE_ALifeObjectBreakable	()
@@ -2124,8 +2124,8 @@ bool CSE_ALifeObjectBreakable::can_switch_offline	() const
 CSE_ALifeObjectClimable::CSE_ALifeObjectClimable	(const char* caSection) : CSE_Shape(), CSE_ALifeDynamicObject(caSection)
 {
 	//m_health					= 100.f;
-	//m_flags.set					(flUseSwitches,FALSE);
-	//m_flags.set					(flSwitchOffline,FALSE);
+	//m_flags.set					(flUseSwitches,false);
+	//m_flags.set					(flSwitchOffline,false);
 	material  = "materials\\fake_ladders";
 }
 

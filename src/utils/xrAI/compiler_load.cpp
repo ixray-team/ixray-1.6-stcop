@@ -147,7 +147,7 @@ void xrLoad(const char* name, bool draft_mode, bool skipThm)
 						// HACK for merged lod textures
 						BT.dwWidth = 1024;
 						BT.dwHeight = 1024;
-						BT.bHasAlpha = TRUE;
+						BT.bHasAlpha = true;
 					}
 					else
 					{
@@ -181,8 +181,8 @@ void xrLoad(const char* name, bool draft_mode, bool skipThm)
 						BT.THM.mip_filter = THM->r_u32();
 						BT.THM.width = THM->r_u32();
 						BT.THM.height = THM->r_u32();
-						bool			bLOD = FALSE;
-						if (N_[0] == 'l' && N_[1] == 'o' && N_[2] == 'd' && N_[3] == '\\') bLOD = TRUE;
+						bool			bLOD = false;
+						if (N_[0] == 'l' && N_[1] == 'o' && N_[2] == 'd' && N_[3] == '\\') bLOD = true;
 
 						// load surface if it has an alpha channel or has "implicit lighting" flag
 						BT.dwWidth = BT.THM.width;

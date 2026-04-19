@@ -56,7 +56,7 @@ void	CTextConsole::CreateConsoleWnd()
 	// Set the window's initial width
 	RECT rc;
 	SetRect			( &rc, lX, lY, lWidth, lHeight );
-//	AdjustWindowRect( &rc, dwWindowStyle, FALSE );
+//	AdjustWindowRect( &rc, dwWindowStyle, false );
 
 	// Create the render window
 	m_hConsoleWnd = CreateWindowA( wndclass, "XRAY Text Console", dwWindowStyle,
@@ -96,7 +96,7 @@ void	CTextConsole::CreateLogWnd()
 	// Set the window's initial width
 	RECT rc;
 	SetRect			( &rc, lX, lY, lWidth, lHeight );
-//	AdjustWindowRect( &rc, dwWindowStyle, FALSE );
+//	AdjustWindowRect( &rc, dwWindowStyle, false );
 
 	// Create the render window
 	m_hLogWnd = CreateWindowA(wndclass, "XRAY Text Console Log", dwWindowStyle,
@@ -332,5 +332,5 @@ void CTextConsole::DrawLog(HDC hDC, RECT* pRect)
 void CTextConsole::OnFrame()
 {
 	inherited::OnFrame();
-	InvalidateRect(m_hConsoleWnd, nullptr, FALSE);
+	InvalidateRect(m_hConsoleWnd, nullptr, false);
 }

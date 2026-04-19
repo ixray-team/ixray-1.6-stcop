@@ -157,9 +157,9 @@ public:
 	MotionID					ID_Cycle_Safe	(const char*  N);
 	MotionID					ID_Cycle		(shared_str  N);
 	MotionID					ID_Cycle_Safe	(shared_str  N);
-	CBlend*						PlayCycle		(const char*  N,  bool bMixIn=TRUE, PlayCallback Callback=0, LPVOID CallbackParam=0, u8 channel = 0);
-	CBlend*						PlayCycle		(MotionID M, bool bMixIn=TRUE, PlayCallback Callback=0, LPVOID CallbackParam=0, u8 channel = 0);
-	CBlend*						PlayCycle		(u16 partition, MotionID M, bool bMixIn=TRUE, PlayCallback Callback=0, LPVOID CallbackParam=0, u8 channel = 0);
+	CBlend*						PlayCycle		(const char*  N,  bool bMixIn=true, PlayCallback Callback=nullptr, LPVOID CallbackParam=nullptr, u8 channel = 0);
+	CBlend*						PlayCycle		(MotionID M, bool bMixIn=true, PlayCallback Callback=nullptr, LPVOID CallbackParam=nullptr, u8 channel = 0);
+	CBlend*						PlayCycle		(u16 partition, MotionID M, bool bMixIn=true, PlayCallback Callback=nullptr, LPVOID CallbackParam=nullptr, u8 channel = 0);
 	// fx'es
 	MotionID					ID_FX			(const char*  N);
 	MotionID					ID_FX_Safe		(const char*  N);
@@ -198,6 +198,6 @@ public:
 	virtual float				get_animation_length (MotionID motion_ID);
 };
 //IC CKinematicsAnimated* PKinematicsAnimated(IRender_Visual* V) { return V?V->dcast_PKinematicsAnimated():0; }
-IC CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V?(CKinematicsAnimated*)V->dcast_PKinematicsAnimated():0; }
+IC CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V?(CKinematicsAnimated*)V->dcast_PKinematicsAnimated():nullptr; }
 //---------------------------------------------------------------------------
 #endif

@@ -51,8 +51,8 @@ bool CLevelTool::OnCreate()
 	sub_target = -1;
 	pCurTool = 0;
 	ssRBOnly = ssRight;
-	m_Flags.set(flChangeAction, FALSE);
-	m_Flags.set(flChangeTarget, FALSE);
+	m_Flags.set(flChangeAction, false);
+	m_Flags.set(flChangeTarget, false);
 	Scene->OnCreate();
 	ExecCommand(COMMAND_CHANGE_TARGET, OBJCLASS_SCENEOBJECT);
 	m_Props = new UIPropertiesForm();
@@ -171,7 +171,7 @@ void CLevelTool::RealSetAction   (ETAction act)
 		pCurTool->SetAction(act);
 
 	ExecCommand(COMMAND_UPDATE_TOOLBAR);
-	m_Flags.set	(flChangeAction,FALSE);
+	m_Flags.set	(flChangeAction,false);
 }
 
 void  CLevelTool::SetAction(ETAction act)
@@ -179,7 +179,7 @@ void  CLevelTool::SetAction(ETAction act)
 	// если мышь захвачена - изменим action после того как она освободится
 	if (UI->IsMouseCaptured() || UI->IsMouseInUse())
 	{
-		m_Flags.set(flChangeAction, TRUE);
+		m_Flags.set(flChangeAction, true);
 		iNeedAction = act;
 	}
 	else
@@ -210,7 +210,7 @@ void  CLevelTool::RealSetTarget   (ObjClassID tgt,int sub_tgt,bool bForced)
 	//fraLeftBar->ChangeTarget(tgt);
 	//fraLeftBar->UpdateSnapList();
 	ExecCommand(COMMAND_UPDATE_TOOLBAR);
-	m_Flags.set(flChangeTarget,FALSE);
+	m_Flags.set(flChangeTarget,false);
 }
 
 void  CLevelTool::ResetSubTarget()
@@ -223,7 +223,7 @@ void  CLevelTool::SetTarget(ObjClassID tgt, int sub_tgt)
 {
 	// если мышь захвачена - изменим target после того как она освободится
 	if (UI->IsMouseCaptured()||UI->IsMouseInUse()||!false){
-		m_Flags.set(flChangeTarget,TRUE);
+		m_Flags.set(flChangeTarget,true);
 		if(tgt == OBJCLASS_WAY && sub_tgt==2 && target==tgt)
 		{
 			iNeedTarget		= tgt;
@@ -345,8 +345,8 @@ void CLevelTool::RealUpdateProperties()
 {
 	PropUpdateIsCompleted = false;
 	SetEvent(mtPropObj);
-	m_Flags.set(flUpdateProperties, FALSE);
-	m_Props->setModified(FALSE);
+	m_Flags.set(flUpdateProperties, false);
+	m_Props->setModified(false);
 }
 
 
@@ -543,7 +543,7 @@ void CLevelTool::ShowObjectList()
 void CLevelTool::RealUpdateObjectList()
 {
    //if (pObjectListForm) pObjectListForm->UpdateObjectList();
-	m_Flags.set(flUpdateObjectList,FALSE);
+	m_Flags.set(flUpdateObjectList,false);
 }
 
 bool CLevelTool::IsModified()
@@ -660,7 +660,7 @@ void CLevelTool::RunGame(const char* Params)
 		CommandLine,        // Command line
 		NULL,           // Process handle not inheritable
 		NULL,           // Thread handle not inheritable
-		FALSE,          // Set handle inheritance to FALSE
+		false,          // Set handle inheritance to false
 		0,              // No creation flags
 		NULL,           // Use parent's environment block
 		NULL,           // Use parent's starting directory 
@@ -707,7 +707,7 @@ void CLevelTool::RunXrLC()
 		CommandLine,        // Command line
 		NULL,           // Process handle not inheritable
 		NULL,           // Thread handle not inheritable
-		FALSE,          // Set handle inheritance to FALSE
+		false,          // Set handle inheritance to false
 		0,              // No creation flags
 		NULL,           // Use parent's environment block
 		NULL,           // Use parent's starting directory 
@@ -750,7 +750,7 @@ void CLevelTool::RunXrDO()
 		CommandLine,        // Command line
 		NULL,           // Process handle not inheritable
 		NULL,           // Thread handle not inheritable
-		FALSE,          // Set handle inheritance to FALSE
+		false,          // Set handle inheritance to false
 		0,              // No creation flags
 		NULL,           // Use parent's environment block
 		NULL,           // Use parent's starting directory 
@@ -793,7 +793,7 @@ void CLevelTool::RunXrAI_Spawn(bool current_level)
 		CommandLine,        // Command line
 		NULL,           // Process handle not inheritable
 		NULL,           // Thread handle not inheritable
-		FALSE,          // Set handle inheritance to FALSE
+		false,          // Set handle inheritance to false
 		0,              // No creation flags
 		NULL,           // Use parent's environment block
 		NULL,           // Use parent's starting directory 
@@ -837,7 +837,7 @@ void CLevelTool::RunXrAI_AIMap(bool draw)
 		CommandLine,        // Command line
 		NULL,           // Process handle not inheritable
 		NULL,           // Thread handle not inheritable
-		FALSE,          // Set handle inheritance to FALSE
+		false,          // Set handle inheritance to false
 		0,              // No creation flags
 		NULL,           // Use parent's environment block
 		NULL,           // Use parent's starting directory 
@@ -881,7 +881,7 @@ void CLevelTool::RunXrAI_Verify()
 		CommandLine,        // Command line
 		NULL,           // Process handle not inheritable
 		NULL,           // Thread handle not inheritable
-		FALSE,          // Set handle inheritance to FALSE
+		false,          // Set handle inheritance to false
 		0,              // No creation flags
 		NULL,           // Use parent's environment block
 		NULL,           // Use parent's starting directory 

@@ -19,7 +19,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 
 	}
 		//	Can't call CreateDXGIFactory from DllMain
-		//if (!xrRender_test_hw())	return FALSE;
+		//if (!xrRender_test_hw())	return false;
 		::Render					= &GRenderInterface;
 		::RenderFactory				= &GRenderFactory;
 		::DU						= &GDUInterface;
@@ -46,7 +46,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 	case DLL_PROCESS_DETACH	:
 		break;
 	}
-	return TRUE;
+	return true;
 }
 
 

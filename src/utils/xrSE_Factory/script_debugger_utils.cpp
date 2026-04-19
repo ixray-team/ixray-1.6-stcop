@@ -113,7 +113,7 @@ bool xr_thread::kill()
 {
 	if (!m_thread) return true;
 
-	bool res = TRUE;
+	bool res = true;
 	if (WaitForSingleObject(m_thread, 0) != WAIT_OBJECT_0)
 		res = TerminateThread(m_thread, 0);
 	if (res)

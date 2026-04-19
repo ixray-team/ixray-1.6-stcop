@@ -118,7 +118,7 @@ float getLastRP_Scale(CDB::COLLIDER* DB, R_Light& L)//, Face* skip)
 #endif
 
 		if (T.pSurface.Empty())
-			T.bHasAlpha = FALSE;
+			T.bHasAlpha = false;
 
 		if (!T.bHasAlpha)
 		{
@@ -377,7 +377,7 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, DWORDVec& box_result
 			{
 				CDB::TRI&	T		= tris	[*tit];
 				Fvector		V[3]	= { verts[T.verts[0]], verts[T.verts[1]], verts[T.verts[2]] };
-				if (CDB::TestRayTri(start,dir,V,r_u,r_v,r_range,TRUE))
+				if (CDB::TestRayTri(start,dir,V,r_u,r_v,r_range,true))
 				{
 					if (r_range>=0.f)	{
 						float y_test	= start.y - r_range;

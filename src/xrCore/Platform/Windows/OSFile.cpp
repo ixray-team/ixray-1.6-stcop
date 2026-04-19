@@ -9,7 +9,7 @@ bool Platform::OpenFileWnd(char* buffer, size_t sz_buf, FS_Path* P, int start_fl
 	{
 		string_path		dr;
 		if (!(buffer[0] == '\\' && buffer[1] == '\\')) { // if !network
-			_splitpath(buffer, dr, 0, 0, 0);
+			_splitpath(buffer, dr, nullptr, nullptr, nullptr);
 
 			if (0 == dr[0])
 			{

@@ -10,7 +10,7 @@ class CBlender_Screen_GRAY : public IBlender
 {
 public:
 	virtual		const char*		getComment()	{ return "INTERNAL: gray-scale effect"; }
-	virtual		bool		canBeLMAPped()	{ return FALSE; }
+	virtual		bool		canBeLMAPped()	{ return false; }
 	
 	virtual		void		Save			(IWriter&  fs);
 	virtual		void		Load			(IReader&	fs, u16 version);

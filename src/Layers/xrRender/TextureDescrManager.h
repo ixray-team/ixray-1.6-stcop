@@ -30,7 +30,7 @@ class CTextureDescrMngr
 #ifdef _EDITOR
 		STextureParams::ETType	m_type;
 #endif
-        texture_desc            ():m_assoc(NULL),m_spec(NULL){}
+        texture_desc            ():m_assoc(nullptr),m_spec(nullptr){}
 	};
 
 	using map_TD = xr_map<shared_str, texture_desc>;

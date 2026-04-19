@@ -177,18 +177,18 @@ void CBuild::Light()
  	//****************************************** Resolve materials
  	Phase("Resolving materials...");
  	xrPhase_ResolveMaterials();
-	IsolateVertices(TRUE);
+	IsolateVertices(true);
 
 	//****************************************** UV mapping
  	Phase("Build UV mapping...");
  	xrPhase_UVmap();
-	IsolateVertices(TRUE);
+	IsolateVertices(true);
 	 
 	//****************************************** Subdivide geometry
 	Phase("Subdividing geometry...");
 	xrPhase_Subdivide();
 	lc_global_data()->vertices_isolate_and_pool_reload();
-	IsolateVertices(TRUE);
+	IsolateVertices(true);
 
 	//****************************************** Starting MU
 	run_mu_light();

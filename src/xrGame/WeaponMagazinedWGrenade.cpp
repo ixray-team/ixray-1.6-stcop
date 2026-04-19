@@ -77,7 +77,7 @@ void CWeaponMagazinedWGrenade::LoadSounds(const char* section)
 
 	if (SoundExist(section, "snd_shoot_grenade_actor"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_grenade_actor, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_grenade_actor, true);
 		m_layered_sounds.LoadSound(section, "snd_shoot_grenade_actor", "sndShotGActor", false, m_eSoundShot);
 	}
 
@@ -92,7 +92,7 @@ void CWeaponMagazinedWGrenade::LoadSounds(const char* section)
 
 	if (SoundExist(section, "snd_change_grenade"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_grenade_change, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_grenade_change, true);
 		m_sounds.LoadSound(section, "snd_change_grenade", "sndChangeGrenade", true, m_eSoundReload);
 	}
 
@@ -100,7 +100,7 @@ void CWeaponMagazinedWGrenade::LoadSounds(const char* section)
 
 	if (SoundExist(section, "snd_switch_g"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_switch_g, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_switch_g, true);
 		m_sounds.LoadSound(section, "snd_switch_g", "sndSwitchG", true, m_eSoundReload);
 	}
 }
@@ -122,7 +122,7 @@ bool CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 	bool l_res = inherited::net_Spawn(DC);
 
 	UpdateGrenadeVisibility(!!iAmmoElapsed);
-	SetPending(FALSE);
+	SetPending(false);
 
 	if (!IsGameTypeSingle())
 	{
@@ -377,7 +377,7 @@ void CWeaponMagazinedWGrenade::switch2_Hiding()
 	}
 
 	PlayAnimHide();
-	SetPending(TRUE);
+	SetPending(true);
 }
 
 void CWeaponMagazinedWGrenade::switch2_Showing()
@@ -424,7 +424,7 @@ void CWeaponMagazinedWGrenade::switch2_Showing()
 		}
 	}
 
-	SetPending(TRUE);
+	SetPending(true);
 	PlayAnimShow();
 }
 
@@ -578,14 +578,14 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 
 		if (IsGameTypeSingle() && IsZoomed() && GO->cast_actor())
 		{
-			H_Parent()->setEnabled(FALSE);
-			setEnabled(FALSE);
+			H_Parent()->setEnabled(false);
+			setEnabled(false);
 
 			collide::rq_result RQ;
 			bool HasPick = Level().ObjectSpace.RayPick(p1, d, 300.0f, collide::rqtStatic, RQ, this);
 
-			setEnabled(TRUE);
-			H_Parent()->setEnabled(TRUE);
+			setEnabled(true);
+			H_Parent()->setEnabled(true);
 
 			if (HasPick)
 			{
@@ -760,7 +760,7 @@ void CWeaponMagazinedWGrenade::OnStateSwitch(u32 S)
 
 void CWeaponMagazinedWGrenade::switch2_SwitchMode()
 {
-	SetPending(TRUE);
+	SetPending(true);
 	PerformSwitchGL();
 
 	if (m_bGrenadeMode && m_eSoundsFlags.test(ESoundsFlags::sf_switch_g))
@@ -790,11 +790,11 @@ void CWeaponMagazinedWGrenade::OnH_B_Independent(bool just_before_destroy)
 {
 	inherited::OnH_B_Independent(just_before_destroy);
 
-	SetPending(FALSE);
+	SetPending(false);
 	if (m_bGrenadeMode)
 	{
 		SetState(eIdle);
-		SetPending(FALSE);
+		SetPending(false);
 	}
 }
 
@@ -1035,8 +1035,8 @@ void CWeaponMagazinedWGrenade::UpdateGrenadeVisibility(bool visibility)
 {
 	if (HudItemData() != nullptr)
 	{
-	HudItemData()->set_bone_visible("grenade", visibility, TRUE);
-}
+		HudItemData()->set_bone_visible("grenade", visibility, true);
+	}
 }
 
 void CWeaponMagazinedWGrenade::save(NET_Packet& output_packet)
@@ -1080,7 +1080,7 @@ void CWeaponMagazinedWGrenade::net_Export(NET_Packet& P)
 
 void CWeaponMagazinedWGrenade::net_Import(NET_Packet& P)
 {
-	bool NewMode = FALSE;
+	bool NewMode = false;
 	NewMode = !!P.r_u8();
 	if (NewMode != m_bGrenadeMode)
 		PerformSwitchGL();
@@ -1171,7 +1171,7 @@ bool CWeaponMagazinedWGrenade::install_upgrade_impl(const char* section, bool te
 	result2 = process_if_exists_set(section, "snd_shoot_grenade_actor", str, test);
 	if (result2 && !test)
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_grenade_actor, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_grenade_actor, true);
 		m_layered_sounds.LoadSound(section, "snd_shoot_grenade_actor", "sndShotGActor", false, m_eSoundShot);
 	}
 	result |= result2;

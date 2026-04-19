@@ -378,7 +378,7 @@ void CScriptGameObject::MarkItemDropped(CScriptGameObject *item)
 		return;
 	}
 
-	inventory_item->SetDropManual(TRUE);
+	inventory_item->SetDropManual(true);
 }
 
 bool CScriptGameObject::MarkedDropped(CScriptGameObject *item)
@@ -2183,7 +2183,7 @@ bool CScriptGameObject::IsDefaultToRuck()
 {
 	if (CInventoryItem* inventory_item = object().cast_inventory_item())
 	{
-		return inventory_item->m_flags.test(inventory_item->EIIFlags::FRuckDefault) == TRUE;
+		return inventory_item->m_flags.test(inventory_item->EIIFlags::FRuckDefault) == true;
 	}
 
 	return false;
@@ -2193,7 +2193,7 @@ void CScriptGameObject::SetDefaultToRuck(bool state)
 {
 	if (CInventoryItem* inventory_item = object().cast_inventory_item())
 	{
-		inventory_item->m_flags.set(inventory_item->EIIFlags::FRuckDefault, state ? TRUE : FALSE);
+		inventory_item->m_flags.set(inventory_item->EIIFlags::FRuckDefault, state ? true : false);
 	}
 }
 

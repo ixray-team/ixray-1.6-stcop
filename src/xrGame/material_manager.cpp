@@ -30,7 +30,7 @@ CMaterialManager::~CMaterialManager	()
 {
 }
 #ifdef	DEBUG
-bool debug_character_material_load = FALSE;
+bool debug_character_material_load = false;
 #endif
 
 void CMaterialManager::Load			(const char* section)

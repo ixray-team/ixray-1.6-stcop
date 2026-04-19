@@ -100,7 +100,7 @@ public:
 
 public:
 	
-	virtual	bool			renderable_ShadowReceive		()	{ return TRUE;	}  
+	virtual	bool			renderable_ShadowReceive		()	{ return true;	}  
 	virtual void			Die								(CObject* who);
 	virtual void			HitSignal						(float amount, Fvector& vLocalDir, CObject* who, s16 element);
 	virtual	void			Hit								(SHit* pHDS);
@@ -424,7 +424,7 @@ public:
 	void				on_kill_enemy				(const CEntity *obj);
 	void				Hit_Psy						(CObject *object, float value);
 	void				Hit_Wound					(CObject *object, float value, const Fvector &dir, float impulse);
-	CParticlesObject	*PlayParticles				(const shared_str& name, const Fvector &position, const Fvector &dir, bool auto_remove = TRUE, bool xformed = TRUE);
+	CParticlesObject	*PlayParticles				(const shared_str& name, const Fvector &position, const Fvector &dir, bool auto_remove = true, bool xformed = true);
 	void				load_effector				(const char* section, const char* line, SAttackEffector &effector);
 
 	// --------------------------------------------------------------------------------------

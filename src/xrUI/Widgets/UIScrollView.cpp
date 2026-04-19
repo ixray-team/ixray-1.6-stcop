@@ -47,12 +47,12 @@ void CUIScrollView::SendMessage	(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	CUIWndCallback::OnEvent(pWnd, msg, pData);
 	if (CHILD_CHANGED_SIZE == msg && m_pad->IsChild(pWnd))
-		m_flags.set			(eNeedRecalc,TRUE);
+		m_flags.set			(eNeedRecalc,true);
 }
 
 void CUIScrollView::ForceUpdate()
 {
-	m_flags.set			(eNeedRecalc,TRUE);
+	m_flags.set			(eNeedRecalc,true);
 }
 
 void CUIScrollView::InitScrollView()
@@ -111,7 +111,7 @@ void CUIScrollView::AddWindow			(CUIWindow* pWnd, bool auto_delete)
 	if(auto_delete)		pWnd->SetAutoDelete	(true);
 
 	m_pad->AttachChild	(pWnd);
-	m_flags.set			(eNeedRecalc,TRUE);
+	m_flags.set			(eNeedRecalc,true);
 }
 
 bool CUIScrollView::HasWindow		(CUIWindow* pWnd)
@@ -122,13 +122,13 @@ bool CUIScrollView::HasWindow		(CUIWindow* pWnd)
 void CUIScrollView::RemoveWindow		(CUIWindow* pWnd)
 {
 	m_pad->DetachChild	(pWnd);
-	m_flags.set			(eNeedRecalc,TRUE);
+	m_flags.set			(eNeedRecalc,true);
 }
 
 void CUIScrollView::Clear				()
 {
 	m_pad->DetachAll	();
-	m_flags.set			(eNeedRecalc,TRUE);
+	m_flags.set			(eNeedRecalc,true);
 	ScrollToBegin		();
 }
 
@@ -197,7 +197,7 @@ void CUIScrollView::RecalcSize			()
 
 	UpdateScroll				();
 
-	m_flags.set					(eNeedRecalc,FALSE);
+	m_flags.set					(eNeedRecalc,false);
 	m_visible_rgn.set			(-1,-1);
 }
 
@@ -391,23 +391,23 @@ void CUIScrollView::ScrollToItem(CUIWindow *pItem, int addVerticalOffset)
 void CUIScrollView::SetRightIndention	(float val)
 {
 	m_rightIndent		= val;
-	m_flags.set			(eNeedRecalc,TRUE);
+	m_flags.set			(eNeedRecalc,true);
 }
 
 void CUIScrollView::SetLeftIndention	(float val)
 {
 	m_leftIndent			= val;
-	m_flags.set			(eNeedRecalc,TRUE);
+	m_flags.set			(eNeedRecalc,true);
 }
 
 void CUIScrollView::SetUpIndention(float val){
 	m_upIndent			= val;
-	m_flags.set			(eNeedRecalc,TRUE);
+	m_flags.set			(eNeedRecalc,true);
 }
 
 void CUIScrollView::SetDownIndention(float val){
 	m_downIndent			= val;
-	m_flags.set			(eNeedRecalc,TRUE);
+	m_flags.set			(eNeedRecalc,true);
 }
 
 u32 CUIScrollView::GetSize				()

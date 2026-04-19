@@ -38,27 +38,27 @@ void	CRenderTarget::phase_combine	()
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 
 	// low/hi RTs
-	u_setrt(rt_Generic_0, 0, 0, RDepth);
-	RCache.set_Stencil(FALSE);
+	u_setrt(rt_Generic_0, nullptr, nullptr, RDepth);
+	RCache.set_Stencil(false);
 
-	BOOL split_the_scene_to_minimize_wait = FALSE;
-	if(ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait = TRUE;
+	bool split_the_scene_to_minimize_wait = false;
+	if(ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait = true;
 
 	// draw skybox
 	if (1)
 	{
 		RCache.set_ColorWriteEnable					();
-		CHK_DX(RDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
+		CHK_DX(RDevice->SetRenderState			( D3DRS_ZENABLE,	false				));
 		g_pGamePersistent->Environment().RenderSky	();
 		//	Igor: Render clouds before compine without Z-test
 		//	to avoid siluets. HOwever, it's a bit slower process.
 		g_pGamePersistent->Environment().RenderClouds	();
-		CHK_DX(RDevice->SetRenderState			( D3DRS_ZENABLE,	TRUE				));
+		CHK_DX(RDevice->SetRenderState			( D3DRS_ZENABLE,	true				));
 	}
 
-	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);	// stencil should be >= 1
+	RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);	// stencil should be >= 1
 	if (RImplementation.o.nvstencil) {
-		u_stencil_optimize(FALSE);
+		u_stencil_optimize(false);
 		RCache.set_ColorWriteEnable();
 	}
 
@@ -145,8 +145,8 @@ void	CRenderTarget::phase_combine	()
 		dxEnvDescriptorMixerRender &envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
 
 		// Setup textures
-		IRHISurface*	e0	= _menu_pp?0:envdescren.sky_r_textures_env[0].second->surface_get();
-		IRHISurface*	e1	= _menu_pp?0:envdescren.sky_r_textures_env[1].second->surface_get();
+		IRHISurface*	e0	= _menu_pp?nullptr:envdescren.sky_r_textures_env[0].second->surface_get();
+		IRHISurface*	e1	= _menu_pp?nullptr:envdescren.sky_r_textures_env[1].second->surface_get();
 		t_envmap_0->surface_set		(e0);	_RELEASE(e0);
 		t_envmap_1->surface_set		(e1);	_RELEASE(e1);
 	
@@ -169,9 +169,9 @@ void	CRenderTarget::phase_combine	()
 
 	// Forward rendering
 	{
-		u_setrt							(rt_Generic_0,0,0,RDepth);		// LDR RT
+		u_setrt							(rt_Generic_0,nullptr,nullptr,RDepth);		// LDR RT
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-		RCache.set_Stencil				(FALSE);
+		RCache.set_Stencil				(false);
 		RCache.set_ColorWriteEnable		();
 		//g_pGamePersistent->Environment().RenderClouds	();
 		RImplementation.render_forward	();
@@ -184,33 +184,33 @@ void	CRenderTarget::phase_combine	()
 		phase_combine_volumetric();
 
 	// Perform blooming filter and distortion if needed
-	RCache.set_Stencil	(FALSE);
+	RCache.set_Stencil	(false);
 	phase_bloom			( );												// HDR RT invalidated here
 
 	if (ps_r2_aa_type == 1) {
-		u_setrt(rt_Accumulator, 0, 0, 0);
+		u_setrt(rt_Accumulator, nullptr, nullptr, nullptr);
 		phase_fxaa(0);
-		u_setrt(rt_Generic_0, 0, 0, 0);
+		u_setrt(rt_Generic_0, nullptr, nullptr, nullptr);
 		phase_fxaa(1);
-		RCache.set_Stencil(FALSE);
+		RCache.set_Stencil(false);
 	}
 	else if (ps_r2_aa_type == 2)
 	{
 		phase_smaa();
-		RCache.set_Stencil(FALSE);
+		RCache.set_Stencil(false);
 	}
 	
 	// Distortion filter
-	BOOL	bDistort	= RImplementation.o.distortion_enabled;				// This can be modified
+	bool	bDistort	= RImplementation.o.distortion_enabled;				// This can be modified
 	{
 		u32 count = RImplementation.mapDistort.size() + RImplementation.mapHUDDistort.size();
-		if ((0 == count) && !_menu_pp) bDistort= FALSE;
+		if ((0 == count) && !_menu_pp) bDistort= false;
 
 		if (bDistort)
 		{
-			u_setrt						(rt_Generic_1,0,0,RDepth);		// Now RT is a distortion mask
+			u_setrt						(rt_Generic_1,nullptr,nullptr,RDepth);		// Now RT is a distortion mask
 			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-			RCache.set_Stencil			(FALSE);
+			RCache.set_Stencil			(false);
 			RCache.set_ColorWriteEnable	();
 			CHK_DX(RDevice->Clear	( 0L, nullptr, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
 			RImplementation.r_dsgraph_render_distort	();
@@ -220,10 +220,10 @@ void	CRenderTarget::phase_combine	()
 
 	// PP enabled ?
 	//	Render to RT texture to be able to copy RT even in windowed mode.
-	u_setrt(rt_Color, 0, 0, RDepth);
+	u_setrt(rt_Color, nullptr, nullptr, RDepth);
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	if (1)	
 	{
@@ -271,7 +271,7 @@ void	CRenderTarget::phase_combine	()
 		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 	}
 
-	RCache.set_Stencil (FALSE);
+	RCache.set_Stencil (false);
 	g_pGamePersistent->Environment().RenderFlares();	// lens-flares
 
 	PhaseRaindrops();
@@ -280,24 +280,24 @@ void	CRenderTarget::phase_combine	()
 	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_SATURATION))
 	{
 		PhaseSaturation();
-		RCache.set_Stencil(FALSE);
+		RCache.set_Stencil(false);
 	}
 	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE))
 	{
 		PhaseVignette();
-		RCache.set_Stencil(FALSE);
+		RCache.set_Stencil(false);
 	}
 	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_ABERRATION))
 	{
 		PhaseAberration();
-		RCache.set_Stencil(FALSE);
+		RCache.set_Stencil(false);
 	}
 
 	//	PP-if required
 	phase_pp();
 
 	//	Re-adapt luminance
-	RCache.set_Stencil		(FALSE);
+	RCache.set_Stencil		(false);
 
 
 	//*** exposure-pipeline-clear
@@ -342,9 +342,9 @@ void	CRenderTarget::phase_combine	()
 	else
 		dbg_lines		= saved_dbg_lines;
 
-	RDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+	RDevice->SetRenderState(D3DRS_ZENABLE, true);
 	RDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-	RDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	RDevice->SetRenderState(D3DRS_ZWRITEENABLE, false);
 	if (1) for (u32 it=0; it<dbg_lines.size(); it++)
 	{
 		RCache.dbg_DrawLINE		(Fidentity,dbg_lines[it].P0,dbg_lines[it].P1,dbg_lines[it].color);
@@ -365,7 +365,7 @@ void CRenderTarget::phase_wallmarks		()
 	RCache.set_RT(nullptr,1);
 	u_setrt								(rt_Color,nullptr,nullptr,RDepth);
 	// Stencil	- draw only where stencil >= 0x1
-	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
+	RCache.set_Stencil					(true,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	RCache.set_ColorWriteEnable			(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
 }
@@ -375,7 +375,7 @@ void CRenderTarget::phase_combine_volumetric()
 	u32			Offset					= 0;
 	Fvector2	p0,p1;
 
-	u_setrt(rt_Generic_0, 0, 0, RDepth);
+	u_setrt(rt_Generic_0, nullptr, nullptr, RDepth);
 	//	Sets limits to both render targets
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
 	{

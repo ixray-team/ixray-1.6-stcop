@@ -171,29 +171,29 @@ void CActorTools::OnFrame()
 			if (!MainForm->GetKeyForm()->AutoChange())
 				K->Bone_Calculate(&K->LL_GetData(K->LL_GetBoneRoot()), &Fidentity);
 			else
-				K->CalculateBones(TRUE);
+				K->CalculateBones(true);
 		}
 
 	}
 	if (m_Flags.is(flRefreshShaders))
 	{
-		m_Flags.set(flRefreshShaders, FALSE);
+		m_Flags.set(flRefreshShaders, false);
 		m_pEditObject->OnDeviceDestroy();
 	}
 	if (m_Flags.is(flMakeThumbnail))
 	{
-		m_Flags.set(flMakeThumbnail, FALSE);
+		m_Flags.set(flMakeThumbnail, false);
 		RealMakeThumbnail();
 	}
 	if (m_Flags.is(flGenerateLODHQ)|| m_Flags.is(flGenerateLODLQ))
 	{
 		RealGenerateLOD(m_Flags.is(flGenerateLODHQ));
-		m_Flags.set(flGenerateLODHQ, FALSE);
-		m_Flags.set(flGenerateLODLQ, FALSE);
+		m_Flags.set(flGenerateLODHQ, false);
+		m_Flags.set(flGenerateLODLQ, false);
 	}
 	if (m_Flags.is(flRefreshSubProps))
 	{
-		m_Flags.set(flRefreshSubProps, FALSE);
+		m_Flags.set(flRefreshSubProps, false);
 
 		xr_vector<ListItem*> items;
 		m_ObjectItems->GetSelected(0, items, false);
@@ -418,7 +418,7 @@ void CActorTools::Clear()
 	m_Props->ClearProperties();
 
 	m_bObjectModified = false;
-	m_Flags.set(flUpdateGeometry | flUpdateMotionDefs | flUpdateMotionKeys | flReadOnlyMode, FALSE);
+	m_Flags.set(flUpdateGeometry | flUpdateMotionDefs | flUpdateMotionKeys | flReadOnlyMode, false);
 	m_EditMode = emObject;
 
 	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Actor Editor");
@@ -737,7 +737,7 @@ void CActorTools::SetPreviewObjectPrefs()
 
 void CActorTools::OnObjectModified(void)
 {
-	m_Flags.set(flUpdateGeometry, TRUE);
+	m_Flags.set(flUpdateGeometry, true);
 	OnGeometryModified();
 }
 
@@ -762,9 +762,9 @@ bool CActorTools::Import(const char* initial, const char* obj_name)
 	CEditableObject* O = new CEditableObject(obj_name);
 	if (O->Load(full_name))
 	{
-		O->m_objectFlags.set(CEditableObject::eoDynamic, TRUE);
-		O->m_objectFlags.set(CEditableObject::eoProgressive, TRUE);
-		O->m_objectFlags.set(CEditableObject::eoSkipOpt, FALSE);
+		O->m_objectFlags.set(CEditableObject::eoDynamic, true);
+		O->m_objectFlags.set(CEditableObject::eoProgressive, true);
+		O->m_objectFlags.set(CEditableObject::eoSkipOpt, false);
 		xr_delete(m_pEditObject);
 		m_pEditObject = O;
 		// delete visual
@@ -1029,7 +1029,7 @@ void CActorTools::RealGenerateLOD(bool hq)
 		if (O && O->IsMUStatic())
 		{
 			bool bLod = O->m_objectFlags.is(CEditableObject::eoUsingLOD);
-			O->m_objectFlags.set(CEditableObject::eoUsingLOD, FALSE);
+			O->m_objectFlags.set(CEditableObject::eoUsingLOD, false);
 			xr_string tex_name;
 			tex_name = EFS.ChangeFileExt(O->GetName(), "");
 

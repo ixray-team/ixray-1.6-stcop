@@ -46,7 +46,7 @@ void CScriptObject::net_Destroy			()
 
 bool CScriptObject::UsedAI_Locations	()
 {
-	return							(FALSE);
+	return							(false);
 }
 
 void CScriptObject::shedule_Update		(u32 DT)

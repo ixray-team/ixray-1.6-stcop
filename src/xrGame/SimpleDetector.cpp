@@ -129,15 +129,15 @@ void CUIArtefactDetectorSimple::Flash(bool bOn, float fRelPower)
 
 	if (bOn)
 	{
-		K->LL_SetBoneVisible(m_flash_bone, TRUE, TRUE);
+		K->LL_SetBoneVisible(m_flash_bone, true, true);
 		m_turn_off_flash_time = Device.dwTimeGlobal + iFloor(fRelPower * 500.0f);
 	}
 	else
 	{
-		K->LL_SetBoneVisible(m_flash_bone, FALSE, TRUE);
+		K->LL_SetBoneVisible(m_flash_bone, false, true);
 		m_turn_off_flash_time = 0;
 	}
-	K->CalculateBones(TRUE);
+	K->CalculateBones(true);
 
 	if (bOn != m_flash_light->get_active())
 	{
@@ -172,8 +172,8 @@ void CUIArtefactDetectorSimple::setup_internals()
 	m_flash_bone = K->LL_BoneID("light_bone_2");
 	m_on_off_bone = K->LL_BoneID("light_bone_1");
 
-	K->LL_SetBoneVisible(m_flash_bone, FALSE, TRUE);
-	K->LL_SetBoneVisible(m_on_off_bone, TRUE, TRUE);
+	K->LL_SetBoneVisible(m_flash_bone, false, true);
+	K->LL_SetBoneVisible(m_on_off_bone, true, true);
 
 	m_pOnOfLAnim = LALib.FindItem("det_on_off");
 	m_pFlashLAnim = LALib.FindItem("det_flash");

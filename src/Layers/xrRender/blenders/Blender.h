@@ -51,9 +51,9 @@ public:
 	virtual 		const char*		getName			()	{return description.cName;}
 	virtual			const char*		getComment		()	= 0;
 
-	virtual			bool		canBeDetailed	()	{ return FALSE; }
+	virtual			bool		canBeDetailed	()	{ return false; }
 	virtual			bool		canBeLMAPped	()	= 0;
-	virtual			bool		canUseSteepParallax	()	{ return FALSE; }
+	virtual			bool		canUseSteepParallax	()	{ return false; }
 	
 	virtual			void		Save			(IWriter& fs);
 	virtual			void		Load			(IReader& fs, u16 version);

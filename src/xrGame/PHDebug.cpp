@@ -808,7 +808,7 @@ void DBG_AnimState( IKinematicsAnimated &ka )
 	if( dbg_track_obj_flags.test(dbg_track_obj_blends_dump) )
 	{
 		ka.LL_DumpBlends_dbg();
-		dbg_track_obj_flags.set( dbg_track_obj_blends_dump, FALSE );
+		dbg_track_obj_flags.set( dbg_track_obj_blends_dump, false );
 	}
 	for(u16 i = 0; i<MAX_PARTS; ++ i )
 		DBG_AnimPartState( ka, i );

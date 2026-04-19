@@ -14,14 +14,14 @@
 extern	s32		g_sv_dm_dwFragLimit;
 extern	bool	g_sv_dm_bPDAHunt;
 //-------------------------------------------------------
-bool		g_sv_tdm_bAutoTeamBalance		= FALSE;
-bool		g_sv_tdm_bAutoTeamSwap			= TRUE;
-bool		g_sv_tdm_bFriendlyIndicators	= FALSE;
-bool		g_sv_tdm_bFriendlyNames			= FALSE;
+bool		g_sv_tdm_bAutoTeamBalance		= false;
+bool		g_sv_tdm_bAutoTeamSwap			= true;
+bool		g_sv_tdm_bFriendlyIndicators	= false;
+bool		g_sv_tdm_bFriendlyNames			= false;
 float		g_sv_tdm_fFriendlyFireModifier	= 1.0f;
 //-------------------------------------------------------
 int			g_sv_tdm_iTeamKillLimit			= 3;
-int			g_sv_tdm_bTeamKillPunishment	= TRUE;
+int			g_sv_tdm_bTeamKillPunishment	= true;
 //-------------------------------------------------------
 bool	game_sv_TeamDeathmatch::isFriendlyFireEnabled	()	{return (int(g_sv_tdm_fFriendlyFireModifier*100.0f) > 0);};
 float	game_sv_TeamDeathmatch::GetFriendlyFire			()	{ return (int(g_sv_tdm_fFriendlyFireModifier*100.0f) > 0) ? g_sv_tdm_fFriendlyFireModifier : 0.0f;};
@@ -270,7 +270,7 @@ void	game_sv_TeamDeathmatch::OnPlayerConnectFinished	(ClientID id_who)
 	SpawnPlayer					(id_who, "spectator");
 	Send_Anomaly_States			(id_who);
 
-	xrCData->net_Ready			= TRUE;	
+	xrCData->net_Ready			= true;	
 };
 
 void game_sv_TeamDeathmatch::OnPlayerSelectTeam		(NET_Packet& P, ClientID sender)
@@ -306,7 +306,7 @@ void game_sv_TeamDeathmatch::OnPlayerChangeTeam(ClientID id_who, s16 team)
 	Px.w_u32(GAME_EVENT_PLAYER_GAME_MENU_RESPOND);
 	Px.w_u8(PLAYER_CHANGE_TEAM);
 	Px.w_s16(team);
-	m_server->SendTo(id_who,Px,net_flags(TRUE,TRUE));
+	m_server->SendTo(id_who,Px,net_flags(true,true));
 	//-----------------------------------------------------
 	if (ps_who->team == team) return;
 	//-----------------------------------------------------
@@ -633,7 +633,7 @@ bool game_sv_TeamDeathmatch::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item)
 				CSE_Abstract *e_child_item = get_entity_from_eid(item->children.back());
 				if (e_child_item)
 				{
-					if (!OnTouch(actor->ID, e_child_item->ID, FALSE))
+					if (!OnTouch(actor->ID, e_child_item->ID, false))
 					{
 						NET_Packet P;
 						u_EventGen(P,GE_OWNERSHIP_REJECT, item->ID);
@@ -663,11 +663,11 @@ bool game_sv_TeamDeathmatch::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item)
 		};
 				
 		//-------------------------------
-		return FALSE;
+		return false;
 		
 	};
 	//---------------------------------------------------------------
-	return TRUE;
+	return true;
 }
 
 void game_sv_TeamDeathmatch::OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *item)
@@ -747,11 +747,11 @@ bool game_sv_TeamDeathmatch::OnTouch(u16 eid_who, u16 eid_what, bool bForced)
 {
 	CSE_ActorMP *e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	if (!e_who)
-		return FALSE;
+		return false;
 	
 	CSE_Abstract *e_entity = m_server->ID_to_entity(eid_what);
 	if (!e_entity )
-		return FALSE;
+		return false;
 
 	return OnTouchItem(e_who, e_entity);
 }

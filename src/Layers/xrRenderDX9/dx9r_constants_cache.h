@@ -138,12 +138,12 @@ public:
 public:
 	// fp, non-array versions
 	ICF void				set		(RHIShaderConstant* C, const Fmatrix& A)		{
-		if (C->destination&1)		{ a_pixel.set	(C,C->ps,A); a_pixel.b_dirty=TRUE;		}
-		if (C->destination&2)		{ a_vertex.set	(C,C->vs,A); a_vertex.b_dirty=TRUE;		}
+		if (C->destination&1)		{ a_pixel.set	(C,C->ps,A); a_pixel.b_dirty=true;		}
+		if (C->destination&2)		{ a_vertex.set	(C,C->vs,A); a_vertex.b_dirty=true;		}
 	}
 	ICF void				set		(RHIShaderConstant* C, const Fvector4& A)		{
-		if (C->destination&1)		{ a_pixel.set	(C,C->ps,A); a_pixel.b_dirty=TRUE;		}
-		if (C->destination&2)		{ a_vertex.set	(C,C->vs,A); a_vertex.b_dirty=TRUE;		}
+		if (C->destination&1)		{ a_pixel.set	(C,C->ps,A); a_pixel.b_dirty=true;		}
+		if (C->destination&2)		{ a_vertex.set	(C,C->vs,A); a_vertex.b_dirty=true;		}
 	}
 	ICF void				set		(RHIShaderConstant* C, float x, float y, float z, float w)	{
 		Fvector4 data;		data.set(x,y,z,w);
@@ -152,12 +152,12 @@ public:
 
 	// fp, array versions
 	ICF void				seta	(RHIShaderConstant* C, u32 e, const Fmatrix& A)		{
-		if (C->destination&1)		{ a_pixel.seta	(C,C->ps,e,A); a_pixel.b_dirty=TRUE;	}
-		if (C->destination&2)		{ a_vertex.seta	(C,C->vs,e,A); a_vertex.b_dirty=TRUE;	}
+		if (C->destination&1)		{ a_pixel.seta	(C,C->ps,e,A); a_pixel.b_dirty=true;	}
+		if (C->destination&2)		{ a_vertex.seta	(C,C->vs,e,A); a_vertex.b_dirty=true;	}
 	}
 	ICF void				seta	(RHIShaderConstant* C, u32 e, const Fvector4& A)		{
-		if (C->destination&1)		{ a_pixel.seta	(C,C->ps,e,A); a_pixel.b_dirty=TRUE;	}
-		if (C->destination&2)		{ a_vertex.seta	(C,C->vs,e,A); a_vertex.b_dirty=TRUE;	}
+		if (C->destination&1)		{ a_pixel.seta	(C,C->ps,e,A); a_pixel.b_dirty=true;	}
+		if (C->destination&2)		{ a_vertex.seta	(C,C->vs,e,A); a_vertex.b_dirty=true;	}
 	}
 	ICF void				seta	(RHIShaderConstant* C, u32 e, float x, float y, float z, float w)	{
 		Fvector4 data;		data.set(x,y,z,w);

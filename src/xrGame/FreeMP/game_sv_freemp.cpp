@@ -181,9 +181,9 @@ void game_sv_freemp::OnPlayerConnectFinished(ClientID id_who)
 		xrCData->ps->team = 0;
 		xrCData->ps->setFlag(GAME_PLAYER_FLAG_SPECTATOR);
 		xrCData->ps->setFlag(GAME_PLAYER_FLAG_READY);
-		xrCData->ps->net_Export(P, TRUE);
+		xrCData->ps->net_Export(P, true);
 		u_EventSend(P);
-		xrCData->net_Ready = TRUE;
+		xrCData->net_Ready = true;
 	};
 }
 
@@ -285,7 +285,7 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 
 	string_path fname = {};
 	FS.update_path(fname, _game_config_, "mp\\fmp_respawn_items.ltx");
-	CInifile Ini(fname, TRUE);
+	CInifile Ini(fname, true);
 
 	if (!Ini.section_exist("spawn"))
 	{
@@ -590,11 +590,11 @@ bool game_sv_freemp::OnTouch(u16 eid_who, u16 eid_what, bool bForced)
 {
 	CSE_ActorMP* e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	if (!e_who)
-		return TRUE;
+		return true;
 
 	CSE_Abstract* e_entity = m_server->ID_to_entity(eid_what);
 	if (!e_entity)
-		return FALSE;
+		return false;
 
 	// pick up players bag
 	if (e_entity->m_tClassID == CLSID_OBJECT_PLAYERS_BAG)
@@ -602,5 +602,5 @@ bool game_sv_freemp::OnTouch(u16 eid_who, u16 eid_what, bool bForced)
 		return OnTouchPlayersBag(e_who, e_entity);
 	}
 
-	return TRUE;
+	return true;
 }

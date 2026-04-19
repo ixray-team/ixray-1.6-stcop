@@ -75,7 +75,7 @@ IPHStaticGeomShell* P_BuildStaticGeomShell(IPhysicsShellHolder* obj,ObjectContac
 	//R_ASSERT2(V,"need visual to build");
 	IKinematics* K		=obj->ObjectKinematics();
 	R_ASSERT2(K,"need visual to build");
-	K->CalculateBones	(TRUE);		//. bForce - was TRUE
+	K->CalculateBones	(true);		//. bForce - was true
 
 	//V->getVisData().box.getradius	(b.m_halfsize);
 	K->GetBox().getradius	(b.m_halfsize);
@@ -84,10 +84,10 @@ IPHStaticGeomShell* P_BuildStaticGeomShell(IPhysicsShellHolder* obj,ObjectContac
 	CPHStaticGeomShell* pUnbrokenObject =P_BuildStaticGeomShell(obj,object_contact_callback,b);
 
 	
-	K->CalculateBones(TRUE);
+	K->CalculateBones(true);
 	for (u16 k=0; k<K->LL_BoneCount(); k++){
-		K->LL_GetBoneInstance(k).set_callback( bctPhysics,cb,K->LL_GetBoneInstance(k).callback_param(), TRUE);
-		//K->LL_GetBoneInstance(k).Callback_overwrite = TRUE;
+		K->LL_GetBoneInstance(k).set_callback( bctPhysics,cb,K->LL_GetBoneInstance(k).callback_param(), true);
+		//K->LL_GetBoneInstance(k).Callback_overwrite = true;
 		//K->LL_GetBoneInstance(k).Callback = cb;
 	}
 	return pUnbrokenObject;

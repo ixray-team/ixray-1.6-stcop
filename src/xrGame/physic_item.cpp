@@ -59,8 +59,8 @@ void CPhysicItem::OnH_B_Independent	(bool just_before_destroy)
 	if (m_ready_to_destroy)
 		return;
 
-	setVisible					(TRUE);
-	setEnabled					(TRUE);
+	setVisible					(true);
+	setEnabled					(true);
 
 	if (!just_before_destroy)
 		activate_physic_shell	();
@@ -70,8 +70,8 @@ void CPhysicItem::OnH_B_Chield		()
 {
 	inherited::OnH_B_Chield		();
 
-	setVisible					(FALSE);
-	setEnabled					(FALSE);
+	setVisible					(false);
+	setEnabled					(false);
 
 	inherited::deactivate_physics_shell();
 }
@@ -79,10 +79,10 @@ void CPhysicItem::OnH_B_Chield		()
 bool CPhysicItem::net_Spawn			(CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC))
-		return (FALSE);
+		return (false);
 	IKinematics* pK = PKinematics(Visual());
 	pK->CalculateBones_Invalidate();
-	pK->CalculateBones(TRUE);
+	pK->CalculateBones(true);
 	CSE_Abstract *abstract = (CSE_Abstract*)DC;
 	if (0xffff == abstract->ID_Parent)
 	{
@@ -90,10 +90,10 @@ bool CPhysicItem::net_Spawn			(CSE_Abstract* DC)
 		//else processing_deactivate();//.
 	}
 
-	setVisible				(TRUE);
-	setEnabled				(TRUE);
+	setVisible				(true);
+	setEnabled				(true);
 
-	return					(TRUE);
+	return					(true);
 }
 
 void CPhysicItem::net_Destroy		()
@@ -125,7 +125,7 @@ void CPhysicItem::activate_physic_shell()
 	if(K)
 	{
 		K->CalculateBones_Invalidate();
-		K->CalculateBones(TRUE);
+		K->CalculateBones(true);
 	}
 	///m_pPhysicsShell->Update		();	
 }
@@ -137,7 +137,7 @@ void CPhysicItem::setup_physic_shell	()
 	if(K)
 	{
 		K->CalculateBones_Invalidate();
-		K->CalculateBones(TRUE);
+		K->CalculateBones(true);
 	}
 
 	//m_pPhysicsShell->Update		();

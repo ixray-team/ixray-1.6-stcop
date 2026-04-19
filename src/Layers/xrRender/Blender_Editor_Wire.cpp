@@ -38,7 +38,7 @@ void CBlender_Editor_Wire::Compile	(CBlender_Compile& C)
 	{
 		C.PassBegin		();
 		{
-			C.PassSET_ZB		(TRUE,TRUE);
+			C.PassSET_ZB		(true,true);
 			C.PassSET_Blend		(false,D3DBLEND_ONE,D3DBLEND_ZERO,	false,0);
 			C.PassSET_LightFog	(false,false);
 

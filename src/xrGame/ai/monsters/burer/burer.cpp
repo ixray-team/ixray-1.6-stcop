@@ -373,7 +373,7 @@ void  CBurer::StaminaHit()
 	if (CCustomDevice* pDevice = pActor->GetDevice())
 	{
 		pDevice->SetActivationSpeedOverride(normalize(dir) * m_weapon_drop_velocity);
-		pDevice->SetDropManual(TRUE);
+		pDevice->SetDropManual(true);
 	}
 
 	const shared_str& kick_animator = pActor->m_sBurerKickAnimator;
@@ -464,7 +464,7 @@ void CBurer::UpdateGraviObject()
 
 	// ---------------------------------------------------------------------
 	// draw particle
-	CParticlesObject* ps = Particles::Details::Create(particle_gravi_wave,TRUE).get();
+	CParticlesObject* ps = Particles::Details::Create(particle_gravi_wave,true).get();
 
 	// вычислить позицию и направленность партикла
 	Fmatrix pos; 
@@ -551,7 +551,7 @@ void CBurer::UpdateGraviObjectCL()
 
 	// ---------------------------------------------------------------------
 	// draw particle
-	CParticlesObject* ps = Particles::Details::Create(particle_gravi_wave, TRUE).get();
+	CParticlesObject* ps = Particles::Details::Create(particle_gravi_wave, true).get();
 
 	// вычислить позицию и направленность партикла
 	Fmatrix pos;
@@ -617,7 +617,7 @@ void CBurer::StartGraviPrepare()
 		CGameObject::u_EventGen(tmp_packet, GE_BURER_GRAVI_PARTICLES, ID());
 		tmp_packet.w_u8(1);
 		tmp_packet.w_u16(pA->ID());
-		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(TRUE, TRUE));
+		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 	}
 }
 
@@ -648,7 +648,7 @@ void CBurer::StopGraviPrepare()
 		CGameObject::u_EventGen(tmp_packet, GE_BURER_GRAVI_PARTICLES, ID());
 		tmp_packet.w_u8(0);
 		tmp_packet.w_u16(pA->ID());
-		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(TRUE, TRUE));
+		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 	}
 }
 
@@ -675,7 +675,7 @@ void CBurer::Hit(SHit* pHDS)
 			TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
 			PPlayer->MakeXFORM(this, pHDS->bone(), pHDS->dir, pHDS->p_in_bone_space, pos);
 			// установить particles
-			xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(particle_fire_shield, TRUE);
+			xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(particle_fire_shield, true);
 			ps->UpdateParent(pos, Fvector().set(0.f, 0.f, 0.f));
 			GamePersistent().ps_needtoplay.push_back(ps);
 		}
@@ -687,7 +687,7 @@ void CBurer::Hit(SHit* pHDS)
 			tmp_packet.w_u16(pHDS->bone());
 			tmp_packet.w_vec3(pHDS->dir);
 			tmp_packet.w_vec3(pHDS->p_in_bone_space);
-			Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(TRUE, TRUE));
+			Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 
 		}
 	}
@@ -809,7 +809,7 @@ void CBurer::OnEvent(NET_Packet& P, u16 type)
 			TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
 			PPlayer->MakeXFORM(this, bone, dir, p_in_bone_space, pos);
 			// установить particles
-			xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(particle_fire_shield, TRUE);
+			xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(particle_fire_shield, true);
 			ps->UpdateParent(pos, Fvector().set(0.f, 0.f, 0.f));
 			GamePersistent().ps_needtoplay.push_back(ps);
 		}
@@ -845,14 +845,14 @@ void CBurer::StartGraviMP()
 	NET_Packet	tmp_packet;
 	CGameObject::u_EventGen(tmp_packet, GE_BURER_GRAVI_WAVE, ID());
 	tmp_packet.w_u16(EnemyMan.get_enemy()->ID());
-	Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(TRUE, TRUE));
+	Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 }
 
 void CBurer::shieldParticlesMP()
 {
 	NET_Packet	tmp_packet;
 	CGameObject::u_EventGen(tmp_packet, GE_BURER_SHIELD, ID());
-	Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(TRUE, TRUE));
+	Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(true, true));
 }
 
 void   CBurer::face_enemy ()

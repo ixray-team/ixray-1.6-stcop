@@ -44,8 +44,8 @@ public:
 	virtual	void	net_Destroy			();
 	virtual void	shedule_Update		( u32 dt);							// Called by sheduler
 	virtual	void	UpdateCL			();
-	virtual bool	renderable_ShadowGenerate	( ) { return FALSE;	}
-	virtual bool	renderable_ShadowReceive	( ) { return TRUE;	}
+	virtual bool	renderable_ShadowGenerate	( ) { return false;	}
+	virtual bool	renderable_ShadowReceive	( ) { return true;	}
 	
 	virtual	void	Hit					(SHit* pHDS);
 

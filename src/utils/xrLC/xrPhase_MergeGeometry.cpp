@@ -52,17 +52,17 @@ ICF void	CreateBox(vecFace& subdiv, Fbox& bb_base)
 
 ICF bool	FaceEqual(Face* F1, Face* F2)
 {
-	if (F1->dwMaterial != F2->dwMaterial)		return FALSE;
-	if (F1->tc.size() != F2->tc.size())			return FALSE;
-	if (F1->lmap_layer != F2->lmap_layer)		return FALSE;
-	return TRUE;
+	if (F1->dwMaterial != F2->dwMaterial)		return false;
+	if (F1->tc.size() != F2->tc.size())			return false;
+	if (F1->lmap_layer != F2->lmap_layer)		return false;
+	return true;
 }
 
 bool	NeedMerge(vecFace& subdiv, Fbox& bb_base)
 {
 	// 1. Amount of polygons
 	if (subdiv.size() >= u32(3 * c_SS_HighVertLimit / 4))
-		return FALSE;
+		return false;
 
 	Fvector sz_base;
 
@@ -73,11 +73,11 @@ bool	NeedMerge(vecFace& subdiv, Fbox& bb_base)
 	bb_base.grow(EPS_S);	// Enshure non-zero volume
 	bb_base.getsize(sz_base);
 	if (sz_base.x < c_SS_maxsize)
-		return TRUE;
+		return true;
 	if (sz_base.y < c_SS_maxsize)
-		return TRUE;
+		return true;
 	if (sz_base.z < c_SS_maxsize)
-		return TRUE;
+		return true;
 
 	return true;
 }
@@ -87,7 +87,7 @@ ICF bool	NeedMerge_for(vecFace& subdiv, Fbox bb_base)
 {
 	// 1. Amount of polygons
 	if (subdiv.size() >= u32(3 * c_SS_HighVertLimit / 4))
-		return FALSE;
+		return false;
 
 	Fvector sz_base;
 	
@@ -95,11 +95,11 @@ ICF bool	NeedMerge_for(vecFace& subdiv, Fbox bb_base)
 	bb_base.grow(EPS_S);	// Enshure non-zero volume
 	bb_base.getsize(sz_base);
 	if (sz_base.x < c_SS_maxsize)
-		return TRUE;
+		return true;
 	if (sz_base.y < c_SS_maxsize)
-		return TRUE;
+		return true;
 	if (sz_base.z < c_SS_maxsize)
-		return TRUE;
+		return true;
 
 	return true;
 }
@@ -109,16 +109,16 @@ bool	ValidateMergeLinearSize(const Fvector& merged, const Fvector& orig1, const 
 	if ((merged[iAxis] > (4 * c_SS_maxsize / 3)) &&
 		(merged[iAxis] > (orig1[iAxis] + 1)) &&
 		(merged[iAxis] > (orig2[iAxis] + 1)))
-		return FALSE;
+		return false;
 	else
-		return TRUE;
+		return true;
 }
 
 ICF bool	ValidateMerge(u32 f1, u32 f2, float& volume, const Fbox& bb_subdiv, const Fbox& bb_base, const Fbox& bb_base_orig)
 {
 	// Polygons
 	if ((f1 + f2) > u32(4 * c_SS_HighVertLimit / 3))
-		return FALSE;	// Don't exceed limits (4/3 max POLY)	
+		return false;	// Don't exceed limits (4/3 max POLY)	
 
 	Fbox	merge;
 	merge.merge(bb_base, bb_subdiv);
@@ -128,9 +128,9 @@ ICF bool	ValidateMerge(u32 f1, u32 f2, float& volume, const Fbox& bb_subdiv, con
 	bb_base_orig.getsize(orig1);
 	bb_subdiv.getsize(orig2);
 
-	if (!ValidateMergeLinearSize(sz, orig1, orig2, 0))	return FALSE;	// Don't exceed limits (4/3 GEOM)
-	if (!ValidateMergeLinearSize(sz, orig1, orig2, 1))	return FALSE;
-	if (!ValidateMergeLinearSize(sz, orig1, orig2, 2))	return FALSE;
+	if (!ValidateMergeLinearSize(sz, orig1, orig2, 0))	return false;	// Don't exceed limits (4/3 GEOM)
+	if (!ValidateMergeLinearSize(sz, orig1, orig2, 1))	return false;
+	if (!ValidateMergeLinearSize(sz, orig1, orig2, 2))	return false;
 
 
 	// Volume
@@ -142,10 +142,10 @@ ICF bool	ValidateMerge(u32 f1, u32 f2, float& volume, const Fbox& bb_subdiv, con
 
 	volume = merge.getvolume();
 	if (volume > 8 * (v1 + v2))
-		return FALSE;	// Don't merge too distant groups (8 vol)
+		return false;	// Don't merge too distant groups (8 vol)
 
 	// OK
-	return TRUE;
+	return true;
 }
  
 auto Validate = [](u32& CurrentProcessedID, u32& VecIndex, data_material& cmaterial_subdiv, xr_vector<data_material>& data_vector,  Fbox bb_base, Fbox bb_base_orig)

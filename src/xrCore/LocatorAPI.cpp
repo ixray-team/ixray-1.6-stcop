@@ -118,7 +118,7 @@ void CLocatorAPI::Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size
 	string_path			folder;
 	while (temp[0]) 
 	{
-		_splitpath		(temp, path, folder, 0, 0 );
+		_splitpath		(temp, path, folder, nullptr, nullptr );
 		xr_strcat			(path,folder);
 		if (!exist(path))	
 		{
@@ -331,7 +331,7 @@ void CLocatorAPI::archive::open()
 	hSrcFile = Platform::CreateFile(*path, false);
 
 #ifdef IXR_WINDOWS
-	hSrcMap			= CreateFileMapping	(hSrcFile, 0, PAGE_READONLY, 0, 0, 0);
+	hSrcMap			= CreateFileMapping	(hSrcFile, nullptr, PAGE_READONLY, 0, 0, nullptr);
 	R_ASSERT		(hSrcMap!=INVALID_HANDLE_VALUE);
 #endif
 
@@ -365,7 +365,7 @@ void CLocatorAPI::ProcessArchive(const char* _path, const char* base_path)
 	A.open						();
 
 	// Read header
-	bool bProcessArchiveLoading = TRUE;
+	bool bProcessArchiveLoading = true;
 
 	IReader* hdr				= open_chunk(A.hSrcFile, CFS_HeaderChunkID, A.path.c_str(), A.size);
 	if(hdr)
@@ -690,7 +690,7 @@ IReader *CLocatorAPI::setup_fs_ltx	(const char* fs_name)
 
 	int				file_handle;
 	intptr_t		file_size;
-	IReader			*result = 0;
+	IReader			*result = nullptr;
 	CHECK_OR_EXIT	(
 		file_handle_internal(fs_file_name, file_size, file_handle),
 		make_string<const char*>("Cannot open file \"%s\".\nCheck your working folder.",fs_file_name)
@@ -716,10 +716,10 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 	Log("Initializing File System...");
 	//u32	M1 = Memory.mem_usage();
 
-	m_Flags.set(flags, TRUE);
+	m_Flags.set(flags, true);
 
 	// scan root directory
-	bNoRecurse = TRUE;
+	bNoRecurse = true;
 	string4096		buf;
 
 	// Load ignore list
@@ -727,7 +727,7 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 
 	// append application path
 	if (m_Flags.is(flScanAppRoot))
-		append_path("$app_root$", Core.ApplicationPath, 0, FALSE);
+		append_path("$app_root$", Core.ApplicationPath, nullptr, false);
 
 
 	//-----------------------------------------------------------
@@ -735,7 +735,7 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 	// target folder 
 	if (m_Flags.is(flTargetFolderOnly))
 	{
-		append_path("$target_folder$", target_folder, 0, TRUE);
+		append_path("$target_folder$", target_folder, nullptr, true);
 	}
 	else
 	{
@@ -782,9 +782,9 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 
 
 			xr_strlwr(root);
-			lp_add = (cnt >= 4) ? xr_strlwr(add) : 0;
-			lp_def = (cnt >= 5) ? def : 0;
-			lp_capt = (cnt >= 6) ? capt : 0;
+			lp_add = (cnt >= 4) ? xr_strlwr(add) : nullptr;
+			lp_def = (cnt >= 5) ? def : nullptr;
+			lp_capt = (cnt >= 6) ? capt : nullptr;
 
 			PathPairIt p_it = pathes.find(root);
 
@@ -794,7 +794,7 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 			Recurse(P->m_Path);
 			I = pathes.insert(std::make_pair(xr_strdup(id), P));
 #ifndef DEBUG
-			m_Flags.set(flCacheFiles, FALSE);
+			m_Flags.set(flCacheFiles, false);
 #endif // DEBUG
 
 			CHECK_OR_EXIT(I.second, "The file 'fsgame.ltx' is corrupted (it contains duplicated lines).\nPlease reinstall the game or fix the problem manually.");
@@ -814,7 +814,7 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 	// u32	M2 = Memory.mem_usage();
 	// Msg("FS: %d files cached %d archives, %dKb memory used.", m_files.size(), m_archives.size(), (M2 - M1) / 1024);
 
-	m_Flags.set(flReady, TRUE);
+	m_Flags.set(flReady, true);
 
 	Msg("Init FileSystem %f sec", t.GetElapsed_sec());
 	//-----------------------------------------------------------
@@ -924,7 +924,7 @@ xr_vector<char*>* CLocatorAPI::file_list_open			(const char* _path, u32 flags)
 	file			desc;
 	desc.name		= N;
 	files_it	I 	= m_files.find(desc);
-	if (I==m_files.end())	return 0;
+	if (I==m_files.end())	return nullptr;
 	
 	xr_vector<char*>*	dest	= new xr_vector<char*>();
 
@@ -942,7 +942,7 @@ xr_vector<char*>* CLocatorAPI::file_list_open			(const char* _path, u32 flags)
 			if ((flags&FS_RootOnly)&& strchr(entry_begin,'\\'))	continue;	// folder in folder
 			dest->push_back			(xr_strdup(entry_begin));
 			LPSTR fname 			= dest->back();
-			if (flags&FS_ClampExt)	if (0!=strext(fname)) *strext(fname)=0;
+			if (flags&FS_ClampExt)	if (nullptr!=strext(fname)) *strext(fname)=0;
 		} else {
 			// folder
 			if ((flags&FS_ListFolders) == 0)continue;
@@ -1075,7 +1075,7 @@ void CLocatorAPI::check_cached_files	(LPSTR fname, const u32 &fname_size, const 
 	if (0!=memcmp(path_base,fname,len_base))
 		return;
 
-	bool		bCopy	= FALSE;
+	bool		bCopy	= false;
 
 	string_path	fname_in_cache	;
 	update_path	(fname_in_cache,"$cache$",path_file+len_base);
@@ -1089,11 +1089,11 @@ void CLocatorAPI::check_cached_files	(LPSTR fname, const u32 &fname_size, const 
 		} else {
 			// copy & use
 			Msg			("copy: db[%X],cache[%X] - '%s', ",desc.modif,fc.modif,fname);
-			bCopy		= TRUE;
+			bCopy		= true;
 		}
 	} else {
 		// copy & use
-		bCopy	= TRUE;
+		bCopy	= true;
 	}
 
 	// copy if need
@@ -1263,7 +1263,7 @@ void CLocatorAPI::copy_file_to_build	(T *&r, const char* source_name)
 	if (!ext)
 		return;
 
-	IReader* R		= 0;
+	IReader* R		= nullptr;
 	if (0==xr_strcmp(ext,".dds")){
 		P			= get_path(_game_textures_);               
 		update_path	(e_cpy_name,_textures_,source_name+xr_strlen(P->m_Path));
@@ -1330,9 +1330,9 @@ template <typename T>
 T *CLocatorAPI::r_open_impl	(const char* path, const char* _fname)
 {
 	PROF_EVENT("r_open_impl");
-	T						*R = 0;
+	T						*R = nullptr;
 	string_path				fname;
-	const file				*desc = 0;
+	const file				*desc = nullptr;
 	const char*					source_name = &fname[0];
 
 #ifdef IXR_WINDOWS
@@ -1340,7 +1340,7 @@ T *CLocatorAPI::r_open_impl	(const char* path, const char* _fname)
 #else
 	if (!check_for_file(path,Platform::RestorePath(_fname),fname,desc))
 #endif
-		return(0);
+		return(nullptr);
 
 	// OK, analyse
 	if (0xffffffff == desc->vfs)
@@ -1556,7 +1556,7 @@ bool CLocatorAPI::dir_delete(const char* path,const char* nm,bool remove_files)
 			if ((*end_symbol) != '\\')
 			{
 				if (!remove_files)
-					return FALSE;
+					return false;
 
 				Platform::Unlink(entry.name);
 				m_files.erase(cur_item);
@@ -1580,7 +1580,7 @@ bool CLocatorAPI::dir_delete(const char* path,const char* nm,bool remove_files)
 		}
 	}
 
-	return TRUE;
+	return true;
 }
 
 void CLocatorAPI::file_delete(const char* path, const char* nm)
@@ -1793,14 +1793,14 @@ void CLocatorAPI::rescan_path(const char* full_path, bool bRecurse)
 
 void  CLocatorAPI::rescan_pathes()
 {
-	m_Flags.set(flNeedRescan,FALSE);
+	m_Flags.set(flNeedRescan,false);
 	for (PathPairIt p_it=pathes.begin(); p_it!=pathes.end(); p_it++)
 	{
 		FS_Path* P	= p_it->second;
 		if (P->m_Flags.is(FS_Path::flNeedRescan))
 		{
 			rescan_path(P->m_Path,P->m_Flags.is(FS_Path::flRecurse));
-			P->m_Flags.set(FS_Path::flNeedRescan,FALSE);
+			P->m_Flags.set(FS_Path::flNeedRescan,false);
 		}
 	}
 }
@@ -1860,19 +1860,19 @@ bool CLocatorAPI::can_write_to_folder(const char* path)
 		FILE* hf;
 		fopen_s(&hf, temp, "wb");
 
-		if (hf == 0)
+		if (hf == nullptr)
 		{
-			return FALSE;
+			return false;
 		}
 		else 
 		{
 			fclose(hf);
 			Platform::Unlink(temp);
-			return 		TRUE;
+			return 		true;
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 bool CLocatorAPI::can_write_to_alias(const char* path)
@@ -1890,9 +1890,9 @@ bool CLocatorAPI::can_modify_file(const char* fname)
 	if (hf)
 	{	
 		fclose(hf);
-		return 			TRUE;
+		return 			true;
 	}
-	return FALSE;
+	return false;
 }
 
 bool CLocatorAPI::can_modify_file(const char* path, const char* name)

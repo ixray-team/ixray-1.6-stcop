@@ -13,7 +13,7 @@ void CBlender_accum_point::Compile(CBlender_Compile& C) {
 	IBlender::Compile(C);
 
 	if(C.iElement == SE_L_FILL) {
-		C.r_Pass("null", "copy", false, FALSE, FALSE);
+		C.r_Pass("null", "copy", false, false, false);
 		C.r_Sampler("s_base", C.L_textures[0]);
 		C.r_End();
 
@@ -32,7 +32,7 @@ void CBlender_accum_point::Compile(CBlender_Compile& C) {
 		RImplementation.addShaderOption("USE_LMAP", "1");
 	}
 
-	C.r_Pass("accum_volume", "accum_base", false, FALSE, FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
+	C.r_Pass("accum_volume", "accum_base", false, false, false, true, D3DBLEND_ONE, D3DBLEND_ONE);
 
 	C.r_Sampler_rtf("s_position", r2_RT_P);
 	C.r_Sampler_rtf("s_normal", r2_RT_N);

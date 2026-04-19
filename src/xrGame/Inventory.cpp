@@ -143,7 +143,7 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 	VERIFY(CanTakeItem(pIItem));
 
 	pIItem->m_pInventory = this;
-	pIItem->SetDropManual(FALSE);
+	pIItem->SetDropManual(false);
 	pIItem->AllowTrade();
 
 	//if net_Import for pObj arrived then the pObj will pushed to CrPr list (correction prediction)
@@ -757,7 +757,7 @@ void CInventory::SendActionEvent(u16 cmd, u32 flags)
 	P.w_u32(flags);
 	P.w_s32(pActor->GetZoomRndSeed());
 	P.w_s32(pActor->GetShotRndSeed());
-	pActor->u_EventSend(P, net_flags(TRUE, TRUE, FALSE, TRUE));
+	pActor->u_EventSend(P, net_flags(true, true, false, true));
 };
 
 bool CInventory::Action(u16 cmd, u32 flags)
@@ -1041,7 +1041,7 @@ void CInventory::UpdateDropItem(PIItem pIItem)
 {
 	if (pIItem->GetDropManual())
 	{
-		pIItem->SetDropManual(FALSE);
+		pIItem->SetDropManual(false);
 		pIItem->DenyTrade();
 
 		if (OnServer())
@@ -1335,7 +1335,7 @@ bool CInventory::Eat(PIItem pIItem)
 			return false;
 		}
 
-		pIItem->SetDropManual(TRUE);
+		pIItem->SetDropManual(true);
 	}
 
 	return true;

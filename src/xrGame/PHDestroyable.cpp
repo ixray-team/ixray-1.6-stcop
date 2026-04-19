@@ -43,7 +43,7 @@ av_transition_factor   =1       ; коэффициент передачи угл
 CPHDestroyable::CPHDestroyable()
 {
 	m_flags.flags=0;
-	m_flags.set(fl_released,TRUE);
+	m_flags.set(fl_released,true);
 	m_depended_objects=0;
 }
 /////////spawn object representing destroyed item//////////////////////////////////////////////////////////////////////////////////
@@ -66,8 +66,8 @@ void CPHDestroyable::GenSpawnReplace(u16 ref_id,const char* section,shared_str v
 	if (OnServer())
 	{
 		NET_Packet			P;
-		D->Spawn_Write		(P,TRUE);
-		Level().Send		(P,net_flags(TRUE));
+		D->Spawn_Write		(P,true);
+		Level().Send		(P,net_flags(true));
 		// Destroy
 		F_entity_Destroy	(D);
 		m_depended_objects++;
@@ -121,16 +121,16 @@ void CPHDestroyable::PhysicallyRemoveSelf()
 
 	}
 
-	obj->setVisible(FALSE);
-	obj->setEnabled(FALSE);
+	obj->setVisible(false);
+	obj->setEnabled(false);
 }
 
 void CPHDestroyable::PhysicallyRemovePart(CPHDestroyableNotificate *dn)
 {
 	CPhysicsShellHolder		*sh		=	dn		->PPhysicsShellHolder		()		;	
 	CPhysicsShell			*s		=	sh		->PPhysicsShell				()		;
-							sh					->setVisible				(FALSE)	;
-							sh					->setEnabled				(FALSE)	;
+							sh					->setVisible				(false)	;
+							sh					->setEnabled				(false)	;
 							s					->Disable					()		;
 							s					->DisableCollision			()		;
 }
@@ -147,7 +147,7 @@ void CPHDestroyable::Destroy(u16 source_id/*=u16(-1)*/,const char* section/*="ph
 	obj->processing_activate();
 	if(source_id==obj->ID())
 	{
-		m_flags.set(fl_released,FALSE);
+		m_flags.set(fl_released,false);
 	}
 	xr_vector<shared_str>::iterator i=m_destroyed_obj_visual_names.begin(),e=m_destroyed_obj_visual_names.end();
 
@@ -157,21 +157,21 @@ void CPHDestroyable::Destroy(u16 source_id/*=u16(-1)*/,const char* section/*="ph
 			GenSpawnReplace(source_id,section,*i);
 	};	
 ///////////////////////////////////////////////////////////////////////////
-	m_flags.set(fl_destroyed,TRUE);
+	m_flags.set(fl_destroyed,true);
 	return;
 }
 
 void CPHDestroyable::Load(CInifile* ini,const char* section)
 {
-	m_flags.set(fl_destroyable,FALSE);
+	m_flags.set(fl_destroyable,false);
 
 	if (ini->line_exist(section,"destroyed_vis_name")){
-		m_flags.set(fl_destroyable,TRUE);
+		m_flags.set(fl_destroyable,true);
 		m_destroyed_obj_visual_names.push_back(ini->r_string(section,"destroyed_vis_name"));
 	} else {
 		CInifile::Sect& data		= ini->r_section(section);
 
-		if(data.Data.size()>0) m_flags.set(fl_destroyable,TRUE);
+		if(data.Data.size()>0) m_flags.set(fl_destroyable,true);
 
 		for (CInifile::SectCIt I = data.Data.begin(); I != data.Data.end(); I++)
 		{
@@ -188,10 +188,10 @@ void CPHDestroyable::Load(CInifile* ini,const char* section)
 }
 void CPHDestroyable::Load(const char* section)
 {
-	m_flags.set(fl_destroyable,FALSE);
+	m_flags.set(fl_destroyable,false);
 
 	if(pSettings->line_exist(section,"destroyed_vis_name")){
-		m_flags.set								(fl_destroyable,TRUE);
+		m_flags.set								(fl_destroyable,true);
 		m_destroyed_obj_visual_names.push_back	(pSettings->r_string(section,"destroyed_vis_name"));
 	}
 }
@@ -203,8 +203,8 @@ void CPHDestroyable::Init()
 
 void CPHDestroyable::RespawnInit()
 {
-	m_flags.set(fl_destroyed,FALSE);
-	m_flags.set(fl_released,TRUE);
+	m_flags.set(fl_destroyed,false);
+	m_flags.set(fl_released,true);
 	m_destroyed_obj_visual_names.clear();
 	m_notificate_objects.clear();
 	m_depended_objects=0;
@@ -326,8 +326,8 @@ void CPHDestroyable::NotificatePart(CPHDestroyableNotificate *dn)
 
 	new_shell->Enable();
 	new_shell->EnableCollision();
-	dn->PPhysicsShellHolder()->setVisible(TRUE);
-	dn->PPhysicsShellHolder()->setEnabled(TRUE);
+	dn->PPhysicsShellHolder()->setVisible(true);
+	dn->PPhysicsShellHolder()->setEnabled(true);
 
 	if(own_shell->IsGroupObject())
 		new_shell->RegisterToCLGroup(own_shell->GetCLGroup());//CollideBits
@@ -356,7 +356,7 @@ void CPHDestroyable::NotificateDestroy(CPHDestroyableNotificate *dn)
 	if (g_pGamePersistent->GameType() == eGameIDFreeMP)
 	{
 		CPhysicsShellHolder* obj = PPhysicsShellHolder();
-		obj->setVisible(FALSE);
+		obj->setVisible(false);
 	}
 
 	m_depended_objects--;
@@ -368,7 +368,7 @@ void CPHDestroyable::NotificateDestroy(CPHDestroyableNotificate *dn)
 		for(;i<e;i++)NotificatePart(*i);
 		PhysicallyRemoveSelf();
 		m_notificate_objects.clear();
-		m_flags.set(fl_released,TRUE);
+		m_flags.set(fl_released,true);
 	}
 
 }

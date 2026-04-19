@@ -211,7 +211,7 @@ void CCreature::reinit		()
 	m_dwLastUpdateTime			= 0xffffffff;
 	m_tEyeShift.set				(0,0,0);
 	m_fEyeShiftYaw				= 0.f;
-	NET_WasExtrapolating		= FALSE;
+	NET_WasExtrapolating		= false;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Critical Wounds
@@ -307,11 +307,11 @@ void CCreature::net_Import(NET_Packet& P)
 
 	if (NET.empty() || (NET.back().dwTimeStamp<N.dwTimeStamp))	{
 		NET.push_back			(N);
-		NET_WasInterpolating	= TRUE;
+		NET_WasInterpolating	= true;
 	}
 
-	setVisible				(TRUE);
-	setEnabled				(TRUE);
+	setVisible				(true);
+	setEnabled				(true);
 }
 
 void CCreature::shedule_Update	( u32 DT )
@@ -447,7 +447,7 @@ void CCreature::UpdateCL	()
 	{
 		PROF_EVENT("network extrapolation");
 		// OK.	interpolation
-		NET_WasExtrapolating		= FALSE;
+		NET_WasExtrapolating		= false;
 		// Search 2 keyframes for interpolation
 		int select		= -1;
 		for (u32 id=0; id<NET.size()-1; ++id)
@@ -474,7 +474,7 @@ void CCreature::UpdateCL	()
 			}
 
 			// Signal, that last time we used interpolation
-			NET_WasInterpolating	= TRUE;
+			NET_WasInterpolating	= true;
 			NET_Time				= dwTime;
 		}
 	}
@@ -536,11 +536,11 @@ void CCreature::UpdatePositionAnimation()
 
 bool CCreature::feel_visible_isRelevant (CObject* O)
 {
-	if (!O)									return FALSE;
+	if (!O)									return false;
 	CEntityAlive* E = O->cast_entity_alive();
-	if (!E)									return FALSE;
-	if (E->g_Team() == g_Team())			return FALSE;
-	return TRUE;
+	if (!E)									return false;
+	if (E->g_Team() == g_Team())			return false;
+	return true;
 }
 
 void CCreature::eye_pp_s0			( )
@@ -651,7 +651,7 @@ bool CCreature::net_Spawn	(CSE_Abstract* DC)
 	memory().reinit				();
 
 	if (!movement().net_Spawn(DC) || !inherited::net_Spawn(DC) || !CScriptEntity::net_Spawn(DC))
-		return					(FALSE);
+		return					(false);
 
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::VISIBLEFORAI;
 		// enable react to sound only if alive
@@ -714,8 +714,8 @@ bool CCreature::net_Spawn	(CSE_Abstract* DC)
 		N.dwTimeStamp			+= NET_Latency;
 		NET.push_back			(N);
 
-		setVisible				(TRUE);
-		setEnabled				(TRUE);
+		setVisible				(true);
+		setEnabled				(true);
 	}
 
 	// Sheduler
@@ -730,7 +730,7 @@ bool CCreature::net_Spawn	(CSE_Abstract* DC)
 	else
 		SpatialComponent->spatial.type |= ESPATIAL_TYPE::AI_ALIVE;
 
-	return TRUE;
+	return true;
 }
 
 #ifdef DEBUG_DRAW
@@ -783,7 +783,7 @@ void CCreature::net_Destroy()
 
 bool CCreature::UsedAI_Locations()
 {
-	return					(TRUE);
+	return					(true);
 }
 
 void CCreature::PitchCorrection() 
@@ -816,41 +816,41 @@ void CCreature::PitchCorrection()
 bool CCreature::feel_touch_on_contact	(CObject *O)
 {
 	if(!O)
-		return		(FALSE);
+		return		(false);
 	CGameObject* GO = O->cast_game_object();
 	if (!GO)
-		return		(FALSE);
+		return		(false);
 	CAnomalyZone	*custom_zone = GO->cast_anomaly_zone();
 	if (!custom_zone)
-		return	(TRUE);
+		return	(true);
 
 	Fsphere		sphere;
 	sphere.P	= Position();
 	sphere.R	= EPS_L;
 	if (custom_zone->inside(sphere))
-		return	(TRUE);
+		return	(true);
 
-	return		(FALSE);
+	return		(false);
 }
 
 bool CCreature::feel_touch_contact		(CObject *O)
 {
 	if (!O)
-		return		(FALSE);
+		return		(false);
 	CGameObject* GO = O->cast_game_object();
 	if (!GO)
-		return		(FALSE);
+		return		(false);
 	CAnomalyZone* custom_zone = GO->cast_anomaly_zone();
 	if (!custom_zone)
-		return	(TRUE);
+		return	(true);
 
 	Fsphere		sphere;
 	sphere.P	= Position();
 	sphere.R	= 0.f;
 	if (custom_zone->inside(sphere))
-		return	(TRUE);
+		return	(true);
 
-	return		(FALSE);
+	return		(false);
 }
 
 void CCreature::set_ready_to_save		()

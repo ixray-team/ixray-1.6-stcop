@@ -90,7 +90,7 @@ public:
 		T denom = n.dotproduct(D);
 	
 		if (std::abs(denom)<EPS_S)  // normal is orthogonal to vector3, cant intersect
-			return FALSE;
+			return false;
 	
 		dist = -(numer / denom);
 		return ((dist>0.f)||fis_zero(dist));
@@ -100,7 +100,7 @@ public:
 		T numer = classify(P);
 		T denom = n.dotproduct(D);
 
-		if (std::abs(denom)<EPS_S) return FALSE; // normal is orthogonal to vector3, cant intersect
+		if (std::abs(denom)<EPS_S) return false; // normal is orthogonal to vector3, cant intersect
 		else {
 	        float dist	= -(numer / denom);
 			dest.mad	(P,D,dist);

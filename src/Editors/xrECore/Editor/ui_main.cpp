@@ -36,7 +36,7 @@ TUI* UI = nullptr;
 
 TUI::TUI()
 {
-	m_HConsole = 0;
+	m_HConsole = nullptr;
 	UI				= this;
 	m_AppClosed = false;
 	m_bAppActive 	= false;
@@ -203,7 +203,7 @@ void TUI::MousePress(TShiftState Shift, int X, int Y)
 		   
 			if(Tools->MouseStart(m_ShiftState))
 			{
-				if(Tools->HiddenMode()) ShowCursor( FALSE );
+				if(Tools->HiddenMode()) ShowCursor( false );
 				m_MouseCaptured = true;
 			}
 		}
@@ -230,7 +230,7 @@ void TUI::MouseRelease(TShiftState Shift, int X, int Y)
 			if( Tools->MouseEnd(m_ShiftState) ){
 				if(bIsHiddenMode){
 					SetCursorPos(m_StartCpH.x,m_StartCpH.y);
-					ShowCursor( TRUE );
+					ShowCursor( true );
 				}
 				m_MouseCaptured = false;
 			}
@@ -362,7 +362,7 @@ void TUI::PrepareRedraw()
 	Tools->GetCurrentFog	(fog_color, fog_start, fog_end);
 
 	EDevice->SetRS( D3DRS_FOGCOLOR,		fog_color			);
-	EDevice->SetRS( D3DRS_RANGEFOGENABLE,	FALSE				);
+	EDevice->SetRS( D3DRS_RANGEFOGENABLE,	false				);
 	if (Caps.bTableFog)	{
 		EDevice->SetRS( D3DRS_FOGTABLEMODE,	D3DFOG_LINEAR 	);
 		EDevice->SetRS( D3DRS_FOGVERTEXMODE,	D3DFOG_NONE	 	);
@@ -432,7 +432,7 @@ void TUI::Redraw()
 
 			ZB.create("$user$rt_depth", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::D24_UNORM_S8_UINT);
 
-			m_Flags.set(flRedraw, TRUE);
+			m_Flags.set(flRedraw, true);
 
 			EDevice->m_fNearer = EDevice->mProject._43;
 			HalfTarget.x = float(View.RTSize.x) * 0.5f;
@@ -450,7 +450,7 @@ void TUI::Redraw()
 			HalfTarget.x = float(View.RTSize.x) * 0.5f;
 			HalfTarget.y = float(View.RTSize.y) * 0.5f;
 			EDevice->fASPECT = float(HalfTarget.y) / float(HalfTarget.x);
-			m_Flags.set(flRedraw, TRUE);
+			m_Flags.set(flRedraw, true);
 		}
 	}
 
@@ -462,18 +462,18 @@ void TUI::Redraw()
 	if (EDevice->Begin())
 	{
 		if (psDeviceFlags.is(rsRenderRealTime))
-			m_Flags.set(flRedraw, TRUE);
+			m_Flags.set(flRedraw, true);
 		if (m_Flags.is(flRedraw) || UI->IsPlayInEditor())
 		{
-			m_Flags.set(flRedraw, FALSE);
+			m_Flags.set(flRedraw, false);
 
 			RCache.set_RT(RTNormal->pRT, 0);
 			RCache.set_RT(RTDiffuse->pRT, 1);
 			RCache.set_RT(RTPostion->pRT, 2);
 
-			GRHI->SetDepthStencilView(0);
+			GRHI->SetDepthStencilView(nullptr);
 
-			CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_TARGET, 0x0, 1, 0));
+			CHK_DX(REDevice->Clear(0, nullptr, D3DCLEAR_TARGET, 0x0, 1, 0));
 
 			RCache.set_RT(RT->pRT);
 			GRHI->SetDepthStencilView(ZB->pZRT);
@@ -484,7 +484,7 @@ void TUI::Redraw()
 			RCache.set_RT(RTNormal->pRT, 2);
 			RCache.set_RT(RTPostion->pRT, 3);
 
-			RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+			RCache.set_Stencil(true, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 			EDevice->UpdateView();
 			EDevice->ResetMaterial();
 
@@ -538,14 +538,14 @@ void TUI::Redraw()
 				g_pGamePersistent->OnRenderPPUI_main();
 			}
 
-			RCache.set_RT(0, 1);
-			RCache.set_RT(0, 2);
-			RCache.set_RT(0, 3);
+			RCache.set_RT(nullptr, 1);
+			RCache.set_RT(nullptr, 2);
+			RCache.set_RT(nullptr, 3);
 
 			RCache.set_RT(RSwapchainTarget);
 			GRHI->SetDepthStencilView(RDepth);
 			
-			CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_TARGET, D3DCOLOR_RGBA(0, 0, 0, 0), 1, 0));
+			CHK_DX(REDevice->Clear(0, nullptr, D3DCLEAR_TARGET, D3DCOLOR_RGBA(0, 0, 0, 0), 1, 0));
 
 			RDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, 0);
 			RDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
@@ -554,7 +554,7 @@ void TUI::Redraw()
 		}
 
 		EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
-		g_bRendering = FALSE;
+		g_bRendering = false;
 
 		// end draw
 		UI->BeginFrame();
@@ -577,7 +577,7 @@ void TUI::Redraw()
 
 void TUI::RealResize()
 {
-	m_Flags.set			(flResize,FALSE);
+	m_Flags.set			(flResize,false);
 	if(m_Size.x&& m_Size.y)
 	EDevice->Resize(m_Size.x, m_Size.y,m_Size_Maximize);
 	ExecCommand			(COMMAND_UPDATE_PROPERTIES);
@@ -585,7 +585,7 @@ void TUI::RealResize()
 void TUI::RealUpdateScene()
 {
 	Tools->UpdateProperties	(false);
-	m_Flags.set			(flUpdateScene,FALSE);
+	m_Flags.set			(flUpdateScene,false);
 }
 void TUI::RealRedrawScene()
 {
@@ -615,7 +615,7 @@ bool TUI::Idle()
 	do
 	{
 		ZeroMemory(&msg, sizeof(msg));
-		if (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+		if (::PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
 		{
 			::TranslateMessage(&msg);
 			::DispatchMessage(&msg);
@@ -693,7 +693,7 @@ bool TUI::OnCreate()
 	extern CDB::COLLIDER XRC;
 	XRC.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
 
-	pInput			= new CInput(FALSE, all_device_key);
+	pInput			= new CInput(false, all_device_key);
 
 	Console = new CConsole();
 	Console->Initialize();
@@ -873,7 +873,7 @@ void TUI::OnDrawUI()
 
 void TUI::RealResetUI()
 {
-	m_Flags.set(flResetUI, FALSE);
+	m_Flags.set(flResetUI, false);
 	string_path 		ini_path;
 	if (FS.exist(ini_path, "$server_data_root$", UI->EditorName(), "_imgui_default.ini"))
 	{

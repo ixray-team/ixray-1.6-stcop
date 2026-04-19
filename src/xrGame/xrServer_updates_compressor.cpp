@@ -5,7 +5,7 @@
 #include "../xrServerEntities/object_broker.h"
 #include "xrMessages.h"
 
-bool		g_sv_write_updates_bin	= FALSE;
+bool		g_sv_write_updates_bin	= false;
 
 last_updates_cache::last_updates_cache()
 {

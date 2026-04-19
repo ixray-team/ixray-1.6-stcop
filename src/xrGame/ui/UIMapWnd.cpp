@@ -234,7 +234,7 @@ void CUIMapWnd::Init(const char* xml_name, const char* start_from)
 				Msg(" --error-incorrect map definition global rect of map [%s] intersects with [%s]", *l->MapName(), *l2->MapName());
 			}
 		}
-		if(FALSE == l->GlobalRect().intersected(GlobalMap()->BoundRect())){
+		if(false == l->GlobalRect().intersected(GlobalMap()->BoundRect())){
 			Msg(" --error-incorrect map definition map [%s] places outside global map", *l->MapName());
 		}
 

@@ -54,7 +54,7 @@ void clientdata_proxy::make_screenshot(ClientID const & admin_id, ClientID const
 	ssr_packet.w_u16		(u16(Random.randI(2)));
 	ssr_packet.w_u8			(u8(Random.randI(2)));
 
-	Level().Server->SecureSendTo	(tmp_cheater, ssr_packet, net_flags(TRUE, TRUE));
+	Level().Server->SecureSendTo	(tmp_cheater, ssr_packet, net_flags(true, true));
 	
 	file_transfer::receiving_state_callback_t receiving_cb =
 		fastdelegate::MakeDelegate(this, &clientdata_proxy::download_screenshot_callback);
@@ -93,7 +93,7 @@ void clientdata_proxy::make_config_dump(ClientID const & admin_id, ClientID cons
 	ssr_packet.w_u16		(u16(Random.randI(2)));
 	ssr_packet.w_u8			(u8(Random.randI(2)));
 
-	Level().Server->SecureSendTo	(tmp_cheater, ssr_packet, net_flags(TRUE, TRUE));
+	Level().Server->SecureSendTo	(tmp_cheater, ssr_packet, net_flags(true, true));
 	
 	file_transfer::receiving_state_callback_t receiving_cb =
 		fastdelegate::MakeDelegate(this, &clientdata_proxy::download_config_callback);
@@ -127,7 +127,7 @@ void clientdata_proxy::notify_admin(clientdata_event_t event_for_admin, char con
 	{
 		ssr_packet.w_stringZ	(reason ? reason : "failed to download screenshot");
 	}
-	Level().Server->SendTo	(m_admin_id, ssr_packet, net_flags(TRUE, TRUE));
+	Level().Server->SendTo	(m_admin_id, ssr_packet, net_flags(true, true));
 }
 
 

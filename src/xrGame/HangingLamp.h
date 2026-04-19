@@ -64,8 +64,8 @@ public:
 	virtual void	save				(NET_Packet &output_packet);
 	virtual void	load				(IReader &input_packet);
 
-	virtual bool	renderable_ShadowGenerate	( ) { return TRUE;	}
-	virtual bool	renderable_ShadowReceive	( ) { return TRUE;	}
+	virtual bool	renderable_ShadowGenerate	( ) { return true;	}
+	virtual bool	renderable_ShadowReceive	( ) { return true;	}
 	
 	virtual	void	Hit				(SHit* pHDS);
 	virtual void	net_Export		(NET_Packet& P);

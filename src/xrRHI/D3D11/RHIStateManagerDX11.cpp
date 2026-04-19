@@ -43,7 +43,7 @@ void RHIStateManagerDX11::Reset()
 	ResetBDesc();
 
 	bOverrideScissoring = false;
-	bOverrideScissoringValue = FALSE;
+	bOverrideScissoringValue = false;
 	SampleMask = 0xffffffff;
 }
 
@@ -51,8 +51,8 @@ void RHIStateManagerDX11::ResetBDesc()
 {
 	ZeroMemory(&BDesc, sizeof(BDesc));
 
-	BDesc.AlphaToCoverageEnable = FALSE;
-	BDesc.IndependentBlendEnable = FALSE;
+	BDesc.AlphaToCoverageEnable = false;
+	BDesc.IndependentBlendEnable = false;
 
 	for (int i = 0; i < 8; ++i)
 	{
@@ -62,7 +62,7 @@ void RHIStateManagerDX11::ResetBDesc()
 		BDesc.RenderTarget[i].SrcBlendAlpha = D3D11_BLEND_ONE;
 		BDesc.RenderTarget[i].DestBlendAlpha = D3D11_BLEND_ZERO;
 		BDesc.RenderTarget[i].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-		BDesc.RenderTarget[i].BlendEnable = FALSE;
+		BDesc.RenderTarget[i].BlendEnable = false;
 		BDesc.RenderTarget[i].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	}
 }
@@ -71,10 +71,10 @@ void RHIStateManagerDX11::ResetDDesc()
 {
 	ZeroMemory(&DSDesc, sizeof(DSDesc));
 
-	DSDesc.DepthEnable = TRUE;
+	DSDesc.DepthEnable = true;
 	DSDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	DSDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	DSDesc.StencilEnable = TRUE;
+	DSDesc.StencilEnable = true;
 	DSDesc.StencilReadMask = 0xFF;
 	DSDesc.StencilWriteMask = 0xFF;
 
@@ -94,14 +94,14 @@ void RHIStateManagerDX11::ResetRDesc()
 	ZeroMemory(&RDesc, sizeof(RDesc));
 	RDesc.FillMode = D3D11_FILL_SOLID;
 	RDesc.CullMode = D3D11_CULL_BACK;
-	RDesc.FrontCounterClockwise = FALSE;
+	RDesc.FrontCounterClockwise = false;
 	RDesc.DepthBias = 0;
 	RDesc.DepthBiasClamp = 0.0f;
 	RDesc.SlopeScaledDepthBias = 0.0f;
-	RDesc.DepthClipEnable = TRUE;
-	RDesc.ScissorEnable = FALSE;
-	RDesc.MultisampleEnable = FALSE;
-	RDesc.AntialiasedLineEnable = FALSE;
+	RDesc.DepthClipEnable = true;
+	RDesc.ScissorEnable = false;
+	RDesc.MultisampleEnable = false;
+	RDesc.AntialiasedLineEnable = false;
 }
 
 void RHIStateManagerDX11::UnmapConstants()

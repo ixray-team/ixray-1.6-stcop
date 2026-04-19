@@ -117,7 +117,7 @@ bool CScriptBinder::net_Spawn(CSE_Abstract* DC)
 		}
 	}
 
-	return TRUE;
+	return true;
 }
 
 void CScriptBinder::net_Destroy()
@@ -203,7 +203,7 @@ bool CScriptBinder::net_SaveRelevant()
 			clear			();
 		}
 	}
-	return							(FALSE);
+	return							(false);
 }
 
 void CScriptBinder::net_Relcase		(CObject *object)

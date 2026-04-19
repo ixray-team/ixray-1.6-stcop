@@ -77,7 +77,7 @@ bool CTeamBaseZone::net_Spawn	(CSE_Abstract* DC)
 		l_pShape->ComputeBounds	();
 		Fvector					P;
 		XFORM().transform_tiny	(P,CFORM()->getSphere().P);
-		setEnabled				(FALSE);
+		setEnabled				(false);
 	}
 
 	if (!IsGameTypeSingle() && !g_dedicated_server)
@@ -119,7 +119,7 @@ void CTeamBaseZone::feel_touch_new	(CObject *tpObject)
 		P_.w_u16			(GAME_EVENT_PLAYER_ENTER_TEAM_BASE);
 		P_.w_u16			( tpObject->ID() );
 		P_.w_u8				( GetZoneTeam() );
-		u_EventSend			(P_,net_flags(TRUE,TRUE));
+		u_EventSend			(P_,net_flags(true,true));
 	};
 }
 
@@ -132,14 +132,14 @@ void CTeamBaseZone::feel_touch_delete	(CObject *tpObject)
 		P_.w_u16			(GAME_EVENT_PLAYER_LEAVE_TEAM_BASE );
 		P_.w_u16			( tpObject->ID() );
 		P_.w_u8				( GetZoneTeam() );
-		u_EventSend			(P_,net_flags(TRUE,TRUE));
+		u_EventSend			(P_,net_flags(true,true));
 	};
 }
 
 bool CTeamBaseZone::feel_touch_contact	(CObject* O)
 {
 	CActor*	pActor = O->cast_actor();
-	if (!pActor) return (FALSE);
+	if (!pActor) return (false);
 	return ((CCF_Shape*)CFORM())->Contact(O);
 }
 

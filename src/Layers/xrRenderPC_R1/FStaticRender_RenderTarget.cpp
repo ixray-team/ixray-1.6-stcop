@@ -13,12 +13,12 @@ bool UseRainDrops = false;
 
 CRenderTarget::CRenderTarget()
 {
-	bAvailable			= FALSE;
-	RT					= 0;
-	RT_color_map		= 0;
-	pTempZB				= 0;
-	ZB					= 0;
-	pFB					= 0;
+	bAvailable			= false;
+	RT					= nullptr;
+	RT_color_map		= nullptr;
+	pTempZB				= nullptr;
+	ZB					= nullptr;
+	pFB					= nullptr;
 
 	param_blur			= 0.f;
 	param_gray			= 0.f;
@@ -43,7 +43,7 @@ CRenderTarget::CRenderTarget()
 	Msg					("* SSample: %s",bAvailable?"enabled":"disabled");
 }
 
-BOOL CRenderTarget::Create()
+bool CRenderTarget::Create()
 {
 	b_fxaa = new CBlender_FXAA();
 	curWidth			=  RCache.get_width();
@@ -95,7 +95,7 @@ BOOL CRenderTarget::Create()
 
 		ZB = GRHI->CreateDepthStencilView(TempSurf, DepthDesc);
 
-		//R_CHK(RDevice->CreateDepthStencilSurface	(rtWidth,rtHeight,D3DFMT_D24S8,D3DMULTISAMPLE_NONE,0,TRUE,&ZB,nullptr));
+		//R_CHK(RDevice->CreateDepthStencilSurface	(rtWidth,rtHeight,D3DFMT_D24S8,D3DMULTISAMPLE_NONE,0,true,&ZB,nullptr));
 	}
 	else
 	{
@@ -156,7 +156,7 @@ void CRenderTarget::phase_fxaa(u32 pass) {
 	float ddh = 1.0f / _h;
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	FVF::V* pv = (FVF::V*)RCache.Vertex.Lock(4, g_fxaa->vb_stride, Offset);
 	pv->set(ddw - 0.5f, ddh + _h - 0.5f, 0.0f, 0.0f, 1.0f);
@@ -254,7 +254,7 @@ bool CRenderTarget::NeedColorMapping()
 	return RImplementation.o.color_mapping&&(param_color_map_influence>0.001f);
 }
 
-BOOL CRenderTarget::NeedPostProcess()
+bool CRenderTarget::NeedPostProcess()
 {
 	bool	_blur	= (param_blur>0.001f);
 	bool	_gray	= (param_gray>0.001f);
@@ -286,7 +286,7 @@ BOOL CRenderTarget::NeedPostProcess()
 	return _blur || _gray || _noise || _dual || _cbase || _cadd || _cmap || _menu_pp; 
 }
 
-BOOL CRenderTarget::Perform		()
+bool CRenderTarget::Perform		()
 {
 	return Available() &&
 		(ps_r2_aa_type > 0 || (RImplementation.m_bMakeAsyncSS) || NeedPostProcess() || (frame_distort==(Device.dwFrame-1)));
@@ -356,17 +356,17 @@ void CRenderTarget::End		()
 		phase_fxaa(0);
 		RCache.set_RT(RT->pRT);
 		phase_fxaa(1);
-		//RCache.set_Stencil(FALSE);
+		//RCache.set_Stencil(false);
 	}
 
 	// find if distortion is needed at all
-	BOOL	bPerform	= Perform				()	;
-	BOOL	bDistort	= RImplementation.o.distortion;
-	BOOL	bCMap		= NeedColorMapping();
+	auto bPerform	= Perform				()	;
+	auto bDistort	= RImplementation.o.distortion;
+	auto bCMap		= NeedColorMapping();
 	bool	_menu_pp	= g_pGamePersistent?g_pGamePersistent->OnRenderPPUI_query():false;
 	u32 count = RImplementation.mapDistort.size() + RImplementation.mapHUDDistort.size();
 
-	if ((0== count) && !_menu_pp) 	bDistort	= FALSE;
+	if ((0== count) && !_menu_pp) 	bDistort	= false;
 	if (bDistort)		phase_distortion		();
 
 	// combination/postprocess

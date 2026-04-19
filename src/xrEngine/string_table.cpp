@@ -8,7 +8,7 @@ ENGINE_API CStringTable* g_pStringTable = nullptr;
 
 STRING_TABLE_DATA* CStringTable::pData = nullptr;
 xr_vector<xr_token> CStringTable::languages_token;
-bool CStringTable::m_bWriteErrorsToLog = FALSE;
+bool CStringTable::m_bWriteErrorsToLog = false;
 
 CStringTable::CStringTable	()
 {

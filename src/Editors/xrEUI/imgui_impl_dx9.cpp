@@ -115,24 +115,24 @@ static void ImGui_ImplDX9_SetupRenderState(ImDrawData* draw_data)
     device->SetVertexShader(nullptr);
     device->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
     device->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_GOURAUD);
-    device->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-    device->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+    device->SetRenderState(D3DRS_ZWRITEENABLE, false);
+    device->SetRenderState(D3DRS_ALPHATESTENABLE, false);
     device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-    device->SetRenderState(D3DRS_ZENABLE, FALSE);
-    device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+    device->SetRenderState(D3DRS_ZENABLE, false);
+    device->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
     device->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
     device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
     device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-    device->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, TRUE);
+    device->SetRenderState(D3DRS_SEPARATEALPHABLENDENABLE, true);
     device->SetRenderState(D3DRS_SRCBLENDALPHA, D3DBLEND_ONE);
     device->SetRenderState(D3DRS_DESTBLENDALPHA, D3DBLEND_INVSRCALPHA);
-    device->SetRenderState(D3DRS_SCISSORTESTENABLE, TRUE);
-    device->SetRenderState(D3DRS_FOGENABLE, FALSE);
-    device->SetRenderState(D3DRS_RANGEFOGENABLE, FALSE);
-    device->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
-    device->SetRenderState(D3DRS_STENCILENABLE, FALSE);
-    device->SetRenderState(D3DRS_CLIPPING, TRUE);
-    device->SetRenderState(D3DRS_LIGHTING, FALSE);
+    device->SetRenderState(D3DRS_SCISSORTESTENABLE, true);
+    device->SetRenderState(D3DRS_FOGENABLE, false);
+    device->SetRenderState(D3DRS_RANGEFOGENABLE, false);
+    device->SetRenderState(D3DRS_SPECULARENABLE, false);
+    device->SetRenderState(D3DRS_STENCILENABLE, false);
+    device->SetRenderState(D3DRS_CLIPPING, true);
+    device->SetRenderState(D3DRS_LIGHTING, false);
     device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
     device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
     device->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
@@ -519,13 +519,13 @@ static void ImGui_ImplDX9_CreateWindow(ImGuiViewport* viewport)
     IM_ASSERT(hwnd != 0);
 
     ZeroMemory(&vd->d3dpp, sizeof(D3DPRESENT_PARAMETERS));
-    vd->d3dpp.Windowed = TRUE;
+    vd->d3dpp.Windowed = true;
     vd->d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
     vd->d3dpp.BackBufferWidth = (UINT)viewport->Size.x;
     vd->d3dpp.BackBufferHeight = (UINT)viewport->Size.y;
     vd->d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;
     vd->d3dpp.hDeviceWindow = hwnd;
-    vd->d3dpp.EnableAutoDepthStencil = FALSE;
+    vd->d3dpp.EnableAutoDepthStencil = false;
     vd->d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
     vd->d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;   // Present without vsync
 

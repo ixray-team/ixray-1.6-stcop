@@ -84,7 +84,7 @@ public:
 	virtual void net_Export(NET_Packet& P);					// export to server
 	virtual void save(NET_Packet& output_packet);
 	virtual void load(IReader& input_packet);
-	virtual bool net_SaveRelevant() { return TRUE; }
+	virtual bool net_SaveRelevant() { return true; }
 	virtual void renderable_Render();
 	virtual void reload(const char* section);
 	virtual void reinit();

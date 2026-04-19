@@ -48,7 +48,7 @@ void CMissile::reinit		()
 	m_constpower = false;
 	m_fThrowForce		= 0;
 	m_dwDestroyTime		= 0xffffffff;
-	SetPending			(FALSE);
+	SetPending			(false);
 	m_fake_missile		= nullptr;
 	SetState			( eHidden );
 }
@@ -88,25 +88,25 @@ void CMissile::LoadSounds(const char* section)
 
 	if (pSettings->line_exist(section, "snd_draw"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_draw, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_draw, true);
 		m_sounds.LoadSound(section, "snd_draw", "SndShow", false, ESoundTypes(SOUND_TYPE_ITEM_TAKING));
 	}
 
 	if (pSettings->line_exist(section, "snd_holster"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_holster, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_holster, true);
 		m_sounds.LoadSound(section, "snd_holster", "SndHide", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
 	}
 
 	if (pSettings->line_exist(section, "snd_throw_begin"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_throw_begin, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_throw_begin, true);
 		m_sounds.LoadSound(section, "snd_throw_begin", "sndThrowBegin", false, ESoundTypes(SOUND_TYPE_ITEM_TAKING));
 	}
 
 	if (pSettings->line_exist(section, "snd_throw"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_throw, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_throw, true);
 		m_sounds.LoadSound(section, "snd_throw", "sndThrow", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
 	}
 
@@ -151,11 +151,11 @@ void CMissile::PH_A_CrPr		()
 		if(!obj.PPhysicsShell()->isFullActive())
 		{
 			K->CalculateBones_Invalidate();
-			K->CalculateBones(TRUE);
+			K->CalculateBones(true);
 		}
 		obj.PPhysicsShell()->GetGlobalTransformDynamic(&obj.XFORM());
 		K->CalculateBones_Invalidate();
-		K->CalculateBones(TRUE);
+		K->CalculateBones(true);
 		obj.spatial_move();
 		m_just_after_spawn = false;
 	}
@@ -201,11 +201,11 @@ void CMissile::spawn_fake_missile()
 
 		CSE_ALifeObject* alife_object = object->cast_alife_object();
 		VERIFY						(alife_object);
-		alife_object->m_flags.set	(CSE_ALifeObject::flCanSave,FALSE);
+		alife_object->m_flags.set	(CSE_ALifeObject::flCanSave,false);
 
 		NET_Packet			P;
-		object->Spawn_Write	(P,TRUE);
-		Level().Send		(P,net_flags(TRUE));
+		object->Spawn_Write	(P,true);
+		Level().Send		(P,net_flags(true));
 		F_entity_Destroy	(object);
 	}
 }
@@ -333,7 +333,7 @@ void CMissile::State(u32 state)
 	{
 		case eShowing:
 		{
-			SetPending(TRUE);
+			SetPending(true);
 
 			if (m_bNeedQuick)
 			{
@@ -359,14 +359,14 @@ void CMissile::State(u32 state)
 		} break;
 	case eIdle:
 		{
-			SetPending			(FALSE);
+			SetPending			(false);
 			PlayAnimIdle		();
 		} break;
 	case eHiding:
 		{
 			if(H_Parent())
 			{
-				SetPending			(TRUE);
+				SetPending			(true);
 				PlayHUDMotion		("anm_hide", EHudMixType::eMixAll, GetState());
 				if (m_eSoundsFlags.test(ESoundsFlags::sf_holster))
 				{
@@ -385,14 +385,14 @@ void CMissile::State(u32 state)
 			
 			if (H_Parent())
 			{				
-				setVisible(FALSE);
-				setEnabled(FALSE);				
+				setVisible(false);
+				setEnabled(false);				
 			};
-			SetPending			(FALSE);
+			SetPending			(false);
 		} break;
 	case eThrowStart:
 		{
-			SetPending			(TRUE);
+			SetPending			(true);
 			m_fThrowForce		= m_fMinForce;
 			if (m_eSoundsFlags.test(ESoundsFlags::sf_throw_begin))
 			{
@@ -427,7 +427,7 @@ void CMissile::State(u32 state)
 		} break;
 	case eThrow:
 		{
-			SetPending			(TRUE);
+			SetPending			(true);
 			m_throw				= false;
 			if (m_eSoundsFlags.test(ESoundsFlags::sf_throw))
 			{
@@ -454,7 +454,7 @@ void CMissile::State(u32 state)
 /*	case eBore:
 		{
 			PlaySound			(sndPlaying,Position());
-			PlayHUDMotion		("anm_bore", TRUE, GetState());
+			PlayHUDMotion		("anm_bore", true, GetState());
 		} break;
 */
 	}
@@ -474,7 +474,7 @@ void CMissile::OnAnimationEnd(u32 state)
 	{
 	case eHiding:
 		{
-			setVisible(FALSE);
+			setVisible(false);
 			SwitchState(eHidden);
 		} break;
 	case eShowing:
@@ -515,7 +515,7 @@ void CMissile::OnAnimationEnd(u32 state)
 			}
 			else
 			{
-				setVisible(TRUE);
+				setVisible(true);
 				SwitchState(eIdle);
 			}
 		} break;
@@ -861,10 +861,10 @@ void CMissile::activate_physic_shell()
 		{
 			bone_id = kinematics->LL_BoneID(boneName);
 			if (bone_id != BI_NONE && kinematics->LL_GetBoneVisible(bone_id))
-				kinematics->LL_SetBoneVisible(bone_id, FALSE, TRUE);
+				kinematics->LL_SetBoneVisible(bone_id, false, true);
 		}
 	}
-	kinematics->CalculateBones			(TRUE);
+	kinematics->CalculateBones			(true);
 }
 void CMissile::net_Relcase(CObject* O)
 {
@@ -896,7 +896,7 @@ void CMissile::setup_physic_shell	()
 	IKinematics					*kinematics = PKinematics(Visual());
 	R_ASSERT					(kinematics);
 	kinematics->CalculateBones_Invalidate();
-	kinematics->CalculateBones			(TRUE);
+	kinematics->CalculateBones			(true);
 }
 
 u32	CMissile::ef_weapon_type		() const

@@ -31,7 +31,7 @@ void CHOM::MT_RENDER()
 
 CHOM::CHOM()
 {
-	bEnabled		= FALSE;
+	bEnabled		= false;
 	m_pModel		= 0;
 #ifdef DEBUG_DRAW
 	Device.seqRender.Add(this,REG_PRIORITY_LOW-1000);
@@ -142,7 +142,7 @@ void CHOM::Load()
 		m_pModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pWriterCache, false);
 	}
 
-	bEnabled = TRUE;
+	bEnabled = true;
 
 	S->close();
 	FS.r_close(fs);
@@ -164,7 +164,7 @@ void CHOM::Unload()
 	adjacency.clear();
 	m_pTris.clear();
 	invaltids.clear();
-	bEnabled = FALSE;
+	bEnabled = false;
 
 	auto I = std::find(Device.seqParallelRender.begin(), Device.seqParallelRender.end(), xr_make_delegate(this, &CHOM::MT_RENDER));
 
@@ -286,7 +286,7 @@ void CHOM::Render(CFrustum& base)
 
 void CHOM::Disable()
 {
-	bEnabled = FALSE;
+	bEnabled = false;
 }
 
 void CHOM::Enable()

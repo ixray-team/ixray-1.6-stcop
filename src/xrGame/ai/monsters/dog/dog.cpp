@@ -319,7 +319,7 @@ void CAI_Dog::start_animation()
 
 	b_state_anim = true;
 	com_man().script_capture(ControlCom::eControlAnimation);
-	Visual()->dcast_PKinematicsAnimated()->PlayCycle(get_current_animation(), TRUE, animation_end, this);
+	Visual()->dcast_PKinematicsAnimated()->PlayCycle(get_current_animation(), true, animation_end, this);
 	b_state_end = true;
 }
 

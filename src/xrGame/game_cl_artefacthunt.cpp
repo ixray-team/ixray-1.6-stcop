@@ -39,7 +39,7 @@ game_cl_ArtefactHunt::game_cl_ArtefactHunt()
 {
 	m_game_ui = nullptr;
 		
-	m_bBuyEnabled	= FALSE;
+	m_bBuyEnabled	= false;
 	//---------------------------------
 	m_Eff_Af_Spawn = "";
 	m_Eff_Af_Disappear = "";
@@ -102,7 +102,7 @@ void game_cl_ArtefactHunt::Init ()
 							transform.identity();
 							transform.setXYZ(R.A);
 							transform.translate_over(R.P);
-							CParticlesObject* pStaticParticles			= Particles::Details::Create(pSettings->r_string("artefacthunt_gamedata", ParticleStr),FALSE,false);
+							CParticlesObject* pStaticParticles			= Particles::Details::Create(pSettings->r_string("artefacthunt_gamedata", ParticleStr),false,false);
 							pStaticParticles->UpdateParent	(transform,zero_vel);
 							pStaticParticles->Play			();
 							Level().m_StaticParticles.push_back		(pStaticParticles);
@@ -137,7 +137,7 @@ game_cl_ArtefactHunt::~game_cl_ArtefactHunt()
 }
 
 
-bool	bBearerCantSprint = TRUE;
+bool	bBearerCantSprint = true;
 void game_cl_ArtefactHunt::net_import_state	(NET_Packet& P)
 {
 	inherited::net_import_state	(P);
@@ -360,11 +360,11 @@ void game_cl_ArtefactHunt::shedule_Update			(u32 dt)
 				if (local_player->testFlag(GAME_PLAYER_FLAG_ONBASE) &&
 					!local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 				{
-					m_bBuyEnabled = TRUE;
+					m_bBuyEnabled = true;
 				}
 				else
 				{
-					m_bBuyEnabled = FALSE;
+					m_bBuyEnabled = false;
 				};
 			};			
 
@@ -499,39 +499,39 @@ void game_cl_ArtefactHunt::SetScore				()
 }
 bool game_cl_ArtefactHunt::CanCallBuyMenu			()
 {
-	if (!m_bBuyEnabled) return FALSE;
+	if (!m_bBuyEnabled) return false;
 	if (Phase()!=GAME_PHASE_INPROGRESS) return false;
 
 	if (!is_buy_menu_ready())
-		return FALSE;
+		return false;
 	
 	if (m_game_ui->m_pUITeamSelectWnd && m_game_ui->m_pUITeamSelectWnd->IsShown())
 	{
-		return FALSE;
+		return false;
 	};
 	if (pCurSkinMenu && pCurSkinMenu->IsShown())
 	{
-		return FALSE;
+		return false;
 	};
 	if ( m_game_ui && m_game_ui->ActorMenu()->IsShown() )
 	{
-		return FALSE;
+		return false;
 	}
 	/*if (m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown())
 	{
-		return FALSE;
+		return false;
 	};*/
 
 	CActor* pCurActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
-	if (!pCurActor || !pCurActor->g_Alive()) return FALSE;
+	if (!pCurActor || !pCurActor->g_Alive()) return false;
 
-	return TRUE;
+	return true;
 };
 
 bool game_cl_ArtefactHunt::CanBeReady				()
 {
 	if (!local_player) return false;
-	m_bMenuCalledFromReady = TRUE;
+	m_bMenuCalledFromReady = true;
 
 	SetCurrentSkinMenu();
 	SetCurrentBuyMenu();
@@ -553,7 +553,7 @@ bool game_cl_ArtefactHunt::CanBeReady				()
 	if (pCurBuyMenu && !pCurBuyMenu->IsShown())
 		ClearBuyMenu();
 
-	m_bMenuCalledFromReady = FALSE;
+	m_bMenuCalledFromReady = false;
 //	return inherited::CanBeReady();
 	return true;
 };

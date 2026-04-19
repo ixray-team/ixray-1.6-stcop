@@ -10,11 +10,11 @@ void CFileStreamReader::construct	(const char* file_name, const u32 &window_size
 	HANDLE file_mapping_handle =
 		CreateFileMapping(
 			m_file_handle,
-			0,
+			nullptr,
 			PAGE_READONLY,
 			0,
 			0,
-			0
+			nullptr
 		);
 	VERIFY					(file_mapping_handle != INVALID_HANDLE_VALUE);
 

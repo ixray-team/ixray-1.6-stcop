@@ -138,7 +138,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 
 					if (device != nullptr)
 					{
-						device->SetDropManual(TRUE);
+						device->SetDropManual(true);
 						need_kick_animator = true;
 					}
 				}
@@ -269,15 +269,15 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 
 bool  CBaseMonster::feel_vision_isRelevant(CObject* O)
 {
-	if(!O || O->getDestroy())		return FALSE;
-	if (!g_Alive())					return FALSE;
-	if (!O->cast_entity())			return FALSE;
+	if(!O || O->getDestroy())		return false;
+	if (!g_Alive())					return false;
+	if (!O->cast_entity())			return false;
 	
 	if ((O->SpatialComponent->spatial.type & ESPATIAL_TYPE::VISIBLEFORAI) == ESPATIAL_TYPE::NONE)
-		return FALSE;
+		return false;
 	
 	// если спит, то ничего не видит
-	if (m_bSleep) return FALSE;
+	if (m_bSleep) return false;
 	
 	// если не враг - не видит
 	CEntityAlive* entity = O->cast_entity_alive();
@@ -288,11 +288,11 @@ bool  CBaseMonster::feel_vision_isRelevant(CObject* O)
 			// если видит друга - проверить наличие у него врагов
 			CBaseMonster *monster = entity->cast_base_monster();
 			if (monster && !m_skip_transfer_enemy) EnemyMan.transfer_enemy(monster);
-			return FALSE;
+			return false;
 		}
 	}
 
-	return TRUE;
+	return true;
 }
 
 void CBaseMonster::HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16 element)

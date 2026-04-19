@@ -64,9 +64,9 @@ class CParticleTool:
 	void 				SelectListItem		(const char* pref, const char* name, bool bVal, bool bLeaveSel, bool bExpand);
 
     void				RealApplyParent		();
-    void				ApplyParent			(bool bForce=false){m_Flags.set(flApplyParent,TRUE); if (bForce) RealApplyParent();}
+    void				ApplyParent			(bool bForce=false){m_Flags.set(flApplyParent,true); if (bForce) RealApplyParent();}
     void				RealCompileEffect	();
-    void				CompileEffect		(bool bForced=false){m_Flags.set(flCompileEffect,TRUE); if (bForced) RealCompileEffect();}
+    void				CompileEffect		(bool bForced=false){m_Flags.set(flCompileEffect,true); if (bForced) RealCompileEffect();}
     u32					remove_action_num;
     void				RealRemoveAction();
 
@@ -76,7 +76,7 @@ class CParticleTool:
 	//EEditMode GetAffectedItemType(const char* path);
 	
 public:
-    virtual void    	RemoveAction(u32 idx, bool bForced=false) {remove_action_num=idx;m_Flags.set(flRemoveAction,TRUE); if (bForced) RealRemoveAction();}
+    virtual void    	RemoveAction(u32 idx, bool bForced=false) {remove_action_num=idx;m_Flags.set(flRemoveAction,true); if (bForced) RealRemoveAction();}
 public:
 	EEditMode			m_EditMode;
     UIPropertiesForm*       m_ObjectProps;
@@ -162,7 +162,7 @@ public:
 	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n);
 
     virtual void		ShowProperties		(const char*){;}
-    virtual void		UpdateProperties	(bool bForced=FALSE){m_Flags.set(flRefreshProps,TRUE); if (bForced) RealUpdateProperties();}
+    virtual void		UpdateProperties	(bool bForced=false){m_Flags.set(flRefreshProps,true); if (bForced) RealUpdateProperties();}
     virtual void		RefreshProperties	(){;}
 
     virtual void		PlayCurrent			(int idx=-1) override;

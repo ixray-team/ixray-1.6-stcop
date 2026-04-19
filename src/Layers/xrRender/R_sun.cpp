@@ -332,7 +332,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	}
 
 	// Fill the database
-	r_dsgraph_render_subspace(pOutdoorSector, cull_xform, cull_COP, TRUE);
+	r_dsgraph_render_subspace(pOutdoorSector, cull_xform, cull_COP, true);
 
 	// Finalize & Cleanup
 	fuckingsun->X.D.combine = cull_xform;
@@ -358,9 +358,9 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 			if (Details && Details->dtFS && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
 				Details->hw_Render();
 
-			fuckingsun->X.D.transluent = FALSE;
+			fuckingsun->X.D.transluent = false;
 			if (bSpecial) {
-				fuckingsun->X.D.transluent = TRUE;
+				fuckingsun->X.D.transluent = true;
 				Target->phase_smap_direct_tsh(fuckingsun, SE_SUN_FAR);
 				r_dsgraph_render_graph(1);			// normal level, secondary priority
 				r_dsgraph_render_sorted();			// strict-sorted geoms

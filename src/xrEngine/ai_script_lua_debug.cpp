@@ -90,7 +90,7 @@ const char* Script::cafEventToString(int iEventCode)
 		default					: NODEFAULT;
 	}
 #ifdef DEBUG
-	return(0);
+	return(nullptr);
 #endif
 }
 

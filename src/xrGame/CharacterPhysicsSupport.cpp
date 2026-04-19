@@ -30,7 +30,7 @@
 #	include "PHDebug.h"
 
 extern bool death_anim_debug;
-bool dbg_draw_ragdoll_spawn = FALSE;
+bool dbg_draw_ragdoll_spawn = false;
 #endif // DEBUG
 
 #include "../xrEngine/device.h"
@@ -76,8 +76,8 @@ CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype, CEntityAlive* ae
 	m_physics_shell_animated_time_destroy(u32(-1)), m_weapon_attach_bone(0), m_active_item_obj(0), m_hit_valide_time(u32(-1))
 {
 	m_flags.assign( 0 );
-	m_flags.set(fl_death_anim_on,FALSE);
-	m_flags.set(fl_skeleton_in_shell,FALSE);
+	m_flags.set(fl_death_anim_on,false);
+	m_flags.set(fl_skeleton_in_shell,false);
 	m_flags.set(fl_use_hit_anims, !m_legacy_hit_anims);
 	m_pPhysicsShell = nullptr;
 
@@ -122,7 +122,7 @@ void CCharacterPhysicsSupport::SetRemoved()
 void CCharacterPhysicsSupport::in_Load(const char* section)
 {
 	m_character_shell_control.Load(section);
-	m_flags.set(fl_specific_bonce_demager, TRUE);
+	m_flags.set(fl_specific_bonce_demager, true);
 	if (pSettings->line_exist(section, "bonce_damage_factor"))
 		m_BonceDamageFactor = pSettings->r_float(section, "bonce_damage_factor_for_objects");
 	else
@@ -136,15 +136,15 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
 	m_sv_hit = SHit();
 	if (m_EntityAlife.use_simplified_visual())
 	{
-		m_flags.set(fl_death_anim_on, TRUE);
+		m_flags.set(fl_death_anim_on, true);
 		IKinematics* ka = PKinematics(m_EntityAlife.Visual());
 		VERIFY(ka);
 		ka->CalculateBones_Invalidate();
-		ka->CalculateBones(TRUE);
+		ka->CalculateBones(true);
 		CollisionCorrectObjPos(m_EntityAlife.Position());
 		m_pPhysicsShell = P_build_Shell(&m_EntityAlife, false);
 		ka->CalculateBones_Invalidate();
-		ka->CalculateBones(TRUE);
+		ka->CalculateBones(true);
 		return;
 	}
 
@@ -168,7 +168,7 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
 	///этот хак нужен, потому что некоторым монстрам 
 	///анимация после спона, может быть вообще не назначена
 	pK->CalculateBones_Invalidate();
-	pK->CalculateBones(TRUE);
+	pK->CalculateBones(true);
 
 	CPHSkeleton::Spawn(e);
 	movement()->EnableCharacter();
@@ -176,7 +176,7 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
 	movement()->SetVelocity(0, 0, 0);
 	if (m_eType != etActor)
 	{
-		m_flags.set(fl_specific_bonce_demager, TRUE);
+		m_flags.set(fl_specific_bonce_demager, true);
 		m_BonceDamageFactor = 1.f;
 	}
 	if (Type() == etStalker)
@@ -263,7 +263,7 @@ void CCharacterPhysicsSupport::SpawnInitPhysics( CSE_Abstract* e )
 #ifdef DEBUG
 		Msg("~ saved bones %d , current bones %d, object :%s", saved_bones.size(), m_EntityAlife.PHGetSyncItemsNumber(), m_EntityAlife.cName().c_str() );
 #endif
-		po->_flags.set(CSE_PHSkeleton::flSavedData, FALSE );
+		po->_flags.set(CSE_PHSkeleton::flSavedData, false );
 		saved_bones.clear();
 	}
 
@@ -297,7 +297,7 @@ void CCharacterPhysicsSupport::in_NetDestroy()
 		xr_delete(m_pPhysicsShell);
 	}
 
-	m_flags.set(fl_skeleton_in_shell, FALSE);
+	m_flags.set(fl_skeleton_in_shell, false);
 	CPHSkeleton::RespawnInit();
 	CPHDestroyable::RespawnInit();
 	m_eState = esAlive;
@@ -410,7 +410,7 @@ void CCharacterPhysicsSupport::KillHit(SHit& H)
 #endif
 
 		EndActivateFreeShell(H.who, start, death_position, velocity);
-		m_flags.set(fl_block_hit, TRUE);
+		m_flags.set(fl_block_hit, true);
 	}
 }
 
@@ -428,7 +428,7 @@ void CCharacterPhysicsSupport::in_Hit(SHit& H, bool is_killing)
 		VERIFY2(!m_EntityAlife.g_Alive(), make_string<const char*>("entity [%s][%d] is dead", m_EntityAlife.Name(), m_EntityAlife.ID()));
 		if (Device.dwTimeGlobal - m_EntityAlife.GetLevelDeathTime() >= 2000)
 		{
-			m_flags.set(fl_block_hit, FALSE);
+			m_flags.set(fl_block_hit, false);
 		}
 		else
 		{
@@ -498,7 +498,7 @@ IC void CCharacterPhysicsSupport::UpdateDeathAnims()
 	{
 		DestroyIKController();
 		m_EntityAlife.Visual()->dcast_PKinematicsAnimated()->PlayCycle("death_init");
-		m_flags.set(fl_death_anim_on, TRUE);
+		m_flags.set(fl_death_anim_on, true);
 	}
 }
 
@@ -892,7 +892,7 @@ void CCharacterPhysicsSupport::CreateShell(CObject* who, Fvector& dp, Fvector& v
 		anim_mov_blend = m_EntityAlife.animation_movement()->ControlBlend();
 
 		m_EntityAlife.destroy_anim_mov_ctrl();
-		BR.set_callback_overwrite(TRUE);
+		BR.set_callback_overwrite(true);
 	}
 
 	u16 anim_root = K->LL_GetBoneRoot();
@@ -929,10 +929,10 @@ void CCharacterPhysicsSupport::CreateShell(CObject* who, Fvector& dp, Fvector& v
 	if (anim_mov_ctrl)
 	{
 		//we do not whant to move by long animation in root 
-		BR.set_callback_overwrite(TRUE);
+		BR.set_callback_overwrite(true);
 	}
 	K->CalculateBones_Invalidate();
-	K->CalculateBones(TRUE);
+	K->CalculateBones(true);
 
 	if (m_eType != etBitting)
 	{
@@ -960,7 +960,7 @@ void CCharacterPhysicsSupport::CreateShell(CObject* who, Fvector& dp, Fvector& v
 
 	if (anim_mov_ctrl) //we do not whant to move by long animation in root 
 	{
-		BR.set_callback_overwrite(TRUE);
+		BR.set_callback_overwrite(true);
 	}
 
 	if (!DoCharacterShellCollide())
@@ -974,16 +974,16 @@ void CCharacterPhysicsSupport::CreateShell(CObject* who, Fvector& dp, Fvector& v
 	}
 
 	K->CalculateBones_Invalidate();
-	K->CalculateBones(TRUE);
+	K->CalculateBones(true);
 
 	if (m_eType != etBitting)
 	{
 		K->LL_SetBoneRoot(physics_root);
 	}
 
-	m_flags.set(fl_death_anim_on, FALSE);
+	m_flags.set(fl_death_anim_on, false);
 	m_eState = esDead;
-	m_flags.set(fl_skeleton_in_shell, TRUE);
+	m_flags.set(fl_skeleton_in_shell, true);
 
 	if (IsGameTypeSingle())
 	{
@@ -1057,7 +1057,7 @@ void CCharacterPhysicsSupport::EndActivateFreeShell(CObject* who, const Fvector&
 
 	IKinematics* K = PKinematics(m_EntityAlife.Visual());
 	K->CalculateBones_Invalidate();
-	K->CalculateBones(TRUE);
+	K->CalculateBones(true);
 }
 
 void CCharacterPhysicsSupport::in_ChangeVisual()

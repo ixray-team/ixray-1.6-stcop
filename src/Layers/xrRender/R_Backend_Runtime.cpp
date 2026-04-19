@@ -13,11 +13,11 @@ void CBackend::OnFrameEnd	()
 #else //USE_DX11
 
 		for (u32 stage=0; stage<Caps.raster.dwStages; stage++)
-			CHK_DX(RDevice->SetTexture(0,0));
-		CHK_DX				(RDevice->SetStreamSource	(0,0,0,0));
-		CHK_DX				(RDevice->SetIndices			(0));
-		CHK_DX				(RDevice->SetVertexShader	(0));
-		CHK_DX				(RDevice->SetPixelShader		(0));
+			CHK_DX(RDevice->SetTexture(0,nullptr));
+		CHK_DX				(RDevice->SetStreamSource	(0,nullptr,0,0));
+		CHK_DX				(RDevice->SetIndices			(nullptr));
+		CHK_DX				(RDevice->SetVertexShader	(nullptr));
+		CHK_DX				(RDevice->SetPixelShader		(nullptr));
 		Invalidate			();
 #endif
 	}
@@ -37,7 +37,7 @@ void CBackend::OnFrameBegin	()
 		Memory.mem_fill		(&stat,0,sizeof(stat));
 		Vertex.Flush		();
 		Index.Flush			();
-		set_Stencil			(FALSE);
+		set_Stencil			(false);
 	}
 //#endif
 }
@@ -107,10 +107,10 @@ void CBackend::Invalidate	()
 	for (u32 cs_it =0; cs_it < mtMaxComputeShaderTextures;)	textures_cs	[cs_it++]	= 0;
 #endif //USE_DX11
 
-	for (u32 ps_it =0; ps_it < mtMaxPixelShaderTextures;)	textures_ps	[ps_it++]	= 0;
-	for (u32 vs_it =0; vs_it < mtMaxVertexShaderTextures;)	textures_vs	[vs_it++]	= 0;
+	for (u32 ps_it =0; ps_it < mtMaxPixelShaderTextures;)	textures_ps	[ps_it++]	= nullptr;
+	for (u32 vs_it =0; vs_it < mtMaxVertexShaderTextures;)	textures_vs	[vs_it++]	= nullptr;
 #ifdef _EDITOR
-	for (u32 m_it =0; m_it< 8;)		matrices	[m_it++]	= 0;
+	for (u32 m_it =0; m_it< 8;)		matrices	[m_it++]	= nullptr;
 #endif
 }
 
@@ -252,7 +252,7 @@ void CBackend::set_Textures(STextureList* _T)
 		if (!textures_ps[_last_ps])
 			continue;
 
-		textures_ps[_last_ps] = 0;
+		textures_ps[_last_ps] = nullptr;
 		GRHI->ShaderResourceCache->SetPSResource(_last_ps, nullptr);
 	}
 	// clear remaining stages (VS)
@@ -261,7 +261,7 @@ void CBackend::set_Textures(STextureList* _T)
 		if (!textures_vs[_last_vs])
 			continue;
 
-		textures_vs[_last_vs] = 0;
+		textures_vs[_last_vs] = nullptr;
 		GRHI->ShaderResourceCache->SetVSResource(_last_vs, nullptr);
 	}
 

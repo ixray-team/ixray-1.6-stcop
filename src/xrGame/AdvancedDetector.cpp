@@ -40,7 +40,7 @@ void CAdvancedDetector::shedule_Update(u32 dt)
 				u16 m_screen_bone_id = kin->LL_BoneID("screen_bone");
 				if (kin->LL_GetBoneVisible(m_screen_bone_id))
 				{
-					kin->LL_SetBoneVisible(m_screen_bone_id, FALSE, TRUE);
+					kin->LL_SetBoneVisible(m_screen_bone_id, false, true);
 				}
 			}
 		}
@@ -160,7 +160,7 @@ void CUIArtefactDetectorAdv::update()
 
 	if (b_visible != kin->LL_GetBoneVisible(m_bid))
 	{
-		kin->LL_SetBoneVisible(m_bid, b_visible, TRUE);
+		kin->LL_SetBoneVisible(m_bid, b_visible, true);
 	}
 
 	if (!b_visible)
@@ -219,7 +219,7 @@ void CUIArtefactDetectorAdv::ResetBoneCallbacks()
 	CBoneInstance& bi = kin->LL_GetBoneInstance(bid);
 	bi.reset_callback();
 
-	kin->LL_SetBoneVisible(bid, FALSE, TRUE);
+	kin->LL_SetBoneVisible(bid, false, true);
 	m_target_dir = zero_vel;
 }
 

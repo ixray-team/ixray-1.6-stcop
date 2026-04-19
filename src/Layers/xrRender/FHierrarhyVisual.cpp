@@ -19,7 +19,7 @@
 
 FHierrarhyVisual::FHierrarhyVisual()  : dxRender_Visual()
 {
-	bDontDelete	= FALSE;
+	bDontDelete	= false;
 }
 
 FHierrarhyVisual::~FHierrarhyVisual()
@@ -53,7 +53,7 @@ void FHierrarhyVisual::Load(const char* N, IReader *data, u32 dwFlags)
 			children[i]	= (dxRender_Visual*)::Render->getVisual(ID);
 		}
 #endif
-		bDontDelete = TRUE;
+		bDontDelete = true;
 	}
 	else
 	{	
@@ -74,7 +74,7 @@ void FHierrarhyVisual::Load(const char* N, IReader *data, u32 dwFlags)
                 }
                 OBJ->close();
             }
-			bDontDelete = FALSE;
+			bDontDelete = false;
         }
 		else
 		{
@@ -95,5 +95,5 @@ void	FHierrarhyVisual::Copy(dxRender_Visual *pSrc)
 		dxRender_Visual *p = (dxRender_Visual*) ::Render->model_Duplicate	(pFrom->children[i]);
 		children.push_back(p);
 	}
-	bDontDelete = FALSE;
+	bDontDelete = false;
 }
