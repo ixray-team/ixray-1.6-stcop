@@ -77,7 +77,6 @@ public:
 	virtual void		HitImpulse					(float	amount,		Fvector& vWorldDir, Fvector& vLocalDir){}
 	virtual	void		Hit							(SHit* pHDS);
 
-	virtual bool		IsVisibleForHUD				() {return false;}
 	virtual bool		IsVisibleForZones			() {return false;}
 
 	virtual bool		UsedAI_Locations			() {return false;}
