@@ -115,7 +115,7 @@ class XRCORE_API CMemoryWriter : public IWriter
 	u32				file_size;
 public:
 	CMemoryWriter() {
-		data		= 0;
+		data		= nullptr;
 		position	= 0;
 		mem_size	= 0;
 		file_size	= 0;
@@ -243,7 +243,7 @@ public:
 	// Set file pointer to start of chunk data (0 for root chunk)
 	IC	void		rewind		()			{	seek(0); }
 
-	virtual intptr_t find_chunk  (u32 ID, bool* bCompressed = 0);
+	virtual intptr_t find_chunk  (u32 ID, bool* bCompressed = nullptr);
 	virtual IReaderBase* open_chunk_base(u32 chunk_id) = 0;
 	
 	IC	bool		r_chunk		(u32 ID, void *dest)	// чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
@@ -251,8 +251,8 @@ public:
 		u32	dwSize = this->find_chunk(ID);
 		if (dwSize!=0) {
 			r(dest,dwSize);
-			return TRUE;
-		} else return FALSE;
+			return true;
+		} else return false;
 	}
 	
 	IC	bool		r_chunk_safe(u32 ID, void *dest, u32 dest_size)	// чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
@@ -261,8 +261,8 @@ public:
 		if (dwSize!=0) {
 			R_ASSERT(dwSize==dest_size);
 			r(dest,dwSize);
-			return TRUE;
-		} else return FALSE;
+			return true;
+		} else return false;
 	}
 
 	template<XRay::Concepts::Enum EnumT>
@@ -394,10 +394,10 @@ public:
 	virtual IReaderBase* open_chunk_base(u32 chunk_id) override {return open_chunk(chunk_id);}
 
 	// iterators
-	IReader* open_chunk_iterator(u32& ID, IReader* previous=NULL);	// NULL=first
+	IReader* open_chunk_iterator(u32& ID, IReader* previous= nullptr);	// NULL=first
 
 	template<XRay::Concepts::Enum EnumT>
-	IReader* open_chunk_iterator(EnumT& ID, IReader* previous=NULL)
+	IReader* open_chunk_iterator(EnumT& ID, IReader* previous= nullptr)
 	{
 		u32 Iter = u32(ID);
 		IReader* Reader = open_chunk_iterator(Iter, previous);
@@ -405,10 +405,10 @@ public:
 		return Reader;
 	}
 
-	intptr_t find_chunk(u32 ID, bool* bCompressed = 0) override;
+	intptr_t find_chunk(u32 ID, bool* bCompressed = nullptr) override;
 
 	template<XRay::Concepts::Enum EnumT>
-	intptr_t find_chunk(EnumT ID, bool* bCompressed = 0)
+	intptr_t find_chunk(EnumT ID, bool* bCompressed = nullptr)
 	{
 		return find_chunk(u32(ID), bCompressed);
 	}

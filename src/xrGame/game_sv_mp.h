@@ -113,7 +113,7 @@ public:
 	virtual		void				Create					(shared_str &options);
 	virtual		void				OnPlayerConnect			(ClientID id_who);
 	virtual		void				OnPlayerDisconnect		(ClientID id_who, LPSTR Name, u16 GameID);
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_target, bool bForced = FALSE){return true;};			// TRUE=allow ownership, FALSE=denied
+	virtual		bool				OnTouch					(u16 eid_who, u16 eid_target, bool bForced = false){return true;};			// true=allow ownership, false=denied
 	virtual		void				OnDetach				(u16 eid_who, u16 eid_target){};
 	virtual		void				OnPlayerKillPlayer		(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA){};
 	virtual		void				OnPlayerKilled			(NET_Packet P);
@@ -151,7 +151,7 @@ public:
 	virtual		void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );
 	virtual		void				Update					();
 				void				KillPlayer				(ClientID id_who, u16 GameID);
-	virtual		bool				CanHaveFriendlyFire		()	{return TRUE;};
+	virtual		bool				CanHaveFriendlyFire		()	{return true;};
 	
 	virtual		void				ClearPlayerState		(game_PlayerState* ps);
 	virtual		void				ClearPlayerItems		(game_PlayerState* ps);

@@ -80,14 +80,14 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 				{
 					if (Level().CurrentEntity() == result.O)
 					{ //ignore self-actor
-						return TRUE;
+						return true;
 					}
 					else
 					{ //check obstacle flag
 						if ((result.O->SpatialComponent->spatial.type & ESPATIAL_TYPE::OBSTACLE) != ESPATIAL_TYPE::NONE)
 							bOverlaped = true;
 
-						return TRUE;
+						return true;
 					}
 				}
 				else
@@ -95,11 +95,11 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 					//получить треугольник и узнать его материал
 					CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
 					if (GMLib.GetMaterialByIdx(T.material)->Flags.is(SGameMtl::flPassable))
-						return TRUE;
+						return true;
 				}
 
 				bOverlaped = true;
-				return FALSE;
+				return false;
 			}, &bOverlaped, nullptr, item);
 
 			for (collide::rq_result& result : RQR.r_results())

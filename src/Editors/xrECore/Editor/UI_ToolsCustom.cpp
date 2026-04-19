@@ -14,7 +14,7 @@
 #include "D3DUtils.h"
 
 //------------------------------------------------------------------------------
-CToolCustom* Tools=0;
+CToolCustom* Tools=nullptr;
 //------------------------------------------------------------------------------
 #define CHECK_SNAP(R,A,C){ R+=A; if(fabsf(R)>=C){ A=snapto(R,C); R=0; }else{A=0;}}
 
@@ -232,7 +232,7 @@ void CToolCustom::Render()
 	int cnt = 0;
 	for (SDebugDraw::PointIt vit = m_DebugDraw.m_Points.begin(); vit != m_DebugDraw.m_Points.end(); ++vit)
 	{
-		const char* s = NULL;
+		const char* s = nullptr;
 		if (vit->i)
 		{
 			sprintf(temp.data(), "P: %d", cnt++);
@@ -268,7 +268,7 @@ void CToolCustom::Render()
 	cnt = 0;
 	if (!m_DebugDraw.m_SolidFaces.empty()) {
 		EDevice->SetShader(EDevice->m_SelectionShader);
-		DU_impl.DD_DrawFace_begin(FALSE);
+		DU_impl.DD_DrawFace_begin(false);
 		for (SDebugDraw::FaceIt fsit = m_DebugDraw.m_SolidFaces.begin(); fsit != m_DebugDraw.m_SolidFaces.end(); fsit++)
 			DU_impl.DD_DrawFace_push(fsit->p[0], fsit->p[1], fsit->p[2], fsit->c);
 		DU_impl.DD_DrawFace_end();

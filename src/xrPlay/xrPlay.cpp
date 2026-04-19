@@ -99,10 +99,10 @@ int APIENTRY WinMain
 #define STALKER_PRESENCE_MUTEX TEXT("Local\\STALKER-COP")
 
 	HANDLE hCheckPresenceMutex = INVALID_HANDLE_VALUE;
-	hCheckPresenceMutex = OpenMutex(READ_CONTROL, FALSE, STALKER_PRESENCE_MUTEX);
+	hCheckPresenceMutex = OpenMutex(READ_CONTROL, false, STALKER_PRESENCE_MUTEX);
 	if (hCheckPresenceMutex == nullptr) {
 		// New mutex
-		hCheckPresenceMutex = CreateMutex(nullptr, FALSE, STALKER_PRESENCE_MUTEX);
+		hCheckPresenceMutex = CreateMutex(nullptr, false, STALKER_PRESENCE_MUTEX);
 		if (hCheckPresenceMutex == nullptr)
 			// Shit happens
 			return 2;

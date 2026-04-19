@@ -69,7 +69,7 @@ void CFlashlight::UpdateCL()
 	{
 		for (const shared_str& bone : LightTorch->ConeBones)
 		{
-			item->set_bone_visible(bone, LightTorch->GetTorchActive(), TRUE);
+			item->set_bone_visible(bone, LightTorch->GetTorchActive(), true);
 		}
 	}
 }

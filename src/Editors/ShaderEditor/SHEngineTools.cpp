@@ -46,14 +46,14 @@ CSHEngineTools::CSHEngineTools(const ISHInit& init):ISHTools(init)
 {
 	m_PreviewObjectType	= pvoNone;
 	m_PreviewObject		= NULL;
-	m_bCustomEditObject	= FALSE;
-	m_bFreezeUpdate		= FALSE;
+	m_bCustomEditObject	= false;
+	m_bFreezeUpdate		= false;
 	m_CurrentBlender 	= 0;
 	m_BlenderStream.clear();
-	m_bNeedResetShaders	= TRUE;
-	m_RemoteRenBlender	= FALSE;
-	m_CreatingBlender = FALSE;
-	m_SetCustomObject = FALSE;
+	m_bNeedResetShaders	= true;
+	m_RemoteRenBlender	= false;
+	m_CreatingBlender = false;
+	m_SetCustomObject = false;
 	MCString.push_back	("Custom...");
 	MCString.push_back	("$null");
 	MCString.push_back	("$base0");
@@ -89,7 +89,7 @@ void CSHEngineTools::OnDestroy()
 
 	ClearData();
 
-	m_bModified = FALSE;
+	m_bModified = false;
 }
 
 xr_token preview_obj_token[]={
@@ -111,7 +111,7 @@ bool CSHEngineTools::OnPreviewObjectRefChange(PropValue* sender, u32& new_val)
 	case pvoBox: 	fn	= "editor\\ShaderTest_Box"; 	break;
 	case pvoSphere:	fn	= "editor\\ShaderTest_Sphere";	break;
 	case pvoTeapot:	fn	= "editor\\ShaderTest_Teapot";	break;
-	case pvoCustom: {m_SetCustomObject = TRUE; UIChooseForm::SelectItem(smObject, 1, 0, 0, 0, 0, 0, 0); return true; }break;
+	case pvoCustom: {m_SetCustomObject = true; UIChooseForm::SelectItem(smObject, 1, 0, 0, 0, 0, 0, 0); return true; }break;
 	}
 	
 	OnPreviewObjectRefChange(fn);
@@ -194,7 +194,7 @@ void CSHEngineTools::OnFrame()
 	}
 	if (m_RemoteRenBlender){
 		RealRenameItem		(m_RenBlenderOldName.c_str(),m_RenBlenderNewName.c_str());
-		m_RemoteRenBlender	= FALSE;
+		m_RemoteRenBlender	= false;
 	}
    
 	if (m_PreviewObject) m_PreviewObject->OnFrame();
@@ -215,7 +215,7 @@ void CSHEngineTools::OnFrame()
 				m_PreviewObjectType = 0;
 				OnPreviewObjectRefChange("");
 			}
-			m_SetCustomObject = FALSE;
+			m_SetCustomObject = false;
 		}
 	}
 	if (m_CreatingBlender)
@@ -240,7 +240,7 @@ void CSHEngineTools::OnFrame()
 
 			}
 
-			m_CreatingBlender = FALSE;
+			m_CreatingBlender = false;
 		}
 
 	}
@@ -265,7 +265,7 @@ void CSHEngineTools::ZoomObject(bool bOnlySel)
 void CSHEngineTools::RealResetShaders() 
 {
 	// disable props vis update
-	m_bFreezeUpdate 	= TRUE;
+	m_bFreezeUpdate 	= true;
 	UpdateStreamFromObject();
  
 	UpdateObjectShader	();
@@ -273,10 +273,10 @@ void CSHEngineTools::RealResetShaders()
 	PrepareRender		();
 	// reset device shaders from temp file
 	IReader data		(m_RenderShaders.pointer(), m_RenderShaders.size());
-	EDevice->Reset		(&data,TRUE);
+	EDevice->Reset		(&data,true);
 	// enable props vis update
-	m_bFreezeUpdate 	= FALSE;
-	m_bNeedResetShaders	= FALSE;
+	m_bFreezeUpdate 	= false;
+	m_bNeedResetShaders	= false;
 }
 
 void CSHEngineTools::FillItemList()
@@ -310,8 +310,8 @@ void CSHEngineTools::Load()
 	string_path 				fn;
 	FS.update_path				(fn,_game_data_,"shaders.xr");
 
-	m_bFreezeUpdate				= TRUE;
-	m_bLockUpdate 				= TRUE;
+	m_bFreezeUpdate				= true;
+	m_bLockUpdate 				= true;
 
 	if (FS.exist(fn))
 	{
@@ -376,8 +376,8 @@ void CSHEngineTools::Load()
 	}else{
 		ELog.DlgMsg(mtInformation,"Can't find file '%s'",fn);
 	}
-	m_bLockUpdate				= FALSE;
-	m_bFreezeUpdate				= FALSE;
+	m_bLockUpdate				= false;
+	m_bFreezeUpdate				= false;
 }
 
 void CSHEngineTools::Save(CMemoryWriter& F)
@@ -442,7 +442,7 @@ bool CSHEngineTools::Save()
 	bool bRes					= F.save_to(fn);
 
 	if (bRes){	
-		m_bModified	= FALSE;
+		m_bModified	= false;
 		//Ext.m_ItemProps->ResetModified();
 		// restore shader
 		ResetShaders ();
@@ -535,7 +535,7 @@ void CSHEngineTools::AppendItem(const char* path, const char* parent_name)
 	CLASS_ID cls_id;
 	if (!parent){
 		UIChooseForm::SelectItem(smCustom, 1, 0, TOnChooseFillItems(this, &CSHEngineTools::FillChooseTemplate),0,0,0,0);
-		m_CreatingBlender = TRUE;
+		m_CreatingBlender = true;
 		m_CreatingBlenderPath = path;
 		return;
 	}else{
@@ -622,7 +622,7 @@ void CSHEngineTools::OnRenameItem(UIItemListForm::Node& node, const char* old_fu
 	
 	if (type==TYPE_OBJECT)
 		RealRenameItem(old_full_name, new_full_name);
-	m_bFreezeUpdate = TRUE;
+	m_bFreezeUpdate = true;
 }
 
 

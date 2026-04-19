@@ -27,7 +27,7 @@ public:
     		hf		= _wfdopen(handle,TEXT("wb"));
         }else{
 			_wfopen_s(&hf, wName, TEXT("wb"));
-			if (hf==0)
+			if (hf==nullptr)
             {
                 string1024 error;
                 xr_strerror(errno, error, sizeof(error));
@@ -38,7 +38,7 @@ public:
 
 	virtual ~CFileWriter()
 	{
-		if (0 != hf)
+		if (nullptr != hf)
 		{
 			fclose(hf);
 #ifdef IXR_WINDOWS
@@ -56,7 +56,7 @@ public:
 	// kernel
 	virtual void	w			(const void* _ptr, u32 count) 
     { 
-		if ((0!=hf) && (0!=count))
+		if ((nullptr!=hf) && (0!=count))
 		{
 			//x64 size_t Везде важно (se7kills Fix)
 			const size_t mb_sz = 0x1000000;
@@ -81,9 +81,9 @@ public:
     };
 	// virtual void	seek		(u32 pos)	{	if (0!=hf) fseek(hf,pos,SEEK_SET);		};
 	// virtual u32		tell		()			{	return (0!=hf)?ftell(hf):0;				};
-	virtual void	seek(size_t pos) { if (0 != hf) xr_fseek(hf, pos, SEEK_SET); };
-	virtual size_t	tell() { return (0 != hf) ? xr_ftell(hf) : 0; };
-	virtual bool	valid() { return (0 != hf); }
+	virtual void	seek(size_t pos) { if (nullptr != hf) xr_fseek(hf, pos, SEEK_SET); };
+	virtual size_t	tell() { return (nullptr != hf) ? xr_ftell(hf) : 0; };
+	virtual bool	valid() { return (nullptr != hf); }
 	virtual	void	flush() { if (hf)	fflush(hf); };
 };
 

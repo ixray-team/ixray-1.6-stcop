@@ -121,7 +121,7 @@ void ISpatial::spatial_updatesector_internal()
 {
 	Fvector curr_sector_point = OwnerSectorPoint();
 
-	if ((FALSE == curr_sector_point.similar(spatial.last_sector_point) || spatial.sector == nullptr))
+	if ((false == curr_sector_point.similar(spatial.last_sector_point) || spatial.sector == nullptr))
 	{
 		PROF_EVENT(__FUNCTION__);
 		spatial.type &= ~ESPATIAL_TYPE::INVALIDSECTOR;

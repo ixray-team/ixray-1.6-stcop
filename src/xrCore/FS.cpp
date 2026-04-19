@@ -102,7 +102,7 @@ void* FileDecompress(const char* fn, const char* sign, intptr_t& size)
 	}
 	R_ASSERT(strncmp(M, F, 8) == 0);
 
-	void* ptr = 0;
+	void* ptr = nullptr;
 	intptr_t SZ;
 	SZ = _readLZ(H, ptr, _filelength(H) - 8);
 	_close(H);
@@ -130,7 +130,7 @@ void CMemoryWriter::w(const void* ptr, u32 count)
 			mem_size *= 2;
 		}
 
-		if (0 == data)
+		if (nullptr == data)
 		{
 			data = (u8*)Memory.mem_alloc(mem_size);
 		}
@@ -198,7 +198,7 @@ u32	IWriter::chunk_size	()					// returns size of currently opened chunk, 0 othe
 
 void IWriter::w_compressed(void* ptr, u32 count)
 {
-	u8*		dest	= 0;
+	u8*		dest	= nullptr;
 	unsigned	dest_sz	= 0;
 	_compressLZ	(&dest,&dest_sz,ptr,count);
 	
@@ -269,7 +269,7 @@ IReader* IReader::open_chunk(u32 ID)
 		}
 	}
 	
-	return 0;
+	return nullptr;
 }
 
 void IReader::close()
@@ -287,7 +287,7 @@ intptr_t IReader::find_chunk(u32 ID, bool* bCompressed)
 
 IReader* IReader::open_chunk_iterator(u32& ID, IReader* _prev)
 {
-	if (0 == _prev)
+	if (nullptr == _prev)
 	{
 		// first
 		rewind();
@@ -327,9 +327,9 @@ void IReader::r	(void *p, intptr_t cnt)
 	CopyMemory		(p,pointer(),cnt);
 	advance			(cnt);
 #ifdef DEBUG
-	bool	bShow		= FALSE		;
-	if (cast_file_reader())			bShow = TRUE;
-	if (cast_virtual_file_reader())	bShow = TRUE;
+	bool	bShow		= false		;
+	if (cast_file_reader())			bShow = true;
+	if (cast_virtual_file_reader())	bShow = true;
 	if (bShow)			{
   		FS.dwOpenCounter	++		;
 	}

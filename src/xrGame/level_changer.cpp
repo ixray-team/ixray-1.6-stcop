@@ -91,7 +91,7 @@ bool CLevelChanger::net_Spawn	(CSE_Abstract* DC)
 		l_pShape->ComputeBounds	();
 		Fvector					P;
 		XFORM().transform_tiny	(P,CFORM()->getSphere().P);
-		setEnabled				(FALSE);
+		setEnabled				(false);
 	}
 	g_lchangers.push_back		(this);
 
@@ -155,7 +155,7 @@ void CLevelChanger::feel_touch_new	(CObject *tpObject)
 		p.w			(&m_level_vertex_id,sizeof(m_level_vertex_id));
 		p.w_vec3	(m_position);
 		p.w_vec3	(m_angles);
-		Level().Send(p,net_flags(TRUE));
+		Level().Send(p,net_flags(true));
 		return;
 	}
 	Fvector			p,r;
@@ -253,7 +253,7 @@ void CLevelChanger::load(IReader &input_packet)
 bool CLevelChanger::net_SaveRelevant()
 {
 	if(!m_b_enabled || m_invite_str!=DEF_INVITATION )
-		return TRUE;
+		return true;
 	else
 		return inherited::net_SaveRelevant();
 }

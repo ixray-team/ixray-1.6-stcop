@@ -120,12 +120,12 @@ bool trajectory_check_collision (float 							low,
 	float					range = distance;
 
 	bool					previous_enabled = self_object->getEnabled();
-	self_object->setEnabled	(FALSE);
+	self_object->setEnabled	(false);
 	
-	bool					throw_ignore_object_enabled = FALSE;
+	bool					throw_ignore_object_enabled = false;
 	if (ignored_object) {
 		throw_ignore_object_enabled			= ignored_object->getEnabled();
-		ignored_object->setEnabled	(FALSE);
+		ignored_object->setEnabled	(false);
 	}
 
 	float const epsilon	=	0.0001f;

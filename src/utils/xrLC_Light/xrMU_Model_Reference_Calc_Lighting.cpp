@@ -260,7 +260,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 		if (it2 != g_trans.end())	it2++;
 
 		// Search
-		bool found = FALSE;
+		bool found = false;
 		for (; it != it2; it++)
 		{
 			xrMU_Model::v_vertices& VL = it->second;
@@ -268,7 +268,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 			R_ASSERT(Front);
 			if (Front->P.similar(V.P, eps))
 			{
-				found = TRUE;
+				found = true;
 				VL.push_back(&V);
 			}
 		}

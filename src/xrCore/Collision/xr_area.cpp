@@ -14,7 +14,7 @@ using namespace	collide;
 //----------------------------------------------------------------------
 CObjectSpace::CObjectSpace()
 #ifdef DEBUG
-	: m_pRender(0)
+	: m_pRender(nullptr)
 #endif
 {
 #ifdef DEBUG

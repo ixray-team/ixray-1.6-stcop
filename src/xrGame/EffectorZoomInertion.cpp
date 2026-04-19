@@ -127,5 +127,5 @@ bool CEffectorZoomInertion::ProcessCam(SCamEffectorInfo& info)
 
 	m_dwTimePassed += Device.dwTimeDelta;
 
-	return TRUE;
+	return true;
 }

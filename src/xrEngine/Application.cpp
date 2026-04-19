@@ -8,7 +8,7 @@
 #include "../xrCore/Collision/ISpatial.h"
 #include "ILoadingScreen.h"
 
-ENGINE_API bool g_appLoaded = FALSE;
+ENGINE_API bool g_appLoaded = false;
 
 struct _SoundProcessor :
 	public pureFrame
@@ -129,7 +129,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 			DEL_INSTANCE(g_pGameLevel);
 			Console->Show();
 
-			if ((FALSE == g_pEventManager->Event.Peek("KERNEL:quit")) && (FALSE == g_pEventManager->Event.Peek("KERNEL:start")))
+			if ((false == g_pEventManager->Event.Peek("KERNEL:quit")) && (false == g_pEventManager->Event.Peek("KERNEL:start")))
 			{
 				Console->Execute("main_menu off");
 				Console->Execute("main_menu on");
@@ -178,7 +178,7 @@ void CApplication::LoadBegin()
 	ll_dwReference++;
 	if (1 == ll_dwReference) {
 
-		g_appLoaded = FALSE;
+		g_appLoaded = false;
 
 		phase_timer.Start();
 		load_stage = 0;
@@ -192,7 +192,7 @@ void CApplication::LoadEnd()
 		//Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());
 		//Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
 		//Console->Execute("stat_memory");
-		g_appLoaded = TRUE;
+		g_appLoaded = true;
 		//		DUMP_PHASE;
 	}
 }

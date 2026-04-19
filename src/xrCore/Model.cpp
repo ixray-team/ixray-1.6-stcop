@@ -19,7 +19,7 @@ using namespace ppmd;
 enum { UP_FREQ=5, INT_BITS=7, PERIOD_BITS=7, TOT_BITS=INT_BITS+PERIOD_BITS,
     INTERVAL=1 << INT_BITS, BIN_SCALE=1 << TOT_BITS, MAX_FREQ=124, O_BOUND=9 };
 
-compression::ppmd::stream	*trained_model = 0;
+compression::ppmd::stream	*trained_model = nullptr;
 
 
 template <class TMP_TYPE>
@@ -330,12 +330,12 @@ static void RestoreModelRare(PPM_CONTEXT* pc1,PPM_CONTEXT* MinContext,
                 SpecialFreeUnit(p);
                 pc->oneState().Freq=(pc->oneState().Freq+11) >> 3;
             } else
-                    pc->refresh((pc->NumStats+3) >> 1,FALSE);
+                    pc->refresh((pc->NumStats+3) >> 1,false);
     for ( ;pc != MinContext;pc=pc->Suffix)
             if ( !pc->NumStats )
                     pc->oneState().Freq -= pc->oneState().Freq >> 1;
             else if ((pc->SummFreq += 4) > 128+4*pc->NumStats)
-                    pc->refresh((pc->NumStats+2) >> 1,TRUE);
+                    pc->refresh((pc->NumStats+2) >> 1,true);
     if (MRMethod > MRM_FREEZE) {
         MaxContext=FSuccessor;              GlueCount += !(BList[1].Stamp & 1);
     } else if (MRMethod == MRM_FREEZE) {
@@ -388,7 +388,7 @@ LOOP_ENTRY:
         pc = p->Successor;                  goto FROZEN;
     } else if (p->Successor <= UpBranch) {
         p1=FoundState;                      FoundState=p;
-        p->Successor=CreateSuccessors(FALSE,nullptr,pc);
+        p->Successor=CreateSuccessors(false,nullptr,pc);
         FoundState=p1;
     }
     if (OrderFall == 1 && pc1 == MaxContext) {
@@ -524,7 +524,7 @@ static inline void UpdateModel( PPM_CONTEXT* MinContext)
     PPM_CONTEXT* Successor = nullptr;
     if( !OrderFall && FSuccessor) 
     {
-        FoundState->Successor=CreateSuccessors(TRUE,p,MinContext);
+        FoundState->Successor=CreateSuccessors(true,p,MinContext);
         if (!FoundState->Successor) {
             Successor = (PPM_CONTEXT*)pText;
             goto RESTART_MODEL;
@@ -544,7 +544,7 @@ static inline void UpdateModel( PPM_CONTEXT* MinContext)
     if( FSuccessor ) 
     {
         if ((BYTE*) FSuccessor < UnitsStart)
-            FSuccessor=CreateSuccessors(FALSE,p,MinContext);
+            FSuccessor=CreateSuccessors(false,p,MinContext);
     } 
     else
     {
@@ -915,7 +915,7 @@ STOP_DECODING:
 static void _STDCALL StartModelRare(int MaxOrder,MR_METHOD MRMethod)
 {
     static bool         first_time  = true;
-    static PPM_CONTEXT* context     = 0;
+    static PPM_CONTEXT* context     = nullptr;
 
     if( first_time )
     {
@@ -989,7 +989,7 @@ static void _STDCALL StartModelRare(int MaxOrder,MR_METHOD MRMethod)
         
         RunLength = InitRL = -((MaxOrder < 12) ? MaxOrder : 12) - 1;
         MaxContext  = context;
-        FoundState  = 0;
+        FoundState  = nullptr;
     }
 }
 

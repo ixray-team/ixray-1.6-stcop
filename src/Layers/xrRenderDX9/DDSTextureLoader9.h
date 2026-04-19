@@ -192,7 +192,7 @@ namespace
         *bitSize = 0;
 
         // open the file
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) && FALSE
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) && false
         ScopedHandle hFile(safe_handle(CreateFile2(fileName,
             GENERIC_READ,
             FILE_SHARE_READ,

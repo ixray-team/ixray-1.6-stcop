@@ -142,8 +142,8 @@ public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);
 	ShaderElement*					rimp_select_sh_dynamic		(dxRender_Visual	*pVisual, float cdist_sq);
 	RHIInputElementDesc*			getVB_Format(int id, size_t* Count, bool	_alt = false);
-	IRHIBuffer*			getVB						(int id, bool	_alt=FALSE);
-	IRHIBuffer*			getIB						(int id, bool	_alt=FALSE);
+	IRHIBuffer*			getVB						(int id, bool	_alt=false);
+	IRHIBuffer*			getIB						(int id, bool	_alt=false);
 	FSlideWindowItem*				getSWI						(int id);
 	IRender_Portal*					getPortal					(int id);
 	IRender_Sector*					getSectorActive				();

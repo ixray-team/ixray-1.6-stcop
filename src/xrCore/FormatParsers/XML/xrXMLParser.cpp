@@ -304,7 +304,7 @@ XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, const char*  path, int node
 		token = strtok( nullptr, seps );
 
 		if( token != nullptr)
-			if(node != 0)
+			if(node != nullptr)
 			{
 				node_parent = node;
 				node = node_parent->FirstChildElement(token);

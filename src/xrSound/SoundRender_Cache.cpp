@@ -46,7 +46,7 @@ void	CSoundRender_Cache::move2top	(cache_line* line)
 	VERIFY						(c_end->next	== nullptr);
 }
 
-BOOL	CSoundRender_Cache::request		(cache_cat& cat, u32 id)
+bool	CSoundRender_Cache::request		(cache_cat& cat, u32 id)
 {
 	// 1. check if cached version available
 	id				%= cat.size;
@@ -57,7 +57,7 @@ BOOL	CSoundRender_Cache::request		(cache_cat& cat, u32 id)
 		_stat_hit		++;
 		cache_line*	L	=	c_storage + cptr;
 		move2top		(L);
-		return			FALSE;
+		return			false;
 	}
 
 	// 2. purge oldest item + move it to top
@@ -73,7 +73,7 @@ BOOL	CSoundRender_Cache::request		(cache_cat& cat, u32 id)
 	c_begin->loopback	= &cptr;
 
 	// 4. fill with data
-	return			TRUE;
+	return			true;
 }
 
 void	CSoundRender_Cache::initialize	(u32 _total_kb_approx, u32 bytes_per_line)

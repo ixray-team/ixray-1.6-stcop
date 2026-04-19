@@ -292,7 +292,7 @@ void CGamePersistent::WeathersUpdate()
 	{
 		bool bIndoor = Render->InIndoor();
 
-		if(bIndoor==FALSE)
+		if(bIndoor==false)
 		{
 			CObject* current_view_entity = Level().CurrentViewEntity();
 			CActor* actor				= current_view_entity != nullptr ? current_view_entity->cast_actor() : nullptr;
@@ -345,7 +345,7 @@ void CGamePersistent::WeathersUpdate()
 				}
 			}
 			// start effect
-			if ((FALSE==bIndoor) && (0==ambient_particles) && Device.dwTimeGlobal>ambient_effect_next_time){
+			if ((false==bIndoor) && (0==ambient_particles) && Device.dwTimeGlobal>ambient_effect_next_time){
 				CEnvAmbient::SEffect* eff			= env_amb->get_rnd_effect(); 
 				if (eff){
 					Environment().wind_gust_factor	= eff->wind_gust_factor;
@@ -357,7 +357,7 @@ void CGamePersistent::WeathersUpdate()
 					ambient_effect_wind_out_time	= Device.fTimeGlobal + eff->life_time/1000.f + eff->wind_blast_out_time;
 					ambient_effect_wind_on			= true;
 										
-					ambient_particles				= Particles::Details::Create(eff->particles.c_str(),FALSE,false);
+					ambient_particles				= Particles::Details::Create(eff->particles.c_str(),false,false);
 					Fvector pos; pos.add			(Device.vCameraPosition,eff->offset); 
 					ambient_particles->play_at_pos	(pos);
 					if (eff->sound.handle())		eff->sound.play_at_pos(0,pos);
@@ -869,7 +869,7 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 		Msg("* Game Loading Timer: Started from Save Reloading");
 
 		if (Device.Paused())
-			Device.Pause(FALSE, TRUE, TRUE, "eQuickLoad");
+			Device.Pause(false, true, true, "eQuickLoad");
 
 		if (CurrentGameUI())
 		{
@@ -912,8 +912,8 @@ float CGamePersistent::MtlTransparent(u32 mtl_idx)
 {
 	return GMLib.GetMaterialByIdx((u16)mtl_idx)->fVisTransparencyFactor;
 }
-static bool bRestorePause	= FALSE;
-static bool bEntryFlag		= TRUE;
+static bool bRestorePause	= false;
+static bool bEntryFlag		= true;
 
 void CGamePersistent::OnAppActivate		()
 {
@@ -922,13 +922,13 @@ void CGamePersistent::OnAppActivate		()
 
 	if( !bIsMP )
 	{
-		Device.Pause			(FALSE, !bRestorePause, TRUE, "CGP::OnAppActivate");
+		Device.Pause			(false, !bRestorePause, true, "CGP::OnAppActivate");
 	}else
 	{
-		Device.Pause			(FALSE, TRUE, TRUE, "CGP::OnAppActivate MP");
+		Device.Pause			(false, true, true, "CGP::OnAppActivate MP");
 	}
 
-	bEntryFlag = TRUE;
+	bEntryFlag = true;
 }
 
 void CGamePersistent::OnAppDeactivate	()
@@ -937,17 +937,17 @@ void CGamePersistent::OnAppDeactivate	()
 
 	bool bIsMP = (g_pGameLevel && Level().game && !IsGameTypeSingle());
 
-	bRestorePause = FALSE;
+	bRestorePause = false;
 
 	if ( !bIsMP )
 	{
 		bRestorePause			= Device.Paused();
-		Device.Pause			(TRUE, TRUE, TRUE, "CGP::OnAppDeactivate");
+		Device.Pause			(true, true, true, "CGP::OnAppDeactivate");
 	}else
 	{
-		Device.Pause			(TRUE, FALSE, TRUE, "CGP::OnAppDeactivate MP");
+		Device.Pause			(true, false, true, "CGP::OnAppDeactivate MP");
 	}
-	bEntryFlag = FALSE;
+	bEntryFlag = false;
 }
 
 

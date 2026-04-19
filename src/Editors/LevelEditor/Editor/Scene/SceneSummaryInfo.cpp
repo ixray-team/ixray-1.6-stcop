@@ -109,7 +109,7 @@ void SSceneSummary::STextureInfo::FillProp	(PropItemVec& items, const char* main
         mem_use				+= tex_mem;
         xr_string pref		= PrepareKey(xr_string(main_pref).c_str(),*file_name).c_str();
         PropValue* V=0;
-        V=PHelper().CreateChoose(items,PrepareKey(pref.c_str(),"Texture"), 		&file_name, smTexture); V->Owner()->Enable(FALSE);
+        V=PHelper().CreateChoose(items,PrepareKey(pref.c_str(),"Texture"), 		&file_name, smTexture); V->Owner()->Enable(false);
         PHelper().CreateCaption(items,PrepareKey(pref.c_str(),"Format"),		info.FormatString());
         PHelper().CreateCaption(items,PrepareKey(pref.c_str(),"Size"), 			shared_str().printf("%d x %d x %s",info.width,info.height,info.HasAlpha()?"32b":"24b"));
         PHelper().CreateCaption(items,PrepareKey(pref.c_str(),"Memory Usage"),	shared_str().printf("%d Kb",iFloor(tex_mem/1024)));
@@ -125,7 +125,7 @@ void SSceneSummary::STextureInfo::FillProp	(PropItemVec& items, const char* main
 */
         if (info.flags.is_any(STextureParams::flDiffuseDetail|STextureParams::flBumpDetail)){
             if (0!=info.detail_name.size()){
-                V=PHelper().CreateChoose(items,PrepareKey(pref.c_str(),"Detail Texture"),	&info.detail_name,smTexture); 	V->Owner()->Enable(FALSE);
+                V=PHelper().CreateChoose(items,PrepareKey(pref.c_str(),"Detail Texture"),	&info.detail_name,smTexture); 	V->Owner()->Enable(false);
                 PHelper().CreateCaption(items,PrepareKey(pref.c_str(), "Detail Scale"),		shared_str().printf("%3.2f",info.detail_scale));
             }else{
                 PHelper().CreateCaption(items,PrepareKey(pref.c_str(), "Detail Texture"),	"INVALID");
@@ -134,7 +134,7 @@ void SSceneSummary::STextureInfo::FillProp	(PropItemVec& items, const char* main
         }
         if (info.bump_mode==STextureParams::tbmUse){
             if (0!=info.bump_name.size()){
-                V=PHelper().CreateChoose(items,PrepareKey(pref.c_str(),"Bump Texture"),		&info.bump_name,smTexture); 	V->Owner()->Enable(FALSE);
+                V=PHelper().CreateChoose(items,PrepareKey(pref.c_str(),"Bump Texture"),		&info.bump_name,smTexture); 	V->Owner()->Enable(false);
             }else{
                 PHelper().CreateCaption(items,PrepareKey(pref.c_str(), "Bump Texture"),		"INVALID");    
                 ELog.Msg(mtError,"Empty bump on texture: '%s'",*file_name);

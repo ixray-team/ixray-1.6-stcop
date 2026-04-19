@@ -140,7 +140,7 @@ public:
     virtual bool 		AllowMouseStart			(){return true;}
 
     virtual void		OnObjectRemove			(CCustomObject* O, bool bDeleting);
-    virtual	void		UpdateSnapList			(){m_Flags.set(flUpdateSnapList,TRUE);}
+    virtual	void		UpdateSnapList			(){m_Flags.set(flUpdateSnapList,true);}
 	virtual ObjectList*	GetSnapList				(){return &m_SnapObjects;}
 
 	// selection manipulate
@@ -208,7 +208,7 @@ public:
     void				RemoveLinks				();
     void				InvertLinks				();
 
-	void 				UpdateHLSelected		(){m_Flags.set(flUpdateHL,TRUE);}
+	void 				UpdateHLSelected		(){m_Flags.set(flUpdateHL,true);}
 
     void 				SmoothNodes				();
 	void 				ResetNodes				();

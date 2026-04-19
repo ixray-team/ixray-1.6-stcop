@@ -33,12 +33,12 @@ void VIMP_Processor::CalculateAllCollapses(Object* m_pObject, u32 max_sliding_wi
 		// Find the best collapse you can.
 		// (how expensive is this? Ohhhh yes).
 		float		fBestError			= 1.0e10f;
-		MeshEdge	*pedgeBestError		= NULL;
-		MeshPt		*pptBestError		= NULL;
+		MeshEdge	*pedgeBestError		= nullptr;
+		MeshPt		*pptBestError		= nullptr;
 		// NL = NewLevel - would force a new level.
 		float		fBestErrorNL		= 1.0e10f;
-		MeshEdge	*pedgeBestErrorNL	= NULL;
-		MeshPt		*pptBestErrorNL		= NULL;
+		MeshEdge	*pedgeBestErrorNL	= nullptr;
+		MeshPt		*pptBestErrorNL		= nullptr;
 		MeshPt		*ppt;
 		MeshEdge	*pedge;
 
@@ -46,30 +46,30 @@ void VIMP_Processor::CalculateAllCollapses(Object* m_pObject, u32 max_sliding_wi
 		int			iAvCount			= 0;
 
 		// Flush the cache, just in case.
-		m_pObject->FindCollapseError		( NULL, NULL, FALSE );
+		m_pObject->FindCollapseError		(nullptr, nullptr, false );
 
-		for ( ppt = m_pObject->CurPtRoot.ListNext(); ppt != NULL; ppt = ppt->ListNext() ){
-			if (0==ppt->FirstEdge())	continue;
+		for ( ppt = m_pObject->CurPtRoot.ListNext(); ppt != nullptr; ppt = ppt->ListNext() ){
+			if (nullptr==ppt->FirstEdge())	continue;
 			// Disallow any pts that are on an edge - shouldn't be collapsing them.
-			bool bAllowed = TRUE;
-			for ( pedge = ppt->FirstEdge(); pedge != NULL; pedge = ppt->NextEdge() ){
-				if ( ( pedge->pTri12 == NULL ) || ( pedge->pTri21 == NULL ) ){
+			bool bAllowed = true;
+			for ( pedge = ppt->FirstEdge(); pedge != nullptr; pedge = ppt->NextEdge() ){
+				if ( ( pedge->pTri12 == nullptr) || ( pedge->pTri21 == nullptr) ){
 					// This edge does not have two tris on it - disallow it.
-					bAllowed = FALSE;
+					bAllowed = false;
 					break;
 				}
 			}
 			if ( !bAllowed ) continue;
 
-			bool bRequiresNewLevel = FALSE;
+			bool bRequiresNewLevel = false;
 			if ( !m_pObject->CollapseAllowedForLevel ( ppt, m_pObject->iCurSlidingWindowLevel ) ){
 				// This collapse would force a new level.
-				bRequiresNewLevel = TRUE;
+				bRequiresNewLevel = true;
 			}
 
 			// collect error
-			for ( pedge = ppt->FirstEdge(); pedge != NULL; pedge = ppt->NextEdge() ){
-				float fErrorBin = m_pObject->FindCollapseError ( ppt, pedge, TRUE );
+			for ( pedge = ppt->FirstEdge(); pedge != nullptr; pedge = ppt->NextEdge() ){
+				float fErrorBin = m_pObject->FindCollapseError ( ppt, pedge, true );
 				iAvCount++;
 				fAverage += fErrorBin;
 				if ( bRequiresNewLevel ){
@@ -101,7 +101,7 @@ void VIMP_Processor::CalculateAllCollapses(Object* m_pObject, u32 max_sliding_wi
 		//-----------------------------------------------------------------------------------------------------------
 		// Do we need to do any collapses?
 		// Collapse auto-found edge.
-		if ( ( pedgeBestError != NULL ) && ( pptBestError != NULL ) ){
+		if ( ( pedgeBestError != nullptr) && ( pptBestError != nullptr) ){
 			MeshPt *pKeptPt = pedgeBestError->OtherPt ( pptBestError ); 
 			VERIFY ( pKeptPt != NULL );
 			m_pObject->CreateEdgeCollapse ( pptBestError, pKeptPt );
@@ -117,10 +117,10 @@ void VIMP_Processor::CalculateAllCollapses(Object* m_pObject, u32 max_sliding_wi
 VIPM_Result* VIMP_Processor::VIPM_Convert		(u32 max_sliding_window, float error_tolerance, u32 optimize_vertex_order)
 {
 	g_pObject->Initialize	();
-	if (!g_pObject->Valid())return NULL;
+	if (!g_pObject->Valid())return nullptr;
 	CalculateAllCollapses	(g_pObject,max_sliding_window,error_tolerance);
 	if (CalculateSW(g_pObject, g_pResult, optimize_vertex_order)) return g_pResult;
-	else					return NULL;
+	else					return nullptr;
 }
 
 void VIMP_Processor::VIPM_Destroy		()

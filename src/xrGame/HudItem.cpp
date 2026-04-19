@@ -97,14 +97,14 @@ void CHudItem::LoadSounds(const char* section)
 
 	if (SoundExist(section, "snd_headlamp_on"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_headlamp, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_headlamp, true);
 		m_sounds.LoadSound(section, "snd_headlamp_on", "sndHeadlampOn", false);
 		m_sounds.LoadSound(section, "snd_headlamp_off", "sndHeadlampOff", false);
 	}
 
 	if (SoundExist(section, "snd_nv_on"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_nv, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_nv, true);
 		m_sounds.LoadSound(section, "snd_nv_on", "sndNVOn", false);
 		m_sounds.LoadSound(section, "snd_nv_off", "sndNVOff", false);
 	}
@@ -116,13 +116,13 @@ void CHudItem::LoadSounds(const char* section)
 
 	if (SoundExist(section, "snd_prepare_detector"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_prepare_detector, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_prepare_detector, true);
 		m_sounds.LoadSound(section, "snd_prepare_detector", "sndPrepareDet", false);
 	}
 
 	if (SoundExist(section, "snd_finish_detector"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_finish_detector, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_finish_detector, true);
 		m_sounds.LoadSound(section, "snd_finish_detector", "sndFinishDet", false);
 	}
 
@@ -388,7 +388,7 @@ void CHudItem::SendHiddenItem()
 		NET_Packet				P;
 		object().u_EventGen		(P,GE_WPN_STATE_CHANGE,object().ID());
 		P.w_u8					(u8(eHiding));
-		object().u_EventSend	(P, net_flags(TRUE, TRUE, FALSE, TRUE));
+		object().u_EventSend	(P, net_flags(true, true, false, true));
 	}
 }
 
@@ -632,7 +632,7 @@ bool CHudItem::GetHUDmode()
 		return (A && A->HUDview());
 	}
 		
-	return FALSE;
+	return false;
 }
 
 bool CHudItem::GetHUDSoundMode()
@@ -642,7 +642,7 @@ bool CHudItem::GetHUDSoundMode()
 		return (A && A->HUDview()) || HudItemData();
 	} 
 
-	return FALSE;
+	return false;
 }
 
 void CHudItem::PlayAnimIdle()
@@ -773,7 +773,7 @@ void CHudItem::PlayAnimIdleSprint()
 
 void CHudItem::PlayAnimDeviceSwitch()
 {
-	SetPending(TRUE);
+	SetPending(true);
 	shared_str anim_name;
 	shared_str sound_name;
 
@@ -911,14 +911,14 @@ void CHudItem::SetModelBoneStatus(const char* bone, bool show)
 {
 	if (HudItemData())
 	{
-		HudItemData()->set_bone_visible(bone, show, TRUE);
+		HudItemData()->set_bone_visible(bone, show, true);
 	}
 
 	if (IKinematics* pWeaponVisual = m_object ? m_object->Visual()->dcast_PKinematics() : NULL)
 	{
 		if (auto BoneID = pWeaponVisual->LL_BoneID(bone); BoneID != BI_NONE)
 		{
-			pWeaponVisual->LL_SetBoneVisible(BoneID, show, FALSE);
+			pWeaponVisual->LL_SetBoneVisible(BoneID, show, false);
 		}
 	}
 }

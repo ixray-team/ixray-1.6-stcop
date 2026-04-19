@@ -163,13 +163,13 @@ bool CCar::net_Spawn(CSE_Abstract* DC)
 	bool							R = inherited::net_Spawn(DC);
 
 	PKinematics(Visual())->CalculateBones_Invalidate();
-	PKinematics(Visual())->CalculateBones(TRUE);
+	PKinematics(Visual())->CalculateBones(true);
 
 	CPHSkeleton::Spawn(e);
-	setEnabled(TRUE);
-	setVisible(TRUE);
+	setEnabled(true);
+	setVisible(true);
 	PKinematics(Visual())->CalculateBones_Invalidate();
-	PKinematics(Visual())->CalculateBones(TRUE);
+	PKinematics(Visual())->CalculateBones(true);
 
 	SetfHealth(co->health);
 
@@ -218,7 +218,7 @@ void CCar::SpawnInitPhysics(CSE_Abstract* D)
 	CreateSkeleton(D);//creates m_pPhysicsShell & fill in bone_map
 	IKinematics* K = PKinematics(Visual());
 	K->CalculateBones_Invalidate();//this need to call callbacks
-	K->CalculateBones(TRUE);
+	K->CalculateBones(true);
 	Init();
 
 	SetDefaultNetState(so);
@@ -280,7 +280,7 @@ void CCar::net_Save(NET_Packet& P)
 
 bool CCar::net_SaveRelevant()
 {
-	return TRUE;
+	return true;
 }
 
 void CCar::SaveNetState(NET_Packet& P)
@@ -340,7 +340,7 @@ void CCar::RestoreNetState(CSE_PHSkeleton* po)
 	replace.mul(sof, inv);
 
 	PKinematics(Visual())->CalculateBones_Invalidate();
-	PKinematics(Visual())->CalculateBones(TRUE);
+	PKinematics(Visual())->CalculateBones(true);
 	m_pPhysicsShell->DisableCollision();
 
 	Fvector center; Center(center);
@@ -399,7 +399,7 @@ void CCar::shedule_Update(u32 dt)
 		//CarExplode();
 	}
 	if (b_exploded && !m_explosion_flags.test(flExploding) && !getEnabled())//!m_bExploding
-		setEnabled(TRUE);
+		setEnabled(true);
 #ifdef DEBUG
 	DbgSheduleUpdate();
 #endif
@@ -1186,7 +1186,7 @@ void CCar::CreateSkeleton(CSE_Abstract* po)
 	if(pKA)
 	{
 		pKA->PlayCycle		("idle");
-		pK->CalculateBones	(TRUE);
+		pK->CalculateBones	(true);
 	}
 
 	m_pPhysicsShell		= P_build_Shell(this, false, &bone_map);
@@ -1195,7 +1195,7 @@ void CCar::CreateSkeleton(CSE_Abstract* po)
 	m_pPhysicsShell->applyForce({ 0.f, 0.f, 0.f }, 0.00001f);
 	ApplySpawnIniToPhysicShell(&po->spawn_ini(),m_pPhysicsShell,false);
 	ApplySpawnIniToPhysicShell(pK->LL_UserData(),m_pPhysicsShell,false);
-	pK->CalculateBones(TRUE);
+	pK->CalculateBones(true);
 }
 
 void CCar::Init()
@@ -2090,7 +2090,7 @@ void CCar::PhDataUpdate(float step)
 
 bool CCar::UsedAI_Locations()
 {
-	return (FALSE);
+	return (false);
 }
 
 u16 CCar::DriverAnimationType()
@@ -2105,7 +2105,7 @@ void CCar::OnAfterExplosion()
 
 void CCar::OnBeforeExplosion()
 {
-	setEnabled(FALSE);
+	setEnabled(false);
 }
 
 void CCar::CarExplode()
@@ -2280,7 +2280,7 @@ void CCar::ASCUpdate()
 
 void CCar::ASCUpdate(EAsyncCalls c)
 {
-	async_calls.set(u16(c), FALSE);
+	async_calls.set(u16(c), false);
 	switch (c) 
 	{
 	case ascSndTransmission:m_car_sound->TransmissionSwitch(); break;
@@ -2292,7 +2292,7 @@ void CCar::ASCUpdate(EAsyncCalls c)
 
 void CCar::AscCall(EAsyncCalls c)
 {
-	async_calls.set(u16(c), TRUE);
+	async_calls.set(u16(c), true);
 }
 
 bool CCar::CanRemoveObject()

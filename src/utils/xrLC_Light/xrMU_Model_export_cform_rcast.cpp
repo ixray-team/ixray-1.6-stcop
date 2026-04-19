@@ -31,7 +31,7 @@ void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 		// Unique
 		std::sort		(adjacent.begin(),adjacent.end());
 		adjacent.erase	(std::unique(adjacent.begin(),adjacent.end()),adjacent.end());
-		bool			bAlready	= FALSE;
+		bool			bAlready	= false;
 		for (u32 ait=0; ait<adjacent.size(); ait++)
 		{
 			_face*	Test				= adjacent[ait];
@@ -39,7 +39,7 @@ void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 			if (!Test->flags.bProcessed)continue;
 			if (F->isEqual(*Test))
 			{
-				bAlready			= TRUE;
+				bAlready			= true;
 				break;
 			}
 		}

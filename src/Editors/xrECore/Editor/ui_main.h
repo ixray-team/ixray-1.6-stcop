@@ -35,7 +35,7 @@ struct ECORE_API SPBItem
 public:
 				SPBItem				(const char* txt, const char* inf, float mx):text(txt),info(inf),max(mx),progress(0.f){}
 	void		GetInfo				(xr_string& txt, float& p, float& m);
-	void		Inc					(const char* info=0, bool bWarn=false);
+	void		Inc					(const char* info=nullptr, bool bWarn=false);
 	void		Update				(float val);
 	void 		Info				(const char* text, bool bWarn=false);
 };
@@ -143,7 +143,7 @@ public:
 					TUI				();
 	virtual 		~TUI			();
 
-	void			Quit			()	{	m_Flags.set(flNeedQuit,TRUE); }
+	void			Quit			()	{	m_Flags.set(flNeedQuit,true); }
 	bool            NeedQuit        () const { return m_Flags.test(flNeedQuit);}
 	u32 			&GetRenderWidth	()	{   return EDevice->TargetWidth; }
 	u32&GetRenderHeight	()	{   return EDevice->TargetHeight; }
@@ -161,13 +161,13 @@ public:
 	bool 			IsModified		();
 
 	bool  Idle			();
-	void 			Resize(int x, int y, bool maximize = false, bool bForced = false) { m_Size.set(x, y); m_Size_Maximize = maximize;   m_Flags.set(flResize | flRedraw, TRUE); if (bForced) RealResize(); }
-	void 			Resize(bool bForced = false) { m_Flags.set(flResize | flRedraw, TRUE); if (bForced) RealResize(); }
+	void 			Resize(int x, int y, bool maximize = false, bool bForced = false) { m_Size.set(x, y); m_Size_Maximize = maximize;   m_Flags.set(flResize | flRedraw, true); if (bForced) RealResize(); }
+	void 			Resize(bool bForced = false) { m_Flags.set(flResize | flRedraw, true); if (bForced) RealResize(); }
 
 	// add, remove, changing objects/scene
-	void 			UpdateScene			(bool bForced=false){	m_Flags.set(flUpdateScene,TRUE); 	if (bForced) RealUpdateScene();}
+	void 			UpdateScene			(bool bForced=false){	m_Flags.set(flUpdateScene,true); 	if (bForced) RealUpdateScene();}
 	// only redraw scene
-	void 			RedrawScene			(bool bForced=false){   m_Flags.set(flRedraw,TRUE); 		if (bForced) RealRedrawScene();}
+	void 			RedrawScene			(bool bForced=false){   m_Flags.set(flRedraw,true); 		if (bForced) RealRedrawScene();}
 
 	void 			SetRenderQuality	(float q)      {   EDevice->m_ScreenQuality = q;}
 // mouse action
@@ -244,7 +244,7 @@ public:
 	SPBItem*		ProgressStart		(float max_val, const char* text);
 	void 			ProgressEnd			(SPBItem*&);
 	virtual void	ProgressDraw();
-	SPBItem*		ProgressLast		(){return m_ProgressItems.empty()?0:m_ProgressItems.back();}
+	SPBItem*		ProgressLast		(){return m_ProgressItems.empty()?nullptr:m_ProgressItems.back();}
 
 public:
 	// Progress load
@@ -301,7 +301,7 @@ protected:
 	mutable xr_hash_map<shared_str, ref_texture> TextureStack;
 
 public:
-   IC  void ResetUI(bool bForced=false)  { if (!bForced)m_Flags.set(flResetUI, TRUE); if (bForced) RealResetUI(); }
+   IC  void ResetUI(bool bForced=false)  { if (!bForced)m_Flags.set(flResetUI, true); if (bForced) RealResetUI(); }
    virtual Ivector2 GetRenderMousePosition()const { return Ivector2().set(0, 0); }
 };
 

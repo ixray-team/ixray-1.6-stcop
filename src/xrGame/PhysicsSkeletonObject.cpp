@@ -25,13 +25,13 @@ bool CPhysicsSkeletonObject::net_Spawn(CSE_Abstract* DC)
 	xr_delete(collidable.model);
 	collidable.model = new CCF_Skeleton(this);
 	CPHSkeleton::Spawn(e);
-	setVisible(TRUE);
-	setEnabled(TRUE);
+	setVisible(true);
+	setEnabled(true);
 
 	if (PPhysicsShell() && !PPhysicsShell()->isBreakable())
 		SheduleUnregister();
 
-	return TRUE;
+	return true;
 }
 
 void	CPhysicsSkeletonObject::SpawnInitPhysics	(CSE_Abstract	*D)
@@ -41,7 +41,7 @@ void	CPhysicsSkeletonObject::SpawnInitPhysics	(CSE_Abstract	*D)
 	if(K)	
 	{	
 		K->CalculateBones_Invalidate();
-		K->CalculateBones	(TRUE);
+		K->CalculateBones	(true);
 	}
 }
 
@@ -86,13 +86,13 @@ void CPhysicsSkeletonObject::net_Save(NET_Packet &P)
 
 bool CPhysicsSkeletonObject::net_SaveRelevant()
 {
-	return TRUE;//!m_flags.test(CSE_ALifeObjectPhysic::flSpawnCopy);
+	return true;//!m_flags.test(CSE_ALifeObjectPhysic::flSpawnCopy);
 }
 
 
 bool CPhysicsSkeletonObject::UsedAI_Locations()
 {
-	return					(FALSE);
+	return					(false);
 }
 
 void CPhysicsSkeletonObject::UpdateCL()

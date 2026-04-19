@@ -24,19 +24,19 @@ CUIStaticItem::CUIStaticItem()
 
 void CUIStaticItem::ResetHeadingPivot()
 {
-	uFlags.set(flValidHeadingPivot, FALSE); 
-	uFlags.set(flFixedLTWhileHeading,FALSE);
+	uFlags.set(flValidHeadingPivot, false); 
+	uFlags.set(flFixedLTWhileHeading,false);
 }
 
 void CUIStaticItem::SetHeadingPivot(const Fvector2& p, const Fvector2& offset, bool fixedLT)		
 {
 	vHeadingPivot=p; 
 	vHeadingOffset=offset; 
-	uFlags.set(flValidHeadingPivot, TRUE); 
+	uFlags.set(flValidHeadingPivot, true); 
 	if(fixedLT)
-		uFlags.set(flFixedLTWhileHeading,TRUE);
+		uFlags.set(flFixedLTWhileHeading,true);
 	else
-		uFlags.set(flFixedLTWhileHeading,FALSE);
+		uFlags.set(flFixedLTWhileHeading,false);
 }
 
 void CUIStaticItem::RenderInternal(const Fvector2& in_pos)
@@ -207,8 +207,8 @@ void CUIStaticItem::CreateShader(const char* tex, const char* sh)
 #ifdef DEBUG
 	dbg_tex_name = tex;
 #endif
-	uFlags.set(flValidSize, FALSE);
-	uFlags.set(flValidTextureRect, FALSE);
+	uFlags.set(flValidSize, false);
+	uFlags.set(flValidTextureRect, false);
 }
 
 
@@ -219,7 +219,7 @@ void CUIStaticItem::SetShader(const ui_shader& sh)
 
 void CUIStaticItem::Init(const char* tex, const char* sh, float left, float top)
 {
-	uFlags.set		(flValidSize, FALSE);
+	uFlags.set		(flValidSize, false);
 	CreateShader	(tex,sh);
 	SetPos			(left,top);
 }

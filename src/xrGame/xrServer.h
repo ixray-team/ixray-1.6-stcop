@@ -183,16 +183,16 @@ public:
 	void					Perform_reject			(CSE_Abstract* what, CSE_Abstract* from, int delta);
 	void					Perform_destroy			(CSE_Abstract* tpSE_Abstract, u32 mode);
 
-	CSE_Abstract*			Process_spawn			(NET_Packet& P, ClientID sender, bool bSpawnWithClientsMainEntityAsParent=FALSE, CSE_Abstract* tpExistedEntity=0);
+	CSE_Abstract*			Process_spawn			(NET_Packet& P, ClientID sender, bool bSpawnWithClientsMainEntityAsParent=false, CSE_Abstract* tpExistedEntity=0);
 	void					Process_update			(NET_Packet& P, ClientID sender);
 	void					Process_save			(NET_Packet& P, ClientID sender);
 	void					Process_event			(NET_Packet& P, ClientID sender);
-	void					Process_event_ownership	(NET_Packet& P, ClientID sender, u32 time, u16 ID, bool bForced = FALSE);
+	void					Process_event_ownership	(NET_Packet& P, ClientID sender, u32 time, u16 ID, bool bForced = false);
 	bool					Process_event_reject	(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message = true);
 	void					Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, u16 ID, NET_Packet* pEPack);
 	void					Process_event_activate	(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message = true);
 	
-	xrClientData*			SelectBestClientToMigrateTo		(CSE_Abstract* E, bool bForceAnother=FALSE);
+	xrClientData*			SelectBestClientToMigrateTo		(CSE_Abstract* E, bool bForceAnother=false);
 	void					SendConnectResult		(IClient* CL, u8 res, u8 res1, char* ResultStr);
 	void			SendConfigFinished		(ClientID const & clientId);
 	void					SendProfileCreationError(IClient* CL, char const * reason);

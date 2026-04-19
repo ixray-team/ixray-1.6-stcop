@@ -69,8 +69,8 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		string256 mask;
 		xr_strconcat(mask, C.L_textures[0].c_str(), "_mask");
 
-	//	C.r_Pass("impl_dt", "impl_dt", TRUE);
-		uber_deffer(C, true, "deffer_base", "deffer_impl", false, oT2_Name[0] ? oT2_Name : 0, true);
+	//	C.r_Pass("impl_dt", "impl_dt", true);
+		uber_deffer(C, true, "deffer_base", "deffer_impl", false, oT2_Name[0] ? oT2_Name : nullptr, true);
 		C.r_Sampler("s_mask", mask);
 
 		C.r_Sampler_waf("s_dt_r", oR_Name, false);
@@ -87,9 +87,9 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		C.r_End();
 		//C.PassBegin		();
 		//{
-		//	C.PassSET_ZB		(TRUE,TRUE);
+		//	C.PassSET_ZB		(true,true);
 		//	C.PassSET_Blend_SET	();
-		//	C.PassSET_LightFog	(TRUE,TRUE);
+		//	C.PassSET_LightFog	(true,true);
 		//	
 		//	// Stage1 - Base texture
 		//	C.StageBegin		();
@@ -257,7 +257,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 			C.r_dx10Texture("s_dn_aX", xr_strconcat(mask, oA_Name, "_bump#"));
 		}
 
-		C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+		C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		C.r_StencilRef(0x01);
 
 		C.r_End ();

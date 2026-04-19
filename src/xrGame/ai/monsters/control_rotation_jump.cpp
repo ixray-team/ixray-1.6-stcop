@@ -77,7 +77,7 @@ void CControlRotationJump::on_event(ControlCom::EEventType type, ControlCom::IEv
 {
 	switch (type) {
 	case ControlCom::eventAnimationEnd:
-		if ((m_stage == eStop) && (m_data.flags.is(SControlRotationJumpData::eRotateOnce) == FALSE)) 
+		if ((m_stage == eStop) && (m_data.flags.is(SControlRotationJumpData::eRotateOnce) == false)) 
 			build_line_second();
 		else  
 			m_man->notify						(ControlCom::eventRotationJumpEnd, 0);

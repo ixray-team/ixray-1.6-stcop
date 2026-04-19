@@ -60,7 +60,7 @@ void CEditableMesh::GenerateRenderBuffers()
 
 	m_RenderBuffers = new RBMap();
 
-	GenerateVNormals(0);
+	GenerateVNormals(nullptr);
 	VERIFY(m_VertexNormals || m_Normals);
 
 	for (auto sp_it = m_SurfFaces.begin(); sp_it != m_SurfFaces.end(); ++sp_it)
@@ -89,7 +89,7 @@ void CEditableMesh::GenerateRenderBuffers()
 		IRHIBuffer* pVB = nullptr;
 		R_ASSERT(RHIUtils::CreateVertexBuffer(&pVB, nullptr, buffer_size));
 
-		rb.pGeom.create(VEditorVertexDecl, pVB, 0);
+		rb.pGeom.create(VEditorVertexDecl, pVB, nullptr);
 
 		RHIMappedSubresource mapped{};
 		if (pVB->Map(ERHI_BUFFER_MAP::WRITE, 0, &mapped))
@@ -148,7 +148,7 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 			{
 				if (m_VertexNormals == nullptr)
 				{
-					GenerateVNormals(0, true);
+					GenerateVNormals(nullptr, true);
 				}
 
 				vtx->N = m_VertexNormals ? m_VertexNormals[norm_id] : m_Normals[norm_id];
@@ -224,7 +224,7 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 //----------------------------------------------------
 void CEditableMesh::Render(const Fmatrix& parent, CSurface* S)
 {
-	if (0==m_RenderBuffers) GenerateRenderBuffers();
+	if (nullptr==m_RenderBuffers) GenerateRenderBuffers();
 	// visibility test
 	if (!m_Flags.is(flVisible)) return;
 	// frustum test
@@ -282,7 +282,7 @@ void CEditableMesh::RenderList(const Fmatrix& parent, u32 color, bool bEdge, Int
 
 void CEditableMesh::RenderSelection(const Fmatrix& parent, CSurface* s, u32 color)
 {
-	if (0==m_RenderBuffers) GenerateRenderBuffers();
+	if (nullptr==m_RenderBuffers) GenerateRenderBuffers();
 //	if (!m_Visible) return;
 	Fbox bb; bb.set(m_Box);
 	bb.xform(parent);
@@ -314,7 +314,7 @@ void CEditableMesh::RenderSelection(const Fmatrix& parent, CSurface* s, u32 colo
 
 void CEditableMesh::RenderEdge(const Fmatrix& parent, CSurface* s, u32 color)
 {
-	if (0==m_RenderBuffers) GenerateRenderBuffers();
+	if (nullptr==m_RenderBuffers) GenerateRenderBuffers();
 //	if (!m_Visible) return;
 	RCache.set_xform_world(parent);
 	EDevice->SetShader(EDevice->m_WireShader);

@@ -54,7 +54,7 @@ void CHUDCrosshair::SetFirstBulletDispertion(float fbdisp)
 	fb_radius		= std::abs(r.x)*scr_size.x/2.0f;
 }
 
-bool	g_bDrawFirstBulletCrosshair = FALSE;
+bool	g_bDrawFirstBulletCrosshair = false;
 
 void CHUDCrosshair::OnRenderFirstBulletDispertion()
 {

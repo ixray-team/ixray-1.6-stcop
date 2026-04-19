@@ -224,7 +224,7 @@ bool EScene::LoadLevelPartLTX(ESceneToolBase* M, const char* mn)
 		if(!b_is_inifile)
 			return LoadLevelPartStream(M, map_name);
 
-		M->m_EditFlags.set(ESceneToolBase::flReadonly,FALSE);
+		M->m_EditFlags.set(ESceneToolBase::flReadonly,false);
 
 		CInifile			ini(map_name);
 
@@ -243,7 +243,7 @@ bool EScene::LoadLevelPartLTX(ESceneToolBase* M, const char* mn)
 		sprintf(map_name, "%s%d", mn, fnidx);
 	}
 
-	return 					TRUE;
+	return 					true;
 }
 
 bool EScene::LoadLevelPart(ESceneToolBase* M, const char* map_name)
@@ -259,7 +259,7 @@ bool EScene::LoadLevelPartStream(ESceneToolBase* M, const char* map_name)
 	if (FS.TryLoad(map_name))
 	{
 		// check locking
-		M->m_EditFlags.set(ESceneToolBase::flReadonly, FALSE);
+		M->m_EditFlags.set(ESceneToolBase::flReadonly, false);
 
 		IReader* R = FS.r_open(map_name);
 		VERIFY(R);
@@ -283,37 +283,37 @@ bool EScene::LoadLevelPartStream(ESceneToolBase* M, const char* map_name)
 		{
 			ELog.DlgMsg(mtError, "Skipping corrupted version of level part: '%s\\%s.part'", EFS.ExtractFileName(map_name).c_str(), M->ClassName());
 			FS.r_close(R);
-			return 			FALSE;
+			return 			false;
 		}
 		//success
 		FS.r_close(R);
-		return 				TRUE;
+		return 				true;
 	}
-	return 					TRUE;
+	return 					true;
 }
 
 bool EScene::LoadLevelPart(const char* map_name, ObjClassID cls)
 {
 	xr_string pn	= LevelPartName(map_name,cls);
 	if (LoadLevelPart(GetTool(cls),pn.c_str()))
-		return 		TRUE;
+		return 		true;
 	else
-		return 			FALSE;
+		return 			false;
 }
 
 bool EScene::UnloadLevelPart(ESceneToolBase* M)
 {
 	M->Clear		();
-	return 			TRUE;
+	return 			true;
 }
 
 bool EScene::UnloadLevelPart(const char* map_name, ObjClassID cls)
 {
 	xr_string pn	= LevelPartName(map_name,cls);
 	if (UnloadLevelPart(GetTool(cls)))
-		return 		TRUE;
+		return 		true;
 	else
-		return			FALSE;
+		return			false;
 }
 
 xr_string EScene::LevelPartPath(const char* full_name)
@@ -368,7 +368,7 @@ void EScene::SaveLTX(const char* map_name, bool bForUndo, bool bForceSaveAll)
 	}
 
 	
-	CInifile ini(full_name.c_str(),FALSE,FALSE,TRUE);
+	CInifile ini(full_name.c_str(),false,false,true);
 
 	if (bSaveMain)
 	{
@@ -456,7 +456,7 @@ void EScene::SaveLTX(const char* map_name, bool bForUndo, bool bForceSaveAll)
 		
 	if (!bForUndo)
 	{
-		m_RTFlags.set	(flRT_Unsaved,FALSE);
+		m_RTFlags.set	(flRT_Unsaved,false);
 		Msg				("Saving time: %3.2f sec",T.GetElapsed_sec());
 	}
 }
@@ -467,7 +467,7 @@ void EScene::SaveToolLTX(ObjClassID clsid, const char* fn)
 	int fc = tool->SaveFileCount();
 	if(fc==1)
 	{
-	  CInifile ini_part		(fn, FALSE, FALSE, FALSE);
+	  CInifile ini_part		(fn, false, false, false);
 	  tool->SaveLTX			(ini_part, 0);
 	  m_GUID.SaveLTX			(ini_part,"guid","guid");
 	  ini_part.save_as		();
@@ -482,7 +482,7 @@ void EScene::SaveToolLTX(ObjClassID clsid, const char* fn)
 			else
 				strcpy				(filename, fn);
 
-			CInifile ini_part		(filename, FALSE, FALSE, FALSE);
+			CInifile ini_part		(filename, false, false, false);
 			tool->SaveLTX			(ini_part, i);
 			m_GUID.SaveLTX			(ini_part,"guid","guid");
 			ini_part.save_as		();
@@ -887,7 +887,7 @@ bool EScene::LoadLTX(const char* map_name, bool bUndo)
 		SynchronizeObjects();
 
 		if (!bUndo)
-			m_RTFlags.set(flRT_Unsaved|flRT_Modified,FALSE);
+			m_RTFlags.set(flRT_Unsaved|flRT_Modified,false);
 		
 		return true;
 	}else
@@ -1027,7 +1027,7 @@ bool EScene::Load(const char* map_name, bool bUndo)
 		SynchronizeObjects();
 
 		if (!bUndo)
-			m_RTFlags.set(flRT_Unsaved|flRT_Modified,FALSE);
+			m_RTFlags.set(flRT_Unsaved|flRT_Modified,false);
 		
 		return true;
 	}else
@@ -1333,7 +1333,7 @@ void EScene::LoadCompilerError(const char* fn)
 void EScene::SaveCompilerError(const char* fn)
 {
 /*
-	CInifile		ini(fn,FALSE,FALSE,TRUE);
+	CInifile		ini(fn,false,false,true);
 	string256		buff;
 	const char*			sect;
 	u32				sz, i;

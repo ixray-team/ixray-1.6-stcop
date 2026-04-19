@@ -21,16 +21,16 @@ void CRenderTarget::phase_ssao	()
 	// Targets
 	u_setrt( rt_ssao_temp,nullptr,nullptr,nullptr );		// No need for ZBuffer at all
 	GRHI->ClearTarget(RCache.get_RT());
-	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,		FALSE				));
+	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,		false				));
 
-	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);	// stencil should be >= 1
+	RCache.set_Stencil					(true,D3DCMP_LESSEQUAL,0x01,0xff,0x00);	// stencil should be >= 1
 	if (RImplementation.o.nvstencil)	
 	{
-		u_stencil_optimize				(FALSE);
+		u_stencil_optimize				(false);
 		RCache.set_ColorWriteEnable		();
 	}
 
-	RCache.set_Stencil(FALSE);//TODO - disable later
+	RCache.set_Stencil(false);//TODO - disable later
 
 	{
 		Fmatrix	m_v2w;				m_v2w.invert(Device.mView);
@@ -73,8 +73,8 @@ void CRenderTarget::phase_ssao	()
 	}
 
 	// re-enable z-buffer
-	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,	TRUE				));
-	RCache.set_Stencil(FALSE);
+	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,	true				));
+	RCache.set_Stencil(false);
 }
 
 void CRenderTarget::phase_downsamp	()
@@ -86,9 +86,9 @@ void CRenderTarget::phase_downsamp	()
 	u_setrt( rt_half_depth,nullptr,nullptr,nullptr );		// No need for ZBuffer at all
 	GRHI->ClearTarget(RCache.get_RT());
 
-	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,		FALSE				));
+	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,		false				));
 
-	RCache.set_Stencil(FALSE);//TODO - disable later
+	RCache.set_Stencil(false);//TODO - disable later
 
 	{
 		Fmatrix	m_v2w;				m_v2w.invert(Device.mView);
@@ -116,6 +116,6 @@ void CRenderTarget::phase_downsamp	()
 	}
 
 	// re-enable z-buffer
-	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,	TRUE				));
-	RCache.set_Stencil(FALSE);
+	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,	true				));
+	RCache.set_Stencil(false);
 }

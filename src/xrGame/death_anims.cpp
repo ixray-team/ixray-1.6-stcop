@@ -7,7 +7,7 @@
 #include "entity_alive.h"
 
 #ifdef	DEBUG
-	bool death_anim_debug	 = FALSE;
+	bool death_anim_debug	 = false;
 #endif
 
 rnd_motion::rnd_motion	( )

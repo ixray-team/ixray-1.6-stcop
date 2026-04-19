@@ -15,7 +15,7 @@ bool CPseudogigantStepEffector::ProcessCam(SCamEffectorInfo& info)
 {
 	fLifeTime -= Device.fTimeDelta; 
 	if(fLifeTime<0) 
-		return FALSE;
+		return false;
 
 	// процент оставшегося времени
 	float time_left_perc = fLifeTime / total;
@@ -47,7 +47,7 @@ bool CPseudogigantStepEffector::ProcessCam(SCamEffectorInfo& info)
 	info.d.set	(mR.k);
 	info.n.set	(mR.j);
 
-	return TRUE;
+	return true;
 }
 
 

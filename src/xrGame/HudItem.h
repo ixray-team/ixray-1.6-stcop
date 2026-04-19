@@ -103,7 +103,7 @@ protected:
 public:
 	virtual void				Load				(const char* section);
 	virtual void				LoadSounds			(const char* section);
-	virtual	bool				net_Spawn			(CSE_Abstract* DC)				{return TRUE;};
+	virtual	bool				net_Spawn			(CSE_Abstract* DC)				{return true;};
 	virtual void				net_Destroy			()								{};
 	virtual void				OnEvent				(NET_Packet& P, u16 type);
 

@@ -19,7 +19,7 @@ void CRenderTarget::phase_accumulator()
 		GRHI->ClearTarget(rt_Accumulator->pRT);
 
 		// Stencil	- draw only where stencil >= 0x1
-		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 		RCache.set_ColorWriteEnable();
 	}
@@ -43,7 +43,7 @@ void CRenderTarget::phase_vol_accumulator()
 		u_setrt(rt_Generic_2, nullptr, nullptr, RDepth);
 	}
 
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_ColorWriteEnable();
 }

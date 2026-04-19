@@ -30,10 +30,10 @@ FS_Path::FS_Path	(const char* _Root, const char* _Add, const char* _DefExt, cons
     if (_Add) 		xr_strcat(temp,_Add);
 	if (temp[0] && temp[xr_strlen(temp)-1]!='\\') xr_strcat(temp,"\\");
 	m_Path			= xr_strlwr(xr_strdup(temp));
-	m_DefExt		= _DefExt?xr_strlwr(xr_strdup(_DefExt)):0;
-	m_FilterCaption	= _FilterCaption?xr_strlwr(xr_strdup(_FilterCaption)):0;
-	m_Add			= _Add?xr_strlwr(xr_strdup(_Add)):0;
-	m_Root			= _Root?xr_strlwr(xr_strdup(_Root)):0;
+	m_DefExt		= _DefExt?xr_strlwr(xr_strdup(_DefExt)):nullptr;
+	m_FilterCaption	= _FilterCaption?xr_strlwr(xr_strdup(_FilterCaption)):nullptr;
+	m_Add			= _Add?xr_strlwr(xr_strdup(_Add)):nullptr;
+	m_Root			= _Root?xr_strlwr(xr_strdup(_Root)):nullptr;
     m_Flags.assign	(flags);
 }
 
@@ -98,14 +98,14 @@ const char* FS_Path::_update(xr_stack_string_path& dest, const char* src) const
 
 void FS_Path::rescan_path_cb	()
 {
-	m_Flags.set(flNeedRescan,TRUE);
-    FS.m_Flags.set(CLocatorAPI::flNeedRescan,TRUE);
+	m_Flags.set(flNeedRescan,true);
+    FS.m_Flags.set(CLocatorAPI::flNeedRescan,true);
 }
 
 bool XRCORE_API PatternMatch(const char* s, const char* mask)
 {
-	const char* cp=0;
-	const char* mp=0;
+	const char* cp=nullptr;
+	const char* mp=nullptr;
 	for (; *s&&*mask!='*'; mask++,s++) if (*mask!=*s&&*mask!='?') return false;
 	for (;;) {
 		if (!*s) { while (*mask=='*') mask++; return !*mask; }

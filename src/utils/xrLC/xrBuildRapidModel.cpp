@@ -72,7 +72,7 @@ void CBuild::BuildRapid		(bool bSaveForOtherCompilers)
 		adjacent_vec.erase	(std::unique(adjacent_vec.begin(),adjacent_vec.end()),adjacent_vec.end());
 
 		// Unique
-		bool			bAlready	= FALSE;
+		bool			bAlready	= false;
 		for (u32 ait=0; ait<adjacent_vec.size(); ++ait)
 		{
 			Face*	Test					= adjacent_vec[ait];
@@ -80,7 +80,7 @@ void CBuild::BuildRapid		(bool bSaveForOtherCompilers)
 			if (!Test->flags.bProcessed)	continue;
 			if (FaceEqual(*F,*Test))
 			{
-				bAlready					= TRUE;
+				bAlready					= true;
 				break;
 			}
 		}

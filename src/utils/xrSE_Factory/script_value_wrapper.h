@@ -33,7 +33,7 @@ public:
 	IC				CScriptValueWrapper		(luabind::object object, const char* name);
 };
 
-template <>
+/*template <>
 class CScriptValueWrapperImpl<bool> : public CScriptValue {
 private:
 	typedef CScriptValue inherited;
@@ -56,7 +56,7 @@ public:
 	{
 		return		(&m_value);
 	}
-};
+};*/
 
 template <>
 class CScriptValueWrapperImpl<shared_str> : public CScriptValue {

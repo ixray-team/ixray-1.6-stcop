@@ -127,7 +127,7 @@ void CDestroyablePhysicsObject::Destroy()
 
 	if (g_pGamePersistent->GameType() & eGameIDFreeMP)
 	{
-		setVisible(FALSE);
+		setVisible(false);
 	}
 
 	CObject* cast_initiator = const_cast<CObject*>(FatalHit().initiator());

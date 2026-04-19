@@ -509,7 +509,7 @@ void CAI_Stalker::update_conflicted(CInventoryItem* item, const CWeapon* new_wea
 	}
 
 	remove_personal_only_ammo(item);
-	item->SetDropManual(TRUE);
+	item->SetDropManual(true);
 }
 
 void CAI_Stalker::on_after_take(const CGameObject* object)

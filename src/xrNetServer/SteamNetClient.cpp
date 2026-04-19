@@ -139,7 +139,7 @@ void SteamNetClient::DestroyConnection()
 
 	xrCriticalSectionGuard lock(&csConnection);
 
-	net_Disconnected = TRUE;
+	net_Disconnected = true;
 
 	if (m_pInterface == nullptr)
 	{
@@ -253,7 +253,7 @@ void SteamNetClient::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusC
 		}
 
 		net_Connected = EnmConnectionFails;
-		net_Disconnected = TRUE;
+		net_Disconnected = true;
 
 		switch (pInfo->m_info.m_eEndReason)
 		{
@@ -317,7 +317,7 @@ void SteamNetClient::SendClientData()
 	xr_strcpy(client_data.name, m_user_name.c_str());
 	xr_strcpy(client_data.pass, m_user_pass.c_str());
 
-	SendTo_LL(&client_data, sizeof(MSYS_CLIENT_DATA), net_flags(TRUE, TRUE, FALSE, FALSE));
+	SendTo_LL(&client_data, sizeof(MSYS_CLIENT_DATA), net_flags(true, true, false, false));
 }
 
 // -----------------------------------------------------------------------------

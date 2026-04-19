@@ -594,11 +594,11 @@ bool CActorCondition::IsCantWalkWeight()
 
 		if( object().inventory().TotalWeight() > max_w )
 		{
-			m_condition_flags.set			(eCantWalkWeight, TRUE);
+			m_condition_flags.set			(eCantWalkWeight, true);
 			return true;
 		}
 	}
-	m_condition_flags.set					(eCantWalkWeight, FALSE);
+	m_condition_flags.set					(eCantWalkWeight, false);
 	return false;
 }
 
@@ -930,43 +930,43 @@ void CActorCondition::UpdateTutorialThresholds()
 
 	bool b = true;
 	if(b && !m_condition_flags.test(eCriticalPowerReached) && GetPower()<_cPowerThr){
-		m_condition_flags.set			(eCriticalPowerReached, TRUE);
+		m_condition_flags.set			(eCriticalPowerReached, true);
 		b=false;
 		xr_strcpy(cb_name,"_G.on_actor_critical_power");
 	}
 
 	if(b && !m_condition_flags.test(eCriticalMaxPowerReached) && GetMaxPower()<_cPowerMaxThr){
-		m_condition_flags.set			(eCriticalMaxPowerReached, TRUE);
+		m_condition_flags.set			(eCriticalMaxPowerReached, true);
 		b=false;
 		xr_strcpy(cb_name,"_G.on_actor_critical_max_power");
 	}
 
 	if(b && !m_condition_flags.test(eCriticalBleedingSpeed) && BleedingSpeed()>_cBleeding){
-		m_condition_flags.set			(eCriticalBleedingSpeed, TRUE);
+		m_condition_flags.set			(eCriticalBleedingSpeed, true);
 		b=false;
 		xr_strcpy(cb_name,"_G.on_actor_bleeding");
 	}
 
 	if(b && !m_condition_flags.test(eCriticalSatietyReached) && GetSatiety()<_cSatiety){
-		m_condition_flags.set			(eCriticalSatietyReached, TRUE);
+		m_condition_flags.set			(eCriticalSatietyReached, true);
 		b=false;
 		xr_strcpy(cb_name,"_G.on_actor_satiety");
 	}
 
 	if(b && !m_condition_flags.test(eCriticalRadiationReached) && GetRadiation()>_cRadiation){
-		m_condition_flags.set			(eCriticalRadiationReached, TRUE);
+		m_condition_flags.set			(eCriticalRadiationReached, true);
 		b=false;
 		xr_strcpy(cb_name,"_G.on_actor_radiation");
 	}
 
 	if(b && !m_condition_flags.test(ePhyHealthMinReached) && GetPsyHealth()<_cPsyHealthThr){
-		m_condition_flags.set			(ePhyHealthMinReached, TRUE);
+		m_condition_flags.set			(ePhyHealthMinReached, true);
 		b=false;
 		xr_strcpy(cb_name,"_G.on_actor_psy");
 	}
 
 	if(b && m_condition_flags.test(eCantWalkWeight) && !m_condition_flags.test(eCantWalkWeightReached)){
-		m_condition_flags.set			(eCantWalkWeightReached, TRUE);
+		m_condition_flags.set			(eCantWalkWeightReached, true);
 		b=false;
 		xr_strcpy(cb_name,"_G.on_actor_cant_walk_weight");
 	}
@@ -976,7 +976,7 @@ void CActorCondition::UpdateTutorialThresholds()
 		CWeapon* pWeapon = item ? item->cast_weapon() : nullptr;
 		if (pWeapon && pWeapon->GetCondition() < _cWpnCondition)
 		{
-			m_condition_flags.set(eWeaponJammedReached, TRUE);
+			m_condition_flags.set(eWeaponJammedReached, true);
 			b = false;
 			xr_strcpy(cb_name,"_G.on_actor_weapon_jammed");
 		}

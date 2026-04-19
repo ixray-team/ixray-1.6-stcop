@@ -42,7 +42,7 @@ inline void aimers::base::fill_bones	(
 			u32 const blend_count		= m_animated.LL_PartBlendsCount(i);
 			for (u32 j=0; j<blend_count; ++j) {
 				CBlend* const blend		= m_animated.LL_PartBlend(i, j);
-				CBlend* const new_blend	= m_animated.LL_PlayCycle( i, blend->motionID, TRUE, 0, 0, channel_id );
+				CBlend* const new_blend	= m_animated.LL_PlayCycle( i, blend->motionID, true, 0, 0, channel_id );
 				VERIFY				(new_blend);
 				*new_blend				= *blend;
 				new_blend->channel		= channel_id;

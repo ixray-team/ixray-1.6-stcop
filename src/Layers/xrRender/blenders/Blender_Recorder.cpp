@@ -59,8 +59,8 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 			if (id>=int(lst.size()))	Debug.fatal(DEBUG_INFO,"Not enought textures for shader. Base texture: '%s'.",*lst[0]);
 			base	=	*lst [id];
 		}
-//.		if (!dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
-		if (!DEV->m_textures_description.GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
+//.		if (!dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= false;
+		if (!DEV->m_textures_description.GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= false;
 	} 
 	else 
 	{
@@ -81,17 +81,17 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 		//	Igor
 		////////////////////
 
-		bDetail	= FALSE;
+		bDetail	= false;
 	}
 
 	// Validate for R1 or R2
-	bDetail_Diffuse	= FALSE;
-	bDetail_Bump	= FALSE;
+	bDetail_Diffuse	= false;
+	bDetail_Bump	= false;
 
 #ifndef _EDITOR
 #if RENDER==R_R1
 	if (RImplementation.o.no_detail_textures)
-		bDetail = FALSE;
+		bDetail = false;
 #endif
 #endif
 
@@ -135,13 +135,13 @@ void	CBlender_Compile::SetParams		(int iPriority, bool bStrictB2F)
 #ifdef _EDITOR    
 		if (1!=(SH->flags.iPriority/2)){
         	Log("!If StrictB2F true then Priority must div 2.");
-            SH->flags.bStrictB2F	= FALSE;
+            SH->flags.bStrictB2F	= false;
         }
 #else
     	VERIFY(1==(SH->flags.iPriority/2));
 #endif
     }
-	//SH->Flags.bLighting		= FALSE;
+	//SH->Flags.bLighting		= false;
 }
 
 //
@@ -205,7 +205,7 @@ void	CBlender_Compile::PassSET_VS		(const char* name)
 
 void	CBlender_Compile::PassSET_ZB		(bool bZTest, bool bZWrite, bool bInvertZTest)
 {
-	if (Pass())	bZWrite = FALSE;
+	if (Pass())	bZWrite = false;
 	RS.SetRS	(D3DRS_ZFUNC,			bZTest?(bInvertZTest?D3DCMP_GREATER:D3DCMP_LESSEQUAL):D3DCMP_ALWAYS);
 	RS.SetRS	(D3DRS_ZWRITEENABLE,	BC(bZWrite));
 	/*
@@ -217,7 +217,7 @@ void	CBlender_Compile::PassSET_ablend_mode(u32 idx, bool bABlend, u32 abSRC, u32
 {
 	if (bABlend && D3DBLEND_ONE == abSRC && D3DBLEND_ZERO == abDST)
 	{
-		bABlend = FALSE;
+		bABlend = false;
 	}
 
 	RS.SetRS(idx, D3DRS_ALPHABLENDENABLE, BC(bABlend));

@@ -59,7 +59,7 @@ void CALifeSwitchManager::add_online(CSE_ALifeDynamicObject *object, bool update
 	object->s_flags.bor				(M_SPAWN_UPDATE);
 	ClientID						clientID;
 	clientID.set					(server().GetServerClient() ? server().GetServerClient()->ID.value() : 0);
-	server().Process_spawn			(tNetPacket,clientID,FALSE,l_tpAbstract);
+	server().Process_spawn			(tNetPacket,clientID,false,l_tpAbstract);
 	object->s_flags.band				(u16(-1) ^ M_SPAWN_UPDATE);
 	//R_ASSERT3						(!object->used_ai_locations() || ai().level_graph().valid_vertex_id(object->m_tNodeID),"Invalid vertex for object ",object->name_replace());
 
@@ -89,7 +89,7 @@ void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject *object, bool upd
 		);
 	}
 
-	server().Perform_destroy	(object,net_flags(TRUE,TRUE));
+	server().Perform_destroy	(object,net_flags(true,true));
 	VERIFY						(object->children.empty());
 
 	_OBJECT_ID					object_id = object->ID;

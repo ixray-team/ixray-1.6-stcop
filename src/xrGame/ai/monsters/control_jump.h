@@ -145,5 +145,5 @@ private:
 
 IC bool CControlJump::is_flag(SControlJumpData::EFlags flag) 
 {
-	return (m_data.flags.is(flag) == TRUE);
+	return (m_data.flags.is(flag) == true);
 }

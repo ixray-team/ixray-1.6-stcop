@@ -112,13 +112,13 @@ public:
 	const CMiniMapSpot*		MiniMapSpot						()					{return m_minimap_spot;}
 
 	IC bool					PointerEnabled					()					{return SpotEnabled() && !!m_flags.test(ePointerEnabled);};
-	IC void					EnablePointer					()					{m_flags.set(ePointerEnabled,TRUE);};
-	IC void					DisablePointer					()					{m_flags.set(ePointerEnabled,FALSE);};
+	IC void					EnablePointer					()					{m_flags.set(ePointerEnabled,true);};
+	IC void					DisablePointer					()					{m_flags.set(ePointerEnabled,false);};
 
 	IC bool					Collidable						() const			{return !!m_flags.test(eCollidable);}
 	IC bool					SpotEnabled						()					{return !!m_flags.test(eSpotEnabled);};
-	void					EnableSpot						()					{m_flags.set(eSpotEnabled,TRUE);};
-	void					DisableSpot						()					{m_flags.set(eSpotEnabled,FALSE);};
+	void					EnableSpot						()					{m_flags.set(eSpotEnabled,true);};
+	void					DisableSpot						()					{m_flags.set(eSpotEnabled,false);};
 	virtual void			UpdateMiniMap					(CUICustomMap* map);
 	virtual void			UpdateLevelMap					(CUICustomMap* map);
 

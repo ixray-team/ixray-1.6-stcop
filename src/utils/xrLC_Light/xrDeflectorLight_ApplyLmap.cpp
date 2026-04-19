@@ -145,7 +145,7 @@ bool NEW_ApplyBorders(lm_layer& lm, u32 ref)
 						lm.surface[y * lm.width + x]._set(clr);
 						lm.marker[y * lm.width + x] = u8(ref);
  
-						bNeedContinue = TRUE;
+						bNeedContinue = true;
 					}
 
 				}
@@ -203,7 +203,7 @@ bool	__stdcall rms_test_compress(lm_layer& lm, u32 w, u32 h, u32 rms)
 {
 	CScopeTimer T(tRmsTests);
 
-	if ((w <= 1) || (h <= 1))	return FALSE;
+	if ((w <= 1) || (h <= 1))	return false;
 
 	// scale down(lanczos3) and up (bilinear, as video board) //.
 	xr_vector<u32>	pOriginal_base;	lm.Pack(pOriginal_base);
@@ -226,7 +226,7 @@ bool	__stdcall rms_test_compress(lm_layer& lm, u32 w, u32 h, u32 rms)
 	catch (...)
 	{
 		clMsg("* ERROR: imf_Process");
-		return	FALSE;
+		return	false;
 	}
 
 	// compare them
@@ -248,15 +248,15 @@ bool	__stdcall rms_test_compress(lm_layer& lm, u32 w, u32 h, u32 rms)
 				u32 pixel_r_base = scan_rest_base[x];
 				u32 pixel_hemi = scan_lmap_hemi[x];
 				u32 pixel_r_hemi = scan_rest_hemi[x];
-				if (rms_diff(color_get_R(pixel_r_base), color_get_R(pixel_base)) > rms)			return FALSE;
-				if (rms_diff(color_get_G(pixel_r_base), color_get_G(pixel_base)) > rms)			return FALSE;
-				if (rms_diff(color_get_B(pixel_r_base), color_get_B(pixel_base)) > rms)			return FALSE;
-				if (rms_diff(color_get_A(pixel_r_base), color_get_A(pixel_base)) > rms)			return FALSE;
-				if (rms_diff(color_get_R(pixel_r_hemi), color_get_R(pixel_hemi)) > ((rms * 4) / 3))	return FALSE;
+				if (rms_diff(color_get_R(pixel_r_base), color_get_R(pixel_base)) > rms)			return false;
+				if (rms_diff(color_get_G(pixel_r_base), color_get_G(pixel_base)) > rms)			return false;
+				if (rms_diff(color_get_B(pixel_r_base), color_get_B(pixel_base)) > rms)			return false;
+				if (rms_diff(color_get_A(pixel_r_base), color_get_A(pixel_base)) > rms)			return false;
+				if (rms_diff(color_get_R(pixel_r_hemi), color_get_R(pixel_hemi)) > ((rms * 4) / 3))	return false;
 			}
 		}
 	}
-	return	TRUE;
+	return	true;
 }
 
 // Это при проверке используется
@@ -279,15 +279,15 @@ bool	__stdcall rms_test(lm_layer& lm, u32 _r, u32 _g, u32 _b, u32 _s, u32 _h, u3
  				u32 s_rms = rms_diff(_s, s);
  				u32 h_rms = rms_diff(_h, h);
 
-				if (r_rms > rms)			return FALSE;
-				if (g_rms > rms)			return FALSE;
-				if (b_rms > rms)			return FALSE;
-				if (s_rms > rms)			return FALSE;
-				if (h_rms > ((rms * 4) / 3))	return FALSE;
+				if (r_rms > rms)			return false;
+				if (g_rms > rms)			return false;
+				if (b_rms > rms)			return false;
+				if (s_rms > rms)			return false;
+				if (h_rms > ((rms * 4) / 3))	return false;
 			}
 		}
 	}
-	return TRUE;
+	return true;
 }
 
 u32	__stdcall rms_average(lm_layer& lm, base_color_c& C)
@@ -336,7 +336,7 @@ bool	compress_Zero(lm_layer& lm, u32 rms)
 		}
  
 		Msg("* ERROR: Lightmap not calculated (W: %u | H: %u) | Markers Has: %u", lm.width, lm.height, AnyMarker);
-		return	FALSE;
+		return	false;
 	}
 	else
 		_c.scale(_count);
@@ -356,9 +356,9 @@ bool	compress_Zero(lm_layer& lm, u32 rms)
 		lm.marker.assign(c_x * c_y, 255);
 		lm.height = 0;
 		lm.width = 0;
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 bool	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h)
@@ -409,7 +409,7 @@ bool	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h)
 		if (0 == h)
 			h = lm.height;
 		//		clMsg	("* RMS: [%d,%d] => [%d,%d]",lm.width,lm.height,w,h);
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }

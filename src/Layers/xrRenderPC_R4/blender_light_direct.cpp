@@ -14,9 +14,9 @@ void CBlender_accum_direct::Compile(CBlender_Compile& C)
 		return;
 	}
 
-	C.r_Pass("stub_fullscreen_triangle", "accum_sun", false, TRUE, FALSE);
+	C.r_Pass("stub_fullscreen_triangle", "accum_sun", false, true, false);
 	C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_GREATER);
-	C.r_Stencil(FALSE);
+	C.r_Stencil(false);
 	C.r_CullMode(D3DCULL_NONE);
 
 	C.r_dx10Texture("s_diffuse", r2_RT_albedo);

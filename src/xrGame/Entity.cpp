@@ -130,7 +130,7 @@ void CEntity::Load		(const char* section)
 {
 	inherited::Load		(section);
 
-	setVisible			(FALSE);
+	setVisible			(false);
 	
 	// Team params
 	id_Team				= READ_IF_EXISTS(pSettings,r_s32,section,"team",-1);
@@ -207,7 +207,7 @@ bool CEntity::net_Spawn		(CSE_Abstract* DC)
 	}
 
 	if (!inherited::net_Spawn(DC))
-		return				(FALSE);
+		return				(false);
 
 //	SetfHealth			(E->fHealth);
 	IKinematics* pKinematics = PKinematics(Visual());
@@ -229,7 +229,7 @@ bool CEntity::net_Spawn		(CSE_Abstract* DC)
 		TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
 		PPlayer->LoadParticles(pKinematics);
 	}
-	return					TRUE;
+	return					true;
 }
 
 void CEntity::net_Destroy()
@@ -298,7 +298,7 @@ void CEntity::KillEntity(u16 whoID, bool bypass_actor_check /*AVO: added for act
 		P.w_u16			(u16(whoID));
 		P.w_u32			(0);
 		if (OnServer())
-			u_EventSend	(P, net_flags(TRUE, TRUE, FALSE, TRUE));
+			u_EventSend	(P, net_flags(true, true, false, true));
 	}
 };
 

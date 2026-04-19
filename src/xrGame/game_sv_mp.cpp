@@ -37,18 +37,18 @@
 
 u32		g_dwMaxCorpses = 10;
 //-----------------------------------------------------------------
-bool		g_sv_mp_bSpectator_FreeFly		= FALSE;
-bool		g_sv_mp_bSpectator_FirstEye		= TRUE;
-bool		g_sv_mp_bSpectator_LookAt		= TRUE;
-bool		g_sv_mp_bSpectator_FreeLook		= TRUE;
-bool		g_sv_mp_bSpectator_TeamCamera	= TRUE;
+bool		g_sv_mp_bSpectator_FreeFly		= false;
+bool		g_sv_mp_bSpectator_FirstEye		= true;
+bool		g_sv_mp_bSpectator_LookAt		= true;
+bool		g_sv_mp_bSpectator_FreeLook		= true;
+bool		g_sv_mp_bSpectator_TeamCamera	= true;
 int			g_sv_mp_iDumpStatsPeriod		= 0;
 int			g_sv_mp_iDumpStats_last			= 0;
-bool		g_sv_mp_bCountParticipants		= FALSE;
+bool		g_sv_mp_bCountParticipants		= false;
 float		g_sv_mp_fVoteQuota				= VOTE_QUOTA;
 float		g_sv_mp_fVoteTime				= VOTE_LENGTH_TIME;
-bool		g_sv_mp_save_proxy_screenshots	= FALSE;
-bool		g_sv_mp_save_proxy_configs		= FALSE;
+bool		g_sv_mp_save_proxy_screenshots	= false;
+bool		g_sv_mp_save_proxy_configs		= false;
 //-----------------------------------------------------------------
 u32			g_sv_adm_menu_ban_time			= 600;
 int			g_sv_adm_menu_ping_limit		= 25;
@@ -105,7 +105,7 @@ void	game_sv_mp::Update	()
 		//---------------------------------------------
 		NET_Packet			P;
 		u_EventGen			(P,GE_DESTROY,CorpseID);
-		Level().Send(P,net_flags(TRUE,TRUE));
+		Level().Send(P,net_flags(true,true));
 		m_CorpseList.erase(m_CorpseList.begin() + i);
 		Msg("corpse [%d] send destroy [%d]",CorpseID, Device.dwFrame);
 	}
@@ -370,7 +370,7 @@ void	game_sv_mp::KillPlayer				(ClientID id_who, u16 GameID)
 	P.w_u16				(PlayerID);
 	P.w_clientID		(id_who);
 
-	u_EventSend(P, net_flags(TRUE, TRUE, FALSE, TRUE));
+	u_EventSend(P, net_flags(true, true, false, true));
 	
 	if (xrCData) SetPlayersDefItems		(xrCData->ps);
 	signal_Syncronize();
@@ -525,7 +525,7 @@ void game_sv_mp::ReconnectPlayer(ClientID const & clientID)
 	P.w_begin			(M_CHANGE_LEVEL_GAME);
 	P.w_stringZ			(Level().name().c_str());
 	P.w_stringZ			(GameTypeToString(Type(),true));
-	m_server->SendTo(clientID, P, net_flags(TRUE, TRUE));
+	m_server->SendTo(clientID, P, net_flags(true, true));
 }
 
 bool g_bConsoleCommandsCreated = false;
@@ -560,7 +560,7 @@ void game_sv_mp::Create (shared_str &options)
 	m_cdkey_ban_list.load();
 	if (strstr(Core.Params, SAVE_SCREENSHOTS_KEY))
 	{
-		g_sv_mp_save_proxy_screenshots = TRUE;
+		g_sv_mp_save_proxy_screenshots = true;
 	}
 };
 
@@ -637,7 +637,7 @@ void	game_sv_mp::RespawnPlayer			(ClientID id_who, bool NoSpectator)
 			NET_Packet			P;
 			u_EventGen			(P,GE_DESTROY,pS->ID);
 			//		pObject->u_EventSend		(P);
-			Level().Send(P,net_flags(TRUE,TRUE));
+			Level().Send(P,net_flags(true,true));
 		};
 		//------------------------------------------------------------
 		SpawnPlayer(id_who, "mp_actor");
@@ -652,7 +652,7 @@ void game_sv_mp::SpawnPlayer(ClientID id, const char* N)
 {
 	xrClientData* CL = m_server->ID_to_client(id);
 	//-------------------------------------------------
-	CL->net_PassUpdates = TRUE;
+	CL->net_PassUpdates = true;
 	//-------------------------------------------------
 	game_PlayerState* ps_who = CL->ps;
 	ps_who->setFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
@@ -1284,7 +1284,7 @@ void game_sv_mp::SendActiveVotingTo(ClientID const & receiver)
 	if (EndVoteTime <= CurTime)
 		return;
 	P.w_u32(EndVoteTime - CurTime);
-	m_server->SendTo(receiver, P, net_flags(TRUE, TRUE));
+	m_server->SendTo(receiver, P, net_flags(true, true));
 }
 
 void		game_sv_mp::UpdateVote				()
@@ -1613,7 +1613,7 @@ void		game_sv_mp::OnPlayerSpeechMessage	(NET_Packet& P, ClientID sender)
 		NP.w_u8(P.r_u8());
 		NP.w_u8(P.r_u8());
 		NP.w_u8(P.r_u8());
-		real_sender tmp_sender(m_server, &NP, net_flags(TRUE, TRUE, TRUE));
+		real_sender tmp_sender(m_server, &NP, net_flags(true, true, true));
 		m_server->ForEachClientDoSender(tmp_sender);
 	};
 };
@@ -1932,8 +1932,8 @@ void game_sv_mp::DestroyGameItem(CSE_Abstract* entity)
 	P.w_u32(Device.dwTimeGlobal - 2*NET_Latency);
 	P.w_u16(GE_DESTROY);
 	P.w_u16(entity->ID);
-	Level().Send(P, net_flags(TRUE,TRUE));
-	//m_server->Perform_destroy(entity, net_flags(TRUE,TRUE));
+	Level().Send(P, net_flags(true,true));
+	//m_server->Perform_destroy(entity, net_flags(true,true));
 }
 
 void game_sv_mp::RejectGameItem(CSE_Abstract* entity)
@@ -1962,7 +1962,7 @@ void game_sv_mp::RejectGameItem(CSE_Abstract* entity)
 	NET_Packet P;
 	u_EventGen(P, GE_OWNERSHIP_REJECT, e_parent->ID);
 	P.w_u16(entity->ID);
-	Level().Send(P, net_flags(TRUE, TRUE));
+	Level().Send(P, net_flags(true, true));
 }
 
 #include "../xrEngine/string_table.h"
@@ -1978,7 +1978,7 @@ void game_sv_mp::DumpOnlineStatistic()
 	string64					t_stamp;
 	timestamp					(t_stamp);
 
-	CInifile					ini(fn, FALSE, FALSE, TRUE);
+	CInifile					ini(fn, false, false, true);
 	shared_str					current_section = "global";
 	string256					str_buff;
 
@@ -2111,7 +2111,7 @@ void game_sv_mp::AskAllToUpdateStatistics()
 	NET_Packet P;
 	P.w_begin	(M_STATISTIC_UPDATE);
 	P.w_u32		(m_async_stats_request_time);
-	m_server->SendBroadcast(BroadcastCID,P,net_flags(TRUE,TRUE));
+	m_server->SendBroadcast(BroadcastCID,P,net_flags(true,true));
 }
 
 void game_sv_mp::DumpRoundStatisticsAsync()
@@ -2182,7 +2182,7 @@ void game_sv_mp::DumpRoundStatistics()
 	if ( !g_sv_mp_iDumpStatsPeriod ) return;
 	if ( !xr_strlen(round_statistics_dump_fn) ) return;
 
-	CInifile					ini(round_statistics_dump_fn, FALSE, FALSE, TRUE);
+	CInifile					ini(round_statistics_dump_fn, false, false, true);
 	shared_str					current_section = "global";
 	string256					str_buff;
 
@@ -2351,7 +2351,7 @@ void game_sv_mp::SetCanOpenBuyMenu(ClientID id)
 	NET_Packet bm_ready;
 	bm_ready.w_begin	( M_GAMEMESSAGE ); 
 	bm_ready.w_u32		( GAME_EVENT_PLAYER_BUYMENU_CLOSE );
-	m_server->SendTo	(id, bm_ready, net_flags(TRUE, TRUE));
+	m_server->SendTo	(id, bm_ready, net_flags(true, true));
 }
 
 void	game_sv_mp::OnPlayerChangeName		(NET_Packet& P, ClientID sender)

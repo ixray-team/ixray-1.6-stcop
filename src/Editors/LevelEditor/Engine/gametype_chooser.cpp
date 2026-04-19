@@ -44,19 +44,19 @@ bool GameTypeChooser::LoadLTX(CInifile& ini, const char* sect_name, bool bOldFor
                 m_GameType.one();
                 break;
             case rpgtGameDeathmatch:
-                m_GameType.set(eGameIDDeathmatch,TRUE);
+                m_GameType.set(eGameIDDeathmatch,true);
                 break;
             case rpgtGameTeamDeathmatch:
-                m_GameType.set(eGameIDTeamDeathmatch,TRUE);
+                m_GameType.set(eGameIDTeamDeathmatch,true);
                 break;
             case rpgtGameArtefactHunt:
-                m_GameType.set(eGameIDArtefactHunt,TRUE);
+                m_GameType.set(eGameIDArtefactHunt,true);
                 break;
             case rpgtGameCaptureTheArtefact:
-                m_GameType.set(eGameIDCaptureTheArtefact,TRUE);
+                m_GameType.set(eGameIDCaptureTheArtefact,true);
                 break;
             case rpgtFreeMp:
-                m_GameType.set(eGameIDFreeMP, TRUE);
+                m_GameType.set(eGameIDFreeMP, true);
                 break;
         }
     }else

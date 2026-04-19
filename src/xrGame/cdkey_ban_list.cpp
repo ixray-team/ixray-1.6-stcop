@@ -37,7 +37,7 @@ void cdkey_ban_list::save()
 {
 	string_path		banlist_file;
 	FS.update_path	(banlist_file, "$app_data_root$", "banned_list.ltx");
-	CInifile		bl_ini(banlist_file, FALSE, FALSE, TRUE);
+	CInifile		bl_ini(banlist_file, false, false, true);
 	string64		tmp_sect_name;
 	u32				index = 0;
 	

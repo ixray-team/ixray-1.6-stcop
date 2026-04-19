@@ -5,10 +5,10 @@
 IClient::IClient(CTimer* timer): stats(timer), server(nullptr)
 {
 	dwTime_LastUpdate = 0;
-	flags.bLocal = FALSE;
-	flags.bConnected = FALSE;
-	flags.bReconnect = FALSE;
-	flags.bVerified = TRUE;
+	flags.bLocal = false;
+	flags.bConnected = false;
+	flags.bReconnect = false;
+	flags.bVerified = true;
 }
 
 IClient::~IClient()

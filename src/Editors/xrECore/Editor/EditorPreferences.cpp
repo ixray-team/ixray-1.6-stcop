@@ -10,7 +10,7 @@
 #include "../xrEngine/Environment.h"
 #include "../xrEngine/IGame_Persistent.h"
 //---------------------------------------------------------------------------
-CCustomPreferences* EPrefs=0;
+CCustomPreferences* EPrefs=nullptr;
 //---------------------------------------------------------------------------
 // extern ENGINE_API bool bIsRaindropCollision;
 // extern ENGINE_API bool bIsSndOnRoof;
@@ -35,8 +35,8 @@ CCustomPreferences::CCustomPreferences()
 	tools_sens_rot		= 0.3f;
 	tools_sens_scale	= 0.3f;
 	// box pick
-	bp_lim_depth		= TRUE;
-	bp_cull				= TRUE;
+	bp_lim_depth		= true;
+	bp_cull				= true;
 	bp_depth_tolerance	= 0.1f;
 	// snap
 	snap_angle			= deg2rad(5.f);
@@ -133,7 +133,7 @@ void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif,
 	switch(B->btn_num)
 	{
 	case 0:
-	    if(EFS.GetOpenName("$import$", fn, false, NULL, 6, "*.json"))
+	    if(EFS.GetOpenName("$import$", fn, false, nullptr, 6, "*.json"))
 		{
 			json File;
 			if (std::filesystem::exists(xr_path(fn)))
@@ -145,7 +145,7 @@ void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif,
 	    }
 	break;
 	case 1:
-	    if(EFS.GetSaveName("$import$", fn, NULL, 6, "*.json"))
+	    if(EFS.GetSaveName("$import$", fn, nullptr, 6, "*.json"))
 		{
 			json File;
 		    SaveShortcuts(File);

@@ -545,10 +545,10 @@ const char* CScriptEntity::GetPatrolPathName()
 bool CScriptEntity::net_Spawn		(CSE_Abstract* DC)
 {
 	m_initialized					= true;
-	object().setVisible				(TRUE);
-	object().setEnabled				(TRUE);
+	object().setVisible				(true);
+	object().setEnabled				(true);
 
-	return							(TRUE);
+	return							(true);
 }
 
 void CScriptEntity::shedule_Update	(u32 DT)
@@ -597,11 +597,11 @@ bool CScriptEntity::bfScriptAnimation()
 			for (u16 i=0; i<MAX_PARTS; ++i) {
 				CBlend			*blend = 0;
 				if (result) {
-					skeleton_animated->LL_PlayCycle(i,animation,TRUE,0,0);
+					skeleton_animated->LL_PlayCycle(i,animation,true,0,0);
 					continue;
 				}
 
-				blend			= skeleton_animated->LL_PlayCycle(i,animation,TRUE,ScriptCallBack,this);
+				blend			= skeleton_animated->LL_PlayCycle(i,animation,true,ScriptCallBack,this);
 				if (!blend)
 					continue;
 				result			= blend;

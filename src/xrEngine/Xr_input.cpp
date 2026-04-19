@@ -345,7 +345,7 @@ bool CInput::iGetAsyncKeyState( int dik )
 		int mk = dik-MOUSE_1;
 		return iGetAsyncBtnState(mk);
 	}else
-		return FALSE; //unknown key ???
+		return false; //unknown key ???
 }
 
 bool CInput::iGetAsyncBtnState( int btn )

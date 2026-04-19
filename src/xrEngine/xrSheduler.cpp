@@ -5,7 +5,7 @@
 float			psShedulerCurrent		= 10.f	;
 float			psShedulerTarget		= 10.f	;
 const	float	psShedulerReaction		= 0.1f	;
-bool			g_bSheduleInProgress	= FALSE	;
+bool			g_bSheduleInProgress	= false	;
 
 //-------------------------------------------------------------------------------------
 void CSheduler::Initialize		()
@@ -50,12 +50,12 @@ void	CSheduler::internal_Registration()
 		if (R.OP)	{
 			// register
 			// search for paired "unregister"
-			bool	bFoundAndErased		= FALSE;
+			bool	bFoundAndErased		= false;
 			for (u32 pair=it+1; pair<Registration.size(); pair++)
 			{
 				ItemReg&	R_pair	= Registration	[pair];
 				if	((!R_pair.OP)&&(R_pair.Object == R.Object))	{
-					bFoundAndErased		= TRUE;
+					bFoundAndErased		= true;
 					Registration.erase	(Registration.begin()+pair	);
 					break				;
 				}
@@ -86,7 +86,7 @@ void CSheduler::internal_Register	(ISheduled* O, bool RT)
 		TNext.dwTimeOfLastExecute	= Device.dwTimeGlobal;
 		TNext.Object				= O;
 		TNext.scheduled_name		= O->shedule_Name();
-		O->shedule.b_RT				= TRUE;
+		O->shedule.b_RT				= true;
 
 		ItemsRT.push_back			(TNext);
 	} else {
@@ -96,7 +96,7 @@ void CSheduler::internal_Register	(ISheduled* O, bool RT)
 		TNext.dwTimeOfLastExecute	= Device.dwTimeGlobal;
 		TNext.Object				= O;
 		TNext.scheduled_name		= O->shedule_Name();
-		O->shedule.b_RT				= FALSE;
+		O->shedule.b_RT				= false;
 
 		// Insert into priority Queue
 		Push						(TNext);
@@ -214,7 +214,7 @@ void	CSheduler::Register		(ISheduled* A, bool RT				)
 	VERIFY		(!Registered(A));
 
 	ItemReg		R;
-	R.OP		= TRUE				;
+	R.OP		= true				;
 	R.RT		= RT				;
 	R.Object	= A					;
 	R.Object->shedule.b_RT	= RT	;
@@ -237,7 +237,7 @@ void CSheduler::Unregister(ISheduled* A)
 	}
 
 	ItemReg		R;
-	R.OP		= FALSE				;
+	R.OP		= false				;
 	R.RT		= A->shedule.b_RT	;
 	R.Object	= A					;
 
@@ -359,7 +359,7 @@ void CSheduler::Update()
 	cycles_start					= CPU::QPC			();
 	cycles_limit					= CPU::qpc_freq * u64 (iCeil(psShedulerCurrent)) / 1000i64 + cycles_start;
 	internal_Registration			();
-	g_bSheduleInProgress			= TRUE;
+	g_bSheduleInProgress			= true;
 
 	// Realtime priority
 	m_processing_now				= true;
@@ -393,7 +393,7 @@ void CSheduler::Update()
 	Device.Statistic->fShedulerLoad	= psShedulerCurrent;
 
 	// Finalize
-	g_bSheduleInProgress			= FALSE;
+	g_bSheduleInProgress			= false;
 	internal_Registration			();
 	Device.Statistic->Sheduler.End	();
 }

@@ -44,9 +44,9 @@ void CBlackGraviArtefact::Load(const char* section)
 
 bool CBlackGraviArtefact::net_Spawn(CSE_Abstract* DC)
 {
-	if(!inherited::net_Spawn(DC)) return FALSE;
+	if(!inherited::net_Spawn(DC)) return false;
 
-	CParticlesObject* pStaticPG = Particles::Details::Create("anomaly\\galantine",FALSE).get();
+	CParticlesObject* pStaticPG = Particles::Details::Create("anomaly\\galantine",false).get();
 	Fmatrix pos;
 	//pos.rotateY(1.57);
 	//pos.mulA(pos);
@@ -60,7 +60,7 @@ bool CBlackGraviArtefact::net_Spawn(CSE_Abstract* DC)
 
 
 
-	return TRUE;
+	return true;
 }
 struct SRP
 {
@@ -96,7 +96,7 @@ void CBlackGraviArtefact::UpdateCLChild()
 
 			GraviStrike();
 
-			CParticlesObject* pStaticPG = Particles::Details::Create(*m_sParticleName,TRUE).get();
+			CParticlesObject* pStaticPG = Particles::Details::Create(*m_sParticleName,true).get();
 			Fmatrix pos; 
 			pos.set(XFORM()); 
 			Fvector vel; 
@@ -159,9 +159,9 @@ bool CBlackGraviArtefact::feel_touch_contact(CObject* O)
 	CGameObject* pGameObject = static_cast<CGameObject*>(O);
 
 	if(pGameObject)
-		return TRUE;
+		return true;
 	else
-		return FALSE;
+		return false;
 }
 
 void CBlackGraviArtefact::GraviStrike()
@@ -194,7 +194,7 @@ void CBlackGraviArtefact::GraviStrike()
 		if(impulse > .001f) 
 		{
 //?			bool		enabled = getEnabled();
-//?			setEnabled	(FALSE);
+//?			setEnabled	(false);
 			impulse		*= CExplosive::ExplosionEffect	(rq_storage,nullptr,pGameObject, Position(),m_fRadius);
 //?			setEnabled	(enabled);
 		}

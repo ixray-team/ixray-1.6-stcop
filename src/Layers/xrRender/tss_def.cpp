@@ -24,7 +24,7 @@ IDirect3DStateBlock9* SimulatorStates::record	()
 			}break;
 		}
 	}
-	IDirect3DStateBlock9*	SB = 0;
+	IDirect3DStateBlock9*	SB = nullptr;
 	CHK_DX	(RDevice->EndStateBlock(&SB));
 	return	SB;
 #endif
@@ -84,9 +84,9 @@ void	SimulatorStates::set_SAMP	(u32 a, u32 b, u32 c)
 
 bool	SimulatorStates::equal	(SimulatorStates& S)
 {
-	if (States.size()!=S.States.size())												return FALSE;
-	if (0!=memcmp(&*States.begin(),&*S.States.begin(),States.size()*sizeof(State))) return FALSE;
-	return TRUE;
+	if (States.size()!=S.States.size())												return false;
+	if (0!=memcmp(&*States.begin(),&*S.States.begin(),States.size()*sizeof(State))) return false;
+	return true;
 }
 
 void	SimulatorStates::clear	()
@@ -149,7 +149,7 @@ void SimulatorStates::UpdateDesc( D3D_RASTERIZER_DESC &desc ) const
 				VERIFY(0);
 				break;
 				
-			//	desc.DepthClipEnable = TRUE;
+			//	desc.DepthClipEnable = true;
 			
 			case D3DRS_SCISSORTESTENABLE:
 				desc.ScissorEnable = S.v2;
@@ -243,7 +243,7 @@ void SimulatorStates::UpdateDesc( D3D_BLEND_DESC &desc ) const
 				start_idx = S.v3;
 				end_idx = start_idx + 1;
 
-				desc.IndependentBlendEnable = TRUE;
+				desc.IndependentBlendEnable = true;
 			}
 
 			switch (S.v1)

@@ -121,7 +121,7 @@ ECORE_API EImageThumbnail* CreateThumbnail(const char* src_name, ECustomThumbnai
     case ECustomThumbnail::ETGroup:		return new EGroupThumbnail	(src_name,bLoad);
     default: NODEFAULT;
     }
-    return 0;              
+    return nullptr;              
 }
 
 

@@ -17,9 +17,9 @@
 #endif
 
 #ifdef	DEBUG
-bool dbg_imotion_draw_skeleton = FALSE;
-bool dbg_imotion_draw_velocity = FALSE;
-bool dbg_imotion_collide_debug = FALSE;
+bool dbg_imotion_draw_skeleton = false;
+bool dbg_imotion_draw_velocity = false;
+bool dbg_imotion_collide_debug = false;
 float dbg_imotion_draw_velocity_scale = 0.01f;
 
 #endif
@@ -181,7 +181,7 @@ void imotion_position::state_start( )
 	obj->processing_activate();
 	shell->Disable( );
 	//K->LL_SetBoneRoot( 0 );
-	shell->EnabledCallbacks( FALSE );
+	shell->EnabledCallbacks( false );
 	init_bones();
 
 
@@ -194,7 +194,7 @@ void imotion_position::state_start( )
 	{
 		interactive_motion_diagnostic("stoped immediately");
 		switch_to_free	( );
-		flags.set(fl_not_played,TRUE);
+		flags.set(fl_not_played,true);
 		return;
 	}
 	move( float( Device.dwTimeDelta )/1000, *KA );
@@ -280,7 +280,7 @@ void	imotion_position::state_end( )
 
 	save_fixes( K );
 	
-	shell->EnabledCallbacks( TRUE );
+	shell->EnabledCallbacks( true );
 
 	restore_fixes( );
 
@@ -304,12 +304,12 @@ void	imotion_position::state_end( )
 	if( root!=0 )
 	{
 		K->LL_GetTransform( 0 ).set( Fidentity );
-		K->LL_SetBoneVisible( 0, FALSE, FALSE );
+		K->LL_SetBoneVisible( 0, false, false );
 		u16 bip01 = K->LL_BoneID( "bip01" );
 		if( bip01 != BI_NONE && bip01 != root )
 		{
 			K->LL_GetTransform( bip01 ).set( Fidentity );
-			K->LL_SetBoneVisible( bip01, FALSE, FALSE );
+			K->LL_SetBoneVisible( bip01, false, false );
 		}
 	}
 
@@ -568,7 +568,7 @@ float imotion_position::motion_collide( float dt, IKinematicsAnimated& KA )
 	if( time_to_end <  ( max_collide_timedelta + end_delta ) )
 	{
 		interactive_motion_diagnostic( make_string<const char*>( "motion_collide 0: stoped: time out, time delta %f", dt ) );
-		flags.set( fl_switch_dm_toragdoll, TRUE );			
+		flags.set( fl_switch_dm_toragdoll, true );			
 		return advance_time;
 	}
 	if( depth > depth_resolve )
@@ -603,7 +603,7 @@ float imotion_position::motion_collide( float dt, IKinematicsAnimated& KA )
 		if( depth > depth0  )
 		{
 			interactive_motion_diagnostic( make_string<const char*>( "motion_collide 1: stoped: colide: %s, depth %f", collide_diag().c_str(), depth ));
-			flags.set( fl_switch_dm_toragdoll, TRUE );
+			flags.set( fl_switch_dm_toragdoll, true );
 		} 
 		else
 		{
@@ -622,7 +622,7 @@ float imotion_position::motion_collide( float dt, IKinematicsAnimated& KA )
 			if( depth > depth_resolve  )
 			{
 				interactive_motion_diagnostic( make_string<const char*>( "motion_collide 2: stoped: colide: %s, depth %f", collide_diag().c_str(), depth ));
-				flags.set( fl_switch_dm_toragdoll, TRUE );
+				flags.set( fl_switch_dm_toragdoll, true );
 			}
 		}
 		restore_blends( saved_blends );// rs1
@@ -669,7 +669,7 @@ void imotion_position::	init_bones()
 		VERIFY(!bi.callback());
 		VERIFY(!bi.callback_param());
 		if(bi.callback_overwrite())
-			bi.set_callback( bctCustom, 0, (void*)1, TRUE ); 
+			bi.set_callback( bctCustom, 0, (void*)1, true ); 
 	}
 */
 }

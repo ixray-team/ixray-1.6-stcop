@@ -23,10 +23,10 @@ void CRenderTarget::phase_luminance()
 	float	eps		= 0;
 
 	// Targets
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_ColorWriteEnable();
-	RCache.set_Z(FALSE);
+	RCache.set_Z(false);
 
 	// 000: Perform LUM-SAT, pass 0, 256x256 => 64x64
 	u_setrt									(rt_LUM_64,nullptr,nullptr,nullptr);
@@ -130,5 +130,5 @@ void CRenderTarget::phase_luminance()
 	}
 
 	// Cleanup states
-	RCache.set_Z(TRUE);
+	RCache.set_Z(true);
 }

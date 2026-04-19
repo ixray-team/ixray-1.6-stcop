@@ -18,7 +18,7 @@ public:
 	IC bool operator() (CObject* O) { return cls==O->CLS_ID; }
 };
 #ifdef	DEBUG
-	bool debug_destroy = TRUE;
+	bool debug_destroy = true;
 #endif
 
 CObjectList::CObjectList() :
@@ -599,7 +599,7 @@ void CObjectList::register_object_to_destroy(CObject *object_to_destroy)
 		if(!O->getDestroy() && O->H_Parent()==object_to_destroy)
 		{
 			Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]",object_to_destroy->ID(), O->ID(), Device.dwFrame);
-			O->setDestroy(TRUE);
+			O->setDestroy(true);
 		}
 	}
 
@@ -611,7 +611,7 @@ void CObjectList::register_object_to_destroy(CObject *object_to_destroy)
 		if(!O->getDestroy() && O->H_Parent()==object_to_destroy)
 		{
 			Msg("setDestroy called, but not-destroyed child found parent[%d] child[%d]",object_to_destroy->ID(), O->ID(), Device.dwFrame);
-			O->setDestroy(TRUE);
+			O->setDestroy(true);
 		}
 	}
 }

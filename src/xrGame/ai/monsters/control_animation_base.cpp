@@ -338,7 +338,7 @@ SAAParam &CControlAnimationBase::AA_GetParams(const char* anim_name)
 		if (it->motion == motion) return (*it);
 	}
 	
-	VERIFY3(FALSE, "Error! No animation in AA_VECTOR! Animation = ", anim_name);
+	VERIFY3(false, "Error! No animation in AA_VECTOR! Animation = ", anim_name);
 	return (*(m_attack_anims.begin()));
 }
 
@@ -349,7 +349,7 @@ SAAParam &CControlAnimationBase::AA_GetParams(MotionID motion, float time_perc)
 		if ((it->motion == motion) && (it->time == time_perc)) return (*it);
 	}
 
-	VERIFY2(FALSE, "Error! No animation in AA_VECTOR! Animation = [UNKNOWN]");
+	VERIFY2(false, "Error! No animation in AA_VECTOR! Animation = [UNKNOWN]");
 	return (*(m_attack_anims.begin()));
 }
 
@@ -663,7 +663,7 @@ ICF static bool check_hit_trace_callback(collide::rq_result& result, LPVOID para
 		const CEntityAlive* entity_alive = result.O->cast_entity_alive();
 		if (monster == param->m_holder)
 		{
-			return TRUE;
+			return true;
 		}
 		else if (entity_alive == param->m_enemy)
 		{
@@ -675,11 +675,11 @@ ICF static bool check_hit_trace_callback(collide::rq_result& result, LPVOID para
 		CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
 		if (GMLib.GetMaterialByIdx(T.material)->Flags.is(SGameMtl::flPassable))
 		{
-			return TRUE;
+			return true;
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 void CControlAnimationBase::check_hit(MotionID motion, float time_perc)

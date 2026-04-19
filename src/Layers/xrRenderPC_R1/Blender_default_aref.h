@@ -10,8 +10,8 @@ public:
 	xrP_BOOL	oBlend;
 public:
 	virtual		const char*		getComment()	{ return "LEVEL: lmap*base.aref";	}
-	virtual		bool		canBeDetailed()	{ return TRUE; }
-	virtual		bool		canBeLMAPped()	{ return TRUE; }
+	virtual		bool		canBeDetailed()	{ return true; }
+	virtual		bool		canBeLMAPped()	{ return true; }
 
 	virtual		void		Save			(IWriter&	fs);
 	virtual		void		Load			(IReader&	fs, u16 version);

@@ -16,7 +16,7 @@ CTorridZone::~CTorridZone()
 bool CTorridZone::net_Spawn(CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC))
-		return			(FALSE);
+		return			(false);
 
 	CSE_Abstract		*abstract=(CSE_Abstract*)(DC);
 	CSE_ALifeTorridZone	*zone	= smart_cast<CSE_ALifeTorridZone*>(abstract);
@@ -25,7 +25,7 @@ bool CTorridZone::net_Spawn(CSE_Abstract* DC)
 	m_animator->Load	(zone->get_motion());
 	m_animator->Play	(true);
 
-	return				(TRUE);
+	return				(true);
 }
 
 void CTorridZone::UpdateWorkload(u32 dt)
