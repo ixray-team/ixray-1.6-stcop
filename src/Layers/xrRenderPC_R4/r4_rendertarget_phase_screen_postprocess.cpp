@@ -69,8 +69,8 @@ void CRenderTarget::PhaseGasmask()
     float d_W = 1.0f;
     constexpr u32 color = color_rgba(0, 0, 0, 255);
 
-    size_t currentState = 4 - ((1.f * condition) * 4);
-    clamp(currentState, 0ull, 3ull);
+    size_t currentState = 6 - ((1.f * condition) * 6);
+    clamp(currentState, 0ull, 5ull);
 
     // Set render target
     u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);

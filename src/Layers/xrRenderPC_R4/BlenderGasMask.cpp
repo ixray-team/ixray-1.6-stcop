@@ -10,7 +10,7 @@ void CBlenderGasMask::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
 
-	if (C.iElement < 0 || C.iElement > 3)
+	if (C.iElement < 0 || C.iElement > 5)
 	{
 		return;
 	}
@@ -21,10 +21,12 @@ void CBlenderGasMask::Compile(CBlender_Compile& C)
 	shared_str TexturePassName;
 	switch (C.iElement)
 	{
-		case 0: TexturePassName = "shaders\\gasmask\\Good"; break;
-		case 1: TexturePassName = "shaders\\gasmask\\Medium"; break;
-		case 2: TexturePassName = "shaders\\gasmask\\Bad"; break;
-		case 3: TexturePassName = "shaders\\gasmask\\Broken"; break;
+		case 0: TexturePassName = "shaders\\gasmask\\FactoryNew"; break;
+		case 1: TexturePassName = "shaders\\gasmask\\Good"; break;
+		case 2: TexturePassName = "shaders\\gasmask\\MediumWell"; break;
+		case 3: TexturePassName = "shaders\\gasmask\\Medium"; break;
+		case 4: TexturePassName = "shaders\\gasmask\\Bad"; break;
+		case 5: TexturePassName = "shaders\\gasmask\\Broken"; break;
 	}
 
 	C.r_dx10Texture("s_breath", "shaders\\gasmask\\Condensation");
