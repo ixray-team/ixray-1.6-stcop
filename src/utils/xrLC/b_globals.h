@@ -12,7 +12,7 @@ struct SBuildOptions
 {
 	bool b_radiosity;
 	bool b_noise;
-	SBuildOptions() :b_radiosity(FALSE), b_noise(FALSE)
+	SBuildOptions() :b_radiosity(false), b_noise(false)
 	{
 	}
 };

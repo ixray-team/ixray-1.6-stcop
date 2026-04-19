@@ -207,7 +207,7 @@ public:
     Flags64     ParamsData;
 
 public:
-	void _initialize	(const char* ApplicationName, xrLogger::LogCallback cb=0, bool init_fs=TRUE, const char* fs_fname=0);
+	void _initialize	(const char* ApplicationName, xrLogger::LogCallback cb=nullptr, bool init_fs=true, const char* fs_fname=nullptr);
 	void _destroy	    ();
 };
 

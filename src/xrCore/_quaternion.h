@@ -323,8 +323,8 @@ public:
 	}
 
 	// gets an axis and angle of rotation around the axis from a quaternion
-	// returns TRUE if there is an axis.
-	// returns FALSE if there is no axis (and Axis is set to 0,0,0, and Theta is 0)
+	// returns true if there is an axis.
+	// returns false if there is no axis (and Axis is set to 0,0,0, and Theta is 0)
 
 	ICF bool	get_axis_angle(Fvector &axis, T &angle)
 	{
@@ -387,7 +387,7 @@ public:
 		return *this;
 	}
 
-	// return TRUE if quaternions differ elementwise by less than Tolerance.
+	// return true if quaternions differ elementwise by less than Tolerance.
 	ICF	bool	cmp(SelfCRef Q, T Tolerance=0.0001f)
 	{
 		if (	// they are the same but with opposite signs

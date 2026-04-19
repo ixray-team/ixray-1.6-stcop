@@ -69,9 +69,9 @@ void ESceneLightTool::BeforeRender()
 void ESceneLightTool::AfterRender()
 {
 	if (m_Flags.is(flShowSun))
-		EDevice->LightEnable(frame_light.size(),FALSE); // sun - last light!
+		EDevice->LightEnable(frame_light.size(),false); // sun - last light!
 	for (u32 i=0; i<frame_light.size(); i++)
-		EDevice->LightEnable(i,FALSE);
+		EDevice->LightEnable(i,false);
 	frame_light.clear();
 }
 
@@ -379,7 +379,7 @@ void CLight::OnDeviceDestroy()
 
 CEditFlare::CEditFlare()
 {
-	m_Flags.set(flFlare|flSource|flGradient,TRUE);
+	m_Flags.set(flFlare|flSource|flGradient,true);
 	// flares
 	m_Flares.resize		(6);
 	FlareIt it=m_Flares.begin();
@@ -509,7 +509,7 @@ void CEditFlare::CreateShaders()
 			bResult = ParseLTX(pIni,group->GetObjects(),group->Name);
 		}break;
 		}
-		if (!bResult) return FALSE;
+		if (!bResult) return false;
 		if (suns.Length()) pIni->w_string("environment", "suns", suns.c_str());
 	}
 */

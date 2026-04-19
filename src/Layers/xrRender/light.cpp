@@ -424,7 +424,7 @@ void light::optimize_smap_size()
 
 	X.S.posX = 0;
 	X.S.posY = 0;
-	X.S.transluent = FALSE;
+	X.S.transluent = false;
 
 	// Compute approximate screen area (treating it as an point light) - R*R/dist_sq
 	// Note: we clamp screen space area to ONE, although it is not correct at all
@@ -500,7 +500,7 @@ void light::optimize_smap_size()
 //	X.S.posY = 0;
 //
 //	X.S.size = SMAP_adapt_max;
-//	X.S.transluent = FALSE;
+//	X.S.transluent = false;
 //
 //	// Compute approximate screen area (treating it as an point light) - R*R/dist_sq
 //	// Note: we clamp screen space area to ONE, although it is not correct at all

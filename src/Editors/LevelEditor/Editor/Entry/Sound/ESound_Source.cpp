@@ -40,7 +40,7 @@ void ESoundSource::Construct(LPVOID data)
 	m_Params.max_ai_distance= 300.f;
 	m_Params.position.set	(0,0,0);
 
-	m_Flags.set				(flLooped,TRUE);
+	m_Flags.set				(flLooped,true);
 	m_Command				= stNothing; 
 	m_RandomPause.set		(0.f,0.f);
 	m_ActiveTime.set		(0.f,0.f);
@@ -313,11 +313,11 @@ void ESoundSource::FillProp(const char* pref, PropItemVec& values)
 	V=PHelper().CreateFloat		(values,PrepareKey(pref,"Source\\Volume"),		&m_Params.volume,			0.0f,1.f);
 	V->OnChangeEvent.bind		(this,&ESoundSource::OnChangeSource);
 	V=PHelper().CreateFloat		(values,PrepareKey(pref,"Source\\Min dist"),	&m_Params.min_distance,		0.1f, 1000.f, 0.1f, 1);
-	V->Owner()->Enable			(FALSE);
+	V->Owner()->Enable			(false);
 	V=PHelper().CreateFloat		(values,PrepareKey(pref,"Source\\Max dist"),	&m_Params.max_distance,		0.1f, 1000.f, 0.1f, 1);
-	V->Owner()->Enable			(FALSE);
+	V->Owner()->Enable			(false);
 	V=PHelper().CreateFloat		(values,PrepareKey(pref,"Source\\Max ai dist"),	&m_Params.max_ai_distance,	0.1f, 1000.f, 0.1f, 1);
-	V->Owner()->Enable			(FALSE);
+	V->Owner()->Enable			(false);
 	PHelper().CreateCaption		(values,PrepareKey(pref,"Game\\Active time\\Hint"),	"Zero - play sound looped round the clock.");
 	PHelper().CreateTime		(values,PrepareKey(pref,"Game\\Active time\\From"),	&m_ActiveTime.x);
 	PHelper().CreateTime		(values,PrepareKey(pref,"Game\\Active time\\To"),	&m_ActiveTime.y);
@@ -348,17 +348,17 @@ void ESoundSource::OnFrame()
 		m_Source.play		(0,m_Flags.is(flLooped));
 		m_Source.set_params	(&m_Params);
 		m_Command			= stNothing; 
-		m_Flags.set			(flPlaying,TRUE);
+		m_Flags.set			(flPlaying,true);
 	break;
 	case stStop: 
 		m_Source.stop		();
 		m_Command			= stNothing; 
-		m_Flags.set			(flPlaying,FALSE);
-		m_Flags.set			(flSimulating,FALSE);
+		m_Flags.set			(flPlaying,false);
+		m_Flags.set			(flSimulating,false);
 	break;
 	case stSimulate:
 	{
-		m_Flags.set(flSimulating, TRUE);
+		m_Flags.set(flSimulating, true);
 		if ((fis_zero(m_ActiveTime.x) && fis_zero(m_ActiveTime.y)) ||
 			((g_pGamePersistent->Environment().GetGameTime() > m_ActiveTime.x) &&
 			 (g_pGamePersistent->Environment().GetGameTime() < m_ActiveTime.y)))

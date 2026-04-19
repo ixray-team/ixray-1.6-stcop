@@ -7,7 +7,7 @@
 class XRCORE_API EFS_Utils
 {
 protected:
-	bool 		GetOpenNameInternal(const char* initial, LPSTR buffer, int sz_buf, bool bMulti = false, const char* offset = 0, int start_flt_ext = -1, const char* ext = nullptr);
+	bool 		GetOpenNameInternal(const char* initial, LPSTR buffer, int sz_buf, bool bMulti = false, const char* offset = nullptr, int start_flt_ext = -1, const char* ext = nullptr);
 
 public:
 	EFS_Utils() = default;
@@ -17,7 +17,7 @@ public:
 
 	const char*		GenerateName(const char* base_path, const char* base_name, const char* def_ext, LPSTR out_name, u32 const out_name_size);
 
-	bool 		GetOpenName(const char* initial, xr_string& buf, bool bMulti = false, const char* offset = 0, int start_flt_ext = -1, const char* ext = nullptr);
+	bool 		GetOpenName(const char* initial, xr_string& buf, bool bMulti = false, const char* offset = nullptr, int start_flt_ext = -1, const char* ext = nullptr);
 
 
 	template<xr_ssnt_t Size>
@@ -34,9 +34,9 @@ public:
 		ofn.nMaxFile = sizeof(path_to_file);
 		ofn.lpstrFilter = mask;
 		ofn.nFilterIndex = 1;
-		ofn.lpstrFileTitle = NULL;
+		ofn.lpstrFileTitle = nullptr;
 		ofn.nMaxFileTitle = 0;
-		ofn.lpstrInitialDir = NULL;
+		ofn.lpstrInitialDir = nullptr;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
 		bool result = GetOpenFileName(&ofn) == TRUE;
@@ -59,7 +59,7 @@ public:
 		std::memcpy(GlobalLock(hMem), buffer.c_str(), buffer.size());
 		GlobalUnlock(hMem);
 
-		bool nStatus = OpenClipboard(NULL);
+		bool nStatus = OpenClipboard(nullptr);
 
 		if (!nStatus)
 		{
@@ -95,8 +95,8 @@ public:
 #endif
 	}
 
-	bool 		GetSaveName(const char* initial, string_path& buffer, const char* offset = 0, int start_flt_ext = -1, const char* ext = nullptr);
-	bool 		GetSaveName(const char* initial, xr_string& buf, const char* offset = 0, int start_flt_ext = -1, const char* ext = nullptr);
+	bool 		GetSaveName(const char* initial, string_path& buffer, const char* offset = nullptr, int start_flt_ext = -1, const char* ext = nullptr);
+	bool 		GetSaveName(const char* initial, xr_string& buf, const char* offset = nullptr, int start_flt_ext = -1, const char* ext = nullptr);
 
 	void 		MarkFile(const char* fn, bool bDeleteSource);
 

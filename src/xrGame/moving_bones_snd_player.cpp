@@ -34,7 +34,7 @@ Fmatrix& moving_bones_snd_player::bone_matrix( )
 	return ( kinematics->LL_GetTransform( bone_id ) );
 }
 #ifdef DEBUG
-bool dbg_moving_bones_snd_player = FALSE;
+bool dbg_moving_bones_snd_player = false;
 #endif
 static const float sm_factor = 0.99f;
 static const float play_threthhold = 0.2f; 

@@ -51,56 +51,56 @@ void resptrcode_geom::create(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer
 //////////////////////////////////////////////////////////////////////
 bool SPass::equal(const SPass& other)
 {
-	if (state		!= other.state)		return FALSE;
-	if (ps			!= other.ps)			return FALSE;
-	if (vs			!= other.vs)			return FALSE;
+	if (state		!= other.state)		return false;
+	if (ps			!= other.ps)			return false;
+	if (vs			!= other.vs)			return false;
 #ifdef USE_DX11
-	if (gs			!= other.gs)			return FALSE;
-	if (hs			!= other.hs)			return FALSE;
-	if (ds			!= other.ds)			return FALSE;
-	if (cs			!= other.cs)			return FALSE;
+	if (gs			!= other.gs)			return false;
+	if (hs			!= other.hs)			return false;
+	if (ds			!= other.ds)			return false;
+	if (cs			!= other.cs)			return false;
 #endif //USE_DX11
-	if (constants	!= other.constants)		return FALSE;	// is this nessesary??? (ps+vs already combines)
+	if (constants	!= other.constants)		return false;	// is this nessesary??? (ps+vs already combines)
 
-	if (T != other.T)					return FALSE;
-	if (C != other.C)					return FALSE;
+	if (T != other.T)					return false;
+	if (C != other.C)					return false;
 #ifdef _EDITOR
-	if (M != other.M)					return FALSE;
+	if (M != other.M)					return false;
 #endif
-	return TRUE;
+	return true;
 }
 
 //
 ShaderElement::ShaderElement()
 {
 	flags.iPriority		= 1;
-	flags.bStrictB2F	= FALSE;
-	flags.bEmissive		= FALSE;
-	flags.bScopeMask	= FALSE;
-	flags.bDistort		= FALSE;
-	flags.bWmark		= FALSE;
-	flags.bLandscape	= FALSE;
+	flags.bStrictB2F	= false;
+	flags.bEmissive		= false;
+	flags.bScopeMask	= false;
+	flags.bDistort		= false;
+	flags.bWmark		= false;
+	flags.bLandscape	= false;
 }
 
 bool ShaderElement::equal	(ShaderElement& S)
 {
-	if (flags.iPriority		!= S.flags.iPriority)	return FALSE;
-	if (flags.bStrictB2F	!= S.flags.bStrictB2F)	return FALSE;
-	if (flags.bEmissive		!= S.flags.bEmissive)	return FALSE;
-	if (flags.bScopeMask	!= S.flags.bScopeMask)	return FALSE;
-	if (flags.bWmark		!= S.flags.bWmark)		return FALSE;
-	if (flags.bLandscape	!= S.flags.bLandscape)	return FALSE;
-	if (flags.bDistort		!= S.flags.bDistort)	return FALSE;
-	if (passes.size() != S.passes.size())			return FALSE;
+	if (flags.iPriority		!= S.flags.iPriority)	return false;
+	if (flags.bStrictB2F	!= S.flags.bStrictB2F)	return false;
+	if (flags.bEmissive		!= S.flags.bEmissive)	return false;
+	if (flags.bScopeMask	!= S.flags.bScopeMask)	return false;
+	if (flags.bWmark		!= S.flags.bWmark)		return false;
+	if (flags.bLandscape	!= S.flags.bLandscape)	return false;
+	if (flags.bDistort		!= S.flags.bDistort)	return false;
+	if (passes.size() != S.passes.size())			return false;
 	for (u32 p=0; p<passes.size(); p++)
-		if (passes[p] != S.passes[p])				return FALSE;
-	return TRUE;
+		if (passes[p] != S.passes[p])				return false;
+	return true;
 }
 
 bool ShaderElement::equal	(ShaderElement* S)
 {	
-	if (0==S && 0==this)	return TRUE;
-	if (0==S || 0==this)	return FALSE;
+	if (nullptr==S && nullptr==this)	return true;
+	if (nullptr==S || nullptr==this)	return false;
 	return	equal	(*S);	
 }
 

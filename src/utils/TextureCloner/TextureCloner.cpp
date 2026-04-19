@@ -153,7 +153,7 @@ int main()
 #endif
 
     Debug._initialize(false);
-    Core._initialize("TextureCloner", 0, FALSE);
+    Core._initialize("TextureCloner", 0, false);
     xrLogger::AddLogCallback(MyLog);
 
     FS.append_path("$working_folder$", "", 0, false);

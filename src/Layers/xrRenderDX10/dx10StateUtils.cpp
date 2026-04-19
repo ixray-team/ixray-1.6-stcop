@@ -146,23 +146,23 @@ void ResetDescription( D3D_RASTERIZER_DESC &desc )
 	ZeroMemory(&desc, sizeof(desc));
 	desc.FillMode = D3D_FILL_SOLID;
 	desc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
-	desc.FrontCounterClockwise = FALSE;
+	desc.FrontCounterClockwise = false;
 	desc.DepthBias = 0;
 	desc.DepthBiasClamp = 0.0f;
 	desc.SlopeScaledDepthBias = 0.0f;
-	desc.DepthClipEnable = TRUE;
-	desc.ScissorEnable = FALSE;
-	desc.MultisampleEnable = FALSE;
-	desc.AntialiasedLineEnable = FALSE;
+	desc.DepthClipEnable = true;
+	desc.ScissorEnable = false;
+	desc.MultisampleEnable = false;
+	desc.AntialiasedLineEnable = false;
 }
 
 void ResetDescription( D3D_DEPTH_STENCIL_DESC &desc )
 {
 	ZeroMemory(&desc, sizeof(desc));
-	desc.DepthEnable = TRUE;
+	desc.DepthEnable = true;
 	desc.DepthWriteMask = D3D_DEPTH_WRITE_MASK_ALL;
 	desc.DepthFunc = D3D_COMPARISON_LESS;
-	desc.StencilEnable = TRUE;
+	desc.StencilEnable = true;
 	desc.StencilReadMask = 0xFF;
 	desc.StencilWriteMask = 0xFF;
 
@@ -181,8 +181,8 @@ void ResetDescription( D3D_BLEND_DESC &desc )
 {
 	ZeroMemory(&desc, sizeof(desc));
 
-	desc.AlphaToCoverageEnable = FALSE;
-	desc.IndependentBlendEnable = FALSE;
+	desc.AlphaToCoverageEnable = false;
+	desc.IndependentBlendEnable = false;
 
 	for ( int i=0; i<8; ++i)
 	{
@@ -192,7 +192,7 @@ void ResetDescription( D3D_BLEND_DESC &desc )
 		desc.RenderTarget[i].SrcBlendAlpha = D3D_BLEND_ONE;
 		desc.RenderTarget[i].DestBlendAlpha = D3D_BLEND_ZERO;
 		desc.RenderTarget[i].BlendOpAlpha = D3D_BLEND_OP_ADD;
-		desc.RenderTarget[i].BlendEnable = FALSE;
+		desc.RenderTarget[i].BlendEnable = false;
 		desc.RenderTarget[i].RenderTargetWriteMask = D3D_COLOR_WRITE_ENABLE_ALL;
 	}
 }
@@ -401,7 +401,7 @@ void ValidateState(D3D_DEPTH_STENCIL_DESC &desc)
 
 void ValidateState(D3D_BLEND_DESC &desc)
 {
-	int bBlendEnable = FALSE;
+	int bBlendEnable = false;
 
 	for ( int i=0; i<8; ++i)
 	{

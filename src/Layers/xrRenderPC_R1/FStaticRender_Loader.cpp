@@ -25,7 +25,7 @@ void CRender::level_Load(IReader *fs)
 
 	// Begin
 	pApp->LoadBegin					();
-	dxRenderDeviceRender::Instance().Resources->DeferredLoad	(TRUE);
+	dxRenderDeviceRender::Instance().Resources->DeferredLoad	(true);
 	IReader*						chunk;
 
 	// Shaders
@@ -119,7 +119,7 @@ void CRender::level_Load(IReader *fs)
 
 	// End
 	pApp->LoadEnd				();
-	b_loaded					= TRUE	;
+	b_loaded					= true	;
 }
 
 void CRender::level_Unload		()
@@ -183,7 +183,7 @@ void CRender::level_Unload		()
 	//*** Shaders
 	Shaders.clear();
 
-	b_loaded					= FALSE;
+	b_loaded					= false;
 }
 
 void CRender::LoadVertexBuffers(IReaderBase& fs)

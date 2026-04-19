@@ -289,7 +289,7 @@ void CPoltergeist::Show()
 
 	state_invisible = false;
 	
-	setVisible(TRUE);
+	setVisible(true);
 
 	com_man().seq_run(anim().get_motion_id(eAnimMiscAction_00));
 
@@ -318,7 +318,7 @@ void CPoltergeist::UpdateCL()
 bool CPoltergeist::AlwaysTheCrow()
 {
 	if (state_invisible)
-		return TRUE;
+		return true;
 
 	return inherited::AlwaysTheCrow();
 }

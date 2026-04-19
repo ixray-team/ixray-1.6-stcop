@@ -195,7 +195,7 @@ void CBulletManager::PlayExplodePS( const Fmatrix& xf )
 		return;
 
 	shared_str const& ps_name	= m_ExplodeParticles[Random.randI(0, (u32)m_ExplodeParticles.size())];
-	xr_shared_ptr<CParticlesObject> const	ps	= Particles::Details::Create(*ps_name,TRUE);
+	xr_shared_ptr<CParticlesObject> const	ps	= Particles::Details::Create(*ps_name,true);
 	ps->UpdateParent			(xf,zero_vel);
 	GamePersistent().ps_needtoplay.push_back(ps);
 }
@@ -277,7 +277,7 @@ void CBulletManager::UpdateWorkload()
 				continue;
 
 			VERIFY(j > 0);
-			RegisterEvent(EVENT_REMOVE, FALSE, &*i, Fvector().set(0, 0, 0), dummy, j - 1);
+			RegisterEvent(EVENT_REMOVE, false, &*i, Fvector().set(0, 0, 0), dummy, j - 1);
 		}
 	}
 }
@@ -747,7 +747,7 @@ bool CBulletManager::firetrace_callback	(collide::rq_result& result, LPVOID para
 				data.collide_time = 1.f;
 				bullet.speed = 0.f;
 
-				return (TRUE);
+				return (true);
 			}
 
 			if (flag == u8(2))
@@ -798,27 +798,27 @@ bool CBulletManager::firetrace_callback	(collide::rq_result& result, LPVOID para
 	Fvector const gravity			= { 0.f, -bullet_manager.m_fGravityConst, 0.f };
 	update_bullet					( bullet, data, gravity, air_resistance);
 	if ( fis_zero(bullet.speed) )
-		return						(FALSE);
+		return						(false);
 
 	if ( fis_zero(data.collide_time) )
-		return						(TRUE);
+		return						(true);
 
 	//статический объект
 	if (!result.O) {
 		CDB::TRI& triangle	= Level().ObjectSpace.GetStaticTris()[result.element];
-		bullet_manager.RegisterEvent(EVENT_HIT, FALSE, &bullet, collide_position, result, triangle.material);
-		return						(FALSE);
+		bullet_manager.RegisterEvent(EVENT_HIT, false, &bullet, collide_position, result, triangle.material);
+		return						(false);
 	}
 
 	//динамический объект
 	VERIFY							( !(result.O->ID() == bullet.parent_id &&  bullet.fly_dist < parent_ignore_distance) );
 	IKinematics* const kinematics	= PKinematics(result.O->Visual());
 	if (!kinematics)
-		return						(FALSE);
+		return						(false);
 
 	CBoneData const& bone_data		= kinematics->LL_GetData( (u16)result.element );
-	bullet_manager.RegisterEvent	( EVENT_HIT, TRUE, &bullet, collide_position, result, bone_data.game_mtl_idx );
-	return							(FALSE);
+	bullet_manager.RegisterEvent	( EVENT_HIT, true, &bullet, collide_position, result, bone_data.game_mtl_idx );
+	return							(false);
 }
 
 bool CBulletManager::trajectory_check_error	(
@@ -987,7 +987,7 @@ bool CBulletManager::process_bullet			(collide::rq_results & storage, SBullet& b
 }
 
 #ifdef DEBUG
-	int g_bDrawBulletHit = FALSE;
+	int g_bDrawBulletHit = false;
 #endif
 
 IC float SqrDistancePointToSegment(const Fvector& pt, const Fvector& orig, const Fvector& dir)

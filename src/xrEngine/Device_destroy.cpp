@@ -14,7 +14,7 @@ void CRenderDevice::_Destroy	(bool bKeepTextures)
 	DU->OnDeviceDestroy();
 
 	// before destroy
-	b_is_Ready					= FALSE;
+	b_is_Ready					= false;
 	Statistic->OnDeviceDestroy	();
 	::Render->destroy			();
 	m_pRender->OnDeviceDestroy(bKeepTextures);
@@ -32,7 +32,7 @@ void CRenderDevice::Destroy()
 	SDL_ShowCursor();
 	m_pRender->ValidateHW();
 
-	_Destroy					(FALSE);
+	_Destroy					(false);
 	
 	auto& hGameRef = Engine.External.hGame;
 	if (hGameRef)
@@ -100,7 +100,7 @@ void CRenderDevice::Reset(bool precache)
 
 	if (g_pGamePersistent)
 	{
-		g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
+		g_pGamePersistent->Environment().bNeed_re_create_env = true;
 	}
 	_SetupStates();
 	

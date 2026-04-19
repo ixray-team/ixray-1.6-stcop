@@ -12,7 +12,7 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "GamePersistent.h"
 CScriptParticlesCustom::CScriptParticlesCustom(CScriptParticles* owner, const char* caParticlesName):
-	CParticlesObject(caParticlesName,FALSE,true)
+	CParticlesObject(caParticlesName,false,true)
 {
 //	CScriptParticlesCustom* self = this;
 //	Msg							("CScriptParticlesCustom: 0x%08x",*(int*)&self);
@@ -113,13 +113,13 @@ void CScriptParticles::PlayAtPos(const Fvector &position)
 void CScriptParticles::Stop		()
 {
 	VERIFY						(m_particles);
-	m_particles->Stop			(FALSE);
+	m_particles->Stop			(false);
 }
 
 void CScriptParticles::StopDeffered()
 {
 	VERIFY						(m_particles);
-	m_particles->Stop			(TRUE);
+	m_particles->Stop			(true);
 }
 
 void CScriptParticles::MoveTo	(const Fvector &pos, const Fvector& vel)

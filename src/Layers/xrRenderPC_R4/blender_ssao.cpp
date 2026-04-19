@@ -14,7 +14,7 @@ void	CBlender_SSAO::Compile			(CBlender_Compile& C)
 	{
 	case 0:		// calculate SSAO
 		C.r_Pass			("stub_fullscreen_triangle",		"ssao_calc",	false,	false,	false);
-		C.r_Stencil			(TRUE, D3DCMP_LESSEQUAL, 0xFF);	// stencil should be >= 1
+		C.r_Stencil			(true, D3DCMP_LESSEQUAL, 0xFF);	// stencil should be >= 1
 		C.r_StencilRef		(0x01);
 		C.r_CullMode		(D3DCULL_NONE);
 
@@ -31,7 +31,7 @@ void	CBlender_SSAO::Compile			(CBlender_Compile& C)
 		break;
 	case 1:		// depth downsample for HBAO
 		C.r_Pass			("combine_1",		"depth_downs",	false,	false,	false);
-//		C.r_Stencil			(TRUE, D3DCMP_LESSEQUAL, 0xFF);	// stencil should be >= 1
+//		C.r_Stencil			(true, D3DCMP_LESSEQUAL, 0xFF);	// stencil should be >= 1
 //		C.r_StencilRef		(0x01);
 		C.r_CullMode		(D3DCULL_NONE);
 

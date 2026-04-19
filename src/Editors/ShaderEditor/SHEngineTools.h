@@ -125,7 +125,7 @@ public:
 	CMemoryWriter			m_RenderShaders;
 
     IBlender*				m_CurrentBlender;
-	void					RemoteRenameBlender	(const char* old_full_name, const char* new_full_name){m_RemoteRenBlender=TRUE;m_RenBlenderOldName=old_full_name;m_RenBlenderNewName=new_full_name;}
+	void					RemoteRenameBlender	(const char* old_full_name, const char* new_full_name){m_RemoteRenBlender=true;m_RenBlenderOldName=old_full_name;m_RenBlenderNewName=new_full_name;}
 
     Shader_xrLC*			m_Shader;
 

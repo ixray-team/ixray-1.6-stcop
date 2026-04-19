@@ -77,8 +77,8 @@ u16 NET_Compressor::compressed_size	(const u32 &count)
 #endif // #if NET_USE_COMPRESSION
 }
 
-XRNETSERVER_API bool g_net_compressor_enabled		= FALSE;
-XRNETSERVER_API bool g_net_compressor_gather_stats	= FALSE;
+XRNETSERVER_API bool g_net_compressor_enabled		= false;
+XRNETSERVER_API bool g_net_compressor_gather_stats	= false;
 
 u16 NET_Compressor::Compress(BYTE* dest, const u32 &dest_size, BYTE* src, const u32 &count)
 {

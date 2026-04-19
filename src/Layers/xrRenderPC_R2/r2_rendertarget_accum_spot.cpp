@@ -30,7 +30,7 @@ void CRenderTarget::accum_spot	(light* L)
 		RImplementation.rmNear();
 	}
 
-	BOOL	bIntersect			= FALSE; //enable_scissor(L);
+	bool	bIntersect			= false; //enable_scissor(L);
 	{
 		// setup xform
 		RCache.set_xform_world			(L->m_xform			);
@@ -42,17 +42,17 @@ void CRenderTarget::accum_spot	(light* L)
 		// *** similar to "Carmack's reverse", but assumes convex, non intersecting objects,
 		// *** thus can cope without stencil clear with 127 lights
 		// *** in practice, 'cause we "clear" it back to 0x1 it usually allows us to > 200 lights :)
-		RCache.set_ColorWriteEnable		(FALSE);
+		RCache.set_ColorWriteEnable		(false);
 		RCache.set_Element				(s_accum_mask->E[SE_MASK_SPOT]);		// masker
 
 		// backfaces: if (stencil>=1 && zfail)			stencil = light_id
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
-		RCache.set_Stencil				(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
+		RCache.set_Stencil				(true,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
 		draw_volume						(L);
 
 		// frontfaces: if (stencil>=light_id && zfail)	stencil = 0x1
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-		RCache.set_Stencil				(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
+		RCache.set_Stencil				(true,D3DCMP_LESSEQUAL,0x01,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
 		draw_volume						(L);
 	}
 
@@ -144,7 +144,7 @@ void CRenderTarget::accum_spot	(light* L)
 		RCache.set_ca				("m_lmap",		0,	m_Lmap._11, m_Lmap._21, m_Lmap._31, m_Lmap._41	);
 		RCache.set_ca				("m_lmap",		1,	m_Lmap._12, m_Lmap._22, m_Lmap._32, m_Lmap._42	);
 
-		RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
+		RCache.set_Stencil			(true,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
 		draw_volume					(L);
 	}
 
@@ -179,7 +179,7 @@ void CRenderTarget::accum_volumetric(light* L)
 
 	// *** assume accumulator setted up ***
 	// *****************************	Mask by stencil		*************************************
-	BOOL	bIntersect			= FALSE; //enable_scissor(L);
+	bool	bIntersect			= false; //enable_scissor(L);
 	{
 		// setup xform
 		RCache.set_xform_world			(L->m_xform			);

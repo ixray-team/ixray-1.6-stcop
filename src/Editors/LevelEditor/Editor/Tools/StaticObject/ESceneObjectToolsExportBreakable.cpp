@@ -16,13 +16,13 @@ IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtracto
 		int gm_id			= surf->_GameMtl(); 
 		if (gm_id==GAMEMTL_NONE_ID){
 			ELog.DlgMsg(mtError, "%s Object '%s', surface '%s' contain invalid game material.", mesh->Name().c_str(), mesh->Parent()->m_LibName.c_str(), surf->_Name());
-			bResult 		= FALSE; 
+			bResult 		= false; 
 			break; 
 		}
 		SGameMtl* M 		=  GameMaterialLibraryEditors->GetMaterialByID(gm_id);
-		if (0==M){
+		if (!M){
 			ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", mesh->Name().c_str(), mesh->Parent()->m_LibName.c_str(),surf->_Name());
-			bResult 		= FALSE; 
+			bResult 		= false; 
 			break; 
 		}
 		if (!M->Flags.is(game_mtl_mask)) continue;
@@ -30,14 +30,14 @@ IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtracto
 		// check engine shader compatibility
 		if (!ignore_shader){
 			IBlender* 		B = EDevice->Resources->_FindBlender(surf->_ShaderName()); 
-			if (FALSE==B){
+			if (!B){
 				ELog.Msg	(mtError,"Can't find engine shader '%s'. Object '%s', surface '%s'. Export interrupted.",surf->_ShaderName(),mesh->Parent()->m_LibName.c_str(),surf->_Name());
-				bResult 	= FALSE; 
+				bResult 	= false; 
 				break; 
 			}
-			if (TRUE==B->canBeLMAPped()){ 
+			if (B->canBeLMAPped()){ 
 				ELog.Msg	(mtError,"Object '%s', surface '%s' contain static engine shader - '%s'. Export interrupted.",mesh->Parent()->m_LibName.c_str(),surf->_Name(),surf->_ShaderName());
-				bResult 	= FALSE; 
+				bResult 	= false; 
 				break; 
 			}
 		}
@@ -96,7 +96,7 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 				CEditableObject* O = obj->GetReference();
 				const Fmatrix& T = obj->_Transform();
 				for (EditMeshIt M = O->FirstMesh(); M != O->LastMesh(); M++)
-					if (!build_mesh(T, *M, extractor, SGameMtl::flBreakable, FALSE)) { bResult = false; break; }
+					if (!build_mesh(T, *M, extractor, SGameMtl::flBreakable, false)) { bResult = false; break; }
 			}
 		}
 		UI->ProgressEnd(pb);
@@ -152,7 +152,7 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 					}
 
 					NET_Packet Packet;
-					m_Data->Spawn_Write(Packet, TRUE);
+					m_Data->Spawn_Write(Packet, true);
 
 					F->spawn.stream.open_chunk(F->spawn.chunk++);
 					F->spawn.stream.w(Packet.B.data, Packet.B.count);
@@ -183,13 +183,13 @@ IC bool OrientToNorm(Fvector& local_norm, Fmatrix33& form, Fvector& hs)
 		if (hs[k]<hs[min_size])
 			min_size=k; 
 	}
-	if (min_size!=max_proj) return FALSE;
+	if (min_size!=max_proj) return false;
 	if (local_norm[max_proj]<0.f){
 		local_norm.invert();
 		ax_pointer[max_proj].invert();
 		ax_pointer[(max_proj+1)%3].invert();
 	}
-	return TRUE;
+	return true;
 }
 
 bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
@@ -227,7 +227,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 				const Fmatrix& T 	= obj->_Transform();
 				
 				for(EditMeshIt M =O->FirstMesh(); M!=O->LastMesh(); M++)
-					if (!build_mesh	(T, *M, extractor, SGameMtl::flClimable, TRUE))
+					if (!build_mesh	(T, *M, extractor, SGameMtl::flClimable, true))
 					{
 					  bResult       = false;
 					  break;
@@ -297,7 +297,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 
 						m_Data->set_additional_info((void*)mat_name);
 						NET_Packet					Packet;
-						m_Data->Spawn_Write			(Packet,TRUE);
+						m_Data->Spawn_Write			(Packet,true);
 
 						F->spawn.stream.open_chunk	(F->spawn.chunk++);
 						F->spawn.stream.w			(Packet.B.data,Packet.B.count);

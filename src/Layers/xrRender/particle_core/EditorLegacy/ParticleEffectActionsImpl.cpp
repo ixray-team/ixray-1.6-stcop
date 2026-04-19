@@ -725,11 +725,11 @@ EPAAvoid::EPAAvoid					():EParticleAction(PAPI::PAAvoidID)
 {
 	actionType						= "Avoid";
 	actionName						= actionType;
-	appendDomain					("Position",	PDomain(PDomain::vNum,TRUE,0x6096FF96));
+	appendDomain					("Position",	PDomain(PDomain::vNum,true,0x6096FF96));
 	appendFloat						("Magnitude",	0.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Epsilon",		0.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Look Ahead",	0.f, -P_MAXFLOAT, P_MAXFLOAT);
-	appendBool						("Allow Rotate",TRUE);
+	appendBool						("Allow Rotate",true);
 	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAAvoid::Compile			(IWriter& F)
@@ -755,11 +755,11 @@ EPABounce::EPABounce				():EParticleAction(PAPI::PABounceID)
 {
 	actionType						= "Bounce";
 	actionName						= actionType;
-	appendDomain					("Position",PDomain(PDomain::vNum,TRUE,0x6096FEEC));
+	appendDomain					("Position",PDomain(PDomain::vNum,true,0x6096FEEC));
 	appendFloat						("Friction",0.5f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Resilience",0.1f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Cutoff",1.f, -P_MAXFLOAT, P_MAXFLOAT);
-	appendBool						("Allow Rotate",	TRUE);
+	appendBool						("Allow Rotate",	true);
 	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPABounce::Compile			(IWriter& F)
@@ -785,7 +785,7 @@ EPACopyVertexB::EPACopyVertexB  	():EParticleAction(PAPI::PACopyVertexBID)
 {
 	actionType						= "CopyVertexB";
 	actionName						= actionType;
-	appendBool						("Copy Position", TRUE);
+	appendBool						("Copy Position", true);
 }
 void	EPACopyVertexB::Compile	   	(IWriter& F)
 {
@@ -831,7 +831,7 @@ EPAExplosion::EPAExplosion			():EParticleAction(PAPI::PAExplosionID)
 	appendFloat						("Standart Dev",	3.f,  	EPS, 			P_MAXFLOAT);
 	appendFloat						("Epsilon",			EPS_L, 	EPS, 			P_MAXFLOAT);
 	appendFloat						("Age",				0.f, 	0.f, 			P_MAXFLOAT);
-	appendBool						("Allow Rotate",	TRUE);
+	appendBool						("Allow Rotate",	true);
 	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAExplosion::Compile	  	(IWriter& F)
@@ -913,7 +913,7 @@ EPAGravity::EPAGravity				():EParticleAction(PAPI::PAGravityID)
 	actionType						= "Gravity";
 	actionName						= actionType;
 	appendVector					("Direction",		PVector::vNum, 0.f,-9.8f,0.f);
-	appendBool						("Allow Rotate",	TRUE);
+	appendBool						("Allow Rotate",	true);
 }
 void	EPAGravity::Compile			(IWriter& F)
 {
@@ -932,12 +932,12 @@ EPAJet::EPAJet						():EParticleAction(PAPI::PAJetID)
 {
 	actionType						= "Jet";
 	actionName						= actionType;
-	appendDomain					("Accelerate",PDomain(PDomain::vNum,FALSE));
+	appendDomain					("Accelerate",PDomain(PDomain::vNum,false));
 	appendVector					("Center",PVector::vNum, 0.f,0.f,0.f);
 	appendFloat						("Magnitude",0.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Epsilon",EPS_L, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Max Radius",P_MAXFLOAT, -P_MAXFLOAT, P_MAXFLOAT);
-	appendBool						("Allow Rotate",	TRUE);
+	appendBool						("Allow Rotate",	true);
 	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAJet::Compile				(IWriter& F)
@@ -967,7 +967,7 @@ EPAKillOld::EPAKillOld				():EParticleAction(PAPI::PAKillOldID)
 	actionType						= "KillOld";
 	actionName						= actionType;
 	appendFloat						("Age Limit",		5.f, 0.0f, P_MAXFLOAT);
-	appendBool						("Kill Less Than",	FALSE);
+	appendBool						("Kill Less Than",	false);
 }
 void	EPAKillOld::Compile			(IWriter& F)
 {
@@ -1027,7 +1027,7 @@ EPAOrbitLine::EPAOrbitLine			():EParticleAction(PAPI::PAOrbitLineID)
 	appendFloat						("Magnitude",		1.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Epsilon",			EPS_L, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Max Radius",		P_MAXFLOAT, -P_MAXFLOAT, P_MAXFLOAT);
-	appendBool						("Allow Rotate",	TRUE);
+	appendBool						("Allow Rotate",	true);
 	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAOrbitLine::Compile	 	(IWriter& F)
@@ -1062,7 +1062,7 @@ EPAOrbitPoint::EPAOrbitPoint		():EParticleAction(PAPI::PAOrbitPointID)
 	appendFloat						("Magnitude",		400.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Epsilon",			0.1f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Max Radius",		100.0f, -P_MAXFLOAT, P_MAXFLOAT);
-	appendBool						("Allow Rotate",	TRUE);
+	appendBool						("Allow Rotate",	true);
 	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAOrbitPoint::Compile	   	(IWriter& F)
@@ -1089,8 +1089,8 @@ EPARandomAccel::EPARandomAccel		():EParticleAction(PAPI::PARandomAccelID)
 {
 	actionType						= "RandomAccel";
 	actionName						= actionType;
-	appendDomain					("Accelerate",PDomain(PDomain::vNum,FALSE));
-	appendBool						("Allow Rotate",	TRUE);
+	appendDomain					("Accelerate",PDomain(PDomain::vNum,false));
+	appendBool						("Allow Rotate",	true);
 	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPARandomAccel::Compile	   	(IWriter& F)
@@ -1110,8 +1110,8 @@ EPARandomDisplace::EPARandomDisplace():EParticleAction(PAPI::PARandomDisplaceID)
 {
 	actionType						= "RandomDisplace";
 	actionName						= actionType;
-	appendDomain					("Displace",PDomain(PDomain::vNum,FALSE));
-	appendBool						("Allow Rotate",	TRUE);
+	appendDomain					("Displace",PDomain(PDomain::vNum,false));
+	appendBool						("Allow Rotate",	true);
 }
 void	EPARandomDisplace::Compile 	(IWriter& F)
 {
@@ -1129,8 +1129,8 @@ EPARandomVelocity::EPARandomVelocity():EParticleAction(PAPI::PARandomVelocityID)
 {
 	actionType						= "RandomVelocity";
 	actionName						= actionType;
-	appendDomain					("Velocity",PDomain(PDomain::vNum,FALSE));
-	appendBool						("Allow Rotate",	TRUE);
+	appendDomain					("Velocity",PDomain(PDomain::vNum,false));
+	appendBool						("Allow Rotate",	true);
 	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPARandomVelocity::Compile 	(IWriter& F)
@@ -1172,7 +1172,7 @@ EPAScatter::EPAScatter				():EParticleAction(PAPI::PAScatterID)
 	appendFloat						("Magnitude",0.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Epsilon",EPS_L, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Max Radius",P_MAXFLOAT, -P_MAXFLOAT, P_MAXFLOAT);
-	appendBool						("Allow Rotate",	TRUE);
+	appendBool						("Allow Rotate",	true);
 	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAScatter::Compile	 		(IWriter& F)
@@ -1199,9 +1199,9 @@ EPASink::EPASink					():EParticleAction(PAPI::PASinkID)
 {
 	actionType						= "Sink";
 	actionName						= actionType;
-	appendBool						("Kill Inside",		TRUE);
-	appendDomain					("Domain",			PDomain(PDomain::vNum,TRUE,0x60ff0000));
-	appendBool						("Allow Rotate",	TRUE);
+	appendBool						("Kill Inside",		true);
+	appendDomain					("Domain",			PDomain(PDomain::vNum,true,0x60ff0000));
+	appendBool						("Allow Rotate",	true);
 }
 void	EPASink::Compile			(IWriter& F)
 {
@@ -1221,9 +1221,9 @@ EPASinkVelocity::EPASinkVelocity	():EParticleAction(PAPI::PASinkVelocityID)
 {
 	actionType						= "SinkVelocity";
 	actionName						= actionType;
-	appendBool						("Kill Inside",		TRUE);
-	appendDomain					("Domain",PDomain(PDomain::vNum,FALSE));
-	appendBool						("Allow Rotate",	TRUE);
+	appendBool						("Kill Inside",		true);
+	appendDomain					("Domain",PDomain(PDomain::vNum,false));
+	appendBool						("Allow Rotate",	true);
 }
 void	EPASinkVelocity::Compile   	(IWriter& F)
 {
@@ -1244,21 +1244,21 @@ EPASource::EPASource				():EParticleAction(PAPI::PASourceID)
 	actionType = "Source";
 	actionName = actionType;
 	appendFloat("Rate", 100.f, -P_MAXFLOAT, P_MAXFLOAT);
-	appendDomain("Domain", PDomain(PDomain::vNum,TRUE,0x60FFEBAA));
-	appendDomain("Velocity", PDomain(PDomain::vNum,FALSE));
-	appendDomain("Rotation", PDomain(PDomain::vAngle,FALSE));
+	appendDomain("Domain", PDomain(PDomain::vNum,true,0x60FFEBAA));
+	appendDomain("Velocity", PDomain(PDomain::vNum,false));
+	appendDomain("Rotation", PDomain(PDomain::vAngle,false));
 	appendBool("Align Rotation Velocity to Rotation", true).min_version = EVersion::Extended;
 	appendDomain("Rotation Velocity", PDomain(PDomain::vNum, false)).min_version = EVersion::Extended;
-	appendDomain("Size", PDomain(PDomain::vNum,FALSE));
-	appendBool("Single Size", FALSE);
-	appendDomain("Color", PDomain(PDomain::vColor, FALSE, 0x00000000, PAPI::PDPoint,1.f,1.f,1.f,1.f,1.f,1.f,1.f,1.f,1.f));
+	appendDomain("Size", PDomain(PDomain::vNum,false));
+	appendBool("Single Size", false);
+	appendDomain("Color", PDomain(PDomain::vColor, false, 0x00000000, PAPI::PDPoint,1.f,1.f,1.f,1.f,1.f,1.f,1.f,1.f,1.f));
 	appendBool("Color\\Random Alpha", false).min_version = EVersion::SomeVasnyaBranch;
 	appendFloat("Color\\Alpha", 0.f, 0.f, 1.f);
 	appendFloat("Color\\Alpha 2", 0.f, 0.f, 1.f).min_version = EVersion::SomeVasnyaBranch;
 	appendFloat("Starting Age", 0.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat("Age Sigma", 0.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat("Parent Motion", 0.f, -P_MAXFLOAT, P_MAXFLOAT);
-	appendBool("Allow Rotate",	FALSE);
+	appendBool("Allow Rotate",	false);
 }
 void	EPASource::Compile			(IWriter& F)
 {
@@ -1381,7 +1381,7 @@ EPATargetVelocity::EPATargetVelocity():EParticleAction(PAPI::PATargetVelocityID)
 	actionName						= actionType;
 	appendVector					("Velocity",		PVector::vNum, 0.f,0.f,0.f);
 	appendFloat						("Scale",			1.f, 0.0f, P_MAXFLOAT);
-	appendBool						("Allow Rotate",	TRUE);
+	appendBool						("Allow Rotate",	true);
 	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPATargetVelocity::Compile	(IWriter& F)
@@ -1408,7 +1408,7 @@ EPAVortex::EPAVortex				():EParticleAction(PAPI::PAVortexID)
 	appendFloat						("Magnitude",		1.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Epsilon",			EPS_L, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Max Radius",		1.0f, -P_MAXFLOAT, P_MAXFLOAT);
-	appendBool						("Allow Rotate",	TRUE);
+	appendBool						("Allow Rotate",	true);
 }
 void	EPAVortex::Compile			(IWriter& F)
 {

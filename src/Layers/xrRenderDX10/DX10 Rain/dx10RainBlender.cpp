@@ -8,8 +8,8 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 	switch (C.iElement) 
 	{
 	case 0:			// Test
-		C.r_Pass	("stub_notransform_2uv", "rain_layer", false,	TRUE,	FALSE, FALSE);
-		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
+		C.r_Pass	("stub_notransform_2uv", "rain_layer", false,	true,	false, false);
+		C.PassSET_ZB		(true,false,true	);	// force inverted Z-Buffer
 		
 		C.r_dx10Texture		("s_diffuse",		r2_RT_albedo);
 		C.r_dx10Texture		("s_surface",		r2_RT_S);
@@ -33,8 +33,8 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 		break;
 
 	case 1:			// Patch normals
-		C.r_Pass	("stub_notransform_2uv", "rain_patch_normal", false,	TRUE,	FALSE, FALSE);
-		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
+		C.r_Pass	("stub_notransform_2uv", "rain_patch_normal", false,	true,	false, false);
+		C.PassSET_ZB		(true,false,true	);	// force inverted Z-Buffer
 
 		C.r_dx10Texture		("s_position",		r2_RT_P);
 		C.r_dx10Texture		("s_normal",		r2_RT_N);
@@ -60,8 +60,8 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 		break;
 
 	case 2:			// Apply normals
-		C.r_Pass	("stub_notransform_2uv", "rain_apply_normal", false,	TRUE,	FALSE, FALSE);
-		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
+		C.r_Pass	("stub_notransform_2uv", "rain_apply_normal", false,	true,	false, false);
+		C.PassSET_ZB		(true,false,true	);	// force inverted Z-Buffer
 
 		C.r_dx10Texture		("s_position",		r2_RT_P);
 		C.r_dx10Texture		("s_material",		r2_material);
@@ -82,8 +82,8 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 		break;
 
 	case 3:			// Apply gloss
-		C.r_Pass	("stub_notransform_2uv", "rain_apply_gloss", false,	TRUE,	FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
-		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
+		C.r_Pass	("stub_notransform_2uv", "rain_apply_gloss", false,	true,	false, true, D3DBLEND_ONE, D3DBLEND_ONE);
+		C.PassSET_ZB		(true,false,true	);	// force inverted Z-Buffer
 
 		C.r_dx10Texture		("s_position",		r2_RT_P);
 		C.r_dx10Texture		("s_material",		r2_material);

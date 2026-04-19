@@ -259,7 +259,7 @@ bool CObject::net_Spawn			(CSE_Abstract* data)
 
 	MakeMeCrow					();
 
-	return TRUE					;
+	return true					;
 }
 
 void CObject::net_Destroy		()
@@ -284,11 +284,11 @@ void	CObject::spatial_update		(float eps_P, float eps_R)
 {
 	if (Props.bDestroy) return;
 	//
-	bool	bUpdate=FALSE;
+	bool	bUpdate=false;
 	if (PositionStack.empty())
 	{
 		// Empty
-		bUpdate							= TRUE;
+		bUpdate							= true;
 		PositionStack.push_back			(SavedPosition());
 		PositionStack.back().dwTime		= Device.dwTimeGlobal;
 		PositionStack.back().vPosition	= Position();
@@ -299,7 +299,7 @@ void	CObject::spatial_update		(float eps_P, float eps_R)
 			PositionStack.back().dwTime		= Device.dwTimeGlobal;
 		} else {
 			// Register _new_ record
-			bUpdate							= TRUE;
+			bUpdate							= true;
 			if (PositionStack.size()<4)		{
 				PositionStack.push_back			(SavedPosition());
 			} else {

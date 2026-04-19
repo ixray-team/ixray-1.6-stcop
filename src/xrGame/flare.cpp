@@ -14,7 +14,7 @@ bool CFlare::net_Spawn(CSE_Abstract* DC)
 	inherited::net_Spawn	(DC);
 	SwitchState				(eFlareHidden);
 	m_pFlareParticles		= nullptr;
-	return					TRUE;
+	return					true;
 }
 
 void CFlare::net_Destroy()
@@ -51,26 +51,26 @@ void CFlare::OnStateSwitch(u32 S)
 		{
 			g_player_hud->attach_item	(this);
 			PlayHUDMotion				("anm_show", EHudMixType::eMixAll, GetState());
-			SetPending					(TRUE);
+			SetPending					(true);
 		}break;
 	case eFlareHiding:
 		{
 			PlayHUDMotion				("anm_hide", EHudMixType::eMixAll, GetState());
-			SetPending					(TRUE);
+			SetPending					(true);
 		}break;
 	case eFlareIdle:
 		{
 			light_lanim					= LALib.FindItem("flare_lanim_idle");
-			SetPending					(FALSE);
+			SetPending					(false);
 		}break;
 	case eFlareHidden:
 		{
-			SetPending					(FALSE);
+			SetPending					(false);
 		}break;
 	case eFlareDropping:
 		{
 			PlayHUDMotion				("anm_drop", EHudMixType::eMixAll, GetState());
-			SetPending					(TRUE);
+			SetPending					(true);
 		}break;
 	};
 }
@@ -86,7 +86,7 @@ void CFlare::OnAnimationEnd(u32 state)
 		}break;
 	case eFlareDropping:
 		{
-			SetDropManual				(TRUE);
+			SetDropManual				(true);
 			SwitchState					(eFlareHidden);
 			processing_activate			();
 		}break;
@@ -104,7 +104,7 @@ void CFlare::SwitchOn()
 
 	light_render->set_active	(true);
 
-	m_pFlareParticles			= Particles::Details::Create(pSettings->r_string(cNameSect(), "working_particles"), FALSE);
+	m_pFlareParticles			= Particles::Details::Create(pSettings->r_string(cNameSect(), "working_particles"), false);
 	m_pFlareParticles->Play		(true);
 
 }

@@ -154,7 +154,7 @@ public:
 		}
 #else //USE_DX11
 		VERIFY(!"Invalid texture stage");
-		return 0;
+		return nullptr;
 #endif
 	}
 
@@ -250,11 +250,11 @@ public:
 	IC  void						set_ZFunc			(u32 _func);
 	IC  void						set_AlphaRef		(u32 _value);
 	IC  void						set_ColorWriteEnable(u32 _mask = D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
-	IC	void						set_Scissor			(Irect*	rect=NULL);
+	IC	void						set_Scissor			(Irect*	rect= nullptr);
 
 	// constants
-	ICF	ref_constant				get_c				(const char*			n)													{ if (ctable) return ctable->get(n); return 0;}
-	ICF	ref_constant				get_c				(shared_str&	n)													{ if (ctable) return ctable->get(n); return 0;}
+	ICF	ref_constant				get_c				(const char*			n)													{ if (ctable) return ctable->get(n); return nullptr;}
+	ICF	ref_constant				get_c				(shared_str&	n)													{ if (ctable) return ctable->get(n); return nullptr;}
 
 	// constants - direct (fast)
 	ICF	void						set_c				(RHIShaderConstant* C_, const Fmatrix& A)									{ if (C_) constants.set(C_,A);					}

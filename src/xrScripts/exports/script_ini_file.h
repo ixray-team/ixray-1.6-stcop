@@ -19,7 +19,7 @@ protected:
 
 public:
 						CScriptIniFile		(IReader *F, const char* path=0);
-						CScriptIniFile		(const char* szFileName, bool ReadOnly=TRUE, bool bLoadAtStart=TRUE, bool SaveAtEnd=TRUE, const char* path=nullptr);
+						CScriptIniFile		(const char* szFileName, bool ReadOnly=true, bool bLoadAtStart=true, bool SaveAtEnd=true, const char* path=nullptr);
 						CScriptIniFile		(bool read, const char* filepath, const char* game_path, bool loadOnStart = true);
 
 	virtual 			~CScriptIniFile		();

@@ -37,7 +37,7 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
 //-------------------------------------------------
 	//force object to be local for server client
 	if (OnServer())		{
-		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
+		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, true);
 	};
 
 	/*
@@ -70,8 +70,8 @@ void CLevel::g_cl_Spawn		(const char* name, u8 rp, u16 flags, Fvector pos)
 
 	// Send
 	NET_Packet			P;
-	E->Spawn_Write		(P,TRUE);
-	Send				(P,net_flags(TRUE));
+	E->Spawn_Write		(P,true);
+	Send				(P,net_flags(true));
 
 	// Destroy
 	F_entity_Destroy	(E);
@@ -93,8 +93,8 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 #endif
 
 	// Optimization for single-player only	- minimize traffic between client and server
-	if	(GameID()	== eGameIDSingle)		psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,TRUE);
-	else								psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,FALSE);
+	if	(GameID()	== eGameIDSingle)		psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,true);
+	else								psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,false);
 
 	// Client spawn
 //	T.Start		();
@@ -204,8 +204,8 @@ CSE_Abstract *CLevel::spawn_item		(const char* section, const Fvector &position,
 
 	if (!return_item) {
 		NET_Packet				P;
-		abstract->Spawn_Write	(P,TRUE);
-		Send					(P,net_flags(TRUE));
+		abstract->Spawn_Write	(P,true);
+		Send					(P,net_flags(true));
 		F_entity_Destroy		(abstract);
 		return					(0);
 	}

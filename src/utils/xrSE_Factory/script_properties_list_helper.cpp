@@ -32,6 +32,14 @@ struct CWrapHelper {
 		return					(value->value());
 	}
 
+	template <bool a>
+	static T*wrap_value(luabind::object object, luabind::object table, const char* name)
+	{
+		CScriptValueWrapper<T>	*value = new CScriptValueWrapper<T> (table,name);
+		owner(object)->add			(value);
+		return						(value->value());
+	}
+
 	template <>
 	static T	*wrap_value<true>		(luabind::object object, const char* name)
 	{
@@ -39,7 +47,7 @@ struct CWrapHelper {
 	}
 };
 
-template <>
+/*template <>
 struct CWrapHelper<bool> 
 {
 	typedef BOOL result_type;
@@ -58,7 +66,7 @@ struct CWrapHelper<bool>
 		owner(object)->add			(value);
 		return						(value->value());
 	}
-};
+};*/
 
 template <typename T>
 typename CWrapHelper<T>::result_type	*wrap_value		(luabind::object object, const char* name)
@@ -322,7 +330,7 @@ FloatValue* CScriptPropertiesListHelper::CreateFloat(PropItemVec* items, const c
 
 BOOLValue* CScriptPropertiesListHelper::CreateBOOL(PropItemVec* items, const char* key, luabind::object object, luabind::object table, const char* name)
 {
-	return		(PHelper().CreateBOOL(*items,key,wrap_value<bool>(object,table,name)));
+	return		(PHelper().CreateBOOL(*items,key,wrap_value<BOOL>(object,table,name)));
 }
 
 VectorValue* CScriptPropertiesListHelper::CreateVector(PropItemVec* items, const char* key, luabind::object object, const char* name, float mn, float mx, float inc, int decim)

@@ -352,7 +352,7 @@ void attachable_hud_item::set_bone_visible(const shared_str& bone_name, bool bVi
 	}
 	bVisibleNow		= m_model->LL_GetBoneVisible	(bone_id);
 	if(bVisibleNow!=bVisibility)
-		m_model->LL_SetBoneVisible	(bone_id,bVisibility, FALSE);
+		m_model->LL_SetBoneVisible	(bone_id,bVisibility, false);
 }
 
 void attachable_hud_item::update(bool bForce)
@@ -376,7 +376,7 @@ void attachable_hud_item::update(bool bForce)
 	{
 		ka->UpdateTracks									();
 		ka->dcast_PKinematics()->CalculateBones_Invalidate	();
-		ka->dcast_PKinematics()->CalculateBones				(TRUE);
+		ka->dcast_PKinematics()->CalculateBones				(true);
 	}
 }
 
@@ -693,7 +693,7 @@ void attachable_hud_item::anim_play(const shared_str& item_anm_name, EHudMixType
 
 		u16 root_id = m_model->LL_GetBoneRoot();
 		CBoneInstance& root_binst = m_model->LL_GetBoneInstance(root_id);
-		root_binst.set_callback_overwrite(TRUE);
+		root_binst.set_callback_overwrite(true);
 		root_binst.mTransform.identity();
 
 		u16 pc = ka->partitions().count();
@@ -755,7 +755,7 @@ void attachable_hud_item::anim_play_bonepart(const shared_str& anim, bool bMixIn
 
 		u16 root_id = m_model->LL_GetBoneRoot();
 		CBoneInstance& root_binst = m_model->LL_GetBoneInstance(root_id);
-		root_binst.set_callback_overwrite(TRUE);
+		root_binst.set_callback_overwrite(true);
 		root_binst.mTransform.identity();
 
 		u16 pc = ka->partitions().count();
@@ -1422,11 +1422,11 @@ void player_hud::load(const shared_str& player_hud_sect)
 	}
 
 	m_model->dcast_PKinematics()->CalculateBones_Invalidate();
-	m_model->dcast_PKinematics()->CalculateBones(TRUE);
+	m_model->dcast_PKinematics()->CalculateBones(true);
 
 	if(m_legs_model) {
 		m_legs_model->CalculateBones_Invalidate();
-		m_legs_model->CalculateBones(TRUE);
+		m_legs_model->CalculateBones(true);
 	}
 
 	if(Actor()) {
@@ -1485,10 +1485,10 @@ void player_hud::render_hud()
 		{
 			IKinematics* actor_model = Actor()->Visual()->dcast_PKinematics();
 
-			actor_model->CalculateBones(TRUE);
+			actor_model->CalculateBones(true);
 
 			m_legs_model->CalculateBones_Invalidate();
-			m_legs_model->CalculateBones(TRUE);
+			m_legs_model->CalculateBones(true);
 
 			u16 legs_bones_cnt = m_legs_model->LL_BoneCount();
 			if(legs_bones_cnt == actor_model->LL_BoneCount())
@@ -1524,7 +1524,7 @@ void player_hud::render_hud()
 			}
 
 			auto bHud = ::Render->get_HUD();
-			::Render->set_HUD(FALSE);
+			::Render->set_HUD(false);
 
 			::Render->set_Transform(&Actor()->XFORM());
 			::Render->add_Visual(m_legs_model->dcast_RenderVisual(), true);
@@ -1647,7 +1647,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 	m_model->UpdateTracks();
 	m_model->dcast_PKinematics()->CalculateBones_Invalidate();
-	m_model->dcast_PKinematics()->CalculateBones(TRUE);
+	m_model->dcast_PKinematics()->CalculateBones(true);
 
 	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend();
 	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend();
@@ -1725,7 +1725,7 @@ u32 player_hud::anim_play(u16 part, const MotionID& M, bool bMixIn, const CMotio
 				continue;
 			}
 
-			if (CBlend* B = m_model->PlayCycle(pid, M, part == 0 && pid == 0 && attached_item(1) ? TRUE : bMixIn))
+			if (CBlend* B = m_model->PlayCycle(pid, M, part == 0 && pid == 0 && attached_item(1) ? true : bMixIn))
 			{
 				B->speed *= speed;
 			}
@@ -1930,7 +1930,7 @@ void player_hud::RestoreHandBlends(const char* ignored_part)
 		{
 			if(pid==part_id)
 				continue;
-			CBlend* B			= m_model->PlayCycle(pid, M, TRUE);//this can destroy BR calling UpdateTracks !
+			CBlend* B			= m_model->PlayCycle(pid, M, true);//this can destroy BR calling UpdateTracks !
 			if( parallel_blend->blend_state() != CBlend::eFREE_SLOT )
 			{
 				u16 bop				= B->bone_or_part;
@@ -1956,7 +1956,7 @@ void player_hud::detach_item_idx(u16 idx)
 	}
 	else if(idx==0 && m_attached_items[1])
 	{
-		m_model->PlayCycle(2, m_model->ID_Cycle("hand_idle_doun"), FALSE);
+		m_model->PlayCycle(2, m_model->ID_Cycle("hand_idle_doun"), false);
 		m_attached_items[1]->m_parent_hud_item->OnMovementChanged(mcAnyMove);
 	}
 }
@@ -2460,7 +2460,7 @@ void animator_item::update(bool bForce)
 	{
 		ka->UpdateTracks();
 		ka->dcast_PKinematics()->CalculateBones_Invalidate();
-		ka->dcast_PKinematics()->CalculateBones(TRUE);
+		ka->dcast_PKinematics()->CalculateBones(true);
 	}
 }
 
@@ -2490,7 +2490,7 @@ void animator_item::anim_play(const shared_str& item_anm_name, bool bMixIn, floa
 
 		u16 root_id = m_item->LL_GetBoneRoot();
 		CBoneInstance& root_binst = m_item->LL_GetBoneInstance(root_id);
-		root_binst.set_callback_overwrite(TRUE);
+		root_binst.set_callback_overwrite(true);
 		root_binst.mTransform.identity();
 
 		u16 pc = ka->partitions().count();

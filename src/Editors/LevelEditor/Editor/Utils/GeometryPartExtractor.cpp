@@ -316,7 +316,7 @@ bool SBPart::Export	(IWriter& F, u8 infl)
         SJointIKData 	ik_data;
         ik_data.Reset	();
         ik_data.type	= jtNone;
-        ik_data.ik_flags.set(SJointIKData::flBreakable,TRUE);
+        ik_data.ik_flags.set(SJointIKData::flBreakable,true);
         ik_data.Export	(F);
 
         Fvector rot={0,0,0};
@@ -409,6 +409,6 @@ bool CGeomPartExtractor::Process()
         }
 	    UI->ProgressEnd(pb);
     }
-    return TRUE;
+    return true;
 }
 

@@ -21,7 +21,7 @@ CPEDef::CPEDef()
 {                                          
     m_Frame.InitDefault	();
     m_MaxParticles		= 0;
-	m_CachedShader		= 0;
+	m_CachedShader		= nullptr;
 	m_fTimeLimit		= 0.f;
     // collision
     m_fCollideOneMinusFriction 	= 1.f;
@@ -145,7 +145,7 @@ bool CPEDef::LoadOriginal(IReader& F)
 	auto version = F.r_enum<PS::PE::Version>();
 	if (version!=PS::PE::Version::Original)
 	{
-		return FALSE;
+		return false;
 	}
 
 	FoundedChunk = !!F.find_chunk(PS::PE::Chunks::NAME);
@@ -236,7 +236,7 @@ bool CPEDef::LoadOriginal(IReader& F)
     } 
 #endif
 
-	return TRUE;
+	return true;
 }
 
 bool CPEDef::LoadExtended(IReader& F)
@@ -342,7 +342,7 @@ bool CPEDef::Load2Original(CInifile& ini)
 	Compile							(m_EActionList);
 	delete_data(m_EActionList);
 #endif
-	return TRUE;
+	return true;
 }
 
 bool CPEDef::Load2Entended(CInifile& ini)

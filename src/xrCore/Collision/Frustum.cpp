@@ -181,7 +181,7 @@ bool CFrustum::CreateFromClipPoly(Fvector* p, int count, Fvector& vBase, CFrustu
 	sPoly*	dest	= clip.ClipPoly(poly1,poly2);
 
 	// here we end up with complete frustum-polygon in 'dest'
-	if (0==dest)	return false;
+	if (nullptr==dest)	return false;
 
 	CreateFromPoints(dest->begin(),dest->size(),vBase);
 	return	true;

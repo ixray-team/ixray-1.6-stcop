@@ -53,10 +53,10 @@ bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 			{
 				ECollisionFormType tp = collidable->collidable.model->Type();
 				if ((tgt & (rqtObject | rqtObstacle)) && (tp == cftObject) && collidable->collidable.model->_RayQuery(Q, CObjectSpaceThreadData::r_temp))
-					return TRUE;
+					return true;
 
 				if ((tgt & rqtShape) && (tp == cftShape) && collidable->collidable.model->_RayQuery(Q, CObjectSpaceThreadData::r_temp))
-					return TRUE;
+					return true;
 			}
 		}
 	}
@@ -74,25 +74,25 @@ bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 			float _u, _v, _range;
 			if (CDB::TestRayTri(start, dir, cache->verts, _u, _v, _range, false))
 			{
-				if (_range > 0 && _range < range) return TRUE;
+				if (_range > 0 && _range < range) return true;
 			}
 
 			// 2. Polygon doesn't pick - real database query
 			CObjectSpaceThreadData::xrc.ray_query(&Static, start, dir, range);
 			if (0 == CObjectSpaceThreadData::xrc.r_count()) {
-				cache->set(start, dir, range, FALSE);
-				return FALSE;
+				cache->set(start, dir, range, false);
+				return false;
 			}
 			else {
 				// cache polygon
-				cache->set(start, dir, range, TRUE);
+				cache->set(start, dir, range, true);
 				CDB::RESULT* R = CObjectSpaceThreadData::xrc.r_begin();
 				CDB::TRI& T = Static.get_tris()[R->id];
 				xr_vector<Fvector>& V = Static.get_verts();
 				cache->verts[0].set(V[T.verts[0]]);
 				cache->verts[1].set(V[T.verts[1]]);
 				cache->verts[2].set(V[T.verts[2]]);
-				return TRUE;
+				return true;
 			}
 		}
 		else {
@@ -100,7 +100,7 @@ bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 			return CObjectSpaceThreadData::xrc.r_count();
 		}
 	}
-	return FALSE;
+	return false;
 	CObjectSpaceThreadData::r_spatial.clear();
 }
 //--------------------------------------------------------------------------------
@@ -110,7 +110,7 @@ bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 {
 	CObjectSpaceThreadData::r_temp.r_clear();
 
-	R.O = 0; R.range = range; R.element = -1;
+	R.O = nullptr; R.range = range; R.element = -1;
 	// static test
 	if (tgt & rqtStatic)
 	{
@@ -134,7 +134,7 @@ bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 		{
 			ISpatial* spatial = CObjectSpaceThreadData::r_spatial[o_it].get();
 			CObject* collidable = spatial->dcast_CObject();
-			if (0 == collidable)				continue;
+			if (nullptr == collidable)				continue;
 			if (collidable == ignore_object)	continue;
 			ECollisionFormType tp = collidable->collidable.model->Type();
 			if (((tgt & (rqtObject | rqtObstacle)) && (tp == cftObject)) || ((tgt & rqtShape) && (tp == cftShape)))
@@ -186,7 +186,7 @@ bool CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& 
 			CDB::RESULT* _I = CObjectSpaceThreadData::xrc.r_begin();
 			CDB::RESULT* _E = CObjectSpaceThreadData::xrc.r_end();
 			for (; _I != _E; _I++)
-				CObjectSpaceThreadData::r_temp.append_result(rq_result().set(0, _I->range, _I->id));
+				CObjectSpaceThreadData::r_temp.append_result(rq_result().set(nullptr, _I->range, _I->id));
 		}
 	}
 	// Test dynamic
@@ -198,7 +198,7 @@ bool CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& 
 		for (u32 o_it = 0; o_it < CObjectSpaceThreadData::r_spatial.size(); o_it++)
 		{
 			CObject* collidable = CObjectSpaceThreadData::r_spatial[o_it]->dcast_CObject();
-			if (0 == collidable)
+			if (nullptr == collidable)
 				continue;
 
 			if (collidable == ignore_object)
@@ -223,7 +223,7 @@ bool CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& 
 		for (; _I != _E; _I++)
 		{
 			dest.append_result(*_I);
-			if (!(CB ? CB(*_I, user_data) : TRUE))						return dest.r_count();
+			if (!(CB ? CB(*_I, user_data) : true))						return dest.r_count();
 			if (R.flags & (CDB::OPT_ONLYNEAREST | CDB::OPT_ONLYFIRST))	return dest.r_count();
 		}
 	}

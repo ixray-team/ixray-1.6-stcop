@@ -33,43 +33,43 @@ public:
 		int sz;
 		r_int(sz);
 		Read(dst,sz+1); 
-		return TRUE;
+		return true;
 	};
 
 	inline bool	w_string(const char* dst){
 		size_t sz = _strlen(dst);
 		w_int((int)sz);
-		Write(dst,(int)(sz+1)); return TRUE;
+		Write(dst,(int)(sz+1)); return true;
 	};
 
 	inline bool	r_float(float& dst){
 		Read(&dst,sizeof(float));
-		return TRUE;
+		return true;
 	};
 
 	inline bool	w_float(const float src){
 		Write(&src,sizeof(float));
-		return TRUE;
+		return true;
 	};
 
 	inline bool	r_int(int& dst){
 		Read(&dst,sizeof(int));
-		return TRUE;
+		return true;
 	};
 	
 	inline bool	w_int(const int src){
 		Write(&src,sizeof(int));
-		return TRUE;
+		return true;
 	};
 
 	inline bool	r_buff(void* dst, int sz){
 		Read(dst,sz);
-		return TRUE;
+		return true;
 	};
 	
 	inline bool	w_buff(void* src, int sz){
 		Write(src,sz);
-		return TRUE;
+		return true;
 	};
 };
 
@@ -140,9 +140,9 @@ inline bool CheckMailslotMessage(HANDLE hSlot, CMailSlotMsg& msg){
  
     cbMessage = cMessage = cbRead = 0; 
 
-    hEvent = CreateEvent(NULL, FALSE, FALSE, L"__Slot");
+    hEvent = CreateEvent(NULL, false, false, L"__Slot");
     if( NULL == hEvent )
-        return FALSE;
+        return false;
     ov.Offset = 0;
     ov.OffsetHigh = 0;
     ov.hEvent = hEvent;

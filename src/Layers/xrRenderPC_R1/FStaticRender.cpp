@@ -258,9 +258,9 @@ void					CRender::apply_object			(IRenderable*		O )
 
 // Misc
 float					g_fSCREEN;
-static	BOOL			gm_Nearer	= 0;
+static	bool			gm_Nearer	= 0;
 
-IC		void			gm_SetNearer		(BOOL bNearer)
+IC		void			gm_SetNearer		(bool bNearer)
 {
 	if (bNearer	!= gm_Nearer)
 	{
@@ -317,7 +317,7 @@ void CRender::Calculate				()
 		HOM.Enable									();
 		HOM.Render									(ViewBase);
 	}
-	gm_SetNearer					(FALSE);
+	gm_SetNearer					(false);
 	phase							= PHASE_NORMAL;
 
 	// Detect camera-sector
@@ -341,7 +341,7 @@ void CRender::Calculate				()
 		for (int K=0; K<Sectors_xrc.r_count(); K++)
 		{
 			CPortal*	pPortal		= (CPortal*) Portals[rmPortals->get_tris()[Sectors_xrc.r_begin()[K].id].dummy];
-			pPortal->bDualRender	= TRUE;
+			pPortal->bDualRender	= true;
 		}
 	}
 	//
@@ -429,7 +429,7 @@ void CRender::Calculate				()
 							vis_data&		v_orig			= renderable->renderable.visual->getVisData();
 							vis_data		v_copy			= v_orig;
 							v_copy.box.xform				(renderable->renderable.xform);
-							BOOL			bVisible		= HOM.visible(v_copy);
+							auto bVisible = HOM.visible(v_copy);
 							v_orig.accept_frame				= v_copy.accept_frame;
 							v_orig.marker					= v_copy.marker;
 							v_orig.hom_frame				= v_copy.hom_frame;
@@ -520,7 +520,7 @@ void CRender::Render()
 
 	// Begin
 	Target->Begin								();
-	o.vis_intersect								= FALSE			;
+	o.vis_intersect								= false			;
 	phase										= PHASE_NORMAL	;
 	r_dsgraph_render_hud						();				// hud
 	r_dsgraph_render_graph						(0);			// normal level
@@ -531,13 +531,13 @@ void CRender::Render()
 	g_pGamePersistent->Environment().RenderClouds	();				// clouds
 
 	r_pmask										(true,false);	// disable priority "1"
-	o.vis_intersect								= TRUE			;
+	o.vis_intersect								= true			;
 	L_Dynamic->render							(0);				// addititional light sources
 	if(Wallmarks){
 		Wallmarks->Render						();				// wallmarks has priority as normal geometry
 	}
 	HOM.Enable									();
-	o.vis_intersect								= FALSE			;
+	o.vis_intersect								= false			;
 	phase										= PHASE_NORMAL	;
 	r_pmask										(true,true);	// enable priority "0" and "1"
 	if(L_Shadows)L_Shadows->render				();				// ... and shadows

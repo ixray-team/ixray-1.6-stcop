@@ -103,7 +103,7 @@ public:
 	
 	void							OnArtefactOnBase		(ClientID id_who);
 
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = FALSE);
+	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = false);
 	virtual		void				OnDetach				(u16 eid_who, u16 eid_what);
 	virtual		void				OnCreate				(u16 id_who);
 
@@ -122,7 +122,7 @@ public:
 	virtual		void				MoveAllAlivePlayers			();
 	virtual		void				CheckForTeamElimination		();
 	virtual		void				CheckForTeamWin				();
-	virtual		bool				CanHaveFriendlyFire		()	{return TRUE;}
+	virtual		bool				CanHaveFriendlyFire		()	{return true;}
 
 	//-----------------------------------------------------------------------------
 	virtual		int					Get_ArtefactsCount			();

@@ -125,7 +125,7 @@ void CStalkerActionDead::execute		()
 
 		if (I == object().inventory().GetActiveSlot())
 		{
-			item->SetDropManual(TRUE);
+			item->SetDropManual(true);
 			continue;
 		}
 		object().inventory().Ruck		(item);

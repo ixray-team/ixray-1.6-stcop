@@ -116,7 +116,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		if (it2!=g_trans.end())	it2++;
 
 		// Search
-		bool found = FALSE;
+		bool found = false;
 		for (; it!=it2; it++)
 		{
 			v_vertices&	VL		= it->second;
@@ -124,7 +124,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 			R_ASSERT			(Front);
 			if (Front->P.similar(V.P,eps))
 			{
-				found				= TRUE;
+				found				= true;
 				VL.push_back		(&V);
 			}
 		}

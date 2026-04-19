@@ -172,9 +172,9 @@ bool STextureParams::HasAlphaChannel()
 	case tf4444:
 	case tf1555:
 	case tfRGBA:
-		return TRUE;
+		return true;
 	default:
-		return FALSE;
+		return false;
 	}
 }
 bool STextureParams::Load(IReader& F)
@@ -281,19 +281,19 @@ void STextureParams::OnTypeChange(PropValue* prop)
 	case ttCubeMap:	
 	break;
 	case ttBumpMap:	
-		flags.set			(flGenerateMipMaps,FALSE);
+		flags.set			(flGenerateMipMaps,false);
 	break;
 	case ttNormalMap:
 		flags.set			(flImplicitLighted|flBinaryAlpha|flAlphaBorder|flColorBorder|flFadeToColor
-							|flFadeToAlpha|flDitherColor|flDitherEachMIPLevel|flBumpDetail,FALSE);
-		flags.set			(flGenerateMipMaps,TRUE);
+							|flFadeToAlpha|flDitherColor|flDitherEachMIPLevel|flBumpDetail,false);
+		flags.set			(flGenerateMipMaps,true);
 		mip_filter			= kMIPFilterKaiser;
 		fmt					= tfRGBA;
 	break;
 	case ttTerrain:
 		flags.set			(flGenerateMipMaps|flBinaryAlpha|flAlphaBorder|flColorBorder|flFadeToColor
-							|flFadeToAlpha|flDitherColor|flDitherEachMIPLevel|flBumpDetail,FALSE);
-		flags.set			(flImplicitLighted,TRUE);
+							|flFadeToAlpha|flDitherColor|flDitherEachMIPLevel|flBumpDetail,false);
+		flags.set			(flImplicitLighted,true);
 		fmt					= tfDXT1;
 	break;
 	}
@@ -309,7 +309,7 @@ void STextureParams::FillProp(const char* base_name, xr_vector<PropItem*>& items
 
 bool STextureParams::similar(STextureParams& tp1, xr_vector<xr_string>& sel_params)
 {
-	bool res 				= TRUE;
+	bool res 				= true;
 	
 	xr_vector<xr_string>::iterator it = sel_params.begin();
 	xr_vector<xr_string>::iterator it_e = sel_params.end();

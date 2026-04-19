@@ -8,7 +8,7 @@
 
 #include "xrsharedmem.h"
 
-bool mem_initialized	= FALSE;
+bool mem_initialized	= false;
 bool shared_str_initialized	= false;
 
 //fake fix of memory corruptions in multiplayer game :(
@@ -58,7 +58,7 @@ void xrMemory::_initialize()
 		mem_fill32 = xrMemFill32_x86;
 	}
 
-	mem_initialized = TRUE;
+	mem_initialized = true;
 
 	g_pStringContainer = new str_container();
 	shared_str_initialized = true;
@@ -70,7 +70,7 @@ void xrMemory::_destroy()
 	xr_delete					(g_pSharedMemoryContainer);
 	xr_delete					(g_pStringContainer);
 
-	mem_initialized				= FALSE;
+	mem_initialized				= false;
 }
 
 void xrMemory::mem_compact()

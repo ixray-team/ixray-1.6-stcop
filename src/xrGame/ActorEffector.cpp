@@ -171,14 +171,14 @@ void CAnimatorCamEffector::Start(const char* fn)
 
 bool CAnimatorCamEffector::Valid()
 {
-	if(Cyclic())	return TRUE;
+	if(Cyclic())	return true;
 	return			inherited::Valid();
 }
 
 bool CAnimatorCamEffector::ProcessCam(SCamEffectorInfo& info)
 {
 	if(!inherited::ProcessCam(info))	
-		return FALSE;
+		return false;
 
 	const Fmatrix& m			= m_objectAnimator->XFORM();
 	m_objectAnimator->Update	(Device.fTimeDelta);
@@ -204,12 +204,12 @@ bool CAnimatorCamEffector::ProcessCam(SCamEffectorInfo& info)
 	if(m_fov>0.0f)
 		info.fFov				= m_fov;
 
-	return						TRUE;
+	return						true;
 }
 
 bool CAnimatorCamLerpEffector::ProcessCam(SCamEffectorInfo& info)
 {
-	if(!CEffectorCam::ProcessCam(info))	return FALSE;
+	if(!CEffectorCam::ProcessCam(info))	return false;
 
 	const Fmatrix& m			= m_objectAnimator->XFORM();
 	m_objectAnimator->Update	(Device.fTimeDelta);
@@ -246,7 +246,7 @@ bool CAnimatorCamLerpEffector::ProcessCam(SCamEffectorInfo& info)
 	if(m_fov>0.0f)
 		info.fFov				= m_fov;
 
-	return TRUE;
+	return true;
 }
 
 
@@ -424,7 +424,7 @@ bool CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
 	info.n.set		(mR.j);
 	info.p.set		(mR.c);
 
-	return TRUE;
+	return true;
 }
 bool similar_cam_info(const SCamEffectorInfo& c1, const SCamEffectorInfo& c2)
 {

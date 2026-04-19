@@ -5,8 +5,8 @@ class XRCORE_API CAppInfo
 public:
 	SDL_Window* Window = nullptr;
 
-	ThreadID MainThread = 0;
-	ThreadID SecondaryThread = 0;
+	ThreadID MainThread = NULL;
+	ThreadID SecondaryThread = NULL;
  
 
 public:

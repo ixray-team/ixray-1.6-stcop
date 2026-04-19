@@ -107,7 +107,7 @@ bool	game_sv_Single::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 			}
 #endif
 	}
-	return TRUE;
+	return true;
 }
 
 void game_sv_Single::OnDetach(u16 eid_who, u16 eid_what)

@@ -51,7 +51,7 @@ CMapLocation::CMapLocation(const char* type, u16 object_id, bool is_user_loc)
 
 	if (is_user_loc)
 	{
-		m_flags.set(eUserDefined, TRUE);
+		m_flags.set(eUserDefined, true);
 	}
 
 	m_objectID				= object_id;
@@ -64,7 +64,7 @@ CMapLocation::CMapLocation(const char* type, u16 object_id, bool is_user_loc)
 	m_compassOverrideVertAlign = valCenter;
 	m_hasCompassOverride = false;
 	m_owner_se_object = (ai().get_alife() && !IsUserDefined()) ? ai().alife().objects().object(m_objectID, true) : nullptr;
-	m_flags.set				(eHintEnabled, TRUE);
+	m_flags.set				(eHintEnabled, true);
 	LoadSpot				(type, false);
 	
 	DisablePointer			();
@@ -187,26 +187,26 @@ void CMapLocation::LoadSpot(const char* type, bool bReload)
 	s = g_uiSpotXml->ReadAttrib(path_base, 0, "store", nullptr);
 	if ( s )
 	{
-		m_flags.set( eSerailizable, TRUE);
+		m_flags.set( eSerailizable, true);
 	}
 
 	s = g_uiSpotXml->ReadAttrib(path_base, 0, "no_offline", nullptr);
 	if ( s )
 	{
-		m_flags.set( eHideInOffline, TRUE);
+		m_flags.set( eHideInOffline, true);
 	}
 
 	m_ttl = g_uiSpotXml->ReadAttribInt(path_base, 0, "ttl", 0);
 	if ( m_ttl > 0 )
 	{
-		m_flags.set( eTTL, TRUE);
+		m_flags.set( eTTL, true);
 		m_actual_time = Device.dwTimeGlobal+m_ttl*1000;
 	}
 
 	s = g_uiSpotXml->ReadAttrib(path_base, 0, "pos_to_actor", nullptr);
 	if ( s )
 	{
-		m_flags.set( ePosToActor, TRUE);
+		m_flags.set( ePosToActor, true);
 	}
 	xr_strconcat(path,path_base,":level_map");
 	node = g_uiSpotXml->NavigateToNode(path,0);
@@ -257,7 +257,7 @@ void CMapLocation::LoadSpot(const char* type, bool bReload)
 		}
 		if (g_uiSpotXml->ReadAttribInt(path, 0, "compass", 0) != 0)
 		{
-			m_flags.set(eShowOnCompass, TRUE);
+			m_flags.set(eShowOnCompass, true);
 		}
 		if (xr_strlen(str))
 		{
@@ -542,7 +542,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 				return;
 			}
 
-			if (b_alife && m_owner_se_object->m_flags.test(CSE_ALifeObject::flVisibleForMap) == FALSE)
+			if (b_alife && m_owner_se_object->m_flags.test(CSE_ALifeObject::flVisibleForMap) == false)
 			{
 				return;
 			}
@@ -815,7 +815,7 @@ void CMapLocation::SetHint(const shared_str& hint)
 {
 	if ( hint == "disable_hint" )
 	{
-		m_flags.set(eHintEnabled, FALSE);
+		m_flags.set(eHintEnabled, false);
 		m_hint		= "" ;
 		return;
 	}

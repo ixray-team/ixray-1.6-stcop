@@ -134,10 +134,10 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		{
 #ifdef DEBUG
 			if(psActorFlags.test(AF_NO_CLIP))
-				Device.Pause(!Device.Paused(), TRUE, TRUE, "li_pause_key_no_clip");
+				Device.Pause(!Device.Paused(), true, true, "li_pause_key_no_clip");
 			else
 #endif //DEBUG
-				Device.Pause(!Device.Paused(), TRUE, TRUE, "li_pause_key");
+				Device.Pause(!Device.Paused(), true, true, "li_pause_key");
 		}
 		return;
 	}
@@ -183,7 +183,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 				if(Device.Paused())
 				{
 					// Снимаем паузу, через Esc
-					Device.Pause(FALSE, TRUE, TRUE, "kQUIT");
+					Device.Pause(false, true, true, "kQUIT");
 					return;
 				}
 
@@ -272,11 +272,11 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	if(_curr == kQUICK_LOAD && IsGameTypeSingle())
 	{
 #ifdef DEBUG
-		FS.get_path					(_game_config_)->m_Flags.set(FS_Path::flNeedRescan, TRUE);
-		FS.get_path					("$game_scripts$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
+		FS.get_path					(_game_config_)->m_Flags.set(FS_Path::flNeedRescan, true);
+		FS.get_path					("$game_scripts$")->m_Flags.set(FS_Path::flNeedRescan, true);
 		// FS.rescan_pathes();
 		FS.IsAddonPhase = true;
-		FS.get_path					("$arch_dir_addons$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
+		FS.get_path					("$arch_dir_addons$")->m_Flags.set(FS_Path::flNeedRescan, true);
 		// FS.rescan_pathes();
 		FS.IsAddonPhase = false;
 #endif // DEBUG
@@ -288,12 +288,12 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	switch (key) {
 	case SDL_SCANCODE_F7: {
 		if (!IsGameTypeSingle()) return;
-		FS.get_path					(_game_config_)->m_Flags.set(FS_Path::flNeedRescan, TRUE);
-		FS.get_path					("$game_scripts$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
+		FS.get_path					(_game_config_)->m_Flags.set(FS_Path::flNeedRescan, true);
+		FS.get_path					("$game_scripts$")->m_Flags.set(FS_Path::flNeedRescan, true);
 		FS.rescan_pathes			();
 		NET_Packet					net_packet;
 		net_packet.w_begin			(M_RELOAD_GAME);
-		Send						(net_packet,net_flags(TRUE));
+		Send						(net_packet,net_flags(true));
 		return;
 	}
 	case SDL_SCANCODE_KP_DIVIDE: {
@@ -456,10 +456,10 @@ void CLevel::IR_OnKeyboardPress	(int key)
 				if (tpObject)
 				{
 					Engine.Sheduler.Unregister	(tpObject);
-					Engine.Sheduler.Register	(tpObject, TRUE);
+					Engine.Sheduler.Register	(tpObject, true);
 				};
 				Engine.Sheduler.Unregister	(*I);
-				Engine.Sheduler.Register	(*I, TRUE);
+				Engine.Sheduler.Register	(*I, true);
 
 				CActor* pActor = (*I) != nullptr ? (*I)->cast_actor() : nullptr;
 				if (pActor)
@@ -725,7 +725,7 @@ void CLevel::IR_GamepadKeyPress(int id)
 				if(Device.Paused())
 				{
 					// Снимаем паузу, через Esc
-					Device.Pause(FALSE, TRUE, TRUE, "kQUIT");
+					Device.Pause(false, true, true, "kQUIT");
 					return;
 				}
 

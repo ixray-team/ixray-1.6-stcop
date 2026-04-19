@@ -150,8 +150,8 @@ void CAI_Crow::Load(const char* section)
 bool CAI_Crow::net_Spawn(CSE_Abstract* DC)
 {
 	bool R		= inherited::net_Spawn	(DC);
-	setVisible	(TRUE);
-	setEnabled	(TRUE);
+	setVisible	(true);
+	setEnabled	(true);
 
 	renderable.visual->IsIgnoreOptimize = true;
 
@@ -223,7 +223,7 @@ void CAI_Crow::switch2_DeathFall()
 	Fvector V;
 	V.mul(XFORM().k,fSpeed);
 //	m_PhysicMovementControl->SetVelocity(V);
-	Visual()->dcast_PKinematicsAnimated()->PlayCycle	(m_Anims.m_death.GetRandom(),TRUE,cb_OnHitEndPlaying,this);
+	Visual()->dcast_PKinematicsAnimated()->PlayCycle	(m_Anims.m_death.GetRandom(),true,cb_OnHitEndPlaying,this);
 	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::CROW_ALIVE;
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::CROW_DEAD;
 }
@@ -511,7 +511,7 @@ void	CAI_Crow::Hit							(SHit* pHDS)
 
 bool CAI_Crow::UsedAI_Locations()
 {
-	return		(FALSE);
+	return		(false);
 }
 
 void CAI_Crow::create_physic_shell()

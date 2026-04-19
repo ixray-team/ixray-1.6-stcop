@@ -71,7 +71,7 @@ void CEditableObject::GotoBindPose()
 {
 	BoneVec& lst = m_Bones;
 	for (BoneIt b_it=lst.begin(); b_it!=lst.end(); b_it++) (*b_it)->Reset();
-	CalculateAnimation(0);
+	CalculateAnimation(nullptr);
 #if 1
 	UI->RedrawScene();
 #endif
@@ -80,7 +80,7 @@ void CEditableObject::GotoBindPose()
 CSMotion* CEditableObject::ResetSAnimation(bool bGotoBindPose)
 {
 	CSMotion* M=m_ActiveSMotion;
-	SetActiveSMotion(0);
+	SetActiveSMotion(nullptr);
 	if (bGotoBindPose)
 			GotoBindPose();
 	return M;
@@ -269,7 +269,7 @@ bool CEditableObject::RemoveSMotion(const char* name)
 	SMotionVec& lst = m_SMotions;
 	for(SMotionIt m=lst.begin(); m!=lst.end(); m++)
 		if ((stricmp((*m)->Name(),name)==0)){
-			if (m_ActiveSMotion==*m) SetActiveSMotion(0);
+			if (m_ActiveSMotion==*m) SetActiveSMotion(nullptr);
 			xr_delete(*m);
 			lst.erase(m);
 			return true;
@@ -292,7 +292,7 @@ bool CEditableObject::AppendSMotion(const char* fname, SMotionVec* inserted)
 			bRes = false;
 		}else{
 			string256 name;
-			_splitpath(fname,0,0,name,0);
+			_splitpath(fname,nullptr,nullptr,name,nullptr);
 			if (CheckBoneCompliance(M)){
 				M->SortBonesBySkeleton(m_Bones);
 				string256 			m_name;
@@ -349,7 +349,7 @@ bool CEditableObject::AppendSMotion(const char* fname, SMotionVec* inserted)
 
 void CEditableObject::ClearSMotions()
 {
-	SetActiveSMotion(0);
+	SetActiveSMotion(nullptr);
 	for(SMotionIt m_it=m_SMotions.begin(); m_it!=m_SMotions.end();m_it++)xr_delete(*m_it);
 	m_SMotions.clear();
 }
@@ -378,7 +378,7 @@ CSMotion* CEditableObject::FindSMotionByName	(const char* name, const CSMotion* 
 		for(SMotionIt m=lst.begin(); m!=lst.end(); m++)
 			if ((Ignore!=(*m))&&(stricmp((*m)->Name(),name)==0)) return (*m);
 	}
-	return 0;
+	return nullptr;
 }
 
 void CEditableObject::GenerateSMotionName(char* buffer, const char* start_name, const CSMotion* M)
@@ -405,13 +405,13 @@ ICF void fill_bones_by_parent(BoneVec& bones,CBone* start)
 void CEditableObject::PrepareBones()
 {
 	if (m_Bones.empty())return;
-	CBone* PARENT		= 0;
+	CBone* PARENT		= nullptr;
 	// clear empty parent
 	BoneIt b_it;
 	for (b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++)
 	{
 		(*b_it)->children.clear	();
-		(*b_it)->parent			= NULL;
+		(*b_it)->parent			= nullptr;
 		BoneIt parent	= std::find_if(m_Bones.begin(),m_Bones.end(),fBoneNameEQ((*b_it)->ParentName()));
 		if (parent==m_Bones.end()){
 			(*b_it)->SetParentName("");
@@ -419,7 +419,7 @@ void CEditableObject::PrepareBones()
 			PARENT		= *b_it;
 		}else{
 			BoneIt parent	= std::find_if(m_Bones.begin(),m_Bones.end(),fBoneNameEQ((*b_it)->ParentName()));
-			CBone* tmp = (parent==m_Bones.end())?0:*parent;
+			CBone* tmp = (parent==m_Bones.end())?nullptr:*parent;
 			(*b_it)->parent	= tmp;
 		}
 	}
@@ -459,7 +459,7 @@ int CEditableObject::FindBoneByNameIdx(const char* name)
 CBone* CEditableObject::FindBoneByName(const char* name)
 {
 	BoneIt b_it = FindBoneByNameIt(name);
-	return (b_it==m_Bones.end())?0:*b_it;
+	return (b_it==m_Bones.end())?nullptr:*b_it;
 }
 
 int CEditableObject::GetRootBoneID()

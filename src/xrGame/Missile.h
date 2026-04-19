@@ -22,7 +22,7 @@ public:
 	CMissile() = default;
 	virtual ~CMissile() = default;
 
-	virtual bool			AlwaysTheCrow				()				{ return TRUE; }
+	virtual bool			AlwaysTheCrow				()				{ return true; }
 	virtual void			render_item_ui					();
 	virtual bool			render_item_ui_query					();
 

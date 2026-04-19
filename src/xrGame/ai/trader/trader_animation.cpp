@@ -44,7 +44,7 @@ void CTraderAnimation::set_animation(const char* anim)
 
 	IKinematicsAnimated* kinematics_animated = m_trader->Visual()->dcast_PKinematicsAnimated();
 	m_motion_global = kinematics_animated->ID_Cycle(m_anim_global);
-	kinematics_animated->PlayCycle(m_motion_global, TRUE, global_callback, this);
+	kinematics_animated->PlayCycle(m_motion_global, true, global_callback, this);
 }
 
 void CTraderAnimation::set_head_animation(const char* anim)
@@ -54,7 +54,7 @@ void CTraderAnimation::set_head_animation(const char* anim)
 	// назначить анимацию головы
 	IKinematicsAnimated* kinematics_animated = m_trader->Visual()->dcast_PKinematicsAnimated();
 	m_motion_head = kinematics_animated->ID_Cycle(m_anim_head);
-	kinematics_animated->PlayCycle(m_motion_head, TRUE, head_callback, this);
+	kinematics_animated->PlayCycle(m_motion_head, true, head_callback, this);
 }
 
 //////////////////////////////////////////////////////////////////////////

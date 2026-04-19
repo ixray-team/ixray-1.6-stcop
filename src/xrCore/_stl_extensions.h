@@ -30,7 +30,7 @@ public:
 	xalloc			(const xalloc<T>&) = default;
 	template<class _Other>							xalloc			(const xalloc<_Other>&)					{	}
 	template<class _Other>	xalloc<T>&				operator=		(const xalloc<_Other>&)					{	return (*this);	}
-							pointer					allocate		(size_type n, const void* p=0) const	{	return xr_alloc<T>((u32)n);	}
+							pointer					allocate		(size_type n, const void* p=nullptr) const	{	return xr_alloc<T>((u32)n);	}
 							char*					_charalloc		(size_type n)							{	return (char*)allocate(n); }
 							void					deallocate		(pointer p, size_type n) const			{	xr_free	(p);				}
 							void					deallocate		(void* p, size_type n) const			{	xr_free	(p);				}

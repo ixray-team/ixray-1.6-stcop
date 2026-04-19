@@ -27,15 +27,15 @@ void CRenderTarget::enable_dbt_bounds		(light* L)
 }
 
 // nv-DBT
-BOOL	CRenderTarget::u_DBT_enable	(float zMin, float zMax)
+bool	CRenderTarget::u_DBT_enable	(float zMin, float zMax)
 {
-	if (!RImplementation.o.nvdbt)					return	FALSE;
-	if (!ps_r2_ls_flags.test(R2FLAG_USE_NVDBT))		return	FALSE;
+	if (!RImplementation.o.nvdbt)					return	false;
+	if (!ps_r2_ls_flags.test(R2FLAG_USE_NVDBT))		return	false;
 
 	// enable cheat
 	GRHI->DriverExt->SetDepthBounds(true, zMin, zMax);
 
-	return TRUE;
+	return true;
 }
 
 void	CRenderTarget::u_DBT_disable	()
@@ -44,7 +44,7 @@ void	CRenderTarget::u_DBT_disable	()
 		GRHI->DriverExt->SetDepthBounds(false, 0, 0);
 }
 
-BOOL CRenderTarget::enable_scissor(light* L)		// true if intersects near plane
+bool CRenderTarget::enable_scissor(light* L)		// true if intersects near plane
 {
 	// Near plane intersection
 	bool near_intersect = false;

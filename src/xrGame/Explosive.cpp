@@ -61,9 +61,9 @@ CExplosive::CExplosive(void)
 	m_explosion_flags.assign(0);
 	m_vExplodeSize.set		(0.001f,0.001f,0.001f);
 
-	m_bHideInExplosion	= TRUE;
+	m_bHideInExplosion	= true;
 	m_fExplodeHideDurationMax = 0;
-	m_bDynamicParticles		= FALSE;
+	m_bDynamicParticles		= false;
 	m_pExpParticle			= nullptr;
 }
 
@@ -129,10 +129,10 @@ void CExplosive::Load(CInifile const *ini,const char* section)
 		m_wallmark_manager.Load(ini->r_string(section, "wallmark_section"));
 	}
 
-	m_bHideInExplosion = READ_IF_EXISTS(ini, r_bool, section, "hide_in_explosion", TRUE);
+	m_bHideInExplosion = READ_IF_EXISTS(ini, r_bool, section, "hide_in_explosion", true);
 	m_fExplodeHideDurationMax = READ_IF_EXISTS(ini, r_float, section, "explode_hide_duration", 0);
 
-	m_bDynamicParticles	 = READ_IF_EXISTS(ini, r_bool, section, "dynamic_explosion_particles", FALSE);
+	m_bDynamicParticles	 = READ_IF_EXISTS(ini, r_bool, section, "dynamic_explosion_particles", false);
 
 	m_bIsGasExplosive = READ_IF_EXISTS(pSettings, r_bool, section, "is_gas_explosive", false);
 	m_sBlastActorCallback = READ_IF_EXISTS(pSettings, r_string, section, "actor_blast_callback", "");
@@ -310,7 +310,7 @@ void CExplosive::Explode()
 	VERIFY(m_explosion_flags.test(flReadyToExplode));//m_bReadyToExplode
 	VERIFY(!physics_world()->Processing());
 	//m_bExploding = true;
-	m_explosion_flags.set(flExploding,TRUE);
+	m_explosion_flags.set(flExploding,true);
 	cast_game_object()->processing_activate();
 
 	Fvector& pos = m_vExplodePos;
@@ -379,7 +379,7 @@ void CExplosive::Explode()
 		cartridge.param_s.kAP				= 1.f;
 		cartridge.param_s.fWallmarkSize		= fWallmarkSize;
 		cartridge.bullet_material_idx		= GMLib.GetMaterialIdx(WEAPON_MATERIAL_NAME);
-		cartridge.m_flags.set				(CCartridge::cfTracer,FALSE);
+		cartridge.m_flags.set				(CCartridge::cfTracer,false);
 
 		Level().BulletManager().AddBullet(	pos, frag_dir, m_fFragmentSpeed,
 											m_fFragHit, m_fFragHitImpulse, Initiator(),
@@ -469,14 +469,14 @@ void CExplosive::UpdateCL()
 	{
 		CGameObject* go=cast_game_object();
 		go->processing_deactivate();
-		m_explosion_flags.set(flExploding,FALSE);//m_bExploding = false;
+		m_explosion_flags.set(flExploding,false);//m_bExploding = false;
 		OnAfterExplosion();
 		return;
 	}
 	//время вышло, убираем объект взрывчатки
 	if(m_fExplodeDuration < 0.f&&m_blasted_objects.empty()) 
 	{
-		m_explosion_flags.set(flExploded,TRUE);
+		m_explosion_flags.set(flExploded,true);
 		
 		
 		StopLight();
@@ -582,8 +582,8 @@ void CExplosive::OnBeforeExplosion()
 void CExplosive::HideExplosive()
 {
 	CGameObject	*GO=cast_game_object();
-	GO->setVisible(FALSE);
-	GO->setEnabled(FALSE);
+	GO->setVisible(false);
+	GO->setEnabled(false);
 	CPhysicsShell* phshell = GO->cast_physics_shell_holder()->PPhysicsShell();
 	if(phshell)
 	{
@@ -620,7 +620,7 @@ void CExplosive::ExplodeParams(const Fvector& pos,
 								const Fvector& dir)
 {
 	//m_bReadyToExplode = true;
-	m_explosion_flags.set	(flReadyToExplode,TRUE);
+	m_explosion_flags.set	(flReadyToExplode,true);
 	m_vExplodePos			= pos;
 	m_vExplodePos.y			+= 0.1f;// fake
 	m_vExplodeDir			= dir;
@@ -643,7 +643,7 @@ void CExplosive::GenExplodeEvent (const Fvector& pos, const Fvector& normal)
 	cast_game_object()->u_EventSend		(P);
 
 	//m_bExplodeEventSent = true;
-	m_explosion_flags.set(flExplodEventSent,TRUE);
+	m_explosion_flags.set(flExplodEventSent,true);
 }
 
 void CExplosive::FindNormal(Fvector& normal)

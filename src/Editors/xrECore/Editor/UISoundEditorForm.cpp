@@ -21,9 +21,9 @@ UISoundEditorForm::UISoundEditorForm()
     if (!FS.can_write_to_alias(_sounds_))
     {
         Log("#!You don't have permisions to modify sounds.");
-        m_ItemProps->SetReadOnly(TRUE);
-        m_Flags.set(flReadOnly, TRUE);
-        bAutoPlay = TRUE;
+        m_ItemProps->SetReadOnly(true);
+        m_Flags.set(flReadOnly, true);
+        bAutoPlay = true;
     }
 }
 
@@ -117,7 +117,7 @@ void UISoundEditorForm::UpdateLib()
     if (modif_map.size()) 
     {
         AStringVec modif;
-        SndLib->SynchronizeSounds(true, true, true, &modif_map, 0);
+        SndLib->SynchronizeSounds(true, true, true, &modif_map, nullptr);
         SndLib->RefreshSounds(false, false);
         modif_map.clear();
     }
@@ -135,7 +135,7 @@ void UISoundEditorForm::AppendModif(const char* nm)
 void UISoundEditorForm::OnControlClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
     switch (V->btn_num) {
-    case 0: m_Snd.play(0, sm_2D); 	break;
+    case 0: m_Snd.play(nullptr, sm_2D); 	break;
     case 1: m_Snd.stop();			break;
     case 2: {
         bAutoPlay = !bAutoPlay;
@@ -197,7 +197,7 @@ void UISoundEditorForm::OnAttClick(ButtonValue* V, bool& bModif, bool& bSafe)
 void UISoundEditorForm::InitItemList()
 {
     FS_FileSet		sound_map;
-    SndLib->GetSounds(sound_map, TRUE);
+    SndLib->GetSounds(sound_map, true);
 
     ListItemsVec items;
 
@@ -259,7 +259,7 @@ void UISoundEditorForm::OnItemsFocused(ListItem* item)
         }
     }
 
-    ButtonValue* B = 0;
+    ButtonValue* B = nullptr;
     if (m_THM_Current.size() == 1)
     {
         ESoundThumbnail* thm = m_THM_Current.back();
@@ -268,7 +268,7 @@ void UISoundEditorForm::OnItemsFocused(ListItem* item)
         string_path OggFilename;
         FS.update_path(OggFilename, _game_sounds_, EFS.ChangeFileExt(thm->SrcName(), ".ogg").c_str());
 
-        CanvasValue* C = 0;
+        CanvasValue* C = nullptr;
         C = PHelper().CreateCanvas(props, "Attenuation", "", 64);
         C->tag = (size_t)this;
         C->OnDrawCanvasEvent.bind(this, &UISoundEditorForm::OnAttenuationDraw);
@@ -317,7 +317,7 @@ void UISoundEditorForm::PlaySound(const char* name)
         }
 
         m_Snd.create(FileName.c_str(), st_Effect, sg_Undefined);
-        m_Snd.play(0, sm_2D);
+        m_Snd.play(nullptr, sm_2D);
         if (!bAutoPlay)		m_Snd.stop();
     }
 }
@@ -336,20 +336,20 @@ void UISoundEditorForm::OnAttenuationDraw(CanvasValue* sender)
         float y = floorf(bb); clamp(y, 0.f, HEIGHT);
         values[d - 1] = y;
     }
-    ImGui::PlotLines("##LinesSound", values, IM_ARRAYSIZE(values),0,0,0, HEIGHT, ImVec2(0, HEIGHT), 4);
+    ImGui::PlotLines("##LinesSound", values, IM_ARRAYSIZE(values),0,nullptr,0, HEIGHT, ImVec2(0, HEIGHT), 4);
 }
 ESoundThumbnail* UISoundEditorForm::FindUsedTHM(const char* name)
 {
     for (THMIt it = m_THM_Used.begin(); it != m_THM_Used.end(); it++)
         if (0 == strcmp((*it)->SrcName(), name)) return *it;
-    return 0;
+    return nullptr;
 }
 
 void UISoundEditorForm::SaveUsedTHM()
 {
-    int m_age = time(NULL);
+    int m_age = time(nullptr);
     for (THMIt t_it = m_THM_Used.begin(); t_it != m_THM_Used.end(); t_it++)
-        (*t_it)->Save(m_age, 0);
+        (*t_it)->Save(m_age, nullptr);
 }
 
 void UISoundEditorForm::DestroyUsedTHM()

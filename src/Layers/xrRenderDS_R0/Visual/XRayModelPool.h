@@ -45,9 +45,9 @@ public:
 
 	CDS0_RenderVisual*		Create(LPCSTR name, IReader* data = 0);
 	CDS0_RenderVisual*		CreateChild(LPCSTR name, IReader* data);
-	void					Delete(CDS0_RenderVisual*& V, bool bDiscard = FALSE);
+	void					Delete(CDS0_RenderVisual*& V, bool bDiscard = false);
 	void					Discard(CDS0_RenderVisual*& V, bool b_complete);
-	void					DeleteInternal(CDS0_RenderVisual*& V, bool bDiscard = FALSE);
+	void					DeleteInternal(CDS0_RenderVisual*& V, bool bDiscard = false);
 	void					DeleteQueue();
 
 	void					Prefetch();

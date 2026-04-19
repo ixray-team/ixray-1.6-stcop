@@ -200,7 +200,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	GetDisplayMetricsSDL3(Wmm, Hmm, Wpx, Hpx);
 #endif
 
-	auto is_res_depend = !!READ_IF_EXISTS(pSettings, r_bool, Name, "res_depend", TRUE);
+	auto is_res_depend = !!READ_IF_EXISTS(pSettings, r_bool, Name, "res_depend", true);
 	auto is_dpi_depend = !!READ_IF_EXISTS(pSettings, r_bool, Name, "dpi_depend", !is_res_depend);
 
 	auto ppi = int(25.4f * sqrt(Hpx * Hpx + Wpx * Wpx) / sqrt(Hmm * Hmm + Wmm * Wmm));
@@ -482,17 +482,17 @@ void CGameFont::MasterOut(
 
 void CGameFont::OutI(float _x, float _y, const char* fmt, ...)
 {
-	MASTER_OUT(FALSE, TRUE, TRUE, FALSE, _x, _y, 0.0f, fmt);
+	MASTER_OUT(false, true, true, false, _x, _y, 0.0f, fmt);
 }
 
 void CGameFont::Out(float _x, float _y, const char* fmt, ...)
 {
-	MASTER_OUT(TRUE, TRUE, FALSE, FALSE, _x, _y, 0.0f, fmt);
+	MASTER_OUT(true, true, false, false, _x, _y, 0.0f, fmt);
 }
 
 void CGameFont::OutNext(const char* fmt, ...)
 {
-	MASTER_OUT(TRUE, FALSE, FALSE, TRUE, 0.0f, 0.0f, LineSpacing, fmt);
+	MASTER_OUT(true, false, false, true, 0.0f, 0.0f, LineSpacing, fmt);
 }
 
 void CGameFont::OutLeft(float x)

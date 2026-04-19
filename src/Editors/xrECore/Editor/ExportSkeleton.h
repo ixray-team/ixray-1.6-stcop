@@ -43,22 +43,22 @@ struct ECORE_API SSkelVert: public st_SVert{
     }
     bool	similar(SSkelVert& V)
     {
-        if (bones.size() != V.bones.size())	return FALSE;
+        if (bones.size() != V.bones.size())	return false;
         for (u8 k = 0; k < (u8)bones.size(); k++)
         {
             if (!bones[k].similar(V.bones[k]))
-                return FALSE;
+                return false;
         }
         if (!uv.similar(V.uv, EPS_S))
-            return FALSE;
+            return false;
 
         if (!offs.similar(V.offs, g_EpsSkelPositionDelta))
-            return FALSE;
+            return false;
 
         if (!norm.similar(V.norm, g_EpsSkelPositionDelta))
-            return FALSE;
+            return false;
 
-        return TRUE;
+        return true;
     }
 };
 

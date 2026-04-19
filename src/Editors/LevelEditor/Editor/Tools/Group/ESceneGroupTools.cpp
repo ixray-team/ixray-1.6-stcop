@@ -54,7 +54,7 @@ bool  ESceneGroupTool::_RemoveObject(CCustomObject* object)
 
     CGroupObject* go 	= smart_cast<CGroupObject*>(object); 
     go->Clear1          ();
-    return              TRUE;
+    return              true;
 }
 
 void ESceneGroupTool::GroupObjects(bool bUndo)
@@ -276,7 +276,7 @@ void ESceneGroupTool::MakeThumbnail()
         // save render params
         Flags32 old_flag			= psDeviceFlags;
         // set render params
-        psDeviceFlags.set			(rsStatistic|rsDrawGrid,FALSE);
+        psDeviceFlags.set			(rsStatistic|rsDrawGrid,false);
 
         U32Vec pixels;
         u32 w=512,h=512;

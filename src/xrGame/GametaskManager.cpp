@@ -43,7 +43,7 @@ CGameTaskManager::CGameTaskManager()
 	m_gametasks_wrapper			= new CGameTaskWrapper();
 	m_gametasks_wrapper->registry().init(0);// actor's id
 	m_flags.zero				();
-	m_flags.set					(eChanged, TRUE);
+	m_flags.set					(eChanged, true);
 	m_gametasks					= nullptr;
 
 	for (auto& taskId : g_active_task_id)
@@ -107,7 +107,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 		return nullptr;
 	}
 
-	m_flags.set						(eChanged, TRUE);
+	m_flags.set						(eChanged, true);
 
 	SGameTaskKey& key = GetGameTasks().emplace_back(t->m_ID);
 	key.setGameTask(t);
@@ -180,7 +180,7 @@ void CGameTaskManager::test_groid()
 void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state, u16 objective_id /*= ROOT_TASK_OBJECTIVE*/)
 {
 	PROF_EVENT("CGameTaskManager::SetTaskState");
-	m_flags.set						(eChanged, TRUE);
+	m_flags.set						(eChanged, true);
 
     ETaskType type = eTaskTypeStoryline;
     if (m_flags.test(eMultipleTasks))
@@ -407,7 +407,7 @@ void CGameTaskManager::UpdateActiveTask()
 		}
 	}
 
-	m_flags.set					(eChanged, FALSE);
+	m_flags.set					(eChanged, false);
 	m_actual_frame				= Device.dwFrame;
 }
 
@@ -432,7 +432,7 @@ void CGameTaskManager::SetActiveTask(const shared_str& id, ETaskType type)
 		t = type;
 
 	g_active_task_id[t] = id;
-	m_flags.set(eChanged, TRUE);
+	m_flags.set(eChanged, true);
 	m_read = true;
 }*/
 
@@ -456,7 +456,7 @@ void CGameTaskManager::SetActiveTask(CGameTask* task, u16 objective_id)
 			if (ml)
 				ml->EnablePointer();
 		}
-        m_flags.set(eChanged, TRUE);
+        m_flags.set(eChanged, true);
         task->m_read = true;
     }
 }

@@ -240,7 +240,7 @@ bool CEditableMesh::LoadMesh(IReader& F){
     {
         GenerateFNormals	();
         GenerateAdjacency	();
-	    GenerateVNormals	(0);
+	    GenerateVNormals	(nullptr);
 		GenerateRenderBuffers();
         UnloadFNormals		();
         UnloadAdjacency		();

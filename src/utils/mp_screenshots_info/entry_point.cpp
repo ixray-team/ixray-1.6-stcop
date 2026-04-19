@@ -77,7 +77,7 @@ int main(int argc, char ** argv)
 		return EXIT_FAILURE;
 	}
 	printf					("Initializing core...\n");
-	Core._initialize		("mp_screenshots_info", xrcore_log_cb, TRUE, "fsgame4mpu.ltx");
+	Core._initialize		("mp_screenshots_info", xrcore_log_cb, true, "fsgame4mpu.ltx");
 	crypto::xr_crypto_init	();
 
 #ifdef DEBUG

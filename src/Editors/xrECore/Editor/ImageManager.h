@@ -35,23 +35,23 @@ public:
     void  	RemoveTexture	(UIItemListForm::Node& node);
     bool		CheckCompliance		(const char* fname, int& compl_);
     void		CheckCompliance		(FS_FileSet& files, FS_FileSet& compl_);
-    int			GetTextures			(FS_FileSet& files, bool bFolder=FALSE);
-    int			GetTexturesRaw		(FS_FileSet& files, bool bFolder=FALSE);
+    int			GetTextures			(FS_FileSet& files, bool bFolder=false);
+    int			GetTexturesRaw		(FS_FileSet& files, bool bFolder=false);
 //	int			GetServerModifiedTextures(CLocatorAPI::files_query& files);
 	int 		GetLocalNewTextures	(FS_FileSet& files);
 	void		SafeCopyLocalToServer(FS_FileSet& files);
 
-	void		SynchronizeTextures	(bool sync_thm, bool sync_game, bool bForceGame, FS_FileSet* source_map, AStringVec* sync_list_without_extention, FS_FileSet* modif_map=0, bool bForceBaseAge=false);
+	void		SynchronizeTextures	(bool sync_thm, bool sync_game, bool bForceGame, FS_FileSet* source_map, AStringVec* sync_list_without_extention, FS_FileSet* modif_map=nullptr, bool bForceBaseAge=false);
     void 		SynchronizeTexture	(const char* tex_name, time_t age);
 //	void		ChangeFileAgeTo		(FS_FileSet* source_map, int age);
 	// make/update routines
     bool		MakeGameTexture		(const char* game_name, u32* data, const STextureParams& tp);
-    void		CreateTextureThumbnail(ETextureThumbnail* THM, const xr_string& src_name, const char* path=0, bool bSetDefParam=true);
+    void		CreateTextureThumbnail(ETextureThumbnail* THM, const xr_string& src_name, const char* path=nullptr, bool bSetDefParam=true);
     bool		CreateOBJThumbnail	(const char* tex_name, CEditableObject* obj, time_t age);
     void		CreateLODTexture	(CEditableObject* object, U32Vec& lod_pixels, U32Vec& nm_pixels, u32 tgt_w, u32 tgt_h, int samples, int quality);
     void		CreateLODTexture	(CEditableObject* object, const char* tex_name, 	u32 tgt_w, u32 tgt_h, int samples, time_t age, int quality);
-    void		CreateGameTexture	(const char* src_name, ETextureThumbnail* thumb=0);
-    bool		LoadTextureData		(const char* src_name, U32Vec& data, u32& w, u32& h, time_t* age=0);
+    void		CreateGameTexture	(const char* src_name, ETextureThumbnail* thumb=nullptr);
+    bool		LoadTextureData		(const char* src_name, U32Vec& data, u32& w, u32& h, time_t* age=nullptr);
 
     // result 0-can't fit images, 1-ok, -1 can't load image 
     void		MergedTextureRemapUV(float& dest_u, float& dest_v, float src_u, float src_v, const Fvector2& offs, const Fvector2& scale, bool bRotate);

@@ -20,11 +20,11 @@ CBlender_Screen_SET::CBlender_Screen_SET()
 	oAREF.value			= 32;
 	oAREF.min			= 0;
 	oAREF.max			= 255;
-	oZTest.value		= FALSE;
-	oZWrite.value		= FALSE;
-	oLighting.value		= FALSE;
-	oFog.value			= FALSE;
-	oClamp.value		= TRUE;
+	oZTest.value		= false;
+	oZWrite.value		= false;
+	oLighting.value		= false;
+	oFog.value			= false;
+	oClamp.value		= true;
 }
 
 CBlender_Screen_SET::~CBlender_Screen_SET()
@@ -144,34 +144,34 @@ void	CBlender_Screen_SET::Compile(CBlender_Compile& C)
 	switch (oBlend.IDselected)
 	{
 	case 0:	// SET
-		C.PassSET_Blend(FALSE, D3DBLEND_ONE, D3DBLEND_ZERO, FALSE, 0);
+		C.PassSET_Blend(false, D3DBLEND_ONE, D3DBLEND_ZERO, false, 0);
 		break;
 	case 1: // BLEND
-		C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, TRUE, oAREF.value);
+		C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, oAREF.value);
 		break;
 	case 2:	// ADD
-		C.PassSET_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE, FALSE, oAREF.value);
+		C.PassSET_Blend(true, D3DBLEND_ONE, D3DBLEND_ONE, false, oAREF.value);
 		break;
 	case 3:	// MUL
-		C.PassSET_Blend(TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO, FALSE, oAREF.value);
+		C.PassSET_Blend(true, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO, false, oAREF.value);
 		break;
 	case 4:	// MUL_2X
-		C.PassSET_Blend(TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_SRCCOLOR, FALSE, oAREF.value);
+		C.PassSET_Blend(true, D3DBLEND_DESTCOLOR, D3DBLEND_SRCCOLOR, false, oAREF.value);
 		break;
 	case 5:	// ALPHA-ADD
-		C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_ONE, TRUE, oAREF.value);
+		C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_ONE, true, oAREF.value);
 		break;
 	case 6:	// MUL_2X + A-test
-		C.PassSET_Blend(TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_SRCCOLOR, FALSE, oAREF.value);
+		C.PassSET_Blend(true, D3DBLEND_DESTCOLOR, D3DBLEND_SRCCOLOR, false, oAREF.value);
 		break;
 	case 7:	// SET (2r)
-		C.PassSET_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ZERO, TRUE, 0);
+		C.PassSET_Blend(true, D3DBLEND_ONE, D3DBLEND_ZERO, true, 0);
 		break;
 	case 8: // BLEND (2r)
-		C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, TRUE, oAREF.value);
+		C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, oAREF.value);
 		break;
 	case 9: // BLEND (2r)
-		C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, TRUE, oAREF.value);
+		C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, oAREF.value);
 		break;
 	}
 	C.PassSET_LightFog(oLighting.value, oFog.value);
@@ -190,38 +190,38 @@ void	CBlender_Screen_SET::Compile	(CBlender_Compile& C)
 		switch (oBlend.IDselected)
 		{
 		case 0:	// SET
-			C.PassSET_Blend	(FALSE,	D3DBLEND_ONE,D3DBLEND_ZERO,				FALSE,0);
+			C.PassSET_Blend	(false,	D3DBLEND_ONE,D3DBLEND_ZERO,				false,0);
 			break;
 		case 1: // BLEND
-			C.PassSET_Blend	(TRUE,	D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,	TRUE,oAREF.value);
+			C.PassSET_Blend	(true,	D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,	true,oAREF.value);
 			break;
 		case 2:	// ADD
-			C.PassSET_Blend	(TRUE,	D3DBLEND_ONE,D3DBLEND_ONE,				FALSE,oAREF.value);
+			C.PassSET_Blend	(true,	D3DBLEND_ONE,D3DBLEND_ONE,				false,oAREF.value);
 			break;
 		case 3:	// MUL
-			C.PassSET_Blend	(TRUE,	D3DBLEND_DESTCOLOR,D3DBLEND_ZERO,		FALSE,oAREF.value);
+			C.PassSET_Blend	(true,	D3DBLEND_DESTCOLOR,D3DBLEND_ZERO,		false,oAREF.value);
 			break;
 		case 4:	// MUL_2X
-			C.PassSET_Blend	(TRUE,	D3DBLEND_DESTCOLOR,D3DBLEND_SRCCOLOR,	FALSE,oAREF.value);
+			C.PassSET_Blend	(true,	D3DBLEND_DESTCOLOR,D3DBLEND_SRCCOLOR,	false,oAREF.value);
 			break;
 		case 5:	// ALPHA-ADD
-			C.PassSET_Blend	(TRUE,	D3DBLEND_SRCALPHA,D3DBLEND_ONE,			TRUE,oAREF.value);
+			C.PassSET_Blend	(true,	D3DBLEND_SRCALPHA,D3DBLEND_ONE,			true,oAREF.value);
 			break;
 		case 6:	// MUL_2X + A-test
-			C.PassSET_Blend	(TRUE,	D3DBLEND_DESTCOLOR,D3DBLEND_SRCCOLOR,	FALSE,oAREF.value);
+			C.PassSET_Blend	(true,	D3DBLEND_DESTCOLOR,D3DBLEND_SRCCOLOR,	false,oAREF.value);
 			break;
 		case 7:	// SET (2r)
-			C.PassSET_Blend	(TRUE,	D3DBLEND_ONE,D3DBLEND_ZERO,				TRUE,0);
+			C.PassSET_Blend	(true,	D3DBLEND_ONE,D3DBLEND_ZERO,				true,0);
 			break;
 		case 8: // BLEND (2r)
-			C.PassSET_Blend	(TRUE,	D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,	TRUE,oAREF.value);
+			C.PassSET_Blend	(true,	D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,	true,oAREF.value);
 			break;
 		case 9: // BLEND (4r)
-			C.PassSET_Blend	(TRUE,	D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,	TRUE,oAREF.value);
+			C.PassSET_Blend	(true,	D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,	true,oAREF.value);
 			break;
 		}
 		C.PassSET_LightFog	(oLighting.value,oFog.value);
-		// C.PassSET_LightFog	(FALSE,FALSE);
+		// C.PassSET_LightFog	(false,false);
 
 		if (oBlend.IDselected==6)	
 		{

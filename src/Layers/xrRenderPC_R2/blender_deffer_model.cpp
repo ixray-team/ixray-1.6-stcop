@@ -12,7 +12,7 @@ CBlender_deffer_model::CBlender_deffer_model() {
 	oAREF.value = 32;
 	oAREF.min = 0;
 	oAREF.max = 255;
-	oBlend.value = FALSE;
+	oBlend.value = false;
 }
 CBlender_deffer_model::~CBlender_deffer_model() {}
 
@@ -35,7 +35,7 @@ void	CBlender_deffer_model::Load(IReader& fs, u16 version) {
 		oAREF.value = 32;
 		oAREF.min = 0;
 		oAREF.max = 255;
-		oBlend.value = FALSE;
+		oBlend.value = false;
 		break;
 		case 1:
 		default:
@@ -57,8 +57,8 @@ void	CBlender_deffer_model::Compile(CBlender_Compile& C) {
 			case SE_R2_NORMAL_LQ:
 			uber_deffer(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_model", "forward_base", false, 0, true);
 
-			C.PassSET_ZB(TRUE, FALSE);
-			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, oAREF.value);
+			C.PassSET_ZB(true, false);
+			C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, oAREF.value);
 
 			C.r_Sampler("s_material", r2_material);
 			C.r_Sampler("env_s0", r2_T_envs0);
@@ -71,7 +71,7 @@ void	CBlender_deffer_model::Compile(CBlender_Compile& C) {
 		}
 	}
 	else {
-		BOOL bAref = oBlend.value;
+		bool bAref = oBlend.value;
 
 		switch(C.iElement) {
 			case SE_R2_NORMAL_HQ: // deffer
@@ -86,7 +86,7 @@ void	CBlender_deffer_model::Compile(CBlender_Compile& C) {
 			if(bAref) {
 				RImplementation.addShaderOption("USE_AREF", "1");
 			}
-			C.r_Pass("shadow_model", "shadow_base", FALSE);
+			C.r_Pass("shadow_model", "shadow_base", false);
 			C.r_Sampler("s_base", C.L_textures[0]);
 			C.r_End();
 			break;

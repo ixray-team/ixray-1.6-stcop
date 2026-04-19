@@ -116,27 +116,27 @@ void dxRenderDeviceRender::SetupStates()
 		CHK_DX(RDevice->SetSamplerState	( i, D3DSAMP_MAGFILTER,	D3DTEXF_LINEAR 		));
 		CHK_DX(RDevice->SetSamplerState	( i, D3DSAMP_MIPFILTER,	D3DTEXF_LINEAR		));
 	}
-	CHK_DX(RDevice->SetRenderState( D3DRS_DITHERENABLE,		TRUE				));
-	CHK_DX(RDevice->SetRenderState( D3DRS_COLORVERTEX,		TRUE				));
-	CHK_DX(RDevice->SetRenderState( D3DRS_ZENABLE,			TRUE				));
+	CHK_DX(RDevice->SetRenderState( D3DRS_DITHERENABLE,		true				));
+	CHK_DX(RDevice->SetRenderState( D3DRS_COLORVERTEX,		true				));
+	CHK_DX(RDevice->SetRenderState( D3DRS_ZENABLE,			true				));
 	CHK_DX(RDevice->SetRenderState( D3DRS_SHADEMODE,			D3DSHADE_GOURAUD	));
 	CHK_DX(RDevice->SetRenderState( D3DRS_CULLMODE,			D3DCULL_CCW			));
 	CHK_DX(RDevice->SetRenderState( D3DRS_ALPHAFUNC,			D3DCMP_GREATER		));
-	CHK_DX(RDevice->SetRenderState( D3DRS_LOCALVIEWER,		TRUE				));
+	CHK_DX(RDevice->SetRenderState( D3DRS_LOCALVIEWER,		true				));
 
 	CHK_DX(RDevice->SetRenderState( D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL	));
 	CHK_DX(RDevice->SetRenderState( D3DRS_SPECULARMATERIALSOURCE,D3DMCS_MATERIAL	));
 	CHK_DX(RDevice->SetRenderState( D3DRS_AMBIENTMATERIALSOURCE, D3DMCS_MATERIAL	));
 	CHK_DX(RDevice->SetRenderState( D3DRS_EMISSIVEMATERIALSOURCE,D3DMCS_COLOR1	));
-	CHK_DX(RDevice->SetRenderState( D3DRS_MULTISAMPLEANTIALIAS,	FALSE			));
-	CHK_DX(RDevice->SetRenderState( D3DRS_NORMALIZENORMALS,		TRUE			));
+	CHK_DX(RDevice->SetRenderState( D3DRS_MULTISAMPLEANTIALIAS,	false			));
+	CHK_DX(RDevice->SetRenderState( D3DRS_NORMALIZENORMALS,		true			));
 
 	if (psDeviceFlags.test(rsWireframe))	{ CHK_DX(RDevice->SetRenderState( D3DRS_FILLMODE,			D3DFILL_WIREFRAME	)); }
 	else									{ CHK_DX(RDevice->SetRenderState( D3DRS_FILLMODE,			D3DFILL_SOLID		)); }
 
 	// ******************** Fog parameters
 	CHK_DX(RDevice->SetRenderState( D3DRS_FOGCOLOR,			0					));
-	CHK_DX(RDevice->SetRenderState( D3DRS_RANGEFOGENABLE,	FALSE				));
+	CHK_DX(RDevice->SetRenderState( D3DRS_RANGEFOGENABLE,	false				));
 	if (Caps.bTableFog)	{
 		CHK_DX(RDevice->SetRenderState( D3DRS_FOGTABLEMODE,	D3DFOG_LINEAR		));
 		CHK_DX(RDevice->SetRenderState( D3DRS_FOGVERTEXMODE,	D3DFOG_NONE			));
@@ -196,7 +196,7 @@ void dxRenderDeviceRender::overdrawBegin()
 	VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
 #else //USE_DX11
 	// Turn stenciling
-	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILENABLE,		TRUE			));
+	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILENABLE,		true			));
 	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILFUNC,		D3DCMP_ALWAYS	));
 	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILREF,		0				));
 	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILMASK,		0x00000000		));
@@ -250,7 +250,7 @@ void dxRenderDeviceRender::overdrawEnd()
 		CHK_DX(RDevice->SetRenderState	( D3DRS_STENCILREF,		I	));
 		CHK_DX(RDevice->DrawPrimitiveUP	( D3DPT_TRIANGLESTRIP,	2,	pv, sizeof(FVF::TL) ));
 	}
-	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILENABLE,		FALSE ));
+	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILENABLE,		false ));
 #endif
 #endif
 }
@@ -347,7 +347,7 @@ void dxRenderDeviceRender::Begin()
 
 	RCache.OnFrameBegin();
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-	RCache.set_Z(TRUE);
+	RCache.set_Z(true);
 #endif
 
 	if (Resources)

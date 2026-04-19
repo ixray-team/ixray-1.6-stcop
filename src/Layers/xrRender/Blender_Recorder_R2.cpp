@@ -219,7 +219,7 @@ u32 CBlender_Compile::r_dx10Sampler(const char* ResourceName)
     if (0 == xr_strcmp(ResourceName, "smp_base"))
     {
         i_Address(stage, D3DTADDRESS_WRAP);
-        i_FilterAnizo(stage, TRUE);
+        i_FilterAnizo(stage, true);
     }
 
     if (0 == xr_strcmp(ResourceName, "smp_material"))
@@ -233,7 +233,7 @@ u32 CBlender_Compile::r_dx10Sampler(const char* ResourceName)
     {
         i_Address(stage, D3DTADDRESS_CLAMP);
         i_Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
-        RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFILTER, TRUE);
+        RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFILTER, true);
         RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFUNC, D3D_COMPARISON_LESS_EQUAL);
     }
 
@@ -300,7 +300,7 @@ void CBlender_Compile::r_Pass(const char* _vs, const char* _gs, const char* _ps,
 
     PassSET_ZB(bZtest, bZwrite);
     PassSET_Blend(bABlend, abSRC, abDST, aTest, aRef);
-    PassSET_LightFog(FALSE, bFog);
+    PassSET_LightFog(false, bFog);
 
     SPS* ps = DEV->_CreatePS(_ps);
     SVS* vs = DEV->_CreateVS(_vs);
@@ -353,10 +353,10 @@ void CBlender_Compile::r_End(bool clear)
     dest.constants = DEV->_CreateConstantTable(ctable);
     dest.state = DEV->_CreateState(RS.GetContainer());
     dest.T = DEV->_CreateTextureList(passTextures);
-    dest.C = 0;
-    ref_matrix_list temp(0);
+    dest.C = nullptr;
+    ref_matrix_list temp(nullptr);
 #ifdef _EDITOR
-    dest.M = 0;
+    dest.M = nullptr;
 #endif
     SH->passes.push_back(DEV->_CreatePass(dest));
 

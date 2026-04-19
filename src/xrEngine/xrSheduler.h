@@ -37,7 +37,7 @@ private:
 	{
 		return Items.front();
 	}
-	void			internal_Register		(ISheduled* A, bool RT=FALSE		);
+	void			internal_Register		(ISheduled* A, bool RT=false		);
 	bool			internal_Unregister		(ISheduled* A, bool RT, bool warn_on_not_found = true);
 	void			internal_Registration	();
 public:
@@ -51,7 +51,7 @@ public:
 #ifdef DEBUG
 	bool			Registered	(ISheduled *object) const;
 #endif // DEBUG
-	void			Register	(ISheduled* A, bool RT=FALSE		);
+	void			Register	(ISheduled* A, bool RT=false		);
 	void			Unregister	(ISheduled* A						);
 	void			EnsureOrder	(ISheduled* Before, ISheduled* After);
 

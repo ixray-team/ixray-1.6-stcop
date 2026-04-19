@@ -77,7 +77,7 @@ namespace PAPI
 			u32 color, const float age = 0.0f, u16 frame = 0, u16 flags = 0)
 		{
 			if (p_count >= max_particles)
-				return FALSE;
+				return false;
 
 			VERIFY(age >=0.0f);
 			Particle& P = particles[p_count];
@@ -104,7 +104,7 @@ namespace PAPI
 
 			p_count++;
 
-			return TRUE;
+			return true;
 		}
 
 		ICF void LoadActions(IReader& R)
@@ -237,7 +237,7 @@ namespace PAPI
 				switch (PA->type)
 				{
 				case PASourceID:
-					static_cast<PASource*>(PA)->m_Flags.set(PASource::flSilent, TRUE);
+					static_cast<PASource*>(PA)->m_Flags.set(PASource::flSilent, true);
 					break;
 				}
 			}
@@ -254,7 +254,7 @@ namespace PAPI
 				switch (PA->type)
 				{
 				case PASourceID:
-					static_cast<PASource*>(PA)->m_Flags.set(PASource::flSilent, FALSE);
+					static_cast<PASource*>(PA)->m_Flags.set(PASource::flSilent, false);
 					break;
 				case PAExplosionID:
 					static_cast<PAExplosion*>(PA)->age = 0.f;

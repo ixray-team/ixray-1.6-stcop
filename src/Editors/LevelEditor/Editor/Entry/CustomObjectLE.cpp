@@ -56,9 +56,9 @@ void CCustomObject::OnDetach()
 //.        Name 				= new_name;
 //.        Scene->AppendObject	(this,false);
     }
-   	m_CO_Flags.set			(flObjectInGroup,FALSE);
+   	m_CO_Flags.set			(flObjectInGroup,false);
     Select					(true);
-    FParentTools->SetChanged(TRUE);
+    FParentTools->SetChanged(true);
 }
 
 void CCustomObject::OnAttach(CCustomObject* owner)
@@ -68,10 +68,10 @@ void CCustomObject::OnAttach(CCustomObject* owner)
     m_pOwnerObject 			= owner;
 //.    Scene->RemoveObject		(this,false,false);
 	if(owner->FClassID==OBJCLASS_GROUP)
-    	m_CO_Flags.set(flObjectInGroup,TRUE);
+    	m_CO_Flags.set(flObjectInGroup,true);
         
     Select					(false);
-    FParentTools->SetChanged(TRUE);
+    FParentTools->SetChanged(true);
 }
 
 void CCustomObject::Move(Fvector& amount)
@@ -83,8 +83,8 @@ void CCustomObject::Move(Fvector& amount)
     {
         bool bVis = Visible();
         bool bSel = Selected();
-        Show(FALSE);
-        Select(FALSE);
+        Show(false);
+        Select(false);
         SnapMove(v, r, FTransformRP, amount);
         Show(bVis);
         Select(bSel);

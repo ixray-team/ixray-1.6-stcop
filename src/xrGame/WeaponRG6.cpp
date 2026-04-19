@@ -72,14 +72,14 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 
 	if (IsGameTypeSingle() && IsZoomed() && GO->cast_actor())
 	{
-		H_Parent()->setEnabled(FALSE);
-		setEnabled(FALSE);
+		H_Parent()->setEnabled(false);
+		setEnabled(false);
 	
 		collide::rq_result RQ;
 		bool HasPick = Level().ObjectSpace.RayPick(p1, d, 300.0f, collide::rqtStatic, RQ, this);
 
-		setEnabled(TRUE);
-		H_Parent()->setEnabled(TRUE);
+		setEnabled(true);
+		H_Parent()->setEnabled(true);
 
 		if (HasPick)
 		{
@@ -206,7 +206,7 @@ void CWeaponRG6::ReloadMagazine()
 
 	//выкинуть коробку патронов, если она пустая
 	if (m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer())
-		m_pCurrentAmmo->SetDropManual(TRUE);
+		m_pCurrentAmmo->SetDropManual(true);
 
 	if (iMagazineSize > iAmmoElapsed)
 	{

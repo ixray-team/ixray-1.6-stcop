@@ -190,14 +190,14 @@ float COMotion::GetLength(float* mn, float* mx)
 }
 bool COMotion::ScaleKeys(float from_time, float to_time, float scale_factor)
 {
-	bool bRes=TRUE;
+	bool bRes=true;
 	for (int ch=0; ch<ctMaxChannel; ch++)
-		if (FALSE==(bRes=envs[ch]->ScaleKeys(from_time, to_time, scale_factor, 1.f/fFPS))) break;
+		if (false==(bRes=envs[ch]->ScaleKeys(from_time, to_time, scale_factor, 1.f/fFPS))) break;
 	return bRes;
 }
 bool COMotion::NormalizeKeys(float from_time, float to_time, float speed)
 {
-	if (to_time<from_time) return FALSE;
+	if (to_time<from_time) return false;
 	CEnvelope* E 	= Envelope(ctPositionX);
 	float new_tm	= 0;
 	float t0		= E->keys.front()->time;
@@ -241,7 +241,7 @@ bool COMotion::NormalizeKeys(float from_time, float to_time, float speed)
 		}
 	}
 */
-	return TRUE;
+	return true;
 }
 
 

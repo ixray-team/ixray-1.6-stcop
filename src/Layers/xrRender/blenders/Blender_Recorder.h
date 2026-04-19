@@ -61,7 +61,7 @@ public:
 	// R1-compiler
 	void				PassBegin			();
 	u32					Pass				()  { return SH->passes.size(); }
-	void				PassSET_ZB			(bool bZTest,	bool bZWrite, bool bInvertZTest=FALSE);
+	void				PassSET_ZB			(bool bZTest,	bool bZWrite, bool bInvertZTest=false);
 	
 	void				PassSET_Blend		(u32 idx, bool bABlend, u32 abSRC, u32 abDST, bool aTest, u32 aRef);
 	void				PassSET_ablend_mode	(u32 idx, bool bABlend,	u32 abSRC, u32 abDST);
@@ -71,11 +71,11 @@ public:
 	void				PassSET_ablend_mode	(bool bABlend,	u32 abSRC, u32 abDST);
 	void				PassSET_ablend_aref	(bool aTest,	u32 aRef);
 
-	void				PassSET_Blend_BLEND	(bool bAref=FALSE, u32 ref=0)	{ PassSET_Blend	(TRUE,D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,bAref,ref);	}
-	void				PassSET_Blend_SET	(bool bAref=FALSE, u32 ref=0)	{ PassSET_Blend	(FALSE,D3DBLEND_ONE,D3DBLEND_ZERO,bAref,ref);				}
-	void				PassSET_Blend_ADD	(bool bAref=FALSE, u32 ref=0)	{ PassSET_Blend	(TRUE, D3DBLEND_ONE,D3DBLEND_ONE, bAref,ref);				}
-	void				PassSET_Blend_MUL	(bool bAref=FALSE, u32 ref=0)	{ PassSET_Blend	(TRUE, D3DBLEND_DESTCOLOR,D3DBLEND_ZERO,bAref,ref);			}
-	void				PassSET_Blend_MUL2X	(bool bAref=FALSE, u32 ref=0)	{ PassSET_Blend	(TRUE, D3DBLEND_DESTCOLOR,D3DBLEND_SRCCOLOR,bAref,ref);		}
+	void				PassSET_Blend_BLEND	(bool bAref=false, u32 ref=0)	{ PassSET_Blend	(true,D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,bAref,ref);	}
+	void				PassSET_Blend_SET	(bool bAref=false, u32 ref=0)	{ PassSET_Blend	(false,D3DBLEND_ONE,D3DBLEND_ZERO,bAref,ref);				}
+	void				PassSET_Blend_ADD	(bool bAref=false, u32 ref=0)	{ PassSET_Blend	(true, D3DBLEND_ONE,D3DBLEND_ONE, bAref,ref);				}
+	void				PassSET_Blend_MUL	(bool bAref=false, u32 ref=0)	{ PassSET_Blend	(true, D3DBLEND_DESTCOLOR,D3DBLEND_ZERO,bAref,ref);			}
+	void				PassSET_Blend_MUL2X	(bool bAref=false, u32 ref=0)	{ PassSET_Blend	(true, D3DBLEND_DESTCOLOR,D3DBLEND_SRCCOLOR,bAref,ref);		}
 	void				PassSET_LightFog	(bool bLight, bool bFog);
 	void				PassSET_PS			(const char* name);
 	void				PassSET_VS			(const char* name);
@@ -110,11 +110,11 @@ public:
 	void				i_Projective		(u32 s, bool	b);
 
 	// R1/R2-compiler	[programmable]		- templates
-	void				r_Pass				(const char* vs,		const char* ps,		bool bFog,	bool	bZtest=TRUE,				bool	bZwrite=TRUE,			bool	bABlend=FALSE,			D3DBLEND	abSRC=D3DBLEND_ONE,		D3DBLEND abDST=D3DBLEND_ZERO,	bool aTest=FALSE,	u32 aRef=0);
-	void				r_Pass				(const char* vs,		const char* gs, const char* ps,		bool bFog,	bool	bZtest=TRUE,				bool	bZwrite=TRUE,			bool	bABlend=FALSE,			D3DBLEND	abSRC=D3DBLEND_ONE,		D3DBLEND abDST=D3DBLEND_ZERO,	bool aTest=FALSE,	u32 aRef=0);
+	void				r_Pass				(const char* vs,		const char* ps,		bool bFog,	bool	bZtest=true,				bool	bZwrite=true,			bool	bABlend=false,			D3DBLEND	abSRC=D3DBLEND_ONE,		D3DBLEND abDST=D3DBLEND_ZERO,	bool aTest=false,	u32 aRef=0);
+	void				r_Pass				(const char* vs,		const char* gs, const char* ps,		bool bFog,	bool	bZtest=true,				bool	bZwrite=true,			bool	bABlend=false,			D3DBLEND	abSRC=D3DBLEND_ONE,		D3DBLEND abDST=D3DBLEND_ZERO,	bool aTest=false,	u32 aRef=0);
 	void				r_Constant			(const char* name, RHIShaderConstant::Setup* s);
 #ifdef USE_DX11
-	void				r_TessPass			(const char* vs,	const char* hs, const char* ds, const char* gs, const char* ps, bool bFog, bool bZtest=TRUE, bool bZwrite=TRUE, bool bABlend=FALSE,	D3DBLEND abSRC=D3DBLEND_ONE, D3DBLEND abDST=D3DBLEND_ZERO, bool aTest=FALSE, u32 aRef=0);
+	void				r_TessPass			(const char* vs,	const char* hs, const char* ds, const char* gs, const char* ps, bool bFog, bool bZtest=true, bool bZwrite=true, bool bABlend=false,	D3DBLEND abSRC=D3DBLEND_ONE, D3DBLEND abDST=D3DBLEND_ZERO, bool aTest=false, u32 aRef=0);
 	void				r_ComputePass		(const char* cs );
 	void				r_Stencil(bool Enable, u32 Func=D3DCMP_ALWAYS, u32 Mask=0x00, u32 WriteMask=0x00, u32 Fail=D3DSTENCILOP_KEEP, u32 Pass=D3DSTENCILOP_KEEP, u32 ZFail=D3DSTENCILOP_KEEP);
 	void				r_StencilRef(u32 Ref);

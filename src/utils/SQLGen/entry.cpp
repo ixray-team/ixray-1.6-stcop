@@ -369,7 +369,7 @@ void SDL_Application()
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	Debug._initialize(false);
-	Core._initialize("IXRay SQL Gen", nullptr, TRUE, "fsgame.ltx");
+	Core._initialize("IXRay SQL Gen", nullptr, true, "fsgame.ltx");
 	
 	auto LogCallback = [](const char* Msg)
 	{

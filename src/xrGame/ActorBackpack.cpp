@@ -9,7 +9,7 @@ static constexpr const char* backpack_off = "interface\\inv_backpack_off";
 
 CBackpack::CBackpack()
 {
-    m_flags.set(FUsingCondition, FALSE);
+    m_flags.set(FUsingCondition, false);
 
     //TODO: Make optional dress sounds
     //m_dress_snd[0].create(backpack_on, st_Effect, SOUND_TYPE_IDLE);
@@ -24,7 +24,7 @@ void CBackpack::Load(const char* section)
     m_additional_weight2 = READ_IF_EXISTS(pSettings, r_float, section, "additional_inventory_weight2", 0.0f);
     m_fPowerRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "power_restore_speed", 0.0f);
 
-    m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", FALSE));
+    m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", false));
 }
 
 void CBackpack::OnMoveToSlot(const SInvItemPlace& previous_place)

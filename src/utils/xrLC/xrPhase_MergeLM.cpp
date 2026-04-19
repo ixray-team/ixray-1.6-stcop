@@ -58,7 +58,7 @@ u32 MergeLmap(vecDefl& Layer, CLightmap* lmap)
 		if (_Y < gCompilerMode.LC_sizeLmaps - HEIGHT)
 		{
 			lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
-			Layer[it]->bMerged = TRUE;
+			Layer[it]->bMerged = true;
 			Layer[it]->layer.clear_memory();
 			MERGED++;
 		}
@@ -151,7 +151,7 @@ u32 MergeLmap_Compact(vecDefl& Layer, CLightmap* lmap)
 				if (D->bMerged == false)
 				{
 					lmap->Capture(D, rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), rotated);
-					D->bMerged = TRUE;
+					D->bMerged = true;
 					D->layer.clear_memory();
 					MergedCount++;
 				}
@@ -230,15 +230,15 @@ struct pred_remove
 	IC bool	operator() (CDeflector* D)
 	{
 		if (0 == D)
-			return TRUE;
+			return true;
 
 		if (D->bMerged)
 		{
-			D->bMerged = FALSE;
-			return TRUE;
+			D->bMerged = false;
+			return true;
 		}
 
-		return FALSE;
+		return false;
 	};
 };
  

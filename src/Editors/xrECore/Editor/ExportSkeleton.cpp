@@ -23,8 +23,8 @@
 
 #define MAX_BONE 128
 
-ECORE_API bool g_force16BitTransformQuant = TRUE;
-ECORE_API bool g_force32BitTransformQuant = FALSE;
+ECORE_API bool g_force16BitTransformQuant = true;
+ECORE_API bool g_force32BitTransformQuant = false;
 ECORE_API float g_EpsSkelPositionDelta = EPS_L;
 
 u16 CSkeletonCollectorPacked::VPack(SSkelVert& V)
@@ -106,7 +106,7 @@ CSkeletonCollectorPacked::CSkeletonCollectorPacked(const Fbox& _bb, int apx_vert
 
 CExportSkeleton::SSplit::SSplit(CSurface* surf, const Fbox& bb, u16 part):CSkeletonCollectorPacked(bb)
 {
-//.	m_b2Link	= FALSE;
+//.	m_b2Link	= false;
 	m_SkeletonLinkType = 1;
 	m_Shader = surf->m_ShaderName;
 	m_Texture = surf->m_Texture;
@@ -620,7 +620,7 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
 
 	bool bBreakable		= false;
 	U16Vec   			bone_brk_parts(m_Source->BoneCount());
-	CBone* root 		= 0;
+	CBone* root 		= nullptr;
 	for (BoneIt bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); bone_it++){
 		CBone* B 		= *bone_it;
 		if (B->IK_data.ik_flags.is(SJointIKData::flBreakable))	bBreakable 	= true;
@@ -650,7 +650,7 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
 
 		CEditableMesh* MESH 							= *mesh_it;
 		// generate vertex offset
-		MESH->GenerateVNormals							(0);
+		MESH->GenerateVNormals							(nullptr);
 		MESH->GenerateFNormals							();
 		MESH->GenerateSVertices							(influence);
 #if 1
@@ -1126,8 +1126,8 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 			Fvector 		Mt={0,0,0};
 			Fvector 		Ct={0,0,0};
 			Fvector 		St={0,0,0};
-			bool			t_present = FALSE;
-			bool			r_present = FALSE;
+			bool			t_present = false;
+			bool			r_present = false;
 			Fvector At		= BM._keysT[0];
 			Fvector Bt		= BM._keysT[0];
 			for (u32 t_idx=0; t_idx<dwLen; ++t_idx)
@@ -1162,13 +1162,13 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 			for (int t_idx=0; t_idx<dwLen; ++t_idx)
 			{
 				Fvector& t = BM._keysT[t_idx];
-				if (!Mt.similar(t, EPS_L))	t_present = TRUE;
+				if (!Mt.similar(t, EPS_L))	t_present = true;
 
 				if (g_force32BitTransformQuant)
 				{                    
 					CKeyQR32& R = BM._keysQR32[0];
 					CKeyQR32& r = BM._keysQR32[t_idx];
-					if ((R.x != r.x) || (R.y != r.y) || (R.z != r.z) || (R.w != r.w)) r_present = TRUE;
+					if ((R.x != r.x) || (R.y != r.y) || (R.z != r.z) || (R.w != r.w)) r_present = true;
 
 					CKeyQT32& Kt = BM._keysQT32[t_idx];
 
@@ -1180,7 +1180,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 				{
 					CKeyQR& R = BM._keysQR[0];
 					CKeyQR& r = BM._keysQR[t_idx];
-					if ((R.x != r.x) || (R.y != r.y) || (R.z != r.z) || (R.w != r.w)) r_present = TRUE;
+					if ((R.x != r.x) || (R.y != r.y) || (R.z != r.z) || (R.w != r.w)) r_present = true;
 
 					if (bTransform16Bit)
 					{

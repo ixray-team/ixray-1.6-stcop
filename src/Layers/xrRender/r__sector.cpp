@@ -208,7 +208,7 @@ void CSector::traverse			(CFrustum &F, _scissor& R_scissor)
 		CFrustum				Clip;
 		Clip.CreateFromPortal	(P, PORTAL->P.n, PortalTraverser.i_vBase,PortalTraverser.i_mXFORM);
 		PORTAL->marker			= PortalTraverser.i_marker;
-		PORTAL->bDualRender		= FALSE;
+		PORTAL->bDualRender		= false;
 		if(pSector)
 			pSector->traverse		(Clip,scissor);
 	}

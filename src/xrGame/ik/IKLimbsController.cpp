@@ -302,7 +302,7 @@ void TIKLimbsController::Calculate()
 	bool sv_root_cb_ovwr = root_bi.callback_overwrite();
 	BoneCallback sv_root_cb = root_bi.callback();
 
-	root_bi.set_callback(root_bi.callback_type(), 0, root_bi.callback_param(), TRUE);
+	root_bi.set_callback(root_bi.callback_type(), 0, root_bi.callback_param(), true);
 
 
 	if (ik_shift_object)

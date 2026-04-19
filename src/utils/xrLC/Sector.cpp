@@ -27,22 +27,22 @@ IC bool	ValidateMerge(Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
 	// Size
 	Fbox	merge;	merge.merge(bb_base, bb);
 	Fvector sz;		merge.getsize(sz);	sz.add(EPS_L);
-	if (sz.x > SLimit)		return FALSE;	// Don't exceed limits (4/3 GEOM)
-	if (sz.y > SLimit)		return FALSE;
-	if (sz.z > SLimit)		return FALSE;
+	if (sz.x > SLimit)		return false;	// Don't exceed limits (4/3 GEOM)
+	if (sz.y > SLimit)		return false;
+	if (sz.z > SLimit)		return false;
 
 	// Volume
 	volume = merge.getvolume();
 
 	// OK
-	return TRUE;
+	return true;
 }
 
 void CSector::BuildHierrarhy()
 {
 	Fvector		scene_size;
 	float		delimiter;
-	bool		bAnyNode = FALSE;
+	bool		bAnyNode = false;
 
 	// calc scene BB
 	Fbox& scene_bb = pBuild->scene_bb;
@@ -119,7 +119,7 @@ void CSector::BuildHierrarhy()
 			if (pNode->chields.size() > 1) {
 				pNode->CalcBounds();
 				new_nodes.push_back(pNode);
-				bAnyNode = TRUE;
+				bAnyNode = true;
 			}
 			else {
 				g_tree[id]->bConnected = false;

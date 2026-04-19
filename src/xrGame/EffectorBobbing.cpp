@@ -116,7 +116,7 @@ bool CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
         info.n.set(mR.j);
     }
 
-    return TRUE;
+    return true;
 }
 
 void CEffectorBobbing::SelectBobbingParams(bool zoom_mode, bool is_limping, float& old_phase, float& old_freq, float& old_amp, u32 mstate, float time, float& amp, float& st)

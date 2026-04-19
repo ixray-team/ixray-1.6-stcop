@@ -44,7 +44,7 @@ bool CPPEffectorControllerAura::update()
 			if (m_snd_left.is_playing())		m_snd_left.stop();
 			if (m_snd_right.is_playing())	m_snd_right.stop();
 		
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -57,7 +57,7 @@ bool CPPEffectorControllerAura::update()
 	if (m_snd_left.is_playing())	m_snd_left.set_volume	(m_factor);
 	if (m_snd_right.is_playing())	m_snd_right.set_volume	(m_factor);
 
-	return TRUE;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -10,7 +10,7 @@
 
 IC	bool CAI_Stalker::UsedAI_Locations							()
 {
-	return					(TRUE);
+	return					(true);
 }
 
 IC	CStalkerAnimationManager &CAI_Stalker::animation			() const

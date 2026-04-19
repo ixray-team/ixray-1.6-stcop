@@ -347,7 +347,7 @@ void CPseudoGigant::on_threaten_execute()
 
 					if (device != nullptr)
 					{
-						device->SetDropManual(TRUE);
+						device->SetDropManual(true);
 						need_kick_animator = true;
 					}
 				}
@@ -414,7 +414,7 @@ void CPseudoGigant::on_threaten_execute()
 
 				NET_Packet	tmp_packet;
 				CGameObject::u_EventGen(tmp_packet, GE_PSEUDO_GIGANT_KICK, pObj->ID());
-				Level().Server->SendTo(client->ID, tmp_packet, net_flags(TRUE, TRUE));
+				Level().Server->SendTo(client->ID, tmp_packet, net_flags(true, true));
 
 				if ((pA->GetMovementState(eReal) & ACTOR_DEFS::mcJump) != 0)
 					return;

@@ -262,7 +262,7 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, dContact& c
 			l_this->m_pPhysicsShell->setForce(zero_vel);
 			l_this->m_pPhysicsShell->setTorque(zero_vel);
 			l_this->m_pPhysicsShell->set_ApplyByGravity(false);
-			l_this->setEnabled(FALSE);
+			l_this->setEnabled(false);
 
 		}
 	}
@@ -571,8 +571,8 @@ void CCustomRocket::UpdateParticles()
 
 void CCustomRocket::StartParticles()
 {
-	m_pFlyParticles = m_sFlyParticles ? Particles::Details::Create(*m_sFlyParticles, FALSE) : nullptr;
-	m_pEngineParticles = m_sEngineParticles ? Particles::Details::Create(*m_sEngineParticles, FALSE) : nullptr;
+	m_pFlyParticles = m_sFlyParticles ? Particles::Details::Create(*m_sFlyParticles, false) : nullptr;
+	m_pEngineParticles = m_sEngineParticles ? Particles::Details::Create(*m_sEngineParticles, false) : nullptr;
 	UpdateParticles();
 	if (m_pFlyParticles)
 		m_pFlyParticles->Play(false);

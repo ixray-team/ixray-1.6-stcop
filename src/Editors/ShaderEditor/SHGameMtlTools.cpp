@@ -11,7 +11,7 @@
 //------------------------------------------------------------------------------
 CSHGameMtlTools::CSHGameMtlTools(const ISHInit& init):ISHTools(init)
 {
-    m_CreatingMtl = FALSE;
+    m_CreatingMtl = false;
     m_Mtl 				= 0;
     m_GameMtlPairTools	= 0;
 }
@@ -52,7 +52,7 @@ void CSHGameMtlTools::OnFrame()
             {
                 AppendItem(m_CreatingMtlPath.c_str(),stricmp( result.c_str(),"dynamic")==0);
             }
-            m_CreatingMtl = FALSE;
+            m_CreatingMtl = false;
         }
 
     }
@@ -75,7 +75,7 @@ bool CSHGameMtlTools::OnCreate()
 
 void CSHGameMtlTools::OnDestroy()
 {
-    m_bModified = FALSE;
+    m_bModified = false;
 }
 
 void CSHGameMtlTools::Reload()
@@ -101,19 +101,19 @@ void CSHGameMtlTools::FillItemList()
 
 void CSHGameMtlTools::Load()
 {
-    m_bLockUpdate		= TRUE;
+    m_bLockUpdate		= true;
 
     GameMaterialLibraryEditors->Unload	();
     GameMaterialLibraryEditors->Load		();
     ResetCurrentItem();
 
-	m_bLockUpdate		= FALSE;
+	m_bLockUpdate		= false;
 }
 
 bool CSHGameMtlTools::Save()
 {
 	ResetCurrentItem	();
-    m_bLockUpdate		= TRUE;
+    m_bLockUpdate		= true;
 
     // save
     string_path 		fn;
@@ -121,9 +121,9 @@ bool CSHGameMtlTools::Save()
     EFS.MarkFile		(fn,false);
     bool bRes			= GameMaterialLibraryEditors->Save();
     
-	m_bLockUpdate		= FALSE;
+	m_bLockUpdate		= false;
 
-    if (bRes) 			m_bModified	= FALSE;
+    if (bRes) 			m_bModified	= false;
     return bRes;
 }
 
@@ -146,7 +146,7 @@ void CSHGameMtlTools::AppendItem(const char* path, const char* parent_name)
     if (!parent)
     {
         UIChooseForm::SelectItem(smCustom, 1, 0, TOnChooseFillItems(this, &CSHGameMtlTools::FillChooseMtlType), 0, 0, 0, 0);
-        m_CreatingMtl = TRUE;
+        m_CreatingMtl = true;
         m_CreatingMtlPath = path;
     }
     else

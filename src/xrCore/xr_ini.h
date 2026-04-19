@@ -13,7 +13,7 @@ public:
 	{
 		shared_str	first;
 		shared_str	second;
-		Item() : first(0), second(0)
+		Item() : first(nullptr), second(nullptr)
 		{};
 	};
 
@@ -26,7 +26,7 @@ public:
 		shared_str		Name;
 		Items			Data;
 
-		bool			line_exist	(const char* L, const char** val=0);
+		bool			line_exist	(const char* L, const char** val=nullptr);
 	};
 
 	typedef	xr_vector<Sect>			Root;
@@ -35,7 +35,7 @@ public:
 	
 	using allow_include_func_t = xr_delegate<bool(const char*)>;
 
-	static CInifile*	Create		( const char* szFileName, bool ReadOnly=TRUE);
+	static CInifile*	Create		( const char* szFileName, bool ReadOnly=true);
 	static void			Destroy		( CInifile*);
     static IC bool		IsBOOL		( const char* B)	{ return (xr_strcmp(B,"on")==0 || xr_strcmp(B,"yes")==0 || xr_strcmp(B,"true")==0 || xr_strcmp(B,"1")==0);}
 
@@ -78,18 +78,18 @@ private:
 	void insert_item(Sect* tgt, const Item& I);
 
 public:
-				CInifile		( IReader* F, const char* path=0 ,allow_include_func_t allow_include_func = nullptr );
+				CInifile		( IReader* F, const char* path=nullptr ,allow_include_func_t allow_include_func = nullptr );
 
 				CInifile		( const char* szFileName,
-								  bool ReadOnly=TRUE,
-								  bool bLoadAtStart=TRUE,
-								  bool SaveAtEnd=TRUE,
+								  bool ReadOnly=true,
+								  bool bLoadAtStart=true,
+								  bool SaveAtEnd=true,
 								  u32 sect_count=0
 								   ,allow_include_func_t allow_include_func = nullptr
                                     );
 
 	virtual 	~CInifile		( );
-    bool		save_as         ( const char* new_fname=0 );
+    bool		save_as         ( const char* new_fname=nullptr );
 	void		save_as			(IWriter& writer, bool bcheck=false)const;
 	void		set_override_names(bool b){m_flags.set(eOverrideNames,b);}
 	void		save_at_end		(bool b){m_flags.set(eSaveAtEnd,b);}
@@ -228,28 +228,28 @@ public:
 		return EnumT(r_u64(S, L));
 	}
 
-    void		w_string		( const char* S, const char* L, const char*			V, const char* comment=0 );
-	void		w_u8			( const char* S, const char* L, u8				V, const char* comment=0 );
-	void		w_u16			( const char* S, const char* L, u16				V, const char* comment=0 );
-	void		w_u32			( const char* S, const char* L, u32				V, const char* comment=0 );
-	void		w_u64			( const char* S, const char* L, u64				V, const char* comment=0 );
-	void		w_s64			( const char* S, const char* L, s64				V, const char* comment=0 );
-    void		w_s8			( const char* S, const char* L, s8				V, const char* comment=0 );
-	void		w_s16			( const char* S, const char* L, s16				V, const char* comment=0 );
-	void		w_s32			( const char* S, const char* L, s32				V, const char* comment=0 );
-	void		w_float			( const char* S, const char* L, float				V, const char* comment=0 );
-    void		w_fcolor		( const char* S, const char* L, const Fcolor&		V, const char* comment=0 );
-    void		w_color			( const char* S, const char* L, u32				V, const char* comment=0 );
-    void		w_ivector2		( const char* S, const char* L, const Ivector2&	V, const char* comment=0 );
-	void		w_ivector3		( const char* S, const char* L, const Ivector3&	V, const char* comment=0 );
-	void		w_ivector4		( const char* S, const char* L, const Ivector4&	V, const char* comment=0 );
-	void		w_fvector2		( const char* S, const char* L, const Fvector2&	V, const char* comment=0 );
-	void		w_fvector3		( const char* S, const char* L, const Fvector3&	V, const char* comment=0 );
-	void		w_fvector4		( const char* S, const char* L, const Fvector4&	V, const char* comment=0 );
-	void		w_bool			( const char* S, const char* L, bool				V, const char* comment=0 );
+    void		w_string		( const char* S, const char* L, const char*			V, const char* comment=nullptr );
+	void		w_u8			( const char* S, const char* L, u8				V, const char* comment=nullptr );
+	void		w_u16			( const char* S, const char* L, u16				V, const char* comment=nullptr );
+	void		w_u32			( const char* S, const char* L, u32				V, const char* comment=nullptr );
+	void		w_u64			( const char* S, const char* L, u64				V, const char* comment=nullptr );
+	void		w_s64			( const char* S, const char* L, s64				V, const char* comment=nullptr );
+    void		w_s8			( const char* S, const char* L, s8				V, const char* comment=nullptr );
+	void		w_s16			( const char* S, const char* L, s16				V, const char* comment=nullptr );
+	void		w_s32			( const char* S, const char* L, s32				V, const char* comment=nullptr );
+	void		w_float			( const char* S, const char* L, float				V, const char* comment=nullptr );
+    void		w_fcolor		( const char* S, const char* L, const Fcolor&		V, const char* comment=nullptr );
+    void		w_color			( const char* S, const char* L, u32				V, const char* comment=nullptr );
+    void		w_ivector2		( const char* S, const char* L, const Ivector2&	V, const char* comment=nullptr );
+	void		w_ivector3		( const char* S, const char* L, const Ivector3&	V, const char* comment=nullptr );
+	void		w_ivector4		( const char* S, const char* L, const Ivector4&	V, const char* comment=nullptr );
+	void		w_fvector2		( const char* S, const char* L, const Fvector2&	V, const char* comment=nullptr );
+	void		w_fvector3		( const char* S, const char* L, const Fvector3&	V, const char* comment=nullptr );
+	void		w_fvector4		( const char* S, const char* L, const Fvector4&	V, const char* comment=nullptr );
+	void		w_bool			( const char* S, const char* L, bool				V, const char* comment=nullptr );
 
 	template<XRay::Concepts::Enum EnumT>
-	void w_enum(const char* S, const char* L, EnumT V, const char* comment=0 )
+	void w_enum(const char* S, const char* L, EnumT V, const char* comment=nullptr )
 	{
 		w_u64(S, L, u64(V), comment);
 	}

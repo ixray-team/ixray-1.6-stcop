@@ -102,7 +102,7 @@ ID3DTexture2D* TW_LoadTextureFromTexture(ID3DTexture2D* t_from, int levels_2_ski
 	R_CHK(RDevice->CreateTexture(
 		top_width, top_height,
 		levels_exist, 0, t_from_desc.Format,
-		D3DPOOL_DEFAULT, &t_dest, 0
+		D3DPOOL_DEFAULT, &t_dest, nullptr
 	));
 
 	// Copy surfaces & destroy temporary

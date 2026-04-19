@@ -16,9 +16,9 @@
 bool CAI_Rat::feel_vision_isRelevant(CObject* O)
 {
 	CEntityAlive* E = O != nullptr ? O->cast_entity_alive() : nullptr;
-	if (!E) return FALSE;
-	if ((E->g_Team() == g_Team()) && (E->g_Alive())) return FALSE;
-	return TRUE;
+	if (!E) return false;
+	if ((E->g_Team() == g_Team()) && (E->g_Alive())) return false;
+	return true;
 }
 
 void CAI_Rat::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power)

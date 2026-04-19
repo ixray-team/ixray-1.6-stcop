@@ -265,7 +265,7 @@ bool RAPIDMinBox(Fobb& B, Fvector* vertices, u32 v_count)
     // need for our use (RAPID has OpenGL column<->line)
     B.m_rotate.transpose();
     
-	return TRUE;
+	return true;
 }
 //------------------------------------------------------------------------------
 

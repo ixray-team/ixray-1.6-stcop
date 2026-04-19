@@ -115,7 +115,7 @@ public:
 	virtual	void			set_additional_info		(void* info) {};
 #endif
 #endif
-	virtual bool					Net_Relevant			(){return FALSE;}; // !!!! WARNING!!!
+	virtual bool					Net_Relevant			(){return false;}; // !!!! WARNING!!!
 	//
 	virtual void			Spawn_Write				(NET_Packet &tNetPacket, bool bLocal);
 	virtual bool			Spawn_Read				(NET_Packet &tNetPacket);

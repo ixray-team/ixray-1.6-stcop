@@ -145,8 +145,8 @@ void CTorch::Switch(bool light_on)
 		VERIFY(pVisual);
 		u16 bi = pVisual->LL_BoneID(light_trace_bone);
 
-		pVisual->LL_SetBoneVisible(bi, light_on, TRUE);
-		pVisual->CalculateBones(TRUE);
+		pVisual->LL_SetBoneVisible(bi, light_on, true);
+		pVisual->CalculateBones(true);
 	}
 }
 bool CTorch::torch_active() const
@@ -167,7 +167,7 @@ bool CTorch::net_Spawn(CSE_Abstract* DC)
 
 	if (!inherited::net_Spawn(DC))
 	{
-		return FALSE;
+		return false;
 	}
 
 	bool b_r2 = !!psDeviceFlags.test(rsR2);
@@ -207,7 +207,7 @@ bool CTorch::net_Spawn(CSE_Abstract* DC)
 		m_delta_h = PI_DIV_2 - atan((range * 0.5f) / std::abs(TORCH_OFFSET.x));
 	}
 
-	return TRUE;
+	return true;
 }
 
 void CTorch::net_Destroy()

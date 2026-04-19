@@ -290,12 +290,12 @@ void UIMainForm::DrawContextMenu()
 	}
 	if (ImGui::BeginMenuI("Visiblity", ICON_FA_EYE))
 	{
-		DrawMenuItemI("Hide Selected", ICON_FA_EYE_SLASH, COMMAND_HIDE_SEL, FALSE);
+		DrawMenuItemI("Hide Selected", ICON_FA_EYE_SLASH, COMMAND_HIDE_SEL, false);
 		DrawMenuItemI("Hide Unselected", ICON_FA_EYE_SLASH, COMMAND_HIDE_UNSEL);
-		DrawMenuItemI("Hide All", ICON_FA_EYE_SLASH, COMMAND_HIDE_ALL, FALSE);
+		DrawMenuItemI("Hide All", ICON_FA_EYE_SLASH, COMMAND_HIDE_ALL, false);
 		ImGui::Separator();
 
-		DrawMenuItemI("Unhide All", ICON_FA_EYE, COMMAND_HIDE_ALL, TRUE);
+		DrawMenuItemI("Unhide All", ICON_FA_EYE, COMMAND_HIDE_ALL, true);
 
 		ImGui::EndMenu();
 	}
@@ -308,17 +308,17 @@ void UIMainForm::DrawContextMenu()
 		bool CanUnlock = TestOut != ESceneToolBase::ETestResult::None;
 
 		ImGui::BeginDisabled(!CanLock);
-		DrawMenuItemI("Lock selection", ICON_FA_LOCK, COMMAND_LOCK_SEL, TRUE);
-		DrawMenuItemI("Lock unselected", ICON_FA_LOCK, COMMAND_LOCK_UNSEL, TRUE);
-		DrawMenuItemI("Lock all", ICON_FA_LOCK, COMMAND_LOCK_ALL, TRUE);
+		DrawMenuItemI("Lock selection", ICON_FA_LOCK, COMMAND_LOCK_SEL, true);
+		DrawMenuItemI("Lock unselected", ICON_FA_LOCK, COMMAND_LOCK_UNSEL, true);
+		DrawMenuItemI("Lock all", ICON_FA_LOCK, COMMAND_LOCK_ALL, true);
 		ImGui::EndDisabled();
 
 		ImGui::Separator();
 
 		ImGui::BeginDisabled(!CanUnlock);
-		DrawMenuItemI("Unlock selection", ICON_FA_LOCK_OPEN, COMMAND_LOCK_SEL, FALSE);
-		DrawMenuItemI("Unlock unselected", ICON_FA_LOCK_OPEN, COMMAND_LOCK_UNSEL, FALSE);
-		DrawMenuItemI("Unlock all", ICON_FA_LOCK_OPEN, COMMAND_LOCK_ALL, FALSE);
+		DrawMenuItemI("Unlock selection", ICON_FA_LOCK_OPEN, COMMAND_LOCK_SEL, false);
+		DrawMenuItemI("Unlock unselected", ICON_FA_LOCK_OPEN, COMMAND_LOCK_UNSEL, false);
+		DrawMenuItemI("Unlock all", ICON_FA_LOCK_OPEN, COMMAND_LOCK_ALL, false);
 		ImGui::EndDisabled();
 
 		ImGui::EndMenu();
@@ -521,7 +521,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		m_tZoom->Load();
 		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar816", m_tZoom->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersLeft))
 		{
-			ExecCommand(COMMAND_ZOOM_EXTENTS, FALSE);
+			ExecCommand(COMMAND_ZOOM_EXTENTS, false);
 		}
 
 		if (ImGui::IsItemHovered())
@@ -533,7 +533,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		m_tZoomSel->Load();
 		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar830", m_tZoomSel->get_SRView()->GetRawSRV(), nullptr, ImDrawFlags_RoundCornersRight))
 		{
-			ExecCommand(COMMAND_ZOOM_EXTENTS, TRUE);
+			ExecCommand(COMMAND_ZOOM_EXTENTS, true);
 		}
 
 		if (ImGui::IsItemHovered())

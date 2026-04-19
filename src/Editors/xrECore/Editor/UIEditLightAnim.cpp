@@ -23,7 +23,7 @@ UIEditLightAnim::UIEditLightAnim()
 	m_PointerTexture = nullptr;
 	m_PointerValue = 0;
 	m_RenderAlpha = false;
-	R_CHK(REDevice->CreateTexture(32, 32, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_ItemTexture, 0));
+	R_CHK(REDevice->CreateTexture(32, 32, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_ItemTexture, nullptr));
 
 	m_Items->SetOnItemCreaetEvent(xr_make_delegate(this, &UIEditLightAnim::OnCreateItem));
 	m_Items->SetOnItemRemoveEvent({this, &UIEditLightAnim::OnRemoveItem});
@@ -319,7 +319,7 @@ void UIEditLightAnim::InitializeItems()
 {
 	ListItemsVec items;
 	for (LAItemIt it = LALib.Items.begin(); it != LALib.Items.end(); it++)
-		LHelper().CreateItem(items, *(*it)->cName, 0, 0, 0);
+		LHelper().CreateItem(items, *(*it)->cName, 0, 0, nullptr);
 	m_Items->AssignItems(items);
 }
 
@@ -334,7 +334,7 @@ void UIEditLightAnim::RenderItem()
 	}
 	{
 		D3DLOCKED_RECT rect;
-		R_CHK(m_ItemTexture->LockRect(0, &rect, 0, 0));
+		R_CHK(m_ItemTexture->LockRect(0, &rect, nullptr, 0));
 		u32* dest = nullptr;
 
 		for (u32 y = 0; y < 32; y++)
@@ -400,7 +400,7 @@ void UIEditLightAnim::OnCloneItem(const char* parent_path, const char* new_full_
 
 void UIEditLightAnim::OnCreateItem(const char* path)
 {
-	LALib.AppendItem(path, 0);;
+	LALib.AppendItem(path, nullptr);;
 	InitializeItems();
 	m_Items->SelectItem(path);
 	OnModified();
@@ -438,7 +438,7 @@ void UIEditLightAnim::RenderPointer()
 		if (m_PointerTexture) {
 			m_PointerTexture->Release(); xr_delete(m_PointerRawImage);
 		}
-		R_CHK(REDevice->CreateTexture(m_PointerWeight, POINTER_HEIGHT, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_PointerTexture, 0));
+		R_CHK(REDevice->CreateTexture(m_PointerWeight, POINTER_HEIGHT, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_PointerTexture, nullptr));
 		m_PointerRawImage = xr_alloc<u32>(POINTER_HEIGHT* m_PointerWeight);
 	}
 	for (int x = 0; x < m_PointerWeight; x++)
@@ -535,7 +535,7 @@ void UIEditLightAnim::RenderPointer()
 	}
 	{
 		D3DLOCKED_RECT rect;
-		R_CHK(m_PointerTexture->LockRect(0, &rect, 0, 0));
+		R_CHK(m_PointerTexture->LockRect(0, &rect, nullptr, 0));
 		u32* dest = nullptr;
 
 		for (u32 y = 0; y < POINTER_HEIGHT; y++)

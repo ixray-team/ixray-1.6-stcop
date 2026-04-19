@@ -12,8 +12,8 @@ namespace Platform
 
 #ifdef IXR_WINDOWS
 		bool result = true;
-		int size_needed = WideCharToMultiByte(CP_UTF8, 0, input.c_str(), InSize, NULL, 0,
-			NULL, NULL);
+		int size_needed = WideCharToMultiByte(CP_UTF8, 0, input.c_str(), InSize, nullptr, 0,
+		                                      nullptr, nullptr);
 
 		if (size_needed > OutSize)
 		{
@@ -22,7 +22,7 @@ namespace Platform
 		}
 
 
-		size_needed = WideCharToMultiByte(CP_UTF8, 0, input.c_str(), InSize, output.data(), size_needed, NULL, NULL);
+		size_needed = WideCharToMultiByte(CP_UTF8, 0, input.c_str(), InSize, output.data(), size_needed, nullptr, nullptr);
 
 		result = size_needed != 0;
 

@@ -14,29 +14,29 @@ void	CBlender_accum_direct_mask::Compile(CBlender_Compile& C) {
 
 	switch(C.iElement) {
 		case SE_MASK_SPOT:		// spot or omni-part
-		C.r_Pass("accum_mask", "dumb", false, TRUE, FALSE);
+		C.r_Pass("accum_mask", "dumb", false, true, false);
 		C.r_ColorWriteEnable(false, false, false, false);
 		C.r_End();
 		break;
 		case SE_MASK_POINT:		// point
-		C.r_Pass("accum_mask", "dumb", false, TRUE, FALSE);
+		C.r_Pass("accum_mask", "dumb", false, true, false);
 		C.r_ColorWriteEnable(false, false, false, false);
 		C.r_End();
 		break;
 		case SE_MASK_ACCUM_VOL:	// copy accumulator (temp -> real), volumetric (usually after blend)
-		C.r_Pass("accum_volume", "copy_p", false, FALSE, FALSE);
+		C.r_Pass("accum_volume", "copy_p", false, false, false);
 		C.r_dx10Texture("s_generic", r2_RT_accum_temp);
 		C.r_dx10Sampler("smp_nofilter");
 		C.r_End();
 		break;
 		case SE_MASK_ACCUM_2D:	// copy accumulator (temp -> real), 2D (usually after sun-blend)
-		C.r_Pass("stub_notransform_t_scaled", "copy", false, FALSE, FALSE);
+		C.r_Pass("stub_notransform_t_scaled", "copy", false, false, false);
 		C.r_dx10Texture("s_generic", r2_RT_accum_temp);
 		C.r_dx10Sampler("smp_nofilter");
 		C.r_End();
 		break;
 		case SE_MASK_ALBEDO:	// copy accumulator, 2D (for accum->color, albedo_wo)
-		C.r_Pass("stub_notransform_t_scaled", "copy", false, FALSE, FALSE);
+		C.r_Pass("stub_notransform_t_scaled", "copy", false, false, false);
 		C.r_dx10Texture("s_generic", r2_RT_accum);
 		C.r_dx10Sampler("smp_nofilter");
 		C.r_End();

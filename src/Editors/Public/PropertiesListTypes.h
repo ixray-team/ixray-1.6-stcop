@@ -184,7 +184,7 @@ public:
     IC void				AppendValue		(PropValue* value)
     {
     	if (!values.empty()&&!value->Equal(values.front()))
-        	m_Flags.set	(flMixed,TRUE);
+        	m_Flags.set	(flMixed,true);
     	values.push_back(value);
     }
     IC xr_string		GetDrawText		()
@@ -198,13 +198,13 @@ public:
     }
 	IC void				CheckMixed		()
     {
-		m_Flags.set		(flMixed,FALSE);
+		m_Flags.set		(flMixed,false);
         if (values.size()>1){
             PropValueIt F	= values.begin();
         	PropValueIt it	= F; ++it;
 	    	for (; values.end() != it; ++it){
     	    	if (!(*it)->Equal(*F)){
-                	m_Flags.set(flMixed,TRUE);
+                	m_Flags.set(flMixed,true);
                     break;
                 }
             }
@@ -228,7 +228,7 @@ public:
     IC bool 			ApplyValue		(const T2& val)
     {
     	bool bChanged	= false;
-        m_Flags.set		(flMixed,FALSE);
+        m_Flags.set		(flMixed,false);
     	for (PropValueIt it=values.begin(); values.end() != it; ++it){
         	T1* CV		= smart_cast<T1*>(*it); VERIFY(CV);
         	if (CV->ApplyValue(val)){
@@ -237,8 +237,8 @@ public:
             }
             if (!CV->Equal(values.front()))
             {
-                m_Flags.set(flMixed, TRUE);
-                m_Flags.set(flIgnoreMixed, FALSE);
+                m_Flags.set(flMixed, true);
+                m_Flags.set(flIgnoreMixed, false);
             }
         }
         return bChanged;
@@ -725,7 +725,7 @@ public:
 	virtual bool		Equal			(PropValue* val)
     {
         if (items!=((RListValue*)val)->items){
-        	m_Owner->m_Flags.set(PropItem::flDisabled,TRUE); 
+        	m_Owner->m_Flags.set(PropItem::flDisabled,true); 
         	return false;
         }
         return RTextValue::Equal(val);
@@ -740,7 +740,7 @@ public:
 	virtual bool		Equal			(PropValue* val)
     {
         if (items!=((CListValue*)val)->items){
-        	m_Owner->m_Flags.set(PropItem::flDisabled,TRUE); 
+        	m_Owner->m_Flags.set(PropItem::flDisabled,true); 
         	return false;
         }
         return CTextValue::Equal(val);

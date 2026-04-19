@@ -39,7 +39,7 @@ float CMovementManager::speed				(CPHMovementControl *movement_control) const
 	return					(m_speed);
 }
 #ifdef	DEBUG
-bool dbg_dump_collision_hit =FALSE;
+bool dbg_dump_collision_hit =false;
 void dump_collision_hit(CPHMovementControl *movement_control)
 {
 	if( !dbg_dump_collision_hit )

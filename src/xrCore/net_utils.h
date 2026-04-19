@@ -82,7 +82,7 @@ public:
 	u32				timeReceive;
 	bool			w_allow;
 public:
-	NET_Packet			():inistream(NULL),w_allow(true)	{}
+	NET_Packet			():inistream(nullptr),w_allow(true)	{}
 	// writing - main
 	IC void write_start	()				{	B.count=0;				INI_W(move_begin());}
 	IC void	w_begin		( u16 type	)	{	B.count=0;	w_u16(type);}
@@ -166,7 +166,7 @@ public:
 			w(*p,p.size()+1);
 		else{
 			IIniFileStream* tmp = inistream;
-			inistream = NULL;
+			inistream = nullptr;
 			w_u8(0);
 			inistream = tmp; //hack -(
 		}

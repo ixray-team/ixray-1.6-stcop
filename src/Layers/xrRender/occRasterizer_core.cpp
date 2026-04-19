@@ -55,11 +55,11 @@ IC void Vclamp(int& v, int a, int b)
 }
 IC bool shared(occTri* T1, occTri* T2)
 {
-	if (T1==T2)					return TRUE;
-	if (T1->adjacent[0]==T2)	return TRUE;
-	if (T1->adjacent[1]==T2)	return TRUE;
-	if (T1->adjacent[2]==T2)	return TRUE;
-	return FALSE;
+	if (T1==T2)					return true;
+	if (T1->adjacent[0]==T2)	return true;
+	if (T1->adjacent[1]==T2)	return true;
+	if (T1->adjacent[2]==T2)	return true;
+	return false;
 }
 IC bool lesser(float& a, float& b)
 {

@@ -58,7 +58,7 @@ CPostprocessAnimator::~CPostprocessAnimator           ()
 #ifndef _PP_EDITOR_
 bool CPostprocessAnimator::Valid()
 {
-	if(m_bCyclic)	return TRUE;
+	if(m_bCyclic)	return true;
 
 	return CEffectorPP::Valid	();
 }
@@ -232,9 +232,9 @@ bool CPostprocessAnimator::Process(SPPInfo &PPInfo)
 	}
 
 	if(fsimilar(m_factor,0.0001f,EPS_S))
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 #else
 bool CPostprocessAnimator::Process(float dt, SPPInfo &PPInfo)
@@ -251,9 +251,9 @@ bool CPostprocessAnimator::Process(float dt, SPPInfo &PPInfo)
 //	PPInfo.lerp				(pp_identity, m_EffectorParams, m_factor);
 
 //	if(fsimilar(m_factor,0.001f,EPS_S))
-//		return FALSE;
+//		return false;
 
-	return TRUE;
+	return true;
 }
 #endif /*_PP_EDITOR_*/
 

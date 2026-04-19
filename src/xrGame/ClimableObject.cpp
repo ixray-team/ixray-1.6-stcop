@@ -301,7 +301,7 @@ bool CClimableObject::BeforeLadder(CPHCharacter *actor,float tolerance/*=0.f*/)c
 
 bool CClimableObject::UsedAI_Locations()
 {
-	return FALSE;
+	return false;
 }
 
 

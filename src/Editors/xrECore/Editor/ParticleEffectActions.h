@@ -190,7 +190,7 @@ public:
 	PVector& _vector(const char* name){auto it=vectors.find(name); R_ASSERT2(it!=vectors.end(),name); return it->second;}
 	PDomain& _domain(const char* name){auto it=domains.find(name); R_ASSERT2(it!=domains.end(),name); return it->second;}
 	PBool& _bool(const char* name){auto it=bools.find(name); R_ASSERT2(it!=bools.end(),name); return it->second;}
-	PBool* _bool_safe(const char* name){auto it=bools.find(name); return (it!=bools.end())?&it->second:0;}
+	PBool* _bool_safe(const char* name){auto it=bools.find(name); return (it!=bools.end())?&it->second:nullptr;}
 	PString& _string(const char* name){auto it=strings.find(name); R_ASSERT(it!=strings.end(),name); return it->second;}
 	PEnum& _enum(const char* name){auto it = enums.find(name); R_ASSERT(it!=enums.end(),name); return it->second;}
 public:

@@ -325,7 +325,7 @@ struct SCollisionHitCallback : ICollisionHitCallback
 
 					if (device != nullptr)
 					{
-						device->SetDropManual(TRUE);
+						device->SetDropManual(true);
 						need_kick_animator = true;
 					}
 				}

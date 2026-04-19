@@ -27,13 +27,13 @@
 u32		g_sv_dm_dwForceRespawn			= 0;
 s32		g_sv_dm_dwFragLimit				= 10;
 s32		g_sv_dm_dwTimeLimit				= 0;
-bool	g_sv_dm_bDamageBlockIndicators	= TRUE;
+bool	g_sv_dm_bDamageBlockIndicators	= true;
 u32		g_sv_dm_dwDamageBlockTime		= 0;
-bool	g_sv_dm_bAnomaliesEnabled		= TRUE;
+bool	g_sv_dm_bAnomaliesEnabled		= true;
 u32		g_sv_dm_dwAnomalySetLengthTime	= 3;
-bool	g_sv_dm_bPDAHunt				= TRUE;
+bool	g_sv_dm_bPDAHunt				= true;
 u32		g_sv_dm_dwWarmUp_MaxTime		= 0;
-bool	g_sv_dm_bDMIgnore_Money_OnBuy	= FALSE;
+bool	g_sv_dm_bDMIgnore_Money_OnBuy	= false;
 //-----------------------------------------------------------------
 bool				game_sv_Deathmatch::IsDamageBlockIndEnabled	() {return g_sv_dm_bDamageBlockIndicators; };
 s32					game_sv_Deathmatch::GetTimeLimit			() {return g_sv_dm_dwTimeLimit; };
@@ -637,7 +637,7 @@ void	game_sv_Deathmatch::SM_SwitchOnPlayer(CObject* pNewObject)
 
 bool	game_sv_Deathmatch::AllPlayers_Ready ()
 {
-	if (!m_server->GetServerClient()) return FALSE;	
+	if (!m_server->GetServerClient()) return false;	
 	// Check if all players ready
 	u32		cnt		= get_players_count	();
 	struct ready_counter
@@ -677,8 +677,8 @@ bool	game_sv_Deathmatch::AllPlayers_Ready ()
 	ready_counter tmp_functor;
 	tmp_functor.serverClientID = m_server->GetServerClient()->ID;
 	m_server->ForEachClientDo(tmp_functor);
-	if (tmp_functor.ready == cnt && tmp_functor.ready != 0) return TRUE;
-	return FALSE;
+	if (tmp_functor.ready == cnt && tmp_functor.ready != 0) return true;
+	return false;
 };
 	
 
@@ -895,7 +895,7 @@ void game_sv_Deathmatch::CheckItem(game_PlayerState* ps, PIItem pItem, xr_vector
 				if (pSWeapon)
 				{
 					pSWeapon->m_addon_flags.zero();
-					pSWeapon->m_addon_flags.set(NewAddons, TRUE);
+					pSWeapon->m_addon_flags.set(NewAddons, true);
 				}
 
 				NET_Packet	P;
@@ -1250,7 +1250,7 @@ void	game_sv_Deathmatch::RemoveItemFromActor	(CSE_Abstract* pItem)
 	//-------------------------------------------------------------
 	NET_Packet			P;
 	u_EventGen			(P,GE_DESTROY,pItem->ID);
-	Level().Send(P,net_flags(TRUE,TRUE));
+	Level().Send(P,net_flags(true,true));
 };
 
 void	game_sv_Deathmatch::OnTeamScore	(u32 Team, bool Minor)
@@ -1331,7 +1331,7 @@ void game_sv_Deathmatch::OnPlayerSelectSkin		(NET_Packet& P, ClientID sender)
 	Px.w_u32(GAME_EVENT_PLAYER_GAME_MENU_RESPOND);
 	Px.w_u8(PLAYER_CHANGE_SKIN);
 	Px.w_s8(l_pC->ps->skin);
-	m_server->SendTo(sender,Px,net_flags(TRUE,TRUE));
+	m_server->SendTo(sender,Px,net_flags(true,true));
 };
 
 void game_sv_Deathmatch::OnPlayerChangeSkin(ClientID id_who, s8 skin) 
@@ -1517,40 +1517,40 @@ bool	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 						NET_Packet				P;
 						u_EventGen				(P,GE_OWNERSHIP_REJECT,eid_who);
 						P.w_u16					(T->ID);
-						Level().Send(P,net_flags(TRUE,TRUE));
+						Level().Send(P,net_flags(true,true));
 						//-----------------------------------------------------
 						u_EventGen				(P,GE_OWNERSHIP_TAKE,eid_who);
 						P.w_u16					(eid_what);
-						Level().Send(P,net_flags(TRUE,TRUE));
+						Level().Send(P,net_flags(true,true));
 						//-----------------------------------------------------						
 					}
-					return FALSE;
+					return false;
 				}
 			}
 
 			// Weapon slot empty - ownership OK
-			return TRUE;
+			return true;
 		}
 		
 		CSE_ALifeItemAmmo* pIAmmo = e_what->cast_item_ammo();
 		if (pIAmmo)
 		{
 			//Ammo
-			return TRUE;
+			return true;
 		};
 
 		CSE_ALifeItemGrenade* pIGrenade		=	smart_cast<CSE_ALifeItemGrenade*> (e_what);
 		if (pIGrenade)
 		{
 			//Grenade
-			return TRUE;
+			return true;
 		};
 
 		CSE_ALifeItemCustomOutfit* pOutfit		= smart_cast<CSE_ALifeItemCustomOutfit*> (e_what);
 		if (pOutfit)
 		{
 			//Possibly Addons and/or Outfits
-			return TRUE;
+			return true;
 		};
 
 		//---------------------------------------------------------------
@@ -1570,7 +1570,7 @@ bool	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 						CSE_Abstract		*e_child_item = get_entity_from_eid(e_what->children.back());
 						if (e_child_item)
 						{
-							if (!OnTouch(eid_who, e_child_item->ID, FALSE))
+							if (!OnTouch(eid_who, e_child_item->ID, false))
 							{
 								NET_Packet			P;
 								u_EventGen			(P,GE_OWNERSHIP_REJECT,e_what->ID);
@@ -1606,15 +1606,15 @@ bool	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 					};
 				};
 				//-------------------------------
-				return FALSE;
+				return false;
 			}
 		};
 		//---------------------------------------------------------------
-		if (IsBuyableItem(*e_what->s_name)) return TRUE;
+		if (IsBuyableItem(*e_what->s_name)) return true;
 		//---------------------------------------------------------------		
 	};
 	// We don't know what the hell is it, so disallow ownership just for safety 
-	return FALSE;
+	return false;
 }
 
 void game_sv_Deathmatch::OnDetach(u16 eid_who, u16 eid_what)
@@ -1729,9 +1729,9 @@ void game_sv_Deathmatch::OnPlayerConnect(ClientID id_who)
 		xrCData->ps->team			= 0;
 		xrCData->ps->setFlag		(GAME_PLAYER_FLAG_SPECTATOR);
 		xrCData->ps->setFlag		(GAME_PLAYER_FLAG_READY);
-		xrCData->ps->net_Export		(P, TRUE);
+		xrCData->ps->net_Export		(P, true);
 		u_EventSend					(P);
-		xrCData->net_Ready			= TRUE;
+		xrCData->net_Ready			= true;
 	};
 	Send_Anomaly_States				(id_who);
 };
@@ -1888,8 +1888,8 @@ bool game_sv_Deathmatch::check_for_Anomalies()
 
 bool game_sv_Deathmatch::Is_Anomaly_InLists(CSE_Abstract* E)
 {
-	if (!E) return FALSE;
-	return TRUE;
+	if (!E) return false;
+	return true;
 }
 
 bool game_sv_Deathmatch::OnPreCreate(CSE_Abstract* E)
@@ -1902,7 +1902,7 @@ bool game_sv_Deathmatch::OnPreCreate(CSE_Abstract* E)
 	{
 		return Is_Anomaly_InLists(pCustomZone);
 	}
-	return TRUE;
+	return true;
 };
 
 void game_sv_Deathmatch::OnCreate(u16 eid_who)
@@ -1978,7 +1978,7 @@ void game_sv_Deathmatch::Send_Anomaly_States(ClientID id_who)
 		};
 	};
 
-	m_server->SendTo(id_who, EventPack, net_flags(TRUE, TRUE));
+	m_server->SendTo(id_who, EventPack, net_flags(true, true));
 };
 
 void game_sv_Deathmatch::Check_ForClearRun(game_PlayerState* ps)

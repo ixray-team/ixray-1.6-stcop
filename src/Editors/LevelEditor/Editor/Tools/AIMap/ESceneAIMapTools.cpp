@@ -218,7 +218,7 @@ extern bool ai_map_shown;
 void ESceneAIMapTool::OnActivate()
 {
 	inherited::OnActivate		();
-    ai_map_shown				= TRUE;
+    ai_map_shown				= true;
 }
 
 void ESceneAIMapTool::OnFrame()
@@ -227,14 +227,14 @@ void ESceneAIMapTool::OnFrame()
         return;
 
 	if (m_Flags.is(flUpdateHL)){
-    	m_Flags.set(flUpdateHL,FALSE);
+    	m_Flags.set(flUpdateHL,false);
         for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
-			(*it)->flags.set(SAINode::flHLSelected,FALSE);
+			(*it)->flags.set(SAINode::flHLSelected,false);
         for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++){
             SAINode& N = **it;
             if (N.flags.is(SAINode::flSelected))
                 for (int k=0; k<4; k++)
-                    if (N.n[k]) N.n[k]->flags.set(SAINode::flHLSelected,TRUE);
+                    if (N.n[k]) N.n[k]->flags.set(SAINode::flHLSelected,true);
         }
     }
 	if (m_Flags.is(flUpdateSnapList)) RealUpdateSnapList();
@@ -621,7 +621,7 @@ int ESceneAIMapTool::AddNode(const Fvector& pos, bool bIgnoreConstraints, bool b
         IsLoaded = true;
         if (N) 
         {
-            N->flags.set(SAINode::flSelected, TRUE);
+            N->flags.set(SAINode::flSelected, true);
             if (bAutoLink) 	UpdateLinks(N, bIgnoreConstraints);
             return 1;
         }
@@ -649,7 +649,7 @@ void ESceneAIMapTool::SelectNodesByLink(int link)
     for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
         if ((*it)->Links()==link)
 //			if (!(*it)->flags.is(SAINode::flHide))
-	            (*it)->flags.set(SAINode::flSelected,TRUE);
+	            (*it)->flags.set(SAINode::flSelected,true);
     UI->RedrawScene		();
 }
 

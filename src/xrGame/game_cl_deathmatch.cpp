@@ -50,9 +50,9 @@ game_cl_Deathmatch::game_cl_Deathmatch()
 
 	pCurSkinMenu	= nullptr;
 
-	m_bBuyEnabled	= TRUE;
+	m_bBuyEnabled	= true;
 
-	m_bSkinSelected	= FALSE;	
+	m_bSkinSelected	= false;	
 
 	m_game_ui		= nullptr;
 
@@ -61,8 +61,8 @@ game_cl_Deathmatch::game_cl_Deathmatch()
 
 	LoadSndMessages();
 	m_cl_dwWarmUp_Time = 0;
-	m_bMenuCalledFromReady = FALSE;
-	m_bFirstRun = TRUE;
+	m_bMenuCalledFromReady = false;
+	m_bFirstRun = true;
 }
 
 void game_cl_Deathmatch::Init ()
@@ -213,7 +213,7 @@ void game_cl_Deathmatch::OnSkinMenu_Ok			()
     P.w_s8	((u8)pCurSkinMenu->GetActiveIndex());
 	l_pPlayer->u_EventSend		(P);
 	//-----------------------------------------------------------------
-	m_bSkinSelected = TRUE;
+	m_bSkinSelected = true;
 
 };
 
@@ -227,7 +227,7 @@ void game_cl_Deathmatch::OnSkinMenu_Cancel		()
 			return;
 		}
 	}
-	m_bMenuCalledFromReady = FALSE;
+	m_bMenuCalledFromReady = false;
 };
 
 bool game_cl_Deathmatch::CanCallBuyMenu			()
@@ -235,26 +235,26 @@ bool game_cl_Deathmatch::CanCallBuyMenu			()
 	if (Phase()!=GAME_PHASE_INPROGRESS) return false;
 
 	if (!is_buy_menu_ready())
-		return FALSE;
+		return false;
 
 	if (Level().CurrentEntity() != nullptr && Level().CurrentEntity()->cast_spectator() == nullptr)
 	{
-		return FALSE;
+		return false;
 	};
-	if (!m_bSkinSelected || m_bSpectatorSelected) return FALSE;
+	if (!m_bSkinSelected || m_bSpectatorSelected) return false;
 	if (pCurSkinMenu && pCurSkinMenu->IsShown())
 	{
-		return FALSE;
+		return false;
 	};
 	if ( m_game_ui )
 	{
 		if ((m_game_ui->ActorMenu() && m_game_ui->ActorMenu()->IsShown()) 
 			|| (m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd()->IsShown()))
-		return FALSE;
+		return false;
 	}
 	/*if (m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown())
 	{
-		return FALSE;
+		return false;
 	};*/
 	return m_bBuyEnabled;
 };
@@ -266,21 +266,21 @@ bool game_cl_Deathmatch::CanCallSkinMenu			()
 	{
 		if ((m_game_ui->ActorMenu() && m_game_ui->ActorMenu()->IsShown()) 
 			|| (m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd()->IsShown()))
-		return FALSE;
+		return false;
 	}
 	/*if (m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown())
 	{
-		return FALSE;
+		return false;
 	};*/
 	if (pCurBuyMenu && pCurBuyMenu->IsShown())
 	{
-		return FALSE;
+		return false;
 	};
 	SetCurrentSkinMenu();
-	if(!pCurSkinMenu)	return FALSE;
+	if(!pCurSkinMenu)	return false;
 	if (!pCurSkinMenu->IsShown())
 		pCurSkinMenu->SetCurSkin(local_player->skin);
-	return TRUE;
+	return true;
 };
 
 bool game_cl_Deathmatch::CanCallInventoryMenu			()
@@ -288,17 +288,17 @@ bool game_cl_Deathmatch::CanCallInventoryMenu			()
 	if (Phase()!=GAME_PHASE_INPROGRESS) return false;
 	if (Level().CurrentEntity() != nullptr && Level().CurrentEntity()->cast_actor() == nullptr)
 	{
-		return FALSE;
+		return false;
 	}
 	if (pCurSkinMenu && pCurSkinMenu->IsShown())
 	{
-		return FALSE;
+		return false;
 	};
 	if (local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 	{
-		return FALSE;
+		return false;
 	}
-	return TRUE;
+	return true;
 };
 
 
@@ -330,7 +330,7 @@ bool game_cl_Deathmatch::CanBeReady()
 {
 	if (!local_player) return false;
 
-	m_bMenuCalledFromReady = TRUE;
+	m_bMenuCalledFromReady = true;
 
 	SetCurrentSkinMenu();
 
@@ -344,7 +344,7 @@ bool game_cl_Deathmatch::CanBeReady()
 
 	if (!m_bSkinSelected)
 	{
-		m_bMenuCalledFromReady = FALSE;
+		m_bMenuCalledFromReady = false;
 		if (CanCallSkinMenu())
 			pCurSkinMenu->ShowDialog(true);
 
@@ -365,7 +365,7 @@ bool game_cl_Deathmatch::CanBeReady()
 			}
 			return false;
 		}
-		m_bMenuCalledFromReady = FALSE;
+		m_bMenuCalledFromReady = false;
 		OnBuyMenu_Ok();
 		return true;
 	};
@@ -391,8 +391,8 @@ bool game_cl_Deathmatch::NeedToSendReady_Spectator(int key, game_PlayerState* ps
 
 void	game_cl_Deathmatch::OnSpectatorSelect		()
 {
-	m_bMenuCalledFromReady = FALSE;
-	m_bSkinSelected = FALSE;
+	m_bMenuCalledFromReady = false;
+	m_bSkinSelected = false;
 	inherited::OnSpectatorSelect();
 };
 
@@ -509,7 +509,7 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 			{
 				if (m_bFirstRun)
 				{
-					m_bFirstRun = FALSE;
+					m_bFirstRun = false;
 					if (m_game_ui->m_pMapDesc && !Level().IsDemoPlayStarted())
 						m_game_ui->m_pMapDesc->ShowDialog(true);
 
@@ -1014,7 +1014,7 @@ void game_cl_Deathmatch::PlayParticleEffect(const char* EffName, Fvector& pos)
 //	CParticlesPlayer::MakeXFORM(pObj,0,Fvector().set(0.f,1.f,0.f),Fvector().set(0.f,0.f,0.f),pos);
 
 	// установить particles
-	xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(EffName,TRUE);
+	xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(EffName,true);
 
 	ps->UpdateParent(M,Fvector().set(0.f,0.f,0.f));
 	GamePersistent().ps_needtoplay.push_back(ps);
@@ -1181,7 +1181,7 @@ void game_cl_Deathmatch::OnGameMenuRespond_ChangeSkin(NET_Packet& P)
 	SetCurrentSkinMenu				();
 	if (pCurSkinMenu)				pCurSkinMenu->SetCurSkin(local_player->skin);
 	SetCurrentBuyMenu				();
-	m_bSpectatorSelected			= FALSE;
+	m_bSpectatorSelected			= false;
 	
 	if (m_bMenuCalledFromReady)
 	{

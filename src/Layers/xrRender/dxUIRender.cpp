@@ -7,9 +7,9 @@ dxUIRender UIRenderImpl;
 
 void dxUIRender::CreateUIGeom()
 {
-	hGeom_L.create(FVF::F_L, RCache.Vertex.Buffer(), 0);
-	hGeom_TL.create(FVF::F_TL, RCache.Vertex.Buffer(), 0);
-	hGeom_LIT.create(FVF::F_LIT, RCache.Vertex.Buffer(), 0);
+	hGeom_L.create(FVF::F_L, RCache.Vertex.Buffer(), nullptr);
+	hGeom_TL.create(FVF::F_TL, RCache.Vertex.Buffer(), nullptr);
+	hGeom_LIT.create(FVF::F_LIT, RCache.Vertex.Buffer(), nullptr);
 }
 
 void dxUIRender::DestroyUIGeom()

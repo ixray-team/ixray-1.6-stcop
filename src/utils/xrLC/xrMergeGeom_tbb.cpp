@@ -11,20 +11,20 @@ extern bool	NeedMerge(vecFace& subdiv, Fbox& bb_base);
 IC bool	ValidateMergeTBB(u32 f1, const Fbox& bb_base, const Fbox& bb_base_orig, u32 f2, const Fbox& bb, float& volume)
 {
 	// Polygons
-	if ((f1 + f2) > u32(4 * c_SS_HighVertLimit / 3))		return FALSE;	// Don't exceed limits (4/3 max POLY)	
+	if ((f1 + f2) > u32(4 * c_SS_HighVertLimit / 3))		return false;	// Don't exceed limits (4/3 max POLY)	
 
 	// Size
 	Fbox	merge;	merge.merge(bb_base, bb);
 	Fvector sz;		merge.getsize(sz);
 	Fvector orig1;	bb_base_orig.getsize(orig1);
 	Fvector orig2;	bb.getsize(orig2);
-	if (sz.x > (4 * c_SS_maxsize / 3))			return FALSE;	// Don't exceed limits (4/3 GEOM)
-	if (sz.y > (4 * c_SS_maxsize / 3))			return FALSE;
-	if (sz.z > (4 * c_SS_maxsize / 3))			return FALSE;
+	if (sz.x > (4 * c_SS_maxsize / 3))			return false;	// Don't exceed limits (4/3 GEOM)
+	if (sz.y > (4 * c_SS_maxsize / 3))			return false;
+	if (sz.z > (4 * c_SS_maxsize / 3))			return false;
 
-	if (!ValidateMergeLinearSize(sz, orig1, orig2, 0))	return FALSE;	// Don't exceed limits (4/3 GEOM)
-	if (!ValidateMergeLinearSize(sz, orig1, orig2, 1))	return FALSE;
-	if (!ValidateMergeLinearSize(sz, orig1, orig2, 2))	return FALSE;
+	if (!ValidateMergeLinearSize(sz, orig1, orig2, 0))	return false;	// Don't exceed limits (4/3 GEOM)
+	if (!ValidateMergeLinearSize(sz, orig1, orig2, 1))	return false;
+	if (!ValidateMergeLinearSize(sz, orig1, orig2, 2))	return false;
 
 	// Volume
 	Fbox		bb0, bb1;
@@ -35,10 +35,10 @@ IC bool	ValidateMergeTBB(u32 f1, const Fbox& bb_base, const Fbox& bb_base_orig, 
 	float	v2 = bb1.getvolume();
 	volume = merge.getvolume(); // / Cuboid(merge);
 	if (volume > 8 * (v1 + v2))
-		return FALSE;	// Don't merge too distant groups (8 vol)
+		return false;	// Don't merge too distant groups (8 vol)
 
 	// OK
-	return TRUE;
+	return true;
 }
 
 // Grids TBB

@@ -239,7 +239,7 @@ void UIEditLibrary::GenerateLOD(const RStringVec& props, bool bHighQuality)
 		{
 			pb->Inc(O->GetName());
 			bool bLod = O->m_objectFlags.is(CEditableObject::eoUsingLOD);
-			O->m_objectFlags.set(CEditableObject::eoUsingLOD, FALSE);
+			O->m_objectFlags.set(CEditableObject::eoUsingLOD, false);
 			xr_string tex_name;
 			tex_name = EFS.ChangeFileExt(O->GetName(), "");
 

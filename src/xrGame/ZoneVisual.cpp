@@ -17,7 +17,7 @@ CVisualZone::~CVisualZone						()
 bool CVisualZone::	net_Spawn						(CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC))
-		return					(FALSE);
+		return					(false);
 
 	CSE_Abstract* e = (CSE_Abstract*)(DC);
 	CSE_ALifeZoneVisual* Z = smart_cast<CSE_ALifeZoneVisual*>(e);
@@ -46,9 +46,9 @@ bool CVisualZone::	net_Spawn						(CSE_Abstract* DC)
 
 	SA->PlayCycle				(m_idle_animation);
 
-	setVisible					(TRUE);
+	setVisible					(true);
 
-	return						(TRUE);
+	return						(true);
 }
 
 void CVisualZone::SwitchZoneState(EZoneState new_state)

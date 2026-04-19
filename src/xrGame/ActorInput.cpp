@@ -231,7 +231,7 @@ void CActor::IR_OnKeyboardPress(int dik)
 		ActorUse();
 		break;
 	case kDROP:
-		b_DropActivated			= TRUE;
+		b_DropActivated			= true;
 		f_DropPower				= 0;
 		break;
 	case kNEXT_SLOT:

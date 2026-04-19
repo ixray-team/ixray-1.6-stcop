@@ -150,9 +150,9 @@ public:
 	MotionID					ID_Cycle_Safe(LPCSTR  N);
 	MotionID					ID_Cycle(shared_str  N);
 	MotionID					ID_Cycle_Safe(shared_str  N);
-	CBlend* PlayCycle(LPCSTR  N, bool bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
-	CBlend* PlayCycle(MotionID M, bool bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
-	CBlend* PlayCycle(u16 partition, MotionID M, bool bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
+	CBlend* PlayCycle(LPCSTR  N, bool bMixIn = true, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
+	CBlend* PlayCycle(MotionID M, bool bMixIn = true, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
+	CBlend* PlayCycle(u16 partition, MotionID M, bool bMixIn = true, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
 	// fx'es
 	MotionID					ID_FX(LPCSTR  N);
 	MotionID					ID_FX_Safe(LPCSTR  N);

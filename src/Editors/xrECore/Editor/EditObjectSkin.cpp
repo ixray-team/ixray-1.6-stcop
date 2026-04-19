@@ -40,7 +40,7 @@ bool CEditableObject::LoadBoneData(IReader& F)
 	BoneVec	load_bones;
     int count=0;
 	IReader* R;
-    while(0!=(R=F.open_chunk(count++)))
+    while(nullptr!=(R=F.open_chunk(count++)))
     {
     	CBone* nBone = new CBone();
     	load_bones.push_back(nBone);
@@ -178,8 +178,8 @@ void CEditableObject::RenderBones(const Fmatrix& parent)
                 if ((*b_it)->shape.Valid()){
                     switch ((*b_it)->shape.type){
                     case SBoneShape::stBox: 	DU_impl.DrawOBB		(mat,(*b_it)->shape.box,c,c);	break;
-                    case SBoneShape::stSphere:	DU_impl.DrawSphere   (mat,(*b_it)->shape.sphere,c,c,TRUE,TRUE);break;
-                    case SBoneShape::stCylinder:DU_impl.DrawCylinder (mat,(*b_it)->shape.cylinder.m_center,(*b_it)->shape.cylinder.m_direction,(*b_it)->shape.cylinder.m_height,(*b_it)->shape.cylinder.m_radius,c,c,TRUE,TRUE);break;
+                    case SBoneShape::stSphere:	DU_impl.DrawSphere   (mat,(*b_it)->shape.sphere,c,c,true,true);break;
+                    case SBoneShape::stCylinder:DU_impl.DrawCylinder (mat,(*b_it)->shape.cylinder.m_center,(*b_it)->shape.cylinder.m_direction,(*b_it)->shape.cylinder.m_height,(*b_it)->shape.cylinder.m_radius,c,c,true,true);break;
 	                }
                 }
             }
@@ -191,7 +191,7 @@ CBone* CEditableObject::PickBone(const Fvector& S, const Fvector& D, const Fmatr
 {
     BoneVec& lst 	= m_Bones;
     float dist 		= 10000.f;
-    CBone* sel	 	= 0;
+    CBone* sel	 	= nullptr;
     for(BoneIt b_it=lst.begin(); b_it!=lst.end(); b_it++){
     	if ((*b_it)->Pick(dist,S,D,parent))
         	sel 	= *b_it;
@@ -235,9 +235,14 @@ bool	SphereValid	(FvectorVec& geom, Fsphere& test)
 
 	Fsphere	S	=	test;
 	S.R			+=	EPS_L;
-	for (FvectorIt I = geom.begin(); I!=geom.end(); I++)
-		if (!S.contains(*I))	return FALSE;
-	return TRUE;
+	for (auto& I : geom)
+	{
+		if (!S.contains(I))
+		{
+			return false;
+		}
+	}
+	return true;
 }
 void ComputeSphere(Fsphere &B, FvectorVec& V)
 {

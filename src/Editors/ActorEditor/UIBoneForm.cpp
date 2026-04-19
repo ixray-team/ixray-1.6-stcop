@@ -306,7 +306,7 @@ void UIBoneForm::SaveTo()
     xr_string temp_fn;
     if (EFS.GetSaveName(_import_, temp_fn))
     {
-        CInifile ini(temp_fn.c_str(), FALSE, FALSE, TRUE);
+        CInifile ini(temp_fn.c_str(), false, false, true);
         string64 buff;
         for (int i = 0; i < 4; ++i)
         {
@@ -330,7 +330,7 @@ void UIBoneForm::LoadFrom()
             m_List[k].clear();
             m_Name[k][0] = 0;
         }
-        CInifile ini(temp_fn.c_str(), TRUE, TRUE, FALSE);
+        CInifile ini(temp_fn.c_str(), true, true, false);
         string64 buff;
         for (int i = 0; i < 4; ++i)
         {

@@ -168,7 +168,7 @@ void stats_manager::decrement_stats( u32 size, enum_stats_buffer_type type, _D3D
 
 void stats_manager::decrement_stats( u32 size, enum_stats_buffer_type type, _D3DPOOL location, void* buff_ptr )
 {
-	if( buff_ptr == 0 || g_dedicated_server )
+	if( buff_ptr == nullptr || g_dedicated_server )
 		return;
 
 #ifdef DEBUG

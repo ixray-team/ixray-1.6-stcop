@@ -64,7 +64,7 @@ bool CSightManager::aim_target	(Fvector &my_position, Fvector &aim_target, const
 		return					(false);
 
 	if(GO->cast_actor())
-		m_object->Visual()->dcast_PKinematics()->CalculateBBox(FALSE);
+		m_object->Visual()->dcast_PKinematics()->CalculateBBox(false);
 
 	m_object->Center			(my_position);
 

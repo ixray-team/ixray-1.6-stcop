@@ -23,7 +23,7 @@ public:
 
 	virtual		void				OnPlayerKillPlayer		(ClientID id_killer, ClientID id_killed){};
 	virtual		void				OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P){}; //игрок получил Hit
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_target, bool bForced = FALSE){return true;};			// TRUE=allow ownership, FALSE=denied
+	virtual		bool				OnTouch					(u16 eid_who, u16 eid_target, bool bForced = false){return true;};			// true=allow ownership, false=denied
 	virtual		void				OnDetach				(u16 eid_who, u16 eid_target){};
 
 protected:

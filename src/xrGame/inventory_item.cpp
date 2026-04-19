@@ -38,16 +38,16 @@ net_updateInvData* CInventoryItem::NetSync()
 
 CInventoryItem::CInventoryItem()
 {
-	m_flags.set(Fbelt, FALSE);
-	m_flags.set(Fruck, TRUE);
-	m_flags.set(FRuckDefault, TRUE);
+	m_flags.set(Fbelt, false);
+	m_flags.set(Fruck, true);
+	m_flags.set(FRuckDefault, true);
 
-	SetDropManual(FALSE);
+	SetDropManual(false);
 
-	m_flags.set(FCanTake, TRUE);
-	m_can_trade = TRUE;
+	m_flags.set(FCanTake, true);
+	m_can_trade = true;
 	m_flags.set(FCanTrade, m_can_trade);
-	m_flags.set(FUsingCondition, FALSE);
+	m_flags.set(FUsingCondition, false);
 	m_fCondition = 1.0f;
 
 	m_ItemCurrPlace.value = 0;
@@ -55,8 +55,8 @@ CInventoryItem::CInventoryItem()
 	m_ItemCurrPlace.base_slot_id = NO_ACTIVE_SLOT;
 	m_ItemCurrPlace.slot_id = NO_ACTIVE_SLOT;
 
-	m_flags.set(FIsHelperItem, FALSE);
-	m_flags.set(FCanStack, TRUE);
+	m_flags.set(FIsHelperItem, false);
+	m_flags.set(FCanStack, true);
 
 	m_custom_text_offset.set(0.0f, 0.0f);
 
@@ -148,17 +148,17 @@ void CInventoryItem::Load(const char* section)
 
 	m_Description = g_pStringTable->translate(READ_IF_EXISTS(pSettings, r_string, section, "description", ""));
 
-	m_flags.set(Fbelt, READ_IF_EXISTS(pSettings, r_bool, section, "belt", FALSE));
-	m_can_trade = READ_IF_EXISTS(pSettings, r_bool, section, "can_trade", TRUE);
-	m_flags.set(FCanTake, READ_IF_EXISTS(pSettings, r_bool, section, "can_take", TRUE));
+	m_flags.set(Fbelt, READ_IF_EXISTS(pSettings, r_bool, section, "belt", false));
+	m_can_trade = READ_IF_EXISTS(pSettings, r_bool, section, "can_trade", true);
+	m_flags.set(FCanTake, READ_IF_EXISTS(pSettings, r_bool, section, "can_take", true));
 	m_flags.set(FCanTrade, m_can_trade);
-	m_flags.set(FCanStack, READ_IF_EXISTS(pSettings, r_bool, section, "can_stack", TRUE));
-	m_flags.set(FIsQuestItem, READ_IF_EXISTS(pSettings, r_bool, section, "quest_item", FALSE));
+	m_flags.set(FCanStack, READ_IF_EXISTS(pSettings, r_bool, section, "can_stack", true));
+	m_flags.set(FIsQuestItem, READ_IF_EXISTS(pSettings, r_bool, section, "quest_item", false));
 
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", false));
 
-	m_highlight_equipped = !!READ_IF_EXISTS(pSettings, r_bool, section, "highlight_equipped", FALSE);
+	m_highlight_equipped = !!READ_IF_EXISTS(pSettings, r_bool, section, "highlight_equipped", false);
 
 	if (BaseSlot() != NO_ACTIVE_SLOT || Belt())
 	{
@@ -420,8 +420,8 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 
 		// Send
 		NET_Packet P;
-		D->Spawn_Write(P, TRUE);
-		Level().Send(P, net_flags(TRUE));
+		D->Spawn_Write(P, true);
+		Level().Send(P, net_flags(true));
 		// Destroy
 		F_entity_Destroy(D);
 	}
@@ -433,10 +433,10 @@ bool CInventoryItem::net_Spawn(CSE_Abstract* DC)
 {
 	VERIFY(!m_pInventory);
 
-	m_flags.set(FInInterpolation, FALSE);
-	m_flags.set(FInInterpolate, FALSE);
+	m_flags.set(FInInterpolation, false);
+	m_flags.set(FInInterpolate, false);
 
-	m_flags.set(Fuseful_for_NPC, TRUE);
+	m_flags.set(Fuseful_for_NPC, true);
 	CSE_Abstract* e = (CSE_Abstract*)(DC);
 	CSE_ALifeObject* alife_object = e != nullptr ? e->cast_alife_object() : nullptr;
 	if (alife_object != nullptr)
@@ -449,7 +449,7 @@ bool CInventoryItem::net_Spawn(CSE_Abstract* DC)
 	CSE_ALifeInventoryItem* pSE_InventoryItem = e != nullptr ? e->cast_inventory_item() : nullptr;
 	if (pSE_InventoryItem == nullptr)
 	{
-		return TRUE;
+		return true;
 	}
 
 	//!!!
@@ -467,7 +467,7 @@ bool CInventoryItem::net_Spawn(CSE_Abstract* DC)
 
 	m_just_after_spawn = true;
 	m_activated = false;
-	return TRUE;
+	return true;
 }
 
 void CInventoryItem::net_Destroy()
@@ -637,7 +637,7 @@ void CInventoryItem::net_Export(NET_Packet& P)
 			stpk.w_float(m_fCondition);
 			stpk.w_stringZ(m_AdditionalDescription);
 			stpk.w_u8(m_IsUsedAdditionalDescription ? 1 : 0);
-			obj->u_EventSend(stpk, net_flags(FALSE));
+			obj->u_EventSend(stpk, net_flags(false));
 		}
 
 		return;
@@ -751,12 +751,12 @@ void CInventoryItem::PH_A_CrPr()
 		if (!object().PPhysicsShell()->isFullActive())
 		{
 			K->CalculateBones_Invalidate();
-			K->CalculateBones(TRUE);
+			K->CalculateBones(true);
 		}
 
 		object().PPhysicsShell()->GetGlobalTransformDynamic(&object().XFORM());
 		K->CalculateBones_Invalidate();
-		K->CalculateBones(TRUE);
+		K->CalculateBones(true);
 #if	0
 		Fbox bb = BoundingBox();
 		DBG_OpenCashedDraw();
@@ -1145,7 +1145,7 @@ void CInventoryItem::SetDropManual(bool val)
 #endif // #ifdef DEBUG
 	if (!IsGameTypeSingle())
 	{
-		if (val == TRUE)
+		if (val == true)
 		{
 			DenyTrade();
 		}

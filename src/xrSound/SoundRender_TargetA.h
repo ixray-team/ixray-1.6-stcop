@@ -25,7 +25,7 @@ public:
 	virtual 					~CSoundRender_TargetA	();
 
 			void				SetSlot					(ALuint NewSlot);
-	virtual BOOL				_initialize				();
+	virtual bool				_initialize				();
 	virtual void				_destroy				();
 	virtual void				_restart				();
 

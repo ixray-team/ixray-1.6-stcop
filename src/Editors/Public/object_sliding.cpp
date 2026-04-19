@@ -18,7 +18,7 @@
 #include "../../xrCore/Mesh/object.h"
 #include "object_sliding.h"
 
-//bool g_bUseFastButBadOptimise = FALSE;
+//bool g_bUseFastButBadOptimise = false;
 
 // Call this to reorder the tris in this trilist to get good vertex-cache coherency.
 // *pwList is modified (but obviously not changed in size or memory location).
@@ -61,7 +61,7 @@ bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 
 	// How many vertices are we looking at?
 	u32 iNumVerts = 0;
-	for ( pt = object->CurPtRoot.ListNext(); pt != NULL; pt = pt->ListNext() ){
+	for ( pt = object->CurPtRoot.ListNext(); pt != nullptr; pt = pt->ListNext() ){
 		pt->mypt.dwNewIndex = INVALID_INDEX;
 		iNumVerts++;
 	}
@@ -70,7 +70,7 @@ bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 
 	// How many tris are we looking at?
 	int iNumTris = 0;
-	for ( tri = object->CurTriRoot.ListNext(); tri != NULL; tri = tri->ListNext() ){
+	for ( tri = object->CurTriRoot.ListNext(); tri != nullptr; tri = tri->ListNext() ){
 		tri->mytri.dwNewIndex = INVALID_INDEX;		// Mark them as not being in a collapse.
 		iNumTris++;
 	}
@@ -93,7 +93,7 @@ bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 	int iCurCollapse = 0;
 	int iCurSlidingWindowLevel = 0;
 	float total_error = 0.f;
-	while ( TRUE ){
+	while ( true ){
 		GeneralCollapseInfo *pCollapse = object->pNextCollapse;
 		if ( object->pNextCollapse == &(object->CollapseRoot) ) break;
 
@@ -109,7 +109,7 @@ bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 
 	// Add the remaining existing pts in any old order.
 	WORD wCurIndex = 0;
-	for ( pt = object->CurPtRoot.ListNext(); pt != NULL; pt = pt->ListNext() )
+	for ( pt = object->CurPtRoot.ListNext(); pt != nullptr; pt = pt->ListNext() )
 	{
 		if ( pt->mypt.dwNewIndex == INVALID_INDEX )
 		{
@@ -125,7 +125,7 @@ bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 
 	// And count the tris that are left.
 	int iCurNumTris = 0;
-	for ( tri = object->CurTriRoot.ListNext(); tri != NULL; tri = tri->ListNext() )
+	for ( tri = object->CurTriRoot.ListNext(); tri != nullptr; tri = tri->ListNext() )
 		iCurNumTris++;
 
 
@@ -151,7 +151,7 @@ bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 
 	int iMaxSlidingWindowLevel = iCurSlidingWindowLevel;
 
-	while ( TRUE )
+	while ( true )
 	{
 		// Now we go through the collapses for this level, undoing them.
 		// As we go, we add the binned tris to the start of the index list,
@@ -171,18 +171,18 @@ bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 
 
 		int iJustCheckingNumTris = 0;
-		for ( tri = object->CurTriRoot.ListNext(); tri != NULL; tri = tri->ListNext() )
+		for ( tri = object->CurTriRoot.ListNext(); tri != nullptr; tri = tri->ListNext() )
 		{
 			tri->mytri.dwNewIndex = INVALID_INDEX;		// Mark them as not being in a collapse.
 			iJustCheckingNumTris++;
 		}
 		R_ASSERT ( iJustCheckingNumTris == iCurNumTris );
 
-		bool bJustStartedANewLevel = TRUE;
+		bool bJustStartedANewLevel = true;
 
 		// Now undo all the collapses for this level in turn, adding vertices,
 		// binned tris, and SlidingWindowRecords as we go.
-		while ( ( object->pNextCollapse->ListNext() != NULL ) &&
+		while ( ( object->pNextCollapse->ListNext() != nullptr) &&
 			    ( object->pNextCollapse->ListNext()->iSlidingWindowLevel == iCurSlidingWindowLevel ) )
 		{
 			GeneralCollapseInfo *pCollapse = object->pNextCollapse->ListNext();
@@ -228,7 +228,7 @@ bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 				// going to store these.
 				iCurTriAdded -= pCollapse->TriCollapsed.size();
 			}
-			bJustStartedANewLevel = FALSE;
+			bJustStartedANewLevel = false;
 			// Do the uncollapse.
 			object->UndoCollapse();
 			// Add the unbinned vertex.
@@ -288,7 +288,7 @@ bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 		iJustCheckingNumTris= 0;
 		int iTempTriNum		= 0;
 //.		wTempIndices.resize	(0);
-		for ( tri = object->CurTriRoot.ListNext(); tri != NULL; tri = tri->ListNext() ){
+		for ( tri = object->CurTriRoot.ListNext(); tri != nullptr; tri = tri->ListNext() ){
 			iJustCheckingNumTris++;
 			if ( tri->mytri.dwNewIndex == INVALID_INDEX ){
 				// This tri has not been created by a collapse this level.
@@ -308,7 +308,7 @@ bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 		// And write them to the index list.
 		result->indices.insert ( iCurTriBinned * 3, wTempIndices, 0, 3 * iTempTriNum );
 
-		if ( object->pNextCollapse->ListNext() == NULL ){
+		if ( object->pNextCollapse->ListNext() == nullptr){
 			// No more collapses.
 			R_ASSERT ( iCurCollapse == 0 );
 			R_ASSERT ( iCurSlidingWindowLevel == 0 );
@@ -352,7 +352,7 @@ bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 	}
 */
 
-	bool bRes = TRUE;
+	bool bRes = true;
 	// And now check everything is OK.
 	R_ASSERT ( result->swr_records.size() == u32(iNumCollapses + 1) );
 	for ( int i = 0; i <= iNumCollapses; i++ ){
@@ -362,7 +362,7 @@ bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 			swr_->num_verts = std::max(swr_->num_verts,*(result->indices.item(j+swr_->offset))); // fignya index ne doljen bit bolshe!!!
 //.			R_ASSERT ( *(result->indices.item(j+swr->offset)) < swr->num_verts ); 
 			if (*(result->indices.item(j+swr_->offset)) >= swr_->num_verts){
-				bRes = FALSE;
+				bRes = false;
 //.				OutputDebugString("--ERROR-------------------\n");
 			}
 		}

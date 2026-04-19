@@ -48,14 +48,14 @@ public:
 		float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
 		if (z < EPS)
 		{
-			return TRUE;
+			return true;
 		}
 
 		float iw = 1.f / (_x * X._14 + _y * X._24 + _z * X._34 + X._44);
 		min.x = max.x = (_x * X._11 + _y * X._21 + _z * X._31 + X._41) * iw;
 		min.y = max.y = (_x * X._12 + _y * X._22 + _z * X._32 + X._42) * iw;
 		minz = 0.f + z * iw;
-		return FALSE;
+		return false;
 	}
 
 	ICF	bool xform_b1(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
@@ -64,7 +64,7 @@ public:
 		float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
 		if (z < EPS)
 		{
-			return TRUE;
+			return true;
 		}
 
 		float iw = 1.f / (_x * X._14 + _y * X._24 + _z * X._34 + X._44);

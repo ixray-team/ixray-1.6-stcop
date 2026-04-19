@@ -29,7 +29,7 @@ void demoplay_control::pause_on(EAction const action, shared_str const & param)
 	}
 	if (Device.Paused())
 	{
-		Device.Pause(FALSE, TRUE, TRUE, "playing demo until");
+		Device.Pause(false, true, true, "playing demo until");
 	}
 	m_current_mode	= waiting_for_actions;
 	activate_filer	(action, param);
@@ -56,7 +56,7 @@ bool demoplay_control::rewind_until(EAction const action, shared_str const & par
 	}
 	if (Device.Paused())
 	{
-		Device.Pause(FALSE, TRUE, TRUE, "playing demo until");
+		Device.Pause(false, true, true, "playing demo until");
 	}
 	m_prev_speed	= Level().GetDemoPlaySpeed();
 	m_current_mode	= rewinding;
@@ -164,7 +164,7 @@ void demoplay_control::process_action()
 	{
 		Level().SetDemoPlaySpeed(m_prev_speed);
 	}
-	Device.Pause(TRUE, TRUE, TRUE, "game action captured");
+	Device.Pause(true, true, true, "game action captured");
 	deactivate_filter();
 	if (m_user_callback)
 		m_user_callback();

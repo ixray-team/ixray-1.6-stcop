@@ -9,7 +9,7 @@ void CRenderTarget::phase_nvg()
 
     u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-    RCache.set_Stencil(FALSE);
+    RCache.set_Stencil(false);
 
 	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(3, g_combine->vb_stride, Offset);
 	pv->set(-1.0, 1.0, 1.0, 1.0, vertex_color, 0.0, 0.0);

@@ -3,7 +3,7 @@
 
 bool SceneBuilder::ParseLTX(CInifile* pIni, ObjectList& lst, const char* prefix)
 {
-    return TRUE;
+    return true;
 }
 
 

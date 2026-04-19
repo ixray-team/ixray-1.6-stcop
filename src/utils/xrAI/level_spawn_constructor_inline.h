@@ -14,7 +14,7 @@ IC	CLevelSpawnConstructor::CLevelSpawnConstructor			(const CGameGraph::SLevel &l
 	m_level						= level;
 	m_game_spawn_constructor	= game_spawn_constructor;
 	m_no_separator_check		= no_separator_check;
-	thDestroyOnComplete			= FALSE;
+	thDestroyOnComplete			= false;
 	m_actor						= 0;
 	m_level_graph				= 0;
 	m_cross_table				= 0;

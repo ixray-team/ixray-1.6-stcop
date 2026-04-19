@@ -33,7 +33,7 @@ void CRender::level_Load(IReader* fs)
 
 	// Begin
 	pApp->LoadBegin					();
-	dxRenderDeviceRender::Instance().Resources->DeferredLoad	(TRUE);
+	dxRenderDeviceRender::Instance().Resources->DeferredLoad	(true);
 	IReader*						chunk;
 
 	// Shaders
@@ -147,7 +147,7 @@ void CRender::level_Load(IReader* fs)
 	mapLOD.clear				();
 
 	// signal loaded
-	b_loaded					= TRUE	;
+	b_loaded					= true	;
 }
 
 void CRender::LoadPuddles()
@@ -242,7 +242,7 @@ void CRender::level_Unload()
 
 	//*** Shaders
 	Shaders.clear();
-	b_loaded					= FALSE;
+	b_loaded					= false;
 }
 
 void CRender::LoadVertexBuffers(IReaderBase& fs, bool _alternative)

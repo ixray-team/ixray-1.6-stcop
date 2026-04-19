@@ -16,7 +16,7 @@ void xrServer::SLS_Save	(IWriter& fs)
 		fs.open_chunk		(C);
 
 		// Spawn
-		E_->Spawn_Write		(P,TRUE);
+		E_->Spawn_Write		(P,true);
 		fs.w_u16			(u16(P.B.count));
 		fs.w				(P.B.data,P.B.count);
 

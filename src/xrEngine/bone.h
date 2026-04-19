@@ -45,7 +45,7 @@ public:
 public:
 	IC void				_BCL	construct();
 
-	void	_BCL set_callback	(u32 Type, BoneCallback C, void* Param,  bool overwrite=FALSE)
+	void	_BCL set_callback	(u32 Type, BoneCallback C, void* Param,  bool overwrite=false)
 	{	
 		Callback			= C; 
 		Callback_Param		= Param; 
@@ -57,7 +57,7 @@ public:
 	{
 		Callback			= 0; 
 		Callback_Param		= 0; 
-		Callback_overwrite	= FALSE;
+		Callback_overwrite	= false;
 		Callback_type		= 0;
 	}
 	void		_BCL		set_callback_overwrite(bool v){ Callback_overwrite = v; }
@@ -499,7 +499,7 @@ IC void		CBoneInstance::construct	()
 	mRenderTransform_old.identity	();
 	mRenderTransform_tmp.identity	();
 
-	Callback_overwrite			= FALSE;
+	Callback_overwrite			= false;
 }
 
 

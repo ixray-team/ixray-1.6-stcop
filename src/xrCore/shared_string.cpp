@@ -102,9 +102,9 @@ str_container::str_container()
 
 str_value* str_container::dock(str_c value)
 {
-	if (0 == value)				return 0;
+	if (nullptr == value)				return nullptr;
 
-	str_value* result = 0;
+	str_value* result = nullptr;
 
 	// calc len
 	u32		s_len = xr_strlen(value);
@@ -126,7 +126,7 @@ str_value* str_container::dock(str_c value)
 #endif //DEBUG
 
 	// it may be the case, string is not found or has "non-exact" match
-	if (0 == result
+	if (nullptr == result
 #ifdef DEBUG
 		|| is_leaked_string
 #endif //DEBUG

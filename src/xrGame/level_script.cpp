@@ -497,7 +497,7 @@ void hide_indicators()
 		CurrentGameUI()->ShowGameIndicators(false);
 		CurrentGameUI()->ShowCrosshair(false);
 	}
-	psActorFlags.set(AF_DISABLE_CONDITION_TEST, TRUE);
+	psActorFlags.set(AF_DISABLE_CONDITION_TEST, true);
 }
 
 void hide_indicators_safe()
@@ -509,7 +509,7 @@ void hide_indicators_safe()
 
 		CurrentGameUI()->OnExternalHideIndicators();
 	}
-	psActorFlags.set(AF_DISABLE_CONDITION_TEST, TRUE);
+	psActorFlags.set(AF_DISABLE_CONDITION_TEST, true);
 }
 
 void show_indicators()
@@ -519,7 +519,7 @@ void show_indicators()
 		CurrentGameUI()->ShowGameIndicators(true);
 		CurrentGameUI()->ShowCrosshair(true);
 	}
-	psActorFlags.set(AF_DISABLE_CONDITION_TEST, FALSE);
+	psActorFlags.set(AF_DISABLE_CONDITION_TEST, false);
 }
 
 void show_weapon(bool b)
@@ -1358,13 +1358,13 @@ int get_g_actor_id()
 void send_script_event_to_client(u32 cleintId, NET_Packet& P)
 {
 	R_ASSERT2(OnServer(), "Avaliable only on server");
-	Level().Server->SendTo(ClientID(cleintId), P, net_flags(TRUE, TRUE));
+	Level().Server->SendTo(ClientID(cleintId), P, net_flags(true, true));
 }
 
 void send_script_event_broadcast(NET_Packet& P)
 {
 	R_ASSERT2(OnServer(), "Avaliable only on server");
-	Level().Server->SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
+	Level().Server->SendBroadcast(BroadcastCID, P, net_flags(true, true));
 }
 
 ScriptEvent* get_front_server_event()
@@ -1393,7 +1393,7 @@ u32 get_size_server_events()
 
 void send_script_event_to_server(NET_Packet& P)
 {
-	Level().Send(P, net_flags(TRUE, TRUE));
+	Level().Send(P, net_flags(true, true));
 }
 
 NET_Packet* get_last_client_event()
@@ -1472,7 +1472,7 @@ void jump_level(const Fvector& m_position, u32 m_level_vertex_id, GameGraph::_GR
 	p.w(&m_level_vertex_id, sizeof(m_level_vertex_id));
 	p.w_vec3(m_position);
 	p.w_vec3(m_angles);
-	Level().Send(p, net_flags(TRUE));
+	Level().Send(p, net_flags(true));
 }
 
 void CallGameOver()
@@ -1517,8 +1517,8 @@ void spawn_anomaly(const char* str, int level_vertex_id, const Fvector& position
 	AlifeZone->m_space_restrictor_type = RestrictionSpace::eRestrictorTypeNone;
 
 	NET_Packet					P;
-	object->Spawn_Write(P, TRUE);
-	Level().Send(P, net_flags(TRUE));
+	object->Spawn_Write(P, true);
+	Level().Send(P, net_flags(true));
 	F_entity_Destroy(object);
 }
 

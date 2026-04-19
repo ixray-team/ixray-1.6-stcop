@@ -210,15 +210,15 @@ void CRender::create()
 	o.HW_smap_FORMAT = DXGI_FORMAT_R24G8_TYPELESS;
 
 	// nvstencil on NV40 and up
-	o.nvstencil = FALSE;
+	o.nvstencil = false;
 	if (Core.ParamsData.test(ECoreParams::nonvs))
-		o.nvstencil	= FALSE;
+		o.nvstencil	= false;
 
 	// nv-dbt
 	o.nvdbt = false;
 
 	// options
-	o.sunstatic = !ps_r2_ls_flags.test(R2FLAG_SUN) ? TRUE : FALSE;
+	o.sunstatic = !ps_r2_ls_flags.test(R2FLAG_SUN) ? true : false;
 	o.volumetricfog = ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE);
 	o.noshadows = Core.ParamsData.test(ECoreParams::noshadows);
 	o.Tshadows = Core.ParamsData.test(ECoreParams::tsh);

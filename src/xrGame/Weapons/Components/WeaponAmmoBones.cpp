@@ -54,7 +54,7 @@ void TLiteAmmoBones::UpdateLiteAmmoBones(CWeapon* pWeapon, u32 idx)
 			u16 bone_id = kin->LL_BoneID(bone_name);
 			if (bone_id != BI_NONE)
 			{
-				kin->LL_SetBoneVisible(bone_id, status, FALSE);
+				kin->LL_SetBoneVisible(bone_id, status, false);
 			}
 		}
 	};
@@ -76,13 +76,13 @@ void TLiteAmmoBones::UpdateLiteAmmoBones(CWeapon* pWeapon, u32 idx)
 	if (world_kin != nullptr)
 	{
 		world_kin->CalculateBones_Invalidate();
-		world_kin->CalculateBones(TRUE);
+		world_kin->CalculateBones(true);
 	}
 
 	if (hud_kin != nullptr)
 	{
 		hud_kin->CalculateBones_Invalidate();
-		hud_kin->CalculateBones(TRUE);
+		hud_kin->CalculateBones(true);
 	}
 }
 
@@ -135,7 +135,7 @@ void TMagAmmoBones::UpdateMagAmmoBones(CWeapon* pWeapon, u8 type)
 			u16 bone_id = kin->LL_BoneID(bone_name);
 			if (bone_id != BI_NONE)
 			{
-				kin->LL_SetBoneVisible(bone_id, status, FALSE);
+				kin->LL_SetBoneVisible(bone_id, status, false);
 			}
 		}
 	};
@@ -157,13 +157,13 @@ void TMagAmmoBones::UpdateMagAmmoBones(CWeapon* pWeapon, u8 type)
 	if (world_kin != nullptr)
 	{
 		world_kin->CalculateBones_Invalidate();
-		world_kin->CalculateBones(TRUE);
+		world_kin->CalculateBones(true);
 	}
 
 	if (hud_kin != nullptr)
 	{
 		hud_kin->CalculateBones_Invalidate();
-		hud_kin->CalculateBones(TRUE);
+		hud_kin->CalculateBones(true);
 	}
 }
 
@@ -221,7 +221,7 @@ void TGrenadeLauncherAmmoBones::UpdateGLAmmoBones(CWeapon* pWeapon, u8 type)
 			u16 bone_id = kin->LL_BoneID(bone_name);
 			if (bone_id != BI_NONE)
 			{
-				kin->LL_SetBoneVisible(bone_id, status, FALSE);
+				kin->LL_SetBoneVisible(bone_id, status, false);
 			}
 		}
 	};
@@ -243,13 +243,13 @@ void TGrenadeLauncherAmmoBones::UpdateGLAmmoBones(CWeapon* pWeapon, u8 type)
 	if (world_kin != nullptr)
 	{
 		world_kin->CalculateBones_Invalidate();
-		world_kin->CalculateBones(TRUE);
+		world_kin->CalculateBones(true);
 	}
 
 	if (hud_kin != nullptr)
 	{
 		hud_kin->CalculateBones_Invalidate();
-		hud_kin->CalculateBones(TRUE);
+		hud_kin->CalculateBones(true);
 	}
 }
 
@@ -302,7 +302,7 @@ void TShellBones::UpdateShellBones(CWeapon* pWeapon, u8 type)
 			u16 bone_id = kin->LL_BoneID(bone_name);
 			if (bone_id != BI_NONE)
 			{
-				kin->LL_SetBoneVisible(bone_id, status, FALSE);
+				kin->LL_SetBoneVisible(bone_id, status, false);
 			}
 		}
 	};
@@ -324,13 +324,13 @@ void TShellBones::UpdateShellBones(CWeapon* pWeapon, u8 type)
 	if (world_kin != nullptr)
 	{
 		world_kin->CalculateBones_Invalidate();
-		world_kin->CalculateBones(TRUE);
+		world_kin->CalculateBones(true);
 	}
 
 	if (hud_kin != nullptr)
 	{
 		hud_kin->CalculateBones_Invalidate();
-		hud_kin->CalculateBones(TRUE);
+		hud_kin->CalculateBones(true);
 	}
 }
 
@@ -482,7 +482,7 @@ void TAmmoBones::UpdateAmmoBones(CWeapon* pWeapon, u32 idx, u8 type)
 			u16 bone_id = kin->LL_BoneID(bone_name);
 			if (bone_id != BI_NONE)
 			{
-				kin->LL_SetBoneVisible(bone_id, status, FALSE);
+				kin->LL_SetBoneVisible(bone_id, status, false);
 			}
 		}
 	};
@@ -500,8 +500,8 @@ void TAmmoBones::UpdateAmmoBones(CWeapon* pWeapon, u32 idx, u8 type)
 	{
 		for (const auto& bone_name : bone_param.AllBones)
 		{
-			SetVisible(hud_kin, bone_name, FALSE);
-			SetVisible(world_kin, bone_name, FALSE);
+			SetVisible(hud_kin, bone_name, false);
+			SetVisible(world_kin, bone_name, false);
 		}
 	}
 
@@ -519,8 +519,8 @@ void TAmmoBones::UpdateAmmoBones(CWeapon* pWeapon, u32 idx, u8 type)
 
 			for (const auto& configuration_bone : node.second)
 			{
-				SetVisible(hud_kin, configuration_bone, TRUE);
-				SetVisible(world_kin, configuration_bone, TRUE);
+				SetVisible(hud_kin, configuration_bone, true);
+				SetVisible(world_kin, configuration_bone, true);
 			}
 		}
 	}
@@ -528,12 +528,12 @@ void TAmmoBones::UpdateAmmoBones(CWeapon* pWeapon, u32 idx, u8 type)
 	if (world_kin != nullptr)
 	{
 		world_kin->CalculateBones_Invalidate();
-		world_kin->CalculateBones(TRUE);
+		world_kin->CalculateBones(true);
 	}
 
 	if (hud_kin != nullptr)
 	{
 		hud_kin->CalculateBones_Invalidate();
-		hud_kin->CalculateBones(TRUE);
+		hud_kin->CalculateBones(true);
 	}
 }

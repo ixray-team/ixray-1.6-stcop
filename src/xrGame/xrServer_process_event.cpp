@@ -19,7 +19,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	u32			timestamp;
 	u16			type;
 	u16			destination;
-	u32			MODE			= net_flags(TRUE,TRUE);
+	u32			MODE			= net_flags(true,true);
 
 	// correct timestamp with server-unique-time (note: direct message correction)
 	P.r_u32		(timestamp	);
@@ -59,7 +59,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		if (!iitem)
 			break;
 		iitem->m_fCondition = 1.0f;
-		SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
+		SendBroadcast(BroadcastCID, P, net_flags(true, true));
 	}break;
 	case GE_INFO_TRANSFER:
 	case GE_WPN_STATE_CHANGE:
@@ -86,8 +86,8 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GE_INV_ACTION:
 		{
 			xrClientData* CL		= ID_to_client(sender);
-			if (CL)	CL->net_Ready	= TRUE;
-			if (SV_Client) SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
+			if (CL)	CL->net_Ready	= true;
+			if (SV_Client) SendTo(SV_Client->ID, P, net_flags(true, true));
 		}break;
 	case GE_RESPAWN:
 		{
@@ -111,7 +111,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		}break;
 	case GE_OWNERSHIP_TAKE_MP_FORCED:
 		{
-			Process_event_ownership	(P,sender,timestamp,destination,TRUE);
+			Process_event_ownership	(P,sender,timestamp,destination,true);
 			//VERIFY					(verify_entities());
 		}break;
 	case GE_TRADE_SELL:
@@ -249,7 +249,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 				P.w_u16				(GE_KILL_SOMEONE);
 				P.w_u16				(id_src);
 				P.w_u16				(destination);
-				SendTo				(c_src->ID, P, net_flags(TRUE, TRUE));
+				SendTo				(c_src->ID, P, net_flags(true, true));
 			}
 			//////////////////////////////////////////////////////////////////////////
 
@@ -259,7 +259,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GE_ADDON_ATTACH:
 	case GE_ADDON_DETACH:
 		{
-			SendBroadcast	(BroadcastCID, P, net_flags(TRUE, TRUE));
+			SendBroadcast	(BroadcastCID, P, net_flags(true, true));
 		}break;
 	case GE_PSEUDO_GIGANT_KICK:
 	case GE_BURER_GRAVI_PARTICLES:
@@ -270,11 +270,11 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GE_BLOODSUCKER_VAMPIRE_STOP:
 	case GE_CONTROLLER_PSY_FIRE:
 	{
-		SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
+		SendTo(SV_Client->ID, P, net_flags(true, true));
 	}break;
 	case GE_CHANGE_POS:
 		{			
-			SendTo		(SV_Client->ID, P, net_flags(TRUE, TRUE));
+			SendTo		(SV_Client->ID, P, net_flags(true, true));
 		}break;
 	case GE_INSTALL_UPGRADE:
 		{
@@ -322,7 +322,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GEG_PLAYER_DISABLE_SPRINT:
 	case GEG_PLAYER_WEAPON_HIDE_STATE:
 		{
-			SendTo		(SV_Client->ID, P, net_flags(TRUE, TRUE));
+			SendTo		(SV_Client->ID, P, net_flags(true, true));
 
 #	ifdef SLOW_VERIFY_ENTITIES
 			VERIFY					(verify_entities());
@@ -331,7 +331,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GEG_PLAYER_ACTIVATE_SLOT:
 	case GEG_PLAYER_ITEM_EAT:
 		{
-			SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
+			SendTo(SV_Client->ID, P, net_flags(true, true));
 #	ifdef SLOW_VERIFY_ENTITIES
 			VERIFY					(verify_entities());
 #	endif
@@ -342,7 +342,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 			{
 				NET_Packet tmp_packet;
 				CGameObject::u_EventGen(tmp_packet, GEG_PLAYER_USE_BOOSTER, receiver->ID);
-				SendTo(receiver->owner->ID, P, net_flags(TRUE, TRUE));
+				SendTo(receiver->owner->ID, P, net_flags(true, true));
 			}
 		}break;
 	case GEG_PLAYER_ITEM_SELL:
