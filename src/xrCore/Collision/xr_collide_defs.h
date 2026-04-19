@@ -12,7 +12,7 @@ namespace collide
 		Fvector start;
 		Fvector dir;
 		float range = 0.f;
-		bool result = FALSE;
+		bool result = false;
 
 		// cached vertices
 		ICF void set(const Fvector& _start, const Fvector& _dir, const float _range,const bool _result)
@@ -24,10 +24,10 @@ namespace collide
 		}
 		ICF bool similar(const Fvector& _start, const Fvector& _dir, const float _range)
 		{
-			if (!_start.similar(start)) return FALSE;
-			if (!fsimilar(1.f,dir.dotproduct(_dir))) return FALSE;
-			if (!fsimilar(_range,range)) return FALSE;
-			return TRUE;
+			if (!_start.similar(start)) return false;
+			if (!fsimilar(1.f,dir.dotproduct(_dir))) return false;
+			if (!fsimilar(_range,range)) return false;
+			return true;
 		}
 	};
 	enum rq_target
@@ -62,9 +62,9 @@ namespace collide
 			element	= _element;
 			return *this;
 		}
-		ICF bool set_if_less(CDB::RESULT* I){if (I->range<range){ set(0,I->range,I->id); return TRUE;}else return FALSE;}
-		ICF bool set_if_less(rq_result*	R){if (R->range<range){ set(R->O,R->range,R->element); return TRUE;}else return FALSE;}
-		ICF bool set_if_less(CObject* _who, float _range, int _element)	{ if (_range<range) { set(_who,_range,_element); return TRUE;}else return FALSE;}
+		ICF bool set_if_less(CDB::RESULT* I){if (I->range<range){ set(nullptr,I->range,I->id); return true;}else return false;}
+		ICF bool set_if_less(rq_result*	R){if (R->range<range){ set(R->O,R->range,R->element); return true;}else return false;}
+		ICF bool set_if_less(CObject* _who, float _range, int _element)	{ if (_range<range) { set(_who,_range,_element); return true;}else return false;}
 		ICF bool valid() {return (element>=0);}
 	};
 
@@ -82,16 +82,16 @@ namespace collide
 					R.O				=_who;
 					R.range			=_range;
 					R.element		=_element;
-					return			TRUE;
+					return			true;
 				}
-				return				FALSE;
+				return				false;
 			}
 			results.push_back		(rq_result());
 			rq_result& rq			= results.back();
 			rq.range	=_range;
 			rq.element	=_element;
 			rq.O		=_who;
-			return TRUE	;
+			return true	;
 		}
 		ICF void		append_result	(rq_result& res)
 		{

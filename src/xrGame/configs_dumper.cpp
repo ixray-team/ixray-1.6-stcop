@@ -133,7 +133,7 @@ void configs_dumper::write_configs()
 	{
 		while (m_ltx_configs.dump_one(m_dump_result)) {};
 	}
-	CInifile			active_params_dumper(nullptr, FALSE, FALSE, FALSE);
+	CInifile			active_params_dumper(nullptr, false, false, false);
 	active_objects_t	active_objects(
 		_alloca(sizeof(active_objects_t::value_type) * max_active_objects),
 		max_active_objects);
@@ -157,7 +157,7 @@ void configs_dumper::sign_configs		()
 {
 	string64	creation_date;
 	string64		tmp_player_name = {};
-	CInifile	tmp_ini				(nullptr, FALSE, FALSE, FALSE);
+	CInifile	tmp_ini				(nullptr, false, false, false);
 	game_cl_mp*	tmp_cl_game			= Game().cast_game_cl_mp();
 	R_ASSERT						(tmp_cl_game);
 	xr_strconcat(tmp_player_name, "\"",
@@ -231,13 +231,13 @@ void configs_dumper::dump_config(complete_callback_t complete_cb)
 	if (m_make_start_event)
 	{
 		SetEvent(m_make_start_event);
-		Engine.Sheduler.Register	(this, TRUE);
+		Engine.Sheduler.Register	(this, true);
 		return;
 	}
-	m_make_start_event			= CreateEvent(nullptr, FALSE, TRUE, nullptr);
-	m_make_done_event			= CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	m_make_start_event			= CreateEvent(nullptr, false, true, nullptr);
+	m_make_done_event			= CreateEvent(nullptr, false, false, nullptr);
 	thread_spawn				(&configs_dumper::dumper_thread, "configs_dumper", 0, this);
-	Engine.Sheduler.Register	(this, TRUE);
+	Engine.Sheduler.Register	(this, true);
 }
 
 void configs_dumper::compress_configs	()

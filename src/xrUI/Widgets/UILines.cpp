@@ -25,12 +25,12 @@ CUILines::CUILines()
 	m_TextOffset.set				(0.0f,0.0f);
 	m_text							="";
 	uFlags.zero();
-	uFlags.set(flNeedReparse,		FALSE);
-	uFlags.set(flComplexMode,		FALSE);
-	uFlags.set(flPasswordMode,		FALSE);
-	uFlags.set(flColoringMode,		TRUE);
-	uFlags.set(flCutWordsMode,		FALSE);
-	uFlags.set(flRecognizeNewLine,	TRUE);
+	uFlags.set(flNeedReparse,		false);
+	uFlags.set(flComplexMode,		false);
+	uFlags.set(flPasswordMode,		false);
+	uFlags.set(flColoringMode,		true);
+	uFlags.set(flCutWordsMode,		false);
+	uFlags.set(flRecognizeNewLine,	true);
 	m_eTextGradientMode				= CGameFont::gm_vert;
 
 	m_wndSize = {0, 0};
@@ -44,7 +44,7 @@ CUILines::~CUILines(){
 void CUILines::SetTextComplexMode(bool mode){
 	uFlags.set(flComplexMode, mode);
 	if (mode)
-		uFlags.set(flPasswordMode, FALSE);
+		uFlags.set(flPasswordMode, false);
 }
 
 void CUILines::SetPasswordMode(bool mode){
@@ -81,7 +81,7 @@ void CUILines::SetText(const char* text){
 		if(m_text==text) 
 			return;
         m_text = text;
-		uFlags.set(flNeedReparse, TRUE);
+		uFlags.set(flNeedReparse, true);
 	}
 	else
 	{
@@ -139,7 +139,7 @@ void CUILines::ParseText(bool force)
 		line->AddSubLine(&subline);
 	}
 
-	bool bNewLines = FALSE;
+	bool bNewLines = false;
 
 	if (uFlags.test(flRecognizeNewLine))
 	{
@@ -159,7 +159,7 @@ void CUILines::ParseText(bool force)
 				pszSearch = szTempLine;
 				while ((pszTemp = strstr(pszSearch, "\\n")) != nullptr)
 				{
-					bNewLines = TRUE;
+					bNewLines = true;
 					*pszTemp = '\0';
 					ptmp_line->AddSubLine(pszSearch, tcolor);
 					pszSearch = pszTemp + 2;
@@ -328,7 +328,7 @@ void CUILines::ParseText(bool force)
 	}
 
 	xr_delete(line);
-	uFlags.set(flNeedReparse, FALSE);
+	uFlags.set(flNeedReparse, false);
 }
 
 float CUILines::GetVisibleHeight()
@@ -493,7 +493,7 @@ void CUILines::Draw(float x, float y)
 
 void CUILines::OnDeviceReset()
 {
-	uFlags.set(flNeedReparse, TRUE);
+	uFlags.set(flNeedReparse, true);
 }
 
 float CUILines::GetIndentByAlign()const

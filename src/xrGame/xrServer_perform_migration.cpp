@@ -12,7 +12,7 @@ void xrServer::PerformMigration(CSE_Abstract* E, xrClientData* from, xrClientDat
 //	{
 //		P.w_begin			(M_MIGRATE_DEACTIVATE);
 //		P.w_u16				(E->ID);
-//		SendTo				(from->ID,P,net_flags(TRUE,TRUE));
+//		SendTo				(from->ID,P,net_flags(true,true));
 //	}
 //
 //	// Send to _new_ 'client' signal to activate 'entity'
@@ -20,7 +20,7 @@ void xrServer::PerformMigration(CSE_Abstract* E, xrClientData* from, xrClientDat
 //		P.w_begin			(M_MIGRATE_ACTIVATE);
 //		P.w_u16				(E->ID);
 //		E->UPDATE_Write		(P);
-//		SendTo				(to->ID,P,net_flags(TRUE,TRUE));
+//		SendTo				(to->ID,P,net_flags(true,true));
 //	}
 //
 //	// Change parent-client

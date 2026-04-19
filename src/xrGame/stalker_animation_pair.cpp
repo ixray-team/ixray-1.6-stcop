@@ -66,7 +66,7 @@ void CStalkerAnimationPair::play_global_animation	(IKinematicsAnimated *skeleton
 
 
 
-			blend		= skeleton_animated->LL_PlayCycle(i, animation(), mix_animations ? TRUE : FALSE, callback, m_object);
+			blend		= skeleton_animated->LL_PlayCycle(i, animation(), mix_animations ? true : false, callback, m_object);
 			
 			if (blend && !m_blend)
 				m_blend	= blend;
@@ -80,7 +80,7 @@ void CStalkerAnimationPair::play_global_animation	(IKinematicsAnimated *skeleton
 			}
 		}
 		else
-			skeleton_animated->LL_PlayCycle	( i, animation(), mix_animations ? TRUE : FALSE, 0, 0 );
+			skeleton_animated->LL_PlayCycle	( i, animation(), mix_animations ? true : false, 0, 0 );
 	}
 	//DBG_OpenCashedDraw();
 	//DBG_DrawBones( *m_object );
@@ -129,7 +129,7 @@ void CStalkerAnimationPair::play			(IKinematicsAnimated *skeleton_animated, Play
 //DBG_OpenCashedDraw();
 //DBG_DrawBones( *m_object );
 //DBG_ClosedCashedDraw( 50000 );
-		m_blend				= skeleton_animated->PlayCycle( animation(), TRUE, callback, m_object );
+		m_blend				= skeleton_animated->PlayCycle( animation(), true, callback, m_object );
 
 		if (m_step_dependence && continue_interrupted_animation) {
 			if (m_object->animation().standing()) 

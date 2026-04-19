@@ -36,8 +36,8 @@ CSound_manager_interface*		Sound		= nullptr;
 
 CSoundRender_Core::CSoundRender_Core	()
 {
-	bPresent					= FALSE;
-	bUserEnvironment			= FALSE;
+	bPresent					= false;
+	bUserEnvironment			= false;
 	geom_MODEL					= nullptr;
 	geom_ENV					= nullptr;
 	geom_SOM					= nullptr;
@@ -47,9 +47,9 @@ CSoundRender_Core::CSoundRender_Core	()
 	s_emitters_u				= 0;
     e_current.set_identity		();
     e_target.set_identity		();
-    bListenerMoved				= FALSE;
-    bReady						= FALSE;
-    bLocked						= FALSE;
+    bListenerMoved				= false;
+    bReady						= false;
+    bLocked						= false;
 	fTimer_Value				= Timer.GetElapsed_sec();
 	fTimer_Delta				= 0.0f;
 	m_iPauseCounter				= 1;
@@ -76,13 +76,13 @@ void CSoundRender_Core::_initialize(int stage)
     // load environment
 	env_load					();
 
-	bPresent					= TRUE;
+	bPresent					= true;
 
 	// Cache
 	cache_bytes_per_line		= (sdef_target_block/8)*276400/1000;
     cache.initialize			(psSoundCacheSizeMB*1024,cache_bytes_per_line);
 
-    bReady						= TRUE;
+    bReady						= true;
 }
 
 extern xr_vector<u8> g_target_temp_data;
@@ -90,7 +90,7 @@ extern xr_vector<u8> g_target_temp_data_16;
 
 void CSoundRender_Core::_clear()
 {
-	bReady = FALSE;
+	bReady = false;
 	cache.destroy();
 	env_unload();
 
@@ -111,7 +111,7 @@ void CSoundRender_Core::_clear()
 void CSoundRender_Core::stop_emitters()
 {
 	for (u32 eit=0; eit<s_emitters.size(); eit++)
-		s_emitters[eit]->stop	(FALSE);
+		s_emitters[eit]->stop	(false);
 }
 
 int CSoundRender_Core::pause_emitters(bool val)
@@ -369,7 +369,7 @@ void	CSoundRender_Core::destroy	(ref_sound& S )
 {
 	if (S._feedback()){                   
 		CSoundRender_Emitter* E		= (CSoundRender_Emitter*)S._feedback();
-		E->stop						(FALSE);
+		E->stop						(false);
 	}
 	S._p				= 0;
 }                                                    
@@ -392,7 +392,7 @@ void CSoundRender_Core::_destroy_data( ref_sound_data& S)
 {
 	if (S.feedback){                   
 		CSoundRender_Emitter* E		= (CSoundRender_Emitter*)S.feedback;
-		E->stop						(FALSE);
+		E->stop						(false);
 	}
 	R_ASSERT						(0==S.feedback);
 	SoundRender->i_destroy_source	((CSoundRender_Source*)S.handle);
@@ -450,7 +450,7 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
 
 void CSoundRender_Core::env_apply		()
 {
-    bListenerMoved			= TRUE;
+    bListenerMoved			= true;
 }
 
 void CSoundRender_Core::update_listener( const Fvector& P, const Fvector& D, const Fvector& N, float dt )
@@ -474,11 +474,11 @@ void CSoundRender_Core::set_user_env( CSound_environment* E)
 	if (E)
 	{
 		s_user_environment	= *((CSoundRender_Environment*)E);
-		bUserEnvironment	= TRUE;
+		bUserEnvironment	= true;
 	}
 	else 
 	{
-		bUserEnvironment	= FALSE;
+		bUserEnvironment	= false;
 	}
 	env_apply			();
 }
@@ -492,7 +492,7 @@ void						CSoundRender_Core::refresh_env_library()
 void						CSoundRender_Core::refresh_sources()
 {
 	for (u32 eit=0; eit<s_emitters.size(); eit++)
-    	s_emitters[eit]->stop(FALSE);
+    	s_emitters[eit]->stop(false);
 	for (u32 sit=0; sit<s_sources.size(); sit++){
     	CSoundRender_Source* s = s_sources[sit];
     	s->unload		();

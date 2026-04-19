@@ -22,7 +22,7 @@ extern CompilersMode gCompilerMode;
 
 void StartupDO()
 {
-	bClose = FALSE;
+	bClose = false;
 
 	for (auto& [Name, Selected] : gCompilerMode.Files)
 	{

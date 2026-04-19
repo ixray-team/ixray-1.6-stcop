@@ -66,7 +66,7 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	fLastMotionMag = 1.f;
 	SetPathDir(Fvector().set(0, 0, 1));
 
-	bIsAffectedByGravity = TRUE;
+	bIsAffectedByGravity = true;
 	fActualVelocity = 0;
 	m_fGroundDelayFactor = 1.f;
 	gcontact_HealthLost = 0;
@@ -1216,7 +1216,7 @@ struct STraceBorderQParams
 	{
 		m_movement = movement;
 	}
-	STraceBorderQParams& operator = (STraceBorderQParams& p) { VERIFY(FALSE); return p; }
+	STraceBorderQParams& operator = (STraceBorderQParams& p) { VERIFY(false); return p; }
 };
 
 bool CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID params)
@@ -1340,14 +1340,14 @@ void CPHMovementControl::VirtualMoveTo( const Fvector	&in_pos, Fvector &out_pos 
 			character_->SetObjectContactCallback(virtual_move_collide_callback);
 			character_->SetObjectContactCallbackData( static_cast<CPHObject*> (character) );
 			character_->SwitchOFFInitContact();
-			character_->SetApplyGravity( FALSE );
+			character_->SetApplyGravity( false );
 		}
 
 		~ph_character_state_save()
 		{
 			character_->SetObjectContactCallback(saved_callback_);
 			character_->SwitchInInitContact();
-			character_->SetApplyGravity( TRUE );
+			character_->SetApplyGravity( true );
 			character_->SetObjectContactCallbackData( 0 );
 			character_->set_State( sv_state );
 		}

@@ -35,10 +35,10 @@ void  CPhysicsShellHolderEditorBase::CreatePhysicsShell( Fmatrix*	obj_xform )
     if(K->dcast_RenderVisual())
    	 		SetBoneMaterials( *K );
      K->CalculateBones_Invalidate();
-    K->CalculateBones(TRUE);
+    K->CalculateBones(true);
     m_physics_shell = P_build_Shell( this, false );
     K->CalculateBones_Invalidate();
-    K->CalculateBones(TRUE);
+    K->CalculateBones(true);
 
 }
 

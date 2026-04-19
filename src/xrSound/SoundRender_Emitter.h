@@ -51,11 +51,11 @@ public:
 	CSound_params				p_source;
 
 	int							iPaused;
-	BOOL						bMoved;
-	BOOL						b2D;
+	bool						bMoved;
+	bool						b2D;
 	bool						bIntro;
-	BOOL						bStopping;
-	BOOL						bRewind;
+	bool						bStopping;
+	bool						bRewind;
 	float						fTimeStarted;			// time of "Start"
 	float						fTimeToStop;			// time to "Stop"
 	float						fTimeToPropagade;
@@ -70,9 +70,9 @@ public:
 public:
 	void						Event_Propagade			();
 	void						Event_ReleaseOwner		();
-	BOOL						isPlaying				(void)					{ return m_current_state!=stStopped; }
+	bool						isPlaying				(void)					{ return m_current_state!=stStopped; }
 
-	virtual BOOL				is_2D					()						{ return b2D; }
+	virtual bool				is_2D					()						{ return b2D; }
 	virtual void				switch_to_2D			();
 	virtual void				switch_to_Intro			() override;
 	virtual void				switch_to_3D			();
@@ -87,14 +87,14 @@ public:
 	void						fill_data				(u8*	ptr, u32 offset, u32 size);
 
 	float						priority				();
-	void						start					(ref_sound* _owner, BOOL _loop, float delay);
+	void						start					(ref_sound* _owner, bool _loop, float delay);
 	void						cancel					();						// manager forces out of rendering
 	void						update					(float dt);
-	BOOL						update_culling			(float dt);
+	bool						update_culling			(float dt);
 	void						update_environment		(float dt);
 	void						rewind					();
-	virtual void				stop					(BOOL bDeffered);
-	void						pause					(BOOL bVal, int id);
+	virtual void				stop					(bool bDeffered);
+	void						pause					(bool bVal, int id);
 
 	virtual u32					play_time				();
 

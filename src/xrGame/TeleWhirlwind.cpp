@@ -112,7 +112,7 @@ bool		CTeleWhirlwindObject::		init(CTelekinesis* tele,CPhysicsShellHolder *obj, 
 			if(obj->PPhysicsShell())
 			{
 				obj->PPhysicsShell()->SetAirResistance(0.f,0.f);
-				obj->m_pPhysicsShell->set_ApplyByGravity(TRUE);
+				obj->m_pPhysicsShell->set_ApplyByGravity(true);
 			}
 
 			if(object->ph_destroyable()&&object->ph_destroyable()->CanDestroy())
@@ -143,7 +143,7 @@ void		CTeleWhirlwindObject::		release					()
 	// включить гравитацию 
 	//Fvector zer;zer.set(0,0,0);
 	//object->m_pPhysicsShell->set_LinearVel(zer);
-	object->m_pPhysicsShell->set_ApplyByGravity(TRUE);
+	object->m_pPhysicsShell->set_ApplyByGravity(true);
 /////////////////////////////////////
 	float impulse=0.f;
 	if(magnitude>0.2f)
@@ -204,7 +204,7 @@ void		CTeleWhirlwindObject::		raise					(float step)
 		else
 			{
 				p->SetAirResistance(0.f,0.f);
-				p->set_ApplyByGravity(TRUE);
+				p->set_ApplyByGravity(true);
 			}
 		u16				element_number		=	p				->get_ElementsNumber();
 		Fvector			center				=	m_telekinesis	->Center();
@@ -295,7 +295,7 @@ void		CTeleWhirlwindObject::		keep					()
 	else
 	{
 		p->SetAirResistance(0.f,0.f);
-		p->set_ApplyByGravity(FALSE);
+		p->set_ApplyByGravity(false);
 	}
 
 	u16				element_number		=	p				->get_ElementsNumber();
@@ -327,7 +327,7 @@ void		CTeleWhirlwindObject::		keep					()
 		p->setForce(Fvector().set(0,0,0));
 		p->set_LinearVel(Fvector().set(0,0,0));
 		p->set_AngularVel(Fvector().set(0,0,0));
-		p->set_ApplyByGravity(TRUE);
+		p->set_ApplyByGravity(true);
 		switch_state(TS_Raise);
 	}
 

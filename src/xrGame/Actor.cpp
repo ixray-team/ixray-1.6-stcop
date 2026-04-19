@@ -756,9 +756,9 @@ void	CActor::Hit(SHit* pHDS)
 				xr_shared_ptr<CParticlesObject> ps_ = nullptr;
 #if 0
 				if (eacFirstEye == cam_active && this == Level().CurrentEntity())
-					ps_ = Particles::Details::Create(invincibility_fire_shield_1st,TRUE);
+					ps_ = Particles::Details::Create(invincibility_fire_shield_1st,true);
 				else
-					ps_ = Particles::Details::Create(invincibility_fire_shield_3rd,TRUE);
+					ps_ = Particles::Details::Create(invincibility_fire_shield_3rd,true);
 #endif 
 				if (ps_ != nullptr)
 				{
@@ -1213,7 +1213,7 @@ void CActor::Die	(CObject* who)
 						}
 						else
 						{
-							item_in_slot->SetDropManual(TRUE);
+							item_in_slot->SetDropManual(true);
 						}
 					}
 					else
@@ -1222,7 +1222,7 @@ void CActor::Die	(CObject* who)
 						/*
 						if ((*I).m_pIItem->object().CLS_ID != CLSID_OBJECT_W_KNIFE)
 						{
-							(*I).m_pIItem->SetDropManual(TRUE);
+							(*I).m_pIItem->SetDropManual(true);
 						}*/							
 					}
 				};
@@ -1257,14 +1257,14 @@ void CActor::Die	(CObject* who)
 				{
 					if (CArtefact* pArtefact = item->cast_artefact())
 					{
-						item->SetDropManual(TRUE);
+						item->SetDropManual(true);
 						continue;
 					};
 				};
 
 				if (item->object().CLS_ID == CLSID_OBJECT_PLAYERS_BAG)
 				{
-					item->SetDropManual(TRUE);
+					item->SetDropManual(true);
 					continue;
 				};
 			};
@@ -2035,13 +2035,13 @@ void CActor::CheckFlyhack()
 						sv_game->u_EventGen(P, GE_MOVE_ACTOR, ps->GameID);
 						P.w_vec3(result);
 						P.w_vec3(Fvector().set(-r_torso.pitch, r_model_yaw, 0));
-						Level().Server->SendTo(l_pC->ID, P, net_flags(TRUE, TRUE));
+						Level().Server->SendTo(l_pC->ID, P, net_flags(true, true));
 
 						NET_Packet Pa;
 						Pa.w_begin(M_GAMEMESSAGE);
 						Pa.w_u32(GAME_EVENT_SERVER_STRING_MESSAGE);
 						Pa.w_stringZ("Warning: Ошибка передвижения, возможно плохое соединение с сервером.");
-						Level().Server->SendTo(l_pC->ID, Pa, net_flags(TRUE, TRUE));
+						Level().Server->SendTo(l_pC->ID, Pa, net_flags(true, true));
 
 						Msg("%s Warning: Ошибка передвижения, возможно плохое соединение с сервером.", Name());
 					}
@@ -2564,14 +2564,14 @@ void CActor::RenderItemUI()
 bool CActor::renderable_ShadowGenerate	() 
 {
 	if(m_holder)
-		return FALSE;
+		return false;
 	
 	return inherited::renderable_ShadowGenerate();
 }
 
 void CActor::g_PerformDrop()
 {
-	b_DropActivated	= FALSE;
+	b_DropActivated	= false;
 
 	if (PIItem pItem = inventory().ActiveItem())
 	{
@@ -2587,7 +2587,7 @@ void CActor::g_PerformDrop()
 			return;
 		}
 
-		pItem->SetDropManual(TRUE);
+		pItem->SetDropManual(true);
 	}
 }
 
@@ -3104,7 +3104,7 @@ void CActor::spawn_supplies			()
 void CActor::AnimTorsoPlayCallBack(CBlend* B)
 {
 	CActor* actor		= (CActor*)B->CallbackParam;
-	actor->m_bAnimTorsoPlayed = FALSE;
+	actor->m_bAnimTorsoPlayed = false;
 }
 
 

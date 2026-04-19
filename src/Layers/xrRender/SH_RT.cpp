@@ -205,7 +205,7 @@ void CRT::destroy()
 {
 	if (pTexture._get())
 	{
-		pTexture->surface_set(0);
+		pTexture->surface_set(nullptr);
 		pTexture = nullptr;
 	}
 

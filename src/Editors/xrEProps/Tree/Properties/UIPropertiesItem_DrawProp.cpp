@@ -94,7 +94,7 @@ template <class T>
 bool TokenOnEdit(PropItem* prop, bool& change)
 {
 	TokenValue<T>* V = dynamic_cast<TokenValue<T>*>(prop->GetFrontValue());
-	if (!V)					return FALSE;
+	if (!V)					return false;
 	T edit_value  = V->GetValue();
 	prop->BeforeEdit<TokenValue<T>, T>(edit_value);
 	int index = 0; 
@@ -113,7 +113,7 @@ bool TokenOnEdit(PropItem* prop, bool& change)
 		if (prop->AfterEdit<TokenValue<T>, T>(new_val))
 			change = prop->ApplyValue<TokenValue<T>, T>(new_val);
 	}
-	return TRUE;
+	return true;
 }
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ template <class T>
 bool RTokenOnEdit(PropItem* prop, bool& change)
 {
 	RTokenValue<T>* V = dynamic_cast<RTokenValue<T>*>(prop->GetFrontValue());
-	if (!V)					return FALSE;
+	if (!V)					return false;
 	T edit_value = V->GetValue();
 	prop->BeforeEdit<RTokenValue<T>, T>(edit_value);
 	int index = 0;
@@ -141,7 +141,7 @@ bool RTokenOnEdit(PropItem* prop, bool& change)
 		if (prop->AfterEdit<RTokenValue<T>, T>(new_val))
 			change = prop->ApplyValue<RTokenValue<T>, T>(new_val);
 	}
-	return TRUE;
+	return true;
 }
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ template <class T>
 bool FlagOnEdit(PropItem* prop, bool& change)
 {
 	FlagValue<_flags<T> >* V = dynamic_cast<FlagValue<_flags<T> >*>(prop->GetFrontValue());
-	if (!V)					return FALSE;
+	if (!V)					return false;
 	_flags<T> new_val = V->GetValue();
 
 	prop->BeforeEdit<FlagValue<_flags<T> >, _flags<T> >(new_val);
@@ -162,7 +162,7 @@ bool FlagOnEdit(PropItem* prop, bool& change)
 		if (prop->AfterEdit<FlagValue<_flags<T> >, _flags<T> >(new_val))
 			change = prop->ApplyValue<FlagValue<_flags<T> >, _flags<T> >(new_val);
 	}
-	return TRUE;
+	return true;
 }
 void UIPropertiesItem::DrawProp()
 {
@@ -394,7 +394,7 @@ void UIPropertiesItem::DrawProp()
 		ImVec2 originalFramePadding = ImGui::GetStyle().FramePadding;
 		ImVec2 originalItemSpacing = ImGui::GetStyle().ItemSpacing;
 
-		// Убираем вертикальные отступы
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(originalCellPadding.x, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(originalFramePadding.x, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(originalItemSpacing.x, 0));

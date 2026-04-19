@@ -16,7 +16,7 @@ PropItem* CPropHelper::CreateItem(PropItemVec& items, const shared_str& key, EPr
     if (!item){
         item		= new PropItem	(type);
         item->SetName(key);
-        item->m_Flags.set(item_flags,TRUE);
+        item->m_Flags.set(item_flags,true);
         items.push_back(item);
     }
     return			item;
@@ -143,7 +143,7 @@ CTextValue* 	CPropHelper::CreateCName	(PropItemVec& items, shared_str key, LPSTR
     V->OnBeforeEditEvent.bind		(this,&CPropHelper::CNameBeforeEdit);
     V->Owner()->OnDrawTextEvent.bind(this,&CPropHelper::CNameDraw);
     V->tag							= (size_t)owner; VERIFY(owner);
-    if (V->Owner()->m_Flags.is(PropItem::flMixed)) V->Owner()->m_Flags.set(PropItem::flDisabled,TRUE);
+    if (V->Owner()->m_Flags.is(PropItem::flMixed)) V->Owner()->m_Flags.set(PropItem::flDisabled,true);
     return V;					
 }
 //---------------------------------------------------------------------------
@@ -168,7 +168,7 @@ RTextValue* 	CPropHelper::CreateName		(PropItemVec& items, shared_str key, share
     V->OnBeforeEditEvent.bind		(this,&CPropHelper::NameBeforeEdit);
     V->Owner()->OnDrawTextEvent.bind(this,&CPropHelper::NameDraw);
     V->tag							= (size_t)owner; VERIFY(owner);
-    if (V->Owner()->m_Flags.is(PropItem::flMixed)) V->Owner()->m_Flags.set(PropItem::flDisabled,TRUE);
+    if (V->Owner()->m_Flags.is(PropItem::flMixed)) V->Owner()->m_Flags.set(PropItem::flDisabled,true);
     return V;					
 }
 RTextValue* 	CPropHelper::CreateNameCB	(PropItemVec& items, shared_str key, shared_str* val, TOnDrawTextEvent draw, RTextValue::TOnBeforeEditEvent before, RTextValue::TOnAfterEditEvent after)
@@ -176,7 +176,7 @@ RTextValue* 	CPropHelper::CreateNameCB	(PropItemVec& items, shared_str key, shar
     V->OnAfterEditEvent   			= after;
     V->OnBeforeEditEvent  			= before;
     V->Owner()->OnDrawTextEvent 	= draw;
-    if (V->Owner()->m_Flags.is(PropItem::flMixed)) V->Owner()->m_Flags.set(PropItem::flDisabled,TRUE);
+    if (V->Owner()->m_Flags.is(PropItem::flMixed)) V->Owner()->m_Flags.set(PropItem::flDisabled,true);
     return V;					
 }
 //---------------------------------------------------------------------------

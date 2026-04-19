@@ -90,9 +90,9 @@ bool	CInifile::Sect::line_exist(const char* L, const char** val)
 	SectCIt A = std::lower_bound(Data.begin(), Data.end(), L, item_pred);
 	if (A != Data.end() && xr_strcmp(*A->first, L) == 0) {
 		if (val) *val = *A->second;
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 //------------------------------------------------------------------------------
 
@@ -101,9 +101,9 @@ CInifile::CInifile(IReader* F, const char* path, allow_include_func_t allow_incl
 	PROF_EVENT("CInifile::CInifile IReader");
 	m_file_name[0] = 0;
 	m_flags.zero();
-	m_flags.set(eSaveAtEnd, FALSE);
-	m_flags.set(eReadOnly, TRUE);
-	m_flags.set(eOverrideNames, FALSE);
+	m_flags.set(eSaveAtEnd, false);
+	m_flags.set(eReadOnly, true);
+	m_flags.set(eOverrideNames, false);
 	Load(F, path, allow_include_func);
 }
 
@@ -124,7 +124,7 @@ CInifile::CInifile(const char* szFileName, bool ReadOnly, bool bLoad, bool SaveA
 	if (bLoad)
 	{
 		string_path	path, folder;
-		_splitpath(m_file_name, path, folder, 0, 0);
+		_splitpath(m_file_name, path, folder, nullptr, nullptr);
 		xr_strcat(path, sizeof(path), folder);
 		IReader* R = FS.r_open(szFileName);
 		if (R) {
@@ -165,7 +165,7 @@ void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& 
 	xr_vector<xr_string>& BaseParents = BaseParentDataMap[SectName];
 	xr_vector<xr_string>& OverrideParents = OverrideParentDataMap[SectName];
 
-	bool bDeleteSectionIfEmpty = FALSE;
+	bool bDeleteSectionIfEmpty = false;
 
 	MergeParentSet(BaseParents, OverrideParents, false);
 
@@ -177,7 +177,7 @@ void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& 
 			if (CurrentItem.first == DLTX_DELETE)
 			{
 				// Delete section
-				bDeleteSectionIfEmpty = TRUE;
+				bDeleteSectionIfEmpty = true;
 			}
 			else
 			{
@@ -484,7 +484,7 @@ bool CInifile::line_exist( const char* S, const char* L )const
 	if (S == nullptr || L == nullptr)
 		return false;
 
-	if (!section_exist(S)) return FALSE;
+	if (!section_exist(S)) return false;
 	Sect&	I = r_section(S);
 	SectCIt A = std::lower_bound(I.Data.begin(),I.Data.end(),L,item_pred);
 	return (A!=I.Data.end() && xr_strcmp(*A->first,L)==0);
@@ -541,14 +541,14 @@ const char*	CInifile::r_string(const char* S, const char* L)const
 	if (A!=I.Data.end() && xr_strcmp(*A->first,L)==0)	return *A->second;
 	else
 		Debug.fatal(DEBUG_INFO,"Can't find variable %s in [%s]",L,S);
-	return 0;
+	return nullptr;
 }
 
 shared_str		CInifile::r_string_wb(const char* S, const char* L)const
 {
 	const char*		_base		= r_string(S,L);
 	
-	if	(0==_base)					return	shared_str(0);
+	if	(nullptr==_base)					return	shared_str(nullptr);
 
 	string4096						_original;
 	xr_strcpy						(_original,sizeof(_original),_base);
@@ -714,14 +714,14 @@ int CInifile::r_token( const char* S, const char* L, const xr_token *token_list)
 bool	CInifile::r_line( const char* S, int L, const char** N, const char** V )const
 {
 	Sect&	SS = r_section(S);
-	if (L>=(int)SS.Data.size() || L<0 ) return FALSE;
+	if (L>=(int)SS.Data.size() || L<0 ) return false;
 	for (SectCIt I=SS.Data.begin(); I!=SS.Data.end(); I++)
 		if (!(L--)){
 			*N = *I->first;
 			*V = *I->second;
-			return TRUE;
+			return true;
 		}
-	return FALSE;
+	return false;
 }
 
 bool CInifile::r_line( const shared_str& S, int L, const char** N, const char** V )const
@@ -757,8 +757,8 @@ void CInifile::w_string(const char* S, const char* L, const char* V, const char*
 	// duplicate & insert
 	Item	I;
 	Sect& data = r_section(sect);
-	I.first = (line[0] ? line : 0);
-	I.second = (value[0] ? value : 0);
+	I.first = (line[0] ? line : nullptr);
+	I.second = (value[0] ? value : nullptr);
 
 	//#ifdef DEBUG
 	//	I.comment		= (comment?comment:0);
@@ -1200,7 +1200,7 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 		else if (!bHasLoadedModFiles && bIsRootFile)
 		{
 			StashCurrentSection();
-			bHasLoadedModFiles = TRUE;
+			bHasLoadedModFiles = true;
 
 			if (!m_file_name[0])
 			{
@@ -1265,7 +1265,7 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 			{
 				string_path fn, inc_path, folder;
 				xr_strconcat(fn, path, inc_name);
-				_splitpath(fn, inc_path, folder, 0, 0);
+				_splitpath(fn, inc_path, folder, nullptr, nullptr);
 				xr_strcat(inc_path, sizeof(inc_path), folder);
 
 				if (strstr(inc_name, "*"))
@@ -1349,7 +1349,7 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 			if (bIsCurrentSectionOverride == bOverridesOnly)
 			{
 				const char* inherited_names = strstr(LTXHelpStr1, "]:");
-				if (0 != inherited_names)
+				if (nullptr != inherited_names)
 				{
 					VERIFY2(m_flags.test(eReadOnly), "Allow for readonly mode only.");
 					inherited_names += 2;

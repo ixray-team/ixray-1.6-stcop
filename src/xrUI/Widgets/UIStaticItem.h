@@ -31,7 +31,7 @@ public:
 	void			Init					(const char* tex, const char* sh, float left, float top);
 	void			Render					();
 	void			Render					(float angle);
-	void ResetOriginalRect() { uFlags.set(flValidTextureRect, FALSE); }
+	void ResetOriginalRect() { uFlags.set(flValidTextureRect, false); }
 
 	IC void			SetPos					(float left, float top)			{vPos.set(left,top);}
 	IC float		GetPosX					()								{return vPos.x;}
@@ -43,8 +43,8 @@ public:
 
 public:
 					CUIStaticItem			();
-	IC void			SetSize					(const Fvector2& sz)								{vSize.set(sz); uFlags.set(flValidSize, TRUE); }
-	void			SetTextureRect			(const Frect& r)									{TextureRect = r; uFlags.set(flValidTextureRect,TRUE);}
+	IC void			SetSize					(const Fvector2& sz)								{vSize.set(sz); uFlags.set(flValidSize, true); }
+	void			SetTextureRect			(const Frect& r)									{TextureRect = r; uFlags.set(flValidTextureRect,true);}
 	const Frect&	GetTextureRect			() const											{return TextureRect;};
 
 	IC Fvector2		GetSize					() {return vSize;}

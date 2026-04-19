@@ -22,8 +22,8 @@ void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
 		VERIFY(itm);
 		m_items.push_back(id);
 		itm->H_SetParent(this);
-		itm->setVisible(FALSE);
-		itm->setEnabled(FALSE);
+		itm->setVisible(false);
+		itm->setEnabled(false);
 
 		PIItem pIItem = itm->cast_inventory_item();
 		VERIFY(pIItem);
@@ -103,8 +103,8 @@ void CInventoryBox::net_Destroy()
 bool CInventoryBox::net_Spawn(CSE_Abstract* DC)
 {
 	inherited::net_Spawn(DC);
-	setVisible(TRUE);
-	setEnabled(TRUE);
+	setVisible(true);
+	setEnabled(true);
 	set_tip_text("inventory_box_use");
 
 	if (CSE_ALifeInventoryBox* pSE_box = smart_cast<CSE_ALifeInventoryBox*>(DC))
@@ -116,7 +116,7 @@ bool CInventoryBox::net_Spawn(CSE_Abstract* DC)
 
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::INV_BOX;
 
-	return TRUE;
+	return true;
 }
 
 void CInventoryBox::net_Relcase(CObject* O)

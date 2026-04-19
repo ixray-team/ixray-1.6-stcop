@@ -103,7 +103,7 @@ public:
 	
 	virtual	void OnSpawn(CObject* pObj);
 	virtual	bool CanCallBuyMenu();
-	virtual bool CanCallSkinMenu() {return TRUE;};
+	virtual bool CanCallSkinMenu() {return true;};
 	virtual bool CanCallTeamSelectMenu();
 	virtual	bool CanCallInventoryMenu();
 			bool LocalPlayerCanBuyItem(shared_str const & name_sect);

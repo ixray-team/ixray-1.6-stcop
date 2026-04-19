@@ -403,12 +403,12 @@ void CEffect_Rain::UpdateItems()
 						if (_sqr(max_distance) <= dist_sqr)
 							one.dwTime_Life = 0;
 						else
-							RenewItem(one, max_distance - _sqrt(dist_sqr), TRUE, time_global, udt);
-						}
-						else
-						RenewItem(one, max_distance - _sqrt(dist_sqr), FALSE, time_global, udt);
+							RenewItem(one, max_distance - _sqrt(dist_sqr), true, time_global, udt);
 					}
 					else
+						RenewItem(one, max_distance - _sqrt(dist_sqr), false, time_global, udt);
+				}
+				else
 					one.dwTime_Life = 0;
 			}
 		}

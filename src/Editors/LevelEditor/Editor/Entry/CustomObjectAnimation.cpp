@@ -35,7 +35,7 @@ void CCustomObject::AnimationUpdate(float t)
 	SetPosition(P);
 	SetRotation(R);
 	bool bAK				= m_CO_Flags.is(flAutoKey);
-	m_CO_Flags.set			(flAutoKey,FALSE);
+	m_CO_Flags.set			(flAutoKey,false);
 	UpdateTransform			(true);
 	m_CO_Flags.set			(flAutoKey,bAK);
 	if (m_CO_Flags.is(flCameraView))
@@ -104,8 +104,8 @@ void CCustomObject::OnMotionControlPlayClick(ButtonValue* value, bool& bModif, b
 	ButtonValue* B = smart_cast<ButtonValue*>(value); R_ASSERT(B);
 	switch (B->btn_num)
 	{
-		case 0: m_MotionParams->bPlay = TRUE; break;
-		case 1: m_MotionParams->bPlay = FALSE; break;
+		case 0: m_MotionParams->bPlay = true; break;
+		case 1: m_MotionParams->bPlay = false; break;
 	}
 	AnimationUpdate(m_MotionParams->Frame());
 	ExecCommand(COMMAND_UPDATE_PROPERTIES);
@@ -120,7 +120,7 @@ void CCustomObject::OnMotionControlClick(ButtonValue* value, bool& bModif, bool&
 		m_MotionParams->t_current = m_MotionParams->min_t;
 		m_MotionParams->tmp = m_MotionParams->t_current;
 
-		m_MotionParams->bPlay = FALSE;
+		m_MotionParams->bPlay = false;
 	}break;
 	case 1: {
 		float min_k;
@@ -128,17 +128,17 @@ void CCustomObject::OnMotionControlClick(ButtonValue* value, bool& bModif, bool&
 		m_Motion->FindNearestKey(m_MotionParams->t_current, min_k, max_k);
 		m_MotionParams->t_current = min_k;
 		m_MotionParams->tmp = m_MotionParams->t_current;
-		m_MotionParams->bPlay = FALSE;
+		m_MotionParams->bPlay = false;
 	}break;
 	case 2: {
 		m_MotionParams->t_current -= 1.f / 30.f;
 		m_MotionParams->tmp = m_MotionParams->t_current;
-		m_MotionParams->bPlay = FALSE;
+		m_MotionParams->bPlay = false;
 	}break;
 	case 3: {
 		m_MotionParams->t_current += 1.f / 30.f;
 		m_MotionParams->tmp = m_MotionParams->t_current;
-		m_MotionParams->bPlay = FALSE;
+		m_MotionParams->bPlay = false;
 	}break;
 	case 4: {
 		float min_k;
@@ -146,12 +146,12 @@ void CCustomObject::OnMotionControlClick(ButtonValue* value, bool& bModif, bool&
 		m_Motion->FindNearestKey(m_MotionParams->t_current, min_k, max_k);
 		m_MotionParams->t_current = max_k;
 		m_MotionParams->tmp = m_MotionParams->t_current;
-		m_MotionParams->bPlay = FALSE;
+		m_MotionParams->bPlay = false;
 	}break;
 	case 5: {
 		m_MotionParams->t_current = m_MotionParams->max_t;
 		m_MotionParams->tmp = m_MotionParams->t_current;
-		m_MotionParams->bPlay = FALSE;
+		m_MotionParams->bPlay = false;
 	}break;
 	}
 	AnimationUpdate(m_MotionParams->Frame());
@@ -303,7 +303,7 @@ void 	CCustomObject::OnMotionCurrentFrameChange(PropValue* value)
 		m_MotionParams->max_t = m_MotionParams->t_current;
 
 	m_Motion->SetParam	(m_MotionParams->min_t*30.f,m_MotionParams->max_t*30.f,30.f);
-	m_MotionParams->bPlay= FALSE;
+	m_MotionParams->bPlay= false;
 	AnimationUpdate		(m_MotionParams->Frame());
 	ExecCommand			(COMMAND_UPDATE_PROPERTIES);
 }

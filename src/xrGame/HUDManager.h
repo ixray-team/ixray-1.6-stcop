@@ -18,7 +18,7 @@ private:
 	CHUDTarget*				m_pHUDTarget;
 	bool					b_online;
 public:
-	LevelInspector			world_prims = LevelInspector(FALSE);
+	LevelInspector			world_prims = LevelInspector(false);
 	IC void					draw_prims()
 	{
 		world_prims.OnRender();

@@ -73,7 +73,7 @@ bool CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 
 	if (!result)
 	{
-		return FALSE;
+		return false;
 	}
 
 	CAnomalyZone* zone = cast_anomaly_zone();
@@ -110,17 +110,17 @@ bool CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 			SpatialComponent->spatial.type |= ESPATIAL_TYPE::SPACE_RESTRICTOR;
 	}
 	
-	setEnabled(FALSE);
-	setVisible(FALSE);
+	setEnabled(false);
+	setVisible(false);
 
 	if (!ai().get_level_graph() || (RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type) == RestrictionSpace::eRestrictorTypeNone))
 	{
-		return TRUE;
+		return true;
 	}
 
 	Level().space_restriction_manager().register_restrictor(this, RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type));
 
-	return TRUE;
+	return true;
 }
 
 void CSpaceRestrictor::net_Destroy	()
@@ -149,7 +149,7 @@ bool CSpaceRestrictor::inside	(const Fsphere &sphere) const
 
 bool CSpaceRestrictor::UsedAI_Locations	()
 {
-	return		(FALSE);
+	return		(false);
 }
 
 void CSpaceRestrictor::spatial_move		()

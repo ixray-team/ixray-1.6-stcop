@@ -207,7 +207,7 @@ void CSoundRender_CoreA::_initialize(int stage)
 	if (pDevice == nullptr)
 	{
 		CHECK_OR_EXIT			(0,"SOUND: OpenAL: Failed to create device.");
-		bPresent				= FALSE;
+		bPresent				= false;
 		return;
 	}
 
@@ -219,7 +219,7 @@ void CSoundRender_CoreA::_initialize(int stage)
     pContext					= alcCreateContext	(pDevice,nullptr);
 	if (pContext == nullptr) {
 		CHECK_OR_EXIT			(0,"SOUND: OpenAL: Failed to create context.");
-		bPresent				= FALSE;
+		bPresent				= false;
 		alcCloseDevice(pDevice);
 		pDevice = nullptr;
 		return;
@@ -367,7 +367,7 @@ void CSoundRender_CoreA::update_listener		( const Fvector& P, const Fvector& D, 
 
 	if (!Listener.position.similar(P)){
 		Listener.position.set	(P);
-		bListenerMoved			= TRUE;
+		bListenerMoved			= true;
 	}
 	Listener.orientation[0].set	(D.x,D.y,-D.z);
 	Listener.orientation[1].set	(N.x,N.y,-N.z);

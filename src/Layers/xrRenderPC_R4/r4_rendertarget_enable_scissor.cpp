@@ -29,10 +29,10 @@ void CRenderTarget::enable_dbt_bounds		(light* L)
 // nv-DBT
 bool	CRenderTarget::u_DBT_enable	(float zMin, float zMax)
 {
-	if (!RImplementation.o.nvdbt)					return	FALSE;
-	if (!ps_r2_ls_flags.test(R2FLAG_USE_NVDBT))		return	FALSE;
+	if (!RImplementation.o.nvdbt)					return	false;
+	if (!ps_r2_ls_flags.test(R2FLAG_USE_NVDBT))		return	false;
 
-	return FALSE;
+	return false;
 
 	//	TODO: DX10: Check if DX10 supports this feature
 	// enable cheat
@@ -40,7 +40,7 @@ bool	CRenderTarget::u_DBT_enable	(float zMin, float zMax)
 	//RDevice->SetRenderState(D3DRS_ADAPTIVETESS_Z,*(DWORD*)&zMin);
 	//RDevice->SetRenderState(D3DRS_ADAPTIVETESS_W,*(DWORD*)&zMax); 
 
-	//return TRUE;
+	//return true;
 }
 
 void	CRenderTarget::u_DBT_disable	()

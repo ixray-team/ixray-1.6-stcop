@@ -39,7 +39,7 @@ bool CMonsterEffector::Process(SPPInfo& pp)
 	clamp(factor,0.01f,1.0f);
 
 	pp.lerp				(pp_identity, state, factor * m_spec_factor);
-	return TRUE;
+	return true;
 }
 
 
@@ -61,7 +61,7 @@ CMonsterEffectorHit::CMonsterEffectorHit(float time, float amp, float periods, f
 
 bool CMonsterEffectorHit::ProcessCam(SCamEffectorInfo& info)
 {
-	fLifeTime -= Device.fTimeDelta; if(fLifeTime<0) return FALSE;
+	fLifeTime -= Device.fTimeDelta; if(fLifeTime<0) return false;
 
 	// процент оставшегося времени
 	float time_left_perc = fLifeTime / total;
@@ -93,6 +93,6 @@ bool CMonsterEffectorHit::ProcessCam(SCamEffectorInfo& info)
 	info.d.set		(mR.k);
 	info.n.set		(mR.j);
 
-	return TRUE;
+	return true;
 }
 

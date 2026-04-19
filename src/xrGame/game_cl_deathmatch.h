@@ -78,7 +78,7 @@ public :
 			void					ClearBuyMenu			();
 			IBuyWnd*				InitBuyMenu				(const shared_str& BasePriceSection, s16 Team);
 			CUISkinSelectorWnd*		InitSkinMenu			(s16 Team = -1);
-			void					SetBuyMenuItems			(PRESET_ITEMS* pItems, bool OnlyPreset = FALSE);
+			void					SetBuyMenuItems			(PRESET_ITEMS* pItems, bool OnlyPreset = false);
 	virtual bool					CanBeReady				();
 	virtual bool					CanCallBuyMenu			();
 	virtual bool					CanCallSkinMenu			();

@@ -630,7 +630,7 @@ static void ImGui_ImplDX11_CreateWindow(ImGuiViewport* viewport)
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.BufferCount = 1;
 	sd.OutputWindow = hwnd;
-	sd.Windowed = TRUE;
+	sd.Windowed = true;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.Flags = 0;
 

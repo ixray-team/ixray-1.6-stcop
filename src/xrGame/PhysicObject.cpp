@@ -50,8 +50,8 @@ bool CPhysicObject::net_Spawn(CSE_Abstract* DC)
 
 
 	CPHSkeleton::Spawn(e);
-	setVisible(TRUE);
-	setEnabled(TRUE);
+	setVisible(true);
+	setEnabled(true);
 
 	if (!PPhysicsShell()->isBreakable()&&!CScriptBinder::object()&&!CPHSkeleton::IsRemoving())
 		SheduleUnregister();
@@ -90,7 +90,7 @@ if(dbg_draw_doors)
 
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::PHYSIC_OBJECT;
 
-	return TRUE;
+	return true;
 
 }
 void CPhysicObject::create_collision_model			( )
@@ -227,7 +227,7 @@ void CPhysicObject::RunStartupAnim(CSE_Abstract* D)
 		}
 
 		PKinematics(Visual())->CalculateBones_Invalidate();
-		PKinematics(Visual())->CalculateBones(TRUE);
+		PKinematics(Visual())->CalculateBones(true);
 	}
 }
 
@@ -243,8 +243,8 @@ void	CPhysicObject::	run_anim_forward				()
 {
 	if( !check_blend( m_anim_blend, cName().c_str(), cNameSect().c_str(), cNameVisual().c_str() ) )
 		return;
-	m_anim_blend->playing = TRUE;
-	m_anim_blend->stop_at_end_callback = TRUE;
+	m_anim_blend->playing = true;
+	m_anim_blend->stop_at_end_callback = true;
 	if(m_anim_blend->speed < 0.f)
 		m_anim_blend->speed = -m_anim_blend->speed;	
 
@@ -253,8 +253,8 @@ void	CPhysicObject::	run_anim_back					()
 {
 	if( !check_blend( m_anim_blend, cName().c_str(), cNameSect().c_str(), cNameVisual().c_str() ) )
 		return;
-	m_anim_blend->playing = TRUE;
-	m_anim_blend->stop_at_end_callback = TRUE;
+	m_anim_blend->playing = true;
+	m_anim_blend->stop_at_end_callback = true;
 	if(m_anim_blend->speed > 0.f)
 		m_anim_blend->speed = -m_anim_blend->speed;
 }
@@ -262,7 +262,7 @@ void	CPhysicObject::	stop_anim						()
 {
 	if( !check_blend( m_anim_blend, cName().c_str(), cNameSect().c_str(), cNameVisual().c_str() ) )
 		return;
-	m_anim_blend->playing = FALSE;
+	m_anim_blend->playing = false;
 }
 
 float	CPhysicObject::		anim_time_get					()
@@ -286,7 +286,7 @@ void	CPhysicObject::		anim_time_set					( float time )
 	IKinematics *K = PKinematics(Visual());
 	VERIFY( K );
 	K->CalculateBones_Invalidate();
-	K->CalculateBones(TRUE);
+	K->CalculateBones(true);
 }
 
 
@@ -495,13 +495,13 @@ void CPhysicObject::CreateBody(CSE_ALifeObjectPhysic* po) {
 
 bool CPhysicObject::net_SaveRelevant()
 {
-	return TRUE;//!m_flags.test(CSE_ALifeObjectPhysic::flSpawnCopy);
+	return true;//!m_flags.test(CSE_ALifeObjectPhysic::flSpawnCopy);
 }
 
 
 bool CPhysicObject::UsedAI_Locations()
 {
-	return					(FALSE);
+	return					(false);
 }
 
 
@@ -708,7 +708,7 @@ void CPhysicObject::net_Import			(NET_Packet& P)
 	//		return;
 
 	//if (!p->NET_IItem.empty())
-	//m_flags.set							(FInInterpolate, TRUE);
+	//m_flags.set							(FInInterpolate, true);
 
 	Level().AddObject_To_Objects4CrPr		(this);
 	//this->CrPr_SetActivated				(false);
@@ -797,11 +797,11 @@ void CPhysicObject::PH_A_CrPr		()
 		if(!PPhysicsShell()->isFullActive())
 		{
 			K->CalculateBones_Invalidate();
-			K->CalculateBones(TRUE);
+			K->CalculateBones(true);
 		}
 		PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
 		K->CalculateBones_Invalidate();
-		K->CalculateBones(TRUE);
+		K->CalculateBones(true);
 #if	0
 		Fbox bb= BoundingBox	();
 		DBG_OpenCashedDraw		();

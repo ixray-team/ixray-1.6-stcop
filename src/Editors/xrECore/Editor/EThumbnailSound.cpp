@@ -151,7 +151,7 @@ void ESoundThumbnail::OnMaxDistChange(PropValue* sender)
         	*CV->value 	= CV->lim_mx;
         }
         if (!CV->Equal(S->Values().front()))
-            S->m_Flags.set(PropItem::flMixed,TRUE);
+            S->m_Flags.set(PropItem::flMixed,true);
     }
 	if (bChanged){ 
     	/*P->Modified		();
@@ -161,7 +161,7 @@ void ESoundThumbnail::OnMaxDistChange(PropValue* sender)
 
 void ESoundThumbnail::FillProp(PropItemVec& items)
 {                                    
-	FloatValue* V	= 0;  
+	FloatValue* V	= nullptr;  
     PHelper().CreateFloat		(items, "Quality", 		&m_fQuality);
     PHelper().CreateFloat		(items, "Min Dist",		&m_fMinDist, 	0.01f,1000.f);
     V = PHelper().CreateFloat	(items, "Max Dist",		&m_fMaxDist, 	0.1f,1000.f);

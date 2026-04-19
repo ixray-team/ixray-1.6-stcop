@@ -205,8 +205,8 @@ void Face::OA_Unwarp( CDeflector *D, xr_vector<type_face*>& faces)
 bool DataFace::RenderEqualTo(Face *F)
 {
 	if (F->dwMaterial	!= dwMaterial		)	
-		return FALSE;
- 	return TRUE;
+		return false;
+ 	return true;
 }
 
 void DataFace::AddChannel(Fvector2 &p1, Fvector2 &p2, Fvector2 &p3) 
@@ -218,8 +218,8 @@ void DataFace::AddChannel(Fvector2 &p1, Fvector2 &p2, Fvector2 &p3)
 
 bool DataFace::hasImplicitLighting()
 {
-	if (0==this)								return FALSE;
-	if (!Shader().flags.bRendering)				return FALSE;
+	if (0==this)								return false;
+	if (!Shader().flags.bRendering)				return false;
 	VERIFY( inlc_global_data() );
 	b_material& M		= inlc_global_data()->materials()		[dwMaterial];
 	b_BuildTexture&	T	= inlc_global_data()->textures()		[M.surfidx];

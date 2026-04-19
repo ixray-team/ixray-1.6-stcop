@@ -34,12 +34,12 @@ public:
 	Shader_xrLC()	{
 		xr_strcpy					(Name,"unknown");
 		m_Flags.assign			(0);
-		flags.bCollision		= TRUE;
-		flags.bRendering		= TRUE;
-		flags.bOptimizeUV		= TRUE;
-		flags.bLIGHT_Vertex		= FALSE;
-		flags.bLIGHT_CastShadow = TRUE;
-		flags.bLIGHT_Sharp		= TRUE;
+		flags.bCollision		= true;
+		flags.bRendering		= true;
+		flags.bOptimizeUV		= true;
+		flags.bLIGHT_Vertex		= false;
+		flags.bLIGHT_CastShadow = true;
+		flags.bLIGHT_Sharp		= true;
 		vert_translucency		= .5f;
 		vert_ambient			= .0f;
 		lm_density				= 1.f;

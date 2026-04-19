@@ -290,7 +290,7 @@ void CDetailManager::hw_Render_dump(ref_constant x_array, u32 var_id, u32 lod_id
 				// flush
 				u32 dwCNT_verts			= dwBatch * Object.number_vertices;
 				u32 dwCNT_prims			= (dwBatch * Object.number_indices)/3;
-				RCache.get_ConstantCache_Vertex().b_dirty				=	TRUE;
+				RCache.get_ConstantCache_Vertex().b_dirty				=	true;
 				RCache.get_ConstantCache_Vertex().get_array_f().dirty	(c_base,c_base+dwBatch*4);
 				RCache.Render			(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vOffset, 0, dwCNT_verts,iOffset,dwCNT_prims);
 
@@ -303,7 +303,7 @@ void CDetailManager::hw_Render_dump(ref_constant x_array, u32 var_id, u32 lod_id
 		{
 			u32 dwCNT_verts			= dwBatch * Object.number_vertices;
 			u32 dwCNT_prims			= (dwBatch * Object.number_indices)/3;
-			RCache.get_ConstantCache_Vertex().b_dirty				=	TRUE;
+			RCache.get_ConstantCache_Vertex().b_dirty				=	true;
 			RCache.get_ConstantCache_Vertex().get_array_f().dirty	(c_base,c_base+dwBatch*4);
 			RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vOffset,0,dwCNT_verts,iOffset,dwCNT_prims);
 			dwBatch					= 0;

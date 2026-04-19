@@ -103,7 +103,7 @@ void ESoundEnvironment::SaveStream(IWriter& F)
 
 void ESoundEnvironment::OnChangeEnvs(PropValue* prop)
 {
-	Scene->m_RTFlags.set(EScene::flIsBuildedSndEnv, FALSE);
+	Scene->m_RTFlags.set(EScene::flIsBuildedSndEnv, false);
 	ExecCommand(COMMAND_REFRESH_SOUND_ENV_GEOMETRY);
 }
 

@@ -710,17 +710,17 @@ bool ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
     /*
 	if (ObjectCount()>=MAX_WALLMARK_COUNT){
     	ELog.DlgMsg			(mtError,"Maximum wallmark per level is reached [Max: %d].",MAX_WALLMARK_COUNT);
-    	return FALSE;
+    	return false;
     }
     */
     
     if (0==sh.size()){
     	ELog.DlgMsg			(mtError,"Select texture before add wallmark.");
-    	return 				FALSE;
+    	return 				false;
     }
     if (0==tx.size()){
     	ELog.DlgMsg			(mtError,"Select texture before add wallmark.");
-    	return 				FALSE;
+    	return 				false;
     }
     // pick contact poly
     Fvector 				contact_pt;
@@ -728,7 +728,7 @@ bool ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
     ObjectList* snap_list	= Scene->GetSnapList(false);
     if (!snap_list){
     	ELog.DlgMsg			(mtError,"Fill and activate snap list.");
-    	return 				FALSE;
+    	return 				false;
     }
     // pick contact poly
     SPickQuery				PQ;
@@ -737,7 +737,7 @@ bool ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
         contact_pt.mad		(PQ.m_Start,PQ.m_Direction,PQ.r_begin()->range); 
         sml_normal.mknormal	(PQ.r_begin()->verts[0],PQ.r_begin()->verts[1],PQ.r_begin()->verts[2]);
         sml_collector.add_face_packed_D	(PQ.r_begin()->verts[0],PQ.r_begin()->verts[1],PQ.r_begin()->verts[2],0);
-    }else return FALSE;
+    }else return false;
 
     // box pick poly
     Fbox					bbox;
@@ -777,7 +777,7 @@ bool ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
 	if ((W->verts.size()<3) || (W->verts.size()>MAX_WALLMARK_VERTEX_COUNT)) { 
     	ELog.DlgMsg		(mtError,"Invalid wallmark vertex count. [Min: %d. Max: %d].",3,MAX_WALLMARK_VERTEX_COUNT);
     	wm_destroy		(W); 
-        return 			FALSE; 
+        return 			false; 
     }else{
 		W->bbox.invalidate();
 		FVF::LIT* I=&*W->verts.begin	();
@@ -804,7 +804,7 @@ bool ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
 				{
 					*out_wm = W;
 				}
-				return TRUE;
+				return true;
 			}
 		}
 	}else{
@@ -818,7 +818,7 @@ bool ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
 	{
 		*out_wm = W;
 	}
-    return TRUE;
+    return true;
 }
 
 bool ESceneWallmarkTool::AddWallmark	(const Fvector& start, const Fvector& dir)
@@ -833,7 +833,7 @@ bool ESceneWallmarkTool::MoveSelectedWallmarkTo(const Fvector& start, const Fvec
     for (WMSVecIt p_it=marks.begin(); p_it!=marks.end(); p_it++){
         for (WMVecIt m_it=(*p_it)->items.begin(); m_it!=(*p_it)->items.end(); m_it++){
             if ((*m_it)->flags.is(wallmark::flSelected)){ 
-            	if (wm) return FALSE;
+            	if (wm) return false;
                 wm 	= *m_it;
             }
         }
@@ -846,12 +846,12 @@ bool ESceneWallmarkTool::MoveSelectedWallmarkTo(const Fvector& start, const Fvec
                     wm_destroy	(wm);
                     *m_it		= (*p_it)->items.back();
                     (*p_it)->items.pop_back();
-                    return TRUE;
+                    return true;
                 }
             }
         }
     }
-    return FALSE;
+    return false;
 }
 
 void ESceneWallmarkTool::FillPropObjects(const char* pref, PropItemVec& items)

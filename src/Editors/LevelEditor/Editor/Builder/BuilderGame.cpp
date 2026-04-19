@@ -12,20 +12,20 @@ bool SceneBuilder::BuildGame()
     F.envmodif.stream.w_u32(u32(SPAWNPOINT_VERSION));
     F.envmodif.stream.close_chunk();
 
-    if (!Scene->ExportGame(&F))				return FALSE;
+    if (!Scene->ExportGame(&F))				return false;
 
-    bool bRes = TRUE;
+    bool bRes = true;
     // save spawn
     {
         xr_string lev_spawn = MakeLevelPath("level.spawn");
         EFS.MarkFile(lev_spawn.c_str(), true);
         if (F.spawn.chunk)
-            if (!F.spawn.stream.save_to(lev_spawn.c_str())) bRes = FALSE;
+            if (!F.spawn.stream.save_to(lev_spawn.c_str())) bRes = false;
 
         lev_spawn = MakeLevelPath("level_rs.spawn");
         EFS.MarkFile(lev_spawn.c_str(), true);
         if (F.spawn_rs.chunk)
-            if (!F.spawn_rs.stream.save_to(lev_spawn.c_str())) bRes = FALSE;
+            if (!F.spawn_rs.stream.save_to(lev_spawn.c_str())) bRes = false;
     }
 
     // save game
@@ -36,7 +36,7 @@ bool SceneBuilder::BuildGame()
         xr_string lev_game = MakeLevelPath("level.game");
         EFS.MarkFile(lev_game.c_str(), true);
         if (GAME.size())
-            if (!GAME.save_to(lev_game.c_str())) bRes = FALSE;
+            if (!GAME.save_to(lev_game.c_str())) bRes = false;
     }
 
     // save weather env modificator
@@ -44,7 +44,7 @@ bool SceneBuilder::BuildGame()
         xr_string lev_env_mod = MakeLevelPath("level.env_mod");
         EFS.MarkFile(lev_env_mod.c_str(), true);
         if (F.envmodif.chunk)
-            if (!F.envmodif.stream.save_to(lev_env_mod.c_str())) bRes = FALSE;
+            if (!F.envmodif.stream.save_to(lev_env_mod.c_str())) bRes = false;
     }
 
     // save static sounds
@@ -52,7 +52,7 @@ bool SceneBuilder::BuildGame()
         xr_string lev_sound_static = MakeLevelPath("level.snd_static");
         EFS.MarkFile(lev_sound_static.c_str(), true);
         if (F.sound_static.chunk)
-            if (!F.sound_static.stream.save_to(lev_sound_static.c_str())) bRes = FALSE;
+            if (!F.sound_static.stream.save_to(lev_sound_static.c_str())) bRes = false;
     }
 
     // save sound envs
@@ -60,7 +60,7 @@ bool SceneBuilder::BuildGame()
         xr_string lev_sound_env = MakeLevelPath("level.snd_env");
         EFS.MarkFile(lev_sound_env.c_str(), true);
         if (LSndLib->MakeEnvGeometry(F.sound_env_geom.stream, false))
-            if (!F.sound_env_geom.stream.save_to(lev_sound_env.c_str())) bRes = FALSE;
+            if (!F.sound_env_geom.stream.save_to(lev_sound_env.c_str())) bRes = false;
     }
 
     // save static PG
@@ -68,7 +68,7 @@ bool SceneBuilder::BuildGame()
         xr_string lev_pe_static = MakeLevelPath("level.ps_static");
         EFS.MarkFile(lev_pe_static.c_str(), true);
         if (F.pe_static.chunk)
-            if (!F.pe_static.stream.save_to(lev_pe_static.c_str())) bRes = FALSE;
+            if (!F.pe_static.stream.save_to(lev_pe_static.c_str())) bRes = false;
     }
 
     // save fog volumes
@@ -113,7 +113,7 @@ bool SceneBuilder::BuildGame()
                 {
                     if (E->m_volumeType != fvEmitter)
                     {
-                        bRes = FALSE;
+                        bRes = false;
                         Msg("! incorrect fog volumes grouping");
                         break;
                     }
@@ -128,7 +128,7 @@ bool SceneBuilder::BuildGame()
                     if (E->m_volumeType != fvEmitter)
                     {
 
-                        bRes = FALSE;
+                        bRes = false;
                         Msg("! incorrect fog volumes grouping");
                         break;
                     }
@@ -140,7 +140,7 @@ bool SceneBuilder::BuildGame()
 
                     if (E->m_volumeType != fvOcclusion)
                     {
-                        bRes = FALSE;
+                        bRes = false;
                         Msg("! incorrect fog volumes grouping");
                         break;
                     }
@@ -154,7 +154,7 @@ bool SceneBuilder::BuildGame()
         }
 
         if (!F.fog_vol.stream.save_to(lev_fog_vol.c_str()))
-            bRes = FALSE;
+            bRes = false;
     }
 
     return bRes;

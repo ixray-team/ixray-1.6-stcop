@@ -5,7 +5,7 @@
 #include "SoundRender_Emitter.h"
 #include "SoundRender_Source.h"
 
-void CSoundRender_Emitter::start(ref_sound* _owner, BOOL _loop, float delay)
+void CSoundRender_Emitter::start(ref_sound* _owner, bool _loop, float delay)
 {
 	starting_delay			= delay;
 
@@ -27,13 +27,13 @@ void CSoundRender_Emitter::start(ref_sound* _owner, BOOL _loop, float delay)
 		m_current_state		= _loop?stStartingLoopedDelayed:stStartingDelayed;
 		fTimeToPropagade	= SoundRender->Timer.GetElapsed_sec();
 	}
-	bStopping				=	FALSE;
-	bRewind					=	FALSE;
+	bStopping				=	false;
+	bRewind					=	false;
 }
 
 void CSoundRender_Emitter::i_stop()
 {
-	bRewind					=	FALSE;
+	bRewind					=	false;
 	if (target)	SoundRender->i_stop		(this);
 	if (owner_data){
 		Event_ReleaseOwner		(); 
@@ -44,15 +44,15 @@ void CSoundRender_Emitter::i_stop()
 	m_current_state = stStopped;
 }
 
-void CSoundRender_Emitter::stop	(BOOL bDeffered)
+void CSoundRender_Emitter::stop	(bool bDeffered)
 {
-	if (bDeffered)			bStopping=TRUE;
+	if (bDeffered)			bStopping=true;
 	else					i_stop();
 }
 
 void CSoundRender_Emitter::rewind()
 {
-	bStopping					=  FALSE;
+	bStopping					=  false;
 
 	float fTime					=  SoundRender->Timer.GetElapsed_sec();
 	float fDiff					=  fTime-fTimeStarted;
@@ -61,10 +61,10 @@ void CSoundRender_Emitter::rewind()
 	fTimeToPropagade			=  fTime;
 
 	set_cursor					(0);
-	bRewind						= TRUE;
+	bRewind						= true;
 }
 
-void CSoundRender_Emitter::pause(BOOL bVal, int id)
+void CSoundRender_Emitter::pause(bool bVal, int id)
 {
 	if (bVal)
 	{

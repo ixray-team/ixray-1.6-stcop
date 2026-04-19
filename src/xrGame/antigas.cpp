@@ -138,7 +138,7 @@ void IAntigas::AddSound(const char* snd_path, bool isFilter)
 
 void IAntigas::Load(const char* section)
 {
-	SetAllowed(READ_IF_EXISTS(pSettings, r_bool, section, "is_antigas", FALSE));
+	SetAllowed(READ_IF_EXISTS(pSettings, r_bool, section, "is_antigas", false));
 	if (IsAllowed())
 	{
 		if (pSettings->line_exist(section, "antigas_allow_filter_sections"))
@@ -399,7 +399,7 @@ bool IAntigas::InstallFilter(CInventoryItem* inventory_item)
 	SetFilterInstalledState(true);
 	UpdateState();
 
-	//inventory_item->SetDropManual(TRUE);
+	//inventory_item->SetDropManual(true);
 	//inventory_item->m_pInventory->DropItem(inventory_item->cast_game_object(), true, true);
 	
 	inventory_item->object().DestroyObject();

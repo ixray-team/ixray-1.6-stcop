@@ -125,11 +125,11 @@ void CLevelGraph::draw_nodes	()
 			u32	CT		= color_xrgb(LL,LL,LL);
 			u32	CH		= color_xrgb(0,128,0);
 
-			bool	bHL		= FALSE;
-			if (Nid==u32(ID))	{ bHL = TRUE; CT = color_xrgb(0,255,0); }
+			bool	bHL		= false;
+			if (Nid==u32(ID))	{ bHL = true; CT = color_xrgb(0,255,0); }
 			else {
 				for (u32 t=0; t<linked.size(); ++t) {
-					if (linked[t]==Nid) { bHL = TRUE; CT = CH; break; }
+					if (linked[t]==Nid) { bHL = true; CT = CH; break; }
 				}
 			}
 

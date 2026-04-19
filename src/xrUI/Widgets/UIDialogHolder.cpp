@@ -60,7 +60,7 @@ void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 		m_input_receivers.back().m_flags.set(recvItem::eIndicators, b);
 		
 		if(bDoHideIndicators){
-			psHUD_Flags.set				(HUD_CROSSHAIR_RT, FALSE);
+			psHUD_Flags.set				(HUD_CROSSHAIR_RT, false);
 			g_pGameCustom->ShowGameIndicators(false);
 		}
 	}
@@ -174,8 +174,8 @@ void  CDialogHolder::OnExternalHideIndicators()
 	xr_vector<recvItem>::iterator it_e = m_input_receivers.end();
 	for(;it!=it_e;++it)
 	{
-		(*it).m_flags.set(recvItem::eIndicators, FALSE);
-		(*it).m_flags.set(recvItem::eCrosshair, FALSE);
+		(*it).m_flags.set(recvItem::eIndicators, false);
+		(*it).m_flags.set(recvItem::eCrosshair, false);
 	}
 }
 

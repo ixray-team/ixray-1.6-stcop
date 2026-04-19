@@ -16,10 +16,10 @@ public:
 	{
 		thID				= _ID;
 		thProgress			= 0;
-		thCompleted			= FALSE;
-		thMessages			= TRUE;
-		thMonitor			= FALSE;
-		thDestroyOnComplete	= TRUE;
+		thCompleted			= false;
+		thMessages			= true;
+		thMonitor			= false;
+		thDestroyOnComplete	= true;
 	}
 	virtual				~CThread(){}
 	void				Start	()

@@ -160,7 +160,7 @@ xr_token					domain_token	[ ]={
 	{ "Blob",		   		PDBlob		},
 	{ "Disc",		  		PDDisc		},
 	{ "Rectangle",	   		PDRectangle	},
-	{ 0,					0		   	}
+	{ nullptr,					0		   	}
 };
 
 void PDomain::OnTypeChange(PropValue* sender)

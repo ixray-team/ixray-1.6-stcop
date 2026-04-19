@@ -58,11 +58,11 @@ void CLevel::remove_objects	()
 		for (int i=0; i<20; ++i) 
 		{
 			snd_Events.clear		();
-			psNET_Flags.set			(NETFLAG_MINIMIZEUPDATES,FALSE);
+			psNET_Flags.set			(NETFLAG_MINIMIZEUPDATES,false);
 			// ugly hack for checks that update is twice on frame
 			// we need it since we do updates for checking network messages
 			++(Device.dwFrame);
-			psDeviceFlags.set		(rsDisableObjectsAsCrows,TRUE);
+			psDeviceFlags.set		(rsDisableObjectsAsCrows,true);
 			ClientReceive			();
 			ProcessGameEvents		();
 			Objects.Update			(false);
@@ -96,7 +96,7 @@ void CLevel::remove_objects	()
 	stalker_animation_data_storage().clear		();
 	
 	VERIFY										(Render);
-	Render->models_Clear						(FALSE);
+	Render->models_Clear						(false);
 	
 	Render->clear_static_wallmarks				();
 
@@ -144,14 +144,14 @@ void CLevel::net_Stop()
 		g_tutorial2->Stop();
 
 	bReady						= false;
-	m_bGameConfigStarted		= FALSE;
+	m_bGameConfigStarted		= false;
 
 	if (m_file_transfer)
 		xr_delete(m_file_transfer);
 
 	if (IsDemoPlay() && m_current_spectator)	//destroying demo spectator ...
 	{
-		m_current_spectator->setDestroy	(TRUE);
+		m_current_spectator->setDestroy	(true);
 		SetControlEntity(nullptr); //m_current_spectator == CurrentControlEntity()
 		m_current_spectator = nullptr;
 		
@@ -162,7 +162,7 @@ void CLevel::net_Stop()
 	remove_objects				();
 	
 	//WARNING ! remove_objects() uses this flag, so position of this line must e here ..
-	game_configured				= FALSE;
+	game_configured				= false;
 	
 	IGame_Level::net_Stop		();
 	IPureClient::Disconnect		();
@@ -239,7 +239,7 @@ void CLevel::ClientSend()
 				if (P.B.count>9)				
 				{
 					if (!OnServer())
-						Send	(P, net_flags(FALSE));
+						Send	(P, net_flags(false));
 				}				
 			}			
 		}		
@@ -263,7 +263,7 @@ void CLevel::ClientSend()
 		if (P.B.count>2)
 		{
 			Device.Statistic->TEST3.Begin();
-				Send	(P, net_flags(FALSE));
+				Send	(P, net_flags(false));
 			Device.Statistic->TEST3.End();
 		}else
 			break;
@@ -296,7 +296,7 @@ void CLevel::ClientSave()
 
 		if (Packet.B.count > 2)
 		{
-			Send(Packet, net_flags(FALSE));
+			Send(Packet, net_flags(false));
 		}
 	}
 }
@@ -371,7 +371,7 @@ bool CLevel::Connect2Server(const char* options)
 		FS.auth_generate		(tmp_ignore, tmp_check);
 	}
 
-	if (!Connect(options))		return	FALSE;
+	if (!Connect(options))		return	false;
 	//---------------------------------------------------------------------------
 	if (psNET_direct_connect)
 	{
@@ -388,7 +388,7 @@ bool CLevel::Connect2Server(const char* options)
 			{
 				OnConnectRejected();
 				Disconnect();
-				return	FALSE;
+				return	false;
 			}
 		}
 
@@ -418,7 +418,7 @@ bool CLevel::Connect2Server(const char* options)
 			{
 				OnConnectRejected();
 				Disconnect();
-				return	FALSE;
+				return	false;
 			}
 		}
 	}
@@ -433,12 +433,12 @@ bool CLevel::Connect2Server(const char* options)
 		}
 		OnConnectRejected			();	
 		Disconnect					();
-		return FALSE		;
+		return false		;
 	};
 
 	
 	if(psNET_direct_connect)
-		net_Syncronised = TRUE;
+		net_Syncronised = true;
 	else
 		net_Syncronize	();
 
@@ -448,15 +448,15 @@ bool CLevel::Connect2Server(const char* options)
 		{
 			OnConnectRejected	();	
 			Disconnect			();
-			return FALSE;
+			return false;
 		}
 	};
 
 	//---------------------------------------------------------------------------
 	//P.w_begin	(M_CLIENT_REQUEST_CONNECTION_DATA);
-	//Send		(P, net_flags(TRUE, TRUE, TRUE, TRUE));
+	//Send		(P, net_flags(true, true, true, true));
 	//---------------------------------------------------------------------------
-	return TRUE;
+	return true;
 };
 
 void CLevel::OnBuildVersionChallenge()
@@ -470,7 +470,7 @@ void CLevel::OnBuildVersionChallenge()
 	u64 auth = FS.auth_get();
 #endif //#ifdef DEBUG
 	P.w_u64					(auth);
-	SecureSend				(P, net_flags(TRUE, TRUE, TRUE, TRUE));
+	SecureSend				(P, net_flags(true, true, true, true));
 };
 
 void CLevel::OnConnectResult(NET_Packet*	P)

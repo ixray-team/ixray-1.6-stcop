@@ -86,7 +86,7 @@ void  IConsole_Command::add_LRU_to_tips(vecTips& tips) {
 class CCC_Quit : public IConsole_Command
 {
 public:
-	CCC_Quit(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
+	CCC_Quit(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args) 
 	{
 		if (Device.IsEditorMode())
@@ -103,7 +103,7 @@ public:
 class CCC_MotionsStat : public IConsole_Command
 {
 public:
-	CCC_MotionsStat(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
+	CCC_MotionsStat(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args) {
 		//g_pMotionsContainer->dump();
 		//	TODO: move this console commant into renderer
@@ -113,7 +113,7 @@ public:
 class CCC_TexturesStat : public IConsole_Command
 {
 public:
-	CCC_TexturesStat(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
+	CCC_TexturesStat(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args) 
 	{
 		Device.DumpResourcesMemoryUsage();
@@ -123,7 +123,7 @@ public:
 class CCC_E_Dump : public IConsole_Command
 {
 public:
-	CCC_E_Dump(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
+	CCC_E_Dump(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args) {
 		g_pEventManager->Event.Dump();
 	}
@@ -146,7 +146,7 @@ public:
 class CCC_Help : public IConsole_Command
 {
 public:
-	CCC_Help(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_Help(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args) {
 		Log("- --- Command listing: start ---");
 		CConsole::vecCMD_IT it;
@@ -355,7 +355,7 @@ public:
 class CCC_Disconnect : public IConsole_Command
 {
 public:
-	CCC_Disconnect(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_Disconnect(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args) {
 		g_pEventManager->Event.Defer("KERNEL:disconnect");
 	}
@@ -364,7 +364,7 @@ public:
 class CCC_VID_Reset : public IConsole_Command
 {
 public:
-	CCC_VID_Reset(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_VID_Reset(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args) {
 		if (Device.b_is_Ready) {
 			Device.Reset	();
@@ -375,7 +375,7 @@ class CCC_VidMode : public CCC_Token
 {
 	u32		_dummy;
 public :
-					CCC_VidMode(const char* N) : CCC_Token(N, &_dummy, nullptr) { bEmptyArgsHandled = FALSE; };
+					CCC_VidMode(const char* N) : CCC_Token(N, &_dummy, nullptr) { bEmptyArgsHandled = false; };
 	virtual void	Execute(const char* args){
 		u32 _w, _h;
 		int cnt = sscanf		(args,"%dx%d",&_w,&_h);
@@ -426,7 +426,7 @@ public :
 class CCC_SND_Restart : public IConsole_Command
 {
 public:
-	CCC_SND_Restart(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_SND_Restart(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args) {
 		Sound->_restart();
 	}
@@ -469,7 +469,7 @@ extern	Fvector	g_DR_LM_Min, g_DR_LM_Max;
 class CCC_DR_ClearPoint : public IConsole_Command
 {
 public:
-	CCC_DR_ClearPoint(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_DR_ClearPoint(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args) {
 		g_DR_LM_Min.x = 1000000.0f;
 		g_DR_LM_Min.z = 1000000.0f;
@@ -484,7 +484,7 @@ public:
 class CCC_DR_TakePoint : public IConsole_Command
 {
 public:
-	CCC_DR_TakePoint(const char* N) : IConsole_Command(N)	{ bEmptyArgsHandled = TRUE; };
+	CCC_DR_TakePoint(const char* N) : IConsole_Command(N)	{ bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args) {
 		Fvector CamPos =  Device.vCameraPosition;
 
@@ -507,7 +507,7 @@ public:
 #endif
 */
 
-ENGINE_API bool r2_sun_static = TRUE;
+ENGINE_API bool r2_sun_static = true;
 
 u32	renderer_value	= 0;
 //void fill_render_mode_list();
@@ -678,7 +678,7 @@ class CCC_Profiler : public IConsole_Command
 {
 	bool start_profile = false;
 public:
-	CCC_Profiler(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	CCC_Profiler(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* args)
 	{
 		if (!start_profile)
@@ -846,8 +846,8 @@ void CCC_Register()
 		CMD1(CCC_r2, "renderer");
 	}
 	else {
-		psDeviceFlags.set(rsR2, TRUE);
-		psDeviceFlags.set(rsR4, FALSE);
+		psDeviceFlags.set(rsR2, true);
+		psDeviceFlags.set(rsR4, false);
 	}
 
 	CMD1(CCC_soundDevice, "snd_device"			);

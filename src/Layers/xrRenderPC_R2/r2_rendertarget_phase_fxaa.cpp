@@ -10,7 +10,7 @@ void CRenderTarget::phase_fxaa(u32 pass) {
     float ddh = 1.0f / _h;
 
     GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-    RCache.set_Stencil(FALSE);
+    RCache.set_Stencil(false);
 
     FVF::V* pv = (FVF::V*)RCache.Vertex.Lock(4, g_fxaa->vb_stride, Offset);
     pv->set(ddw - 0.5f, ddh + _h - 0.5f, 0.0f, 0.0f, 1.0f);

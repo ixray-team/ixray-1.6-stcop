@@ -29,7 +29,7 @@ void CDeflector::PrepareForLighting()
  
 	lm_layer& lm = layer;
  	// UV
-	RemapUV(0, 0, lm.width, lm.height, lm.width, lm.height, FALSE);
+	RemapUV(0, 0, lm.width, lm.height, lm.width, lm.height, false);
 
 	// Calculate
  	lm.create(lm.width, lm.height);
@@ -65,7 +65,7 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 				lm_layer& lm = layer;
 
 				// UV
-				RemapUV(0, 0, lm.width, lm.height, lm.width, lm.height, FALSE);
+				RemapUV(0, 0, lm.width, lm.height, lm.width, lm.height, false);
 
 
 				// Hash Initialize

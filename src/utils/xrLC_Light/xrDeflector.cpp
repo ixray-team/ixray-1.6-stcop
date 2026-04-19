@@ -108,7 +108,7 @@ CDeflector::CDeflector()
 	normal.set		(0,1,0);
 	Sphere.P.set	(flt_max,flt_max,flt_max);
 	Sphere.R		= 0;
-	bMerged			= FALSE;
+	bMerged			= false;
 	UVpolys.reserve	(32);
 }
 
@@ -206,13 +206,13 @@ bool CDeflector::OA_Place	(Face *owner)
 	float cosa = normal.dotproduct(owner->N);
 	VERIFY( inlc_global_data() );
 	if (cosa< std::cos(deg2rad(inlc_global_data()->g_params().m_sm_angle+1)))
-		return FALSE;
+		return false;
 
 	UVtri				T;
 	T.owner				= owner;
 	owner->pDeflector	= this;
 	UVpolys.push_back	(T);
-	return TRUE;
+	return true;
 }
 
 void CDeflector::OA_Place	(vecFace& lst)

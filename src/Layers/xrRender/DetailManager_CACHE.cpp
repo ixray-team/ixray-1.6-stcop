@@ -128,11 +128,11 @@ bool	CDetailManager::cache_Validate	()
 			int		w_z		= cg2w_Z(z);
 			Slot*	D		= cache[z][x];
 
-			if (D->sx	!= w_x)	return FALSE;
-			if (D->sz	!= w_z)	return FALSE;
+			if (D->sx	!= w_x)	return false;
+			if (D->sz	!= w_z)	return false;
 		}
 	}
-	return TRUE;
+	return true;
 }
 
 void	CDetailManager::cache_Update(Fvector& view)
@@ -206,9 +206,9 @@ void	CDetailManager::cache_Update(Fvector& view)
 		PROF_EVENT("cache_Decompress");
 		if (!ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))
 		{
-			bool	bFullUnpack = FALSE;
+			bool	bFullUnpack = false;
 			int limit = dm_max_decompress;
-			if (cache_task.size() == dm_cache_size) { limit = dm_cache_size; bFullUnpack = TRUE; }
+			if (cache_task.size() == dm_cache_size) { limit = dm_cache_size; bFullUnpack = true; }
 
 			for (int iteration = 0; cache_task.size() && (iteration < limit); iteration++) {
 				u32		best_id = 0;
@@ -260,13 +260,13 @@ void	CDetailManager::cache_Update(Fvector& view)
 			u32 _mz = index / dm_cache1_line;
 			u32 _mx = index % dm_cache1_line;
             CacheSlot1& MS 	= cache_level1[_mz][_mx];
-			MS.empty		= TRUE;
+			MS.empty		= true;
             MS.vis.clear	();
             for (int _i=0; _i<dm_cache_count; _i++)
 			{
                 Slot& 	S 		= **MS.slots[_i];
                 MS.vis.box.merge(S.vis.box);
-				if (!S.empty)	MS.empty = FALSE;
+				if (!S.empty)	MS.empty = false;
             }
             MS.vis.box.getsphere(MS.vis.sphere.P,MS.vis.sphere.R);
         }

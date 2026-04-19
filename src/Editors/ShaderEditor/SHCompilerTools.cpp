@@ -50,7 +50,7 @@ bool CSHCompilerTools::OnCreate()
 
 void CSHCompilerTools::OnDestroy()
 {
-    m_bModified = FALSE;
+    m_bModified = false;
 }
 
 void CSHCompilerTools::ApplyChanges(bool bForced)
@@ -90,7 +90,7 @@ bool CSHCompilerTools::Save()
     bool bRes = m_Library.Save(fn);
 
     if (bRes) 
-        m_bModified = FALSE;
+        m_bModified = false;
 
     return bRes;
 }

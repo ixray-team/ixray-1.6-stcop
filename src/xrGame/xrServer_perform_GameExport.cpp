@@ -16,7 +16,7 @@ void xrServer::Perform_game_export	()
 
 			R_ASSERT(server_ptr);
 			NET_Packet		P;
-			u32				mode				= net_flags(TRUE,TRUE);
+			u32				mode				= net_flags(true,true);
 			
 			xrClientData*	CL	= (xrClientData*)client;
 			if (!CL->net_Accepted)
@@ -28,13 +28,13 @@ void xrServer::Perform_game_export	()
 	};
 	NetExportToClientFunctor temp_functor(this);
 	ForEachClientDoSender(temp_functor);
-	game->sv_force_sync	= FALSE;
+	game->sv_force_sync	= false;
 }
 
 void xrServer::Export_game_type(IClient* CL)
 {
 	NET_Packet			P;
-	u32					mode = net_flags(TRUE,TRUE);
+	u32					mode = net_flags(true,true);
 	P.w_begin			(M_SV_CONFIG_NEW_CLIENT);
 	P.w_stringZ			(game->type_name() );
 	SendTo				(CL->ID,P,mode);

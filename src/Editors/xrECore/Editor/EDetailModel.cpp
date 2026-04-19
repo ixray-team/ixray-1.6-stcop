@@ -24,16 +24,16 @@ void EDetail::EVertexIn::remapUV(const fvfVertexIn& src, const Fvector2& offs, c
 
 EDetail::EDetail(bool lib)
 {
-	shader				= 0;
+	shader				= nullptr;
 	m_Flags.zero		();
-	m_pRefs				= 0;
+	m_pRefs				= nullptr;
 	m_fMinScale			= 0.5f;
 	m_fMaxScale   		= 2.f;
 	m_fDensityFactor	= 1.f;
 	m_sRefs				= "";
-	vertices			= 0;
+	vertices			= nullptr;
 	number_vertices		= 0;
-	indices				= 0;       
+	indices				= nullptr;       
 	number_indices		= 0;
 	m_bLoadFromLibrary = lib;
 }

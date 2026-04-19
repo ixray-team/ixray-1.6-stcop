@@ -34,7 +34,7 @@ void CRenderTarget::phase_bloom_downsample()
 
 	u_setrt(rt_Bloom_A, nullptr, nullptr, nullptr);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	RCache.set_Element(s_bloom_downsample->E[0]);
 	RCache.set_c("downsample_params", W, H, rW, rH);
@@ -54,7 +54,7 @@ void CRenderTarget::phase_bloom_downsample()
 
 	u_setrt(rt_Bloom_B, nullptr, nullptr, nullptr);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	RCache.set_Element(s_bloom_downsample->E[1]);
 	RCache.set_c("downsample_params", W, H, rW, rH);
@@ -74,7 +74,7 @@ void CRenderTarget::phase_bloom_downsample()
 
 	u_setrt(rt_Bloom_C, nullptr, nullptr, nullptr);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	RCache.set_Element(s_bloom_downsample->E[2]);
 	RCache.set_c("downsample_params", W, H, rW, rH);
@@ -94,7 +94,7 @@ void CRenderTarget::phase_bloom_downsample()
 
 	u_setrt(rt_Bloom_D, nullptr, nullptr, nullptr);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	RCache.set_Element(s_bloom_downsample->E[3]);
 	RCache.set_c("downsample_params", W, H, rW, rH);
@@ -114,7 +114,7 @@ void CRenderTarget::phase_bloom_downsample()
 
 	u_setrt(rt_Bloom_E, nullptr, nullptr, nullptr);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	RCache.set_Element(s_bloom_downsample->E[4]);
 	RCache.set_c("downsample_params", W, H, rW, rH);
@@ -134,7 +134,7 @@ void CRenderTarget::phase_bloom_downsample()
 
 	u_setrt(rt_Bloom_F, nullptr, nullptr, nullptr);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	RCache.set_Element(s_bloom_downsample->E[5]);
 	RCache.set_c("downsample_params", W, H, rW, rH);
@@ -154,7 +154,7 @@ void CRenderTarget::phase_bloom_downsample()
 
 	u_setrt(rt_Bloom_G, nullptr, nullptr, nullptr);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	RCache.set_Element(s_bloom_downsample->E[5]);
 	RCache.set_c("downsample_params", W, H, rW, rH);

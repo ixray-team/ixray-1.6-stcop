@@ -23,7 +23,7 @@ void CLevel::OnSecureKeySync	(NET_Packet & P)
 	NET_Packet	ack_key;
 	ack_key.w_begin		(M_SECURE_KEY_SYNC);
 	ack_key.w_s32		(new_seed); //this parameter only for DEBUG !
-	Send				(ack_key, net_flags(TRUE, TRUE, TRUE));
+	Send				(ack_key, net_flags(true, true, true));
 }
 
 void CLevel::SecureSend	(NET_Packet& P, u32 dwFlags, u32 dwTimeout)

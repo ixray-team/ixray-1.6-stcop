@@ -28,5 +28,5 @@ void* doug_lea_allocator::realloc_impl(void* pointer, size_t new_size)
 void doug_lea_allocator::free_impl(void*& pointer)
 {
 	dlfree(pointer);
-	pointer = 0;
+	pointer = nullptr;
 }

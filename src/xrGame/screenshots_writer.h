@@ -36,7 +36,7 @@ public:
 
 	u32	const write_info			(sha_process_yielder* yielder = NULL);
 private:
-	writer() : m_info_data(NULL, FALSE, FALSE, FALSE) {};
+	writer() : m_info_data(NULL, false, false, false) {};
 	
 	u8*			m_buffer;
 	u32			m_buffer_size;

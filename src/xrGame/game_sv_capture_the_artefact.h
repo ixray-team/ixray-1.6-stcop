@@ -251,7 +251,7 @@ public:
 	virtual void OnPlayerHitPlayer(u16 id_hitter, u16 id_hitted, NET_Packet& P);
 	virtual void OnPlayerHitPlayer_Case(game_PlayerState* ps_hitter, game_PlayerState* ps_hitted, SHit* pHitS);
 
-	virtual	bool OnTouch(u16 eid_who, u16 eid_target, bool bForced = FALSE);			// TRUE=allow ownership, FALSE=denied
+	virtual	bool OnTouch(u16 eid_who, u16 eid_target, bool bForced = false);			// true=allow ownership, false=denied
 	virtual	void OnDetach(u16 eid_who, u16 eid_target);
 	virtual	bool OnActivate(u16 eid_who, u16 eid_target);
 	virtual	void OnEvent(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );

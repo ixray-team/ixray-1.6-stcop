@@ -337,7 +337,7 @@ void	CActor::cam_Lookout	( const Fmatrix &xform, float camera_height )
 			//if (tri_count)		
 			{
 				float da		= 0.f;
-				bool bIntersect	= FALSE;
+				bool bIntersect	= false;
 				Fvector	ext		= {w,h,Device.fViewportNear /2};
 				Fvector				pt;
 				calc_gl_point	( pt, xform, radius, alpha );
@@ -352,7 +352,7 @@ void	CActor::cam_Lookout	( const Fmatrix &xform, float camera_height )
 						Fvector				pt_;
 						calc_gl_point( pt_, xform, radius, angle );
 						if (test_point( pt_, mat,ext, this )) 
-							{ bIntersect=TRUE; break; } 
+							{ bIntersect=true; break; } 
 					}
 					valid_angle	= bIntersect?angle:alpha;
 				} 

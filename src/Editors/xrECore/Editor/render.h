@@ -27,11 +27,11 @@ public:
 	}
 
 	virtual bool canBeDetailed() {
-		return FALSE;
+		return false;
 	}
 
 	virtual bool canBeLMAPped() {
-		return FALSE;
+		return false;
 	}
 
 	virtual void Compile(CBlender_Compile& C);
@@ -185,14 +185,14 @@ public:
 
 	void					reset_begin();
 	void					reset_end();
-	virtual IRenderVisual* model_Create(const char* name, IReader* data = 0);
+	virtual IRenderVisual* model_Create(const char* name, IReader* data = nullptr);
 	virtual IRenderVisual* model_CreateChild(const char* name, IReader* data);
 	virtual IRenderVisual* model_CreatePE(const char* name);
 	virtual IRenderVisual* model_CreateParticles(const char* name);
 
 	virtual IRender_DetailModel* model_CreateDM(IReader* R);
 	virtual IRenderVisual* model_Duplicate(IRenderVisual* V);
-	virtual void			model_Delete(IRenderVisual*& V, bool bDiscard = TRUE);
+	virtual void			model_Delete(IRenderVisual*& V, bool bDiscard = true);
 	virtual void			model_Delete(IRender_DetailModel*& F)
 	{
 		if (F)
@@ -200,7 +200,7 @@ public:
 			CDetail* D = (CDetail*)F;
 			D->Unload();
 			xr_delete(D);
-			F = NULL;
+			F = nullptr;
 		}
 	}
 	void 					model_Render(IRenderVisual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD);
@@ -221,7 +221,7 @@ public:
 
 	IC void apply_lmaterial() {
 		RHIShaderConstant* C = &*RCache.get_c("s_base"); // get sampler
-		if(0 == C)			return;
+		if(nullptr == C)			return;
 		VERIFY(RC_dest_sampler == C->destination);
 		VERIFY(RC_sampler == C->type);
 		CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));
@@ -291,7 +291,7 @@ public:
 
 	// Main
 
-	virtual void					Screenshot(ScreenshotMode mode = SM_NORMAL, const char* name = 0);
+	virtual void					Screenshot(ScreenshotMode mode = SM_NORMAL, const char* name = nullptr);
 	virtual	void					Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer);
 	virtual void					ScreenshotAsyncBegin();
 	virtual void					ScreenshotAsyncEnd(CMemoryWriter& memory_writer);

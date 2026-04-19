@@ -79,12 +79,12 @@ void CRenderTarget::phase_combine()
 	u_setrt(rt_Generic_0, 0, 0, RDepth);
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	// draw skybox
 	g_pGamePersistent->Environment().RenderClouds();
 
-	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);	// stencil should be >= 1
+	RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);	// stencil should be >= 1
 
 	if (RImplementation.o.nvstencil) {
 		u_stencil_optimize(CRenderTarget::SO_Combine);
@@ -171,7 +171,7 @@ void CRenderTarget::phase_combine()
 		phase_scene_forward();
 
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-		RCache.set_Stencil (FALSE);
+		RCache.set_Stencil (false);
 		RCache.set_ColorWriteEnable ();
 
 		RImplementation.render_forward	();
@@ -188,7 +188,7 @@ void CRenderTarget::phase_combine()
 	{
 		u32 count = RImplementation.mapDistort.size() + RImplementation.mapHUDDistort.size();
 		if((count < 1 && !_menu_pp)) {
-			bDistort= FALSE;
+			bDistort= false;
 		}
 		if(bDistort) {
 			GPU_EVENT(render_distort_objects);
@@ -197,7 +197,7 @@ void CRenderTarget::phase_combine()
 			RImplementation.rmNormal();
 			GRHI->ClearTarget(rt_Generic_1->pRT, ERTColor::Gray);
 			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-			RCache.set_Stencil(FALSE);
+			RCache.set_Stencil(false);
 			RCache.set_ColorWriteEnable();
 			RImplementation.r_dsgraph_render_distort();
 
@@ -232,14 +232,14 @@ void CRenderTarget::phase_combine()
 			GPU_EVENT(phase_fxaa);
 			phase_fxaa();
 
-			RCache.set_Stencil(FALSE);
+			RCache.set_Stencil(false);
 		}
 		else if(ps_r2_aa_type == 2) 
 		{
 			GPU_EVENT(phase_smaa);
 			phase_smaa();
 
-			RCache.set_Stencil(FALSE);
+			RCache.set_Stencil(false);
 		}
 		else if(ps_r2_aa_type == 3)
 		{
@@ -294,7 +294,7 @@ void CRenderTarget::phase_combine()
 
 	// HDR RT invalidated here
 	// Perform blooming filter and distortion if needed
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 	phase_bloom();
 
 	{
@@ -320,7 +320,7 @@ void CRenderTarget::phase_combine()
 	RImplementation.rmNormal();
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 	{
 		GPU_EVENT(combine_2);
 
@@ -344,7 +344,7 @@ void CRenderTarget::phase_combine()
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 3, 0, 1);
 	}
 
-	RCache.set_Stencil		(FALSE);
+	RCache.set_Stencil		(false);
 
 	//	if FP16-BLEND !not! supported - draw flares here, overwise they are already in the bloom target
 	g_pGamePersistent->Environment().RenderFlares();	// lens-flares
@@ -394,7 +394,7 @@ void CRenderTarget::phase_combine()
 	}
 	
 	//	Re-adapt luminance
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	//*** exposure-pipeline-clear
 	{
@@ -448,7 +448,7 @@ void CRenderTarget::phase_wallmarks()
 	// Targets
 	u_setrt(rt_Color, nullptr, nullptr, RDepth);
 	// Stencil	- draw only where stencil >= 0x1
-	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+	RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
 }

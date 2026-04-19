@@ -59,7 +59,7 @@ CSCompiler& CSCompiler::defSampler(const char* ResourceName)
 	if (0==xr_strcmp(ResourceName,"smp_base"))
 	{
 		//i_dx10Address( stage, D3DTADDRESS_WRAP);
-		//i_dx10FilterAnizo( stage, TRUE);
+		//i_dx10FilterAnizo( stage, true);
 		desc.AddressU = desc.AddressV = desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 		desc.Filter = D3D11_FILTER_ANISOTROPIC;
 		desc.MaxAnisotropy = ps_r__tf_Anisotropic;
@@ -82,7 +82,7 @@ CSCompiler& CSCompiler::defSampler(const char* ResourceName)
 	{
 		//i_dx10Address( stage, D3DTADDRESS_CLAMP);
 		//i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
-		//RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFILTER, TRUE);
+		//RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFILTER, true);
 		//RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFUNC, D3D_COMPARISON_LESS_EQUAL);
 		desc.AddressU = desc.AddressV = desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 		desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;

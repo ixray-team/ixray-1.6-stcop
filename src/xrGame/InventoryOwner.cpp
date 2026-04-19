@@ -70,7 +70,7 @@ void CInventoryOwner::Load(const char* section)
 	}
 
 	m_isFocusingOnNpc = READ_IF_EXISTS(pSettings, r_bool, section, "focus_on_npc", true);
-	m_need_osoznanie_mode = READ_IF_EXISTS(pSettings, r_bool, section, "need_osoznanie_mode", FALSE);
+	m_need_osoznanie_mode = READ_IF_EXISTS(pSettings, r_bool, section, "need_osoznanie_mode", false);
 }
 
 void CInventoryOwner::reload(const char* section)
@@ -114,7 +114,7 @@ bool CInventoryOwner::net_Spawn(CSE_Abstract* DC)
 	CGameObject* pThis = cast_game_object();
 	if (pThis == nullptr)
 	{
-		return FALSE;
+		return false;
 	}
 
 	CSE_Abstract* E = (CSE_Abstract*)(DC);
@@ -123,7 +123,7 @@ bool CInventoryOwner::net_Spawn(CSE_Abstract* DC)
 	{
 		CSE_ALifeTraderAbstract* pTrader = nullptr;
 		if (E) pTrader = smart_cast<CSE_ALifeTraderAbstract*>(E);
-		if (!pTrader) return FALSE;
+		if (!pTrader) return false;
 
 		R_ASSERT(pTrader->character_profile().size());
 
@@ -160,10 +160,10 @@ bool CInventoryOwner::net_Spawn(CSE_Abstract* DC)
 
 	if (!pThis->Local())
 	{
-		return TRUE;
+		return true;
 	}
 
-	return TRUE;
+	return true;
 }
 
 void CInventoryOwner::net_Destroy()
@@ -433,8 +433,8 @@ void CInventoryOwner::spawn_supplies()
 		pda->m_original_owner = (u16)game_object->ID();
 
 		NET_Packet P;
-		abstract->Spawn_Write(P, TRUE);
-		Level().Send(P, net_flags(TRUE));
+		abstract->Spawn_Write(P, true);
+		Level().Send(P, net_flags(true));
 		F_entity_Destroy(abstract);
 	}
 }
@@ -676,7 +676,7 @@ void CInventoryOwner::sell_useless_items()
 			}
 		}
 
-		item->SetDropManual(FALSE);
+		item->SetDropManual(false);
 		item->object().DestroyObject();
 	}
 }

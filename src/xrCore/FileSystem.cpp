@@ -10,28 +10,28 @@ EFS_Utils* xr_EFS = nullptr;
 xr_string	EFS_Utils::ExtractFileName(const char* src)
 {
 	string_path name;
-	_splitpath(src, 0, 0, name, 0);
+	_splitpath(src, nullptr, nullptr, name, nullptr);
 	return xr_string(name);
 }
 
 xr_string	EFS_Utils::ExtractFileExt(const char* src)
 {
 	string_path ext;
-	_splitpath(src, 0, 0, 0, ext);
+	_splitpath(src, nullptr, nullptr, nullptr, ext);
 	return xr_string(ext);
 }
 
 xr_string	EFS_Utils::ExtractFilePath(const char* src)
 {
 	string_path drive, dir;
-	_splitpath(src, drive, dir, 0, 0);
+	_splitpath(src, drive, dir, nullptr, nullptr);
 	return xr_string(drive) + dir;
 }
 
 xr_string	EFS_Utils::ExcludeBasePath(const char* full_path, const char* excl_path)
 {
 	const char* sub = strstr(full_path, excl_path);
-	if (0 != sub) 	return xr_string(sub + xr_strlen(excl_path));
+	if (nullptr != sub) 	return xr_string(sub + xr_strlen(excl_path));
 	else	   		return xr_string(full_path);
 }
 
@@ -127,7 +127,7 @@ bool EFS_Utils::GetOpenNameInternal(const char* initial, LPSTR buffer, int sz_bu
 	{
 		string_path		dr;
 		if (!(buffer[0] == '\\' && buffer[1] == '\\')) { // if !network
-			_splitpath(buffer, dr, 0, 0, 0);
+			_splitpath(buffer, dr, nullptr, nullptr, nullptr);
 
 			if (0 == dr[0])
 			{
@@ -228,7 +228,7 @@ bool EFS_Utils::GetSaveName(const char* initial, string_path& buffer, const char
 	if (xr_strlen(buffer)) {
 		string_path		dr;
 		if (!(buffer[0] == '\\' && buffer[1] == '\\')) { // if !network
-			_splitpath(buffer, dr, 0, 0, 0);
+			_splitpath(buffer, dr, nullptr, nullptr, nullptr);
 			if (0 == dr[0])	P._update(buffer, buffer);
 		}
 	}
