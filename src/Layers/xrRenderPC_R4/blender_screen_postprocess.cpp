@@ -37,15 +37,6 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
 
     switch (C.iElement)
     {
-        case ScreenPostProcessType::Vignette:
-            C.r_Pass("stub_screen_space", "vignette", FALSE, FALSE, FALSE);
-            break;
-        case ScreenPostProcessType::Aberration:
-            C.r_Pass("stub_screen_space", "chromatic_aberration", FALSE, FALSE, FALSE);
-            break;
-        case ScreenPostProcessType::Saturation:
-            C.r_Pass("stub_screen_space", "saturation", FALSE, FALSE, FALSE);
-            break;
         case ScreenPostProcessType::SinCity:
             C.r_Pass("stub_screen_space", "sincity", FALSE, FALSE, FALSE);
             break;

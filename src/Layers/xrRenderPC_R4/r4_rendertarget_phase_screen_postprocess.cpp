@@ -36,18 +36,6 @@ void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType, bool pos
     }
 }
 
-void CRenderTarget::PhaseAberration() {
-    RenderEffect(ScreenPostProcessType::Aberration);
-}
-
-void CRenderTarget::PhaseVignette() {
-    RenderEffect(ScreenPostProcessType::Vignette);
-}
-
-void CRenderTarget::PhaseSaturation() {
-    RenderEffect(ScreenPostProcessType::Saturation);
-}
-
 void CRenderTarget::PhaseSinCity() {
     RenderEffect(ScreenPostProcessType::SinCity);
 }
