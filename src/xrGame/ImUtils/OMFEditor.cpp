@@ -966,10 +966,12 @@ void RenderOMFEditor_Draw_TableMain_Params()
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
 
-		ImGui::DragFloat("Speed", &param.speed);
-		ImGui::DragFloat("Power", &param.power);
-		ImGui::DragFloat("Accrue", &param.accrue);
-		ImGui::DragFloat("Falloff", &param.falloff);
+		constexpr float _kMinSpeed = 0.001f;
+
+		ImGui::DragFloat("Speed", &param.speed, _kMinSpeed);
+		ImGui::DragFloat("Power", &param.power, _kMinSpeed);
+		ImGui::DragFloat("Accrue", &param.accrue, _kMinSpeed);
+		ImGui::DragFloat("Falloff", &param.falloff, _kMinSpeed);
 
 		ImGui::BeginDisabled(true);
 
