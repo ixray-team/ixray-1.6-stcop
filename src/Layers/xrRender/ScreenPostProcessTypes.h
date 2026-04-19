@@ -4,5 +4,6 @@ enum ScreenPostProcessType
 {
     Winter,
     SinCity,
-    GasMask
+    GasMask,
+    Raindrops
 };

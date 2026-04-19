@@ -90,3 +90,19 @@ void CRenderTarget::PhaseGasmask()
     // Copy resource
     RContext->CopyResource(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
 }
+
+void CRenderTarget::PhaseRaindrops()
+{
+    const float condition = g_pGamePersistent->ShaderParams.HelmetCondition;
+    if (condition < 0)
+    {
+        return;
+    }
+
+    if (g_pGamePersistent->Environment().wetness_factor < EPS_L)
+    {
+        return;
+    }
+
+    RenderEffect(ScreenPostProcessType::Raindrops);
+}

@@ -277,6 +277,7 @@ public:
 
 	void						RenderEffect			(ScreenPostProcessType postProcessType, bool = true);
 	void						PhaseSinCity();
+	void						PhaseRaindrops();
 	void						PhaseGasmask			();
 	void						PhaseWinter				();
 
