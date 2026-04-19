@@ -63,7 +63,7 @@ bool CLevel::Load_GameSpecific_Before()
 		m_electronics_problems_manager = new CElectronicsProblemsManager();
 	}
 
-	return (TRUE);
+	return (true);
 }
 
 bool CLevel::Load_GameSpecific_After()
@@ -104,7 +104,7 @@ bool CLevel::Load_GameSpecific_After()
 						
 			if ((g_pGamePersistent->m_game_params.m_e_game_type & EGameIDs(gametype_usage)) || (ver == 0))
 			{
-				auto pStaticParticles = Particles::Details::Create(ref_name,FALSE,false);
+				auto pStaticParticles = Particles::Details::Create(ref_name,false,false);
 				pStaticParticles->UpdateParent	(transform,zero_vel_);
 				pStaticParticles->Play			(false);
 				m_StaticParticles.push_back		(pStaticParticles);
@@ -142,7 +142,7 @@ bool CLevel::Load_GameSpecific_After()
 				Sound->create			(Sounds_Random.back(),*I->first,st_Effect,sg_SourceType);
 			}
 			Sounds_Random_dwNextTime= Device.TimerAsync	()	+ 50000;
-			Sounds_Random_Enabled	= FALSE;
+			Sounds_Random_Enabled	= false;
 		}
 
 		if (g_pGamePersistent->pEnvironment) {
@@ -187,7 +187,7 @@ bool CLevel::Load_GameSpecific_After()
 
 	g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(),game->GetEnvironmentGameTimeFactor());
 
-	return TRUE;
+	return true;
 }
 
 void CLevel::BlockCheatLoad()

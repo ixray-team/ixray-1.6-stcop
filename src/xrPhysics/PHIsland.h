@@ -30,18 +30,18 @@ public:
 
 			CPHIslandFlags					()	{init();}
 
-	IC void init							()	{flags.zero();flags.set(stActive,TRUE);unmerge();}
+	IC void init							()	{flags.zero();flags.set(stActive,true);unmerge();}
 	IC bool is_active						()	{return flags.test(stActive<<shift_to_variable);}
 
-	IC void set_prefere_exact_integration	()	{flags.set(flPrefereExactIntegration,TRUE);}
-	IC void uset_prefere_exact_integration	()	{flags.set(flPrefereExactIntegration,FALSE);}
+	IC void set_prefere_exact_integration	()	{flags.set(flPrefereExactIntegration,true);}
+	IC void uset_prefere_exact_integration	()	{flags.set(flPrefereExactIntegration,false);}
 
 	IC bool is_exact_integration_prefeared	()	{return flags.test(flPrefereExactIntegration<<shift_to_variable);}
 
 	IC void merge							(CPHIslandFlags& aflags) 
 	{
 		flags.flags |=  aflags.flags.flags & mask_static;
-		aflags.flags.set(stActive<<shift_to_variable,FALSE);
+		aflags.flags.set(stActive<<shift_to_variable,false);
 	}
 	IC void unmerge							()
 	{

@@ -41,7 +41,7 @@ void CTelekinesis<_Object>::Activate()
 		if (!obj || !obj->m_pPhysicsShell) continue;
 		
 		// отключить гравитацию
-		obj->m_pPhysicsShell->set_ApplyByGravity(FALSE);
+		obj->m_pPhysicsShell->set_ApplyByGravity(false);
 		
 		CTelekineticObject tele_object;
 

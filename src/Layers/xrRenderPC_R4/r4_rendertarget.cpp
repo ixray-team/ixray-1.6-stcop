@@ -129,7 +129,7 @@ void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
 {
 	//	TODO: DX10: remove half pixel offset?
 	VERIFY	(RImplementation.o.nvstencil);
-	//RCache.set_ColorWriteEnable	(FALSE);
+	//RCache.set_ColorWriteEnable	(false);
 	u32		Offset;
 	float	_w					= RCache.get_width();
 	float	_h					= RCache.get_height();
@@ -265,12 +265,12 @@ void	generate_jitter	(DWORD*	dest, u32 elem_count)
 	{
 		Ivector2	test;
 		test.set	(::Random.randI(0,256),::Random.randI(0,256));
-		bool		valid = TRUE;
+		bool		valid = true;
 		for (u32 t=0; t<samples.size(); t++)
 		{
 			int		dist	= std::abs(test.x-samples[t].x)+ std::abs(test.y-samples[t].y);
 			if (dist<32)	{
-				valid		= FALSE;
+				valid		= false;
 				break;
 			}
 		}

@@ -27,7 +27,7 @@ void rat_state_death::execute			()
 	if (object().m_fFood > 0.f)
 		return;
 
-	object().setEnabled			(FALSE);
+	object().setEnabled			(false);
 
 	NET_Packet					packet;
 	object().u_EventGen			(packet, GE_DESTROY, object().ID());

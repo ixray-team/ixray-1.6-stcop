@@ -432,7 +432,7 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
 	float	radius;		radius	= vis.sphere.R;
 	// light-tracing
 	bool	bTraceLights	= MODE & IRender_ObjectSpecific::TRACE_LIGHTS;
-	if		((!O->renderable_ShadowGenerate()) && (!O->renderable_ShadowReceive()))	bTraceLights = FALSE;
+	if		((!O->renderable_ShadowGenerate()) && (!O->renderable_ShadowReceive()))	bTraceLights = false;
 	if		(bTraceLights)	{
 		// Select nearest lights
 		Fvector					bb_size	=	{radius,radius,radius};

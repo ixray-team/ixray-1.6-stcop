@@ -181,7 +181,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 						{
 							pInput->acquire();
 							UI->IsEnableInput = false;
-							ShowCursor(FALSE);
+							ShowCursor(false);
 						}
 					}
 				}break;

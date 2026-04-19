@@ -77,7 +77,7 @@ bool SceneBuilder::BuildHOMModel()
 
 bool SceneBuilder::BuildSOMModel()
 {
-	bool bResult 	= TRUE;
+	bool bResult 	= true;
 	CMemoryWriter 	F;
 
 	F.open_chunk	(0);
@@ -101,7 +101,7 @@ bool SceneBuilder::BuildSOMModel()
 					if (gm_id==GAMEMTL_NONE_ID)
 					{ 
 						ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain invalid game material.", *(*m_it)->Name(), (*m_it)->Parent()->m_LibName.c_str(),surf->_Name());
-						bResult 		= FALSE; 
+						bResult 		= false; 
 						break; 
 					}
 					SGameMtl* mtl 		=  GameMaterialLibraryEditors->GetMaterialByID(gm_id);
@@ -109,7 +109,7 @@ bool SceneBuilder::BuildSOMModel()
 					if (0==mtl)
 					{
 						ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", *(*m_it)->Name(), (*m_it)->Parent()->m_LibName.c_str(),surf->_Name());
-						bResult 		= FALSE; 
+						bResult 		= false; 
 						break; 
 					}
 					bool b2Sided 		= surf->m_Flags.is(CSurface::sf2Sided);

@@ -427,33 +427,33 @@ void capped_cylinder_ray_collision_test()
 	dir.set(1,0,0);pos.set(0,0,0);R=3;
 	
 	//inside
-	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true , 1
-	RAYvsCYLINDER(c,pos,dir,R,TRUE);//false ,
+	RAYvsCYLINDER(c,pos,dir,R,false);//true , 1
+	RAYvsCYLINDER(c,pos,dir,R,true);//false ,
 	dir.set(0,0,1);
-	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true , 2
-	RAYvsCYLINDER(c,pos,dir,R,TRUE);//false
+	RAYvsCYLINDER(c,pos,dir,R,false);//true , 2
+	RAYvsCYLINDER(c,pos,dir,R,true);//false
 
 	//outside
 	pos.set(-3,0,0);dir.set(1,0,0);R=4;
-	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true , 2
-	RAYvsCYLINDER(c,pos,dir,R,TRUE);//true , 2
+	RAYvsCYLINDER(c,pos,dir,R,false);//true , 2
+	RAYvsCYLINDER(c,pos,dir,R,true);//true , 2
 	R=1;
-	RAYvsCYLINDER(c,pos,dir,R,FALSE);//false
+	RAYvsCYLINDER(c,pos,dir,R,false);//false
 	pos.set(0,0,-3);dir.set(0,0,1);R=4;
-	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true , 1
-	RAYvsCYLINDER(c,pos,dir,R,TRUE);//true, 1
+	RAYvsCYLINDER(c,pos,dir,R,false);//true , 1
+	RAYvsCYLINDER(c,pos,dir,R,true);//true, 1
 
 	pos.set(-3,-3,-3);dir.set(1,1,1);dir.normalize();R=10;
-	RAYvsCYLINDER(c,pos,dir,R,TRUE);//true, ?
+	RAYvsCYLINDER(c,pos,dir,R,true);//true, ?
 	float ir[2];
 	Fcylinder::ecode code[2];
 	c.intersect(pos,dir,ir,code);
 	//
 	pos.set(0,0,0);
-	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true, ?
+	RAYvsCYLINDER(c,pos,dir,R,false);//true, ?
 	//Fcylinder::ecode code[2];
 	c.intersect(pos,dir,ir,code);
-	RAYvsCYLINDER(c,pos,dir,R,TRUE);//false
+	RAYvsCYLINDER(c,pos,dir,R,true);//false
 	CTimer t;t.Start();
 	for(int i=0;i<1000000;i++)
 	{
@@ -465,7 +465,7 @@ void capped_cylinder_ray_collision_test()
 		//ray
 		Fvector dir_,pos_;float R_=Random.randF(0.1f,2.f);
 		dir_.random_dir();pos_.random_point(Fvector().set(2,2,2));
-		RAYvsCYLINDER(c_,pos_,dir_,R_,TRUE);
+		RAYvsCYLINDER(c_,pos_,dir_,R_,true);
 	}
 	Msg("my RAYvsCYLINDE time %f ms",t.GetElapsed_sec()*1000.f);
 	t.Start();

@@ -24,7 +24,7 @@ class CMULight : public CThread
 public:
 	CMULight(u32 ID) : CThread(ID)
 	{
-		thMessages = FALSE;
+		thMessages = false;
 	}
 
 	virtual void Execute()
@@ -62,7 +62,7 @@ class CMULightCalculation : public CThread
 public:
 	CMULightCalculation(u32 ID) : CThread(ID)
 	{
-		thMessages = FALSE;
+		thMessages = false;
 	}
 
 	virtual void	Execute()

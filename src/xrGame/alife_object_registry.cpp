@@ -34,7 +34,7 @@ void CALifeObjectRegistry::save				(IWriter &memory_stream, CSE_ALifeDynamicObje
 
 	NET_Packet					tNetPacket;
 	// Spawn
-	object->Spawn_Write			(tNetPacket,TRUE);
+	object->Spawn_Write			(tNetPacket,true);
 	memory_stream.w_u16			(u16(tNetPacket.B.count));
 	memory_stream.w				(tNetPacket.B.data,tNetPacket.B.count);
 

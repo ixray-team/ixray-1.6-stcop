@@ -7,7 +7,7 @@
 CParticlesObject::CParticlesObject(const char* p_name, bool bAutoRemove, bool destroy_on_game_load) :
 	m_bAutoRemove(bAutoRemove), m_destroy_on_game_load(destroy_on_game_load)
 {
-	renderable.pROS_Allowed = FALSE;
+	renderable.pROS_Allowed = false;
 	dwLastTime = Device.dwTimeGlobal;
 
 	float time_limit = 1.0f;
@@ -40,7 +40,7 @@ CParticlesObject::CParticlesObject(const char* p_name, bool bAutoRemove, bool de
 	// spatial
 	SpatialComponent->spatial.type = ESPATIAL_TYPE::NONE;
 	SpatialComponent->spatial.sector = nullptr;
-	renderable.pROS_Allowed = FALSE;
+	renderable.pROS_Allowed = false;
 }
 
 extern ENGINE_API xr_atomic_bool g_bRendering;
@@ -124,7 +124,7 @@ void CParticlesObject::Update(u32 _dt, CFrustum& viewbase)
 	if (m_bPlaying && !IsPlaying())
 	{
 		if(m_bAutoStop)
-			Stop(FALSE);
+			Stop(false);
 
 		if (ESPATIAL_TYPE::NONE != SpatialComponent->spatial.type)
 		{
@@ -181,7 +181,7 @@ void CParticlesObject::SetXFORM(const Fmatrix& m)
 	if(g_dedicated_server || renderable.visual == nullptr) return;
 
 	IParticleCustom* V = renderable.visual->dcast_ParticleCustom(); VERIFY(V);
-	V->UpdateParent(m,zero_vel,TRUE);
+	V->UpdateParent(m,zero_vel,true);
 	renderable.xform.set(m);
 }
 
@@ -209,7 +209,7 @@ void CParticlesObject::UpdateParent(const Fmatrix& m, const Fvector& vel)
 		return;
 
 	IParticleCustom* V = renderable.visual->dcast_ParticleCustom(); VERIFY(V);
-	V->UpdateParent(m,vel,FALSE);
+	V->UpdateParent(m,vel,false);
 }
 
 Fvector& CParticlesObject::Position()

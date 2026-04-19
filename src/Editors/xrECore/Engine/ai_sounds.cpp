@@ -25,5 +25,5 @@ xr_token anomaly_type_token[]={
 	{ "Object colliding",		SOUND_TYPE_WORLD_OBJECT_COLLIDING	},
 	{ "Object exploding",		SOUND_TYPE_WORLD_OBJECT_EXPLODING	},
 	{ "World ambient",			SOUND_TYPE_WORLD_AMBIENT			},
-	{ 0,						0}
+	{ nullptr,						0}
 };

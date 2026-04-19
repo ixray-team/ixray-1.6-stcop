@@ -79,7 +79,7 @@ void	game_sv_mp_script::SpawnPlayer				(ClientID id, const char* N, const char* 
 			pOldSpectator->owner = (xrClientData*)m_server->GetServerClient();
 			NET_Packet			P;
 			u_EventGen			(P,GE_DESTROY,pOldSpectator->ID);
-			Level().Send(P,net_flags(TRUE,TRUE));
+			Level().Send(P,net_flags(true,true));
 		};
 	}
 

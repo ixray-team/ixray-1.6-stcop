@@ -38,7 +38,7 @@ static void check(Vertex* vE1, Vertex* vE2, Vertex* vTEST)
 {
 	if (_sqrt(SqrDistance2Segment(vTEST->P,vE1->P,vE2->P))<0.002f)	
 	{
-		bool bWeld = FALSE;
+		bool bWeld = false;
 		
 		// check for duplicated errors
 		if (vE1>vE2)	std::swap(vE1,vE2);
@@ -46,7 +46,7 @@ static void check(Vertex* vE1, Vertex* vE2, Vertex* vTEST)
 		{
 			record&	rec = (*vecJunctions)[i];
 			if (rec.T==vTEST)						return;
-			if (rec.T->P.similar(vTEST->P,.002f))	bWeld = TRUE;
+			if (rec.T->P.similar(vTEST->P,.002f))	bWeld = true;
 		}
 		
 		// register

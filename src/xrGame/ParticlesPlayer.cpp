@@ -29,7 +29,7 @@ TParticlesPlayer::SParticlesInfo* TParticlesPlayer::SBoneInfo::AppendParticles(C
 	if (pi)				return pi;
 	particles.push_back	(SParticlesInfo());
 	pi					= &particles.back();
-	pi->ps				= Particles::Details::Create(*ps_name,FALSE);
+	pi->ps				= Particles::Details::Create(*ps_name,false);
 	return pi;
 }
 void TParticlesPlayer::SBoneInfo::StopParticles(const shared_str& ps_name, bool bDestroy)

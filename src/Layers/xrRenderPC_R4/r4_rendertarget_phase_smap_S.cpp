@@ -15,12 +15,12 @@ void CRenderTarget::phase_smap_spot		(light* L)
 
 	// Misc - draw only front-faces //back-faces
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	// no transparency
 	#pragma todo("can optimize for multi-lights covering more than say 50%...")
 
-	RCache.set_ColorWriteEnable(FALSE);
+	RCache.set_ColorWriteEnable(false);
 }
 
 void	CRenderTarget::phase_smap_spot_tsh	(light* L)

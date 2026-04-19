@@ -128,7 +128,7 @@ protected:
 	virtual CBoneData*			CreateBoneData			(u16 ID){return new CBoneData(ID);}
 	virtual void				IBoneInstances_Create	();
 	virtual void				IBoneInstances_Destroy	();
-	void						Visibility_Invalidate	()	{ Update_Visibility=TRUE; };
+	void						Visibility_Invalidate	()	{ Update_Visibility=true; };
 	void						Visibility_Update		()	;
 
     void						LL_Validate				();
@@ -230,7 +230,7 @@ public:
 		result.mulA_43(xform);
 	}
 
-	ICF void CalculateBBox(bool bforce = TRUE)
+	ICF void CalculateBBox(bool bforce = true)
 	{
 		if (!bforce && Device.dwFrame == Visibox_frame)
 			return;
@@ -287,7 +287,7 @@ public:
 	void							LL_SetBonesVisibleAll() { visimask.set_all(); };
 
 	// Main functionality
-	virtual void					CalculateBones				(bool bForceExact	=	FALSE);		// Recalculate skeleton
+	virtual void					CalculateBones				(bool bForceExact	=	false);		// Recalculate skeleton
 	void							CalculateBones_Invalidate	();
 	void							Callback					(UpdateCallback C, void* Param)		{	Update_Callback	= C; Update_Callback_Param	= Param;	}
 
@@ -315,7 +315,7 @@ public:
 	virtual void					Depart				();
     virtual void 					Release				();
 
-	virtual	IKinematicsAnimated*dcast_PKinematicsAnimated() { return 0;	}
+	virtual	IKinematicsAnimated*dcast_PKinematicsAnimated() { return nullptr;	}
 	virtual IRenderVisual*	_BCL dcast_RenderVisual() { return this; }
 	virtual IKinematics*	_BCL dcast_PKinematics()  { return this; }
 //	virtual	CKinematics*		dcast_PKinematics	()				{ return this;	}
@@ -335,6 +335,6 @@ private:
 	bool						m_is_original_lod;
 
 };
-IC CKinematics* PCKinematics		(dxRender_Visual* V)		{ return V?(CKinematics*)V->dcast_PKinematics():0; }
+IC CKinematics* PCKinematics		(dxRender_Visual* V)		{ return V?(CKinematics*)V->dcast_PKinematics():nullptr; }
 //---------------------------------------------------------------------------
 #endif

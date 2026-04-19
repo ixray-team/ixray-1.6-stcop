@@ -128,19 +128,19 @@ void CLightProjector::calculate	()
 	for (u32 r_it=0; r_it<receivers.size(); r_it++)
 	{
 		// validate
-		BOOL				bValid	= TRUE;
+		bool bValid	= true;
 		IRenderable*		O		= receivers[r_it];
 		CROS_impl*			LT		= (CROS_impl*)O->renderable_ROS();
 		int					slot	= LT->shadow_recv_slot;
-		if (slot<0 || slot>=P_o_count)								bValid = FALSE;	// invalid slot
-		else if (cache[slot].O!=O)									bValid = FALSE;	// not the same object
+		if (slot<0 || slot>=P_o_count)								bValid = false;	// invalid slot
+		else if (cache[slot].O!=O)									bValid = false;	// not the same object
 		else {
 			// seems to be valid
 			Fbox	bb;		bb.xform		(O->renderable.visual->getVisData().box,O->renderable.xform);
 			if (cache[slot].BB.contains(bb))	{
 				// inside, but maybe timelimit exceeded?
-				if (Device.dwTimeGlobal > cache[slot].dwTimeValid)	bValid = FALSE;	// timeout
-			} else													bValid = FALSE;	// out of bounds
+				if (Device.dwTimeGlobal > cache[slot].dwTimeValid)	bValid = false;	// timeout
+			} else													bValid = false;	// out of bounds
 		}
 
 		// 
@@ -292,7 +292,7 @@ void CLightProjector::calculate	()
 			spatial->spatial_updatesector			();
 			if (spatial->spatial.sector)			RImplementation.r_dsgraph_render_R1_box	(spatial->spatial.sector,BB,SE_R1_LMODELS);
 		}
-		//if (spatial)		RImplementation.r_dsgraph_render_subspace	(spatial->spatial.sector,mCombine,v_C,FALSE);
+		//if (spatial)		RImplementation.r_dsgraph_render_subspace	(spatial->spatial.sector,mCombine,v_C,false);
 	}
 
 	// Blur

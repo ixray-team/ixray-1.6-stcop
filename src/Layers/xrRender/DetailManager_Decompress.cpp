@@ -150,7 +150,7 @@ void CDetailManager::cache_Decompress(Slot* S)
 RDEVICE.Statistic->TEST0.Begin	();
 					I.e_obj->GetFaceWorld(I.s_obj->_Transform(),I.e_mesh,I.inf[k].id,verts);
 RDEVICE.Statistic->TEST0.End		();
-					if (CDB::TestRayTri(Item_P,dir,verts,r_u,r_v,r_range,TRUE))
+					if (CDB::TestRayTri(Item_P,dir,verts,r_u,r_v,r_range,true))
 					{
 						if (r_range>=0)	{
 							float y_test	= Item_P.y - r_range;
@@ -177,7 +177,7 @@ RDEVICE.Statistic->TEST0.End		();
 						break;
 					}
 				}
-				if (CDB::TestRayTri(Item_P,dir, R.verts,r_u,r_v,r_range,TRUE))
+				if (CDB::TestRayTri(Item_P,dir, R.verts,r_u,r_v,r_range,true))
 				{
 					if (r_range>=0)
 					{

@@ -89,7 +89,7 @@ bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 		map_data.m_map_download_url = download_url;
 		map_data.m_map_loaded = true;
 
-		deny_m_spawn = FALSE;
+		deny_m_spawn = false;
 		Device.seqRender.Add(this);
 		Device.seqFrame.Add(this);
 		R_ASSERT(Load_GameSpecific_Before());
@@ -137,8 +137,8 @@ bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 		}
 	}
 
-	deny_m_spawn = TRUE;
-	sended_request_connection_data = FALSE;
+	deny_m_spawn = true;
+	sended_request_connection_data = false;
 
 	{
 		IReader F(nullptr, 0, 0);
@@ -169,20 +169,20 @@ bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 
 		g_pGamePersistent->LoadTitle();
 		Device.PreCache(60, true, true);
-		net_start_result_total = TRUE;
+		net_start_result_total = true;
 
 	}
 	else
 	{
-		net_start_result_total = FALSE;
+		net_start_result_total = false;
 	}
 
 	if (net_start_result_total)
 	{
 		NET_Packet		NP;
 		NP.w_begin(M_CLIENTREADY);
-		Game().local_player->net_Export(NP, TRUE);
-		Send(NP, net_flags(TRUE, TRUE));
+		Game().local_player->net_Export(NP, true);
+		Send(NP, net_flags(true, true));
 
 		if (OnClient() && Server)
 		{
@@ -213,7 +213,7 @@ bool CLevelEditor::net_Start(const char* op_server, const char* op_client)
 	if (CurrentGameUI())
 		CurrentGameUI()->OnConnected();
 
-	return TRUE;
+	return true;
 }
 
 void CLevelEditor::LoadEditor(shared_str LevelName)

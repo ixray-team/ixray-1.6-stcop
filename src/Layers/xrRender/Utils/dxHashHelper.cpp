@@ -59,7 +59,7 @@ void dxHashHelper::Crc32Init()
 	//if (!crc32_ready)	
 	//{
 	//	crc32_init	();
-	//	crc32_ready	= TRUE;
+	//	crc32_ready	= true;
 	//}
 
 	// Pass a text string to this function and it will return the CRC. 

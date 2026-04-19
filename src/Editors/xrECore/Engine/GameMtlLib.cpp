@@ -257,7 +257,7 @@ void SGameMtl::Save(IWriter& fs)
 
 IC SGameMtlPair* GetLastParentValue(SGameMtlPair* who, u32 flag)
 {
-    if (!who)					return 0;
+    if (!who)					return nullptr;
     if ((GAMEMTL_NONE_ID == who->GetParent()) || (who->OwnProps.is(flag))) return who;
     else						return GetLastParentValue(who->m_Owner->GetMaterialPair(who->GetParent()), flag);
 }
@@ -276,25 +276,25 @@ void SGameMtlPair::Save(IWriter& fs)
     // copy from parent
     if (ID_parent != GAMEMTL_NONE_ID) {
         SGameMtlPair* P;
-        if ((0 != (P = GetLastParentValue(this, flBreakingSounds))) && (P != this))
+        if ((nullptr != (P = GetLastParentValue(this, flBreakingSounds))) && (P != this))
             BreakingSounds = P->BreakingSounds;
-        if ((0 != (P = GetLastParentValue(this, flStepSounds))) && (P != this))
+        if ((nullptr != (P = GetLastParentValue(this, flStepSounds))) && (P != this))
             StepSounds = P->StepSounds;
-        if ((0 != (P = GetLastParentValue(this, flCollideSounds))) && (P != this))
+        if ((nullptr != (P = GetLastParentValue(this, flCollideSounds))) && (P != this))
             CollideSounds = P->CollideSounds;
-        if ((0 != (P = GetLastParentValue(this, flCollideParticles))) && (P != this))
+        if ((nullptr != (P = GetLastParentValue(this, flCollideParticles))) && (P != this))
             CollideParticles = P->CollideParticles;
-        if ((0 != (P = GetLastParentValue(this, flCollideMarks))) && (P != this))
+        if ((nullptr != (P = GetLastParentValue(this, flCollideMarks))) && (P != this))
             EditorProp->CollideMarks = P->EditorProp->CollideMarks;
     }
     /*
         else{
             OwnProps.zero();
-            if (!BreakingSounds.IsEmpty())	OwnProps.set(flBreakingSounds,TRUE);
-            if (!StepSounds.IsEmpty())		OwnProps.set(flStepSounds,TRUE);
-            if (!CollideSounds.IsEmpty())	OwnProps.set(flCollideSounds,TRUE);
-            if (!CollideParticles.IsEmpty())OwnProps.set(flCollideParticles,TRUE);
-            if (!CollideMarks.IsEmpty())	OwnProps.set(flCollideMarks,TRUE);
+            if (!BreakingSounds.IsEmpty())	OwnProps.set(flBreakingSounds,true);
+            if (!StepSounds.IsEmpty())		OwnProps.set(flStepSounds,true);
+            if (!CollideSounds.IsEmpty())	OwnProps.set(flCollideSounds,true);
+            if (!CollideParticles.IsEmpty())OwnProps.set(flCollideParticles,true);
+            if (!CollideMarks.IsEmpty())	OwnProps.set(flCollideMarks,true);
         }
     */
     // save    
@@ -322,7 +322,7 @@ GameMtlPairIt CGameMtlLibrary::GetMaterialPairIt(int id)
 SGameMtlPair* CGameMtlLibrary::GetMaterialPair(int id)
 {
     GameMtlPairIt it = GetMaterialPairIt(id);
-    return it != material_pairs.end() ? *it : 0;
+    return it != material_pairs.end() ? *it : nullptr;
 }
 GameMtlPairIt CGameMtlLibrary::GetMaterialPairIt(int mtl0, int mtl1)
 {
@@ -333,7 +333,7 @@ GameMtlPairIt CGameMtlLibrary::GetMaterialPairIt(int mtl0, int mtl1)
 SGameMtlPair* CGameMtlLibrary::GetMaterialPair(int mtl0, int mtl1)
 {
     GameMtlPairIt it = GetMaterialPairIt(mtl0, mtl1);
-    return it != material_pairs.end() ? *it : 0;
+    return it != material_pairs.end() ? *it : nullptr;
 }
 SGameMtlPair* CGameMtlLibrary::GetMaterialPair(const char* name)
 {
@@ -341,9 +341,9 @@ SGameMtlPair* CGameMtlLibrary::GetMaterialPair(const char* name)
         int mtl0, mtl1;
         NameToMtlPair(name, mtl0, mtl1);
         GameMtlPairIt it = GetMaterialPairIt(mtl0, mtl1);
-        return it != material_pairs.end() ? *it : 0;
+        return it != material_pairs.end() ? *it : nullptr;
     }
-    return 0;
+    return nullptr;
 }
 
 void CGameMtlLibrary::NameToMtlPair(const char* name, int& mtl0, int& mtl1)

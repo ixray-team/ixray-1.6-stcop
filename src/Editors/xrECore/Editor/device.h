@@ -66,7 +66,7 @@ public:
 	virtual ~CEditorRenderDevice();
 
 
-	virtual bool Paused() const { return FALSE; };
+	virtual bool Paused() const { return false; };
 	void time_factor(float);
 	bool Create();
 	void Destroy();

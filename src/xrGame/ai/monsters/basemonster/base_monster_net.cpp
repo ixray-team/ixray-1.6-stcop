@@ -97,15 +97,15 @@ void CBaseMonster::SyncRead(NET_Packet& Packet)
 		{
 			CStepManager::on_animation_start
 			(
-				motion, ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_GetMotionDef(motion)->bone_or_part, motion, TRUE,
+				motion, ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_GetMotionDef(motion)->bone_or_part, motion, true,
 				ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
-				ik_anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0)
+				ik_anim_obj->LL_GetMotionDef(motion)->Speed(), false, 0, 0, 0)
 			);
 		}
 	}
 	
-	setVisible(TRUE);
-	setEnabled(TRUE);
+	setVisible(true);
+	setEnabled(true);
 
 	Flags8 flags;
 	flags.zero();
@@ -242,7 +242,7 @@ void CBaseMonster::net_Import(NET_Packet& P)
 
 	if(NET.empty() || (NET.back().dwTimeStamp < N.dwTimeStamp)) {
 		NET.push_back(N);
-		NET_WasInterpolating = TRUE;
+		NET_WasInterpolating = true;
 	}
 
 	float f1 = 0;
@@ -257,8 +257,8 @@ void CBaseMonster::net_Import(NET_Packet& P)
 		P.r(&f1, sizeof(f1));
 	}
 
-	setVisible(TRUE);
-	setEnabled(TRUE);
+	setVisible(true);
+	setEnabled(true);
 }
 
 void CBaseMonster::net_Export_Sounds(NET_Packet& P) {

@@ -19,7 +19,7 @@ bool is_device_paused(CRenderDeviceData* d)
 
 void set_device_paused(CRenderDeviceData* d, bool b)
 {
-	Device.Pause(b, TRUE, FALSE,"set_device_paused_script");
+	Device.Pause(b, true, false,"set_device_paused_script");
 }
 
 extern ENGINE_API bool g_appLoaded;

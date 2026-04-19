@@ -73,11 +73,11 @@ public:
 	// Detects if this box intersect other
 	ICF	bool	intersect(SelfCRef box )
 	{
-		if( max.x < box.min.x )	return FALSE;
-		if( max.y < box.min.y )	return FALSE;
-		if( min.x > box.max.x )	return FALSE;
-		if( min.y > box.max.y )	return FALSE;
-		return TRUE;
+		if( max.x < box.min.x )	return false;
+		if( max.y < box.min.y )	return false;
+		if( min.x > box.max.x )	return false;
+		if( min.y > box.max.y )	return false;
+		return true;
 	};
 
 	// Make's this box valid AABB
@@ -148,7 +148,7 @@ public:
 
 	ICF u32& IR(T &x) { return (u32&)x; }
 	ICF bool Pick2(const Tvector& origin, const Tvector& dir, Tvector& coord){
-		bool Inside = TRUE;
+		bool Inside = true;
 		Tvector	MaxT;
 		MaxT.x=MaxT.y=-1.0f;
 		
@@ -156,22 +156,22 @@ public:
 		{
 			if(origin[0] < min[0]) {
 				coord[0]	= min[0];
-				Inside		= FALSE;
+				Inside		= false;
 				if(IR(dir[0]))	MaxT[0] = (min[0] - origin[0]) / dir[0]; // Calculate T distances to candidate planes
 			} else if(origin[0] > max[0]) {
 				coord[0]	= max[0];
-				Inside		= FALSE;
+				Inside		= false;
 				if(IR(dir[0]))	MaxT[0] = (max[0] - origin[0]) / dir[0]; // Calculate T distances to candidate planes
 			}
 		}
 		{
 			if(origin[1] < min[1]) {
 				coord[1]	= min[1];
-				Inside		= FALSE;
+				Inside		= false;
 				if(IR(dir[1]))	MaxT[1] = (min[1] - origin[1]) / dir[1]; // Calculate T distances to candidate planes
 			} else if(origin[1] > max[1]) {
 				coord[1]	= max[1];
-				Inside		= FALSE;
+				Inside		= false;
 				if(IR(dir[1]))	MaxT[1] = (max[1] - origin[1]) / dir[1]; // Calculate T distances to candidate planes
 			}
 		}
