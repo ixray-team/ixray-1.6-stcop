@@ -57,7 +57,7 @@ BOOL APIENTRY DllMain		(HANDLE module_handle, DWORD call_reason, LPVOID reserved
 //			g_temporary_stuff			= &trivial_encryptor::decode;
 
 			Debug._initialize(false);
- 			Core._initialize("xrSE_Factory",NULL,TRUE,"fsfactory.ltx");
+ 			Core._initialize("xrSE_Factory",NULL,true,"fsfactory.ltx");
 			string_path SYSTEM_LTX;
 			FS.update_path(SYSTEM_LTX,"$game_config$","system.ltx");
 			pSettings = new CInifile(SYSTEM_LTX);
@@ -84,7 +84,7 @@ BOOL APIENTRY DllMain		(HANDLE module_handle, DWORD call_reason, LPVOID reserved
 			break;
 		}
 	}
-    return				(TRUE);
+    return				(true);
 }
 
 void _destroy_item_data_vector_cont(T_VECTOR* vec)

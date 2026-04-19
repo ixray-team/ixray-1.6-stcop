@@ -16,7 +16,7 @@ bool CPluginPython::IsPythonInstalled() const
 xr_string CPluginPython::RunCommand(const xr_string& command)
 {
 	HANDLE hRead, hWrite;
-	SECURITY_ATTRIBUTES sa = { sizeof(SECURITY_ATTRIBUTES), nullptr, TRUE };
+	SECURITY_ATTRIBUTES sa = { sizeof(SECURITY_ATTRIBUTES), nullptr, true };
 
 	// Создаем анонимный канал (pipe)
 	if (!CreatePipe(&hRead, &hWrite, &sa, 0))
@@ -38,7 +38,7 @@ xr_string CPluginPython::RunCommand(const xr_string& command)
 	FS.update_path(Root, "$fs_root$", "");
 
 	// Создаем процесс
-	if (!CreateProcessA(nullptr, const_cast<char*>(cmd.c_str()), nullptr, nullptr, TRUE, CREATE_NO_WINDOW, nullptr, Root, &si, &pi))
+	if (!CreateProcessA(nullptr, const_cast<char*>(cmd.c_str()), nullptr, nullptr, true, CREATE_NO_WINDOW, nullptr, Root, &si, &pi))
 	{
 		CloseHandle(hRead);
 		CloseHandle(hWrite);

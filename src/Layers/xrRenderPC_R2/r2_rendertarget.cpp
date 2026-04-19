@@ -41,10 +41,10 @@ void	CRenderTarget::u_setrt			(u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRende
 //	RImplementation.rmNormal				();
 }
 
-void	CRenderTarget::u_stencil_optimize	(BOOL		common_stencil)
+void	CRenderTarget::u_stencil_optimize	(bool		common_stencil)
 {
 	VERIFY	(RImplementation.o.nvstencil);
-	RCache.set_ColorWriteEnable	(FALSE);
+	RCache.set_ColorWriteEnable	(false);
 	u32		Offset;
 	float	_w					= float(RCache.get_width());
 	float	_h					= float(RCache.get_height());
@@ -57,7 +57,7 @@ void	CRenderTarget::u_stencil_optimize	(BOOL		common_stencil)
 	pv->set						(float(_w+eps),	eps,			eps,	1.f, C, 0, 0);	pv++;
 	RCache.Vertex.Unlock		(4,g_combine->vb_stride);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	if (common_stencil)			RCache.set_Stencil	(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);	// keep/keep/keep
+	if (common_stencil)			RCache.set_Stencil	(true,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);	// keep/keep/keep
 	RCache.set_Element			(s_occq->E[1]	);
 	RCache.set_Geometry			(g_combine		);
 	RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
@@ -164,12 +164,12 @@ void	generate_jitter	(DWORD*	dest, u32 elem_count)
 	{
 		Ivector2	test;
 		test.set	(::Random.randI(0,256),::Random.randI(0,256));
-		BOOL		valid = TRUE;
+		bool		valid = true;
 		for (u32 t=0; t<samples.size(); t++)
 		{
 			int		dist	= std::abs(test.x-samples[t].x)+ std::abs(test.y-samples[t].y);
 			if (dist<32)	{
-				valid		= FALSE;
+				valid		= false;
 				break;
 			}
 		}
@@ -584,7 +584,7 @@ void CRenderTarget::reset_light_marker( bool bResetStencil)
 	dwLightMarkerID = 5;
 	if (bResetStencil)
 	{
-		RCache.set_ColorWriteEnable	(FALSE);
+		RCache.set_ColorWriteEnable	(false);
 		u32		Offset;
 		float	_w					= float(RCache.get_width());
 		float	_h					= float(RCache.get_height());
@@ -599,7 +599,7 @@ void CRenderTarget::reset_light_marker( bool bResetStencil)
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 
 		//	Clear everything except last bit
-		RCache.set_Stencil	(TRUE,D3DCMP_ALWAYS,dwLightMarkerID,0x00,0xFE, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO);
+		RCache.set_Stencil	(true,D3DCMP_ALWAYS,dwLightMarkerID,0x00,0xFE, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO);
 		RCache.set_Element			(s_occq->E[1]	);
 		RCache.set_Geometry			(g_combine		);
 		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);

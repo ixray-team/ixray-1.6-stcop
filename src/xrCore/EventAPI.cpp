@@ -104,7 +104,7 @@ EVENT	CEventAPI::Handler_Attach(const char* N, IEventReceiver* H)
 
 void	CEventAPI::Handler_Detach(EVENT& E, IEventReceiver* H)
 {
-	if (0==E)	
+	if (nullptr==E)	
 		return;
 
 	xrCriticalSectionGuard guard(CS);
@@ -164,18 +164,18 @@ bool CEventAPI::Peek(const char* EName)
 {
 	xrCriticalSectionGuard guard(CS);
 	if (Events_Deferred.empty())
-		return FALSE;
+		return false;
 
 	for (u32 I = 0; I < Events_Deferred.size(); I++)
 	{
 		Deferred& DEF = Events_Deferred[I];
 		if (_stricmp(DEF.E->GetFull(), EName) == 0)
 		{
-			return TRUE;
+			return true;
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 void CEventAPI::_destroy()

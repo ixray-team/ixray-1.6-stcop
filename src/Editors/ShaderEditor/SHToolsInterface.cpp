@@ -8,8 +8,8 @@
 
 ISHTools::ISHTools(const ISHInit& init)
 {
-	m_bModified			= FALSE;
-    m_bLockUpdate		= FALSE;
+	m_bModified			= false;
+    m_bLockUpdate		= false;
     Ext					= init;
 }
 //---------------------------------------------------------------------------
@@ -18,15 +18,15 @@ void ISHTools::ViewSetCurrentItem(const char* full_name)
 {
 	if (m_bLockUpdate) 	return;
 
-    m_bLockUpdate		= TRUE;
+    m_bLockUpdate		= true;
     Ext.m_Items->SelectItem(full_name);
-    m_bLockUpdate		= FALSE;
+    m_bLockUpdate		= false;
 }
 //---------------------------------------------------------------------------
 
 void ISHTools::Modified()
 {
-    m_bModified = TRUE;
+    m_bModified = true;
 
     ExecCommand(COMMAND_UPDATE_CAPTION);
     ApplyChanges();
@@ -39,8 +39,8 @@ bool ISHTools::IfModified()
     if (m_bModified){
         int mr = ELog.DlgMsg(mtConfirmation, mbYes | mbNo | mbCancel, "The '%s' has been modified.\nDo you want to save your changes?",ToolsName());
         switch(mr){
-        case mrYes: Save(); m_bModified = FALSE; break;
-        case mrNo: m_bModified = FALSE; break;
+        case mrYes: Save(); m_bModified = false; break;
+        case mrNo: m_bModified = false; break;
         case mrCancel: return false;
         }
     }

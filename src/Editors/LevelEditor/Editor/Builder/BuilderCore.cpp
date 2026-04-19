@@ -13,7 +13,7 @@ bool SceneBuilder::PreparePath()
 
 bool SceneBuilder::PrepareFolders()
 {
-	FS.dir_delete(m_LevelPath, TRUE);
+	FS.dir_delete(m_LevelPath, true);
 	return true;
 }
 

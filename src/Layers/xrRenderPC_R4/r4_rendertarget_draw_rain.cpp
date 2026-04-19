@@ -118,7 +118,7 @@ void CRenderTarget::draw_rain(light& RainSetup) {
 		RCache.set_c("m_sunmask", m_clouds_shadow);
 		RCache.set_c("RainDensity", fRainFactor, 0, 0, 0);
 		RCache.set_c("RainFallof", ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0, 0);
-		RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);
+		RCache.set_Stencil(true, D3DCMP_EQUAL, 0x01, 0x01, 0);
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 
 		//	Apply normal
@@ -129,7 +129,7 @@ void CRenderTarget::draw_rain(light& RainSetup) {
 
 		u_setrt(rt_Normal, NULL, NULL, RDepth);
 
-		RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);
+		RCache.set_Stencil(true, D3DCMP_EQUAL, 0x01, 0x01, 0);
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 
 		//	Apply gloss
@@ -141,7 +141,7 @@ void CRenderTarget::draw_rain(light& RainSetup) {
 		//	It is restored automatically by a set_Element call
 		u_setrt(rt_Color, nullptr, nullptr, RDepth);
 
-		RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);
+		RCache.set_Stencil(true, D3DCMP_EQUAL, 0x01, 0x01, 0);
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 	}
 }

@@ -63,7 +63,7 @@ Snd_Initialize()
     R_ASSERT2(backend.stream, make_string<const char*>("Couldn't create audio stream: %s", SDL_GetError()));
     SDL_BindAudioStream(backend.device, backend.stream);
 
-    backend.is_running = TRUE;
+    backend.is_running = true;
     backend.buffer_frame_count = std::max((u32)SND_BLOCKSIZE, (u32)MEM_ALIGN(backend.device_frame_count, SND_BLOCKSIZE));
     backend.buffer = xr_alloc<float>(backend.buffer_frame_count * SND_CHANNEL_COUNT);
     backend.output_buffer = xr_alloc<float>(backend.buffer_frame_count * SND_CHANNEL_COUNT);
@@ -172,6 +172,6 @@ void XRay::Sound::Backend::ChangeDevice(u32 DeviceID)
 
 void XRay::Sound::Backend::Shutdown()
 {
-    backend.is_running = FALSE;
+    backend.is_running = false;
     Platform::WaitForSingleObject(backend.sound_thread);
 }

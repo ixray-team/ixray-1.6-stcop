@@ -34,7 +34,7 @@ void CPartition::load(IKinematics* V, const char* model_name)
 
 	FS.update_path(fn_full, _game_meshes_, fn);
 
-	CInifile ini(fn_full, TRUE, TRUE, FALSE);
+	CInifile ini(fn_full, true, true, false);
 
 	if (ini.sections().empty())
 	{

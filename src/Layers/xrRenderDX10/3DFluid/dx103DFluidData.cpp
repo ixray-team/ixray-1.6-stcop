@@ -108,7 +108,7 @@ void dx103DFluidData::ParseProfile(const xr_string &Profile)
 	string_path fn;
 	FS.update_path(fn, _game_config_,Profile.c_str());
 	
-	CInifile	ini(fn,TRUE,TRUE,FALSE);
+	CInifile	ini(fn,true,true,false);
 
 	Msg("Reading fog volume config: %s", fn);
 

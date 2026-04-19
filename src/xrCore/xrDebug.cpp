@@ -291,32 +291,32 @@ const char* xrDebug::dxerror2string(long code)
 
 void xrDebug::error(long hr, const char* expr, const char* file, int line, const char* function, bool& ignore_always)
 {
-	backend(error2string(hr), expr, 0, 0, file, line, function, ignore_always);
+	backend(error2string(hr), expr, nullptr, nullptr, file, line, function, ignore_always);
 }
 
 void xrDebug::error(long hr, const char* expr, const char* e2, const char* file, int line, const char* function, bool& ignore_always)
 {
-	backend(error2string(hr), expr, e2, 0, file, line, function, ignore_always);
+	backend(error2string(hr), expr, e2, nullptr, file, line, function, ignore_always);
 }
 
 void xrDebug::fail(const char* e1, const char* file, int line, const char* function, bool& ignore_always)
 {
-	backend("assertion failed", e1, 0, 0, file, line, function, ignore_always);
+	backend("assertion failed", e1, nullptr, nullptr, file, line, function, ignore_always);
 }
 
 void xrDebug::fail(const char* e1, const std::string& e2, const char* file, int line, const char* function, bool& ignore_always)
 {
-	backend(e1, e2.c_str(), 0, 0, file, line, function, ignore_always);
+	backend(e1, e2.c_str(), nullptr, nullptr, file, line, function, ignore_always);
 }
 
 void xrDebug::fail(const char* e1, const char* e2, const char* file, int line, const char* function, bool& ignore_always)
 {
-	backend(e1, e2, 0, 0, file, line, function, ignore_always);
+	backend(e1, e2, nullptr, nullptr, file, line, function, ignore_always);
 }
 
 void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* file, int line, const char* function, bool& ignore_always)
 {
-	backend(e1, e2, e3, 0, file, line, function, ignore_always);
+	backend(e1, e2, e3, nullptr, file, line, function, ignore_always);
 }
 
 void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* e4, const char* file, int line, const char* function, bool& ignore_always)
@@ -326,7 +326,7 @@ void xrDebug::fail(const char* e1, const char* e2, const char* e3, const char* e
 
 void xrDebug::error_dx(long hr, const char* expr, const char* file, int line, const char* function, bool& ignore_always)
 {
-	backend(dxerror2string(hr), expr, 0, 0, file, line, function, ignore_always);
+	backend(dxerror2string(hr), expr, nullptr, nullptr, file, line, function, ignore_always);
 }
 
 void __cdecl xrDebug::fatal(const char *file, int line, const char *function, const char* F,...)
@@ -340,11 +340,11 @@ void __cdecl xrDebug::fatal(const char *file, int line, const char *function, co
 
 	bool		ignore_always = true;
 
-	backend		("fatal error","<no expression>",buffer,0,file,line,function,ignore_always);
+	backend		("fatal error","<no expression>",buffer,nullptr,file,line,function,ignore_always);
 }
 
 typedef void (*full_memory_stats_callback_type) ( );
-XRCORE_API full_memory_stats_callback_type g_full_memory_stats_callback = 0;
+XRCORE_API full_memory_stats_callback_type g_full_memory_stats_callback = nullptr;
 
 int out_of_memory_handler	(size_t size)
 {
@@ -354,7 +354,7 @@ int out_of_memory_handler	(size_t size)
 		Memory.mem_compact	();
 
 #ifdef IXR_WINDOWS
-		u32 process_heap = mem_usage_impl((void*)_get_heap_handle(), 0, 0);
+		u32 process_heap = mem_usage_impl((void*)_get_heap_handle(), nullptr, nullptr);
 #else
 		u32 process_heap = mem_usage_impl(0, 0, 0);
 #endif // IXR_WINDOWS
@@ -376,7 +376,7 @@ typedef long WINAPI UnhandledExceptionFilterType(struct _EXCEPTION_POINTERS *pEx
 typedef long (  *PFNCHFILTFN ) ( EXCEPTION_POINTERS * pExPtrs ) ;
 extern "C" bool  SetCrashHandlerFilter ( PFNCHFILTFN pFn );
 
-static UnhandledExceptionFilterType	*previous_filter = 0;
+static UnhandledExceptionFilterType	*previous_filter = nullptr;
 
 #ifdef USE_OWN_MINI_DUMP
 typedef bool (WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,
@@ -576,8 +576,8 @@ void _terminate()
 		//gather_info				(
 		"<no expression>",
 		"Unexpected application termination",
-		0,
-		0,
+		nullptr,
+		nullptr,
 #ifdef ANONYMOUS_BUILD
 		"",
 		0,

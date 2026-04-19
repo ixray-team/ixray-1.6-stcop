@@ -20,7 +20,7 @@ void CBlender_accum_direct_cascade::Compile(CBlender_Compile& C) {
 		RImplementation.addShaderOption("USE_FAR_ATTENTION", "1");
 	}
 
-	C.r_Pass("accum_volume", "accum_sun", false, TRUE, FALSE);
+	C.r_Pass("accum_volume", "accum_sun", false, true, false);
 
 	C.r_Sampler_rtf("s_position", r2_RT_P);
 	C.r_Sampler_rtf("s_normal", r2_RT_N);

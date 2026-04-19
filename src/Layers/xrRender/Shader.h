@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(SHADER__INCLUDED_)
-#define SHADER__INCLUDED_
 #pragma once
 
 #include "r_constants.h"
@@ -33,12 +31,12 @@ struct ECORE_API STextureList :
 
 						IC bool		equal (const STextureList& base) const
 						{
-							if (size()!=base.size())			return FALSE;
+							if (size()!=base.size())			return false;
 							for (u32 cmp=0; cmp<size(); cmp++)	{
-								if ((*this)[cmp].first	!=base[cmp].first)	return FALSE;
-								if ((*this)[cmp].second	!=base[cmp].second)	return FALSE;
+								if ((*this)[cmp].first	!=base[cmp].first)	return false;
+								if ((*this)[cmp].second	!=base[cmp].second)	return false;
 							}
-							return TRUE;
+							return true;
 						}
 	virtual		void	clear();
 	virtual		void	clear_not_free();
@@ -94,7 +92,7 @@ struct ECORE_API resptrcode_geom:
 	void 				create			(RHIInputElementDesc* DescList, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib);
 	void 				create			(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer* ib);
 	void				create			(u32 FVF				, IRHIBuffer* vb, IRHIBuffer* ib);
-	void				destroy			()			{ _set(NULL);		}
+	void				destroy			()			{ _set(nullptr);		}
 	u32					stride			()	const	{ return _get()->vb_stride;	}
 };
 
@@ -170,9 +168,9 @@ public:
 };
 struct 	 ECORE_API	resptrcode_shader	: public resptr_base<Shader>
 {
-	void				create			(const char* s_shader=0, const char* s_textures=0, const char* s_constants=0, const char* s_matrices=0);
-	void				create			(IBlender*	B,	const char* s_shader=0, const char* s_textures=0, const char* s_constants=0, const char* s_matrices=0);
-	void				destroy			()	{ _set(NULL);		}
+	void				create			(const char* s_shader=nullptr, const char* s_textures=nullptr, const char* s_constants=nullptr, const char* s_matrices=nullptr);
+	void				create			(IBlender*	B,	const char* s_shader=nullptr, const char* s_textures=nullptr, const char* s_constants=nullptr, const char* s_matrices=nullptr);
+	void				destroy			()	{ _set(nullptr);		}
 };
 typedef	resptr_core<Shader,resptrcode_shader>												ref_shader;
 
@@ -194,4 +192,3 @@ enum	SE_R1				{
 
 #pragma pack(pop)
 
-#endif // !defined(AFX_SHADER_H__9CBD70DD_E147_446B_B4EE_5DA321EB726F__INCLUDED_)

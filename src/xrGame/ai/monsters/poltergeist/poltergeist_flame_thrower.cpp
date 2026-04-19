@@ -115,18 +115,18 @@ void CPolterFlame::select_state(SFlameElement *elem, EFlameState state)
 	switch(elem->state) {
 	case ePrepare:	
 		// start prepare particles
-		m_object->PlayParticles(m_particles_prepare,elem->position,elem->target_dir,TRUE);
+		m_object->PlayParticles(m_particles_prepare,elem->position,elem->target_dir,true);
 		break;
 	case eFire:		
 		// start fire particles
-		elem->particles_object = m_object->PlayParticles(m_particles_fire,elem->position,elem->target_dir,FALSE);
+		elem->particles_object = m_object->PlayParticles(m_particles_fire,elem->position,elem->target_dir,false);
 		break;
 	case eStop:		
 		// stop fire particles
 		if (elem->particles_object) Particles::Details::Destroy(elem->particles_object);
 		
 		// start finish particles
-		m_object->PlayParticles(m_particles_stop,elem->position,elem->target_dir,TRUE);
+		m_object->PlayParticles(m_particles_stop,elem->position,elem->target_dir,true);
 
 		break;
 	}

@@ -47,7 +47,7 @@ bool CLE_Visual::g_tmp_lock = false;
 
 CLE_Visual::~CLE_Visual()
 {
-	::Render->model_Delete	(visual,TRUE);
+	::Render->model_Delete	(visual,true);
 }
 
 void CLE_Visual::OnDrawUI()
@@ -68,7 +68,7 @@ void CLE_Visual::OnDrawUI()
 
 void CLE_Visual::OnChangeVisual()
 {
-	::Render->model_Delete(visual, TRUE);
+	::Render->model_Delete(visual, true);
 	if (source->visual_name.size())
 	{
 		visual = ::Render->model_Create(source->visual_name.c_str());
@@ -267,7 +267,7 @@ void CSpawnPoint::SSpawnData::Create(const char* _entity_ref)
 		{
 			if (pSettings->r_bool(_entity_ref, "$player"))
 			{
-				m_Data->flags().set(M_SPAWN_OBJECT_ASPLAYER, TRUE);
+				m_Data->flags().set(M_SPAWN_OBJECT_ASPLAYER, true);
 			}
 		}
 		m_ClassID = pSettings->r_clsid(_entity_ref, "class");
@@ -335,7 +335,7 @@ void CSpawnPoint::SSpawnData::SaveLTX	(CInifile& ini, const char* sect_name)
 	ini_stream.move_begin	();
 	Packet.inistream 		= &ini_stream;
 	
-	m_Data->Spawn_Write	(Packet,TRUE);
+	m_Data->Spawn_Write	(Packet,true);
 }
 
 void CSpawnPoint::SSpawnData::SaveStream(IWriter& F)
@@ -350,7 +350,7 @@ void CSpawnPoint::SSpawnData::SaveStream(IWriter& F)
 
 	F.open_chunk		(SPAWNPOINT_CHUNK_SPAWNDATA);
 	NET_Packet 			Packet;
-	m_Data->Spawn_Write	(Packet,TRUE);
+	m_Data->Spawn_Write	(Packet,true);
 	F.w_u32				(Packet.B.count);
 	F.w					(Packet.B.data,Packet.B.count);
 	F.close_chunk		();
@@ -399,7 +399,7 @@ bool CSpawnPoint::SSpawnData::ExportGame(SExportStreams* F, CSpawnPoint* owner)
 	// end
 
 	NET_Packet					Packet;
-	m_Data->Spawn_Write			(Packet,TRUE);
+	m_Data->Spawn_Write			(Packet,true);
 
 	SExportStreamItem& tgt 		= (m_flags.test(eSDTypeRespawn))? F->spawn_rs : F->spawn;
 	tgt.stream.open_chunk		(tgt.chunk++);
@@ -415,7 +415,7 @@ void CSpawnPoint::SSpawnData::ExportSpawn(xr_vector<NET_Packet>& Ps, CSpawnPoint
 	m_Data->position().set(owner->GetPosition());
 	m_Data->angle().set(owner->GetRotation());
 	Ps.push_back(NET_Packet());
-	m_Data->Spawn_Write(Ps.back(), TRUE);
+	m_Data->Spawn_Write(Ps.back(), true);
 }
 
 void CSpawnPoint::SSpawnData::PreExportSpawn(CSpawnPoint* owner)
@@ -564,7 +564,7 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 		{
 			IParticleCustom* Particles = smart_cast<IParticleCustom*>(IdleParticle);
 			static Fvector v = { 0.f, 0.f, 0.f };
-			Particles->UpdateParent(parent, v, FALSE);
+			Particles->UpdateParent(parent, v, false);
 			Particles->OnFrame(1);
 
 			::RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
@@ -603,14 +603,14 @@ void CSpawnPoint::SSpawnData::OnFrame()
 		if(m_Data->m_editor_flags.is(CSE_Abstract::flVisualAnimationChange))
 		{
 			m_Visual->PlayAnimationFirstFrame();
-			m_Data->m_editor_flags.set(CSE_Abstract::flVisualAnimationChange, FALSE);
+			m_Data->m_editor_flags.set(CSE_Abstract::flVisualAnimationChange, false);
 		}
 
 		IKinematics* KinematicsObj = PKinematics(m_Visual->visual);
 		if (m_Visual->visual && KinematicsObj != nullptr)
 		{
 			float Dist = EDevice->vCameraPosition.distance_to(m_owner->FPosition);
-			KinematicsObj->CalculateBones(TRUE);
+			KinematicsObj->CalculateBones(true);
 		}
 	}
 	// motion part
@@ -653,7 +653,7 @@ void CSpawnPoint::SSpawnData::OnFrame()
 		CLE_Visual* v = *it;
 		if (IKinematics* KinematicsObj = PKinematics(v->visual))
 		{
-			KinematicsObj->CalculateBones(TRUE);
+			KinematicsObj->CalculateBones(true);
 		}
 	}
 
@@ -1586,7 +1586,7 @@ void CSpawnPoint::OnProfileChange(PropValue* prop)
 			CSE_Abstract* tmp	= g_SEFactoryManager->create_entity	(*s_name);
 			VERIFY				(tmp);
 			NET_Packet 			Packet;
-			tmp->Spawn_Write	(Packet,TRUE);
+			tmp->Spawn_Write	(Packet,true);
 			R_ASSERT			(m_SpawnData.m_Data->Spawn_Read(Packet));
 			m_SpawnData.m_Data->set_editor_flag(CSE_Abstract::flVisualChange|CSE_Abstract::flVisualAnimationChange);
 			g_SEFactoryManager->destroy_entity		(tmp);
@@ -1676,7 +1676,7 @@ void CSpawnPoint::FillProp(const char* pref, PropItemVec& items)
 }
 void CSpawnPoint::OnEnvModFlagChange(PropValue* prop)
 {
-	LTools->UpdateProperties(FALSE);
+	LTools->UpdateProperties(false);
 }
 
 

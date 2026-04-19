@@ -57,9 +57,9 @@ void light::vis_prepare()
 	//	Hope it won't slow down too much since there's not too much volumetric lights
 	//	TODO: sort for performance improvement if this technique hurts
 	if ( (flags.type==IRender_Light::SPOT) && flags.bShadow && flags.bVolumetric )
-		RCache.set_Stencil			(FALSE);
+		RCache.set_Stencil			(false);
 	else
-		RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
+		RCache.set_Stencil			(true,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
 	RImplementation.Target->draw_volume				(this);
 	RImplementation.occq_end						(vis.query_id);
 }

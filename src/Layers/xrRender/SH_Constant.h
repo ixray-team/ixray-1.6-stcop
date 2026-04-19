@@ -63,12 +63,12 @@ public:
 	void			Calculate	();
 	IC	bool		Similar		(CConstant& C)		// comare by modes and params
 	{
-		if (dwMode!=C.dwMode)	return FALSE;
-		if (!_R.Similar(C._R))	return FALSE;
-		if (!_G.Similar(C._G))	return FALSE;
-		if (!_B.Similar(C._B))	return FALSE;
-		if (!_A.Similar(C._A))	return FALSE;
-		return TRUE;
+		if (dwMode!=C.dwMode)	return false;
+		if (!_R.Similar(C._R))	return false;
+		if (!_G.Similar(C._G))	return false;
+		if (!_B.Similar(C._B))	return false;
+		if (!_A.Similar(C._A))	return false;
+		return true;
 	}
 	void			Load		(IReader* fs);
 	void			Save		(IWriter* fs);

@@ -146,7 +146,7 @@ void CLightmap::Save(const char* path)
 	xr_vector<u32>			hemi_packed;
 	lm.Pack_hemi(hemi_packed);
 
-	lm_texture.bHasAlpha = TRUE;
+	lm_texture.bHasAlpha = true;
 	lm_texture.dwWidth = lm.width;
 	lm_texture.dwHeight = lm.height;
 	lm_texture.pSurface.Clear();
@@ -176,9 +176,9 @@ void CLightmap::Save(const char* path)
 			case LCLightmapFormat::FORMAT_BC5:  fmt.fmt = STextureParams::tfDXT5; break;
 		}
 
-		fmt.flags.set(STextureParams::flDitherColor, FALSE);
-		fmt.flags.set(STextureParams::flGenerateMipMaps, FALSE);
-		fmt.flags.set(STextureParams::flBinaryAlpha, FALSE);
+		fmt.flags.set(STextureParams::flDitherColor, false);
+		fmt.flags.set(STextureParams::flGenerateMipMaps, false);
+		fmt.flags.set(STextureParams::flBinaryAlpha, false);
 
  		DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
  	}
@@ -207,9 +207,9 @@ void CLightmap::Save(const char* path)
 		case LCLightmapFormat::FORMAT_BC5:  fmt.fmt = STextureParams::tfDXT5; break;
 		}
 
-		fmt.flags.set(STextureParams::flDitherColor, FALSE);
-		fmt.flags.set(STextureParams::flGenerateMipMaps, FALSE);
-		fmt.flags.set(STextureParams::flBinaryAlpha, FALSE);
+		fmt.flags.set(STextureParams::flDitherColor, false);
+		fmt.flags.set(STextureParams::flGenerateMipMaps, false);
+		fmt.flags.set(STextureParams::flBinaryAlpha, false);
 
  		DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
  	}
@@ -223,7 +223,7 @@ void CLightmap::Save(const char* path)
  	s32 UsedMemory = StartMemory > GetMemory() ? - s32( ( StartMemory - GetMemory() ) / 1024 / 1024) : ( ( GetMemory() - StartMemory) / 1024 / 1024 );
 
 
-	// Чтобы лучше выглядело в логе
+	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
 	clMsg("* [Lightmap] Corection Borders: %u ms, Apply Borders: %u ms", correct, ApplyBorders);
 	clMsg("* [Lightmap] Save Base: %u ms, Hemi: %u ms, Memory: %d mb",   saving_base, t.GetElapsed_ms(), u32(UsedMemory) );
 }

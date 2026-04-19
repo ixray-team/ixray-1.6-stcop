@@ -117,7 +117,7 @@ public:
 	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n);
 
 	virtual void		ShowProperties		(const char* focused_item);
-	virtual void		UpdateProperties	(bool bForced){m_Flags.set(flUpdateProperties|flUpdateObjectList,TRUE); if (bForced) OnFrame();}
+	virtual void		UpdateProperties	(bool bForced){m_Flags.set(flUpdateProperties|flUpdateObjectList,true); if (bForced) OnFrame();}
 	virtual void		RefreshProperties	();
 	virtual bool UpdateCamera();
 private:

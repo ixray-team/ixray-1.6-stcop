@@ -14,7 +14,7 @@ bool				SphereValid	(xr_vector<Fvector>& geom, Fsphere& test)
 	if (!f_valid(test.P.x) || !f_valid(test.R)) 
 	{
 		clMsg("*** Attention ***: invalid sphere: %f,%f,%f - %f", test.P.x, test.P.y, test.P.z, test.R);
-		return FALSE;
+		return false;
 	}
 
 
@@ -23,8 +23,8 @@ bool				SphereValid	(xr_vector<Fvector>& geom, Fsphere& test)
 	S.R += EPS_L;
 	for (xr_vector<Fvector>::iterator I = geom.begin(); I != geom.end(); I++)
 	if (!S.contains(*I))	
-		return FALSE;
-	return TRUE;
+		return false;
+	return true;
 }
 
 Fsphere CalculateSphere(xr_vector<Fvector>& V, Fbox &bbox)

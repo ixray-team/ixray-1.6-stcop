@@ -36,10 +36,10 @@ bool CPPEffectorPsyDogAura::update()
 			m_effector_state	= eStatePermanent;
 			m_factor			= 1.f;
 		} else if (m_factor < 0) {
-			return FALSE;
+			return false;
 		}
 	}
-	return TRUE;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////

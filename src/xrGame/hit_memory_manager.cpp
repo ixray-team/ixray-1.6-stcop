@@ -161,7 +161,7 @@ void CHitMemoryManager::add(const CHitObject& _hit_object)
 		return;
 
 	CHitObject hit_object = _hit_object;
-	hit_object.m_squad_mask.set(!m_stalker ? u64(-1) : m_stalker->agent_manager().member().mask(m_stalker), TRUE);
+	hit_object.m_squad_mask.set(!m_stalker ? u64(-1) : m_stalker->agent_manager().member().mask(m_stalker), true);
 
 	const CGameObject* entity_alive = hit_object.m_object;
 	HITS::iterator J = std::find(m_hits->begin(), m_hits->end(), CMemoryObject::object_id(entity_alive));

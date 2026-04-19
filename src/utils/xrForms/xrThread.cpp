@@ -13,7 +13,7 @@ void CThread::startup(void* P)
 	SetThreadAffinityMask(threadHandle, affinityMask);
  
 	T->Execute();
-	T->thCompleted = TRUE;
+	T->thCompleted = true;
 	if (T->thMessages)	clMsg("* THREAD #%d: Task Completed.", T->thID);
 }
 

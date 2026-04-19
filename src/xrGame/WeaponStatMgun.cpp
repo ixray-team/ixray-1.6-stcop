@@ -44,7 +44,7 @@ CWeaponStatMgun::~CWeaponStatMgun()
 
 void CWeaponStatMgun::SetBoneCallbacks()
 {
-	m_pPhysicsShell->EnabledCallbacks(FALSE);
+	m_pPhysicsShell->EnabledCallbacks(false);
 
 	IKinematics* pK = PKinematics(Visual());
 
@@ -63,7 +63,7 @@ void CWeaponStatMgun::ResetBoneCallbacks()
 	CBoneInstance& biY = pK->LL_GetBoneInstance(m_rotate_y_bone);
 	biY.reset_callback();
 
-	m_pPhysicsShell->EnabledCallbacks(TRUE);
+	m_pPhysicsShell->EnabledCallbacks(true);
 }
 
 void CWeaponStatMgun::Load(const char* section)
@@ -95,7 +95,7 @@ bool CWeaponStatMgun::net_Spawn(CSE_Abstract* DC)
 {
 	if (!inheritedPH::net_Spawn(DC))
 	{
-		return FALSE;
+		return false;
 	}
 
 	IKinematics* K = PKinematics(Visual());
@@ -133,9 +133,9 @@ bool CWeaponStatMgun::net_Spawn(CSE_Abstract* DC)
 	XFORM().transform_dir(m_destEnemyDir);
 
 	processing_activate();
-	setVisible(TRUE);
-	setEnabled(TRUE);
-	return TRUE;
+	setVisible(true);
+	setEnabled(true);
+	return true;
 }
 
 void CWeaponStatMgun::net_Destroy()
@@ -143,7 +143,7 @@ void CWeaponStatMgun::net_Destroy()
 	if (p_overheat)
 	{
 		if (p_overheat->IsPlaying())
-			p_overheat->Stop(FALSE);
+			p_overheat->Stop(false);
 		Particles::Details::Destroy(p_overheat);
 	}
 	inheritedPH::net_Destroy	();
@@ -164,8 +164,8 @@ void CWeaponStatMgun::net_Import(NET_Packet& P)	// import from server
 	u8 state = P.r_u8();
 	load_data						(m_destEnemyDir, P);
 
-	if(TRUE==IsWorking()&&!state)			FireEnd		();
-	if(FALSE==IsWorking()&&state)			FireStart	();
+	if(true==IsWorking()&&!state)			FireEnd		();
+	if(false==IsWorking()&&state)			FireStart	();
 
 }
 
@@ -216,14 +216,14 @@ void CWeaponStatMgun::UpdateBarrelDir()
 		float sv_x		= m_tgt_x_rot;
 		
 		clamp			(m_tgt_x_rot,-m_lim_x_rot.y,-m_lim_x_rot.x);
-		if (!fsimilar(sv_x,m_tgt_x_rot,EPS_L)) m_allow_fire=FALSE;
+		if (!fsimilar(sv_x,m_tgt_x_rot,EPS_L)) m_allow_fire=false;
 	}
 	{// y angle
 		m_i_bind_y_xform.transform_dir(dep); dep.normalize();
 		m_tgt_y_rot		= angle_normalize_signed(m_bind_y_rot-dep.getH());
 		float sv_y		= m_tgt_y_rot;
 		clamp			(m_tgt_y_rot,-m_lim_y_rot.y,-m_lim_y_rot.x);
-		if (!fsimilar(sv_y,m_tgt_y_rot,EPS_L)) m_allow_fire=FALSE;
+		if (!fsimilar(sv_y,m_tgt_y_rot,EPS_L)) m_allow_fire=false;
 	}
 
 	m_cur_x_rot		= angle_inertion_var(m_cur_x_rot,m_tgt_x_rot,0.5f,3.5f,PI_DIV_6,Device.fTimeDelta);
@@ -239,7 +239,7 @@ void CWeaponStatMgun::cam_Update			(float dt, float fov)
 
 	IKinematics* K					= Visual()->dcast_PKinematics();
 	K->CalculateBones_Invalidate	();
-	K->CalculateBones				(TRUE);
+	K->CalculateBones				(true);
 	const Fmatrix& C				= K->LL_GetTransform(m_camera_bone);
 	XFORM().transform_tiny			(P,C.c);
 

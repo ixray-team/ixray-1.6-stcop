@@ -1,5 +1,3 @@
-#ifndef EDetailModelH
-#define EDetailModelH
 #pragma once
 
 #include "../Layers/xrRender/DetailModel.h"
@@ -19,48 +17,14 @@ class ECORE_API EDetail: public CDetail{
 		IC void			set			(const Fvector& _P, float _u, float _v){P.set(_P); u=_u; v=_v;};
 		IC bool			similar		(EVertexIn& V)
 		{
-			if (!fsimilar	(u,V.u,EPS_L))	return FALSE;
-			if (!fsimilar	(v,V.v,EPS_L))	return FALSE;
-			if (!P.similar	(V.P,EPS_L))	return FALSE;
-			return TRUE;
+			if (!fsimilar	(u,V.u,EPS_L))	return false;
+			if (!fsimilar	(v,V.v,EPS_L))	return false;
+			if (!P.similar	(V.P,EPS_L))	return false;
+			return true;
 		}
 		void			remapUV		(const fvfVertexIn& src, const Fvector2& offs, const Fvector2& scale, bool bRotate);
 	};
-/*
-	struct fvfVertexIn{
-		Fvector 		P;
-		float			u,v;
-						fvfVertexIn	(const Fvector& _P, float _u, float _v){P.set(_P); u=_u; v=_v;};
-		void			set			(fvfVertexIn& src){P.set(src.P); u=src.u; v=src.v;};
-		void			set			(const Fvector& _P, float _u, float _v){P.set(_P); u=_u; v=_v;};
-		bool			similar		(fvfVertexIn& V)
-		{
-			if (!fsimilar	(u,V.u,EPS_L))	return FALSE;
-			if (!fsimilar	(v,V.v,EPS_L))	return FALSE;
-			if (!P.similar	(V.P,EPS_L))	return FALSE;
-			return TRUE;
-		}
-	};
-	struct fvfVertexOut
-	{
-		Fvector 		P;
-		DWORD			C;
-		float			u,v;
-	};
-
-	float				m_fMinScale;
-	float				m_fMaxScale;
-
-	// render
-	fvfVertexIn			*vertices;
-	DWORD				number_vertices;
-	WORD				*indices;
-	DWORD				number_indices;
-	ref_shader			shader;
-	Flags32				m_Flags;
-	Fsphere				bv_sphere;
-	Fbox				bv_bb;
-*/
+	
 	bool                m_bLoadFromLibrary;
 	float 				m_fDensityFactor;
 
@@ -95,5 +59,4 @@ public:
 
 using DOVec = xr_vector<EDetail*>;
 using DOIt = DOVec::iterator;
-#endif //_INCDEF_DetailModel_H_
 

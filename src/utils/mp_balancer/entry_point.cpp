@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv[])
 {
-	Core._initialize("mp_ballancer", NULL, TRUE, "fsgame4mpu.ltx");
+	Core._initialize("mp_ballancer", NULL, true, "fsgame4mpu.ltx");
 	
 	SetConsoleOutputCP(1251);
 

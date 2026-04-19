@@ -464,7 +464,7 @@ void CWeapon::Load		(const char* section)
 	if(pSettings->line_exist(section,"auto_spawn_ammo"))
 		m_bAutoSpawnAmmo = pSettings->r_bool(section,"auto_spawn_ammo");
 	else
-		m_bAutoSpawnAmmo = TRUE;
+		m_bAutoSpawnAmmo = true;
 
 
 
@@ -492,7 +492,7 @@ void CWeapon::Load		(const char* section)
 	}
 
 	
-	m_zoom_params.m_bUseDynamicZoom	= READ_IF_EXISTS(pSettings,r_bool,section,"scope_dynamic_zoom",FALSE);
+	m_zoom_params.m_bUseDynamicZoom	= READ_IF_EXISTS(pSettings,r_bool,section,"scope_dynamic_zoom",false);
 	m_zoom_params.m_sUseZoomPostprocess	= READ_IF_EXISTS(pSettings, r_string, section, "scope_nightvision", 0);
 	m_zoom_params.m_sUseBinocularVision	= READ_IF_EXISTS(pSettings, r_string, section, "scope_alive_detector", 0);
 
@@ -1204,7 +1204,7 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	inherited::OnH_B_Independent(just_before_destroy);
 
 	FireEnd						();
-	SetPending					(FALSE);
+	SetPending					(false);
 	SwitchState					(eHidden);
 
 	m_strapped_mode				= false;
@@ -1309,8 +1309,8 @@ void CWeapon::SendHiddenItem()
 		P.w_u8			(m_ammoType);
 		P.w_u8			(u8(iAmmoElapsed & 0xff));
 		P.w_u8			(m_set_next_ammoType_on_reload);
-		CHudItem::object().u_EventSend		(P, net_flags(TRUE, TRUE, FALSE, TRUE));
-		SetPending		(TRUE);
+		CHudItem::object().u_EventSend		(P, net_flags(true, true, false, true));
+		SetPending		(true);
 	}
 }
 
@@ -1576,7 +1576,7 @@ void CWeapon::ProcessScope()
 				u16 bone_id = pWeaponVisual->LL_BoneID(bone);
 
 				if (bone_id != BI_NONE)
-					pWeaponVisual->LL_SetBoneVisible(bone_id, status, TRUE);
+					pWeaponVisual->LL_SetBoneVisible(bone_id, status, true);
 			};
 
 		for (auto& bone : m_bScopeHideBones)
@@ -1594,12 +1594,12 @@ void CWeapon::ProcessScope()
 
 		for (auto& bone : m_bScopeHideBones)
 		{
-			HudItemData()->set_bone_visible(bone, false, TRUE);
+			HudItemData()->set_bone_visible(bone, false, true);
 		}
 
 		for (auto& bone : m_bScopeShowBones)
 		{
-			HudItemData()->set_bone_visible(bone, true, TRUE);
+			HudItemData()->set_bone_visible(bone, true, true);
 		}
 	}
 }
@@ -1653,9 +1653,9 @@ void CWeapon::renderable_Render		()
 
 	//если мы в режиме снайперки, то сам HUD рисовать не надо
 	if(IsZoomed() && !IsRotatingToZoom() && m_zoom_params.m_fZoomRotationFactor2 == 0.0f && ZoomTexture())
-		RenderHud		(FALSE);
+		RenderHud		(false);
 	else
-		RenderHud		(TRUE);
+		RenderHud		(true);
 
 	inherited::renderable_Render	();
 }
@@ -1663,15 +1663,15 @@ void CWeapon::renderable_Render		()
 void CWeapon::signal_HideComplete()
 {
 	if(H_Parent()) 
-		setVisible			(FALSE);
-	SetPending				(FALSE);
+		setVisible			(false);
+	SetPending				(false);
 }
 
 void CWeapon::SetDefaults()
 {
-	SetPending			(FALSE);
+	SetPending			(false);
 
-	m_flags.set			(FUsingCondition, TRUE);
+	m_flags.set			(FUsingCondition, true);
 	bMisfire			= false;
 	m_flagsAddOnState	= 0;
 	m_zoom_params.m_bIsZoomModeNow	= false;
@@ -2111,8 +2111,8 @@ void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, u32 ParentID)
 		{
 			l_pA->a_elapsed			= (u16)(boxCurr > l_pA->m_boxSize ? l_pA->m_boxSize : boxCurr);
 			NET_Packet				P;
-			D->Spawn_Write			(P, TRUE);
-			Level().Send			(P,net_flags(TRUE));
+			D->Spawn_Write			(P, true);
+			Level().Send			(P,net_flags(true));
 
 			if(boxCurr > l_pA->m_boxSize) 
 				boxCurr				-= l_pA->m_boxSize;
@@ -2456,24 +2456,24 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 	bool test = !!(get_ScopeStatus() == 2 && IsScopeAttached() || get_ScopeStatus() == 1);
 
-	HudItemData()->set_bone_visible(wpn_scope, test, TRUE);
+	HudItemData()->set_bone_visible(wpn_scope, test, true);
 
 	test = !!(get_SilencerStatus() == 2 && IsSilencerAttached() || get_SilencerStatus() == 1);
 
-	HudItemData()->set_bone_visible(wpn_silencer, test, TRUE);
+	HudItemData()->set_bone_visible(wpn_silencer, test, true);
 
 	test = !!(get_GrenadeLauncherStatus() == 2 && IsGrenadeLauncherAttached() || get_GrenadeLauncherStatus() == 1);
 
-	HudItemData()->set_bone_visible(wpn_grenade_launcher, test, TRUE);
+	HudItemData()->set_bone_visible(wpn_grenade_launcher, test, true);
 
 	for (auto& bone : m_bDefHideBones)
 	{
-		HudItemData()->set_bone_visible(bone, false, TRUE);
+		HudItemData()->set_bone_visible(bone, false, true);
 	}
 
 	for (auto& bone : m_bDefShowBones)
 	{
-		HudItemData()->set_bone_visible(bone, true, TRUE);
+		HudItemData()->set_bone_visible(bone, true, true);
 	}
 
 	if (m_bShowBonesUpgToHide.empty())
@@ -2496,17 +2496,17 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 	for (auto& bone : m_bShowBonesUpgToHide)
 	{
-		HudItemData()->set_bone_visible(bone, false, TRUE);
+		HudItemData()->set_bone_visible(bone, false, true);
 	}
 
 	for (auto& bone : m_bShowBonesUpgToShow)
 	{
-		HudItemData()->set_bone_visible(bone, true, TRUE);
+		HudItemData()->set_bone_visible(bone, true, true);
 	}
 
 	for (auto& bone : m_bHideBonesUpgrade)
 	{
-		HudItemData()->set_bone_visible(bone, false, TRUE);
+		HudItemData()->set_bone_visible(bone, false, true);
 	}
 
 	for (u32 i = 0; i < m_upgrades.size(); i++)
@@ -2514,19 +2514,19 @@ void CWeapon::UpdateHUDAddonsVisibility()
 		const char* section = pSettings->r_string(m_upgrades.at(i).c_str(), "section");
 
 		if (pSettings->line_exist(section, "show_bones"))
-			SetMultipleBonesStatus(section, "show_bones", TRUE);
+			SetMultipleBonesStatus(section, "show_bones", true);
 	}
 
 	for (auto& bone : m_bHideBonesOverride)
 	{
-		HudItemData()->set_bone_visible(bone, false, TRUE);
+		HudItemData()->set_bone_visible(bone, false, true);
 	}
 
 	if (IsSilencerAttached())
 	{
 		for (auto& bone : m_bHideBonesSilAttached)
 		{
-			HudItemData()->set_bone_visible(bone, false, TRUE);
+			HudItemData()->set_bone_visible(bone, false, true);
 		}
 	}
 
@@ -2534,7 +2534,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 	{
 		for (auto& bone : m_bHideBonesScopeAttached)
 		{
-			HudItemData()->set_bone_visible(bone, false, TRUE);
+			HudItemData()->set_bone_visible(bone, false, true);
 		}
 	}
 
@@ -2542,7 +2542,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 	{
 		for (auto& bone : m_bHideBonesGLAttached)
 		{
-			HudItemData()->set_bone_visible(bone, false, TRUE);
+			HudItemData()->set_bone_visible(bone, false, true);
 		}
 	}
 
@@ -2550,7 +2550,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 	{
 		for (auto& bone : m_bDefHideBonesGLAttached)
 		{
-			HudItemData()->set_bone_visible(bone, false, TRUE);
+			HudItemData()->set_bone_visible(bone, false, true);
 		}
 	}
 }
@@ -2627,7 +2627,7 @@ void CWeapon::UpdateAddonsVisibility()
 		const char* section = pSettings->r_string(m_upgrades.at(i).c_str(), "section");
 
 		if (pSettings->line_exist(section, "show_bones"))
-			SetMultipleBonesStatus(section, "show_bones", TRUE);
+			SetMultipleBonesStatus(section, "show_bones", true);
 
 	}
 
@@ -2669,7 +2669,7 @@ void CWeapon::UpdateAddonsVisibility()
 	}
 
 	pWeaponVisual->CalculateBones_Invalidate();
-	pWeaponVisual->CalculateBones(TRUE);
+	pWeaponVisual->CalculateBones(true);
 }
 
 void CWeapon::InitAddons()
@@ -3024,7 +3024,7 @@ void CWeapon::SwitchState(u32 S)
 		P.w_u8			(m_ammoType);
 		P.w_u8			(u8(iAmmoElapsed & 0xff));
 		P.w_u8			(m_set_next_ammoType_on_reload);
-		CHudItem::object().u_EventSend		(P, net_flags(TRUE, TRUE, FALSE, TRUE));
+		CHudItem::object().u_EventSend		(P, net_flags(true, true, false, true));
 	}
 }
 
@@ -4083,7 +4083,7 @@ void CWeapon::LoadCurrentScopeParams(const char* section)
 	if (bScopeIsHasTexture)
 	{
 		m_zoom_params.m_sUseZoomPostprocess = READ_IF_EXISTS(pSettings, r_string, section, "scope_nightvision", 0);
-		m_zoom_params.m_bUseDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, section, "scope_dynamic_zoom", FALSE);
+		m_zoom_params.m_bUseDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, section, "scope_dynamic_zoom", false);
 
 		m_zoom_params.m_sUseBinocularVision = READ_IF_EXISTS(pSettings, r_string, section, "scope_alive_detector", 0);
 
@@ -4320,7 +4320,7 @@ void CWeapon::LoadChamber()
 	//выкинуть коробку патронов, если она пустая
 	if (m_pCurrentAmmo != nullptr && !m_pCurrentAmmo->m_boxCurr && OnServer())
 	{
-		m_pCurrentAmmo->SetDropManual(TRUE);
+		m_pCurrentAmmo->SetDropManual(true);
 	}
 
 	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
@@ -4366,7 +4366,7 @@ void CWeapon::UpdateCollimatorSight()
 	{
 		for (auto& bone : m_sCollimatorSightsBones)
 		{
-			HudItemData()->set_bone_visible(bone, false, TRUE);
+			HudItemData()->set_bone_visible(bone, false, true);
 		}
 	}
 	else if (GetCondition() < bp.start_condition || current_problems_cnt > 0.0f)
@@ -4393,12 +4393,12 @@ void CWeapon::UpdateCollimatorSight()
 
 		for (auto& bone : m_sCollimatorSightsBones)
 		{
-			HudItemData()->set_bone_visible(bone, !(::Random.randF(0.0f, 1.0f) < probability), TRUE);
+			HudItemData()->set_bone_visible(bone, !(::Random.randF(0.0f, 1.0f) < probability), true);
 		}
 	}
 	else for (auto& bone : m_sCollimatorSightsBones)
 	{
-		HudItemData()->set_bone_visible(bone, true, TRUE);
+		HudItemData()->set_bone_visible(bone, true, true);
 	}
 }
 
@@ -4810,7 +4810,7 @@ void CWeapon::OnChangeVisual()
 bool CWeapon::AlwaysTheCrow()
 {
 	if (H_Parent() && H_Parent()->cast_stalker() && H_Parent()->cast_stalker()->memory().enemy().selected() && m_pInventory && m_pInventory->ActiveItem() == this && !m_strapped_mode)
-		return TRUE;
+		return true;
 
 	return inherited::AlwaysTheCrow();
 }

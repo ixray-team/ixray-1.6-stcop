@@ -230,7 +230,7 @@ Fvector CSightManager::object_position				() const
 	Fvector				look_pos;
 
 	if (const_cast<CGameObject*>(object)->cast_actor())
-		object->Visual()->dcast_PKinematics()->CalculateBBox(FALSE);
+		object->Visual()->dcast_PKinematics()->CalculateBBox(false);
 
 	object->Center		(look_pos);
 

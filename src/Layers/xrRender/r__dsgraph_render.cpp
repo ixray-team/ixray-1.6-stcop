@@ -419,7 +419,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 		for (int K=0; K<RImplementation.Sectors_xrc.r_count(); K++)
 		{
 			CPortal*	pPortal		= (CPortal*) RImplementation.Portals[RImplementation.rmPortals->get_tris()[RImplementation.Sectors_xrc.r_begin()[K].id].dummy];
-			pPortal->bDualRender	= TRUE;
+			pPortal->bDualRender	= true;
 		}
 	}
 
@@ -480,13 +480,13 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 					{
 						if ((spatial->spatial.type & ESPATIAL_TYPE::RENDERABLESHADOW) != ESPATIAL_TYPE::NONE)
 						{
-							pKin->CalculateBones(TRUE);
+							pKin->CalculateBones(true);
 						}
 						if ((spatial->spatial.type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE)
 						{
 							if(0==ViewSave.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
 							{
-								pKin->CalculateBones(TRUE);
+								pKin->CalculateBones(true);
 							}
 						}
 					}
@@ -540,7 +540,7 @@ void	R_dsgraph_structure::r_dsgraph_render_R1_box	(IRender_Sector* _S, Fbox& BB,
 			{
 				// Add all children	(s)
 				CKinematics * pV		= (CKinematics*)V;
-				pV->CalculateBones		(TRUE);
+				pV->CalculateBones		(true);
 				I = pV->children.begin	();
 				E = pV->children.end		();
 				for (; I!=E; I++)		{

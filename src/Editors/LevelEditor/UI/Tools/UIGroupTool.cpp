@@ -52,8 +52,8 @@ void UIGroupTool::Draw()
 			if (XRay::ImGui::Button("Reload Refs", { SizeX, 0 }))
 			{
 				ParentTools->ReloadRefsSelectedObject();
-				//bForceInitListBox = TRUE;
-				Tools->UpdateProperties(TRUE);
+				//bForceInitListBox = true;
+				Tools->UpdateProperties(true);
 			}
 			XRay::ImGui::TextFramed("Current: %s", { -0.01, 0 }, { 0, 0.5f}, true, m_Current.c_str() ? m_Current.c_str() : "");
 

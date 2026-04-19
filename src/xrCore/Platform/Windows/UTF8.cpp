@@ -41,7 +41,7 @@ XRCORE_API xr_string Platform::UTF8_to_CP1251(xr_string const& utf8)
 			xr_vector<wchar_t> wbuf(wchlen);
 			MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), utf8.size(), &wbuf[0], wchlen);
 			xr_vector<char> buf(wchlen);
-			WideCharToMultiByte(1251, 0, &wbuf[0], wchlen, &buf[0], wchlen, 0, 0);
+			WideCharToMultiByte(1251, 0, &wbuf[0], wchlen, &buf[0], wchlen, nullptr, nullptr);
 
 			return xr_string(&buf[0], wchlen);
 		}
@@ -60,7 +60,7 @@ XRCORE_API wchar_t* Platform::ANSI_TO_TCHAR_U8(const char* C)
 
 XRCORE_API xr_string Platform::TCHAR_TO_ANSI_U8(const wchar_t* input)
 {
-	int size = WideCharToMultiByte(CP_UTF8, 0, input, (int)wcslen(input), 0, 0,
+	int size = WideCharToMultiByte(CP_UTF8, 0, input, (int)wcslen(input), nullptr, 0,
 		nullptr, nullptr);
 
 	static thread_local char buf[256] = {};
@@ -72,7 +72,7 @@ XRCORE_API xr_string Platform::TCHAR_TO_ANSI_U8(const wchar_t* input)
 
 XRCORE_API xr_string Platform::CP_TCHAR_TO_ANSI_U8(const wchar_t* input)
 {
-	int size = WideCharToMultiByte(CP_UTF8, 0, input, (int)wcslen(input), 0, 0,
+	int size = WideCharToMultiByte(CP_UTF8, 0, input, (int)wcslen(input), nullptr, 0,
 		nullptr, nullptr);
 
 	static thread_local char buf[256] = {};

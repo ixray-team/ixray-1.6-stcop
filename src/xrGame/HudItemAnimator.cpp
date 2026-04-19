@@ -398,9 +398,9 @@ void CBurnAnimator::Load()
 	CHudAnimatorBase::Load();
 	m_burn_restore = pSettings->r_float(m_section, "burn_restore");
 
-	m_pFlameParticles = Particles::Details::Create(pSettings->r_string(m_section, "flame_particles"), FALSE);
+	m_pFlameParticles = Particles::Details::Create(pSettings->r_string(m_section, "flame_particles"), false);
 	m_pFlameParticles->m_bAutoStop = true;
-	m_pFlameParticles->SetLiveUpdate(TRUE);
+	m_pFlameParticles->SetLiveUpdate(true);
 
 	m_sounds.LoadSound(m_section.c_str(), "snd_burn", "sndBurned", true);
 }
@@ -484,7 +484,7 @@ void CBurnAnimator::Update()
 
 void CBurnAnimator::StartFlameParticle()
 {
-	m_pFlameParticles->Stop(FALSE);
+	m_pFlameParticles->Stop(false);
 
 	Fmatrix pos;
 	pos.set(get_ParticlesXFORM());

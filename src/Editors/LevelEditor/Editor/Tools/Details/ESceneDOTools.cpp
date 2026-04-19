@@ -148,7 +148,7 @@ void EDetailManager::OnObjectRemove(CCustomObject* O, bool bDeleting)
 {
 	ObjectIt it=std::find(m_SnapObjects.begin(),m_SnapObjects.end(),O);
 	if (it!=m_SnapObjects.end()){
-    	m_RTFlags.set		(flRTGenerateBaseMesh,TRUE);
+    	m_RTFlags.set		(flRTGenerateBaseMesh,true);
 		m_SnapObjects.remove(O);
     }
 }
@@ -162,7 +162,7 @@ void EDetailManager::OnSceneUpdate()
 void EDetailManager::OnFrame()
 {
     if (m_RTFlags.is(flRTGenerateBaseMesh)&&m_Base.Valid()){
-    	m_RTFlags.set		(flRTGenerateBaseMesh,FALSE);
+    	m_RTFlags.set		(flRTGenerateBaseMesh,false);
 	    m_Base.CreateRMFromObjects(m_BBox,m_SnapObjects);
     }
 }
@@ -416,7 +416,7 @@ bool EDetailManager::LoadLTX(CInifile& ini)
         if (m_Base.LoadImage(image_name))
         {
             m_Base.CreateShader();
-            m_RTFlags.set(flRTGenerateBaseMesh, TRUE);
+            m_RTFlags.set(flRTGenerateBaseMesh, true);
         }
         else
         {
@@ -606,7 +606,7 @@ bool EDetailManager::LoadStream(IReader& F)
 	    F.r_stringZ		(buf,sizeof(buf));
     	if (m_Base.LoadImage(buf)){
 		    m_Base.CreateShader();
-            m_RTFlags.set(flRTGenerateBaseMesh,TRUE);
+            m_RTFlags.set(flRTGenerateBaseMesh,true);
         }else{
         	ELog.Msg(mtError,"EDetailManager: Can't find base texture '%s'.",buf);
             ClearSlots();
@@ -715,7 +715,7 @@ bool EDetailManager::Export(const char* path)
 
     xr_string 			do_tex_name = ChangeFileExt(fn,"_details");
     int res = ImageLib.CreateMergedTexture(textures, do_tex_name.c_str(), STextureParams::tfDXT5, 256, 8192, 256, 8192, offsets, scales, rotated, remap);
-    if (1!=res)			bRes=FALSE;
+    if (1!=res)			bRes=false;
 
     pb->Inc				("export geometry");
     // objects

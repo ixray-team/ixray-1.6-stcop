@@ -72,7 +72,7 @@ bool CPhantom::net_Spawn(CSE_Abstract* DC)
 	OBJ->set_killer_id(u16(-1)); // Alundaio: Hack to prevent strange crash with dynamic phantoms
 
 	// inherited
-	if (!inherited::net_Spawn(DC)) return FALSE;
+	if (!inherited::net_Spawn(DC)) return false;
 	
 	m_enemy			= Level().CurrentEntity();
 	VERIFY			(m_enemy);
@@ -101,10 +101,10 @@ bool CPhantom::net_Spawn(CSE_Abstract* DC)
 	// set state
 	SwitchToState_internal(m_TgtState);
 
-	setVisible		(m_CurState>stIdle?TRUE:FALSE);
-	setEnabled		(TRUE);
+	setVisible		(m_CurState>stIdle?true:false);
+	setEnabled		(true);
 
-	return			TRUE;
+	return			true;
 }
 void CPhantom::net_Destroy	()
 {
@@ -143,7 +143,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
 		case stFly:			break;
 		case stContact:{
 			SStateData& sdata	= m_state_data[m_CurState];
-			PlayParticles		(sdata.particles.c_str(),FALSE,xform);
+			PlayParticles		(sdata.particles.c_str(),false,xform);
 			Fvector vE,vP;
 			m_enemy->Center		(vE);
 			Center				(vP);
@@ -154,7 +154,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
 			}break;
 		case stShoot:{
 			SStateData& sdata	= m_state_data[m_CurState];
-			PlayParticles		(sdata.particles.c_str(),FALSE,xform);
+			PlayParticles		(sdata.particles.c_str(),false,xform);
 		}break;
 		case stIdle:		break;
 		}
@@ -162,14 +162,14 @@ void CPhantom::SwitchToState_internal(EState new_state)
 		switch (new_state){
 		case stBirth:{
 			SStateData& sdata	= m_state_data[new_state];
-			PlayParticles		(sdata.particles.c_str(),TRUE,xform);
+			PlayParticles		(sdata.particles.c_str(),true,xform);
 			sdata.sound.play_at_pos(0,xform.c);
-			K->PlayCycle		(sdata.motion, TRUE, animation_end_callback, this);
+			K->PlayCycle		(sdata.motion, true, animation_end_callback, this);
 		}break;
 		case stFly:{
 			UpdateEvent.bind	(this,&CPhantom::OnFlyState);
 			SStateData& sdata	= m_state_data[new_state];
-			m_fly_particles		= PlayParticles(sdata.particles.c_str(),FALSE,xform);
+			m_fly_particles		= PlayParticles(sdata.particles.c_str(),false,xform);
 			sdata.sound.play_at_pos(0,xform.c,sm_Looped);
 			K->PlayCycle		(sdata.motion);
 		}break;
@@ -177,14 +177,14 @@ void CPhantom::SwitchToState_internal(EState new_state)
 			UpdateEvent.bind	(this,&CPhantom::OnDeadState);	
 			SStateData& sdata	= m_state_data[new_state];
 			sdata.sound.play_at_pos(0,xform.c);
-			K->PlayCycle		(sdata.motion, TRUE, animation_end_callback, this);
+			K->PlayCycle		(sdata.motion, true, animation_end_callback, this);
 		}break;
 		case stShoot:{
 			UpdateEvent.bind	(this,&CPhantom::OnDeadState);	
 			SStateData& sdata	= m_state_data[new_state];
-			PlayParticles		(sdata.particles.c_str(),TRUE,xform);
+			PlayParticles		(sdata.particles.c_str(),true,xform);
 			sdata.sound.play_at_pos(0,xform.c);
-			K->PlayCycle		(sdata.motion, TRUE, animation_end_callback, this);
+			K->PlayCycle		(sdata.motion, true, animation_end_callback, this);
 		}break;
 		case stIdle:{
 			UpdateEvent.bind	(this,&CPhantom::OnIdleState);	

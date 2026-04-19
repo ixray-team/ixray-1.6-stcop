@@ -51,7 +51,7 @@ void EParticlesObject::OnUpdateTransform()
 {
 	inherited::OnUpdateTransform	();
 	Fvector v={0.f,0.f,0.f};
-	if (m_Particles) m_Particles->UpdateParent(_Transform(),v,FALSE);
+	if (m_Particles) m_Particles->UpdateParent(_Transform(),v,false);
 }
 
 

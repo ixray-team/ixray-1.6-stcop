@@ -146,7 +146,7 @@ public:
 		void							MakeMeCrow			();
 
 	ICF	void							IAmNotACrowAnyMore	()					{ Props.crow = false;		}
-	virtual bool						AlwaysTheCrow		()					{ return FALSE;				}
+	virtual bool						AlwaysTheCrow		()					{ return false;				}
 	ICF	bool							AmICrow				() const			{ return !!Props.crow;		}
 
 	// Network
@@ -186,8 +186,8 @@ public:
 	
 	IC IRender_Sector*					Sector				()					{ return H_Root()->SpatialComponent->spatial.sector;	}
 	IC IRender_ObjectSpecific*			ROS					()					{ return renderable_ROS();			}
-	virtual bool						renderable_ShadowGenerate	()			{ return TRUE;						}
-	virtual bool						renderable_ShadowReceive	()			{ return TRUE;						}
+	virtual bool						renderable_ShadowGenerate	()			{ return true;						}
+	virtual bool						renderable_ShadowReceive	()			{ return true;						}
 
 	// Accessors and converters
 	ICF IRenderVisual*					Visual				() const			{ return renderable.visual;			}
@@ -278,7 +278,7 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 	void								processing_deactivate	();				// request	to disable	UpdateCL
 	bool								processing_enabled		()				{ return 0!=Props.bActiveCounter;	}
 
-	void                                setVisible(bool _visible, bool _visibleshadow = FALSE);
+	void                                setVisible(bool _visible, bool _visibleshadow = false);
 	ICF bool							getVisible			()			const	{ return Props.bVisible;			}
 	void								setEnabled			(bool _enabled);
 	ICF bool							getEnabled			()			const	{ return Props.bEnabled;			}
@@ -311,9 +311,9 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 	virtual void						SyncWrite			(NET_Packet& Packet) {};
 
 	virtual	void						net_ImportInput		(NET_Packet& P)	{};
-	virtual bool						net_Relevant		()				{ return FALSE; };	// relevant for export to server
-	virtual void						net_MigrateInactive	(NET_Packet& P)	{ Props.net_Local = FALSE;		};
-	virtual void						net_MigrateActive	(NET_Packet& P)	{ Props.net_Local = TRUE;		};
+	virtual bool						net_Relevant		()				{ return false; };	// relevant for export to server
+	virtual void						net_MigrateInactive	(NET_Packet& P)	{ Props.net_Local = false;		};
+	virtual void						net_MigrateActive	(NET_Packet& P)	{ Props.net_Local = true;		};
 	virtual void						net_Relcase			(CObject*	 O) { };				// destroy all links to another objects
 
 	// Position stack
