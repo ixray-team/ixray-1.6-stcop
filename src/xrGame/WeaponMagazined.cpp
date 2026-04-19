@@ -35,31 +35,6 @@
 
 CUIXml* pWpnScopeXml = nullptr;
 
-CWeaponMagazined::CWeaponMagazined()
-{
-	m_eSoundShow				= ESoundTypes(SOUND_TYPE_ITEM_TAKING);
-	m_eSoundHide				= ESoundTypes(SOUND_TYPE_ITEM_HIDING);
-	m_eSoundShot				= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
-	m_eSoundEmptyClick			= ESoundTypes(SOUND_TYPE_WEAPON_EMPTY_CLICKING);
-	m_eSoundReload				= ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING);
-	m_eSoundAim 				= ESoundTypes(SOUND_TYPE_WEAPON);
-	m_eSoundAimOut 				= ESoundTypes(SOUND_TYPE_WEAPON);
-	
-	m_sounds_enabled			= true;
-	
-	m_sSndShotCurrent			= "sndShot";
-
-	m_bFireSingleShot			= false;
-	m_iShotNum					= 0;
-	m_fOldBulletSpeed			= 0;
-	m_iQueueSize				= WEAPON_ININITE_QUEUE;
-	m_bLockType					= false;
-	bMisfireReload				= false;
-}
-
-CWeaponMagazined::~CWeaponMagazined()
-{}
-
 void CWeaponMagazined::net_Destroy()
 {
 	inherited::net_Destroy();
