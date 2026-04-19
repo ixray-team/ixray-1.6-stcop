@@ -35,7 +35,7 @@ private:
 
 public:
 	typedef _operator										COperator;
-	typedef GraphEngineSpace::CWorldState					CState;
+	typedef CWorldState										CState;
 	typedef _condition_evaluator							CConditionEvaluator;
 	typedef _operator_ptr									_operator_ptr;
 	typedef _condition_evaluator_ptr						_condition_evaluator_ptr;
