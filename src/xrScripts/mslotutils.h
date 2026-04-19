@@ -140,9 +140,9 @@ inline bool CheckMailslotMessage(HANDLE hSlot, CMailSlotMsg& msg){
  
     cbMessage = cMessage = cbRead = 0; 
 
-    hEvent = CreateEvent(NULL, FALSE, FALSE, L"__Slot");
+    hEvent = CreateEvent(NULL, false, false, L"__Slot");
     if( NULL == hEvent )
-        return FALSE;
+        return false;
     ov.Offset = 0;
     ov.OffsetHigh = 0;
     ov.hEvent = hEvent;

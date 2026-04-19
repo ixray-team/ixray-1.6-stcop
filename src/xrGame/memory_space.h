@@ -92,7 +92,7 @@ namespace MemorySpace
 
 		IC void visible(const u64& mask, bool value)
 		{
-			m_visible.set(mask, value ? true : FALSE);
+			m_visible.set(mask, value ? true : false);
 		}
 
 		IC void fill(const CGameObject* game_object, const CGameObject* self, const u64& mask, const u64& visibility_mask)

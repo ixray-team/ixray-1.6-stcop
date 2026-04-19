@@ -16,7 +16,7 @@ void CHWCaps::Update()
 	// ***************** PIXEL processing
 	raster.dwStages = 15; //unused
 
-	bTableFog = FALSE;	//bool	(caps.RasterCaps&D3DPRASTERCAPS_FOGTABLE);
+	bTableFog = false;	//bool	(caps.RasterCaps&D3DPRASTERCAPS_FOGTABLE);
 
 	// Detect if stencil available
 	bStencil = true;

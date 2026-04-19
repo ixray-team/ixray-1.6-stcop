@@ -14,10 +14,10 @@
 extern	s32		g_sv_dm_dwFragLimit;
 extern	bool	g_sv_dm_bPDAHunt;
 //-------------------------------------------------------
-bool		g_sv_tdm_bAutoTeamBalance		= FALSE;
+bool		g_sv_tdm_bAutoTeamBalance		= false;
 bool		g_sv_tdm_bAutoTeamSwap			= true;
-bool		g_sv_tdm_bFriendlyIndicators	= FALSE;
-bool		g_sv_tdm_bFriendlyNames			= FALSE;
+bool		g_sv_tdm_bFriendlyIndicators	= false;
+bool		g_sv_tdm_bFriendlyNames			= false;
 float		g_sv_tdm_fFriendlyFireModifier	= 1.0f;
 //-------------------------------------------------------
 int			g_sv_tdm_iTeamKillLimit			= 3;
@@ -633,7 +633,7 @@ bool game_sv_TeamDeathmatch::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item)
 				CSE_Abstract *e_child_item = get_entity_from_eid(item->children.back());
 				if (e_child_item)
 				{
-					if (!OnTouch(actor->ID, e_child_item->ID, FALSE))
+					if (!OnTouch(actor->ID, e_child_item->ID, false))
 					{
 						NET_Packet P;
 						u_EventGen(P,GE_OWNERSHIP_REJECT, item->ID);
@@ -663,7 +663,7 @@ bool game_sv_TeamDeathmatch::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item)
 		};
 				
 		//-------------------------------
-		return FALSE;
+		return false;
 		
 	};
 	//---------------------------------------------------------------
@@ -747,11 +747,11 @@ bool game_sv_TeamDeathmatch::OnTouch(u16 eid_who, u16 eid_what, bool bForced)
 {
 	CSE_ActorMP *e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	if (!e_who)
-		return FALSE;
+		return false;
 	
 	CSE_Abstract *e_entity = m_server->ID_to_entity(eid_what);
 	if (!e_entity )
-		return FALSE;
+		return false;
 
 	return OnTouchItem(e_who, e_entity);
 }

@@ -67,8 +67,8 @@ bool CDelayedActionFuse::Update(float current_condition)
 
 	if(ret)
 	{
-		m_dafflags.set(flActive,FALSE);
-		m_dafflags.set(flInitialized,FALSE);
+		m_dafflags.set(flActive,false);
+		m_dafflags.set(flInitialized,false);
 	}
 	return ret;
 }

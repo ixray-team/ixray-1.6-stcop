@@ -21,7 +21,7 @@ void XrGameMaterialLibraryEditors::CopyMtlPairs(SGameMtl* from, SGameMtl* to)
 
 bool XrGameMaterialLibraryEditors::UpdateMtlPairs(SGameMtl* src)
 {
-    bool bRes = FALSE;
+    bool bRes = false;
     SGameMtl* M0 = src;
     for (GameMtlIt m1_it = materials.begin(); m1_it != materials.end(); ++m1_it)
     {
@@ -46,7 +46,7 @@ bool XrGameMaterialLibraryEditors::UpdateMtlPairs(SGameMtl* src)
 
 bool XrGameMaterialLibraryEditors::UpdateMtlPairs()
 {
-    bool bRes = FALSE;
+    bool bRes = false;
     for (GameMtlIt m0_it = materials.begin(); m0_it != materials.end(); m0_it++)
         if (UpdateMtlPairs(*m0_it)) bRes = true;
     return bRes;
@@ -269,7 +269,7 @@ void XrGameMaterialLibraryEditors::Load()
 
 bool XrGameMaterialLibraryEditors::Save()
 {
-    R_ASSERT(FALSE == UpdateMtlPairs());
+    R_ASSERT(false == UpdateMtlPairs());
     // save
     CMemoryWriter fs;
     fs.open_chunk(GAMEMTLS_CHUNK_VERSION);
@@ -311,7 +311,7 @@ void SGameMtlEditor::FillProp(PropItemVec& items, ListItem* owner)
     PropValue* V = nullptr;
     PHelper().CreateRText(items, "Desc", &m_Desc);
     // flags                                                      	
-    V = PHelper().CreateFlag32(items, "Flags\\Dynamic", &Flags, flDynamic);	V->Owner()->Enable(FALSE);
+    V = PHelper().CreateFlag32(items, "Flags\\Dynamic", &Flags, flDynamic);	V->Owner()->Enable(false);
     PHelper().CreateFlag32(items, "Flags\\Passable", &Flags, flPassable);
     if (Flags.is(flDynamic))
         PHelper().CreateFlag32(items, "Flags\\Breakable", &Flags, flBreakable);
@@ -378,7 +378,7 @@ IC SGameMtlPairEditor* GetLastParentValue(SGameMtlPairEditor* who, u32 flag)
 IC bool ValidateParent(SGameMtlPair* who, SGameMtlPair* parent)
 {
     if (!parent)				return true;
-    if (who == parent)			return FALSE;
+    if (who == parent)			return false;
     else						return ValidateParent(who, GameMaterialLibraryEditors->GetMaterialPair(parent->GetParent()));
 }
 
@@ -390,7 +390,7 @@ bool SGameMtlPairEditor::SetParent(int parent)
     for (GameMtlPairIt it = GameMaterialLibraryEditors->FirstMaterialPair(); it != GameMaterialLibraryEditors->LastMaterialPair(); it++) {
         if (!ValidateParent(*it, GameMaterialLibraryEditors->GetMaterialPair((*it)->GetParent()))) {
             ID_parent = ID_parent_save;
-            return FALSE;
+            return false;
         }
     }
     // all right
@@ -720,7 +720,7 @@ void  SGameMtlPairEditor::OnDrawUI()
                 }
                 ExecCommand(COMMAND_UPDATE_PROPERTIES);
             }
-            m_EditCommand = FALSE;
+            m_EditCommand = false;
         }
         UIChooseForm::Update();
     }

@@ -69,7 +69,7 @@ CSE_Abstract::CSE_Abstract					(const char* caSection)
 {
 	m_editor_flags.zero			();
 	RespawnTime					= 0;
-	net_Ready					= FALSE;
+	net_Ready					= false;
 	ID							= 0xffff;
 	ID_Parent					= 0xffff;
 	ID_Phantom					= 0xffff;
@@ -296,7 +296,7 @@ bool CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
 	if (0==m_wVersion) {
 		tNetPacket.r_pos		-= sizeof(u16);
 		m_wVersion				= 0;
-        return					FALSE;
+        return					false;
 	}
 
 	if (m_wVersion > 69)

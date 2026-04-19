@@ -32,7 +32,7 @@ void CCar::SExhaust::Init()
 	//pelement->InterpolateGlobalTransform(&element_transform);
 	//element_transform.invert();
 	//transform.mulA(element_transform);
-	p_pgobject=Particles::Details::Create(*pcar->m_exhaust_particles,FALSE);
+	p_pgobject=Particles::Details::Create(*pcar->m_exhaust_particles,false);
 	Fvector zero_vector;
 	zero_vector.set(0.f,0.f,0.f);
 	p_pgobject->UpdateParent(pcar->XFORM(), zero_vector );

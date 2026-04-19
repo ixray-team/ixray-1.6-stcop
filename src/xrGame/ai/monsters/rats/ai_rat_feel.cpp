@@ -16,8 +16,8 @@
 bool CAI_Rat::feel_vision_isRelevant(CObject* O)
 {
 	CEntityAlive* E = O != nullptr ? O->cast_entity_alive() : nullptr;
-	if (!E) return FALSE;
-	if ((E->g_Team() == g_Team()) && (E->g_Alive())) return FALSE;
+	if (!E) return false;
+	if ((E->g_Team() == g_Team()) && (E->g_Alive())) return false;
 	return true;
 }
 

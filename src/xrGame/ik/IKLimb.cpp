@@ -260,7 +260,7 @@ bool	CIKLimb::SetGoalToLimb( const SCalculateData& cd )
 #ifdef DEBUG 
 		return !! m_limb.SetGoal( Goal( gl,  cd.goal( goal ), cd ), ph_dbg_draw_mask.test( phDbgIKLimits ) );
 #else
-		return !! m_limb.SetGoal( Goal( gl, cd.goal( goal ), cd ), FALSE );
+		return !! m_limb.SetGoal( Goal( gl, cd.goal( goal ), cd ), false );
 #endif
 }
 
@@ -912,8 +912,8 @@ u16	CIKLimb::foot_matrix_predict ( Fmatrix& foot, Fmatrix& toe, float time, IKin
 	ssaved_callback cb2( bi2 );
 	ssaved_callback cb3( bi3 );
 	Fmatrix m_b2, m_b3;
-	bi2.set_callback( bctCustom, get_matrix, &m_b2, FALSE );
-	bi3.set_callback( bctCustom, get_matrix, &m_b3, FALSE );
+	bi2.set_callback( bctCustom, get_matrix, &m_b2, false );
+	bi3.set_callback( bctCustom, get_matrix, &m_b3, false );
 
 	Kinematics()->Bone_GetAnimPos( foot, m_bones[3], u8(-1), false );
 	u16 ref_b = m_foot.get_ref_bone( m_b2, m_b3 );

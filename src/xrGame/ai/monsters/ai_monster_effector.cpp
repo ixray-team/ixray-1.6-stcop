@@ -61,7 +61,7 @@ CMonsterEffectorHit::CMonsterEffectorHit(float time, float amp, float periods, f
 
 bool CMonsterEffectorHit::ProcessCam(SCamEffectorInfo& info)
 {
-	fLifeTime -= Device.fTimeDelta; if(fLifeTime<0) return FALSE;
+	fLifeTime -= Device.fTimeDelta; if(fLifeTime<0) return false;
 
 	// процент оставшегося времени
 	float time_left_perc = fLifeTime / total;

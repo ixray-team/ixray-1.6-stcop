@@ -188,11 +188,11 @@ void CUISequencer::Start(const char* tutor_name)
 	if(m_flags.test(etsNeedPauseOn) && !m_flags.test(etsStoredPauseState))
 	{
 		Device.Pause			(true, true, true, "tutorial_start");
-		bShowPauseString		= FALSE;
+		bShowPauseString		= false;
 	}
 
 	if(m_flags.test(etsNeedPauseOff) && m_flags.test(etsStoredPauseState))
-		Device.Pause			(FALSE, true, FALSE, "tutorial_start");
+		Device.Pause			(false, true, false, "tutorial_start");
 
 	if (m_global_sound.handle())
 		m_global_sound.play(nullptr, sm_2D);
@@ -247,7 +247,7 @@ void CUISequencer::Destroy()
 	delete_data					(m_sequencer_items);
 	delete_data					(m_UIWindow);
 	IR_Release					();
-	m_flags.set					(etsActive, FALSE);
+	m_flags.set					(etsActive, false);
 	m_pStoredInputReceiver		= nullptr;
 	
 	if(!m_on_destroy_event.empty())
@@ -279,10 +279,10 @@ void CUISequencer::Stop()
 	}
 	{
 	if(m_flags.test(etsNeedPauseOn) && !m_flags.test(etsStoredPauseState))
-		Device.Pause			(FALSE, true, true, "tutorial_stop");
+		Device.Pause			(false, true, true, "tutorial_stop");
 
 	if(m_flags.test(etsNeedPauseOff) && m_flags.test(etsStoredPauseState))
-		Device.Pause			(true, true, FALSE, "tutorial_stop");
+		Device.Pause			(true, true, false, "tutorial_stop");
 	}
 	Destroy			();
 }

@@ -31,10 +31,10 @@ struct ECORE_API STextureList :
 
 						IC bool		equal (const STextureList& base) const
 						{
-							if (size()!=base.size())			return FALSE;
+							if (size()!=base.size())			return false;
 							for (u32 cmp=0; cmp<size(); cmp++)	{
-								if ((*this)[cmp].first	!=base[cmp].first)	return FALSE;
-								if ((*this)[cmp].second	!=base[cmp].second)	return FALSE;
+								if ((*this)[cmp].first	!=base[cmp].first)	return false;
+								if ((*this)[cmp].second	!=base[cmp].second)	return false;
 							}
 							return true;
 						}

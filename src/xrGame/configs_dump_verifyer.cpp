@@ -203,7 +203,7 @@ bool const configs_verifyer::verify(u8* data, u32 data_size, string256 & diff)
 
 	IReader		tmp_reader(data, data_size);
 	CInifile	tmp_ini(&tmp_reader);
-	CInifile	tmp_active_params(nullptr, FALSE, FALSE, FALSE);
+	CInifile	tmp_active_params(nullptr, false, false, false);
 	
 	string16	tmp_digit;
 	u32			ap_index = 1;

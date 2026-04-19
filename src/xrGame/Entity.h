@@ -81,7 +81,7 @@ public:
 /*	virtual*/ IC void			SetMaxHealth		(float v)	{ m_entity_condition->max_health()=v;}
 
 	/*virtual*/ IC bool		g_Alive				()const	{ return GetfHealth()>0; }
-	virtual bool			g_State				(SEntityState&) const	{return FALSE;}
+	virtual bool			g_State				(SEntityState&) const	{return false;}
 	
 			bool			AlreadyDie			()			{return  0!=GetLevelDeathTime()?true:false;}
 			ALife::_TIME_ID	GetGameDeathTime	()const		{return m_game_death_time;}

@@ -232,7 +232,7 @@ bool CPostprocessAnimator::Process(SPPInfo &PPInfo)
 	}
 
 	if(fsimilar(m_factor,0.0001f,EPS_S))
-		return FALSE;
+		return false;
 
 	return true;
 }
@@ -251,7 +251,7 @@ bool CPostprocessAnimator::Process(float dt, SPPInfo &PPInfo)
 //	PPInfo.lerp				(pp_identity, m_EffectorParams, m_factor);
 
 //	if(fsimilar(m_factor,0.001f,EPS_S))
-//		return FALSE;
+//		return false;
 
 	return true;
 }

@@ -13,8 +13,8 @@
 #include "ParticlesObject.h"
 
 #ifdef	DEBUG
-bool debug_step_info = FALSE;
-bool debug_step_info_load = FALSE;
+bool debug_step_info = false;
+bool debug_step_info_load = false;
 #endif
 
 extern float psHUDStepSoundVolume;

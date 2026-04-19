@@ -18,7 +18,7 @@ CPHObject::CPHObject()
 	m_flags.flags	=	0;
 	m_island.Init	();
 	m_check_count	=0;
-	m_flags.set(fl_collision_disable,FALSE);
+	m_flags.set(fl_collision_disable,false);
 	CPHCollideValidator::InitObject	(*this);
 }
 
@@ -44,7 +44,7 @@ void CPHObject::deactivate()
 	VERIFY2(m_island.IsActive(),"can not do it during processing");
 	ph_world->RemoveObject(PH_OBJECT_I(this));
 	vis_update_deactivate();
-	m_flags.set(st_activated,FALSE);
+	m_flags.set(st_activated,false);
 }
 
 void CPHObject::put_in_recently_deactivated()
@@ -59,7 +59,7 @@ void CPHObject::remove_from_recently_deactivated()
 {
 	if(!m_flags.test(st_recently_deactivated))return;
 	m_check_count=0;
-	m_flags.set(st_recently_deactivated,FALSE);
+	m_flags.set(st_recently_deactivated,false);
 	ph_world->RemoveFromRecentlyDisabled(PH_OBJECT_I(this));
 }
 void CPHObject::check_recently_deactivated()
@@ -120,7 +120,7 @@ void CPHObject::Collide()
 	CollideDynamics					();
 ///////////////////////////////
 	if(CPHCollideValidator::DoCollideStatic(*this) && !m_flags.test(fl_collision_disable)) CollideStatic(dSpacedGeom(),this);
-	m_flags.set(st_dirty,FALSE);
+	m_flags.set(st_dirty,false);
 }
 
 void CPHObject::CollideDynamics()
@@ -198,13 +198,13 @@ void CPHObject::FreezeContent()
 {
 	R_ASSERT(!m_flags.test(st_freezed));
 	m_flags.set(st_freezed,true);
-	m_flags.set(st_activated,FALSE);
+	m_flags.set(st_activated,false);
 	vis_update_deactivate();
 }
 void CPHObject::UnFreezeContent()
 {
 	R_ASSERT(m_flags.test(st_freezed));
-	m_flags.set(st_freezed,FALSE);
+	m_flags.set(st_freezed,false);
 	m_flags.set(st_activated,true);
 	vis_update_activate();
 }
@@ -224,13 +224,13 @@ void CPHObject::collision_disable()
 void CPHObject::collision_enable()
 {
 	spatial_register();
-	m_flags.set(fl_collision_disable,FALSE);
+	m_flags.set(fl_collision_disable,false);
 }
 
 void CPHObject::collision_dynamic_enable()
 {
 	spatial_register();
-	m_flags.set(fl_collision_disable_dynamic, FALSE);
+	m_flags.set(fl_collision_disable_dynamic, false);
 }
 void CPHObject::collision_dynamic_disable()
 {

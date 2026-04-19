@@ -44,7 +44,7 @@ void	CRenderTarget::u_setrt			(u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRende
 void	CRenderTarget::u_stencil_optimize	(bool		common_stencil)
 {
 	VERIFY	(RImplementation.o.nvstencil);
-	RCache.set_ColorWriteEnable	(FALSE);
+	RCache.set_ColorWriteEnable	(false);
 	u32		Offset;
 	float	_w					= float(RCache.get_width());
 	float	_h					= float(RCache.get_height());
@@ -584,7 +584,7 @@ void CRenderTarget::reset_light_marker( bool bResetStencil)
 	dwLightMarkerID = 5;
 	if (bResetStencil)
 	{
-		RCache.set_ColorWriteEnable	(FALSE);
+		RCache.set_ColorWriteEnable	(false);
 		u32		Offset;
 		float	_w					= float(RCache.get_width());
 		float	_h					= float(RCache.get_height());

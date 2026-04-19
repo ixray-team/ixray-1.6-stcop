@@ -17,9 +17,9 @@ class ECORE_API EDetail: public CDetail{
 		IC void			set			(const Fvector& _P, float _u, float _v){P.set(_P); u=_u; v=_v;};
 		IC bool			similar		(EVertexIn& V)
 		{
-			if (!fsimilar	(u,V.u,EPS_L))	return FALSE;
-			if (!fsimilar	(v,V.v,EPS_L))	return FALSE;
-			if (!P.similar	(V.P,EPS_L))	return FALSE;
+			if (!fsimilar	(u,V.u,EPS_L))	return false;
+			if (!fsimilar	(v,V.v,EPS_L))	return false;
+			if (!P.similar	(V.P,EPS_L))	return false;
 			return true;
 		}
 		void			remapUV		(const fvfVertexIn& src, const Fvector2& offs, const Fvector2& scale, bool bRotate);

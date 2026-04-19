@@ -203,7 +203,7 @@ bool CScriptBinder::net_SaveRelevant()
 			clear			();
 		}
 	}
-	return							(FALSE);
+	return							(false);
 }
 
 void CScriptBinder::net_Relcase		(CObject *object)

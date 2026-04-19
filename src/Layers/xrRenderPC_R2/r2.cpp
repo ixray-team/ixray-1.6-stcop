@@ -164,20 +164,20 @@ void CRender::create()
 	o.nvstencil = !!GRHI->DriverExt->GetNV();
 
 	if (Core.ParamsData.test(ECoreParams::nonvs))
-		o.nvstencil	= FALSE;
+		o.nvstencil	= false;
 
 	// nv-dbt
 	o.nvdbt = false;
 
 	// gloss
 	char*	g			= strstr(Core.Params,"-gloss ");
-	o.forcegloss		= g?	true	:FALSE	;
+	o.forcegloss		= g?	true	:false	;
 	if (g)				{
 		o.forcegloss_v		= float	(atoi	(g+xr_strlen("-gloss ")))/255.f;
 	}
 
 	// options
-	o.sunstatic			= !ps_r2_ls_flags.test(R2FLAG_SUN) ? true : FALSE;
+	o.sunstatic			= !ps_r2_ls_flags.test(R2FLAG_SUN) ? true : false;
 	o.noshadows			= Core.ParamsData.test(ECoreParams::noshadows);
 	o.Tshadows			= Core.ParamsData.test(ECoreParams::tsh);
 	o.distortion_enabled= !Core.ParamsData.test(ECoreParams::nodistort);

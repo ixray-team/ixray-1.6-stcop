@@ -789,7 +789,7 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 
 	// append application path
 	if (m_Flags.is(flScanAppRoot))
-		append_path("$app_root$", Core.ApplicationPath, nullptr, FALSE);
+		append_path("$app_root$", Core.ApplicationPath, nullptr, false);
 
 
 	//-----------------------------------------------------------
@@ -856,7 +856,7 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 			Recurse(P->m_Path);
 			I = pathes.insert(std::make_pair(xr_strdup(id), P));
 #ifndef DEBUG
-			m_Flags.set(flCacheFiles, FALSE);
+			m_Flags.set(flCacheFiles, false);
 #endif // DEBUG
 
 			CHECK_OR_EXIT(I.second, "The file 'fsgame.ltx' is corrupted (it contains duplicated lines).\nPlease reinstall the game or fix the problem manually.");
@@ -1191,7 +1191,7 @@ void CLocatorAPI::check_cached_files	(LPSTR fname, const u32 &fname_size, const 
 	if (0!=memcmp(path_base,fname,len_base))
 		return;
 
-	bool		bCopy	= FALSE;
+	bool		bCopy	= false;
 
 	string_path	fname_in_cache	;
 	update_path	(fname_in_cache,"$cache$",path_file+len_base);
@@ -1675,7 +1675,7 @@ bool CLocatorAPI::dir_delete(const char* path,const char* nm,bool remove_files)
 			if ((*end_symbol) != '\\')
 			{
 				if (!remove_files)
-					return FALSE;
+					return false;
 
 				Platform::Unlink(entry.name);
 				m_files.erase(cur_item);
@@ -1940,14 +1940,14 @@ void CLocatorAPI::rescan_path(const char* full_path, bool bRecurse)
 
 void  CLocatorAPI::rescan_pathes()
 {
-	m_Flags.set(flNeedRescan,FALSE);
+	m_Flags.set(flNeedRescan,false);
 	for (PathPairIt p_it=pathes.begin(); p_it!=pathes.end(); p_it++)
 	{
 		FS_Path* P	= p_it->second;
 		if (P->m_Flags.is(FS_Path::flNeedRescan))
 		{
 			rescan_path(P->m_Path,P->m_Flags.is(FS_Path::flRecurse));
-			P->m_Flags.set(FS_Path::flNeedRescan,FALSE);
+			P->m_Flags.set(FS_Path::flNeedRescan,false);
 		}
 	}
 }
@@ -2032,7 +2032,7 @@ bool CLocatorAPI::can_write_to_folder(const char* path)
 
 		if (hf == nullptr)
 		{
-			return FALSE;
+			return false;
 		}
 		else 
 		{
@@ -2042,7 +2042,7 @@ bool CLocatorAPI::can_write_to_folder(const char* path)
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 bool CLocatorAPI::can_write_to_alias(const char* path)
@@ -2062,7 +2062,7 @@ bool CLocatorAPI::can_modify_file(const char* fname)
 		fclose(hf);
 		return 			true;
 	}
-	return FALSE;
+	return false;
 }
 
 bool CLocatorAPI::can_modify_file(const char* path, const char* name)

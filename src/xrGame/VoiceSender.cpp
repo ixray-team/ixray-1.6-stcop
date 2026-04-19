@@ -20,5 +20,5 @@ void CVoiceSender::Send(VoicePacket** packets, u8 count)
 		P.w(packet->data, packet->length);
 	}
 
-	Level().Send(P, net_flags(FALSE, true, true, true));
+	Level().Send(P, net_flags(false, true, true, true));
 }

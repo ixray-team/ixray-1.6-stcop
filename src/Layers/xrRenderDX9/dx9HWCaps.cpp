@@ -19,10 +19,10 @@ void CHWCaps::Update()
 	// ***************** PIXEL processing
 	raster.dwStages				= caps.MaxSimultaneousTextures;
 
-	bTableFog			=	FALSE;	//bool	(caps.RasterCaps&D3DPRASTERCAPS_FOGTABLE);
+	bTableFog			=	false;	//bool	(caps.RasterCaps&D3DPRASTERCAPS_FOGTABLE);
 
 	// Detect if stencil available
-	bStencil			=	FALSE;
+	bStencil			=	false;
 	IDirect3DSurface9*	surfZS=nullptr;
 	D3DSURFACE_DESC		surfDESC;
 	CHK_DX		(RDevice->GetDepthStencilSurface(&surfZS));
@@ -39,7 +39,7 @@ void CHWCaps::Update()
 
 	// Scissoring
 	if (caps.RasterCaps & D3DPRASTERCAPS_SCISSORTEST)	bScissor	= true;
-	else												bScissor	= FALSE;
+	else												bScissor	= false;
 
 	// DEV INFO
 	iGPUNum = GRHI->DriverExt->GetGPUCount();

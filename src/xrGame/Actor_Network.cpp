@@ -55,7 +55,7 @@
 int			g_cl_InterpolationType		= 0;
 u32			g_cl_InterpolationMaxPoints = 0;
 int			g_dwInputUpdateDelta		= 20;
-bool		net_cl_inputguaranteed		= FALSE;
+bool		net_cl_inputguaranteed		= false;
 int g_start_game_vertex_id = 0;
 shared_str g_start_position_smart = nullptr;
 Fvector g_start_position {};
@@ -495,7 +495,7 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 			if (!smart_cast<CActorMP*>(this))
 			{
 				E->s_flags.set(M_SPAWN_OBJECT_LOCAL, true);
-				E->s_flags.set(M_SPAWN_OBJECT_ASPLAYER, FALSE);
+				E->s_flags.set(M_SPAWN_OBJECT_ASPLAYER, false);
 				
 				Msg("[Actor.cpp] single_actor_spawn");
 				g_actor = this;
@@ -567,8 +567,8 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 	game_news_registry->registry().init(ID());
 
 
-	if (!CInventoryOwner::net_Spawn(DC)) return FALSE;
-	if (!inherited::net_Spawn(DC))	return FALSE;
+	if (!CInventoryOwner::net_Spawn(DC)) return false;
+	if (!inherited::net_Spawn(DC))	return false;
 
 	CSE_ALifeTraderAbstract	 *pTA	= smart_cast<CSE_ALifeTraderAbstract*>(e);
 	set_money				(pTA->m_dwMoney, false);
@@ -615,7 +615,7 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 	//mstate_wishful			= 0;
 	//mstate_real				= 0;
 	//mstate_old				= 0;
-	m_bJumpKeyPressed		= FALSE;
+	m_bJumpKeyPressed		= false;
 //
 //	m_bJumpKeyPressed = ((mstate_wishful&mcJump)!=0);
 //		
@@ -732,7 +732,7 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 	
 	if (Level().IsDemoPlay() && OnClient())
 	{
-		setLocal(FALSE);
+		setLocal(false);
 	};
 	return					true;
 }

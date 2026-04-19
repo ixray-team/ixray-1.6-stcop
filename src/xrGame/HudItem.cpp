@@ -388,7 +388,7 @@ void CHudItem::SendHiddenItem()
 		NET_Packet				P;
 		object().u_EventGen		(P,GE_WPN_STATE_CHANGE,object().ID());
 		P.w_u8					(u8(eHiding));
-		object().u_EventSend	(P, net_flags(true, true, FALSE, true));
+		object().u_EventSend	(P, net_flags(true, true, false, true));
 	}
 }
 
@@ -632,7 +632,7 @@ bool CHudItem::GetHUDmode()
 		return (A && A->HUDview());
 	}
 		
-	return FALSE;
+	return false;
 }
 
 bool CHudItem::GetHUDSoundMode()
@@ -642,7 +642,7 @@ bool CHudItem::GetHUDSoundMode()
 		return (A && A->HUDview()) || HudItemData();
 	} 
 
-	return FALSE;
+	return false;
 }
 
 void CHudItem::PlayAnimIdle()
@@ -918,7 +918,7 @@ void CHudItem::SetModelBoneStatus(const char* bone, bool show)
 	{
 		if (auto BoneID = pWeaponVisual->LL_BoneID(bone); BoneID != BI_NONE)
 		{
-			pWeaponVisual->LL_SetBoneVisible(BoneID, show, FALSE);
+			pWeaponVisual->LL_SetBoneVisible(BoneID, show, false);
 		}
 	}
 }

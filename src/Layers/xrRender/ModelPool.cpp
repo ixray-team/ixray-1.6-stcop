@@ -186,7 +186,7 @@ void CModelPool::Destroy()
 
 CModelPool::CModelPool()
 {
-    bForceDiscard 			= FALSE;
+    bForceDiscard 			= false;
     bAllowChildrenDuplicate	= true; 
 	g_pMotionsContainer		= new motions_container();
 }
@@ -236,7 +236,7 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 
 		if (nullptr==Base){
 			// 2. If not found
-			bAllowChildrenDuplicate	= FALSE;
+			bAllowChildrenDuplicate	= false;
 			if (data)		Base = Instance_Load(low_name,data,true);
             else			Base = Instance_Load(low_name,true);
 			bAllowChildrenDuplicate	= true;
@@ -259,11 +259,11 @@ dxRender_Visual* CModelPool::CreateChild(const char* name, IReader* data)
 
 	// 1. Search for already loaded model
 	dxRender_Visual* Base	= Instance_Find(low_name);
-//.	if (0==Base) Base	 	= Instance_Load(name,data,FALSE);
+//.	if (0==Base) Base	 	= Instance_Load(name,data,false);
 	if(nullptr==Base)
 	{
-		if (data)		Base = Instance_Load	(low_name,data,FALSE);
-		else			Base = Instance_Load	(low_name,FALSE);
+		if (data)		Base = Instance_Load	(low_name,data,false);
+		else			Base = Instance_Load	(low_name,false);
 	}
 
     dxRender_Visual* Model	= bAllowChildrenDuplicate?Instance_Duplicate(Base):Base;
@@ -364,7 +364,7 @@ void CModelPool::Discard(dxRender_Visual*& V, bool b_complete)
 						I->model->Release();
 						xr_delete(I->model);
 						Models.erase(I);
-						bForceDiscard = FALSE;
+						bForceDiscard = false;
 					}
 					break;
 				}
@@ -410,7 +410,7 @@ void CModelPool::Prefetch()
 	{
 		const CInifile::Item& item = *I;
 		dxRender_Visual* V = Create(item.first.c_str());
-		Delete(V, FALSE);
+		Delete(V, false);
 	}
 }
 

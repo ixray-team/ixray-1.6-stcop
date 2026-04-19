@@ -17,7 +17,7 @@ void CWeaponSVD::OnAnimationEnd(u32 state)
 	switch(state) 
 	{
 	case eFire:	{
-		SetPending			(FALSE);
+		SetPending			(false);
 		}break;	// End of reload animation
 	}
 	inherited::OnAnimationEnd(state);

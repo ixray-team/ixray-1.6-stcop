@@ -218,7 +218,7 @@ void	CDS0_KinematicsAnimated::LL_FadeCycle(u16 part, float falloff, u8 mask_chan
 		B.set_falloff_state();
 		B.blendFalloff = falloff;
 		//B.blendAccrue		= B.timeCurrent;
-		if (B.stop_at_end)  B.stop_at_end_callback = FALSE;		// callback �� ������ ���������!
+		if (B.stop_at_end)  B.stop_at_end_callback = false;		// callback �� ������ ���������!
 	}
 }
 void	CDS0_KinematicsAnimated::LL_CloseCycle(u16 part, u8 mask_channel /*= (1<<0)*/)
@@ -312,13 +312,13 @@ void CDS0_KinematicsAnimated::IFXBlendSetup(CBlend& B, MotionID motion_ID, float
 
 	B.playing = true;
 	B.stop_at_end_callback = true;
-	B.stop_at_end = FALSE;
+	B.stop_at_end = false;
 	//
 	B.Callback = 0;
 	B.CallbackParam = 0;
 
 	B.channel = 0;
-	B.fall_at_end = FALSE;
+	B.fall_at_end = false;
 }
 CBlend* CDS0_KinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool  bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam, u8 channel/*=0*/)
 {
@@ -503,7 +503,7 @@ void	CDS0_KinematicsAnimated::LL_UpdateFxTracks(float dt)
 		CBlend& B = *(*I);
 		if (!B.stop_at_end_callback)
 		{
-			B.playing = FALSE;
+			B.playing = false;
 			continue;
 		}
 		//B.timeCurrent += dt*B.speed;

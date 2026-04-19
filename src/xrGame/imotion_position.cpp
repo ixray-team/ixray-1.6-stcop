@@ -17,9 +17,9 @@
 #endif
 
 #ifdef	DEBUG
-bool dbg_imotion_draw_skeleton = FALSE;
-bool dbg_imotion_draw_velocity = FALSE;
-bool dbg_imotion_collide_debug = FALSE;
+bool dbg_imotion_draw_skeleton = false;
+bool dbg_imotion_draw_velocity = false;
+bool dbg_imotion_collide_debug = false;
 float dbg_imotion_draw_velocity_scale = 0.01f;
 
 #endif
@@ -181,7 +181,7 @@ void imotion_position::state_start( )
 	obj->processing_activate();
 	shell->Disable( );
 	//K->LL_SetBoneRoot( 0 );
-	shell->EnabledCallbacks( FALSE );
+	shell->EnabledCallbacks( false );
 	init_bones();
 
 
@@ -304,12 +304,12 @@ void	imotion_position::state_end( )
 	if( root!=0 )
 	{
 		K->LL_GetTransform( 0 ).set( Fidentity );
-		K->LL_SetBoneVisible( 0, FALSE, FALSE );
+		K->LL_SetBoneVisible( 0, false, false );
 		u16 bip01 = K->LL_BoneID( "bip01" );
 		if( bip01 != BI_NONE && bip01 != root )
 		{
 			K->LL_GetTransform( bip01 ).set( Fidentity );
-			K->LL_SetBoneVisible( bip01, FALSE, FALSE );
+			K->LL_SetBoneVisible( bip01, false, false );
 		}
 	}
 

@@ -94,7 +94,7 @@ template <class T>
 bool TokenOnEdit(PropItem* prop, bool& change)
 {
 	TokenValue<T>* V = dynamic_cast<TokenValue<T>*>(prop->GetFrontValue());
-	if (!V)					return FALSE;
+	if (!V)					return false;
 	T edit_value  = V->GetValue();
 	prop->BeforeEdit<TokenValue<T>, T>(edit_value);
 	int index = 0; 
@@ -122,7 +122,7 @@ template <class T>
 bool RTokenOnEdit(PropItem* prop, bool& change)
 {
 	RTokenValue<T>* V = dynamic_cast<RTokenValue<T>*>(prop->GetFrontValue());
-	if (!V)					return FALSE;
+	if (!V)					return false;
 	T edit_value = V->GetValue();
 	prop->BeforeEdit<RTokenValue<T>, T>(edit_value);
 	int index = 0;
@@ -150,7 +150,7 @@ template <class T>
 bool FlagOnEdit(PropItem* prop, bool& change)
 {
 	FlagValue<_flags<T> >* V = dynamic_cast<FlagValue<_flags<T> >*>(prop->GetFrontValue());
-	if (!V)					return FALSE;
+	if (!V)					return false;
 	_flags<T> new_val = V->GetValue();
 
 	prop->BeforeEdit<FlagValue<_flags<T> >, _flags<T> >(new_val);

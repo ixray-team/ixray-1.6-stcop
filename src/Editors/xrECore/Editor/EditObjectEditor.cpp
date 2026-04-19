@@ -354,7 +354,7 @@ void CEditableObject::DefferedUnloadRP()
 		(*s_it)->OnDeviceDestroy();
 	// LOD
 	m_LODShader.destroy();
-	m_LoadState.set(LS_RBUFFERS,FALSE);
+	m_LoadState.set(LS_RBUFFERS,false);
 }
 void CEditableObject::EvictObject()
 {

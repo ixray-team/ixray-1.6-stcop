@@ -31,8 +31,8 @@ CTexture::CTexture		()
 	flags.MemoryUsage	= 0;
 	flags.bLoaded		= false;
 	flags.bUser			= false;
-	flags.seqCycles		= FALSE;
-	flags.bLoadedAsStaging = FALSE;
+	flags.seqCycles		= false;
+	flags.bLoadedAsStaging = false;
 	m_material			= 1.0f;
 	can_unload = true;
 	bind				= xr_make_delegate(this,&CTexture::apply_load);
@@ -185,7 +185,7 @@ void CTexture::ProcessStaging()
 
 	GRHI->CopySurface(pTargetSurface, pSurface);
 
-	flags.bLoadedAsStaging = FALSE;
+	flags.bLoadedAsStaging = false;
 
 	//	Check if texture was not copied _before_ it was converted.
 	pSurface->Release();
@@ -433,7 +433,7 @@ void CTexture::Load()
 		string256 buffer;
 		IReader* _fs = FS.r_open(fn);
 
-		flags.seqCycles = FALSE;
+		flags.seqCycles = false;
 		_fs->r_string(buffer, sizeof(buffer));
 		if (0 == _stricmp(buffer, "cycled"))
 		{

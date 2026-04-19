@@ -159,7 +159,7 @@ void EScene::SelectSnapList()
 {
     ObjectList* snap_objects = GetSnapList(true);
     if (snap_objects){
-        SelectObjects(FALSE,OBJCLASS_SCENEOBJECT);
+        SelectObjects(false,OBJCLASS_SCENEOBJECT);
         for(ObjectIt _F = snap_objects->begin();_F!=snap_objects->end();_F++)
             (*_F)->Select(true);
         UI->RedrawScene();
@@ -185,5 +185,5 @@ void EScene::UpdateSnapListReal()
 	// visual update
 	//if (fraLeftBar) fraLeftBar->UpdateSnapList();
 
-    m_RTFlags.set(flUpdateSnapList, FALSE);
+    m_RTFlags.set(flUpdateSnapList, false);
 }

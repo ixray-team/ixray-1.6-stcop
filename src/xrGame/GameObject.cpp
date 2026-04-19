@@ -113,7 +113,7 @@ void CGameObject::net_Destroy	()
 		Visual()->dcast_PKinematics()->Callback(0,0);
 
 	inherited::net_Destroy						();
-	setReady									(FALSE);
+	setReady									(false);
 	
 	if (Level().IsDemoPlayStarted() && ID() == u16(-1))
 	{
@@ -301,7 +301,7 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	{
 		if (!demo_spectator)
 		{
-			setLocal(FALSE);
+			setLocal(false);
 		}
 	};
 

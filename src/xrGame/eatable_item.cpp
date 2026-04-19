@@ -89,7 +89,7 @@ bool CEatableItem::net_Spawn(CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC))
 	{
-		return FALSE;
+		return false;
 	}
 
 	if (IsUsingCondition())
@@ -139,8 +139,8 @@ void CEatableItem::OnH_B_Independent(bool just_before_destroy)
 {
 	if (!Useful())
 	{
-		object().setVisible(FALSE);
-		object().setEnabled(FALSE);
+		object().setVisible(false);
+		object().setEnabled(false);
 		if (m_physic_item != nullptr)
 		{
 			m_physic_item->m_ready_to_destroy = true;

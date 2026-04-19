@@ -17,7 +17,7 @@
 
 #define			MAPROT_LIST_NAME		"maprot_list.ltx"
 string_path		MAPROT_LIST		= "";
-bool	net_sv_control_hit	= FALSE		;
+bool	net_sv_control_hit	= false		;
 bool	g_bCollectStatisticData = true;
 //-----------------------------------------------------------------
 u32		g_sv_base_dwRPointFreezeTime	= 0;

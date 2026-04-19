@@ -37,18 +37,18 @@
 
 u32		g_dwMaxCorpses = 10;
 //-----------------------------------------------------------------
-bool		g_sv_mp_bSpectator_FreeFly		= FALSE;
+bool		g_sv_mp_bSpectator_FreeFly		= false;
 bool		g_sv_mp_bSpectator_FirstEye		= true;
 bool		g_sv_mp_bSpectator_LookAt		= true;
 bool		g_sv_mp_bSpectator_FreeLook		= true;
 bool		g_sv_mp_bSpectator_TeamCamera	= true;
 int			g_sv_mp_iDumpStatsPeriod		= 0;
 int			g_sv_mp_iDumpStats_last			= 0;
-bool		g_sv_mp_bCountParticipants		= FALSE;
+bool		g_sv_mp_bCountParticipants		= false;
 float		g_sv_mp_fVoteQuota				= VOTE_QUOTA;
 float		g_sv_mp_fVoteTime				= VOTE_LENGTH_TIME;
-bool		g_sv_mp_save_proxy_screenshots	= FALSE;
-bool		g_sv_mp_save_proxy_configs		= FALSE;
+bool		g_sv_mp_save_proxy_screenshots	= false;
+bool		g_sv_mp_save_proxy_configs		= false;
 //-----------------------------------------------------------------
 u32			g_sv_adm_menu_ban_time			= 600;
 int			g_sv_adm_menu_ping_limit		= 25;
@@ -370,7 +370,7 @@ void	game_sv_mp::KillPlayer				(ClientID id_who, u16 GameID)
 	P.w_u16				(PlayerID);
 	P.w_clientID		(id_who);
 
-	u_EventSend(P, net_flags(true, true, FALSE, true));
+	u_EventSend(P, net_flags(true, true, false, true));
 	
 	if (xrCData) SetPlayersDefItems		(xrCData->ps);
 	signal_Syncronize();
@@ -1978,7 +1978,7 @@ void game_sv_mp::DumpOnlineStatistic()
 	string64					t_stamp;
 	timestamp					(t_stamp);
 
-	CInifile					ini(fn, FALSE, FALSE, true);
+	CInifile					ini(fn, false, false, true);
 	shared_str					current_section = "global";
 	string256					str_buff;
 
@@ -2182,7 +2182,7 @@ void game_sv_mp::DumpRoundStatistics()
 	if ( !g_sv_mp_iDumpStatsPeriod ) return;
 	if ( !xr_strlen(round_statistics_dump_fn) ) return;
 
-	CInifile					ini(round_statistics_dump_fn, FALSE, FALSE, true);
+	CInifile					ini(round_statistics_dump_fn, false, false, true);
 	shared_str					current_section = "global";
 	string256					str_buff;
 

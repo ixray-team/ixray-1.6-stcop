@@ -58,7 +58,7 @@ void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Pack
 	}
 	else				
 	{
-		E->Spawn_Write	(P, FALSE);
+		E->Spawn_Write	(P, false);
 		E->UPDATE_Write	(P);
 
 		if (g_pGamePersistent->GameType() == eGameIDFreeMP)
@@ -86,7 +86,7 @@ void xrServer::SendConnectionData(IClient* _CL)
 	NET_Packet		P;
 	// Replicate current entities on to this client
 	xrS_entities::iterator	I=entities.begin(),E=entities.end();
-	for (; I!=E; ++I)						I->second->net_Processed	= FALSE;
+	for (; I!=E; ++I)						I->second->net_Processed	= false;
 	for (I=entities.begin(); I!=E; ++I)		Perform_connect_spawn		(I->second,CL,P);
 
 	// Start to send server logo and rules
@@ -193,7 +193,7 @@ void xrServer::Check_GameSpy_CDKey_Success			(IClient* CL)
 	RequestClientDigest(CL);
 };
 
-bool	g_SV_Disable_Auth_Check = FALSE;
+bool	g_SV_Disable_Auth_Check = false;
 
 bool xrServer::NeedToCheckClient_BuildVersion		(IClient* CL)	
 {
@@ -208,7 +208,7 @@ bool xrServer::NeedToCheckClient_BuildVersion		(IClient* CL)
 
 
 	if (g_SV_Disable_Auth_Check) return false;
-	CL->flags.bVerified = FALSE;
+	CL->flags.bVerified = false;
 	NET_Packet	P;
 	P.w_begin	(M_AUTH_CHALLENGE);
 	SendTo		(CL->ID, P);

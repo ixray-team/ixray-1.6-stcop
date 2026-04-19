@@ -28,7 +28,7 @@ CAnomalyZone::CAnomalyZone(void)
 	m_fMaxPower					= 100.f;
 	m_fAttenuation				= 1.f;
 	m_fEffectiveRadius			= 1.0f;
-	m_zone_flags.set			(eZoneIsActive, FALSE);
+	m_zone_flags.set			(eZoneIsActive, false);
 	m_eHitTypeBlowout			= ALife::eHitTypeWound;
 	m_pIdleParticles			= nullptr;
 	m_pLight					= nullptr;
@@ -48,8 +48,8 @@ CAnomalyZone::CAnomalyZone(void)
 	m_owner_id					= u32(-1);
 
 	m_actor_effector			= nullptr;
-	m_zone_flags.set			(eIdleObjectParticlesDontStop, FALSE);
-	m_zone_flags.set			(eBlowoutWindActive, FALSE);
+	m_zone_flags.set			(eIdleObjectParticlesDontStop, false);
+	m_zone_flags.set			(eBlowoutWindActive, false);
 	m_zone_flags.set			(eFastMode, true);
 
 	m_eZoneState				= eZoneStateIdle;
@@ -161,7 +161,7 @@ void CAnomalyZone::Load(const char* section)
 	if(pSettings->line_exist(section,"blowout_particles")) 
 		m_sBlowoutParticles = pSettings->r_string(section,"blowout_particles");
 
-	m_bBlowoutOnce = FALSE;
+	m_bBlowoutOnce = false;
 	if (pSettings->line_exist(section, "blowout_once"))
 		m_bBlowoutOnce		= pSettings->r_bool(section,"blowout_once");
 
@@ -335,7 +335,7 @@ void CAnomalyZone::Load(const char* section)
 bool CAnomalyZone::net_Spawn(CSE_Abstract* DC) 
 {
 	if (!inherited::net_Spawn(DC))
-		return					(FALSE);
+		return					(false);
 
 	CSE_Abstract				*e = (CSE_Abstract*)(DC);
 	CSE_ALifeAnomalyZone			*Z = smart_cast<CSE_ALifeAnomalyZone*>(e);
@@ -554,7 +554,7 @@ void CAnomalyZone::UpdateCL		()
 void CAnomalyZone::shedule_Update(u32 dt)
 {
 	PROF_EVENT("CAnomalyZone::shedule_Update");
-	m_zone_flags.set(eZoneIsActive, FALSE);
+	m_zone_flags.set(eZoneIsActive, false);
 
 	if (IsEnabled())
 	{
@@ -673,21 +673,21 @@ void CAnomalyZone::feel_touch_delete(CObject* O)
 
 bool CAnomalyZone::feel_touch_contact(CObject* O) 
 {
-	if (!O || O->getDestroy()) return FALSE;
+	if (!O || O->getDestroy()) return false;
 	CGameObject* pGameObject = O->cast_game_object();
-	if (!pGameObject)							return FALSE;
-	if (pGameObject->cast_anomaly_zone())		return FALSE;
-	if (pGameObject->cast_breakable_object())	return FALSE;
-	if (0==PKinematics(O->Visual()))			return FALSE;
+	if (!pGameObject)							return false;
+	if (pGameObject->cast_anomaly_zone())		return false;
+	if (pGameObject->cast_breakable_object())	return false;
+	if (0==PKinematics(O->Visual()))			return false;
 
 	if (O->ID() == ID())
-		return		(FALSE);
+		return		(false);
 
     if (!pGameObject->IsVisibleForZones())
-		return		(FALSE);
+		return		(false);
 
 	if (!((CCF_Shape*)CFORM())->Contact(O))
-		return		(FALSE);
+		return		(false);
 
 	return			(pGameObject->feel_touch_on_contact(this));
 }
@@ -722,7 +722,7 @@ void CAnomalyZone::PlayIdleParticles(bool bIdleLight)
 	{
 		if (!m_pIdleParticles)
 		{
-			m_pIdleParticles = Particles::Details::Create(m_sIdleParticles.c_str(),FALSE);
+			m_pIdleParticles = Particles::Details::Create(m_sIdleParticles.c_str(),false);
 			m_pIdleParticles->UpdateParent(XFORM(),zero_vel);
 			m_pIdleParticles->Play(false);
 		}
@@ -737,7 +737,7 @@ void CAnomalyZone::StopIdleParticles(bool bIdleLight)
 
 	if(m_pIdleParticles)
 	{
-		m_pIdleParticles->Stop(FALSE);
+		m_pIdleParticles->Stop(false);
 		Particles::Details::Destroy(m_pIdleParticles);
 	}
 
@@ -1332,7 +1332,7 @@ void CAnomalyZone::StartWind()
 void CAnomalyZone::StopWind()
 {
 	if(!m_zone_flags.test(eBlowoutWindActive)) return;
-	m_zone_flags.set(eBlowoutWindActive, FALSE);
+	m_zone_flags.set(eBlowoutWindActive, false);
 	g_pGamePersistent->Environment().wind_strength_factor = m_fStoreWindPower;
 }
 
@@ -1519,7 +1519,7 @@ void CAnomalyZone::GoEnabledState()
 bool CAnomalyZone::feel_touch_on_contact	(CObject *O)
 {
 	if ((SpatialComponent->spatial.type & ESPATIAL_TYPE::VISIBLEFORAI) == ESPATIAL_TYPE::NONE)
-		return			(FALSE);
+		return			(false);
 
 	return				(inherited::feel_touch_on_contact(O));
 }
@@ -1620,7 +1620,7 @@ void CAnomalyZone::o_switch_2_fast				()
 void CAnomalyZone::o_switch_2_slow				()
 {
 	if (!m_zone_flags.test(eFastMode))	return	;
-	m_zone_flags.set(eFastMode, FALSE);
+	m_zone_flags.set(eFastMode, false);
 	if ( !light_in_slow_mode() )
 	{
 		StopIdleLight();

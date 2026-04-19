@@ -407,7 +407,7 @@ void CGameTaskManager::UpdateActiveTask()
 		}
 	}
 
-	m_flags.set					(eChanged, FALSE);
+	m_flags.set					(eChanged, false);
 	m_actual_frame				= Device.dwFrame;
 }
 

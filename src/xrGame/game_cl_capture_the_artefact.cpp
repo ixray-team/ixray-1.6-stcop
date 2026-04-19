@@ -48,10 +48,10 @@ game_cl_CaptureTheArtefact::game_cl_CaptureTheArtefact()
 	m_game_ui = nullptr;
 	spawn_cost = -10000;
 
-	m_bTeamSelected = FALSE;
-	m_bSkinSelected = FALSE;
-	m_bReadMapDesc = FALSE;
-	m_winnerTeamShowed = FALSE;
+	m_bTeamSelected = false;
+	m_bSkinSelected = false;
+	m_bReadMapDesc = false;
+	m_winnerTeamShowed = false;
 	
 	m_curReinforcementTime = 0;
 	m_maxReinforcementTime = 0;
@@ -182,7 +182,7 @@ void game_cl_CaptureTheArtefact::shedule_Update(u32 dt)
 				{
 					m_game_ui->ShowTeamPanels(true);
 				}
-				m_winnerTeamShowed = FALSE;
+				m_winnerTeamShowed = false;
 			}break;
 		case GAME_PHASE_PLAYER_SCORES:
 			{
@@ -532,7 +532,7 @@ void game_cl_CaptureTheArtefact::LoadSndMessages()
 bool game_cl_CaptureTheArtefact::CanCallBuyMenu()
 {
 	if (!is_buy_menu_ready())
-		return FALSE;
+		return false;
 
 	if (!local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 	{
@@ -540,7 +540,7 @@ bool game_cl_CaptureTheArtefact::CanCallBuyMenu()
 	}
 	if (local_player->team == etSpectatorsTeam)
 	{
-		return FALSE;
+		return false;
 	}
 	return true;
 }
@@ -549,7 +549,7 @@ bool game_cl_CaptureTheArtefact::CanCallInventoryMenu()
 {
 	if (local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 	{
-		return FALSE;
+		return false;
 	}
 	return true;
 }
@@ -661,7 +661,7 @@ void game_cl_CaptureTheArtefact::OnGameMenuRespond_ChangeSkin(NET_Packet& P)
 	s8 NewSkin = P.r_s8();
 	local_player->skin				= NewSkin;
 	m_bSkinSelected					= true;
-	m_bSpectatorSelected			= FALSE;
+	m_bSpectatorSelected			= false;
 	Msg("* player [%s][%d] changed skin to %d", local_player->getName(), local_player->GameID, local_player->skin);
 	//SpawnMe();
 }
@@ -981,20 +981,20 @@ bool game_cl_CaptureTheArtefact::CanCallTeamSelectMenu			()
 	VERIFY2(local_player, "local player not initialized");
 	if (Phase() != GAME_PHASE_INPROGRESS)
 	{
-		return FALSE;
+		return false;
 	}
 	if (m_game_ui->IsTeamSelectShown())
 	{
-		return FALSE;
+		return false;
 	};
 
 	/*if (pCurBuyMenu && pCurBuyMenu->IsShown())
 	{
-		return FALSE;
+		return false;
 	};
 	if (pCurSkinMenu && pCurSkinMenu->IsShown())
 	{
-		return FALSE;
+		return false;
 	};
 
 	m_game_ui->m_pUITeamSelectWnd->SetCurTeam(ModifyTeam(local_player->team));*/
@@ -1073,8 +1073,8 @@ void game_cl_CaptureTheArtefact::OnBuySpawnMenu_Ok		()
 
 void game_cl_CaptureTheArtefact::OnSpectatorSelect()
 {
-	m_bTeamSelected = FALSE;
-	m_bSkinSelected = FALSE;
+	m_bTeamSelected = false;
+	m_bSkinSelected = false;
 	inherited::OnSpectatorSelect();
 }
 
@@ -1395,7 +1395,7 @@ void game_cl_CaptureTheArtefact::OnTeamSelect(int Team)
 		//P.w_u32			(0);
 		u_EventSend(P);
 		//-----------------------------------------------------------------
-		m_bSkinSelected = FALSE;
+		m_bSkinSelected = false;
 	};
 	//-----------------------------------------------------------------
 	m_bTeamSelected = true;	

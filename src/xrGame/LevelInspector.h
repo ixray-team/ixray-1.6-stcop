@@ -129,9 +129,9 @@ struct LevelInspector final
 
 	bool zbuffer_enable = true;
 	bool visible_currents = true;
-	bool hud_mode = FALSE;
+	bool hud_mode = false;
 
-	LevelInspector(bool hm = FALSE);
+	LevelInspector(bool hm = false);
 	~LevelInspector();
 
 	void OnRender();

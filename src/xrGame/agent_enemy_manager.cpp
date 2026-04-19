@@ -186,8 +186,8 @@ void CAgentEnemyManager::exchange_enemies		(CMemberOrder &member0, CMemberOrder 
 	u32								enemy1 = member1.selected_enemy();
 	u64					mask0 = object().member().mask(&member0.object());
 	u64					mask1 = object().member().mask(&member1.object());
-	m_enemies[enemy0].m_distribute_mask.set(mask0,FALSE);
-	m_enemies[enemy1].m_distribute_mask.set(mask1,FALSE);
+	m_enemies[enemy0].m_distribute_mask.set(mask0,false);
+	m_enemies[enemy1].m_distribute_mask.set(mask1,false);
 	m_enemies[enemy0].m_distribute_mask.set(mask1,true);
 	m_enemies[enemy1].m_distribute_mask.set(mask0,true);
 	member0.selected_enemy			(enemy1);

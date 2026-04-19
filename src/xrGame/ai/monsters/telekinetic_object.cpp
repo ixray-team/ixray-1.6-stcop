@@ -50,7 +50,7 @@ bool CTelekineticObject::init(CTelekinesis* tele,CPhysicsShellHolder *obj, float
 	m_rotate			= rot;
 
 	if(object->m_pPhysicsShell)
-		object->m_pPhysicsShell->set_ApplyByGravity(FALSE);
+		object->m_pPhysicsShell->set_ApplyByGravity(false);
 
 
 	return true;

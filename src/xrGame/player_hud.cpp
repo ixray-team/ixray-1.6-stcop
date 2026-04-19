@@ -352,7 +352,7 @@ void attachable_hud_item::set_bone_visible(const shared_str& bone_name, bool bVi
 	}
 	bVisibleNow		= m_model->LL_GetBoneVisible	(bone_id);
 	if(bVisibleNow!=bVisibility)
-		m_model->LL_SetBoneVisible	(bone_id,bVisibility, FALSE);
+		m_model->LL_SetBoneVisible	(bone_id,bVisibility, false);
 }
 
 void attachable_hud_item::update(bool bForce)
@@ -1522,7 +1522,7 @@ void player_hud::render_hud()
 			}
 
 			auto bHud = ::Render->get_HUD();
-			::Render->set_HUD(FALSE);
+			::Render->set_HUD(false);
 
 			::Render->set_Transform(&Actor()->XFORM());
 			::Render->add_Visual(m_legs_model->dcast_RenderVisual(), true);
@@ -1954,7 +1954,7 @@ void player_hud::detach_item_idx(u16 idx)
 	}
 	else if(idx==0 && m_attached_items[1])
 	{
-		m_model->PlayCycle(2, m_model->ID_Cycle("hand_idle_doun"), FALSE);
+		m_model->PlayCycle(2, m_model->ID_Cycle("hand_idle_doun"), false);
 		m_attached_items[1]->m_parent_hud_item->OnMovementChanged(mcAnyMove);
 	}
 }

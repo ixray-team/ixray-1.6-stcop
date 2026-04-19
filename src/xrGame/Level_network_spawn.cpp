@@ -94,7 +94,7 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 
 	// Optimization for single-player only	- minimize traffic between client and server
 	if	(GameID()	== eGameIDSingle)		psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,true);
-	else								psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,FALSE);
+	else								psNET_Flags.set	(NETFLAG_MINIMIZEUPDATES,false);
 
 	// Client spawn
 //	T.Start		();

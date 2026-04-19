@@ -26,7 +26,7 @@
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= nullptr;
 ENGINE_API bool g_dedicated_server  = false;
-bool	g_bIntroFinished			= FALSE;
+bool	g_bIntroFinished			= false;
 extern	void	Intro				( void* fn );
 extern	void	Intro_DSHOW			( void* fn );
 //int		max_load_stage = 0;
@@ -302,14 +302,14 @@ struct damn_keys_filter {
 	{
 		// Screen saver stuff
 
-		bScreenSaverState = FALSE;
+		bScreenSaverState = false;
 
 		// Saveing current state
 		SystemParametersInfo( SPI_GETSCREENSAVEACTIVE , 0 , ( PVOID ) &bScreenSaverState , 0 );
 
 		if ( bScreenSaverState )
 			// Disable screensaver
-			SystemParametersInfo( SPI_SETSCREENSAVEACTIVE , FALSE , nullptr , 0 );
+			SystemParametersInfo( SPI_SETSCREENSAVEACTIVE , false , nullptr , 0 );
 
 		dwStickyKeysFlags = 0;
 		dwFilterKeysFlags = 0;

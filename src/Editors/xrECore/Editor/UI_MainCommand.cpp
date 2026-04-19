@@ -27,7 +27,7 @@
 
 
 ECommandVec 		ECommands;
-bool 				bAllowReceiveCommand	= FALSE;
+bool 				bAllowReceiveCommand	= false;
 bool 				bAllowLogCommands		= false;
 //TfrmText*			frmEditCommandList		= 0;
 xr_string			sCommandListText;
@@ -265,7 +265,7 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
 		FS.update_path(fn, _local_root_, fn);
 		string_path 			si_name;
 		FS.update_path(si_name, "$game_config$", "system.ltx");
-		pSettings = new CInifile(si_name, true);// FALSE,true,true);
+		pSettings = new CInifile(si_name, true);// false,true,true);
 
 		g_pStringTable = new CStringTable();
 
@@ -622,7 +622,7 @@ CCommandVar 	ExecuteCommandList(const char* text)
 				SESubCommand* SUB= FindSubCommandByName(CMD,sub_cmd_name.c_str());
 				if (!sub_cmd_name.empty()&&!SUB){
 					ELog.DlgMsg	(mtError,"Can't find sub-command: '%s'",sub_cmd_name.c_str());
-					res			= FALSE;
+					res			= false;
 					break;
 				}
 				// parse params
@@ -634,14 +634,14 @@ CCommandVar 	ExecuteCommandList(const char* text)
 				ParseParam		(sp1,p1);
 				ParseParam		(sp2,p2);
 				// execute command
-				if (FALSE==ExecCommand(CMD->idx,p1,p2)){	
+				if (false==ExecCommand(CMD->idx,p1,p2)){	
 					ELog.DlgMsg	(mtError,"Can't execute command: '%s'",cmd.c_str());
-					res			= FALSE;
+					res			= false;
 					break;
 				}
 			}else{
 				ELog.DlgMsg		(mtError,"Can't find command: '%s'",cmd.c_str());
-				res				= FALSE;
+				res				= false;
 				break;
 			}
 		}
@@ -675,7 +675,7 @@ CCommandVar 	CommandEditCommandList(CCommandVar _p1, CCommandVar _p2)
 	//	frmEditCommandList	= TfrmText::CreateForm(sCommandListText,"Execute command list",0,0,"Run",OnRunExecuteListClick,OnCloseCommandListEditor);
 		return true;
 	}*/
-	return FALSE;
+	return false;
 }
 
 CCommandVar 	CommandLogCommands(CCommandVar _p1, CCommandVar _p2)
@@ -703,7 +703,7 @@ CCommandVar 	CommandRunMacro(CCommandVar p1, CCommandVar p2)
 		fn 				= xr_string(SUB->p0);
 		return ExecCommand(COMMAND_RUN_MACRO,fn,p2);
 	}
-	return 				FALSE;
+	return 				false;
 }
 CCommandVar 	CommandAssignMacro(CCommandVar p1, CCommandVar p2)
 {
@@ -717,7 +717,7 @@ CCommandVar 	CommandAssignMacro(CCommandVar p1, CCommandVar p2)
 		if (EFS.GetOpenName(_import_,fn,false, nullptr,2))
 			return 		ExecCommand	(COMMAND_ASSIGN_MACRO,p1,fn);
 	}
-	return FALSE;
+	return false;
 }
 void TUI::RegisterCommands()
 {

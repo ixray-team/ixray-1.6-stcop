@@ -105,7 +105,7 @@ CEffect_Thunderbolt::CEffect_Thunderbolt()
 	life_time	= 0.f;
     state		= stIdle;
     next_lightning_time = 0.f;
-    bEnabled	= FALSE;
+    bEnabled	= false;
 
     // geom
 	//hGeom_model.create	(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RCache.Vertex.Buffer(), RCache.Index.Buffer());

@@ -128,8 +128,8 @@ bool	CDetailManager::cache_Validate	()
 			int		w_z		= cg2w_Z(z);
 			Slot*	D		= cache[z][x];
 
-			if (D->sx	!= w_x)	return FALSE;
-			if (D->sz	!= w_z)	return FALSE;
+			if (D->sx	!= w_x)	return false;
+			if (D->sz	!= w_z)	return false;
 		}
 	}
 	return true;
@@ -206,7 +206,7 @@ void	CDetailManager::cache_Update(Fvector& view)
 		PROF_EVENT("cache_Decompress");
 		if (!ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))
 		{
-			bool	bFullUnpack = FALSE;
+			bool	bFullUnpack = false;
 			int limit = dm_max_decompress;
 			if (cache_task.size() == dm_cache_size) { limit = dm_cache_size; bFullUnpack = true; }
 
@@ -266,7 +266,7 @@ void	CDetailManager::cache_Update(Fvector& view)
 			{
                 Slot& 	S 		= **MS.slots[_i];
                 MS.vis.box.merge(S.vis.box);
-				if (!S.empty)	MS.empty = FALSE;
+				if (!S.empty)	MS.empty = false;
             }
             MS.vis.box.getsphere(MS.vis.sphere.P,MS.vis.sphere.R);
         }

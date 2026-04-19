@@ -128,7 +128,7 @@ FS_file_list_ex::FS_file_list_ex(const char* path, u32 flags, const char* mask)
 		itm.size = it->size;
 	}
 
-	FS.m_Flags.set(CLocatorAPI::flNeedCheck, FALSE);
+	FS.m_Flags.set(CLocatorAPI::flNeedCheck, false);
 }
 
 void FS_file_list_ex::Sort(u32 flags)

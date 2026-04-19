@@ -317,7 +317,7 @@ void SteamNetClient::SendClientData()
 	xr_strcpy(client_data.name, m_user_name.c_str());
 	xr_strcpy(client_data.pass, m_user_pass.c_str());
 
-	SendTo_LL(&client_data, sizeof(MSYS_CLIENT_DATA), net_flags(true, true, FALSE, FALSE));
+	SendTo_LL(&client_data, sizeof(MSYS_CLIENT_DATA), net_flags(true, true, false, false));
 }
 
 // -----------------------------------------------------------------------------

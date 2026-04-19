@@ -38,7 +38,7 @@ CAI_Trader::~CAI_Trader()
 
 void CAI_Trader::Load(const char* section)
 {
-	//	setEnabled						(FALSE);
+	//	setEnabled						(false);
 	inherited::Load					(section);
 
 	//fHealth							= pSettings->r_float	(section,"Health");
@@ -125,12 +125,12 @@ bool CAI_Trader::net_Spawn(CSE_Abstract* DC)
 	//проспавнить PDA у InventoryOwner
 	if (!CInventoryOwner::net_Spawn(DC))
 	{
-		return FALSE;
+		return false;
 	}
 
 	if (!inherited::net_Spawn(DC) || !CScriptEntity::net_Spawn(DC))
 	{
-		return FALSE;
+		return false;
 	}
 
 	setVisible(true);

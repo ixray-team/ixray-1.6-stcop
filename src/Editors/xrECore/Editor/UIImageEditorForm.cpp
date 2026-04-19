@@ -451,7 +451,7 @@ void UIImageEditorForm::FilterUpdate()
 
 		ETextureThumbnail* thm = (ETextureThumbnail*)I->m_Object;
 
-		bool bVis = FALSE;
+		bool bVis = false;
 		int type = thm->_Format().type;
 		if (STextureParams::ttImage == type&&m_bFilterImage)
 			bVis = true;

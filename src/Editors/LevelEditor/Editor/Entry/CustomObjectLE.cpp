@@ -56,7 +56,7 @@ void CCustomObject::OnDetach()
 //.        Name 				= new_name;
 //.        Scene->AppendObject	(this,false);
     }
-   	m_CO_Flags.set			(flObjectInGroup,FALSE);
+   	m_CO_Flags.set			(flObjectInGroup,false);
     Select					(true);
     FParentTools->SetChanged(true);
 }
@@ -83,8 +83,8 @@ void CCustomObject::Move(Fvector& amount)
     {
         bool bVis = Visible();
         bool bSel = Selected();
-        Show(FALSE);
-        Select(FALSE);
+        Show(false);
+        Select(false);
         SnapMove(v, r, FTransformRP, amount);
         Show(bVis);
         Select(bSel);

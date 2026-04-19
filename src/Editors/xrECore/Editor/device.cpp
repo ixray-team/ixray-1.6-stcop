@@ -67,8 +67,8 @@ CEditorRenderDevice::CEditorRenderDevice()
 	m_WireShader	= nullptr;
 	m_SelectionShader = nullptr;
 
-    b_is_Ready 			= FALSE;
-	b_is_Active			= FALSE;
+    b_is_Ready 			= false;
+	b_is_Active			= false;
 
 	// Engine flow-control
 	fTimeDelta		= 0;
@@ -257,7 +257,7 @@ bool CEditorRenderDevice::Create()
 
     // if build options - load textures immediately
     if (strstr(Core.Params,"-build")||strstr(Core.Params,"-ebuild"))
-        EDevice->Resources->DeferredLoad(FALSE);
+        EDevice->Resources->DeferredLoad(false);
 
 	g_FontManager = new CFontManager();
 
@@ -284,7 +284,7 @@ void CEditorRenderDevice::Destroy()
 	SearchIcon.destroy();
 	::Render->destroy();
 	// before destroy
-	_Destroy(FALSE);
+	_Destroy(false);
 
 	xr_delete(Resources);
 
@@ -303,7 +303,7 @@ void CEditorRenderDevice::_SetupStates()
 	}
 	EDevice->SetRS(D3DRS_DITHERENABLE,	true				);
     EDevice->SetRS(D3DRS_COLORVERTEX,		true				);
-    EDevice->SetRS(D3DRS_STENCILENABLE,	FALSE				);
+    EDevice->SetRS(D3DRS_STENCILENABLE,	false				);
     EDevice->SetRS(D3DRS_ZENABLE,			true				);
     EDevice->SetRS(D3DRS_SHADEMODE,		D3DSHADE_GOURAUD	);
 	EDevice->SetRS(D3DRS_CULLMODE,		D3DCULL_CCW			);
@@ -345,7 +345,7 @@ void CEditorRenderDevice::_Create(IReader* F)
 
 void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 {
-	b_is_Ready 						= FALSE;
+	b_is_Ready 						= false;
     m_CurrentShader				= nullptr;
 
     UI->OnDeviceDestroy			();
@@ -457,7 +457,7 @@ bool CEditorRenderDevice::Begin()
 		// If the device was lost, do not render until we get it back
 		if (D3DERR_DEVICELOST == _hr) {
 			Sleep(33);
-			return	FALSE;
+			return	false;
 		}
 
 		// Check if the device is ready to be reset
@@ -467,7 +467,7 @@ bool CEditorRenderDevice::Begin()
 		}
 	}
 
-	VERIFY(FALSE == g_bRendering);
+	VERIFY(false == g_bRendering);
 	(REDevice->BeginScene());
 
 	Clear();
@@ -481,7 +481,7 @@ bool CEditorRenderDevice::Begin()
 void CEditorRenderDevice::End()
 {
 	VERIFY(b_is_Ready);
-	g_bRendering = 	FALSE;
+	g_bRendering = 	false;
 	// end scene
 	RCache.OnFrameEnd();
 	GRHI->Present();

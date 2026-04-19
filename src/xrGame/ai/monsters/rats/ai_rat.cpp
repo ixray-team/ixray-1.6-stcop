@@ -225,10 +225,10 @@ bool CAI_Rat::net_Spawn	(CSE_Abstract* DC)
 
 	// model
 	if (!inherited::net_Spawn(DC))
-		return(FALSE);
+		return(false);
 	// model
 	if (!CEatableItem::net_Spawn(DC))
-		return(FALSE);
+		return(false);
 
 	monster_squad().register_member			((u8)g_Team(),(u8)g_Squad(),(u8)g_Group(), this);
 
@@ -300,7 +300,7 @@ bool CAI_Rat::net_Spawn	(CSE_Abstract* DC)
 	if (g_Alive())
 		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).m_dwLastActionTime = 0;
 
-	m_flags.set						(FCanTake, FALSE);
+	m_flags.set						(FCanTake, false);
 
 	CInifile *m_spawn_ini = spawn_ini();
 
@@ -537,8 +537,8 @@ void CAI_Rat::OnH_A_Chield		()
 
 void CAI_Rat::OnH_B_Chield		()
 {
-	setVisible					(FALSE);
-	setEnabled					(FALSE);
+	setVisible					(false);
+	setEnabled					(false);
 
 	if (m_pPhysicsShell)
 		m_pPhysicsShell->Deactivate	();
@@ -671,7 +671,7 @@ bool CAI_Rat::renderable_ShadowReceive	()
 
 bool CAI_Rat::renderable_ShadowGenerate	()
 {
-	return FALSE;
+	return false;
 }
 
 DLL_Pure *CAI_Rat::_construct			()

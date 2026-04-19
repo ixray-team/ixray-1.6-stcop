@@ -84,7 +84,7 @@ public:
 	}
 #if 1
 					~CSurface		(){R_ASSERT(!m_Shader);xr_delete(m_ImageData);}
-	IC void			CopyFrom		(CSurface* surf){*this = *surf; m_Shader=nullptr; m_RTFlags.set(rtValidShader, FALSE);}
+	IC void			CopyFrom		(CSurface* surf){*this = *surf; m_Shader=nullptr; m_RTFlags.set(rtValidShader, false);}
 	IC int			_Priority		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.iPriority:1;}
 	IC bool			_StrictB2F		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.bStrictB2F:false;}
 	IC ref_shader	_Shader			()	{if (!m_RTFlags.is(rtValidShader)) OnDeviceCreate(); return m_Shader;}
@@ -122,7 +122,7 @@ public:
 	IC void			OnDeviceDestroy	()
 	{
 		m_Shader.destroy();
-		m_RTFlags.set(rtValidShader,FALSE);
+		m_RTFlags.set(rtValidShader,false);
 	}
 	void			CreateImageData	();
 	void			RemoveImageData	();
@@ -498,7 +498,7 @@ virtual	const IBoneData&_BCL	GetBoneData(u16 bone_id) const 															{ ret
 	virtual void				LL_SetBonesVisible(VisMask mask) 														{ VERIFY(false); }
 
 	// Main functionality
-	virtual void				CalculateBones(bool bForceExact	= FALSE) 												{ } // Recalculate skeleton
+	virtual void				CalculateBones(bool bForceExact	= false) 												{ } // Recalculate skeleton
 	virtual void				CalculateBones_Invalidate()																{ }
 	virtual void				Callback(UpdateCallback C, void* Param) 												{ VERIFY(false); }
 

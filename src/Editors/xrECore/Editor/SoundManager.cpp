@@ -12,7 +12,7 @@ CSoundManager* SndLib=nullptr;
 //------------------------------------------------------------------------------
 xr_string CSoundManager::UpdateFileName(xr_string& fn)
 {
-	return EFS.AppendFolderToName(fn,-1,FALSE);
+	return EFS.AppendFolderToName(fn,-1,false);
 }
 
 //------------------------------------------------------------------------------
@@ -69,8 +69,8 @@ void CSoundManager::RenameSound(const char* nm0, const char* nm1, EItemType type
 {
     if (TYPE_FOLDER == type)
     {
-        FS.dir_delete(_sounds_, nm0, FALSE);
-        FS.dir_delete(_game_sounds_, nm0, FALSE);
+        FS.dir_delete(_sounds_, nm0, false);
+        FS.dir_delete(_game_sounds_, nm0, false);
     }
     else if (TYPE_OBJECT == type)
     {
@@ -96,8 +96,8 @@ void CSoundManager::RenameSound(const char* nm0, const char* nm1, EItemType type
 bool CSoundManager::RemoveSound(const char* fname, EItemType type)
 {
 	if (TYPE_FOLDER==type){
-    	FS.dir_delete			(_sounds_,fname,FALSE);
-    	FS.dir_delete			(_game_sounds_,fname,FALSE);
+    	FS.dir_delete			(_sounds_,fname,false);
+    	FS.dir_delete			(_game_sounds_,fname,false);
 		return true;
     }else if (TYPE_OBJECT==type){
         xr_string src_name;
@@ -115,7 +115,7 @@ bool CSoundManager::RemoveSound(const char* fname, EItemType type)
             return true;
         }
     }
-    return FALSE;
+    return false;
 }
 
 //------------------------------------------------------------------------------
@@ -214,7 +214,7 @@ void CSoundManager::SynchronizeSounds(bool sync_thm, bool sync_game, bool bForce
 	FS_FileSetIt it_e 			= M_BASE.end();
 	for (; it!=it_e; ++it)
     {
-	    bool bUpdated 			= FALSE;
+	    bool bUpdated 			= false;
 
         string_path PathInitial = {};
         FS.update_path(PathInitial, _sounds_, "");

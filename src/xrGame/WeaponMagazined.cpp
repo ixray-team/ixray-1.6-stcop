@@ -1760,7 +1760,7 @@ void CWeaponMagazined::switch2_Idle	()
 	if(m_fOldBulletSpeed != 0.f)
 		SetBulletSpeed(m_fOldBulletSpeed);
 
-	SetPending			(FALSE);
+	SetPending			(false);
 	PlayAnimIdle		();
 }
 

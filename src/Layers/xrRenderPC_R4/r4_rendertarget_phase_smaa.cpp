@@ -30,7 +30,7 @@ void CRenderTarget::phase_smaa()
     u_setrt(rt_Generic_2, nullptr, nullptr, nullptr);
 
     GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-    RCache.set_Stencil(FALSE);
+    RCache.set_Stencil(false);
 
     // Draw COLOR
     RCache.set_Element(s_smaa->E[2]);

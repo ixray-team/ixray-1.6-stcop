@@ -47,7 +47,7 @@ public		:
 	  cName				(N),
 	  bEnabled			(true),
 	  bLowerCaseArgs	(true),
-	  bEmptyArgsHandled	(FALSE) {
+	  bEmptyArgsHandled	(false) {
 		  m_LRU.reserve(LRU_MAX_COUNT + 1);
 		  m_LRU.clear();
 	  }
@@ -125,7 +125,7 @@ public :
 		if (EQ(args, "on") || EQ(args, "1"))
 			value->set(mask,true);
 		else if (EQ(args, "off") || EQ(args, "0"))
-			value->set(mask,FALSE);
+			value->set(mask,false);
 		else InvalidSyntax();
 	}
 
@@ -200,7 +200,7 @@ public :
 		if (EQ(args, "on") || EQ(args, "1"))
 			value->set(mask,true);
 		else if (EQ(args, "off") || EQ(args, "0"))
-			value->set(mask,FALSE);
+			value->set(mask,false);
 		else InvalidSyntax();
 	}
 
@@ -271,7 +271,7 @@ public		:
 		if (EQ(args, "on") || EQ(args, "1"))
 			value->set(mask,true);
 		else if (EQ(args, "off") || EQ(args, "0"))
-			value->set(mask,FALSE);
+			value->set(mask,false);
 		else InvalidSyntax();
 	}
 	virtual void	Status	(TStatus& S)
@@ -766,7 +766,7 @@ public:
 		value	(V),
 		size	(_size)
 	{
-		bLowerCaseArgs	=	FALSE;
+		bLowerCaseArgs	=	false;
 		R_ASSERT(V);
 		R_ASSERT(size>1);
 	}

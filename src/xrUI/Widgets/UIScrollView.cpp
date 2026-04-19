@@ -197,7 +197,7 @@ void CUIScrollView::RecalcSize			()
 
 	UpdateScroll				();
 
-	m_flags.set					(eNeedRecalc,FALSE);
+	m_flags.set					(eNeedRecalc,false);
 	m_visible_rgn.set			(-1,-1);
 }
 

@@ -12,7 +12,7 @@ bool GetPointColor(SPickQuery::SResult* R, u32& alpha)
     CSurface* surf = R->e_mesh->GetSurfaceByFaceID(R->tag); VERIFY(surf);
     Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
     if (!c_sh->flags.bRendering) 
-        return FALSE;
+        return false;
 
     const Fvector2* cuv[3];
     R->e_mesh->GetFaceTC(R->tag, cuv);

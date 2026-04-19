@@ -205,7 +205,7 @@ bool CPSLibrary::Load2()
 		const FS_File& f		= (*it);
 	    _splitpath				(f.name.c_str(), nullptr, p_path, p_name, p_ext );
         FS.update_path			(_path, "$game_particles$",f.name.c_str());
-        CInifile				ini (_path,true,true,FALSE);
+        CInifile				ini (_path,true,true,false);
 
 #ifdef _EDITOR
         if(pb) pb->Inc					();

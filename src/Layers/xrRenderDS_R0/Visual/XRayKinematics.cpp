@@ -19,7 +19,7 @@ IC void iBuildGroups(CBoneData* B, U16Vec& tgt, u16 id, u16& last_id)
 }
 void CDS0_Kinematics::LL_Validate()
 {
-	bool bCheckBreakable = FALSE;
+	bool bCheckBreakable = false;
 	for (u16 k = 0; k < LL_BoneCount(); k++) {
 		if (LL_GetData(k).IK_data.ik_flags.is(SJointIKData::flBreakable) && (LL_GetData(k).IK_data.type != jtNone)) {
 			bCheckBreakable = true;
@@ -45,14 +45,14 @@ void CDS0_Kinematics::LL_Validate()
 			xr_vector<u16>& group = groups[g];
 			u16 bp_id = b_parts[group[0]];
 			for (u32 b = 1; b < groups[g].size(); b++)
-				if (bp_id != b_parts[groups[g][b]]) { bValidBreakable = FALSE; break; }
+				if (bp_id != b_parts[groups[g][b]]) { bValidBreakable = false; break; }
 		}
 
-		if (bValidBreakable == FALSE) {
+		if (bValidBreakable == false) {
 			for (u16 k = 0; k < LL_BoneCount(); k++) {
 				CBoneData& BD = LL_GetData(k);
 				if (BD.IK_data.ik_flags.is(SJointIKData::flBreakable))
-					BD.IK_data.ik_flags.set(SJointIKData::flBreakable, FALSE);
+					BD.IK_data.ik_flags.set(SJointIKData::flBreakable, false);
 			}
 #ifdef DEBUG            
 			Msg("! ERROR: Invalid breakable object: '%s'", *DebugName);
@@ -363,7 +363,7 @@ void CDS0_Kinematics::OnCalculateBones()
 
 void CDS0_Kinematics::Visibility_Update()
 {
-	Update_Visibility = FALSE;
+	Update_Visibility = false;
 	// check visible
 	for (u32 c_it = 0; c_it < children.size(); c_it++) 
 	{
@@ -431,7 +431,7 @@ CDS0_Kinematics::CDS0_Kinematics()
 {
 	Update_Callback = 0;
 #ifdef DEBUG
-	dbg_single_use_marker = FALSE;
+	dbg_single_use_marker = false;
 #endif
 
 	m_is_original_lod = false;

@@ -492,7 +492,7 @@ void CWeapon::Load		(const char* section)
 	}
 
 	
-	m_zoom_params.m_bUseDynamicZoom	= READ_IF_EXISTS(pSettings,r_bool,section,"scope_dynamic_zoom",FALSE);
+	m_zoom_params.m_bUseDynamicZoom	= READ_IF_EXISTS(pSettings,r_bool,section,"scope_dynamic_zoom",false);
 	m_zoom_params.m_sUseZoomPostprocess	= READ_IF_EXISTS(pSettings, r_string, section, "scope_nightvision", 0);
 	m_zoom_params.m_sUseBinocularVision	= READ_IF_EXISTS(pSettings, r_string, section, "scope_alive_detector", 0);
 
@@ -1204,7 +1204,7 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	inherited::OnH_B_Independent(just_before_destroy);
 
 	FireEnd						();
-	SetPending					(FALSE);
+	SetPending					(false);
 	SwitchState					(eHidden);
 
 	m_strapped_mode				= false;
@@ -1309,7 +1309,7 @@ void CWeapon::SendHiddenItem()
 		P.w_u8			(m_ammoType);
 		P.w_u8			(u8(iAmmoElapsed & 0xff));
 		P.w_u8			(m_set_next_ammoType_on_reload);
-		CHudItem::object().u_EventSend		(P, net_flags(true, true, FALSE, true));
+		CHudItem::object().u_EventSend		(P, net_flags(true, true, false, true));
 		SetPending		(true);
 	}
 }
@@ -1653,7 +1653,7 @@ void CWeapon::renderable_Render		()
 
 	//если мы в режиме снайперки, то сам HUD рисовать не надо
 	if(IsZoomed() && !IsRotatingToZoom() && m_zoom_params.m_fZoomRotationFactor2 == 0.0f && ZoomTexture())
-		RenderHud		(FALSE);
+		RenderHud		(false);
 	else
 		RenderHud		(true);
 
@@ -1663,13 +1663,13 @@ void CWeapon::renderable_Render		()
 void CWeapon::signal_HideComplete()
 {
 	if(H_Parent()) 
-		setVisible			(FALSE);
-	SetPending				(FALSE);
+		setVisible			(false);
+	SetPending				(false);
 }
 
 void CWeapon::SetDefaults()
 {
-	SetPending			(FALSE);
+	SetPending			(false);
 
 	m_flags.set			(FUsingCondition, true);
 	bMisfire			= false;
@@ -3024,7 +3024,7 @@ void CWeapon::SwitchState(u32 S)
 		P.w_u8			(m_ammoType);
 		P.w_u8			(u8(iAmmoElapsed & 0xff));
 		P.w_u8			(m_set_next_ammoType_on_reload);
-		CHudItem::object().u_EventSend		(P, net_flags(true, true, FALSE, true));
+		CHudItem::object().u_EventSend		(P, net_flags(true, true, false, true));
 	}
 }
 
@@ -4083,7 +4083,7 @@ void CWeapon::LoadCurrentScopeParams(const char* section)
 	if (bScopeIsHasTexture)
 	{
 		m_zoom_params.m_sUseZoomPostprocess = READ_IF_EXISTS(pSettings, r_string, section, "scope_nightvision", 0);
-		m_zoom_params.m_bUseDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, section, "scope_dynamic_zoom", FALSE);
+		m_zoom_params.m_bUseDynamicZoom = READ_IF_EXISTS(pSettings, r_bool, section, "scope_dynamic_zoom", false);
 
 		m_zoom_params.m_sUseBinocularVision = READ_IF_EXISTS(pSettings, r_string, section, "scope_alive_detector", 0);
 

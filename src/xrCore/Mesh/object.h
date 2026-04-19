@@ -154,9 +154,9 @@ public:
 
 	// Return the error from this edge collapse.
 	// Set bTryToCacheResult=TRUE if you can pass pptBinned in multiple times.
-	// Make sure you call this with bTryToCacheResult=FALSE if any data changes,
+	// Make sure you call this with bTryToCacheResult=false if any data changes,
 	//	or you'll confuse the poor thing.
-	float		FindCollapseError			( MeshPt *pptBinned, MeshEdge *pedgeCollapse, long bTryToCacheResult = FALSE );
+	float		FindCollapseError			( MeshPt *pptBinned, MeshEdge *pedgeCollapse, long bTryToCacheResult = false );
 
 	bool		Valid						( void );
 };

@@ -64,7 +64,7 @@ void CRenderTarget::phase_smaa()
     u_setrt(rt_Color, nullptr, nullptr, nullptr);
 
     GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-    RCache.set_Stencil(FALSE);
+    RCache.set_Stencil(false);
 
     // Fill vertex buffer
     pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);

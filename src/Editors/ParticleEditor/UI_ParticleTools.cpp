@@ -115,8 +115,8 @@ bool CParticleTool::IfModified()
     if (m_bModified){
         int mr = ELog.DlgMsg(mtConfirmation, mbYes|mbNo|mbCancel, "The particles has been modified.\nDo you want to save your changes?");
         switch(mr){
-        case mrYes: if (!ExecCommand(COMMAND_SAVE)) return false; else m_bModified = FALSE; break;
-        case mrNo: m_bModified = FALSE; break;
+        case mrYes: if (!ExecCommand(COMMAND_SAVE)) return false; else m_bModified = false; break;
+        case mrNo: m_bModified = false; break;
         case mrCancel: return false;
         }
     }
@@ -272,7 +272,7 @@ void CParticleTool::OnFrame()
         auto CurrentList = GetCurrentList();
         R_ASSERT(CurrentList);
         CurrentList->SelectItem(sel_eff_name.c_str());
-        m_Flags.set			(flSelectEffect,FALSE);
+        m_Flags.set			(flSelectEffect,false);
         sel_eff_name		= "";
     }
 
@@ -783,8 +783,8 @@ void CParticleTool::CloneCurrent()
 void CParticleTool::ResetCurrent()
 {
 	VERIFY(m_bReady);
-    if (m_LibPED) m_EditPE->Stop(FALSE);
-    if (m_LibPGD) m_EditPG->Stop(FALSE);
+    if (m_LibPED) m_EditPE->Stop(false);
+    if (m_LibPGD) m_EditPG->Stop(false);
     m_LibPED= 0;
     m_LibPGD= 0;
     m_CurrentEf = nullptr;
@@ -958,7 +958,7 @@ void CParticleTool::ImportPE()
         PS::CPEDef* def = new PS::CPEDef();
         FS.TryLoad(Path);
 
-        CInifile ini(Path.c_str(), true, true, FALSE);
+        CInifile ini(Path.c_str(), true, true, false);
         if (def->Load2(ini))
         {
             AppendPE(def, xr_path(Path.c_str()).xfilename().c_str());
@@ -1166,13 +1166,13 @@ void CParticleTool::RealApplyParent()
             THROW;
         }
     }
-	m_Flags.set		(flApplyParent,FALSE);
+	m_Flags.set		(flApplyParent,false);
 }
 
 void CParticleTool::RealCompileEffect()
 {
 	if (m_LibPED)    m_LibPED->Compile(m_LibPED->m_EActionList);
-	m_Flags.set		(flCompileEffect,FALSE);
+	m_Flags.set		(flCompileEffect,false);
 }
 
 void CParticleTool::RealRemoveAction()
@@ -1184,7 +1184,7 @@ void CParticleTool::RealRemoveAction()
 
         RealCompileEffect();
     }
-	m_Flags.set(flRemoveAction,FALSE);
+	m_Flags.set(flRemoveAction,false);
 }
 
 const char* CParticleTool::GetInfo()
@@ -1342,7 +1342,7 @@ void CParticleTool::OnDrawUI()
                     R_ASSERT(false, "Invalid choose result type!", result.c_str());
                 }
             }
-            m_CreatingParticle = FALSE;
+            m_CreatingParticle = false;
         }
         UIChooseForm::Update();
     }
@@ -1679,7 +1679,7 @@ void CParticleTool::RealUpdateProperties()
     static string1024 buffer;
     //static string256 buffer2;
     
-    m_Flags.set(flRefreshProps, FALSE);
+    m_Flags.set(flRefreshProps, false);
 
     // Make path functions
     //auto MakePGPathFunc = [&](const char* OrigName)

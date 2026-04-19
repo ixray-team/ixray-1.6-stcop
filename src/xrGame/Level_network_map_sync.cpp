@@ -37,7 +37,7 @@ bool CLevel::synchronize_map_data()
 {
 	if (!OnClient() && !IsDemoSave())
 	{
-		deny_m_spawn		= FALSE;
+		deny_m_spawn		= false;
 		map_data.m_map_sync_received	= true;
 		return synchronize_client();
 	}
@@ -77,7 +77,7 @@ bool CLevel::synchronize_map_data()
 	}
 	if (map_data.IsInvalidClientChecksum())
 	{
-		connected_to_server	= FALSE;
+		connected_to_server	= false;
 		return false;	//!!!
 	}
 	return synchronize_client();
@@ -97,7 +97,7 @@ bool	CLevel::synchronize_client()
 //---------------------------------------------------------------------------
 	if (game_configured)
 	{
-		deny_m_spawn = FALSE;
+		deny_m_spawn = false;
 		return true;
 	}
 #ifdef DEBUG

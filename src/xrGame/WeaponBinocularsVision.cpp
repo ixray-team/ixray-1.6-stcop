@@ -90,7 +90,7 @@ void SBinocVisibleObj::Update()
 	new_rect.lt			= mn;
 	new_rect.rb			= mx;
 
-	if( FALSE == screen_rect.intersected(new_rect) ) return;
+	if( false == screen_rect.intersected(new_rect) ) return;
 	if( new_rect.in(screen_rect.lt) && new_rect.in(screen_rect.rb) ) return;
 	
 	std::swap	(mn.y,mx.y);
@@ -174,7 +174,7 @@ void SBinocVisibleObj::Update()
 	m_rt.SetWndPos		( Fvector2().set((cur_rect.rb.x),	(cur_rect.lt.y)) );
 	m_rb.SetWndPos		( Fvector2().set((cur_rect.rb.x),	(cur_rect.rb.y)) );
 
-	m_flags.set			(flVisObjNotValid, FALSE);
+	m_flags.set			(flVisObjNotValid, false);
 }
 
 void TBinocularsVision::EndComponent()
@@ -229,11 +229,11 @@ void TBinocularsVision::Update()
 		found = std::find_if				(m_active_objects.begin(),m_active_objects.end(),f);
 
 		if( found != m_active_objects.end() ){
-			(*found)->m_flags.set			(flVisObjNotValid,FALSE);
+			(*found)->m_flags.set			(flVisObjNotValid,false);
 		}else{
 			m_active_objects.push_back		(new SBinocVisibleObj() );
 			SBinocVisibleObj* new_vis_obj	= m_active_objects.back();
-			new_vis_obj->m_flags.set		(flVisObjNotValid,FALSE);
+			new_vis_obj->m_flags.set		(flVisObjNotValid,false);
 			new_vis_obj->m_object			= object_;
 			new_vis_obj->create_default		(m_frame_color.get());
 			new_vis_obj->m_upd_speed		= m_rotating_speed;

@@ -1422,7 +1422,7 @@ static void draw_animation_bones	(CAI_Stalker& self, Fmatrix const& transform, I
 	fill_bones							(self, transform, kinematics_animated, animation_id, true);
 
 #ifdef DEBUG_RENDER
-//	self.setVisible						(FALSE);
+//	self.setVisible						(false);
 
 	draw_bones							(
 		*kinematics,

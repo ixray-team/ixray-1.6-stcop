@@ -101,7 +101,7 @@ void CUIEventsWnd::Update			()
 	if(m_flags.test(flNeedReload) )
 	{
 		ReloadList(false);
-		m_flags.set(flNeedReload,FALSE );
+		m_flags.set(flNeedReload,false );
 	}
 	inherited::Update		();
 	UpdateGamepadLegend		();

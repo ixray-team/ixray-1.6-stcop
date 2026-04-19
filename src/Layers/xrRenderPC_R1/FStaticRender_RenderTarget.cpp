@@ -156,7 +156,7 @@ void CRenderTarget::phase_fxaa(u32 pass) {
 	float ddh = 1.0f / _h;
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	FVF::V* pv = (FVF::V*)RCache.Vertex.Lock(4, g_fxaa->vb_stride, Offset);
 	pv->set(ddw - 0.5f, ddh + _h - 0.5f, 0.0f, 0.0f, 1.0f);
@@ -356,7 +356,7 @@ void CRenderTarget::End		()
 		phase_fxaa(0);
 		RCache.set_RT(RT->pRT);
 		phase_fxaa(1);
-		//RCache.set_Stencil(FALSE);
+		//RCache.set_Stencil(false);
 	}
 
 	// find if distortion is needed at all
@@ -366,7 +366,7 @@ void CRenderTarget::End		()
 	bool	_menu_pp	= g_pGamePersistent?g_pGamePersistent->OnRenderPPUI_query():false;
 	u32 count = RImplementation.mapDistort.size() + RImplementation.mapHUDDistort.size();
 
-	if ((0== count) && !_menu_pp) 	bDistort	= FALSE;
+	if ((0== count) && !_menu_pp) 	bDistort	= false;
 	if (bDistort)		phase_distortion		();
 
 	// combination/postprocess

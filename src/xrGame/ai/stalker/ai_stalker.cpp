@@ -638,7 +638,7 @@ bool CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 	m_group_behaviour				= !!tpHuman->m_flags.test(CSE_ALifeObject::flGroupBehaviour);
 
 	if (!CObjectHandler::net_Spawn(DC) || !inherited::net_Spawn(DC))
-		return						(FALSE);
+		return						(false);
 	
 	set_money						(tpHuman->m_dwMoney, false);
 

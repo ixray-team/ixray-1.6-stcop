@@ -324,7 +324,7 @@ public:
 
 	// gets an axis and angle of rotation around the axis from a quaternion
 	// returns true if there is an axis.
-	// returns FALSE if there is no axis (and Axis is set to 0,0,0, and Theta is 0)
+	// returns false if there is no axis (and Axis is set to 0,0,0, and Theta is 0)
 
 	ICF bool	get_axis_angle(Fvector &axis, T &angle)
 	{

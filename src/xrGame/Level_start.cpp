@@ -150,7 +150,7 @@ bool CLevel::net_start1				()
 
 			if (id<0) {
 				Msg("! Can't find level: %s", map_data.m_name.c_str());
-				net_start_result_total	= FALSE;
+				net_start_result_total	= false;
 				return true;
 			}
 		}

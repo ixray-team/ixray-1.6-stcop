@@ -930,10 +930,10 @@ void CChangeLevelWnd::Show(bool status)
 
 		g_block_pause = true;
 		Device.Pause(true, true, true, "CChangeLevelWnd_show");
-		bShowPauseString = FALSE;
+		bShowPauseString = false;
 	}
 	else {
 		g_block_pause = false;
-		Device.Pause(FALSE, true, true, "CChangeLevelWnd_hide");
+		Device.Pause(false, true, true, "CChangeLevelWnd_hide");
 	}
 }

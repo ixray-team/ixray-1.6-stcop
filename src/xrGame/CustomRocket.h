@@ -47,7 +47,7 @@ public:
 	virtual void OnH_A_Chield() override;
 	virtual void UpdateCL() override;
 
-	virtual bool UsedAI_Locations() override { return FALSE; }
+	virtual bool UsedAI_Locations() override { return false; }
 	virtual bool Useful() const { return (m_eState == eInactive); }
 
 	virtual void renderable_Render() override { inherited::renderable_Render(); }

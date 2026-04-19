@@ -183,7 +183,7 @@ void CRender::level_Unload		()
 	//*** Shaders
 	Shaders.clear();
 
-	b_loaded					= FALSE;
+	b_loaded					= false;
 }
 
 void CRender::LoadVertexBuffers(IReaderBase& fs)

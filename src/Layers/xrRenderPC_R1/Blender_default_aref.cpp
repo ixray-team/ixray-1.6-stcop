@@ -19,7 +19,7 @@ CBlender_default_aref::CBlender_default_aref()
 	oAREF.value			= 32;
 	oAREF.min			= 0;
 	oAREF.max			= 255;
-	oBlend.value		= FALSE;
+	oBlend.value		= false;
 }
 
 CBlender_default_aref::~CBlender_default_aref()
@@ -42,7 +42,7 @@ void	CBlender_default_aref::Load(	IReader& fs , u16 version)
 	{
 	case 0: 
 		xrPREAD_PROP	(fs,xrPID_INTEGER,	oAREF);
-		oBlend.value	= FALSE;
+		oBlend.value	= false;
 		break;
 	case 1:
 	default:
@@ -80,7 +80,7 @@ void CBlender_default_aref::Compile(CBlender_Compile& C)
 		uber_deffer(C, true, "deffer_base", "deffer_base", !oBlend.value, nullptr, true);
 
 		if(!!oBlend.value) {
-		//	C.PassSET_ZB(true, FALSE);
+		//	C.PassSET_ZB(true, false);
 			C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
 		}
 
@@ -116,7 +116,7 @@ void CBlender_default_aref::Compile(CBlender_Compile& C)
 		case SE_R1_LPOINT:
 			if (!oBlend.value)	
 			{
-				C.r_Pass		("lmap_point","add_point",FALSE,true,FALSE,true,D3DBLEND_ONE,D3DBLEND_ONE,true,oAREF.value);
+				C.r_Pass		("lmap_point","add_point",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true,oAREF.value);
 				C.r_Sampler		("s_base",	C.L_textures[0]		);
 				C.r_Sampler_clf	("s_lmap",	TEX_POINT_ATT		);
 				C.r_Sampler_clf	("s_att",	TEX_POINT_ATT		);
@@ -126,7 +126,7 @@ void CBlender_default_aref::Compile(CBlender_Compile& C)
 		case SE_R1_LSPOT:
 			if (!oBlend.value)	
 			{
-				C.r_Pass		("lmap_spot","add_spot",FALSE,true,FALSE,true,D3DBLEND_ONE,D3DBLEND_ONE,true,oAREF.value);
+				C.r_Pass		("lmap_spot","add_spot",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true,oAREF.value);
 				C.r_Sampler		("s_base",	C.L_textures[0]);
 				C.r_Sampler_clf	("s_lmap",	"internal\\internal_light_att",		true);
 				C.r_Sampler_clf	("s_att",	TEX_SPOT_ATT		);
@@ -135,7 +135,7 @@ void CBlender_default_aref::Compile(CBlender_Compile& C)
 			break;
 		case SE_R1_LMODELS:
 			// Lighting only, not use alpha-channel
-			C.r_Pass		("lmap_l","lmap_l",FALSE);
+			C.r_Pass		("lmap_l","lmap_l",false);
 			C.r_Sampler		("s_base",C.L_textures[0]);
 			C.r_Sampler		("s_lmap",C.L_textures[1]);
 			C.r_Sampler_clf	("s_hemi",*C.L_textures[2]);

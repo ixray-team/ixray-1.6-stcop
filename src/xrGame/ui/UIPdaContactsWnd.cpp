@@ -155,7 +155,7 @@ void CUIPdaContactsWnd::UpdateInfo()
 			needSelect = false;
 		}
 	}
-	m_flags.set(flNeedUpdate, FALSE);
+	m_flags.set(flNeedUpdate, false);
 }
 
 void CUIPdaContactsWnd::AddContact(CInventoryOwner* owner)

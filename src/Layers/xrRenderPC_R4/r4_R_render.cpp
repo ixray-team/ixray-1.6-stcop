@@ -311,7 +311,7 @@ void CRender::render_menu() {
 	GPU_EVENT(render_menu);
 	//	Globals
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 	RCache.set_ColorWriteEnable();
 
 	// Main Render
@@ -504,7 +504,7 @@ void CRender::Render()
 			ps_r_taa_jitter.set(0, 0, -1);
 			ps_r_taa_jitter_full.set(ps_r_taa_jitter);
 
-			r_dsgraph_render_subspace(pLastSector, EnvFullTransform[iFace], EnvPosition, FALSE, FALSE);
+			r_dsgraph_render_subspace(pLastSector, EnvFullTransform[iFace], EnvPosition, false, false);
 
 			RCache.set_xform_project(EnvProject);
 			RCache.set_xform_view(EnvView[iFace]);
@@ -517,7 +517,7 @@ void CRender::Render()
 
 			RImplementation.rmNormal();
 
-			RCache.set_Stencil(FALSE);
+			RCache.set_Stencil(false);
 			RCache.set_ColorWriteEnable();
 
 			r_dsgraph_render_graph(0);
@@ -564,11 +564,11 @@ void CRender::Render()
 	GRHI->ClearTarget(Target->rt_Velocity->pRT);
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	g_pGamePersistent->Environment().RenderSky();
 
-	RImplementation.o.distortion = FALSE;
+	RImplementation.o.distortion = false;
 	Fcolor sun_color = ((light*)Lights.sun_adapted._get())->color;
 	bool bSUN = !o.sunstatic && u_diffuse2s(sun_color) > EPS;
 
@@ -596,7 +596,7 @@ void CRender::Render()
 
 			// flush
 			Target->phase_scene_prepare();
-			RCache.set_ColorWriteEnable(FALSE);
+			RCache.set_ColorWriteEnable(false);
 			r_dsgraph_render_graph(0);
 			RCache.set_ColorWriteEnable();
 		}
@@ -616,11 +616,11 @@ void CRender::Render()
 	r_pmask										(true,false);	// disable priority "1"
 	Device.Statistic->RenderCALC.End			();
 
-	bool	split_the_scene_to_minimize_wait		= FALSE;
+	bool	split_the_scene_to_minimize_wait		= false;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=true;
 
 	if (mapHUDScopeMask.size() > 0) {
-		split_the_scene_to_minimize_wait = FALSE;
+		split_the_scene_to_minimize_wait = false;
 	}
 
 	rmNormal();
@@ -863,5 +863,5 @@ void CRender::render_forward				()
 		r_dsgraph_render_sorted_hud();
 	}
 
-	RImplementation.o.distortion				= FALSE;				// disable distorion
+	RImplementation.o.distortion				= false;				// disable distorion
 }

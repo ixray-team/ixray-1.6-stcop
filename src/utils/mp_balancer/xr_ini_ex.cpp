@@ -86,7 +86,7 @@ bool CInifileEx::Sect::line_exist( LPCSTR L, LPCSTR* val )
     	if (val) *val = *A->second;
     	return true;
     }
-	return FALSE;
+	return false;
 }
 //------------------------------------------------------------------------------
 
@@ -94,9 +94,9 @@ CInifileEx::CInifileEx(IReader* F ,LPCSTR path)
 {
 	m_file_name[0]	= 0;
 	m_flags.zero	();
-	m_flags.set		(eSaveAtEnd,		FALSE);
+	m_flags.set		(eSaveAtEnd,		false);
 	m_flags.set		(eReadOnly,			true);
-	m_flags.set		(eOverrideNames,	FALSE);
+	m_flags.set		(eOverrideNames,	false);
 	Load			(F,path);
 }
 
@@ -414,7 +414,7 @@ bool	CInifileEx::section_exist( LPCSTR S )
 
 bool	CInifileEx::line_exist( LPCSTR S, LPCSTR L )
 {
-	if (!section_exist(S)) return FALSE;
+	if (!section_exist(S)) return false;
 	Sect&	I = r_section(S);
 	SectCIt A = std::lower_bound(I.Data.begin(),I.Data.end(),L,item_pred);
 	return (A!=I.Data.end() && xr_strcmp(*A->first,L)==0);

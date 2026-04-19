@@ -38,7 +38,7 @@ bool CScriptZone::net_Spawn	(CSE_Abstract* DC)
 	feel_touch.clear			();
 
 	if (!inherited::net_Spawn(DC))
-		return					(FALSE);
+		return					(false);
 
 	return						(true);
 }

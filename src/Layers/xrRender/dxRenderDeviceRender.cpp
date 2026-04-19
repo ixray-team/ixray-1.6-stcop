@@ -128,7 +128,7 @@ void dxRenderDeviceRender::SetupStates()
 	CHK_DX(RDevice->SetRenderState( D3DRS_SPECULARMATERIALSOURCE,D3DMCS_MATERIAL	));
 	CHK_DX(RDevice->SetRenderState( D3DRS_AMBIENTMATERIALSOURCE, D3DMCS_MATERIAL	));
 	CHK_DX(RDevice->SetRenderState( D3DRS_EMISSIVEMATERIALSOURCE,D3DMCS_COLOR1	));
-	CHK_DX(RDevice->SetRenderState( D3DRS_MULTISAMPLEANTIALIAS,	FALSE			));
+	CHK_DX(RDevice->SetRenderState( D3DRS_MULTISAMPLEANTIALIAS,	false			));
 	CHK_DX(RDevice->SetRenderState( D3DRS_NORMALIZENORMALS,		true			));
 
 	if (psDeviceFlags.test(rsWireframe))	{ CHK_DX(RDevice->SetRenderState( D3DRS_FILLMODE,			D3DFILL_WIREFRAME	)); }
@@ -136,7 +136,7 @@ void dxRenderDeviceRender::SetupStates()
 
 	// ******************** Fog parameters
 	CHK_DX(RDevice->SetRenderState( D3DRS_FOGCOLOR,			0					));
-	CHK_DX(RDevice->SetRenderState( D3DRS_RANGEFOGENABLE,	FALSE				));
+	CHK_DX(RDevice->SetRenderState( D3DRS_RANGEFOGENABLE,	false				));
 	if (Caps.bTableFog)	{
 		CHK_DX(RDevice->SetRenderState( D3DRS_FOGTABLEMODE,	D3DFOG_LINEAR		));
 		CHK_DX(RDevice->SetRenderState( D3DRS_FOGVERTEXMODE,	D3DFOG_NONE			));
@@ -250,7 +250,7 @@ void dxRenderDeviceRender::overdrawEnd()
 		CHK_DX(RDevice->SetRenderState	( D3DRS_STENCILREF,		I	));
 		CHK_DX(RDevice->DrawPrimitiveUP	( D3DPT_TRIANGLESTRIP,	2,	pv, sizeof(FVF::TL) ));
 	}
-	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILENABLE,		FALSE ));
+	CHK_DX(RDevice->SetRenderState( D3DRS_STENCILENABLE,		false ));
 #endif
 #endif
 }

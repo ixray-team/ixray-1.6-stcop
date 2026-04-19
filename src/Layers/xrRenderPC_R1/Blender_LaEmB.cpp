@@ -129,9 +129,9 @@ void CBlender_LaEmB::compile_EDc	(CBlender_Compile& C)
 	// Pass1 - *base
 	C.PassBegin		();
 	{
-		C.PassSET_ZB			(true,FALSE);
+		C.PassSET_ZB			(true,false);
 		C.PassSET_Blend_MUL		();
-		C.PassSET_LightFog		(FALSE,true);
+		C.PassSET_LightFog		(false,true);
 		
 		// Stage2 - Diffuse color
 		C.StageBegin			();
@@ -151,7 +151,7 @@ void CBlender_LaEmB::compile_2	(CBlender_Compile& C)
 	{
 		C.PassSET_ZB			(true,true);
 		C.PassSET_Blend_SET		();
-		C.PassSET_LightFog		(FALSE,true);
+		C.PassSET_LightFog		(false,true);
 		
 		// Stage0 - Lightmap
 		C.StageBegin			();
@@ -170,9 +170,9 @@ void CBlender_LaEmB::compile_2	(CBlender_Compile& C)
 	// Pass2 - Base map
 	C.PassBegin		();
 	{
-		C.PassSET_ZB			(true,FALSE);
+		C.PassSET_ZB			(true,false);
 		C.PassSET_Blend_MUL2X	();
-		C.PassSET_LightFog		(FALSE,true);
+		C.PassSET_LightFog		(false,true);
 		
 		// Stage0 - Base
 		C.StageBegin			();
@@ -190,7 +190,7 @@ void CBlender_LaEmB::compile_2c	(CBlender_Compile& C)
 	{	
 		C.PassSET_ZB			(true,true);
 		C.PassSET_Blend_SET		();
-		C.PassSET_LightFog		(FALSE,true);
+		C.PassSET_LightFog		(false,true);
 		
 		// Stage0 - Environment map [*] const
 		C.StageBegin			();
@@ -211,9 +211,9 @@ void CBlender_LaEmB::compile_2c	(CBlender_Compile& C)
 	// Pass2 - Base map
 	C.PassBegin		();
 	{
-		C.PassSET_ZB			(true,FALSE);
+		C.PassSET_ZB			(true,false);
 		C.PassSET_Blend_MUL2X	();
-		C.PassSET_LightFog		(FALSE,true);
+		C.PassSET_LightFog		(false,true);
 		
 		// Stage0 - Detail
 		C.StageBegin			();
@@ -232,7 +232,7 @@ void CBlender_LaEmB::compile_3	(CBlender_Compile& C)
 	{
 		C.PassSET_ZB			(true,true);
 		C.PassSET_Blend_SET		();
-		C.PassSET_LightFog		(FALSE,true);
+		C.PassSET_LightFog		(false,true);
 		
 		// Stage0 - [=] Lightmap
 		C.StageBegin			();
@@ -263,7 +263,7 @@ void CBlender_LaEmB::compile_3c	(CBlender_Compile& C)
 	{
 		C.PassSET_ZB			(true,true);
 		C.PassSET_Blend_SET		();
-		C.PassSET_LightFog		(FALSE,true);
+		C.PassSET_LightFog		(false,true);
 		
 		// Stage1 - [=] Env-map [*] const
 		C.StageBegin			();
@@ -297,7 +297,7 @@ void CBlender_LaEmB::compile_L	(CBlender_Compile& C)
 	{
 		C.PassSET_ZB			(true,true);
 		C.PassSET_Blend_SET		();
-		C.PassSET_LightFog		(FALSE,FALSE);
+		C.PassSET_LightFog		(false,false);
 		
 		// Stage0 - Lightmap
 		C.StageBegin			();
@@ -320,7 +320,7 @@ void CBlender_LaEmB::compile_Lc	(CBlender_Compile& C)
 	{	
 		C.PassSET_ZB			(true,true);
 		C.PassSET_Blend_SET		();
-		C.PassSET_LightFog		(FALSE,FALSE);
+		C.PassSET_LightFog		(false,false);
 		
 		// Stage0 - Environment map [*] const
 		C.StageBegin			();

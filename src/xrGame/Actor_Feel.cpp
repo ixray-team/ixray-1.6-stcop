@@ -27,13 +27,13 @@ bool CActor::feel_touch_contact(CObject* O)
 {
 	if (O == nullptr || O->getDestroy())
 	{
-		return FALSE;
+		return false;
 	}
 
 	CGameObject* GO = O->cast_game_object();
 	if (GO == nullptr)
 	{
-		return FALSE;
+		return false;
 	}
 
 	CInventoryItem* item = GO->cast_inventory_item();
@@ -49,20 +49,20 @@ bool CActor::feel_touch_contact(CObject* O)
 		return true;
 	}
 
-	return FALSE;
+	return false;
 }
 
 bool CActor::feel_touch_on_contact(CObject* O)
 {
 	if (O == nullptr || O->getDestroy())
 	{
-		return FALSE;
+		return false;
 	}
 
 	CGameObject* GO = O->cast_game_object();
 	if (GO == nullptr)
 	{
-		return FALSE;
+		return false;
 	}
 
 	CAnomalyZone* custom_zone = GO->cast_anomaly_zone();
@@ -80,7 +80,7 @@ bool CActor::feel_touch_on_contact(CObject* O)
 		return true;
 	}
 
-	return FALSE;
+	return false;
 }
 
 void CActor::PickupModeUpdate()

@@ -15,17 +15,17 @@ ECORE_API xr_token2* actions_token = nullptr;
 
 bool PS::CPEDef::Equal(const CPEDef* pe)
 {
-    if (!m_Flags.equal(pe->m_Flags)) 						return FALSE;
-    if (!m_ShaderName.equal(pe->m_ShaderName)) 				return FALSE;
-    if (!m_TextureName.equal(pe->m_TextureName))			return FALSE;
-    if (0!=memcmp(&m_Frame,&pe->m_Frame,sizeof(m_Frame))) 	return FALSE;
-	if (!fsimilar(m_fTimeLimit,pe->m_fTimeLimit))			return FALSE;
-    if (m_MaxParticles!=pe->m_MaxParticles)					return FALSE;
-    if (m_Actions.size()!=pe->m_Actions.size())				return FALSE;
-    if (!m_VelocityScale.similar(pe->m_VelocityScale))		return FALSE;
-	if (!fsimilar(m_fCollideOneMinusFriction,pe->m_fCollideOneMinusFriction))	return FALSE;
-    if (!fsimilar(m_fCollideResilience,pe->m_fCollideResilience))				return FALSE;
-    if (!fsimilar(m_fCollideSqrCutoff,pe->m_fCollideSqrCutoff))					return FALSE;
+    if (!m_Flags.equal(pe->m_Flags)) 						return false;
+    if (!m_ShaderName.equal(pe->m_ShaderName)) 				return false;
+    if (!m_TextureName.equal(pe->m_TextureName))			return false;
+    if (0!=memcmp(&m_Frame,&pe->m_Frame,sizeof(m_Frame))) 	return false;
+	if (!fsimilar(m_fTimeLimit,pe->m_fTimeLimit))			return false;
+    if (m_MaxParticles!=pe->m_MaxParticles)					return false;
+    if (m_Actions.size()!=pe->m_Actions.size())				return false;
+    if (!m_VelocityScale.similar(pe->m_VelocityScale))		return false;
+	if (!fsimilar(m_fCollideOneMinusFriction,pe->m_fCollideOneMinusFriction))	return false;
+    if (!fsimilar(m_fCollideResilience,pe->m_fCollideResilience))				return false;
+    if (!fsimilar(m_fCollideSqrCutoff,pe->m_fCollideSqrCutoff))					return false;
     return true;
 }
 
@@ -517,10 +517,10 @@ bool PS::CPEDef::NameOnAfterEdit(PropValue* sender, shared_str& edit_val)
 
 bool PS::CPGDef::SEffect::Equal(const SEffect& src)
 {
-	if (!m_Flags.equal(src.m_Flags))	return FALSE;
-    if (!m_EffectName.equal(src.m_EffectName)) return FALSE;
-	if (!fsimilar(m_Time0,src.m_Time0))	return FALSE;
-	if (!fsimilar(m_Time1,src.m_Time1))	return FALSE;
+	if (!m_Flags.equal(src.m_Flags))	return false;
+    if (!m_EffectName.equal(src.m_EffectName)) return false;
+	if (!fsimilar(m_Time0,src.m_Time0))	return false;
+	if (!fsimilar(m_Time1,src.m_Time1))	return false;
 	return true;
 }
 
@@ -590,12 +590,12 @@ void PS::CPGDef::SEffect::FillPropInit(PropItemVec& items, const char* pref)
 
 bool PS::CPGDef::Equal(const CPGDef* pg)
 {
-	if (!m_Flags.equal(pg->m_Flags))				return FALSE;
-	if (!fsimilar(m_fTimeLimit,pg->m_fTimeLimit))	return FALSE;
-    if (m_Effects.size()!=pg->m_Effects.size())		return FALSE;
+	if (!m_Flags.equal(pg->m_Flags))				return false;
+	if (!fsimilar(m_fTimeLimit,pg->m_fTimeLimit))	return false;
+    if (m_Effects.size()!=pg->m_Effects.size())		return false;
     EffectIt s_it=m_Effects.begin(); 
     for (EffectIt d_it=m_Effects.begin(); d_it!=m_Effects.end(); s_it++,d_it++)
-    	if (!(*s_it)->Equal(**d_it)) return FALSE;
+    	if (!(*s_it)->Equal(**d_it)) return false;
 	return true;
 }
 int PS::CPGDef::FindEffect(SEffect* effect)
@@ -649,7 +649,7 @@ void  PS::CPGDef::OnEffectsEditClick(ButtonValue* B, bool& bDataModified, bool& 
     switch (B->btn_num){
     case 0:
         m_Effects.push_back(new SEffect());
-        m_Effects.back()->m_Flags.set(CPGDef::SEffect::flEnabled,FALSE);
+        m_Effects.back()->m_Flags.set(CPGDef::SEffect::flEnabled,false);
     	m_Effects.back()->parent = this;
         ExecCommand		(COMMAND_UPDATE_PROPERTIES);
         OnParamsChange	(B);
@@ -842,7 +842,7 @@ bool CPSLibrary::Save2()
 
         FS.file_delete(fn);
 
-        CInifile ini(fn, FALSE, FALSE, FALSE);
+        CInifile ini(fn, false, false, false);
         pe->Save2(ini);
         ini.save_as(fn);
     }
@@ -860,7 +860,7 @@ bool CPSLibrary::Save2()
 
         FS.file_delete(fn);
 
-        CInifile ini(fn, FALSE, FALSE, FALSE);
+        CInifile ini(fn, false, false, false);
         pg->Save2(ini);
         ini.save_as(fn);
     }
@@ -879,7 +879,7 @@ bool CPSLibrary::Save2()
 
 		FS.file_delete(fn);
 
-		CInifile ini(fn, FALSE, FALSE, FALSE);
+		CInifile ini(fn, false, false, false);
 		elem->Save2(ini);
 		ini.save_as(fn);
 	}

@@ -816,7 +816,7 @@ void CDrawUtilities::DD_DrawFace_push(const Fvector& p0, const Fvector& p1, cons
 }
 void CDrawUtilities::DD_DrawFace_end()
 {
-    DD_DrawFace_flush	(FALSE); 	
+    DD_DrawFace_flush	(false); 	
     m_DD_pv_start 		= nullptr;
 }
 //----------------------------------------------------

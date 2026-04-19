@@ -268,7 +268,7 @@ void CToolCustom::Render()
 	cnt = 0;
 	if (!m_DebugDraw.m_SolidFaces.empty()) {
 		EDevice->SetShader(EDevice->m_SelectionShader);
-		DU_impl.DD_DrawFace_begin(FALSE);
+		DU_impl.DD_DrawFace_begin(false);
 		for (SDebugDraw::FaceIt fsit = m_DebugDraw.m_SolidFaces.begin(); fsit != m_DebugDraw.m_SolidFaces.end(); fsit++)
 			DU_impl.DD_DrawFace_push(fsit->p[0], fsit->p[1], fsit->p[2], fsit->c);
 		DU_impl.DD_DrawFace_end();

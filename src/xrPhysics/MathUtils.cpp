@@ -427,20 +427,20 @@ void capped_cylinder_ray_collision_test()
 	dir.set(1,0,0);pos.set(0,0,0);R=3;
 	
 	//inside
-	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true , 1
+	RAYvsCYLINDER(c,pos,dir,R,false);//true , 1
 	RAYvsCYLINDER(c,pos,dir,R,true);//false ,
 	dir.set(0,0,1);
-	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true , 2
+	RAYvsCYLINDER(c,pos,dir,R,false);//true , 2
 	RAYvsCYLINDER(c,pos,dir,R,true);//false
 
 	//outside
 	pos.set(-3,0,0);dir.set(1,0,0);R=4;
-	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true , 2
+	RAYvsCYLINDER(c,pos,dir,R,false);//true , 2
 	RAYvsCYLINDER(c,pos,dir,R,true);//true , 2
 	R=1;
-	RAYvsCYLINDER(c,pos,dir,R,FALSE);//false
+	RAYvsCYLINDER(c,pos,dir,R,false);//false
 	pos.set(0,0,-3);dir.set(0,0,1);R=4;
-	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true , 1
+	RAYvsCYLINDER(c,pos,dir,R,false);//true , 1
 	RAYvsCYLINDER(c,pos,dir,R,true);//true, 1
 
 	pos.set(-3,-3,-3);dir.set(1,1,1);dir.normalize();R=10;
@@ -450,7 +450,7 @@ void capped_cylinder_ray_collision_test()
 	c.intersect(pos,dir,ir,code);
 	//
 	pos.set(0,0,0);
-	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true, ?
+	RAYvsCYLINDER(c,pos,dir,R,false);//true, ?
 	//Fcylinder::ecode code[2];
 	c.intersect(pos,dir,ir,code);
 	RAYvsCYLINDER(c,pos,dir,R,true);//false

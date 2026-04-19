@@ -163,7 +163,7 @@ void CBaseMonster::PostLoad (const char* section)
 	attack_on_move_params_t& aom			=	m_attack_on_move_params;
 
 	aom.enabled								=	(READ_IF_EXISTS(pSettings, r_bool, section, 
-												"aom_enabled", FALSE)) != 0;
+												"aom_enabled", false)) != 0;
 	aom.far_radius							=	READ_IF_EXISTS(pSettings, r_float, section, 
 												"aom_far_radius", ::detail::base_monster::aom_far_radius);
 	aom.attack_radius						=	READ_IF_EXISTS(pSettings, r_float, section, 
@@ -332,7 +332,7 @@ void CBaseMonster::reinit()
 bool CBaseMonster::net_Spawn (CSE_Abstract* DC) 
 {
 	if (!inherited::net_Spawn(DC))
-		return(FALSE);
+		return(false);
 
 	CSE_Abstract* e = (CSE_Abstract*)(DC);
 

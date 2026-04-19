@@ -327,7 +327,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				BT.dwWidth		= 1024;
 				BT.dwHeight		= 1024;
 				BT.bHasAlpha	= true;
-				BT.SetHasSurface(FALSE);
+				BT.SetHasSurface(false);
 
 			} 
 			else 
@@ -342,8 +342,8 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
  					is_thm_missing = true;
 					BT.dwWidth = 1024;
 					BT.dwHeight = 1024;
-					BT.bHasAlpha = FALSE;
-					BT.SetHasSurface(FALSE);
+					BT.bHasAlpha = false;
+					BT.SetHasSurface(false);
  				}
 				else
 				{
@@ -361,7 +361,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 					BT.THM.mip_filter = THM->r_u32();
 					BT.THM.width = THM->r_u32();
 					BT.THM.height = THM->r_u32();
-					bool			bLOD = FALSE;
+					bool			bLOD = false;
 					if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') bLOD = true;
 
 					// load surface if it has an alpha channel or has "implicit lighting" flag
@@ -381,7 +381,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 								clMsg("! cannot find dds texture: %s", N);
 								is_tga_missing = true;
 
-								BT.SetHasSurface(FALSE);
+								BT.SetHasSurface(false);
 								textures().push_back(BT);
 								continue;
 							}

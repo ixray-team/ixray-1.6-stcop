@@ -211,7 +211,7 @@ void CCreature::reinit		()
 	m_dwLastUpdateTime			= 0xffffffff;
 	m_tEyeShift.set				(0,0,0);
 	m_fEyeShiftYaw				= 0.f;
-	NET_WasExtrapolating		= FALSE;
+	NET_WasExtrapolating		= false;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Critical Wounds
@@ -447,7 +447,7 @@ void CCreature::UpdateCL	()
 	{
 		PROF_EVENT("network extrapolation");
 		// OK.	interpolation
-		NET_WasExtrapolating		= FALSE;
+		NET_WasExtrapolating		= false;
 		// Search 2 keyframes for interpolation
 		int select		= -1;
 		for (u32 id=0; id<NET.size()-1; ++id)
@@ -536,10 +536,10 @@ void CCreature::UpdatePositionAnimation()
 
 bool CCreature::feel_visible_isRelevant (CObject* O)
 {
-	if (!O)									return FALSE;
+	if (!O)									return false;
 	CEntityAlive* E = O->cast_entity_alive();
-	if (!E)									return FALSE;
-	if (E->g_Team() == g_Team())			return FALSE;
+	if (!E)									return false;
+	if (E->g_Team() == g_Team())			return false;
 	return true;
 }
 
@@ -651,7 +651,7 @@ bool CCreature::net_Spawn	(CSE_Abstract* DC)
 	memory().reinit				();
 
 	if (!movement().net_Spawn(DC) || !inherited::net_Spawn(DC) || !CScriptEntity::net_Spawn(DC))
-		return					(FALSE);
+		return					(false);
 
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::VISIBLEFORAI;
 		// enable react to sound only if alive
@@ -816,10 +816,10 @@ void CCreature::PitchCorrection()
 bool CCreature::feel_touch_on_contact	(CObject *O)
 {
 	if(!O)
-		return		(FALSE);
+		return		(false);
 	CGameObject* GO = O->cast_game_object();
 	if (!GO)
-		return		(FALSE);
+		return		(false);
 	CAnomalyZone	*custom_zone = GO->cast_anomaly_zone();
 	if (!custom_zone)
 		return	(true);
@@ -830,16 +830,16 @@ bool CCreature::feel_touch_on_contact	(CObject *O)
 	if (custom_zone->inside(sphere))
 		return	(true);
 
-	return		(FALSE);
+	return		(false);
 }
 
 bool CCreature::feel_touch_contact		(CObject *O)
 {
 	if (!O)
-		return		(FALSE);
+		return		(false);
 	CGameObject* GO = O->cast_game_object();
 	if (!GO)
-		return		(FALSE);
+		return		(false);
 	CAnomalyZone* custom_zone = GO->cast_anomaly_zone();
 	if (!custom_zone)
 		return	(true);
@@ -850,7 +850,7 @@ bool CCreature::feel_touch_contact		(CObject *O)
 	if (custom_zone->inside(sphere))
 		return	(true);
 
-	return		(FALSE);
+	return		(false);
 }
 
 void CCreature::set_ready_to_save		()

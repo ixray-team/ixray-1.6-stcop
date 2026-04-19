@@ -25,11 +25,11 @@ CUILines::CUILines()
 	m_TextOffset.set				(0.0f,0.0f);
 	m_text							="";
 	uFlags.zero();
-	uFlags.set(flNeedReparse,		FALSE);
-	uFlags.set(flComplexMode,		FALSE);
-	uFlags.set(flPasswordMode,		FALSE);
+	uFlags.set(flNeedReparse,		false);
+	uFlags.set(flComplexMode,		false);
+	uFlags.set(flPasswordMode,		false);
 	uFlags.set(flColoringMode,		true);
-	uFlags.set(flCutWordsMode,		FALSE);
+	uFlags.set(flCutWordsMode,		false);
 	uFlags.set(flRecognizeNewLine,	true);
 	m_eTextGradientMode				= CGameFont::gm_vert;
 
@@ -44,7 +44,7 @@ CUILines::~CUILines(){
 void CUILines::SetTextComplexMode(bool mode){
 	uFlags.set(flComplexMode, mode);
 	if (mode)
-		uFlags.set(flPasswordMode, FALSE);
+		uFlags.set(flPasswordMode, false);
 }
 
 void CUILines::SetPasswordMode(bool mode){
@@ -139,7 +139,7 @@ void CUILines::ParseText(bool force)
 		line->AddSubLine(&subline);
 	}
 
-	bool bNewLines = FALSE;
+	bool bNewLines = false;
 
 	if (uFlags.test(flRecognizeNewLine))
 	{
@@ -328,7 +328,7 @@ void CUILines::ParseText(bool force)
 	}
 
 	xr_delete(line);
-	uFlags.set(flNeedReparse, FALSE);
+	uFlags.set(flNeedReparse, false);
 }
 
 float CUILines::GetVisibleHeight()

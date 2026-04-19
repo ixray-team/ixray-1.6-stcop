@@ -300,7 +300,7 @@ void CBlender_Compile::r_Pass(const char* _vs, const char* _gs, const char* _ps,
 
     PassSET_ZB(bZtest, bZwrite);
     PassSET_Blend(bABlend, abSRC, abDST, aTest, aRef);
-    PassSET_LightFog(FALSE, bFog);
+    PassSET_LightFog(false, bFog);
 
     SPS* ps = DEV->_CreatePS(_ps);
     SVS* vs = DEV->_CreateVS(_vs);

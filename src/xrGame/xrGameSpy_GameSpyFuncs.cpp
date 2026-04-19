@@ -11,7 +11,7 @@ void			xrGameSpyServer::QR2_Init			(int PortID)
 
 void			xrGameSpyServer::QR2_ShutDown()
 {
-	m_bQR2_Initialized = FALSE;
+	m_bQR2_Initialized = false;
 	m_QR2.ShutDown(nullptr);
 };
 
@@ -26,7 +26,7 @@ void			xrGameSpyServer::CDKey_Init			()
 void			xrGameSpyServer::CDKey_ShutDown()
 {
 	m_GCDServer.ShutDown();
-	m_bCDKey_Initialized = FALSE;
+	m_bCDKey_Initialized = false;
 };
 
 //generate a rand nchar challenge

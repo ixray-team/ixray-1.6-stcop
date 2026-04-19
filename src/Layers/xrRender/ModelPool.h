@@ -56,10 +56,10 @@ public:
 	dxRender_Visual*		CreatePG			(PS::CPGDef* source);
 	dxRender_Visual*		Create				(const char* name, IReader* data=nullptr);
 	dxRender_Visual*		CreateChild			(const char* name, IReader* data);
-	void					Delete				(dxRender_Visual* &V, bool bDiscard=FALSE);
+	void					Delete				(dxRender_Visual* &V, bool bDiscard=false);
 	void					DeleteDeffered		(dxRender_Visual* &V);
 	void					Discard				(dxRender_Visual* &V, bool b_complete);
-	void					DeleteInternal		(dxRender_Visual* &V, bool bDiscard=FALSE);
+	void					DeleteInternal		(dxRender_Visual* &V, bool bDiscard=false);
 	void					DeleteQueue			();
 	void					DeleteQueuedDeffer	();
 	

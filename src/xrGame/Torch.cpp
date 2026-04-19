@@ -150,7 +150,7 @@ bool CTorch::net_Spawn(CSE_Abstract* DC)
 
 	if (!inherited::net_Spawn(DC))
 	{
-		return FALSE;
+		return false;
 	}
 
 	bool b_r2 = !!psDeviceFlags.test(rsR2);

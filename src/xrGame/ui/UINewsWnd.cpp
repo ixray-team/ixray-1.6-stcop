@@ -67,7 +67,7 @@ void CUINewsWnd::LoadNews()
 			++currentNews;
 		}
 	}
-	m_flags.set(eNeedAdd,FALSE);
+	m_flags.set(eNeedAdd,false);
 }
 
 void CUINewsWnd::Update()

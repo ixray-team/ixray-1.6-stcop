@@ -70,7 +70,7 @@ void CPHCollideValidator::SetDynamicNotCollide(CPHObject& obj)
 
 void CPHCollideValidator::SetNonDynamicObject(CPHObject& obj)
 {
-	obj.collide_class_bits().set(cbClassDynamic,FALSE);
+	obj.collide_class_bits().set(cbClassDynamic,false);
 }
 
 void	CPHCollideValidator::SetCharacterClass			(CPHObject& obj)

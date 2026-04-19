@@ -59,7 +59,7 @@ bool	reclaim		(xr_vector<T*>& vec, const T* ptr)
 	typename xr_vector<T*>::iterator end	= vec.end	();
 	for (; it!=end; it++)
 		if (*it == ptr)	{ vec.erase	(it); return true; }
-		return FALSE;
+		return false;
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -396,14 +396,14 @@ static bool	dcl_equal(D3DVERTEXELEMENT9* a, D3DVERTEXELEMENT9* b)
 	// check sizes
 	size_t a_size = GetDeclLength(a);
 	size_t b_size = GetDeclLength(b);
-	if (a_size != b_size)	return FALSE;
+	if (a_size != b_size)	return false;
 	return 0 == memcmp(a, b, a_size * sizeof(D3DVERTEXELEMENT9));
 }
 
 static bool dcl_equal(const RHIInputElementDesc* a, size_t aDeclSize, const RHIInputElementDesc* b, size_t bDeclSize)
 {
 	if (aDeclSize != bDeclSize)
-		return FALSE;
+		return false;
 	return 0 == memcmp(a, b, aDeclSize * sizeof(RHIInputElementDesc));
 }
 
@@ -803,7 +803,7 @@ SMatrixList*	CResourceManager::_CreateMatrixList(SMatrixList& L)
 {
 	bool bEmpty = true;
 	xrCriticalSectionGuard guard(creationGuard);
-	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=FALSE; break; }
+	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=false; break; }
 	if (bEmpty)	return nullptr;
 
 	for (u32 it=0; it<lst_matrices.size(); it++)
@@ -831,7 +831,7 @@ SConstantList*	CResourceManager::_CreateConstantList(SConstantList& L)
 {
 	bool bEmpty = true;
 	xrCriticalSectionGuard guard(creationGuard);
-	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=FALSE; break; }
+	for (u32 i=0; i<L.size(); i++)	if (L[i]) { bEmpty=false; break; }
 	if (bEmpty)	return nullptr;
 
 	for (u32 it=0; it<lst_constants.size(); it++)

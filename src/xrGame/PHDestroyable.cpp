@@ -121,16 +121,16 @@ void CPHDestroyable::PhysicallyRemoveSelf()
 
 	}
 
-	obj->setVisible(FALSE);
-	obj->setEnabled(FALSE);
+	obj->setVisible(false);
+	obj->setEnabled(false);
 }
 
 void CPHDestroyable::PhysicallyRemovePart(CPHDestroyableNotificate *dn)
 {
 	CPhysicsShellHolder		*sh		=	dn		->PPhysicsShellHolder		()		;	
 	CPhysicsShell			*s		=	sh		->PPhysicsShell				()		;
-							sh					->setVisible				(FALSE)	;
-							sh					->setEnabled				(FALSE)	;
+							sh					->setVisible				(false)	;
+							sh					->setEnabled				(false)	;
 							s					->Disable					()		;
 							s					->DisableCollision			()		;
 }
@@ -147,7 +147,7 @@ void CPHDestroyable::Destroy(u16 source_id/*=u16(-1)*/,const char* section/*="ph
 	obj->processing_activate();
 	if(source_id==obj->ID())
 	{
-		m_flags.set(fl_released,FALSE);
+		m_flags.set(fl_released,false);
 	}
 	xr_vector<shared_str>::iterator i=m_destroyed_obj_visual_names.begin(),e=m_destroyed_obj_visual_names.end();
 
@@ -163,7 +163,7 @@ void CPHDestroyable::Destroy(u16 source_id/*=u16(-1)*/,const char* section/*="ph
 
 void CPHDestroyable::Load(CInifile* ini,const char* section)
 {
-	m_flags.set(fl_destroyable,FALSE);
+	m_flags.set(fl_destroyable,false);
 
 	if (ini->line_exist(section,"destroyed_vis_name")){
 		m_flags.set(fl_destroyable,true);
@@ -188,7 +188,7 @@ void CPHDestroyable::Load(CInifile* ini,const char* section)
 }
 void CPHDestroyable::Load(const char* section)
 {
-	m_flags.set(fl_destroyable,FALSE);
+	m_flags.set(fl_destroyable,false);
 
 	if(pSettings->line_exist(section,"destroyed_vis_name")){
 		m_flags.set								(fl_destroyable,true);
@@ -203,7 +203,7 @@ void CPHDestroyable::Init()
 
 void CPHDestroyable::RespawnInit()
 {
-	m_flags.set(fl_destroyed,FALSE);
+	m_flags.set(fl_destroyed,false);
 	m_flags.set(fl_released,true);
 	m_destroyed_obj_visual_names.clear();
 	m_notificate_objects.clear();
@@ -356,7 +356,7 @@ void CPHDestroyable::NotificateDestroy(CPHDestroyableNotificate *dn)
 	if (g_pGamePersistent->GameType() == eGameIDFreeMP)
 	{
 		CPhysicsShellHolder* obj = PPhysicsShellHolder();
-		obj->setVisible(FALSE);
+		obj->setVisible(false);
 	}
 
 	m_depended_objects--;

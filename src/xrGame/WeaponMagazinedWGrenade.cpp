@@ -122,7 +122,7 @@ bool CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 	bool l_res = inherited::net_Spawn(DC);
 
 	UpdateGrenadeVisibility(!!iAmmoElapsed);
-	SetPending(FALSE);
+	SetPending(false);
 
 	if (!IsGameTypeSingle())
 	{
@@ -578,8 +578,8 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 
 		if (IsGameTypeSingle() && IsZoomed() && GO->cast_actor())
 		{
-			H_Parent()->setEnabled(FALSE);
-			setEnabled(FALSE);
+			H_Parent()->setEnabled(false);
+			setEnabled(false);
 
 			collide::rq_result RQ;
 			bool HasPick = Level().ObjectSpace.RayPick(p1, d, 300.0f, collide::rqtStatic, RQ, this);
@@ -790,11 +790,11 @@ void CWeaponMagazinedWGrenade::OnH_B_Independent(bool just_before_destroy)
 {
 	inherited::OnH_B_Independent(just_before_destroy);
 
-	SetPending(FALSE);
+	SetPending(false);
 	if (m_bGrenadeMode)
 	{
 		SetState(eIdle);
-		SetPending(FALSE);
+		SetPending(false);
 	}
 }
 
@@ -1080,7 +1080,7 @@ void CWeaponMagazinedWGrenade::net_Export(NET_Packet& P)
 
 void CWeaponMagazinedWGrenade::net_Import(NET_Packet& P)
 {
-	bool NewMode = FALSE;
+	bool NewMode = false;
 	NewMode = !!P.r_u8();
 	if (NewMode != m_bGrenadeMode)
 		PerformSwitchGL();

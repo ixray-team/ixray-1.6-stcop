@@ -28,7 +28,7 @@ void xrServer::Perform_game_export	()
 	};
 	NetExportToClientFunctor temp_functor(this);
 	ForEachClientDoSender(temp_functor);
-	game->sv_force_sync	= FALSE;
+	game->sv_force_sync	= false;
 }
 
 void xrServer::Export_game_type(IClient* CL)

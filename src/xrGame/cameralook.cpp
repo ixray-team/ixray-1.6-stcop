@@ -102,7 +102,7 @@ ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 	}
 
 	*RQ = result;
-	return FALSE;
+	return false;
 }
 
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore)

@@ -411,7 +411,7 @@ void stalker_movement_manager_base::parse_velocity_mask	(stalker_movement_params
 		if (movement_params.m_mental_state == eMentalStateFree) {
 			setup_body_orientation	();
 			guard.enable			(false);
-//			Msg						("%d FALSE",Device.dwTimeGlobal);
+//			Msg						("%d false",Device.dwTimeGlobal);
 		}
 		if	(
 				(movement_params.m_mental_state != eMentalStateFree) ||

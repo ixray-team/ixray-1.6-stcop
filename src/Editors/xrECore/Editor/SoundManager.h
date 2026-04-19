@@ -17,7 +17,7 @@ public:
 	void  RenameSound		(const char* p0, const char* p1, EItemType type);
 
 	// texture routines
-    int			GetSounds			(FS_FileSet& files, bool bFolders=FALSE);
+    int			GetSounds			(FS_FileSet& files, bool bFolders=false);
     int			GetGameSounds		(FS_FileSet& files);
     int			GetSoundEnvs		(AStringVec& items);
 

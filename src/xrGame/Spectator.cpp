@@ -488,10 +488,10 @@ void CSpectator::cam_Update	(CActor* A)
 bool			CSpectator::net_Spawn				( CSE_Abstract*	DC )
 {
 	bool res = inherited::net_Spawn(DC);
-	if (!res) return FALSE;
+	if (!res) return false;
 
 	CSE_Abstract			*E	= (CSE_Abstract*)(DC);
-	if (!E) return FALSE;
+	if (!E) return false;
 
 	game_cl_mp* pMPGame = Game().cast_game_cl_mp();
 	float tmp_roll = 0.f;

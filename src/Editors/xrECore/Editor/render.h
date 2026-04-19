@@ -27,11 +27,11 @@ public:
 	}
 
 	virtual bool canBeDetailed() {
-		return FALSE;
+		return false;
 	}
 
 	virtual bool canBeLMAPped() {
-		return FALSE;
+		return false;
 	}
 
 	virtual void Compile(CBlender_Compile& C);

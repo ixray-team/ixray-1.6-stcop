@@ -87,7 +87,7 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpaw
 			// Clone from Phantom
 			E->ID					=	PerformIDgen(0xffff);
 			E->owner				=	CL;//		= SelectBestClientToMigrateTo	(E);
-			E->s_flags.set			(M_SPAWN_OBJECT_PHANTOM,FALSE);
+			E->s_flags.set			(M_SPAWN_OBJECT_PHANTOM,false);
 			entities.insert			(std::make_pair(E->ID,E));
 		} else {
 			// Simple spawn
@@ -137,12 +137,12 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpaw
 		SendTo				(CL->ID,Packet,net_flags(true,true));
 
 		// For everybody, except client, which contains authorative copy
-		E->Spawn_Write		(Packet,FALSE	);
+		E->Spawn_Write		(Packet,false	);
 		if (E->s_flags.is(M_SPAWN_UPDATE))
 			E->UPDATE_Write	(Packet);
 		SendBroadcast		(CL->ID,Packet,net_flags(true,true));
 	} else {
-		E->Spawn_Write		(Packet,FALSE	);
+		E->Spawn_Write		(Packet,false	);
 		if (E->s_flags.is(M_SPAWN_UPDATE))
 			E->UPDATE_Write	(Packet);
 		ClientID clientID;clientID.set(0);

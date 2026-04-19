@@ -55,7 +55,7 @@ void CPsyDog::Load(const char* section)
 
 bool CPsyDog::net_Spawn(CSE_Abstract *dc)
 {
-	if (!inherited::net_Spawn(dc)) return FALSE;
+	if (!inherited::net_Spawn(dc)) return false;
 
 	return true;
 }
@@ -198,7 +198,7 @@ CPsyDogPhantom::~CPsyDogPhantom()
 }
 bool CPsyDogPhantom::net_Spawn(CSE_Abstract *dc)
 {
-	if (!inherited::net_Spawn(dc)) return FALSE;
+	if (!inherited::net_Spawn(dc)) return false;
 
 	CSE_ALifeMonsterBase *se_monster	= smart_cast<CSE_ALifeMonsterBase*>(dc);
 	m_parent_id = se_monster->m_spec_object_id;
@@ -207,8 +207,8 @@ bool CPsyDogPhantom::net_Spawn(CSE_Abstract *dc)
 	
 	try_to_register_to_parent();
 
-	setVisible	(FALSE);
-	setEnabled	(FALSE);
+	setVisible	(false);
+	setEnabled	(false);
 
 	// load effector
 	// Load psi postprocess --------------------------------------------------------

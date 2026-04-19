@@ -166,7 +166,7 @@ void ESceneObjectTool::OnFrame()
     inherited::OnFrame();
     if (m_Flags.is(flAppendRandomUpdateProps))
     {
-        m_Flags.set(flAppendRandomUpdateProps, FALSE);
+        m_Flags.set(flAppendRandomUpdateProps, false);
         //FillAppendRandomPropertiesBegin	(true);
     }
 }

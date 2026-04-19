@@ -80,8 +80,8 @@ bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 			// 2. Polygon doesn't pick - real database query
 			CObjectSpaceThreadData::xrc.ray_query(&Static, start, dir, range);
 			if (0 == CObjectSpaceThreadData::xrc.r_count()) {
-				cache->set(start, dir, range, FALSE);
-				return FALSE;
+				cache->set(start, dir, range, false);
+				return false;
 			}
 			else {
 				// cache polygon
@@ -100,7 +100,7 @@ bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 			return CObjectSpaceThreadData::xrc.r_count();
 		}
 	}
-	return FALSE;
+	return false;
 	CObjectSpaceThreadData::r_spatial.clear();
 }
 //--------------------------------------------------------------------------------

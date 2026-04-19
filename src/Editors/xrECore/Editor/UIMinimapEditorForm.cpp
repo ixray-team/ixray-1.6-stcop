@@ -843,7 +843,7 @@ void UIMinimapEditorForm::ShowMenu()
 
 			if (FS.exist(levelLtx))
 			{
-				CInifile levelLtxFile(levelLtx, FALSE, true, true);
+				CInifile levelLtxFile(levelLtx, false, true, true);
 
 				levelLtxFile.remove_line("level_map", "bound_rect");
 				levelLtxFile.w_fvector4("level_map", "bound_rect", m_Bound);
@@ -1100,7 +1100,7 @@ void UIMinimapEditorForm::SaveFile(bool saveCurrent)
 	}
 
 	FS.TryLoad(fn.c_str());
-	auto ltxFile = new CInifile(fn.c_str(), FALSE, true, true);
+	auto ltxFile = new CInifile(fn.c_str(), false, true, true);
 
 	{
 		ltxFile->remove_line("global_map", "texture");

@@ -163,7 +163,7 @@ void CRenderTarget::accum_spot(light* L)
 		// *** similar to "Carmack's reverse", but assumes convex, non intersecting objects,
 		// *** thus can cope without stencil clear with 127 lights
 		// *** in practice, 'cause we "clear" it back to 0x1 it usually allows us to > 200 lights :)
-		RCache.set_ColorWriteEnable(FALSE);
+		RCache.set_ColorWriteEnable(false);
 		RCache.set_Element(s_accum->E[0]);		// masker
 
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
@@ -247,8 +247,8 @@ void CRenderTarget::accum_spot(light* L)
 //---------------------------------------------------------------------------
 CRender::CRender()
 {
-	val_bUI = FALSE;
-	val_bInvisible = FALSE;
+	val_bUI = false;
+	val_bInvisible = false;
 	::Render = &RImplementation;
 	Engine.External.SetSkinningMode();
 }
@@ -356,8 +356,8 @@ void CRender::Calculate()
 				{
 					if(Device.dwFrame == L->frame_render) continue;
 					L->frame_render = Device.dwFrame;
-					L->flags.bShadow = FALSE;
-					L->flags.bOccq = FALSE;
+					L->flags.bShadow = false;
+					L->flags.bOccq = false;
 					if(L->flags.type == IRender_Light::SPOT)
 					{
 						m_spotlights.push_back(L);
@@ -419,7 +419,7 @@ void CRender::Render()
 		Target->reset_light_marker(true);
 
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK); // back
-		RCache.set_Stencil(FALSE);
+		RCache.set_Stencil(false);
 	}
 
 	m_pointlights.resize(0);

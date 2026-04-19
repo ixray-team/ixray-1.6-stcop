@@ -34,7 +34,7 @@ CHolderEntityObject::~CHolderEntityObject()
 
 void CHolderEntityObject::SetBoneCallbacks()
 {
-	m_pPhysicsShell->EnabledCallbacks(FALSE);
+	m_pPhysicsShell->EnabledCallbacks(false);
 }
 
 void CHolderEntityObject::ResetBoneCallbacks()
@@ -57,7 +57,7 @@ void CHolderEntityObject::Load(const char* section)
 
 bool CHolderEntityObject::net_Spawn(CSE_Abstract* DC)
 {
-	if(!inheritedPH::net_Spawn	(DC)) return FALSE;
+	if(!inheritedPH::net_Spawn	(DC)) return false;
 
 	IKinematics* K = smart_cast<IKinematics*>(Visual());
 	U16Vec fixed_bones;

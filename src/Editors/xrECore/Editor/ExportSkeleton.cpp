@@ -24,7 +24,7 @@
 #define MAX_BONE 128
 
 ECORE_API bool g_force16BitTransformQuant = true;
-ECORE_API bool g_force32BitTransformQuant = FALSE;
+ECORE_API bool g_force32BitTransformQuant = false;
 ECORE_API float g_EpsSkelPositionDelta = EPS_L;
 
 u16 CSkeletonCollectorPacked::VPack(SSkelVert& V)
@@ -106,7 +106,7 @@ CSkeletonCollectorPacked::CSkeletonCollectorPacked(const Fbox& _bb, int apx_vert
 
 CExportSkeleton::SSplit::SSplit(CSurface* surf, const Fbox& bb, u16 part):CSkeletonCollectorPacked(bb)
 {
-//.	m_b2Link	= FALSE;
+//.	m_b2Link	= false;
 	m_SkeletonLinkType = 1;
 	m_Shader = surf->m_ShaderName;
 	m_Texture = surf->m_Texture;
@@ -1126,8 +1126,8 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 			Fvector 		Mt={0,0,0};
 			Fvector 		Ct={0,0,0};
 			Fvector 		St={0,0,0};
-			bool			t_present = FALSE;
-			bool			r_present = FALSE;
+			bool			t_present = false;
+			bool			r_present = false;
 			Fvector At		= BM._keysT[0];
 			Fvector Bt		= BM._keysT[0];
 			for (u32 t_idx=0; t_idx<dwLen; ++t_idx)

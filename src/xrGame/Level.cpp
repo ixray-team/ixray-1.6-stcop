@@ -107,8 +107,8 @@ CLevel::CLevel():
 		::Sound->create(m_screenshot_sound_event, soundScreenshot, st_Effect, sg_SourceType);
 	}
 
-	game_configured				= FALSE;
-	m_bGameConfigStarted		= FALSE;
+	game_configured				= false;
+	m_bGameConfigStarted		= false;
 	m_connect_server_err		= xrServer::ErrNoError;
 
 	eChangeRP					= g_pEventManager->Event.Handler_Attach	("LEVEL:ChangeRP",this);
@@ -175,11 +175,11 @@ CLevel::CLevel():
 	//---------------------------------------------------------	
 	m_writer = nullptr;
 	m_reader = nullptr;
-	m_DemoPlay = FALSE;
-	m_DemoPlayStarted	= FALSE;
-	m_DemoPlayStoped	= FALSE;
-	m_DemoSave = FALSE;
-	m_DemoSaveStarted = FALSE;
+	m_DemoPlay = false;
+	m_DemoPlayStarted	= false;
+	m_DemoPlayStoped	= false;
+	m_DemoSave = false;
+	m_DemoSaveStarted = false;
 	m_current_spectator = nullptr;
 	m_msg_filter = nullptr;
 	m_demoplay_control = nullptr;
@@ -403,7 +403,7 @@ int	CLevel::get_RPID(const char* /**name/**/)
 	return -1;
 }
 
-bool		g_bDebugEvents = FALSE	;
+bool		g_bDebugEvents = false	;
 
 
 void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)

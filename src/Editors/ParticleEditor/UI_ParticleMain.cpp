@@ -78,7 +78,7 @@ CCommandVar CParticleTool::CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 }
 CCommandVar CParticleTool::CommandReload(CCommandVar p1, CCommandVar p2)
 {
-    if (!IfModified()) 	return FALSE;
+    if (!IfModified()) 	return false;
     Reload				();
     ExecCommand(COMMAND_UPDATE_CAPTION);
     return true;

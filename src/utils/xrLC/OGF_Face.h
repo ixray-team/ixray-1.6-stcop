@@ -89,7 +89,7 @@ struct OGF_Base
 	OGF_Base(int _Level) {
 		bbox.invalidate	();
 		iLevel			= _Level;
-		bConnected		= FALSE;
+		bConnected		= false;
 		Sector			= 0xffff;
 	}
 

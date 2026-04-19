@@ -176,9 +176,9 @@ void CLightmap::Save(const char* path)
 			case LCLightmapFormat::FORMAT_BC5:  fmt.fmt = STextureParams::tfDXT5; break;
 		}
 
-		fmt.flags.set(STextureParams::flDitherColor, FALSE);
-		fmt.flags.set(STextureParams::flGenerateMipMaps, FALSE);
-		fmt.flags.set(STextureParams::flBinaryAlpha, FALSE);
+		fmt.flags.set(STextureParams::flDitherColor, false);
+		fmt.flags.set(STextureParams::flGenerateMipMaps, false);
+		fmt.flags.set(STextureParams::flBinaryAlpha, false);
 
  		DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
  	}
@@ -207,9 +207,9 @@ void CLightmap::Save(const char* path)
 		case LCLightmapFormat::FORMAT_BC5:  fmt.fmt = STextureParams::tfDXT5; break;
 		}
 
-		fmt.flags.set(STextureParams::flDitherColor, FALSE);
-		fmt.flags.set(STextureParams::flGenerateMipMaps, FALSE);
-		fmt.flags.set(STextureParams::flBinaryAlpha, FALSE);
+		fmt.flags.set(STextureParams::flDitherColor, false);
+		fmt.flags.set(STextureParams::flGenerateMipMaps, false);
+		fmt.flags.set(STextureParams::flBinaryAlpha, false);
 
  		DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
  	}

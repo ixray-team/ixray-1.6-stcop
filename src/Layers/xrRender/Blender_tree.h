@@ -13,7 +13,7 @@ public:
 	xrP_BOOL	oNotAnTree;
 public:
 	virtual		const char*		getComment()	{ return "LEVEL: trees/bushes";	}
-	virtual		bool		canBeLMAPped()	{ return FALSE; }
+	virtual		bool		canBeLMAPped()	{ return false; }
 	virtual		bool		canBeDetailed()	{ return true; }
 
 	virtual		void		Save			(IWriter&	fs);

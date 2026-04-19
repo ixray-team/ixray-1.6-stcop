@@ -80,7 +80,7 @@ s32		game_sv_CaptureTheArtefact::GetTimeLimit				() {return g_sv_dm_dwTimeLimit;
 game_sv_CaptureTheArtefact::game_sv_CaptureTheArtefact()
 {
 	m_type = eGameIDCaptureTheArtefact;
-	roundStarted = FALSE;
+	roundStarted = false;
 	teams_swaped = false;
 	m_bSpectatorMode = false;
 	
@@ -344,7 +344,7 @@ void game_sv_CaptureTheArtefact::net_Export_Update(NET_Packet& P, ClientID id_to
 
 bool game_sv_CaptureTheArtefact::CheckForAllPlayersReady()
 {
-	if (!m_server->GetServerClient()) return FALSE;	
+	if (!m_server->GetServerClient()) return false;	
 	// Check if all players ready
 	struct ready_checker
 	{
@@ -380,7 +380,7 @@ bool game_sv_CaptureTheArtefact::CheckForAllPlayersReady()
 	m_server->ForEachClientDo(tmp_functor);
 	u32		cnt		= get_players_count	();
 	if (tmp_functor.ready == cnt && tmp_functor.ready != 0) return true;
-	return FALSE;
+	return false;
 }
 
 void game_sv_CaptureTheArtefact::OnPlayerConnect(ClientID id_who)
@@ -796,7 +796,7 @@ void game_sv_CaptureTheArtefact::Money_SetStart(game_PlayerState* ps)
 
 void game_sv_CaptureTheArtefact::OnRoundEnd()
 {
-	roundStarted = FALSE;
+	roundStarted = false;
 	struct spectator_spawner
 	{
 		game_sv_CaptureTheArtefact* m_owner;
@@ -1623,7 +1623,7 @@ void game_sv_CaptureTheArtefact::ReSpawnArtefacts()
 	signal_Syncronize();
 }
 
-// true=allow ownership, FALSE=denied
+// true=allow ownership, false=denied
 bool game_sv_CaptureTheArtefact::OnTouch(u16 eid_who, u16 eid_target, bool bForced)
 {
 	CSE_ActorMP *e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
@@ -1658,7 +1658,7 @@ bool game_sv_CaptureTheArtefact::OnTouch(u16 eid_who, u16 eid_target, bool bForc
 				te,
 				std::bind2nd(SearchOwnerIdFunctor(), e_who->ID)) != te) 
 		{
-			return FALSE;
+			return false;
 		}*/
 		
 
@@ -1689,23 +1689,23 @@ bool game_sv_CaptureTheArtefact::OnTouch(u16 eid_who, u16 eid_target, bool bForc
 					P.w_u8(static_cast<u8>(artefactOfTeam->first));
 					P.w_clientID(xrCData->ID);
 					u_EventSend(P);
-					return FALSE;
+					return false;
 				}
 				if (std::find_if(teams.begin(), te, [e_who](const auto& team) {
 					return SearchOwnerIdFunctor()(team, e_who->ID);
 					}) != te) {
-					return FALSE;
+					return false;
 				}
 				artefactOfTeam->second.OnPlayerAttachArtefact(e_who);
 				return true;
 			}
-			return FALSE;
+			return false;
 		} else
 		{
 			if (std::find_if(teams.begin(), te, [e_who](const auto& team) {
 				return SearchOwnerIdFunctor()(team, e_who->ID);
 				}) != te) {
-				return FALSE;
+				return false;
 			}
 			artefactOfTeam->second.OnPlayerAttachArtefact(e_who);
 			NET_Packet			P;
@@ -1745,7 +1745,7 @@ bool game_sv_CaptureTheArtefact::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *i
 				CSE_Abstract *e_child_item = get_entity_from_eid(item->children.back());
 				if (e_child_item)
 				{
-					if (!OnTouch(actor->ID, e_child_item->ID, FALSE))
+					if (!OnTouch(actor->ID, e_child_item->ID, false))
 					{
 						NET_Packet P;
 						u_EventGen(P,GE_OWNERSHIP_REJECT, item->ID);
@@ -1775,7 +1775,7 @@ bool game_sv_CaptureTheArtefact::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *i
 		};
 				
 		//-------------------------------
-		return FALSE;
+		return false;
 		
 	};
 	//---------------------------------------------------------------
@@ -1851,7 +1851,7 @@ bool game_sv_CaptureTheArtefact::OnActivate(u16 eid_who, u16 eid_target)
 			return true;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 void game_sv_CaptureTheArtefact::FillDeathActorRejectItems(CSE_ActorMP *actor, xr_vector<CSE_Abstract*> & to_reject)
@@ -2344,7 +2344,7 @@ void game_sv_CaptureTheArtefact::CheckForArtefactDelivering()
 bool game_sv_CaptureTheArtefact::CheckForRoundEnd()
 {
 	VERIFY(TeamList.size() >= 2);
-	if (m_dwWarmUp_CurTime != 0 || m_bInWarmUp) return FALSE;
+	if (m_dwWarmUp_CurTime != 0 || m_bInWarmUp) return false;
 	if ((teams[etGreenTeam].score >= Get_ScoreLimit()) ||
 		(teams[etBlueTeam].score >= Get_ScoreLimit()))
 	{
@@ -2352,7 +2352,7 @@ bool game_sv_CaptureTheArtefact::CheckForRoundEnd()
 		return true;
 	}
 	if (!GetTimeLimit())
-		return FALSE;
+		return false;
 	if ( (Level().timeServer() - StartTime()) > u32(GetTimeLimit()*60000) )
 	{
 		if (teams[etGreenTeam].score != teams[etBlueTeam].score)
@@ -2361,7 +2361,7 @@ bool game_sv_CaptureTheArtefact::CheckForRoundEnd()
 			return true;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 bool game_sv_CaptureTheArtefact::ResetInvincibility(ClientID const clientId)

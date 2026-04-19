@@ -564,7 +564,7 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 		{
 			IParticleCustom* Particles = smart_cast<IParticleCustom*>(IdleParticle);
 			static Fvector v = { 0.f, 0.f, 0.f };
-			Particles->UpdateParent(parent, v, FALSE);
+			Particles->UpdateParent(parent, v, false);
 			Particles->OnFrame(1);
 
 			::RImplementation.model_Render(IdleParticle, parent, priority, strictB2F, 1.f);
@@ -603,7 +603,7 @@ void CSpawnPoint::SSpawnData::OnFrame()
 		if(m_Data->m_editor_flags.is(CSE_Abstract::flVisualAnimationChange))
 		{
 			m_Visual->PlayAnimationFirstFrame();
-			m_Data->m_editor_flags.set(CSE_Abstract::flVisualAnimationChange, FALSE);
+			m_Data->m_editor_flags.set(CSE_Abstract::flVisualAnimationChange, false);
 		}
 
 		IKinematics* KinematicsObj = PKinematics(m_Visual->visual);
@@ -1676,7 +1676,7 @@ void CSpawnPoint::FillProp(const char* pref, PropItemVec& items)
 }
 void CSpawnPoint::OnEnvModFlagChange(PropValue* prop)
 {
-	LTools->UpdateProperties(FALSE);
+	LTools->UpdateProperties(false);
 }
 
 

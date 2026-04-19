@@ -218,7 +218,7 @@ bool CCF_Skeleton::_RayQuery( const collide::ray_defs& Q, collide::rq_results& R
 	float aft[2];
 	int quant;
 	Fsphere::ERP_Result res				= w_bv_sphere.intersect(Q.start,Q.dir,tgt_dist,quant,aft);
-	if ((Fsphere::rpNone==res)||((Fsphere::rpOriginOutside==res)&&(aft[0]>tgt_dist)) ) return FALSE;
+	if ((Fsphere::rpNone==res)||((Fsphere::rpOriginOutside==res)&&(aft[0]>tgt_dist)) ) return false;
 
 	if (dwFrame != Device.dwFrame)		BuildState	();
 	else{
@@ -230,7 +230,7 @@ bool CCF_Skeleton::_RayQuery( const collide::ray_defs& Q, collide::rq_results& R
 		}
 	}
 	xrSRWLockGuard guard(&build_lock, true);
-	bool bHIT			= FALSE;
+	bool bHIT			= false;
 	for (ElementVecIt I=elements.begin(); I!=elements.end(); I++){
 		if (!I->valid())continue;
 		bool res_		= false;
@@ -298,12 +298,12 @@ bool CCF_EventBox::Contact(CObject* O)
 	O->XFORM().transform_tiny(PT,P);
 	
 	for (int i=0; i<6; i++) {
-		if (Planes[i].classify(PT)>R) return FALSE;
+		if (Planes[i].classify(PT)>R) return false;
 	}
 	return true;
 }
 bool CCF_EventBox::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
-{	return FALSE; }
+{	return false; }
 /*
 void CCF_EventBox::_BoxQuery(const Fbox& B, const Fmatrix& M, u32 flags)
 {   return; }
@@ -325,9 +325,9 @@ bool CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 	temp.transform_dir(dD,Q.dir);
 
 	if (!bv_sphere.intersect(dS,dD))
-		return FALSE;
+		return false;
 	float& range = const_cast<float&>(Q.range);
-	bool bHIT = FALSE;
+	bool bHIT = false;
 	for (u32 el=0; el<shapes.size(); el++)
 	{
 		shape_def& shape= shapes[el];
@@ -460,7 +460,7 @@ bool CCF_Shape::Contact		( CObject* O )
 	}else if (O->CFORM()){
 		S = O->CFORM()->getSphere();
 		O->XFORM().transform_tiny(S.P);
-	}else return FALSE;
+	}else return false;
 	
 	// Get our matrix
 	const Fmatrix& XF	= Owner()->XFORM();
@@ -508,5 +508,5 @@ bool CCF_Shape::Contact		( CObject* O )
 			break;
 		}
 	}
-	return FALSE;
+	return false;
 }

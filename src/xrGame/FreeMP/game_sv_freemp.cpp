@@ -594,7 +594,7 @@ bool game_sv_freemp::OnTouch(u16 eid_who, u16 eid_what, bool bForced)
 
 	CSE_Abstract* e_entity = m_server->ID_to_entity(eid_what);
 	if (!e_entity)
-		return FALSE;
+		return false;
 
 	// pick up players bag
 	if (e_entity->m_tClassID == CLSID_OBJECT_PLAYERS_BAG)

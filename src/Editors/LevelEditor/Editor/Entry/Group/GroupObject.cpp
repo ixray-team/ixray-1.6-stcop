@@ -89,7 +89,7 @@ bool CGroupObject::LL_AppendObject(CCustomObject* object)
 	}
 
 	object->OnAttach		(this);
-	object->m_CO_Flags.set	(flObjectInGroupUnique, FALSE);
+	object->m_CO_Flags.set	(flObjectInGroupUnique, false);
 	m_ObjectsInGroup.resize	(m_ObjectsInGroup.size()+1);
 	m_ObjectsInGroup.back().pObject = object;
 
@@ -193,7 +193,7 @@ void CGroupObject::SaveLTX(CInifile& ini, const char* sect_name)
 	GetObjects		(grp_lst);
 	ObjectList::iterator it;
 	for(it=grp_lst.begin(); it!=grp_lst.end(); ++it)
-		(*it)->m_CO_Flags.set(CCustomObject::flObjectInGroup, FALSE);
+		(*it)->m_CO_Flags.set(CCustomObject::flObjectInGroup, false);
 		
 	Scene->SaveObjectsLTX(grp_lst, sect_name, "ingroup", ini);
 
@@ -291,7 +291,7 @@ void CGroupObject::SaveStream(IWriter& F)
 		GetObjects		(grp_lst);
 		ObjectList::iterator it;
 		for (it=grp_lst.begin(); it!=grp_lst.end(); ++it)
-			(*it)->m_CO_Flags.set(CCustomObject::flObjectInGroup, FALSE);
+			(*it)->m_CO_Flags.set(CCustomObject::flObjectInGroup, false);
 
 		Scene->SaveObjectsStream(grp_lst,GROUPOBJ_CHUNK_OBJECT_LIST,F);
 
@@ -378,7 +378,7 @@ bool CGroupObject::UpdateReference(bool bForceReload)
 			ObjectsInGroup::iterator itBk = ObjectsInGroupBk.begin();
 			for(; it!=m_ObjectsInGroup.end(); ++it, ++itBk)
 			{
-				it->pObject->m_CO_Flags.set(flObjectInGroupUnique, FALSE);
+				it->pObject->m_CO_Flags.set(flObjectInGroupUnique, false);
 			   
 			   if(itBk->pObject->m_CO_Flags.test(flObjectInGroupUnique) )
 			   {
@@ -393,11 +393,11 @@ bool CGroupObject::UpdateReference(bool bForceReload)
 			{
 				ELog.Msg		(mtError, "Not all objects synchronised correctly", GetName());
 				for (ObjectsInGroup::iterator it=m_ObjectsInGroup.begin(); it!=m_ObjectsInGroup.end(); ++it)
-						it->pObject->m_CO_Flags.set(flObjectInGroupUnique, FALSE);
+						it->pObject->m_CO_Flags.set(flObjectInGroupUnique, false);
 			}else
 			{ // first setup
 				for (ObjectsInGroup::iterator it=m_ObjectsInGroup.begin(); it!=m_ObjectsInGroup.end(); ++it)
-						it->pObject->m_CO_Flags.set(flObjectInGroupUnique, FALSE);
+						it->pObject->m_CO_Flags.set(flObjectInGroupUnique, false);
 			}
 		}
 
@@ -434,7 +434,7 @@ void CGroupObject::FillProp(const char* pref, PropItemVec& items)
 void CGroupObject::OnFreezeAllClick(ButtonValue* sender, bool& bModif, bool& bSafe)
 {
 	ButtonValue* V = smart_cast<ButtonValue*>(sender);
-	bool bDoUnique = FALSE;
+	bool bDoUnique = false;
 	switch (V->btn_num)
 	{
 		case 0: 
@@ -443,7 +443,7 @@ void CGroupObject::OnFreezeAllClick(ButtonValue* sender, bool& bModif, bool& bSa
 		}break;
 		case 1:
 		{   
-			bDoUnique = FALSE;
+			bDoUnique = false;
 		}break;
 	}
 	for (ObjectsInGroup::iterator it=m_ObjectsInGroup.begin(); it!=m_ObjectsInGroup.end(); ++it)

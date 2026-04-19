@@ -284,7 +284,7 @@ void	CObject::spatial_update		(float eps_P, float eps_R)
 {
 	if (Props.bDestroy) return;
 	//
-	bool	bUpdate=FALSE;
+	bool	bUpdate=false;
 	if (PositionStack.empty())
 	{
 		// Empty

@@ -193,7 +193,7 @@ void CEditableObject::Save(IWriter& F)
     F.close_chunk		();
 
     // set modif desc
-	SetVersionToCurrent	(FALSE, true);
+	SetVersionToCurrent	(false, true);
 
 	bOnModified			= false;
 }

@@ -483,17 +483,17 @@ void CGameFont::MasterOut(
 
 void CGameFont::OutI(float _x, float _y, const char* fmt, ...)
 {
-	MASTER_OUT(FALSE, true, true, FALSE, _x, _y, 0.0f, fmt);
+	MASTER_OUT(false, true, true, false, _x, _y, 0.0f, fmt);
 }
 
 void CGameFont::Out(float _x, float _y, const char* fmt, ...)
 {
-	MASTER_OUT(true, true, FALSE, FALSE, _x, _y, 0.0f, fmt);
+	MASTER_OUT(true, true, false, false, _x, _y, 0.0f, fmt);
 }
 
 void CGameFont::OutNext(const char* fmt, ...)
 {
-	MASTER_OUT(true, FALSE, FALSE, true, 0.0f, 0.0f, LineSpacing, fmt);
+	MASTER_OUT(true, false, false, true, 0.0f, 0.0f, LineSpacing, fmt);
 }
 
 void CGameFont::OutLeft(float x)

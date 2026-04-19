@@ -219,7 +219,7 @@ void CShootingObject::LoadParticle(const char* section, const char* line, xr_sha
 			if (particle)
 				particle->Destroy();
 
-			particle = Particles::Details::Create(pname, FALSE);
+			particle = Particles::Details::Create(pname, false);
 			particle->m_bAutoStop = true;
 			particle->SetLiveUpdate(true);
 		}
@@ -253,7 +253,7 @@ void CShootingObject::StartSmokeParticle(const Fvector& parent_vel)
 
 	if (!particles_ptr) return;
 
-	particles_ptr->Stop(FALSE);
+	particles_ptr->Stop(false);
 	Fmatrix pos;
 	pos.set(get_ParticlesXFORM());
 	pos.c.set(get_CurrentFirePoint());
@@ -276,7 +276,7 @@ void CShootingObject::StartFlameParticle()
 
 	if(!particles_ptr) return;
 
-	particles_ptr->Stop(FALSE);
+	particles_ptr->Stop(false);
 
 	Fmatrix pos;
 	pos.set(get_ParticlesXFORM());

@@ -108,7 +108,7 @@ void CLevel::RestartPlayDemo()
 	R_ASSERT(m_reader);
 	
 	m_DemoPlayStarted	= true;
-	m_DemoPlayStoped	= FALSE;
+	m_DemoPlayStoped	= false;
 
 	m_StartGlobalTime	= Device.dwTimeGlobal - m_starting_spawns_dtime;
 	m_reader->seek		(m_starting_spawns_pos);
@@ -124,7 +124,7 @@ void CLevel::StopPlayDemo()
 	{
 		//FS.r_close			(m_reader);
 		//m_reader			= nullptr;
-		m_DemoPlayStarted	= FALSE;
+		m_DemoPlayStarted	= false;
 		m_DemoPlayStoped	= true;
 	}
 	Msg("! ------------- Demo Stoped ------------");

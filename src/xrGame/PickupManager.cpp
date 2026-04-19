@@ -99,7 +99,7 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 				}
 
 				bOverlaped = true;
-				return FALSE;
+				return false;
 			}, &bOverlaped, nullptr, item);
 
 			for (collide::rq_result& result : RQR.r_results())

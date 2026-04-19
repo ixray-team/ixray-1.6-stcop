@@ -117,7 +117,7 @@ void CImageManager::CreateTextureThumbnail(ETextureThumbnail* THM, const xr_stri
 		THM->m_TexParams.fmt            = (a)?STextureParams::tfDXT3:STextureParams::tfDXT1;
 		if ((h*6)==w){
 			THM->m_TexParams.type	        = STextureParams::ttCubeMap;
-			THM->m_TexParams.flags.set      (STextureParams::flGenerateMipMaps,FALSE);
+			THM->m_TexParams.flags.set      (STextureParams::flGenerateMipMaps,false);
 		}
 	}
 	THM->SetValid();
@@ -355,8 +355,8 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 
 		ETextureThumbnail* THM=nullptr;
 
-		bool bUpdated 	= FALSE;
-		bool bFailed 	= FALSE;
+		bool bUpdated 	= false;
+		bool bFailed 	= false;
 		// check thumbnail
 		if (sync_thm&&bThm){
 			THM = new ETextureThumbnail(it->name.c_str());
@@ -491,7 +491,7 @@ bool CImageManager::CheckCompliance(const char* fname, int& compl_)
 	compl_ = 0;
 	U32Vec data;
 	u32 w, h, a;
-	if (!Stbi_Load(fname,data,w,h,a)) return FALSE;
+	if (!Stbi_Load(fname,data,w,h,a)) return false;
 	if ((1==w) || (1==h))				 return true;
 
 	u32 w_2 	= (1==w)?w:w/2;
@@ -507,7 +507,7 @@ bool CImageManager::CheckCompliance(const char* fname, int& compl_)
 		Msg             ("* ERROR: imf_Process");
 		xr_free   (pScaled);
 		xr_free   (pRestored);
-		return  FALSE;
+		return  false;
 	}
 	// Analyze
 	float 		difference	= 0;
@@ -575,7 +575,7 @@ IC void GET(U32Vec& pixels, u32 w, u32 h, u32 x, u32 y, u32 ref, u32 &count, u32
 
 bool _ApplyBorders(U32Vec& pixels, u32 w, u32 h, u32 ref)
 {
-	bool    bNeedContinue = FALSE;
+	bool    bNeedContinue = false;
 
 	try {
 		U32Vec result;
@@ -687,8 +687,8 @@ bool CImageManager::CreateOBJThumbnail(const char* tex_name, CEditableObject* ob
 	Flags32 old_flag = psDeviceFlags;
 
 	// set render params
-	psDeviceFlags.set(rsDrawGrid,FALSE);
-	psDeviceFlags.set(rsStatistic,FALSE);
+	psDeviceFlags.set(rsDrawGrid,false);
+	psDeviceFlags.set(rsStatistic,false);
 
 	U32Vec pixels;
 	int w=512,h=512;
@@ -701,7 +701,7 @@ bool CImageManager::CreateOBJThumbnail(const char* tex_name, CEditableObject* ob
 	}
 	else
 	{
-		bResult = FALSE;
+		bResult = false;
 		ELog.DlgMsg(mtError,"Can't make screenshot.");
 	}
 
@@ -715,8 +715,8 @@ void CImageManager::RemoveTexture(UIItemListForm::Node& node)
 {
 	auto fname = node.Name.c_str();
 	if (node.IsFolder()){
-		FS.dir_delete			(_textures_,fname,FALSE);
-		FS.dir_delete			(_game_textures_,fname,FALSE);
+		FS.dir_delete			(_textures_,fname,false);
+		FS.dir_delete			(_game_textures_,fname,false);
 		return;
 	}else if (node.IsObject())
 	{
@@ -800,7 +800,7 @@ bool CImageManager::CreateSmallerCubeMap(const char* src_name, const char* dst_n
 		u32 sm_w=32, sm_wf=6*sm_w, sm_h=32;
 		if (!btwIsPow2(h)||(h*6!=wf)||(wf<sm_wf)||(h<sm_h)){	
 			ELog.Msg(mtError,"Texture '%s' - invalid size: [%d, %d]",src_name,wf,h);
-			return 		FALSE;
+			return 		false;
 		}
 		// generate smaller
 		U32Vec sm_data	(sm_wf*sm_h,0);
@@ -821,12 +821,12 @@ bool CImageManager::CreateSmallerCubeMap(const char* src_name, const char* dst_n
 		tp.type			= STextureParams::ttCubeMap;
 		tp.flags.zero	();
 		if (!MakeGameTexture(out_name,&*sm_data.begin(),tp))
-			return FALSE;
+			return false;
 		ELog.DlgMsg(mtInformation,"Smaller cubemap successfylly created [%3.2f sec].",tm_scm);
 		return true;
 	}else{
 		ELog.Msg(mtError,"Can't load texture '%s'.",src_name);
 	}
-	return FALSE;
+	return false;
 }
 

@@ -14,7 +14,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CDemoPlay::CDemoPlay(const char *name, float ms, u32 cycles, float life_time) : CEffectorCam(cefDemo,life_time/*,FALSE*/)
+CDemoPlay::CDemoPlay(const char *name, float ms, u32 cycles, float life_time) : CEffectorCam(cefDemo,life_time/*,false*/)
 {
 	Msg					("*** Playing demo: %s",name);
 	Console->Execute	("hud_weapon 0");
@@ -56,7 +56,7 @@ CDemoPlay::CDemoPlay(const char *name, float ms, u32 cycles, float life_time) : 
 		FS.r_close		(fs);
 		Msg("~ Total key-frames: %d",m_count);
 	}
-	stat_started		= FALSE;
+	stat_started		= false;
 	Device.PreCache		(50, true, false);
 }
 
@@ -86,7 +86,7 @@ void CDemoPlay::stat_Stop	()
 {
 	if (!stat_started)		return;
 
-	stat_started			= FALSE;
+	stat_started			= false;
 	float	stat_total		= stat_Timer_total.GetElapsed_sec	();
 
 	float	rfps_min, rfps_max, rfps_middlepoint, rfps_average	;
@@ -214,7 +214,7 @@ bool CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 		if (frame>=m_count)
 		{
 			dwCyclesLeft			--	;
-			if (0==dwCyclesLeft)	return FALSE;
+			if (0==dwCyclesLeft)	return false;
 			fStartTime				= 0	;
 			// just continue
 			// stat_Stop			();

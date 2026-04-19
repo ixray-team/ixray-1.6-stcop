@@ -214,7 +214,7 @@ void CRender::level_Unload()
 
 	//*** Shaders
 	Shaders.clear();
-	b_loaded					= FALSE;
+	b_loaded					= false;
 /*	
 	Models->ClearPool( true );
 	Visuals.clear_and_free();

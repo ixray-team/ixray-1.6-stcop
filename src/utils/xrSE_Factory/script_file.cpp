@@ -136,9 +136,9 @@ int CScriptFile::GetNearestDebugLine(int nLine)
 bool CScriptFile::PositionBreakPoints()
 {
 	if ( !CDbgLuaHelper::LoadDebugLines(this) )
-		return FALSE;
+		return false;
 
-/*	bool bModified = FALSE;
+/*	bool bModified = false;
 	POSITION pos = m_breakPoints.GetStartPosition();
 	int nLine, nTemp, nNearest;
 	while (pos != NULL)
@@ -224,7 +224,7 @@ bool CScriptFile::HasFile(CString strPathName)
 
 	if(!m_strPathName.CompareNoCase(sFullPath))
 		return true;
-	return FALSE;
+	return false;
 }
 
 */
@@ -315,7 +315,7 @@ bool CProjectFile::Compile()
 	if ( !strOutput.IsEmpty() )
 	{
 		pOutput->Write(strOutput);
-		return FALSE;
+		return false;
 	}
 
 	return true;

@@ -273,8 +273,8 @@ void screenshot_manager::process_screenshot(bool singlecore)
 		SetEvent(m_make_start_event);
 		return;
 	}
-	m_make_start_event	= CreateEvent(nullptr, FALSE, true, nullptr);
-	m_make_done_event	= CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	m_make_start_event	= CreateEvent(nullptr, false, true, nullptr);
+	m_make_done_event	= CreateEvent(nullptr, false, false, nullptr);
 	thread_spawn	(&screenshot_manager::screenshot_maker_thread, "screenshot_maker", 0, this);
 }
 

@@ -177,7 +177,7 @@ void _initialize_cpu_thread()
 			}
 			__except (EXCEPTION_EXECUTE_HANDLER)
 			{
-				_denormals_are_zero_supported = FALSE;
+				_denormals_are_zero_supported = false;
 			}
 		}
 #endif

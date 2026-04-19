@@ -170,7 +170,7 @@ CSE_ALifeTraderAbstract::CSE_ALifeTraderAbstract(const char* caSection)
 	m_deadbody_closed			= false;
 
 	m_trader_flags.zero			();
-	m_trader_flags.set			(eTraderFlagInfiniteAmmo,FALSE);
+	m_trader_flags.set			(eTraderFlagInfiniteAmmo,false);
 }
 
 CSE_Abstract *CSE_ALifeTraderAbstract::init	()
@@ -1601,8 +1601,8 @@ CSE_ALifeCreatureCrow::CSE_ALifeCreatureCrow(const char* caSection) : CSE_ALifeC
 {
 	if (pSettings->section_exist(caSection) && pSettings->line_exist(caSection,"visual"))
 		set_visual				(pSettings->r_string(caSection,"visual"));
-	m_flags.set					(flUseSwitches,FALSE);
-	m_flags.set					(flSwitchOffline,FALSE);
+	m_flags.set					(flUseSwitches,false);
+	m_flags.set					(flSwitchOffline,false);
 }
 
 CSE_ALifeCreatureCrow::~CSE_ALifeCreatureCrow()
@@ -1653,8 +1653,8 @@ CSE_ALifeCreaturePhantom::CSE_ALifeCreaturePhantom(const char* caSection) : CSE_
 {
 	if (pSettings->section_exist(caSection) && pSettings->line_exist(caSection,"visual"))
 		set_visual				(pSettings->r_string(caSection,"visual"));
-	m_flags.set					(flUseSwitches,FALSE);
-	m_flags.set					(flSwitchOffline,FALSE);
+	m_flags.set					(flUseSwitches,false);
+	m_flags.set					(flSwitchOffline,false);
 }
 
 CSE_ALifeCreaturePhantom::~CSE_ALifeCreaturePhantom()
@@ -2371,7 +2371,7 @@ CSE_Abstract *CSE_ALifeOnlineOfflineGroup::init				()
 #endif
 
 	VERIFY						(m_members.empty());
-	m_flags.set					(flUsedAI_Locations,FALSE);
+	m_flags.set					(flUsedAI_Locations,false);
 
 	return						(this);
 }

@@ -79,7 +79,7 @@ void CPhysicsShellAnimator::OnFrame(bool calculate_bones)
 		CBoneInstance& B = m_pPhysicsShell->PKinematics()->LL_GetBoneInstance(i->m_element->m_SelfID);
 
 #pragma todo("reset callback?")
-		B.set_callback(B.callback_type(), 0, B.callback_param(), FALSE);
+		B.set_callback(B.callback_type(), 0, B.callback_param(), false);
 
 		if (calculate_bones)
 		{

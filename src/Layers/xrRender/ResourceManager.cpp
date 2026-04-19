@@ -56,7 +56,7 @@ bool	reclaim		(xr_vector<T*>& vec, const T* ptr)
 	typename xr_vector<T*>::iterator end = vec.end	();
 	for (; it!=end; it++)
 		if (*it == ptr)	{ vec.erase	(it); return true; }
-		return FALSE;
+		return false;
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -181,8 +181,8 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, const char* s_shader, const 
 
 	// Access to template
 	C.BT				= B;
-	C.bEditor			= FALSE;
-	C.bDetail			= FALSE;
+	C.bEditor			= false;
+	C.bDetail			= false;
 #ifdef _EDITOR
 	if (!C.BT)			{ /*ELog.Msg(mtError, "Can't find shader '%s'", s_shader); */return nullptr; }
 	C.bEditor			= true;
@@ -214,7 +214,7 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, const char* s_shader, const 
 	// Compile element
 	{
 		C.iElement			= 2;
-		C.bDetail			= FALSE;
+		C.bDetail			= false;
 		ShaderElement		E;
 		C._cpp_Compile		(&E);
 		S.E[2]				= _CreateElement	(E);
@@ -223,7 +223,7 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, const char* s_shader, const 
 	// Compile element
 	{
 		C.iElement			= 3;
-		C.bDetail			= FALSE;
+		C.bDetail			= false;
 		ShaderElement		E;
 		C._cpp_Compile		(&E);
 		S.E[3]				= _CreateElement	(E);
@@ -241,7 +241,7 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, const char* s_shader, const 
 	// Compile element
 	{
 		C.iElement			= 5;
-		C.bDetail			= FALSE;
+		C.bDetail			= false;
 		ShaderElement		E;
 		C._cpp_Compile		(&E);
 		S.E[5]				= _CreateElement	(E);

@@ -52,7 +52,7 @@ void CUI3dStatic::SetBonesVisible(IKinematics* pVisual)
 		{
 			if (auto BoneID = pK->LL_BoneID(bonename); BoneID != BI_NONE)
 			{
-				pK->LL_SetBoneVisible(BoneID, pVisual->LL_GetBoneVisible(bone_id), FALSE);
+				pK->LL_SetBoneVisible(BoneID, pVisual->LL_GetBoneVisible(bone_id), false);
 			}
 		}
 

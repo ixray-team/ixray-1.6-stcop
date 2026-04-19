@@ -61,7 +61,7 @@ protected:
 	CTimer*             device_timer;
 
 	ConnectionState			net_Connected;
-	bool                net_Syncronised = FALSE;
+	bool                net_Syncronised = false;
 	bool                net_Disconnected = true;
 
 	INetQueue           net_Queue;

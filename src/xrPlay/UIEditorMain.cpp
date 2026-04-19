@@ -214,7 +214,7 @@ void RenderScenesViewer() {
 			),
 			true,
 			true,
-			FALSE
+			false
 		);
 
 	auto levelName = g_pGameLevel->name();

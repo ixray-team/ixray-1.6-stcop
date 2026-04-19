@@ -39,7 +39,7 @@ bool CreateNode(Fvector& vAt, vertex& N)
 	u32	dwCount = IXRC.r_count();
 	if (dwCount==0)	{
 //		Log("chasm1");
-		return FALSE;			// chasm?
+		return false;			// chasm?
 	}
 
 	// *** Transfer triangles and compute sector
@@ -62,7 +62,7 @@ bool CreateNode(Fvector& vAt, vertex& N)
 	}
 	if (tris.size()==0)	{
 //		Log("chasm2");
-		return FALSE;			// chasm?
+		return false;			// chasm?
 	}
 
 	// *** Perform ray-casts and calculate sector
@@ -111,10 +111,10 @@ bool CreateNode(Fvector& vAt, vertex& N)
 	}
 
 	if (points.size() < 3) {
-		return	FALSE;
+		return	false;
 	}
 	if (float(points.size()) / float(RCAST_Total) < 0.7f) {
-		return	FALSE;
+		return	false;
 	}
 
 	// *** Calc normal
@@ -146,16 +146,16 @@ bool CreateNode(Fvector& vAt, vertex& N)
 
 	// *** Validate results
 	vNorm.set(0,1,0);
-	if (vNorm.dotproduct(N.Plane.n)<std::cos(deg2rad(60.f)))  return FALSE;
+	if (vNorm.dotproduct(N.Plane.n)<std::cos(deg2rad(60.f)))  return false;
 
 	float y_old = vAt.y;
 	float y_new = N.Pos.y;
 	if (y_old>y_new) {
 		// down
-		if (y_old-y_new > g_params.fCanDOWN ) return FALSE;
+		if (y_old-y_new > g_params.fCanDOWN ) return false;
 	} else {
 		// up
-		if (y_new-y_old > g_params.fCanUP	) return FALSE;
+		if (y_new-y_old > g_params.fCanUP	) return false;
 	}
  
 	// *** Validate plane
@@ -192,7 +192,7 @@ bool CreateNode(Fvector& vAt, vertex& N)
 		float perc = float(num_successed_rays)/float(RCAST_Total);
 		if (perc < 0.5f) {
 			//			Msg		("Floating node.");
-			return	FALSE;
+			return	false;
 		}
 	}
 
@@ -292,7 +292,7 @@ bool	CanTravel(Fvector& _from, Fvector& _at)
 	bool b2 = fsimilar(Result.x,_at.x,eps)&&fsimilar(Result.z,_at.z,eps)&&fsimilar(Result.y,_at.y,eps_y);
 	if (b2) return true;
 
-	return FALSE;
+	return false;
 }
 
 u32 BuildNode(Fvector& vFrom, Fvector& vAt)	// return node's index

@@ -14,7 +14,7 @@ void CRenderTarget::phase_ssao()
 	// low/hi RTs
 	u_setrt(rt_ssao_temp, 0, 0, 0);
 
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	float _w = RCache.get_width();
 	float _h = RCache.get_height();
@@ -28,7 +28,7 @@ void CRenderTarget::phase_ssao()
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 	set_viewport(RContext, RCache.get_width(), RCache.get_height());
 
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 }
 
 
@@ -41,7 +41,7 @@ void CRenderTarget::phase_downsamp()
 	u32 h = (u32)RCache.get_height();
 
 	RImplementation.rmNormal();
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	Fmatrix m_v2w;
 	m_v2w.invert(Device.mView);

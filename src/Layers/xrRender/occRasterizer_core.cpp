@@ -59,7 +59,7 @@ IC bool shared(occTri* T1, occTri* T2)
 	if (T1->adjacent[0]==T2)	return true;
 	if (T1->adjacent[1]==T2)	return true;
 	if (T1->adjacent[2]==T2)	return true;
-	return FALSE;
+	return false;
 }
 IC bool lesser(float& a, float& b)
 {

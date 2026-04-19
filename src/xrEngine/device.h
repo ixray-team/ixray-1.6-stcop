@@ -204,7 +204,7 @@ public:
 			m_bNearer						= true;
 			mProject._43					-= EPS_L;
 		}else if (!enabled&&m_bNearer){
-			m_bNearer						= FALSE;
+			m_bNearer						= false;
 			mProject._43					+= EPS_L;
 		}
 		m_pRender->SetCacheXform(mView, mProject);

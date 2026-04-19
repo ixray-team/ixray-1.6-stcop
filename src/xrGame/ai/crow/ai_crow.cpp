@@ -511,7 +511,7 @@ void	CAI_Crow::Hit							(SHit* pHDS)
 
 bool CAI_Crow::UsedAI_Locations()
 {
-	return		(FALSE);
+	return		(false);
 }
 
 void CAI_Crow::create_physic_shell()

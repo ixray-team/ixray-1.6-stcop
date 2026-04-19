@@ -358,7 +358,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 			if (Details && Details->dtFS && ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
 				Details->hw_Render();
 
-			fuckingsun->X.D.transluent = FALSE;
+			fuckingsun->X.D.transluent = false;
 			if (bSpecial) {
 				fuckingsun->X.D.transluent = true;
 				Target->phase_smap_direct_tsh(fuckingsun, SE_SUN_FAR);

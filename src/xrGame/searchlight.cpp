@@ -61,7 +61,7 @@ bool CProjector::net_Spawn(CSE_Abstract* DC)
 	R_ASSERT				(slight);
 	
 	if (!inherited::net_Spawn(DC))
-		return			(FALSE);
+		return			(false);
 	
 	R_ASSERT				(Visual() && PKinematics(Visual()));
 
@@ -130,7 +130,7 @@ void CProjector::TurnOff()
 	light_render->set_active(false);
 	glow_render->set_active (false);
 	
-	PKinematics(Visual())->LL_SetBoneVisible(guid_bone, FALSE, true);
+	PKinematics(Visual())->LL_SetBoneVisible(guid_bone, false, true);
 }
 
 void CProjector::UpdateCL	()
@@ -177,7 +177,7 @@ void CProjector::renderable_Render()
 
 bool CProjector::UsedAI_Locations()
 {
-	return					(FALSE);
+	return					(false);
 }
 
 bool CProjector::bfAssignWatch(CScriptEntityAction *tpEntityAction)

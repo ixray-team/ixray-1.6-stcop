@@ -92,7 +92,7 @@ bool	R_constant_table::parse(void* _desc, u32 destination)
 
 		// TypeInfo + class
 		D3DXSHADER_TYPEINFO* T = (D3DXSHADER_TYPEINFO*)(ptr + it->TypeInfo);
-		bool bSkip = FALSE;
+		bool bSkip = false;
 		switch (T->Class)
 		{
 		case D3DXPC_SCALAR:			r_type = RC_1x1;		break;
@@ -277,11 +277,11 @@ void R_constant_table::clear()
 
 bool R_constant_table::equal(R_constant_table& C)
 {
-	if (table.size() != C.table.size())	return FALSE;
+	if (table.size() != C.table.size())	return false;
 	u32 size = (u32)table.size();
 	for (u32 it = 0; it < size; it++)
 	{
-		if (!table[it]->equal(&*C.table[it]))	return FALSE;
+		if (!table[it]->equal(&*C.table[it]))	return false;
 	}
 
 	return true;

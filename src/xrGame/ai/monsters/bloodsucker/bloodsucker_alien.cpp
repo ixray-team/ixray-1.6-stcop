@@ -225,7 +225,7 @@ void CBloodsuckerAlien::activate()
 
 	// hide crosshair
 	m_crosshair_show			= !!psHUD_Flags.is(HUD_CROSSHAIR_RT);
-	if (m_crosshair_show)		psHUD_Flags.set(HUD_CROSSHAIR_RT,FALSE);
+	if (m_crosshair_show)		psHUD_Flags.set(HUD_CROSSHAIR_RT,false);
 
 	// Start effector
 	m_effector_pp				= new CAlienEffectorPP	(m_object->pp_vampire_effector, EFFECTOR_ID_GEN(EEffectorPPType));

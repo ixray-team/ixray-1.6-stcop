@@ -295,7 +295,7 @@ void		CTeleWhirlwindObject::		keep					()
 	else
 	{
 		p->SetAirResistance(0.f,0.f);
-		p->set_ApplyByGravity(FALSE);
+		p->set_ApplyByGravity(false);
 	}
 
 	u16				element_number		=	p				->get_ElementsNumber();

@@ -219,7 +219,7 @@ void EngineModel::PlayMotion(const char* name, u16 slot)
 					CMotionDef* D = PSkeletonAnimated(m_pVisual)->ID_Cycle_Safe(m_BPPlayCache[k].c_str());
 					CBlend* B=0;
 					if (D){
-						B = D->PlayCycle(PSkeletonAnimated(m_pVisual),k,(idx==k)?!(D->flags&esmNoMix):FALSE,0,0);
+						B = D->PlayCycle(PSkeletonAnimated(m_pVisual),k,(idx==k)?!(D->flags&esmNoMix):false,0,0);
 						if (idx==k) m_pBlend = B;
 					}
 				}
@@ -251,7 +251,7 @@ void CActorTools::OnMotionKeysModified()
 	Modified			();
 	m_Flags.set			(flUpdateMotionKeys,true);
 	if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine){
-		m_Flags.set		(flUpdateMotionKeys,FALSE);
+		m_Flags.set		(flUpdateMotionKeys,false);
 		if (m_RenderObject.UpdateVisual(m_pEditObject,false,true,false)){
 			PlayMotion();
 		}else{
@@ -267,7 +267,7 @@ void CActorTools::OnMotionDefsModified()
 	Modified			();
 	m_Flags.set			(flUpdateMotionDefs,true);
 	if ( MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine){
-		m_Flags.set		(flUpdateMotionDefs,FALSE);
+		m_Flags.set		(flUpdateMotionDefs,false);
 		if (m_RenderObject.UpdateVisual(m_pEditObject,false,false,true)){
 			PlayMotion();
 		}else{
@@ -282,7 +282,7 @@ void CActorTools::OnGeometryModified()
 {
 	Modified			();
 	if ( MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine){
-		m_Flags.set		(flUpdateGeometry,FALSE);
+		m_Flags.set		(flUpdateGeometry,false);
 		if (m_RenderObject.UpdateVisual(m_pEditObject,true,false,false)){
 			PlayMotion();
 		}else{
@@ -336,7 +336,7 @@ void CActorTools::MakePreview()
 	if (m_pEditObject)
 	{
 		CMemoryWriter F;
-		m_Flags.set(flUpdateGeometry|flUpdateMotionDefs|flUpdateMotionKeys,FALSE);
+		m_Flags.set(flUpdateGeometry|flUpdateMotionDefs|flUpdateMotionKeys,false);
 
 		if (m_RenderObject.UpdateVisual(m_pEditObject,true,true,true))
 		{

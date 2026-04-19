@@ -214,7 +214,7 @@ int ELibrary::GetObjects(FS_FileSet& files)
 void ELibrary::RemoveObject(const char* _fname, EItemType type, bool& res)   
 {
 	if (TYPE_FOLDER==type){
-    	FS.dir_delete			(_objects_,_fname,FALSE);
+    	FS.dir_delete			(_objects_,_fname,false);
         res 					= true;
 		return;
     }else if (TYPE_OBJECT==type){
@@ -242,7 +242,7 @@ void ELibrary::RemoveObject(const char* _fname, EItemType type, bool& res)
 void ELibrary::RenameObject(const char* nm0, const char* nm1, EItemType type)
 {
 	if (TYPE_FOLDER==type){
-    	FS.dir_delete			(_objects_,nm0,FALSE);
+    	FS.dir_delete			(_objects_,nm0,false);
     }else if (TYPE_OBJECT==type){
         string_path fn0,fn1,temp;
         // rename base file

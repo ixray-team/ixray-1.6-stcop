@@ -15,7 +15,7 @@ void CSound_manager_interface::_create(int stage)
 
 		if (strstr			( Core.Params,"-nosound"))
 		{
-			SoundRender->bPresent = FALSE;
+			SoundRender->bPresent = false;
 			return;
 		}else
 			SoundRender->bPresent = true;

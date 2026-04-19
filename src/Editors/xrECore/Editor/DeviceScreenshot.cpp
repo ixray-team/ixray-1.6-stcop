@@ -24,7 +24,7 @@ bool CEditorRenderDevice::MakeScreenshot(U32Vec& pixels, u32 width, u32 height)
     CHK_DX(REDevice->GetDepthStencilSurface(&poldZB));
     CHK_DX(REDevice->GetViewport(&oldViewport));
 
-	CHK_DX(REDevice->CreateRenderTarget(width,height,D3DFMT_A8R8G8B8,D3DMULTISAMPLE_NONE,0,FALSE,&pRT,nullptr));
+	CHK_DX(REDevice->CreateRenderTarget(width,height,D3DFMT_A8R8G8B8,D3DMULTISAMPLE_NONE,0,false,&pRT,nullptr));
 	CHK_DX(REDevice->SetRenderTarget(0,pRT));
 
 	UI->PrepareRedraw	();

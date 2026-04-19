@@ -200,7 +200,7 @@ void CSector::UpdateVolume()
 
 	UI->RedrawScene();
 
-	m_Flags.set(flNeedUpdateVolume,FALSE);
+	m_Flags.set(flNeedUpdateVolume,false);
 }
 
 void CSector::OnDestroy( )

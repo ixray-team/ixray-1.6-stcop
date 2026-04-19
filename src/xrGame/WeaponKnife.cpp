@@ -212,8 +212,8 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 	cartridge.param_s.kHit			= k_hit;
 	cartridge.param_s.kImpulse		= 1.0f;
 	cartridge.param_s.kAP			= EPS_L;
-	cartridge.m_flags.set			(CCartridge::cfTracer, FALSE);
-	cartridge.m_flags.set			(CCartridge::cfRicochet, FALSE);
+	cartridge.m_flags.set			(CCartridge::cfTracer, false);
+	cartridge.m_flags.set			(CCartridge::cfRicochet, false);
 	cartridge.param_s.fWallmarkSize	= fWallmarkSize;
 	cartridge.bullet_material_idx	= knife_material_idx;
 
@@ -361,7 +361,7 @@ void CWeaponKnife::switch2_Idle	()
 	VERIFY(GetState()==eIdle);
 
 	PlayAnimIdle		();
-	SetPending			(FALSE);
+	SetPending			(false);
 }
 
 void CWeaponKnife::switch2_Hiding	()
@@ -379,7 +379,7 @@ void CWeaponKnife::switch2_Hiding	()
 void CWeaponKnife::switch2_Hidden()
 {
 	signal_HideComplete		();
-	SetPending				(FALSE);
+	SetPending				(false);
 }
 
 void CWeaponKnife::switch2_Showing	()
@@ -946,7 +946,7 @@ bool CWeaponKnife::RayQueryCallback(collide::rq_result& result, LPVOID this_ptr)
 	if (result.O && (result.O->ID() != me->m_except_id))
 	{
 		me->m_last_picked_obj = result.O;
-		return FALSE;	//first hit
+		return false;	//first hit
 	}
 	return true;
 }

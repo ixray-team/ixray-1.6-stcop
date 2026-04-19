@@ -118,7 +118,7 @@ float getLastRP_Scale(CDB::COLLIDER* DB, R_Light& L)//, Face* skip)
 #endif
 
 		if (T.pSurface.Empty())
-			T.bHasAlpha = FALSE;
+			T.bHasAlpha = false;
 
 		if (!T.bHasAlpha)
 		{

@@ -327,7 +327,7 @@ void IReader::r	(void *p, intptr_t cnt)
 	CopyMemory		(p,pointer(),cnt);
 	advance			(cnt);
 #ifdef DEBUG
-	bool	bShow		= FALSE		;
+	bool	bShow		= false		;
 	if (cast_file_reader())			bShow = true;
 	if (cast_virtual_file_reader())	bShow = true;
 	if (bShow)			{

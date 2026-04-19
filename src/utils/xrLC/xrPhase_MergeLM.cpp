@@ -234,11 +234,11 @@ struct pred_remove
 
 		if (D->bMerged)
 		{
-			D->bMerged = FALSE;
+			D->bMerged = false;
 			return true;
 		}
 
-		return FALSE;
+		return false;
 	};
 };
  

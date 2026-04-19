@@ -91,13 +91,13 @@ bool xrCompressor::testVFS(const char* path)
 		return			(false);
 
 	if (!_stricmp(p_ext,".ltx"))
-		return			(FALSE);
+		return			(false);
 
 	if (!_stricmp(p_ext,".ttf"))
-		return			(FALSE);
+		return			(false);
 
 	if (!_stricmp(p_ext,".script"))
-		return			(FALSE);
+		return			(false);
 
 	return				(true);
 }

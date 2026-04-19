@@ -83,7 +83,7 @@ void CKinematics::DebugRender(Fmatrix& XFORM)
 CKinematics::CKinematics()
 {
 #ifdef DEBUG
-	dbg_single_use_marker		= FALSE;
+	dbg_single_use_marker		= false;
 #endif
 
 	m_is_original_lod = false;
@@ -314,7 +314,7 @@ void iBuildGroups(CBoneData* B, buffer_vector<u16>& tgt, u16 id, u16& last_id)
 void CKinematics::LL_Validate()
 {
 	// check breakable
-    bool bCheckBreakable			= FALSE;
+    bool bCheckBreakable			= false;
     for (u16 k=0; k<LL_BoneCount(); k++){
         if (LL_GetData(k).IK_data.ik_flags.is(SJointIKData::flBreakable)&&(LL_GetData(k).IK_data.type!=jtNone)) {
         	bCheckBreakable			= true;
@@ -345,12 +345,12 @@ void CKinematics::LL_Validate()
 			{
 				if (bp_id != b_parts[GroupIDs[g][b]]) 
 				{ 
-					bValidBreakable = FALSE; break;
+					bValidBreakable = false; break;
 				}
 			}
 		}
     
-        if (bValidBreakable==FALSE)
+        if (bValidBreakable==false)
 		{
             for (u16 k=0; k<LL_BoneCount(); k++)
 			{
@@ -358,7 +358,7 @@ void CKinematics::LL_Validate()
 
 				if (BD.IK_data.ik_flags.is(SJointIKData::flBreakable))
 				{
-					BD.IK_data.ik_flags.set(SJointIKData::flBreakable, FALSE);
+					BD.IK_data.ik_flags.set(SJointIKData::flBreakable, false);
 				}
 			}
 #ifdef DEBUG            
@@ -507,7 +507,7 @@ void CKinematics::LL_SetBonesVisible(VisMask mask)
 
 void CKinematics::Visibility_Update()
 {
-	Update_Visibility = FALSE;
+	Update_Visibility = false;
 	// check visible
 	for (u32 c_it=0; c_it<children.size(); c_it++)
 	{
@@ -688,7 +688,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 	P.transform_dir(D,dir);
 	// find pick point
 	float dist = flt_max;
-	bool picked = FALSE;
+	bool picked = false;
 	size_t bones_count = bones->size();
 	buffer_vector<Fobb> cache_obb(_alloca(bones_count * sizeof(Fobb)), bones_count);
 	//���� �������� ���������� �������� �� xr_vector

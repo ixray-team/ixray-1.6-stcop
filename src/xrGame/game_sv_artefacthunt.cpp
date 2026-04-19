@@ -13,7 +13,7 @@
 #include "ui/UIBuyWndShared.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 
-bool	g_SV_Force_Artefact_Spawn = FALSE;
+bool	g_SV_Force_Artefact_Spawn = false;
 
 #ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
@@ -28,7 +28,7 @@ u32		g_sv_ah_dwArtefactRespawnDelta	= 30;
 int		g_sv_ah_dwArtefactsNum			= 10;
 u32		g_sv_ah_dwArtefactStayTime		= 3;
 int		g_sv_ah_iReinforcementTime		= 15;		//0 - Immediate, -1 - after artefact spawn , other - reinforcement
-bool	g_sv_ah_bBearerCantSprint		= FALSE;
+bool	g_sv_ah_bBearerCantSprint		= false;
 bool	g_sv_ah_bShildedBases			= true;
 bool	g_sv_ah_bAfReturnPlayersToBases = true;
 //-------------------------------------------------------
@@ -42,7 +42,7 @@ bool	game_sv_ArtefactHunt::Get_ReturnPlayers			() {return g_sv_ah_bAfReturnPlaye
 //-------------------------------------------------------
 void	game_sv_ArtefactHunt::Create					(shared_str& options)
 {
-	g_SV_Force_Artefact_Spawn			= FALSE;
+	g_SV_Force_Artefact_Spawn			= false;
 	inherited::Create					(options);
 
 	m_delayedRoundEnd = false;
@@ -895,7 +895,7 @@ bool game_sv_ArtefactHunt::ArtefactSpawn_Allowed()
 	};
 	all_players_ready_cond tmp_functor;
 	m_server->ForEachClientDo(tmp_functor);
-	if (tmp_functor.TeamAlived[0] == 0 || tmp_functor.TeamAlived[1] == 0) return FALSE;
+	if (tmp_functor.TeamAlived[0] == 0 || tmp_functor.TeamAlived[1] == 0) return false;
 	
 	return true;
 };
@@ -1189,7 +1189,7 @@ void	game_sv_ArtefactHunt::MoveAllAlivePlayers			()
 			tmpP.w_vec3(pA->o_Angle);
 			//------------------------------------------------
 			AliveCount++;
-			l_pC->net_PassUpdates = FALSE;
+			l_pC->net_PassUpdates = false;
 			l_pC->net_LastMoveUpdateTime = Level().timeServer();
 		}
 	};
@@ -1229,7 +1229,7 @@ void	game_sv_ArtefactHunt::UpdatePlayersNotSendedMoveRespond()
 	if (l_pC)
 	{
 		ReplicatePlayersStateToPlayer(l_pC->ID);
-		l_pC->net_PassUpdates = FALSE;
+		l_pC->net_PassUpdates = false;
 		l_pC->net_LastMoveUpdateTime = Level().timeServer();
 	}
 };

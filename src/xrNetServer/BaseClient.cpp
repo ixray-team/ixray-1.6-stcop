@@ -25,7 +25,7 @@ BaseClient::BaseClient(CTimer * timer) : net_Statistic(timer)
 // -----------------------------------------------------------------------------
 BaseClient::~BaseClient()
 {
-	psNET_direct_connect = FALSE;
+	psNET_direct_connect = false;
 }
 
 // -----------------------------------------------------------------------------
@@ -84,7 +84,7 @@ void BaseClient::ParseConnectionOptions(const char* options, ClientConnectionOpt
 	};
 
 	// CLIENT PORT
-	out.bClPortWasSet = FALSE;
+	out.bClPortWasSet = false;
 	out.cl_port = START_PORT_LAN_CL;
 	if (strstr(options, "portcl="))
 	{
@@ -101,7 +101,7 @@ bool BaseClient::Connect(const char* options)
 {
 	R_ASSERT(options);
 
-	net_Disconnected = FALSE;
+	net_Disconnected = false;
 
 	if (!psNET_direct_connect)
 	{
@@ -109,8 +109,8 @@ bool BaseClient::Connect(const char* options)
 		ParseConnectionOptions(options, connectOpt);
 
 		net_Connected = EnmConnectionWait;
-		net_Syncronised = FALSE;
-		net_Disconnected = FALSE;
+		net_Syncronised = false;
+		net_Disconnected = false;
 
 		bool success = CreateConnection(connectOpt);
 		if (!success)
@@ -129,7 +129,7 @@ bool BaseClient::Connect(const char* options)
 void BaseClient::Disconnect()
 {
 	net_Connected = EnmConnectionWait;
-	net_Syncronised = FALSE;
+	net_Syncronised = false;
 
 	DestroyConnection();
 }
@@ -188,7 +188,7 @@ void client_sync_thread(void* P)
 
 void BaseClient::net_Syncronize()
 {
-	net_Syncronised = FALSE;
+	net_Syncronised = false;
 	net_DeltaArray.clear();
 	thread_spawn(client_sync_thread, "network-time-sync", 0, this);
 }
@@ -335,7 +335,7 @@ bool BaseClient::net_HasBandwidth()
 	u32 dwTime = TimeGlobal(device_timer);
 	u32 dwInterval = 0;
 	if (net_Disconnected) 
-		return FALSE;
+		return false;
 
 	if (psNET_ClientUpdate != 0) dwInterval = 1000 / psNET_ClientUpdate;
 	if (psNET_Flags.test(NETFLAG_MINIMIZEUPDATES))	dwInterval = 1000;	// approx 3 times per second
@@ -356,13 +356,13 @@ bool BaseClient::net_HasBandwidth()
 		DWORD dwPending = 0;
 		if (!GetPendingMessagesCount(dwPending))
 		{
-			return FALSE;
+			return false;
 		}
 
 		if (dwPending > u32(psNET_ClientPending))
 		{
 			net_Statistic.dwTimesBlocked++;
-			return FALSE;
+			return false;
 		};
 
 		UpdateStatistic();
@@ -372,6 +372,6 @@ bool BaseClient::net_HasBandwidth()
 		return true;
 	}
 
-	return FALSE;
+	return false;
 }
 #pragma endregion

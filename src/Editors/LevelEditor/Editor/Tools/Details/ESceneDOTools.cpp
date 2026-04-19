@@ -162,7 +162,7 @@ void EDetailManager::OnSceneUpdate()
 void EDetailManager::OnFrame()
 {
     if (m_RTFlags.is(flRTGenerateBaseMesh)&&m_Base.Valid()){
-    	m_RTFlags.set		(flRTGenerateBaseMesh,FALSE);
+    	m_RTFlags.set		(flRTGenerateBaseMesh,false);
 	    m_Base.CreateRMFromObjects(m_BBox,m_SnapObjects);
     }
 }
@@ -715,7 +715,7 @@ bool EDetailManager::Export(const char* path)
 
     xr_string 			do_tex_name = ChangeFileExt(fn,"_details");
     int res = ImageLib.CreateMergedTexture(textures, do_tex_name.c_str(), STextureParams::tfDXT5, 256, 8192, 256, 8192, offsets, scales, rotated, remap);
-    if (1!=res)			bRes=FALSE;
+    if (1!=res)			bRes=false;
 
     pb->Inc				("export geometry");
     // objects

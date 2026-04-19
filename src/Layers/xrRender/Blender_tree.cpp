@@ -16,8 +16,8 @@ CBlender_Tree::CBlender_Tree()
 {
 	description.CLS		= B_TREE;
 	description.version	= 1;
-	oBlend.value		= FALSE;
-	oNotAnTree.value	= FALSE;
+	oBlend.value		= false;
+	oNotAnTree.value	= false;
 }
 
 CBlender_Tree::~CBlender_Tree()
@@ -110,14 +110,14 @@ void	CBlender_Tree::Compile	(CBlender_Compile& C)
 			C.r_End				();
 			break;
 		case SE_R1_LPOINT:
-			C.r_Pass		((oNotAnTree.value)?"tree_s_point":"tree_w_point",	"add_point",FALSE,true,FALSE,true,D3DBLEND_ONE,D3DBLEND_ONE,true,0);
+			C.r_Pass		((oNotAnTree.value)?"tree_s_point":"tree_w_point",	"add_point",false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true,0);
 			C.r_Sampler		("s_base",	C.L_textures[0]);
 			C.r_Sampler_clf	("s_lmap",	TEX_POINT_ATT	);
 			C.r_Sampler_clf	("s_att",	TEX_POINT_ATT	);
 			C.r_End			();
 			break;
 		case SE_R1_LSPOT:
-			C.r_Pass		((oNotAnTree.value)?"tree_s_spot":"tree_w_spot",	"add_spot",	FALSE,true,FALSE,true,D3DBLEND_ONE,D3DBLEND_ONE,true,0);
+			C.r_Pass		((oNotAnTree.value)?"tree_s_spot":"tree_w_spot",	"add_spot",	false,true,false,true,D3DBLEND_ONE,D3DBLEND_ONE,true,0);
 			C.r_Sampler		("s_base",	C.L_textures[0]);
 			C.r_Sampler_clf	("s_lmap",	"internal\\internal_light_att",		true);
 			C.r_Sampler_clf	("s_att",	TEX_SPOT_ATT	);
@@ -126,7 +126,7 @@ void	CBlender_Tree::Compile	(CBlender_Compile& C)
 		case SE_R1_LMODELS:
 			/*	Don't use lighting from flora - strange visual results
 			//	Lighting only
-			C.r_Pass		("tree_wave","vert_l",FALSE);
+			C.r_Pass		("tree_wave","vert_l",false);
 			C.r_Sampler		("s_base",C.L_textures[0]);
 			C.r_End			();
 			*/
@@ -162,7 +162,7 @@ void	CBlender_Tree::Compile	(CBlender_Compile& C)
 			RImplementation.addShaderOption("USE_AREF", "1");
 		}
 
-		C.r_Pass("shadow_lod", "shadow_base", FALSE);
+		C.r_Pass("shadow_lod", "shadow_base", false);
 		C.r_Sampler("s_base", C.L_textures[0]);
 		C.r_End();
 
@@ -204,7 +204,7 @@ void	CBlender_Tree::Compile	(CBlender_Compile& C)
 				RImplementation.addShaderOption("USE_AREF", "1");
 			}
 
-			C.r_Pass("shadow_lod", "shadow_base", FALSE);
+			C.r_Pass("shadow_lod", "shadow_base", false);
 
 			C.r_dx10Texture("s_base", C.L_textures[0]);
 			C.r_dx10Sampler("smp_base");

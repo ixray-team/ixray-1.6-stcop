@@ -292,7 +292,7 @@ void CLightProjector::calculate	()
 			spatial->spatial_updatesector			();
 			if (spatial->spatial.sector)			RImplementation.r_dsgraph_render_R1_box	(spatial->spatial.sector,BB,SE_R1_LMODELS);
 		}
-		//if (spatial)		RImplementation.r_dsgraph_render_subspace	(spatial->spatial.sector,mCombine,v_C,FALSE);
+		//if (spatial)		RImplementation.r_dsgraph_render_subspace	(spatial->spatial.sector,mCombine,v_C,false);
 	}
 
 	// Blur

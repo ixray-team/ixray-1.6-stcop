@@ -70,8 +70,8 @@ void CPhysicItem::OnH_B_Chield		()
 {
 	inherited::OnH_B_Chield		();
 
-	setVisible					(FALSE);
-	setEnabled					(FALSE);
+	setVisible					(false);
+	setEnabled					(false);
 
 	inherited::deactivate_physics_shell();
 }
@@ -79,7 +79,7 @@ void CPhysicItem::OnH_B_Chield		()
 bool CPhysicItem::net_Spawn			(CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC))
-		return (FALSE);
+		return (false);
 	IKinematics* pK = PKinematics(Visual());
 	pK->CalculateBones_Invalidate();
 	pK->CalculateBones(true);

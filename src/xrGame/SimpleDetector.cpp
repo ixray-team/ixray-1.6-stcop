@@ -134,7 +134,7 @@ void CUIArtefactDetectorSimple::Flash(bool bOn, float fRelPower)
 	}
 	else
 	{
-		K->LL_SetBoneVisible(m_flash_bone, FALSE, true);
+		K->LL_SetBoneVisible(m_flash_bone, false, true);
 		m_turn_off_flash_time = 0;
 	}
 	K->CalculateBones(true);
@@ -172,7 +172,7 @@ void CUIArtefactDetectorSimple::setup_internals()
 	m_flash_bone = K->LL_BoneID("light_bone_2");
 	m_on_off_bone = K->LL_BoneID("light_bone_1");
 
-	K->LL_SetBoneVisible(m_flash_bone, FALSE, true);
+	K->LL_SetBoneVisible(m_flash_bone, false, true);
 	K->LL_SetBoneVisible(m_on_off_bone, true, true);
 
 	m_pOnOfLAnim = LALib.FindItem("det_on_off");

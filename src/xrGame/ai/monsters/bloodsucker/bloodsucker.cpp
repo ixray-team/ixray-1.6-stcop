@@ -427,7 +427,7 @@ void CAI_Bloodsucker::CheckSpecParams(u32 spec_params)
 bool CAI_Bloodsucker::net_Spawn (CSE_Abstract* DC) 
 {
 	if (!inherited::net_Spawn(DC))
-		return(FALSE);
+		return(false);
 
 	vfAssignBones();
 
@@ -963,7 +963,7 @@ void CAI_Bloodsucker::stop_invisible_predator()
 void CAI_Bloodsucker::manual_activate()
 {
 	state_invisible = true;
-	setVisible		(FALSE);
+	setVisible		(false);
 }
 
 void CAI_Bloodsucker::manual_deactivate()

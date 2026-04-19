@@ -279,7 +279,7 @@ void CRender::render_menu	()
 {
 	//	Globals
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-	RCache.set_Stencil				(FALSE);
+	RCache.set_Stencil				(false);
 	RCache.set_ColorWriteEnable		();
 
 	// Main Render
@@ -369,7 +369,7 @@ void CRender::Render()
 //.	VERIFY					(g_pGameLevel && g_pGameLevel->pHUD);
 
 	// Configure
-	RImplementation.o.distortion				= FALSE;		// disable distorion
+	RImplementation.o.distortion				= false;		// disable distorion
 	Fcolor					sun_color			= ((light*)Lights.sun_adapted._get())->color;
 	bool					bSUN				= !o.sunstatic && (u_diffuse2s(sun_color.r,sun_color.g,sun_color.b)>EPS);
 	// Msg						("sstatic: %s, sun: %s",o.sunstatic?"true":"false", bSUN?"true":"false");
@@ -393,7 +393,7 @@ void CRender::Render()
 
 		// flush
 		Target->phase_scene_prepare					();
-		RCache.set_ColorWriteEnable					(FALSE);
+		RCache.set_ColorWriteEnable					(false);
 		r_dsgraph_render_graph						(0);
 		RCache.set_ColorWriteEnable					( );
 	} else {
@@ -590,5 +590,5 @@ void CRender::render_forward				()
 		g_pGamePersistent->Environment().RenderLast()	;					// rain/thunder-bolts
 	}
 
-	RImplementation.o.distortion				= FALSE;				// disable distorion
+	RImplementation.o.distortion				= false;				// disable distorion
 }

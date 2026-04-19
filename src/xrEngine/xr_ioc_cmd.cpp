@@ -375,7 +375,7 @@ class CCC_VidMode : public CCC_Token
 {
 	u32		_dummy;
 public :
-					CCC_VidMode(const char* N) : CCC_Token(N, &_dummy, nullptr) { bEmptyArgsHandled = FALSE; };
+					CCC_VidMode(const char* N) : CCC_Token(N, &_dummy, nullptr) { bEmptyArgsHandled = false; };
 	virtual void	Execute(const char* args){
 		u32 _w, _h;
 		int cnt = sscanf		(args,"%dx%d",&_w,&_h);
@@ -852,7 +852,7 @@ void CCC_Register()
 	}
 	else {
 		psDeviceFlags.set(rsR2, true);
-		psDeviceFlags.set(rsR4, FALSE);
+		psDeviceFlags.set(rsR4, false);
 	}
 
 	CMD1(CCC_soundDevice, "snd_device"			);

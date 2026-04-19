@@ -1216,7 +1216,7 @@ struct STraceBorderQParams
 	{
 		m_movement = movement;
 	}
-	STraceBorderQParams& operator = (STraceBorderQParams& p) { VERIFY(FALSE); return p; }
+	STraceBorderQParams& operator = (STraceBorderQParams& p) { VERIFY(false); return p; }
 };
 
 bool CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID params)
@@ -1340,7 +1340,7 @@ void CPHMovementControl::VirtualMoveTo( const Fvector	&in_pos, Fvector &out_pos 
 			character_->SetObjectContactCallback(virtual_move_collide_callback);
 			character_->SetObjectContactCallbackData( static_cast<CPHObject*> (character) );
 			character_->SwitchOFFInitContact();
-			character_->SetApplyGravity( FALSE );
+			character_->SetApplyGravity( false );
 		}
 
 		~ph_character_state_save()

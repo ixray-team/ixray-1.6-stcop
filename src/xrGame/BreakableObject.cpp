@@ -108,7 +108,7 @@ void CBreakableObject::net_Import(NET_Packet& P)
 
 bool CBreakableObject::UsedAI_Locations()
 {
-	return					(FALSE);
+	return					(false);
 }
 
 

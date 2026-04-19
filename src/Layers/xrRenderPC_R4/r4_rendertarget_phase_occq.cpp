@@ -6,5 +6,5 @@ void CRenderTarget::phase_occq()
 	RCache.set_Shader(s_occq);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
-	RCache.set_ColorWriteEnable(FALSE);
+	RCache.set_ColorWriteEnable(false);
 }

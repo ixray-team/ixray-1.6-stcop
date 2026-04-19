@@ -33,7 +33,7 @@ bool ESceneCustomOTool::_RemoveObject(CCustomObject* object)
 {
     object->OnSceneRemove();
 	m_Objects.remove(object);
-    return FALSE;
+    return false;
 }
 
 
@@ -54,7 +54,7 @@ bool  ESceneCustomOTool::AllowMouseStart()
     {
     	CCustomObject* CO = *it;
        if(CO->Selected() && !CO->Editable() )
-       	return FALSE;
+       	return false;
     }
        
     return true;
@@ -435,7 +435,7 @@ void ESceneCustomOTool::OnSelected(CCustomObject* object)
     for (ObjectIt o_it=m_Objects.begin(); o_it!=m_Objects.end(); ++o_it)
     {
     	CCustomObject* obj	= *o_it;
-    	obj->m_RT_Flags.set(CCustomObject::flRT_SelectedLast, FALSE);
+    	obj->m_RT_Flags.set(CCustomObject::flRT_SelectedLast, false);
 	}
     object->m_RT_Flags.set(CCustomObject::flRT_SelectedLast, true);
 }

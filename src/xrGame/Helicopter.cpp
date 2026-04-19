@@ -43,7 +43,7 @@ void CHelicopter::init()
 	m_tgt_rot.set				(0.0f,0.0f);
 	m_bind_rot.set				(0.0f,0.0f);
 
-	m_allow_fire				= FALSE;
+	m_allow_fire				= false;
 	m_use_rocket_on_attack		= true;
 	m_use_mgun_on_attack		= true;	
 	m_syncronize_rocket			= true;
@@ -145,7 +145,7 @@ bool CHelicopter::net_Spawn(CSE_Abstract*	DC)
 	m_dead							=false;
 	
 	if (!inherited::net_Spawn(DC))
-		return			(FALSE);
+		return			(false);
 
 	CPHSkeleton::Spawn((CSE_Abstract*)(DC));
 	for(u32 i=0; i<4; ++i)
@@ -263,7 +263,7 @@ void	CHelicopter::SpawnInitPhysics	(CSE_Abstract	*D)
 	PPhysicsShell()=P_build_Shell	(this,false);
 	if(g_Alive())
 	{
-		PPhysicsShell()->EnabledCallbacks				(FALSE);
+		PPhysicsShell()->EnabledCallbacks				(false);
 		PPhysicsShell()->set_ObjectContactCallback		(CollisionCallbackAlife);
 		PPhysicsShell()->set_ContactCallback			(ContactCallbackAlife);
 		PPhysicsShell()->Disable						();

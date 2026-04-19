@@ -78,7 +78,7 @@ void RenderHUDAdjustManager()
 			attachable_hud_item* p_hud_item_second = g_player_hud->attached_item(1);
 
 			FS.update_path(fn, "$app_data_root$", "hud_adjust\\saved.ltx");
-			CInifile file(fn, FALSE, true, true);
+			CInifile file(fn, false, true, true);
 			file.set_override_names(true);
 
 			auto writeParams = [](attachable_hud_item* p_item, CInifile& file) -> void

@@ -203,7 +203,7 @@ void TUI::MousePress(TShiftState Shift, int X, int Y)
 		   
 			if(Tools->MouseStart(m_ShiftState))
 			{
-				if(Tools->HiddenMode()) ShowCursor( FALSE );
+				if(Tools->HiddenMode()) ShowCursor( false );
 				m_MouseCaptured = true;
 			}
 		}
@@ -362,7 +362,7 @@ void TUI::PrepareRedraw()
 	Tools->GetCurrentFog	(fog_color, fog_start, fog_end);
 
 	EDevice->SetRS( D3DRS_FOGCOLOR,		fog_color			);
-	EDevice->SetRS( D3DRS_RANGEFOGENABLE,	FALSE				);
+	EDevice->SetRS( D3DRS_RANGEFOGENABLE,	false				);
 	if (Caps.bTableFog)	{
 		EDevice->SetRS( D3DRS_FOGTABLEMODE,	D3DFOG_LINEAR 	);
 		EDevice->SetRS( D3DRS_FOGVERTEXMODE,	D3DFOG_NONE	 	);
@@ -465,7 +465,7 @@ void TUI::Redraw()
 			m_Flags.set(flRedraw, true);
 		if (m_Flags.is(flRedraw) || UI->IsPlayInEditor())
 		{
-			m_Flags.set(flRedraw, FALSE);
+			m_Flags.set(flRedraw, false);
 
 			RCache.set_RT(RTNormal->pRT, 0);
 			RCache.set_RT(RTDiffuse->pRT, 1);
@@ -554,7 +554,7 @@ void TUI::Redraw()
 		}
 
 		EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
-		g_bRendering = FALSE;
+		g_bRendering = false;
 
 		// end draw
 		UI->BeginFrame();
@@ -577,7 +577,7 @@ void TUI::Redraw()
 
 void TUI::RealResize()
 {
-	m_Flags.set			(flResize,FALSE);
+	m_Flags.set			(flResize,false);
 	if(m_Size.x&& m_Size.y)
 	EDevice->Resize(m_Size.x, m_Size.y,m_Size_Maximize);
 	ExecCommand			(COMMAND_UPDATE_PROPERTIES);
@@ -585,7 +585,7 @@ void TUI::RealResize()
 void TUI::RealUpdateScene()
 {
 	Tools->UpdateProperties	(false);
-	m_Flags.set			(flUpdateScene,FALSE);
+	m_Flags.set			(flUpdateScene,false);
 }
 void TUI::RealRedrawScene()
 {
@@ -693,7 +693,7 @@ bool TUI::OnCreate()
 	extern CDB::COLLIDER XRC;
 	XRC.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
 
-	pInput			= new CInput(FALSE, all_device_key);
+	pInput			= new CInput(false, all_device_key);
 
 	Console = new CConsole();
 	Console->Initialize();
@@ -873,7 +873,7 @@ void TUI::OnDrawUI()
 
 void TUI::RealResetUI()
 {
-	m_Flags.set(flResetUI, FALSE);
+	m_Flags.set(flResetUI, false);
 	string_path 		ini_path;
 	if (FS.exist(ini_path, "$server_data_root$", UI->EditorName(), "_imgui_default.ini"))
 	{

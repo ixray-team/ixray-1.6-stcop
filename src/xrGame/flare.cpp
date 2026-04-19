@@ -61,11 +61,11 @@ void CFlare::OnStateSwitch(u32 S)
 	case eFlareIdle:
 		{
 			light_lanim					= LALib.FindItem("flare_lanim_idle");
-			SetPending					(FALSE);
+			SetPending					(false);
 		}break;
 	case eFlareHidden:
 		{
-			SetPending					(FALSE);
+			SetPending					(false);
 		}break;
 	case eFlareDropping:
 		{
@@ -104,7 +104,7 @@ void CFlare::SwitchOn()
 
 	light_render->set_active	(true);
 
-	m_pFlareParticles			= Particles::Details::Create(pSettings->r_string(cNameSect(), "working_particles"), FALSE);
+	m_pFlareParticles			= Particles::Details::Create(pSettings->r_string(cNameSect(), "working_particles"), false);
 	m_pFlareParticles->Play		(true);
 
 }

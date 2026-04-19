@@ -63,7 +63,7 @@ protected:
 	virtual		void			get_spatial_params				()								=0;
 	virtual		void			spatial_register				()								;
 				void			SetRayMotions					()								{m_flags.set(fl_ray_motions,true);}
-				void			UnsetRayMotions					()								{m_flags.set(fl_ray_motions,FALSE);}
+				void			UnsetRayMotions					()								{m_flags.set(fl_ray_motions,false);}
 
 				void			SetPrefereExactIntegration		()								{m_island.SetPrefereExactIntegration();}
 

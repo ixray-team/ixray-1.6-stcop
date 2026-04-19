@@ -46,7 +46,7 @@ void CRenderTarget::accum_point		(light* L)
 	// *** in practice, 'cause we "clear" it back to 0x1 it usually allows us to > 200 lights :)
 	RCache.set_Element				(s_accum_mask->E[SE_MASK_POINT]);			// masker
 	//	Done in blender!
-	//RCache.set_ColorWriteEnable		(FALSE);
+	//RCache.set_ColorWriteEnable		(false);
 
 	// backfaces: if (1<=stencil && zfail)	stencil = light_id
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);

@@ -251,7 +251,7 @@ public:
 	virtual bool CanTake() const { return !!m_flags.test(FCanTake); }
 	bool CanTrade() const;
 	void AllowTrade() { m_flags.set(FCanTrade, m_can_trade); };
-	void DenyTrade() { m_flags.set(FCanTrade, FALSE); };
+	void DenyTrade() { m_flags.set(FCanTrade, false); };
 
 	virtual bool IsNecessaryItem(CInventoryItem* item);
 	virtual bool IsNecessaryItem(const shared_str& item_sect) { return false; };

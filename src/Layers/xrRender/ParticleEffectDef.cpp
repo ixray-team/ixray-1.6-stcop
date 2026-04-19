@@ -145,7 +145,7 @@ bool CPEDef::LoadOriginal(IReader& F)
 	auto version = F.r_enum<PS::PE::Version>();
 	if (version!=PS::PE::Version::Original)
 	{
-		return FALSE;
+		return false;
 	}
 
 	FoundedChunk = !!F.find_chunk(PS::PE::Chunks::NAME);

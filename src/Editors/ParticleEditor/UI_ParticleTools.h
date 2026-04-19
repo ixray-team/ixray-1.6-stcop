@@ -162,7 +162,7 @@ public:
 	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt, Fvector* n);
 
     virtual void		ShowProperties		(const char*){;}
-    virtual void		UpdateProperties	(bool bForced=FALSE){m_Flags.set(flRefreshProps,true); if (bForced) RealUpdateProperties();}
+    virtual void		UpdateProperties	(bool bForced=false){m_Flags.set(flRefreshProps,true); if (bForced) RealUpdateProperties();}
     virtual void		RefreshProperties	(){;}
 
     virtual void		PlayCurrent			(int idx=-1) override;

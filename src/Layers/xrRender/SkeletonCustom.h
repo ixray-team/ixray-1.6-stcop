@@ -287,7 +287,7 @@ public:
 	void							LL_SetBonesVisibleAll() { visimask.set_all(); };
 
 	// Main functionality
-	virtual void					CalculateBones				(bool bForceExact	=	FALSE);		// Recalculate skeleton
+	virtual void					CalculateBones				(bool bForceExact	=	false);		// Recalculate skeleton
 	void							CalculateBones_Invalidate	();
 	void							Callback					(UpdateCallback C, void* Param)		{	Update_Callback	= C; Update_Callback_Param	= Param;	}
 

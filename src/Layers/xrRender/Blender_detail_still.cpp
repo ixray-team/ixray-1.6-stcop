@@ -66,12 +66,12 @@ void	CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 		switch (C.iElement)
 		{
 		case SE_R1_NORMAL_HQ:
-			C.r_Pass("detail_wave", "detail", true, true, true, FALSE, D3DBLEND_ONE, D3DBLEND_ZERO, oBlend.value ? true : FALSE, oBlend.value ? 200 : 0);
+			C.r_Pass("detail_wave", "detail", true, true, true, false, D3DBLEND_ONE, D3DBLEND_ZERO, oBlend.value ? true : false, oBlend.value ? 200 : 0);
 			C.r_Sampler	("s_base",	C.L_textures[0]);
 			C.r_End		();
 			break;
 		case SE_R1_NORMAL_LQ:
-			C.r_Pass("detail_still", "detail", true, true, true, FALSE, D3DBLEND_ONE, D3DBLEND_ZERO, oBlend.value ? true : FALSE, oBlend.value ? 200 : 0);
+			C.r_Pass("detail_still", "detail", true, true, true, false, D3DBLEND_ONE, D3DBLEND_ZERO, oBlend.value ? true : false, oBlend.value ? 200 : 0);
 			C.r_Sampler	("s_base",	C.L_textures[0]);
 			C.r_End		();
 			break;

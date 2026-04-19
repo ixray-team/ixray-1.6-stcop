@@ -140,7 +140,7 @@ void CSE_ALifeOnlineOfflineGroup::unregister_member						(ALife::_OBJECT_ID memb
 	m_members.erase				(I);
 	
 	if (m_members.empty()) {
-		m_flags.set				(flUsedAI_Locations,FALSE);
+		m_flags.set				(flUsedAI_Locations,false);
 	}
 }
 
@@ -282,7 +282,7 @@ void CSE_ALifeOnlineOfflineGroup::notify_on_member_death(MEMBER *member)
 void CSE_ALifeOnlineOfflineGroup::on_before_register	()
 {
 	m_tGraphID					= GameGraph::_GRAPH_ID(-1);
-	m_flags.set					(flUsedAI_Locations,FALSE);
+	m_flags.set					(flUsedAI_Locations,false);
 }
 
 void CSE_ALifeOnlineOfflineGroup::on_after_game_load	()

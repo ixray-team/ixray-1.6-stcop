@@ -916,7 +916,7 @@ ENGINE_API bool any_binded_key_for_action_pressed_c(int actionId)
 }
 
 ENGINE_API ConsoleBindCmds bindConsoleCmds;
-bool bRemapped = FALSE;
+bool bRemapped = false;
 
 class CCC_Bind : public IConsole_Command
 {
@@ -1299,7 +1299,7 @@ class CCC_UnBindConsoleCmd : public IConsole_Command
 {
 public:
 	CCC_UnBindConsoleCmd(const char* N) : IConsole_Command(N)
-	{ bEmptyArgsHandled=FALSE; };
+	{ bEmptyArgsHandled=false; };
 
 	virtual void Execute(const char* args) 
 	{

@@ -13,18 +13,18 @@ void	CBlender_light_occq::Compile(CBlender_Compile& C) {
 
 	switch(C.iElement) {
 		case 0: // occlusion testing
-		C.r_Pass("dumb", "dumb", false, true, FALSE, FALSE);
+		C.r_Pass("dumb", "dumb", false, true, false, false);
 		C.r_End();
 		break;
 		case 1: // NV40 optimization :)
-		C.r_Pass("stub_notransform_t_scaled", "dumb", false, FALSE, FALSE, FALSE);
+		C.r_Pass("stub_notransform_t_scaled", "dumb", false, false, false, false);
 		C.r_ColorWriteEnable(false, false, false, false);
 		C.r_CullMode(D3DCULL_NONE);
 		C.r_Stencil(true, D3DCMP_LESSEQUAL, 0xff, 0x00);	// keep/keep/keep
 		C.r_End();
 		break;
 		case 2: // Stencil clear in case we've ran out of markers.
-		C.r_Pass("stub_notransform_t_scaled", "dumb", false, FALSE, FALSE, FALSE);
+		C.r_Pass("stub_notransform_t_scaled", "dumb", false, false, false, false);
 		C.r_ColorWriteEnable(false, false, false, false);
 		C.r_CullMode(D3DCULL_NONE);
 		//	Clear all bits except the last one

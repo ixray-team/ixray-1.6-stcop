@@ -330,7 +330,7 @@ static void RestoreModelRare(PPM_CONTEXT* pc1,PPM_CONTEXT* MinContext,
                 SpecialFreeUnit(p);
                 pc->oneState().Freq=(pc->oneState().Freq+11) >> 3;
             } else
-                    pc->refresh((pc->NumStats+3) >> 1,FALSE);
+                    pc->refresh((pc->NumStats+3) >> 1,false);
     for ( ;pc != MinContext;pc=pc->Suffix)
             if ( !pc->NumStats )
                     pc->oneState().Freq -= pc->oneState().Freq >> 1;
@@ -388,7 +388,7 @@ LOOP_ENTRY:
         pc = p->Successor;                  goto FROZEN;
     } else if (p->Successor <= UpBranch) {
         p1=FoundState;                      FoundState=p;
-        p->Successor=CreateSuccessors(FALSE,nullptr,pc);
+        p->Successor=CreateSuccessors(false,nullptr,pc);
         FoundState=p1;
     }
     if (OrderFall == 1 && pc1 == MaxContext) {
@@ -544,7 +544,7 @@ static inline void UpdateModel( PPM_CONTEXT* MinContext)
     if( FSuccessor ) 
     {
         if ((BYTE*) FSuccessor < UnitsStart)
-            FSuccessor=CreateSuccessors(FALSE,p,MinContext);
+            FSuccessor=CreateSuccessors(false,p,MinContext);
     } 
     else
     {

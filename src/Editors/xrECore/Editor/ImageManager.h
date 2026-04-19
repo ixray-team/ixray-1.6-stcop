@@ -35,8 +35,8 @@ public:
     void  	RemoveTexture	(UIItemListForm::Node& node);
     bool		CheckCompliance		(const char* fname, int& compl_);
     void		CheckCompliance		(FS_FileSet& files, FS_FileSet& compl_);
-    int			GetTextures			(FS_FileSet& files, bool bFolder=FALSE);
-    int			GetTexturesRaw		(FS_FileSet& files, bool bFolder=FALSE);
+    int			GetTextures			(FS_FileSet& files, bool bFolder=false);
+    int			GetTexturesRaw		(FS_FileSet& files, bool bFolder=false);
 //	int			GetServerModifiedTextures(CLocatorAPI::files_query& files);
 	int 		GetLocalNewTextures	(FS_FileSet& files);
 	void		SafeCopyLocalToServer(FS_FileSet& files);

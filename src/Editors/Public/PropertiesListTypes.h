@@ -198,7 +198,7 @@ public:
     }
 	IC void				CheckMixed		()
     {
-		m_Flags.set		(flMixed,FALSE);
+		m_Flags.set		(flMixed,false);
         if (values.size()>1){
             PropValueIt F	= values.begin();
         	PropValueIt it	= F; ++it;
@@ -228,7 +228,7 @@ public:
     IC bool 			ApplyValue		(const T2& val)
     {
     	bool bChanged	= false;
-        m_Flags.set		(flMixed,FALSE);
+        m_Flags.set		(flMixed,false);
     	for (PropValueIt it=values.begin(); values.end() != it; ++it){
         	T1* CV		= smart_cast<T1*>(*it); VERIFY(CV);
         	if (CV->ApplyValue(val)){
@@ -238,7 +238,7 @@ public:
             if (!CV->Equal(values.front()))
             {
                 m_Flags.set(flMixed, true);
-                m_Flags.set(flIgnoreMixed, FALSE);
+                m_Flags.set(flIgnoreMixed, false);
             }
         }
         return bChanged;

@@ -92,7 +92,7 @@ bool CPhysicsSkeletonObject::net_SaveRelevant()
 
 bool CPhysicsSkeletonObject::UsedAI_Locations()
 {
-	return					(FALSE);
+	return					(false);
 }
 
 void CPhysicsSkeletonObject::UpdateCL()

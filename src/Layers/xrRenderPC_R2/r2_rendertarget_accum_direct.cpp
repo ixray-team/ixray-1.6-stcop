@@ -74,7 +74,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		RCache.set_c				("Ldynamic_dir",		dir.x,dir.y,dir.z,0		);
 
 		// if (stencil>=1 && aref_pass)	stencil = light_id
-		RCache.set_ColorWriteEnable	(FALSE		);
+		RCache.set_ColorWriteEnable	(false		);
 		RCache.set_Stencil			(true,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
 		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 	}
@@ -231,7 +231,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		if (u_DBT_enable(zMin,zMax))	{
 			// z-test always
 			RDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-			RDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+			RDevice->SetRenderState(D3DRS_ZWRITEENABLE, false);
 		}
 
 		// Enable Z function only for near and middle cascades, the far one is restricted by only stencil.
@@ -384,7 +384,7 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32, const Fma
 		{
 			// z-test always
 			RDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-			RDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+			RDevice->SetRenderState(D3DRS_ZWRITEENABLE, false);
 		}
 		else
 		{

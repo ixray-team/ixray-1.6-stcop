@@ -46,14 +46,14 @@ CSHEngineTools::CSHEngineTools(const ISHInit& init):ISHTools(init)
 {
 	m_PreviewObjectType	= pvoNone;
 	m_PreviewObject		= NULL;
-	m_bCustomEditObject	= FALSE;
-	m_bFreezeUpdate		= FALSE;
+	m_bCustomEditObject	= false;
+	m_bFreezeUpdate		= false;
 	m_CurrentBlender 	= 0;
 	m_BlenderStream.clear();
 	m_bNeedResetShaders	= true;
-	m_RemoteRenBlender	= FALSE;
-	m_CreatingBlender = FALSE;
-	m_SetCustomObject = FALSE;
+	m_RemoteRenBlender	= false;
+	m_CreatingBlender = false;
+	m_SetCustomObject = false;
 	MCString.push_back	("Custom...");
 	MCString.push_back	("$null");
 	MCString.push_back	("$base0");
@@ -89,7 +89,7 @@ void CSHEngineTools::OnDestroy()
 
 	ClearData();
 
-	m_bModified = FALSE;
+	m_bModified = false;
 }
 
 xr_token preview_obj_token[]={
@@ -194,7 +194,7 @@ void CSHEngineTools::OnFrame()
 	}
 	if (m_RemoteRenBlender){
 		RealRenameItem		(m_RenBlenderOldName.c_str(),m_RenBlenderNewName.c_str());
-		m_RemoteRenBlender	= FALSE;
+		m_RemoteRenBlender	= false;
 	}
    
 	if (m_PreviewObject) m_PreviewObject->OnFrame();
@@ -215,7 +215,7 @@ void CSHEngineTools::OnFrame()
 				m_PreviewObjectType = 0;
 				OnPreviewObjectRefChange("");
 			}
-			m_SetCustomObject = FALSE;
+			m_SetCustomObject = false;
 		}
 	}
 	if (m_CreatingBlender)
@@ -240,7 +240,7 @@ void CSHEngineTools::OnFrame()
 
 			}
 
-			m_CreatingBlender = FALSE;
+			m_CreatingBlender = false;
 		}
 
 	}
@@ -275,8 +275,8 @@ void CSHEngineTools::RealResetShaders()
 	IReader data		(m_RenderShaders.pointer(), m_RenderShaders.size());
 	EDevice->Reset		(&data,true);
 	// enable props vis update
-	m_bFreezeUpdate 	= FALSE;
-	m_bNeedResetShaders	= FALSE;
+	m_bFreezeUpdate 	= false;
+	m_bNeedResetShaders	= false;
 }
 
 void CSHEngineTools::FillItemList()
@@ -376,8 +376,8 @@ void CSHEngineTools::Load()
 	}else{
 		ELog.DlgMsg(mtInformation,"Can't find file '%s'",fn);
 	}
-	m_bLockUpdate				= FALSE;
-	m_bFreezeUpdate				= FALSE;
+	m_bLockUpdate				= false;
+	m_bFreezeUpdate				= false;
 }
 
 void CSHEngineTools::Save(CMemoryWriter& F)
@@ -442,7 +442,7 @@ bool CSHEngineTools::Save()
 	bool bRes					= F.save_to(fn);
 
 	if (bRes){	
-		m_bModified	= FALSE;
+		m_bModified	= false;
 		//Ext.m_ItemProps->ResetModified();
 		// restore shader
 		ResetShaders ();

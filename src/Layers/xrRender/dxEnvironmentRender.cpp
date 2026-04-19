@@ -205,7 +205,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env) {
 
 		OnFrame(env);
 
-		env.bNeed_re_create_env = FALSE;
+		env.bNeed_re_create_env = false;
 	}
 	::Render->rmFar();
 
@@ -247,7 +247,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env) {
 
 	RCache.set_Textures(&mixRen.sky_r_textures);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, v_offset, 0, 12, i_offset, 20);
-	env.eff_LensFlare->Render(true, FALSE, FALSE);
+	env.eff_LensFlare->Render(true, false, false);
 
 	// Sun
 	::Render->rmNormal();

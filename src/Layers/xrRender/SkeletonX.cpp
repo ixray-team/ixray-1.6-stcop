@@ -649,7 +649,7 @@ bool CSkeletonX::has_visible_bones()
 		if (Parent->visimask.is(BonesUsed[it]))
 			return true;
 	}
-	return FALSE;
+	return false;
 }
 
 void CSkeletonX::_DuplicateIndices(IReader *data)

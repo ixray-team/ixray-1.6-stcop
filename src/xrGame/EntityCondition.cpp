@@ -116,7 +116,7 @@ void CEntityCondition::LoadCondition(const char* entity_section)
 	m_fHealthHitPart		= pSettings->r_float(section,"health_hit_part");
 	m_fPowerHitPart			= pSettings->r_float(section,"power_hit_part");
 
-	m_use_limping_state		= !!(READ_IF_EXISTS(pSettings,r_bool,section,"use_limping_state",FALSE));
+	m_use_limping_state		= !!(READ_IF_EXISTS(pSettings,r_bool,section,"use_limping_state",false));
 	m_limping_threshold		= READ_IF_EXISTS(pSettings,r_float,section,"limping_threshold",.5f);
 
 	m_fKillHitTreshold		= READ_IF_EXISTS(pSettings,r_float,section,"killing_hit_treshold",0.0f);

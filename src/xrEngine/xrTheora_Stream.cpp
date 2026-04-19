@@ -53,7 +53,7 @@ bool CTheoraStream::ParseHeaders		()
 {
 	ogg_packet			o_packet;
 	int header_count	= 0;
-	bool stateflag		= FALSE;
+	bool stateflag		= false;
 
 	// find Theora stream
 	while(!stateflag){
@@ -88,7 +88,7 @@ bool CTheoraStream::ParseHeaders		()
 	}
 
 	// fail if theora stream not found in source
-	if (0==header_count)		return FALSE;
+	if (0==header_count)		return false;
 
 	// we're expecting more header packets. 
 	while((header_count && header_count<3)){
@@ -118,7 +118,7 @@ bool CTheoraStream::ParseHeaders		()
 		}
 	}
 
-	if (3!=header_count)	return FALSE;
+	if (3!=header_count)	return false;
 	
 	// init decode
 	theora_decode_init		(&t_state,&t_info);
@@ -161,10 +161,10 @@ bool CTheoraStream::Decode(u32 in_tm_play)
 	ogg_int64_t	k_frame	= t_frame-t_frame%key_rate;
 
 	if (d_frame<t_frame){
-		bool result		= FALSE;
+		bool result		= false;
 		ogg_packet		o_packet;
 		while (d_frame<t_frame){
-			while(FALSE==result){
+			while(false==result){
 				// theora is one in, one out... 
 				if(ogg_stream_packetout(&o_stream_state,&o_packet)>0 && !theora_packet_isheader(&o_packet)){
 					d_frame++; 
@@ -185,8 +185,8 @@ bool CTheoraStream::Decode(u32 in_tm_play)
 				}else						break;
 			}
 			// check eof
-			VERIFY(!(FALSE==result&&source->eof()));
-			if(FALSE==result){
+			VERIFY(!(false==result&&source->eof()));
+			if(false==result){
 				// no data yet for somebody.  Grab another page 
 				if (ReadData()){
 					while(ogg_sync_pageout(&o_sync_state,&o_page)>0)
@@ -201,7 +201,7 @@ bool CTheoraStream::Decode(u32 in_tm_play)
 //.		dbg_log								((stderr,"%04d: yuv out\n",d_frame));
 		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 bool CTheoraStream::Load(const char* fname)

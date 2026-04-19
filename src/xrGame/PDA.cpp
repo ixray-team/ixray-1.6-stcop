@@ -153,7 +153,7 @@ bool CPda::feel_touch_contact(CObject* O)
 {
 	if (O == nullptr || O->getDestroy())
 	{
-		return FALSE;
+		return false;
 	}
 
 	CEntityAlive* entity_alive = O->cast_entity_alive();
@@ -173,7 +173,7 @@ bool CPda::feel_touch_contact(CObject* O)
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 void CPda::OnH_A_Chield()

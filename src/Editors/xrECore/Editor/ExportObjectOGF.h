@@ -35,9 +35,9 @@ struct SOGFVert{
     }
 	bool	similar(SOGFVert& V)
 	{
-        if (!P.similar	(V.P,EPS_L))	return FALSE;
-        if (!UV.similar	(V.UV,EPS_S))	return FALSE;
-		if (!N.similar	(V.N,EPS_L))	return FALSE;
+        if (!P.similar	(V.P,EPS_L))	return false;
+        if (!UV.similar	(V.UV,EPS_S))	return false;
+		if (!N.similar	(V.N,EPS_L))	return false;
 		return true;
 	}
 };

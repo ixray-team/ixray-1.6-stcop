@@ -302,7 +302,7 @@ void CCustomDevice::OnStateSwitch(u32 S)
 	case eIdle:
 	{
 		PlayAnimIdle();
-		SetPending(FALSE);
+		SetPending(false);
 	}break;
 	case eHandDraw:
 	{

@@ -60,7 +60,7 @@ Fbox get_level_screenshot_bound()
 	return res;
 }
 
-CDemoRecord::CDemoRecord(const char *name,float life_time) : CEffectorCam(cefDemo,life_time/*,FALSE*/)
+CDemoRecord::CDemoRecord(const char *name,float life_time) : CEffectorCam(cefDemo,life_time/*,false*/)
 {
 	stored_red_text = g_bDisableRedText;
 	g_bDisableRedText = true;
@@ -94,9 +94,9 @@ CDemoRecord::CDemoRecord(const char *name,float life_time) : CEffectorCam(cefDem
 		
 		m_vT.set(0,0,0);
 		m_vR.set(0,0,0);
-		m_bMakeCubeMap		= FALSE;
-		m_bMakeScreenshot	= FALSE;
-		m_bMakeLevelMap		= FALSE;
+		m_bMakeCubeMap		= false;
+		m_bMakeScreenshot	= false;
+		m_bMakeLevelMap		= false;
 
 		m_fSpeed0		= pSettings->r_float("demo_record","speed0");
 		m_fSpeed1		= pSettings->r_float("demo_record","speed1");
@@ -138,7 +138,7 @@ void CDemoRecord::MakeScreenshotFace()
 	case 1:
 		Render->Screenshot	();
 		psHUD_Flags.assign	(s_hud_flag);
-		m_bMakeScreenshot= FALSE;
+		m_bMakeScreenshot= false;
 	break;
 	}
 	m_Stage++;
@@ -190,7 +190,7 @@ void CDemoRecord::MakeLevelMapProcess()
 			s_hud_flag.assign(psHUD_Flags);
 
 			psDeviceFlags.zero();
-			psDeviceFlags.set(rsFullscreen, FALSE);
+			psDeviceFlags.set(rsFullscreen, false);
 			psDeviceFlags.set(rsClearBB | rsDrawStatic, true);
 
 			psOldVidMode[0] = psCurrentVidMode[0];
@@ -236,7 +236,7 @@ void CDemoRecord::MakeLevelMapProcess()
 
 				Device.Reset();
 
-				m_bMakeLevelMap = FALSE;
+				m_bMakeLevelMap = false;
 				m_iLMScreenshotFragment = -1;
 			}
 		}break;
@@ -272,7 +272,7 @@ void CDemoRecord::MakeCubeMapFace(Fvector &D, Fvector &N)
 		N.set		(m_Camera.j);
 		D.set		(m_Camera.k);
 		psHUD_Flags.assign(s_hud_flag);
-		m_bMakeCubeMap = FALSE;
+		m_bMakeCubeMap = false;
 	break;
 	}
 	m_Stage++;

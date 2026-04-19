@@ -72,7 +72,7 @@ bool R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 
 		// TypeInfo + class
 		//D3DXSHADER_TYPEINFO*	T	= (D3DXSHADER_TYPEINFO*)(ptr+it->TypeInfo);
-		bool bSkip					= FALSE;
+		bool bSkip					= false;
 		//switch (T->Class)
 		switch (TypeDesc.Class)
 		{

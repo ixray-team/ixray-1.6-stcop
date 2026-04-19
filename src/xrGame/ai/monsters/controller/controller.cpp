@@ -292,7 +292,7 @@ bool CController::is_community_friend_overrides(const CEntityAlive *entity_alive
 bool CController::net_Spawn(CSE_Abstract *DC)
 {
 	if (!inherited::net_Spawn(DC))
-		return(FALSE);
+		return(false);
 
 	return (true);
 }

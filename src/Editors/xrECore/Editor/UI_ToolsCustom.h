@@ -231,7 +231,7 @@ public:
 	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt=nullptr, Fvector* n=nullptr)=0;
 
     virtual void		ShowProperties		(const char* focused_item)=0;
-    virtual void		UpdateProperties	(bool bForced=FALSE)=0;
+    virtual void		UpdateProperties	(bool bForced=false)=0;
     virtual void		RefreshProperties	()=0;
 
     const xr_string&	GetEditFileName		()	{ return m_LastFileName; }

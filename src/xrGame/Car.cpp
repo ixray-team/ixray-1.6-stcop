@@ -2090,7 +2090,7 @@ void CCar::PhDataUpdate(float step)
 
 bool CCar::UsedAI_Locations()
 {
-	return (FALSE);
+	return (false);
 }
 
 u16 CCar::DriverAnimationType()
@@ -2105,7 +2105,7 @@ void CCar::OnAfterExplosion()
 
 void CCar::OnBeforeExplosion()
 {
-	setEnabled(FALSE);
+	setEnabled(false);
 }
 
 void CCar::CarExplode()
@@ -2280,7 +2280,7 @@ void CCar::ASCUpdate()
 
 void CCar::ASCUpdate(EAsyncCalls c)
 {
-	async_calls.set(u16(c), FALSE);
+	async_calls.set(u16(c), false);
 	switch (c) 
 	{
 	case ascSndTransmission:m_car_sound->TransmissionSwitch(); break;

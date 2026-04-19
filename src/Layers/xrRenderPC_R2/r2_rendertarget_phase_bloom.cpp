@@ -72,7 +72,7 @@ void CRenderTarget::phase_bloom	()
 	// Clear	- don't clear - it's stupid here :)
 	// Stencil	- disable
 	// Misc		- draw everything (no culling)
-	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,		FALSE				));
+	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,		false				));
 
 	// Transfer into Bloom1
 	{

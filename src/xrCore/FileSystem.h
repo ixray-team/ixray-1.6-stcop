@@ -39,7 +39,7 @@ public:
 		ofn.lpstrInitialDir = nullptr;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
-		bool result = GetOpenFileName(&ofn) == true;
+		bool result = GetOpenFileName(&ofn) == TRUE;
 
 		return result;
 #else

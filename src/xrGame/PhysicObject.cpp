@@ -262,7 +262,7 @@ void	CPhysicObject::	stop_anim						()
 {
 	if( !check_blend( m_anim_blend, cName().c_str(), cNameSect().c_str(), cNameVisual().c_str() ) )
 		return;
-	m_anim_blend->playing = FALSE;
+	m_anim_blend->playing = false;
 }
 
 float	CPhysicObject::		anim_time_get					()
@@ -501,7 +501,7 @@ bool CPhysicObject::net_SaveRelevant()
 
 bool CPhysicObject::UsedAI_Locations()
 {
-	return					(FALSE);
+	return					(false);
 }
 
 

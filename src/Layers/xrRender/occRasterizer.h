@@ -61,7 +61,7 @@ public:
 			for (; it <= end; it++)
 				if (z < *it)	return true;
 		}
-		return FALSE;
+		return false;
 	}
 
 	ICF bool test(float _x0, float _y0, float _x1, float _y1, float _z)

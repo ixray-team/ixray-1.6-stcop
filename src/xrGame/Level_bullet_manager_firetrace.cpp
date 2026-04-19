@@ -35,7 +35,7 @@ extern float gCheckHitK;
 
 //test callback функция 
 //  object - object for testing
-//return true-тестировать объект / FALSE-пропустить объект
+//return true-тестировать объект / false-пропустить объект
 bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params)
 {
 	bullet_test_callback_data* pData = (bullet_test_callback_data*)params;
@@ -46,12 +46,12 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 		if (CAnomalyZone* CZ = object->cast_anomaly_zone())
 			return CZ->PlayEntranceSmallParticles(bullet->bullet_pos, bullet->dir, bullet->start_velocity, false);
 
-		return FALSE;
+		return false;
 	}
 
 	if ((object->ID() == bullet->parent_id) && (bullet->fly_dist < parent_ignore_distance) && (!bullet->flags.ricochet_was))
 	{
-		return FALSE;
+		return false;
 	}
 
 	bool bRes = true;
@@ -132,7 +132,7 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 #endif
 							if (Random.randF(0.f, 1.f) > (ahp * hpf))
 							{
-								bRes = FALSE;	// don't hit actor
+								bRes = false;	// don't hit actor
 								play_whine = true;		// play whine sound
 							}
 							else
@@ -147,7 +147,7 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 								}
 								else
 								{
-									bRes = FALSE;	// don't hit actor
+									bRes = false;	// don't hit actor
 									play_whine = true;		// play whine sound
 								}
 							}
@@ -162,8 +162,8 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 					}
 					else
 					{
-						// don't test this object again (return FALSE)
-						bRes = FALSE;
+						// don't test this object again (return false)
+						bRes = false;
 					}
 
 				}
@@ -180,7 +180,7 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 //	result.element;	// if (O) "num tri" else "num bone"
 //	params;			// user defined abstract data
 //	Device.Statistic.TEST0.End();
-//return true-продолжить трассировку / FALSE-закончить трассировку
+//return true-продолжить трассировку / false-закончить трассировку
 
 void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const Fvector &vEnd, collide::rq_result& R, u16 target_material, const Fvector& vNormal, bool ShowMark)
 {

@@ -33,7 +33,7 @@ bool	g_sv_dm_bAnomaliesEnabled		= true;
 u32		g_sv_dm_dwAnomalySetLengthTime	= 3;
 bool	g_sv_dm_bPDAHunt				= true;
 u32		g_sv_dm_dwWarmUp_MaxTime		= 0;
-bool	g_sv_dm_bDMIgnore_Money_OnBuy	= FALSE;
+bool	g_sv_dm_bDMIgnore_Money_OnBuy	= false;
 //-----------------------------------------------------------------
 bool				game_sv_Deathmatch::IsDamageBlockIndEnabled	() {return g_sv_dm_bDamageBlockIndicators; };
 s32					game_sv_Deathmatch::GetTimeLimit			() {return g_sv_dm_dwTimeLimit; };
@@ -637,7 +637,7 @@ void	game_sv_Deathmatch::SM_SwitchOnPlayer(CObject* pNewObject)
 
 bool	game_sv_Deathmatch::AllPlayers_Ready ()
 {
-	if (!m_server->GetServerClient()) return FALSE;	
+	if (!m_server->GetServerClient()) return false;	
 	// Check if all players ready
 	u32		cnt		= get_players_count	();
 	struct ready_counter
@@ -678,7 +678,7 @@ bool	game_sv_Deathmatch::AllPlayers_Ready ()
 	tmp_functor.serverClientID = m_server->GetServerClient()->ID;
 	m_server->ForEachClientDo(tmp_functor);
 	if (tmp_functor.ready == cnt && tmp_functor.ready != 0) return true;
-	return FALSE;
+	return false;
 };
 	
 
@@ -1524,7 +1524,7 @@ bool	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 						Level().Send(P,net_flags(true,true));
 						//-----------------------------------------------------						
 					}
-					return FALSE;
+					return false;
 				}
 			}
 
@@ -1570,7 +1570,7 @@ bool	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 						CSE_Abstract		*e_child_item = get_entity_from_eid(e_what->children.back());
 						if (e_child_item)
 						{
-							if (!OnTouch(eid_who, e_child_item->ID, FALSE))
+							if (!OnTouch(eid_who, e_child_item->ID, false))
 							{
 								NET_Packet			P;
 								u_EventGen			(P,GE_OWNERSHIP_REJECT,e_what->ID);
@@ -1606,7 +1606,7 @@ bool	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 					};
 				};
 				//-------------------------------
-				return FALSE;
+				return false;
 			}
 		};
 		//---------------------------------------------------------------
@@ -1614,7 +1614,7 @@ bool	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, bool bForced)
 		//---------------------------------------------------------------		
 	};
 	// We don't know what the hell is it, so disallow ownership just for safety 
-	return FALSE;
+	return false;
 }
 
 void game_sv_Deathmatch::OnDetach(u16 eid_who, u16 eid_what)
@@ -1888,7 +1888,7 @@ bool game_sv_Deathmatch::check_for_Anomalies()
 
 bool game_sv_Deathmatch::Is_Anomaly_InLists(CSE_Abstract* E)
 {
-	if (!E) return FALSE;
+	if (!E) return false;
 	return true;
 }
 

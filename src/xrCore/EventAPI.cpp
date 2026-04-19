@@ -164,7 +164,7 @@ bool CEventAPI::Peek(const char* EName)
 {
 	xrCriticalSectionGuard guard(CS);
 	if (Events_Deferred.empty())
-		return FALSE;
+		return false;
 
 	for (u32 I = 0; I < Events_Deferred.size(); I++)
 	{
@@ -175,7 +175,7 @@ bool CEventAPI::Peek(const char* EName)
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 void CEventAPI::_destroy()

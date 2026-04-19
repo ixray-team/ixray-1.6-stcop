@@ -44,7 +44,7 @@ public:
 		flags.bCollision = true;
 		flags.bRendering = true;
 		flags.bOptimizeUV = true;
-		flags.bLIGHT_Vertex = FALSE;
+		flags.bLIGHT_Vertex = false;
 		flags.bLIGHT_CastShadow = true;
 		flags.bLIGHT_Sharp = true;
 		vert_translucency = .5f;

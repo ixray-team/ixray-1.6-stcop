@@ -183,7 +183,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 				if(Device.Paused())
 				{
 					// Снимаем паузу, через Esc
-					Device.Pause(FALSE, true, true, "kQUIT");
+					Device.Pause(false, true, true, "kQUIT");
 					return;
 				}
 
@@ -730,7 +730,7 @@ void CLevel::IR_GamepadKeyPress(int id)
 				if(Device.Paused())
 				{
 					// Снимаем паузу, через Esc
-					Device.Pause(FALSE, true, true, "kQUIT");
+					Device.Pause(false, true, true, "kQUIT");
 					return;
 				}
 

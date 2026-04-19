@@ -176,7 +176,7 @@ void CDS0_ModelPool::Destroy()
 
 CDS0_ModelPool::CDS0_ModelPool()
 {
-	bForceDiscard = FALSE;
+	bForceDiscard = false;
 	bAllowChildrenDuplicate = true;
 	g_pMotionsContainer = new motions_container;
 }
@@ -227,7 +227,7 @@ CDS0_RenderVisual* CDS0_ModelPool::Create(const char* name, IReader* data)
 
 		if (0 == Base) {
 			// 2. If not found
-			bAllowChildrenDuplicate = FALSE;
+			bAllowChildrenDuplicate = false;
 			if (data)		Base = Instance_Load(low_name, data, true);
 			else			Base = Instance_Load(low_name, true);
 			bAllowChildrenDuplicate = true;
@@ -250,11 +250,11 @@ CDS0_RenderVisual* CDS0_ModelPool::CreateChild(LPCSTR name, IReader* data)
 
 	// 1. Search for already loaded model
 	CDS0_RenderVisual* Base = Instance_Find(low_name);
-	//.	if (0==Base) Base	 	= Instance_Load(name,data,FALSE);
+	//.	if (0==Base) Base	 	= Instance_Load(name,data,false);
 	if (0 == Base)
 	{
-		if (data)		Base = Instance_Load(low_name, data, FALSE);
-		else			Base = Instance_Load(low_name, FALSE);
+		if (data)		Base = Instance_Load(low_name, data, false);
+		else			Base = Instance_Load(low_name, false);
 	}
 
 	CDS0_RenderVisual* Model = bAllowChildrenDuplicate ? Instance_Duplicate(Base) : Base;
@@ -339,7 +339,7 @@ void CDS0_ModelPool::Discard(CDS0_RenderVisual*& V, bool b_complete)
 						I->model->Release();
 						xr_delete(I->model);
 						Models.erase(I);
-						bForceDiscard = FALSE;
+						bForceDiscard = false;
 					}
 					break;
 				}

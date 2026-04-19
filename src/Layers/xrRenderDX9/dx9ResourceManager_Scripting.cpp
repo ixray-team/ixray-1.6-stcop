@@ -59,7 +59,7 @@ public:
 	adopt_compiler&			_o_distort		(bool	E)								{	C->SH->flags.bDistort=E;					return	*this;		}
 	adopt_compiler&			_o_wmark		(bool	E)								{	C->SH->flags.bWmark=E;						return	*this;		}
 	adopt_compiler&			_pass			(const char*	vs,		const char* ps)				{	C->r_Pass			(vs,ps,true);			return	*this;		}
-	adopt_compiler&			_fog			(bool	_fog)							{	C->PassSET_LightFog	(FALSE,_fog);			return	*this;		}
+	adopt_compiler&			_fog			(bool	_fog)							{	C->PassSET_LightFog	(false,_fog);			return	*this;		}
 	adopt_compiler&			_ZB				(bool	_test,	bool _write)			{	C->PassSET_ZB		(_test,_write);			return	*this;		}
 	adopt_compiler&			_blend			(bool	_blend, u32 abSRC, u32 abDST)	{	C->PassSET_ablend_mode(_blend,abSRC,abDST);	return 	*this;		}
 	adopt_compiler&			_aref			(bool	_aref,  u32 aref)				{	C->PassSET_ablend_aref(_aref,aref);			return 	*this;		}
@@ -231,8 +231,8 @@ Shader*	CResourceManager::_lua_Create		(const char* d_shader, const char* s_text
 
 	// Access to template
 	C.BT				= nullptr;
-	C.bEditor			= FALSE;
-	C.bDetail			= FALSE;
+	C.bEditor			= false;
+	C.bDetail			= false;
 
 	// Prepare
 	_ParseList			(C.L_textures,	s_textures	);
@@ -275,7 +275,7 @@ Shader*	CResourceManager::_lua_Create		(const char* d_shader, const char* s_text
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"l_point",LUA_TFUNCTION))
 	{
 		C.iElement			= 2;
-		C.bDetail			= FALSE;
+		C.bDetail			= false;
 		S.E[2]				= C._lua_Compile(s_shader,"l_point");;
 	}
 
@@ -283,7 +283,7 @@ Shader*	CResourceManager::_lua_Create		(const char* d_shader, const char* s_text
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"l_spot",LUA_TFUNCTION))
 	{
 		C.iElement			= 3;
-		C.bDetail			= FALSE;
+		C.bDetail			= false;
 		S.E[3]				= C._lua_Compile(s_shader,"l_spot");;
 	}
 
@@ -291,7 +291,7 @@ Shader*	CResourceManager::_lua_Create		(const char* d_shader, const char* s_text
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"l_special",LUA_TFUNCTION))
 	{
 		C.iElement			= 4;
-		C.bDetail			= FALSE;
+		C.bDetail			= false;
 		S.E[4]				= C._lua_Compile(s_shader,"l_special");
 	}
 

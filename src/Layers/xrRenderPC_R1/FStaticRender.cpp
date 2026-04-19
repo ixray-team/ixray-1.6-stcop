@@ -520,7 +520,7 @@ void CRender::Render()
 
 	// Begin
 	Target->Begin								();
-	o.vis_intersect								= FALSE			;
+	o.vis_intersect								= false			;
 	phase										= PHASE_NORMAL	;
 	r_dsgraph_render_hud						();				// hud
 	r_dsgraph_render_graph						(0);			// normal level
@@ -537,7 +537,7 @@ void CRender::Render()
 		Wallmarks->Render						();				// wallmarks has priority as normal geometry
 	}
 	HOM.Enable									();
-	o.vis_intersect								= FALSE			;
+	o.vis_intersect								= false			;
 	phase										= PHASE_NORMAL	;
 	r_pmask										(true,true);	// enable priority "0" and "1"
 	if(L_Shadows)L_Shadows->render				();				// ... and shadows

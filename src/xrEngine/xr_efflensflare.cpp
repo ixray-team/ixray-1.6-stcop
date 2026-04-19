@@ -403,7 +403,7 @@ void CLensFlare::OnFrame(shared_str id)
 				// cache outdated. real query.
 				r_dest.r_clear	();
 				if (g_pGameLevel->ObjectSpace.RayQuery	(r_dest,RD,material_callback,&TP,nullptr,o_main))
-					m_ray_cache[i].result = FALSE			;
+					m_ray_cache[i].result = false			;
 			}
 		}
 

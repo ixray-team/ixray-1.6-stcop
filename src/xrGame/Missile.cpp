@@ -48,7 +48,7 @@ void CMissile::reinit		()
 	m_constpower = false;
 	m_fThrowForce		= 0;
 	m_dwDestroyTime		= 0xffffffff;
-	SetPending			(FALSE);
+	SetPending			(false);
 	m_fake_missile		= nullptr;
 	SetState			( eHidden );
 }
@@ -201,7 +201,7 @@ void CMissile::spawn_fake_missile()
 
 		CSE_ALifeObject* alife_object = object->cast_alife_object();
 		VERIFY						(alife_object);
-		alife_object->m_flags.set	(CSE_ALifeObject::flCanSave,FALSE);
+		alife_object->m_flags.set	(CSE_ALifeObject::flCanSave,false);
 
 		NET_Packet			P;
 		object->Spawn_Write	(P,true);
@@ -359,7 +359,7 @@ void CMissile::State(u32 state)
 		} break;
 	case eIdle:
 		{
-			SetPending			(FALSE);
+			SetPending			(false);
 			PlayAnimIdle		();
 		} break;
 	case eHiding:
@@ -385,10 +385,10 @@ void CMissile::State(u32 state)
 			
 			if (H_Parent())
 			{				
-				setVisible(FALSE);
-				setEnabled(FALSE);				
+				setVisible(false);
+				setEnabled(false);				
 			};
-			SetPending			(FALSE);
+			SetPending			(false);
 		} break;
 	case eThrowStart:
 		{
@@ -474,7 +474,7 @@ void CMissile::OnAnimationEnd(u32 state)
 	{
 	case eHiding:
 		{
-			setVisible(FALSE);
+			setVisible(false);
 			SwitchState(eHidden);
 		} break;
 	case eShowing:
@@ -861,7 +861,7 @@ void CMissile::activate_physic_shell()
 		{
 			bone_id = kinematics->LL_BoneID(boneName);
 			if (bone_id != BI_NONE && kinematics->LL_GetBoneVisible(bone_id))
-				kinematics->LL_SetBoneVisible(bone_id, FALSE, true);
+				kinematics->LL_SetBoneVisible(bone_id, false, true);
 		}
 	}
 	kinematics->CalculateBones			(true);

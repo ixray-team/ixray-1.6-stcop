@@ -106,15 +106,15 @@ public:
 	}
 	IC bool				available	(u32 T)
 	{
-//		if (queue.empty()/* || (T<queue.begin()->timestamp)*/)	return FALSE;
+//		if (queue.empty()/* || (T<queue.begin()->timestamp)*/)	return false;
 //		else												return true;
-		if (queue.empty()) return FALSE;
+		if (queue.empty()) return false;
 		/**
 		else 
 		{
 			if (!g_bCheckTime) return true;
 #ifdef _DEBUG
-			if (T<queue.begin()->timestamp) return FALSE;
+			if (T<queue.begin()->timestamp) return false;
 #endif
 			return true;
 		}

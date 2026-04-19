@@ -66,7 +66,7 @@ void CStalkerAnimationPair::play_global_animation	(IKinematicsAnimated *skeleton
 
 
 
-			blend		= skeleton_animated->LL_PlayCycle(i, animation(), mix_animations ? true : FALSE, callback, m_object);
+			blend		= skeleton_animated->LL_PlayCycle(i, animation(), mix_animations ? true : false, callback, m_object);
 			
 			if (blend && !m_blend)
 				m_blend	= blend;
@@ -80,7 +80,7 @@ void CStalkerAnimationPair::play_global_animation	(IKinematicsAnimated *skeleton
 			}
 		}
 		else
-			skeleton_animated->LL_PlayCycle	( i, animation(), mix_animations ? true : FALSE, 0, 0 );
+			skeleton_animated->LL_PlayCycle	( i, animation(), mix_animations ? true : false, 0, 0 );
 	}
 	//DBG_OpenCashedDraw();
 	//DBG_DrawBones( *m_object );

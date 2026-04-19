@@ -77,7 +77,7 @@ void ETextureThumbnail::CreateFromData(u32* p, u32 w, u32 h)
 	EImageThumbnail::CreatePixels(p, w, h);
     m_TexParams.width = w;
     m_TexParams.height= h;
-    m_TexParams.flags.set(STextureParams::flHasAlpha,FALSE);
+    m_TexParams.flags.set(STextureParams::flHasAlpha,false);
 }
 //------------------------------------------------------------------------------
 

@@ -5,7 +5,7 @@
 float			psShedulerCurrent		= 10.f	;
 float			psShedulerTarget		= 10.f	;
 const	float	psShedulerReaction		= 0.1f	;
-bool			g_bSheduleInProgress	= FALSE	;
+bool			g_bSheduleInProgress	= false	;
 
 //-------------------------------------------------------------------------------------
 void CSheduler::Initialize		()
@@ -50,7 +50,7 @@ void	CSheduler::internal_Registration()
 		if (R.OP)	{
 			// register
 			// search for paired "unregister"
-			bool	bFoundAndErased		= FALSE;
+			bool	bFoundAndErased		= false;
 			for (u32 pair=it+1; pair<Registration.size(); pair++)
 			{
 				ItemReg&	R_pair	= Registration	[pair];
@@ -96,7 +96,7 @@ void CSheduler::internal_Register	(ISheduled* O, bool RT)
 		TNext.dwTimeOfLastExecute	= Device.dwTimeGlobal;
 		TNext.Object				= O;
 		TNext.scheduled_name		= O->shedule_Name();
-		O->shedule.b_RT				= FALSE;
+		O->shedule.b_RT				= false;
 
 		// Insert into priority Queue
 		Push						(TNext);
@@ -237,7 +237,7 @@ void CSheduler::Unregister(ISheduled* A)
 	}
 
 	ItemReg		R;
-	R.OP		= FALSE				;
+	R.OP		= false				;
 	R.RT		= A->shedule.b_RT	;
 	R.Object	= A					;
 
@@ -393,7 +393,7 @@ void CSheduler::Update()
 	Device.Statistic->fShedulerLoad	= psShedulerCurrent;
 
 	// Finalize
-	g_bSheduleInProgress			= FALSE;
+	g_bSheduleInProgress			= false;
 	internal_Registration			();
 	Device.Statistic->Sheduler.End	();
 }

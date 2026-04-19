@@ -100,7 +100,7 @@ bool SMusicTrack::in(u32 game_time)
 		return true;
 	
 	bool b_cross_midnight	= (m_ActiveTime.y < m_ActiveTime.x);
-	bool res				= FALSE;
+	bool res				= false;
 
 	if(!b_cross_midnight)
 	{

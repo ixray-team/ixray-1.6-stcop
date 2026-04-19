@@ -21,10 +21,10 @@ void CRenderTarget::phase_luminance()
 	float	eps		= EPS_S;
 
 	// Targets
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_ColorWriteEnable();
-	CHK_DX(RDevice->SetRenderState	(D3DRS_ZENABLE,FALSE));
+	CHK_DX(RDevice->SetRenderState	(D3DRS_ZENABLE,false));
 
 	// 000: Perform LUM-SAT, pass 0, 256x256 => 64x64
 	u_setrt									(rt_LUM_64,nullptr,nullptr,nullptr);

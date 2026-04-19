@@ -86,7 +86,7 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 		);
 	}
 	if ((mstate_wf&mcJump)==0)	
-		m_bJumpKeyPressed	=	FALSE;
+		m_bJumpKeyPressed	=	false;
 
 	// Зажало-ли меня/уперся - не двигаюсь
 	if (((character_physics_support()->movement()->GetVelocityActual()<0.2f)&&(!(mstate_real&(mcFall|mcJump)))) || character_physics_support()->movement()->bSleep) 

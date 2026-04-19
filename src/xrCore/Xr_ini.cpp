@@ -92,7 +92,7 @@ bool	CInifile::Sect::line_exist(const char* L, const char** val)
 		if (val) *val = *A->second;
 		return true;
 	}
-	return FALSE;
+	return false;
 }
 //------------------------------------------------------------------------------
 
@@ -101,9 +101,9 @@ CInifile::CInifile(IReader* F, const char* path, allow_include_func_t allow_incl
 	PROF_EVENT("CInifile::CInifile IReader");
 	m_file_name[0] = 0;
 	m_flags.zero();
-	m_flags.set(eSaveAtEnd, FALSE);
+	m_flags.set(eSaveAtEnd, false);
 	m_flags.set(eReadOnly, true);
-	m_flags.set(eOverrideNames, FALSE);
+	m_flags.set(eOverrideNames, false);
 	Load(F, path, allow_include_func);
 }
 
@@ -165,7 +165,7 @@ void CInifile::EvaluateSection(const xr_string& SectName, xr_vector<xr_string>& 
 	xr_vector<xr_string>& BaseParents = BaseParentDataMap[SectName];
 	xr_vector<xr_string>& OverrideParents = OverrideParentDataMap[SectName];
 
-	bool bDeleteSectionIfEmpty = FALSE;
+	bool bDeleteSectionIfEmpty = false;
 
 	MergeParentSet(BaseParents, OverrideParents, false);
 
@@ -484,7 +484,7 @@ bool CInifile::line_exist( const char* S, const char* L )const
 	if (S == nullptr || L == nullptr)
 		return false;
 
-	if (!section_exist(S)) return FALSE;
+	if (!section_exist(S)) return false;
 	Sect&	I = r_section(S);
 	SectCIt A = std::lower_bound(I.Data.begin(),I.Data.end(),L,item_pred);
 	return (A!=I.Data.end() && xr_strcmp(*A->first,L)==0);
@@ -714,14 +714,14 @@ int CInifile::r_token( const char* S, const char* L, const xr_token *token_list)
 bool	CInifile::r_line( const char* S, int L, const char** N, const char** V )const
 {
 	Sect&	SS = r_section(S);
-	if (L>=(int)SS.Data.size() || L<0 ) return FALSE;
+	if (L>=(int)SS.Data.size() || L<0 ) return false;
 	for (SectCIt I=SS.Data.begin(); I!=SS.Data.end(); I++)
 		if (!(L--)){
 			*N = *I->first;
 			*V = *I->second;
 			return true;
 		}
-	return FALSE;
+	return false;
 }
 
 bool CInifile::r_line( const shared_str& S, int L, const char** N, const char** V )const

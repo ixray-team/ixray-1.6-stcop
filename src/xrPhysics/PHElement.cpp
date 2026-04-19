@@ -56,8 +56,8 @@ CPHElement::CPHElement()																															//aux
 	m_body=nullptr;
 	//bActive=false;
 	//bActivating=false;
-	m_flags.set(flActive,FALSE);
-	m_flags.set(flActivating,FALSE);
+	m_flags.set(flActive,false);
+	m_flags.set(flActivating,false);
 	m_parent_element=nullptr;
 	m_shell=nullptr;
 
@@ -66,7 +66,7 @@ CPHElement::CPHElement()																															//aux
 	k_l=default_k_l;//1.8f;
 	m_fratures_holder=nullptr;
 	//b_enabled_onstep=false;
-	//m_flags.set(flEnabledOnStep,FALSE);
+	//m_flags.set(flEnabledOnStep,false);
 	m_flags.assign(0);
 	mXFORM.identity();
 	m_mass.setZero();
@@ -221,8 +221,8 @@ void		CPHElement::Deactivate()
 	VERIFY(isActive());
 
 	destroy();
-	m_flags.set(flActive,FALSE);
-	m_flags.set(flActivating,FALSE);
+	m_flags.set(flActive,false);
+	m_flags.set(flActivating,false);
 	//bActive=false;
 	//bActivating=false;
 	IKinematics* K=m_shell->PKinematics();
@@ -385,7 +385,7 @@ void CPHElement::Activate(const Fmatrix& start_from,bool disable){
 
 void CPHElement::Update(){
 	if(!isActive()) return;
-	if(m_flags.test(flActivating)) m_flags.set(flActivating,FALSE);
+	if(m_flags.test(flActivating)) m_flags.set(flActivating,false);
 	if( !dBodyIsEnabled(m_body)&&!m_flags.test(flUpdate)/*!bUpdate*/) return;
 
 	InterpolateGlobalTransform(&mXFORM);
@@ -710,7 +710,7 @@ void CPHElement::InterpolateGlobalTransform(Fmatrix* m){
 	m_body_interpolation.InterpolateRotation(*m);
 	m_body_interpolation.InterpolatePosition(m->c);
 	MulB43InverceLocalForm(*m);
-	m_flags.set(flUpdate,FALSE);
+	m_flags.set(flUpdate,false);
 	VERIFY(_valid(*m));
 }
 
@@ -776,7 +776,7 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 
 		FillInterpolation();
 		//bActivating=false;
-		m_flags.set(flActivating,FALSE);
+		m_flags.set(flActivating,false);
 		if(!m_parent_element) 
 		{
 			m_shell->m_object_in_root.set(mXFORM);
@@ -1535,7 +1535,7 @@ void CPHElement::ReleaseFixed()
 		return;
 
 	dBodySetNoUpdatePosMode(m_body, 0);
-	m_flags.set(flFixed, FALSE);
+	m_flags.set(flFixed, false);
 
 	if (!isActive())
 		return;

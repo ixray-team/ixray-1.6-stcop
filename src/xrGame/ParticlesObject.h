@@ -32,7 +32,7 @@ public:
 	void				SetLiveUpdate		(bool b);
 	bool				GetLiveUpdate		();
 	u32					GetSpriteCount		();
-	void				play_at_pos			(const Fvector& pos, bool xform=FALSE);
+	void				play_at_pos			(const Fvector& pos, bool xform=false);
 	void				Play				(bool bHudMode);
 	void				Stop				(bool bDefferedStop=true);
 	bool				IsPlaying			();

@@ -48,7 +48,7 @@ void	CRenderTarget::phase_combine	()
 	if (1)
 	{
 		RCache.set_ColorWriteEnable					();
-		CHK_DX(RDevice->SetRenderState			( D3DRS_ZENABLE,	FALSE				));
+		CHK_DX(RDevice->SetRenderState			( D3DRS_ZENABLE,	false				));
 		g_pGamePersistent->Environment().RenderSky	();
 		//	Igor: Render clouds before compine without Z-test
 		//	to avoid siluets. HOwever, it's a bit slower process.

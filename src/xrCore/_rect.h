@@ -80,7 +80,7 @@ public:
 	ICF bool intersection(SelfCRef b1, SelfCRef b2)
 	{
 		if (!intersected(b1,b2))
-			return	(FALSE);
+			return	(false);
 
 		x1	= std::max(b1.x1,b2.x1);
 		y1	= std::max(b1.y1,b2.y1);

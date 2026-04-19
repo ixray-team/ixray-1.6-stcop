@@ -138,7 +138,7 @@ void	CRender::render_lights	(light_Package& LP)
 				else
 				{
 					PROF_EVENT("r_dsgraph_render_subspace");
-					r_dsgraph_render_subspace(L->SpatialComponent->spatial.sector, L->X.S.combine, L->position, true, FALSE, L->ignore_object);
+					r_dsgraph_render_subspace(L->SpatialComponent->spatial.sector, L->X.S.combine, L->position, true, false, L->ignore_object);
 				}
 
 				if (L->flags.bOccq && !L->flags.bHudMode)
@@ -164,7 +164,7 @@ void	CRender::render_lights	(light_Package& LP)
 						Details->hw_Render(L);
 					}
 
-					L->X.S.transluent = FALSE;
+					L->X.S.transluent = false;
 					if (bSpecial)
 					{
 						L->X.S.transluent = true;

@@ -48,8 +48,8 @@ CPHShell::~CPHShell()
 CPHShell::CPHShell()
 {
 	m_flags.assign(0);
-	m_flags.set(flActivating,FALSE);
-	m_flags.set(flActive,FALSE);
+	m_flags.set(flActivating,false);
+	m_flags.set(flActive,false);
 	m_space=nullptr;
 	m_pKinematics=nullptr;
 	m_spliter_holder=nullptr;
@@ -233,7 +233,7 @@ void CPHShell::PhTune(dReal step)
 
 void CPHShell::Update(){
 	if(!isActive()) return;
-	if(m_flags.test(flActivating)) m_flags.set(flActivating,FALSE);
+	if(m_flags.test(flActivating)) m_flags.set(flActivating,false);
 	ELEMENT_I i;
 	for(i=elements.begin();elements.end() != i;++i)
 		(*i)->Update();

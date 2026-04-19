@@ -12,7 +12,7 @@ public:
 							CThread			(u32 _ID)
 	{
 		thID				= _ID;
-        Terminated			= FALSE;
+        Terminated			= false;
     }
 	virtual 				~CThread		(){}
 	void					Start			()

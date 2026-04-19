@@ -83,7 +83,7 @@ void CBastArtefact::BastCollision(CEntityAlive* pEntityAlive)
 bool CBastArtefact::net_Spawn(CSE_Abstract* DC)
 {
 	bool result = inherited::net_Spawn(DC);
-	if(!result) return FALSE;
+	if(!result) return false;
 
 	m_bStrike = false;
 	m_AttakingEntity = nullptr;
@@ -266,7 +266,7 @@ bool CBastArtefact::feel_touch_contact(CObject* O)
 	if(pEntityAlive && pEntityAlive->g_Alive()) 
 		return true;
 	else
-		return FALSE;
+		return false;
 }
 
 void CBastArtefact::setup_physic_shell	()

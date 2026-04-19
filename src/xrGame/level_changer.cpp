@@ -91,7 +91,7 @@ bool CLevelChanger::net_Spawn	(CSE_Abstract* DC)
 		l_pShape->ComputeBounds	();
 		Fvector					P;
 		XFORM().transform_tiny	(P,CFORM()->getSphere().P);
-		setEnabled				(FALSE);
+		setEnabled				(false);
 	}
 	g_lchangers.push_back		(this);
 

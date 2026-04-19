@@ -215,7 +215,7 @@ void	CKinematicsAnimated::LL_FadeCycle(u16 part, float falloff, u8 mask_channel 
 		B.set_falloff_state();
 		B.blendFalloff		= falloff;
 		//B.blendAccrue		= B.timeCurrent;
-		if (B.stop_at_end)  B.stop_at_end_callback = FALSE;		// callback не должен приходить!
+		if (B.stop_at_end)  B.stop_at_end_callback = false;		// callback не должен приходить!
 	}
 }
 void	CKinematicsAnimated::LL_CloseCycle(u16 part, u8 mask_channel /*= (1<<0)*/)
@@ -286,7 +286,7 @@ void CKinematicsAnimated::IBlendSetup(CBlend& B,u16 part,u8 channel, MotionID mo
 	B.stop_at_end	= noloop;
 	B.playing		= true;
 	B.stop_at_end_callback = true;
-	B.update_callback = FALSE;
+	B.update_callback = false;
 	B.Callback		= Callback;
 	B.CallbackParam = CallbackParam;
 
@@ -309,14 +309,14 @@ void CKinematicsAnimated::IFXBlendSetup(CBlend &B, MotionID motion_ID, float ble
 
 	B.playing		= true;
 	B.stop_at_end_callback = true;
-	B.stop_at_end	= FALSE;
-	B.update_callback = FALSE;
+	B.stop_at_end	= false;
+	B.update_callback = false;
 	//
 	B.Callback		= nullptr;
 	B.CallbackParam = nullptr;
 
 	B.channel		= 0;
-	B.fall_at_end	= FALSE;	
+	B.fall_at_end	= false;	
 }
 CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, bool  bMixing, float blendAccrue, float blendFalloff, float Speed, bool noloop, PlayCallback Callback, LPVOID CallbackParam,u8 channel/*=0*/ )
 {
@@ -586,7 +586,7 @@ void	CKinematicsAnimated::LL_UpdateFxTracks( float dt )
 		CBlend& B = *(*I);
 		if ( !B.stop_at_end_callback )
 		{
-			B.playing =FALSE;
+			B.playing =false;
 			continue;
 		}
 		//B.timeCurrent += dt*B.speed;

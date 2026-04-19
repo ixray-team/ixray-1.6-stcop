@@ -842,7 +842,7 @@ void    CEnvironment::load_level_specific_ambients ()
 			FS.update_path(full_path, _game_config_, path),
 			true,
 			true,
-			FALSE);
+			false);
 
 	if (level_ambients->section_count() == 0)
 	{

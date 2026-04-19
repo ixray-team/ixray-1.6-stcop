@@ -46,7 +46,7 @@ bool ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 	DWORD	dwCount 		= PQ.r_count();
 	if (dwCount==0){
 //		Log("chasm1");
-		return FALSE;			// chasm?
+		return false;			// chasm?
 	}
 
 	// *** Transfer triangles and compute sector
@@ -90,7 +90,7 @@ bool ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 	}
 	if (tris.size()==0){
 //		Log("chasm2");
-		return FALSE;			// chasm?
+		return false;			// chasm?
 	}
 
 	static xr_vector<Fvector>	points;		points.reserve(RCAST_Total); points.clear();
@@ -130,13 +130,13 @@ bool ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 	}
 	if (points.size()<3)
 	{
-		return	FALSE;
+		return	false;
 	}
 //.
 	float rc_lim = bIC?0.015f:0.7f;
 	if (float(points.size())/float(RCAST_Total) < rc_lim)
 	{
-		return	FALSE;
+		return	false;
 	}
 
 	// *** Calc normal
@@ -167,16 +167,16 @@ bool ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 
 	// *** Validate results
 	vNorm.set(0,1,0);
-	if (vNorm.dotproduct(N.Plane.n)< std::cos(deg2rad(60.f)))  return FALSE;
+	if (vNorm.dotproduct(N.Plane.n)< std::cos(deg2rad(60.f)))  return false;
 
 	float y_old = vAt.y;
 	float y_new = N.Pos.y;
 	if (y_old>y_new) {
 		// down
-		if (y_old-y_new > m_Params.fCanDOWN ) return FALSE;
+		if (y_old-y_new > m_Params.fCanDOWN ) return false;
 	} else {
 		// up
-		if (y_new-y_old > m_Params.fCanUP	) return FALSE;
+		if (y_new-y_old > m_Params.fCanUP	) return false;
 	}
  
 	// *** Validate plane
@@ -213,7 +213,7 @@ bool ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 		float perc_lim = bIC?0.015f:0.5f;
 		if (perc < perc_lim){
 			//			Msg		("Floating node.");
-			return	FALSE;
+			return	false;
 		}
 	}
 
@@ -327,7 +327,7 @@ bool ESceneAIMapTool::CanTravel(Fvector _from, Fvector _at)
 	bool b2 = fsimilar(Result.x,_at.x,eps)&&fsimilar(Result.z,_at.z,eps)&&fsimilar(Result.y,_at.y,eps_y);
 	if (b2) return true;
 
-	return FALSE;
+	return false;
 }
 
 SAINode* ESceneAIMapTool::BuildNode(Fvector& vFrom, Fvector& vAt, bool bIC, bool bSuperIC)	// return node's index
@@ -721,7 +721,7 @@ int ESceneAIMapTool::RemoveOutOfBoundsNodes()
 
 bool ESceneAIMapTool::RealUpdateSnapList()
 {
-	m_Flags.set					(flUpdateSnapList,FALSE);
+	m_Flags.set					(flUpdateSnapList,false);
 	Fbox nodes_bb;				CalculateNodesBBox(nodes_bb);
 	if (!GetSnapList()->empty()){
 		Fbox bb,snap_bb;		Scene->GetBox(snap_bb,*GetSnapList());
@@ -767,7 +767,7 @@ void ESceneAIMapTool::InvertLinks()
 				}
 	// reset processing flag
 	for (AINodeIt a_it=m_Nodes.begin(); a_it!=m_Nodes.end(); a_it++)
-		(*a_it)->flags.set(SAINode::flN1|SAINode::flN2|SAINode::flN3|SAINode::flN4,FALSE);
+		(*a_it)->flags.set(SAINode::flN1|SAINode::flN2|SAINode::flN3|SAINode::flN4,false);
 	UpdateHLSelected	();
 }
 
@@ -849,7 +849,7 @@ void ESceneAIMapTool::MakeLinks(u8 side_flag, EMode mode, bool bIgnoreConstraint
 	}
 	// reset processing flag
 	for (AINodeIt a_it=m_Nodes.begin(); a_it!=m_Nodes.end(); a_it++)
-		(*a_it)->flags.set(SAINode::flN1|SAINode::flN2|SAINode::flN3|SAINode::flN4,FALSE);
+		(*a_it)->flags.set(SAINode::flN1|SAINode::flN2|SAINode::flN3|SAINode::flN4,false);
 	UpdateHLSelected	();
 }
 

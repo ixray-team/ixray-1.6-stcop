@@ -22,8 +22,8 @@ void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
 		VERIFY(itm);
 		m_items.push_back(id);
 		itm->H_SetParent(this);
-		itm->setVisible(FALSE);
-		itm->setEnabled(FALSE);
+		itm->setVisible(false);
+		itm->setEnabled(false);
 
 		PIItem pIItem = itm->cast_inventory_item();
 		VERIFY(pIItem);

@@ -542,7 +542,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 				return;
 			}
 
-			if (b_alife && m_owner_se_object->m_flags.test(CSE_ALifeObject::flVisibleForMap) == FALSE)
+			if (b_alife && m_owner_se_object->m_flags.test(CSE_ALifeObject::flVisibleForMap) == false)
 			{
 				return;
 			}
@@ -815,7 +815,7 @@ void CMapLocation::SetHint(const shared_str& hint)
 {
 	if ( hint == "disable_hint" )
 	{
-		m_flags.set(eHintEnabled, FALSE);
+		m_flags.set(eHintEnabled, false);
 		m_hint		= "" ;
 		return;
 	}

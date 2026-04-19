@@ -213,7 +213,7 @@ bool CSHSoundEnvTools::OnCreate()
 void CSHSoundEnvTools::OnDestroy()
 {
 	m_Library.Unload	();
-	m_bModified 		= FALSE;
+	m_bModified 		= false;
 }
 //---------------------------------------------------------------------------
 
@@ -256,7 +256,7 @@ void CSHSoundEnvTools::Load()
 		ELog.DlgMsg(mtInformation,"Can't find file '%s'",fn);
 	}
 
-	m_bLockUpdate		= FALSE;
+	m_bLockUpdate		= false;
 }
 
 bool CSHSoundEnvTools::Save()
@@ -271,9 +271,9 @@ bool CSHSoundEnvTools::Save()
 	// save new file
 	EFS.MarkFile				(fn,false);
 	bool bRes					= m_Library.Save(fn);
-	m_bLockUpdate				= FALSE;
+	m_bLockUpdate				= false;
 
-	if (bRes) 					m_bModified	= FALSE;
+	if (bRes) 					m_bModified	= false;
 	return bRes;
 }
 

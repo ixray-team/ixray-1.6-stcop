@@ -208,7 +208,7 @@ void CEntityAlive::reload		(const char* section)
 	m_fFood					= 100*pSettings->r_float	(section,"ph_mass");
 }
 
-bool	g_fight_fast_respawn = FALSE;
+bool	g_fight_fast_respawn = false;
 void CEntityAlive::shedule_Update(u32 dt)
 {
 	PROF_EVENT("CEntityAlive::shedule_Update");

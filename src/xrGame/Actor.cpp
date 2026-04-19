@@ -2564,14 +2564,14 @@ void CActor::RenderItemUI()
 bool CActor::renderable_ShadowGenerate	() 
 {
 	if(m_holder)
-		return FALSE;
+		return false;
 	
 	return inherited::renderable_ShadowGenerate();
 }
 
 void CActor::g_PerformDrop()
 {
-	b_DropActivated	= FALSE;
+	b_DropActivated	= false;
 
 	if (PIItem pItem = inventory().ActiveItem())
 	{
@@ -3104,7 +3104,7 @@ void CActor::spawn_supplies			()
 void CActor::AnimTorsoPlayCallBack(CBlend* B)
 {
 	CActor* actor		= (CActor*)B->CallbackParam;
-	actor->m_bAnimTorsoPlayed = FALSE;
+	actor->m_bAnimTorsoPlayed = false;
 }
 
 

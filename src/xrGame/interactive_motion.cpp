@@ -115,10 +115,10 @@ void interactive_motion::state_start( )
 void	interactive_motion::state_end( )
 {
 	VERIFY( shell );
-	flags.set( fl_switch_dm_toragdoll, FALSE );
-	flags.set( fl_use_death_motion, FALSE );
+	flags.set( fl_switch_dm_toragdoll, false );
+	flags.set( fl_use_death_motion, false );
 
-	flags.set( fl_started, FALSE );
+	flags.set( fl_started, false );
 
 }
 

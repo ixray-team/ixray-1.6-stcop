@@ -19,7 +19,7 @@ ENGINE_API xr_atomic_bool g_bRendering = false;
 extern ENGINE_API float psHUD_FOV;
 bool IsFpsShow = false;
 
-bool g_bLoaded = FALSE;
+bool g_bLoaded = false;
 ref_light precache_light = 0;
 
 bool CRenderDevice::Begin()
@@ -39,7 +39,7 @@ bool CRenderDevice::Begin()
 	case IRenderDeviceRender::dsLost:
 		// If the device was lost, do not render until we get it back
 		Sleep(33);
-		return FALSE;
+		return false;
 		break;
 
 	case IRenderDeviceRender::dsNeedReset:
@@ -323,7 +323,7 @@ void CRenderDevice::message_loop()
 void CRenderDevice::Run()
 {
 	//	DUMP_PHASE;
-	g_bLoaded = FALSE;
+	g_bLoaded = false;
 	Log("Starting engine...");
 	thread_name("X-Ray Primary Thread");
 
@@ -506,9 +506,9 @@ void CRenderDevice::FrameMove()
 CRenderDevice::CRenderDevice() : dwPrecacheTotal(0), m_pRender(nullptr), Statistic(nullptr)
 {
 	b_is_Active = true;
-	b_is_Ready = FALSE;
+	b_is_Ready = false;
 	Timer.Start();
-	m_bNearer = FALSE;
+	m_bNearer = false;
 }
 
 ENGINE_API bool bShowPauseString = true;
@@ -539,7 +539,7 @@ void CRenderDevice::Pause(bool bOn, bool bTimer, bool bSound, const char* reason
 		if (bTimer && g_pauseMngr.Paused())
 		{
 			fTimeDelta						= EPS_S + EPS_S;
-			g_pauseMngr.Pause(FALSE);
+			g_pauseMngr.Pause(false);
 		}
 		
 		if (bSound)
@@ -559,7 +559,7 @@ bool CRenderDevice::Paused()
 
 void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 {
-	bool NewState = (active && (!minimized)) ? true : FALSE;
+	bool NewState = (active && (!minimized)) ? true : false;
 	bool OldState = Device.b_is_Active;
 
 	Device.b_is_Active = psDeviceFlags.test(rsDeviceActive) || NewState;

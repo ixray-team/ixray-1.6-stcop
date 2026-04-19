@@ -114,7 +114,7 @@ public:
 
 	virtual void				Release();
 	// Main functionality
-	virtual void CalculateBones(bool bForceExact = FALSE); // Recalculate skeleton
+	virtual void CalculateBones(bool bForceExact = false); // Recalculate skeleton
 	virtual void CalculateBones_Invalidate();
 	virtual void Callback(UpdateCallback C, void* Param)
 	{

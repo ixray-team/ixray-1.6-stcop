@@ -239,7 +239,7 @@ bool	SphereValid	(FvectorVec& geom, Fsphere& test)
 	{
 		if (!S.contains(I))
 		{
-			return FALSE;
+			return false;
 		}
 	}
 	return true;

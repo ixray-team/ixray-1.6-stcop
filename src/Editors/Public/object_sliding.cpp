@@ -18,7 +18,7 @@
 #include "../../xrCore/Mesh/object.h"
 #include "object_sliding.h"
 
-//bool g_bUseFastButBadOptimise = FALSE;
+//bool g_bUseFastButBadOptimise = false;
 
 // Call this to reorder the tris in this trilist to get good vertex-cache coherency.
 // *pwList is modified (but obviously not changed in size or memory location).
@@ -228,7 +228,7 @@ bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 				// going to store these.
 				iCurTriAdded -= pCollapse->TriCollapsed.size();
 			}
-			bJustStartedANewLevel = FALSE;
+			bJustStartedANewLevel = false;
 			// Do the uncollapse.
 			object->UndoCollapse();
 			// Add the unbinned vertex.
@@ -362,7 +362,7 @@ bool CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 			swr_->num_verts = std::max(swr_->num_verts,*(result->indices.item(j+swr_->offset))); // fignya index ne doljen bit bolshe!!!
 //.			R_ASSERT ( *(result->indices.item(j+swr->offset)) < swr->num_verts ); 
 			if (*(result->indices.item(j+swr_->offset)) >= swr_->num_verts){
-				bRes = FALSE;
+				bRes = false;
 //.				OutputDebugString("--ERROR-------------------\n");
 			}
 		}

@@ -99,7 +99,7 @@ void CBaseMonster::SyncRead(NET_Packet& Packet)
 			(
 				motion, ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_GetMotionDef(motion)->bone_or_part, motion, true,
 				ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
-				ik_anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0)
+				ik_anim_obj->LL_GetMotionDef(motion)->Speed(), false, 0, 0, 0)
 			);
 		}
 	}

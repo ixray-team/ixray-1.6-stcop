@@ -116,7 +116,7 @@ bool CEnvelope::ScaleKeys(float from_time, float to_time, float scale_factor, fl
         }
 	    return true;
     }
-    return FALSE;
+    return false;
 }
 
 float CEnvelope::GetLength(float* mn, float* mx)

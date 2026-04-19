@@ -519,7 +519,7 @@ void show_indicators()
 		CurrentGameUI()->ShowGameIndicators(true);
 		CurrentGameUI()->ShowCrosshair(true);
 	}
-	psActorFlags.set(AF_DISABLE_CONDITION_TEST, FALSE);
+	psActorFlags.set(AF_DISABLE_CONDITION_TEST, false);
 }
 
 void show_weapon(bool b)

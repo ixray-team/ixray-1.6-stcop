@@ -63,7 +63,7 @@ CParticleEffect::~CParticleEffect()
 void CParticleEffect::Play()
 {
 	xrCriticalSectionGuard guard(&onframe_lock);
-	m_RT_Flags.set(flRT_DefferedStop,FALSE);
+	m_RT_Flags.set(flRT_DefferedStop,false);
 	m_RT_Flags.set(flRT_Playing,true);
 	Pholder.PlayEffect();
 }
@@ -74,7 +74,7 @@ void CParticleEffect::Stop(bool bDefferedStop)
 	if (bDefferedStop)
 		m_RT_Flags.set(flRT_DefferedStop,true);
 	else
-		m_RT_Flags.set(flRT_Playing,FALSE);
+		m_RT_Flags.set(flRT_Playing,false);
 }
 
 void CParticleEffect::UpdateParent(const Fmatrix& m, const Fvector& velocity, bool bXFORM)
@@ -169,7 +169,7 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 			}
 			if (m_RT_Flags.is(flRT_DefferedStop) && (0 == p_cnt))
 			{
-				m_RT_Flags.set(flRT_Playing | flRT_DefferedStop, FALSE);
+				m_RT_Flags.set(flRT_Playing | flRT_DefferedStop, false);
 				break;
 			}
 		}
@@ -220,7 +220,7 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 			}
 		}
 		if (deffered_stop && m_RT_Flags.is(flRT_DefferedStop) && (0 == p_cnt))
-			m_RT_Flags.set(flRT_Playing | flRT_DefferedStop, FALSE);
+			m_RT_Flags.set(flRT_Playing | flRT_DefferedStop, false);
 	}
 }
 

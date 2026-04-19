@@ -37,7 +37,7 @@ void CRenderTarget::accum_spot(light* L)
 		RImplementation.rmNear();
 	}
 
-	bool	bIntersect = FALSE; //enable_scissor(L);
+	bool	bIntersect = false; //enable_scissor(L);
 	{
 		// setup xform
 		RCache.set_xform_world(L->m_xform);
@@ -50,7 +50,7 @@ void CRenderTarget::accum_spot(light* L)
 		// *** thus can cope without stencil clear with 127 lights
 		// *** in practice, 'cause we "clear" it back to 0x1 it usually allows us to > 200 lights :)
 		//	Done in blender!
-		//RCache.set_ColorWriteEnable		(FALSE);
+		//RCache.set_ColorWriteEnable		(false);
 		RCache.set_Element(s_accum_mask->E[SE_MASK_SPOT]);		// masker
 
 		// backfaces: if (stencil>=1 && zfail)			stencil = light_id
@@ -190,7 +190,7 @@ void CRenderTarget::accum_volumetric(light* L) {
 
 	// *** assume accumulator setted up ***
 	// *****************************	Mask by stencil		*************************************
-	bool	bIntersect = FALSE; //enable_scissor(L);
+	bool	bIntersect = false; //enable_scissor(L);
 	{
 		// setup xform
 		RCache.set_xform_world(L->m_xform);
@@ -416,7 +416,7 @@ void CRenderTarget::accum_volumetric_lv(light* L)
 	//Set the shader
 	RCache.set_Element(s_combine->E[3]);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	RCache.set_ColorWriteEnable();
 	//Set constants

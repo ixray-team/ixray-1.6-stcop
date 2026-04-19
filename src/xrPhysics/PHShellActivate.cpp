@@ -247,8 +247,8 @@ void CPHShell::Deactivate()
 		m_space=nullptr;
 	}
 
-	m_flags.set(flActivating,FALSE);
-	m_flags.set(flActive,FALSE);
+	m_flags.set(flActivating,false);
+	m_flags.set(flActive,false);
 	m_traced_geoms.clear();
 	CPHObject::UnsetRayMotions();
 }

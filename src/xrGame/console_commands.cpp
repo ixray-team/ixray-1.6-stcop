@@ -121,14 +121,14 @@ u32 particles_workers_count = 1;
 void register_mp_console_commands();
 //-----------------------------------------------------------
 
-bool	g_bCheckTime = FALSE;
+bool	g_bCheckTime = false;
 int		net_cl_inputupdaterate = 50;
 #ifdef DEBUG_DRAW
 Flags32	dbg_net_Draw_Flags = { 0 };
 #endif
 
 #ifdef DEBUG
-bool	g_bDebugNode = FALSE;
+bool	g_bDebugNode = false;
 u32		g_dwDebugNodeSource = 0;
 u32		g_dwDebugNodeDest = 0;
 extern	int	g_bDrawBulletHit;
@@ -491,7 +491,7 @@ void get_files_list(xr_vector<shared_str>& files, const char* dir, const char* f
 		strncpy_s(fn, sizeof(fn), fn_ext, xr_strlen(fn_ext) - len_str_ext);
 		files.push_back(fn);
 	}
-	FS.m_Flags.set(CLocatorAPI::flNeedCheck, FALSE);
+	FS.m_Flags.set(CLocatorAPI::flNeedCheck, false);
 }
 
 #include "UIGameCustom.h"
@@ -646,7 +646,7 @@ public:
 //		Console->Execute("stat_memory");
 
 		if (Device.Paused())
-			Device.Pause(FALSE, true, true, "CCC_ALifeLoadFrom");
+			Device.Pause(false, true, true, "CCC_ALifeLoadFrom");
 
 		NET_Packet					net_packet;
 		net_packet.w_begin(M_LOAD_GAME);
@@ -951,7 +951,7 @@ public:
 			g_dwDebugNodeDest = value2;
 		}
 		else {
-			g_bDebugNode = FALSE;
+			g_bDebugNode = false;
 		}
 	}
 };
@@ -988,7 +988,7 @@ public:
 		CCC_String::Execute(args);
 		if (!xr_strcmp(args, "none"))
 		{
-			ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject, FALSE);
+			ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject, false);
 			return;
 		}
 		ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject, true);
@@ -1293,7 +1293,7 @@ public:
 			bWhatToDo = true;
 
 		if (EQ(args, "off") || EQ(args, "0"))
-			bWhatToDo = FALSE;
+			bWhatToDo = false;
 
 		if (Device.IsEditorMode())
 		{
@@ -2237,7 +2237,7 @@ public:
 			sscanf(args, "%s %d", &string, &count);
 			for (int i = 0; i < count; ++i)
 			{
-				xr_shared_ptr<CParticlesObject> pParticle = Particles::Details::Create(string, FALSE);
+				xr_shared_ptr<CParticlesObject> pParticle = Particles::Details::Create(string, false);
 
 				// вычислить позицию и направленность партикла
 				Fmatrix pos;
@@ -2386,7 +2386,7 @@ class CCC_ChangeLanguage : public CCC_Token
 public:
 	CCC_ChangeLanguage(const char* N): CCC_Token(N, &_dummy, nullptr)
 	{
-		bEmptyArgsHandled = FALSE;
+		bEmptyArgsHandled = false;
 	}
 
 	virtual void Execute(const char* args)

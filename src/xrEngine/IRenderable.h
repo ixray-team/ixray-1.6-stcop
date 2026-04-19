@@ -23,8 +23,8 @@ public:
 	IRender_ObjectSpecific*				renderable_ROS				()	;
 
 	virtual	void						renderable_Render			()	= 0;
-	virtual	bool						renderable_ShadowGenerate	()	{ return FALSE; };
-	virtual	bool						renderable_ShadowReceive	()	{ return FALSE; };
+	virtual	bool						renderable_ShadowGenerate	()	{ return false; };
+	virtual	bool						renderable_ShadowReceive	()	{ return false; };
 
 
 	virtual IRenderable* dcast_Renderable() override { return this; }

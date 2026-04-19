@@ -26,7 +26,7 @@ IC		void	CPHElement::CalculateBoneTransform( Fmatrix &bone_transform )const
 IC		void		CPHElement::ActivatingPos(const Fmatrix &BoneTransform)
 {
 	ToBonePos( BoneTransform, mh_unspecified );
-	m_flags.set( flActivating, FALSE );
+	m_flags.set( flActivating, false );
 	if( !m_parent_element ) 
 		m_shell->SetObjVsShellTransform(BoneTransform);
 

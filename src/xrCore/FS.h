@@ -252,7 +252,7 @@ public:
 		if (dwSize!=0) {
 			r(dest,dwSize);
 			return true;
-		} else return FALSE;
+		} else return false;
 	}
 	
 	IC	bool		r_chunk_safe(u32 ID, void *dest, u32 dest_size)	// чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
@@ -262,7 +262,7 @@ public:
 			R_ASSERT(dwSize==dest_size);
 			r(dest,dwSize);
 			return true;
-		} else return FALSE;
+		} else return false;
 	}
 
 	template<XRay::Concepts::Enum EnumT>

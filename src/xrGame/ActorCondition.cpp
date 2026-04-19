@@ -598,7 +598,7 @@ bool CActorCondition::IsCantWalkWeight()
 			return true;
 		}
 	}
-	m_condition_flags.set					(eCantWalkWeight, FALSE);
+	m_condition_flags.set					(eCantWalkWeight, false);
 	return false;
 }
 

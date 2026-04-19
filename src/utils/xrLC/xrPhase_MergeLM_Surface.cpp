@@ -116,7 +116,7 @@ bool SurfacePlacePerpixel::rect_place_full(L_rect& r, lm_layer* D)
 			}
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 SurfacePlacePerpixel placer_perpixel;

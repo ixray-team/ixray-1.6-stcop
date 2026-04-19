@@ -311,7 +311,7 @@ void CHangingLamp::TurnOff	()
 	{
 		IKinematics *K = PKinematics(Visual());
 		VERIFY( K );
-		K->LL_SetBoneVisible(light_bone, FALSE, true);
+		K->LL_SetBoneVisible(light_bone, false, true);
 		VERIFY2( K->LL_GetBonesVisible()._visimask.flags != 0, make_string<const char*>("can not Turn Off lamp: %s, visual %s - because all bones become invisible", cNameVisual().c_str(), cName().c_str() ));
 	}
 	processing_deactivate();
@@ -404,7 +404,7 @@ void CHangingLamp::net_Import(NET_Packet& P)
 
 bool CHangingLamp::UsedAI_Locations()
 {
-	return					(FALSE);
+	return					(false);
 }
 
 #pragma optimize("s",on)

@@ -71,7 +71,7 @@ bool CTeamCaptureZone::net_Spawn(CSE_Abstract* DC)
 		l_pShape->ComputeBounds();
 		Fvector					P;
 		XFORM().transform_tiny(P, CFORM()->getSphere().P);
-		setEnabled(FALSE);
+		setEnabled(false);
 	}
 
 	if (GameID() != eGameIDSingle && !g_dedicated_server)
@@ -203,7 +203,7 @@ void CTeamCaptureZone::feel_touch_delete(CObject* tpObject)
 bool CTeamCaptureZone::feel_touch_contact(CObject* O)
 {
 	CActor* pActor = O->cast_actor();
-	if (!pActor) return (FALSE);
+	if (!pActor) return (false);
 	return ((CCF_Shape*)CFORM())->Contact(O);
 }
 

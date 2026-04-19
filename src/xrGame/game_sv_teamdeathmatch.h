@@ -73,7 +73,7 @@ public:
 				bool				OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *item);
 				void				OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *item);
 	
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = FALSE);
+	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = false);
 	virtual		void				OnDetach				(u16 eid_who, u16 eid_what);
 
 				void				OnObjectEnterTeamBase	(u16 id, u16 zone_team);

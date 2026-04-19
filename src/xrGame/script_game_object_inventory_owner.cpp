@@ -2193,7 +2193,7 @@ void CScriptGameObject::SetDefaultToRuck(bool state)
 {
 	if (CInventoryItem* inventory_item = object().cast_inventory_item())
 	{
-		inventory_item->m_flags.set(inventory_item->EIIFlags::FRuckDefault, state ? true : FALSE);
+		inventory_item->m_flags.set(inventory_item->EIIFlags::FRuckDefault, state ? true : false);
 	}
 }
 

@@ -49,7 +49,7 @@
 #define KILLEVENT_GRID_HEIGHT	64
 
 
-bool g_draw_downloads = FALSE;
+bool g_draw_downloads = false;
 
 game_cl_mp::game_cl_mp()
 {
@@ -65,7 +65,7 @@ game_cl_mp::game_cl_mp()
 	m_pSndMessagesInPlay.clear();
 	m_aMessageMenus.clear();
 
-	m_bSpectatorSelected = FALSE;
+	m_bSpectatorSelected = false;
 	//-------------------------------------
 	m_u8SpectatorModes		= 0xff;
 	m_bSpectator_FreeFly	= true;
@@ -640,7 +640,7 @@ void game_cl_mp::OnSwitchPhase			(u32 old_phase, u32 new_phase)
 	{
 	case GAME_PHASE_INPROGRESS:
 		{
-			m_bSpectatorSelected = FALSE;
+			m_bSpectatorSelected = false;
 
 			if(CurrentGameUI())
 			{

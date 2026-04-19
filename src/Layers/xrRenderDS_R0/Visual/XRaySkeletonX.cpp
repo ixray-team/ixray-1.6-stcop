@@ -289,7 +289,7 @@ inline bool pick_bone(T_buffer vertices, CDS0_Kinematics* Parent, IKinematics::p
 			return true;
 		};
 	}
-	return FALSE;
+	return false;
 }
 bool CDS0_SkeletonX::_PickBoneSoft1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
@@ -324,7 +324,7 @@ bool CDS0_SkeletonX::has_visible_bones()
 		{
 			return	true;
 		}
-	return	FALSE;
+	return	false;
 }
 
 

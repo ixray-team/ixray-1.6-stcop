@@ -125,7 +125,7 @@ void Object::CreateEdgeCollapse ( MeshPt *pptBinned, MeshPt *pptKept )
 
 	MeshTri *ptri;
 	int iNumTrisCollapsed = 0;
-	long bNeedNewLevel = FALSE;
+	long bNeedNewLevel = false;
 	for ( ptri = pptBinned->FirstTri(); ptri != nullptr; ptri = pptBinned->NextTri() )
 	{
 		VERIFY ( iNumTrisCollapsed < c_iMaxNumTris );	// Grow c_iMaxNumTris as needed.
@@ -285,7 +285,7 @@ bool Object::BinEdgeCollapse ( void )
 	{
 		// No collapses to bin.
 		VERIFY ( iNumCollapses == 0 );
-		return FALSE;
+		return false;
 	}
 	else
 	{
@@ -313,7 +313,7 @@ bool Object::UndoCollapse ( void )
 	if ( pNextCollapse->ListNext() == nullptr)
 	{
 		// No more to undo.
-		return FALSE;
+		return false;
 	}
 	else
 	{
@@ -370,7 +370,7 @@ bool Object::DoCollapse ( void )
 	if ( pNextCollapse == &CollapseRoot )
 	{
 		// No more to do.
-		return FALSE;
+		return false;
 	}
 	else
 	{
@@ -433,7 +433,7 @@ bool Object::CollapseAllowedForLevel ( MeshPt *pptBinned, int iLevel )
 	{
 		if ( iLevel != pTri->mytri.iSlidingWindowLevel )
 		{
-			bRes = FALSE;
+			bRes = false;
 		}
 	}
 	return bRes;
@@ -441,7 +441,7 @@ bool Object::CollapseAllowedForLevel ( MeshPt *pptBinned, int iLevel )
 
 // Return the error from this edge collapse.
 // Set bTryToCacheResult=TRUE if you can pass pptBinned in multiple times.
-// Make sure you call this with bTryToCacheResult=FALSE if any data changes,
+// Make sure you call this with bTryToCacheResult=false if any data changes,
 //	or you'll confuse the poor thing.
 void pack_to_vector(MxVector& tgt, const Fvector3& src_p, float src_u, float src_v)
 {
@@ -466,7 +466,7 @@ void Object::compute_face_quadric(MeshTri* tri, MxQuadric& Q)
 	Q = MxQuadric(v1, v2, v3, 0.f);
 }
 
-float Object::FindCollapseError ( MeshPt *pptBinned, MeshEdge *pedgeCollapse, long bTryToCacheResult /*= FALSE*/ )
+float Object::FindCollapseError ( MeshPt *pptBinned, MeshEdge *pedgeCollapse, long bTryToCacheResult /*= false*/ )
 {
 	static MeshPt		*pptLast;
 	static MxQuadric	qLast;

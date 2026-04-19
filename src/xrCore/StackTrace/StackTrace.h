@@ -21,7 +21,7 @@ namespace StackTrace
 		bool result = StackWalk(MACHINE_TYPE, GetCurrentProcess(), GetCurrentThread(), stackFrame, threadCtx, nullptr,
 			SymFunctionTableAccess, SymGetModuleBase, nullptr);
 
-		if (result == FALSE || stackFrame->AddrPC.Offset == 0)
+		if (result == false || stackFrame->AddrPC.Offset == 0)
 		{
 			return false;
 		}

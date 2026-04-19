@@ -114,14 +114,14 @@ const	u32		CSE_ALifeInventoryItem::random_limit			= 120;
 bool CSE_ALifeInventoryItem::Net_Relevant()
 {
 	if (base()->ID_Parent != u16(-1))
-		return		FALSE;
+		return		false;
 
 	if (!freezed)
 		return		true;
 
 #ifdef XRGAME_EXPORTS
 	if (Device.dwTimeGlobal >= (m_freeze_time + m_freeze_delta_time))
-		return		FALSE;
+		return		false;
 #endif
 
 	if (!prev_freezed)
@@ -131,7 +131,7 @@ bool CSE_ALifeInventoryItem::Net_Relevant()
 	}
 
 	if (m_relevent_random.randI(random_limit))
-		return		FALSE;
+		return		false;
 
 	return			true;
 }
@@ -431,17 +431,17 @@ bool CSE_ALifeItem::Net_Relevant			()
 		return					(true);
 
 	if (attached())
-		return					(FALSE);
+		return					(false);
 
 	if (!m_physics_disabled && !fis_zero(State.linear_vel.square_magnitude(),EPS_L))
 		return					(true);
 
 #ifdef XRGAME_EXPORTS
 //	if (Device.dwTimeGlobal < (m_last_update_time + update_rate()))
-//		return					(FALSE);
+//		return					(false);
 #endif // XRGAME_EXPORTS
 
-	return						(FALSE);
+	return						(false);
 }
 
 void CSE_ALifeItem::OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender )
@@ -1037,7 +1037,7 @@ bool CSE_ALifeItemArtefact::Net_Relevant	()
 	if (base()->ID_Parent == u16(-1))
 		return true;
 
-	return FALSE;
+	return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -1248,8 +1248,8 @@ void CSE_ALifeItemExplosive::FillProps			(const char* pref, PropItemVec& items)
 ////////////////////////////////////////////////////////////////////////////
 CSE_ALifeItemBolt::CSE_ALifeItemBolt		(const char* caSection) : CSE_ALifeItem(caSection)
 {
-	m_flags.set					(flUseSwitches,FALSE);
-	m_flags.set					(flSwitchOffline,FALSE);
+	m_flags.set					(flUseSwitches,false);
+	m_flags.set					(flSwitchOffline,false);
 	m_ef_weapon_type			= READ_IF_EXISTS(pSettings,r_u32,caSection,"ef_weapon_type",u32(-1));
 }
 
@@ -1304,8 +1304,8 @@ void CSE_ALifeItemBolt::FillProps(const char* pref, PropItemVec& values)
 ////////////////////////////////////////////////////////////////////////////
 CSE_ALifeItemsNotSave::CSE_ALifeItemsNotSave(const char* caSection) : CSE_ALifeItem(caSection)
 {
-	m_flags.set(flUseSwitches, FALSE);
-	m_flags.set(flSwitchOffline, FALSE);
+	m_flags.set(flUseSwitches, false);
+	m_flags.set(flSwitchOffline, false);
 	m_ef_weapon_type = READ_IF_EXISTS(pSettings, r_u32, caSection, "ef_weapon_type", u32(-1));
 }
 

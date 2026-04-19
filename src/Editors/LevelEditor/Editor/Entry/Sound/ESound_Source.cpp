@@ -313,11 +313,11 @@ void ESoundSource::FillProp(const char* pref, PropItemVec& values)
 	V=PHelper().CreateFloat		(values,PrepareKey(pref,"Source\\Volume"),		&m_Params.volume,			0.0f,1.f);
 	V->OnChangeEvent.bind		(this,&ESoundSource::OnChangeSource);
 	V=PHelper().CreateFloat		(values,PrepareKey(pref,"Source\\Min dist"),	&m_Params.min_distance,		0.1f, 1000.f, 0.1f, 1);
-	V->Owner()->Enable			(FALSE);
+	V->Owner()->Enable			(false);
 	V=PHelper().CreateFloat		(values,PrepareKey(pref,"Source\\Max dist"),	&m_Params.max_distance,		0.1f, 1000.f, 0.1f, 1);
-	V->Owner()->Enable			(FALSE);
+	V->Owner()->Enable			(false);
 	V=PHelper().CreateFloat		(values,PrepareKey(pref,"Source\\Max ai dist"),	&m_Params.max_ai_distance,	0.1f, 1000.f, 0.1f, 1);
-	V->Owner()->Enable			(FALSE);
+	V->Owner()->Enable			(false);
 	PHelper().CreateCaption		(values,PrepareKey(pref,"Game\\Active time\\Hint"),	"Zero - play sound looped round the clock.");
 	PHelper().CreateTime		(values,PrepareKey(pref,"Game\\Active time\\From"),	&m_ActiveTime.x);
 	PHelper().CreateTime		(values,PrepareKey(pref,"Game\\Active time\\To"),	&m_ActiveTime.y);
@@ -353,8 +353,8 @@ void ESoundSource::OnFrame()
 	case stStop: 
 		m_Source.stop		();
 		m_Command			= stNothing; 
-		m_Flags.set			(flPlaying,FALSE);
-		m_Flags.set			(flSimulating,FALSE);
+		m_Flags.set			(flPlaying,false);
+		m_Flags.set			(flSimulating,false);
 	break;
 	case stSimulate:
 	{

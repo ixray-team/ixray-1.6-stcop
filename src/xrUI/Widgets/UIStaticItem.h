@@ -31,7 +31,7 @@ public:
 	void			Init					(const char* tex, const char* sh, float left, float top);
 	void			Render					();
 	void			Render					(float angle);
-	void ResetOriginalRect() { uFlags.set(flValidTextureRect, FALSE); }
+	void ResetOriginalRect() { uFlags.set(flValidTextureRect, false); }
 
 	IC void			SetPos					(float left, float top)			{vPos.set(left,top);}
 	IC float		GetPosX					()								{return vPos.x;}

@@ -181,7 +181,7 @@ void xrLoad(const char* name, bool draft_mode, bool skipThm)
 						BT.THM.mip_filter = THM->r_u32();
 						BT.THM.width = THM->r_u32();
 						BT.THM.height = THM->r_u32();
-						bool			bLOD = FALSE;
+						bool			bLOD = false;
 						if (N_[0] == 'l' && N_[1] == 'o' && N_[2] == 'd' && N_[3] == '\\') bLOD = true;
 
 						// load surface if it has an alpha channel or has "implicit lighting" flag

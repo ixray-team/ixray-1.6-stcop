@@ -103,7 +103,7 @@ public:
 	
 	void							OnArtefactOnBase		(ClientID id_who);
 
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = FALSE);
+	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = false);
 	virtual		void				OnDetach				(u16 eid_who, u16 eid_what);
 	virtual		void				OnCreate				(u16 id_who);
 

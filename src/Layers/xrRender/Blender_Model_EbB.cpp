@@ -18,7 +18,7 @@ CBlender_Model_EbB::CBlender_Model_EbB	()
 	description.version	= 0x1;
 	xr_strcpy				(oT2_Name,	"$null");
 	xr_strcpy				(oT2_xform,	"$null");
-	oBlend.value		= FALSE;
+	oBlend.value		= false;
 }
 
 CBlender_Model_EbB::~CBlender_Model_EbB	()
@@ -54,7 +54,7 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 	if (C.bEditor)	{
 		//C.PassBegin		();
 		//{
-		//	if (oBlend.value)	{ C.PassSET_ZB		(true,FALSE);	C.PassSET_Blend_BLEND	(); }
+		//	if (oBlend.value)	{ C.PassSET_ZB		(true,false);	C.PassSET_Blend_BLEND	(); }
 		//	else				{ C.PassSET_ZB		(true,true);	C.PassSET_Blend_SET		(); }
 		//	C.PassSET_LightFog	(true,true);
 		//	
@@ -91,7 +91,7 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 		uber_deffer(C, true, "deffer_model", "deffer_base", false, nullptr, true);
 
 		if(oBlend.value) {
-			C.PassSET_ZB(true, FALSE);
+			C.PassSET_ZB(true, false);
 			C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
 		}
 
@@ -103,7 +103,7 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 		{
 		case SE_R1_NORMAL_HQ:	
 			vsname = psname =	"model_env_hq"; 
-			if (oBlend.value)	C.r_Pass	(vsname,psname,true,true,FALSE,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,0);
+			if (oBlend.value)	C.r_Pass	(vsname,psname,true,true,false,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,0);
 			else				C.r_Pass	(vsname,psname,true);
 			C.r_Sampler			("s_base",	C.L_textures[0]);
 			C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
@@ -112,7 +112,7 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 			break;
 		case SE_R1_NORMAL_LQ:
 			vsname = psname =	"model_env_lq"; 
-			if (oBlend.value)	C.r_Pass	(vsname,psname,true,true,FALSE,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,0);
+			if (oBlend.value)	C.r_Pass	(vsname,psname,true,true,false,true,D3DBLEND_SRCALPHA,	D3DBLEND_INVSRCALPHA,	true,0);
 			else				C.r_Pass	(vsname,psname,true);
 			C.r_Sampler			("s_base",	C.L_textures[0]);
 			C.r_Sampler			("s_env",	oT2_Name,false,D3DTADDRESS_CLAMP);
@@ -121,7 +121,7 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 		case SE_R1_LPOINT:
 			vsname				= "model_def_point";
 			psname				= "add_point";
-			C.r_Pass			(vsname,psname,FALSE,true,FALSE,true,D3DBLEND_ONE, D3DBLEND_ONE,true);
+			C.r_Pass			(vsname,psname,false,true,false,true,D3DBLEND_ONE, D3DBLEND_ONE,true);
 			C.r_Sampler			("s_base",	C.L_textures[0]);
 			C.r_Sampler_clf		("s_lmap",	TEX_POINT_ATT);
 			C.r_Sampler_clf		("s_att",	TEX_POINT_ATT);
@@ -130,7 +130,7 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 		case SE_R1_LSPOT:
 			vsname				= "model_def_spot";
 			psname				= "add_spot";
-			C.r_Pass			(vsname,psname,FALSE,true,FALSE,true,D3DBLEND_ONE, D3DBLEND_ONE,true);
+			C.r_Pass			(vsname,psname,false,true,false,true,D3DBLEND_ONE, D3DBLEND_ONE,true);
 			C.r_Sampler			("s_base",	C.L_textures[0]);
 			C.r_Sampler_clf		("s_lmap",	"internal\\internal_light_att",		true);
 			C.r_Sampler_clf		("s_att",	TEX_SPOT_ATT);
@@ -139,7 +139,7 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 		case SE_R1_LMODELS:
 			vsname				= "model_def_shadow";
 			psname				= "model_shadow";
-			C.r_Pass			(vsname,psname,FALSE,FALSE,FALSE,true,D3DBLEND_ZERO,D3DBLEND_SRCCOLOR,FALSE,0);
+			C.r_Pass			(vsname,psname,false,false,false,true,D3DBLEND_ZERO,D3DBLEND_SRCCOLOR,false,0);
 			C.r_End				();
 			break;
 		}
@@ -172,7 +172,7 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 			C.r_End();
 			break;
 			case SE_R2_SHADOW:		// smap
-			C.r_Pass("shadow_model", "shadow_base", FALSE);
+			C.r_Pass("shadow_model", "shadow_base", false);
 			C.r_Sampler("s_base", C.L_textures[0]);
 			C.r_ColorWriteEnable(false, false, false, false);
 			C.r_End();
@@ -192,7 +192,7 @@ void CBlender_Model_EbB::Compile( CBlender_Compile& C )
 		
 		if (oBlend.value)
 		{
-			C.PassSET_ZB(true, FALSE);
+			C.PassSET_ZB(true, false);
 			C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
 		}
 
@@ -235,7 +235,7 @@ void CBlender_Model_EbB::Compile( CBlender_Compile& C )
 			break;
 		case SE_R2_SHADOW:		// smap
 			RImplementation.addShaderOption("DISABLE_VELOCITY", "1");
-			C.r_Pass("shadow_model", "shadow_base", FALSE);
+			C.r_Pass("shadow_model", "shadow_base", false);
 			C.r_dx10Texture("s_base", C.L_textures[0]);
 			C.r_dx10Sampler("smp_base");
 			C.r_dx10Sampler("smp_linear");
