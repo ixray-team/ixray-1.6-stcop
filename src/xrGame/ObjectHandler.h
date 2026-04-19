@@ -18,16 +18,16 @@ class CObjectHandler :
 	public CInventoryOwner 
 {
 protected:
-	typedef CInventoryOwner inherited;
+	using inherited = CInventoryOwner;
 
 private:
-	int								m_r_hand;
-	int								m_l_finger1;
-	int								m_r_finger2;
+	u16								m_r_hand = BI_NONE;
+	u16								m_l_finger1 = BI_NONE;
+	u16								m_r_finger2 = BI_NONE;
 
 private:
-	mutable int						m_strap_bone0;
-	mutable int						m_strap_bone1;
+	mutable u16						m_strap_bone0 = BI_NONE;
+	mutable u16						m_strap_bone1 = BI_NONE;
 	mutable ALife::_OBJECT_ID		m_strap_object_id;
 
 protected:
@@ -63,7 +63,7 @@ public:
 			bool					goal_reached			();
 	IC		bool					hammer_is_clutched		() const;
 	IC		bool const&				infinite_ammo			() const;
-			void					weapon_bones			(int &b0, int &b1, int &b2) const;
+			void					weapon_bones			(u16 &b0, u16 &b1, u16 &b2) const;
 			bool					weapon_strapped			() const;
 			bool					weapon_strapped			(CWeapon *weapon) const;
 			bool					weapon_unstrapped		() const;

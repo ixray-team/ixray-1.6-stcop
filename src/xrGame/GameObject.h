@@ -217,7 +217,7 @@ public:
 	virtual void			OnEvent				(NET_Packet& P, u16 type);
 	virtual	void			Hit					(SHit* pHDS) {};
 	virtual void			SetHitInfo				(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir)	{};
-	virtual	bool			BonePassBullet		(int boneID) { return FALSE; }
+	virtual	bool			BonePassBullet		(u16 boneID) { return false; }
 
 
 	//игровое имя объекта

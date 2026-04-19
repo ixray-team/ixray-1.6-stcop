@@ -2108,7 +2108,7 @@ bool CActor::InventoryAllowSprint()
 	return true;
 };
 
-bool CActor::BonePassBullet(int boneID)
+bool CActor::BonePassBullet(u16 boneID)
 {
 	if (IsGameTypeSingle())
 	{
@@ -2120,7 +2120,7 @@ bool CActor::BonePassBullet(int boneID)
 	{
 		IKinematics* V = PKinematics(Visual());
 		VERIFY(V);
-		CBoneInstance& bone_instance = V->LL_GetBoneInstance(u16(boneID));
+		CBoneInstance& bone_instance = V->LL_GetBoneInstance(boneID);
 		return (bone_instance.get_param(3) > 0.5f);
 	}
 
