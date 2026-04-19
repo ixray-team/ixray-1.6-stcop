@@ -65,6 +65,7 @@ constexpr const char* _kOMFEditorModalWindow_WarningRenameHasCollision = "Warnin
 constexpr const char* _kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSuccessful = "Successful!##ToolsInGameImGui_OMFEditor_BonePartsToClipboard";
 constexpr const char* _kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed = "Failed!##ToolsInGameImGui_OMFEditor_BonePartsToClipboard";
 constexpr const char* _kOMFEditorModalWindow_BoneRenameHasCollion = "Warning!##ToolsInGameImGui_OMFEditor_BoneRenameHasCollision";
+constexpr const char* _kOMFEditorModalWindow_AnimationParamMotionMarksCleared = "Warning!##ToolsOMFEditor_MotionMarksCleared";
 
 struct OMFData
 {
@@ -164,11 +165,15 @@ struct CImGuiOMFEditor
 		}
 	}
 
+
+	bool is_show_popup_marks_cleared{};
+
 	bool is_file_loaded{};
 	bool animation_param_was_changed{};
 	bool is_motion_time_format_seconds_selected{};
 	bool is_motion_time_format_keys_selected{};
 	bool is_motion_time_format_radiobutton_changed{};
+	bool is_motion_marks_enabled{};
 	int current_selected_animation_param{};
 	int current_selected_bone_rename{};
 	OMFData* omf{};
@@ -427,10 +432,13 @@ void OMFEditor_Init(CImGuiOMFEditor* p_state, OMFData& data)
 
 	p_state->is_motion_time_format_seconds_selected = true;
 	p_state->is_motion_time_format_radiobutton_changed = true;
+	p_state->is_motion_marks_enabled = false;
 	p_state->combo_animation_params_data.clear();
 	p_state->combo_animation_params_name_hashes.clear();
 	p_state->combo_bones_data.clear();
 	p_state->combo_bones_name_hashes.clear();
+
+	p_state->is_show_popup_marks_cleared = false;
 
 	OMFEditor_Init_ComboAnimationParams(p_state, data);
 	OMFEditor_Init_ComboBones(p_state, data);
@@ -884,7 +892,14 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 
 	OMFData::AnimParamsData::AnimParams& param = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param];
 
-	bool has_motion_marks_selected = (g_pOMFEditor->omf->data_bone.ogf_version == 4 && param.marks_count > 0);
+	bool has_motion_marks_selected = (g_pOMFEditor->omf->data_bone.ogf_version == 4);
+
+	has_motion_marks_selected &= g_pOMFEditor->is_motion_marks_enabled;
+
+	if (!has_motion_marks_selected && g_pOMFEditor->is_motion_marks_enabled)
+	{
+		ImGui::Text("Motion marks are only for OGF Version == 4 yours is %d", g_pOMFEditor->omf->data_bone.ogf_version);
+	}
 
 	ImGui::BeginDisabled(has_motion_marks_selected == false);
 
@@ -1147,11 +1162,18 @@ void RenderOMFEditor_Draw_TableMain_Params()
 			}
 		}
 
-		bool has_motion_marks = (g_pOMFEditor->omf->data_bone.ogf_version == 4 && param.marks_count > 0);
+		check_box_changed = ImGui::Checkbox("Has motion marks", &g_pOMFEditor->is_motion_marks_enabled);
 
-		ImGui::BeginDisabled(true);
-		ImGui::Checkbox("Has motion marks", &has_motion_marks);
-		ImGui::EndDisabled();
+		if (check_box_changed)
+		{
+			if (g_pOMFEditor->is_motion_marks_enabled == false)
+			{
+				param.marks.clear();
+				param.marks_count = 0;
+
+				g_pOMFEditor->is_show_popup_marks_cleared = true;
+			}
+		}
 
 		ImGui::EndTable();
 	}
@@ -1174,6 +1196,26 @@ void RenderOMFEditor_Draw_TableMain()
 #endif
 		};
 		constexpr u8 _kColumnOfMainTableSize = sizeof(_kColumnOfMainTableNames) / sizeof(_kColumnOfMainTableNames[0]);
+
+
+		if (g_pOMFEditor->is_show_popup_marks_cleared)
+		{
+			ImGui::OpenPopup(_kOMFEditorModalWindow_AnimationParamMotionMarksCleared);
+			g_pOMFEditor->is_show_popup_marks_cleared = false;
+		}
+
+
+		if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_AnimationParamMotionMarksCleared))
+		{
+			ImGui::Text("Motion marks are cleared!");
+
+			if (ImGui::Button("Ok##ToolsOMFEditor_MotionMarksCleared"))
+			{
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
+		}
 
 
 		if (ImGui::BeginTable("##TII_OE_Main", _kColumnOfMainTableSize, ImGuiTableFlags_SizingStretchProp))
