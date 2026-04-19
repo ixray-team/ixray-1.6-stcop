@@ -256,8 +256,8 @@ public:
 	virtual void						SelectAnimation						(const Fvector& _view, const Fvector& _move, float speed );
 	virtual bool						UsedAI_Locations					();
 
-	virtual void						g_WeaponBones						(int &L, int &R1, int &R2);
-	virtual void						g_fireParams						(const CHudItem* pHudItem, Fvector& P, Fvector& D);
+	virtual void						g_WeaponBones						(u16 &L, u16 &R1, u16 &R2) final override;
+	virtual void						g_fireParams						(const CHudItem* pHudItem, Fvector& P, Fvector& D) final override;
 	virtual void						HitSignal							(float P,	Fvector& vLocalDir, CObject* who, s16 element);
 	virtual void						Die									(CObject* who);
 
