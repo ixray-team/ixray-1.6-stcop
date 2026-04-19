@@ -1,195 +1,222 @@
-////////////////////////////////////////////////////////////////////////////
-//	Module 		: condition_state_inline.h
-//	Created 	: 26.02.2004
-//  Modified 	: 26.02.2004
-//	Author		: Dmitriy Iassenev
-//	Description : Condition state inline functions
-////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template<typename _world_property>
-#define CConditionStateAbstract CConditionState<_world_property>
-
-TEMPLATE_SPECIALIZATION
-IC	const xr_vector<typename CConditionStateAbstract::COperatorCondition> &CConditionStateAbstract::conditions	() const
+IC const xr_vector<CWorldProperty>& CWorldState::conditions() const
 {
-	return (m_conditions);
+	return m_conditions;
 }
 
-TEMPLATE_SPECIALIZATION
-IC	void CConditionStateAbstract::add_condition_back	(const COperatorCondition &condition)
+IC void CWorldState::add_condition_back(const CWorldProperty& condition)
 {
-	THROW					(m_conditions.empty() || (m_conditions.back().condition() < condition.condition()));
-	if (m_conditions.empty() || (m_conditions.back().condition() < condition.condition())) {
+	THROW(m_conditions.empty() || (m_conditions.back().condition() < condition.condition()));
+	if (m_conditions.empty() || (m_conditions.back().condition() < condition.condition()))
+	{
 		m_conditions.push_back(condition);
 		m_hash ^= condition.hash_value();
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-IC	void CConditionStateAbstract::add_condition	(const COperatorCondition &condition)
+IC void CWorldState::add_condition(const CWorldProperty& condition)
 {
-	typename xr_vector<COperatorCondition>::iterator	I = std::lower_bound(m_conditions.begin(),m_conditions.end(),condition);
-	THROW					((I == m_conditions.end()) || ((*I).condition() != condition.condition()));
-	if ((I == m_conditions.end()) || ((*I).condition() != condition.condition())) {
+	xr_vector<CWorldProperty>::iterator	I = std::lower_bound(m_conditions.begin(), m_conditions.end(), condition);
+	THROW((I == m_conditions.end()) || ((*I).condition() != condition.condition()));
+	if ((I == m_conditions.end()) || ((*I).condition() != condition.condition()))
+	{
 		m_conditions.insert(I, condition);
 		m_hash ^= condition.hash_value();
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-IC	void CConditionStateAbstract::remove_condition	(const typename u32 &condition)
+IC void CWorldState::remove_condition(const u32& condition)
 {
-	typename xr_vector<COperatorCondition>::iterator	I = std::lower_bound(m_conditions.begin(),m_conditions.end(),COperatorCondition(condition,false));
-	THROW					((I != m_conditions.end()) && ((*I).condition() == condition));
-	if ((I != m_conditions.end()) && ((*I).condition() == condition)) {
+	xr_vector<CWorldProperty>::iterator I = std::lower_bound(m_conditions.begin(), m_conditions.end(), CWorldProperty(condition, false));
+	THROW((I != m_conditions.end()) && ((*I).condition() == condition));
+
+	if ((I != m_conditions.end()) && ((*I).condition() == condition)) 
+	{
 		m_hash ^= (*I).hash_value();
 		m_conditions.erase(I);
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-IC	void CConditionStateAbstract::add_condition	(typename xr_vector<COperatorCondition>::const_iterator &J, const COperatorCondition &condition)
+IC void CWorldState::add_condition(xr_vector<CWorldProperty>::const_iterator& J, const CWorldProperty& condition)
 {
-	m_conditions.insert		(m_conditions.begin() + (J - m_conditions.begin()),condition);
-	m_hash					^= condition.hash_value();
+	m_conditions.insert(m_conditions.begin() + (J - m_conditions.begin()), condition);
+	m_hash ^= condition.hash_value();
 }
 
-TEMPLATE_SPECIALIZATION
-IC	void CConditionStateAbstract::clear	()
+IC void CWorldState::clear()
 {
-	m_conditions.clear		();
-	m_hash					= 0;
+	m_conditions.clear();
+	m_hash = 0;
 }
 
-TEMPLATE_SPECIALIZATION
-IC	u8	CConditionStateAbstract::weight		(const CConditionState &condition) const
+IC u8 CWorldState::weight(const CWorldState& condition) const
 {
-	u8						result = 0;
-	typename xr_vector<COperatorCondition>::const_iterator	I = conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator	E = conditions().end();
-	typename xr_vector<COperatorCondition>::const_iterator	i = condition.conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator	e = condition.conditions().end();
-	for ( ; (I != E) && (i != e); )
+	u8 result = 0;
+	xr_vector<CWorldProperty>::const_iterator I = conditions().begin();
+	xr_vector<CWorldProperty>::const_iterator E = conditions().end();
+	xr_vector<CWorldProperty>::const_iterator i = condition.conditions().begin();
+	xr_vector<CWorldProperty>::const_iterator e = condition.conditions().end();
+
+	for (; (I != E) && (i != e); )
+	{
 		if ((*I).condition() < (*i).condition())
+		{
 			++I;
+		}
+		else if ((*I).condition() > (*i).condition())
+		{
+			++i;
+		}
 		else
-			if ((*I).condition() > (*i).condition())
-				++i;
-			else {
-				if ((*I).value() != (*i).value())
-					++result;
-				++I;
-				++i;
+		{
+			if ((*I).value() != (*i).value())
+			{
+				++result;
 			}
-	return					(result);
+
+			++I;
+			++i;
+		}
+	}
+
+	return result;
 }
 
-TEMPLATE_SPECIALIZATION
-IC	bool CConditionStateAbstract::operator<	(const CConditionState &condition) const
+IC bool CWorldState::operator<(const CWorldState& condition) const
 {
-	typename xr_vector<COperatorCondition>::const_iterator	I = conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator	E = conditions().end();
-	typename xr_vector<COperatorCondition>::const_iterator	i = condition.conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator	e = condition.conditions().end();
-	for ( ; (I != E) && (i != e); ++I, ++i)
+	xr_vector<CWorldProperty>::const_iterator I = conditions().begin();
+	xr_vector<CWorldProperty>::const_iterator E = conditions().end();
+	xr_vector<CWorldProperty>::const_iterator i = condition.conditions().begin();
+	xr_vector<CWorldProperty>::const_iterator e = condition.conditions().end();
+	for (; (I != E) && (i != e); ++I, ++i)
+	{
 		if (*I < *i)
-			return			(true);
-		else
-			if (*i < *I)
-				return		(false);
+		{
+			return true;
+		}
+		else if (*i < *I)
+		{
+			return false;
+		}
+	}
+
 	if (I == E)
+	{
 		if (i == e)
-			return			(false);
-		else
-			return			(true);
-	else
-		return				(false);
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-IC	bool CConditionStateAbstract::operator==	(const CConditionState &condition) const
+IC bool CWorldState::operator==(const CWorldState& condition) const
 {
 	if (hash_value() != condition.hash_value())
-		return				(false);
-	typename xr_vector<COperatorCondition>::const_iterator	I = conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator	E = conditions().end();
-	typename xr_vector<COperatorCondition>::const_iterator	i = condition.conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator	e = condition.conditions().end();
-	for ( ; (I != E) && (i != e); ++I, ++i)
+	{
+		return (false);
+	}
+
+	xr_vector<CWorldProperty>::const_iterator I = conditions().begin();
+	xr_vector<CWorldProperty>::const_iterator E = conditions().end();
+	xr_vector<CWorldProperty>::const_iterator i = condition.conditions().begin();
+	xr_vector<CWorldProperty>::const_iterator e = condition.conditions().end();
+	for (; (I != E) && (i != e); ++I, ++i)
+	{
 		if (!(*I == *i))
-			return			(false);
+		{
+			return (false);
+		}
+	}
+
 	if ((I == E) && (i == e))
-		return				(true);
-	return					(false);
+	{
+		return true;
+	}
+	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-IC	CConditionState<_world_property> &CConditionStateAbstract::operator-=(const CConditionState &condition)
+IC CWorldState& CWorldState::operator-=(const CWorldState& condition)
 {
-	m_hash							= 0;
-	xr_vector<COperatorCondition>	temp;
-	typename xr_vector<COperatorCondition>::const_iterator	I = conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator	E = conditions().end();
-	typename xr_vector<COperatorCondition>::const_iterator	i = condition.conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator	e = condition.conditions().end();
-	for ( ; (I != E) && (i != e); )
+	m_hash = 0;
+	xr_vector<CWorldProperty> temp;
+	xr_vector<CWorldProperty>::const_iterator I = conditions().begin();
+	xr_vector<CWorldProperty>::const_iterator E = conditions().end();
+	xr_vector<CWorldProperty>::const_iterator i = condition.conditions().begin();
+	xr_vector<CWorldProperty>::const_iterator e = condition.conditions().end();
+
+	for (; (I != E) && (i != e); )
+	{
 		if ((*I).condition() < (*i).condition())
+		{
 			++I;
+		}
+		else if ((*I).condition() > (*i).condition())
+		{
+			++i;
+		}
 		else
-			if ((*I).condition() > (*i).condition())
-				++i;
-			else {
-				if ((*I).value() != (*i).value()) {
-					temp.push_back	(*I);
-					m_hash			^= (*I).hash_value();
-				}
-				++I;
-				++i;
+		{
+			if ((*I).value() != (*i).value())
+			{
+				temp.push_back(*I);
+				m_hash ^= (*I).hash_value();
 			}
-	m_conditions				= temp;
-	return						(*this);
-}
-
-TEMPLATE_SPECIALIZATION
-IC	bool CConditionStateAbstract::includes(const CConditionState &condition) const
-{
-	typename xr_vector<COperatorCondition>::const_iterator	I = conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator	E = conditions().end();
-	typename xr_vector<COperatorCondition>::const_iterator	i = condition.conditions().begin();
-	typename xr_vector<COperatorCondition>::const_iterator	e = condition.conditions().end();
-	for ( ; (I != E) && (i != e); )
-		if ((*I).condition() < (*i).condition())
 			++I;
+			++i;
+		}
+	}
+
+	m_conditions = temp;
+	return *this;
+}
+
+IC bool CWorldState::includes(const CWorldState& condition) const
+{
+	xr_vector<CWorldProperty>::const_iterator I = conditions().begin();
+	xr_vector<CWorldProperty>::const_iterator E = conditions().end();
+	xr_vector<CWorldProperty>::const_iterator i = condition.conditions().begin();
+	xr_vector<CWorldProperty>::const_iterator e = condition.conditions().end();
+	for (; (I != E) && (i != e); )
+	{
+		if ((*I).condition() < (*i).condition())
+		{
+			++I;
+		}
+		else if ((*I).condition() > (*i).condition())
+		{
+			return false;
+		}
+		else if ((*I).value() != (*i).value())
+		{
+			return false;
+		}
 		else
-			if ((*I).condition() > (*i).condition())
-				return			(false);
-			else
-				if ((*I).value() != (*i).value())
-					return		(false);
-				else {
-					++I;
-					++i;
-				}
-	return						(i == e);
+		{
+			++I;
+			++i;
+		}
+	}
+
+	return (i == e);
 }
 
-TEMPLATE_SPECIALIZATION
-IC	u32	CConditionStateAbstract::hash_value		() const
+IC u32 CWorldState::hash_value() const
 {
-	return					(m_hash);
+	return m_hash;
 }
 
-TEMPLATE_SPECIALIZATION
-IC	const typename CConditionStateAbstract::COperatorCondition *CConditionStateAbstract::property (const u32 &condition) const
+IC const CWorldProperty* CWorldState::property(const u32& condition) const
 {
-	typename xr_vector<COperatorCondition>::const_iterator	I = std::lower_bound(conditions().begin(),conditions().end(),COperatorCondition(condition, false));
+	auto I = std::lower_bound(conditions().begin(), conditions().end(), CWorldProperty(condition, false));
 	if (I == m_conditions.end())
-		return				(0);
-	else
-		return				(&*I);
-}
+	{
+		return (0);
+	}
 
-#undef TEMPLATE_SPECIALIZATION
-#undef CConditionStateAbstract
+	return (&*I);
+}
