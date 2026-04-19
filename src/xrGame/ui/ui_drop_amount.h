@@ -37,6 +37,8 @@ public:
     CUIItemDropAmountWnd();
     ~CUIItemDropAmountWnd();
 
+    bool HasInitializedLayout() const { return _trackBar != nullptr; }
+
     void InitDropAmount(CUIXml& uiXml);
     void ShowDropAmount(u32 max, EDropMode mode, CInventoryItem* pItem = nullptr);
     void Show(CInventoryItem* pItem, int maxAmount, std::function<void(int)> callback);

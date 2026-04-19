@@ -338,7 +338,7 @@ void CUIActorMenuBase::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item,
 
 			if (cell_item->ChildsCount())
 			{
-				if (m_pItemDropAmountWnd)
+				if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
 				{
 					m_UIPropertiesBox->AddItem("st_drop_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_DROP_ACTION);
 				}
@@ -354,7 +354,7 @@ void CUIActorMenuBase::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item,
 
 				if (cell_item->ChildsCount())
 				{
-					if (m_pItemDropAmountWnd)
+					if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
 					{
 						m_UIPropertiesBox->AddItem("st_move_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_DROP_ACTION);
 					}
@@ -370,7 +370,7 @@ void CUIActorMenuBase::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item,
 
 		if (cell_item->ChildsCount())
 		{
-			if (m_pItemDropAmountWnd)
+			if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
 			{
 				m_UIPropertiesBox->AddItem("st_take_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_DROP_ACTION);
 			}
@@ -589,7 +589,7 @@ void CUIActorMenuBase::PropertiesBoxForTrade(CUICellItem* cell_item, PIItem item
 		m_UIPropertiesBox->AddItem("st_remove_from_offer", nullptr, INVENTORY_TO_BAG_ACTION);
 		if (cell_item->ChildsCount())
 		{
-			if (m_pItemDropAmountWnd)
+			if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
 			{
 				m_UIPropertiesBox->AddItem("st_remove_from_offer_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_TO_BAG_ACTION);
 			}
@@ -604,7 +604,7 @@ void CUIActorMenuBase::PropertiesBoxForTrade(CUICellItem* cell_item, PIItem item
 			m_UIPropertiesBox->AddItem("st_move_to_offer", nullptr, INVENTORY_SHOP_OFFER_ITEM_ACTION);
 			if (cell_item->ChildsCount())
 			{
-				if (m_pItemDropAmountWnd)
+				if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
 				{
 					m_UIPropertiesBox->AddItem("st_move_to_offer_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_SHOP_OFFER_ITEM_ACTION);
 				}
@@ -618,7 +618,7 @@ void CUIActorMenuBase::PropertiesBoxForTrade(CUICellItem* cell_item, PIItem item
 		m_UIPropertiesBox->AddItem("st_remove_from_cart", nullptr, INVENTORY_SHOP_UNCHOOSE_ITEM_ACTION);
 		if (cell_item->ChildsCount())
 		{
-			if (m_pItemDropAmountWnd)
+			if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
 			{
 				m_UIPropertiesBox->AddItem("st_remove_from_cart_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_SHOP_UNCHOOSE_ITEM_ACTION);
 			}
@@ -635,7 +635,7 @@ void CUIActorMenuBase::PropertiesBoxForTrade(CUICellItem* cell_item, PIItem item
 			m_UIPropertiesBox->AddItem("st_move_to_cart", nullptr, INVENTORY_SHOP_CHOOSE_ITEM_ACTION);
 			if (cell_item->ChildsCount())
 			{
-				if (m_pItemDropAmountWnd)
+				if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
 				{
 					m_UIPropertiesBox->AddItem("st_move_to_cart_amount", (void*)INVENTORY_AMOUNT_CODE, INVENTORY_SHOP_CHOOSE_ITEM_ACTION);
 				}
@@ -730,7 +730,10 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		}
 		else if (d == (void*)INVENTORY_AMOUNT_CODE)
 		{
-			m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeFromOffer, item);
+			if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
+			{
+				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeFromOffer, item);
+			}
 		}
 		else
 		{
@@ -817,7 +820,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 				{
 					DropAllCurrentItem(cell_item->ChildsCount() + 1);
 				}
-				else if (m_pItemDropAmountWnd != nullptr && d_ == (void*)INVENTORY_AMOUNT_CODE)
+				else if (m_pItemDropAmountWnd != nullptr && m_pItemDropAmountWnd->HasInitializedLayout() && d_ == (void*)INVENTORY_AMOUNT_CODE)
 				{
 					m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeDrop, item);
 				}
@@ -837,7 +840,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 					{
 						MoveAllCurrentItem(cell_item->ChildsCount() + 1);
 					}
-					else if (m_pItemDropAmountWnd != nullptr && d_ == (void*)INVENTORY_AMOUNT_CODE && isAllowPlace)
+					else if (m_pItemDropAmountWnd != nullptr && m_pItemDropAmountWnd->HasInitializedLayout() && d_ == (void*)INVENTORY_AMOUNT_CODE && isAllowPlace)
 					{
 						m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeMove, item);
 					}
@@ -852,7 +855,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 					{
 						TakeAllCurrentItem(cell_item->ChildsCount() + 1);
 					}
-					else if (m_pItemDropAmountWnd != nullptr && d_ == (void*)INVENTORY_AMOUNT_CODE)
+					else if (m_pItemDropAmountWnd != nullptr && m_pItemDropAmountWnd->HasInitializedLayout() && d_ == (void*)INVENTORY_AMOUNT_CODE)
 					{
 						m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeTake, item);
 					}
@@ -1031,7 +1034,10 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		}
 		else if (d == (void*)INVENTORY_AMOUNT_CODE)
 		{
-			m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeToOffer, item);
+			if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
+			{
+				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeToOffer, item);
+			}
 		}
 		else
 		{
@@ -1048,7 +1054,10 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		}
 		else if (d == (void*)INVENTORY_AMOUNT_CODE)
 		{
-			m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeToCart, item);
+			if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
+			{
+				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeToCart, item);
+			}
 		}
 		else
 		{
@@ -1065,7 +1074,10 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		}
 		else if (d == (void*)INVENTORY_AMOUNT_CODE)
 		{
-			m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeFromCart, item);
+			if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
+			{
+				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeFromCart, item);
+			}
 		}
 		else
 		{
