@@ -11,6 +11,7 @@
 #include "xr_object.h"
 #include "x_ray.h"
 #include "GameMtlLib.h"
+#include "IxAiStackSoundBridge.h"
 #include "../xrGame/AnimNotify/AnimNotifyGame.h"
 
 ENGINE_API	IGame_Level*	g_pGameLevel	= nullptr;
@@ -409,6 +410,8 @@ void IGame_Level::SoundEvent_Dispatch()
 			);
 		}
 	}
+
+	IxAiStackSoundBridge_DispatchTap(snd_Events);
 
 	snd_Events.clear();
 }

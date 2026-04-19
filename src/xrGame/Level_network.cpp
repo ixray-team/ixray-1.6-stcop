@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "Level.h"
+#include "ix_ai_stack/IxAiStackApi.h"
 #include "Level_Bullet_Manager.h"
 #include "xrServer.h"
 #include "xrMessages.h"
@@ -145,6 +146,8 @@ void CLevel::net_Stop()
 
 	bReady						= false;
 	m_bGameConfigStarted		= FALSE;
+
+	IxAiStackApi::Shutdown();
 
 	if (m_file_transfer)
 		xr_delete(m_file_transfer);

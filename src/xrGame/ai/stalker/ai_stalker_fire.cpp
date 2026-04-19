@@ -29,6 +29,7 @@
 #include "../../sound_player.h"
 #include "../../cover_point.h"
 #include "../../agent_member_manager.h"
+#include "../../ix_ai_stack/IxAiSquadChannel.h"
 #include "../../agent_location_manager.h"
 #include "../../danger_cover_location.h"
 #include "../../ObjectHandlerSpace.h"
@@ -403,7 +404,15 @@ void CAI_Stalker::Hit(SHit* pHDS)
 
 	//conditions().health()			= 1.f;
 
+	const f32 ixSquadDamageSnapshot = HDS.damage();
+	const Fvector ixSquadWoundPosition = Position();
+
 	inherited::Hit					( &HDS );
+
+	if (ixSquadDamageSnapshot > EPS_L)
+	{
+		IxAiSquadChannel::NotifyStalkerWound(*this, HDS, ixSquadWoundPosition);
+	}
 }
 
 void CAI_Stalker::HitSignal				(float amount, Fvector& vLocalDir, CObject* who, s16 element)

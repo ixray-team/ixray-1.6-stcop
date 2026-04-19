@@ -9,6 +9,7 @@
 #include "script_utility.h"
 #include "Level.h"
 #include "xrServer_Objects_ALife_Monsters.h"
+#include "../../ix_ai_stack/IxAiStackScriptBridge.h"
 
 inline void update_npc_logic_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
@@ -4176,5 +4177,283 @@ inline void set_active_task_server(CScriptGameObject* pActor,
 	_impl(pActor, pBot, temp.data());
 #elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
+#endif
+}
+
+inline void ix_ai_stack_reload_runtime_config_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+	(void)buffer;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	IxAiStackScriptReloadRuntimeConfig();
+#endif
+}
+
+inline void ix_ai_stack_reload_runtime_config_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+	(void)buffer;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	IxAiStackScriptReloadRuntimeConfig();
+#endif
+}
+
+inline bool IxAiParseCondlistBool00(const xr_string& token, bool& outValue)
+{
+	if (token.empty())
+	{
+		return false;
+	}
+
+	pcstr c = token.c_str();
+
+	if (_strcmpi(c, "true") == 0 || _strcmpi(c, "yes") == 0 || token == "1")
+	{
+		outValue = true;
+		return true;
+	}
+
+	if (_strcmpi(c, "false") == 0 || _strcmpi(c, "no") == 0 || token == "0")
+	{
+		outValue = false;
+		return true;
+	}
+
+	return false;
+}
+
+inline void ix_ai_stack_set_bridge_enabled_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (buffer.empty())
+	{
+		return;
+	}
+
+	bool v = false;
+
+	if (!IxAiParseCondlistBool00(buffer[0], v))
+	{
+		return;
+	}
+
+	IxAiStackScriptSetBridgeEnabled(v);
+#endif
+}
+
+inline void ix_ai_stack_set_bridge_enabled_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (buffer.empty())
+	{
+		return;
+	}
+
+	bool v = false;
+
+	if (!IxAiParseCondlistBool00(buffer[0], v))
+	{
+		return;
+	}
+
+	IxAiStackScriptSetBridgeEnabled(v);
+#endif
+}
+
+inline void ix_ai_stack_set_memory_authoritative_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (buffer.empty())
+	{
+		return;
+	}
+
+	bool v = false;
+
+	if (!IxAiParseCondlistBool00(buffer[0], v))
+	{
+		return;
+	}
+
+	IxAiStackScriptSetMemoryAuthoritative(v);
+#endif
+}
+
+inline void ix_ai_stack_set_memory_authoritative_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (buffer.empty())
+	{
+		return;
+	}
+
+	bool v = false;
+
+	if (!IxAiParseCondlistBool00(buffer[0], v))
+	{
+		return;
+	}
+
+	IxAiStackScriptSetMemoryAuthoritative(v);
+#endif
+}
+
+inline void ix_ai_stack_set_tactics_feed_movement_hint_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (buffer.empty())
+	{
+		return;
+	}
+
+	bool v = false;
+
+	if (!IxAiParseCondlistBool00(buffer[0], v))
+	{
+		return;
+	}
+
+	IxAiStackScriptSetTacticsFeedMovementHint(v);
+#endif
+}
+
+inline void ix_ai_stack_set_tactics_feed_movement_hint_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (buffer.empty())
+	{
+		return;
+	}
+
+	bool v = false;
+
+	if (!IxAiParseCondlistBool00(buffer[0], v))
+	{
+		return;
+	}
+
+	IxAiStackScriptSetTacticsFeedMovementHint(v);
+#endif
+}
+
+inline void ix_ai_stack_set_cover_feed_danger_hint_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (buffer.empty())
+	{
+		return;
+	}
+
+	bool v = false;
+
+	if (!IxAiParseCondlistBool00(buffer[0], v))
+	{
+		return;
+	}
+
+	IxAiStackScriptSetCoverFeedDangerHint(v);
+#endif
+}
+
+inline void ix_ai_stack_set_cover_feed_danger_hint_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (buffer.empty())
+	{
+		return;
+	}
+
+	bool v = false;
+
+	if (!IxAiParseCondlistBool00(buffer[0], v))
+	{
+		return;
+	}
+
+	IxAiStackScriptSetCoverFeedDangerHint(v);
+#endif
+}
+
+inline void ix_ai_stack_set_locality_actor_attenuation_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (buffer.empty())
+	{
+		return;
+	}
+
+	bool v = false;
+
+	if (!IxAiParseCondlistBool00(buffer[0], v))
+	{
+		return;
+	}
+
+	IxAiStackScriptSetLocalityActorAttenuationEnabled(v);
+#endif
+}
+
+inline void ix_ai_stack_set_locality_actor_attenuation_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (buffer.empty())
+	{
+		return;
+	}
+
+	bool v = false;
+
+	if (!IxAiParseCondlistBool00(buffer[0], v))
+	{
+		return;
+	}
+
+	IxAiStackScriptSetLocalityActorAttenuationEnabled(v);
 #endif
 }

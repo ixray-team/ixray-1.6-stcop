@@ -1,6 +1,7 @@
 ﻿#include "StdAfx.h"
 
 #include "ImUtils.h"
+#include "../ix_ai_stack/IxAiStackImGui.h"
 #include "../xrEngine/xr_input.h"
 
 clsid_manager* g_pClsidManager;
@@ -22,6 +23,10 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("Input Manager", CImGuiManager::ERenderPriority::eMedium, RenderToolsInputManagerWindow);
 		CImGuiManager::Instance().Subscribe("SVGStorageViewer", CImGuiManager::ERenderPriority::eMedium, RenderToolsRenderDebugSVGStorageViewerWindow);
 		CImGuiManager::Instance().Subscribe("Hud Adjust", CImGuiManager::ERenderPriority::eMedium, RenderHUDAdjustManager);
+
+#		ifdef DEBUG_DRAW
+		CImGuiManager::Instance().Subscribe("IX AI Stack", CImGuiManager::ERenderPriority::eMedium, RenderIxAiStackWindow);
+#		endif
 
 		InitImGuiCLSIDInGame();
 		InitImGuiSearchInGame();

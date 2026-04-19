@@ -9,6 +9,7 @@
 #include "StdAfx.h"
 #include "agent_member_manager.h"
 #include "ai/stalker/ai_stalker.h"
+#include "ix_ai_stack/IxAiSquadChannel.h"
 #include "object_broker.h"
 #include "agent_manager.h"
 #include "agent_memory_manager.h"
@@ -117,6 +118,8 @@ void CAgentMemberManager::register_in_combat	(const CAI_Stalker *object)
 //	if (!object->group_behaviour())
 //		return;
 
+	const bool wasInCombat = registered_in_combat(object);
+
 #if 0//def DEBUG
 	Msg							(
 		"%6d registering stalker %s in combat: 0x%08x -> 0x%08x",
@@ -130,6 +133,11 @@ void CAgentMemberManager::register_in_combat	(const CAI_Stalker *object)
 	u64				m = mask(object);
 	m_actuality					= m_actuality && ((m_combat_mask | m) == m_combat_mask);
 	m_combat_mask				|= m;
+
+	if (!wasInCombat)
+	{
+		IxAiSquadChannel::NotifyCombatRegistered(*object);
+	}
 }
 
 void CAgentMemberManager::unregister_in_combat	(const CAI_Stalker *object)

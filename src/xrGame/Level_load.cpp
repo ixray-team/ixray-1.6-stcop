@@ -15,6 +15,7 @@
 #include "inventory_upgrade_manager.h"
 #include "ElectronicsProblemsManager.h"
 #include "ParticlesObject.h"
+#include "ix_ai_stack/IxAiStackApi.h"
 
 BOOL CLevel::Load_GameSpecific_Before()
 {
@@ -186,6 +187,8 @@ BOOL CLevel::Load_GameSpecific_After()
 	BlockCheatLoad();
 
 	g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(),game->GetEnvironmentGameTimeFactor());
+
+	IxAiStackApi::Initialize();
 
 	return TRUE;
 }

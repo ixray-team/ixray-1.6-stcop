@@ -730,6 +730,7 @@ void CLevel::OnFrame()
 	// update static sounds & gc
 	Device.seqParallel.push_back(xr_make_delegate(m_level_sound_manager, &CLevelSoundManager::Update));
 	Device.seqParallel.push_back(xr_make_delegate(this, &CLevel::script_gc));
+	Device.seqParallel.push_back(xr_make_delegate(this, &CLevel::IxAiStackParallelUpdate));
 
 	//-----------------------------------------------------
 	if (pStatGraphR)

@@ -1064,6 +1064,10 @@ function game_disconnect(actor, npc)
 --	c:execute_deferred("hide")
 end
 
+-- IX AI Stack: condlist/C++ implementation reloads misc\\ix_ai_stack.ltx; stub for direct Lua calls.
+function ix_ai_stack_reload_runtime_config(actor, npc)
+end
+
 function game_credits(actor, npc)
 	db.gameover_credits_started = true
 	game.start_tutorial("credits_seq")

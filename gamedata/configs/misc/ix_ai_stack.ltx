@@ -1,0 +1,197 @@
+; IX AI Stack - опциональная подстройка во время работы. Загружается после значений по умолчанию из кода при инициализации этого ПИЗДЕЦА
+; Перезагрузка в игре: вкладка ImGui IX AI Stack или эффект condlist ix_ai_stack_reload_runtime_config.
+; Переключатели в рантайме (condlist: первый аргумент true/false, yes/no, 1/0):
+;   ix_ai_stack_set_bridge_enabled
+;   ix_ai_stack_set_memory_authoritative
+;   ix_ai_stack_set_tactics_feed_movement_hint
+;   ix_ai_stack_set_cover_feed_danger_hint
+;   ix_ai_stack_set_locality_actor_attenuation
+
+[ix_ai_tuning]
+; Порог громкости выстрела: ниже - считается «глушённым» (сильнее ослабление слуха).
+silenced_shot_power_cutoff = 0.25
+; Нижняя граница шкалы подозрения для перехода в уровень тревоги Suspicious.
+suspicion_to_suspicious = 0.35
+; Нижняя граница подозрения для перехода в Search.
+suspicion_to_search = 1.2
+; Нижняя граница подозрения для перехода в Combat.
+suspicion_to_combat = 2.8
+; Множитель скорости глобального затухания подозрения (профиль × этот коэффициент).
+global_suspicion_decay_scale = 1.0
+; Скорость экспоненциального затухания силы сенсорных слотов памяти (в секунду).
+memory_decay_per_second = 1.25
+; Масштаб «утечки» подозрения из памяти в глобальную шкалу за кадр.
+memory_suspicion_leak_scale = 0.12
+; Множитель веса при слиянии новых сэмплов в сенсорный слот памяти.
+memory_sample_weight_scale = 0.25
+; Порог: слоты с силой ниже удаляются как исчезнувшие.
+memory_strength_epsilon = 0.02
+; Дистанция удержания для тактики стража (метры).
+tactics_guard_hold_distance = 4.0
+; Масштаб смещения в сторону при тактике фланка (0–1 и около).
+tactics_flank_side_scale = 0.35
+; Подавать ли NPC подсказку движения из тактической системы.
+tactics_feed_movement_hint = true
+; Минимальный интервал (мс) между «опасными» тактическими подсказками.
+tactic_hint_danger_cooldown_ms = 900
+; Передавать ли в IX опасную подсказку для поиска укрытия.
+cover_feed_danger_hint = true
+; Минимальный интервал (мс) между подсказками укрытия по опасности.
+cover_hint_danger_cooldown_ms = 1100
+; Интервал в кадрах между выдачей подсказок укрытия.
+cover_hint_interval_frames = 14
+
+[ix_ai_bridge]
+; Включить мост к legacy-поведению сталкера (danger/combat и т.д.).
+enabled = true
+; Если true - фокус Suspicious/Search опирается на IX-память (нужно enabled = true).
+ix_memory_authoritative = false
+; Пауза (сек) между пушами «подозрительной» опасности в legacy.
+suspicious_cooldown_sec = 4.0
+; Пауза (сек) между пушами опасности режима поиска.
+search_cooldown_sec = 2.5
+; Пауза (сек) между пушами боевой опасности.
+combat_cooldown_sec = 1.5
+
+[ix_ai_perception]
+; Как часто (в кадрах) опрашивать визуальные пробы к игроку.
+visual_probe_interval_frames = 4
+; Интенсивность события при визуальном обнаружении игрока.
+visual_probe_intensity = 1.15
+; Радиус визуального пробы (метры).
+visual_probe_radius = 2.5
+; Максимум визуальных проб на кадр.
+max_visual_probes_per_frame = 24
+; Запас половины угла FOV (градусы), если у существа eye_fov <= 0.
+vision_half_fov_degrees_fallback = 55.0
+; Дополнительная длина луча видимости (метры).
+vision_ray_range_extra = 0.65
+; Допуск глубины для окклюзии (метры).
+vision_occlusion_depth_epsilon = 0.08
+; Высота точки на цели (грудь), доля роста для луча.
+vision_target_chest_height = 0.95
+; Множитель максимальной дистанции видимости.
+vision_max_distance_scale = 1.08
+; Интервал (кадры) между пробами трупов.
+corpse_probe_interval_frames = 18
+; Радиус поиска трупов для события (метры).
+corpse_probe_radius = 42.0
+; Интенсивность события «труп» для восприятия.
+corpse_event_intensity = 0.55
+
+[ix_ai_squad_channel]
+; Рассылать ранение союзника и «в бою» остальным группе (тот же agent_manager).
+enabled = true
+; 0 - без фильтра по дистанции (весь отряд); >0 - только соратники ближе этого значения (метры).
+max_distance = 0.0
+; Интенсивность события «ранен союзник» для fan-out.
+ally_wound_intensity = 1.35
+; Радиус события ранения союзника (метры).
+ally_wound_radius = 8.0
+; Интенсивность события «в бою» для fan-out.
+combat_engaged_intensity = 1.1
+; Радиус события «в бою» (метры).
+combat_engaged_radius = 12.0
+; Множитель добавки подозрения от канала отряда.
+suspicion_scale = 0.42
+; Минимальная интенсивность события для прямого фокуса от fan-out.
+focus_intensity_min = 0.25
+; Обработка скрытных ударов (удар/рана/физудар): смягчить позицию жертвы и т.д.
+stealth_fanout_enabled = true
+; Обнулять id атакующего в fan-out при скрытном попадании.
+stealth_clear_attacker_id = true
+; Вес lerp(получатель, жертва, вес): меньше - размытее направление на инцидент.
+stealth_victim_position_weight = 0.32
+; Подавлять прямой фокус на игрока при скрытном попадании.
+stealth_suppress_direct_focus = true
+; Множитель подозрения для скрытного fan-out.
+stealth_suspicion_scale = 0.55
+
+[ix_ai_locality]
+; Ослаблять интенсивность событий от актёров по дистанции.
+actor_attenuation_enabled = true
+; Дистанция (м), с которой начинается плавное ослабление.
+actor_soft_begin_distance = 95.0
+; Дистанция (м), за которой событие от актёра почти отрезается.
+actor_hard_cutoff_distance = 260.0
+; Минимальный масштаб интенсивности у дальнего края зоны смягчения.
+actor_min_intensity_scale = 0.04
+; Радиус «якоря» актёра для локальности (метры).
+actor_anchor_radius = 6.0
+
+[ix_ai_preset]
+; Активный пресет: aggressive, stealth или none (без переопределений из [preset_*]).
+active = none
+
+[preset_aggressive]
+; Переопределение порога подозрения для Combat в пресете «агрессивный».
+suspicion_to_combat = 2.2
+; Переопределение включения моста в пресете «агрессивный».
+bridge_enabled = true
+
+[preset_stealth]
+; Переопределение порога подозрения для Search в пресете «стелс».
+suspicion_to_search = 1.5
+; Переопределение включения моста в пресете «стелс».
+bridge_enabled = true
+
+; Деревья поведения: обход в preorder; selector,N и sequence,N - число детей.
+; Уровни тревоги в условиях: vigilant, suspicious, search, combat.
+; Секции [ix_ai_bt_tree_*] можно опустить - тогда используются встроенные в код дефолты.
+
+[ix_ai_bt_tree_guard_basic]
+; Корень: selector из 4 веток (по приоритету слева направо в тике).
+node_0=selector,4
+; Боевая ветка: последовательность из 2 узлов.
+node_1=sequence,2
+; Условие: уровень тревоги не ниже Combat.
+node_2=condition_alert_gte,combat
+; Действие: сбросить тактическую подсказку.
+node_3=action_clear_tactical_hint
+; Ветка поиска: последовательность из 3 узлов.
+node_4=sequence,3
+; Условие: тревога не ниже Search.
+node_5=condition_alert_gte,search
+; Условие: тревога строго ниже Combat.
+node_6=condition_alert_lt,combat
+; Действие: применить подсказку из сильнейшей памяти.
+node_7=action_apply_strongest_memory_hint
+; Ветка расследования: последовательность из 3 узлов.
+node_8=sequence,3
+; Условие: тревога строго ниже Search.
+node_9=condition_alert_lt,search
+; Условие: есть память для расследования.
+node_10=condition_has_investigate_memory
+; Действие: применить подсказку расследования из памяти.
+node_11=action_apply_investigate_memory_hint
+; Запасная ветка: пустое действие (успех по умолчанию).
+node_12=action_noop
+
+[ix_ai_bt_tree_flanker_lite]
+; Корень: selector из 4 веток (профиль FlankerLite; по умолчанию совпадает с guard_basic).
+node_0=selector,4
+; Боевая ветка: последовательность из 2 узлов.
+node_1=sequence,2
+; Условие: уровень тревоги не ниже Combat.
+node_2=condition_alert_gte,combat
+; Действие: сбросить тактическую подсказку.
+node_3=action_clear_tactical_hint
+; Ветка поиска: последовательность из 3 узлов.
+node_4=sequence,3
+; Условие: тревога не ниже Search.
+node_5=condition_alert_gte,search
+; Условие: тревога строго ниже Combat.
+node_6=condition_alert_lt,combat
+; Действие: применить подсказку из сильнейшей памяти.
+node_7=action_apply_strongest_memory_hint
+; Ветка расследования: последовательность из 3 узлов.
+node_8=sequence,3
+; Условие: тревога строго ниже Search.
+node_9=condition_alert_lt,search
+; Условие: есть память для расследования.
+node_10=condition_has_investigate_memory
+; Действие: применить подсказку расследования из памяти.
+node_11=action_apply_investigate_memory_hint
+; Запасная ветка: пустое действие (успех по умолчанию).
+node_12=action_noop
+

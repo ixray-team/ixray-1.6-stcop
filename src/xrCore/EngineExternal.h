@@ -57,6 +57,7 @@ enum class EEngineExternalGame
 	Enable3DPDA,
 	EnableTorchOnlyInOutfit,
 	EnableBurerShieldPenetrationWithGauss,
+	EnableIxAiStack,
 	None
 };
 

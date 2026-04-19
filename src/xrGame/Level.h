@@ -358,6 +358,7 @@ public:
 	IC CDebugRenderer				&debug_renderer				();
 #endif
 	void					script_gc					();			// GC-cycle
+	void					IxAiStackParallelUpdate		();
 
 	IC CPHCommander					&ph_commander				();
 	IC CPHCommander					&ph_commander_scripts		();

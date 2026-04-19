@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Bolt.h"
+#include "ix_ai_stack/IxAiPhysicsIngest.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "../xrEngine/xr_level_controller.h"
 
@@ -46,7 +47,16 @@ bool CBolt::Action(u16 cmd, u32 flags)
 void CBolt::activate_physic_shell()
 {
 	inherited::activate_physic_shell();
-	m_pPhysicsShell->SetAirResistance(.0001f);
+
+	if (m_pPhysicsShell != nullptr)
+	{
+		m_pPhysicsShell->SetAirResistance(.0001f);
+
+		if (m_pPhysicsShell->isActive())
+		{
+			m_pPhysicsShell->add_ObjectContactCallback(IxAiBoltContactCallback);
+		}
+	}
 }
 
 void CBolt::SetInitiator(u16 id)

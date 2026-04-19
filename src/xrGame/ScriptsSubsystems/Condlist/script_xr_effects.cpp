@@ -110,6 +110,12 @@ void CScriptXREffectsStorage::initialize(CLevel* pLevelManager)
 	IXRAY_LUA_TO_CPP_REGISTER_FUNCTION_TO_SCRIPT(clear_smart_terrain);
 	IXRAY_LUA_TO_CPP_REGISTER_FUNCTION_TO_SCRIPT(give_task);
 	IXRAY_LUA_TO_CPP_REGISTER_FUNCTION_TO_SCRIPT(set_active_task);
+	IXRAY_LUA_TO_CPP_REGISTER_FUNCTION_TO_SCRIPT(ix_ai_stack_reload_runtime_config);
+	IXRAY_LUA_TO_CPP_REGISTER_FUNCTION_TO_SCRIPT(ix_ai_stack_set_bridge_enabled);
+	IXRAY_LUA_TO_CPP_REGISTER_FUNCTION_TO_SCRIPT(ix_ai_stack_set_memory_authoritative);
+	IXRAY_LUA_TO_CPP_REGISTER_FUNCTION_TO_SCRIPT(ix_ai_stack_set_tactics_feed_movement_hint);
+	IXRAY_LUA_TO_CPP_REGISTER_FUNCTION_TO_SCRIPT(ix_ai_stack_set_cover_feed_danger_hint);
+	IXRAY_LUA_TO_CPP_REGISTER_FUNCTION_TO_SCRIPT(ix_ai_stack_set_locality_actor_attenuation);
 
 #endif
 }
