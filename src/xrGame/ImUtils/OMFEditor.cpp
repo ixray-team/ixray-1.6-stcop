@@ -66,6 +66,8 @@ constexpr const char* _kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSucces
 constexpr const char* _kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed = "Failed!##ToolsInGameImGui_OMFEditor_BonePartsToClipboard";
 constexpr const char* _kOMFEditorModalWindow_BoneRenameHasCollion = "Warning!##ToolsInGameImGui_OMFEditor_BoneRenameHasCollision";
 constexpr const char* _kOMFEditorModalWindow_AnimationParamMotionMarksCleared = "Warning!##ToolsOMFEditor_MotionMarksCleared";
+constexpr const char* _kOMFEditorModalWindow_AddMotionMark = "Add##ToolsOMFEditor_MotionMarkAdd";
+
 
 struct OMFData
 {
@@ -169,9 +171,11 @@ struct CImGuiOMFEditor
 	bool is_show_popup_marks_cleared{};
 	bool is_show_popup_rename_animation_param{};
 	bool is_show_popup_renamehascollision{};
-	bool is_show_popup_boneparts_was_copied_to_clipboard_suc;
-	bool is_show_popup_boneparts_was_copied_to_clipboard_fail;
+	bool is_show_popup_boneparts_was_copied_to_clipboard_suc{};
+	bool is_show_popup_boneparts_was_copied_to_clipboard_fail{};
 	bool is_show_popup_boneparts_rename_has_collision{};
+
+	bool is_show_popup_add_motion_mark{};
 
 
 	bool is_file_loaded{};
@@ -182,13 +186,20 @@ struct CImGuiOMFEditor
 	bool is_motion_marks_enabled{};
 	int current_selected_animation_param{};
 	int current_selected_bone_rename{};
+	int current_selected_mark{};
+	int current_selected_mark_param{};
+	
 	OMFData* omf{};
 	OMFData::omf_name_t rename_temp;
 	OMFData::omf_name_t rename_temp_bone;
+	OMFData::omf_name_t temp_motion_mark_name;
 	xr_vector<const char*> combo_animation_params_data;
 	xr_set<size_t> combo_animation_params_name_hashes;
 	xr_vector<const char*> combo_bones_data;
 	xr_set<size_t> combo_bones_name_hashes;
+
+	xr_vector<const char*> list_box_motion_marks_names;
+	xr_vector<xr_stack_string16> list_box_motion_marks_params_names;
 
 	xr_stack_string<sizeof(string_path) * 2> path;
 };
@@ -427,6 +438,8 @@ void OMFEditor_Init(CImGuiOMFEditor* p_state, OMFData& data)
 		return;
 
 	p_state->current_selected_animation_param = 0;
+	p_state->current_selected_mark = 0;
+	p_state->current_selected_mark_param = 0;
 
 #if IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING == 0
 	p_state->current_selected_bone_rename = 0;
@@ -450,7 +463,10 @@ void OMFEditor_Init(CImGuiOMFEditor* p_state, OMFData& data)
 	p_state->is_show_popup_boneparts_was_copied_to_clipboard_suc = false;
 	p_state->is_show_popup_boneparts_was_copied_to_clipboard_fail = false;
 	p_state->is_show_popup_boneparts_rename_has_collision = false;
+	p_state->is_show_popup_add_motion_mark = false;
 
+	p_state->list_box_motion_marks_names.reserve(128);
+	p_state->list_box_motion_marks_params_names.reserve(128);
 
 	OMFEditor_Init_ComboAnimationParams(p_state, data);
 	OMFEditor_Init_ComboBones(p_state, data);
@@ -904,6 +920,29 @@ void RenderOMFEditor_Draw_TableMain_BonesRenaming_Section()
 #endif
 }
 
+void OMFEditor_AddMotionMark(
+	CImGuiOMFEditor* pState,
+	const OMFData::omf_name_t& mark_name
+)
+{
+	R_ASSERT(pState);
+	R_ASSERT(mark_name.empty() == false);
+
+	if (
+		pState &&
+		pState->omf &&
+		pState->current_selected_animation_param >= 0 &&
+		pState->omf->data_animparams.count > 0
+	)
+	{
+		OMFData::AnimParamsData::AnimParams& param = pState->omf->data_animparams.params[pState->current_selected_animation_param];
+
+		param.marks.push_back(OMFData::AnimParamsData::AnimParams::MotionMark());
+		param.marks.back().name = mark_name;
+		param.marks_count = static_cast<int32_t>(param.marks.size());
+	}
+}
+
 void RenderOMFEditor_Draw_TableMain_MotionMarks()
 {
 	if (
@@ -936,46 +975,97 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 
 			ImGui::TableSetColumnIndex(0);
 
+			ImGui::SeparatorText("Mark");
+
+			OMFData::AnimParamsData::AnimParams& param_anim = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param];
+
+			for (int i = 0; i < param_anim.marks_count; ++i)
+			{
+				g_pOMFEditor->list_box_motion_marks_names.push_back(param_anim.marks[i].name.c_str());
+			}
+
+			ImGui::ListBox(
+				"##ToolsOMFEditor_MarkGroupLB",
+				&g_pOMFEditor->current_selected_mark, 
+				g_pOMFEditor->list_box_motion_marks_names.data(),
+				g_pOMFEditor->list_box_motion_marks_names.size()
+			);
+
+			if (
+				ImGui::Button("Add##ToolsOMFEditor_MarkAdd") &&
+				g_pOMFEditor->is_show_popup_add_motion_mark==false
+			)
+			{
+				g_pOMFEditor->is_show_popup_add_motion_mark = true;
+				g_pOMFEditor->temp_motion_mark_name.clear();
+				g_pOMFEditor->temp_motion_mark_name = "NewGroup";
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Delete##ToolsOMFEditor_MarkDelete"))
+			{
+
+			}
+
+			ImGui::SeparatorText("Mark Param");
+
+			if (param_anim.marks_count > 0)
+			{
+				OMFData::AnimParamsData::AnimParams::MotionMark& motion_mark = param_anim.marks[g_pOMFEditor->current_selected_mark_param];
+
+				xr_stack_string16 param_name;
+				for (int i = 0; i < motion_mark.count; ++i)
+				{
+					std::sprintf(param_name.data(), "%d_mark%d", g_pOMFEditor->current_selected_mark_param, i);
+					g_pOMFEditor->list_box_motion_marks_params_names.push_back(param_name);
+				}
+
+				ImGui::ListBox(
+					"##ToolsOMFEditor_MarkParamLB",
+					&g_pOMFEditor->current_selected_mark_param,
+					reinterpret_cast<const char* const*>(g_pOMFEditor->list_box_motion_marks_params_names.data()),
+					g_pOMFEditor->list_box_motion_marks_params_names.size()
+				);
+
+				if (ImGui::Button("Add##ToolsOMFEditor_MarkParamAdd"))
+				{
+
+				}
+
+				ImGui::SameLine();
+
+				if (ImGui::Button("Delete##ToolsOMFEditor_MarkParamDelete"))
+				{
+
+				}
+			}
+			else
+			{
+				int none_selected = -1;
+				ImGui::ListBox(
+					"##ToolsOMFEditor_MarkParamLBEmpty",
+					&none_selected,
+					nullptr,
+					0
+				);
+			}
+
+			g_pOMFEditor->list_box_motion_marks_names.clear();
+			g_pOMFEditor->list_box_motion_marks_params_names.clear();
+
 			ImGui::TableSetColumnIndex(1);
 
-			ImGui::SeparatorText("Motion marks");
-
 			ImGui::BeginDisabled(!has_motion_marks_selected);
-			if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MotionMarksTable", 3))
-			{
-				ImGui::TableNextRow();
 
-				ImGui::TableSetColumnIndex(0);
+			ImGui::SeparatorText("Mark settings");
 
-				ImGui::SeparatorText("Mark Group");
-				//	ImGui::ListBox("##ToolsInGameImGui_OMFEditor_MarkGroupLB", 0, 0, 0);
-
-				ImGui::Button("Add##ToolsInGameImGui_OMFEditor_MotionMarksGroup");
-				ImGui::SameLine();
-				ImGui::Button("Delete##ToolsInGameImGui_OMFEditor_MotionMarksGroup");
-
-				ImGui::TableSetColumnIndex(1);
-
-				ImGui::SeparatorText("Marks");
-				//	ImGui::ListBox("##ToolsInGameImGui_OMFEditor_MarksLB", 0, 0, 0);
-
-				ImGui::Button("Add##ToolsInGameImGui_OMFEditor_MotionMarksMarks");
-				ImGui::SameLine();
-				ImGui::Button("Delete##ToolsInGameImGui_OMFEditor_MotionMarksMarks");
-
-				ImGui::TableSetColumnIndex(2);
-
-				ImGui::SeparatorText("Mark settings");
-
-				float fStart{};
-				ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fStart);
+			float fStart{};
+			ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fStart);
 
 
-				float fEnd{};
-				ImGui::DragFloat("End##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fEnd);
-
-				ImGui::EndTable();
-			}
+			float fEnd{};
+			ImGui::DragFloat("End##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fEnd);
 
 			ImGui::EndTable();
 			ImGui::EndDisabled();
@@ -995,6 +1085,7 @@ void RenderOMFEditor_Draw_ModalPopups()
 	modal_opened += g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_suc;
 	modal_opened += g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_fail;
 	modal_opened += g_pOMFEditor->is_show_popup_renamehascollision;
+	modal_opened += g_pOMFEditor->is_show_popup_add_motion_mark;
 
 	R_ASSERT(modal_opened <= 1);
 
@@ -1023,6 +1114,11 @@ void RenderOMFEditor_Draw_ModalPopups()
 		if (g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_fail)
 		{
 			ImGui::OpenPopup(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed);
+		}
+
+		if (g_pOMFEditor->is_show_popup_add_motion_mark)
+		{
+			ImGui::OpenPopup(_kOMFEditorModalWindow_AddMotionMark);
 		}
 	}
 
@@ -1108,6 +1204,31 @@ void RenderOMFEditor_Draw_ModalPopups()
 		if (ImGui::Button("OK##ToolsInGameImGui_OMFEditor_ClipBoard"))
 		{
 			g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_suc = false;
+		}
+
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal(
+		_kOMFEditorModalWindow_AddMotionMark,
+		&g_pOMFEditor->is_show_popup_add_motion_mark,
+		ImGuiWindowFlags_AlwaysAutoResize
+	))
+	{
+
+		if (ImGui::InputText(
+			"##ToolsOMFEditor_MotionMarkIT",
+			g_pOMFEditor->temp_motion_mark_name.data(),
+			g_pOMFEditor->temp_motion_mark_name.max_size()
+		))
+		{
+
+		}
+
+		if (ImGui::Button("Ok##ToolsOMFEditor_MotionMarkITOK"))
+		{
+			OMFEditor_AddMotionMark(g_pOMFEditor, g_pOMFEditor->temp_motion_mark_name);
+			g_pOMFEditor->is_show_popup_add_motion_mark = false;
 		}
 
 		ImGui::EndPopup();
