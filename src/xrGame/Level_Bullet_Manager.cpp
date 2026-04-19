@@ -1377,7 +1377,7 @@ void CBulletManager::RegisterEvent(EventType Type, bool _dynamic, SBullet* bulle
 					if (bullet->targetID != R.O->ID())
 					{
 						CGameObject* pGO = R.O->cast_game_object();
-						if (pGO == nullptr || !pGO->BonePassBullet(R.element))
+						if (pGO == nullptr || !pGO->BonePassBullet((u16)R.element))
 						{
 							bullet->targetID = R.O->ID();
 						}

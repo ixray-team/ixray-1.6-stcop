@@ -15,15 +15,8 @@
 #include "../xrScripts/script_callback_ex.h"
 #include "Weapon.h"
 
-ENGINE_API extern float psHUD_FOV_def;
-
 CHudItem::CHudItem()
 {
-	RenderHud					(TRUE);
-	m_bStopAtEndAnimIsRunning	= false;
-	m_current_motion_def		= nullptr;
-	m_started_rnd_anim_idx		= u8(-1);
-	m_nearwall_last_hud_fov		= psHUD_FOV_def;
 	m_eDevicesFlags.zero();
 }
 

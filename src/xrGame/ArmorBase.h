@@ -25,10 +25,10 @@ public:
 	virtual bool			install_upgrade_impl	(const char* section, bool test);
 	virtual void			save(NET_Packet& packet) override;
 	virtual void			load(IReader& packet) override;
-	virtual float			HitThroughArmor			(float hit_power, s16 element, float ap, bool& add_wound, ALife::EHitType hit_type);
+	virtual float			HitThroughArmor			(float hit_power, u16 element, float ap, bool& add_wound, ALife::EHitType hit_type);
 	virtual float			GetDefHitTypeProtection	(ALife::EHitType hit_type);
-	virtual float			GetHitTypeProtection	(ALife::EHitType hit_type, s16 element);
-	virtual float			GetBoneArmor			(s16 element);
+	virtual float			GetHitTypeProtection	(ALife::EHitType hit_type, u16 element);
+	virtual float			GetBoneArmor			(u16 element);
 	virtual void			AddBonesProtection		(const char* bones_section);
 	virtual bool			net_Spawn				(CSE_Abstract* DC);
 	virtual void			net_Export				(NET_Packet& P);
