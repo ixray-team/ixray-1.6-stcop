@@ -1,6 +1,4 @@
-
-#ifndef CHARACTER_PHYSICS_SUPPORT
-#define CHARACTER_PHYSICS_SUPPORT
+#pragma once
 
 #include "alife_space.h"
 #include "PHSkeleton.h"
@@ -11,10 +9,11 @@
 #include "death_anims.h"
 #include "character_shell_control.h"
 #include "animation_utils.h"
+#include "physics_shell_animated.h"
+
 class CPhysicsShell;
 class CPHMovementControl;
 class interactive_motion;
-class interactive_animation;
 class physics_shell_animated;
 class CODEGeom;
 class CPhysicsElement;
@@ -71,7 +70,6 @@ private:
 	float								m_BonceDamageFactor;
 	interactive_motion					*m_interactive_motion;
 	character_shell_control				m_character_shell_control;
-	interactive_animation				*m_interactive_animation;
 	physics_shell_animated				*m_physics_shell_animated;
 	xr_vector<CODEGeom*>				m_weapon_geoms;
 	xr_vector<anim_bone_fix*>			m_weapon_bone_fixes;
@@ -142,8 +140,6 @@ IC		CPHSoundPlayer					*ph_sound_player				( )	{ return &m_ph_sound_player; }
 		void							PHGetLinearVell					( Fvector& velocity );
 		ICollisionHitCallback*			get_collision_hit_callback		( );
 		void							set_collision_hit_callback		( ICollisionHitCallback* cc );
-		void							run_interactive					( CBlend* B );
-		void							update_interactive_anims		( );
 IC		physics_shell_animated			*animation_collision			( ){ return m_physics_shell_animated; }
 IC		const physics_shell_animated	*animation_collision			( )const{ return m_physics_shell_animated; }
 		void							create_animation_collision		( );
@@ -181,4 +177,3 @@ IC		void							UpdateDeathAnims				( );
 IC		bool							DoCharacterShellCollide			( );
 		void							SpawnCharacterCreate			( );
 };
-#endif  //CHARACTER_PHYSICS_SUPPORT
