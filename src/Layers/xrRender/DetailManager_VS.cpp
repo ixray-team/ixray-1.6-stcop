@@ -1,15 +1,7 @@
 #include "stdafx.h"
-
-
 #include "DetailManager.h"
 
-#include "../../xrEngine/IGame_Persistent.h"
-#include "../../xrEngine/Environment.h"
-
-#ifdef USE_DX11
-#include "../xrRenderDX10/dx10BufferUtils.h"
-#endif // USE_DX11
-
+#ifndef USE_DX11
 const int quant = 16384;
 
 static D3DVERTEXELEMENT9 dwDecl[] =
@@ -22,31 +14,33 @@ static D3DVERTEXELEMENT9 dwDecl[] =
 #pragma pack(push,1)
 struct	vertHW
 {
-	float		x,y,z;
-	short		u,v,t,mid;
+	float		x, y, z;
+	short		u, v, t, mid;
 };
 #pragma pack(pop)
 
-short QC (float v)
+ICF short QC(float v)
 {
-	int t=iFloor(v*float(quant)); clamp(t,-32768,32767);
-	return short(t&0xffff);
+	int t = iFloor(v * float(quant)); clamp(t, -32768, 32767);
+	return short(t & 0xffff);
 }
 
-void CDetailManager::hw_Load	()
+void CDetailManager::hw_Load()
 {
-	hw_Load_Geom();
-	hw_Load_Shaders();
-}
+	// Create shader to access constant storage
+	ref_shader S; S.create("details\\set");
+	R_constant_table& T0 = *(S->E[0]->passes[0]->constants);
+	R_constant_table& T1 = *(S->E[1]->passes[0]->constants);
+	hwc_consts = T0.get("consts");
+	hwc_wave = T0.get("wave");
+	hwc_wind = T0.get("dir2D");
+	hwc_array = T0.get("array");
+	hwc_s_consts = T1.get("consts");
+	hwc_s_xform = T1.get("xform");
+	hwc_s_array = T1.get("array");
 
-void CDetailManager::hw_Load_Geom()
-{
 	// Analyze batch-size
 	hw_BatchSize = 50;
-
-#ifdef USE_DX11
-	hw_BatchSize = 61;
-#endif
 
 	// Pre-process objects
 	u32			dwVerts		= 0;
@@ -64,7 +58,7 @@ void CDetailManager::hw_Load_Geom()
 	u32			vSize		= sizeof(vertHW);
 	Msg("* [DETAILS] %d v(%d), %d p",dwVerts,vSize,dwIndices/3);
 
-#ifndef USE_DX11
+
 	// Determine POOL & USAGE
 	u32 dwUsage		=	D3DUSAGE_WRITEONLY;
 
@@ -154,33 +148,15 @@ void CDetailManager::hw_Load_Geom()
 
 	// Declare geometry
 	hw_Geom.create		(dwDecl, hw_VB, hw_IB);
-#endif	//	USE_DX11
 }
+
 
 void CDetailManager::hw_Unload()
 {
 	// Destroy VS/VB/IB
-#ifndef USE_DX11	
-	hw_Geom.destroy				();
-	_RELEASE					(hw_IB);
-	_RELEASE					(hw_VB);
-#endif
-}
-
-#ifndef USE_DX11
-void CDetailManager::hw_Load_Shaders()
-{
-	// Create shader to access constant storage
-	ref_shader		S;	S.create("details\\set");
-	R_constant_table&	T0	= *(S->E[0]->passes[0]->constants);
-	R_constant_table&	T1	= *(S->E[1]->passes[0]->constants);
-	hwc_consts			= T0.get("consts");
-	hwc_wave			= T0.get("wave");
-	hwc_wind			= T0.get("dir2D");
-	hwc_array			= T0.get("array");
-	hwc_s_consts		= T1.get("consts");
-	hwc_s_xform			= T1.get("xform");
-	hwc_s_array			= T1.get("array");
+	hw_Geom.destroy();
+	_RELEASE(hw_IB);
+	_RELEASE(hw_VB);
 }
 
 void CDetailManager::hw_Render(light*L)
@@ -202,9 +178,19 @@ void CDetailManager::hw_Render(light*L)
 		RCache.set_c(&*hwc_wave, wave.div(PI_MUL_2));	// wave
 		RCache.set_c(&*hwc_wind, wave_dir1);																					// wind-dir
 		if (CPU::ID().hasFeature(CPUFeature::AVX))
-			hw_Render_dump<__m256>(&*hwc_array, 1, 0, L);
+		{
+			if(L)
+				hw_Render_dump<__m256, true>(&*hwc_array, 1, 0, L);
+			else
+				hw_Render_dump<__m256, false>(&*hwc_array, 1, 0);
+		}
 		else
-			hw_Render_dump<CDetail::SlotItem>(&*hwc_array, 1, 0, L);
+		{
+			if (L)
+				hw_Render_dump<CDetail::SlotItem, true>(&*hwc_array, 1, 0, L);
+			else
+				hw_Render_dump<CDetail::SlotItem, false>(&*hwc_array, 1, 0);
+		}
 	}
 
 	// Wave1
@@ -214,9 +200,19 @@ void CDetailManager::hw_Render(light*L)
 		RCache.set_c(&*hwc_wave, wave.div(PI_MUL_2));	// wave
 		RCache.set_c(&*hwc_wind, wave_dir2);																					// wind-dir
 		if (CPU::ID().hasFeature(CPUFeature::AVX))
-			hw_Render_dump<__m256>(&*hwc_array, 2, 0, L);
+		{
+			if (L)
+				hw_Render_dump<__m256, true>(&*hwc_array, 2, 0, L);
+			else
+				hw_Render_dump<__m256, false>(&*hwc_array, 2, 0);
+		}
 		else
-			hw_Render_dump<CDetail::SlotItem>(&*hwc_array, 2, 0, L);
+		{
+			if (L)
+				hw_Render_dump<CDetail::SlotItem, true>(&*hwc_array, 2, 0, L);
+			else
+				hw_Render_dump<CDetail::SlotItem, false>(&*hwc_array, 2, 0);
+		}
 	}
 
 	// Still
@@ -225,15 +221,25 @@ void CDetailManager::hw_Render(light*L)
 		RCache.set_c(&*hwc_s_consts, scale, scale, scale, 1.f);
 		RCache.set_c(&*hwc_s_xform, RDEVICE.mFullTransform);
 		if (CPU::ID().hasFeature(CPUFeature::AVX))
-			hw_Render_dump<__m256>(&*hwc_s_array, 0, 1, L);
+		{
+			if (L)
+				hw_Render_dump<__m256, true>(&*hwc_s_array, 0, 1, L);
+			else
+				hw_Render_dump<__m256, false>(&*hwc_s_array, 0, 1);
+		}
 		else
-			hw_Render_dump<CDetail::SlotItem>(&*hwc_s_array, 0, 1, L);
+		{
+			if (L)
+				hw_Render_dump<CDetail::SlotItem, true>(&*hwc_s_array, 0, 1, L);
+			else
+				hw_Render_dump<CDetail::SlotItem, false>(&*hwc_s_array, 0, 1);
+		}
 	}
 
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 }
 
-template<typename T>
+template<typename T, bool light_phase>
 void CDetailManager::hw_Render_dump(ref_constant x_array, u32 var_id, u32 lod_id, light*L)
 {
 #if RENDER==R_R2
@@ -243,17 +249,21 @@ void CDetailManager::hw_Render_dump(ref_constant x_array, u32 var_id, u32 lod_id
 #endif
 #ifndef _EDITOR
 	bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
+	if (!in_outdoor)
+		return;
 #endif 
 	// Matrices and offsets
-	u32		vOffset	=	0;
-	u32		iOffset	=	0;
+	u32 vOffset	= 0;
+	u32 iOffset	= 0;
 
 	// Iterate
-#ifndef _EDITOR 
+#ifndef _EDITOR
+
+	Fvector l_spatial_pos = L ? L->SpatialComponent->spatial.sphere.P : zero_vel;
+	float l_range_sqr = L ? _sqr(L->SpatialComponent->spatial.sphere.R) : EPS;
+
 	for (CDetail& Object : objects)
 	{
-		if (!in_outdoor)
-			continue;
 #else
 	for (CDetail* D : objects)
 	{
@@ -267,49 +277,41 @@ void CDetailManager::hw_Render_dump(ref_constant x_array, u32 var_id, u32 lod_id
 
 		u32 dwBatch	= 0;
 
-		for (CDetail::SlotItem& Instance : Object.m_items[var_id][render_key])
+		for (CDetail::SlotItem& Instance : Object.m_items[render_key][var_id])
 		{
-#ifndef _EDITOR
-			if (!in_outdoor)
-				continue;
-
 #if RENDER==R_R2
-			if (phase_shmap && L)
+			if constexpr (light_phase)
 			{
-				if(L->position.distance_to_sqr(Instance.pos) >= _sqr(L->range))
+				if (l_spatial_pos.distance_to_sqr(Instance.pos) >= l_range_sqr)
 					continue;
 			}
-#endif
+#endif 
+			c_storage[dwBatch++] = reinterpret_cast<T&>(Instance);
 
-#endif  
-			c_storage[dwBatch] = reinterpret_cast<T&>(Instance);
-			dwBatch++;
-
-			if (dwBatch >= hw_BatchSize)
+			if (dwBatch == hw_BatchSize)
 			{
 				// flush
-				u32 dwCNT_verts			= dwBatch * Object.number_vertices;
-				u32 dwCNT_prims			= (dwBatch * Object.number_indices)/3;
-				RCache.get_ConstantCache_Vertex().b_dirty				=	true;
-				RCache.get_ConstantCache_Vertex().get_array_f().dirty	(c_base,c_base+dwBatch*4);
-				RCache.Render			(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vOffset, 0, dwCNT_verts,iOffset,dwCNT_prims);
+				u32 dwCNT_verts = dwBatch * Object.number_vertices;
+				u32 dwCNT_prims = (dwBatch * Object.number_indices)/3;
+				RCache.get_ConstantCache_Vertex().b_dirty = true;
+				RCache.get_ConstantCache_Vertex().get_array_f().dirty(c_base,c_base+dwBatch*4);
+				RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vOffset, 0, dwCNT_verts,iOffset,dwCNT_prims);
 
 				// restart
-				dwBatch					= 0;
+				dwBatch = 0;
 			}
 		}
 		// flush if nessecary
-		if (dwBatch>0&&dwBatch<hw_BatchSize)
+		if (dwBatch>0)
 		{
-			u32 dwCNT_verts			= dwBatch * Object.number_vertices;
-			u32 dwCNT_prims			= (dwBatch * Object.number_indices)/3;
-			RCache.get_ConstantCache_Vertex().b_dirty				=	true;
-			RCache.get_ConstantCache_Vertex().get_array_f().dirty	(c_base,c_base+dwBatch*4);
-			RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vOffset,0,dwCNT_verts,iOffset,dwCNT_prims);
-			dwBatch					= 0;
+			u32 dwCNT_verts = dwBatch * Object.number_vertices;
+			u32 dwCNT_prims = (dwBatch * Object.number_indices)/3;
+			RCache.get_ConstantCache_Vertex().b_dirty = true;
+			RCache.get_ConstantCache_Vertex().get_array_f().dirty(c_base,c_base+dwBatch*4);
+			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vOffset,0,dwCNT_verts,iOffset,dwCNT_prims);
 		}
-		vOffset		+=	hw_BatchSize * Object.number_vertices;
-		iOffset		+=	hw_BatchSize * Object.number_indices;
+		vOffset += hw_BatchSize * Object.number_vertices;
+		iOffset += hw_BatchSize * Object.number_indices;
 	}
 }
 
