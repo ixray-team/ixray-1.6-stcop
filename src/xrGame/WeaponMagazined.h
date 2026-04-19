@@ -20,16 +20,16 @@ class CWeaponMagazined : public CWeapon
 	using inherited = CWeapon;
 protected:
 	//звук текущего выстрела
-	xr_string		m_sSndShotCurrent;
-	ESoundTypes		m_eSoundShow;
-	ESoundTypes		m_eSoundHide;
-	ESoundTypes		m_eSoundShot;
-	ESoundTypes		m_eSoundEmptyClick;
-	ESoundTypes		m_eSoundReload;
-	ESoundTypes		m_eSoundAim;
-	ESoundTypes		m_eSoundAimOut;
+	xr_string		m_sSndShotCurrent = "sndShot";
+	ESoundTypes		m_eSoundShow = ESoundTypes(SOUND_TYPE_ITEM_TAKING);
+	ESoundTypes		m_eSoundHide = ESoundTypes(SOUND_TYPE_ITEM_HIDING);
+	ESoundTypes		m_eSoundShot = ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
+	ESoundTypes		m_eSoundEmptyClick = ESoundTypes(SOUND_TYPE_WEAPON_EMPTY_CLICKING);
+	ESoundTypes		m_eSoundReload = ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING);
+	ESoundTypes		m_eSoundAim = ESoundTypes(SOUND_TYPE_WEAPON);
+	ESoundTypes		m_eSoundAimOut = ESoundTypes(SOUND_TYPE_WEAPON);
 
-	bool			m_sounds_enabled;
+	bool			m_sounds_enabled = true;
 	// General
 	//кадр момента пересчета UpdateSounds
 	u32				dwUpdateSounds_Frame;
@@ -79,8 +79,8 @@ protected:
 	virtual void	state_Fire		(float dt);
 	virtual void	state_FireChamber(float dt);
 public:
-	CWeaponMagazined();
-	virtual ~CWeaponMagazined();
+	CWeaponMagazined() = default;
+	virtual ~CWeaponMagazined() = default;
 
 	virtual void	Load(const char* section);
 	virtual void	LoadSounds(const char* section);
@@ -125,7 +125,7 @@ public:
 	void UpdateFiremodeAnimations();
 	void UpdateIdleAnimations();
 
-	bool			bMisfireReload;
+	bool			bMisfireReload = false;
 
 public:
 	virtual bool	SwitchMode				();
@@ -138,9 +138,9 @@ public:
 
 protected:
 	//максимальный размер очереди, которой можно стрельнуть
-	s8				m_iQueueSize;
+	s8				m_iQueueSize = WEAPON_ININITE_QUEUE;
 	//количество реально выстреляных патронов
-	int				m_iShotNum;
+	int				m_iShotNum = 0;
 	//после какого патрона, при непрерывной стрельбе, начинается отдача (сделано из-за Абакана)
 	int				m_iBaseDispersionedBulletsCount;
 	//скорость вылета патронов, на которые не влияет отдача (сделано из-за Абакана)
@@ -148,14 +148,14 @@ protected:
 	float			m_fBaseDispersionedBulletsTimeDelta;
 	float			m_fSingleShootsTimeDelta;
 	//скорость вылета остальных патронов
-	float			m_fOldBulletSpeed;
+	float			m_fOldBulletSpeed = 0.0f;
 	Fvector			m_vStartPos, m_vStartDir;
 	//флаг того, что мы остановились после того как выстреляли
 	//ровно столько патронов, сколько было задано в m_iQueueSize
 	bool			m_bStopedAfterQueueFired;
 	//флаг того, что хотя бы один выстрел мы должны сделать
 	//(даже если очень быстро нажали на курок и вызвалось FireEnd)
-	bool			m_bFireSingleShot;
+	bool			m_bFireSingleShot = false;
 	//режимы стрельбы
 	xr_vector<s8>	m_aFireModes;
 	u8				m_iCurFireMode;
@@ -163,7 +163,7 @@ protected:
 
 	//переменная блокирует использование
 	//только разных типов патронов
-	bool m_bLockType;
+	bool m_bLockType = false;
 
 public:
 	virtual void	OnZoomIn			();
@@ -201,7 +201,7 @@ protected:
 	shared_str SetCurrentPumpAnimation();
 
 	virtual	int		ShotsFired			() { return m_iShotNum; }
-	virtual float	GetWeaponDeterioration	();
+	virtual float	GetWeaponDeterioration() final override;
 
 	virtual void	FireBullet			(const Fvector& pos, 
         								 const Fvector& dir, 
@@ -209,6 +209,6 @@ protected:
 										 const CCartridge& cartridge,
 										 u16 parent_ids,
 										 u16 weapon_id,
-										 bool send_hit);
+										 bool send_hit) final override;
 
 };

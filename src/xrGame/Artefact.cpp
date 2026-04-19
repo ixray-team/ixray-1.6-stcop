@@ -447,15 +447,15 @@ void CArtefact::UpdateXForm()
 			return;
 
 		// Get matrices
-		int					boneL = -1, boneR = -1, boneR2 = -1;
+		u16					boneL = BI_NONE, boneR = BI_NONE, boneR2 = BI_NONE;
 		E->g_WeaponBones	(boneL,boneR,boneR2);
-		if (boneR == -1)	return;
+		if (boneR == BI_NONE)	return;
 
 		boneL = boneR2;
 
 		V->CalculateBones	();
-		Fmatrix& mL			= V->LL_GetTransform(u16(boneL));
-		Fmatrix& mR			= V->LL_GetTransform(u16(boneR));
+		Fmatrix& mL			= V->LL_GetTransform(boneL);
+		Fmatrix& mR			= V->LL_GetTransform(boneR);
 
 		// Calculate
 		Fmatrix				mRes;

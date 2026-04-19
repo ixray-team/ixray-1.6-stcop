@@ -146,7 +146,7 @@ void CArmorBase::AddBonesProtection(const char* bones_section)
 		parent = smart_cast<CObject*>(Level().CurrentViewEntity());
 
 	if (parent && parent->Visual() && m_BonesProtectionSect.size())
-		m_boneProtection->add(bones_section, smart_cast<IKinematics*>(parent->Visual()));
+		m_boneProtection->add(bones_section, PKinematics(parent->Visual()));
 }
 
 void CArmorBase::ReloadBonesProtection()
@@ -233,7 +233,7 @@ void CArmorBase::load(IReader& packet)
 	IAntigas::UpdateState();
 }
 
-float CArmorBase::HitThroughArmor(float hit_power, s16 element, float ap, bool& add_wound, ALife::EHitType hit_type)
+float CArmorBase::HitThroughArmor(float hit_power, u16 element, float ap, bool& add_wound, ALife::EHitType hit_type)
 {
 	float NewHitPower = hit_power;
 
@@ -375,7 +375,7 @@ float CArmorBase::GetDefHitTypeProtection(ALife::EHitType hit_type)
     return base; // CS/COP
 }
 
-float CArmorBase::GetHitTypeProtection(ALife::EHitType hit_type, s16 element)
+float CArmorBase::GetHitTypeProtection(ALife::EHitType hit_type, u16 element)
 {
     float base = m_HitTypeProtection[hit_type] * GetCondition();
     float bone = m_boneProtection->getBoneProtection(element);
@@ -386,7 +386,7 @@ float CArmorBase::GetHitTypeProtection(ALife::EHitType hit_type, s16 element)
     return base * bone; // CS/COP
 }
 
-float CArmorBase::GetBoneArmor(s16 element)
+float CArmorBase::GetBoneArmor(u16 element)
 {
 	return m_boneProtection->getBoneArmor(element);
 }

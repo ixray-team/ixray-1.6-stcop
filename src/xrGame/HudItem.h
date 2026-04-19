@@ -34,6 +34,8 @@ class motion_marks;
 
 //class HudLightTorch;
 
+ENGINE_API extern float psHUD_FOV_def;
+
 class CHUDState
 {
 public:
@@ -53,8 +55,8 @@ enum EHudStates
 };
 
 private:
-	u32						m_hud_item_state;
-	u32						m_nextState;
+	u32						m_hud_item_state = EHudStates::eHidden;
+	u32						m_nextState = EHudStates::eHidden;
 	u32						m_dw_curr_state_time;
 protected:
 	u32						m_dw_curr_substate_time;
@@ -86,14 +88,14 @@ protected:
 	};
 
 	struct{
-		const CMotionDef*		m_current_motion_def;
+		const CMotionDef*		m_current_motion_def = nullptr;
 		shared_str				m_current_motion;
 		u32						m_dwMotionCurrTm;
 		u32						m_dwMotionStartTm;
 		u32						m_dwMotionEndTm;
 		u32						m_startedMotionState;
-		u8						m_started_rnd_anim_idx;
-		bool					m_bStopAtEndAnimIsRunning;
+		u8						m_started_rnd_anim_idx = u8(-1);
+		bool					m_bStopAtEndAnimIsRunning = false;
 	};
 
 	virtual void switch2_Bore();
@@ -351,7 +353,7 @@ protected:
 	InertionData				m_current_inertion;
 	float						m_nearwall_dist_max;
 	float						m_nearwall_dist_min;
-	float						m_nearwall_last_hud_fov;
+	float						m_nearwall_last_hud_fov = psHUD_FOV_def;
 	float						m_nearwall_target_hud_fov;
 	float						m_nearwall_speed_mod;
 	float						m_fHudFov;

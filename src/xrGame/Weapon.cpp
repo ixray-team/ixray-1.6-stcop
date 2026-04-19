@@ -47,64 +47,21 @@ ENGINE_API extern bool g_3d_scopes;
 
 CWeapon::CWeapon()
 {
-	SetState				(eHidden);
-	SetNextState			(eHidden); 
-	m_sub_state				= eSubstateReloadBegin;
-	m_bTriStateReload		= false;
-	SetDefaults				();
+	SetDefaults();
 
-	m_Offset.identity		();
-	m_StrapOffset.identity	();
+	m_Offset.identity();
+	m_StrapOffset.identity();
+	m_StrapOffset_alt.identity();
+	m_StrapOffset.identity();
 	m_StrapOffset_alt.identity();
 
-	m_iAmmoCurrentTotal		= 0;
-	m_BriefInfo_CalcFrame	= 0;
-
-	iAmmoElapsed			= -1;
-	iMagazineSize			= -1;
-
-	iAmmoChamberElapsed = 0;
-	iChamberSize = 1;
-
-	m_ammoType				= 0;
-	m_ChamberAmmoType		= 0;
-
-	m_current_pattern = nullptr;
-
-	eHandDependence			= hdNone;
-
-	m_zoom_params.m_fCurrentZoomFactor			= g_fov;
-	m_zoom_params.m_fZoomRotationFactor			= 0.f;
-
-	m_pCurrentAmmo			= nullptr;
-
-	m_bIAmWeaponRPG7 = false;
-	m_fCurrentCartirdgeDisp = 1.f;
-
-	m_strap_bone0			= 0;
-	m_strap_bone1			= 0;
-	m_strap_bone0_id = -1;
-	m_strap_bone1_id = -1;
-	m_StrapOffset.identity	();
-	m_StrapOffset_alt.identity();
-	m_strapped_mode			= false;
-	m_can_be_strapped = false;
-	m_strapped_mode_rifle = false;
-	m_can_be_strapped_rifle = false;
-	m_ef_main_weapon_type	= u32(-1);
-	m_ef_weapon_type		= u32(-1);
-	m_UIScope				= nullptr;
-	m_set_next_ammoType_on_reload = undefined_ammo_type;
-	m_crosshair_inertion	= 0.f;
-	m_cur_scope				= 0;
 	_last_update_time = Device.dwTimeGlobal;
-	useLegacyMisfire = false;
 }
 
-CWeapon::~CWeapon		()
+CWeapon::~CWeapon()
 {
-	xr_delete				(m_UIScope);
-	delete_data				(m_scopes);
+	xr_delete(m_UIScope);
+	delete_data(m_scopes);
 }
 
 void CWeapon::Hit					(SHit* pHDS)
@@ -150,10 +107,10 @@ void CWeapon::UpdateXForm	()
 	VERIFY					(V);
 
 	// Get matrices
-	int						boneL = -1, boneR = -1, boneR2 = -1;
+	u16						boneL = BI_NONE, boneR = BI_NONE, boneR2 = BI_NONE;
 
 	// this ugly case is possible in case of a CustomMonster, not a Stalker, nor an Actor
-	if ((m_strap_bone0_id == -1 || m_strap_bone1_id == -1) && m_can_be_strapped_rifle) {
+	if ((m_strap_bone0_id == BI_NONE || m_strap_bone1_id == BI_NONE) && m_can_be_strapped_rifle) {
 		m_strap_bone0_id = V->LL_BoneID(m_strap_bone0);
 		m_strap_bone1_id = V->LL_BoneID(m_strap_bone1);
 	}
@@ -174,7 +131,7 @@ void CWeapon::UpdateXForm	()
 			m_strapped_mode_rifle = false;
 	}
 
-	if (boneR == -1)		return;
+	if (boneR == BI_NONE)		return;
 
 	if ((HandDependence() == hd1Hand) || (GetState() == eReload) || (!go->cast_entity_alive()->g_Alive()))
 		boneL				= boneR2;

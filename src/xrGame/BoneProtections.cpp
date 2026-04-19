@@ -5,7 +5,7 @@
 #include "Level.h"
 #include "../xrEngine/GameMtlLib.h"
 
-float SBoneProtections::getBoneProtection(s16 bone_id)
+float SBoneProtections::getBoneProtection(u16 bone_id)
 {
 	storage_it it = m_bones_koeff.find(bone_id);
 	if (it != m_bones_koeff.end())
@@ -18,7 +18,7 @@ float SBoneProtections::getBoneProtection(s16 bone_id)
 	}
 }
 
-float SBoneProtections::getBoneArmor(s16 bone_id)
+float SBoneProtections::getBoneArmor(u16 bone_id)
 {
 	storage_it it = m_bones_koeff.find(bone_id);
 	if (it != m_bones_koeff.end())
@@ -31,7 +31,7 @@ float SBoneProtections::getBoneArmor(s16 bone_id)
 	}
 }
 
-bool SBoneProtections::getBonePassBullet(s16 bone_id)
+bool SBoneProtections::getBonePassBullet(u16 bone_id)
 {
 	storage_it it = m_bones_koeff.find(bone_id);
 	if (it != m_bones_koeff.end())
@@ -72,7 +72,7 @@ void SBoneProtections::reload(const shared_str& bone_sect, IKinematics* kinemati
 
 	m_default.koeff = 1.0f;
 	m_default.armor = 0.0f;
-	m_default.BonePassBullet = FALSE;
+	m_default.BonePassBullet = false;
 
 	CInifile::Sect& protections = pSettings->r_section(bone_sect);
 	for (CInifile::SectCIt i = protections.Data.begin(); protections.Data.end() != i; ++i)
