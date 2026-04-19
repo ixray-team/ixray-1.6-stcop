@@ -219,9 +219,9 @@ void CShootingObject::LoadParticle(const char* section, const char* line, xr_sha
 			if (particle)
 				particle->Destroy();
 
-			particle = Particles::Details::Create(pname, FALSE);
+			particle = Particles::Details::Create(pname, false);
 			particle->m_bAutoStop = true;
-			particle->SetLiveUpdate(TRUE);
+			particle->SetLiveUpdate(true);
 		}
 	}
 }
@@ -230,8 +230,8 @@ void CShootingObject::LoadParticle(const char* section, const char* line, xr_sha
 void CShootingObject::StartShellParticle(const Fvector& parent_vel)
 {
 	if(!m_sShellParticles || Device.vCameraPosition.distance_to_sqr(get_CurrentShellPoint())>25.f ) return;
-	xr_shared_ptr<CParticlesObject> m_pShellParticles = Particles::Details::Create(*m_sShellParticles, TRUE);
-	m_pShellParticles->SetLiveUpdate(TRUE);
+	xr_shared_ptr<CParticlesObject> m_pShellParticles = Particles::Details::Create(*m_sShellParticles, true);
+	m_pShellParticles->SetLiveUpdate(true);
 	Fmatrix pos;
 	pos.set(get_ParticlesXFORM());
 	pos.c.set(get_CurrentShellPoint());
@@ -253,7 +253,7 @@ void CShootingObject::StartSmokeParticle(const Fvector& parent_vel)
 
 	if (!particles_ptr) return;
 
-	particles_ptr->Stop(FALSE);
+	particles_ptr->Stop(false);
 	Fmatrix pos;
 	pos.set(get_ParticlesXFORM());
 	pos.c.set(get_CurrentFirePoint());
@@ -276,7 +276,7 @@ void CShootingObject::StartFlameParticle()
 
 	if(!particles_ptr) return;
 
-	particles_ptr->Stop(FALSE);
+	particles_ptr->Stop(false);
 
 	Fmatrix pos;
 	pos.set(get_ParticlesXFORM());

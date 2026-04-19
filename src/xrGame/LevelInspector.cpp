@@ -510,7 +510,7 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 
 	if (!hud_mode)
 	{
-		hud_prims = new LevelInspector(TRUE);
+		hud_prims = new LevelInspector(true);
 
 		CImGuiManager::Instance().Subscribe("LevelInspector", CImGuiManager::ERenderPriority::eMedium, [this]()
 		{
@@ -3124,11 +3124,11 @@ void LevelInspector::DrawObjectsInfo()
 			CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
 			SGameMtl* pMtl = GMLib.GetMaterialByIdx(T.material);
 			if (pMtl != nullptr && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
-				return TRUE;
+				return true;
 		}
 
 		*RQ = result;
-		return FALSE;
+		return false;
 	},
 	&RQ,
 	[](const collide::ray_defs& rd, CObject* object, LPVOID params) -> bool
@@ -3136,31 +3136,31 @@ void LevelInspector::DrawObjectsInfo()
 		if (object && (object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 		{
 			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SMART_COVER) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SMART_COVER))
-				return FALSE;
+				return false;
 
 			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SPACE_RESTRICTOR) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_RESTR))
-				return FALSE;
+				return false;
 
 			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::ANOMALY_ZONE) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_ANOMALY_ZONE))
-				return FALSE;
+				return false;
 
 			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::LEVEL_CHANGER) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_LEVEL_CHANGER))
-				return FALSE;
+				return false;
 
 			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::CAMP_ZONE) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_CAMP_ZONE))
-				return FALSE;
+				return false;
 
 			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::ANOMAL_ZONE_LOGIC) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_ANOMAL_ZONE_LOGIC))
-				return FALSE;
+				return false;
 
 			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SMART_TERRAIN) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SMART_TERRAIN))
-				return FALSE;
+				return false;
 
 			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SIM_FACTION) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SIM_FACTION))
-				return FALSE;
+				return false;
 		}
 
-		return TRUE;
+		return true;
 	},
 	m_selection_text_flags.test(EOBJECT_INFO::EOI_ACTOR) ? nullptr : Level().CurrentViewEntity());
 

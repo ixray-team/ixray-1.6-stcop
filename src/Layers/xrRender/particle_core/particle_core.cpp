@@ -263,7 +263,7 @@ bool pDomain::Within(const Fvector &pos) const
 			// radius2Sqr stores 1 / (p2.p2)
 			float dist = (p2 * x) * radius2Sqr;
 			if(dist < 0.0f || dist > 1.0f)
-				return FALSE;
+				return false;
 			
 			// Check radial distance; scale radius along axis for cones
 			Fvector xrad = x - p2 * dist; // Radial component of x
@@ -288,7 +288,7 @@ bool pDomain::Within(const Fvector &pos) const
 	case PDTriangle:
 	case PDDisc:
 	default:
-		return FALSE; // XXX Is there something better?
+		return false; // XXX Is there something better?
 	}
 }
 

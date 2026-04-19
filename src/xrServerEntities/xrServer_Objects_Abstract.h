@@ -106,7 +106,7 @@ public:
 		flVisualAnimationPauseChange= u32(1 << 4),
 	};
 	Flags32							m_editor_flags;
-	IC	void						set_editor_flag			(u32 mask)	{m_editor_flags.set	(mask,TRUE);}
+	IC	void						set_editor_flag			(u32 mask)	{m_editor_flags.set	(mask,true);}
 
 public:
 	virtual void			Spawn_Write				(NET_Packet &tNetPacket, bool bLocal) = 0;

@@ -29,7 +29,7 @@ public:
 
 	void 				OnCreate			();
 	void 				OnDestroy			();
-	void 				Save				(FS_FileSet* modif_map=0);
+	void 				Save				(FS_FileSet* modif_map=nullptr);
 
     void 				ReloadObjects		();
     void 				CleanLibrary		();

@@ -10,7 +10,7 @@ IRenderable::IRenderable()
 	renderable.xform.identity			();
 	renderable.visual					= nullptr;
 	renderable.pROS						= nullptr;
-	renderable.pROS_Allowed				= TRUE;
+	renderable.pROS_Allowed				= true;
 }
 
 extern ENGINE_API xr_atomic_bool g_bRendering; 

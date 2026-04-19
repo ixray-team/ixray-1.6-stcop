@@ -268,7 +268,7 @@ void CActorMP::process_packet(net_update& N)
 
 	if (g_Alive()) {
 		setVisible((bool)!HUDview());
-		setEnabled(TRUE);
+		setEnabled(true);
 	};
 
 	if (!NET.empty() && (N.dwTimeStamp == NET.back().dwTimeStamp)) {

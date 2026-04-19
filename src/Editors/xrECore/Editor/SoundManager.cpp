@@ -8,11 +8,11 @@
 
 #include "../Importer/AudioWav.h"
 
-CSoundManager* SndLib=0;
+CSoundManager* SndLib=nullptr;
 //------------------------------------------------------------------------------
 xr_string CSoundManager::UpdateFileName(xr_string& fn)
 {
-	return EFS.AppendFolderToName(fn,-1,FALSE);
+	return EFS.AppendFolderToName(fn,-1,false);
 }
 
 //------------------------------------------------------------------------------
@@ -69,8 +69,8 @@ void CSoundManager::RenameSound(const char* nm0, const char* nm1, EItemType type
 {
     if (TYPE_FOLDER == type)
     {
-        FS.dir_delete(_sounds_, nm0, FALSE);
-        FS.dir_delete(_game_sounds_, nm0, FALSE);
+        FS.dir_delete(_sounds_, nm0, false);
+        FS.dir_delete(_game_sounds_, nm0, false);
     }
     else if (TYPE_OBJECT == type)
     {
@@ -96,9 +96,9 @@ void CSoundManager::RenameSound(const char* nm0, const char* nm1, EItemType type
 bool CSoundManager::RemoveSound(const char* fname, EItemType type)
 {
 	if (TYPE_FOLDER==type){
-    	FS.dir_delete			(_sounds_,fname,FALSE);
-    	FS.dir_delete			(_game_sounds_,fname,FALSE);
-		return TRUE;
+    	FS.dir_delete			(_sounds_,fname,false);
+    	FS.dir_delete			(_game_sounds_,fname,false);
+		return true;
     }else if (TYPE_OBJECT==type){
         xr_string src_name;
         src_name				= EFS.ChangeFileExt(fname,".wav");
@@ -112,10 +112,10 @@ bool CSoundManager::RemoveSound(const char* fname, EItemType type)
             // game
             FS.file_delete		(_game_sounds_,game_name.c_str());
 		   Sound->refresh_sources();
-            return TRUE;
+            return true;
         }
     }
-    return FALSE;
+    return false;
 }
 
 //------------------------------------------------------------------------------
@@ -204,9 +204,9 @@ void CSoundManager::SynchronizeSounds(bool sync_thm, bool sync_game, bool bForce
 
     bool bProgress 				= (M_BASE.size()>1);
 
-    int m_age					= time(NULL);
+    int m_age					= time(nullptr);
 
-    SPBItem* pb = 0;
+    SPBItem* pb = nullptr;
     if (bProgress)
     	pb = UI->ProgressStart(M_BASE.size(),"Synchronize sounds...");
 
@@ -214,7 +214,7 @@ void CSoundManager::SynchronizeSounds(bool sync_thm, bool sync_game, bool bForce
 	FS_FileSetIt it_e 			= M_BASE.end();
 	for (; it!=it_e; ++it)
     {
-	    bool bUpdated 			= FALSE;
+	    bool bUpdated 			= false;
 
         string_path PathInitial = {};
         FS.update_path(PathInitial, _sounds_, "");
@@ -244,7 +244,7 @@ void CSoundManager::SynchronizeSounds(bool sync_thm, bool sync_game, bool bForce
         {
         	THM = new ESoundThumbnail(it->name.c_str(), true, true);
             THM->Save(m_age);
-            bUpdated= TRUE;
+            bUpdated= true;
         }
         // check game sounds
     	if (bForceGame||(sync_game&&bGame))
@@ -270,7 +270,7 @@ void CSoundManager::SynchronizeSounds(bool sync_thm, bool sync_game, bool bForce
             if (modif_map)
             	modif_map->insert(*it);
 
-            bUpdated = TRUE;
+            bUpdated = true;
 		}
 
 		if (THM)
@@ -383,7 +383,7 @@ void CSoundManager::RefreshSounds(bool bSync, bool IsSoft)
 
         if (bSync) 
         {
-            SynchronizeSounds(true, true, false, 0, 0);
+            SynchronizeSounds(true, true, false, nullptr, nullptr);
             CleanupSounds(IsSoft);
         }
 

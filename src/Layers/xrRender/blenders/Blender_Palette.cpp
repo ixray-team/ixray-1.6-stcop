@@ -115,6 +115,6 @@ IBlender*	IBlender::Create	(CLASS_ID cls)
 	case B_TREE:			return new CBlender_Tree();	
 	case B_PARTICLE:		return new CBlender_Particle();	
 	}
-	return 0;
+	return nullptr;
 }
 #endif

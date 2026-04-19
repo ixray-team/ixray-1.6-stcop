@@ -49,29 +49,29 @@ class XRCORE_API shared_str
 {
 	str_value* p_;
 protected:
-	void _dec() { if (0 == p_) return;	p_->dwReference--; 	if (0 == p_->dwReference)	p_ = 0; }
+	void _dec() { if (nullptr == p_) return;	p_->dwReference--; 	if (0 == p_->dwReference)	p_ = nullptr; }
 public:
-	void _set(str_c rhs) { str_value* v = g_pStringContainer->dock(rhs); if (0 != v) v->dwReference++; _dec(); p_ = v; }
-	void _set(shared_str const& rhs) { str_value* v = rhs.p_; if (0 != v) v->dwReference++; _dec(); p_ = v; }
+	void _set(str_c rhs) { str_value* v = g_pStringContainer->dock(rhs); if (nullptr != v) v->dwReference++; _dec(); p_ = v; }
+	void _set(shared_str const& rhs) { str_value* v = rhs.p_; if (nullptr != v) v->dwReference++; _dec(); p_ = v; }
 
 	const str_value* _get()	const { return p_; }
 public:
 	// construction
-	shared_str() { p_ = 0; }
-	shared_str(str_c rhs) { p_ = 0;	_set(rhs); }
-	shared_str(shared_str const& rhs) { p_ = 0;	_set(rhs); }
+	shared_str() { p_ = nullptr; }
+	shared_str(str_c rhs) { p_ = nullptr;	_set(rhs); }
+	shared_str(shared_str const& rhs) { p_ = nullptr;	_set(rhs); }
 	~shared_str() { _dec(); }
 
 	// assignment & accessors
 	shared_str&			operator=	(str_c rhs) { _set(rhs);	return (shared_str&)*this; }
 	shared_str&			operator=	(shared_str const& rhs) { _set(rhs);	return (shared_str&)*this; }
-	str_c				operator*	() const { return p_ ? p_->value : 0; }
+	str_c				operator*	() const { return p_ ? p_->value : nullptr; }
 						operator bool	() const { return p_ != nullptr; }
 	char				operator[]	(size_t id) { return p_->value[id]; }
-	str_c				c_str		() const { return p_ ? p_->value : 0; }
+	str_c				c_str		() const { return p_ ? p_->value : nullptr; }
 
 	// misc func
-	u32					size		() const { if (0 == p_) return 0; else return p_->dwLength; }
+	u32					size		() const { if (nullptr == p_) return 0; else return p_->dwLength; }
 	void				swap		(shared_str& rhs) { str_value* tmp = p_; p_ = rhs.p_; rhs.p_ = tmp; }
 	bool				equal		(const shared_str& rhs) const { return (p_ == rhs.p_); }
 	shared_str& 		printf		(const char* format, ...);

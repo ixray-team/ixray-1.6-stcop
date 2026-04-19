@@ -147,7 +147,7 @@ bool XRay::Importer::Audio::ImportWav(shared_str Path, shared_str Out, float Qua
 	vorbis_block_init(&vd, &vb);
 
 	ogg_stream_state os;
-	srand((unsigned int)time(NULL));
+	srand((unsigned int)time(nullptr));
 	ogg_stream_init(&os, rand());
 
 	ogg_packet header_packet, header_comm, header_code;

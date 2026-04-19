@@ -35,9 +35,9 @@ void	CBlender_Screen_GRAY::Compile	(CBlender_Compile& C)
 	IBlender::Compile		(C);
 	C.PassBegin		();
 	{
-		C.PassSET_ZB			(FALSE,FALSE);
-		C.PassSET_Blend		(FALSE,D3DBLEND_ONE,D3DBLEND_ZERO,	FALSE,0);
-		C.PassSET_LightFog	(FALSE,FALSE);
+		C.PassSET_ZB			(false,false);
+		C.PassSET_Blend		(false,D3DBLEND_ONE,D3DBLEND_ZERO,	false,0);
+		C.PassSET_LightFog	(false,false);
 
 		C.R().SetRS		(D3DRS_TEXTUREFACTOR,color_rgba(76+105,150+105,29+105,0));
 

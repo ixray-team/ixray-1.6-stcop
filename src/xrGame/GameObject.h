@@ -181,7 +181,7 @@ public:
 	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
 
 public:
-	virtual bool						feel_touch_on_contact	(CObject *)					{return TRUE;}
+	virtual bool						feel_touch_on_contact	(CObject *)					{return true;}
 	virtual bool						use						(CGameObject* who_use)		{return CUsableScriptObject::use(who_use);};
 
 public:

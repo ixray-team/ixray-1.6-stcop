@@ -74,8 +74,8 @@ void CRenderTarget::phase_bloom	()
 	// Clear	- don't clear - it's stupid here :)
 	// Stencil	- disable
 	// Misc		- draw everything (no culling)
-	//CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,		FALSE				));
-	RCache.set_Z(FALSE);
+	//CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,		false				));
+	RCache.set_Z(false);
 
 	// Transfer into Bloom1
 	{
@@ -323,6 +323,6 @@ void CRenderTarget::phase_bloom	()
 	}
 
 	// re-enable z-buffer
-	//CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,	TRUE				));
-	RCache.set_Z(TRUE);
+	//CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,	true				));
+	RCache.set_Z(true);
 }

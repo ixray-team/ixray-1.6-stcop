@@ -68,7 +68,7 @@ void CPolterSpecialAbility::on_die()
 	Fvector particles_position	= m_object->m_current_position;
 	particles_position.y		+= m_object->target_height;
 
-	m_object->PlayParticles			(m_particles_death, particles_position, Fvector().set(0.0f,1.0f,0.0f), TRUE, FALSE);
+	m_object->PlayParticles			(m_particles_death, particles_position, Fvector().set(0.0f,1.0f,0.0f), true, false);
 
 	Particles::Details::Destroy		(m_particles_object_electro);
 	Particles::Details::Destroy		(m_particles_object);

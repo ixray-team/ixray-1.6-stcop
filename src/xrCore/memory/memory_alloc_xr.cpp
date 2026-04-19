@@ -34,7 +34,7 @@ CMemAllocXRay::CMemAllocXRay() {
 
 void* CMemAllocXRay::alloc(size_t size) {
 	u32	_footer = 0;
-	void* _ptr = 0;
+	void* _ptr = nullptr;
 
 	if (!mem_initialized) {
 		// generic

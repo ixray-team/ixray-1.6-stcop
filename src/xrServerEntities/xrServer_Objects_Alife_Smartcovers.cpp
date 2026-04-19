@@ -39,7 +39,7 @@ bool parse_bool		(luabind::object const &table, const char* identifier)
 bool is_combat_cover			(shared_str const &table_id)
 {
 	if (table_id.size() == 0)
-		return					(FALSE);
+		return					(false);
 
 	string256					temp;
 	xr_strcpy					(temp, "smart_covers.descriptions.");
@@ -56,16 +56,16 @@ bool is_combat_cover			(shared_str const &table_id)
 	VERIFY2						(result, make_string<const char*>("bad or missing description in smart_cover [%s]", table_id.c_str()));
 	if (luabind::get_type(table) != LUA_TTABLE) {
 		VERIFY					(luabind::get_type(table) != LUA_TNIL);
-		return					(TRUE);
+		return					(true);
 	}
 
 	value						= table["is_combat_cover"];
 	if (luabind::get_type(value) == LUA_TNIL) {
 		Msg						("! is_combat_cover flag not found for smart_cover [%s], forcing to \"true\"", table_id.c_str());
-		return					(TRUE);
+		return					(true);
 	}
 
-	return						(parse_bool(table, "is_combat_cover") ? TRUE : FALSE);
+	return						(parse_bool(table, "is_combat_cover") ? true : false);
 }
 #endif // XRSE_FACTORY_EXPORTS
 
@@ -589,9 +589,9 @@ void CSE_SmartCover::on_render	(CDUInterface* du, ISE_AbstractLEOwner* owner_, b
 
 		du->OutText(pos, H.string_identifier.c_str(), color_rgba(255,255,255,255));
 
-		//du->DrawBox(H.point_position,Fvector().set(0.2f,0.2f,0.2f),TRUE,TRUE,color_rgba(255,0,0,80),color_rgba(0,255,0,255));
-		//du->DrawFlag(H.point_position, 0, 1.0f, 1, 1, color_rgba(0,255,0,255), FALSE);
-		//du->DrawCylinder(Fidentity, pos, Fvector().set(0.f, 1.f, 0.f), 1.f, .05f, color_rgba(0,255,0,255), color_rgba(0,255,0,255), TRUE, FALSE);
+		//du->DrawBox(H.point_position,Fvector().set(0.2f,0.2f,0.2f),true,true,color_rgba(255,0,0,80),color_rgba(0,255,0,255));
+		//du->DrawFlag(H.point_position, 0, 1.0f, 1, 1, color_rgba(0,255,0,255), false);
+		//du->DrawCylinder(Fidentity, pos, Fvector().set(0.f, 1.f, 0.f), 1.f, .05f, color_rgba(0,255,0,255), color_rgba(0,255,0,255), true, false);
 
 		Fvector dir = H.fov_direction;
 		parent.transform_dir(dir);

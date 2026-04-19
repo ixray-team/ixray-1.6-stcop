@@ -14,7 +14,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CDemoPlay::CDemoPlay(const char *name, float ms, u32 cycles, float life_time) : CEffectorCam(cefDemo,life_time/*,FALSE*/)
+CDemoPlay::CDemoPlay(const char *name, float ms, u32 cycles, float life_time) : CEffectorCam(cefDemo,life_time/*,false*/)
 {
 	Msg					("*** Playing demo: %s",name);
 	Console->Execute	("hud_weapon 0");
@@ -56,7 +56,7 @@ CDemoPlay::CDemoPlay(const char *name, float ms, u32 cycles, float life_time) : 
 		FS.r_close		(fs);
 		Msg("~ Total key-frames: %d",m_count);
 	}
-	stat_started		= FALSE;
+	stat_started		= false;
 	Device.PreCache		(50, true, false);
 }
 
@@ -72,7 +72,7 @@ void CDemoPlay::stat_Start	()
 {
 	//if (stat_started)		return;
 	VERIFY(!stat_started);
-	stat_started			= TRUE				;
+	stat_started			= true				;
 	Sleep					(1)					;
 	stat_StartFrame			=	Device.dwFrame	;
 	stat_Timer_frame.Start	()					;
@@ -86,7 +86,7 @@ void CDemoPlay::stat_Stop	()
 {
 	if (!stat_started)		return;
 
-	stat_started			= FALSE;
+	stat_started			= false;
 	float	stat_total		= stat_Timer_total.GetElapsed_sec	();
 
 	float	rfps_min, rfps_max, rfps_middlepoint, rfps_average	;
@@ -171,7 +171,7 @@ void spline1( float t, Fvector *p, Fvector *ret )
 bool CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 {
 	// skeep a few frames before counting
-	if (Device.dwPrecacheFrame)	return	TRUE;
+	if (Device.dwPrecacheFrame)	return	true;
 
 	if (!stat_started) {
 		stat_Start();
@@ -200,7 +200,7 @@ bool CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 	{
 		if (seq.empty()) {
 			g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
-			return		TRUE;
+			return		true;
 		}
 
 		fStartTime		+=	Device.fTimeDelta;
@@ -214,7 +214,7 @@ bool CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 		if (frame>=m_count)
 		{
 			dwCyclesLeft			--	;
-			if (0==dwCyclesLeft)	return FALSE;
+			if (0==dwCyclesLeft)	return false;
 			fStartTime				= 0	;
 			// just continue
 			// stat_Stop			();
@@ -249,5 +249,5 @@ bool CDemoPlay::ProcessCam(SCamEffectorInfo& info)
 		
 		fLifeTime-=Device.fTimeDelta;
 	}
-	return TRUE;
+	return true;
 }

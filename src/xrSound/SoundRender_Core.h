@@ -9,12 +9,12 @@ class CNotificationClient;
 class CSoundRender_Core				
 	: public CSound_manager_interface
 {
-    volatile BOOL						bLocked;
+    volatile bool						bLocked;
 protected:
 	virtual void						_create_data			( ref_sound_data& S, const char* fName,	esound_type sound_type, int game_type); 
 	virtual void						_destroy_data			( ref_sound_data& S);
 protected:
-    BOOL								bListenerMoved;
+    bool								bListenerMoved;
 
 	CNotificationClient*				pSysNotification = nullptr;
 	CSoundRender_Environment			e_current;
@@ -107,12 +107,12 @@ public:
 public:
 	CSoundRender_Source*				i_create_source			( const char* name				);
 	void								i_destroy_source		( CSoundRender_Source*  S	);
-	CSoundRender_Emitter*				i_play					( ref_sound* S, BOOL _loop, float delay	);
+	CSoundRender_Emitter*				i_play					( ref_sound* S, bool _loop, float delay	);
 	void								i_start					( CSoundRender_Emitter* E	);
 	void								i_stop					( CSoundRender_Emitter* E	);
 	void								i_rewind				( CSoundRender_Emitter* E	);
-	BOOL								i_allow_play			( CSoundRender_Emitter* E	);
-    virtual BOOL						i_locked 				(){return bLocked;}
+	bool								i_allow_play			( CSoundRender_Emitter* E	);
+    virtual bool						i_locked 				(){return bLocked;}
 
 	virtual void						object_relcase			( CObject* obj );
 

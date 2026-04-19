@@ -93,7 +93,7 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 		SActionItem& itm			= m_actions[idx_];
 		const char* str_					= xml->ReadAttrib("action", idx_, "id");
 		itm.m_action				= action_name_to_id(str_);
-		itm.m_bfinalize				= !!xml->ReadAttribInt("action", idx_, "finalize", FALSE);
+		itm.m_bfinalize				= !!xml->ReadAttribInt("action", idx_, "finalize", false);
 		itm.m_functor				= xml->Read(xml->GetLocalRoot(), "action", idx_, "");
 	}
 
@@ -241,15 +241,15 @@ void CUISequenceSimpleItem::Start()
 	
 	if(m_flags.test(etiNeedPauseOn) && !m_flags.test(etiStoredPauseState))
 	{
-		Device.Pause			(TRUE, TRUE, FALSE, "simpleitem_start");
-		bShowPauseString		= FALSE;
+		Device.Pause			(true, true, false, "simpleitem_start");
+		bShowPauseString		= false;
 	}
 
 	if(m_flags.test(etiNeedPauseOff) && m_flags.test(etiStoredPauseState))
-		Device.Pause			(FALSE, TRUE, FALSE, "simpleitem_start");
+		Device.Pause			(false, true, false, "simpleitem_start");
 
 	if(m_flags.test(etiNeedPauseSound))
-		Device.Pause			(TRUE, FALSE, TRUE, "simpleitem_start");
+		Device.Pause			(true, false, true, "simpleitem_start");
 
 	if(m_desired_cursor_pos.x && m_desired_cursor_pos.y)
 		GetUICursor().SetUICursorPosition(m_desired_cursor_pos);
@@ -345,13 +345,13 @@ bool CUISequenceSimpleItem::Stop			(bool bForce)
 	m_sound.stop				();
 
 	if(m_flags.test(etiNeedPauseOn) && !m_flags.test(etiStoredPauseState))
-		Device.Pause			(FALSE, TRUE, FALSE, "simpleitem_stop");
+		Device.Pause			(false, true, false, "simpleitem_stop");
 
 	if(m_flags.test(etiNeedPauseOff) && m_flags.test(etiStoredPauseState))
-		Device.Pause			(TRUE, TRUE, FALSE, "simpleitem_stop");
+		Device.Pause			(true, true, false, "simpleitem_stop");
 
 	if(m_flags.test(etiNeedPauseSound))
-		Device.Pause			(FALSE, FALSE, TRUE, "simpleitem_stop");
+		Device.Pause			(false, false, true, "simpleitem_stop");
 
 	if (g_pGameLevel)
 	{
@@ -375,10 +375,10 @@ void CUISequenceSimpleItem::OnKeyboardPress	(int dik)
 	if(!m_flags.test(etiCanBeStopped) )
 	{
 		VERIFY		(m_continue_dik_guard!=kNOTBINDED);
-		if(m_continue_dik_guard==kNOTBINDED)m_flags.set(etiCanBeStopped, TRUE); //not binded action :(
+		if(m_continue_dik_guard==kNOTBINDED)m_flags.set(etiCanBeStopped, true); //not binded action :(
 
 		if(m_continue_dik_guard==kLASTACTION || dik == m_continue_dik_guard)
-			m_flags.set(etiCanBeStopped, TRUE); //match key
+			m_flags.set(etiCanBeStopped, true); //match key
 	}
 
 	for(u32 idx=0; idx<m_actions.size(); ++idx)
@@ -417,7 +417,7 @@ void CUISequenceSimpleItem::OnKeyboardPress	(int dik)
 					}
 				}
 
-				m_flags.set					(etiCanBeStopped, TRUE);
+				m_flags.set					(etiCanBeStopped, true);
 				m_stop_lua_functions.clear	();
 				Stop						();
 			}

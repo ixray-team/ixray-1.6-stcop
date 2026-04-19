@@ -24,9 +24,9 @@ CAI_Flesh::~CAI_Flesh()
 bool CAI_Flesh::net_Spawn (CSE_Abstract* DC) 
 {
 	if (!inherited::net_Spawn(DC))
-		return(FALSE);
+		return(false);
 
-	return TRUE;
+	return true;
 }
 
 void CAI_Flesh::Load(const char* section)

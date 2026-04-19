@@ -132,7 +132,7 @@ void  CAI_Boar::BoneCallback(CBoneInstance *B)
 bool CAI_Boar::net_Spawn (CSE_Abstract* DC) 
 {
 	if (!inherited::net_Spawn(DC))
-		return(FALSE);
+		return(false);
 	
 	if(!PPhysicsShell())//нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
 	{
@@ -143,7 +143,7 @@ bool CAI_Boar::net_Spawn (CSE_Abstract* DC)
 	_cur_delta		= _target_delta = 0.f;
 	_velocity		= PI;
 	look_at_enemy	= false;
-	return TRUE;
+	return true;
 }
 
 void CAI_Boar::CheckSpecParams(u32 spec_params)

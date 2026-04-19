@@ -258,7 +258,7 @@ public:
 												);
 	void				CorrectPathDir			(const Fvector &real_path_dir,const xr_vector<DetailPathManager::STravelPathPoint> & path,int index,Fvector &corrected_path_dir);
 
-	//	void				Move					(Fvector& Dest, Fvector& Motion, bool bDynamic=FALSE){};
+	//	void				Move					(Fvector& Dest, Fvector& Motion, bool bDynamic=false){};
 	void				SetApplyGravity			(bool flag)																;
 	void				GetDeathPosition		(Fvector& pos)															;
 	void				SetEnvironment			( int enviroment,int old_enviroment);

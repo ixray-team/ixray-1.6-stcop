@@ -13,8 +13,8 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 	switch (C.iElement)
 	{
 	case 0:	// combine
-		C.r_Pass			("stub_fullscreen_triangle",		"combine_1",		false,	false,	false, TRUE, D3DBLEND_INVSRCALPHA, D3DBLEND_SRCALPHA);	//. MRT-blend?
-		C.r_Stencil			(TRUE,D3DCMP_LESSEQUAL,0xff,0x00);	// stencil should be >= 1
+		C.r_Pass			("stub_fullscreen_triangle",		"combine_1",		false,	false,	false, true, D3DBLEND_INVSRCALPHA, D3DBLEND_SRCALPHA);	//. MRT-blend?
+		C.r_Stencil			(true,D3DCMP_LESSEQUAL,0xff,0x00);	// stencil should be >= 1
 		C.r_StencilRef		(0x01);
 
 		C.r_dx10Texture		("s_position",		r2_RT_P				);
@@ -98,7 +98,7 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		break;
 	}
 	case 3:
-		C.r_Pass("pfx_volumetric_light", "pfx_volumetric_light", false, false, false, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
+		C.r_Pass("pfx_volumetric_light", "pfx_volumetric_light", false, false, false, true, D3DBLEND_ONE, D3DBLEND_ONE);
 		
 		C.r_dx10Texture("s_position", r2_RT_P);
 		C.r_dx10Texture("s_smap", r2_RT_smap_depth);

@@ -81,7 +81,7 @@ static void	calc_normals( vecVertex &vertices, vecFace &faces )
 	Progress		( 1.f );
 
 	// Destroy unused vertices
- 	isolate_vertices<type_vertex>( FALSE, vertices);
+ 	isolate_vertices<type_vertex>( false, vertices);
 	  
 	// Recalculate normals
 	for ( vecVertexIt it=vertices.begin(); it!=vertices.end(); it++ )

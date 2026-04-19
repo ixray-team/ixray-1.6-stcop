@@ -276,7 +276,7 @@ void CCustomDevice::switch_device()
 
 	if (GetState() == eHidden && g_player_hud->attached_item(0) && need_fx && active_item && IsSidearmPhysicalSlot(active_item->BaseSlot()))
 	{
-		if (g_player_hud->animator_play(g_player_hud->check_anim("anm_hide", 0) ? "anm_hide" : "anm_hide_0", 0, 1, TRUE, 1.5f, 0, false, true, [](CBlend* B) {static_cast<CCustomDevice*>(B->CallbackParam)->ShowingCallback(B); }, this, 0))
+		if (g_player_hud->animator_play(g_player_hud->check_anim("anm_hide", 0) ? "anm_hide" : "anm_hide_0", 0, 1, true, 1.5f, 0, false, true, [](CBlend* B) {static_cast<CCustomDevice*>(B->CallbackParam)->ShowingCallback(B); }, this, 0))
 			g_player_hud->animator_fx_play(g_player_hud->check_anim("anm_hide", 0) ? "anm_hide" : "anm_hide_0", 0, 2, 0, 3.f, 1.f, 1.f, 0.5f);
 	}
 	else
@@ -301,19 +301,19 @@ void CCustomDevice::OnStateSwitch(u32 S)
 		g_player_hud->attach_item(this);
 		m_sounds.PlaySound("sndShow", Fvector().set(0, 0, 0), this, true, false);
 		PlayHUDMotion(m_bFastAnimMode ? "anm_show_fast" : "anm_show", EHudMixType::eNoMix, S);
-		SetPending(TRUE);
+		SetPending(true);
 	}break;
 	case eHiding:
 	{
 		m_sounds.PlaySound("sndHide", Fvector().set(0, 0, 0), this, true, false);
 		PlayHUDMotion(m_bFastAnimMode ? "anm_hide_fast" : "anm_hide", EHudMixType::eMixAll, S);
-		SetPending(TRUE);
+		SetPending(true);
 		PlayWpnFinishDetector();
 	}break;
 	case eIdle:
 	{
 		PlayAnimIdle();
-		SetPending(FALSE);
+		SetPending(false);
 	}break;
 	case eHandDraw:
 	{

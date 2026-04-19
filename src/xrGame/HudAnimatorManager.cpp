@@ -255,14 +255,14 @@ void CHudStateAnimator::Load()
 
 	if (pSettings->line_exist(m_section, "snd_headlamp_on"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_headlamp, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_headlamp, true);
 		m_sounds.LoadSound(*m_section, "snd_headlamp_on", "sndHeadlampOn", false);
 		m_sounds.LoadSound(*m_section, "snd_headlamp_off", "sndHeadlampOff", false);
 	}
 
 	if (pSettings->line_exist(m_section, "snd_nv_on"))
 	{
-		m_eSoundsFlags.set(ESoundsFlags::sf_nv, TRUE);
+		m_eSoundsFlags.set(ESoundsFlags::sf_nv, true);
 		m_sounds.LoadSound(*m_section, "snd_nv_on", "sndNVOn", false);
 		m_sounds.LoadSound(*m_section, "snd_nv_off", "sndNVOff", false);
 	}

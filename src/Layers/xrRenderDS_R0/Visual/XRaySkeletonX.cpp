@@ -286,10 +286,10 @@ inline bool pick_bone(T_buffer vertices, CDS0_Kinematics* Parent, IKinematics::p
 		r.dist = flt_max;
 		if (CDB::TestRayTri(S, D, r.tri, u, v, r.dist, true) && (r.dist < dist)) {
 			r.normal.mknormal(r.tri[0], r.tri[1], r.tri[2]);
-			return TRUE;
+			return true;
 		};
 	}
-	return FALSE;
+	return false;
 }
 bool CDS0_SkeletonX::_PickBoneSoft1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
@@ -322,9 +322,9 @@ bool CDS0_SkeletonX::has_visible_bones()
 	for (u32 it = 0; it < BonesUsed.size(); it++)
 		if (Parent->LL_GetBoneVisible(BonesUsed[it]))
 		{
-			return	TRUE;
+			return	true;
 		}
-	return	FALSE;
+	return	false;
 }
 
 

@@ -14,7 +14,7 @@ bool GetPointColor(SPickQuery::SResult* R, u32& alpha, u32& color)
 {
     CSurface* surf			= R->e_mesh->GetSurfaceByFaceID(R->tag); VERIFY(surf);
     Shader_xrLC* c_sh		= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
-    if (!c_sh->flags.bRendering) return FALSE;
+    if (!c_sh->flags.bRendering) return false;
     const Fvector2*			cuv[3];
     R->e_mesh->GetFaceTC	(R->tag,cuv);
 
@@ -59,7 +59,7 @@ bool GetPointColor(SPickQuery::SResult* R, u32& alpha, u32& color)
         return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 struct SBuildLight{
@@ -95,7 +95,7 @@ void CreateLODSamples(const Fbox& bbox, U32Vec& tgt_data, u32 tgt_w, u32 tgt_h)
     u32 cc						= 	EPrefs->scene_clear_color;
     EPrefs->scene_clear_color 	= 	0x0000000;
     psDeviceFlags.zero			();
-	psDeviceFlags.set			(rsFilterLinear,TRUE);
+	psDeviceFlags.set			(rsFilterLinear,true);
 	EDevice->dwFillMode			= D3DFILL_SOLID;
     EDevice->dwShadeMode			= D3DSHADE_GOURAUD;
 
@@ -186,7 +186,7 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
         CSurface* surf = *surf_it;
         Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
         if (!c_sh->flags.bRendering) continue;
-        if (0 == surf->m_ImageData)surf->CreateImageData();
+        if (nullptr == surf->m_ImageData)surf->CreateImageData();
     }
 
     // calculate

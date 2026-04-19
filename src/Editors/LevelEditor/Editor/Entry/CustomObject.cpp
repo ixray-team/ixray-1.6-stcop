@@ -22,7 +22,7 @@ CCustomObject::CCustomObject(LPVOID data, const char* name)
     m_RT_Flags.assign	(flRT_Valid|flRT_Visible);
     m_pOwnerObject		= 0;
     ResetTransform		();
-    m_RT_Flags.set		(flRT_UpdateTransform,TRUE);
+    m_RT_Flags.set		(flRT_UpdateTransform,true);
     m_Motion			= NULL;
     m_MotionParams 		= NULL;
 
@@ -54,7 +54,7 @@ bool CCustomObject::IsRender()
 void CCustomObject::OnUpdateTransform()
 {
 
-	m_RT_Flags.set			(flRT_UpdateTransform,FALSE);
+	m_RT_Flags.set			(flRT_UpdateTransform,false);
     // update transform matrix
 
 	FTransformR.setXYZi		(-GetRotation().x, -GetRotation().y, -GetRotation().z);
@@ -73,7 +73,7 @@ void CCustomObject::Select( int flag )
 {
     if (m_RT_Flags.is(flRT_Visible) && (!!m_RT_Flags.is(flRT_Selected) != flag))
     {
-        m_RT_Flags.set(flRT_Selected, (flag == -1) ? (m_RT_Flags.is(flRT_Selected) ? FALSE : TRUE) : flag);
+        m_RT_Flags.set(flRT_Selected, (flag == -1) ? (m_RT_Flags.is(flRT_Selected) ? false : true) : flag);
         //UI->RedrawScene		();
         ExecCommand(COMMAND_UPDATE_PROPERTIES);
 
@@ -89,7 +89,7 @@ void CCustomObject::Show( bool flag )
 	m_RT_Flags.set	   	(flRT_Visible,flag);
 
     if (!m_RT_Flags.is(flRT_Visible)) 
-    	m_RT_Flags.set(flRT_Selected, FALSE);
+    	m_RT_Flags.set(flRT_Selected, false);
         
     UI->RedrawScene();
 };
@@ -128,7 +128,7 @@ bool  CCustomObject::LoadLTX(CInifile& ini, const char* sect_name)
     // object motion
     if (m_CO_Flags.is(flMotion))
     {
-    	m_CO_Flags.set(flMotion, FALSE);
+    	m_CO_Flags.set(flMotion, false);
 //    	R_ASSERT		(0);
 /*
     	VERIFY			(m_Motion);
@@ -244,7 +244,7 @@ void CCustomObject::OnFrame()
     if (m_Motion) 			AnimationOnFrame();
 	if (m_RT_Flags.is(flRT_UpdateTransform)) OnUpdateTransform();
     if(m_CO_Flags.test(flObjectInGroup) && m_pOwnerObject==NULL)
-		m_CO_Flags.set(flObjectInGroup, FALSE);
+		m_CO_Flags.set(flObjectInGroup, false);
 }
 
 void CCustomObject::Render(int priority, bool strictB2F)

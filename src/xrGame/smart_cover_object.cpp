@@ -58,7 +58,7 @@ bool smart_cover::object::net_Spawn		(CSE_Abstract *server_entity)
 	shape->ComputeBounds			();
 
 	if (!inherited::net_Spawn(server_entity))
-		return (FALSE);
+		return (false);
 
 	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::VISIBLEFORAI;
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::SMART_COVER;
@@ -70,10 +70,10 @@ bool smart_cover::object::net_Spawn		(CSE_Abstract *server_entity)
 
 	processing_deactivate			();
 
-	setEnabled						(FALSE);
-	setVisible						(FALSE);
+	setEnabled						(false);
+	setVisible						(false);
 
-	return (TRUE);
+	return (true);
 }
 
 void smart_cover::object::Center			(Fvector &result) const

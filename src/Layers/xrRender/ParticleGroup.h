@@ -93,7 +93,7 @@ namespace PS
 			xr_vector<CParticleEffect*> children_free;
 			CParticleEffect* root_effect = nullptr;
 
-			//заглушка для CS
+			//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ CS
 			SItem(){};
 			SItem(SItem&& other){}
 			SItem(const SItem& item){};
@@ -138,7 +138,7 @@ namespace PS
 		const CPGDef* GetDefinition(){return m_Def;}
 
 		virtual void Play();
-		virtual void Stop(bool bDefferedStop=TRUE);
+		virtual void Stop(bool bDefferedStop=true);
 		virtual bool IsPlaying(){return m_RT_Flags.is(flRT_Playing);}
 
 		virtual void SetHudMode(bool b);

@@ -48,7 +48,7 @@ void ESceneToolBase::OnActivate  ()
     if (pCurControl) 	pCurControl->OnEnter();
 
     ExecCommand			(COMMAND_CHANGE_ACTION,etaSelect,estDefault);
-    SetChanged			(TRUE);
+    SetChanged			(true);
 }
 
 void ESceneToolBase::OnDeactivate()

@@ -35,8 +35,8 @@ void CSurface::RemoveImageData()
 #endif
 
 CEditableObject::CEditableObject(const char* name):
-	m_physics_shell(0),
-    m_object_xform(0)
+	m_physics_shell(nullptr),
+    m_object_xform(nullptr)
 {
     m_FaceCount = -1;
     m_VertexCount = -1;
@@ -46,13 +46,13 @@ CEditableObject::CEditableObject(const char* name):
     m_ObjectVersion	= 0;
 
 #if 1
-    vs_SkeletonGeom	= 0;
+    vs_SkeletonGeom	= nullptr;
 #endif
 	m_BBox.invalidate();
 
     m_LoadState.zero();
 
-    m_ActiveSMotion = 0;
+    m_ActiveSMotion = nullptr;
 
 	t_vPosition.set	(0.f,0.f,0.f);
     t_vScale.set   	(1.f,1.f,1.f);
@@ -65,7 +65,7 @@ CEditableObject::CEditableObject(const char* name):
 
     m_RefCount		= 0;
 
-    m_LODShader		= 0;
+    m_LODShader		= nullptr;
     
     m_CreateName	= "unknown";
     m_CreateTime	= 0;
@@ -105,7 +105,7 @@ CEditableMesh* CEditableObject::FindMeshByName	(const char* name, CEditableMesh*
 {
     for(EditMeshIt m=m_Meshes.begin();m!=m_Meshes.end();m++)
         if ((Ignore!=(*m))&&(stricmp((*m)->Name().c_str(),name)==0)) return (*m);
-    return 0;
+    return nullptr;
 }
 
 void CEditableObject::ClearGeometry()
@@ -131,7 +131,7 @@ void CEditableObject::ClearGeometry()
         xr_delete(*s_it);
     m_SMotions.clear();
 
-    m_ActiveSMotion = 0;
+    m_ActiveSMotion = nullptr;
 }
 
 int CEditableObject::GetFaceCount(bool bMatch2Sided, bool bIgnoreOCC)
@@ -199,7 +199,7 @@ void CEditableObject::TranslateToWorld(const Fmatrix& parent)
 CSurface*	CEditableObject::FindSurfaceByName(const char* surf_name, int* s_id){
 	for(SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++)
     	if (stricmp((*s_it)->_Name(),surf_name)==0){ if (s_id) *s_id=s_it-m_Surfaces.begin(); return *s_it;}
-    return 0;
+    return nullptr;
 }
 
 const char* CEditableObject::GenerateSurfaceName(const char* base_name)
@@ -252,11 +252,11 @@ void CEditableObject::SetVersionToCurrent(bool bCreate, bool bModif)
 	string512			tmp;
 	if (bCreate){
 		m_CreateName	= xr_strconcat(tmp,"\\\\",Core.CompName,"\\",Core.UserName);
-		m_CreateTime	= time(NULL);
+		m_CreateTime	= time(nullptr);
 	}
 	if (bModif){
 		m_ModifName		= xr_strconcat(tmp,"\\\\",Core.CompName,"\\",Core.UserName);
-		m_ModifTime		= time(NULL);
+		m_ModifTime		= time(nullptr);
 	}
 }
 

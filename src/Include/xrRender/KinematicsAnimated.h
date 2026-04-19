@@ -89,9 +89,9 @@ public:
 	virtual MotionID					ID_Cycle_Safe	(const char*  N) = 0;
 	virtual MotionID					ID_Cycle		(shared_str  N) = 0;
 	virtual MotionID					ID_Cycle_Safe	(shared_str  N) = 0;
-	virtual CBlend*						PlayCycle		(const char*  N,  bool bMixIn=TRUE, PlayCallback Callback=0, LPVOID CallbackParam=0, u8 channel = 0) = 0;
-	virtual CBlend*						PlayCycle		(MotionID M, bool bMixIn=TRUE, PlayCallback Callback=0, LPVOID CallbackParam=0, u8 channel = 0) = 0;
-	virtual CBlend*						PlayCycle		(u16 partition, MotionID M, bool bMixIn=TRUE, PlayCallback Callback=0, LPVOID CallbackParam=0, u8 channel = 0) = 0;
+	virtual CBlend*						PlayCycle		(const char*  N,  bool bMixIn=true, PlayCallback Callback=0, LPVOID CallbackParam=0, u8 channel = 0) = 0;
+	virtual CBlend*						PlayCycle		(MotionID M, bool bMixIn=true, PlayCallback Callback=0, LPVOID CallbackParam=0, u8 channel = 0) = 0;
+	virtual CBlend*						PlayCycle		(u16 partition, MotionID M, bool bMixIn=true, PlayCallback Callback=0, LPVOID CallbackParam=0, u8 channel = 0) = 0;
 	// fx'es
 	virtual MotionID					ID_FX			(const char*  N) = 0;
 	virtual MotionID					ID_FX_Safe		(const char*  N) = 0;

@@ -108,7 +108,7 @@ ICF static bool pick_trace_callback(collide::rq_result& result, LPVOID params)
 	if(result.O)
 	{	
 		pp->RQ				= result;
-		return FALSE;
+		return false;
 	}else
 	{
 		//получить треугольник и узнать его материал
@@ -118,13 +118,13 @@ ICF static bool pick_trace_callback(collide::rq_result& result, LPVOID params)
 		pp->power		*= mtl->fVisTransparencyFactor;
 		if(pp->power>0.34f)
 		{
-			return TRUE;
+			return true;
 		}
 //.		if (mtl->Flags.is(SGameMtl::flPassable)) 
-//.			return TRUE;
+//.			return true;
 	}
 	pp->RQ					= result;
-	return					FALSE;
+	return					false;
 }
 
 void CHUDTarget::CursorOnFrame ()

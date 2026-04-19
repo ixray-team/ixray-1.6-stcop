@@ -55,9 +55,9 @@ void CPsyDog::Load(const char* section)
 
 bool CPsyDog::net_Spawn(CSE_Abstract *dc)
 {
-	if (!inherited::net_Spawn(dc)) return FALSE;
+	if (!inherited::net_Spawn(dc)) return false;
 
-	return TRUE;
+	return true;
 }
 void CPsyDog::reinit()
 {
@@ -115,8 +115,8 @@ bool CPsyDog::spawn_phantom()
 	
 	// spawn here
 	NET_Packet					P;
-	phantom->Spawn_Write		(P,TRUE);
-	Level().Send				(P,net_flags(TRUE));
+	phantom->Spawn_Write		(P,true);
+	Level().Send				(P,net_flags(true));
 	F_entity_Destroy			(phantom);
 
 	return true;
@@ -198,7 +198,7 @@ CPsyDogPhantom::~CPsyDogPhantom()
 }
 bool CPsyDogPhantom::net_Spawn(CSE_Abstract *dc)
 {
-	if (!inherited::net_Spawn(dc)) return FALSE;
+	if (!inherited::net_Spawn(dc)) return false;
 
 	CSE_ALifeMonsterBase *se_monster	= smart_cast<CSE_ALifeMonsterBase*>(dc);
 	m_parent_id = se_monster->m_spec_object_id;
@@ -207,8 +207,8 @@ bool CPsyDogPhantom::net_Spawn(CSE_Abstract *dc)
 	
 	try_to_register_to_parent();
 
-	setVisible	(FALSE);
-	setEnabled	(FALSE);
+	setVisible	(false);
+	setEnabled	(false);
 
 	// load effector
 	// Load psi postprocess --------------------------------------------------------
@@ -221,7 +221,7 @@ bool CPsyDogPhantom::net_Spawn(CSE_Abstract *dc)
 
 	m_time_spawned			= time();
 
-	return (TRUE);
+	return (true);
 }
 
 const u32 pmt_time_wait_parent = 10000;
@@ -274,8 +274,8 @@ void CPsyDogPhantom::Think()
 
 	m_state			= eAttack;
 	
-	setVisible		(TRUE);
-	setEnabled		(TRUE);
+	setVisible		(true);
+	setEnabled		(true);
 
 	TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
 	PPlayer->StartParticles(m_particles_appear,Fvector().set(0.0f,0.1f,0.0f),ID());

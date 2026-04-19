@@ -49,15 +49,15 @@ bool CBreakableObject::net_Spawn(CSE_Abstract* DC)
 	R_ASSERT				(Visual()&&PKinematics(Visual()));
 	fHealth					= obj->m_health;
 	processing_deactivate	();
-	setVisible				(TRUE);
-	setEnabled				(TRUE);
+	setVisible				(true);
+	setEnabled				(true);
 	CreateUnbroken			();
 	//CreateBroken			();
 	bRemoved				=false;
 	//Break					();
 //	shedule_unregister		();
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::PHYSIC_OBJECT_DESTR;
-	return					(TRUE);
+	return					(true);
 }
 
 void CBreakableObject::shedule_Update	(u32 dt)
@@ -108,7 +108,7 @@ void CBreakableObject::net_Import(NET_Packet& P)
 
 bool CBreakableObject::UsedAI_Locations()
 {
-	return					(FALSE);
+	return					(false);
 }
 
 
@@ -157,7 +157,7 @@ void CBreakableObject::ActivateBroken()
 	m_pPhysicsShell->RunSimulation();
 	m_pPhysicsShell->SetCallbacks();
 	K->CalculateBones_Invalidate();
-	K->CalculateBones(TRUE);
+	K->CalculateBones(true);
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
 }
 
@@ -176,7 +176,7 @@ void CBreakableObject::net_Destroy()
 	xr_delete(collidable.model);
 	Init();
 	//Visual()->vis.box.set(m_saved_box);
-	Render->model_Delete(renderable.visual,TRUE);
+	Render->model_Delete(renderable.visual,true);
 	cNameVisual_set("");
 
 }

@@ -7,7 +7,7 @@
 XrGamePersistentEditors::XrGamePersistentEditors():IGame_Persistent ()
 {
 	g_dedicated_server = false;
-	m_pMainMenu						= NULL;
+	m_pMainMenu						= nullptr;
 	//pEnvironment = nullptr;
 	/*switch (xrGameManager::GetGame())
 	{

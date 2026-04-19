@@ -26,7 +26,7 @@ void CRenderTarget::phase_new_luminance()
 
 	u_setrt(rt_LUM_A, nullptr, nullptr, nullptr);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	RCache.set_Element(s_lum_copy->E[0]);
 	RCache.set_c("adapt_params", W, H, rW, rH);
@@ -46,7 +46,7 @@ void CRenderTarget::phase_new_luminance()
 
 	u_setrt(rt_LUM_B, nullptr, nullptr, nullptr);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	RCache.set_Element(s_lum_copy->E[1]);
 	RCache.set_c("adapt_params", W, H, rW, rH);
@@ -66,7 +66,7 @@ void CRenderTarget::phase_new_luminance()
 
 	u_setrt(rt_LUM_C, nullptr, nullptr, nullptr);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	RCache.set_Element(s_lum_copy->E[2]);
 	RCache.set_c("adapt_params", W, H, rW, rH);
@@ -86,7 +86,7 @@ void CRenderTarget::phase_new_luminance()
 
 	u_setrt(rt_LUM_D, nullptr, nullptr, nullptr);
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 
 	RCache.set_Element(s_lum_copy->E[3]);
 	W = Device.fTimeDelta;

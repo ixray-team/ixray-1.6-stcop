@@ -127,12 +127,12 @@ void CWeaponRPG7::UpdateMissileVisibility()
 
 	if (HudItemData() != nullptr)
 	{
-		HudItemData()->set_bone_visible(m_sHudGrenadeBoneName, vis_hud, TRUE);
+		HudItemData()->set_bone_visible(m_sHudGrenadeBoneName, vis_hud, true);
 	}
 
 	IKinematics* pWeaponVisual = PKinematics(Visual());
 	VERIFY(pWeaponVisual);
-	pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(m_sGrenadeBoneName), vis_weap, TRUE);
+	pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(m_sGrenadeBoneName), vis_weap, true);
 }
 
 bool CWeaponRPG7::net_Spawn(CSE_Abstract* DC) 

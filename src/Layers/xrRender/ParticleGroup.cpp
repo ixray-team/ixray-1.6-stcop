@@ -35,7 +35,7 @@ void CPGDef::Clone	(CPGDef* source)
 	m_Flags			= source->m_Flags;
 	m_fTimeLimit	= source->m_fTimeLimit;
 
-	m_Effects.resize(source->m_Effects.size(),0);		
+	m_Effects.resize(source->m_Effects.size(),nullptr);		
 	for (EffectIt d_it=m_Effects.begin(),s_it=source->m_Effects.begin(); s_it!=source->m_Effects.end(); s_it++,d_it++)
 		*d_it		= new SEffect(**s_it);
 }
@@ -53,7 +53,7 @@ bool CPGDef::LoadOriginal(IReader& F)
 
 	if (version!=PS::PG::Version::Original){
 		Log			("!Unsupported PG version. Load failed.");
-		return FALSE;
+		return false;
 	}
 
 	FoundedChunk = !!F.find_chunk(PS::PG::Chunks::NAME);
@@ -89,7 +89,7 @@ bool CPGDef::LoadOriginal(IReader& F)
 				m_fTimeLimit	= std::max(m_fTimeLimit, (*it)->m_Time1);
 		}
 	}
-	return TRUE;
+	return true;
 }                   
 
 bool CPGDef::Load2(CInifile& ini)
@@ -140,7 +140,7 @@ bool CPGDef::Load2Original(CInifile& ini)
 		(*it)->m_Flags.assign		(ini.r_u32(buff, "flags"));
 	}
 	m_fTimeLimit					= ini.r_float		("_group", "timelimit");
-	return							TRUE;
+	return							true;
 }
 
 bool CPGDef::Load2Extended(CInifile& ini)
@@ -238,9 +238,9 @@ void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, const ch
 	M.transform_tiny(p,m.pos);
 	M.c.set(p);
 	C->Play();
-	C->UpdateParent(M,vel,FALSE);
-	C->m_RT_Flags.set(CParticleEffect::flRT_FreeChild, FALSE);
-	C->m_RT_Flags.set(CParticleEffect::flRT_RelatedChild, TRUE);
+	C->UpdateParent(M,vel,false);
+	C->m_RT_Flags.set(CParticleEffect::flRT_FreeChild, false);
+	C->m_RT_Flags.set(CParticleEffect::flRT_RelatedChild, true);
 	xrCriticalSectionGuard guard(childs_cs);
 	children_related.push_back(C);
 }
@@ -249,9 +249,9 @@ void CParticleGroup::SItem::StopRelatedChild(u32 idx)
 	xrCriticalSectionGuard guard(childs_cs);
 	VERIFY(idx<children_related.size());
 	CParticleEffect* V = children_related[idx];
-	V->Stop(TRUE);
-	V->m_RT_Flags.set(CParticleEffect::flRT_RelatedChild, FALSE);
-	V->m_RT_Flags.set(CParticleEffect::flRT_FreeChild, TRUE);
+	V->Stop(true);
+	V->m_RT_Flags.set(CParticleEffect::flRT_RelatedChild, false);
+	V->m_RT_Flags.set(CParticleEffect::flRT_FreeChild, true);
 	children_free.push_back(V);
 	
 	fast_erase(children_related, idx);
@@ -273,9 +273,9 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, const char*
 		M.transform_tiny(p,m.pos);
 		M.c.set(p);
 		C->Play();
-		C->UpdateParent(M,vel,FALSE);
-		C->m_RT_Flags.set(CParticleEffect::flRT_RelatedChild, FALSE);
-		C->m_RT_Flags.set(CParticleEffect::flRT_FreeChild, TRUE);
+		C->UpdateParent(M,vel,false);
+		C->m_RT_Flags.set(CParticleEffect::flRT_RelatedChild, false);
+		C->m_RT_Flags.set(CParticleEffect::flRT_FreeChild, true);
 		children_free.push_back(C);
 	}
 	else
@@ -326,7 +326,7 @@ void CParticleGroup::SItem::Stop(bool def_stop)
 
 bool CParticleGroup::SItem::IsPlaying() const
 {
-	return root_effect ? root_effect->IsPlaying() : FALSE;
+	return root_effect ? root_effect->IsPlaying() : false;
 }
 
 void CParticleGroup::SItem::UpdateParent(const Fmatrix& m, const Fvector& velocity, bool bXFORM)
@@ -394,7 +394,7 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
 						CParticleEffect* C = children_related[i];
 						Fmatrix M; M.translate(m.pos);
 						Fvector vel; vel.sub(m.pos, m.posB); vel.div(C->m_RT_Flags.is(CParticleEffect::flRT_LiveUpdate) ? Device.fTimeDelta : fDT_STEP);
-						C->UpdateParent(M, vel, FALSE);
+						C->UpdateParent(M, vel, false);
 					}
 				}
 			}
@@ -531,7 +531,7 @@ void CParticleGroup::OnFrame(u32 u_dt)
 
 	if (m_RT_Flags.is(flRT_DefferedStop) && !bPlaying)
 	{
-		m_RT_Flags.set(flRT_Playing | flRT_DefferedStop, FALSE);
+		m_RT_Flags.set(flRT_Playing | flRT_DefferedStop, false);
 	}
 
 	if (BBOX.is_valid())
@@ -595,8 +595,8 @@ void CParticleGroup::Play()
 {
 	xrCriticalSectionGuard guard(&onframe_lock);
 	m_CurrentTime = 0;
-	m_RT_Flags.set(flRT_DefferedStop,FALSE);
-	m_RT_Flags.set(flRT_Playing,TRUE);
+	m_RT_Flags.set(flRT_DefferedStop,false);
+	m_RT_Flags.set(flRT_Playing,true);
 }
 
 void CParticleGroup::Stop(bool bDefferedStop)
@@ -604,9 +604,9 @@ void CParticleGroup::Stop(bool bDefferedStop)
 	{
 		xrCriticalSectionGuard guard(&onframe_lock);
 		if (bDefferedStop)
-			m_RT_Flags.set(flRT_DefferedStop, TRUE);
+			m_RT_Flags.set(flRT_DefferedStop, true);
 		else
-			m_RT_Flags.set(flRT_Playing, FALSE);
+			m_RT_Flags.set(flRT_Playing, false);
 	}
 	for (SItem& item : items)
 		item.Stop(bDefferedStop);
@@ -646,7 +646,7 @@ bool CParticleGroup::GetHudMode()
 	if(!items.empty() && items[0].root_effect)
 		return items[0].root_effect->GetHudMode();
 
-	return FALSE;
+	return false;
 }
 
 void CParticleGroup::SetLiveUpdate(bool b)
@@ -663,5 +663,5 @@ bool CParticleGroup::GetLiveUpdate()
 	if(!items.empty() && items[0].root_effect)
 		return items[0].root_effect->GetLiveUpdate();
 
-	return FALSE;
+	return false;
 }

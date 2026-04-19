@@ -49,7 +49,7 @@ private:
 	void					disconnect	();									// disconnect from CATs
 	void					format		();									// format structure (like filesystem)
 public:
-	BOOL					request		(cache_cat& cat, u32 id);			// TRUE=need to fill, FALSE=cached info avail
+	bool					request		(cache_cat& cat, u32 id);			// true=need to fill, false=cached info avail
 	void					purge		();									// discard all contents of cache
 
 	void*					get_dataptr	(cache_cat& cat, u32 id)			{ id%=cat.size; return c_storage[cat.table[id]].data;			} //.

@@ -93,13 +93,13 @@ bool CRadioactiveZone::feel_touch_contact(CObject* O)
 	{
 		if (!((CCF_Shape*)CFORM())->Contact(O))
 		{
-			return FALSE;
+			return false;
 		}
 
 		return A->feel_touch_on_contact(this);
 	}
 
-	return FALSE;
+	return false;
 }
 
 void CRadioactiveZone::UpdateWorkload					(u32	dt)

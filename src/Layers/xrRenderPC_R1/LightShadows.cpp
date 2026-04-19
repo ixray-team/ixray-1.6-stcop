@@ -137,7 +137,7 @@ void CLightShadows::calculate	()
 {
 	if (casters.empty())		return;
 
-	BOOL bRTS					= FALSE;
+	bool bRTS = false;
 	Device.Statistic->RenderDUMP_Scalc.Begin	();
 	RDevice->SetRenderState	(D3DRS_ZENABLE, D3DZB_FALSE);
 	
@@ -165,7 +165,7 @@ void CLightShadows::calculate	()
 
 			// setup rt+state(s) for first use
 			if (!bRTS)	{
-				bRTS						= TRUE;
+				bRTS						= true;
 				RCache.set_RT				(RT_temp->pRT);
 				GRHI->SetDepthStencilView	(RImplementation.Target->pTempZB);
 				RDevice->Clear(0, 0, D3DCLEAR_TARGET, color_xrgb(255, 255, 255), 1, 0);
@@ -459,26 +459,26 @@ void CLightShadows::render	()
 		t_offset.y	+= .5f/S_rt_size;
 		
 		// Search the cache
-		cache_item*						CI		= 0; BOOL	bValid = FALSE;
-		cache_item						CI_what; CI_what.O	= S.O; CI_what.L = S.L; CI_what.tris=0;
+		cache_item*						CI		= nullptr; bool	bValid = false;
+		cache_item						CI_what; CI_what.O	= S.O; CI_what.L = S.L; CI_what.tris=nullptr;
 		xr_vector<cache_item>::iterator	CI_ptr	= std::lower_bound(cache.begin(),cache.end(),CI_what,cache_search);
 		if (CI_ptr==cache.end())		
 		{	// empty ?
 			CI_ptr	= cache.insert		(CI_ptr,CI_what);
 			CI		= &*CI_ptr;
-			bValid	= FALSE;
+			bValid	= false;
 		} else {
 			if (CI_ptr->O != CI_what.O  || CI_ptr->L != CI_what.L)	
 			{	// we found something different
 				CI_ptr	= cache.insert		(CI_ptr,CI_what);
 				CI		= &*CI_ptr;
-				bValid	= FALSE;
+				bValid	= false;
 			} else {
 				// Everything, OK. Check if info is still relevant...
 				CI		= &*CI_ptr;
-				bValid	= TRUE;
-				if (!CI->Op.similar(CI->O->renderable.xform.c))	bValid = FALSE;
-				else if (!CI->Lp.similar(CI->L->position))		bValid = FALSE;
+				bValid	= true;
+				if (!CI->Op.similar(CI->O->renderable.xform.c))	bValid = false;
+				else if (!CI->Lp.similar(CI->L->position))		bValid = false;
 			}
 		}
 		CI->time				= Device.dwTimeGlobal;	// acess time
@@ -525,7 +525,7 @@ void CLightShadows::render	()
 
 				// Triangulate poly 
 				for (u32 v=2; v<clip->size(); v++)	{
-					tess.push_back	(tess_tri());
+					tess.emplace_back();
 					tess_tri& T		= tess.back();
 					T.v[0]			= (*clip)[0];
 					T.v[1]			= (*clip)[v-1];
@@ -541,7 +541,7 @@ void CLightShadows::render	()
 			CI->Lp					= CI->L->position;
 			CI->tcnt				= (u32)tess.size();
 			//Msg						("---free--- %x",u32(CI->tris));
-			xr_free					(CI->tris);	VERIFY(0==CI->tris);	
+			xr_free					(CI->tris);	VERIFY(nullptr==CI->tris);	
 			if (tess.size())		{
 				CI->tris			= xr_alloc<tess_tri>(CI->tcnt);
 				//Msg					("---alloc--- %x",u32(CI->tris));
@@ -601,7 +601,7 @@ void CLightShadows::render	()
 		u32				time	= Device.dwTimeGlobal - ci.time;
 		if				(time > cache_old)	{
 			//Msg			("---free--- %x",u32(ci.tris));
-			xr_free		(ci.tris);	VERIFY(0==ci.tris);
+			xr_free		(ci.tris);	VERIFY(nullptr==ci.tris);
 			cache.erase (cache.begin()+cit);
 			cit			--;
 		}

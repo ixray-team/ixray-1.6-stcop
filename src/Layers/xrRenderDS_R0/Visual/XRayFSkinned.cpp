@@ -744,7 +744,7 @@ template<typename T>
 bool pick_bone(CDS0_Kinematics* Parent, IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces)
 {
 	VERIFY(!"Not implemented");
-	return FALSE;
+	return false;
 }
 bool CDS0_SkeletonXExt::_PickBoneHW1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, CDS0_FVisual* V, u16* indices, CBoneData::FacesVec& faces)
 {
@@ -773,7 +773,7 @@ bool CDS0_SkeletonXExt::_PickBone(IKinematics::pick_result& r, float dist, const
 	CBoneData& BD = Parent->LL_GetData(bone_id);
 	CBoneData::FacesVec* faces = &BD.child_faces[ChildIDX];
 
-	bool result = FALSE;
+	bool result = false;
 	u16* indices = 0;
 
 	indices = *m_Indices;

@@ -46,7 +46,7 @@ void check_file(LPCSTR file_name)
 	IReader*	tmp_reader = FS.r_open(file_name);
 	if (!tmp_reader)
 	{
-		FS.rescan_path("$screenshots$", TRUE);
+		FS.rescan_path("$screenshots$", true);
 		tmp_reader = FS.r_open("$screenshots$", file_name);
 		if (!tmp_reader)
 		{
@@ -160,12 +160,12 @@ void run_configs_verifyer_server()
 
 void initialize_core()
 {
-	Core._initialize		("mp_configs_info", xrcore_log_cb, TRUE, "fsgame4mpu.ltx");
+	Core._initialize		("mp_configs_info", xrcore_log_cb, true, "fsgame4mpu.ltx");
 	crypto::xr_crypto_init	();
 
 	string_path					fname; 
 	FS.update_path				(fname,"$game_config$","system.ltx");
-	pSettings					= new CInifile	(fname,TRUE);
+	pSettings					= new CInifile	(fname,true);
 }
 void deinitialize_core()
 {

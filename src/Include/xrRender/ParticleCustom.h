@@ -69,7 +69,7 @@ public:
 	virtual void	UpdateCache			() {;}
 
 	virtual void	Play				()=0;
-	virtual void	Stop				(bool bDefferedStop=TRUE)=0;
+	virtual void	Stop				(bool bDefferedStop=true)=0;
 	virtual bool	IsPlaying			()=0;
 
 	virtual u32		SpriteCount			()=0;

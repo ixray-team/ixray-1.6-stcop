@@ -97,7 +97,7 @@ void server_site::update_transfer()
 		tmp_packet.w_u8					(receive_data);
 		tmp_packet.w_u32				(ti->first.second.value());	//src
 		bool complete = tmp_ftnode->make_data_packet(tmp_packet);
-		Level().Server->SendTo			(tmp_client->ID, tmp_packet, net_flags(TRUE,TRUE,TRUE));
+		Level().Server->SendTo			(tmp_client->ID, tmp_packet, net_flags(true,true,true));
 		if (complete)
 		{
 			tmp_ftnode->signal_callback		(sending_complete);
@@ -122,7 +122,7 @@ void server_site::on_message(NET_Packet* packet, ClientID const & sender)
 			{
 				NET_Packet reject_packet;
 				make_reject_packet(reject_packet, ClientID(0));
-				Level().Server->SendTo(sender, reject_packet, net_flags(TRUE,TRUE,TRUE));
+				Level().Server->SendTo(sender, reject_packet, net_flags(true,true,true));
 				break;
 			}
 			if (temp_iter->second->receive_packet(*packet))
@@ -304,7 +304,7 @@ void server_site::stop_transfer_file(dst_src_pair_t const & tkey)
 		make_abort_packet(abort_packet, tkey.second);
 		if (Level().Server->GetClientByID(tkey.first))
 		{
-			Level().Server->SendTo(tkey.first, abort_packet, net_flags(TRUE,TRUE,TRUE));
+			Level().Server->SendTo(tkey.first, abort_packet, net_flags(true,true,true));
 		}
 	}
 	xr_delete(temp_iter->second);
@@ -360,7 +360,7 @@ void server_site::stop_receive_file(ClientID const & from_client)
 	{
 		NET_Packet reject_packet;
 		make_reject_packet(reject_packet, ClientID(0));
-		Level().Server->SendTo(from_client, reject_packet, net_flags(TRUE,TRUE,TRUE));
+		Level().Server->SendTo(from_client, reject_packet, net_flags(true,true,true));
 	}
 	xr_delete(temp_iter->second);
 	m_receivers.erase(temp_iter);
@@ -425,7 +425,7 @@ void client_site::update_transfer()
 		tmp_packet.w_begin					(M_FILE_TRANSFER);
 		tmp_packet.w_u8						(receive_data);
 		bool complete = m_transfering->make_data_packet(tmp_packet);
-		Level().Send(tmp_packet, net_flags	(TRUE, TRUE, TRUE));
+		Level().Send(tmp_packet, net_flags	(true, true, true));
 		if (complete)
 		{
 			m_transfering->signal_callback	(sending_complete);
@@ -459,7 +459,7 @@ void client_site::on_message(NET_Packet* packet)
 			{
 				NET_Packet reject_packet;
 				make_reject_packet(reject_packet, from_client);
-				Level().Send(reject_packet, net_flags(TRUE,TRUE,TRUE));
+				Level().Send(reject_packet, net_flags(true,true,true));
 			}
 		}break;
 	case abort_receive:
@@ -536,7 +536,7 @@ void client_site::stop_transfer_file()
 	{
 		NET_Packet abort_packet;
 		make_abort_packet(abort_packet, ClientID(0));
-		Level().Send(abort_packet, net_flags(TRUE,TRUE,TRUE));
+		Level().Send(abort_packet, net_flags(true,true,true));
 	}
 	xr_delete(m_transfering);
 }
@@ -589,7 +589,7 @@ void client_site::stop_receive_file(ClientID const & from_client)
 	{
 		NET_Packet reject_packet;
 		make_reject_packet(reject_packet, from_client);
-		Level().Send(reject_packet, net_flags	(TRUE, TRUE, TRUE));
+		Level().Send(reject_packet, net_flags	(true, true, true));
 	}
 	xr_delete(temp_iter->second);
 	m_receivers.erase(temp_iter);

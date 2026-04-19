@@ -7,7 +7,7 @@
 CUIListBox::CUIListBox()
 {
 	m_pFont					= nullptr;
-	m_flags.set				(eItemsSelectabe, TRUE);
+	m_flags.set				(eItemsSelectabe, true);
 
 	m_def_item_height		 = 20;
 	m_text_color			= 0xff000000;

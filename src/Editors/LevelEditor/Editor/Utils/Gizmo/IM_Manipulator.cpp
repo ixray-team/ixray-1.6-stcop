@@ -23,7 +23,7 @@ void IM_Manipulator::Render(float canvasX, float canvasY, float canvasWidth, flo
 
 	if (ESceneCustomOTool* tool = Scene->GetOTool(LTools->CurrentClassID()))
 	{
-		tool->GetQueryObjects(lst, TRUE, TRUE, FALSE);
+		tool->GetQueryObjects(lst, true, true, false);
 		if (lst.size() < 1)
 			return;
 

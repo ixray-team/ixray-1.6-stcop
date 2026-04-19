@@ -250,7 +250,7 @@ bool IGame_Level::Load			(u32 dwNum)
 	}
 
 	Device.seqFrame.Add			(this);
-	return TRUE;	
+	return true;	
 }
 
 int		psNET_DedicatedSleep	= 5;

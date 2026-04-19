@@ -101,7 +101,7 @@ void CUIEventsWnd::Update			()
 	if(m_flags.test(flNeedReload) )
 	{
 		ReloadList(false);
-		m_flags.set(flNeedReload,FALSE );
+		m_flags.set(flNeedReload,false );
 	}
 	inherited::Update		();
 	UpdateGamepadLegend		();
@@ -168,7 +168,7 @@ void CUIEventsWnd::OnFilterChanged			(CUIWindow* w, void*)
 
 void CUIEventsWnd::Reload					()
 {
-		m_flags.set(flNeedReload,TRUE );
+		m_flags.set(flNeedReload,true );
 }
 
 void CUIEventsWnd::ReloadList(bool bClearOnly)

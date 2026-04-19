@@ -235,7 +235,7 @@ void CUICustomMap::SetActivePoint(const Fvector &vNewPoint)
 	Fvector2 pos;
 	pos.set(vNewPoint.x,vNewPoint.z);
 	Frect bound = BoundRect();
-	if( FALSE==bound.in(pos) )return;
+	if( false==bound.in(pos) )return;
 
 	Fvector2	pos_on_map		= ConvertRealToLocalNoTransform(pos, BoundRect());
 	Frect		map_abs_rect;
@@ -280,7 +280,7 @@ void	CUICustomMap::SendMessage			(CUIWindow* pWnd, s16 msg, void* pData)
 bool CUIGlobalMap::OnMouseAction	(float x, float y, EUIMessages mouse_action)
 {
 	if(inherited::OnMouseAction(x,y,mouse_action)) return true;
-	if(mouse_action==WINDOW_MOUSE_MOVE && (FALSE==pInput->iGetAsyncBtnState(0)))
+	if(mouse_action==WINDOW_MOUSE_MOVE && (false==pInput->iGetAsyncBtnState(0)))
 	{
 		if( MapWnd() )
 		{
@@ -480,7 +480,7 @@ void CUILevelMap::Init_internal	(const shared_str& name, CInifile& pLtx, const s
 	float kw = m_GlobalRect.width	()	/	BoundRect().width	();
 	float kh = m_GlobalRect.height	()	/	BoundRect().height	();
 
-	if(FALSE==fsimilar(kw,kh,EPS_L))
+	if(false==fsimilar(kw,kh,EPS_L))
 	{
 		Msg(" --incorrect global rect definition for map [%s]  kw=%f kh=%f",*MapName(),kw,kh);
 		Msg(" --try x2=%f or  y2=%f",m_GlobalRect.x1+kh*BoundRect().width(), m_GlobalRect.y1+kw*BoundRect().height());
@@ -499,7 +499,7 @@ void CUILevelMap::UpdateSpots()
 	Frect				_r;
 	GetAbsoluteRect		(_r);
 
-	if( FALSE==MapWnd()->ActiveMapRect().intersected(_r)) return;
+	if( false==MapWnd()->ActiveMapRect().intersected(_r)) return;
 
 	Locations& ls		= Level().MapManager().Locations();
 	Locations_it it		= ls.begin();
@@ -585,7 +585,7 @@ bool CUILevelMap::OnMouseAction(float x, float y, EUIMessages mouse_action)
 		}
 	}
 
-	if(mouse_action==WINDOW_MOUSE_MOVE && (FALSE==pInput->iGetAsyncBtnState(0)) )
+	if(mouse_action==WINDOW_MOUSE_MOVE && (false==pInput->iGetAsyncBtnState(0)) )
 	{
 		if( MapWnd() )
 		{

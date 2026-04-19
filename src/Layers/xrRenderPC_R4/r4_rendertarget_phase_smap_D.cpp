@@ -24,7 +24,7 @@ void CRenderTarget::phase_smap_direct(light* L, u32 sub_phase)
 	}
 
 	// Stencil	- disable
-	RCache.set_Stencil(FALSE);
+	RCache.set_Stencil(false);
 }
 
 void CRenderTarget::phase_smap_direct_tsh(light* L, u32 sub_phase)

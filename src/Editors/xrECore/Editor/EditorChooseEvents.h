@@ -31,7 +31,7 @@ namespace ChoseEvents
     {
         choose_snd->stop();
         choose_snd->create(item->name.c_str(), st_Effect, sg_Undefined);
-        choose_snd->play(0, sm_2D);
+        choose_snd->play(nullptr, sm_2D);
         //    snd.pla
         /*
         //.
@@ -89,7 +89,7 @@ namespace ChoseEvents
         else if (ID)
         {
             IM_TEXTURE_RELEASE(ID);
-            ID = 0;
+            ID = nullptr;
         }
         xr_delete(thm);
     }
@@ -119,7 +119,7 @@ namespace ChoseEvents
         else if(ID)
         {
             IM_TEXTURE_RELEASE(ID);
-            ID = 0;
+            ID = nullptr;
         }
         xr_delete(thm);
     }
@@ -454,26 +454,26 @@ namespace ChoseEvents
 
 void FillChooseEvents()
 {
-    UIChooseForm::AppendEvents(smSoundSource, "Select Sound Source", ChoseEvents::FillSoundSource, ChoseEvents::SelectSoundSource, 0, ChoseEvents::CloseSoundSource, 0);
-    UIChooseForm::AppendEvents(smSoundEnv, "Select Sound Environment", ChoseEvents::FillSoundEnv, 0, 0, 0, 0);
-    UIChooseForm::AppendEvents(smObject, "Select Library Object", ChoseEvents::FillObject, ChoseEvents::SelectObject, ChoseEvents::UpdateObjectTHM, 0, 0);
-    UIChooseForm::AppendEvents(smGroup, "Select Group", ChoseEvents::FillGroup, ChoseEvents::SelectGroup, ChoseEvents::UpdateGroupTHM, 0, 0);
-    UIChooseForm::AppendEvents(smEShader, "Select Engine Shader", ChoseEvents::FillEShader, 0, 0, 0, 0);
-    UIChooseForm::AppendEvents(smCShader, "Select Compiler Shader", ChoseEvents::FillCShader, 0, 0, 0, 0);
-    UIChooseForm::AppendEvents(smPE, "Select Particle Effect", ChoseEvents::FillPE, 0/*ChoseEvents::SelectPE*/, 0, 0, 0);
-    UIChooseForm::AppendEvents(smParticles, "Select Particle System", ChoseEvents::FillParticles, 0/*ChoseEvents::SelectPG*/, 0, 0, 0);
-    UIChooseForm::AppendEvents(smTextureRaw, "Select Source Texture", ChoseEvents::FillTextureRaw, ChoseEvents::SelectTextureRaw, ChoseEvents::UpdateTextureTHMRaw, 0, SChooseEvents::flClearTexture);
-    UIChooseForm::AppendEvents(smTexture, "Select Texture", ChoseEvents::FillTexture, ChoseEvents::SelectTexture, ChoseEvents::UpdateTextureTHM, 0, SChooseEvents::flClearTexture);
-    UIChooseForm::AppendEvents(smEntityType, "Select Entity", ChoseEvents::FillEntity, 0, 0, 0, 0);
-    UIChooseForm::AppendEvents(smLAnim, "Select Light Animation", ChoseEvents::FillLAnim, 0, ChoseEvents::UpdateLAnim, 0, SChooseEvents::flAnimated);
-    UIChooseForm::AppendEvents(smVisual, "Select Visual", ChoseEvents::FillVisual, ChoseEvents::SelectVisual, 0, 0, 0);
-    UIChooseForm::AppendEvents(smSkeletonAnims, "Select Skeleton Animation", ChoseEvents::FillSkeletonAnims, 0, 0, 0, 0);
-    UIChooseForm::AppendEvents(smSkeletonBones, "Select Skeleton Bones", ChoseEvents::FillSkeletonBones, 0, 0, 0, 0);
-    UIChooseForm::AppendEvents(smSkeletonBonesInObject, "Select Skeleton Bones", ChoseEvents::FillSkeletonBonesObject, 0, 0, 0, 0);
-    UIChooseForm::AppendEvents(smGameMaterial, "Select Game Material", ChoseEvents::FillGameMaterial, 0, 0, 0, 0);
-    UIChooseForm::AppendEvents(smGameAnim, "Select Animation", ChoseEvents::FillGameAnim, 0, 0, 0, 0);
-    UIChooseForm::AppendEvents(smGameSMotions, "Select Game Object Motions", ChoseEvents::FillGameObjectMots, ChoseEvents::SelectGameObjectMots, 0, 0, 0);
-    UIChooseForm::AppendEvents(smPAC, "Select Animation Curve", ChoseEvents::FillPAC, 0,0, 0, 0);
+    UIChooseForm::AppendEvents(smSoundSource, "Select Sound Source", ChoseEvents::FillSoundSource, ChoseEvents::SelectSoundSource, nullptr, ChoseEvents::CloseSoundSource, 0);
+    UIChooseForm::AppendEvents(smSoundEnv, "Select Sound Environment", ChoseEvents::FillSoundEnv, nullptr, nullptr, nullptr, 0);
+    UIChooseForm::AppendEvents(smObject, "Select Library Object", ChoseEvents::FillObject, ChoseEvents::SelectObject, ChoseEvents::UpdateObjectTHM, nullptr, 0);
+    UIChooseForm::AppendEvents(smGroup, "Select Group", ChoseEvents::FillGroup, ChoseEvents::SelectGroup, ChoseEvents::UpdateGroupTHM, nullptr, 0);
+    UIChooseForm::AppendEvents(smEShader, "Select Engine Shader", ChoseEvents::FillEShader, nullptr, nullptr, nullptr, 0);
+    UIChooseForm::AppendEvents(smCShader, "Select Compiler Shader", ChoseEvents::FillCShader, nullptr, nullptr, nullptr, 0);
+    UIChooseForm::AppendEvents(smPE, "Select Particle Effect", ChoseEvents::FillPE, nullptr/*ChoseEvents::SelectPE*/, nullptr, nullptr, 0);
+    UIChooseForm::AppendEvents(smParticles, "Select Particle System", ChoseEvents::FillParticles, nullptr/*ChoseEvents::SelectPG*/, nullptr, nullptr, 0);
+    UIChooseForm::AppendEvents(smTextureRaw, "Select Source Texture", ChoseEvents::FillTextureRaw, ChoseEvents::SelectTextureRaw, ChoseEvents::UpdateTextureTHMRaw, nullptr, SChooseEvents::flClearTexture);
+    UIChooseForm::AppendEvents(smTexture, "Select Texture", ChoseEvents::FillTexture, ChoseEvents::SelectTexture, ChoseEvents::UpdateTextureTHM, nullptr, SChooseEvents::flClearTexture);
+    UIChooseForm::AppendEvents(smEntityType, "Select Entity", ChoseEvents::FillEntity, nullptr, nullptr, nullptr, 0);
+    UIChooseForm::AppendEvents(smLAnim, "Select Light Animation", ChoseEvents::FillLAnim, nullptr, ChoseEvents::UpdateLAnim, nullptr, SChooseEvents::flAnimated);
+    UIChooseForm::AppendEvents(smVisual, "Select Visual", ChoseEvents::FillVisual, ChoseEvents::SelectVisual, nullptr, nullptr, 0);
+    UIChooseForm::AppendEvents(smSkeletonAnims, "Select Skeleton Animation", ChoseEvents::FillSkeletonAnims, nullptr, nullptr, nullptr, 0);
+    UIChooseForm::AppendEvents(smSkeletonBones, "Select Skeleton Bones", ChoseEvents::FillSkeletonBones, nullptr, nullptr, nullptr, 0);
+    UIChooseForm::AppendEvents(smSkeletonBonesInObject, "Select Skeleton Bones", ChoseEvents::FillSkeletonBonesObject, nullptr, nullptr, nullptr, 0);
+    UIChooseForm::AppendEvents(smGameMaterial, "Select Game Material", ChoseEvents::FillGameMaterial, nullptr, nullptr, nullptr, 0);
+    UIChooseForm::AppendEvents(smGameAnim, "Select Animation", ChoseEvents::FillGameAnim, nullptr, nullptr, nullptr, 0);
+    UIChooseForm::AppendEvents(smGameSMotions, "Select Game Object Motions", ChoseEvents::FillGameObjectMots, ChoseEvents::SelectGameObjectMots, nullptr, nullptr, 0);
+    UIChooseForm::AppendEvents(smPAC, "Select Animation Curve", ChoseEvents::FillPAC, nullptr,nullptr, nullptr, 0);
     choose_snd = new ref_sound();
 }
 

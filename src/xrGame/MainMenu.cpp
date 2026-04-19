@@ -181,8 +181,8 @@ void CMainMenu::Activate	(bool bActivate)
 	if(bActivate)
 	{
 		b_shniaganeed_pp			= true;
-		Device.Pause				(TRUE, FALSE, TRUE, "mm_activate1");
-		m_Flags.set					(flActive|flNeedChangeCapture,TRUE);
+		Device.Pause				(true, false, true, "mm_activate1");
+		m_Flags.set					(flActive|flNeedChangeCapture,true);
 
 		m_Flags.set					(flRestoreCursor,GetUICursor().IsVisible());
 
@@ -198,9 +198,9 @@ void CMainMenu::Activate	(bool bActivate)
 		if(b_is_single)
 		{
 			m_Flags.set					(flRestorePauseStr, bShowPauseString);
-			bShowPauseString			= FALSE;
+			bShowPauseString			= false;
 			if(!m_Flags.test(flRestorePause))
-				Device.Pause			(TRUE, TRUE, FALSE, "mm_activate2");
+				Device.Pause			(true, true, false, "mm_activate2");
 		}
 
 		if(g_pGameLevel)
@@ -218,8 +218,8 @@ void CMainMenu::Activate	(bool bActivate)
 		g_Discord.SetPhase(StrMainMenu);
 	}else{
 		m_deactivated_frame					= Device.dwFrame;
-		m_Flags.set							(flActive,				FALSE);
-		m_Flags.set							(flNeedChangeCapture,	TRUE);
+		m_Flags.set							(flActive,				false);
+		m_Flags.set							(flNeedChangeCapture,	true);
 
 		Device.seqRender.Remove				(this);
 
@@ -251,7 +251,7 @@ void CMainMenu::Activate	(bool bActivate)
 		if(b_is_single)
 		{
 			if(!m_Flags.test(flRestorePause))
-				Device.Pause			(FALSE, TRUE, FALSE, "mm_deactivate1");
+				Device.Pause			(false, true, false, "mm_deactivate1");
 
 			bShowPauseString			= m_Flags.test(flRestorePauseStr);
 		}	
@@ -259,11 +259,11 @@ void CMainMenu::Activate	(bool bActivate)
 		if(m_Flags.test(flRestoreCursor))
 			GetUICursor().Show			();
 
-		Device.Pause					(FALSE, TRUE, TRUE, "mm_deactivate2");
+		Device.Pause					(false, true, true, "mm_deactivate2");
 
 		if(m_Flags.test(flNeedVidRestart))
 		{
-			m_Flags.set			(flNeedVidRestart, FALSE);
+			m_Flags.set			(flNeedVidRestart, false);
 			Console->Execute	("vid_restart");
 		}
 
@@ -282,7 +282,7 @@ bool CMainMenu::ReloadUI()
 	DLL_Pure* dlg = NEW_INSTANCE(TEXT2CLSID("MAIN_MNU"));
 	if(!dlg) 
 	{
-		m_Flags.set				(flActive|flNeedChangeCapture,FALSE);
+		m_Flags.set				(flActive|flNeedChangeCapture,false);
 		return false;
 	}
 	xr_delete					(m_startDialog);
@@ -479,7 +479,7 @@ void CMainMenu::OnFrame()
 {
 	if (m_Flags.test(flNeedChangeCapture))
 	{
-		m_Flags.set					(flNeedChangeCapture,FALSE);
+		m_Flags.set					(flNeedChangeCapture,false);
 		if (m_Flags.test(flActive))	IR_Capture();
 		else						IR_Release();
 	}
@@ -489,7 +489,7 @@ void CMainMenu::OnFrame()
 	//screenshot stuff
 	if(m_Flags.test(flGameSaveScreenshot) && Device.dwFrame > m_screenshotFrame  )
 	{
-		m_Flags.set					(flGameSaveScreenshot,FALSE);
+		m_Flags.set					(flGameSaveScreenshot,false);
 		::Render->Screenshot		(IRender_interface::SM_FOR_GAMESAVE, m_screenshot_name);
 		
 		if(g_pGameLevel && m_Flags.test(flActive))
@@ -530,7 +530,7 @@ void CMainMenu::Screenshot(IRender_interface::ScreenshotMode mode, const char* n
 	{
 		::Render->Screenshot		(mode,name);
 	}else{
-		m_Flags.set					(flGameSaveScreenshot, TRUE);
+		m_Flags.set					(flGameSaveScreenshot, true);
 		xr_strcpy(m_screenshot_name,name);
 		if(g_pGameLevel && m_Flags.test(flActive)){
 			Device.seqFrame.Add		(g_pGameLevel);
@@ -715,7 +715,7 @@ void CMainMenu::CancelDownload()
 
 void CMainMenu::SetNeedVidRestart()
 {
-	m_Flags.set(flNeedVidRestart,TRUE);
+	m_Flags.set(flNeedVidRestart,true);
 }
 
 void CMainMenu::OnDeviceReset()

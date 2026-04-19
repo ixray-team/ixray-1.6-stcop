@@ -67,7 +67,7 @@ void CUINewsWnd::LoadNews()
 			++currentNews;
 		}
 	}
-	m_flags.set(eNeedAdd,FALSE);
+	m_flags.set(eNeedAdd,false);
 }
 
 void CUINewsWnd::Update()
@@ -79,7 +79,7 @@ void CUINewsWnd::Update()
 
 void CUINewsWnd::AddNews()
 {
-	m_flags.set(eNeedAdd,TRUE);
+	m_flags.set(eNeedAdd,true);
 }
 
 void CUINewsWnd::AddNewsItem(GAME_NEWS_DATA& news_data)

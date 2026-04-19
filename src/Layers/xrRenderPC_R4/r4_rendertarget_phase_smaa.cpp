@@ -6,7 +6,7 @@ void CRenderTarget::phase_smaa()
     u_setrt(rt_smaa_edgetex, nullptr, nullptr, nullptr);
 
     GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-    RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+    RCache.set_Stencil(true, D3DCMP_ALWAYS, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
     GRHI->ClearTarget(RCache.get_RT());
 
     // Draw COLOR
@@ -18,7 +18,7 @@ void CRenderTarget::phase_smaa()
     u_setrt(rt_smaa_blendtex, nullptr, nullptr, nullptr);
 
     GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-    RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+    RCache.set_Stencil(true, D3DCMP_EQUAL, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
     GRHI->ClearTarget(RCache.get_RT());
 
     // Draw COLOR
@@ -30,7 +30,7 @@ void CRenderTarget::phase_smaa()
     u_setrt(rt_Generic_2, nullptr, nullptr, nullptr);
 
     GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-    RCache.set_Stencil(FALSE);
+    RCache.set_Stencil(false);
 
     // Draw COLOR
     RCache.set_Element(s_smaa->E[2]);

@@ -135,7 +135,7 @@ CEditableObject* ELibrary::LoadEditObject(const char* name)
         }
     }
     xr_delete(m_EditObject);
-	return 0;
+	return nullptr;
 }
 //---------------------------------------------------------------------------
 
@@ -147,12 +147,12 @@ CEditableObject* ELibrary::CreateEditObject(const char* nm)
     xr_string name		= xr_string(nm);
     xr_strlwr(name);
     // file exist - find in already loaded
-    CEditableObject* m_EditObject = 0;
+    CEditableObject* m_EditObject = nullptr;
 	EditObjPairIt it 	= m_EditObjects.find(name);
 
     if (it!=m_EditObjects.end())
         m_EditObject = it->second;
-    else if (0!=(m_EditObject=LoadEditObject(name.c_str())))
+    else if (nullptr!=(m_EditObject=LoadEditObject(name.c_str())))
 		m_EditObjects[name]	= m_EditObject;
 
     if (m_EditObject)	m_EditObject->m_RefCount++;
@@ -167,7 +167,7 @@ void ELibrary::RemoveEditObject(CEditableObject*& object)
     	R_ASSERT(object->m_RefCount>=0);
 		if ((object->m_RefCount==0)&&EPrefs->object_flags.is(epoDiscardInstance))
 			if (!object->IsModified()) UnloadEditObject(object->GetName());
-        object=0;
+        object=nullptr;
 	}
 }
 //---------------------------------------------------------------------------
@@ -214,7 +214,7 @@ int ELibrary::GetObjects(FS_FileSet& files)
 void ELibrary::RemoveObject(const char* _fname, EItemType type, bool& res)   
 {
 	if (TYPE_FOLDER==type){
-    	FS.dir_delete			(_objects_,_fname,FALSE);
+    	FS.dir_delete			(_objects_,_fname,false);
         res 					= true;
 		return;
     }else if (TYPE_OBJECT==type){
@@ -242,7 +242,7 @@ void ELibrary::RemoveObject(const char* _fname, EItemType type, bool& res)
 void ELibrary::RenameObject(const char* nm0, const char* nm1, EItemType type)
 {
 	if (TYPE_FOLDER==type){
-    	FS.dir_delete			(_objects_,nm0,FALSE);
+    	FS.dir_delete			(_objects_,nm0,false);
     }else if (TYPE_OBJECT==type){
         string_path fn0,fn1,temp;
         // rename base file

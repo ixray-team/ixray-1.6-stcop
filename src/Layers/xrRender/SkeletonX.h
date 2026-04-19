@@ -98,10 +98,10 @@ ICF bool pick_bone(IKinematics::pick_result& r, float dist, const Fvector& S, co
 		if (CDB::TestRayTri(S, D, r.tri, u, v, r.dist, true) && (r.dist < dist))
 		{
 			r.normal.mknormal(r.tri[0], r.tri[1], r.tri[2]);
-			return TRUE;
+			return true;
 		};
 	}
-	return FALSE;
+	return false;
 }
 
 template<typename T_vertex>
@@ -258,7 +258,7 @@ public:
 		else if (*Vertices4W)
 			return pick_bone(r, dist, start, dir, indices, faces, Vertices4W, Parent->bone_instances);
 
-		return FALSE;
+		return false;
 	}
 
 	ICF void FillWMVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id)

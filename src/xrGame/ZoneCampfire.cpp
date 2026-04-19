@@ -38,7 +38,7 @@ void CZoneCampfire::GoEnabledState()
 	
 	if(m_pDisabledParticles)
 	{
-		m_pDisabledParticles->Stop	(FALSE);
+		m_pDisabledParticles->Stop	(false);
 		Particles::Details::Destroy	(m_pDisabledParticles);
 	}
 
@@ -46,7 +46,7 @@ void CZoneCampfire::GoEnabledState()
 	m_disabled_sound.destroy	();
 
 	const char* str						= pSettings->r_string(cNameSect(),"enabling_particles");
-	m_pEnablingParticles			= Particles::Details::Create(str,FALSE);
+	m_pEnablingParticles			= Particles::Details::Create(str,false);
 	m_pEnablingParticles->UpdateParent(XFORM(),zero_vel);
 	m_pEnablingParticles->Play		(false);
 }
@@ -57,7 +57,7 @@ void CZoneCampfire::GoDisabledState()
 
 	R_ASSERT						(nullptr==m_pDisabledParticles);
 	const char* str						= pSettings->r_string(cNameSect(),"disabled_particles");
-	m_pDisabledParticles			= Particles::Details::Create(str,FALSE);
+	m_pDisabledParticles			= Particles::Details::Create(str,false);
 	m_pDisabledParticles->UpdateParent	(XFORM(),zero_vel);
 	m_pDisabledParticles->Play			(false);
 	
@@ -117,7 +117,7 @@ void CZoneCampfire::PlayIdleParticles(bool bIdleLight)
 		inherited::PlayIdleParticles(bIdleLight);
 		if(m_pEnablingParticles)
 		{
-			m_pEnablingParticles->Stop	(FALSE);
+			m_pEnablingParticles->Stop	(false);
 			Particles::Details::Destroy	(m_pEnablingParticles);
 		}
 	}
@@ -132,7 +132,7 @@ void CZoneCampfire::StopIdleParticles(bool bIdleLight)
 bool CZoneCampfire::AlwaysTheCrow()
 {
 	if(m_turn_time)
-		return TRUE;
+		return true;
 	else
 		return inherited::AlwaysTheCrow();
 }

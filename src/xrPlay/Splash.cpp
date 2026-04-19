@@ -46,8 +46,8 @@ namespace splash
     int WINDOW_WIDTH = 98;
     int WINDOW_HEIGHT = 78;
 
-    static SDL_Window* window = NULL;
-    static SDL_Renderer* renderer = NULL;
+    static SDL_Window* window = nullptr;
+    static SDL_Renderer* renderer = nullptr;
 
     const char* SPLASH_STATUS = "";
     int progress_percent = 0;
@@ -250,7 +250,7 @@ namespace splash
         
         unsigned char* imageData = nullptr;
 
-        SDL_Surface* surface = NULL;
+        SDL_Surface* surface = nullptr;
 
         //check if exist splash.png in exe dir
         {
@@ -422,7 +422,7 @@ namespace splash
 #endif
 
         SDL_PropertiesID props = SDL_GetWindowProperties(window);
-        HWND hwnd = (HWND)SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+        HWND hwnd = (HWND)SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
 
         if (!hwnd) {
             SDL_Log("Failed to get HWND: %s", SDL_GetError());

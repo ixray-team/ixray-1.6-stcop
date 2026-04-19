@@ -151,7 +151,7 @@ void CUITrackBar::InitTrackBar(Fvector2 pos, Fvector2 size)
 
 	m_pSlider->InitButton	(Fvector2().set(0.0f, 0.0f), Fvector2().set(item_width, item_height));			//size
 	m_pSlider->InitTexture	(nodevalue_button);
-	m_pSlider->m_background->SetStretchTexture(xml_doc.ReadInt("stretch", 0, TRUE));
+	m_pSlider->m_background->SetStretchTexture(xml_doc.ReadInt("stretch", 0, true));
 
 	if (m_b_draw_value)
 	{

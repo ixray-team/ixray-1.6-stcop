@@ -65,20 +65,20 @@ ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 		if (CCustomRocket* pRocket = result.O != nullptr ? result.O->cast_custom_rocket() : nullptr)
 		{
 			if (!pRocket->Useful())
-				return TRUE;
+				return true;
 		}
 
 		if (CMissile* pMissile = result.O != nullptr ? result.O->cast_missile() : nullptr)
 		{
 			if (!pMissile->Useful())
-				return TRUE;
+				return true;
 		}
 		CObject* current_entity = Level().CurrentEntity();
 		if (CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr)
 		{
 			if (result.O == pActor)
 			{
-				return TRUE;
+				return true;
 			}
 
 			if (CHolderCustom* get_holder = pActor->Holder())
@@ -86,7 +86,7 @@ ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 				CCar* car = get_holder != nullptr ? get_holder->cast_car() : nullptr;
 				if (car && result.O == car)
 				{
-					return TRUE;
+					return true;
 				}
 			}
 		}
@@ -97,12 +97,12 @@ ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 		SGameMtl* pMtl = GMLib.GetMaterialByIdx(T.material);
 		if (pMtl != nullptr && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
 		{
-			return TRUE;
+			return true;
 		}
 	}
 
 	*RQ = result;
-	return FALSE;
+	return false;
 }
 
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore)

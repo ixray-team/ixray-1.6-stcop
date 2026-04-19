@@ -42,7 +42,7 @@ void	CBlender_deffer_flat::Compile(CBlender_Compile& C) {
 		C.r_End();
 		break;
 		case SE_R2_SHADOW: // smap-direct
-		C.r_Pass("shadow_base", "shadow_base", FALSE);
+		C.r_Pass("shadow_base", "shadow_base", false);
 		C.r_Sampler("s_base", C.L_textures[0]);
 		C.r_End();
 		break;

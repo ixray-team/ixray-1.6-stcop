@@ -43,7 +43,7 @@ void  CActorTools::OnObjectItemsFocused(xr_vector<ListItem*>& items)
 			{
 				FillBoneProperties(props, BONES_PREFIX, prop);
 				CBone* BONE = (CBone*)prop->m_Object;
-				if (BONE) 			BONE->Select(TRUE);
+				if (BONE) 			BONE->Select(true);
 			}
 			break;
 			case emSurface:
@@ -77,7 +77,7 @@ void CActorTools::OnExportImportRefsClick(ButtonValue* V, bool& bModif, bool& bS
 			{
 				fname = FS.fix_path(fname);
 
-				CInifile ini( fname.c_str(), FALSE, FALSE, FALSE);
+				CInifile ini( fname.c_str(), false, false, false);
 				xr_vector<shared_str>::iterator it 		= m_pEditObject->m_SMotionRefs.begin();
 				xr_vector<shared_str>::iterator it_e 	= m_pEditObject->m_SMotionRefs.end();
 				string64 buff;
@@ -97,7 +97,7 @@ void CActorTools::OnExportImportRefsClick(ButtonValue* V, bool& bModif, bool& bS
 			{
 				fname = FS.fix_path(fname);
 
-				CInifile ini( fname.c_str(), TRUE, TRUE, FALSE);
+				CInifile ini( fname.c_str(), true, true, false);
 				m_pEditObject->m_SMotionRefs.clear();
 				CInifile::Sect& S = ini.r_section("refs");
 				CInifile::SectCIt it = S.Data.begin();                
@@ -200,7 +200,7 @@ void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
 
 void CActorTools::RealUpdateProperties()
 {
-	m_Flags.set(flRefreshProps, FALSE);
+	m_Flags.set(flRefreshProps, false);
 	ListItemsVec items;
 	if (m_pEditObject) {
 		LHelper().CreateItem(items, OBJECT_PREFIX, 0, emObject);
@@ -635,7 +635,7 @@ void  CActorTools::OnBoneCreateDeleteClick(ButtonValue* V, bool& bModif, bool& b
 	if(bModif)
 	{
 		bSafe 			= false;
-		m_Flags.set		(flRefreshProps, TRUE);
+		m_Flags.set		(flRefreshProps, true);
 	}
 }
 
