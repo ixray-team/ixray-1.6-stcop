@@ -1166,7 +1166,7 @@ void RenderOMFEditor_Draw_TableMain_Params()
 		}
 
 		ImGui::Text(pPrintOutTemplate, length_with_current_speed, length_with_rt);
-
+		ImGui::SetItemTooltip("Length: [value_uses_current_speed] | [value_uses_real_time_speed] \nReal time means when speed=1.0 so animation plays as it would take normal time speed in game");
 
 		ImGui::EndDisabled();
 
@@ -1197,7 +1197,10 @@ void RenderOMFEditor_Draw_TableMain_Params()
 			{
 				R_ASSERT2(!(g_pOMFEditor->is_motion_time_format_keys_selected && g_pOMFEditor->is_motion_time_format_seconds_selected), "You can't select both keys and seconds format at the same time!");
 
-				// todo: add implemenetation here
+				if (g_pOMFEditor->is_motion_time_format_seconds_selected == false && g_pOMFEditor->is_motion_time_format_keys_selected == false)
+				{
+					g_pOMFEditor->is_motion_time_format_seconds_selected = true;
+				}
 
 				g_pOMFEditor->is_motion_time_format_radiobutton_changed = false;
 			}
