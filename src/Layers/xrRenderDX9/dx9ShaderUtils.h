@@ -137,7 +137,7 @@ inline HRESULT D3D9FindShaderComment(const DWORD* byte_code, DWORD fourcc, const
 
     version = *ptr >> 16;
 
-    BOOL isInvalidData = version != 0x4658      /* FX */
+    bool isInvalidData = version != 0x4658      /* FX */
         && version != 0x5458                    /* TX */
         && version != 0x7ffe
         && version != 0x7fff

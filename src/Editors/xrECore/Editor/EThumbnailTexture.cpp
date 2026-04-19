@@ -58,7 +58,7 @@ int ETextureThumbnail::MemoryUsage()
     if (FS.exist(fn))
     {
         string128		buffer;
-        IReader* F		= FS.r_open(0,fn);
+        IReader* F		= FS.r_open(nullptr,fn);
         F->r_string		(buffer,sizeof(buffer));
         int cnt = 0;
         while (!F->eof()){

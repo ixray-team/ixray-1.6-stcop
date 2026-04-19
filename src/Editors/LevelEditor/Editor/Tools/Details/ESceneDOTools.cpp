@@ -148,7 +148,7 @@ void EDetailManager::OnObjectRemove(CCustomObject* O, bool bDeleting)
 {
 	ObjectIt it=std::find(m_SnapObjects.begin(),m_SnapObjects.end(),O);
 	if (it!=m_SnapObjects.end()){
-    	m_RTFlags.set		(flRTGenerateBaseMesh,TRUE);
+    	m_RTFlags.set		(flRTGenerateBaseMesh,true);
 		m_SnapObjects.remove(O);
     }
 }
@@ -416,7 +416,7 @@ bool EDetailManager::LoadLTX(CInifile& ini)
         if (m_Base.LoadImage(image_name))
         {
             m_Base.CreateShader();
-            m_RTFlags.set(flRTGenerateBaseMesh, TRUE);
+            m_RTFlags.set(flRTGenerateBaseMesh, true);
         }
         else
         {
@@ -606,7 +606,7 @@ bool EDetailManager::LoadStream(IReader& F)
 	    F.r_stringZ		(buf,sizeof(buf));
     	if (m_Base.LoadImage(buf)){
 		    m_Base.CreateShader();
-            m_RTFlags.set(flRTGenerateBaseMesh,TRUE);
+            m_RTFlags.set(flRTGenerateBaseMesh,true);
         }else{
         	ELog.Msg(mtError,"EDetailManager: Can't find base texture '%s'.",buf);
             ClearSlots();

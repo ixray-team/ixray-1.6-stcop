@@ -33,7 +33,7 @@ bool GetPointColor(SPickQuery::SResult* R, u32& alpha)
     V %= surf->m_ImageData->h;	if (V < 0) V += surf->m_ImageData->h;
 
     alpha = color_get_A(surf->m_ImageData->layers.back()[V * surf->m_ImageData->w + U]);
-    return TRUE;
+    return true;
 }
 
 int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int sector_num)

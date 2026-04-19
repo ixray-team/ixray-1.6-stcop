@@ -491,7 +491,7 @@ bool GetStaticCformData(const Fmatrix& parent, CEditableMesh* mesh, CEditableObj
 	if (object->IsDynamic())
 		return FALSE;
 
-	bool bResult = TRUE;
+	bool bResult = true;
 	int point_offs = vert_it;
 
 	// fill vertices
@@ -580,7 +580,7 @@ bool SceneBuilder::BuildMesh(	const Fmatrix& parent,
 								const Fmatrix& real_transform,
 								CSceneObject* obj)
 {
-	bool bResult = TRUE;
+	bool bResult = true;
 	int point_offs;
 	point_offs = vert_it;  // save offset
 
@@ -918,7 +918,7 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 	for (u32 mu_vi=0; mu_vi<(u32)M.m_iVertexCount; ++mu_vi)
 		l_scene_stat->add_muvert(obj->_Transform(),M.m_pVertices[mu_vi]);
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -1025,7 +1025,7 @@ bool SceneBuilder::BuildSun(u8 quality, Fvector2 dir)
 		dl.data.direction.setHP(dir.y,dir.x);
 	}
 
-	return TRUE;
+	return true;
 }
 
 bool SceneBuilder::BuildPointLight(b_light* b, const Flags32& usage, svector<WORD,16>* sectors, FvectorVec* soft_points, const Fmatrix* soft_transform)
@@ -1064,7 +1064,7 @@ bool SceneBuilder::BuildPointLight(b_light* b, const Flags32& usage, svector<WOR
 		dl.sectors			= *sectors;
 	}
 
-	return TRUE;
+	return true;
 }
 
 bool SceneBuilder::BuildLight(CLight* e)
@@ -1161,7 +1161,7 @@ bool SceneBuilder::BuildGlow(CGlow* e)
 	b.size        	= e->m_fRadius;
 	b.dwMaterial   	= mtl_idx;
 	b.flags			= e->m_Flags.is(CGlow::gfFixedSize)?0x01:0x00;	// 0x01 - non scalable
-	return TRUE;
+	return true;
 }
 
 
@@ -1310,7 +1310,7 @@ int SceneBuilder::BuildMaterial(const char* esh_name, const char* csh_name, cons
 
 bool SceneBuilder::ParseStaticObjects(ObjectList& lst, const char* prefix, bool b_selected_only)
 {
-	bool bResult = TRUE;
+	bool bResult = true;
 	SPBItem* pb	= UI->ProgressStart(lst.size(),"Parse static objects...");
 	for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++)
 	{
@@ -1373,7 +1373,7 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 	if(cls==OBJCLASS_DUMMY)	return FALSE;
 	ESceneToolBase* pCurrentTool 	= Scene->GetOTool(cls);
 
-	bool bResult	= TRUE;
+	bool bResult	= true;
 
 	Clear			();
 

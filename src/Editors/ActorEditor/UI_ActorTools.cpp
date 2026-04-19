@@ -171,7 +171,7 @@ void CActorTools::OnFrame()
 			if (!MainForm->GetKeyForm()->AutoChange())
 				K->Bone_Calculate(&K->LL_GetData(K->LL_GetBoneRoot()), &Fidentity);
 			else
-				K->CalculateBones(TRUE);
+				K->CalculateBones(true);
 		}
 
 	}
@@ -737,7 +737,7 @@ void CActorTools::SetPreviewObjectPrefs()
 
 void CActorTools::OnObjectModified(void)
 {
-	m_Flags.set(flUpdateGeometry, TRUE);
+	m_Flags.set(flUpdateGeometry, true);
 	OnGeometryModified();
 }
 
@@ -762,8 +762,8 @@ bool CActorTools::Import(const char* initial, const char* obj_name)
 	CEditableObject* O = new CEditableObject(obj_name);
 	if (O->Load(full_name))
 	{
-		O->m_objectFlags.set(CEditableObject::eoDynamic, TRUE);
-		O->m_objectFlags.set(CEditableObject::eoProgressive, TRUE);
+		O->m_objectFlags.set(CEditableObject::eoDynamic, true);
+		O->m_objectFlags.set(CEditableObject::eoProgressive, true);
 		O->m_objectFlags.set(CEditableObject::eoSkipOpt, FALSE);
 		xr_delete(m_pEditObject);
 		m_pEditObject = O;

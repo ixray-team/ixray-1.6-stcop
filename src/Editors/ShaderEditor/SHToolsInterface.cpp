@@ -18,7 +18,7 @@ void ISHTools::ViewSetCurrentItem(const char* full_name)
 {
 	if (m_bLockUpdate) 	return;
 
-    m_bLockUpdate		= TRUE;
+    m_bLockUpdate		= true;
     Ext.m_Items->SelectItem(full_name);
     m_bLockUpdate		= FALSE;
 }
@@ -26,7 +26,7 @@ void ISHTools::ViewSetCurrentItem(const char* full_name)
 
 void ISHTools::Modified()
 {
-    m_bModified = TRUE;
+    m_bModified = true;
 
     ExecCommand(COMMAND_UPDATE_CAPTION);
     ApplyChanges();

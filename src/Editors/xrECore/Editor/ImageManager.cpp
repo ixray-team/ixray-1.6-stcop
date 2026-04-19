@@ -67,7 +67,7 @@ u32* Stbi_Load(const char* full_name, u32& w, u32& h)
 //------------------------------------------------------------------------------
 xr_string CImageManager::UpdateFileName(xr_string& fn)
 {
-	return EFS.AppendFolderToName(fn,1,TRUE);
+	return EFS.AppendFolderToName(fn,1,true);
 }
 
 //------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ bool CImageManager::MakeGameTexture(const char* game_name, u32* data, const STex
 	// fill texture params
 	// compress
 	u32 w4= tp.width*4;
-	int res = DXTUtils::Compress(game_name, (u8*)data, 0, tp.width, tp.height, w4, (STextureParams*)&tp, 4);
+	int res = DXTUtils::Compress(game_name, (u8*)data, nullptr, tp.width, tp.height, w4, (STextureParams*)&tp, 4);
 
 	if (1!=res)
 	{
@@ -233,7 +233,7 @@ bool CImageManager::MakeGameTexture(ETextureThumbnail* THM, const char* game_nam
 	}
 	// compress
 
-	int res = DXTUtils::Compress(game_name, (u8*)load_data, (u8*)(ext_data.empty() ? 0 : ext_data.data()), w, h, w4, &THM->m_TexParams, 4);
+	int res = DXTUtils::Compress(game_name, (u8*)load_data, (u8*)(ext_data.empty() ? nullptr : ext_data.data()), w, h, w4, &THM->m_TexParams, 4);
 
 	if (1 != res) 
 	{
@@ -332,10 +332,10 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 	bool bProgress 	= M_BASE.size()>1;
 	
 	// lock rescanning
-	int m_age		= time(NULL);
+	int m_age		= time(nullptr);
 
 	// sync assoc
-	SPBItem* pb=0;
+	SPBItem* pb=nullptr;
 	if (bProgress) pb = UI->ProgressStart(M_BASE.size(),"Synchronize textures...");
 	FS_FileSetIt it=M_BASE.begin();
 	FS_FileSetIt _E = M_BASE.end();
@@ -353,7 +353,7 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 		FS_FileSetIt gm = M_GAME.find(base_name);
 		bool bGame= bThm || ((gm==M_GAME.end()) || ((gm!=M_GAME.end())&&(gm->time_write!=it->time_write)));
 
-		ETextureThumbnail* THM=0;
+		ETextureThumbnail* THM=nullptr;
 
 		bool bUpdated 	= FALSE;
 		bool bFailed 	= FALSE;
@@ -363,7 +363,7 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 		bool bRes = Stbi_Load(fn,data,w,h,a); R_ASSERT(bRes);
 //.             MakeThumbnailImage(THM,data.begin(),w,h,a);
 			THM->Save	(it->time_write);
-			bUpdated = TRUE;
+			bUpdated = true;
 		}
 		// check game textures
 		if (bForceGame||(sync_game&&bGame)){
@@ -381,9 +381,9 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 					if (sync_list) 		sync_list->push_back(base_name.c_str());
 					if (modif_map) 		modif_map->insert(*it);
 				}else{
-					bFailed				= TRUE;
+					bFailed				= true;
 				}
-				bUpdated 				= TRUE;
+				bUpdated 				= true;
 			}else{
 				ELog.DlgMsg(mtError,"Can't make game texture '%s'.\nInvalid size (%dx%d).",base_name.c_str(),w,h);
 			}
@@ -453,7 +453,7 @@ void CImageManager::SynchronizeTexture(const char* tex_name, time_t age)
 	FS_FileSet t_map;
 	FS_File				F(tex_name); F.time_write = age;
 	t_map.insert		(F);
-	SynchronizeTextures	(true,true,true,&t_map,&modif,0,age);
+	SynchronizeTextures	(true,true,true,&t_map,&modif,nullptr,age);
 	RefreshTextures		(&modif);
 }
 //------------------------------------------------------------------------------
@@ -492,7 +492,7 @@ bool CImageManager::CheckCompliance(const char* fname, int& compl_)
 	U32Vec data;
 	u32 w, h, a;
 	if (!Stbi_Load(fname,data,w,h,a)) return FALSE;
-	if ((1==w) || (1==h))				 return TRUE;
+	if ((1==w) || (1==h))				 return true;
 
 	u32 w_2 	= (1==w)?w:w/2;
 	u32 h_2 	= (1==h)?h:h/2;
@@ -536,7 +536,7 @@ bool CImageManager::CheckCompliance(const char* fname, int& compl_)
 	// free
 	xr_free			(pScaled);
 	xr_free   		(pRestored);
-	return 			TRUE;
+	return 			true;
 }
 void CImageManager::CheckCompliance(FS_FileSet& files, FS_FileSet& compl_)
 {
@@ -599,7 +599,7 @@ bool _ApplyBorders(U32Vec& pixels, u32 w, u32 h, u32 ref)
 
 					if (C) {
 						result[y*w+x]	= color_rgba(r/C,g/C,b/C,ref);
-						bNeedContinue 	= TRUE;
+						bNeedContinue 	= true;
 					}
 				}
 			}
@@ -681,7 +681,7 @@ bool GetRTDataU32(ref_rt& RT, xr_vector<u32>& outPixels, int& width, int& height
 
 bool CImageManager::CreateOBJThumbnail(const char* tex_name, CEditableObject* obj, time_t age)
 {
-	bool bResult = TRUE;
+	bool bResult = true;
 
 	// save render params
 	Flags32 old_flag = psDeviceFlags;
@@ -748,7 +748,7 @@ EImageThumbnail* CImageManager::CreateThumbnail(const char* src_name, ECustomThu
 	case ECustomThumbnail::ETTexture:	return new ETextureThumbnail(src_name,bLoad);
 	default: NODEFAULT;
 	}
-	return 0;
+	return nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -772,7 +772,7 @@ void CImageManager::RefreshTextures(AStringVec* modif)
 		{
 			UI->SetStatus("Refresh textures...");
 			AStringVec modif_files;
-			ImageLib.SynchronizeTextures(true,true,false,0,&modif_files);
+			ImageLib.SynchronizeTextures(true,true,false,nullptr,&modif_files);
 			EDevice->Resources->ED_UpdateTextures(&modif_files);
 			UI->SetStatus("");
 		}
@@ -823,7 +823,7 @@ bool CImageManager::CreateSmallerCubeMap(const char* src_name, const char* dst_n
 		if (!MakeGameTexture(out_name,&*sm_data.begin(),tp))
 			return FALSE;
 		ELog.DlgMsg(mtInformation,"Smaller cubemap successfylly created [%3.2f sec].",tm_scm);
-		return TRUE;
+		return true;
 	}else{
 		ELog.Msg(mtError,"Can't load texture '%s'.",src_name);
 	}

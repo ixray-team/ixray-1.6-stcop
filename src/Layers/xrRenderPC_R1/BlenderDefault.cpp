@@ -47,7 +47,7 @@ void	CBlender_default::Compile(CBlender_Compile& C)
 	IBlender::Compile(C);
 #ifdef _EDITOR
 	if (C.bEditor)	{
-		uber_deffer(C, true, "deffer_base", "deffer_base", false, 0, true);
+		uber_deffer(C, true, "deffer_base", "deffer_base", false, nullptr, true);
 		C.r_End();
 		//C.PassBegin		();
 		//{

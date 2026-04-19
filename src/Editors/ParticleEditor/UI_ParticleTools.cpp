@@ -240,7 +240,7 @@ void CParticleTool::OnFrame()
                     new_vel.div (EDevice->fTimeDelta);
                     m_Vel.lerp	(m_Vel,new_vel,0.9);
                     m_Transform	= m_ParentAnimator->XFORM();
-                    m_Flags.set	(flApplyParent,TRUE);
+                    m_Flags.set	(flApplyParent,true);
                 }
             }
             break;
@@ -250,7 +250,7 @@ void CParticleTool::OnFrame()
             m_Transform.identity();
             m_Transform.setHPB(m_Rotation.y, m_Rotation.x, m_Rotation.z);
             m_Transform.c = m_Position;
-            m_Flags.set(flApplyParent,TRUE);
+            m_Flags.set(flApplyParent,true);
             break;
         }
     }
@@ -533,7 +533,7 @@ CCommandVar CParticleTool::CreateGroupFromSelected(CCommandVar p1, CCommandVar p
     pg->m_Effects.push_back	   		(eff);
     eff->m_EffectName				= eff_name;
 
-    eff->m_Flags.set				(PS::CPGDef::SEffect::flEnabled,TRUE);
+    eff->m_Flags.set				(PS::CPGDef::SEffect::flEnabled,true);
     eff->m_Time0					= 0.0f;
     eff->m_Time1					= 0.0f;
 
@@ -550,7 +550,7 @@ CCommandVar CParticleTool::CreateGroupFromSelected(CCommandVar p1, CCommandVar p
     
    	m_PList->SelectItem				(grp_name.c_str());*/
    
-	return 							TRUE;
+	return 							true;
 }
 
 CCommandVar CParticleTool::Compact(CCommandVar p1, CCommandVar p2)
@@ -599,7 +599,7 @@ CCommandVar CParticleTool::Compact(CCommandVar p1, CCommandVar p2)
     ResetCurrent		();
     UpdateProperties	(true);
 
-	return TRUE;
+	return true;
 }
 
 bool CParticleTool::Validate(bool bMsg)
@@ -958,7 +958,7 @@ void CParticleTool::ImportPE()
         PS::CPEDef* def = new PS::CPEDef();
         FS.TryLoad(Path);
 
-        CInifile ini(Path.c_str(), TRUE, TRUE, FALSE);
+        CInifile ini(Path.c_str(), true, true, FALSE);
         if (def->Load2(ini))
         {
             AppendPE(def, xr_path(Path.c_str()).xfilename().c_str());
@@ -1039,7 +1039,7 @@ void CParticleTool::StopCurrent(bool bFinishPlaying)
 void CParticleTool::SelectEffect(const char* name)
 {
 	sel_eff_name 	= name;
-    m_Flags.set		(flSelectEffect,TRUE);
+    m_Flags.set		(flSelectEffect,true);
 }
 
 void CParticleTool::OnShowHint(AStringVec& SS)
@@ -1271,7 +1271,7 @@ void CParticleTool::OnChangeObject(PropValue* sender)
     {
         Lib.RemoveEditObject(m_EditObject);
         m_EditObject = V->value->c_str() ? Lib.CreateEditObject(V->value->c_str()) : 0;
-        //	ZoomObject(TRUE); 
+        //	ZoomObject(true); 
 
         UI->RedrawScene();
     }
@@ -1359,7 +1359,7 @@ void CParticleTool::FillChooseParticleType(ChooseItemVec& items, void* param)
 void CParticleTool::OnParticleCreateItem(const char* path)
 {
     UIChooseForm::SelectItem(smCustom, 1, 0, TOnChooseFillItems(this, &CParticleTool::FillChooseParticleType), 0, 0, 0, 0);
-    m_CreatingParticle = TRUE;
+    m_CreatingParticle = true;
     m_CreatingParticlePath = path;
 }
 

@@ -245,7 +245,7 @@ void EScene::OnFrame( float dT )
 				pInput->unacquire();
 				pInput->KeyboardButtonUpdate(SDL_SCANCODE_LALT, false);
 				UI->IsEnableInput = true;
-				ShowCursor(TRUE);
+				ShowCursor(true);
 			}
 		}
 	}
@@ -255,7 +255,7 @@ void EScene::OnFrame( float dT )
 		m_RTFlags.set(flIsStopPlayInEditor, FALSE);
 		if(IsPlayInEditor())
 		{
-			ShowCursor(TRUE);
+			ShowCursor(true);
 			pInput->unacquire();
 			SDL_WarpMouseInWindow(g_AppInfo.Window, 
 			Device.TargetWidth / 2, Device.TargetHeight / 2);
@@ -409,7 +409,7 @@ void EScene::Modified()
 		m_RTFlags.set(flIsBuildedGameGraph, FALSE);
 		break;
 	}
-	m_RTFlags.set(flRT_Modified|flRT_Unsaved,TRUE);
+	m_RTFlags.set(flRT_Modified|flRT_Unsaved,true);
 	g_scene_physics.OnSceneModified();
 	ExecCommand(COMMAND_UPDATE_CAPTION);
 	UIObjectList::Refresh();
@@ -805,7 +805,7 @@ void EScene::Stop()
 	::Sound->set_geometry_som(nullptr);
 
 	Console->Hide();
-	m_RTFlags.set(flIsStopPlayInEditor, TRUE);
+	m_RTFlags.set(flIsStopPlayInEditor, true);
 
 	g_pGamePersistent->Environment().Invalidate();
 	Device.seqFrameMT.Remove(this);
@@ -844,7 +844,7 @@ bool EScene::BuildAIMap()
 			return false;;
 		}
 		m_game_graph.clear();
-		m_RTFlags.set(flIsBuildedAIMap, TRUE);
+		m_RTFlags.set(flIsBuildedAIMap, true);
 		m_RTFlags.set(flIsBuildedGameGraph, FALSE);
 		UI->RedrawScene();
 	}
@@ -866,7 +866,7 @@ bool EScene::BuildGameGraph()
 			return false;
 		}
 
-		m_RTFlags.set(flIsBuildedGameGraph, TRUE);
+		m_RTFlags.set(flIsBuildedGameGraph, true);
 		UI->RedrawScene();
 	}
 	return true;
@@ -881,7 +881,7 @@ bool EScene::BuildCForm()
 			Msg("! CForm is empty!");
 			return false;
 		}
-		m_RTFlags.set(flIsBuildedCForm, TRUE);
+		m_RTFlags.set(flIsBuildedCForm, true);
 		UI->RedrawScene();
 	}
 
@@ -895,7 +895,7 @@ bool EScene::BuildCForm()
 		if (LSndLib->MakeEnvGeometry(stream, false))
 			stream.save_to(lev_sound_env.c_str());
 
-		m_RTFlags.set(flIsBuildedSndEnv, TRUE);
+		m_RTFlags.set(flIsBuildedSndEnv, true);
 	}
 	return true;
 }

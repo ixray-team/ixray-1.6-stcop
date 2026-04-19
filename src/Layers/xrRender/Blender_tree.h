@@ -14,7 +14,7 @@ public:
 public:
 	virtual		const char*		getComment()	{ return "LEVEL: trees/bushes";	}
 	virtual		bool		canBeLMAPped()	{ return FALSE; }
-	virtual		bool		canBeDetailed()	{ return TRUE; }
+	virtual		bool		canBeDetailed()	{ return true; }
 
 	virtual		void		Save			(IWriter&	fs);
 	virtual		void		Load			(IReader&	fs, u16 version);

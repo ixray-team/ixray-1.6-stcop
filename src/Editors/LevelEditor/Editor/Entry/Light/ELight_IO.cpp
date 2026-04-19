@@ -217,7 +217,7 @@ bool CLight::LoadStream(IReader& F)
     {
         m_FuzzyData	= new SFuzzyData();
         m_FuzzyData->LoadStream(F);
-		m_Flags.set(ELight::flPointFuzzy,TRUE);
+		m_Flags.set(ELight::flPointFuzzy,true);
     }else{
 		m_Flags.set(ELight::flPointFuzzy,FALSE);
     }

@@ -161,14 +161,14 @@ void EScene::SelectSnapList()
     if (snap_objects){
         SelectObjects(FALSE,OBJCLASS_SCENEOBJECT);
         for(ObjectIt _F = snap_objects->begin();_F!=snap_objects->end();_F++)
-            (*_F)->Select(TRUE);
+            (*_F)->Select(true);
         UI->RedrawScene();
     }
 }
 
 void EScene::UpdateSnapList()
 {
-    m_RTFlags.set(flUpdateSnapList, TRUE);
+    m_RTFlags.set(flUpdateSnapList, true);
 }
 
 void EScene::UpdateSnapListReal()

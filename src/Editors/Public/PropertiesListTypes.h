@@ -184,7 +184,7 @@ public:
     IC void				AppendValue		(PropValue* value)
     {
     	if (!values.empty()&&!value->Equal(values.front()))
-        	m_Flags.set	(flMixed,TRUE);
+        	m_Flags.set	(flMixed,true);
     	values.push_back(value);
     }
     IC xr_string		GetDrawText		()
@@ -204,7 +204,7 @@ public:
         	PropValueIt it	= F; ++it;
 	    	for (; values.end() != it; ++it){
     	    	if (!(*it)->Equal(*F)){
-                	m_Flags.set(flMixed,TRUE);
+                	m_Flags.set(flMixed,true);
                     break;
                 }
             }
@@ -237,7 +237,7 @@ public:
             }
             if (!CV->Equal(values.front()))
             {
-                m_Flags.set(flMixed, TRUE);
+                m_Flags.set(flMixed, true);
                 m_Flags.set(flIgnoreMixed, FALSE);
             }
         }
@@ -725,7 +725,7 @@ public:
 	virtual bool		Equal			(PropValue* val)
     {
         if (items!=((RListValue*)val)->items){
-        	m_Owner->m_Flags.set(PropItem::flDisabled,TRUE); 
+        	m_Owner->m_Flags.set(PropItem::flDisabled,true); 
         	return false;
         }
         return RTextValue::Equal(val);
@@ -740,7 +740,7 @@ public:
 	virtual bool		Equal			(PropValue* val)
     {
         if (items!=((CListValue*)val)->items){
-        	m_Owner->m_Flags.set(PropItem::flDisabled,TRUE); 
+        	m_Owner->m_Flags.set(PropItem::flDisabled,true); 
         	return false;
         }
         return CTextValue::Equal(val);

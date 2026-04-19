@@ -38,7 +38,7 @@ const char* CKinematics::LL_BoneName_dbg	(u16 ID)
 {
 	CKinematics::accel::iterator _I, _E=bone_map_N->end();
 	for (_I	= bone_map_N->begin(); _I!=_E; ++_I)	if (_I->second==ID) return *_I->first;
-	return 0;
+	return nullptr;
 }
 
 #ifdef DEBUG_DRAW
@@ -187,7 +187,7 @@ void	CKinematics::Load(const char* N, IReader *data, u32 dwFlags)
  
 	// User data
 	IReader* UD 	= data->open_chunk(OGF_S_USERDATA);
-    pUserData		= UD?new CInifile(UD,FS.get_path(_game_config_)->m_Path):0;
+    pUserData		= UD?new CInifile(UD,FS.get_path(_game_config_)->m_Path):nullptr;
     if (UD)			UD->close();
 
 	// Globals
@@ -329,7 +329,7 @@ void CKinematics::LL_Validate()
         LL_GetBoneGroups			(GroupIDs);
 
 		buffer_vector<u16> b_parts(_alloca((size_t)LL_BoneCount() * sizeof(u16)), (size_t)LL_BoneCount(), (size_t)LL_BoneCount(), BI_NONE);
-		//если поймаете исключение замените на xr_vector
+		//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ xr_vector
 
         CBoneData* root = &LL_GetData(LL_GetBoneRoot());
 
@@ -388,7 +388,7 @@ void CKinematics::Copy(dxRender_Visual *P)
 
 	CalculateBones_Invalidate	();
 
-    m_lod 	   = (pFrom->m_lod)?(dxRender_Visual*)::Render->model_Duplicate	(pFrom->m_lod):0;
+    m_lod 	   = (pFrom->m_lod)?(dxRender_Visual*)::Render->model_Duplicate	(pFrom->m_lod):nullptr;
 }
 
 void CKinematics::CalculateBones_Invalidate	()
@@ -691,7 +691,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 	bool picked = FALSE;
 	size_t bones_count = bones->size();
 	buffer_vector<Fobb> cache_obb(_alloca(bones_count * sizeof(Fobb)), bones_count);
-	//если поймаете исключение замените на xr_vector
+	//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ xr_vector
 	IKinematics::pick_result r;r.normal = normal; r.dist = dist;
 	for (u16 k=0; k<bones_count; k++)
 	{
@@ -723,7 +723,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 	// collect collide boxes
 	Fsphere test_sphere{ cp,size };
 	buffer_vector<u16> test_bones(_alloca(bones_count * sizeof(u16)), bones_count);
-	//если поймаете исключение замените на xr_vector
+	//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ xr_vector
 	for (u16 k=0; k< bones_count; k++)
 	{
 		CBoneData& BD = *((*bones)[k]);
@@ -802,7 +802,7 @@ void CKinematics::CalculateWallmarks()
 
 		if (need_remove)
 		{
-			SkeletonWMVecIt new_end = std::remove_if(wallmarks.begin(), wallmarks.end(), [](const intrusive_ptr<CSkeletonWallmark>& x) { return x == 0; });
+			SkeletonWMVecIt new_end = std::remove_if(wallmarks.begin(), wallmarks.end(), [](const intrusive_ptr<CSkeletonWallmark>& x) { return x == nullptr; });
 			wallmarks.erase(new_end, wallmarks.end());
 		}
 	}
@@ -816,7 +816,7 @@ void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT* 
 	VERIFY2(bones,"Invalid visual. Bones already released.");
 	VERIFY2(bone_instances,"Invalid visual. bone_instances already deleted.");
 
-	if ((wm == 0) || (0==bones) || (0==bone_instances))	return;
+	if ((wm == nullptr) || (nullptr==bones) || (nullptr==bone_instances))	return;
 
 	// skin vertices
 	Fvector P, P0, P1, P2, P3;

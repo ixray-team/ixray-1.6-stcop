@@ -43,7 +43,7 @@ void PS::OnEffectParticleBirth(void* owner, u32 , PAPI::Particle& m, u32 )
             m.frame	= (u16)iFloor(Random.randI(PED->m_Frame.m_iFrameCount)*255.f);
 
         if (PED->m_Flags.is(CPEDef::dfAnimated)&&PED->m_Flags.is(CPEDef::dfRandomPlayback)&&Random.randI(2))
-            m.flags.set(Particle::ANIMATE_CCW,TRUE);
+            m.flags.set(Particle::ANIMATE_CCW,true);
     }
 }
 void PS::OnEffectParticleDead(void* , u32 , PAPI::Particle& , u32 )
@@ -64,7 +64,7 @@ void CParticleEffect::Play()
 {
 	xrCriticalSectionGuard guard(&onframe_lock);
 	m_RT_Flags.set(flRT_DefferedStop,FALSE);
-	m_RT_Flags.set(flRT_Playing,TRUE);
+	m_RT_Flags.set(flRT_Playing,true);
 	Pholder.PlayEffect();
 }
 void CParticleEffect::Stop(bool bDefferedStop)
@@ -72,7 +72,7 @@ void CParticleEffect::Stop(bool bDefferedStop)
 	xrCriticalSectionGuard guard(&onframe_lock);
 	Pholder.StopEffect(bDefferedStop);
 	if (bDefferedStop)
-		m_RT_Flags.set(flRT_DefferedStop,TRUE);
+		m_RT_Flags.set(flRT_DefferedStop,true);
 	else
 		m_RT_Flags.set(flRT_Playing,FALSE);
 }

@@ -68,7 +68,7 @@ public:
 		if (!_G.Similar(C._G))	return FALSE;
 		if (!_B.Similar(C._B))	return FALSE;
 		if (!_A.Similar(C._A))	return FALSE;
-		return TRUE;
+		return true;
 	}
 	void			Load		(IReader* fs);
 	void			Save		(IWriter* fs);

@@ -101,7 +101,7 @@ void CSHGameMtlTools::FillItemList()
 
 void CSHGameMtlTools::Load()
 {
-    m_bLockUpdate		= TRUE;
+    m_bLockUpdate		= true;
 
     GameMaterialLibraryEditors->Unload	();
     GameMaterialLibraryEditors->Load		();
@@ -113,7 +113,7 @@ void CSHGameMtlTools::Load()
 bool CSHGameMtlTools::Save()
 {
 	ResetCurrentItem	();
-    m_bLockUpdate		= TRUE;
+    m_bLockUpdate		= true;
 
     // save
     string_path 		fn;
@@ -146,7 +146,7 @@ void CSHGameMtlTools::AppendItem(const char* path, const char* parent_name)
     if (!parent)
     {
         UIChooseForm::SelectItem(smCustom, 1, 0, TOnChooseFillItems(this, &CSHGameMtlTools::FillChooseMtlType), 0, 0, 0, 0);
-        m_CreatingMtl = TRUE;
+        m_CreatingMtl = true;
         m_CreatingMtlPath = path;
     }
     else

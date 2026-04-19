@@ -99,7 +99,7 @@ bool CGroupObject::LL_AppendObject(CCustomObject* object)
 bool CGroupObject::AppendObjectLoadCB(CCustomObject* object)
 {
 	object->m_pOwnerObject			= this;
-	object->m_CO_Flags.set			(flObjectInGroup, TRUE);
+	object->m_CO_Flags.set			(flObjectInGroup, true);
 	m_ObjectsInGroup.resize			(m_ObjectsInGroup.size()+1);
 	m_ObjectsInGroup.back().pObject = object;
 
@@ -175,8 +175,8 @@ bool CGroupObject::LoadLTX(CInifile& ini, const char* sect_name)
 		for (ObjectsInGroup::iterator it=m_ObjectsInGroup.begin(); it!=m_ObjectsInGroup.end(); ++it)
 			if(it->pObject)
 			{
-				it->pObject->m_CO_Flags.set(flObjectInGroup, TRUE);
-				it->pObject->m_CO_Flags.set(flObjectInGroupUnique, TRUE);
+				it->pObject->m_CO_Flags.set(flObjectInGroup, true);
+				it->pObject->m_CO_Flags.set(flObjectInGroupUnique, true);
 			}
 	}
 
@@ -198,7 +198,7 @@ void CGroupObject::SaveLTX(CInifile& ini, const char* sect_name)
 	Scene->SaveObjectsLTX(grp_lst, sect_name, "ingroup", ini);
 
 	for(it=grp_lst.begin(); it!=grp_lst.end(); ++it)
-		(*it)->m_CO_Flags.set(CCustomObject::flObjectInGroup, TRUE);
+		(*it)->m_CO_Flags.set(CCustomObject::flObjectInGroup, true);
 
 	ini.w_string		(sect_name, "ref_name", m_ReferenceName_.c_str());
 }
@@ -270,8 +270,8 @@ bool CGroupObject::LoadStream(IReader& F)
 		for (ObjectsInGroup::iterator it=m_ObjectsInGroup.begin(); it!=m_ObjectsInGroup.end(); ++it)
 			if(it->pObject)
 			{
-				it->pObject->m_CO_Flags.set(flObjectInGroup, TRUE);
-				it->pObject->m_CO_Flags.set(flObjectInGroupUnique, TRUE);
+				it->pObject->m_CO_Flags.set(flObjectInGroup, true);
+				it->pObject->m_CO_Flags.set(flObjectInGroupUnique, true);
 			}
 	}
 
@@ -296,7 +296,7 @@ void CGroupObject::SaveStream(IWriter& F)
 		Scene->SaveObjectsStream(grp_lst,GROUPOBJ_CHUNK_OBJECT_LIST,F);
 
 		for (it=grp_lst.begin(); it!=grp_lst.end(); ++it)
-			(*it)->m_CO_Flags.set(CCustomObject::flObjectInGroup, TRUE);
+			(*it)->m_CO_Flags.set(CCustomObject::flObjectInGroup, true);
 	}
 
 	F.open_chunk	(GROUPOBJ_CHUNK_REFERENCE);
@@ -439,7 +439,7 @@ void CGroupObject::OnFreezeAllClick(ButtonValue* sender, bool& bModif, bool& bSa
 	{
 		case 0: 
 		{   
-			bDoUnique = TRUE;
+			bDoUnique = true;
 		}break;
 		case 1:
 		{   
@@ -498,8 +498,8 @@ void CGroupObject::OnSceneUpdate()
 					it->ObjectName	= buf;
 				}
 				
-				it->pObject->m_CO_Flags.set(flObjectInGroup, 		TRUE);
-				it->pObject->m_CO_Flags.set(flObjectInGroupUnique, 	TRUE);
+				it->pObject->m_CO_Flags.set(flObjectInGroup, 		true);
+				it->pObject->m_CO_Flags.set(flObjectInGroupUnique, 	true);
 				if(it->pObject==NULL)
 					ELog.Msg	(mtError,"Gr%s' has invalid roup 'eference to object '%s'.", GetName(), it->ObjectName.c_str());
 */                    

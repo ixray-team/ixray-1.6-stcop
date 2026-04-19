@@ -43,7 +43,7 @@ void  CActorTools::OnObjectItemsFocused(xr_vector<ListItem*>& items)
 			{
 				FillBoneProperties(props, BONES_PREFIX, prop);
 				CBone* BONE = (CBone*)prop->m_Object;
-				if (BONE) 			BONE->Select(TRUE);
+				if (BONE) 			BONE->Select(true);
 			}
 			break;
 			case emSurface:
@@ -97,7 +97,7 @@ void CActorTools::OnExportImportRefsClick(ButtonValue* V, bool& bModif, bool& bS
 			{
 				fname = FS.fix_path(fname);
 
-				CInifile ini( fname.c_str(), TRUE, TRUE, FALSE);
+				CInifile ini( fname.c_str(), true, true, FALSE);
 				m_pEditObject->m_SMotionRefs.clear();
 				CInifile::Sect& S = ini.r_section("refs");
 				CInifile::SectCIt it = S.Data.begin();                
@@ -635,7 +635,7 @@ void  CActorTools::OnBoneCreateDeleteClick(ButtonValue* V, bool& bModif, bool& b
 	if(bModif)
 	{
 		bSafe 			= false;
-		m_Flags.set		(flRefreshProps, TRUE);
+		m_Flags.set		(flRefreshProps, true);
 	}
 }
 

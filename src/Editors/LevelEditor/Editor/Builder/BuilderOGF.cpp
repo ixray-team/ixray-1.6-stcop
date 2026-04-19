@@ -77,7 +77,7 @@ bool SceneBuilder::BuildHOMModel()
 
 bool SceneBuilder::BuildSOMModel()
 {
-	bool bResult 	= TRUE;
+	bool bResult 	= true;
 	CMemoryWriter 	F;
 
 	F.open_chunk	(0);

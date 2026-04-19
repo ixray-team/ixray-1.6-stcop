@@ -104,7 +104,7 @@ void CCustomObject::OnMotionControlPlayClick(ButtonValue* value, bool& bModif, b
 	ButtonValue* B = smart_cast<ButtonValue*>(value); R_ASSERT(B);
 	switch (B->btn_num)
 	{
-		case 0: m_MotionParams->bPlay = TRUE; break;
+		case 0: m_MotionParams->bPlay = true; break;
 		case 1: m_MotionParams->bPlay = FALSE; break;
 	}
 	AnimationUpdate(m_MotionParams->Frame());

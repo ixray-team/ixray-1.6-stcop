@@ -410,8 +410,8 @@ void CRender::Render()
 	r_pmask										(true,false);	// disable priority "1"
 	Device.Statistic->RenderCALC.End			();
 
-	BOOL	split_the_scene_to_minimize_wait		= FALSE;
-	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
+	bool	split_the_scene_to_minimize_wait		= false;
+	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=true;
 
 	//******* Main render :: PART-0	-- first
 	if (!split_the_scene_to_minimize_wait)

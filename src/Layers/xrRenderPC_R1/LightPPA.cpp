@@ -106,10 +106,10 @@ void CLightR_Manager::render_point	(u32 _priority)
 			RImplementation.r_pmask						(true,true);
 
 		//		4. Analyze if HUD intersects light volume
-		BOOL				bHUD	= FALSE;
-		CFrustum			F;
-		F.CreateFromMatrix	(L_combine,FRUSTUM_P_ALL);
-		bHUD				= F.testSphere_dirty	(Device.vCameraPosition,2.f);
+		bool bHUD = false;
+		CFrustum F;
+		F.CreateFromMatrix(L_combine,FRUSTUM_P_ALL);
+		bHUD = F.testSphere_dirty(Device.vCameraPosition,2.f);
 
 		//		5. Dump sorting tree
 		RCache.set_Constants((R_constant_table*)0);
@@ -187,14 +187,14 @@ void CLightR_Manager::render_spot	(u32 _priority)
 			RImplementation.r_pmask(true, true);
 
 		//		4. Analyze if HUD intersects light volume
-		BOOL				bHUD = FALSE;
-		CFrustum			F;
+		bool bHUD = false;
+		CFrustum F;
 		F.CreateFromMatrix(L_combine, FRUSTUM_P_ALL);
 		bHUD = F.testSphere_dirty(Device.vCameraPosition, 2.f);
 		// if (bHUD)		Msg	("HUD");
 
 		//		4. Dump sorting tree
-		RCache.set_Constants((R_constant_table*)0);
+		RCache.set_Constants(nullptr);
 		if (bHUD && _priority == 0)
 			g_hud->Render_Last();
 

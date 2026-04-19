@@ -87,7 +87,7 @@ void	CBlender_Model::Compile	(CBlender_Compile& C)
 			RImplementation.addShaderOption("FORWARD_ONLY", "1");
 		}
 
-		uber_deffer(C, true, "deffer_model", "deffer_base", !is_blend && !!oBlend.value, 0, true);
+		uber_deffer(C, true, "deffer_model", "deffer_base", !is_blend && !!oBlend.value, nullptr, true);
 
 		if(is_blend) {
 			C.PassSET_ZB(TRUE, FALSE);
@@ -96,8 +96,8 @@ void	CBlender_Model::Compile	(CBlender_Compile& C)
 
 		C.r_End();
 	} else {
-		const char*	vsname		= 0;
-		const char*	psname		= 0;
+		const char*	vsname		= nullptr;
+		const char*	psname		= nullptr;
 		switch (C.iElement)
 		{
 		case SE_R1_NORMAL_HQ:	

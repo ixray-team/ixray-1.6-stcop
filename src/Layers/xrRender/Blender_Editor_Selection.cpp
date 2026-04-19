@@ -37,8 +37,8 @@ void	CBlender_Editor_Selection::Compile	(CBlender_Compile& C)
 	if (C.bEditor)	{
 		C.PassBegin		();
 		{
-			C.PassSET_ZB		(TRUE,FALSE);
-			C.PassSET_Blend		(TRUE,D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,	FALSE,0);
+			C.PassSET_ZB		(true,FALSE);
+			C.PassSET_Blend		(true,D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,	FALSE,0);
 			C.PassSET_LightFog	(FALSE,FALSE);
 
 			// Stage0 - Base texture
@@ -56,7 +56,7 @@ void	CBlender_Editor_Selection::Compile	(CBlender_Compile& C)
 	else 
 #endif //USE_DX11
 	{
-		C.r_Pass	("editor","simple_color",FALSE,TRUE,FALSE,TRUE,D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA);
+		C.r_Pass	("editor","simple_color",FALSE,true,FALSE,true,D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA);
 		C.r_End		();
 	}
 }

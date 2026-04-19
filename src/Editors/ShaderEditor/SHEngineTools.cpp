@@ -50,7 +50,7 @@ CSHEngineTools::CSHEngineTools(const ISHInit& init):ISHTools(init)
 	m_bFreezeUpdate		= FALSE;
 	m_CurrentBlender 	= 0;
 	m_BlenderStream.clear();
-	m_bNeedResetShaders	= TRUE;
+	m_bNeedResetShaders	= true;
 	m_RemoteRenBlender	= FALSE;
 	m_CreatingBlender = FALSE;
 	m_SetCustomObject = FALSE;
@@ -111,7 +111,7 @@ bool CSHEngineTools::OnPreviewObjectRefChange(PropValue* sender, u32& new_val)
 	case pvoBox: 	fn	= "editor\\ShaderTest_Box"; 	break;
 	case pvoSphere:	fn	= "editor\\ShaderTest_Sphere";	break;
 	case pvoTeapot:	fn	= "editor\\ShaderTest_Teapot";	break;
-	case pvoCustom: {m_SetCustomObject = TRUE; UIChooseForm::SelectItem(smObject, 1, 0, 0, 0, 0, 0, 0); return true; }break;
+	case pvoCustom: {m_SetCustomObject = true; UIChooseForm::SelectItem(smObject, 1, 0, 0, 0, 0, 0, 0); return true; }break;
 	}
 	
 	OnPreviewObjectRefChange(fn);
@@ -265,7 +265,7 @@ void CSHEngineTools::ZoomObject(bool bOnlySel)
 void CSHEngineTools::RealResetShaders() 
 {
 	// disable props vis update
-	m_bFreezeUpdate 	= TRUE;
+	m_bFreezeUpdate 	= true;
 	UpdateStreamFromObject();
  
 	UpdateObjectShader	();
@@ -273,7 +273,7 @@ void CSHEngineTools::RealResetShaders()
 	PrepareRender		();
 	// reset device shaders from temp file
 	IReader data		(m_RenderShaders.pointer(), m_RenderShaders.size());
-	EDevice->Reset		(&data,TRUE);
+	EDevice->Reset		(&data,true);
 	// enable props vis update
 	m_bFreezeUpdate 	= FALSE;
 	m_bNeedResetShaders	= FALSE;
@@ -310,8 +310,8 @@ void CSHEngineTools::Load()
 	string_path 				fn;
 	FS.update_path				(fn,_game_data_,"shaders.xr");
 
-	m_bFreezeUpdate				= TRUE;
-	m_bLockUpdate 				= TRUE;
+	m_bFreezeUpdate				= true;
+	m_bLockUpdate 				= true;
 
 	if (FS.exist(fn))
 	{
@@ -535,7 +535,7 @@ void CSHEngineTools::AppendItem(const char* path, const char* parent_name)
 	CLASS_ID cls_id;
 	if (!parent){
 		UIChooseForm::SelectItem(smCustom, 1, 0, TOnChooseFillItems(this, &CSHEngineTools::FillChooseTemplate),0,0,0,0);
-		m_CreatingBlender = TRUE;
+		m_CreatingBlender = true;
 		m_CreatingBlenderPath = path;
 		return;
 	}else{
@@ -622,7 +622,7 @@ void CSHEngineTools::OnRenameItem(UIItemListForm::Node& node, const char* old_fu
 	
 	if (type==TYPE_OBJECT)
 		RealRenameItem(old_full_name, new_full_name);
-	m_bFreezeUpdate = TRUE;
+	m_bFreezeUpdate = true;
 }
 
 

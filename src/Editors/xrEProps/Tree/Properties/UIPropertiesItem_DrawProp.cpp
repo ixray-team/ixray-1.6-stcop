@@ -113,7 +113,7 @@ bool TokenOnEdit(PropItem* prop, bool& change)
 		if (prop->AfterEdit<TokenValue<T>, T>(new_val))
 			change = prop->ApplyValue<TokenValue<T>, T>(new_val);
 	}
-	return TRUE;
+	return true;
 }
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ bool RTokenOnEdit(PropItem* prop, bool& change)
 		if (prop->AfterEdit<RTokenValue<T>, T>(new_val))
 			change = prop->ApplyValue<RTokenValue<T>, T>(new_val);
 	}
-	return TRUE;
+	return true;
 }
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
@@ -162,7 +162,7 @@ bool FlagOnEdit(PropItem* prop, bool& change)
 		if (prop->AfterEdit<FlagValue<_flags<T> >, _flags<T> >(new_val))
 			change = prop->ApplyValue<FlagValue<_flags<T> >, _flags<T> >(new_val);
 	}
-	return TRUE;
+	return true;
 }
 void UIPropertiesItem::DrawProp()
 {
@@ -394,7 +394,7 @@ void UIPropertiesItem::DrawProp()
 		ImVec2 originalFramePadding = ImGui::GetStyle().FramePadding;
 		ImVec2 originalItemSpacing = ImGui::GetStyle().ItemSpacing;
 
-		// Убираем вертикальные отступы
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(originalCellPadding.x, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(originalFramePadding.x, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(originalItemSpacing.x, 0));

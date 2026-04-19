@@ -243,7 +243,7 @@ bool EScene::LoadLevelPartLTX(ESceneToolBase* M, const char* mn)
 		sprintf(map_name, "%s%d", mn, fnidx);
 	}
 
-	return 					TRUE;
+	return 					true;
 }
 
 bool EScene::LoadLevelPart(ESceneToolBase* M, const char* map_name)
@@ -287,16 +287,16 @@ bool EScene::LoadLevelPartStream(ESceneToolBase* M, const char* map_name)
 		}
 		//success
 		FS.r_close(R);
-		return 				TRUE;
+		return 				true;
 	}
-	return 					TRUE;
+	return 					true;
 }
 
 bool EScene::LoadLevelPart(const char* map_name, ObjClassID cls)
 {
 	xr_string pn	= LevelPartName(map_name,cls);
 	if (LoadLevelPart(GetTool(cls),pn.c_str()))
-		return 		TRUE;
+		return 		true;
 	else
 		return 			FALSE;
 }
@@ -304,14 +304,14 @@ bool EScene::LoadLevelPart(const char* map_name, ObjClassID cls)
 bool EScene::UnloadLevelPart(ESceneToolBase* M)
 {
 	M->Clear		();
-	return 			TRUE;
+	return 			true;
 }
 
 bool EScene::UnloadLevelPart(const char* map_name, ObjClassID cls)
 {
 	xr_string pn	= LevelPartName(map_name,cls);
 	if (UnloadLevelPart(GetTool(cls)))
-		return 		TRUE;
+		return 		true;
 	else
 		return			FALSE;
 }
@@ -368,7 +368,7 @@ void EScene::SaveLTX(const char* map_name, bool bForUndo, bool bForceSaveAll)
 	}
 
 	
-	CInifile ini(full_name.c_str(),FALSE,FALSE,TRUE);
+	CInifile ini(full_name.c_str(),FALSE,FALSE,true);
 
 	if (bSaveMain)
 	{
@@ -1333,7 +1333,7 @@ void EScene::LoadCompilerError(const char* fn)
 void EScene::SaveCompilerError(const char* fn)
 {
 /*
-	CInifile		ini(fn,FALSE,FALSE,TRUE);
+	CInifile		ini(fn,FALSE,FALSE,true);
 	string256		buff;
 	const char*			sect;
 	u32				sz, i;

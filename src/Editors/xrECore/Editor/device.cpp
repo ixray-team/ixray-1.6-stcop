@@ -33,7 +33,7 @@ static LPVOID __cdecl luabind_allocator(
 	{
 		LPVOID	non_const_pointer = const_cast<LPVOID>(pointer);
 		xr_free(non_const_pointer);
-		return	(0);
+		return	(nullptr);
 	}
 
 	if (!pointer)
@@ -48,7 +48,7 @@ static LPVOID __cdecl luabind_allocator(
 void setup_luabind_allocator()
 {
 	luabind::allocator = &luabind_allocator;
-	luabind::allocator_parameter = 0;
+	luabind::allocator_parameter = nullptr;
 }
 
 
@@ -64,8 +64,8 @@ CEditorRenderDevice::CEditorRenderDevice()
 	mProject.identity();
     mFullTransform.identity();
     mView.identity	();
-	m_WireShader	= 0;
-	m_SelectionShader = 0;
+	m_WireShader	= nullptr;
+	m_SelectionShader = nullptr;
 
     b_is_Ready 			= FALSE;
 	b_is_Active			= FALSE;
@@ -79,7 +79,7 @@ CEditorRenderDevice::CEditorRenderDevice()
 	dwFillMode		= D3DFILL_SOLID;
     dwShadeMode		= D3DSHADE_GOURAUD;
 
-    m_CurrentShader	= 0;
+    m_CurrentShader	= nullptr;
     //pSystemFont		= 0;
 
 	fASPECT 		= 1.f;
@@ -250,9 +250,9 @@ bool CEditorRenderDevice::Create()
 	string_path 		sh;
     FS.update_path		(sh,_game_data_,"shaders.xr");
 
-    IReader* F			= 0;
+    IReader* F			= nullptr;
 	if (FS.exist(sh))
-		F				= FS.r_open(0,sh);
+		F				= FS.r_open(nullptr,sh);
 	Resources			= new CResourceManager	();
 
     // if build options - load textures immediately
@@ -301,15 +301,15 @@ void CEditorRenderDevice::_SetupStates()
 		float fBias = -1.f;
 		CHK_DX(REDevice->SetSamplerState( i, D3DSAMP_MIPMAPLODBIAS, *((LPDWORD) (&fBias))));
 	}
-	EDevice->SetRS(D3DRS_DITHERENABLE,	TRUE				);
-    EDevice->SetRS(D3DRS_COLORVERTEX,		TRUE				);
+	EDevice->SetRS(D3DRS_DITHERENABLE,	true				);
+    EDevice->SetRS(D3DRS_COLORVERTEX,		true				);
     EDevice->SetRS(D3DRS_STENCILENABLE,	FALSE				);
-    EDevice->SetRS(D3DRS_ZENABLE,			TRUE				);
+    EDevice->SetRS(D3DRS_ZENABLE,			true				);
     EDevice->SetRS(D3DRS_SHADEMODE,		D3DSHADE_GOURAUD	);
 	EDevice->SetRS(D3DRS_CULLMODE,		D3DCULL_CCW			);
 	EDevice->SetRS(D3DRS_ALPHAFUNC,		D3DCMP_GREATER		);
-	EDevice->SetRS(D3DRS_LOCALVIEWER,		TRUE				);
-    EDevice->SetRS(D3DRS_NORMALIZENORMALS,TRUE				);
+	EDevice->SetRS(D3DRS_LOCALVIEWER,		true				);
+    EDevice->SetRS(D3DRS_NORMALIZENORMALS,true				);
 
 	EDevice->SetRS(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL);
 	EDevice->SetRS(D3DRS_SPECULARMATERIALSOURCE,D3DMCS_MATERIAL);
@@ -321,7 +321,7 @@ void CEditorRenderDevice::_SetupStates()
 //---------------------------------------------------------------------------
 void CEditorRenderDevice::_Create(IReader* F)
 {
-	b_is_Ready				= TRUE;
+	b_is_Ready				= true;
 
 	// General Render States
     _SetupStates		();
@@ -346,7 +346,7 @@ void CEditorRenderDevice::_Create(IReader* F)
 void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 {
 	b_is_Ready 						= FALSE;
-    m_CurrentShader				= 0;
+    m_CurrentShader				= nullptr;
 
     UI->OnDeviceDestroy			();
 
@@ -437,7 +437,7 @@ void CEditorRenderDevice::ResoreWindow(bool moving)
 	if (GetWindowPlacement(GetHWND(), &wp)) //analog EDevice->NormalWinSizeSaved
 	{
 		RECT r = wp.rcNormalPosition;
-		MoveWindow(GetHWND(), r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
+		MoveWindow(GetHWND(), r.left, r.top, r.right - r.left, r.bottom - r.top, true);
 	}
 	
 	EDevice->isZoomed = false;
@@ -473,8 +473,8 @@ bool CEditorRenderDevice::Begin()
 	Clear();
 
 	RCache.OnFrameBegin();
-	g_bRendering = TRUE;
-	return		TRUE;
+	g_bRendering = true;
+	return		true;
 }
 
 //---------------------------------------------------------------------------

@@ -98,7 +98,7 @@ ICF bool pick_bone(IKinematics::pick_result& r, float dist, const Fvector& S, co
 		if (CDB::TestRayTri(S, D, r.tri, u, v, r.dist, true) && (r.dist < dist))
 		{
 			r.normal.mknormal(r.tri[0], r.tri[1], r.tri[2]);
-			return TRUE;
+			return true;
 		};
 	}
 	return FALSE;

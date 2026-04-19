@@ -67,7 +67,7 @@ bool SPass::equal(const SPass& other)
 #ifdef _EDITOR
 	if (M != other.M)					return FALSE;
 #endif
-	return TRUE;
+	return true;
 }
 
 //
@@ -94,13 +94,13 @@ bool ShaderElement::equal	(ShaderElement& S)
 	if (passes.size() != S.passes.size())			return FALSE;
 	for (u32 p=0; p<passes.size(); p++)
 		if (passes[p] != S.passes[p])				return FALSE;
-	return TRUE;
+	return true;
 }
 
 bool ShaderElement::equal	(ShaderElement* S)
 {	
-	if (0==S && 0==this)	return TRUE;
-	if (0==S || 0==this)	return FALSE;
+	if (nullptr==S && nullptr==this)	return true;
+	if (nullptr==S || nullptr==this)	return FALSE;
 	return	equal	(*S);	
 }
 

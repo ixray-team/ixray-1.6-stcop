@@ -23,9 +23,9 @@ public:
 
 	int 		GetLocalNewSounds	(FS_FileSet& files);
 //	void		SafeCopyLocalToServer(FS_FileSet& files);
-	void		SynchronizeSounds	(bool sync_thm, bool sync_game, bool bForceGame, FS_FileSet* source_map, AStringVec* sync_list_without_extention, FS_FileSet* modif_map=0);
+	void		SynchronizeSounds	(bool sync_thm, bool sync_game, bool bForceGame, FS_FileSet* source_map, AStringVec* sync_list_without_extention, FS_FileSet* modif_map=nullptr);
 //	void 		ChangeFileAgeTo		(FS_FileSet* tgt_map, int age);
-    void		CreateSoundThumbnail(ESoundThumbnail* THM, const xr_string& src_name, const char* path=0, bool bSetDefParam=true);
+    void		CreateSoundThumbnail(ESoundThumbnail* THM, const xr_string& src_name, const char* path=nullptr, bool bSetDefParam=true);
 	void		CleanupSounds		(bool IsSoft);
 
     bool		OnCreate			();

@@ -153,7 +153,7 @@ int EScene::RaySelect(int flag, ObjClassID classfilter)
 		for (; _I!=_E; _I++)
 		{
 			float range			= UI->ZFar();
-			_I->second->RaySelect(flag,range,UI->m_CurrentRStart,UI->m_CurrentRDir,TRUE);
+			_I->second->RaySelect(flag,range,UI->m_CurrentRStart,UI->m_CurrentRDir,true);
 			if (range<dist){
 				dist			= range;
 				mt				= _I->second;

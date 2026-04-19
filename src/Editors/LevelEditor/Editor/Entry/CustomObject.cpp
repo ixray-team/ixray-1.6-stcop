@@ -22,7 +22,7 @@ CCustomObject::CCustomObject(LPVOID data, const char* name)
     m_RT_Flags.assign	(flRT_Valid|flRT_Visible);
     m_pOwnerObject		= 0;
     ResetTransform		();
-    m_RT_Flags.set		(flRT_UpdateTransform,TRUE);
+    m_RT_Flags.set		(flRT_UpdateTransform,true);
     m_Motion			= NULL;
     m_MotionParams 		= NULL;
 
@@ -73,7 +73,7 @@ void CCustomObject::Select( int flag )
 {
     if (m_RT_Flags.is(flRT_Visible) && (!!m_RT_Flags.is(flRT_Selected) != flag))
     {
-        m_RT_Flags.set(flRT_Selected, (flag == -1) ? (m_RT_Flags.is(flRT_Selected) ? FALSE : TRUE) : flag);
+        m_RT_Flags.set(flRT_Selected, (flag == -1) ? (m_RT_Flags.is(flRT_Selected) ? FALSE : true) : flag);
         //UI->RedrawScene		();
         ExecCommand(COMMAND_UPDATE_PROPERTIES);
 

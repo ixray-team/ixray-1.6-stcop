@@ -92,7 +92,7 @@ static class cl_sun_shafts_intensity : public RHIShaderConstant::Setup
 	}
 }	binder_sun_shafts_intensity;
 
-extern ENGINE_API BOOL r2_sun_static;
+extern ENGINE_API bool r2_sun_static;
 //////////////////////////////////////////////////////////////////////////
 // Just two static storage
 void CRender::create()

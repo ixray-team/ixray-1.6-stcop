@@ -437,7 +437,7 @@ void		CResourceManager::DeleteGeom		(const SGeometry* Geom)
 CTexture* CResourceManager::_CreateTexture	(const char* _Name)
 {
 	// DBG_VerifyTextures	();
-	if (0==xr_strcmp(_Name,"null"))	return 0;
+	if (0==xr_strcmp(_Name,"null"))	return nullptr;
 	R_ASSERT		(_Name && _Name[0]);
 
 	xrCriticalSectionGuard guard(creationGuard);

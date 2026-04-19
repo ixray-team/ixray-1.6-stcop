@@ -54,7 +54,7 @@ ref_constant R_constant_table::get(const char* S)
 	//PROF_EVENT("R_constant_table::get const char*")
 	// assumption - sorted by name
 	c_table::iterator I = std::lower_bound(table.begin(), table.end(), S, p_search);
-	if (I == table.end() || (0 != xr_strcmp(*(*I)->name, S)))	return 0;
+	if (I == table.end() || (0 != xr_strcmp(*(*I)->name, S)))	return nullptr;
 	else												return *I;
 }
 ref_constant R_constant_table::get(shared_str& S)
@@ -67,7 +67,7 @@ ref_constant R_constant_table::get(shared_str& S)
 		ref_constant	C = *I;
 		if (C->name.equal(S))	return C;
 	}
-	return	0;
+	return	nullptr;
 }
 
 #ifndef USE_DX11
@@ -206,7 +206,7 @@ bool	R_constant_table::parse(void* _desc, u32 destination)
 /// !!!!!!!!FIX THIS FOR DX11!!!!!!!!!
 void R_constant_table::merge(R_constant_table* T)
 {
-	if (0 == T)		return;
+	if (nullptr == T)		return;
 
 	// Real merge
 	static xr_vector<ref_constant> table_tmp;
@@ -268,7 +268,7 @@ void R_constant_table::clear()
 {
 	//.
 	for (u32 it = 0; it < table.size(); it++)
-		table[it] = 0;//.g_constant_allocator.destroy(table[it]);
+		table[it] = nullptr;//.g_constant_allocator.destroy(table[it]);
 	table.clear();
 #ifdef USE_DX11
 	m_CBTable.clear();

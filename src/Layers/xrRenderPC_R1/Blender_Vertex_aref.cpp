@@ -79,7 +79,7 @@ void	CBlender_Vertex_aref::Compile(CBlender_Compile& C)
 		if (!!oBlend.value) {
 			RImplementation.addShaderOption("FORWARD_ONLY", "1");
 		}
-		uber_deffer(C, true, "deffer_base", "deffer_base", !oBlend.value, 0, true);
+		uber_deffer(C, true, "deffer_base", "deffer_base", !oBlend.value, nullptr, true);
 		
 		if(!!oBlend.value) 
 		{

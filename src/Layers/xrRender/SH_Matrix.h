@@ -74,7 +74,7 @@ public:
 		if (!rotate.Similar(M.rotate))		return FALSE;
 		if (!scrollU.Similar(M.scrollU))	return FALSE;
 		if (!scrollV.Similar(M.scrollV))	return FALSE;
-		return TRUE;
+		return true;
 	}
 
 	void			Load		(IReader* fs);

@@ -171,7 +171,7 @@ void UIImageEditorForm::Show(bool bImport)
 	if (Form->bReadonlyMode)
 	{
 		Log("#!You don't have permisions to modify textures.");
-		Form->m_ItemProps->SetReadOnly(TRUE);
+		Form->m_ItemProps->SetReadOnly(true);
 	}
 	Form->modif_map.clear();
 	Form->InitItemList();
@@ -454,15 +454,15 @@ void UIImageEditorForm::FilterUpdate()
 		bool bVis = FALSE;
 		int type = thm->_Format().type;
 		if (STextureParams::ttImage == type&&m_bFilterImage)
-			bVis = TRUE;
+			bVis = true;
 		else if (STextureParams::ttCubeMap == type && m_bFilterCube)
-			bVis = TRUE;
+			bVis = true;
 		else if (STextureParams::ttBumpMap== type && m_bFilterBump)
-			bVis = TRUE;
+			bVis = true;
 		else if (STextureParams::ttNormalMap == type && m_bFilterNormal)
-			bVis = TRUE;
+			bVis = true;
 		else if (STextureParams::ttTerrain == type && m_bFilterTerrain)
-			bVis = TRUE;
+			bVis = true;
 
 		I->Visible(bVis);
 		

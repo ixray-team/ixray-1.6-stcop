@@ -53,7 +53,7 @@ void FHierrarhyVisual::Load(const char* N, IReader *data, u32 dwFlags)
 			children[i]	= (dxRender_Visual*)::Render->getVisual(ID);
 		}
 #endif
-		bDontDelete = TRUE;
+		bDontDelete = true;
 	}
 	else
 	{	

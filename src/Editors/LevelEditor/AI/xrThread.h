@@ -17,9 +17,9 @@ public:
 		thID				= _ID;
 		thProgress			= 0;
 		thCompleted			= FALSE;
-		thMessages			= TRUE;
+		thMessages			= true;
 		thMonitor			= FALSE;
-		thDestroyOnComplete	= TRUE;
+		thDestroyOnComplete	= true;
 	}
 	virtual				~CThread(){}
 	void				Start	()

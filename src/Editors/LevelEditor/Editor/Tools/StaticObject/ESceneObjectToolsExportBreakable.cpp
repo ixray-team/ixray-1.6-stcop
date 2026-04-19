@@ -35,7 +35,7 @@ IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtracto
 				bResult 	= FALSE; 
 				break; 
 			}
-			if (TRUE==B->canBeLMAPped()){ 
+			if (true==B->canBeLMAPped()){ 
 				ELog.Msg	(mtError,"Object '%s', surface '%s' contain static engine shader - '%s'. Export interrupted.",mesh->Parent()->m_LibName.c_str(),surf->_Name(),surf->_ShaderName());
 				bResult 	= FALSE; 
 				break; 
@@ -152,7 +152,7 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 					}
 
 					NET_Packet Packet;
-					m_Data->Spawn_Write(Packet, TRUE);
+					m_Data->Spawn_Write(Packet, true);
 
 					F->spawn.stream.open_chunk(F->spawn.chunk++);
 					F->spawn.stream.w(Packet.B.data, Packet.B.count);
@@ -189,7 +189,7 @@ IC bool OrientToNorm(Fvector& local_norm, Fmatrix33& form, Fvector& hs)
 		ax_pointer[max_proj].invert();
 		ax_pointer[(max_proj+1)%3].invert();
 	}
-	return TRUE;
+	return true;
 }
 
 bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
@@ -227,7 +227,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 				const Fmatrix& T 	= obj->_Transform();
 				
 				for(EditMeshIt M =O->FirstMesh(); M!=O->LastMesh(); M++)
-					if (!build_mesh	(T, *M, extractor, SGameMtl::flClimable, TRUE))
+					if (!build_mesh	(T, *M, extractor, SGameMtl::flClimable, true))
 					{
 					  bResult       = false;
 					  break;
@@ -297,7 +297,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 
 						m_Data->set_additional_info((void*)mat_name);
 						NET_Packet					Packet;
-						m_Data->Spawn_Write			(Packet,TRUE);
+						m_Data->Spawn_Write			(Packet,true);
 
 						F->spawn.stream.open_chunk	(F->spawn.chunk++);
 						F->spawn.stream.w			(Packet.B.data,Packet.B.count);

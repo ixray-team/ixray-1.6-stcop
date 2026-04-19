@@ -32,7 +32,7 @@ void CBlender_ShWorld::Compile	(CBlender_Compile& C)
 	IBlender::Compile		(C);
 	C.PassBegin		();
 	{
-		C.PassSET_ZB		(TRUE, FALSE);
+		C.PassSET_ZB		(true, FALSE);
 		C.PassSET_Blend_MUL	();
 		C.PassSET_LightFog	(FALSE, FALSE);
 

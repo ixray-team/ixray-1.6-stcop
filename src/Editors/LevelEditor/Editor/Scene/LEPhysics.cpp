@@ -37,7 +37,7 @@ bool GetStaticCformData(ObjectClass* obj, mesh_build_data& data, bool b_selected
 
 bool GetStaticCformData(ObjectList& lst, mesh_build_data& data, bool b_selected_only)
 {
-	bool bResult = TRUE;
+	bool bResult = true;
 
 	for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++)
 	{

@@ -167,11 +167,11 @@ void CRenderTarget::accum_spot(light* L)
 		RCache.set_Element(s_accum->E[0]);		// masker
 
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
-		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
+		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 		draw_volume(L);
 
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
+		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 		draw_volume(L);
 	}
 
@@ -234,7 +234,7 @@ void CRenderTarget::accum_spot(light* L)
 		RCache.set_c("m_texgen", m_Texgen);
 		RCache.set_c("m_shadow", m_Lmap);
 
-		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00);
+		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, dwLightMarkerID, 0xff, 0x00);
 		draw_volume(L);
 	}
 
@@ -277,7 +277,7 @@ void CRender::OnDeviceDestroy()
 	xr_delete(Models);
 }
 
-ref_shader	CRender::getShader(int id) { return 0; }
+ref_shader	CRender::getShader(int id) { return nullptr; }
 
 bool CRender::occ_visible(Fbox& B)
 {
@@ -329,7 +329,7 @@ void CRender::Calculate()
 		m_spotlights.resize(0);
 
 		// Determine visibility for dynamic part of scene
-		set_Object(0);
+		set_Object(nullptr);
 		if (g_hud)
 		{
 			g_hud->Render_First();	// R1 shadows
@@ -446,7 +446,7 @@ IRenderVisual* CRender::model_CreateParticles(const char* name)
 	if (SE) return		Models->CreatePE(SE);
 	else {
 		PS::CPGDef* SG = PSLibrary.FindPGD(name);
-		return			SG ? Models->CreatePG(SG) : 0;
+		return			SG ? Models->CreatePG(SG) : nullptr;
 	}
 }
 
@@ -489,7 +489,7 @@ void CRender::add_Visual(IRenderVisual* visual, bool)
 	}
 
 	if(auto pKin = PKinematics(visual)) {
-		pKin->CalculateBones(TRUE);
+		pKin->CalculateBones(true);
 	}
 
 	Models->RenderSingle(dynamic_cast<dxRender_Visual*>(visual), current_matrix, 1.f);
@@ -710,10 +710,10 @@ public:
 		string_path pname;
 		xr_strconcat(pname, ::Render->getShaderPath(), pFileName);
 		IReader* R = FS.r_open("$game_shaders$", pname);
-		if (0 == R) {
+		if (nullptr == R) {
 			// possibly in shared directory or somewhere else - open directly
 			R = FS.r_open("$game_shaders$", pFileName);
-			if (0 == R) {
+			if (nullptr == R) {
 				return E_FAIL;
 			}
 		}
@@ -860,8 +860,8 @@ HRESULT	CRender::shader_compile(
 	sh_name[len] = '0' + char(4 == m_skinning); ++len;
 
 	// finish
-	defines[def_it].Name = 0;
-	defines[def_it].Definition = 0;
+	defines[def_it].Name = nullptr;
+	defines[def_it].Definition = nullptr;
 	def_it++;
 	R_ASSERT(def_it < 128);
 

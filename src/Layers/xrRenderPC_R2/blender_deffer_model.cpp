@@ -71,7 +71,7 @@ void	CBlender_deffer_model::Compile(CBlender_Compile& C) {
 		}
 	}
 	else {
-		BOOL bAref = oBlend.value;
+		bool bAref = oBlend.value;
 
 		switch(C.iElement) {
 			case SE_R2_NORMAL_HQ: // deffer

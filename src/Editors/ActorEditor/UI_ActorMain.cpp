@@ -9,7 +9,7 @@ CCommandVar CActorTools::CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 	xr_strconcat		(fn, Core.UserName, "_backup.object");
 	FS.update_path		(fn,"$objects$",fn);
 	ExecCommand			(COMMAND_SAVE,xr_string(fn));
-	return TRUE;
+	return true;
 }
 CCommandVar CActorTools::CommandSave(CCommandVar p1, CCommandVar p2)
 {
@@ -35,7 +35,7 @@ CCommandVar CActorTools::CommandSave(CCommandVar p1, CCommandVar p2)
 				m_LastFileName	= temp_fn.c_str();
 				EPrefs->AppendRecentFile	(m_LastFileName.c_str());
 				ExecCommand		(COMMAND_UPDATE_CAPTION);
-				res				= TRUE;
+				res				= true;
 			}else{
 				res				= FALSE;
 			}
@@ -79,7 +79,7 @@ CCommandVar CActorTools::CommandImport(CCommandVar p1, CCommandVar p2)
 			{
 				ExecCommand(COMMAND_CLEAR);
 			}
-			return TRUE;
+			return true;
 		}
 		else {
 			ELog.Msg(mtError, "Invalid file path. ");
@@ -173,12 +173,12 @@ CCommandVar CActorTools::CommandRedo(CCommandVar p1, CCommandVar p2)
 CCommandVar CActorTools::CommandOptimizeMotions(CCommandVar p1, CCommandVar p2)
 {
 	OptimizeMotions();
-	return TRUE;
+	return true;
 }
 CCommandVar CActorTools::CommandMakeThumbnail(CCommandVar p1, CCommandVar p2)
 {
 	MakeThumbnail();
-	return TRUE;
+	return true;
 }
 
 CCommandVar CActorTools::CommandBatchConvert(CCommandVar p1, CCommandVar p2)
@@ -312,22 +312,22 @@ CActorMain::~CActorMain()
 CCommandVar CommandShowClipMaker(CCommandVar p1, CCommandVar p2)
 {
 	ATools->ShowClipMaker();
-	return TRUE;
+	return true;
 }
 CCommandVar CommandMakePreview(CCommandVar p1, CCommandVar p2)
 {
 	ATools->MakePreview();
-	return TRUE;
+	return true;
 }
 CCommandVar CommandPreviewObjPref(CCommandVar p1, CCommandVar p2)
 {
 	ATools->SetPreviewObjectPrefs();
-	return TRUE;
+	return true;
 }
 CCommandVar CommandSelectPreviewObj(CCommandVar p1, CCommandVar p2)
 {
 	ATools->SelectPreviewObject(p1);
-	return TRUE;
+	return true;
 }
 CCommandVar CommandLoadFirstRecent(CCommandVar p1, CCommandVar p2)
 {
@@ -341,13 +341,13 @@ CCommandVar CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
 {
 	//not_implemented();
   //  fraLeftBar->UpdateBar();
-	return TRUE;
+	return true;
 }
 CCommandVar CommandUpdateCaption(CCommandVar p1, CCommandVar p2)
 {
 	//not_implemented();
 	//frmMain->UpdateCaption();
-	return TRUE;
+	return true;
 }
 
 CCommandVar CommandChangeTarget(CCommandVar p1, CCommandVar p2)
@@ -363,7 +363,7 @@ CCommandVar CommandChangeTarget(CCommandVar p1, CCommandVar p2)
 		case 3: ATools->SelectListItem(SURFACES_PREFIX, 0, true, false, true); 	break;
 		}
 	}
-	return TRUE;
+	return true;
 }
 CCommandVar CActorTools::CommandClear(CCommandVar p1, CCommandVar p2)
 {
@@ -376,7 +376,7 @@ CCommandVar CActorTools::CommandClear(CCommandVar p1, CCommandVar p2)
 	ExecCommand(COMMAND_UPDATE_CAPTION);
 	ExecCommand(COMMAND_UPDATE_PROPERTIES);
 	UndoClear();
-	return TRUE;
+	return true;
 }
 
 CCommandVar CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
@@ -425,7 +425,7 @@ CCommandVar CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
 		UndoClear();
 		UndoSave();
 	}
-	return TRUE;
+	return true;
 }
 
 void CActorMain::RegisterCommands()

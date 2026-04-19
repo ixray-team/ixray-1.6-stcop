@@ -379,7 +379,7 @@ void CLight::OnDeviceDestroy()
 
 CEditFlare::CEditFlare()
 {
-	m_Flags.set(flFlare|flSource|flGradient,TRUE);
+	m_Flags.set(flFlare|flSource|flGradient,true);
 	// flares
 	m_Flares.resize		(6);
 	FlareIt it=m_Flares.begin();

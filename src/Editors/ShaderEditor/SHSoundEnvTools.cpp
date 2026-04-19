@@ -246,7 +246,7 @@ void CSHSoundEnvTools::Load()
 	string_path 		fn;
 	FS.update_path		(fn,_game_data_,SNDENV_FILENAME);
 
-	m_bLockUpdate		= TRUE;
+	m_bLockUpdate		= true;
 
 	if (FS.exist(fn))
 	{
@@ -262,7 +262,7 @@ void CSHSoundEnvTools::Load()
 bool CSHSoundEnvTools::Save()
 {
 	ApplyChanges();
-	m_bLockUpdate				= TRUE;
+	m_bLockUpdate				= true;
 
 	// save
 	string_path 				fn;

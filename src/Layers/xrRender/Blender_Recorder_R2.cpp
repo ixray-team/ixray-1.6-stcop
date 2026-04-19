@@ -353,10 +353,10 @@ void CBlender_Compile::r_End(bool clear)
     dest.constants = DEV->_CreateConstantTable(ctable);
     dest.state = DEV->_CreateState(RS.GetContainer());
     dest.T = DEV->_CreateTextureList(passTextures);
-    dest.C = 0;
-    ref_matrix_list temp(0);
+    dest.C = nullptr;
+    ref_matrix_list temp(nullptr);
 #ifdef _EDITOR
-    dest.M = 0;
+    dest.M = nullptr;
 #endif
     SH->passes.push_back(DEV->_CreatePass(dest));
 

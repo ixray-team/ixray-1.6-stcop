@@ -25,7 +25,7 @@ bool ESceneCustomOTool::_AppendObject(CCustomObject* object)
 {
     m_Objects.push_back(object);
     object->FParentTools = this;
-    return TRUE;
+    return true;
 }
 
 
@@ -57,7 +57,7 @@ bool  ESceneCustomOTool::AllowMouseStart()
        	return FALSE;
     }
        
-    return TRUE;
+    return true;
 }
 
 void ESceneCustomOTool::OnFrame()
@@ -437,7 +437,7 @@ void ESceneCustomOTool::OnSelected(CCustomObject* object)
     	CCustomObject* obj	= *o_it;
     	obj->m_RT_Flags.set(CCustomObject::flRT_SelectedLast, FALSE);
 	}
-    object->m_RT_Flags.set(CCustomObject::flRT_SelectedLast, TRUE);
+    object->m_RT_Flags.set(CCustomObject::flRT_SelectedLast, true);
 }
 
 const CCustomObject* ESceneCustomOTool::LastSelected() const

@@ -28,7 +28,7 @@ bool MixedFlag(PropItem* prop, bool& change)
 	prop->BeforeEdit<FlagValue<_flags<T> >, _flags<T> >(new_val);
 	if (prop->AfterEdit<FlagValue<_flags<T> >, _flags<T> >(new_val))
 		change = prop->ApplyValue<FlagValue<_flags<T> >, _flags<T> >(new_val);
-	return TRUE;
+	return true;
 }
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ bool MixedToken(PropItem* prop, bool& change)
 	prop->BeforeEdit<TokenValue<T>, T>(edit_value);
 	if (prop->AfterEdit<TokenValue<T>, T>(edit_value))
 		change = prop->ApplyValue<TokenValue<T>, T>(edit_value);
-	return TRUE;
+	return true;
 }
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ bool MixedRToken(PropItem* prop, bool& change)
 	prop->BeforeEdit<RTokenValue<T>, T>(edit_value);
 	if (prop->AfterEdit<RTokenValue<T>, T>(edit_value))
 		change = prop->ApplyValue<RTokenValue<T>, T>(edit_value);
-	return TRUE;
+	return true;
 }
 void UIPropertiesItem::RemoveMixed()
 {

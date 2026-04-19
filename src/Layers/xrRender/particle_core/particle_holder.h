@@ -104,7 +104,7 @@ namespace PAPI
 
 			p_count++;
 
-			return TRUE;
+			return true;
 		}
 
 		ICF void LoadActions(IReader& R)
@@ -237,7 +237,7 @@ namespace PAPI
 				switch (PA->type)
 				{
 				case PASourceID:
-					static_cast<PASource*>(PA)->m_Flags.set(PASource::flSilent, TRUE);
+					static_cast<PASource*>(PA)->m_Flags.set(PASource::flSilent, true);
 					break;
 				}
 			}

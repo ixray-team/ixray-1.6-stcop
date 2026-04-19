@@ -35,7 +35,7 @@ void CPGDef::Clone	(CPGDef* source)
 	m_Flags			= source->m_Flags;
 	m_fTimeLimit	= source->m_fTimeLimit;
 
-	m_Effects.resize(source->m_Effects.size(),0);		
+	m_Effects.resize(source->m_Effects.size(),nullptr);		
 	for (EffectIt d_it=m_Effects.begin(),s_it=source->m_Effects.begin(); s_it!=source->m_Effects.end(); s_it++,d_it++)
 		*d_it		= new SEffect(**s_it);
 }
@@ -89,7 +89,7 @@ bool CPGDef::LoadOriginal(IReader& F)
 				m_fTimeLimit	= std::max(m_fTimeLimit, (*it)->m_Time1);
 		}
 	}
-	return TRUE;
+	return true;
 }                   
 
 bool CPGDef::Load2(CInifile& ini)
@@ -140,7 +140,7 @@ bool CPGDef::Load2Original(CInifile& ini)
 		(*it)->m_Flags.assign		(ini.r_u32(buff, "flags"));
 	}
 	m_fTimeLimit					= ini.r_float		("_group", "timelimit");
-	return							TRUE;
+	return							true;
 }
 
 bool CPGDef::Load2Extended(CInifile& ini)
@@ -240,7 +240,7 @@ void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, const ch
 	C->Play();
 	C->UpdateParent(M,vel,FALSE);
 	C->m_RT_Flags.set(CParticleEffect::flRT_FreeChild, FALSE);
-	C->m_RT_Flags.set(CParticleEffect::flRT_RelatedChild, TRUE);
+	C->m_RT_Flags.set(CParticleEffect::flRT_RelatedChild, true);
 	xrCriticalSectionGuard guard(childs_cs);
 	children_related.push_back(C);
 }
@@ -249,9 +249,9 @@ void CParticleGroup::SItem::StopRelatedChild(u32 idx)
 	xrCriticalSectionGuard guard(childs_cs);
 	VERIFY(idx<children_related.size());
 	CParticleEffect* V = children_related[idx];
-	V->Stop(TRUE);
+	V->Stop(true);
 	V->m_RT_Flags.set(CParticleEffect::flRT_RelatedChild, FALSE);
-	V->m_RT_Flags.set(CParticleEffect::flRT_FreeChild, TRUE);
+	V->m_RT_Flags.set(CParticleEffect::flRT_FreeChild, true);
 	children_free.push_back(V);
 	
 	fast_erase(children_related, idx);
@@ -275,7 +275,7 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, const char*
 		C->Play();
 		C->UpdateParent(M,vel,FALSE);
 		C->m_RT_Flags.set(CParticleEffect::flRT_RelatedChild, FALSE);
-		C->m_RT_Flags.set(CParticleEffect::flRT_FreeChild, TRUE);
+		C->m_RT_Flags.set(CParticleEffect::flRT_FreeChild, true);
 		children_free.push_back(C);
 	}
 	else
@@ -596,7 +596,7 @@ void CParticleGroup::Play()
 	xrCriticalSectionGuard guard(&onframe_lock);
 	m_CurrentTime = 0;
 	m_RT_Flags.set(flRT_DefferedStop,FALSE);
-	m_RT_Flags.set(flRT_Playing,TRUE);
+	m_RT_Flags.set(flRT_Playing,true);
 }
 
 void CParticleGroup::Stop(bool bDefferedStop)
@@ -604,7 +604,7 @@ void CParticleGroup::Stop(bool bDefferedStop)
 	{
 		xrCriticalSectionGuard guard(&onframe_lock);
 		if (bDefferedStop)
-			m_RT_Flags.set(flRT_DefferedStop, TRUE);
+			m_RT_Flags.set(flRT_DefferedStop, true);
 		else
 			m_RT_Flags.set(flRT_Playing, FALSE);
 	}

@@ -54,7 +54,7 @@ bool  ESceneGroupTool::_RemoveObject(CCustomObject* object)
 
     CGroupObject* go 	= smart_cast<CGroupObject*>(object); 
     go->Clear1          ();
-    return              TRUE;
+    return              true;
 }
 
 void ESceneGroupTool::GroupObjects(bool bUndo)

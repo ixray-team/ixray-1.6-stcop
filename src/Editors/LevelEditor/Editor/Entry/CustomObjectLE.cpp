@@ -58,7 +58,7 @@ void CCustomObject::OnDetach()
     }
    	m_CO_Flags.set			(flObjectInGroup,FALSE);
     Select					(true);
-    FParentTools->SetChanged(TRUE);
+    FParentTools->SetChanged(true);
 }
 
 void CCustomObject::OnAttach(CCustomObject* owner)
@@ -68,10 +68,10 @@ void CCustomObject::OnAttach(CCustomObject* owner)
     m_pOwnerObject 			= owner;
 //.    Scene->RemoveObject		(this,false,false);
 	if(owner->FClassID==OBJCLASS_GROUP)
-    	m_CO_Flags.set(flObjectInGroup,TRUE);
+    	m_CO_Flags.set(flObjectInGroup,true);
         
     Select					(false);
-    FParentTools->SetChanged(TRUE);
+    FParentTools->SetChanged(true);
 }
 
 void CCustomObject::Move(Fvector& amount)

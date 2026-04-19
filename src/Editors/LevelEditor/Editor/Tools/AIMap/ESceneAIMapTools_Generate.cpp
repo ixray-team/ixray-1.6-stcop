@@ -220,7 +220,7 @@ bool ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 	// *** Mask check
 	// ???
 
-	return TRUE;
+	return true;
 }
 
 void ESceneAIMapTool::hash_Initialize()
@@ -320,12 +320,12 @@ bool ESceneAIMapTool::CanTravel(Fvector _from, Fvector _at)
 	// 1
 	MotionSimulate(Result,_from,_at,radius,0.7f);
 	bool b1 = fsimilar(Result.x,_at.x,eps)&&fsimilar(Result.z,_at.z,eps)&&fsimilar(Result.y,_at.y,eps_y);
-	if (b1) return TRUE;
+	if (b1) return true;
 
 	// 2
 	MotionSimulate(Result,_from,_at,radius,2.f);
 	bool b2 = fsimilar(Result.x,_at.x,eps)&&fsimilar(Result.z,_at.z,eps)&&fsimilar(Result.y,_at.y,eps_y);
-	if (b2) return TRUE;
+	if (b2) return true;
 
 	return FALSE;
 }
@@ -345,7 +345,7 @@ SAINode* ESceneAIMapTool::BuildNode(Fvector& vFrom, Fvector& vAt, bool bIC, bool
 		Fvector D	= {0,1,0};
 		N.Plane.build(vAt,D);					// build plane
 		N.Plane.intersectRayPoint(vAt,D,N.Pos);	// "project" position
-		bRes		= TRUE;
+		bRes		= true;
 	}
 	if (bRes) {
 		//*** check if similar node exists
@@ -492,10 +492,10 @@ void ESceneAIMapTool::BuildNodes(bool bFromSelectedOnly)
 		}
 		if (bFromSelectedOnly){
 			// select neighbour nodes
-			if (N->n1) N->n1->flags.set(SAINode::flSelected,TRUE);
-			if (N->n2) N->n2->flags.set(SAINode::flSelected,TRUE);
-			if (N->n3) N->n3->flags.set(SAINode::flSelected,TRUE);
-			if (N->n4) N->n4->flags.set(SAINode::flSelected,TRUE);
+			if (N->n1) N->n1->flags.set(SAINode::flSelected,true);
+			if (N->n2) N->n2->flags.set(SAINode::flSelected,true);
+			if (N->n3) N->n3->flags.set(SAINode::flSelected,true);
+			if (N->n4) N->n4->flags.set(SAINode::flSelected,true);
 		}
 		
 		if (k%512==0) {
@@ -761,7 +761,7 @@ void ESceneAIMapTool::InvertLinks()
 				if ((*it)->n[k]&&(*it)->n[k]->flags.is(SAINode::flSelected)&&!(*it)->flags.is(fl[k])){
 					if (0==(*it)->n[k]->n[opposite[k]]){ 
 						(*it)->n[k]->n[opposite[k]] 		= (*it);
-						(*it)->n[k]->flags.set(fl[opposite[k]],TRUE);
+						(*it)->n[k]->flags.set(fl[opposite[k]],true);
 						(*it)->n[k]	= 0;
 					}
 				}
@@ -840,7 +840,7 @@ void ESceneAIMapTool::MakeLinks(u8 side_flag, EMode mode, bool bIgnoreConstraint
 							T->n[k] 			= S->n[opposite[k]];
 							S->n[opposite[k]]	= a;
 						}
-						S->flags.set(fl[opposite[k]],TRUE);
+						S->flags.set(fl[opposite[k]],true);
 					}
 				}break;
 				}

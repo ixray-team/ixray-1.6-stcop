@@ -1,5 +1,3 @@
-#ifndef _SkeletonVert_H_
-#define _SkeletonVert_H_
 #pragma once
 
 struct st_SVERT;
@@ -40,8 +38,6 @@ struct st_SVERT {
         }
 		if (!O.similar	(V.O))		return FALSE;
 		if (!N.similar	(V.N))		return FALSE;
-		return TRUE;
+		return true;
 	}
 };
-DEFINE_VECTOR(st_SVERT*,vSVERT,SVERTIt);
-#endif //_SkeletonVert_H_

@@ -804,7 +804,7 @@ bool ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
 				{
 					*out_wm = W;
 				}
-				return TRUE;
+				return true;
 			}
 		}
 	}else{
@@ -818,7 +818,7 @@ bool ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
 	{
 		*out_wm = W;
 	}
-    return TRUE;
+    return true;
 }
 
 bool ESceneWallmarkTool::AddWallmark	(const Fvector& start, const Fvector& dir)
@@ -846,7 +846,7 @@ bool ESceneWallmarkTool::MoveSelectedWallmarkTo(const Fvector& start, const Fvec
                     wm_destroy	(wm);
                     *m_it		= (*p_it)->items.back();
                     (*p_it)->items.pop_back();
-                    return TRUE;
+                    return true;
                 }
             }
         }

@@ -40,7 +40,7 @@ void ESoundSource::Construct(LPVOID data)
 	m_Params.max_ai_distance= 300.f;
 	m_Params.position.set	(0,0,0);
 
-	m_Flags.set				(flLooped,TRUE);
+	m_Flags.set				(flLooped,true);
 	m_Command				= stNothing; 
 	m_RandomPause.set		(0.f,0.f);
 	m_ActiveTime.set		(0.f,0.f);
@@ -348,7 +348,7 @@ void ESoundSource::OnFrame()
 		m_Source.play		(0,m_Flags.is(flLooped));
 		m_Source.set_params	(&m_Params);
 		m_Command			= stNothing; 
-		m_Flags.set			(flPlaying,TRUE);
+		m_Flags.set			(flPlaying,true);
 	break;
 	case stStop: 
 		m_Source.stop		();
@@ -358,7 +358,7 @@ void ESoundSource::OnFrame()
 	break;
 	case stSimulate:
 	{
-		m_Flags.set(flSimulating, TRUE);
+		m_Flags.set(flSimulating, true);
 		if ((fis_zero(m_ActiveTime.x) && fis_zero(m_ActiveTime.y)) ||
 			((g_pGamePersistent->Environment().GetGameTime() > m_ActiveTime.x) &&
 			 (g_pGamePersistent->Environment().GetGameTime() < m_ActiveTime.y)))

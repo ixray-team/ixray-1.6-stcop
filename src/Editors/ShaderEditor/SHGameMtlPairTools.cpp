@@ -85,7 +85,7 @@ void CSHGameMtlPairTools::FillItemList()
 
 void CSHGameMtlPairTools::Load()
 {
-    m_bLockUpdate		= TRUE;
+    m_bLockUpdate		= true;
 
     ResetCurrentItem	();
 
@@ -95,7 +95,7 @@ void CSHGameMtlPairTools::Load()
 
 bool CSHGameMtlPairTools::Save()
 {
-    m_bLockUpdate		= TRUE;
+    m_bLockUpdate		= true;
 
     // save
     string_path 		fn;

@@ -10,7 +10,7 @@ xr_token							qpreset_token							[ ]={
 	{ "High",						3											},
 	{ "Extreme",					4											},
 	{ "Ultra",						5											},
-	{ 0,							0											}
+	{ nullptr,							0											}
 };
 
 u32 ps_r2_smapsize = 2048;
@@ -29,7 +29,7 @@ xr_token							qssao_mode_token						[ ]={
 #ifdef USE_DX11
 	{ "ui_mm_gtao",					2											},
 #endif
-	{ 0,							0											}
+	{ nullptr,							0											}
 };
 
 u32			ps_r_sun_shafts				=	2;
@@ -38,7 +38,7 @@ xr_token							qsun_shafts_token							[ ]={
 	{ "st_opt_low",					1												},
 	{ "st_opt_medium",				2												},
 	{ "st_opt_high",				3												},
-	{ 0,							0												}
+	{ nullptr,							0												}
 };
 
 u32			ps_r_sun_quality		=	1;			//	=	0;
@@ -52,7 +52,7 @@ xr_token							qsun_quality_token							[ ]={
 	{ "st_opt_extreme",				4												},
 #endif //USE_DX11
 */
-	{ 0,							0												}
+	{ nullptr,							0												}
 };
 
 u32			ps_r2_aa_type			= 0;			//	=	0;
@@ -65,7 +65,7 @@ xr_token							aa_type_token[] = {
 	{ "taa",						3												},
 #endif
 #endif // DEBUG	
-	{ 0,							0												}
+	{ nullptr,							0												}
 };
 
 u32 ps_r4_mblur_quality = 0;
@@ -77,7 +77,7 @@ xr_token mblur_quality_token[] =
 	{"st_opt_high", 3},
 	{"st_opt_ultra", 4},
 	{"st_opt_extreme", 5},
-	{0, 0}
+	{nullptr, 0}
 };
 
 u32			ps_screenshot_format = 2;			//	=	0;
@@ -85,7 +85,7 @@ xr_token							screenshot_format_token[] = {
 	{ "ss_jpg",						0												},
 	{ "ss_tga",						1												},
 	{ "ss_png",						2												},
-	{ 0,							0												}
+	{ nullptr,							0												}
 };
 
 // Common

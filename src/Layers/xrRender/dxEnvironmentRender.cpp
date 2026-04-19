@@ -108,7 +108,7 @@ void dxEnvDescriptorMixerRender::Destroy() {
 }
 
 void dxEnvDescriptorMixerRender::Clear() {
-	std::pair<u32, ref_texture>	zero = std::make_pair(u32(0), ref_texture(0));
+	std::pair<u32, ref_texture>	zero = std::make_pair(u32(0), ref_texture(nullptr));
 	sky_r_textures.clear();
 	sky_r_textures.push_back(zero);
 	sky_r_textures.push_back(zero);

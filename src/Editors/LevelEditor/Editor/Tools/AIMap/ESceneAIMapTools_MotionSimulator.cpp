@@ -190,7 +190,7 @@ IC float intersectRayIdentitySphere(const Fvector& rO, const Fvector& rV)
 //         sO - Origin of sphere
 //         sR - radius of sphere 
 // Notes : 
-// Return: TRUE if point is in sphere, FALSE if not.
+// Return: true if point is in sphere, FALSE if not.
 // -----------------------------------------------------------------------  
 IC bool CheckPointInSphere(const Fvector& point, const Fvector& sO, float sR) {
 	return (sO.distance_to_sqr(point)< sR*sR);
@@ -281,7 +281,7 @@ void msimulator_CheckCollision(SCollisionData& cl)
 			// Here we do the error checking to see if we got ourself stuck last frame
 			if (CheckPointInSphere(polyIPoint, source, 1.0f)) 
 			{
-				cl.bStuck = TRUE;
+				cl.bStuck = true;
 			}
 			
 			// Ok, now we might update the collision data if we hit something
@@ -293,7 +293,7 @@ void msimulator_CheckCollision(SCollisionData& cl)
 					cl.fNearestDistance = distToEllipsoidIntersection;
 					cl.vNearestIntersectionPoint.set(sIPoint);
 					cl.vNearestPolygonIntersectionPoint.set(polyIPoint);
-					cl.bFoundCollision = TRUE;
+					cl.bFoundCollision = true;
 				}
 			} 
 		} // if not backface

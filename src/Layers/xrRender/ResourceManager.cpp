@@ -55,7 +55,7 @@ bool	reclaim		(xr_vector<T*>& vec, const T* ptr)
 	typename xr_vector<T*>::iterator it	= vec.begin	();
 	typename xr_vector<T*>::iterator end = vec.end	();
 	for (; it!=end; it++)
-		if (*it == ptr)	{ vec.erase	(it); return TRUE; }
+		if (*it == ptr)	{ vec.erase	(it); return true; }
 		return FALSE;
 }
 
@@ -78,7 +78,7 @@ IBlender* CResourceManager::_GetBlender		(const char* Name)
 			Debug.fatal(DEBUG_INFO, "Shader '%s' not found in library.", Name);
 		}
 #endif
-		return 0;
+		return nullptr;
 	}
 	
 	return I->second;
@@ -86,11 +86,11 @@ IBlender* CResourceManager::_GetBlender		(const char* Name)
 
 IBlender* CResourceManager::_FindBlender		(const char* Name)
 {
-	if (!(Name && Name[0])) return 0;
+	if (!(Name && Name[0])) return nullptr;
 
 	LPSTR N = LPSTR(Name);
 	map_Blender::iterator I = m_blenders.find	(N);
-	if (I==m_blenders.end())	return 0;
+	if (I==m_blenders.end())	return nullptr;
 	else						return I->second;
 }
 
@@ -112,7 +112,7 @@ void	CResourceManager::ED_UpdateBlender	(const char* Name, IBlender* data)
 //////////////////////////////////////////////////////////////////////
 void	CResourceManager::_ParseList(sh_list& dest, const char* names)
 {
-	if (0==names || 0==names[0])
+	if (nullptr==names || 0==names[0])
  		names 	= "$null";
 
 	ZeroMemory			(&dest, sizeof(dest));
@@ -149,7 +149,7 @@ void	CResourceManager::_ParseList(sh_list& dest, const char* names)
 
 ShaderElement* CResourceManager::_CreateElement			(ShaderElement& S)
 {
-	if (S.passes.empty())		return	0;
+	if (S.passes.empty())		return	nullptr;
 
 	// Search equal in shaders array
 	xrCriticalSectionGuard guard(creationGuard);
@@ -184,8 +184,8 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, const char* s_shader, const 
 	C.bEditor			= FALSE;
 	C.bDetail			= FALSE;
 #ifdef _EDITOR
-	if (!C.BT)			{ /*ELog.Msg(mtError, "Can't find shader '%s'", s_shader); */return 0; }
-	C.bEditor			= TRUE;
+	if (!C.BT)			{ /*ELog.Msg(mtError, "Can't find shader '%s'", s_shader); */return nullptr; }
+	C.bEditor			= true;
 #endif
 
 	// Parse names
@@ -232,7 +232,7 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, const char* s_shader, const 
 	// Compile element
 	{
 		C.iElement			= 4;
-		C.bDetail			= TRUE;	//.$$$ HACK :)
+		C.bDetail			= true;	//.$$$ HACK :)
 		ShaderElement		E;
 		C._cpp_Compile		(&E);
 		S.E[4]				= _CreateElement	(E);

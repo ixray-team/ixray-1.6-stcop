@@ -66,7 +66,7 @@ void	CBlender_Tree::Compile	(CBlender_Compile& C)
 		//	C.StageEnd			();
 		//}
 		//C.PassEnd			();
-		uber_deffer(C, true, "deffer_base", "deffer_base", oBlend.value, 0, true);
+		uber_deffer(C, true, "deffer_base", "deffer_base", oBlend.value, nullptr, true);
 		C.r_End();
 	} else {
 		u32							tree_aref		= 200;

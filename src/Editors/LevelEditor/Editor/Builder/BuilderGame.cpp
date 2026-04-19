@@ -14,7 +14,7 @@ bool SceneBuilder::BuildGame()
 
     if (!Scene->ExportGame(&F))				return FALSE;
 
-    bool bRes = TRUE;
+    bool bRes = true;
     // save spawn
     {
         xr_string lev_spawn = MakeLevelPath("level.spawn");

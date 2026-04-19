@@ -58,7 +58,7 @@ struct ECORE_API SSkelVert: public st_SVert{
         if (!norm.similar(V.norm, g_EpsSkelPositionDelta))
             return FALSE;
 
-        return TRUE;
+        return true;
     }
 };
 

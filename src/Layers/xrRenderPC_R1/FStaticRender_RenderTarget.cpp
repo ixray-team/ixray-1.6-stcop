@@ -13,12 +13,12 @@ bool UseRainDrops = false;
 
 CRenderTarget::CRenderTarget()
 {
-	bAvailable			= FALSE;
-	RT					= 0;
-	RT_color_map		= 0;
-	pTempZB				= 0;
-	ZB					= 0;
-	pFB					= 0;
+	bAvailable			= false;
+	RT					= nullptr;
+	RT_color_map		= nullptr;
+	pTempZB				= nullptr;
+	ZB					= nullptr;
+	pFB					= nullptr;
 
 	param_blur			= 0.f;
 	param_gray			= 0.f;
@@ -43,7 +43,7 @@ CRenderTarget::CRenderTarget()
 	Msg					("* SSample: %s",bAvailable?"enabled":"disabled");
 }
 
-BOOL CRenderTarget::Create()
+bool CRenderTarget::Create()
 {
 	b_fxaa = new CBlender_FXAA();
 	curWidth			=  RCache.get_width();
@@ -254,7 +254,7 @@ bool CRenderTarget::NeedColorMapping()
 	return RImplementation.o.color_mapping&&(param_color_map_influence>0.001f);
 }
 
-BOOL CRenderTarget::NeedPostProcess()
+bool CRenderTarget::NeedPostProcess()
 {
 	bool	_blur	= (param_blur>0.001f);
 	bool	_gray	= (param_gray>0.001f);
@@ -286,7 +286,7 @@ BOOL CRenderTarget::NeedPostProcess()
 	return _blur || _gray || _noise || _dual || _cbase || _cadd || _cmap || _menu_pp; 
 }
 
-BOOL CRenderTarget::Perform		()
+bool CRenderTarget::Perform		()
 {
 	return Available() &&
 		(ps_r2_aa_type > 0 || (RImplementation.m_bMakeAsyncSS) || NeedPostProcess() || (frame_distort==(Device.dwFrame-1)));
@@ -360,9 +360,9 @@ void CRenderTarget::End		()
 	}
 
 	// find if distortion is needed at all
-	BOOL	bPerform	= Perform				()	;
-	BOOL	bDistort	= RImplementation.o.distortion;
-	BOOL	bCMap		= NeedColorMapping();
+	auto bPerform	= Perform				()	;
+	auto bDistort	= RImplementation.o.distortion;
+	auto bCMap		= NeedColorMapping();
 	bool	_menu_pp	= g_pGamePersistent?g_pGamePersistent->OnRenderPPUI_query():false;
 	u32 count = RImplementation.mapDistort.size() + RImplementation.mapHUDDistort.size();
 

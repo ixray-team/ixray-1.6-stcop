@@ -14,7 +14,7 @@
 #include "D3DUtils.h"
 
 //------------------------------------------------------------------------------
-CToolCustom* Tools=0;
+CToolCustom* Tools=nullptr;
 //------------------------------------------------------------------------------
 #define CHECK_SNAP(R,A,C){ R+=A; if(fabsf(R)>=C){ A=snapto(R,C); R=0; }else{A=0;}}
 
@@ -232,7 +232,7 @@ void CToolCustom::Render()
 	int cnt = 0;
 	for (SDebugDraw::PointIt vit = m_DebugDraw.m_Points.begin(); vit != m_DebugDraw.m_Points.end(); ++vit)
 	{
-		const char* s = NULL;
+		const char* s = nullptr;
 		if (vit->i)
 		{
 			sprintf(temp.data(), "P: %d", cnt++);

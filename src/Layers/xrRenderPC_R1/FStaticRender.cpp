@@ -258,9 +258,9 @@ void					CRender::apply_object			(IRenderable*		O )
 
 // Misc
 float					g_fSCREEN;
-static	BOOL			gm_Nearer	= 0;
+static	bool			gm_Nearer	= 0;
 
-IC		void			gm_SetNearer		(BOOL bNearer)
+IC		void			gm_SetNearer		(bool bNearer)
 {
 	if (bNearer	!= gm_Nearer)
 	{
@@ -317,7 +317,7 @@ void CRender::Calculate				()
 		HOM.Enable									();
 		HOM.Render									(ViewBase);
 	}
-	gm_SetNearer					(FALSE);
+	gm_SetNearer					(false);
 	phase							= PHASE_NORMAL;
 
 	// Detect camera-sector
@@ -429,7 +429,7 @@ void CRender::Calculate				()
 							vis_data&		v_orig			= renderable->renderable.visual->getVisData();
 							vis_data		v_copy			= v_orig;
 							v_copy.box.xform				(renderable->renderable.xform);
-							BOOL			bVisible		= HOM.visible(v_copy);
+							auto bVisible = HOM.visible(v_copy);
 							v_orig.accept_frame				= v_copy.accept_frame;
 							v_orig.marker					= v_copy.marker;
 							v_orig.hom_frame				= v_copy.hom_frame;

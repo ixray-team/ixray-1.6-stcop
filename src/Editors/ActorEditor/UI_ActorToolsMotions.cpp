@@ -133,7 +133,7 @@ bool EngineModel::UpdateVisual(CEditableObject* source, bool bUpdGeom, bool bUpd
 		F.w(m_GeometryStream.pointer(),m_GeometryStream.size());
 	}
 	IReader R							(F.pointer(), F.size());
-	::Render->model_Delete				(m_pVisual,TRUE);
+	::Render->model_Delete				(m_pVisual,true);
 	g_pMotionsContainer->clean			(false);
 	m_pVisual = ::Render->model_Create	(ChangeFileExt(source->GetName(),"").c_str(),&R);
 	m_pBlend = 0;
@@ -249,7 +249,7 @@ void EngineModel::SaveParams(TFormStorage* s)
 void CActorTools::OnMotionKeysModified()
 {
 	Modified			();
-	m_Flags.set			(flUpdateMotionKeys,TRUE);
+	m_Flags.set			(flUpdateMotionKeys,true);
 	if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine){
 		m_Flags.set		(flUpdateMotionKeys,FALSE);
 		if (m_RenderObject.UpdateVisual(m_pEditObject,false,true,false)){
@@ -265,7 +265,7 @@ void CActorTools::OnMotionKeysModified()
 void CActorTools::OnMotionDefsModified()
 {
 	Modified			();
-	m_Flags.set			(flUpdateMotionDefs,TRUE);
+	m_Flags.set			(flUpdateMotionDefs,true);
 	if ( MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine){
 		m_Flags.set		(flUpdateMotionDefs,FALSE);
 		if (m_RenderObject.UpdateVisual(m_pEditObject,false,false,true)){

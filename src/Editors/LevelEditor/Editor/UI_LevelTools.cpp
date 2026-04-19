@@ -179,7 +179,7 @@ void  CLevelTool::SetAction(ETAction act)
 	// если мышь захвачена - изменим action после того как она освободится
 	if (UI->IsMouseCaptured() || UI->IsMouseInUse())
 	{
-		m_Flags.set(flChangeAction, TRUE);
+		m_Flags.set(flChangeAction, true);
 		iNeedAction = act;
 	}
 	else
@@ -223,7 +223,7 @@ void  CLevelTool::SetTarget(ObjClassID tgt, int sub_tgt)
 {
 	// если мышь захвачена - изменим target после того как она освободится
 	if (UI->IsMouseCaptured()||UI->IsMouseInUse()||!false){
-		m_Flags.set(flChangeTarget,TRUE);
+		m_Flags.set(flChangeTarget,true);
 		if(tgt == OBJCLASS_WAY && sub_tgt==2 && target==tgt)
 		{
 			iNeedTarget		= tgt;
