@@ -117,22 +117,24 @@ float CAI_Stalker::GetWeaponAccuracy() const
 
 void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D)
 {
-//.	VERIFY				(inventory().ActiveItem());
-	if (!inventory().ActiveItem()) {
+	if (!inventory().ActiveItem())
+	{
 #ifdef DEBUG
-		Msg				("! CAI_Stalker::g_fireParams() : VERIFY(inventory().ActiveItem())");
+		Msg("! CAI_Stalker::g_fireParams() : VERIFY(inventory().ActiveItem())");
 #endif // DEBUG
-		P				= Position();
-		D				= Fvector().set(0.f,0.f,1.f);
+		P = Position();
+		D = Fvector().set(0.0f, 0.0f, 1.0f);
 		return;
 	}
 
-	if(inventory().ActiveItem())
+	if (inventory().ActiveItem())
 	{
 		CWeapon* weapon = inventory().ActiveItem()->cast_weapon();
-		if (!weapon) {
+		if (!weapon)
+		{
 			CMissile* missile = inventory().ActiveItem()->cast_missile();
-			if (missile) {
+			if (missile)
+			{
 				update_throw_params();
 				P = m_throw_position;
 				D = Fvector().set(m_throw_velocity).normalize();
@@ -144,96 +146,125 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D)
 			D = eye_matrix.k;
 
 			if (weapon_shot_effector().IsActive())
+			{
 				D = weapon_shot_effector_direction(D);
+			}
 
 			VERIFY(!fis_zero(D.square_magnitude()));
 			return;
 		}
 
 
-		if (!g_Alive()) {
-			P				= weapon->get_LastFP();
-			D				= weapon->get_LastFD();
-			VERIFY			(!fis_zero(D.square_magnitude()));
+		if (!g_Alive())
+		{
+			P = weapon->get_LastFP();
+			D = weapon->get_LastFD();
+			VERIFY(!fis_zero(D.square_magnitude()));
 			return;
 		}
 
-		if (!animation().script_animations().empty() || animation().global_selector()) {
-			P				= weapon->get_LastFP();
-			
+		if (!animation().script_animations().empty() || animation().global_selector())
+		{
+			P = weapon->get_LastFP();
+
 			if (sniper_fire_mode())
-				D.setHP		(-movement().m_head.target.yaw, -movement().m_head.target.pitch);
+			{
+				D.setHP(-movement().m_head.target.yaw, -movement().m_head.target.pitch);
+			}
 			else
-				D			= weapon->get_LastFD();
-			VERIFY			(!fis_zero(D.square_magnitude()));
+			{
+				D = weapon->get_LastFD();
+			}
+
+			VERIFY(!fis_zero(D.square_magnitude()));
 
 			return;
 		}
 	}
 
-	switch (movement().body_state()) {
-		case eBodyStateStand : {
-			if (movement().movement_type() == eMovementTypeStand) {
-				P		= eye_matrix.c;
-				D		= eye_matrix.k;
-				if (weapon_shot_effector().IsActive())
-					D	= weapon_shot_effector_direction(D);
-				VERIFY	(!fis_zero(D.square_magnitude()));
-			}
-			else {
-				D.setHP	(-movement().m_head.current.yaw,-movement().m_head.current.pitch);
-				if (weapon_shot_effector().IsActive())
-					D			= weapon_shot_effector_direction(D);
-				Center	(P);
-				P.mad	(D,.5f);
-				P.y		+= .50f;
-				VERIFY	(!fis_zero(D.square_magnitude()));
-			}
-
-			if (sniper_fire_mode())
-				D.setHP	(-movement().m_head.target.yaw, -movement().m_head.target.pitch);
-
-			return;
-		}
-		case eBodyStateCrouch : {
-			P			= eye_matrix.c;
-			D			= eye_matrix.k;
+	switch (movement().body_state())
+	{
+	case eBodyStateStand:
+	{
+		if (movement().movement_type() == eMovementTypeStand)
+		{
+			P = eye_matrix.c;
+			D = eye_matrix.k;
 			if (weapon_shot_effector().IsActive())
-				D		= weapon_shot_effector_direction(D);
-
-			VERIFY		(!fis_zero(D.square_magnitude()));
-
-			if (sniper_fire_mode())
-				D.setHP	(-movement().m_head.target.yaw, -movement().m_head.target.pitch);
-
-			return;
+			{
+				D = weapon_shot_effector_direction(D);
+			}
+			VERIFY(!fis_zero(D.square_magnitude()));
 		}
-		default			: NODEFAULT;
+		else {
+			D.setHP(-movement().m_head.current.yaw, -movement().m_head.current.pitch);
+			if (weapon_shot_effector().IsActive())
+			{
+				D = weapon_shot_effector_direction(D);
+			}
+			Center(P);
+			P.mad(D, .5f);
+			P.y += .50f;
+			VERIFY(!fis_zero(D.square_magnitude()));
+		}
+
+		if (sniper_fire_mode())
+		{
+			D.setHP(-movement().m_head.target.yaw, -movement().m_head.target.pitch);
+		}
+
+		return;
+	}
+	case eBodyStateCrouch:
+	{
+		P = eye_matrix.c;
+		D = eye_matrix.k;
+		if (weapon_shot_effector().IsActive())
+		{
+			D = weapon_shot_effector_direction(D);
+		}
+
+		VERIFY(!fis_zero(D.square_magnitude()));
+
+		if (sniper_fire_mode())
+		{
+			D.setHP(-movement().m_head.target.yaw, -movement().m_head.target.pitch);
+		}
+
+		return;
+	}
+	default: NODEFAULT;
 	}
 
 #ifdef DEBUG
-	if (inventory().ActiveItem())
+	if (inventory().ActiveItem() != nullptr)
 	{
-		if(CWeapon* weapon = inventory().ActiveItem()->cast_weapon())
+		if (CWeapon* weapon = inventory().ActiveItem()->cast_weapon())
 		{
 			P = weapon->get_LastFP();
 			D = weapon->get_LastFD();
 		}
 	}
-	VERIFY				(!fis_zero(D.square_magnitude()));
+	VERIFY(!fis_zero(D.square_magnitude()));
 #endif
 }
 
-void CAI_Stalker::g_WeaponBones	(int &L, int &R1, int &R2)
+void CAI_Stalker::g_WeaponBones(u16& L, u16& R1, u16& R2)
 {
-	int				r_hand, r_finger2, l_finger1;
+	u16 r_hand = BI_NONE, r_finger2 = BI_NONE, l_finger1 = BI_NONE;
 	CObjectHandler::weapon_bones(r_hand, r_finger2, l_finger1);
-	R1				= r_hand;
-	R2				= r_finger2;
+
+	R1 = r_hand;
+	R2 = r_finger2;
+
 	if (!animation().script_animations().empty() && animation().script_animations().front().hand_usage())
-		L			= R2;
+	{
+		L = R2;
+	}
 	else
-		L			= l_finger1;
+	{
+		L = l_finger1;
+	}
 }
 
 void CAI_Stalker::Hit(SHit* pHDS)
