@@ -166,24 +166,11 @@ struct CImGuiOMFEditor
 
 	bool is_file_loaded{};
 	bool animation_param_was_changed{};
-	bool stop_at_end_selected{};
-	bool no_mix_selected{};
-	bool sync_part_selected{};
-	bool use_foot_steps_selected{};
-	bool move_xform_selected{};
-	bool idle_selected{};
-	bool use_weapon_bone_selected{};
-	bool has_motion_marks_selected{};
 	bool is_motion_time_format_seconds_selected{};
 	bool is_motion_time_format_keys_selected{};
 	bool is_motion_time_format_radiobutton_changed{};
 	int current_selected_animation_param{};
 	int current_selected_bone_rename{};
-	float speed{};
-	float power{};
-	float accrue{};
-	float falloff{};
-	float length{};
 	OMFData* omf{};
 	OMFData::omf_name_t rename_temp;
 	OMFData::omf_name_t rename_temp_bone;
@@ -423,28 +410,6 @@ void OMFEditor_Init_ComboBones(CImGuiOMFEditor* p_state, OMFData& data)
 	}
 }
 
-void OMFEditor_Init_CurrentAnimationParams(int animation_param_id, OMFData& data, CImGuiOMFEditor* p_state)
-{
-	if (p_state)
-	{
-		auto& param = data.data_animparams.params[animation_param_id];
-		p_state->speed = param.speed;
-		p_state->accrue = param.accrue;
-		p_state->falloff = param.falloff;
-		p_state->power = param.power;
-
-		// probably you could replace with for-loop but for now it is just for simplicity
-		p_state->stop_at_end_selected = (param.flags & (1 << 1)) == (1 << 1);
-		p_state->no_mix_selected = (param.flags & (1 << 2)) == (1 << 2);
-		p_state->sync_part_selected = (param.flags & (1 << 3)) == (1 << 3);
-		p_state->use_foot_steps_selected = (param.flags & (1 << 4)) == (1 << 4);
-		p_state->move_xform_selected = (param.flags & (1 << 5)) == (1 << 5);
-		p_state->idle_selected = (param.flags & (1 << 6)) == (1 << 6);
-		p_state->use_weapon_bone_selected = (param.flags & (1 << 7)) == (1 << 7);
-		p_state->has_motion_marks_selected = (data.data_bone.ogf_version == 4 && param.marks_count > 0);
-	}
-}
-
 void OMFEditor_Init(CImGuiOMFEditor* p_state, OMFData& data)
 {
 	if (!p_state)
@@ -474,11 +439,6 @@ void OMFEditor_Init(CImGuiOMFEditor* p_state, OMFData& data)
 	{
 		R_ASSERT2(p_state->combo_bones_data.size(), "No bones detected");
 		p_state->rename_temp_bone = p_state->combo_bones_data[0];
-	}
-
-	if (data.data_animparams.count > 0)
-	{
-		OMFEditor_Init_CurrentAnimationParams(p_state->current_selected_animation_param, data, p_state);
 	}
 }
 
@@ -647,9 +607,9 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 			bool can_hide_window = false;
 
 #if IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING == 1
-			can_hide_window = g_pOMFEditor->current_selected_bone_rename==-1;
+			can_hide_window = g_pOMFEditor->current_selected_bone_rename == -1;
 
-			if (can_hide_window==false)
+			if (can_hide_window == false)
 			{
 				g_pOMFEditor->current_selected_bone_rename = -1;
 			}
@@ -765,11 +725,11 @@ void RenderOMFEditor_Draw_TableMain_Bone_Renaming(int bone_id, OMFData::BonePart
 	if (g_pOMFEditor->current_selected_bone_rename == bone_id)
 	{
 		if (ImGui::InputText(
-			"##ToolsOMFEditor_DirectRenamingOfBone", 
-			g_pOMFEditor->rename_temp_bone.data(), 
+			"##ToolsOMFEditor_DirectRenamingOfBone",
+			g_pOMFEditor->rename_temp_bone.data(),
 			g_pOMFEditor->rename_temp_bone.max_size(),
 			ImGuiInputTextFlags_EnterReturnsTrue
-		) && g_pOMFEditor->rename_temp_bone.size()>0)
+		) && g_pOMFEditor->rename_temp_bone.size() > 0)
 		{
 			bone.name = g_pOMFEditor->rename_temp_bone;
 			g_pOMFEditor->current_selected_bone_rename = -1;
@@ -913,10 +873,23 @@ void RenderOMFEditor_Draw_TableMain_BonesRenaming_Section()
 
 void RenderOMFEditor_Draw_TableMain_MotionMarks()
 {
-	ImGui::BeginDisabled(g_pOMFEditor->has_motion_marks_selected == false);
+	if (
+		g_pOMFEditor == nullptr ||
+		g_pOMFEditor->omf == nullptr ||
+		g_pOMFEditor->omf->data_animparams.count <= 0 ||
+		g_pOMFEditor->current_selected_animation_param < 0
+		)
+		return;
+
+
+	OMFData::AnimParamsData::AnimParams& param = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param];
+
+	bool has_motion_marks_selected = (g_pOMFEditor->omf->data_bone.ogf_version == 4 && param.marks_count > 0);
+
+	ImGui::BeginDisabled(has_motion_marks_selected == false);
 
 	if (ImGui::CollapsingHeader("Motion marks"))
-	{		
+	{
 		if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body3", 2))
 		{
 			ImGui::TableNextRow();
@@ -925,49 +898,9 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 
 			ImGui::TableSetColumnIndex(1);
 
-			ImGui::SeparatorText("Motion time format");
-
-			if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MotionTimeFormat", 2))
-			{
-				ImGui::TableNextRow();
-				ImGui::TableSetColumnIndex(0);
-
-				ImGui::BeginDisabled(!g_pOMFEditor->has_motion_marks_selected);
-				if (ImGui::RadioButton("Keys##ToolsInGameImGui_OMFEditor_KeysRB", g_pOMFEditor->is_motion_time_format_keys_selected))
-				{
-					g_pOMFEditor->is_motion_time_format_radiobutton_changed = true;
-					g_pOMFEditor->is_motion_time_format_seconds_selected = false;
-					g_pOMFEditor->is_motion_time_format_keys_selected = !g_pOMFEditor->is_motion_time_format_keys_selected;
-				}
-				ImGui::EndDisabled();
-
-				ImGui::TableSetColumnIndex(1);
-
-				ImGui::BeginDisabled(!g_pOMFEditor->has_motion_marks_selected);
-				if (ImGui::RadioButton("Seconds##ToolsInGameImGui_OMFEditor_SecondsRB", g_pOMFEditor->is_motion_time_format_seconds_selected))
-				{
-					g_pOMFEditor->is_motion_time_format_radiobutton_changed = true;
-					g_pOMFEditor->is_motion_time_format_keys_selected = false;
-					g_pOMFEditor->is_motion_time_format_seconds_selected = !g_pOMFEditor->is_motion_time_format_seconds_selected;
-				}
-				ImGui::EndDisabled();
-
-				if (g_pOMFEditor->has_motion_marks_selected && g_pOMFEditor->is_motion_time_format_radiobutton_changed)
-				{
-					R_ASSERT2(!(g_pOMFEditor->is_motion_time_format_keys_selected && g_pOMFEditor->is_motion_time_format_seconds_selected), "You can't select both keys and seconds format at the same time!");
-
-					// todo: add implemenetation here
-
-					g_pOMFEditor->is_motion_time_format_radiobutton_changed = false;
-				}
-
-				ImGui::EndTable();
-			}
-
-
 			ImGui::SeparatorText("Motion marks");
 
-			ImGui::BeginDisabled(!g_pOMFEditor->has_motion_marks_selected);
+			ImGui::BeginDisabled(!has_motion_marks_selected);
 			if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MotionMarksTable", 3))
 			{
 				ImGui::TableNextRow();
@@ -1014,29 +947,214 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 
 void RenderOMFEditor_Draw_TableMain_Params()
 {
+	if (
+		g_pOMFEditor == nullptr ||
+		g_pOMFEditor->omf == nullptr ||
+		g_pOMFEditor->omf->data_animparams.count <= 0 ||
+		g_pOMFEditor->current_selected_animation_param < 0
+		)
+		return;
+
+	bool is_disabled = false;
+
+	ImGui::BeginDisabled(is_disabled);
+
+	OMFData::AnimParamsData::AnimParams& param = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param];
+
 	if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body_Params", 2))
 	{
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
 
-		ImGui::DragFloat("Speed", &g_pOMFEditor->speed);
-		ImGui::DragFloat("Power", &g_pOMFEditor->power);
-		ImGui::DragFloat("Accrue", &g_pOMFEditor->accrue);
-		ImGui::DragFloat("Falloff", &g_pOMFEditor->falloff);
+		ImGui::DragFloat("Speed", &param.speed);
+		ImGui::DragFloat("Power", &param.power);
+		ImGui::DragFloat("Accrue", &param.accrue);
+		ImGui::DragFloat("Falloff", &param.falloff);
+
+		ImGui::BeginDisabled(true);
+
+		R_ASSERT(g_pOMFEditor->omf->data_anim.animations_count > 0);
+
+		const auto& anim = g_pOMFEditor->omf->data_anim.anims[g_pOMFEditor->current_selected_animation_param];
+
+		R_ASSERT(anim.data);
+
+		int num_keys;
+		std::memcpy(&num_keys, anim.data, sizeof(num_keys));
+
+		float unit_time = g_pOMFEditor->is_motion_time_format_seconds_selected ? 30.0f : 1.0f;
+
+		float length_with_current_speed = (float(num_keys) / unit_time) / param.speed;
+		float length_with_rt = (float(num_keys) / unit_time) / 1.0f;
+
+		const char* pPrintOutTemplate = "Length: %.4f | %.4f";
+
+		if (g_pOMFEditor->is_motion_time_format_seconds_selected == false)
+		{
+			pPrintOutTemplate = "Length: %.0f | %.0f";
+		}
+
+		ImGui::Text(pPrintOutTemplate, length_with_current_speed, length_with_rt);
+
+
+		ImGui::EndDisabled();
+
+		ImGui::SeparatorText("Motion time format");
+
+		if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MotionTimeFormat", 2))
+		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+
+			if (ImGui::RadioButton("Keys##ToolsInGameImGui_OMFEditor_KeysRB", g_pOMFEditor->is_motion_time_format_keys_selected))
+			{
+				g_pOMFEditor->is_motion_time_format_radiobutton_changed = true;
+				g_pOMFEditor->is_motion_time_format_seconds_selected = false;
+				g_pOMFEditor->is_motion_time_format_keys_selected = !g_pOMFEditor->is_motion_time_format_keys_selected;
+			}
+			
+			ImGui::TableSetColumnIndex(1);
+
+			if (ImGui::RadioButton("Seconds##ToolsInGameImGui_OMFEditor_SecondsRB", g_pOMFEditor->is_motion_time_format_seconds_selected))
+			{
+				g_pOMFEditor->is_motion_time_format_radiobutton_changed = true;
+				g_pOMFEditor->is_motion_time_format_keys_selected = false;
+				g_pOMFEditor->is_motion_time_format_seconds_selected = !g_pOMFEditor->is_motion_time_format_seconds_selected;
+			}
+
+			if (g_pOMFEditor->is_motion_time_format_radiobutton_changed)
+			{
+				R_ASSERT2(!(g_pOMFEditor->is_motion_time_format_keys_selected && g_pOMFEditor->is_motion_time_format_seconds_selected), "You can't select both keys and seconds format at the same time!");
+
+				// todo: add implemenetation here
+
+				g_pOMFEditor->is_motion_time_format_radiobutton_changed = false;
+			}
+
+			ImGui::EndTable();
+		}
+
+
+
 
 		ImGui::TableSetColumnIndex(1);
 
-		ImGui::Checkbox("Stop at end", &g_pOMFEditor->stop_at_end_selected);
-		ImGui::Checkbox("No mix", &g_pOMFEditor->no_mix_selected);
-		ImGui::Checkbox("Sync part", &g_pOMFEditor->sync_part_selected);
-		ImGui::Checkbox("Use foot steps", &g_pOMFEditor->use_foot_steps_selected);
-		ImGui::Checkbox("Move XForm", &g_pOMFEditor->move_xform_selected);
-		ImGui::Checkbox("Idle", &g_pOMFEditor->idle_selected);
-		ImGui::Checkbox("Use weapon bone", &g_pOMFEditor->use_weapon_bone_selected);
-		ImGui::Checkbox("Has motion marks", &g_pOMFEditor->has_motion_marks_selected);
+
+		bool stop_at_end = (param.flags & (1 << 1)) == (1 << 1);
+		bool check_box_changed = ImGui::Checkbox("Stop at end", &stop_at_end);
+
+		if (check_box_changed)
+		{
+			if (stop_at_end)
+			{
+				param.flags |= (1 << 1);
+			}
+			else
+			{
+				param.flags &= ~(1 << 1);
+			}
+		}
+
+		bool no_mix_selected = (param.flags & (1 << 2)) == (1 << 2);
+		check_box_changed = ImGui::Checkbox("No mix", &no_mix_selected);
+
+		if (check_box_changed)
+		{
+			if (no_mix_selected)
+			{
+				param.flags |= (1 << 2);
+			}
+			else
+			{
+				param.flags &= ~(1 << 2);
+			}
+		}
+
+		bool sync_part = (param.flags & (1 << 3)) == (1 << 3);
+		check_box_changed = ImGui::Checkbox("Sync part", &sync_part);
+
+		if (check_box_changed)
+		{
+			if (sync_part)
+			{
+				param.flags |= (1 << 3);
+			}
+			else
+			{
+				param.flags &= ~(1 << 3);
+			}
+		}
+
+		bool use_foot_steps = (param.flags & (1 << 4)) == (1 << 4);
+		check_box_changed = ImGui::Checkbox("Use foot steps", &use_foot_steps);
+
+		if (check_box_changed)
+		{
+			if (use_foot_steps)
+			{
+				param.flags |= (1 << 4);
+			}
+			else
+			{
+				param.flags &= ~(1 << 4);
+			}
+		}
+
+		bool move_xform = (param.flags & (1 << 5)) == (1 << 5);
+		check_box_changed = ImGui::Checkbox("Move XForm", &move_xform);
+
+		if (check_box_changed)
+		{
+			if (move_xform)
+			{
+				param.flags |= (1 << 5);
+			}
+			else
+			{
+				param.flags &= ~(1 << 5);
+			}
+		}
+
+		bool idle = (param.flags & (1 << 6)) == (1 << 6);
+		check_box_changed = ImGui::Checkbox("Idle", &idle);
+
+		if (check_box_changed)
+		{
+			if (idle)
+			{
+				param.flags |= (1 << 6);
+			}
+			else
+			{
+				param.flags &= ~(1 << 6);
+			}
+		}
+
+		bool use_weapon_bone = (param.flags & (1 << 7)) == (1 << 7);
+		check_box_changed = ImGui::Checkbox("Use weapon bone", &use_weapon_bone);
+
+		if (check_box_changed)
+		{
+			if (use_weapon_bone)
+			{
+				param.flags |= (1 << 7);
+			}
+			else
+			{
+				param.flags &= ~(1 << 7);
+			}
+		}
+
+		bool has_motion_marks = (g_pOMFEditor->omf->data_bone.ogf_version == 4 && param.marks_count > 0);
+
+		ImGui::BeginDisabled(true);
+		ImGui::Checkbox("Has motion marks", &has_motion_marks);
+		ImGui::EndDisabled();
 
 		ImGui::EndTable();
 	}
+
+	ImGui::EndDisabled();
 }
 
 void RenderOMFEditor_Draw_TableMain()
@@ -1086,10 +1204,6 @@ void RenderOMFEditor_Draw_TableMain()
 
 						if (ImGui::Combo("Animation params##ToolsInGameImGui_OMFEditor_Data_Header_Combo", &g_pOMFEditor->current_selected_animation_param, g_pOMFEditor->combo_animation_params_data.data(), g_pOMFEditor->omf->data_animparams.count))
 						{
-							if (g_pOMFEditor->current_selected_animation_param > -1)
-							{
-								OMFEditor_Init_CurrentAnimationParams(g_pOMFEditor->current_selected_animation_param, *g_pOMFEditor->omf, g_pOMFEditor);
-							}
 						}
 
 						ImGui::TableSetColumnIndex(1);
@@ -1209,7 +1323,7 @@ void RenderOMFEditor_Draw_TableMain()
 
 						RenderOMFEditor_Draw_TableMain_Params();
 						RenderOMFEditor_Draw_TableMain_MotionMarks();
-						
+
 						ImGui::EndTable();
 					}
 
