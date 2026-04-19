@@ -19,10 +19,8 @@
 #include "Actor.h"
 #include "ai/stalker/ai_stalker.h"
 #include "imotion_position.h"
-#include "imotion_velocity.h"
 #include "animation_movement_controller.h"
 #include "xrServer_Object_Base.h"
-#include "interactive_animation.h"
 #include "stalker_animation_manager.h"
 #include "InventoryOwner.h"
 #include "Inventory.h"
@@ -44,7 +42,6 @@ bool dbg_draw_ragdoll_spawn = FALSE;
 string64 sdbg_stalker_death_anim = "none";
 LPSTR dbg_stalker_death_anim = sdbg_stalker_death_anim;
 #endif
-bool  b_death_anim_velocity = TRUE;
 constexpr u32 hit_valide_time = 1000;
 static constexpr u32 physics_shell_animated_destroy_delay = 3000;
 const float cmp_angle = M_PI / 10.f;
@@ -75,7 +72,7 @@ CCharacterPhysicsSupport::CCharacterPhysicsSupport(EType atype, CEntityAlive* ae
 	mXFORM(aentity->XFORM()), m_ph_sound_player(aentity), m_interactive_motion(0),
 	m_PhysicMovementControl(new CPHMovementControl(aentity)), m_eType(atype), m_eState(esAlive),
 	m_physics_skeleton(nullptr), m_BonceDamageFactor(1.f),
-	m_collision_hit_callback(nullptr), m_interactive_animation(nullptr), m_physics_shell_animated(nullptr),
+	m_collision_hit_callback(nullptr), m_physics_shell_animated(nullptr),
 	m_physics_shell_animated_time_destroy(u32(-1)), m_weapon_attach_bone(0), m_active_item_obj(0), m_hit_valide_time(u32(-1))
 {
 	m_flags.assign( 0 );
@@ -132,28 +129,6 @@ void CCharacterPhysicsSupport::in_Load(const char* section)
 		m_BonceDamageFactor = pSettings->r_float("collision_damage", "bonce_damage_factor_for_objects");
 
 	CPHDestroyable::Load(section);
-}
-
-void CCharacterPhysicsSupport::run_interactive(CBlend* B)
-{
-	VERIFY(!m_interactive_animation);
-	m_interactive_animation = new interactive_animation(&m_EntityAlife, B);
-}
-
-void CCharacterPhysicsSupport::update_interactive_anims()
-{
-	if (Type() != etStalker)
-		return;
-	
-	VERIFY(m_EntityAlife.cast_stalker());
-	CAI_Stalker* stalker = m_EntityAlife.cast_stalker();
-	CBlend* b = stalker->animation().global().blend();
-	
-	if (b && !m_interactive_animation && stalker->animation().global().callback_on_collision())
-		run_interactive(b);
-
-	if (m_interactive_animation && !m_interactive_animation->update(m_EntityAlife.XFORM()))
-		xr_delete(m_interactive_animation);
 }
 
 void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
@@ -327,7 +302,6 @@ void CCharacterPhysicsSupport::in_NetDestroy()
 	CPHDestroyable::RespawnInit();
 	m_eState = esAlive;
 
-	xr_delete(m_interactive_animation);
 	destroy_animation_collision();
 	DestroyIKController();
 }
@@ -406,13 +380,10 @@ void CCharacterPhysicsSupport::KillHit(SHit& H)
 		m = MotionID();
 	}
 
-	if (m.valid())//&& cmp( prev_pose, mXFORM ) 
+	if (m.valid())
 	{
 		destroy(m_interactive_motion);
-		if (false && b_death_anim_velocity)
-			m_interactive_motion = new imotion_velocity();
-		else
-			m_interactive_motion = new imotion_position();
+		m_interactive_motion = new imotion_position();
 		m_interactive_motion->setup(m, m_pPhysicsShell, hit_angle);
 	}
 	else
@@ -454,8 +425,7 @@ void CCharacterPhysicsSupport::in_Hit(SHit& H, bool is_killing)
 
 	if (m_flags.test(fl_block_hit))
 	{
-		VERIFY2(!m_EntityAlife.g_Alive(),
-			make_string<const char*>("entity [%s][%d] is dead", m_EntityAlife.Name(), m_EntityAlife.ID()));
+		VERIFY2(!m_EntityAlife.g_Alive(), make_string<const char*>("entity [%s][%d] is dead", m_EntityAlife.Name(), m_EntityAlife.ID()));
 		if (Device.dwTimeGlobal - m_EntityAlife.GetLevelDeathTime() >= 2000)
 		{
 			m_flags.set(fl_block_hit, FALSE);
@@ -597,7 +567,6 @@ void CCharacterPhysicsSupport::in_UpdateCL()
 	}
 	else if (TIKLimbsController* LimbContorller = m_EntityAlife.GetComponent<TIKLimbsController>())
 	{
-		update_interactive_anims();
 		LimbContorller->Update();
 	}
 
@@ -908,7 +877,6 @@ void CCharacterPhysicsSupport::AddActiveWeaponCollision()
 
 void CCharacterPhysicsSupport::CreateShell(CObject* who, Fvector& dp, Fvector& velocity)
 {
-	xr_delete(m_interactive_animation);
 	destroy_animation_collision();
 
 	IKinematics* K = PKinematics(m_EntityAlife.Visual());
@@ -1105,7 +1073,6 @@ void CCharacterPhysicsSupport::in_ChangeVisual()
 		}
 	}
 
-	xr_delete(m_interactive_animation);
 	destroy_animation_collision();
 	destroy(m_interactive_motion);
 

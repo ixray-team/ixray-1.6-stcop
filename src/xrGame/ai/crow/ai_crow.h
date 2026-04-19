@@ -130,7 +130,6 @@ public:
 	virtual	float	ffGetFov					() const {return 150.f;	}
 	virtual	float	ffGetRange					() const {return 30.f;	}
 
-	virtual bool	IsVisibleForHUD	()			{ return FALSE;		}
 	virtual bool	IsVisibleForZones()			{ return false;		}
 	virtual bool	UsedAI_Locations()			;
 	virtual void	create_physic_shell	()		;

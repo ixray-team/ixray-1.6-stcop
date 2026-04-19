@@ -16,7 +16,8 @@ class CAI_Stalker;
 
 #define USE_HEAD_BONE_PART_FAKE
 
-class CStalkerAnimationPair {
+class CStalkerAnimationPair
+{
 #ifdef USE_HEAD_BONE_PART_FAKE
 public:
 	enum {
@@ -38,7 +39,6 @@ private:
 	bool					m_actual;
 	bool					m_step_dependence;
 	bool					m_global_animation;
-	bool					m_callback_on_collision;
 	MotionID				m_array_animation;
 	const ANIM_VECTOR		*m_array;
 	CALLBACKS				m_callbacks;
@@ -94,8 +94,6 @@ public:
 	IC		void			remove_callback			(const CALLBACK_ID &callback);
 			void			on_animation_end		();
 	IC		bool			need_update				() const;
-	IC		void			callback_on_collision	(bool const &value);
-	IC		bool			callback_on_collision	() const;
 	IC		void			target_matrix			();
 	IC		void			target_matrix			(Fmatrix const &matrix);
 			void			target_matrix			(Fvector const &position, Fvector const &direction);
