@@ -32,9 +32,9 @@ public:
 	void				SetLiveUpdate		(bool b);
 	bool				GetLiveUpdate		();
 	u32					GetSpriteCount		();
-	void				play_at_pos			(const Fvector& pos, bool xform=FALSE);
+	void				play_at_pos			(const Fvector& pos, bool xform=false);
 	void				Play				(bool bHudMode);
-	void				Stop				(bool bDefferedStop=TRUE);
+	void				Stop				(bool bDefferedStop=true);
 	bool				IsPlaying			();
 
 	IC bool				IsLooped			() { return m_bLooped; }
@@ -50,7 +50,7 @@ public:
 
 namespace Particles::Details
 {
-	xr_shared_ptr<CParticlesObject> Create(const char* p_name, bool bAutoRemove = TRUE, bool remove_on_game_load = true);
+	xr_shared_ptr<CParticlesObject> Create(const char* p_name, bool bAutoRemove = true, bool remove_on_game_load = true);
 
 	template <class T>
 	static IC void Destroy(T& p)

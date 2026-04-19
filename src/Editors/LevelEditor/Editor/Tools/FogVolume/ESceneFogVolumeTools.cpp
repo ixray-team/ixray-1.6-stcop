@@ -257,7 +257,7 @@ void EFogVolume::OnChangeEnvs	(PropValue* prop)
 
     ((ESceneFogVolumeTool*)FParentTools)->RegisterGroup(m_group_id);
 
-    LTools->UpdateProperties(FALSE);
+    LTools->UpdateProperties(false);
 }
 
 void EFogVolume::FillPropObjects(const char* pref, PropItemVec& values)

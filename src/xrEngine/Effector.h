@@ -29,6 +29,6 @@ public:
 	virtual bool		ProcessCam		(SCamEffectorInfo& info)			{fLifeTime-=Device.fTimeDelta; return Valid();};;
 		
 	virtual	void		ProcessIfInvalid(SCamEffectorInfo& info)			{};
-	virtual bool		AllowProcessingIfInvalid()							{return FALSE;}
+	virtual bool		AllowProcessingIfInvalid()							{return false;}
 	virtual bool		AbsolutePositioning()								{return false;}		
 };

@@ -164,6 +164,6 @@ bonesAxis &bonesManipulation::GetBoneParams(CBoneInstance *bone, u8 axis_used)
 			return m_Bones[i].params;
 		}
 	}
-	VERIFY(FALSE);
+	VERIFY(false);
 	return m_Bones[0].params;
 }

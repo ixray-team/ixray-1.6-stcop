@@ -9,7 +9,7 @@ void CRenderTarget::accum_reflected		(light* L)
 	// *****************************	Mask by stencil		*************************************
 	ref_shader		shader				= s_accum_reflected;
 
-	bool	bIntersect			= FALSE; //enable_scissor(L);
+	bool	bIntersect			= false; //enable_scissor(L);
 	RCache.set_xform_world		(L->m_xform			);
 	RCache.set_xform_view		(Device.mView		);
 	RCache.set_xform_project	(Device.mProject	);
@@ -55,7 +55,7 @@ void CRenderTarget::accum_reflected		(light* L)
 		RCache.set_c				("Ldynamic_color",	L_clr.x,L_clr.y,L_clr.z,L_spec);
 		RCache.set_c				("direction",		L_dir.x,L_dir.y,L_dir.z,0);
 		RCache.set_c				("m_texgen",		m_Texgen);
-		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
 		draw_volume(L);
 	}
 

@@ -53,8 +53,8 @@ void CPHShell::Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool d
 		SetCallbacks();
 	}
 
-	m_flags.set(flActive, TRUE);
-	m_flags.set(flActivating, TRUE);
+	m_flags.set(flActive, true);
+	m_flags.set(flActivating, true);
 	spatial_register();
 
 	Fvector lin_vel;
@@ -85,8 +85,8 @@ void CPHShell::Activate(const Fmatrix& transform, const Fvector& lin_vel, const 
 	}
 	spatial_register();
 
-	m_flags.set(flActivating, TRUE);
-	m_flags.set(flActive, TRUE);
+	m_flags.set(flActivating, true);
+	m_flags.set(flActive, true);
 }
 
 void CPHShell::Activate(bool disable, bool not_set_bone_callbacks /*= false*/)
@@ -114,8 +114,8 @@ void CPHShell::Activate(bool disable, bool not_set_bone_callbacks /*= false*/)
 	}
 
 	spatial_register();
-	m_flags.set(flActivating, TRUE);
-	m_flags.set(flActive, TRUE);
+	m_flags.set(flActivating, true);
+	m_flags.set(flActive, true);
 
 }
 
@@ -124,8 +124,8 @@ void CPHShell::Build(bool disable)
 	if (isActive())return;
 
 	PresetActive();
-	m_flags.set(flActivating, TRUE);
-	m_flags.set(flActive, TRUE);
+	m_flags.set(flActivating, true);
+	m_flags.set(flActive, true);
 
 	{
 		ELEMENT_I i = elements.begin(), e = elements.end();
@@ -169,7 +169,7 @@ void CPHShell::AfterSetActive()
 	if(isActive())	return;
 	PureActivate();
 
-	m_flags.set(flActive,TRUE);
+	m_flags.set(flActive,true);
 	ELEMENT_I i=elements.begin(),e=elements.end();
 	for(;i!=e;++i)(*i)->PresetActive();
 }
@@ -178,7 +178,7 @@ void CPHShell::PureActivate()
 {
 	if(isActive())	return;
 
-	m_flags.set(flActive,TRUE);
+	m_flags.set(flActive,true);
 	if(!CPHObject::is_active()) vis_update_deactivate();
 	EnableObject(0);
 	m_object_in_root.identity();
@@ -247,8 +247,8 @@ void CPHShell::Deactivate()
 		m_space=nullptr;
 	}
 
-	m_flags.set(flActivating,FALSE);
-	m_flags.set(flActive,FALSE);
+	m_flags.set(flActivating,false);
+	m_flags.set(flActive,false);
 	m_traced_geoms.clear();
 	CPHObject::UnsetRayMotions();
 }

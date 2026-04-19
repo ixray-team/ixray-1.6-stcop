@@ -29,7 +29,7 @@ void CServerEntityWrapper::save				(IWriter &stream)
 	// Spawn
 	stream.open_chunk		(0);
 
-	m_object->Spawn_Write	(net_packet,TRUE);
+	m_object->Spawn_Write	(net_packet,true);
 	stream.w_u16			(u16(net_packet.B.count));
 	stream.w				(net_packet.B.data,net_packet.B.count);
 	

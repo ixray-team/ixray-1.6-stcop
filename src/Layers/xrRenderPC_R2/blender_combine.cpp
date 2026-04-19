@@ -13,7 +13,7 @@ void	CBlender_combine::Compile(CBlender_Compile& C) {
 
 	switch(C.iElement) {
 	case 0:	// combine
-		C.r_Pass("combine_1", "combine_1", false, false, false, TRUE, D3DBLEND_INVSRCALPHA, D3DBLEND_SRCALPHA);	//. MRT-blend?
+		C.r_Pass("combine_1", "combine_1", false, false, false, true, D3DBLEND_INVSRCALPHA, D3DBLEND_SRCALPHA);	//. MRT-blend?
 		C.r_Sampler_rtf("s_position", r2_RT_P);
 		C.r_Sampler_rtf("s_normal", r2_RT_N);
 		C.r_Sampler_rtf("s_diffuse", r2_RT_albedo);

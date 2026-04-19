@@ -109,7 +109,7 @@ void CControlAnimation::play_part(SAnimationPart &part, PlayCallback callback)
 	//Msg				("%6d Playing animation : %s , %s , Object %s",Device.dwTimeGlobal, K->LL_MotionDefName_dbg(part.motion).first,K->LL_MotionDefName_dbg(part.motion).second, *(m_object->cName()));
 #endif
 	
-	part.blend			= m_skeleton_animated->LL_PlayCycle(bone_or_part,part.get_motion(), TRUE, callback, this);
+	part.blend			= m_skeleton_animated->LL_PlayCycle(bone_or_part,part.get_motion(), true, callback, this);
 	
 	
 ///////////////////////////////////////////////////////////////////////////////
@@ -219,7 +219,7 @@ void CControlAnimation::restart(SAnimationPart &part, PlayCallback callback)
 	float time_saved		= part.blend->timeCurrent;
 	
 	// start
-	part.blend				= m_skeleton_animated->LL_PlayCycle(bone_or_part,part.get_motion(), TRUE, callback, this);
+	part.blend				= m_skeleton_animated->LL_PlayCycle(bone_or_part,part.get_motion(), true, callback, this);
 
 	// restore
 	part.blend->timeCurrent = time_saved;

@@ -62,8 +62,8 @@ protected:
 	virtual		dGeomID			dSpacedGeom						()								=0;
 	virtual		void			get_spatial_params				()								=0;
 	virtual		void			spatial_register				()								;
-				void			SetRayMotions					()								{m_flags.set(fl_ray_motions,TRUE);}
-				void			UnsetRayMotions					()								{m_flags.set(fl_ray_motions,FALSE);}
+				void			SetRayMotions					()								{m_flags.set(fl_ray_motions,true);}
+				void			UnsetRayMotions					()								{m_flags.set(fl_ray_motions,false);}
 
 				void			SetPrefereExactIntegration		()								{m_island.SetPrefereExactIntegration();}
 
@@ -97,8 +97,8 @@ public:
 				void 			Freeze							()								;
 				void 			UnFreeze						()								;
 	IC			bool			IsFreezed			()											{return !!(m_flags.test(st_freezed));}
-				void			NetInterpolationON				()								{m_flags.set(st_net_interpolation,TRUE);}
-				void			NetInterpolationOFF				()								{m_flags.set(st_net_interpolation,TRUE);}
+				void			NetInterpolationON				()								{m_flags.set(st_net_interpolation,true);}
+				void			NetInterpolationOFF				()								{m_flags.set(st_net_interpolation,true);}
 				bool			NetInterpolation				()								{return !!(m_flags.test(st_net_interpolation));}
 	virtual		u16				get_elements_number				()								= 0;
 	virtual		CPHSynchronize	*get_element_sync				(u16 element)					= 0;		

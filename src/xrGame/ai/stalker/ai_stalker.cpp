@@ -638,7 +638,7 @@ bool CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 	m_group_behaviour				= !!tpHuman->m_flags.test(CSE_ALifeObject::flGroupBehaviour);
 
 	if (!CObjectHandler::net_Spawn(DC) || !inherited::net_Spawn(DC))
-		return						(FALSE);
+		return						(false);
 	
 	set_money						(tpHuman->m_dwMoney, false);
 
@@ -661,7 +661,7 @@ bool CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 		"There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!"
 	);
 
-	setEnabled						(TRUE);
+	setEnabled						(true);
 
 
 	if (!Level().CurrentViewEntity())
@@ -750,7 +750,7 @@ bool CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 	else
 		SpatialComponent->spatial.type |= ESPATIAL_TYPE::STALKER_DEAD;
 
-	return							(TRUE);
+	return							(true);
 }
 
 void CAI_Stalker::net_Destroy()
@@ -1315,6 +1315,6 @@ void CAI_Stalker::ChangeVisual(shared_str NewVisual)
 	cNameVisual_set(NewVisual);
 
 	Visual()->dcast_PKinematics()->CalculateBones_Invalidate();
-	Visual()->dcast_PKinematics()->CalculateBones(TRUE);
+	Visual()->dcast_PKinematics()->CalculateBones(true);
 };
 

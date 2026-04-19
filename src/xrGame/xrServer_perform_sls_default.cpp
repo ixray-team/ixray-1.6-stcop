@@ -64,7 +64,7 @@ void xrServer::SLS_Default	()
 	_actor->s_flags.flags	|= M_SPAWN_OBJECT_ASPLAYER;
 	NET_Packet				packet;
 	packet.w_begin			(M_SPAWN);
-	_actor->Spawn_Write		(packet,TRUE);
+	_actor->Spawn_Write		(packet,true);
 
 	u16						id;
 	packet.r_begin			(id);

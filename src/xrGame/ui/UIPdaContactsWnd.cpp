@@ -118,7 +118,7 @@ void CUIPdaContactsWnd::DrawHint()
 
 void CUIPdaContactsWnd::Update()
 {
-	if (TRUE == m_flags.test(flNeedUpdate))
+	if (true == m_flags.test(flNeedUpdate))
 	{
 		UpdateInfo();
 	}
@@ -155,7 +155,7 @@ void CUIPdaContactsWnd::UpdateInfo()
 			needSelect = false;
 		}
 	}
-	m_flags.set(flNeedUpdate, FALSE);
+	m_flags.set(flNeedUpdate, false);
 }
 
 void CUIPdaContactsWnd::AddContact(CInventoryOwner* owner)
@@ -181,7 +181,7 @@ void CUIPdaContactsWnd::RemoveAll()
 
 void CUIPdaContactsWnd::Reload()
 {
-	m_flags.set(flNeedUpdate, TRUE);
+	m_flags.set(flNeedUpdate, true);
 }
 
 void CUIPdaContactsWnd::Reset()

@@ -73,7 +73,7 @@ xr_set<shared_str> modifiedWeathers;
 
 void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
 {
-	CInifile f(nullptr, FALSE, FALSE, FALSE);
+	CInifile f(nullptr, false, false, false);
 	for (auto el : env) {
 		if (el->env_ambient) {
 			f.w_string(el->m_identifier.c_str(), "ambient", el->env_ambient->name().c_str());

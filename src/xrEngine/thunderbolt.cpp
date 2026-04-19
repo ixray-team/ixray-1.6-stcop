@@ -105,7 +105,7 @@ CEffect_Thunderbolt::CEffect_Thunderbolt()
 	life_time	= 0.f;
     state		= stIdle;
     next_lightning_time = 0.f;
-    bEnabled	= FALSE;
+    bEnabled	= false;
 
     // geom
 	//hGeom_model.create	(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RCache.Vertex.Buffer(), RCache.Index.Buffer());
@@ -144,7 +144,7 @@ shared_str CEffect_Thunderbolt::AppendDef(CEnvironment& environment, CInifile* p
 
 bool CEffect_Thunderbolt::RayPick(const Fvector& s, const Fvector& d, float& dist)
 {
-	bool bRes 	= TRUE;
+	bool bRes 	= true;
 
 	collide::rq_result	RQ;
 	CObject* E 			= g_pGameLevel ? g_pGameLevel->CurrentViewEntity() : nullptr;

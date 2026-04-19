@@ -33,8 +33,8 @@ public:
     IC bool			IsClass			(THMType type){return m_Type==type;}
 
     // thumbnail public routines
-	virtual bool 	Load			(const char* src_name=0, const char* path=0)=0;
-	virtual void 	Save			(int age=0,const char* path=0)=0;
+	virtual bool 	Load			(const char* src_name=nullptr, const char* path=nullptr)=0;
+	virtual void 	Save			(int age=0,const char* path=nullptr)=0;
     virtual bool	Valid			()=0;
 	//virtual void	FillProp		(PropItemVec& values)=0;
 	virtual void	FillInfo		(PropItemVec& values)=0;
@@ -78,8 +78,8 @@ public:
     IC u32			_Alpha			(){return m_TexParams.HasAlphaChannel();}
     // thumbnail public routines
     IC STextureParams& _Format		(){return m_TexParams;}
-	virtual bool 	Load			(const char* src_name=0, const char* path=0);
-	virtual void 	Save			(int age=0,const char* path=0);
+	virtual bool 	Load			(const char* src_name=nullptr, const char* path=nullptr);
+	virtual void 	Save			(int age=0,const char* path=nullptr);
     virtual bool	Valid			(){return m_bValid; /*return !m_Pixels.empty();*/}
         	void    SetValid        () {m_bValid = true;}
 	virtual void	FillProp		(PropItemVec& values, PropValue::TOnChange on_type_change);
@@ -109,8 +109,8 @@ public:
     IC int			_FaceCount		(){return face_count;}
 
     // thumbnail public routines
-	virtual bool 	Load			(const char* src_name=0, const char* path=0);
-	virtual void 	Save			(int age=0,const char* path=0);
+	virtual bool 	Load			(const char* src_name=nullptr, const char* path=nullptr);
+	virtual void 	Save			(int age=0,const char* path=nullptr);
     virtual bool	Valid			(){return !m_Pixels.empty();}
 	virtual void	FillProp		(PropItemVec& values);
 	virtual void	FillInfo		(PropItemVec& values);
@@ -130,8 +130,8 @@ public:
 	void 			CreateFromData	(u32* p, u32 w, u32 h, const SStringVec& lst);
 
     // thumbnail public routines
-	virtual bool 	Load			(const char* src_name=0, const char* path=0);
-	virtual void 	Save			(int age=0,const char* path=0);
+	virtual bool 	Load			(const char* src_name=nullptr, const char* path=nullptr);
+	virtual void 	Save			(int age=0,const char* path=nullptr);
     virtual bool	Valid			(){return !m_Pixels.empty();}
 	virtual void	FillProp		(PropItemVec& values);
 	virtual void	FillInfo		(PropItemVec& values);
@@ -159,8 +159,8 @@ public:
 	virtual			~ESoundThumbnail();
 
     // thumbnail public routines
-	virtual bool 	Load			(const char* src_name=0, const char* path=0);
-	virtual void 	Save			(int age=0,const char* path=0);
+	virtual bool 	Load			(const char* src_name=nullptr, const char* path=nullptr);
+	virtual void 	Save			(int age=0,const char* path=nullptr);
     virtual bool	Valid			(){return true;}
 	virtual void	FillProp		(PropItemVec& values);
 	virtual void	FillInfo		(PropItemVec& values);

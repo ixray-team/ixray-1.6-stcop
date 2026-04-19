@@ -7,7 +7,7 @@ gsc_dsigned_ltx_writer::gsc_dsigned_ltx_writer(u8 const p_number[crypto::xr_dsa:
 											   u8 const g_number[crypto::xr_dsa::public_key_length],
 											   priv_key_filler_function_t pkf_func) :
 	xr_dsa_signer(p_number, q_number, g_number),
-	m_ltx(nullptr, FALSE, FALSE, FALSE)
+	m_ltx(nullptr, false, false, false)
 {
 	pkf_func(m_private_key);
 }

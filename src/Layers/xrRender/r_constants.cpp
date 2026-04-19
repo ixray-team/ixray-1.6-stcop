@@ -54,7 +54,7 @@ ref_constant R_constant_table::get(const char* S)
 	//PROF_EVENT("R_constant_table::get const char*")
 	// assumption - sorted by name
 	c_table::iterator I = std::lower_bound(table.begin(), table.end(), S, p_search);
-	if (I == table.end() || (0 != xr_strcmp(*(*I)->name, S)))	return 0;
+	if (I == table.end() || (0 != xr_strcmp(*(*I)->name, S)))	return nullptr;
 	else												return *I;
 }
 ref_constant R_constant_table::get(shared_str& S)
@@ -67,7 +67,7 @@ ref_constant R_constant_table::get(shared_str& S)
 		ref_constant	C = *I;
 		if (C->name.equal(S))	return C;
 	}
-	return	0;
+	return	nullptr;
 }
 
 #ifndef USE_DX11
@@ -92,7 +92,7 @@ bool	R_constant_table::parse(void* _desc, u32 destination)
 
 		// TypeInfo + class
 		D3DXSHADER_TYPEINFO* T = (D3DXSHADER_TYPEINFO*)(ptr + it->TypeInfo);
-		bool bSkip = FALSE;
+		bool bSkip = false;
 		switch (T->Class)
 		{
 		case D3DXPC_SCALAR:			r_type = RC_1x1;		break;
@@ -170,10 +170,10 @@ bool	R_constant_table::parse(void* _desc, u32 destination)
 				break;
 			}
 		}
-		bSkip = TRUE;
+		bSkip = true;
 		break;
 		default:
-			bSkip = TRUE;
+			bSkip = true;
 			break;
 		}
 		if (bSkip)			continue;
@@ -199,14 +199,14 @@ bool	R_constant_table::parse(void* _desc, u32 destination)
 		}
 	}
 	std::sort(table.begin(), table.end(), p_sort_constants);
-	return		TRUE;
+	return		true;
 }
 #endif
 
 /// !!!!!!!!FIX THIS FOR DX11!!!!!!!!!
 void R_constant_table::merge(R_constant_table* T)
 {
-	if (0 == T)		return;
+	if (nullptr == T)		return;
 
 	// Real merge
 	static xr_vector<ref_constant> table_tmp;
@@ -268,7 +268,7 @@ void R_constant_table::clear()
 {
 	//.
 	for (u32 it = 0; it < table.size(); it++)
-		table[it] = 0;//.g_constant_allocator.destroy(table[it]);
+		table[it] = nullptr;//.g_constant_allocator.destroy(table[it]);
 	table.clear();
 #ifdef USE_DX11
 	m_CBTable.clear();
@@ -277,12 +277,12 @@ void R_constant_table::clear()
 
 bool R_constant_table::equal(R_constant_table& C)
 {
-	if (table.size() != C.table.size())	return FALSE;
+	if (table.size() != C.table.size())	return false;
 	u32 size = (u32)table.size();
 	for (u32 it = 0; it < size; it++)
 	{
-		if (!table[it]->equal(&*C.table[it]))	return FALSE;
+		if (!table[it]->equal(&*C.table[it]))	return false;
 	}
 
-	return TRUE;
+	return true;
 }

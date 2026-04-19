@@ -33,7 +33,7 @@ public:
 	int width,height;
 	void *data;
 public:
-	TGAdesc()	{ data = 0; };
+	TGAdesc()	{ data = nullptr; };
 	~TGAdesc()	{};
 
 	void maketga( IWriter &fs );

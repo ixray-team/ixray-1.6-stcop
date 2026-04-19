@@ -170,7 +170,7 @@ CSE_ALifeTraderAbstract::CSE_ALifeTraderAbstract(const char* caSection)
 	m_deadbody_closed			= false;
 
 	m_trader_flags.zero			();
-	m_trader_flags.set			(eTraderFlagInfiniteAmmo,FALSE);
+	m_trader_flags.set			(eTraderFlagInfiniteAmmo,false);
 }
 
 CSE_Abstract *CSE_ALifeTraderAbstract::init	()
@@ -756,7 +756,7 @@ CSE_ALifeAnomalousZone::CSE_ALifeAnomalousZone(const char* caSection) : CSE_ALif
 {
 	m_offline_interactive_radius	= 30.f;
 	m_artefact_spawn_count			= 32;
-	m_spawn_flags.set				(flSpawnDestroyOnSpawn,TRUE);
+	m_spawn_flags.set				(flSpawnDestroyOnSpawn,true);
 }
 
 CSE_Abstract *CSE_ALifeAnomalousZone::init			()
@@ -1611,8 +1611,8 @@ CSE_ALifeCreatureCrow::CSE_ALifeCreatureCrow(const char* caSection) : CSE_ALifeC
 {
 	if (pSettings->section_exist(caSection) && pSettings->line_exist(caSection,"visual"))
 		set_visual				(pSettings->r_string(caSection,"visual"));
-	m_flags.set					(flUseSwitches,FALSE);
-	m_flags.set					(flSwitchOffline,FALSE);
+	m_flags.set					(flUseSwitches,false);
+	m_flags.set					(flSwitchOffline,false);
 }
 
 CSE_ALifeCreatureCrow::~CSE_ALifeCreatureCrow()
@@ -1663,8 +1663,8 @@ CSE_ALifeCreaturePhantom::CSE_ALifeCreaturePhantom(const char* caSection) : CSE_
 {
 	if (pSettings->section_exist(caSection) && pSettings->line_exist(caSection,"visual"))
 		set_visual				(pSettings->r_string(caSection,"visual"));
-	m_flags.set					(flUseSwitches,FALSE);
-	m_flags.set					(flSwitchOffline,FALSE);
+	m_flags.set					(flUseSwitches,false);
+	m_flags.set					(flSwitchOffline,false);
 }
 
 CSE_ALifeCreaturePhantom::~CSE_ALifeCreaturePhantom()
@@ -2265,7 +2265,7 @@ void CSE_ALifeHumanAbstract::FillProps		(const char* pref, PropItemVec& items)
 //////////////////////////////////////////////////////////////////////////
 CSE_ALifeHumanStalker::CSE_ALifeHumanStalker(const char* caSection) : CSE_ALifeHumanAbstract(caSection),CSE_PHSkeleton(caSection)
 {
-	m_trader_flags.set			(eTraderFlagInfiniteAmmo,TRUE);
+	m_trader_flags.set			(eTraderFlagInfiniteAmmo,true);
 	m_start_dialog				= "";
 }
 
@@ -2381,7 +2381,7 @@ CSE_Abstract *CSE_ALifeOnlineOfflineGroup::init				()
 #endif
 
 	VERIFY						(m_members.empty());
-	m_flags.set					(flUsedAI_Locations,FALSE);
+	m_flags.set					(flUsedAI_Locations,false);
 
 	return						(this);
 }

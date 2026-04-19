@@ -283,7 +283,7 @@ void CUIStatsPlayerList::Update()
 		xrCriticalSectionGuard guard(m_pad->csUi);
 		for (int i = 0; i<n; i++)
             m_pad->DetachChild(*(m_pad->GetChildWndList().begin()));
-		m_flags.set			(eNeedRecalc,TRUE);
+		m_flags.set			(eNeedRecalc,true);
 	}
 	else
 	{		
@@ -292,7 +292,7 @@ void CUIStatsPlayerList::Update()
             CUIStatsPlayerInfo* pi = new CUIStatsPlayerInfo(&m_field_info, m_i.f, m_i.c);
 			pi->InitPlayerInfo( Fvector2().set(0,0), Fvector2().set(this->GetDesiredChildWidth(),m_i.h) );
 			CUIScrollView::AddWindow(pi, true);
-			m_flags.set			(eNeedRecalc,TRUE);
+			m_flags.set			(eNeedRecalc,true);
 		}
 	}
 
@@ -350,5 +350,5 @@ void CUIStatsPlayerList::ShowHeader(bool bShow){
 		m_header->Show(bShow);
 		m_header->SetHeight(bShow? m_h.h : 0);
 	}
-	m_flags.set			(eNeedRecalc,TRUE);
+	m_flags.set			(eNeedRecalc,true);
 }

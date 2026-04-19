@@ -23,7 +23,7 @@ public:
     typedef Real (*Function)(const Real*,void*);
 
     MinimizeN (int iDimensions, Function oFunction, int iMaxLevel,
-        int iMaxBracket, int iMaxIterations, void* pvData = 0);
+        int iMaxBracket, int iMaxIterations, void* pvData = nullptr);
 
     ~MinimizeN ();
 

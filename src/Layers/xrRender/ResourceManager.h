@@ -209,14 +209,14 @@ public:
 	ShaderElement*					_CreateElement		(ShaderElement& L);
 	void							_DeleteElement		(const ShaderElement* L);
 
-	Shader*							_cpp_Create			(const char*		s_shader,	const char* s_textures=0,	const char* s_constants=0,	const char* s_matrices=0);
-	Shader*							_cpp_Create			(IBlender*	B,			const char* s_shader=0,		const char* s_textures=0,	const char* s_constants=0, const char* s_matrices=0);
+	Shader*							_cpp_Create			(const char*		s_shader,	const char* s_textures=nullptr,	const char* s_constants=nullptr,	const char* s_matrices=nullptr);
+	Shader*							_cpp_Create			(IBlender*	B,			const char* s_shader=nullptr,		const char* s_textures=nullptr,	const char* s_constants=nullptr, const char* s_matrices=nullptr);
 	Shader*							_lua_Create			(const char*		s_shader,	const char* s_textures);
 	bool							_lua_HasShader		(const char*		s_shader);
 
 	xr_vector<SGeometry*>&			_GetGeoms			()		{	return v_geoms;	}
 
-	CResourceManager						()	: bDeferredLoad(TRUE){	}
+	CResourceManager						()	: bDeferredLoad(true){	}
 	~CResourceManager						()	;
 
 	void			OnDeviceCreate			(IReader* F);
@@ -227,8 +227,8 @@ public:
 	void			reset_end				();
 
 	// Creation/Destroying
-	Shader*			Create					(const char* s_shader=0, const char* s_textures=0,	const char* s_constants=0,	const char* s_matrices=0);
-	Shader*			Create					(IBlender*	B,		const char* s_shader=0,		const char* s_textures=0,	const char* s_constants=0, const char* s_matrices=0);
+	Shader*			Create					(const char* s_shader=nullptr, const char* s_textures=nullptr,	const char* s_constants=nullptr,	const char* s_matrices=nullptr);
+	Shader*			Create					(IBlender*	B,		const char* s_shader=nullptr,		const char* s_textures=nullptr,	const char* s_constants=nullptr, const char* s_matrices=nullptr);
 	void			Delete					(const Shader*		S	);
 	void			RegisterConstantSetup	(const char* name,		RHIShaderConstant::Setup* s)	{	v_constant_setup.push_back(std::make_pair(shared_str(name),s));	}
 

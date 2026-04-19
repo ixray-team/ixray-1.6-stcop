@@ -126,7 +126,7 @@ void	game_cl_Deathmatch::OnBuyMenu_DefaultItems	()
 		pCurBuyMenu->SectionToSlot(u8((ItemID&0xff00)>>0x08), u8(ItemID&0x00ff), false);
 	};
 */	//---------------------------------------------------------
-	SetBuyMenuItems(&PlayerDefItems, TRUE);
+	SetBuyMenuItems(&PlayerDefItems, true);
 };
 
 void game_cl_Deathmatch::SetBuyMenuItems		(PRESET_ITEMS* pItems, bool OnlyPreset)

@@ -200,7 +200,7 @@ bool CActor::g_State (SEntityState& state) const
 	state.bSprint		= !!(mstate_real&mcSprint);
 	state.fVelocity		= character_physics_support()->movement()->GetVelocityActual();
 	state.fAVelocity	= fCurAVelocity;
-	return TRUE;
+	return true;
 }
 
 void CActor::SetCantRunState(bool bDisable)
@@ -306,7 +306,7 @@ void CActor::SelectBestWeapon(CObject* O)
 }
 
 #define ENEMY_HIT_SPOT "mp_hit_sector_location"
-bool g_bShowHitSectors = TRUE;
+bool g_bShowHitSectors = true;
 
 void	CActor::HitSector(CObject* who, CObject* weapon)
 {

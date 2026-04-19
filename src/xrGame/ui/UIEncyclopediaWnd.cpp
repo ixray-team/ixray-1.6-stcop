@@ -190,14 +190,14 @@ void CUIEncyclopediaWnd::Draw()
 			prevArticlesCount = Actor()->encyclopedia_registry->registry().objects_ptr()->size();
 		}
 		
-		m_flags.set(eNeedReload, FALSE);
+		m_flags.set(eNeedReload, false);
 	}
 	inherited::Draw();
 }
 
 void CUIEncyclopediaWnd::ReloadArticles()
 {
-	m_flags.set(eNeedReload, TRUE);
+	m_flags.set(eNeedReload, true);
 }
 
 

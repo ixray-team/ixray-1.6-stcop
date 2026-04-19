@@ -87,15 +87,15 @@ public:
 	{
 		val_pObject			= NULL	;
 		val_pTransform		= NULL	;
-		val_bHUD			= FALSE	;
-		val_bUI				= FALSE	;
-		val_bInvisible		= FALSE	;
-		val_bRecordMP		= FALSE	;
+		val_bHUD			= false	;
+		val_bUI				= false	;
+		val_bInvisible		= false	;
+		val_bRecordMP		= false	;
 		val_feedback		= 0;
 		val_feedback_breakp	= 0;
 		marker				= 0;
 		r_pmask				(true,true);
-		b_loaded			= FALSE	;
+		b_loaded			= false	;
 	};
 
 	void		r_dsgraph_destroy()
@@ -156,8 +156,8 @@ public:
 	void		r_dsgraph_render_scope							();
 	void		r_dsgraph_render_wmarks							();
 	void		r_dsgraph_render_distort						();
-	void		r_dsgraph_render_subspace						(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals=FALSE, CObject*O=nullptr );
-	void		r_dsgraph_render_subspace						(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals=FALSE, CObject*O=nullptr );
+	void		r_dsgraph_render_subspace						(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals=false, CObject*O=nullptr );
+	void		r_dsgraph_render_subspace						(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals=false, CObject*O=nullptr );
 	void		r_dsgraph_render_R1_box							(IRender_Sector* _sector, Fbox& _bb, int _element);
 	void renderImGuiDebugWindow_SVGStorage() override;
 

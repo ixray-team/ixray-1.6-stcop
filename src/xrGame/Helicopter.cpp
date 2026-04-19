@@ -43,10 +43,10 @@ void CHelicopter::init()
 	m_tgt_rot.set				(0.0f,0.0f);
 	m_bind_rot.set				(0.0f,0.0f);
 
-	m_allow_fire				= FALSE;
-	m_use_rocket_on_attack		= TRUE;
-	m_use_mgun_on_attack		= TRUE;	
-	m_syncronize_rocket			= TRUE;
+	m_allow_fire				= false;
+	m_use_rocket_on_attack		= true;
+	m_use_mgun_on_attack		= true;	
+	m_syncronize_rocket			= true;
 	m_min_rocket_dist			= 20.0f;
 	m_max_rocket_dist			= 200.0f;
 	m_time_between_rocket_attack = 0;
@@ -145,7 +145,7 @@ bool CHelicopter::net_Spawn(CSE_Abstract*	DC)
 	m_dead							=false;
 	
 	if (!inherited::net_Spawn(DC))
-		return			(FALSE);
+		return			(false);
 
 	CPHSkeleton::Spawn((CSE_Abstract*)(DC));
 	for(u32 i=0; i<4; ++i)
@@ -208,14 +208,14 @@ bool CHelicopter::net_Spawn(CSE_Abstract*	DC)
 	IKinematicsAnimated	*A	= Visual()->dcast_PKinematicsAnimated();
 	if (A) {
 		A->PlayCycle		(*heli->startup_animation);
-		K->CalculateBones	(TRUE);
+		K->CalculateBones	(true);
 	}
 
 	m_engineSound.create			(*heli->engine_sound,st_Effect,sg_SourceType);
 	m_engineSound.play_at_pos		(0,XFORM().c,sm_Looped);
 
-	setVisible						(TRUE);
-	setEnabled						(TRUE);
+	setVisible						(true);
+	setEnabled						(true);
 
 
 
@@ -236,7 +236,7 @@ bool CHelicopter::net_Spawn(CSE_Abstract*	DC)
 	Device.seqRender.Add(this,REG_PRIORITY_LOW-1);
 #endif
 
-	return TRUE;
+	return true;
 }
 
 void CHelicopter::net_Destroy()
@@ -263,7 +263,7 @@ void	CHelicopter::SpawnInitPhysics	(CSE_Abstract	*D)
 	PPhysicsShell()=P_build_Shell	(this,false);
 	if(g_Alive())
 	{
-		PPhysicsShell()->EnabledCallbacks				(FALSE);
+		PPhysicsShell()->EnabledCallbacks				(false);
 		PPhysicsShell()->set_ObjectContactCallback		(CollisionCallbackAlife);
 		PPhysicsShell()->set_ContactCallback			(ContactCallbackAlife);
 		PPhysicsShell()->Disable						();

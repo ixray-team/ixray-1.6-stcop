@@ -1829,7 +1829,7 @@ public:
 				P.w_stringZ		(user);
 				P.w_stringZ		(pass);
 
-				Level().Send(P,net_flags(TRUE,TRUE));
+				Level().Send(P,net_flags(true,true));
 			}else
 				Msg("2 args(user pass) needed");
 		}
@@ -1840,7 +1840,7 @@ public:
 			P.w_begin		(M_REMOTE_CONTROL_AUTH);
 			P.w_stringZ		("logoff");
 
-			Level().Send(P,net_flags(TRUE,TRUE));
+			Level().Send(P,net_flags(true,true));
 		}//logoff
 		else
 		{
@@ -1848,7 +1848,7 @@ public:
 			P.w_begin		(M_REMOTE_CONTROL_CMD);
 			P.w_stringZ		(arguments);
 
-			Level().Send(P,net_flags(TRUE,TRUE));
+			Level().Send(P,net_flags(true,true));
 		}
 	}
 	virtual void	Save	(IWriter *F)	{};
@@ -1866,7 +1866,7 @@ public:
 			if (tdmGame)
 			{
 				bool old_team_swap = g_sv_tdm_bAutoTeamSwap;
-				g_sv_tdm_bAutoTeamSwap = TRUE;
+				g_sv_tdm_bAutoTeamSwap = true;
 				tdmGame->AutoSwapTeams();
 				g_sv_tdm_bAutoTeamSwap = old_team_swap;
 			} else if (ctaGame)

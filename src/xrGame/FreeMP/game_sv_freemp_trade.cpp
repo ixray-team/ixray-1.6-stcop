@@ -70,7 +70,7 @@ void game_sv_freemp::OnPlayerTrade(NET_Packet& P, ClientID const& clientID)
 			P.w_u32(Device.dwTimeGlobal - 2 * NET_Latency);
 			P.w_u16(GE_DESTROY);
 			P.w_u16(pItem->object_id());
-			Level().Send(P, net_flags(TRUE, TRUE));
+			Level().Send(P, net_flags(true, true));
 
 			CSE_Abstract* E = spawn_begin(pItem->m_section_id.c_str());
 			E->ID_Parent = pTrader->object_id();
@@ -121,7 +121,7 @@ void game_sv_freemp::OnPlayerTrade(NET_Packet& P, ClientID const& clientID)
 				P.w_u32(Device.dwTimeGlobal - 2 * NET_Latency);
 				P.w_u16(GE_DESTROY);
 				P.w_u16(pItem->object_id());
-				Level().Send(P, net_flags(TRUE, TRUE));
+				Level().Send(P, net_flags(true, true));
 			}
 		}
 

@@ -1698,7 +1698,7 @@ bool CScriptGameObject::IsBoneVisible(const char* bone_name)
 			return false;
 		}
 
-		return k->LL_GetBoneVisible(bone_id) == TRUE ? true : false;
+		return k->LL_GetBoneVisible(bone_id) == true ? true : false;
 	}
 
 	return false;
@@ -1923,9 +1923,9 @@ bool CScriptGameObject::SetHudObjectBoneVisibility(const char* boneName, bool bV
 
 	if ((bool)KI->LL_GetBoneVisible(boneId) != bVisibility)
 	{
-		KI->CalculateBones(TRUE);
-		KI->LL_SetBoneVisible(boneId, bVisibility, TRUE);
-		KI->CalculateBones(TRUE);
+		KI->CalculateBones(true);
+		KI->LL_SetBoneVisible(boneId, bVisibility, true);
+		KI->CalculateBones(true);
 		return true;
 	}
 	
@@ -1949,9 +1949,9 @@ bool CScriptGameObject::SetWorldObjectBoneVisibility(const char* boneName, bool 
 
 	if ((bool)KI->LL_GetBoneVisible(boneId) != bVisibility)
 	{
-		KI->CalculateBones(TRUE);
-		KI->LL_SetBoneVisible(boneId, bVisibility, TRUE);
-		KI->CalculateBones(TRUE);
+		KI->CalculateBones(true);
+		KI->LL_SetBoneVisible(boneId, bVisibility, true);
+		KI->CalculateBones(true);
 		
 		return true;
 	}

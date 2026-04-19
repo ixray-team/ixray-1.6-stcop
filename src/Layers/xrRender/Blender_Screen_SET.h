@@ -17,7 +17,7 @@ class CBlender_Screen_SET : public IBlender
 	xrP_BOOL	oClamp;
 public:
 	virtual		const char*		getComment()	{ return "basic (simple)"; }
-	virtual		bool		canBeLMAPped()	{ return FALSE; }
+	virtual		bool		canBeLMAPped()	{ return false; }
 	
 	virtual		void		Save			(IWriter&  fs);
 	virtual		void		Load			(IReader&	fs, u16 version);

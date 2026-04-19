@@ -32,7 +32,7 @@ void CSoundRender_Emitter::update(float dt)
 
 	if (bRewind){
 		if (target)		SoundRender->i_rewind	(this);
-		bRewind			= FALSE;
+		bRewind			= false;
 	}
 
 	switch (m_current_state)	
@@ -195,7 +195,7 @@ void CSoundRender_Emitter::update(float dt)
 	VERIFY2(owner_data?*(int*)(owner_data->feedback):1,"owner");
 
 	// footer
-	bMoved									= FALSE;
+	bMoved									= false;
 	if (m_current_state != stStopped)
 	{
 		if (fTime	>=	fTimeToPropagade)		
@@ -219,7 +219,7 @@ IC void	volume_lerp(float& c, float t, float s, float dt)
 	c				+= (diff/diff_a)*mot;
 }
 
-BOOL CSoundRender_Emitter::update_culling(float dt)
+bool CSoundRender_Emitter::update_culling(float dt)
 {
 	float volume_att = 1.f;
 
@@ -233,7 +233,7 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 	{
 		// Check range
 		float	dist = SoundRender->listener_position().distance_to(p_source.position);
-		if (dist > p_source.max_distance) { smooth_volume = 0; return FALSE; }
+		if (dist > p_source.max_distance) { smooth_volume = 0; return false; }
 
 		// Calc attenuated volume
 		//LostAlphaRus in
@@ -263,12 +263,12 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 	//LostAlphaRus out
 
 	if (smooth_volume < psSoundCull)
-		return FALSE;	// allow volume to go up
+		return false;	// allow volume to go up
 	// Here we has enought "PRIORITY" to be soundable
 	// If we are playing already, return OK
 	// --- else check availability of resources
 	if (target)
-		return TRUE;
+		return true;
 
 	return	SoundRender->i_allow_play(this);
 }

@@ -84,7 +84,7 @@ public:
 	virtual void		UpdateSnapList			()=0;
 	
 	// selection manipulate
-	// flags: [0 - FALSE, 1 - TRUE, -1 - INVERT]
+	// flags: [0 - false, 1 - true, -1 - INVERT]
 	virtual int			RaySelect				(int flag, float& distance, const Fvector& start, const Fvector& direction, bool bDistanceOnly)=0;
 	virtual int			FrustumSelect			(int flag, const CFrustum& frustum)=0;
 	virtual void 		SelectObjects           (bool flag)=0;

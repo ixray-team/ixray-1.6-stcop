@@ -270,7 +270,7 @@ struct attachable_hud_item final
 	void render_item_ui				();
 	bool render_item_ui_query		();
 	bool need_renderable			();
-	void set_bone_visible			(const shared_str& bone_name, bool bVisibility, bool bSilent=FALSE);
+	void set_bone_visible			(const shared_str& bone_name, bool bVisibility, bool bSilent=false);
 	void debug_draw_firedeps		();
 	void UpdateInertion				(u32 delta, CActor* actor);
 
@@ -411,7 +411,7 @@ public:
 	u32				anim_play			(u16 part, const MotionID& M, bool bMixIn, const CMotionDef*& md, float speed);
 	bool			check_anim			(const shared_str& anim_name, u16 place_idx);
 
-	bool			animator_play			(const shared_str& anim_name, u16 place_idx = u16(-1), u16 part_id = u16(-1), bool bMixIn = FALSE, float speed = 1.0f, u8 anm_idx = u8(0), bool impact_on_item = false, bool similar_check = false, PlayCallback Callback = PlayCallback(0), LPVOID CallbackParam = LPVOID(0), bool UpdateCallbackType = 0);
+	bool			animator_play			(const shared_str& anim_name, u16 place_idx = u16(-1), u16 part_id = u16(-1), bool bMixIn = false, float speed = 1.0f, u8 anm_idx = u8(0), bool impact_on_item = false, bool similar_check = false, PlayCallback Callback = PlayCallback(0), LPVOID CallbackParam = LPVOID(0), bool UpdateCallbackType = 0);
 
 	// анимация-эффект которая не будет отключать обычные анимации но позволит создать подрагивания уклонения и прочие анимационные эффекты
 	void			animator_fx_play		(const shared_str& anim_name, u16 place_idx = u16(-1), u16 part_id = u16(-1), u8 anm_idx = u8(0), float blendAccrue = 1.f, float blendFalloff = 1.f, float Speed = 1.f, float Power = 1.f);

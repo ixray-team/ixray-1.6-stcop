@@ -35,13 +35,13 @@ CBlend*	anim_script_callback::play_cycle( IKinematicsAnimated* sa,const shared_s
 		on_end		= false;
 		on_begin	= false;
 		is_set		= true;
-		return PlayMotionByParts( sa, m, FALSE, anim_callback, this );
+		return PlayMotionByParts( sa, m, false, anim_callback, this );
 	} else
 	{
 		on_end		= false;
 		on_begin	= false;
 		is_set		= false;
-		return PlayMotionByParts( sa, m, FALSE, 0, 0 );
+		return PlayMotionByParts( sa, m, false, 0, 0 );
 	}
 }
 

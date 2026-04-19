@@ -217,14 +217,14 @@ void CPhysicsShellHolder::activate_physic_shell()
 	if(H_Parent()&&H_Parent()->Visual())
 	{
 		PKinematics(H_Parent()->Visual())->CalculateBones_Invalidate	();
-		PKinematics(H_Parent()->Visual())->CalculateBones	(TRUE);
+		PKinematics(H_Parent()->Visual())->CalculateBones	(true);
 		Fvector dir = H_Parent()->Direction();
 		if (dir.y < 0.f)
 			dir.y = -dir.y;
 		l_fw.set(dir.normalize().mul(2.f));
 	}
 	PKinematics(Visual())->CalculateBones_Invalidate	();
-	PKinematics(Visual())->CalculateBones(TRUE);
+	PKinematics(Visual())->CalculateBones(true);
 	if(!IsGameTypeSingle())
 	{
 		if (!cast_custom_rocket() && !cast_grenade())
@@ -249,7 +249,7 @@ void CPhysicsShellHolder::activate_physic_shell()
 	if(H_Parent()&&H_Parent()->Visual())
 	{
 		PKinematics(H_Parent()->Visual())->CalculateBones_Invalidate	();
-		PKinematics(H_Parent()->Visual())->CalculateBones	(TRUE);
+		PKinematics(H_Parent()->Visual())->CalculateBones	(true);
 	}
 	CPhysicsShellHolder* P = H_Parent() != nullptr ? H_Parent()->cast_physics_shell_holder() : nullptr;
 	if( P )
@@ -262,7 +262,7 @@ void CPhysicsShellHolder::setup_physic_shell	()
 	create_physic_shell			();
 	m_pPhysicsShell->Activate	(XFORM(),0,XFORM());
 	PKinematics(Visual())->CalculateBones_Invalidate	();
-	PKinematics(Visual())->CalculateBones(TRUE);
+	PKinematics(Visual())->CalculateBones(true);
 		
 	ApplySpawnIniToPhysicShell(spawn_ini(),PPhysicsShell(),false);
 	correct_spawn_pos();

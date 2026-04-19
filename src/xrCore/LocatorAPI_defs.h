@@ -59,7 +59,7 @@ public:
 	LPSTR		m_FilterCaption;
     Flags32		m_Flags;
 public:
-				FS_Path		(const char* _Root, const char* _Add, const char* _DefExt=0, const char* _FilterString=0, u32 flags=0);
+				FS_Path		(const char* _Root, const char* _Add, const char* _DefExt=nullptr, const char* _FilterString=nullptr, u32 flags=0);
 				~FS_Path	();
 	const char*		_update		(string_path& dest, const char* src) const;
 	const char*		_update		(xr_stack_string_path& dest, const char* src) const;

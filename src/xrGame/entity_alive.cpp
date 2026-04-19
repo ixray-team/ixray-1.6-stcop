@@ -208,7 +208,7 @@ void CEntityAlive::reload		(const char* section)
 	m_fFood					= 100*pSettings->r_float	(section,"ph_mass");
 }
 
-bool	g_fight_fast_respawn = FALSE;
+bool	g_fight_fast_respawn = false;
 void CEntityAlive::shedule_Update(u32 dt)
 {
 	PROF_EVENT("CEntityAlive::shedule_Update");
@@ -269,7 +269,7 @@ bool CEntityAlive::net_Spawn	(CSE_Abstract* DC)
 	if (character_physics_support())
 		SpatialComponent->spatial.type |= ESPATIAL_TYPE::PHYSIC_MOVEMENT;
 
-	return						(TRUE);
+	return						(true);
 }
 
 void CEntityAlive::net_Destroy	()
@@ -626,7 +626,7 @@ void CEntityAlive::load	(IReader &input_packet)
 
 bool	CEntityAlive::net_SaveRelevant		()
 {
-	return		(TRUE);
+	return		(true);
 }
 
 CEntityConditionSimple* CEntityAlive::create_entity_condition	(CEntityConditionSimple* ec)

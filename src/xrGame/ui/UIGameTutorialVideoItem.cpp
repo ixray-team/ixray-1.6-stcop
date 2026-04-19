@@ -20,7 +20,7 @@ extern ENGINE_API bool bShowPauseString;
 CUISequenceVideoItem::CUISequenceVideoItem(CUISequencer* owner):CUISequenceItem(owner)
 {
 	//m_texture				= nullptr;
-	m_flags.set				(etiPlaying|etiNeedStart|etiDelayed|etiBackVisible,FALSE);
+	m_flags.set				(etiPlaying|etiNeedStart|etiDelayed|etiBackVisible,false);
 	m_delay					= 0.f;
 	m_wnd					= nullptr;
 	m_wnd_bg				= nullptr;
@@ -61,7 +61,7 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 	str						= xml->Read				("back_show",0,"on");
 	m_flags.set										(etiBackVisible,	0==_stricmp(str, "on"));
 
-	m_flags.set										(etiGrabInput,		TRUE);
+	m_flags.set										(etiGrabInput,		true);
 
 	m_delay					= std::max(xml->ReadFlt		("delay",0,0.f),0.f);
 
@@ -120,7 +120,7 @@ void CUISequenceVideoItem::Update()
 	inherited::Update();
 	if(GetUICursor().IsVisible())
 	{
-		m_flags.set			(etiStoredCursorState, TRUE);
+		m_flags.set			(etiStoredCursorState, true);
 		GetUICursor().Hide	();
 	}
 	// deferred start
@@ -135,7 +135,7 @@ void CUISequenceVideoItem::Update()
 			}
 			m_owner->MainWnd()->AttachChild	(m_wnd);
 			m_wnd->Show						(true);
-			m_flags.set						(etiDelayed, FALSE);
+			m_flags.set						(etiDelayed, false);
 		}
 	}else return;
 
@@ -164,13 +164,13 @@ void CUISequenceVideoItem::Update()
 					m_sound_mono[1].play(nullptr, sm_Intro);
 					//m_sound_mono[1].set_panning(0.f, 1.0f);
 				}
-				m_texture->video_Play	(FALSE, m_sync_time);
-				m_flags.set				(etiNeedStart,FALSE);
+				m_texture->video_Play	(false, m_sync_time);
+				m_flags.set				(etiNeedStart,false);
 				CUIWindow* w			= m_owner->MainWnd()->FindChild("back");
 				if (w)					
 					w->Show(!!m_flags.test(etiBackVisible));
 			}else{
-				m_flags.set				(etiPlaying,FALSE);
+				m_flags.set				(etiPlaying,false);
 			}
 		}
 	}
@@ -193,22 +193,22 @@ void CUISequenceVideoItem::Start()
 
 	if(m_flags.test(etiNeedPauseOn) && !m_flags.test(etiStoredPauseState))
 	{
-		Device.Pause			(TRUE, TRUE, TRUE, "videoitem_start");
-		bShowPauseString		= FALSE;
+		Device.Pause			(true, true, true, "videoitem_start");
+		bShowPauseString		= false;
 	}
 
 	if(m_flags.test(etiNeedPauseOff) && m_flags.test(etiStoredPauseState))
-		Device.Pause			(FALSE, TRUE, TRUE, "videoitem_start");
+		Device.Pause			(false, true, true, "videoitem_start");
 
 	if(m_flags.test(etiNeedPauseSound))
-		Device.Pause			(TRUE, FALSE, TRUE, "videoitem_start");
+		Device.Pause			(true, false, true, "videoitem_start");
 
-	m_flags.set					(etiPlaying,TRUE);
-	m_flags.set					(etiNeedStart,TRUE);
+	m_flags.set					(etiPlaying,true);
+	m_flags.set					(etiNeedStart,true);
 
 	m_sync_time					= 0;
 	m_time_start				= Device.dwTimeContinual+iFloor(m_delay*1000.f);
-	m_flags.set					(etiDelayed,TRUE);
+	m_flags.set					(etiDelayed,true);
 
 	if (m_flags.test(etiBackVisible)){
 		CUIWindow* w			= m_owner->MainWnd()->FindChild("back");
@@ -224,7 +224,7 @@ bool CUISequenceVideoItem::Stop	(bool bForce)
 	if(!m_flags.test(etiCanBeStopped) && !bForce && IsPlaying()) 
 		return false;
 
-	m_flags.set					(etiPlaying,FALSE);
+	m_flags.set					(etiPlaying,false);
 
 	m_wnd->Show					(false);
 	if(Device.dwTimeContinual>=m_time_start && m_wnd->GetParent()==m_owner->MainWnd())
@@ -234,13 +234,13 @@ bool CUISequenceVideoItem::Stop	(bool bForce)
 	m_texture->ResetTexture		();
 
 	if(m_flags.test(etiNeedPauseOn) && !m_flags.test(etiStoredPauseState))
-		Device.Pause			(FALSE, TRUE, TRUE, "videoitem_stop");
+		Device.Pause			(false, true, true, "videoitem_stop");
 
 	if(m_flags.test(etiNeedPauseOff) && m_flags.test(etiStoredPauseState))
-		Device.Pause			(TRUE, TRUE, TRUE, "videoitem_stop");
+		Device.Pause			(true, true, true, "videoitem_stop");
 
 	if(m_flags.test(etiNeedPauseSound))
-		Device.Pause			(FALSE, FALSE, TRUE, "videoitem_stop");
+		Device.Pause			(false, false, true, "videoitem_stop");
 
 	inherited::Stop				();
 	return true;

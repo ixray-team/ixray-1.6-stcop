@@ -130,7 +130,7 @@ public:
 
 	void	SetLoadedState();
 
-	virtual void	DeleteThis		(){m_RT_Flags.set(flRT_NeedSelfDelete,TRUE);}
+	virtual void	DeleteThis		(){m_RT_Flags.set(flRT_NeedSelfDelete,true);}
 public:
 					CCustomObject	(LPVOID data, const char* name);
 	virtual 		~CCustomObject	();
@@ -181,7 +181,7 @@ public:
 						FITransformRP.identity	();
 					}
 	virtual void 	ResetAnimation	(bool upd_t=true){;}
-	virtual void 	UpdateTransform	(bool bForced=false){m_RT_Flags.set(flRT_UpdateTransform,TRUE);if(bForced)OnUpdateTransform();}
+	virtual void 	UpdateTransform	(bool bForced=false){m_RT_Flags.set(flRT_UpdateTransform,true);if(bForced)OnUpdateTransform();}
 
 	// animation methods
 	

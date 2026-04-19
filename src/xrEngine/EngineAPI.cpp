@@ -55,14 +55,14 @@ void CEngineAPI::InitializeNotDedicated()
 		if (0==hRender) {
 			// try to load R1
 			Msg			("! ...Failed - incompatible hardware/pre-Vista OS.");
-			psDeviceFlags.set	(rsR2,TRUE);
+			psDeviceFlags.set	(rsR2,true);
 		}
 	}
 
 	if (psDeviceFlags.test(rsR2))
 	{
 		// try to initialize R2
-		psDeviceFlags.set	(rsR4,FALSE);
+		psDeviceFlags.set	(rsR4,false);
 		Msg("Loading DLL: %s",	r2_name);
 		hRender = Platform::LoadLibrary(r2_name);
 		if (0==hRender)
@@ -78,8 +78,8 @@ void CEngineAPI::InitializeNotDedicated()
 void CEngineAPI::InitializeDedicated()
 {
 	const char* r1_name	= "xrRender_DS0";
-	psDeviceFlags.set	(rsR4,FALSE);
-	psDeviceFlags.set	(rsR2,FALSE);
+	psDeviceFlags.set	(rsR4,false);
+	psDeviceFlags.set	(rsR2,false);
 	renderer_value		= 0; //con cmd
 
 	Msg("Loading DLL: %s",	r1_name);
@@ -113,8 +113,8 @@ void CEngineAPI::Initialize(void)
 	if (0==hRender)		
 	{
 		// try to load R1
-		psDeviceFlags.set	(rsR4,FALSE);
-		psDeviceFlags.set	(rsR2,FALSE);
+		psDeviceFlags.set	(rsR4,false);
+		psDeviceFlags.set	(rsR2,false);
 		renderer_value		= 0; //con cmd
 
 		Msg("Loading DLL: %s",	r1_name);

@@ -99,7 +99,7 @@ bool CRestrictedObject::net_Spawn			(CSE_Abstract* data)
 
 	actual						(true);
 	
-	return						(TRUE);
+	return						(true);
 }
 
 void CRestrictedObject::net_Destroy			()
@@ -254,7 +254,7 @@ IC	void CRestrictedObject::add_object_restriction(ALife::_OBJECT_ID id, const Re
 	object().u_EventGen	(net_packet,GE_ADD_RESTRICTION,object().ID());
 	net_packet.w		(&id,sizeof(id));
 	net_packet.w		(&restrictor_type,sizeof(restrictor_type));
-	Level().Send		(net_packet,net_flags(TRUE,TRUE));
+	Level().Send		(net_packet,net_flags(true,true));
 }
 
 IC	void CRestrictedObject::remove_object_restriction(ALife::_OBJECT_ID id, const RestrictionSpace::ERestrictorTypes &restrictor_type)
@@ -263,7 +263,7 @@ IC	void CRestrictedObject::remove_object_restriction(ALife::_OBJECT_ID id, const
 	object().u_EventGen	(net_packet,GE_REMOVE_RESTRICTION,object().ID());
 	net_packet.w		(&id,sizeof(id));
 	net_packet.w		(&restrictor_type,sizeof(restrictor_type));
-	Level().Send		(net_packet,net_flags(TRUE,TRUE));
+	Level().Send		(net_packet,net_flags(true,true));
 }
 
 template <typename P, bool value>
@@ -372,7 +372,7 @@ void CRestrictedObject::remove_all_restrictions	(const RestrictionSpace::ERestri
 	NET_Packet			net_packet;
 	object().u_EventGen	(net_packet,GE_REMOVE_ALL_RESTRICTIONS,object().ID());
 	net_packet.w		(&restrictor_type,sizeof(restrictor_type));
-	Level().Send		(net_packet,net_flags(TRUE,TRUE));
+	Level().Send		(net_packet,net_flags(true,true));
 }
 
 void CRestrictedObject::remove_all_restrictions()

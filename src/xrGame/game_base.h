@@ -102,7 +102,7 @@ struct game_PlayerState
 			s16		frags					() const {return m_iRivalKills - m_iSelfKills - m_iTeamKills;} 
 
 #ifndef AI_COMPILER
-			void	net_Export				(NET_Packet& P, bool Full = FALSE);
+			void	net_Export				(NET_Packet& P, bool Full = false);
 			void	net_Import				(NET_Packet& P);
 	static	void	skip_Import				(NET_Packet& P);
 #endif

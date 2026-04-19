@@ -27,7 +27,7 @@ public:
 	Fcolor				color		;
 
 	// Ray-testing cache
-	BOOL				bTestResult	;
+	bool				bTestResult	;
 	collide::ray_cache	RayCache	;
 	u32					qid_pass	;
 	u32					qid_total	;
@@ -60,7 +60,7 @@ class CGlowManager
 	xr_vector<ref_glow>		SelectedToTest_0;	// 0-frames behind
 	ref_geom				hGeom			;
 
-	BOOL					b_hardware		;
+	bool					b_hardware		;
 	u32						dwTestID		;
 public:
 	void	add				(ref_glow	g)	;

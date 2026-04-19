@@ -126,11 +126,11 @@ struct LevelInspector final
 	Flags32 m_zone_flags = { 0 };
 	ESPATIAL_TYPE m_spatials_mask{ ESPATIAL_TYPE::NONE};
 
-	bool zbuffer_enable = TRUE;
-	bool visible_currents = TRUE;
-	bool hud_mode = FALSE;
+	bool zbuffer_enable = true;
+	bool visible_currents = true;
+	bool hud_mode = false;
 
-	LevelInspector(bool hm = FALSE);
+	LevelInspector(bool hm = false);
 	~LevelInspector();
 
 	void OnRender();

@@ -49,7 +49,7 @@ CBone::CBone()
 	flags.zero		();
     rest_length		= 0;
 	SelfID			= -1;
-    parent			= 0;
+    parent			= nullptr;
 
     ResetData		();
 }

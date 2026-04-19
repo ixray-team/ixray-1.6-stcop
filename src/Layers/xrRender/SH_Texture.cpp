@@ -31,8 +31,8 @@ CTexture::CTexture		()
 	flags.MemoryUsage	= 0;
 	flags.bLoaded		= false;
 	flags.bUser			= false;
-	flags.seqCycles		= FALSE;
-	flags.bLoadedAsStaging = FALSE;
+	flags.seqCycles		= false;
+	flags.bLoadedAsStaging = false;
 	m_material			= 1.0f;
 	can_unload = true;
 	bind				= xr_make_delegate(this,&CTexture::apply_load);
@@ -51,7 +51,7 @@ void CTexture::surface_set(IRHISurface* surf)
 	_RELEASE(m_pSRView);
 
 	pSurface = surf;
-	m_pSRView = 0;
+	m_pSRView = nullptr;
 
 	if (pSurface)
 	{
@@ -141,7 +141,7 @@ void CTexture::ProcessStaging()
 	VERIFY(pSurface);
 	VERIFY(flags.bLoadedAsStaging);
 
-	IRHISurface* pTargetSurface = 0;
+	IRHISurface* pTargetSurface = nullptr;
 
 	ERHI_RESOURCE_DIMENSION type = pSurface->GetTextureType();
 
@@ -185,11 +185,11 @@ void CTexture::ProcessStaging()
 
 	GRHI->CopySurface(pTargetSurface, pSurface);
 
-	flags.bLoadedAsStaging = FALSE;
+	flags.bLoadedAsStaging = false;
 
 	//	Check if texture was not copied _before_ it was converted.
 	pSurface->Release();
-	pSurface = 0;
+	pSurface = nullptr;
 
 	surface_set(pTargetSurface);
 
@@ -330,7 +330,7 @@ void CTexture::Load()
 	if (0 == _stricmp(*cName, "$null"))
 		return;
 
-	if (0 != strstr(*cName, "$user$"))
+	if (nullptr != strstr(*cName, "$user$"))
 	{
 		flags.bUser = true;
 		return;
@@ -356,7 +356,7 @@ void CTexture::Load()
 		else
 		{
 			flags.MemoryUsage = pTheora->Width(true) * pTheora->Height(true) * 4;
-			pTheora->Play(TRUE, Device.dwTimeContinual);
+			pTheora->Play(true, Device.dwTimeContinual);
 
 			u32 _w = pTheora->Width(false);
 			u32 _h = pTheora->Height(false);
@@ -377,8 +377,8 @@ void CTexture::Load()
 			{
 				FATAL("Invalid video stream");
 				xr_delete(pTheora);
-				pSurface = 0;
-				m_pSRView = 0;
+				pSurface = nullptr;
+				m_pSRView = nullptr;
 			}
 			else
 			{
@@ -417,8 +417,8 @@ void CTexture::Load()
 			{
 				FATAL("Invalid video stream");
 				xr_delete(pAVI);
-				pSurface = 0;
-				m_pSRView = 0;
+				pSurface = nullptr;
+				m_pSRView = nullptr;
 			}
 			else
 			{
@@ -433,11 +433,11 @@ void CTexture::Load()
 		string256 buffer;
 		IReader* _fs = FS.r_open(fn);
 
-		flags.seqCycles = FALSE;
+		flags.seqCycles = false;
 		_fs->r_string(buffer, sizeof(buffer));
 		if (0 == _stricmp(buffer, "cycled"))
 		{
-			flags.seqCycles = TRUE;
+			flags.seqCycles = true;
 			_fs->r_string(buffer, sizeof(buffer));
 		}
 		u32 fps = atoi(buffer);
@@ -473,13 +473,13 @@ void CTexture::Load()
 				if (pSurface)
 				{
 					seqDATA.push_back(pSurface);
-					m_seqSRView.push_back(0);
+					m_seqSRView.push_back(nullptr);
 					m_seqSRView.back() = GRHI->CreateShaderResourceView(seqDATA.back(), nullptr);
 					flags.MemoryUsage += mem;
 				}
 			}
 		}
-		pSurface = 0;
+		pSurface = nullptr;
 		FS.r_close(_fs);
 	}
 	else
@@ -508,7 +508,7 @@ void CTexture::Load()
 
 		if (GetUsage() == ERHI_USAGE::USAGE_STAGING)
 		{
-			flags.bLoadedAsStaging = TRUE;
+			flags.bLoadedAsStaging = true;
 			bCreateView = false;
 		}
 
@@ -542,8 +542,8 @@ void CTexture::Unload()
 		}
 		seqDATA.clear();
 		m_seqSRView.clear();
-		pSurface = 0;
-		m_pSRView = 0;
+		pSurface = nullptr;
+		m_pSRView = nullptr;
 	}
 
 	_RELEASE(pSurface);
@@ -612,7 +612,7 @@ void CTexture::CreateEmpty(u32 w, u32 h)
 	flags.bUser = false;
 	flags.MemoryUsage = 0;
 	if (0 == _stricmp(*cName, "$null"))	return;
-	if (0 != strstr(*cName, "$user$")) {
+	if (nullptr != strstr(*cName, "$user$")) {
 		flags.bUser = true;
 		return;
 	}

@@ -130,7 +130,7 @@ public:
 	    	m_Points.clear	();
             m_OBB.clear		();
         }
-        void AppendPoint(const Fvector& p0, u32 c=0xff0000ff, bool i=true, bool m=true, const char* descr = NULL)
+        void AppendPoint(const Fvector& p0, u32 c=0xff0000ff, bool i=true, bool m=true, const char* descr = nullptr)
         {
         	m_Points.push_back(Point());
             m_Points.back().p[0].set(p0);
@@ -228,10 +228,10 @@ public:
     virtual bool  	KeyPress   	(WORD Key, TShiftState Shift){return false;}
 
     virtual bool		Pick				(TShiftState Shift)=0;
-	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt=0, Fvector* n=0)=0;
+	virtual bool 		RayPick				(const Fvector& start, const Fvector& dir, float& dist, Fvector* pt=nullptr, Fvector* n=nullptr)=0;
 
     virtual void		ShowProperties		(const char* focused_item)=0;
-    virtual void		UpdateProperties	(bool bForced=FALSE)=0;
+    virtual void		UpdateProperties	(bool bForced=false)=0;
     virtual void		RefreshProperties	()=0;
 
     const xr_string&	GetEditFileName		()	{ return m_LastFileName; }

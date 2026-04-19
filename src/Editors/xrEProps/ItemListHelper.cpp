@@ -20,7 +20,7 @@ ListItem* CListHelper::CreateItem	(ListItemsVec& items, const char* key, int typ
     ListItem* item	= new ListItem	(type);
     item->SetName	(key);
     item->m_Object	= object;
-    item->m_Flags.set(item_flags,TRUE);
+    item->m_Flags.set(item_flags,true);
     items.push_back	(item);
     return			item;
 }

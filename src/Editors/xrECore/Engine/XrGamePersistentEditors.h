@@ -12,7 +12,7 @@ public:
 	virtual void					Disconnect			();
 
 
-	virtual bool					OnRenderPPUI_query	() { return FALSE; };	// should return true if we want to have second function called
+	virtual bool					OnRenderPPUI_query	() { return false; };	// should return true if we want to have second function called
 	virtual void					OnRenderPPUI_main	() {};
 	virtual void					OnRenderPPUI_PP		() {};
 

@@ -427,11 +427,11 @@ void CAI_Bloodsucker::CheckSpecParams(u32 spec_params)
 bool CAI_Bloodsucker::net_Spawn (CSE_Abstract* DC) 
 {
 	if (!inherited::net_Spawn(DC))
-		return(FALSE);
+		return(false);
 
 	vfAssignBones();
 
-	return(TRUE);
+	return(true);
 }
 
 float   CAI_Bloodsucker::get_full_visibility_radius ()
@@ -639,7 +639,7 @@ void CAI_Bloodsucker::shedule_Update(u32 dt)
 	
 	if (!g_Alive())	
 	{
-		setVisible(TRUE);
+		setVisible(true);
 		if ( state_invisible )
 		{
 			stop_invisible_predator();
@@ -762,7 +762,7 @@ void CAI_Bloodsucker::start_drag()
 {
 	if(m_animated){
 		com_man().script_capture(ControlCom::eControlAnimation);
-		Visual()->dcast_PKinematicsAnimated()->PlayCycle("boloto_attack_link_bone", TRUE, animation_end_jump, this);
+		Visual()->dcast_PKinematicsAnimated()->PlayCycle("boloto_attack_link_bone", true, animation_end_jump, this);
 		m_animated = false;
 	}
 }
@@ -822,7 +822,7 @@ void CAI_Bloodsucker::predator_start()
 					u16 bone_or_part = ik_anim_obj->LL_GetMotionDef(motion)->bone_or_part;
 					if (bone_or_part == u16(-1)) bone_or_part = ik_anim_obj->LL_PartID("default");
 
-					CStepManager::on_animation_start(motion, ik_anim_obj->LL_PlayCycle(bone_or_part, motion, TRUE,
+					CStepManager::on_animation_start(motion, ik_anim_obj->LL_PlayCycle(bone_or_part, motion, true,
 						ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
 						ik_anim_obj->LL_GetMotionDef(motion)->Speed(), loop, 0, 0, 0));
 				}
@@ -891,7 +891,7 @@ void CAI_Bloodsucker::predator_stop()
 					u16 bone_or_part = ik_anim_obj->LL_GetMotionDef(motion)->bone_or_part;
 					if (bone_or_part == u16(-1)) bone_or_part = ik_anim_obj->LL_PartID("default");
 
-					CStepManager::on_animation_start(motion, ik_anim_obj->LL_PlayCycle(bone_or_part, motion, TRUE,
+					CStepManager::on_animation_start(motion, ik_anim_obj->LL_PlayCycle(bone_or_part, motion, true,
 						ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
 						ik_anim_obj->LL_GetMotionDef(motion)->Speed(), loop, 0, 0, 0));
 				}
@@ -963,19 +963,19 @@ void CAI_Bloodsucker::stop_invisible_predator()
 void CAI_Bloodsucker::manual_activate()
 {
 	state_invisible = true;
-	setVisible		(FALSE);
+	setVisible		(false);
 }
 
 void CAI_Bloodsucker::manual_deactivate()
 {
 	state_invisible = false;
-	setVisible		(TRUE);
+	setVisible		(true);
 }
 
 bool CAI_Bloodsucker::AlwaysTheCrow()
 {
 	if (m_visibility_state == no_visibility)
-		return TRUE;
+		return true;
 
 	return inherited::AlwaysTheCrow();
 }
@@ -1018,7 +1018,7 @@ void CAI_Bloodsucker::sendToStartVampire(CActor* pA)
 	//tmp_packet.w_u16(pA->ID());
 	CSE_Abstract* e_who = Level().Server->ID_to_entity(pA->ID());
 	xrClientData* xrCData = e_who->owner;
-	Level().Server->SendTo(xrCData->ID, tmp_packet, net_flags(TRUE, TRUE));
+	Level().Server->SendTo(xrCData->ID, tmp_packet, net_flags(true, true));
 }
 
 void CAI_Bloodsucker::sendToStopVampire()
@@ -1028,7 +1028,7 @@ void CAI_Bloodsucker::sendToStopVampire()
 	//tmp_packet.w_u16(CControlledActor::m_actor->ID());
 	CSE_Abstract* e_who = Level().Server->ID_to_entity(CControlledActor::m_actor->ID());
 	xrClientData* xrCData = e_who->owner;
-	Level().Server->SendTo(xrCData->ID, tmp_packet, net_flags(TRUE, TRUE));
+	Level().Server->SendTo(xrCData->ID, tmp_packet, net_flags(true, true));
 }
 
 #include "../../../HUDManager.h"

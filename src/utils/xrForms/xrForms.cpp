@@ -154,7 +154,7 @@ void Startup(LPSTR lpCmdLine)
 	extern volatile bool bClose;
 
 	// Close log
-	bClose = TRUE;
+	bClose = true;
 	xrLogger::FlushLog();
 
 	ShowMainUI = true;

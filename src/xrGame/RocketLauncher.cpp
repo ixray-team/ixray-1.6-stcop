@@ -39,8 +39,8 @@ void CRocketLauncher::SpawnRocket(const shared_str& rocket_section, CGameObject*
 	D->RespawnTime = 0;
 
 	NET_Packet P;
-	D->Spawn_Write(P, TRUE);
-	Level().Send(P, net_flags(TRUE));
+	D->Spawn_Write(P, true);
+	Level().Send(P, net_flags(true));
 	F_entity_Destroy(D);
 }
 

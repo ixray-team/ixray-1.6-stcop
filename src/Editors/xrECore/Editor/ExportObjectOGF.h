@@ -35,10 +35,10 @@ struct SOGFVert{
     }
 	bool	similar(SOGFVert& V)
 	{
-        if (!P.similar	(V.P,EPS_L))	return FALSE;
-        if (!UV.similar	(V.UV,EPS_S))	return FALSE;
-		if (!N.similar	(V.N,EPS_L))	return FALSE;
-		return TRUE;
+        if (!P.similar	(V.P,EPS_L))	return false;
+        if (!UV.similar	(V.UV,EPS_S))	return false;
+		if (!N.similar	(V.N,EPS_L))	return false;
+		return true;
 	}
 };
 
@@ -173,7 +173,7 @@ class ECORE_API CExportObjectOGF
 public:
 			CExportObjectOGF	(CEditableObject* object);
 			~CExportObjectOGF	();
-    bool    Export				(IWriter& F, bool gen_tb=true, CEditableMesh* mesh=NULL);
+    bool    Export				(IWriter& F, bool gen_tb=true, CEditableMesh* mesh= nullptr);
     bool    ExportAsSimple		(IWriter& F);
     bool	ExportAsWavefrontOBJ(IWriter& F, const char* fn);
 };

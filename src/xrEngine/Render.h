@@ -292,7 +292,7 @@ public:
 	virtual IRenderVisual*			model_Create			(const char* name, IReader*	data=0)				{return 0;};
 	virtual IRenderVisual*			model_CreateChild		(const char* name, IReader*	data)				{return 0;};
 	virtual IRenderVisual*			model_Duplicate			(IRenderVisual*	V)							{return 0;};
-	virtual void					model_Delete			(IRenderVisual* &	V, bool bDiscard=FALSE)	{};
+	virtual void					model_Delete			(IRenderVisual* &	V, bool bDiscard=false)	{};
 	virtual void					model_Delete_Deffered	(IRenderVisual* &	V)						{};
 	virtual void					models_Prefetch			()											{};
 	virtual void					models_Clear			(bool b_complete)							{};

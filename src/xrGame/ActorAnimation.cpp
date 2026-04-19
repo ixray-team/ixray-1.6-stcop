@@ -359,7 +359,7 @@ CMotion* FindMotionKeys(MotionID motion_ID, IRenderVisual* V)
 }
 
 #ifdef DEBUG
-bool	g_ShowAnimationInfo = TRUE;
+bool	g_ShowAnimationInfo = true;
 #endif // DEBUG
 const char* mov_state[] ={
 	"idle",
@@ -746,7 +746,7 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 	if (m_current_torso != M_torso)
 	{
 		if (m_bAnimTorsoPlayed)
-			m_current_torso_blend = Visual()->dcast_PKinematicsAnimated()->PlayCycle(M_torso, TRUE, AnimTorsoPlayCallBack, this);
+			m_current_torso_blend = Visual()->dcast_PKinematicsAnimated()->PlayCycle(M_torso, true, AnimTorsoPlayCallBack, this);
 		else
 			m_current_torso_blend = Visual()->dcast_PKinematicsAnimated()->PlayCycle(M_torso);
 
@@ -772,8 +772,8 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 
 
 		IKinematicsAnimated* ka		= Visual()->dcast_PKinematicsAnimated();
-		m_current_legs_blend		= PlayMotionByParts(ka, M_legs, TRUE, legs_play_callback, this);
-//		m_current_legs_blend		= smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(M_legs,TRUE,legs_play_callback,this);
+		m_current_legs_blend		= PlayMotionByParts(ka, M_legs, true, legs_play_callback, this);
+//		m_current_legs_blend		= smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(M_legs,true,legs_play_callback,this);
 
 
 		if ((!(mstate_old&mcAnyMove))&&(mstate_real&mcAnyMove))

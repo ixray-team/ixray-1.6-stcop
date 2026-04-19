@@ -396,7 +396,7 @@ void CGrenade::OnAnimationEnd(u32 state)
 		}
 		else
 		{
-			setVisible(TRUE);
+			setVisible(true);
 			SwitchState(eIdle);
 		}
 		break;

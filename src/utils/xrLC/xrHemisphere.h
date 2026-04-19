@@ -13,7 +13,7 @@ typedef void __stdcall		xrHemisphereIterator(float x, float y, float z, float en
 
 extern "C"
 {
-	// Returns TRUE only if everything OK.
+	// Returns true only if everything OK.
 	XRHS_API void	xrHemisphereBuild
 		(
 			int						quality,

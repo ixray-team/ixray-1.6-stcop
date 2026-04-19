@@ -62,9 +62,9 @@ BIND_FUNCTION10	(&object(),	CScriptGameObject::Position,			CGameObject,	Position
 BIND_FUNCTION10	(&object(),	CScriptGameObject::Direction,			CGameObject,	Direction,			Fvector,						Fvector());
 BIND_FUNCTION10	(&object(),	CScriptGameObject::Mass,		CPhysicsShellHolder,	GetMass,			float,							float(-1));
 BIND_FUNCTION10	(&object(),	CScriptGameObject::ID,					CGameObject,	ID,					u16,							u16(-1));
-BIND_FUNCTION10	(&object(),	CScriptGameObject::getVisible,			CGameObject,	getVisible,			bool,							FALSE);
+BIND_FUNCTION10	(&object(),	CScriptGameObject::getVisible,			CGameObject,	getVisible,			bool,							false);
 //BIND_FUNCTION01	(&object(),	CScriptGameObject::setVisible,			CGameObject,	setVisible,			bool,							bool);
-BIND_FUNCTION10	(&object(),	CScriptGameObject::getEnabled,			CGameObject,	getEnabled,			bool,							FALSE);
+BIND_FUNCTION10	(&object(),	CScriptGameObject::getEnabled,			CGameObject,	getEnabled,			bool,							false);
 //BIND_FUNCTION01	(&object(),	CScriptGameObject::setEnabled,			CGameObject,	setEnabled,			bool,							bool);
 BIND_FUNCTION10	(&object(),	CScriptGameObject::story_id,			CGameObject,	story_id,			ALife::_STORY_ID,				ALife::_STORY_ID(-1));
 BIND_FUNCTION10	(&object(),	CScriptGameObject::DeathTime,			CEntity,		GetLevelDeathTime,	u32,							0);
@@ -954,12 +954,12 @@ bool CScriptGameObject::IsActorOutdoors() const
 	// Check to make sure all the params are available (we're in game and such).
 	if (!g_pGameLevel)
 	{
-		return FALSE;
+		return false;
 	}
 	CObject* e = g_pGameLevel->CurrentViewEntity();
 	if (!e || !e->renderable_ROS())
 	{
-		return FALSE;
+		return false;
 	}
 	// Now do the real check! This is a copy out of another section of code that is also hard coded.
 	// I don't know what the proper limit for this is supposed to be, but this seems good enough.

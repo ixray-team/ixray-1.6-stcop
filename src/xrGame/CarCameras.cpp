@@ -49,12 +49,12 @@ void	CCar::OnCameraChange		(int type)
 		if	(type==ectFirst)
 		{
 			m_camera_current_position = &m_camera_position;
-			Owner()->setVisible(FALSE);
+			Owner()->setVisible(false);
 		}
 		else if(active_camera->tag==ectFirst)
 		{
 			m_camera_current_position = &m_camera_position_2;
-			Owner()->setVisible(TRUE);
+			Owner()->setVisible(true);
 		}
 	}
 	

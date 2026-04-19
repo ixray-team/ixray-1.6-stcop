@@ -113,7 +113,7 @@ ECORE_API bool IXBeginMainMenuBar()
 	ImGui::PushStyleColor(ImGuiCol_Border, { 0.f,0.f,0.f,0.f });
 	ImGui::PushStyleColor(ImGuiCol_BorderShadow, { 0.f,0.f,0.f,0.f });
 
-	if (!ImGui::Begin("##ChezzeTopMenu", NULL, window_flags))
+	if (!ImGui::Begin("##ChezzeTopMenu", nullptr, window_flags))
 	{
 		ImGui::PopStyleVar(3);
 		ImGui::PopStyleColor(4);

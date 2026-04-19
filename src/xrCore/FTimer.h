@@ -34,7 +34,7 @@ protected:
 
 	bool		bPause			;
 public:
-	CTimer() : startTimePoint_(high_resolution_clock::now()), pausedTime_(0), pauseAccum_(0), bPause(FALSE) {
+	CTimer() : startTimePoint_(high_resolution_clock::now()), pausedTime_(0), pauseAccum_(0), bPause(false) {
 	}
 
 	ICF virtual void Start() 	{

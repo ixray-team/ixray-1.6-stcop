@@ -70,7 +70,7 @@ void CUICompass::update()
 	bool b_visible = !fis_zero(m_target_dir.magnitude());
 	if (b_visible != kin->LL_GetBoneVisible(m_bid))
 	{
-		kin->LL_SetBoneVisible(m_bid, b_visible, TRUE);
+		kin->LL_SetBoneVisible(m_bid, b_visible, true);
 	}
 
 	if (!b_visible)

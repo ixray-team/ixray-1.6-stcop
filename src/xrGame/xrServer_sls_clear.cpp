@@ -58,7 +58,7 @@ void xrServer::SLS_Clear		()
 		Msg								("entity to destroy : [%d][%s][%s]",(*I).second->ID,(*I).second->name(),(*I).second->name_replace());
 #endif
 
-	u32									mode = net_flags(TRUE,TRUE);
+	u32									mode = net_flags(true,true);
 	while (!entities.empty()) {
 		bool							found = false;
 		xrS_entities::const_iterator	I = entities.begin();

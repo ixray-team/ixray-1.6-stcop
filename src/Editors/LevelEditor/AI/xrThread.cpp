@@ -7,7 +7,7 @@ void	CThread::startup(void* P)
 
 	if (T->thMessages)	clMsg("* THREAD #%d: Started.",T->thID);
 	T->Execute		();
-	T->thCompleted	= TRUE;
+	T->thCompleted	= true;
 	if (T->thMessages)	clMsg("* THREAD #%d: Task Completed.",T->thID);
 }
 

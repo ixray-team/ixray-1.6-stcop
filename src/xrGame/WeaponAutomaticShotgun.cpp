@@ -217,7 +217,7 @@ void CWeaponAutomaticShotgun::switch2_StartReload()
 	}
 
 	PlayAnimOpenWeapon();
-	SetPending(TRUE);
+	SetPending(true);
 
 	if (ParentIsActor() && m_sounds.FindSoundItem("sndOpenEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
 	{
@@ -255,7 +255,7 @@ void CWeaponAutomaticShotgun::switch2_AddCartgidge()
 		PlaySound("sndAddCartridge", get_LastFP());
 	}
 
-	SetPending(TRUE);
+	SetPending(true);
 	PlayAnimAddOneCartridgeWeapon();
 }
 
@@ -270,7 +270,7 @@ void CWeaponAutomaticShotgun::switch2_EndReload()
 	{
 		MagAmmoBones->UpdateMagAmmoBones(this, GetTargetAmmoType());
 	}
-	SetPending(TRUE);
+	SetPending(true);
 
 	PlayAnimCloseWeapon();
 

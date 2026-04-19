@@ -509,15 +509,15 @@ void CUIMMShniaga::ProcessEvent(EVENT ev)
 					m_run_time = 100;
 
                 // reset flags
-				m_flags.set(fl_SoundFinalized,	FALSE);
-				m_flags.set(fl_MovingStoped,	FALSE);
+				m_flags.set(fl_SoundFinalized,	false);
+				m_flags.set(fl_MovingStoped,	false);
 			}	break;
 		case E_Finalize:
 			if (!m_flags.test(fl_SoundFinalized))
 			{
 				m_sound->whell_Click();
 				
-				m_flags.set(fl_SoundFinalized, TRUE);
+				m_flags.set(fl_SoundFinalized, true);
 			}	break;
 		case E_Stop:		
 			if (!m_flags.test(fl_MovingStoped))
@@ -529,7 +529,7 @@ void CUIMMShniaga::ProcessEvent(EVENT ev)
 				pos.y = m_destination;
 				m_shniaga->SetWndPos(pos);		
 
-                m_flags.set(fl_MovingStoped, TRUE);
+                m_flags.set(fl_MovingStoped, true);
 			}	break;
 		case E_Update:		m_sound->music_Update();
 			break;

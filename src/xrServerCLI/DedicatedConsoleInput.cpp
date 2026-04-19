@@ -378,7 +378,7 @@ namespace DedicatedConsoleInput
 		{
 			INPUT_RECORD record = {};
 			record.EventType = KEY_EVENT;
-			record.Event.KeyEvent.bKeyDown = TRUE;
+			record.Event.KeyEvent.bKeyDown = true;
 			record.Event.KeyEvent.wVirtualKeyCode = VK_RETURN;
 			record.Event.KeyEvent.uChar.UnicodeChar = L'\r';
 			DWORD written = 0;

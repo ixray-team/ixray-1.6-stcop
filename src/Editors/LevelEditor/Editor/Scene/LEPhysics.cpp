@@ -29,15 +29,15 @@ bool GetStaticCformData(ObjectClass* obj, mesh_build_data& data, bool b_selected
 		}
 
 		if (!::GetStaticCformData(T, *M, O, data.l_verts, data.l_vert_cnt, data.l_vert_it, data.l_faces, data.l_face_cnt, data.l_face_it, SurfaceOwner))
-			return FALSE;
+			return false;
 	}
 
-	return FALSE;
+	return false;
 }
 
 bool GetStaticCformData(ObjectList& lst, mesh_build_data& data, bool b_selected_only)
 {
-	bool bResult = TRUE;
+	bool bResult = true;
 
 	for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++)
 	{

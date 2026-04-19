@@ -885,7 +885,7 @@ void CChangeLevelWnd::OnOk()
 	p.w_vec3(m_position);
 	p.w_vec3(m_angles);
 
-	Level().Send(p, net_flags(TRUE));
+	Level().Send(p, net_flags(true));
 }
 
 void CChangeLevelWnd::OnCancel()
@@ -942,11 +942,11 @@ void CChangeLevelWnd::Show(bool status)
 		m_messageBox->SetText(m_message_str.c_str());
 
 		g_block_pause = true;
-		Device.Pause(TRUE, TRUE, TRUE, "CChangeLevelWnd_show");
-		bShowPauseString = FALSE;
+		Device.Pause(true, true, true, "CChangeLevelWnd_show");
+		bShowPauseString = false;
 	}
 	else {
 		g_block_pause = false;
-		Device.Pause(FALSE, TRUE, TRUE, "CChangeLevelWnd_hide");
+		Device.Pause(false, true, true, "CChangeLevelWnd_hide");
 	}
 }

@@ -228,7 +228,7 @@ IC bool material_callback(collide::rq_result& result, LPVOID params)
 		{
 			xr_vector<Fvector>& V = g_pGameLevel->ObjectSpace.GetStaticVerts();
 			auto& Tidxs = T.verts;
-			fp->pray_cache->set(fp->P,fp->D,fp->f,TRUE);
+			fp->pray_cache->set(fp->P,fp->D,fp->f,true);
 			fp->pray_cache->verts[0] = V[Tidxs[0]];
 			fp->pray_cache->verts[1] = V[Tidxs[1]];
 			fp->pray_cache->verts[2] = V[Tidxs[2]];
@@ -403,7 +403,7 @@ void CLensFlare::OnFrame(shared_str id)
 				// cache outdated. real query.
 				r_dest.r_clear	();
 				if (g_pGameLevel->ObjectSpace.RayQuery	(r_dest,RD,material_callback,&TP,nullptr,o_main))
-					m_ray_cache[i].result = FALSE			;
+					m_ray_cache[i].result = false			;
 			}
 		}
 

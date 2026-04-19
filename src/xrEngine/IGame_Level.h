@@ -92,8 +92,8 @@ public:
 	virtual void				net_Update				( )										= 0;
 
 	virtual bool				Load					( u32 dwNum );
-	virtual bool				Load_GameSpecific_Before( )										{ return TRUE; };		// before object loading
-	virtual bool				Load_GameSpecific_After	( )										{ return TRUE; };		// after object loading
+	virtual bool				Load_GameSpecific_Before( )										{ return true; };		// before object loading
+	virtual bool				Load_GameSpecific_After	( )										{ return true; };		// after object loading
 	void						Load_GameSpecific_CFORM	( CDB::TRI* T, size_t count );
 
 	virtual void	_BCL		OnFrame					( void );

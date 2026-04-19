@@ -32,9 +32,9 @@ void CBlender_ShWorld::Compile	(CBlender_Compile& C)
 	IBlender::Compile		(C);
 	C.PassBegin		();
 	{
-		C.PassSET_ZB		(TRUE, FALSE);
+		C.PassSET_ZB		(true, false);
 		C.PassSET_Blend_MUL	();
-		C.PassSET_LightFog	(FALSE, FALSE);
+		C.PassSET_LightFog	(false, false);
 
 		// Stage0 - Base texture
 		C.StageBegin		();

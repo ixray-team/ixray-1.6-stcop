@@ -20,7 +20,7 @@ extern	pureFrame*				g_pNetProcessor;
 
 bool CLevel::net_Start_client	( const char* options )
 {
-	return FALSE;
+	return false;
 }
 #include "../xrEngine/string_table.h"
 bool	CLevel::net_start_client1				()
@@ -102,7 +102,7 @@ bool	CLevel::net_start_client3				()
 		{
 			Disconnect			();
 
-			connected_to_server = FALSE;
+			connected_to_server = false;
 			Msg("! Level (name:%s), (version:%s), not found, try to download from:%s",
 				level_name, level_ver, download_url);
 			map_data.m_name					= level_name;
@@ -119,7 +119,7 @@ bool	CLevel::net_start_client3				()
 		map_data.m_map_download_url		= download_url;
 		map_data.m_map_loaded			= true;
 		
-		deny_m_spawn			= FALSE;
+		deny_m_spawn			= false;
 		// Load level
 		R_ASSERT2				(Load(level_id),"Loading failed.");
 		map_data.m_level_geom_crc32 = 0;
@@ -175,8 +175,8 @@ void CLevel::ClientSendProfileData	()
 	NET_Packet								NP;
 	NP.w_begin								(M_CREATE_PLAYER_STATE);
 	game_PlayerState	tmp_player_state	(nullptr);
-	tmp_player_state.net_Export				(NP, TRUE);
-	SecureSend								(NP,net_flags(TRUE, TRUE, TRUE, TRUE));
+	tmp_player_state.net_Export				(NP, true);
+	SecureSend								(NP,net_flags(true, true, true, true));
 }
 
 bool CLevel::net_start_client5()
@@ -188,11 +188,11 @@ bool CLevel::net_start_client5()
 		{
 			g_pGamePersistent->SetLoadStageTitle("st_loading_textures");
 			g_pGamePersistent->LoadTitle();
-			Device.m_pRender->DeferredLoad(FALSE);
+			Device.m_pRender->DeferredLoad(false);
 			Device.m_pRender->ResourcesDeferredUpload();
 		}
-		sended_request_connection_data = FALSE;
-		deny_m_spawn = TRUE;
+		sended_request_connection_data = false;
+		deny_m_spawn = true;
 	}
 
 	return true;

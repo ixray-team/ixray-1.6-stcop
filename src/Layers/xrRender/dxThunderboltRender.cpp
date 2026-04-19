@@ -101,7 +101,7 @@ void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
 
 #ifdef USE_DX11
 	//	Hack. Since lightning gradient uses sun shader override z write settings manually
-	RCache.set_Z(TRUE);
+	RCache.set_Z(true);
 	RCache.set_ZFunc(D3DCMP_LESSEQUAL);
 #endif //USE_DX11
 
@@ -110,7 +110,7 @@ void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
 
 #ifdef USE_DX11
 	//	Hack. Since lightning gradient uses sun shader override z write settings manually
-	RCache.set_Z(TRUE);
+	RCache.set_Z(true);
 	RCache.set_ZFunc(D3DCMP_LESSEQUAL);
 #endif //USE_DX11
 

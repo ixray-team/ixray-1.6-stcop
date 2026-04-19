@@ -32,9 +32,9 @@ void CBlender_Blur::Compile	(CBlender_Compile& C)
 	IBlender::Compile		(C);
 	C.PassBegin		();
 	{
-		C.PassSET_ZB		(FALSE, FALSE);
+		C.PassSET_ZB		(false, false);
 		C.PassSET_Blend_SET	();
-		C.PassSET_LightFog	(FALSE, FALSE);
+		C.PassSET_LightFog	(false, false);
 
 		// Stage0 - B0*F
 		C.StageBegin		();

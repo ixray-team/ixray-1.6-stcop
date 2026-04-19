@@ -91,7 +91,7 @@ public:
 	IntVec			vindices;
 	IntVec			pindices;
 public:
-	st_VMap			(const char* nm=0, u8 t=vmtUV, bool pm=false)
+	st_VMap			(const char* nm=nullptr, u8 t=vmtUV, bool pm=false)
 	{
 		type		= t;
 		polymap		= pm;
@@ -198,7 +198,7 @@ class CSector;
 		u32			dwStartVertex;
 		u32			dwNumVertex;
 		ref_geom 	pGeom;
-		st_RenderBuffer	(u32 sv, u32 nv):dwStartVertex(sv),dwNumVertex(nv),pGeom(0){;}
+		st_RenderBuffer	(u32 sv, u32 nv):dwStartVertex(sv),dwNumVertex(nv),pGeom(nullptr){;}
 	};
 	using RBVector = xr_vector<st_RenderBuffer>;
 	using RBVecIt = RBVector::iterator;
@@ -333,7 +333,7 @@ public:
 	IC const st_SVert*	GetSVertices		(){ VERIFY(0!=m_SVertices);return m_SVertices;	}
 	IC const Fvector*	GetNormals			(){ VERIFY(0!=m_Normals); return m_Normals; }
 	// pick routine
-	bool            RayPick					(float& dist, const Fvector& start, const Fvector& dir, const Fmatrix& inv_parent, SRayPickInfo* pinf = NULL);
+	bool            RayPick					(float& dist, const Fvector& start, const Fvector& dir, const Fmatrix& inv_parent, SRayPickInfo* pinf = nullptr);
 #if 1
 	void            RayQuery				(SPickQuery& pinf);
 	void            RayQuery				(const Fmatrix& parent, const Fmatrix& inv_parent, SPickQuery& pinf);

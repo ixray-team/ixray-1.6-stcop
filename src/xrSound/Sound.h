@@ -179,7 +179,7 @@ class XRSOUND_API			CSound_emitter
 public:
 	virtual ~CSound_emitter() = default;
 
-	virtual BOOL					is_2D					()															= 0;
+	virtual bool					is_2D					()															= 0;
 	virtual void					switch_to_2D			()															= 0;
 	virtual void					switch_to_Intro			()															= 0;
 	virtual void					switch_to_3D			()															= 0;
@@ -188,7 +188,7 @@ public:
 	virtual void					set_range				(float min, float max)										= 0;
 	virtual void					set_volume				(float vol)													= 0;
 	virtual void					set_priority			(float vol)													= 0;
-	virtual void					stop					(BOOL bDeffered)											= 0;
+	virtual void					stop					(bool bDeffered)											= 0;
 	virtual	CSound_params			get_params				( )															= 0;
 	virtual u32						play_time				( )															= 0;
 };
@@ -256,7 +256,7 @@ public:
 	static void						_destroy				( );
 
 	virtual void					_restart				( )																						= 0;
-    virtual BOOL					i_locked 				( )																						= 0;
+    virtual bool					i_locked 				( )																						= 0;
 
 	virtual void					create					( ref_sound& S, const char* fName,				esound_type sound_type, int		game_type)	= 0;
 	virtual void					attach_tail				( ref_sound& S, const char* fName)															= 0;
@@ -312,8 +312,8 @@ IC void	ref_sound::set_frequency				( float freq)											{	VERIFY(!::Sound->i
 IC void	ref_sound::set_range					( float min, float max )								{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->set_range(min,max);							}
 IC void	ref_sound::set_volume					( float vol )											{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->set_volume(vol);								}
 IC void	ref_sound::set_priority					( float p )												{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->set_priority(p);								}
-IC void	ref_sound::stop							( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->stop(FALSE);									}
-IC void	ref_sound::stop_deffered				( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->stop(TRUE);									}
+IC void	ref_sound::stop							( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->stop(false);									}
+IC void	ref_sound::stop_deffered				( )														{	VERIFY(!::Sound->i_locked()); 	if (_feedback())	_feedback()->stop(true);									}
 IC CSound_params ref_sound::get_params()
 {
 	VERIFY(!::Sound->i_locked());

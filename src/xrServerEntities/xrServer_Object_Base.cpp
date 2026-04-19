@@ -69,7 +69,7 @@ CSE_Abstract::CSE_Abstract					(const char* caSection)
 {
 	m_editor_flags.zero			();
 	RespawnTime					= 0;
-	net_Ready					= FALSE;
+	net_Ready					= false;
 	ID							= 0xffff;
 	ID_Parent					= 0xffff;
 	ID_Phantom					= 0xffff;
@@ -89,11 +89,11 @@ CSE_Abstract::CSE_Abstract					(const char* caSection)
 
 //	m_spawn_probability			= 1.f;
 	m_spawn_flags.zero			();
-	m_spawn_flags.set			(flSpawnEnabled			,TRUE);
-	m_spawn_flags.set			(flSpawnOnSurgeOnly		,TRUE);
-	m_spawn_flags.set			(flSpawnSingleItemOnly	,TRUE);
-	m_spawn_flags.set			(flSpawnIfDestroyedOnly	,TRUE);
-	m_spawn_flags.set			(flSpawnInfiniteCount	,TRUE);
+	m_spawn_flags.set			(flSpawnEnabled			,true);
+	m_spawn_flags.set			(flSpawnOnSurgeOnly		,true);
+	m_spawn_flags.set			(flSpawnSingleItemOnly	,true);
+	m_spawn_flags.set			(flSpawnIfDestroyedOnly	,true);
+	m_spawn_flags.set			(flSpawnInfiniteCount	,true);
 //	m_max_spawn_count			= 1;
 //	m_spawn_control				= "";
 //	m_spawn_count				= 0;
@@ -198,7 +198,7 @@ void CSE_Abstract::Spawn_Write				(NET_Packet	&tNetPacket, bool bLocal)
 	tNetPacket.w_u16			(ID_Parent		);
 	tNetPacket.w_u16			(ID_Phantom		);
 
-	s_flags.set					(M_SPAWN_VERSION,TRUE);
+	s_flags.set					(M_SPAWN_VERSION,true);
 	if (bLocal)
 		tNetPacket.w_u16		(u16(s_flags.flags|M_SPAWN_OBJECT_LOCAL) );
 	else
@@ -296,7 +296,7 @@ bool CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
 	if (0==m_wVersion) {
 		tNetPacket.r_pos		-= sizeof(u16);
 		m_wVersion				= 0;
-        return					FALSE;
+        return					false;
 	}
 
 	if (m_wVersion > 69)
@@ -347,7 +347,7 @@ bool CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
 	bool b2						= size > sizeof(size)|| (tNetPacket.inistream != nullptr);
 	R_ASSERT3					( (b1 || b2),"cannot read object, which is not successfully saved :(",name_replace());
 	STATE_Read					(tNetPacket,size);
-	return						TRUE;
+	return						true;
 }
 
 void	CSE_Abstract::load			(NET_Packet	&tNetPacket)

@@ -17,8 +17,8 @@
 
 #define			MAPROT_LIST_NAME		"maprot_list.ltx"
 string_path		MAPROT_LIST		= "";
-bool	net_sv_control_hit	= FALSE		;
-bool	g_bCollectStatisticData = TRUE;
+bool	net_sv_control_hit	= false		;
+bool	g_bCollectStatisticData = true;
 //-----------------------------------------------------------------
 u32		g_sv_base_dwRPointFreezeTime	= 0;
 int		g_sv_base_iVotingEnabled		= 0x00ff;
@@ -211,7 +211,7 @@ const char*			game_sv_GameState::get_option_s				(const char* lst, const char* n
 }
 void				game_sv_GameState::signal_Syncronize		()
 {
-	sv_force_sync	= TRUE;
+	sv_force_sync	= true;
 }
 
 // Network
@@ -256,7 +256,7 @@ struct player_exporter
 			curr_ps->setFlag(GAME_PLAYER_FLAG_LOCAL);
 
 		p_to_send->w_clientID	(client->ID);
-		curr_ps->net_Export		(*p_to_send, TRUE);
+		curr_ps->net_Export		(*p_to_send, true);
 		curr_ps->flags__		= tmp_flags;
 	}
 };
@@ -581,7 +581,7 @@ CSE_Abstract*		game_sv_GameState::spawn_end				(CSE_Abstract* E, ClientID id)
 {
 	NET_Packet						P;
 	u16								skip_header;
-	E->Spawn_Write					(P,TRUE);
+	E->Spawn_Write					(P,true);
 	P.r_begin						(skip_header);
 	CSE_Abstract* N = m_server->Process_spawn	(P,id);
 	F_entity_Destroy				(E);
@@ -748,7 +748,7 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 			}
 
 			OnHit(id_src, id_dest, tNetPacket);
-			m_server->SendBroadcast		(BroadcastCID,tNetPacket,net_flags(TRUE,TRUE));
+			m_server->SendBroadcast		(BroadcastCID,tNetPacket,net_flags(true,true));
 		}break;
 	case GAME_EVENT_CREATE_CLIENT:
 		{
@@ -756,7 +756,7 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 			VERIFY2(CL, "bad create client message GAME_EVENT_CREATE_CLIENT");
 			if ( CL == nullptr ) { break; }
 			
-			CL->flags.bConnected		= TRUE;
+			CL->flags.bConnected		= true;
 			m_server->AttachNewClient	(CL);
 		}break;
 	case GAME_EVENT_PLAYER_AUTH:

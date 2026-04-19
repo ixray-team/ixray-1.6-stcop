@@ -32,7 +32,7 @@ namespace object_type_traits
 		static detail::yes	select(T1<P>*);
 		static detail::no	select(...);
 
-		enum { value = sizeof(detail::yes) == sizeof(select((T2*)0))};
+		enum { value = sizeof(detail::yes) == sizeof(select((T2*)nullptr))};
 	};
 
 	declare_has(iterator);

@@ -52,7 +52,7 @@ IC float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C)
 			continue;
 
 		if (T.pSurface.Empty())
-			T.bHasAlpha = FALSE;
+			T.bHasAlpha = false;
 
 		if (!T.bHasAlpha)
 		{

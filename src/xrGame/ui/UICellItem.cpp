@@ -413,7 +413,7 @@ bool CUICellItem::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	return false;
 };
 
-bool g_Adjust3dIcon = FALSE;
+bool g_Adjust3dIcon = false;
 float g_Adjust3dIconValue = 0.1f;
 bool CUICellItem::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {

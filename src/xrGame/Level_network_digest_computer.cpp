@@ -28,5 +28,5 @@ void CLevel::SendClientDigestToServer()
 	P.w_begin			(M_SV_DIGEST);
 	m_client_digest	=	ComputeClientDigest(tmp_digest);
 	P.w_stringZ			(m_client_digest);
-	SecureSend			(P, net_flags(TRUE, TRUE, TRUE, TRUE));
+	SecureSend			(P, net_flags(true, true, true, true));
 }

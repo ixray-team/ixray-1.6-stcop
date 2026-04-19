@@ -64,7 +64,7 @@ void SCarLight::ParseDefinitions(const char* section)
 	bone_id	= pKinematics->LL_BoneID(ini->r_string(section,"bone"));
 	glow_render ->set_active(false);
 	light_render->set_active(false);
-	pKinematics->LL_SetBoneVisible(bone_id,FALSE,TRUE);
+	pKinematics->LL_SetBoneVisible(bone_id,false,true);
 
 	//lanim					= LALib.FindItem(ini->r_string(section,"animator"));
 	
@@ -88,9 +88,9 @@ void SCarLight::TurnOn()
 	VERIFY(!physics_world()->Processing());
 	if(isOn()) return;
 	IKinematics* K=PKinematics(m_holder->PCar()->Visual());
-	K->LL_SetBoneVisible(bone_id,TRUE,TRUE);
+	K->LL_SetBoneVisible(bone_id,true,true);
 	K->CalculateBones_Invalidate	();
-	K->CalculateBones(TRUE);	
+	K->CalculateBones(true);	
 	glow_render ->set_active(true);
 	light_render->set_active(true);
 	Update();
@@ -102,7 +102,7 @@ void SCarLight::TurnOff()
 	if(!isOn()) return;
  	glow_render ->set_active(false);
 	light_render->set_active(false);
-	PKinematics(m_holder->PCar()->Visual())->LL_SetBoneVisible(bone_id,FALSE,TRUE);
+	PKinematics(m_holder->PCar()->Visual())->LL_SetBoneVisible(bone_id,false,true);
 }
 
 bool SCarLight::isOn()

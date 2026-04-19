@@ -26,7 +26,7 @@ void CRenderTarget::phase_new_dof()
 
         u_setrt(rt_dof_focus, nullptr, nullptr, nullptr);
         GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-        RCache.set_Stencil(FALSE);
+        RCache.set_Stencil(false);
 
         // element 0 = dof_focus
         RCache.set_Element(s_dof_coc->E[0]);
@@ -56,7 +56,7 @@ void CRenderTarget::phase_new_dof()
     {
         u_setrt(rt_dof_coc, nullptr, nullptr, nullptr);
         GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-        RCache.set_Stencil(FALSE);
+        RCache.set_Stencil(false);
 
         // element 1 = dof_coc
         RCache.set_Element(s_dof_coc->E[1]);
@@ -77,7 +77,7 @@ void CRenderTarget::phase_new_dof()
     {
         u_setrt(rt_dof_blur1, nullptr, nullptr, nullptr);
         GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-        RCache.set_Stencil(FALSE);
+        RCache.set_Stencil(false);
 
         // element 2 = dof_blur1
         RCache.set_Element(s_dof_coc->E[2]);
@@ -96,7 +96,7 @@ void CRenderTarget::phase_new_dof()
     {
         u_setrt(rt_dof_blur2, nullptr, nullptr, nullptr);
         GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-        RCache.set_Stencil(FALSE);
+        RCache.set_Stencil(false);
 
         // element 3 = dof_blur2
         RCache.set_Element(s_dof_blur2->E[3]);
@@ -115,7 +115,7 @@ void CRenderTarget::phase_new_dof()
     {
         u_setrt(rt_dof_blur3, nullptr, nullptr, nullptr);
         GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
-        RCache.set_Stencil(FALSE);
+        RCache.set_Stencil(false);
 
         // element 4 = dof_blur3
         RCache.set_Element(s_dof_blur3->E[4]);

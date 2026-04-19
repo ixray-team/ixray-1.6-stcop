@@ -121,11 +121,11 @@ void CExplosiveRocket::PH_A_CrPr()
 		if (!obj.PPhysicsShell()->isFullActive())
 		{
 			K->CalculateBones_Invalidate();
-			K->CalculateBones(TRUE);
+			K->CalculateBones(true);
 		}
 		obj.PPhysicsShell()->GetGlobalTransformDynamic(&obj.XFORM());
 		K->CalculateBones_Invalidate();
-		K->CalculateBones(TRUE);
+		K->CalculateBones(true);
 		obj.spatial_move();
 		m_just_after_spawn = false;
 	}

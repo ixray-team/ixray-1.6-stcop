@@ -95,7 +95,7 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* N, bool allow_register)
 	string_path		name;
 
 	// Add default ext if no ext at all
-	if (0==strext(N))	xr_strconcat(name,N,".ogf");
+	if (nullptr==strext(N))	xr_strconcat(name,N,".ogf");
 	else				xr_strcpy	(name,sizeof(name),N);
 
 	// Load data from MESHES or LEVEL
@@ -166,7 +166,7 @@ void CModelPool::Destroy()
 			break;
 
 		dxRender_Visual* V=(dxRender_Visual*)it->first;
-		DeleteInternal	(V,TRUE);
+		DeleteInternal	(V,true);
 	}
 
 	// Base/Reference
@@ -186,8 +186,8 @@ void CModelPool::Destroy()
 
 CModelPool::CModelPool()
 {
-    bForceDiscard 			= FALSE;
-    bAllowChildrenDuplicate	= TRUE; 
+    bForceDiscard 			= false;
+    bAllowChildrenDuplicate	= true; 
 	g_pMotionsContainer		= new motions_container();
 }
 
@@ -199,7 +199,7 @@ CModelPool::~CModelPool()
 
 dxRender_Visual* CModelPool::Instance_Find(const char* N)
 {
-	dxRender_Visual*				Model=0;
+	dxRender_Visual*				Model=nullptr;
 	xr_vector<ModelDef>::iterator	I;
 	for (I=Models.begin(); I!=Models.end(); I++)
 	{
@@ -214,7 +214,7 @@ dxRender_Visual* CModelPool::Instance_Find(const char* N)
 dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 {
 #ifdef _EDITOR
-	if (!name||!name[0])	return 0;
+	if (!name||!name[0])	return nullptr;
 #endif
 	string_path low_name;	VERIFY	(xr_strlen(name)<sizeof(low_name));
 	xr_strcpy(low_name,name);	_strlwr	(low_name);
@@ -234,14 +234,14 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 		// 1. Search for already loaded model (reference, base model)
 		dxRender_Visual* Base		= Instance_Find		(low_name);
 
-		if (0==Base){
+		if (nullptr==Base){
 			// 2. If not found
-			bAllowChildrenDuplicate	= FALSE;
-			if (data)		Base = Instance_Load(low_name,data,TRUE);
-            else			Base = Instance_Load(low_name,TRUE);
-			bAllowChildrenDuplicate	= TRUE;
+			bAllowChildrenDuplicate	= false;
+			if (data)		Base = Instance_Load(low_name,data,true);
+            else			Base = Instance_Load(low_name,true);
+			bAllowChildrenDuplicate	= true;
 #ifdef _EDITOR
-			if (!Base)		return 0;
+			if (!Base)		return nullptr;
 #endif
 		}
         // 3. If found - return (cloned) reference
@@ -259,11 +259,11 @@ dxRender_Visual* CModelPool::CreateChild(const char* name, IReader* data)
 
 	// 1. Search for already loaded model
 	dxRender_Visual* Base	= Instance_Find(low_name);
-//.	if (0==Base) Base	 	= Instance_Load(name,data,FALSE);
-	if(0==Base)
+//.	if (0==Base) Base	 	= Instance_Load(name,data,false);
+	if(nullptr==Base)
 	{
-		if (data)		Base = Instance_Load	(low_name,data,FALSE);
-		else			Base = Instance_Load	(low_name,FALSE);
+		if (data)		Base = Instance_Load	(low_name,data,false);
+		else			Base = Instance_Load	(low_name,false);
 	}
 
     dxRender_Visual* Model	= bAllowChildrenDuplicate?Instance_Duplicate(Base):Base;
@@ -277,7 +277,7 @@ void	CModelPool::DeleteInternal	(dxRender_Visual* &V, bool bDiscard)
     if (!V)					return;
 	V->Depart				();
 	if (bDiscard||bForceDiscard){
-    	Discard	(V, TRUE); 
+    	Discard	(V, true); 
 	}else{
 		//
 		REGISTRY_IT	it		= Registry.find	(V);
@@ -360,11 +360,11 @@ void CModelPool::Discard(dxRender_Visual*& V, bool b_complete)
 					I->refs--;
 					if (0 == I->refs)
 					{
-						bForceDiscard = TRUE;
+						bForceDiscard = true;
 						I->model->Release();
 						xr_delete(I->model);
 						Models.erase(I);
-						bForceDiscard = FALSE;
+						bForceDiscard = false;
 					}
 					break;
 				}
@@ -410,7 +410,7 @@ void CModelPool::Prefetch()
 	{
 		const CInifile::Item& item = *I;
 		dxRender_Visual* V = Create(item.first.c_str());
-		Delete(V, FALSE);
+		Delete(V, false);
 	}
 }
 

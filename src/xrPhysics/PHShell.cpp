@@ -48,8 +48,8 @@ CPHShell::~CPHShell()
 CPHShell::CPHShell()
 {
 	m_flags.assign(0);
-	m_flags.set(flActivating,FALSE);
-	m_flags.set(flActive,FALSE);
+	m_flags.set(flActivating,false);
+	m_flags.set(flActive,false);
 	m_space=nullptr;
 	m_pKinematics=nullptr;
 	m_spliter_holder=nullptr;
@@ -233,7 +233,7 @@ void CPHShell::PhTune(dReal step)
 
 void CPHShell::Update(){
 	if(!isActive()) return;
-	if(m_flags.test(flActivating)) m_flags.set(flActivating,FALSE);
+	if(m_flags.test(flActivating)) m_flags.set(flActivating,false);
 	ELEMENT_I i;
 	for(i=elements.begin();elements.end() != i;++i)
 		(*i)->Update();
@@ -892,7 +892,7 @@ void CPHShell::ResetCallbacksRecursive(u16 id, u16 element, VisMask& mask)
 			element++;
 			R_ASSERT2(element < elements.size(), "Out of elements!!");
 			B.set_callback(bctPhysics, BonesCallback, cast_PhysicsElement(elements[element]));
-			B.set_callback_overwrite(TRUE);
+			B.set_callback_overwrite(true);
 		}
 	}
 
@@ -912,7 +912,7 @@ void CPHShell::EnabledCallbacks(bool val)
 		for (; i != e; ++i)
 		{
 			CBoneInstance& B = m_pKinematics->LL_GetBoneInstance((*i)->m_SelfID);
-			B.set_callback_overwrite(TRUE);
+			B.set_callback_overwrite(true);
 		}
 
 		return;

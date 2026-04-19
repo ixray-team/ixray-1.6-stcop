@@ -104,7 +104,7 @@ void IGame_Persistent::Disconnect()
 
 	// Kill object - save memory
 	ObjectPool.clear();
-	Render->models_Clear(TRUE);
+	Render->models_Clear(true);
 }
 
 void IGame_Persistent::OnGameStart()
@@ -143,7 +143,7 @@ void IGame_Persistent::Prefetch()
 void IGame_Persistent::OnGameEnd()
 {
 	ObjectPool.clear();
-	Render->models_Clear(TRUE);
+	Render->models_Clear(true);
 }
 
 void IGame_Persistent::OnFrame()

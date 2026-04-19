@@ -5,7 +5,7 @@
 Fvisual::Fvisual() :
 	dxRender_Visual()
 {
-	m_fast = 0;
+	m_fast = nullptr;
 }
 
 Fvisual::~Fvisual()
@@ -23,7 +23,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 	dxRender_Visual::Load		(N,data,dwFlags);
 
 	xr_vector<RHIInputElementDesc> dcl;
-	RHIInputElementDesc*	vFormat	= 0;
+	RHIInputElementDesc*	vFormat	= nullptr;
 	size_t FormatSize = 0;
 	dwPrimitives				= 0;
 	bool				loaded_v=false;

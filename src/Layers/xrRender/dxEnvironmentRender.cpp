@@ -108,7 +108,7 @@ void dxEnvDescriptorMixerRender::Destroy() {
 }
 
 void dxEnvDescriptorMixerRender::Clear() {
-	std::pair<u32, ref_texture>	zero = std::make_pair(u32(0), ref_texture(0));
+	std::pair<u32, ref_texture>	zero = std::make_pair(u32(0), ref_texture(nullptr));
 	sky_r_textures.clear();
 	sky_r_textures.push_back(zero);
 	sky_r_textures.push_back(zero);
@@ -213,7 +213,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env) {
 
 		OnFrame(env);
 
-		env.bNeed_re_create_env = FALSE;
+		env.bNeed_re_create_env = false;
 	}
 	::Render->rmFar();
 
@@ -255,7 +255,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env) {
 
 	RCache.set_Textures(&mixRen.sky_r_textures);
 	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, v_offset, 0, 12, i_offset, 20);
-	env.eff_LensFlare->Render(TRUE, FALSE, FALSE);
+	env.eff_LensFlare->Render(true, false, false);
 
 	// Sun
 	::Render->rmNormal();

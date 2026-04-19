@@ -36,7 +36,7 @@ public:
 	virtual void save(NET_Packet& output_packet) override;
 	virtual void load(IReader& input_packet) override;
 
-	virtual bool net_SaveRelevant() override  { return TRUE; }
+	virtual bool net_SaveRelevant() override  { return true; }
 
 	void SetText();
 	void DestroySoundsArray(xr_vector<ref_sound>& soundsArray);

@@ -14,7 +14,7 @@ void UIMoveToCamera::Draw()
 {
     ImGui::SetNextWindowPos(ImGui::GetWindowViewport()->GetCenter(), ImGuiCond_Appearing, { 0.5f, 0.5f });
 
-    if (ImGui::Begin("Move camera to", 0, ImGuiWindowFlags_::ImGuiWindowFlags_NoDocking
+    if (ImGui::Begin("Move camera to", nullptr, ImGuiWindowFlags_::ImGuiWindowFlags_NoDocking
         | ImGuiWindowFlags_NoResize
         | ImGuiWindowFlags_NoSavedSettings
         | ImGuiWindowFlags_AlwaysAutoResize

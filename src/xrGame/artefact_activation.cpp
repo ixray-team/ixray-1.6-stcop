@@ -198,8 +198,8 @@ void SArtefactActivation::SpawnAnomaly()
 		AlifeZone->m_space_restrictor_type	= RestrictionSpace::eRestrictorTypeNone;
 
 		NET_Packet					P;
-		object->Spawn_Write			(P,TRUE);
-		Level().Send				(P,net_flags(TRUE));
+		object->Spawn_Write			(P,true);
+		Level().Send				(P,net_flags(true));
 		F_entity_Destroy			(object);
 //. #ifdef DEBUG
 		Msg("artefact [%s] spawned a zone [%s] at [%f]", *m_af->cName(), zone_sect, Device.fTimeGlobal);

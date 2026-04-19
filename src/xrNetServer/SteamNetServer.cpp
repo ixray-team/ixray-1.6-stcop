@@ -203,7 +203,7 @@ void SteamNetServer::PollIncomingMessages()
 			// ping - save server time and reply
 			m_ping->dwTime_Server = TimerAsync(device_timer);
 			ClientID ID; ID.set(m_sender);
-			BaseServer::SendTo_Buf(ID, m_data, m_size, net_flags(FALSE, FALSE, TRUE, TRUE));
+			BaseServer::SendTo_Buf(ID, m_data, m_size, net_flags(false, false, true, true));
 		}
 		else if (m_size == sizeof(MSYS_CLIENT_DATA) && m_ping->sign1 == 0x02281488 && m_ping->sign2 == 0x01488228)
 		{ // client data message
@@ -355,7 +355,7 @@ void SteamNetServer::FinishConnection(SClientConnectData &cl_data)
 	sys_gd.sign2 = 0x01488228;
 	CopyMemory(&sys_gd.data, &m_game_description, sizeof(m_game_description));
 
-	_SendTo_LL(cl_data.clientID, &sys_gd, sizeof(sys_gd), net_flags(TRUE, TRUE, FALSE, FALSE));
+	_SendTo_LL(cl_data.clientID, &sys_gd, sizeof(sys_gd), net_flags(true, true, false, false));
 }
 
 
@@ -471,8 +471,8 @@ void SteamNetServer::DestroyCleint(ClientID clientId)
 
 	if (tmp_client)
 	{
-		tmp_client->flags.bConnected = FALSE;
-		tmp_client->flags.bReconnect = FALSE;
+		tmp_client->flags.bConnected = false;
+		tmp_client->flags.bReconnect = false;
 		OnCL_Disconnected(tmp_client);
 		// real destroy
 		client_Destroy(tmp_client);

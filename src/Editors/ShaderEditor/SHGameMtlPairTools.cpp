@@ -39,7 +39,7 @@ bool CSHGameMtlPairTools::OnCreate()
 
 void CSHGameMtlPairTools::OnDestroy()
 {
-    m_bModified = FALSE;
+    m_bModified = false;
 }
 //---------------------------------------------------------------------------
 
@@ -85,25 +85,25 @@ void CSHGameMtlPairTools::FillItemList()
 
 void CSHGameMtlPairTools::Load()
 {
-    m_bLockUpdate		= TRUE;
+    m_bLockUpdate		= true;
 
     ResetCurrentItem	();
 
-    m_bLockUpdate		= FALSE;
+    m_bLockUpdate		= false;
 }
 //---------------------------------------------------------------------------
 
 bool CSHGameMtlPairTools::Save()
 {
-    m_bLockUpdate		= TRUE;
+    m_bLockUpdate		= true;
 
     // save
     string_path 		fn;
     FS.update_path		(fn,_game_data_,GAMEMTL_FILENAME);
     EFS.MarkFile		(fn,false);
     bool bRes			= GameMaterialLibraryEditors->Save();
-    m_bLockUpdate		= FALSE;
-    if (bRes)			m_bModified	= FALSE;
+    m_bLockUpdate		= false;
+    if (bRes)			m_bModified	= false;
     return bRes;
 }
 //---------------------------------------------------------------------------

@@ -33,7 +33,7 @@ void CLight::Construct(LPVOID data)
 {
 	FClassID 		= OBJCLASS_LIGHT;
 
-    m_UseInD3D		= TRUE;
+    m_UseInD3D		= true;
 
     m_FuzzyData		= 0;
     

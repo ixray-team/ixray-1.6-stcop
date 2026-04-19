@@ -22,13 +22,13 @@ template <class T>
 bool MixedFlag(PropItem* prop, bool& change)
 {
 	FlagValue<_flags<T> >* V = dynamic_cast<FlagValue<_flags<T> >*>(prop->GetFrontValue());
-	if (!V)					return FALSE;
+	if (!V)					return false;
 	_flags<T> new_val = V->GetValue();
 
 	prop->BeforeEdit<FlagValue<_flags<T> >, _flags<T> >(new_val);
 	if (prop->AfterEdit<FlagValue<_flags<T> >, _flags<T> >(new_val))
 		change = prop->ApplyValue<FlagValue<_flags<T> >, _flags<T> >(new_val);
-	return TRUE;
+	return true;
 }
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
@@ -37,12 +37,12 @@ template <class T>
 bool MixedToken(PropItem* prop, bool& change)
 {
 	TokenValue<T>* V = dynamic_cast<TokenValue<T>*>(prop->GetFrontValue());
-	if (!V)					return FALSE;
+	if (!V)					return false;
 	T edit_value = V->GetValue();
 	prop->BeforeEdit<TokenValue<T>, T>(edit_value);
 	if (prop->AfterEdit<TokenValue<T>, T>(edit_value))
 		change = prop->ApplyValue<TokenValue<T>, T>(edit_value);
-	return TRUE;
+	return true;
 }
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
@@ -51,12 +51,12 @@ template <class T>
 bool MixedRToken(PropItem* prop, bool& change)
 {
 	RTokenValue<T>* V = dynamic_cast<RTokenValue<T>*>(prop->GetFrontValue());
-	if (!V)					return FALSE;
+	if (!V)					return false;
 	T edit_value = V->GetValue();
 	prop->BeforeEdit<RTokenValue<T>, T>(edit_value);
 	if (prop->AfterEdit<RTokenValue<T>, T>(edit_value))
 		change = prop->ApplyValue<RTokenValue<T>, T>(edit_value);
-	return TRUE;
+	return true;
 }
 void UIPropertiesItem::RemoveMixed()
 {

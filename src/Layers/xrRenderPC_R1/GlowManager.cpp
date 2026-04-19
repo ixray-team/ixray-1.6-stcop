@@ -25,7 +25,7 @@ CGlow::CGlow()// : ISpatial(g_SpatialSpace)
 	direction.set(0, 0, 0);
 	radius = 0.1f;
 	color.set(1, 1, 1, 1);
-	bTestResult = FALSE;
+	bTestResult = false;
 	fade = 1.f;
 	dwFrame = 0;
 }
@@ -116,7 +116,7 @@ void CGlowManager::Load		(IReader* fs)
 
 		G->fade				= 255.f;
 		G->dwFrame			= 0x0;
-		G->bTestResult		= TRUE;
+		G->bTestResult		= true;
 
 		G->SpatialComponent->spatial.type		= ESPATIAL_TYPE::RENDERABLE;
 

@@ -64,7 +64,7 @@ public:
     size_t PrefConfigVer = 0;
 
 public:
-					CAEPreferences():bAlwaysShowKeyBar12(FALSE),bAlwaysShowKeyBar34(FALSE){}
+					CAEPreferences():bAlwaysShowKeyBar12(false),bAlwaysShowKeyBar34(false){}
     bool							bAlwaysShowKeyBar12;
     bool							bAlwaysShowKeyBar34;
 

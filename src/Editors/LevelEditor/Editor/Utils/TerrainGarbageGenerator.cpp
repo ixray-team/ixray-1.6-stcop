@@ -83,7 +83,7 @@ void EGarbageGenerator::Generate(CSceneObject* terrain)
 			obj->SetScale(s);
 
 			obj->MoveTo(pos, up);
-			//obj->Select(TRUE);
+			//obj->Select(true);
 			Scene->AppendObject(obj, false);
 			i++;
 		}

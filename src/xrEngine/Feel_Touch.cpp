@@ -14,7 +14,7 @@ Touch::~Touch()
 
 bool Touch::feel_touch_contact(CObject* O)
 { 
-	return TRUE; 
+	return true; 
 }
 
 void Touch::feel_touch_deny(CObject* O, DWORD T)

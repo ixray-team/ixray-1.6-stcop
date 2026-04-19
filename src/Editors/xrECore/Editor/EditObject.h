@@ -1,5 +1,4 @@
-#ifndef EditObjectH
-#define EditObjectH
+#pragma once
 
 #include "../../xrEngine/Bone.h"
 #include "../../xrEngine/Motion.h"
@@ -72,8 +71,8 @@ public:
 	CSurface		()
 	{
 		m_GameMtlName="default";
-		m_ImageData	= 0;
-		m_Shader	= 0;
+		m_ImageData	= nullptr;
+		m_Shader	= nullptr;
 		m_RTFlags.zero	();
 		m_Flags.zero	();
 		m_dwFVF		= 0;
@@ -85,7 +84,7 @@ public:
 	}
 #if 1
 					~CSurface		(){R_ASSERT(!m_Shader);xr_delete(m_ImageData);}
-	IC void			CopyFrom		(CSurface* surf){*this = *surf; m_Shader=0; m_RTFlags.set(rtValidShader, FALSE);}
+	IC void			CopyFrom		(CSurface* surf){*this = *surf; m_Shader=nullptr; m_RTFlags.set(rtValidShader, false);}
 	IC int			_Priority		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.iPriority:1;}
 	IC bool			_StrictB2F		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.bStrictB2F:false;}
 	IC ref_shader	_Shader			()	{if (!m_RTFlags.is(rtValidShader)) OnDeviceCreate(); return m_Shader;}
@@ -118,12 +117,12 @@ public:
 		R_ASSERT(!m_RTFlags.is(rtValidShader));
 		if (m_ShaderName.size()&&m_Texture.size())	m_Shader.create(*m_ShaderName,*m_Texture); 
 		else                                       	m_Shader.create("editor\\wire");
-		m_RTFlags.set(rtValidShader,TRUE);
+		m_RTFlags.set(rtValidShader,true);
 	}
 	IC void			OnDeviceDestroy	()
 	{
 		m_Shader.destroy();
-		m_RTFlags.set(rtValidShader,FALSE);
+		m_RTFlags.set(rtValidShader,false);
 	}
 	void			CreateImageData	();
 	void			RemoveImageData	();
@@ -278,7 +277,7 @@ public:
 	// LOD
 	xr_string		GetLODTextureName		();
 	const char*			GetLODShaderName		(){return LOD_SHADER_NAME;}
-	void			GetLODFrame				(int frame, Fvector p[4], Fvector2 t[4], const Fmatrix* parent=0);
+	void			GetLODFrame				(int frame, Fvector p[4], Fvector2 t[4], const Fmatrix* parent=nullptr);
 
 	// skeleton
 	IC BPIt			FirstBonePart			()	{return m_BoneParts.begin();}
@@ -342,8 +341,8 @@ public:
 
 	// render methods
 	void 			Render					(const Fmatrix& parent, int priority, bool strictB2F,SurfaceVec * surfaces=nullptr);
-	void 			RenderSelection			(const Fmatrix& parent, CEditableMesh* m=0, CSurface* s=0, u32 c=0x40E64646);
-	void 			RenderEdge				(const Fmatrix& parent, CEditableMesh* m=0, CSurface* s=0, u32 c=0xFFC0C0C0);
+	void 			RenderSelection			(const Fmatrix& parent, CEditableMesh* m=nullptr, CSurface* s=nullptr, u32 c=0x40E64646);
+	void 			RenderEdge				(const Fmatrix& parent, CEditableMesh* m=nullptr, CSurface* s=nullptr, u32 c=0xFFC0C0C0);
 	void 			RenderBones				(const Fmatrix& parent);
 	void 			RenderAnimation			(const Fmatrix& parent);
 	void 			RenderSingle			(const Fmatrix& parent);
@@ -356,7 +355,7 @@ public:
 	void		    EvictObject				();
 
 	// pick methods
-	bool 			RayPick					(float& dist, const Fvector& S, const Fvector& D, const Fmatrix& inv_parent, SRayPickInfo* pinf=0);
+	bool 			RayPick					(float& dist, const Fvector& S, const Fvector& D, const Fmatrix& inv_parent, SRayPickInfo* pinf=nullptr);
 
 	void			CreateBone				(shared_str Name);
 	void			AddBone					(CBone* parent_bone);
@@ -384,7 +383,7 @@ public:
 
 	bool			RemoveSMotion			(const char* name);
 	bool			RenameSMotion			(const char* old_name, const char* new_name);
-	bool			AppendSMotion			(const char* fname, SMotionVec* inserted=0);
+	bool			AppendSMotion			(const char* fname, SMotionVec* inserted=nullptr);
 	void			ClearSMotions			();
 	bool			SaveSMotions			(const char* fname);
 
@@ -405,16 +404,16 @@ public:
 #endif
 
 	// contains methods
-	CEditableMesh* 	FindMeshByName			(const char* name, CEditableMesh* Ignore=0);
+	CEditableMesh* 	FindMeshByName			(const char* name, CEditableMesh* Ignore=nullptr);
 	void			VerifyMeshNames			();
 	bool 			ContainsMesh			(const CEditableMesh* m);
-	CSurface*		FindSurfaceByName		(const char* surf_name, int* s_id=0);
+	CSurface*		FindSurfaceByName		(const char* surf_name, int* s_id=nullptr);
 	int				FindBoneByNameIdx		(const char* name);
 	BoneIt			FindBoneByNameIt		(const char* name);
 	CBone*			FindBoneByName			(const char* name);
 	int				GetSelectedBones		(BoneVec& sel_bones);
 	u16				GetBoneIndexByWMap		(const char* wm_name);
-	CSMotion* 		FindSMotionByName		(const char* name, const CSMotion* Ignore=0);
+	CSMotion* 		FindSMotionByName		(const char* name, const CSMotion* Ignore=nullptr);
 	void			GenerateSMotionName		(char* buffer, const char* start_name, const CSMotion* M);
 	bool			GenerateBoneShape		(bool bSelOnly);
 
@@ -466,8 +465,8 @@ private:
 	virtual u16			_BCL	LL_BoneID(const shared_str& B)                                                          { return LL_BoneID( B.c_str() ); }
 	virtual const char*		_BCL	LL_BoneName_dbg(u16 ID) 																;
 
-	virtual CInifile*	_BCL	LL_UserData() 																			{ return 0; }
-	virtual accel*				LL_Bones() 																				{ VERIFY(false); return 0; }
+	virtual CInifile*	_BCL	LL_UserData() 																			{ return nullptr; }
+	virtual accel*				LL_Bones() 																				{ VERIFY(false); return nullptr; }
 
 	virtual  CBoneInstance&	_BCL LL_GetBoneInstance(u16 bone_id);
 
@@ -487,7 +486,7 @@ virtual	const IBoneData&_BCL	GetBoneData(u16 bone_id) const 															{ ret
 	virtual u16			_BCL	LL_GetBoneRoot() 																		{ u16 root_id = (u16)GetRootBoneID(); VERIFY( root_id < u16(-1) ); return root_id; }
 	virtual void				LL_SetBoneRoot(u16 bone_id) 															{ VERIFY(false); }
 
-	virtual bool		_BCL	LL_GetBoneVisible(u16 bone_id) 															{ return TRUE; }
+	virtual bool		_BCL	LL_GetBoneVisible(u16 bone_id) 															{ return true; }
 	virtual void				LL_SetBoneVisible(u16 bone_id, bool val, bool bRecursive) 								{ VERIFY(false); }
 
 	virtual VisMask _BCL LL_GetBonesVisible() {
@@ -499,7 +498,7 @@ virtual	const IBoneData&_BCL	GetBoneData(u16 bone_id) const 															{ ret
 	virtual void				LL_SetBonesVisible(VisMask mask) 														{ VERIFY(false); }
 
 	// Main functionality
-	virtual void				CalculateBones(bool bForceExact	= FALSE) 												{ } // Recalculate skeleton
+	virtual void				CalculateBones(bool bForceExact	= false) 												{ } // Recalculate skeleton
 	virtual void				CalculateBones_Invalidate()																{ }
 	virtual void				Callback(UpdateCallback C, void* Param) 												{ VERIFY(false); }
 
@@ -507,12 +506,12 @@ virtual	const IBoneData&_BCL	GetBoneData(u16 bone_id) const 															{ ret
 	virtual void				SetUpdateCallback(UpdateCallback pCallback) 											{ VERIFY(false); }
 	virtual void				SetUpdateCallbackParam(void* pCallbackParam)											{ VERIFY(false); }
 
-	virtual UpdateCallback		GetUpdateCallback() 																	{ VERIFY(false); return 0; }
-	virtual void*				GetUpdateCallbackParam() 																{ VERIFY(false); return 0; }
+	virtual UpdateCallback		GetUpdateCallback() 																	{ VERIFY(false); return nullptr; }
+	virtual void*				GetUpdateCallbackParam() 																{ VERIFY(false); return nullptr; }
 	//UpdateCallback				Update_Callback;
 	//void*						Update_Callback_Param;
-	virtual IRenderVisual* _BCL dcast_RenderVisual()																	{ 	return 0; }
-	virtual IKinematicsAnimated* dcast_PKinematicsAnimated() 															{ VERIFY(false); return 0; }
+	virtual IRenderVisual* _BCL dcast_RenderVisual()																	{ 	return nullptr; }
+	virtual IKinematicsAnimated* dcast_PKinematicsAnimated() 															{ VERIFY(false); return nullptr; }
 
 	// debug
 #ifdef DEBUG_DRAW
@@ -551,8 +550,6 @@ private:
 #define EOBJ_CHUNK_SMOTIONS3		0x0926
 //----------------------------------------------------
 
-
-#endif /*_INCDEF_EditObject_H_*/
 
 
 

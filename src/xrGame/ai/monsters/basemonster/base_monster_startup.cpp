@@ -163,7 +163,7 @@ void CBaseMonster::PostLoad (const char* section)
 	attack_on_move_params_t& aom			=	m_attack_on_move_params;
 
 	aom.enabled								=	(READ_IF_EXISTS(pSettings, r_bool, section, 
-												"aom_enabled", FALSE)) != 0;
+												"aom_enabled", false)) != 0;
 	aom.far_radius							=	READ_IF_EXISTS(pSettings, r_float, section, 
 												"aom_far_radius", ::detail::base_monster::aom_far_radius);
 	aom.attack_radius						=	READ_IF_EXISTS(pSettings, r_float, section, 
@@ -332,7 +332,7 @@ void CBaseMonster::reinit()
 bool CBaseMonster::net_Spawn (CSE_Abstract* DC) 
 {
 	if (!inherited::net_Spawn(DC))
-		return(FALSE);
+		return(false);
 
 	CSE_Abstract* e = (CSE_Abstract*)(DC);
 
@@ -366,7 +366,7 @@ bool CBaseMonster::net_Spawn (CSE_Abstract* DC)
 	else
 		SpatialComponent->spatial.type |= ESPATIAL_TYPE::MONSTER_DEAD;
 
-	return(TRUE);
+	return(true);
 }
 
 void CBaseMonster::net_Destroy()
@@ -488,7 +488,7 @@ void CBaseMonster::on_before_sell	(CInventoryItem *item)
 	VERIFY							(object);
 	CSE_ALifeObject* alife_object = object->cast_alife_object();
 	if (alife_object)
-		alife_object->m_flags.set	(CSE_ALifeObject::flCanSave,TRUE);
+		alife_object->m_flags.set	(CSE_ALifeObject::flCanSave,true);
 }
 
 void CBaseMonster::load_critical_wound_bones()

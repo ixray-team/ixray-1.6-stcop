@@ -71,7 +71,7 @@ private:
 		m_body_interpolation.ResetPositions();
 		m_body_interpolation.ResetRotations();
 		//bUpdate=true;
-		m_flags.set(flUpdate,TRUE);
+		m_flags.set(flUpdate,true);
 	}
 IC	void					UpdateInterpolation				()																				//interpolation called from ph update visual influent
 	{
@@ -79,7 +79,7 @@ IC	void					UpdateInterpolation				()																				//interpolation called 
 		m_body_interpolation.UpdatePositions();
 		m_body_interpolation.UpdateRotations();
 		//bUpdate=true;
-		m_flags.set(flUpdate,TRUE);
+		m_flags.set(flUpdate,true);
 	}
 public:
 ////////////////////////////////////////////////Geometry/////////////////////////////////////////////////////////////////////////////////////////////////

@@ -153,7 +153,7 @@ int EScene::RaySelect(int flag, ObjClassID classfilter)
 		for (; _I!=_E; _I++)
 		{
 			float range			= UI->ZFar();
-			_I->second->RaySelect(flag,range,UI->m_CurrentRStart,UI->m_CurrentRDir,TRUE);
+			_I->second->RaySelect(flag,range,UI->m_CurrentRStart,UI->m_CurrentRDir,true);
 			if (range<dist){
 				dist			= range;
 				mt				= _I->second;
@@ -165,7 +165,7 @@ int EScene::RaySelect(int flag, ObjClassID classfilter)
 	int count					= 0;
 	dist						= UI->ZFar();
 	if (mt) 
-		count=mt->RaySelect	(flag,dist,UI->m_CurrentRStart,UI->m_CurrentRDir,FALSE);
+		count=mt->RaySelect	(flag,dist,UI->m_CurrentRStart,UI->m_CurrentRDir,false);
 	return count;
 /*
 	CCustomObject *nearest_object = RayPickObject(flt_max,UI->m_CurrentRStart,UI->m_CurrentRNorm,classfilter,0,0);

@@ -78,7 +78,7 @@ bool CSector::AddMesh	(CSceneObject* O, CEditableMesh* M)
 	if (!PortalUtils.FindSector(O,M))
 		if (!FindSectorItem(O, M, it)){
 			sector_items.push_back(CSectorItem(O, M, M->Name()));
-			m_Flags.set(flNeedUpdateVolume,TRUE);
+			m_Flags.set(flNeedUpdateVolume,true);
 			return true;
 		}
 	return false;
@@ -91,7 +91,7 @@ int CSector::DelMesh	(CSceneObject* O, CEditableMesh* M)
 	SItemIt it;
 	if (FindSectorItem(O, M, it)){
 		sector_items.erase(it);
-		m_Flags.set(flNeedUpdateVolume,TRUE);
+		m_Flags.set(flNeedUpdateVolume,true);
 		res = 1;
 	}
 	if (sector_items.empty()){
@@ -200,7 +200,7 @@ void CSector::UpdateVolume()
 
 	UI->RedrawScene();
 
-	m_Flags.set(flNeedUpdateVolume,FALSE);
+	m_Flags.set(flNeedUpdateVolume,false);
 }
 
 void CSector::OnDestroy( )
@@ -221,7 +221,7 @@ void CSector::OnSceneUpdate()
 	}
 	if (bUpdate) PortalUtils.RemoveSectorPortal(this);
 */
-	m_Flags.set(flNeedUpdateVolume,TRUE);
+	m_Flags.set(flNeedUpdateVolume,true);
 }
 
 
@@ -312,7 +312,7 @@ void CSector::CaptureInsideVolume(){
 					AddMesh(obj,*m_def);
 			}
 		}
-		m_Flags.set		(flNeedUpdateVolume,TRUE);
+		m_Flags.set		(flNeedUpdateVolume,true);
 		UI->RedrawScene	();
 		ExecCommand		(COMMAND_UPDATE_PROPERTIES);
 	}
@@ -352,7 +352,7 @@ void CSector::DistributeInsideObjects(){
 				}
 			}
 		}
-		m_Flags.set		(flNeedUpdateVolume,TRUE);
+		m_Flags.set		(flNeedUpdateVolume,true);
 		UI->RedrawScene	();
 		ExecCommand		(COMMAND_UPDATE_PROPERTIES);
 	}
@@ -527,7 +527,7 @@ bool CSector::LoadLTX(CInifile& ini, const char* sect_name)
 		
 	if (sector_items.empty()) return false;
 
-	m_Flags.set(flNeedUpdateVolume,TRUE);
+	m_Flags.set(flNeedUpdateVolume,true);
 	IsLoaded = true;
 
 	return true;
@@ -593,7 +593,7 @@ bool CSector::LoadStream(IReader& F)
 
 	if (sector_items.empty()) return false;
 
-	m_Flags.set(flNeedUpdateVolume,TRUE);
+	m_Flags.set(flNeedUpdateVolume,true);
 	return true;
 }
 

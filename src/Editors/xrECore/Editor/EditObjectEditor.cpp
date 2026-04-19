@@ -114,19 +114,19 @@ void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F
 		if (m_objectFlags.is(eoHOM))
 		{
 			if ((1 == priority) && (false == strictB2F))
-				RenderEdge(parent, 0, 0, 0x40B64646);
+				RenderEdge(parent, nullptr, nullptr, 0x40B64646);
 
 			if ((2 == priority) && (true == strictB2F))
-				RenderSelection(parent, 0, 0, 0xA0FFFFFF);
+				RenderSelection(parent, nullptr, nullptr, 0xA0FFFFFF);
 
 		}
 		else if (m_objectFlags.is(eoSoundOccluder))
 		{
 			if ((1 == priority) && (false == strictB2F))
-				RenderEdge(parent, 0, 0, 0xFF000000);
+				RenderEdge(parent, nullptr, nullptr, 0xFF000000);
 
 			if ((2 == priority) && (true == strictB2F))
-				RenderSelection(parent, 0, 0, 0xA00000FF);
+				RenderSelection(parent, nullptr, nullptr, 0xA00000FF);
 		}
 		else 
 		{
@@ -339,7 +339,7 @@ void CEditableObject::DefferedLoadRP()
 	if (m_objectFlags.is(eoUsingLOD))
 		m_LODShader.create(GetLODShaderName(),l_name.c_str());
 
-	m_LoadState.set(LS_RBUFFERS,TRUE);
+	m_LoadState.set(LS_RBUFFERS,true);
 }
 void CEditableObject::DefferedUnloadRP()
 {
@@ -354,7 +354,7 @@ void CEditableObject::DefferedUnloadRP()
 		(*s_it)->OnDeviceDestroy();
 	// LOD
 	m_LODShader.destroy();
-	m_LoadState.set(LS_RBUFFERS,FALSE);
+	m_LoadState.set(LS_RBUFFERS,false);
 }
 void CEditableObject::EvictObject()
 {
@@ -466,7 +466,7 @@ void CEditableObject::CreateBone(shared_str Name)
 	SBonePart& BP = m_BoneParts.emplace_back(SBonePart());
 	BP.alias = "default";
 
-	m_objectFlags.set(eoDynamic, TRUE);
+	m_objectFlags.set(eoDynamic, true);
 
 	BP.bones.push_back(B->Name());
 	m_Bones.push_back(B);
@@ -518,7 +518,7 @@ void CEditableObject::AddBone(CBone* parent_bone)
 	}
 }
 
-CBone* 	bone_to_delete = NULL;
+CBone* 	bone_to_delete = nullptr;
 u32 	bone_to_delete_frame = 0;
 
 void CEditableObject::DeleteBone(CBone* bone)

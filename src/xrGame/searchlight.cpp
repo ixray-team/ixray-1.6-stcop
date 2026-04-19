@@ -61,7 +61,7 @@ bool CProjector::net_Spawn(CSE_Abstract* DC)
 	R_ASSERT				(slight);
 	
 	if (!inherited::net_Spawn(DC))
-		return			(FALSE);
+		return			(false);
 	
 	R_ASSERT				(Visual() && PKinematics(Visual()));
 
@@ -83,8 +83,8 @@ bool CProjector::net_Spawn(CSE_Abstract* DC)
 	glow_render->set_color	(clr);
 	glow_render->set_radius	(pUserData->r_float					("projector_definition","glow_radius"));
 
-	setVisible	(TRUE);
-	setEnabled	(TRUE);
+	setVisible	(true);
+	setEnabled	(true);
 
 	TurnOn		();
 	
@@ -100,7 +100,7 @@ bool CProjector::net_Spawn(CSE_Abstract* DC)
 
 	//////////////////////////////////////////////////////////////////////////
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::LIGHT_LAMP;
-	return TRUE;
+	return true;
 }
 
 void CProjector::shedule_Update	(u32 dt)
@@ -118,9 +118,9 @@ void CProjector::TurnOn()
 
 	IKinematics *visual = PKinematics(Visual());
 
-	visual->LL_SetBoneVisible			(guid_bone, TRUE, TRUE);
+	visual->LL_SetBoneVisible			(guid_bone, true, true);
 	visual->CalculateBones_Invalidate	();
-	visual->CalculateBones				(TRUE);
+	visual->CalculateBones				(true);
 }
 
 void CProjector::TurnOff()
@@ -130,7 +130,7 @@ void CProjector::TurnOff()
 	light_render->set_active(false);
 	glow_render->set_active (false);
 	
-	PKinematics(Visual())->LL_SetBoneVisible(guid_bone, FALSE, TRUE);
+	PKinematics(Visual())->LL_SetBoneVisible(guid_bone, false, true);
 }
 
 void CProjector::UpdateCL	()
@@ -177,7 +177,7 @@ void CProjector::renderable_Render()
 
 bool CProjector::UsedAI_Locations()
 {
-	return					(FALSE);
+	return					(false);
 }
 
 bool CProjector::bfAssignWatch(CScriptEntityAction *tpEntityAction)

@@ -30,6 +30,6 @@ ORM_API void		__cdecl	ORM_Process	(
 		u32		Count,
 		Fvector&	Pos,		// position of test point
 		u16*		ID,			// id's of tested models
-		bool*		R			// boolean result, TRUE-visible
+		bool*		R			// boolean result, true-visible
 		);
 #endif

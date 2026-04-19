@@ -38,7 +38,7 @@ void AntigasFilter::Load(const char* section)
 		m_flags.set(FUsingCondition, true);
 	}
 
-	SetAllowed(READ_IF_EXISTS(pSettings, r_bool, section, "is_antigas_filter", FALSE));
+	SetAllowed(READ_IF_EXISTS(pSettings, r_bool, section, "is_antigas_filter", false));
 	if (IsAllowed())
 	{
 		// immunities

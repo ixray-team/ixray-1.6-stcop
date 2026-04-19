@@ -10,7 +10,7 @@
 CSoundRender_Target::CSoundRender_Target()
 {
 	m_pEmitter		= 0;
-	rendering		= FALSE;
+	rendering		= false;
 	m_wave			= 0;
 }
 
@@ -19,9 +19,9 @@ CSoundRender_Target::~CSoundRender_Target()
 	VERIFY				(m_wave == 0);
 }
 
-BOOL CSoundRender_Target::_initialize()
+bool CSoundRender_Target::_initialize()
 {
-    return					TRUE;
+    return					true;
 }
 
 void	CSoundRender_Target::start(CSoundRender_Emitter* E)
@@ -33,20 +33,20 @@ void	CSoundRender_Target::start(CSoundRender_Emitter* E)
 	// 4. Load 2 blocks of data (as much as possible)
 	// 5. Deferred-play-signal (emitter-exist, rendering-false)
 	m_pEmitter		= E;
-	rendering		= FALSE;
+	rendering		= false;
 	attach			();
 }
 
 void	CSoundRender_Target::render			()
 {
-	rendering		= TRUE;
+	rendering		= true;
 }
 
 void	CSoundRender_Target::stop			()
 {
 	dettach			();
 	m_pEmitter		= nullptr;
-	rendering		= FALSE;
+	rendering		= false;
 }
 
 void	CSoundRender_Target::rewind			()

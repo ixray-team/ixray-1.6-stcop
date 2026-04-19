@@ -31,7 +31,7 @@ void CLevel::PrepareToSaveDemo		()
 	Msg					("Demo would be stored in - %s", demo_name);
 	FS.update_path      (demo_path, "$logs$", demo_name);
 	m_writer			= FS.w_open(demo_path);
-	m_DemoSave			= TRUE;
+	m_DemoSave			= true;
 }
 
 bool CLevel::PrepareToPlayDemo		(shared_str const & file_name)
@@ -48,7 +48,7 @@ bool CLevel::PrepareToPlayDemo		(shared_str const & file_name)
 		Msg("ERROR: bad demo file...");
 		return false;
 	}
-	m_DemoPlay	= TRUE;
+	m_DemoPlay	= true;
 	return true;
 }
 
@@ -66,7 +66,7 @@ void CLevel::StartPlayDemo()
 	R_ASSERT(IsDemoPlay() && !m_DemoPlayStarted);
 
 	m_current_spectator	= nullptr;
-	m_DemoPlayStarted	= TRUE;
+	m_DemoPlayStarted	= true;
 	m_StartGlobalTime	= Device.dwTimeGlobal;
 	SetDemoPlaySpeed	(1.0f);
 	m_starting_spawns_pos	= 0;
@@ -107,8 +107,8 @@ void CLevel::RestartPlayDemo()
 	}
 	R_ASSERT(m_reader);
 	
-	m_DemoPlayStarted	= TRUE;
-	m_DemoPlayStoped	= FALSE;
+	m_DemoPlayStarted	= true;
+	m_DemoPlayStoped	= false;
 
 	m_StartGlobalTime	= Device.dwTimeGlobal - m_starting_spawns_dtime;
 	m_reader->seek		(m_starting_spawns_pos);
@@ -124,8 +124,8 @@ void CLevel::StopPlayDemo()
 	{
 		//FS.r_close			(m_reader);
 		//m_reader			= nullptr;
-		m_DemoPlayStarted	= FALSE;
-		m_DemoPlayStoped	= TRUE;
+		m_DemoPlayStarted	= false;
+		m_DemoPlayStoped	= true;
 	}
 	Msg("! ------------- Demo Stoped ------------");
 }
@@ -135,7 +135,7 @@ void CLevel::StartSaveDemo(shared_str const & server_options)
 	R_ASSERT(IsDemoSave() && !m_DemoSaveStarted);
 
 	SaveDemoHeader		(server_options);
-	m_DemoSaveStarted	= TRUE;
+	m_DemoSaveStarted	= true;
 }
 
 void CLevel::SaveDemoHeader(shared_str const & server_options)
@@ -324,7 +324,7 @@ void CLevel::SetDemoPlayPos(float const pos)
 		time_shift		+= tmp_hdr.m_time_global_delta;
 	}
 	m_StartGlobalTime	-= time_shift;
-	m_rewind			= TRUE;
+	m_rewind			= true;
 	m_reader->seek		(old_file_pos);
 }*/
 

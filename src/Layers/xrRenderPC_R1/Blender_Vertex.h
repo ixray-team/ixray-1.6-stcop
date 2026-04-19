@@ -10,8 +10,8 @@ class CBlender_Vertex : public IBlender
 {
 public:
 	virtual		const char*		getComment()	{ return "LEVEL: diffuse*base";	}
-	virtual		bool		canBeDetailed()	{ return TRUE;	}
-	virtual		bool		canBeLMAPped()	{ return FALSE; }
+	virtual		bool		canBeDetailed()	{ return true;	}
+	virtual		bool		canBeLMAPped()	{ return false; }
 
 	virtual		void		Save			(IWriter&  fs);
 	virtual		void		Load			(IReader&	fs, u16 version);

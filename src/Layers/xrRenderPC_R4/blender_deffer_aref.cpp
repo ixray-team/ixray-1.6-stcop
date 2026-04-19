@@ -9,7 +9,7 @@ CBlender_deffer_aref::CBlender_deffer_aref	(bool _lmapped) : lmapped(_lmapped)	{
 	oAREF.value			= 200;
 	oAREF.min			= 0;
 	oAREF.max			= 255;
-	oBlend.value		= FALSE;
+	oBlend.value		= false;
 	description.version	= 1;
 }
 CBlender_deffer_aref::~CBlender_deffer_aref	()	{	}
@@ -53,19 +53,19 @@ void	CBlender_deffer_aref::Compile(CBlender_Compile& C)
 		{
 		case SE_R2_NORMAL_HQ:
 			uber_deffer(C, true, "deffer_base", "deffer_base", true, 0, true);
-			C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+			C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 			C.r_StencilRef(0x01);
 			C.r_End();
 			break;
 		case SE_R2_NORMAL_LQ:
 			uber_deffer(C, false, "deffer_base", "deffer_base", true, 0, true);
-			C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+			C.r_Stencil(true, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 			C.r_StencilRef(0x01);
 			C.r_End();
 			break;
 		case SE_R2_SHADOW:
 			RImplementation.addShaderOption("USE_AREF", "1");
-			C.r_Pass("shadow_base", "shadow_base", FALSE);
+			C.r_Pass("shadow_base", "shadow_base", false);
 			C.r_dx10Texture("s_base", C.L_textures[0]);
 			C.r_dx10Sampler("smp_base");
 			C.r_dx10Sampler("smp_linear");

@@ -70,7 +70,7 @@ public:
 	MeshTri ( MeshPt *pNewPt1, MeshPt *pNewPt2, MeshPt *pNewPt3, MeshTri *pListRoot = nullptr, MeshEdge *pEdgeListRoot = nullptr );
 	~MeshTri ( void );
 	// Set bBinUnusedEdges to TRUE to autodestroy edges.
-	void Delete ( bool bBinUnusedEdges = FALSE );
+	void Delete ( bool bBinUnusedEdges = false );
 	// Which list is this tri in?
 	MeshTri *QueryList ( void );
 	// Move this tri to this list.
@@ -144,7 +144,7 @@ public:
 	void SetList ( MeshEdge *pListRoot );
 	// Makes these two edges prox.
 	// The point prox data must agree.
-	// Returns TRUE on success, or FALSE if it failed.
+	// Returns TRUE on success, or false if it failed.
 	bool AddProx ( MeshEdge *pEdge );
 	// Find the proximity edge, if any.
 	// Relies on the point proximity values having been set up.
@@ -244,9 +244,9 @@ public:
 
 	// Add the given pt to the prox list (and vice versa).
 	// If the pt was not already there, returns TRUE;
-	// If bProxEdges is set to TRUE (default is FALSE ),
+	// If bProxEdges is set to TRUE (default is false ),
 	// the edges that these two pts use are made prox if possible.
-	bool AddProx ( MeshPt *pPt, bool bProxEdges = FALSE );
+	bool AddProx ( MeshPt *pPt, bool bProxEdges = false );
 	// Remove the given pt from the prox list (and vice versa).
 	// If the pt was there, returns TRUE.
 	bool RemoveProx ( MeshPt *pPt );
@@ -480,10 +480,10 @@ inline void MeshTri::InternalDelete ( bool bBinUnusedEdges )
 
 inline MeshTri::~MeshTri ( void )
 {
-	InternalDelete ( FALSE );
+	InternalDelete ( false );
 }
 
-inline void MeshTri::Delete ( bool bBinUnusedEdges /*= FALSE*/ )
+inline void MeshTri::Delete ( bool bBinUnusedEdges /*= false*/ )
 {
 	InternalDelete ( bBinUnusedEdges );
 	MeshTri* tri = (MeshTri*)this;
@@ -494,7 +494,7 @@ inline void MeshTri::Delete ( bool bBinUnusedEdges /*= FALSE*/ )
 inline void MeshTri::AddEdge ( MeshEdge *pEdge )
 {
 	// Can't mess with a tri's edges once created.
-	VERIFY ( FALSE );
+	VERIFY ( false );
 }
 
 inline void MeshTri::RemoveEdge ( MeshEdge *pEdge )
@@ -554,7 +554,7 @@ inline void MeshTri::SetList ( MeshTri *pListRoot )
 	}
 }
 
-#define FAIL_CHECK() bRes = FALSE; VERIFY ( FALSE )
+#define FAIL_CHECK() bRes = false; VERIFY ( false )
 inline bool MeshTri::ConsistencyCheck ( MeshPt *pPtRoot, MeshEdge *pEdgeRoot, MeshTri *pTriRoot )
 {
 	bool bRes = TRUE;
@@ -920,7 +920,7 @@ inline bool MeshEdge::bTryToMergeEdges ( MeshEdge *pedge )
 		else
 		{
 			// Nope - they don't match.
-			return ( FALSE );
+			return ( false );
 		}
 	}
 	else
@@ -994,7 +994,7 @@ inline bool MeshEdge::bTryToMergeEdges ( MeshEdge *pedge )
 		else
 		{
 			// Nope - they don't match.
-			return ( FALSE );
+			return ( false );
 		}
 	}
 }
@@ -1025,19 +1025,19 @@ inline void MeshEdge::SetList ( MeshEdge *pListRoot )
 
 // Makes these two edges prox.
 // The point prox data must agree.
-// Returns TRUE on success, or FALSE if it failed.
+// Returns TRUE on success, or false if it failed.
 inline bool MeshEdge::AddProx ( MeshEdge *pEdge )
 {
 	VERIFY ( pEdge != nullptr );
 	if ( pEdgeProx != nullptr )
 	{
 		// Already got prox.
-		return ( FALSE );
+		return ( false );
 	}
 	else if ( pEdge->pEdgeProx != nullptr )
 	{
 		// Already got prox.
-		return ( FALSE );
+		return ( false );
 	}
 	else
 	{
@@ -1047,19 +1047,19 @@ inline bool MeshEdge::AddProx ( MeshEdge *pEdge )
 		{
 			if ( !pEdge->pPt2->CheckProx ( pPt2 ) )
 			{
-				return ( FALSE );
+				return ( false );
 			}
 		}
 		else if ( pEdge->pPt1->CheckProx ( pPt2 ) )
 		{
 			if ( !pEdge->pPt2->CheckProx ( pPt1 ) )
 			{
-				return ( FALSE );
+				return ( false );
 			}
 		}
 		else
 		{
-			return ( FALSE );
+			return ( false );
 		}
 
 		// OK, must have passed.
@@ -1118,7 +1118,7 @@ inline bool MeshEdge::RemoveProx ( void )
 {
 	if ( pEdgeProx == nullptr )
 	{
-		return ( FALSE );
+		return ( false );
 	}
 	else
 	{
@@ -1584,12 +1584,12 @@ inline bool MeshPt::CheckProx ( MeshPt *pPt )
 			return ( TRUE );
 		}
 	}
-	return ( FALSE );
+	return ( false );
 }
 
 // Add the given pt to the prox list (and vice versa).
 // If the pt was not already there, returns TRUE;
-// If bProxEdges is set to TRUE (default is FALSE ),
+// If bProxEdges is set to TRUE (default is false ),
 // the edges that these two pts use are made prox if possible.
 inline bool MeshPt::AddProx ( MeshPt *pPt, bool bProxEdges )
 {
@@ -1600,7 +1600,7 @@ inline bool MeshPt::AddProx ( MeshPt *pPt, bool bProxEdges )
 	{
 		// Already prox.
 		VERIFY ( pPt->CheckProx ( this ) );
-		bRes = FALSE;
+		bRes = false;
 	}
 	else
 	{
@@ -1687,7 +1687,7 @@ inline bool MeshPt::RemoveProx ( MeshPt *pPt )
 	{
 		// No, they're not prox.
 		VERIFY ( !pPt->CheckProx ( this ) );
-		return ( FALSE );
+		return ( false );
 	}
 
 }
@@ -1777,7 +1777,7 @@ inline bool MeshPt::ConsistencyCheck ( MeshPt *pPtRoot, MeshEdge *pEdgeRoot, Mes
 		if ( !pEdge->ConsistencyCheck ( pPtRoot, pEdgeRoot, pTriRoot ) )
 		{
 			// Will have already VERIFYed.
-			bRes = FALSE;
+			bRes = false;
 		}
 		pEdge = NextEdge();
 	}
@@ -1787,7 +1787,7 @@ inline bool MeshPt::ConsistencyCheck ( MeshPt *pPtRoot, MeshEdge *pEdgeRoot, Mes
 		if ( !pTri->ConsistencyCheck ( pPtRoot, pEdgeRoot, pTriRoot ) )
 		{
 			// Will have already VERIFYed.
-			bRes = FALSE;
+			bRes = false;
 		}
 		pTri = NextTri();
 	}

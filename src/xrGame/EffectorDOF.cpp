@@ -17,5 +17,5 @@ bool CEffectorDOF::ProcessCam(SCamEffectorInfo& info)
 		fLifeTime = -1;
 	}
 
-	return TRUE;
+	return true;
 }

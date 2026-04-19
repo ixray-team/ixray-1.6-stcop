@@ -48,7 +48,7 @@ public:
 
 	void				Play				(bool _looped, u32 _time);
 	void				Pause				(bool _pause)		{playing=!_pause;}
-	void				Stop				()					{playing=FALSE;Reset();}
+	void				Stop				()					{playing=false;Reset();}
 	bool				IsPlaying			()					{return playing;}
 
 	u32					Width				(bool bRealSize);

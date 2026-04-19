@@ -21,10 +21,10 @@ void set_status(char* N, int id, int f, int v)
 bool OGF_Vertex::similar(OGF* ogf, OGF_Vertex& V)
 {
 	const float ntb		= std::cos	(deg2rad(5.f));
-	if (!P.similar(V.P)) 		return FALSE;
-	if (!N.similar(V.N)) 		return FALSE;
-	if (!T.similar(V.T)) 		return FALSE;
-	if (!B.similar(V.B)) 		return FALSE;
+	if (!P.similar(V.P)) 		return false;
+	if (!N.similar(V.N)) 		return false;
+	if (!T.similar(V.T)) 		return false;
+	if (!B.similar(V.B)) 		return false;
 	
 	R_ASSERT(UV.size()==V.UV.size());
 	for (u32 i=0; i<V.UV.size(); i++) {
@@ -32,9 +32,9 @@ bool OGF_Vertex::similar(OGF* ogf, OGF_Vertex& V)
 		b_texture	*B = T->pBuildSurface;
 		float		eu = 1.f/float(B->dwWidth );
 		float		ev = 1.f/float(B->dwHeight);
-		if (!UV[i].similar(V.UV[i],eu,ev)) return FALSE;
+		if (!UV[i].similar(V.UV[i],eu,ev)) return false;
 	}
-	return TRUE;
+	return true;
 }
 void OGF_Vertex::dump	(u32 id)
 {
@@ -98,8 +98,8 @@ bool OGF::dbg_SphereContainsVertex(Fvector& c, float R)
 {
 	Fsphere	S;	S.set(c,R);
 	for (u32 it=0; it<data.vertices.size(); it++)
-		if (S.contains(data.vertices[it].P))	return	TRUE;
-	return FALSE	;
+		if (S.contains(data.vertices[it].P))	return	true;
+	return false	;
 }
 
 void OGF::adjacent_select	(xr_vector<u32>& dest, xr_vector<bool>& vmark, xr_vector<bool>& fmark)
@@ -117,13 +117,13 @@ void OGF::adjacent_select	(xr_vector<u32>& dest, xr_vector<bool>& vmark, xr_vect
 			dest.push_back	(F.v[2]);	vmark[F.v[2]]=true;
 		} else {
 			// check connectivity
-			bool	bConnected	=	FALSE;
+			bool	bConnected	=	false;
 			for (u32 vid=0; vid<3; vid++)	{
 				u32		id = F.v	[vid];	// search in already registered verts
 				for (u32 sid=0; sid<dest.size(); sid++)
 				{
 					if (id==dest[sid])	{
-						bConnected	= TRUE;	// this face shares at least one vertex with already selected faces
+						bConnected	= true;	// this face shares at least one vertex with already selected faces
 						break;
 					}
 				}

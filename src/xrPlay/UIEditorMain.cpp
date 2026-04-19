@@ -210,9 +210,9 @@ void RenderScenesViewer() {
 				_game_config_,
 				"scripts\\scenes.ltx"
 			),
-			TRUE,
-			TRUE,
-			FALSE
+			true,
+			true,
+			false
 		);
 
 	auto levelName = g_pGameLevel->name();

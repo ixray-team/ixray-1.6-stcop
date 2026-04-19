@@ -61,7 +61,7 @@ namespace PS
 		ICF CPEDef*			GetDefinition		(){return m_Def;}
 
 		virtual void		Play				();
-		virtual void		Stop				(bool bDefferedStop=TRUE);
+		virtual void		Stop				(bool bDefferedStop=true);
 		virtual bool		IsPlaying			(){return m_RT_Flags.is(flRT_Playing);}
 		
 		virtual void		SetHudMode			(bool b){m_RT_Flags.set(flRT_HUDmode,b);}

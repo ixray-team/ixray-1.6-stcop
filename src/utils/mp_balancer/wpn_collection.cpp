@@ -24,33 +24,33 @@ void weapon_collection::load_all_mp_weapons()
 	string_path		path_ltx;
 	
 	FS.update_path			(path_ltx, "$patch_config$", "system.ltx");
-	patch_config			= new CInifileEx(path_ltx, TRUE, TRUE, FALSE);
+	patch_config			= new CInifileEx(path_ltx, true, true, false);
 	
 	FS.update_path			(path_ltx, "$game_config$", "system.ltx");
-	priquel_config			= new CInifileEx(path_ltx, TRUE, TRUE, FALSE);
+	priquel_config			= new CInifileEx(path_ltx, true, true, false);
 
 	/*FS.update_path			(path_ltx, "$game_config$", "mp\\weapons_mp\\weapons_mp_for_work.ltx");
-	work_mp_weapons			= new CInifileEx(path_ltx, TRUE, TRUE, FALSE);
+	work_mp_weapons			= new CInifileEx(path_ltx, true, true, false);
 
 	FS.update_path			(path_ltx, "$game_config$", "mp\\weapons_mp\\ammo_mp_for_work.ltx");
-	work_mp_ammo				= new CInifileEx(path_ltx, TRUE, TRUE, FALSE);
+	work_mp_ammo				= new CInifileEx(path_ltx, true, true, false);
 
 	FS.update_path			(path_ltx, "$game_config$", "mp\\weapons_mp\\items_mp_for_work.ltx");
-	work_mp_items			= new CInifileEx(path_ltx, TRUE, TRUE, FALSE);
+	work_mp_items			= new CInifileEx(path_ltx, true, true, false);
 	
 	FS.update_path			(path_ltx, "$game_config$", "mp\\weapons_mp\\outfit_mp_for_work.ltx");
-	work_mp_outfits			= new CInifileEx(path_ltx, TRUE, TRUE, FALSE);*/
+	work_mp_outfits			= new CInifileEx(path_ltx, true, true, false);*/
 
 	FS.update_path			(path_ltx, "$app_data_root$", "export_settings.ltx");
-	settings				= new CInifileEx(path_ltx, TRUE, TRUE, FALSE);
+	settings				= new CInifileEx(path_ltx, true, true, false);
 	load_settings			();
 		
 	
 	
-	/*new_mp_weapons			= new CInifileEx("new_weapons_mp.ltx", FALSE, FALSE, FALSE);
-	new_mp_ammo				= new CInifileEx("new_ammo_mp.ltx", FALSE, FALSE, FALSE);
-	new_mp_items			= new CInifileEx("new_items_mp.ltx", FALSE, FALSE, FALSE);
-	new_mp_outfits			= new CInifileEx("new_outfit_mp.ltx", FALSE, FALSE, FALSE);*/
+	/*new_mp_weapons			= new CInifileEx("new_weapons_mp.ltx", false, false, false);
+	new_mp_ammo				= new CInifileEx("new_ammo_mp.ltx", false, false, false);
+	new_mp_items			= new CInifileEx("new_items_mp.ltx", false, false, false);
+	new_mp_outfits			= new CInifileEx("new_outfit_mp.ltx", false, false, false);*/
 
 	
 	CInifileEx::Sect & dm_base_cost = priquel_config->r_section("deathmatch_base_cost");

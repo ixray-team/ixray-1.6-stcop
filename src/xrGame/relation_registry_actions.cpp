@@ -95,7 +95,7 @@ void RELATION_REGISTRY::Action (CEntityAlive* from, CEntityAlive* to, ERelationA
 	ALife::ERelationType relation = ALife::eRelationTypeDummy;
 	if(stalker)
 	{
-		stalker->m_actor_relation_flags.set(action, TRUE);
+		stalker->m_actor_relation_flags.set(action, true);
 		relation = GetRelationType(stalker->cast_inventory_owner(), inv_owner_from);
 	}
 

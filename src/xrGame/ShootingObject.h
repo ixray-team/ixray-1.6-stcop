@@ -55,8 +55,8 @@ protected:
 	virtual void			FireEnd				();
 public:
 	IC bool					IsWorking			()	const	{return bWorking;}
-	virtual bool			ParentMayHaveAimBullet()		{return FALSE;}
-	virtual bool			ParentIsActor()					{return FALSE;}
+	virtual bool			ParentMayHaveAimBullet()		{return false;}
+	virtual bool			ParentIsActor()					{return false;}
 
 	float getFireDistance(void) const { return fireDistance; }
 	void setFireDistance(float value);

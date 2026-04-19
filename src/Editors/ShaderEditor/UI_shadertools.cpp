@@ -284,13 +284,13 @@ bool CShaderTool::RayPick(const Fvector& start, const Fvector& dir, float& dist,
 void CShaderTool::RealUpdateProperties()
 {
     Current()->RealUpdateProperties();
-	m_Flags.set(flRefreshProps,FALSE);
+	m_Flags.set(flRefreshProps,false);
 }
 
 void CShaderTool::RealUpdateList()
 {
     Current()->RealUpdateList();
-	m_Flags.set(flRefreshList,FALSE);
+	m_Flags.set(flRefreshList,false);
 }
 
 void  CShaderTool::OnItemFocused(ListItem* items)

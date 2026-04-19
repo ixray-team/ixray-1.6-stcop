@@ -27,7 +27,7 @@ void xrServer::Process_update(NET_Packet& P, ClientID sender)
 		if (E)
 		{
 			//Msg				("sv_import: %d '%s'",E->ID,E->name_replace());
-			E->net_Ready	= TRUE;
+			E->net_Ready	= true;
 			E->UPDATE_Read	(P);
 
 			if (g_pGamePersistent->GameType() == eGameIDFreeMP)
@@ -65,7 +65,7 @@ void xrServer::Process_save(NET_Packet& P, ClientID sender)
 {
 	xrClientData* CL		= ID_to_client(sender);
 	R_ASSERT2				(CL,"Process_save client not found");
-	CL->net_Ready			= TRUE;
+	CL->net_Ready			= true;
 
 	R_ASSERT(CL->flags.bLocal);
 	// while has information
@@ -81,7 +81,7 @@ void xrServer::Process_save(NET_Packet& P, ClientID sender)
 		CSE_Abstract	*E	= ID_to_entity(ID);
 
 		if (E) {
-			E->net_Ready = TRUE;
+			E->net_Ready = true;
 			E->load		(P);
 		}
 		else

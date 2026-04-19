@@ -195,7 +195,7 @@ IC float intersectRayIdentitySphere(const Fvector& rO, const Fvector& rV)
 //         sO - Origin of sphere
 //         sR - radius of sphere 
 // Notes : 
-// Return: TRUE if point is in sphere, FALSE if not.
+// Return: true if point is in sphere, false if not.
 // -----------------------------------------------------------------------  
 IC bool CheckPointInSphere(const Fvector& point, const Fvector& sO, float sR) {
 	return (sO.distance_to_sqr(point)< sR*sR);
@@ -284,19 +284,19 @@ void msimulator_CheckCollision(SCollisionData& cl)
 			// Here we do the error checking to see if we got ourself stuck last frame
 			if (CheckPointInSphere(polyIPoint, source, 1.0f)) 
 			{
-				cl.bStuck = TRUE;
+				cl.bStuck = true;
 			}
 			
 			// Ok, now we might update the collision data if we hit something
 			if ((distToEllipsoidIntersection >= 0) && (distToEllipsoidIntersection <= distanceToTravel)) 
 			{ 
-				if ((cl.bFoundCollision == FALSE) || (distToEllipsoidIntersection < cl.fNearestDistance))  
+				if ((cl.bFoundCollision == false) || (distToEllipsoidIntersection < cl.fNearestDistance))  
 				{
 					// if we are hit we have a closest hit so far. We save the information
 					cl.fNearestDistance = distToEllipsoidIntersection;
 					cl.vNearestIntersectionPoint.set(sIPoint);
 					cl.vNearestPolygonIntersectionPoint.set(polyIPoint);
-					cl.bFoundCollision = TRUE;
+					cl.bFoundCollision = true;
 				}
 			} 
 		} // if not backface
@@ -382,15 +382,15 @@ Fvector msimulator_CollideWithWorld(SCollisionData& cl, Fvector position, Fvecto
 	// reset the collision package we send to the mesh 
 	cl.vVelocity.set	(velocity);
 	cl.vSourcePoint.set	(position);
-	cl.bFoundCollision	= FALSE;
-	cl.bStuck			= FALSE;
+	cl.bFoundCollision	= false;
+	cl.bStuck			= false;
 	cl.fNearestDistance	= -1;	
 	
 	// Check collision
 	msimulator_CheckCollision	(cl);	
 	
 	// check return value here, and possibly call recursively 	
-	if (cl.bFoundCollision == FALSE  && !cl.bStuck)
+	if (cl.bFoundCollision == false  && !cl.bStuck)
 	{ 
 		// if no collision move very close to the desired destination. 
 		float l = velocity.magnitude();

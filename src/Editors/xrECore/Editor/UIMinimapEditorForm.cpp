@@ -177,7 +177,7 @@ void UIMinimapEditorForm::RenderCanvas()
 
 		int resize_off = 5;
 		int resize_mode = 0;
-		bool resize_or = 0;
+		bool resize_or = false;
 
 		if (inside)
 		{
@@ -194,22 +194,22 @@ void UIMinimapEditorForm::RenderCanvas()
 				if (ckCursorZone(image_min.x, (image_min.x + resize_off), (image_min.y+resize_off), (image_max.y - resize_off)))
 				{
 					resize_mode = 1;
-					resize_or = 0;
+					resize_or = false;
 				}
 				else if (ckCursorZone((image_max.x - resize_off), image_max.x, (image_min.y + resize_off), (image_max.y - resize_off)))
 				{
 					resize_mode = 1;
-					resize_or = 1;
+					resize_or = true;
 				}
 				else if (ckCursorZone(image_min.x+resize_off, image_max.x-resize_off, image_min.y, image_min.y+resize_off))
 				{
 					resize_mode = 2;
-					resize_or = 0;
+					resize_or = false;
 				}
 				else if (ckCursorZone(image_min.x + resize_off, image_max.x - resize_off, image_max.y-resize_off, image_max.y))
 				{
 					resize_mode = 2;
-					resize_or = 1;
+					resize_or = true;
 				}
 
 				if (resize_mode != 0)
@@ -460,7 +460,7 @@ void UIMinimapEditorForm::RenderBoundCanvas()
 
 	int resize_off = 5;
 	int resize_mode = 0;
-	bool resize_or = 0;
+	bool resize_or = false;
 
 	auto ckCursorZone = [](float x1, float x2, float y1, float y2)
 		{
@@ -475,22 +475,22 @@ void UIMinimapEditorForm::RenderBoundCanvas()
 		if (ckCursorZone(image_min.x- resize_off, (image_min.x + resize_off), (image_min.y + resize_off), (image_max.y - resize_off)))
 		{
 			resize_mode = 1;
-			resize_or = 0;
+			resize_or = false;
 		}
 		else if (ckCursorZone((image_max.x - resize_off), image_max.x+ resize_off, (image_min.y + resize_off), (image_max.y - resize_off)))
 		{
 			resize_mode = 1;
-			resize_or = 1;
+			resize_or = true;
 		}
 		else if (ckCursorZone(image_min.x + resize_off, image_max.x - resize_off, image_min.y- resize_off, image_min.y + resize_off))
 		{
 			resize_mode = 2;
-			resize_or = 0;
+			resize_or = false;
 		}
 		else if (ckCursorZone(image_min.x + resize_off, image_max.x - resize_off, image_max.y - resize_off, image_max.y+ resize_off))
 		{
 			resize_mode = 2;
-			resize_or = 1;
+			resize_or = true;
 		}
 
 		if (resize_mode != 0 && !BoundEditMode && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
@@ -711,7 +711,7 @@ void UIMinimapEditorForm::CreateElementPopup()
 			el_new.position = ImVec2(0, 0);
 			el_new.name = CreatingData.name;
 			el_new.TexturePath = CreatingData.TexturePath;
-			el_new.Texture = 0/*nullptr*/;
+			el_new.Texture = nullptr/*nullptr*/;
 
 			string_path p;
 			if (!el_new.TexturePath.empty())
@@ -843,7 +843,7 @@ void UIMinimapEditorForm::ShowMenu()
 
 			if (FS.exist(levelLtx))
 			{
-				CInifile levelLtxFile(levelLtx, FALSE, TRUE, 1);
+				CInifile levelLtxFile(levelLtx, false, true, true);
 
 				levelLtxFile.remove_line("level_map", "bound_rect");
 				levelLtxFile.w_fvector4("level_map", "bound_rect", m_Bound);
@@ -940,7 +940,7 @@ void UIMinimapEditorForm::ShowMenu()
 
 			if (FS.exist(levelLtx))
 			{
-				CInifile levelLtxFile(levelLtx, TRUE);
+				CInifile levelLtxFile(levelLtx, true);
 
 				if (levelLtxFile.line_exist("level_map", "bound_rect")) 
 				{
@@ -955,7 +955,7 @@ void UIMinimapEditorForm::ShowMenu()
 void UIMinimapEditorForm::OpenFile()
 {
 	xr_string fn;
-	if (!EFS.GetOpenName("$game_config$", fn, false, NULL, 0, "*.ltx"))
+	if (!EFS.GetOpenName("$game_config$", fn, false, nullptr, 0, "*.ltx"))
 	{
 		return;
 	}
@@ -973,7 +973,7 @@ bool UIMinimapEditorForm::GetTextureFromLevelLtx(const xr_string level_name, xr_
 	if (!FS.exist(levelLtx))
 		return false;
 
-	CInifile levelLtxFile(levelLtx, TRUE);
+	CInifile levelLtxFile(levelLtx, true);
 
 	if (!levelLtxFile.line_exist("level_map", "texture"))
 		return false;
@@ -990,7 +990,7 @@ void UIMinimapEditorForm::ReloadMapInfo(const xr_string& fn)
 
 	FS.TryLoad(fn.c_str());
 
-	xr_unique_ptr<CInifile> ltxFile = xr_make_unique<CInifile>(fn.c_str(), TRUE);
+	xr_unique_ptr<CInifile> ltxFile = xr_make_unique<CInifile>(fn.c_str(), true);
 
 	if (ltxFile->section_exist("global_map"))
 	{
@@ -1058,7 +1058,7 @@ void UIMinimapEditorForm::ReloadMapInfo(const xr_string& fn)
 		bool find_result = false;
 		if (FS.exist(levelLtx))
 		{
-			CInifile levelLtxFile(levelLtx, TRUE);
+			CInifile levelLtxFile(levelLtx, true);
 
 			if (levelLtxFile.line_exist("level_map", "texture"))
 			{
@@ -1088,7 +1088,7 @@ void UIMinimapEditorForm::SaveFile(bool saveCurrent)
 	{
 		fn = ActiveFile;
 	}
-	else if (!EFS.GetSaveName("$game_data$", fn, NULL, 0, "*.ltx"))
+	else if (!EFS.GetSaveName("$game_data$", fn, nullptr, 0, "*.ltx"))
 	{
 		return;
 	}
@@ -1100,7 +1100,7 @@ void UIMinimapEditorForm::SaveFile(bool saveCurrent)
 	}
 
 	FS.TryLoad(fn.c_str());
-	auto ltxFile = new CInifile(fn.c_str(), FALSE, TRUE, 1);
+	auto ltxFile = new CInifile(fn.c_str(), false, true, true);
 
 	{
 		ltxFile->remove_line("global_map", "texture");
@@ -1247,7 +1247,7 @@ int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 	{
 		fn = texture;
 	}
-	else if (!EFS.GetOpenName("$game_textures$", fn, false, NULL, 0, "*.dds; *.tga"))
+	else if (!EFS.GetOpenName("$game_textures$", fn, false, nullptr, 0, "*.dds; *.tga"))
 	{
 		return 1;
 	}
@@ -1276,11 +1276,11 @@ int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 
 	ID3DTexture2D* pTexture = nullptr;
 	{
-		R_CHK(REDevice->CreateTexture(W, H, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, 0));
+		R_CHK(REDevice->CreateTexture(W, H, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr));
 		el.Texture = pTexture;
 		{
 			D3DLOCKED_RECT rect;
-			R_CHK(pTexture->LockRect(0, &rect, 0, D3DLOCK_DISCARD));
+			R_CHK(pTexture->LockRect(0, &rect, nullptr, D3DLOCK_DISCARD));
 			for (int i = 0; i < H; i++)
 			{
 
@@ -1303,7 +1303,7 @@ void UIMinimapEditorForm::LoadBGClick(const xr_string texture)
 	{
 		fn = texture;
 	}
-	else if (!EFS.GetOpenName("$game_textures$", fn, false, NULL, 0, "*.dds"))
+	else if (!EFS.GetOpenName("$game_textures$", fn, false, nullptr, 0, "*.dds"))
 	{
 		return;
 	}
@@ -1334,12 +1334,12 @@ void UIMinimapEditorForm::LoadBGClick(const xr_string texture)
 		m_TextureRemove = m_BackgroundTexture;
 		ID3DTexture2D* pTexture = nullptr;
 		{
-			R_CHK(REDevice->CreateTexture(m_ImageW, m_ImageH, 1, 0, D3DFMT_X8R8G8B8, D3DPOOL_MANAGED, &pTexture, 0));
+			R_CHK(REDevice->CreateTexture(m_ImageW, m_ImageH, 1, 0, D3DFMT_X8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr));
 			m_BackgroundTexture = pTexture;
 
 			{
 				D3DLOCKED_RECT rect;
-				R_CHK(pTexture->LockRect(0, &rect, 0, D3DLOCK_DISCARD));
+				R_CHK(pTexture->LockRect(0, &rect, nullptr, D3DLOCK_DISCARD));
 				for (int i = 0; i < m_ImageH; i++)
 				{
 

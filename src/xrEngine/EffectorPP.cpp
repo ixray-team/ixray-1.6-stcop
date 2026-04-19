@@ -23,5 +23,5 @@ CEffectorPP::~CEffectorPP() {}
 bool CEffectorPP::Process(SPPInfo &PPInfo) 
 {
 	fLifeTime -= Device.fTimeDelta;
-	return TRUE;
+	return true;
 }

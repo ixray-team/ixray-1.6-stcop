@@ -42,7 +42,7 @@ xr_token ECORE_API eo_type_token[]={
 	{ "HOM",					CEditableObject::eoHOM},
 	{ "Multiple Usage",			CEditableObject::eoMultipleUsage|CEditableObject::eoUsingLOD},
 	{ "Sound Occluder",			CEditableObject::eoSoundOccluder},
-	{ 0,						0}
+	{ nullptr,						0}
 };
 
 void CEditableObject::FillBasicProps(const char* pref, PropItemVec& items)
@@ -51,7 +51,7 @@ void CEditableObject::FillBasicProps(const char* pref, PropItemVec& items)
     _Trim(ct);
     xr_string mt(_ctime32(&m_ModifTime));
     _Trim(mt);
-	PropValue* V=0;
+	PropValue* V=nullptr;
 	PHelper().CreateCaption		(items, PrepareKey(pref,"Reference Name"),		m_LibName.c_str());
     PHelper().CreateToken32		(items, PrepareKey(pref,"Object Type"),   		&m_objectFlags.flags,		eo_type_token);
 	PHelper().CreateCaption		(items, PrepareKey(pref,"Version\\Owner Name"),	m_CreateName.c_str());

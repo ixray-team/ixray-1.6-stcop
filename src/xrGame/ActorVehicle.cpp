@@ -62,8 +62,8 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 	// temp play animation
 	u16 anim_type = car->DriverAnimationType();
 	SVehicleAnimCollection& anims = m_vehicle_anims->m_vehicles_type_collections[anim_type];
-	V->PlayCycle(anims.idles[0], FALSE);
-	V->PlayCycle(anims.idles[1], FALSE);
+	V->PlayCycle(anims.idles[0], false);
+	V->PlayCycle(anims.idles[1], false);
 
 	ResetCallbacks();
 	u16 head_bone = pK->LL_BoneID("bip01_head");

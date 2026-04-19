@@ -145,7 +145,7 @@ struct ENGINE_API STextureParams
 		construct_shared_str(bump_name);
 		construct_shared_str(ext_normal_map_name);
 
-		flags.set			(flGenerateMipMaps|flDitherColor,TRUE);
+		flags.set			(flGenerateMipMaps|flDitherColor,true);
 		mip_filter			= kMIPFilterBox;
 		width				= 0;
 		height				= 0;

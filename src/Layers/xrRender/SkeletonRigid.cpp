@@ -166,7 +166,7 @@ void CKinematics::BoneChain_Calculate(const CBoneData* bd, CBoneInstance &bi, u8
 	BoneCallback bc = bi.callback();
 	bool ow = bi.callback_overwrite();
 	if(ignore_callbacks)
-		bi.set_callback( bi.callback_type(), 0, bi.callback_param(), 0 );
+		bi.set_callback( bi.callback_type(), nullptr, bi.callback_param(), false );
 
 	if(SelfID==LL_GetBoneRoot())
 	{

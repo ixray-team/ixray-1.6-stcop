@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #ifdef DEBUG_DRAW
-ECORE_API bool bDebug = FALSE;
+ECORE_API bool bDebug = false;
 #endif
 
 // Video

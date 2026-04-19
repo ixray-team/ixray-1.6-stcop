@@ -144,7 +144,7 @@ IC void CBlend::update_play( float dt, PlayCallback _Callback )
 	if ( _Callback &&  stop_at_end_callback )	
 		_Callback( this );		// callback only once
 
-	stop_at_end_callback		= FALSE;
+	stop_at_end_callback		= false;
 
 	if( fall_at_end )
 	{

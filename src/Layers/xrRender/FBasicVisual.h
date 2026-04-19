@@ -29,7 +29,7 @@ struct IRender_Mesh
 	u32							iCount;
 	u32							dwPrimitives;
 
-	IRender_Mesh				()				{ p_rm_Vertices=0; p_rm_Indices=0;						}
+	IRender_Mesh				()				{ p_rm_Vertices=nullptr; p_rm_Indices=nullptr;						}
 	virtual ~IRender_Mesh		();
 private:
 	IRender_Mesh				(const IRender_Mesh& other);

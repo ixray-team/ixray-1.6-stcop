@@ -116,16 +116,16 @@ int ProcessDifference()
 	sscanf					(strstr(params,"-out ")+5,"%[^ ] ",target_folder);
 
 	if(strstr(params,"-nofileage")){
-		_flags.set(file_comparer::eDontCheckFileAge, TRUE);
+		_flags.set(file_comparer::eDontCheckFileAge, true);
 	};
 	if(strstr(params,"-nocrc")){
-		_flags.set(file_comparer::eDontCheckCRC, TRUE);
+		_flags.set(file_comparer::eDontCheckCRC, true);
 	};
 	if(strstr(params,"-nobinary")){
-		_flags.set(file_comparer::eDontCheckBinary, TRUE);
+		_flags.set(file_comparer::eDontCheckBinary, true);
 	};
 	if(strstr(params,"-nosize")){
-		_flags.set(file_comparer::eDontCheckFileSize, TRUE);
+		_flags.set(file_comparer::eDontCheckFileSize, true);
 	};
 
 	FS_new = new CLocatorAPI	();

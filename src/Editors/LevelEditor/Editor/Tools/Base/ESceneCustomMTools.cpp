@@ -29,7 +29,7 @@ void ESceneToolBase::Clear(bool bSpecific)
 void ESceneToolBase::Reset()
 {
 	Clear				();
-    m_EditFlags.set		(flReadonly,FALSE);
+    m_EditFlags.set		(flReadonly,false);
 }
  
 void ESceneToolBase::OnCreate()

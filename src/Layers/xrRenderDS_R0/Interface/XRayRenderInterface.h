@@ -63,7 +63,7 @@ public:
 
 	virtual IRenderVisual* model_Duplicate(IRenderVisual* V);
 
-	virtual void model_Delete(IRenderVisual*& V, bool bDiscard = FALSE);
+	virtual void model_Delete(IRenderVisual*& V, bool bDiscard = false);
 	virtual void models_Prefetch();
 	virtual void models_Clear(bool b_complete);
 

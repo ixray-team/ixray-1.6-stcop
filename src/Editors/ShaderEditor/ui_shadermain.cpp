@@ -24,40 +24,40 @@ CCommandVar CShaderTool::CommandSave(CCommandVar p1, CCommandVar p2)
 {
     Save			(0,0);
     ExecCommand		(COMMAND_UPDATE_CAPTION);
-    return TRUE;
+    return true;
 }
 CCommandVar CShaderTool::CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 {
     ExecCommand		(COMMAND_SAVE);
-    return TRUE;
+    return true;
 }
 CCommandVar CShaderTool::CommandReload(CCommandVar p1, CCommandVar p2)
 {
     Reload			();
     ExecCommand		(COMMAND_UPDATE_CAPTION);
-    return TRUE;
+    return true;
 }
 CCommandVar CShaderTool::CommandClear(CCommandVar p1, CCommandVar p2)
 {
     UI->CurrentView().m_Camera.Reset();
     ExecCommand		(COMMAND_UPDATE_CAPTION);
-    return TRUE;
+    return true;
 }
 CCommandVar CShaderTool::CommandUpdateList(CCommandVar p1, CCommandVar p2)
 {
 	UpdateList		();
-    return TRUE;
+    return true;
 }
 
 CCommandVar CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
 {
     //fraLeftBar->UpdateBar();
-    return TRUE;
+    return true;
 }
 CCommandVar CommandUpdateCaption(CCommandVar p1, CCommandVar p2)
 {
     //frmMain->UpdateCaption();
-    return TRUE;
+    return true;
 }
 
 void CShaderMain::RegisterCommands()

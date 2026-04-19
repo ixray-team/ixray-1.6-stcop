@@ -26,7 +26,7 @@
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= nullptr;
 ENGINE_API bool g_dedicated_server  = false;
-bool	g_bIntroFinished			= FALSE;
+bool	g_bIntroFinished			= false;
 extern	void	Intro				( void* fn );
 extern	void	Intro_DSHOW			( void* fn );
 //int		max_load_stage = 0;
@@ -131,7 +131,7 @@ void InitSettings	()
 #ifdef DEBUG
 	Msg							("Updated path to system.ltx is %s", fname);
 #endif // #ifdef DEBUG
-	pSettings					= new CInifile	(fname,TRUE);
+	pSettings					= new CInifile	(fname,true);
 	CHECK_OR_EXIT				(0!=pSettings->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
 
 	xr_auth_strings_t			tmp_ignore_pathes;
@@ -143,7 +143,7 @@ void InitSettings	()
 	tmp_functor.bind(&tmp_excluder, &path_excluder_predicate::is_allow_include);
 
 	FS.update_path				(fname,_game_config_,"game.ltx");
-	pGameIni					= new CInifile	(fname,TRUE);
+	pGameIni					= new CInifile	(fname,true);
 	CHECK_OR_EXIT				(0!=pGameIni->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
 }
 
@@ -302,14 +302,14 @@ struct damn_keys_filter {
 	{
 		// Screen saver stuff
 
-		bScreenSaverState = FALSE;
+		bScreenSaverState = false;
 
 		// Saveing current state
 		SystemParametersInfo( SPI_GETSCREENSAVEACTIVE , 0 , ( PVOID ) &bScreenSaverState , 0 );
 
 		if ( bScreenSaverState )
 			// Disable screensaver
-			SystemParametersInfo( SPI_SETSCREENSAVEACTIVE , FALSE , nullptr , 0 );
+			SystemParametersInfo( SPI_SETSCREENSAVEACTIVE , false , nullptr , 0 );
 
 		dwStickyKeysFlags = 0;
 		dwFilterKeysFlags = 0;
@@ -355,7 +355,7 @@ struct damn_keys_filter {
 	{
 		if ( bScreenSaverState )
 			// Restoring screen saver
-			SystemParametersInfo( SPI_SETSCREENSAVEACTIVE , TRUE , nullptr , 0 );
+			SystemParametersInfo( SPI_SETSCREENSAVEACTIVE , true , nullptr , 0 );
 
 		if ( dwStickyKeysFlags) {
 			// Restore StickyKeys feature
@@ -387,7 +387,7 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 {
 	PROF_EVENT("EngineLoadStage1");
 	// AVI
-	g_bIntroFinished = TRUE;
+	g_bIntroFinished = true;
 
 	g_sLaunchOnExit_app[0] = 0;
 	g_sLaunchOnExit_params[0] = 0;
@@ -401,7 +401,7 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 	}
 
 	compute_build_id			();
-	Core._initialize			("IXRay",nullptr, TRUE, fsgame[0] ? fsgame : nullptr);
+	Core._initialize			("IXRay",nullptr, true, fsgame[0] ? fsgame : nullptr);
 
 	InitSettings				();
 

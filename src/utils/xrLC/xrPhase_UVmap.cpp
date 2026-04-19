@@ -82,7 +82,7 @@ void CBuild::xrPhase_UVmap()
 		if (!Fvl->Shader().flags.bRendering) 	continue;	// do-not touch (skip)
 		if (Fvl->hasImplicitLighting())			continue;	// do-not touch (skip)
 
-		while (TRUE)
+		while (true)
 		{
 			// Сортировка списка в перед с больщими зонами.
 			std::sort(g_XSplit[SP]->begin(), g_XSplit[SP]->end(), sort_faces);

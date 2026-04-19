@@ -48,7 +48,7 @@ public:
 	using archives_it = archives_vec::iterator;
 
     archives_vec				m_archives;
-	void						LoadArchive		(archive& A, const char* entrypoint=NULL);
+	void						LoadArchive		(archive& A, const char* entrypoint= nullptr);
 
 	PathMap						pathes;
 
@@ -183,9 +183,9 @@ public:
     bool						can_modify_file		(const char* path, const char* name);
 
     bool 						dir_delete			(const char* path,const char* nm,bool remove_files);
-    bool 						dir_delete			(const char* full_path,bool remove_files){return dir_delete(0,full_path,remove_files);}
+    bool 						dir_delete			(const char* full_path,bool remove_files){return dir_delete(nullptr,full_path,remove_files);}
     void 						file_delete			(const char* path,const char* nm);
-    void 						file_delete			(const char* full_path){file_delete(0,full_path);}
+    void 						file_delete			(const char* full_path){file_delete(nullptr,full_path);}
 	void 						file_copy			(const char* src, const char* dest);
 	void 						file_rename			(const char* src, const char* dest,bool bOwerwrite=true);
     int							file_length			(const char* src);
@@ -203,7 +203,7 @@ public:
     const char*						update_path			(string_path& dest, const char* initial, const char* src);
 	const char*						update_path			(xr_stack_string_path& dest, const char* initial, const char* src);
 
-	int							file_list			(FS_FileSet& dest, const char* path, u32 flags=FS_ListFiles, const char* mask=0);
+	int							file_list			(FS_FileSet& dest, const char* path, u32 flags=FS_ListFiles, const char* mask=nullptr);
 
 	bool						load_all_unloaded_archives();
 	void						unload_archive		(archive& A);

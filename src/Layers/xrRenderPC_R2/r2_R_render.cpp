@@ -170,7 +170,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 									CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
 									if(pKin)
 									{
-										pKin->CalculateBones(TRUE);
+										pKin->CalculateBones(true);
 										pKin->CalculateWallmarks();
 										//dbg_text_renderer(spatial->spatial.sphere.P);
 									}
@@ -228,7 +228,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 										CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
 										if(pKin)
 										{
-											pKin->CalculateBones(TRUE);
+											pKin->CalculateBones(true);
 											pKin->CalculateWallmarks();
 											//dbg_text_renderer(spatial->spatial.sphere.P);
 										}
@@ -279,7 +279,7 @@ void CRender::render_menu	()
 {
 	//	Globals
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-	RCache.set_Stencil				(FALSE);
+	RCache.set_Stencil				(false);
 	RCache.set_ColorWriteEnable		();
 
 	// Main Render
@@ -369,7 +369,7 @@ void CRender::Render()
 //.	VERIFY					(g_pGameLevel && g_pGameLevel->pHUD);
 
 	// Configure
-	RImplementation.o.distortion				= FALSE;		// disable distorion
+	RImplementation.o.distortion				= false;		// disable distorion
 	Fcolor					sun_color			= ((light*)Lights.sun_adapted._get())->color;
 	bool					bSUN				= !o.sunstatic && (u_diffuse2s(sun_color.r,sun_color.g,sun_color.b)>EPS);
 	// Msg						("sstatic: %s, sun: %s",o.sunstatic?"true":"false", bSUN?"true":"false");
@@ -393,7 +393,7 @@ void CRender::Render()
 
 		// flush
 		Target->phase_scene_prepare					();
-		RCache.set_ColorWriteEnable					(FALSE);
+		RCache.set_ColorWriteEnable					(false);
 		r_dsgraph_render_graph						(0);
 		RCache.set_ColorWriteEnable					( );
 	} else {
@@ -410,8 +410,8 @@ void CRender::Render()
 	r_pmask										(true,false);	// disable priority "1"
 	Device.Statistic->RenderCALC.End			();
 
-	BOOL	split_the_scene_to_minimize_wait		= FALSE;
-	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
+	bool	split_the_scene_to_minimize_wait		= false;
+	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=true;
 
 	//******* Main render :: PART-0	-- first
 	if (!split_the_scene_to_minimize_wait)
@@ -545,13 +545,13 @@ void CRender::Render()
 		RCache.set_xform_project(Device.mProject);
 		RCache.set_xform_view(Device.mView);
 		// Stencil - write 0x1 at pixel pos - 
-		RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+		RCache.set_Stencil(true, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 		RCache.set_ColorWriteEnable();
 		RImplementation.r_dsgraph_render_emissive();
 
 		// Stencil	- draw only where stencil >= 0x1
-		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 		RCache.set_ColorWriteEnable();
 	}
@@ -590,5 +590,5 @@ void CRender::render_forward				()
 		g_pGamePersistent->Environment().RenderLast()	;					// rain/thunder-bolts
 	}
 
-	RImplementation.o.distortion				= FALSE;				// disable distorion
+	RImplementation.o.distortion				= false;				// disable distorion
 }

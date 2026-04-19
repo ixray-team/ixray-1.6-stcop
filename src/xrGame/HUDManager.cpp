@@ -99,10 +99,10 @@ void CHUDManager::Render_First()
 	}
 
 	// only shadow 
-	::Render->set_Invisible			(TRUE);
+	::Render->set_Invisible			(true);
 	::Render->set_Object			(O->H_Root());
 	O->renderable_Render			();
-	::Render->set_Invisible			(FALSE);
+	::Render->set_Invisible			(false);
 }
 
 bool need_render_hud()
@@ -136,10 +136,10 @@ void CHUDManager::Render_Last()
 
 	CObject*	O					= g_pGameLevel->CurrentViewEntity();
 	// hud itself
-	::Render->set_HUD				(TRUE);
+	::Render->set_HUD				(true);
 	::Render->set_Object			(O->H_Root());
 	O->OnHUDDraw					(this);
-	::Render->set_HUD				(FALSE);
+	::Render->set_HUD				(false);
 }
 
 #include "player_hud.h"

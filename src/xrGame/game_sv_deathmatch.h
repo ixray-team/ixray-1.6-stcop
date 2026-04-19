@@ -128,7 +128,7 @@ public:
 	virtual		void				OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P); //игрок получил Hit
 	virtual		void				OnPlayerHitPlayer_Case	(game_PlayerState* ps_hitter, game_PlayerState* ps_hitted, SHit* pHitS);	
 
-	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = FALSE);
+	virtual		bool				OnTouch					(u16 eid_who, u16 eid_what, bool bForced = false);
 	virtual		void				OnDetach				(u16 eid_who, u16 eid_what);
 
 	virtual		bool				OnPreCreate				(CSE_Abstract* E);
@@ -193,7 +193,7 @@ public:
 				int					GetTeamScore			(u32 idx);
 				void				SetTeamScore			(u32 idx, int val);
 				game_PlayerState*	GetWinningPlayer		();
-	virtual		bool				CanHaveFriendlyFire		()	{return FALSE;}
+	virtual		bool				CanHaveFriendlyFire		()	{return false;}
 	virtual		void				RespawnPlayer			(ClientID id_who, bool NoSpectator);
 	virtual		void				check_InvinciblePlayers	();	
 	virtual		void				check_ForceRespawn		();

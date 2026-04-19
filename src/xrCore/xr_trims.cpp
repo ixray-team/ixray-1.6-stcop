@@ -32,7 +32,7 @@ const char* _SetPos (const char* src, u32 pos, char separator )
 {
 	const char*	res			= src;
 	u32		p			= 0;
-	while( (p<pos) && (0!=(res=strchr(res,separator))) )
+	while( (p<pos) && (nullptr!=(res=strchr(res,separator))) )
 	{
 		res		++;
 		p		++;
@@ -57,7 +57,7 @@ int	_GetItemCount ( const char* src, char separator )
 	if (src&&src[0]){
 		const char*	res			= src;
 		const char*	last_res	= res;
-		while( 0!=(res=strchr(res,separator)) )
+		while( nullptr!=(res=strchr(res,separator)) )
 		{
 			res		++;
 			last_res=res;
@@ -170,7 +170,7 @@ void _SequenceToList(LPSTRVec& lst, const char* in, char separator)
 	int t_cnt=_GetItemCount(in,separator);
 	string1024 T;
 	for (int i=0; i<t_cnt; i++){
-		_GetItem(in,i,T,separator,0);
+		_GetItem(in,i,T,separator,nullptr);
         _Trim(T);
         if (xr_strlen(T)) lst.push_back(xr_strdup(T));
 	}
@@ -182,7 +182,7 @@ void _SequenceToList(RStringVec& lst, const char* in, char separator)
 	int t_cnt	= _GetItemCount(in,separator);
 	xr_string	T;
 	for (int i=0; i<t_cnt; i++){
-		_GetItem(in,i,T,separator,0);
+		_GetItem(in,i,T,separator,nullptr);
         _Trim	(T);
         if (T.size()) lst.push_back(T.c_str());
 	}
@@ -195,7 +195,7 @@ void _SequenceToList(SStringVec& lst, const char* in, char separator)
 	xr_string	T;
 
 	for (int i = 0; i < t_cnt; i++) {
-		_GetItem(in, i, T, separator, 0);
+		_GetItem(in, i, T, separator, nullptr);
 		_Trim(T);
 		if (T.size()) lst.push_back(T);
 	}

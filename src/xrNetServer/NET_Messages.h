@@ -13,8 +13,8 @@
 
 #define	DPNSEND_IMMEDIATELLY 0x0100
 
-IC u32	net_flags	(bool bReliable=FALSE, bool bSequental=TRUE, bool bHighPriority=FALSE, 
-					 bool bSendImmediatelly = FALSE)
+IC u32	net_flags	(bool bReliable=false, bool bSequental=true, bool bHighPriority=false, 
+					 bool bSendImmediatelly = false)
 {
 	return 
 		(bReliable?DPNSEND_GUARANTEED:DPNSEND_NOCOMPLETE) | 

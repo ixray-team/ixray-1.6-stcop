@@ -11,7 +11,7 @@ CDelayedActionFuse::CDelayedActionFuse()
 void CDelayedActionFuse::SetTimer(float current_condition)
 {
 	VERIFY(isInitialized()&&!isActive());
-	m_dafflags.set(flActive,TRUE);
+	m_dafflags.set(flActive,true);
 	ChangeCondition(m_fSpeedChangeCondition-current_condition);
 	VERIFY(!fis_zero(m_fTime)||m_dafflags.test(flNoConditionChange));
 	if(!m_dafflags.test(flNoConditionChange))m_fSpeedChangeCondition/=m_fTime;
@@ -41,8 +41,8 @@ void CDelayedActionFuse::Initialize(float time,float critical_condition)
 		m_fSpeedChangeCondition=0.f;
 		m_fTime=0.f;
 	}
-	if(fis_zero(m_fSpeedChangeCondition))m_dafflags.set(flNoConditionChange,TRUE);
-	m_dafflags.set(flInitialized,TRUE);
+	if(fis_zero(m_fSpeedChangeCondition))m_dafflags.set(flNoConditionChange,true);
+	m_dafflags.set(flInitialized,true);
 }
 bool CDelayedActionFuse::Update(float current_condition)
 {
@@ -67,8 +67,8 @@ bool CDelayedActionFuse::Update(float current_condition)
 
 	if(ret)
 	{
-		m_dafflags.set(flActive,FALSE);
-		m_dafflags.set(flInitialized,FALSE);
+		m_dafflags.set(flActive,false);
+		m_dafflags.set(flInitialized,false);
 	}
 	return ret;
 }

@@ -4,7 +4,7 @@
 #ifdef IXR_WINDOWS
 XRCORE_API void vminfo(size_t* _free, size_t* reserved, size_t* committed) {
 	MEMORY_BASIC_INFORMATION memory_info;
-	memory_info.BaseAddress = 0;
+	memory_info.BaseAddress = nullptr;
 	*_free = *reserved = *committed = 0;
 	while (VirtualQuery(memory_info.BaseAddress, &memory_info, sizeof(memory_info))) {
 		switch (memory_info.State) {
@@ -44,7 +44,7 @@ int heap_walk(
 	int errflag;
 	int retval = _HEAPOK;
 
-	if (Entry->lpData == NULL) {
+	if (Entry->lpData == nullptr) {
 		if (!HeapWalk(heap_handle, Entry)) {
 			if (GetLastError() == ERROR_CALL_NOT_IMPLEMENTED) {
 				_doserrno = ERROR_CALL_NOT_IMPLEMENTED;

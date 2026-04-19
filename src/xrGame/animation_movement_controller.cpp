@@ -10,7 +10,7 @@
 
 void	DBG_DrawBones( const Fmatrix &xform,  IKinematics *K );
 #ifdef	 DEBUG
-bool	dbg_draw_animation_movement_controller  = FALSE;
+bool	dbg_draw_animation_movement_controller  = false;
 u16		dbg_frame_count = 0;
 #endif
 
@@ -38,7 +38,7 @@ animation_movement_controller::animation_movement_controller(Fmatrix* _pObjXForm
 	if (dbg_draw_animation_movement_controller)
 	{
 		m_pKinematicsC->CalculateBones_Invalidate();
-		m_pKinematicsC->CalculateBones(TRUE);
+		m_pKinematicsC->CalculateBones(true);
 		DBG_OpenCashedDraw();
 		DBG_DrawBones(*_pObjXForm, _pKinematicsC);
 		DBG_ClosedCashedDraw(50000);
@@ -46,13 +46,13 @@ animation_movement_controller::animation_movement_controller(Fmatrix* _pObjXForm
 #endif	
 	CBoneInstance& B = m_pKinematicsC->LL_GetBoneInstance(m_pKinematicsC->LL_GetBoneRoot());
 	VERIFY(!B.callback() && !B.callback_param());
-	B.set_callback(bctCustom, RootBoneCallback, this, TRUE);
+	B.set_callback(bctCustom, RootBoneCallback, this, true);
 	B.mTransform = Fidentity;
 	GetInitalPositionBlenSpeed();
 
 	m_pKinematicsA->SetBlendDestroyCallback(this);
 	m_pKinematicsC->CalculateBones_Invalidate();
-	m_pKinematicsC->CalculateBones(TRUE);
+	m_pKinematicsC->CalculateBones(true);
 	SetPosesBlending();
 #ifdef	DEBUG
 	if (dbg_draw_animation_movement_controller)
