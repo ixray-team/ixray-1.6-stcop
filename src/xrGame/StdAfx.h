@@ -14,6 +14,10 @@
 #	define	THROW3					VERIFY3
 #endif
 
+#ifdef DEBUG
+#	define LOG_ACTION
+#endif
+
 #ifndef _PP_EDITOR_
 #pragma warning(disable:4995)
 #include "../xrUI/stdafx.h"
