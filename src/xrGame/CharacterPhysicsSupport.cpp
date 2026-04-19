@@ -858,9 +858,10 @@ void CCharacterPhysicsSupport::AddActiveWeaponCollision()
 	PIItem active_weapon_item = inv_owner->inventory().ActiveItem();
 	if (!active_weapon_item)
 		return;
-	int bl = -1, br = -1, br2 = -1;
+
+	u16 bl = BI_NONE, br = BI_NONE, br2 = BI_NONE;
 	m_EntityAlife.g_WeaponBones(bl, br, br2);
-	if (br == -1)
+	if (br == BI_NONE)
 		return;
 
 	active_weapon_item->UpdateXForm();
@@ -868,20 +869,20 @@ void CCharacterPhysicsSupport::AddActiveWeaponCollision()
 	CPhysicsShell* weapon_shell = P_build_Shell(&active_weapon_item->object(), true, (BONE_P_MAP*)(0), true);
 
 	VERIFY(m_pPhysicsShell);
-	CPhysicsElement* weapon_attach_bone = m_pPhysicsShell->get_PhysicsParrentElement((u16)br);
+	CPhysicsElement* weapon_attach_bone = m_pPhysicsShell->get_PhysicsParrentElement(br);
 
-	bone_chain_disable((u16)br, weapon_attach_bone->m_SelfID, *m_pPhysicsShell->PKinematics());
-	if (bl != br && bl != -1)
+	bone_chain_disable(br, weapon_attach_bone->m_SelfID, *m_pPhysicsShell->PKinematics());
+	if (bl != br && bl != BI_NONE)
 	{
-		CPhysicsElement* p = m_pPhysicsShell->get_PhysicsParrentElement((u16)bl);
+		CPhysicsElement* p = m_pPhysicsShell->get_PhysicsParrentElement(bl);
 		VERIFY(p);
-		bone_chain_disable((u16)bl, p->m_SelfID, *m_pPhysicsShell->PKinematics());
+		bone_chain_disable(bl, p->m_SelfID, *m_pPhysicsShell->PKinematics());
 	}
-	if (br2 != bl && br2 != br && br2 != -1)
+	if (br2 != bl && br2 != br && br2 != BI_NONE)
 	{
-		CPhysicsElement* p = m_pPhysicsShell->get_PhysicsParrentElement((u16)br2);
+		CPhysicsElement* p = m_pPhysicsShell->get_PhysicsParrentElement(br2);
 		VERIFY(p);
-		bone_chain_disable((u16)br2, weapon_attach_bone->m_SelfID, *m_pPhysicsShell->PKinematics());
+		bone_chain_disable(br2, weapon_attach_bone->m_SelfID, *m_pPhysicsShell->PKinematics());
 	}
 
 	CPhysicsElement* weapon_element = weapon_shell->get_ElementByStoreOrder(0);
