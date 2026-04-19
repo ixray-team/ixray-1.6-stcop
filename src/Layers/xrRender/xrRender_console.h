@@ -130,6 +130,7 @@ extern  float					ps_r__test_exp_to_shaders_3;
 extern  float					ps_r__test_exp_to_shaders_4;
 
 extern ECORE_API float ps_r_sincity_sensitivity;
+extern bool UseGasmak;
 
 extern ECORE_API int opt_static;
 extern ECORE_API int opt_dynamic;

@@ -382,6 +382,12 @@ void CRenderTarget::phase_combine()
 		phase_cas();
 	}
 
+	extern bool UseGasmak;
+	if (UseGasmak)
+	{
+		PhaseGasmask();
+	}
+
 	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_SINCITY)) {
 		GPU_EVENT(PhaseSinCity);
 		PhaseSinCity();
