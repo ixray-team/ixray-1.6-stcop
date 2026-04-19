@@ -106,9 +106,9 @@ bool CCustomOutfit::install_upgrade_impl(const char* section, bool test)
 	return result;
 }
 
-bool CCustomOutfit::BonePassBullet(int boneID)
+bool CCustomOutfit::BonePassBullet(u16 boneID)
 {
-	return m_boneProtection->getBonePassBullet(s16(boneID));
+	return m_boneProtection->getBonePassBullet(boneID);
 }
 
 void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)

@@ -265,20 +265,22 @@ void CAI_Trader::shedule_Update	(u32 dt)
 	else Think();
 }
 
-void CAI_Trader::g_WeaponBones	(int &L, int &R1, int &R2)
+void CAI_Trader::g_WeaponBones(u16& L, u16& R1, u16& R2)
 {
-	IKinematics *V	= PKinematics(Visual());
-	R1				= V->LL_BoneID("bip01_r_hand");
-	R2				= V->LL_BoneID("bip01_r_finger2");
-	L				= V->LL_BoneID("bip01_l_finger1");
+	IKinematics* V = PKinematics(Visual());
+	R1 = V->LL_BoneID("bip01_r_hand");
+	R2 = V->LL_BoneID("bip01_r_finger2");
+	L = V->LL_BoneID("bip01_l_finger1");
 }
 
 void CAI_Trader::g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D)
 {
-	VERIFY			(inventory().ActiveItem());
-	if (g_Alive() && inventory().ActiveItem()) {
+	VERIFY(inventory().ActiveItem());
+
+	if (g_Alive() && inventory().ActiveItem())
+	{
 		Center(P);
-		D.setHP(0,0);
+		D.setHP(0.0f, 0.0f);
 		D.normalize_safe();
 	}
 }

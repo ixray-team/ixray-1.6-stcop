@@ -42,8 +42,6 @@ void CObjectHandler::reinit			(CAI_Stalker *object)
 	m_l_finger1					= kinematics->LL_BoneID(pSettings->r_string(*m_planner->GetOwner()->cNameSect(),"weapon_bone1"));
 	m_r_finger2					= kinematics->LL_BoneID(pSettings->r_string(*m_planner->GetOwner()->cNameSect(),"weapon_bone2"));
 	m_strap_object_id			= ALife::_OBJECT_ID(-1);
-	m_strap_bone0				= -1;
-	m_strap_bone1				= -1;
 	m_clutched_hammer_enabled	= false;
 }
 
@@ -143,7 +141,7 @@ bool CObjectHandler::goal_reached	()
 	return					(m_planner->GoapPlanner.IsReached());
 }
 
-void CObjectHandler::weapon_bones	(int &b0, int &b1, int &b2) const
+void CObjectHandler::weapon_bones	(u16 &b0, u16 &b1, u16 &b2) const
 {
 	CWeapon						*weapon = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : NULL;
 	if (!weapon || !m_planner->bStrapped) {
