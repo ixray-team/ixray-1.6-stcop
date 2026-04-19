@@ -185,7 +185,7 @@ void CActor::g_fireParams(const CHudItem* pHudItem, Fvector& fire_pos, Fvector& 
 	}
 }
 
-void CActor::g_WeaponBones	(int &L, int &R1, int &R2)
+void CActor::g_WeaponBones	(u16 &L, u16 &R1, u16 &R2)
 {
 	R1				= m_r_hand;
 	R2				= m_r_finger2;
@@ -412,52 +412,3 @@ Fvector CActor::weapon_recoil_last_delta()
 	return							(result);
 }
 //////////////////////////////////////////////////////////////////////////
-
-void	CActor::SpawnAmmoForWeapon	(CInventoryItem *pIItem)
-{
-	if (OnClient()) return;
-	if (!pIItem) return;
-
-	CWeaponMagazined* pWM = pIItem->cast_weapon_magazined();
-	if (!pWM || !pWM->AutoSpawnAmmo()) return;
-
-	///	CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*>(inventory().GetAny( (pWM->m_ammoTypes[0].c_str()) ));
-	//	if (!pAmmo) 
-	pWM->SpawnAmmo(0xffffffff, nullptr, ID());
-};
-
-void	CActor::RemoveAmmoForWeapon	(CInventoryItem *pIItem)
-{
-	if (OnClient()) return;
-	if (!pIItem) return;
-
-	CWeaponMagazined* pWM = pIItem->cast_weapon_magazined();
-	if (!pWM || !pWM->AutoSpawnAmmo()) return;
-
-	PIItem get_any = inventory().GetAny(pWM->m_ammoTypes[0].c_str());
-	CWeaponAmmo* pAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
-	if (!pAmmo) return;
-	//--- мы нашли патроны к текущему оружию	
-	/*
-	//--- проверяем не подходят ли они к чему-то еще
-	bool CanRemove = true;
-	TIItemContainer::const_iterator I = inventory().m_all.begin();//, B = I;
-	TIItemContainer::const_iterator E = inventory().m_all.end();
-	for ( ; I != E; ++I)
-	{
-	CInventoryItem* pItem = (*I);//->m_pIItem;
-	CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*> (pItem);
-	if (!pWM || !pWM->AutoSpawnAmmo()) continue;
-	if (pWM == pIItem) continue;
-	if (pWM->m_ammoTypes[0] != pAmmo->CInventoryItem::object().cNameSect()) continue;
-	CanRemove = false;
-	break;
-	};
-
-	if (!CanRemove) return;
-	*/
-	pAmmo->DestroyObject();
-	//	NET_Packet			P;
-	//	u_EventGen			(P,GE_DESTROY,pAmmo->ID());
-	//	u_EventSend			(P);
-};

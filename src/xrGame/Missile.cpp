@@ -567,9 +567,9 @@ void CMissile::UpdateXForm	()
 		IKinematics* V = PKinematics(E->Visual());
 
 		// Get matrices
-		int					boneL = -1, boneR = -1, boneR2 = -1;
+		u16					boneL = BI_NONE, boneR = BI_NONE, boneR2 = BI_NONE;
 		E->g_WeaponBones	(boneL,boneR,boneR2);
-		if (boneR == -1)	return;
+		if (boneR == BI_NONE)	return;
 
 
 		boneL = boneR2;

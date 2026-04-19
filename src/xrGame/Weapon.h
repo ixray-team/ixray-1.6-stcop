@@ -180,11 +180,11 @@ public:
 	bool					AutoSpawnAmmo		() const		{ return m_bAutoSpawnAmmo; };
 	bool					IsTriStateReload	() const		{ return m_bTriStateReload;}
 	EWeaponSubStates		GetReloadState		() const		{ return (EWeaponSubStates)m_sub_state;}
-	u8						m_sub_state;
+	u8						m_sub_state = eSubstateReloadBegin;
 protected:
-	bool					m_bTriStateReload;
+	bool					m_bTriStateReload = false;
 	// a misfire happens, you'll need to rearm weapon
-	bool					bMisfire;				
+	bool					bMisfire = false;
 
 	bool					m_bAutoSpawnAmmo;
 public:
@@ -222,7 +222,7 @@ public:
 
 		// Данные паттернов
 		SRecoilPattern m_hipfire_pattern;
-		SRecoilPattern* m_current_pattern;
+		SRecoilPattern* m_current_pattern = nullptr;
 
 		void LoadRecoilPatterns(const char* section);
 		void ApplyPattern();
@@ -442,7 +442,7 @@ protected:
 
 protected:
 	//состояние подключенных аддонов
-	u8 m_flagsAddOnState;
+	u8 m_flagsAddOnState = 0;
 
 	//возможность подключения различных аддонов
 	ALife::EWeaponAddonStatus	m_eScopeStatus;
@@ -469,7 +469,7 @@ protected:
 
 		bool			m_bIsZoomModeNow = false;		//когда режим приближения включен
 		bool			m_bIsAltZoomModeNow = false;		//когда режим приближения включен
-		float			m_fCurrentZoomFactor;	//текущий фактор приближения
+		float			m_fCurrentZoomFactor = g_fov;	//текущий фактор приближения
 		float			m_fZoomRotateTime;		//время приближения
 	
 		float			m_fIronSightZoomFactor;	//коэффициент увеличения прицеливания
@@ -487,11 +487,11 @@ protected:
 	} m_zoom_params;
 	
 		float			m_fRTZoomFactor; //run-time zoom factor
-		CUIStatic*		m_UIScope;
+		CUIStatic*		m_UIScope = nullptr;
 
 	InertionData	m_base_inertion;
 	InertionData	m_zoom_inertion;
-	bool m_bIAmWeaponRPG7;
+	bool m_bIAmWeaponRPG7 = false;
 	shared_str GetCurrentScopeSection() const { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) const { return m_scopes[idx]; }
 
@@ -553,26 +553,26 @@ public:
 			THudLightLaser*		GetLightLaser		();
 
 public:
-	int m_strap_bone0_id;
-	int m_strap_bone1_id;
-	bool m_strapped_mode_rifle;
+	u16 m_strap_bone0_id = BI_NONE;
+	u16 m_strap_bone1_id = BI_NONE;
+	bool m_strapped_mode_rifle = false;
 	IC		const char*			strap_bone0			() const {return m_strap_bone0;}
 	IC		const char*			strap_bone1			() const {return m_strap_bone1;}
 	IC		void			strapped_mode		(bool value) {m_strapped_mode = value;}
 	IC		bool			strapped_mode		() const {return m_strapped_mode;}
-	bool m_can_be_strapped_rifle;
+	bool m_can_be_strapped_rifle = false;
 
 protected:
-	const char*					m_strap_bone0;
-	const char*					m_strap_bone1;
+	const char*					m_strap_bone0 = nullptr;
+	const char*					m_strap_bone1 = nullptr;
 	Fmatrix					m_StrapOffset;
 	Fmatrix m_StrapOffset_alt;
-	bool					m_strapped_mode;
-	bool					m_can_be_strapped;
+	bool					m_strapped_mode = false;
+	bool					m_can_be_strapped = false;
 
 	Fmatrix					m_Offset;
 	// 0-используется без участия рук, 1-одна рука, 2-две руки
-	EHandDependence			eHandDependence;
+	EHandDependence			eHandDependence = EHandDependence::hdNone;
 	bool					m_bIsSingleHanded;
 
 public:
@@ -654,7 +654,7 @@ public:
 	CameraRecoil			zoom_cam_recoil;	// using zoom =(ironsight or scope)
 
 protected:
-	bool					useLegacyMisfire;
+	bool					useLegacyMisfire = false;
 	//фактор увеличения дисперсии при максимальной изношености 
 	//(на сколько процентов увеличится дисперсия)
 	float					fireDispersionConditionFactor;
@@ -686,7 +686,7 @@ protected:
 	};
 	SPDM					m_pdm;
 	
-	float					m_crosshair_inertion;
+	float					m_crosshair_inertion = 0.0f;
 	first_bullet_controller	m_first_bullet_controller;
 protected:
 	//для отдачи оружия
@@ -747,17 +747,17 @@ public:
 	virtual void OnChangeVisual() final override;
 
 protected:
-	int						iAmmoElapsed;		// ammo in magazine, currently
-	int						iMagazineSize;		// size (in bullets) of magazine
+	int						iAmmoElapsed = 0;		// ammo in magazine, currently
+	int						iMagazineSize = 0;		// size (in bullets) of magazine
 
-	int						iAmmoChamberElapsed;
-	int						iChamberSize;
+	int						iAmmoChamberElapsed = 0;
+	int						iChamberSize = 0;
 
 	bool					m_bAmmoInChamber;
 
 	//для подсчета в GetSuitableAmmoTotal
-	mutable int				m_iAmmoCurrentTotal;
-	mutable u32				m_BriefInfo_CalcFrame;	//кадр на котором просчитали кол-во патронов
+	mutable int				m_iAmmoCurrentTotal = 0;
+	mutable u32				m_BriefInfo_CalcFrame = 0;	//кадр на котором просчитали кол-во патронов
 	bool					m_bAmmoWasSpawned;
 
 	virtual bool			IsNecessaryItem	    (const shared_str& item_sect);
@@ -787,22 +787,22 @@ public:
 	using SCOPES_VECTOR = xr_vector<shared_str>;
 	using SCOPES_VECTOR_IT = SCOPES_VECTOR::iterator;
 
-	SCOPES_VECTOR			m_scopes;
-	u8						m_cur_scope;
+	SCOPES_VECTOR			m_scopes = {};
+	u8						m_cur_scope = 0;
 
-	CWeaponAmmo*			m_pCurrentAmmo;
-	u8						m_ammoType;
-	u8						m_ChamberAmmoType;
+	CWeaponAmmo*			m_pCurrentAmmo = nullptr;
+	u8						m_ammoType = 0;
+	u8						m_ChamberAmmoType = 0;
 //-	shared_str				m_ammoName; <== deleted
 	bool					m_bHasTracers;
 	u8						m_u8TracerColorID;
-	u8						m_set_next_ammoType_on_reload;
+	u8						m_set_next_ammoType_on_reload = undefined_ammo_type;
 	// Multitype ammo support
 	xr_vector<CCartridge>	m_magazine;
 	xr_vector<CCartridge>	m_chamber;
 	CCartridge				m_DefaultCartridge;
 	CCartridge				m_DefaultCartridgeInChamber;
-	float					m_fCurrentCartirdgeDisp;
+	float					m_fCurrentCartirdgeDisp = 1.0f;
 
 		bool				unlimited_ammo				();
 		bool				infinite_fire();
@@ -811,8 +811,8 @@ public:
 	float GetMagazineWeight(const decltype(m_magazine)& mag) const;
 
 protected:
-	u32						m_ef_main_weapon_type;
-	u32						m_ef_weapon_type;
+	u32						m_ef_main_weapon_type = u32(-1);
+	u32						m_ef_weapon_type = u32(-1);
 
 protected:
 	float					m_bullet_point_offset_hud;

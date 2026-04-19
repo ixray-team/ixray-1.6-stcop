@@ -550,8 +550,8 @@ public:
 	void					ProcessKeys(CHudItem* itm = nullptr);
 
 public:
-	virtual void						g_WeaponBones		(int &L, int &R1, int &R2);
-	virtual void						g_fireParams		(const CHudItem* pHudItem, Fvector& P, Fvector& D);
+	virtual void						g_WeaponBones		(u16 &L, u16 &R1, u16 &R2) final override;
+	virtual void						g_fireParams		(const CHudItem* pHudItem, Fvector& P, Fvector& D) final override;
 	virtual bool						g_stateFire			() {return ! ((mstate_wishful & mcLookout) && !IsGameTypeSingle() );}
 
 	virtual bool						g_State				(SEntityState& state) const;
@@ -596,18 +596,18 @@ protected:
 
 protected:
 	//косточки используемые при стрельбе
-	int									m_r_hand;
-	int									m_l_finger1;
-    int									m_r_finger2;
-	int									m_eye_left;
-	int									m_eye_right;
+	u16									m_r_hand = BI_NONE;
+	u16									m_l_finger1 = BI_NONE;
+    u16									m_r_finger2 = BI_NONE;
+	u16									m_eye_left = BI_NONE;
+	u16									m_eye_right = BI_NONE;
 
-	int									m_l_clavicle;
-	int									m_r_clavicle;
-	int									m_spine2;
-	int									m_spine1;
-	int									m_spine;
-	int									m_neck;
+	u16									m_l_clavicle = BI_NONE;
+	u16									m_r_clavicle = BI_NONE;
+	u16									m_spine2 = BI_NONE;
+	u16									m_spine1 = BI_NONE;
+	u16									m_spine = BI_NONE;
+	u16									m_neck = BI_NONE;
 
 
 
@@ -717,8 +717,6 @@ public:
 //	virtual void			UpdatePosStack	( u32 Time0, u32 Time1 );
 	virtual void			MoveActor		(Fvector NewPos, Fvector NewDir);
 
-	virtual void			SpawnAmmoForWeapon		(CInventoryItem *pIItem);
-	virtual void			RemoveAmmoForWeapon		(CInventoryItem *pIItem);
 	virtual	void			spawn_supplies			();
 	virtual bool			human_being				() const
 	{
@@ -851,7 +849,7 @@ public:
 	IC float					HitProbability					() {return m_hit_probability;}
 	virtual	CVisualMemoryManager*visual_memory					() const;
 
-	virtual	bool				BonePassBullet					(int boneID);
+	virtual	bool				BonePassBullet					(u16 boneID) final override;
 	virtual	void				On_B_NotCurrentEntity			();
 
 private:
