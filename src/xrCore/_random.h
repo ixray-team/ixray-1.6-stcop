@@ -11,7 +11,7 @@ public:
 	ICF 	void	seed	(s32 val)					{ holdrand=val;	}
 	ICF 	s32		maxI	()							{ return 32767;	}
 
-    ICN	s32		randI	()							{ return(((holdrand = holdrand * 214013L + 2531011L) >> 16) & 0x7fff); }
+    ICF	    s32		randI	()							{ return(((holdrand = holdrand * 214013L + 2531011L) >> 16) & 0x7fff); }
 	ICF 	s32		randI	(size_t max)				{ VERIFY(max);  return randI()% s32(max); }
 	ICF 	s32		randI	(s32 min, s32 max)			{ return min+randI(max-min); }
 	ICF 	s32		randIs	(s32 range)					{ return randI(-range,range); }

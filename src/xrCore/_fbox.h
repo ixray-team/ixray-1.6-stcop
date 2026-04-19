@@ -113,12 +113,7 @@ public:
 	ICF	void		getradius	(Tvector& R )	const 	{ getsize(R); R.mul(0.5f); };
 	ICF	T			getradius	()				const 	{ Tvector R; getradius(R); return R.magnitude();	};
 	ICF	T			getvolume	()				const	{ Tvector sz; getsize(sz); return sz.x*sz.y*sz.z;	};
-	ICF	SelfCRef	getcenter	(Tvector& C )	const 	{
-		C.x = (min.x + max.x) * 0.5f;
-		C.y = (min.y + max.y) * 0.5f;
-		C.z = (min.z + max.z) * 0.5f;
-		return				*this;
-	};
+	ICF	SelfCRef	getcenter	(Tvector& C )	const 	{ C = (min + max) * 0.5f; return *this; };
 	ICF	SelfCRef	get_CD		(Tvector& bc, Tvector& bd)	const // center + dimensions
 	{
 		bd.sub				(max,min).mul(.5f);

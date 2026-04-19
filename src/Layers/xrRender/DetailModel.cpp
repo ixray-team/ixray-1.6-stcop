@@ -1,11 +1,5 @@
 #include "stdafx.h"
-
-#include "DetailModel.h"
 #include "DetailManager.h"
-
-#ifdef USE_DX11
-	#include "../xrRenderDX10/dx10BufferUtils.h"
-#endif
 
 struct vertHW
 {
@@ -25,13 +19,6 @@ static RHIInputElementDesc dwDecl[] =
 
 CDetail::~CDetail()
 {
-	for (u32 i = 0; i < 3; ++i)
-	{
-		for (u32 j = 0; j < 2; ++j)
-		{
-			m_items[i][j].clear();
-		}
-	}
 }
 
 void CDetail::Unload	()
@@ -55,6 +42,15 @@ void CDetail::Unload	()
 	_RELEASE(hw_VB);
 	_RELEASE(hw_IB);
 	hw_Geom.destroy();
+
+	for (u32 i = 0; i < 2; i++)
+	{
+		for (u32 j = 0; j < 3; j++)
+		{
+			_RELEASE(DetailGPUBoundBuffers[i][j].first);
+			_RELEASE(DetailGPUBoundBuffers[i][j].second);
+		}
+	}
 #endif
 }
 
