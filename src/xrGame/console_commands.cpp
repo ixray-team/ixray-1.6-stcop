@@ -138,7 +138,6 @@ float	debug_on_frame_gather_stats_frequency = 0.f;
 #endif
 #ifdef DEBUG 
 extern LPSTR	dbg_stalker_death_anim;
-extern bool		b_death_anim_velocity;
 extern bool		death_anim_debug;
 extern bool		dbg_imotion_draw_skeleton;
 extern bool		dbg_imotion_draw_velocity;
@@ -2834,7 +2833,6 @@ void CCC_RegisterCommands()
 	CMD1(CCC_DumpObjects, "dump_all_objects");
 	CMD3(CCC_String, "stalker_death_anim", dbg_stalker_death_anim, 32);
 	CMD2(CCC_Boolean, "death_anim_debug", &death_anim_debug);
-	CMD2(CCC_Boolean, "death_anim_velocity", &b_death_anim_velocity);
 	CMD2(CCC_Boolean, "dbg_imotion_draw_velocity", &dbg_imotion_draw_velocity);
 	CMD2(CCC_Boolean, "dbg_imotion_collide_debug", &dbg_imotion_collide_debug);
 
