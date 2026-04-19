@@ -51,6 +51,12 @@ void CRenderTarget::PhaseWinter() {
 
 void CRenderTarget::PhaseGasmask()
 {
+    const bool ItemCfgHudGasMaskAvialable = g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvialable;
+    if (!ItemCfgHudGasMaskAvialable)
+    {
+        return;
+    }
+
     const float condition = g_pGamePersistent->ShaderParams.HelmetCondition;
     if (condition < 0)
     {
@@ -93,6 +99,12 @@ void CRenderTarget::PhaseGasmask()
 
 void CRenderTarget::PhaseRaindrops()
 {
+    const bool ItemCfgHudRainDropsAvialable = g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvialable;
+    if (!ItemCfgHudRainDropsAvialable)
+    {
+        return;
+    }
+
     const float condition = g_pGamePersistent->ShaderParams.HelmetCondition;
     if (condition < 0)
     {
