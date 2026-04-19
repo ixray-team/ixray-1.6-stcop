@@ -76,25 +76,25 @@ bool ParseU32Token(const char* token, u32& outValue)
 
 bool ParseAlertLevelToken(const char* token, IxAiAlertLevel& outLevel)
 {
-    if (xr_strcmpi(token, "vigilant") == 0)
+    if (_stricmp(token, "vigilant") == 0)
     {
         outLevel = IxAiAlertLevel::Vigilant;
         return true;
     }
 
-    if (xr_strcmpi(token, "suspicious") == 0)
+    if (_stricmp(token, "suspicious") == 0)
     {
         outLevel = IxAiAlertLevel::Suspicious;
         return true;
     }
 
-    if (xr_strcmpi(token, "search") == 0)
+    if (_stricmp(token, "search") == 0)
     {
         outLevel = IxAiAlertLevel::Search;
         return true;
     }
 
-    if (xr_strcmpi(token, "combat") == 0)
+    if (_stricmp(token, "combat") == 0)
     {
         outLevel = IxAiAlertLevel::Combat;
         return true;
@@ -116,7 +116,7 @@ bool ParseBehaviourTreeSpecLine(const char* line, IxAiBtSpecNode& outNode)
         return false;
     }
 
-    if (xr_strcmpi(tokenKind, "selector") == 0)
+    if (_stricmp(tokenKind, "selector") == 0)
     {
         CopyToken(p, tokenArg, sizeof(tokenArg));
         u32 arity = 0;
@@ -131,7 +131,7 @@ bool ParseBehaviourTreeSpecLine(const char* line, IxAiBtSpecNode& outNode)
         return SkipSpaces(p)[0] == 0;
     }
 
-    if (xr_strcmpi(tokenKind, "sequence") == 0)
+    if (_stricmp(tokenKind, "sequence") == 0)
     {
         CopyToken(p, tokenArg, sizeof(tokenArg));
         u32 arity = 0;
@@ -146,7 +146,7 @@ bool ParseBehaviourTreeSpecLine(const char* line, IxAiBtSpecNode& outNode)
         return SkipSpaces(p)[0] == 0;
     }
 
-    if (xr_strcmpi(tokenKind, "condition_alert_gte") == 0)
+    if (_stricmp(tokenKind, "condition_alert_gte") == 0)
     {
         CopyToken(p, tokenArg, sizeof(tokenArg));
         IxAiAlertLevel lvl{};
@@ -162,7 +162,7 @@ bool ParseBehaviourTreeSpecLine(const char* line, IxAiBtSpecNode& outNode)
         return SkipSpaces(p)[0] == 0;
     }
 
-    if (xr_strcmpi(tokenKind, "condition_alert_lt") == 0)
+    if (_stricmp(tokenKind, "condition_alert_lt") == 0)
     {
         CopyToken(p, tokenArg, sizeof(tokenArg));
         IxAiAlertLevel lvl{};
@@ -178,35 +178,35 @@ bool ParseBehaviourTreeSpecLine(const char* line, IxAiBtSpecNode& outNode)
         return SkipSpaces(p)[0] == 0;
     }
 
-    if (xr_strcmpi(tokenKind, "action_noop") == 0)
+    if (_stricmp(tokenKind, "action_noop") == 0)
     {
         outNode._kind = IxAiBtSpecNodeKind::ActionNoop;
         outNode._childArity = 0;
         return SkipSpaces(p)[0] == 0;
     }
 
-    if (xr_strcmpi(tokenKind, "action_clear_tactical_hint") == 0)
+    if (_stricmp(tokenKind, "action_clear_tactical_hint") == 0)
     {
         outNode._kind = IxAiBtSpecNodeKind::ActionClearTacticalHint;
         outNode._childArity = 0;
         return SkipSpaces(p)[0] == 0;
     }
 
-    if (xr_strcmpi(tokenKind, "action_apply_strongest_memory_hint") == 0)
+    if (_stricmp(tokenKind, "action_apply_strongest_memory_hint") == 0)
     {
         outNode._kind = IxAiBtSpecNodeKind::ActionApplyStrongestMemoryHint;
         outNode._childArity = 0;
         return SkipSpaces(p)[0] == 0;
     }
 
-    if (xr_strcmpi(tokenKind, "condition_has_investigate_memory") == 0)
+    if (_stricmp(tokenKind, "condition_has_investigate_memory") == 0)
     {
         outNode._kind = IxAiBtSpecNodeKind::ConditionHasInvestigateMemory;
         outNode._childArity = 0;
         return SkipSpaces(p)[0] == 0;
     }
 
-    if (xr_strcmpi(tokenKind, "action_apply_investigate_memory_hint") == 0)
+    if (_stricmp(tokenKind, "action_apply_investigate_memory_hint") == 0)
     {
         outNode._kind = IxAiBtSpecNodeKind::ActionApplyInvestigateMemoryHint;
         outNode._childArity = 0;
