@@ -96,6 +96,8 @@ void CUIItemDropAmountWnd::InitDropAmount(CUIXml& uiXml)
     XML_NODE* base_node = uiXml.NavigateToNode(base, 0);
     if (!base_node)
     {
+        Msg("! CUIItemDropAmountWnd::InitDropAmount: <%s> node missing in [%s]", base, uiXml.m_xml_file_name);
+        R_ASSERT4(base_node != nullptr, "split_item node not found in UI XML", base, uiXml.m_xml_file_name);
         return;
     }
     _background = UIHelper::CreateStatic(uiXml, base, this);
@@ -157,6 +159,11 @@ void CUIItemDropAmountWnd::RecalculateLayout(CInventoryItem* pItem)
 
 void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode, CInventoryItem* pItem)
 {
+    if (_trackBar == nullptr)
+    {
+        return;
+    }
+
     _simpleDropMode = true;
     _maxAmount = (int)max;
     _pItem = pItem;
@@ -199,6 +206,11 @@ void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode, CInventoryIte
 void CUIItemDropAmountWnd::Show(CInventoryItem* pItem, int maxAmount, std::function<void(int)> callback)
 {
     if (!callback)
+    {
+        return;
+    }
+
+    if (_trackBar == nullptr)
     {
         return;
     }
@@ -256,6 +268,11 @@ void CUIItemDropAmountWnd::SyncValueToEdit()
 
 void CUIItemDropAmountWnd::SyncEditToValue()
 {
+    if (_trackBar == nullptr)
+    {
+        return;
+    }
+
     const char* text = _editAmount->GetText();
     int val = 1;
     if (text && xr_strlen(text) > 0)
@@ -389,6 +406,11 @@ void CUIItemDropAmountWnd::OnBtnCancelClicked(CUIWindow* w, void* d)
 
 void CUIItemDropAmountWnd::OnBtnDecClicked(CUIWindow* w, void* d)
 {
+    if (_trackBar == nullptr)
+    {
+        return;
+    }
+
     _currentAmount--;
     clamp(_currentAmount, 1, _maxAmount + 1);
     _trackBar->SetIValue(_currentAmount);
@@ -397,6 +419,11 @@ void CUIItemDropAmountWnd::OnBtnDecClicked(CUIWindow* w, void* d)
 
 void CUIItemDropAmountWnd::OnBtnIncClicked(CUIWindow* w, void* d)
 {
+    if (_trackBar == nullptr)
+    {
+        return;
+    }
+
     _currentAmount++;
     clamp(_currentAmount, 1, _maxAmount + 1);
     _trackBar->SetIValue(_currentAmount);
@@ -405,6 +432,11 @@ void CUIItemDropAmountWnd::OnBtnIncClicked(CUIWindow* w, void* d)
 
 void CUIItemDropAmountWnd::OnBtnHalfClicked(CUIWindow* w, void* d)
 {
+    if (_trackBar == nullptr)
+    {
+        return;
+    }
+
     _currentAmount = (_maxAmount + 2) / 2;
     clamp(_currentAmount, 1, _maxAmount + 1);
     _trackBar->SetIValue(_currentAmount);
@@ -413,6 +445,11 @@ void CUIItemDropAmountWnd::OnBtnHalfClicked(CUIWindow* w, void* d)
 
 void CUIItemDropAmountWnd::OnBtnAllClicked(CUIWindow* w, void* d)
 {
+    if (_trackBar == nullptr)
+    {
+        return;
+    }
+
     _currentAmount = _maxAmount + 1;
     _trackBar->SetIValue(_currentAmount);
     SyncValueToEdit();
@@ -425,6 +462,11 @@ void CUIItemDropAmountWnd::OnEditCommit(CUIWindow* w, void* d)
 
 void CUIItemDropAmountWnd::OnTrackChanged(CUIWindow* w, void* d)
 {
+    if (_trackBar == nullptr)
+    {
+        return;
+    }
+
     _currentAmount = _trackBar->GetIValue();
     SyncValueToEdit();
 }
@@ -463,6 +505,11 @@ bool CUIItemDropAmountWnd::OnKeyboardAction(int dik, EUIMessages keyboardAction)
 
 bool CUIItemDropAmountWnd::OnGamepadKeyAction(int id, EUIMessages gamepadAction)
 {
+    if (_trackBar == nullptr)
+    {
+        return CUIDialogWnd::OnGamepadKeyAction(id, gamepadAction);
+    }
+
     if (gamepadAction == WINDOW_KEY_PRESSED)
     {
         switch (get_binded_action(id, agUIGeneral))
@@ -509,6 +556,11 @@ bool CUIItemDropAmountWnd::OnGamepadKeyAction(int id, EUIMessages gamepadAction)
 
 bool CUIItemDropAmountWnd::OnGamepadKeyHold(int id)
 {
+    if (_trackBar == nullptr)
+    {
+        return CUIDialogWnd::OnGamepadKeyHold(id);
+    }
+
     switch (get_binded_action(id, agUIGeneral))
     {
         case kUI_LEFT:
@@ -531,6 +583,11 @@ bool CUIItemDropAmountWnd::OnGamepadKeyHold(int id)
 void CUIItemDropAmountWnd::Update()
 {
     CUIDialogWnd::Update();
+
+    if (_btnAccept == nullptr)
+    {
+        return;
+    }
 
     _btnAccept->Show(!pInput->GetControllerMode());
     _btnCancel->Show(!pInput->GetControllerMode());
