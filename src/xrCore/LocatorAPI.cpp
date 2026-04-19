@@ -407,7 +407,7 @@ void CLocatorAPI::archive::close()
 	hSrcMap			= nullptr;
 #endif
 	Platform::CloseFile(hSrcFile);
-	hSrcFile = nullptr;
+	hSrcFile = 0;
 }
 
 void CLocatorAPI::ProcessArchive(const char* _path, const char* base_path)
