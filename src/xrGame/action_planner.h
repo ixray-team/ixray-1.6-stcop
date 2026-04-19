@@ -48,7 +48,6 @@ public:
 	using CConditionEvaluator = typename inherited::CConditionEvaluator;
 	using _operator_ptr = typename inherited::_operator_ptr;
 	
-	typedef GraphEngineSpace::CWorldState CWorldState;
 	typedef _world_operator _world_operator; 
 
 protected:
