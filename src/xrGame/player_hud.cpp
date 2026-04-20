@@ -1290,8 +1290,12 @@ player_hud::player_hud(bool invert)
 	m_bhands_visible = false;
 	m_legs_model = nullptr;
 
-	//Movement Layers
+	//Bone Callback Params
+	m_bone_callback_params.emplace(r_finger0,  new BoneCallbackParams());
+	m_bone_callback_params.emplace(r_finger01, new BoneCallbackParams());
+	m_bone_callback_params.emplace(r_finger02, new BoneCallbackParams());
 
+	//Movement Layers
 	if (!pSettings->section_exist("hud_movement_layers"))
 	{
 		return;
@@ -1335,6 +1339,7 @@ player_hud::~player_hud()
 	xr_delete(m_animator_item);
 
 	delete_data(m_movement_layers);
+	delete_data(m_bone_callback_params);
 }
 
 void player_hud::load(const shared_str& player_hud_sect)
@@ -1371,6 +1376,14 @@ void player_hud::load(const shared_str& player_hud_sect)
 
 	m_model = smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name.c_str()));
 
+	u16 bone_r_finger0 = m_model->dcast_PKinematics()->LL_BoneID("r_finger0");
+	u16 bone_r_finger01 = m_model->dcast_PKinematics()->LL_BoneID("r_finger01");
+	u16 bone_r_finger02 = m_model->dcast_PKinematics()->LL_BoneID("r_finger02");
+	
+	m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger0).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger0]);
+	m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger01).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger01]);
+	m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger02).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger02]);
+
 	auto pathOmfs = EngineExternal().GetPlayerHudOmfAdditional();
 	if (pathOmfs && pathOmfs[0])
 	{
@@ -1381,7 +1394,6 @@ void player_hud::load(const shared_str& player_hud_sect)
 			m_model->append_motion_from_path(model_name.c_str(), path);
 		}
 	}
-
 
 	if(pSettings->line_exist(player_hud_sect, "legs_visual")) {
 		auto model_name = pSettings->r_string(player_hud_sect, "legs_visual");
@@ -2605,4 +2617,31 @@ void animator_item::setup_firedeps(firedeps& fd)
 															fd.m_FireParticlesXForm.i);
 		VERIFY(_valid(fd.m_FireParticlesXForm));
 	}
+}
+
+void player_hud::FingerCallback(CBoneInstance* B)
+{
+	BoneCallbackParams* params = static_cast<BoneCallbackParams*>(B->callback_param());
+
+	Fvector& target = params->m_target;
+	Fvector& current = params->m_current;
+
+	//if (!target.similar(current))
+	//{
+	//	Fvector diff[2];
+	//	diff[0] = target;
+	//	diff[0].sub(current);
+	//	diff[0].mul(Device.fTimeDelta / .1f);
+	//	current.add(diff[0]);
+	//}
+	//else
+	//	current.set(target);
+
+	current = EulerYawPitchRollInertion(current, target, 1.0f, Device.fTimeDelta);
+
+	Fmatrix rotation;
+	rotation.identity();
+	rotation.setHPB(current.y, -current.x, current.z);
+
+	B->mTransform.mulB_43(rotation);
 }
