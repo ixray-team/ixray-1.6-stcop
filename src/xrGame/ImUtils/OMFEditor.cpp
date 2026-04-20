@@ -1275,14 +1275,9 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 
 			ImGui::TableSetColumnIndex(1);
 
-			bool is_mark_settings_disabled = (!has_motion_marks_selected) && (g_pOMFEditor->current_selected_mark_param >= 0);
+			bool is_mark_settings_disabled = (has_motion_marks_selected) && (g_pOMFEditor->current_selected_mark_param >= 0);
 
 			ImGui::BeginDisabled(is_mark_settings_disabled);
-
-			if (!is_mark_settings_disabled)
-			{
-
-			}
 
 
 			ImGui::SeparatorText("Mark settings");
