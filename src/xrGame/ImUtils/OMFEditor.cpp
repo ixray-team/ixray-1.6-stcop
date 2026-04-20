@@ -982,6 +982,14 @@ void OMFEditor_DeleteMotionMark(
 
 		if (param.marks_count > 0)
 		{
+			auto& mark = param.marks[index];
+
+			if (mark.count > 0)
+			{
+				mark.params.clear();
+				pState->list_box_motion_marks_params_names.clear();
+			}
+
 			param.marks.erase(param.marks.cbegin() + index);
 			--param.marks_count;
 
@@ -990,6 +998,93 @@ void OMFEditor_DeleteMotionMark(
 			if (param.marks_count == 0)
 			{
 				g_pOMFEditor->current_selected_mark = -1;
+			}
+		}
+	}
+}
+
+void OMFEditor_AddMotionMarkParam(
+	CImGuiOMFEditor* pState,
+	int index_selected_animation_param,
+	int index_selected_mark
+)
+{
+	R_ASSERT(pState);
+
+	if (
+		pState && 
+		pState->omf &&
+		index_selected_animation_param >= 0 &&
+		index_selected_mark >= 0 &&
+		pState->omf->data_animparams.count > 0
+	)
+	{
+		OMFData::AnimParamsData::AnimParams& param = pState->omf->data_animparams.params[index_selected_animation_param];
+
+		R_ASSERT(param.marks_count > 0 && "if triggered something is wrong and state handling of UI state is broken or memory corruption from outside code execution");
+
+		if (param.marks_count > 0)
+		{
+			OMFData::AnimParamsData::AnimParams::MotionMark& mark = param.marks[index_selected_mark];
+
+			mark.params.push_back({});
+			++mark.count;
+			xr_stack_string16 param_name;
+
+			std::sprintf(
+				param_name.data(),
+				"%d_mark%zu",
+				index_selected_mark,
+				mark.params.size()-1
+			);
+
+			pState->list_box_motion_marks_params_names.push_back(param_name);
+		}
+	}
+}
+
+void OMFEditor_DeleteMotionMarkParam(
+	CImGuiOMFEditor* pState,
+	int index_selected_animation_param,
+	int index_selected_mark,
+	int index_selected_mark_param
+)
+{
+	R_ASSERT(pState);
+
+	if (
+		pState &&
+		pState->omf &&
+		index_selected_animation_param >= 0 &&
+		index_selected_mark >= 0 &&
+		index_selected_mark_param >= 0 &&
+		pState->omf->data_animparams.count > 0
+		)
+	{
+		OMFData::AnimParamsData::AnimParams& param = pState->omf->data_animparams.params[index_selected_animation_param];
+
+		if (param.marks_count > 0)
+		{
+			OMFData::AnimParamsData::AnimParams::MotionMark& mark = param.marks[index_selected_mark];
+
+			mark.params.erase(mark.params.cbegin() + index_selected_mark_param);
+			--mark.count;
+			pState->list_box_motion_marks_params_names.erase(pState->list_box_motion_marks_params_names.cbegin() + index_selected_mark_param);
+
+			if (pState->list_box_motion_marks_params_names.empty() == false)
+			{
+				xr_stack_string16 temp;
+				int i = 0;
+				for (xr_stack_string16& param_name : pState->list_box_motion_marks_params_names)
+				{
+					std::sprintf(temp.data(), "%d_mark%d", index_selected_mark, i);
+					param_name = temp;
+					++i;
+				}
+			}
+			else
+			{
+				pState->current_selected_mark_param = -1;
 			}
 		}
 	}
@@ -1081,12 +1176,39 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 			}
 			*/
 
-			ImGui::ListBox(
+			bool reselected = ImGui::ListBox(
 				"##ToolsOMFEditor_MarkGroupLB",
 				&g_pOMFEditor->current_selected_mark,
 				g_pOMFEditor->list_box_motion_marks_names.data(),
 				g_pOMFEditor->list_box_motion_marks_names.size()
 			);
+
+			if (reselected)
+			{
+				g_pOMFEditor->list_box_motion_marks_params_names.clear();
+				
+				R_ASSERT(g_pOMFEditor->current_selected_animation_param >= 0);
+				R_ASSERT(g_pOMFEditor->current_selected_mark >= 0);
+
+				if (
+					g_pOMFEditor->current_selected_animation_param >= 0 &&
+					g_pOMFEditor->current_selected_mark >= 0 &&
+					g_pOMFEditor->omf
+				)
+				{
+					auto& mark = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param].marks[g_pOMFEditor->current_selected_mark];
+
+					if (mark.count > 0)
+					{
+						xr_stack_string16 temp;
+						for (int i = 0; i < mark.count; ++i)
+						{
+							std::sprintf(temp.data(), "%d_mark%d", g_pOMFEditor->current_selected_mark, i);
+							g_pOMFEditor->list_box_motion_marks_params_names.push_back(temp);
+						}
+					}
+				}
+			}
 
 			if (
 				ImGui::Button("Add##ToolsOMFEditor_MarkAdd") &&
@@ -1112,20 +1234,38 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 			ImGui::ListBox(
 				"##ToolsOMFEditor_MarkParamLB",
 				&g_pOMFEditor->current_selected_mark_param,
-				reinterpret_cast<const char* const*>(g_pOMFEditor->list_box_motion_marks_params_names.data()),
+				[](void* user_data, int idx) -> const char* {
+					R_ASSERT(user_data);
+
+					xr_vector<xr_stack_string16>* pCasted = static_cast<xr_vector<xr_stack_string16>*>(user_data);
+					
+					R_ASSERT(idx <= pCasted->size()-1);
+
+					return pCasted->operator[](idx).c_str();
+				}, 
+				&g_pOMFEditor->list_box_motion_marks_params_names,
 				g_pOMFEditor->list_box_motion_marks_params_names.size()
 			);
 
 			if (ImGui::Button("Add##ToolsOMFEditor_MarkParamAdd"))
 			{
-
+				OMFEditor_AddMotionMarkParam(
+					g_pOMFEditor,
+					g_pOMFEditor->current_selected_animation_param,
+					g_pOMFEditor->current_selected_mark
+				);
 			}
 
 			ImGui::SameLine();
 
 			if (ImGui::Button("Delete##ToolsOMFEditor_MarkParamDelete"))
 			{
-
+				OMFEditor_DeleteMotionMarkParam(
+					g_pOMFEditor,
+					g_pOMFEditor->current_selected_animation_param,
+					g_pOMFEditor->current_selected_mark,
+					g_pOMFEditor->current_selected_mark_param
+				);
 			}
 
 			ImGui::EndDisabled();
