@@ -25,6 +25,4 @@ public:
 	virtual CCameraBase* cam_Active() { return nullptr; }
 };
 
-extern ENGINE_API IGame_Actor* g_pIGameActor;
-
-extern ENGINE_API int psActorSleepTime;
+extern ENGINE_API IGame_Actor* GActorInterface;

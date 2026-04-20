@@ -21,7 +21,6 @@ class CUIEditBoxEx;
 class CUIEditBox;
 class CUICustomEdit;
 class CUIAnimatedStatic;
-class CUISleepStatic;
 class CUIOptionsItem;
 class CUIScrollView;
 class CUIListWnd;
@@ -67,7 +66,6 @@ public:
 	static bool 	InitTabButtonMP			(CUIXml& xml_doc, const char* path, int index, CUITabButtonMP *pWnd);
 	static bool 	InitTabControl			(CUIXml& xml_doc, const char* path, int index, CUITabControl *pWnd);
 	static bool 	InitAnimatedStatic		(CUIXml& xml_doc, const char* path, int index, CUIAnimatedStatic *pWnd);
-	static bool 	InitSleepStatic			(CUIXml& xml_doc, const char* path, int index, CUISleepStatic *pWnd);
 	static bool 	InitTextureOffset		(CUIXml& xml_doc, const char* path, int index, CUIStatic* pWnd);
 	static bool 	InitSound				(CUIXml& xml_doc, const char* path, int index, CUI3tButton* pWnd);
 	static bool 	InitMultiTexture		(CUIXml& xml_doc, const char* path, int index, CUI3tButton* pWnd, bool fatal = true);
