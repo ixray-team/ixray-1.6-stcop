@@ -6,7 +6,7 @@
 //	Description : ALife Simulator
 ////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "alife_interaction_manager.h"
+#include "alife_combat_manager.h"
 #include "alife_update_manager.h"
 #include "../xrScripts/script_export_space.h"
 
@@ -15,7 +15,7 @@
 
 class CALifeSimulator : 
 	public CALifeUpdateManager,
-	public CALifeInteractionManager
+	public CALifeCombatManager
 {
 protected:
 	virtual void	setup_simulator		(CSE_ALifeObject *object);
