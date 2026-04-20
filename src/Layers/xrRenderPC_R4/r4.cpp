@@ -556,13 +556,24 @@ void CRender::Statistics(CGameFont* _F) {
 
 xr_string CRender::getShaderParams() 
 {
+	static thread_local xr_vector<xr_string> crc_vector;
+
+	crc_vector.resize(0);
+	crc_vector.reserve(16);
+
 	if(!m_ShaderOptions.empty()) 
 	{
-		u32 start_crc = 0xffffffff;
-
-		for(auto& [Name, Value] : m_ShaderOptions)
+		for(const auto& [Name, Value] : m_ShaderOptions)
 		{
-			start_crc = crc32(Name.data(), Name.size(), start_crc);
+			crc_vector.push_back(Name);
+			crc_vector.back().append(Value);
+		}
+
+		u32 start_crc = 0xffffffff;
+		std::sort(crc_vector.begin(), crc_vector.end());
+
+		for (const auto& Value : crc_vector)
+		{
 			start_crc = crc32(Value.data(), Value.size(), start_crc);
 		}
 
@@ -571,20 +582,25 @@ xr_string CRender::getShaderParams()
 
 		return params;
 	}
+
 	return "";
 }
 
-xr_string CRender::getShaderParamsDebug() {
-	if (!m_ShaderOptions.empty()) {
+xr_string CRender::getShaderParamsDebug() 
+{
+	if (!m_ShaderOptions.empty()) 
+	{
 		xr_string params = "";
 
-		for (auto& [Name, Value] : m_ShaderOptions) {
+		for (auto& [Name, Value] : m_ShaderOptions)
+		{
 			params += Name + (Value[0] ? "_" + Value : "") + ",";
 		}
 
 		params[params.size() - 1] = ' ';
 		return params;
 	}
+
 	return "";
 }
 
@@ -1106,32 +1122,44 @@ HRESULT	CRender::shader_compile(
 	}
 
 	u32 const RealCodeCRC = crc32(pSrcData, SrcDataLen);
-
 	Flags |= D3DCOMPILE_OPTIMIZATION_LEVEL3;
 
-	if(FS.exist(file_name) && ps_r__common_flags.test(RFLAG_USE_CACHE)) {
+	xr_resource_uniq* inShader = (xr_resource_uniq*)result;
+
+	if(FS.exist(file_name) && ps_r__common_flags.test(RFLAG_USE_CACHE)) 
+	{
 #ifdef DEBUG
 		Msg("compilied shader library found %s", file_name);
 #endif // DEBUG
 		IReader* file = FS.r_open(file_name);
 
-		if(file->length() > 4) {
+		if(file->length() > 4) 
+		{
 			u32 ShaderCRC = file->r_u32();
 			u32 CodeSRC = file->r_u32();
 
-			if(RealCodeCRC == CodeSRC) {
+			if(RealCodeCRC == CodeSRC)
+			{
 				u32 const real_crc = crc32(file->pointer(), file->elapsed());
-				if(real_crc == ShaderCRC) {
+
+				if(real_crc == ShaderCRC) 
+				{
+					inShader->m_crc1 = ShaderCRC;
+					inShader->m_crc2 = CodeSRC;
+
 					_result = create_shader(pTarget, (DWORD*)file->pointer(), file->elapsed(), file_name, result, o.disasm);
 				}
 			}
 		}
+
 		file->close();
 	}
 
-	if(FAILED(_result)) {
+	if(FAILED(_result)) 
+	{
 		LPD3DBLOB pShaderBuf = nullptr;
 		LPD3DBLOB pErrorBuf = nullptr;
+
 		includer Includer;
 
 		_result = D3DCompile(
@@ -1147,15 +1175,17 @@ HRESULT	CRender::shader_compile(
 
 		if(SUCCEEDED(_result))
 		{
-			if(/*ps_r__common_flags.test(RFLAG_USE_CACHE)*/1) 
-			{
-				IWriter* file = FS.w_open(file_name);
-				u32 const crc = crc32(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
-				file->w_u32(crc);
-				file->w_u32(RealCodeCRC);
-				file->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
-				FS.w_close(file);
-			}
+			IWriter* file = FS.w_open(file_name);
+			u32 const crc = crc32(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
+
+			file->w_u32(crc);
+			file->w_u32(RealCodeCRC);
+			file->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
+
+			FS.w_close(file);
+
+			inShader->m_crc1 = crc;
+			inShader->m_crc2 = RealCodeCRC;
 
 			_result = create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
 		}
