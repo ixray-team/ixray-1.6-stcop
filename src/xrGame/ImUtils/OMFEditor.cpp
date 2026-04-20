@@ -962,6 +962,39 @@ void OMFEditor_AddMotionMark(
 	}
 }
 
+void OMFEditor_DeleteMotionMark(
+	CImGuiOMFEditor* pState,
+	int index
+)
+{
+	R_ASSERT(pState);
+	R_ASSERT(index >= 0);
+
+	if (
+		pState &&
+		pState->omf &&
+		pState->current_selected_animation_param >= 0 &&	
+		index >= 0 &&
+		pState->omf->data_animparams.count > 0
+		)
+	{
+		OMFData::AnimParamsData::AnimParams& param = pState->omf->data_animparams.params[pState->current_selected_animation_param];
+
+		if (param.marks_count > 0)
+		{
+			param.marks.erase(param.marks.cbegin() + index);
+			--param.marks_count;
+
+			g_pOMFEditor->list_box_motion_marks_names.erase(g_pOMFEditor->list_box_motion_marks_names.cbegin() + index);
+
+			if (param.marks_count == 0)
+			{
+				g_pOMFEditor->current_selected_mark = -1;
+			}
+		}
+	}
+}
+
 bool OMFEditor_CheckDuplicateMotionMark(
 	CImGuiOMFEditor* pState,
 	const OMFData::omf_name_t& mark_name
@@ -1069,7 +1102,7 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 
 			if (ImGui::Button("Delete##ToolsOMFEditor_MarkDelete"))
 			{
-
+				OMFEditor_DeleteMotionMark(g_pOMFEditor, g_pOMFEditor->current_selected_mark);
 			}
 
 			ImGui::SeparatorText("Mark Param");
