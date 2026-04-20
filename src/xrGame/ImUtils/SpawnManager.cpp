@@ -180,7 +180,7 @@ void InitSections()
 			if (pSection->line_exist("parent_section"))
 			{
 				const char* parentSection = pSettings->r_string(name.data(), "parent_section");
-				isValidSect = strcmp(parentSection, name.data()) == 0;
+				isValidSect = parentSection != nullptr && *parentSection != '\0' && strcmp(parentSection, name.data()) == 0;
 			}
 			if (isInvItem && isValidSect)
 			{
@@ -1087,7 +1087,7 @@ void RenderSpawnManagerWindow() {
 void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 {
 	auto sm_process_button = [](bool is_table, const xr_string_view& section_name, CInifile::Sect* pSection, size_t& number_imgui) {
-		string64 imname{};
+		string128 imname{};
 		memcpy_s(imname, sizeof(imname), section_name.data(), section_name.size());
 
 		string16 index{};
