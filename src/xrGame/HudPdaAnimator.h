@@ -3,6 +3,7 @@
 #include "HudAnimatorManager.h"
 #include "player_hud.h"
 #include "InertionData.h"
+#include "../xrUI/Widgets/UIMessages.h"
 
 class CHudPdaAnimator final : public CHudStateAnimator
 {
@@ -53,4 +54,29 @@ protected:
 
 	InertionData m_base_inertion;
 	InertionData m_zoom_inertion;
+
+	float m_thumb_rot[2]{};
+	shared_str m_joystick_bone;
+	bool bButtonL = false;
+	bool bButtonR = false;
+	Fvector target_joystickrot, joystickrot;
+	float target_buttonpress, buttonpress;
+	u16 m_joystick;
+
+	void ResetJoystick(bool bForce)
+	{
+		if (bForce)
+		{
+			joystickrot.set(0.f, 0.f, 0.f);
+			buttonpress = 0.f;
+		}
+
+		target_joystickrot.set(0.f, 0.f, 0.f);
+		target_buttonpress = 0.f;
+	}
+	static void JoystickCallback(CBoneInstance* B);
+
+public:
+	void MouseMovement(float x, float y);
+	bool OnMouseAction(float x, float y, EUIMessages mouse_action);
 };
