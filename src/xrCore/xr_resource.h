@@ -37,6 +37,20 @@ public:
 	virtual ~xr_resource_named()		{ }
 };
 
+class XRCORE_API xr_resource_uniq : public xr_resource_named
+{
+public:
+	u32 m_crc1 = u32(-1), m_crc2 = u32(-1);
+
+	void set_crc(u32 _crc1, u32 _crc2)
+	{
+		m_crc1 = _crc1;
+		m_crc2 = _crc2;
+	}
+
+	virtual ~xr_resource_uniq() {}
+};
+
 // resptr_BASE
 template <class T>
 class resptr_base
