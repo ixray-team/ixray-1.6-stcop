@@ -194,9 +194,9 @@ void CRenderDevice::on_idle		()
 		       ++it;
 		}
 
-		if (g_pIGameActor != nullptr)
+		if (GActorInterface != nullptr)
 		{
-			g_pIGameActor->UpdatePlayerHud();
+			GActorInterface->UpdatePlayerHud();
 		}
 
 		secondary_tasks.run(&XRay::Engine::PreRenderThread);

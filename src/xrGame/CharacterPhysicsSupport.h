@@ -167,7 +167,6 @@ private:
 		void							bone_fix_clear					();
 		void							EndActivateFreeShell			( CObject* who, const Fvector& inital_entity_position, const Fvector& dp, const Fvector & velocity )				;
 		void							KillHit							( SHit &H )																											;
-static	void							DeathAnimCallback				( CBlend *B )																										;
 		void							CreateIKController				( )																													;
 		void							DestroyIKController				( )																													;
 		bool							CollisionCorrectObjPos			( const Fvector& start_from, bool character_create=false );
