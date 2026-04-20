@@ -396,6 +396,20 @@ struct movement_layer
 	}
 };
 
+
+struct BoneCallbackParams
+{
+	Fvector m_current = { 0,0,0 };
+	Fvector m_target = { 0,0,0 };
+};
+
+enum EBoneCallbackParam
+{
+	r_finger0 = 0,
+	r_finger01,
+	r_finger02,
+};
+
 class player_hud
 {
 public: 
@@ -480,6 +494,23 @@ private:
 	bool								m_binverted;
 	int									item_idx_priority;
 	void  LeftArmCallback(CBoneInstance* B);
+	static void FingerCallback(CBoneInstance* B);
+public:
+	xr_map<EBoneCallbackParam, BoneCallbackParams*> m_bone_callback_params; // bonename,params
+
+	void reset_thumb(bool bForce)
+	{
+		if (bForce)
+		{
+			m_bone_callback_params[r_finger0]->m_current.set(0.f, 0.f, 0.f);
+			m_bone_callback_params[r_finger01]->m_current.set(0.f, 0.f, 0.f);
+			m_bone_callback_params[r_finger02]->m_current.set(0.f, 0.f, 0.f);
+		}
+
+		m_bone_callback_params[r_finger0]->m_target.set(0.f, 0.f, 0.f);
+		m_bone_callback_params[r_finger01]->m_target.set(0.f, 0.f, 0.f);
+		m_bone_callback_params[r_finger02]->m_target.set(0.f, 0.f, 0.f);
+	}
 };
 
 extern player_hud* g_player_hud;
