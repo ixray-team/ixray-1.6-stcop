@@ -75,6 +75,7 @@ public:
 	CUIMapWnd*				pUIMapWnd;
 	
 	CMapSpot*				pSelectedMapSpot;
+	Fvector2				last_cursor_pos;
 
 	virtual void			Reset				();
 	virtual CUIWindow* ui_cast_window() { return this; }
@@ -83,6 +84,8 @@ public:
 							CUIPdaWnd			();
 	virtual					~CUIPdaWnd			();
 
+	void ResetCursor();
+
 	virtual void 			Init				();
 
 	virtual void 			SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
@@ -90,11 +93,10 @@ public:
 	virtual void 			Draw				();
 	virtual void 			Update				();
 	virtual void 			Show				(bool status);
-	virtual bool			OnMouseAction		(float x, float y, EUIMessages mouse_action) {CUIDialogWnd::OnMouseAction(x,y,mouse_action);return true;} //always true because StopAnyMove() == false
+	virtual bool			OnMouseAction		(float x, float y, EUIMessages mouse_action) override;
 	virtual bool			OnKeyboardAction	(int dik, EUIMessages keyboard_action);
 	virtual bool			OnGamepadKeyAction	(int key, EUIMessages gamepad_action);
 	virtual bool			OnGamepadKeyHold	(int key);
-	
 			UIHint*			get_hint_wnd		() const { return m_hint_wnd; }
 			void			DrawHint			();
 
@@ -117,5 +119,7 @@ public:
 
 			void			UpdatePda			();
 			void			UpdateRankingWnd	();
-			DECLARE_SCRIPT_REGISTER_FUNCTION
+public:
+
+DECLARE_SCRIPT_REGISTER_FUNCTION
 };

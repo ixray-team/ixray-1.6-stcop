@@ -32,6 +32,7 @@
 #include "UIEncyclopediaWnd.h"
 #include "UIActorInfo.h"
 #include "UIDiaryWnd.h"
+#include "../../xrUI/UICursor.h"
 
 #define PDA_XML		"pda.xml"
 
@@ -67,6 +68,8 @@ CUIPdaWnd::CUIPdaWnd()
 	m_updatedSectionImage = nullptr;
 	m_oldSectionImage = nullptr;
 	m_sign_places_main.clear();
+
+	last_cursor_pos.set(UI_BASE_WIDTH / 2.f, UI_BASE_HEIGHT / 2.f);
 
 	LoadCallbackGlobals(m_isSetActiveSubdialog, m_onSetActiveSubdialog, "OnSetActiveSubdialog");
 	Init();
@@ -894,6 +897,21 @@ bool CUIPdaWnd::OnGamepadKeyHold(int key)
 	return inherited::OnGamepadKeyHold(key);
 }
 
+//void CUIPdaWnd::Enable(bool status)
+//{
+//	if (status)
+//		ResetCursor();
+//	else
+//	{
+//		g_player_hud->reset_thumb(false);
+//		ResetJoystick(false);
+//		bButtonL = false;
+//		bButtonR = false;
+//	}
+//
+//	inherited::Enable(status);
+//}
+
 void CUIPdaWnd::HideDialog()
 {
 	if (!IsShown())
@@ -961,4 +979,24 @@ void RearrangeTabButtonsLegacy(CUITabControl* pTab, xr_vector<Fvector2>& vec_sig
 bool CUIPdaWnd::StopAnyMove() 
 { 
 	return pInput->GetControllerMode(); 
+}
+
+bool CUIPdaWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
+{
+	CObject* current_entity = Level().CurrentControlEntity();
+	CHudPdaAnimator* pda_animator = current_entity != nullptr ? current_entity->cast_actor()->HudAnimator()->PdaAnimator() : nullptr;
+	if (pda_animator != nullptr)
+	{
+		pda_animator->OnMouseAction(x, y, mouse_action);
+	}
+	CUIDialogWnd::OnMouseAction(x, y, mouse_action);
+	return true; //always true because StopAnyMove() == false
+}
+
+void CUIPdaWnd::ResetCursor()
+{
+	if (!last_cursor_pos.similar({ 0.f, 0.f }))
+	{
+		GetUICursor().SetUICursorPosition(last_cursor_pos);
+	}
 }
