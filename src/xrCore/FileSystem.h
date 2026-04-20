@@ -48,6 +48,35 @@ public:
 	}
 
 	template<xr_ssnt_t Size>
+	IC bool GetSaveName(xr_stack_tstring<Size>& path_to_file, const xr_char_t* mask, bool multi_selection = false)
+	{
+#ifdef IXR_WINDOWS
+
+		OPENFILENAME ofn;
+
+		ZeroMemory(&ofn, sizeof(ofn));
+		ofn.lStructSize = sizeof(ofn);
+		ofn.hwndOwner = nullptr;
+		ofn.lpstrFile = path_to_file.data();
+		ofn.nMaxFile = sizeof(path_to_file);
+		ofn.lpstrFilter = mask;
+		ofn.nFilterIndex = 1;
+		ofn.lpstrFileTitle = nullptr;
+		ofn.nMaxFileTitle = 0;
+		ofn.lpstrInitialDir = nullptr;
+		ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+
+		bool result = GetSaveFileName(&ofn) == TRUE;
+
+
+		return result;
+#else
+		R_ASSERT(false && "todo: provide implementation");
+		return false;
+#endif
+	}
+
+	template<xr_ssnt_t Size>
 	IC bool CopyTextToClipboard(xr_stack_string<Size>& buffer)
 	{
 		if (buffer.empty())
