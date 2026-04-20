@@ -1703,6 +1703,9 @@ void RenderOMFEditor_Draw_TableMain_Params()
 				param.marks.clear();
 				param.marks_count = 0;
 
+				g_pOMFEditor->list_box_motion_marks_names.clear();
+				g_pOMFEditor->list_box_motion_marks_params_names.clear();
+
 				g_pOMFEditor->is_show_popup_marks_cleared = true;
 			}
 		}
