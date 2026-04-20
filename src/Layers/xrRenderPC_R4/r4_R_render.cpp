@@ -438,6 +438,8 @@ void CRender::Render()
 
 	if(RImplementation.o.offscreen_reflecitons && pLastSector)
 	{
+		GPU_EVENT(FORWARD_REFLECTIONS);
+
 		static int& FaceCount = CCC_Integer::FastCommand("r_fce_count", 1, 0, 7);
 
 		extern float g_fSCREEN;
@@ -475,7 +477,7 @@ void CRender::Render()
 
 		for (auto i = 0; i < FaceCount; ++i)
 		{
-			GPU_EVENT(FORWARD_REFLECTIONS);
+			GPU_EVENT(FORWARD_REFLECTIONS_FACE);
 
 			static Fvector EnvPosition;
 			static Fmatrix EnvViewReal;
