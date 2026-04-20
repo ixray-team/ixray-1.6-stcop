@@ -1711,7 +1711,7 @@ public:
 			return;
 		}
 
-		if (g_pIGameActor == nullptr)
+		if (GActorInterface == nullptr)
 			return;
 
 		CActor* pActor = Actor();
@@ -2862,10 +2862,7 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Float, "air_resistance_epsilon", &air_resistance_epsilon, .0f, 1.f);
 #endif // #ifdef DEBUG
 
-	CMD4(CCC_Integer, "g_sleep_time", &psActorSleepTime, 1, 24);
-
 	CMD2(CCC_Boolean, "g_artefacts_on_hud", &g_artefacts_on_hud);
-
 
 #ifndef MASTER_GOLD
 	extern float g_bullet_time_factor;

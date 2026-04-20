@@ -500,7 +500,7 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 				Msg("[Actor.cpp] single_actor_spawn");
 				g_actor = this;
 				g_actor_single = this;
-				g_pIGameActor = this;
+				GActorInterface = this;
 			}
 		}
 
@@ -514,7 +514,7 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 					{
 						Msg("[Actor.cpp] mp_actor_spawn");
 						g_actor = this;
-						g_pIGameActor = this;
+						GActorInterface = this;
 
 						// St4lker0k765: Do not trigger actor spawn event if playing on vanilla game modes
 						if (g_pGamePersistent->GameType() == eGameIDFreeMP)
@@ -541,7 +541,7 @@ bool CActor::net_Spawn(CSE_Abstract* DC)
 
 		if (true == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && true == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
 		{
-			g_pIGameActor = this;
+			GActorInterface = this;
 			g_actor = this;
 		}
 
@@ -790,7 +790,7 @@ void CActor::net_Destroy	()
 	if (g_actor == this)
 	{
 		g_actor = nullptr;
-		g_pIGameActor = nullptr;
+		GActorInterface = nullptr;
 	}
 
 	Engine.Sheduler.Unregister	(this);
