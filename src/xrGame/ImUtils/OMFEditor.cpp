@@ -67,6 +67,7 @@ constexpr const char* _kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed
 constexpr const char* _kOMFEditorModalWindow_BoneRenameHasCollion = "Warning!##ToolsInGameImGui_OMFEditor_BoneRenameHasCollision";
 constexpr const char* _kOMFEditorModalWindow_AnimationParamMotionMarksCleared = "Warning!##ToolsOMFEditor_MotionMarksCleared";
 constexpr const char* _kOMFEditorModalWindow_AddMotionMark = "Add##ToolsOMFEditor_MotionMarkAdd";
+constexpr const char* _kOMFEditorModalWindow_DuplicateFoundMotionMark = "Warning!##ToolsOMFEditor_DuplicateFoundMotionMark";
 
 
 struct OMFData
@@ -176,6 +177,7 @@ struct CImGuiOMFEditor
 	bool is_show_popup_boneparts_rename_has_collision{};
 
 	bool is_show_popup_add_motion_mark{};
+	bool is_show_popup_duplicate_found_motion_mark{};
 
 
 	bool is_file_loaded{};
@@ -188,7 +190,7 @@ struct CImGuiOMFEditor
 	int current_selected_bone_rename{};
 	int current_selected_mark{};
 	int current_selected_mark_param{};
-	
+
 	OMFData* omf{};
 	OMFData::omf_name_t rename_temp;
 	OMFData::omf_name_t rename_temp_bone;
@@ -438,8 +440,8 @@ void OMFEditor_Init(CImGuiOMFEditor* p_state, OMFData& data)
 		return;
 
 	p_state->current_selected_animation_param = 0;
-	p_state->current_selected_mark = 0;
-	p_state->current_selected_mark_param = 0;
+	p_state->current_selected_mark = -1;
+	p_state->current_selected_mark_param = -1;
 
 #if IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING == 0
 	p_state->current_selected_bone_rename = 0;
@@ -464,6 +466,7 @@ void OMFEditor_Init(CImGuiOMFEditor* p_state, OMFData& data)
 	p_state->is_show_popup_boneparts_was_copied_to_clipboard_fail = false;
 	p_state->is_show_popup_boneparts_rename_has_collision = false;
 	p_state->is_show_popup_add_motion_mark = false;
+	p_state->is_show_popup_duplicate_found_motion_mark = false;
 
 	p_state->list_box_motion_marks_names.reserve(128);
 	p_state->list_box_motion_marks_params_names.reserve(128);
@@ -661,7 +664,20 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 				g_pOMFEditor->is_show_popup_marks_cleared = false;
 				g_pOMFEditor->is_show_popup_renamehascollision = false;
 				g_pOMFEditor->is_show_popup_rename_animation_param = false;
+				g_pOMFEditor->is_show_popup_add_motion_mark = false;
 
+				can_hide_window = false;
+			}
+
+			if (g_pOMFEditor->current_selected_mark_param >= 0)
+			{
+				g_pOMFEditor->current_selected_mark_param = -1;
+				can_hide_window = false;
+			}
+
+			if (can_hide_window && g_pOMFEditor->current_selected_mark >= 0)
+			{
+				g_pOMFEditor->current_selected_mark = -1;
 				can_hide_window = false;
 			}
 
@@ -717,33 +733,36 @@ void RenderOMFEditor_Draw_TableHeader()
 			ImGui::TableSetColumnIndex(2);
 			if (ImGui::Button("Save##ToolsInGameImGui_OMFEditor"))
 			{
+				if (xr_EFS)
+				{
+					xr_stack_tstring<sizeof(string_path)> local_path;
+					bool status = xr_EFS->GetSaveName(local_path, XR_TEXT("OMF file\0*.omf\0"));
 
+					if (status)
+					{
+
+					}
+				}
 			}
 
 			ImGui::TableSetColumnIndex(3);
-			if (ImGui::Button("Save As...##ToolsInGameImGui_OMFEditor"))
-			{
-
-			}
-
-			ImGui::TableSetColumnIndex(4);
 			if (ImGui::Button("Merge with##ToolsInGameImGui_OMFEditor"))
 			{
 
 			}
 
-			ImGui::TableSetColumnIndex(5);
+			ImGui::TableSetColumnIndex(4);
 			if (ImGui::Button("Add anims from##ToolsInGameImGui_OMFEditor"))
 			{
 			}
 
-			ImGui::TableSetColumnIndex(6);
+			ImGui::TableSetColumnIndex(5);
 			if (ImGui::Button("Try repair##ToolsInGameImGui_OMFEditor"))
 			{
 
 			}
 
-			ImGui::TableSetColumnIndex(7);
+			ImGui::TableSetColumnIndex(6);
 			if (ImGui::Button("Swap anim marks##ToolsInGameImGui_OMFEditor"))
 			{
 
@@ -933,14 +952,188 @@ void OMFEditor_AddMotionMark(
 		pState->omf &&
 		pState->current_selected_animation_param >= 0 &&
 		pState->omf->data_animparams.count > 0
-	)
+		)
 	{
 		OMFData::AnimParamsData::AnimParams& param = pState->omf->data_animparams.params[pState->current_selected_animation_param];
 
 		param.marks.push_back(OMFData::AnimParamsData::AnimParams::MotionMark());
 		param.marks.back().name = mark_name;
+
+		g_pOMFEditor->list_box_motion_marks_names.push_back(param.marks.back().name.c_str());
+
 		param.marks_count = static_cast<int32_t>(param.marks.size());
 	}
+}
+
+void OMFEditor_DeleteMotionMark(
+	CImGuiOMFEditor* pState,
+	int index
+)
+{
+	R_ASSERT(pState);
+	R_ASSERT(index >= 0);
+
+	if (
+		pState &&
+		pState->omf &&
+		pState->current_selected_animation_param >= 0 &&	
+		index >= 0 &&
+		pState->omf->data_animparams.count > 0
+		)
+	{
+		OMFData::AnimParamsData::AnimParams& param = pState->omf->data_animparams.params[pState->current_selected_animation_param];
+
+		if (param.marks_count > 0)
+		{
+			auto& mark = param.marks[index];
+
+			if (mark.count > 0)
+			{
+				mark.params.clear();
+				pState->list_box_motion_marks_params_names.clear();
+			}
+
+			param.marks.erase(param.marks.cbegin() + index);
+			--param.marks_count;
+
+			g_pOMFEditor->list_box_motion_marks_names.erase(g_pOMFEditor->list_box_motion_marks_names.cbegin() + index);
+
+			if (param.marks_count == 0)
+			{
+				g_pOMFEditor->current_selected_mark = -1;
+			}
+		}
+	}
+}
+
+void OMFEditor_AddMotionMarkParam(
+	CImGuiOMFEditor* pState,
+	int index_selected_animation_param,
+	int index_selected_mark
+)
+{
+	R_ASSERT(pState);
+
+	if (
+		pState && 
+		pState->omf &&
+		index_selected_animation_param >= 0 &&
+		index_selected_mark >= 0 &&
+		pState->omf->data_animparams.count > 0
+	)
+	{
+		OMFData::AnimParamsData::AnimParams& param = pState->omf->data_animparams.params[index_selected_animation_param];
+
+		R_ASSERT(param.marks_count > 0 && "if triggered something is wrong and state handling of UI state is broken or memory corruption from outside code execution");
+
+		if (param.marks_count > 0)
+		{
+			OMFData::AnimParamsData::AnimParams::MotionMark& mark = param.marks[index_selected_mark];
+
+			mark.params.push_back({});
+			++mark.count;
+			xr_stack_string16 param_name;
+
+			std::sprintf(
+				param_name.data(),
+				"%d_mark%zu",
+				index_selected_mark,
+				mark.params.size()-1
+			);
+
+			pState->list_box_motion_marks_params_names.push_back(param_name);
+		}
+	}
+}
+
+void OMFEditor_DeleteMotionMarkParam(
+	CImGuiOMFEditor* pState,
+	int index_selected_animation_param,
+	int index_selected_mark,
+	int index_selected_mark_param
+)
+{
+	R_ASSERT(pState);
+
+	if (
+		pState &&
+		pState->omf &&
+		index_selected_animation_param >= 0 &&
+		index_selected_mark >= 0 &&
+		index_selected_mark_param >= 0 &&
+		pState->omf->data_animparams.count > 0
+		)
+	{
+		OMFData::AnimParamsData::AnimParams& param = pState->omf->data_animparams.params[index_selected_animation_param];
+
+		if (param.marks_count > 0)
+		{
+			OMFData::AnimParamsData::AnimParams::MotionMark& mark = param.marks[index_selected_mark];
+
+			mark.params.erase(mark.params.cbegin() + index_selected_mark_param);
+			--mark.count;
+			pState->list_box_motion_marks_params_names.erase(pState->list_box_motion_marks_params_names.cbegin() + index_selected_mark_param);
+
+			if (pState->list_box_motion_marks_params_names.empty() == false)
+			{
+				xr_stack_string16 temp;
+				int i = 0;
+				for (xr_stack_string16& param_name : pState->list_box_motion_marks_params_names)
+				{
+					std::sprintf(temp.data(), "%d_mark%d", index_selected_mark, i);
+					param_name = temp;
+					++i;
+				}
+			}
+			else
+			{
+				pState->current_selected_mark_param = -1;
+			}
+		}
+	}
+}
+
+bool OMFEditor_CheckDuplicateMotionMark(
+	CImGuiOMFEditor* pState,
+	const OMFData::omf_name_t& mark_name
+)
+{
+	R_ASSERT(pState);
+	R_ASSERT(mark_name.empty() == false);
+
+	if (
+		pState &&
+		pState->omf &&
+		pState->current_selected_animation_param >= 0 &&
+		pState->omf->data_animparams.count > 0
+		)
+	{
+		OMFData::omf_name_t lower_left;
+		OMFData::omf_name_t lower_right = mark_name;
+
+		xr_strlwr(lower_right);
+
+		const xr_vector<OMFData::AnimParamsData::AnimParams::MotionMark>& marks = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param].marks;
+
+
+		auto it = std::find_if(
+			marks.begin(),
+			marks.end(),
+			[&lower_left, lower_right](
+				const OMFData::AnimParamsData::AnimParams::MotionMark& left
+				)->bool {
+					lower_left = left.name;
+
+					xr_strlwr(lower_left);
+
+					return lower_left == lower_right;
+			}
+		);
+
+		return (it != marks.end());
+	}
+
+	return false;
 }
 
 void RenderOMFEditor_Draw_TableMain_MotionMarks()
@@ -979,22 +1172,51 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 
 			OMFData::AnimParamsData::AnimParams& param_anim = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param];
 
+			/*
 			for (int i = 0; i < param_anim.marks_count; ++i)
 			{
 				g_pOMFEditor->list_box_motion_marks_names.push_back(param_anim.marks[i].name.c_str());
 			}
+			*/
 
-			ImGui::ListBox(
+			bool reselected = ImGui::ListBox(
 				"##ToolsOMFEditor_MarkGroupLB",
-				&g_pOMFEditor->current_selected_mark, 
+				&g_pOMFEditor->current_selected_mark,
 				g_pOMFEditor->list_box_motion_marks_names.data(),
 				g_pOMFEditor->list_box_motion_marks_names.size()
 			);
 
+			if (reselected)
+			{
+				g_pOMFEditor->list_box_motion_marks_params_names.clear();
+				
+				R_ASSERT(g_pOMFEditor->current_selected_animation_param >= 0);
+				R_ASSERT(g_pOMFEditor->current_selected_mark >= 0);
+
+				if (
+					g_pOMFEditor->current_selected_animation_param >= 0 &&
+					g_pOMFEditor->current_selected_mark >= 0 &&
+					g_pOMFEditor->omf
+				)
+				{
+					auto& mark = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param].marks[g_pOMFEditor->current_selected_mark];
+
+					if (mark.count > 0)
+					{
+						xr_stack_string16 temp;
+						for (int i = 0; i < mark.count; ++i)
+						{
+							std::sprintf(temp.data(), "%d_mark%d", g_pOMFEditor->current_selected_mark, i);
+							g_pOMFEditor->list_box_motion_marks_params_names.push_back(temp);
+						}
+					}
+				}
+			}
+
 			if (
 				ImGui::Button("Add##ToolsOMFEditor_MarkAdd") &&
-				g_pOMFEditor->is_show_popup_add_motion_mark==false
-			)
+				g_pOMFEditor->is_show_popup_add_motion_mark == false
+				)
 			{
 				g_pOMFEditor->is_show_popup_add_motion_mark = true;
 				g_pOMFEditor->temp_motion_mark_name.clear();
@@ -1005,58 +1227,61 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 
 			if (ImGui::Button("Delete##ToolsOMFEditor_MarkDelete"))
 			{
-
+				OMFEditor_DeleteMotionMark(g_pOMFEditor, g_pOMFEditor->current_selected_mark);
 			}
 
 			ImGui::SeparatorText("Mark Param");
 
-			if (param_anim.marks_count > 0)
+			ImGui::BeginDisabled(g_pOMFEditor->current_selected_mark == -1);
+
+			ImGui::ListBox(
+				"##ToolsOMFEditor_MarkParamLB",
+				&g_pOMFEditor->current_selected_mark_param,
+				[](void* user_data, int idx) -> const char* {
+					R_ASSERT(user_data);
+
+					xr_vector<xr_stack_string16>* pCasted = static_cast<xr_vector<xr_stack_string16>*>(user_data);
+					
+					R_ASSERT(idx <= pCasted->size()-1);
+
+					return pCasted->operator[](idx).c_str();
+				}, 
+				&g_pOMFEditor->list_box_motion_marks_params_names,
+				g_pOMFEditor->list_box_motion_marks_params_names.size()
+			);
+
+			if (ImGui::Button("Add##ToolsOMFEditor_MarkParamAdd"))
 			{
-				OMFData::AnimParamsData::AnimParams::MotionMark& motion_mark = param_anim.marks[g_pOMFEditor->current_selected_mark_param];
-
-				xr_stack_string16 param_name;
-				for (int i = 0; i < motion_mark.count; ++i)
-				{
-					std::sprintf(param_name.data(), "%d_mark%d", g_pOMFEditor->current_selected_mark_param, i);
-					g_pOMFEditor->list_box_motion_marks_params_names.push_back(param_name);
-				}
-
-				ImGui::ListBox(
-					"##ToolsOMFEditor_MarkParamLB",
-					&g_pOMFEditor->current_selected_mark_param,
-					reinterpret_cast<const char* const*>(g_pOMFEditor->list_box_motion_marks_params_names.data()),
-					g_pOMFEditor->list_box_motion_marks_params_names.size()
-				);
-
-				if (ImGui::Button("Add##ToolsOMFEditor_MarkParamAdd"))
-				{
-
-				}
-
-				ImGui::SameLine();
-
-				if (ImGui::Button("Delete##ToolsOMFEditor_MarkParamDelete"))
-				{
-
-				}
-			}
-			else
-			{
-				int none_selected = -1;
-				ImGui::ListBox(
-					"##ToolsOMFEditor_MarkParamLBEmpty",
-					&none_selected,
-					nullptr,
-					0
+				OMFEditor_AddMotionMarkParam(
+					g_pOMFEditor,
+					g_pOMFEditor->current_selected_animation_param,
+					g_pOMFEditor->current_selected_mark
 				);
 			}
 
-			g_pOMFEditor->list_box_motion_marks_names.clear();
-			g_pOMFEditor->list_box_motion_marks_params_names.clear();
+			ImGui::SameLine();
+
+			if (ImGui::Button("Delete##ToolsOMFEditor_MarkParamDelete"))
+			{
+				OMFEditor_DeleteMotionMarkParam(
+					g_pOMFEditor,
+					g_pOMFEditor->current_selected_animation_param,
+					g_pOMFEditor->current_selected_mark,
+					g_pOMFEditor->current_selected_mark_param
+				);
+			}
+
+			ImGui::EndDisabled();
+
+	//		g_pOMFEditor->list_box_motion_marks_names.clear();
+	//		g_pOMFEditor->list_box_motion_marks_params_names.clear();
 
 			ImGui::TableSetColumnIndex(1);
 
-			ImGui::BeginDisabled(!has_motion_marks_selected);
+			bool is_mark_settings_disabled = (has_motion_marks_selected) && (g_pOMFEditor->current_selected_mark_param == -1);
+
+			ImGui::BeginDisabled(is_mark_settings_disabled);
+
 
 			ImGui::SeparatorText("Mark settings");
 
@@ -1086,6 +1311,7 @@ void RenderOMFEditor_Draw_ModalPopups()
 	modal_opened += g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_fail;
 	modal_opened += g_pOMFEditor->is_show_popup_renamehascollision;
 	modal_opened += g_pOMFEditor->is_show_popup_add_motion_mark;
+	modal_opened += g_pOMFEditor->is_show_popup_duplicate_found_motion_mark;
 
 	R_ASSERT(modal_opened <= 1);
 
@@ -1119,6 +1345,11 @@ void RenderOMFEditor_Draw_ModalPopups()
 		if (g_pOMFEditor->is_show_popup_add_motion_mark)
 		{
 			ImGui::OpenPopup(_kOMFEditorModalWindow_AddMotionMark);
+		}
+
+		if (g_pOMFEditor->is_show_popup_duplicate_found_motion_mark)
+		{
+			ImGui::OpenPopup(_kOMFEditorModalWindow_DuplicateFoundMotionMark);
 		}
 	}
 
@@ -1227,8 +1458,34 @@ void RenderOMFEditor_Draw_ModalPopups()
 
 		if (ImGui::Button("Ok##ToolsOMFEditor_MotionMarkITOK"))
 		{
-			OMFEditor_AddMotionMark(g_pOMFEditor, g_pOMFEditor->temp_motion_mark_name);
+			if (OMFEditor_CheckDuplicateMotionMark(
+				g_pOMFEditor,
+				g_pOMFEditor->temp_motion_mark_name
+			))
+			{
+				g_pOMFEditor->is_show_popup_duplicate_found_motion_mark = true;
+			}
+			else
+			{
+				OMFEditor_AddMotionMark(g_pOMFEditor, g_pOMFEditor->temp_motion_mark_name);
+			}
+
 			g_pOMFEditor->is_show_popup_add_motion_mark = false;
+		}
+
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal(
+		_kOMFEditorModalWindow_DuplicateFoundMotionMark
+	))
+	{
+		ImGui::Text("failed to add motion mark because it is already added!");
+
+		if (ImGui::Button("Ok##ToolsOMFEditor_DuplicateFoundMM"))
+		{
+			g_pOMFEditor->is_show_popup_add_motion_mark = true;
+			g_pOMFEditor->is_show_popup_duplicate_found_motion_mark = false;
 		}
 
 		ImGui::EndPopup();
@@ -1448,6 +1705,9 @@ void RenderOMFEditor_Draw_TableMain_Params()
 			{
 				param.marks.clear();
 				param.marks_count = 0;
+
+				g_pOMFEditor->list_box_motion_marks_names.clear();
+				g_pOMFEditor->list_box_motion_marks_params_names.clear();
 
 				g_pOMFEditor->is_show_popup_marks_cleared = true;
 			}
