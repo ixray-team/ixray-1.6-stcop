@@ -317,8 +317,12 @@ void CSceneObject::FillProp(const char* pref, PropItemVec& items)
 	inherited::FillProp(pref, items);
 	PropValue* V = PHelper().CreateChoose(items, PrepareKey(pref, "Reference"), &m_ReferenceName, smObject);
 	V->OnChangeEvent.bind(this, &CSceneObject::ReferenceChange);
+
 	if (IsDynamic())
+	{
 		inherited::AnimationFillProp(pref, items);
+	}
+	
 	SurfaceVec& s_lst = m_Surfaces;
 
 	shared_str Pref1 = PrepareKey(pref, "Surfaces").c_str();
@@ -339,6 +343,11 @@ void CSceneObject::FillProp(const char* pref, PropItemVec& items)
 		if (s->m_GameMtlName != occ_name)
 		{
 			MultiChooseValue* MultiValue = PHelper().CreateChooseTexture(items, PrepareKey(Pref2.c_str(), "TextureView"));
+			MultiValue->DropCallback = [this, s](const char* File)
+			{
+				s->m_Texture = File;
+				OnChangeShader(nullptr);
+			};
 
 			ChooseValue* Val = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Tex"), &s->m_Texture, smTexture);
 			Val->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
