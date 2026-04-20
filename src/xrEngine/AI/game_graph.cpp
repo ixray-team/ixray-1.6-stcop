@@ -46,13 +46,14 @@ bool IGameGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>&
 			return true;
 		}
 
-#ifdef DEBUG
 		if (!VertexTypes||VertexTypes->empty()) 
 		{
+		#ifndef MASTER_GOLD
 			Msg("! warning : empty vertex types");
-			return false;
+		#endif // MASTER_GOLD
+
+			return true;
 		}
-#endif
 
 		xr_vector<GameGraph::STerrainPlace>::const_iterator I = VertexTypes->begin();
 		xr_vector<GameGraph::STerrainPlace>::const_iterator E = VertexTypes->end();
