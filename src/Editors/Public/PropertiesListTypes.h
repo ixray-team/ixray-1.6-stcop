@@ -446,6 +446,9 @@ class MultiChooseValue:
 {
 
 public:
+    using DnDCallback = void(const char*);
+    std::function<DnDCallback> DropCallback;
+
     xr_vector<ChooseValue*> Values;
 
     MultiChooseValue() = default;

@@ -83,6 +83,34 @@ void UIPropertiesItem::Draw()
 					//ImGui::SetCursorPosX(ImGui::GetCursorPosX());
 					ImGui::SetCursorPosX((CellWhdth - TexSize) / 2.f);
 					ImGui::Image(Image, { TexSize, TexSize });
+
+					if (Prop->DropCallback != nullptr && GUIManager->DnDType == EDragDropType::File)
+					{
+						if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+						{
+							ImDrawList* DrawList = ImGui::GetWindowDrawList();
+							ImVec2 RectMin = ImGui::GetItemRectMin();
+							ImVec2 RectMax = ImGui::GetItemRectMax();
+
+							DrawList->AddRect(RectMin, RectMax, IM_COL32(100, 150, 255, 180), 4.0f, 0, 2.0f);
+							DrawList->AddRectFilled(RectMin, RectMax, IM_COL32(100, 150, 255, 30), 4.0f);
+						}
+
+						if (ImGui::BeginDragDropTarget())
+						{
+							struct DragDropData
+							{
+								xr_string FileName;
+							};
+
+							if (auto ImData = ImGui::AcceptDragDropPayload("OTHR"))
+							{
+								DragDropData Data = *(DragDropData*)ImData->Data;
+								Prop->DropCallback(Data.FileName.c_str());
+								ImGui::EndDragDropTarget();
+							}
+						}
+					}
 				}
 			}
 		}
