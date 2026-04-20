@@ -733,33 +733,36 @@ void RenderOMFEditor_Draw_TableHeader()
 			ImGui::TableSetColumnIndex(2);
 			if (ImGui::Button("Save##ToolsInGameImGui_OMFEditor"))
 			{
+				if (xr_EFS)
+				{
+					xr_stack_tstring<sizeof(string_path)> local_path;
+					bool status = xr_EFS->GetSaveName(local_path, XR_TEXT("OMF file\0*.omf\0"));
 
+					if (status)
+					{
+
+					}
+				}
 			}
 
 			ImGui::TableSetColumnIndex(3);
-			if (ImGui::Button("Save As...##ToolsInGameImGui_OMFEditor"))
-			{
-
-			}
-
-			ImGui::TableSetColumnIndex(4);
 			if (ImGui::Button("Merge with##ToolsInGameImGui_OMFEditor"))
 			{
 
 			}
 
-			ImGui::TableSetColumnIndex(5);
+			ImGui::TableSetColumnIndex(4);
 			if (ImGui::Button("Add anims from##ToolsInGameImGui_OMFEditor"))
 			{
 			}
 
-			ImGui::TableSetColumnIndex(6);
+			ImGui::TableSetColumnIndex(5);
 			if (ImGui::Button("Try repair##ToolsInGameImGui_OMFEditor"))
 			{
 
 			}
 
-			ImGui::TableSetColumnIndex(7);
+			ImGui::TableSetColumnIndex(6);
 			if (ImGui::Button("Swap anim marks##ToolsInGameImGui_OMFEditor"))
 			{
 
@@ -1275,7 +1278,7 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 
 			ImGui::TableSetColumnIndex(1);
 
-			bool is_mark_settings_disabled = (has_motion_marks_selected) && (g_pOMFEditor->current_selected_mark_param >= 0);
+			bool is_mark_settings_disabled = (has_motion_marks_selected) && (g_pOMFEditor->current_selected_mark_param == -1);
 
 			ImGui::BeginDisabled(is_mark_settings_disabled);
 
