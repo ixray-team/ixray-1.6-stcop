@@ -301,7 +301,21 @@ T GetSafe(const nlohmann::json& j, const char* key, T& Out)
 		}
 		else
 		{
-			Out = it->get<T>();
+			if constexpr (std::is_same_v<T, bool>)
+			{
+				if (it->is_number())
+				{
+					Out = !!it->get<int>();
+				}
+				else 
+				{
+					Out = it->get<T>();
+				}
+			}
+			else
+			{
+				Out = it->get<T>();
+			}
 		}
 	}
 	catch (...)
