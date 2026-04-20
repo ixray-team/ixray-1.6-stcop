@@ -13,6 +13,7 @@ extern bool m_AnimatorForceHideItems;
 CHudPdaAnimator::CHudPdaAnimator(CHudAnimatorManager* manager, const shared_str& section) : CHudStateAnimator(manager)
 {
 	m_section = section;
+	m_joystick = BI_NONE;
 	Load();
 }
 
@@ -24,6 +25,9 @@ void CHudPdaAnimator::Load()
 	{
 		m_sounds.LoadSound(m_section.c_str(), "snd_blowout", "sndBlowout", true);
 	}
+
+	m_sounds.LoadSound(m_section.c_str(), "snd_btn_press", "sndButtonPress");
+	m_sounds.LoadSound(m_section.c_str(), "snd_btn_release", "sndButtonRelease");
 
 	m_fBlowoutLevel = READ_IF_EXISTS(pSettings, r_float, m_section, "blowout_anim_level", 1000.0f);
 	m_fZoomRotateTime = READ_IF_EXISTS(pSettings, r_float, m_section, "zoom_rotate_time", 0.25f);
@@ -38,6 +42,9 @@ void CHudPdaAnimator::Load()
 	m_zoom_inertion.TendtoSpeed = READ_IF_EXISTS(pSettings, r_float, m_section, "inertion_aim_tendto_speed", TENDTO_SPEED);
 
 	m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, m_section, "hud_fov_zoom_factor", m_fHudFovFactor);
+	m_thumb_rot[0] = READ_IF_EXISTS(pSettings, r_float, m_section, "thumb_rot_x", 0.f);
+	m_thumb_rot[1] = READ_IF_EXISTS(pSettings, r_float, m_section, "thumb_rot_y", 0.f);
+	m_joystick_bone = READ_IF_EXISTS(pSettings, r_string, m_section, "joystick_bone", nullptr);
 }
 
 void CHudPdaAnimator::Update()
@@ -249,9 +256,35 @@ void CHudPdaAnimator::OnStateSwitch(u32 state)
 	case eIdle:
 	{
 		PlayAnimIdle();
+
+		if (m_joystick_bone && m_joystick == BI_NONE)
+			m_joystick = g_player_hud->GetAnimator()->m_item->LL_BoneID(m_joystick_bone);
+
+		if (m_joystick != BI_NONE)
+		{
+			CBoneInstance* bi = &g_player_hud->GetAnimator()->m_item->LL_GetBoneInstance(m_joystick);
+			if (bi)
+			{
+				bi->set_callback(bctCustom, JoystickCallback, this);
+			}
+		}
 	}break;
+	//case eHiding:
+	//{
+	//	g_player_hud->reset_thumb(false);
+	//	ResetJoystick(false);
+	//
+	//	if (m_joystick != BI_NONE)
+	//	{
+	//		g_player_hud->GetAnimator()->m_item->LL_GetBoneInstance(m_joystick).reset_callback();
+	//	}
+	//	
+	//}break;
 	case eHidden:
 	{
+		g_player_hud->reset_thumb(true);
+		ResetJoystick(true);
+
 		StopAnimator();
 	}break;
 	case eBlowout:
@@ -496,4 +529,121 @@ shared_str CHudPdaAnimator::SetCurrentStateAnimation(const shared_str& anim_name
 	}
 
 	return anim_name;
+}
+
+void CHudPdaAnimator::JoystickCallback(CBoneInstance* B)
+{
+	CHudPdaAnimator* pdaAnimator = static_cast<CHudPdaAnimator*>(B->callback_param());
+	static float fAvgTimeDelta = Device.fTimeDelta;
+	fAvgTimeDelta = _inertion(fAvgTimeDelta, Device.fTimeDelta, 0.8f);
+
+	Fvector& target = pdaAnimator->target_joystickrot;
+	Fvector& current = pdaAnimator->joystickrot;
+	float& target_press = pdaAnimator->target_buttonpress;
+	float& press = pdaAnimator->buttonpress;
+
+	if (!target.similar(current, 0.0001f))
+	{
+		Fvector diff;
+		diff = target;
+		diff.sub(current);
+		diff.mul(fAvgTimeDelta / 0.1f);
+		current.add(diff);
+	}
+	else
+		current.set(target);
+
+	if (!fsimilar(target_press, press, 0.0001f))
+	{
+		float prev_press = press;
+
+		float diff = target_press;
+		diff -= press;
+		diff *= (fAvgTimeDelta / .1f);
+		press += diff;
+
+		//f (prev_press == 0.f && press < 0.f)
+		//
+		//	pdaAnimator->m_sounds.PlaySound("sndButtonPress", B->mTransform.c, pdaAnimator->m_manager->Parent(), true);
+		//
+		//lse if (prev_press < -.001f && press >= -.001f)
+		//
+		//	pdaAnimator->m_sounds.PlaySound("sndButtonRelease", B->mTransform.c, pdaAnimator->m_manager->Parent(), true);
+		//
+	}
+	else
+	{
+		press = target_press;
+	}
+
+	Fmatrix rotation;
+	rotation.identity();
+	rotation.rotateX(current.x);
+
+	Fmatrix rotation_y;
+	rotation_y.identity();
+	rotation_y.rotateY(current.y);
+	rotation.mulA_43(rotation_y);
+
+	rotation_y.identity();
+	rotation_y.rotateZ(current.z);
+	rotation.mulA_43(rotation_y);
+
+	rotation.translate_over(0.f, press, 0.f);
+
+	B->mTransform.mulB_43(rotation);
+}
+
+void CHudPdaAnimator::MouseMovement(float x, float y)
+{
+	x *= 0.1f;
+	y *= 0.1f;
+	clamp(x, -0.15f, 0.15f);
+	clamp(y, -0.15f, 0.15f);
+
+	if (std::abs(x) < 0.05f)
+		x = 0.0f;
+
+	if (std::abs(y) < 0.05f)
+		y = 0.0f;
+
+	bool buttonpressed = (bButtonL || bButtonR);
+
+	target_buttonpress = (buttonpressed ? -0.0015f : 0.0f);
+	target_joystickrot.set(x * -0.75f, 0.0f, y * 0.75f);
+
+	x += y * m_thumb_rot[0];
+	y += x * m_thumb_rot[1];
+
+	g_player_hud->m_bone_callback_params[r_finger0]->m_target.set(y * 0.15f, y * -0.05f, (x * -0.15f) + (buttonpressed ? 0.002f : 0.0f));
+	g_player_hud->m_bone_callback_params[r_finger01]->m_target.set(0.0f, 0.0f, (x * -0.25f) + (buttonpressed ? 0.01f : 0.0f));
+	g_player_hud->m_bone_callback_params[r_finger02]->m_target.set(0.0f, 0.0f, (x * 0.75f) + (buttonpressed ? 0.025f : 0.0f));
+}
+
+bool CHudPdaAnimator::OnMouseAction(float x, float y, EUIMessages mouse_action)
+{
+	switch (mouse_action)
+	{
+	case WINDOW_LBUTTON_DOWN:
+	case WINDOW_RBUTTON_DOWN:
+	case WINDOW_LBUTTON_UP:
+	case WINDOW_RBUTTON_UP:
+	{
+		if (GetState() != eIdle)
+			return true;
+
+		if (mouse_action == WINDOW_LBUTTON_DOWN)
+			bButtonL = true;
+		else if (mouse_action == WINDOW_RBUTTON_DOWN)
+			bButtonR = true;
+		else if (mouse_action == WINDOW_LBUTTON_UP)
+			bButtonL = false;
+		else if (mouse_action == WINDOW_RBUTTON_UP)
+			bButtonR = false;
+		
+		break;
+	}
+	}
+	
+	return true; //always true because StopAnyMove() == false
 }
