@@ -86,6 +86,9 @@ void CUICharacterInfo::InitCharacterInfo(Fvector2 pos, Fvector2 size, CUIXml* xm
 	Init_StrInfoItem( *xml_doc, "relation_caption",  eRelationCaption   );
 	Init_StrInfoItem( *xml_doc, "relation_static",   eRelation          );
 
+	Init_StrInfoItem( *xml_doc, "game_time_caption", eGameTimeCaption   );
+	Init_StrInfoItem( *xml_doc, "game_time_static",  eGameTime          );
+
 	if (xml_doc->NavigateToNode("biography_list", 0))
 	{
 		pUIBio = new CUIScrollView();
@@ -355,6 +358,16 @@ void CUICharacterInfo::InitCharacter(const char* player_name, const char* player
 	{
 		m_icons[eIconOver]->Show(true);
 	}
+
+	if (m_icons[eGameTimeCaption])
+	{
+		m_icons[eGameTimeCaption]->Show(true);
+	}
+	if (m_icons[eGameTime])
+	{
+		m_icons[eGameTime]->Show(true);
+		m_icons[eGameTime]->SetText(GetGameTimeAsString(etpTimeToMinutes).c_str());
+	}
 }
 
 void  CUICharacterInfo::SetRelation(ALife::ERelationType relation, s32 goodwill)
@@ -429,6 +442,11 @@ namespace detail
 void CUICharacterInfo::Update()
 {
 	inherited::Update();
+
+	if (m_icons[eGameTime])
+	{
+		m_icons[eGameTime]->SetText(GetGameTimeAsString(etpTimeToMinutes).c_str());
+	}
 
 	if(hasOwner() && (m_bForceUpdate || (Device.dwFrame % 50 == 0)))
 	{
