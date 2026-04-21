@@ -474,6 +474,14 @@
 	<string id="kb_show_quick_slots">
 		<text>Quick Access Panel</text>
 	</string>
+	<!--
+	<string id="kb_inventory_sort_prev">
+		<text>Inventory sort: previous tab</text>
+	</string>
+	<string id="kb_inventory_sort_next">
+		<text>Inventory sort: next tab</text>
+	</string>
+	-->
 	<string id="ui_mm_show_minimap">
 		<text>Show minimap</text>
 	</string>

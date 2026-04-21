@@ -208,6 +208,8 @@ protected:
 	eUIDirection4				GetNaviDirection			(CUIWindow* pWndFrom, CUIWindow* pWndTo);
 	void						UpdateSortTabsLayout		();
 	void						ShowSortTabsForCurrentMode	();
+	CUITabControl*				GetActiveSortTabControl		() const;
+	bool						ProcessSortTabKeyboardSwitch(int dik, EUIMessages keyboard_action);
 	virtual bool				AnyInfoWindowOpen			() const { return false; }
 			void				CheckSelectors				();
 
@@ -338,6 +340,7 @@ public:
 
 	virtual bool				OnMouseAction				(float x, float y, EUIMessages mouse_action);
 	virtual bool				OnKeyboardAction			(int dik, EUIMessages keyboard_action);
+	virtual bool				OnKeyboardHold				(int dik);
 	virtual bool				OnGamepadKeyAction			(int id, EUIMessages gamepad_action);
 	virtual bool				OnGamepadKeyHold			(int id);
 	virtual bool				StopAnyMove					();
