@@ -608,21 +608,27 @@ static float trajectory_select_pick_time	(
 	return					(low);
 }
 
-void CBulletManager::add_bullet_point		(
+void CBulletManager::add_bullet_point(
 		Fvector const& start_position,
 		Fvector& previous_position,
 		Fvector const& start_velocity,
 		Fvector const& gravity,
 		float const air_resistance,
-		float const current_time
+		float const current_time,
+		SBullet& bullet
 	)
 {
-#ifdef DEBUG
 	Fvector	const temp			= trajectory_position(start_position, start_velocity, gravity, air_resistance, current_time);
+#ifdef DEBUG
 	m_bullet_points.push_back	(previous_position);
 	m_bullet_points.push_back	(temp);
+#endif
+	
+	if (!g_bullet_debug_trj)
+		return;
+	
+	bullet.lines.emplace_back(previous_position, temp);
 	previous_position			= temp;
-#endif // #ifdef DEBUG
 }
 
 static void update_bullet_parabolic	(
@@ -855,12 +861,31 @@ bool CBulletManager::trajectory_check_error	(
 
 	collide::ray_defs RD	(start, start_to_target, distance, CDB::OPT_FULL_TEST, collide::rq_target(collide::rqtBoth|collide::rqtShape));
 	bool const result		= Level().ObjectSpace.RayQuery(storage, RD, CBulletManager::firetrace_callback, &data, CBulletManager::test_callback, nullptr);
-	if ( !result || (data.collide_time == 0.f) ) {
-		add_bullet_point	(bullet.start_position, previous_position, bullet.start_velocity, gravity, air_resistance, high);
-		return				(true);
+	
+	if (!result || data.collide_time == 0.f) 
+	{
+		add_bullet_point(
+			bullet.start_position, 
+			previous_position, 
+			bullet.start_velocity,
+			gravity,
+			air_resistance, 
+			high,
+		    bullet
+		);
+		
+		return true;
 	}
 
-	add_bullet_point		(bullet.start_position, previous_position, bullet.start_velocity, gravity, air_resistance, data.collide_time);
+	add_bullet_point(
+		bullet.start_position, 
+		previous_position, 
+		bullet.start_velocity,
+		gravity,
+		air_resistance,
+		data.collide_time,
+		bullet
+	);
 
 	low						= 0.f;
 	
@@ -900,10 +925,7 @@ static bool try_update_bullet				(SBullet& bullet, Fvector const& gravity, float
 	bullet.speed				= new_velocity.magnitude();
 	if ( fis_zero(bullet.speed) )
 		return					(false);
-
-	if(g_bullet_debug_trj && !bullet.bullet_pos.similar(new_position))
-		bullet.lines.push_back({ bullet.bullet_pos, new_position });
-
+	
 	bullet.tracer_last_pos[bp_update_idx] = bullet.bullet_pos;
 	bullet.bullet_pos = new_position;
 	bullet.tracer_pos[bp_update_idx] = new_position;
