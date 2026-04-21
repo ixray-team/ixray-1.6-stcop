@@ -233,7 +233,18 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 		}
 		if (!placedPreferred)
 		{
-			if (!pIItem->RuckDefault())
+			if (InventoryHolsterPistolSlotActiveInSettings() &&
+				ItemFromSlot(PISTOL_SLOT_NEW) == nullptr &&
+				InventoryHolsterExclusivePistolFootprint(pIItem) &&
+				CanPutInSlot(pIItem, PISTOL_SLOT_NEW))
+			{
+				if (Slot(PISTOL_SLOT_NEW, pIItem, bNotActivate, strict_placement))
+				{
+					result = true;
+				}
+			}
+
+			if (!result && !pIItem->RuckDefault())
 			{
 				if (CanPutInSlot(pIItem, pIItem->BaseSlot()))
 				{
@@ -248,7 +259,7 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 					result = Ruck(pIItem, strict_placement); VERIFY(result);
 				}
 			}
-			else
+			else if (!result)
 			{
 				result = Ruck(pIItem, strict_placement); VERIFY(result);
 			}
