@@ -299,6 +299,11 @@ void CHangingLamp::TurnOn	()
 	m_bState				= 1;
 }
 
+bool CHangingLamp::Active() const
+{
+	return m_bState;
+}
+
 void CHangingLamp::TurnOff	()
 {
 	if (!m_bState)
@@ -416,5 +421,6 @@ void CHangingLamp::script_register(lua_State *L)
 			.def(luabind::constructor<>())
 			.def("turn_on",		&CHangingLamp::TurnOn)
 			.def("turn_off",	&CHangingLamp::TurnOff)
+			.def("is_on",		&CHangingLamp::Active)
 	];
 }

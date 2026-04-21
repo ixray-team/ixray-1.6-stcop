@@ -1519,6 +1519,10 @@ const char* GetActorMaterialPairName()
 	}
 }
 
+void set_time_factor_single(float value)
+{
+	Level().SetGameTimeFactor(value);
+}
 
 std::unordered_map<shared_str, xr_vector<shared_str>> m_named_stash;
 
@@ -1811,6 +1815,8 @@ void CLevel::script_register(lua_State *L)
 		def("debug_actor",						tpfGetActor),
 		def("check_object",						check_object),
 #endif
+		def("set_time_factor_single", set_time_factor_single), // FNAS
+
 		def("search_online_objects_by_sphere", &GetOnlineGameObjectsBySphereSpatial, return_stl_iterator),
 		def("search_online_objects_by_obb_box", &GetOnlineGameObjectsByObbBoxSpatial, return_stl_iterator),
 

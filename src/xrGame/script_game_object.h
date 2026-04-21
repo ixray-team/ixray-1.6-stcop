@@ -250,6 +250,7 @@ public:
 	// Actor only
 			void				SetActorPosition	(Fvector pos);
 			void				SetActorDirection	(float dir);
+			void				MoveCamera			(float dir);
 			void				SetNpcPosition		(Fvector pos);
 			void				DisableHitMarks		(bool disable);
 			bool				DisableHitMarks		() const;
@@ -656,6 +657,8 @@ public:
 			bool				torch_enabled			() const;
 			
 			void				attachable_item_load_attach(const char* section);
+			void				switch_torch			();
+
 			// CustomZone
 			void				EnableAnomaly			();
 			void				DisableAnomaly			();
@@ -740,6 +743,7 @@ public:
 			void				SetActorMovementState				(ACTOR_DEFS::EMovementStates state, ACTOR_DEFS::EMoveCommand mask, bool status);
 
 			void				ActorFire() const;
+			void				SetActorCrouch();
 
 #ifdef DEBUG
 			void				debug_planner						(const script_planner *planner);
