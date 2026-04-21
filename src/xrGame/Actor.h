@@ -191,6 +191,7 @@ public:
 	virtual bool use_bolts		() const;
 
 	virtual void OnItemTake		(CInventoryItem *inventory_item);
+	void OnItemTakeFromGround(CInventoryItem* inventory_item);
 
 	virtual void OnItemRuck		(CInventoryItem *inventory_item, const SInvItemPlace& previous_place);
 	virtual void OnItemBelt		(CInventoryItem *inventory_item, const SInvItemPlace& previous_place);
