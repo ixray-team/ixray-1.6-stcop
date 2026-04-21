@@ -2520,12 +2520,12 @@ void CCC_RegisterCommands()
 	CMD1(CCC_UI_Reload, "ui_reload");
 
 #ifndef MASTER_GOLD
-	CMD1(CCC_ALifeTimeFactor, "al_time_factor");		// set time factor
-	CMD1(CCC_ALifeSwitchDistance, "al_switch_distance");		// set switch distance
-	CMD1(CCC_ALifeProcessTime, "al_process_time");		// set process time
-	CMD1(CCC_ALifeObjectsPerUpdate, "al_objects_per_update");		// set process time
-	CMD1(CCC_ALifeSwitchFactor, "al_switch_factor");		// set switch factor
-#endif // #ifndef MASTER_GOLD
+	CMD1(CCC_ALifeTimeFactor, "al_time_factor") // set time factor
+	CMD1(CCC_ALifeSwitchDistance, "al_switch_distance") // set switch distance
+	CMD1(CCC_ALifeProcessTime, "al_process_time") // set process time
+	CMD1(CCC_ALifeObjectsPerUpdate, "al_objects_per_update") // set process time
+	CMD1(CCC_ALifeSwitchFactor, "al_switch_factor") // set switch factor
+#endif
 
 
 	CMD3(CCC_Mask32, "hud_weapon", &psHUD_Flags, HUD_WEAPON);
@@ -2559,12 +2559,12 @@ void CCC_RegisterCommands()
 	CMD1(CCC_DemoRecordSetPos, "demo_set_cam_position");
 
 #ifndef MASTER_GOLD
-	CMD3(CCC_Mask32, "ai_obstacles_avoiding", &psAI_Flags, aiObstaclesAvoiding);
-	CMD3(CCC_Mask32, "ai_obstacles_avoiding_static", &psAI_Flags, aiObstaclesAvoidingStatic);
-	CMD3(CCC_Mask32, "ai_use_smart_covers", &psAI_Flags, aiUseSmartCovers);
-	CMD3(CCC_Mask32, "ai_use_smart_covers_animation_slots", &psAI_Flags, (u32)aiUseSmartCoversAnimationSlot);
+	CMD3(CCC_Mask64, "ai_obstacles_avoiding", &psAI_Flags, aiObstaclesAvoiding);
+	CMD3(CCC_Mask64, "ai_obstacles_avoiding_static", &psAI_Flags, aiObstaclesAvoidingStatic);
+	CMD3(CCC_Mask64, "ai_use_smart_covers", &psAI_Flags, aiUseSmartCovers);
+	CMD3(CCC_Mask64, "ai_use_smart_covers_animation_slots", &psAI_Flags, (u32)aiUseSmartCoversAnimationSlot);
 	CMD4(CCC_Float, "ai_smart_factor", &g_smart_cover_factor, 0.f, 1000000.f);
-	CMD3(CCC_Mask32, "ai_dbg_lua", &psAI_Flags, aiLua);
+	CMD3(CCC_Mask64, "ai_dbg_lua", &psAI_Flags, aiLua);
 #endif // MASTER_GOLD
 
 #ifdef DEBUG
@@ -2637,7 +2637,7 @@ void CCC_RegisterCommands()
 #endif // DEBUG
 
 #ifndef MASTER_GOLD
-	CMD3(CCC_Mask32, "ai_ignore_actor", &psAI_Flags, aiIgnoreActor);
+	CMD3(CCC_Mask64, "ai_ignore_actor", &psAI_Flags, aiIgnoreActor);
 	CMD1(CCC_TuneAttachableItem, "dbg_adjust_attachable_item");
 #endif // MASTER_GOLD
 
