@@ -17,6 +17,7 @@ class CAnomalyZone :		public CSpaceRestrictor,
 private:
     typedef	CSpaceRestrictor inherited;
 	bool isErrorAnimSend = false;
+
 public:
 	CZoneEffector*		m_actor_effector;
 
@@ -56,7 +57,7 @@ public:
 
 				float	GetMaxPower						()							{return m_fMaxPower;}
 				void	SetMaxPower						(float p)					{m_fMaxPower = p;}
-
+				void UpdateMovement();
 	//вычисление силы хита в зависимости от расстояния до центра зоны
 	//относительный размер силы (от 0 до 1)
 				float	RelativePower					(float dist, float nearest_shape_radius);
@@ -309,6 +310,22 @@ protected:
 	Fvector					m_vPrevPos;
 	u32						m_dwLastTimeMoved;
 
+	//FFx0001++
+	bool m_use_movement = false;
+	float max_processing_distance = 200.f;
+	bool draw_dbg = false;
+	bool m_use_movement_always_mode = false;
+	bool m_use_movement_magnetic_on_inside_alive_mode = false;
+	float movement_magnetic_on_inside_alive_mode_speed = 0.f;
+	bool m_use_movement_magnetic_on_take_artefacts_mode = false;
+	float m_timer_magnetic_on_take_artefacts = 0.f;
+	float m_max_timer_magnetic_on_take_artefacts = 0.f;
+	float movement_magnetic_on_take_artefacts_mode_speed = 0.f;
+	float m_movement_speed = 0.f;
+	float m_movement_radius = 0.f;
+	Fvector m_initial_spawn_position;
+	Fvector m_target_position;
+
 	//расстояние от зоны до текущего актера
 	float					m_fDistanceToCurEntity;
 protected:
@@ -320,6 +337,10 @@ public:
 	virtual u32				ef_weapon_type				() const;
 	virtual	bool			register_schedule			() const {return true;}
 	u8						PlayEntranceSmallParticles	(const Fvector& pos, const Fvector& dir, const Fvector& vel, bool play_effect = true);
+	void					MoveToFromDelta				(Fvector newPos, float speed);
+	Fvector					GetLVPos					(Fvector newPos);
+	CGameObject*			ScanObjects					();
+	void					OnActorTakeArtefact			(float scan_radius, CArtefact* art, Fvector actorPos);
 	// optimization FAST/SLOW mode
 public:	
 	virtual bool			AlwaysTheCrow				();
