@@ -170,6 +170,7 @@ private:
 	UI_CELLS_VEC				m_cells_to_draw;
 protected:
 	CUIDragDropListEx*			m_pParentDragDropList;
+	bool						m_isInventoryGridDisabled;
 
 	// Selector for controller
 	Irect						m_selectorArea; // Selector can occupy 1 or several cells
