@@ -46,6 +46,9 @@
 #include "../../xrEngine/xr_input.h"
 #include "UIInvUpgradeInfo.h"
 #include "../../xrUI/Widgets/UIGamepadLegend.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/ui_base.h"
+#include "UIHelperGame.h"
 #include "ui_drop_amount.h"
 
 void CUIActorMenu::OnSortTabChanged(CUIWindow* w, void* pData)
@@ -421,6 +424,7 @@ void CUIActorMenu::Update()
 	}
 	
 	inherited::Update();
+	UpdateActorWeightBarTooltip();
 	m_ItemInfo->Update();
 	m_hint_wnd->Update();
 	m_exit_button->Show(!pInput->GetControllerMode());
@@ -690,4 +694,120 @@ void CUIActorMenu::SetAuxMode(eActorMenuControllerAuxMode mode)
 		m_ui_aux_selector_shown = false;
 		m_pUpgradeWnd->SetActiveForController(false);
 	}
+}
+
+namespace
+{
+	bool IsActorWeightHintRectInsideViewport(const Frect& viewport, const Frect& hintRect)
+	{
+		return (viewport.x1 < hintRect.x1) && (viewport.x2 > hintRect.x2) && (viewport.y1 < hintRect.y1)
+			&& (viewport.y2 > hintRect.y2);
+	}
+} // namespace
+
+void CUIActorMenu::InitActorWeightSection(CUIXml& uiXml, CUIXmlInit& xmlInit)
+{
+	constexpr const char* kActorWeightRow = "actor_weight_row";
+	constexpr const char* kCaption = "actor_weight_row:actor_weight_caption";
+	constexpr const char* kWeightStatic = "actor_weight_row:actor_weight";
+	constexpr const char* kWeightBar = "actor_weight_row:weight_status_bar";
+	constexpr const char* kWeightMax = "actor_weight_row:actor_weight_max";
+
+	m_ActorWeightRow = nullptr;
+	m_ActorWeightBar = nullptr;
+	m_ActorWeight = nullptr;
+
+	if (uiXml.NavigateToNode(kActorWeightRow, 0))
+	{
+		m_ActorWeightRow = new CUIWindow();
+		m_ActorWeightRow->SetAutoDelete(true);
+		AttachChild(m_ActorWeightRow);
+		R_ASSERT2(xmlInit.InitWindow(uiXml, kActorWeightRow, 0, m_ActorWeightRow), kActorWeightRow);
+
+		m_ActorBottomInfo = UIHelper::CreateStatic(uiXml, kCaption, m_ActorWeightRow);
+		R_ASSERT(m_ActorBottomInfo != nullptr);
+
+		if (uiXml.NavigateToNode(kWeightBar, 0))
+		{
+			m_ActorWeightBar = new CUIProgressBar();
+			m_ActorWeightBar->SetAutoDelete(true);
+			m_ActorWeightRow->AttachChild(m_ActorWeightBar);
+			R_ASSERT2(xmlInit.InitProgressBar(uiXml, kWeightBar, 0, m_ActorWeightBar), kWeightBar);
+			m_ActorWeightBar->Enable(true);
+			m_ActorWeightBar->Show(true);
+		}
+		else
+		{
+			m_ActorWeight = UIHelper::CreateStatic(uiXml, kWeightStatic, m_ActorWeightRow);
+			R_ASSERT(m_ActorWeight != nullptr);
+		}
+
+		m_ActorWeightMax = UIHelper::CreateStatic(uiXml, kWeightMax, m_ActorWeightRow);
+		R_ASSERT(m_ActorWeightMax != nullptr);
+		return;
+	}
+
+	m_ActorBottomInfo = UIHelper::CreateStatic(uiXml, "actor_weight_caption", this);
+	m_ActorWeight = UIHelper::CreateStatic(uiXml, "actor_weight", this);
+	m_ActorWeightMax = UIHelper::CreateStatic(uiXml, "actor_weight_max", this);
+}
+
+void CUIActorMenu::UpdateActorWeightBarTooltip()
+{
+	if (m_ActorWeightBar == nullptr || m_pActorInvOwner == nullptr)
+	{
+		return;
+	}
+
+	if (!m_ActorWeightBar->CursorOverWindow())
+	{
+		if (g_statHint->Owner() == m_ActorWeightBar)
+		{
+			g_statHint->Discard();
+		}
+		return;
+	}
+
+	if (g_statHint->Owner() != nullptr)
+	{
+		return;
+	}
+
+	if (Device.dwTimeContinual < m_ActorWeightBar->FocusReceiveTime() + 700)
+	{
+		return;
+	}
+
+	const float totalWeight = m_pActorInvOwner->inventory().CalcTotalWeight();
+	const float maxCarry = m_pActorInvOwner->MaxCarryWeight();
+	const char* kgStr = g_pStringTable->translate("st_kg").c_str();
+	const char* maxCaption = g_pStringTable->translate("ui_inv_max_weight").c_str();
+
+	string256 hintBuf;
+	xr_sprintf(hintBuf, "%.3f %s\n%s %.3f %s", totalWeight, kgStr, maxCaption, maxCarry, kgStr);
+	g_statHint->SetHintText(m_ActorWeightBar, hintBuf);
+
+	Fvector2 cursorPos = GetUICursor().GetCursorPosition();
+	Frect visRect;
+	visRect.set(0.0f, 0.0f, UI_BASE_WIDTH, UI_BASE_HEIGHT);
+
+	Frect hintRect;
+	hintRect.set(0.0f, 0.0f, g_statHint->GetWidth(), g_statHint->GetHeight());
+	hintRect.add(cursorPos.x, cursorPos.y);
+
+	hintRect.sub(0.0f, hintRect.height());
+	if (!IsActorWeightHintRectInsideViewport(visRect, hintRect))
+	{
+		hintRect.sub(hintRect.width(), 0.0f);
+	}
+	if (!IsActorWeightHintRectInsideViewport(visRect, hintRect))
+	{
+		hintRect.add(0.0f, hintRect.height());
+	}
+	if (!IsActorWeightHintRectInsideViewport(visRect, hintRect))
+	{
+		hintRect.add(hintRect.width(), 45.0f);
+	}
+
+	g_statHint->SetWndPos(hintRect.lt);
 }
