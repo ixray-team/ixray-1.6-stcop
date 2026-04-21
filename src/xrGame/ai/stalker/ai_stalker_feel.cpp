@@ -17,7 +17,7 @@
 
 #ifdef DEBUG
 #	include "../../ai_debug.h"
-	extern Flags32 psAI_Flags;
+	extern Flags64 psAI_Flags;
 #endif // DEBUG
 
 bool CAI_Stalker::feel_vision_isRelevant(CObject* O)
