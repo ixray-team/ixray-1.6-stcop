@@ -61,7 +61,7 @@ void SetActorVisibility(u16 who, float value);
 extern int g_AI_inactive_time;
 
 #ifndef MASTER_GOLD
-	Flags32		psAI_Flags	= {aiObstaclesAvoiding | aiUseSmartCovers};
+	Flags64 psAI_Flags = {aiObstaclesAvoiding | aiUseSmartCovers};
 #endif // MASTER_GOLD
 
 void CCreature::SAnimState::Create(IKinematicsAnimated* K, const char* base)
