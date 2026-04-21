@@ -192,17 +192,36 @@ void CUIActorMenu::UpdateActor()
 		}
 	}
 
-	InventoryUtilities::UpdateWeightStr( *m_ActorWeight, *m_ActorWeightMax, m_pActorInvOwner );
-	
-	m_ActorWeight->AdjustWidthToText();
+	InventoryUtilities::UpdateWeightStr(m_ActorWeight, *m_ActorWeightMax, m_pActorInvOwner);
+
+	if (m_ActorWeightBar != nullptr)
+	{
+		const float totalWeight = m_pActorInvOwner->inventory().CalcTotalWeight();
+		float maxCarry = m_pActorInvOwner->MaxCarryWeight();
+		if (maxCarry < EPS_S)
+		{
+			maxCarry = EPS_S;
+		}
+		m_ActorWeightBar->SetRange(0.0f, maxCarry);
+		m_ActorWeightBar->SetProgressPos(totalWeight);
+	}
+
+	if (m_ActorWeight != nullptr)
+	{
+		m_ActorWeight->AdjustWidthToText();
+	}
 	m_ActorWeightMax->AdjustWidthToText();
 	m_ActorBottomInfo->AdjustWidthToText();
 
-	Fvector2 pos = m_ActorWeight->GetWndPos();
-	pos.x = m_ActorWeightMax->GetWndPos().x - m_ActorWeight->GetWndSize().x - 5.0f;
-	m_ActorWeight->SetWndPos( pos );
+	CUIWindow* centerWeight = m_ActorWeightBar != nullptr ? static_cast<CUIWindow*>(m_ActorWeightBar)
+														  : static_cast<CUIWindow*>(m_ActorWeight);
+	R_ASSERT(centerWeight != nullptr);
+
+	Fvector2 pos = centerWeight->GetWndPos();
+	pos.x = m_ActorWeightMax->GetWndPos().x - centerWeight->GetWndSize().x - 5.0f;
+	centerWeight->SetWndPos(pos);
 	pos.x = pos.x - m_ActorBottomInfo->GetWndSize().x - 5.0f;
-	m_ActorBottomInfo->SetWndPos( pos );
+	m_ActorBottomInfo->SetWndPos(pos);
 }
 
 void CUIActorMenu::UpdatePartnerBag()

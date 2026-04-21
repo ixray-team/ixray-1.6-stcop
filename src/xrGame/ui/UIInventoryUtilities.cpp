@@ -466,21 +466,24 @@ void InventoryUtilities::UpdateWeight(CUIStatic &wnd, bool withPrefix)
 	//	UIStaticWeight.ClipperOff();
 }
 
-void InventoryUtilities::UpdateWeightStr(CUIStatic&wnd, CUIStatic&wnd_max, CInventoryOwner *pInvOwner)
+void InventoryUtilities::UpdateWeightStr(CUIStatic* weightLabel, CUIStatic& wnd_max, CInventoryOwner* pInvOwner)
 {
-	R_ASSERT		(pInvOwner);
-	string128		buf;
+	R_ASSERT(pInvOwner);
+	string128 buf;
 
-	float total		= pInvOwner->inventory().CalcTotalWeight();
-	float max		= pInvOwner->MaxCarryWeight();
+	float total = pInvOwner->inventory().CalcTotalWeight();
+	float max = pInvOwner->MaxCarryWeight();
 
-	const char* kg_str	= g_pStringTable->translate( "st_kg" ).c_str();
-	xr_sprintf		(buf, "%.1f %s", total, kg_str);
-	wnd.SetText	(buf);
+	const char* kg_str = g_pStringTable->translate("st_kg").c_str();
+	if (weightLabel != nullptr)
+	{
+		xr_sprintf(buf, "%.1f %s", total, kg_str);
+		weightLabel->SetText(buf);
+	}
 
 	const char* max_str = g_pStringTable->translate("ui_inv_max_weight").c_str();
-	xr_sprintf		(buf, "(%s %.1f %s)", max_str, max, kg_str);
-	wnd_max.SetText	(buf);
+	xr_sprintf(buf, "(%s %.1f %s)", max_str, max, kg_str);
+	wnd_max.SetText(buf);
 }
 
 //////////////////////////////////////////////////////////////////////////
