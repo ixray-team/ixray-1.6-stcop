@@ -102,11 +102,11 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 		if (!FS.exist(fn, "$level$", name))
 			if (!FS.exist(fn, "$game_meshes$", name)){
 #ifdef _EDITOR
-				Msg("!Can't find model file '%s'.",name);
-                return 0;
+				Msg("! Can't find model file '%s'.",name);
 #else            
 				Debug.fatal(DEBUG_INFO,"Can't find model file '%s'.",name);
 #endif
+				return nullptr;
 			}
 	} else {
 		xr_strcpy			(fn,N);
