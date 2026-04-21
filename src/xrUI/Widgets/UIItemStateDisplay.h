@@ -65,6 +65,12 @@ protected:
 	bool _hasPortionData;
 	CUIStatic* _percentBackground;
 	CUIStatic* _percentText;
+	bool _useTextColor;
+	bool _useMiddleTextColor;
+	bool _useTextGradient;
+	Fcolor _minTextColor;
+	Fcolor _middleTextColor;
+	Fcolor _maxTextColor;
 
 private:
 	void updatePercentText();

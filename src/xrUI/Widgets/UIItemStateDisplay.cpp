@@ -14,10 +14,16 @@ CUIItemStateDisplay::CUIItemStateDisplay()
 	  _portionMax(1),
 	  _hasPortionData(false),
 	  _percentBackground(nullptr),
-	  _percentText(nullptr)
+	  _percentText(nullptr),
+	  _useTextColor(false),
+	  _useMiddleTextColor(false),
+	  _useTextGradient(true)
 {
 	Enable(false);
 	m_bUseGradient = true;
+	_minTextColor.set(1.0f, 1.0f, 1.0f, 1.0f);
+	_middleTextColor.set(1.0f, 1.0f, 1.0f, 1.0f);
+	_maxTextColor.set(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 CUIItemStateDisplay::~CUIItemStateDisplay()
@@ -124,6 +130,32 @@ void CUIItemStateDisplay::updatePercentText()
 		}
 	}
 	_percentText->SetText(buf);
+
+	if (_useTextColor)
+	{
+		Fcolor currentColor;
+		if (_useTextGradient)
+		{
+			if (_useMiddleTextColor)
+			{
+				currentColor.lerp(_minTextColor, _middleTextColor, _maxTextColor, _value);
+			}
+			else
+			{
+				currentColor.lerp(_minTextColor, _maxTextColor, _value);
+			}
+		}
+		else
+		{
+			currentColor = _maxTextColor;
+		}
+
+		CUILines* lines = _percentText->TextItemControl();
+		if (lines)
+		{
+			lines->SetTextColor(currentColor.get());
+		}
+	}
 }
 
 void CUIItemStateDisplay::Draw()
