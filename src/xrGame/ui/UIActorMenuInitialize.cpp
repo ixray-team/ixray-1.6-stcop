@@ -98,9 +98,7 @@ void CUIActorMenu::Construct()
 	m_PartnerTradePrice			= UIHelper::CreateStatic(uiXml, "left_delimiter:trade_price", m_LeftDelimiter);
 	m_PartnerTradeWeightMax		= UIHelper::CreateStatic(uiXml, "left_delimiter:trade_weight_max", m_LeftDelimiter);
 
-	m_ActorBottomInfo			= UIHelper::CreateStatic(uiXml, "actor_weight_caption", this);
-	m_ActorWeight				= UIHelper::CreateStatic(uiXml, "actor_weight", this);
-	m_ActorWeightMax			= UIHelper::CreateStatic(uiXml, "actor_weight_max", this);
+	InitActorWeightSection				(uiXml, xml_init);
 	m_ActorBottomInfo->AdjustWidthToText();
 
 	m_PartnerBottomInfo			= UIHelper::CreateStatic(uiXml, "partner_weight_caption", this);
