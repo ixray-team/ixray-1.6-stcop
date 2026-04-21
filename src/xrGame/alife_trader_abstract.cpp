@@ -18,7 +18,7 @@
 #include "alife_schedule_registry.h"
 
 #ifdef DEBUG
-extern Flags32 psAI_Flags;
+extern Flags64 psAI_Flags;
 #endif
 
 void CSE_ALifeTraderAbstract::spawn_supplies()
