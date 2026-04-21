@@ -156,9 +156,28 @@ void CAnomalyZone::Load(const char* section)
 	ParseRandomSounds(section, "hit_sound", m_hit_sounds_variants);
 	ParseRandomSounds(section, "entrance_sound", m_entrance_sounds_variants);
 
+	if (READ_IF_EXISTS(pSettings, r_bool, section, "use_movement", false))
+	{
+		m_use_movement = true;
+		max_processing_distance = READ_IF_EXISTS(pSettings, r_float, section, "max_processing_distance", max_processing_distance);
+		draw_dbg = READ_IF_EXISTS(pSettings, r_bool, section, "draw_debug", false);
+		m_use_movement_always_mode = READ_IF_EXISTS(pSettings, r_bool, section, "use_movement_always_mode", false);
+
+		m_use_movement_magnetic_on_inside_alive_mode = READ_IF_EXISTS(pSettings, r_bool, section, "use_movement_magnetic_on_inside_alive_mode", false);
+		movement_magnetic_on_inside_alive_mode_speed = READ_IF_EXISTS(pSettings, r_float, section, "movement_magnetic_on_inside_alive_mode_speed", false);
+
+		m_use_movement_magnetic_on_take_artefacts_mode = READ_IF_EXISTS(pSettings, r_bool, section, "use_movement_magnetic_on_take_artefacts_mode", false);
+		m_max_timer_magnetic_on_take_artefacts = READ_IF_EXISTS(pSettings, r_float, section, "milliseconds_time_magnetic_on_take_artefacts", 0.f);
+		movement_magnetic_on_take_artefacts_mode_speed = READ_IF_EXISTS(pSettings, r_float, section, "movement_magnetic_on_take_artefacts_mode_speed", 0.f);
+
+		m_movement_speed = READ_IF_EXISTS(pSettings, r_float, section, "movement_speed", 1.5f);
+		m_movement_radius = READ_IF_EXISTS(pSettings, r_float, section, "movement_radius", 15.f);
+	}
+	
 
 	if(pSettings->line_exist(section,"idle_particles")) 
 		m_sIdleParticles	= pSettings->r_string(section,"idle_particles");
+
 	if(pSettings->line_exist(section,"blowout_particles")) 
 		m_sBlowoutParticles = pSettings->r_string(section,"blowout_particles");
 
@@ -409,9 +428,14 @@ bool CAnomalyZone::net_Spawn(CSE_Abstract* DC)
 	}
 	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ANOMALY_ZONE;
 	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::SPACE_RESTRICTOR;
-	if (Visual())
-		setEnabled(true);
-	return						(true);
+	if (Visual()) 
+	{
+		setEnabled(TRUE);
+	}
+
+	m_initial_spawn_position.set(Z->o_Position);
+
+	return						(TRUE);
 }
 
 void CAnomalyZone::net_Destroy() 
@@ -541,14 +565,201 @@ void CAnomalyZone::UpdateWorkload	(u32 dt)
 	{
 		UpdateSecondaryHit();
 	}
+
+	
+}
+
+// ГГ берет артефакт с земли где то в пределах переданного радиуса
+void CAnomalyZone::OnActorTakeArtefact(float scan_radius, CArtefact* artefact, Fvector actorPos)
+{
+	if (!m_use_movement_magnetic_on_take_artefacts_mode)
+	{
+		return;
+	}
+
+	if (m_movement_radius > m_initial_spawn_position.distance_to(Actor()->Position()))
+	{
+		m_timer_magnetic_on_take_artefacts = m_max_timer_magnetic_on_take_artefacts;
+	}
+}
+
+#include "HUDManager.h"
+
+Fvector CAnomalyZone::GetLVPos(Fvector newPos)
+{
+	u32 lvid = (ai().level_graph().vertex(ai_location().level_vertex_id(), newPos));
+	if (ai().level_graph().valid_vertex_id(lvid))
+	{
+		Fvector LVPosition = (ai().level_graph().vertex_position(lvid));
+		return LVPosition;
+	}
+
+	return newPos;
+}
+
+void CAnomalyZone::MoveToFromDelta(Fvector newPos, float speed)
+{
+	Fvector _pos;
+	_pos.set(newPos);
+
+	_pos.y = GetLVPos(_pos).y + 0.15;
+
+	XFORM().c.set(Fvector().set(XFORM().c).add(((Fvector().sub(_pos, XFORM().c)).normalize()).mul(speed * Device.fTimeDelta)));
+
+	XFORM().c.y = GetLVPos(XFORM().c).y + 0.25;
+
+	if (draw_dbg)
+	{
+		Fvector draw_dir_c;
+		draw_dir_c.sub(newPos, XFORM().c);
+		float draw_range_c = draw_dir_c.magnitude();
+		draw_dir_c.normalize();
+		HUD().world_prims.append_line(XFORM().c, newPos, color_rgba(255, 0, 0, 255));
+		HUD().world_prims.append_sphere(newPos, 0.25f, color_rgba(10, 10, 10, 255), color_rgba(255, 255, 255, 50));
+	}
+}
+
+void CAnomalyZone::UpdateMovement()
+{
+	if (!m_use_movement)
+	{
+		return;
+	}
+
+	CGameObject* m_best_magnetic_target = nullptr;
+	Fvector min = m_initial_spawn_position - m_movement_radius;
+	Fvector max = m_initial_spawn_position + m_movement_radius;
+
+	if (m_use_movement_magnetic_on_inside_alive_mode)
+	{
+		m_best_magnetic_target = ScanObjects();
+	}
+
+	if (m_use_movement_magnetic_on_take_artefacts_mode && m_timer_magnetic_on_take_artefacts > 0.f)
+	{
+		m_timer_magnetic_on_take_artefacts -= Device.dwTimeDelta;
+		MoveToFromDelta(Actor()->Position(), movement_magnetic_on_take_artefacts_mode_speed);
+	}
+	else 
+	{
+		if (m_use_movement_magnetic_on_inside_alive_mode && m_best_magnetic_target != nullptr)
+		{
+			MoveToFromDelta(m_best_magnetic_target->Position(), movement_magnetic_on_inside_alive_mode_speed);
+		}
+		else
+		{
+			if (m_use_movement_always_mode)
+			{
+				float dist_to_target = XFORM().c.distance_to_xz_sqr(m_target_position);
+
+				if (m_best_magnetic_target == nullptr && ((m_target_position.x == 0.f && m_target_position.y == 0.f && m_target_position.z == 0.f) || (dist_to_target <= Radius() * 0.5)))
+				{
+					m_target_position.x = Random.randF(min.x, max.x);
+					m_target_position.z = Random.randF(min.z, max.z);
+
+					if (std::isnan(dist_to_target)) {
+						dist_to_target = 0.f;
+						XFORM().c.set(m_target_position);
+					}
+
+					Fvector dir;
+					dir.sub(m_target_position, XFORM().c);
+					float range = dir.magnitude();
+					dir.normalize();
+
+					collide::rq_result R;
+					Fvector pos = XFORM().c;
+					pos.y += Radius() * 0.5;
+
+					if (g_pGameLevel->ObjectSpace.RayPick(pos, dir, range, collide::rqtStatic, R, this))
+					{
+						float rq_range = R.range;
+						if (rq_range > Radius())
+						{
+							rq_range -= Radius();
+						}
+
+						if (rq_range > 0.5) {
+							m_target_position.mad(XFORM().c, dir, rq_range);
+						}
+					}
+
+					m_target_position.y = GetLVPos(m_target_position).y + 0.25;
+				}
+
+				MoveToFromDelta(m_target_position, m_movement_speed);
+			}
+		}
+	}
+
+	if (!m_use_movement_always_mode && m_best_magnetic_target == nullptr && m_timer_magnetic_on_take_artefacts <= 0.f && XFORM().c.distance_to_xz_sqr(m_initial_spawn_position) > 0.5)
+	{
+		MoveToFromDelta(m_initial_spawn_position, m_movement_speed);
+	}
+
+	OnMove();
+
+	if (!processing_enabled() && Actor()->Position().distance_to_xz(m_initial_spawn_position) <= max_processing_distance)
+	{
+		processing_activate();
+	}
+}
+
+
+
+CGameObject* CAnomalyZone::ScanObjects()
+{
+	static xr_vector<ISpatialShared> R;
+	R.clear();
+	R.reserve(64);
+
+	u64 mask = (u64)ESPATIAL_TYPE::ACTOR_ALIVE;
+	mask |= (u64)ESPATIAL_TYPE::AI_ALIVE;
+
+	g_SpatialSpace->q_sphere(R, 0, ESPATIAL_TYPE(mask), m_initial_spawn_position, m_movement_radius);
+
+	CGameObject* lastObj = nullptr;
+	float lastDist = 9999999;
+
+	for (ISpatialShared& spatial : R)
+	{
+		if (!spatial.get())
+		{
+			continue;
+		}
+
+		if (CObject* obj = spatial->dcast_CObject())
+		{
+			if (obj->getDestroy() || !obj->cast_game_object())
+			{
+				continue;
+			}
+
+			if (CGameObject* gobj = obj->cast_game_object())
+			{
+				float dist = gobj->Position().distance_to_sqr(XFORM().c);
+				if (dist < lastDist)
+				{
+					lastObj = gobj;
+					lastDist = dist;
+				}
+			}
+		}
+	}
+
+	return lastObj;
 }
 
 // called only in "fast-mode"
-void CAnomalyZone::UpdateCL		() 
+void CAnomalyZone::UpdateCL() 
 {
-	inherited::UpdateCL			();
-	if (m_zone_flags.test(eFastMode))				
-		UpdateWorkload	(Device.dwTimeDelta);	
+	UpdateMovement();
+	inherited::UpdateCL();
+
+	if (m_zone_flags.test(eFastMode))
+	{
+		UpdateWorkload(Device.dwTimeDelta);
+	}
 }
 
 // called as usual
@@ -557,45 +768,59 @@ void CAnomalyZone::shedule_Update(u32 dt)
 	PROF_EVENT("CAnomalyZone::shedule_Update");
 	m_zone_flags.set(eZoneIsActive, false);
 
+	UpdateMovement();
+
 	if (IsEnabled())
 	{
-		const Fsphere& s		= CFORM()->getSphere();
-		Fvector					P;
-		XFORM().transform_tiny	(P,s.P);
+		const Fsphere& s = CFORM()->getSphere();
+		Fvector	P;
+		XFORM().transform_tiny(P,s.P);
 
 		// update
-		feel_touch_update		(P,s.R);
+		feel_touch_update(P, s.R);
 
 		//пройтись по всем объектам в зоне
 		//и проверить их состояние
 		for (SZoneObjectInfo& info : m_ObjectInfoMap)
 		{
-			CGameObject* pObject		= info.object;
-			if (!pObject)				continue;
-			CEntityAlive* pEntityAlive	= pObject->cast_entity_alive();
+			CGameObject* pObject = info.object;
+			if (!pObject)			
+			{
+				continue;
+			}
+
+			CEntityAlive* pEntityAlive = pObject->cast_entity_alive();
 
 			info.dw_time_in_zone += dt;
 
-			if((!info.small_object && m_iDisableHitTime != -1 && (int)info.dw_time_in_zone > m_iDisableHitTime) ||
-				(info.small_object && m_iDisableHitTimeSmall != -1 && (int)info.dw_time_in_zone > m_iDisableHitTimeSmall))
+			if((!info.small_object && m_iDisableHitTime != -1 && (int)info.dw_time_in_zone > m_iDisableHitTime) || (info.small_object && m_iDisableHitTimeSmall != -1 && (int)info.dw_time_in_zone > m_iDisableHitTimeSmall))
 			{
 				if(!pEntityAlive || !pEntityAlive->g_Alive())
+				{
 					info.zone_ignore = true;
+				}
 			}
+
 			if(m_iDisableIdleTime != -1 && (int)info.dw_time_in_zone > m_iDisableIdleTime)
 			{
 				if(!pEntityAlive || !pEntityAlive->g_Alive())
-					StopObjectIdleParticles( pObject );
+				{
+					StopObjectIdleParticles(pObject);
+				}
 			}
 
 			//если есть хотя бы один не дисабленый объект, то
 			//зона считается активной
 			if(info.zone_ignore == false) 
+			{
 				m_zone_flags.set(eZoneIsActive,true);
+			}
 		}
 
-		if(eZoneStateIdle ==  m_eZoneState)
+		if(eZoneStateIdle == m_eZoneState)
+		{
 			CheckForAwaking();
+		}
 
 		inherited::shedule_Update(dt);
 
@@ -603,58 +828,87 @@ void CAnomalyZone::shedule_Update(u32 dt)
 		float	cam_distance	= Device.vCameraPosition.distance_to(P)-s.R;
 		
 		if (cam_distance>FASTMODE_DISTANCE && !m_zone_flags.test(eAlwaysFastmode) )	
-			o_switch_2_slow	();
+		{
+			o_switch_2_slow();
+		}
 		else									
-			o_switch_2_fast	();
+		{
+			o_switch_2_fast();
+		}
 
 		if (!m_zone_flags.test(eFastMode))
-			UpdateWorkload	(dt);
+		{
+			UpdateWorkload(dt);
+		}
 
 	};
 
-	UpdateOnOffState	();
+	UpdateOnOffState();
 
 	if( !IsGameTypeSingle() && Local() )
 	{
 		if(Device.dwTimeGlobal > m_ttl)
-			DestroyObject ();
+		{
+			DestroyObject();
+		}
 	}
 }
 
 void CAnomalyZone::CheckForAwaking()
 {
 	if(m_zone_flags.test(eZoneIsActive) && eZoneStateIdle ==  m_eZoneState)
+	{
 		SwitchZoneState(eZoneStateAwaking);
+	}
 }
 
-void CAnomalyZone::feel_touch_new	(CObject* O) 
+void CAnomalyZone::feel_touch_new(CObject* O) 
 {
-	if (!O || O->getDestroy()) return;
-	CGameObject*	pGameObject		= O->cast_game_object();
-	if (!pGameObject) return;
-	CEntityAlive*	pEntityAlive	= pGameObject->cast_entity_alive();
+	if (!O || O->getDestroy()) 
+	{
+		return;
+	}
+
+	CGameObject* pGameObject = O->cast_game_object();
+	if (!pGameObject)
+	{
+		return;
+	}
+
+	CEntityAlive* pEntityAlive = pGameObject->cast_entity_alive();
 
 	SZoneObjectInfo& object_info = m_ObjectInfoMap.emplace_back();
 	object_info.object = pGameObject;
 
-	if(pEntityAlive && pEntityAlive->g_Alive())
+	if (pEntityAlive && pEntityAlive->g_Alive())
+	{
 		object_info.nonalive_object = false;
+	}
 	else
+	{
 		object_info.nonalive_object = true;
+	}
 
-	if(pGameObject->Radius()<SMALL_OBJECT_RADIUS)
+	if (pGameObject->Radius() < SMALL_OBJECT_RADIUS)
+	{
 		object_info.small_object = true;
+	}
 	else
+	{
 		object_info.small_object = false;
+	}
 
-	if((object_info.small_object && m_zone_flags.test(eIgnoreSmall)) ||
-		(object_info.nonalive_object && m_zone_flags.test(eIgnoreNonAlive)) || 
-		(pGameObject->cast_artefact() && m_zone_flags.test(eIgnoreArtefact)))
+	if ((object_info.small_object && m_zone_flags.test(eIgnoreSmall)) || (object_info.nonalive_object && m_zone_flags.test(eIgnoreNonAlive)) || (pGameObject->cast_artefact() && m_zone_flags.test(eIgnoreArtefact)))
+	{
 		object_info.zone_ignore = true;
+	}
 	else
+	{
 		object_info.zone_ignore = false;
+	}
+
 	enter_Zone(object_info);
-	
+
 	if (IsEnabled())
 	{
 		PlayEntranceParticles(pGameObject);
@@ -1527,6 +1781,11 @@ bool CAnomalyZone::feel_touch_on_contact	(CObject *O)
 
 bool CAnomalyZone::AlwaysTheCrow()
 {
+	if (m_use_movement && Actor()->Position().distance_to_xz(m_initial_spawn_position) <= max_processing_distance)
+	{
+		return TRUE;
+	}
+
 	bool b_idle = ZoneState()==eZoneStateIdle || ZoneState()==eZoneStateDisabled;
  	if(!b_idle || (m_zone_flags.test(eAlwaysFastmode) && IsEnabled()) )
 		return true;
