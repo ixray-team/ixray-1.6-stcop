@@ -9,6 +9,12 @@
 
 CUIDragItem* CUIDragDropListEx::m_drag_item = nullptr;
 
+namespace
+{
+// Horizontal UV span for one cell when inventory grid is disabled (must match GetTexUVLT sliding room).
+constexpr float kInventoryCellUSpanGridDisabled = 0.23f;
+}
+
 void CUICell::Clear()
 {
 	m_bMainItem = false;
@@ -549,10 +555,10 @@ CUICell& CUIDragDropListEx::GetCellAt(const Ivector2& pos)
 // =================================================================================================
 
 CUICellContainer::CUICellContainer(CUIDragDropListEx* parent)
+	: m_pParentDragDropList(parent)
+	, m_isInventoryGridDisabled(EngineExternal()[EEngineExternalUI::DisableInventoryGrid])
 {
-	m_pParentDragDropList		= parent;
-	const static bool isGridDisabled = EngineExternal()[EEngineExternalUI::DisableInventoryGrid];
-	if (isGridDisabled)
+	if (m_isInventoryGridDisabled)
 	{
 		hShader->create("hud\\fog_of_war", "ui\\ui_grid_alt");
 	}
@@ -765,13 +771,37 @@ bool CUICellContainer::IsRoomFree(const Ivector2& pos, const Ivector2& _size)
 
 void CUICellContainer::GetTexUVLT(Fvector2& uv, u32 col, u32 row, u8 select_mode)
 {
-	switch ( select_mode )
+	float sliceStart = 0.0f;
+	switch (select_mode)
 	{
-	case 0:		uv.set(0.00f, 0.0f);	break;
-	case 1:		uv.set(0.25f, 0.0f);	break;
-	case 2:		uv.set(0.50f, 0.0f);	break;
-	case 3:		uv.set(0.75f, 0.0f);	break;
-	default:	uv.set(0.00f, 0.0f);	break;
+	case 0:
+		sliceStart = 0.00f;
+		break;
+	case 1:
+		sliceStart = 0.25f;
+		break;
+	case 2:
+		sliceStart = 0.50f;
+		break;
+	case 3:
+		sliceStart = 0.75f;
+		break;
+	default:
+		sliceStart = 0.00f;
+		break;
+	}
+
+	if (m_isInventoryGridDisabled)
+	{
+		// Slide the sampling window within each 0.25 select strip so repeating vertical atlas detail does not line up across cells.
+		const u32 mix = col * 0x9E3779B9u + row * 0x85EBCA6Bu;
+		const float t = float(mix % 1024u) / 1023.0f;
+		const float slideRoom = 0.25f - kInventoryCellUSpanGridDisabled;
+		uv.set(sliceStart + t * slideRoom, 0.0f);
+	}
+	else
+	{
+		uv.set(sliceStart, 0.0f);
 	}
 }
 
@@ -998,10 +1028,10 @@ void CUICellContainer::Draw()
 
 	const Fvector2 pts[6] =		{{0.0f,0.0f},{1.0f,0.0f},{1.0f,1.0f},
 								 {0.0f,0.0f},{1.0f,1.0f},{0.0f,1.0f}};
-#define ty 1.0f
-#define tx 0.25f
-	const Fvector2 uvs[6] =		{{0.0f,0.0f},{tx,0.0f},{tx,ty},
-								 {0.0f,0.0f},{tx,ty},{0.0f,ty}};
+	const float texUSpan = m_isInventoryGridDisabled ? kInventoryCellUSpanGridDisabled : 0.25f;
+	const float texVSpan = 1.0f;
+	const Fvector2 uvs[6] =		{{0.0f,0.0f},{texUSpan,0.0f},{texUSpan,texVSpan},
+								 {0.0f,0.0f},{texUSpan,texVSpan},{0.0f,texVSpan}};
 
 	// calculate cell size in screen pixels
 	Fvector2 f_len, sp_len;

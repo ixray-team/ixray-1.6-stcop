@@ -157,6 +157,7 @@ private:
 	UI_CELLS_VEC				m_cells_to_draw;
 protected:
 	CUIDragDropListEx*			m_pParentDragDropList;
+	bool						m_isInventoryGridDisabled;
 
 	Ivector2					m_cellsCapacity;			//count		(col,	row)
 	Ivector2					m_cellSize;					//pixels	(width, height)
