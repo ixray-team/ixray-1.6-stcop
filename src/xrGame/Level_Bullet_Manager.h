@@ -216,14 +216,17 @@ protected:
 								Fvector const& gravity,
 								float const air_resistance
 							);
-	void					add_bullet_point	(
-								Fvector const& start_position,
-								Fvector& previous_position,
-								Fvector const& start_velocity,
-								Fvector const& gravity,
-								float const ait_resistance,
-								float const current_time
-							);
+	
+	void add_bullet_point(
+		Fvector const& start_position,
+		Fvector& previous_position,
+		Fvector const& start_velocity,
+		Fvector const& gravity,
+		float air_resistance,
+		float current_time, 
+		SBullet& bullet
+	);
+	
 	bool					process_bullet		(
 								collide::rq_results& rq_storage,
 								SBullet& bullet,
