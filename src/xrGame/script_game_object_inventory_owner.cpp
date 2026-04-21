@@ -1285,6 +1285,14 @@ bool CScriptGameObject::torch_enabled() const
 	return false;
 }
 
+void CScriptGameObject::switch_torch()
+{
+	if (CTorch* torch = object().cast_torch())
+	{
+		torch->Switch(!torch->torch_active());
+	}
+}
+
 void CScriptGameObject::attachable_item_load_attach(const char* section)
 {
 	CAttachableItem* attachable_item = object().cast_attachable_item();
@@ -1626,6 +1634,14 @@ void CScriptGameObject::ActorFire() const
 	else
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member ActorFire!");
+	}
+}
+
+void CScriptGameObject::SetActorCrouch()
+{
+	if (CActor* pActor = object().cast_actor())
+	{
+		pActor->SetMovementState(ACTOR_DEFS::EMovementStates::eReal, ACTOR_DEFS::EMoveCommand::mcCrouch, true);
 	}
 }
 

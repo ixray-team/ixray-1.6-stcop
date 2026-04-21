@@ -321,6 +321,7 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 
 		.def("set_actor_position",			&CScriptGameObject::SetActorPosition)
 		.def("set_actor_direction",			&CScriptGameObject::SetActorDirection)
+		.def("camera_move",					&CScriptGameObject::MoveCamera)
 		.def("disable_hit_marks",			(void (CScriptGameObject::*)	(bool))&CScriptGameObject::DisableHitMarks)
 		.def("disable_hit_marks",			(bool (CScriptGameObject::*)	() const)&CScriptGameObject::DisableHitMarks)
 		.def("get_movement_speed",			&CScriptGameObject::GetMovementSpeed)

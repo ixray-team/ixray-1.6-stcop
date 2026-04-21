@@ -47,6 +47,7 @@ public:
 					CHangingLamp	();
 	virtual			~CHangingLamp	();
 	void			TurnOn			();
+	bool Active() const;
 	void			TurnOff			();
 	virtual void	Load			( const char* section);
 	virtual bool	net_Spawn		( CSE_Abstract* DC);

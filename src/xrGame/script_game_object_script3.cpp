@@ -127,6 +127,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("night_vision_enabled",		&CScriptGameObject::night_vision_enabled)
 		.def("enable_torch",				&CScriptGameObject::enable_torch)
 		.def("torch_enabled",				&CScriptGameObject::torch_enabled)
+		.def("switch_torch",				&CScriptGameObject::switch_torch)
 		.def("attachable_item_load_attach", &CScriptGameObject::attachable_item_load_attach)
 		.def("weapon_strapped",				&CScriptGameObject::weapon_strapped)
 		.def("weapon_unstrapped",			&CScriptGameObject::weapon_unstrapped)
@@ -288,6 +289,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("get_movement_state", &CScriptGameObject::GetActorMovementState)
 		.def("set_movement_state", &CScriptGameObject::SetActorMovementState)
 		.def("fire", &CScriptGameObject::ActorFire)
+		.def("set_actor_crouch", &CScriptGameObject::SetActorCrouch)
 
 		//CustomZone
 		.def("set_restrictor_type",			&CScriptGameObject::SetRestrictionType) 

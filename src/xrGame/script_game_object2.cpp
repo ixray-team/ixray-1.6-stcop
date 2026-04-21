@@ -433,6 +433,14 @@ void CScriptGameObject::SetActorDirection(float dir)
 	}
 }
 
+void CScriptGameObject::MoveCamera(float YawOffset)
+{
+	if (CActor* Actor = object().cast_actor())
+	{
+		Actor->cam_Active()->yaw -= YawOffset;
+	}
+}
+
 void CScriptGameObject::DisableHitMarks(bool disable)
 {
 	if (CActor* actor = object().cast_actor())
