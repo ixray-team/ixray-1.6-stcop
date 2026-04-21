@@ -280,17 +280,17 @@ void OMFEditor_WriteMotionMarkName(
 	{
 		for (unsigned int i = 0; i < Size; ++i)
 		{
-			char symbol = pStr[Size];
+			char symbol = pStr[i];
 
 			if (symbol == '\0')
 			{
-
-				file << 0xA;
+				char val = 0xA;
+				file.write(&val, sizeof(char));
 				return;
 			}
 			else
 			{
-				file << symbol;
+				file.write(&symbol, sizeof(char));
 			}
 		}
 	}
@@ -346,19 +346,19 @@ bool OMFEditor_SaveOMF_AnimData(
 
 	section_size += 12;
 
-	file << data.section_id;
-	file << section_size;
+	file.write(reinterpret_cast<const char*>(&data.section_id), sizeof(data.section_id));
+	file.write(reinterpret_cast<char*>(&section_size), sizeof(section_size));
 
-	file << data.section_id2;
-	file << data.section_size2;
+	file.write(reinterpret_cast<const char*>(&data.section_id2), sizeof(data.section_id2));
+	file.write(reinterpret_cast<const char*>(&data.section_size2), sizeof(data.section_size2));
 
-	file << data.animations_count;
+	file.write(reinterpret_cast<const char*>(&data.animations_count), sizeof(data.animations_count));
 
 	for (const auto& anim : data.anims)
 	{
-		file << anim.section_id;
-		file << anim.section_size;
-		file << anim.name.c_str();
+		file.write(reinterpret_cast<const char*>(&anim.section_id), sizeof(anim.section_id));
+		file.write(reinterpret_cast<const char*>(&anim.section_size), sizeof(anim.section_size));
+		file.write(anim.name.c_str(), anim.name.size()+1);
 		file.write(anim.data, (anim.section_size - (anim.name.size() + 1)));
 	}
 
@@ -407,7 +407,7 @@ bool OMFEditor_SaveOMF_BoneData(
 	if (file.good() == false)
 		return false;
 
-	file << data.section_id;
+	file.write(reinterpret_cast<const char*>(&data.section_id), sizeof(data.section_id));
 
 	unsigned int section_size = sizeof(data.section_id);
 
@@ -455,31 +455,43 @@ bool OMFEditor_SaveOMF_BoneData(
 		}
 	}
 
-	file << section_size;
-	file << data.ogf_version;
-	file << data.count;
+	file.write(reinterpret_cast<char*>(&section_size), sizeof(section_size));
+	file.write(reinterpret_cast<const char*>(&data.ogf_version), sizeof(data.ogf_version));
+	file.write(reinterpret_cast<const char*>(&data.count), sizeof(data.count));
 
 	for (const auto& part : data.parts)
 	{
-		file << part.name.c_str();
-		file << part.count;
+		file.write(part.name.c_str(), part.name.size()+1);
+		file.write(reinterpret_cast<const char*>(&part.count), sizeof(part.count));
 
 		for (const auto& bone : part.bones)
 		{
-			file << bone.name.c_str();
-			file << bone.id;
+			file.write(bone.name.c_str(), bone.name.size()+1);
+			file.write(reinterpret_cast<const char*>(&bone.id), sizeof(bone.id));
 		}
 	}
 
 	return file.good();
 }
 
-bool OMFEditor_LoadOMF_AnimParamsData_MotionMark(OMFData::AnimParamsData::AnimParams::MotionMark& mark, std::ifstream& file)
+bool OMFEditor_LoadOMF_AnimParamsData_MotionMark(
+	OMFData::AnimParamsData::AnimParams::MotionMark& mark, 
+	int16_t mark_id,
+	std::ifstream& file
+)
 {
 	bool status = true;
 
 	OMFEditor_ReadStringMotionMark(mark.name, file);
 	file.read(reinterpret_cast<char*>(&mark.count), sizeof(mark.count));
+
+	if (mark.name.empty() == false)
+	{
+		if (g_pOMFEditor && mark_id == 0)
+		{
+			g_pOMFEditor->list_box_motion_marks_names.push_back(mark.name.c_str());
+		}
+	}
 
 	for (int32_t i = 0; i < mark.count; ++i)
 	{
@@ -488,6 +500,13 @@ bool OMFEditor_LoadOMF_AnimParamsData_MotionMark(OMFData::AnimParamsData::AnimPa
 
 		file.read(reinterpret_cast<char*>(&mark_param.t0), sizeof(mark_param.t0));
 		file.read(reinterpret_cast<char*>(&mark_param.t1), sizeof(mark_param.t1));
+
+		if (g_pOMFEditor && mark_id == 0)
+		{
+			xr_stack_string16 temp;
+			std::sprintf(temp.data(), "%hd_mark%d", mark_id, i);
+			g_pOMFEditor->list_box_motion_marks_params_names.push_back(temp);
+		}
 	}
 
 	return status;
@@ -505,6 +524,11 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 
 	for (int16_t i = 0; i < data.count; ++i)
 	{
+		if (g_pOMFEditor)
+		{
+			g_pOMFEditor->current_selected_animation_param = 0;
+		}
+
 		data.params.push_back({});
 		OMFData::AnimParamsData::AnimParams& param = data.params.back();
 		OMFEditor_ReadString(param.name, file);
@@ -528,7 +552,7 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 					param.marks.push_back({});
 					OMFData::AnimParamsData::AnimParams::MotionMark& mark = param.marks.back();
 
-					bool status_mark = OMFEditor_LoadOMF_AnimParamsData_MotionMark(mark, file);
+					bool status_mark = OMFEditor_LoadOMF_AnimParamsData_MotionMark(mark, mark_id, file);
 
 					if (!status_mark)
 					{
@@ -541,6 +565,17 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 		}
 	}
 
+	if (g_pOMFEditor)
+	{
+		if (g_pOMFEditor->current_selected_animation_param != 0)
+		{
+			// invalidate it means serialized data didn't contain any animation param
+			g_pOMFEditor->current_selected_animation_param = -1;
+		}
+
+		g_pOMFEditor->current_selected_mark = -1;
+		g_pOMFEditor->current_selected_mark_param = -1;
+	}
 
 	return true;
 }
@@ -556,43 +591,44 @@ bool OMFEditor_SaveOMF_AnimParamsData(
 	if (file.good() == false)
 		return false;
 
-	file << data.count;
+	file.write(reinterpret_cast<const char*>(&data.count), sizeof(data.count));
 
 	for (int i = 0; i < data.count; ++i)
 	{
 		auto& param = data.params[i];
 
-		file << param.name.c_str();
-		file << param.flags;
-		file << param.bone_or_part;
-		file << param.motion_id;
-		file << param.speed;
-		file << param.power;
-		file << param.accrue;
-		file << param.falloff;
+		file.write(param.name.c_str(), param.name.size()+1);
+		file.write(reinterpret_cast<const char*>(&param.flags), sizeof(param.flags));
+		file.write(reinterpret_cast<const char*>(&param.bone_or_part), sizeof(param.bone_or_part));
+		file.write(reinterpret_cast<const char*>(&param.motion_id), sizeof(param.motion_id));
+		file.write(reinterpret_cast<const char*>(&param.speed), sizeof(param.speed));
+		file.write(reinterpret_cast<const char*>(&param.power), sizeof(param.power));
+		file.write(reinterpret_cast<const char*>(&param.accrue), sizeof(param.accrue));
+		file.write(reinterpret_cast<const char*>(&param.falloff), sizeof(param.falloff));
 
 		if (ogf_version != 4)
 			continue;
 
-		file << param.marks_count;
+		file.write(reinterpret_cast<const char*>(&param.marks_count), sizeof(param.marks_count));
 
 		for (int j = 0; j < param.marks_count; ++j)
 		{
 			auto& mark = param.marks[j];
 			
+			R_ASSERT(mark.name[mark.name.size()] == '\0' && "invalid string you got!!!!");
 			OMFEditor_WriteMotionMarkName(
 				mark.name.c_str(),
-				mark.name.size(),
+				mark.name.size()+1,
 				file
 			);
 
-			file << mark.count;
+			file.write(reinterpret_cast<const char*>(&mark.count), sizeof(mark.count));
 
 			for (int y = 0; y < mark.count; ++y)
 			{
 				auto& param_mark = mark.params[y];
-				file << param_mark.t0;
-				file << param_mark.t1;
+				file.write(reinterpret_cast<const char*>(&param_mark.t0), sizeof(param_mark.t0));
+				file.write(reinterpret_cast<const char*>(&param_mark.t1), sizeof(param_mark.t1));
 			}
 		}
 	}
@@ -740,6 +776,9 @@ void OMFEditor_LoadFile(CImGuiOMFEditor* p_state)
 					{
 						p_state->omf = new OMFData();
 					}
+
+					p_state->list_box_motion_marks_names.clear();
+					p_state->list_box_motion_marks_params_names.clear();
 
 					OMFEditor_LoadOMF(*p_state->omf, file_omf);
 				}
@@ -1021,7 +1060,10 @@ void RenderOMFEditor_Draw_TableHeader()
 
 						if (local_path.empty() == false)
 						{
-
+							OMFEditor_SaveOMF(
+								g_pOMFEditor,
+								local_path
+							);
 						}
 					}
 				}
@@ -1555,9 +1597,6 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 
 			ImGui::EndDisabled();
 
-	//		g_pOMFEditor->list_box_motion_marks_names.clear();
-	//		g_pOMFEditor->list_box_motion_marks_params_names.clear();
-
 			ImGui::TableSetColumnIndex(1);
 
 			bool is_mark_settings_disabled = (has_motion_marks_selected) && (g_pOMFEditor->current_selected_mark_param == -1);
@@ -1567,12 +1606,27 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 
 			ImGui::SeparatorText("Mark settings");
 
-			float fStart{};
-			ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fStart);
+			if (
+				g_pOMFEditor->current_selected_mark_param == -1 ||
+				g_pOMFEditor->current_selected_mark == -1 ||
+				g_pOMFEditor->current_selected_animation_param == -1
+			)
+			{
+				float fStart{};
+				ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fStart);
 
 
-			float fEnd{};
-			ImGui::DragFloat("End##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fEnd);
+				float fEnd{};
+				ImGui::DragFloat("End##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fEnd);
+			}
+			else
+			{
+				auto& mark_param = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param].marks[g_pOMFEditor->current_selected_mark].params[g_pOMFEditor->current_selected_mark_param];
+
+				ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &mark_param.t0);
+				ImGui::DragFloat("End##ToolsInGameImGui_OMFEditor_MotionMarksMark", &mark_param.t1);
+			}
+
 
 			ImGui::EndTable();
 			ImGui::EndDisabled();
