@@ -57,6 +57,11 @@ bool InventoryHolsterExclusivePistolFootprint(CInventoryItem* item)
 	{
 		return false;
 	}
+	// Knives belong in KNIFE_SLOT, not PISTOL_SLOT_NEW, even when their inventory footprint matches pistols.
+	if (item->cast_weapon_knife() != nullptr)
+	{
+		return false;
+	}
 	if (item->cast_weapon() == nullptr)
 	{
 		return false;
