@@ -265,6 +265,37 @@ void OMFEditor_ReadStringMotionMark(T& str, std::ifstream& file)
 	} while (symbol != 0xA);
 }
 
+void OMFEditor_WriteMotionMarkName(
+	const char* pStr, 
+	unsigned int Size, 
+	std::ofstream& file
+)
+{
+	if (
+		pStr && 
+		Size > 0 &&
+		file.is_open() && 
+		file.good()
+	)
+	{
+		for (unsigned int i = 0; i < Size; ++i)
+		{
+			char symbol = pStr[Size];
+
+			if (symbol == '\0')
+			{
+
+				file << 0xA;
+				return;
+			}
+			else
+			{
+				file << symbol;
+			}
+		}
+	}
+}
+
 
 bool OMFEditor_LoadOMF_AnimData(OMFData::AnimData& data, std::ifstream& file)
 {
@@ -292,6 +323,46 @@ bool OMFEditor_LoadOMF_AnimData(OMFData::AnimData& data, std::ifstream& file)
 	}
 
 	return true;
+}
+
+bool OMFEditor_SaveOMF_AnimData(
+	const OMFData::AnimData& data,
+	std::ofstream& file
+)
+{
+	R_ASSERT(file.good());
+
+	if (file.good() == false)
+		return false;
+
+	uint32_t section_size = 0;
+
+	for (const auto& anim : data.anims)
+	{
+		section_size += anim.name.size() + 1 + (anim.section_size - (anim.name.size()+1));
+		section_size += sizeof(anim.section_id);
+		section_size += sizeof(anim.section_size);
+	}
+
+	section_size += 12;
+
+	file << data.section_id;
+	file << section_size;
+
+	file << data.section_id2;
+	file << data.section_size2;
+
+	file << data.animations_count;
+
+	for (const auto& anim : data.anims)
+	{
+		file << anim.section_id;
+		file << anim.section_size;
+		file << anim.name.c_str();
+		file.write(anim.data, (anim.section_size - (anim.name.size() + 1)));
+	}
+
+	return file.good();
 }
 
 bool OMFEditor_LoadOMF_BoneData(OMFData::BoneData& data, std::ifstream& file)
@@ -324,6 +395,83 @@ bool OMFEditor_LoadOMF_BoneData(OMFData::BoneData& data, std::ifstream& file)
 	}
 
 	return true;
+}
+
+bool OMFEditor_SaveOMF_BoneData(
+	const OMFData::BoneData& data,
+	const OMFData::AnimParamsData& data_ap,
+	std::ofstream& file)
+{
+	R_ASSERT(file.good());
+
+	if (file.good() == false)
+		return false;
+
+	file << data.section_id;
+
+	unsigned int section_size = sizeof(data.section_id);
+
+	for (const auto& part : data.parts)
+	{
+		section_size += part.name.size() + 1;
+		section_size += sizeof(part.count);
+
+		for (const auto& bone : part.bones)
+		{
+			section_size += bone.name.size() + 1;
+			section_size += sizeof(bone.id);
+		}
+	}
+
+	section_size += sizeof(data.ogf_version);
+
+	for (const auto& param : data_ap.params)
+	{
+		section_size += param.name.size() + 1;
+
+		section_size += sizeof(param.flags);
+		section_size += sizeof(param.bone_or_part);
+		section_size += sizeof(param.motion_id);
+		section_size += sizeof(param.speed);
+		section_size += sizeof(param.power);
+		section_size += sizeof(param.accrue);
+		section_size += sizeof(param.falloff);
+
+		if (data.ogf_version >= 4)
+		{
+			section_size += 4;
+
+			for (const auto& mark : param.marks)
+			{
+				section_size += mark.name.size() + 1;
+				section_size += sizeof(mark.count);
+
+				for (const auto& mark_param : mark.params)
+				{
+					section_size += sizeof(mark_param.t0);
+					section_size += sizeof(mark_param.t1);
+				}
+			}
+		}
+	}
+
+	file << section_size;
+	file << data.ogf_version;
+	file << data.count;
+
+	for (const auto& part : data.parts)
+	{
+		file << part.name.c_str();
+		file << part.count;
+
+		for (const auto& bone : part.bones)
+		{
+			file << bone.name.c_str();
+			file << bone.id;
+		}
+	}
+
+	return file.good();
 }
 
 bool OMFEditor_LoadOMF_AnimParamsData_MotionMark(OMFData::AnimParamsData::AnimParams::MotionMark& mark, std::ifstream& file)
@@ -395,6 +543,61 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 
 
 	return true;
+}
+
+bool OMFEditor_SaveOMF_AnimParamsData(
+	int16_t ogf_version, 
+	const OMFData::AnimParamsData& data, 
+	std::ofstream& file
+)
+{
+	R_ASSERT(file.good());
+
+	if (file.good() == false)
+		return false;
+
+	file << data.count;
+
+	for (int i = 0; i < data.count; ++i)
+	{
+		auto& param = data.params[i];
+
+		file << param.name.c_str();
+		file << param.flags;
+		file << param.bone_or_part;
+		file << param.motion_id;
+		file << param.speed;
+		file << param.power;
+		file << param.accrue;
+		file << param.falloff;
+
+		if (ogf_version != 4)
+			continue;
+
+		file << param.marks_count;
+
+		for (int j = 0; j < param.marks_count; ++j)
+		{
+			auto& mark = param.marks[j];
+			
+			OMFEditor_WriteMotionMarkName(
+				mark.name.c_str(),
+				mark.name.size(),
+				file
+			);
+
+			file << mark.count;
+
+			for (int y = 0; y < mark.count; ++y)
+			{
+				auto& param_mark = mark.params[y];
+				file << param_mark.t0;
+				file << param_mark.t1;
+			}
+		}
+	}
+
+	return file.good();
 }
 
 void OMFEditor_Init_ComboAnimationParams(CImGuiOMFEditor* p_state, OMFData& data)
@@ -619,6 +822,80 @@ void OMFEditor_RenameBone(int bone_id, const OMFData::omf_name_t& new_name, OMFD
 	}
 }
 
+void OMFEditor_SaveOMF(
+	CImGuiOMFEditor* pState,
+	const xr_stack_tstring<sizeof(string_path)>& path_where_to_save_file
+)
+{
+	R_ASSERT(pState);
+	R_ASSERT(pState->omf);
+	R_ASSERT(pState->is_file_loaded);
+	R_ASSERT(path_where_to_save_file.empty() == false);
+
+	if (
+		pState &&
+		pState->omf && 
+		pState->is_file_loaded &&
+		path_where_to_save_file.empty()==false
+	)
+	{
+		std::ofstream file(path_where_to_save_file.c_str(), std::ios_base::binary);
+
+		R_ASSERT(file.good());
+
+		if (file.good() == false)
+		{
+			ShowMessageBox(_eMessageBoxStatus::kError, "Check writing policy for your disk", "Failed to create file for writing");
+			return;
+		}
+
+		bool status = OMFEditor_SaveOMF_AnimData(pState->omf->data_anim, file);
+		R_ASSERT(status);
+
+		if (status)
+		{
+			status = OMFEditor_SaveOMF_BoneData(pState->omf->data_bone, pState->omf->data_animparams, file);
+			R_ASSERT(status);
+
+			if (status)
+			{
+				status = OMFEditor_SaveOMF_AnimParamsData(
+					pState->omf->data_bone.ogf_version,
+					pState->omf->data_animparams,
+					file
+				);
+				R_ASSERT(status);
+
+				if (status)
+				{
+					ShowMessageBox(_eMessageBoxStatus::kSuccess, "", "File is saved!");
+				}
+				else
+				{
+					ShowMessageBox(_eMessageBoxStatus::kError, "ERROR", "Failed to save anim params data, can't save file!");
+					file.close();
+					std::filesystem::remove(path_where_to_save_file.c_str());
+				}
+			}
+			else
+			{
+				ShowMessageBox(_eMessageBoxStatus::kError, "ERROR", "Failed to save bone data, can't save file");
+				file.close();
+				std::filesystem::remove(path_where_to_save_file.c_str());
+			}
+		}
+		else
+		{
+			ShowMessageBox(_eMessageBoxStatus::kError, "ERROR", "Failed to save anim data, can't save file");
+			file.close();
+			std::filesystem::remove(path_where_to_save_file.c_str());
+		}
+
+		if (file.is_open())
+			file.close();
+	}
+}
+
 void RequestHandler_OMFEditor(const SRequestData& req)
 {
 	R_ASSERT2(static_cast<eImGuiEditorType>(req.editor_type) == eImGuiEditorType::kOMFEditor, "mistaken workload calling! that means data was corrupted or some error occurred");
@@ -740,7 +1017,12 @@ void RenderOMFEditor_Draw_TableHeader()
 
 					if (status)
 					{
+						R_ASSERT(local_path.empty() == false);
 
+						if (local_path.empty() == false)
+						{
+
+						}
 					}
 				}
 			}
