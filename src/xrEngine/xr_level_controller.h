@@ -116,6 +116,8 @@ enum EGameActions
 
 	kUI_ACTION_1,
 	kUI_ACTION_2,
+	kINV_SORT_PREV,
+	kINV_SORT_NEXT,
 
 	kPDA_LOG_TO_START,
 	kPDA_LOG_TO_END,
