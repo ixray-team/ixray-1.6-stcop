@@ -116,6 +116,8 @@ ENGINE_API _action  actions[]		= {
 	{ "ui_hint",			kUI_HINT,				_both,			agUIGeneral},
 	{ "ui_action_1",		kUI_ACTION_1,			_both,			agUIGeneral},
 	{ "ui_action_2",		kUI_ACTION_2,			_both,			agUIGeneral},
+	{ "inv_sort_prev",		kINV_SORT_PREV,			_both,			agUIGeneral},
+	{ "inv_sort_next",		kINV_SORT_NEXT,			_both,			agUIGeneral},
 
 	{ "pda_log_to_start",	kPDA_LOG_TO_START,		_both,			agUILogMenu},
 	{ "pda_log_to_end",	 	kPDA_LOG_TO_END,		_both,			agUILogMenu},
