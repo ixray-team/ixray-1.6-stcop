@@ -48,7 +48,9 @@ protected:
 		eReputationCaption,
 		eRelation,
 		eRelationCaption,
-		
+		eGameTimeCaption,
+		eGameTime,
+
 		eMaxCaption
 	};
 	CUIStatic*			m_icons[eMaxCaption];
