@@ -28,6 +28,8 @@ class CTrade;
 class CUIProgressBar;
 class CUIItemDropAmountWnd;
 class CUIGamepadLegend;
+class CUIXml;
+class CUIXmlInit;
 
 namespace inventory { namespace upgrade {
 	class Upgrade;
@@ -82,6 +84,8 @@ protected:
 	CUIStatic*					m_ActorBottomInfo = nullptr;
 	CUIStatic*					m_ActorWeight = nullptr;
 	CUIStatic*					m_ActorWeightMax = nullptr;
+	CUIWindow*					m_ActorWeightRow = nullptr;
+	CUIProgressBar*				m_ActorWeightBar = nullptr;
 	
 	CUIStatic*					m_PartnerBottomInfo = nullptr;
 	CUIStatic*					m_PartnerWeight = nullptr;
@@ -145,6 +149,8 @@ public:
 
 protected:			
 	void						Construct							();
+	void						InitActorWeightSection				(CUIXml& uiXml, CUIXmlInit& xmlInit);
+	void						UpdateActorWeightBarTooltip			();
 	void						InitCallbacks						();
 
 	void						UpdateActorBagList					();
