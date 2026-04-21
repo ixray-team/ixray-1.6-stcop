@@ -227,7 +227,7 @@ protected:
 	bool					process_bullet		(
 								collide::rq_results& rq_storage,
 								SBullet& bullet,
-								u32 delta_time
+								float dt
 							);
 	void 			UpdateWorkload		();
 public:
