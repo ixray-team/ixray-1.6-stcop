@@ -740,6 +740,27 @@ bool CUIXmlInit::InitItemStateDisplay(CUIXml& xml_doc, const char* path, int ind
 				pLines->SetFont(pFont);
 			}
 		}
+
+		xr_strconcat(subPath, path, ":min_color");
+		if (xml_doc.NavigateToNode(subPath, index))
+		{
+			pWnd->_useTextColor = true;
+			u32 color = GetColor(xml_doc, subPath, index, 0xff);
+			pWnd->_minTextColor.set(color);
+
+			xr_strconcat(subPath, path, ":middle_color");
+			if (xml_doc.NavigateToNode(subPath, index))
+			{
+				pWnd->_useMiddleTextColor = true;
+				color = GetColor(xml_doc, subPath, index, 0xff);
+				pWnd->_middleTextColor.set(color);
+			}
+
+			xr_strconcat(subPath, path, ":max_color");
+			color = GetColor(xml_doc, subPath, index, 0xff);
+			pWnd->_maxTextColor.set(color);
+		}
+
 		pWnd->SetState(initialPos);
 	}
 	else
