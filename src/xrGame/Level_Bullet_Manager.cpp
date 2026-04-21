@@ -260,25 +260,28 @@ void CBulletManager::UpdateWorkload()
 	// in the reversed order
 
 	if (m_Bullets.empty()) return;
-
-	u32 const time_delta = Device.dwTimeDelta;
-	if(time_delta)
+	
+	rq_storage.r_clear();
+	collide::rq_result dummy;
+	BulletVec::reverse_iterator	begin = m_Bullets.rbegin();
+	BulletVec::reverse_iterator	end = m_Bullets.rend();
+	
+	for (auto& it = begin; it < end; ++it)
 	{
-		rq_storage.r_clear();
-		collide::rq_result dummy;
-		BulletVec::reverse_iterator	i = m_Bullets.rbegin();
-		BulletVec::reverse_iterator	e = m_Bullets.rend();
-		for (u16 j = u16(e - i); i != e; ++i, --j)
-		{
-			if (process_bullet(rq_storage, *i, u32(time_delta * g_bullet_time_factor)))
-				continue;
+		if (process_bullet(rq_storage, *it, Device.fTimeDelta * g_bullet_time_factor))
+			continue;
 
-			if (g_bullet_debug_trj && Device.dwTimeGlobal < (*i).born_time + 10000)
-				continue;
-
-			VERIFY(j > 0);
-			RegisterEvent(EVENT_REMOVE, false, &*i, Fvector().set(0, 0, 0), dummy, j - 1);
-		}
+		if (g_bullet_debug_trj && Device.dwTimeGlobal < (*it).born_time + 10000)
+			continue;
+		
+		RegisterEvent(
+			EVENT_REMOVE, 
+			false,
+			&*it, 
+			Fvector().set(0, 0, 0), 
+			dummy, 
+			static_cast<u16>(&*it - &*m_Bullets.begin())
+		);
 	}
 }
 
@@ -910,13 +913,10 @@ static bool try_update_bullet				(SBullet& bullet, Fvector const& gravity, float
 }
 
 
-bool CBulletManager::process_bullet			(collide::rq_results & storage, SBullet& bullet, u32 const delta_time)
+bool CBulletManager::process_bullet(collide::rq_results & storage, SBullet& bullet, float dt)
 {
-	float const time_delta		= float(delta_time)/1000.f;
-	Fvector const gravity		= Fvector().set( 0.f, -m_fGravityConst, 0.f);
-
-	float const	air_resistance	= (IsGameTypeSingle()) ? m_fAirResistanceK : bullet.air_resistance;
-
+	Fvector const gravity = Fvector().set(0.f, -m_fGravityConst, 0.f);
+	float const air_resistance = (IsGameTypeSingle()) ? m_fAirResistanceK : bullet.air_resistance;
 
 #if 0//def DEBUG
 	extern bool g_bDrawBulletHit;
@@ -939,13 +939,15 @@ bool CBulletManager::process_bullet			(collide::rq_results & storage, SBullet& b
 	Fvector const&start_position= bullet.bullet_pos;
 	Fvector	previous_position	= start_position;
 	float low					= bullet.life_time;
-	float high					= bullet.life_time + time_delta;
+	float high					= bullet.life_time + dt;
 //	Msg							("process_bullet0: low[%f], high[%f]", low, high);
 
 	bullet.change_rajectory_count	= 0;
 
-	for (;;) {
-		for (;;) {
+	for (;;) 
+	{
+		for (;;)
+		{
 			if ( bullet.speed < 1.f )
 				return			(false);
 
