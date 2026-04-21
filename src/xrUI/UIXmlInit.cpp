@@ -738,6 +738,22 @@ bool CUIXmlInit::InitItemStateDisplay(CUIXml& xml_doc, const char* path, int ind
 				CUILines* pLines = pWnd->_percentText->TextItemControl();
 				pLines->SetTextColor(color);
 				pLines->SetFont(pFont);
+
+				shared_str al = xml_doc.ReadAttrib(subPath, index, "align");
+				if (0 == xr_strcmp(al, "c"))
+					pLines->SetTextAlignment(CGameFont::alCenter);
+				else if (0 == xr_strcmp(al, "r"))
+					pLines->SetTextAlignment(CGameFont::alRight);
+				else if (0 == xr_strcmp(al, "l"))
+					pLines->SetTextAlignment(CGameFont::alLeft);
+
+				al = xml_doc.ReadAttrib(subPath, index, "vert_align", "");
+				if (0 == xr_strcmp(al, "c"))
+					pLines->SetVTextAlignment(valCenter);
+				else if (0 == xr_strcmp(al, "b"))
+					pLines->SetVTextAlignment(valBotton);
+				else if (0 == xr_strcmp(al, "t"))
+					pLines->SetVTextAlignment(valTop);
 			}
 		}
 
