@@ -2826,8 +2826,45 @@ ALife::_TIME_ID	 CActor::TimePassedAfterDeath()	const
 }
 
 
+void CActor::OnItemTakeFromGround(CInventoryItem* inventory_item)
+{
+	if (CArtefact* art = inventory_item->cast_artefact())
+	{
+		static xr_vector<ISpatialShared> R;
+		R.clear();
+		R.reserve(64);
+
+		g_SpatialSpace->q_sphere(R, 0, ESPATIAL_TYPE::ANOMALY_ZONE, Actor()->Position(), 60);
+
+		for (ISpatialShared& spatial : R)
+		{
+			if (!spatial.get())
+			{
+				continue;
+			}
+
+			if (CObject* obj = spatial->dcast_CObject())
+			{
+				if (obj->getDestroy() || !obj->cast_game_object())
+				{
+					continue;
+				}
+
+				if (CAnomalyZone* gzone = obj->cast_anomaly_zone())
+				{
+					gzone->OnActorTakeArtefact(60.f, art, Actor()->Position());
+				}
+			}
+		}
+	}
+}
+
 void CActor::OnItemTake(CInventoryItem *inventory_item)
 {
+	if (inventory_item->m_last_dropped_owner_id == u16(-1))
+	{
+		OnItemTakeFromGround(inventory_item);
+	}
 	CInventoryOwner::OnItemTake(inventory_item);
 	if (OnClient()) return;
 }
