@@ -1079,6 +1079,55 @@ void CUIActorMenuBase::ShowSortTabsForCurrentMode()
 	}
 }
 
+CUITabControl* CUIActorMenuBase::GetActiveSortTabControl() const
+{
+	if (m_currMenuMode != mmInventory)
+	{
+		return nullptr;
+	}
+
+	CUITabControl* sortTabControl = m_sortTabControl[eSortTabsInventory];
+	if (!sortTabControl || !sortTabControl->IsShown() || !sortTabControl->IsEnabled())
+	{
+		return nullptr;
+	}
+
+	return sortTabControl;
+}
+
+bool CUIActorMenuBase::ProcessSortTabKeyboardSwitch(int dik, EUIMessages keyboard_action)
+{
+	if (keyboard_action != WINDOW_KEY_PRESSED)
+	{
+		return false;
+	}
+
+	CUITabControl* sortTabControl = GetActiveSortTabControl();
+	if (!sortTabControl)
+	{
+		return false;
+	}
+
+	const bool hasSortPrevBinding = get_action_dik(kINV_SORT_PREV, 0) != 0 || get_action_dik(kINV_SORT_PREV, 1) != 0;
+	const bool hasSortNextBinding = get_action_dik(kINV_SORT_NEXT, 0) != 0 || get_action_dik(kINV_SORT_NEXT, 1) != 0;
+
+	const bool isSortPrevPressed = is_binded(kINV_SORT_PREV, dik) || (!hasSortPrevBinding && dik == SDL_SCANCODE_Q);
+	if (isSortPrevPressed)
+	{
+		sortTabControl->PrevTab(true);
+		return true;
+	}
+
+	const bool isSortNextPressed = is_binded(kINV_SORT_NEXT, dik) || (!hasSortNextBinding && dik == SDL_SCANCODE_E);
+	if (isSortNextPressed)
+	{
+		sortTabControl->NextTab(true);
+		return true;
+	}
+
+	return false;
+}
+
 void CUIActorMenuBase::Update()
 {
 	if (pInput->GetControllerMode())
@@ -1223,6 +1272,11 @@ bool CUIActorMenuBase::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		return true;
 	}	
 
+	if (ProcessSortTabKeyboardSwitch(dik, keyboard_action))
+	{
+		return true;
+	}
+
 	if ( is_binded(kUSE, dik) || is_binded(kINVENTORY, dik) )
 	{
 		if ( WINDOW_KEY_PRESSED == keyboard_action )
@@ -1271,6 +1325,21 @@ bool CUIActorMenuBase::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	if( inherited::OnKeyboardAction(dik,keyboard_action) )return true;
 
 	return false;
+}
+
+bool CUIActorMenuBase::OnKeyboardHold(int dik)
+{
+	if (!GetActiveSortTabControl())
+	{
+		return false;
+	}
+
+	const bool hasSortPrevBinding = get_action_dik(kINV_SORT_PREV, 0) != 0 || get_action_dik(kINV_SORT_PREV, 1) != 0;
+	const bool hasSortNextBinding = get_action_dik(kINV_SORT_NEXT, 0) != 0 || get_action_dik(kINV_SORT_NEXT, 1) != 0;
+
+	const bool isSortPrevPressed = is_binded(kINV_SORT_PREV, dik) || (!hasSortPrevBinding && dik == SDL_SCANCODE_Q);
+	const bool isSortNextPressed = is_binded(kINV_SORT_NEXT, dik) || (!hasSortNextBinding && dik == SDL_SCANCODE_E);
+	return isSortPrevPressed || isSortNextPressed;
 }
 
 bool CUIActorMenuBase::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
