@@ -273,8 +273,6 @@ void CBulletManager::UpdateWorkload()
 
 		if (g_bullet_debug_trj && Device.dwTimeGlobal < (*it).born_time + 10000)
 			continue;
-
-		VERIFY(j > 0);
 		
 		RegisterEvent(
 			EVENT_REMOVE, 
@@ -620,19 +618,17 @@ void CBulletManager::add_bullet_point(
 		SBullet& bullet
 	)
 {
-#ifdef DEBUG
 	Fvector	const temp			= trajectory_position(start_position, start_velocity, gravity, air_resistance, current_time);
+#ifdef DEBUG
 	m_bullet_points.push_back	(previous_position);
 	m_bullet_points.push_back	(temp);
-	previous_position			= temp;
 #endif
+	previous_position			= temp;
 	
 	if (!g_bullet_debug_trj)
 		return;
 	
-	Fvector	const temp = trajectory_position(start_position, start_velocity, gravity, air_resistance, current_time);
 	bullet.lines.emplace_back(previous_position, temp);
-	previous_position = temp;
 }
 
 static void update_bullet_parabolic	(
