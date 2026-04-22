@@ -496,6 +496,7 @@ virtual	const IBoneData&_BCL	GetBoneData(u16 bone_id) const 															{ ret
 	virtual void				LL_SetBonesVisibleAll() {};
 
 	virtual void				LL_SetBonesVisible(VisMask mask) 														{ VERIFY(false); }
+	virtual void				BonesHistory_Invalidate() override {}
 
 	// Main functionality
 	virtual void				CalculateBones(bool bForceExact	= false) 												{ } // Recalculate skeleton
