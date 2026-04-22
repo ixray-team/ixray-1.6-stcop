@@ -2325,7 +2325,7 @@ void CActor::shedule_Update	(u32 DT)
 	pCamBobbing->SetState(mstate_real, conditions().IsLimping(), IsZoomAimingMode());
 
 	//звук тяжелого дыхания при уталости и хромании
-	if(this==Level().CurrentControlEntity() && !g_dedicated_server && Holder() != nullptr)
+	if(this==Level().CurrentControlEntity() && !g_dedicated_server && Holder() == nullptr)
 	{
 		if(conditions().IsLimping() && g_Alive() && !psActorFlags.test(AF_DISABLE_CONDITION_TEST)){
 			if(!m_HeavyBreathSnd.is_playing())
