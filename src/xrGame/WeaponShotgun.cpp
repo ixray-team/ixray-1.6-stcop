@@ -322,7 +322,7 @@ void CWeaponShotgun::PlayAnimOpenWeapon()
 {
 	VERIFY(GetState() == eReload);
 
-	PlayHUDMotion(SelectOpenWeaponAnimation(), EHudMixType::eNoMix, eReload);
+	PlayHUDMotion(SelectOpenWeaponAnimation(), EHudMixType::eMixAll, eReload);
 }
 
 shared_str CWeaponShotgun::SelectAddCartridgeWeaponAnimation()

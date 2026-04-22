@@ -38,7 +38,6 @@ protected:
 	shared_str	m_sGrenadeBoneName;
 	shared_str	m_sHudGrenadeBoneName;
 	virtual bool	AllowBore		();
-	virtual void	PlayAnimReload	();
 
 	struct
 	{
