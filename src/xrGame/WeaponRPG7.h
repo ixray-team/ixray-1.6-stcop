@@ -33,7 +33,6 @@ public:
 
 protected:
 	virtual bool	AllowBore		();
-	virtual void	PlayAnimReload	();
 
 	shared_str	m_sRocketSection;
 
