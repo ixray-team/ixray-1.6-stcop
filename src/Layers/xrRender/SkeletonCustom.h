@@ -287,6 +287,8 @@ public:
 	void							LL_SetBonesVisible	(VisMask mask);
 	void							LL_SetBonesVisibleAll() { visimask.set_all(); };
 
+	virtual void					BonesHistory_Invalidate() override;
+
 	// Main functionality
 	virtual void					CalculateBones				(bool bForceExact	=	false);		// Recalculate skeleton
 	void							CalculateBones_Invalidate	();
