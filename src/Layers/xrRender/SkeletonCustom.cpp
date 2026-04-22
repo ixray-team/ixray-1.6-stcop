@@ -374,21 +374,25 @@ void CKinematics::Copy(dxRender_Visual *P)
 
 	CKinematics* pFrom = smart_cast<CKinematics*>(P);
 	VERIFY(pFrom);
-	pUserData  = pFrom->pUserData;
-	bones	   = pFrom->bones;
-	iRoot	   = pFrom->iRoot;
+
+	pUserData = pFrom->pUserData;
+	bones = pFrom->bones;
+	iRoot = pFrom->iRoot;
 	bone_map_N = pFrom->bone_map_N;
 	bone_map_P = pFrom->bone_map_P;
-	visimask   = pFrom->visimask;
+	visimask = pFrom->visimask;
 
-	IBoneInstances_Create	();
+	IBoneInstances_Create();
 
-	for (u32 i=0; i<children.size(); i++) 
+	for (u32 i = 0; i < children.size(); i++)
+	{
 		LL_GetChild(i)->SetParent(this);
+	}
 
-	CalculateBones_Invalidate	();
+	CalculateBones_Invalidate();
 
-    m_lod 	   = (pFrom->m_lod)?(dxRender_Visual*)::Render->model_Duplicate	(pFrom->m_lod):nullptr;
+	m_lod = (pFrom->m_lod) ? (dxRender_Visual*)::Render->model_Duplicate(pFrom->m_lod) : nullptr;
+	dwFirstRenderFrame = 0;
 }
 
 void CKinematics::CalculateBones_Invalidate	()
@@ -923,6 +927,12 @@ void CKinematics::StoreVisualMatrix(Fmatrix& world_matrix)
 				Bi.mRenderTransform_old.set(Bi.mRenderTransform);
 			}
 		}
+
 		dwFirstRenderFrame = RDEVICE.dwFrame;
 	}
+}
+
+void CKinematics::BonesHistory_Invalidate()
+{
+	dwFirstRenderFrame = 0;
 }
