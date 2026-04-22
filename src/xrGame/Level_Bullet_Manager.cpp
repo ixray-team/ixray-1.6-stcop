@@ -623,12 +623,12 @@ void CBulletManager::add_bullet_point(
 	m_bullet_points.push_back	(previous_position);
 	m_bullet_points.push_back	(temp);
 #endif
-	previous_position			= temp;
 	
 	if (!g_bullet_debug_trj)
 		return;
 	
 	bullet.lines.emplace_back(previous_position, temp);
+	previous_position			= temp;
 }
 
 static void update_bullet_parabolic	(
