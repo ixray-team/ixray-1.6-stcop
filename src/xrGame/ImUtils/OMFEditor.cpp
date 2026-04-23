@@ -863,7 +863,7 @@ void OMFEditor_RenameBone(int bone_id, const OMFData::omf_name_t& new_name, OMFD
 
 void OMFEditor_SaveOMF(
 	CImGuiOMFEditor* pState,
-	const xr_stack_tstring<sizeof(string_path)>& path_where_to_save_file
+	xr_stack_tstring<sizeof(string_path)>& path_where_to_save_file
 )
 {
 	R_ASSERT(pState);
@@ -878,6 +878,13 @@ void OMFEditor_SaveOMF(
 		path_where_to_save_file.empty() == false
 		)
 	{
+		xr_strlwr(path_where_to_save_file);
+
+		if (path_where_to_save_file.find(XR_TEXT(".omf")) == xr_stack_tstring<1>::npos)
+		{
+			path_where_to_save_file.append(XR_TEXT(".omf"));
+		}
+
 		std::ofstream file(path_where_to_save_file.c_str(), std::ios_base::binary);
 
 		R_ASSERT(file.good());
@@ -907,7 +914,7 @@ void OMFEditor_SaveOMF(
 
 				if (status)
 				{
-					ShowMessageBox(_eMessageBoxStatus::kSuccess, "", "File is saved!");
+					ShowMessageBox(_eMessageBoxStatus::kSuccess, "", "File is saved successfully!");
 				}
 				else
 				{
