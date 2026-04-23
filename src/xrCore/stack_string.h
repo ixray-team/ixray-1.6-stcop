@@ -529,22 +529,26 @@ IC void xr_strlwr(xr_stack_string<StringLength>& src)
 
 #ifdef IXR_WINDOWS
 template<xr_ssnt_t StringLength>
-IC std::enable_if_t<std::is_same_v<xr_char_t, wchar_t>, void>
-xr_strlwr(xr_stack_wstring<StringLength>& src)
+IC void xr_strlwr(xr_stack_wstring<StringLength>& src)
 {
-	for (auto& Char : src)
+	if constexpr (std::is_same_v<xr_char_t, wchar_t>)
 	{
-		Char = std::towlower(Char);
+		for (auto& Char : src)
+		{
+			Char = std::towlower(Char);
+		}
 	}
 }
 #elif defined(IXR_LINUX)
 template<xr_ssnt_t StringLength>
-IC std::enable_if_t<std::is_same_v<xr_char_t, char16_t>, void>
-xr_strlwr(xr_stack_wstring<StringLength>& src)
+IC void xr_strlwr(xr_stack_wstring<StringLength>& src)
 {
-	for (auto& Char : src)
+	if constexpr (std::is_same_v<xr_char_t, char16_t>)
 	{
-		Char = std::towlower(Char);
+		for (auto& Char : src)
+		{
+			Char = std::towlower(Char);
+		}
 	}
 }
 #endif
