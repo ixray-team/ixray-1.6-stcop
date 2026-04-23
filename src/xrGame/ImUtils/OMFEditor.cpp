@@ -1474,7 +1474,8 @@ void OMFEditor_ComboAnimationParamWasChanged(
 	{
 		pState->list_box_motion_marks_names.clear();
 		pState->list_box_motion_marks_params_names.clear();
-
+		pState->current_selected_mark = -1;
+		pState->current_selected_mark_param = -1;
 		if (selected_animation_param_id >= 0)
 		{
 			auto& param = pState->omf->data_animparams.params[selected_animation_param_id];
@@ -1490,6 +1491,7 @@ void OMFEditor_ComboAnimationParamWasChanged(
 				{
 					std::sprintf(temp.data(), "%d_mark%d", mark_id, mark_param_id);
 					pState->list_box_motion_marks_params_names.push_back(temp);
+					++mark_param_id; 
 				}
 
 				mark_param_id = 0;
