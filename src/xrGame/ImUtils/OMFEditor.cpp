@@ -1660,10 +1660,27 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 			}
 			else
 			{
-				auto& mark_param = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param].marks[g_pOMFEditor->current_selected_mark].params[g_pOMFEditor->current_selected_mark_param];
+				auto& mark = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param].marks[g_pOMFEditor->current_selected_mark];
 
-				ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &mark_param.t0);
-				ImGui::DragFloat("End##ToolsInGameImGui_OMFEditor_MotionMarksMark", &mark_param.t1);
+				if (mark.params.empty() == false)
+				{
+					auto& mark_param = mark.params[g_pOMFEditor->current_selected_mark_param];
+					ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &mark_param.t0);
+					ImGui::DragFloat("End##ToolsInGameImGui_OMFEditor_MotionMarksMark", &mark_param.t1);
+				}
+				else
+				{
+					ImGui::BeginDisabled(true);
+
+					float fStart{};
+					ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fStart);
+
+
+					float fEnd{};
+					ImGui::DragFloat("End##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fEnd);
+
+					ImGui::EndDisabled();
+				}
 			}
 
 
