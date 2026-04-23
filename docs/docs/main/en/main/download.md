@@ -87,7 +87,7 @@ Now you need to find the latest successful build. This is the most important ste
 1.  The downloaded file (for both methods) is a ZIP archive
 2.  **Extract its contents to the folder with the installed game**
 3.  When asked to **replace files** — agree
-4.  Unpack original *.db files
+4.  Unpack all original *.db files into `gamedata`
 > [!NOTE] 
 > **Key Warning:** IX-Ray is only an **engine**. It requires a pre-installed legal copy of the original game.
 
