@@ -13,6 +13,7 @@
 #include <cassert>
 #include <functional>
 #include <string_view>
+#include <cwctype>
 
 #include "xrDebug_macros.h"
 #include "_std_c_undefs.h"
@@ -49,6 +50,7 @@ public:
 
 	inline static constexpr number_type Length = _kStringLength;
 	inline static constexpr number_type Size = _kStringLength * sizeof(value_type);
+	inline static constexpr number_type npos = number_type(-1);
 
 	static_assert(std::is_same<char, char_t>::value || std::is_same<wchar_t, char_t>::value, "unsupported char format, report to developers (maybe you need it, but at least write your problem)");
 	static_assert(_kStringLength != number_type(-1), "you can't pass a negative value for instatiation!");
@@ -149,14 +151,14 @@ public:
 		if constexpr (std::is_same_v<char_t, char>)
 		{
 			const char* found = std::strstr(this->m_buffer + pos, p_str);
-			return found ? found - this->m_buffer : number_type(-1);
+			return found ? found - this->m_buffer : npos;
 		}
 
 #ifdef IXR_WINDOWS
 		if constexpr (std::is_same_v<char_t, wchar_t>)
 		{
 			const wchar_t* found = std::wcsstr(this->m_buffer + pos, p_str);
-			return found ? found - this->m_buffer : number_type(-1);
+			return found ? found - this->m_buffer : npos;
 		}
 #endif
 
@@ -207,7 +209,7 @@ public:
 		const number_type current_length = this->size();
 		const number_type available_length = _kStringLength - current_length;
 
-		if (!IVERIFY(available_length > 0) || !IVERIFY(std::strlen(p_str) < available_length))
+		if (!IVERIFY(available_length > 0) || !IVERIFY(current_length < available_length))
 		{
 			return *this;
 		}
@@ -524,3 +526,29 @@ IC void xr_strlwr(xr_stack_string<StringLength>& src)
 		Char = std::tolower(Char);
 	}
 }
+
+#ifdef IXR_WINDOWS
+template<xr_ssnt_t StringLength>
+IC void xr_strlwr(xr_stack_wstring<StringLength>& src)
+{
+	if constexpr (std::is_same_v<xr_char_t, wchar_t>)
+	{
+		for (auto& Char : src)
+		{
+			Char = std::towlower(Char);
+		}
+	}
+}
+#elif defined(IXR_LINUX)
+template<xr_ssnt_t StringLength>
+IC void xr_strlwr(xr_stack_wstring<StringLength>& src)
+{
+	if constexpr (std::is_same_v<xr_char_t, char16_t>)
+	{
+		for (auto& Char : src)
+		{
+			Char = std::towlower(Char);
+		}
+	}
+}
+#endif
