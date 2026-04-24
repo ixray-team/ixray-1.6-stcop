@@ -77,6 +77,11 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 		}
 	}
 
+	if (SendErrorCallback)
+	{
+		SendErrorCallback(assertion_info);
+	}
+
 	if (!ignore_error_window && !IsDebuggerPresent() && !strstr(GetCommandLineA(), "-no_call_stack_assert")) {
 		if (shared_str_initialized)
 			Msg			("stack trace:\n");
@@ -170,7 +175,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 		g_pEventManager->Event.Defer("KERNEL:assert", (size_t)&LastError, (size_t)&ignore_always);
 
-		if (IsDebuggerPresent())
+		if (IsDebuggerPresent() && !SilentErrorMode)
 		{
 			DebugBreak();
 		}
