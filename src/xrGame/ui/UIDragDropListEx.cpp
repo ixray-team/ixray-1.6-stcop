@@ -576,24 +576,21 @@ CUICellContainer::~CUICellContainer()
 
 bool CUICellContainer::AddSimilar(CUICellItem* itm)
 {
-    if (!m_pParentDragDropList->IsGrouping())
-        return false;
+	if (!m_pParentDragDropList->IsGrouping())
+	{
+		return false;
+	}
 
-    const PIItem iitem = static_cast<PIItem>(itm->m_pData);
-    if (iitem && iitem->m_pInventory && iitem->m_pInventory->ItemFromSlot(iitem->BaseSlot()) == iitem)
-        return false;
+	CUICellItem* i = FindSimilar(itm);
+	R_ASSERT(i != itm);
+	R_ASSERT(0 == itm->ChildsCount());
+	if (i != nullptr)
+	{
+		i->PushChild(itm);
+		itm->SetOwnerList(m_pParentDragDropList);
+	}
 
-    if (!iitem->CanStack())
-        return false;
-
-    CUICellItem* i = FindSimilar(itm);
-    if (i == nullptr || i == itm || itm->ChildsCount() > 0)
-        return false;
-
-    i->PushChild(itm);
-    itm->SetOwnerList(m_pParentDragDropList);
-
-    return true;
+	return (i != nullptr);
 }
 
 CUICellItem* CUICellContainer::FindSimilar(CUICellItem* itm)
