@@ -117,6 +117,8 @@ class CUIGameCustom :
 	public DLL_Pure, 
 	public CDialogHolder
 {
+private:
+	xrCriticalSection ui_lock;
 protected:
 	CUIWindow*			m_window;
 	CUIXml*				m_msgs_xml;

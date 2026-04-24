@@ -66,28 +66,34 @@ bool CUIGameCustom::HasShownDialogs() const
 	return ActorMenu().IsShown() || PdaMenu().IsShown();
 }
 
-void CUIGameCustom::OnFrame() 
+void CUIGameCustom::OnFrame()
 {
 	PROF_EVENT("CUIGameCustom::OnFrame");
+
 	CDialogHolder::OnFrame();
-	st_vec_it it = m_custom_statics.begin();
-	st_vec_it it_e = m_custom_statics.end();
-	for(;it!=it_e;++it)
-		(*it)->Update();
 
-	std::sort(	it, it_e, predicate_sort_stat );
+	xrCriticalSectionGuard guard(ui_lock);
 
-	
-	while(!m_custom_statics.empty() && !m_custom_statics.back()->IsActual())
 	{
-		delete_data					(m_custom_statics.back());
-		m_custom_statics.pop_back	();
-	}
-	
-	if(g_b_ClearGameCaptions)
-	{
-		delete_data				(m_custom_statics);
-		g_b_ClearGameCaptions	= false;
+		st_vec_it it = m_custom_statics.begin();
+		st_vec_it it_e = m_custom_statics.end();
+		for (; it != it_e; ++it)
+			(*it)->Update();
+
+		std::sort(it, it_e, predicate_sort_stat);
+
+
+		while (!m_custom_statics.empty() && !m_custom_statics.back()->IsActual())
+		{
+			delete_data(m_custom_statics.back());
+			m_custom_statics.pop_back();
+		}
+
+		if (g_b_ClearGameCaptions)
+		{
+			delete_data(m_custom_statics);
+			g_b_ClearGameCaptions = false;
+		}
 	}
 	m_window->Update();
 
@@ -100,11 +106,14 @@ void CUIGameCustom::Render()
 {
 	PROF_EVENT("CUIGameCustom::Render");
 
-	for (auto& it : m_custom_statics)
 	{
-		if (it != nullptr)
+		xrCriticalSectionGuard guard(ui_lock);
+		for (auto& it : m_custom_statics)
 		{
-			it->Draw();
+			if (it != nullptr)
+			{
+				it->Draw();
+			}
 		}
 	}
 
@@ -142,6 +151,8 @@ void CUIGameCustom::Render()
 
 SDrawStaticStruct* CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstance, float ttlDefault)
 {
+	xrCriticalSectionGuard guard(ui_lock);
+
 	if(bSingleInstance)
 	{
 		st_vec::iterator it = std::find_if(m_custom_statics.begin(),m_custom_statics.end(), predicate_find_stat(id) );
@@ -183,6 +194,7 @@ SDrawStaticStruct * CUIGameCustom::AddHudMessage(LPCSTR text, LPCSTR text2, LPCS
 
 SDrawStaticStruct* CUIGameCustom::GetCustomStatic(LPCSTR id)
 {
+	xrCriticalSectionGuard guard(ui_lock);
 	st_vec::iterator it = std::find_if(m_custom_statics.begin(),m_custom_statics.end(), predicate_find_stat(id));
 	if(it!=m_custom_statics.end())
 		return (*it);
@@ -192,10 +204,11 @@ SDrawStaticStruct* CUIGameCustom::GetCustomStatic(LPCSTR id)
 
 void CUIGameCustom::RemoveCustomStatic(LPCSTR id)
 {
+	xrCriticalSectionGuard guard(ui_lock);
 	st_vec::iterator it = std::find_if(m_custom_statics.begin(),m_custom_statics.end(), predicate_find_stat(id) );
 	if(it!=m_custom_statics.end())
 	{
-			delete_data				(*it);
+		delete_data				(*it);
 		m_custom_statics.erase	(it);
 	}
 }
