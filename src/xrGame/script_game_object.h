@@ -249,6 +249,9 @@ public:
 	// Actor only
 			void				SetActorPosition	(Fvector pos);
 			void				SetActorDirection	(float dir);
+			void				CameraMove			(float dir); // FNAS
+			void				SwitchTorch			();			// FNAS
+			void				SetActorCrouch		();			// FNAS
 			void				SetNpcPosition		(Fvector pos);
 			void				DisableHitMarks		(bool disable);
 			bool				DisableHitMarks		() const;

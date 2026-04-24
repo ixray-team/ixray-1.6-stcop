@@ -317,6 +317,14 @@ void CHangingLamp::TurnOff	()
 		
 }
 
+BOOL CHangingLamp::IsOn() //FNAS
+{
+	if (!Alive() || m_bState < 1)
+		return FALSE;
+
+	return TRUE;
+}
+
 //void CHangingLamp::Hit(float P,Fvector &dir, CObject* who,s16 element,
 //					   Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
 void	CHangingLamp::Hit					(SHit* pHDS)
@@ -414,5 +422,6 @@ void CHangingLamp::script_register(lua_State *L)
 			.def(luabind::constructor<>())
 			.def("turn_on",		&CHangingLamp::TurnOn)
 			.def("turn_off",	&CHangingLamp::TurnOff)
+			.def("is_on",		&CHangingLamp::IsOn) // FNAS
 	];
 }
