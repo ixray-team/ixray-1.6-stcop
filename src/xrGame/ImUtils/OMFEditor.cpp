@@ -1033,28 +1033,31 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 
 void RenderOMFEditor_Draw_TableHeader()
 {
-	if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MainTable", 10))
+	if (ImGui::BeginMenuBar())
 	{
-		ImGui::TableNextRow();
-
-		ImGui::TableSetColumnIndex(0);
-		if (ImGui::Button("Load##ToolsInGameImGui_OMFEditor"))
+		if (ImGui::BeginMenu("File##OMFEditor"))
 		{
-			OMFEditor_LoadFile(g_pOMFEditor);
+			if (ImGui::MenuItem("Load"))
+			{
+				OMFEditor_LoadFile(g_pOMFEditor);
+			}
+
+			if (g_pOMFEditor->is_file_loaded)
+			{
+				if (ImGui::MenuItem("Close"))
+				{
+					g_pOMFEditor->is_file_loaded = false;
+					g_pOMFEditor->path[0] = 0;
+				}
+			}
+
+			ImGui::EndMenu();
 		}
 
 
 		if (g_pOMFEditor->is_file_loaded)
 		{
-			ImGui::TableSetColumnIndex(1);
-			if (ImGui::Button("Close##ToolsInGameImGui_OMFEditor"))
-			{
-				g_pOMFEditor->is_file_loaded = false;
-				g_pOMFEditor->path[0] = 0;
-			}
-
-			ImGui::TableSetColumnIndex(2);
-			if (ImGui::Button("Save##ToolsInGameImGui_OMFEditor"))
+			if (ImGui::MenuItem("Save##ToolsInGameImGui_OMFEditor"))
 			{
 				if (xr_EFS)
 				{
@@ -1076,42 +1079,30 @@ void RenderOMFEditor_Draw_TableHeader()
 				}
 			}
 
-			ImGui::TableSetColumnIndex(3);
-			if (ImGui::Button("Merge with##ToolsInGameImGui_OMFEditor"))
+			if (ImGui::BeginMenu("Merge with##ToolsInGameImGui_OMFEditor"))
 			{
 
+				ImGui::EndMenu();
 			}
 
-			ImGui::TableSetColumnIndex(4);
-			if (ImGui::Button("Add anims from##ToolsInGameImGui_OMFEditor"))
+			if (ImGui::BeginMenu("Add anims from##ToolsInGameImGui_OMFEditor"))
 			{
+				ImGui::EndMenu();
 			}
 
-			ImGui::TableSetColumnIndex(5);
-			if (ImGui::Button("Try repair##ToolsInGameImGui_OMFEditor"))
+			if (ImGui::BeginMenu("Try repair##ToolsInGameImGui_OMFEditor"))
 			{
-
+				ImGui::EndMenu();
 			}
 
-			ImGui::TableSetColumnIndex(6);
-			if (ImGui::Button("Swap anim marks##ToolsInGameImGui_OMFEditor"))
+			if (ImGui::BeginMenu("Swap anim marks##ToolsInGameImGui_OMFEditor"))
 			{
-
+				ImGui::EndMenu();
 			}
-
-			//ImGui::TableSetColumnIndex(8);
-			//if (ImGui::Button("Rename bones##ToolsInGameImGui_OMFEditor"))
-			//{
-			//}
-
-			//	ImGui::TableSetColumnIndex(9);
-			//	if (ImGui::Button("Show bone parts##ToolsInGameImGui_OMFEditor"))
-			//	{
-			//	}
 
 		}
 
-		ImGui::EndTable();
+		ImGui::EndMenuBar();
 	}
 
 }
@@ -2261,7 +2252,7 @@ void RenderToolsOMFEditorWindow()
 
 	if (g_pOMFEditor)
 	{
-		if (ImGui::Begin("Editor - [OMF]##ToolsInGameImGui"))
+		if (ImGui::Begin("Editor - [OMF]##ToolsInGameImGui", nullptr, ImGuiWindowFlags_MenuBar))
 		{
 			RenderOMFEditor_Draw_TableHeader();
 
