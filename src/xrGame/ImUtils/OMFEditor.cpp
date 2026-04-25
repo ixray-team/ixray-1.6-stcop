@@ -1079,25 +1079,20 @@ void RenderOMFEditor_Draw_TableHeader()
 				}
 			}
 
-			if (ImGui::BeginMenu("Merge with##ToolsInGameImGui_OMFEditor"))
+			if (ImGui::MenuItem("Merge with##ToolsInGameImGui_OMFEditor"))
 			{
-
-				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Add anims from##ToolsInGameImGui_OMFEditor"))
+			if (ImGui::MenuItem("Add anims from##ToolsInGameImGui_OMFEditor"))
 			{
-				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Try repair##ToolsInGameImGui_OMFEditor"))
+			if (ImGui::MenuItem("Try repair##ToolsInGameImGui_OMFEditor"))
 			{
-				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Swap anim marks##ToolsInGameImGui_OMFEditor"))
+			if (ImGui::MenuItem("Swap anim marks##ToolsInGameImGui_OMFEditor"))
 			{
-				ImGui::EndMenu();
 			}
 
 		}
