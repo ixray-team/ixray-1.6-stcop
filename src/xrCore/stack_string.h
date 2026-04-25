@@ -67,9 +67,31 @@ public:
 	
 	stack_string(const char* Str)
 	{
-		m_buffer[0] = char_t(0);
-		append(Str); // maybe need to optimize
+		if constexpr (std::is_same_v<char_t, char>)
+		{
+			m_buffer[0] = char_t(0);
+			append(Str); // maybe need to optimize
+		}
 	}
+
+#ifdef UNICODE
+	stack_string(const xr_char_t* Str)
+	{
+#ifdef IXR_WINDOWS
+		if constexpr (std::is_same_v<char_t, wchar_t>)
+		{
+			m_buffer[0] = char_t(0);
+			append(Str);
+		}
+#elif defined(IXR_LINUX)
+		if constexpr (std::is_same_v<char_t, char16_t>)
+		{
+			m_buffer[0] = char_t(0);
+			append(Str);
+		}
+#endif
+	}
+#endif
 
 	stack_string(xr_string_view Str)
 	{
