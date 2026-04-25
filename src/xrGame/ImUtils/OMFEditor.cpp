@@ -68,6 +68,7 @@ constexpr const char* _kOMFEditorModalWindow_BoneRenameHasCollion = "Warning!##T
 constexpr const char* _kOMFEditorModalWindow_AnimationParamMotionMarksCleared = "Warning!##ToolsOMFEditor_MotionMarksCleared";
 constexpr const char* _kOMFEditorModalWindow_AddMotionMark = "Add##ToolsOMFEditor_MotionMarkAdd";
 constexpr const char* _kOMFEditorModalWindow_DuplicateFoundMotionMark = "Warning!##ToolsOMFEditor_DuplicateFoundMotionMark";
+constexpr const char* _kOMFEditorModalWindow_TryRepairApplied = "Info##ToolsOMFEditor_TryRepairModal";
 
 
 struct OMFData
@@ -179,6 +180,7 @@ struct CImGuiOMFEditor
 	bool is_show_popup_add_motion_mark{};
 	bool is_show_popup_duplicate_found_motion_mark{};
 
+	bool is_show_popup_try_repair_applied{};
 
 	bool is_file_loaded{};
 	bool animation_param_was_changed{};
@@ -203,7 +205,7 @@ struct CImGuiOMFEditor
 	xr_vector<const char*> list_box_motion_marks_names;
 	xr_vector<xr_stack_string16> list_box_motion_marks_params_names;
 
-	xr_stack_string<sizeof(string_path) * 2> path;
+	xr_stack_string<sizeof(string_path)*2> path;
 };
 
 CImGuiOMFEditor* g_pOMFEditor = nullptr;
@@ -706,6 +708,7 @@ void OMFEditor_Init(CImGuiOMFEditor* p_state, OMFData& data)
 	p_state->is_show_popup_boneparts_rename_has_collision = false;
 	p_state->is_show_popup_add_motion_mark = false;
 	p_state->is_show_popup_duplicate_found_motion_mark = false;
+	p_state->is_show_popup_try_repair_applied = false;
 
 	p_state->list_box_motion_marks_names.reserve(128);
 	p_state->list_box_motion_marks_params_names.reserve(128);
@@ -863,7 +866,8 @@ void OMFEditor_RenameBone(int bone_id, const OMFData::omf_name_t& new_name, OMFD
 
 void OMFEditor_SaveOMF(
 	CImGuiOMFEditor* pState,
-	xr_stack_tstring<sizeof(string_path)>& path_where_to_save_file
+	xr_stack_tstring<sizeof(string_path)>& path_where_to_save_file,
+	bool silent = false
 )
 {
 	R_ASSERT(pState);
@@ -914,7 +918,10 @@ void OMFEditor_SaveOMF(
 
 				if (status)
 				{
-					ShowMessageBox(_eMessageBoxStatus::kSuccess, "", "File is saved successfully!");
+					if (silent == false)
+					{
+						ShowMessageBox(_eMessageBoxStatus::kSuccess, "", "File is saved successfully!");
+					}
 				}
 				else
 				{
@@ -939,6 +946,48 @@ void OMFEditor_SaveOMF(
 
 		if (file.is_open())
 			file.close();
+	}
+}
+
+void OMFEditor_TryRepair(
+	CImGuiOMFEditor* pState
+)
+{
+	R_ASSERT(pState);
+
+	if (
+		pState &&
+		pState->omf &&
+		pState->is_file_loaded &&
+		pState->omf->data_animparams.params.empty()==false &&
+		pState->omf->data_anim.anims.empty()==false
+		)
+	{
+		short i = 0;
+		for (auto& param : pState->omf->data_animparams.params)
+		{
+			param.motion_id = i;
+			++i;
+		}
+
+		i = 1;
+
+		for (auto& anim : pState->omf->data_anim.anims)
+		{
+			anim.name = pState->omf->data_animparams.params[i - 1].name;
+			anim.section_id = i;
+			++i;
+		}
+		
+	 	xr_stack_tstring<sizeof(string_path)> path = Platform::ANSI_TO_TCHAR(g_pOMFEditor->path.c_str());
+
+		OMFEditor_SaveOMF(
+			g_pOMFEditor,
+			path,
+			true
+		);
+
+		g_pOMFEditor->is_show_popup_try_repair_applied = true;
 	}
 }
 
@@ -988,6 +1037,7 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 				g_pOMFEditor->is_show_popup_renamehascollision = false;
 				g_pOMFEditor->is_show_popup_rename_animation_param = false;
 				g_pOMFEditor->is_show_popup_add_motion_mark = false;
+				g_pOMFEditor->is_show_popup_try_repair_applied = false;
 
 				can_hide_window = false;
 			}
@@ -1089,6 +1139,7 @@ void RenderOMFEditor_Draw_TableHeader()
 
 			if (ImGui::MenuItem("Try repair##ToolsInGameImGui_OMFEditor"))
 			{
+				OMFEditor_TryRepair(g_pOMFEditor);
 			}
 
 			if (ImGui::MenuItem("Swap anim marks##ToolsInGameImGui_OMFEditor"))
@@ -1699,6 +1750,7 @@ void RenderOMFEditor_Draw_ModalPopups()
 	modal_opened += g_pOMFEditor->is_show_popup_renamehascollision;
 	modal_opened += g_pOMFEditor->is_show_popup_add_motion_mark;
 	modal_opened += g_pOMFEditor->is_show_popup_duplicate_found_motion_mark;
+	modal_opened += g_pOMFEditor->is_show_popup_try_repair_applied;
 
 	R_ASSERT(modal_opened <= 1);
 
@@ -1737,6 +1789,11 @@ void RenderOMFEditor_Draw_ModalPopups()
 		if (g_pOMFEditor->is_show_popup_duplicate_found_motion_mark)
 		{
 			ImGui::OpenPopup(_kOMFEditorModalWindow_DuplicateFoundMotionMark);
+		}
+
+		if (g_pOMFEditor->is_show_popup_try_repair_applied)
+		{
+			ImGui::OpenPopup(_kOMFEditorModalWindow_TryRepairApplied);
 		}
 	}
 
@@ -1873,6 +1930,22 @@ void RenderOMFEditor_Draw_ModalPopups()
 		{
 			g_pOMFEditor->is_show_popup_add_motion_mark = true;
 			g_pOMFEditor->is_show_popup_duplicate_found_motion_mark = false;
+		}
+
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal(
+		_kOMFEditorModalWindow_TryRepairApplied,
+		&g_pOMFEditor->is_show_popup_try_repair_applied,
+		ImGuiWindowFlags_AlwaysAutoResize
+	))
+	{
+		ImGui::Text("Repair was applied!");
+
+		if (ImGui::Button("Ok##ToolsOMFEditor_TryRepair"))
+		{
+			g_pOMFEditor->is_show_popup_try_repair_applied = false;
 		}
 
 		ImGui::EndPopup();
