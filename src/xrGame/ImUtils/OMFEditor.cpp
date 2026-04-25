@@ -16,14 +16,21 @@ enum class _eMessageBoxStatus
 {
 	kSuccess,
 	kWarning,
-	kError
+	kError,
+	kYesOrNo
 };
 
-void ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::string_view message)
+int ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::string_view message)
 {
 	const SDL_MessageBoxButtonData buttons[] =
 	{
 		{ 0, 0, "Ok" }
+	};
+
+	const SDL_MessageBoxButtonData buttons_yesorno[] = 
+	{
+		{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes"},
+		{0, 0, "No"},
 	};
 
 	u32 type = SDL_MESSAGEBOX_INFORMATION;
@@ -42,24 +49,38 @@ void ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::stri
 	}
 	}
 
+	const SDL_MessageBoxButtonData* pButtons = buttons;
+	int size_buttons = std::size(buttons);
+
+	if (status == _eMessageBoxStatus::kYesOrNo)
+	{
+		pButtons = buttons_yesorno;
+		size_buttons = std::size(buttons_yesorno);
+	}
+
 	const SDL_MessageBoxData messageboxdata =
 	{
 		type | SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT,		/* .flags */
 		nullptr,					/* .window */
 		title.data(),				/* .title */
 		message.data(),			/* .message */
-		std::size(buttons),			/* .numbuttons */
-		buttons,					/* .buttons */
+		size_buttons,			/* .numbuttons */
+		pButtons,					/* .buttons */
 		nullptr						/* .colorScheme */
 	};
 
 	int button_id = -1;
 
 	int ret = SDL_ShowMessageBox(&messageboxdata, &button_id);
+
+	if (ret < 0)
+		button_id = -1;
+
+	return button_id;
 }
 
 
-constexpr unsigned int _kMaxStringFieldNameLength = sizeof(string128);
+constexpr unsigned int _kMaxStringFieldNameLength = 32;
 constexpr const char* _kOMFEditorModalWindow_RenameAnimationParam = "Rename##ToolsInGameImGui_OMGEditor_AnimationParam";
 constexpr const char* _kOMFEditorModalWindow_WarningRenameHasCollision = "Warning##ToolsInGameImGui_OMFEditor_AnimationParamFailedRenaming";
 constexpr const char* _kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSuccessful = "Successful!##ToolsInGameImGui_OMFEditor_BonePartsToClipboard";
@@ -68,6 +89,7 @@ constexpr const char* _kOMFEditorModalWindow_BoneRenameHasCollion = "Warning!##T
 constexpr const char* _kOMFEditorModalWindow_AnimationParamMotionMarksCleared = "Warning!##ToolsOMFEditor_MotionMarksCleared";
 constexpr const char* _kOMFEditorModalWindow_AddMotionMark = "Add##ToolsOMFEditor_MotionMarkAdd";
 constexpr const char* _kOMFEditorModalWindow_DuplicateFoundMotionMark = "Warning!##ToolsOMFEditor_DuplicateFoundMotionMark";
+constexpr const char* _kOMFEditorModalWindow_TryRepairApplied = "Info##ToolsOMFEditor_TryRepairModal";
 
 
 struct OMFData
@@ -156,6 +178,18 @@ struct OMFData
 	AnimData data_anim;
 	BoneData data_bone;
 	AnimParamsData data_animparams;
+
+	void destroy()
+	{
+		for (auto& anim : data_anim.anims)
+		{
+			if (anim.data)
+			{
+				delete[] anim.data;
+				anim.data = nullptr;
+			}
+		}
+	}
 };
 
 struct CImGuiOMFEditor
@@ -179,6 +213,7 @@ struct CImGuiOMFEditor
 	bool is_show_popup_add_motion_mark{};
 	bool is_show_popup_duplicate_found_motion_mark{};
 
+	bool is_show_popup_try_repair_applied{};
 
 	bool is_file_loaded{};
 	bool animation_param_was_changed{};
@@ -192,6 +227,7 @@ struct CImGuiOMFEditor
 	int current_selected_mark_param{};
 
 	OMFData* omf{};
+	OMFData* temp_omf{};
 	OMFData::omf_name_t rename_temp;
 	OMFData::omf_name_t rename_temp_bone;
 	OMFData::omf_name_t temp_motion_mark_name;
@@ -203,7 +239,7 @@ struct CImGuiOMFEditor
 	xr_vector<const char*> list_box_motion_marks_names;
 	xr_vector<xr_stack_string16> list_box_motion_marks_params_names;
 
-	xr_stack_string<sizeof(string_path) * 2> path;
+	xr_stack_string<sizeof(string_path)*2> path;
 };
 
 CImGuiOMFEditor* g_pOMFEditor = nullptr;
@@ -706,6 +742,7 @@ void OMFEditor_Init(CImGuiOMFEditor* p_state, OMFData& data)
 	p_state->is_show_popup_boneparts_rename_has_collision = false;
 	p_state->is_show_popup_add_motion_mark = false;
 	p_state->is_show_popup_duplicate_found_motion_mark = false;
+	p_state->is_show_popup_try_repair_applied = false;
 
 	p_state->list_box_motion_marks_names.reserve(128);
 	p_state->list_box_motion_marks_params_names.reserve(128);
@@ -769,6 +806,8 @@ void OMFEditor_LoadFile(CImGuiOMFEditor* p_state)
 				{
 					if (p_state->omf)
 					{
+						p_state->omf->destroy();
+
 						delete p_state->omf;
 						p_state->omf = new OMFData();
 					}
@@ -863,7 +902,8 @@ void OMFEditor_RenameBone(int bone_id, const OMFData::omf_name_t& new_name, OMFD
 
 void OMFEditor_SaveOMF(
 	CImGuiOMFEditor* pState,
-	xr_stack_tstring<sizeof(string_path)>& path_where_to_save_file
+	xr_stack_tstring<sizeof(string_path)>& path_where_to_save_file,
+	bool silent = false
 )
 {
 	R_ASSERT(pState);
@@ -914,7 +954,10 @@ void OMFEditor_SaveOMF(
 
 				if (status)
 				{
-					ShowMessageBox(_eMessageBoxStatus::kSuccess, "", "File is saved successfully!");
+					if (silent == false)
+					{
+						ShowMessageBox(_eMessageBoxStatus::kSuccess, "", "File is saved successfully!");
+					}
 				}
 				else
 				{
@@ -939,6 +982,198 @@ void OMFEditor_SaveOMF(
 
 		if (file.is_open())
 			file.close();
+	}
+}
+
+void OMFEditor_TryRepair(
+	CImGuiOMFEditor* pState
+)
+{
+	R_ASSERT(pState);
+
+	if (
+		pState &&
+		pState->omf &&
+		pState->is_file_loaded &&
+		pState->omf->data_animparams.params.empty()==false &&
+		pState->omf->data_anim.anims.empty()==false
+		)
+	{
+		short i = 0;
+		for (auto& param : pState->omf->data_animparams.params)
+		{
+			param.motion_id = i;
+			++i;
+		}
+
+		i = 1;
+
+		for (auto& anim : pState->omf->data_anim.anims)
+		{
+			anim.name = pState->omf->data_animparams.params[i - 1].name;
+			anim.section_id = i;
+			++i;
+		}
+		
+	 	xr_stack_tstring<sizeof(string_path)> path = Platform::ANSI_TO_TCHAR(g_pOMFEditor->path.c_str());
+
+		OMFEditor_SaveOMF(
+			g_pOMFEditor,
+			path,
+			true
+		);
+
+		g_pOMFEditor->is_show_popup_try_repair_applied = true;
+	}
+}
+
+void OMFEditor_SwapAnimMarks(
+	CImGuiOMFEditor* pState
+)
+{
+	R_ASSERT(pState);
+
+	if (
+		pState && 
+		pState->omf && 
+		pState->is_file_loaded
+	)
+	{
+		if (pState->temp_omf)
+		{
+			pState->temp_omf->destroy();
+			delete pState->temp_omf;
+			pState->temp_omf = nullptr;
+		}
+
+		if (pState->temp_omf == nullptr)
+		{
+			pState->temp_omf = pState->omf;
+			pState->omf = nullptr;
+		}
+
+		R_ASSERT(pState->omf==nullptr);
+
+		if (pState->omf == nullptr)
+		{
+			xr_stack_tstring<sizeof(string_path)> local_path;
+			bool status = xr_EFS->GetOpenName(local_path, XR_TEXT("OMF file\0*.omf\0"));
+
+			if (status)
+			{
+				status = Platform::WCHAR_TO_CHAR(local_path, pState->path);
+				R_ASSERT(status);
+
+				R_ASSERT(std::filesystem::exists(pState->path.c_str()));
+
+				std::ifstream file_omf(local_path.c_str(), std::ios::binary);
+
+				if (file_omf.is_open())
+				{
+					pState->current_selected_animation_param = 0;
+					pState->current_selected_mark = -1;
+					pState->current_selected_mark_param = -1;
+					pState->omf = new OMFData();
+
+					status = OMFEditor_LoadOMF(*pState->omf, file_omf);
+					R_ASSERT(status);
+
+					if (status)
+					{
+						bool dlg_showed = false;
+						bool dlg_option_overwrite_enabled = false;
+
+
+						OMFData::omf_name_t name_from_temp;
+						OMFData::omf_name_t name_from_current;
+
+						for (int i = 0; i < pState->temp_omf->data_anim.animations_count; ++i)
+						{
+							auto& param_temp = pState->temp_omf->data_animparams.params[i];
+
+							if (param_temp.marks_count > 0)
+							{
+								for (int j = 0; j < pState->omf->data_anim.animations_count; ++j)
+								{
+									name_from_temp = pState->temp_omf->data_anim.anims[i].name;
+									name_from_current = pState->omf->data_anim.anims[j].name;
+
+									// we must gurantee how we compare names...
+									xr_strlwr(name_from_temp);
+									xr_strlwr(name_from_current);
+
+									if (name_from_temp == name_from_current)
+									{
+										if (!dlg_showed)
+										{
+											dlg_option_overwrite_enabled = ShowMessageBox(_eMessageBoxStatus::kYesOrNo, "Info", "Overwrite existing motion marks?") == 1;
+											dlg_showed = true;
+										}
+
+										if (dlg_option_overwrite_enabled)
+										{
+											auto& param = pState->omf->data_animparams.params[j];
+											
+											param.marks.clear();
+											param.marks_count = param_temp.marks_count;
+											param.marks = param_temp.marks;
+										}
+									}
+								}
+							}
+						}
+					}
+					else
+					{
+						delete pState->omf;
+						pState->omf = pState->temp_omf;
+						pState->temp_omf = nullptr;
+						ShowMessageBox(_eMessageBoxStatus::kWarning, "Warning", "failed to load file!");
+					}
+				}
+				else
+				{
+					R_ASSERT(pState->omf == nullptr);
+					pState->omf = pState->temp_omf;
+					pState->temp_omf = nullptr;
+					ShowMessageBox(_eMessageBoxStatus::kWarning, "Warning", "failed to load file!");
+				}
+			}
+			else
+			{
+				R_ASSERT(pState->omf == nullptr);
+				pState->omf = pState->temp_omf;
+				pState->temp_omf = nullptr;
+			}
+
+			R_ASSERT(pState->omf);
+			if (pState->omf)
+			{
+				auto& selected_param = pState->omf->data_animparams.params[pState->current_selected_animation_param];
+
+				xr_stack_string16 temp_mark_param_name;
+				pState->list_box_motion_marks_names.clear();
+				pState->list_box_motion_marks_params_names.clear();
+
+				int i = 0;
+				for (auto& mark : selected_param.marks)
+				{
+					pState->list_box_motion_marks_names.push_back(mark.name.c_str());
+
+					if (i == 0)
+					{
+						int mark_param_id = 0;
+						for (auto& mark_param : mark.params)
+						{
+							std::sprintf(temp_mark_param_name.data(), "%d_mark%d", i, mark_param_id);
+							pState->list_box_motion_marks_params_names.push_back(temp_mark_param_name);
+							++mark_param_id;
+						}
+					}
+					++i;
+				}
+			}
+		}
 	}
 }
 
@@ -988,6 +1223,7 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 				g_pOMFEditor->is_show_popup_renamehascollision = false;
 				g_pOMFEditor->is_show_popup_rename_animation_param = false;
 				g_pOMFEditor->is_show_popup_add_motion_mark = false;
+				g_pOMFEditor->is_show_popup_try_repair_applied = false;
 
 				can_hide_window = false;
 			}
@@ -1017,6 +1253,22 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 	{
 		if (g_pOMFEditor)
 		{
+			if (g_pOMFEditor->omf)
+			{
+				g_pOMFEditor->omf->destroy();
+
+				delete g_pOMFEditor->omf;
+				g_pOMFEditor->omf = nullptr;
+			}
+			
+			if (g_pOMFEditor->temp_omf)
+			{
+				g_pOMFEditor->temp_omf->destroy();
+
+				delete g_pOMFEditor->temp_omf;
+				g_pOMFEditor->temp_omf = nullptr;
+			}
+
 			delete g_pOMFEditor;
 			g_pOMFEditor = nullptr;
 		}
@@ -1033,28 +1285,31 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 
 void RenderOMFEditor_Draw_TableHeader()
 {
-	if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MainTable", 10))
+	if (ImGui::BeginMenuBar())
 	{
-		ImGui::TableNextRow();
-
-		ImGui::TableSetColumnIndex(0);
-		if (ImGui::Button("Load##ToolsInGameImGui_OMFEditor"))
+		if (ImGui::BeginMenu("File##OMFEditor"))
 		{
-			OMFEditor_LoadFile(g_pOMFEditor);
+			if (ImGui::MenuItem("Load"))
+			{
+				OMFEditor_LoadFile(g_pOMFEditor);
+			}
+
+			if (g_pOMFEditor->is_file_loaded)
+			{
+				if (ImGui::MenuItem("Close"))
+				{
+					g_pOMFEditor->is_file_loaded = false;
+					g_pOMFEditor->path[0] = 0;
+				}
+			}
+
+			ImGui::EndMenu();
 		}
 
 
 		if (g_pOMFEditor->is_file_loaded)
 		{
-			ImGui::TableSetColumnIndex(1);
-			if (ImGui::Button("Close##ToolsInGameImGui_OMFEditor"))
-			{
-				g_pOMFEditor->is_file_loaded = false;
-				g_pOMFEditor->path[0] = 0;
-			}
-
-			ImGui::TableSetColumnIndex(2);
-			if (ImGui::Button("Save##ToolsInGameImGui_OMFEditor"))
+			if (ImGui::MenuItem("Save##ToolsInGameImGui_OMFEditor"))
 			{
 				if (xr_EFS)
 				{
@@ -1076,42 +1331,27 @@ void RenderOMFEditor_Draw_TableHeader()
 				}
 			}
 
-			ImGui::TableSetColumnIndex(3);
-			if (ImGui::Button("Merge with##ToolsInGameImGui_OMFEditor"))
-			{
-
-			}
-
-			ImGui::TableSetColumnIndex(4);
-			if (ImGui::Button("Add anims from##ToolsInGameImGui_OMFEditor"))
+			if (ImGui::MenuItem("Merge with##ToolsInGameImGui_OMFEditor"))
 			{
 			}
 
-			ImGui::TableSetColumnIndex(5);
-			if (ImGui::Button("Try repair##ToolsInGameImGui_OMFEditor"))
+			if (ImGui::MenuItem("Add anims from##ToolsInGameImGui_OMFEditor"))
 			{
-
 			}
 
-			ImGui::TableSetColumnIndex(6);
-			if (ImGui::Button("Swap anim marks##ToolsInGameImGui_OMFEditor"))
+			if (ImGui::MenuItem("Try repair##ToolsInGameImGui_OMFEditor"))
 			{
-
+				OMFEditor_TryRepair(g_pOMFEditor);
 			}
 
-			//ImGui::TableSetColumnIndex(8);
-			//if (ImGui::Button("Rename bones##ToolsInGameImGui_OMFEditor"))
-			//{
-			//}
-
-			//	ImGui::TableSetColumnIndex(9);
-			//	if (ImGui::Button("Show bone parts##ToolsInGameImGui_OMFEditor"))
-			//	{
-			//	}
+			if (ImGui::MenuItem("Swap anim marks##ToolsInGameImGui_OMFEditor"))
+			{
+				OMFEditor_SwapAnimMarks(g_pOMFEditor);
+			}
 
 		}
 
-		ImGui::EndTable();
+		ImGui::EndMenuBar();
 	}
 
 }
@@ -1713,6 +1953,7 @@ void RenderOMFEditor_Draw_ModalPopups()
 	modal_opened += g_pOMFEditor->is_show_popup_renamehascollision;
 	modal_opened += g_pOMFEditor->is_show_popup_add_motion_mark;
 	modal_opened += g_pOMFEditor->is_show_popup_duplicate_found_motion_mark;
+	modal_opened += g_pOMFEditor->is_show_popup_try_repair_applied;
 
 	R_ASSERT(modal_opened <= 1);
 
@@ -1751,6 +1992,11 @@ void RenderOMFEditor_Draw_ModalPopups()
 		if (g_pOMFEditor->is_show_popup_duplicate_found_motion_mark)
 		{
 			ImGui::OpenPopup(_kOMFEditorModalWindow_DuplicateFoundMotionMark);
+		}
+
+		if (g_pOMFEditor->is_show_popup_try_repair_applied)
+		{
+			ImGui::OpenPopup(_kOMFEditorModalWindow_TryRepairApplied);
 		}
 	}
 
@@ -1887,6 +2133,22 @@ void RenderOMFEditor_Draw_ModalPopups()
 		{
 			g_pOMFEditor->is_show_popup_add_motion_mark = true;
 			g_pOMFEditor->is_show_popup_duplicate_found_motion_mark = false;
+		}
+
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal(
+		_kOMFEditorModalWindow_TryRepairApplied,
+		&g_pOMFEditor->is_show_popup_try_repair_applied,
+		ImGuiWindowFlags_AlwaysAutoResize
+	))
+	{
+		ImGui::Text("Repair was applied!");
+
+		if (ImGui::Button("Ok##ToolsOMFEditor_TryRepair"))
+		{
+			g_pOMFEditor->is_show_popup_try_repair_applied = false;
 		}
 
 		ImGui::EndPopup();
@@ -2261,7 +2523,7 @@ void RenderToolsOMFEditorWindow()
 
 	if (g_pOMFEditor)
 	{
-		if (ImGui::Begin("Editor - [OMF]##ToolsInGameImGui"))
+		if (ImGui::Begin("Editor - [OMF]##ToolsInGameImGui", nullptr, ImGuiWindowFlags_MenuBar))
 		{
 			RenderOMFEditor_Draw_TableHeader();
 
