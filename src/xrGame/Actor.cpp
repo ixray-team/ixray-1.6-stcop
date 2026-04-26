@@ -2229,6 +2229,8 @@ void CActor::UpdateConditionArtefacts()
 			}
 		}
 	}
+
+	inventory().CalcTotalWeight();
 }
 
 xr_map<shared_str, float> imm_mul =
@@ -2286,6 +2288,8 @@ void CActor::HitArtefactsCondition(SHit& hit)
 			}
 		}
 	}
+
+	inventory().CalcTotalWeight();
 }
 
 void CActor::set_state_box(u32	mstate)
@@ -3032,6 +3036,7 @@ void CActor::MoveArtefactBelt(const CArtefact* artefact, bool on_belt)
 void CActor::UpdateArtefactsOnBeltAndOutfit()
 {
 	static float update_time = 0;
+	const static bool enableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
 
 	float f_update_time = 0;
 
@@ -3056,6 +3061,10 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 			conditions().ChangePower((artefact->m_fPowerRestoreSpeed * art_cond) * f_update_time);
 			conditions().ChangeSatiety((artefact->m_fSatietyRestoreSpeed * art_cond) * f_update_time);
 			conditions().ChangeThirst((artefact->m_fThirstRestoreSpeed * art_cond) * f_update_time);
+			if (enableSleepiness)
+			{
+				conditions().ChangeSleepiness((artefact->m_fSleepinessRestoreSpeed * art_cond) * f_update_time);
+			}
 
 			if ((artefact->m_fRadiationRestoreSpeed * art_cond) > 0.0f)
 			{
@@ -3143,6 +3152,68 @@ float CActor::GetProtection_ArtefactsOnBelt(ALife::EHitType hit_type)
 	}
 
 	return sum;
+}
+
+float CActor::GetArtefactEquipmentDurabilityModifier() const
+{
+	float modifier = 1.0f;
+
+	for (const PIItem item : inventory().m_belt)
+	{
+		if (CArtefact* artefact = item->cast_artefact())
+		{
+			modifier += ((artefact->GetEquipmentDurabilityModifier() - 1.0f) * artefact->GetCondition());
+		}
+	}
+
+	clamp(modifier, 0.0f, 10.0f);
+	return modifier;
+}
+
+float CActor::GetArtefactInventoryWeightModifier() const
+{
+	float modifier = 1.0f;
+
+	for (const PIItem item : inventory().m_belt)
+	{
+		if (CArtefact* artefact = item->cast_artefact())
+		{
+			modifier += ((artefact->GetInventoryWeightModifier() - 1.0f) * artefact->GetCondition());
+		}
+	}
+
+	clamp(modifier, 0.0f, 10.0f);
+	return modifier;
+}
+
+float CActor::GetArtefactJumpHeightModifier() const
+{
+	float modifier = 0.0f;
+
+	for (const PIItem item : inventory().m_belt)
+	{
+		if (CArtefact* artefact = item->cast_artefact())
+		{
+			modifier += (artefact->GetJumpHeightModifier() * artefact->GetCondition());
+		}
+	}
+
+	return modifier;
+}
+
+float CActor::GetArtefactMovementSpeedModifier() const
+{
+	float modifier = 0.0f;
+
+	for (const PIItem item : inventory().m_belt)
+	{
+		if (CArtefact* artefact = item->cast_artefact())
+		{
+			modifier += (artefact->GetMovementSpeedModifier() * artefact->GetCondition());
+		}
+	}
+
+	return modifier;
 }
 
 void	CActor::SetZoomRndSeed		(s32 Seed)

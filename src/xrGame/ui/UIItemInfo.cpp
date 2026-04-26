@@ -256,18 +256,18 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 	if ( UIWeight )
 	{
 		const char*  kg_str = g_pStringTable->translate( "st_kg" ).c_str();
-		float	weight = pInvItem->Weight();
+		float	weight = pInvItem->m_pInventory ? pInvItem->m_pInventory->CalcItemWeight(pInvItem) : pInvItem->Weight();
 		
 		if ( !weight )
 		{
 			if ( CWeaponAmmo* ammo = dynamic_cast<CWeaponAmmo*>(pInvItem) )
 			{
 				// its helper item, m_boxCur is zero, so recalculate via CInventoryItem::Weight()
-				weight = pInvItem->CInventoryItem::Weight();
+				weight = pInvItem->m_pInventory ? pInvItem->m_pInventory->CalcItemWeight(pInvItem) : pInvItem->CInventoryItem::Weight();
 				for( u32 j = 0; j < pCellItem->ChildsCount(); ++j )
 				{
 					PIItem jitem	= (PIItem)pCellItem->Child(j)->m_pData;
-					weight			+= jitem->CInventoryItem::Weight();
+					weight += jitem->m_pInventory ? jitem->m_pInventory->CalcItemWeight(jitem) : jitem->CInventoryItem::Weight();
 				}
 
 			}
