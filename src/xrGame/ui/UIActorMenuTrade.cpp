@@ -27,6 +27,7 @@
 #include "UIGameSP.h"
 #include "UITalkWnd.h"
 #include "Car.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
 
 bool is_item_in_list(CUIDragDropListEx* pList, PIItem item);
 // -------------------------------------------------
