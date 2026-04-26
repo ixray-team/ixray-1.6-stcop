@@ -43,15 +43,25 @@ public:
 	float	GetRadiationPower() { return m_fRadiationRestoreSpeed; }
 	float	GetSatietyPower() { return m_fSatietyRestoreSpeed; }
 	float	GetThirstPower() { return m_fThirstRestoreSpeed; }
+	float	GetSleepinessPower() { return m_fSleepinessRestoreSpeed; }
 	float	GetPowerPower() { return m_fPowerRestoreSpeed; }
 	float	GetBleedingPower() { return m_fBleedingRestoreSpeed; }
+	float	GetEquipmentDurabilityModifier() const { return m_fEquipmentDurabilityModifier; }
+	float	GetInventoryWeightModifier() const { return m_fInventoryWeightModifier; }
+	float	GetJumpHeightModifier() const { return m_fJumpHeightModifier; }
+	float	GetMovementSpeedModifier() const { return m_fMovementSpeedModifier; }
 
 	void	SetHealthPower(float value) { m_fHealthRestoreSpeed = value; }
 	void	SetRadiationPower(float value) { m_fRadiationRestoreSpeed = value; }
 	void	SetSatietyPower(float value) { m_fSatietyRestoreSpeed = value; }
 	void	SetThirstPower(float value) { m_fThirstRestoreSpeed = value; }
+	void	SetSleepinessPower(float value) { m_fSleepinessRestoreSpeed = value; }
 	void	SetPowerPower(float value) { m_fPowerRestoreSpeed = value; }
 	void	SetBleedingPower(float value) { m_fBleedingRestoreSpeed = value; }
+	void	SetEquipmentDurabilityModifier(float value) { m_fEquipmentDurabilityModifier = value; }
+	void	SetInventoryWeightModifier(float value) { m_fInventoryWeightModifier = value; }
+	void	SetJumpHeightModifier(float value) { m_fJumpHeightModifier = value; }
+	void	SetMovementSpeedModifier(float value) { m_fMovementSpeedModifier = value; }
 
 	float m_fJumpSpeed;
 	float m_fWalkAccel;
@@ -100,8 +110,13 @@ public:
 	float 							m_fRadiationRestoreSpeed;
 	float 							m_fSatietyRestoreSpeed;
 	float 							m_fThirstRestoreSpeed;
+	float 							m_fSleepinessRestoreSpeed;
 	float							m_fPowerRestoreSpeed;
 	float							m_fBleedingRestoreSpeed;
+	float							m_fEquipmentDurabilityModifier;
+	float							m_fInventoryWeightModifier;
+	float							m_fJumpHeightModifier;
+	float							m_fMovementSpeedModifier;
 	CHitImmunity 					m_ArtefactHitImmunities;
 public:
 	enum EAFHudStates {

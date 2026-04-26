@@ -277,11 +277,11 @@ float CUIActorMenuBase::CalcItemsWeight(CUIDragDropListEx* pList)
 	{
 		CUICellItem* itm	= pList->GetItemIdx(i);
 		PIItem	iitem		= (PIItem)itm->m_pData;
-		res					+= iitem->Weight();
+		res					+= iitem->m_pInventory ? iitem->m_pInventory->CalcItemWeight(iitem) : iitem->Weight();
 		for( u32 j = 0; j < itm->ChildsCount(); ++j )
 		{
 			PIItem	jitem	= (PIItem)itm->Child(j)->m_pData;
-			res				+= jitem->Weight();
+			res += jitem->m_pInventory ? jitem->m_pInventory->CalcItemWeight(jitem) : jitem->Weight();
 		}
 	}
 	return res;
@@ -303,7 +303,7 @@ bool CUIActorMenuBase::CanMoveToPartner(PIItem pItem)
 
 	float r1				= CalcItemsWeight( GetTradeActorList() );		// actor
 	float r2				= CalcItemsWeight( GetTradePartnerList() );	// partner
-	float itmWeight			 = pItem->Weight();
+	float itmWeight = pItem->m_pInventory ? pItem->m_pInventory->CalcItemWeight(pItem) : pItem->Weight();
 	float partner_inv_weight = GetPartner()->inventory().CalcTotalWeight();
 	float partner_max_weight = GetPartner()->MaxCarryWeight();
 

@@ -1003,6 +1003,9 @@ public:
 			float				GetArtefactRadiationRestoreSpeed();
 			float				GetArtefactSatietyRestoreSpeed();
 			float				GetArtefactThirstRestoreSpeed();
+			float				GetArtefactSleepinessRestoreSpeed();
+			float				GetArtefactEquipmentDurabilityModifier();
+			float				GetArtefactInventoryWeightModifier();
 			float				GetArtefactPowerRestoreSpeed();
 			float				GetArtefactBleedingRestoreSpeed();
 
@@ -1010,6 +1013,9 @@ public:
 			void				SetArtefactRadiationRestoreSpeed(float value);
 			void				SetArtefactSatietyRestoreSpeed(float value);
 			void				SetArtefactThirstRestoreSpeed(float value);
+			void				SetArtefactSleepinessRestoreSpeed(float value);
+			void				SetArtefactEquipmentDurabilityModifier(float value);
+			void				SetArtefactInventoryWeightModifier(float value);
 			void				SetArtefactPowerRestoreSpeed(float value);
 			void				SetArtefactBleedingRestoreSpeed(float value);
 			CScriptGameObject* ItemOnBelt(u32 item_id) const;
