@@ -75,6 +75,7 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 	fAirControlParam = 0.f;
 	m_character = nullptr;
 	m_dwCurBox = 0xffffffff;
+	m_lastSpeedCrashDamageTime = 0;
 	fCollisionDamageFactor = 1.f;
 	in_dead_area_count = 0;
 	bNonInteractiveMode = false;
@@ -160,7 +161,10 @@ void CPHMovementControl::Calculate(Fvector& vAccel, const Fvector& camDir, float
 	m_character->SetAcceleration(vAccel);
 
 	if (!fis_zero(jump))
+	{
+		m_character->SetJupmUpVelocity(jump);
 		m_character->Jump(vAccel);
+	}
 
 	m_character->GetSavedVelocity(vVelocity);
 	fActualVelocity = vVelocity.magnitude();
@@ -203,6 +207,41 @@ void CPHMovementControl::UpdateCollisionDamage( )
 	gcontact_Power				= fContactSpeed/fMaxCrashSpeed;
 	if (fContactSpeed > fMinCrashSpeed) 
 	{
+			bool applyHighSpeedProtection = false;
+			bool isFallSequence = true;
+			if (CActor* actor = smart_cast<CActor*>(m_character->PhysicsRefObject()))
+			{
+				applyHighSpeedProtection = !fis_zero(actor->GetArtefactMovementSpeedModifier());
+				if (applyHighSpeedProtection)
+				{
+					const u32 moveState = actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal);
+					isFallSequence = !!(moveState & (ACTOR_DEFS::mcJump | ACTOR_DEFS::mcFall | ACTOR_DEFS::mcLanding | ACTOR_DEFS::mcLanding2));
+				}
+			}
+
+			if (applyHighSpeedProtection)
+			{
+				Fvector currentVelocity = {};
+				m_character->GetVelocity(currentVelocity);
+
+				const bool isStrongDownwardVelocity = currentVelocity.y < -2.0f;
+				if (!isFallSequence && !isStrongDownwardVelocity)
+				{
+					gcontact_HealthLost = 0.0f;
+					gcontact_Power = 0.0f;
+					return;
+				}
+
+				if (Device.dwTimeGlobal < (m_lastSpeedCrashDamageTime + 250))
+				{
+					gcontact_HealthLost = 0.0f;
+					gcontact_Power = 0.0f;
+					return;
+				}
+
+				m_lastSpeedCrashDamageTime = Device.dwTimeGlobal;
+			}
+
 			gcontact_HealthLost = ((fContactSpeed - fMinCrashSpeed)) / (fMaxCrashSpeed - fMinCrashSpeed);
 
 			VERIFY( m_character );

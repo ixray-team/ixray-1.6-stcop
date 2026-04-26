@@ -38,6 +38,11 @@ protected:
 	UIArtefactParamItem*	m_disp_condition;
 	UIArtefactParamItem*	m_additional_weight;
 	UIArtefactParamItem*	m_af_slots;
+	UIArtefactParamItem*	m_jump_height_modifier;
+	UIArtefactParamItem*	m_movement_speed_modifier;
+	UIArtefactParamItem*	m_sleepiness_restore_speed;
+	UIArtefactParamItem*	m_equipment_durability_modifier;
+	UIArtefactParamItem*	m_inventory_weight_modifier;
 
 	CUIStatic*				m_Prop_line;
 
