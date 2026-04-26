@@ -405,8 +405,6 @@ void CRender::RenderUI(bool is_debug)
 	++marker;
 }
 
-bool is_render_cubemap = false;
-
 void CRender::Render()
 {
 	GPU_EVENT(CRender_Render);
@@ -436,207 +434,12 @@ void CRender::Render()
 		return;
 	}
 
-	if(RImplementation.o.offscreen_reflecitons && pLastSector)
+	if (o.offscreen_reflecitons)
 	{
-		GPU_EVENT(FORWARD_REFLECTIONS);
+		ps_r_taa_jitter.set(0, 0, -1);
+		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
 
-		static int& FaceCount = CCC_Integer::FastCommand("r_fce_count", 1, 0, 7);
-
-		extern float g_fSCREEN;
-
-		extern float r_ssaDISCARD;
-		extern float r_ssaDONTSORT;
-		extern float r_ssaLOD_A;
-		extern float r_ssaLOD_B;
-		extern float r_ssaHZBvsTEX;
-		extern float r_ssaGLOD_start, r_ssaGLOD_end;
-
-		auto saved_g_fSCREEN = g_fSCREEN;
-		auto saved_r_ssaDISCARD = r_ssaDISCARD;
-		auto saved_r_ssaDONTSORT = r_ssaDONTSORT;
-		auto saved_r_ssaLOD_A = r_ssaLOD_A;
-		auto saved_r_ssaLOD_B = r_ssaLOD_B;
-		auto saved_r_ssaGLOD_start = r_ssaGLOD_start;
-		auto saved_r_ssaGLOD_end = r_ssaGLOD_end;
-		auto saved_r_ssaHZBvsTEX = r_ssaHZBvsTEX;
-
-		u32 dwSize = Target->rt_Reflection->dwSize;
-
-		float fov_factor = _sqr(90.f / Device.fFOV);
-		g_fSCREEN = _sqr((float)dwSize) * fov_factor * (EPS_S + ps_r__LOD);
-
-		r_ssaDISCARD = _sqr(ps_r__ssaDISCARD) / g_fSCREEN;
-		r_ssaDONTSORT = _sqr(ps_r__ssaDONTSORT / 3) / g_fSCREEN;
-
-		r_ssaLOD_A = _sqr(ps_r2_ssaLOD_A / 3) / g_fSCREEN;
-		r_ssaLOD_B = _sqr(ps_r2_ssaLOD_B / 3) / g_fSCREEN;
-
-		r_ssaGLOD_start = _sqr(ps_r__GLOD_ssa_start / 3) / g_fSCREEN;
-		r_ssaGLOD_end = _sqr(ps_r__GLOD_ssa_end / 3) / g_fSCREEN;
-		r_ssaHZBvsTEX = _sqr(ps_r__ssaHZBvsTEX / 3) / g_fSCREEN;
-
-		for (auto i = 0; i < FaceCount; ++i)
-		{
-			GPU_EVENT(FORWARD_REFLECTIONS_FACE);
-
-			static Fvector EnvPosition;
-			static Fmatrix EnvViewReal;
-
-			static Fmatrix EnvProject;
-
-			static Fmatrix EnvView[6](Fidentity);
-			static Fmatrix EnvFullTransform[6](Fidentity);
-
-			static u32 SectorIndex = 0;
-
-			static Fvector cmNorm[6] = {
-				{0.f, +1.f, 0.f},
-				{0.f, +1.f, 0.f},
-				{0.f, 0.f, -1.f},
-				{0.f, 0.f, +1.f},
-				{0.f, +1.f, 0.f},
-				{0.f, +1.f, 0.f}
-			};
-
-			static Fvector cmDir[6] = {
-				{+1.f, 0.f, 0.f},
-				{-1.f, 0.f, 0.f},
-				{0.f, +1.f, 0.f},
-				{0.f, -1.f, 0.f},
-				{0.f, 0.f, +1.f},
-				{0.f, 0.f, -1.f}
-			};
-
-			static int iFace = 6;
-
-			if (psDeviceFlags.test(rsClearBB))
-			{
-				iFace = 6;
-			}
-
-			if (iFace == 6)
-			{
-				GPU_EVENT(FORWARD_REFLECTION_COMPOSE);
-
-				CEnvDescriptorMixer* CurrentEnv = g_pGamePersistent->Environment().CurrentEnv;
-
-				EnvProject.build_projection(PI_DIV_2, 1.0f, Device.fViewportNear,
-					CurrentEnv->far_plane * ps_r4_vslr_distance);
-
-				Fvector4 fog_color4 = {
-					CurrentEnv->fog_color.x / (1.0f + CurrentEnv->fog_color.x),
-					CurrentEnv->fog_color.y / (1.0f + CurrentEnv->fog_color.y),
-					CurrentEnv->fog_color.z / (1.0f + CurrentEnv->fog_color.z),
-					CurrentEnv->fog_far
-				};
-
-				if(RImplementation.o.deffered_reflecitons && FaceCount == 7)
-				{
-					cmDir[2].mul(Device.vCameraTop, +1.0f);
-					cmDir[3].mul(Device.vCameraTop, -1.0f);
-
-					cmNorm[2].mul(Device.vCameraDirection, -1.0f);
-					cmNorm[3].mul(Device.vCameraDirection, +1.0f);
-
-					cmDir[0].mul(Device.vCameraRight, +1.0f);
-					cmDir[1].mul(Device.vCameraRight, -1.0f);
-
-					cmNorm[0].mul(Device.vCameraTop, +1.0f);
-					cmNorm[1].mul(Device.vCameraTop, +1.0f);
-
-					cmDir[4].mul(Device.vCameraDirection, +1.0f);
-					cmDir[5].mul(Device.vCameraDirection, -1.0f);
-
-					cmNorm[4].mul(Device.vCameraTop, +1.0f);
-					cmNorm[5].mul(Device.vCameraTop, +1.0f);
-				}
-
-				EnvPosition.set(Device.vCameraPosition);
-
-				if (!psDeviceFlags.test(rsClearBB))
-				{
-					GRHI->CopySurface(Target->rt_Reflection_temp->pSurface, Target->rt_Reflection->pSurface);
-					GRHI->GenerateMips(Target->rt_Reflection_temp->pTexture->get_SRView());
-				}
-
-				RCache.xforms.set_env_view(EnvView[4]);
-
-				for (auto i = 0; i < 6; ++i)
-				{
-					EnvView[i].build_camera_dir(EnvPosition, cmDir[i], cmNorm[i]);
-					EnvFullTransform[i].mul(EnvProject, EnvView[i]);
-
-					GRHI->ClearTarget(Target->rt_Reflection->pRT[i], (FLOAT*)&fog_color4);
-				}
-
-				if (psDeviceFlags.test(rsClearBB))
-				{
-					GRHI->CopySurface(Target->rt_Reflection_temp->pSurface, Target->rt_Reflection->pSurface);
-					GRHI->GenerateMips(Target->rt_Reflection_temp->pTexture->get_SRView());
-					break;
-				}
-
-				SectorIndex = 0;
-
-				for (size_t idx = 0, count = SectorsCount(); idx < count; ++idx)
-				{
-					if (Sectors[idx] == pLastSector)
-					{
-						SectorIndex = idx;
-						break;
-					}
-				}
-			}
-			else
-			{
-				GPU_EVENT(FORWARD_REFLECTION_SIDE);
-
-				phase = PHASE_REFLECT;
-				r_pmask(true, false, true);
-
-				is_render_cubemap = true;
-
-				ps_r_taa_jitter.set(0, 0, -1);
-				ps_r_taa_jitter_full.set(ps_r_taa_jitter);
-
-				auto pSector = getSector(SectorIndex);
-				pSector = pSector ? pSector : pLastSector;
-
-				r_dsgraph_render_subspace(pSector, EnvFullTransform[iFace], EnvPosition, false, false);
-
-				RCache.set_xform_project(EnvProject);
-				RCache.set_xform_view(EnvView[iFace]);
-
-				mapWmark.clear();
-
-				GRHI->ClearDepthStencil(Target->rt_Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
-				Target->u_setrt(dwSize, dwSize, Target->rt_Reflection->pRT[iFace], NULL, NULL, Target->rt_Depth->pZRT);
-
-				RImplementation.rmNormal();
-
-				RCache.set_Stencil(FALSE);
-				RCache.set_ColorWriteEnable();
-
-				r_dsgraph_render_graph(0);
-
-				RCache.set_xform_project(Device.mProject);
-				RCache.set_xform_view(Device.mView);
-
-				is_render_cubemap = false;
-				phase = PHASE_NORMAL;
-			}
-
-			iFace = (iFace + 1) % 7;
-		}
-
-		g_fSCREEN = saved_g_fSCREEN;
-		r_ssaDISCARD = saved_r_ssaDISCARD;
-		r_ssaDONTSORT = saved_r_ssaDONTSORT;
-		r_ssaLOD_A = saved_r_ssaLOD_A;
-		r_ssaLOD_B = saved_r_ssaLOD_B;
-		r_ssaGLOD_start = saved_r_ssaGLOD_start;
-		r_ssaGLOD_end = saved_r_ssaGLOD_end;
-		r_ssaHZBvsTEX = saved_r_ssaHZBvsTEX;
+		render_reflections();
 	}
 
 	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3)
@@ -973,8 +776,11 @@ void CRender::render_forward				()
 		r_dsgraph_render_sorted					(false)	;					// strict-sorted geoms
 		g_pGamePersistent->Environment().RenderLast()	;					// rain/thunder-bolts
 
-		GRHI->CopySurface(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
-		r_dsgraph_render_sorted_hud();
+		if(mapHUDSorted.size() > 0)
+		{
+			GRHI->CopySurface(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
+			r_dsgraph_render_sorted_hud();
+		}
 	}
 
 	RImplementation.o.distortion				= false;				// disable distorion

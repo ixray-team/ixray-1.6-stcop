@@ -84,6 +84,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 #ifndef USE_CLASSIQUE_TONEMAP
 	return float2(LumaCurr, adapt_params.z).xxxy;
 #else
+	LumaCurr = LinearToGamma(LumaCurr);
     LumaCurr = MiddleGray.x * rcp(LumaCurr * MiddleGray.y + MiddleGray.z);
     LumaCurr = clamp(LumaCurr, 1.f / 128.f, 20.0f);
 	LumaCurr = GammaToLinear(LumaCurr);

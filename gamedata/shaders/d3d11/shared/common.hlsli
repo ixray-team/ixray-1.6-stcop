@@ -23,11 +23,6 @@ cbuffer dynamic_transforms
     uniform float4 hemi_cube_neg_faces;
     uniform float4 dt_params;
 
-#ifdef USE_OFFSCREEN_REFLECTIONS
-	uniform float3x4 m_env_view;
-	uniform float3x4 m_env_view_inv;
-#endif
-
     uniform float4 m_taa_jitter;
 }
 
