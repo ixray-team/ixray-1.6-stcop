@@ -705,7 +705,58 @@ object:set_sub_inventory_icon(mark, offset, size, texture, color)
 retval: none
 args: bool, vector2, vector2, string, int
 
+
+--// Получить позицию кости по идентификатору кости у обьекта
+object:bone_position(bone_id)
+retval: vector
+args: (integer) bone_id
+
+--// Получить позицию кости по названию кости у обьекта
+object:bone_position(bone_name)
+retval: vector
+args: (string) bone_name
+
+
+--// Получить направление кости по идентификатору кости у обьекта
+object:bone_direction(bone_id)
+retval: vector
+args: (integer) bone_id
+
+--// Получить направление кости по названию кости у обьекта
+object:bone_direction(bone_name)
+retval: vector
+args: (string) bone_name
+
+
+--// Получить имя кости по идентификатору кости у обьекта
+object:get_bone_name_by_id(bone_id)
+retval: string
+args: (integer) bone_id
+
+--// Получить идентификатор кости по имени кости у обьекта
+object:get_bone_name_by_id(bone_name)
+retval: integer
+args: (string) bone_name
+
+
+--// Получить имя root кости у обьекта
+object:get_root_bone_name()
+retval: string
+
+--// Получить идентификатор root кости у обьекта
+object:get_root_bone_id()
+retval: integer
+
 ```
+
+## sim (CompatibilityBringeScripts.cpp)
+```lua
+--// Получить ссылку на игровой обьект по идентификатору
+sim.net_find(object_id)
+retval: game_object | nil
+args: (u16) object_id
+```
+
 ## CConsole
 ```lua
 --// Регистрация LUA команды в консоли (нужно вызывать каждый раз на старте уровня)
@@ -784,6 +835,15 @@ retval: none
 --// Проверить, установлена ли строка дополнительного описания на инвентарный предмет
 object:is_item_used_additional_description()
 retval: bool
+
+--// Проверить, активен ли флаг автовзятия в слот при подборе
+object:is_ruck_to_default()
+retval: bool
+
+--// Задать, состояние флага автовзятия предмета в слот при подборе
+object:set_ruck_to_default(state)
+retval: void
+args: bool (state)
 ```
 
 ::: details Пример оптимизированного варианта установки дополнительного описания к предмету через скрипт
@@ -853,6 +913,140 @@ args: wallmark_object(script game object), status (boolean)
 level.get_fog_distance()
 retval: float
 
+```
+
+## level
+```lua
+--// Поиск онлайн обьектов по eSpatial в сфере
+level.search_online_objects_by_sphere(center_position, radius, table_spatial_types)
+retval: lua iterator (CScriptGameObject*)
+args: 
+  center_position (vector3), -- точка центра сферы
+  radius (float), -- радиус сферы в метрах
+  table_spatial_types (table)
+  
+--// Поиск онлайн обьектов по eSpatial в боксе с указанным углом поворота
+level.search_online_objects_by_obb_box(center_position, box_halfsize, box_direction, table_spatial_types)
+retval: lua iterator (CScriptGameObject*)
+args: 
+  center_position (vector3), -- точка центра бокса
+  box_halfsize (vector3), -- вектор указывающий длинну сторон бокса по трем осям координат X Y Z
+  box_direction (vector3), -- вектор указывающий направление бокса в пространстве X Y Z
+  table_spatial_types (table)
+  
+--// Допустимые E_SPATIAL типы
+level.e_spatial_type.NONE
+level.e_spatial_type.INVALIDSECTOR
+level.e_spatial_type.RENDERABLE
+level.e_spatial_type.LIGHTSOURCE
+level.e_spatial_type.LIGHTSOURCEHEMI
+level.e_spatial_type.PHYSIC
+level.e_spatial_type.SHAPE
+level.e_spatial_type.PARTICLE
+
+level.e_spatial_type.COLLIDEABLE
+level.e_spatial_type.VISIBLEFORAI
+level.e_spatial_type.REACTTOSOUND
+level.e_spatial_type.OBSTACLE
+level.e_spatial_type.RENDERABLESHADOW
+
+level.e_spatial_type.LADDER
+
+level.e_spatial_type.ACTOR
+level.e_spatial_type.ACTOR_DEAD
+level.e_spatial_type.ACTOR_ALIVE
+
+level.e_spatial_type.AI
+level.e_spatial_type.AI_DEAD
+level.e_spatial_type.AI_ALIVE
+
+level.e_spatial_type.STALKER
+level.e_spatial_type.STALKER_WOUNDED
+level.e_spatial_type.STALKER_DEAD
+level.e_spatial_type.STALKER_ALIVE
+
+level.e_spatial_type.MONSTER
+level.e_spatial_type.MONSTER_DEAD
+level.e_spatial_type.MONSTER_ALIVE
+
+level.e_spatial_type.CROW
+level.e_spatial_type.CROW_DEAD
+level.e_spatial_type.CROW_ALIVE
+
+level.e_spatial_type.ITEM
+level.e_spatial_type.WEAPON
+level.e_spatial_type.MISSILE
+level.e_spatial_type.ROCKET
+level.e_spatial_type.ARTEFACT
+level.e_spatial_type.ANOMALY_DETECTOR
+
+level.e_spatial_type.CAR
+level.e_spatial_type.HELI
+
+level.e_spatial_type.PHYSIC_OBJECT
+level.e_spatial_type.PHYSIC_SHELL_HOLDER
+level.e_spatial_type.PHYSIC_OBJECT_DESTR
+level.e_spatial_type.PHYSIC_OBJECT_BRKBL
+level.e_spatial_type.PHYSIC_MOVEMENT
+
+level.e_spatial_type.INV_BOX
+
+level.e_spatial_type.AI_DOOR
+
+level.e_spatial_type.LIGHT_LAMP
+
+level.e_spatial_type.LEVEL_CHANGER
+level.e_spatial_type.SPACE_RESTRICTOR
+level.e_spatial_type.ANOMALY_ZONE
+level.e_spatial_type.SIM_FACTION
+level.e_spatial_type.SMART_TERRAIN
+level.e_spatial_type.CAMP_ZONE
+level.e_spatial_type.SMART_COVER
+level.e_spatial_type.ANOMAL_ZONE_LOGIC
+```
+
+## Пример поиск онлайн обьектов по eSpatial в сфере
+```lua
+--// Центр сферы относительно которого будет произведен поиск
+local center = db.actor:position()
+--// Радиус поиска
+local radius = 120
+--// Перечисление типов обьектов для фильтрации поиска
+local spatial_types = {
+  level.e_spatial_type.SHAPE,
+  level.e_spatial_type.STALKER,
+}
+
+--// Поиск и печать списка найденных онлайн обьектов
+for obj in level.search_online_objects_by_sphere(center, radius, spatial_types) do
+    if obj then
+      SemiLog(tostring( obj:name() )) --// Распечатать имена обьектов из результата поиска
+    end
+end
+```
+
+## Пример поиск онлайн обьектов по eSpatial в боксе obb
+```lua
+--// Центр бокса относительно которого будет произведен поиск
+local center_position = db.actor:position()
+
+--// Полусумма сторон бокса 5 5 5 метров
+local box_halfsize = vector():set(5,5,5)
+
+-- направление бокса возьмем по направлению вгляда гг
+local box_direction = db.actor:direction()
+
+--// Перечисление типов обьектов для фильтрации поиска
+local spatial_types = {
+  level.e_spatial_type.SHAPE,
+  level.e_spatial_type.STALKER,
+}
+
+local result_obb = level.search_online_objects_by_obb_box(center_position, box_halfsize, box_direction, spatial_types)
+
+for k in result_obb do
+  if k then SemiLog("OBB:: " .. tostring(k:name())) end -- печатаем в консоль попавшие в боек обьекты искомых типов
+end
 ```
 
 ## level (runtime storage)
@@ -925,4 +1119,64 @@ else
 	)
 end
 
+```
+
+## CFFxRandom 
+
+* Воспроизводимость
+* Позволяет восстанавливать своё состояние что позволяет упростить разработку логики требующую повторяемость на сейв лоаде либо как то еще
+* Улучшенное распределение рандома в отличии от встроенного в lua math.random
+* Добавлено принудительное занижение шанса выдачи одинаковых результатов в ряд
+* Не зависимые экземпляры класса позволяют манипулировать последовательностями корректируя входные настройки сидов и счетчиков
+
+```lua
+local ffx_rand = FFxRandom() -- Конструктор с автогенерацией seed по текущей дате и времени
+retval: FFxRandom
+
+local ffx_rand = FFxRandom(seed, counter) -- Конструктор
+retval: FFxRandom
+args: 
+  seed (u32), -- Вектор инициализации
+  counter (u32) -- Счетчик проходов
+
+ffx_rand.is_counter_valid() -- Проверка того не происходило ли переполнение счетчика если да то воспроизведение последовательности не гарантируется на следующем сохранении
+retval: void
+
+ffx_rand.get_seed() -- Получить текущий вектор инициализации
+retval: u32
+
+ffx_rand.get_counter() -- Получить текущий счетчик проходов
+retval: u32
+
+ffx_rand.set_state(seed, counter) -- Восстановление состояния рандомизатора (позволяет воспроизвести положение рандомизатора после загрузки сохранения предварительно сохранив seed и counter)
+retval: void
+args: 
+  seed (u32), -- Вектор инициализации
+  counter (u32) -- Счетчик проходов
+
+ffx_rand.next_int() -- Получить следующее случайное целое от 0 до (u32)-1
+retval: u32
+
+ffx_rand.next_int_range(min_value, max_value) -- Получить следующее случайное целое в интервале
+retval: u32
+  args: 
+    min_value (u32), -- Минимальное значение
+    max_value (u32) -- Максимальное значение
+    
+ffx_rand.next_float() -- Получить следующее случайное дробное от 0 до (float) - 1
+retval: float    
+ 
+ffx_rand.next_float_range(min_value, max_value) -- Получить следующее случайное дробное в интервале
+retval: float
+  args: 
+    min_value (float), -- Минимальное значение
+    max_value (float) -- Максимальное значение   
+
+ffx_rand.next_bool() -- Получить следующее случайное булево true | false
+retval: bool
+
+ffx_rand.next_bool_probability(chance) -- Получить следующее случайное булево истинну с шансом в интервале значений 0.00001 до 0.99999 при значении 0.5 считается как 50х50 вероятность броска монетки
+retval: float
+  args: 
+    chance (float), -- Шанс в интервале 0.00001 до 0.99999
 ```

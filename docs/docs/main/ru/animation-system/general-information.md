@@ -1,4 +1,3 @@
-# Общие сведения
 ## HUD motions
 > [!IMPORTANT]
 > **Статус**: Поддерживается <br>
@@ -27,3 +26,13 @@ anm_idle_moving_empty = colt1911_idle_moving, colt1911_opened, 1.9
 ```ini
 hud_fov = float
 ```
+
+> [!IMPORTANT]
+> **Статус**: Поддерживается <br>
+> **Минимальная версия**: 1.3
+
+```ini
+hud_fov_zoom = float ; hud fov в зуме
+hud_fov_factor = float ; Множитель hud fov индивидуально для итема. Например, в моде по умолчанию hud_fov 40, но для пушки нужно чуть больше, пишет hud_fov_factor = 1.25 (по умолчанию 1.0), и 40 умножится на 1.25.
+hud_fov_zoom_factor = float ; Тоже самое, что и hud_fov_factor, только для аима
+hud_fov_gl_zoom_factor = float ; Тоже самое, что и hud_fov_zoom_factor, только в режиме гранатомёта
