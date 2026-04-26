@@ -128,7 +128,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 	bool b_ui_exist = (!!CurrentGameUI());
 
-	if(_curr==kPAUSE)
+	if (_curr == kPAUSE && !EngineExternal()[EEngineExternalSystem::DisablePause])
 	{
 		if (!g_block_pause && (IsGameTypeSingle() || IsDemoPlay()))
 		{
@@ -172,9 +172,13 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	{
 
 	case kCONSOLE:
-		Console->Show				();
-		return;
-		break;
+		{
+			if (EngineExternal()[EEngineExternalSystem::DisableConsole])
+				break;
+		
+			Console->Show();
+		}
+	break;
 
 	case kQUIT: 
 		{
