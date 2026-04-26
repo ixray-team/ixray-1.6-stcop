@@ -26,6 +26,11 @@ CUIArtefactParams::CUIArtefactParams(const CParamType& type)
 	m_disp_condition = nullptr;
 	m_additional_weight = nullptr;
 	m_af_slots = nullptr;
+	m_jump_height_modifier = nullptr;
+	m_movement_speed_modifier = nullptr;
+	m_sleepiness_restore_speed = nullptr;
+	m_equipment_durability_modifier = nullptr;
+	m_inventory_weight_modifier = nullptr;
 
 	object_type = type;
 	m_Prop_line = nullptr;
@@ -38,6 +43,11 @@ CUIArtefactParams::~CUIArtefactParams()
 	xr_delete(m_disp_condition);
 	xr_delete	( m_additional_weight );
 	xr_delete	(m_af_slots);
+	xr_delete	(m_jump_height_modifier);
+	xr_delete	(m_movement_speed_modifier);
+	xr_delete	(m_sleepiness_restore_speed);
+	xr_delete	(m_equipment_durability_modifier);
+	xr_delete	(m_inventory_weight_modifier);
 	xr_delete	( m_Prop_line );
 }
 
@@ -116,6 +126,11 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		m_af_slots = CreateItem(xml, "af_slots", "st_prop_artefact");
 	}
 	m_additional_weight = CreateItem(xml, "additional_weight", "ui_inv_weight", "ui_inv_outfit_additional_weight");
+	m_jump_height_modifier = CreateItem(xml, "jump_height_modifier", 100.0f, false, "%", "jump_height_modifier");
+	m_movement_speed_modifier = CreateItem(xml, "movement_speed_modifier", 100.0f, false, "%", "movement_speed_modifier");
+	m_sleepiness_restore_speed = CreateItem(xml, "sleepiness_restore_speed", 10000.0f, false, nullptr, "sleepiness_restore_speed");
+	m_equipment_durability_modifier = CreateItem(xml, "equipment_durability_modifier", 100.0f, false, "%", "equipment_durability_modifier");
+	m_inventory_weight_modifier = CreateItem(xml, "inventory_weight_modifier", 100.0f, false, "%", "inventory_weight_modifier");
 
 	xml.SetLocalRoot( stored_root );
 }
@@ -241,6 +256,51 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 				val /= actor_val;
 			}
 			setValue(m_restore_item[id], val * pInvItem.GetCondition());
+		}
+
+		if (m_jump_height_modifier)
+		{
+			val = READ_IF_EXISTS(pSettings, r_float, af_section, "jump_height_modifier", 0.0f);
+			if (!fis_zero(val))
+			{
+				setValue(m_jump_height_modifier, val * pInvItem.GetCondition());
+			}
+		}
+
+		if (m_movement_speed_modifier)
+		{
+			val = READ_IF_EXISTS(pSettings, r_float, af_section, "movement_speed_modifier", 0.0f);
+			if (!fis_zero(val))
+			{
+				setValue(m_movement_speed_modifier, val * pInvItem.GetCondition());
+			}
+		}
+
+		if (m_sleepiness_restore_speed)
+		{
+			val = READ_IF_EXISTS(pSettings, r_float, af_section, "sleepiness_restore_speed", 0.0f);
+			if (!fis_zero(val))
+			{
+				setValue(m_sleepiness_restore_speed, val * pInvItem.GetCondition());
+			}
+		}
+
+		if (m_equipment_durability_modifier)
+		{
+			val = READ_IF_EXISTS(pSettings, r_float, af_section, "equipment_durability_modifier", 1.0f);
+			if (!fsimilar(val, 1.0f))
+			{
+				setValue(m_equipment_durability_modifier, (1.0f - val) * pInvItem.GetCondition());
+			}
+		}
+
+		if (m_inventory_weight_modifier)
+		{
+			val = READ_IF_EXISTS(pSettings, r_float, af_section, "inventory_weight_modifier", 1.0f);
+			if (!fsimilar(val, 1.0f))
+			{
+				setValue(m_inventory_weight_modifier, (1.0f - val) * pInvItem.GetCondition());
+			}
 		}
 	}
 	else if (!is_backpack())

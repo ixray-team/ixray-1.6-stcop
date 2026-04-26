@@ -41,6 +41,11 @@ CArtefact::CArtefact()
 	m_activationObj				= nullptr;
 	m_detectorObj				= nullptr;
 	m_additional_weight			= 0.0f;
+	m_fSleepinessRestoreSpeed	= 0.0f;
+	m_fEquipmentDurabilityModifier = 1.0f;
+	m_fInventoryWeightModifier	= 1.0f;
+	m_fJumpHeightModifier		= 0.0f;
+	m_fMovementSpeedModifier	= 0.0f;
 	has_detector_visibling		= false;
 	m_ParticlesBoneID			= BI_NONE;
 	m_LightBoneID				= BI_NONE;
@@ -103,8 +108,13 @@ void CArtefact::Load(const char* section)
 	m_fRadiationRestoreSpeed = pSettings->r_float(section, "radiation_restore_speed");
 	m_fSatietyRestoreSpeed = pSettings->r_float(section, "satiety_restore_speed");
 	m_fThirstRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "thirst_restore_speed", 0.0f);
+	m_fSleepinessRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "sleepiness_restore_speed", 0.0f);
 	m_fPowerRestoreSpeed = pSettings->r_float(section, "power_restore_speed");
 	m_fBleedingRestoreSpeed = pSettings->r_float(section, "bleeding_restore_speed");
+	m_fEquipmentDurabilityModifier = READ_IF_EXISTS(pSettings, r_float, section, "equipment_durability_modifier", 1.0f);
+	m_fInventoryWeightModifier = READ_IF_EXISTS(pSettings, r_float, section, "inventory_weight_modifier", 1.0f);
+	m_fJumpHeightModifier = READ_IF_EXISTS(pSettings, r_float, section, "jump_height_modifier", 0.0f);
+	m_fMovementSpeedModifier = READ_IF_EXISTS(pSettings, r_float, section, "movement_speed_modifier", 0.0f);
 	
 	if(pSettings->section_exist(pSettings->r_string(section,"hit_absorbation_sect")))
 	{
