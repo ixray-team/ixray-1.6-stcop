@@ -93,9 +93,9 @@ constexpr EEngineExternalPlatform g_Platforms[] = {EEngineExternalPlatform::Shad
 
 constexpr const char* kUIConfigField_InventoryVectorIcon = "inv_vector_icon";
 
-static_assert((sizeof(g_PlatformNames) / sizeof(g_PlatformNames[0])) == static_cast<u8>(EEngineExternalPlatform::EnumSize), "you must register names that will be equal to EEngineExternalPlatform, you forgot to add a new platform to g_PlatformNames");
-static_assert((sizeof(g_Platforms) / sizeof(g_Platforms[0])) == static_cast<u8>(EEngineExternalPlatform::EnumSize), "must be equal, probably you forgot to register a new platform in enum or you forgot to add platform to g_Platforms");
-static_assert((sizeof(g_Platforms) / sizeof(g_Platforms[0])) == (sizeof(g_PlatformNames) / sizeof(g_PlatformNames[0])), "must be equal!");
+static_assert(std::size(g_PlatformNames) == static_cast<u8>(EEngineExternalPlatform::EnumSize), "you must register names that will be equal to EEngineExternalPlatform, you forgot to add a new platform to g_PlatformNames");
+static_assert(std::size(g_Platforms) == static_cast<u8>(EEngineExternalPlatform::EnumSize), "must be equal, probably you forgot to register a new platform in enum or you forgot to add platform to g_Platforms");
+static_assert(std::size(g_Platforms) == std::size(g_PlatformNames), "must be equal!");
 
 
 class XRCORE_API CEngineExternal final
@@ -183,7 +183,7 @@ public:
 
 	ICF bool operator[](const EEngineExternalPlatform& ID) const
 	{
-		if (static_cast<unsigned char>(ID) > (static_cast<unsigned char>(sizeof(g_Platforms) / sizeof(g_Platforms[0])) - 1))
+		if (static_cast<unsigned char>(ID) > static_cast<unsigned char>(std::size(g_Platforms)) - 1)
 			return false;
 
 		return g_Platforms[static_cast<unsigned char>(ID)] == m_platform_type;
