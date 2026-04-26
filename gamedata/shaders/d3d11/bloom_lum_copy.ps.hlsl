@@ -13,11 +13,6 @@ The Real MJP https://mynameismjp.wordpress.com/2011/08/10/average-luminance-comp
 float main(PSInputFullscreen I) : SV_Target
 {
     float3 Color = s_image.Sample(smp_rtlinear, I.texcoord.xy).rgb;
-	
-#ifdef USE_CLASSIQUE_TONEMAP
-	Color = LinearToGamma(Color);
-#endif
-
     float Final = dot(Color, LUMINANCE_VECTOR);
 	
 #ifndef USE_CLASSIQUE_TONEMAP

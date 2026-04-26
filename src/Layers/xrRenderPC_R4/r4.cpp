@@ -129,7 +129,7 @@ static class cl_invP : public RHIShaderConstant::Setup
 	{
 		if (Device.dwFrame != marker)
 		{
-			result.invert44(Device.mProject);
+			result.invert44(Device.mProject_saved);
 			marker = Device.dwFrame;
 		}
 
@@ -196,21 +196,22 @@ static class cl_m_shadow_sun : public RHIShaderConstant::Setup
 	}
 }	binder_m_shadow_sun;
 
-class cl_m_env_view : public RHIShaderConstant::Setup
+template <typename T>
+class cl_m_dev_cal : public RHIShaderConstant::Setup
 {
-	virtual void setup(RHIShaderConstant* C)
-	{
-		RCache.xforms.set_c_env_view(C);
-	}
-} binder_m_env_view;
+	T* value{};
 
-class cl_m_env_view_inv : public RHIShaderConstant::Setup
-{
+public:
+	cl_m_dev_cal(T* inval)
+	{
+		value = inval;
+	}
+
 	virtual void setup(RHIShaderConstant* C)
 	{
-		RCache.xforms.set_c_env_view_inv(C);
+		RCache.set_c(C, *value);
 	}
-} binder_m_env_view_inv;
+};
 
 //////////////////////////////////////////////////////////////////////////
 // Just two static storage
@@ -274,11 +275,15 @@ void CRender::create()
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_invP_hud", &binder_invP_hud);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_invP", &binder_invP);
 
-	if (o.offscreen_reflecitons)
-	{
-		dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_env_view", &binder_m_env_view);
-		dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_env_view_inv", &binder_m_env_view_inv);
-	}
+	static cl_m_dev_cal m_dev_cal1(&ps_r__test_exp_to_shaders_1);
+	static cl_m_dev_cal m_dev_cal2(&ps_r__test_exp_to_shaders_2);
+	static cl_m_dev_cal m_dev_cal3(&ps_r__test_exp_to_shaders_3);
+	static cl_m_dev_cal m_dev_cal4(&ps_r__test_exp_to_shaders_4);
+
+	DEV->RegisterConstantSetup("test_exp_to_shaders_1", &m_dev_cal1);
+	DEV->RegisterConstantSetup("test_exp_to_shaders_2", &m_dev_cal2);
+	DEV->RegisterConstantSetup("test_exp_to_shaders_3", &m_dev_cal3);
+	DEV->RegisterConstantSetup("test_exp_to_shaders_4", &m_dev_cal4);
 
 	c_lmaterial = "L_material";
 	c_sbase = "s_base";
@@ -759,7 +764,7 @@ static HRESULT create_shader(
 		ID3DBlob* disasm_ = 0;
 		D3DDisassemble(buffer, buffer_size, FALSE, 0, &disasm_);
 		string_path		dname;
-		xr_strconcat(dname, "disasm\\", file_name, ('v' == pTarget[0]) ? ".vs.hlsl" : ('p' == pTarget[0]) ? ".ps.hlsl" : ".gs.hlsl");
+		xr_strconcat(dname, "disasm\\", file_name, ".", pTarget);
 		IWriter* W = FS.w_open("$logs$", dname);
 		W->w(disasm_->GetBufferPointer(), (u32)disasm_->GetBufferSize());
 		FS.w_close(W);

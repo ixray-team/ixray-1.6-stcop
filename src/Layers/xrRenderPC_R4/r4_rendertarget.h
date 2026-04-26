@@ -94,6 +94,7 @@ public:
 
 	ref_rtc						rt_Reflection;
 	ref_rtc						rt_Reflection_temp;
+	ref_rt						rt_Reflection_forward;
 	ref_rt						rt_Depth;
 
 	IRHISurface*				rt_smap_depth_sun_tex;
@@ -162,7 +163,10 @@ public:
 
 	IRHISurface*			t_noise_surf	[TEX_jitter_count];
 	ref_texture					t_noise				[TEX_jitter_count];
+
+	ref_shader					s_sslr;
 private:
+
 	ref_shader					s_spp;
 	ref_shader					s_gasmask;
 	ref_shader					s_fxaa;
@@ -173,7 +177,6 @@ private:
 	ref_shader					s_puddles;
 	ref_shader					s_taa;
 	ref_shader					s_nvg;
-	ref_shader					s_sslr;
 
 	// For gamma correction in windowed mode
 	ref_shader					s_gamma;
@@ -244,7 +247,6 @@ private:
 	
 
 	// FX: ScreenQuad
-	ref_geom FSTriangleGeom;
 	IRHIBuffer* FSTriangleVB = nullptr;
 	IRHIBuffer* FSTriangleIB = nullptr;
 
@@ -257,6 +259,7 @@ private:
 	ref_shader				s_combine;
 	ref_shader				s_combine_volumetric;
 public:
+	ref_geom				FSTriangleGeom;
 	ref_shader				s_postprocess;
 	ref_geom					g_postprocess;
 	ref_shader				s_menu;

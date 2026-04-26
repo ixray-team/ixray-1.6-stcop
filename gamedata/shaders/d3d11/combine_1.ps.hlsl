@@ -33,10 +33,19 @@ float4 main(PSInputFullscreen I) : SV_Target
 
 #ifndef USE_LEGACY_LIGHT
 	#ifdef USE_SSLR_REFLECTIONS
-		float3 SpecularIrradance = s_refl.Load(int3(I.hpos.xy, 0)).xyz;
-		SpecularIrradance *= SpecularIrradance > 0.0f ? rcp(1.0f - SpecularIrradance) : 0.0f;
+		float3 SpecularIrradance = saturate(s_refl.Load(int3(I.hpos.xy, 0)).xyz);
+		SpecularIrradance *= SpecularIrradance < 1.0f ? rcp(1.0f - SpecularIrradance) : 1.0f;
 	#else
-		float3 SpecularIrradance = CompureSpecularIrradance(reflect(O.View, O.Normal), O.Hemi, O.Roughness);
+		float3 SpecularIrradance = CompureSpecularIrradance
+		(
+			reflect(O.View, O.Normal), 
+		#ifdef USE_VIEW_REFLECTIONS
+			O.Depth > 0.02 ? O.Hemi : 1.0f,
+		#else
+			O.Hemi,
+		#endif
+			O.Roughness
+		);
 	#endif
 
 	float3 DiffuseIrradance = CompureDiffuseIrradance(O.Normal, O.Hemi) + L_ambient.xyz;
@@ -57,7 +66,7 @@ float4 main(PSInputFullscreen I) : SV_Target
     Fog = saturate(Fog);
 #endif
 
-	// Color = O.Specular * 0.5f;
+	// Color = O.Roughness * 0.5f;
 
 #ifdef USE_LEGACY_LIGHT
 	Fog *= Fog;
