@@ -14,7 +14,13 @@
 	uniform float4 L_model_light_dir;
 #endif
 	
-void main(p_bumped_new I, out f_forward O)
+#ifndef USE_LENGTH_BUFFER
+	#define OutStructure IXRayForward
+#else
+	#define OutStructure IXRayVSLRGBuffer
+#endif
+
+void main(p_bumped_new I, out OutStructure O)
 {
     IXRayMaterial M = (IXRayMaterial)NULL;
 
@@ -50,12 +56,12 @@ void main(p_bumped_new I, out f_forward O)
 #endif
 
     M.Sun = saturate(M.Sun * 2.0f);
-	
-    M.Color.xyz = GammaToLinear(M.Color.xyz);
-    M.Specular = GammaToLinear(M.Specular);
 
 #ifdef USE_LEGACY_LIGHT
 	M.Material = L_material.w;
+#else
+    M.Color.xyz = GammaToLinear(M.Color.xyz);
+    M.Specular = GammaToLinear(M.Specular);
 #endif
 	
 	float3 LightDir = mul((float3x3)m_V, L_sun_dir_w.xyz);
@@ -63,11 +69,11 @@ void main(p_bumped_new I, out f_forward O)
 #ifndef USE_R2_STATIC_SUN
 	float4 Point = float4(M.Point.xyz, 1.f);
 	
-#ifdef USE_LENGTH_BUFFER
-    Point.xyz += M.Normal * 0.05f;
-#else
-    Point.xyz += M.Normal * 0.025f;
-#endif
+	#ifdef USE_LENGTH_BUFFER
+		Point.xyz += M.Normal * 0.05f;
+	#else
+		Point.xyz += M.Normal * 0.025f;
+	#endif
 	
 	Point.xyz = mul(m_invV, Point).xyz;
 
@@ -113,7 +119,7 @@ void main(p_bumped_new I, out f_forward O)
 		float3 Ambient = GammaToLinear(M.AO) * AmbientLighting(View, M.Normal, Diffuse, Specular, M.Roughness, M.Hemi);
 	#else
 		float3 Light = M.Sun * DirectLightLegacy(LightColor, mul((float3x3)m_V, L_sun_dir_w.xyz), M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
-		float3 Ambient = AmbientLighting(View, M.Normal, M.Color.xyz, M.Material, M.Gloss, M.Hemi);
+		float3 Ambient = AmbientLightingLegcay(View, M.Normal, M.Color.xyz, M.Material, M.Gloss, M.Hemi);
 	#endif
 	
 #ifdef FORWARD_LIGHT
@@ -139,28 +145,26 @@ void main(p_bumped_new I, out f_forward O)
 	Lmap = lerp(1.0f, Lmap, min(1.0f, Luma * 10.0f));
 	
 	#ifndef USE_LEGACY_LIGHT
-		Light += Luma * DirectLight(float4(Lmap.xyz, 0.5f), View, M.Normal, View, Diffuse, Specular, M.Roughness);
+		Light += Luma * DirectLight(Lmap.xyzy, View, M.Normal, View, Diffuse, Specular, M.Roughness);
 	#else
-		Light += Luma * DirectLightLegacy(float4(Lmap.xyz, 0.5f), View, M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
+		Light += Luma * DirectLightLegacy(Lmap.xyzy, View, M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
 	#endif
 #endif
 	
     O.Color.xyz = Ambient + Light.xyz;
-    O.Color.w = M.Color.w;
-
-    float Fog = GammaToLinear(saturate(ViewLength * fog_params.w + fog_params.x));
-    O.Color = lerp(O.Color, GammaToLinear(fog_color), Fog);
 
 #ifndef USE_LENGTH_BUFFER
+    O.Color.w = M.Color.w;
+	
+    float Fog = saturate(ViewLength * fog_params.w + fog_params.x);
+    O.Color = lerp(O.Color, GammaToLinear(fog_color), Fog * Fog);
+	
 	#ifndef DISABLE_MOTION_VECTORS
 		O.Velocity.xy = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
-		O.Reactive = O.Color.w * 0.9f; O.Velocity.zw = saturate(M.Color.w * 2.0f);
+		O.Reactive = O.Color.w * 0.9f; O.Velocity.zw = saturate(M.Color.w * 3.0f - 1.0f);
 	#endif
-#endif
-	
-#ifdef USE_LENGTH_BUFFER
-	O.Color.w = ViewLength;
-	O.Color.xyz = saturate(O.Color.xyz * rcp(1.0f + O.Color.xyz));
+#else
+	O.Length = ViewLength;
 #endif
 }
 

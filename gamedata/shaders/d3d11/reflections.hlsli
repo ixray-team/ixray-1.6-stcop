@@ -42,14 +42,14 @@ float BinaryRefinement(inout float3 EndProj, float3 Reflect)
 	[unroll]
 	for(int i = 0; i < MAX_FIND_STEP; ++i)
 	{
-		HitDepth = s_env.SampleLevel(smp_nofilter, EndProj.xyz, 0).w;
+		HitDepth = s_env_dist.SampleLevel(smp_nofilter, EndProj.xyz, 0).x;
 		HitDepth *= HitDepth;
 		
 		Reflect *= 0.5f;
 		EndProj += dot(EndProj, EndProj) > HitDepth ? -Reflect : Reflect;
 	}
 	
-	HitDepth = s_env.SampleLevel(smp_nofilter, EndProj.xyz, 0).w;
+	HitDepth = s_env_dist.SampleLevel(smp_nofilter, EndProj.xyz, 0).x;
 	HitDepth *= HitDepth;
 	
 	return HitDepth;
@@ -96,7 +96,7 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 	float OldDelta = 0.0f;
 	float SampleHitPointLen = 0;
 	
-	float MaxLen = s_env.SampleLevel(smp_nofilter, Reflect.xyz, 0).w;
+	float MaxLen = s_env_dist.SampleLevel(smp_nofilter, Reflect.xyz, 0).x;
 	MaxLen *= MaxLen;
 	
 	[loop]
@@ -109,7 +109,7 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 		
 		SamplePoint.xyz = Point.xyz + Reflect * L;
 		
-		SampleHitPointLen = s_env.SampleLevel(smp_nofilter, SamplePoint.xyz, 0).w;
+		SampleHitPointLen = s_env_dist.SampleLevel(smp_nofilter, SamplePoint.xyz, 0).x;
 		SampleHitPointLen *= SampleHitPointLen;
 		
 		MaxLen = max(MaxLen, SampleHitPointLen);
@@ -249,7 +249,7 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 
 float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
 {
-#ifndef USE_OFFSCREEN_REFLECTIONS
+#if 1 //ndef USE_OFFSCREEN_REFLECTIONS
     float2 ReflUV = 0.0;
     float3 HitPos, TestPos;
     float L = 0.025f, DeltaL = 0.0f;
@@ -289,11 +289,13 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
     float Attention = GetBorderAtten(ReflUV, 0.125f);
 
 	float4 PrevSpecularUV = mul(m_VP_old, float4(mul(m_invV, float4(HitPos.xyz, 1.0f)).xyz, 1.0f));
-	ReflUV.xy = PrevSpecularUV.xy / PrevSpecularUV.w * float2(0.5f, -0.5f) + 0.5f;	
-
-    //ReflUV -= s_velocity.SampleLevel(smp_nofilter, ReflUV, 0).xy * float2(0.5f, -0.5f);
+	ReflUV.xy = PrevSpecularUV.xy / PrevSpecularUV.w * float2(0.5f, -0.5f) + 0.5f;
 	
+#ifndef USE_OFFSCREEN_REFLECTIONS
     Fade *= min(Attention, GetBorderAtten(ReflUV, 0.125f));
+#else
+    Fade *= min(Attention, GetBorderAtten(ReflUV, 0.025f));
+#endif
 	
 #ifdef SKYBLED_FADE
     float Fog = saturate(length(HitPos.xyz) * fog_params.w + fog_params.x);

@@ -77,11 +77,28 @@ struct IXRayGbufferPack
 	#endif
 };
 
+struct IXRayForward
+{
+    float4 Color : SV_Target0;
+    float4 Velocity : SV_Target1;
+	
+    float Reactive : SV_Target2;
+};
+
+struct IXRayVSLRGBuffer
+{
+    float3 Color : SV_Target0;
+    float Length : SV_Target1;
+};
+
 inline float2 PackNormalVector(float3 Vector)
 {
 	float PackedZ = 0.5f + 0.5f * Vector.z;
 	float Scale = rcp(dot(Vector.xy, Vector.xy));
-	return Vector.xy * sqrt(PackedZ * Scale);
+	
+	Vector.xy *= sqrt(PackedZ * Scale);
+	
+	return Vector.xy;
 }
 
 inline float3 UnPackNormalVector(float2 Packed)
@@ -103,13 +120,11 @@ inline float2 NormalEncode(float3 Normal)
     float Shift = saturate(-Normal.z);
 	
     Normal.xy += Normal.xy > 0.0f ? Shift : -Shift;
-    return Normal.xy * 0.5f + 0.5f;
+    return Normal.xy;
 }
 
 inline float3 NormalDecode(float2 InNormal)
 {
-    InNormal = InNormal * 2.0f - 1.0f;
-
     float3 Normal = float3(InNormal, 1.0f - abs(InNormal.x) - abs(InNormal.y));
     float Shift = saturate(-Normal.z);
 
@@ -123,26 +138,15 @@ inline void GbufferPack(inout IXRayGbufferPack O, inout IXRayMaterial M)
 {
     O.Color.xyz = M.Color.xyz;
 	
-    O.Normal.xy = NormalEncode(M.Normal.xyz);
-	O.Normal.w = M.SnowMask;
-	O.Normal.z = M.Hemi;
-	
-	float3 Jitter = Hash33(M.Point * timers.x) - 0.5f;
-	Jitter *= rcp(1024.0f);
-	
-	O.Normal.xyz += Jitter;
-	
 #ifdef USE_LEGACY_LIGHT
 	O.Color.w = M.Gloss;
-	
-	O.Material.x = M.SSS;
-	O.Material.y = M.Material;
+	O.Material = 0.0f;
 	
 	#ifdef USE_R2_STATIC_SUN
 		M.Material.x = M.Sun;
+	#else
+		O.Material.x = float(((uint(M.SSS) & 1) << 7) | (uint(M.Material * 0x7F) & 0x7F)) / 255.0f;
 	#endif
-	
-	O.Material.zw = 0.0f;
 #else
 	O.Color.w = M.AO;
 
@@ -158,6 +162,16 @@ inline void GbufferPack(inout IXRayGbufferPack O, inout IXRayMaterial M)
 		O.Color.w = M.Sun;
 	#endif
 #endif
+	
+    O.Normal.xy = NormalEncode(M.Normal.xyz) * 0.5f + 0.5f;
+	
+	O.Normal.w = M.SnowMask;
+	O.Normal.z = M.Hemi;
+	
+	float3 Jitter = Hash33(M.Point * timers.x) - 0.5f;
+	Jitter *= rcp(1024.0f);
+	
+	O.Normal.xyz += Jitter;
 }
 
 inline float4 GbufferGetPoint(in float2 HPos)
@@ -208,18 +222,20 @@ inline void GbufferUnpackNormal(in uint2 TexCoord, inout IXRayGbuffer O)
 {
     float4 Sample = s_normal.Load(uint3(TexCoord, 0));
 	
-	O.Normal.xyz = NormalDecode(Sample.xy);
+	O.Normal.xyz = NormalDecode(Sample.xy * 2.0f - 1.0f);
 	O.SnowMask = Sample.w;
 	O.Hemi = Sample.z;
 	
 #ifdef USE_LEGACY_LIGHT
-	float4 Surface = s_surface.Load(uint3(TexCoord, 0));
-	O.Material = Surface.y;
+	float Surface = s_surface.Load(uint3(TexCoord, 0)).x;
 	
 	#ifdef USE_R2_STATIC_SUN
 		O.Sun = Surface.x;
 	#else
-		O.SSS = Surface.x;
+		uint data = Surface.x * 255u;
+	
+		O.SSS = float((data >> 7) & 1);
+		O.Material = float(data & 0x7F) / 0x7F;
 	#endif
 #endif
 }
@@ -229,7 +245,7 @@ inline void GbufferUnpackColor(in uint2 TexCoord, inout IXRayGbuffer O)
     float4 Sample = s_diffuse.Load(uint3(TexCoord, 0));
 	
 #ifdef USE_LEGACY_LIGHT
-	O.Color = GammaToLinear(Sample.xyz);
+	O.Color = Sample.xyz;
 	O.Gloss = Sample.w;
 #else
 	Sample.xyz = GammaToLinear(Sample.xyz);

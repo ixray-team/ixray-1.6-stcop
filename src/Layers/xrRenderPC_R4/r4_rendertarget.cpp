@@ -419,6 +419,9 @@ CRenderTarget::CRenderTarget()
 
 		DisplayRT(rt_Accumulator);
 		DisplayRT(rt_Color);
+		DisplayRT(rt_Normal);
+		DisplayRT(rt_Surface);
+		DisplayRT(rt_Position);
 		DisplayRT(rt_Back_Buffer_AA);
 		DisplayRT(rt_Back_Buffer);
 		DisplayRT(rt_BackbufferLUT);
@@ -426,8 +429,6 @@ CRenderTarget::CRenderTarget()
 		DisplayRT(rt_Generic_0);
 		DisplayRT(rt_Generic_1);
 		DisplayRT(rt_Generic_2);
-		DisplayRT(rt_Normal);
-		DisplayRT(rt_Position);
 		DisplayRT(rt_upscaled_depth);
 		DisplayRT(rt_sslr);
 		DisplayRT(rt_sslr_temp);
@@ -442,6 +443,7 @@ CRenderTarget::CRenderTarget()
 		DisplayRT(rt_LUM_C);
 		DisplayRT(rt_LUM_D);
 		DisplayRT(rt_smap_surf);
+		DisplayRT(rt_Reflection_forward);
 		DisplaySRT(rt_smap_depth_sun);
 
 
@@ -507,6 +509,11 @@ CRenderTarget::CRenderTarget()
 		auto SurfaceFormat = ERHI_FORMAT::R8G8B8A8_UNORM;
 		auto NormalFormat = ERHI_FORMAT::R10G10B10A2_UNORM;
 
+		if (RImplementation.o.dx11_use_legacy_light)
+		{
+			SurfaceFormat = ERHI_FORMAT::R8_SNORM;
+		}
+
 		rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, ColorFormat);
 
 		rt_Surface.create(r2_RT_S, s_dwWidth, s_dwHeight, SurfaceFormat);
@@ -520,7 +527,7 @@ CRenderTarget::CRenderTarget()
 		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, HDR_Format);
 		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, HDR_Format);
 
-		rt_Velocity.create(r2_RT_velocity, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16_FLOAT);
+		rt_Velocity.create(r2_RT_velocity, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16_SNORM);
 		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM);
 
 		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, RDepth->GetSurface()->GetFormat());
@@ -625,13 +632,13 @@ CRenderTarget::CRenderTarget()
 		if(RImplementation.o.offscreen_reflecitons)
 		{
 			u32 RefSize = 256;
-			CRT::CRTCreationFlags flags = (CRT::CRTCreationFlags)(CRT::CRTCreationFlags::MIPPED_RT_FLAG | CRT::CRTCreationFlags::AUTOGEN_MIP_MAPS);
 
-			// TODO: Optimize memory using
-			rt_Reflection.create(r2_RT_env, RefSize, ERHI_FORMAT::R16G16B16A16_FLOAT, flags);
-			rt_Reflection_temp.create(r2_RT_env_temp, RefSize, ERHI_FORMAT::R16G16B16A16_FLOAT, flags);
+			rt_Reflection.create(r2_RT_env, RefSize, ERHI_FORMAT::R11G11B10_FLOAT); // Color
+			rt_Reflection_temp.create(r2_RT_env_temp, RefSize, ERHI_FORMAT::R16_FLOAT); // Distance2Point
 
-			rt_Depth.create(r2_RT_env_depth, RefSize, RefSize, ERHI_FORMAT::R24G8_TYPELESS);
+			// Maybe remove rt_Depth? (like LV)
+			rt_Depth.create(r2_RT_env_depth, RefSize, RefSize, ERHI_FORMAT::D16_UNORM);
+			rt_Reflection_forward.create(r2_RT_env_fwd, RefSize * 2u, RefSize * 2u, ERHI_FORMAT::R8G8B8A8_UNORM_SRGB, 1, CRT::CRTCreationFlags::AUTOGEN_MIP_MAPS);
 		}
 
 		b_sslr = new CBlender_sslr();
