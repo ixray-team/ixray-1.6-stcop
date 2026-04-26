@@ -433,6 +433,33 @@ void CScriptGameObject::SetActorDirection(float dir)
 	}
 }
 
+void CScriptGameObject::CameraMove(float dir) // FNAS
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		actor->cam_Active()->Move(0, dir);
+	}
+}
+
+void CScriptGameObject::SwitchTorch() // FNAS
+{
+	if (CTorch* torch = object().cast_torch())
+	{
+		torch->Switch();
+	}
+}
+
+void CScriptGameObject::SetActorCrouch() // FNAS
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		if (actor->mstate_wishful != mcCrouch) {
+			actor->mstate_wishful = mcCrouch;
+		}
+	}
+
+}
+
 void CScriptGameObject::DisableHitMarks(bool disable)
 {
 	if (CActor* actor = object().cast_actor())

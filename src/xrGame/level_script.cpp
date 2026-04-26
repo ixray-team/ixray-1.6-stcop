@@ -1449,6 +1449,11 @@ void spawn_anomaly(LPCSTR str, int level_vertex_id, const Fvector& position, flo
 	F_entity_Destroy(object);
 }
 
+void set_time_factor_single(float value) // FNAS
+{
+	Level().SetGameTimeFactor(value);
+}
+
 LPCSTR GetActorMaterialPairName()
 {
 	u16 mtl_idx = Actor() ? Actor()->material().last_material_idx() : GAMEMTL_NONE_IDX;
@@ -1482,7 +1487,7 @@ void CLevel::script_register(lua_State *L)
 		def("debug_actor",						tpfGetActor),
 		def("check_object",						check_object),
 #endif
-		
+		def("set_time_factor_single", set_time_factor_single), // FNAS
 		def("get_weather",						get_weather),
 		def("set_weather",						set_weather),
 		def("set_weather_fx",					set_weather_fx),
