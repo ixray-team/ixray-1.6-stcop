@@ -131,8 +131,11 @@ void CArmorBase::Hit(float hit_power, ALife::EHitType hit_type)
 {
 	IAntigas::Hit(hit_power, hit_type, GetHitImmunity(hit_type));
 
-	float hit_power_not_k = hit_power;
 	hit_power *= GetHitImmunity(hit_type);
+	if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+	{
+		hit_power *= actor->GetArtefactEquipmentDurabilityModifier();
+	}
 	if (!psActorFlags.test(AF_INFINITE_DURABILITY))
 	{
 		ChangeCondition(-hit_power);

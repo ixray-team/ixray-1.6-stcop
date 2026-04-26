@@ -141,6 +141,7 @@ private:
 	float				fActualVelocity;
 	float				fContactSpeed;
 	float				fLastUpdateTime;
+	u32					m_lastSpeedCrashDamageTime;
 
 	
 public:

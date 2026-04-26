@@ -19,7 +19,15 @@ void CArtefact::script_register(lua_State *L)
 			.def(constructor<>())
 			.def("FollowByPath", &CArtefact::FollowByPath)
 			.def("SwitchVisibility", &CArtefact::SwitchVisibility)
-			.def("GetAfRank", &CArtefact::GetAfRank),
+			.def("GetAfRank", &CArtefact::GetAfRank)
+			.def("GetJumpHeightModifier", &CArtefact::GetJumpHeightModifier)
+			.def("SetJumpHeightModifier", &CArtefact::SetJumpHeightModifier)
+			.def("GetMovementSpeedModifier", &CArtefact::GetMovementSpeedModifier)
+			.def("SetMovementSpeedModifier", &CArtefact::SetMovementSpeedModifier)
+			.def("GetEquipmentDurabilityModifier", &CArtefact::GetEquipmentDurabilityModifier)
+			.def("GetInventoryWeightModifier", &CArtefact::GetInventoryWeightModifier)
+			.def("SetInventoryWeightModifier", &CArtefact::SetInventoryWeightModifier)
+			.def("SetEquipmentDurabilityModifier", &CArtefact::SetEquipmentDurabilityModifier),
 
 		class_<CMercuryBall			,CArtefact>("CMercuryBall").def(constructor<>()),
 		class_<CBlackGraviArtefact	,CArtefact>("CBlackGraviArtefact").def(constructor<>()),
