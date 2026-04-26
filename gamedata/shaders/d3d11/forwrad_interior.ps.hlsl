@@ -114,7 +114,7 @@ float3 CompureDiffuseIrradanceSimple(float3 LightDirection, float3 Hemi)
 	return Irradance * Hemi;
 }
 
-void main(p_bumped_new I, out f_forward O)
+void main(p_bumped_new I, out IXRayForward O)
 {	
 #if defined(USE_STEEPPARALLAX) && defined(USE_HIGH_QUALITY)
     #ifdef USE_PBR

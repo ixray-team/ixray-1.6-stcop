@@ -5,7 +5,7 @@
 #ifndef USE_LENGTH_BUFFER
 	#define OutStructure IXRayGbufferPack
 #else
-	#define OutStructure f_forward
+	#define OutStructure IXRayVSLRGBuffer
 	
 #include "metalic_roughness_light.hlsli"
 #include "metalic_roughness_ambient.hlsli"
@@ -167,82 +167,78 @@ void main(p_bumped_new I, out OutStructure O)
 #else
     M.SnowMask = 1.0f;
 #endif
-
-#ifndef DISABLE_MOTION_VECTORS
-    O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
-#endif
 	
 #ifndef USE_LENGTH_BUFFER
+	#ifndef DISABLE_MOTION_VECTORS
+		O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+	#endif
+	
     GbufferPack(O, M);
 #else
+	
 	float4 LightColor = float4(L_sun_color.xyz, 0.5f);
 	float3 LightDir = mul((float3x3)m_V, L_sun_dir_w.xyz);
 	
     M.Sun = saturate(M.Sun * 2.0f);
 	
-    M.Color.xyz = GammaToLinear(M.Color.xyz);
-    M.Specular = GammaToLinear(M.Specular);
-	
-#ifndef USE_R2_STATIC_SUN
-	float4 Point = float4(M.Point.xyz, 1.f);
-    Point.xyz += M.Normal * 0.025f;
-	
-	Point.xyz = mul(m_invV, Point).xyz;
+	#ifndef USE_R2_STATIC_SUN
+		float4 Point = float4(M.Point.xyz, 1.f);
+		Point.xyz += M.Normal * 0.025f;
+		
+		Point.xyz = mul(m_invV, Point).xyz;
 
-	int cascade_index;
-	float3 smap_texcoord;
-	
-	bool is_in_bounds = calc_cascades(Point.xyz, m_shadow_sun, cascade_index, smap_texcoord);
+		int cascade_index;
+		float3 smap_texcoord;
+		
+		bool is_in_bounds = calc_cascades(Point.xyz, m_shadow_sun, cascade_index, smap_texcoord);
 
-	float Shadow = 1.0;
+		float Shadow = 1.0;
 
-	if(is_in_bounds)
-	{
-		Shadow = pcf_3x3(s_smap_sun, smp_smap, smap_texcoord, float2(SMAP_size, 1.0 / SMAP_size), 0.0, cascade_index);
-	}
+		if(is_in_bounds)
+		{
+			Shadow = pcf_3x3(s_smap_sun, smp_smap, smap_texcoord, float2(SMAP_size, 1.0 / SMAP_size), 0.0, cascade_index);
+		}
 
-	if(cascade_index >= 2)
-	{
-		float3 Factor = smoothstep(0.499f, 0.498f, abs(smap_texcoord - 0.5f));
-		float Fade = Factor.x * Factor.y * Factor.z;
+		if(cascade_index >= 2)
+		{
+			float3 Factor = smoothstep(0.499f, 0.498f, abs(smap_texcoord - 0.5f));
+			float Fade = Factor.x * Factor.y * Factor.z;
 
-		float FarShadow = saturate(M.Hemi * 8.0f - 2.0f);
-		Shadow = lerp(FarShadow, Shadow, Fade);
-	
-		float3 FlatNormal = normalize(cross(ddx(M.Point.xyz), ddy(M.Point.xyz)));
-		Shadow *= step(0.0f, dot(FlatNormal, -LightDir));
-	}
-	
-	M.Sun = Shadow;
-#endif
+			float FarShadow = saturate(M.Hemi * 8.0f - 2.0f);
+			Shadow = lerp(FarShadow, Shadow, Fade);
+		
+			float3 FlatNormal = normalize(cross(ddx(M.Point.xyz), ddy(M.Point.xyz)));
+			Shadow *= step(0.0f, dot(FlatNormal, -LightDir));
+		}
+		
+		M.Sun = Shadow;
+	#endif
+
 	float ViewLength = length(M.Point);
 	float3 View = M.Point.xyz * rcp(ViewLength);
 	
 	Lmap = Lmap * 4.0f;
 
 	#ifndef USE_LEGACY_LIGHT
+		M.Color.xyz = GammaToLinear(M.Color.xyz);
+		M.Specular = GammaToLinear(M.Specular);
+	
 		float3 Diffuse = M.Color.xyz * float(1.0f - M.Metalness);
 		float3 Specular = lerp(M.Specular, M.Color.xyz, M.Metalness);
 		
 		float3 Light = GammaToLinear(M.Sun) * DirectLight(LightColor, mul((float3x3)m_V, L_sun_dir_w.xyz), M.Normal, View, Diffuse, Specular, M.Roughness);
 		float3 Ambient = GammaToLinear(M.AO) * AmbientLighting(View, M.Normal, Diffuse, Specular, M.Roughness, M.Hemi);
 		
-		Light += DirectLight(float4(Lmap.xyz, 0.5f), View, M.Normal, View, Diffuse, Specular, M.Roughness);
+		Light += DirectLight(Lmap.xyzy, View, M.Normal, View, Diffuse, Specular, M.Roughness);
 	#else
 		float3 Light = M.Sun * DirectLightLegacy(LightColor, mul((float3x3)m_V, L_sun_dir_w.xyz), M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
-		float3 Ambient = AmbientLighting(View, M.Normal, M.Color.xyz, M.Material, M.Gloss, M.Hemi);
+		float3 Ambient = AmbientLightingLegcay(View, M.Normal, M.Color.xyz, M.Material, M.Gloss, M.Hemi);
 		
-		Light += DirectLightLegacy(float4(Lmap.xyz, 0.5f), View, M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
+		Light += DirectLightLegacy(Lmap.xyzy, View, M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
 	#endif
 	
-    O.Color.xyz = Ambient + Light.xyz;
-    O.Color.w = M.Color.w;
-
-    float Fog = GammaToLinear(saturate(ViewLength * fog_params.w + fog_params.x));
-    O.Color = lerp(O.Color, GammaToLinear(fog_color), Fog);
-	
-	O.Color.w = ViewLength;
-	O.Color.xyz = saturate(O.Color.xyz * rcp(1.0f + O.Color.xyz));
+    O.Color = Ambient + Light;
+	O.Length = ViewLength;
 #endif
 }
 
