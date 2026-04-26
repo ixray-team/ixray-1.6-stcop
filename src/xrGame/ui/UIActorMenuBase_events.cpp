@@ -20,7 +20,7 @@ bool move_item_check( PIItem itm, CInventoryOwner* from, CInventoryOwner* to, bo
 	{
 		float invWeight		= to->inventory().CalcTotalWeight();
 		float maxWeight		= to->MaxCarryWeight();
-		float itmWeight		= itm->Weight();
+		float itmWeight = itm->m_pInventory ? itm->m_pInventory->CalcItemWeight(itm) : itm->Weight();
 		if ( invWeight + itmWeight >= maxWeight )
 		{
 			return false;
@@ -1248,7 +1248,7 @@ bool CUIActorMenuBase::ToDeadBodyBag(CUICellItem* itm, bool b_use_cursor_pos)
 
 			luabind::functor<bool> funct;
 			R_ASSERT2(ai().script_engine().functor(m_onCanMoveToPartner, funct), "failed to get OnCanMoveToPartner functor");
-			float itmWeight = quest_item->Weight();
+			float itmWeight = quest_item->m_pInventory ? quest_item->m_pInventory->CalcItemWeight(quest_item) : quest_item->Weight();
 			float partner_inv_weight = GetPartner()->inventory().CalcTotalWeight();
 			float partner_max_weight = GetPartner()->MaxCarryWeight();
 
