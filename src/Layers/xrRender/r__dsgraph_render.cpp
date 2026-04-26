@@ -189,7 +189,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 	}
 }
 
-ICF static void RenderNode(mapSorted_Node& N)
+ICF void RenderNode(mapSorted_Node& N)
 {
 	dxRender_Visual* V = N.val.pVisual;
 
@@ -210,12 +210,12 @@ ICF static void RenderNode(mapSorted_Node& N)
 	V->Render(calcLOD(N.val.ssa, V->vis.sphere.R));
 }
 
-static void __fastcall sorted_L1(mapSorted_Node* N)
+ICF void sorted_L1(mapSorted_Node* N)
 {
 	RenderNode(*N);
 }
 
-ICF static void RenderMap(mapSorted_T& Map, const bool clear = true)
+ICF void RenderMap(mapSorted_T& Map, const bool clear = true)
 {
 	for (auto& Node : Map)
 	{

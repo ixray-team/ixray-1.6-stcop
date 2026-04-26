@@ -22,7 +22,8 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_velocity", r2_RT_velocity);
         C.r_dx10Texture("s_half_depth", r2_RT_half_depth);
 
-        C.r_dx10Texture("s_env", r2_RT_env_temp);
+        C.r_dx10Texture("s_env_dist", r2_RT_env_temp);
+        C.r_dx10Texture("s_env", r2_RT_env);
 
         C.r_dx10Texture("sky_s0", r2_T_sky0);
         C.r_dx10Texture("sky_s1", r2_T_sky1);
@@ -51,7 +52,6 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_dx10Texture("env_s1", r2_T_envs1);
 
         C.r_dx10Texture("s_refl", r2_RT_sslr_data);
-        C.r_dx10Texture("s_env", r2_RT_env_temp);
 
         C.r_dx10Texture("s_image", r2_RT_sslr);
         C.r_dx10Texture("s_velocity", r2_RT_velocity);
@@ -76,7 +76,6 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
         C.r_dx10Texture("env_s1", r2_T_envs1);
 
         C.r_dx10Texture("s_refl", r2_RT_sslr_old);
-        C.r_dx10Texture("s_env", r2_RT_env_temp);
 
         C.r_dx10Texture("s_image", r2_RT_sslr_temp);
         C.r_dx10Texture("s_velocity", r2_RT_velocity);
@@ -87,6 +86,21 @@ void CBlender_sslr::Compile(CBlender_Compile& C)
 
         C.r_End();
 
+        break;
+    case 3:
+        C.r_Pass("stub_fullscreen_triangle", "combine_vslr", false, false, false);
+
+        C.r_dx10Texture("sky_s0", r2_T_sky0);
+        C.r_dx10Texture("sky_s1", r2_T_sky1);
+
+        C.r_dx10Texture("s_env_dist", r2_RT_env_temp);
+        C.r_dx10Texture("s_env", r2_RT_env);
+
+        C.r_dx10Sampler("smp_linear");
+        C.r_dx10Sampler("smp_rtlinear");
+        C.r_dx10Sampler("smp_nofilter");
+
+        C.r_End();
         break;
     }
 }

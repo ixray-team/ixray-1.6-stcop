@@ -292,20 +292,6 @@ struct v_static_color
 #endif
 };
 
-struct f_deffer
-{
-    float4 Ne : SV_Target0;
-    float4 C : SV_Target1;
-    float2 V : SV_Target2;
-};
-
-struct f_forward
-{
-    float4 Color : SV_Target0;
-    float4 Velocity : SV_Target1;
-    float Reactive : SV_Target2;
-};
-
 struct gbuffer_data
 {
     float3 P;

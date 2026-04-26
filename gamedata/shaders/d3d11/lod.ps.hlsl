@@ -34,19 +34,20 @@ void main(in p_bilbord I, out IXRayGbufferPack O)
     M.Color = D;
 
     M.Sun = Sun;
-
-    M.AO = 1.0f;
-    M.SSS = 0.0f;
     M.Hemi = H.w;
 
     M.Normal = N.xyz;
 
-    M.Roughness = 0.95f;
-    M.Metalness = 0.0f;
-
 #ifdef USE_LEGACY_LIGHT
-    M.Metalness = L_material.w;
-    M.Roughness = def_gloss;
+    M.Material = L_material.w;
+    M.Gloss = def_gloss;
+#else
+    M.AO = 1.0f;
+    M.SSS = 0.0f;
+	
+    M.Roughness = 1.0f;
+    M.Metalness = 0.0f;
+	M.Specular = 0.0f;
 #endif
 
 	M.SnowMask = 0.95f;

@@ -53,9 +53,6 @@ float4 main(PSInput I) : SV_Target
     float4 sslr = ScreenSpaceLocalReflections(ReflectPoint, Reflect);
 	
 	#ifdef USE_OFFSCREEN_REFLECTIONS
-		ReflectPoint = mul(m_env_view, float4(ReflectPoint, 1.0f)).xyz;
-		Reflect = mul((float3x3)m_env_view, Reflect);
-	
 		float4 vslr = FastViewReflections(ReflectPoint, Reflect);
 		
 		float Fog = saturate(length(vslr.xyz) * fog_params.w + fog_params.x);
@@ -63,17 +60,6 @@ float4 main(PSInput I) : SV_Target
 		
 		vslr.xyz = s_env.SampleLevel(smp_rtlinear, vslr.xyz, 0.0f);
 		vslr.xyz *= rcp(1.00001f - vslr.xyz);
-	#endif
-#else
-	#ifdef USE_OFFSCREEN_REFLECTIONS
-		float3 Reflect = mul((float3x3)m_V, vreflect);
-		Reflect = mul((float3x3)m_env_view, Reflect);
-		
-		float4 vslr = s_env.SampleLevel(smp_rtlinear, Reflect.xyz, 0.0f);
-		vslr.xyz *= rcp(1.00001f - vslr.xyz);
-		
-		float Fog = saturate(vslr.w * fog_params.w + fog_params.x);
-		vslr.w = 1.f - Fog * Fog;
 	#endif
 #endif
 

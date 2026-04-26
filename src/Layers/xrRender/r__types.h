@@ -34,9 +34,10 @@
 #define		r2_RT_backbuffer_lut "$user$backbufferlut"
 #define		r2_RT_generic0_prev "$user$generic0_prev"
 
-#define		r2_RT_env			"$user$sky_temp"
-#define		r2_RT_env_depth		"$user$sky_depth"
-#define		r2_RT_env_temp		"$user$sky"
+#define		r2_RT_env			"$user$env"
+#define		r2_RT_env_depth		"$user$env_depth"
+#define		r2_RT_env_fwd		"$user$env_fwd"
+#define		r2_RT_env_temp		"$user$env_temp"
 
 #define		r2_RT_upscaled_depth "$user$upscaled_depth"
 #define		r2_RT_upscaled_depth_old "$user$upscaled_depth_old"
