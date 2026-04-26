@@ -18,7 +18,7 @@ Full changelog of _IX-Ray_ 1.6 project
 
 - Removed x86 CMake presets (@Drombeys)
 - Updated root documents (@Drombeys)
-- Updated website (@ForserX)
+- Updated website (@ForserX, @FFx0001, @SaloEater, @LostAlphaRus)
 
 ### Engine
 
@@ -40,6 +40,7 @@ Full changelog of _IX-Ray_ 1.6 project
 
 - Added `aiIgnoreActor` for mutants (@v2v3v4)
 - Added check to verify caller is alive (@Drombeys)
+- Added FNaS mod features (@Emmis)
 - Added game loading check for tooltips to prevent display on loading screens (@Shtrecker)
 - Added validation during path building (@ForserX, @FFx0001, @Drombeys)
 - Experimentally fixed offline alife simulation (@Drombeys)
