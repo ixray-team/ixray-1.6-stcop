@@ -27,3 +27,4 @@ endfunction()
 
 add_maya_tools_target(MayaTools_2024 2024 "${IXR_MAYA_SDK_2024}")
 add_maya_tools_target(MayaTools_2025 2025 "${IXR_MAYA_SDK_2025}")
+add_maya_tools_target(MayaTools_2026 2026 "${IXR_MAYA_SDK_2026}")
