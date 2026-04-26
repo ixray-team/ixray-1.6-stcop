@@ -86,16 +86,6 @@ void	R_xforms::set_P_old			(const Fmatrix& m)
 	if (c_wvp_old)		RCache.set_c(c_wvp_old,	m_wvp_old);
 }
 
-void R_xforms::set_env_view(const Fmatrix& m)
-{
-	m_env_view_real = m;
-	m_env_view.mul(m, m_invv);
-	m_env_view_inv.invert(m_env_view);
-
-	if(c_env_view) RCache.set_c(c_env_view, m_env_view);
-	if(c_env_view_inv) RCache.set_c(c_env_view_inv, m_env_view_inv);
-}
-
 void	R_xforms::apply_invw()
 {
 	VERIFY(c_invw);
@@ -106,7 +96,7 @@ void	R_xforms::apply_invw()
 		m_bInvWValid = true;
 	}
 
-	RCache.set_c( c_invw, m_invw);
+	RCache.set_c(c_invw, m_invw);
 }
 
 void R_xforms::apply_invv()
@@ -115,8 +105,6 @@ void R_xforms::apply_invv()
 
 	m_invv.invert(m_v);
 	RCache.set_c(c_invv, m_invv);
-
-	set_env_view(m_env_view_real);
 }
 
 void	R_xforms::unmap			()
@@ -137,9 +125,6 @@ void	R_xforms::unmap			()
 	c_wv_old	= nullptr;
 	c_vp_old	= nullptr;
 	c_wvp_old	= nullptr;
-
-	c_env_view = nullptr;
-	c_env_view_inv = nullptr;
 }
 
 R_xforms::R_xforms ()
@@ -161,10 +146,6 @@ R_xforms::R_xforms ()
 	m_wv_old.identity	();
 	m_vp_old.identity	();
 	m_wvp_old.identity	();
-
-	m_env_view.identity	();
-	m_env_view_inv.identity	();
-	m_env_view_real.identity	();
 
 	m_bInvWValid = true;
 }
