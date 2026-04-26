@@ -162,8 +162,11 @@ struct OMFData
 	{
 		for (auto& anim : data_anim.anims)
 		{
-			delete[] anim.data;
-			anim.data = nullptr;
+			if (anim.data)
+			{
+				delete[] anim.data;
+				anim.data = nullptr;
+			}
 		}
 	}
 };
@@ -792,11 +795,6 @@ void OMFEditor_LoadFile(CImGuiOMFEditor* p_state)
 						p_state->omf = new OMFData();
 					}
 
-					if (p_state->temp_omf==nullptr)
-					{
-						p_state->temp_omf = new OMFData();
-					}
-
 					p_state->list_box_motion_marks_names.clear();
 					p_state->list_box_motion_marks_params_names.clear();
 
@@ -1020,7 +1018,25 @@ void OMFEditor_SwapAnimMarks(
 		pState->is_file_loaded
 	)
 	{
+		if (pState->temp_omf)
+		{
+			pState->temp_omf->destroy();
+			delete pState->temp_omf;
+			pState->temp_omf = nullptr;
+		}
 
+		if (pState->temp_omf == nullptr)
+		{
+			pState->temp_omf = pState->omf;
+			pState->omf = nullptr;
+		}
+
+		if (pState->omf == nullptr)
+		{
+			pState->omf = new OMFData();
+
+
+		}
 	}
 }
 

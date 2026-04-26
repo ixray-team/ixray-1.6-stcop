@@ -74,6 +74,7 @@ public:
 		}
 	}
 
+#ifdef UNICODE
 	stack_string(const xr_char_t* Str)
 	{
 #ifdef IXR_WINDOWS
@@ -90,6 +91,7 @@ public:
 		}
 #endif
 	}
+#endif
 
 	stack_string(xr_string_view Str)
 	{
