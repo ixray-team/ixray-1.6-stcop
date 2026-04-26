@@ -80,8 +80,8 @@ Latest release of the engine can be downloaded on the [releases page](https://gi
 
 | Platform | Build | System | Files | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| Call of Pripyat | Gamer | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.3/ixray-1.6-r1.3.3-engine-x64-game.zip) | Ready-made engine build for players or necessary for the release of modifications. Archive contains the engine and assets for running the game |
-| Call of Pripyat | Developer | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.3/ixray-1.6-r1.3.3-engine-x64-develop.zip) | Ready-made engine build for developers, necessary for convenient modification development. Archive contains the engine and assets for launching the game |
+| Call of Pripyat | Gamer | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.4/ixray-1.6-r1.3.4-engine-x64-game.zip) | Ready-made engine build for players or necessary for the release of modifications. Archive contains the engine and assets for running the game |
+| Call of Pripyat | Developer | Windows x64 | [Engine+Assets](https://github.com/ixray-team/ixray-1.6-stcop/releases/download/r1.3.4/ixray-1.6-r1.3.4-engine-x64-develop.zip) | Ready-made engine build for developers, necessary for convenient modification development. Archive contains the engine and assets for launching the game |
 
 You can read about the differences in [FAQ](https://github.com/ixray-team/ixray-1.6-stcop/blob/default/doc/faq.md#what-is-the-difference-between-the-game-player-and-developer-builds)
 
@@ -105,6 +105,12 @@ You can read about the differences in [FAQ](https://github.com/ixray-team/ixray-
 - Extended gameplay features
 - [Extended __UI__ features](https://github.com/ixray-team/ixray-1.6-stcop/wiki/UI-%D0%9E%D0%B1%D1%89%D0%B5%D0%B5)
 - [Extended __Lua__ features](https://github.com/ixray-team/ixray-1.6-stcop/wiki#%D1%81%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D1%8B-lua)
+
+## Addons
+
+We host official addons in our organization [IX-Ray Community](https://github.com/ixray-community). There you will find weapon and graphics addons
+
+Additionally, addons can be downloaded from [ModDB](https://www.moddb.com/mods/ix-ray-platform/addons)
 
 ## Minimal system requirements
 

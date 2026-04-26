@@ -12,6 +12,74 @@
 
 Full changelog of _IX-Ray_ 1.6 project
 
+## Release 1.3.4 (April 2026)
+
+### Common
+
+- Removed x86 CMake presets (@Drombeys)
+- Updated root documents (@Drombeys)
+- Updated website (@ForserX)
+
+### Engine
+
+- Fixed localized save game loading (@Drombeys)
+- Fixed log message skipping (@ForserX)
+- Fixed memory leak in renders (@v2v3v4)
+- Fixed method exit on missing model (@Drombeys)
+- Implemented optional camera-shell collision (@Hozar_2002)
+- Improved UI backend stability (@mrGlock5, @Drombeys)
+
+### Graphics
+
+- Added night vision scope jitter effect (@Shtrecker)
+- Added scope brightness control for 3D scopes (@Shtrecker)
+- Fixed normal map reconstruction and terrain normals for PBR shaders (@LVutner)
+- Removed TAA option from D3D9 renderers (@LVutner)
+
+### Gameplay
+
+- Added `aiIgnoreActor` for mutants (@v2v3v4)
+- Added check to verify caller is alive (@Drombeys)
+- Added game loading check for tooltips to prevent display on loading screens (@Shtrecker)
+- Added validation during path building (@ForserX, @FFx0001, @Drombeys)
+- Experimentally fixed offline alife simulation (@Drombeys)
+- Fixed addons visibility (@Shtrecker)
+- Fixed detector aim animations (@Shtrecker)
+- Fixed edible items jumping after use (@Shtrecker)
+- Fixed freezing with incorrect suppressor parameters (@FFx0001, @v2v3v4)
+- Fixed GOAP crash (@v2v3v4)
+- Fixed grenade launcher reload (@Shtrecker)
+- Fixed grenade packing (@Drombeys)
+- Fixed HUD flickering issue (@Shtrecker)
+- Fixed inertia (@Shtrecker)
+- Fixed known first-person leg issues (@v2v3v4)
+- Fixed magazine capacity calculation (@Shtrecker)
+- Fixed magazine capacity in grenade launcher mode (@Shtrecker)
+- Fixed missing breath sound (@mrGlock5)
+- Fixed reload mixing (@Shtrecker)
+- Fixed reload sounds in STCoP WP scope system (@Shtrecker)
+- Fixed running state in reload action (@Shtrecker)
+- Fixed Sidorovich armor durability issue when shot while wearing and selling same armor (@Shtrecker)
+- Fixed vertical stripes (@mrGlock5)
+- Force crash on missing upgrade (@St4lker0k765)
+- Hidden indicators when zoom is fully rotated (@Shtrecker)
+- Improved and fixed bullet bones scheme (@Shtrecker)
+- Restored old loading logic for ammo bones system (@Shtrecker)
+
+### Toolchain
+
+- Added sector validation for missing shaders in library (@Drombeys)
+- Enabled mesh optimization during level loading (@Drombeys)
+- Fixed default value display in `Level Name` properties (@ForserX)
+- Fixed missing level error message (@Drombeys)
+- Fixed object reloading in editors (@ForserX)
+- Fixed run compile geometry and light from Level Editor interface (@wikiraccoon)
+- Fixed scale manipulator in Level Editor (@ForserX)
+- Fixed shape type detection for `EnvMod` (@mnelenpridumivat)
+- Fixed snap list in Level Editor (@ForserX)
+- Improved Spawn Manager stability when configurations are incorrect (@Drombeys)
+- Reported invalid face deletion in object (@ForserX)
+
 ## Release 1.3.3 (January 2026)
 
 ### Common
