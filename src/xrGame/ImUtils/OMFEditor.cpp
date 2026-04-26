@@ -157,6 +157,15 @@ struct OMFData
 	AnimData data_anim;
 	BoneData data_bone;
 	AnimParamsData data_animparams;
+
+	void destroy()
+	{
+		for (auto& anim : data_anim.anims)
+		{
+			delete[] anim.data;
+			anim.data = nullptr;
+		}
+	}
 };
 
 struct CImGuiOMFEditor
@@ -194,6 +203,7 @@ struct CImGuiOMFEditor
 	int current_selected_mark_param{};
 
 	OMFData* omf{};
+	OMFData* temp_omf{};
 	OMFData::omf_name_t rename_temp;
 	OMFData::omf_name_t rename_temp_bone;
 	OMFData::omf_name_t temp_motion_mark_name;
@@ -772,12 +782,19 @@ void OMFEditor_LoadFile(CImGuiOMFEditor* p_state)
 				{
 					if (p_state->omf)
 					{
+						p_state->omf->destroy();
+
 						delete p_state->omf;
 						p_state->omf = new OMFData();
 					}
 					else
 					{
 						p_state->omf = new OMFData();
+					}
+
+					if (p_state->temp_omf==nullptr)
+					{
+						p_state->temp_omf = new OMFData();
 					}
 
 					p_state->list_box_motion_marks_names.clear();
@@ -991,6 +1008,22 @@ void OMFEditor_TryRepair(
 	}
 }
 
+void OMFEditor_SwapAnimMarks(
+	CImGuiOMFEditor* pState
+)
+{
+	R_ASSERT(pState);
+
+	if (
+		pState && 
+		pState->omf && 
+		pState->is_file_loaded
+	)
+	{
+
+	}
+}
+
 void RequestHandler_OMFEditor(const SRequestData& req)
 {
 	R_ASSERT2(static_cast<eImGuiEditorType>(req.editor_type) == eImGuiEditorType::kOMFEditor, "mistaken workload calling! that means data was corrupted or some error occurred");
@@ -1067,6 +1100,22 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 	{
 		if (g_pOMFEditor)
 		{
+			if (g_pOMFEditor->omf)
+			{
+				g_pOMFEditor->omf->destroy();
+
+				delete g_pOMFEditor->omf;
+				g_pOMFEditor->omf = nullptr;
+			}
+			
+			if (g_pOMFEditor->temp_omf)
+			{
+				g_pOMFEditor->temp_omf->destroy();
+
+				delete g_pOMFEditor->temp_omf;
+				g_pOMFEditor->temp_omf = nullptr;
+			}
+
 			delete g_pOMFEditor;
 			g_pOMFEditor = nullptr;
 		}
