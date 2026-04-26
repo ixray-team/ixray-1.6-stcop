@@ -8,6 +8,7 @@
 #include "clsid_game.h"
 #include "WeaponMagazined.h"
 #include "Grenade.h"
+#include "Actor.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "ui/UICarBodyWnd.h"
 
@@ -1187,11 +1188,27 @@ float CInventory::CalcTotalWeight()
 	float weight = 0.0f;
 	for (const PIItem item : m_all)
 	{
-		weight += item->Weight();
+		weight += CalcItemWeight(item);
 	}
 
 	m_fTotalWeight = weight;
 	return m_fTotalWeight;
+}
+
+float CInventory::CalcItemWeight(const CInventoryItem* item) const
+{
+	if (!item)
+	{
+		return 0.0f;
+	}
+
+	float weight = item->Weight();
+	if (CActor* actor = m_pOwner != nullptr ? m_pOwner->cast_actor() : nullptr)
+	{
+		weight *= actor->GetArtefactInventoryWeightModifier();
+	}
+
+	return weight;
 }
 
 u32 CInventory::dwfGetSameItemCount(const char* caSection, bool SearchAll)
@@ -1549,7 +1566,7 @@ bool CInventory::CanTakeItem(CInventoryItem* inventory_item) const
 	CCar* pCar = m_pOwner->cast_car();
 
 	//актер всегда может взять вещь
-	if (pCar == nullptr && pActor == nullptr && TotalWeight() + inventory_item->Weight() > m_pOwner->MaxCarryWeight())
+	if (pCar == nullptr && pActor == nullptr && TotalWeight() + CalcItemWeight(inventory_item) > m_pOwner->MaxCarryWeight())
 	{
 		return false;
 	}
