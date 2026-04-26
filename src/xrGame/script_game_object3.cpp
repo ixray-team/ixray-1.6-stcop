@@ -1602,6 +1602,30 @@ float CScriptGameObject::GetArtefactThirstRestoreSpeed()
 	return artefact->GetThirstPower();
 }
 
+float CScriptGameObject::GetArtefactSleepinessRestoreSpeed()
+{
+	CArtefact* artefact = object().cast_artefact();
+	THROW(artefact);
+
+	return artefact->GetSleepinessPower();
+}
+
+float CScriptGameObject::GetArtefactEquipmentDurabilityModifier()
+{
+	CArtefact* artefact = object().cast_artefact();
+	THROW(artefact);
+
+	return artefact->GetEquipmentDurabilityModifier();
+}
+
+float CScriptGameObject::GetArtefactInventoryWeightModifier()
+{
+	CArtefact* artefact = object().cast_artefact();
+	THROW(artefact);
+
+	return artefact->GetInventoryWeightModifier();
+}
+
 float CScriptGameObject::GetArtefactPowerRestoreSpeed()
 {
 	CArtefact* artefact = object().cast_artefact();
@@ -1648,6 +1672,30 @@ void CScriptGameObject::SetArtefactThirstRestoreSpeed(float value)
 	THROW(artefact);
 
 	artefact->SetThirstPower(value);
+}
+
+void CScriptGameObject::SetArtefactSleepinessRestoreSpeed(float value)
+{
+	CArtefact* artefact = object().cast_artefact();
+	THROW(artefact);
+
+	artefact->SetSleepinessPower(value);
+}
+
+void CScriptGameObject::SetArtefactEquipmentDurabilityModifier(float value)
+{
+	CArtefact* artefact = object().cast_artefact();
+	THROW(artefact);
+
+	artefact->SetEquipmentDurabilityModifier(value);
+}
+
+void CScriptGameObject::SetArtefactInventoryWeightModifier(float value)
+{
+	CArtefact* artefact = object().cast_artefact();
+	THROW(artefact);
+
+	artefact->SetInventoryWeightModifier(value);
 }
 
 void CScriptGameObject::SetArtefactPowerRestoreSpeed(float value)
