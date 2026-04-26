@@ -83,7 +83,7 @@ float3 SimpleTranslucency(float3 Radiance, float3 Light, float3 Normal)
 	float Factor = 1.0f - saturate(abs(Scale) * 13.0f - 1.0f);
 
 	float SSS = lerp(saturate(NdotL), Attention, Factor * Factor);
-	return GammaToLinear(Radiance.xyz) * saturate(3.5f * SSS + 0.1f);
+	return GammaToLinear(Radiance.xyz * saturate(3.5f * SSS + 0.1f));
 }
 
 float3 sample_vndf_isotropic(float3 n, float3 wi, float2 u, float alpha)

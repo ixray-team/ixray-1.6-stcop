@@ -31,9 +31,6 @@ IC void		R_xforms::set_c_wv_old		(RHIShaderConstant* C)		{	c_wv_old = C;	RCache.
 IC void		R_xforms::set_c_vp_old		(RHIShaderConstant* C)		{	c_vp_old = C;	RCache.set_c(C,m_vp_old);	};
 IC void		R_xforms::set_c_wvp_old		(RHIShaderConstant* C)		{	c_wvp_old = C;	RCache.set_c(C,m_wvp_old);	};
 
-IC void	 R_xforms::set_c_env_view(RHIShaderConstant* C) { c_env_view = C; RCache.set_c(C, m_env_view); };
-IC void	 R_xforms::set_c_env_view_inv(RHIShaderConstant* C) { c_env_view_inv = C; RCache.set_c(C, m_env_view_inv); };
-
 IC	void	CBackend::set_xform_world	(const Fmatrix& M_)
 { 
 	xforms.set_W(M_);	

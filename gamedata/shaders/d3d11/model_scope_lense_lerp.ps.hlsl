@@ -10,7 +10,7 @@ struct v2p
     float4 c0: COLOR0;
 };
 
-void main(v2p I, float4 pos2d : SV_POSITION, out f_forward O)
+void main(v2p I, float4 pos2d : SV_POSITION, out IXRayForward O)
 {
     if (m_hud_params.y * m_hud_params.a < 0.0001f)
 	{
@@ -39,6 +39,7 @@ void main(v2p I, float4 pos2d : SV_POSITION, out f_forward O)
 	
     O.Color = float4(final.xyz, alpha);
 	O.Velocity = float4(vel, 0.0f, t_base.a * alpha);
+	
 	O.Reactive = 0.0f;
 }
 
