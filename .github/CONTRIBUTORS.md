@@ -37,6 +37,7 @@ Detail list of all contributors to IX-Ray project
   - MiX225
   - kola2451
   - FFx0001
+  - Desert Cliff (mrGlock5)
 
 - IX-Ray Partners:
   - _V_O_IN_
@@ -103,6 +104,9 @@ Detail list of all contributors to IX-Ray project
 - BASE1707
 - tabudz
 - openhands
+- Emmis
+- wikiraccoon
+- SaloEater
 
 ## Former Contributors
 
