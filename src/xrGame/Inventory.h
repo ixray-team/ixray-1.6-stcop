@@ -39,6 +39,7 @@ public:
 
 	float TotalWeight() const;
 	float CalcTotalWeight();
+	float CalcItemWeight(const CInventoryItem* item) const;
 
 	void Take(CGameObject* pObj, bool bNotActivate, bool strict_placement);
 	//if just_before_destroy is true, then activate will be forced (because deactivate message will not deliver)

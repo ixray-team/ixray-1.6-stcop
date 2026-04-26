@@ -11,6 +11,7 @@
 #include "UIInventoryWnd.h"
 #include "UICarBodyWnd.h"
 #include "inventory_item.h"
+#include "../Inventory.h"
 #include "WeaponAmmo.h"
 #include "../../xrUI/UIHelper.h"
 #include "../../xrUI/UIXmlInit.h"
@@ -287,7 +288,8 @@ void CUIItemDropAmountWnd::UpdateWeightText()
 {
     if (!_pItem)
         return;
-    float weight = _pItem->Weight() * _currentAmount;
+    float itemWeight = _pItem->m_pInventory ? _pItem->m_pInventory->CalcItemWeight(_pItem) : _pItem->Weight();
+    float weight = itemWeight * _currentAmount;
     const char* weightLabel = g_pStringTable->translate("st_weight").c_str();
     const char* kgLabel = g_pStringTable->translate("st_kg").c_str();
     string128 buf;

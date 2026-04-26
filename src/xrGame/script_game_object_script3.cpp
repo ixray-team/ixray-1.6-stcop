@@ -301,6 +301,9 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
         .def("get_artefact_radiation",			&CScriptGameObject::GetArtefactRadiationRestoreSpeed)
         .def("get_artefact_satiety",			&CScriptGameObject::GetArtefactSatietyRestoreSpeed)
         .def("get_artefact_thirst",			&CScriptGameObject::GetArtefactThirstRestoreSpeed)
+        .def("get_artefact_sleepiness",			&CScriptGameObject::GetArtefactSleepinessRestoreSpeed)
+        .def("get_artefact_equipment_durability",	&CScriptGameObject::GetArtefactEquipmentDurabilityModifier)
+        .def("get_artefact_inventory_weight",		&CScriptGameObject::GetArtefactInventoryWeightModifier)
         .def("get_artefact_power",			&CScriptGameObject::GetArtefactPowerRestoreSpeed)
         .def("get_artefact_bleeding",			&CScriptGameObject::GetArtefactBleedingRestoreSpeed)        
 
@@ -308,6 +311,9 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
         .def("set_artefact_radiation",			&CScriptGameObject::SetArtefactRadiationRestoreSpeed)
         .def("set_artefact_satiety",			&CScriptGameObject::SetArtefactSatietyRestoreSpeed)
         .def("set_artefact_thirst",			&CScriptGameObject::SetArtefactThirstRestoreSpeed)
+        .def("set_artefact_sleepiness",			&CScriptGameObject::SetArtefactSleepinessRestoreSpeed)
+        .def("set_artefact_equipment_durability",	&CScriptGameObject::SetArtefactEquipmentDurabilityModifier)
+        .def("set_artefact_inventory_weight",		&CScriptGameObject::SetArtefactInventoryWeightModifier)
         .def("set_artefact_power",			&CScriptGameObject::SetArtefactPowerRestoreSpeed)
         .def("set_artefact_bleeding",			&CScriptGameObject::SetArtefactBleedingRestoreSpeed)
 		//HELICOPTER
