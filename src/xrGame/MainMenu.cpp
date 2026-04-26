@@ -339,16 +339,19 @@ void	CMainMenu::IR_OnMouseStop(int x, int y)
 {
 };
 
-void	CMainMenu::IR_OnKeyboardPress(int dik)
+void CMainMenu::IR_OnKeyboardPress(int dik)
 {
-	if(!IsActive()) return;
-
-	if( is_binded(kCONSOLE, dik) )
+	if (!IsActive()) 
+		return;
+	
+	if (is_binded(kCONSOLE, dik) && !EngineExternal()[EEngineExternalSystem::DisableConsole])
 	{
 		Console->Show();
 		return;
 	}
-	if (SDL_SCANCODE_F12 == dik){
+	
+	if (SDL_SCANCODE_F12 == dik)
+	{
 		Render->Screenshot();
 		return;
 	}
