@@ -16,14 +16,21 @@ enum class _eMessageBoxStatus
 {
 	kSuccess,
 	kWarning,
-	kError
+	kError,
+	kYesOrNo
 };
 
-void ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::string_view message)
+int ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::string_view message)
 {
 	const SDL_MessageBoxButtonData buttons[] =
 	{
 		{ 0, 0, "Ok" }
+	};
+
+	const SDL_MessageBoxButtonData buttons_yesorno[] = 
+	{
+		{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes"},
+		{0, 0, "No"},
 	};
 
 	u32 type = SDL_MESSAGEBOX_INFORMATION;
@@ -42,24 +49,38 @@ void ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::stri
 	}
 	}
 
+	const SDL_MessageBoxButtonData* pButtons = buttons;
+	int size_buttons = std::size(buttons);
+
+	if (status == _eMessageBoxStatus::kYesOrNo)
+	{
+		pButtons = buttons_yesorno;
+		size_buttons = std::size(buttons_yesorno);
+	}
+
 	const SDL_MessageBoxData messageboxdata =
 	{
 		type | SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT,		/* .flags */
 		nullptr,					/* .window */
 		title.data(),				/* .title */
 		message.data(),			/* .message */
-		std::size(buttons),			/* .numbuttons */
-		buttons,					/* .buttons */
+		size_buttons,			/* .numbuttons */
+		pButtons,					/* .buttons */
 		nullptr						/* .colorScheme */
 	};
 
 	int button_id = -1;
 
 	int ret = SDL_ShowMessageBox(&messageboxdata, &button_id);
+
+	if (ret < 0)
+		button_id = -1;
+
+	return button_id;
 }
 
 
-constexpr unsigned int _kMaxStringFieldNameLength = sizeof(string128);
+constexpr unsigned int _kMaxStringFieldNameLength = 32;
 constexpr const char* _kOMFEditorModalWindow_RenameAnimationParam = "Rename##ToolsInGameImGui_OMGEditor_AnimationParam";
 constexpr const char* _kOMFEditorModalWindow_WarningRenameHasCollision = "Warning##ToolsInGameImGui_OMFEditor_AnimationParamFailedRenaming";
 constexpr const char* _kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSuccessful = "Successful!##ToolsInGameImGui_OMFEditor_BonePartsToClipboard";
@@ -1031,11 +1052,127 @@ void OMFEditor_SwapAnimMarks(
 			pState->omf = nullptr;
 		}
 
+		R_ASSERT(pState->omf==nullptr);
+
 		if (pState->omf == nullptr)
 		{
-			pState->omf = new OMFData();
+			xr_stack_tstring<sizeof(string_path)> local_path;
+			bool status = xr_EFS->GetOpenName(local_path, XR_TEXT("OMF file\0*.omf\0"));
+
+			if (status)
+			{
+				status = Platform::WCHAR_TO_CHAR(local_path, pState->path);
+				R_ASSERT(status);
+
+				R_ASSERT(std::filesystem::exists(pState->path.c_str()));
+
+				std::ifstream file_omf(local_path.c_str(), std::ios::binary);
+
+				if (file_omf.is_open())
+				{
+					pState->current_selected_animation_param = 0;
+					pState->current_selected_mark = -1;
+					pState->current_selected_mark_param = -1;
+					pState->omf = new OMFData();
+
+					status = OMFEditor_LoadOMF(*pState->omf, file_omf);
+					R_ASSERT(status);
+
+					if (status)
+					{
+						bool dlg_showed = false;
+						bool dlg_option_overwrite_enabled = false;
 
 
+						OMFData::omf_name_t name_from_temp;
+						OMFData::omf_name_t name_from_current;
+
+						for (int i = 0; i < pState->temp_omf->data_anim.animations_count; ++i)
+						{
+							auto& param_temp = pState->temp_omf->data_animparams.params[i];
+
+							if (param_temp.marks_count > 0)
+							{
+								for (int j = 0; j < pState->omf->data_anim.animations_count; ++j)
+								{
+									name_from_temp = pState->temp_omf->data_anim.anims[i].name;
+									name_from_current = pState->omf->data_anim.anims[j].name;
+
+									// we must gurantee how we compare names...
+									xr_strlwr(name_from_temp);
+									xr_strlwr(name_from_current);
+
+									if (name_from_temp == name_from_current)
+									{
+										if (!dlg_showed)
+										{
+											dlg_option_overwrite_enabled = ShowMessageBox(_eMessageBoxStatus::kYesOrNo, "Info", "Overwrite existing motion marks?") == 1;
+											dlg_showed = true;
+										}
+
+										if (dlg_option_overwrite_enabled)
+										{
+											auto& param = pState->omf->data_animparams.params[j];
+											
+											param.marks.clear();
+											param.marks_count = param_temp.marks_count;
+											param.marks = param_temp.marks;
+										}
+									}
+								}
+							}
+						}
+					}
+					else
+					{
+						delete pState->omf;
+						pState->omf = pState->temp_omf;
+						pState->temp_omf = nullptr;
+						ShowMessageBox(_eMessageBoxStatus::kWarning, "Warning", "failed to load file!");
+					}
+				}
+				else
+				{
+					R_ASSERT(pState->omf == nullptr);
+					pState->omf = pState->temp_omf;
+					pState->temp_omf = nullptr;
+					ShowMessageBox(_eMessageBoxStatus::kWarning, "Warning", "failed to load file!");
+				}
+			}
+			else
+			{
+				R_ASSERT(pState->omf == nullptr);
+				pState->omf = pState->temp_omf;
+				pState->temp_omf = nullptr;
+			}
+
+			R_ASSERT(pState->omf);
+			if (pState->omf)
+			{
+				auto& selected_param = pState->omf->data_animparams.params[pState->current_selected_animation_param];
+
+				xr_stack_string16 temp_mark_param_name;
+				pState->list_box_motion_marks_names.clear();
+				pState->list_box_motion_marks_params_names.clear();
+
+				int i = 0;
+				for (auto& mark : selected_param.marks)
+				{
+					pState->list_box_motion_marks_names.push_back(mark.name.c_str());
+
+					if (i == 0)
+					{
+						int mark_param_id = 0;
+						for (auto& mark_param : mark.params)
+						{
+							std::sprintf(temp_mark_param_name.data(), "%d_mark%d", i, mark_param_id);
+							pState->list_box_motion_marks_params_names.push_back(temp_mark_param_name);
+							++mark_param_id;
+						}
+					}
+					++i;
+				}
+			}
 		}
 	}
 }
@@ -1209,6 +1346,7 @@ void RenderOMFEditor_Draw_TableHeader()
 
 			if (ImGui::MenuItem("Swap anim marks##ToolsInGameImGui_OMFEditor"))
 			{
+				OMFEditor_SwapAnimMarks(g_pOMFEditor);
 			}
 
 		}
