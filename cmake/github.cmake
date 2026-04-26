@@ -1,20 +1,20 @@
 # Общая функция для скачивания и распаковки SDK
 function(download_and_extract_sdk url zip_file out_dir)
-    if(NOT EXISTS "${zip_file}")
-        message(STATUS "Downloading ${url} ...")
-        file(DOWNLOAD
-            "${url}"
-            "${zip_file}"
-            SHOW_PROGRESS
-        )
+	if(NOT EXISTS "${zip_file}")
+		message(STATUS "Downloading ${url} ...")
+		file(DOWNLOAD
+			"${url}"
+			"${zip_file}"
+			SHOW_PROGRESS
+		)
 
-        file(MAKE_DIRECTORY "${out_dir}")
+		file(MAKE_DIRECTORY "${out_dir}")
 
-        execute_process(
-            COMMAND ${CMAKE_COMMAND} -E tar -xzf "${zip_file}"
-            WORKING_DIRECTORY "${out_dir}"
-        )
-    endif()
+		execute_process(
+			COMMAND ${CMAKE_COMMAND} -E tar -xzf "${zip_file}"
+			WORKING_DIRECTORY "${out_dir}"
+		)
+	endif()
 endfunction()
 
 # Папка с зависимостями
@@ -29,17 +29,17 @@ set(DEP_DIR ${CMAKE_BINARY_DIR}/dep)
 
 # Maya SDK
 if (IXRAY_PLUGINS)
-    set(IXR_MAYA_SDK_2024_ZIP ${DEP_DIR}/Autodesk.Maya.Sdk.2024.zip)
-    set(IXR_MAYA_SDK_2024_URL https://github.com/ixray-team/ixray-packages/releases/download/d2024.5.3/Autodesk.Maya.Sdk.2024.zip)
-    set(IXR_MAYA_SDK_2024_DIR ${DEP_DIR}/maya_sdk)
-    download_and_extract_sdk(${IXR_MAYA_SDK_2024_URL} ${IXR_MAYA_SDK_2024_ZIP} ${IXR_MAYA_SDK_2024_DIR})
-    set(IXR_MAYA_SDK_2024 ${IXR_MAYA_SDK_2024_DIR}/)
-    
-    set(IXR_MAYA_SDK_2025_ZIP ${DEP_DIR}/Autodesk.Maya.Sdk.2025.zip)
-    set(IXR_MAYA_SDK_2025_URL https://github.com/ixray-team/ixray-packages/releases/download/d2024.5.3/Autodesk.Maya.Sdk.2025.zip)
-    set(IXR_MAYA_SDK_2025_DIR ${DEP_DIR}/maya_sdk_2025)
-    download_and_extract_sdk(${IXR_MAYA_SDK_2025_URL} ${IXR_MAYA_SDK_2025_ZIP} ${IXR_MAYA_SDK_2025_DIR})
-    set(IXR_MAYA_SDK_2025 ${IXR_MAYA_SDK_2025_DIR}/)
+	function(setup_maya_sdk version)
+	    set(IXR_MAYA_SDK_${version}_ZIP ${DEP_DIR}/Autodesk.Maya.Sdk.${version}.zip)
+	    set(IXR_MAYA_SDK_${version}_URL https://github.com/ixray-team/ixray-packages/releases/download/d2024.5.3/Autodesk.Maya.Sdk.${version}.zip)
+	    set(IXR_MAYA_SDK_${version}_DIR ${DEP_DIR}/maya_sdk_${version})
+	    download_and_extract_sdk(${IXR_MAYA_SDK_${version}_URL} ${IXR_MAYA_SDK_${version}_ZIP} ${IXR_MAYA_SDK_${version}_DIR})
+	    set(IXR_MAYA_SDK_${version} ${IXR_MAYA_SDK_${version}_DIR}/ PARENT_SCOPE)
+	endfunction()
+	
+    foreach(version 2024 2025 2026)
+        setup_maya_sdk(${version})
+    endforeach()
 endif()
 
 # LightWave SDK (закомментировано)
