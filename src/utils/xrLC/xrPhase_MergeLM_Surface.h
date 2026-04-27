@@ -25,9 +25,9 @@ public:
 	u32 FilledPercent = 0;
 
 	void RecalcY();
-	void _InitSurface_tbb();
-	bool _rect_register_tbb(L_rect& R, lm_layer* D);
- 	bool Place_Perpixel_tbb(L_rect& R, lm_layer* D);
+	void _InitSurface();
+	bool _rect_register(L_rect& R, lm_layer* D);
+ 	bool Place_Perpixel(L_rect& R, lm_layer* D);
  	bool rect_place_full(L_rect& r, lm_layer* D);
 };
 
