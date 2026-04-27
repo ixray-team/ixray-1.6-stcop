@@ -1180,3 +1180,32 @@ retval: float
   args: 
     chance (float), -- Шанс в интервале 0.00001 до 0.99999
 ```
+
+## CScriptParticles
+```lua
+local pg_obj = particles_object("ffx0001\\test\\
+
+--// Задать позицию и направление партикл группы относительно оси X
+pg_obj:set_xform_dir_x(position, direction, velocity))
+retval: void
+args: 
+    position (vector), -- позиция партикла
+    direction (vector), -- направление партикла
+    velocity (vector), -- скорость совмещения позиции партикла
+    
+--// Задать позицию и направление партикл группы относительно оси Y
+pg_obj:set_xform_dir_y(position, direction, velocity))
+retval: void
+args: 
+    position (vector), -- позиция партикла
+    direction (vector), -- направление партикла
+    velocity (vector), -- скорость совмещения позиции партикла
+    
+--// Задать позицию и направление партикл группы относительно оси Z
+pg_obj:set_xform_dir_z(position, direction, velocity))
+retval: void
+args: 
+    position (vector), -- позиция партикла
+    direction (vector), -- направление партикла
+    velocity (vector), -- скорость совмещения позиции партикла
+```
