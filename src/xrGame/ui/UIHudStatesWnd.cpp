@@ -346,6 +346,7 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
     if (xml.NavigateToNode("static_ammo_adaptive", 0))
     {
         m_use_adaptive_ammo_widget = true;
+        xr_strcpy(m_adaptive_total_separator, xml.ReadAttrib("static_ammo_adaptive", 0, "separator", "/"));
         CUIWindow* adaptiveContainer = new CUIWindow();
         adaptiveContainer->SetAutoDelete(true);
         CUIXmlInit::InitWindow(xml, "static_ammo_adaptive", 0, adaptiveContainer);
@@ -1091,14 +1092,29 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 
                 string64 clipBuf;
                 string64 totalBuf;
+                const bool hasSeparator = m_adaptive_total_separator[0] != 0;
                 xr_sprintf(clipBuf, "%d", clipCount);
                 if (isTotalInfinity)
                 {
-                    xr_strcpy(totalBuf, "/ ∞");
+                    if (hasSeparator)
+                    {
+                        xr_sprintf(totalBuf, "%s %s", m_adaptive_total_separator, "∞");
+                    }
+                    else
+                    {
+                        xr_strcpy(totalBuf, "∞");
+                    }
                 }
                 else
                 {
-                    xr_sprintf(totalBuf, "/ %d", totalCount);
+                    if (hasSeparator)
+                    {
+                        xr_sprintf(totalBuf, "%s %d", m_adaptive_total_separator, totalCount);
+                    }
+                    else
+                    {
+                        xr_sprintf(totalBuf, "%d", totalCount);
+                    }
                 }
 
                 m_ui_adaptive_clip->SetText(clipBuf);
@@ -1198,6 +1214,7 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 
                 string64 clipBuf;
                 string64 totalBuf;
+                const bool hasSeparator = m_adaptive_total_separator[0] != 0;
                 if (isClipInfinity)
                 {
                     xr_strcpy(clipBuf, "∞");
@@ -1208,11 +1225,25 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
                 }
                 if (isTotalInfinity)
                 {
-                    xr_strcpy(totalBuf, "/ ∞");
+                    if (hasSeparator)
+                    {
+                        xr_sprintf(totalBuf, "%s %s", m_adaptive_total_separator, "∞");
+                    }
+                    else
+                    {
+                        xr_strcpy(totalBuf, "∞");
+                    }
                 }
                 else
                 {
-                    xr_sprintf(totalBuf, "/ %d", totalCount);
+                    if (hasSeparator)
+                    {
+                        xr_sprintf(totalBuf, "%s %d", m_adaptive_total_separator, totalCount);
+                    }
+                    else
+                    {
+                        xr_sprintf(totalBuf, "%d", totalCount);
+                    }
                 }
 
                 m_ui_adaptive_clip->SetText(clipBuf);
