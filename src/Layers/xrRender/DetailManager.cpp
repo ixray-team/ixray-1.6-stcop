@@ -184,8 +184,13 @@ void CDetailManager::Render()
 #ifndef _EDITOR
 					CHOM& HOM = RImplementation.HOM;
 #endif
-					// Initialize 'vis' and 'cache'
-					// Collect objects for rendering
+					float fade_limit = dm_fade;	fade_limit = fade_limit * fade_limit;
+					float fade_start = 1.f; fade_start = fade_start * fade_start;
+					float fade_range = fade_limit - fade_start;
+					extern ECORE_API float r_ssaDISCARD;
+					float ssa_D = r_ssaDISCARD;
+					float r_ssaCHEAP = 16 * ssa_D;
+
 					u32 max_index = dm_slide_window_line * dm_slide_window_line;
 					for (u32 index = 0; index < max_index; index++)
 					{
@@ -198,35 +203,44 @@ void CDetailManager::Render()
 						u32 mask = 0xff;
 						u32 res = View.testSAABB(MS.vis.sphere.P, MS.vis.sphere.R, MS.vis.box.data(), mask);
 						if (fcvNone == res)
-							continue;	// invisible-view frustum
+							continue;
 #ifndef _EDITOR
 						if (!HOM.visible(MS.vis))
-							continue;	// invisible-occlusion
+							continue;
 #endif
-						// test slots
 						for (u32 _i = 0; _i < dm_cache_count; _i++)
 						{
 							Slot** slots = MS.slots[_i];
 							Slot* S = *slots;
 
-							// if slot empty - continue
 							if (S->empty)
 								continue;
 
-							// if upper test = fcvPartial - test inner slots
 							if (fcvPartial == res)
 							{
 								u32 _mask = mask;
 								u32 _res = View.testSAABB(S->vis.sphere.P, S->vis.sphere.R, S->vis.box.data(), _mask);
 								if (fcvNone == _res)
-									continue;	// invisible-view frustum
+									continue;
 							}
 #ifndef _EDITOR
 							if (!HOM.visible(S->vis))
-								continue;	// invisible-occlusion
+								continue;
 #endif
-							// Add to visibility structures
-							// Calc fade factor	(per slot)
+							float dist_sq = cam_pos.distance_to_sqr(S->vis.sphere.P);
+							float alpha = (dist_sq < fade_start) ? 0.f : (dist_sq - fade_start) / fade_range;
+							float dist_sq_rcp = 1.f / dist_sq;
+
+							float R = S->vis.sphere.R;
+							float Rq_drcp = R * R * dist_sq_rcp;
+
+							float scale = (R*0.8f)*(1.f - alpha);
+							float ssa = scale * scale * Rq_drcp;
+
+							u32 ssa_vis_id = 1;
+							if (ssa <= r_ssaCHEAP || ssa < ssa_D)
+								ssa_vis_id = 0;
+
 							for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
 							{
 								SlotPart& sp = S->G[sp_id];
@@ -237,10 +251,21 @@ void CDetailManager::Render()
 #endif
 								auto& ditems = D.m_items[calc_key];
 								auto& items = sp.items;
-								for (u32 i = 0; i < 3; ++i)
+								if (ssa_vis_id == 0)
 								{
-									for (CDetail::SlotItem* Item : items[i])
-										ditems[i].push_back(*Item);
+									for (u32 i = 0; i < 3; ++i)
+									{
+										for (CDetail::SlotItem* Item : items[i])
+											ditems[0].push_back(*Item);
+									}
+								}
+								else
+								{
+									for (u32 i = 0; i < 3; ++i)
+									{
+										for (CDetail::SlotItem* Item : items[i])
+											ditems[i].push_back(*Item);
+									}
 								}
 							}
 						}
