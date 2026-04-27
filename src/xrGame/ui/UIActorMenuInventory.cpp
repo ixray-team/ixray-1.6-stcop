@@ -155,9 +155,7 @@ void CUIActorMenu::UpdateActorBagList()
 	PIItem grenade_item = m_pActorInvOwner->inventory().ItemFromSlot(GRENADE_SLOT);
 	if (grenade_item)
 	{
-		const bool allow_grenade = (GetPlayerSortCategory() == EInventorySortCategory::All ||
-			GetPlayerSortCategory() == EInventorySortCategory::Ammo);
-		if (allow_grenade)
+		if (ShouldDisplayGrenadeInBag())
 		{
 			CUICellItem* itm = create_cell_item(grenade_item);
 			m_pInventoryBagList->SetItem(itm);
