@@ -213,13 +213,14 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 				RCache.set_Geometry(Object.hw_Geom);
 				u32 offset = 0u, chunkSize = 0u;
 				RHIMappedSubresource pSubRes;
+				CDetail::SlotItem* items_data = items.data();
 				while (offset < totalInstances)
 				{
 					chunkSize = std::min(currentSize, totalInstances - offset);
 
 					R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
 
-					memcpy(pSubRes.pData, items.data() + offset, chunkSize * sizeof(T));
+					memcpy(pSubRes.pData, items_data + offset, chunkSize * sizeof(T));
 
 					currentBuffer->Unmap();
 					RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, chunkSize, 0, false);
