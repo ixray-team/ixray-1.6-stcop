@@ -105,17 +105,10 @@ IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
     }
 }
 
-size_t GetMemory();
-
-void CLightmap::Save(const char* path)
+void CLightmap::Save(LPCSTR path)
 {
-	size_t StartMemory = GetMemory();
-
 	static int		lmapNameID = 0;
 	++lmapNameID;
-
-	CTimer t;
-	t.Start();
 
 	// Borders correction
 	for (u32 _y = 0; _y < gCompilerMode.LC_sizeLmaps; _y++)
@@ -129,16 +122,6 @@ void CLightmap::Save(const char* path)
 				lm.marker[offset] = 0;
 		}
 	}
-  	u32 correct = t.GetElapsed_ms();  t.Start();
-
-	for (u32 ref = 254; ref > (254 - 16); ref--)
-	{
-		ApplyBorders(lm, ref);
-		Progress(1.f - float(ref) / float(254 - 16));
-	}
- 	u32 ApplyBorders = t.GetElapsed_ms();
-
-	Progress(1.f);
 
 	xr_vector<u32>			lm_packed;
 	lm.Pack(lm_packed);
@@ -152,13 +135,8 @@ void CLightmap::Save(const char* path)
 	lm_texture.pSurface.Clear();
  	lm.clear_memory();
 
-
-	clMsg("$ [Lightmap] Saving DDS ...");
- 	t.Start();
 	if (true)
 	{
-		// Status("Compression base...");
-
 		string_path				FN;
 		xr_sprintf(lm_texture.name, "lmap#%d", lmapNameID);
 		xr_sprintf(FN, "%s%s_1.dds", path, lm_texture.name);
@@ -183,12 +161,8 @@ void CLightmap::Save(const char* path)
  		DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
  	}
 
-	u32 saving_base = t.GetElapsed_ms(); t.Start();
-
 	if (true)
 	{
-		// Status("Compression hemi...");
-
  		string_path				FN;
 		xr_sprintf(lm_texture.name, "lmap#%d", lmapNameID);
 		xr_sprintf(FN, "%s%s_2.dds", path, lm_texture.name);
@@ -219,11 +193,4 @@ void CLightmap::Save(const char* path)
 
 	lm_packed.shrink_to_fit();
 	hemi_packed.shrink_to_fit();
-
- 	s32 UsedMemory = StartMemory > GetMemory() ? - s32( ( StartMemory - GetMemory() ) / 1024 / 1024) : ( ( GetMemory() - StartMemory) / 1024 / 1024 );
-
-
-	// ����� ����� ��������� � ����
-	clMsg("* [Lightmap] Corection Borders: %u ms, Apply Borders: %u ms", correct, ApplyBorders);
-	clMsg("* [Lightmap] Save Base: %u ms, Hemi: %u ms, Memory: %d mb",   saving_base, t.GetElapsed_ms(), u32(UsedMemory) );
 }
