@@ -13,37 +13,34 @@
 extern CompilersMode gCompilerMode;
  
 
-#define OFFSET_POS 2 
+
 u32 MergeLmap(vecDefl& Layer, CLightmap* lmap)
 {
-	// Process 	
 	// Немного отступ делаем
-	u32 BorderUpdate = ((2 * BORDER) + OFFSET_POS);
 
-	int _X = BorderUpdate, _Y = BorderUpdate;
+	#define OFFSET_SHIFT 0
+ 	#define OFFSET_START (2 * BORDER) + OFFSET_SHIFT
+  
+ 	int _X = OFFSET_START, _Y = OFFSET_START;
 	int _Max_y = 0;
  	u32 MERGED = 0;
-
+ 
 	for (int it = 0; it < Layer.size(); it++)
 	{
-		// if (0 == (it % 1024))
-		// AditionalData("Process Y[%u] [%d]...Merged{%d}", _Y, it, MERGED);
-
-		if (_Y > gCompilerMode.LC_sizeLmaps - 32)
-			break;
+ 		if (_Y > gCompilerMode.LC_sizeLmaps - 32) break;
 
 		lm_layer& L = Layer[it]->layer;
 
-		u32 WIDTH = L.width + (2 * BORDER);
-		u32 HEIGHT = L.height + (2 * BORDER);
+		u32 WIDTH	= L.width  + (2 * BORDER);
+		u32 HEIGHT	= L.height + (2 * BORDER);
 
 		if (_Max_y < HEIGHT)
 			_Max_y = HEIGHT;
 
 		if (_X + WIDTH > gCompilerMode.LC_sizeLmaps - 32)
 		{
-			_X = BorderUpdate;
-			_Y += _Max_y + BorderUpdate;
+			_X = OFFSET_START;				// Ставим как стартовый
+			_Y += _Max_y + OFFSET_SHIFT;	// Офсетаем не как стартовый
 			_Max_y = 0;
 		}
 
@@ -63,7 +60,7 @@ u32 MergeLmap(vecDefl& Layer, CLightmap* lmap)
 			MERGED++;
 		}
 
-		_X += WIDTH + BorderUpdate;
+		_X += WIDTH + OFFSET_SHIFT; // Офсетаем как стартовый
 		Progress(float(it) / float(g_XSplit.size()));
 	}
 
@@ -109,7 +106,7 @@ u32 MergeLmap_Compact(vecDefl& Layer, CLightmap* lmap)
 		merge_count++;
 	}
   
-	placer_perpixel._InitSurface_tbb();
+	placer_perpixel._InitSurface();
 
 
 	xr_atomic_u32 CurrentIndex = 0;
@@ -242,18 +239,16 @@ struct pred_remove
 	};
 };
  
-void CBuild::xrPhase_MergeLM(size_t begin, size_t end)
+void CBuild::xrPhase_MergeLM(xr_vector<CDeflector*>& deflectors)
 {
-	Phase("LIGHT: Merging lightmaps...");
-
-	vecDefl Layer;
+	// Phase("LIGHT: Merging lightmaps...");
+ 	vecDefl Layer;
 
 	// **** Select all deflectors, which contain this light-layer
 	Layer.clear();
-	for (u32 it = begin; it < end; it++)
+	for (auto& D : deflectors)
 	{
-		CDeflector* D = lc_global_data()->g_deflectors()[it];
-		if (D->bMerged)		continue;
+ 		if (D->bMerged)		continue;
 		Layer.push_back(D);
 	}
 
@@ -265,10 +260,7 @@ void CBuild::xrPhase_MergeLM(size_t begin, size_t end)
 	extern size_t GetMemory();
 	while (Layer.size())
 	{
-		clMsg("* [Lightmap] Collecting Deflectors ...");
-		size_t StartMemory = GetMemory();
-		
-		tStats.Start();
+ 		tStats.Start();
  		for (u32 it = 0; it < materials().size(); it++) materials()[it].internal_max_area = 0;
 		for (u32 it = 0; it < Layer.size(); it++)
 		{
@@ -293,42 +285,24 @@ void CBuild::xrPhase_MergeLM(size_t begin, size_t end)
 			std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);
 
 			// Startup
- 			placer_perpixel._InitSurface_tbb();
+ 			placer_perpixel._InitSurface();
 			lmap = new CLightmap();
 			lc_global_data()->lightmaps().push_back(lmap);
 			
 			// Collect All to map
 			TotalMerged		+= MergeLmap_Compact(Layer, lmap);
 		}
- 		Progress(float(TotalMerged / float(StartSize)));
-
-		size_t GMem = GetMemory();
-		
-		s32 Allocated = GMem > StartMemory ? (GMem - StartMemory) / 1024 / 1024 : -s32 ( ( StartMemory - GMem) / 1024 / 1024);
-		clMsg("* [Lightmap] Collecting time: %u ms | Memory Allocated: %d mb", tStats.GetElapsed_ms(), Allocated );
-
-		clMsg("* [Lightmap] Erasing Processed Deflectors ...");
+ 		Progress(float(TotalMerged / float(StartSize)));	
 
 		// Remove merged lightmaps
  		vecDeflIt last = std::remove_if(Layer.begin(), Layer.end(), pred_remove());
 		Layer.erase(last, Layer.end());
-
- 		lmap->Save(pBuild->path);
- 		
-		size_t mem = GetMemory();
- 		s32 MemoryConsumed = mem > StartMemory ? ( (mem - StartMemory) / 1024 / 1024) : -s32( (StartMemory - mem) / 1024 / 1024 );
-
- 		clMsg("* [Lightmap: %u] : Merging:[%u/%u]  Memory: %d mb",
+		lmap->Save(pBuild->path);
+  		 
+ 		clMsg("* [Lightmap: %u] : Merging:[%u/%u]  Time(%u ms)",
 			lc_global_data()->lightmaps().size(), 
-			TotalMerged, StartSize,
-			MemoryConsumed
-		);
+			TotalMerged, StartSize, 
+			tStats.GetElapsed_ms()
+ 		);
 	}
-   	clMsg("%d lightmaps builded", lc_global_data()->lightmaps().size()); 
-
-	clMsg("Start Destroy Deflectors: Memory: %llu mb used", u32(GetHeapMemory() / 1024 / 1024));
-	for (u32 it = 0; it < lc_global_data()->g_deflectors().size(); it++)
-		xr_delete(lc_global_data()->g_deflectors()[it]);
-	lc_global_data()->g_deflectors().clear();
-	clMsg("End Destroy Deflectors: Memory: %llu mb used", u32(GetHeapMemory() / 1024 / 1024));
 }

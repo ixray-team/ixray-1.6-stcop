@@ -213,14 +213,22 @@ void CDeflector::ApplyColor(size_t IKey, base_color_c& C)
 	u32 V				= GPUTaskinSystem.GetV(IKey);
 
 	u32 Key				= V * lm.width + U;
- 	auto& CResult		= lm.surface[Key];
-	auto& Keys			= lm.samples[Key];
-	Keys				+= 1;
 
-	base_color_c cNew;
-	CResult._get(cNew);
-	cNew.add(C);
-	CResult._set(cNew);
+	if (Key < lm.surface.size())
+	{
+		auto& CResult = lm.surface[Key];
+		auto& Keys = lm.samples[Key];
+		Keys += 1;
+
+		base_color_c cNew;
+		CResult._get(cNew);
+		cNew.add(C);
+		CResult._set(cNew);
+	}
+	else
+	{
+		clMsg("! Apply Colors key[%u] max[%u] is invalid", Key, lm.surface.size() );
+	}
 }
 
 // se7kills: Убрал Перерасчет в сжатый формат
@@ -230,10 +238,8 @@ bool	compress_Zero(lm_layer& lm, u32 rms);
 /// После сжатия пересчитываем
 void CDeflector::ApplyExpandBordersGPU()
 {
-	for (u32 ref = 254; ref > 0; ref--)
-	if (!ApplyBorders(layer, ref))		break;
- 
- 	if (compress_Zero(layer, rms_zero))   		return;		// already with borders (Se7kills: Быстро очень обычно)
+	if (compress_Zero(layer, rms_zero)) return;		// already with borders (Se7kills: Быстро очень обычно)
+	
 	// se7kills : Убрал 2й проход со сжатием !
 	 
 	// Expand with borders
@@ -292,15 +298,8 @@ void CDeflector::ApplyExpandBordersGPU()
 			lm_new.create(lm_old.width + 2 * BORDER, lm_old.height + 2 * BORDER);
 			lblit(lm_new, lm_old, BORDER, BORDER, 255 - BORDER);
 			layer = lm_new;
-
-			ApplyBorders(layer, 254);
-			ApplyBorders(layer, 253);
-			ApplyBorders(layer, 252);
-			ApplyBorders(layer, 251);
-			for (u32 ref = 250; ref > 0; ref--)
-			if (!ApplyBorders(layer, ref)) break;
-
-			layer.width = lm_old.width;
+			 
+ 			layer.width = lm_old.width;
 			layer.height = lm_old.height;
 		}
 	}

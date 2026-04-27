@@ -193,7 +193,7 @@ void CDeflector::OA_Export()
 	// VERIFY(inlc_global_data());
 	u32 dwWidth		= iCeil(size.x*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwWidth, 1u, 512u-2*BORDER);
 	u32 dwHeight	= iCeil(size.y*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwHeight,1u, 512u-2*BORDER);
-	// layer.create	(dwWidth,dwHeight);
+	// layer.create	(dwWidth,dwHeight);  // Убрал алокацию Когда делаем развертку просто запоминаем размер !
 
 	layer.width  = dwWidth;
 	layer.height = dwHeight;
@@ -326,26 +326,4 @@ bool	CDeflector::similar					( const CDeflector &D, float eps/* =EPS */ ) const
 	}
 
 	return   layer.similar( D.layer, eps );
-}
- 
-void DumpDeflctor( u32 id )
-{
-	VERIFY( inlc_global_data()->g_deflectors().size()>id );
-	const CDeflector &D = *inlc_global_data()->g_deflectors()[id];
-	clMsg( "deflector id: %d - faces num: %d ", id, D.UVpolys.size() );
-}
-
-void DumpDeflctor( const CDeflector &D )
-{
-	clMsg( "lightmap size: %d ", D.layer.width * D.layer.height );
-	clMsg( "lightmap width/height : %d/%d", D.layer.width, D.layer.height  );
-	clMsg( "deflector - faces num: %d ", D.UVpolys.size() );
-}
-
-void DeflectorsStats ()
-{
-	u32 size =  inlc_global_data()->g_deflectors().size();
-	clMsg( "num deflectors: %d", size);
-	for( u32 i = 0; i <size ; i++ )
-			DumpDeflctor( i ); 
 }

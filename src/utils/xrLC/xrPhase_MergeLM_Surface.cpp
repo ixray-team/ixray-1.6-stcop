@@ -2,7 +2,7 @@
 #include "xrPhase_MergeLM_Surface.h"
 #include "../xrForms/CompilersUI.h"
 
-extern float MAX_GRID_SPACE_WRITE  = 0.95f;	// 90% НАПОЛНЕНИЯ LMAP
+extern float MAX_GRID_SPACE_WRITE  = 0.75f;	// 90% НАПОЛНЕНИЯ LMAP
 // Surfaces
 
 void SurfacePlacePerpixel::RecalcY()
@@ -24,7 +24,7 @@ void SurfacePlacePerpixel::RecalcY()
  	FilledPercent = u32 ( float( float(total_occupied) / float(SurfaceGrid * SurfaceGrid) ) * 100.0f);
 }
 
-void SurfacePlacePerpixel::_InitSurface_tbb()
+void SurfacePlacePerpixel::_InitSurface()
 {
 	StartYPos   = 0;
 	SurfaceGrid = gCompilerMode.LC_sizeLmaps;
@@ -35,11 +35,11 @@ void SurfacePlacePerpixel::_InitSurface_tbb()
 	FillMemory(occupied_y, SurfaceGrid, 0);
 }
 
-bool SurfacePlacePerpixel::_rect_register_tbb(L_rect& R, lm_layer* D)
+bool SurfacePlacePerpixel::_rect_register(L_rect& R, lm_layer* D)
 {
 	csLMMerge.Enter();
 
-	bool isCanRegister = Place_Perpixel_tbb(R, D);
+	bool isCanRegister = Place_Perpixel(R, D);
 	if (isCanRegister)
 	{
 		u8* lm = &*(D->marker.begin());
@@ -68,7 +68,7 @@ bool SurfacePlacePerpixel::_rect_register_tbb(L_rect& R, lm_layer* D)
 	return isCanRegister;
 }
  
-bool SurfacePlacePerpixel::Place_Perpixel_tbb(L_rect& R, lm_layer* D)
+bool SurfacePlacePerpixel::Place_Perpixel(L_rect& R, lm_layer* D)
 {
 	u8* lm = &*(D->marker.begin());
 	u32	s_x = D->width + 2 * BORDER;
@@ -109,7 +109,7 @@ bool SurfacePlacePerpixel::rect_place_full(L_rect& r, lm_layer* D)
 		for (int _X = 0; _X < x_max; _X++)
 		{
 			R.init(_X, _Y, _X + SizeX, _Y + SizeY);
-			if (Place_Perpixel_tbb(R, D) && _rect_register_tbb(R, D))
+			if (Place_Perpixel(R, D) && _rect_register(R, D))
 			{
   				r.set(R);
 				return true;
