@@ -130,12 +130,32 @@ void CScriptParticles::MoveTo	(const Fvector &pos, const Fvector& vel)
 	m_particles->UpdateParent	(XF,vel);
 }
 
-void CScriptParticles::SetXFORM(const Fvector& pos, const Fvector& dir, const Fvector& vel)
+void CScriptParticles::SetXFORM_DIR_X(const Fvector& pos, const Fvector& dir, const Fvector& vel)
 {
 	VERIFY(m_particles);
 	Fmatrix XF;
 	XF.k.set(dir);
 	Fvector::generate_orthonormal_basis(XF.k, XF.j, XF.i);
+	XF.c.set(pos);
+	m_particles->UpdateParent(XF, vel);
+}
+
+void CScriptParticles::SetXFORM_DIR_Y(const Fvector& pos, const Fvector& dir, const Fvector& vel)
+{
+	VERIFY(m_particles);
+	Fmatrix XF;
+	XF.j.set(dir);
+	Fvector::generate_orthonormal_basis(XF.j, XF.k, XF.i);
+	XF.c.set(pos);
+	m_particles->UpdateParent(XF, vel);
+}
+
+void CScriptParticles::SetXFORM_DIR_Z(const Fvector& pos, const Fvector& dir, const Fvector& vel)
+{
+	VERIFY(m_particles);
+	Fmatrix XF;
+	XF.i.set(dir);
+	Fvector::generate_orthonormal_basis(XF.i, XF.j, XF.k);
 	XF.c.set(pos);
 	m_particles->UpdateParent(XF, vel);
 }
