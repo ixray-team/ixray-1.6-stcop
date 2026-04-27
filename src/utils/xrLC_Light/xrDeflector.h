@@ -38,7 +38,6 @@ public:
 	void	GetRect				(Fvector2 &min, Fvector2 &max);
 	u32		GetFaceCount()		{ return (u32)UVpolys.size();	};
 		
-	void	PrepareForLighting	();
 	void	Light				(CDB::COLLIDER* DB, base_lighting* LightsSelected);
 	void	L_Direct			(CDB::COLLIDER* DB, base_lighting* LightsSelected);
  
