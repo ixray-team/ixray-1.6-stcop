@@ -2,196 +2,7 @@
 #include "xrDeflector.h"
 #include "../xrDXT/xrDXT.h"
 
-// Borders
-
-void GET(const base_color& surface_color, const u8 marker, u32 ref, u32& count, base_color_c& dst)
-{
-	if (marker <= ref)		return;
-
-	base_color_c		C;
-	surface_color._get(C);
-	dst.add(C);
-	count++;
-}
-
-void GET(const lm_layer& lm, int x, int y, u32 ref, u32& count, base_color_c& dst)
-{
-	// wrap pixels
-	if (x < 0) return;
-	else if (x >= (int)lm.width)	return;
-	if (y < 0) return;
-	else if (y >= (int)lm.height)	return;
-
-	// summarize
-	u32		id = y * lm.width + x;
-	if (lm.marker[id] <= ref)		return;
-
-	base_color_c		C;
-	lm.surface[id]._get(C);
-	dst.add(C);
-	count++;
-}
- 
-struct lm_line
-{
-	buffer_vector<base_color>& surface;
-	buffer_vector<u8>& marker;
-	u32 y;
-	u32 height;
-	lm_line(buffer_vector<base_color>& surf_buf, buffer_vector<u8>& mark_buf) :
-		surface(surf_buf), marker(mark_buf), y(u32(-1)), height(u32(-1))
-	{
-	}
-
-	void save(int _y, const lm_layer& lm)
-	{
-		y = _y;
-		height = lm.height;
-
-		{
-			xr_vector<base_color>::const_iterator from = lm.surface.begin() + y * lm.width;
-			xr_vector<base_color>::const_iterator to = from + lm.width;
-			surface.assign(from, to);
-		}
-
-		{
-			xr_vector<u8>::const_iterator from = lm.marker.begin() + y * lm.width;
-			xr_vector<u8>::const_iterator to = from + lm.width;
-			marker.assign(from, to);
-		}
-	}
-};
-
-void GET(const lm_line& l, int x, u32 width, u32 ref, u32& count, base_color_c& dst)
-{
-	if (x < 0) return;
-	else if (x >= (int)width)			return;
-	if (l.y < 0) return;
-	else if (l.y >= (int)l.height)	return;
-
-	// summarize
-	u32		id = x;
-	if (l.marker[id] <= ref)		return;
-
-	base_color_c		C;
-	l.surface[id]._get(C);
-	dst.add(C);
-	count++;
-}
-
-bool NEW_ApplyBorders(lm_layer& lm, u32 ref)
-{
-	bool			bNeedContinue = false;
-
-	buffer_vector<base_color>	buf_surf_line0(_alloca(lm.width * sizeof(base_color)), lm.width);
- 	buffer_vector<base_color>	buf_surf_line1(_alloca(lm.width * sizeof(base_color)), lm.width);
- 	buffer_vector<u8>			buf_marker_line0(_alloca(lm.width * sizeof(u8)), lm.width);
- 	buffer_vector<u8>			buf_marker_line1(_alloca(lm.width * sizeof(u8)), lm.width);
-
-
-	lm_line line0(buf_surf_line0, buf_marker_line0);
-	lm_line line1(buf_surf_line1, buf_marker_line1);
-
-	try {
-		//lm_layer	result	= lm;
-
-		lm_line* l_0 = &line0;
-		lm_line* l_1 = &line1;
-
-		for (int y = 0; y < (int)lm.height; y++) {
-
-			l_0->save(y, lm);
-
-			std::swap(l_0, l_1);
-
-			lm_line& line = *l_0;
-
-			base_color sv_color0;
-			sv_color0._set(-1, -1, -1);
-
-			u8		   sv_marker0 = u8(-1);
-			for (int x = 0; x < (int) lm.width; x++)
-			{
-				base_color sv_color = sv_color0;
-				u8		   sv_marker = sv_marker0;
-				sv_color0 = lm.surface[y * lm.width + x];
-				sv_marker0 = lm.marker[y * lm.width + x];
-				
-				if (lm.marker[y * lm.width + x] == 0)
-				{
-					base_color_c	clr;
-					u32			C = 0;
-					if (y > 0)
-					{
-						GET(line, x - 1, lm.width, ref, C, clr);
-						GET(line, x, lm.width, ref, C, clr);
-						GET(line, x + 1, lm.width, ref, C, clr);
-					}
-
-					if (x > 0)
-						GET(sv_color, sv_marker, ref, C, clr);
-
-
-
-					GET(lm, x + 1, y, ref, C, clr);
-
-					GET(lm, x - 1, y + 1, ref, C, clr);
-					GET(lm, x, y + 1, ref, C, clr);
-					GET(lm, x + 1, y + 1, ref, C, clr);
-
-					if (C) 
-					{
-						clr.scale(C);
-						lm.surface[y * lm.width + x]._set(clr);
-						lm.marker[y * lm.width + x] = u8(ref);
- 
-						bNeedContinue = true;
-					}
-
-				}
-			}
-		}
- 	}
-	catch (...)
-	{
-		clMsg("* ERROR: ApplyBorders");
-	}
-	return bNeedContinue;
-}
- 
-thread_local CStatTimer tApplyBorders;
-thread_local CStatTimer tRmsTests;
-thread_local CStatTimer tRmsTestsZero;
-
-
-bool ApplyBorders(lm_layer& lm, u32 ref)
-{
-	tApplyBorders.Begin();
-	bool ret =  NEW_ApplyBorders(lm, ref);
-	tApplyBorders.End();
- 	return ret;
-}
-
-void GetApplyStats()
-{
-	tApplyBorders.FrameEnd();
-	tRmsTests.FrameEnd();
-	tRmsTestsZero.FrameEnd();
-
-	Msg("TH[%u] ApplyBorder: %u ms | Rms: %u ms | Zero: %u ms",
-		GetCurrentThreadId(),
-		tApplyBorders.GetElapsed_ms(),
-		tRmsTests.GetElapsed_ms(),
-		tRmsTestsZero.GetElapsed_ms() 
-	);
-
-	tApplyBorders.FrameStart();
-	tRmsTests.FrameStart();
-	tRmsTestsZero.FrameStart();
-}
-
 // Compression test
-
 IC u32	rms_diff(u32 a, u32 b)
 {
 	if (a > b)	return a - b;
@@ -201,8 +12,6 @@ IC u32	rms_diff(u32 a, u32 b)
 // Это при сжатии используется
 bool	__stdcall rms_test_compress(lm_layer& lm, u32 w, u32 h, u32 rms)
 {
-	CScopeTimer T(tRmsTests);
-
 	if ((w <= 1) || (h <= 1))	return false;
 
 	// scale down(lanczos3) and up (bilinear, as video board) //.
@@ -314,29 +123,14 @@ u32	__stdcall rms_average(lm_layer& lm, base_color_c& C)
 
 bool	compress_Zero(lm_layer& lm, u32 rms)
 {
-	CScopeTimer T(tRmsTestsZero);
-
 	// Average color
 	base_color_c	_c;
 	u32				_count = rms_average(lm, _c);
 
 	if (0 == _count)
 	{
-		u32 AnyMarker = 0;
-		for (int y = 0; y < lm.height; y++)
-		{
-			for (int x = 0; x < lm.width; x++)
-			{
-				u32	offset = y * lm.width + x;
-				if (lm.marker[offset] > 0)
-				{
-					AnyMarker++;
-				}
-			}
-		}
- 
-		Msg("* ERROR: Lightmap not calculated (W: %u | H: %u) | Markers Has: %u", lm.width, lm.height, AnyMarker);
-		return	false;
+		Msg("* ERROR: Lightmap not calculated (W: %u | H: %u)", lm.width, lm.height);
+		return	FALSE;
 	}
 	else
 		_c.scale(_count);
