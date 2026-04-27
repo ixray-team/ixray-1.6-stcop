@@ -169,23 +169,7 @@ void CUIActorMenuBase::OnInventoryAction(PIItem pItem, u16 action_type)
 
 				CUIDragDropListEx* lst_to_add		= nullptr;
 				SInvItemPlace pl						= pItem->m_ItemCurrPlace;
-				if ( pItem->BaseSlot() == GRENADE_SLOT )
-				{
-					pl.type		= eItemPlaceRuck;
-					pl.slot_id	= GRENADE_SLOT;
-				}
-
-				if(pl.type==eItemPlaceSlot)
-					lst_to_add						= GetSlotList(pl.slot_id);
-				else if(pl.type==eItemPlaceBelt)
-					lst_to_add						= GetListByType(iActorBelt);
-				else
-				{
-					if(pItem->parent_id()==GetInventoryOwner()->object_id())
-						lst_to_add						= GetListByType(iActorBag);
-					else
-						lst_to_add						= GetListByType(iDeadBodyBag);
-				}
+				lst_to_add = GetDisplayListForItem(pItem, pl);
 
 
 				for (int i = 0; i < 4; i++)
@@ -425,6 +409,11 @@ bool CUIActorMenuBase::TryActiveSlot(CUICellItem* itm)
 
 	if ( slot == GRENADE_SLOT )
 	{
+		if ( !IsSlotHiddenInUi(slot) )
+		{
+			return false;
+		}
+
 		PIItem	prev_iitem = GetInventoryOwner()->inventory().ItemFromSlot(slot);
 		if ( prev_iitem && (prev_iitem->object().cNameSect() != iitem->object().cNameSect()) )
 		{
@@ -709,10 +698,9 @@ bool CUIActorMenuBase::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 	if (GetInventoryOwner()->inventory().CanPutInSlot(iitem, slot_id))
 	{
 		CUIDragDropListEx* new_owner = GetSlotList(slot_id);
-
-		if ( slot_id == GRENADE_SLOT || !new_owner )
+		if (!new_owner)
 		{
-			return true; //fake, sorry (((
+			return false;
 		}
 		if(slot_id==OUTFIT_SLOT)
 		{

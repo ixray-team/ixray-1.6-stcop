@@ -694,14 +694,9 @@ void CInventory::Activate(u16 slot, bool bForce, bool ForceHide)
 		{
 			m_iNextActiveSlot = slot;
 		}
-		else
+		else if (slot == GRENADE_SLOT)
 		{
-			if (slot == GRENADE_SLOT)//fake for grenade
-			{
-				PIItem gr = SameSlot(GRENADE_SLOT, nullptr, true);
-				if (gr)
-					Slot(GRENADE_SLOT, gr);
-			}
+			EnsureSlotItemFromRuck(GRENADE_SLOT);
 		}
 	}
 	//активный слот задействован
@@ -737,6 +732,33 @@ void CInventory::PutGrenade(CGrenade* new_grenade)
 {
 	m_pNewGrenade = new_grenade;
 	Activate(NO_ACTIVE_SLOT);
+}
+
+PIItem CInventory::EnsureSlotItemFromRuck(u16 slotId, PIItem itemToSkip)
+{
+	if (slotId == NO_ACTIVE_SLOT)
+	{
+		return nullptr;
+	}
+
+	PIItem itemInSlot = ItemFromSlot(slotId);
+	if (itemInSlot != nullptr)
+	{
+		return itemInSlot;
+	}
+
+	PIItem candidate = SameSlot(slotId, itemToSkip, true);
+	if (candidate == nullptr)
+	{
+		return nullptr;
+	}
+
+	if (!Slot(slotId, candidate, true))
+	{
+		return nullptr;
+	}
+
+	return ItemFromSlot(slotId);
 }
 
 PIItem CInventory::ItemFromSlot(u16 slot) const
