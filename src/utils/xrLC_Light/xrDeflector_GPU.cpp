@@ -17,35 +17,21 @@ extern void Jitter_Select(Fvector2*& Jitter, u32& Jcount);
 void CDeflector::LightGPU()
 {
 	Fbox bb;		bb.invalidate();
-	try 
+	for (u32 fid = 0; fid < UVpolys.size(); fid++)
 	{
-		for (u32 fid = 0; fid < UVpolys.size(); fid++)
-		{
-			Face* F = UVpolys[fid].owner;
-			for (int i = 0; i < 3; i++)	bb.modify(F->v[i]->P);
-		}
-		bb.getsphere(Sphere.P, Sphere.R);
+		Face* F = UVpolys[fid].owner;
+		for (int i = 0; i < 3; i++)	bb.modify(F->v[i]->P);
 	}
-	catch (...)
-	{
-		clMsg("* ERROR: CDeflector::Light - sphere calc");
-	}
+	bb.getsphere(Sphere.P, Sphere.R);
 
 	// Calculate and fill borders
-	try
-	{ 		
-		// UV  
- 		RemapUV(0, 0, layer.width, layer.height, layer.width, layer.height, FALSE);
- 		layer.create(layer.width, layer.height);
 
-		// Calculate
-  		L_DirectGPU();
- 	}
-	catch (...)
-	{
-		clMsg("* ERROR: CDeflector::L_Calculate");
-	}
+	// UV  
+ 	RemapUV(0, 0, layer.width, layer.height, layer.width, layer.height, FALSE);
+ 	layer.create(layer.width, layer.height);
 
+	// Calculate
+  	L_DirectGPU();
 }
  
 void CDeflector::L_DirectGPU()
