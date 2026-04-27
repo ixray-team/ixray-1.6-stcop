@@ -120,6 +120,9 @@ protected:
 	virtual void				SetAuxMode					(eActorMenuControllerAuxMode mode) {}
 	virtual void				UpdatePrices				() {}
 	CUIDragDropListEx*			GetSlotList					(u16 slot_idx);
+	CUIDragDropListEx*			GetDisplayListForItem		(PIItem item, const SInvItemPlace& place);
+	bool						IsSlotHiddenInUi			(u16 slot_idx) const;
+	bool						ShouldDisplayGrenadeInBag	() const;
 	CUIDragDropListEx*			GetSidearmDragDropList		() const;
 	CUIDragDropListEx*			GetPrimaryDragDropList		() const;
 	virtual	void				InfoCurItem					(CUICellItem* cell_item) {}

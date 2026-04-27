@@ -203,15 +203,8 @@ void CActor::IR_OnKeyboardPress(int dik)
 	}break;
 	case kQUICK_GRENADE:
 	{
-		PIItem item_from_slot = inventory().ItemFromSlot(GRENADE_SLOT);
+		PIItem item_from_slot = inventory().EnsureSlotItemFromRuck(GRENADE_SLOT);
 		CGrenade* grenade_item = item_from_slot != nullptr ? item_from_slot->cast_grenade() : nullptr;
-
-		if (item_from_slot == nullptr)
-		{
-			item_from_slot = inventory().SameSlot(GRENADE_SLOT, nullptr, true);
-			grenade_item = item_from_slot != nullptr ? item_from_slot->cast_grenade() : nullptr;
-			inventory().Slot(GRENADE_SLOT, item_from_slot, true);
-		}
 
 		if (grenade_item != nullptr && !inventory().IsSlotBlocked(grenade_item) && grenade_item->HudAnimationExist("anm_throw_quick"))
 		{

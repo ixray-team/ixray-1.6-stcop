@@ -65,6 +65,7 @@ public:
 
 	void Activate(u16 slot, bool bForce = false, bool ForceHide = false);
 	void PutGrenade(CGrenade* new_grenade);
+	PIItem EnsureSlotItemFromRuck(u16 slotId, PIItem itemToSkip = nullptr);
 
 	static u32 const qs_priorities_count = 5;
 	PIItem GetNextItemInActiveSlot(u8 const priority_value, bool ignore_ammo);
