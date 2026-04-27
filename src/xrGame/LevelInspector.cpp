@@ -530,34 +530,13 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 					ImGui::CheckboxFlags("Zones", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ZONES);
 					ImGui::Separator();
 
-					if (ImGui::CollapsingHeader("HUD##spoiler"))
-					{
-						RenderSkeletonFlags(hud_prims->m_skeleton_flags, true);
-					}
-
-					if (ImGui::CollapsingHeader("Objects##spoiler"))
-					{
-						RenderSkeletonFlags(m_skeleton_flags, false);
-					}
-
-					if (ImGui::CollapsingHeader("Zones##spoiler"))
-					{
-						ImGui::CheckboxFlags("Restrictor", &m_zone_flags.flags, EZONE_INFO::EZI_RESTR);
-						ImGui::CheckboxFlags("Anomaly Zone", &m_zone_flags.flags, EZONE_INFO::EZI_ANOMALY_ZONE);
-						ImGui::CheckboxFlags("Anomaly Zone Logic", &m_zone_flags.flags, EZONE_INFO::EZI_ANOMAL_ZONE_LOGIC);
-						ImGui::CheckboxFlags("Camp Zone", &m_zone_flags.flags, EZONE_INFO::EZI_CAMP_ZONE);
-						ImGui::CheckboxFlags("Level Changer", &m_zone_flags.flags, EZONE_INFO::EZI_LEVEL_CHANGER);
-						ImGui::CheckboxFlags("Smart Covers", &m_zone_flags.flags, EZONE_INFO::EZI_SMART_COVER);
-						ImGui::CheckboxFlags("Smart Terrain", &m_zone_flags.flags, EZONE_INFO::EZI_SMART_TERRAIN);
-						ImGui::CheckboxFlags("Sim Faction", &m_zone_flags.flags, EZONE_INFO::EZI_SIM_FACTION);
-					}
 					ImGui::Separator();
 
 					ImGui::CheckboxFlags("AI Paths", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_AI_PATHS);
 					ImGui::CheckboxFlags("Game Graph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_G_GRID);
 					if (ImGui::CheckboxFlags("Waypoints", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_W_GRID))
 					{
-						m_waypoint_flags.flags = EWAYPOINT_INFO::EWI_ALL;
+						WaypointsFlags = EWAYPOINT_INFO::EWI_ALL;
 					}
 
 					ImGui::CheckboxFlags("Level Graph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_L_GRID);
@@ -566,8 +545,10 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 					ImGui::CheckboxFlags("HOM", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HOM);
 					ImGui::CheckboxFlags("CForm", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM);
 					ImGui::CheckboxFlags("CForm Tris", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS);
+					ImGui::CheckboxFlags("CForm All", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_ALL);
 					ImGui::CheckboxFlags("Level Bounds", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_LEVEL_BOUNDS);
-					ImGui::CheckboxFlags("Spatials", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS);
+					ImGui::CheckboxFlags("Spatials Registred", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE);
+					ImGui::CheckboxFlags("Spatials Unregistred", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE_ALL);
 
 					ImGui::Separator();
 					ImGui::CheckboxFlags("Draw Selected", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SELECTION);
@@ -575,12 +556,51 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 				}
 
 				// ================= SPATIALS =================
-				if (ImGui::BeginTabItem("Spatials"))
+				if (ImGui::BeginTabItem("Objects Space"))
 				{
-					ImGui::CheckboxFlags("Spatials", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS);
+					RenderSkeletonFlags(m_skeleton_flags, false);
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("HUD Space"))
+				{
+					RenderSkeletonFlags(hud_prims->m_skeleton_flags, true);
+					ImGui::EndTabItem();
+				}
+
+				if (ImGui::BeginTabItem("Zones##spoiler"))
+				{
+					ImGui::CheckboxFlags("Restrictor", &m_zone_flags.flags, EZONE_INFO::EZI_RESTR);
+					ImGui::CheckboxFlags("Anomaly Zone", &m_zone_flags.flags, EZONE_INFO::EZI_ANOMALY_ZONE);
+					ImGui::CheckboxFlags("Anomaly Zone Logic", &m_zone_flags.flags, EZONE_INFO::EZI_ANOMAL_ZONE_LOGIC);
+					ImGui::CheckboxFlags("Camp Zone", &m_zone_flags.flags, EZONE_INFO::EZI_CAMP_ZONE);
+					ImGui::CheckboxFlags("Level Changer", &m_zone_flags.flags, EZONE_INFO::EZI_LEVEL_CHANGER);
+					ImGui::CheckboxFlags("Smart Covers", &m_zone_flags.flags, EZONE_INFO::EZI_SMART_COVER);
+					ImGui::CheckboxFlags("Smart Terrain", &m_zone_flags.flags, EZONE_INFO::EZI_SMART_TERRAIN);
+					ImGui::CheckboxFlags("Sim Faction", &m_zone_flags.flags, EZONE_INFO::EZI_SIM_FACTION);
+					ImGui::EndTabItem();
+				}
+
+				if (ImGui::BeginTabItem("Spaces"))
+				{
+					ImGui::CheckboxFlags("Spatials Space", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE);
+					ImGui::CheckboxFlags("Spatials All", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE_ALL);
+					ImGui::CheckboxFlags("HOM", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HOM);
+					ImGui::CheckboxFlags("CForm", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM);
+					ImGui::CheckboxFlags("CForm Tris", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS);
+					ImGui::CheckboxFlags("CForm All", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_ALL);
 					ImGui::Separator();
 
-					ImGui::BeginDisabled(!m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS));
+					ImGui::BeginDisabled(!m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) && !m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS));
+					{
+						static float test_ssa = 0.5f;
+						ImGui::SliderFloat("cform_ssa", &test_ssa, 10.0f, 0.01f);
+						cform_ssa = test_ssa / 10000.f;
+						if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM))
+							ImGui::CheckboxFlags("Draw Cform All", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_ALL);
+					}
+					ImGui::EndDisabled();
+
+					ImGui::BeginDisabled(!m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE) && !m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE_ALL));
 					{
 						static char search[64] = "";
 						ImGui::InputTextWithHint("##search", "Search...", search, sizeof(search));
@@ -615,27 +635,36 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 					{
 						static int mode = 0;
 						ImGui::Text("Filter Mode:");
-						ImGui::RadioButton("All", &mode, 0);
-						ImGui::RadioButton("Prefix##wp", &mode, 1);
-						ImGui::RadioButton("Level ID", &mode, 2);
+						if (ImGui::RadioButton("All", &mode, 0))
+						{
+							wp_recalc = true;
+						}
+						if (ImGui::RadioButton("Prefix##wp", &mode, 1))
+						{
+							wp_recalc = true;
+						}
+						if (ImGui::RadioButton("Level ID", &mode, 2))
+						{
+							wp_recalc = true;
+						}
 
 						if (mode == 0)
 						{
-							m_waypoint_flags.flags = EWAYPOINT_INFO::EWI_ALL;
+							WaypointsFlags = EWAYPOINT_INFO::EWI_ALL;
 						}
 						else if (mode == 1)
 						{
-							m_waypoint_flags.flags = EWAYPOINT_INFO::EWI_PREFIX;
+							WaypointsFlags = EWAYPOINT_INFO::EWI_PREFIX;
 							static char prefix[64] = "zat";
 							if (ImGui::InputTextWithHint("Prefix", "zat / jup / pri", prefix, sizeof(prefix)))
 							{
-								wp_prefix = prefix;
 								wp_recalc = true;
 							}
+							wp_prefix = prefix;
 						}
 						else
 						{
-							m_waypoint_flags.flags = EWAYPOINT_INFO::EWI_LOCATION_ID;
+							WaypointsFlags = EWAYPOINT_INFO::EWI_LOCATION_ID;
 						}
 					}
 					ImGui::EndDisabled();
@@ -650,15 +679,6 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 
 					ImGui::BeginDisabled(!m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION));
 					{
-						if ((m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS)))
-						{
-							static float test_ssa = 0.5f;
-							ImGui::SliderFloat("cform_ssa", &test_ssa, 10.0f, 0.01f);
-							cform_ssa = test_ssa / 10000.f;
-							if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM))
-								ImGui::CheckboxFlags("Draw Cform All", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_ALL);
-						}
-
 						ImGui::CheckboxFlags("Select Object", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_O);
 						ImGui::CheckboxFlags("Select Zone", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_Z);
 						ImGui::CheckboxFlags("Select WayPoint", &m_selection_flags.flags, ESELECTION_FLAGS::ESLF_WP);
@@ -784,7 +804,7 @@ void LevelInspector::OnRender()
 			DrawWayPoints();
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HOM))
 			DrawHOM();
-		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE))
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE_ALL) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE))
 			DrawSpatials();
 
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_LEVEL_BOUNDS))
@@ -983,8 +1003,10 @@ void LevelInspector::DrawWayPoints()
 		wp_recalc = false;
 	}
 
-	if (m_waypoint_flags.flags == EWAYPOINT_INFO::EWI_NONE)
+	if (WaypointsFlags == EWAYPOINT_INFO::EWI_NONE)
+	{
 		return;
+	}
 
 	if(m_way_points.empty())
 	{
@@ -993,7 +1015,7 @@ void LevelInspector::DrawWayPoints()
 		CPatrolPathStorage::PATROL_REGISTRY& paths = const_cast<CPatrolPathStorage::PATROL_REGISTRY&>(ai().patrol_paths().patrol_paths());
 		for (auto& [name, path] : paths)
 		{
-			if (!m_waypoint_flags.test(EWAYPOINT_INFO::EWI_ALL) && m_waypoint_flags.test(EWAYPOINT_INFO::EWI_PREFIX))
+			if (WaypointsFlags ==EWAYPOINT_INFO::EWI_PREFIX)
 			{
 				if (wp_prefix && name && name.c_str() != strstr(name.c_str(), wp_prefix.c_str()))
 					continue;
@@ -1008,18 +1030,22 @@ void LevelInspector::DrawWayPoints()
 				const ILevelGraph::CVertex* lgvertex = lgraph.vertex(point.level_vertex_id());
 				u8 level_id = ggvertex->level_id();
 
-				if (!m_waypoint_flags.test(EWAYPOINT_INFO::EWI_ALL) && m_waypoint_flags.test(EWAYPOINT_INFO::EWI_LOCATION_ID))
+				if (WaypointsFlags == EWAYPOINT_INFO::EWI_LOCATION_ID)
 				{
 					if (level_id != curr_level_id)
+					{
 						continue;
+					}
 				}
 
 				Fbox bbox; bbox.invalidate();
 				WayPoint& wp = m_way_points.emplace_back();
 
 				auto it = graph.header().levels().find(level_id);
-				if(it != graph.header().levels().end())
+				if (it != graph.header().levels().end())
+				{
 					wp.level_name = it->second.m_name;
+				}
 
 				Flags32 flags; flags.flags = point.flags();
 				u32 mask = 1;
@@ -1028,7 +1054,9 @@ void LevelInspector::DrawWayPoints()
 				for (int i = 0; i < numBits; i++)
 				{
 					if (flags.test(mask))
+					{
 						wp.m_flags.push_back(shared_str().printf("flag: %d", i));
+					}
 					mask <<= 1;
 				}
 
@@ -1039,7 +1067,10 @@ void LevelInspector::DrawWayPoints()
 				wp.path_name = name;
 				wp.name = point.name();
 				if (level_id != curr_level_id)
+				{
 					wp.color = WAYPOINT_COLOR_RED;
+				}
+				
 				Fbox box;
 				box.setb(pos, { WAYPOINT_RADIUS , WAYPOINT_RADIUS , WAYPOINT_RADIUS });
 				bbox.merge(box);
@@ -3522,7 +3553,7 @@ void LevelInspector::DrawObjects()
 void LevelInspector::DrawSpatials()
 {
 	Fvector& cam_pos = Device.vCameraPosition;
-	if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_ALL_SPATIALS))
+
 	{
 		if(m_spatials_mask != ESPATIAL_TYPE::NONE)
 		{
