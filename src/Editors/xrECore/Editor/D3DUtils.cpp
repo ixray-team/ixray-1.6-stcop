@@ -489,7 +489,8 @@ static Fvector PT [6] = {
 //------------------------------------------------------------------------------
 
 void CDrawUtilities::DrawSound(const Fvector& p, float r, u32 c){
-	DrawCross(p, r,r,r, r,r,r, c, true);
+//	DrawCross(p, r,r,r, r,r,r, c, true);
+    AddCross(p, r, r, r, r, r, r, c, true);
 }
 //------------------------------------------------------------------------------
 void CDrawUtilities::DrawIdentCone	(bool bSolid, bool bWire, u32 clr_s, u32 clr_w)
@@ -583,7 +584,8 @@ void CDrawUtilities::DrawLineSphere(const Fvector& p, float radius, u32 c, bool 
 	Stream->Unlock	(LINE_DIVISION+1,vs_L->vb_stride);
 	DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,vs_L,vBase,LINE_DIVISION);
 
-    if (bCross) DrawCross(p, radius,radius,radius, radius,radius,radius, c);
+    //if (bCross) DrawCross(p, radius,radius,radius, radius,radius,radius, c);
+    if (bCross) AddCross(p, radius,radius,radius, radius,radius,radius, c);
 }
 
 //----------------------------------------------------
