@@ -558,16 +558,6 @@ CUIDragDropListEx* CUIActorMenuBase::GetSlotList(u16 slot_idx)
 		return nullptr;
 	}
 
-	if (slot_idx == GRENADE_SLOT)
-	{
-		//fake
-		if (m_currMenuMode == mmTrade)
-		{
-			return GetTradeActorBagList();
-		}
-		return GetActorList();
-	}
-
 	if (m_pInvList[slot_idx])
 		return m_pInvList[slot_idx];
 
@@ -575,6 +565,70 @@ CUIDragDropListEx* CUIActorMenuBase::GetSlotList(u16 slot_idx)
 		return GetTradeActorBagList();
 
 	return GetActorList();
+}
+
+CUIDragDropListEx* CUIActorMenuBase::GetDisplayListForItem(PIItem item, const SInvItemPlace& place)
+{
+	if (item == nullptr)
+	{
+		return nullptr;
+	}
+
+	if (place.type == eItemPlaceSlot)
+	{
+		const u16 slotId = place.slot_id;
+		if (IsSlotHiddenInUi(slotId))
+		{
+			if (slotId == GRENADE_SLOT)
+			{
+				if (!ShouldDisplayGrenadeInBag())
+				{
+					return nullptr;
+				}
+			}
+
+			if (m_currMenuMode == mmTrade)
+			{
+				return GetTradeActorBagList();
+			}
+			return GetActorList();
+		}
+
+		return GetSlotList(slotId);
+	}
+
+	if (place.type == eItemPlaceBelt)
+	{
+		return GetListByType(iActorBelt);
+	}
+
+	if (item->parent_id() == GetInventoryOwner()->object_id())
+	{
+		return GetListByType(iActorBag);
+	}
+
+	return GetListByType(iDeadBodyBag);
+}
+
+bool CUIActorMenuBase::IsSlotHiddenInUi(u16 slot_idx) const
+{
+	if (slot_idx == NO_ACTIVE_SLOT || slot_idx > LAST_SLOT)
+	{
+		return false;
+	}
+
+	return m_pInvList[slot_idx] == nullptr;
+}
+
+bool CUIActorMenuBase::ShouldDisplayGrenadeInBag() const
+{
+	if (m_currMenuMode != mmInventory || m_pInventorySorter == nullptr)
+	{
+		return true;
+	}
+
+	const EInventorySortCategory category = GetPlayerSortCategory();
+	return category == EInventorySortCategory::All || category == EInventorySortCategory::Ammo;
 }
 
 CUIDragDropListEx* CUIActorMenuBase::GetSidearmDragDropList() const
@@ -682,9 +736,7 @@ void CUIActorMenuBase::InitCellForSlot( u16 slot_idx )
 		return;
 	}
 
-	if (slot_idx == GRENADE_SLOT && m_currMenuMode == mmInventory && m_pInventorySorter &&
-		GetPlayerSortCategory() != EInventorySortCategory::All &&
-		GetPlayerSortCategory() != EInventorySortCategory::Ammo)
+	if (slot_idx == GRENADE_SLOT && !ShouldDisplayGrenadeInBag() && IsSlotHiddenInUi(slot_idx))
 	{
 		return;
 	}
