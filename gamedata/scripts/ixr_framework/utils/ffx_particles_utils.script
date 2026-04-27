@@ -1,0 +1,15 @@
+
+function set_pos_and_dir_x_bazis(pg_object, position, direction)
+	local vel = vector():set(0,0,0)
+	pg_object:set_xform_dir_x(position, direction, vel)
+end
+
+function set_pos_and_dir_y_bazis(pg_object, position, direction)
+	local vel = vector():set(0,0,0)
+	pg_object:set_xform_dir_y(position, direction, vel)
+end
+
+function set_pos_and_dir_z_bazis(pg_object, position, direction)
+	local vel = vector():set(0,0,0)
+	pg_object:set_xform_dir_z(position, direction, vel)
+end
