@@ -262,7 +262,7 @@ void CUIActorMenuBase::PropertiesBoxForSlots(CUICellItem* cell_item, PIItem item
 	bool bAlreadyDressed = false;
 	u16 cur_slot = item->BaseSlot();
 
-	if (cur_slot == GRENADE_SLOT)
+	if (cur_slot == GRENADE_SLOT && IsSlotHiddenInUi(cur_slot))
 	{
 		return;
 	}
