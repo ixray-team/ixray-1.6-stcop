@@ -155,7 +155,7 @@ void CBuild::Run(const char* P)
 	CorrectTJunctions();
 	mem_Compact();
 
- 	// Tesselate + calculate
+ 	// Tesselate 
  	xrPhase_AdaptiveHT_tessalte();
  
 	Phase("Building (Level, Build).cform ...");

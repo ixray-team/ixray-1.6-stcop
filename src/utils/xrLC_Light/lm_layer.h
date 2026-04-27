@@ -59,4 +59,7 @@ public:
 		size_t lm_marker = marker.capacity() * sizeof(u8);
  		return lm_surface + lm_marker + sizeof(*this); // + Собственный размер
 	}
-};
+
+	// Apply Borders Types
+ 	bool ApplyBorders(u32 ref);
+ };

@@ -169,16 +169,6 @@ void run_mu_light()
 			}
  		} );
 
-
-		// u32 _REF_INDEX = 0;
-		// for (auto& REF : inlc_global_data()->mu_refs())
-		// {
-		// 	AditionalData("REF LIGHT APPLY: %u/%u", _REF_INDEX, inlc_global_data()->mu_refs().size());
-		// 
-		// 	REF->calc_lighting_cuda_2();
-		// 	REF->calc_lighting_cuda_3();
-		// 	_REF_INDEX++;
-		// }
 		Msg("[MURefs] Elapsed For Apply Colors: %u ms", tStats.GetElapsed_ms());
 
 		GPUTaskinSystem.RestartALL(); // Выгружаем все Это последнее освещение 

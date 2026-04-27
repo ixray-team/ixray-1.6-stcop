@@ -10,7 +10,7 @@
 #include "xrMU_Model_Reference.h"
 
 PackedLighting GPUTaskinSystem;
-thread_local xr_vector<RayRecvestIndex>	task_pools_deflectors;
+thread_local xr_vector<RayRecvestIndex>	recvest_array;
 extern void ApplyColorGPU(size_t IndexTask, base_color_c& C);
  
 
@@ -25,7 +25,7 @@ void PackedLighting::InitializeGPU()
 void PackedLighting::LightPointPacked_add_task(size_t IndexTask, void* Owner, Fvector& P, Fvector& N, Face* skip)
 {
 	// MT SAFE
-	if (task_pools_deflectors.size() >= MAX_RAYS_PER_TASK - 1024)
+	if (recvest_array.size() >= MAX_RAYS_PER_TASK - 1024)
 		LightPointPacked_run_tasks();
  
  	RayRecvestIndex task_data;
@@ -33,29 +33,28 @@ void PackedLighting::LightPointPacked_add_task(size_t IndexTask, void* Owner, Fv
 	task_data.P				= P;
 	task_data.N				= N;
 	task_data.Owner			= Owner;
-  	task_pools_deflectors.emplace_back( task_data );
+	recvest_array.emplace_back( task_data );
 }
  
 void PackedLighting::LightPointPacked_run_tasks()
 {
-	auto& recvests = task_pools_deflectors;
-	if (recvests.size() <= 0) return;
+ 	if (recvest_array.size() <= 0) return;
 
  	// Initialize
 	XRay::RayTrace::CUDA::RayTraceInitialize( current_flags );
 
 	// Tasks
- 	for (size_t RayIndex = 0; RayIndex < recvests.size(); RayIndex++)
-		XRay::RayTrace::CUDA::RayTraceAddRay(recvests[RayIndex], RayIndex);
+ 	for (size_t RayIndex = 0; RayIndex < recvest_array.size(); RayIndex++)
+		XRay::RayTrace::CUDA::RayTraceAddRay(recvest_array[RayIndex], RayIndex);
 
 	// Запускаем трейсинг
 	XRay::RayTrace::CUDA::RayTraceRun();
 
 	// Получаем результаты
 	auto& colors = XRay::RayTrace::CUDA::RayTraceResult();
-	for (auto RecvestID = 0; RecvestID < recvests.size(); RecvestID++)
+	for (auto RecvestID = 0; RecvestID < recvest_array.size(); RecvestID++)
 	{
-		auto& RAY_INFO = recvests[RecvestID];
+		auto& RAY_INFO = recvest_array[RecvestID];
  		 
 		switch (ColorsMapType)
 		{
@@ -82,6 +81,6 @@ void PackedLighting::LightPointPacked_run_tasks()
 		}		
  	}
 
-	recvests.clear();
+	recvest_array.clear();
 }
  
