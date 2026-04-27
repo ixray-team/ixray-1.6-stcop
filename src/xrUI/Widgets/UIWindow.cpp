@@ -38,6 +38,71 @@ void LogAnchorAbsRectDepthExceededOnce()
 	hasLoggedDepthExceeded = true;
 	Msg("! UI anchor GetAbsoluteRect recursion depth exceeded (possible anchor_to cycle)");
 }
+
+void LogAnchorToCycleOnce()
+{
+	static bool hasLoggedAnchorToCycle = false;
+	if (hasLoggedAnchorToCycle)
+	{
+		return;
+	}
+	hasLoggedAnchorToCycle = true;
+	Msg("! UI anchor_to: cycle detected while resolving reference rect");
+}
+
+void LogAnchorToChainTooLongOnce()
+{
+	static bool hasLoggedAnchorToChainTooLong = false;
+	if (hasLoggedAnchorToChainTooLong)
+	{
+		return;
+	}
+	hasLoggedAnchorToChainTooLong = true;
+	Msg("! UI anchor_to: reference chain exceeds depth limit (possible misconfiguration)");
+}
+
+// Returns true when anchor_to links under parentWnd revisit a window or exceed the depth limit.
+bool HasInvalidAnchorToGraph(CUIWindow* startWnd, CUIWindow* parentWnd)
+{
+	xr_vector<CUIWindow*> visited;
+	CUIWindow* w = startWnd;
+	while (w != nullptr)
+	{
+		if (w->GetAnchorTo().size() == 0)
+		{
+			return false;
+		}
+		if (visited.size() >= (size_t)AnchorAbsRectDepthLimit)
+		{
+			LogAnchorToChainTooLongOnce();
+			return true;
+		}
+		for (CUIWindow* v : visited)
+		{
+			if (v == w)
+			{
+				LogAnchorToCycleOnce();
+				return true;
+			}
+		}
+		visited.push_back(w);
+		CUIWindow* target = parentWnd->FindChild(w->GetAnchorTo());
+		if (target == nullptr || target == w)
+		{
+			return false;
+		}
+		for (CUIWindow* v : visited)
+		{
+			if (v == target)
+			{
+				LogAnchorToCycleOnce();
+				return true;
+			}
+		}
+		w = target;
+	}
+	return false;
+}
 } // namespace
 
 // #define LOG_ALL_WNDS
@@ -254,6 +319,18 @@ void CUIWindow::Update()
 			float h = GetHeight();
 			ad.offsetMax.x = ad.offsetMin.x + w;
 			ad.offsetMax.y = ad.offsetMin.y + h;
+		}
+		else if (stretchH && !stretchV)
+		{
+			float halfH = GetHeight() * 0.5f;
+			ad.offsetMin.y = -halfH;
+			ad.offsetMax.y = halfH;
+		}
+		else if (!stretchH && stretchV)
+		{
+			float halfW = GetWidth() * 0.5f;
+			ad.offsetMin.x = -halfW;
+			ad.offsetMax.x = halfW;
 		}
 	}
 
@@ -839,6 +916,11 @@ void CUIWindow::ResolveAnchorReferenceRect(Frect& anchorRect)
 		return;
 	}
 	if (m_anchorToWindowName.size() == 0)
+	{
+		parentWnd->GetAbsoluteRect(anchorRect);
+		return;
+	}
+	if (HasInvalidAnchorToGraph(this, parentWnd))
 	{
 		parentWnd->GetAbsoluteRect(anchorRect);
 		return;

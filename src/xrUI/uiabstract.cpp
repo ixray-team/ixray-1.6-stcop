@@ -25,13 +25,39 @@ void ComputeAnchoredRect(const Frect& parentRect, const SAnchorData& anchor, Fre
 		return;
 	}
 
-	const float parentWidth = parentRect.width();
-	const float parentHeight = parentRect.height();
+	Frect parentWork = parentRect;
+	if (parentWork.x2 < parentWork.x1)
+	{
+		const float tmp = parentWork.x1;
+		parentWork.x1 = parentWork.x2;
+		parentWork.x2 = tmp;
+	}
+	if (parentWork.y2 < parentWork.y1)
+	{
+		const float tmp = parentWork.y1;
+		parentWork.y1 = parentWork.y2;
+		parentWork.y2 = tmp;
+	}
 
-	result.x1 = parentRect.x1 + anchor.anchorMin.x * parentWidth + anchor.offsetMin.x;
-	result.y1 = parentRect.y1 + anchor.anchorMin.y * parentHeight + anchor.offsetMin.y;
-	result.x2 = parentRect.x1 + anchor.anchorMax.x * parentWidth + anchor.offsetMax.x;
-	result.y2 = parentRect.y1 + anchor.anchorMax.y * parentHeight + anchor.offsetMax.y;
+	if (!_valid(parentWork) || !_valid(anchor.anchorMin) || !_valid(anchor.anchorMax) || !_valid(anchor.offsetMin) || !_valid(anchor.offsetMax))
+	{
+		result.set(parentWork.x1, parentWork.y1, parentWork.x2, parentWork.y2);
+		return;
+	}
+
+	const float parentWidth = parentWork.width();
+	const float parentHeight = parentWork.height();
+
+	result.x1 = parentWork.x1 + anchor.anchorMin.x * parentWidth + anchor.offsetMin.x;
+	result.y1 = parentWork.y1 + anchor.anchorMin.y * parentHeight + anchor.offsetMin.y;
+	result.x2 = parentWork.x1 + anchor.anchorMax.x * parentWidth + anchor.offsetMax.x;
+	result.y2 = parentWork.y1 + anchor.anchorMax.y * parentHeight + anchor.offsetMax.y;
+
+	if (!_valid(result))
+	{
+		result.set(parentWork.x1, parentWork.y1, parentWork.x2, parentWork.y2);
+		return;
+	}
 
 	if (result.x2 < result.x1)
 	{
