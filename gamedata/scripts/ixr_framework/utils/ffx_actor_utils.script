@@ -1,0 +1,9 @@
+
+
+function is_in_crouch()
+	if not  db.actor then 
+		return false
+	end
+		
+	return db.actor:get_movement_state(EMovementStates.eReal, EMoveCommand.mcCrouch)
+end
