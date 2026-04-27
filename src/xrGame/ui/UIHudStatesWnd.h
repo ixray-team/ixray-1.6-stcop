@@ -74,6 +74,7 @@ private:
 
 	CUIStatic*			m_ui_adaptive_clip = nullptr;
 	CUIStatic*			m_ui_adaptive_total = nullptr;
+	string32			m_adaptive_total_separator = "/";
 	CUIStatic*			m_ui_fire_mode_icon = nullptr;
 	CUIStatic*			m_ui_caliber_text = nullptr;
 	CUIStatic*			m_ui_caliber_icon = nullptr;
