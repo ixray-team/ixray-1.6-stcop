@@ -57,3 +57,5 @@ pushd build\x64\Editors-Windows
 popd
 move build\x64\Editors-Windows\ixray-1.6-r%release%-editors-x64-mixed-pdb.zip ^
     publish\ixray-1.6-r%release%-editors-x64-mixed-pdb.zip
+move build\x64\Editors-Windows\ixray-1.6-r%release%-editors-x64-debug-pdb.zip ^
+    publish\ixray-1.6-r%release%-editors-x64-debug-pdb.zip
