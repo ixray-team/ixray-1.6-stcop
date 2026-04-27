@@ -107,8 +107,6 @@ void errors_embree_det(void* userPtr, enum RTCError code, const char* str)
 RTCDevice DeviceDetails = nullptr;
 void EmbreeRayTraceModel::InitEmbreeDetails()
 {
-	// InitializeEmbreeDevice();	// TODO
-	
 	DeviceDetails = rtcNewDevice(GetDeviceConfig());;
 	rtcSetDeviceErrorFunction(DeviceDetails, &errors_embree_det, nullptr);
 
