@@ -354,13 +354,11 @@ void ImplicitLightingExec()
 		}
 		else
 #endif
+		{
 			RunImplicitMultithread(defl);
+		}
 
-		defl.faces.clear();
-
-		// Expand
-		Status("Processing lightmap...");
-		for (u32 ref = 254; ref > 0; ref--)	if (!ApplyBorders(defl.lmap, ref)) break;
+ 		defl.faces.clear();
 
 		Status("Mixing lighting with texture...");
 		{

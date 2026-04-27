@@ -36,8 +36,6 @@ void CDeflector::PrepareForLighting()
 }
 
 thread_local HASH			Hash2dDeflectorEmbree;
-
-
 void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 {
 	// Geometrical bounds
@@ -95,10 +93,6 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 
 	// Calculate and fill borders
 	Light(DB, LightsSelected);
-
-
-	for (u32 ref = 254; ref > 0; ref--)
-	if (!ApplyBorders(layer, ref)) break;
 
 	// Compression
 	try
@@ -179,14 +173,6 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 			lm_new.create(lm_old.width + 2 * BORDER, lm_old.height + 2 * BORDER);
 			lblit(lm_new, lm_old, BORDER, BORDER, 255 - BORDER);
 			layer = lm_new;
-
-			ApplyBorders(layer, 254);
-			ApplyBorders(layer, 253);
-			ApplyBorders(layer, 252);
-			ApplyBorders(layer, 251);
-			for (u32 ref = 250; ref > 0; ref--)
-				if (!ApplyBorders(layer, ref))
-					break;
 
 			layer.width = lm_old.width;
 			layer.height = lm_old.height;

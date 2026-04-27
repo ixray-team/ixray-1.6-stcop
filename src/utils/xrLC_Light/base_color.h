@@ -18,6 +18,8 @@ public:
 	float					_tmp_;		// ???
 	base_color_c()			{ rgb.set(0,0,0); hemi=0; sun=0; _tmp_=0;	}
 
+	void					clear_color() { rgb.set(0, 0, 0); hemi = 0; sun = 0; _tmp_ = 0; };
+
 	void					mul			(float s)									{	rgb.mul(s);	hemi*=s; sun*=s;				};
 	void					add			(float s)									{	rgb.add(s);	hemi+=s; sun+=s;				};
 	void					add			(base_color_c& s)							{	rgb.add(s.rgb);	hemi+=s.hemi; sun+=s.sun;	};
