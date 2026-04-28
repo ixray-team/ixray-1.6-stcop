@@ -42,8 +42,7 @@ void InitializeUIData()
 int current_format = 0;
 static bool autoScroll = true;
 static bool hideLogSection = false;
-static bool ResizeMaximal = false;
-
+ 
 void DrawCompilerConfig();
 void DrawAIConfig();
 void DrawDOConfig();
@@ -52,25 +51,20 @@ void DrawLCConfig();
 void RenderMainUI()
 {
 	int Size[2] = {};
- 	SDL_GetWindowSize(g_AppInfo.Window, &Size[0], &Size[1]);
+	if (Size[0] != 1100 || Size[1] != 675)
+		SDL_SetWindowSize(g_AppInfo.Window, 1100, 675);
+	SDL_GetWindowSize(g_AppInfo.Window, &Size[0], &Size[1]);
+
 
 	ImGui::SetNextWindowPos({ 0, 0 });
 	ImGui::SetNextWindowSize({ (float)Size[0], (float)Size[1] });
-
-
+ 
 	if (!ShowMainUI) 
 	{
 		RenderCompilerUI(Size[0], Size[1]);
 		return;
 	}
-
-
-	if (Size[0] != 1000 || Size[1] != 675)
-	{
-		SDL_SetWindowSize(g_AppInfo.Window, 1000, 675);
-	}
-	
-
+	 
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
 	{
 		ImVec2 ListBoxSize = { float(Size[0] - 20), float ( Size[1] - 115) };
@@ -88,10 +82,10 @@ void RenderMainUI()
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
 			
-			ImVec2 ListBoxSize2 = { 200, float(Size[1] - 155) };
+			ImVec2 ListBoxSize2 = { 250, float(Size[1] - 155) };
 			if (  ImGui::BeginTable("##Levels", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize2)  )
 			{
-				ImGui::TableSetupColumn("Name");
+				ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 200);
 				ImGui::TableSetupColumn("Prop");
 				ImGui::TableHeadersRow();
 
@@ -172,14 +166,11 @@ void RenderMainUI()
 			ShowMainUI = false;
 			extern void StartCompile();
 			if (!levelsEmpty)
-			{
-				StartCompile();
-			}
-			else
+ 				StartCompile();
+ 			else
 			{
 				SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning!", "No levels selected.", nullptr);
-				ShowMainUI = true;
-			}
+ 			}
 		}
 
 	}
@@ -192,18 +183,8 @@ void RenderMainUI()
 		{
 			autoScroll = !autoScroll;
 		}
-
-		ImGui::SameLine();
-
-		if (ImGui::Button(!ResizeMaximal ? "Maximal resize" : "Minimal resize"))
-		{
-			ResizeMaximal = !ResizeMaximal;
-		}
-
 		ImGui::SameLine();
 		ImGui::TextColored(ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", GetHeapMemory() / 1024 / 1024);
-		ImGui::SameLine();
-		ImGui::Checkbox("ShowMain", &ShowMainUI);
 	}
  
 	ImGui::End();
@@ -590,6 +571,61 @@ const ImVec4 getLogColor(char* text)
 	return ImVec4(RGBAColor(230, 230, 230, 255));
 }
 
+void DrawGpuGraph(const float* values, int count, float maxValue = 100.0f)
+{
+	if (count == 0)return;
+
+	ImVec2 size = ImVec2(500, 100);
+	ImVec2 p = ImGui::GetCursorScreenPos();
+	ImDrawList* draw = ImGui::GetWindowDrawList();
+
+	// background
+	draw->AddRectFilled(p, ImVec2(p.x + size.x, p.y + size.y), IM_COL32(20, 20, 20, 255));
+
+	// grid
+	for (int i = 0; i < 5; i++)
+	{
+		float y = p.y + (size.y / 4) * i;
+		draw->AddLine(ImVec2(p.x, y), ImVec2(p.x + size.x, y), IM_COL32(50, 50, 50, 120));
+	}
+
+	// graph line
+	float step = size.x / (float)(count - 1);
+	for (int i = 1; i < count; i++)
+	{
+		float v0 = values[i - 1] / maxValue;
+		float v1 = values[i] / maxValue;
+
+		ImVec2 a = ImVec2(
+			p.x + step * (i - 1),
+			p.y + size.y - (v0 * size.y)
+		);
+
+		ImVec2 b = ImVec2(
+			p.x + step * i,
+			p.y + size.y - (v1 * size.y)
+		);
+
+		draw->AddLine(a, b, IM_COL32(0, 200, 255, 255), 2.0f);
+	}
+
+	// fill (like MSI Afterburner)
+	for (int i = 1; i < count; i++)
+	{
+		float v0 = values[i - 1] / maxValue;
+		float v1 = values[i] / maxValue;
+
+		ImVec2 a = ImVec2(p.x + step * (i - 1), p.y + size.y);
+		ImVec2 b = ImVec2(p.x + step * (i - 1), p.y + size.y - (v0 * size.y));
+		ImVec2 c = ImVec2(p.x + step * i, p.y + size.y - (v1 * size.y));
+		ImVec2 d = ImVec2(p.x + step * i, p.y + size.y);
+
+		draw->AddQuadFilled(a, b, c, d, IM_COL32(0, 120, 255, 40));
+	}
+
+	ImGui::Dummy(size);
+}
+
 void RenderCompilerUI(int X, int Y)
 {
 	//static const char* levelName = "LevelTextName";
@@ -616,98 +652,19 @@ void RenderCompilerUI(int X, int Y)
 	ImGui::Separator();
 
 	ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
-
-	int MAX_TRABS = 9;
-	if (ResizeMaximal)
-		MAX_TRABS = 7;
-
-	auto RenderRowIcon = [](IterationStatus& status, int Index)
-	{
- 		xr_string rowStatus;
-		ImVec4 rowStatusColor;
-		char rowIcon;
-		getStatusInfo(status, rowStatus, rowStatusColor, rowIcon);
- 		ImGui::TableSetColumnIndex(Index);
-		ImGui::PushFont(gCompilerMode.CompilerIconsFont);
-		ImGui::TextColored(rowStatusColor, "%c", rowIcon);
-		ImGui::PopFont();
-	};
-
-	auto GetPhaseTime = [](IterationPhase& phase)
-	{
- 		if (phase.status != Complete)
-		{
-			u32 dwCurrentTime = timeGetTime();
-			u32 dwTimeDiff = dwCurrentTime - GetPhaseStartTime();
-			u32 secElapsed = dwTimeDiff / 1000;
- 			phase.elapsed_time = secElapsed;
- 		}
-	};
-
 	int Flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingFixedSame;
-
- 	if (ResizeMaximal && ImGui::BeginTable("DebugTable", MAX_TRABS, Flags))
-	{
-		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.f);
-		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 15.f);
-		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthFixed, 250.0f);
-		ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 40.f);
-		ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);		
-		ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.f);
-		ImGui::TableSetupColumn("Status Description", ImGuiTableColumnFlags_WidthStretch);
-
-		ImGui::TableHeadersRow();
-
-		for (auto& row : GetIterationData())
-		{
-			ImGui::TableNextRow();
- 			RenderRowIcon(row.status, 0);
-
-			// TASK
-			ImGui::TableSetColumnIndex(1);
-			ImGui::Text("%s", row.iterationName.c_str());
-
-			ImGui::TableSetColumnIndex(3);
-			ImGui::Text("%0.f", row.Persent * 100);
-
-			for (auto& phase : row.phases)
-			{
-				GetPhaseTime(phase);
-
-  				ImGui::TableNextRow();
-				RenderRowIcon(phase.status, 1);
-				 
- 				ImGui::TableSetColumnIndex(2);
-				ImGui::TextColored(phaseTextCol, phase.PhaseName.c_str());
-
-				ImGui::TableSetColumnIndex(4);
-				ImGui::TextColored(phaseTextCol, "%s", make_time(phase.elapsed_time).c_str());
-
-				ImGui::TableSetColumnIndex(5);
-				ImGui::Text("%u MB", u32(size_t(phase.used_memory / 1024 / 1024)));
-
-				ImGui::TableSetColumnIndex(6);
-				ImGui::Text("%s", phase.AdditionalData.c_str());
-			}
-		}
-
-		if (autoScroll)
-			ImGui::SetScrollY(ImGui::GetScrollMaxY());
-		ImGui::EndTable();
-	}
-
+ 
 	// Table
- 	if (!ResizeMaximal && ImGui::BeginTable("IterationsTable", MAX_TRABS, Flags))
+ 	if ( ImGui::BeginTable("IterationsTable", 8, Flags) )
 	{
  		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
 		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 50.f);
 		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 50.f);
-		ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-		ImGui::TableSetupColumn("Remain Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-		ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-		ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.f);
-		ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.f);
+		ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 60.0f);
+ 		ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 75.f);
+		ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 60.f);
+		ImGui::TableSetupColumn("Info", ImGuiTableColumnFlags_WidthFixed, 350.0f);
 
 		ImGui::TableHeadersRow();
 
@@ -720,8 +677,7 @@ void RenderCompilerUI(int X, int Y)
  			ImGui::TableNextRow();
 
 			// Status icon
-
-			ImGui::TableSetColumnIndex(0);
+ 			ImGui::TableSetColumnIndex(0);
 			ImGui::PushFont(gCompilerMode.CompilerIconsFont);
 			ImGui::TextColored(rowStatusColor, "%c", rowIcon);
 			ImGui::PopFont();
@@ -733,10 +689,8 @@ void RenderCompilerUI(int X, int Y)
 			ImGui::TableSetColumnIndex(3);
 			ImGui::Text("%0.f", row.Persent * 100);
 
-			ImGui::TableSetColumnIndex(6);
-			ImGui::Text("%d", row.warnings);
-			// Status text
-			ImGui::TableSetColumnIndex(7);
+  			// Status text
+			ImGui::TableSetColumnIndex(5);
 			ImGui::TextColored(rowStatusColor, rowStatus.c_str());
  
 			for (auto& phase : row.phases)
@@ -782,91 +736,118 @@ void RenderCompilerUI(int X, int Y)
 
 				ImGui::TableSetColumnIndex(4);
 				ImGui::TextColored(phaseTextCol, "%s", make_time(phase.elapsed_time).c_str());
-
+ 				 
 				ImGui::TableSetColumnIndex(5);
-				if (phase.status != Complete)
-					ImGui::TextColored(phaseTextCol, "%s", (phase.remain_time == 0 ? "Calculating..." : make_time(phase.remain_time).c_str()));
- 
-				 
-				ImGui::TableSetColumnIndex(7);
+ 				ImGui::TextColored(statusColor, status.c_str());
 
-				ImGui::TextColored(statusColor, status.c_str());
-
-				ImGui::TableSetColumnIndex(8);
+				ImGui::TableSetColumnIndex(6);
 				ImGui::Text("%u MB", u32(size_t(phase.used_memory / 1024 / 1024)));
+
+				ImGui::TableSetColumnIndex(7);
+				ImGui::Text("%s", phase.AdditionalData.c_str() );
 			}
 		}
 
 		if (autoScroll)
 			ImGui::SetScrollY(ImGui::GetScrollMaxY());
 		ImGui::EndTable();
-	}
 
-	ImGui::EndChild();
-	 
-
-	ImGui::Separator();
-	ImGui::Text("Log");
-
-	ImGui::SameLine();
-
-	const char* buttonText = (hideLogSection) ? "+" : "-";
-	ImVec2 textSize = ImGui::CalcTextSize(buttonText);
-
-	ImVec2 buttonSize = ImVec2(textSize.x + ImGui::GetStyle().FramePadding.x * 2,
-		textSize.y + ImGui::GetStyle().FramePadding.y * 2);
-
-	auto ZSize = ImGui::GetContentRegionAvail();
-
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ZSize.x - buttonSize.x);
-
-	if (ImGui::Button(buttonText))
-		hideLogSection = !hideLogSection;
-
-	if (!hideLogSection && ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - topHeight - (buttonSize.y * 2)-30), true))
-	{
-		ImGuiListClipper clipper;
-
-		xrCriticalSectionGuard LogGuard(&csLog);
-
-		clipper.Begin(GetLogVector().size());
-
-		while (clipper.Step())
-		{
-			for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
-			{
-				auto& line = GetLogVector()[i];
-				ImGui::TextColored(getLogColor((char*)line.c_str()), "%s", Platform::UTF8_to_CP1251(line.c_str()).c_str() );
-			}
-		}
-
-
-		if (autoScroll)
-			ImGui::SetScrollY(ImGui::GetScrollMaxY());
 
 		ImGui::EndChild();
 	}
+ 
+	ImGui::Separator();
+
+	// Окно лога
+	{
+		ImGui::Text("Log");	ImGui::SameLine();
+
+		const char* buttonText = (hideLogSection) ? "+" : "-";
+		ImVec2 textSize = ImGui::CalcTextSize(buttonText);
+
+		ImVec2 buttonSize = ImVec2(	textSize.x + ImGui::GetStyle().FramePadding.x * 2,
+									textSize.y + ImGui::GetStyle().FramePadding.y * 2);
+
+		auto ZSize = ImGui::GetContentRegionAvail();
+
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ZSize.x - buttonSize.x);
+
+		if (ImGui::Button(buttonText))
+			hideLogSection = !hideLogSection;
+
+		u32 nSize = windowSize.x / 4;
+
+		if (!hideLogSection)
+		{
+			if (ImGui::BeginChild("LogSection", ImVec2(nSize * 3, windowSize.y - topHeight - (buttonSize.y * 2) - 30), true))
+			{
+				ImGuiListClipper clipper;
+
+				xrCriticalSectionGuard LogGuard(&csLog);
+
+				clipper.Begin(GetLogVector().size());
+
+				while (clipper.Step())
+				{
+					for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
+					{
+						auto& line = GetLogVector()[i];
+						ImGui::TextColored(getLogColor((char*)line.c_str()), "%s", Platform::UTF8_to_CP1251(line.c_str()).c_str());
+					}
+				}
+
+				if (autoScroll)
+					ImGui::SetScrollY(ImGui::GetScrollMaxY());
+
+				ImGui::EndChild();
+			}
+		
+			ImGui::SameLine();
+
+			if (ImGui::BeginChild("GPU USAGE", ImVec2(nSize, windowSize.y - topHeight - (buttonSize.y * 2) - 30), true))
+			{
+				extern void CudaUsage(unsigned int& UsageCuda, unsigned int& UsageMemory);
+				extern  void CudaStatisticThread();
+				extern	xr_vector<float> get_cuda_usage();
+				extern  xr_vector<float> get_mem_usage();
+
+				static bool isGpuStarted = false;
+				if (!isGpuStarted)
+				{
+					isGpuStarted = true;
+					CudaStatisticThread();
+				}
+				 
+				unsigned int UsageCuda = 0, UsageMemory = 0;
+				CudaUsage(UsageCuda, UsageMemory);
+
+				ImGui::Text("Gpu Usage: %u", UsageCuda);
+				auto data = get_cuda_usage();
+				DrawGpuGraph(data.data(), data.size(), 100.0f);
+
+				ImGui::Separator();
+
+
+				ImGui::Text("Gpu Memory Usage: %u", UsageMemory);
+				auto data_mem = get_mem_usage();
+				DrawGpuGraph(data_mem.data(), data_mem.size(), 100.0f);
+  
+				ImGui::EndChild();
+			}
+		}
+	}
 
 	ImGui::Separator();
 
-	if (ImGui::Button(autoScroll ? "Disable Auto-Scroll" : "Enable Auto-Scroll"))
+	// Нижний Список
 	{
-		autoScroll = !autoScroll;
+		if (ImGui::Button(autoScroll ? "Disable Auto-Scroll" : "Enable Auto-Scroll"))
+		{
+			autoScroll = !autoScroll;
+		}
+		ImGui::SameLine();
+		ImGui::TextColored(ImVec4{ 0, 0.9, 0, 1 }, "Memory usage: %u mb", GetHeapMemory() / 1024 / 1024);
 	}
-
-	ImGui::SameLine();
-
-	if (ImGui::Button(!ResizeMaximal ? "Maximal resize" : "Minimal resize"))
-	{
-		ResizeMaximal = !ResizeMaximal;
-	}
-
-	ImGui::SameLine();
-
-	ImGui::TextColored( ImVec4{ 0, 0.9, 0, 1 }, "Memory usage: %u mb", GetHeapMemory() / 1024 / 1024);
-
-	ImGui::SameLine();
-	ImGui::Checkbox("Show Main", &ShowMainUI);
 
 	ImGui::End();
 }
