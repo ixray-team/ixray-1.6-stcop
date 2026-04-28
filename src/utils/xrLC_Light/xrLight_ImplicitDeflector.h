@@ -41,3 +41,23 @@ public:
 	void		Bounds_Summary	(Fbox2& bounds);
  
 };
+
+
+class ImplicitCalcGlobs
+{
+	ImplicitDeflector* defl;
+
+public:
+	ImplicitCalcGlobs() : defl(0)
+	{
+	}
+ 	vecFace& query(float px, float py);
+
+	IC ImplicitDeflector& DATA()
+	{
+		R_ASSERT(defl);
+		return *defl;
+	}
+
+	void Initialize(ImplicitDeflector& d);
+};

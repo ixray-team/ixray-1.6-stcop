@@ -81,8 +81,6 @@ public:
 	void	BuildPortals			(IWriter &fs);
 
  	void	BuildRapid				(bool bSave);
-
-	void	xrPhase_Radiosity		();
 		
 	void	IsolateVertices			(bool bProgress);
 	void	xrPhase_ResolveMaterials();

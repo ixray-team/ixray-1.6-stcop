@@ -326,7 +326,7 @@ bool detail_slot_process( u32 _x, u32 _z, DetailSlot&	DS )
 
 
 
-bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, DWORDVec& box_result, CDB::COLLIDER &DB, base_lighting	&Selected )
+bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, xr_vector<u32>& box_result, CDB::COLLIDER &DB, base_lighting	&Selected )
 {
 	///////////////////////////////////////////////////////////
 	// Build slot BB & sphere
@@ -373,7 +373,7 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, DWORDVec& box_result
 			Fvector start;	start.set	(P.x,BB.max.y+EPS,P.z);
 			
 			float		r_u,r_v,r_range;
-			for (DWORDIt tit=box_result.begin(); tit!=box_result.end(); tit++)
+			for (xr_vector<u32>::iterator tit = box_result.begin(); tit != box_result.end(); tit++)
 			{
 				CDB::TRI&	T		= tris	[*tit];
 				Fvector		V[3]	= { verts[T.verts[0]], verts[T.verts[1]], verts[T.verts[2]] };
