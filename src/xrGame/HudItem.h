@@ -224,6 +224,7 @@ public:
 		af_det_hand_dry = (1 << 24),
 		af_det_hand_jammed = (1 << 25),
 		af_det_hand_lightmis = (1 << 26),
+		af_safemode_in_out = (1 << 27),
 	};
 
 	enum EBPAnimsFlags : u64
@@ -288,6 +289,7 @@ public:
 		sf_holster_jam_w_gl = (1 << 13),
 		sf_draw_jam_g = (1 << 14),
 		sf_holster_jam_g = (1 << 15),
+		sf_safemode_in_out = (1 << 16),
 	};
 
 	Flags32 m_eDevicesFlags;

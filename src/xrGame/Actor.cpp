@@ -209,6 +209,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	m_inventory_disabled	= false;
 	m_pda_disabled			= false;
 	m_use_disabled			= false;
+	m_safemode_enabled		= false;
 
 	m_hud_animator			= new CHudAnimatorManager(this);
 
@@ -1553,6 +1554,11 @@ void CActor::UpdateCL()
 
 	bBlockSprint = isDelayedWeaponActions && m_iKeyFlags != 0 || pWeapon != nullptr && pWeapon->NeedBlockSprint() || dev != nullptr && dev->NeedBlockSprint() || pMissile != nullptr && pMissile->NeedBlockSprint();
 
+	if (pWeapon == nullptr || !pWeapon->AllowSafemode())
+	{
+		m_bIsSafemode = false;
+	}
+
 	if (pWeapon)
 	{
 
@@ -1678,6 +1684,33 @@ void CActor::UpdateCL()
 	else
 		fSprintFactor -= Device.fTimeDelta / 0.1f;
 	clamp(fSprintFactor, 0.0f, 1.0f);
+
+	if (g_Alive()) {
+		PIItem active_item = inventory().ActiveItem();
+		CWeapon* weapon = active_item ? active_item->cast_weapon() : nullptr;
+		if (!weapon)
+			return;
+
+		if (weapon->H_Parent() != this)
+			return;
+
+		if (m_safemode_enabled)
+		{
+			if (!IsSafemode())
+			{
+				weapon->SwitchState(CWeapon::eSafemodeSwitch);
+				this->SetSafemodeStatus(true);
+			}
+		}
+		else
+		{
+			if (IsSafemode())
+			{
+				weapon->SwitchState(CWeapon::eIdle);
+				this->SetSafemodeStatus(false);
+			}
+		}
+	}
 }
 
 void CActor::UpdatePlayerHud()

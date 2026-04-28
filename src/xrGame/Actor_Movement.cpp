@@ -681,6 +681,9 @@ bool CActor::CanRun()
 
 bool CActor::CanSprint()
 {
+	if (m_safemode_enabled)
+		return false;
+
 	bool is_animator = (HudAnimator() && (HudAnimator()->IsActive() && HudAnimator()->CanSprint() || !HudAnimator()->IsActive()) || !HudAnimator());
 	bool can_Sprint = CanAccelerate() && !conditions().IsCantSprint() && Game().PlayerCanSprint(this) && CanRun() && !(mstate_real & mcLStrafe || mstate_real & mcRStrafe) && InventoryAllowSprint() && !bBlockSprint && is_animator;
 

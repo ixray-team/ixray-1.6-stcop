@@ -854,7 +854,7 @@ BOOL	CActor::net_Relevant		()				// relevant for export to server
 	};
 };
 
-//костыли для ног
+//РєРѕСЃС‚С‹Р»Рё РґР»СЏ РЅРѕРі
 void CActor::Center(Fvector& C)	const
 {
 	VERIFY2(renderable.visual, *cName());
@@ -882,7 +882,7 @@ void	CActor::SetCallbacks()
 	V->LL_GetBoneInstance(u16(shoulder_bone)).set_callback	(bctCustom,ShoulderCallback,this);
 	V->LL_GetBoneInstance(u16(head_bone)).set_callback		(bctCustom,HeadCallback,this);
 
-	//костыли для ног
+	//РєРѕСЃС‚С‹Р»Рё РґР»СЏ РЅРѕРі
 	V->LL_GetBoneInstance(V->LL_GetBoneRoot()).set_callback(bctCustom,
 		[](CBoneInstance* B)
 		{
@@ -918,7 +918,7 @@ void CActor::ResetCallbacks()
 	V->LL_GetBoneInstance(u16(shoulder_bone)).reset_callback();
 	V->LL_GetBoneInstance(u16(head_bone)).reset_callback();
 
-	//костыли для ног
+	//РєРѕСЃС‚С‹Р»Рё РґР»СЏ РЅРѕРі
 	V->LL_GetBoneInstance(V->LL_GetBoneRoot()).reset_callback();
 	if (CCF_Skeleton* skeleton = smart_cast<CCF_Skeleton*>(CFORM()))
 		skeleton->CCF_SetCallback(nullptr, nullptr);
@@ -1476,6 +1476,7 @@ void CActor::save(NET_Packet &output_packet)
 	output_packet.w_u8(u8(m_inventory_disabled));
 	output_packet.w_u8(u8(m_pda_disabled));
 	output_packet.w_u8(u8(m_use_disabled));
+	output_packet.w_u8(u8(m_safemode_enabled));
 }
 
 void CActor::load(IReader &input_packet)
@@ -1502,6 +1503,7 @@ void CActor::load(IReader &input_packet)
 	set_inventory_disabled(!!input_packet.r_u8());
 	set_pda_disabled(!!input_packet.r_u8());
 	set_use_disabled(!!input_packet.r_u8());
+	set_safemode_enabled(!!input_packet.r_u8());
 }
 
 #ifdef DEBUG

@@ -310,6 +310,7 @@ private:
 	float m_fLookOutSpeed = 0.0f;
 	float m_fLookOutAmplK = 0.0f;
 	float m_fLookOutSpeedAmplDXPow = 0.0f;
+	bool m_bIsSafemode = false;
 
 public:
 	bool					m_bAllowDeathRemove;
@@ -402,6 +403,8 @@ public:
 	virtual	float			ffGetFov			()	const	{ return 90.f;		}	
 	virtual	float			ffGetRange			()	const	{ return 500.f;		}
 
+	IC bool IsSafemode() const { return m_bIsSafemode; }
+	IC void SetSafemodeStatus(bool status) { m_bIsSafemode = status; }
 	
 public:
 	bool					HasCameraEffector	() const { return m_pActorEffector != nullptr; };
@@ -867,6 +870,7 @@ public:
 			void			set_pda_disabled(bool is_disabled) { m_pda_disabled = is_disabled; }
 			bool			pda_disabled() const { return m_pda_disabled; }
 			void			set_use_disabled(bool is_disabled) { m_use_disabled = is_disabled; }
+			void			set_safemode_enabled(bool enabled) { m_safemode_enabled = enabled; }
 			virtual IInputReceiver* GetIIR() override { return this; }
 private:
 			void			set_state_box(u32	mstate);
@@ -875,6 +879,7 @@ private:
 	bool					m_inventory_disabled;
 	bool					m_pda_disabled;
 	bool					m_use_disabled;
+	bool					m_safemode_enabled;
 //static CPhysicsShell		*actor_camera_shell;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

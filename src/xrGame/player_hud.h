@@ -150,8 +150,8 @@ struct hud_item_measures
 	struct hud_hands_positions
 	{
 		void Load(const shared_str& section, bool is_16x9);
-		Fvector hands_offsets[2][3]; //pos,rot //normal, aim, gl
-		Fvector hands_offsets_tune[2][3];
+		Fvector hands_offsets[2][5]; //pos,rot //normal, aim, gl, alt-aim, safemode
+		Fvector hands_offsets_tune[2][5];
 		bool bIs16x9 = false;
 		shared_str sSection;
 	} m_hands_positions;

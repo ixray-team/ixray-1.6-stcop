@@ -424,6 +424,7 @@ public:
 			void				SetInventoryDisabled(bool b);
 			bool				IsInventoryDisabled	();
 			void				SetUseDisabled(bool b);
+			void				SetSafeModeEnabled(bool b);
 
 			bool				Weapon_IsGrenadeLauncherAttached();
 			bool				Weapon_IsScopeAttached			();

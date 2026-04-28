@@ -1191,6 +1191,18 @@ void CScriptGameObject::SetUseDisabled(bool value)
 	}
 }
 
+void CScriptGameObject::SetSafeModeEnabled(bool value)
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		actor->set_safemode_enabled(value);
+	}
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member set_safemode_enabled!");
+	}
+}
+
 bool CScriptGameObject::night_vision_enabled() const
 {
 	if (CActor* actor = object().cast_actor())

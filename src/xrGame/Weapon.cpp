@@ -577,6 +577,9 @@ void CWeapon::Load		(LPCSTR section)
 	m_zoom_params.m_sUseZoomPostprocess			= 0;
 	m_zoom_params.m_sUseBinocularVision			= 0;
 
+	m_bAllowSafemode = READ_IF_EXISTS(pSettings, r_bool, section, "allow_safemode", true);
+	//pSettings->READ_IF_EXISTS(m_fSafeModeRotateTime, section, "safemode_rotate_time");
+
 	m_bUseSilHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_silencer_is_attached", false);
 	m_bUseScopeHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_scope_is_attached", false);
 	m_bUseGLHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_gl_is_attached", false);
@@ -1839,6 +1842,18 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 					return false;
 				}
 
+				if (flags & CMD_START && ParentIsActor())
+				{
+					if (CActor* pActor = H_Parent()->cast_actor())
+					{
+						if (pActor->IsSafemode())
+						{
+							//pActor->SetSafemodeStatus(false);
+							return false;
+						}
+					}
+				}
+
 				if (flags&CMD_START) 
 					FireStart();
 				else 
@@ -1888,6 +1903,16 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 						{
 							if (!IsPending())
 							{
+								if (ParentIsActor())
+								{
+									if (CActor* pActor = H_Parent()->cast_actor())
+									{
+										if (pActor->IsSafemode())
+										{
+											return false;
+										}
+									}
+								}
 								if (!CanAimNow())
 								{
 									CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
@@ -1927,6 +1952,17 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				{
 					if (flags & CMD_START)
 					{
+						if (ParentIsActor())
+						{
+							if (CActor* pActor = H_Parent()->cast_actor())
+							{
+								if (pActor->IsSafemode())
+								{
+									return false;
+								}
+							}
+						}
+
 						if (!CanAimNow())
 						{
 							CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
@@ -3413,6 +3449,50 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 	else {
 		m_fFactor = 0.0;
 	}
+
+	AddOffset(trans, 4, m_fSafeModeRotationFactor, m_fSafeModeRotateTime, pActor->IsSafemode() && !IsZoomed());
+}
+
+void CWeapon::AddOffset(Fmatrix& trans, const u8 idx, float& factor, const float rotate_time, const bool inc)
+{
+	attachable_hud_item* hi = HudItemData();
+	if (hi == nullptr)
+	{
+		return;
+	}
+	Fvector curr_offs = hi->m_measures.m_hands_positions.hands_offsets[0][idx];//pos,aim
+	Fvector curr_rot = hi->m_measures.m_hands_positions.hands_offsets[1][idx];//rot,aim
+
+	const float dec_factor = idx == GetCurrentHudOffsetIdx() && m_zoom_params.m_fZoomRotationFactor2 > 0.0f && m_zoom_params.m_fZoomRotationFactor2 <= 1.0f ? 1.0f - m_zoom_params.m_fZoomRotationFactor2 : 1.0f;
+
+	curr_offs.mul(factor * dec_factor);
+	curr_rot.mul(factor * dec_factor);
+
+	Fmatrix	hud_rotation;
+	hud_rotation.identity();
+	hud_rotation.rotateX(curr_rot.x);
+
+	Fmatrix	hud_rotation_y;
+	hud_rotation_y.identity();
+	hud_rotation_y.rotateY(curr_rot.y);
+	hud_rotation.mulA_43(hud_rotation_y);
+
+	hud_rotation_y.identity();
+	hud_rotation_y.rotateZ(curr_rot.z);
+	hud_rotation.mulA_43(hud_rotation_y);
+
+	hud_rotation.translate_over(curr_offs);
+	trans.mulB_43(hud_rotation);
+	if (inc)
+	{
+		factor += Device.fTimeDelta / rotate_time;
+	}
+	else
+	{
+		factor -= Device.fTimeDelta / rotate_time;
+	}
+
+	clamp(factor, 0.0f, 1.0f);
 }
 
 void CWeapon::SetAmmoElapsed(int ammo_count)
@@ -4898,4 +4978,10 @@ void CWeapon::on_a_hud_attach()
 	inherited::on_a_hud_attach();
 
 	ForceUpdateHUD();
+}
+
+bool CWeapon::AllowSafemode() const
+{
+	const u32 state = GetState();
+	return m_bAllowSafemode && (state == eIdle || state == eSafemodeSwitch || state == eSwitchMode) && !m_bSwitchSprint;
 }

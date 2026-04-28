@@ -141,6 +141,7 @@ public:
 		eKick,
 		eMagCheck,
 		eFiremodeCheck,
+		eSafemodeSwitch,
 	};
 	enum EWeaponSubStates{
 		eSubstateReloadBegin		=0,
@@ -180,6 +181,8 @@ public:
 	ALife::EWeaponAddonStatus	get_GrenadeLauncherStatus	() const { return m_eGrenadeLauncherStatus; }
 	ALife::EWeaponAddonStatus	get_ScopeStatus				() const { return m_eScopeStatus; }
 	ALife::EWeaponAddonStatus	get_SilencerStatus			() const { return m_eSilencerStatus; }
+
+	bool AllowSafemode() const;
 
 	virtual bool UseScopeTexture();
 
@@ -375,6 +378,9 @@ protected:
 	float m_fCollimatorLevelsProblem = 0.0f;
 	float m_fMisfireAfterProblemsLevel = 10.0f;
 
+	float m_fSafeModeRotationFactor = 0.0f;
+	float m_fSafeModeRotateTime = 0.3f;
+
 	bool bUpdateHUDBonesVisibility = false;
 	u32 _last_update_time;
 
@@ -403,6 +409,7 @@ protected:
 	bool m_bActorCanShoot = true;
 	bool m_bIsAimAnimationPlaying = false;
 	bool m_bBlockFiremodeinGLM = false;
+	bool m_bAllowSafemode = false;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
@@ -442,7 +449,8 @@ protected:
 		float			m_fScopeZoomFactor;		//коэффициент увеличения прицела
 
 		float			m_fZoomRotationFactor;
-		
+		float			m_fZoomRotationFactor2;
+
 //		Fvector			m_ZoomDof;
 		Fvector4		m_ReloadDof;
 		BOOL			m_bUseDynamicZoom;
@@ -556,6 +564,7 @@ protected:
 	virtual void UpdatePosition_alt(const Fmatrix& transform);
 	virtual void			UpdateXForm				();
 
+	void					AddOffset(Fmatrix& trans, const u8 idx, float& factor, const float rotate_time, const bool inc);
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
 	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
 
