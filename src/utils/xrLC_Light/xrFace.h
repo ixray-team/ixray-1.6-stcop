@@ -97,3 +97,7 @@ IC bool DataVertex::similar(Vertex& V, float eps)
 {
 	return P.similar(V.P, eps);
 }
+
+
+void GetBarycentric(Face* F, Fvector& wP, Fvector& wN, Fvector& B);
+void GetBarycentricNormalized(Face* F, Fvector& wP, Fvector& wN, Fvector& B);
