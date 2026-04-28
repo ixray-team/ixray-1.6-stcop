@@ -7,3 +7,6 @@
 extern ECORE_API CDrawUtilities DU_impl;
 ECORE_API void AddCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, bool bRot45 = false);
 ECORE_API void FlushCrosses();
+ECORE_API void AddLine(const Fvector& p0, const Fvector& p1, u32 c);
+ECORE_API void FlushLines();
+ECORE_API void FlushDU();
