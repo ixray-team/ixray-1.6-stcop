@@ -7,7 +7,7 @@ XRCORE_API	smem_container*	g_pSharedMemoryContainer	= nullptr;
 
 smem_value*			smem_container::dock			(u32 dwCRC, u32 dwLength, void* ptr)
 {
-	VERIFY						(dwCRC && dwLength && ptr);
+	VERIFY(dwLength && ptr); // данные пришли валидные с dwCRC = 0, мне охренеть как "повезло"?
 
 	cs.Enter					();
 	smem_value*		result		= nullptr;
