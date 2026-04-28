@@ -560,29 +560,57 @@ void CDrawUtilities::DrawIdentBox(bool bSolid, bool bWire, u32 clr_s, u32 clr_w)
 
 void CDrawUtilities::DrawLineSphere(const Fvector& p, float radius, u32 c, bool bCross)
 {
-	// fill VB
-	_VertexStream*	Stream	= &RCache.Vertex;
-	u32			vBase;
-    int i;
-	FVF::L*	pv;
+	//// fill VB
+	//_VertexStream*	Stream	= &RCache.Vertex;
+	//u32			vBase;
+ //   int i;
+	//FVF::L*	pv;
+ //   // seg 0
+	//pv	 			= (FVF::L*)Stream->Lock(LINE_DIVISION+1,vs_L->vb_stride,vBase);
+	//for( i=0; i<LINE_DIVISION; i++,pv++){ pv->p.mad(p,circledef1[i],radius); pv->color=c;}
+ //   pv->set(*(pv-LINE_DIVISION));
+	//Stream->Unlock	(LINE_DIVISION+1,vs_L->vb_stride);
+	//DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,vs_L,vBase,LINE_DIVISION);
+ //   // seg 1
+	//pv	 			= (FVF::L*)Stream->Lock(LINE_DIVISION+1,vs_L->vb_stride,vBase);
+	//for( i=0; i<LINE_DIVISION; i++){ pv->p.mad(p,circledef2[i],radius); pv->color=c; pv++; }
+ //   pv->set(*(pv-LINE_DIVISION)); pv++;
+	//Stream->Unlock	(LINE_DIVISION+1,vs_L->vb_stride);
+	//DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,vs_L,vBase,LINE_DIVISION);
+ //   // seg 2
+	//pv	 			= (FVF::L*)Stream->Lock(LINE_DIVISION+1,vs_L->vb_stride,vBase);
+	//for( i=0; i<LINE_DIVISION; i++){ pv->p.mad(p,circledef3[i],radius); pv->color=c; pv++; }
+ //   pv->set(*(pv-LINE_DIVISION)); pv++;
+	//Stream->Unlock	(LINE_DIVISION+1,vs_L->vb_stride);
+	//DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,vs_L,vBase,LINE_DIVISION);
+
     // seg 0
-	pv	 			= (FVF::L*)Stream->Lock(LINE_DIVISION+1,vs_L->vb_stride,vBase);
-	for( i=0; i<LINE_DIVISION; i++,pv++){ pv->p.mad(p,circledef1[i],radius); pv->color=c;}
-    pv->set(*(pv-LINE_DIVISION));
-	Stream->Unlock	(LINE_DIVISION+1,vs_L->vb_stride);
-	DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,vs_L,vBase,LINE_DIVISION);
+    
+    Fvector p1;
+    Fvector p2;
+
+    for (int i = 0; i < LINE_DIVISION; i++)
+    {
+        p1.mad(p, circledef1[i], radius);
+        p2.mad(p, circledef1[(i + 1) % LINE_DIVISION], radius);
+        AddLine(p1, p2, c);
+    }
+    
     // seg 1
-	pv	 			= (FVF::L*)Stream->Lock(LINE_DIVISION+1,vs_L->vb_stride,vBase);
-	for( i=0; i<LINE_DIVISION; i++){ pv->p.mad(p,circledef2[i],radius); pv->color=c; pv++; }
-    pv->set(*(pv-LINE_DIVISION)); pv++;
-	Stream->Unlock	(LINE_DIVISION+1,vs_L->vb_stride);
-	DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,vs_L,vBase,LINE_DIVISION);
+    for (int i = 0; i < LINE_DIVISION; i++)
+    {
+        p1.mad(p, circledef2[i], radius);
+        p2.mad(p, circledef2[(i + 1) % LINE_DIVISION], radius);
+        AddLine(p1, p2, c);
+    }
+   
     // seg 2
-	pv	 			= (FVF::L*)Stream->Lock(LINE_DIVISION+1,vs_L->vb_stride,vBase);
-	for( i=0; i<LINE_DIVISION; i++){ pv->p.mad(p,circledef3[i],radius); pv->color=c; pv++; }
-    pv->set(*(pv-LINE_DIVISION)); pv++;
-	Stream->Unlock	(LINE_DIVISION+1,vs_L->vb_stride);
-	DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,vs_L,vBase,LINE_DIVISION);
+    for (int i = 0; i < LINE_DIVISION; i++)
+    {
+        p1.mad(p, circledef3[i], radius);
+        p2.mad(p, circledef3[(i + 1) % LINE_DIVISION], radius);
+        AddLine(p1, p2, c);
+    }
 
     //if (bCross) DrawCross(p, radius,radius,radius, radius,radius,radius, c);
     if (bCross) AddCross(p, radius,radius,radius, radius,radius,radius, c);
@@ -653,15 +681,16 @@ void CDrawUtilities::dbgDrawFace(const Fvector& p0,	const Fvector& p1, const Fve
 //----------------------------------------------------
 
 void CDrawUtilities::DrawLine(const Fvector& p0, const Fvector& p1, u32 c){
-	// fill VB
-	_VertexStream*	Stream	= &RCache.Vertex;
-	u32			vBase;
-	FVF::L*	pv	 	= (FVF::L*)Stream->Lock(2,vs_L->vb_stride,vBase);
-    pv->set			(p0,c); pv++;
-    pv->set			(p1,c); pv++;
-	Stream->Unlock	(2,vs_L->vb_stride);
-	// and Render it as triangle list
-    DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_L,vBase,1);
+	//// fill VB
+	//_VertexStream*	Stream	= &RCache.Vertex;
+	//u32			vBase;
+	//FVF::L*	pv	 	= (FVF::L*)Stream->Lock(2,vs_L->vb_stride,vBase);
+ //   pv->set			(p0,c); pv++;
+ //   pv->set			(p1,c); pv++;
+	//Stream->Unlock	(2,vs_L->vb_stride);
+	//// and Render it as triangle list
+ //   DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_L,vBase,1);
+    AddLine(p0, p1, c);
 }
 
 
@@ -1333,4 +1362,48 @@ ECORE_API void FlushCrosses()
     );
 
     CrossVerts.clear();
+}
+
+xr_vector<FVF::L> LineVerts;
+ECORE_API void AddLine(const Fvector& p0, const Fvector& p1, u32 c)
+{
+    FVF::L v;
+    v.set(p0, c);
+    LineVerts.push_back(v);
+    v.set(p1, c);
+    LineVerts.push_back(v);
+}
+
+ECORE_API void FlushLines()
+{
+    if (LineVerts.empty())
+        return;
+
+    _VertexStream* Stream = &RCache.Vertex;
+
+    u32 vBase;
+    FVF::L* pv = (FVF::L*)Stream->Lock(
+        LineVerts.size(),
+        DU_impl.vs_L->vb_stride,
+        vBase
+    );
+
+    memcpy(pv, LineVerts.data(), LineVerts.size() * sizeof(FVF::L));
+
+    Stream->Unlock(LineVerts.size(), DU_impl.vs_L->vb_stride);
+
+    DU_DRAW_DP(
+        ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
+        DU_impl.vs_L,
+        vBase,
+        LineVerts.size() / 2
+    );
+
+    LineVerts.clear();
+}
+
+ECORE_API void FlushDU()
+{
+    FlushCrosses();
+    FlushLines();
 }
