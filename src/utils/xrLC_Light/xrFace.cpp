@@ -226,3 +226,22 @@ bool DataFace::hasImplicitLighting()
 	return (T.THM.flags.test(STextureParams::flImplicitLighted));
 }
 
+void GetBarycentric(Face* F, Fvector& wP, Fvector& wN, Fvector& B)
+{
+	Vertex * V1 = F->v[0];
+	Vertex* V2 = F->v[1];
+	Vertex* V3 = F->v[2];
+	wP.from_bary(V1->P, V2->P, V3->P, B);
+	wN.from_bary(V1->N, V2->N, V3->N, B);
+	wN.normalize();
+};
+
+void GetBarycentricNormalized(Face* F, Fvector& wP, Fvector& wN, Fvector& B)
+{
+	Vertex* V1 = F->v[0];
+	Vertex* V2 = F->v[1];
+	Vertex* V3 = F->v[2];
+	wP.from_bary(V1->P, V2->P, V3->P, B);
+	wN.from_bary(V1->N, V2->N, V3->N, B);   exact_normalize(wN);
+	wN.add(F->N);							exact_normalize(wN);
+};

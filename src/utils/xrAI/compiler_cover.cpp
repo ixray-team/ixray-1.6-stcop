@@ -1,12 +1,13 @@
 #include "StdAfx.h"
 #include "compiler.h"
 #include "../../xrCore/Collision/cl_intersect.h"
-#include "../xrForms/xrThread.h"
 #include <mmsystem.h>
-
 #include "../../xrGame/quadtree.h"
 #include "cover_point.h"
 #include "object_broker.h"
+
+#include "../xrForms/CompilersUI.h"
+
 
 Shader_xrLC_LIB*				g_shaders_xrlc	;
 xr_vector<b_material>			g_materials		;
@@ -200,21 +201,20 @@ public:
 };
 struct	RC { RayCache	C; };
 
-class	CoverThread : public CThread
+
+xr_atomic_u32 tAtomicIndex = 0;
+class	CoverTasker
 {
-	u32					Nstart, Nend;
-	xr_vector<RC>		cache;
+ 	xr_vector<RC>		cache;
 	CDB::COLLIDER		DB;
 	Query				Q;
 
 	typedef float	Cover[4];
 
 public:
-	CoverThread			(u32 ID, u32 _start, u32 _end) : CThread(ID)
+	CoverTasker	()
 	{
-		Nstart	= _start;
-		Nend	= _end;
-	}
+ 	}
 
 	void				compute_cover_value	(u32 const &N, vertex &BaseNode, float const &cover_height, Cover &cover)
 	{
@@ -268,7 +268,7 @@ public:
 		cover	[3]	= (value[4]+value[5]+value[6]+value[7])/4.f; clamp(cover[3],0.f,1.f);	// back
 	}
 
-	virtual void		Execute()
+	virtual void Execute()
 	{
 		DB.ray_options		(CDB::OPT_CULL);
 		{
@@ -281,12 +281,18 @@ public:
 		}
 
 		Q.Begin			(g_nodes.size());
-		for (u32 N=Nstart; N<Nend; N++) {
-			// initialize process
-			thProgress	= float(N-Nstart)/float(Nend-Nstart);
-			vertex&		BaseNode= g_nodes[N];
+		
+		while(true)
+		{
+			u32 tID = tAtomicIndex.fetch_add(1);
+ 			if (g_nodes.size() >= tID) break;
 
-			if (!g_cover_nodes[N]) {
+
+			// initialize process
+ 			vertex&		BaseNode= g_nodes[tID];
+
+			if (!g_cover_nodes[tID]) 
+			{
 				BaseNode.high_cover[0]	= flt_max;
 				BaseNode.high_cover[1]	= flt_max;
 				BaseNode.high_cover[2]	= flt_max;
@@ -298,8 +304,8 @@ public:
 				continue;
 			}
 
-			compute_cover_value	(N, BaseNode, high_cover_height, BaseNode.high_cover);
-			compute_cover_value	(N, BaseNode, low_cover_height,  BaseNode.low_cover);
+			compute_cover_value	(tID, BaseNode, high_cover_height, BaseNode.high_cover);
+			compute_cover_value	(tID, BaseNode, low_cover_height,  BaseNode.low_cover);
 		}
 	}
 };
@@ -531,8 +537,8 @@ void compute_non_covers		()
 	}
 }
 
-#define NUM_THREADS	CPU::ID().n_threads
 extern	void mem_Optimize();
+
 void	xrCover	(bool pure_covers)
 {
 	Status("Calculating...");
@@ -544,15 +550,14 @@ void	xrCover	(bool pure_covers)
 
 	// Start threads, wait, continue --- perform all the work
 	u32	start_time		= timeGetTime();
-	CThreadManager		Threads;
-	u32	stride			= g_nodes.size()/NUM_THREADS;
-	u32	last			= g_nodes.size()-stride*(NUM_THREADS-1);
-	for (u32 thID=0; thID<NUM_THREADS; thID++) {
-		Threads.start(new CoverThread(thID,thID*stride,thID*stride+((thID==(NUM_THREADS-1))?last:stride)));
-//		CoverThread(thID,thID*stride,thID*stride+((thID==(NUM_THREADS-1))?last:stride)).Execute();
-//		Threads.wait		();
-	}
-	Threads.wait			();
+ 
+	// se7kills : Переработал 
+	tAtomicIndex = 0;
+ 	xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork),
+	[](size_t threadID) 
+	{
+ 		CoverTasker().Execute();
+	});
 	Msg("%d seconds elapsed.",(timeGetTime()-start_time)/1000);
 
 	if (!pure_covers) {

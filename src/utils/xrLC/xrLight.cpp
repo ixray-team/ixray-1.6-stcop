@@ -2,8 +2,6 @@
 #include "Build.h"
 
 #include "../xrForms/CompilersUI.h"
-#include "../xrForms/xrThread.h"
-
 #include "../xrLC_Light/xrDeflector.h"
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/xrLightVertex.h"
