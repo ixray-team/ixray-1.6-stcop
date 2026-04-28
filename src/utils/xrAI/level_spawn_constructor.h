@@ -8,7 +8,6 @@
 
 #pragma once
 #include "game_graph.h"
-#include "../xrForms/xrThread.h"
 
 class CLevelGraph;
 class CGameLevelCrossTable;
@@ -31,8 +30,7 @@ namespace SpawnConstructorSpace
 	typedef xr_vector<CSE_ALifeLevelChanger*>	LEVEL_CHANGER_STORAGE;
 };
 
-class CLevelSpawnConstructor :
-	public CThread
+class CLevelSpawnConstructor
 {
 public:
 	typedef SpawnConstructorSpace::LEVEL_POINT_STORAGE			LEVEL_POINT_STORAGE;

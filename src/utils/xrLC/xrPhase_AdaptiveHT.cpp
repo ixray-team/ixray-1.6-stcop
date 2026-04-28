@@ -8,7 +8,6 @@
 #include "../xrLC_Light/face_smoth_flags.h"
 
 #include "../../xrCore/Collision/xrCDB.h"
-#include "../xrForms/xrThread.h"
 #include "../xrForms/CompilersUI.h"
 
 #ifdef LCCUDA_BUILD
@@ -46,49 +45,6 @@ int		callback_edge_longest	( const Face* F)
 	return	max_id;
 }
 
-xrCriticalSection csA;
-int ThreadWorkID_Adaptive = 0;
-
-class CPrecalcBaseHemiThread: 
-public CThread
-{
- 	CDB::COLLIDER	DB;
-	
-public:
-	CPrecalcBaseHemiThread(u32 ID ): CThread(ID)
-	{
-	}
-virtual	void Execute()
-	{
-		DB.ray_options	(0);
-		while (true)
-		{
-			csA.Enter();
-			int ID = ThreadWorkID_Adaptive;
-			if (ID >= lc_global_data()->g_vertices().size())
-			{
-				csA.Leave();
-				break;
-			}
-			ThreadWorkID_Adaptive++;
-
-			Progress(float(ThreadWorkID_Adaptive) / float( lc_global_data()->g_vertices().size() ) );
-			csA.Leave();
-
-			base_color_c		vC;
- 			vecVertex			&verts = lc_global_data()->g_vertices();
- 			Vertex*		V		= verts[ID];
-			
- 			V->normalFromAdj	();
-			LightPoint			(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb+LP_dont_sun,0);
-			vC.mul				(0.5f);
-			V->C._set			(vC);
-		}
-	}
-};
-
-CThreadManager	precalc_base_hemi;
-
 void CBuild::xrPhase_AdaptiveHT_tessalte()
 {
 	CDB::COLLIDER	DB;
@@ -109,6 +65,7 @@ void CBuild::xrPhase_AdaptiveHT_tessalte()
 
 }
 
+xr_atomic_u32 ThreadWorkID_Adaptive = 0;
 void CBuild::xrPhase_AdaptiveHT_calculate()
 {
 	const bool Cuda = gCompilerMode.CUDA;
@@ -123,10 +80,28 @@ void CBuild::xrPhase_AdaptiveHT_calculate()
 	{
 		// Prepare
 		Status("AdaptiveHT : base hemisphere ...");
+		
 		ThreadWorkID_Adaptive = 0;
- 		for (u32 thID = 0; thID < gCompilerMode.ThreadsPerWork; thID++)
-			precalc_base_hemi.start(new CPrecalcBaseHemiThread(thID));
-		precalc_base_hemi.wait();
+		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [](size_t threadID)
+		{
+			CDB::COLLIDER DB;
+ 			DB.ray_options(0);
+			while (true)
+			{
+ 				u32 taskID = ThreadWorkID_Adaptive.fetch_add(1);
+				if (taskID >= lc_global_data()->g_vertices().size())	break;
+ 
+				base_color_c		vC;
+				vecVertex& verts = lc_global_data()->g_vertices();
+				Vertex* V = verts[taskID];
+
+				V->normalFromAdj();
+				LightPoint(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb + LP_dont_sun, 0);
+				vC.mul(0.5f);
+				V->C._set(vC);
+			}
+		});
+
 
 		//////////////////////////////////////////////////////////////////////////
 		Status("AdaptiveHT : Gathering lighting information...");

@@ -615,9 +615,7 @@ void CLevelSpawnConstructor::update_artefact_spawn_positions	()
 void CLevelSpawnConstructor::Execute							()
 {
 	load_objects						();
-//	fill_spawn_groups					();
-
-	init								();
+ 	init								();
 	
 	correct_objects						();
 	generate_artefact_spawn_positions	();
