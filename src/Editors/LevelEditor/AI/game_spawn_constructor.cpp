@@ -18,8 +18,6 @@
 
 extern const char* GAME_CONFIG;
 
-#define NO_MULTITHREADING
-
 CGameSpawnConstructor::~CGameSpawnConstructor	()
 {
 	delete_data						(m_level_spawns);
@@ -91,16 +89,10 @@ bool CGameSpawnConstructor::process_spawns	()
 	LEVEL_SPAWN_STORAGE::iterator		I = m_level_spawns.begin();
 	LEVEL_SPAWN_STORAGE::iterator		E = m_level_spawns.end();
 	for ( ; I != E; ++I)
-#ifdef NO_MULTITHREADING
-		if (!(*I)->Execute())
-		{
-			return false;
-		}
-#else
-		m_thread_manager.start			(*I);
-	m_thread_manager.wait				();
-#endif
-
+	if (!(*I)->Execute())
+	{
+		return false;
+	}
 	I									= m_level_spawns.begin();
 	for ( ; I != E; ++I)
 		if (!(*I)->update())
@@ -259,10 +251,8 @@ void CGameSpawnConstructor::add_story_object	(ALife::_STORY_ID id, CSE_ALifeDyna
 
 void CGameSpawnConstructor::add_object				(CSE_Abstract *object)
 {
-	m_critical_section.Enter	();
-	object->m_tSpawnID			= spawn_id();
+ 	object->m_tSpawnID			= spawn_id();
 	spawn_graph().add_vertex	(new CServerEntityWrapper(object),object->m_tSpawnID);
-	m_critical_section.Leave	();
 }
 
 void CGameSpawnConstructor::remove_object			(CSE_Abstract *object)
