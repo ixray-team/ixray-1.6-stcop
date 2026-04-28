@@ -7,8 +7,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
-#include "xrThread.h"
 #include "spawn_constructor_space.h"
 
 class CSE_ALifeCreatureActor;

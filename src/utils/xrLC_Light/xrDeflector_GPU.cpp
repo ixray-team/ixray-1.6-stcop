@@ -76,15 +76,6 @@ void CDeflector::L_DirectGPU()
 			}
 		};
 
-	auto FromBarry = [](Face* F, Fvector& wP, Fvector& wN, Fvector& B)
-	{
-		wP.from_bary(F->v[0]->P, F->v[1]->P, F->v[2]->P, B);
-		wN.from_bary(F->v[0]->N, F->v[1]->N, F->v[2]->N, B);
-		exact_normalize(wN);
-		wN.add(F->N);
-		exact_normalize(wN);
-	};
-  
  	// Setup variables
 	lm_layer& lm = layer;
 
@@ -97,9 +88,9 @@ void CDeflector::L_DirectGPU()
 	JS.set(.4999f / dim.x, .4999f / dim.y);
 	Jitter_Select(Jitter, Jcount);
 
+	// 🔹 вычисляем AABB для каждого треугольника и нормализуем UV
   	Fbox2 bounds;
 	Bounds_Summary(bounds);
- 	// 🔹 вычисляем AABB для каждого треугольника и нормализуем UV
 	for (auto& T : UVpolys)
 		T.computeAABB(bounds);
  	uv_grid.reset();
@@ -125,7 +116,7 @@ void CDeflector::L_DirectGPU()
 					if (T->isInside(P, B))
 					{
 						Face* F = T->owner;
-						FromBarry(F, wP, wN, B);
+						GetBarycentricNormalized(F, wP, wN, B);
 						GPUTaskinSystem.LightPointPacked_add_task(TaskID, this, wP, wN, F);
 						Fcount += 1;
 						break;
