@@ -9,7 +9,6 @@
 #pragma once
 
 #include "alife_space.h"
-#include "xrThread.h"
 #include "graph_abstract.h"
 #include "../../xrServerEntities/xrServer_Object_Base.h"
 #include "spawn_constructor_space.h"
@@ -63,10 +62,8 @@ public:
 	};
 
 private:
-	xrCriticalSection				m_critical_section;
-	ALife::_SPAWN_ID				m_spawn_id;
-	CThreadManager					m_thread_manager;
-	CSpawnHeader					m_spawn_header;
+ 	ALife::_SPAWN_ID				m_spawn_id;
+ 	CSpawnHeader					m_spawn_header;
 	xr_map<ALife::_STORY_ID, CSE_ALifeDynamicObject*> m_story_objects;
 	LEVEL_INFO_STORAGE				m_levels;
 	LEVEL_SPAWN_STORAGE				m_level_spawns;

@@ -20,8 +20,6 @@
 extern const char* GAME_CONFIG;
 extern const char* generate_temp_file_name(const char* header0, const char* header1, string_path& buffer);
 
-#define NO_MULTITHREADING
-
 static void* __cdecl luabind_allocator(void* context, const void* pointer, size_t const size) {
 	if (!size) {
 		void* non_const_pointer = const_cast<LPVOID>(pointer);
@@ -126,13 +124,8 @@ void CGameSpawnConstructor::process_spawns	()
 	LEVEL_SPAWN_STORAGE::iterator		I = m_level_spawns.begin();
 	LEVEL_SPAWN_STORAGE::iterator		E = m_level_spawns.end();
 	for ( ; I != E; ++I)
-#ifdef NO_MULTITHREADING
 		(*I)->Execute					();
-#else
-		m_thread_manager.start			(*I);
-	m_thread_manager.wait				();
-#endif
-
+ 
 	I									= m_level_spawns.begin();
 	for ( ; I != E; ++I)
 		(*I)->update					();
@@ -258,10 +251,8 @@ void CGameSpawnConstructor::add_story_object	(ALife::_STORY_ID id, CSE_ALifeDyna
 
 void CGameSpawnConstructor::add_object				(CSE_Abstract *object)
 {
-	m_critical_section.Enter	();
-	object->m_tSpawnID			= spawn_id();
+ 	object->m_tSpawnID			= spawn_id();
 	spawn_graph().add_vertex	(new CServerEntityWrapper(object),object->m_tSpawnID);
-	m_critical_section.Leave	();
 }
 
 void CGameSpawnConstructor::remove_object			(CSE_Abstract *object)

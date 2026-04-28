@@ -5,28 +5,25 @@
 void lm_layer::Pack		(xr_vector<u32>& dest)const	
 {
 	dest.resize			(width*height);
-	xr_vector<base_color>::const_iterator I=surface.begin();
-	xr_vector<base_color>::const_iterator E=surface.end();
-	xr_vector<u32>::iterator		W=dest.begin();
-	for (; I!=E; I++)
+ 	xr_vector<u32>::iterator		W = dest.begin();
+ 	for (auto& S : surface)
 	{
-		base_color_c	C; I->_get(C);
-		u8	_r	= u8_clr(C.rgb.x);
+		base_color_c	C;  S._get(C);
+ 		u8	_r	= u8_clr(C.rgb.x);
 		u8	_g	= u8_clr(C.rgb.y);
 		u8	_b	= u8_clr(C.rgb.z);
 		u8	_d	= u8_clr(C.sun);
-		*W++	= color_rgba(_r,_g,_b,_d);
+		*W++  = color_rgba(_r,_g,_b,_d);
 	}
 }
+
 void lm_layer::Pack_hemi	(xr_vector<u32>& dest)const	//.
 {
 	dest.resize			(width*height);
-	xr_vector<base_color>::const_iterator I=surface.begin	();
-	xr_vector<base_color>::const_iterator E=surface.end	();
-	xr_vector<u32>::iterator		W=dest.begin	();
-	for (; I!=E; I++)
+  	xr_vector<u32>::iterator		W=dest.begin	();
+	for (auto& S : surface)
 	{
-		base_color_c	C;	I->_get(C);
+		base_color_c	C;	S._get(C);
 		u8	_d	= u8_clr	(C.sun);
 		u8	_h	= u8_clr	(C.hemi);
 		if (gCompilerMode.LC_legacyLM)
@@ -35,6 +32,7 @@ void lm_layer::Pack_hemi	(xr_vector<u32>& dest)const	//.
 			*W++	= color_rgba(_d,_d,_d,_h);
 	}
 }
+
 void lm_layer::Pixel	(u32 ID, u8& r, u8& g, u8& b, u8& s, u8& h)
 {
 	xr_vector<base_color>::iterator I = surface.begin()+ID;
