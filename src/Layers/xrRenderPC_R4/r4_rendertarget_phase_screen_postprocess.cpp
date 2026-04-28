@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../../xrEngine/IGame_Persistent.h"
 
-bool UseGasmak = false;
+bool UseGasmak = true;
 bool UseRainDrops = false;
 
 void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType, bool postProcessMode) {
