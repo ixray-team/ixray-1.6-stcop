@@ -224,7 +224,7 @@ function ixr_timers.on_tick(delta)
 				ixr_timers.on_timer_left(index, ixr_timers.dynamic_vars.storage[index])
 				
 				if ixr_timers.dynamic_vars.storage[index].looped then
-					ixr_timers.dynamic_vars.storage[index].left_milliseconds = ixr_timers.dynamic_vars.storage[indexi].timer_milliseconds
+					ixr_timers.dynamic_vars.storage[index].left_milliseconds = ixr_timers.dynamic_vars.storage[index].timer_milliseconds
 				else
 					table.insert(to_remove, index)
 				end
