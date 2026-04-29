@@ -577,11 +577,16 @@ void CActor::cam_Update(float dt, float fFOV)
 		{
 			// Stop auto-aiming after a period of time
 			const u32 autoAimStopPeriod = 600;
-			if (Device.dwTimeContinual > lastTimeAutoAimStarted + autoAimStopPeriod)
+			if (Device.dwTimeContinual > (lastTimeAutoAimStarted + autoAimStopPeriod) && lastTimeAutoAimStarted > 0)
 			{
 				CCameraFirstEye* pCam = smart_cast<CCameraFirstEye*>(cameras[cam_active]);
+
 				if (pCam && pCam->IsLookingAtPoint())
+				{
 					pCam->StopLookingAtPoint();
+				}
+
+				lastTimeAutoAimStarted = 0;
 			}
 		}
 	}
