@@ -24,7 +24,6 @@ static const float ABSORB_TINT_STRENGTH = 0.5f; // 0 = gray absorption, 1 = tint
 
 // Sun shafts intensity param (x used as density scale)
 float4 sun_shafts_intensity;
-Texture3D s_blue_noise;
 
 // Schlick phase function (normalized form)
 float PhaseFunction_Schlick(float g, float cos_theta)

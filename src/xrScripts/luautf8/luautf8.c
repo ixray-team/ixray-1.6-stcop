@@ -404,7 +404,7 @@ static void stable_sort_combining_marks(uint32_t* vector, uint32_t* scratch, siz
     unsigned int runsize = 2; /* Every consecutive slice of this size is sorted */
     while (runsize < size) {
         unsigned int blocksize = runsize * 2; /* We will now sort slices of this size */
-        limit = size & ~(blocksize - 1);
+        limit = size & ~((size_t)blocksize - 1);
         for (unsigned int i = 0; i < limit; i += blocksize)
             merge_combining_marks(&src[i], &src[i + runsize], &dest[i], runsize, runsize);
         if (size - limit > runsize) {
