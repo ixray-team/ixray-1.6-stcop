@@ -330,7 +330,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		if (pVisual->dcast_ParticleCustom())
 			Ntex->val.particles.push_back(pVisual);
 		else
-			Ntex->val.visuals.push_back(item);
+			Ntex->val.visuals.push_back({ SSA, RI.val_pObject, pVisual, *RI.val_pTransform }); // TODO: Возможно сдохло при ребейзе
 #else
 		if(pVisual->dcast_ParticleCustom())
 			Ntex->val.particles.push_back(pVisual);

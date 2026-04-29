@@ -10,11 +10,7 @@ void CRenderTarget::phase_scene_prepare()
 {
 	GPU_EVENT(phase_scene_prepare);
 
-	//	TODO: DX10: Check if we need to set RT here.
-	u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), rt_Normal->pRT, NULL, NULL, RDepth);
-
-	static float ColorRGBA[4] = { 0.5f, 0.5f, 1.0f, 1.0f };
-	GRHI->ClearTarget(rt_Normal->pRT, ColorRGBA);
+	GRHI->ClearTarget(rt_Normal->pRT, ERTColor::Gray);
 	GRHI->ClearDepthStencil(RDepth, ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.0f, 0L);
 
 	//	Igor: for volumetric lights
@@ -27,7 +23,7 @@ void CRenderTarget::phase_scene_begin()
 
 	if (!RImplementation.o.dx11_disable_motion_vectors)
 	{
-		u_setrt(rt_Color, rt_Normal, rt_Velocity, rt_Surface, RDepth);
+		u_setrt(rt_Color, rt_Normal, rt_Surface, rt_Velocity, RDepth);
 	}
 	else
 	{

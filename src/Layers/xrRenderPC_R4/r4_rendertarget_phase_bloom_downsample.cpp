@@ -4,7 +4,7 @@
 
 void CRenderTarget::phase_bloom_downsample()
 {
-	GPU_EVENT(phase_bloom_downsample)
+	GPU_EVENT(phase_bloom_downsample);
 
 	u_setrt(rt_Bloom_A, nullptr, nullptr, nullptr);
 	RImplementation.rmNormal();

@@ -3,8 +3,6 @@
 #include "metalic_roughness_ambient.hlsli"
 #include "metalic_roughness_light.hlsli"
 
-Texture3D s_blue_noise;
-
 //LVutner: UAVs. See CPP code
 RWTexture2D<float4> u_sslr : register(u0);
 RWTexture2D<float4> u_sslr_data : register(u1);
@@ -49,7 +47,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	if (dot(Reflection, O.Normal) < 0.0f)
     {
-        Reflection = normalize(Reflection + O.Normal);
+       Reflection = normalize(Reflection + O.Normal);
     }
 	
 	float3 StartPoint = ReflectPoint * 0.996f;

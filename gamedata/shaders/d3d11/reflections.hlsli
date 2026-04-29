@@ -96,9 +96,8 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 	float OldDelta = 0.0f;
 	float SampleHitPointLen = 0;
 	
-	float MaxLen = s_env_dist.SampleLevel(smp_nofilter, Reflect.xyz, 0).x;
-	MaxLen *= MaxLen;
-	
+	float MaxLen = 0; //s_env_dist.SampleLevel(smp_nofilter, Reflect.xyz, 0).x; MaxLen *= MaxLen;
+
 	[loop]
 	for(uint i = 0; i < SSLR_STEPS; ++i)
 	{
@@ -137,7 +136,7 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 	}
 	
 	SamplePoint = normalize(SamplePoint) * sqrt(SampleHitPointLen);
-	MaxLen = Fade ? 1.0f : 1.0f - saturate(2.0f * sqrt(MaxLen) * fog_params.w + fog_params.x);
+	MaxLen = Fade ? 1.0f : 1.0f - saturate(2.5f * sqrt(MaxLen) * fog_params.w + fog_params.x);
 	
 	return float4(SamplePoint, MaxLen);
 }

@@ -255,7 +255,8 @@ public:
 		DWORD                           Flags,
 		void*&							result);
 
-	struct PuddleBase {
+	struct PuddleBase 
+	{
 		Fmatrix m_world = Fidentity;
 
 		float m_height = EPS;
@@ -263,6 +264,7 @@ public:
 	};
 
 	xr_vector<PuddleBase> m_levels_puddles;
+	Frect m_puddles_level_bound;
 
 	void							LoadPuddles();
 

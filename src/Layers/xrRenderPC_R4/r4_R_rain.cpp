@@ -29,9 +29,13 @@ static int			facetable[6][4] = {
 void CRender::render_rain()
 {
 	float fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+	static float fRainFov = Device.fFOV;
+
+	//bool in_outdoor = RImplementation.SectorsCount() <= 1 || (RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker);
 
 	if (fRainFactor < EPS_L)
 	{
+		fRainFov = Device.fFOV;
 		return;
 	}
 
@@ -51,9 +55,8 @@ void CRender::render_rain()
 	Fmatrix	ex_project{}, ex_full{};
 	Fmatrix ex_full_inverse{};
 
-	// Funny rounding. This will reduce flickering. 
-	const float fRainFov = std::floor(Device.fFOV * 0.1f + 1.0f) * 10.0f;
 	const float fRainFar = ps_r3_dyn_wet_surf_far;
+	fRainFov = std::max(fRainFov, Device.fFOV);
 
 	ex_project.build_projection(deg2rad(fRainFov), Device.fASPECT, Device.fViewportNear, fRainFar);
 	ex_full.mul(ex_project, Device.mView);
@@ -100,25 +103,11 @@ void CRender::render_rain()
 		}
 		//hull.compute_caster_model	(cull_planes,fuckingsun->direction);
 		hull.compute_caster_model(cull_planes, RainLight.direction);
+
 #ifdef	_DEBUG
 		for(u32 it = 0; it < cull_planes.size(); it++)
 			RImplementation.Target->dbg_addplane(cull_planes[it], 0xffffffff);
 #endif
-
-		// Search for default sector - assume "default" or "outdoor" sector is the largest one
-		//. hack: need to know real outdoor sector
-		CSector* largest_sector = 0;
-		float		largest_sector_vol = 0;
-		for(u32 s = 0; s < Sectors.size(); s++) {
-			CSector* S = (CSector*)Sectors[s];
-			dxRender_Visual* V = S->root();
-			float				vol = V->vis.box.getvolume();
-			if(vol > largest_sector_vol) {
-				largest_sector_vol = vol;
-				largest_sector = S;
-			}
-		}
-		cull_sector = largest_sector;
 
 		// COP - 100 km away
 		cull_COP.mad(Device.vCameraPosition, RainLight.direction, -tweak_rain_COP_initial_offs);
@@ -213,7 +202,7 @@ void CRender::render_rain()
 	r_pmask(true, false);
 
 	// Fill the database
-	r_dsgraph_render_subspace(cull_sector, &cull_frustum, cull_xform, cull_COP, false);
+	r_dsgraph_render_subspace(pOutdoorSector, cull_xform, cull_COP, false);
 
 	// Finalize & Cleanup
 	RainLight.X.D.combine = cull_xform;
