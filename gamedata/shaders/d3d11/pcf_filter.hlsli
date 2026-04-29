@@ -194,4 +194,60 @@ float pcf_3x3(Texture2D<float> shadow_tex, SamplerComparisonState shadow_comp_sa
 	return sum / 16.0;	
 }
 
+float pcf_7x7(Texture2D<float> shadow_tex, SamplerComparisonState shadow_comp_sampler, float3 tc, float2 shadow_res, float bias)
+{
+	tc.z -= bias;
+
+	float2 uv = tc.xy * shadow_res.x;
+
+    float2 base_uv = floor(uv.xy + 0.5);
+    float2 st = (uv.xy + 0.5 - base_uv.xy);
+
+    base_uv -= float2(0.5, 0.5);
+    base_uv *= shadow_res.y;
+
+	float uw0 = (5.0 * st.x - 6.0);
+	float uw1 = (11.0 * st.x - 28.0);
+	float uw2 = -(11.0 * st.x + 17.0);
+	float uw3 = -(5.0 * st.x + 1.0);
+
+	float u0 = (4.0 * st.x - 5.0) / uw0 - 3.0;
+	float u1 = (4.0 * st.x - 16.0) / uw1 - 1.0;
+	float u2 = -(7.0 * st.x + 5.0) / uw2 + 1.0;
+	float u3 = -st.x / uw3 + 3.0;
+
+	float vw0 = (5.0 * st.y - 6.0);
+	float vw1 = (11.0 * st.y - 28.0);
+	float vw2 = -(11.0 * st.y + 17.0);
+	float vw3 = -(5.0 * st.y + 1.0);
+
+	float v0 = (4.0 * st.y - 5.0) / vw0 - 3.0;
+	float v1 = (4.0 * st.y - 16.0) / vw1 - 1.0;
+	float v2 = -(7.0 * st.y + 5.0) / vw2 + 1.0;
+	float v3 = -st.y / vw3 + 3.0;
+
+	float sum = 0.0;
+	sum += uw0 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v0) * shadow_res.y, tc.z);
+	sum += uw1 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v0) * shadow_res.y, tc.z);
+	sum += uw2 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u2, v0) * shadow_res.y, tc.z);
+	sum += uw3 * vw0 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u3, v0) * shadow_res.y, tc.z);
+
+	sum += uw0 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v1) * shadow_res.y, tc.z);
+	sum += uw1 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v1) * shadow_res.y, tc.z);
+	sum += uw2 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u2, v1) * shadow_res.y, tc.z);
+	sum += uw3 * vw1 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u3, v1) * shadow_res.y, tc.z);
+
+	sum += uw0 * vw2 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v2) * shadow_res.y, tc.z);
+	sum += uw1 * vw2 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v2) * shadow_res.y, tc.z);
+	sum += uw2 * vw2 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u2, v2) * shadow_res.y, tc.z);
+	sum += uw3 * vw2 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u3, v2) * shadow_res.y, tc.z);
+
+	sum += uw0 * vw3 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u0, v3) * shadow_res.y, tc.z);
+	sum += uw1 * vw3 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u1, v3) * shadow_res.y, tc.z);
+	sum += uw2 * vw3 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u2, v3) * shadow_res.y, tc.z);
+	sum += uw3 * vw3 * shadow_tex.SampleCmpLevelZero(shadow_comp_sampler, base_uv + float2(u3, v3) * shadow_res.y, tc.z);
+
+	return sum / 2704.0;
+}
+
 #endif //PCF_FILTER_H

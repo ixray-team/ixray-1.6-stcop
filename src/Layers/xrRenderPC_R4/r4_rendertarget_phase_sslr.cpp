@@ -190,14 +190,12 @@ void CRender::render_reflections()
 
 		is_render_cubemap = true;
 
+		phase = PHASE_REFLECT;
+		r_pmask(true, false);
+
 		for (u32 i = 0; i < 6; ++i)
 		{
 			GPU_EVENT(FORWARD_REFLECTION_SIDE);
-
-			phase = PHASE_REFLECT;
-
-			r_pmask(true, false, true);
-			mapWmark.clear();
 
 			EnvView.build_camera_dir(Device.vCameraPosition, cmDir[i], cmNorm[i]);
 			EnvFullTransform.mul(EnvProject, EnvView);
@@ -205,6 +203,15 @@ void CRender::render_reflections()
 			r_dsgraph_render_subspace(pLastSector, EnvFullTransform, Device.vCameraPosition, false, false);
 
 			GRHI->ClearTarget(Target->rt_Reflection_temp->pRT[i], (const float*)&fog_color4);
+
+			bool bRender = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
+			bRender |= mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
+
+			if (!bRender)
+			{
+				continue;
+			}
+
 			GRHI->ClearDepthStencil(Target->rt_Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
 
 			Target->u_setrt(dwSize, dwSize, Target->rt_Reflection->pRT[i], Target->rt_Reflection_temp->pRT[i], NULL, Target->rt_Depth->pZRT);

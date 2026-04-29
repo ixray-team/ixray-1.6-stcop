@@ -4,8 +4,6 @@
 */
 
 #include "common.hlsli"
-
-Texture3D s_blue_noise;
 float4 scaled_screen_res;
 
 static const float3 arrKernel[8] =

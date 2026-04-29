@@ -14,8 +14,6 @@ struct PSInput
 	float4 hpos2d : TEXCOORD0;
 };
 
-Texture3D s_blue_noise;
-
 float4 main(PSInput s) : SV_Target
 {
 	uint2 d = uint2(s.hpos.xy);

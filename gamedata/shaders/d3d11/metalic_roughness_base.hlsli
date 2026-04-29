@@ -16,6 +16,7 @@ struct IXRayMaterial
 	float Gloss;
 	float Material;
 #endif
+
     float SSS;
 	
 	float3 Normal;
@@ -68,13 +69,11 @@ struct IXRayGbufferPack
 {
 	float4 Color : SV_Target0;
 	float4 Normal : SV_Target1;
+	float4 Material : SV_Target2;
 	
-	#ifdef DISABLE_MOTION_VECTORS
-		float4 Material : SV_Target2;
-	#else
-		float2 Velocity : SV_Target2;
-		float4 Material : SV_Target3;
-	#endif
+#ifndef DISABLE_MOTION_VECTORS
+	float2 Velocity : SV_Target3;
+#endif
 };
 
 struct IXRayForward
@@ -167,11 +166,46 @@ inline void GbufferPack(inout IXRayGbufferPack O, inout IXRayMaterial M)
 	
 	O.Normal.w = M.SnowMask;
 	O.Normal.z = M.Hemi;
+}
+
+inline void GbufferUnpackMaterial(inout IXRayGbufferPack O, inout IXRayMaterial M)
+{
+    M.Color.xyz = O.Color.xyz;
+	M.Color.w = 1.0f;
+
+#ifdef USE_LEGACY_LIGHT
+    M.Gloss = O.Color.w;
+
+	#ifdef USE_R2_STATIC_SUN
+		M.Sun = 0.0f;
+		M.Material = 0.0f;
+	#else
+		uint packed = uint(O.Material.x * 255.0f);
 	
-	float3 Jitter = Hash33(M.Point * timers.x) - 0.5f;
-	Jitter *= rcp(1024.0f);
-	
-	O.Normal.xyz += Jitter;
+		M.SSS = float((packed >> 7) & 1);
+		M.Material = float(packed & 0x7F) / 127.0f;
+	#endif
+#else
+    M.AO = O.Color.w;
+
+    M.Roughness = O.Material.x;
+    M.Metalness = O.Material.y;
+    M.Specular = O.Material.z;
+    M.SSS = O.Material.w;
+
+	#ifdef USE_R2_STATIC_SUN
+		M.Sun = O.Color.w;
+		M.AO  = 1.0f;
+		M.Color.xyz = O.Color.xyz;
+		M.Specular  = O.Material.z;
+	#else
+		M.Sun = 0.0f;
+	#endif
+#endif
+
+    M.Normal.xyz = NormalDecode(O.Normal.xy * 2.0f - 1.0f);
+    M.SnowMask = O.Normal.w;
+    M.Hemi = O.Normal.z;
 }
 
 inline float4 GbufferGetPoint(in float2 HPos)
@@ -214,8 +248,62 @@ inline float3 GbufferGetPointRealUnjitter(in float2 TexCoord, in float Depth)
 
 inline float3 GbufferGetPointRealUnjitter(in float2 TexCoord)
 {
-	float Depth = s_position.Load(int3(TexCoord * pos_decompression_params2.xy, 0)).x;
+	float Depth = s_position[uint2(TexCoord * pos_decompression_params2.xy)].x;
 	return GbufferGetPointRealUnjitter(TexCoord, Depth);
+}
+
+inline float3 GbufferGetPointRealJitter(in float2 TexCoord, in float Depth)
+{
+	float4 Point = float4(TexCoord, Depth, 1.0f);
+	
+	Point.x = Point.x * 2.0f - 1.0f;
+	Point.y = 1.0f - Point.y * 2.0f;
+	
+	Point.xy -= m_taa_jitter.xy;
+	
+	if(Point.z < 0.02f)
+	{
+		Point.z *= 50.0f;
+		Point = mul(m_invP_hud, Point);
+	}
+	else
+	{
+		Point = mul(m_invP, Point);
+	}
+	
+    return Point.xyz / Point.w;
+}
+
+inline float3 GbufferGetPointRealJitter(in float2 TexCoord)
+{
+	float Depth = s_position.Load(int3(TexCoord * pos_decompression_params2.xy, 0)).x;
+	return GbufferGetPointRealJitter(TexCoord, Depth);
+}
+
+inline void GbufferUnpackDepth(in uint2 HPos, inout IXRayGbuffer O)
+{
+    float2 TexCoord = HPos * pos_decompression_params2.zw;
+    O.Depth = s_position.Load(uint3(HPos, 0)).x;
+	
+	float4 Point = float4(TexCoord, O.Depth, 1.0f);
+	
+	Point.x = Point.x * 2.0f - 1.0f;
+	Point.y = 1.0f - Point.y * 2.0f;
+	
+	Point.xy -= m_taa_jitter.xy;
+	
+	float4 Proj = mul(m_invP, Point);
+	O.Point = Proj.xyz / Proj.w;
+	
+	Point.z *= 50.0f;
+	
+	Proj = mul(m_invP_hud, Point);	
+	O.PointHud = Proj.xyz / Proj.w;
+
+    O.PointReal = O.Depth < 0.02f ? O.PointHud : O.Point;
+	
+	O.ViewDist = length(O.PointReal);
+	O.View = O.PointReal * rcp(O.ViewDist);
 }
 
 inline void GbufferUnpackNormal(in uint2 TexCoord, inout IXRayGbuffer O)
@@ -268,48 +356,12 @@ inline void GbufferUnpackColor(in uint2 TexCoord, inout IXRayGbuffer O)
 #endif
 }
 
-inline void GbufferUnpackDepth(in uint2 HPos, inout IXRayGbuffer O)
-{
-    float2 TexCoord = HPos * pos_decompression_params2.zw;
-    O.Depth = s_position.Load(uint3(HPos, 0)).x;
-	
-	float4 Point = float4(TexCoord, O.Depth, 1.0f);
-	
-	Point.x = Point.x * 2.0f - 1.0f;
-	Point.y = 1.0f - Point.y * 2.0f;
-	
-	Point.xy -= m_taa_jitter.xy;
-	
-	float4 Proj = mul(m_invP, Point);
-	O.Point = Proj.xyz / Proj.w;
-	
-	Point.z *= 50.0f;
-	
-	Proj = mul(m_invP_hud, Point);	
-	O.PointHud = Proj.xyz / Proj.w;
-
-    O.PointReal = O.Depth < 0.02f ? O.PointHud : O.Point;
-	
-	O.ViewDist = length(O.PointReal);
-	O.View = O.PointReal * rcp(O.ViewDist);
-}
-
 inline void GbufferUnpack(in uint2 HPos, inout IXRayGbuffer O)
 {
 	GbufferUnpackColor(HPos, O);
 	GbufferUnpackDepth(HPos, O);
 	GbufferUnpackNormal(HPos, O);
 }
-
-#define WrapFunction(F) inline void F(in float2 TexCoord, inout IXRayGbuffer O) { F(uint2(TexCoord * pos_decompression_params2.xy), O); }
-
-WrapFunction(GbufferUnpackColor);
-WrapFunction(GbufferUnpackDepth);
-WrapFunction(GbufferUnpackNormal);
-
-WrapFunction(GbufferUnpack);
-
-#undef WrapFunction
 
 #endif
 
