@@ -178,6 +178,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 			RImplementation.addShaderOption(Name.data(), Value.data());
 		}
 
+#ifdef USE_DX11
 		if (hq && pShaderOptions->contains(xr_string("USE_PARRALAX_INTERIOR")))
 		{
 			C.r_Pass(vs, "forwrad_interior", FALSE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
@@ -203,6 +204,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		
 			C.r_End(false);
 		}
+#endif // USE_DX11
 	}
 
 	C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_LESS_EQUAL);
@@ -339,7 +341,6 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, bool aref, bool blend, const char* detail_replace, bool DO_NOT_FINISH, bool DO_NOT_START)
 {
 	uber_deffer(C, hq, vs, ps, aref && !blend, detail_replace, true, DO_NOT_START);
-
 
 	if (blend) 
 	{
