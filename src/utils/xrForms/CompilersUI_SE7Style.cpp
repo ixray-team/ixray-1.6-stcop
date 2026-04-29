@@ -802,7 +802,7 @@ void RenderCompilerUI(int X, int Y)
 			}
 		
 			ImGui::SameLine();
-
+#ifdef LCCUDA_BUILD
 			if (ImGui::BeginChild("GPU USAGE", ImVec2(nSize, windowSize.y - topHeight - (buttonSize.y * 2) - 30), ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar))
 			{
 				extern void CudaUsage(unsigned int& UsageCuda, unsigned int& UsageMemory);
@@ -833,6 +833,7 @@ void RenderCompilerUI(int X, int Y)
   
 				ImGui::EndChild();
 			}
+#endif
 		}
 	}
 
