@@ -997,10 +997,16 @@ void UIMinimapEditorForm::ReloadMapInfo(const xr_string& fn)
 		if (ltxFile->line_exist("global_map", "texture"))
 		{
 			auto tx = ltxFile->r_string("global_map", "texture");
-
-			string_path texturePath;
-			sprintf(texturePath, "%s%s.dds", FS.get_path("$game_textures$")->m_Path, tx);
-			LoadBGClick(texturePath);
+			
+			xr_stack_string_path texturePath;
+			xr_sprintf(texturePath, "%s%s.dds", FS.get_path("$game_textures$")->m_Path, tx);
+			auto data = FS.exist(texturePath.c_str());
+			if (data)
+			{
+				texturePath = data->wrap;
+			}
+			
+			LoadBGClick(texturePath.c_str());
 		}
 		if (ltxFile->line_exist("global_map", "bound_rect"))
 		{
@@ -1051,7 +1057,7 @@ void UIMinimapEditorForm::ReloadMapInfo(const xr_string& fn)
 		el.RenderSize.x = tmp.z - tmp.x;
 		el.RenderSize.y = tmp.w - tmp.y;
 
-		string_path texturePath = "";
+		xr_stack_string_path texturePath = "";
 		string_path levelLtx;
 		sprintf(levelLtx, "%s%s\\level.ltx", FS.get_path("$level$")->m_Path, levelName.c_str());
 
@@ -1064,14 +1070,22 @@ void UIMinimapEditorForm::ReloadMapInfo(const xr_string& fn)
 			{
 				auto textureFile = levelLtxFile.r_string("level_map", "texture");
 				el.TexturePath = textureFile;
-				sprintf(texturePath, "%s%s.dds", FS.get_path("$game_textures$")->m_Path, textureFile);
+
+				xr_sprintf(texturePath, "%s%s.dds", FS.get_path("$game_textures$")->m_Path, textureFile);
+				auto data = FS.exist(texturePath.c_str());
+				if (data)
+				{
+					texturePath = data->wrap;
+				}
 			}
 		}
 
 		if (texturePath == "")
-			sprintf(texturePath, "%smap\\map_%s.dds", FS.get_path("$game_textures$")->m_Path, levelName.c_str());
+		{
+			xr_sprintf(texturePath, "%smap\\map_%s.dds", FS.get_path("$game_textures$")->m_Path, levelName.c_str());
+		}
 
-		LoadTexture(el, texturePath);
+		LoadTexture(el, texturePath.c_str());
 		elements.push_back(el);
 	}
 
