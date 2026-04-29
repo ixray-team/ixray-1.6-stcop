@@ -13,7 +13,7 @@ D3D_VIEWPORT VP_NL = {
 
 void CRenderTarget::phase_new_luminance()
 {
-	GPU_EVENT(phase_new_luminance)
+	GPU_EVENT(phase_new_luminance);
 
 	u_setrt(rt_LUM_A, nullptr, nullptr, nullptr);
 	RImplementation.rmNormal();

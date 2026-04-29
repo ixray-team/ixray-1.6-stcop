@@ -143,7 +143,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	float4 PrevSpecularUV = mul(m_VP_old, float4(mul(m_invV, float4(ReflectPoint, 1.0f)).xyz, 1.0f));
 	
 	PrevSpecularUV.xy = PrevSpecularUV.xy / PrevSpecularUV.w * float2(0.5f, -0.5f) + 0.5f;	
-	PrevSpecularUV.xy = O.Roughness > 0.2f ? PrevDiffuseUV.xy : PrevSpecularUV.xy;
+	PrevSpecularUV.xy = O.Roughness > 0.1f ? PrevDiffuseUV.xy : PrevSpecularUV.xy;
 	
     float4 SSLR_OldSpecular = s_refl.SampleLevel(smp_rtlinear, PrevSpecularUV.xy, 0.0f);
 	

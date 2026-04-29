@@ -227,7 +227,7 @@ void CRender::create()
 	o.nullrt = false;
 
 	// SMAP / DST
-	o.HW_smap_FORMAT = DXGI_FORMAT_R24G8_TYPELESS;
+	o.HW_smap_FORMAT = DXGI_FORMAT_R24G8_TYPELESS; 
 
 	// nvstencil on NV40 and up
 	o.nvstencil = false;
