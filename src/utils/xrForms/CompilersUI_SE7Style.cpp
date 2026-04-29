@@ -85,9 +85,8 @@ void RenderMainUI()
 			ImVec2 ListBoxSize2 = { 250, float(Size[1] - 155) };
 			if (  ImGui::BeginTable("##Levels", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize2)  )
 			{
-				ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 200);
+				ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 205);
 				ImGui::TableSetupColumn("Prop");
-				ImGui::TableHeadersRow();
 
 				size_t Iter = 1;
 				for (auto& [File, Selected] : gCompilerMode.Files)
@@ -804,7 +803,7 @@ void RenderCompilerUI(int X, int Y)
 		
 			ImGui::SameLine();
 
-			if (ImGui::BeginChild("GPU USAGE", ImVec2(nSize, windowSize.y - topHeight - (buttonSize.y * 2) - 30), true))
+			if (ImGui::BeginChild("GPU USAGE", ImVec2(nSize, windowSize.y - topHeight - (buttonSize.y * 2) - 30), ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar))
 			{
 				extern void CudaUsage(unsigned int& UsageCuda, unsigned int& UsageMemory);
 				extern  void CudaStatisticThread();
@@ -821,14 +820,14 @@ void RenderCompilerUI(int X, int Y)
 				unsigned int UsageCuda = 0, UsageMemory = 0;
 				CudaUsage(UsageCuda, UsageMemory);
 
-				ImGui::Text("Gpu Usage: %u", UsageCuda);
+				ImGui::Text("CUDA Usage: %u", UsageCuda);
 				auto data = get_cuda_usage();
 				DrawGpuGraph(data.data(), data.size(), 100.0f);
 
 				ImGui::Separator();
 
 
-				ImGui::Text("Gpu Memory Usage: %u", UsageMemory);
+				ImGui::Text("VRAM Usage: %u", UsageMemory);
 				auto data_mem = get_mem_usage();
 				DrawGpuGraph(data_mem.data(), data_mem.size(), 100.0f);
   
