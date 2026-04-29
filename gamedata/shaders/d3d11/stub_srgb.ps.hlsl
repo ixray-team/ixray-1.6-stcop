@@ -4,6 +4,8 @@
 float4 main(p_TL I) : SV_Target
 {
 	float4 final = s_base.Sample(smp_base, I.Tex0) * I.Color;
-	return GammaToLinear(final);
+	final.xyz = GammaToLinear(final.xyz * 0.6f);
+	
+	return final;
 }
 

@@ -147,12 +147,41 @@ void CRender::level_Load(IReader* fs)
 	mapLOD.clear				();
 
 	// signal loaded
-	b_loaded					= true	;
+	b_loaded = true;
 }
 
 void CRender::LoadPuddles()
 {
+	if (g_pGameLevel->pLevel->section_exist("level_map"))
+	{
+		Fvector4 res2d = g_pGameLevel->pLevel->r_fvector4("level_map", "bound_rect");
+
+		m_puddles_level_bound.lt.x = res2d.x;
+		m_puddles_level_bound.lt.y = res2d.y;
+
+		m_puddles_level_bound.rb.x = res2d.z;
+		m_puddles_level_bound.rb.y = res2d.w;
+	}
+	else
+	{
+		Fbox puddles_level_bound = g_pGameLevel->ObjectSpace.GetBoundingVolume();
+
+		m_puddles_level_bound.lt.x = puddles_level_bound.min.x;
+		m_puddles_level_bound.lt.y = puddles_level_bound.min.z;
+
+		m_puddles_level_bound.rb.x = puddles_level_bound.max.x;
+		m_puddles_level_bound.rb.y = puddles_level_bound.max.z;
+	}
+
+	m_puddles_level_bound.rb.sub(m_puddles_level_bound.lt);
+
+	m_puddles_level_bound.rb.x = m_puddles_level_bound.rb.x > 0.0f ? 1.0f / m_puddles_level_bound.rb.x : 0.0f;
+	m_puddles_level_bound.rb.y = m_puddles_level_bound.rb.y > 0.0f ? -1.0f / m_puddles_level_bound.rb.y : 0.0f;
+
+	m_puddles_level_bound.lt.mul(m_puddles_level_bound.rb);
+
 	m_levels_puddles.resize(0);
+
 	string_path ini_file;
 
 	if(!FS.exist(ini_file, "$level$", "level.puddles"))

@@ -444,6 +444,7 @@ CRenderTarget::CRenderTarget()
 		DisplayRT(rt_LUM_D);
 		DisplayRT(rt_smap_surf);
 		DisplayRT(rt_Reflection_forward);
+		DisplayRT(rt_smap_depth);
 		DisplaySRT(rt_smap_depth_sun);
 
 
@@ -507,6 +508,7 @@ CRenderTarget::CRenderTarget()
 
 		auto ColorFormat = ERHI_FORMAT::R8G8B8A8_UNORM;
 		auto SurfaceFormat = ERHI_FORMAT::R8G8B8A8_UNORM;
+
 		auto NormalFormat = ERHI_FORMAT::R10G10B10A2_UNORM;
 
 		if (RImplementation.o.dx11_use_legacy_light)
@@ -514,13 +516,9 @@ CRenderTarget::CRenderTarget()
 			SurfaceFormat = ERHI_FORMAT::R8_SNORM;
 		}
 
-		rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, ColorFormat);
-
-		rt_Surface.create(r2_RT_S, s_dwWidth, s_dwHeight, SurfaceFormat);
-		rt_SurfaceTemp.create(r2_RT_S_temp, s_dwWidth, s_dwHeight, SurfaceFormat);
-
-		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, NormalFormat);
-		rt_NormalTemp.create(r2_RT_N_temp, s_dwWidth, s_dwHeight, NormalFormat);
+		rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, ColorFormat, 1, isUAV);
+		rt_Surface.create(r2_RT_S, s_dwWidth, s_dwHeight, SurfaceFormat, 1, isUAV);
+		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, NormalFormat, 1, isUAV);
 
 		rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, HDR_Format);
 
