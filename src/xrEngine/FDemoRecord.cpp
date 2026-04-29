@@ -23,6 +23,7 @@ CDemoRecord * xrDemoRecord = 0;
 CDemoRecord::force_position CDemoRecord:: g_position = { false, { 0, 0, 0 } };
 
 Fbox curr_lm_fbox;
+
 void setup_lm_screenshot_matrices()
 {
 	psHUD_Flags.assign(0);

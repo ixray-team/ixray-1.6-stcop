@@ -434,7 +434,7 @@ void CRender::Render()
 		return;
 	}
 
-	if (o.offscreen_reflecitons)
+	if (o.offscreen_reflecitons && o.deffered_reflecitons)
 	{
 		ps_r_taa_jitter.set(0, 0, -1);
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);

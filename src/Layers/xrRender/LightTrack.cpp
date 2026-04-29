@@ -356,9 +356,10 @@ void	CROS_impl::update	(IRenderable* O)
 	{
 		hemi_smooth = hemi_value;
 		CopyMemory(hemi_cube_smooth, hemi_cube, NUM_FACES * sizeof(float));
-
+#if RENDER!=R_R1
 		smooth_avg_color = avg_color;
 		smooth_avg_dir = avg_dir;
+#endif
 	}
 
 	update_smooth();
@@ -463,6 +464,7 @@ void CROS_impl::update_smooth(IRenderable* O)
 		hemi_cube_smooth[i] += (hemi_cube[i] - hemi_cube_smooth[i]) * l_f;
 	}
 
+#if RENDER!=R_R1
 	l_f = std::min(1.0f, Device.fTimeDelta * 10.0f);
 	
 	if (smooth_avg_color.square_magnitude() < EPS)
@@ -472,6 +474,7 @@ void CROS_impl::update_smooth(IRenderable* O)
 
 	smooth_avg_color = smooth_avg_color.lerp(smooth_avg_color, avg_color, l_f);
 	smooth_avg_dir = smooth_avg_dir.lerp(smooth_avg_dir, avg_dir, l_f);
+#endif
 }
 
 void CROS_impl::calc_sun_value(Fvector& position, CObject* _object)

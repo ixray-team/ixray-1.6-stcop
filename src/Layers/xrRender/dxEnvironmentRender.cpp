@@ -7,6 +7,7 @@
 #include "ResourceManager.h"
 
 #include "../../xrEngine/xr_efflensflare.h"
+#include "r__types.h"
 
 
 //////////////////////////////////////////////////////////////////////////

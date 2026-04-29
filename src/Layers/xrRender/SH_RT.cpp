@@ -108,12 +108,13 @@ void CRT::create(const char* Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount,
 			}
 		}
 
+#ifdef USE_DX11
 		if (CreationFlags & CRT::CRTCreationFlags::AUTOGEN_MIP_MAPS)
 		{
 			desc.MiscFlags |= D3D_RESOURCE_MISC_GENERATE_MIPS;
 			desc.MipLevels = 0;
 		}
-
+#endif // USE_DX11
 		if (SampleCount == 1 && CreationFlags & CRTCreationFlags::USE_UAV_FLAG)
 		{
 			desc.BindFlags |= ERHI_BIND_FLAG::UNORDERED_ACCESS;
