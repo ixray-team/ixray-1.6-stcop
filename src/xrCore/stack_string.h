@@ -574,3 +574,19 @@ IC void xr_strlwr(xr_stack_wstring<StringLength>& src)
 	}
 }
 #endif
+
+template<xr_ssnt_t StringLength>
+ICF int __cdecl xr_sprintf	(xr_stack_string<StringLength>& destination, const char* format_string, ... )
+{
+	va_list args;
+	va_start					( args, format_string);
+	return						vsnprintf_s( destination.data(), StringLength, StringLength - 1, format_string, args );
+}
+
+template<xr_ssnt_t StringLength>
+ICF int __cdecl xr_sprintf	(xr_stack_wstring<StringLength>& destination, const char* format_string, ... )
+{
+	va_list args;
+	va_start					( args, format_string);
+	return						vsnwprintf_s( destination.data(), StringLength, StringLength - 1, format_string, args );
+}
