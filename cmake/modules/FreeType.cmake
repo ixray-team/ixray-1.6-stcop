@@ -9,9 +9,13 @@ if(WIN32)
         "${ENGINE_FREETYPE}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/freetype.dll"
     )
 else()
-    if(PkgConfig_FOUND)
-        pkg_check_modules(FREETYPE QUIET freetype2)
-    endif()
+	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+	FetchContent_Declare(
+		freetype
+		URL https://gitlab.freedesktop.org/freetype/freetype/-/archive/VER-2-14-3/freetype-VER-2-14-3.tar.gz
+		DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+	)
+	FetchContent_MakeAvailable(freetype)
 
     if(FREETYPE_FOUND)
         add_library(FreeType::FreeType INTERFACE IMPORTED)

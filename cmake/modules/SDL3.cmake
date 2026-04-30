@@ -2,8 +2,8 @@ include(FetchContent)
 
 FetchContent_Declare(
     SDL3
-    GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG release-3.2.22
+    URL https://github.com/libsdl-org/SDL/archive/refs/tags/release-3.2.22.tar.gz
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 
 set(SDL_SHARED ON CACHE BOOL "" FORCE)
