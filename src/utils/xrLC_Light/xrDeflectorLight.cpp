@@ -22,7 +22,7 @@ void Jitter_Select(Fvector2* &Jitter, u32& Jcount)
 		{-1,1},		{0,1},		{1,1}
 	};
 
-	switch (gCompilerMode.LC_JSample)
+	switch (g_params().m_lm_jitter_samples)
 	{
 	case 1:
 		Jcount	= 1;
@@ -190,9 +190,7 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P,
 				}
 				else
 				{
-					att = (inlc_global_data()->gl_linear())
-						? scale * (1 - R / L.range)
-						: scale * (1 / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD) - R * L.falloff);
+					att = scale * (1 / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD) - R * L.falloff);
 				}
 				break;
 			}
@@ -271,7 +269,6 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P,
 	}
 }
 
-
 void LightPointNew(EmbreeRayTraceModel* MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip)
 {
 	auto processLight = [&]<typename T>(R_Light & L, T & accumulator, bool isSunOrHemi)
@@ -315,9 +312,7 @@ void LightPointNew(EmbreeRayTraceModel* MDL, base_color_c& C, Fvector& P, Fvecto
 			}
 			else
 			{
-				att = (inlc_global_data()->gl_linear())
-					? scale * (1 - R / L.range)
-					: scale * (1 / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD) - R * L.falloff);
+				att = scale * (1 / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD) - R * L.falloff);
 			}
 			break;
 		}

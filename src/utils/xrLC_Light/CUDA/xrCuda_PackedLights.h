@@ -9,8 +9,8 @@
 #include "xrMU_Model_Reference.h"
  
 // Initialize TASKS
-#define MAX_RAYS_PER_TASK   256 * 1024				// Общее кол-во Задач (на запуск GPU)
-#define MAX_RAYS_PER_GPU	256 * 1024				// Кол-во задач которое может обработать GPU за 1 заход Слишком большое кол-во вызывает недогруз ГПУ
+#define MAX_RAYS_PER_TASK   16*1024				// Общее кол-во Задач (на запуск GPU)
+#define MAX_RAYS_PER_GPU	16*1024				// Кол-во задач которое может обработать GPU за 1 заход Слишком большое кол-во вызывает недогруз ГПУ
 
 enum ColorsReturnType
 {
@@ -30,11 +30,9 @@ struct RayRecvestIndex
 	Fvector N;
 };
  
-class PackedLighting
+class CUDA_PackedLighting
 {
 public:
-
-
 	// Unordered for maps
 	size_t MakeKey(u32 U, u32 V)
 	{
@@ -51,7 +49,9 @@ public:
 		return static_cast<u32>(key & 0xFFFFFFFFull);
 	}
 
-	void InitializeGPU();
+	void InitializeGPU();		   // Optix-Cuda, PTX (Once Load)
+	void InitializeGPU_Model  ();  // Loading Model
+	void DestroyGPU_Model();
 	
 	/* Специальные релизация под разные типы освещения */
 	ColorsReturnType ColorsMapType = eCommon;
@@ -63,16 +63,7 @@ public:
  	xr_concurrent_unordered_map <size_t, base_color_c>  task_colors;
 
 	// Reseting
- 	void RestartALL()
-	{
-		// start
-		Recalculated = 0;
- 		current_flags = 0;
-
-		// clearing pool
- 		task_colors.clear();
-	}
- 
+	void RestartALL();
   
 	// Stats 
 	bool	isInitializedGPU = false;
@@ -82,8 +73,4 @@ public:
 	u32		Recalculated = 0;
 };
 
-extern PackedLighting GPUTaskinSystem;
-
-
-u32 GetFaceIndex(Face* F);
-void SetFaceIndex(Face* F, u32 Index);
+extern CUDA_PackedLighting GPUTaskinSystem;

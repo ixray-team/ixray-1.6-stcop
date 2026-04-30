@@ -35,6 +35,7 @@
     } while (0)
 
 
+extern size_t GetCudaMemoryFree();
 
 class OptixContext
 {
@@ -70,20 +71,4 @@ public:
 
     OptixPipeline GetPipeline() const { return m_pipeline; }
     OptixShaderBindingTable& GetSBT() { return m_sbt; }
-
-    // Создание CUDA stream
-    static CUstream CreateCudaStream()
-    {
-        CUstream stream;
-        CUDA_CHECK(cudaStreamCreate(&stream));
-        return stream;
-    }
-
-    // Уничтожение CUDA stream
-    static void DestroyCudaStream(CUstream stream)
-    {
-        if (stream) {
-            CUDA_CHECK(cudaStreamDestroy(stream));
-        }
-    }
 };

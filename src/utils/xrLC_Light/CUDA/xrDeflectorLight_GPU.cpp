@@ -4,13 +4,95 @@
 #include "light_point.h"
 #include "xrFace.h"
 #include "uv_grid.h"
+#include "../xrLC/Build.h"
+
+void RunCompileDeflectorsGPU(CBuild* build)
+{
+ 	GPUTaskinSystem.RestartALL();
+	GPUTaskinSystem.ColorsMapType = eDeflectors;
+	GPUTaskinSystem.current_flags = LGetCurrentFlags();
+
+	CTimer tStats; tStats.Start();
+	auto ProcessDeflectors = [](xr_vector<CDeflector*>& deflectors)
+		{
+
+			xr_atomic_u32 IndexTaskID = 0, IndexTaskApply = 0, IndexTaskExpand = 0;
+			xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TID)
+				{
+					while (true)
+					{
+						u32 Index = IndexTaskID.fetch_add(1);
+						if (Index >= deflectors.size()) break;
+						CDeflector* D = deflectors[Index];
+
+						D->LightGPU();
+
+						AditionalData("*** [LMAPS] ID [%u/%u] W: %u | H: %u",
+							Index, deflectors.size(), D->layer.width, D->layer.height);
+					}
+
+					// Система тасков щас иная
+					GPUTaskinSystem.LightPointPacked_run_tasks();
+				});
+
+			GPUTaskinSystem.RestartALL();
+
+			xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TID)
+				{
+					while (true)
+					{
+						u32 Index = IndexTaskApply.fetch_add(1);
+						if (Index >= deflectors.size()) break;
+						CDeflector* D = deflectors[Index];
+
+						D->ApplyColors();
+						D->ApplyExpandBordersGPU();
+
+						AditionalData("*** [LMAPS] ApplyID [%u/%u] W: %u | H: %u",
+							Index, deflectors.size(), D->layer.width, D->layer.height);
+					}
+				});
+		};
+
+	u32 AreaCollected = 0; u32 IndexD = 0;
+	xr_vector<CDeflector*> deflectors_map;
+	for (auto& D : lc_global_data()->g_deflectors())
+	{
+		// deflectors.
+		if (AreaCollected > 8192 * 8192 * 20 || IndexD == lc_global_data()->g_deflectors().size())
+		{
+			// Lmaps Process
+			ProcessDeflectors(deflectors_map);
+			
+			// Merge LMAPS
+			build->xrPhase_MergeLM(deflectors_map);
+
+			deflectors_map.clear();
+			AreaCollected = 0;
+		}
+
+		IndexD++;
+		AreaCollected += D->layer.Area();
+		deflectors_map.push_back(D);
+	}
+
+	if (deflectors_map.size())
+	{
+		// Lmaps Process
+		ProcessDeflectors(deflectors_map);
+		
+		// Merge LMAPS
+		build->xrPhase_MergeLM(deflectors_map);
+
+		deflectors_map.clear();
+		AreaCollected = 0;
+	}
+}
+
+
 
 // Создание тоже может занимать время
-thread_local UVGridLazy<UVtri> uv_grid;
-
-// 08.12.2025 (Убрал 2Hash Нужно было для ускорения поиска по треугольникам) (для GPU кода будет сложно сделать)
-// 14.12.2025 (Повыпиливал лишние действие с Edge) там можно было и так посчитать ;
- 
+thread_local UVGridLazy<UVtri> uv_grid; 
 extern void Jitter_Select(Fvector2*& Jitter, u32& Jcount);
 
 /// Запрашивает лучи у ГПУ
@@ -210,12 +292,12 @@ void CDeflector::ApplyColor(size_t IKey, base_color_c& C)
 
 // se7kills: Убрал Перерасчет в сжатый формат
 // тестил на затоне не было замечено багов
-bool	compress_Zero(lm_layer& lm, u32 rms);
+bool	compress_Zero(lm_layer& lm);
 
 /// После сжатия пересчитываем
 void CDeflector::ApplyExpandBordersGPU()
 {
-	if (compress_Zero(layer, rms_zero)) return;		// already with borders (Se7kills: Быстро очень обычно)
+	if (compress_Zero(layer)) return;		// already with borders (Se7kills: Быстро очень обычно)
 	
 	// se7kills : Убрал 2й проход со сжатием !
 	 

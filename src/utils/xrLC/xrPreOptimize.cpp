@@ -27,8 +27,7 @@ IC bool				FaceEqual(Face& F1, Face& F2)
 
 void CBuild::PreOptimize()
 {
-    if (lc_global_data()->GetSkipWeld())
-        return;
+    if (gCompilerMode.LC_skipWeld)  return;
 
     std::unordered_map<size_t, vecVertex> hashTable;
   
@@ -110,7 +109,8 @@ void CBuild::PreOptimize()
 	if (InvalideFaces())	
 	{
 		err_save		();
-		if (lc_global_data()->GetSkipInvalid()) {
+		if (gCompilerMode.LC_SkipInvalidFaces)
+		{
 			clMsg("* Total %d invalid faces. Do something.", InvalideFaces());
 		} else {
 			Debug.fatal(DEBUG_INFO, "* FATAL: %d invalid faces. Compilation aborted", InvalideFaces());

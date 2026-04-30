@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "xrFace.h"
-//#include "build.h"
 #include "xrDeflector.h"
 #include "xrLC_GlobalData.h"
 #include "Lightmap.h"
@@ -35,8 +34,6 @@ void base_Face::CacheOpacity()
 	}
 }
 
-static bool do_not_add_to_vector_in_global_data = false;
-
 bool g_bUnregister = true;
 
 void destroy_vertex( Vertex* &v, bool unregister )
@@ -60,11 +57,7 @@ Tvertex<DataVertex>::Tvertex()
 {
  	R_ASSERT( inlc_global_data() );
 	if( inlc_global_data()->vert_construct_register() )
-	{	
- 		inlc_global_data()->g_vertices().push_back(this);
-	}
-	
-	// m_adjacents.reserve	(4);
+	  	inlc_global_data()->g_vertices().push_back(this);
 }
 
 template<>
@@ -81,6 +74,9 @@ Tvertex<DataVertex>::~Tvertex()
 		}
 		else clMsg("* ERROR: Unregistered VERTEX destroyed");
 	}
+
+	m_adjacents.clear();
+	m_adjacents.shrink_to_fit();
 }
 
 template<>
@@ -101,10 +97,8 @@ Tface<DataVertex>::Tface()
 {
  	pDeflector				= 0;
 	flags.bSplitted			= false;
- 	if( !do_not_add_to_vector_in_global_data )
-	{
- 		inlc_global_data()->g_faces().push_back		(this);
-	}
+ 	inlc_global_data()->g_faces().push_back		(this);
+
 	sm_group				= u32(-1);
 	lmap_layer				= NULL;
 }
@@ -120,15 +114,14 @@ Tface<DataVertex>::~Tface()
 			vecFace& faces = inlc_global_data()->g_faces();
 			std::swap( *F, *( faces.end()-1 ) );
 			faces.pop_back();
-			//faces.erase(F);
-		}
+ 		}
 		else clMsg("* ERROR: Unregistered FACE destroyed");
 	}
+
 	// Remove 'this' from adjacency info in vertices
 	for (int i=0; i<3; ++i)
 		v[i]->prep_remove(this);
-
-	lmap_layer				= NULL;
+ 	lmap_layer				= NULL;
 }
  
 template<>

@@ -135,6 +135,16 @@ void Phase(const char* phase_name)
 	csLog.Leave();
 }
 
+void PhaseEnd()
+{
+ 	// Start _new phase
+ 	if (ActiveIteration->phases.size() > 0)
+	{
+		ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = GetHeapMemory();
+		ActiveIteration->phases[ActiveIteration->phases.size() - 1].status = Complete;
+	}
+}
+
 void AditionalData(const char* format, ...)
 {
 	csLog.Enter();
@@ -142,8 +152,7 @@ void AditionalData(const char* format, ...)
 	va_list		mark;
 	va_start(mark, format);
 	vsprintf(additional_data, format, mark);
-
-
+ 
 	if (ActiveIteration->phases.size() > 0)
 	{
 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].AdditionalData = additional_data;

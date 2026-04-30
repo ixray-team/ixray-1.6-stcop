@@ -100,12 +100,12 @@ public:
 		type_vertex* V2 = v[edge2idx[edge][1]];
 		return V1->P.distance_to(V2->P);
 	};
+
 	IC void	EdgeVerts		(int e, type_vertex** A, type_vertex** B) const
 	{
 		*A = v[edge2idx[e][0]];
 		*B = v[edge2idx[e][1]];
 	}
-
 	bool			isEqual		(type_face& F)
 	{
 		// Test for 6 variations
@@ -117,8 +117,8 @@ public:
 		if ((v[1]==F.v[0]) && (v[2]==F.v[1]) && (v[0]==F.v[2])) return true;
 		return false;
 	}
-
-
+ 
+	// Calculate Normal
 	void	CalcNormal	()
 	{
 		Fvector t1,t2;
@@ -175,6 +175,7 @@ public:
 		}
 	}
 
+	// UV, Deflector
 	float CalcArea() const
 	{
 		auto e1 = Fvector().sub(v[0]->P, v[1]->P);
@@ -182,16 +183,8 @@ public:
 		float area = Fvector().crossproduct(e1, e2).magnitude() / 2;
 		return area;
 	}
-	float CalcMaxEdge()
-	{
-		float	e1 = v[0]->P.distance_to(v[1]->P);
-		float	e2 = v[0]->P.distance_to(v[2]->P);
-		float	e3 = v[1]->P.distance_to(v[2]->P);
 
-		if (e1>e2 && e1>e3) return e1;
-		if (e2>e1 && e2>e3) return e2;
-		return e3;
-	}
+	// xrSubdivide used
 	void	CalcCenter	(Fvector &C)
 	{
 		C.set(v[0]->P);
@@ -225,9 +218,7 @@ struct MESHSTRUCTURE_API Tvertex: public DataVertexType
 
 
 	v_faces m_adjacents;
- 
-
-	IC	type_vertex* CreateCopy(v_vertices& vertises_storage)
+ 	IC	type_vertex* CreateCopy(v_vertices& vertises_storage)
 	{
 		type_vertex* V = CreateCopy_NOADJ(vertises_storage);
 		V->m_adjacents = m_adjacents;
@@ -259,36 +250,18 @@ struct MESHSTRUCTURE_API Tvertex: public DataVertexType
 	}
 
 };
-
-
-
+ 
 template<typename typeVertex>
 IC  void   _destroy_vertex( typeVertex* &v, bool unregister )
 {
 	destroy_vertex( v, unregister );
 }
-
-
-template<typename typeVertex>
-struct remove_pred
-{
-	bool operator() ( typeVertex* &v )
-	{
-		if (v && v->m_adjacents.empty())
-		{
-			_destroy_vertex( v, false );
-			return true;
-		}
-		return false;
-	}
-} ;
- 
+  
 template<typename typeVertex>
 IC void isolate_vertices(bool bProgress, xr_vector<typeVertex*> &vertices )
 {
  	// Status		("Isolating vertices...");
-
- 	const u32 verts_old		= (u32)vertices.size();
+  	const u32 verts_old		= (u32)vertices.size();
 	u32 vRemoveReal = 0;
 
  	for (auto it = 0; it < verts_old; it++)

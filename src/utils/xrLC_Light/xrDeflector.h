@@ -8,7 +8,7 @@
 #include "embree_raytracing/EmbreeRayTrace.h"
 
 // se7kills: Packed Task pool
-#include "xrDeflectorLight_Packed.h"
+#include "cuda/xrCuda_PackedLights.h"
 
 class  base_lighting;
 extern EmbreeRayTraceModel EmbreeMain;
@@ -121,5 +121,4 @@ extern void		lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF);
 extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip);
 extern XRLC_LIGHT_API void		LightPointNew	(EmbreeRayTraceModel* MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
 
-#define rms_zero	((4+g_params().m_lm_rms_zero)/2)
-#define rms_shrink	((8+g_params().m_lm_rms)/2)
+extern void UpdateCurrentPhase(LPCSTR text);

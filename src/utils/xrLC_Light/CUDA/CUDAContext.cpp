@@ -5,6 +5,14 @@
 #include <filesystem>
 #include <string>
 
+// CUDA RUNTIME GET MEMORY ()
+size_t GetCudaMemoryUsed()
+{
+	size_t total, Free;
+	cudaMemGetInfo(&Free, &total);
+	return total-Free;
+}
+
 xr_path GetExecutableDir()
 {
 #ifdef IXR_WINDOWS
@@ -19,16 +27,20 @@ xr_path GetExecutableDir()
 	return xr_path(xr_string(result, count)).parent_path();
 #endif
 }
+extern size_t GetMemory();
 
+// Чтобы CUDA Выделела память CPU - > Heap не рос там где не нужно !
 bool OptixContext::Initialize()
 {
+	clMsg("[Cuda] Memory Used: %u mb", GetCudaMemoryUsed() / 1024 / 1024);
+	
+	size_t Start = GetMemory();
 	// --- 1. Primary context через CUDA Runtime ---
 	CUDA_CHECK(cudaSetDevice(cudaDeviceId));
-	CUDA_CHECK(cudaFree(0));
 
 	cudaDeviceProp deviceProps;
 	CUDA_CHECK(cudaGetDeviceProperties(&deviceProps, cudaDeviceId));
-  	Msg("[OptiX] Using CUDA device: %s (SM %d.%d)", deviceProps.name, deviceProps.major, deviceProps.minor);
+  	clMsg("[OptiX] Using CUDA device: %s (SM %d.%d)", deviceProps.name, deviceProps.major, deviceProps.minor);
 
 	// --- 2. Получаем primary CUcontext через Driver API ---
 	CUdevice cuDev;
@@ -43,10 +55,12 @@ bool OptixContext::Initialize()
 
 	OptixDeviceContextOptions options = {};
 	options.logCallbackFunction = &OptixLogCallback;
-	options.logCallbackLevel = 4;
+	options.logCallbackLevel	= 0;
+	options.validationMode		= OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_OFF;
 
 #ifdef DEBUG
-	options.validationMode = OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_ALL;
+	options.logCallbackLevel = 4;
+	options.validationMode		= OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_ALL;
 #endif
 
 	// В этом режиме OptiX требует НЕ nullptr
@@ -56,6 +70,8 @@ bool OptixContext::Initialize()
 	xr_path fullPtxPath = GetExecutableDir() / "CuTrace.ptx";
 	CreatePipeline(fullPtxPath.xstring().c_str());
 
+	clMsg("[Cuda] Loaded Memory Used: %u mb", GetCudaMemoryUsed() / 1024 / 1024);
+
 	return true;
 } 
 
@@ -63,7 +79,7 @@ void OptixContext::Destroy()
 {
 	if (optixContext)
 	{
-		OPTIX_CHECK(optixDeviceContextDestroy(optixContext));
+ 		OPTIX_CHECK(optixDeviceContextDestroy(optixContext));
 		optixContext = nullptr;
 	}
 }
