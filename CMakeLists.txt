@@ -2,9 +2,8 @@ cmake_minimum_required(VERSION 3.20)
 project(IXRay)
 
 # CMake options
-option(USE_OPTIX "Enable NVIDIA OptiX support" ON)
-
 option(IXRAY_UTILS "Apply utils to solution" OFF)
+option(IXRAY_UTILS_OPTIX "Enable NVIDIA OptiX support" OFF)
 option(IXRAY_EDITORS "Apply editors to solution" OFF)
 option(IXRAY_MP "Apply multiplayer xrGame and multiplayer utilities to solution" OFF)
 option(IXRAY_MP_SQL "Use SQL Database system for FreeMP mode" OFF)

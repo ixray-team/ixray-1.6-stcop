@@ -87,7 +87,7 @@ endif()
 
 set(OPTIX_AVAILABLE OFF)
 
-if (USE_OPTIX)
+if (IXRAY_UTILS_OPTIX)
 	if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 		find_package(CUDAToolkit)
 	endif()
