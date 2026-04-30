@@ -6,8 +6,8 @@ set(LUA_LIBRARY "${LUAJIT_LIB}" CACHE FILEPATH "" FORCE)
 
 FetchContent_Declare(
     luabind
-    GIT_REPOSITORY https://github.com/ForserX/luabind-latest.git
-    GIT_TAG        master
+    URL https://github.com/ForserX/luabind-latest/archive/refs/heads/master.tar.gz
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 
 set(LUABIND_TESTAPP OFF CACHE BOOL "" FORCE)
