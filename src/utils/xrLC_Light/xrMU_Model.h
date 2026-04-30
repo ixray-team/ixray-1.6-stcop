@@ -33,8 +33,6 @@ public:
 		u32		sw_id;
 	};
 
-	typedef xr_vector<_vertex>::iterator dummy_compiler_treatment;
-
 	//** 
 	typedef	xr_vector<_vertex*>			v_vertices;
 	typedef	v_vertices::iterator		v_vertices_it;
@@ -43,15 +41,18 @@ public:
 	typedef xr_vector<_face*>		v_faces;
 	typedef v_faces::iterator		v_faces_it;
 	typedef v_faces::const_iterator	v_faces_cit;
+
 	typedef xr_vector<_subdiv>		v_subdivs;
 	typedef v_subdivs::iterator		v_subdivs_it;
 
 public:
 	shared_str				m_name;
 	u16						m_lod_ID;
+	
 	v_vertices				m_vertices;
 	v_faces					m_faces;
 	v_subdivs				m_subdivs;
+
 	CDB::CollectorPacked	CL;
 	xr_vector<base_color>	color;
 private:
@@ -75,11 +76,8 @@ public:
 	void					export_cform_rcast	( CDB::CollectorPacked& CL, Fmatrix& xform );
 	void					export_cform_rcast_new (xr_vector<FaceDataEmbree>& faces, Fmatrix& xform);
  
-	u32						find				( const _vertex *v )const;
-	u32						find				( const _face *v )const;
-
-
-
+	u32						find				( const _vertex *v )	const;
+	u32						find				( const _face *v )		const;
 };
 
 void XRLC_LIGHT_API	calc_normals	( xrMU_Model &model );

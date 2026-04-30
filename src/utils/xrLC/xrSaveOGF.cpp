@@ -189,3 +189,14 @@ void CBuild::SaveTREE(IWriter& fs)
 
 	clMsg("Save OGF ENDED");
 }
+
+void ClearingVectors()
+{
+	g_VB.Clear();
+	g_IB.Clear();
+	g_SWI.Clear();
+
+	x_VB.Clear();
+	x_IB.Clear();
+	x_SWI.Clear();
+}

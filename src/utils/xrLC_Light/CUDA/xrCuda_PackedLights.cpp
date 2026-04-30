@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "xrDeflectorLight_Packed.h"
+#include "xrCuda_PackedLights.h"
 
 #include <../xrForms/CompilersUI.h>
 #include "CUDA/CUDARayCast.h"
@@ -9,23 +9,45 @@
 #include "xrDeflector.h"
 #include "xrMU_Model_Reference.h"
 
-PackedLighting GPUTaskinSystem;
+CUDA_PackedLighting GPUTaskinSystem;
 thread_local xr_vector<RayRecvestIndex>	recvest_array;
 extern void ApplyColorGPU(size_t IndexTask, base_color_c& C);
  
 
 // Initializes
-void PackedLighting::InitializeGPU()
+
+void CUDA_PackedLighting::InitializeGPU()
 {
-	clMsg("$ InitializeGPU RayTracing");
-	XRay::RayTrace::CUDA::InitializeRayTracing();
+ 	XRay::RayTrace::CUDA::InitializeGPU();
+}
+
+void CUDA_PackedLighting::InitializeGPU_Model()
+{
+ 	XRay::RayTrace::CUDA::InitializeModel();
+}
+
+void CUDA_PackedLighting::DestroyGPU_Model()
+{
+ 	XRay::RayTrace::CUDA::UnloadingModel();
+	RestartALL();
+}
+
+void CUDA_PackedLighting::RestartALL()
+{
+	// start
+	Recalculated = 0;
+	current_flags = 0;
+
+	// clearing pool
+	xr_concurrent_unordered_map <size_t, base_color_c>  new_colors;
+	task_colors.swap(new_colors);
 }
 
 // Deflectors
-void PackedLighting::LightPointPacked_add_task(size_t IndexTask, void* Owner, Fvector& P, Fvector& N, Face* skip)
+void CUDA_PackedLighting::LightPointPacked_add_task(size_t IndexTask, void* Owner, Fvector& P, Fvector& N, Face* skip)
 {
 	// MT SAFE
-	if (recvest_array.size() >= MAX_RAYS_PER_TASK - 1024)
+	if (recvest_array.size() >= MAX_RAYS_PER_TASK - 16)
 		LightPointPacked_run_tasks();
  
  	RayRecvestIndex task_data;
@@ -36,7 +58,7 @@ void PackedLighting::LightPointPacked_add_task(size_t IndexTask, void* Owner, Fv
 	recvest_array.emplace_back( task_data );
 }
  
-void PackedLighting::LightPointPacked_run_tasks()
+void CUDA_PackedLighting::LightPointPacked_run_tasks()
 {
  	if (recvest_array.size() <= 0) return;
 

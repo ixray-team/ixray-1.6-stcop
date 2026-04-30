@@ -5,7 +5,9 @@
 #include "light_point.h"
 
 #include "../../xrCore/Collision/xrCDB.h"
-#include <xrDeflectorLight_Packed.h>
+#include "CUDA/xrCuda_PackedLights.h"
+#include "xrDeflector.h"
+
 //-----------------------------------------------------------------------
 typedef	xr_multimap<float,vecVertex>	mapVert;
 typedef	mapVert::iterator				mapVertIt;
@@ -81,17 +83,15 @@ void LightVertex()
 	g_trans = new mapVert();
 
 	// Start threads, wait, continue --- perform all the work
- 	const bool Cuda = gCompilerMode.CUDA;
-	const bool Embree = gCompilerMode.Embree;
- 	string128 tmp_phase;
-	sprintf(tmp_phase, "LIGHT: Vertex (*%s*)", Cuda ? "CUDA" : Embree ? "Embree" : "Opcode");
-	Phase(tmp_phase);
+	UpdateCurrentPhase("Vertex");
 
 	Status("Calculating...");
+
+	u32 flags = LGetCurrentFlags() | LP_dont_hemi;
  	if (!gCompilerMode.CUDA)
 	{
  		TasksIds = 0;
-		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [](size_t temp)
+		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [flags](size_t temp)
 		{
 			while (true)
 			{
@@ -108,7 +108,6 @@ void LightVertex()
 					CDB::COLLIDER	DB;
 					DB.ray_options(0);
 
-					u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_dont_hemi;
 					LightPoint(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, lc_global_data()->L_static(), flags, 0);
 
 					vC._tmp_ = v_trans;
@@ -127,9 +126,7 @@ void LightVertex()
 		int INDEX = 0;
 		GPUTaskinSystem.RestartALL();
 		GPUTaskinSystem.ColorsMapType = eCommon;
-
-		u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_dont_hemi;
-		GPUTaskinSystem.current_flags = flags;
+  		GPUTaskinSystem.current_flags = flags;
 
 		xr_vector<float> v_transparency;
 		v_transparency.resize(lc_global_data()->g_vertices().size());
@@ -145,7 +142,6 @@ void LightVertex()
 		}
 
 		GPUTaskinSystem.LightPointPacked_run_tasks();
-
 		for (auto& C : GPUTaskinSystem.task_colors)
 		{
 			int INDEX = GPUTaskinSystem.GetU(C.first);
@@ -163,6 +159,8 @@ void LightVertex()
 
 			g_trans_register(V);
 		}
+
+		GPUTaskinSystem.RestartALL();
 #endif
 	}
  

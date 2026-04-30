@@ -2,15 +2,15 @@
 #include "CUDAGeometryBuilder.h"
 #include "../../xrLC/Build.h"
 
-bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers, CUstream stream)
+bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers)
 {
     if (vertices.empty() || triangles.empty()) return false;
- 
+  
     // 0. Временные буферы для построения
     CUdeviceptr  d_tempBuffer;
     CUdeviceptr  d_tmp_vertexBuffer;
     CUdeviceptr  d_tmp_indexBuffer;
-
+   
     // 1. Загружаем вершины на GPU
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_tmp_vertexBuffer),
         sizeof(Fvector) * vertices.size()));
@@ -18,7 +18,7 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
         vertices.data(),
         sizeof(Fvector) * vertices.size(),
         cudaMemcpyHostToDevice));
-  
+
     // 2. Загружаем индексы на GPU
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_tmp_indexBuffer),
         sizeof(CDB::TRI) * triangles.size()));
@@ -48,30 +48,26 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
     // 4. Настройка параметров сборки
     OptixAccelBuildOptions accelOptions = {};
     accelOptions.operation           = OPTIX_BUILD_OPERATION_BUILD;
-    accelOptions.buildFlags          = OPTIX_BUILD_FLAG_ALLOW_COMPACTION | OPTIX_BUILD_FLAG_PREFER_FAST_TRACE;
+    accelOptions.buildFlags          = OPTIX_BUILD_FLAG_PREFER_FAST_TRACE;
+    accelOptions.buildFlags         |= OPTIX_BUILD_FLAG_ALLOW_COMPACTION;
 
     // 5. Вычисление требуемой памяти
     OptixAccelBufferSizes bufferSizes;
     OPTIX_CHECK(optixAccelComputeMemoryUsage(context, &accelOptions, &buildInput, 1, &bufferSizes));
      
-    clMsg("BLAS : ( Temp : %u mb | update size: %u mb | output: %u mb ) ", 
-        bufferSizes.tempSizeInBytes / 1024 / 1024, 
-        bufferSizes.tempUpdateSizeInBytes / 1024 / 1024,
-        bufferSizes.outputSizeInBytes / 1024 / 1024 
-     );
-
-
     // 6. Выделение памяти
-    CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_tempBuffer), bufferSizes.tempSizeInBytes));
-    CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&outBuffers.blasBuffer), bufferSizes.outputSizeInBytes));
-
-
+    CUDA_CHECK(cudaMalloc((void**) &d_tempBuffer, bufferSizes.tempSizeInBytes));
+    CUDA_CHECK(cudaMalloc((void**) &outBuffers.blasBuffer, bufferSizes.outputSizeInBytes));
+     
     // 7. Готовим дескриптор для запроса размера компактации
     OptixAccelEmitDesc emitDesc = {};
     CUdeviceptr d_compactedSize;
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_compactedSize), sizeof(uint64_t)));
     emitDesc.type = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
     emitDesc.result = d_compactedSize;
+
+    CUstream stream;
+    CUDA_CHECK(cudaStreamCreate(&stream));
 
     // 8. Сборка BLAS
     OPTIX_CHECK(  optixAccelBuild
@@ -114,24 +110,26 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
         ));
 
         CUDA_CHECK(cudaStreamSynchronize(stream));
-
+      
         // Освобождаем старый буфер
         CUDA_CHECK(cudaFree(reinterpret_cast<void*>(outBuffers.blasBuffer)));
-    
+ 
         // Сохраняем компактный
         outBuffers.blasBuffer = d_compactedBuffer;
         outBuffers.blasHandle = compactedHandle;
     }
  
     // 11. Освобождаем временный буфер
+    CUDA_CHECK( cudaStreamDestroy(stream) );
+
     CUDA_CHECK( cudaFree(reinterpret_cast<void*>(d_tempBuffer)));
     CUDA_CHECK( cudaFree(reinterpret_cast<void*>(d_tmp_vertexBuffer) ));
     CUDA_CHECK( cudaFree(reinterpret_cast<void*>(d_tmp_indexBuffer) ));
-     
+      
     return true;
 }
 
-bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffers& outScene, CUstream stream)
+bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffers& outScene)
 {
     if (outScene.blasHandle == 0) {
         Msg("! ERROR: Invalid BLAS handle");
@@ -179,6 +177,9 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_tempBuffer), bufferSizes.tempSizeInBytes));
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&outScene.tlasBuffer), bufferSizes.outputSizeInBytes));
  
+    CUstream stream;
+    CUDA_CHECK(cudaStreamCreate(&stream));
+
     OPTIX_CHECK(optixAccelBuild(
         context,
         stream,
@@ -194,6 +195,8 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
      ));
 
     CUDA_CHECK(cudaStreamSynchronize(stream));
+    CUDA_CHECK(cudaStreamDestroy(stream));
+
 
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_tempBuffer)));
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_instances)));
@@ -205,21 +208,16 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
 #include "../xrLC_GlobalData.h"
 #include "../xrMU_Model_Reference.h"
 #include <embree_raytracing/EmbreeRayTrace.h>
-#include "xrDeflectorLight_Packed.h"
-
-struct FaceDataEmbree;
-
-size_t GetMemory();
  
-bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, OptixMeshBuffers& outScene)
+struct FaceDataEmbree;
+bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, OptixMeshBuffers& outScene)
 {
     xrLC_GlobalData* globalData = lc_global_data();
     if (!globalData)        return false;
-
-
+ 
     OptixGeometryBuilder geometryBuilder;
     
-    size_t StartMemory = GetMemory();
+    size_t StartMemory = GetHeapMemory();
     // 1. Обрабатываем статическую геометрию
     for (Face* F : globalData->g_faces())
     {
@@ -235,9 +233,10 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
     }
 
     // 2. Обрабатываем MU-референсы
+    xr_vector<FaceDataEmbree> tempBuffer;
     for (auto ref : globalData->mu_refs())
     {
-        xr_vector<FaceDataEmbree> tempBuffer;
+        tempBuffer.clear(); 
         ref->export_cform_rcast_new(tempBuffer);
 
         for (auto& pF : tempBuffer)
@@ -251,35 +250,33 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
             geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
         }
     }
+    tempBuffer.clear();
+    tempBuffer.shrink_to_fit();
   
     size_t pVertex = geometryBuilder.RawFacesSize() * 3;
     size_t pFaces  = geometryBuilder.RawFacesSize();
     geometryBuilder.RemoveDublicates_Batched();  
     geometryBuilder.RemoveDublicateFaces();
-
-    Msg("$[GPU Accel Structure] Remove Dublicate Vert : %llu to %llu", pVertex, geometryBuilder.vertices.size());
-    Msg("$[GPU Accel Structure] Remove Dublicate Face : %llu to %llu", pFaces, geometryBuilder.triangles.size());
-
-    Msg("*[GPU Accel Structure] MU-Faces Memory: %u mb", u32( (GetMemory() - StartMemory) / 1024 / 1024));
+    Msg("*[GPU Accel Structure] Collected Structure Faces Memory: %u mb", u32( (GetHeapMemory() - StartMemory) / 1024 / 1024));
   
-    StartMemory = GetMemory();
+    StartMemory = GetHeapMemory();
 
     // 3. Строим BLAS
-    if (!geometryBuilder.BuildBLAS(context, outScene, stream))          return false;
+    if (!geometryBuilder.BuildBLAS(context, outScene))          return false;
   
      // 4. Строим TLAS
-    if (!geometryBuilder.BuildTLAS(context, outScene, stream))          return false;
-    Msg("*[GPU Accel Structure] Cpu (GPU Used) Memory: %u mb", u32( (GetMemory() - StartMemory) / 1024 / 1024));
+    if (!geometryBuilder.BuildTLAS(context, outScene))          return false;
+    Msg("*[GPU Accel Structure] Cpu (GPU Used) Memory: %u mb", u32( (GetHeapMemory() - StartMemory) / 1024 / 1024));
 
-    StartMemory = GetMemory();
     // 5: Face Pointers Loading to GPU
+    StartMemory = GetHeapMemory();
     XRay::RayTrace::CUDA::InitializeFaces(geometryBuilder.facePointers);
-    Msg("*[GPU Accel Structure] GPU FACES COPY Memory: %u mb", u32( (GetMemory() - StartMemory) / 1024 / 1024));
  
+    // Msg("$[GPU Accel Structure] Remove Dublicate Vert : %llu to %llu", pVertex, geometryBuilder.vertices.size());
+    // Msg("$[GPU Accel Structure] Remove Dublicate Face : %llu to %llu", pFaces, geometryBuilder.triangles.size());
 
     geometryBuilder.Clear();
     geometryBuilder.MemoryDealoc();
-
     return true;
 }
 
