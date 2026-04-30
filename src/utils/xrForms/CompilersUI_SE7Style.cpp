@@ -711,7 +711,12 @@ void RenderCompilerUI(int X, int Y)
 
 		if (!hideLogSection)
 		{
+
+#ifndef LCCUDA_BUILD
 			if (ImGui::BeginChild("LogSection", ImVec2(nSize * 3, windowSize.y - topHeight - (buttonSize.y * 2) - 30), true))
+#else 
+			if (ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - topHeight - (buttonSize.y * 2) - 30), true))
+#endif
 			{
 				ImGuiListClipper clipper;
 
@@ -733,9 +738,10 @@ void RenderCompilerUI(int X, int Y)
 
 				ImGui::EndChild();
 			}
-		
-			ImGui::SameLine();
+
 #ifdef LCCUDA_BUILD
+			ImGui::SameLine();
+
 			if (ImGui::BeginChild("GPU USAGE", ImVec2(nSize, windowSize.y - topHeight - (buttonSize.y * 2) - 30), ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar))
 			{
 				extern void CudaUsage(unsigned int& UsageCuda, unsigned int& UsageMemory);
