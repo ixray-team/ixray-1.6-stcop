@@ -14,8 +14,8 @@ else()
 	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 	FetchContent_Declare(
 		freetype
-		GIT_REPOSITORY https://gitlab.freedesktop.org/freetype/freetype.git
-		GIT_TAG VER-2-14-3
+		URL https://gitlab.freedesktop.org/freetype/freetype/-/archive/VER-2-14-3/freetype-VER-2-14-3.tar.gz
+		DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 	)
 	FetchContent_MakeAvailable(freetype)
 
