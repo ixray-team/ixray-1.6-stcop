@@ -47,10 +47,7 @@ int		callback_edge_longest	( const Face* F)
 
 void CBuild::xrPhase_AdaptiveHT_tessalte()
 {
-	CDB::COLLIDER	DB;
-	DB.ray_options(0);
-
-	if (!lc_global_data()->GetSkipTesselate())
+ 	if (gCompilerMode.LC_Tess)
 	{
 		Status("Tesselating...");
 		// clear split flag from all faces + calculate normals
@@ -62,18 +59,12 @@ void CBuild::xrPhase_AdaptiveHT_tessalte()
 		}
 		u_Tesselate(callback_edge_longest, 0, 0);		// tesselate
 	}
-
 }
 
 xr_atomic_u32 ThreadWorkID_Adaptive = 0;
 void CBuild::xrPhase_AdaptiveHT_calculate()
 {
-	const bool Cuda = gCompilerMode.CUDA;
-	const bool Embree = gCompilerMode.Embree;
-
-	string128 tmp_phase;
-	sprintf(tmp_phase, "LIGHT: AdaptiveHT (*%s*)", Cuda ? "CUDA" : Embree ? "Embree" : "Opcode");
-	Phase(tmp_phase);
+	UpdateCurrentPhase("AdaptiveHT");
 
 	// Build model
 	if (!gCompilerMode.CUDA)
@@ -347,44 +338,7 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 
 void CBuild::u_SmoothVertColors(int count)
 {
-	// for (int iteration=0; iteration<count; ++iteration)
-	// {
-	// 	// Gather
-	// 	xr_vector<base_color>	colors;
-	// 	colors.resize			(lc_global_data()->g_vertices().size());
-	// 	for (u32 it=0; it<lc_global_data()->g_vertices().size(); ++it)
-	// 	{
-	// 		// Circle
-	// 		xr_vector<Vertex*>	circle_vec;
-	// 		Vertex*		V		= lc_global_data()->g_vertices()[it];
-	// 
-	// 		for (u32 fit=0; fit<V->m_adjacents.size(); ++fit)
-	// 		{
-	// 			Face*	F		= V->m_adjacents[fit];
-	// 			circle_vec.push_back(F->v[0]);
-	// 			circle_vec.push_back(F->v[1]);
-	// 			circle_vec.push_back(F->v[2]);
-	// 		}
-	// 		std::sort				(circle_vec.begin(),circle_vec.end());
-	// 		circle_vec.erase		(std::unique(circle_vec.begin(),circle_vec.end()),circle_vec.end());
-	// 
-	// 		// Average
-	// 		base_color_c		avg,tmp;
-	// 		for (u32 cit=0; cit<circle_vec.size(); ++cit)
-	// 		{
-	// 			circle_vec[cit]->C._get	(tmp);
-	// 			avg.add					(tmp);
-	// 		}
-	// 		avg.scale			(circle_vec.size());
-	// 		colors[it]._set		(avg);
-	// 	}
-	// 
-	// 	// Transfer
-	// 	for (u32 it=0; it<lc_global_data()->g_vertices().size(); ++it)
-	// 		lc_global_data()->g_vertices()[it]->C	= colors[it];
-	// }
-
-	// Concurency CODE
+ 	// Concurency CODE
 	for (int iteration = 0; iteration < count; ++iteration)
 	{
 		Progress(float(iteration / count));

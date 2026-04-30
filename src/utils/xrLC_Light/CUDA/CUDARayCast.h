@@ -24,6 +24,9 @@ struct OptixMeshBuffers
 
 namespace XRay::RayTrace::CUDA
 {
+    // GPU
+    void InitializeGPU();
+
     // Отдельный инициализвтор
     void InitializeLights();
 
@@ -34,10 +37,11 @@ namespace XRay::RayTrace::CUDA
     void InitializeTexturesAlpha();
 
     // Builder Scene
-	bool BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, OptixMeshBuffers& outScene);
+	bool BuildSceneFromLCGlobalData(OptixDeviceContext context, OptixMeshBuffers& outScene);
 
     // RayTracing
-    void InitializeRayTracing();
+    void InitializeModel();
+    void UnloadingModel();
  
     // Ray Trace Call
     void RayTraceInitialize(u8 CurrentFlags);

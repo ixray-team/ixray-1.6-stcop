@@ -26,7 +26,9 @@ public:
 	}
 	void			Deallocate	()
 	{
-		lmap.destroy();
+		lmap.clear_memory();
+		faces.clear();
+		faces.shrink_to_fit();
 	}
 	
 	u32			Width	()						;
@@ -40,6 +42,7 @@ public:
 	void		Bounds			(u32 ID, Fbox2& dest);
 	void		Bounds_Summary	(Fbox2& bounds);
  
+	void		SaveTextures();
 };
 
 

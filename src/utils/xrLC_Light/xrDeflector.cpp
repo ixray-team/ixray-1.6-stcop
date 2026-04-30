@@ -4,6 +4,16 @@
 #include "math.h"
 #include "xrFace.h"
  
+void UpdateCurrentPhase (LPCSTR text)
+{
+	const bool Cuda = gCompilerMode.CUDA;
+	const bool Embree = gCompilerMode.Embree;
+
+	string128 tmp_phase;
+	sprintf(tmp_phase, "LIGHT: %s (*%s*)", text, Cuda ? "CUDA" : Embree ? "Embree" : "Opcode");
+	Phase(tmp_phase);
+}
+
 // Размещение в dds файле выходном  
 void blit			(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
@@ -114,6 +124,10 @@ CDeflector::CDeflector()
 
 CDeflector::~CDeflector()
 {
+	UVpolys.clear();
+	UVpolys.shrink_to_fit();
+
+	layer.clear_memory();
 }
 
 // Делается в UV генерации

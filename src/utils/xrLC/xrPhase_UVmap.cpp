@@ -17,23 +17,23 @@ void Detach(vecFace* S)
 		for (int i = 0; i < 3; ++i)
 		{
 			Vertex* V = (*F)->v[i];
-			Vertex* VC;
+			Vertex* VNewCreate;
  			map_v2v_it	W = verts.find(V);	// iterator
  
 			if (W == verts.end())
 			{	// where is no such-vertex
-				VC = V->CreateCopy_NOADJ(lc_global_data()->g_vertices());	// make copy
-				verts.insert(std::make_pair(V, VC));
+				VNewCreate = V->CreateCopy_NOADJ(lc_global_data()->g_vertices());	// make copy
+				verts.insert(std::make_pair(V, VNewCreate));
 			}
 			else
 			{
 				// such vertex(key) already exists - update its adjacency
-				VC = W->second;
+				VNewCreate = W->second;
 			}
 			
- 			VC->prep_add(*F);
+			VNewCreate->prep_add(*F);
 			V->prep_remove(*F);
- 			(*F)->v[i] = VC;
+ 			(*F)->v[i] = VNewCreate;
 		}
 	}
 
@@ -190,7 +190,5 @@ void CBuild::xrPhase_UVmap()
 
 void CBuild::mem_Compact()
 {
-	log_vminfo();
-	Memory.mem_compact();
-	log_vminfo();
+ 	Memory.mem_compact();
 }
