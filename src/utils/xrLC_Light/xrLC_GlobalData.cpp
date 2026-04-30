@@ -19,6 +19,7 @@ xrLC_GlobalData*	lc_global_data()
 {
 	return data;
 }
+
 xr_vector<base_Face*> FacesStorage;
 void	create_global_data()
 {
@@ -35,11 +36,7 @@ void	destroy_global_data()
 }
 
 
-xrLC_GlobalData::xrLC_GlobalData() :
-	_gl_linear(false),
-	b_vert_not_register( false ),
-	_skipInvalid(false), _skipTesselate(false),
-	_skipSubdivide(false)
+xrLC_GlobalData::xrLC_GlobalData() : b_vert_not_register( false )
 {
 	_cl_globs._RCAST_Model = 0;
 }
@@ -47,38 +44,6 @@ xrLC_GlobalData::xrLC_GlobalData() :
 void	xrLC_GlobalData	::destroy_rcmodel	()
 {
 	xr_delete		(_cl_globs._RCAST_Model);
-}
-
-void xrLC_GlobalData::clear_build_textures_surface()
-{
-	clMsg( "mem usage before clear build textures surface: %u", Memory.mem_usage() );
-
-	xr_vector<b_BuildTexture>::iterator i = textures().begin();
-	xr_vector<b_BuildTexture>::const_iterator e = textures().end();
-	for (; i != e; ++i)
-	{
-		(*i).pSurface.Clear();
-	}
-
-	Memory.mem_compact();
-	clMsg( "mem usage after clear build textures surface: %u", Memory.mem_usage() );
-}
-void xrLC_GlobalData::clear_build_textures_surface( const xr_vector<u32> &exept )
-{
-	clMsg( "mem usage before clear build textures surface: %u", Memory.mem_usage() );
-	xr_vector<b_BuildTexture>::iterator i = textures().begin();
-	xr_vector<b_BuildTexture>::const_iterator e = textures().end();
-	xr_vector<b_BuildTexture>::const_iterator b = textures().begin();
-	for(;i!=e;++i)
-	{
-		xr_vector<u32>::const_iterator ff = std::find( exept.begin(), exept.end(),u32( i - b ) );
-		if( ff ==  exept.end() )
-		{
-			(*i).pSurface.Clear();
-		}
-	}
-	Memory.mem_compact();
-	clMsg( "mem usage after clear build textures surface: %u", Memory.mem_usage() );
 }
 
 void	xrLC_GlobalData	::create_rcmodel	(CDB::CollectorPacked& CL)
@@ -90,7 +55,6 @@ void	xrLC_GlobalData	::create_rcmodel	(CDB::CollectorPacked& CL)
 
 void		xrLC_GlobalData	::				initialize		()
 {
-	if (strstr(Core.Params,"-att"))	_gl_linear	= true;
 }
 
 
@@ -127,102 +91,108 @@ bool	xrLC_GlobalData	::			b_r_vertices	()
 	return false;
 }
  
-template<typename T>
-std::pair<u32,u32>	get_id( const xr_vector<xrMU_Model*>& mu_models, const T * v )
-{
-
-
-	u32 face_id = u32(-1);
-	struct find
-	{
-		const T * _v;
-		u32& _id;
-		find( const T * v, u32& id) : _v(v), _id( id )
-		{}
-		bool operator () ( const xrMU_Model * m )
-		{	
-			VERIFY(m);
-			u32 id = m->find( _v );
-			if( id == u32(-1) )
-				return false;
-			_id = id;
-			return true;
-		}
-	} f( v, face_id );
-
-	xr_vector<xrMU_Model*> :: const_iterator ii =std::find_if( mu_models.begin(), mu_models.end(), f );
-	if( ii == mu_models.end() )
-		return std::pair<u32,u32>(u32(-1), u32(-1));
-	return std::pair<u32,u32>(u32(ii-mu_models.begin()), face_id );
-}
- 
-enum serialize_mesh_item_type
-{
-	smit_plain = u8(0),
-	smit_model = u8(1),
-	smit_null  = u8(-1)
-};
-  
 xrLC_GlobalData::~xrLC_GlobalData()
 {
  
 }
-
-
-
+ 
 template<typename T>
 void vec_clear( xr_vector<T*> &v )
 {
 	typename xr_vector<T*>::iterator i = v.begin(), e = v.end();
 	for(;i!=e;++i)
-			xr_delete(*i);
+		xr_delete(*i);
 	v.clear();
+ 	v.shrink_to_fit();
+}
+ 
+template<typename T>
+void vec_free(xr_vector<T*>& v)
+{
+	typename xr_vector<T*>::iterator i = v.begin(), e = v.end();
+	for (; i != e; ++i)
+		xr_free(*i);
+
+ 	v.clear();
+	v.shrink_to_fit();
 }
 
-template<typename T>
-void vec_spetial_clear( xr_vector<T> &v )
+#include "../xrLC/Build.h"
+void xrLC_GlobalData::clear_build_textures_surface()
 {
-	typename xr_vector<T>::iterator i = v.begin(), e = v.end();
-	for(;i!=e;++i)
-	{
-		(*i).pSurface.Clear();
-	}
-	v.clear();
+ 	for (auto& surface : textures())
+		surface.pSurface.Clear();
+
+	textures().clear();
+	textures().shrink_to_fit();
 }
 
 void mu_mesh_clear();
-void xrLC_GlobalData::clear_mu_models() {
 
-	clMsg("mem usage before mu_clear %d", Memory.mem_usage());
-	vec_clear(_mu_models);// not clear ogf
-	vec_clear(_mu_refs);
-	mu_mesh_clear();
-	Memory.mem_compact();
-	clMsg("mem usage after mu_clear: %d", Memory.mem_usage());
+// create - destroy 
 
+// typedef poolSS<Vertex, 16 * 1024>	poolVertices;
+// typedef poolSS<Face, 16 * 1024>		poolFaces;
+// static poolVertices	_VertexPool;
+// static poolFaces	_FacePool;
+
+Face* xrLC_GlobalData::create_face()
+{
+ 	return new Face();
 }
 
-void xrLC_GlobalData::clear() {
-	vec_spetial_clear(_cl_globs._textures);
-	_cl_globs._materials.clear();
+void xrLC_GlobalData::destroy_face(Face*& f)
+{
+ 	xr_delete(f);
+}
+
+Vertex* xrLC_GlobalData::create_vertex()
+{
+	return new Vertex();
+}
+
+void xrLC_GlobalData::destroy_vertex(Vertex*& v)
+{
+	xr_delete(v);
+}
+
+void xrLC_GlobalData::clear() 
+{
+	// se7kills (Проверил это отгружается хорошо !)
+ 	clear_build_textures_surface();
+
+ 	_cl_globs._materials.clear();
 	_cl_globs._shaders.Unload();
+  
+	// Пометка чтобы не трогало векторы (_g_faces, _g_vertex) в деструкторе !
+	g_bUnregister = false;
+ 	
+	for (auto F : _g_faces)
+	{
+		F->~Tface();
+		xr_free(F);
+	}
+	_g_faces.clear();
+	_g_faces.shrink_to_fit();
+	clMsg("[xrLC_Remove] mem faces: %u mb", GetHeapMemory() / 1024 / 1024);
+
+	for (auto V : _g_vertices)
+	{
+		V->~Tvertex();
+		xr_free(V);
+	}
+	_g_vertices.clear();
+	_g_vertices.shrink_to_fit();
+	clMsg("[xrLC_Remove] mem vertex: %u mb", GetHeapMemory() / 1024 / 1024);
  
-	vec_clear(_g_lightmaps);
-	vec_clear(_mu_models);//mem leak
+	// Не замечал утечек памяти !
+	vec_clear(_mu_models); 
 	vec_clear(_mu_refs);
 	mu_mesh_clear();
-	gl_mesh_clear();
 
-	gl_mesh_clear();
+	// Lighting stuff
 	vec_clear(_g_deflectors);
-
+	vec_clear(_g_lightmaps);
 	xr_delete(_cl_globs._RCAST_Model);
 }
-
-
-void		xrLC_GlobalData::set_faces_indexses		()
-{
-}
-void		xrLC_GlobalData::set_vertices_indexses	()
-{
-}
+ 
