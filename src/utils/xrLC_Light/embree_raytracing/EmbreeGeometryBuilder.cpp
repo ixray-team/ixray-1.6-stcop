@@ -17,11 +17,7 @@ void TriangleContainer::RemoveDublicatesVertexs(bool isTransparent, bool enable_
     //----------------------
     size_t totalVerts = raw_faces.size() * 3;
  
-    if (raw_faces.empty())
-    {
-        clMsg("$Raw Faces : %u size", raw_faces.size());
-        return;
-    }
+    if (raw_faces.empty())   return;
 
     xr_vector<IndexedVertex> temp;
     temp.reserve(totalVerts);

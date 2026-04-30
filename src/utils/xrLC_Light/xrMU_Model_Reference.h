@@ -25,6 +25,15 @@ public:
 
 public:
 							xrMU_Reference		(): model(0), sector(u16(-1)), flags(Flags32().assign(0)), xform(Fidentity){}
+							~xrMU_Reference() 
+							{ 
+								xr_concurrent_unordered_map<size_t, base_color_c> new_colors;
+								colors_cuda.clear(); 
+								colors_cuda.swap(new_colors);
+
+								color.clear();
+								color.shrink_to_fit();
+							}
 
 	void					Load				( IReader& fs, xr_vector<xrMU_Model*>& mu_models );
 	

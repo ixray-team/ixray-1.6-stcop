@@ -3,6 +3,7 @@
 #include "b_build_texture.h"
 #include "xrFace.h"
 #include "xrLC_GlobalData.h"
+#include "../xrDXT/xrDXT.h"
 
 u32	ImplicitDeflector::Width	()						
 {
@@ -38,7 +39,103 @@ void	ImplicitDeflector::Bounds_Summary (Fbox2& bounds)
 		Bounds	(I,B);
 		bounds.merge(B);
 	}
-} 
+}
+void ImplicitDeflector::SaveTextures()
+{
+	// base (HEMI)
+	{
+		Status("Mixing lighting with texture...");
+		{
+			b_BuildTexture& TEX = *texture;
+			VERIFY(!TEX.pSurface.Empty());
+
+			u32* color = (u32*) *TEX.pSurface;
+			for (u32 V = 0; V < Height(); V++)
+			{
+				for (u32 U = 0; U < Width(); U++)
+				{
+					// Retreive Texel
+					float	hemi = Lumel(U, V).h._r();
+					u32& C = color[V * Width() + U];
+					C = subst_alpha(C, u8_clr(hemi));
+				}
+			}
+		}
+
+		Status("Saving base...");
+		string128 name;
+		string_path out_name;
+		xr_strcpy(name, gCompilerMode.get_lname());
+
+		R_ASSERT(name[0] && texture);
+
+		b_BuildTexture& TEX = *texture;
+		xr_strconcat(out_name, name, "\\", TEX.name, ".dds");
+		FS.update_path(out_name, "$game_levels$", out_name);
+		clMsg("Saving texture '%s'...", out_name);
+		VerifyPath(out_name);
+
+		STextureParams fmt = TEX.THM;
+		switch (gCompilerMode.LmapsFormat)
+		{
+			case LCLightmapFormat::FORMAT_RGBA: fmt.fmt = STextureParams::tfRGBA; break;
+			case LCLightmapFormat::FORMAT_BC7:  fmt.fmt = STextureParams::tfBC7; break;
+			case LCLightmapFormat::FORMAT_BC5:  fmt.fmt = STextureParams::tfDXT5; break;
+		}
+
+		fmt.flags.set(STextureParams::flDitherColor, false);
+		fmt.flags.set(STextureParams::flGenerateMipMaps, false);
+		fmt.flags.set(STextureParams::flBinaryAlpha, false);
+
+		BYTE* raw_data = LPBYTE(*TEX.pSurface);
+		u32	w = TEX.dwWidth;
+		u32	h = TEX.dwHeight;
+		u32	pitch = w * 4;
+		DXTUtils::Compress(out_name, raw_data, 0, w, h, pitch, &fmt, 4);
+	}
+
+	// lmap (RGB + SUN)
+ 	{
+		Status("Saving lmap...");
+		string128 name;
+		string_path out_name;
+		xr_strcpy(name, gCompilerMode.get_lname());
+
+		b_BuildTexture& TEX = *texture;
+		xr_strconcat(out_name, name, "\\", TEX.name, "_lm.dds");
+		FS.update_path(out_name, "$game_levels$", out_name);
+		clMsg("Saving texture '%s'...", out_name);
+		VerifyPath(out_name);
+
+		STextureParams			fmt;
+		switch (gCompilerMode.LmapsFormat)
+		{
+			case LCLightmapFormat::FORMAT_RGBA: fmt.fmt = STextureParams::tfRGBA; break;
+			case LCLightmapFormat::FORMAT_BC7:  fmt.fmt = STextureParams::tfBC7; break;
+			case LCLightmapFormat::FORMAT_BC5:  fmt.fmt = STextureParams::tfDXT5; break;
+		}
+
+		fmt.flags.set(STextureParams::flDitherColor, false);
+		fmt.flags.set(STextureParams::flGenerateMipMaps, false);
+		fmt.flags.set(STextureParams::flBinaryAlpha, false);
+
+		xr_vector<u32> packed;
+		lmap.Pack(packed);
+
+		BYTE* raw_data = LPBYTE(&*packed.begin());
+		u32	w = TEX.dwWidth;
+		u32	h = TEX.dwHeight;
+		u32	pitch = w * 4;
+		DXTUtils::Compress(out_name, raw_data, 0, w, h, pitch, &fmt, 4);
+
+		packed.clear();
+		packed.shrink_to_fit();
+	}
+	
+	// Dealocate
+	Deallocate();
+}
+
 
 // Client Global
 
@@ -53,6 +150,8 @@ vecFace& ImplicitCalcGlobs::query(float px, float py)
 
 void	ImplicitCalcGlobs::Initialize(ImplicitDeflector& d)
 {
+	d.Allocate();
+
 	defl = &d;
 	R_ASSERT(defl);
 	Fbox2 bounds;

@@ -143,7 +143,10 @@ public:
 	void Clear()
 	{
 		vDcl.clear();
+		vDcl.shrink_to_fit();
+
 		vContainers.clear();
+		vContainers.shrink_to_fit();
 	}
 };
 
@@ -208,6 +211,7 @@ public:
 	void Clear()
 	{
 		data.clear();
+		data.shrink_to_fit();
 	}
 };
 
@@ -256,6 +260,7 @@ public:
 	void Clear()
 	{
 		data.clear();
+		data.shrink_to_fit();
 	}
 };
 

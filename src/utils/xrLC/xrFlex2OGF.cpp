@@ -97,9 +97,6 @@ void CBuild::Flex2OGF()
 			
 			// Collect textures
 			OGF_Texture			T;
-			//pOGF->shader		= M->shader;
-			//pOGF->shader_xrlc	= &F->Shader();
-			
 			TRY(T.name			= textures()[M->surfidx].name);
 			TRY(T.pBuildSurface	= &(textures()[M->surfidx]));
 			TRY(pOGF->textures.push_back(T));
@@ -189,19 +186,10 @@ void CBuild::Flex2OGF()
 
 		ProgressID++;
 		Progress(float(ProgressID) / float(g_XSplit.size()));
-
-		if (ProgressID % 256 == 0)
-			clMsg("Progress: %u/%u", ProgressID, g_XSplit.size());
+  		AditionalData("Progress: %u/%u", ProgressID, g_XSplit.size());
 		cs.Leave();
 	}
 	);
-
-	for (auto it : g_XSplit)
-	{
-		if (it != nullptr)
-			xr_delete(it);
-	}
-	g_XSplit.clear	();
 }
 
 void CBuild::SaveOGF()
@@ -249,16 +237,4 @@ void CBuild::SaveOGF()
 		start = ID;
 	}
 }
-
-size_t CBuild::GetTreeSize()
-{
-	size_t treeOgf = 0;
-	for (auto& tree : g_tree)
-	{
-		auto P = smart_cast<OGF*> ( tree );
-		
-		if (P != nullptr)
-		treeOgf += P->Sizeof();
-	}
-	return treeOgf;
-}
+ 
