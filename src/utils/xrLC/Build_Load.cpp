@@ -51,8 +51,6 @@ inline bool Surface_Detect(string_path& F, LPSTR N)
 void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 {
 	IReader&	fs	= const_cast<IReader&>(_in_FS);
-	// HANDLE		hLargeHeap	= HeapCreate(0,64*1024*1024,0);
-	// clMsg		("* <LargeHeap> handle: %X",hLargeHeap);
 
 	u32				i			= 0;
 
@@ -65,6 +63,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	string_path				sh_name;
 	FS.update_path			(sh_name,"$game_data$","shaders_xrlc.xr");
 	shaders().Load			(sh_name);
+
 
 	//*******
 
@@ -99,37 +98,32 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		R_ASSERT				(F);
 		u32 f_count			=	F->length()/sizeof(b_face);
 		lc_global_data()->g_faces().reserve			(f_count);
+
 		for (i=0; i<f_count; i++)
 		{
-			try 
+			Face*	_F			= lc_global_data()->create_face();
+			
+			b_face	B;
+			F->r				(&B,sizeof(B));
+			R_ASSERT			(B.dwMaterialGame<65536);
+
+			_F->dwMaterial		= u16(B.dwMaterial);
+			_F->dwMaterialGame	= B.dwMaterialGame;
+
+			// Vertices and adjacement info
+			for (u32 it=0; it<3; ++it)
 			{
-				Face*	_F			= lc_global_data()->create_face();
-				b_face	B;
-				F->r				(&B,sizeof(B));
-				R_ASSERT			(B.dwMaterialGame<65536);
-
-				_F->dwMaterial		= u16(B.dwMaterial);
-				_F->dwMaterialGame	= B.dwMaterialGame;
-
-				// Vertices and adjacement info
-				for (u32 it=0; it<3; ++it)
-				{
-					int id			= B.v[it];
- 					R_ASSERT		(id<(int)lc_global_data()->g_vertices().size());
-					_F->SetVertex	(it,lc_global_data()->g_vertices()[id]);
-				}
-
-				// transfer TC
-				Fvector2				uv1,uv2,uv3;
-				uv1.set				(B.t[0].x,B.t[0].y);
-				uv2.set				(B.t[1].x,B.t[1].y);
-				uv3.set				(B.t[2].x,B.t[2].y);
-				_F->AddChannel		( uv1, uv2, uv3 );
-			} catch (...)
-			{
-				err_save	();
-				Debug.fatal	(DEBUG_INFO,"* ERROR: Can't process face #%d",i);
+				int id			= B.v[it];
+ 				R_ASSERT		(id<(int)lc_global_data()->g_vertices().size());
+				_F->SetVertex	(it, lc_global_data()->g_vertices()[id]);
 			}
+
+			// transfer TC
+			Fvector2				uv1,uv2,uv3;
+			uv1.set				(B.t[0].x,B.t[0].y);
+			uv2.set				(B.t[1].x,B.t[1].y);
+			uv3.set				(B.t[2].x,B.t[2].y);
+			_F->AddChannel		( uv1, uv2, uv3 );
 		}
 		Progress			(p_total+=p_cost);
 		clMsg				("* %16s: %d","faces",lc_global_data()->g_faces().size());
@@ -143,29 +137,30 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			
 			u32* sm_groups			= NULL;
 			u32 sm_count			=	F->length()/sizeof(u32);
-
+		
 			R_ASSERT				( sm_count == lc_global_data()->g_faces().size() );
 			sm_groups				= xr_alloc<u32>(sm_count);
 			F->r					(sm_groups, F->length());
 			F->close				();
-
+		
 			for(u32 idx=0; idx<sm_count; ++idx)
 				lc_global_data()->g_faces()[idx]->sm_group = sm_groups[idx];
-
+		
 			xr_free					(sm_groups);
 		}
 		
 		if (InvalideFaces())	
 		{
-			err_save		();
-			if (lc_global_data()->GetSkipInvalid()) {
+			// err_save		();
+			if (gCompilerMode.LC_SkipInvalidFaces) 
+			{
 				clMsg("* Total %d invalid faces. Do something.", InvalideFaces());
 			} else {
 				Debug.fatal(DEBUG_INFO, "* FATAL: %d invalid faces. Compilation aborted", InvalideFaces());
 			}
 		}
 	}
-
+	 
 	//*******
 	Status	("Models and References");
 	F = fs.open_chunk		(EB_MU_models);
@@ -178,6 +173,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		}
 		F->close				();
 	}
+	
 	F = fs.open_chunk		(EB_MU_refs);
 	if (F)
 	{
@@ -188,6 +184,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		}		
 		F->close				();
 	}
+
 
 	//*******
 	Status	("Other transfer...");
@@ -328,8 +325,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				BT.dwHeight		= 1024;
 				BT.bHasAlpha	= true;
 				BT.SetHasSurface(false);
-
-			} 
+ 			} 
 			else 
 			{
 				string_path			th_name;
@@ -405,7 +401,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			textures().push_back	(BT);
 		}
 
-		if (!lc_global_data()->GetSkipTHM())
+		if (!gCompilerMode.SkipTHM)
 		{
 			R_ASSERT2(!is_thm_missing, "Some of required thm's are missing. See log for details.");
 			R_ASSERT2(!is_tga_missing, "Some of required tga_textures are missing. See log for details.");

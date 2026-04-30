@@ -50,6 +50,7 @@ void Status(const char* format, ...);
 void StatusNoMsg(const char* format, ...);
 void Progress(const float F);
 void Phase(const char* phase_name);
+void PhaseEnd();
 
 void AditionalData(const char* text, ...);
 

@@ -104,6 +104,8 @@ struct OGF_Base
 
 	void				SaveForCompile(IWriter* W);
 	void				LoadForCompile(IReader* R);
+
+	virtual size_t				SizeOF() { return sizeof(OGF_Base); };
 };
 extern xr_vector<OGF_Base *>		g_tree;
 
@@ -185,12 +187,12 @@ struct OGF : public OGF_Base
 	void				SaveForCompile(IWriter* W);
 	void				LoadForCompile(IReader* R);
 
-	size_t Sizeof()
+	virtual size_t SizeOF() override
 	{
-		u32 SizeV = data.vertices.size() * sizeof(OGF_Vertex);
-		u32 SizeF = data.faces.size() * sizeof(OGF_Face);
-		u32 SizexV = fast_path_data.vertices.size() * sizeof(x_vertex);
-		u32 SizexF = fast_path_data.faces.size() * sizeof(OGF_Face);
+		u32 SizeV  = data.vertices.size()				* sizeof(OGF_Vertex);
+		u32 SizeF  = data.faces.size()					* sizeof(OGF_Face);
+		u32 SizexV = fast_path_data.vertices.size()		* sizeof(x_vertex);
+		u32 SizexF = fast_path_data.faces.size()		* sizeof(OGF_Face);
 		u32 tex = 0;
 		for (auto& T : textures)
 		{
@@ -236,7 +238,7 @@ struct OGF_Reference : public OGF_Base
 		}
 	}
 
-	size_t Sizeof() 
+	virtual size_t SizeOF() override
 	{
 		u32 tex = 0;
 		for (auto& T : textures)
@@ -244,14 +246,13 @@ struct OGF_Reference : public OGF_Base
 			tex += T.name.size();
 			tex += sizeof(T.pBuildSurface);
 		}
-		return sizeof(*this) + tex + model->Sizeof();
+		return sizeof(*this) + tex + model->SizeOF();
 	};
 	void SaveForCompile(IWriter* W);
 	void LoadForCompile(IReader* R);
 };
 
-struct OGF_Node : 
-	public OGF_Base
+struct OGF_Node :  public OGF_Base
 {
 	xr_vector<u32>		chields;
 
@@ -284,6 +285,7 @@ struct	OGF_LOD		: public OGF_Node
 		u32				c_rgb_hemi;	// rgb,hemi
 		u8				c_sun;
 	};
+
 	struct _face
 	{
 		_vertex			v			[4];

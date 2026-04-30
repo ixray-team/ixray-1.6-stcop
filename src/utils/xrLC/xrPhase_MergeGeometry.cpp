@@ -441,9 +441,7 @@ void CBuild::xrPhase_MergeGeometry()
 	u32 Recalculated = 0;
 	while (g_XSplit.size() != Recalculated)
 	{
-		Msg("Start Merging: %u", Recalculated);
-		Recalculated = g_XSplit.size();
-		
+ 		Recalculated = g_XSplit.size();
 		xrPhase_MergeGeometry_Tbb();
 	}
 

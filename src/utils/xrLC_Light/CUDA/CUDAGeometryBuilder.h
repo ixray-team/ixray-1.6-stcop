@@ -205,8 +205,8 @@ public:
         facePointers.swap(new_dummy);
     }
 
-    bool BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers, CUstream stream);
-    bool BuildTLAS(OptixDeviceContext context, OptixMeshBuffers& outScene, CUstream stream);
+    bool BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers);
+    bool BuildTLAS(OptixDeviceContext context, OptixMeshBuffers& outScene );
 
     // Initialize Model
     void InitializeModel()

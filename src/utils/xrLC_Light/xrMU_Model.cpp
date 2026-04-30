@@ -14,7 +14,6 @@ xrMU_Model::~xrMU_Model()
   	clear_mesh	();
 }
 
-
 poolSS<_vertex,8*1024>	&mu_vertices_pool();
 poolSS<_face,8*1024>	&mu_faces_pool();
 
@@ -34,13 +33,18 @@ static struct destruct_face_not_uregister
 	}
 } _destruct_face;
 
+#include "../xrLC/OGF_Face.h"
 void xrMU_Model::clear_mesh			()
 {
 	vec_clear( m_vertices, _destruct_vertex ); 
 	vec_clear( m_faces, _destruct_face );
-}
- 
+	color.clear();
+	color.shrink_to_fit();
 
+ 	m_subdivs.clear();
+	m_subdivs.shrink_to_fit();
+}
+  
 u32	xrMU_Model::find( const _vertex *v ) const
 {
  	v_vertices::const_iterator i = std::find( m_vertices.begin(), m_vertices.end(), v );

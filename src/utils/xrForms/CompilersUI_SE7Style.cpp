@@ -48,6 +48,17 @@ void DrawAIConfig();
 void DrawDOConfig();
 void DrawLCConfig();
 
+
+void DrawDownUI()
+{
+	ImGui::Separator();
+
+	ImGui::Checkbox("SwitchUI", &ShowMainUI);			ImGui::SameLine();
+	ImGui::Checkbox("auto-scrool", &autoScroll);		ImGui::SameLine();
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", GetHeapMemory() / 1024 / 1024);
+}
+
 void RenderMainUI()
 {
 	int Size[2] = {};
@@ -162,10 +173,12 @@ void RenderMainUI()
 				}
 			}
 
-			ShowMainUI = false;
 			extern void StartCompile();
 			if (!levelsEmpty)
- 				StartCompile();
+			{
+				ShowMainUI = false;
+				StartCompile();
+			}
  			else
 			{
 				SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning!", "No levels selected.", nullptr);
@@ -174,88 +187,8 @@ void RenderMainUI()
 
 	}
 	 
-	if (true)
-	{
-		ImGui::Separator();
-
-		if (ImGui::Button(autoScroll ? "Disable Auto-Scroll" : "Enable Auto-Scroll"))
-		{
-			autoScroll = !autoScroll;
-		}
-		ImGui::SameLine();
-		ImGui::TextColored(ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", GetHeapMemory() / 1024 / 1024);
-	}
- 
+	DrawDownUI();
 	ImGui::End();
-
-
-	/*
-		Якорный переход просчитывается по порядку.
-			Первый yButton будет связан с первым yRow
-
-		yButton - может иметь любое название.
-	*/
-
-	// для включения
-	//    \/
-	if (false && ImGui::Begin("DemoWindow##dw02", 0, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse))
-	{
-///////////////////////////////////////////////
-#define yButton(text) ++yStep; if (ImGui::Button(text)) colClick = yStep;
-#define yRow()   ++yStep; ImGui::TableNextRow(); ImGui::TableNextColumn(); if (yStep == colClick) { ImGui::SetScrollHereY(0.0f); colClick = 0; }
-///////////////////////////////////////////////
-
-		ImVec2 winSize = ImGui::GetWindowSize();
-		//
-		int yStep = 0;
-		int colClick = 0;
-
-		ImGui::BeginGroup();
-			yButton("Compiler");
-			yButton("xrLC");
-			yButton("xrAI");
-			yButton("xrDO");
-		ImGui::EndGroup();
-
-		ImGui::SameLine();
-		
-		yStep = 0;
-		ImVec2 ListBoxSize = { -1, -1 };
-		if (ImGui::BeginTable("##DemoContent", 1, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders| ImGuiTableFlags_ScrollY, ListBoxSize))
-		{
-			ImGui::TableSetupColumn("c1");
-			
-			yRow();
-
-			ImGui::Text("Compiler");
-			ImGui::Separator();
-			DrawCompilerConfig();
-
-			yRow();
-
-			ImGui::Text("xrLC");
-			ImGui::Separator();
-			DrawLCConfig();
-
-			yRow();
-
-			ImGui::Text("xrAI");
-			ImGui::Separator();
-			DrawAIConfig();
-
-			yRow();
-
-			ImGui::Text("xrDO");
-			ImGui::Separator();
-			DrawDOConfig();
-
-			//Заглушка
-			ImGui::Dummy({ 0,winSize.y -123});
-
-			ImGui::EndTable();
-		}
-		ImGui::End();
-	}
 }
 
 int item_current_lightmap = 2;
@@ -294,8 +227,8 @@ void DrawLCConfig()
 
 		ImGui::BeginDisabled(!gCompilerMode.LC);
 
-		// ImGui::Checkbox("GI (Radiosity)", &gCompilerMode.LC_GI);
-		ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
+		ImGui::Checkbox("Skip Static map", &gCompilerMode.LC_SkipStaticMap);
+ 		ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
 		ImGui::Checkbox("No Smooth Group", &gCompilerMode.LC_NoSMG);
 		ImGui::Checkbox("Noise", &gCompilerMode.LC_Noise);
 		ImGui::Checkbox("Tesselation", &gCompilerMode.LC_Tess);
@@ -778,7 +711,12 @@ void RenderCompilerUI(int X, int Y)
 
 		if (!hideLogSection)
 		{
+
+#ifndef LCCUDA_BUILD
 			if (ImGui::BeginChild("LogSection", ImVec2(nSize * 3, windowSize.y - topHeight - (buttonSize.y * 2) - 30), true))
+#else 
+			if (ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - topHeight - (buttonSize.y * 2) - 30), true))
+#endif
 			{
 				ImGuiListClipper clipper;
 
@@ -800,9 +738,10 @@ void RenderCompilerUI(int X, int Y)
 
 				ImGui::EndChild();
 			}
-		
-			ImGui::SameLine();
+
 #ifdef LCCUDA_BUILD
+			ImGui::SameLine();
+
 			if (ImGui::BeginChild("GPU USAGE", ImVec2(nSize, windowSize.y - topHeight - (buttonSize.y * 2) - 30), ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar))
 			{
 				extern void CudaUsage(unsigned int& UsageCuda, unsigned int& UsageMemory);
@@ -837,17 +776,7 @@ void RenderCompilerUI(int X, int Y)
 		}
 	}
 
-	ImGui::Separator();
-
-	// Нижний Список
-	{
-		if (ImGui::Button(autoScroll ? "Disable Auto-Scroll" : "Enable Auto-Scroll"))
-		{
-			autoScroll = !autoScroll;
-		}
-		ImGui::SameLine();
-		ImGui::TextColored(ImVec4{ 0, 0.9, 0, 1 }, "Memory usage: %u mb", GetHeapMemory() / 1024 / 1024);
-	}
+	DrawDownUI();
 
 	ImGui::End();
 }

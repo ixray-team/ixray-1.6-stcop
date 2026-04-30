@@ -9,8 +9,6 @@
 #include "xrFace.h"
 #include "xrLC_GlobalData.h"
 
-
-#include "xrDeflectorLight_Packed.h"
 #include "../xrForms/CompilersUI.h"
 
 extern CompilersMode gCompilerMode;
@@ -46,7 +44,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
  	for (size_t Iter = 0; Iter < m_vertices.size(); Iter++)
  		SafeVertices[Iter] = *m_vertices[Iter];
 	
-	u32 SampleMAX = lc_global_data()->GetOverrideSettings() ? lc_global_data()->GetJitterMU() : 6;
+	u32 SampleMAX = gCompilerMode.IsOverloadedSettings ? gCompilerMode.LC_JSampleMU : 6;
 	const int n_samples = (g_params().m_quality == ebqDraft) ? 1 : SampleMAX;
 
 	// Perform lighting
@@ -102,8 +100,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		{
 			vC.hemi = 0.75f;
 		}
-
-		V.C._set				(vC);
+ 		V.C._set				(vC);
 
 		// Search
 		const float key			= V.P.x;
@@ -217,7 +214,7 @@ void xrMU_Model::calc_lighting	()
 		xr_delete(M);
  	}
 
-	clMsg					("model '%s' - REF_lighted.",*m_name);
+//	clMsg					("model '%s' - REF_lighted.",*m_name);
 }
  
 
