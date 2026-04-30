@@ -178,6 +178,7 @@ void EmbreeRayTraceModel::CommitScene()
 
 void EmbreeRayTraceModel::InitializeGeometry()
 {
+	Phase("Embree: Initialize Geometry");
  	// Конструктор модели
  	BuildRaytraceModel();
 	
@@ -249,7 +250,7 @@ const char* GetDeviceConfig()
 
 void InitializeEmbreeDevice()
 {
-	if (isDeviceInitialized)		return;
+ 	if (isDeviceInitialized)		return;
 
 	EmbreeDevice = rtcNewDevice(GetDeviceConfig());
   	rtcSetDeviceErrorFunction(EmbreeDevice, &errors_embree, nullptr);

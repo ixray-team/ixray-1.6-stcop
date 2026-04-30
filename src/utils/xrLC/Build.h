@@ -13,6 +13,8 @@
 class xrLC_GlobalData;
 class xrMU_Model;
 class xrMU_Reference;
+class CSector;
+
 extern "C" XRLC_LIGHT_API xrLC_GlobalData*	lc_global_data();
 //////////////////////////////////////////////////////////////////////////
 // tesselator callbacks
@@ -25,7 +27,8 @@ typedef void	tesscb_vertex		(Vertex*	V);	// new vertex
 
 class  base_lighting;
 extern size_t GetHeapMemory();
-  
+extern size_t GetHeapMemoryIXray();
+
 //////////////////////////////////////////////////////////////////////////
 class CBuild  
 {
@@ -59,10 +62,9 @@ public:
  
 public:
 	void	Load					(const b_params& P, const IReader&  fs);
-	void	Run						(const char* path);
+  	void	Run						(const char* path);
  
 	void	RunAfterLight			( IWriter* fs	);
-	void	Tesselate				();
 	void	PreOptimize				();
 	void	CorrectTJunctions		();
 
@@ -78,9 +80,9 @@ public:
 	void	xrPhase_TangentBasis	();
 
 	void	BuildCForm				();
+	void	BuildRapid				(bool bSave);
 	void	BuildPortals			(IWriter &fs);
-
- 	void	BuildRapid				(bool bSave);
+	 
 		
 	void	IsolateVertices			(bool bProgress);
 	void	xrPhase_ResolveMaterials();
@@ -88,27 +90,24 @@ public:
 	void	xrPhase_Subdivide		();
 	void	ImplicitLighting		();
 
+	// Lighting Functions
  	void	Light_prepare			();
-	void	Light					();
+ 	void	Light					();
  
 
 	// Lmaps Processing 
-	void	ProcessLMAPS_CPU		();
  	void	LMaps					();
-
-
-	//void	Light_R2				();
-	void	LightVertex				();
+  	void	LightVertex				();
 	void	xrPhase_MergeLM			(xr_vector<CDeflector*>& deflectors);
  
 	void	xrPhase_MergeGeometry	();
 
+	// Converting OGF
 	void	Flex2OGF				();
-	void	SaveOGF();
-	size_t	GetTreeSize();
-
 	void	BuildSectors			();
-
+	
+	// Saving
+	void	SaveOGF();
 	void	SaveLights				(IWriter &fs);
 	void	SaveTREE				(IWriter &fs);
 	void	SaveSectors				(IWriter &fs);
@@ -118,6 +117,7 @@ public:
 	void	CheckBeforeSave			( u32 stage );
 	void	TempSave				( u32 stage );
  
+	xr_vector<CSector*>	g_sectors;
 
 	CBuild	();
 	~CBuild	();

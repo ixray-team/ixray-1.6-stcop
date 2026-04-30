@@ -9,8 +9,7 @@ bool	cmp_face_material		(_face* f1, _face* f2)
 //static xrMU_Model::v_faces temp_vector;
 void xrMU_Model::calc_materials	()
 {
-	
-	xrMU_Model::v_faces &temp_vector			= m_faces;
+ 	xrMU_Model::v_faces &temp_vector			= m_faces;
 
 	std::sort			(temp_vector.begin(),temp_vector.end(),cmp_face_material);
 
@@ -47,5 +46,5 @@ void xrMU_Model::calc_materials	()
 		it--;
 	}
 
-	clMsg	("model '%s' - %d subdivisions",*m_name,m_subdivs.size());
+//	clMsg	("model '%s' - %d subdivisions",*m_name,m_subdivs.size());
 }
