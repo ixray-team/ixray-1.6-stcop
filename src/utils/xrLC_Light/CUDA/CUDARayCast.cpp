@@ -10,19 +10,9 @@
 #include "Vector3HW.cuh"
 
 // Пример использования:
-OptixContext optixContext;
+OptixContext optixContext;								// Постоянный буфер !
 OptixMeshBuffers CommitedScene;
 static CUstream cudaStream = nullptr;
-
-// Lighting 
-int					  size_lights;
-Hardware_Lighting*	  gpu_lights   = nullptr;			// GPU alloc
-
-int					  size_faces;
-Hardware_FaceData*	  gpu_faces    = nullptr;
-
-int					  size_textures;
-Hardware_TextureData* gpu_textures = nullptr;
 
 struct TextureDataCPU
 {
@@ -30,7 +20,32 @@ struct TextureDataCPU
 	u32 Width;
 	u32 Height;
 };
- 
+
+void XRay::RayTrace::CUDA::InitializeGPU()
+{
+	// Однократная инициализация
+	if (optixContext.Initialize())
+	{
+		Msg("[OptiX] Successfully initialized OptiX context");
+ 	}
+	else
+	{
+		FATAL("[OptiX] Failed to initialize OptiX context");
+	}
+}
+
+// Loading Buffers
+xr_vector<Hardware_TextureData> cpu_tex_gpu;
+
+int					  size_lights;
+Hardware_Lighting* gpu_lights = nullptr;			// GPU alloc
+
+int					  size_faces;
+Hardware_FaceData* gpu_faces = nullptr;
+
+int					  size_textures;
+Hardware_TextureData* gpu_textures = nullptr;
+
 void XRay::RayTrace::CUDA::InitializeLights()
 {
 	auto Lights = lc_global_data()->L_static();
@@ -123,6 +138,8 @@ void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<Face*>& Faces)
 	// РЕАЛЬНО освобождаем CPU память
 	faces_host.clear();
 	faces_host.shrink_to_fit();
+
+	Msg("[GPU DEVICE MEMORY] Faces[%u] Allocated: %u mb", faces_host.size(), alloc_size/ 1024 / 1024);
 }
 
 void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
@@ -163,8 +180,7 @@ void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 
 
 	// Textures (alpha only)
-	xr_vector<Hardware_TextureData> cpu_tex_gpu(Textures.size());
-
+	cpu_tex_gpu.resize(Textures.size());
 	size_t allocated = 0;
 	for (size_t i = 0; i < Textures.size(); ++i)
 	{
@@ -202,45 +218,10 @@ void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 		cudaMemcpyHostToDevice) );
 
 
-	allocated += cpu_tex_gpu.size() * sizeof(Hardware_TextureData);
+	allocated     += cpu_tex_gpu.size() * sizeof(Hardware_TextureData);
 	size_textures = cpu_tex_gpu.size();
 
-	Msg("[GPU DEVICE MEMORY] Textures[%u] Allocate : %llu kb", cpu_tex_gpu.size(), allocated / 1024);
-}
-
-void XRay::RayTrace::CUDA::InitializeRayTracing()
-{
-	Phase("CUDA: Initialize Raytrace Model");
- 
-	// Однократная инициализация
-	static bool initialized = false;
-	if (!initialized)
-	{
-		if (optixContext.Initialize())
-		{
-			cudaStream = OptixContext::CreateCudaStream();
-			Msg("[OptiX] Successfully initialized OptiX context");
-			initialized = true;
-		}
-		else
-		{
-			FATAL("[OptiX] Failed to initialize OptiX context");
-		}
-	}
-
-	// Использование контекста
-	OptixDeviceContext context = optixContext.GetOptixContext();
-	BuildSceneFromLCGlobalData(context, cudaStream, CommitedScene);
- 
-	InitializeLights();
-	InitializeTexturesAlpha();
-}
-
-// При завершении работы
-void CleanupRayTracing()
-{
-	OptixContext::DestroyCudaStream(cudaStream);
-	optixContext.Destroy();
+	Msg("[GPU DEVICE MEMORY] Textures[%u] Allocate : %llu mb", cpu_tex_gpu.size(), allocated / 1024 / 1024);
 }
 
 class RayTracer
@@ -263,22 +244,36 @@ class RayTracer
 
 public:
 	xr_vector<base_color_c> colors;
+
+	// Tasking
+	u32 LastIndexTask = 0;
  	u8  current_flags = 0;
  	bool isInitialized = false;
 
 	~RayTracer()
 	{
-		if (h_params) cudaFreeHost(h_params);
-		if (h_rays) cudaFreeHost(h_rays);
-		if (h_colors) cudaFreeHost(h_colors);
+		ClearingBuffers();
+	}
 
-		if (d_params) cudaFree(d_params);
-		if (d_rays) cudaFree(d_rays);
-		if (d_colors) cudaFree(d_colors);
+	void ClearingBuffers()
+	{
+		isInitialized = false;
+
+		if (h_params) cudaFreeHost(&h_params);
+		if (h_rays) cudaFreeHost(&h_rays);
+		if (h_colors) cudaFreeHost(&h_colors);
+
+		if (d_params) cudaFree(&d_params);
+		if (d_rays) cudaFree(&d_rays);
+		if (d_colors) cudaFree(&d_colors);
  	}
 	
 	void Init(int max_rays)
 	{
+		LastIndexTask = 0;
+		current_flags = 0;
+		GetColors().clear();
+
 		this->max_rays = max_rays;
 		CUDA_CHECK(cudaStreamCreate(&stream));
 
@@ -311,7 +306,6 @@ public:
    
 	// Заполнять после вызова StartRayTracing (чтобы индекс начинался с 0) (при каждой новой стадии освещения)
 	
-	u32 LastIndexTask = 0;
 	void WriteRayToBuffer(RayRecvestIndex& Task, size_t INDEX)
 	{
 		h_rays[INDEX] =
@@ -416,15 +410,20 @@ public:
 	}
 };
 
+xr_concurrent_vector<RayTracer*> ThreadsRayTracers;
+
 thread_local RayTracer GPURayTracer;
  
-
 // Raytracer Initialize
 void XRay::RayTrace::CUDA::RayTraceInitialize(u8 CurrentFlags)
 {
 	if (!GPURayTracer.isInitialized)
- 		GPURayTracer.Init(MAX_RAYS_PER_GPU);
- 	GPURayTracer.current_flags = CurrentFlags; 
+	{
+		GPURayTracer.Init(MAX_RAYS_PER_GPU);
+		ThreadsRayTracers.push_back(&GPURayTracer);
+	}
+	
+	GPURayTracer.current_flags = CurrentFlags; 
 }
 
 void XRay::RayTrace::CUDA::RayTraceAddRay(RayRecvestIndex& task, size_t index)
@@ -442,3 +441,36 @@ xr_vector<base_color_c>& XRay::RayTrace::CUDA::RayTraceResult()
 	return GPURayTracer.GetColors();
 }
 
+// Загрузка моделей
+void XRay::RayTrace::CUDA::InitializeModel()
+{
+	Phase("CUDA: Initialize Raytrace Model");
+	// Использование контекста
+	OptixDeviceContext context = optixContext.GetOptixContext();
+	BuildSceneFromLCGlobalData(context, CommitedScene);		// Test
+
+	// Создаем источники света
+	InitializeLights();
+	InitializeTexturesAlpha();
+}
+ 
+void XRay::RayTrace::CUDA::UnloadingModel()
+{
+	for (auto TRACE : ThreadsRayTracers)
+  		TRACE->ClearingBuffers();
+ 	ThreadsRayTracers.clear();
+
+	for (auto& T : cpu_tex_gpu)
+	{
+		cudaFree(T.pSurface);
+	}
+	cpu_tex_gpu.clear();
+	cpu_tex_gpu.shrink_to_fit();
+
+	cudaFree(&gpu_textures);
+	cudaFree(&gpu_faces);
+	cudaFree(&gpu_lights);
+
+	cudaFree(&CommitedScene.blasBuffer);
+	cudaFree(&CommitedScene.tlasBuffer);;
+}

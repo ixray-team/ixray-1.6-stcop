@@ -24,12 +24,17 @@ public:
 		marker.clear();		marker.assign	(size, 0);
  		samples.clear();	samples.assign  (size, 0);
 	}
+
 	void					destroy			()
 	{
 		width=height		= 0;
 		surface.clear();
 		marker.clear();
 		samples.clear();
+
+ 		surface.shrink_to_fit();
+		marker.shrink_to_fit();
+		samples.shrink_to_fit();
 	}
 
 	void					clear_memory()

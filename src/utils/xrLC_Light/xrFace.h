@@ -77,13 +77,7 @@ class Material;
 class Edge;
 
 // Typedefs
-namespace detail
-{
-	typedef xr_vector<Vertex>::iterator	dummy_compiler_treatment;
-}
-
 #include "xrUVpoint.h"
-
 extern XRLC_LIGHT_API bool g_bUnregister;
 
 #pragma pack(pop)

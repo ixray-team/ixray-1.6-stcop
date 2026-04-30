@@ -2,7 +2,7 @@
 #include "Build.h"
 #include "Sector.h"
 #include "OGF_Face.h"
-xr_vector<CSector*>	g_sectors;
+
 
 void CBuild::BuildSectors()
 {

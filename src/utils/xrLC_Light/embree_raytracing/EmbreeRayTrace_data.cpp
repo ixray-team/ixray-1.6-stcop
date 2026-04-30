@@ -89,8 +89,6 @@ void EmbreeRayTraceModel::BuildModel(xr_vector<FaceDataEmbree>& faces)
 		if ( !isOpcue) IndexFaceTransp++;
 	}
 
-	clMsg("RawFaces total : %u | RawFaces Transp: %u", IndexFace, IndexFaceTransp);
-
 	static_geom.RemoveDublicatesVertexs(false, false);			// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
 	static_geom_transp.RemoveDublicatesVertexs(true, false);	// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
 

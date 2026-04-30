@@ -1,6 +1,7 @@
 #include "../xrLC/StdAfx.h"
 #include "../xrLC/Build.h"
 #include "../xrLC_Light/xrLC_GlobalData.h"
+ 
 #include <CompilersUI.h>
 
 CBuild* pBuild = NULL;
@@ -28,30 +29,19 @@ extern CompilersMode gCompilerMode;
 
 void StartupLC() 
 {
-	g_build_options.b_radiosity = gCompilerMode.LC_GI;
-	g_build_options.b_noise = gCompilerMode.LC_Noise;
-	g_using_smooth_groups = !gCompilerMode.LC_NoSMG;
-
-	// Faster FPU 
-	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+	g_build_options.b_radiosity		= gCompilerMode.LC_GI;
+	g_build_options.b_noise			= gCompilerMode.LC_Noise;
+	g_using_smooth_groups			= !gCompilerMode.LC_NoSMG;
 
 	// Load project
 	for (auto& [Name, Selected] : gCompilerMode.Files)
 	{
-		if (!Selected)
-			continue;
+		if (!Selected)	continue;
 
-		create_global_data();
-		lc_global_data()->SetSkipInvalid(gCompilerMode.LC_SkipInvalidFaces);
-		lc_global_data()->SetSkipTesselate(!gCompilerMode.LC_Tess);
-		lc_global_data()->SetSkipSubdivide(gCompilerMode.LC_NoSubdivide);
-		lc_global_data()->SetSkipTHM(gCompilerMode.SkipTHM);
-
+		gCompilerMode.compilation_level = Name;
+ 		create_global_data();
+	
 		// Se7kills
- 		lc_global_data()->SetSkipWeld(gCompilerMode.LC_skipWeld);
-
-		lc_global_data()->SetLevelName(Name.data());
-
 		string256 temp;
 		xr_sprintf(temp, "%s - Levels Compiler", Name.data());
 		SDL_SetWindowTitle(g_AppInfo.Window, temp);
@@ -59,10 +49,7 @@ void StartupLC()
 		string_path prjName;
 		FS.update_path(prjName, "$game_levels$", xr_strconcat(prjName, Name.data(), "\\build.prj"));
 
-		string256 phaseName;
-		Phase(xr_strconcat(phaseName, "Reading project [", Name.data(), "]..."));
-
-		string256 inf;
+  		string256 inf;
 		IReader* F = FS.r_open(prjName);
 		if (NULL == F)
 		{
@@ -74,35 +61,34 @@ void StartupLC()
 
 		// Version
 		F->r_chunk(EB_Version, &version);
-		clMsg("version: %d", version);
-		R_ASSERT(XRCL_CURRENT_VERSION == version);
+ 		R_ASSERT(XRCL_CURRENT_VERSION == version);
 
 		// Header
 		b_params Params;
 		F->r_chunk(EB_Parameters, &Params);
 
 		// Conversion
-		Phase("Converting data structures...");
 		pBuild = new CBuild();
-		pBuild->Load(Params, *F);
+		
+		Phase("Converting data structures...");
+ 		pBuild->Load(Params, *F);
+		FS.r_close(F);
 
-		lc_global_data()->SetOverrideSettings(gCompilerMode.IsOverloadedSettings);
-  
+		// Test
 		if (gCompilerMode.IsOverloadedSettings)
 		{
 			g_params().m_lm_jitter_samples = gCompilerMode.LC_JSample;
 			g_params().m_lm_pixels_per_meter = gCompilerMode.LC_Pixels;
   			g_params().m_weld_distance = gCompilerMode.WeldDistance;
- 			lc_global_data()->SetJitterMU(gCompilerMode.LC_JSampleMU);
 		}
-
-		FS.r_close(F);
 
 		// Call for builder
 		string_path lfn;
 		FS.update_path(lfn, _game_levels_, Name.data());
 		pBuild->Run(lfn);
 		xr_delete(pBuild);
+
+		PhaseEnd();
 	}
 	    
 	 
