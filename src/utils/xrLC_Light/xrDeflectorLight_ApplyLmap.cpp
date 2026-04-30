@@ -121,7 +121,10 @@ u32	__stdcall rms_average(lm_layer& lm, base_color_c& C)
 	return	_count;
 }
 
-bool	compress_Zero(lm_layer& lm, u32 rms)
+#define rms_zero	((4+g_params().m_lm_rms_zero)/2)
+#define rms_shrink	((8+g_params().m_lm_rms)/2)
+
+bool	compress_Zero(lm_layer& lm)
 {
 	// Average color
 	base_color_c	_c;
@@ -141,7 +144,7 @@ bool	compress_Zero(lm_layer& lm, u32 rms)
 	u8	_b = u8_clr(_c.rgb.z);
 	u8	_s = u8_clr(_c.sun);
 	u8	_h = u8_clr(_c.hemi);
-	if (rms_test(lm, _r, _g, _b, _s, _h, rms))
+	if (rms_test(lm, _r, _g, _b, _s, _h, rms_zero))
 	{
 		u32		c_x = BORDER * 2;
 		u32		c_y = BORDER * 2;
@@ -155,25 +158,25 @@ bool	compress_Zero(lm_layer& lm, u32 rms)
 	return false;
 }
 
-bool	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h)
+bool	compress_RMS(lm_layer& lm, u32& w, u32& h)
 {
 	// *** Try to bilinearly filter lightmap down and up
 	w = 0, h = 0;
 	if (lm.width >= 2)
 	{
 		w = lm.width / 2;
-		if (!rms_test_compress(lm, w, lm.height, rms))
+		if (!rms_test_compress(lm, w, lm.height, rms_shrink))
 		{
 			// 3/4
 			w = (lm.width * 3) / 4;
-			if (!rms_test_compress(lm, w, lm.height, rms))
+			if (!rms_test_compress(lm, w, lm.height, rms_shrink))
 				w = 0;
 		}
 		else
 		{
 			// 1/4
 			u32 nw = (lm.width * 1) / 4;
-			if (rms_test_compress(lm, nw, lm.height, rms))
+			if (rms_test_compress(lm, nw, lm.height, rms_shrink))
 				w = nw;
 		}
 	}
@@ -181,18 +184,18 @@ bool	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h)
 	if (lm.height >= 2)
 	{
 		h = lm.height / 2;
-		if (!rms_test_compress(lm, lm.width, h, rms))
+		if (!rms_test_compress(lm, lm.width, h, rms_shrink))
 		{
 			// 3/4
 			h = (lm.height * 3) / 4;
-			if (!rms_test_compress(lm, lm.width, h, rms))
+			if (!rms_test_compress(lm, lm.width, h, rms_shrink))
 				h = 0;
 		}
 		else
 		{
 			// 1/4
 			u32 nh = (lm.height * 1) / 4;
-			if (rms_test_compress(lm, lm.width, nh, rms))
+			if (rms_test_compress(lm, lm.width, nh, rms_shrink))
 				h = nh;
 		}
 	}
@@ -202,7 +205,6 @@ bool	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h)
 			w = lm.width;
 		if (0 == h)
 			h = lm.height;
-		//		clMsg	("* RMS: [%d,%d] => [%d,%d]",lm.width,lm.height,w,h);
 		return true;
 	}
 	return false;

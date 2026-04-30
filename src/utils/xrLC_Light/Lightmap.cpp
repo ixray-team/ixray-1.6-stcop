@@ -19,6 +19,8 @@ CLightmap::CLightmap()
 
 CLightmap::~CLightmap()
 {
+	lm.clear_memory();
+	lm_texture.pSurface.Clear();
 }
  
 void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, bool bRotated)
@@ -39,7 +41,8 @@ void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, boo
 		F->lmap_layer		= this;
 		F->AddChannel		(P.uv[0], P.uv[1], P.uv[2]);
 	}
-	tris.clear(); tris.shrink_to_fit();
+	tris.clear(); 
+	tris.shrink_to_fit();
 	
 	// Perform BLIT
 	lm_layer&	L		=	D->layer;
@@ -122,56 +125,23 @@ void CLightmap::Save(LPCSTR path)
 				lm.marker[offset] = 0;
 		}
 	}
-
-	xr_vector<u32>			lm_packed;
-	lm.Pack(lm_packed);
-
-	xr_vector<u32>			hemi_packed;
-	lm.Pack_hemi(hemi_packed);
-
+	
 	lm_texture.bHasAlpha = true;
-	lm_texture.dwWidth = lm.width;
+	lm_texture.dwWidth  = lm.width;
 	lm_texture.dwHeight = lm.height;
 	lm_texture.pSurface.Clear();
- 	lm.clear_memory();
 
+
+	// Записываем RGB + SUN
 	if (true)
 	{
 		string_path				FN;
 		xr_sprintf(lm_texture.name, "lmap#%d", lmapNameID);
 		xr_sprintf(FN, "%s%s_1.dds", path, lm_texture.name);
-		
-		BYTE* raw_data = LPBYTE(&*lm_packed.begin());
-		u32	w = lm_texture.dwWidth;//lm.width;
-		u32	h = lm_texture.dwHeight;//lm.height;
+
+		u32	w = lm_texture.dwWidth;
+		u32	h = lm_texture.dwHeight;
 		u32	pitch = w * 4;
-
-		STextureParams fmt;
-		switch (gCompilerMode.LmapsFormat)
-		{
-			case LCLightmapFormat::FORMAT_RGBA: fmt.fmt = STextureParams::tfRGBA; break;
-			case LCLightmapFormat::FORMAT_BC7:  fmt.fmt = STextureParams::tfBC7; break;
-			case LCLightmapFormat::FORMAT_BC5:  fmt.fmt = STextureParams::tfDXT5; break;
-		}
-
-		fmt.flags.set(STextureParams::flDitherColor, false);
-		fmt.flags.set(STextureParams::flGenerateMipMaps, false);
-		fmt.flags.set(STextureParams::flBinaryAlpha, false);
-
- 		DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
- 	}
-
-	if (true)
-	{
- 		string_path				FN;
-		xr_sprintf(lm_texture.name, "lmap#%d", lmapNameID);
-		xr_sprintf(FN, "%s%s_2.dds", path, lm_texture.name);
-
-		u32 w = lm_texture.dwWidth;		//lm.width;
-		u32 h = lm_texture.dwHeight;	//lm.height;
-		u32	pitch = w * 4;
-
-		u8* raw_data = LPBYTE(&*hemi_packed.begin());
 
 		STextureParams fmt;
 		switch (gCompilerMode.LmapsFormat)
@@ -185,12 +155,64 @@ void CLightmap::Save(LPCSTR path)
 		fmt.flags.set(STextureParams::flGenerateMipMaps, false);
 		fmt.flags.set(STextureParams::flBinaryAlpha, false);
 
- 		DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
- 	}
+		if (!gCompilerMode.LC_SkipStaticMap)
+		{
+			xr_vector<u32>			lm_packed;
+			lm.Pack(lm_packed);
 
-	lm_packed.clear();
-	hemi_packed.clear();
+			BYTE* raw_data = LPBYTE(&*lm_packed.begin());
+			DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
+			lm_packed.clear();
+			lm_packed.shrink_to_fit();
+		}
+		else
+		{
+ 			xr_vector<u32> colors(4 * 4);
+			for (auto& C : colors)
+				C = color_rgba(0, 0, 0, 255);
 
-	lm_packed.shrink_to_fit();
-	hemi_packed.shrink_to_fit();
+			BYTE* raw_data = LPBYTE(&*colors.begin());
+			u32 w = 4, h = 4, pitch = w * 4;
+			DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
+		}
+	}
+ 
+	// Записываем Hemi + SUN
+	if (true)
+	{
+ 		xr_vector<u32>			hemi_packed;
+		lm.Pack_hemi(hemi_packed);
+ 
+		string_path				FN;
+		xr_sprintf(lm_texture.name, "lmap#%d", lmapNameID);
+		xr_sprintf(FN, "%s%s_2.dds", path, lm_texture.name);
+
+		u32 w = lm_texture.dwWidth;		//lm.width;
+		u32 h = lm_texture.dwHeight;	//lm.height;
+		u32	pitch = w * 4;
+
+		u8* raw_data = LPBYTE(&*hemi_packed.begin());
+
+		STextureParams fmt;
+		switch (gCompilerMode.LmapsFormat)
+		{
+			case LCLightmapFormat::FORMAT_RGBA: fmt.fmt = STextureParams::tfRGBA; break;
+			case LCLightmapFormat::FORMAT_BC7:  fmt.fmt = STextureParams::tfBC7; break;
+			case LCLightmapFormat::FORMAT_BC5:  fmt.fmt = STextureParams::tfDXT5; break;
+		}
+
+		fmt.flags.set(STextureParams::flDitherColor, false);
+		fmt.flags.set(STextureParams::flGenerateMipMaps, false);
+		fmt.flags.set(STextureParams::flBinaryAlpha, false);
+
+		DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
+
+
+		hemi_packed.clear();
+		hemi_packed.shrink_to_fit();
+	}
+	 
+
+	// Освобождаем память
+	lm.clear_memory();
 }

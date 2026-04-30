@@ -82,6 +82,13 @@ struct CompilersMode
 
 	xr_vector<LevelFileData> Files;
 	ImFont* CompilerIconsFont;
+
+	// Текущий уровень
+	xr_string compilation_level;
+	LPCSTR get_lname()
+	{
+		return compilation_level.c_str();
+	}
 };
 
 void RenderMainUI();

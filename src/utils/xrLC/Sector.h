@@ -27,6 +27,4 @@ public:
 	~CSector			();
 };
 
-extern xr_vector<CSector*>	g_sectors;
-
 #endif // !defined(AFX_SECTOR_H__751706E5_383E_40CB_9F3D_6A4D1BB8F3CD__INCLUDED_)

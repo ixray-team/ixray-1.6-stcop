@@ -25,12 +25,12 @@ void export_ogf(xrMU_Reference& mu_reference);
 
 extern u16 RegisterShader(const char* T);
 
+// Буферы геометрии
 struct OGF_Base;
 xr_vector<OGF_Base*> g_tree;
+vec2Face			 g_XSplit;
 
 SBuildOptions g_build_options;
-vec2Face g_XSplit;
-
 void CBuild::CheckBeforeSave(u32 stage)
 {
 	bool b_g_tree_empty = g_tree.empty();
@@ -48,15 +48,52 @@ void CBuild::TempSave(u32 stage)
 
 //////////////////////////////////////////////////////////////////////
 #include "../xrLC_Light/embree_raytracing/EmbreeRayTrace.h"
+static bool cuda_setuped = false;
+static bool embree_setuped = false;
+
 CBuild::CBuild()
 {
-	// Se7kills Initialize Device Embree
+	Phase("[xrLC][Startup] Initialize Devices ...");
 
+	// Se7kills Initialize Device Embree
+#ifdef LCCUDA_BUILD
+	if (gCompilerMode.CUDA && !cuda_setuped)
+	{
+ 		cuda_setuped = true;
+ 		GPUTaskinSystem.InitializeGPU();
+	}
+#endif 
+	// На стадии xrMU-Models Нужно !
+	if ((gCompilerMode.CUDA || gCompilerMode.Embree) && !embree_setuped)
+	{
+		embree_setuped = true;
+		InitializeEmbreeDevice();
+	}
 }
 
+#include "OGF_Face.h"
 CBuild::~CBuild()
 {
+	clMsg("[xrLC_Remove] mem usage before: %u mb", GetHeapMemory() / 1024 / 1024);
+
 	destroy_global_data();
+
+	clMsg("[xrLC_Remove] Removing GTree");
+	for (auto OGF : g_tree)
+	{
+		xr_delete(OGF);
+	}
+	g_tree.clear();
+	g_tree.shrink_to_fit();
+
+	clMsg("[xrLC_Remove] Removing g_XSplits !");
+	for (auto faces : g_XSplit)
+		xr_delete(faces);
+	g_XSplit.clear();
+	g_XSplit.shrink_to_fit();
+
+	Memory.mem_compact();
+	clMsg("[xrLC_Remove] mem usage after: %u  mb", GetHeapMemory() / 1024 / 1024);
 }
  
 CMemoryWriter&	CBuild::err_invalid()
@@ -114,14 +151,17 @@ size_t GetHeapMemory()
 
 	return 0;
 }
-  
+
+size_t GetHeapMemoryIXray()
+{
+	size_t free, reserved, commited;
+	vminfo(&free, &reserved, &commited);
+ 	return commited;
+}
+
 void CBuild::Run(const char* P)
 {
-	if (gCompilerMode.CUDA || gCompilerMode.Embree)
-		InitializeEmbreeDevice();
-
-
-	lc_global_data()->initialize();
+ 	lc_global_data()->initialize();
 
 	//****************************************** Open Level
 	xr_strconcat(path, P, "\\");
@@ -146,47 +186,16 @@ void CBuild::Run(const char* P)
 		fs->w_chunk(2, &*L_static().sun.begin(), L_static().sun.size() * sizeof(R_Light));
 		FS.w_close(fs);
 	}
-
-	// Optimizing + checking for T-junctions
-	mem_Compact();
-
-	Phase("Optimizing...");
-	PreOptimize();
+	 
+	// Optimizing, Adaptive, etc
+  	PreOptimize();
 	CorrectTJunctions();
-	mem_Compact();
-
- 	// Tesselate 
  	xrPhase_AdaptiveHT_tessalte();
- 
 	Phase("Building (Level, Build).cform ...");
 	BuildCForm();
- 	// se7kills: теперь тут код эксплота build.cform
- 	EmbreeMain.BuildRcast();
+	EmbreeMain.BuildRcast();
+	mem_Compact();
 
-#ifdef LCCUDA_BUILD
-	if (gCompilerMode.CUDA)
- 		GPUTaskinSystem.InitializeGPU();
-	else
-#endif
-	if (gCompilerMode.Embree)
-	{
-		EmbreeMain.InitializeGeometry();
-	}
-	else
-		BuildRapid(false);
-
-	// Hemi MT - Calculate
- 	Light_prepare();
-   	xrPhase_AdaptiveHT_calculate();
-  
- 	// Building normals
-	Phase("Building normals...");
- 	CalcNormals();
-
-	//should be after normals, so that double-sided faces gets separated
-	BuildPortals(*fs);
-
- 
 	// All lighting + lmaps building and saving
 	Light();
 	RunAfterLight(fs);
@@ -194,18 +203,16 @@ void CBuild::Run(const char* P)
 
 void CBuild::RunAfterLight(IWriter* fs)
 {
-	Phase("Building tangent-basis...");
+	Phase("Building tangent-basis ...");
 	xrPhase_TangentBasis();
 	mem_Compact();
 
 	//****************************************** Convert to OGF
 	Phase("Converting to OGFs...");
-	mem_Compact();
 	Flex2OGF();
-
+	mem_Compact();
 	//****************************************** Export MU-models
 	Phase("Converting MU-models to OGFs...");
-	mem_Compact();
 	{
 		Status("MU : Models...");
 		xr_parallel_for(size_t(0), size_t(mu_models().size()), [&] (size_t m)
@@ -219,12 +226,12 @@ void CBuild::RunAfterLight(IWriter* fs)
 		}
 		
 		Status("MU : References...");
-
-		for (u32 m = 0; m < mu_models().size(); m++)
+ 		for (u32 m = 0; m < mu_models().size(); m++)
 		{
 			export_ogf(*mu_refs()[m]);
 		}
 	}
+	mem_Compact();
 
 	Status("MU : References...");
 	for (auto mRID = 0; mRID < (mu_refs().size()); mRID++)
@@ -234,11 +241,15 @@ void CBuild::RunAfterLight(IWriter* fs)
 
 		AditionalData("MU : Refference: %u / %u", mRID, mu_refs().size() );
 	}
+	mem_Compact();
+
 
 	//****************************************** Build sectors
 	Phase("Building sectors...");
-	mem_Compact();
 	BuildSectors();
+	//should be after normals, so that double-sided faces gets separated
+	BuildPortals(*fs);
+ 	mem_Compact();
 
 	//****************************************** Saving MISC stuff
 	Phase("Saving...");
@@ -246,8 +257,7 @@ void CBuild::RunAfterLight(IWriter* fs)
 	SaveLights(*fs);
 
 	fs->open_chunk(fsL_GLOWS);
-
-	for (b_glow& G : glows)
+ 	for (b_glow& G : glows)
 	{
 		fs->w(&G, 4 * sizeof(float));
 

@@ -5,10 +5,9 @@
 #include "xrFace.h"
 
 extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
-extern bool	compress_Zero(lm_layer& lm, u32 rms);
-extern bool	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
+extern bool	compress_Zero(lm_layer& lm);
+extern bool	compress_RMS(lm_layer& lm, u32& w, u32& h);
  
-
 // Освещение
 void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 {
@@ -43,15 +42,15 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 
 	// Compression
  	u32	w, h;
-	if (compress_Zero(layer, rms_zero)) return;		// already with borders
+	if (compress_Zero(layer)) return;		// already with borders
  
-	if (compress_RMS(layer, rms_shrink, w, h))
-	{
-		// Reacalculate lightmap at lower resolution
-		layer.clear_memory();		// Уменьшаем размер но память то остается !
-		layer.create(w, h);
-		Light(DB, LightsSelected);
-	}
+	// if (compress_RMS(layer, w, h))
+	// {
+	// 	// Reacalculate lightmap at lower resolution
+	// 	layer.clear_memory();		// Уменьшаем размер но память то остается !
+	// 	layer.create(w, h);
+	// 	Light(DB, LightsSelected);
+	// }
   
 	// Move to xrDeflectorLight_ApplyLmap.cpp
 	// Expand with borders
@@ -119,6 +118,8 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 thread_local UVGridLazy<UVtri> uv_grid_embree;
 void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 {
+	u32 flags = LGetCurrentFlags();
+ 
  	auto EdgeProcessing = [&](CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
 		{
 			Fvector		vdir;
@@ -151,7 +152,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 				base_color_c	C;
 				Fvector			P;
 				P.mad(v1, vdir, time);
-				LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_DEFAULT, skip); //.
+				LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, flags, skip); //.
 
 				C.mul(.5f);
 				lm.surface[_y * lm.width + _x]._set(C);
@@ -208,9 +209,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 						// We found triangle and have barycentric coords
 						Face	*F	= TRI->owner;
  						GetBarycentricNormalized(F, wP, wN, B);
- 
-						u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_UseFaceDisable;
-						LightPoint	(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F); 
+  						LightPoint	(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F); 
  						Fcount		+= 1;
 
 						break;
