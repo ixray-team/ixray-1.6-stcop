@@ -781,8 +781,14 @@ void CActor::net_Destroy	()
 	m_holderID=u16(-1);
 
 	m_ArtefactsOnBelt.clear();
-	if (CurrentGameUI()->UIMainIngameWnd->m_artefactPanel && Level().CurrentViewEntity() == this)
-		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
+
+	if (!g_dedicated_server)
+	{
+		if (CurrentGameUI()->UIMainIngameWnd->m_artefactPanel && Level().CurrentViewEntity() == this)
+		{
+			CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
+		}
+	}
 
 	SetDefaultVisualOutfit(nullptr);
 
