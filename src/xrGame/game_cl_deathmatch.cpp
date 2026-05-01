@@ -1120,10 +1120,13 @@ void				game_cl_Deathmatch::OnGameRoundStarted				()
 	}
 	if (pCurBuyMenu) pCurBuyMenu->ClearPreset(_preset_idx_last);
 	//-----------------------------------------------------------------
-	if ((m_game_ui->ActorMenu() && m_game_ui->ActorMenu()->IsShown())
-		|| (m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd()->IsShown()))
+	if (!g_dedicated_server)
 	{
-		m_game_ui->HideActorMenu();
+		if ((m_game_ui->ActorMenu() && m_game_ui->ActorMenu()->IsShown())
+			|| (m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd()->IsShown()))
+		{
+			m_game_ui->HideActorMenu();
+		}
 	}
 }
 
