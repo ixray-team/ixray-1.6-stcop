@@ -8,6 +8,7 @@ ENGINE_API void EngineLoadStage2();
 ENGINE_API void EngineLoadStage3();
 ENGINE_API void EngineLoadStage4();
 ENGINE_API void EngineLoadStage5();
+ENGINE_API void EngineLoadStage6();
 
 void CreateGameWindow()
 {
@@ -60,6 +61,7 @@ int APIENTRY WinMain
 	Console->Execute("vid_restart");
 
 	EngineLoadStage5();
+	EngineLoadStage6();
 
 	Core._destroy();
 
