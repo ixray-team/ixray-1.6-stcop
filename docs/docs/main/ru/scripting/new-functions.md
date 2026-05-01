@@ -705,6 +705,19 @@ object:set_sub_inventory_icon(mark, offset, size, texture, color)
 retval: none
 args: bool, vector2, vector2, string, int
 
+--// Передвинуть камеру
+object:camera_move(dir)
+retval: none
+args: dir (number)
+
+--// Включить/выключить факел
+object:switch_torch()
+retval: none
+
+--// Установить актёра в положение присесть
+object:set_actor_crouch()
+retval: none
+
 
 --// Получить позицию кости по идентификатору кости у обьекта
 object:bone_position(bone_id)
@@ -747,6 +760,14 @@ retval: string
 object:get_root_bone_id()
 retval: integer
 
+```
+
+## CHangingLamp
+`local lamp = level.object_by_id(lamp_id)`
+```lua
+--// Проверить, включена ли лампа
+lamp:is_on()
+retval: boolean
 ```
 
 ## sim (CompatibilityBringeScripts.cpp)
@@ -913,10 +934,19 @@ args: wallmark_object(script game object), status (boolean)
 level.get_fog_distance()
 retval: float
 
-```
+--// Установить одиночный множитель времени
+level.set_time_factor_single(value)
+retval: none
+args: value (float)
 
-## level
-```lua
+--// Запретить двигать мышью (независимо от disable input или во время него)
+level.disable_mouse_move()
+retval: void
+
+--// Разрешить двигать мышью (независимо от disable input или во время него)
+level.enable_mouse_move()
+retval: void
+
 --// Поиск онлайн обьектов по eSpatial в сфере
 level.search_online_objects_by_sphere(center_position, radius, table_spatial_types)
 retval: lua iterator (CScriptGameObject*)

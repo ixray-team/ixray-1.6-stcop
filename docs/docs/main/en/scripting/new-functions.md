@@ -899,6 +899,19 @@ args: string, int, string, vector2
 object:set_sub_inventory_icon(mark, offset, size, texture, color)
 retval: none
 args: bool, vector2, vector2, string, int
+
+--// Move camera by direction
+object:camera_move(dir)
+retval: none
+args: dir (number)
+
+--// Toggle torch
+object:switch_torch()
+retval: none
+
+--// Force actor to crouch
+object:set_actor_crouch()
+retval: none
 ```
 
 ::: details Examples
@@ -980,6 +993,14 @@ args: bool, vector2, vector2, string, int
   actor:SetActorRunBackCoef(0.8)
   ```
 :::
+
+## CHangingLamp
+`local lamp = level.object_by_id(lamp_id)`
+```lua
+--// Check if hanging lamp is on
+lamp:is_on()
+retval: boolean
+```
 
 ## ActorMenu
 ```lua
@@ -1097,11 +1118,297 @@ args: wallmark_object(script game object), status (boolean)
 level.get_fog_distance()
 retval: float
 
--- Запретить двигать мышью (независимо от disable input или во время него)
-level.disable_mouse_move()
-retval: void
+--// Set single time factor
+level.set_time_factor_single(value)
+retval: none
+args: value (float)
 
--- Разрешить двигать мышью (независимо от disable input или во время него)
-level.enable_mouse_move()
+--// Find online objects by eSpatial in a sphere
+level.search_online_objects_by_sphere(center_position, radius, table_spatial_types)
+retval: lua iterator (CScriptGameObject*)
+args:
+  center_position (vector3), -- center point of the sphere
+  radius (float), -- radius of the sphere in meters
+  table_spatial_types (table)
+  
+--// Find online objects by eSpatial in an OBB box with specified orientation
+level.search_online_objects_by_obb_box(center_position, box_halfsize, box_direction, table_spatial_types)
+retval: lua iterator (CScriptGameObject*)
+args:
+  center_position (vector3), -- box center point
+  box_halfsize (vector3), -- half size of the box sides
+  box_direction (vector3), -- direction of the OBB in world space X Y Z
+  table_spatial_types (table)
+  
+--// Allowed E_SPATIAL types
+level.e_spatial_type.NONE
+level.e_spatial_type.INVALIDSECTOR
+level.e_spatial_type.RENDERABLE
+level.e_spatial_type.LIGHTSOURCE
+level.e_spatial_type.LIGHTSOURCEHEMI
+level.e_spatial_type.PHYSIC
+level.e_spatial_type.SHAPE
+level.e_spatial_type.PARTICLE
+
+level.e_spatial_type.COLLIDEABLE
+level.e_spatial_type.VISIBLEFORAI
+level.e_spatial_type.REACTTOSOUND
+level.e_spatial_type.OBSTACLE
+level.e_spatial_type.RENDERABLESHADOW
+
+level.e_spatial_type.LADDER
+
+level.e_spatial_type.ACTOR
+level.e_spatial_type.ACTOR_DEAD
+level.e_spatial_type.ACTOR_ALIVE
+
+level.e_spatial_type.AI
+level.e_spatial_type.AI_DEAD
+level.e_spatial_type.AI_ALIVE
+
+level.e_spatial_type.STALKER
+level.e_spatial_type.STALKER_WOUNDED
+level.e_spatial_type.STALKER_DEAD
+level.e_spatial_type.STALKER_ALIVE
+
+level.e_spatial_type.MONSTER
+level.e_spatial_type.MONSTER_DEAD
+level.e_spatial_type.MONSTER_ALIVE
+
+level.e_spatial_type.CROW
+level.e_spatial_type.CROW_DEAD
+level.e_spatial_type.CROW_ALIVE
+
+level.e_spatial_type.ITEM
+level.e_spatial_type.WEAPON
+level.e_spatial_type.MISSILE
+level.e_spatial_type.ROCKET
+level.e_spatial_type.ARTEFACT
+level.e_spatial_type.ANOMALY_DETECTOR
+
+level.e_spatial_type.CAR
+level.e_spatial_type.HELI
+
+level.e_spatial_type.PHYSIC_OBJECT
+level.e_spatial_type.PHYSIC_SHELL_HOLDER
+level.e_spatial_type.PHYSIC_OBJECT_DESTR
+level.e_spatial_type.PHYSIC_OBJECT_BRKBL
+level.e_spatial_type.PHYSIC_MOVEMENT
+
+level.e_spatial_type.INV_BOX
+
+level.e_spatial_type.AI_DOOR
+
+level.e_spatial_type.LIGHT_LAMP
+
+level.e_spatial_type.LEVEL_CHANGER
+level.e_spatial_type.SPACE_RESTRICTOR
+level.e_spatial_type.ANOMALY_ZONE
+level.e_spatial_type.SIM_FACTION
+level.e_spatial_type.SMART_TERRAIN
+level.e_spatial_type.CAMP_ZONE
+level.e_spatial_type.SMART_COVER
+level.e_spatial_type.ANOMAL_ZONE_LOGIC
+
+## Example: find online objects by eSpatial in a sphere
+```lua
+--// Center of the sphere used for the search
+local center = db.actor:position()
+--// Search radius
+local radius = 120
+--// List of object types for filtering
+local spatial_types = {
+  level.e_spatial_type.SHAPE,
+  level.e_spatial_type.STALKER,
+}
+
+--// Search and print found online objects
+for obj in level.search_online_objects_by_sphere(center, radius, spatial_types) do
+    if obj then
+      SemiLog(tostring( obj:name() )) --// Print object names from the search results
+    end
+end
+```
+
+## Example: find online objects by eSpatial in an OBB box
+```lua
+--// Center of the box used for the search
+local center_position = db.actor:position()
+
+--// Half-size of the box sides: 5 5 5 meters
+local box_halfsize = vector():set(5,5,5)
+
+--// Use actor direction as the box orientation
+local box_direction = db.actor:direction()
+
+--// Types of objects to filter
+local spatial_types = {
+  level.e_spatial_type.SHAPE,
+  level.e_spatial_type.STALKER,
+}
+
+local result_obb = level.search_online_objects_by_obb_box(center_position, box_halfsize, box_direction, spatial_types)
+
+for k in result_obb do
+  if k then SemiLog("OBB:: " .. tostring(k:name())) end -- print found objects of the requested types
+end
+```
+
+## level (runtime storage)
+```lua
+
+--// Special wrapper for passing string Lua tables between Lua VM reloads
+
+--// Check if a named string stash exists
+level.is_exists_named_stash_string_vector(key_name)
+retval: bool
+args: key_name (string)
+
+--// Get a named string stash table
+level.get_named_stash_string_vector(key_name)
+retval: lua table
+args: key_name (string)
+
+--// Set a named string stash table
+level.set_named_stash_string_vector(key_name, table)
+retval: void
+args:
+ key_name (string)
+ table (lua table)
+
+--// Remove a named string stash
+level.remove_named_stash_string_vector(key_name)
+retval: void
+args: key_name (string)
+
+--// Remove all named string stashes
+level.remove_all_named_stash_string_vectors()
 retval: void
 ```
+
+## Examples (runtime storage)
+```lua
+--// Check if a named string stash exists
+if level.is_exists_named_stash_string_vector("my-data") then
+
+end
+
+--// Get a named string stash table
+local data = level.get_named_stash_string_vector(key_name)
+  
+--// Set a named string stash table
+level.set_named_stash_string_vector(
+  "my-data", --// stash name
+  {"test", "best"} --// stored table
+)
+
+--// Remove a named string stash table
+level.remove_named_stash_string_vector("my-data")
+
+--// Remove all named string stash tables
+level.remove_all_named_stash_string_vectors()
+
+
+--// Full usage example
+if level.is_exists_named_stash_string_vector("my-data") then
+  --// Stash exists - print it to the log
+	SemiLog(tostring(ffx_dump_utils.var_export(
+	    level.get_named_stash_string_vector("my-data"))
+  ))
+else
+  --// Stash does not exist - set it
+	level.set_named_stash_string_vector(
+    "my-data", 
+    {"test", "best"}
+	)
+end
+```
+
+## CFFxRandom 
+
+* Reproducibility
+* Allows restoring its state, which simplifies developing logic requiring save/load repeatability or similar
+* Improved random distribution compared to Lua math.random
+* Added forced reduction of identical consecutive results
+* Independent class instances allow manipulating sequences by adjusting input seed and counter settings
+
+```lua
+local ffx_rand = FFxRandom() -- Constructor with auto-generated seed from current date and time
+retval: FFxRandom
+
+local ffx_rand = FFxRandom(seed, counter) -- Constructor
+retval: FFxRandom
+args: 
+  seed (u32), -- Initialization vector
+  counter (u32) -- run counter
+
+ffx_rand.is_counter_valid() -- Check whether the counter overflowed; if so, the sequence may not be reproducible on the next save
+retval: void
+
+ffx_rand.get_seed() -- Get current initialization vector
+retval: u32
+
+ffx_rand.get_counter() -- Get current run counter
+retval: u32
+
+ffx_rand.set_state(seed, counter) -- Restore random generator state (allows reproducing the generator position after load if seed and counter were saved)
+retval: void
+args: 
+  seed (u32), -- initialization vector
+  counter (u32) -- run counter
+
+ffx_rand.next_int() -- Get next random integer from 0 to (u32)-1
+retval: u32
+
+ffx_rand.next_int_range(min_value, max_value) -- Get next random integer in range
+retval: u32
+  args: 
+    min_value (u32), -- minimum value
+    max_value (u32) -- maximum value
+    
+ffx_rand.next_float() -- Get next random float from 0 to (float)-1
+retval: float    
+ 
+ffx_rand.next_float_range(min_value, max_value) -- Get next random float in range
+retval: float
+  args: 
+    min_value (float), -- minimum value
+    max_value (float) -- maximum value    
+
+ffx_rand.next_bool() -- Get next random boolean true | false
+retval: bool
+
+ffx_rand.next_bool_probability(chance) -- Get next random boolean with probability in the interval 0.00001 to 0.99999; 0.5 is treated as a 50/50 coin flip
+retval: float
+  args: 
+    chance (float), -- chance in the interval 0.00001 to 0.99999
+```
+
+## CScriptParticles
+```lua
+local pg_obj = particles_object("ffx0001\\test\\")
+
+--// Set particle group position and direction relative to the X axis
+pg_obj:set_xform_dir_x(position, direction, velocity)
+retval: void
+args: 
+    position (vector), -- particle position
+    direction (vector), -- particle direction
+    velocity (vector), -- particle velocity alignment
+    
+--// Set particle group position and direction relative to the Y axis
+pg_obj:set_xform_dir_y(position, direction, velocity)
+retval: void
+args: 
+    position (vector), -- particle position
+    direction (vector), -- particle direction
+    velocity (vector), -- particle velocity alignment
+    
+--// Set particle group position and direction relative to the Z axis
+pg_obj:set_xform_dir_z(position, direction, velocity)
+retval: void
+args: 
+    position (vector), -- particle position
+    direction (vector), -- particle direction
+    velocity (vector), -- particle velocity alignment
+``````

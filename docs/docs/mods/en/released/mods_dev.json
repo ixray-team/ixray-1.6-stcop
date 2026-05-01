@@ -8,28 +8,20 @@
   },
   "mods": [
     {
-      "id": "aiw",
-      "title": "Alone in Windstorm: Fallen Bear",
-      "description": "A harsh future after a global nuclear conflict. The story is set in one of the regions of the Russian Far East",
-      "author": "AIW Team",
-      "link": "https://ap-pro.ru/forums/topic/3903-alone-in-windstorm-fallen-bear/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B0%D0%B8%D0%B2.png"
-    },
-    {
       "id": "AnotherSide",
       "title": "Another Side",
-      "description": "How to become a mercenary? Easy — if your fighting spirit is high and your moral compass is low",
+      "description": "How to become a mercenary? Easy — if your fighting spirit is high and your moral outlook is low.",
       "author": "Another Side",
       "link": "https://vk.com/stalker_another_side",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/anotherside.png"
     },
     {
-        "id": "ikarus",
-        "title": "Icarus",
-        "description": "The mod's plot follows a girl who enters the Zone to find her kidnapped sister",
-        "author": "Mawrak",
-        "link": "https://ap-pro.ru/forums/topic/11616-sostoyalsya-anons-modifikacii-«proekt-icarus»/",
-        "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B8%D0%BA%D0%B0%D1%80%D1%83%D1%81.png"
+      "id": "ikarus",
+      "title": "Ikarus",
+      "description": "The mod's plot follows a girl who enters the Zone to find her kidnapped sister.",
+      "author": "Mawrak",
+      "link": "https://ap-pro.ru/forums/topic/11616-sostoyalsya-anons-modifikacii-«proekt-icarus»/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B8%D0%BA%D0%B0%D1%80%D1%83%D1%81.png"
     },
     {
       "id": "whitelist",

@@ -90,6 +90,21 @@ export const mainSidebar: DefaultTheme.Sidebar = [
       { text: 'Fonts', link: '/en/interface/fonts' },
       { text: 'XML Expression', link: '/en/interface/xml-expression' },
       { text: 'SVG icons', link: '/en/interface/svg-icons' },
+      {
+        text: 'New UI features',
+        collapsed: true,
+        items: [
+          { text: 'Overview and toggles', link: '/en/interface/ui-advanced-features' },
+          { text: 'Horizontal compass, minimap', link: '/en/interface/hud-compass-minimap-motion-icon' },
+          { text: 'Quick slots', link: '/en/interface/hud-quick-slots-panel' },
+          { text: 'Personal navigation marker', link: '/en/interface/map-personal-navigation-marker' },
+          { text: 'Inventory sorting', link: '/en/interface/inventory-sort-tabs' },
+          { text: 'Ammo, weapon, fire mode', link: '/en/interface/hud-weapon-ammo-fire-mode' },
+          { text: 'Item condition and percentages', link: '/en/interface/item-condition-percent-display' },
+          { text: 'Radial indicators', link: '/en/interface/radial-progress-shape' },
+          { text: 'Weight progress bar', link: '/en/interface/weight-progress-bar' },
+        ],
+      },
     ]
   },
   {

@@ -8,14 +8,6 @@
   },
   "mods": [
     {
-      "id": "aiw",
-      "title": "Alone in Windstorm: Fallen Bear",
-      "description": "Суровое будущее после мирового ядерного конфликта. Местом действия сюжета станет один из регионов Дальнего Востока",
-      "author": "AIW Team",
-      "link": "https://ap-pro.ru/forums/topic/3903-alone-in-windstorm-fallen-bear/",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B0%D0%B8%D0%B2.png"
-    },
-    {
       "id": "AnotherSide",
       "title": "Another Side",
       "description": "Как стать наёмником? Легко. Если высок боевой дух и низок моральный облик",

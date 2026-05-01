@@ -8,6 +8,24 @@
   },
   "mods": [
     {
+      "id": "aiw",
+      "title": "Alone in Windstorm: Fallen Bear",
+      "description": "A harsh future after a global nuclear conflict. The story takes place in one of the regions of the Russian Far East.",
+      "author": "AIW Team",
+      "score": "Ap-Pro: 9.5",
+      "link": "https://ap-pro.ru/forums/topic/14527-alone-in-windstorm-fallen-bear/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B0%D0%B8%D0%B2.png"
+    },
+    {
+      "id": "fnas",
+      "title": "Five Nights at Sidorovich’s",
+      "description": "An unknown anomaly appeared inside the “Newbie Village”. Military intelligence reports that it affects some people, who are called the “affected”.",
+      "author": "Emmis",
+      "score": "Ap-Pro: 9.2",
+      "link": "https://ap-pro.ru/forums/topic/14527-alone-in-windstorm-fallen-bear/",
+      "image": "https://i.postimg.cc/VLxx7ddd/logo.png"
+    },
+    {
       "id": "awakening-2055",
       "title": "Awakening. 2055",
       "description": "Mod in its own universe, separate from the STALKER series. Protagonist is transported to the future, finding himself in a post-apocalyptic world.",
