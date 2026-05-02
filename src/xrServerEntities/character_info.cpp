@@ -168,6 +168,15 @@ shared_str	CCharacterInfo::StartDialog	()	const
 	return m_StartDialog;
 }
 
+shared_str CCharacterInfo::SpecificCharacterStartDialog() const
+{
+	if (!m_SpecificCharacterId.size())
+	{
+		return shared_str(nullptr);
+	}
+	return m_SpecificCharacter.data()->m_StartDialog;
+}
+
 const DIALOG_ID_VECTOR&	CCharacterInfo::ActorDialogs	()	const
 {
 	R_ASSERT(m_SpecificCharacterId.size());

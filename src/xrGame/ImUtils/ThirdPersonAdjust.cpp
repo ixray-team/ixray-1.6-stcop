@@ -83,7 +83,7 @@ static void ThirdAdjustDrawSaveButton()
 	}
 
 	GAME_NEWS_DATA news_data = {};
-	news_data.m_type = GAME_NEWS_DATA::eNewsType::eNews;
+	news_data.m_type = GAME_NEWS_DATA::eNews;
 	news_data.news_caption = "Saved result to:";
 	news_data.news_text = fn;
 	news_data.show_time = 5000;

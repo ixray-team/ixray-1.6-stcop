@@ -255,8 +255,11 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 }
 
 #include "../xrEngine/IGame_Persistent.h"
+#include "Actor.h"
+
 void CALifeUpdateManager::new_game			(const char* save_name)
 {
+	CActor::ResetDeathStatCarryOver();
 	g_pGamePersistent->SetLoadStageTitle("st_creating_new_game");
 	g_pGamePersistent->LoadTitle		();
 	Msg									("* Creating new game...");

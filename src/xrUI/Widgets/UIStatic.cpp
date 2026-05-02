@@ -12,6 +12,15 @@
 
 bool is_in2(const Frect& b1, const Frect& b2);
 
+namespace
+{
+	constexpr Fvector2 kOutlineDirs8[8] = {
+		{-1.0f, -1.0f}, { 0.0f, -1.0f}, { 1.0f, -1.0f},
+		{-1.0f,  0.0f},                 { 1.0f,  0.0f},
+		{-1.0f,  1.0f}, { 0.0f,  1.0f}, { 1.0f,  1.0f}
+	};
+}
+
 void lanim_cont::set_defaults()
 {
 	m_lanim					= nullptr;	
@@ -32,11 +41,21 @@ m_bStretchTexture(false),
 m_bHeading(false),
 m_bConstHeading(false),
 m_fHeading(0.0f),
-m_pTextControl(nullptr)
+m_pTextControl(nullptr),
+m_textureShadowEnabled(false),
+m_textureShadowThickness(0.0f),
+m_textureShadowColor(0)
 {
 	m_TextureOffset.set		(0.0f,0.0f);
 	m_lanim_xform.set_defaults	();
 	m_bEnableTextHighlighting = false;
+}
+
+void CUIStatic::SetTextureShadow(bool enabled, float thickness, u32 color)
+{
+	m_textureShadowEnabled = enabled;
+	m_textureShadowThickness = thickness;
+	m_textureShadowColor = color;
 }
 
 CUIStatic::~CUIStatic()
@@ -147,54 +166,71 @@ void CUIStatic::DrawText()
 
 #include "../../Include/xrRender/UIShader.h"
 
-void CUIStatic::DrawTexture()
+void CUIStatic::DrawTexturePass(u32 color, const Fvector2& extraOffset)
 {
-	if(m_bTextureEnable && GetShader() && GetShader()->inited())
+	Frect rect;
+	GetAbsoluteRect(rect);
+	m_UIStaticItem.SetPos(
+		rect.left + m_TextureOffset.x + extraOffset.x,
+		rect.top + m_TextureOffset.y + extraOffset.y);
+
+	if (m_bStretchTexture)
 	{
-		Frect			rect;
-		GetAbsoluteRect	(rect);
-		m_UIStaticItem.SetPos	(rect.left + m_TextureOffset.x, rect.top + m_TextureOffset.y);
-
-		if(m_bStretchTexture)
+		if (Heading())
 		{
-			if(Heading())
+			if (m_UIStaticItem.GetFixedLTWhileHeading())
 			{
-				if( m_UIStaticItem.GetFixedLTWhileHeading() )
-				{
-					float t1,t2;
-					t1			= rect.width();
-					t2			= rect.height();
-					rect.y2		= rect.y1 + t1;
-					rect.x2		= rect.x1 + t2;
-				}
-			}
-			m_UIStaticItem.SetSize(Fvector2().set(rect.width(), rect.height()));
-		}else
-		{
-			Frect r={0.0f,0.0f,
-				m_UIStaticItem.GetTextureRect().width(),
-				m_UIStaticItem.GetTextureRect().height()};
-
-			{	
-				if(Heading())
-				{
-					float t1,t2;
-					t1			= rect.width();
-					t2			= rect.height();
-					rect.y2		= rect.y1 + t1;
-					rect.x2		= rect.x1 + t2;
-				}
-
-				m_UIStaticItem.SetSize(Fvector2().set(r.width(),r.height()));
+				const float t1 = rect.width();
+				const float t2 = rect.height();
+				rect.y2 = rect.y1 + t1;
+				rect.x2 = rect.x1 + t2;
 			}
 		}
-
-		if( Heading() )
-		{
-			m_UIStaticItem.Render( GetHeading() );
-		}else
-			m_UIStaticItem.Render();
+		m_UIStaticItem.SetSize(Fvector2().set(rect.width(), rect.height()));
 	}
+	else
+	{
+		Frect r = { 0.0f, 0.0f,
+			m_UIStaticItem.GetTextureRect().width(),
+			m_UIStaticItem.GetTextureRect().height() };
+
+		if (Heading())
+		{
+			const float t1 = rect.width();
+			const float t2 = rect.height();
+			rect.y2 = rect.y1 + t1;
+			rect.x2 = rect.x1 + t2;
+		}
+
+		m_UIStaticItem.SetSize(Fvector2().set(r.width(), r.height()));
+	}
+
+	const u32 prevColor = m_UIStaticItem.GetTextureColor();
+	m_UIStaticItem.SetTextureColor(color);
+
+	if (Heading())
+		m_UIStaticItem.Render(GetHeading());
+	else
+		m_UIStaticItem.Render();
+
+	m_UIStaticItem.SetTextureColor(prevColor);
+}
+
+void CUIStatic::DrawTexture()
+{
+	if (!m_bTextureEnable || !GetShader() || !GetShader()->inited())
+		return;
+
+	if (m_textureShadowEnabled && m_textureShadowThickness > 0.0f)
+	{
+		for (const Fvector2& d : kOutlineDirs8)
+		{
+			DrawTexturePass(m_textureShadowColor,
+				Fvector2().set(d.x * m_textureShadowThickness, d.y * m_textureShadowThickness));
+		}
+	}
+
+	DrawTexturePass(GetTextureColor(), Fvector2().set(0.0f, 0.0f));
 }
 
 void CUIStatic::Update()

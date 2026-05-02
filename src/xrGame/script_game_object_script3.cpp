@@ -196,6 +196,12 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("transfer_money",				&CScriptGameObject::TransferMoney)
 		.def("give_money",					&CScriptGameObject::GiveMoney)
 		.def("money",						&CScriptGameObject::Money)
+		.def("actor_money_earned",			&CScriptGameObject::GetActorMoneyEarned)
+		.def("actor_money_spent",			&CScriptGameObject::GetActorMoneySpent)
+		.def("actor_distance_km",			&CScriptGameObject::GetActorDistanceKm)
+		.def("actor_headshots",				&CScriptGameObject::GetActorHeadshots)
+		.def("actor_deaths",				&CScriptGameObject::GetActorDeaths)
+		.def("actor_help_wounded",			&CScriptGameObject::GetActorHelpWounded)
 		.def("make_item_active",			&CScriptGameObject::MakeItemActive)
 
 		.def("switch_to_trade",				&CScriptGameObject::SwitchToTrade)

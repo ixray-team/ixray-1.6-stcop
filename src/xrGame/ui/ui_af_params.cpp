@@ -36,19 +36,41 @@ CUIArtefactParams::CUIArtefactParams(const CParamType& type)
 	m_Prop_line = nullptr;
 }
 
+namespace
+{
+template<typename T>
+void DeleteUiChild(T*& item)
+{
+	if (!item)
+	{
+		return;
+	}
+
+	if (CUIWindow* parent = item->GetParent())
+	{
+		parent->DetachChild(item);
+	}
+
+	xr_delete(item);
+}
+} // namespace
+
 CUIArtefactParams::~CUIArtefactParams()
 {
-	delete_data	( m_immunity_item );
-	delete_data	( m_restore_item );
-	xr_delete(m_disp_condition);
-	xr_delete	( m_additional_weight );
-	xr_delete	(m_af_slots);
-	xr_delete	(m_jump_height_modifier);
-	xr_delete	(m_movement_speed_modifier);
-	xr_delete	(m_sleepiness_restore_speed);
-	xr_delete	(m_equipment_durability_modifier);
-	xr_delete	(m_inventory_weight_modifier);
-	xr_delete	( m_Prop_line );
+	DetachAll();
+
+	delete_data(m_immunity_item);
+	delete_data(m_restore_item);
+
+	DeleteUiChild(m_disp_condition);
+	DeleteUiChild(m_additional_weight);
+	DeleteUiChild(m_af_slots);
+	DeleteUiChild(m_jump_height_modifier);
+	DeleteUiChild(m_movement_speed_modifier);
+	DeleteUiChild(m_sleepiness_restore_speed);
+	DeleteUiChild(m_equipment_durability_modifier);
+	DeleteUiChild(m_inventory_weight_modifier);
+	DeleteUiChild(m_Prop_line);
 }
 
 constexpr std::tuple<ALife::EHitType, const char*, const char*, float, bool, const char*> af_immunity[] =
@@ -332,16 +354,10 @@ UIArtefactParamItem::UIArtefactParamItem()
 	m_value     = nullptr;
 	m_magnitude = 1.0f;
 	m_sign_inverse = false;
-	
-	m_unit_str._set( "" );
-	m_texture_minus._set( "" );
-	m_texture_plus._set( "" );
 	m_text_legacy = nullptr;
 }
 
-UIArtefactParamItem::~UIArtefactParamItem()
-{
-}
+UIArtefactParamItem::~UIArtefactParamItem() = default;
 
 UIArtefactParamItem::InitResult UIArtefactParamItem::Init(CUIXml& xml, const char* section)
 {
@@ -405,13 +421,23 @@ void UIArtefactParamItem::SetDefaultValuesPlain(float magnitude, bool isSignInve
     m_sign_inverse = isSignInverse;
     m_unit_str = unit;
 }
-void UIArtefactParamItem::SetCaption( const char* name )
+void UIArtefactParamItem::SetCaption(const char* name)
 {
-	m_caption->TextItemControl()->SetText( name );
+	if (!m_caption || !name)
+	{
+		return;
+	}
+
+	m_caption->TextItemControl()->SetText(name);
 }
 
-void UIArtefactParamItem::SetValue( float value )
+void UIArtefactParamItem::SetValue(float value)
 {
+	if (!m_value)
+	{
+		return;
+	}
+
 	value *= m_magnitude;
 	string32	buf;
 	xr_sprintf( buf, "%+.0f", value );
@@ -435,20 +461,20 @@ void UIArtefactParamItem::SetValue( float value )
 	u32 color     = (positive      )? green_clr : red_clr;
 	m_value->SetTextColor( color );
 
-	if ( m_texture_minus.size() )
+	if (m_caption && m_texture_minus.size())
 	{
-		if ( positive )
+		if (positive)
 		{
-			m_caption->InitTexture( m_texture_plus.c_str() );
+			m_caption->InitTexture(m_texture_plus.c_str());
 		}
 		else
 		{
-			m_caption->InitTexture( m_texture_minus.c_str() );
+			m_caption->InitTexture(m_texture_minus.c_str());
 		}
 	}
 
 	// hack
-	if (!m_caption->IsShown() && !m_value->IsShown())
+	if (m_caption && m_text_legacy && !m_caption->IsShown() && !m_value->IsShown())
 	{
 		xr_sprintf(buf, "%s %s %s", m_caption->GetText(), positive ? "%c[green]" : "%c[red]", m_value->GetText());
 		m_text_legacy->SetText(buf);

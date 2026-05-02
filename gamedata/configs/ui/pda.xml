@@ -1,4 +1,16 @@
 <w>
+	<!-- PDA UI sounds (optional): paths without sounds\ prefix and .ogg, files in gamedata/sounds/ -->
+	<!-- <snd_open>device\pda\pda_open</snd_open> -->
+	<!-- <snd_close>device\pda\pda_close</snd_close> -->
+	<!-- <snd_tab>device\pda\pda_tab_switch</snd_tab> -->
+	<!-- Legacy: snd_key_tab, snd_key_close -->
+	<!-- <snd_list_scroll>interface\list_scroll</snd_list_scroll> -->
+	<!-- <snd_list_select>interface\list_select</snd_list_select> -->
+	<!-- <snd_filter_toggle>interface\filter_toggle</snd_filter_toggle> -->
+	<!-- <snd_panel_open>interface\panel_open</snd_panel_open> -->
+	<!-- <snd_panel_close>interface\panel_close</snd_panel_close> -->
+	<!-- <snd_confirm>interface\confirm</snd_confirm> -->
+	<!-- <snd_cancel>interface\cancel</snd_cancel> -->
 	<main x="0" y="0" width="1024" height="768"/>
 	<background_static x="0" y="0" width="1024" height="768">
 		<texture>ui_inGame2_pda_texture</texture>

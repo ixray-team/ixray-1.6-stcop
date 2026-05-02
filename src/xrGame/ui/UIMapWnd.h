@@ -2,6 +2,7 @@
 
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
+class CPdaUiSounds;
 
 
 class CUICustomMap;
@@ -23,6 +24,7 @@ class UIHint;
 class CUIPdaSpot;
 class CUIPropertiesBox;
 class CUIGamepadLegend;
+class UIMapZoomScale;
 
 using GameMaps = xr_map<shared_str, CUICustomMap*>;
 using GameMapsPairIt = GameMaps::iterator;
@@ -73,13 +75,23 @@ private:
 		max_btn_nav		= 9
 	};
 	CUI3tButton*				m_btn_nav[max_btn_nav];
+	CUI3tButton*				m_btn_nav_task_focus = nullptr;
 	CUIStatic*					m_btn_nav_parent;
 	CUIStatic*					m_controller_cursor = nullptr;
+	// Optional XML: map_pattern_overlay (drawn above map; non-interactive).
+	CUIStatic*					m_mapPatternOverlay = nullptr;
+	UIMapZoomScale*				_zoomScale = nullptr;
+	CPdaUiSounds*				m_pUiSounds = nullptr;
 	u32							m_nav_timing;
 	Fvector2					m_controller_cursor_pos = { 0, 0 };
 	Fvector2					m_controller_cursor_pos_initial = { 0, 0 };
 
+	bool						m_personalSpotPlacement = false;
+	bool						m_personalSpotRmbMode = false;
+
 	void						UpdateNav				();
+	void						RegisterNavButtonByName	(CUI3tButton* btn);
+	void						InitPersonalSpotRmbMode	(CUIXml& xml, const char* buttonPath, CUI3tButton* btn);
 
 	void 				OnBtnLegend_Push		(CUIWindow*, void*);
 	void 				OnBtnUp_Push			(CUIWindow*, void*);
@@ -92,6 +104,8 @@ private:
 	void 				OnBtnZoomLess_Push		(CUIWindow*, void*);
 	void 				OnBtnDown_Push			(CUIWindow*, void*);
 	void 				OnBtnZoomReset_Push		(CUIWindow*, void*);
+	void 				OnBtnPersonalSpot_Push	(CUIWindow*, void*);
+	void 				OnBtnNavTaskFocus_Push	(CUIWindow*, void*);
 
 private:
 	void 				OnScrollV				(CUIWindow*, void*);
@@ -156,6 +170,10 @@ public:
 			void				SetZoom					(float value);
 			bool				UpdateZoom				(bool b_zoom_in, bool b_use_dt = false);
 
+			void				SetPersonalSpotPlacement	(bool isActive);
+			bool				IsPersonalSpotPlacement	() const { return m_personalSpotPlacement; }
+			bool				IsPersonalSpotRmbMode	() const { return m_personalSpotRmbMode; }
+			void				UpdateNavTaskFocusVisibility(CGameTask* primaryTask);
 
 			void				ShowHintStr				(CUIWindow* parent, const char* text);
 			void				ShowHintSpot			(CMapSpot* spot);
@@ -166,6 +184,8 @@ public:
 			void				HideHint				(CUIWindow* parent);
 			void				HideCurHint				();
 			void				Hint					(const shared_str& text);
+			bool				ApplyMouseWheelZoom		(EUIMessages mouse_action);
+			void				SetUiSounds				(CPdaUiSounds* uiSounds) { m_pUiSounds = uiSounds; }
 	virtual bool				OnMouseAction					(float x, float y, EUIMessages mouse_action);
 	virtual bool				OnKeyboardAction				(int dik, EUIMessages keyboard_action);
 	virtual bool				OnKeyboardHold			(int dik);

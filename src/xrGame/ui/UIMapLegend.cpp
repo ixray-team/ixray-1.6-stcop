@@ -7,6 +7,7 @@
 
 #include "StdAfx.h"
 #include "UIMapLegend.h"
+#include "PdaUiSound.h"
 
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../../xrUI/UIXmlInit.h"
@@ -72,6 +73,10 @@ void UIMapLegend::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )
 	{
 		if ( msg == BUTTON_DOWN )
 		{
+			if (m_pUiSounds)
+			{
+				m_pUiSounds->Play(EPdaUiSound::PanelClose);
+			}
 			Show( false );
 			return;
 		}

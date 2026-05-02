@@ -119,6 +119,7 @@ public:
 			void			ResetXformAnimation		();
 
 	virtual void			DrawTexture				();
+			void			DrawTexturePass			(u32 color, const Fvector2& extraOffset);
 	virtual void			DrawText				();
 	virtual void			DrawHighlightedText		();
 
@@ -131,6 +132,8 @@ public:
 
 			void			SetStretchTexture		(bool stretch_texture)	{m_bStretchTexture = stretch_texture;}
 			bool			GetStretchTexture		()						{return m_bStretchTexture;}
+			void			SetTextureShadow		(bool enabled, float thickness, u32 color);
+			bool			GetTextureShadowEnabled	() const					{return m_textureShadowEnabled;}
 			void			SetEllipsis				(int pos, int indent)	{ TextItemControl()->SetEllipsis(pos != 0); }
 			void			SetEllipsis_script		(bool mode)				{ TextItemControl()->SetEllipsis(mode); }
 
@@ -166,6 +169,9 @@ protected:
 	float			m_fHeading;
 
 	Fvector2		m_TextureOffset;
+	bool			m_textureShadowEnabled;
+	float			m_textureShadowThickness;
+	u32				m_textureShadowColor;
 	bool			m_text_control_exists;
 
 public:

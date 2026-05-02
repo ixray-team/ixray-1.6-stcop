@@ -11,8 +11,11 @@
 #include "UIRankFaction.h"
 #include "UIAchievements.h"
 #include "UIRankingsCoC.h"
+#include "../../xrCore/FormatParsers/XML/xrXMLParser.h"
 
 class CUIStatic;
+class CUIStackPanel;
+class CUIWindow;
 class CUIXml;
 class CUIProgressBar;
 class CUIFrameLineWnd;
@@ -20,6 +23,7 @@ class CUIFrameWindow;
 class CUICharacterInfo;
 class CUIScrollView;
 class CUIGamepadLegend;
+class CPdaUiSounds;
 
 class CUIRankingWnd final :
 	public CUIWindow,
@@ -57,6 +61,9 @@ private:
 	CUIStatic*			m_favorite_weapon_bckgrnd = nullptr;
 	CUIStatic*			m_favorite_weapon_icon = nullptr;
 
+	CUIStatic*			m_valuable_artifact_icon = nullptr;
+	CUICharacterInfo*	m_ranking_actor_identity = nullptr;
+
 	//Alundaio: CoC Rankings
 	CUIScrollView*		m_coc_ranking = nullptr;
 	CUIScrollView*		m_coc_ranking_actor_view = nullptr;
@@ -76,19 +83,47 @@ private:
 	CUIRankingsCoC* m_coc_ranking_actor = nullptr;
 	//-Alundaio
 
-	enum { max_stat_info = 32 };
-	CUIStatic*			m_stat_caption[max_stat_info];
-	CUIStatic*			m_stat_info[max_stat_info];
+	struct StatItem final
+	{
+		enum class ELayout : u8
+		{
+			Legacy = 0,
+			StackedRow = 1,
+			SplitColumns = 2,
+		};
+
+		ELayout layout = ELayout::Legacy;
+		shared_str statId;
+		CUIStackPanel* rowStack = nullptr;
+		CUIWindow* rowRoot = nullptr;
+		CUIStatic* caption = nullptr;
+		CUIStatic* value = nullptr;
+		shared_str cachedValue;
+	};
+
+	xr_vector<StatItem> m_stat_items;
+	CUIStackPanel* _statList = nullptr;
+	CUIWindow* _statColumns = nullptr;
+	CUIStackPanel* _statCaptionsStack = nullptr;
+	CUIStackPanel* _statValuesStack = nullptr;
 
 	u32					m_delay;
 	u32					m_previous_time;
+	u32					m_statDelay;
+	u32					m_statPreviousTime;
+	u32					m_actorStatRevision;
 	u32					m_stat_count;
 	const char*				m_last_monster_icon_back;
 	const char*				m_last_monster_icon;
 	const char*				m_last_weapon_icon;
+	shared_str				m_last_valuable_artifact_icon;
+
+	CPdaUiSounds*		m_pUiSounds = nullptr;
 
 	bool m_isGetRankingsArraySize = false;
 	const char* m_onGetRankingsArraySize = {};
+	bool m_isGetPdaStatById = false;
+	const char* m_onGetPdaStatById = {};
 
 public:
 						CUIRankingWnd			();
@@ -100,23 +135,32 @@ public:
 	virtual void		ResetAll				();
 
 			void		Init					();
+			void		SetUiSounds				(CPdaUiSounds* uiSounds) { m_pUiSounds = uiSounds; }
 			void		update_info				();
 
 			bool		OnGamepadKeyAction		(int key, EUIMessages gamepad_action) override;
 			bool		OnGamepadKeyHold		(int key) override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
 	CUIGamepadLegend*	m_gamepad_legend = nullptr;
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
 			void		add_faction				(CUIXml& xml, shared_str const& faction_id);
 			void		clear_all_factions		();
 			bool		SortingLessFunction		(CUIWindow* left, CUIWindow* right);
-			void		get_value_from_script	();
+			void		RefreshStatItems		();
+			void		RefreshStatItemsIfNeeded();
+			void		update_ranking_heavy	();
+			void		InitStatInfo			(CUIXml& xml);
+			bool		InitLegacyStat			(CUIXml& xml, XML_NODE* statInfoNode, u32 index, u32 valueColor);
+			bool		InitSplitStatColumns		(CUIXml& xml, XML_NODE* statInfoNode, u32 valueColor);
+			bool		InitStackedStatRow		(CUIXml& xml, XML_NODE* statInfoNode, u32 index, u32 valueColor);
 
 			void		add_achievement			(CUIXml& xml, shared_str const& faction_id);
-			void		get_statistic			();
 			void		get_best_monster		();
 			void		get_favorite_weapon		();
+			void		get_valuable_artifact_icon();
+			const char* GetStatValue		(const StatItem& item, const u32 index) const;
 
 }; // class CUIRankingWnd

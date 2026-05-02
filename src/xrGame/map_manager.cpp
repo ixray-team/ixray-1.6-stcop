@@ -281,10 +281,16 @@ CMapLocation* CMapManager::GetActiveTaskCompassLocation()
 	CGameTask* storyTask = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);
 	CGameTask* additionalTask = Level().GameTaskManager()->ActiveTask(eTaskTypeAdditional);
 	CMapLocation* activeLoc = nullptr;
-	if (storyTask && storyTask->m_map_object_id != u16(-1) && storyTask->m_map_location.size() > 0)
-		activeLoc = GetMapLocation(storyTask->m_map_location, storyTask->m_map_object_id);
-	if (!activeLoc && additionalTask && additionalTask->m_map_object_id != u16(-1) && additionalTask->m_map_location.size() > 0)
-		activeLoc = GetMapLocation(additionalTask->m_map_location, additionalTask->m_map_object_id);
+	if (storyTask && storyTask->HasActiveMapTarget())
+	{
+		const SGameTaskObjective& objective = storyTask->Objective(storyTask->ActiveObjectiveIdx());
+		activeLoc = GetMapLocation(objective.m_map_location, objective.m_map_object_id);
+	}
+	if (!activeLoc && additionalTask && additionalTask->HasActiveMapTarget())
+	{
+		const SGameTaskObjective& objective = additionalTask->Objective(additionalTask->ActiveObjectiveIdx());
+		activeLoc = GetMapLocation(objective.m_map_location, objective.m_map_object_id);
+	}
 	return activeLoc;
 }
 

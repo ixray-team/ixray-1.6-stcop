@@ -16,9 +16,9 @@
 #include "../../xrUI/Widgets/UIScrollView.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UITabControl.h"
 #include "../../xrUI/Widgets/UICheckButton.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
-#include "../../xrUI/Widgets/UIFixedScrollBar.h"
 #include "../../xrUI/Widgets/UIHint.h"
 #include "UITaskWnd.h"
 #include "../../xrEngine/string_table.h"
@@ -29,11 +29,36 @@
 #include "../Level.h"
 #include "../GametaskManager.h"
 #include "../Actor.h"
+#include "PdaConstants.h"
+#include "PdaUiSound.h"
+#include "../../xrUI/Widgets/UIMessages.h"
 
+namespace
+{
+bool IsWindowOrChildOf(CUIWindow* child, CUIWindow* ancestor)
+{
+	while (child)
+	{
+		if (child == ancestor)
+		{
+			return true;
+		}
+		child = child->GetParent();
+	}
+	return false;
+}
+
+bool TaskHasMapTarget(const CGameTask* task)
+{
+	return task && task->HasActiveMapTarget();
+}
+} // namespace
 
 UITaskListWnd::UITaskListWnd()
 	: hint_wnd(nullptr), m_background(nullptr), m_list(nullptr),
-	m_caption(nullptr), m_bt_close(nullptr), m_orig_h(0), m_show_only_secondary_tasks(false) 
+	m_caption(nullptr), m_bt_close(nullptr), m_filter_tabs(nullptr),
+	_storylineTaskItem(nullptr), _btnStorylineTaskFocus(nullptr),
+	m_orig_h(0), m_filter(ETaskListFilter::All)
 {
 	ActionRepeaters()->Register(this, kPDA_TASKS_NEXT);
 	ActionRepeaters()->Register(this, kPDA_TASKS_PREV);
@@ -61,6 +86,40 @@ void UITaskListWnd::init_from_xml( CUIXml& xml, const char* path )
 	Register( m_bt_close );
 	AddCallback( m_bt_close, BUTTON_DOWN, CUIWndCallback::void_function( this, &UITaskListWnd::OnBtnClose ) );
 
+	if (xml.NavigateToNode(PdaTaskXml::PanelStorylineItemRel))
+	{
+		_storylineTaskItem = new CUITaskItem();
+		_storylineTaskItem->SetAutoDelete(true);
+		AttachChild(_storylineTaskItem);
+		_storylineTaskItem->Init(xml, PdaTaskXml::PanelStorylineItemRel);
+		Register(_storylineTaskItem);
+		AddCallback(
+			_storylineTaskItem,
+			WINDOW_LBUTTON_DB_CLICK,
+			CUIWndCallback::void_function(this, &UITaskListWnd::OnStorylineTaskFocus)
+		);
+	}
+
+	if (_storylineTaskItem && xml.NavigateToNode(PdaTaskXml::PanelStorylineFocusRel))
+	{
+		_btnStorylineTaskFocus = UIHelper::Create3tButton(
+			xml,
+			PdaTaskXml::PanelStorylineFocusRel,
+			_storylineTaskItem
+		);
+	}
+
+	if (_btnStorylineTaskFocus)
+	{
+		_btnStorylineTaskFocus->Show(false);
+		Register(_btnStorylineTaskFocus);
+		AddCallback(
+			_btnStorylineTaskFocus,
+			BUTTON_DOWN,
+			CUIWndCallback::void_function(this, &UITaskListWnd::OnStorylineTaskFocus)
+		);
+	}
+
 	m_list = new CUIScrollView();
 	m_list->SetAutoDelete( true );
 	AttachChild( m_list );
@@ -70,7 +129,22 @@ void UITaskListWnd::init_from_xml( CUIXml& xml, const char* path )
 	m_list->SetWindowName("---second_task_list");
 	m_list->m_sort_function = fastdelegate::MakeDelegate( this, &UITaskListWnd::SortingLessFunction );
 
+	if (xml.NavigateToNode(PdaTaskXml::PanelFilterTabsRel)
+		&& xml.GetNodesNum(PdaTaskXml::PanelFilterTabsRel, 0, "button") > 0)
+	{
+		m_filter_tabs = new CUITabControl();
+		m_filter_tabs->SetAutoDelete(true);
+		AttachChild(m_filter_tabs);
+		CUIXmlInit::InitTabControl(xml, PdaTaskXml::PanelFilterTabsRel, 0, m_filter_tabs);
+		m_filter_tabs->SetMessageTarget(this);
+	}
+
 	xml.SetLocalRoot( stored_root );
+
+	if (m_filter_tabs && m_filter_tabs->GetTabsCount() > 0)
+	{
+		m_filter_tabs->SetActiveTabByIndex(0);
+	}
 }
 
 bool UITaskListWnd::OnMouseAction( float x, float y, EUIMessages mouse_action )
@@ -84,6 +158,11 @@ bool UITaskListWnd::OnMouseAction( float x, float y, EUIMessages mouse_action )
 
 void UITaskListWnd::OnMouseScroll( float iDirection )
 {
+	if (m_pUiSounds)
+	{
+		m_pUiSounds->Play(EPdaUiSound::ListScroll, true);
+	}
+
 	if ( (u32)iDirection == WINDOW_MOUSE_WHEEL_UP )
 		m_list->ScrollBar()->TryScrollDec();
 	else if ((u32)iDirection == WINDOW_MOUSE_WHEEL_DOWN )
@@ -112,11 +191,38 @@ void UITaskListWnd::OnFocusLost()
 void UITaskListWnd::Update()
 {
 	inherited::Update();
+	if (_storylineTaskItem && _storylineTaskItem->show_hint && _storylineTaskItem->OwnerTask())
+	{
+		CGameTask* task = _storylineTaskItem->OwnerTask();
+		GetMessageTarget()->SendMessage(_storylineTaskItem, PDA_TASK_SHOW_HINT, (void*)task);
+	}
 //	UpdateCounter();
 }
 
 void UITaskListWnd::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )
 {
+	if (msg == TAB_CHANGED && m_filter_tabs && pWnd == m_filter_tabs)
+	{
+		if (m_pUiSounds)
+		{
+			m_pUiSounds->Play(EPdaUiSound::Tab);
+		}
+
+		const shared_str activeId = m_filter_tabs->GetActiveId();
+		ETaskListFilter mode = ETaskListFilter::All;
+		if (activeId == "story")
+		{
+			mode = ETaskListFilter::Story;
+		}
+		else if (activeId == "side")
+		{
+			mode = ETaskListFilter::Side;
+		}
+
+		SetFilterMode(mode);
+		return;
+	}
+
 	GetMessageTarget()->SendMessage( pWnd, msg, pData );
 	inherited::SendMessage( pWnd, msg, pData );
 	CUIWndCallback::OnEvent( pWnd, msg, pData );
@@ -129,6 +235,48 @@ void UITaskListWnd::OnBtnClose( CUIWindow* w, void* d )
 		wnd->Show_TaskListWnd(false);
 //	Show( false );
 	m_bt_close->SetButtonState(CUIButton::BUTTON_NORMAL);
+}
+
+void UITaskListWnd::OnStorylineTaskFocus(CUIWindow* w, void* d)
+{
+	CGameTask* task = StorylineTask();
+	if (task)
+	{
+		GetMessageTarget()->SendMessage(this, PDA_TASK_SET_TARGET_MAP, (void*)task);
+	}
+}
+
+void UITaskListWnd::UpdateStorylineTask(CGameTask* task)
+{
+	if (!_storylineTaskItem)
+	{
+		return;
+	}
+
+	_storylineTaskItem->InitTask(task);
+	UpdateStorylineTaskFocus();
+}
+
+CGameTask* UITaskListWnd::StorylineTask() const
+{
+	return _storylineTaskItem ? _storylineTaskItem->OwnerTask() : nullptr;
+}
+
+void UITaskListWnd::UpdateStorylineTaskFocus()
+{
+	if (!_btnStorylineTaskFocus)
+	{
+		return;
+	}
+
+	CGameTask* task = StorylineTask();
+	if (!task || !task->HasActiveMapTarget())
+	{
+		_btnStorylineTaskFocus->Show(false);
+		return;
+	}
+
+	_btnStorylineTaskFocus->Show(true);
 }
 
 void UITaskListWnd::UpdateList()
@@ -145,8 +293,27 @@ void UITaskListWnd::UpdateList()
 		CGameTask* task = (*itb).getGameTask();
 		if ( task && task->GetTaskState() == eTaskStateInProgress )
 		{
-			if (m_show_only_secondary_tasks && task->GetTaskType() == eTaskTypeStoryline)
-				continue;
+			const ETaskType taskType = task->GetTaskType();
+			switch (m_filter)
+			{
+				case ETaskListFilter::Story:
+					if (taskType != eTaskTypeStoryline)
+					{
+						continue;
+					}
+					break;
+
+				case ETaskListFilter::Side:
+					if (taskType == eTaskTypeStoryline)
+					{
+						continue;
+					}
+					break;
+
+				case ETaskListFilter::All:
+				default:
+					break;
+			}
 
 			UITaskListWndItem* item = new UITaskListWndItem();
 			if ( item->init_task( task, this ) )
@@ -155,7 +322,37 @@ void UITaskListWnd::UpdateList()
 			}
 		}
 	}
+	m_list->UpdateChildrenLenght();
+	m_list->ForceUpdate();
+	if (!m_list->NeedShowScrollBar())
+	{
+		m_list->ScrollToBegin();
+		prev_scroll_pos = m_list->GetMinScrollPos();
+	}
 	m_list->SetScrollPos(prev_scroll_pos);
+}
+
+void UITaskListWnd::SetFilterMode(ETaskListFilter mode)
+{
+	if (m_filter == mode)
+	{
+		return;
+	}
+
+	m_filter = mode;
+	if (IsShown())
+	{
+		UpdateList();
+	}
+
+	if (m_filter_tabs)
+	{
+		GetMessageTarget()->SendMessage(
+			this,
+			PDA_TASK_LIST_FILTER_CHANGED,
+			reinterpret_cast<void*>(static_cast<intptr_t>(mode))
+		);
+	}
 }
 
 bool UITaskListWnd::SortingLessFunction( CUIWindow* left, CUIWindow* right )
@@ -187,6 +384,10 @@ bool UITaskListWnd::SelectNextToSelected(bool bNext)
 						UITaskListWndItem* nextToItem = static_cast<UITaskListWndItem*>(*(it + 1));
 						taskManager->SetActiveTask(nextToItem->get_task());
 						m_list->ScrollToItem(nextToItem, iFloor(-m_list->ScrollBar()->GetHeight() / 2.0f + nextToItem->GetWndRect().height() / 2.0f));
+						if (m_pUiSounds)
+						{
+							m_pUiSounds->Play(EPdaUiSound::ListSelect);
+						}
 						return true;
 					}
 				}
@@ -197,6 +398,10 @@ bool UITaskListWnd::SelectNextToSelected(bool bNext)
 						UITaskListWndItem* nextToItem = static_cast<UITaskListWndItem*>(*(it - 1));
 						taskManager->SetActiveTask(nextToItem->get_task());
 						m_list->ScrollToItem(nextToItem, iFloor(-m_list->ScrollBar()->GetHeight() / 2.0f + nextToItem->GetWndRect().height() / 2.0f));
+						if (m_pUiSounds)
+						{
+							m_pUiSounds->Play(EPdaUiSound::ListSelect);
+						}
 						return true;
 					}
 				}
@@ -289,7 +494,8 @@ UITaskListWndItem::UITaskListWndItem()
 	: show_hint_can(false), show_hint(false),
 	m_task(nullptr), m_name(nullptr),
 	m_bt_view(nullptr), m_st_story(nullptr),
-	m_bt_focus(nullptr)
+	m_task_icon(nullptr),
+	m_bt_focus(nullptr), m_btn_task_focus(nullptr)
 {
 	m_color_states[0] = (u32)(-1);
 	m_color_states[1] = (u32)(-1);
@@ -323,9 +529,39 @@ bool UITaskListWndItem::init_task( CGameTask* task, UITaskListWnd* parent )
 		m_bt_view  = UIHelper::CreateCheck(      xml, "second_task_wnd:task_item:btn_view", this );
 
 	if (xml.NavigateToNode("second_task_wnd:task_item:st_story"))
-	m_st_story = UIHelper::CreateStatic( xml, "second_task_wnd:task_item:st_story", this );
-	m_bt_focus = UIHelper::Create3tButton( xml, "second_task_wnd:task_item:btn_focus", this );
-	
+		m_st_story = UIHelper::CreateStatic( xml, "second_task_wnd:task_item:st_story", this );
+
+	// Optional per-task icon container (uses CGameTask::m_icon_texture_name).
+	if (xml.NavigateToNode("second_task_wnd:task_item:t_icon"))
+	{
+		m_task_icon = UIHelper::CreateStatic(xml, "second_task_wnd:task_item:t_icon", this);
+	}
+
+	if (xml.NavigateToNode(PdaTaskXml::TaskItemFocus))
+	{
+		m_bt_focus = UIHelper::Create3tButton(xml, PdaTaskXml::TaskItemFocus, this);
+	}
+	else if (xml.NavigateToNode(PdaTaskXml::TaskItemTaskFocus))
+	{
+		m_bt_focus = UIHelper::Create3tButton(xml, PdaTaskXml::TaskItemTaskFocus, this);
+	}
+
+	// Optional second focus button when both btn_focus and btn_task_focus are defined in XML.
+	if (m_bt_focus && xml.NavigateToNode(PdaTaskXml::TaskItemTaskFocus)
+		&& xml.NavigateToNode(PdaTaskXml::TaskItemFocus))
+	{
+		m_btn_task_focus = UIHelper::Create3tButton(xml, PdaTaskXml::TaskItemTaskFocus, this);
+	}
+
+	if (m_bt_focus)
+	{
+		m_bt_focus->SetMessageTarget(this);
+	}
+	if (m_btn_task_focus)
+	{
+		m_btn_task_focus->SetMessageTarget(this);
+	}
+
 	m_color_states[stt_activ ] = CUIXmlInit::GetColor( xml, "second_task_wnd:task_item:activ",  0, (u32)(-1) );
 	m_color_states[stt_unread] = CUIXmlInit::GetColor( xml, "second_task_wnd:task_item:unread", 0, (u32)(-1) );
 	m_color_states[stt_read  ] = CUIXmlInit::GetColor( xml, "second_task_wnd:task_item:read",   0, (u32)(-1) );
@@ -366,19 +602,31 @@ void UITaskListWndItem::update_view()
 {
 	VERIFY( m_task );
 	CMapLocation* ml = m_task->LinkedMapLocation();
-	if ( ml && ml->SpotEnabled() )
+	const bool hasMapTarget = TaskHasMapTarget(m_task);
+	const bool spotVisible = ml && ml->SpotEnabled();
+	if ( spotVisible )
 	{
 		if (m_bt_view)
+		{
 			m_bt_view->SetCheck(false);
-		else
-			m_bt_focus->Show(true);
+		}
 	}
 	else
 	{
 		if (m_bt_view)
+		{
 			m_bt_view->SetCheck(true);
-		else
-			m_bt_focus->Show(false);
+		}
+	}
+
+	if (m_bt_focus)
+	{
+		m_bt_focus->Show(hasMapTarget);
+	}
+
+	if (m_btn_task_focus)
+	{
+		m_btn_task_focus->Show(hasMapTarget);
 	}
 
 	if (m_st_story)
@@ -389,11 +637,40 @@ void UITaskListWndItem::update_view()
 			m_st_story->InitTexture("ui_inGame2_PDA_icon_Secondary_mission");
 	}
 
+	if (m_task_icon)
+	{
+		if (m_task->m_icon_texture_name.size())
+		{
+			m_task_icon->InitTexture(m_task->m_icon_texture_name.c_str());
+			m_task_icon->TextureOn();
+			m_task_icon->SetStretchTexture(true);
+			m_task_icon->Show(true);
+		}
+		else
+		{
+			m_task_icon->TextureOff();
+			m_task_icon->Show(false);
+		}
+	}
+
 	m_name->TextItemControl()->SetTextST( g_pStringTable->ParseStringFromScript(m_task->m_Title).c_str() );
 	m_name->AdjustHeightToText();
+	const float prevHeight = GetHeight();
 	float h1 = m_name->GetWndPos().y + m_name->GetHeight() + 10.0f;
-	h1 = std::max( h1, GetHeight() );
+	h1 = std::max( h1, prevHeight );
 	SetHeight( h1 );
+	if (!fsimilar(prevHeight, h1))
+	{
+		CUIWindow* pad = GetParent();
+		if (pad)
+		{
+			CUIScrollView* scroll = smart_cast<CUIScrollView*>(pad->GetParent());
+			if (scroll)
+			{
+				scroll->ForceUpdate();
+			}
+		}
+	}
 
     const CGameTask* storyTask = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);
     const CGameTask* additionalTask = Level().GameTaskManager()->ActiveTask(eTaskTypeAdditional);
@@ -415,12 +692,13 @@ void UITaskListWndItem::update_view()
 
 void UITaskListWndItem::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )
 {
-	if ( pWnd == m_bt_focus )
+	const bool isFocusControl = (m_bt_focus && IsWindowOrChildOf(pWnd, m_bt_focus))
+		|| (m_btn_task_focus && IsWindowOrChildOf(pWnd, m_btn_task_focus));
+
+	if (isFocusControl && (msg == BUTTON_DOWN || msg == BUTTON_CLICKED))
 	{
-		if ( msg == BUTTON_DOWN )
-		{
-			GetMessageTarget()->SendMessage( this, PDA_TASK_SET_TARGET_MAP, (void*)m_task );
-		}
+		GetMessageTarget()->SendMessage(this, PDA_TASK_SET_TARGET_MAP, (void*)m_task);
+		return;
 	}
 
 	if ( pWnd == m_bt_view )
@@ -458,7 +736,7 @@ bool UITaskListWndItem::OnMouseAction( float x, float y, EUIMessages mouse_actio
 {
 	if ( inherited::OnMouseAction( x, y, mouse_action ) )
 	{
-		//return true;
+		return true;
 	}
 
 	switch ( mouse_action )
@@ -472,7 +750,7 @@ bool UITaskListWndItem::OnMouseAction( float x, float y, EUIMessages mouse_actio
 		}
 	}//switch
 
-	return true;
+	return false;
 }
 
 void UITaskListWndItem::OnFocusReceive()

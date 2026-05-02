@@ -1476,6 +1476,14 @@ void CActor::save(NET_Packet &output_packet)
 	output_packet.w_stringZ(g_quick_use_slots[2]);
 	output_packet.w_stringZ(g_quick_use_slots[3]);
 
+	output_packet.w_u32(m_statMoneyEarned);
+	output_packet.w_u32(m_statMoneySpent);
+	output_packet.w_float(m_statDistanceMeters);
+	output_packet.w_u32(m_statHeadshots);
+	OnDeathStatSavedToGame();
+	output_packet.w_u32(m_statDeaths);
+	output_packet.w_u32(m_statHelpWounded);
+
 	//output_packet.w_u8(u8(m_inventory_disabled));
 	//output_packet.w_u8(u8(m_pda_disabled));
 	//output_packet.w_u8(u8(m_use_disabled));
@@ -1510,6 +1518,27 @@ void CActor::load(IReader &input_packet)
 	input_packet.r_stringZ(g_quick_use_slots[1], sizeof(g_quick_use_slots[1]));
 	input_packet.r_stringZ(g_quick_use_slots[2], sizeof(g_quick_use_slots[2]));
 	input_packet.r_stringZ(g_quick_use_slots[3], sizeof(g_quick_use_slots[3]));
+
+	constexpr u32 actorStatsBlockSize = sizeof(u32) * 5 + sizeof(float);
+	if (input_packet.tell() + actorStatsBlockSize <= input_packet.length())
+	{
+		m_statMoneyEarned = input_packet.r_u32();
+		m_statMoneySpent = input_packet.r_u32();
+		m_statDistanceMeters = input_packet.r_float();
+		m_statHeadshots = input_packet.r_u32();
+		OnDeathStatLoadedFromSave(input_packet.r_u32());
+		m_statHelpWounded = input_packet.r_u32();
+	}
+	else
+	{
+		m_statMoneyEarned = 0;
+		m_statMoneySpent = 0;
+		m_statDistanceMeters = 0.0f;
+		m_statHeadshots = 0;
+		OnDeathStatLoadedFromSave(0);
+		m_statHelpWounded = 0;
+	}
+	m_isMoneyStatInitialized = true;
 
 	//set_inventory_disabled(!!input_packet.r_u8());
 	//set_pda_disabled(!!input_packet.r_u8());

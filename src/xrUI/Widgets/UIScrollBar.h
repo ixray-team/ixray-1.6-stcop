@@ -1,87 +1,179 @@
 #pragma once
 #include "UIWindow.h"
+#include "../../xrScripts/script_export_space.h"
 
 class CUI3tButton;
 class CUIScrollBox;
 class CUIFrameLineWnd;
+class CUIStatic;
+class CUIXml;
 
-class UI_API CUIScrollBar :
+enum class ScrollLayoutMode : u8
+{
+	Stretch,
+	Fixed,
+};
+
+enum class ScrollBarPart : u8
+{
+	Dec,
+	Inc,
+	Track,
+	Thumb,
+};
+
+struct ScrollBarProfileConfig
+{
+	ScrollLayoutMode layoutMode = ScrollLayoutMode::Stretch;
+	bool thumbAsButton = false;
+	float thickness = 16.0f;
+	float holdDelay = 50.0f;
+	Ivector2 scrollBoxOffset{};
+};
+
+struct ScrollBarPartFlags
+{
+	bool hasDec = false;
+	bool hasInc = false;
+	bool hasTrack = false;
+	bool hasThumb = false;
+
+	bool anyPart() const
+	{
+		return hasDec || hasInc || hasTrack || hasThumb;
+	}
+};
+
+enum class ScrollHitZone : u8
+{
+	None,
+	DecButton,
+	IncButton,
+	TrackBefore,
+	TrackAfter,
+};
+
+UI_API int QueryScrollBarProfileLayout_script(const char* profile, bool isHorizontal);
+
+class UI_API CUIScrollBar final :
 	public CUIWindow
 {
 private:
-	typedef CUIWindow inherited;
-protected:
+	using ScrollBarBase = CUIWindow;
 
-	CUI3tButton*	m_DecButton;
-	CUI3tButton*	m_IncButton;
-	CUIScrollBox*	m_ScrollBox;
-	CUIFrameLineWnd* m_FrameBackground;
+	CUI3tButton* _decButton = nullptr;
+	CUI3tButton* _incButton = nullptr;
+	CUIScrollBox* _scrollBox = nullptr;
+	CUI3tButton* _fixedThumb = nullptr;
+	CUIFrameLineWnd* _frameBackground = nullptr;
 
-	float			m_hold_delay;
-	int				m_iScrollPos;
+	float _holdDelay = 50.0f;
+	int _scrollPos = 0;
+	int _stepSize = 1;
+	int _minPos = 1;
+	int _maxPos = 1;
+	int _pageSize = 1;
+	int _scrollWorkArea = 0;
+	bool _enabled = true;
+	bool _isHorizontal = false;
+	int _mouseState = 0;
+	ScrollLayoutMode _layoutMode = ScrollLayoutMode::Stretch;
+	Ivector2 _scrollBoxOffset{};
+	u32 _lastHoldTimeMs = 0;
+	bool _initialized = false;
+	ScrollBarProfileConfig _profileConfig{};
+	ScrollBarPartFlags _partFlags{};
 
-	int				m_iStepSize;
+	bool ScrollInc(bool byScrollbox = false);
+	bool ScrollDec(bool byScrollbox = false);
+	void UpdateScrollBar();
+	void layoutThumbGeometry(CUIWindow* thumb, float boxSz);
+	u32 ScrollSize() const { return std::max(1, _maxPos - _minPos - _pageSize + 1); }
+	void ClampByViewRect();
+	void SetPosScrollFromView(float viewPos, float viewWidth, float viewOffs);
+	int PosViewFromScroll(int viewSize, int viewOffs);
+	void SetScrollPosClamped(int pos);
+	bool IsRelevant() const;
 
-	int				m_iMinPos;
-	int				m_iMaxPos;
+	bool LoadScrollBarXml(CUIXml& xmlDoc, const char* profile);
+	static bool ParseProfile(CUIXml& xmlDoc, const char* profile, bool isHorizontal, ScrollBarProfileConfig& out);
+	bool ResolvePartPath(CUIXml& xmlDoc, const char* profile, ScrollBarPart part, bool isHorizontal, string_path& outPath) const;
+	bool TryInitPart(CUIXml& xmlDoc, const char* nodePath, ScrollBarPart part, const ScrollBarProfileConfig& config);
+	void ApplyStaticThumbHack(CUIStatic* tempStatic, CUIWindow* targetWnd);
+	void ApplyStaticTrackHack(CUIStatic* tempBackground);
+	void RecalcWorkArea(float thickness);
+	bool InitStretchLayout(CUIXml& xmlDoc, const char* profile, Fvector2 pos, float length, bool isHorizontal);
+	bool InitFixedLayout(CUIXml& xmlDoc, const char* profile, Fvector2 pos, bool isHorizontal);
+	bool InitPartsFromProfile(CUIXml& xmlDoc, const char* profile, bool isHorizontal, float incAnchorLength);
+	void ResetPartFlags();
+	void detachFixedThumbChild();
+	void prepareFixedLayoutChildren();
+	void PositionIncButton(float anchorLength);
+	CUIWindow* GetThumbWindow() const;
+	float GetDecSpan() const;
+	float GetIncSpan() const;
+	float mainBarSpan() const;
+	float crossBarSpan() const;
+	float thumbViewOffset() const;
+	float scrollBoxInset() const;
+	void NotifyScrollChanged();
+	void HandleThumbMove();
+	ScrollHitZone hitTestScrollZone() const;
+	bool applyHitZone(ScrollHitZone zone);
+	bool handleFixedLayoutMouseAction(CUIWindow* thumb, EUIMessages mouseAction);
 
-	int				m_iPageSize;
-
-	int				m_ScrollWorkArea;
-	bool			m_b_enabled;
-	bool			m_bIsHorizontal;
-
-	int				m_mouse_state;
-
-	bool			ScrollInc			(bool by_scrollbox=false);
-	bool			ScrollDec			(bool by_scrollbox=false);
-	virtual void	UpdateScrollBar		();
-
-	u32				ScrollSize			(){return std::max( 1, m_iMaxPos - m_iMinPos - m_iPageSize + 1 );}
-	virtual void	ClampByViewRect		();
-	virtual void	SetPosScrollFromView(float view_pos, float view_width, float view_offs);
-	int				PosViewFromScroll	(int view_size, int view_offs);
-	void			SetScrollPosClamped	(int iPos);
-
-	bool			IsRelevant			();
 public:
-					CUIScrollBar		();
+	CUIScrollBar();
+	~CUIScrollBar();
 
-			void	SetEnabled			(bool b)			{m_b_enabled = b;if(!m_b_enabled)Show(m_b_enabled);}
-			bool	GetEnabled			()					{return m_b_enabled;}
-	virtual void	Show				(bool b);
-	virtual void	Enable				(bool b);
-	virtual	bool	InitScrollBar		(Fvector2 pos, float length, bool bIsHorizontal, const char* profile = "default");
+	void SetEnabled(bool enabled) { _enabled = enabled; if (!_enabled) { Show(_enabled); } }
+	bool GetEnabled() const { return _enabled; }
 
-	virtual void	SendMessage			(CUIWindow *pWnd, s16 msg, void *pData);
-	virtual bool	OnMouseAction				(float x, float y, EUIMessages mouse_action);
-	virtual bool 	OnMouseDown			(int mouse_btn);
-	virtual	bool	OnMouseDownEx		();
-	virtual void	OnMouseUp			(int mouse_btn);
-	virtual bool	OnKeyboardHold		(int dik);
+	void Show(bool show) override;
+	void Enable(bool enable) override;
 
-	virtual void	Draw				();
+	bool InitScrollBar(Fvector2 pos, float length, bool isHorizontal, const char* profile = "default");
+	bool InitScrollBar(Fvector2 pos, bool isHorizontal, const char* profile = "pda");
 
-	virtual void	SetWidth			(float width);
-	virtual void	SetHeight			(float height);
+	static bool QueryProfileLayout(const char* profile, bool isHorizontal, ScrollLayoutMode& outMode);
+	static bool InitForProfile(CUIScrollBar& bar, Fvector2 pos, float stretchLength, bool isHorizontal, const char* profile);
 
-	virtual void	Reset				();
-	void			Refresh				();
-	void			SetStepSize			(int step);
-	IC int			GetStepSize			() { return m_iStepSize; }
-	void 			SetRange			(int iMin, int iMax);
-	void 			GetRange			(int& iMin, int& iMax) {iMin = m_iMinPos;  iMax = m_iMaxPos;}
-	int 			GetMaxRange			() {return m_iMaxPos;}
-	int 			GetMinRange			() {return m_iMinPos;}
+	bool IsFixedLayout() const { return _layoutMode == ScrollLayoutMode::Fixed; }
+	bool IsInitialized() const { return _initialized; }
 
-	void			SetPageSize			(int iPage) { m_iPageSize = std::max(0,iPage); UpdateScrollBar();}
-	int				GetPageSize			() {return m_iPageSize;}
+	void SendMessage(CUIWindow* wnd, s16 msg, void* data) override;
+	bool OnMouseAction(float x, float y, EUIMessages mouseAction) override;
+	bool OnMouseDown(int mouseBtn) override;
+	bool OnMouseDownEx();
+	void OnMouseUp(int mouseBtn) override;
+	bool OnKeyboardHold(int dik) override;
 
-	void			SetScrollPos		(int iPos) { SetScrollPosClamped(iPos); UpdateScrollBar();}
-	int				GetScrollPos		() {return std::max(m_iMinPos,m_iScrollPos);}
-	
-	void			TryScrollInc		(bool by_scrollbox=false);
-	void			TryScrollDec		(bool by_scrollbox=false);
+	void Draw() override;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	void SetWidth(float width) override;
+	void SetHeight(float height) override;
+
+	void Reset() override;
+	void SyncThumbFromScrollPos();
+	void Refresh() { SyncThumbFromScrollPos(); }
+
+	void SetStepSize(int step);
+	int GetStepSize() const { return _stepSize; }
+	void SetRange(int minPos, int maxPos);
+	void GetRange(int& minPos, int& maxPos) const { minPos = _minPos; maxPos = _maxPos; }
+	int GetMaxRange() const { return _maxPos; }
+	int GetMinRange() const { return _minPos; }
+
+	void SetPageSize(int page) { _pageSize = std::max(0, page); UpdateScrollBar(); }
+	int GetPageSize() const { return _pageSize; }
+
+	void SetScrollPos(int pos) { SetScrollPosClamped(pos); UpdateScrollBar(); }
+	int GetScrollPos() const { return std::max(_minPos, _scrollPos); }
+
+	void TryScrollInc(bool byScrollbox = false);
+	void TryScrollDec(bool byScrollbox = false);
+
+	CUIWindow* ui_cast_window() override { return this; }
+
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

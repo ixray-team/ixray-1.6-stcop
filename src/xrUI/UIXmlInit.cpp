@@ -29,6 +29,7 @@
 #include "UIVectorBinding.h"
 #include "Widgets/UITabButtonMP.h"
 #include "Widgets/UILines.h"
+#include "Widgets/UIStatic.h"
 //////////////////////////////////////////////////////////////////////////
 
 const char * const		COLOR_DEFINITIONS					= "color_defs.xml";
@@ -248,11 +249,11 @@ bool CUIXmlInit::InitStackPanel(CUIXml& xml_doc, const char* path, int index, CU
 		return RetVal;
 
 	CUIStackPanel::EStackPanelAlignment mode = CUIStackPanel::eLeft;
-	if (xml_doc.ReadAttribBool(path, index, "right", true))
+	if (xml_doc.ReadAttribBool(path, index, "right", false))
 	{
 		mode = CUIStackPanel::eRight;
 	}
-	const char* mode_str = xml_doc.ReadAttrib(path, index, "sp_align");
+	const char* mode_str = xml_doc.ReadAttrib(path, index, "sp_align", "left");
 	if (_stricmp(mode_str, "right") == 0) { mode = CUIStackPanel::eRight; }
 	else if (_stricmp(mode_str, "top") == 0) { mode = CUIStackPanel::eTop; }
 	else if (_stricmp(mode_str, "left") == 0) { mode = CUIStackPanel::eLeft; }
@@ -409,7 +410,11 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, const char* path, int index, CUILines
 bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, const char* path, int index, CUI3tButton* pWnd, bool fatal)
 {
 	bool ValidNode = xml_doc.NavigateToNode(path, index);
-	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
+	if (!ValidNode)
+	{
+		R_ASSERT4(!fatal, "XML node not found", path, xml_doc.m_xml_file_name);
+		return false;
+	}
 
 	pWnd->m_frameline_mode = (CUI3tButton::EFrameMode)xml_doc.ReadAttribInt(path, index, "frame_mode", 0);
 
@@ -1282,6 +1287,14 @@ bool CUIXmlInit::InitTexture(CUIXml& xml_doc, const char* path, int index, IText
 	if (rect.width() != 0 && rect.height() != 0)
 		pWnd->SetTextureRect(rect);
 
+	string256 textureNodePath;
+	xr_strconcat(textureNodePath, path, ":texture");
+	if (xml_doc.NavigateToNode(textureNodePath, index))
+	{
+		if (CUIStatic* pStatic = dynamic_cast<CUIStatic*>(pWnd))
+			ApplyShadowsToStatic(xml_doc, textureNodePath, index, pStatic);
+	}
+
 	return result;
 }
 
@@ -1792,6 +1805,54 @@ u32	CUIXmlInit::GetColor(CUIXml& xml_doc, const char* path, int index, u32 def_c
 		return color_argb(a,r,g,b);
 	}
 
+}
+
+void CUIXmlInit::ReadShadowsNode(CUIXml& xml_doc, const char* parentPath, int index, SUITextureShadowParams& out)
+{
+	string512 shadowsPath;
+	xr_strconcat(shadowsPath, parentPath, ":shadows");
+	if (!xml_doc.NavigateToNode(shadowsPath, index))
+	{
+		out.enabled = false;
+		out.thickness = 0.0f;
+		out.color = 0;
+		return;
+	}
+
+	out.thickness = xml_doc.ReadAttribFlt(shadowsPath, index, "thickness", 1.0f);
+
+	const u32 defClr = color_argb(160, 0, 0, 0);
+	const char* colorDef = xml_doc.ReadAttrib(shadowsPath, index, "color", nullptr);
+	if (colorDef && xr_strlen(colorDef) > 0)
+	{
+		const ColorDefs::const_iterator it = m_pColorDefs->find(colorDef);
+		out.color = (it != m_pColorDefs->end()) ? it->second : defClr;
+	}
+	else
+	{
+		const int r = xml_doc.ReadAttribInt(shadowsPath, index, "r", color_get_R(defClr));
+		const int g = xml_doc.ReadAttribInt(shadowsPath, index, "g", color_get_G(defClr));
+		const int b = xml_doc.ReadAttribInt(shadowsPath, index, "b", color_get_B(defClr));
+		const int a = xml_doc.ReadAttribInt(shadowsPath, index, "a", color_get_A(defClr));
+		out.color = color_argb(a, r, g, b);
+	}
+
+	out.enabled = (out.thickness > 0.0f) && (color_get_A(out.color) > 0);
+}
+
+void CUIXmlInit::ApplyShadowsToStatic(CUIXml& xml_doc, const char* parentPath, int index, CUIStatic* pWnd)
+{
+	VERIFY(pWnd);
+
+	SUITextureShadowParams shadowParams;
+	ReadShadowsNode(xml_doc, parentPath, index, shadowParams);
+	if (!shadowParams.enabled)
+	{
+		pWnd->SetTextureShadow(false, 0.0f, 0);
+		return;
+	}
+
+	pWnd->SetTextureShadow(true, shadowParams.thickness, shadowParams.color);
 }
 
 u32	CUIXmlInit::GetGradientColor(CUIXml& xml_doc, const char* path, int index, u32 def_clr)

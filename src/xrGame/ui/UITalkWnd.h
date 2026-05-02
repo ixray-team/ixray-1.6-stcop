@@ -13,7 +13,9 @@
 class CActor;
 class CInventoryOwner;
 class CPhraseDialogManager;
+class CUIPdaTalkHost;
 class CUITalkDialogWnd;
+class CUIPdaContactsWnd;
 ///////////////////////////////////////
 //
 ///////////////////////////////////////
@@ -43,11 +45,21 @@ public:
 		
 	virtual void		Show					(bool status);
 	
-	void				Stop					();					//deffered
+	void				Stop					() {}					//deffered
 	void				StopTalk				();
 
 	void				UpdateQuestions			();
 	void				NeedUpdateQuestions		();
+	void				SetPdaMode				(bool value) { m_isPdaDialog = value; }
+	bool				IsPdaMode				() const { return m_isPdaDialog; }
+	void				SetOwner				(CInventoryOwner* owner) { m_pOurInvOwner = owner; }
+	void				SetTalkPartner			(CInventoryOwner* partner) { m_pOthersInvOwner = partner; }
+	bool				InitializeDialogForPda	();
+	void				StopPdaDialog			();
+	void				BeginPdaEmbed				(CUIPdaContactsWnd* contacts);
+	void				EndPdaEmbed					();
+	bool				IsEmbeddedInPda				() const;
+	bool				IsActiveTalkUi				();
 	//инициализации начального диалога собеседника
 	void				InitOthersStartDialog	();
 	virtual bool		OnKeyboardAction				(int dik, EUIMessages keyboard_action);
@@ -62,7 +74,7 @@ public:
 
 protected:
 	//диалог
-	void				InitTalkDialog			();
+	void				InitTalkDialog			(bool skipLogClear = false);
 	void				AskQuestion				();
 
 	void				SayPhrase				(const shared_str& phrase_id);
@@ -92,4 +104,6 @@ protected:
 private:
 	Fvector4 m_TalkDof = {};
 	float m_talkFovScale;
+	bool m_isPdaDialog = false;
+	CUIPdaTalkHost* m_pdaTalkHost = nullptr;
 };

@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "UIDiaryWnd.h"
+#include "PdaUiSound.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "UINewsWnd.h"
@@ -119,6 +120,11 @@ void CUIDiaryWnd::Init()
 	m_gamepad_legend				= UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
 
 	RearrangeTabButtonsLegacy		(m_FilterTab, m_sign_places);
+
+	if (m_pUiSounds)
+	{
+		m_pUiSounds->LoadSubdialog(uiXml, "main_wnd");
+	}
 }
 
 void	CUIDiaryWnd::SendMessage			(CUIWindow* pWnd, s16 msg, void* pData)
@@ -129,6 +135,10 @@ void	CUIDiaryWnd::SendMessage			(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIDiaryWnd::OnFilterChanged			(CUIWindow* w, void*)
 {
+	if (m_pUiSounds)
+	{
+		m_pUiSounds->Play(EPdaUiSound::Tab);
+	}
 	Reload( (EDiaryFilter)m_FilterTab->GetActiveIndex() );
 }
 
@@ -232,6 +242,11 @@ void CUIDiaryWnd::LoadNewsTab	()
 
 void CUIDiaryWnd::OnSrcListItemClicked	(CUIWindow* w,void* p)
 {
+	if (m_pUiSounds)
+	{
+		m_pUiSounds->Play(EPdaUiSound::ListSelect);
+	}
+
 	CUITreeViewItem*	pSelItem	= (CUITreeViewItem*)p;
 	m_DescrView->Clear	();
 	if (!pSelItem->IsRoot())

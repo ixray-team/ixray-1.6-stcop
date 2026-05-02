@@ -93,13 +93,28 @@ void CPda::UpdateActiveContacts()
 {
 	m_active_contacts.resize(0);
 
-	for (const auto& feel_object : feel_touch)
+	const u32 objectCount = Level().Objects.o_count();
+	for (u32 i = 0; i < objectCount; ++i)
 	{
-		CEntityAlive* pEA = feel_object->cast_entity_alive();
-		if (!!pEA->g_Alive() && pEA->cast_base_monster() == nullptr && pEA->cast_car() == nullptr)
+		CObject* object = Level().Objects.o_get_by_iterator(i);
+		if (!object || object->getDestroy() || object == H_Parent())
 		{
-			m_active_contacts.push_back(feel_object);
+			continue;
 		}
+
+		CEntityAlive* entityAlive = object->cast_entity_alive();
+		CInventoryOwner* inventoryOwner = object->cast_inventory_owner();
+		if (!entityAlive || !inventoryOwner)
+		{
+			continue;
+		}
+
+		if (!entityAlive->g_Alive() || entityAlive->cast_base_monster() != nullptr || entityAlive->cast_car() != nullptr)
+		{
+			continue;
+		}
+
+		m_active_contacts.push_back(object);
 	}
 }
 
