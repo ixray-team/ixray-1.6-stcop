@@ -20,6 +20,7 @@ struct SSpotRenderItem
     const shared_str* textureName;
     Fvector2 iconSize;
     u32 color;
+    SUITextureShadowParams shadow;
 
     bool operator<(const SSpotRenderItem& other) const
     {
@@ -81,6 +82,7 @@ struct SCompassSpotLayerConfig
     float spotHeight = 0.0f;
     float collectInterval = 0.1f;
     u32 defaultSpotColor = 0;
+    SUITextureShadowParams defaultShadow;
 };
 
 struct SSpotCandidate
@@ -94,6 +96,7 @@ struct SSpotCandidate
     Fvector2 iconSize;
     EVTextAlignment valign = valCenter;
     float distance = 0.0f;
+    SUITextureShadowParams shadow;
 };
 
 struct SCompassUpdateState
@@ -190,9 +193,12 @@ private:
     xr_vector<shared_str> _poolSpotTextureNames;
     xr_vector<float> _poolSpotAlpha;
     xr_vector<u32> _poolSpotBaseColor;
+    xr_vector<SUITextureShadowParams> _poolSpotShadow;
 
     shared_str _activeMarkerFallbackTexture;
     shared_str _activeMarkerLastTexture;
+    u32 _activeMarkerFallbackColor;
+    SUITextureShadowParams _activeMarkerShadow;
 
     float _stripWidth;
     float _stripTexWidth;

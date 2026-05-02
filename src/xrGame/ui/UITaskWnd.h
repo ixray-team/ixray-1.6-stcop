@@ -3,18 +3,19 @@
 #include "../../xrUI/Widgets/UIWndCallback.h"
 #include "../../xrCore/Containers/associative_vector.h"
 #include "../GameTaskDefs.h"
+#include "../GameTask.h"
 #include "../../xrUI/Widgets/UICheckButton.h"
-
+#include "PdaConstants.h"
+#include "UISecondTaskWnd.h"
+class CPdaUiSounds;
 class CUIMapWnd;
 class CUIStatic;
-class CGameTask;
 class CUIXml;
 class CUITaskItem;
 class CUI3tButton;
 class CUIFrameLineWnd;
 class CUIFrameWindow;
 class CUICheckButton;
-class UITaskListWnd;
 class UIMapLegend;
 class UIHint;
 class CUIGamepadLegend;
@@ -36,6 +37,7 @@ private:
 	CUITaskItem*			m_pSecondaryTaskItem;
 
 	CUI3tButton*			m_BtnTaskListWnd;
+	STaskWndFeatures		m_features;
 	CUIStatic*				m_second_task_index;
 	CUIStatic*				m_devider;
 	u32						m_actual_frame;
@@ -49,8 +51,16 @@ private:
 		MAP_MARKS_FILTER_PRIMARY_OBJECTS,
 		MAP_MARKS_FILTER_SECONDARY_TASKS,
 		MAP_MARKS_FILTER_NPCS,
+		MAP_MARKS_FILTER_PERSONAL_SPOTS,
 
 		MAP_MARKS_FILTER_MAX
+	};
+
+	enum class ETaskScopeMode : u8
+	{
+		Story = 0,
+		Side,
+		Failed
 	};
 	
 	CUICheckButton*			m_cbFilters[MAP_MARKS_FILTER_MAX];
@@ -59,6 +69,12 @@ private:
 	bool					m_bQuestNpcsEnabled;
 	bool					m_bSecondaryTasksEnabled;
 	bool					m_bPrimaryObjectsEnabled;
+	bool					m_bPersonalSpotsEnabled;
+
+	ETaskScopeMode			m_taskScopeMode = ETaskScopeMode::Story;
+	CUI3tButton*			m_btnScopeStory = nullptr;
+	CUI3tButton*			m_btnScopeSide = nullptr;
+	CUI3tButton*			m_btnScopeFailed = nullptr;
 
 	UITaskListWnd*			m_task_wnd;
 	bool					m_task_wnd_show;
@@ -79,6 +95,7 @@ public:
 			void				DrawHint				();
 	virtual void				Show					(bool status);
 	virtual void				Reset					();
+	virtual bool				OnMouseAction			(float x, float y, EUIMessages mouse_action);
 	virtual bool				OnGamepadKeyAction		(int id, EUIMessages gamepad_action);
 	virtual bool				OnGamepadKeyHold		(int id);
 
@@ -102,12 +119,8 @@ public:
 				if (m_cbFilters[MAP_MARKS_FILTER_NPCS])
 					m_cbFilters[MAP_MARKS_FILTER_NPCS]->SetCheck(enable);
 			};
-			void SecondaryTasksEnabled(bool enable)
-			{
-				m_bSecondaryTasksEnabled = enable;
-				if (m_cbFilters[MAP_MARKS_FILTER_SECONDARY_TASKS])
-					m_cbFilters[MAP_MARKS_FILTER_SECONDARY_TASKS]->SetCheck(enable);
-			};
+			void SecondaryTasksEnabled(bool enable);
+			void ApplySecondaryTasksMapFilter(bool enable);
 			void PrimaryObjectsEnabled(bool enable)
 			{
 				m_bPrimaryObjectsEnabled = enable;
@@ -116,10 +129,13 @@ public:
 			};
 
 			void				Show_TaskListWnd		(bool status);
+			void				SetUiSounds				(CPdaUiSounds* uiSounds) { m_pUiSounds = uiSounds; }
+			void				FocusPrimaryTaskOnMap	();
 
 			virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
+	CPdaUiSounds*				m_pUiSounds = nullptr;
 	// Controller
 	bool						SwitchToNextFilter		(bool loop);
 	bool						SwitchToPrevFilter		(bool loop);
@@ -139,6 +155,18 @@ private:
 	void 				OnShowPrimaryObjects	(CUIWindow*, void*);
 	void 				OnShowSecondaryTasks	(CUIWindow*, void*);
 	void 				OnShowQuestNpcs			(CUIWindow*, void*);
+	void 				OnShowPersonalSpots		(CUIWindow*, void*);
+
+	void				OnTaskScopeStory		(CUIWindow*, void*);
+	void				OnTaskScopeSide			(CUIWindow*, void*);
+	void				OnTaskScopeFailed		(CUIWindow*, void*);
+
+	void				ResolveTaskRows			(CGameTask*& outPrimary, CGameTask*& outSecondary) const;
+	void				InitStorylineWidgets		(CUIXml& xml);
+	void				InitStorylineFocusButton	(CUIXml& xml);
+	CUITaskItem*		StorylineHintItem			() const;
+	void				OnTaskListFilterChanged		(ETaskListFilter mode);
+	bool				CanUseTaskMapSpot			(CGameTask* task, bool forShow) const;
 };
 
 class CUITaskItem final : public CUIWindow

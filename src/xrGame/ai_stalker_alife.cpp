@@ -23,6 +23,8 @@
 #include "ef_pattern.h"
 #include "trade_parameters.h"
 #include "clsid_game.h"
+#include "Actor.h"
+#include "Actor.h"
 
 extern u32 get_rank(const shared_str& section);
 
