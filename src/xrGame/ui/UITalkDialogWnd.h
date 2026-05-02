@@ -13,6 +13,7 @@
 class CUIScrollView;
 class CUIXml;
 class CUITalkWnd;
+class CUIPdaContactsWnd;
 class CUIGamepadLegend;
 class CUIQuestionItem;
 
@@ -29,11 +30,15 @@ public:
 	
 
 			void InitTalkDialogWnd		();
-	
+			void ReloadDialogLayout		(bool usePdaDialogXml, const CUIPdaContactsWnd* contacts = nullptr);
+
 	virtual void SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 
 	virtual void Show();
+	void Show(bool resetWidgetTree, bool notifyActorHud);
+	void ShowForPdaEmbed();
 	virtual void Hide();
+	bool HasPdaDialogLayout() const { return m_hasPdaDialogLayout; }
 	CUITalkWnd*	m_pParent;
 	u32			GetHeaderColor()		{ return m_iNameTextColor; }
 	CGameFont *	GetHeaderFont()			{ return m_pNameTextFont; }
@@ -65,6 +70,9 @@ public:
 	CUICharacterInfo	UICharacterInfoLeft;
 	CUICharacterInfo	UICharacterInfoRight;
 	CUIGamepadLegend*	m_gamepad_legend = nullptr;
+	CUIWindow*			m_gamepad_trade_hint = nullptr;
+	CUIWindow*			m_gamepad_back_hint = nullptr;
+	CUIWindow*			m_gamepad_log_hint = nullptr;
 
 	bool				swapCharacterNames = false;
 
@@ -73,7 +81,9 @@ public:
 	void				AddIconedAnswer		(const char* caption, const char* text, const char* texture_name, const char* templ_name);
 	void				AddIconedAnswer		(const char* text, const char* texture_name, Frect texture_rect, const char* templ_name);
 	void				ClearAll			();
+	bool				TryClearAll			();
 	void				ClearQuestions		();
+	bool				TryClearQuestions	();
 
 	void				SetOsoznanieMode	(bool b);
 	void				SetTradeMode		();
@@ -109,6 +119,13 @@ private:
 	void 		OnUpgradeClicked		(CUIWindow* w, void*);
 	void 		OnQuestionClicked		(CUIWindow* w, void*);
 	void 		OnExitClicked			(CUIWindow* w, void*);
+
+	bool m_usePdaDialogXml = false;
+	bool m_hasPdaDialogLayout = false;
+	bool _layoutXmlOwned = true;
+	XML_NODE* _pdaDialogLayoutRoot = nullptr;
+	void ReleaseLayoutXml();
+	void BuildDialogLayout();
 };
 
 

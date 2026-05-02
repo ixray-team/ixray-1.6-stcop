@@ -126,6 +126,7 @@ public:
 	const shared_str&			IconName			()	const;
 
 	shared_str					StartDialog			()	const;
+	shared_str					SpecificCharacterStartDialog() const;
 	const DIALOG_ID_VECTOR&		ActorDialogs		()	const;
 #endif
 

@@ -68,9 +68,10 @@ void CAI_PhraseDialogManager::AnswerPhrase (DIALOG_SHARED_PTR& phrase_dialog)
 		phrase_num = phrases[Random.randI(0, (int) phrases.size())];
 
 		shared_str phrase_id = phrase_dialog->PhraseList()[phrase_num]->GetID();
-		
+
 		if (CurrentGameUI() == nullptr)
 			return;
+		// Same as face-to-face: NPC reply must appear in TalkMenu (including embedded PDA phrase UI).
 		CurrentGameUI()->TalkMenu->AddAnswer	(phrase_dialog->GetPhraseText(phrase_id), pInvOwner->NameReal());
 
 		CPhraseDialogManager::SayPhrase(phrase_dialog, phrase_id);

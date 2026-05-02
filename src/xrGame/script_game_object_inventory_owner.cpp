@@ -29,9 +29,9 @@
 #include "ui/UITalkWnd.h"
 #include "Inventory.h"
 #include "InfoPortion.h"
+#include "ai/stalker/ai_stalker.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "WeaponMagazined.h"
-#include "ai/stalker/ai_stalker.h"
 #include "agent_manager.h"
 #include "agent_member_manager.h"
 #include "stalker_animation_manager.h"
@@ -82,7 +82,7 @@ void _AddIconedTalkMessage(const char* text, const char* texture_name, const Fre
 	if (!pGameSP)
 		return;
 
-	if (pGameSP->TalkMenu->IsShown())
+	if (pGameSP->TalkMenu->IsActiveTalkUi())
 	{
 		pGameSP->TalkMenu->AddIconedMessage(text, texture_name, tex_rect, templ_name ? templ_name : "iconed_answer_item");
 	}
@@ -100,7 +100,7 @@ void _AddIconedTalkMessage(const char* caption, const char* text, const char* te
 {
 	if (CUIGameCustom* current_ui = CurrentGameUI())
 	{
-		if (current_ui->TalkMenu->IsShown())
+		if (current_ui->TalkMenu->IsActiveTalkUi())
 		{
 			current_ui->TalkMenu->AddIconedMessage(caption, text, texture_name, templ_name ? templ_name : "iconed_answer_item");
 		}
@@ -150,7 +150,7 @@ bool  CScriptGameObject::GiveGameNews(const char* news, const char* texture_name
 void _give_news(const char* caption, const char* text, const char* texture_name, int delay, int show_time, int type)
 {
 	GAME_NEWS_DATA				news_data;
-	news_data.m_type = (GAME_NEWS_DATA::eNewsType)type;
+	news_data.m_type = (GAME_NEWS_DATA::ENewsKind)type;
 	news_data.news_caption = caption;
 	news_data.news_text = text;
 	if (show_time != 0)
@@ -559,6 +559,60 @@ u32 CScriptGameObject::Money()
 	return pOurOwner->get_money();
 }
 
+u32 CScriptGameObject::GetActorMoneyEarned()
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		return actor->GetStatMoneyEarned();
+	}
+	return 0;
+}
+
+u32 CScriptGameObject::GetActorMoneySpent()
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		return actor->GetStatMoneySpent();
+	}
+	return 0;
+}
+
+float CScriptGameObject::GetActorDistanceKm()
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		return actor->GetStatDistanceMeters() / 1000.0f;
+	}
+	return 0.0f;
+}
+
+u32 CScriptGameObject::GetActorHeadshots()
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		return actor->GetStatHeadshots();
+	}
+	return 0;
+}
+
+u32 CScriptGameObject::GetActorDeaths()
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		return actor->GetStatDeaths();
+	}
+	return 0;
+}
+
+u32 CScriptGameObject::GetActorHelpWounded()
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		return actor->GetStatHelpWounded();
+	}
+	return 0;
+}
+
 void CScriptGameObject::TransferMoney(int money, CScriptGameObject* pForWho)
 {
 	if (pForWho == nullptr)
@@ -929,7 +983,7 @@ void CScriptGameObject::SwitchToTrade()
 
 	if (CUIGameCustom* current_ui = CurrentGameUI())
 	{
-		if (current_ui->TalkMenu->IsShown())
+		if (current_ui->TalkMenu->IsActiveTalkUi())
 		{
 			current_ui->TalkMenu->SwitchToTrade();
 		}
@@ -946,7 +1000,7 @@ void CScriptGameObject::SwitchToUpgrade()
 
 	if (CUIGameCustom* current_ui = CurrentGameUI())
 	{
-		if (current_ui->TalkMenu && current_ui->TalkMenu->IsShown())
+		if (current_ui->TalkMenu && current_ui->TalkMenu->IsActiveTalkUi())
 			current_ui->TalkMenu->HideDialog();
 
 		current_ui->StartUpgrade(Actor(), nullptr);

@@ -9,10 +9,65 @@
 #include "script_game_object.h"
 #include "Actor.h"
 
+namespace
+{
+constexpr const char* DialogXmlEnabledAttribute = "enabled";
+constexpr const char* DialogXmlPhraseTag = "phrase";
+constexpr const char* DialogXmlPhraseTextAttribute = "text";
+
+bool IsDialogXmlNodeEnabled(CUIXml* xml, XML_NODE* node)
+{
+	if (xml == nullptr || node == nullptr)
+	{
+		return true;
+	}
+
+	return xml->ReadAttribBool(node, DialogXmlEnabledAttribute, true);
+}
+
+void LoadPdaDisabledPhraseOverrides(CUIXml* xml, XML_NODE* dialogNode, SPhraseDialogData* dialogData)
+{
+	if (xml == nullptr || dialogNode == nullptr || dialogData == nullptr)
+	{
+		return;
+	}
+
+	const int phraseCount = xml->GetNodesNum(dialogNode, DialogXmlPhraseTag);
+	for (int i = 0; i < phraseCount; ++i)
+	{
+		XML_NODE* phraseNode = xml->NavigateToNode(dialogNode, DialogXmlPhraseTag, i);
+		if (IsDialogXmlNodeEnabled(xml, phraseNode))
+		{
+			continue;
+		}
+
+		const char* phraseId = xml->ReadAttrib(phraseNode, "id", nullptr);
+		if (phraseId != nullptr && phraseId[0] != 0)
+		{
+			dialogData->m_pdaDisabledPhraseIds.insert(phraseId);
+		}
+
+		const char* phraseText = xml->ReadAttrib(phraseNode, DialogXmlPhraseTextAttribute, nullptr);
+		if (phraseText == nullptr || phraseText[0] == 0)
+		{
+			phraseText = xml->Read(phraseNode, "text", 0, nullptr);
+		}
+		if (phraseText != nullptr && phraseText[0] != 0)
+		{
+			dialogData->m_pdaDisabledPhraseTexts.insert(phraseText);
+		}
+	}
+}
+} // namespace
+
 SPhraseDialogData::SPhraseDialogData ()
 {
 	m_PhraseGraph.clear	();
 	m_iPriority			= 0;
+	m_isPdaAvailable	= false;
+	m_isEnabled			= true;
+	m_pdaDisabledPhraseIds.clear();
+	m_pdaDisabledPhraseTexts.clear();
 }
 
 SPhraseDialogData::~SPhraseDialogData ()
@@ -27,6 +82,7 @@ CPhraseDialog::CPhraseDialog()
 	m_pSpeakerFirst		= nullptr;
 	m_pSpeakerSecond	= nullptr;
 	m_DialogId			= nullptr;
+	_talkMode			= ETalkMode::Normal;
 }
 
 CPhraseDialog::~CPhraseDialog()
@@ -51,6 +107,7 @@ void CPhraseDialog::Init(CPhraseDialogManager* speaker_first,
 
 	m_bFinished			= false;
 	m_bFirstIsSpeaking	= true;
+	_talkMode			= ETalkMode::Normal;
 }
 
 //обнуляем все связи
@@ -123,14 +180,16 @@ bool CPhraseDialog::SayPhrase (DIALOG_SHARED_PTR& phrase_dialog, const shared_st
 			CPhraseGraph::CVertex* next_phrase_vertex = phrase_dialog->data()->m_PhraseGraph.vertex(edge.vertex_id());
 			THROW						(next_phrase_vertex);
 			shared_str next_phrase_id	= next_phrase_vertex->vertex_id();
-			if(next_phrase_vertex->data()->GetScriptHelper()->Precondition(pSpeakerGO2, pSpeakerGO1, *phrase_dialog->m_DialogId, phrase_id.c_str(), next_phrase_id.c_str()))
+			CPhrase* next_phrase = next_phrase_vertex->data();
+			if(phrase_dialog->IsPhraseAvailable(next_phrase) &&
+				next_phrase->GetScriptHelper()->Precondition(pSpeakerGO2, pSpeakerGO1, *phrase_dialog->m_DialogId, phrase_id.c_str(), next_phrase_id.c_str()))
 			{
-				phrase_dialog->m_PhraseVector.push_back(next_phrase_vertex->data());
+				phrase_dialog->m_PhraseVector.push_back(next_phrase);
 #ifdef DEBUG
 				if(psAI_Flags.test(aiDialogs))
 				{
-					const char* phrase_text = next_phrase_vertex->data()->GetText();
-					shared_str id = next_phrase_vertex->data()->GetID();
+					const char* phrase_text = next_phrase->GetText();
+					shared_str id = next_phrase->GetID();
 					Msg("----added phrase text [%s] phrase_id=[%s] id=[%s] to dialog [%s]", phrase_text, phrase_id.c_str(), id.c_str(), phrase_dialog->m_DialogId.c_str());
 				}
 #endif
@@ -221,9 +280,6 @@ void CPhraseDialog::Load(shared_str dialog_id)
 	inherited_shared::load_shared(m_DialogId, nullptr);
 }
 
-#include "../xrScripts/script_engine.h"
-#include "ai_space.h"
-
 void CPhraseDialog::load_shared	(const char*)
 {
 	const ITEM_DATA& item_data = *id_to_index::GetById(m_DialogId);
@@ -237,6 +293,11 @@ void CPhraseDialog::load_shared	(const char*)
 
 	pXML->SetLocalRoot(dialog_node);
 
+	data()->m_isEnabled = IsDialogXmlNodeEnabled(pXML, dialog_node);
+	if (!data()->m_isEnabled)
+	{
+		return;
+	}
 
 	SetPriority	( pXML->ReadAttribInt(dialog_node, "priority", 0) );
 
@@ -245,6 +306,18 @@ void CPhraseDialog::load_shared	(const char*)
 
 	//предикаты начала диалога
 	data()->m_ScriptDialogHelper.Load(pXML, dialog_node);
+
+	data()->m_isPdaAvailable = pXML->ReadInt(dialog_node, "pda_available", 0, 0) == 1;
+#ifdef DEBUG
+	if (pXML->ReadAttribInt(dialog_node, "pda", 0) == 1)
+	{
+		Msg(
+			"! [PDA] dialog [%s]: legacy pda=\"1\" attribute is ignored; use <pda_available>1</pda_available>",
+			*item_data.id
+		);
+	}
+#endif
+	LoadPdaDisabledPhraseOverrides(pXML, dialog_node, data());
 
 	//заполнить граф диалога фразами
 	data()->m_PhraseGraph.clear();
@@ -273,6 +346,11 @@ void CPhraseDialog::load_shared	(const char*)
 	//ищем стартовую фразу
 	XML_NODE* phrase_node	= pXML->NavigateToNodeWithAttribute("phrase", "id", "0");
 	THROW					(phrase_node);
+	if (!IsDialogXmlNodeEnabled(pXML, phrase_node))
+	{
+		data()->m_isEnabled = false;
+		return;
+	}
 	AddPhrase				(pXML, phrase_node, "0", "");
 }
 
@@ -309,6 +387,11 @@ CPhrase* CPhraseDialog::AddPhrase	(const char* text, const shared_str& phrase_id
 
 void CPhraseDialog::AddPhrase	(CUIXml* pXml, XML_NODE* phrase_node, const shared_str& phrase_id, const shared_str& prev_phrase_id)
 {
+	if (!IsDialogXmlNodeEnabled(pXml, phrase_node))
+	{
+		return;
+	}
+
 	const char* sText			= pXml->Read(phrase_node, "text", 0, "");
 	int		gw				= pXml->ReadInt(phrase_node, "goodwill", 0, -10000);
 	CPhrase* ph				= AddPhrase(sText, phrase_id, prev_phrase_id, gw);
@@ -327,16 +410,60 @@ void CPhraseDialog::AddPhrase	(CUIXml* pXml, XML_NODE* phrase_node, const shared
 	int next_num = pXml->GetNodesNum(phrase_node, "next");
 	for (int i = 0; i < next_num; ++i)
 	{
-		const char* next_phrase_id_str		= pXml->Read(phrase_node, "next", i, "");
+		XML_NODE* next_node					= pXml->NavigateToNode(phrase_node, "next", i);
+		if (!IsDialogXmlNodeEnabled(pXml, next_node))
+		{
+			continue;
+		}
+
+		const char* next_phrase_id_str		= pXml->Read(next_node, "");
 		XML_NODE* next_phrase_node		= pXml->NavigateToNodeWithAttribute("phrase", "id", next_phrase_id_str);
 		R_ASSERT2						(next_phrase_node, next_phrase_id_str );
+		if (!IsDialogXmlNodeEnabled(pXml, next_phrase_node))
+		{
+			continue;
+		}
+
 		AddPhrase						(pXml, next_phrase_node, next_phrase_id_str, phrase_id);
 	}
 }
 
 bool  CPhraseDialog::Precondition(const CGameObject* pSpeaker1, const CGameObject* pSpeaker2)
 {	
+	if (!data()->m_isEnabled)
+	{
+		return false;
+	}
+
 	return data()->m_ScriptDialogHelper.Precondition(pSpeaker1, pSpeaker2, m_DialogId.c_str(), "", "");
+}
+
+bool CPhraseDialog::IsPhraseAvailable(const CPhrase* phrase) const
+{
+	if (phrase == nullptr || !phrase->IsEnabled())
+	{
+		return false;
+	}
+
+	return !IsPdaMode() || !IsPhraseDisabledForPda(phrase->GetID(), phrase->GetText());
+}
+
+bool CPhraseDialog::IsPhraseDisabledForPda(const shared_str& phraseId, const char* text) const
+{
+	const SPhraseDialogData* dialogData = data();
+	if (dialogData->m_pdaDisabledPhraseIds.find(phraseId) != dialogData->m_pdaDisabledPhraseIds.end())
+	{
+		return true;
+	}
+
+	// Text match is a legacy fallback; localized or scripted text may not match.
+	if (text != nullptr && text[0] != 0)
+	{
+		const shared_str phraseText = text;
+		return dialogData->m_pdaDisabledPhraseTexts.find(phraseText) != dialogData->m_pdaDisabledPhraseTexts.end();
+	}
+
+	return false;
 }
 
 void   CPhraseDialog::InitXmlIdToIndex()

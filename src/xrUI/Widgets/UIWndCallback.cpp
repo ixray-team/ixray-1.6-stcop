@@ -19,6 +19,11 @@ CUIWndCallback::~CUIWndCallback()
 	delete_data(m_callbacks);
 }
 
+void CUIWndCallback::ClearCallbacks()
+{
+	delete_data(m_callbacks);
+}
+
 void CUIWndCallback::Register(CUIWindow* pChild)
 {
 	pChild->SetMessageTarget(ui_cast_window());

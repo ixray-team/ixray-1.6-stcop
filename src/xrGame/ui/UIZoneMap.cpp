@@ -20,8 +20,35 @@
 #include "../game_cl_single.h"
 //////////////////////////////////////////////////////////////////////////
 
+namespace
+{
+constexpr u32 kDefaultMinimapTextureColor = 0x7fffffff;
+constexpr LPCSTR kLevelFramePath = "minimap:level_frame";
+
+bool HasLevelFrameColorAttribs(CUIXml& uiXml)
+{
+	if (!uiXml.NavigateToNode(kLevelFramePath, 0))
+		return false;
+
+	if (uiXml.ReadAttrib(kLevelFramePath, 0, "color", nullptr))
+		return true;
+
+	if (uiXml.ReadAttribInt(kLevelFramePath, 0, "a", -1) != -1)
+		return true;
+
+	if (uiXml.ReadAttribInt(kLevelFramePath, 0, "r", -1) != -1)
+		return true;
+
+	if (uiXml.ReadAttribInt(kLevelFramePath, 0, "g", -1) != -1)
+		return true;
+
+	return uiXml.ReadAttribInt(kLevelFramePath, 0, "b", -1) != -1;
+}
+} // namespace
+
 CUIZoneMap::CUIZoneMap()
 :m_current_map_idx(u8(-1)),
+m_mapTextureColor(kDefaultMinimapTextureColor),
 visible(true)
 {	
 	m_clock_wnd = nullptr;
@@ -43,6 +70,12 @@ void CUIZoneMap::Init()
 	CUIXmlInit						xml_init;
 	xml_init.InitStatic				(uiXml, "minimap:background",	0, &m_background);
 	xml_init.InitWindow				(uiXml, "minimap:level_frame",	0, &m_clipFrame);
+
+	if (HasLevelFrameColorAttribs(uiXml))
+		m_mapTextureColor = xml_init.GetColor(uiXml, kLevelFramePath, 0, 0xff);
+	else
+		m_mapTextureColor = kDefaultMinimapTextureColor;
+
 	xml_init.InitStatic				(uiXml, "minimap:center",		0, &m_center);
 	
 	if (uiXml.NavigateToNode("minimap:clock_wnd", 0))
@@ -257,6 +290,7 @@ void CUIZoneMap::SetupCurrentMap()
 	wnd_size.x						= m_activeMap->BoundRect().width()*zoom_factor;
 	wnd_size.y						= m_activeMap->BoundRect().height()*zoom_factor;
 	m_activeMap->SetWndSize			(wnd_size);
+	m_activeMap->SetTextureColor	(m_mapTextureColor);
 }
 
 void CUIZoneMap::OnSectorChanged(int sector)

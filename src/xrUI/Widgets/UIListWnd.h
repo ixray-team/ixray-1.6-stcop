@@ -33,7 +33,9 @@ public:
     virtual void Draw();
     virtual void Update();
     virtual void DetachChild(CUIWindow* pChild);
-    void SetScrollBarProfile(const char* profile) { m_scrollbar_profile = profile; };
+    void SetScrollBarProfile(const char* profile) { m_scrollbar_profile = profile; }
+    CUIScrollBar* ScrollBar() { return m_ScrollBar; }
+    bool ReinitScrollBar();
 
     // Добавление элементов в листбокс
     template <class Element>
@@ -118,6 +120,10 @@ protected:
 
     CUIScrollBar* m_ScrollBar;
     CGameFont* m_pFont;
+
+    bool _initListScrollBar(Fvector2 size);
+    void SyncScrollRangeFromItems();
+    void UpdateScrollBarVisibility();
 
     //обновления елементов списка, вызвается
     //если произошли изменения

@@ -8,6 +8,7 @@ class CUI3tButton;
 class CUIStatic;
 class CUIEditBox;
 class UIHint;
+class CPdaUiSounds;
 
 class CUIPdaSpot final :
 	public CUIDialogWnd, 
@@ -25,6 +26,7 @@ class CUIPdaSpot final :
 	Fvector m_position;
 	u16 m_spotID;
 	shared_str m_spotType;
+	CPdaUiSounds* m_pUiSounds = nullptr;
 
 public:
 	CUIPdaSpot();
@@ -32,6 +34,7 @@ public:
 
 	void Init(u16 spot_id, const char* level_name, Fvector pos, bool main_wnd);
 	void InitControls();
+	void SetUiSounds(CPdaUiSounds* uiSounds) { m_pUiSounds = uiSounds; }
 
 	void OnAdd(CUIWindow* w, void* d);
 	void OnApply(CUIWindow* w, void* d);

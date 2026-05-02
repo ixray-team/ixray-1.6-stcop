@@ -3,6 +3,7 @@
 #include "../../xrUI/Widgets/UIDialogWnd.h"
 #include "../encyclopedia_article_defs.h"
 #include "UIPdaAux.h"
+#include "PdaUiSound.h"
 
 class CInventoryOwner;
 class CUIFrameLineWnd;
@@ -42,22 +43,39 @@ protected:
 	CUIStatic*				UINoice;
 	
 	CUIStatic*				m_caption;
+	CUIStatic*				m_captionDate;
+	CUIStatic*				m_captionLocation;
 	shared_str				m_caption_const;
+	shared_str				m_prevDateTimeValue;
+	bool					m_captionGameDateTime = false;
+	bool					m_captionShowLocationName = false;
 	CUIAnimatedStatic*		m_anim_static;
 	CUIStatic*				m_clock;
+	CUIWindow*				m_pTabBgLayer;
+	xr_map<shared_str, CUIStatic*> m_tabBackgrounds;
+	CUIStatic*				m_pCurrentTabBackground;
 
-	// Текущий активный диалог
+	// Currently visible PDA page (native subdialog or script-provided window).
 	CUIWindow*				m_pActiveDialog;
 	shared_str				m_sActiveSection;
 	xr_vector<Fvector2>		m_sign_places_main;
+	xr_vector<pda_section::part> m_updateBadgeSections;
 
 	UIHint*					m_hint_wnd;
 
 	CUIFrameLineWnd*		UIMainButtonsBackground;
 	CUIFrameLineWnd*		UITimerBackground;
+	CPdaUiSounds			m_uiSounds;
 
-	void					UpdateDateTime					();
+	void					UpdateDateTime					(bool force = false);
+	void					UpdateLocationName				();
+	void					SetCaptionWithOptionalLocation	(const char* baseText);
 	void					DrawUpdatedSections				();
+	void					BuildUpdateBadgeSections		();
+	void					InitTabBackgrounds				(CUIXml& xml);
+	void					SetActiveTabBackground			(const shared_str& sectionId);
+	CUIWindow*				ResolveNativeSubdialog			(const shared_str& resolvedSection);
+	void					ApplyActiveSubdialog			(const shared_str& tabButtonSection, const shared_str& resolvedSection);
 private:
 	bool m_isSetActiveSubdialog = false;
 	const char* m_onSetActiveSubdialog = {};
@@ -74,7 +92,7 @@ public:
 	CUIActorInfoWnd*		pUIActorInfoWnd;
 	CUIDiaryWnd*			pUIDiaryWnd;
 	CUIMapWnd*				pUIMapWnd;
-	
+
 	CMapSpot*				pSelectedMapSpot;
 	Fvector2				last_cursor_pos;
 
@@ -89,7 +107,7 @@ public:
 
 	virtual void 			Init				();
 
-	virtual void 			SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+	virtual void 			SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
 	virtual void 			Draw				();
 	virtual void 			Update				();
@@ -99,6 +117,8 @@ public:
 	virtual bool			OnGamepadKeyAction	(int key, EUIMessages gamepad_action);
 	virtual bool			OnGamepadKeyHold	(int key);
 			UIHint*			get_hint_wnd		() const { return m_hint_wnd; }
+			CPdaUiSounds&	UiSounds			() { return m_uiSounds; }
+			const CPdaUiSounds& UiSounds		() const { return m_uiSounds; }
 			void			DrawHint			();
 
 			void			SetActiveCaption	();
