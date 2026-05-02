@@ -12,6 +12,7 @@
 #define vsprintf_s(dest, size, format, args) vsprintf(dest, format, args)
 #define strlwr _strlwr
 #define sscanf_s sscanf
+#define _strnicmp strncasecmp
 
 inline const char* itoa(float val)
 {

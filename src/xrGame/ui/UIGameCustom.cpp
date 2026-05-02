@@ -442,6 +442,10 @@ void CUIGameCustom::HideShownDialogs()
 {
 	HideActorMenu();
 	HidePdaMenu();
+	if (TalkMenu && TalkMenu->IsEmbeddedInPda())
+	{
+		TalkMenu->StopPdaDialog();
+	}
 	CUIDialogWnd* mir = TopInputReceiver();
 	if (mir && mir == TalkMenu)
 	{
@@ -512,17 +516,22 @@ void CUIGameCustom::SetClGame(game_cl_GameState* g)
 
 void CUIGameCustom::UnLoad()
 {
+	if (TalkMenu)
+	{
+		TalkMenu->StopPdaDialog();
+	}
+
 	xr_delete					(m_msgs_xml);
 	xr_delete					(m_pgameCaptions);
 	xr_delete					(m_ActorMenu);
 	xr_delete					(m_InventoryMenu);
 	xr_delete					(m_CarBodyMenu);
 	xr_delete					(m_TradeMenu);
+	xr_delete					(TalkMenu);
 	xr_delete					(m_PdaMenu);
 	xr_delete					(m_window);
 	xr_delete					(UIMainIngameWnd);
 	xr_delete					(m_pMessagesWnd);
-	xr_delete					(TalkMenu);
 	xr_delete					(m_RadialMenuWeapon);
 }
 

@@ -12,8 +12,6 @@
 #include "ai/stalker/ai_stalker_space.h"
 #include "sound_player.h"
 #include "stalker_animation_data.h"
-#include "UIGameSP.h"
-#include "ui/UITalkWnd.h"
 
 void CStalkerAnimationManager::head_play_callback		(CBlend *blend)
 {
@@ -27,15 +25,6 @@ void CStalkerAnimationManager::head_play_callback		(CBlend *blend)
 MotionID CStalkerAnimationManager::assign_head_animation	()
 {
 	const ANIM_VECTOR		&animations = m_data_storage->m_head_animations.A;
-
- 	if (CurrentGameUI() && CurrentGameUI()->TalkMenu->IsShown())
-	{
-		if (CurrentGameUI()->TalkMenu->OthersInvOwner() == m_object)
-		{
-			if (CurrentGameUI()->TalkMenu->playing_sound())
-				return		(animations[1]);
-		}
-	}
 
 	CSoundPlayer			&sound = object().sound();
 	if (!sound.active_sound_count(true))

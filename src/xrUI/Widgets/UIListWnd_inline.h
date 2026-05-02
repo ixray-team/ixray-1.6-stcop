@@ -65,12 +65,7 @@ bool CUIListWnd::AddItem(Element* pItem, int insertBeforeIdx)
 
     UpdateList();
 
-    //обновить полосу прокрутки
-    m_ScrollBar->SetRange(0, s16(m_ItemList.size() - 1));
-    m_ScrollBar->SetPageSize((m_iRowNum < (int)m_ItemList.size()) ? m_iRowNum : (int)m_ItemList.size());
-    m_ScrollBar->SetScrollPos(s16(m_iFirstShownIndex));
-    //	m_ScrollBar.Refresh();
-
+    SyncScrollRangeFromItems();
     UpdateScrollBar();
 
     return true;

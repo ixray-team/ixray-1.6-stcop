@@ -168,7 +168,14 @@ void CUIActorInfoWnd::FillPointsInfo			()
 	}
 	FillMasterPart						(&uiXml, "total");
 #endif
-	UIMasterList->SetSelected(UIMasterList->GetItem(1) );
+	if (UIMasterList->GetSize() > 1)
+	{
+		UIMasterList->SetSelected(UIMasterList->GetItem(1));
+	}
+	else if (UIMasterList->GetSize() > 0)
+	{
+		UIMasterList->SetSelected(UIMasterList->GetItem(0));
+	}
 }
 
 void CUIActorInfoWnd::FillMasterPart(CUIXml* xml, const shared_str& key_name)
@@ -317,7 +324,8 @@ bool CUIActorInfoWnd::MoveSelectionUp(bool bAllowLoop)
 
 	CUIActorStaticticHeader* pSelected = static_cast<CUIActorStaticticHeader*>(UIMasterList->GetSelected());
 	xr_vector<CUIActorStaticticHeader*>::iterator fIt = std::find(UIMasterSelectableItems.begin(), UIMasterSelectableItems.end(), pSelected);
-	R_ASSERT(fIt != UIMasterSelectableItems.end());
+	if (fIt == UIMasterSelectableItems.end())
+		return false;
 	if (fIt == UIMasterSelectableItems.begin())
 	{
 		if (bAllowLoop)
@@ -342,7 +350,8 @@ bool CUIActorInfoWnd::MoveSelectionDown(bool bAllowLoop)
 
 	CUIActorStaticticHeader* pSelected = static_cast<CUIActorStaticticHeader*>(UIMasterList->GetSelected());
 	xr_vector<CUIActorStaticticHeader*>::iterator fIt = std::find(UIMasterSelectableItems.begin(), UIMasterSelectableItems.end(), pSelected);
-	R_ASSERT(fIt != UIMasterSelectableItems.end());
+	if (fIt == UIMasterSelectableItems.end())
+		return false;
 	++fIt;
 	if (fIt == UIMasterSelectableItems.end())
 	{

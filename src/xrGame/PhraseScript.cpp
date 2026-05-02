@@ -10,6 +10,8 @@
 #include "ai_debug.h"
 #include "../../xrUI/xrUIXmlParser.h"
 #include "Actor.h"
+#include "pda_communication.h"
+#include "pda_talk_reward_guard.h"
 
 
 //загрузка из XML файла
@@ -128,6 +130,12 @@ bool CDialogScriptHelper::Precondition	(const CGameObject* pSpeakerGO, const cha
 
 void CDialogScriptHelper::Action			(const CGameObject* pSpeakerGO, const char* dialog_id, const char* phrase_id) const 
 {
+	if (PdaCommunication().IsRemotePhraseContext())
+	{
+		PdaTalkRewardGuard::RunPhraseActions(*this, pSpeakerGO, nullptr, dialog_id, phrase_id);
+		TransferInfo(smart_cast<const CInventoryOwner*>(pSpeakerGO));
+		return;
+	}
 
 	for(u32 i = 0; i<Actions().size(); ++i)
 	{
@@ -177,6 +185,12 @@ bool CDialogScriptHelper::Precondition	(	const CGameObject* pSpeakerGO1,
 void CDialogScriptHelper::Action			(const CGameObject* pSpeakerGO1, const CGameObject* pSpeakerGO2, const char* dialog_id, const char* phrase_id) const 
 {
 	TransferInfo(smart_cast<const CInventoryOwner*>(pSpeakerGO1));
+
+	if (PdaCommunication().IsRemotePhraseContext())
+	{
+		PdaTalkRewardGuard::RunPhraseActions(*this, pSpeakerGO1, pSpeakerGO2, dialog_id, phrase_id);
+		return;
+	}
 
 	for(u32 i = 0; i<Actions().size(); ++i)
 	{

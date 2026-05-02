@@ -5,6 +5,7 @@
 #include "../../xrEngine/XR_IOConsole.h"
 #include "../UIFontDefines.h"
 #include "../UITextureMaster.h"
+#include "../../xrCore/EngineExternal.h"
 
 CUIEditKeyBind::CUIEditKeyBind(bool bPrim)
 {
@@ -61,12 +62,18 @@ void CUIEditKeyBind::InitKeyBind(Fvector2 pos, Fvector2 size)
 	CUIStatic::SetWndPos	(pos);
 	CUIStatic::SetWndSize	(size);
 
-	if (CUITextureMaster::ItemExist("ui_listline2")) // cop
+	if (EngineExternal().CallOfPripyatMode())
+	{
 		InitTexture("ui_listline2");
-	else if (CUITextureMaster::ItemExist("ui_options_string")) // soc
+	}
+	else if (EngineExternal().ShadowOfChernobylMode())
+	{
 		InitTexture("ui_options_string");
-	else if (CUITextureMaster::ItemExist("ui_options_string_back")) // cs (exists in soc also, that's why it's last)
+	}
+	else if (EngineExternal().ClearSkyMode())
+	{
 		InitTexture("ui_options_string_back");
+	}
 
 	TextItemControl()->SetFont	(UI().Font().GetFont(LETTERICA16_FONT_NAME));
 	SetStretchTexture		(true);

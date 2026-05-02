@@ -354,6 +354,12 @@ public:
 			void				TransferMoney		(int money, CScriptGameObject* pForWho);
 			void				GiveMoney			(int money);
 			u32					Money				();
+			u32					GetActorMoneyEarned	();
+			u32					GetActorMoneySpent	();
+			float				GetActorDistanceKm	();
+			u32					GetActorHeadshots	();
+			u32					GetActorDeaths		();
+			u32					GetActorHelpWounded	();
 			void				MakeItemActive		(CScriptGameObject* pItem);
 			
 			void				SetRelation			(ALife::ERelationType relation, CScriptGameObject* pWhoToSet);

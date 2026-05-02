@@ -4,7 +4,6 @@
 #include "UIWndCallback.h"
 
 class CUIScrollBar;
-class CUIFixedScrollBar;
 
 class UI_API CUIScrollView :
 	public CUIWindow, 
@@ -29,7 +28,11 @@ enum {eVertFlip=(1<<0),eNeedRecalc=(1<<1),eFixedScrollBar=(1<<2),eItemsSelectabe
 	Ivector2		m_visible_rgn;
 
 virtual void		RecalcSize			();
-		void		UpdateScroll		();	
+		void		UpdateScroll		();
+		void		_updateVerticalScrollState();
+		void		_applyScrollPos		(int scrollPos);
+		bool		_createOrInitScrollBar();
+		void		_applyScrollBarLayout();
 		void 	OnScrollV		(CUIWindow*, void*);
 		void		SetRightIndention	(float val);
 		void		SetLeftIndention	(float val);
@@ -50,6 +53,8 @@ public:
 			bool	HasWindow			(CUIWindow* pWnd);
 			void	RemoveWindow		(CUIWindow* pWnd);
 			void	Clear				();
+			bool	TryClear			();
+			bool	HasPad				() const							{ return m_pad != nullptr; }
 			void	ScrollToBegin		();
 			void	ScrollToItem		(CUIWindow *pItem, int addVerticalOffset);
 			void	ScrollToEnd			();
@@ -76,6 +81,7 @@ public:
 			int		GetCurrentScrollPos	();
 			void	SetScrollPos		(int value);
 			void	SetScrollBarProfile	(const char* profile);
+			bool	ReinitScrollBar		();
 IC			bool	NeedShowScrollBar	();		// no comment
 			float	GetHorizIndent		();		// left + right indent
 			float	GetVertIndent		();		// top + bottom indent

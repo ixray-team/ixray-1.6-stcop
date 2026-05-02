@@ -3,6 +3,7 @@
 #include "alife_space.h"
 #include "game_graph_space.h"
 #include "../xrUI/uiabstract.h"
+#include "../xrUI/ui_defs.h"
 
 enum class ECompassSpotKind : u8
 {
@@ -82,6 +83,8 @@ protected:
 	float					m_compassOverrideMaxDist;
 	EVTextAlignment			m_compassOverrideVertAlign;
 	bool					m_hasCompassOverride;
+	bool					m_compassShadowOverridden;
+	SUITextureShadowParams	m_compassShadow;
 private:
 							CMapLocation					(const CMapLocation&){R_ASSERT(0);} //disable copy ctor
 
@@ -139,6 +142,8 @@ public:
 	float					GetCompassOffsetY				()	const;
 	float					GetCompassMaxDist				()	const; // not specified or 0.0f = infinite, > 0.0f = distance in meters
 	EVTextAlignment			GetCompassVertAlign				()	const;
+	const SUITextureShadowParams& GetCompassTextureShadow	()	const { return m_compassShadow; }
+	IC bool					HasCompassShadowOverride		()	const { return m_compassShadowOverridden; }
 	virtual shared_str		GetSpotName					()	const { return m_type; }
 	ECompassSpotKind		GetCompassSpotKind				()	const;
 

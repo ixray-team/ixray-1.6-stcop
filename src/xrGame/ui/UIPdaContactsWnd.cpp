@@ -3,6 +3,7 @@
 #include "../PDA.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../Actor.h"
+#include "../Level.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../../xrUI/Widgets/UIAnimatedStatic.h"
@@ -13,10 +14,97 @@
 #include "../../xrServerEntities/xrServer_Objects_ALife_Monsters.h"
 #include "../../xrUI/UICursor.h"
 #include "../../xrEngine/xr_input.h"
+#include "../pda_communication.h"
+#include "UICharacterInfo.h"
+#include "UIGameCustom.h"
+#include "UITalkWnd.h"
+#include "PdaConstants.h"
+
+extern CSE_ALifeTraderAbstract* ch_info_get_from_id(u16 id);
+
+namespace
+{
+// Resolves a contact owner safely from the stable owner id, avoiding dereference of stale m_data pointers
+// after the underlying NPC object was destroyed (death, alife unload) while the PDA window stays open.
+CInventoryOwner* ResolveContactOwnerById(u16 ownerId)
+{
+	if (ownerId == u16(-1))
+	{
+		return nullptr;
+	}
+
+	CObject* object = Level().Objects.net_Find(ownerId);
+	if (object == nullptr || object->getDestroy())
+	{
+		return nullptr;
+	}
+
+	return object->cast_inventory_owner();
+}
+
+// Ends embedded phrase UI and PDA talk session when the highlighted contact no longer matches the active NPC.
+void StopEmbeddedPhraseUiIfSessionNpcDiffers(CInventoryOwner* highlightedOwner)
+{
+	if (!highlightedOwner)
+	{
+		return;
+	}
+
+	CPdaCommunication& comm = PdaCommunication();
+	if (!comm.IsSessionActive())
+	{
+		return;
+	}
+
+	CInventoryOwner* sessionNpc = comm.GetSessionNpc();
+	if (!sessionNpc || sessionNpc == highlightedOwner)
+	{
+		return;
+	}
+
+	CUIGameCustom* gameUi = CurrentGameUI();
+	if (gameUi && gameUi->TalkMenu)
+	{
+		gameUi->TalkMenu->StopPdaDialog();
+	}
+	else
+	{
+		comm.Stop();
+	}
+}
+
+bool TryLaunchEmbeddedPdaPhraseUi(CUIPdaContactsWnd* contactsWnd)
+{
+    CUIGameCustom* gameUi = CurrentGameUI();
+    if (!gameUi || !gameUi->TalkMenu)
+    {
+        return false;
+    }
+
+    CUITalkWnd* talkWnd = gameUi->TalkMenu;
+    talkWnd->SetPdaMode(true);
+    if (!talkWnd->IsEmbeddedInPda() && contactsWnd)
+    {
+        talkWnd->BeginPdaEmbed(contactsWnd);
+    }
+
+    if (!talkWnd->IsEmbeddedInPda())
+    {
+        talkWnd->StopPdaDialog();
+        return false;
+    }
+
+    const bool isInitialized = talkWnd->InitializeDialogForPda();
+    if (!isInitialized)
+    {
+        talkWnd->StopPdaDialog();
+    }
+
+    return isInitialized;
+}
+} // namespace
 
 #define PDA_CONTACT_HEIGHT 70
-
-#define		PDA_CONTACTS_XML			"pda_contacts_new.xml"
 
 CUIPdaContactsWnd::CUIPdaContactsWnd()
 {
@@ -31,6 +119,7 @@ CUIPdaContactsWnd::CUIPdaContactsWnd()
 
 CUIPdaContactsWnd::~CUIPdaContactsWnd()
 {
+	xr_delete(_layoutXml);
 	ActionRepeaters()->UnregisterOwner(this);
 }	
 
@@ -39,8 +128,6 @@ void CUIPdaContactsWnd::Show(bool status)
 	inherited::Show(status);
 	if (status)
 	{
-		if (UIDetailsWnd)
-			UIDetailsWnd->Clear();
 		Reload();
 	}
 
@@ -48,61 +135,74 @@ void CUIPdaContactsWnd::Show(bool status)
 
 void CUIPdaContactsWnd::Init()
 {
-	CUIXml		uiXml;
-	uiXml.Load(CONFIG_PATH, UI_PATH, PDA_CONTACTS_XML);
+	xr_delete(_layoutXml);
+	_layoutXml = new CUIXml();
+	_hasValidDialogLayout = false;
+
+	// CUIXml::Load(CONFIG_PATH, UI_PATH, ...) maps names via UI().get_xml_name() (e.g. widescreen -> *_16.xml).
+	if (!_layoutXml->Load(CONFIG_PATH, UI_PATH, PdaXml::ContactsNew))
+	{
+		Msg("! CUIPdaContactsWnd: failed to load [%s] from configs/ui (check addon merge order)", PdaXml::ContactsNew);
+		xr_delete(_layoutXml);
+		return;
+	}
+
+	const SPdaContactsLayoutInfo layoutInfo = InspectPdaContactsLayout(*_layoutXml);
+	LogPdaContactsLayoutIssues(layoutInfo, _layoutXml->m_xml_file_name);
+	_hasValidDialogLayout = IsPdaContactsLayoutValid(layoutInfo);
 
 	CUIXmlInit	xml_init;
 
-	xml_init.InitWindow					(uiXml, "main_wnd", 0, this);
+	xml_init.InitWindow					(*_layoutXml, "main_wnd", 0, this);
 
 	CUIWindow* frameParent = this;
-	if (uiXml.NavigateToNode("background"))
+	m_background = UIHelper::CreateFrameWindow(*_layoutXml, PdaXml::ContactsBackground, this, false);
+	if (m_background)
 	{
-		m_background					= UIHelper::CreateFrameWindow(uiXml, "background", this);
-		frameParent						= m_background;
+		frameParent = m_background;
 	}
 
-	UIFrameContacts						= UIHelper::CreateFrameWindow(uiXml, "left_frame_window", frameParent);
+	UIFrameContacts						= UIHelper::CreateFrameWindow(*_layoutXml, PdaXml::ContactsLeftFrame, frameParent);
 
-	UIContactsHeader					= UIHelper::CreateFrameLine(uiXml, "left_frame_line", UIFrameContacts);
+	UIContactsHeader					= UIHelper::CreateFrameLine(*_layoutXml, "left_frame_line", UIFrameContacts);
 
-	UIRightFrame						= UIHelper::CreateFrameWindow(uiXml, "right_frame_window", frameParent, false);
+	UIRightFrame						= UIHelper::CreateFrameWindow(*_layoutXml, PdaXml::ContactsRightFrame, frameParent, false);
 
-	UIRightFrameHeader					= UIHelper::CreateFrameLine(uiXml, "right_frame_line", UIRightFrame, false);
+	UIRightFrameHeader					= UIHelper::CreateFrameLine(*_layoutXml, "right_frame_line", UIRightFrame, false);
 
 	UIAnimation							= new CUIAnimatedStatic();UIAnimation->SetAutoDelete(true);
 	UIContactsHeader->AttachChild		(UIAnimation);
-	xml_init.InitAnimatedStatic			(uiXml, "a_static", 0, UIAnimation);
+	xml_init.InitAnimatedStatic			(*_layoutXml, "a_static", 0, UIAnimation);
 
 	UIListWnd							= new CUIScrollView();UIListWnd->SetAutoDelete(true);
 	UIFrameContacts->AttachChild		(UIListWnd);
-	xml_init.InitScrollView				(uiXml, "list", 0, UIListWnd);
+	xml_init.InitScrollView				(*_layoutXml, "list", 0, UIListWnd);
 
-	UIDetailsWnd						= UIHelper::CreateScrollView(uiXml, "detail_list", UIRightFrame, false);
+	UIDetailsWnd						= UIHelper::CreateScrollView(*_layoutXml, PdaXml::ContactsDetailList, UIRightFrame, false);
 
-	if (uiXml.NavigateToNode("hint_wnd"))
+	if (_layoutXml->NavigateToNode("hint_wnd"))
 	{
-		m_hint_wnd = UIHelper::CreateHint(uiXml, "hint_wnd");
+		m_hint_wnd = UIHelper::CreateHint(*_layoutXml, "hint_wnd");
 	}
 	
-	int leftStaticCount					= uiXml.GetNodesNum(uiXml.GetRoot(), "left_auto_static");
+	int leftStaticCount					= _layoutXml->GetNodesNum(_layoutXml->GetRoot(), "left_auto_static");
 	for (int i = 0; i < leftStaticCount; ++i)
 	{
 		CUIStatic* leftStatic = new CUIStatic();
 		leftStatic->SetAutoDelete(true);
 		UIFrameContacts->AttachChild(leftStatic);
-		xml_init.InitStatic(uiXml, "left_auto_static", i, leftStatic);
+		xml_init.InitStatic(*_layoutXml, "left_auto_static", i, leftStatic);
 	}
 	
-	int rightStaticCount					= uiXml.GetNodesNum(uiXml.GetRoot(), "right_auto_static");
+	int rightStaticCount					= _layoutXml->GetNodesNum(_layoutXml->GetRoot(), "right_auto_static");
 	for (int i = 0; i < rightStaticCount; ++i)
 	{
 		CUIStatic* rightStatic = new CUIStatic();
 		rightStatic->SetAutoDelete(true);
 		UIRightFrame->AttachChild(rightStatic);
-		xml_init.InitStatic(uiXml, "right_auto_static", i, rightStatic);
+		xml_init.InitStatic(*_layoutXml, "right_auto_static", i, rightStatic);
 	}
-	m_gamepad_legend = UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
+	m_gamepad_legend = UIHelper::CreateGamepadLegend(*_layoutXml, "gamepad_legend", this, false);
 }
 
 void CUIPdaContactsWnd::Draw()
@@ -290,39 +390,59 @@ bool CUIPdaContactsWnd::OnGamepadKeyHold(int id)
 }
 
 
-CUIPdaContactItem::~CUIPdaContactItem()
-{
-}
-
-extern CSE_ALifeTraderAbstract* ch_info_get_from_id (u16 id);
-
-#include "UICharacterInfo.h"
-
 void CUIPdaContactItem::SetSelected	(bool b)
 {
 	CUISelectable::SetSelected(b);
 
-	if (!m_cw->UIDetailsWnd)
-		return;
-
-	if(b)
+	if (!b || !m_cw->UIDetailsWnd)
 	{
-		m_cw->UIDetailsWnd->Clear		();
-		CCharacterInfo				chInfo;
-		CSE_ALifeTraderAbstract*	T = ch_info_get_from_id(UIInfo->OwnerID());
-		chInfo.Init					(T);
-
-		ADD_TEXT_TO_VIEW2( g_pStringTable->translate(chInfo.Bio()).c_str(), m_cw->UIDetailsWnd);
+		return;
 	}
+
+	CInventoryOwner* owner = ResolveContactOwnerById(UIInfo->OwnerID());
+	StopEmbeddedPhraseUiIfSessionNpcDiffers(owner);
+
+	m_cw->UIDetailsWnd->Clear		();
+	CCharacterInfo				chInfo;
+	CSE_ALifeTraderAbstract*	T = ch_info_get_from_id(UIInfo->OwnerID());
+	chInfo.Init					(T);
+
+	ADD_TEXT_TO_VIEW2( g_pStringTable->translate(chInfo.Bio()).c_str(), m_cw->UIDetailsWnd);
 }
 
 bool CUIPdaContactItem::OnMouseDown(int mouse_btn)
 {
-	if(mouse_btn==MOUSE_1){
-		m_cw->UIListWnd->SetSelected(this);
+	if (mouse_btn != MOUSE_1)
+	{
+		return false;
+	}
+
+	// Selection/focus alone must not start a phrase session; LMB activates dialog branches like face-to-face talk.
+	m_cw->UIListWnd->SetSelected(this);
+
+	CInventoryOwner* owner = ResolveContactOwnerById(UIInfo->OwnerID());
+	if (!owner)
+	{
 		return true;
 	}
-	return false;
+
+	if (!PdaCommunication().IsEnabled())
+	{
+		return true;
+	}
+
+	if (!m_cw->HasValidPdaDialogLayout())
+	{
+		Msg("! [PDA] contacts: invalid <%s> layout; see earlier [PDA] messages", PdaXml::ContactsDialog);
+		return true;
+	}
+
+	if (PdaCommunication().OpenDialog(owner))
+	{
+		TryLaunchEmbeddedPdaPhraseUi(m_cw);
+	}
+
+	return true;
 }
 
 void CUIPdaContactItem::OnFocusReceive()
@@ -347,49 +467,32 @@ void CUIPdaContactItem::OnFocusReceive()
 void CUIPdaContactItem::SetHintText()
 {
 	CSE_ALifeTraderAbstract* T = ch_info_get_from_id(UIInfo->OwnerID());
+	if (!T)
+	{
+		m_cw->m_hint_wnd->set_text("");
+		return;
+	}
 
-	const char* stalkersKilled = "0";
-	const char* mutantsKilled = "0";
-	const char* artsFound = "0";
-	const char* itemsSold = "0";
+	CInventoryOwner* owner = ResolveContactOwnerById(UIInfo->OwnerID());
+	CActor* actor = Actor();
 
-	luabind::functor<const char*> functorGetStalkersKilled;
-	if (ai().script_engine().functor("pda.coc_contacts_get_stalkers_killed", functorGetStalkersKilled))
-		stalkersKilled = functorGetStalkersKilled(UIInfo->OwnerID());
-
-	luabind::functor<const char*> functorGetMutantsKilled;
-	if (ai().script_engine().functor("pda.coc_contacts_get_mutants_killed", functorGetMutantsKilled))
-		mutantsKilled = functorGetMutantsKilled(UIInfo->OwnerID());
-
-	luabind::functor<const char*> functorGetArtsFound;
-	if (ai().script_engine().functor("pda.coc_contacts_get_arts_found", functorGetArtsFound))
-		artsFound = functorGetArtsFound(UIInfo->OwnerID());
-
-	luabind::functor<const char*> functorGetItemsSold;
-	if (ai().script_engine().functor("pda.coc_contacts_get_items_sold", functorGetItemsSold))
-		itemsSold = functorGetItemsSold(UIInfo->OwnerID());
+	EPdaCommunicationStatus status = EPdaCommunicationStatus::DisabledByConfig;
+	if (PdaCommunication().IsEnabled() && owner && actor)
+	{
+		status = PdaCommunication().CanStart(owner, actor->cast_inventory_owner());
+	}
+	else if (PdaCommunication().IsEnabled() && !owner)
+	{
+		status = EPdaCommunicationStatus::NpcOffline;
+	}
 
 	xr_string str;
 	str = "%c[255, 255, 160, 255] %c[default]";
 	str += T->m_character_name.c_str();
 	str += "\\n \\n %c[255, 215, 215, 215]";
-	str += g_pStringTable->translate("st_mm_pda_statistics").c_str();
-	str += ": %c[default] \\n%c[255, 160, 160, 160]";
-	str += g_pStringTable->translate("st_mm_pda_stalkers_killed").c_str();
+	str += g_pStringTable->translate("st_pda_talk_status_label").c_str();
 	str += ": %c[default] ";
-	str += stalkersKilled;
-	str += "\\n%c[255, 160, 160, 160]";
-	str += g_pStringTable->translate("st_mm_pda_mutants_killed").c_str();
-	str += ": %c[default] ";
-	str += mutantsKilled;
-	str += "\\n%c[255, 160, 160, 160]";
-	str += g_pStringTable->translate("st_mm_pda_artes_found").c_str();
-	str += ": %c[default] ";
-	str += artsFound;
-	str += "\\n%c[255, 160, 160, 160]";
-	str += g_pStringTable->translate("st_mm_pda_items_sold").c_str();
-	str += ": %c[default] ";
-	str += itemsSold;
+	str += g_pStringTable->translate(CPdaCommunication::StatusStringId(status)).c_str();
 
 	m_cw->m_hint_wnd->set_text(str.c_str());
 }
