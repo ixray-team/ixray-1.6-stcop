@@ -29,6 +29,8 @@ using namespace ACTOR_DEFS;
 class CInfoPortion;
 struct GAME_NEWS_DATA;
 class CActorCondition;
+class CAI_Stalker;
+class CInventoryItem;
 class CCustomOutfit;
 class CGameTaskRegistryWrapper;
 class CGameNewsRegistryWrapper;
@@ -176,6 +178,22 @@ public:
 	virtual void StartTalk			(CInventoryOwner* talk_partner);
 			void RunTalkDialog		(CInventoryOwner* talk_partner, bool disable_break);
 	CActorStatisticMgr&				StatisticMgr()	{return *m_statistic_manager;}
+			void OnMoneyChanged		(u32 previousMoney, u32 newMoney);
+			void AddDistanceMeters	(float deltaMeters);
+			void RegisterHeadshotKill();
+			void RegisterPlayerDeath();
+			void RegisterHelpWounded();
+			void TryRegisterHelpWounded(CAI_Stalker* targetStalker, const CInventoryItem* item);
+			static void ResetDeathStatCarryOver();
+			void OnDeathStatLoadedFromSave(u32 savedDeaths);
+			void OnDeathStatSavedToGame();
+			u32 GetStatMoneyEarned	() const { return m_statMoneyEarned; }
+			u32 GetStatMoneySpent	() const { return m_statMoneySpent; }
+			float GetStatDistanceMeters() const { return m_statDistanceMeters; }
+			u32 GetStatHeadshots	() const { return m_statHeadshots; }
+			u32 GetStatDeaths		() const { return m_statDeaths; }
+			u32 GetStatHelpWounded	() const { return m_statHelpWounded; }
+			u32 GetPdaRankingStatRevision() const { return m_pdaRankingStatRevision; }
     CEncyclopediaRegistryWrapper*	encyclopedia_registry;
 	CGameNewsRegistryWrapper		*game_news_registry;
 	CCharacterPhysicsSupport		*m_pPhysics_support;
@@ -252,6 +270,20 @@ protected:
 	ref_sound			m_HeavyBreathSnd = {};
 	ref_sound			m_BloodSnd = {};
 	ref_sound			m_DangerSnd = {};
+	u32					m_statMoneyEarned = 0;
+	u32					m_statMoneySpent = 0;
+	float				m_statDistanceMeters = 0.0f;
+	u32					m_statHeadshots = 0;
+	u32					m_statDeaths = 0;
+	u32					m_statDeathsSavedInLastLoad = 0;
+	u32					m_statHelpWounded = 0;
+	u16					m_lastHelpWoundedStalkerId = u16(-1);
+	u32					m_lastHelpWoundedGameTime = 0;
+	u32					m_pdaRankingStatRevision = 0;
+	bool				m_isMoneyStatInitialized = false;
+			void BumpPdaRankingStatRevision();
+	Fvector				m_lastStatPosition = {};
+	bool				m_hasLastStatPosition = false;
 	ref_sound			m_rainOnHelmetSnd = {};
 
 	xr_vector<const CArtefact*> m_ArtefactsOnBelt;

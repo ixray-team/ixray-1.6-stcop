@@ -261,6 +261,7 @@ void CEntity::KillEntity(u16 whoID, bool bypass_actor_check /*AVO: added for act
 		}
 #endif // MASTER_GOLD
 
+		Actor()->RegisterPlayerDeath();
 		Actor()->use_HolderEx(nullptr, true);
 		Actor()->callback(GameObject::eActorBeforeDeath)(whoID);
 		return;

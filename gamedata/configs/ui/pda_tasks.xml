@@ -80,6 +80,12 @@
 	</btn_second_task>
 
 	<map_wnd scroll_enable="1" map_move_step="11">
+		<!-- Map sounds (inside map_wnd, used by pda_tasks and pda_map tabs): -->
+		<!-- <snd_map_zoom_in>device\pda\pda_map_zoom_in</snd_map_zoom_in> -->
+		<!-- <snd_map_zoom_out>device\pda\pda_map_zoom_out</snd_map_zoom_out> -->
+		<!-- <snd_map_zoom>device\pda\pda_map_zoom</snd_map_zoom> -->
+		<!-- <snd_map_center>device\pda\pda_map_center</snd_map_center> -->
+		<!-- <snd_map_pan>device\pda\pda_map_pan</snd_map_pan> -->
 		<main_wnd x="35" y="149" width="955" height="555">
 	        <auto_frameline x="0" y="0" width="955" height="555" vertical="1">
 	            <texture>ui_inGame2_pda_map_background</texture>

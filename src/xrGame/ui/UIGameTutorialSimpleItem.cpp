@@ -220,7 +220,7 @@ void CUISequenceSimpleItem::Update()
 			if (CurrentGameUI()->PdaMenu()->IsShown()		||
 				(CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu()->IsShown())		||
 				(CurrentGameUI()->InventoryWnd() && CurrentGameUI()->InventoryWnd()->IsShown()) ||
-				CurrentGameUI()->TalkMenu->IsShown()			||
+				CurrentGameUI()->TalkMenu->IsActiveTalkUi()			||
 				CurrentGameUI()->UIChangeLevelWnd->IsShown() ||
 				(MainMenu()->IsActive() && !m_owner->m_flags.test(CUISequencer::etsOverMainMenu) )
 				)

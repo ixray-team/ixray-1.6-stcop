@@ -1247,7 +1247,7 @@ void SpawnManager_HandleButtonPress(CInifile::Sect* section)
 		text_news_final += text_news;
 
 		GAME_NEWS_DATA				news_data;
-		news_data.m_type = GAME_NEWS_DATA::eNewsType::eNews;
+		news_data.m_type = GAME_NEWS_DATA::eNews;
 		news_data.news_caption = "general_in_item";
 		news_data.news_text = text_news_final.c_str();
 		news_data.show_time = 3000;

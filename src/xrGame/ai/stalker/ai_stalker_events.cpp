@@ -8,6 +8,7 @@
 
 #include "StdAfx.h"
 #include "ai_stalker.h"
+#include "../../Actor.h"
 #include "../../PDA.h"
 #include "../../Inventory.h"
 #include "../../../xrServerEntities/xrMessages.h"
@@ -43,6 +44,17 @@ void CAI_Stalker::OnEvent		(NET_Packet& P, u16 type)
 			CGameObject	*_O = O->cast_game_object();
 			if (inventory().CanTakeItem(_O->cast_inventory_item()))
 			{
+				if (IsGameTypeSingle())
+				{
+					if (CActor* actor = Actor())
+					{
+						if (CInventoryItem* inventoryItem = _O->cast_inventory_item())
+						{
+							actor->TryRegisterHelpWounded(this, inventoryItem);
+						}
+					}
+				}
+
 				O->H_SetParent(this);
 				inventory().Take(_O,true, false);
 				if (!inventory().ActiveItem() && GetScriptControl() && smart_cast<CShootingObject*>(O))

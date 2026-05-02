@@ -25,6 +25,8 @@ class CEntityAlive : public CEntity {
 private:
 	typedef	CEntity			inherited;	
 	u32						m_used_time;
+	u16						m_lastHitBoneID = u16(-1);
+	ALife::_OBJECT_ID		m_lastHitWhoID = ALife::_OBJECT_ID(-1);
 public:
 	virtual CEntityAlive*		cast_entity_alive		()	{return this;}
 	virtual CActor*				cast_actor				()  {return nullptr;}
