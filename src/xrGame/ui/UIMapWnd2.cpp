@@ -6,8 +6,129 @@
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "../../xrUI/UIHelper.h"
 #include "UITaskWnd.h"
+#include "PdaConstants.h"
+#include "../../xrEngine/string_table.h"
 
-void CUIMapWnd::init_xml_nav( CUIXml& xml, const char* start_from )
+namespace
+{
+bool WindowNameEquals(const char* windowName, const char* candidate)
+{
+	return windowName && candidate && xr_strcmp(windowName, candidate) == 0;
+}
+
+constexpr u8 kNavExtraIndexStart = 9;
+constexpr u8 kNavExtraIndexMaxExclusive = 32;
+constexpr const char* kNavButtonPathFormat = "btn_nav_parent:btn_nav_%d";
+
+CUI3tButton* FindNavButtonByWindowName(CUI3tButton* const* buttons, u32 count, const char* windowName)
+{
+	for (u32 i = 0; i < count; ++i)
+	{
+		CUI3tButton* btn = buttons[i];
+		if (btn && WindowNameEquals(btn->WindowName().c_str(), windowName))
+		{
+			return btn;
+		}
+	}
+	return nullptr;
+}
+
+bool IsNavPanButtonHeld(CUI3tButton* btn)
+{
+	return btn && btn->CursorOverWindow() && btn->GetButtonState() == CUIButton::BUTTON_PUSHED;
+}
+
+} // namespace
+
+void CUIMapWnd::InitPersonalSpotRmbMode(CUIXml& xml, const char* buttonPath, CUI3tButton* btn)
+{
+	if (!btn || !buttonPath || !buttonPath[0])
+	{
+		return;
+	}
+
+	const shared_str windowName = btn->WindowName();
+	if (!WindowNameEquals(windowName.c_str(), PdaNavButton::PersonalSpot))
+	{
+		return;
+	}
+
+	if (xml.ReadAttribInt(buttonPath, 0, PdaNavButton::PersonalSpotRmbAttrib, 0) != 1)
+	{
+		return;
+	}
+
+	m_personalSpotRmbMode = true;
+
+	const char* hintRmb = xml.ReadAttrib(buttonPath, 0, PdaNavButton::PersonalSpotRmbHintAttrib, nullptr);
+	if (hintRmb && hintRmb[0])
+	{
+		btn->m_hint_text = g_pStringTable->translate(hintRmb);
+	}
+}
+
+void CUIMapWnd::RegisterNavButtonByName(CUI3tButton* btn)
+{
+	if (!btn)
+	{
+		return;
+	}
+
+	const shared_str windowName = btn->WindowName();
+	const char* n = windowName.c_str();
+	if (!n || !n[0])
+	{
+		return;
+	}
+
+	if (WindowNameEquals(n, PdaNavButton::Legend))
+	{
+		AddCallback(btn, BUTTON_DOWN, CUIWndCallback::void_function(this, &CUIMapWnd::OnBtnLegend_Push));
+	}
+	else if (WindowNameEquals(n, PdaNavButton::ZoomIn))
+	{
+		AddCallback(btn, BUTTON_DOWN, CUIWndCallback::void_function(this, &CUIMapWnd::OnBtnZoomMore_Push));
+	}
+	else if (WindowNameEquals(n, PdaNavButton::Center) || WindowNameEquals(n, "btn_nav_actor"))
+	{
+		AddCallback(btn, BUTTON_DOWN, CUIWndCallback::void_function(this, &CUIMapWnd::OnBtnActor_Push));
+	}
+	else if (WindowNameEquals(n, PdaNavButton::ZoomOut))
+	{
+		AddCallback(btn, BUTTON_DOWN, CUIWndCallback::void_function(this, &CUIMapWnd::OnBtnZoomLess_Push));
+	}
+	else if (WindowNameEquals(n, PdaNavButton::ZoomReset))
+	{
+		AddCallback(btn, BUTTON_DOWN, CUIWndCallback::void_function(this, &CUIMapWnd::OnBtnZoomReset_Push));
+	}
+	else if (WindowNameEquals(n, PdaNavButton::PersonalSpot))
+	{
+		AddCallback(btn, BUTTON_DOWN, CUIWndCallback::void_function(this, &CUIMapWnd::OnBtnPersonalSpot_Push));
+	}
+	else if (WindowNameEquals(n, PdaNavButton::TaskFocus))
+	{
+		m_btn_nav_task_focus = btn;
+		AddCallback(btn, BUTTON_DOWN, CUIWndCallback::void_function(this, &CUIMapWnd::OnBtnNavTaskFocus_Push));
+	}
+	else if (WindowNameEquals(n, "global_map_btn"))
+	{
+		AddCallback(btn, BUTTON_DOWN, CUIWndCallback::void_function(this, &CUIMapWnd::OnBtnZoomReset_Push));
+	}
+	else if (WindowNameEquals(n, "actor_btn"))
+	{
+		AddCallback(btn, BUTTON_DOWN, CUIWndCallback::void_function(this, &CUIMapWnd::OnBtnActor_Push));
+	}
+	else if (WindowNameEquals(n, "zoom_in_btn"))
+	{
+		AddCallback(btn, BUTTON_DOWN, CUIWndCallback::void_function(this, &CUIMapWnd::OnBtnZoomMore_Push));
+	}
+	else if (WindowNameEquals(n, "zoom_out_btn"))
+	{
+		AddCallback(btn, BUTTON_DOWN, CUIWndCallback::void_function(this, &CUIMapWnd::OnBtnZoomLess_Push));
+	}
+}
+
+void CUIMapWnd::init_xml_nav(CUIXml& xml, const char* start_from)
 {
 	if (xml.NavigateToNode("btn_nav_parent"))
 	{
@@ -15,14 +136,34 @@ void CUIMapWnd::init_xml_nav( CUIXml& xml, const char* start_from )
 
 		VERIFY(hint_wnd);
 
+		auto registerNavButtonByPathLambda = [this, &xml](const char* buttonPath) -> CUI3tButton*
+		{
+			if (!xml.NavigateToNode(buttonPath))
+			{
+				return nullptr;
+			}
+
+			CUI3tButton* navButton = UIHelper::Create3tButton(xml, buttonPath, m_btn_nav_parent);
+			Register(navButton);
+			RegisterNavButtonByName(navButton);
+			InitPersonalSpotRmbMode(xml, buttonPath, navButton);
+			return navButton;
+		};
+
 		string64 buf;
 		for (u8 i = 0; i < max_btn_nav; ++i)
 		{
-			xr_sprintf(buf, "btn_nav_parent:btn_nav_%d", i);
+			xr_sprintf(buf, kNavButtonPathFormat, i);
+			m_btn_nav[i] = registerNavButtonByPathLambda(buf);
+		}
 
-			m_btn_nav[i] = UIHelper::Create3tButton(xml, buf, m_btn_nav_parent);
-			Register(m_btn_nav[i]);
-			//.		m_btn_nav[i]->set_hint_wnd( hint_wnd );
+		for (u8 i = kNavExtraIndexStart; i < kNavExtraIndexMaxExclusive; ++i)
+		{
+			xr_sprintf(buf, kNavButtonPathFormat, i);
+			if (!registerNavButtonByPathLambda(buf))
+			{
+				break;
+			}
 		}
 	}
 	else
@@ -31,27 +172,18 @@ void CUIMapWnd::init_xml_nav( CUIXml& xml, const char* start_from )
 		xr_strconcat(pth, start_from, ":main_wnd:map_header_frame_line:tool_bar");
 
 		string512 temp;
-		m_btn_nav[btn_zoom_reset] = UIHelper::Create3tButton(xml, xr_strconcat(temp, pth, ":global_map_btn"), UIMainMapHeader);
-		Register(m_btn_nav[btn_zoom_reset]);
-		m_btn_nav[btn_actor] = UIHelper::Create3tButton(xml, xr_strconcat(temp, pth, ":actor_btn"), UIMainMapHeader);
-		Register(m_btn_nav[btn_actor]);
-		m_btn_nav[btn_zoom_more] = UIHelper::Create3tButton(xml, xr_strconcat(temp, pth, ":zoom_in_btn"), UIMainMapHeader);
-		Register(m_btn_nav[btn_zoom_more]);
-		m_btn_nav[btn_zoom_less] = UIHelper::Create3tButton(xml, xr_strconcat(temp, pth, ":zoom_out_btn"), UIMainMapHeader);
-		Register(m_btn_nav[btn_zoom_less]);
+		auto registerToolbarButtonLambda = [this, &xml, &pth, &temp](u8 navIndex, const char* buttonName)
+		{
+			m_btn_nav[navIndex] = UIHelper::Create3tButton(xml, xr_strconcat(temp, pth, buttonName), UIMainMapHeader);
+			Register(m_btn_nav[navIndex]);
+			RegisterNavButtonByName(m_btn_nav[navIndex]);
+		};
+
+		registerToolbarButtonLambda(btn_zoom_reset, ":global_map_btn");
+		registerToolbarButtonLambda(btn_actor, ":actor_btn");
+		registerToolbarButtonLambda(btn_zoom_more, ":zoom_in_btn");
+		registerToolbarButtonLambda(btn_zoom_less, ":zoom_out_btn");
 	}
-	AddCallback( m_btn_nav[btn_legend],						BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnLegend_Push	) );
-//	AddCallback( m_btn_nav[btn_up]->WindowName(),			BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnUp_Push		) );
-	AddCallback( m_btn_nav[btn_zoom_more],					BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnZoomMore_Push) );
-
-//	AddCallback( m_btn_nav[btn_left]->WindowName(),			BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnLeft_Push	) );
-	AddCallback( m_btn_nav[btn_actor],						BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnActor_Push	) );
-//	AddCallback( m_btn_nav[btn_right]->WindowName(),		BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnRight_Push	) );
-
-	AddCallback( m_btn_nav[btn_zoom_less],					BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnZoomLess_Push) );
-//	AddCallback( m_btn_nav[btn_down]->WindowName(),			BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnDown_Push	) );
-	AddCallback( m_btn_nav[btn_zoom_reset],					BUTTON_DOWN, CUIWndCallback::void_function( this, &CUIMapWnd::OnBtnZoomReset_Push) );
-
 }
 
 void CUIMapWnd::UpdateNav()
@@ -60,42 +192,43 @@ void CUIMapWnd::UpdateNav()
 	{
 		m_btn_nav_parent->Show(!pInput->GetControllerMode());
 	}
-	if ( Device.dwTimeGlobal - m_nav_timing < 10 )
+	if (Device.dwTimeGlobal - m_nav_timing < 10)
 	{
 		return;
 	}
 	m_nav_timing = Device.dwTimeGlobal;
 
-	if (m_btn_nav[btn_up] && m_btn_nav[btn_up]->CursorOverWindow() && m_btn_nav[btn_up]->GetButtonState() == CUIButton::BUTTON_PUSHED )
+	CUI3tButton* btnUp = FindNavButtonByWindowName(m_btn_nav, max_btn_nav, PdaNavButton::Up);
+	CUI3tButton* btnLeft = FindNavButtonByWindowName(m_btn_nav, max_btn_nav, PdaNavButton::Left);
+	CUI3tButton* btnRight = FindNavButtonByWindowName(m_btn_nav, max_btn_nav, PdaNavButton::Right);
+	CUI3tButton* btnDown = FindNavButtonByWindowName(m_btn_nav, max_btn_nav, PdaNavButton::Down);
+
+	if (IsNavPanButtonHeld(btnUp))
 	{
-		MoveMap( Fvector2().set( 0.0f, m_map_move_step ) );
+		MoveMap(Fvector2().set(0.0f, m_map_move_step));
 	}
-	else if (m_btn_nav[btn_left] && m_btn_nav[btn_left]->CursorOverWindow() && m_btn_nav[btn_left]->GetButtonState() == CUIButton::BUTTON_PUSHED )
+	else if (IsNavPanButtonHeld(btnLeft))
 	{
-		MoveMap( Fvector2().set( m_map_move_step, 0.0f ) );
+		MoveMap(Fvector2().set(m_map_move_step, 0.0f));
 	}
-	else if (m_btn_nav[btn_right] && m_btn_nav[btn_right]->CursorOverWindow() && m_btn_nav[btn_right]->GetButtonState() == CUIButton::BUTTON_PUSHED )
+	else if (IsNavPanButtonHeld(btnRight))
 	{
-		MoveMap( Fvector2().set( -m_map_move_step, 0.0f ) );
+		MoveMap(Fvector2().set(-m_map_move_step, 0.0f));
 	}
-	else if (m_btn_nav[btn_down] && m_btn_nav[btn_down]->CursorOverWindow() && m_btn_nav[btn_down]->GetButtonState() == CUIButton::BUTTON_PUSHED )
+	else if (IsNavPanButtonHeld(btnDown))
 	{
-		MoveMap( Fvector2().set( 0.0f, -m_map_move_step ) );
+		MoveMap(Fvector2().set(0.0f, -m_map_move_step));
 	}
 }
 
 void CUIMapWnd::OnBtnLegend_Push(CUIWindow*, void*)
 {
 	CUITaskWnd* parent_wnd = smart_cast<CUITaskWnd*>(m_pParentWnd);
-	if ( parent_wnd )
+	if (parent_wnd)
 	{
 		parent_wnd->Switch_ShowMapLegend();
 	}
 }
-//void CUIMapWnd::OnBtnUp_Push(   CUIWindow*, void*) { MoveMap( Fvector2().set( 0.0f, m_map_move_step ) ); }
-//void CUIMapWnd::OnBtnLeft_Push( CUIWindow*, void*) { MoveMap( Fvector2().set( m_map_move_step, 0.0f ) ); }
-//void CUIMapWnd::OnBtnRight_Push(CUIWindow*, void*) { MoveMap( Fvector2().set( -m_map_move_step, 0.0f ) ); }
-//void CUIMapWnd::OnBtnDown_Push( CUIWindow*, void*) { MoveMap( Fvector2().set( 0.0f, -m_map_move_step ) ); }
 
 void CUIMapWnd::OnBtnZoomMore_Push(CUIWindow*, void*)
 {
@@ -111,7 +244,40 @@ void CUIMapWnd::OnBtnZoomLess_Push(CUIWindow*, void*)
 {
 	ViewZoomOut();
 }
+
 void CUIMapWnd::OnBtnZoomReset_Push(CUIWindow*, void*)
 {
 	ViewGlobalMap();
 }
+
+void CUIMapWnd::OnBtnPersonalSpot_Push(CUIWindow*, void*)
+{
+	SetPersonalSpotPlacement(!m_personalSpotPlacement);
+}
+
+void CUIMapWnd::OnBtnNavTaskFocus_Push(CUIWindow*, void*)
+{
+	CUITaskWnd* parentWnd = smart_cast<CUITaskWnd*>(m_pParentWnd);
+	if (parentWnd)
+	{
+		parentWnd->FocusPrimaryTaskOnMap();
+	}
+}
+
+void CUIMapWnd::UpdateNavTaskFocusVisibility(CGameTask* primaryTask)
+{
+	if (!m_btn_nav_task_focus)
+	{
+		return;
+	}
+
+	if (!primaryTask || !primaryTask->HasActiveMapTarget())
+	{
+		m_btn_nav_task_focus->Show(false);
+	}
+	else
+	{
+		m_btn_nav_task_focus->Show(true);
+	}
+}
+

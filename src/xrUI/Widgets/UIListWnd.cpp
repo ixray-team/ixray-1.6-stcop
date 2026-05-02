@@ -32,30 +32,36 @@ CUIListWnd::~CUIListWnd()
     xr_delete(m_ActiveBackgroundFrame);
 }
 
-/*
-void CUIListWnd::Init(float x, float y, float width, float height)
+bool CUIListWnd::_initListScrollBar(Fvector2 size)
 {
-	Init(x, y, width, height, m_iItemHeight);
-}*/
+    const Fvector2 scrollPos = Fvector2().set(size.x, 0.0f);
+    const char* profile = m_scrollbar_profile.size() ? *m_scrollbar_profile : nullptr;
+
+    if (!CUIScrollBar::InitForProfile(*m_ScrollBar, scrollPos, size.y, false, profile))
+    {
+        return false;
+    }
+
+    m_ScrollBar->SetWndPos(Fvector2().set(m_ScrollBar->GetWndPos().x - m_ScrollBar->GetWidth(),
+                                          m_ScrollBar->GetWndPos().y));
+    return true;
+}
 
 void CUIListWnd::InitListWnd(Fvector2 pos, Fvector2 size, float item_height)
 {
     inherited::SetWndPos(pos);
     inherited::SetWndSize(size);
 
-    //добавить полосу прокрутки
     m_ScrollBar = new CUIScrollBar();
     m_ScrollBar->SetAutoDelete(true);
     AttachChild(m_ScrollBar);
 
-    if (!!m_scrollbar_profile)
-        m_ScrollBar->InitScrollBar(Fvector2().set(size.x, 0.0f), size.y, false, *m_scrollbar_profile);
-    else
-        m_ScrollBar->InitScrollBar(Fvector2().set(size.x, 0.0f), size.y, false);
-
-
-    m_ScrollBar->SetWndPos(Fvector2().set(m_ScrollBar->GetWndPos().x - m_ScrollBar->GetWidth(),
-                                          m_ScrollBar->GetWndPos().y));
+    if (!_initListScrollBar(size))
+    {
+        DetachChild(m_ScrollBar);
+        m_ScrollBar = nullptr;
+        return;
+    }
 
     SetItemWidth(size.x - m_ScrollBar->GetWidth());
 
@@ -72,14 +78,42 @@ void CUIListWnd::InitListWnd(Fvector2 pos, Fvector2 size, float item_height)
     m_ScrollBar->Show(false);
     m_ScrollBar->Enable(false);
 
-    /*
-        m_StaticActiveBackground.Init(ACTIVE_BACKGROUND,"hud\\default", 0,0,alNone);
-        m_StaticActiveBackground.SetTile(iFloor(m_iItemWidth/ACTIVE_BACKGROUND_WIDTH), 
-                                         iFloor(m_iItemHeight/ACTIVE_BACKGROUND_HEIGHT),
-                                         fmod(m_iItemWidth,float(ACTIVE_BACKGROUND_WIDTH)), 
-                                         fmod(m_iItemHeight,float(ACTIVE_BACKGROUND_HEIGHT)));
-    */
     UpdateList();
+}
+
+bool CUIListWnd::ReinitScrollBar()
+{
+    if (!m_ScrollBar || GetWndSize().y <= 0.0f)
+    {
+        return false;
+    }
+
+    const int scrollPos = m_ScrollBar->GetScrollPos();
+    const int firstShownIndex = m_iFirstShownIndex;
+    const Fvector2 size = GetWndSize();
+
+    DetachChild(m_ScrollBar);
+    m_ScrollBar = nullptr;
+
+    m_ScrollBar = new CUIScrollBar();
+    m_ScrollBar->SetAutoDelete(true);
+    AttachChild(m_ScrollBar);
+
+    if (!_initListScrollBar(size))
+    {
+        DetachChild(m_ScrollBar);
+        m_ScrollBar = nullptr;
+        return false;
+    }
+
+    SetItemWidth(size.x - m_ScrollBar->GetWidth());
+    m_iFirstShownIndex = firstShownIndex;
+    SyncScrollRangeFromItems();
+    m_ScrollBar->SetScrollPos(scrollPos);
+    m_iFirstShownIndex = m_ScrollBar->GetScrollPos();
+    UpdateScrollBar();
+
+    return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -99,13 +133,6 @@ void CUIListWnd::SetHeight(float height)
 void CUIListWnd::SetWidth(float width)
 {
     inherited::SetWidth(width);
-    /*
-        m_StaticActiveBackground.SetTile(iFloor(GetWidth()/ACTIVE_BACKGROUND_WIDTH), 
-                                         iFloor(m_iItemHeight/ACTIVE_BACKGROUND_HEIGHT),
-                                         fmod(GetWidth(),float(ACTIVE_BACKGROUND_WIDTH)), 
-                                         fmod(float(m_iItemHeight),float(ACTIVE_BACKGROUND_HEIGHT))
-                                         );
-    */
 }
 
 void CUIListWnd::RemoveItem(int index)
@@ -126,15 +153,7 @@ void CUIListWnd::RemoveItem(int index)
 
     UpdateList();
 
-    //обновить полосу прокрутки
-    if (m_ItemList.size() > 0)
-        m_ScrollBar->SetRange(0, s16(m_ItemList.size() - 1));
-    else
-        m_ScrollBar->SetRange(0, 0);
-
-    m_ScrollBar->SetPageSize((m_iRowNum < (int)m_ItemList.size()) ? m_iRowNum : (int)m_ItemList.size());
-    m_ScrollBar->SetScrollPos(s16(m_iFirstShownIndex));
-    m_ScrollBar->Refresh();
+    SyncScrollRangeFromItems();
 
     //перенумеровать индексы заново
     int i = 0;
@@ -192,11 +211,7 @@ void CUIListWnd::RemoveAll()
     UpdateList();
     Reset();
 
-    //обновить полосу прокрутки
-    m_ScrollBar->SetRange(0, 0);
-    m_ScrollBar->SetPageSize(1);
-    m_ScrollBar->SetScrollPos(s16(m_iFirstShownIndex));
-
+    SyncScrollRangeFromItems();
     UpdateScrollBar();
 }
 
@@ -519,11 +534,9 @@ bool CUIListWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
     case WINDOW_MOUSE_WHEEL_DOWN:
         m_ScrollBar->TryScrollInc();
         return true;
-        break;
     case WINDOW_MOUSE_WHEEL_UP:
         m_ScrollBar->TryScrollDec();
         return true;
-        break;
     }
 
     return inherited::OnMouseAction(x, y, mouse_action);
@@ -536,7 +549,23 @@ bool CUIListWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 //////////////////////////////////////////////////////////////////////////
 
-void CUIListWnd::UpdateScrollBar()
+void CUIListWnd::SyncScrollRangeFromItems()
+{
+    if (m_ItemList.size() > 0)
+    {
+        m_ScrollBar->SetRange(0, s16(m_ItemList.size() - 1));
+    }
+    else
+    {
+        m_ScrollBar->SetRange(0, 0);
+    }
+
+    m_ScrollBar->SetPageSize((m_iRowNum < (int)m_ItemList.size()) ? m_iRowNum : (int)m_ItemList.size());
+    m_ScrollBar->SetScrollPos(s16(m_iFirstShownIndex));
+    m_ScrollBar->SyncThumbFromScrollPos();
+}
+
+void CUIListWnd::UpdateScrollBarVisibility()
 {
     if (m_bAlwaysShowScroll_enable)
     {
@@ -545,9 +574,18 @@ void CUIListWnd::UpdateScrollBar()
     }
 
     if ((int)m_ItemList.size() <= m_ScrollBar->GetPageSize())
+    {
         m_ScrollBar->Show(false);
+    }
     else
+    {
         m_ScrollBar->Show(true);
+    }
+}
+
+void CUIListWnd::UpdateScrollBar()
+{
+    UpdateScrollBarVisibility();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -592,7 +630,7 @@ void CUIListWnd::ScrollToPos(int position)
     if (IsScrollBarEnabled())
     {
         int pos = position;
-        clamp(pos, m_ScrollBar->GetMinRange(), (m_ScrollBar->GetMaxRange() - m_ScrollBar->GetPageSize() / + 1));
+        clamp(pos, m_ScrollBar->GetMinRange(), (m_ScrollBar->GetMaxRange() - m_ScrollBar->GetPageSize() + 1));
         m_ScrollBar->SetScrollPos(pos);
         m_iFirstShownIndex = m_ScrollBar->GetScrollPos();
         UpdateList();

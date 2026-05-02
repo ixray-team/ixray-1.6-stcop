@@ -642,8 +642,14 @@ void InventoryUtilities::SendInfoToActor(const char* info_id)
 	{
 		return;
 	}
-	
-	if (CActor* actor = Level().CurrentEntity() ? Level().CurrentEntity()->cast_actor() : nullptr)
+
+	if (!g_pGameLevel)
+	{
+		return;
+	}
+
+	CObject* entity = g_pGameLevel->CurrentEntity();
+	if (CActor* actor = entity ? entity->cast_actor() : nullptr)
 	{
 		actor->TransferInfo(info_id, true);
 	}
@@ -664,7 +670,7 @@ void InventoryUtilities::SendInfoToLuaScripts(shared_str info)
 	{
 		int mode = 11; // Talk Dialog hide
 		luabind::functor<void>	funct;
-		if(!ai().script_engine().functor("pda.actor_menu_mode", funct))
+		if (!ai().script_engine().functor("pda.actor_menu_mode", funct))
 			return;
 		funct( mode );
 	}

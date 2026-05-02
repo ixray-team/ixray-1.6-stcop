@@ -1,4 +1,5 @@
 <w>
+	<!-- See pda.xml for optional snd_* nodes (snd_open, snd_close, snd_tab, ...) -->
 	<main x="0" y="0" width="1024" height="768"/>
 	<background_static x="102" y="0" width="819" height="768" stretch="1">
 		<texture>ui_inGame2_pda_texture</texture>

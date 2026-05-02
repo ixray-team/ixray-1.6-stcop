@@ -16,10 +16,47 @@
 #include "../../xrUI/UIHelper.h"
 #include "../../xrEngine/xr_input.h"
 #include "../../xrUI/Widgets/UIGamepadLegend.h"
+#include "PdaConstants.h"
+#include "UIPdaContactsWnd.h"
 
 #define				TALK_XML				"talk.xml"
 
 using namespace InventoryUtilities;
+
+namespace
+{
+bool UiKbHintsPreferred()
+{
+	return !pInput || !pInput->GetControllerMode();
+}
+
+class CScopedPdaDialogXmlRoot final
+{
+	CUIXml* _xml = nullptr;
+	XML_NODE* _previousRoot = nullptr;
+
+public:
+	CScopedPdaDialogXmlRoot(CUIXml* xml, XML_NODE* pdaDialogRoot)
+	{
+		if (!xml || !pdaDialogRoot)
+		{
+			return;
+		}
+
+		_xml = xml;
+		_previousRoot = xml->GetLocalRoot();
+		_xml->SetLocalRoot(pdaDialogRoot);
+	}
+
+	~CScopedPdaDialogXmlRoot()
+	{
+		if (_xml)
+		{
+			_xml->SetLocalRoot(_previousRoot);
+		}
+	}
+};
+} // namespace
 
 CUITalkDialogWnd::CUITalkDialogWnd()
 	: m_uiXml(nullptr),
@@ -42,15 +79,118 @@ CUITalkDialogWnd::CUITalkDialogWnd()
 
 CUITalkDialogWnd::~CUITalkDialogWnd()
 {
-	xr_delete(m_uiXml);
+	ReleaseLayoutXml();
+}
+
+void CUITalkDialogWnd::ReleaseLayoutXml()
+{
+	if (_layoutXmlOwned)
+	{
+		xr_delete(m_uiXml);
+	}
+	m_uiXml = nullptr;
+	_layoutXmlOwned = true;
+	_pdaDialogLayoutRoot = nullptr;
+}
+
+void CUITalkDialogWnd::ReloadDialogLayout(bool usePdaDialogXml, const CUIPdaContactsWnd* contacts)
+{
+	if (m_usePdaDialogXml == usePdaDialogXml && UIAnswersList != nullptr)
+	{
+		return;
+	}
+
+	TryClearAll();
+	ClearCallbacks();
+	DetachAll();
+
+	UIDialogFrameTop = nullptr;
+	UIDialogFrameBottom = nullptr;
+	UIStaticTop = nullptr;
+	UIStaticBottom = nullptr;
+	UIDialogFrame = nullptr;
+	UIOurPhrasesFrame = nullptr;
+	UIOurIcon = nullptr;
+	UIOthersIcon = nullptr;
+	UIToExitButton = nullptr;
+	UIAnswersList = nullptr;
+	UIQuestionsList = nullptr;
+	m_gamepad_legend = nullptr;
+	m_gamepad_trade_hint = nullptr;
+	m_gamepad_back_hint = nullptr;
+	m_gamepad_log_hint = nullptr;
+
+	ReleaseLayoutXml();
+	m_usePdaDialogXml = usePdaDialogXml;
+	m_hasPdaDialogLayout = false;
+	_pdaDialogLayoutRoot = nullptr;
+
+	if (m_usePdaDialogXml)
+	{
+		CUIXml* contactsXml = contacts ? contacts->GetLayoutXml() : nullptr;
+		if (contactsXml)
+		{
+			m_uiXml = contactsXml;
+			_layoutXmlOwned = false;
+		}
+		else
+		{
+			m_uiXml = new CUIXml();
+			_layoutXmlOwned = true;
+			if (!m_uiXml->Load(CONFIG_PATH, UI_PATH, PdaXml::ContactsNew))
+			{
+				Msg("! CUITalkDialogWnd: failed to load [%s]", PdaXml::ContactsNew);
+			}
+		}
+
+		XML_NODE* storedRoot = m_uiXml ? m_uiXml->GetLocalRoot() : nullptr;
+		XML_NODE* dialogNode = m_uiXml ? m_uiXml->NavigateToNode(PdaXml::ContactsDialog) : nullptr;
+		if (dialogNode)
+		{
+			_pdaDialogLayoutRoot = dialogNode;
+			m_uiXml->SetLocalRoot(dialogNode);
+			m_hasPdaDialogLayout = m_uiXml->NavigateToNode(PdaXml::DialogMain) != nullptr;
+			BuildDialogLayout();
+			if (storedRoot)
+			{
+				m_uiXml->SetLocalRoot(storedRoot);
+			}
+			else if (XML_NODE* documentRoot = m_uiXml->GetRoot())
+			{
+				m_uiXml->SetLocalRoot(documentRoot);
+			}
+		}
+		else
+		{
+			const SPdaContactsLayoutInfo layoutInfo = m_uiXml ? InspectPdaContactsLayout(*m_uiXml) : SPdaContactsLayoutInfo();
+			LogPdaContactsLayoutIssues(layoutInfo, m_uiXml ? m_uiXml->m_xml_file_name : PdaXml::ContactsNew);
+			Msg("! CUITalkDialogWnd: missing [%s], fallback to [%s]", PdaXml::ContactsDialog, TALK_XML);
+			if (!_layoutXmlOwned)
+			{
+				m_uiXml = nullptr;
+			}
+			m_uiXml = new CUIXml();
+			_layoutXmlOwned = true;
+			m_uiXml->Load(CONFIG_PATH, UI_PATH, TALK_XML);
+			BuildDialogLayout();
+		}
+	}
+	else
+	{
+		m_uiXml = new CUIXml();
+		_layoutXmlOwned = true;
+		m_uiXml->Load(CONFIG_PATH, UI_PATH, TALK_XML);
+		BuildDialogLayout();
+	}
 }
 
 void CUITalkDialogWnd::InitTalkDialogWnd()
 {
-	m_uiXml						= new CUIXml();
-	m_uiXml->Load				(CONFIG_PATH, UI_PATH, TALK_XML);
-	CUIXmlInit					ml_init;
+	ReloadDialogLayout(false, nullptr);
+}
 
+void CUITalkDialogWnd::BuildDialogLayout()
+{
 	if (m_uiXml->NavigateToNode("main"))
 	{
 		CUIXmlInit::InitWindow(*m_uiXml, "main", 0, this);
@@ -135,11 +275,19 @@ void CUITalkDialogWnd::InitTalkDialogWnd()
 	UIQuestionsList->SetWindowName("---UIQuestionsList");
 
 
-	//кнопка перехода в режим торговли
+	// Trade / upgrade button (not used in embedded PDA phrase UI).
 	AttachChild					(&UIToTradeButton);
-	CUIXmlInit::Init3tButton	(*m_uiXml, "button", 0, &UIToTradeButton);
-
-	m_btn_pos[0] = UIToTradeButton.GetWndPos();
+	if (m_usePdaDialogXml)
+	{
+		UIToTradeButton.Show(false);
+		UIToTradeButton.Enable(false);
+		m_btn_pos[0] = UIToTradeButton.GetWndPos();
+	}
+	else
+	{
+		CUIXmlInit::Init3tButton	(*m_uiXml, "button", 0, &UIToTradeButton);
+		m_btn_pos[0] = UIToTradeButton.GetWndPos();
+	}
 
 	if (m_uiXml->NavigateToNode("button_exit"))
 	{
@@ -172,26 +320,55 @@ void CUITalkDialogWnd::InitTalkDialogWnd()
 	}
 
 	m_gamepad_legend = UIHelper::CreateGamepadLegend(*m_uiXml, "gamepad_legend", this, false);
+	if (m_gamepad_legend)
+	{
+		m_gamepad_trade_hint = m_gamepad_legend->FindChild("trade_hint");
+		m_gamepad_back_hint = m_gamepad_legend->FindChild("back_hint");
+		m_gamepad_log_hint = m_gamepad_legend->FindChild("log_hint");
+	}
 }
 
-	
 void CUITalkDialogWnd::Show()
 {
-    SendInfoToActor("ui_talk_show");
-    SendInfoToLuaScripts("ui_talk_show");
-    inherited::Show(true);
-    inherited::Enable(true);
+	Show(true, true);
+}
 
-    ResetAll();
+void CUITalkDialogWnd::Show(bool resetWidgetTree, bool notifyActorHud)
+{
+	if (notifyActorHud)
+	{
+		SendInfoToActor("ui_talk_show");
+		SendInfoToLuaScripts("ui_talk_show");
+	}
+
+	inherited::Show(true);
+	inherited::Enable(true);
+
+	if (resetWidgetTree)
+	{
+		ResetAll();
+	}
+}
+
+void CUITalkDialogWnd::ShowForPdaEmbed()
+{
+	inherited::Show(true);
+	inherited::Enable(true);
 }
 
 void CUITalkDialogWnd::Hide()
 {
-    SendInfoToActor("ui_talk_hide");
-    SendInfoToLuaScripts("ui_talk_hide");
-    inherited::Show(false);
-    inherited::Enable(false);
-    g_btnHint->Discard();
+	const bool isPdaEmbed = m_pParent != nullptr && ((CUITalkWnd*)m_pParent)->IsPdaMode();
+
+	if (!isPdaEmbed)
+	{
+		SendInfoToActor("ui_talk_hide");
+		SendInfoToLuaScripts("ui_talk_hide");
+	}
+
+	inherited::Show(false);
+	inherited::Enable(false);
+	g_btnHint->Discard();
 }
 
 void CUITalkDialogWnd::OnQuestionClicked(CUIWindow* w, void*)
@@ -240,14 +417,40 @@ void CUITalkDialogWnd::ClearAll()
 	ClearQuestions			();
 }
 
+bool CUITalkDialogWnd::TryClearAll()
+{
+	if (!UIAnswersList || !UIQuestionsList)
+	{
+		return false;
+	}
+
+	if (!UIAnswersList->TryClear())
+	{
+		return false;
+	}
+
+	return TryClearQuestions();
+}
+
 void CUITalkDialogWnd::ClearQuestions()
 {
 	UIQuestionsList->Clear();
 }
 
+bool CUITalkDialogWnd::TryClearQuestions()
+{
+	if (!UIQuestionsList)
+	{
+		return false;
+	}
+
+	return UIQuestionsList->TryClear();
+}
+
 
 void CUITalkDialogWnd::AddQuestion(const char* str, const char* value, int number, SPhraseInfo &phInfo)
 {
+	CScopedPdaDialogXmlRoot xmlScope(m_uiXml, _pdaDialogLayoutRoot);
 	CUIQuestionItem* itm			= new CUIQuestionItem(m_uiXml,"question_item");
 	itm->Init						(value, str, phInfo.bFinalizer);
 	++number; //zero-based index
@@ -267,7 +470,10 @@ void CUITalkDialogWnd::AddQuestion(const char* str, const char* value, int numbe
 	}
 	if (phInfo.bFinalizer)
 	{
-		itm->m_text->SetAccelerator		(kQUIT, 2);
+		if (m_pParent == nullptr || !m_pParent->IsPdaMode())
+		{
+			itm->m_text->SetAccelerator	(kQUIT, 2);
+		}
 		itm->m_text->SetAccelerator		(kUSE, 3);
 	}
 	if (phInfo.sIconName.size() > 1)
@@ -312,6 +518,7 @@ void CUITalkDialogWnd::AddQuestion(const char* str, const char* value, int numbe
 
 void CUITalkDialogWnd::AddAnswer(const char* SpeakerName, const char* str, bool bActor)
 {
+	CScopedPdaDialogXmlRoot xmlScope(m_uiXml, _pdaDialogLayoutRoot);
 	CUIAnswerItem* itm				= new CUIAnswerItem(m_uiXml,bActor?"actor_answer_item":"other_answer_item");
 	itm->Init						(str, SpeakerName);
 	UIAnswersList->AddWindow		(itm, true);
@@ -347,6 +554,7 @@ void CUITalkDialogWnd::AddAnswer(const char* SpeakerName, const char* str, bool 
 
 void CUITalkDialogWnd::AddIconedAnswer(const char* caption, const char* text, const char* texture_name, const char* templ_name)
 {
+	CScopedPdaDialogXmlRoot xmlScope(m_uiXml, _pdaDialogLayoutRoot);
 	CUIAnswerItemIconed* itm		= new CUIAnswerItemIconed(m_uiXml,templ_name);
 	itm->Init						(text, caption, texture_name);
 	UIAnswersList->AddWindow		(itm, true);
@@ -365,6 +573,7 @@ void CUITalkDialogWnd::AddIconedAnswer(const char* caption, const char* text, co
 
 void CUITalkDialogWnd::AddIconedAnswer(const char* text, const char* texture_name, Frect texture_rect, const char* templ_name)
 {
+	CScopedPdaDialogXmlRoot xmlScope(m_uiXml, _pdaDialogLayoutRoot);
 	CUIAnswerItemIconed* itm = new CUIAnswerItemIconed(m_uiXml, templ_name);
 	itm->Init(text, texture_name, texture_rect);
 	UIAnswersList->AddWindow(itm, true);
@@ -397,7 +606,7 @@ void CUITalkDialogWnd::SetOsoznanieMode(bool b)
 	else if (UIDialogFrame)
 		UIDialogFrame->Show(!b);
 
-	UIToTradeButton.Show(!b && !pInput->GetControllerMode());
+	UIToTradeButton.Show(!m_usePdaDialogXml && !b && UiKbHintsPreferred());
 	if ( mechanic_mode )
 	{
 		UIToTradeButton.m_hint_text = "ui_st_upgrade_hint";
@@ -413,11 +622,12 @@ void CUITalkDialogWnd::SetOsoznanieMode(bool b)
 void CUITalkDialogWnd::UpdateButtonsLayout(bool b_disable_break, bool trade_enabled)
 {
 	m_trade_enabled = trade_enabled;
-	UIToTradeButton.Show		(m_trade_enabled && !pInput->GetControllerMode());
+	const bool showTradeButton = !m_usePdaDialogXml && m_trade_enabled && UiKbHintsPreferred();
+	UIToTradeButton.Show(showTradeButton);
 
 	if (UIToExitButton)
 	{
-		UIToExitButton->Show(!b_disable_break && !pInput->GetControllerMode());
+		UIToExitButton->Show(!b_disable_break && UiKbHintsPreferred());
 
 		if (UIToExitButton->IsShown() && UIToTradeButton.IsShown())
 		{
@@ -470,7 +680,7 @@ void CUIQuestionItem::Update()
 {
 	inherited::Update();
 	if (m_num_text)
-		m_num_text->Show(!pInput->GetControllerMode());
+		m_num_text->Show(UiKbHintsPreferred());
 }
 
 void CUIQuestionItem::Init			(const char* val, const char* text, bool isFinalizer)
@@ -560,7 +770,7 @@ void CUIAnswerItemIconed::Init(const char* text, const char* texture_name, Frect
 // return true if we moved selection
 bool CUITalkDialogWnd::OffsetQuestionSelection(bool next, bool bLoop)
 {
-	if (!UIQuestionsList)
+	if (!UIQuestionsList || !UIQuestionsList->HasPad())
 		return false;
 
 	WINDOW_LIST& questions = UIQuestionsList->Items();
@@ -618,6 +828,11 @@ void CUITalkDialogWnd::ResetQuestionSelection()
 
 void CUITalkDialogWnd::SetFirstQuestionSelected()
 {
+	if (!UIQuestionsList || !UIQuestionsList->HasPad())
+	{
+		return;
+	}
+
 	WINDOW_LIST& questions = UIQuestionsList->Items();
 	if (!questions.empty())
 	{
@@ -628,17 +843,27 @@ void CUITalkDialogWnd::SetFirstQuestionSelected()
 
 void CUITalkDialogWnd::UpdateQuestionSelection()
 {
+	if (!UIQuestionsList || !UIQuestionsList->HasPad())
+	{
+		return;
+	}
+
 	WINDOW_LIST& questions = UIQuestionsList->Items();
 	for (WINDOW_LIST::iterator it = questions.begin(); it != questions.end(); ++it)
 	{
 		CUIQuestionItem* pQuestion = static_cast<CUIQuestionItem*>(*it);
-		pQuestion->m_text->SetHighlighted(pQuestion->m_s_value == m_ClickedQuestionID && pInput->GetControllerMode());
+		if (!pQuestion || !pQuestion->m_text)
+		{
+			continue;
+		}
+
+		pQuestion->m_text->SetHighlighted(pQuestion->m_s_value == m_ClickedQuestionID && pInput && pInput->GetControllerMode());
 	}
 }
 
 CUIQuestionItem*	CUITalkDialogWnd::GetQuestionItemByID(shared_str questionID)
 {
-	if (!UIQuestionsList)
+	if (!UIQuestionsList || !UIQuestionsList->HasPad())
 		return NULL;
 
 	WINDOW_LIST& questions = UIQuestionsList->Items();
@@ -658,12 +883,14 @@ bool CUITalkDialogWnd::HasQuestionWithID(shared_str questionID)
 
 void CUITalkDialogWnd::ScrollSelectionIntoView()
 {
-	if (m_ClickedQuestionID.size())
+	if (m_ClickedQuestionID.size() && UIQuestionsList && UIQuestionsList->HasPad())
 	{
 		CUIQuestionItem* pQuestion = GetQuestionItemByID(m_ClickedQuestionID);
 		if (pQuestion)
 		{
-			UIQuestionsList->ScrollToItem(pQuestion, iFloor(-UIQuestionsList->ScrollBar()->GetHeight()/2.0f + pQuestion->GetWndRect().height()/2.0f));
+			CUIScrollBar* scrollbar = UIQuestionsList->ScrollBar();
+			const float offset = scrollbar ? iFloor(-scrollbar->GetHeight() / 2.0f + pQuestion->GetWndRect().height() / 2.0f) : 0;
+			UIQuestionsList->ScrollToItem(pQuestion, offset);
 		}
 	}
 }
@@ -695,24 +922,24 @@ void CUITalkDialogWnd::UpdateGamepadLegend()
 		return;
 	}
 
-	CUIWindow* tradeHint = m_gamepad_legend->FindChild("trade_hint");
+	CUIWindow* tradeHint = m_gamepad_trade_hint;
 	if (tradeHint)
 	{
-		tradeHint->Show(m_trade_enabled);
+		tradeHint->Show(m_trade_enabled && !m_usePdaDialogXml);
 		if (tradeHint->ui_cast_static())
 		{
 			tradeHint->ui_cast_static()->SetTextST(mechanic_mode ? "ui_talk_open_upgrade" : "ui_talk_open_trade");
 		}
 	}
 
-	CUIWindow* backHint = m_gamepad_legend->FindChild("back_hint");
+	CUIWindow* backHint = m_gamepad_back_hint;
 	if (backHint)
 	{
 		backHint->Show(m_break_enabled);
 	}
 
-	CUIWindow* logHint = m_gamepad_legend->FindChild("log_hint");
-	if (logHint)
+	CUIWindow* logHint = m_gamepad_log_hint;
+	if (logHint && UIAnswersList)
 	{
 		bool showLogHint = UIAnswersList->IsShown();
 		logHint->Show(showLogHint);

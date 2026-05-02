@@ -565,7 +565,52 @@ bool CUILevelMap::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	if (inherited::OnMouseAction(x,y,mouse_action))	return true;
 	if (MapWnd()->GlobalMap()->Locked())		return true;
 
-	if (mouse_action == WINDOW_LBUTTON_DB_CLICK)
+	if (MapWnd()->IsPersonalSpotPlacement())
+	{
+		if (MapWnd()->IsPersonalSpotRmbMode())
+		{
+			if (mouse_action == WINDOW_RBUTTON_UP)
+			{
+				Fvector RealPosition;
+				if (MapWnd()->ConvertCursorPosToMap(&RealPosition, this))
+				{
+					CMapLocation* under = MapWnd()->UnderSpot(RealPosition, this);
+					if (under == nullptr)
+					{
+						MapWnd()->CreateSpotWindow(RealPosition, MapName());
+					}
+					MapWnd()->SetPersonalSpotPlacement(false);
+					return true;
+				}
+			}
+			else if (mouse_action == WINDOW_LBUTTON_DB_CLICK)
+			{
+				MapWnd()->SetPersonalSpotPlacement(false);
+				return true;
+			}
+		}
+		else if (mouse_action == WINDOW_LBUTTON_UP)
+		{
+			Fvector RealPosition;
+			if (MapWnd()->ConvertCursorPosToMap(&RealPosition, this))
+			{
+				CMapLocation* under = MapWnd()->UnderSpot(RealPosition, this);
+				if (under == nullptr)
+				{
+					MapWnd()->CreateSpotWindow(RealPosition, MapName());
+				}
+				MapWnd()->SetPersonalSpotPlacement(false);
+				return true;
+			}
+		}
+		else if (mouse_action == WINDOW_LBUTTON_DB_CLICK)
+		{
+			MapWnd()->SetPersonalSpotPlacement(false);
+			return false;
+		}
+	}
+
+	if (!MapWnd()->IsPersonalSpotRmbMode() && mouse_action == WINDOW_LBUTTON_DB_CLICK)
 	{
 		Fvector RealPosition;
 
@@ -635,7 +680,6 @@ CUIMiniMap::~CUIMiniMap()
 void CUIMiniMap::Init_internal(const shared_str& name, CInifile& pLtx, const shared_str& sect_name, const char* sh_name)
 {
 	inherited::Init_internal	(name, pLtx, sect_name, sh_name);
-	CUIStatic::SetTextureColor	(0x7fffffff);
 }
 
 void CUIMiniMap::UpdateSpots()

@@ -17,6 +17,7 @@
 #include "PHDebug.h"
 #endif
 #include "../../xrUI/UIFontDefines.h"
+#include "pda_communication.h"
 
 extern CUIGameCustom* CurrentGameUI() {return HUD().GetGameUI();}
 

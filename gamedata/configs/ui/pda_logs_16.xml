@@ -98,12 +98,12 @@
 		<text align="c" vert_align="c" font="letterica18" r="170" g="170" b="170"/>
 	</period>
 
-	<btn_prev_period x="616" y="93" width="24" height="30" stretch="1">
+	<btn_prev_period x="600" y="91" width="37" height="37" stretch="1">
 		<window_name>btn_prev_period</window_name>
 		<texture>ui_inGame2_pda_Filtr_arrow_left</texture>
 	</btn_prev_period>
 
-	<btn_next_period x="760" y="93" width="24" height="30" stretch="1">
+	<btn_next_period x="803" y="91" width="37" height="37" stretch="1">
 		<window_name>btn_next_period</window_name>
 		<texture>ui_inGame2_pda_Filtr_arrow_right</texture>
 	</btn_next_period>

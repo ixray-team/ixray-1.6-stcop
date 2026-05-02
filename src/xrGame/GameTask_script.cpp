@@ -95,6 +95,10 @@ void CGameTask::script_register(lua_State *L)
 
             .def("get_priority", &CGameTask::GetPriority_script)
             .def("set_priority", &CGameTask::SetPriority_script)
+            .def("is_remote_allowed", &CGameTask::IsRemoteAllowed_script)
+            .def("set_remote_allowed", &CGameTask::SetRemoteAllowed_script)
+            .def("is_reward_pending", &CGameTask::IsRewardPending_script)
+            .def("set_reward_pending", &CGameTask::SetRewardPending_script)
  
             .def("add_objective", &CGameTask::AddObjective_script, adopt<2>())
             .def("get_objective", &CGameTask::GetObjective_script)

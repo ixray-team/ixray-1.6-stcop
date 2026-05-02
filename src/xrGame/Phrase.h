@@ -40,6 +40,8 @@ public:
 	int						GoodwillLevel	()	const				{ return m_iGoodwillLevel; }
 
 	bool					IsDummy			()	const;
+	bool					IsEnabled		()	const				{ return m_isEnabled; }
+	void					SetEnabled		(bool isEnabled)		{ m_isEnabled = isEnabled; }
 	CDialogScriptHelper*	GetScriptHelper	()						{return &m_ScriptHelper; }
 
 	int						GetGoodwillLevel() const				{ return m_iGoodwillLevel; }
@@ -56,6 +58,7 @@ protected:
 	//чтоб фразу можно было сказать
 	int				m_iGoodwillLevel;
 	bool			m_b_finalizer;
+	bool			m_isEnabled;
 	shared_str		m_sIconName;
 	bool			m_bUseIconLtx;
 	//для вызова скриптовых функций

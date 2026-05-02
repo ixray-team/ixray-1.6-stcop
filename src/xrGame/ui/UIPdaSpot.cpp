@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "UIPdaSpot.h"
+#include "PdaUiSound.h"
+//#include <dinput.h>
 #include "Level.h"
 #include "map_manager.h"
 #include "map_location.h"
@@ -82,11 +84,16 @@ void CUIPdaSpot::OnAdd(CUIWindow* ui, void* d)
 	ml->SetHint(m_editBox->GetText());
 	ml->SetSerializable(true);
 
-	OnExit(ui, d);
+	Exit();
 }
 
 void CUIPdaSpot::OnApply(CUIWindow* ui, void* d)
 {
+	if (m_pUiSounds)
+	{
+		m_pUiSounds->Play(EPdaUiSound::Confirm);
+	}
+
 	if (m_mainWnd)
 	{
 		OnAdd(ui, d);
@@ -100,11 +107,15 @@ void CUIPdaSpot::OnApply(CUIWindow* ui, void* d)
 	if (m_editBox->GetText() != ml->GetHint())
 		ml->SetHint(m_editBox->GetText());
 
-	OnExit(ui, d);
+	Exit();
 }
 
 void CUIPdaSpot::OnExit(CUIWindow* w, void* d)
 {
+	if (m_pUiSounds)
+	{
+		m_pUiSounds->Play(EPdaUiSound::Cancel);
+	}
 	Exit();
 }
 
