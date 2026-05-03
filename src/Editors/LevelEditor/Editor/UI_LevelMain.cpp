@@ -160,11 +160,9 @@ CCommandVar CommandUnloadLevelPart(CCommandVar p1, CCommandVar p2)
 	return				true;
 }
 
-static xr_task_group LoaderEvent;
-
 CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 {
-	LoaderEvent.wait();
+	LUI->LoaderEvent.wait();
 
 	if (!Scene->locked())
 	{
@@ -193,7 +191,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 			FS.r_close(R);
 			LTools->m_LastFileName = temp_fn.c_str();
 
-			LoaderEvent.run
+			LUI->LoaderEvent.run
 			(
 				[temp_fn, is_ltx]
 				{
@@ -241,62 +239,71 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 {
-	LoaderEvent.wait();
+	LUI->LoaderEvent.wait();
 
 	string_path 	fn;
 	xr_strconcat(fn,Core.CompName,"_",Core.UserName,"_backup.level");
 	FS.update_path	(fn,_maps_,fn);
 	return 			ExecCommand(COMMAND_SAVE,xr_string(fn));
 }
+
 CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 {
-	LoaderEvent.wait();
+	LUI->LoaderEvent.wait();
 
-	if( !Scene->locked() )
+	if (!Scene->locked())
 	{
-		if (p2==1)
+		if (p2 == 1)
 		{
-			xr_string temp_fn	= LTools->m_LastFileName.c_str();
-			if (EFS.GetSaveName	( _maps_, temp_fn ))
-				return 			ExecCommand(COMMAND_SAVE,temp_fn, 66);
-			else
-				return          false;
-		}else{
+			xr_string temp_fn = LTools->m_LastFileName.c_str();
+			if (EFS.GetSaveName(_maps_, temp_fn))
+			{
+				return ExecCommand(COMMAND_SAVE, temp_fn, 66);
+			}
+
+			return false;
+		}
+		else
+		{
 			if (p1.IsInteger())
-				return 			ExecCommand(COMMAND_SAVE,xr_string(LTools->m_LastFileName.c_str()),0);
-				
-			xr_string temp_fn	= xr_string(p1);
+			{
+				return ExecCommand(COMMAND_SAVE, xr_string(LTools->m_LastFileName.c_str()), 0);
+			}
+
+			xr_string temp_fn = xr_string(p1);
 			if (temp_fn.empty())
 			{
-				return 			ExecCommand(COMMAND_SAVE,temp_fn,1);
+				return ExecCommand(COMMAND_SAVE, temp_fn, 1);
 			}
 			else
 			{
 				xr_strlwr(temp_fn);
 
 				UI->SetStatus("Level saving...");
-					Scene->SaveLTX(temp_fn.c_str(), false, (p2 == 66));
+				Scene->SaveLTX(temp_fn.c_str(), false, (p2 == 66));
 
-				UI->ResetStatus	();
+				UI->ResetStatus();
 				// set new name
-				if (0!=xr_strcmp(Tools->m_LastFileName.c_str(),temp_fn.c_str()))
+				if (0 != xr_strcmp(Tools->m_LastFileName.c_str(), temp_fn.c_str()))
 				{
-					Tools->m_LastFileName 	= temp_fn.c_str();
+					Tools->m_LastFileName = temp_fn.c_str();
 				}
-				ExecCommand		(COMMAND_UPDATE_CAPTION);
+				ExecCommand(COMMAND_UPDATE_CAPTION);
 				EPrefs->AppendRecentFile(temp_fn.c_str());
 				return 			true;
 			}
 		}
-	} else {
-		ELog.DlgMsg			( mtError, "Scene sharing violation" );
+	}
+	else
+	{
+		ELog.DlgMsg(mtError, "Scene sharing violation");
 		return				false;
 	}
 }
 
 CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 {
-	LoaderEvent.wait();
+	LUI->LoaderEvent.wait();
 
 	if( !Scene->locked() )
 	{
@@ -660,14 +667,13 @@ CCommandVar CommandBuild(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to build level?"))
 		{
-			LoaderEvent.wait();
+			LUI->LoaderEvent.wait();
 
-			LoaderEvent.run
+			LUI->LoaderEvent.run
 			(
 				[]()
 				{
 					Builder.Compile(false);
-
 				}
 			);
 
@@ -719,9 +725,9 @@ CCommandVar CommandMakeGame(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export game?"))
 		{
-			LoaderEvent.wait();
+			LUI->LoaderEvent.wait();
 
-			LoaderEvent.run
+			LUI->LoaderEvent.run
 			(
 				[]()
 				{
@@ -744,9 +750,9 @@ CCommandVar CommandMakePuddles(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export puddles?"))
 		{
-			LoaderEvent.wait();
+			LUI->LoaderEvent.wait();
 
-			LoaderEvent.run
+			LUI->LoaderEvent.run
 			(
 				[]()
 				{
@@ -769,9 +775,9 @@ CCommandVar CommandMakeDetails(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export details?"))
 		{
-			LoaderEvent.wait();
+			LUI->LoaderEvent.wait();
 
-			LoaderEvent.run
+			LUI->LoaderEvent.run
 			(
 				[]()
 				{
@@ -795,9 +801,9 @@ CCommandVar CommandMakeHOM(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export HOM?"))
 		{
-			LoaderEvent.wait();
+			LUI->LoaderEvent.wait();
 
-			LoaderEvent.run
+			LUI->LoaderEvent.run
 			(
 				[]()
 				{
@@ -821,9 +827,9 @@ CCommandVar CommandMakeSOM(CCommandVar p1, CCommandVar p2)
 	{
 		if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export Sound Occlusion Model?"))
 		{
-			LoaderEvent.wait();
+			LUI->LoaderEvent.wait();
 
-			LoaderEvent.run
+			LUI->LoaderEvent.run
 			(
 				[]()
 				{

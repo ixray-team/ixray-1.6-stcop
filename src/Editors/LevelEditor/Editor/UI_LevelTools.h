@@ -44,19 +44,15 @@ class CLevelTool: public CToolCustom
 	UIPropertiesForm* m_Props;
 	UIPropertiesForm* m_WorldProps;
 	void   	OnPropsModified		();
-	void   	OnPropsClose		();
 
 	void				RealUpdateProperties();
 	void				RealUpdateObjectList();
 
-private:
 	HANDLE mtPropObj = nullptr;
 	static void			mtUpdateProperties(void*);
 	xr_vector<IViewport*> Viewlist;
 
 public:
-	volatile bool PropUpdateIsCompleted = true;
-
 	float 				fFogness;
 	u32					dwFogColor;
 	xr_string			m_LastSelectionName;

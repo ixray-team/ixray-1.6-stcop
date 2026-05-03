@@ -16,7 +16,7 @@ void UILPropertiesForm::Draw()
 		{
 			if (XRay::ImGui::BeginDarkChild("WorldPropertiesBorder"))
 			{
-				if (LTools->PropUpdateIsCompleted)
+				if (PropUpdateIsCompleted)
 				{
 					LTools->GetProperties()->Draw();
 				}
