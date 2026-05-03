@@ -125,7 +125,7 @@ void CContentView::DrawFolderNode(FolderNode& Node)
 
 	bool Open = XRay::ImGui::TreeNodeEx(FolderName.c_str(), Flags);
 
-	if (ImGui::IsItemClicked())
+	if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
 	{
 		CurrentDir = Node.FullPath;
 		ClearFileList();
@@ -139,6 +139,7 @@ void CContentView::DrawFolderNode(FolderNode& Node)
 				OutPath = Node.FullPath.substr(15);
 			}
 
+			VirtualPath.clear();
 			RescanISEDirectory(OutPath);
 		}
 	}
@@ -995,6 +996,12 @@ void CContentView::RescanDirectory()
 	xr_delete(WatcherPtr);
 
 	ClearFileList();
+
+	if (!std::filesystem::exists(CurrentDir.c_str()))
+	{
+		CurrentDir = RootDir;
+	}
+
 	for (const auto& file : xr_dir_iter{ CurrentDir.data() })
 	{
 		if (std::filesystem::is_directory(file))
@@ -1559,11 +1566,7 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 
 				if (!isRenaming)
 				{
-					float inputHeight = ImGui::GetFrameHeight();
-					float textHeight = ImGui::GetTextLineHeight();
-					float textOffset = (inputHeight - textHeight) ;
-
-					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + textOffset);
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
 				}
 
 				ImGui::TextColored(TooltipTextColor, ExtDescription.c_str());
