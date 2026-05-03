@@ -35,13 +35,23 @@ void UISectorTool::Draw()
 			}
 
 			//XRay::ImGui::Separator();
-			if (XRay::ImGui::Button("Recalculate Portals", { SizeX, 0 })) {
-				int Size = PortalUtils.CalculateAllPortals();
-				if (Size > 0) {
-					ELog.DlgMsg(mtInformation, "Recalculated %d portals.", Size);
-				} else {
-					ELog.DlgMsg(mtInformation, "Recalculated portals error! Portals is empty...");
-				}
+			if (XRay::ImGui::Button("Recalculate Portals", { SizeX, 0 }))
+			{
+				LUI->LoaderEvent.run
+				(
+					[]() 
+					{
+						int Size = PortalUtils.CalculateAllPortals();
+
+						if (Size > 0)
+						{
+							ELog.DlgMsg(mtInformation, "Recalculated %d portals.", Size);
+							return;
+						}
+
+						ELog.DlgMsg(mtInformation, "Recalculated portals error! Portals is empty...");
+					}
+				);
 			}
 			ImGui::SameLine(0, ItemSpacingX);
 			if (XRay::ImGui::Button("Distribute Objects", { SizeX, 0 })) {
