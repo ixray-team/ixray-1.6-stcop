@@ -83,13 +83,18 @@ enum ELECommand
     COMMAND_LE_END
 };
 
-class CLevelMain: public TUI{
+class CLevelMain: 
+    public TUI
+{
 	typedef TUI inherited;
     
     virtual void 	RealUpdateScene			();
     virtual void 	RealQuit				();
+
 public:
     C3DCursor*   	m_Cursor;
+    xr_task_group LoaderEvent;
+
 public:
     				CLevelMain 				();
     virtual 		~CLevelMain				();

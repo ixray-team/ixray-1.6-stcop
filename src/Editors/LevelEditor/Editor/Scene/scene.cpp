@@ -654,7 +654,8 @@ xr_token		js_token	[ ]={
 
 void EScene::OnBuildControlClick	(ButtonValue* V, bool& bModif, bool& bSafe)
 {
-	switch (V->btn_num){
+	switch (V->btn_num)
+	{
 	case 0: m_LevelOp.SetDraftQuality();	break;
 	case 1: m_LevelOp.SetHighQuality();		break;
 	case 2: m_LevelOp.SetCustomQuality();	break;
