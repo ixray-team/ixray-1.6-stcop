@@ -320,7 +320,10 @@ void CLevelTool::mtUpdateProperties(void* This)
 		pTool->m_WorldProps->ClearProperties();
 		pTool->m_Props->ClearProperties();
 
-		if (pTool->m_WorldProps->IsModified()) Scene->UndoSave();
+		if (pTool->m_WorldProps->IsModified())
+		{
+			Scene->UndoSave();
+		}
 
 		PropItemVec itemsworld;
 
@@ -335,7 +338,10 @@ void CLevelTool::mtUpdateProperties(void* This)
 		Scene->FillPropObjects("", items, pTool->CurrentClassID());
 		pTool->m_Props->AssignItemsAsync(std::move(items));
 
-		pTool->PropUpdateIsCompleted = true;
+		if (MainForm != nullptr)
+		{
+			MainForm->GetPropertiesForm()->PropUpdateIsCompleted = true;
+		}
 
 		ResetEvent(pTool->mtPropObj);
 	}
@@ -343,18 +349,15 @@ void CLevelTool::mtUpdateProperties(void* This)
 
 void CLevelTool::RealUpdateProperties()
 {
-	PropUpdateIsCompleted = false;
+	if (MainForm != nullptr)
+	{
+		MainForm->GetPropertiesForm()->PropUpdateIsCompleted = false;
+	}
+
 	SetEvent(mtPropObj);
 	m_Flags.set(flUpdateProperties, false);
 	m_Props->setModified(false);
 }
-
-
-void CLevelTool::OnPropsClose()
-{
-	/*if (m_Props->IsModified()) Scene->UndoSave();*/
-}
-
 
 void  CLevelTool::OnPropsModified()
 {
@@ -362,8 +365,6 @@ void  CLevelTool::OnPropsModified()
 //	Scene->UndoSave();
 	UI->RedrawScene();
 }
-
-
 
 bool CLevelTool::IfModified()
 {
@@ -377,7 +378,6 @@ bool CLevelTool::IfModified()
 	return false;
 }
 
-
 void CLevelTool::ZoomObject(bool bSelectedOnly)
 {
 	if( !Scene->locked() ){
@@ -388,7 +388,6 @@ void CLevelTool::ZoomObject(bool bSelectedOnly)
 		}
 	}
 }
-
 
 void CLevelTool::GetCurrentFog(u32& fog_color, float& s_fog, float& e_fog)
 {
@@ -406,7 +405,6 @@ void CLevelTool::GetCurrentFog(u32& fog_color, float& s_fog, float& e_fog)
 	}
 }
 
-
 const char* CLevelTool::GetInfo()
 {
 	static xr_string sel;
@@ -415,7 +413,6 @@ const char* CLevelTool::GetInfo()
 
 	return sel.c_str();
 }
-
 
 void  CLevelTool::OnFrame()
 {
