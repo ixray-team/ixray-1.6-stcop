@@ -4,38 +4,112 @@
 	Link       : https://www.moddb.com/mods/stalker-anomaly/addons/parallax-reflex-sights
 	Authors    : LVutner, party_50
 	Date       : 06.02.2024
-	Last Edit  : 12.05.2025
+	Last Edit  : 06.02.2024
 	=====================================================================
 */
 
 #include "common.hlsli"
-#include "mark_adjust.hlsli"
 
-#define OFFSET 0.0039
-#define PARALLAX 1000.0
-#define SCALE 160.0
+// Important:
+// In perfect world OFFSET constants should be 0, but most of reflex sight lenses
+// are not actually parallel to screen, so we compensate it. For PROJECT_DISTANCE=100
+// offset values should be at least 0.005 even for perfect models and position configs due
+// to normal vectors resolution.
+//
+// If you want the most realistic look, set PROJECT_DISTANCE to some high value (like 100.0),
+// increase SIZE_FACTOR to something like 20.0, set OFFSET_X and OFFSET_Y to 0.005.
+// Then you will have to adjust models so that mark texture point is exactly in center
+// and edit aim position in configs.
 
+
+#define OFFSET 0.05				// (default 0.05) Normal vector coordinate max absolute value which is considered 0
+#define PROJECT_DISTANCE 20.0	// (default 20.0) Distance to projected mark
+#define SIZE_FACTOR 4.0			// (default 4.0) Mark size factor
+
+// Vertex to Pixel struct
 struct vf
 {
-	float4 hpos : SV_Position;
     float2 tc0 : TEXCOORD0;
-    float3 P : TEXCOORD1;
-	float3 T : TEXCOORD3;
-	float3 B : TEXCOORD4;
-	float3 N : TEXCOORD5;
+	
+    float3 v_pos : TEXCOORD1;
+    float3 v_nrm : TEXCOORD2;
+	
+    float4 hpos_curr : TEXCOORD3;
+    float4 hpos_old  : TEXCOORD4;
 };
 
-float4 main(vf I): SV_Target
+// This gives us cotangent basis that can be used instead of TBN.
+// It is useful when tangents of your mesh are broken, or not available.
+// Source: http://www.thetenthplanet.de/archives/1180
+float3x3 cotangent_frame(float3 N, float3 P, float2 uv)
 {
-	float3x3 TBN = float3x3(I.T + OFFSET, I.B + OFFSET, I.N);
-    float3 V_tangent = normalize(float3(dot(-I.P, TBN[0]), dot(-I.P, TBN[1]), dot(-I.P, TBN[2])));
-    float2 parallax_tc = I.tc0 - V_tangent.xy * PARALLAX;
-	
-	parallax_tc = (parallax_tc + (SCALE - 1) / 2) / SCALE;
-	
-	#ifdef MARK_ADJUST
-	parallax_tc = mark_adjust(parallax_tc);
-	#endif
+    // Get edge vectors of the pixel triangle
+    float3 dp1 = ddx(P);
+    float3 dp2 = ddy(P);
+    float2 duv1 = ddx(uv);
+    float2 duv2 = ddy(uv);
 
-    return s_base.SampleLevel(smp_rtlinear, parallax_tc, 0.0);
+    // Solve the linear system
+    float3 dp2perp = cross(dp2, N);
+    float3 dp1perp = cross(N, dp1);
+    float3 T = dp2perp * duv1.x + dp1perp * duv2.x;
+    float3 B = dp2perp * duv1.y + dp1perp * duv2.y;
+
+    // Construct a scale-invariant frame
+    float invmax = rsqrt(max(dot(T, T), dot(B, B)));
+    return float3x3(T * invmax, B * invmax, N);
 }
+
+float3 offset_normal(float3 N)
+{
+	N.xy = N.xy > 0 ? max(N.xy, OFFSET) - OFFSET : min(N.xy, -OFFSET) + OFFSET;
+	N.z += N.z > 0 ? EPS : -EPS;
+	
+	return normalize(N);
+}
+
+void main(in vf I, out IXRayForward O)
+{
+    // Derive view direction from view space position
+    float3 V = -I.v_pos;
+    
+    // Build cotangent frame
+    // Important: In theory, you don't need to do this. It should be possible to pass TBN straight from VS
+    float3x3 TBN = cotangent_frame(offset_normal(I.v_nrm), I.v_pos, I.tc0.xy);
+    
+    // Transform view direction to tangent space, and normalize (Just in case)
+    float3 V_tangent = normalize(float3(dot(V, TBN[0]), dot(V, TBN[1]), dot(V, TBN[2])));
+	
+    // Calculate texture coordinates used to fetch the mark texture
+    // Important: PROJECT_DISTANCE can be positive or negative, 0 = no projection at all
+    float2 parallax_tc = I.tc0 - V_tangent.xy * PROJECT_DISTANCE;
+	
+	// Upscaling the texture
+	parallax_tc.x = (parallax_tc.x + (SIZE_FACTOR - 1) / 2) / SIZE_FACTOR;
+	parallax_tc.y = (parallax_tc.y + (SIZE_FACTOR - 1) / 2) / SIZE_FACTOR;
+	
+#ifdef MARK_ADJUST
+	parallax_tc = mark_adjust(parallax_tc);
+#endif
+
+    // Fetch the mark texture
+    // Important: We do not want texture to repeat itself, so we use sampler with CLAMP address
+    // Important2: We do not want to sample mip levels of the mark texture, let's keep this thing sharp as fuck
+	
+    float4 mark_texture = s_base.SampleLevel(smp_rtlinear, parallax_tc, 0.0);
+	mark_texture.xyz = GammaToLinear(mark_texture.xyz * mark_texture.w);
+	mark_texture.w = 1.0f;
+	
+	O.Color = mark_texture;
+	
+#ifndef DISABLE_MOTION_VECTORS
+	float Fade = saturate(max(mark_texture.x, max(mark_texture.y, mark_texture.z)) * 2.0f);
+	
+	O.Velocity.xy = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+	O.Velocity.w = 1.0f - Fade; O.Velocity.xy *= Fade;
+	O.Velocity.z = 1.0f;
+	
+	O.Reactive = 0.0f;
+#endif
+}
+
