@@ -32,12 +32,6 @@ CCommandVar CLevelTool::CommandChangeTarget(CCommandVar p1, CCommandVar p2)
 	return false;
 }
 
-CCommandVar CLevelTool::CommandShowObjectList(CCommandVar p1, CCommandVar p2)
-{
-	if (LUI->GetEState()==esEditScene) ShowObjectList();
-	return true;
-}
-
 // Main commands
 CCommandVar CommandLibraryEditor(CCommandVar p1, CCommandVar p2)
 {
@@ -637,16 +631,16 @@ CCommandVar CommandExportSceneSummary(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandSceneHighlightTexture(CCommandVar p1, CCommandVar p2)
 {
-	/*if( !Scene->locked() ){
-		const char* new_val 		 	= 0;
-		if (TfrmChoseItem::SelectItem(smTexture,new_val,1)){
-			Scene->HighlightTexture(new_val,false,0,0,false);
-			return 				true;
-		}
-	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+	if (!Scene->locked())
+	{
+		UIChooseForm::SelectItem(smTexture, 1);
+		return true;
 	}
-	return 						false;*/
+	else
+	{
+		ELog.DlgMsg(mtError, "Scene sharing violation");
+	}
+
 	return false;
 }
 
@@ -1144,7 +1138,6 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_C	    (COMMAND_READONLY_TARGET,          	LTools,CLevelTool::CommandReadonlyTarget);
 	REGISTER_CMD_C	    (COMMAND_MULTI_RENAME_OBJECTS,     	LTools,CLevelTool::CommandMultiRenameObjects);
 
-	REGISTER_CMD_CE	    (COMMAND_SHOW_OBJECTLIST,           "Scene\\Show Object List",		LTools,CLevelTool::CommandShowObjectList, false);
 	// common
 	REGISTER_CMD_S	    (COMMAND_LIBRARY_EDITOR,           	CommandLibraryEditor);
 	REGISTER_CMD_S	    (COMMAND_LANIM_EDITOR,            	CommandLAnimEditor);

@@ -32,7 +32,7 @@ class CLevelTool: public CToolCustom
 	ObjClassID			iNeedTarget;
 	int					iNeedSubTarget;
 
-	ESceneToolBase*		pCurTool;
+	ESceneToolBase*		CurrentTool;
 	
 	TfrmObjectList*		pObjectListForm;
 
@@ -45,11 +45,11 @@ class CLevelTool: public CToolCustom
 	UIPropertiesForm* m_WorldProps;
 	void   	OnPropsModified		();
 
-	void				RealUpdateProperties();
-	void				RealUpdateObjectList();
+	void UpdateProperties();
+	void UpdateObjectList();
 
 	HANDLE mtPropObj = nullptr;
-	static void			mtUpdateProperties(void*);
+	static void mtUpdateProperties(void*);
 	xr_vector<IViewport*> Viewlist;
 
 public:
@@ -130,16 +130,15 @@ public:
 
 	ObjClassID 			CurrentClassID		();
 
-	void				ShowObjectList		();
 	virtual bool		GetSelectionPosition(Fmatrix& result);
 
 	// commands
 	CCommandVar			CommandChangeTarget		(CCommandVar p1, CCommandVar p2);
-	CCommandVar			CommandShowObjectList	(CCommandVar p1, CCommandVar p2);
 	CCommandVar			CommandEnableTarget		(CCommandVar p1, CCommandVar p2);
 	CCommandVar			CommandShowTarget		(CCommandVar p1, CCommandVar p2);
 	CCommandVar			CommandReadonlyTarget	(CCommandVar p1, CCommandVar p2);
 	CCommandVar			CommandMultiRenameObjects(CCommandVar p1,CCommandVar p2);
+
 public:
 	void RunGame(const char* Params = "");
 	void RunXrLC();
