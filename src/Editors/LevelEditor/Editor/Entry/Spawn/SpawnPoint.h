@@ -8,7 +8,7 @@ class CSE_Visual;
 class CSE_Motion;
 class CObjectAnimator;
 
-class CLE_Visual :private pureDrawUI
+class CLE_Visual : public pureDrawUI
 {
     virtual void OnDrawUI();
 public:

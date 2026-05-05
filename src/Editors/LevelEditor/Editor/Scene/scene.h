@@ -92,7 +92,7 @@ struct st_LevelOptions{
 
 class EScene :
 	public XrEditorSceneInterface,
-	private pureFrame
+	public pureFrame
 {
 	CMemoryWriter 	m_SaveCache;
 public:

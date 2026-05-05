@@ -226,7 +226,8 @@ void CRenderDevice::on_idle		()
 		{
 			if (Begin())
 			{
-				seqRender.Process(rp_Render);
+				seqRender.Process<&pureRender::OnRender>();
+				
 				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
 					Statistic->Show();
 
@@ -345,12 +346,12 @@ void CRenderDevice::Run()
 
 	g_AppInfo.MainThread = Platform::GetCurrentThread();
 	// Message cycle
-	seqAppStart.Process(rp_AppStart);
+	seqAppStart.Process<&pureAppStart::OnAppStart>();
 
 	m_pRender->ClearTarget();
 	message_loop();
 
-	seqAppEnd.Process(rp_AppEnd);
+	seqAppEnd.Process<&pureAppEnd::OnAppEnd>();
 
 	// Stop Balance-Threads
 	secondary_tasks.wait();
@@ -498,7 +499,7 @@ void CRenderDevice::FrameMove()
 	dwTimeDelta = dwTimeGlobal - _old_global;
 	
 	Statistic->EngineTOTAL.Begin();
-	Device.seqFrame.Process(rp_Frame);
+	Device.seqFrame.Process<&pureFrame::OnFrame>();
 	g_bLoaded = true;
 	Statistic->EngineTOTAL.End();
 }
@@ -566,7 +567,7 @@ void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 
 	if (Device.b_is_Active && !OldState)
 	{
-		Device.seqAppActivate.Process(rp_AppActivate);
+		Device.seqAppActivate.Process<&pureAppActivate::OnAppActivate>();
 		app_inactive_time += TimerMM.GetElapsed_ms() - app_inactive_time_start;
 
 		if (g_dedicated_server)
@@ -577,7 +578,7 @@ void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 	else if (!psDeviceFlags.test(rsDeviceActive))
 	{
 		app_inactive_time_start = TimerMM.GetElapsed_ms();
-		Device.seqAppDeactivate.Process(rp_AppDeactivate);
+		Device.seqAppDeactivate.Process<&pureAppDeactivate::OnAppDeactivate>();
 		SDL_ShowCursor();
 	}
 	else

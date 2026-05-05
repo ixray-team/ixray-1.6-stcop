@@ -1,6 +1,6 @@
 #pragma once
 
-class ESceneGroupTool: public ESceneCustomOTool,private pureDrawUI
+class ESceneGroupTool: public ESceneCustomOTool, public pureDrawUI
 {
 	typedef ESceneCustomOTool inherited;
     xr_string			m_CurrentObject;
