@@ -521,7 +521,7 @@ void CEditorRenderDevice::FrameMove()
 	}
 
     // process objects
-	seqFrame.Process(rp_Frame);
+	seqFrame.Process<&pureFrame::OnFrame>();
 }
 
 #if _WINDOWS

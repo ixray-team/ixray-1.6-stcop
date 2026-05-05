@@ -21,7 +21,7 @@ protected:
 // Also there can be a situation when a key is pressed, 1 window is processing it, and then we switch to another window
 // we want a new keypress and hold in that window
 
-class UI_API CUIActionRepeatersManager : pureFrame
+class UI_API CUIActionRepeatersManager : public pureFrame
 {
 public:
 	typedef CUIActionRepeatersOwner* ActionRepeatersOwnerKey;
@@ -44,7 +44,7 @@ public:
 	void SetActionStarted			(ActionRepeatersOwnerKey owner, int actionId);
 	bool IsActionStarted			(ActionRepeatersOwnerKey owner, int actionId);
 
-	void OnFrame();
+	void OnFrame() override;
 
 protected:
 	struct UIActionRepeatInfo
