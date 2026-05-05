@@ -46,14 +46,14 @@ void CRenderDevice::Destroy()
 	// real destroy
 	m_pRender->DestroyHW();
 
-	seqRender.R.clear			();
-	seqAppActivate.R.clear		();
-	seqAppDeactivate.R.clear	();
-	seqAppStart.R.clear			();
-	seqAppEnd.R.clear			();
-	seqFrame. R.clear			();
-	seqFrameMT.R.clear			();
-	seqDeviceReset.R.clear		();
+	seqRender.pure_objects.clear			();
+	seqAppActivate.pure_objects.clear		();
+	seqAppDeactivate.pure_objects.clear	();
+	seqAppStart.pure_objects.clear			();
+	seqAppEnd.pure_objects.clear			();
+	seqFrame. pure_objects.clear			();
+	seqFrameMT.pure_objects.clear			();
+	seqDeviceReset.pure_objects.clear		();
 	seqParallel.clear			();
 	seqParallelRender.clear		();
 	m_time_callbacks.clear		();
@@ -118,10 +118,10 @@ void CRenderDevice::Reset(bool precache)
 		SDL_ShowCursor();
 	}
 
-	seqDeviceReset.Process(rp_DeviceReset);
+	seqDeviceReset.Process<&pureDeviceReset::OnDeviceReset>();
 
 	if (dwWidth_before != TargetWidth || dwHeight_before != TargetHeight || RenderScale_before != GRHI->DevicePtr->RenderScale)
 	{
-		seqResolutionChanged.Process(rp_ScreenResolutionChanged);
+		seqResolutionChanged.Process<&pureScreenResolutionChanged::OnScreenResolutionChanged>();
 	}
 }
