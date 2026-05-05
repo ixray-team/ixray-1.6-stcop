@@ -196,7 +196,7 @@ public:
 				break;
 			}
 	}
-	EEditorState 	GetEState			(){ return m_EditorState.back(); }
+	EEditorState 	GetEState			() const { return m_EditorState.back(); }
 	bool 			ContainEState		(EEditorState st){ return std::find(m_EditorState.begin(),m_EditorState.end(),st)!=m_EditorState.end(); }
 
 	virtual void 	SetStatus			(const char* s, bool bOutLog=true)=0;

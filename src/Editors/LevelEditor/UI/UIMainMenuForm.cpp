@@ -76,12 +76,15 @@ void UIMainMenuForm::DrawMenuItem(const char* label, int command, const xr_strin
 	}
 }
 
-void UIMainMenuForm::DrawMenuItem(const char* label, int command, int param, int flag)
+bool UIMainMenuForm::DrawMenuItem(const char* label, int command, int param, int flag)
 {
 	if (ImGui::MenuItem(label, *GetCommandShortcat(command)))
 	{
 		ExecCommand(command, param, flag);
+		return true;
 	}
+
+	return false;
 }
 
 void UIMainMenuForm::DrawMenuItemI(const char* label, const char* icon, int command, const xr_string& param, int flag)
@@ -181,7 +184,12 @@ void UIMainMenuForm::Draw()
 				ExecCommand(COMMAND_COLLECT_SCENE_SUMMARY);
 				ExecCommand(COMMAND_SHOW_SCENE_SUMMARY);
 			}
-			DrawMenuItem("Highlight Texture", COMMAND_SCENE_HIGHLIGHT_TEXTURE);
+
+			if (DrawMenuItem("Highlight Texture", COMMAND_SCENE_HIGHLIGHT_TEXTURE))
+			{
+				IsChooseFormDraw = true;
+			}
+
 			ImGui::Separator();
 
 			DrawMenuItem("Clear Debug Draw", COMMAND_CLEAR_DEBUG_DRAW);
@@ -702,6 +710,19 @@ void UIMainMenuForm::Draw()
 
 	ImGui::PopStyleColor();
 	ImGui::PopStyleVar(1);
+
+	if (IsChooseFormDraw)
+	{
+		xr_string TextureName;
+		bool Change = false;
+		if (UIChooseForm::GetResult(Change, TextureName))
+		{
+			Scene->HighlightTexture(TextureName.c_str(), false, 0, 0, false);
+			IsChooseFormDraw = false;
+		}
+
+		UIChooseForm::Update();
+	}
 }
 
 void UIMainMenuForm::ExportLevelAsArchive()
