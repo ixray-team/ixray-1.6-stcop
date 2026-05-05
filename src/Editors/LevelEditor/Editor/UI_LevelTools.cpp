@@ -4,9 +4,6 @@
 #include "Scene/LEPhysics.h"
 #include "../Viewports/ViewportMesh.h"
 
-#define DETACH_FRAME(a) 	if (a){ a=0; }
-#define ATTACH_FRAME(a,b)	if (a){b=a;}
-
 CLevelTool*	LTools=(CLevelTool*)Tools;
 
 TShiftState ssRBOnly;
@@ -34,7 +31,7 @@ CLevelTool::CLevelTool()
 	m_ToolForm = 0;
 	m_CompilerProcess.hProcess = 0;
 
-	pCurTool = nullptr;
+	CurrentTool = nullptr;
 	mtPropObj = CreateEventA(nullptr, true, false, nullptr);
 	thread_spawn(mtUpdateProperties, "PropertiesAsync", 1, this);
 }
@@ -49,7 +46,7 @@ bool CLevelTool::OnCreate()
 	inherited::OnCreate();
 	target = OBJCLASS_DUMMY;
 	sub_target = -1;
-	pCurTool = 0;
+	CurrentTool = 0;
 	ssRBOnly = ssRight;
 	m_Flags.set(flChangeAction, false);
 	m_Flags.set(flChangeTarget, false);
@@ -63,18 +60,19 @@ bool CLevelTool::OnCreate()
 	return true;
 }
 
-
 void CLevelTool::OnDestroy()
 {
 	inherited::OnDestroy();
 	xr_delete(m_Props);
 	xr_delete(m_WorldProps);
-	/*TfrmObjectList::DestroyForm(pObjectListForm);
-	TProperties::DestroyForm(m_Props);*/
+
 	// scene destroing
-	if (pCurTool)
-		pCurTool->OnDeactivate();
-	Scene->OnDestroy		();
+	if (CurrentTool)
+	{
+		CurrentTool->OnDeactivate();
+	}
+
+	Scene->OnDestroy();
 }
 
 void CLevelTool::Reset()
@@ -83,140 +81,168 @@ void CLevelTool::Reset()
 }
 
 
-bool  CLevelTool::MouseStart(TShiftState Shift)
+bool CLevelTool::MouseStart(TShiftState Shift)
 {
 	if (Scene->IsPlayInEditor())
+	{
 		return false;
+	}
 
 	inherited::MouseStart(Shift);
-	if(pCurTool && pCurTool->pCurControl)
+	if(CurrentTool && CurrentTool->pCurControl)
 	{
-		if ((pCurTool->pCurControl->Action()!=etaSelect)&&
-			(!pCurTool->IsEditable() || !pCurTool->AllowMouseStart() || (pCurTool->FClassID==OBJCLASS_DUMMY)))
+		if ((CurrentTool->pCurControl->Action() != etaSelect) && (!CurrentTool->IsEditable() || !CurrentTool->AllowMouseStart() || (CurrentTool->FClassID == OBJCLASS_DUMMY)))
+		{
 			return false;
+		}
 
-		return pCurTool->pCurControl->Start(Shift);
+		return CurrentTool->pCurControl->Start(Shift);
 	}
 	return false;
 }
 
-void  CLevelTool::MouseMove(TShiftState Shift)
+void CLevelTool::MouseMove(TShiftState Shift)
 {
 	inherited::MouseMove(Shift);
-	if(pCurTool&&pCurTool->pCurControl)
+	if(CurrentTool&&CurrentTool->pCurControl)
 	{
 		if (HiddenMode())
+		{
 			ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		}
 
-		pCurTool->pCurControl->Move(Shift);
+		CurrentTool->pCurControl->Move(Shift);
 	}
 }
 
-bool  CLevelTool::MouseEnd(TShiftState Shift)
+bool CLevelTool::MouseEnd(TShiftState Shift)
 {
 	inherited::MouseEnd(Shift);
-	if(pCurTool&&pCurTool->pCurControl)
+	if(CurrentTool&&CurrentTool->pCurControl)
 	{
 		if (HiddenMode())
+		{
 			ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		}
 
-		return pCurTool->pCurControl->End(Shift);
+		return CurrentTool->pCurControl->End(Shift);
 	}
 	return false;
 }
 
-void  CLevelTool::OnObjectsUpdate()
+void CLevelTool::OnObjectsUpdate()
 {
 	UpdateProperties(false);
-	if(pCurTool&&pCurTool->pCurControl)
-		return pCurTool->OnObjectsUpdate();
+	if (CurrentTool && CurrentTool->pCurControl)
+	{
+		return CurrentTool->OnObjectsUpdate();
+	}
 }
 
-bool  CLevelTool::HiddenMode()
+bool CLevelTool::HiddenMode()
 {
-	if(pCurTool&&pCurTool->pCurControl)
-		return pCurTool->pCurControl->HiddenMode();
+	if (CurrentTool && CurrentTool->pCurControl)
+	{
+		return CurrentTool->pCurControl->HiddenMode();
+	}
+	
 	return false;
 }
 
-bool  CLevelTool::KeyDown   (WORD Key, TShiftState Shift)
+bool CLevelTool::KeyDown(WORD Key, TShiftState Shift)
 {
-	if(pCurTool&&pCurTool->pCurControl)
-		return pCurTool->pCurControl->KeyDown(Key,Shift);
-
-	return false;
-}
-
-bool  CLevelTool::KeyUp     (WORD Key, TShiftState Shift)
-{
-	if(pCurTool&&pCurTool->pCurControl)
-		return pCurTool->pCurControl->KeyUp(Key,Shift);
-
-	return false;
-}
-
-bool  CLevelTool::KeyPress  (WORD Key, TShiftState Shift)
-{
-	if(pCurTool&&pCurTool->pCurControl)
-		return pCurTool->pCurControl->KeyPress(Key,Shift);
+	if (CurrentTool && CurrentTool->pCurControl)
+	{
+		return CurrentTool->pCurControl->KeyDown(Key, Shift);
+	}
 
 	return false;
 }
 
+bool CLevelTool::KeyUp(WORD Key, TShiftState Shift)
+{
+	if (CurrentTool && CurrentTool->pCurControl)
+	{
+		return CurrentTool->pCurControl->KeyUp(Key, Shift);
+	}
 
-void CLevelTool::RealSetAction   (ETAction act)
+	return false;
+}
+
+bool CLevelTool::KeyPress(WORD Key, TShiftState Shift)
+{
+	if (CurrentTool && CurrentTool->pCurControl)
+	{
+		return CurrentTool->pCurControl->KeyPress(Key, Shift);
+	}
+
+	return false;
+}
+
+void CLevelTool::RealSetAction(ETAction act)
 {
 	inherited::SetAction(act);
-	if (pCurTool)
-		pCurTool->SetAction(act);
+	if (CurrentTool)
+	{
+		CurrentTool->SetAction(act);
+	}
 
 	ExecCommand(COMMAND_UPDATE_TOOLBAR);
 	m_Flags.set	(flChangeAction,false);
 }
 
-void  CLevelTool::SetAction(ETAction act)
+void CLevelTool::SetAction(ETAction act)
 {
 	// если мышь захвачена - изменим action после того как она освободится
 	if (UI->IsMouseCaptured() || UI->IsMouseInUse())
 	{
 		m_Flags.set(flChangeAction, true);
 		iNeedAction = act;
+		return;
 	}
-	else
-		RealSetAction(act);
+
+	RealSetAction(act);
 }
 
-void  CLevelTool::RealSetTarget   (ObjClassID tgt,int sub_tgt,bool bForced)
+void  CLevelTool::RealSetTarget(ObjClassID tgt, int sub_tgt, bool bForced)
 {
-	if(bForced||(target!=tgt)||(sub_target!=sub_tgt)){
-		target 					= tgt;
-		sub_target 				= sub_tgt;
-		if (pCurTool){
-			DETACH_FRAME(m_ToolForm);
-			pCurTool->OnDeactivate();
+	if (bForced || (target != tgt) || (sub_target != sub_tgt))
+	{
+		target = tgt;
+		sub_target = sub_tgt;
+
+		if (CurrentTool)
+		{
+			m_ToolForm = nullptr;
+			CurrentTool->OnDeactivate();
 		}
-		pCurTool				= Scene->GetTool(tgt);
-		VERIFY					(pCurTool);
-		pCurTool->SetSubTarget	(sub_target);
 
-		pCurTool->OnActivate	();
+		CurrentTool = Scene->GetTool(tgt);
+		VERIFY(CurrentTool);
 
-		pCurTool->SetAction		(GetAction());
+		CurrentTool->SetSubTarget(sub_target);
+		CurrentTool->OnActivate();
+		CurrentTool->SetAction(GetAction());
 
-		if (pCurTool->IsEditable())
-			ATTACH_FRAME(pCurTool->pForm, m_ToolForm);
+		if (CurrentTool->IsEditable())
+		{
+			if (CurrentTool->pForm)
+			{
+				m_ToolForm = CurrentTool->pForm;
+			};
+		}
 	}
+
 	UI->RedrawScene();
-	//fraLeftBar->ChangeTarget(tgt);
-	//fraLeftBar->UpdateSnapList();
+
 	ExecCommand(COMMAND_UPDATE_TOOLBAR);
-	m_Flags.set(flChangeTarget,false);
+	m_Flags.set(flChangeTarget, false);
 }
 
 void  CLevelTool::ResetSubTarget()
 {
-	VERIFY(pCurTool);
-	pCurTool->ResetSubTarget();
+	VERIFY(CurrentTool);
+	CurrentTool->ResetSubTarget();
 }
 
 void  CLevelTool::SetTarget(ObjClassID tgt, int sub_tgt)
@@ -289,25 +315,14 @@ bool CLevelTool::UpdateCamera()
 
 void CLevelTool::ShowProperties(const char* focus_to_item)
 {
-	RealUpdateProperties	();
-	if(MainForm)
-		MainForm->GetPropertiesForm()->Open();
-   
-	/*
-	if(focus_to_item)
-		m_Props->SelectFolder	(focus_to_item);
-	else
+	UpdateProperties();
+	if (MainForm)
 	{
-		if(pCurTool && pCurTool->ClassID!=OBJCLASS_DUMMY)
-		{
-			const char* cn = pCurTool->ClassDesc();
-			m_Props->SelectFolder	(cn);
-		}
+		MainForm->GetPropertiesForm()->Open();
 	}
-	*/
-	UI->RedrawScene			();
-}
 
+	UI->RedrawScene();
+}
 
 void CLevelTool::mtUpdateProperties(void* This)
 {
@@ -332,7 +347,9 @@ void CLevelTool::mtUpdateProperties(void* This)
 		pTool->m_WorldProps->AssignItems(itemsworld);
 
 		if (pTool->m_Props->IsModified())
+		{
 			Scene->UndoSave();
+		}
 
 		PropItemVec items;
 		Scene->FillPropObjects("", items, pTool->CurrentClassID());
@@ -347,7 +364,7 @@ void CLevelTool::mtUpdateProperties(void* This)
 	}
 }
 
-void CLevelTool::RealUpdateProperties()
+void CLevelTool::UpdateProperties()
 {
 	if (MainForm != nullptr)
 	{
@@ -362,30 +379,19 @@ void CLevelTool::RealUpdateProperties()
 void  CLevelTool::OnPropsModified()
 {
 	Scene->Modified();
-//	Scene->UndoSave();
 	UI->RedrawScene();
 }
 
 bool CLevelTool::IfModified()
 {
-  /*  EEditorState est 		= UI->GetEState();
-	switch(est){
-	case esEditLightAnim: 	return TfrmEditLightAnim::FinalClose();
-	case esEditLibrary: 	return TfrmEditLibrary::FinalClose();
-	case esEditScene:		return Scene->IfModified();
-	default: THROW;
-	}*/
 	return false;
 }
 
 void CLevelTool::ZoomObject(bool bSelectedOnly)
 {
-	if( !Scene->locked() ){
-		Scene->ZoomExtents(CurrentClassID(),bSelectedOnly);
-	} else {
-		if (UI->GetEState()==esEditLibrary){
-		   //   TfrmEditLibrary::ZoomObject();
-		}
+	if (!Scene->locked())
+	{
+		Scene->ZoomExtents(CurrentClassID(), bSelectedOnly);
 	}
 }
 
@@ -414,26 +420,23 @@ const char* CLevelTool::GetInfo()
 	return sel.c_str();
 }
 
-void  CLevelTool::OnFrame()
+void CLevelTool::OnFrame()
 {
-
-	if (psDeviceFlags.is(rsEnvironment) &&! UI->IsPlayInEditor()&& g_pGamePersistent&&g_pGamePersistent->pEnvironment)
+	if (psDeviceFlags.is(rsEnvironment) && !UI->IsPlayInEditor() && g_pGamePersistent && g_pGamePersistent->pEnvironment)
 	{
 		g_pGamePersistent->Environment().SetGameTime(g_pGamePersistent->Environment().GetGameTime() + Device.fTimeDelta * g_pGamePersistent->Environment().fTimeFactor, g_pGamePersistent->Environment().fTimeFactor);
 	}
-	Scene->OnFrame		(EDevice->fTimeDelta);
-	EEditorState est 	= UI->GetEState();
-	if ((est==esEditScene)||(est==esEditLibrary)||(est==esEditLightAnim)){
-		if (true/*!UI->IsMouseCaptured()*/)
-		{
-			// если нужно изменить target выполняем после того как мышь освободится
-			if(m_Flags.is(flChangeTarget)) 		RealSetTarget(iNeedTarget,iNeedSubTarget,false);
-			// если нужно изменить action выполняем после того как мышь освободится
-			if(m_Flags.is(flChangeAction)) 		RealSetAction(ETAction(iNeedAction));
-		}
-		if (m_Flags.is(flUpdateProperties)) 	RealUpdateProperties();
-		if (m_Flags.is(flUpdateObjectList)) 	RealUpdateObjectList();
-		//TfrmEditLightAnim::OnIdle();
+	Scene->OnFrame(EDevice->fTimeDelta);
+	EEditorState est = UI->GetEState();
+	if ((est == esEditScene) || (est == esEditLibrary) || (est == esEditLightAnim))
+	{
+		// если нужно изменить target выполняем после того как мышь освободится
+		if (m_Flags.is(flChangeTarget)) 		RealSetTarget(iNeedTarget, iNeedSubTarget, false);
+		// если нужно изменить action выполняем после того как мышь освободится
+		if (m_Flags.is(flChangeAction)) 		RealSetAction(ETAction(iNeedAction));
+
+		if (m_Flags.is(flUpdateProperties)) 	UpdateProperties();
+		if (m_Flags.is(flUpdateObjectList)) 	UpdateObjectList();
 	}
 
 	if (IsCompilerRunning())
@@ -454,7 +457,7 @@ void  CLevelTool::OnFrame()
 				m_CompilerProcess.hProcess = 0;
 			}
 		}
-	}  
+	}
 	if (IsGameRunning())
 	{
 		DWORD ExitCode = 0;
@@ -476,7 +479,6 @@ void  CLevelTool::OnFrame()
 	}
 }
 
-
 void  CLevelTool::RenderEnvironment()
 {
 	// draw sky
@@ -492,10 +494,11 @@ void  CLevelTool::RenderEnvironment()
 	}
 }
 
-void  CLevelTool::Render()
+void CLevelTool::Render()
 {
 	// Render update
-	if(!Scene->IsPlayInEditor()) {
+	if(!Scene->IsPlayInEditor())
+	{
 		::Render->Calculate();
 		::Render->Render();
 	}
@@ -504,27 +507,27 @@ void  CLevelTool::Render()
 	// draw scene
 	switch(est)
 	{
-	case esEditLibrary:
-		UIEditLibrary::OnRender(); 
-		break;
+		case esEditLibrary:
+			UIEditLibrary::OnRender(); 
+			break;
 
-	case esEditLightAnim:
-	case esEditScene:
-		Scene->Render(UI->CurrentView().m_Camera.GetTransform());
-        if (psDeviceFlags.is(rsEnvironment) || UI->IsPlayInEditor())
-        {
-            g_pGamePersistent->Environment().RenderFlares();
-            g_pGamePersistent->Environment().RenderLast();
-        }
-	break;
-	case esBuildLevel: Builder.OnRender(); break;
-	case esEditCustom:
-	{
-		for (IViewport* VP : Viewlist)
+		case esEditLightAnim:
+		case esEditScene:
+			Scene->Render(UI->CurrentView().m_Camera.GetTransform());
+		    if (psDeviceFlags.is(rsEnvironment) || UI->IsPlayInEditor())
+		    {
+		        g_pGamePersistent->Environment().RenderFlares();
+		        g_pGamePersistent->Environment().RenderLast();
+		    }
+		break;
+		case esBuildLevel: Builder.OnRender(); break;
+		case esEditCustom:
 		{
-			VP->Render();
+			for (IViewport* VP : Viewlist)
+			{
+				VP->Render();
+			}
 		}
-	}
 	}
 
 	// draw cursor
@@ -532,14 +535,8 @@ void  CLevelTool::Render()
     inherited::Render();
 }
 
-void CLevelTool::ShowObjectList()
+void CLevelTool::UpdateObjectList()
 {
- //if (pObjectListForm) pObjectListForm->ShowObjectList();
-}
-
-void CLevelTool::RealUpdateObjectList()
-{
-   //if (pObjectListForm) pObjectListForm->UpdateObjectList();
 	m_Flags.set(flUpdateObjectList,false);
 }
 
@@ -579,54 +576,61 @@ bool CLevelTool::RayPick(const Fvector& start, const Fvector& dir, float& dist, 
 
 bool CLevelTool::GetSelectionPosition(Fmatrix& result)
 {
-	if(pCurTool)
+	if (CurrentTool)
 	{
-		Fvector 			center;
-		Fbox 				BB;
-		BB.invalidate		();
-//    	pCurTool->GetBBox	(BB, true);
+		Fvector center;
+		Fbox BB;
+		BB.invalidate();
 
-		const CCustomObject* object = pCurTool->LastSelected();
-		if(!object)
+		const CCustomObject* object = CurrentTool->LastSelected();
+		if (!object)
+		{
 			return false;
-			
-		const_cast<CCustomObject*>(object)->GetBox		(BB);
-		
-		BB.getcenter		(center);
-		center.y			= BB.max.y;
+		}
 
-		Fvector2			pt_ss;
-		pt_ss.set			(10000,-10000);
-		Fvector				pt_ss_3d;
-		BB.setb				(center, Fvector().set(1.0f,1.0f,1.0f));
-		for(int k=0;k<8;++k)
+		const_cast<CCustomObject*>(object)->GetBox(BB);
+
+		BB.getcenter(center);
+		center.y = BB.max.y;
+
+		Fvector2 pt_ss;
+		pt_ss.set(10000, -10000);
+		Fvector pt_ss_3d;
+		BB.setb(center, Fvector().set(1.0f, 1.0f, 1.0f));
+		for (int k = 0; k < 8; ++k)
 		{
 			Fvector pt;
-			BB.getpoint(k,pt);
+			BB.getpoint(k, pt);
 			EDevice->mFullTransform.transform(pt_ss_3d, pt);
-			
+
 			pt_ss.x = std::min(pt_ss.x, pt_ss_3d.y);
 			pt_ss.y = std::max(pt_ss.y, pt_ss_3d.y);
 		}
 
-		float r_bb_ss	 = pt_ss.y - pt_ss.x;
-		clamp(r_bb_ss, 0.0f,0.10f);
-		float des_radius = 0.2f; 
-		float csale 	 = des_radius/r_bb_ss;
-		
-		result.scale	(csale,csale,csale);
-		result.c 		= center;
-		return 			true;
-	}else
-		return 			false;
+		float r_bb_ss = pt_ss.y - pt_ss.x;
+		clamp(r_bb_ss, 0.0f, 0.10f);
+		float des_radius = 0.2f;
+		float csale = des_radius / r_bb_ss;
+
+		result.scale(csale, csale, csale);
+		result.c = center;
+		return true;
+	}
+
+	return false;
 }
 
 void CLevelTool::Simulate()
 {
-    if (!g_scene_physics.Simulating())
-        g_scene_physics.CreateShellsSelected();
-    else
-        g_scene_physics.DestroyAll();
+	if (!g_scene_physics.Simulating())
+	{
+		g_scene_physics.CreateShellsSelected();
+	}
+	else
+	{
+		g_scene_physics.DestroyAll();
+	}
+
     UI->RedrawScene();
 }
 
