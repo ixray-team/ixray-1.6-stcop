@@ -293,7 +293,7 @@ void TUI::OnAppActivate()
 	if (pInput){
 		m_ShiftState = ssNone;
 		pInput->OnAppActivate();
-		EDevice->seqAppActivate.Process	(rp_AppActivate);
+		EDevice->seqAppActivate.Process<&pureAppActivate::OnAppActivate>();
 	}
 }
 //---------------------------------------------------------------------------
@@ -305,7 +305,7 @@ void TUI::OnAppDeactivate()
 	if (pInput){
 		pInput->OnAppDeactivate();
 		m_ShiftState = ssNone;
-		EDevice->seqAppDeactivate.Process(rp_AppDeactivate);
+		EDevice->seqAppDeactivate.Process<&pureAppDeactivate::OnAppDeactivate>();
 	}
 	HideHint();
 }
@@ -439,8 +439,8 @@ void TUI::Redraw()
 			HalfTarget.y = float(View.RTSize.y) * 0.5f;
 			EDevice->fASPECT = float(HalfTarget.y) / float(HalfTarget.x);
 
-			EDevice->seqDeviceReset.Process(rp_DeviceReset);
-			EDevice->seqResolutionChanged.Process(rp_ScreenResolutionChanged);
+			EDevice->seqDeviceReset.Process<&pureDeviceReset::OnDeviceReset>();
+			EDevice->seqResolutionChanged.Process<&pureScreenResolutionChanged::OnScreenResolutionChanged>();
 			RCache.set_xform_project(EDevice->mProject);
 			RCache.set_xform_world(Fidentity);
 		}
@@ -531,7 +531,7 @@ void TUI::Redraw()
 			g_FontManager->Render();
 
 			EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
-			EDevice->seqRender.Process(rp_Render);
+			EDevice->seqRender.Process<&pureRender::OnRender>();
 
 			if (g_pGamePersistent->OnRenderPPUI_query())
 			{
@@ -662,7 +662,7 @@ bool TUI::Idle()
 
 		{
 			PROF_EVENT("seqFrameMT")
-			EDevice->seqFrameMT.Process(rp_Frame);
+			EDevice->seqFrameMT.Process<&pureFrame::OnFrame>();
 		}
 	});
 
@@ -868,7 +868,7 @@ void TUI::OnDrawUI()
 	UIWeatherPropForm::Update();
 	UIIconPicker::Update();
 	UILogForm::Update();
-	EDevice->seqDrawUI.Process(rp_DrawUI);
+	EDevice->seqDrawUI.Process<&pureDrawUI::OnDrawUI>();
 }
 
 void TUI::RealResetUI()

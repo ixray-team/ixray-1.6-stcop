@@ -34,7 +34,7 @@ struct SExportStreams
 };
 
 class  CCustomObject:
-	private pureDrawUI
+	public pureDrawUI
 {
 protected:
 	shared_str		EName;

@@ -1,106 +1,125 @@
-#ifndef _PURE_H_AAA_
-#define _PURE_H_AAA_
+#pragma once
 
-// messages
-#define REG_PRIORITY_LOW		0x11111111ul
-#define REG_PRIORITY_NORMAL		0x22222222ul
-#define REG_PRIORITY_HIGH		0x33333333ul
-#define REG_PRIORITY_CAPTURE	0x7ffffffful
-#define REG_PRIORITY_INVALID	0xfffffffful
+enum : u32
+{
+	REG_PRIORITY_LOW		= 0x11111111ul,
+	REG_PRIORITY_NORMAL		= 0x22222222ul,
+	REG_PRIORITY_HIGH		= 0x33333333ul,
+	REG_PRIORITY_CAPTURE 	= 0x7ffffffful,
+	REG_PRIORITY_INVALID	= 0xfffffffful
+};
 
-// typedef void __fastcall RP_FUNC		(void *obj);
-typedef void RP_FUNC(void* obj);
+#define CREATE_PURE_DEFINITION(name) \
+	class ENGINE_API pure##name		 \
+	{								 \
+	public:							 \
+		virtual void On##name() = 0; \
+	}								 \
 
-#define DECLARE_MESSAGE_CL(name,calling)		extern ENGINE_API RP_FUNC rp_##name; class ENGINE_API pure##name { public: virtual void calling On##name(void)=0;	}
+CREATE_PURE_DEFINITION(Frame);						// OnFrame
+CREATE_PURE_DEFINITION(Render);						// OnRender
+CREATE_PURE_DEFINITION(AppActivate);				// OnAppActivate
+CREATE_PURE_DEFINITION(AppDeactivate);				// OnAppDeactivate
+CREATE_PURE_DEFINITION(AppStart);					// OnAppStart
+CREATE_PURE_DEFINITION(AppEnd);						// OnAppEnd
+CREATE_PURE_DEFINITION(DeviceReset);				// OnDeviceReset
+CREATE_PURE_DEFINITION(ScreenResolutionChanged);	// OnScreenResolutionChanged
+CREATE_PURE_DEFINITION(DrawUI);						// OnDrawUI
+
+template<typename T>
+struct PureReg
+{
+	T* object;
+    int	priority;
+};
+
+template<class T>
+class CRegistrator
+{
+	bool changed;
+	bool in_process;
 	
-#define DECLARE_MESSAGE( name )	DECLARE_MESSAGE_CL(name, )
-#define DECLARE_RP(name) void  rp_##name(void *p) { ((pure##name *)p)->On##name(); }
-
-DECLARE_MESSAGE_CL(Frame,_BCL);
-DECLARE_MESSAGE(Render);
-DECLARE_MESSAGE(AppActivate);
-DECLARE_MESSAGE(AppDeactivate);
-DECLARE_MESSAGE(AppStart);
-DECLARE_MESSAGE(AppEnd);
-DECLARE_MESSAGE(DeviceReset);
-DECLARE_MESSAGE(ScreenResolutionChanged);
-DECLARE_MESSAGE(DrawUI);
-
-
-
-//-----------------------------------------------------------------------------
-struct _REG_INFO {
-	void*	Object;
-	int		Prio;
-	u32		Flags;
-};
-
-//ENGINE_API extern int	__cdecl	_REG_Compare(const void *, const void *);
-
-template <class T> class CRegistrator		// the registrator itself
-{
-//	friend ENGINE_API int	__cdecl	_REG_Compare(const void *, const void *);
-static int	__cdecl	_REG_Compare(const void *e1, const void *e2)
-{
-	_REG_INFO *p1 = (_REG_INFO *)e1;
-	_REG_INFO *p2 = (_REG_INFO *)e2;
-	return (p2->Prio - p1->Prio);
-}
-public:
-	xr_vector<_REG_INFO>	R;
-	// constructor
-	struct {
-		u32		in_process	:1;
-		u32		changed		:1;
-	};
-	CRegistrator()			{ in_process=false; changed=false;}
-
-	//
-	void Add	(T *obj, int priority=REG_PRIORITY_NORMAL, u32 flags=0)
+	void cleanup_invalidated_objects()
 	{
-#ifdef DEBUG
-		VERIFY	(priority!=REG_PRIORITY_INVALID);
-		VERIFY	(obj);
-		for		(u32 i=0; i<R.size(); i++) VERIFY( !((R[i].Prio!=REG_PRIORITY_INVALID)&&(R[i].Object==(void*)obj))   );
-#endif
-		_REG_INFO I_;
-		I_.Object = obj;
-		I_.Prio = priority;
-		I_.Flags = flags;
-		R.push_back(I_);
+		auto begin = std::remove_if(pure_objects.begin(), pure_objects.end(),
+									[&](const PureReg<T>& reg_entry)
+									{
+										return reg_entry.priority == REG_PRIORITY_INVALID;
+									});
 		
-		if(in_process)		changed=true;
-		else Resort			( );
-	};
-	void Remove	(T *obj)
-	{
-		for (u32 i=0; i<R.size(); i++) {
-			if (R[i].Object==obj) R[i].Prio = REG_PRIORITY_INVALID;
-		}
-		if(in_process)		changed=true;
-		else Resort			( );
-	};
-	void Process(RP_FUNC *f)
-	{
-		in_process = true;
-    	if (R.empty()) return;
-		if (R[0].Prio==REG_PRIORITY_CAPTURE)	f(R[0].Object);
-		else {
-			for (u32 i=0; i<R.size(); i++)
-				if(R[i].Prio!=REG_PRIORITY_INVALID)
-					f(R[i].Object);
+		pure_objects.erase(begin, pure_objects.end());
+	}
+	
+public:
+	xr_vector<PureReg<T>> pure_objects;
 
-		}
-		if(changed)	Resort();
+	CRegistrator()
+	{
 		in_process = false;
-	};
-	void Resort	(void)
+		changed = false;
+		pure_objects.reserve(1024);
+	}
+	
+	template<typename U> requires std::derived_from<U, T>
+	void Add(U* pure_object, int priority = REG_PRIORITY_NORMAL)
 	{
-		qsort(&R.front(), R.size(), sizeof(_REG_INFO), _REG_Compare);
-		while	((R.size()) && (R[R.size()-1].Prio==REG_PRIORITY_INVALID)) R.pop_back();
-		if (R.empty())		R.clear		();
-		changed				= false;
-	};
-};
+		PureReg<T> reg_entry { pure_object, priority };
+		pure_objects.push_back(reg_entry);
 
-#endif
+		if (in_process)
+			changed = true;
+		else
+			Resort();
+	}
+
+	template<typename U> requires std::derived_from<U, T>
+	void Remove(U* to_remove)
+	{
+		for (PureReg<T>& reg_entry : pure_objects)
+			if (reg_entry.object == to_remove)
+				reg_entry.priority = REG_PRIORITY_INVALID;
+		
+		if (in_process)
+			changed = true;
+		else
+			Resort();
+	}
+	
+	template<void (T::*pureMethod)()>
+	void Process()
+	{
+		if (pure_objects.empty())
+			return;
+		
+		in_process = true;
+		
+		for (PureReg<T>& reg_entry : pure_objects)
+		{
+			if (reg_entry.priority == REG_PRIORITY_INVALID)
+				continue;
+			
+			if (reg_entry.object == nullptr)
+				continue;
+			
+			(reg_entry.object->*pureMethod)();
+		}
+
+		if (changed)
+			Resort();
+		
+		in_process = false;
+	}
+	
+	void Resort()
+	{
+		std::sort(pure_objects.begin(), pure_objects.end(),
+		          [](const PureReg<T>& a, const PureReg<T>& b)
+		          {
+			          return a.priority > b.priority;
+		          });
+		
+		cleanup_invalidated_objects();
+		
+		changed = false;
+	}
+};

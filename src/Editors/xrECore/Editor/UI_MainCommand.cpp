@@ -303,7 +303,7 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
                     g_pGamePersistent->Environment().ed_to_time = EPrefs->env_to_time;
                     g_pGamePersistent->Environment().fTimeFactor = EPrefs->env_speed;
                 }
-				EDevice->seqAppStart.Process(rp_AppStart);
+				EDevice->seqAppStart.Process<&pureAppStart::OnAppStart>();
 				ExecCommand(COMMAND_CLEAR);
 				ExecCommand(COMMAND_RENDER_FOCUS);
 				ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
@@ -329,7 +329,7 @@ CCommandVar CommandDestroy(CCommandVar p1, CCommandVar p2)
 	EPrefs->env_speed = g_pGamePersistent->Environment().fTimeFactor;
 	EPrefs->OnDestroy();
 	ExecCommand(COMMAND_CLEAR);
-	EDevice->seqAppEnd.Process(rp_AppEnd);
+	EDevice->seqAppEnd.Process<&pureAppEnd::OnAppEnd>();
 	xr_delete(g_pGamePersistent);
 	LALib.OnDestroy();
 	Tools->OnDestroy();

@@ -66,7 +66,7 @@ void XRay::Engine::GameThread()
 
 	{
 		PROF_EVENT("seqFrameMT");
-		Device.seqFrameMT.Process(rp_Frame);
+		Device.seqFrameMT.Process<&pureFrame::OnFrame>();
 	}
 	PROF_STOP_THREAD();
 	Platform::SetThreadName("X-Ray Empty Task");
