@@ -11,7 +11,7 @@ class ENGINE_API CGameFont;
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/StatsRender.h"
 
-DECLARE_MESSAGE(Stats);
+CREATE_PURE_DEFINITION(Stats);
 
 class ENGINE_API CStatsPhysics
 {
