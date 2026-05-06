@@ -24,6 +24,7 @@ namespace ImGui
 namespace XRay::ImGui
 {
     void IMGUI_API MakeEditorTheme();
+    void IMGUI_API MakeRedTheme();
 }
 
 //enum ImGuiItemFlags_

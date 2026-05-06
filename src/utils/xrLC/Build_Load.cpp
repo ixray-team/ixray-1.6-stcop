@@ -366,7 +366,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 					BT.bHasAlpha = BT.THM.HasAlphaChannel();
 					if (!bLOD)
 					{
-						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity)
+						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted)  )
 						{
 							clMsg("- loading: %s W[%u] H[%u]", N, BT.dwWidth, BT.dwHeight);
 							BT.SetHasSurface(true);
