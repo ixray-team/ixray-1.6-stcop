@@ -11,6 +11,7 @@
 
 #include "ImUtils.h"
 #include <fstream>
+#include <memory_resource>
 
 enum class _eMessageBoxStatus
 {
@@ -27,7 +28,7 @@ int ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::strin
 		{ 0, 0, "Ok" }
 	};
 
-	const SDL_MessageBoxButtonData buttons_yesorno[] = 
+	const SDL_MessageBoxButtonData buttons_yesorno[] =
 	{
 		{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes"},
 		{0, 0, "No"},
@@ -239,7 +240,7 @@ struct CImGuiOMFEditor
 	xr_vector<const char*> list_box_motion_marks_names;
 	xr_vector<xr_stack_string16> list_box_motion_marks_params_names;
 
-	xr_stack_string<sizeof(string_path)*2> path;
+	xr_stack_string<sizeof(string_path) * 2> path;
 };
 
 CImGuiOMFEditor* g_pOMFEditor = nullptr;
@@ -271,8 +272,7 @@ void OMFEditor_OnReleased(int key)
 {
 }
 
-template<typename T>
-void OMFEditor_ReadString(T& str, std::ifstream& file)
+void OMFEditor_ReadString(OMFData::omf_name_t& str, std::ifstream& file)
 {
 	char symbol = -1;
 	uint32_t str_length = 0;
@@ -286,8 +286,7 @@ void OMFEditor_ReadString(T& str, std::ifstream& file)
 	} while (symbol != '\0');
 }
 
-template<typename T>
-void OMFEditor_ReadStringMotionMark(T& str, std::ifstream& file)
+void OMFEditor_ReadStringMotionMark(OMFData::omf_name_t& str, std::ifstream& file)
 {
 	char symbol = -1;
 	uint32_t str_length = 0;
@@ -995,8 +994,8 @@ void OMFEditor_TryRepair(
 		pState &&
 		pState->omf &&
 		pState->is_file_loaded &&
-		pState->omf->data_animparams.params.empty()==false &&
-		pState->omf->data_anim.anims.empty()==false
+		pState->omf->data_animparams.params.empty() == false &&
+		pState->omf->data_anim.anims.empty() == false
 		)
 	{
 		short i = 0;
@@ -1014,8 +1013,8 @@ void OMFEditor_TryRepair(
 			anim.section_id = i;
 			++i;
 		}
-		
-	 	xr_stack_tstring<sizeof(string_path)> path = Platform::ANSI_TO_TCHAR(g_pOMFEditor->path.c_str());
+
+		xr_stack_tstring<sizeof(string_path)> path = Platform::ANSI_TO_TCHAR(g_pOMFEditor->path.c_str());
 
 		OMFEditor_SaveOMF(
 			g_pOMFEditor,
@@ -1034,10 +1033,10 @@ void OMFEditor_SwapAnimMarks(
 	R_ASSERT(pState);
 
 	if (
-		pState && 
-		pState->omf && 
+		pState &&
+		pState->omf &&
 		pState->is_file_loaded
-	)
+		)
 	{
 		if (pState->temp_omf)
 		{
@@ -1052,7 +1051,7 @@ void OMFEditor_SwapAnimMarks(
 			pState->omf = nullptr;
 		}
 
-		R_ASSERT(pState->omf==nullptr);
+		R_ASSERT(pState->omf == nullptr);
 
 		if (pState->omf == nullptr)
 		{
@@ -1113,7 +1112,7 @@ void OMFEditor_SwapAnimMarks(
 										if (dlg_option_overwrite_enabled)
 										{
 											auto& param = pState->omf->data_animparams.params[j];
-											
+
 											param.marks.clear();
 											param.marks_count = param_temp.marks_count;
 											param.marks = param_temp.marks;
@@ -1173,6 +1172,160 @@ void OMFEditor_SwapAnimMarks(
 					++i;
 				}
 			}
+		}
+	}
+}
+
+void OMFEditor_MergeWith(
+	CImGuiOMFEditor* pState
+)
+{
+	R_ASSERT(pState);
+	R_ASSERT(pState->omf);
+
+	if (
+		pState &&
+		pState->is_file_loaded &&
+		pState->omf
+		)
+	{
+
+		xr_stack_tstring<sizeof(string_path)> local_path;
+		bool status = xr_EFS->GetOpenName(local_path, XR_TEXT("OMF file\0*.omf\0"));
+
+		if (
+			status &&
+			local_path.empty() == false &&
+			std::filesystem::exists(local_path.c_str())
+			)
+		{
+			OMFData from;
+			std::ifstream file(local_path.c_str(), std::ios::binary);
+
+			if (file.good())
+			{
+				status = OMFEditor_LoadOMF(from, file);
+
+				if (status)
+				{
+					int overwrite = ShowMessageBox(_eMessageBoxStatus::kYesOrNo, "", "Overwrite existed?");
+
+					if (overwrite != 1 && overwrite != 0)
+					{
+						overwrite = 0;
+					}
+
+					OMFData::omf_name_t current_omf_name;
+					OMFData::omf_name_t from_omf_name;
+
+					unsigned char raw_mem[sizeof(int) * 64];
+					std::pmr::monotonic_buffer_resource mbr{ raw_mem, sizeof(raw_mem) };
+					std::pmr::polymorphic_allocator<int> pmr_al{ &mbr };
+					std::pmr::vector<int> elements_to_remove_by_lookupids{ pmr_al };
+
+
+					for (int i = 0; i <
+						pState->omf->data_anim.animations_count; ++i)
+					{
+						for (int j = 0; j < from.data_anim.animations_count; ++j)
+						{
+							current_omf_name = pState->omf->data_anim.anims[i].name;
+							from_omf_name = from.data_anim.anims[j].name;
+
+							xr_strlwr(current_omf_name);
+							xr_strlwr(from_omf_name);
+
+							if (current_omf_name == from_omf_name)
+							{
+								if (overwrite == 1)
+								{
+									elements_to_remove_by_lookupids.push_back(i);
+								}
+								else
+								{
+									elements_to_remove_by_lookupids.push_back(j);
+								}
+							}
+						}
+					}
+
+					std::sort(
+						elements_to_remove_by_lookupids.begin(),
+						elements_to_remove_by_lookupids.end(),
+						std::greater<int>()
+					);
+
+#ifdef DEBUG
+					if (overwrite == 1)
+					{
+						R_ASSERT(pState->omf->data_anim.anims.size() == pState->omf->data_animparams.params.size());
+					}
+					else
+					{
+						R_ASSERT(from.data_anim.anims.size() == from.data_animparams.params.size());
+					}
+#endif
+
+					for (int id : elements_to_remove_by_lookupids)
+					{
+						if (overwrite == 1)
+						{
+							pState->omf->data_anim.anims.erase(pState->omf->data_anim.anims.begin() + id);
+							pState->omf->data_animparams.params.erase(pState->omf->data_animparams.params.begin() + id);
+						}
+						else
+						{
+							from.data_anim.anims.erase(from.data_anim.anims.begin() + id);
+							from.data_animparams.params.erase(from.data_animparams.params.begin() + id);
+						}
+					}
+
+					int temp_id = 0;
+
+					for (const auto& anim : pState->omf->data_anim.anims)
+					{
+						pState->omf->data_animparams.params[temp_id].motion_id = temp_id;
+						++temp_id;
+					}
+
+					temp_id = 0;
+
+					for (const auto& anim : from.data_anim.anims)
+					{
+						pState->omf->data_anim.anims.push_back(anim);
+
+						from.data_animparams.params[temp_id].motion_id = static_cast<decltype(OMFData::AnimParamsData::AnimParams::motion_id)>(pState->omf->data_animparams.params.size());
+						pState->omf->data_animparams.params.push_back(from.data_animparams.params[temp_id]);
+						++temp_id;
+					}
+
+					pState->omf->data_anim.animations_count = static_cast<decltype(OMFData::AnimData::animations_count)>(pState->omf->data_anim.anims.size());
+					pState->omf->data_animparams.count = static_cast<decltype(OMFData::AnimParamsData::count)>(pState->omf->data_animparams.params.size());
+
+					temp_id = 0;
+
+					for (auto& param : pState->omf->data_animparams.params)
+					{
+						param.motion_id = temp_id;
+						++temp_id;
+					}
+
+					temp_id = 1;
+
+					for (auto& anim : pState->omf->data_anim.anims)
+					{
+						anim.section_id = temp_id;
+						++temp_id;
+					}
+
+					pState->combo_animation_params_data.clear();
+					pState->combo_animation_params_name_hashes.clear();
+					OMFEditor_Init_ComboAnimationParams(pState, *pState->omf);
+
+				}
+			}
+
+			file.close();
 		}
 	}
 }
@@ -1260,7 +1413,7 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 				delete g_pOMFEditor->omf;
 				g_pOMFEditor->omf = nullptr;
 			}
-			
+
 			if (g_pOMFEditor->temp_omf)
 			{
 				g_pOMFEditor->temp_omf->destroy();
@@ -1333,6 +1486,7 @@ void RenderOMFEditor_Draw_TableHeader()
 
 			if (ImGui::MenuItem("Merge with##ToolsInGameImGui_OMFEditor"))
 			{
+				OMFEditor_MergeWith(g_pOMFEditor);
 			}
 
 			if (ImGui::MenuItem("Add anims from##ToolsInGameImGui_OMFEditor"))
@@ -1733,12 +1887,12 @@ void OMFEditor_ComboAnimationParamWasChanged(
 			for (const auto& mark : param.marks)
 			{
 				pState->list_box_motion_marks_names.push_back(mark.name.c_str());
-				
+
 				for (const auto& mark_param : mark.params)
 				{
 					std::sprintf(temp.data(), "%d_mark%d", mark_id, mark_param_id);
 					pState->list_box_motion_marks_params_names.push_back(temp);
-					++mark_param_id; 
+					++mark_param_id;
 				}
 
 				mark_param_id = 0;
@@ -2473,7 +2627,7 @@ void RenderOMFEditor_Draw_TableMain()
 
 							if (ImGui::Button("save as file##ToolsInGameImGui_OMFEditor_ShowBoneParts"))
 							{
-
+								R_ASSERT(false && "todo: impl");
 							}
 
 							RenderOMFEditor_Draw_TableMain_Bones_Section();
