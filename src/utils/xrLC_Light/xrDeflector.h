@@ -30,6 +30,14 @@ public:
 	CDeflector					();
   	~CDeflector					();
  
+	void clear_memory() 
+	{
+		UVpolys.clear();
+		UVpolys.shrink_to_fit();
+
+		layer.clear_memory();
+	};
+
 	void	OA_SetNormal		(Fvector &_N )	{ normal.set(_N); normal.normalize(); VERIFY(_valid(normal)); }
 	bool	OA_Place			(Face *owner);
 	void	OA_Place			(vecFace& lst);

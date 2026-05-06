@@ -11,158 +11,6 @@
 #include <ppl.h>
 
 extern CompilersMode gCompilerMode;
- 
-
-
-u32 MergeLmap(vecDefl& Layer, CLightmap* lmap)
-{
-	// Немного отступ делаем
-
-	#define OFFSET_SHIFT 0
- 	#define OFFSET_START (2 * BORDER) + OFFSET_SHIFT
-  
- 	int _X = OFFSET_START, _Y = OFFSET_START;
-	int _Max_y = 0;
- 	u32 MERGED = 0;
- 
-	for (int it = 0; it < Layer.size(); it++)
-	{
- 		if (_Y > gCompilerMode.LC_sizeLmaps - 32) break;
-
-		lm_layer& L = Layer[it]->layer;
-
-		u32 WIDTH	= L.width  + (2 * BORDER);
-		u32 HEIGHT	= L.height + (2 * BORDER);
-
-		if (_Max_y < HEIGHT)
-			_Max_y = HEIGHT;
-
-		if (_X + WIDTH > gCompilerMode.LC_sizeLmaps - 32)
-		{
-			_X = OFFSET_START;				// Ставим как стартовый
-			_Y += _Max_y + OFFSET_SHIFT;	// Офсетаем не как стартовый
-			_Max_y = 0;
-		}
-
-		L_rect		rT, rS;
-		rS.a.set(_X, _Y);
-		rS.b.set(_X + WIDTH, _Y + HEIGHT);
-		rS.iArea = L.Area();
-		rT = rS;
-
-		// Нужен только в оригенальной LMerge
-		bool		bRotated = false;
-		if (_Y < gCompilerMode.LC_sizeLmaps - HEIGHT)
-		{
-			lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
-			Layer[it]->bMerged = true;
-			Layer[it]->layer.clear_memory();
-			MERGED++;
-		}
-
-		_X += WIDTH + OFFSET_SHIFT; // Офсетаем как стартовый
-		Progress(float(it) / float(g_XSplit.size()));
-	}
-
-	return MERGED;
-}
-
-extern float MAX_GRID_SPACE_WRITE;
-
-u32 MergeLmap_Compact(vecDefl& Layer, CLightmap* lmap)
-{
-	// Sort layer by similarity (state changes) + calc material area
- 	// Слишком много возьмет для помещения 
-	int selected_max = 1;
-	switch (gCompilerMode.LC_sizeLmaps)
-	{
-		case 1024:
-			selected_max = 8;
-			MAX_GRID_SPACE_WRITE = 0.95f;
-			break;
-		case 2048:
-			selected_max = 4;
-			MAX_GRID_SPACE_WRITE = 0.93f;
-			break;
-		case 4096:
-			selected_max = 4;
-			MAX_GRID_SPACE_WRITE = 0.92f;
-			break;
-		case 8192:
-			selected_max = 2.5;
-			MAX_GRID_SPACE_WRITE = 0.87f;
-			break;
-		default: break;
-	}
-
-	u32 maxarea = gCompilerMode.LC_sizeLmaps * gCompilerMode.LC_sizeLmaps * selected_max;	// Max up to 8 lm selected
-	u32 curarea = 0, merge_count = 0;
-
-	for (u32 it = 0; it < (int)Layer.size(); it++)
-	{
-		int		defl_area = Layer[it]->layer.Area();
-		if (curarea + defl_area > maxarea) break;
-		curarea += defl_area;
-		merge_count++;
-	}
-  
-	placer_perpixel._InitSurface();
-
-
-	xr_atomic_u32 CurrentIndex = 0;
-	xr_atomic_u32 ErrorsPlace = 0;
-	u32 MergedCount = 0;
-	concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t thread_id)
-	{
-		static xrCriticalSection IndexLock;
- 		while (true)
-		{
-			u32 IndexTask = CurrentIndex.fetch_add(1);
-			if (IndexTask >= merge_count) break;
-			if (ErrorsPlace.load() > 4096) break;
-
-			auto D = Layer[IndexTask];
-			lm_layer& L = D->layer;
-
-			if (IndexTask % 512 == 0)
-			{
-				placer_perpixel.RecalcY();
-				AditionalData("IT: %u/%u | filled: %u | NoPlaced: %u", IndexTask, merge_count, placer_perpixel.FilledPercent, ErrorsPlace.load());
-			}
-			else if (IndexTask % 64 == 0)
-			{
-				float Total = float(IndexTask - 1) / float(merge_count);
-				Progress(Total);
-			}
-
-			L_rect		rT, rS;
-			rS.a.set(0, 0);
-			rS.b.set(L.width + 2 * BORDER - 1, L.height + 2 * BORDER - 1);
-			rS.iArea = L.Area();
-			rT = rS;
-
-			bool rotated = false;
-			if (placer_perpixel.rect_place_full(rT, &L))
-			{
-				IndexLock.Enter();
-				if (D->bMerged == false)
-				{
-					lmap->Capture(D, rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), rotated);
-					D->bMerged = true;
-					D->layer.clear_memory();
-					MergedCount++;
-				}
-				IndexLock.Leave();
-			}
-			else
-				if (L.Area() < 128)
-					ErrorsPlace.fetch_add(1);
-		}
-	});
-
-	Progress(1.f);
-	return MergedCount;
-} 
 
 // Other Stuff
 IC int	compare_defl(CDeflector* D1, CDeflector* D2)
@@ -222,84 +70,105 @@ IC bool	sort_defl_complex(CDeflector* D1, CDeflector* D2)
 	}
 }
 
-struct pred_remove
+
+// Оригенальный метод но с улучшениями для скорости и большей разверткой в 2к - 16к !
+// Доработал метод SizeX плюсуется что очень ускоряет сборку DDS ! теперь он быстрее обычного !
+u32 MergeLmap_Compact(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 {
-	IC bool	operator() (CDeflector* D)
-	{
-		if (0 == D)
-			return true;
+	static u32 MergedCount = 0;
+	static xr_atomic_u32 CurrentIndex = 0;
+	static xr_atomic_u32 ErrorsPlace  = 0;
 
-		if (D->bMerged)
-		{
-			D->bMerged = false;
-			return true;
-		}
-
-		return false;
-	};
-};
+	CurrentIndex = 0;
+	ErrorsPlace = 0;
+	MergedCount = 0;
  
-void CBuild::xrPhase_MergeLM(xr_vector<CDeflector*>& deflectors)
-{
-	// Phase("LIGHT: Merging lightmaps...");
- 	vecDefl Layer;
-
-	// **** Select all deflectors, which contain this light-layer
-	Layer.clear();
-	for (auto& D : deflectors)
+	concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [Layer, lmap](size_t thread_id)
 	{
- 		if (D->bMerged)		continue;
-		Layer.push_back(D);
-	}
+		static xrCriticalSection IndexLock;
+		while (true)
+		{
+			u32 IndexTask = CurrentIndex.fetch_add(1);
+			if (IndexTask >= Layer.size()) break;
+			CDeflector* D = Layer[IndexTask];
 
-	 
+			if (ErrorsPlace > 256 && D->layer.Area() > 4) continue;
+			if (ErrorsPlace > 1024) break;
+
+			lm_layer& L = D->layer;
+
+			if (IndexTask % 16 == 0)
+			{
+				float Total = float(IndexTask - 1) / float(Layer.size());
+				Progress(Total);
+
+				AditionalData("IT: %u/%u | NoPlaced: %u", IndexTask, Layer.size(), ErrorsPlace.load());
+			}
+
+			L_rect		rT;
+ 
+			bool rotated = false;
+			if (placer_perpixel.rect_place_full(rT, &L))
+			{
+				IndexLock.Enter();
+				if (D->bMerged == false)
+				{
+					lmap->Capture(D, rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), rotated);
+					D->bMerged = true;
+ 					D->clear_memory();
+					MergedCount++;
+				}
+				IndexLock.Leave();
+			}
+			else
+				if (L.Area() < 128)
+					ErrorsPlace.fetch_add(1);
+		}
+	});
+
+	Progress(1.f);
+	return MergedCount;
+}
+
+
+void CBuild::xrPhase_MergeLM()
+{
+	auto& Layer = lc_global_data()->g_deflectors();
+
+	Phase("Building Lmaps...");
+	// **** Select all deflectors, which contain this light-layer
+ 	for (u32 it = 0; it < materials().size(); it++)
+		materials()[it].internal_max_area = 0;
+ 	for (auto D : Layer)
+ 		materials()[D->GetBaseMaterial()].internal_max_area = std::max(D->layer.Area(), materials()[D->GetBaseMaterial()].internal_max_area);
+	std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);
+
 	// Merge this layer (which left unmerged)
 	u32 StartSize   = Layer.size();
 	u32 TotalMerged = 0;
 	CTimer tStats; 
-	extern size_t GetMemory();
+ 
 	while (Layer.size())
 	{
  		tStats.Start();
- 		for (u32 it = 0; it < materials().size(); it++) materials()[it].internal_max_area = 0;
-		for (u32 it = 0; it < Layer.size(); it++)
-		{
-			CDeflector* D = Layer[it];
-			materials()[D->GetBaseMaterial()].internal_max_area = std::max(D->layer.Area(), materials()[D->GetBaseMaterial()].internal_max_area);
-		}
-
-		CLightmap* lmap = nullptr;
-		if (gCompilerMode.LC_LmapsAlternative)
-		{
-			std::sort(Layer.begin(), Layer.end(), [&](CDeflector* D1, CDeflector* D2) {
-  				return D1->layer.height < D2->layer.height;
- 			});
-
-			// Startup
-  			lmap = new CLightmap();
-			lc_global_data()->lightmaps().push_back(lmap);
-			TotalMerged += MergeLmap(Layer, lmap);
-		}
-		else
-		{
-			std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);
-
-			// Startup
- 			placer_perpixel._InitSurface();
-			lmap = new CLightmap();
-			lc_global_data()->lightmaps().push_back(lmap);
-			
-			// Collect All to map
-			TotalMerged		+= MergeLmap_Compact(Layer, lmap);
-		}
- 		Progress(float(TotalMerged / float(StartSize)));	
+ 
+		CLightmap* lmap = new CLightmap();
+		lc_global_data()->lightmaps().push_back(lmap);
+    	placer_perpixel._InitSurface();
+ 		
+		// TotalMerged += MergeLmap(Layer, lmap);
+		TotalMerged		+= MergeLmap_Compact(Layer, lmap);
 
 		// Remove merged lightmaps
- 		vecDeflIt last = std::remove_if(Layer.begin(), Layer.end(), pred_remove());
-		Layer.erase(last, Layer.end());
-		lmap->Save(pBuild->path);
-  		 
- 		clMsg("* [Lightmap: %u] : Merging:[%u/%u]  Time(%u ms)",
+		Layer.erase(
+			std::remove_if(Layer.begin(), Layer.end(), [](CDeflector* D) { return D == nullptr || D->bMerged; }),
+			Layer.end()
+		);
+
+ 		lmap->Save(pBuild->path);
+		Progress(float(TotalMerged / float(StartSize)));
+
+  		clMsg("* [Lightmap: %u] : Merging:[%u/%u]  Time(%u ms)",
 			lc_global_data()->lightmaps().size(), 
 			TotalMerged, StartSize, 
 			tStats.GetElapsed_ms()

@@ -9,6 +9,7 @@
 
 #include "../../xrCore/xrSyncronize.h"
 #include "../xrLC_Light/mu_model_light.h"
+#include "../xrLC_Light/light_point.h"
 
 #ifdef LCCUDA_BUILD
 #include "../xrLC_Light/CUDA/CUDARayCast.h"
@@ -28,9 +29,43 @@ void	CBuild::LMaps					()
 	{
 		// Se7kills 
  		CTimer start_time; start_time.Start();
-		extern void RunCompileDeflectorsGPU (CBuild * build);
-		RunCompileDeflectorsGPU(this);
-		clMsg("%d lightmaps builded", lc_global_data()->lightmaps().size());
+
+		GPUTaskinSystem.RestartALL();
+		GPUTaskinSystem.ColorsMapType = eDeflectors;
+		GPUTaskinSystem.current_flags = LGetCurrentFlags();
+
+		auto& deflectors = lc_global_data()->g_deflectors();
+
+		xr_atomic_u32 IndexTaskID = 0, IndexTaskApply = 0;
+		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TID)
+			{
+				while (true)
+				{
+					u32 Index = IndexTaskID.fetch_add(1);
+					if (Index >= deflectors.size()) break;
+					CDeflector* D = deflectors[Index];
+					D->LightGPU();
+					AditionalData("*** [LMAPS] ID [%u/%u]", Index, deflectors.size());
+				}
+				GPUTaskinSystem.LightPointPacked_run_tasks(); // Завершаем задачи !
+			});
+		GPUTaskinSystem.RestartALL();
+
+		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TID)
+			{
+				while (true)
+				{
+					u32 Index = IndexTaskApply.fetch_add(1);
+					if (Index >= deflectors.size()) break;
+					CDeflector* D = deflectors[Index];
+
+					D->ApplyColors();
+					D->ApplyExpandBordersGPU();
+					AditionalData("*** [LMAPS] ApplyID [%u/%u]", Index, deflectors.size());
+				}
+			});
+
+		clMsg("%f seconds", start_time.GetElapsed_sec());
    	}
 	else
 #endif
@@ -58,18 +93,7 @@ void	CBuild::LMaps					()
 		}
 		);
 		clMsg("%f seconds", start_time.GetElapsed_sec());
-		 
-		//****************************************** Merge LMAPS
-		xrPhase_MergeLM( lc_global_data()->g_deflectors() );
 	}
-
-
-
-	clMsg("Start Destroy Deflectors: Memory: %llu mb used", u32(GetHeapMemory() / 1024 / 1024));
-	for (u32 it = 0; it < lc_global_data()->g_deflectors().size(); it++)
-		xr_delete(lc_global_data()->g_deflectors()[it]);
-	lc_global_data()->g_deflectors().clear();
-	clMsg("End Destroy Deflectors: Memory: %llu mb used", u32(GetHeapMemory() / 1024 / 1024));
 }
  
 void CBuild::Light()
@@ -102,10 +126,14 @@ void CBuild::Light()
 
 	auto BuildingUV = [this]()
 	{
-		Phase("Building UV...");
-		//****************************************** Building normals
+		Phase("Building Normals...");
 		CalcNormals();
+ 
 
+		Phase("Building tangent-basis ...");
+ 		xrPhase_TangentBasis();
+
+		Phase("Building UV...");
 		//****************************************** Resolve materials
 		xrPhase_ResolveMaterials();
 		IsolateVertices(true);
@@ -121,11 +149,11 @@ void CBuild::Light()
 
 	// Hemi MT - Calculate
 	Light_prepare();
-	InitModel();
 
 	// ***************************************** Computing UV
 	BuildingUV();
- 
+	InitModel();
+  
 	//****************************************** AdaptiveHT расщет
 	xrPhase_AdaptiveHT_calculate();		
 	
@@ -141,6 +169,9 @@ void CBuild::Light()
 	//****************************************** Vertex
  	LightVertex();
  
+ 	//****************************************** Merge LMAPS
+	xrPhase_MergeLM();
+
 	//****************************************** Merge geometry
 	Phase("Merging geometry...");
  	xrPhase_MergeGeometry();

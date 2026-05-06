@@ -265,6 +265,7 @@ void OGF::Optimize()
 
 thread_local VIMP_Processor make_progressive_vimp;
 
+#include "../xrForms/CompilersUI.h"
 // Make Progressive
 void OGF::MakeProgressive	(float metric_limit)
 {
@@ -274,8 +275,8 @@ void OGF::MakeProgressive	(float metric_limit)
 	// for nv40 and up the better guess will probably be around 500
 	if (data.faces.size() < c_PM_FaceLimit * 4)		return;			// nv40 Теперь только
 
- 	if (g_params().m_quality==ebqDraft)			return;
-	if (g_build_options.b_noise)				return;
+ 	if (g_params().m_quality==ebqDraft)				return;
+	if (gCompilerMode.LC_Noise)						return;
 
 	// Есть шанс словить вылет
 	if (data.faces.size() > 32 * 1024)
