@@ -39,8 +39,7 @@ void CUDA_PackedLighting::RestartALL()
 	current_flags = 0;
 
 	// clearing pool
-	xr_concurrent_unordered_map <size_t, base_color_c>  new_colors;
-	task_colors.swap(new_colors);
+	task_colors.clear();
 }
 
 // Deflectors

@@ -118,15 +118,7 @@ void vec_free(xr_vector<T*>& v)
 }
 
 #include "../xrLC/Build.h"
-void xrLC_GlobalData::clear_build_textures_surface()
-{
- 	for (auto& surface : textures())
-		surface.pSurface.Clear();
-
-	textures().clear();
-	textures().shrink_to_fit();
-}
-
+ 
 void mu_mesh_clear();
 
 // create - destroy 
@@ -138,12 +130,12 @@ void mu_mesh_clear();
 
 Face* xrLC_GlobalData::create_face()
 {
- 	return new Face();
+	return new Face();
 }
 
 void xrLC_GlobalData::destroy_face(Face*& f)
 {
- 	xr_delete(f);
+	xr_delete(f);
 }
 
 Vertex* xrLC_GlobalData::create_vertex()
@@ -153,17 +145,21 @@ Vertex* xrLC_GlobalData::create_vertex()
 
 void xrLC_GlobalData::destroy_vertex(Vertex*& v)
 {
-	xr_delete(v);
+	return xr_delete(v);
 }
 
 void xrLC_GlobalData::clear() 
 {
 	// se7kills (Проверил это отгружается хорошо !)
- 	clear_build_textures_surface();
+	for (auto& surface : textures())
+		surface.pSurface.Clear();
+ 	textures().clear();
+	textures().shrink_to_fit();
 
  	_cl_globs._materials.clear();
 	_cl_globs._shaders.Unload();
-  
+	clMsg("[xrLC_Remove] mem textures: %u mb", GetHeapMemory() / 1024 / 1024);
+
 	// Пометка чтобы не трогало векторы (_g_faces, _g_vertex) в деструкторе !
 	g_bUnregister = false;
  	
@@ -174,25 +170,33 @@ void xrLC_GlobalData::clear()
 	}
 	_g_faces.clear();
 	_g_faces.shrink_to_fit();
-	clMsg("[xrLC_Remove] mem faces: %u mb", GetHeapMemory() / 1024 / 1024);
-
+ 
 	for (auto V : _g_vertices)
 	{
 		V->~Tvertex();
 		xr_free(V);
 	}
-	_g_vertices.clear();
+ 	_g_vertices.clear();
 	_g_vertices.shrink_to_fit();
-	clMsg("[xrLC_Remove] mem vertex: %u mb", GetHeapMemory() / 1024 / 1024);
+	
+	clMsg("[xrLC_Remove] mem faces-vertex: %u mb", GetHeapMemory() / 1024 / 1024);
  
 	// Не замечал утечек памяти !
 	vec_clear(_mu_models); 
 	vec_clear(_mu_refs);
 	mu_mesh_clear();
 
+	clMsg("[xrLC_Remove] mem mu-models: %u mb", GetHeapMemory() / 1024 / 1024);
+
+
 	// Lighting stuff
-	vec_clear(_g_deflectors);
+	for (auto D : _g_deflectors)
+		D->~CDeflector();
+ 	vec_free(_g_deflectors);
+
 	vec_clear(_g_lightmaps);
 	xr_delete(_cl_globs._RCAST_Model);
+
+	clMsg("[xrLC_Remove] mem defl-lmaps: %u mb", GetHeapMemory() / 1024 / 1024);
 }
  

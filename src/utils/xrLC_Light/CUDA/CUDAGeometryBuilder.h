@@ -140,6 +140,7 @@ public:
         //----------------------
         // 4. Перестраиваем треугольники
         //----------------------
+        vertices.clear(); vertices.shrink_to_fit();
         vertices.swap(unique_vertices);
          
         triangles.clear();                       facePointers.clear();
@@ -201,7 +202,10 @@ public:
         new_dummy.shrink_to_fit();
 
         // меняем местами
+        triangles.clear(); triangles.shrink_to_fit();
         triangles.swap(new_faces);
+        
+        facePointers.clear(); facePointers.shrink_to_fit();
         facePointers.swap(new_dummy);
     }
 

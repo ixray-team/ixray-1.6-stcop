@@ -51,7 +51,6 @@ protected:
 	TriangleContainer			static_geom_transp;
  
 
-	void RemoveGeometry();
  	void CommitScene();
 
 	void BuildModel(xr_vector<FaceDataEmbree> & faces);
@@ -69,6 +68,7 @@ public:
 	void  InitializeGeometry_Model(xr_vector<FaceDataEmbree> & faces); // Single-Models (xrMU-Model)
   
  	void  IntelEmbereUnloadAll();
+	void  RemoveGeometry();
 
 	// Details Loading 
 	RTCScene	IntelSceneDetails = nullptr;
