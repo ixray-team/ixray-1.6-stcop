@@ -199,7 +199,7 @@ void xrMU_Model::calc_lighting	()
 
 		calc_lighting(color, Fidentity, &MDL, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun);
 
-		MDL.IntelEmbereUnloadAll();
+		MDL.RemoveGeometry();
 	}
 	else
 	{

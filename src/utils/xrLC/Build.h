@@ -98,7 +98,7 @@ public:
 	// Lmaps Processing 
  	void	LMaps					();
   	void	LightVertex				();
-	void	xrPhase_MergeLM			(xr_vector<CDeflector*>& deflectors);
+	void	xrPhase_MergeLM			();
  
 	void	xrPhase_MergeGeometry	();
 

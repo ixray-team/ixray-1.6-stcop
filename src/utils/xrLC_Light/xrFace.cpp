@@ -174,11 +174,9 @@ void Face::OA_Unwarp( CDeflector *D, xr_vector<type_face*>& faces)
 		{
 			for (auto it : f->v[i]->m_adjacents)
 			{
-				if (it->pDeflector)
-					continue;
+				if (it->pDeflector) continue;
 				
-				if (!D->OA_Place(it))
-					continue;
+				if (!D->OA_Place(it)) continue;
 
 				affected++;
 				st.push(it);

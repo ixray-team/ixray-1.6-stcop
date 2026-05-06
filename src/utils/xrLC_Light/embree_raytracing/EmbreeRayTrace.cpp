@@ -210,23 +210,32 @@ void EmbreeRayTraceModel::RemoveGeometry()
 	IntelScene = 0;
 
 }
+ 
+// Embree Device (Должен быть один)
+void InitializeEmbreeDevice()
+{
+	if (isDeviceInitialized)		return;
+
+	auto fError = [](void* userPtr, enum RTCError code, const char* str)
+	{
+		R_ASSERT2(false, str);
+	};
+
+	EmbreeDevice = rtcNewDevice(GetDeviceConfig());
+	rtcSetDeviceErrorFunction(EmbreeDevice, fError, nullptr);
+
+	isDeviceInitialized = true;
+}
 
 void EmbreeRayTraceModel::IntelEmbereUnloadAll()
 {
-	if (this == &EmbreeMain)
- 		Msg("* Intel Embree Releasing Start| Memory: %u mb", u32(GetMemory() / 1024 / 1024));
- 	
-	RemoveGeometry();
+  	Msg("* Intel Embree Releasing Start| Memory: %u mb", u32(GetMemory() / 1024 / 1024));
+ 	RemoveGeometry();
+    Msg("* Intel Embree Releasing End| Memory: %u mb", u32(GetMemory() / 1024 / 1024));
 
-	if (this == &EmbreeMain)
-  		Msg("* Intel Embree Releasing End| Memory: %u mb", u32(GetMemory() / 1024 / 1024));
+	rtcReleaseDevice(EmbreeDevice);
 }
  
-// Embree Device (Должен быть один)
-void errors_embree(void* userPtr, enum RTCError code, const char* str)
-{
-	R_ASSERT2(false, str);
-}
 
 const char* GetDeviceConfig()
 {
@@ -246,14 +255,4 @@ const char* GetDeviceConfig()
 		config = "isa=sse2";
 	
 	return config;
-}
-
-void InitializeEmbreeDevice()
-{
- 	if (isDeviceInitialized)		return;
-
-	EmbreeDevice = rtcNewDevice(GetDeviceConfig());
-  	rtcSetDeviceErrorFunction(EmbreeDevice, &errors_embree, nullptr);
-
-	isDeviceInitialized = true;
 }

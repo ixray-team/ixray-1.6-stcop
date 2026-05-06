@@ -34,8 +34,8 @@ struct CompilersMode
 	bool DO = false;
 	bool LC = false;
 
-	bool LC_SkipStaticMap = false;
-	bool LC_LmapsAlternative = false;
+	bool LC_SkipTangent = false;
+ 	bool LC_SkipStaticMap = false;
 	bool LC_BackingDisabled = false;
 	bool LC_SaveOFG = false;
 	bool LC_GI = false;
@@ -54,7 +54,10 @@ struct CompilersMode
 	CFormVersions LC_CformType = CFormVersions::Vanilla;
 	int LC_CFormChunkSize = 75;
 	
+	int LC_BORDER = 1;
 	int LC_sizeLmaps = 1024 * 4;
+	float LC_sizeFill  = 0.85f;
+
 	int LC_JSampleMU = 6;
 	int LC_JSample = 9;
 	int ThreadsPerWork = 14;
