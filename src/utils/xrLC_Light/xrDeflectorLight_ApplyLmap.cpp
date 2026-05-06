@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "xrDeflector.h"
 #include "../xrDXT/xrDXT.h"
+#include "../xrForms/CompilersUI.h"
 
 // Compression test
 IC u32	rms_diff(u32 a, u32 b)
@@ -39,7 +40,7 @@ bool	__stdcall rms_test_compress(lm_layer& lm, u32 w, u32 h, u32 rms)
 	}
 
 	// compare them
-	const u32 limit = 254 - BORDER;
+	const u32 limit = 254 - gCompilerMode.LC_BORDER;
 	for (u32 y = 0; y < lm.height; y++)
 	{
 		u32		offset = y * lm.width;
@@ -146,8 +147,8 @@ bool	compress_Zero(lm_layer& lm)
 	u8	_h = u8_clr(_c.hemi);
 	if (rms_test(lm, _r, _g, _b, _s, _h, rms_zero))
 	{
-		u32		c_x = BORDER * 2;
-		u32		c_y = BORDER * 2;
+		u32		c_x = gCompilerMode.LC_BORDER * 2;
+		u32		c_y = gCompilerMode.LC_BORDER * 2;
 		base_color ccc;		ccc._set(_c);
 		lm.surface.assign(c_x * c_y, ccc);
 		lm.marker.assign(c_x * c_y, 255);

@@ -30,7 +30,6 @@ struct OGF_Base;
 xr_vector<OGF_Base*> g_tree;
 vec2Face			 g_XSplit;
 
-SBuildOptions g_build_options;
 void CBuild::CheckBeforeSave(u32 stage)
 {
 	bool b_g_tree_empty = g_tree.empty();
@@ -203,10 +202,6 @@ void CBuild::Run(const char* P)
 
 void CBuild::RunAfterLight(IWriter* fs)
 {
-	Phase("Building tangent-basis ...");
-	xrPhase_TangentBasis();
-	mem_Compact();
-
 	//****************************************** Convert to OGF
 	Phase("Converting to OGFs...");
 	Flex2OGF();

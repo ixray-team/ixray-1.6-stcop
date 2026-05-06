@@ -29,9 +29,7 @@ extern CompilersMode gCompilerMode;
 
 void StartupLC() 
 {
-	g_build_options.b_radiosity		= gCompilerMode.LC_GI;
-	g_build_options.b_noise			= gCompilerMode.LC_Noise;
-	g_using_smooth_groups			= !gCompilerMode.LC_NoSMG;
+ 	g_using_smooth_groups			= !gCompilerMode.LC_NoSMG;
 
 	// Load project
 	for (auto& [Name, Selected] : gCompilerMode.Files)

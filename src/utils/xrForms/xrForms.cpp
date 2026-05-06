@@ -181,7 +181,7 @@ void SDL_Application()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 
 	// Setup Dear ImGui style
-	XRay::ImGui::MakeEditorTheme();
+	XRay::ImGui::MakeRedTheme();
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplSDL3_InitForSDLRenderer(g_AppInfo.Window, renderer);
@@ -272,6 +272,8 @@ void SaveCompilerCfg()
 	Serializer->Write("LC_BackingDisabled", gCompilerMode.LC_BackingDisabled);
 	Serializer->Write("LC_SaveOFG", gCompilerMode.LC_SaveOFG);
 	Serializer->Write("LC_GI", gCompilerMode.LC_GI);
+	
+	Serializer->Write("LC_SkipStaticMap", gCompilerMode.LC_SkipStaticMap);
 	Serializer->Write("LC_NoSun", gCompilerMode.LC_NoSun);
 	Serializer->Write("LC_NoSMG", gCompilerMode.LC_NoSMG);
 	Serializer->Write("LC_Noise", gCompilerMode.LC_Noise);
@@ -282,8 +284,7 @@ void SaveCompilerCfg()
 	Serializer->Write("LC_skipWeld", gCompilerMode.LC_skipWeld);
 	Serializer->Write("IsOverloadedSettings", gCompilerMode.IsOverloadedSettings);
 	Serializer->Write("LC_sizeLmaps", gCompilerMode.LC_sizeLmaps);
-	Serializer->Write("LC_LmapsAlternative", gCompilerMode.LC_LmapsAlternative);
-	Serializer->Write("LC_JSampleMU", gCompilerMode.LC_JSampleMU);
+ 	Serializer->Write("LC_JSampleMU", gCompilerMode.LC_JSampleMU);
 	Serializer->Write("LC_JSample", gCompilerMode.LC_JSample);
 	Serializer->Write("ThreadsPerWork", gCompilerMode.ThreadsPerWork);
 	Serializer->Write("LC_Pixels", gCompilerMode.LC_Pixels);
@@ -347,6 +348,8 @@ int APIENTRY WinMain
 	Serializer->Read("LC_BackingDisabled", gCompilerMode.LC_BackingDisabled);
 	Serializer->Read("LC_SaveOFG", gCompilerMode.LC_SaveOFG);
 	Serializer->Read("LC_GI", gCompilerMode.LC_GI);
+
+	Serializer->Read("LC_SkipStaticMap", gCompilerMode.LC_SkipStaticMap);
 	Serializer->Read("LC_NoSun", gCompilerMode.LC_NoSun);
 	Serializer->Read("LC_NoSMG", gCompilerMode.LC_NoSMG);
 	Serializer->Read("LC_Noise", gCompilerMode.LC_Noise);
@@ -378,8 +381,7 @@ int APIENTRY WinMain
 	Serializer->Read("item_current_geom", item_current_geom);
 	Serializer->Read("item_current_jitter", item_current_jitter);
 	Serializer->Read("item_current_jitter_mu", item_current_jitter_mu);
-	Serializer->Read("LC_LmapsAlternative", gCompilerMode.LC_LmapsAlternative);
-	Serializer->Read("LC_legacyLM", gCompilerMode.LC_legacyLM);
+ 	Serializer->Read("LC_legacyLM", gCompilerMode.LC_legacyLM);
 	Serializer->Read("LC_CformType", gCompilerMode.LC_CformType);
 	Serializer->Read("LC_CFormChunkSize", gCompilerMode.LC_CFormChunkSize);
 	Serializer->Read("LC_GeomType", gCompilerMode.LC_GeomType);
