@@ -105,13 +105,13 @@ void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 {
 #ifndef _EDITOR
 	Resources->reset_begin	();
-	Memory.mem_compact		();
-	ResourcesDeferredUnload();
+
+	//ResourcesDeferredUnload();
+	//ResourcesDeferredUpload();
 
 	CImGuiManager::Instance().Reset();
 	
 	Device.ResizeWindow(psCurrentVidMode[0], psCurrentVidMode[1]);
-	ResourcesDeferredUpload();
 
 	dwWidth = Device.GetSwapchainWidth();
 	dwHeight = Device.GetSwapchainHeight();

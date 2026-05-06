@@ -191,9 +191,7 @@ bool	CLevel::net_start_client5				()
 		{
 			g_pGamePersistent->SetLoadStageTitle("st_loading_textures");
 			g_pGamePersistent->LoadTitle		();
-			//Device.Resources->DeferredLoad	(FALSE);
 			Device.m_pRender->DeferredLoad		(FALSE);
-			//Device.Resources->DeferredUpload	();
 			Device.m_pRender->ResourcesDeferredUpload();
 			LL_CheckTextures					();
 		}

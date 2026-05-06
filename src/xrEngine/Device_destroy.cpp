@@ -98,9 +98,6 @@ void CRenderDevice::Reset(bool precache)
 	u32 tm_end = TimerAsync();
 	Msg("*** RESET [%d ms]", tm_end - tm_start);
 
-	//	TODO: Remove this! It may hide crash
-	Memory.mem_compact();
-
 	if (!g_dedicated_server)
 	{
 		SDL_ShowCursor();
