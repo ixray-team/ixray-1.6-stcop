@@ -90,9 +90,6 @@ public:
   
 // Clearing Data
 		void						clear					();
- 		void						clear_build_textures_surface();
-
-
  		void						mu_models_calc_materials();
 };
 

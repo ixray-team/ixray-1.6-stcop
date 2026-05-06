@@ -71,18 +71,25 @@ bool	lm_layer::similar			( const lm_layer &layer, float eps/* =EPS*/ ) const
 
 }
 
-// Apply borders (Новая релизация)
+u32 lm_layer::Area() 
+{ 
+	u32 BORDER = gCompilerMode.LC_BORDER;;
+	return (width + 2 * BORDER) * (height + 2 * BORDER);
+}
+
+// x2 ускорил 
 bool lm_layer::ApplyBorders(u32 ref)
 {
 	bool bNeedContinue = false;
 
 	// Копия surface для чтения (читаем старые значения)
-	xr_vector<base_color> src = surface;
+	apply_borders_tmp.resize(surface.size());
+
+	base_color* src = surface.data();
+	base_color* dst = apply_borders_tmp.data();
 
 	// Сбор соседей
-	xr_vector<base_color*> neighbors;
-
-	base_color_c out;
+	base_color_c out; u32 count = 0;
 	u32 idx, nidx;
 
 	// Проходим по всем пикселям
@@ -91,11 +98,12 @@ bool lm_layer::ApplyBorders(u32 ref)
 		for (u32 x = 0; x < width; ++x)
 		{
 			idx = y * width + x;
+			dst[idx] = src[idx];
 
 			// только пустые пиксели
 			if (marker[idx] != 0) continue;
 
-			neighbors.clear();
+			count = 0; out.clear_color();
 			for (int dy = -1; dy <= 1; ++dy)
 			{
 				int ny = (int)y + dy;
@@ -109,32 +117,31 @@ bool lm_layer::ApplyBorders(u32 ref)
 
 					nidx = ny * width + nx;
 					if (marker[nidx] > ref)
-						neighbors.push_back(&src[nidx]);
+					{
+						base_color_c C;
+						src[idx]._get(C);
+						out.add(C);
+						count++;
+					}
 				}
 			}
 
- 			if (neighbors.size() == 0) continue;
- 			out.clear_color();
-
-			// суммирование RGB, Hemi, Sun (float x5 )
-			for (auto* n : neighbors)
-			{
-				base_color_c C;
-				n->_get(C);
-				out.add(C);
-			}
+			if (count == 0) { continue; }
 
 			// усредняем
-			out.scale(neighbors.size());
+			out.scale(count);
 
 			// геттер/сеттер base_color
-			surface[idx]._set(out);
+			dst[idx]._set(out);
 			marker[idx] = u8(std::min(ref, 255u));
 
 			bNeedContinue = true;
 		}
 	}
-		 
+
+	// Фиксы утечек !
+	surface.clear(); surface.shrink_to_fit();
+	surface.swap(apply_borders_tmp);
+
 	return bNeedContinue;
 }
- 

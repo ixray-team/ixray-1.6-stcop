@@ -29,6 +29,8 @@ void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, boo
 	if (lm.surface.empty())
 		lm.create(gCompilerMode.LC_sizeLmaps, gCompilerMode.LC_sizeLmaps);
 	
+	u32 BORDER = gCompilerMode.LC_BORDER;
+
 	// Addressing
 	xr_vector<UVtri>	tris;
 	D->RemapUV			(tris, b_u+BORDER, b_v+BORDER, s_u-2*BORDER, s_v-2*BORDER, gCompilerMode.LC_sizeLmaps, gCompilerMode.LC_sizeLmaps, bRotated);
@@ -113,6 +115,8 @@ void CLightmap::Save(LPCSTR path)
 	static int		lmapNameID = 0;
 	++lmapNameID;
 
+	u32 BORDER = gCompilerMode.LC_BORDER;;
+
 	// Borders correction
 	for (u32 _y = 0; _y < gCompilerMode.LC_sizeLmaps; _y++)
 	{
@@ -125,12 +129,17 @@ void CLightmap::Save(LPCSTR path)
 				lm.marker[offset] = 0;
 		}
 	}
-	
+
+	for (u32 ref = 254; ref > (254 - 16); ref--)
+	{
+		lm.ApplyBorders(ref);
+		Progress(1.f - float(ref) / float(254 - 16));
+	} 
+
 	lm_texture.bHasAlpha = true;
-	lm_texture.dwWidth  = lm.width;
+	lm_texture.dwWidth = lm.width;
 	lm_texture.dwHeight = lm.height;
 	lm_texture.pSurface.Clear();
-
 
 	// Записываем RGB + SUN
 	if (true)

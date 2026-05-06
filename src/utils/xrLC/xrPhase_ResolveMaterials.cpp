@@ -92,5 +92,7 @@ void	CBuild::xrPhase_ResolveMaterials()
  	for (auto F : g_XSplit)
  		Detach(F);
  
-	clMsg				("Material %u subdivisions. %u ms", g_XSplit.size(), tProcecss.GetElapsed_ms());
+	//clMsg				("Material %u subdivisions. %u ms", g_XSplit.size(), tProcecss.GetElapsed_ms());
+
+	Status("* Resolving Materials: %u ms", tProcecss.GetElapsed_ms());
 }

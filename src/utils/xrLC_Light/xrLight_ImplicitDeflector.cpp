@@ -44,12 +44,16 @@ void ImplicitDeflector::SaveTextures()
 {
 	// base (HEMI)
 	{
+ 		Status("Processing lightmap...");
+		for (u32 ref = 254; ref > 0; ref--)	
+		if (!lmap.ApplyBorders(ref)) break;
+
 		Status("Mixing lighting with texture...");
 		{
 			b_BuildTexture& TEX = *texture;
 			VERIFY(!TEX.pSurface.Empty());
 
-			u32* color = (u32*) *TEX.pSurface;
+			u32* color = (u32*)*TEX.pSurface;
 			for (u32 V = 0; V < Height(); V++)
 			{
 				for (u32 U = 0; U < Width(); U++)
@@ -60,8 +64,8 @@ void ImplicitDeflector::SaveTextures()
 					C = subst_alpha(C, u8_clr(hemi));
 				}
 			}
-		}
 
+		}
 		Status("Saving base...");
 		string128 name;
 		string_path out_name;
@@ -134,6 +138,8 @@ void ImplicitDeflector::SaveTextures()
 	
 	// Dealocate
 	Deallocate();
+	b_BuildTexture& TEX = *texture;
+	TEX.pSurface.Clear();
 }
 
 

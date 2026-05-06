@@ -2,9 +2,6 @@
 
 #include "base_color.h"
 
-#define BORDER 2
- 
-
 struct XRLC_LIGHT_API  lm_layer
 {
 	u32						width;
@@ -12,7 +9,8 @@ struct XRLC_LIGHT_API  lm_layer
 	xr_vector<base_color>	surface;
 	xr_vector<u8>			marker;
 	xr_vector<u8>			samples;
- 
+	xr_vector<base_color>	apply_borders_tmp;
+
 public:
 	void					create			(u32 w, u32 h)
 	{
@@ -23,6 +21,7 @@ public:
 		surface.clear();	surface.resize	(size);
 		marker.clear();		marker.assign	(size, 0);
  		samples.clear();	samples.assign  (size, 0);
+		apply_borders_tmp.clear(); apply_borders_tmp.shrink_to_fit();
 	}
 
 	void					destroy			()
@@ -31,10 +30,12 @@ public:
 		surface.clear();
 		marker.clear();
 		samples.clear();
+		apply_borders_tmp.clear();
 
  		surface.shrink_to_fit();
 		marker.shrink_to_fit();
 		samples.shrink_to_fit();
+		apply_borders_tmp.shrink_to_fit();
 	}
 
 	void					clear_memory()
@@ -49,7 +50,7 @@ public:
 		samples.shrink_to_fit();
 	}
 
-	u32						Area			()						{ return (width+2*BORDER)*(height+2*BORDER); }
+	u32						Area();
 	void					Pixel			(u32 ID, u8& r, u8& g, u8& b, u8& s, u8& h);
 	void					Pack			(xr_vector<u32>& dest)const;
 	void					Pack_hemi		(xr_vector<u32>& dest)const;
