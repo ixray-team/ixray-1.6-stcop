@@ -38,6 +38,7 @@ namespace
         if ((int)faces.size() > c_SS_HighVertLimit)
             return true;
 
+        u32     BORDER = gCompilerMode.LC_BORDER;
         auto* defl = (CDeflector*)faces.front()->pDeflector;
         if (defl)
         {
@@ -170,13 +171,6 @@ void CBuild::xrPhase_Subdivide()
         Detach(&s2);
     }
 
-    clMsg("%d subdivisions.", g_XSplit.size());
+    Status("Subdivided: %u subdivisions.", g_XSplit.size());
     validate_splits();
-
-    size_t allocated = 0;
-    for (auto* D : lc_global_data()->g_deflectors())
-        allocated += D->size_deflector();
-
-    allocated /= (1024 * 1024);
-    AditionalData("Splits: %u | DeflectorsAlloc: %u mb", g_XSplit.size(), allocated);
 }

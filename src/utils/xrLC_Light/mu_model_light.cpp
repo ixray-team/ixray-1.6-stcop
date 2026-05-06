@@ -42,7 +42,7 @@ void run_mu_light()
 				
 				// Light references
 				inlc_global_data()->mu_refs()[tID]->calc_lighting();
-				Msg("MuRefs %d/%d", tID, inlc_global_data()->mu_refs().size());
+				AditionalData("MuRefs %d/%d", tID, inlc_global_data()->mu_refs().size());
 			}
 		});
  	}

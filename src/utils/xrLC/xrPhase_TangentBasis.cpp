@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+﻿#include "StdAfx.h"
 #include "Build.h"
 
 #include	"MeshMenderLayerOrdinaryStatic.h"
@@ -90,7 +90,10 @@ static void retrive_data_from_mender_otput( const	 xr_vector< MeshMender::Vertex
  
 void CBuild::xrPhase_TangentBasis()
 {
-	xr_vector< MeshMender::Vertex > mender_in_out_verts;
+	if (gCompilerMode.LC_SkipTangent)
+		return;
+
+ 	xr_vector< MeshMender::Vertex > mender_in_out_verts;
 	xr_vector< unsigned int >		mender_in_out_indices;
 	xr_vector< unsigned int >		mender_mapping_out_to_in_vert;
 
@@ -131,9 +134,9 @@ void CBuild::xrPhase_TangentBasis()
 	// ************************************* Perform mungle
 	Status			("Calculating basis...");
 	
+	CTimer tState; tState.Start();
 	MeshMender	mender	;
-
-	if ( !mender.Mend		(
+ 	if ( !mender.Mend		(
 		  mender_in_out_verts,
 		  mender_in_out_indices,
 		  mender_mapping_out_to_in_vert,
@@ -149,6 +152,7 @@ void CBuild::xrPhase_TangentBasis()
 	{
 		Debug.fatal	(DEBUG_INFO, "NVMeshMender failed " );
 	}
+	AditionalData("MeshMender: %u ms", tState.GetElapsed_ms() );
 	
 	// ************************************* Retreive data
 	Status("Retreiving basis...");

@@ -82,7 +82,8 @@ void blit_r	(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px
 		u32 dx = px+y;
 		u32 dy = py+x;
 		u32 sc = src[y*ss_x+x];
-		if (color_get_A(sc)>=aREF) dest[dy*ds_x+dx] = sc;
+		if (color_get_A(sc)>=aREF) 
+			dest[dy*ds_x+dx] = sc;
 	}
 }
 
@@ -119,7 +120,7 @@ CDeflector::CDeflector()
 	Sphere.P.set	(flt_max,flt_max,flt_max);
 	Sphere.R		= 0;
 	bMerged			= false;
-	UVpolys.reserve	(32);
+	// UVpolys.reserve	(32);
 }
 
 CDeflector::~CDeflector()
@@ -204,9 +205,10 @@ void CDeflector::OA_Export()
 	size.sub		(max,min);
 
 	// Surface
-	// VERIFY(inlc_global_data());
-	u32 dwWidth		= iCeil(size.x*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwWidth, 1u, 512u-2*BORDER);
-	u32 dwHeight	= iCeil(size.y*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwHeight,1u, 512u-2*BORDER);
+	u32 BORDER = gCompilerMode.LC_BORDER;;
+
+	u32 dwWidth		= iCeil(size.x*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwWidth, 1u, 512u-2 * BORDER);
+	u32 dwHeight	= iCeil(size.y*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwHeight,1u, 512u-2 * BORDER);
 	// layer.create	(dwWidth,dwHeight);  // Убрал алокацию Когда делаем развертку просто запоминаем размер !
 
 	layer.width  = dwWidth;
@@ -232,8 +234,7 @@ bool CDeflector::OA_Place	(Face *owner)
 void CDeflector::OA_Place	(vecFace& lst)
 {
 	UVpolys.clear	();
-	UVpolys.reserve	(lst.size());
-	for (u32 I=0; I<lst.size(); I++)
+ 	for (u32 I=0; I<lst.size(); I++)
 	{
 		UVtri T;
 		Face* F			= lst[I];
@@ -263,8 +264,7 @@ void CDeflector::GetRect	(Fvector2 &min, Fvector2 &max)
 void CDeflector::RemapUV	(xr_vector<UVtri>& dest, u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_u, u32 lm_v, bool bRotate)
 {
 	dest.clear	();
-	dest.reserve(UVpolys.size());
-	
+ 	
 	// UV rect (actual)
 	Fvector2		a_min,a_max,a_size;
 	GetRect		(a_min,a_max);

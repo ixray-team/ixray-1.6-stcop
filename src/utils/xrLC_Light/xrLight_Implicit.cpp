@@ -61,9 +61,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 						{
 							// We found triangle and have barycentric coords
 							GetBarycentric(F, wP, wN, B);
-
-							 
-							LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), LGetCurrentFlags(), F);
+ 							LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), LGetCurrentFlags(), F);
 							Fcount++;
 						}
 					}
