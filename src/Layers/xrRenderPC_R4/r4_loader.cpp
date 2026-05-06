@@ -24,8 +24,13 @@ using namespace FVF;
 
 #pragma warning(pop)
 
+CTimer LevelLoadTimer;
+
 void CRender::level_Load(IReader* fs)
 {
+	LevelLoadTimer.Start();
+	Msg("* Level Loading Started!");
+
 	R_ASSERT						(0!=g_pGameLevel);
 	R_ASSERT						(!b_loaded);
 
@@ -120,6 +125,8 @@ void CRender::level_Load(IReader* fs)
 
 	// signal loaded
 	b_loaded					= TRUE	;
+
+	Msg("* Level Loading Finished for %d ms", LevelLoadTimer.GetElapsed_ms());
 }
 
 void CRender::LoadPuddles()
