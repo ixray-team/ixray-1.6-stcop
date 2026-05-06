@@ -8,19 +8,6 @@ constexpr u32 c_PM_FaceLimit			= 128;			// face-limit
 constexpr float c_PM_MetricLimit_static	= 0.10f;		// vertex-count-simplification-limit
 constexpr float c_PM_MetricLimit_mu		= 0.05f;		// vertex-count-simplification-limit
 
-struct SBuildOptions
-{
-	bool b_radiosity;
-	bool b_noise;
-	SBuildOptions() :b_radiosity(false), b_noise(false)
-	{
-	}
-};
-
-extern SBuildOptions g_build_options;
-
-
-
 
 
 

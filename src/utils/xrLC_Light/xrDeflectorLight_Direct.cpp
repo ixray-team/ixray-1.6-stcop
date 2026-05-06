@@ -40,20 +40,19 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 	// Calculate and fill borders
 	Light(DB, LightsSelected);
 
+	// ApplyBorders
+	for (auto ref = 254; ref > 0; ref--)
+	if (!lm.ApplyBorders(ref) ) break;
+ 
 	// Compression
  	u32	w, h;
 	if (compress_Zero(layer)) return;		// already with borders
- 
-	// if (compress_RMS(layer, w, h))
-	// {
-	// 	// Reacalculate lightmap at lower resolution
-	// 	layer.clear_memory();		// Уменьшаем размер но память то остается !
-	// 	layer.create(w, h);
-	// 	Light(DB, LightsSelected);
-	// }
-  
+    
 	// Move to xrDeflectorLight_ApplyLmap.cpp
 	// Expand with borders
+
+	u32 BORDER = gCompilerMode.LC_BORDER;;
+
 	if (layer.width == 1)
 	{
 		// Horizontal ZERO - vertical line
@@ -108,6 +107,14 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 		lm_new.create(lm_old.width + 2 * BORDER, lm_old.height + 2 * BORDER);
 		lblit(lm_new, lm_old, BORDER, BORDER, 255 - BORDER);
 		layer = lm_new;
+
+		// ApplyBorders
+		lm.ApplyBorders(254);
+		lm.ApplyBorders(253);
+		lm.ApplyBorders(252);
+		lm.ApplyBorders(251);
+		for (auto ref = 250; ref > 0; ref--)
+		if (!lm.ApplyBorders(ref)) break;
 
 		layer.width = lm_old.width;
 		layer.height = lm_old.height;
