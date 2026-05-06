@@ -24,11 +24,12 @@ public:
 	{
 		lmap.create	(Width(),Height());
 	}
+	
 	void			Deallocate	()
 	{
 		lmap.clear_memory();
-		faces.clear();
-		faces.shrink_to_fit();
+		
+		faces.clear(); faces.shrink_to_fit();
 	}
 	
 	u32			Width	()						;
