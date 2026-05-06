@@ -36,7 +36,7 @@ void CRender::level_Load(IReader* fs)
 
 	// Begin
 	pApp->LoadBegin					();
-	dxRenderDeviceRender::Instance().Resources->DeferredLoad	(TRUE);
+	dxRenderDeviceRender::Instance().Resources->DeferredLoad	(FALSE);
 	IReader*						chunk;
 
 	// Shaders
