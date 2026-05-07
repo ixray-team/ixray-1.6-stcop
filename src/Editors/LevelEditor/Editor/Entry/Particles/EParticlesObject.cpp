@@ -287,10 +287,9 @@ bool EParticlesObject::Compile(const char* ref_name)
 
 void EParticlesObject::OnRefChange(PropValue* V)
 {
-	if (!Compile(*m_RefName)){
-        ELog.Msg( mtError, "Can't compile particle system '%s'", *m_RefName );
-    }else{
-    	ExecCommand(COMMAND_REFRESH_PROPERTIES);
+    if (!Compile(*m_RefName))
+    {
+        ELog.Msg(mtError, "Can't compile particle system '%s'", *m_RefName);
     }
 }
 

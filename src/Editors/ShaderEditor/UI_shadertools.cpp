@@ -33,7 +33,6 @@ void CShaderTool::OnChangeEditor(ISHTools* tools)
 	m_Current = tools; R_ASSERT(m_Current);
 	m_Current->OnActivate();
     ExecCommand(COMMAND_UPDATE_PROPERTIES);
-	ExecCommand(COMMAND_UPDATE_CAPTION);
 }
 //---------------------------------------------------------------------------
 

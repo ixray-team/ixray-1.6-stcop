@@ -76,7 +76,6 @@ public:
 
     virtual void		ShowProperties		(const char* focused_item);
     virtual void		UpdateProperties	(bool bForced=false){m_Flags.set(flRefreshProps,true); if (bForced) RealUpdateProperties();}
-    virtual void		RefreshProperties	(){;}
     virtual void		UpdateList			(bool bForced=false){m_Flags.set(flRefreshList,true); if (bForced) RealUpdateList();}
     virtual bool		GetSelectionPosition	(Fmatrix& result);
 

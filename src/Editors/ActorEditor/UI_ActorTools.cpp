@@ -260,7 +260,6 @@ bool CActorTools::IfModified()
 void CActorTools::Modified()
 {
 	m_bObjectModified = true;
-	ExecCommand(COMMAND_UPDATE_CAPTION);
 }
 void  CActorTools::OnBoneModified(void)
 {

@@ -232,7 +232,6 @@ public:
 
     virtual void		ShowProperties		(const char* focused_item)=0;
     virtual void		UpdateProperties	(bool bForced=false)=0;
-    virtual void		RefreshProperties	()=0;
 
     const xr_string&	GetEditFileName		()	{ return m_LastFileName; }
 
