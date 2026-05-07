@@ -187,7 +187,6 @@ void CLevelTool::RealSetAction(ETAction act)
 		CurrentTool->SetAction(act);
 	}
 
-	ExecCommand(COMMAND_UPDATE_TOOLBAR);
 	m_Flags.set	(flChangeAction,false);
 }
 
@@ -234,47 +233,39 @@ void  CLevelTool::RealSetTarget(ObjClassID tgt, int sub_tgt, bool bForced)
 	}
 
 	UI->RedrawScene();
-
-	ExecCommand(COMMAND_UPDATE_TOOLBAR);
 	m_Flags.set(flChangeTarget, false);
 }
 
-void  CLevelTool::ResetSubTarget()
+void CLevelTool::ResetSubTarget()
 {
 	VERIFY(CurrentTool);
 	CurrentTool->ResetSubTarget();
 }
 
-void  CLevelTool::SetTarget(ObjClassID tgt, int sub_tgt)
+void CLevelTool::SetTarget(ObjClassID tgt, int sub_tgt)
 {
-	// если мышь захвачена - изменим target после того как она освободится
-	if (UI->IsMouseCaptured()||UI->IsMouseInUse()||!false){
-		m_Flags.set(flChangeTarget,true);
-		if(tgt == OBJCLASS_WAY && sub_tgt==2 && target==tgt)
-		{
-			iNeedTarget		= tgt;
-			iNeedSubTarget  = (sub_target)?0:1;
-		}else
-		{
-			iNeedTarget		= tgt;
-			iNeedSubTarget  = sub_tgt;
-		}
-	}else
-		RealSetTarget(tgt,sub_tgt,false);
+	m_Flags.set(flChangeTarget, true);
+	if (tgt == OBJCLASS_WAY && sub_tgt == 2 && target == tgt)
+	{
+		iNeedTarget = tgt;
+		iNeedSubTarget = (sub_target) ? 0 : 1;
+	}
+	else
+	{
+		iNeedTarget = tgt;
+		iNeedSubTarget = sub_tgt;
+	}
 }
-
 
 ObjClassID CLevelTool::CurrentClassID()
 {
 	return GetTarget();
 }
 
-
 void CLevelTool::OnShowHint(AStringVec& ss)
 {
 	Scene->OnShowHint(ss);
 }
-
 
 bool CLevelTool::Pick(TShiftState Shift)
 {
@@ -289,27 +280,19 @@ bool CLevelTool::Pick(TShiftState Shift)
 	return false;
 }
 
-
-void CLevelTool::RefreshProperties()
-{
-	//m_Props->RefreshForm();
-}
-
 bool CLevelTool::UpdateCamera()
 {
 	if (Scene->IsPlayInEditor())
 	{
-		//g_pGameLevel->Cameras().ApplyDevice(VIEWPORT_NEAR);
-
 		extern ENGINE_API float psHUD_FOV;
-		Device.mProject_hud.build_projection(deg2rad(psHUD_FOV), Device.fASPECT,
-			Device.fHUDViewportNear, g_pGamePersistent->Environment().CurrentEnv->far_plane);
+		Device.mProject_hud.build_projection(deg2rad(psHUD_FOV), Device.fASPECT, Device.fHUDViewportNear, g_pGamePersistent->Environment().CurrentEnv->far_plane);
 
 		Device.mView_hud.set(Device.mView);
 		Device.mFullTransform_hud.mul(Device.mProject_hud, Device.mView_hud);
 
 		return true;
 	}
+
 	return false;
 }
 
