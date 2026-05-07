@@ -163,7 +163,6 @@ public:
 
     virtual void		ShowProperties		(const char*){;}
     virtual void		UpdateProperties	(bool bForced=false){m_Flags.set(flRefreshProps,true); if (bForced) RealUpdateProperties();}
-    virtual void		RefreshProperties	(){;}
 
     virtual void		PlayCurrent			(int idx=-1) override;
     virtual void		StopCurrent			(bool bFinishPlaying) override;

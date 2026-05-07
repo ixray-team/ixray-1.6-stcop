@@ -114,7 +114,6 @@ friend class TfrmShaderProperties;
 
 	void   		FillMatrix			(PropItemVec& values, const char* pref, CMatrix* m);
 	void   		FillConst			(PropItemVec& values, const char* pref, CConstant* c);
-    void  			RefreshProperties	();
 
     void					ResetShaders		(bool bForced=false){m_bNeedResetShaders=true; if (bForced) RealResetShaders(); }
     void					UpdateObjectShader	();

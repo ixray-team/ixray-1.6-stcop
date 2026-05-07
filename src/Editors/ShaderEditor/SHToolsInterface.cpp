@@ -28,7 +28,6 @@ void ISHTools::Modified()
 {
     m_bModified = true;
 
-    ExecCommand(COMMAND_UPDATE_CAPTION);
     ApplyChanges();
 
 }
