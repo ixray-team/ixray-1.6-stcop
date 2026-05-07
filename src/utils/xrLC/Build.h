@@ -121,6 +121,8 @@ public:
 
 	CBuild	();
 	~CBuild	();
+
+	int lmapNameID = 0;
 };
 
 extern CBuild*		pBuild;			;

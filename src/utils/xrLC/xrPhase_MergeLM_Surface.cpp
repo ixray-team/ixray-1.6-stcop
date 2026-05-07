@@ -14,6 +14,18 @@ float SurfacePlacePerpixel::GetCurrFilled()
     return float(FilledCount) / float(SurfaceGrid * SurfaceGrid);
 };
 
+void SurfacePlacePerpixel::UpdateFill()
+{
+    std::lock_guard lock(csLMMerge);
+
+    int y_max_line = SurfaceGrid * GetMaxFilled();
+    FullFilled = 0;
+    for (auto _Y = 0; _Y < SurfaceGrid; _Y++)
+    {
+        if (occupied_y[_Y] > y_max_line)
+            FullFilled++;
+    }
+}
 
 // --------------------------------------------------------
 void SurfacePlacePerpixel::_InitSurface()
