@@ -77,22 +77,24 @@ u32 lm_layer::Area()
 	return (width + 2 * BORDER) * (height + 2 * BORDER);
 }
 
-// x2 ускорил 
+// Apply borders (Новая релизация)
 bool lm_layer::ApplyBorders(u32 ref)
 {
 	bool bNeedContinue = false;
 
 	// Копия surface для чтения (читаем старые значения)
-	apply_borders_tmp.resize(surface.size());
-
-	base_color* src = surface.data();
-	base_color* dst = apply_borders_tmp.data();
+  	xr_vector<base_color> newBuffer;
+	newBuffer.resize(surface.size());
+ 
+	auto src = surface.data();
+	auto dst = newBuffer.data();
 
 	// Сбор соседей
-	base_color_c out; u32 count = 0;
+	base_color_c out;
 	u32 idx, nidx;
 
 	// Проходим по всем пикселям
+	u32 count = 0;
 	for (u32 y = 0; y < height; ++y)
 	{
 		for (u32 x = 0; x < width; ++x)
@@ -103,8 +105,8 @@ bool lm_layer::ApplyBorders(u32 ref)
 			// только пустые пиксели
 			if (marker[idx] != 0) continue;
 
-			count = 0; out.clear_color();
-			for (int dy = -1; dy <= 1; ++dy)
+ 			count = 0; out.clear_color();
+  			for (int dy = -1; dy <= 1; ++dy)
 			{
 				int ny = (int)y + dy;
 				if (ny < 0 || ny >= (int)height) continue;
@@ -119,14 +121,17 @@ bool lm_layer::ApplyBorders(u32 ref)
 					if (marker[nidx] > ref)
 					{
 						base_color_c C;
-						src[idx]._get(C);
+						src[nidx]._get(C);
 						out.add(C);
 						count++;
 					}
 				}
 			}
 
-			if (count == 0) { continue; }
+			if (count == 0) 
+			{
+				continue;
+			}
 
 			// усредняем
 			out.scale(count);
@@ -139,9 +144,194 @@ bool lm_layer::ApplyBorders(u32 ref)
 		}
 	}
 
-	// Фиксы утечек !
-	surface.clear(); surface.shrink_to_fit();
-	surface.swap(apply_borders_tmp);
+	surface.swap(newBuffer);
 
 	return bNeedContinue;
 }
+
+struct Node
+{
+	u32 idx;
+	u8 ref;
+};
+
+bool lm_layer::ApplyBordersFast(u32 checking_ref)
+{
+	const u32 W = width;
+	const u32 H = height;
+
+	xr_vector<Node> queue;
+	queue.reserve(W * H / 4);
+
+	for (u32 i = 0; i < W * H; ++i)
+	{
+		if (marker[i] != 0 && marker[i] > checking_ref)
+			queue.push_back({ i, marker[i] });
+	}
+
+	size_t head = 0;
+	while (head < queue.size())
+	{
+		Node N = queue[head++];
+
+		if (N.ref <= 1)	continue;
+
+		const s32 cx = N.idx % W;
+		const s32 cy = N.idx / W;
+
+		const u8 nextRef = N.ref - 1;
+
+		for (s32 dy = -1; dy <= 1; ++dy)
+		{
+			for (s32 dx = -1; dx <= 1; ++dx)
+			{
+				if (dx == 0 && dy == 0)
+					continue;
+
+				const s32 nx = cx + dx;
+				const s32 ny = cy + dy;
+
+				if (nx < 0 || ny < 0 || nx >= (s32)W || ny >= (s32)H)
+					continue;
+
+				const u32 nidx = ny * W + nx;
+
+				if (marker[nidx] != 0)  continue;
+
+				// =====================================================
+				// AVERAGE NEIGHBORS
+				// =====================================================
+
+				base_color_c accum;
+				accum.clear_color();
+
+				u32 count = 0;
+
+				for (s32 sy = -1; sy <= 1; ++sy)
+				{
+					for (s32 sx = -1; sx <= 1; ++sx)
+					{
+						const s32 tx = nx + sx;
+						const s32 ty = ny + sy;
+
+						if (tx < 0 || ty < 0 || tx >= (s32)W || ty >= (s32)H)
+							continue;
+
+						const u32 tidx = ty * W + tx;
+
+						if (marker[tidx] > nextRef)
+						{
+							base_color_c C;
+							surface[tidx]._get(C);
+
+							accum.add(C);
+							++count;
+						}
+					}
+				}
+
+				if (count == 0)
+					continue;
+
+				accum.scale(count);
+
+				surface[nidx]._set(accum);
+				marker[nidx] = nextRef;
+
+				if (nextRef > checking_ref)
+					queue.push_back({ nidx, nextRef });
+			}
+		}
+	}
+
+	return true;
+}
+
+bool lm_layer::compress_Zero()
+{
+	auto rms_test = [this](u32 _r, u32 _g, u32 _b, u32 _s, u32 _h, u32 rms) -> bool
+	{
+		// RMS  TESTING 
+		auto rms_diff = [](u32 a, u32 b)
+			{
+				if (a > b)
+					return a - b;
+				else
+					return b - a;
+			};
+
+		u32 x, y;
+		for (y = 0; y < height; y++)
+		{
+			for (x = 0; x < width; x++)
+			{
+				u32	offset = y * width + x;
+				if (marker[offset] >= 254) 
+				{
+					u8			r, g, b, s, h;
+					Pixel(offset, r, g, b, s, h);
+
+					if (rms_diff(_r, r) > rms)				return false;
+					if (rms_diff(_g, g) > rms)				return false;
+					if (rms_diff(_b, b) > rms)				return false;
+					if (rms_diff(_s, s) > rms)				return false;
+					if (rms_diff(_h, h) > ((rms * 4) / 3))	return false;
+				}
+			}
+		}
+		return true;
+	};
+
+	auto rms_average = [this](base_color_c& C) -> bool
+	{
+		u32 x, y, _count = 0;
+		for (y = 0; y < height; y++)
+		{
+			for (x = 0; x < width; x++)
+			{
+				u32	offset = y * width + x;
+				if (marker[offset] >= 254)
+				{
+					base_color_c	cc;
+					surface[offset]._get(cc);
+					C.add(cc);
+					_count++;
+				}
+			}
+		}
+		return	_count;
+	};
+
+	// Average color
+	base_color_c	_c;
+	u32				_count = rms_average(_c);
+
+	if (0 == _count) {
+		clMsg("* ERROR: Lightmap not calculated (T:%d)");
+		return	false;
+	}
+	else		_c.scale(_count);
+
+	// Compress if needed
+	u8	_r = u8_clr(_c.rgb.x); //.
+	u8	_g = u8_clr(_c.rgb.y);
+	u8	_b = u8_clr(_c.rgb.z);
+	u8	_s = u8_clr(_c.sun);
+	u8	_h = u8_clr(_c.hemi);
+
+	u32 rms = (4 + g_params().m_lm_rms_zero) / 2;
+	if (rms_test(_r, _g, _b, _s, _h, rms))
+	{
+		u32		c_x = gCompilerMode.LC_BORDER * 2;
+		u32		c_y = gCompilerMode.LC_BORDER * 2;
+		base_color ccc;		ccc._set(_c);
+		surface.assign(c_x * c_y, ccc);
+		marker.assign(c_x * c_y, 255);
+		height = 0;
+		width = 0;
+		return true;
+	}
+	return false;
+}
+
+

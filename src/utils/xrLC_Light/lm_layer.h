@@ -9,7 +9,7 @@ struct XRLC_LIGHT_API  lm_layer
 	xr_vector<base_color>	surface;
 	xr_vector<u8>			marker;
 	xr_vector<u8>			samples;
-	xr_vector<base_color>	apply_borders_tmp;
+//	xr_vector<base_color>	apply_borders_tmp;
 
 public:
 	void					create			(u32 w, u32 h)
@@ -21,7 +21,7 @@ public:
 		surface.clear();	surface.resize	(size);
 		marker.clear();		marker.assign	(size, 0);
  		samples.clear();	samples.assign  (size, 0);
-		apply_borders_tmp.clear(); apply_borders_tmp.shrink_to_fit();
+		// apply_borders_tmp.clear();  
 	}
 
 	void					destroy			()
@@ -30,12 +30,11 @@ public:
 		surface.clear();
 		marker.clear();
 		samples.clear();
-		apply_borders_tmp.clear();
-
+ 
  		surface.shrink_to_fit();
 		marker.shrink_to_fit();
 		samples.shrink_to_fit();
-		apply_borders_tmp.shrink_to_fit();
+		// apply_borders_tmp.clear(); apply_borders_tmp.shrink_to_fit();
 	}
 
 	void					clear_memory()
@@ -48,6 +47,8 @@ public:
 		surface.shrink_to_fit();
 		marker.shrink_to_fit();
 		samples.shrink_to_fit();
+
+		//apply_borders_tmp.clear(); apply_borders_tmp.shrink_to_fit();
 	}
 
 	u32						Area();
@@ -57,7 +58,7 @@ public:
  
 	bool					similar			( const lm_layer &D, float eps =EPS ) const;
 							lm_layer()				{ width=height=0; }
-
+ 
 	// se7kills Подсчитать Размер
 	size_t					memory_lmap()
 	{
@@ -68,4 +69,7 @@ public:
 
 	// Apply Borders Types
  	bool ApplyBorders(u32 ref);
+	bool ApplyBordersFast(u32 checking_ref);
+
+	bool compress_Zero();
  };
