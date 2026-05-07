@@ -52,21 +52,27 @@ static bool embree_setuped = false;
 
 CBuild::CBuild()
 {
-	Phase("[xrLC][Startup] Initialize Devices ...");
+	lmapNameID = 0;
 
-	// Se7kills Initialize Device Embree
+	if (gCompilerMode.CUDA || gCompilerMode.Embree)
+	{
+		if (!cuda_setuped || !embree_setuped)
+			Phase("[CUDA,EMBREE] Initialize Devices ...");
+
+		// Se7kills Initialize Device Embree
 #ifdef LCCUDA_BUILD
-	if (gCompilerMode.CUDA && !cuda_setuped)
-	{
- 		cuda_setuped = true;
- 		GPUTaskinSystem.InitializeGPU();
-	}
+		if (gCompilerMode.CUDA && !cuda_setuped)
+		{
+			cuda_setuped = true;
+			GPUTaskinSystem.InitializeGPU();
+		}
 #endif 
-	// На стадии xrMU-Models Нужно !
-	if ((gCompilerMode.CUDA || gCompilerMode.Embree) && !embree_setuped)
-	{
-		embree_setuped = true;
-		InitializeEmbreeDevice();
+		// На стадии xrMU-Models Нужно !
+		if ((gCompilerMode.CUDA || gCompilerMode.Embree) && !embree_setuped)
+		{
+			embree_setuped = true;
+			InitializeEmbreeDevice();
+		}
 	}
 }
 
