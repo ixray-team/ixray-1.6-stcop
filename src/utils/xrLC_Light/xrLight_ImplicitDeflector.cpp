@@ -44,9 +44,8 @@ void ImplicitDeflector::SaveTextures()
 {
 	// base (HEMI)
 	{
- 		Status("Processing lightmap...");
-		for (u32 ref = 254; ref > 0; ref--)	
-		if (!lmap.ApplyBorders(ref)) break;
+		Status("Processing lightmap...");
+		lmap.ApplyBordersFast(0);
 
 		Status("Mixing lighting with texture...");
 		{
@@ -66,6 +65,7 @@ void ImplicitDeflector::SaveTextures()
 			}
 
 		}
+
 		Status("Saving base...");
 		string128 name;
 		string_path out_name;
@@ -99,6 +99,7 @@ void ImplicitDeflector::SaveTextures()
 	}
 
 	// lmap (RGB + SUN)
+	
  	{
 		Status("Saving lmap...");
 		string128 name;
@@ -123,17 +124,28 @@ void ImplicitDeflector::SaveTextures()
 		fmt.flags.set(STextureParams::flGenerateMipMaps, false);
 		fmt.flags.set(STextureParams::flBinaryAlpha, false);
 
-		xr_vector<u32> packed;
-		lmap.Pack(packed);
+		
+		if (!gCompilerMode.LC_SkipStaticMap)
+		{
+			xr_vector<u32> packed;
+			lmap.Pack(packed);
 
-		BYTE* raw_data = LPBYTE(&*packed.begin());
-		u32	w = TEX.dwWidth;
-		u32	h = TEX.dwHeight;
-		u32	pitch = w * 4;
-		DXTUtils::Compress(out_name, raw_data, 0, w, h, pitch, &fmt, 4);
+			BYTE* raw_data = LPBYTE(&*packed.begin());
+			u32	w = TEX.dwWidth;
+			u32	h = TEX.dwHeight;
+			u32	pitch = w * 4;
+			DXTUtils::Compress(out_name, raw_data, 0, w, h, pitch, &fmt, 4);
+		}
+		else
+		{
+			xr_vector<u32> packed(4 * 4);
+			for (auto& C : packed)
+				C = color_rgba(0, 0, 0, 255);
+ 			BYTE* raw_data = LPBYTE(&*packed.begin());
+			u32 w = 4, h = 4, pitch = w * 4;
+ 			DXTUtils::Compress(out_name, raw_data, 0, w, h, pitch, &fmt, 4);
+		}
 
-		packed.clear();
-		packed.shrink_to_fit();
 	}
 	
 	// Dealocate
