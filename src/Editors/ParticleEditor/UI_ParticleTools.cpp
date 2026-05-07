@@ -126,7 +126,6 @@ bool CParticleTool::IfModified()
 void CParticleTool::Modified()
 {
 	m_bModified = true;
-	ExecCommand(COMMAND_UPDATE_CAPTION);
 }
 //---------------------------------------------------------------------------
 

@@ -379,21 +379,16 @@ CCommandVar CommandChangeAxis(CCommandVar p1, CCommandVar p2)
 	return true;
 }
 
-CCommandVar 	CommandSimulate(CCommandVar p1, CCommandVar p2)
+CCommandVar CommandSimulate(CCommandVar p1, CCommandVar p2)
 {
-
 	Tools->Simulate();
-
-	
-	return				true;
+	return true;
 }
 
-CCommandVar 	CommandUseSimulatePositions(CCommandVar p1, CCommandVar p2)
+CCommandVar CommandUseSimulatePositions(CCommandVar p1, CCommandVar p2)
 {
-
-   Tools->UseSimulatePositions();
-
-	return				true;
+	Tools->UseSimulatePositions();
+	return true;
 }
 
 CCommandVar 	CommandIconPicker(CCommandVar p1, CCommandVar p2)
@@ -475,12 +470,6 @@ CCommandVar 	CommandReloadTextures(CCommandVar p1, CCommandVar p2)
 	UI->RedrawScene		();
 	return				true;
 }
-CCommandVar 	CommandChangeSnap(CCommandVar p1, CCommandVar p2)
-{
-	not_implemented();
-  //  ((TExtBtn*)(u32)p1)->Down = !((TExtBtn*)(u32)p1)->Down;
-	return				true;
-}
 CCommandVar 	CommandUnloadTextures(CCommandVar p1, CCommandVar p2)
 {
 	EDevice->UnloadTextures();
@@ -517,11 +506,6 @@ CCommandVar 	CommandShowProperties(CCommandVar p1, CCommandVar p2)
 CCommandVar 	CommandUpdateProperties(CCommandVar p1, CCommandVar p2)
 {
 	Tools->UpdateProperties(p1);
-	return				true;
-}
-CCommandVar 	CommandRefreshProperties(CCommandVar p1, CCommandVar p2)
-{
-	Tools->RefreshProperties();
 	return				true;
 }
 CCommandVar 	CommandZoomExtents(CCommandVar p1, CCommandVar p2)
@@ -757,7 +741,6 @@ void TUI::RegisterCommands()
 	REGISTER_CMD_S	    (COMMAND_CHECK_TEXTURES,     	CommandCheckTextures);
 	REGISTER_CMD_S	    (COMMAND_REFRESH_TEXTURES,   	CommandRefreshTextures);	
 	REGISTER_CMD_S	    (COMMAND_RELOAD_TEXTURES,    	CommandReloadTextures);
-	REGISTER_CMD_S	    (COMMAND_CHANGE_SNAP,        	CommandChangeSnap);
 	REGISTER_CMD_S	    (COMMAND_UNLOAD_TEXTURES,    	CommandUnloadTextures);
 	REGISTER_CMD_S	    (COMMAND_EVICT_OBJECTS,      	CommandEvictObjects);
 	REGISTER_CMD_S	    (COMMAND_EVICT_TEXTURES,     	CommandEvictTextures);
@@ -765,7 +748,6 @@ void TUI::RegisterCommands()
 	REGISTER_CMD_S	    (COMMAND_ICON_PICKER,   		CommandIconPicker);
 	REGISTER_CMD_SE	    (COMMAND_SHOW_PROPERTIES,    	"Show Properties",		CommandShowProperties, false);
 	REGISTER_CMD_S	    (COMMAND_UPDATE_PROPERTIES,  	CommandUpdateProperties);
-	REGISTER_CMD_S	    (COMMAND_REFRESH_PROPERTIES, 	CommandRefreshProperties);
 	REGISTER_SUB_CMD_SE (COMMAND_ZOOM_EXTENTS,     		"Zoom",					CommandZoomExtents,false);
 		APPEND_SUB_CMD	("Extent",						0,0);
 		APPEND_SUB_CMD	("Selected",					1,0);
