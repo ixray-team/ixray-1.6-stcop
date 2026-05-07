@@ -34,8 +34,7 @@ CCommandVar CParticleTool::CommandEditPreviewProps(CCommandVar p1, CCommandVar p
 
 CCommandVar CParticleTool::CommandSaveXR(CCommandVar p1, CCommandVar p2)
 {
-    Save							(true);
-    ExecCommand						(COMMAND_UPDATE_CAPTION);
+    Save(true);
     return true;
 }
 
@@ -60,7 +59,6 @@ CCommandVar CParticleTool::CommandLoadXR(CCommandVar p1, CCommandVar p2)
         RImplementation.PSLibrary.Load(NormalPath.c_str());
         PTools->ResetCurrent();
         ExecCommand(COMMAND_UPDATE_PROPERTIES);
-        ExecCommand(COMMAND_UPDATE_CAPTION);
     }
     return true;
 }
@@ -68,7 +66,6 @@ CCommandVar CParticleTool::CommandLoadXR(CCommandVar p1, CCommandVar p2)
 CCommandVar CParticleTool::CommandSave(CCommandVar p1, CCommandVar p2)
 {
     Save		(false);
-    ExecCommand	(COMMAND_UPDATE_CAPTION);
     return 		true;
 }
 CCommandVar CParticleTool::CommandSaveBackup(CCommandVar p1, CCommandVar p2)
@@ -80,7 +77,6 @@ CCommandVar CParticleTool::CommandReload(CCommandVar p1, CCommandVar p2)
 {
     if (!IfModified()) 	return false;
     Reload				();
-    ExecCommand(COMMAND_UPDATE_CAPTION);
     return true;
 }
 CCommandVar CParticleTool::CommandValidate(CCommandVar p1, CCommandVar p2)
@@ -92,7 +88,6 @@ CCommandVar CParticleTool::CommandClear(CCommandVar p1, CCommandVar p2)
 {
     UI->CurrentView().m_Camera.Reset();
     ResetPreviewObject();
-    ExecCommand(COMMAND_UPDATE_CAPTION);
     return true;
 }
 CCommandVar CParticleTool::CommandPlayCurrent(CCommandVar p1, CCommandVar p2)
@@ -103,17 +98,6 @@ CCommandVar CParticleTool::CommandPlayCurrent(CCommandVar p1, CCommandVar p2)
 CCommandVar CParticleTool::CommandStopCurrent(CCommandVar p1, CCommandVar p2)
 {
     StopCurrent(p1);
-    return true;
-}
-
-CCommandVar CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
-{
-    /*fraLeftBar->UpdateBar();*/
-    return true;
-}
-CCommandVar CommandUpdateCaption(CCommandVar p1, CCommandVar p2)
-{
-    /*frmMain->UpdateCaption();*/
     return true;
 }
 
@@ -137,8 +121,6 @@ void CParticleMain::RegisterCommands()
     	APPEND_SUB_CMD	("Stop Immediate",		0,0);
     	APPEND_SUB_CMD	("Stop Deffered", 		1,0);
     REGISTER_SUB_CMD_END;
-	REGISTER_CMD_S	(COMMAND_UPDATE_TOOLBAR,    CommandUpdateToolBar);
-	REGISTER_CMD_S	(COMMAND_UPDATE_CAPTION,    CommandUpdateCaption);
 	REGISTER_CMD_S	(COMMAND_JUMP_TO_ITEM,     CommandJumpToItem);
 	REGISTER_CMD_C	(COMMAND_SAVE_XR,     		PTools, CParticleTool::CommandSaveXR);
 	REGISTER_CMD_C	(COMMAND_LOAD_XR,     		PTools, CParticleTool::CommandLoadXR);

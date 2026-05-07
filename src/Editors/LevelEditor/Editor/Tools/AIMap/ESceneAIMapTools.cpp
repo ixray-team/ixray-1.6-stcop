@@ -180,29 +180,27 @@ ESceneAIMapTool::ESceneAIMapTool():ESceneToolBase(OBJCLASS_AIMAP)
     m_CFModel	= 0;
 }
 
-
 ESceneAIMapTool::~ESceneAIMapTool()
 {
 }
 
-
-
 void ESceneAIMapTool::Clear(bool bOnlyNodes)
 {
-	inherited::Clear	();
-	hash_Clear			();
-	for (SAINode*node:m_Nodes)
-    	xr_delete		(node);
-	m_Nodes.clear();
-	if (!bOnlyNodes){
-	    //m_SnapObjects.clear	();
-        m_AIBBox.invalidate	();
-        ExecCommand		(COMMAND_REFRESH_SNAP_OBJECTS);
-		//g_ainode_pool.clear	();
+    inherited::Clear();
+    hash_Clear();
+    for (SAINode* node : m_Nodes)
+    {
+        xr_delete(node);
+    }
+
+    m_Nodes.clear();
+
+    if (!bOnlyNodes)
+    {
+        m_AIBBox.invalidate();
         RealUpdateSnapList();
     }
 }
-
 
 void ESceneAIMapTool::CalculateNodesBBox(Fbox& bb)
 {

@@ -73,14 +73,13 @@ EScene::~EScene()
 
 void EScene::OnCreate()
 {
-	CreateSceneTools		();
-	
-	m_LastAvailObject 		= 0;
-	m_LevelOp.Reset			();
-	ELog.Msg				( mtInformation, "Scene: initialized" );
-	m_Valid 				= true;
-	m_RTFlags.zero			();
-	ExecCommand				(COMMAND_UPDATE_CAPTION);
+	CreateSceneTools();
+
+	m_LastAvailObject = 0;
+	m_LevelOp.Reset();
+	ELog.Msg(mtInformation, "Scene: initialized");
+	m_Valid = true;
+	m_RTFlags.zero();
 }
 
 void EScene::OnDestroy()
@@ -411,7 +410,6 @@ void EScene::Modified()
 	}
 	m_RTFlags.set(flRT_Modified|flRT_Unsaved,true);
 	g_scene_physics.OnSceneModified();
-	ExecCommand(COMMAND_UPDATE_CAPTION);
 	UIObjectList::Refresh();
 }
 
@@ -436,7 +434,6 @@ bool EScene::IfModified()
 		case mrYes: if (!ExecCommand(COMMAND_SAVE)) return false; break;
 		case mrNo:{ 
 			m_RTFlags.set(flRT_Unsaved,false); 
-			ExecCommand	(COMMAND_UPDATE_CAPTION);
 		}break;
 		case mrCancel: return false;
 		}
