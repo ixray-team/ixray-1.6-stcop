@@ -20,11 +20,13 @@ public:
 	xr_vector<u8> surface_tbb;
 	xr_vector<u16> occupied_y;
 
-	u32 FilledCount = 0;
+	u32 FullFilled   = 0;
+	u32 FilledCount  = 0;
 	u32 RegisterSize = 0;
 
 	float GetMaxFilled();
 	float GetCurrFilled();
+	void UpdateFill();
 
 	// 
  	void _InitSurface();
