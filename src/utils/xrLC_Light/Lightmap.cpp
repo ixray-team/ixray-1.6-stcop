@@ -72,7 +72,6 @@ IC void pixel	(int x, int y,  b_texture* T, u32 C=color_rgba(0,255,0,0))
 	u32* raw = static_cast<u32*>(*T->pSurface);
 	raw[y * T->dwWidth + x] = C;
 }
-
 IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
 {
     int dx = std::abs(x2 - x1);
@@ -110,12 +109,11 @@ IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
     }
 }
 
+
 void CLightmap::Save(LPCSTR path)
 {
-	static int		lmapNameID = 0;
-	++lmapNameID;
-
-	u32 BORDER = gCompilerMode.LC_BORDER;;
+	++pBuild->lmapNameID;
+ 	u32 BORDER = gCompilerMode.LC_BORDER;;
 
 	// Borders correction
 	for (u32 _y = 0; _y < gCompilerMode.LC_sizeLmaps; _y++)
@@ -130,11 +128,7 @@ void CLightmap::Save(LPCSTR path)
 		}
 	}
 
-	for (u32 ref = 254; ref > (254 - 16); ref--)
-	{
-		lm.ApplyBorders(ref);
-		Progress(1.f - float(ref) / float(254 - 16));
-	} 
+	lm.ApplyBordersFast(254 - 16);
 
 	lm_texture.bHasAlpha = true;
 	lm_texture.dwWidth = lm.width;
@@ -145,19 +139,15 @@ void CLightmap::Save(LPCSTR path)
 	if (true)
 	{
 		string_path				FN;
-		xr_sprintf(lm_texture.name, "lmap#%d", lmapNameID);
+		xr_sprintf(lm_texture.name, "lmap#%d", pBuild->lmapNameID);
 		xr_sprintf(FN, "%s%s_1.dds", path, lm_texture.name);
-
-		u32	w = lm_texture.dwWidth;
-		u32	h = lm_texture.dwHeight;
-		u32	pitch = w * 4;
 
 		STextureParams fmt;
 		switch (gCompilerMode.LmapsFormat)
 		{
-		case LCLightmapFormat::FORMAT_RGBA: fmt.fmt = STextureParams::tfRGBA; break;
-		case LCLightmapFormat::FORMAT_BC7:  fmt.fmt = STextureParams::tfBC7; break;
-		case LCLightmapFormat::FORMAT_BC5:  fmt.fmt = STextureParams::tfDXT5; break;
+			case LCLightmapFormat::FORMAT_RGBA: fmt.fmt = STextureParams::tfRGBA; break;
+			case LCLightmapFormat::FORMAT_BC7:  fmt.fmt = STextureParams::tfBC7; break;
+			case LCLightmapFormat::FORMAT_BC5:  fmt.fmt = STextureParams::tfDXT5; break;
 		}
 
 		fmt.flags.set(STextureParams::flDitherColor, false);
@@ -168,11 +158,12 @@ void CLightmap::Save(LPCSTR path)
 		{
 			xr_vector<u32>			lm_packed;
 			lm.Pack(lm_packed);
+			u32	w = lm_texture.dwWidth; 
+			u32	h = lm_texture.dwHeight; 
+			u32	pitch = w * 4;
 
 			BYTE* raw_data = LPBYTE(&*lm_packed.begin());
 			DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
-			lm_packed.clear();
-			lm_packed.shrink_to_fit();
 		}
 		else
 		{
@@ -193,14 +184,8 @@ void CLightmap::Save(LPCSTR path)
 		lm.Pack_hemi(hemi_packed);
  
 		string_path				FN;
-		xr_sprintf(lm_texture.name, "lmap#%d", lmapNameID);
+		xr_sprintf(lm_texture.name, "lmap#%d", pBuild->lmapNameID);
 		xr_sprintf(FN, "%s%s_2.dds", path, lm_texture.name);
-
-		u32 w = lm_texture.dwWidth;		//lm.width;
-		u32 h = lm_texture.dwHeight;	//lm.height;
-		u32	pitch = w * 4;
-
-		u8* raw_data = LPBYTE(&*hemi_packed.begin());
 
 		STextureParams fmt;
 		switch (gCompilerMode.LmapsFormat)
@@ -214,11 +199,13 @@ void CLightmap::Save(LPCSTR path)
 		fmt.flags.set(STextureParams::flGenerateMipMaps, false);
 		fmt.flags.set(STextureParams::flBinaryAlpha, false);
 
+
+		u32 w = lm_texture.dwWidth;		//lm.width;
+		u32 h = lm_texture.dwHeight;	//lm.height;
+		u32	pitch = w * 4;
+
+		u8* raw_data = LPBYTE(&*hemi_packed.begin());
 		DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
-
-
-		hemi_packed.clear();
-		hemi_packed.shrink_to_fit();
 	}
 	 
 
