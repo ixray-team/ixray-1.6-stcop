@@ -205,7 +205,6 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 						Scene->m_RTFlags.set(EScene::flRT_Modified, bk2);
 
 						ExecCommand(COMMAND_CLEAN_LIBRARY);
-						ExecCommand(COMMAND_UPDATE_CAPTION);
 						ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
 						EPrefs->AppendRecentFile(temp_fn.c_str());
 					}
@@ -282,7 +281,6 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 				{
 					Tools->m_LastFileName = temp_fn.c_str();
 				}
-				ExecCommand(COMMAND_UPDATE_CAPTION);
 				EPrefs->AppendRecentFile(temp_fn.c_str());
 				return 			true;
 			}
@@ -311,7 +309,6 @@ CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 		Tools->m_LastFileName 		= "";
 		LTools->m_LastSelectionName = "";
 		Scene->UndoClear		();
-		ExecCommand				(COMMAND_UPDATE_CAPTION);
 		ExecCommand				(COMMAND_CHANGE_TARGET,OBJCLASS_SCENEOBJECT);
 		ExecCommand				(COMMAND_CHANGE_ACTION,etaSelect,estDefault);
 		ExecCommand				(COMMAND_UPDATE_PROPERTIES,1);
@@ -681,17 +678,6 @@ CCommandVar CommandBuild(CCommandVar p1, CCommandVar p2)
 	return false;
 }
 
-CCommandVar CommandUpdateGizmo(CCommandVar p1, CCommandVar p2)
-{
-	// LTools->GetGimzo()->bApplyUpdatePos = true;
-	return false;
-}
-CCommandVar CommandMakeGizmo(CCommandVar p1, CCommandVar p2)
-{
-	// auto GizmoPtr = LTools->GetGimzo();
-	// GizmoPtr->bApplyChangePos = !GizmoPtr->bApplyChangePos;
-	return false;
-}
 CCommandVar CommandMakeAIMap(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
@@ -1060,19 +1046,6 @@ CCommandVar CommandSelectSnapObjects(CCommandVar p1, CCommandVar p2)
 		return 					false;
 	}
 }
-CCommandVar CommandRefreshSnapObjects(CCommandVar p1, CCommandVar p2)
-{
- //   fraLeftBar->UpdateSnapList();
-	return 						true;
-}
-/*
-CCommandVar CommandRefreshSoundEnvs(CCommandVar p1, CCommandVar p2)
-{
-	::Sound->refresh_env_library();
-	return 						true;
-//		::Sound->_restart();
-}
-*/
 
 CCommandVar CommandRefreshSoundEnvGeometry(CCommandVar p1, CCommandVar p2)
 {
@@ -1081,20 +1054,10 @@ CCommandVar CommandRefreshSoundEnvGeometry(CCommandVar p1, CCommandVar p2)
 }
 CCommandVar CommandShowContextMenu(CCommandVar p1, CCommandVar p2)
 {
-	LUI->ShowContextMenu		(p1);
-	return 						true;
+	LUI->ShowContextMenu(p1);
+	return true;
 }
 
-CCommandVar CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
-{
- /*   fraLeftBar->UpdateBar		();*/
-	return 						true;
-}
-CCommandVar CommandUpdateCaption(CCommandVar p1, CCommandVar p2)
-{
-  /*  frmMain->UpdateCaption		();*/
-	return 						true;
-}
 //------
 CCommandVar CommandCreateSoundLib(CCommandVar p1, CCommandVar p2)
 {
@@ -1177,8 +1140,6 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_SE	    (COMMAND_MAKE_PUDDLES,             	"Compile\\Make Puddles",	    CommandMakePuddles,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_AIMAP,              	"Compile\\Make AI Map",	        CommandMakeAIMap,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_AIMAP_LEGACY,        	"Compile\\Make AI Map Legacy",  CommandMakeAIMapLegacy,false);
-	REGISTER_CMD_SE	    (COMMAND_MOVE_GIZMO,              	"Gizmo\\Set at camera",	        CommandMakeGizmo,false);
-	REGISTER_CMD_SE	    (COMMAND_UPDATE_GIZMO,             	"Gizmo\\Update at camera",	    CommandUpdateGizmo,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_DETAILS,              "Compile\\Make Details",        CommandMakeDetails,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_HOM,              	"Compile\\Make HOM",	        CommandMakeHOM,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_SOM,              	"Compile\\Make SOM",	        CommandMakeSOM,false);
@@ -1199,14 +1160,10 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_S	    (COMMAND_DEL_SEL_SNAP_OBJECTS,      CommandDelSelSnapObjects);
 	REGISTER_CMD_S	    (COMMAND_CLEAR_SNAP_OBJECTS,        CommandClearSnapObjects);
 	REGISTER_CMD_S	    (COMMAND_SELECT_SNAP_OBJECTS,       CommandSelectSnapObjects);
-	REGISTER_CMD_S	    (COMMAND_REFRESH_SNAP_OBJECTS,      CommandRefreshSnapObjects);
-//	REGISTER_CMD_S	    (COMMAND_REFRESH_SOUND_ENVS,        CommandRefreshSoundEnvs);
 	REGISTER_CMD_S	    (COMMAND_ICON_LOAD, CommandLoadCustomIcons);
 	REGISTER_CMD_S	    (COMMAND_ICON_REMOVE, CommandRemoveCustomIcon);
 	REGISTER_CMD_S	    (COMMAND_REFRESH_SOUND_ENV_GEOMETRY,CommandRefreshSoundEnvGeometry);
 	REGISTER_CMD_S	    (COMMAND_SHOWCONTEXTMENU,           CommandShowContextMenu);
-	REGISTER_CMD_S	    (COMMAND_UPDATE_TOOLBAR,            CommandUpdateToolBar);
-	REGISTER_CMD_S	    (COMMAND_UPDATE_CAPTION,            CommandUpdateCaption);
 	REGISTER_CMD_S	    (COMMAND_CREATE_SOUND_LIB,          CommandCreateSoundLib);
 	REGISTER_CMD_SE	    (COMMAND_TOGGLE_AIMAP_VISIBILITY,   "Visibility\\Toggle AI-Map",			CommandToggleAiMapVisibility,true);
 	REGISTER_CMD_S	    (COMMAND_SHOW_CLIP_EDITOR,			CommandShowClipEditor);

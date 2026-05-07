@@ -259,7 +259,6 @@ public:
 
 	virtual void		ShowProperties		(const char* focused_item){;}
 	virtual void		UpdateProperties	(bool bForced=false){m_Flags.set(flRefreshProps,true); if (bForced) RealUpdateProperties();}
-	virtual void		RefreshProperties	(){;}
 	
 	void				GetStatTime			(float& a, float& b, float& c);
 
