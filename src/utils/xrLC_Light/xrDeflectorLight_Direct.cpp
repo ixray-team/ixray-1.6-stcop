@@ -5,8 +5,6 @@
 #include "xrFace.h"
 
 extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
-extern bool	compress_Zero(lm_layer& lm);
-extern bool	compress_RMS(lm_layer& lm, u32& w, u32& h);
  
 // Освещение
 void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
@@ -39,21 +37,14 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 
 	// Calculate and fill borders
 	Light(DB, LightsSelected);
-
-	// ApplyBorders
-	for (auto ref = 254; ref > 0; ref--)
-	if (!lm.ApplyBorders(ref) ) break;
  
+	lm.ApplyBordersFast(0);
+
 	// Compression
- 	u32	w, h;
-	if (compress_Zero(layer)) return;		// already with borders
+ 	if (lm.compress_Zero()) return;		// already with borders
     
-	// Move to xrDeflectorLight_ApplyLmap.cpp
-	// Expand with borders
-
 	u32 BORDER = gCompilerMode.LC_BORDER;;
-
-	if (layer.width == 1)
+ 	if (layer.width == 1)
 	{
 		// Horizontal ZERO - vertical line
 		lm_layer		T;
@@ -108,13 +99,7 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 		lblit(lm_new, lm_old, BORDER, BORDER, 255 - BORDER);
 		layer = lm_new;
 
-		// ApplyBorders
-		lm.ApplyBorders(254);
-		lm.ApplyBorders(253);
-		lm.ApplyBorders(252);
-		lm.ApplyBorders(251);
-		for (auto ref = 250; ref > 0; ref--)
-		if (!lm.ApplyBorders(ref)) break;
+ 		lm.ApplyBordersFast(0);
 
 		layer.width = lm_old.width;
 		layer.height = lm_old.height;

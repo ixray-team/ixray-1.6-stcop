@@ -102,7 +102,12 @@ u32 MergeLmap_Compact(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 				float Total = float(IndexTask - 1) / float(Layer.size());
 				Progress(Total);
 
-				AditionalData("IT: %u/%u | NoPlaced: %u", IndexTask, Layer.size(), ErrorsPlace.load());
+				AditionalData("IT: %u/%u | Fill: %u/%u | Error: %u", 
+					IndexTask, Layer.size(),
+					placer_perpixel.FullFilled,placer_perpixel.SurfaceGrid,
+					ErrorsPlace.load());
+
+				placer_perpixel.UpdateFill();
 			}
 
 			L_rect		rT;
@@ -130,7 +135,6 @@ u32 MergeLmap_Compact(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 	return MergedCount;
 }
 
-
 void CBuild::xrPhase_MergeLM()
 {
 	auto& Layer = lc_global_data()->g_deflectors();
@@ -141,7 +145,8 @@ void CBuild::xrPhase_MergeLM()
 		materials()[it].internal_max_area = 0;
  	for (auto D : Layer)
  		materials()[D->GetBaseMaterial()].internal_max_area = std::max(D->layer.Area(), materials()[D->GetBaseMaterial()].internal_max_area);
-	std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);
+	
+ 	std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);
 
 	// Merge this layer (which left unmerged)
 	u32 StartSize   = Layer.size();
@@ -156,8 +161,8 @@ void CBuild::xrPhase_MergeLM()
 		lc_global_data()->lightmaps().push_back(lmap);
     	placer_perpixel._InitSurface();
  		
-		// TotalMerged += MergeLmap(Layer, lmap);
-		TotalMerged		+= MergeLmap_Compact(Layer, lmap);
+		// Startup
+  		TotalMerged				+= MergeLmap_Compact(Layer, lmap);
 
 		// Remove merged lightmaps
 		Layer.erase(
