@@ -389,22 +389,10 @@ void CUIActorMenu::Update()
 		}
 	case mmTrade:
 		{
-			if(m_pPartnerInvOwner->inventory().ModifyFrame() != m_trade_partner_inventory_state)
-				InitPartnerInventoryContents	();
-			CheckDistance					();
-
-			if (m_trade_button)
-			{
-				m_trade_button->Show(!pInput->GetControllerMode());
-			}
-			if (m_trade_buy_button)
-			{
-				m_trade_buy_button->Show(!pInput->GetControllerMode());
-			}
-			if (m_trade_sell_button)
-			{
-				m_trade_sell_button->Show(!pInput->GetControllerMode());
-			}
+			if (m_pPartnerInvOwner->inventory().ModifyFrame() != m_trade_partner_inventory_state)
+				InitPartnerInventoryContents();
+			
+			CheckDistance();
 			break;
 		}
 	case mmUpgrade:
