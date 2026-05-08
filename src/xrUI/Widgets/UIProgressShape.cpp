@@ -79,9 +79,9 @@ void CUIProgressShape::Draw()
 	if (m_bText)
 	{
 		if (m_pTexture)
-			m_pTexture->DrawText();
+			m_pTexture->DrawWidgetText();
 		else
-			DrawText();
+			DrawWidgetText();
 	}
 	if (m_pTexture)
 		UIRender->SetShader				(*m_pTexture->GetShader());

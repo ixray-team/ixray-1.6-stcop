@@ -147,9 +147,9 @@ void CUIButton::DrawHighlightedText() {
 
 }
 
-void CUIButton::DrawText()
+void CUIButton::DrawWidgetText()
 {
-	CUIStatic::DrawText();
+	CUIStatic::DrawWidgetText();
 	if(g_btnHint->Owner()==this)
 		g_btnHint->Draw_();
 }
