@@ -382,19 +382,30 @@ void CResourceManager::DeferredUpload()
 {
 	if (!RDEVICE.b_is_Ready) return;
 
+	PROF_EVENT("CResourceManager::DeferredUpload");
+	Log("Loading textures via DeferredUpload");
+
+	// Build list of textures that actually need loading to avoid extra work
+	xr_vector<CTexture*> to_load;
+	to_load.reserve(m_textures.size());
+	for (auto& pair : m_textures) {
+		CTexture* T = pair.second;
+		// Only enqueue textures that are not already marked as loaded
+		if (T && !T->flags.bLoaded)
+			to_load.push_back(T);
+	}
+
 #ifndef _EDITOR
 	if (ps_r__common_flags.test(RFLAG_MT_TEX_LOAD)) {
-		xr_parallel_foreach(m_textures.begin(), m_textures.end(), [](auto& pair)
-		{
-			pair.second->Load();
-		});
-	} 
-	else 
+		// Parallel: load filtered list
+		xr_parallel_foreach(to_load.begin(), to_load.end(), [](CTexture* texPtr) { texPtr->Load(); });
+	}
+	else
 #endif // _EDITOR
 	{
-		for (auto& pair : m_textures) {
-			pair.second->Load();
-		}
+		// Single-threaded: load filtered list
+		for (CTexture* T : to_load)
+			T->Load();
 	}
 
 #ifdef USE_DX11
