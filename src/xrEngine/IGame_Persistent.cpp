@@ -133,11 +133,6 @@ void IGame_Persistent::Prefetch()
 		Log("Loading models...");
 		Render->models_Prefetch();
 	}
-	{
-		PROF_EVENT("Loading textures");
-		Log("Loading textures...");
-		Device.m_pRender->ResourcesDeferredUpload();
-	}
 }
 
 void IGame_Persistent::OnGameEnd()
