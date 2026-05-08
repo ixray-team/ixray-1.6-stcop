@@ -15,7 +15,7 @@ public:
 
 	//прорисовка окна
 	virtual void	DrawTexture				();
-	virtual void	DrawText				();
+	virtual void	DrawWidgetText				();
 	virtual void	DrawHighlightedText		();
 
 	virtual void	Update					();

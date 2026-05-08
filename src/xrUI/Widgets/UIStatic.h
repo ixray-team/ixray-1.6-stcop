@@ -120,7 +120,7 @@ public:
 
 	virtual void			DrawTexture				();
 			void			DrawTexturePass			(u32 color, const Fvector2& extraOffset);
-	virtual void			DrawText				();
+	virtual void			DrawWidgetText				();
 	virtual void			DrawHighlightedText		();
 
 			void 			AdjustHeightToText		();
