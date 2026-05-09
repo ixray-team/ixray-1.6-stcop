@@ -46,7 +46,7 @@ private:
 
 	void 					OnChangeDescription				(PropValue* sender);
 	void 					OnChangeLoopholes				(PropValue* sender);
-	void							set_loopholes_table_checker		(BOOLValue *value);
+	void							set_loopholes_table_checker		(BoolValue *value);
 
 private:
 	mutable visuals_collection		m_visuals;

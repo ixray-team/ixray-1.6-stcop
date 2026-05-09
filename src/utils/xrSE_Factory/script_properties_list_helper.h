@@ -78,7 +78,7 @@ public:
 			FloatValue* 		CreateFloat		    (PropItemVec* items, const char* key, luabind::object object, const char* name, float mn, float mx, float inc);
 			FloatValue* 		CreateFloat		    (PropItemVec* items, const char* key, luabind::object object, const char* name, float mn, float mx, float inc, int decim);
 
-			BOOLValue* 	  		CreateBOOL		    (PropItemVec* items, const char* key, luabind::object object, luabind::object table, const char* name);
+			BoolValue* 	  		CreateBool		    (PropItemVec* items, const char* key, luabind::object object, luabind::object table, const char* name);
 
 			VectorValue*  	 	CreateVector	    (PropItemVec* items, const char* key, luabind::object object, const char* name);
 			VectorValue*  	 	CreateVector	    (PropItemVec* items, const char* key, luabind::object object, const char* name, float mn);
