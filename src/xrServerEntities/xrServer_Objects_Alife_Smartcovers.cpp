@@ -201,7 +201,7 @@ void CSE_SmartCover::FillProps	(const char* pref, PropItemVec& items)
 #include <script_value_container_impl.h>
 
 #ifdef XRSE_FACTORY_EXPORTS
-void CSE_SmartCover::set_loopholes_table_checker(BOOLValue *value){
+void CSE_SmartCover::set_loopholes_table_checker(BoolValue *value){
 	value->OnChangeEvent.bind	(this,&CSE_SmartCover::OnChangeLoopholes);
 }
 
@@ -444,7 +444,7 @@ void draw_frustum	(CDUInterface* du, float FOV, float _FAR, float A, Fvector &P,
 }
 
 shared_str animation_id(luabind::object table)
-{ 
+{
 	luabind::object::iterator i = table.begin();
 	luabind::object::iterator e = table.end();
 	for ( ; i != e; ++i ) {
@@ -494,9 +494,17 @@ void CSE_SmartCover::load_draw_data () {
 				const char* const loophole_id= luabind::object_cast< const char* >( i.key( ) );
 				shared_str descr_loophole_id = parse_string(*I,"id");
 				if ( xr_strcmp( loophole_id, descr_loophole_id ) )
+				{
 					continue;
-				if ( !luabind::object_cast< bool >( *i ) )
+				}
+				auto type = luabind::get_type(*i);
+				if (type == LUA_TNUMBER && !luabind::object_cast< int >( *i ))
+				{
 					loophole_exist = false;
+				} else if (type == LUA_TBOOLEAN && !luabind::object_cast< bool >( *i ) )
+				{
+					loophole_exist = false;
+				}
 				break;
 			}
 		}
