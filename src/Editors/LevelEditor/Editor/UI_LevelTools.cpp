@@ -338,7 +338,7 @@ void CLevelTool::mtUpdateProperties(void* This)
 		Scene->FillPropObjects("", items, pTool->CurrentClassID());
 		pTool->m_Props->AssignItemsAsync(std::move(items));
 
-		if (MainForm != nullptr)
+		if (MainForm != nullptr && MainForm->GetPropertiesForm())
 		{
 			MainForm->GetPropertiesForm()->PropUpdateIsCompleted = true;
 		}
@@ -349,7 +349,7 @@ void CLevelTool::mtUpdateProperties(void* This)
 
 void CLevelTool::UpdateProperties()
 {
-	if (MainForm != nullptr)
+	if (MainForm != nullptr && MainForm->GetPropertiesForm())
 	{
 		MainForm->GetPropertiesForm()->PropUpdateIsCompleted = false;
 	}
