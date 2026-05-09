@@ -328,9 +328,12 @@ FloatValue* CScriptPropertiesListHelper::CreateFloat(PropItemVec* items, const c
 	return		(PHelper().CreateFloat(*items,key,wrap_value<float>(object,name)));
 }
 
-BOOLValue* CScriptPropertiesListHelper::CreateBOOL(PropItemVec* items, const char* key, luabind::object object, luabind::object table, const char* name)
+BoolValue* CScriptPropertiesListHelper::CreateBool(PropItemVec* items, const char* key, luabind::object object, luabind::object table, const char* name)
 {
-	return		(PHelper().CreateBOOL(*items,key,wrap_value<BOOL>(object,table,name)));
+	if (I_ASSERT_M(table[name].type() == LUA_TBOOLEAN, "create_bool supports only boolean type, but element [%s] has type [%d]!", key, table[name].type())){
+		return PHelper().CreateBool(*items,key,wrap_value<bool>(object,table,name));
+	}
+	return nullptr;
 }
 
 VectorValue* CScriptPropertiesListHelper::CreateVector(PropItemVec* items, const char* key, luabind::object object, const char* name, float mn, float mx, float inc, int decim)
