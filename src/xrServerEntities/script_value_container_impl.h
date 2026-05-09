@@ -40,10 +40,10 @@ IC	void CScriptValueContainer::add			(CScriptValue *new_value)
 IC	void CScriptValueContainer::assign		()
 {
 #ifdef XRSE_FACTORY_EXPORTS
-	xr_vector<CScriptValue*>::iterator	I = m_values.begin();
-	xr_vector<CScriptValue*>::iterator	E = m_values.end();
-	for ( ; I != E; ++I)
-		(*I)->assign	();
+	for (auto& elem : m_values)
+	{
+		elem->assign();
+	}
 #endif
 }
 
