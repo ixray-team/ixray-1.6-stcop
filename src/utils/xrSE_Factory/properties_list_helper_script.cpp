@@ -58,7 +58,7 @@ void CScriptPropertiesListHelper::script_register(lua_State *L)
 		class_<U16Value>	("u16_value"),
 		class_<U32Value>	("u32_value"),
 		class_<FloatValue>	("u32_value"),
-		class_<BOOLValue>	("bool_value"),
+		class_<BoolValue>	("bool_value"),
 		class_<VectorValue>	("vector_value"),
 		class_<ColorValue>	("color_value"),
 		class_<RTextValue>	("text_value"),
@@ -153,7 +153,7 @@ void CScriptPropertiesListHelper::script_register(lua_State *L)
 			.def("create_float",(FloatValue *(CScriptPropertiesListHelper::*)(PropItemVec*, const char*, luabind::object , const char* , float, float, float))(&CScriptPropertiesListHelper::CreateFloat))
 			.def("create_float",(FloatValue *(CScriptPropertiesListHelper::*)(PropItemVec*, const char*, luabind::object , const char* , float, float, float,int))(&CScriptPropertiesListHelper::CreateFloat))
 
-			.def("create_bool",&CScriptPropertiesListHelper::CreateBOOL)
+			.def("create_bool",&CScriptPropertiesListHelper::CreateBool)
 
 			.def("create_vector",(VectorValue *(CScriptPropertiesListHelper::*)(PropItemVec*, const char*, luabind::object , const char* ))					(&CScriptPropertiesListHelper::CreateVector))
 			.def("create_vector",(VectorValue *(CScriptPropertiesListHelper::*)(PropItemVec*, const char*, luabind::object , const char* , float))				(&CScriptPropertiesListHelper::CreateVector))
