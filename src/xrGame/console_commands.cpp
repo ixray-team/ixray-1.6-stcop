@@ -1209,6 +1209,49 @@ public:
 
 };
 
+#include "./ui/UIMap.h"
+#include "./ui/UIMapWnd.h"
+CUIMapWnd* GetMapWnd();
+class CCC_LB : public IConsole_Command {
+public:
+	CCC_LB (LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+	CUICustomMap* mp = nullptr;
+	shared_str ln = nullptr;
+	Fvector4 fr{};
+
+	virtual void Execute(LPCSTR args)
+	{
+		float time_factor = (float)atof(args);
+		Fvector4 V = {0.f,0.f,0.f,0.f};
+		sscanf(args, "%f,%f,%f,%f", &V.x,&V.y,&V.z,&V.w);
+
+		mp->setBoundRect(V);
+	}
+
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		if ((!ln) || (ln != Level().name())) {
+			ln = Level().name();
+			mp = nullptr;
+		}
+		
+		if (!mp) 
+		{
+			CUIMapWnd* m = GetMapWnd();
+			const GameMaps gm = m->GameMaps();
+			auto l = gm.find(ln);
+			mp = l->second;
+
+			fr.set(mp->BoundRectRaw());
+		}
+
+		TStatus  str;
+		xr_sprintf(str, sizeof(str), "%5.3f, %5.3f, %5.3f, %5.3f", fr.x, fr.y, fr.z, fr.w);
+		tips.push_back(str);
+		IConsole_Command::fill_tips(tips, mode);
+	}
+};
+
 class CCC_ScriptCommand : public IConsole_Command {
 public:
 	CCC_ScriptCommand(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
@@ -2875,6 +2918,8 @@ void CCC_RegisterCommands()
 	CMD3(CCC_String, "slot_3", g_quick_use_slots[3], 32);
 
 	CMD4(CCC_Integer, "keypress_on_start", &g_keypress_on_start, 0, 1);
+
+	CMD1(CCC_LB, "level_bound");
 
 #ifdef XR_MP_BUILD
 	register_mp_console_commands();

@@ -11,6 +11,7 @@ protected:
 	shared_str		m_name;
 
 	Frect			m_BoundRect_;// real map size (meters)
+	Fvector4		m_Raw_BoundRect;
 	Flags16			m_flags;
 	enum EFlags
 	{	
@@ -41,6 +42,8 @@ public:
 	void			FitToHeight						(float height);
 	Fvector2		GetCurrentZoom					()const					{return Fvector2().set(GetWndRect().height()/BoundRect().height(), GetWndRect().width()/BoundRect().width());}
 	const Frect&	BoundRect						()const					{return m_BoundRect_;}
+	Fvector4		BoundRectRaw					()const					{return m_Raw_BoundRect;}
+	void			setBoundRect					(Fvector4 frct);
 	virtual void	OptimalFit						(const Frect& r);
 
 	const shared_str& MapName						() {return m_name;}

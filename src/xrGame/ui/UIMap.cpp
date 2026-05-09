@@ -66,7 +66,6 @@ void CUICustomMap::Draw()
 	UI().PopScissor			();
 }
 
-
 void CUICustomMap::Init_internal(const shared_str& name, CInifile& pLtx, const shared_str& sect_name, LPCSTR sh_name)
 {
 	m_name					= name;
@@ -75,14 +74,18 @@ void CUICustomMap::Init_internal(const shared_str& name, CInifile& pLtx, const s
 	m_texture				= pLtx.r_string(sect_name,"texture");
 	m_shader_name			= sh_name;
 	tmp						= pLtx.r_fvector4(sect_name,"bound_rect");
+
+	/*tmp.set(m_Raw_BoundRect);
 	
-	if(!Heading())
+	if (1 && !Heading())
 	{
 		tmp.x					*= UI().get_current_kx();
 		tmp.z					*= UI().get_current_kx();
 	}
 
-	m_BoundRect_.set		(tmp.x, tmp.y, tmp.z, tmp.w);
+	m_BoundRect_.set		(tmp.x, tmp.y, tmp.z, tmp.w);*/
+	setBoundRect(tmp);
+	Msg("Init_internal::%s::%.4f::%.4f::%.4f::%.4f", name.c_str(), tmp.x, tmp.y, tmp.z, tmp.w);
 
 	Fvector2 sz;
 	m_BoundRect_.getsize	(sz);
@@ -91,6 +94,21 @@ void CUICustomMap::Init_internal(const shared_str& name, CInifile& pLtx, const s
 	CUIStatic::InitTextureEx(m_texture.c_str(), m_shader_name.c_str());
 	
 	SetStretchTexture		(true);
+}
+
+void CUICustomMap::setBoundRect(Fvector4 rect)
+{
+	m_Raw_BoundRect.set(rect);
+
+	Fvector4 tmp = Fvector4().set(m_Raw_BoundRect);
+	
+	if(!Heading())
+	{
+		tmp.x					*= UI().get_current_kx();
+		tmp.z					*= UI().get_current_kx();
+	}
+
+	m_BoundRect_.set		(tmp.x, tmp.y, tmp.z, tmp.w);
 }
 
 void rotation_(float x, float y, const float angle, float& x_, float& y_, float kx)
