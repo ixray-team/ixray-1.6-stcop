@@ -25,7 +25,7 @@ void CRender::level_Load(IReader *fs)
 
 	// Begin
 	pApp->LoadBegin					();
-	dxRenderDeviceRender::Instance().Resources->DeferredLoad	(true);
+	dxRenderDeviceRender::Instance().Resources->DeferredLoad(ps_r__common_flags.test(RFLAG_DD_TEX_LOAD));
 	IReader*						chunk;
 
 	// Shaders
