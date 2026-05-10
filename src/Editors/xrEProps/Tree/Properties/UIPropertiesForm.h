@@ -8,6 +8,7 @@ public:
 	UIPropertiesForm();
 	virtual ~UIPropertiesForm();
 
+
 	virtual void Draw() override;
 	virtual void ResetEnd() override;
 
@@ -42,6 +43,8 @@ public:
 	IC bool IsReadOnly()const { return m_Flags.is(plReadOnly); }
 
 	float StartDrawPos = 0.f;
+	xr_atomic_bool DrawComplete = true;
+
 private:
 	bool IsSearchActive = false;
 	xr_atomic_bool bAsyncUpdated = true;
@@ -65,6 +68,7 @@ private:
 	bool IsSearchDisabled = false;
 	xr_string m_SearchText;
 
+	void UpdateCallbacks();
 	void DrawEditText();
 	void DrawEditGameType();
 	void DrawFilteredProperties();

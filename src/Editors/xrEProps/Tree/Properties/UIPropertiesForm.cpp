@@ -19,6 +19,88 @@ UIPropertiesForm::~UIPropertiesForm()
 	ClearProperties();
 }
 
+void UIPropertiesForm::UpdateCallbacks()
+{
+	bool HasResult = false;
+
+	if (m_EditChooseValue)
+	{
+		shared_str result;
+		if (UIChooseForm::GetResult(HasResult, result))
+		{
+			if (HasResult)
+			{
+				if (m_EditChooseValue->AfterEdit<ChooseValue, shared_str>(result))
+				{
+					if (m_EditChooseValue->ApplyValue<ChooseValue, shared_str>(result))
+					{
+						Modified();
+					}
+				}
+			}
+
+			m_EditChooseValue = nullptr;
+		}
+
+		UIChooseForm::Update();
+	}
+
+	if (m_EditTextureValue)
+	{
+		shared_str result;
+		if (UIChooseForm::GetResult(HasResult, result))
+		{
+			if (HasResult)
+			{
+				if (result.c_str() == nullptr)
+				{
+					xr_string result_as_str = "$null";
+					if (m_EditTextureValue->AfterEdit<CTextValue, xr_string>(result_as_str))
+					{
+						if (m_EditTextureValue->ApplyValue<CTextValue, const char*>(result_as_str.c_str()))
+						{
+							Modified();
+						}
+					}
+				}
+				else
+				{
+					xr_string result_as_str = result.c_str();
+					if (m_EditTextureValue->AfterEdit<CTextValue, xr_string>(result_as_str))
+					{
+						if (m_EditTextureValue->ApplyValue<CTextValue, const char*>(result_as_str.c_str()))
+						{
+							Modified();
+						}
+					}
+				}
+			}
+
+			m_EditTextureValue = nullptr;
+		}
+		UIChooseForm::Update();
+	}
+
+	if (m_EditShortcutValue)
+	{
+		xr_shortcut result;
+		if (UIKeyPressForm::GetResult(HasResult, result))
+		{
+			if (HasResult)
+			{
+				if (m_EditShortcutValue->AfterEdit<ShortcutValue, xr_shortcut>(result))
+				{
+					if (m_EditShortcutValue->ApplyValue<ShortcutValue, xr_shortcut>(result))
+					{
+						Modified();
+					}
+				}
+			}
+			m_EditShortcutValue = nullptr;
+		}
+	}
+
+}
 void UIPropertiesForm::Draw()
 {
 	if (!bAsyncUpdated)
@@ -26,79 +108,14 @@ void UIPropertiesForm::Draw()
 		return;
 	}
 
-	if (m_EditChooseValue)
-	{
-		shared_str result;
-		bool is_result;
-		if (UIChooseForm::GetResult(is_result, result))
-		{
-			if (is_result)
-			{
-				if (m_EditChooseValue->AfterEdit<ChooseValue, shared_str>(result))
-					if (m_EditChooseValue->ApplyValue<ChooseValue, shared_str>(result))
-					{
-						Modified();
-					}
-			}
-			m_EditChooseValue = nullptr;
-		}
+	DrawComplete = false;
+	
+	UpdateCallbacks();
 
-		UIChooseForm::Update();
-	}
-	if (m_EditTextureValue)
-	{
-		shared_str result;
-		bool is_result;
-		if (UIChooseForm::GetResult(is_result, result))
-		{
-			if (is_result)
-			{
-				if (result.c_str() == nullptr)
-				{
-					xr_string result_as_str = "$null";
-					if (m_EditTextureValue->AfterEdit<CTextValue, xr_string>(result_as_str))
-						if (m_EditTextureValue->ApplyValue<CTextValue, const char*>(result_as_str.c_str()))
-						{
-							Modified();
-						}
-				}
-				else
-				{
-					xr_string result_as_str = result.c_str();
-					if (m_EditTextureValue->AfterEdit<CTextValue, xr_string>(result_as_str))
-						if (m_EditTextureValue->ApplyValue<CTextValue, const char*>(result_as_str.c_str()))
-						{
-							Modified();
-						}
-				}
-
-			}
-			m_EditTextureValue = nullptr;
-		}
-		UIChooseForm::Update();
-	}
-	if (m_EditShortcutValue)
-	{
-		xr_shortcut result;
-		bool ok;
-		if (UIKeyPressForm::GetResult(ok, result))
-		{
-			if (ok)
-			{
-				if (m_EditShortcutValue->AfterEdit<ShortcutValue, xr_shortcut>(result))
-					if (m_EditShortcutValue->ApplyValue<ShortcutValue, xr_shortcut>(result))
-					{
-						Modified();
-					}
-			}
-			m_EditShortcutValue = nullptr;
-		}
-	}
-
-	float BorderSize		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableBorder);
-	float Padding			= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableTextPaddingY);
-	float ButtonPaddingX	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH);
-	float Icon				= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IconSize) * 0.7f;
+	const float BorderSize		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableBorder);
+	const float Padding			= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableTextPaddingY);
+	const float ButtonPaddingX	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH);
+	const float Icon			= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::IconSize) * 0.7f;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { BorderSize, BorderSize });
 	if (!IsSearchDisabled)
@@ -159,20 +176,12 @@ void UIPropertiesForm::Draw()
 		ImGui::BeginChild("##Scroll");
 		ImGui::BeginChild("##Content", { -2.f, 0.f }, ImGuiChildFlags_AutoResizeY);
 	}
-	static constexpr ImGuiTableFlags DefFlags =
-		ImGuiTableFlags_BordersInner |
-		ImGuiTableFlags_Resizable;
-	ImGuiTableFlags Flags = DefFlags;
-	if (IsFitMode)
-	{
-		Flags |= ImGuiTableFlags_SizingFixedFit;
-	}
-	else
-	{
-		Flags |= ImGuiTableFlags_Resizable;
-	}
+
+	static constexpr ImGuiTableFlags DefFlags = ImGuiTableFlags_BordersInner | ImGuiTableFlags_Resizable;
+	ImGuiTableFlags Flags = DefFlags | (IsFitMode ? ImGuiTableFlags_SizingFixedFit : ImGuiTableFlags_Resizable);
 
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, ImGui::GetStyle().CellPadding.y));
+
 	if (ImGui::BeginTable("props", 2, Flags))
 	{
 		ImGui::TableSetupColumn(" Name", ImGuiTableColumnFlags_WidthFixed, 0.0f);
@@ -182,6 +191,7 @@ void UIPropertiesForm::Draw()
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonPaddingH), 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.f);
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
+
 		if (IsSearchActive)
 		{
 			DrawFilteredProperties();
@@ -190,10 +200,12 @@ void UIPropertiesForm::Draw()
 		{
 			m_Root.DrawRoot();
 		}
+
 		ImGui::PopStyleVar(3);
 
 		ImGui::EndTable();
 	}
+
 	ImGui::PopStyleVar();
 	if (!IsSearchDisabled)
 	{
@@ -202,6 +214,8 @@ void UIPropertiesForm::Draw()
 		ImGui::PopStyleColor();
 	}
 	ImGui::PopStyleVar();
+
+	DrawComplete = true;
 }
 
 void UIPropertiesForm::ResetEnd()
