@@ -121,55 +121,51 @@ void CXMLOverride::GenerateNewDoc(tinyxml2::XMLDocument& Original, tinyxml2::XML
 				}
 				Parent = Parent->Parent();
 			}
-			ParentList.push_back(ChildElement);
 
-			tinyxml2::XMLElement* IterateElement = Original.FirstChildElement(ParentList[0]->Value());
-			ParentList.erase(ParentList.begin());
-
-			tinyxml2::XMLNode* MyParent = nullptr;
-
-			for (auto Element : ParentList)
+			if (OverrideMode == EOverrideMode::remove || OverrideMode == EOverrideMode::replace)
 			{
-				if (IterateElement == nullptr)
-					break;
+				ParentList.push_back(ChildElement);
 
-				xr_string ElValue = Element->Value();
-				if (ElValue == "string")
+				tinyxml2::XMLElement* IterateElement = Original.FirstChildElement(ParentList[0]->Value());
+				ParentList.erase(ParentList.begin());
+				
+				tinyxml2::XMLNode* MyParent = nullptr;
+				for (auto Element : ParentList)
 				{
+					if (IterateElement == nullptr)
+					{
+						break;
+					}
+
 					const char* IDAttrib = Element->Attribute("id");
-
-					IterateElement = IterateElement->FirstChildElement();
-					while (IterateElement != nullptr)
+					
+					IterateElement = IterateElement->FirstChildElement(Element->Value());
+					if (IDAttrib)
 					{
-						xr_string CheckID = IterateElement->Attribute("id");
-						if (CheckID == IDAttrib)
-							break;
+						shared_str IDAttribShared = IDAttrib;
+						while (IterateElement != nullptr)
+						{
+							auto CheckID = IterateElement->Attribute("id");
+							if (!I_ASSERT_M(CheckID, "XML element %s doesn't contains ID while others does!", Element->Value()))
+							{
+								IterateElement = nullptr;
+							}
+							if (CheckID == IDAttribShared)
+							{
+								break;
+							}
 
-						IterateElement = IterateElement->NextSiblingElement();
+							IterateElement = IterateElement->NextSiblingElement();
+						}
 					}
 				}
-				else
+
+				if (IterateElement != nullptr)
 				{
-					tinyxml2::XMLElement* TestChild = IterateElement->FirstChildElement(Element->Value());
-					if (TestChild != nullptr)
-					{
-						IterateElement = TestChild;
-					}
-					else
-					{
-						IterateElement = nullptr;
-					}
+					MyParent = IterateElement->Parent();
 				}
-			}
 
-			if (IterateElement != nullptr)
-			{
-				MyParent = IterateElement->Parent();
-			}
-
-			if (MyParent != nullptr)
-			{
-				if (OverrideMode == EOverrideMode::remove || OverrideMode == EOverrideMode::replace)
+				if (MyParent != nullptr)
 				{
 					size_t NodeCount = MyParent->ChildElementCount();
 					MyParent->DeleteChild(IterateElement);
@@ -180,17 +176,44 @@ void CXMLOverride::GenerateNewDoc(tinyxml2::XMLDocument& Original, tinyxml2::XML
 						VERIFY(NodeCount == MyParent->ChildElementCount());
 					}
 				}
-				else if (OverrideMode == EOverrideMode::add)
+			}
+			else if (OverrideMode == EOverrideMode::add)
+			{
+				tinyxml2::XMLElement* IterateElement = Original.FirstChildElement(ParentList[0]->Value());
+				ParentList.erase(ParentList.begin());
+				
+				for (auto Element : ParentList)
 				{
-					if (IterateElement != nullptr)
+					if (IterateElement == nullptr)
 					{
-						tinyxml2::XMLElement* ChildToAdd = ChildElement->FirstChildElement();
-						while (ChildToAdd != nullptr)
+						break;
+					}
+
+					const char* IDAttrib = Element->Attribute("id");
+					
+					IterateElement = IterateElement->FirstChildElement(Element->Value());
+					if (IDAttrib)
+					{
+						shared_str IDAttribShared = IDAttrib;
+						while (IterateElement != nullptr)
 						{
-							ApplyNewNode(IterateElement, ChildToAdd);
-							ChildToAdd = ChildToAdd->NextSiblingElement();
+							auto CheckID = IterateElement->Attribute("id");
+							if (!I_ASSERT_M(CheckID, "XML element %s doesn't contains ID while others does!", Element->Value()))
+							{
+								IterateElement = nullptr;
+							}
+							if (CheckID == IDAttribShared)
+							{
+								break;
+							}
+
+							IterateElement = IterateElement->NextSiblingElement();
 						}
 					}
+				}
+				if (IterateElement != nullptr)
+				{
+					ApplyNewNode(IterateElement, ChildElement);
 				}
 			}
 		}
