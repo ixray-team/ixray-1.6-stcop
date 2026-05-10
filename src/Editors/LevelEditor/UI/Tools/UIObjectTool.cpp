@@ -30,7 +30,9 @@ UIObjectTool::UIObjectTool()
 UIObjectTool::~UIObjectTool()
 {
 	while (RefreshInProgress)
+	{
 		std::this_thread::yield();
+	}
 
 	m_RemoveTexture.destroy();
 	m_RealTexture.destroy();

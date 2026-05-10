@@ -365,8 +365,6 @@ void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
 //---------------------------------------------------------------------------
 void  CEditorRenderDevice::Resize(int w, int h, bool maximized)
 {
-	m_RenderArea = w * h;
-
 	dwRealWidth = w;
 	dwRealHeight = h;
 
