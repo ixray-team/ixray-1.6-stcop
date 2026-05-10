@@ -785,6 +785,7 @@ void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask32, "r__no_ram_textures", &ps_r__common_flags, RFLAG_NO_RAM_TEXTURES);
 	CMD3(CCC_Mask32, "r__mt_texture_load", &ps_r__common_flags, RFLAG_MT_TEX_LOAD);
+	CMD3(CCC_Mask32, "r__deferred_texture_load", &ps_r__common_flags, RFLAG_DD_TEX_LOAD);
 	CMD3(CCC_Token, "r_aa", &ps_r2_aa_type, aa_type_token);
 	CMD4(CCC_Integer, "r__optimize_static_geom", &opt_static, 0, 2);
 	CMD4(CCC_Integer, "r__optimize_dynamic_geom", &opt_dynamic, 0, 2);

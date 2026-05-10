@@ -380,8 +380,17 @@ void CResourceManager::Delete(const Shader* S)
 
 void CResourceManager::DeferredUpload()
 {
-	if (!RDEVICE.b_is_Ready) return;
+	if (!RDEVICE.b_is_Ready)
+	{
+		return;
+	}
 
+#ifndef _EDITOR
+	if (!ps_r__common_flags.test(RFLAG_DD_TEX_LOAD))
+	{
+		return;
+	}
+#endif
 	PROF_EVENT("CResourceManager::DeferredUpload");
 	Log("Loading textures via DeferredUpload");
 
@@ -418,6 +427,11 @@ void CResourceManager::DeferredUnload()
 {
 	if (!RDEVICE.b_is_Ready)
 		return;
+
+#ifndef _EDITOR
+	if (!ps_r__common_flags.test(RFLAG_DD_TEX_LOAD))
+		return;
+#endif
 
 #ifdef USE_DX11
 	FluidManager.Destroy();
