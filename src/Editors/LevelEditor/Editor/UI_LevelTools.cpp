@@ -315,6 +315,11 @@ void CLevelTool::mtUpdateProperties(void* This)
 	{
 		WaitForSingleObject(pTool->mtPropObj, INFINITE);
 
+		while (!pTool->m_WorldProps->DrawComplete || !pTool->m_Props->DrawComplete)
+		{
+			std::this_thread::yield();
+		}
+		
 		pTool->m_WorldProps->ClearProperties();
 		pTool->m_Props->ClearProperties();
 
