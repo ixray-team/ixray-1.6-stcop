@@ -126,50 +126,49 @@ void CXMLOverride::GenerateNewDoc(tinyxml2::XMLDocument& Original, tinyxml2::XML
 			tinyxml2::XMLElement* IterateElement = Original.FirstChildElement(ParentList[0]->Value());
 			ParentList.erase(ParentList.begin());
 
-			tinyxml2::XMLNode* MyParent = nullptr;
-
-			for (auto Element : ParentList)
+			if (OverrideMode == EOverrideMode::remove || OverrideMode == EOverrideMode::replace)
 			{
-				if (IterateElement == nullptr)
-					break;
-
-				xr_string ElValue = Element->Value();
-				if (ElValue == "string")
+				tinyxml2::XMLNode* MyParent = nullptr;
+				for (auto Element : ParentList)
 				{
-					const char* IDAttrib = Element->Attribute("id");
+					if (IterateElement == nullptr)
+						break;
 
-					IterateElement = IterateElement->FirstChildElement();
-					while (IterateElement != nullptr)
+					xr_string ElValue = Element->Value();
+					if (ElValue == "string")
 					{
-						xr_string CheckID = IterateElement->Attribute("id");
-						if (CheckID == IDAttrib)
-							break;
+						const char* IDAttrib = Element->Attribute("id");
 
-						IterateElement = IterateElement->NextSiblingElement();
-					}
-				}
-				else
-				{
-					tinyxml2::XMLElement* TestChild = IterateElement->FirstChildElement(Element->Value());
-					if (TestChild != nullptr)
-					{
-						IterateElement = TestChild;
+						IterateElement = IterateElement->FirstChildElement();
+						while (IterateElement != nullptr)
+						{
+							xr_string CheckID = IterateElement->Attribute("id");
+							if (CheckID == IDAttrib)
+								break;
+
+							IterateElement = IterateElement->NextSiblingElement();
+						}
 					}
 					else
 					{
-						IterateElement = nullptr;
+						tinyxml2::XMLElement* TestChild = IterateElement->FirstChildElement(Element->Value());
+						if (TestChild != nullptr)
+						{
+							IterateElement = TestChild;
+						}
+						else
+						{
+							IterateElement = nullptr;
+						}
 					}
 				}
-			}
 
-			if (IterateElement != nullptr)
-			{
-				MyParent = IterateElement->Parent();
-			}
+				if (IterateElement != nullptr)
+				{
+					MyParent = IterateElement->Parent();
+				}
 
-			if (MyParent != nullptr)
-			{
-				if (OverrideMode == EOverrideMode::remove || OverrideMode == EOverrideMode::replace)
+				if (MyParent != nullptr)
 				{
 					size_t NodeCount = MyParent->ChildElementCount();
 					MyParent->DeleteChild(IterateElement);
@@ -180,17 +179,12 @@ void CXMLOverride::GenerateNewDoc(tinyxml2::XMLDocument& Original, tinyxml2::XML
 						VERIFY(NodeCount == MyParent->ChildElementCount());
 					}
 				}
-				else if (OverrideMode == EOverrideMode::add)
+			}
+			else if (OverrideMode == EOverrideMode::add)
+			{
+				if (IterateElement != nullptr)
 				{
-					if (IterateElement != nullptr)
-					{
-						tinyxml2::XMLElement* ChildToAdd = ChildElement->FirstChildElement();
-						while (ChildToAdd != nullptr)
-						{
-							ApplyNewNode(IterateElement, ChildToAdd);
-							ChildToAdd = ChildToAdd->NextSiblingElement();
-						}
-					}
+					ApplyNewNode(IterateElement, ChildElement);
 				}
 			}
 		}
