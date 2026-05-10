@@ -51,7 +51,6 @@ public:
 
 	float RenderRadius;
 	u32 dwRealWidth, dwRealHeight;
-	float m_RenderArea;
 	float m_ScreenQuality;
 
 	u32 dwFillMode;
@@ -91,7 +90,6 @@ public:
 	{
 	}
 
-	IC float GetRenderArea() { return m_RenderArea; }
 	// Sprite rendering
 	IC float _x2real(float x)
 	{
