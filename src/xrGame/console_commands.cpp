@@ -2359,8 +2359,6 @@ public:
 
 	void Execute(const char* args) override
 	{
-		CCC_Mask32::Execute(args);
-
 		if (!g_pGameLevel)
 			return;
 		
