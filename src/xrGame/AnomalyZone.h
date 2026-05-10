@@ -3,6 +3,8 @@
 #include "space_restrictor.h"
 #include "../xrEngine/Feel_Touch.h"
 #include "../xrScripts/script_export_space.h"
+#include "ElectricCurve.h"
+#include "RandomSoundEmmiter.h"
 
 class CActor;
 class CLAItem;
@@ -57,7 +59,6 @@ public:
 
 				float	GetMaxPower						()							{return m_fMaxPower;}
 				void	SetMaxPower						(float p)					{m_fMaxPower = p;}
-				void UpdateMovement();
 	//вычисление силы хита в зависимости от расстояния до центра зоны
 	//относительный размер силы (от 0 до 1)
 				float	RelativePower					(float dist, float nearest_shape_radius);
@@ -311,6 +312,23 @@ protected:
 	u32						m_dwLastTimeMoved;
 
 	//FFx0001++
+	bool m_use_electric_curve = false;
+	bool m_cascade_curves = false;
+	bool m_cascade_curves_by_anomalies = false;
+	shared_str m_electric_curve_particle_path;
+	xr_vector<SElectricCurve> m_electric_curves;
+	u8 m_max_count_electric_curves = 1;
+	float max_trace_curve_distance = 15.f;
+	float m_max_curve_damage = 0.005f;
+	float m_max_curve_impulse = 0.012f;
+
+	xr_vector<CRandomSoundEmmiter*> m_snd_emmiter_electric_core_target_damage;
+	xr_vector<CRandomSoundEmmiter*> m_snd_emmiter_electric_core_loop;
+
+	xr_vector<CRandomSoundEmmiter*> m_snd_emmiter_electric_curve_start;
+	xr_vector<CRandomSoundEmmiter*> m_snd_emmiter_electric_curve_loop;
+	xr_vector<CRandomSoundEmmiter*> m_snd_emmiter_electric_curve_end;
+
 	bool m_use_movement = false;
 	float max_processing_distance = 200.f;
 	bool draw_dbg = false;
@@ -325,6 +343,10 @@ protected:
 	float m_movement_radius = 0.f;
 	Fvector m_initial_spawn_position;
 	Fvector m_target_position;
+	float animTime = 0.0f;
+	float blastTimeProcessing = 0.0f;
+	CGameObject* lastDamagedObject = nullptr;
+	xr_vector<CGameObject*> lastScannedObjects;
 
 	//расстояние от зоны до текущего актера
 	float					m_fDistanceToCurEntity;
@@ -337,10 +359,17 @@ public:
 	virtual u32				ef_weapon_type				() const;
 	virtual	bool			register_schedule			() const {return true;}
 	u8						PlayEntranceSmallParticles	(const Fvector& pos, const Fvector& dir, const Fvector& vel, bool play_effect = true);
-	void					MoveToFromDelta				(Fvector newPos, float speed);
-	Fvector					GetLVPos					(Fvector newPos);
-	CGameObject*			ScanObjects					();
-	void					OnActorTakeArtefact			(float scan_radius, CArtefact* art, Fvector actorPos);
+
+	void					MoveToFromDelta	(Fvector newPos, float speed);
+	Fvector					GetLVPos(Fvector newPos);
+	CGameObject*			ScanObjects(float distance, Fvector center);
+	void					OnActorTakeArtefact(float scan_radius, CArtefact* art, Fvector actorPos);
+	void					UpdateElectricCurves(CGameObject* firstObject);
+	void					UpdateMovement(bool isUpdateCL);
+	void					OnBlastElectricCurvesProcessing(CGameObject* obj);
+	void					OnBlastElectricCurvesUpdate(CGameObject* obj);
+	xr_vector<CGameObject*> GetSortedByDistanceAliveObjects(float distance, Fvector centerPos, u64 mask);
+	void					AffectCurveDamade(CGameObject* obj);
 	// optimization FAST/SLOW mode
 public:	
 	virtual bool			AlwaysTheCrow				();
