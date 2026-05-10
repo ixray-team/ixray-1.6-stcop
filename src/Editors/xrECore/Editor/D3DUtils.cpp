@@ -1047,9 +1047,14 @@ void CDrawUtilities::DrawCross(const Fvector& p, float szx1, float szy1, float s
     DU_DRAW_DP			(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_L,vBase,bRot45?6:3);
 }
 
-void CDrawUtilities::DrawPivot(const Fvector& pos, float sz){
+void CDrawUtilities::DrawPivot(const Fvector& pos, float sz)
+{
 	DU_DRAW_SH(EDevice->m_WireShader);
     AddCross(pos, sz, sz, sz, sz, sz, sz, 0xFF7FFF7F);
+
+    RCache.stat.calls--;
+    RCache.stat.verts -= 9;
+    RCache.stat.polys -= 3;
 }
 
 void CDrawUtilities::DrawAxis(const Fmatrix& T)
@@ -1156,6 +1161,10 @@ void CDrawUtilities::DrawGrid()
     RCache.set_xform_world(ddd);
 	DU_DRAW_SH(EDevice->m_WireShader);
     DU_DRAW_DP(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_L,vBase,m_GridPoints.size()/2);
+
+    RCache.stat.calls--;
+    RCache.stat.verts -= (m_GridPoints.size() / 2) * 3;
+    RCache.stat.polys -= (m_GridPoints.size() / 2);
 }
 
 void CDrawUtilities::DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd){
