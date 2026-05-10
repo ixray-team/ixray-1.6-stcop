@@ -393,6 +393,7 @@ void CEditorRenderDevice::Reset(bool)
 	UI->ResetEnd(RDevice);
 	_SetupStates();
 
+	R_ASSERT(texture_null->get_SRView(), "Null texture not found!");
 	UIChooseForm::SetNullTexture(texture_null->get_SRView()->GetRawSRV());
 
 	SearchIcon = EDevice->Resources->_CreateTexture("ed\\content_browser_search");
