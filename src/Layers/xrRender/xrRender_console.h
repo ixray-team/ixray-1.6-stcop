@@ -223,6 +223,7 @@ enum
 	R4FLAG_PUDDLES					= (1<<16),
 	R4FLAG_OFFSCREEN_REFLECTIONS	= (1<<17),
 	R4FLAG_SSLR_ON_WORLD = (1<<18),
+	RFLAG_DD_TEX_LOAD = (1<<19),
 };
 
 extern void						xrRender_initconsole	();
