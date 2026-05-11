@@ -91,6 +91,7 @@ constexpr const char* _kOMFEditorModalWindow_AnimationParamMotionMarksCleared = 
 constexpr const char* _kOMFEditorModalWindow_AddMotionMark = "Add##ToolsOMFEditor_MotionMarkAdd";
 constexpr const char* _kOMFEditorModalWindow_DuplicateFoundMotionMark = "Warning!##ToolsOMFEditor_DuplicateFoundMotionMark";
 constexpr const char* _kOMFEditorModalWindow_TryRepairApplied = "Info##ToolsOMFEditor_TryRepairModal";
+constexpr const char* _kOMFEditorModalWindow_AddAnimsFrom = "Add anims from##ToolsOMFEditor_AddAnimsFrom";
 
 
 struct OMFData
@@ -215,6 +216,7 @@ struct CImGuiOMFEditor
 	bool is_show_popup_duplicate_found_motion_mark{};
 
 	bool is_show_popup_try_repair_applied{};
+	bool is_show_popup_add_anims_from{};
 
 	bool is_file_loaded{};
 	bool animation_param_was_changed{};
@@ -222,6 +224,8 @@ struct CImGuiOMFEditor
 	bool is_motion_time_format_keys_selected{};
 	bool is_motion_time_format_radiobutton_changed{};
 	bool is_motion_marks_enabled{};
+	bool is_input_text_addanimsfrom_updated_preview{};
+	bool is_input_text_addanimsfrom_was_edited{};
 	int current_selected_animation_param{};
 	int current_selected_bone_rename{};
 	int current_selected_mark{};
@@ -240,6 +244,9 @@ struct CImGuiOMFEditor
 	xr_vector<const char*> list_box_motion_marks_names;
 	xr_vector<xr_stack_string16> list_box_motion_marks_params_names;
 
+	xr_vector<OMFData::omf_name_t> addanimsfrom_animation_list;
+
+	xr_stack_string<512> input_text_add_anims_from_buffer;
 	xr_stack_string<sizeof(string_path) * 2> path;
 };
 
@@ -742,9 +749,14 @@ void OMFEditor_Init(CImGuiOMFEditor* p_state, OMFData& data)
 	p_state->is_show_popup_add_motion_mark = false;
 	p_state->is_show_popup_duplicate_found_motion_mark = false;
 	p_state->is_show_popup_try_repair_applied = false;
+	p_state->is_show_popup_add_anims_from = false;
 
 	p_state->list_box_motion_marks_names.reserve(128);
 	p_state->list_box_motion_marks_params_names.reserve(128);
+	p_state->addanimsfrom_animation_list.reserve(64);
+
+	p_state->is_input_text_addanimsfrom_updated_preview = false;
+	p_state->is_input_text_addanimsfrom_was_edited = false;
 
 	OMFEditor_Init_ComboAnimationParams(p_state, data);
 	OMFEditor_Init_ComboBones(p_state, data);
@@ -1330,6 +1342,23 @@ void OMFEditor_MergeWith(
 	}
 }
 
+void OMFEditor_AddAnimsFrom_Popup(
+	CImGuiOMFEditor* pState
+)
+{
+	R_ASSERT(pState);
+	R_ASSERT(pState->omf);
+
+	if (
+		pState &&
+		pState->is_file_loaded &&
+		pState->omf
+		)
+	{
+		pState->is_show_popup_add_anims_from = true;
+	}
+}
+
 void RequestHandler_OMFEditor(const SRequestData& req)
 {
 	R_ASSERT2(static_cast<eImGuiEditorType>(req.editor_type) == eImGuiEditorType::kOMFEditor, "mistaken workload calling! that means data was corrupted or some error occurred");
@@ -1377,6 +1406,7 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 				g_pOMFEditor->is_show_popup_rename_animation_param = false;
 				g_pOMFEditor->is_show_popup_add_motion_mark = false;
 				g_pOMFEditor->is_show_popup_try_repair_applied = false;
+				g_pOMFEditor->is_show_popup_add_anims_from = false;
 
 				can_hide_window = false;
 			}
@@ -1491,6 +1521,7 @@ void RenderOMFEditor_Draw_TableHeader()
 
 			if (ImGui::MenuItem("Add anims from##ToolsInGameImGui_OMFEditor"))
 			{
+				OMFEditor_AddAnimsFrom_Popup(g_pOMFEditor);
 			}
 
 			if (ImGui::MenuItem("Try repair##ToolsInGameImGui_OMFEditor"))
@@ -2108,6 +2139,7 @@ void RenderOMFEditor_Draw_ModalPopups()
 	modal_opened += g_pOMFEditor->is_show_popup_add_motion_mark;
 	modal_opened += g_pOMFEditor->is_show_popup_duplicate_found_motion_mark;
 	modal_opened += g_pOMFEditor->is_show_popup_try_repair_applied;
+	modal_opened += g_pOMFEditor->is_show_popup_add_anims_from;
 
 	R_ASSERT(modal_opened <= 1);
 
@@ -2151,6 +2183,11 @@ void RenderOMFEditor_Draw_ModalPopups()
 		if (g_pOMFEditor->is_show_popup_try_repair_applied)
 		{
 			ImGui::OpenPopup(_kOMFEditorModalWindow_TryRepairApplied);
+		}
+
+		if (g_pOMFEditor->is_show_popup_add_anims_from)
+		{
+			ImGui::OpenPopup(_kOMFEditorModalWindow_AddAnimsFrom);
 		}
 	}
 
@@ -2304,6 +2341,95 @@ void RenderOMFEditor_Draw_ModalPopups()
 		{
 			g_pOMFEditor->is_show_popup_try_repair_applied = false;
 		}
+
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal(
+		_kOMFEditorModalWindow_AddAnimsFrom,
+		&g_pOMFEditor->is_show_popup_add_anims_from,
+		ImGuiWindowFlags_AlwaysAutoResize
+	))
+	{
+		ImGui::Text("Insert text:");
+
+		ImGui::SameLine();
+
+		ImGui::BeginDisabled();
+
+		ImGui::Text("(?)");
+
+		ImGui::SetItemTooltip("You need to insert animation list using newline ('\\n') separator like this:\nanim1\nanim2\nanim3");
+
+		ImGui::EndDisabled();
+
+		if (g_pOMFEditor->input_text_add_anims_from_buffer.empty())
+		{
+			if (ImGui::InputTextMultiline(
+				"##AddAnimsFrom_ITM",
+				g_pOMFEditor->input_text_add_anims_from_buffer.data(),
+				g_pOMFEditor->input_text_add_anims_from_buffer.max_size()
+			))
+			{
+				g_pOMFEditor->is_input_text_addanimsfrom_updated_preview = true;
+			}
+		}
+		else
+		{
+			if (ImGui::BeginTable("##AddAnimsFrom_Table", 2))
+			{
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+
+				g_pOMFEditor->is_input_text_addanimsfrom_was_edited = false;
+
+				if (ImGui::InputTextMultiline(
+					"##AddAnimsFrom_ITM",
+					g_pOMFEditor->input_text_add_anims_from_buffer.data(),
+					g_pOMFEditor->input_text_add_anims_from_buffer.max_size()
+				))
+				{
+					g_pOMFEditor->is_input_text_addanimsfrom_was_edited = true;
+					g_pOMFEditor->is_input_text_addanimsfrom_updated_preview = true;
+				}
+
+				if (
+					g_pOMFEditor->is_input_text_addanimsfrom_updated_preview && 
+					g_pOMFEditor->is_input_text_addanimsfrom_was_edited==false
+				)
+				{
+					g_pOMFEditor->addanimsfrom_animation_list.clear();
+
+					if (g_pOMFEditor->input_text_add_anims_from_buffer.empty() == false)
+					{
+
+					}
+
+					g_pOMFEditor->is_input_text_addanimsfrom_updated_preview = false;
+				}
+
+				ImGui::TableSetColumnIndex(1);
+
+
+
+				ImGui::EndTable();
+			}
+		}
+
+
+		if (ImGui::Button("Ok##AddAnimsFrom"))
+		{
+
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Cancel##AddAnimsFrom"))
+		{
+			g_pOMFEditor->is_show_popup_add_anims_from = false;
+		}
+
 
 		ImGui::EndPopup();
 	}
