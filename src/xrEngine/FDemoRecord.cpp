@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "IGame_Level.h"
 #include "x_ray.h"
 
@@ -144,39 +144,26 @@ void CDemoRecord::MakeScreenshotFace()
 	m_Stage++;
 }
 
-
-void GetLM_BBox(Fbox &bb, int Step)
+void GetLM_BBox(Fbox& bb, int Step)
 {
-	float half_x = bb.min.x + (bb.max.x - bb.min.x)/2;
-	float half_z = bb.min.z + (bb.max.z - bb.min.z)/2;
-	switch (Step)
-	{
-	case 0:
-		{
-			bb.max.x = half_x;
-			bb.min.z = half_z;
-		}break;
-	case 1:
-		{
-			bb.min.x = half_x;
-			bb.min.z = half_z;
-		}break;
-	case 2:
-		{
-			bb.max.x = half_x;
-			bb.max.z = half_z;
-		}break;
-	case 3:
-		{
-			bb.min.x = half_x;
-			bb.max.z = half_z;
-		}break;
-	default:
-		{			
-		}break;
-		
-	}
-};
+	float dx = (bb.max.x - bb.min.x) / 4.0f;
+	float dz = (bb.max.z - bb.min.z) / 4.0f;
+
+	int row = Step / 4; // 0..3
+	int col = Step % 4; // 0..3
+
+	// ������� ����� ���� = Step 0
+	float min_x = bb.min.x + col * dx;
+	float max_x = min_x + dx;
+
+	float max_z = bb.max.z - row * dz;
+	float min_z = max_z - dz;
+
+	bb.min.x = min_x;
+	bb.max.x = max_x;
+	bb.min.z = min_z;
+	bb.max.z = max_z;
+}
 
 void CDemoRecord::MakeLevelMapProcess()
 {
@@ -184,30 +171,30 @@ void CDemoRecord::MakeLevelMapProcess()
 	{
 	case 0:
 		{
-			s_dev_flags			= psDeviceFlags;
-			s_hud_flag.assign	(psHUD_Flags);
-			psDeviceFlags.zero	();
+			s_dev_flags = psDeviceFlags;
+			s_hud_flag.assign(psHUD_Flags);
+
+			psDeviceFlags.zero();
 			psDeviceFlags.set	(rsClearBB|rsFullscreen|rsDrawStatic,TRUE);
 			if (!psDeviceFlags.equal(s_dev_flags,rsFullscreen))
-				Device.Reset();
+			Device.Reset();
 
 		}break;
 
 	case DEVICE_RESET_PRECACHE_FRAME_COUNT+30:
 		{
-			setup_lm_screenshot_matrices		();
 
 			string_path					tmp;
 			if(m_iLMScreenshotFragment==-1)
 				xr_sprintf				(tmp, sizeof(tmp),"map_%s", *g_pGameLevel->name());
 			else
-				xr_sprintf				(tmp, sizeof(tmp),"map_%s#%d", *g_pGameLevel->name(), m_iLMScreenshotFragment);
+				xr_sprintf				(tmp, sizeof(tmp),"map_%s_%02d", *g_pGameLevel->name(), m_iLMScreenshotFragment);
 
 			if(m_iLMScreenshotFragment!=-1)
 			{
 				++m_iLMScreenshotFragment;
 				
-				if(m_iLMScreenshotFragment!=4)
+				if(m_iLMScreenshotFragment!=16)
 				{
 					curr_lm_fbox		= get_level_screenshot_bound();
 					GetLM_BBox			(curr_lm_fbox, m_iLMScreenshotFragment);
@@ -215,25 +202,30 @@ void CDemoRecord::MakeLevelMapProcess()
 				}
 			}
 
-			Render->Screenshot			(IRender_interface::SM_FOR_LEVELMAP,tmp);
+			Render->Screenshot(IRender_interface::SM_FOR_LEVELMAP, tmp);
 
-			if(m_iLMScreenshotFragment==-1 || m_iLMScreenshotFragment==4)
+			if(m_iLMScreenshotFragment==-1 || m_iLMScreenshotFragment==16)
 			{
-				psHUD_Flags.assign			(s_hud_flag);
+				psHUD_Flags.assign(s_hud_flag);
 
 				BOOL bDevReset				= !psDeviceFlags.equal(s_dev_flags,rsFullscreen);
-				psDeviceFlags				= s_dev_flags;
+				psDeviceFlags = s_dev_flags;
 				if (bDevReset)				Device.Reset();
 				m_bMakeLevelMap				= FALSE;
-				m_iLMScreenshotFragment		= -1;
+				m_iLMScreenshotFragment = -1;
 			}
 		}break;
 	default:
 		{
-			setup_lm_screenshot_matrices		();
+			//setup_lm_screenshot_matrices		();
 		}break;
 	}
-	m_Stage++;
+	if (Device.dwTimeGlobal % 10 == 0)
+	{
+		m_Stage++;
+		setup_lm_screenshot_matrices();
+		Msg("m_Stage [%d]", m_Stage);
+	}
 }
 
 void CDemoRecord::MakeCubeMapFace(Fvector &D, Fvector &N)

@@ -624,13 +624,13 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Preset,	"_preset",				&ps_Preset,	qpreset_token	);
 
 	CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);
-	CMD4(CCC_Float,		"r__dtex_range",		&r__dtex_range,		5,		175	);
+	CMD4(CCC_Float,		"r__dtex_range",		&r__dtex_range,		5,		1075	);
 
 // Common
 	CMD1(CCC_Screenshot,"screenshot"			);
 	CMD4(CCC_Float, "r__wallmark_ttl", &ps_r__WallmarkTTL, 1.0f, 10.f * 60.f);
 
-	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	1.2f		);
+	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	1000.2f		);
 	CMD4(CCC_Float,		"r__detail_density",	&ps_current_detail_density,		0.2f,	0.8f	);
 
 #ifdef DEBUG
