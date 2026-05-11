@@ -375,7 +375,11 @@ struct SCollisionHitCallback : ICollisionHitCallback
 void CPolterTele::tele_fire_objects()
 {
 	const CEntityAlive* enemy = this->m_object->EnemyMan.get_enemy();
-	
+	if (enemy == nullptr)
+	{
+		return;
+	}
+
 	for (u32 i = 0; i < m_object->get_objects_total_count(); i++)
 	{
 		CTelekineticObject tele_object = m_object->get_object_by_index(i);
