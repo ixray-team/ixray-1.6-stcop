@@ -4,6 +4,7 @@
 
 
 #include <FlexibleVertexFormat.h>
+#include <d3dx9.h>
 
 #include "../xrEngine/GameFont.h"
 #include "D3DUtils.h"
@@ -93,7 +94,6 @@ u32 m_ColorGridTh = 0xffb4b4b4;
 u32 m_SelectionRect=D3DCOLOR_RGBA(127,255,127,64);
 
 u32 m_ColorSafeRect = 0xffB040B0;
-#include <d3dx9.h>
 
 void SPrimitiveBuffer::CreateFromData(ERHI_PRIMITIVE_TOPOLOGY _pt, u32 _p_cnt, u32 FVF, LPVOID vertices, u32 _v_cnt, u16* indices, u32 _i_cnt)
 {
@@ -285,9 +285,6 @@ void CDrawUtilities::DrawSpotLight(const Fvector& p, const Fvector& d, float ran
     d.getHP		(H,P);
     T.setHPB	(H,P,0);     
     T.translate_over(p);
-    _VertexStream*	Stream	= &RCache.Vertex;
-    u32				vBase;
-    FVF::L*	pv	 	= (FVF::L*)Stream->Lock(LINE_DIVISION*2+2,vs_L->vb_stride,vBase);
 	for (float angle=0; angle<PI_MUL_2; angle+=da){
         float _sa	=std::sin(angle);
         float _ca	=std::cos(angle);
@@ -295,16 +292,10 @@ void CDrawUtilities::DrawSpotLight(const Fvector& p, const Fvector& d, float ran
 		p1.y		= b * _sa;
         p1.z		= a;
         T.transform_tiny(p1);
-        // fill VB
-        pv->set		(p,clr); pv++;
-        pv->set		(p1,clr); pv++;
+        DrawLine(p, p1, clr);
     }
     p1.mad			(p,d,range);
-    pv->set			(p,clr); pv++;
-    pv->set			(p1,clr); pv++;
-    Stream->Unlock	(LINE_DIVISION*2+2,vs_L->vb_stride);
-    // and Render it as triangle list
-    DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_L,vBase,LINE_DIVISION+1);
+    DrawLine(p, p1, clr);
 }
 
 void CDrawUtilities::DrawDirectionalLight(const Fvector& p, const Fvector& d, float radius, float range, u32 c)
@@ -320,20 +311,23 @@ void CDrawUtilities::DrawDirectionalLight(const Fvector& p, const Fvector& d, fl
     rot.set(R,N,D,p);
 	float sz=radius+range;
 
-	// fill VB
-	_VertexStream*	Stream	= &RCache.Vertex;
-	u32				vBase;
-	FVF::L*	pv	 	= (FVF::L*)Stream->Lock(6,vs_L->vb_stride,vBase);
-    pv->set			(0,0,r,		c); rot.transform_tiny(pv->p); pv++;
-    pv->set			(0,0,sz,	c); rot.transform_tiny(pv->p); pv++;
-    pv->set			(-r,0,r,	c); rot.transform_tiny(pv->p); pv++;
-    pv->set			(-r,0,sz,	c); rot.transform_tiny(pv->p); pv++;
-    pv->set			(r,0,r,		c); rot.transform_tiny(pv->p); pv++;
-    pv->set			(r,0,sz,	c); rot.transform_tiny(pv->p); pv++;
-	Stream->Unlock	(6,vs_L->vb_stride);
+    Fvector p0;
+    Fvector p1;
 
-	// and Render it as triangle list
-    DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_L,vBase,3);
+    // seg 0
+    p0.set(0, 0, r); rot.transform_tiny(p0);
+    p1.set(0, 0, sz); rot.transform_tiny(p1);
+    DrawLine(p0, p1, c);
+
+    // seg 1
+    p0.set(-r, 0, r); rot.transform_tiny(p0);
+    p1.set(-r, 0, sz); rot.transform_tiny(p1);
+    DrawLine(p0, p1, c);
+
+    // seg 2
+    p0.set(r, 0, r); rot.transform_tiny(p0);
+    p1.set(r, 0, sz); rot.transform_tiny(p1);
+    DrawLine(p0, p1, c);
 
     Fbox b;
     b.min.set(-r,-r,-r);
@@ -350,19 +344,36 @@ void CDrawUtilities::DrawPointLight(const Fvector& p, float radius, u32 c)
 
 void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
 {
+    Fvector p0;
+    Fvector p1;
+
+    // render flagshtok
+
+    const Fmatrix& world = RCache.get_xform_world();
+
+    // seg 0
+    p0.set(0.f, 0.f, 0.f); world.transform_tiny(p0);
+    p1.set(0.f, 1.f, 0.f); world.transform_tiny(p1);
+    DrawLine(p0, p1, clr);
+    
+    // seg 1
+    p0.set(0.f, 1.f, 0.f); world.transform_tiny(p0);
+    p1.set(0.f, 1.f, .5f); world.transform_tiny(p1);
+    DrawLine(p0, p1, clr);
+
+    // seg 2
+    p0.set(0.f, 1.f, .5f); world.transform_tiny(p0);
+    p1.set(0.f, .5f, .5f); world.transform_tiny(p1);
+    DrawLine(p0, p1, clr);
+
+    // seg 3
+    p0.set(0.f, .5f, .5f); world.transform_tiny(p0);
+    p1.set(0.f, .5f, 0.f); world.transform_tiny(p1);
+    DrawLine(p0, p1, clr);
+
 	// fill VB
 	_VertexStream*	Stream	= &RCache.Vertex;
-	u32			vBase;
-	FVF::L*	pv	 	= (FVF::L*)Stream->Lock(5,vs_L->vb_stride,vBase);
-    pv->set			(0.f,0.f,0.f,clr); pv++;
-    pv->set			(0.f,1.f,0.f,clr); pv++;
-    pv->set			(0.f,1.f,.5f,clr); pv++;
-    pv->set			(0.f,.5f,.5f,clr); pv++;
-    pv->set			(0.f,.5f,0.f,clr); pv++;
-	Stream->Unlock	(5,vs_L->vb_stride);
-	// render flagshtok
-    DU_DRAW_SH		(EDevice->m_WireShader);
-    DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,vs_L,vBase,4);
+	u32			    vBase;
 
     if (s) DU_DRAW_SH(s);
     {
@@ -381,32 +392,36 @@ void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
 }
 
 void CDrawUtilities::DrawFlag(const Fvector& p, float heading, float height, float sz, float sz_fl, u32 clr, bool bDrawEntity){
-	// fill VB
+    Fvector p0;
+    Fvector p1;
+    p1.set(p.x, p.y + height, p.z);
+    DrawLine(p, p1, clr);
+    
 	_VertexStream*	Stream	= &RCache.Vertex;
-	u32			vBase;
-	FVF::L*	pv	 	= (FVF::L*)Stream->Lock(2,vs_L->vb_stride,vBase);
-    pv->set			(p,clr); pv++;
-    pv->set			(p.x,p.y+height,p.z,clr); pv++;
-	Stream->Unlock	(2,vs_L->vb_stride);
-	// and Render it as triangle list
-    DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_L,vBase,1);
+	u32			    vBase;
 
     if (bDrawEntity){
-		// fill VB
-        float rx		= std::sin(heading);
-        float rz		= std::cos(heading);
-		FVF::L*	pv	 	= (FVF::L*)Stream->Lock(6,vs_L->vb_stride,vBase);
-        sz				*= 0.8f;
-        pv->set			(p.x,p.y+height,p.z,clr);											pv++;
-        pv->set			(p.x+rx*sz,p.y+height,p.z+rz*sz,clr);                               pv++;
-        sz				*= 0.5f;
-        pv->set			(p.x,p.y+height*(1.f-sz_fl*.5f),p.z,clr);                           pv++;
-        pv->set			(p.x+rx*sz*0.6f,p.y+height*(1.f-sz_fl*.5f),p.z+rz*sz*0.75f,clr);   	pv++;
-        pv->set			(p.x,p.y+height*(1.f-sz_fl),p.z,clr);                               pv++;
-        pv->set			(p.x+rx*sz,p.y+height*(1.f-sz_fl),p.z+rz*sz,clr);                   pv++;
-		Stream->Unlock	(6,vs_L->vb_stride);
-		// and Render it as line list
-    	DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,vs_L,vBase,3);
+        float rx = std::sin(heading);
+        float rz = std::cos(heading);
+
+        sz *= 0.8f;
+        
+        // seg 0
+        p0.set(p.x, p.y + height, p.z);
+        p1.set(p.x + rx * sz, p.y + height, p.z + rz * sz);
+        DrawLine(p0, p1, clr);
+
+        sz *= 0.5f;
+
+        // seg 1
+        p0.set(p.x, p.y + height * (1.f - sz_fl * .5f), p.z);
+        p1.set(p.x + rx * sz * 0.6f, p.y + height * (1.f - sz_fl * .5f), p.z + rz * sz * 0.75f);
+        DrawLine(p0, p1, clr);
+
+        // seg 2
+        p0.set(p.x, p.y + height * (1.f - sz_fl), p.z);
+        p1.set(p.x + rx * sz, p.y + height * (1.f - sz_fl), p.z + rz * sz);
+        DrawLine(p0, p1, clr);
     }else{
 		// fill VB
 		FVF::L*	pv	 	= (FVF::L*)Stream->Lock(6,vs_L->vb_stride,vBase);
@@ -560,30 +575,6 @@ void CDrawUtilities::DrawIdentBox(bool bSolid, bool bWire, u32 clr_s, u32 clr_w)
 
 void CDrawUtilities::DrawLineSphere(const Fvector& p, float radius, u32 c, bool bCross)
 {
-	//// fill VB
-	//_VertexStream*	Stream	= &RCache.Vertex;
-	//u32			vBase;
- //   int i;
-	//FVF::L*	pv;
- //   // seg 0
-	//pv	 			= (FVF::L*)Stream->Lock(LINE_DIVISION+1,vs_L->vb_stride,vBase);
-	//for( i=0; i<LINE_DIVISION; i++,pv++){ pv->p.mad(p,circledef1[i],radius); pv->color=c;}
- //   pv->set(*(pv-LINE_DIVISION));
-	//Stream->Unlock	(LINE_DIVISION+1,vs_L->vb_stride);
-	//DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,vs_L,vBase,LINE_DIVISION);
- //   // seg 1
-	//pv	 			= (FVF::L*)Stream->Lock(LINE_DIVISION+1,vs_L->vb_stride,vBase);
-	//for( i=0; i<LINE_DIVISION; i++){ pv->p.mad(p,circledef2[i],radius); pv->color=c; pv++; }
- //   pv->set(*(pv-LINE_DIVISION)); pv++;
-	//Stream->Unlock	(LINE_DIVISION+1,vs_L->vb_stride);
-	//DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,vs_L,vBase,LINE_DIVISION);
- //   // seg 2
-	//pv	 			= (FVF::L*)Stream->Lock(LINE_DIVISION+1,vs_L->vb_stride,vBase);
-	//for( i=0; i<LINE_DIVISION; i++){ pv->p.mad(p,circledef3[i],radius); pv->color=c; pv++; }
- //   pv->set(*(pv-LINE_DIVISION)); pv++;
-	//Stream->Unlock	(LINE_DIVISION+1,vs_L->vb_stride);
-	//DU_DRAW_DP		(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP,vs_L,vBase,LINE_DIVISION);
-
     // seg 0
     
     Fvector p1;
