@@ -300,6 +300,10 @@ void IM_Manipulator::CommandMove(ObjectList& lst, Fmatrix& ObjectMatrix, Fmatrix
 				{
 					ObjPtr->UpdateTransform();
 				}
+				else if (ESoundSource* SndPtr = smart_cast<ESoundSource*>(ObjPtr))
+				{
+					ObjPtr->UpdateTransform();
+				}
 			}
 		}
 	}
