@@ -1314,7 +1314,10 @@ void CDrawUtilities::OutText(const Fvector& pos, const char* text, u32 color, u3
     }
 }
 
-xr_vector<FVF::L> CrossVerts;
+const int kMaxLineVBSize = 10240;
+
+xr_vector<FVF::L> g_lineVerts(kMaxLineVBSize);
+
 ECORE_API void AddCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, bool bRot45)
 {
     FVF::L v[12];
@@ -1342,77 +1345,42 @@ ECORE_API void AddCross(const Fvector& p, float szx1, float szy1, float szz1, fl
         }
     }
 
-    CrossVerts.insert(CrossVerts.end(), v, v + count);
+    g_lineVerts.insert(g_lineVerts.end(), v, v + count);
 }
 
-ECORE_API void FlushCrosses()
-{
-    if (CrossVerts.empty())
-        return;
-
-    _VertexStream* Stream = &RCache.Vertex;
-
-    u32 vBase;
-    FVF::L* pv = (FVF::L*)Stream->Lock(
-        CrossVerts.size(),
-        DU_impl.vs_L->vb_stride,
-        vBase
-    );
-
-    memcpy(pv, CrossVerts.data(), CrossVerts.size() * sizeof(FVF::L));
-
-    Stream->Unlock(CrossVerts.size(), DU_impl.vs_L->vb_stride);
-
-    DU_DRAW_DP(
-        ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
-        DU_impl.vs_L,
-        vBase,
-        CrossVerts.size() / 2
-    );
-
-    CrossVerts.clear();
-}
-
-xr_vector<FVF::L> LineVerts;
 ECORE_API void AddLine(const Fvector& p0, const Fvector& p1, u32 c)
 {
     FVF::L v;
     v.set(p0, c);
-    LineVerts.push_back(v);
+    g_lineVerts.push_back(v);
     v.set(p1, c);
-    LineVerts.push_back(v);
+    g_lineVerts.push_back(v);
 }
 
-ECORE_API void FlushLines()
+ECORE_API void FlushDU()
 {
-    if (LineVerts.empty())
+    if (g_lineVerts.empty())
         return;
 
     _VertexStream* Stream = &RCache.Vertex;
 
     u32 vBase;
     FVF::L* pv = (FVF::L*)Stream->Lock(
-        LineVerts.size(),
+        g_lineVerts.size(),
         DU_impl.vs_L->vb_stride,
         vBase
     );
 
-    memcpy(pv, LineVerts.data(), LineVerts.size() * sizeof(FVF::L));
+    memcpy(pv, g_lineVerts.data(), g_lineVerts.size() * sizeof(FVF::L));
 
-    Stream->Unlock(LineVerts.size(), DU_impl.vs_L->vb_stride);
+    Stream->Unlock(g_lineVerts.size(), DU_impl.vs_L->vb_stride);
 
     DU_DRAW_DP(
         ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,
         DU_impl.vs_L,
         vBase,
-        LineVerts.size() / 2
+        g_lineVerts.size() / 2
     );
 
-    LineVerts.clear();
-}
-
-ECORE_API void FlushDU()
-{
-    FlushCrosses();
-    FlushLines();
+    g_lineVerts.clear();
 }
