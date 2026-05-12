@@ -1045,6 +1045,16 @@ void CSE_ALifeCreatureAbstract::STATE_Write	(NET_Packet &tNetPacket)
 	tNetPacket.w_u8				(s_squad);
 	tNetPacket.w_u8				(s_group);
 	tNetPacket.w_float			(fHealth);
+#ifdef XRGAME_EXPORTS
+	std::erase_if(m_dynamic_out_restrictions, [](ALife::_OBJECT_ID elem)
+	{
+		return !ai().alife().objects().object(elem, true);
+	});
+	std::erase_if(m_dynamic_in_restrictions, [](ALife::_OBJECT_ID elem)
+	{
+		return !ai().alife().objects().object(elem, true);
+	});
+#endif // XRGAME_EXPORTS
 	save_data					(m_dynamic_out_restrictions,tNetPacket);
 	save_data					(m_dynamic_in_restrictions,tNetPacket);
 	tNetPacket.w_u16			( get_killer_id() );
