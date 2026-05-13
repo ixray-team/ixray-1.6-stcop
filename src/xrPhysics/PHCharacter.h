@@ -8,6 +8,7 @@
 #include "PHDisabling.h"
 
 #include "../xrEngine/IPhysicsShell.h"
+#include "../xrEngine/AI/alife_space.h"
 
 
 class IPhysicsShellHolder;
@@ -17,9 +18,7 @@ class ICollisionDamageInfo;
 class CElevatorState;
 class CPHActorCharacter;
 class CPHAICharacter;
-namespace ALife {
-	enum EHitType;
-};
+
  enum EEnvironment
 			{
 				peOnGround,
