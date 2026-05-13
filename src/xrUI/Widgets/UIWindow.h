@@ -15,6 +15,18 @@ class CUIWindow;
 
 class ILayoutProvider;
 
+// Dirty flags for incremental UI layout / geometry (opt-in participation via ParticipatesInUILayoutDirtyPropagation).
+enum class EUIDirtyFlags : u32
+{
+    None = 0,
+    Layout = 1u << 0,
+    AbsoluteRect = 1u << 1,
+    Transform = 1u << 2,
+    Measure = 1u << 3,
+};
+
+IC constexpr u32 UiDirtyMask(EUIDirtyFlags flag) { return static_cast<u32>(flag); }
+
 class CUIStatic;
 class CUICellItem;
 class CUIListBoxItem;
@@ -162,7 +174,7 @@ public:
 
 	// Name of the window
 	const shared_str		WindowName			() const					{ return m_windowName; }
-	void					SetWindowName		(LPCSTR wn)					{ m_windowName = wn; }
+	void					SetWindowName		(LPCSTR wn);
 	void					SetAnchorTo			(LPCSTR targetName);
 	const shared_str&		GetAnchorTo			() const					{ return m_anchorToWindowName; }
 	LPCSTR					WindowName_script	()							{return m_windowName.c_str();}
@@ -179,10 +191,26 @@ public:
 	IC bool					GetCustomDraw		() const					{return m_bCustomDraw;}
 	IC void					SetCustomDraw		(bool b) 					{m_bCustomDraw = b;}
 
-	void					SetLayout			(ILayoutProvider* layout)	{m_pLayout = layout;}
+	void					SetLayout			(ILayoutProvider* layout);
 	ILayoutProvider*		GetLayout			()							{return m_pLayout;}
 
-public:
+	IC bool					ParticipatesInUILayoutDirtyPropagation	() const
+	{
+		if (GetUseAnchors())
+			return true;
+		if (m_pLayout != nullptr)
+			return true;
+		if (GetSizeModeWidth() == UI_SIZE_MODE_AUTO || GetSizeModeHeight() == UI_SIZE_MODE_AUTO)
+			return true;
+		return false;
+	}
+
+	void					MarkDirty			(u32 flags);
+	void					ClearDirty			(u32 flagsToClear);
+	IC bool					IsDirty				(u32 flagsMask) const		{ return (_dirtyFlags & flagsMask) != 0; }
+	void					MarkParentLayoutDirty	(u32 flags);
+	void					NotifyChildLayoutChanged	(CUIWindow* child, u32 flags);
+
 	// Expression that provide data for this widget
 	CExpression             m_expression;
 	xrCriticalSection csUi;
@@ -229,6 +257,10 @@ protected:
 	bool					m_bLoggedMissingAnchorTo;
 
 	ILayoutProvider*		m_pLayout;
+
+	u32						_dirtyFlags;
+
+	void					MarkDirtyOnParticipatingSiblingsUnderSameParent	(u32 flags);
 
 #ifdef DEBUG
 	int m_dbg_id;

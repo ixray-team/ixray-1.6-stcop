@@ -204,7 +204,8 @@ m_bPP(false),
 m_dwFocusReceiveTime(0),
 m_bCustomDraw(false),
 m_bLoggedMissingAnchorTo(false),
-m_pLayout(nullptr)
+m_pLayout(nullptr),
+_dirtyFlags(0)
 {
 	Show					(true);
 	Enable					(true);
@@ -285,6 +286,68 @@ void CUIWindow::Draw()
 		add_rect_to_draw(r);
 	}
 #endif
+}
+
+void CUIWindow::SetLayout(ILayoutProvider* layout)
+{
+	if (m_pLayout == layout)
+		return;
+	m_pLayout = layout;
+	const u32 flags = UiDirtyMask(EUIDirtyFlags::Layout) | UiDirtyMask(EUIDirtyFlags::AbsoluteRect);
+	_dirtyFlags |= flags;
+	MarkParentLayoutDirty(flags);
+}
+
+void CUIWindow::MarkDirty(u32 flags)
+{
+	if (!ParticipatesInUILayoutDirtyPropagation())
+		return;
+	_dirtyFlags |= flags;
+}
+
+void CUIWindow::ClearDirty(u32 flagsToClear)
+{
+	_dirtyFlags &= ~flagsToClear;
+}
+
+void CUIWindow::MarkParentLayoutDirty(u32 flags)
+{
+	for (CUIWindow* parent = m_pParentWnd; parent != nullptr; parent = parent->m_pParentWnd)
+		parent->MarkDirty(flags);
+}
+
+void CUIWindow::NotifyChildLayoutChanged(CUIWindow* child, u32 flags)
+{
+	R_ASSERT(child);
+	VERIFY(IsChild(child));
+	(void)child;
+	MarkDirty(flags);
+	MarkParentLayoutDirty(flags);
+}
+
+void CUIWindow::MarkDirtyOnParticipatingSiblingsUnderSameParent(u32 flags)
+{
+	CUIWindow* parent = GetParent();
+	if (parent == nullptr)
+		return;
+	xrCriticalSectionGuard guard(parent->csUi);
+	for (CUIWindow* sibling : parent->m_ChildWndList)
+	{
+		if (sibling != nullptr && sibling->ParticipatesInUILayoutDirtyPropagation())
+			sibling->MarkDirty(flags);
+	}
+}
+
+void CUIWindow::SetWindowName(LPCSTR wn)
+{
+	shared_str next = wn ? wn : "";
+	if (next == m_windowName)
+		return;
+	m_windowName = next;
+	const u32 anchorFlags = UiDirtyMask(EUIDirtyFlags::Layout) | UiDirtyMask(EUIDirtyFlags::AbsoluteRect);
+	MarkDirty(anchorFlags);
+	MarkParentLayoutDirty(anchorFlags);
+	MarkDirtyOnParticipatingSiblingsUnderSameParent(anchorFlags);
 }
 
 void CUIWindow::Draw(float x, float y)
@@ -893,6 +956,9 @@ void CUIWindow::SetAnchorTo(LPCSTR targetName)
 		m_bLoggedMissingAnchorTo = false;
 	}
 	m_anchorToWindowName = nextName;
+	const u32 anchorFlags = UiDirtyMask(EUIDirtyFlags::Layout) | UiDirtyMask(EUIDirtyFlags::AbsoluteRect);
+	MarkDirty(anchorFlags);
+	MarkParentLayoutDirty(anchorFlags);
 }
 
 void CUIWindow::LogMissingAnchorToTargetOnce()
@@ -958,7 +1024,24 @@ void CUIWindow::SetParent(CUIWindow* pNewParent)
 {
 	R_ASSERT( !(m_pParentWnd && m_pParentWnd->IsChild(this)) );
 
+	if (m_pParentWnd == pNewParent)
+		return;
+
+	CUIWindow* oldParent = m_pParentWnd;
+	const u32 geometryFlags = UiDirtyMask(EUIDirtyFlags::Layout) | UiDirtyMask(EUIDirtyFlags::AbsoluteRect);
+
+	MarkDirty(geometryFlags);
+	if (oldParent != nullptr)
+	{
+		oldParent->MarkDirty(geometryFlags);
+		for (CUIWindow* ancestor = oldParent->m_pParentWnd; ancestor != nullptr; ancestor = ancestor->m_pParentWnd)
+			ancestor->MarkDirty(geometryFlags);
+	}
+
 	m_pParentWnd = pNewParent;
+
+	MarkDirty(geometryFlags);
+	MarkParentLayoutDirty(geometryFlags);
 }
 
 void CUIWindow::ShowChildren(bool show)
