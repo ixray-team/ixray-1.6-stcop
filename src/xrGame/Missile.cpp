@@ -1015,7 +1015,8 @@ void CMissile::ExitContactCallback_Patch(dGeomID dxGeom)
 				}
 			}
 		}
-		grenade->set_destroy_time_now(new_destroy_time);
+		grenade->set_destroy_time_now(0xffffffff);
+		grenade->Destroy();
 	}
 }
 
