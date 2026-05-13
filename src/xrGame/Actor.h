@@ -910,7 +910,6 @@ private:
 	float m_actor_burn_restore_speed = 0.0f;
 	float GetMaterialBurnRestoreSpeed(const char* mtl);
 	bool m_need_fire_particle = false;
-	bool m_actor_burning = false;
 	bool isGamepadShooting = false;
 	bool isGamepadZooming = false;
 public:
@@ -932,7 +931,6 @@ public:
 	float fSprintFactor = 0;
 	float m_SprintFovFactor = 7.0f;
 	bool IsActorBurning();
-	void SetActorBurning(bool val) { m_actor_burning = val; }
 };
 
 extern bool		isActorAccelerated			(u32 mstate, bool ZoomMode);

@@ -76,6 +76,10 @@ void CWound::AddHit(float hit_power, ALife::EHitType hit_type)
 	clamp(m_Wounds[hit_type],0.0f,WOUND_MAX);
 }
 
+void CWound::SetHit(float hit_power, ALife::EHitType hit_type)
+{
+	m_Wounds[hit_type] = hit_power;
+}
 
 void CWound::Incarnation	(float percent, float min_wound_size)
 {
