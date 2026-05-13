@@ -325,14 +325,17 @@ bool CScriptStorage::load_buffer(lua_State* L, const char* caBuffer, size_t tSiz
 		LPSTR			script = 0;
 		bool dynamic_allocation = false;
 
+#ifdef IXR_WINDOWS
 		__try 
 		{
+#endif
 			if (total_size < 768 * 1024)
 				script = (LPSTR)_alloca(total_size);
 			else {
 				script = (LPSTR)Memory.mem_alloc(total_size);
 				dynamic_allocation = true;
 			}
+#ifdef IXR_WINDOWS
 		}
 		__except (GetExceptionCode() == STATUS_STACK_OVERFLOW)
 		{
@@ -341,6 +344,7 @@ bool CScriptStorage::load_buffer(lua_State* L, const char* caBuffer, size_t tSiz
 			script = (LPSTR)Memory.mem_alloc(total_size);
 			dynamic_allocation = true;
 		};
+#endif
 
 		xr_strcpy(script, total_size, insert);
 		CopyMemory(script + str_len, caBuffer, u32(tSize));

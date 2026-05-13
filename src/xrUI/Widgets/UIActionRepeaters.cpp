@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "UIActionRepeaters.h"
 #include "../../xrEngine/device.h"
