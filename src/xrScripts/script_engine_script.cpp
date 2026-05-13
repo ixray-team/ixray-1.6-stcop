@@ -58,22 +58,14 @@ CRenderDevice *get_device()
 
 void trigger_assert(const char* pStringFromLua)
 {
-	#ifdef DEBUG
 	R_ASSERT(false && "catch the thing!");
-	#else
-	MessageBoxA(nullptr,
-		"Report to wh1t3lord, because xr_parser failed and is different to "
-	    "xr_logic behaviour!",
-		"Report to wh1t3lord", 0);
-	#endif
 }
 
 void trigger_vs_log(const char* pStringFromLua)
 {
-	#ifdef WIN32
+#ifdef IXR_WINDOWS
 	OutputDebugStringA(pStringFromLua);
-	#else
-	#endif
+#endif
 }
 
 void LoadScriptToGlobal_script(const char* script_name)
