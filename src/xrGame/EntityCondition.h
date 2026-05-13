@@ -102,6 +102,12 @@ private:
 	bool					m_use_limping_state;
 	CEntityAlive			*m_object;
 
+	static HitImmunity::HitTypeSVec m_GlobalWoundsFactorsForHitTypes;
+	static HitImmunity::HitTypeSVec m_GlobalBleedingsFactorsForHitTypes;
+
+	HitImmunity::HitTypeSVec m_WoundsFactorsForHitTypes = {};
+	HitImmunity::HitTypeSVec m_BleedingsFactorsForHitTypes = {};
+
 public:
 							CEntityCondition		(CEntityAlive *object);
 	virtual					~CEntityCondition		();
@@ -148,12 +154,19 @@ public:
 
 	
 	//скорость потери крови из всех открытых ран 
-	float					BleedingSpeed			();
+	float					BleedingSpeed			(int hit_type_mask = -1);
 
 	CObject*				GetWhoHitLastTime		() {return m_pWho;}
 	u16						GetWhoHitLastTimeID		() {return m_iWhoID;}
 
 	CWound*					AddWound				(float hit_power, ALife::EHitType hit_type, u16 element);
+
+	float					CorrectBleedingForHitType(ALife::EHitType hit_type, float bleeding);
+	float					GetWoundComponentByHitType(CWound* wound, ALife::EHitType hit_type);
+	void					SetWoundComponentByHitType(CWound* wound, float value, ALife::EHitType hit_type);
+	float					CalcModifiedWoundTotalSize(CWound* wound, int hit_type_mask = -1);
+	bool					ChangeBleedingForWound(CWound* wound, float percent, float min_wound_size, int hit_type_mask = -1);
+	void					ChangeBleedingCustom(float percent, int hit_type_mask = -1);
 
 	IC void 				SetCanBeHarmedState		(bool CanBeHarmed) 			{m_bCanBeHarmed = CanBeHarmed;}
 	IC bool					CanBeHarmed				() const					{return OnServer() && m_bCanBeHarmed;};

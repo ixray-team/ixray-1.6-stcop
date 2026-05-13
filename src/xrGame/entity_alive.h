@@ -118,6 +118,7 @@ public:
 protected:
 	static STR_VECTOR*			m_pFireParticlesVector;
 	static u32					m_dwMinBurnTime;
+	static u32					m_dwMinBurnTimeDead;
 	static float				m_fStartBurnWoundSize;
 	static float				m_fStopBurnWoundSize;
 

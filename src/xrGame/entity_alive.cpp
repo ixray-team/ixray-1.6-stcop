@@ -46,6 +46,7 @@ float CEntityAlive::m_fBloodDropSize = 0.03f;
 //минимальный размер ожега, после которого горят партиклы
 //минимальное время горения
 u32	  CEntityAlive::m_dwMinBurnTime = 10000;
+u32	  CEntityAlive::m_dwMinBurnTimeDead = 5000;
 //размер раны, чтоб запустить партиклы
 float CEntityAlive::m_fStartBurnWoundSize = 0.3f;
 //размер раны, чтоб остановить партиклы
@@ -178,6 +179,8 @@ void CEntityAlive::LoadFireParticles(const char* section)
 	m_fStopBurnWoundSize   = pSettings->r_float(section, "stop_burn_size");
 	
 	m_dwMinBurnTime		   = pSettings->r_u32(section, "min_burn_time");
+
+	pSettings->read_if_exists<u32>(m_dwMinBurnTimeDead, section, "min_burn_time_dead");
 }
 
 void CEntityAlive::UnloadFireParticles()
@@ -226,6 +229,12 @@ void CEntityAlive::shedule_Update(u32 dt)
 	conditions().UpdateCondition		();
 	
 	//Обновление партиклов огня
+
+	if (TParticlesPlayer* PPlayer = GetComponent<TParticlesPlayer>())
+	{
+		PPlayer->UpdateParticles();
+	}
+
 	UpdateFireParticles	();
 	//капли крови
 	UpdateBloodDrops	();
@@ -297,7 +306,7 @@ void CEntityAlive::Hit(SHit* pHDS)
 	CWound* pWound = conditions().ConditionHit(&HDS);
 
 	if(pWound){
-		if(ALife::eHitTypeBurn == HDS.hit_type || ALife::eHitTypeLightBurn == HDS.hit_type)
+		if(ALife::eHitTypeBurn == HDS.hit_type)
 			StartFireParticles(pWound);
 		else if(ALife::eHitTypeWound == HDS.hit_type || ALife::eHitTypeFireWound == HDS.hit_type)
 			StartBloodDrops(pWound);
@@ -487,40 +496,38 @@ void CEntityAlive::StartFireParticles(CWound* pWound)
 				pWound->GetParticleBoneNum(),
 				Fvector().set(0,1,0),
 				ID(), 
-				u32(float(m_dwMinBurnTime)*::Random.randF(0.5f,1.5f)), false);
+				u32(float(g_Alive() ? m_dwMinBurnTime : m_dwMinBurnTimeDead)*::Random.randF(0.5f,1.5f)), false);
 		}
 		else
 		{
 			PPlayer->StartParticles(pWound->GetParticleName(),
 				Fvector().set(0,1,0),
 				ID(), 
-				u32(float(m_dwMinBurnTime)*::Random.randF(0.5f,1.5f)), false);
+				u32(float(g_Alive() ? m_dwMinBurnTime : m_dwMinBurnTimeDead)*::Random.randF(0.5f,1.5f)), false);
 		}
 	}
 }
 
 void CEntityAlive::UpdateFireParticles()
 {
-	if(m_ParticleWounds.empty()) return;
-	
-//	WOUND_VECTOR_IT last_it;
+	if (m_ParticleWounds.empty())
+	{
+		return;
+	}
 
-	for(WOUND_VECTOR_IT it = m_ParticleWounds.begin(); 
-					  it != m_ParticleWounds.end();)
+	for (WOUND_VECTOR_IT it = m_ParticleWounds.begin(); it != m_ParticleWounds.end();)
 	{
 		CWound* pWound = *it;
 		float burn_size = pWound->TypeSize(ALife::eHitTypeBurn);
 
-		if(pWound->GetDestroy() || (burn_size>0 && (burn_size<m_fStopBurnWoundSize || !g_Alive())))
+		if(pWound->GetDestroy() || (burn_size >= 0.0f && (burn_size<m_fStopBurnWoundSize || !g_Alive())))
 		{
 			TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
-			PPlayer->AutoStopParticles(pWound->GetParticleName(),
-												pWound->GetParticleBoneNum(),
-												u32(float(m_dwMinBurnTime)*::Random.randF(0.5f,1.5f))
-												);
+			PPlayer->AutoStopParticles(pWound->GetParticleName(), pWound->GetParticleBoneNum(), u32(float(g_Alive() ? m_dwMinBurnTime : m_dwMinBurnTimeDead) * ::Random.randF(0.5f, 1.5f)));
 			it = m_ParticleWounds.erase(it);
 			continue;
 		}
+
 		it++;
 	}
 }
