@@ -11,6 +11,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "object_broker.h"
 #include "ActorHelmet.h"
+#include "Actor.h"
 
 #define MAX_HEALTH 1.0f
 #define MIN_HEALTH -0.01f
@@ -28,6 +29,9 @@ CEntityConditionSimple::CEntityConditionSimple()
 
 CEntityConditionSimple::~CEntityConditionSimple()
 {}
+
+HitImmunity::HitTypeSVec CEntityCondition::m_GlobalWoundsFactorsForHitTypes = {};
+HitImmunity::HitTypeSVec CEntityCondition::m_GlobalBleedingsFactorsForHitTypes = {};
 
 CEntityCondition::CEntityCondition(CEntityAlive *object)
 :CEntityConditionSimple()
@@ -90,6 +94,27 @@ CEntityCondition::CEntityCondition(CEntityAlive *object)
 
 	m_bIsBleeding			= false;
 	m_bCanBeHarmed			= true;
+
+	static bool wound_params_initialized = false;
+
+	if (!wound_params_initialized)
+	{
+		m_GlobalWoundsFactorsForHitTypes.resize(ALife::eHitTypeMax);
+
+		for (int i = 0; i < ALife::eHitTypeMax; i++)
+		{
+			m_GlobalWoundsFactorsForHitTypes[i] = READ_IF_EXISTS(pSettings, r_float, "gunslinger_wound_factors", shared_str().printf("wound_factor_for_hit_type_%u", i).c_str(), 1.0f);
+		}
+
+		m_GlobalBleedingsFactorsForHitTypes.resize(ALife::eHitTypeMax);
+
+		for (int i = 0; i < ALife::eHitTypeMax; i++)
+		{
+			m_GlobalBleedingsFactorsForHitTypes[i] = READ_IF_EXISTS(pSettings, r_float, "gunslinger_wound_factors", shared_str().printf("bleeding_factor_for_hit_type_%u", i).c_str(), 1.0f);
+		}
+	}
+
+	wound_params_initialized = true;
 }
 
 CEntityCondition::~CEntityCondition(void)
@@ -122,6 +147,20 @@ void CEntityCondition::LoadCondition(const char* entity_section)
 	m_fKillHitTreshold		= READ_IF_EXISTS(pSettings,r_float,section,"killing_hit_treshold",0.0f);
 	m_fLastChanceHealth		= READ_IF_EXISTS(pSettings,r_float,section,"last_chance_health",0.0f);
 	m_fInvulnerableTimeDelta= READ_IF_EXISTS(pSettings,r_float,section,"invulnerable_time",0.0f)/1000.f;
+
+	m_WoundsFactorsForHitTypes.resize(ALife::eHitTypeMax);
+
+	for (int i = 0; i < ALife::eHitTypeMax; i++)
+	{
+		m_WoundsFactorsForHitTypes[i] = READ_IF_EXISTS(pSettings, r_float, section, shared_str().printf("wound_factor_for_hit_type_%u", i).c_str(), 1.0f);
+	}
+
+	m_BleedingsFactorsForHitTypes.resize(ALife::eHitTypeMax);
+
+	for (int i = 0; i < ALife::eHitTypeMax; i++)
+	{
+		m_BleedingsFactorsForHitTypes[i] = READ_IF_EXISTS(pSettings, r_float, section, shared_str().printf("bleeding_factor_for_hit_type_%u", i).c_str(), 1.0f);
+	}
 }
 
 void CEntityCondition::LoadTwoHitsDeathParams(const char* section)
@@ -194,15 +233,16 @@ void CEntityCondition::ChangeEntityMorale(const float value)
 	m_fDeltaEntityMorale += value;
 }
 
-
 void CEntityCondition::ChangeBleeding(const float percent)
 {
-	//затянуть раны
-	for(WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; ++it)
+	if (m_object->cast_actor() != nullptr)
 	{
-		(*it)->Incarnation			(percent, m_fMinWoundSize);
-		if(0 == (*it)->TotalSize	())
-			(*it)->SetDestroy		(true);
+		int mask = ~static_cast<int>(1 << ALife::EHitType::eHitTypeBurn);
+		ChangeBleedingCustom(percent, mask);
+	}
+	else
+	{
+		ChangeBleedingCustom(percent);
 	}
 }
 
@@ -398,34 +438,131 @@ float CEntityCondition::HitPowerEffect(float power_loss)
 CWound* CEntityCondition::AddWound(float hit_power, ALife::EHitType hit_type, u16 element)
 {
 	//максимальное число косточек 64
-	VERIFY(element  < 64 || BI_NONE == element);
+	VERIFY(element < 64 || BI_NONE == element);
 
 	//запомнить кость по которой ударили и силу удара
 	WOUND_VECTOR_IT it = m_WoundVector.begin();
-	for(;it != m_WoundVector.end(); it++)
+	for (; it != m_WoundVector.end(); it++)
 	{
-		if((*it)->GetBoneNum() == element)
+		if ((*it)->GetBoneNum() == element)
+		{
 			break;
+		}
 	}
-	
+
 	CWound* pWound = nullptr;
+	
+	hit_power *= m_GlobalWoundsFactorsForHitTypes[hit_type] * m_WoundsFactorsForHitTypes[hit_type];
 
 	//новая рана
 	if (it == m_WoundVector.end())
 	{
 		pWound = new CWound(element);
-		pWound->AddHit(hit_power*::Random.randF(0.5f,1.5f), hit_type);
+		pWound->AddHit(hit_power * ::Random.randF(0.5f, 1.5f), hit_type);
 		m_WoundVector.push_back(pWound);
 	}
 	//старая 
 	else
 	{
 		pWound = *it;
-		pWound->AddHit(hit_power*::Random.randF(0.5f,1.5f), hit_type);
+		pWound->AddHit(hit_power * ::Random.randF(0.5f, 1.5f), hit_type);
 	}
 
 	VERIFY(pWound);
 	return pWound;
+}
+
+float CEntityCondition::CorrectBleedingForHitType(ALife::EHitType hit_type, float bleeding)
+{
+	return bleeding * m_GlobalBleedingsFactorsForHitTypes[hit_type] * m_BleedingsFactorsForHitTypes[hit_type];
+}
+
+float CEntityCondition::GetWoundComponentByHitType(CWound* wound, ALife::EHitType hit_type)
+{
+	if (hit_type >= ALife::EHitType::eHitTypeMax)
+	{
+		return 0.0f;
+	}
+
+	return wound->TypeSize(hit_type);
+}
+
+void CEntityCondition::SetWoundComponentByHitType(CWound* wound, float value, ALife::EHitType hit_type)
+{
+	wound->SetHit(value, hit_type);
+}
+
+float CEntityCondition::CalcModifiedWoundTotalSize(CWound* wound, int hit_type_mask)
+{
+	float result = 0.0f;
+
+	for (int i = 0; i < ALife::EHitType::eHitTypeMax; ++i)
+	{
+		if (hit_type_mask > 0 && ((1 << i) & hit_type_mask) == 0)
+		{
+			continue;
+		}
+
+		float bleeding = GetWoundComponentByHitType(wound, (ALife::EHitType)i);
+
+		if (bleeding > 0.0f)
+		{
+			result += CorrectBleedingForHitType((ALife::EHitType)i, bleeding);
+		}
+	}
+
+	return result;
+}
+
+bool CEntityCondition::ChangeBleedingForWound(CWound* wound, float percent, float min_wound_size, int hit_type_mask)
+{
+	for (int i = 0; i < ALife::EHitType::eHitTypeMax; ++i)
+	{
+		if (hit_type_mask > 0 && ((1 << i) & hit_type_mask) == 0)
+		{
+			continue;
+		}
+
+		float wound_size = GetWoundComponentByHitType(wound, (ALife::EHitType)i);
+		wound_size -= percent;
+		if (wound_size < min_wound_size)
+		{
+			wound_size = 0.0f;
+		}
+
+		SetWoundComponentByHitType(wound, wound_size, (ALife::EHitType)i);
+	}
+
+	bool result = true;
+	for (int i = 0; i < ALife::EHitType::eHitTypeMax; ++i)
+	{
+		if (GetWoundComponentByHitType(wound, (ALife::EHitType)i) > EPS_S)
+		{
+			result = false;
+			break;
+		}
+	}
+
+	if (result)
+	{
+		for (int i = 0; i < ALife::EHitType::eHitTypeMax; ++i)
+		{
+			SetWoundComponentByHitType(wound, 0.0f, (ALife::EHitType)i);
+		}
+	}
+
+	return result;
+}
+
+void CEntityCondition::ChangeBleedingCustom(float percent, int hit_type_mask)
+{
+	for (auto& wound : wounds())
+	{
+		if (ChangeBleedingForWound(wound, percent, m_fMinWoundSize, hit_type_mask))
+		{
+			wound->SetDestroy(true);
+		}
+	}
 }
 
 CWound* CEntityCondition::ConditionHit(SHit* pHDS)
@@ -441,6 +578,8 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 	float hit_power_org = pHDS->damage();
 	float hit_power = hit_power_org;
 	hit_power = HitOutfitEffect( hit_power_org, pHDS->hit_type, pHDS->boneID, pHDS->armor_piercing, bAddWound );
+
+	CActor* pActor = m_object->cast_actor();
 
 	switch(pHDS->hit_type)
 	{
@@ -461,8 +600,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		m_fHealthLost = hit_power*m_fHealthHitPart*m_fHitBoneScale;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
-//		bAddWound		=  is_special_hit_2_self;
-		bAddWound		=  false;
+		bAddWound = pActor && pActor->HudAnimator()->BurnAnimator();
 		break;
 	case ALife::eHitTypeChemicalBurn:
 		hit_power -= m_fBoostChemicalBurnProtection;
@@ -536,15 +674,16 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 }
 
 
-float CEntityCondition::BleedingSpeed()
+float CEntityCondition::BleedingSpeed(int hit_type_mask)
 {
-	float bleeding_speed		=0;
+	float result = 0.0f;
 
-	for(WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; ++it)
-		bleeding_speed			+= (*it)->TotalSize();
-	
-	
-	return (m_WoundVector.empty() ? 0.f : bleeding_speed / m_WoundVector.size());
+	for (auto& wound : wounds())
+	{
+		result += CalcModifiedWoundTotalSize(wound, hit_type_mask);
+	}
+
+	return result;
 }
 
 void CEntityCondition::UpdateHealth()

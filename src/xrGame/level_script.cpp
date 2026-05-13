@@ -1249,6 +1249,11 @@ bool IsPickupMode()
 
 bool IsActorBurned()
 {
+	if (CActor* actor = Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr)
+	{
+		return actor->IsActorBurning();
+	}
+
 	return false;
 }
 
