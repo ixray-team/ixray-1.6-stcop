@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../xrCore/_types.h"
+#include "IxAiTypes.h"
 
 class IxAiManager;
 
@@ -14,6 +15,14 @@ public:
     static IxAiManager* Manager();
 
     static void ReloadRuntimeConfig();
+    static void ResetRuntimeOverrides();
+
+    static IxAiControlMode GetControlMode();
+    static void SetControlMode(IxAiControlMode mode);
+
+    static bool IsLegacyOutputAllowed();
+    static bool IsFeatureEnabled(IxAiFeatureGate feature);
+    static void SetFeatureEnabled(IxAiFeatureGate feature, bool enabled);
 
 private:
     IxAiStackApi() = delete;

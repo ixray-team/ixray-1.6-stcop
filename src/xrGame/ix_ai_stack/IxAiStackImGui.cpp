@@ -56,6 +56,23 @@ namespace
         }
     }
 
+    const char* ControlModeOwnershipText(IxAiControlMode mode)
+    {
+        switch (mode)
+        {
+        case IxAiControlMode::LegacyOnly:
+            return "Legacy AI owns decisions. IX output to legacy is blocked.";
+        case IxAiControlMode::ObserveOnly:
+            return "IX observes and updates telemetry/memory. IX output to legacy is blocked.";
+        case IxAiControlMode::LegacyAssist:
+            return "Legacy AI owns behavior. IX can assist through enabled legacy output gates.";
+        case IxAiControlMode::IxAuthoritative:
+            return "IX owns decision intent. Legacy AI is treated as the actuator.";
+        default:
+            return "Unknown runtime ownership mode.";
+        }
+    }
+
     const char* PerceptionTypeName(IxAiPerceptionEventType type)
     {
         switch (type)
@@ -276,7 +293,12 @@ namespace
         ImGui::SliderFloat("Corpse event intensity", &g_ixAiRuntimeTuning.corpseEventIntensity, 0.05f, 2.f);
 
         ImGui::SeparatorText("Squad channel (ally wound / combat fan-out)");
-        ImGui::Checkbox("Squad channel enabled", &g_ixAiRuntimeTuning.squadChannelEnabled);
+        bool squadChannelEnabled = g_ixAiRuntimeTuning.squadChannelEnabled;
+        if (ImGui::Checkbox("Squad channel enabled", &squadChannelEnabled))
+        {
+            IxAiStackApi::SetFeatureEnabled(IxAiFeatureGate::SquadChannel, squadChannelEnabled);
+        }
+
         ImGui::SliderFloat("Squad max distance (0 = off)", &g_ixAiRuntimeTuning.squadChannelMaxDistance, 0.f, 400.f);
         ImGui::SliderFloat("Ally wound intensity", &g_ixAiRuntimeTuning.squadAllyWoundIntensity, 0.1f, 4.f);
         ImGui::SliderFloat("Ally wound radius", &g_ixAiRuntimeTuning.squadAllyWoundRadius, 1.f, 40.f);
@@ -286,10 +308,25 @@ namespace
         ImGui::SliderFloat("Squad focus intensity min", &g_ixAiRuntimeTuning.squadChannelFocusIntensityMin, 0.f, 2.f);
 
         ImGui::SeparatorText("Squad stealth (melee-like hits: strike / wound_2 / physic_strike)");
-        ImGui::Checkbox("Stealth fan-out handling", &g_ixAiRuntimeTuning.squadFanoutStealthHitHandlingEnabled);
-        ImGui::Checkbox("Stealth: clear attacker id in event", &g_ixAiRuntimeTuning.squadFanoutClearAttackerIdOnStealthHit);
+        bool stealthFanout = g_ixAiRuntimeTuning.squadFanoutStealthHitHandlingEnabled;
+        if (ImGui::Checkbox("Stealth fan-out handling", &stealthFanout))
+        {
+            IxAiStackApi::SetFeatureEnabled(IxAiFeatureGate::SquadStealthFanout, stealthFanout);
+        }
+
+        bool clearAttackerOnStealthHit = g_ixAiRuntimeTuning.squadFanoutClearAttackerIdOnStealthHit;
+        if (ImGui::Checkbox("Stealth: clear attacker id in event", &clearAttackerOnStealthHit))
+        {
+            IxAiStackApi::SetFeatureEnabled(IxAiFeatureGate::SquadClearAttackerOnStealthHit, clearAttackerOnStealthHit);
+        }
+
         ImGui::SliderFloat("Stealth: victim position weight", &g_ixAiRuntimeTuning.squadFanoutStealthVictimPositionWeight, 0.f, 1.f);
-        ImGui::Checkbox("Stealth: suppress direct focus snap", &g_ixAiRuntimeTuning.squadFanoutSuppressDirectFocusOnStealthHit);
+        bool suppressDirectFocus = g_ixAiRuntimeTuning.squadFanoutSuppressDirectFocusOnStealthHit;
+        if (ImGui::Checkbox("Stealth: suppress direct focus snap", &suppressDirectFocus))
+        {
+            IxAiStackApi::SetFeatureEnabled(IxAiFeatureGate::SquadSuppressDirectFocusOnStealthHit, suppressDirectFocus);
+        }
+
         ImGui::SliderFloat("Stealth: suspicion scale", &g_ixAiRuntimeTuning.squadFanoutStealthSuspicionScale, 0.05f, 1.5f);
     }
 
@@ -314,11 +351,21 @@ namespace
         ImGui::SliderFloat("Flank side scale", &g_ixAiRuntimeTuning.tacticsFlankSideScale, 0.05f, 1.f);
 
         ImGui::SeparatorText("Experimental movement bias (danger at tactical hint)");
-        ImGui::Checkbox("Feed tactical hint as EnemySound danger", &g_ixAiRuntimeTuning.tacticsFeedMovementHint);
+        bool tacticsFeedMovementHint = g_ixAiRuntimeTuning.tacticsFeedMovementHint;
+        if (ImGui::Checkbox("Feed tactical hint as EnemySound danger", &tacticsFeedMovementHint))
+        {
+            IxAiStackApi::SetFeatureEnabled(IxAiFeatureGate::TacticsFeedMovementHint, tacticsFeedMovementHint);
+        }
+
         ImGui::SliderInt("Tactic hint danger cooldown (ms)", (int*)&g_ixAiRuntimeTuning.tacticHintDangerCooldownMs, 200, 5000);
 
         ImGui::SeparatorText("Experimental cover bias (lateral danger nudge)");
-        ImGui::Checkbox("Feed cover-side danger (Search/Combat)", &g_ixAiRuntimeTuning.coverFeedDangerHint);
+        bool coverFeedDangerHint = g_ixAiRuntimeTuning.coverFeedDangerHint;
+        if (ImGui::Checkbox("Feed cover-side danger (Search/Combat)", &coverFeedDangerHint))
+        {
+            IxAiStackApi::SetFeatureEnabled(IxAiFeatureGate::CoverFeedDangerHint, coverFeedDangerHint);
+        }
+
         ImGui::SliderInt("Cover hint interval (frames)", (int*)&g_ixAiRuntimeTuning.coverHintIntervalFrames, 1, 60);
         ImGui::SliderInt("Cover hint danger cooldown (ms)", (int*)&g_ixAiRuntimeTuning.coverHintDangerCooldownMs, 200, 6000);
     }
@@ -330,8 +377,71 @@ namespace
             IxAiStackApi::ReloadRuntimeConfig();
         }
 
-        ImGui::Checkbox("Enable legacy bridge (danger / enemy nudges)", &g_ixAiRuntimeTuning.bridgeEnabled);
-        ImGui::Checkbox("IX memory authoritative (Suspicious/Search danger focus from slots)", &g_ixAiRuntimeTuning.memoryAuthoritative);
+        ImGui::SameLine();
+
+        if (ImGui::Button("Reset runtime overrides"))
+        {
+            IxAiStackApi::ResetRuntimeOverrides();
+        }
+
+        ImGui::SeparatorText("Runtime control mode");
+
+        static const IxAiControlMode kModes[] = {
+            IxAiControlMode::LegacyOnly,
+            IxAiControlMode::ObserveOnly,
+            IxAiControlMode::LegacyAssist,
+            IxAiControlMode::IxAuthoritative,
+        };
+
+        int selectedMode = 0;
+        const IxAiControlMode currentMode = IxAiStackApi::GetControlMode();
+
+        for (u32 modeIndex = 0; modeIndex < sizeof(kModes) / sizeof(kModes[0]); ++modeIndex)
+        {
+            if (kModes[modeIndex] == currentMode)
+            {
+                selectedMode = (int)modeIndex;
+                break;
+            }
+        }
+
+        if (ImGui::BeginCombo("Control mode", IxAiControlModeToDisplayName(currentMode)))
+        {
+            for (u32 modeIndex = 0; modeIndex < sizeof(kModes) / sizeof(kModes[0]); ++modeIndex)
+            {
+                const bool isSelected = selectedMode == (int)modeIndex;
+
+                if (ImGui::Selectable(IxAiControlModeToDisplayName(kModes[modeIndex]), isSelected))
+                {
+                    IxAiStackApi::SetControlMode(kModes[modeIndex]);
+                }
+
+                if (isSelected)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+
+            ImGui::EndCombo();
+        }
+
+        ImGui::TextWrapped("%s", ControlModeOwnershipText(IxAiStackApi::GetControlMode()));
+        ImGui::Text("Legacy output currently: %s", IxAiStackApi::IsLegacyOutputAllowed() ? "allowed" : "blocked");
+
+        ImGui::SeparatorText("Legacy bridge feature gates");
+
+        bool bridgeEnabled = g_ixAiRuntimeTuning.bridgeEnabled;
+        if (ImGui::Checkbox("Enable legacy bridge (danger / enemy nudges)", &bridgeEnabled))
+        {
+            IxAiStackApi::SetFeatureEnabled(IxAiFeatureGate::LegacyBridge, bridgeEnabled);
+        }
+
+        bool memoryAuthoritative = g_ixAiRuntimeTuning.memoryAuthoritative;
+        if (ImGui::Checkbox("IX memory authoritative (Suspicious/Search danger focus from slots)", &memoryAuthoritative))
+        {
+            IxAiStackApi::SetFeatureEnabled(IxAiFeatureGate::MemoryAuthoritative, memoryAuthoritative);
+        }
+
         ImGui::SliderFloat("Suspicious danger cooldown (s)", &g_ixAiRuntimeTuning.bridgeSuspiciousCooldownSeconds, 0.5f, 12.f);
         ImGui::SliderFloat("Search danger cooldown (s)", &g_ixAiRuntimeTuning.bridgeSearchCooldownSeconds, 0.5f, 12.f);
         ImGui::SliderFloat("Combat push cooldown (s)", &g_ixAiRuntimeTuning.bridgeCombatCooldownSeconds, 0.2f, 8.f);

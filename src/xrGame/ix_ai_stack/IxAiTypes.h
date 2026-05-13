@@ -3,6 +3,34 @@
 #include "../../xrCore/_types.h"
 #include "../../xrCore/_vector3d.h"
 
+enum class IxAiControlMode : u8
+{
+    LegacyOnly,
+    ObserveOnly,
+    LegacyAssist,
+    IxAuthoritative,
+};
+
+enum class IxAiFeatureGate : u8
+{
+    LegacyBridge,
+    MemoryAuthoritative,
+    TacticsFeedMovementHint,
+    CoverFeedDangerHint,
+    LocalityActorAttenuation,
+    SquadChannel,
+    SquadStealthFanout,
+    SquadClearAttackerOnStealthHit,
+    SquadSuppressDirectFocusOnStealthHit,
+};
+
+LPCSTR IxAiControlModeToConfigName(IxAiControlMode mode);
+LPCSTR IxAiControlModeToDisplayName(IxAiControlMode mode);
+bool IxAiControlModeTryParse(pcstr value, IxAiControlMode& outMode);
+
+LPCSTR IxAiFeatureGateToConfigName(IxAiFeatureGate feature);
+bool IxAiFeatureGateTryParse(pcstr value, IxAiFeatureGate& outFeature);
+
 enum class IxAiSquadFanoutFlags : u8
 {
     None = 0,

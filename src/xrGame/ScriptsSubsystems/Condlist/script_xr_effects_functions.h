@@ -4204,6 +4204,30 @@ inline void ix_ai_stack_reload_runtime_config_server(CScriptGameObject* pActor,
 #endif
 }
 
+inline void ix_ai_stack_reset_runtime_overrides_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+	(void)buffer;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	IxAiStackScriptResetRuntimeOverrides();
+#endif
+}
+
+inline void ix_ai_stack_reset_runtime_overrides_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+	(void)buffer;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	IxAiStackScriptResetRuntimeOverrides();
+#endif
+}
+
 inline bool IxAiParseCondlistBool00(const xr_string& token, bool& outValue)
 {
 	if (token.empty())
@@ -4226,6 +4250,84 @@ inline bool IxAiParseCondlistBool00(const xr_string& token, bool& outValue)
 	}
 
 	return false;
+}
+
+inline void ix_ai_stack_set_control_mode_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (buffer.empty())
+	{
+		return;
+	}
+
+	IxAiStackScriptSetControlMode(buffer[0].c_str());
+#endif
+}
+
+inline void ix_ai_stack_set_control_mode_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (buffer.empty())
+	{
+		return;
+	}
+
+	IxAiStackScriptSetControlMode(buffer[0].c_str());
+#endif
+}
+
+inline void ix_ai_stack_set_feature_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (buffer.size() < 2)
+	{
+		return;
+	}
+
+	bool v = false;
+
+	if (!IxAiParseCondlistBool00(buffer[1], v))
+	{
+		return;
+	}
+
+	IxAiStackScriptSetFeature(buffer[0].c_str(), v);
+#endif
+}
+
+inline void ix_ai_stack_set_feature_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+	(void)pActor;
+	(void)pBot;
+#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
+	if (buffer.size() < 2)
+	{
+		return;
+	}
+
+	bool v = false;
+
+	if (!IxAiParseCondlistBool00(buffer[1], v))
+	{
+		return;
+	}
+
+	IxAiStackScriptSetFeature(buffer[0].c_str(), v);
+#endif
 }
 
 inline void ix_ai_stack_set_bridge_enabled_client(CScriptGameObject* pActor,

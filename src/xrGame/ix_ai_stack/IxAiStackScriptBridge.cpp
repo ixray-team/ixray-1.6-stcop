@@ -2,39 +2,69 @@
 
 #include "IxAiStackScriptBridge.h"
 #include "IxAiStackApi.h"
-#include "IxAiStackTuning.h"
 
 void IxAiStackScriptReloadRuntimeConfig()
 {
     IxAiStackApi::ReloadRuntimeConfig();
 }
 
+void IxAiStackScriptResetRuntimeOverrides()
+{
+    IxAiStackApi::ResetRuntimeOverrides();
+}
+
+bool IxAiStackScriptSetControlMode(pcstr modeName)
+{
+    IxAiControlMode mode = IxAiControlMode::LegacyAssist;
+
+    if (!IxAiControlModeTryParse(modeName, mode))
+    {
+        return false;
+    }
+
+    IxAiStackScriptSetControlMode(mode);
+    return true;
+}
+
+void IxAiStackScriptSetControlMode(IxAiControlMode mode)
+{
+    IxAiStackApi::SetControlMode(mode);
+}
+
 void IxAiStackScriptSetBridgeEnabled(bool enabled)
 {
-    xrCriticalSectionGuard guard(g_ixAiRuntimeTuningCs);
-    g_ixAiRuntimeTuning.bridgeEnabled = enabled;
+    IxAiStackApi::SetFeatureEnabled(IxAiFeatureGate::LegacyBridge, enabled);
 }
 
 void IxAiStackScriptSetMemoryAuthoritative(bool enabled)
 {
-    xrCriticalSectionGuard guard(g_ixAiRuntimeTuningCs);
-    g_ixAiRuntimeTuning.memoryAuthoritative = enabled;
+    IxAiStackApi::SetFeatureEnabled(IxAiFeatureGate::MemoryAuthoritative, enabled);
 }
 
 void IxAiStackScriptSetTacticsFeedMovementHint(bool enabled)
 {
-    xrCriticalSectionGuard guard(g_ixAiRuntimeTuningCs);
-    g_ixAiRuntimeTuning.tacticsFeedMovementHint = enabled;
+    IxAiStackApi::SetFeatureEnabled(IxAiFeatureGate::TacticsFeedMovementHint, enabled);
 }
 
 void IxAiStackScriptSetCoverFeedDangerHint(bool enabled)
 {
-    xrCriticalSectionGuard guard(g_ixAiRuntimeTuningCs);
-    g_ixAiRuntimeTuning.coverFeedDangerHint = enabled;
+    IxAiStackApi::SetFeatureEnabled(IxAiFeatureGate::CoverFeedDangerHint, enabled);
 }
 
 void IxAiStackScriptSetLocalityActorAttenuationEnabled(bool enabled)
 {
-    xrCriticalSectionGuard guard(g_ixAiRuntimeTuningCs);
-    g_ixAiRuntimeTuning.localityActorAttenuationEnabled = enabled;
+    IxAiStackApi::SetFeatureEnabled(IxAiFeatureGate::LocalityActorAttenuation, enabled);
+}
+
+bool IxAiStackScriptSetFeature(pcstr featureName, bool enabled)
+{
+    IxAiFeatureGate feature = IxAiFeatureGate::LegacyBridge;
+
+    if (!IxAiFeatureGateTryParse(featureName, feature))
+    {
+        return false;
+    }
+
+    IxAiStackApi::SetFeatureEnabled(feature, enabled);
+    return true;
 }

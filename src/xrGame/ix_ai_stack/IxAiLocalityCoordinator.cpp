@@ -3,6 +3,7 @@
 #include "../../xrCore/_vector3d.h"
 
 #include "IxAiLocalityCoordinator.h"
+#include "IxAiStackApi.h"
 #include "IxAiStackTuning.h"
 
 namespace
@@ -25,7 +26,7 @@ void IxAiLocalityCoordinator::ApplyActorAnchoredAttenuation(
     const Fvector& threatPosition,
     xr_vector<IxAiPerceptionEvent>& events)
 {
-    if (!g_ixAiRuntimeTuning.localityActorAttenuationEnabled)
+    if (!IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::LocalityActorAttenuation))
     {
         return;
     }

@@ -8,6 +8,7 @@
 #include "../ai/stalker/ai_stalker.h"
 #include "IxAiAgent.h"
 #include "IxAiConstants.h"
+#include "IxAiStackApi.h"
 #include "IxAiStackTelemetry.h"
 #include "IxAiStackTuning.h"
 #include "IxAiStalkerLegacyOutput.h"
@@ -158,7 +159,7 @@ namespace
     {
         outPerceive = CDangerObject::eDangerPerceiveTypeSound;
 
-        if (g_ixAiRuntimeTuning.memoryAuthoritative)
+        if (IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::MemoryAuthoritative))
         {
             for (LegacyFocusResolverFn resolver : kAuthoritativeFocusChain)
             {
@@ -252,7 +253,7 @@ namespace
 
 void IxAiStalkerLegacyOutput_Apply(CAI_Stalker& stalker, IxAiAgent& agent)
 {
-    if (!g_ixAiRuntimeTuning.bridgeEnabled)
+    if (!IxAiStackApi::IsLegacyOutputAllowed())
     {
         return;
     }

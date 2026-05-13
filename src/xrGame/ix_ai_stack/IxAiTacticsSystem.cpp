@@ -10,6 +10,7 @@
 #include "../memory_manager.h"
 #include "IxAiAgent.h"
 #include "IxAiConstants.h"
+#include "IxAiStackApi.h"
 #include "IxAiStackTelemetry.h"
 #include "IxAiStackTuning.h"
 #include "IxAiTacticsHelper.h"
@@ -72,7 +73,7 @@ void IxAiTacticsSystem::EvaluateForStalker(IxAiAgent& agent, CAI_Stalker& stalke
 
 void IxAiTacticsSystem::TryPublishTacticDangerHint(CAI_Stalker& stalker, IxAiAgent& agent)
 {
-    if (!g_ixAiRuntimeTuning.tacticsFeedMovementHint)
+    if (!IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::TacticsFeedMovementHint))
     {
         return;
     }
@@ -117,7 +118,7 @@ void IxAiTacticsSystem::TryPublishTacticDangerHint(CAI_Stalker& stalker, IxAiAge
 
 void IxAiTacticsSystem::TryPublishInvestigateMovementHint(CAI_Stalker& stalker, IxAiAgent& agent)
 {
-    if (!g_ixAiRuntimeTuning.tacticsFeedMovementHint)
+    if (!IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::TacticsFeedMovementHint))
     {
         return;
     }
@@ -166,7 +167,7 @@ void IxAiTacticsSystem::TryPublishCoverDangerHint(
     const Fvector& threatPosition,
     u32 framePhase)
 {
-    if (!g_ixAiRuntimeTuning.coverFeedDangerHint)
+    if (!IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::CoverFeedDangerHint))
     {
         return;
     }

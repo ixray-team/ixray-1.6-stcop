@@ -33,6 +33,23 @@ bool TryLoadFromDefaultPathImpl()
 
     IxAiRuntimeTuning& tuning = g_ixAiRuntimeTuning;
 
+    constexpr LPCSTR kControl = "ix_ai_control";
+
+    if (ini.section_exist(kControl) && ini.line_exist(kControl, "mode"))
+    {
+        const shared_str controlModeName = ini.r_string_wb(kControl, "mode");
+        IxAiControlMode controlMode = IxAiControlMode::LegacyAssist;
+
+        if (IxAiControlModeTryParse(controlModeName.c_str(), controlMode))
+        {
+            tuning.controlMode = controlMode;
+        }
+        else
+        {
+            Msg("! [IX AI]: Unknown [ix_ai_control] mode '%s'", controlModeName.c_str());
+        }
+    }
+
     if (ini.line_exist(kTuning, "silenced_shot_power_cutoff"))
     {
         tuning.silencedShotPowerCutoff = ini.r_float(kTuning, "silenced_shot_power_cutoff");

@@ -1,11 +1,21 @@
 ; IX AI Stack - опциональная подстройка во время работы. Загружается после значений по умолчанию из кода при инициализации этого ПИЗДЕЦА
 ; Перезагрузка в игре: вкладка ImGui IX AI Stack или эффект condlist ix_ai_stack_reload_runtime_config.
 ; Переключатели в рантайме (condlist: первый аргумент true/false, yes/no, 1/0):
+;   ix_ai_stack_set_control_mode legacy_only|observe_only|legacy_assist|ix_authoritative
+;   ix_ai_stack_reset_runtime_overrides
+;   ix_ai_stack_set_feature <feature> true|false
+;     features: bridge, memory_authoritative, tactics_feed_movement_hint, cover_feed_danger_hint,
+;               locality_actor_attenuation, squad_channel, squad_stealth_fanout,
+;               squad_clear_attacker_on_stealth_hit, squad_suppress_direct_focus_on_stealth_hit
 ;   ix_ai_stack_set_bridge_enabled
 ;   ix_ai_stack_set_memory_authoritative
 ;   ix_ai_stack_set_tactics_feed_movement_hint
 ;   ix_ai_stack_set_cover_feed_danger_hint
 ;   ix_ai_stack_set_locality_actor_attenuation
+
+[ix_ai_control]
+; Режим владения поведением: legacy_only, observe_only, legacy_assist, ix_authoritative.
+mode = legacy_assist
 
 [ix_ai_tuning]
 ; Порог громкости выстрела: ниже - считается «глушённым» (сильнее ослабление слуха).

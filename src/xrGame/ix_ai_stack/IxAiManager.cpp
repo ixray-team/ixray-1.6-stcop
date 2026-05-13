@@ -16,6 +16,7 @@
 #include "IxAiLocalityCoordinator.h"
 #include "IxAiManager.h"
 #include "IxAiPerceptionSystem.h"
+#include "IxAiStackApi.h"
 #include "IxAiStackTelemetry.h"
 #include "IxAiStackTuning.h"
 
@@ -425,7 +426,7 @@ void IxAiManager::DeliverSquadFanout(const xr_vector<u16>& recipientObjectIds, c
 {
     const f32 nowTime = event._timestamp;
     const bool applyStealthPositionBlend =
-        g_ixAiRuntimeTuning.squadFanoutStealthHitHandlingEnabled &&
+        IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::SquadStealthFanout) &&
         (event._squadFanoutFlags & (u8)IxAiSquadFanoutFlags::StealthClassified) != 0u;
 
     for (u16 objectId : recipientObjectIds)

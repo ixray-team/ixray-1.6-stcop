@@ -2,9 +2,12 @@
 
 #include "../../xrCore/_types.h"
 #include "../../xrCore/xrSyncronize.h"
+#include "IxAiTypes.h"
 
 struct IxAiRuntimeTuning final
 {
+    IxAiControlMode controlMode{IxAiControlMode::LegacyAssist};
+
     f32 silencedShotPowerCutoff{0.25f};
     f32 suspicionToSuspicious{0.35f};
     f32 suspicionToSearch{1.2f};

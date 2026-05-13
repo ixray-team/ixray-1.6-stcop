@@ -120,7 +120,7 @@ void IxAiSquadChannel::NotifyStalkerWound(CAI_Stalker& victim, const SHit& hit, 
 
     xrCriticalSectionGuard tuningGuard(g_ixAiRuntimeTuningCs);
 
-    if (!g_ixAiRuntimeTuning.squadChannelEnabled)
+    if (!IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::SquadChannel))
     {
         return;
     }
@@ -157,7 +157,7 @@ void IxAiSquadChannel::NotifyStalkerWound(CAI_Stalker& victim, const SHit& hit, 
 
     const f32 damageScale = clampr(hit.damage() / 50.f, 0.15f, 2.5f);
     const bool stealthClassified =
-        g_ixAiRuntimeTuning.squadFanoutStealthHitHandlingEnabled && ClassifyStealthLikeSquadHit(hit);
+        IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::SquadStealthFanout) && ClassifyStealthLikeSquadHit(hit);
 
     u16 sourceObjectId = 0;
 
@@ -166,7 +166,7 @@ void IxAiSquadChannel::NotifyStalkerWound(CAI_Stalker& victim, const SHit& hit, 
         sourceObjectId = hit.who->ID();
     }
 
-    if (stealthClassified && g_ixAiRuntimeTuning.squadFanoutClearAttackerIdOnStealthHit)
+    if (stealthClassified && IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::SquadClearAttackerOnStealthHit))
     {
         sourceObjectId = 0;
     }
@@ -197,7 +197,7 @@ void IxAiSquadChannel::NotifyCombatRegistered(const CAI_Stalker& registrant)
 
     xrCriticalSectionGuard tuningGuard(g_ixAiRuntimeTuningCs);
 
-    if (!g_ixAiRuntimeTuning.squadChannelEnabled)
+    if (!IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::SquadChannel))
     {
         return;
     }

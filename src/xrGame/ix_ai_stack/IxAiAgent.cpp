@@ -4,6 +4,7 @@
 #include "IxAiAgent.h"
 #include "IxAiBehaviourTree.h"
 #include "IxAiConstants.h"
+#include "IxAiStackApi.h"
 #include "IxAiStackTuning.h"
 
 IxAiAgent::IxAiAgent()
@@ -112,10 +113,10 @@ void IxAiAgent::ReceiveSquadFanout(const IxAiPerceptionEvent& event, f32 nowTime
 
     const bool stealthFanout =
         (event._squadFanoutFlags & (u8)IxAiSquadFanoutFlags::StealthClassified) != 0u &&
-        g_ixAiRuntimeTuning.squadFanoutStealthHitHandlingEnabled;
+        IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::SquadStealthFanout);
 
     const bool allowDirectFocus =
-        !stealthFanout || !g_ixAiRuntimeTuning.squadFanoutSuppressDirectFocusOnStealthHit;
+        !stealthFanout || !IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::SquadSuppressDirectFocusOnStealthHit);
 
     if (allowDirectFocus && event._intensity >= g_ixAiRuntimeTuning.squadChannelFocusIntensityMin)
     {
