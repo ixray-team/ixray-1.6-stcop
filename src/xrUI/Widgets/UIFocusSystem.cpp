@@ -1,7 +1,5 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIFocusSystem.h"
-
-
 
 UI_API int ReadWndSelectorsInfo(CUIXml& xml, const char* ui_path, xr_vector<WND_SELECTOR_INFO> &outInfos, xr_map<xr_string, CUIWindow*> &wndPointers)
 {
