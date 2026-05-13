@@ -2,12 +2,7 @@
 #pragma once
 
 #include "UIStatic.h"
-
-namespace text_editor
-{
-	class ENGINE_API line_edit_control;
-	enum init_mode;
-};
+#include "../xrEngine/line_edit_control.h"
 
 class UI_API CUICustomEdit : 
 	public CUIStatic
