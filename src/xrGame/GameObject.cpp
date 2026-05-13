@@ -200,6 +200,12 @@ void CGameObject::OnEvent		(NET_Packet& P, u16 type)
 				}break;
 			}
 			SetHitInfo(Hitter, Weapon, HDS.bone(), HDS.p_in_bone_space, HDS.dir);
+
+			if (HDS.hit_type == ALife::EHitType::eHitTypeBurn)
+			{
+				HDS.add_wound = true;
+			}
+
 			Hit				(&HDS);
 			//---------------------------------------------------------------------------
 			if (!IsGameTypeSingle())

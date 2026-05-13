@@ -1204,11 +1204,11 @@ void CPHMovementControl::ApplyHit(const Fvector& dir,const float P,ALife::EHitTy
 	{
 		switch(hit_type)
 		{
-			case ALife::eHitTypeBurn  :												;//stop
 			case ALife::eHitTypeShock :												;//stop
 			case ALife::eHitTypeStrike:												;//stop
 			case ALife::eHitTypeWound:			SetVelocity(Fvector().set(0,0,0))	; break; // stop							;
 			case ALife::eHitTypeLightBurn  :										;//not stop
+			case ALife::eHitTypeBurn:												;//not stop
 			case ALife::eHitTypeRadiation:											;//not stop
 			case ALife::eHitTypeTelepatic:											;//not stop
 			case ALife::eHitTypeChemicalBurn:										;break;//not stop

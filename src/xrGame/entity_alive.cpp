@@ -297,7 +297,7 @@ void CEntityAlive::Hit(SHit* pHDS)
 	CWound* pWound = conditions().ConditionHit(&HDS);
 
 	if(pWound){
-		if(ALife::eHitTypeBurn == HDS.hit_type || ALife::eHitTypeLightBurn == HDS.hit_type)
+		if(ALife::eHitTypeBurn == HDS.hit_type)
 			StartFireParticles(pWound);
 		else if(ALife::eHitTypeWound == HDS.hit_type || ALife::eHitTypeFireWound == HDS.hit_type)
 			StartBloodDrops(pWound);
@@ -511,7 +511,7 @@ void CEntityAlive::UpdateFireParticles()
 		CWound* pWound = *it;
 		float burn_size = pWound->TypeSize(ALife::eHitTypeBurn);
 
-		if(pWound->GetDestroy() || (burn_size>0 && (burn_size<m_fStopBurnWoundSize || !g_Alive())))
+		if(pWound->GetDestroy() || (burn_size >= 0.0f && (burn_size<m_fStopBurnWoundSize || !g_Alive())))
 		{
 			TParticlesPlayer* PPlayer = GetOrCreateComponent<TParticlesPlayer>();
 			PPlayer->AutoStopParticles(pWound->GetParticleName(),

@@ -842,8 +842,8 @@ void	CActor::Hit(SHit* pHDS)
 
 	if( (mstate_real&mcSprint) && Level().CurrentControlEntity() == this && conditions().DisableSprint(pHDS) && psActorFlags.test(AF_HIT_SLOWMO))
 	{
-		bool const is_special_burn_hit_2_self	=	(pHDS->who == this) && (pHDS->boneID == BI_NONE) && 
-													((pHDS->hit_type==ALife::eHitTypeBurn)||(pHDS->hit_type==ALife::eHitTypeLightBurn));
+		bool const is_special_burn_hit_2_self =	((pHDS->hit_type==ALife::eHitTypeBurn)||(pHDS->hit_type==ALife::eHitTypeLightBurn));
+
 		if ( !is_special_burn_hit_2_self )
 		{
 			mstate_wishful	&=~mcSprint;
@@ -871,10 +871,7 @@ void	CActor::Hit(SHit* pHDS)
 			float hit_power = EngineExternal().ShadowOfChernobylMode() ? HitArtefactsOnBeltLegacy(HDS.damage(), HDS.hit_type) : HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
 			HDS.power = hit_power;
 			HDS.add_wound = true;
-			if (HDS.damage() > 0.05f && (HDS.hit_type == ALife::eHitTypeBurn || HDS.hit_type == ALife::eHitTypeLightBurn))
-			{
-				m_actor_burning = true;
-			}
+
 			if (m_isBeforeHitCallback)
 			{
 				if (g_Alive())
@@ -1808,7 +1805,8 @@ void CActor::UpdateCL()
 	{
 		if (HudAnimator()->BurnAnimator()->IsActive())
 		{
-			conditions().ChangeWoundsByType(HudAnimator()->BurnAnimator()->m_burn_restore * dt, ALife::eHitTypeBurn);
+			conditions().ChangeBleedingCustom(HudAnimator()->BurnAnimator()->m_burn_restore * dt, (1 << ALife::eHitTypeBurn));
+
 			if (m_need_fire_particle)
 			{
 				HudAnimator()->BurnAnimator()->StartFlameParticle();
@@ -1818,16 +1816,19 @@ void CActor::UpdateCL()
 		else 
 		{
 			float material_burn_restore_speed = GetMaterialBurnRestoreSpeed(GMLib.GetMaterialByIdx(material().last_material_idx())->m_Name.c_str());
-			if (material_burn_restore_speed > 0)
+			if (material_burn_restore_speed > 0.0f)
 			{
-				conditions().ChangeWoundsByType(material_burn_restore_speed * dt, ALife::eHitTypeBurn);
+				conditions().ChangeBleedingCustom(material_burn_restore_speed * dt, (1 << ALife::eHitTypeBurn));
 			}
+
 			if (g_SingleGameDifficulty == egdNovice)
 			{
 				SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("gunsl_messenger", true);
 				s->SetText(g_pStringTable->translate("gunsl_actor_burned").c_str());
 			}
-			conditions().ChangeWoundsByType(m_actor_burn_restore_speed * dt, ALife::eHitTypeBurn);
+
+
+			conditions().ChangeBleedingCustom(m_actor_burn_restore_speed * dt, (1 << ALife::eHitTypeBurn));
 		}
 	}
 
@@ -3659,7 +3660,9 @@ void CScriptGameObject::SetCharacterMaxWeight(float value)
 
 bool CActor::IsActorBurning()
 {
-	return m_actor_burning;
+	float burn_amount = conditions().BleedingSpeed(1 << ALife::EHitType::eHitTypeBurn);
+
+	return burn_amount > 0.0f;
 }
 
 float CActor::GetMaterialBurnRestoreSpeed(const char* mtl)
