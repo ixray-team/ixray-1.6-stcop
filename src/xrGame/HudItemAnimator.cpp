@@ -572,7 +572,6 @@ void CBurnAnimator::UpdateAnimation()
 
 void CBurnAnimator::OnAnimationEnd()
 {
-	Level().CurrentControlEntity()->cast_actor()->SetActorBurning(false);
 	StopAnimator();
 
 	u8& restore_slot = m_manager->SlotToRestore();
