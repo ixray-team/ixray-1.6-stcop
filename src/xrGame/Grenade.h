@@ -27,7 +27,7 @@ public:
 	virtual void 			OnEvent								(NET_Packet& P, u16 type);
 	virtual bool			DropGrenade							();			//in this case if grenade state is eReady, it should Throw
 	
-	virtual void 			OnAnimationEnd						(u32 state);
+	virtual void 			OnAnimationEnd						(u8 state);
 	virtual void 			UpdateCL							();
 
 	virtual void 			Throw();
@@ -36,7 +36,7 @@ public:
 	
 	virtual bool			Action								(u16 cmd, u32 flags);
 	virtual bool			Useful								() const;
-	virtual void			State								(u32 state);
+	virtual void			State								(u8 state);
 
 	virtual void			OnH_B_Chield						()				{inherited::OnH_B_Chield();}
 
