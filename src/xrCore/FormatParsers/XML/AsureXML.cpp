@@ -121,44 +121,41 @@ void CXMLOverride::GenerateNewDoc(tinyxml2::XMLDocument& Original, tinyxml2::XML
 				}
 				Parent = Parent->Parent();
 			}
-			ParentList.push_back(ChildElement);
-
-			tinyxml2::XMLElement* IterateElement = Original.FirstChildElement(ParentList[0]->Value());
-			ParentList.erase(ParentList.begin());
 
 			if (OverrideMode == EOverrideMode::remove || OverrideMode == EOverrideMode::replace)
 			{
+				ParentList.push_back(ChildElement);
+
+				tinyxml2::XMLElement* IterateElement = Original.FirstChildElement(ParentList[0]->Value());
+				ParentList.erase(ParentList.begin());
+				
 				tinyxml2::XMLNode* MyParent = nullptr;
 				for (auto Element : ParentList)
 				{
 					if (IterateElement == nullptr)
-						break;
-
-					xr_string ElValue = Element->Value();
-					if (ElValue == "string")
 					{
-						const char* IDAttrib = Element->Attribute("id");
+						break;
+					}
 
-						IterateElement = IterateElement->FirstChildElement();
+					const char* IDAttrib = Element->Attribute("id");
+					
+					IterateElement = IterateElement->FirstChildElement(Element->Value());
+					if (IDAttrib)
+					{
+						shared_str IDAttribShared = IDAttrib;
 						while (IterateElement != nullptr)
 						{
-							xr_string CheckID = IterateElement->Attribute("id");
-							if (CheckID == IDAttrib)
+							auto CheckID = IterateElement->Attribute("id");
+							if (!I_ASSERT_M(CheckID, "XML element %s doesn't contains ID while others does!", Element->Value()))
+							{
+								IterateElement = nullptr;
+							}
+							if (CheckID == IDAttribShared)
+							{
 								break;
+							}
 
 							IterateElement = IterateElement->NextSiblingElement();
-						}
-					}
-					else
-					{
-						tinyxml2::XMLElement* TestChild = IterateElement->FirstChildElement(Element->Value());
-						if (TestChild != nullptr)
-						{
-							IterateElement = TestChild;
-						}
-						else
-						{
-							IterateElement = nullptr;
 						}
 					}
 				}
@@ -182,6 +179,38 @@ void CXMLOverride::GenerateNewDoc(tinyxml2::XMLDocument& Original, tinyxml2::XML
 			}
 			else if (OverrideMode == EOverrideMode::add)
 			{
+				tinyxml2::XMLElement* IterateElement = Original.FirstChildElement(ParentList[0]->Value());
+				ParentList.erase(ParentList.begin());
+				
+				for (auto Element : ParentList)
+				{
+					if (IterateElement == nullptr)
+					{
+						break;
+					}
+
+					const char* IDAttrib = Element->Attribute("id");
+					
+					IterateElement = IterateElement->FirstChildElement(Element->Value());
+					if (IDAttrib)
+					{
+						shared_str IDAttribShared = IDAttrib;
+						while (IterateElement != nullptr)
+						{
+							auto CheckID = IterateElement->Attribute("id");
+							if (!I_ASSERT_M(CheckID, "XML element %s doesn't contains ID while others does!", Element->Value()))
+							{
+								IterateElement = nullptr;
+							}
+							if (CheckID == IDAttribShared)
+							{
+								break;
+							}
+
+							IterateElement = IterateElement->NextSiblingElement();
+						}
+					}
+				}
 				if (IterateElement != nullptr)
 				{
 					ApplyNewNode(IterateElement, ChildElement);
