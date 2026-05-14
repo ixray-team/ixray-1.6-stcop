@@ -14,7 +14,7 @@ public:
 
 	void Load(const char* section) override;
 	void UpdateCL() override;
-	void OnMotionMark(u32 state, const motion_marks& m) override;
+	void OnMotionMark(u8 state, const motion_marks& m) override;
 	void OnH_B_Independent(bool just_before_destroy) override;
 	void OnHiddenItem() override;
 	void OnMoveToRuck(const SInvItemPlace& prev) override;

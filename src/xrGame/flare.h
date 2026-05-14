@@ -9,7 +9,7 @@ class CFlare final : public CHudItemObject
 {
 	using inherited = CHudItemObject;
 
-	enum FlareStates
+	enum FlareStates : u8
 	{
 		eFlareHidden,
 		eFlareShowing,
@@ -36,8 +36,8 @@ public:
 	virtual bool				net_Spawn						(CSE_Abstract* DC);
 	virtual void				net_Destroy						();
 
-	virtual void				OnStateSwitch					(u32 S);
-	virtual void				OnAnimationEnd					(u32 state);
+	virtual void				OnStateSwitch					(u8 S);
+	virtual void				OnAnimationEnd					(u8 state);
 
 	virtual	void				UpdateXForm						();
 

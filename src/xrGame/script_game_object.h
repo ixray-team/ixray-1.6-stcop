@@ -975,7 +975,7 @@ public:
 			void				AttachVehicle(CScriptGameObject* veh, bool bForce = false);
 			void				DetachVehicle(bool bForce = false);
 
-			u32 PlayHudMotion(const char* M, bool bMixIn, u32 state);
+			u32 PlayHudMotion(const char* M, bool bMixIn, u8 state);
 			void AmmoSetCount(u16 count);
 			u16 AmmoBoxSize();
 			float GetTotalTelepaticProtection();
@@ -984,8 +984,8 @@ public:
 			bool InstallUpgrade(const char* upgrade);
 			bool HasUpgrade(const char* upgrade);
 			void IterateInstalledUpgrades(const luabind::functor<bool>& functor);
-			void SwitchState(u32 state);
-			u32 GetState();
+			void SwitchState(u8 state);
+			u8 GetState();
 			
 			//Works for anything with visual
 			bool				IsBoneVisible(const char* bone_name);

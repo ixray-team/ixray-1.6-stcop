@@ -74,7 +74,7 @@ void CFlashlight::UpdateCL()
 	}
 }
 
-void CFlashlight::OnMotionMark(u32 state, const motion_marks& mark)
+void CFlashlight::OnMotionMark(u8 state, const motion_marks& mark)
 {
 	inherited::OnMotionMark(state, mark);
 

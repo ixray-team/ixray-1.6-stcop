@@ -11,7 +11,7 @@ public:
 	CHudPdaAnimator(CHudAnimatorManager* manager, const shared_str& pda_section);
 	virtual ~CHudPdaAnimator() = default;
 
-	enum EPdaStates
+	enum EPdaStates : u8
 	{
 		eBlowout = eLastAnimatorState + 1,
 		eAimStart,
@@ -36,8 +36,8 @@ public:
 
 protected:
 	//void OnMotionMark(const motion_marks& mark);
-	virtual void OnAnimationEnd(u32 state) override;
-	virtual void OnStateSwitch(u32 state) override;
+	virtual void OnAnimationEnd(u8 state) override;
+	virtual void OnStateSwitch(u8 state) override;
 	virtual void PlayAnimIdle() override;
 	virtual bool TryPlayAnimIdle() override;
 

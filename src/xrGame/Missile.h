@@ -12,7 +12,8 @@ class CMissile : public CHudItemObject
 {
 	using inherited = CHudItemObject;
 public:
-	enum EMissileStates{
+	enum EMissileStates : u8
+	{
 		eThrowStart = eLastBaseState+1,
 		eReady,
 		eThrow,
@@ -44,8 +45,8 @@ public:
 
 	virtual void 			OnEvent						(NET_Packet& P, u16 type);
 
-	virtual void 			OnAnimationEnd				(u32 state);
-	virtual void			OnMotionMark				(u32 state, const motion_marks&);
+	virtual void 			OnAnimationEnd				(u8 state);
+	virtual void			OnMotionMark				(u8 state, const motion_marks&);
 
 
 	virtual void 			Throw();
@@ -53,8 +54,8 @@ public:
 
 	virtual bool 			Action						(u16 cmd, u32 flags);
 
-	virtual void 			State						(u32 state);
-	virtual void 			OnStateSwitch				(u32 S);
+	virtual void 			State						(u8 state);
+	virtual void 			OnStateSwitch				(u8 S);
 	virtual bool			GetBriefInfo				(II_BriefInfo& info);
 	bool					NeedBlockSprint				() const;
 

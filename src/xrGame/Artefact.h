@@ -116,7 +116,7 @@ public:
 	
 	CHitImmunity 					m_ArtefactHitImmunities;
 public:
-	enum EAFHudStates {
+	enum EAFHudStates :u8 {
 		eActivating = eLastBaseState+1,
 	};
 	virtual void					Interpolate			();
@@ -131,8 +131,8 @@ public:
 	virtual void					Show				();
 	virtual	void					UpdateXForm			();
 	virtual bool					Action				(u16 cmd, u32 flags);
-	virtual void					OnStateSwitch		(u32 S);
-	virtual void					OnAnimationEnd		(u32 state);
+	virtual void					OnStateSwitch		(u8 S);
+	virtual void					OnAnimationEnd		(u8 state);
 	virtual bool					IsHidden			()	const	{return GetState()==eHidden;}
 	virtual u32						Cost				() const;
 	float							DegradationRate		() {return m_fDegradationRate;}

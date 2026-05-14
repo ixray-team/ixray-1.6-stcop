@@ -182,7 +182,7 @@ CScriptGameObject* CScriptGameObject::GetAttachedVehicle()
 	return GO->lua_game_object();
 }
 
-u32 CScriptGameObject::PlayHudMotion(const char* M, bool bMixIn, u32 state)
+u32 CScriptGameObject::PlayHudMotion(const char* M, bool bMixIn, u8 state)
 {
 	if (CHudItem* itm = object().cast_hud_item())
 	{
@@ -285,7 +285,7 @@ u16 CScriptGameObject::AmmoGetCount()
 	return 0;
 }
 
-void CScriptGameObject::SwitchState(u32 state)
+void CScriptGameObject::SwitchState(u8 state)
 {
 	if (CHudItem* itm = object().cast_hud_item())
 	{
@@ -297,7 +297,7 @@ void CScriptGameObject::SwitchState(u32 state)
 	}
 }
 
-u32 CScriptGameObject::GetState()
+u8 CScriptGameObject::GetState()
 {
 	if (CHudItem* itm = object().cast_hud_item())
 	{
@@ -305,7 +305,7 @@ u32 CScriptGameObject::GetState()
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : cannot be cast to CHudItem!");
-	return 65535;
+	return 255;
 }
 
 bool CScriptGameObject::ActorIsJump() const
