@@ -1176,7 +1176,7 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
 				m_set_next_ammoType_on_reload = NextAmmo;
 
 			if (OnClient()) SetAmmoElapsed(int(AmmoElapsed));			
-			OnStateSwitch	(u32(state));
+			OnStateSwitch	(state);
 		}
 		break;
 	default:
@@ -1304,8 +1304,8 @@ void CWeapon::SendHiddenItem()
 		// !!! Just single entry for given state !!!
 		NET_Packet		P;
 		CHudItem::object().u_EventGen		(P,GE_WPN_STATE_CHANGE,CHudItem::object().ID());
-		P.w_u8			(u8(eHiding));
-		P.w_u8			(u8(m_sub_state));
+		P.w_u8			(eHiding);
+		P.w_u8			(m_sub_state);
 		P.w_u8			(m_ammoType);
 		P.w_u8			(u8(iAmmoElapsed & 0xff));
 		P.w_u8			(m_set_next_ammoType_on_reload);
@@ -2732,7 +2732,7 @@ bool CWeapon::CanAimNow()
 
 	if (pDevice != nullptr)
 	{
-		u32 state = pDevice->GetState();
+		u8 state = pDevice->GetState();
 		result = !!(state == CCustomDevice::eIdle || state == CCustomDevice::EDeviceStates::eHandAimStart || state == CCustomDevice::EDeviceStates::eHandAimEnd);
 	}
 
@@ -3001,7 +3001,7 @@ bool CWeapon::UseScopeTexture()
 	return !g_3d_scopes && !IsAltZoomed();
 }
 
-void CWeapon::SwitchState(u32 S)
+void CWeapon::SwitchState(u8 S)
 {
 	if (OnClient()) return;
 
@@ -3019,8 +3019,8 @@ void CWeapon::SwitchState(u32 S)
 		// !!! Just single entry for given state !!!
 		NET_Packet		P;
 		CHudItem::object().u_EventGen		(P,GE_WPN_STATE_CHANGE,CHudItem::object().ID());
-		P.w_u8			(u8(S));
-		P.w_u8			(u8(m_sub_state));
+		P.w_u8			(S);
+		P.w_u8			(m_sub_state);
 		P.w_u8			(m_ammoType);
 		P.w_u8			(u8(iAmmoElapsed & 0xff));
 		P.w_u8			(m_set_next_ammoType_on_reload);
@@ -3641,7 +3641,7 @@ const float &CWeapon::hit_probability	() const
 
 bool EnableDof = true;
 
-void CWeapon::OnStateSwitch	(u32 S)
+void CWeapon::OnStateSwitch	(u8 S)
 {
 	inherited::OnStateSwitch(S);
 	m_BriefInfo_CalcFrame = 0;
@@ -3667,11 +3667,6 @@ void CWeapon::OnStateSwitch	(u32 S)
 	}
 }
 
-void CWeapon::OnAnimationEnd(u32 state) 
-{
-	inherited::OnAnimationEnd(state);
-}
-
 void CWeapon::SetSilencerX(int value)
 {
 	m_iSilencerX = value;
@@ -3684,7 +3679,7 @@ void CWeapon::SetSilencerY(int value)
 
 bool CWeapon::NeedBlockSprint() const
 {
-	u32 state = GetState();
+	u8 state = GetState();
 	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
 	if (isDelayedWeaponActions)
@@ -4413,7 +4408,7 @@ u32 CWeapon::FakeReload()
 	return clampr(in_box, (u32)0, (u32)iMagazineSize);
 }
 
-void CWeapon::OnMotionMark(u32 state, const motion_marks& mark)
+void CWeapon::OnMotionMark(u8 state, const motion_marks& mark)
 {
 	inherited::OnMotionMark(state, mark);
 
@@ -4875,7 +4870,7 @@ bool CWeapon::NeedMovementBlend() const
 
 bool CWeapon::AllowSafemode() const
 {
-	const u32 state = GetState();
+	const u8 state = GetState();
 	return m_bAllowSafemode && (state == eIdle || state == eSafemodeSwitch || state == eSwitchMode);
 }
 

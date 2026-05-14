@@ -95,8 +95,8 @@ public:
 class CHudStateAnimator : public CHudAnimatorBase
 {
 protected:
-	u32 m_current_state = eHidden;
-	u32 m_on_animation_end_state = eHidden;
+	u8 m_current_state = eHidden;
+	u8 m_on_animation_end_state = eHidden;
 
 	u32 m_dw_curr_state_time = 0;
 	u32	m_dw_curr_substate_time = 0;
@@ -117,11 +117,11 @@ protected:
 protected:
 	u32 CurrStateTime() const { return Device.dwTimeGlobal - m_dw_curr_state_time; }
 	void ResetSubStateTime() { m_dw_curr_substate_time = Device.dwTimeGlobal; }
-	virtual void OnAnimationEnd(u32 state);
-	virtual void OnStateSwitch(u32 state);
+	virtual void OnAnimationEnd(u8 state);
+	virtual void OnStateSwitch(u8 state);
 	void UpdateAnimation();
-	void PlayMotion(const shared_str& name, bool blend, u32 state);
-	virtual void OnMotionMark(const motion_marks& mark, u32 state);
+	void PlayMotion(const shared_str& name, bool blend, u8 state);
+	virtual void OnMotionMark(const motion_marks& mark, u8 state);
 	virtual void PlayAnimIdle();
 	virtual void PlayAnimIdleMoving();
 	virtual void PlayAnimIdleMovingSlow();
@@ -134,7 +134,7 @@ protected:
 	virtual shared_str SetCurrentStateAnimation(const shared_str& anim_name) { return anim_name; }
 
 public:
-	enum EAnimatorStates
+	enum EAnimatorStates : u8
 	{
 		eHidden = 0,
 		eIdle,
@@ -176,8 +176,8 @@ public:
 	virtual void ShowStateAnimator(const shared_str& section);
 	virtual void HideStateAnimator();
 
-	void SetState(u32 state) { OnStateSwitch(state); }
-	u32 GetState() const { return m_current_state; }
+	void SetState(u8 state) { OnStateSwitch(state); }
+	u8 GetState() const { return m_current_state; }
 
 	virtual void StopAnimator() override;
 

@@ -145,7 +145,7 @@ void CGrenade::OnH_A_Chield()
 	inherited::OnH_A_Chield				();
 }
 
-void CGrenade::State(u32 state) 
+void CGrenade::State(u8 state) 
 {
 	switch (state)
 	{
@@ -326,7 +326,7 @@ void CGrenade::PutNextToSlot()
 	}
 }
 
-void CGrenade::OnAnimationEnd(u32 state) 
+void CGrenade::OnAnimationEnd(u8 state) 
 {
 	switch(state)
 	{

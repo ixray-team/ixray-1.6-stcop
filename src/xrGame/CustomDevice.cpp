@@ -210,7 +210,7 @@ void CCustomDevice::ToggleDetector(bool bFastMode, bool switching)
 	}
 }
 
-void CCustomDevice::SwitchState(u32 S)
+void CCustomDevice::SwitchState(u8 S)
 {
 	if (IsGameTypeSingle() || OnServer())
 	{
@@ -221,7 +221,7 @@ void CCustomDevice::SwitchState(u32 S)
 	if (!IsGameTypeSingle() && OnClient())
 	{
 		SetNextState(S);
-		OnStateSwitch(u32(S));
+		OnStateSwitch(S);
 
 		switch (S)
 		{
@@ -279,7 +279,7 @@ bool CCustomDevice::need_renderable()
 	return m_pInventory && (!m_pInventory->ActiveItem() || (m_pInventory->ActiveItem() && m_pInventory->ActiveItem()->cast_hud_item() && m_pInventory->ActiveItem()->cast_hud_item()->need_renderable()));
 }
 
-void CCustomDevice::OnStateSwitch(u32 S)
+void CCustomDevice::OnStateSwitch(u8 S)
 {
 	inherited::OnStateSwitch(S);
 
@@ -480,7 +480,7 @@ void CCustomDevice::PlayAnimIdle()
 	}
 }
 
-void CCustomDevice::OnAnimationEnd(u32 state)
+void CCustomDevice::OnAnimationEnd(u8 state)
 {
 	inherited::OnAnimationEnd(state);
 	switch (state)

@@ -146,7 +146,7 @@ bool CWeaponRPG7::net_Spawn(CSE_Abstract* DC)
 	return l_res;
 }
 
-void CWeaponRPG7::OnStateSwitch(u32 S) 
+void CWeaponRPG7::OnStateSwitch(u8 S) 
 {
 	inherited::OnStateSwitch(S);
 	UpdateMissileVisibility();
@@ -164,11 +164,6 @@ void CWeaponRPG7::ReloadMagazine()
 
 	if(iAmmoElapsed && !getRocketCount()) 
 		CRocketLauncher::SpawnRocket(m_sRocketSection.c_str(), this);
-}
-
-void CWeaponRPG7::SwitchState(u32 S) 
-{
-	inherited::SwitchState(S);
 }
 
 bool CWeaponRPG7::CheckRLMisfireRocket()

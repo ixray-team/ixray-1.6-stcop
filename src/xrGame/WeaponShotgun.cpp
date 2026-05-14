@@ -72,7 +72,7 @@ void CWeaponShotgun::switch2_Fire()
 	bWorking = false;
 }
 
-void CWeaponShotgun::OnAnimationEnd(u32 state)
+void CWeaponShotgun::OnAnimationEnd(u8 state)
 {
 	if (!m_bTriStateReload || state != eReload || state == eReload && (bMisfireReload || bReloadEmptyByScheme))
 	{
@@ -162,7 +162,7 @@ void CWeaponShotgun::TriStateReload()
 	SwitchState(eReload);
 }
 
-void CWeaponShotgun::OnStateSwitch(u32 S)
+void CWeaponShotgun::OnStateSwitch(u8 S)
 {
 	if (!m_bTriStateReload || S != eReload || S == eReload && (bMisfireReload || bReloadEmptyByScheme))
 	{
@@ -445,7 +445,7 @@ void CWeaponShotgun::net_Import(NET_Packet& P)
 	}
 }
 
-void CWeaponShotgun::OnMotionMark(u32 state, const motion_marks& mark)
+void CWeaponShotgun::OnMotionMark(u8 state, const motion_marks& mark)
 {
 	inherited::OnMotionMark(state, mark);
 

@@ -327,7 +327,7 @@ void CMissile::shedule_Update(u32 dt)
 	}
 }
 #include "player_hud.h"
-void CMissile::State(u32 state) 
+void CMissile::State(u8 state) 
 {
 	switch(GetState()) 
 	{
@@ -460,7 +460,7 @@ void CMissile::State(u32 state)
 	}
 }
 
-void CMissile::OnStateSwitch	(u32 S)
+void CMissile::OnStateSwitch	(u8 S)
 {
 	m_dwStateTime				= 0;
 	inherited::OnStateSwitch	(S);
@@ -468,7 +468,7 @@ void CMissile::OnStateSwitch	(u32 S)
 }
 
 
-void CMissile::OnAnimationEnd(u32 state) 
+void CMissile::OnAnimationEnd(u8 state) 
 {
 	switch(state) 
 	{
@@ -627,7 +627,7 @@ void CMissile::setup_throw_params()
 	m_throw_direction.set	(trans.k);
 }
 
-void CMissile::OnMotionMark(u32 state, const motion_marks& M)
+void CMissile::OnMotionMark(u8 state, const motion_marks& M)
 {
 	inherited::OnMotionMark(state, M);
 	if ((state == eThrow || state == eShowing && m_bNeedQuick) && !m_throw)
@@ -1029,7 +1029,7 @@ bool CMissile::GetBriefInfo( II_BriefInfo& info )
 
 bool CMissile::NeedBlockSprint() const
 {
-	u32 state = GetState();
+	u8 state = GetState();
 	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 	if (isDelayedWeaponActions)
 	{
