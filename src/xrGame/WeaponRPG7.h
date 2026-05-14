@@ -13,7 +13,7 @@ public:
 	virtual	~CWeaponRPG7() = default;
 
 	virtual bool net_Spawn		(CSE_Abstract* DC);
-	virtual void OnStateSwitch	(u32 S);
+	virtual void OnStateSwitch	(u8 S);
 	virtual void OnEvent		(NET_Packet& P, u16 type);
 	virtual void ReloadMagazine	();
 	virtual void Load			(const char* section);
@@ -21,7 +21,6 @@ public:
 	virtual void on_a_hud_attach();
 
 	virtual void FireStart		();
-	virtual void SwitchState	(u32 S);
 
 			void UpdateMissileVisibility	();
 	virtual void UnloadMagazine				(bool spawn_ammo = true);
