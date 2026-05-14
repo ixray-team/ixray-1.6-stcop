@@ -217,7 +217,7 @@ local function how_much_repair( item_name, item_condition )
 	
 	local result = math.floor(cost*(1-item_condition)*cof * cur_price_percent)
 	
-	local flags_table = {new_value = price}
+	local flags_table = {new_value = result}
 	SendScriptCallback("inv_upgrades_how_much_repair_override", param_ini, char_ini, item_name, item_condition, cost, cof, cur_price_percent, flags_table)
 	result = flags_table.new_value
 		
