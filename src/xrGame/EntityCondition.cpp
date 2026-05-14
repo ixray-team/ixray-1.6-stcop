@@ -11,6 +11,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "object_broker.h"
 #include "ActorHelmet.h"
+#include "Actor.h"
 
 #define MAX_HEALTH 1.0f
 #define MIN_HEALTH -0.01f
@@ -578,6 +579,8 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 	float hit_power = hit_power_org;
 	hit_power = HitOutfitEffect( hit_power_org, pHDS->hit_type, pHDS->boneID, pHDS->armor_piercing, bAddWound );
 
+	CActor* pActor = m_object->cast_actor();
+
 	switch(pHDS->hit_type)
 	{
 	case ALife::eHitTypeTelepatic:
@@ -597,8 +600,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		m_fHealthLost = hit_power*m_fHealthHitPart*m_fHitBoneScale;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
-//		bAddWound		=  is_special_hit_2_self;
-//		bAddWound		=  false;
+		bAddWound = pActor && pActor->HudAnimator()->BurnAnimator();
 		break;
 	case ALife::eHitTypeChemicalBurn:
 		hit_power -= m_fBoostChemicalBurnProtection;

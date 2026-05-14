@@ -713,6 +713,11 @@ struct playing_pred
 
 void	CActor::Hit(SHit* pHDS)
 {
+	if (pHDS->hit_type == ALife::EHitType::eHitTypeBurn && HudAnimator() && HudAnimator()->BurnAnimator())
+	{
+		pHDS->add_wound = true;
+	}
+
 	bool b_initiated = pHDS->aim_bullet; // physics strike by poltergeist
 
 	pHDS->aim_bullet = false;
