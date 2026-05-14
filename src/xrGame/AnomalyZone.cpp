@@ -1022,6 +1022,8 @@ CGameObject* CAnomalyZone::ScanObjects(float distance, Fvector center)
 
 		return obj;
 	}
+
+	return nullptr;
 }
 
 // called only in "fast-mode"
