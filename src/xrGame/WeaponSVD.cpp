@@ -12,7 +12,7 @@ void CWeaponSVD::switch2_Fire	()
 
 }
 
-void CWeaponSVD::OnAnimationEnd(u32 state) 
+void CWeaponSVD::OnAnimationEnd(u8 state) 
 {
 	switch(state) 
 	{

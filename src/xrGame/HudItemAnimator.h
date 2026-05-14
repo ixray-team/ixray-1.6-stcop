@@ -33,13 +33,13 @@ public:
 
 	virtual void SwitchAnimator() override;
 
-	virtual void OnMotionMark(const motion_marks& mark, u32 state) override;
+	virtual void OnMotionMark(const motion_marks& mark, u8 state) override;
 
 	virtual CBackpackAnimator* cast_backpack_animator() override { return this; }
 	virtual CHudStateAnimator* cast_hud_state_animator() override { return this; }
 
 protected:
-	virtual void OnAnimationEnd(u32 state) override;
+	virtual void OnAnimationEnd(u8 state) override;
 };
 
 class CBurnAnimator final : public CHudAnimatorBase

@@ -67,7 +67,7 @@ void CWeaponAutomaticShotgun::LoadSounds(const char* section)
 	}
 }
 
-void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state) 
+void CWeaponAutomaticShotgun::OnAnimationEnd(u8 state) 
 {
 	if (!m_bTriStateReload || state != eReload || state == eReload && (bMisfireReload || bReloadEmptyByScheme))
 	{
@@ -157,7 +157,7 @@ void CWeaponAutomaticShotgun::TriStateReload()
 	SwitchState	(eReload);
 }
 
-void CWeaponAutomaticShotgun::OnStateSwitch	(u32 S)
+void CWeaponAutomaticShotgun::OnStateSwitch	(u8 S)
 {
 	if (!m_bTriStateReload || S != eReload || S == eReload && (bMisfireReload || bReloadEmptyByScheme))
 	{
@@ -440,7 +440,7 @@ void CWeaponAutomaticShotgun::net_Import(NET_Packet& P)
 	}
 }
 
-void CWeaponAutomaticShotgun::OnMotionMark(u32 state, const motion_marks& mark)
+void CWeaponAutomaticShotgun::OnMotionMark(u8 state, const motion_marks& mark)
 {
 	inherited::OnMotionMark(state, mark);
 
