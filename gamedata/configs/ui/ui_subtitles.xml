@@ -1,0 +1,12 @@
+<header>
+
+	<subtitles_body x="0" y="0" width="476" height="32" stretch="1">
+		<name x="-5" y="0" width="0" height="32">
+			<text align="r" vert_align="t" font="graffiti19" r="238" g="155" b="23"/>
+		</name>
+		<subs x="0" y="0" width="476" height="32">
+			<text complex_mode="1" align="l" vert_align="t" font="graffiti19" r="240" g="240" b="240"/>
+		</subs>
+	</subtitles_body>
+
+</header>

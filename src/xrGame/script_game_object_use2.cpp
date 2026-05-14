@@ -36,6 +36,84 @@ bool CScriptGameObject::get_force_anti_aim()
 	return false;
 }
 
+// [subs]
+void CScriptGameObject::BillboardSubtitlesDraw(LPCSTR text, u32 text_color, LPCSTR bone_name)
+{
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		Fvector attached_bone = bone_position(bone_name);
+		Fvector4 v_res;
+
+		attached_bone.y += .4f;
+		Device.mFullTransform.transform(v_res, attached_bone);
+
+		if (v_res.z < 0 || v_res.w < 0)
+			return;
+
+		if (v_res.x < -1.f || v_res.x > 1.f || v_res.y < -1.f || v_res.y > 1.f)
+			return;
+
+		float x = (1.f + v_res.x) / 2.f * (Device.TargetWidth);
+		float y = (1.f - v_res.y) / 2.f * (Device.TargetHeight);
+
+		CGameFont* font = g_FontManager->pFontBillboardSubtitles;
+		font->SetAligment(CGameFont::alCenter);
+		font->SetColor(text_color);
+
+		const int max_line_length = 60;
+		const int max_lines = 10;
+		int text_len = strlen(text);
+
+		if (text_len <= max_line_length)
+		{
+			font->Out(x, y, text);
+		}
+		else
+		{
+			char lines[max_lines][256];
+			int line_count = 0;
+			int pos = 0;
+
+			while (pos < text_len && line_count < max_lines)
+			{
+				int line_end = pos + max_line_length;
+				if (line_end >= text_len)
+				{
+					strncpy_s(lines[line_count], 256, text + pos, text_len - pos);
+					lines[line_count][text_len - pos] = '\0';
+					line_count++;
+					break;
+				}
+				else
+				{
+					int break_pos = line_end;
+					while (break_pos > pos && text[break_pos] != ' ')
+						break_pos--;
+
+					if (break_pos == pos)
+						break_pos = line_end;
+
+					strncpy_s(lines[line_count], 256, text + pos, break_pos - pos);
+					lines[line_count][break_pos - pos] = '\0';
+					line_count++;
+					pos = break_pos;
+					while (pos < text_len && text[pos] == ' ') pos++;
+				}
+			}
+
+			float line_height = font->GetHeight();
+			float total_height = line_height * line_count;
+			float start_y = y - total_height / 2.f;
+
+			for (int i = 0; i < line_count; i++)
+			{
+				font->Out(x, start_y + (i * line_height), lines[i]);
+			}
+		}
+	}
+}
+// [/subs]
+
 void CScriptGameObject::burer_set_force_gravi_attack(bool force)
 {
 	if (CBurer* monster = smart_cast<CBurer*>(&object()))

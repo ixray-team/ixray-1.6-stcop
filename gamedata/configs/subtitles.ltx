@@ -1,0 +1,14 @@
+[subtitles] ; субтитры на экране
+max_subtitles = 3                   ; максимальное одновременное количество субтитров на экране
+max_distance = 30                   ; максимальная дистанция для появления субтитров (чтобы они не появлялись, когда кто-то начинает говорить где-то в жопе мира) (высчитывается от позиции камеры, а не актора)
+screen_position = 290,645           ; позиция субтитров на экране (x,y)
+def_npc_subtitles = false            ; для всех звуков из misc\script_sound*.ltx c type = npc, если не указан subtitles, по дефолту ставится subtitles = def_npc_subtitles
+def_actor_subtitles = false         ; для всех звуков из misc\script_sound*.ltx c type = actor, если не указан subtitles, по дефолту ставится subtitles = def_actor_subtitles
+def_3d_subtitles = false            ; для всех звуков из misc\script_sound*.ltx c type = 3d, если не указан subtitles, по дефолту ставится subtitles = def_3d_subtitles
+
+[billboard_subtitles] ; субтитры над головой нпс
+max_subtitles = 10                  ; максимальное одновременное количество субтитров на экране
+max_distance = 15                   ; максимальная дистанция для появления субтитров (чтобы они не появлялись, когда кто-то начинает говорить где-то в жопе мира) (высчитывается от позиции камеры, а не актора)
+def_color = 255,240,240,240         ; цвет субтитров по дефолту (ARGB)
+def_bone_name = bip01_head          ; кость по дефолту над которой будут появляться субтитры
+def_npc_subtitles = false           ; для всех звуков из misc\script_sound*.ltx c type = npc, если не указан bil_subtitles, по дефолту ставится bil_subtitles = def_npc_subtitles

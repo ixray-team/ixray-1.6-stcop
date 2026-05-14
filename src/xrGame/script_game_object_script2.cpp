@@ -210,6 +210,8 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("set_override_animation",		&CScriptGameObject::set_override_animation)
 		.def("clear_override_animation",	&CScriptGameObject::clear_override_animation)
 
+		.def("add_billboard_subtitles",		&CScriptGameObject::BillboardSubtitlesDraw) // [subs]
+
 		// burer
 		.def("burer_set_force_gravi_attack",&CScriptGameObject::burer_set_force_gravi_attack)
 		.def("burer_get_force_gravi_attack",&CScriptGameObject::burer_get_force_gravi_attack)

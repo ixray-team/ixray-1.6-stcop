@@ -11,6 +11,7 @@ public:
 	CGameFont* pFontSystem;
 	CGameFont* pFontSystem16;
 	CGameFont* pFontStat;
+	CGameFont* pFontBillboardSubtitles; // [subs]
 
 	xr_map<shared_str, CGameFont*> Fonts;
 
@@ -31,6 +32,7 @@ protected:
 	shared_str FontSystem16Name = "ui_font_letterica16_russian";
 	shared_str FontSystemName = "ui_font_letterica18_russian";
 	shared_str FontStatName = "stat_font";
+	shared_str FontBillboardSubtitlesName = "subtitles_billboard"; // [subs]
 };
 
 extern ENGINE_API CFontManager* g_FontManager;

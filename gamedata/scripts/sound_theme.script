@@ -43,6 +43,24 @@ function npc_sound:__init(snd_ini, section)
 	self.point = utils.cfg_get_string(snd_ini, section, "point", nil, false, "", "")
 	self.msg = utils.cfg_get_string(snd_ini, section, "message", nil, false, "", "")
 
+	-- [subs]
+	if subtitles.CONFIG.DEF_NPC_SUBS == nil then
+		subtitles.init_general_config()
+	end
+	self.subs = utils.cfg_get_bool(snd_ini, section, "subtitles", nil, false, subtitles.CONFIG.DEF_NPC_SUBS)
+	self.subs_name = utils.cfg_get_string(snd_ini, section, "subtitles_name", nil, false, "", "")
+	self.subs_text = utils.cfg_get_string(snd_ini, section, "subtitles_text", nil, false, "", "")
+
+	local bs_color_parse = parse_names(utils.cfg_get_string(snd_ini, section, "bil_subtitles_color", nil, false, "", "def"))
+	self.bil_subs = utils.cfg_get_bool(snd_ini, section, "bil_subtitles", nil, false, subtitles.BS_CONFIG.DEF_NPC_SUBS)
+	self.bil_subs_text = utils.cfg_get_string(snd_ini, section, "bil_subtitles_text", nil, false, "", "")
+	if bs_color_parse[1] == "def" then
+		self.bil_subs_color = subtitles.BS_CONFIG.DEF_COLOR
+	else
+		self.bil_subs_color = GetARGB(tonumber(bs_color_parse[1]), tonumber(bs_color_parse[2]), tonumber(bs_color_parse[3]), tonumber(bs_color_parse[4]))
+	end
+	self.bil_subs_bone_name = utils.cfg_get_string(snd_ini, section, "bil_subtitles_bone", nil, false, "", subtitles.BS_CONFIG.DEF_BONE_NAME)
+	-- [/subs]
 
 	local avail_communities = parse_names(utils.cfg_get_string(snd_ini, section, "avail_communities", nil, false, "", "stalker, ecolog, bandit, dolg, freedom, army, zombied, monolith, killer"))
 	self.avail_communities = {}
@@ -207,6 +225,40 @@ function npc_sound:play(npc_id, faction, point, msg)
 	if npc ~= nil then
 		-- play_sound (u32 internal_type, u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
 		npc:play_sound(npc_data.id, self.delay_sound+0.06, self.delay_sound+0.05, 1, 0, self.played_id)
+		
+		-- [subs]
+		if self.subs then
+			local snd = self.sound_path[npc_id][self.played_id + 1]
+			local name = npc:character_name()
+			local text = snd:gsub("\\", "_")
+
+			if self.subs_name and self.subs_name ~= "" then
+				name = self.subs_name
+			end
+			if self.subs_text and self.subs_text ~= "" then
+				text = self.subs_text
+			end
+
+			if self.delay_sound < 1 then
+				subtitles.add_npc_subtitles(npc, name, text)
+			else
+				local snd_obj_length = sound_object(snd):length()
+				subtitles.add_fake_subtitles(name, text, snd_obj_length, self.delay_sound)
+			end
+		end
+
+		if self.bil_subs then
+			local snd = self.sound_path[npc_id][self.played_id + 1]
+			local text = snd:gsub("\\", "_")
+
+			if self.bil_subs_text and self.bil_subs_text ~= "" then
+				text = self.bil_subs_text
+			end
+
+			subtitles.add_billboard_subtitles(npc, text, self.bil_subs_color, self.bil_subs_bone_name)
+		end
+		-- [/subs]
+
 	end
 	local table_id = self.played_id + 1
 	local snd = self.sound_path[npc_id][table_id]
@@ -239,9 +291,9 @@ function npc_sound:play(npc_id, faction, point, msg)
 							point = nil
 			end
 		end
-		news_manager.send_sound(npc, faction, point, snd, snd_st, self.delay_sound)
+		--news_manager.send_sound(npc, faction, point, snd, snd_st, self.delay_sound) -- [subs]: если не закоментить строку, то будут появляться смс
 	else
-		news_manager.send_sound(npc, faction, point, snd, nil , self.delay_sound)
+		--news_manager.send_sound(npc, faction, point, snd, nil , self.delay_sound) -- [subs]: если не закоментить строку, то будут появляться смс
 	end
 	return true
 end
@@ -363,6 +415,15 @@ function actor_sound:__init(snd_ini, section)
 	self.point = utils.cfg_get_string(snd_ini, section, "point", nil, false, "", "")
 	self.msg = utils.cfg_get_string(snd_ini, section, "message", nil, false, "", "")
 
+	-- [subs]
+	if subtitles.CONFIG.DEF_ACTOR_SUBS == nil then
+		subtitles.init_general_config()
+	end
+	self.subs = utils.cfg_get_bool(snd_ini, section, "subtitles", nil, false, subtitles.CONFIG.DEF_ACTOR_SUBS)
+	self.subs_name = utils.cfg_get_string(snd_ini, section, "subtitles_name", nil, false, "", "")
+	self.subs_text = utils.cfg_get_string(snd_ini, section, "subtitles_text", nil, false, "", "")
+	-- [/subs]
+
 	local f = getFS()
 
 	if f:exist("$game_sounds$",self.path..".ogg") ~= nil then
@@ -438,6 +499,21 @@ function actor_sound:play(npc, faction, point, msg)
 	self.snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
 	self.snd_obj.volume = 0.8
 	local snd_st, num_copy = string.gsub(snd, "\\", "_")
+
+	-- [subs]
+	if self.subs then
+		local name = db.actor:character_name()
+		local text = snd:gsub("\\", "_")
+		if self.subs_name and self.subs_name ~= "" then
+			name = self.subs_name
+		end
+		if self.subs_text and self.subs_text ~= "" then
+			text = self.subs_text
+		end
+		subtitles.add_actor_subtitles(name, text, self.snd_obj)
+	end
+	-- [/subs]
+
 --[[
 	if game.translate_string(snd_st) ~= snd_st then
 		local hud_demo = get_hud()
@@ -452,7 +528,7 @@ function actor_sound:play(npc, faction, point, msg)
 ]]
 	self.can_play_sound = false
 
-	news_manager.send_sound(nil, faction, point, snd)
+	--news_manager.send_sound(nil, faction, point, snd) -- [subs]: если не закоментить строку, то будут появляться смс
 
 	return true
 end
@@ -547,6 +623,15 @@ function object_sound:__init(snd_ini, section)
 	self.point = utils.cfg_get_string(snd_ini, section, "point", nil, false, "", "")
 	self.msg = utils.cfg_get_string(snd_ini, section, "message", nil, false, "", "")
 
+	-- [subs]
+	if subtitles.CONFIG.DEF_OBJ_SUBS == nil then
+		subtitles.init_general_config()
+	end
+	self.subs = utils.cfg_get_bool(snd_ini, section, "subtitles", nil, false, subtitles.CONFIG.DEF_OBJ_SUBS)
+	self.subs_name = utils.cfg_get_string(snd_ini, section, "subtitles_name", nil, false, "", "")
+	self.subs_text = utils.cfg_get_string(snd_ini, section, "subtitles_text", nil, false, "", "")
+	-- [/subs]
+
 	local f = getFS()
 	if f:exist("$game_sounds$",self.path..".ogg") ~= nil then
 		self.sound[1] = self.path
@@ -622,6 +707,21 @@ function object_sound:play(obj_id, faction, point, msg)
 	self.snd_obj = sound_object(snd)
 	self.snd_obj:play_at_pos(obj, obj:position(), 0, sound_object.s3d)
 	local snd_st, num_copy = string.gsub(snd, "\\", "_")
+
+	-- [subs]
+	if self.subs then
+		local name = obj:name()
+		local text = snd:gsub("\\", "_")
+		if self.subs_name and self.subs_name ~= "" then
+			name = self.subs_name
+		end
+		if self.subs_text and self.subs_text ~= "" then
+			text = self.subs_text
+		end
+		subtitles.add_obj_subtitles(obj, name, text, self.snd_obj)
+	end
+	-- [/subs]
+
 --[[
 	if game.translate_string(snd_st) ~= snd_st then
 		local hud_demo = get_hud()
@@ -636,7 +736,7 @@ function object_sound:play(obj_id, faction, point, msg)
 ]]
 	self.can_play_sound = false
 
-	news_manager.send_sound(nil, faction, point, snd)
+	--news_manager.send_sound(nil, faction, point, snd) -- [subs]: если не закоментить строку, то будут появляться смс
 
 	return true
 end

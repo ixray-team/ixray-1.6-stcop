@@ -41,6 +41,7 @@ void CFontManager::InitializeFonts()
 	pFontSystem = GetFont(FontSystemName);
 	pFontSystem16 = GetFont(FontSystem16Name);
 	pFontStat = GetFont(FontStatName);
+	pFontBillboardSubtitles = GetFont(FontBillboardSubtitlesName); // [subs]
 }
 
 void CFontManager::Render()
