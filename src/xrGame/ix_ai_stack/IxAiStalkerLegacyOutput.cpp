@@ -3,11 +3,10 @@
 #include "../../xrEngine/device.h"
 #include "../Actor.h"
 #include "../danger_object.h"
-#include "../danger_manager.h"
-#include "../memory_manager.h"
 #include "../ai/stalker/ai_stalker.h"
 #include "IxAiAgent.h"
 #include "IxAiConstants.h"
+#include "IxAiOutputAdapter.h"
 #include "IxAiStackApi.h"
 #include "IxAiStackTelemetry.h"
 #include "IxAiStackTuning.h"
@@ -199,15 +198,17 @@ namespace
             return;
         }
 
-        stalker.memory().make_object_visible_somewhen(enemyAlive);
-        stalker.memory().enemy().set_enemy(enemyAlive);
-        stalker.memory().danger().add(
-            CDangerObject(
-                enemyAlive,
-                enemyAlive->Position(),
+        if (!IxAiOutputAdapter::TrySetEnemyVisibleAndAddDanger(
+                stalker,
+                *enemyAlive,
                 now,
                 kCombatBridgeSpec.dangerType,
-                kCombatBridgeSpec.perceiveType));
+                kCombatBridgeSpec.perceiveType,
+                IxAiFeatureGate::LegacyBridge))
+        {
+            return;
+        }
+
         agent.SetBridgeLastCombatPushTime(now);
         IxAiStackTelemetry_AddBridgePush(1u);
     }
@@ -238,13 +239,17 @@ namespace
         const CEntityAlive* dangerSubject =
             (enemyAlive != nullptr && stalker.is_relation_enemy(enemyAlive)) ? enemyAlive : nullptr;
 
-        stalker.memory().danger().add(
-            CDangerObject(
+        if (!IxAiOutputAdapter::TryAddDanger(
+                stalker,
                 dangerSubject,
                 dangerFocus,
                 now,
                 kInvestigationBridgeSpec.dangerType,
-                dangerPerceive));
+                dangerPerceive,
+                IxAiFeatureGate::LegacyBridge))
+        {
+            return;
+        }
 
         agent.SetBridgeLastDangerPushTime(now);
         IxAiStackTelemetry_AddBridgePush(1u);
@@ -253,7 +258,7 @@ namespace
 
 void IxAiStalkerLegacyOutput_Apply(CAI_Stalker& stalker, IxAiAgent& agent)
 {
-    if (!IxAiStackApi::IsLegacyOutputAllowed())
+    if (!IxAiOutputAdapter::IsLegacyOutputAllowed(IxAiFeatureGate::LegacyBridge))
     {
         return;
     }

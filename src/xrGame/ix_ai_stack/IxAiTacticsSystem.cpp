@@ -6,11 +6,9 @@
 #include "../../xrEngine/device.h"
 #include "../ai/stalker/ai_stalker.h"
 #include "../danger_object.h"
-#include "../danger_manager.h"
-#include "../memory_manager.h"
 #include "IxAiAgent.h"
 #include "IxAiConstants.h"
-#include "IxAiStackApi.h"
+#include "IxAiOutputAdapter.h"
 #include "IxAiStackTelemetry.h"
 #include "IxAiStackTuning.h"
 #include "IxAiTacticsHelper.h"
@@ -73,7 +71,7 @@ void IxAiTacticsSystem::EvaluateForStalker(IxAiAgent& agent, CAI_Stalker& stalke
 
 void IxAiTacticsSystem::TryPublishTacticDangerHint(CAI_Stalker& stalker, IxAiAgent& agent)
 {
-    if (!IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::TacticsFeedMovementHint))
+    if (!IxAiOutputAdapter::IsLegacyOutputAllowed(IxAiFeatureGate::TacticsFeedMovementHint))
     {
         return;
     }
@@ -104,13 +102,17 @@ void IxAiTacticsSystem::TryPublishTacticDangerHint(CAI_Stalker& stalker, IxAiAge
 
     const Fvector hint = agent.GetTacticalHintPosition();
 
-    stalker.memory().danger().add(
-        CDangerObject(
+    if (!IxAiOutputAdapter::TryAddDanger(
+            stalker,
             nullptr,
             hint,
             now,
             CDangerObject::eDangerTypeEnemySound,
-            CDangerObject::eDangerPerceiveTypeSound));
+            CDangerObject::eDangerPerceiveTypeSound,
+            IxAiFeatureGate::TacticsFeedMovementHint))
+    {
+        return;
+    }
 
     agent.SetTacticHintDangerPushTime(now);
     IxAiStackTelemetry_AddTacticHintPush(1u);
@@ -118,7 +120,7 @@ void IxAiTacticsSystem::TryPublishTacticDangerHint(CAI_Stalker& stalker, IxAiAge
 
 void IxAiTacticsSystem::TryPublishInvestigateMovementHint(CAI_Stalker& stalker, IxAiAgent& agent)
 {
-    if (!IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::TacticsFeedMovementHint))
+    if (!IxAiOutputAdapter::IsLegacyOutputAllowed(IxAiFeatureGate::TacticsFeedMovementHint))
     {
         return;
     }
@@ -149,13 +151,17 @@ void IxAiTacticsSystem::TryPublishInvestigateMovementHint(CAI_Stalker& stalker, 
 
     const Fvector hint = agent.GetTacticalHintPosition();
 
-    stalker.memory().danger().add(
-        CDangerObject(
+    if (!IxAiOutputAdapter::TryAddDanger(
+            stalker,
             nullptr,
             hint,
             now,
             CDangerObject::eDangerTypeEnemySound,
-            CDangerObject::eDangerPerceiveTypeSound));
+            CDangerObject::eDangerPerceiveTypeSound,
+            IxAiFeatureGate::TacticsFeedMovementHint))
+    {
+        return;
+    }
 
     agent.SetInvestigateHintPushTime(now);
     IxAiStackTelemetry_AddTacticHintPush(1u);
@@ -167,7 +173,7 @@ void IxAiTacticsSystem::TryPublishCoverDangerHint(
     const Fvector& threatPosition,
     u32 framePhase)
 {
-    if (!IxAiStackApi::IsFeatureEnabled(IxAiFeatureGate::CoverFeedDangerHint))
+    if (!IxAiOutputAdapter::IsLegacyOutputAllowed(IxAiFeatureGate::CoverFeedDangerHint))
     {
         return;
     }
@@ -214,13 +220,17 @@ void IxAiTacticsSystem::TryPublishCoverDangerHint(
     coverHint.mad(lateral, IxAiConstants::kTacticsCoverLateralScale);
     coverHint.mad(toThreatUnit, IxAiConstants::kTacticsCoverBackAlongThreatScale);
 
-    stalker.memory().danger().add(
-        CDangerObject(
+    if (!IxAiOutputAdapter::TryAddDanger(
+            stalker,
             nullptr,
             coverHint,
             now,
             CDangerObject::eDangerTypeEnemySound,
-            CDangerObject::eDangerPerceiveTypeSound));
+            CDangerObject::eDangerPerceiveTypeSound,
+            IxAiFeatureGate::CoverFeedDangerHint))
+    {
+        return;
+    }
 
     agent.SetCoverHintDangerPushTime(now);
     IxAiStackTelemetry_AddCoverHintPush(1u);
