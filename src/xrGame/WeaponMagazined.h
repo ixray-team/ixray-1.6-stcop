@@ -61,8 +61,8 @@ protected:
 	
 	virtual void	OnEmptyClick	();
 
-	virtual void	OnAnimationEnd	(u32 state);
-	virtual void	OnStateSwitch	(u32 S);
+	virtual void	OnAnimationEnd	(u8 state);
+	virtual void	OnStateSwitch	(u8 S);
 
 	virtual void	UpdateSounds	();
 
@@ -176,7 +176,7 @@ public:
 	virtual void	save				(NET_Packet &output_packet);
 	virtual void	load				(IReader &input_packet);
 
-	virtual void OnMotionMark(u32 state, const motion_marks&);
+	virtual void OnMotionMark(u8 state, const motion_marks&);
 	virtual bool WpnCanShoot() const { return true; }
 
 protected:

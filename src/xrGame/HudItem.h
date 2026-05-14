@@ -39,7 +39,7 @@ ENGINE_API extern float psHUD_FOV_def;
 class CHUDState
 {
 public:
-enum EHudStates
+enum EHudStates : u8
 {
 		eIdle = 0,
 		eShowing,
@@ -55,22 +55,22 @@ enum EHudStates
 };
 
 private:
-	u32						m_hud_item_state = EHudStates::eHidden;
-	u32						m_nextState = EHudStates::eHidden;
+	u8						m_hud_item_state = EHudStates::eHidden;
+	u8						m_nextState = EHudStates::eHidden;
 	u32						m_dw_curr_state_time;
 protected:
 	u32						m_dw_curr_substate_time;
 public:
 							CHUDState			()					{SetState(eHidden);}
-	IC		u32				GetNextState		() const			{return		m_nextState;}
-	IC		u32				GetState			() const			{return		m_hud_item_state;}
+	IC		u8				GetNextState		() const			{return		m_nextState;}
+	IC		u8				GetState			() const			{return		m_hud_item_state;}
 
-	IC		void			SetState			(u32 v)				{m_hud_item_state = v; m_dw_curr_state_time=Device.dwTimeGlobal;ResetSubStateTime();}
-	IC		void			SetNextState		(u32 v)				{m_nextState = v;}
+	IC		void			SetState			(u8 v)				{m_hud_item_state = v; m_dw_curr_state_time=Device.dwTimeGlobal;ResetSubStateTime();}
+	IC		void			SetNextState		(u8 v)				{m_nextState = v;}
 	IC		u32				CurrStateTime		() const			{return Device.dwTimeGlobal-m_dw_curr_state_time;}
 	IC		void			ResetSubStateTime	()					{m_dw_curr_substate_time=Device.dwTimeGlobal;}
-	virtual void			SwitchState			(u32 S)				= 0;
-	virtual void			OnStateSwitch		(u32 S)				= 0;
+	virtual void			SwitchState			(u8 S)				= 0;
+	virtual void			OnStateSwitch		(u8 S)				= 0;
 };
 
 class CHudItem : public CHUDState
@@ -93,7 +93,7 @@ protected:
 		u32						m_dwMotionCurrTm;
 		u32						m_dwMotionStartTm;
 		u32						m_dwMotionEndTm;
-		u32						m_startedMotionState;
+		u8						m_startedMotionState;
 		u8						m_started_rnd_anim_idx = u8(-1);
 		bool					m_bStopAtEndAnimIsRunning = false;
 	};
@@ -135,11 +135,11 @@ public:
 	bool						IsHiding			()	const		{	return GetState() == eHiding;}
 	bool						IsShowing			()	const		{	return GetState() == eShowing;}
 
-	virtual void				SwitchState			(u32 S);
-	virtual void				OnStateSwitch		(u32 S);
+	virtual void				SwitchState			(u8 S);
+	virtual void				OnStateSwitch		(u8 S);
 
-	virtual void				OnAnimationEnd		(u32 state);
-	virtual void				OnMotionMark		(u32 state, const motion_marks&);
+	virtual void				OnAnimationEnd		(u8 state);
+	virtual void				OnMotionMark		(u8 state, const motion_marks&);
 
 	virtual void				PlayAnimIdle		();
 	virtual void				PlayAnimBore		();
@@ -162,7 +162,7 @@ public:
 
 	virtual	void				UpdateXForm			()						= 0;
 
-	u32							PlayHUDMotion		(const shared_str& M, EHudMixType bMixIn, u32 state);
+	u32							PlayHUDMotion		(const shared_str& M, EHudMixType bMixIn, u8 state);
 	u32							PlayHUDMotion_noCB	(const shared_str& M, EHudMixType bMixIn);
 	void						StopCurrentAnimWithoutCallback();
 	bool						AddSuffixName		(shared_str& anim, const char* suffix, const char* test_suffix = "");

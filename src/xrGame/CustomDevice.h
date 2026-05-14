@@ -10,7 +10,7 @@ class CCustomDevice : public CHudItemObject
 {
 	using inherited = CHudItemObject;
 public:
-	enum EDeviceStates
+	enum EDeviceStates : u8
 	{
 		eHandHide = eLastBaseState + 1,
 		eHandDraw,
@@ -52,10 +52,10 @@ public:
 	bool need_renderable() final override;
 	void OnMoveToRuck(const SInvItemPlace& prev) override;
 	void ShowingCallback(CBlend* B);
-	void OnStateSwitch(u32 S) override;
-	void OnAnimationEnd(u32 state) override;
+	void OnStateSwitch(u8 S) override;
+	void OnAnimationEnd(u8 state) override;
 	void UpdateXForm() override;
-	void SwitchState(u32 S) final override;
+	void SwitchState(u8 S) final override;
 	void UpdateHudAdditonal(Fmatrix& trans) override;
 	void ToggleDetector(bool bFastMode, bool switching = false);
 	void HideDetector(bool bFastMode, bool force = false);
