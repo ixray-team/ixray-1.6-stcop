@@ -14,11 +14,11 @@ protected:
 	virtual void		switch2_Hiding				();
 	virtual void		switch2_Hidden				();
 	virtual void		switch2_Showing				();
-			void		switch2_Attacking			(u32 state);
+			void		switch2_Attacking			(u8 state);
 
-	virtual void		OnAnimationEnd				(u32 state);
-	virtual void		OnMotionMark				(u32 state, const motion_marks&);
-	virtual void		OnStateSwitch				(u32 S);
+	virtual void		OnAnimationEnd				(u8 state);
+	virtual void		OnMotionMark				(u8 state, const motion_marks&);
+	virtual void		OnStateSwitch				(u8 S);
 
 	virtual void		UpdateCL					();
 

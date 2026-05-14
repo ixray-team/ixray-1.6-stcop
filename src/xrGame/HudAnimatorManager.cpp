@@ -370,7 +370,7 @@ void CHudStateAnimator::Update()
 	UpdateAnimation();
 }
 
-void CHudStateAnimator::PlayMotion(const shared_str& name, bool blend, u32 state)
+void CHudStateAnimator::PlayMotion(const shared_str& name, bool blend, u8 state)
 {
 	m_on_animation_end_state = state;
 
@@ -432,7 +432,7 @@ void CHudStateAnimator::UpdateAnimation()
 	}
 }
 
-void CHudStateAnimator::OnMotionMark(const motion_marks& mark, u32 state)
+void CHudStateAnimator::OnMotionMark(const motion_marks& mark, u8 state)
 {
 	if (state == eDeviceSwitch)
 	{
@@ -483,7 +483,7 @@ void CHudStateAnimator::OnMotionMark(const motion_marks& mark, u32 state)
 	}
 }
 
-void CHudStateAnimator::OnAnimationEnd(u32 state)
+void CHudStateAnimator::OnAnimationEnd(u8 state)
 {
 	switch (state)
 	{
@@ -538,7 +538,7 @@ void CHudStateAnimator::OnAnimationEnd(u32 state)
 	}
 }
 
-void CHudStateAnimator::OnStateSwitch(u32 state)
+void CHudStateAnimator::OnStateSwitch(u8 state)
 {
 	m_current_state = state;
 
