@@ -151,7 +151,7 @@ void CHudPdaAnimator::Update()
 	UpdateAnimation();
 }
 
-void CHudPdaAnimator::OnAnimationEnd(u32 state)
+void CHudPdaAnimator::OnAnimationEnd(u8 state)
 {
 	switch (state)
 	{
@@ -212,7 +212,7 @@ void CHudPdaAnimator::OnAnimationEnd(u32 state)
 	}
 }
 
-void CHudPdaAnimator::OnStateSwitch(u32 state)
+void CHudPdaAnimator::OnStateSwitch(u8 state)
 {
 	m_current_state = state;
 

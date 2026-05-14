@@ -41,7 +41,7 @@ bool CFlare::IsFlareActive()
 	return ( GetState()==eFlareIdle );
 }
 
-void CFlare::OnStateSwitch(u32 S)
+void CFlare::OnStateSwitch(u8 S)
 {
 	inherited::OnStateSwitch(S);
 
@@ -75,7 +75,7 @@ void CFlare::OnStateSwitch(u32 S)
 	};
 }
 
-void CFlare::OnAnimationEnd(u32 state)
+void CFlare::OnAnimationEnd(u8 state)
 {
 	switch (state)
 	{

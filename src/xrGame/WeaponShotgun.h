@@ -32,14 +32,14 @@ public:
 	virtual void	PlayAnimAddOneCartridgeWeapon();
 	void			PlayAnimCloseWeapon	();
 
-	virtual void	OnMotionMark(u32 state, const motion_marks&);
+	virtual void	OnMotionMark(u8 state, const motion_marks&);
 
 	virtual CWeaponShotgun* cast_weapon_shotgun() override { return this; }
 
 protected:
-	virtual void	OnAnimationEnd		(u32 state);
+	virtual void	OnAnimationEnd		(u8 state);
 	void			TriStateReload		();
-	virtual void	OnStateSwitch		(u32 S);
+	virtual void	OnStateSwitch		(u8 S);
 
 	ESoundTypes		m_eSoundOpen;
 	ESoundTypes		m_eSoundAddCartridge;

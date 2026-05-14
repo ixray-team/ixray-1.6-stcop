@@ -506,7 +506,7 @@ bool CArtefact::Action(u16 cmd, u32 flags)
 	return inherited::Action(cmd,flags);
 }
 
-void CArtefact::OnStateSwitch(u32 S)
+void CArtefact::OnStateSwitch(u8 S)
 {
 	inherited::OnStateSwitch	(S);
 	switch(S)
@@ -535,7 +535,7 @@ void CArtefact::PlayAnimIdle()
 	PlayHUDMotion("anm_idle", EHudMixType::eNoMix, eIdle);
 }
 
-void CArtefact::OnAnimationEnd(u32 state)
+void CArtefact::OnAnimationEnd(u8 state)
 {
 	switch (state)
 	{
