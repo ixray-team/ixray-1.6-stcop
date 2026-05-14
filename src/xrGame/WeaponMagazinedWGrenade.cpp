@@ -496,7 +496,7 @@ void CWeaponMagazinedWGrenade::FireStart()
 		return;
 	}
 
-	u32 CurrentState = GetState();
+	u8 CurrentState = GetState();
 
 	if (!iAmmoElapsed)
 	{
@@ -745,7 +745,7 @@ void CWeaponMagazinedWGrenade::UnloadMagazine(bool spawn_ammo)
 	}
 }
 
-void CWeaponMagazinedWGrenade::OnStateSwitch(u32 S)
+void CWeaponMagazinedWGrenade::OnStateSwitch(u8 S)
 {
 	switch (S)
 	{
@@ -775,7 +775,7 @@ void CWeaponMagazinedWGrenade::switch2_SwitchMode()
 	PlayAnimModeSwitch();
 }
 
-void CWeaponMagazinedWGrenade::OnAnimationEnd(u32 state)
+void CWeaponMagazinedWGrenade::OnAnimationEnd(u8 state)
 {
 	switch (state)
 	{

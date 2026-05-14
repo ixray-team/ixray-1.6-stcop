@@ -97,7 +97,7 @@ void CWeaponKnife::LoadSounds(const char* section)
 	}
 }
 
-void CWeaponKnife::OnStateSwitch	(u32 S)
+void CWeaponKnife::OnStateSwitch	(u8 S)
 {
 	inherited::OnStateSwitch(S);
 	switch (S)
@@ -239,7 +239,7 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 	}
 }
 
-void CWeaponKnife::OnMotionMark(u32 state, const motion_marks& M)
+void CWeaponKnife::OnMotionMark(u8 state, const motion_marks& M)
 {
 	inherited::OnMotionMark(state, M);
 
@@ -288,7 +288,7 @@ void CWeaponKnife::OnMotionMark(u32 state, const motion_marks& M)
 	}
 }
 
-void CWeaponKnife::OnAnimationEnd(u32 state)
+void CWeaponKnife::OnAnimationEnd(u8 state)
 {
 	switch (state)
 	{
@@ -310,7 +310,7 @@ void CWeaponKnife::state_Attacking	(float)
 {
 }
 
-void CWeaponKnife::switch2_Attacking(u32 state)
+void CWeaponKnife::switch2_Attacking(u8 state)
 {
 	if (state == eFire)
 	{

@@ -170,7 +170,7 @@ void CHudItem::renderable_Render()
 	}
 }
 
-void CHudItem::SwitchState(u32 S)
+void CHudItem::SwitchState(u8 S)
 {
 	if (OnClient()) 
 		return;
@@ -182,7 +182,7 @@ void CHudItem::SwitchState(u32 S)
 		// !!! Just single entry for given state !!!
 		NET_Packet				P;
 		object().u_EventGen		(P,GE_WPN_STATE_CHANGE,object().ID());
-		P.w_u8					(u8(S));
+		P.w_u8					(S);
 		object().u_EventSend	(P);
 	}
 }
@@ -195,15 +195,15 @@ void CHudItem::OnEvent(NET_Packet& P, u16 type)
 		{
 			u8				S;
 			P.r_u8			(S);
-			OnStateSwitch	(u32(S));
+			OnStateSwitch	(S);
 		}
 		break;
 	}
 }
 
-void CHudItem::OnStateSwitch(u32 S)
+void CHudItem::OnStateSwitch(u8 S)
 {
-	u32 old_state = GetState();
+	u8 old_state = GetState();
 	SetState			(S);
 	
 	if(object().Remote()) 
@@ -314,7 +314,7 @@ void CHudItem::switch2_Bore()
 	PlaySound("sndBore", root->Position());
 }
 
-void CHudItem::OnAnimationEnd(u32 state)
+void CHudItem::OnAnimationEnd(u8 state)
 {
 	if (CActor* pActor = m_object&&m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : NULL)
 	{
@@ -387,7 +387,7 @@ void CHudItem::SendHiddenItem()
 	{
 		NET_Packet				P;
 		object().u_EventGen		(P,GE_WPN_STATE_CHANGE,object().ID());
-		P.w_u8					(u8(eHiding));
+		P.w_u8					(eHiding);
 		object().u_EventSend	(P, net_flags(true, true, false, true));
 	}
 }
@@ -549,7 +549,7 @@ bool CHudItem::HudAnimationExist(const shared_str& anim_name)
 	}
 }
 
-u32 CHudItem::PlayHUDMotion(const shared_str& M, EHudMixType bMixIn, u32 state)
+u32 CHudItem::PlayHUDMotion(const shared_str& M, EHudMixType bMixIn, u8 state)
 {
 	if (HudItemData() && !HudAnimationExist(M.c_str()))
 	{
@@ -946,7 +946,7 @@ void CHudItem::SetMultipleBonesStatus(const char* section, const char* line, boo
 	}
 }
 
-void CHudItem::OnMotionMark(u32 state, const motion_marks& mark)
+void CHudItem::OnMotionMark(u8 state, const motion_marks& mark)
 {
 	if (state == eDeviceSwitch)
 	{
@@ -1039,7 +1039,7 @@ bool CHudItem::CanStartAction(CActor* pActor)
 
 	if (CCustomDevice* pDevice = pActor->GetDevice())
 	{
-		u32 state = pDevice->GetState();
+		u8 state = pDevice->GetState();
 		if (state != CCustomDevice::eIdle && state != CCustomDevice::EDeviceStates::eHandAimStart && state != CCustomDevice::EDeviceStates::eHandAimEnd && !pDevice->IsHidden() || pDevice->NeedActivation())
 		{
 			return false;

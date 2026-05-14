@@ -100,7 +100,7 @@ public:
 	virtual void			activate_physic_shell();
 	virtual void			setup_physic_shell	();
 
-	virtual void			SwitchState			(u32 S);
+	virtual void			SwitchState			(u8 S);
 
 	virtual void			OnActiveItem		();
 	virtual void			OnHiddenItem		();
@@ -138,7 +138,7 @@ public:
 	void					signal_HideComplete	();
 	virtual bool			Action(u16 cmd, u32 flags);
 
-	enum EWeaponStates
+	enum EWeaponStates : u8
 	{
 		eFire = eLastBaseState + 1,
 		eFire2,
@@ -159,7 +159,7 @@ public:
 		eSafemodeSwitch,
 	};
 
-	enum EWeaponSubStates
+	enum EWeaponSubStates : u8
 	{
 		eSubstateReloadBegin = 0,
 		eSubstateReloadInProcess,
@@ -285,7 +285,7 @@ protected:
 
 	bool	NeedBlockSprint						() const;
 
-	virtual void OnMotionMark(u32 state, const motion_marks&);
+	virtual void OnMotionMark(u8 state, const motion_marks&);
 
 	bool IsJamProhibited();
 	bool OnWeaponJam();
@@ -609,8 +609,7 @@ protected:
 	virtual void			SetDefaults				();
 	
 	virtual bool			MovingAnimAllowedNow	();
-	virtual void			OnStateSwitch			(u32 S);
-	virtual void			OnAnimationEnd			(u32 state);
+	virtual void			OnStateSwitch			(u8 S);
 
 	//трассирование полета пули
 	virtual	void			FireTrace			(const Fvector& P, const Fvector& D);

@@ -8,7 +8,7 @@ class CWeaponSVD final : public CWeaponCustomPistol
 	using inherited = CWeaponCustomPistol;
 protected:
 	virtual void switch2_Fire();
-	virtual void OnAnimationEnd(u32 state);
+	virtual void OnAnimationEnd(u8 state);
 public:
 	CWeaponSVD() = default;
 	virtual ~CWeaponSVD() = default;

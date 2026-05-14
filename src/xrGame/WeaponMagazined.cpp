@@ -498,7 +498,7 @@ void CWeaponMagazined::LoadSounds(const char* section)
 
 void CWeaponMagazined::FireStart()
 {
-	u32 CurrentState = GetState();
+	u8 CurrentState = GetState();
 	bool IsActor = ParentIsActor();
 	CObject* parent = H_Parent();
 
@@ -1045,7 +1045,7 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 	return cnt;
 }
 
-void CWeaponMagazined::OnStateSwitch	(u32 S)
+void CWeaponMagazined::OnStateSwitch	(u8 S)
 {
 	inherited::OnStateSwitch(S);
 	switch (S)
@@ -1636,7 +1636,7 @@ void CWeaponMagazined::OnEmptyClick()
 	PlaySound("sndEmptyClick", get_LastFP());
 }
 
-void CWeaponMagazined::OnAnimationEnd(u32 state) 
+void CWeaponMagazined::OnAnimationEnd(u8 state) 
 {
 	switch(state) 
 	{
@@ -3703,7 +3703,7 @@ void CWeaponMagazined::FireBullet(	const Fvector& pos,
 	inherited::FireBullet(pos, shot_dir, fire_disp, cartridge, parent_id, weapon_id, send_hit);
 }
 
-void CWeaponMagazined::OnMotionMark(u32 state, const motion_marks& mark)
+void CWeaponMagazined::OnMotionMark(u8 state, const motion_marks& mark)
 {
 	inherited::OnMotionMark(state, mark);
 

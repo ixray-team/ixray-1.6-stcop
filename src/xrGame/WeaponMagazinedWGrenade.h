@@ -39,7 +39,7 @@ public:
 	virtual void	FireEnd					();
 			void	LaunchGrenade_Correct	(Fvector3* v);
 	
-	virtual void	OnStateSwitch	(u32 S);
+	virtual void	OnStateSwitch	(u8 S);
 	
 	virtual void	switch2_Hiding() override;
 	virtual void	switch2_Showing() override;
@@ -57,7 +57,7 @@ public:
 	//переключение в режим подствольника
 	virtual bool	SwitchMode		();
 	void			PerformSwitchGL	();
-	void			OnAnimationEnd	(u32 state);
+	void			OnAnimationEnd	(u8 state);
 	virtual bool	GetBriefInfo			(II_BriefInfo& info);
 
 	virtual bool	IsNecessaryItem	    (const shared_str& item_sect);

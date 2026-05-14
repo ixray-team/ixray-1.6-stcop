@@ -309,7 +309,7 @@ CBackpackAnimator::CBackpackAnimator(CHudAnimatorManager* m_manager, const share
 	Load();
 }
 
-void CBackpackAnimator::OnAnimationEnd(u32 state)
+void CBackpackAnimator::OnAnimationEnd(u8 state)
 {
 	switch (state)
 	{
@@ -376,7 +376,7 @@ void CBackpackAnimator::SwitchAnimator()
 	}
 }
 
-void CBackpackAnimator::OnMotionMark(const motion_marks& mark, u32 state)
+void CBackpackAnimator::OnMotionMark(const motion_marks& mark, u8 state)
 {
 	if (state == eShowing && mark.name == "Left")
 	{
