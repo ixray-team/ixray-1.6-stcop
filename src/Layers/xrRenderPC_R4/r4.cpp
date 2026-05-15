@@ -538,6 +538,7 @@ CRender::~CRender()
 }
 
 #include "../../xrEngine/GameFont.h"
+
 void CRender::Statistics(CGameFont* _F) {
 	CGameFont& F = *_F;
 	F.OutSet(250, 35);
@@ -772,6 +773,47 @@ static HRESULT create_shader(
 	}
 
 	return _result;
+}
+
+
+void GetShaderCRC(IReader* F, u32& final_crc, SStringVec& files)
+{
+	string_path pFileName = {};
+	string_path pFilePath = {};
+
+	xr_string string;
+
+	while (!F->eof())
+	{
+		F->r_string(string);
+		_Trim(string);
+
+		if (string[0] == '#' && strstr(string.data(), "#include"))
+		{
+			if (_GetItem(string.c_str(), 1, pFileName, '"'))
+			{
+				if(std::find(files.begin(), files.end(), pFileName) == files.end())
+				{
+					xr_strconcat(pFilePath, ::Render->getShaderPath(), pFileName);
+
+					IReader* R = FS.r_open(_game_shaders_, pFilePath);
+					VERIFY3(R, "include file not found", pFilePath);
+
+					files.push_back(pFileName);
+
+					if (!R)
+					{
+						continue;
+					}
+
+					GetShaderCRC(R, final_crc, files);
+					FS.r_close(R);
+				}
+			}
+		}
+
+		final_crc = crc32(string.data(), string.size(), final_crc);
+	}
 }
 
 class includer : public ID3DInclude {
@@ -1126,7 +1168,12 @@ HRESULT	CRender::shader_compile(
 		FS.update_path(file_name, "$app_data_root$", file);
 	}
 
-	u32 const RealCodeCRC = crc32(pSrcData, SrcDataLen);
+	u32 RealCodeCRC = u32(-1);
+	SStringVec crc_file_list;
+
+	IReader R = IReader((char*)pSrcData, SrcDataLen);
+	GetShaderCRC(&R, RealCodeCRC, crc_file_list);
+
 	Flags |= D3DCOMPILE_OPTIMIZATION_LEVEL3;
 
 	xr_resource_uniq* inShader = (xr_resource_uniq*)result;
