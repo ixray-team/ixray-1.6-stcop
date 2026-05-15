@@ -146,37 +146,99 @@ public:
 class CCC_Help : public IConsole_Command
 {
 public:
-	CCC_Help(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args) {
-		Log("- --- Command listing: start ---");
-		CConsole::vecCMD_IT it;
-		for (it=Console->Commands.begin(); it!=Console->Commands.end(); it++)
-		{
-			IConsole_Command &C = *(it->second);
-			TStatus _S; C.Status(_S);
-			TInfo	_I;	C.Info	(_I);
-			
-			Msg("%-20s (%-10s) --- %s",	C.Name(), _S, _I);
-		}
-		Log("Key: Ctrl + A         === Select all ");
-		Log("Key: Ctrl + C         === Copy to clipboard ");
-		Log("Key: Ctrl + V         === Paste from clipboard ");
-		Log("Key: Ctrl + X         === Cut to clipboard ");
-		Log("Key: Ctrl + Z         === Undo ");
-		Log("Key: Ctrl + Insert    === Copy to clipboard ");
-		Log("Key: Shift + Insert   === Paste from clipboard ");
-		Log("Key: Shift + Delete   === Cut to clipboard ");
-		Log("Key: Insert           === Toggle mode <Insert> ");
-		Log("Key: Back / Delete          === Delete symbol left / right ");
+	CCC_Help(const char* N) : IConsole_Command(N)
+	{
+		bEmptyArgsHandled = true;
+	}
+	
+	virtual void Execute(const char* args)
+	{
+	    Log("--- Command listing begin ---");
+	    {
+	    	u32 max_name_len = 0;
+	    	u32 max_status_len = 0;
 
-		Log("Key: Up   / Down            === Prev / Next command in tips list ");
-		Log("Key: Ctrl + Up / Ctrl + Down === Prev / Next executing command ");
-		Log("Key: Left, Right, Home, End {+Shift/+Ctrl}       === Navigation in text ");
-		Log("Key: PageUp / PageDown      === Scrolling history ");
-		Log("Key: Tab  / Shift + Tab     === Next / Prev possible command from list");
-		Log("Key: Enter  / NumEnter      === Execute current command ");
-		
-		Log("- --- Command listing: end ----");
+	    	for (auto [cmd_name, cmd_ptr] : Console->Commands)
+	    	{
+	    		u32 cur_name_len = xr_strlen(cmd_ptr->Name());
+	    		max_name_len = std::max(cur_name_len, max_name_len);
+
+	    		TStatus status;
+	    		cmd_ptr->Status(status);
+
+	    		u32 cur_status_len = xr_strlen(status);
+	    		max_status_len = std::max(cur_status_len, max_status_len);
+	    	}
+
+	    	auto print_center = [](TStatus& out, const TStatus& str, u32 width)
+	    	{
+	    		u32 len = xr_strlen(str);
+
+	    		if (len >= width)
+	    		{
+	    			xr_strcpy(out, str);
+	    			return;
+	    		}
+
+	    		u32 left  = (width - len) / 2;
+	    		u32 right = width - len - left;
+
+	    		u32 char_pos = 0;
+	    	
+	    		for (u32 i = 0; i < left; ++i)
+	    			out[char_pos++] = VK_SPACE;
+
+	    		for (u32 i = 0; i < len; ++i)
+	    			out[char_pos++] = str[i];
+
+	    		for (u32 i = 0; i < right; ++i)
+	    			out[char_pos++] = VK_SPACE;
+
+	    		out[char_pos] = '\0';
+	    	};
+
+	    	for (auto [cmd_name, cmd_ptr] : Console->Commands)
+	    	{
+	    		TStatus status;
+	    		cmd_ptr->Status(status);
+
+	    		TInfo info;
+	    		cmd_ptr->Info(info);
+
+	    		TStatus formatted_status;
+	    		print_center(formatted_status, status, max_status_len);
+
+	    		Msg("%-*s (%s) - %s",
+					max_name_len,
+					cmd_ptr->Name(),
+					formatted_status,
+					info);
+	    	}
+	    	
+	    	Msg(" ");
+	    }
+
+	    Log("--- Console usage begin ---");
+	    {
+	    	Msg("Key: Ctrl + A                              === Select all");
+	    	Msg("Key: Ctrl + C                              === Copy to clipboard");
+	    	Msg("Key: Ctrl + V                              === Paste from clipboard");
+	    	Msg("Key: Ctrl + X                              === Cut to clipboard");
+	    	Msg("Key: Ctrl + Z                              === Undo");
+	    	Msg("Key: Ctrl + Insert                         === Copy to clipboard");
+	    	Msg("Key: Shift + Insert                        === Paste from clipboard");
+	    	Msg("Key: Shift + Delete                        === Cut to clipboard");
+	    	Msg("Key: Insert                                === Toggle mode <Insert>");
+	    	Msg("Key: Back / Delete                         === Delete symbol left/right");
+	    	Msg("Key: Up/Down                               === Prev/Next command in tips list");
+	    	Msg("Key: Ctrl+Up/Ctrl+Down                     === Prev/Next executing command");
+	    	Msg("Key: Left, Right, Home, End {+Shift/+Ctrl} === Navigation in text");
+	    	Msg("Key: PageUp/PageDown                       === Scrolling history");
+	    	Msg("Key: Tab/Shift+Tab                         === Next/Prev possible command from list");
+	    	Msg("Key: Enter/NumEnter                        === Execute current command");
+	    	
+	    	Msg(" ");
+	    }
 	}
 };
 
