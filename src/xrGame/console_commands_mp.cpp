@@ -1236,12 +1236,20 @@ class CCC_Name : public IConsole_Command
 public:
 	CCC_Name(const char* N) : IConsole_Command(N)  { bLowerCaseArgs = false;	bEmptyArgsHandled = false; };
 	virtual void	Status	(TStatus& S)
-	{ 
-		S[0]=0;
-		if( IsGameTypeSingle() )									return;
+	{
+		S[0] = 0;
+		if (IsGameTypeSingle()) 
+			return;
+		
+		if (g_pGameLevel == nullptr)
+			return;
+		
 		game_PlayerState* tmp_player = Game().local_player;
-		if (!tmp_player)											return;
-		xr_sprintf( S, "is \"%s\" ", tmp_player->getName());
+		
+		if (!tmp_player) 
+			return;
+		
+		xr_sprintf(S, "is \"%s\" ", tmp_player->getName());
 	}
 
 	virtual void	Save	(IWriter *F)	{}
