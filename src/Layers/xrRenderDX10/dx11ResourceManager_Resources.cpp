@@ -147,21 +147,27 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 	res_name += RImplementation.getShaderParams();
 	const char* name = res_name.c_str();
 
-	LPSTR N				= LPSTR		(name);
-	map_VS::iterator I	= m_vs.find	(N);
-	if (I!=m_vs.end())	return I->second;
+	LPSTR N = LPSTR(name);
+	map_VS::iterator I = m_vs.find(N);
+
+	if (I!=m_vs.end())	
+	{
+		return I->second;
+	}
 	else
 	{
-		SVS*	_vs					= new SVS	();
-		_vs->dwFlags				|= xr_resource_flagged::RF_REGISTERED;
-		m_vs.insert					(std::make_pair(_vs->set_name(name),_vs));
-		if (0==_stricmp(_name,"null"))	{
+		SVS* _vs = new SVS();
+		_vs->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+		m_vs.insert(std::make_pair(_vs->set_name(name), _vs));
+
+		if (0==_stricmp(_name,"null"))
+		{
 			return _vs;
 		}
 
-		string_path					cname;
-		xr_strconcat(cname,::Render->getShaderPath(), _name,".vs.hlsl");
-		FS.update_path				(cname,	_game_shaders_, cname);
+		string_path cname;
+		xr_strconcat(cname, ::Render->getShaderPath(), _name, ".vs.hlsl");
+		FS.update_path(cname, _game_shaders_, cname);
 		//		const char*						target		= nullptr;
 
 		// duplicate and zero-terminate
@@ -169,30 +175,32 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 		//	TODO: DX10: HACK: Implement all shaders. Remove this for PS
 		if (!file)
 		{
-			string1024			tmp;
-			xr_sprintf			(tmp, "DX10: %s is missing. Replace with stub_default.vs.hlsl", cname);
-			Msg					(tmp);
-			xr_strconcat(cname,::Render->getShaderPath(),"stub_default",".vs.hlsl");
-			FS.update_path		(cname,	_game_shaders_, cname);
-			file				= FS.r_open(cname);
+			string1024 tmp;
+			xr_sprintf(tmp, "DX10: %s is missing. Replace with stub_default.vs.hlsl", cname);
+			Msg(tmp);
+			xr_strconcat(cname, ::Render->getShaderPath(), "stub_default", ".vs.hlsl");
+			FS.update_path(cname, _game_shaders_, cname);
+			file = FS.r_open(cname);
 		}
-		u32	const size			= file->length();
-		char* const data		= (LPSTR)_alloca(size + 1);
-		CopyMemory				( data, file->pointer(), size );
-		data[size]				= 0;
-		FS.r_close				( file );
+
+		u32	const size = file->length();
+		char* const data = (LPSTR)_alloca(size + 1);
+		CopyMemory(data, file->pointer(), size);
+		data[size] = 0;
+		FS.r_close(file);
 
 		// Select target
-		const char*						c_target	= "vs_2_0";
-		const char*						c_entry		= "main";
+		const char* c_target = "vs_2_0";
+		const char* c_entry = "main";
 
-		if (strstr(data, "main_vs_1_1"))	{ c_target = "vs_1_1"; c_entry = "main_vs_1_1";	}
-		if (strstr(data, "main_vs_2_0"))	{ c_target = "vs_2_0"; c_entry = "main_vs_2_0";	}
-		if (strstr(data, "main_vs_4_0"))	{ c_target = "vs_4_0"; c_entry = "main_vs_4_0"; }
+		if (strstr(data, "main_vs_1_1")) { c_target = "vs_1_1"; c_entry = "main_vs_1_1"; }
+		if (strstr(data, "main_vs_2_0")) { c_target = "vs_2_0"; c_entry = "main_vs_2_0"; }
+		if (strstr(data, "main_vs_4_0")) { c_target = "vs_4_0"; c_entry = "main_vs_4_0"; }
 
 		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
 
-		if (Core.ParamsData.test(ECoreParams::renderdoc) || Core.ParamsData.test(ECoreParams::dxdebug)) {
+		if (Core.ParamsData.test(ECoreParams::renderdoc) || Core.ParamsData.test(ECoreParams::dxdebug)) 
+		{
 			flags |= D3DCOMPILE_DEBUG;
 			flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
 			flags |= D3DCOMPILE_DEBUG_NAME_FOR_SOURCE;
@@ -202,7 +210,21 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
 
-		return					_vs;
+		// Оптимизация макросов в шейдрах
+
+		for (const auto& [_, vs] : m_vs)
+		{
+			if(vs->dwFlags & xr_resource_flagged::RF_REGISTERED)
+			{
+				if (vs != _vs && vs->m_crc1 == _vs->m_crc1)
+				{
+					xr_delete(_vs);
+					return vs;
+				}
+			}
+		}
+
+		return _vs;
 	}
 }
 
@@ -302,7 +324,22 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
 
-		return			_ps;
+		// Оптимизация макросов в шейдрах
+
+		for (const auto& [_, ps] : m_ps)
+		{
+			if (ps->dwFlags & xr_resource_flagged::RF_REGISTERED)
+			{
+				if (ps != _ps && ps->m_crc1 == _ps->m_crc1)
+				{
+					xr_delete(_ps);
+					return ps;
+				}
+			}
+		
+		}
+
+		return _ps;
 	}
 }
 
