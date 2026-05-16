@@ -5,10 +5,7 @@ struct v2p
     float2 tc0 : TEXCOORD0;
     float4 c : COLOR0;
 
-//	Igor: for additional depth dest
-#ifdef USE_SOFT_PARTICLES
     float4 tctexgen : TEXCOORD1;
-#endif //	USE_SOFT_PARTICLES
 
     float4 hpos : SV_POSITION;
     float fog : FOG;
@@ -17,23 +14,21 @@ struct v2p
 //	Must be less than view near
 #define DEPTH_EPSILON 0.1h
 
-float4 main(v2p I) : SV_Target
+void main(v2p I, out IXRayForward O)
 {
     float4 result = I.c * s_base.Sample(smp_base, I.tc0);
 
-    //	Igor: additional depth test
-#ifdef USE_SOFT_PARTICLES
-    float4 Point = GbufferGetPoint(I.hpos.xy);
-	
+#if defined(USE_SOFT_PARTICLES) && !defined(DISABLE_SOFT_PARTICLES)
+    float3 Point = GbufferGetPoint(I.hpos.xy);
     float spaceDepth = Point.z - I.tctexgen.z;
     result *= Contrast(saturate(spaceDepth * 1.3f), 2.0f);
-#endif //	USE_SOFT_PARTICLES
+#endif
 
     clip(result.a - (0.01f / 255.0f));
 
-    result.w *= I.fog;
-    result.xyz *= I.fog;
-
-    return GammaToLinear(result);
+    O.Color.xyz = GammaToLinear(result.xyz * I.fog);
+    O.Color.w = result.w * I.fog;
+	
+	O.Velocity = 0.0f;
 }
 
