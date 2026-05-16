@@ -15,6 +15,9 @@
 #include "../../../xrScripts/script_export_space.h"
 
 #include "ai_stalker_state_net.h"
+#include "ai_stalker_space.h"
+#include "ai_monster_space.h"
+#include "stalker_animation_names.h"
 
 #ifdef DEBUG
 	template <typename _object_type>
@@ -43,14 +46,6 @@
 	>								script_planner;
 #endif
 
-namespace MonsterSpace {
-	enum EMovementDirection;
-};
-
-namespace StalkerSpace {
-	enum EBodyAction;
-};
-
 namespace smart_cover {
 	class cover;
 	class loophole;
@@ -78,8 +73,6 @@ namespace stalker_interpolation
 		u32 dwTimeStamp = 0;
 	};
 };
-
-enum ECriticalWoundType;
 
 class CALifeSimulator;
 class CCharacterPhysicsSupport;

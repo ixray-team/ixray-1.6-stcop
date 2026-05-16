@@ -5,26 +5,13 @@
 //	Author		: Dmitriy Iassenev
 //	Description : Stalker movement parameters class
 ////////////////////////////////////////////////////////////////////////////
+#pragma once
+#include "movement_manager_space.h"
+#include "ai_monster_space.h"
+#include "detail_path_manager_space.h"
 
-#ifndef STALKER_MOVEMENT_PARAMS_H_INCLUDED
-#define STALKER_MOVEMENT_PARAMS_H_INCLUDED
-
-namespace MonsterSpace {
-	enum EBodyState;
-	enum EMovementType;
-	enum EMentalState;
-	enum EPathType;
-};
-
-namespace MovementManager {
-	enum EPathType;
-};
-
-namespace DetailPathManager {
-	enum EDetailPathType;
-};
-
-namespace smart_cover {
+namespace smart_cover
+{
 	class cover;
 	class loophole;
 };
@@ -113,8 +100,6 @@ private:
 
 	stalker_movement_manager_smart_cover*	m_manager;
 	mutable loophole_type const*			m_cover_selected_loophole;
-}; // class stalker_movement_params
+}; 
 
 #include "stalker_movement_params_inline.h"
-
-#endif // #ifndef STALKER_MOVEMENT_PARAMS_H_INCLUDED
