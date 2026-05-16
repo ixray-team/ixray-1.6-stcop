@@ -106,10 +106,8 @@ void main(in vf I, out IXRayForward O)
 	float Fade = saturate(max(mark_texture.x, max(mark_texture.y, mark_texture.z)) * 2.0f);
 	
 	O.Velocity.xy = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
-	O.Velocity.w = 1.0f - Fade; O.Velocity.xy *= Fade;
+	O.Velocity.w = 1.0f - Fade; O.Velocity.xy *= Fade / SIZE_FACTOR;
 	O.Velocity.z = 1.0f;
-	
-	O.Reactive = 0.0f;
 #endif
 }
 

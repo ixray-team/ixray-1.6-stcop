@@ -39,7 +39,5 @@ void main(v2p I, float4 pos2d : SV_POSITION, out IXRayForward O)
 	
     O.Color = float4(final.xyz, alpha);
 	O.Velocity = float4(vel, 0.0f, t_base.a * alpha);
-	
-	O.Reactive = 0.0f;
 }
 
