@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#ifdef XR_MP_BUILD
 #include "screenshots_writer.h"
 #include "screenshots_common.h"
 
@@ -119,3 +120,4 @@ void signer::feel_private_dsa_key()
 }
 
 }
+#endif
