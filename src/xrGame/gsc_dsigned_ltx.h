@@ -1,6 +1,5 @@
-#ifndef GSC_DSINGNED_LTX_INCLUDED
-#define GSC_DSINGNED_LTX_INCLUDED
-
+#pragma once
+#ifdef XR_MP_BUILD
 #include "../xrCore/fastdelegate.h"
 #include "xr_dsa_signer.h"
 #include "xr_dsa_verifyer.h"
@@ -37,4 +36,4 @@ private:
 }; //class gsc_dsigned_ltx_reader
 
 
-#endif //#ifndef GSC_DSINGNED_LTX_INCLUDED
+#endif

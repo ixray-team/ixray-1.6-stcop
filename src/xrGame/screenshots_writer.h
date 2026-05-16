@@ -1,6 +1,7 @@
 #ifndef SCREENSHOT_WRITER_INCLUDED
 #define SCREENSHOT_WRITER_INCLUDED
 
+#ifdef XR_MP_BUILD
 #include "xr_dsa_signer.h"
 
 namespace screenshots
@@ -48,4 +49,5 @@ private:
 
 } //namespace screenshots
 
+#endif
 #endif //#ifndef SCREENSHOT_WRITER_INCLUDED
