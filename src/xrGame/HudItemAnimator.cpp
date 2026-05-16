@@ -7,7 +7,7 @@
 #include "ai_space.h"
 #include "UIActorMenu.h"
 #include "ParticlesObject.h"
-#include "actor.h"
+#include "Actor.h"
 
 extern bool m_AnimatorForceHideItems;
 

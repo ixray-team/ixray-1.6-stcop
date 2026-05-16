@@ -12,22 +12,8 @@
 #include "../xrScripts/script_export_space.h"
 #include "patrol_path_manager_space.h"
 #include "detail_path_manager_space.h"
-
-namespace DetailPathManager {
-	enum EDetailPathType;
-};
-
-namespace MonsterSpace {
-	enum EBodyState;
-	enum EMovementType;
-	enum EScriptMonsterMoveAction;
-	enum EScriptMonsterSpeedParam;
-};
-
-namespace PatrolPathManager {
-	enum EPatrolStartType;
-	enum EPatrolRouteType;
-};
+#include "ai_monster_space.h"
+#include "patrol_path_manager_space.h"
 
 class CPatrolPath;
 class CScriptGameObject;

@@ -15,10 +15,10 @@
 #include "../../../squad_hierarchy_holder.h"
 #include "../../../group_hierarchy_holder.h"
 #include "../../../../xrEngine/AI/game_graph_space.h"
+#include "../../../../xrSound/ai_sounds.h"
 
 class CBlend;
 class CPatrolPath;
-enum ESoundTypes;
 class rat_state_manager;
 
 namespace steering_behaviour {
