@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#ifdef XR_MP_BUILD
 #include "screenshots_common.h"
 
 namespace screenshots
@@ -66,3 +67,4 @@ u8 const public_key[crypto::xr_dsa::public_key_length] = {
 };//public_key
 
 } //namespace screenshots
+#endif

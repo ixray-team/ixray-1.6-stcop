@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#ifdef XR_MP_BUILD
 #include "configs_dumper.h"
 #include "configs_common.h"
 #include "../xrCore/compression/ppmd/ppmd_compressor.h"
@@ -359,3 +360,4 @@ void dump_signer::feel_private_dsa_key()
 
 
 }//namespace mp_anticheat
+#endif

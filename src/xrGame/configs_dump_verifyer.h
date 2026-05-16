@@ -1,6 +1,6 @@
-#ifndef CONFIGS_DUMP_VERIFYER
-#define CONFIGS_DUMP_VERIFYER
+#pragma once
 
+#ifdef XR_MP_BUILD
 #include "mp_config_sections.h"
 #include "xr_dsa_verifyer.h"
 

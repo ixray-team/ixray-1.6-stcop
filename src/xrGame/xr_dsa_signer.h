@@ -1,5 +1,5 @@
 #pragma once
-
+#ifdef XR_MP_BUILD
 #include "../3rd-party/crypto/crypto.h"
 
 using sha_process_yielder = xr_delegate<void(long)>;
@@ -28,3 +28,4 @@ private:
 }; //xr_dsa_signer
 
 char const * current_time(string64 & dest_time);
+#endif

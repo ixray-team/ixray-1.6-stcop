@@ -219,10 +219,15 @@ target_link_libraries(xrGame PUBLIC xrPhysics)
 target_link_libraries(xrGame PUBLIC xrScripts)
 target_link_libraries(xrGame PUBLIC xrUI)
 target_link_libraries(xrGame PUBLIC luabind)
-target_link_libraries(xrGame PUBLIC crypto)
 target_link_libraries(xrGame PUBLIC IKAN)
 
-target_link_libraries(xrGame PRIVATE "shlwapi.lib")
+if (IXRAY_MP)
+	target_link_libraries(xrGame PUBLIC crypto)
+endif()
+
+if (WIN32)
+	target_link_libraries(xrGame PRIVATE "shlwapi.lib")
+endif()
 
 # Move precompiled header
 set_target_properties(xrGame PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

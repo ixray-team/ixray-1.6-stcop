@@ -1,6 +1,5 @@
-#ifndef XR_DSA_VERIFYER_INCLUDED
-#define XR_DSA_VERIFYER_INCLUDED
-
+#pragma once
+#ifdef XR_MP_BUILD
 #include "../3rd-party/crypto/crypto.h"
 
 class xr_dsa_verifyer
@@ -23,6 +22,4 @@ private:
 	crypto::xr_dsa			m_dsa;
 	crypto::xr_sha256		m_sha;
 };//class xr_dsa_verifyer
-
-
-#endif //#ifndef XR_DSA_VERIFYER_INCLUDED
+#endif
