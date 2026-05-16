@@ -148,10 +148,15 @@ void CRenderTarget::phase_combine()
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 	}
 
-	if(ps_r2_ls_flags_ext.test(R4FLAG_PUDDLES))
+	if (RImplementation.o.dx11_allow_wboit_transparency)
 	{
-		GPU_EVENT(Forward_rendering_puddles);
-		phase_puddles();
+		GRHI->ClearTarget(rt_Forward->pRT);
+		GRHI->ClearTarget(rt_Revealage->pRT, ERTColor::Black);
+	}
+
+	if (!m_bHasActiveVolumetric)
+	{
+		GRHI->ClearTarget(rt_Generic_2->pRT);
 	}
 
 	// Forward rendering
@@ -159,57 +164,32 @@ void CRenderTarget::phase_combine()
 		GPU_EVENT(Forward_rendering);
 		phase_scene_forward();
 
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-		RCache.set_Stencil (FALSE);
-		RCache.set_ColorWriteEnable ();
+		if (ps_r2_ls_flags_ext.test(R4FLAG_PUDDLES))
+		{
+			GPU_EVENT(Forward_rendering_puddles);
+			phase_puddles();
+		}
 
-		RImplementation.render_forward	();
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+		RCache.set_Stencil(FALSE);
+		RCache.set_ColorWriteEnable();
+
+		RImplementation.render_forward();
 	}
 
 	//	Igor: for volumetric lights
 	//	combine light volume here
-	if(m_bHasActiveVolumetric) {
-		phase_combine_volumetric();
-	}
 
-	// Distortion filter
-	BOOL bDistort = RImplementation.o.distortion_enabled; // This can be modified
-	{
-		u32 count = RImplementation.mapDistort.size() + RImplementation.mapHUDDistort.size();
-		if((count < 1 && !_menu_pp)) {
-			bDistort= FALSE;
-		}
-		if(bDistort) {
-			GPU_EVENT(render_distort_objects);
-			u_setrt(rt_Generic_1, 0, 0, RDepth);		// Now RT is a distortion mask
-
-			RImplementation.rmNormal();
-			GRHI->ClearTarget(rt_Generic_1->pRT, ERTColor::Gray);
-			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-			RCache.set_Stencil(FALSE);
-			RCache.set_ColorWriteEnable();
-			RImplementation.r_dsgraph_render_distort();
-
-			if(g_pGamePersistent) {
-				g_pGamePersistent->OnRenderPPUI_PP();	// PP-UI
-			}
-
-			u_setrt(rt_Generic_2, 0, 0, 0);
-
-			// Draw COLOR
-			RCache.set_Element(s_combine->E[1]);
-			RCache.set_Geometry(FSTriangleGeom);
-
-			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
-			GRHI->CopySurface(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
-		}
-	}
+	//if(g_pGamePersistent)
+	//{
+	//	g_pGamePersistent->OnRenderPPUI_PP();
+	//}
 
 	u_setrt(rt_Generic_0, 0, 0, RDepth);
 
 	if (g_pGamePersistent) 
 	{
-		g_pGamePersistent->OnRenderPPUI_main();	// PP-UI
+		g_pGamePersistent->OnRenderPPUI_main();
 	}
 
 	copy_position();
@@ -419,16 +399,15 @@ void CRenderTarget::phase_wallmarks()
 
 void CRenderTarget::phase_combine_volumetric()
 {
+	if (!m_bHasActiveVolumetric)
+	{
+		return;
+	}
+
 	GPU_EVENT(phase_combine_volumetric);
 
-	u_setrt(rt_Generic_0, 0, 0, RDepth);
-	//	Sets limits to both render targets
-	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
-	{
-		// Draw
-		RCache.set_Element			(s_combine_volumetric->E[0]	);
-		RCache.set_Geometry			(FSTriangleGeom);
-		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,0,0,3,0,1);
-	}
-	RCache.set_ColorWriteEnable();
+	RCache.set_Element(s_combine_volumetric->E[0]);
+	RCache.set_Geometry(FSTriangleGeom);
+
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 }

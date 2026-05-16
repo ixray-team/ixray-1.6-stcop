@@ -151,7 +151,7 @@ void main(p_bumped_new I, out IXRayForward O)
 	float4 PrevUV = mul(m_VP_old, float4(mul(m_invV, float4(PojectedPos, 1.0f)).xyz, 1.0f));
 	
  	if(LightDir.z > 0.0f) 
-	{		
+	{
 		float3 Window = CubemapParralax(Point, LightDir);
 		float3 WindowW = PojectedPos - length(Window - Point) * LightDirE.xyz + normalize(float3(I.M1.z, I.M2.z, I.M3.z)) * 0.1f;
 		
@@ -183,7 +183,11 @@ void main(p_bumped_new I, out IXRayForward O)
 #else
 	#ifndef DISABLE_MOTION_VECTORS
 		O.Velocity.xy = I.hpos_curr.xy / I.hpos_curr.w - PrevUV.xy / PrevUV.w;
-		O.Reactive = O.Color.w * 0.9f; O.Velocity.zw = 1.0f;
+		O.Velocity.zw = saturate(O.Color.w * 2.0f - 1.0f);
+	#endif
+	
+	#ifdef ALLOW_WBOIT_TRANSPARENCY
+		WboitBufferPack(O, PojectedPos);
 	#endif
 #endif
 }

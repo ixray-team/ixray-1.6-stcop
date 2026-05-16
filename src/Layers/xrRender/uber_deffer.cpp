@@ -181,9 +181,21 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 #ifdef USE_DX11
 		if (hq && pShaderOptions->contains(xr_string("USE_PARRALAX_INTERIOR")))
 		{
-			C.r_Pass(vs, "forwrad_interior", FALSE, TRUE, FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
+			C.r_Pass(vs, "forwrad_interior", FALSE, TRUE, FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
+
 			C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_EQUAL);
 			C.SetPassPriority(3);
+
+			if(RImplementation.o.dx11_allow_wboit_transparency)
+			{
+				C.PassSET_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE, false, 0);
+				C.PassSET_Blend(2, TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO, false, 0);
+				C.PassSET_Blend(1, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, false, 0);
+			}
+			else
+			{
+				C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, false, 0);
+			}
 
 			C.r_dx10Texture("s_base", C.L_textures[0]);
 			C.r_dx10Texture("s_env", "newsky_reflection_lobby_room");
@@ -340,12 +352,32 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, bool aref, bool blend, const char* detail_replace, bool DO_NOT_FINISH, bool DO_NOT_START)
 {
+	bool use_wboit = blend && !C.bHudElement && RImplementation.o.dx11_allow_wboit_transparency;
+
+	if (use_wboit)
+	{
+		RImplementation.addShaderOption("USE_WBOIT_TRANSPARENCY");
+	}
+
 	uber_deffer(C, hq, vs, ps, aref && !blend, detail_replace, true, DO_NOT_START);
 
 	if (blend) 
 	{
 		C.PassSET_ZB(TRUE, FALSE);
-		C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
+
+		if(use_wboit)
+		{
+			C.PassSET_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE, false, 0);
+			C.PassSET_Blend(2, TRUE, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO, false, 0);
+			C.PassSET_Blend(1, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, false, 0);
+
+			// Disable sorting for WBOIT
+			C.SetParams(C.SH->flags.iPriority, false);
+		}
+		else
+		{
+			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, false, 0);
+		}
 	}
 
 #ifndef _EDITOR

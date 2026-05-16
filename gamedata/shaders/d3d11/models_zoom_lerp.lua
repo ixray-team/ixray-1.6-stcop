@@ -18,7 +18,7 @@ function normal   (shader, t_base, t_second, t_detail)
 end
 
 function l_special(shader, t_base, t_second, t_detail)
-	shader:add_shader_option("USE_LENSE_LERP", "1")
+	AddShaderOption("USE_LENSE_LERP", "1")
     shader:begin("scope_lense_mask", "scope_lense_mask")
 	: zb(false, true) : scope(true) : fog(false)
 	
