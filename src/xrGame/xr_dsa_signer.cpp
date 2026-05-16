@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#ifdef XR_MP_BUILD
 #include "xr_dsa_signer.h"
 
 xr_dsa_signer::xr_dsa_signer(u8 const p_number[crypto::xr_dsa::public_key_length],
@@ -62,7 +63,4 @@ char const * current_time(string64 & dest_time)
 	return dest_time;
 }
 
-	
-
-
-
+#endif

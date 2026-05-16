@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "configs_common.h"
 
+#ifdef XR_MP_BUILD
 namespace mp_anticheat
 {
 
@@ -67,3 +68,4 @@ u8 const public_key[crypto::xr_dsa::public_key_length] = {
 
 
 } //namespace mp_anticheat
+#endif
