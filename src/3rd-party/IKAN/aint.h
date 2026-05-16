@@ -32,6 +32,8 @@
 #ifndef _AINTH
 #define _AINTH
 #include <cmath>
+#include <cstdio>
+#include <algorithm>
 
 #ifdef IKAN_INTERNAL
 #   ifndef M_PI
