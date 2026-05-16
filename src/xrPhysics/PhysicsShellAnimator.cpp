@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "PhysicsShellAnimator.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "../Include/xrRender/Kinematics.h"
