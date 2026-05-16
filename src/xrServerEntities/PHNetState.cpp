@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "PHNetState.h"
 
 void w_vec_q8(NET_Packet& P,const Fvector& vec,const Fvector& min,const Fvector& max)
