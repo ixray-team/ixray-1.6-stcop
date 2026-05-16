@@ -418,6 +418,8 @@ CRenderTarget::CRenderTarget()
 		DisplaySRV(rt ? rt->pTexture : nullptr, Show##rt);
 
 		DisplayRT(rt_Accumulator);
+		DisplayRT(rt_Revealage);
+		DisplayRT(rt_Forward);
 		DisplayRT(rt_Color);
 		DisplayRT(rt_Normal);
 		DisplayRT(rt_Surface);
@@ -521,6 +523,12 @@ CRenderTarget::CRenderTarget()
 		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, NormalFormat, 1, isUAV);
 
 		rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, HDR_Format);
+
+		if(RImplementation.o.dx11_allow_wboit_transparency)
+		{
+			rt_Forward.create(r2_RT_wboit, s_dwWidth, s_dwHeight, HDR_Format);
+			rt_Revealage.create(r2_RT_wboit_revealage, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16_UNORM);
+		}
 
 		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, HDR_Format);
 		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, HDR_Format);

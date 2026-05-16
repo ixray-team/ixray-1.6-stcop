@@ -161,7 +161,11 @@ void main(p_bumped_new I, out OutStructure O)
 	
 	#ifndef DISABLE_MOTION_VECTORS
 		O.Velocity.xy = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
-		O.Reactive = O.Color.w * 0.9f; O.Velocity.zw = saturate(M.Color.w * 3.0f - 1.0f);
+		O.Velocity.zw = saturate(M.Color.w * 3.0f - 1.0f);
+	#endif
+	
+	#if defined(ALLOW_WBOIT_TRANSPARENCY) && defined(USE_WBOIT_TRANSPARENCY)
+		WboitBufferPack(O, M.Point);
 	#endif
 #else
 	O.Length = ViewLength;

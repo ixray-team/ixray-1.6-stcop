@@ -103,6 +103,10 @@ public:
 
 	// 
 	ref_rt						rt_Accumulator;		// 64bit		(r,g,b,specular)
+
+	ref_rt						rt_Forward;
+	ref_rt						rt_Revealage;
+
 	ref_rt						rt_Generic_0;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	ref_rt						rt_Generic_1;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
 	//	Igor: for volumetric lights
@@ -256,9 +260,9 @@ private:
 	ref_geom					g_combine_2UV;
 	ref_geom					g_combine_cuboid;
 	ref_geom					g_aa_AA;
-	ref_shader				s_combine;
 	ref_shader				s_combine_volumetric;
 public:
+	ref_shader				s_combine;
 	ref_geom				FSTriangleGeom;
 	ref_shader				s_postprocess;
 	ref_geom					g_postprocess;

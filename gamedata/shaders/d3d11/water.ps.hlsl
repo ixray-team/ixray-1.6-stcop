@@ -28,12 +28,11 @@ Texture2D s_caustic;
 
 float3 SpecularPhong(float3 Point, float3 Normal, float3 Light)
 {
-	float3 LightColor = max(0.0f, L_sun_color.xyz * 4.0f - 1.0f);
-	return LightColor * pow(dot(normalize(Point + Light), -Normal), 256.0);
+	return L_sun_color.xyz * pow(abs(dot(normalize(Point + Light), -Normal)), 256.0);
 }
 
 // Pixel
-float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
+void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 {
 	float4 base = s_base.Sample(smp_base, I.tbase);
 	
@@ -90,12 +89,12 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 #else
     env *= L_sky_color.xyz;
 #endif
-
-#ifdef USE_OFFSCREEN_REFLECTIONS
-	env.xyz = lerp(env, LinearToGamma(vslr.xyz), vslr.w);
-#endif
 	
 #ifdef USE_SSLR_ON_WATER
+	#ifdef USE_OFFSCREEN_REFLECTIONS
+		env.xyz = lerp(env, LinearToGamma(vslr.xyz), vslr.w);
+	#endif
+	
 	env = lerp(env, LinearToGamma(sslr.xyz), sslr.w);
 #endif
 
@@ -103,7 +102,7 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 	float amount = 0.25f + 0.25f * power;
 
 	float3 final = lerp(env * amount * 0.8f, base.xyz, base.w);
-	float alpha = 0.25f + 0.65f * power;
+	float alpha = 0.45f + 0.45f * power;
 	
 	alpha = lerp(alpha, 1.0f, base.w);
 	
@@ -152,6 +151,7 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 #endif
 
 	float3 Light = s_accumulator.Load(int3(pos2d.xy, 0), 0).xyz;
+	Light = LinearToGamma(Light);
 	Light *= 1.0f - base.w;
 	
 	float2 CausticTexcoord = mul(m_invV, float4(Point.xyz, 1.0f)).xz * 0.45f;
@@ -169,6 +169,15 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 	alpha = max(alpha, leaves.w * fLeavesFactor);
 #endif
 	
-	return GammaToLinear(lerp(float4(final, LinearToGamma(alpha)), fog_color, calc_fogging(I.pos.xyz)));
+	float fog_fade = calc_fogging(I.pos.xyz);
+	
+	O.Color = lerp(float4(final, alpha), fog_color, fog_fade * fog_fade);
+	O.Color.xyz = GammaToLinear(O.Color.xyz);
+	
+	O.Velocity = 0.0f;
+	
+#ifdef ALLOW_WBOIT_TRANSPARENCY
+	WboitBufferPack(O, I.tctexgen);
+#endif
 }
 
