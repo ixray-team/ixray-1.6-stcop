@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#ifdef XR_MP_BUILD
 #include "gsc_dsigned_ltx.h"
 #include "../xrCore/xr_ini.h"
 
@@ -107,3 +108,5 @@ bool gsc_dsigned_ltx_reader::load_and_verify(u8* buffer, u32 const size)
 	m_ltx = new CInifile(&tmp_reader);
 	return true;
 }
+
+#endif
