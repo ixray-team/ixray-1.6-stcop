@@ -181,8 +181,11 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, const char* s_shader, const 
 
 	// Access to template
 	C.BT				= B;
+
 	C.bEditor			= false;
 	C.bDetail			= false;
+	C.bHudElement		= false;
+
 #ifdef _EDITOR
 	if (!C.BT)			{ /*ELog.Msg(mtError, "Can't find shader '%s'", s_shader); */return nullptr; }
 	C.bEditor			= true;
