@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "../xrEngine/AI/restrictor_types.h"
 
 class CSpaceRestrictionBridge;
 class CSpaceRestrictor;
@@ -15,7 +16,6 @@ template <typename _1, typename _2> class intrusive_ptr;
 
 namespace RestrictionSpace {
 	struct CTimeIntrusiveBase;
-	enum ERestrictorTypes;
 };
 
 namespace SpaceRestrictionHolder {

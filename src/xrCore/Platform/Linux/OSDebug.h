@@ -52,8 +52,7 @@ IC bool IsDebuggerPresent()
 
 inline void DebugBreak()
 {
-    using BYTE = unsigned char;
-    BYTE bCrash = *(BYTE*)(nullptr);
+    __builtin_trap();
 }
 
 inline void OutputDebugStringA(const char* data)

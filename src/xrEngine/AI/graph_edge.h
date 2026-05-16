@@ -8,12 +8,12 @@
 
 #pragma once
 
-template <typename _edge_weight_type, typename _vertex_type>
+template <typename __edge_weight_type, typename __vertex_type>
 class CEdgeBase
 {
 public:
-	typedef _edge_weight_type						_edge_weight_type;
-	typedef _vertex_type							_vertex_type;
+	typedef typename __edge_weight_type				_edge_weight_type;
+	typedef typename __vertex_type					_vertex_type;
 	typedef typename _vertex_type::_vertex_id_type	_vertex_id_type;
 
 private:

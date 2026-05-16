@@ -9,6 +9,7 @@
 #pragma once
 
 #include "../xrEngine/device.h"
+#include "../xrEngine/AI/restrictor_types.h"
 
 namespace RestrictionSpace {
 	struct CTimeIntrusiveBase : public intrusive_base {
@@ -23,15 +24,6 @@ namespace RestrictionSpace {
 		{
 			m_last_time_dec = Device.dwTimeGlobal;
 		}
-	};
-
-	enum ERestrictorTypes {
-		eDefaultRestrictorTypeNone = u8(0),
-		eDefaultRestrictorTypeOut  = u8(1),
-		eDefaultRestrictorTypeIn   = u8(2),
-		eRestrictorTypeNone		   = u8(3),
-		eRestrictorTypeIn		   = u8(4),
-		eRestrictorTypeOut		   = u8(5),
 	};
 };
 
