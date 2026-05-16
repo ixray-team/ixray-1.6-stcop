@@ -589,7 +589,9 @@ static class cl_digiclock : public R_constant_setup
 static class cl_sincity_params : public R_constant_setup {
 public:
     virtual void setup(R_constant* C) override {
+#ifndef _EDITOR
 		RCache.set_c(C, ps_r_sincity_sensitivity);
+#endif
     }
 } binder_sincity;
 
