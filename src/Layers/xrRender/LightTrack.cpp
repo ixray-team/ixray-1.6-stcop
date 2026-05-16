@@ -583,10 +583,10 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 				if((spatial->spatial.type != ESPATIAL_TYPE::LIGHTSOURCE) || !source->flags.bStatic)
 				{
 					// TODO: Add spot lights support
-					if (source->flags.type == IRender_Light::LT::SPOT)
-					{
-						continue;
-					}
+					//if (source->flags.type == IRender_Light::LT::SPOT)
+					//{
+					//	continue;
+					//}
 
 					add(source);
 				}
@@ -596,9 +596,9 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 		// Trace visibility
 		lights.clear();
 
-//#if RENDER==R_R1 
-		float traceR	= radius*.5f;
-//#endif
+#if RENDER==R_R1 
+		float traceR = radius * .5f;
+#endif
 
 		for (s32 id = 0; id < s32(track.size()); id++)
 		{
@@ -619,20 +619,27 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 			light* xrL = I->source;
 			Fvector LP = xrL->position;
 
-//#if RENDER==R_R1
+#if RENDER==R_R1
 			P.sub(LP, position).normalize();
-
+			
 			Fvector R; R.setHP(Random.randF(PI_MUL_2), Random.randF(PI_MUL_2));
-
+			
 			if (P.dotproduct(R) < 0.0f)
 			{
 				R.mul(-1.0f);
 			}
-
+			
 			P.mad(position, R, traceR);		// Random point inside range
-//#else
-//			P = position;
-//#endif
+#else
+			//D.x = Random.randF(0.25f, 0.75f);
+			//D.y = Random.randF(0.25f, 0.75f);
+			//D.z = Random.randF(0.25f, 0.75f);
+			//
+			//P.mad(vis.box.min, vis.box.max - vis.box.min, D);
+			// 
+			//P = position;
+			_object->Center(P);
+#endif
 
 			// point/spot
 			float f = D.sub(P, LP).magnitude(); 
@@ -690,17 +697,18 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 		}
 
 #if RENDER==R_R1
-		light*	sun		=		(light*)RImplementation.L_DB->sun_adapted._get()	;
+		light* sun = (light*)RImplementation.L_DB->sun_adapted._get();
 
 		// Sun
-		float	E			=	sun_smooth * sun->color.intensity	();
-		if (E > EPS)		{
+		float E = sun_smooth * sun->color.intensity();
+		if (E > EPS) 
+		{
 			// Select light
-			lights.push_back			(CROS_impl::Light())		;
-			CROS_impl::Light&	L		= lights.back()				;
-			L.source					= sun						;
-			L.color.mul_rgb				(sun->color,sun_smooth/2)	;
-			L.energy					= sun_smooth				;
+			lights.push_back(CROS_impl::Light());
+			CROS_impl::Light& L = lights.back();
+			L.source = sun;
+			L.color.mul_rgb(sun->color, sun_smooth / 2);
+			L.energy = sun_smooth;
 		}
 #endif
 		// Sort lights by importance - important for R1-shadows
