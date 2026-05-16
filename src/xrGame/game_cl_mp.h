@@ -255,12 +255,12 @@ public:
 				void				SendPlayerStarted();
 	virtual		void				OnConnected				();
 	virtual		const char*				GetGameScore			(string32&	score_dest) {return ""; };
+
 #ifdef XR_MP_BUILD
 	screenshot_manager				ss_manager;
-#endif //  XR_MP_BUILD
-
 	mp_anticheat::configs_dumper	cd_manager;
 	mp_anticheat::configs_verifyer	cd_verifyer;
+#endif //  XR_MP_BUILD
 	
 				void				AddSoundMessage		(const char* sound_name, u32 const sound_priority, u32 const soundID);
 				void				PlaySndMessage		(u32 ID);

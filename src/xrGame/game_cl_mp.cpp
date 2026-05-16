@@ -91,7 +91,9 @@ game_cl_mp::game_cl_mp()
 	pBuySpawnMsgBox->SetText(BuySpawnText);
 */	//-----------------------------------------------------------
 	m_ready_to_open_buy_menu	= true;
+#ifdef XR_MP_BUILD
 	crypto::xr_crypto_init();
+#endif
 };
 
 game_cl_mp::~game_cl_mp()
@@ -360,38 +362,42 @@ void game_cl_mp::TranslateGameMessage	(u32 msg, NET_Packet& P)
 		}break;
 	case GAME_EVENT_MAKE_DATA:
 		{
+#ifdef XR_MP_BUILD
 			clientdata_event_t etype = static_cast<clientdata_event_t>(P.r_u8());
 			if (etype == e_screenshot_request)
 			{
-			#ifdef XR_MP_BUILD
 				screenshot_manager::complete_callback_t compl_cb =
 					fastdelegate::MakeDelegate(this, &game_cl_mp::SendCollectedData);
 				ss_manager.make_screenshot(compl_cb);
-			#endif //  XR_MP_BUILD
-			} else if (etype == e_configs_request)
+			} 
+			else if (etype == e_configs_request)
 			{
 				mp_anticheat::configs_dumper::complete_callback_t compl_cb = 
 					fastdelegate::MakeDelegate(this, &game_cl_mp::SendCollectedData);
 				cd_manager.dump_config(compl_cb);
-			} else if (etype == e_screenshot_response)
+			} 
+			else if (etype == e_screenshot_response)
 			{
 				ClientID tmp_client(P.r_u32());
 				shared_str client_name;
 				P.r_stringZ(client_name);
 				PrepareToReceiveFile(tmp_client, client_name, e_screenshot_response);
-			} else if (etype == e_configs_response)
+			}
+			else if (etype == e_configs_response)
 			{
 				ClientID tmp_client(P.r_u32());
 				shared_str client_name;
 				P.r_stringZ(client_name);
 				PrepareToReceiveFile(tmp_client, client_name, e_configs_response);
-			} else
+			} 
+			else
 			{
 				ClientID tmp_client(P.r_u32());
 				shared_str error_msg;
 				P.r_stringZ(error_msg);
 				Msg("! File transfer error: from client [%u]: %s", tmp_client.value(), error_msg.c_str());
 			}
+#endif //  XR_MP_BUILD
 		}break;
 	case GAME_EVENT_RECEIVE_SERVER_LOGO:
 		{
@@ -1685,6 +1691,7 @@ void game_cl_mp::decompress_and_save_screenshot(const char* file_name, u8* data,
 
 void game_cl_mp::decompress_and_process_config(const char* file_name, u8* data, u32 data_size, u32 file_size)
 {
+#ifdef XR_MP_BUILD
 	if (!file_size)
 	{
 		Msg("! ERROR: file size to save is 0...");
@@ -1724,6 +1731,7 @@ void game_cl_mp::decompress_and_process_config(const char* file_name, u8* data, 
 		add_detected_cheater(file_name, tmp_diff);
 		Msg("! CHEATER detected: %s, %s", file_name, tmp_diff);
 	}
+#endif
 }
 
 game_cl_mp::fr_callback_binder*	game_cl_mp::get_receiver_cb_binder()

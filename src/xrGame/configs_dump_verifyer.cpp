@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#ifdef XR_MP_BUILD
 #include "configs_dump_verifyer.h"
 #include "configs_common.h"
 #include "configs_dumper.h"
@@ -260,3 +261,4 @@ bool const configs_verifyer::verify(u8* data, u32 data_size, string256 & diff)
 }
 
 } //namespace mp_anticheat
+#endif
