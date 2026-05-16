@@ -983,7 +983,11 @@ void dump_file(char *file, int euler_type, float min[], float max[],
 	       Matrix c, Matrix s, Matrix o)
 {
     FILE *fp;
+#ifdef _WIN32
     fopen_s(&fp, file, "w");
+#else
+    fp = fopen(file, "w");
+#endif
 
     fprintf(fp, "%d\n", euler_type);
     fprintf(fp, "%f %f %f \n", roundup(min[2]), roundup(min[1]), roundup(min[0]));
