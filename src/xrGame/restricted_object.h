@@ -9,14 +9,11 @@
 #pragma once
 
 #include "alife_space.h"
+#include "../xrEngine/AI/restrictor_types.h"
 
 class CSE_Abstract;
 class CCreature;
 class CGameObject;
-
-namespace RestrictionSpace {
-	enum ERestrictorTypes;
-};
 
 template <bool add> struct CRestrictionPredicate;
 
