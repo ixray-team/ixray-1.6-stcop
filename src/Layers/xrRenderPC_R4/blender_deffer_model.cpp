@@ -90,6 +90,19 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
 				uber_forward(C, SE_R2_NORMAL_LQ != C.iElement, "deffer_model", "forward_base", true, true);
 				break;
 			}
+			case SE_R2_SHADOW:
+			{
+				RImplementation.addShaderOption("DISABLE_VELOCITY", "1");
+				RImplementation.addShaderOption("USE_TRANSPARENT", "1");
+				C.r_Pass("shadow_model", "shadow_base", false, true, false, true, D3DBLEND_DESTCOLOR, D3DBLEND_ZERO);
+
+				C.r_dx10Texture("s_base", C.L_textures[0]);
+				C.r_dx10Sampler("smp_base");
+				C.r_dx10Sampler("smp_linear");
+
+				C.r_End();
+				break;
+			}
 		}
 	} 
 	else 
