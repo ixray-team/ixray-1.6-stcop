@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "net_physics_state.h"
 
 void net_physics_state::fill(SPHNetState &state, u32 time)

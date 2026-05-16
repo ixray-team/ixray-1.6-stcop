@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "../xrServerEntities/PHNetState.h"
 
 #define MIN_LINEAR_VELOCITY_COMPONENT -32.f
