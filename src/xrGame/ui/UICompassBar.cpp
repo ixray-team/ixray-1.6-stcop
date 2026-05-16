@@ -5,7 +5,7 @@
 #include "../map_location.h"
 #include "../map_location_defs.h"
 #include "../map_manager.h"
-#include "../../xrEngine/Device.h"
+#include "../../xrEngine/device.h"
 #include "../../xrEngine/GameFont.h"
 #include "../../xrCore/FormatParsers/XML/xrXMLParser.h"
 #include "../../xrCore/_stl_extensions.h"
