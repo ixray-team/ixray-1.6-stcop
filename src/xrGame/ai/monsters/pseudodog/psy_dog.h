@@ -3,8 +3,11 @@
 #include "../../../../xrScripts/script_export_space.h"
 
 class CPsyDogPhantom;
+class CPsyDogAura;
 
-class CPsyDog final : public CAI_PseudoDog {
+class CPsyDog final : 
+	public CAI_PseudoDog 
+{
 	typedef CAI_PseudoDog inherited;
 
 	friend class CPsyDogPhantom;

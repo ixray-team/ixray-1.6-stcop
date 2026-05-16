@@ -35,7 +35,7 @@
 #include "patrol_path.h"
 #include "patrol_path_storage.h"
 #include "player_hud.h"
-#include "ImUtils\ImUtils.h"
+#include "ImUtils/ImUtils.h"
 #include "script_game_object.h"
 
 Fvector aabb_selection_vertices[32]

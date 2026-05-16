@@ -15,10 +15,6 @@ class CMovementManagerHolder;
 class CALifeMonsterDetailPathManager;
 class CALifeMonsterPatrolPathManager;
 
-namespace MovementManager {
-	enum EPathType;
-};
-
 class CALifeMonsterMovementManager {
 public:
 	typedef CMovementManagerHolder							object_type;

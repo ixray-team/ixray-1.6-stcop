@@ -1,8 +1,8 @@
 #pragma once
 
 #include "hit_immunity_space.h"
-#include "..\xrUI\Widgets\UIPropertiesBox.h"
-#include "..\xrUI\Widgets\UIListBoxItem.h"
+#include "../xrUI/Widgets/UIPropertiesBox.h"
+#include "../xrUI/Widgets/UIListBoxItem.h"
 
 class IAntigas
 {
