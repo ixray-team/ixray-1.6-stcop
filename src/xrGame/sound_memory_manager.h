@@ -9,6 +9,7 @@
 #pragma once
 
 #include "memory_space.h"
+#include "../xrSound/ai_sounds.h"
 
 #ifdef DEBUG
 #	define USE_SELECTED_SOUND
@@ -17,8 +18,6 @@
 namespace MemorySpace {
 	struct CSoundObject;
 };
-
-enum ESoundTypes;
 
 class CCreature;
 class CAI_Stalker;

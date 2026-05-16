@@ -1,12 +1,8 @@
 #pragma once
+#include "../Include/xrRender/ParticleCustom.h"
 
-namespace PAPI
-{
-	enum PActionEnum;
-	struct ParticleAction;
-}
-
-class CParticlesObject : public IRenderable
+class CParticlesObject : 
+	public IRenderable
 {
 public:
 	bool				m_destroy_on_game_load = false;
