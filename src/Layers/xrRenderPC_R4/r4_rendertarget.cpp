@@ -536,7 +536,7 @@ CRenderTarget::CRenderTarget()
 		rt_Generic.create(r2_RT_generic, get_target_width(), get_target_height(), ERHI_FORMAT::R16G16B16A16_FLOAT, 1, isUAV);
 
 		rt_BackbufferLUT.create(r2_RT_backbuffer_lut, get_target_width(), get_target_height(), ERHI_FORMAT::R10G10B10A2_UNORM);
-		rt_ui_pda.create(r_ui_pda, get_target_width(), get_target_height(), ERHI_FORMAT::R8G8B8A8_UNORM);
+		rt_ui_pda.create(r_ui_pda, get_target_width(), get_target_height(), ERHI_FORMAT::R10G10B10A2_UNORM);
 	}
 
 	rt_upscaled_depth.create(r2_RT_upscaled_depth, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16_FLOAT);

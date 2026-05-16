@@ -1,2 +1,2 @@
-#undef USE_SOFT_PARTICLES
+#define DISABLE_SOFT_PARTICLES
 #include "particle.ps.hlsl"
