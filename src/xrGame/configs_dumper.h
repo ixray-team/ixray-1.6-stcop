@@ -1,6 +1,7 @@
 #ifndef CONFIGS_DUMPER_INCLUDED
 #define CONFIGS_DUMPER_INCLUDED
 
+#ifdef XR_MP_BUILD
 #include "xr_dsa_signer.h"
 #include "mp_config_sections.h"
 
@@ -85,4 +86,5 @@ private:
 
 } //namespace mp_anticheat
 
+#endif
 #endif

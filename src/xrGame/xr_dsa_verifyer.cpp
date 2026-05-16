@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#ifdef XR_MP_BUILD
 #include "xr_dsa_verifyer.h"
 
 xr_dsa_verifyer::xr_dsa_verifyer(u8 const p_number[crypto::xr_dsa::public_key_length],
@@ -31,4 +32,4 @@ bool xr_dsa_verifyer::verify(u8 const * data,
 	return m_dsa.verify		(m_public_key, m_sha.pointer(), m_sha.digest_length, dsign);
 }
 
-
+#endif
