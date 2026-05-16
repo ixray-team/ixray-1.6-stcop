@@ -5,7 +5,7 @@
 #include "../InventoryOwner.h"
 #include "../../xrUI/UICursor.h"
 #include "UICellItem.h"
-#include "../Medkit.h"
+#include "../medkit.h"
 #include "../eatable_item_object.h"
 #include "../WeaponMagazined.h"
 #include "../PDA.h"

@@ -4,8 +4,8 @@
 #include "../xrScripts/script_export_space.h"
 #include "PowerCell.h"
 #include "pch_script.h"
-#include "..\xrUI\Widgets\UIPropertiesBox.h"
-#include "..\xrUI\Widgets\UIListBoxItem.h"
+#include "../xrUI/Widgets/UIPropertiesBox.h"
+#include "../xrUI/Widgets/UIListBoxItem.h"
 
 class CUIProgressBar;
 

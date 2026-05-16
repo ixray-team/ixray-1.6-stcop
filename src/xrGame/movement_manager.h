@@ -11,23 +11,19 @@
 #include "ai_monster_space.h"
 #include "graph_engine_space.h"
 #include "game_graph_space.h"
+#include "movement_manager_space.h"
+#include "detail_path_manager_space.h"
 
-namespace MovementManager {
-	enum EPathType;
-};
-
-namespace DetailPathManager {
-	enum EDetailPathType;
-};
-
-template <
+template 
+<
 	typename _Graph,
 	typename _VertexEvaluator,
 	typename _vertex_id_type
 >
 class CBaseLocationSelector;
 
-template <
+template 
+<
 	typename _Graph,
 	typename _VertexEvaluator,
 	typename _vertex_id_type,
@@ -35,14 +31,16 @@ template <
 >
 class CBasePathManager;
 
-template <
+template 
+<
 	typename _dist_type,
 	typename _index_type,
 	typename _iteration_type
 >
 struct SVertexType;
 
-template <
+template 
+<
 	typename _dist_type,
 	typename _index_type,
 	typename _iteration_type
@@ -69,8 +67,8 @@ namespace DetailPathManager {
 class CLevelPathBuilder;
 class CDetailPathBuilder;
 
-class CMovementManager {
-private:
+class CMovementManager 
+{
 	friend class CLevelPathBuilder;
 	friend class CDetailPathBuilder;
 
