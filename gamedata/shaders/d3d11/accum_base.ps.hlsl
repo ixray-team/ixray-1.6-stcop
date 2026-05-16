@@ -31,6 +31,7 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
     Lightmap *= max(Ldynamic_hud, shadow_local(PS.xyz / PS.w));
 
     #ifdef USE_HUD_SHADOWS
+		[branch]
 		if (O.Depth < 0.02f && dot(Lightmap.xyz, Light.xyz) > EPS_S)
 		{
 			Lightmap *= RayTraceContactShadow(I.tc.xy / I.tc.w, O.PointHud, LightDirection);
@@ -38,13 +39,21 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
     #endif
 #endif
 
-#ifdef USE_LMAP
+#if defined(USE_LMAP) || defined(USE_SMAP)
 	Point = float4(O.Point.xyz, 1.0f);
 	PS = mul(m_shadow, Point);
+#endif
+
+#ifdef USE_SMAP
+	Lightmap *= O.Depth > 0.02f ? s_mask.SampleLevel(smp_rtlinear, PS.xy / PS.w, 0.0f).xyz : 1.0f;
+#endif
+
+#ifdef USE_LMAP
     #ifdef USE_LMAPXFORM
 		PS.x = dot(Point, m_lmap[0]);
 		PS.y = dot(Point, m_lmap[1]);
     #endif
+	
     Lightmap *= GammaToLinear(s_lmap.SampleLevel(smp_rtlinear, PS.xy / PS.w, 0.0f).xyz);
 #endif
 	

@@ -129,17 +129,21 @@ void CRenderTarget::accum_spot(light* L)
 	// Draw volume with projective texgen
 	{
 		// Select shader
-		u32		_id = 0;
-		if(L->flags.bShadow) {
-			bool	bFullSize = (L->X.S.size == RImplementation.o.smapsize);
-			if(L->X.S.transluent)	_id = SE_L_TRANSLUENT;
-			else if(bFullSize)	_id = SE_L_FULLSIZE;
-			else					_id = SE_L_NORMAL;
+		u32 _id = 0;
+
+		if(L->flags.bShadow) 
+		{
+			bool bFullSize = (L->X.S.size == RImplementation.o.smapsize);
+			if (L->X.S.transluent)	_id = SE_L_TRANSLUENT;
+			else if (bFullSize)	_id = SE_L_FULLSIZE;
+			else _id = SE_L_NORMAL;
 		}
-		else {
+		else
+		{
 			_id = SE_L_UNSHADOWED;
 			m_Shadow = m_Lmap;
 		}
+
 		RCache.set_Element(shader->E[_id]);
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
 
