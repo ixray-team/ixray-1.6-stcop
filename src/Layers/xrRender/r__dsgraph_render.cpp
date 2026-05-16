@@ -273,7 +273,6 @@ void R_dsgraph_structure::r_dsgraph_render_sorted(bool render_hud)
 {
 	PROF_EVENT("r_dsgraph_render_sorted");
 
-	// Sorted (back to front)
 	mapSorted.traverseRL(sorted_L1);
 	mapSorted.clear();
 
@@ -288,7 +287,8 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 	PROF_EVENT("r_dsgraph_render_sorted_hud");
 
 	CHudInitializer initalizer(true, true);
-	RenderMap(mapHUDSorted);
+	mapHUDSorted.traverseRL(sorted_L1);
+	mapHUDSorted.clear();
 }
 
 void R_dsgraph_structure::r_dsgraph_render_emissive()
