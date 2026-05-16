@@ -26,7 +26,7 @@ else()
             CC=${CMAKE_C_COMPILER}
             CXX=${CMAKE_CXX_COMPILER}
             CFLAGS=${CMAKE_C_FLAGS}
-            ./configure --prefix=${THEORA_INSTALL_DIR} --disable-shared --enable-static --with-pic &&
+            ./configure --prefix=${THEORA_INSTALL_DIR} --disable-shared --enable-static --with-pic --disable-examples &&
             make -j${CMAKE_BUILD_PARALLEL_LEVEL} &&
             make install
         BYPRODUCTS 

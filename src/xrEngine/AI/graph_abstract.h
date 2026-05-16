@@ -13,16 +13,16 @@
 #include "../xrServerEntities/object_broker.h"
 
 template <
-	typename _data_type = xr_empty,
-	typename _edge_weight_type = float,
-	typename _vertex_id_type = u32,
-	typename _edge_data_type = xr_empty
+	typename typename _data_type = xr_empty,
+	typename typename _edge_weight_type = float,
+	typename typename __vertex_id_type = u32,
+	typename typename _edge_data_type = xr_empty
 >
 class CGraphAbstract {
 public:
 	typedef CVertex<
 		_data_type,
-		_vertex_id_type,
+		__vertex_id_type,
 		CGraphAbstract
 	>												CVertex;
 
@@ -33,7 +33,7 @@ public:
 	>												CEdge;
 
 public:
-	typedef xr_map<_vertex_id_type,CVertex*>		VERTICES;
+	typedef xr_map<__vertex_id_type,CVertex*>		VERTICES;
 	typedef typename CVertex::EDGES					EDGES;
 
 public:
@@ -41,7 +41,7 @@ public:
 	typedef typename VERTICES::iterator				vertex_iterator;
 	typedef typename EDGES::const_iterator			const_iterator;
 	typedef typename EDGES::iterator				iterator;
-	typedef _vertex_id_type							_vertex_id_type;
+	typedef __vertex_id_type						_vertex_id_type;
 
 private:
 	VERTICES					m_vertices;

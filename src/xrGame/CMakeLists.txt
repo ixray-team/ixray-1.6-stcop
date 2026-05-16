@@ -232,7 +232,7 @@ endif()
 # Move precompiled header
 set_target_properties(xrGame PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 
-if (NOT IXRAY_UNITYBUILD)
+if (NOT IXRAY_UNITYBUILD AND WIN32)
 	set_target_properties(xrGame PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
 	set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
 	target_precompile_headers(xrGame PUBLIC "stdafx.h")

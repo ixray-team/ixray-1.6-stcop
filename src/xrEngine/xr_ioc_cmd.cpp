@@ -184,15 +184,18 @@ public:
 	    		u32 right = width - len - left;
 
 	    		u32 char_pos = 0;
-	    	
+#ifdef IXR_WINDOWS
 	    		for (u32 i = 0; i < left; ++i)
 	    			out[char_pos++] = VK_SPACE;
+#endif
 
 	    		for (u32 i = 0; i < len; ++i)
 	    			out[char_pos++] = str[i];
 
+#ifdef IXR_WINDOWS
 	    		for (u32 i = 0; i < right; ++i)
 	    			out[char_pos++] = VK_SPACE;
+#endif
 
 	    		out[char_pos] = '\0';
 	    	};
