@@ -1,7 +1,7 @@
 // xrPhysics.cpp : Defines the entry point for the DLL application.
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "xrPhysics.h"
 
 #include "../3rd-party/ode/include/ode/memory.h"
