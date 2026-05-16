@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "physics_scripted.h"
 
 cphysics_scripted::	~cphysics_scripted()
