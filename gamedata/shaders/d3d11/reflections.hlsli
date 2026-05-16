@@ -302,10 +302,7 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
 #endif
 
     float3 Color = s_image.SampleLevel(smp_rtlinear, ReflUV, 0).xyz;
-	Color *= rcp(1.0f + Color);
-	
-	Color = saturate(Color);
-	Color *= rcp(1.0f - max(EPS, Color));
+	Color = clamp(Color, 0.0f, 20.0f);
 	
     return float4(Color, Fade);
 }

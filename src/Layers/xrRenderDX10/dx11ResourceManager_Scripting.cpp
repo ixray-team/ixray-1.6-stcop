@@ -82,9 +82,8 @@ public:
 	adopt_compiler&			_fog			(bool	_fog)							{	C->PassSET_LightFog	(false,_fog);			return	*this;		}
 	adopt_compiler&			_ZB				(bool	_test,	bool _write)			{	C->PassSET_ZB		(_test,_write);			return	*this;		}
 	adopt_compiler&			_blend			(bool	_blend, u32 abSRC, u32 abDST)	{	C->PassSET_ablend_mode(_blend,abSRC,abDST);	return 	*this;		}
+	adopt_compiler&			_iblend			(int idx, bool	_blend, u32 abSRC, u32 abDST)	{	C->PassSET_ablend_mode(idx, _blend,abSRC,abDST);	return 	*this;		}
 	adopt_compiler&			_aref			(bool	_aref,  u32 aref)				{	C->PassSET_ablend_aref(_aref,aref);			return 	*this;		}
-	adopt_compiler&			_export_macros	(const char*	_name, const char* _def)				{	RImplementation.addShaderOption(_name, _def);	return 	*this;		}
-	adopt_compiler&			_clear_macros	()				{	RImplementation.clearAllShaderOptions();	return 	*this;		}
 	adopt_compiler&			_dx10texture	(const char* _resname, const char* _texname)		{	C->r_dx10Texture(_resname, _texname);		return	*this;		}
 	adopt_dx10sampler		_dx10sampler	(const char* _name)							{	u32 s = C->r_dx10Sampler(_name);			return	adopt_dx10sampler(C,s);	}
 
@@ -115,11 +114,28 @@ public:
 
 void LuaLog(const char* caMessage)
 {
-	Lua::LuaOut	(Lua::eLuaMessageTypeMessage,"%s",caMessage);
+//	Lua::LuaOut	(Lua::eLuaMessageTypeMessage,"%s",caMessage);
+	Log(caMessage);
 }
+
 void LuaError(lua_State* L)
 {
 	Debug.fatal(DEBUG_INFO,"LUA error: %s",lua_tostring(L,-1));
+}
+
+void LuaAddShaderOption(const char* _name, const char* _def) 
+{ 
+	RImplementation.addShaderOption(_name, _def);
+}
+
+bool LuaGetShaderOption(const char* _name)
+{
+	return EngineExternal().ShadersOptions.contains(xr_string(_name));
+}
+
+void LuaClearAllShaderOptions()
+{ 
+	RImplementation.clearAllShaderOptions(); 
 }
 
 // export
@@ -161,10 +177,8 @@ void	CResourceManager::LS_Load			()
 			.def("fog",							&adopt_compiler::_fog			,return_reference_to<1>())
 			.def("zb",							&adopt_compiler::_ZB			,return_reference_to<1>())
 			.def("blend",						&adopt_compiler::_blend			,return_reference_to<1>())
+			.def("iblend",						&adopt_compiler::_iblend		,return_reference_to<1>())
 			.def("aref",						&adopt_compiler::_aref			,return_reference_to<1>())
-
-			.def("add_shader_option",			&adopt_compiler::_export_macros	,return_reference_to<1>())
-			.def("clear_all_shader_options",	&adopt_compiler::_clear_macros	,return_reference_to<1>())
 
 			//	For compatibility only
 			.def("dx10color_write_enable",		&adopt_compiler::_dx10color_write_enable,return_reference_to<1>())
@@ -218,7 +232,11 @@ void	CResourceManager::LS_Load			()
 				value("decr",					int(D3DSTENCILOP_DECR))
 			],
 
-		def("log", LuaLog)
+		def("log", LuaLog),
+
+		def("AddShaderOption", LuaAddShaderOption),
+		def("GetShaderOption", LuaGetShaderOption),
+		def("ClearAllShaderOptions", LuaClearAllShaderOptions)
 	];
 
 	// load shaders

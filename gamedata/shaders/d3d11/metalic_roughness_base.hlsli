@@ -79,9 +79,14 @@ struct IXRayGbufferPack
 struct IXRayForward
 {
     float4 Color : SV_Target0;
+	
+#ifndef DISABLE_MOTION_VECTORS
     float4 Velocity : SV_Target1;
 	
     float Reactive : SV_Target2;
+#else
+    float Reactive : SV_Target1;
+#endif
 };
 
 struct IXRayVSLRGBuffer
@@ -133,6 +138,14 @@ inline float3 NormalDecode(float2 InNormal)
     return normalize(Normal);
 }
 
+inline void WboitBufferPack(inout IXRayForward O, in float3 Point)
+{
+	O.Reactive = 1.0f - O.Color.w;
+	
+	O.Color.w = O.Color.w * O.Color.w * clamp(40.0f * rcp(1e-5 + dot(Point, Point)), 0.001, 3000);
+	O.Color.xyz = O.Color.xzy * O.Color.w;
+}
+
 inline void GbufferPack(inout IXRayGbufferPack O, inout IXRayMaterial M)
 {
     O.Color.xyz = M.Color.xyz;
@@ -149,8 +162,8 @@ inline void GbufferPack(inout IXRayGbufferPack O, inout IXRayMaterial M)
 #else
 	O.Color.w = M.AO;
 
-	O.Material.x = M.Roughness;
-	O.Material.y = M.Metalness;
+	O.Material.x = M.Metalness;
+	O.Material.y = M.Roughness;
 	O.Material.z = M.Specular;
 	O.Material.w = M.SSS;
 	
@@ -188,8 +201,8 @@ inline void GbufferUnpackMaterial(inout IXRayGbufferPack O, inout IXRayMaterial 
 #else
     M.AO = O.Color.w;
 
-    M.Roughness = O.Material.x;
-    M.Metalness = O.Material.y;
+    M.Metalness = O.Material.x;
+    M.Roughness = O.Material.y;
     M.Specular = O.Material.z;
     M.SSS = O.Material.w;
 
@@ -349,10 +362,10 @@ inline void GbufferUnpackColor(in uint2 TexCoord, inout IXRayGbuffer O)
 	Surface.z = GammaToLinear(Surface.z);
 	
 	O.SSS = Surface.w;
-	O.Roughness = Surface.x;
+	O.Roughness = Surface.y;
 	
-	O.Specular = lerp(Surface.z, Sample.xyz, Surface.y);
-	O.Color = Sample.xyz * float(1.0f - Surface.y);
+	O.Specular = lerp(Surface.z, Sample.xyz, Surface.x);
+	O.Color = Sample.xyz * float(1.0f - Surface.x);
 #endif
 }
 
