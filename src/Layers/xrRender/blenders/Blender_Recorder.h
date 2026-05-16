@@ -17,6 +17,7 @@ public:
 	bool				bDetail_Diffuse;
 	bool				bDetail_Bump;
 	bool				bUseSteepParallax;
+	bool				bHudElement;
 	int					iElement;
 
 public:

@@ -196,7 +196,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 		mapHUDScopeMask.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh_d });
 	}
 
-	ShaderElement* sh = RImplementation.rimp_select_sh_dynamic(pVisual, distSQ);
+	ShaderElement* sh = RImplementation.rimp_select_sh_dynamic(pVisual, distSQ, bHUD);
 
 	if (!sh || RI.val_bInvisible)
 	{
@@ -248,12 +248,12 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 
 		// Shadows registering
 #if RENDER==R_R1
-		_MatrixItem		item = { SSA,RI.val_pObject,pVisual,*RI.val_pTransform };
+		_MatrixItem item = { SSA,RI.val_pObject,pVisual,*RI.val_pTransform };
 		RI.L_Shadows->add_element(item);
 #endif
 
 		// strict-sorting selection
-		if (sh->flags.bStrictB2F && !pVisual->dcast_ParticleCustom())
+		if (sh->flags.bStrictB2F || pVisual->dcast_ParticleCustom())
 		{
 			mapSorted.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
 			return;
@@ -326,18 +326,8 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 #endif
 		mapMatrixStates::TNode*		Nstate	= Ncs->val.insert	(pass.state->state);
 		mapMatrixTextures::TNode*	Ntex	= Nstate->val.insert(pass.T._get());
-#if RENDER==R_R1
-		if (pVisual->dcast_ParticleCustom())
-			Ntex->val.particles.push_back(pVisual);
-		else
-			Ntex->val.visuals.push_back({ SSA, RI.val_pObject, pVisual, *RI.val_pTransform }); // TODO: Возможно сдохло при ребейзе
-#else
-		if(pVisual->dcast_ParticleCustom())
-			Ntex->val.particles.push_back(pVisual);
-		else
-			Ntex->val.visuals.push_back({ SSA, RI.val_pObject, pVisual, *RI.val_pTransform });
-#endif
 
+		Ntex->val.visuals.push_back({ SSA, RI.val_pObject, pVisual, *RI.val_pTransform });
 	}
 }
 

@@ -263,10 +263,10 @@ bool	CResourceManager::_lua_HasShader	(const char* s_shader)
 #endif
 }
 
-Shader*	CResourceManager::_lua_Create		(const char* d_shader, const char* s_textures)
+Shader* CResourceManager::_lua_Create(const char* d_shader, const char* s_textures)
 {
-	CBlender_Compile	C;
-	Shader				S;
+	CBlender_Compile C;
+	Shader S;
 
 	// undecorate
 	string256	undercorated;
@@ -293,7 +293,9 @@ Shader*	CResourceManager::_lua_Create		(const char* d_shader, const char* s_text
 
 		if (C.bDetail)		S.E[0]	= C._lua_Compile(s_shader,"normal_hq");
 		else				S.E[0]	= C._lua_Compile(s_shader,"normal");
-	} else {
+	} 
+	else
+	{
 		if (Script::bfIsObjectPresent(LSVM,s_shader,"normal",LUA_TFUNCTION))
 		{
 			C.iElement			= 0;
@@ -302,7 +304,15 @@ Shader*	CResourceManager::_lua_Create		(const char* d_shader, const char* s_text
 		}
 	}
 
-	// Compile element	(LOD1)
+	// Compile element (HUD)
+	if (Script::bfIsObjectPresent(LSVM, s_shader, "normal_hud", LUA_TFUNCTION))
+	{
+		C.iElement = 5;
+		C.bDetail = dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+		S.E[5] = C._lua_Compile(s_shader, "normal_hud");
+	}
+
+	// Compile element (LOD1)
 	if (Script::bfIsObjectPresent(LSVM,s_shader,"normal",LUA_TFUNCTION))
 	{
 		C.iElement			= 1;
@@ -336,14 +346,20 @@ Shader*	CResourceManager::_lua_Create		(const char* d_shader, const char* s_text
 
 	// Search equal in shaders array
 	for (u32 it=0; it<v_shaders.size(); it++)
-		if (S.equal(v_shaders[it]))	return v_shaders[it];
+	{
+		if (S.equal(v_shaders[it]))	
+		{
+			return v_shaders[it];
+		}
+	}
 
 	// Create _new_ entry
 	Shader* N = new Shader();
 	N->_copy(S);
 
-	N->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-	v_shaders.push_back		(N);
+	N->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+	v_shaders.push_back(N);
+
 	return N;
 }
 
