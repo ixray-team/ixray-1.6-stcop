@@ -757,31 +757,71 @@ void CRender::Render()
 	//HWOCC.occq_stats();
 }
 
-void CRender::render_forward				()
+void CRender::render_forward()
 {
 	VERIFY	(0==mapDistort.size() + mapHUDDistort.size());
-	RImplementation.o.distortion				= RImplementation.o.distortion_enabled;	// enable distorion
+	RImplementation.o.distortion = RImplementation.o.distortion_enabled;	// enable distorion
 
-	//******* Main render - second order geometry (the one, that doesn't support deffering)
-	//.todo: should be done inside "combine" with estimation of of luminance, tone-mapping, etc.
+	// level enable priority "1"
+	r_pmask(false, true);
+	phase = PHASE_NORMAL;
+
+	render_main(false);
+	mapLOD.clear();
+
+	bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size();
+	bSpecial |= mapNormalPasses[1][1].size() || mapMatrixPasses[1][1].size();
+
+	// May be WBOIT
+	r_dsgraph_render_graph(1);
+
+	bool bDistort = RImplementation.mapDistort.size() || RImplementation.mapHUDDistort.size();
+	GRHI->ClearTarget(Target->rt_Generic_1->pRT, ERTColor::Gray);
+
+	if (bDistort)
 	{
-		// level
-		r_pmask									(false,true);			// enable priority "1"
-		phase									= PHASE_NORMAL;
-		render_main								(false);//
-		//	Igor: we don't want to render old lods on next frame.
-		mapLOD.clear							();
-		r_dsgraph_render_graph					(1)	;					// normal level, secondary priority
-		PortalTraverser.fade_render				()	;					// faded-portals
-		r_dsgraph_render_sorted					(false)	;					// strict-sorted geoms
-		g_pGamePersistent->Environment().RenderLast()	;					// rain/thunder-bolts
+		GPU_EVENT(render_distort_objects);
 
-		if(mapHUDSorted.size() > 0)
-		{
-			GRHI->CopySurface(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
-			r_dsgraph_render_sorted_hud();
-		}
+		Target->u_setrt(Target->rt_Generic_1, 0, 0, RDepth);
+
+		RImplementation.rmNormal();
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+		RCache.set_Stencil(FALSE);
+		RCache.set_ColorWriteEnable();
+		RImplementation.r_dsgraph_render_distort();
 	}
 
-	RImplementation.o.distortion				= false;				// disable distorion
+	if(bDistort || bSpecial)
+	{
+		Target->u_setrt(Target->rt_Accumulator, 0, 0, 0);
+
+		RCache.set_Element(Target->s_combine->E[1]);
+		RCache.set_Geometry(Target->FSTriangleGeom);
+
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+		GRHI->CopySurface(Target->rt_Generic_0->pSurface, Target->rt_Accumulator->pSurface);
+	}
+
+	RImplementation.o.distortion = false;
+
+	if(RImplementation.o.dx11_disable_motion_vectors)
+	{
+		Target->u_setrt(Target->rt_Generic_0, nullptr, RDepth);
+	}
+	else
+	{
+		Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, RDepth);
+	}
+
+	PortalTraverser.fade_render();
+	r_dsgraph_render_sorted(false);
+
+	g_pGamePersistent->Environment().RenderLast();
+	Target->phase_combine_volumetric();
+
+	if(mapHUDSorted.size() > 0)
+	{
+	 	GRHI->CopySurface(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
+		r_dsgraph_render_sorted_hud();
+	}
 }

@@ -269,6 +269,8 @@ void CRender::create()
 	}
 
 	o.dx11_disable_motion_vectors = !!EngineExternal().ShadersOptions.contains(xr_string("DISABLE_MOTION_VECTORS"));
+	o.dx11_allow_wboit_transparency = !!EngineExternal().ShadersOptions.contains(xr_string("ALLOW_WBOIT_TRANSPARENCY"));
+
 	o.dx11_enable_tessellation = RFeatureLevel >= D3D_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
 
 	// constants

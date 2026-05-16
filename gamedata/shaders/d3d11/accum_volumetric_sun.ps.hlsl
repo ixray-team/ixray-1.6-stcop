@@ -95,7 +95,8 @@ float4 main(PSInputFullscreen I) : SV_Target
     float cosTheta = dot(Ldir, O.View);
     // since density is isomorphic and light dir constant - we can take phase out of loop
     float phase = PhaseFunction_Schlick(PHASE_G, cosTheta);
-    [unroll]
+	
+    [loop]
     for (int i = 0; i < RAY_SAMPLES; ++i)
     {
         if (depth > 0.3f)

@@ -9,12 +9,27 @@ local tex_env1 = "$user$sky1"
 local tex_leaves = "water\\water_foam"
 
 function normal(shader, t_base, t_second, t_detail)
+
+	local wboit = GetShaderOption("ALLOW_WBOIT_TRANSPARENCY")
+	
     shader:begin("water", "water")
-        :sorting(2, false)
-        :blend(true, blend.srcalpha, blend.invsrcalpha)
-        :zb(true, false)
-        :distort(true)
-        :fog(true)
+
+	:sorting(2, false)
+	
+	:zb(true, false)
+	:distort(true)
+	:fog(true)
+	
+	if wboit then
+		shader:blend(true, blend.one, blend.one)
+		: iblend(2, true, blend.destcolor, blend.zero)
+		: iblend(1, true, blend.srcalpha, blend.invsrcalpha)
+		
+		log("Water shader " .. t_base .. " WBOIT ON")
+	else
+		shader:blend(true, blend.srcalpha, blend.invsrcalpha)
+		log("Water shader " .. t_base .. " WBOIT OFF")
+	end
 
     shader:dx10texture("s_base", tex_base)
 
@@ -49,11 +64,11 @@ end
 
 function l_special(shader, t_base, t_second, t_detail)
     shader:begin("water", "waterd")
-        :sorting(2, true)
-        :blend(true, blend.srcalpha, blend.invsrcalpha)
-        :zb(true, false)
-        :fog(false)
-        :distort(true)
+	
+	:blend(true, blend.srcalpha, blend.invsrcalpha)
+	:zb(true, false)
+	:fog(false)
+	:distort(true)
 
     shader:dx10color_write_enable(true, true, true, false)
 

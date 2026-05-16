@@ -2,7 +2,28 @@
 
 void CRenderTarget::phase_scene_forward()
 {
-	u_setrt(rt_Generic_0, rt_Velocity, 0, RDepth);
+	if (RImplementation.o.dx11_disable_motion_vectors)
+	{
+		if (RImplementation.o.dx11_allow_wboit_transparency)
+		{
+			u_setrt(rt_Forward, rt_Revealage, RDepth);
+		}
+		else
+		{
+			u_setrt(rt_Generic_0, nullptr, RDepth);
+		}
+	}
+	else 
+	{
+		if (RImplementation.o.dx11_allow_wboit_transparency)
+		{
+			u_setrt(rt_Forward, rt_Velocity, rt_Revealage, RDepth);
+		}
+		else
+		{
+			u_setrt(rt_Generic_0, rt_Velocity, RDepth);
+		}
+	}
 }
 
 // startup

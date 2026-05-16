@@ -61,6 +61,7 @@ public:
 		u32 dx11_use_legacy_light : 1;
 		u32 dx11_enable_tessellation : 1;
 		u32 dx11_disable_motion_vectors : 1;
+		u32 dx11_allow_wboit_transparency : 1;
 	} o;
 
 	struct _stats

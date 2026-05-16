@@ -59,6 +59,9 @@
 	#define r2_RT_backbuffer_lut "$user$backbufferlut"
 	#define r2_RT_backbuffer_AA "$user$backbuffer_aa"
 
+	#define r2_RT_wboit "$user$wboit"
+	#define r2_RT_wboit_revealage "$user$wboit_revealage"
+
 	#define r2_RT_bloomA  "$user$bloomA"
 	#define r2_RT_bloomB  "$user$bloomB"
 	#define r2_RT_bloomC  "$user$bloomC"
