@@ -13,10 +13,10 @@
 #include "../xrServerEntities/object_broker.h"
 
 template <
-	typename typename _data_type = xr_empty,
-	typename typename _edge_weight_type = float,
-	typename typename __vertex_id_type = u32,
-	typename typename _edge_data_type = xr_empty
+	typename _data_type = xr_empty,
+	typename _edge_weight_type = float,
+	typename __vertex_id_type = u32,
+	typename _edge_data_type = xr_empty
 >
 class CGraphAbstract {
 public:
@@ -50,6 +50,7 @@ private:
 public:
 	IC									CGraphAbstract	();
 	virtual								~CGraphAbstract	();
+	IC		bool						Search			(_vertex_id_type start_vertex_id, _vertex_id_type dest_vertex_id,xr_vector<_vertex_id_type>& OutPath, _edge_weight_type MaxRange = type_max(_edge_weight_type), u32 MaxIterationCount = 0xFFFFFFFF,u32 MaxVisitedNodeCount = 0xFFFFFFFF, _edge_weight_type* LastCost = nullptr) const;
 	IC		bool						operator==		(const CGraphAbstract &obj) const;
 	IC		void						clear			();
 	IC		void						add_vertex		(const _data_type &data, const _vertex_id_type &vertex_id);
@@ -84,5 +85,31 @@ public:
 	virtual void						save			(IWriter &stream);
 	virtual void						load			(IReader &stream);
 };
+
+template <typename _data_type, typename _edge_weight_type, typename _vertex_id_type, typename _edge_data_type>
+IC void delete_abstract_data(const CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type, _edge_data_type>& graph_)
+{
+	using Graph = CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type, _edge_data_type>;
+
+	Graph& graph = const_cast<Graph&>(graph_);
+
+	using Vertices = typename Graph::VERTICES;
+	using Edges = typename Graph::EDGES;
+
+	Vertices& verts = graph.vertices();
+
+	for (auto vi = verts.begin(); vi != verts.end(); ++vi)
+	{
+		auto vert = (*vi).second;
+		delete_data(vert->data());
+
+		Edges& edges = const_cast<Edges&>(vert->edges());
+		for (auto ei = edges.begin(); ei != edges.end(); ++ei)
+		{
+			auto& edge = (*ei);
+			delete_data(edge.data());
+		}
+	}
+}
 
 #include "graph_abstract_inline.h"
