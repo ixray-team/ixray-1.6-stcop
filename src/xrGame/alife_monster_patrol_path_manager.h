@@ -15,11 +15,6 @@
 class CMovementManagerHolder;
 class CPatrolPath;
 
-namespace PatrolPathManager {
-	enum EPatrolStartType;
-	enum EPatrolRouteType;
-};
-
 class CALifeMonsterPatrolPathManager {
 public:
 	typedef CMovementManagerHolder								object_type;

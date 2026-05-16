@@ -8,7 +8,7 @@
 #include "../Artefact.h"
 #include "../CustomDetector.h"
 #include "../Torch.h"
-#include "../Pda.h"
+#include "../PDA.h"
 #include "../CustomDevice.h"
 #include "../eatable_item.h"
 #include "../medkit.h"

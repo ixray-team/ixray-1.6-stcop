@@ -12,10 +12,6 @@
 #include "../xrScripts/script_export_space.h"
 #include "sight_manager_space.h"
 
-namespace SightManager {
-	enum ESightType;
-};
-
 class CScriptGameObject;
 
 class CScriptWatchAction : public CScriptAbstractAction {

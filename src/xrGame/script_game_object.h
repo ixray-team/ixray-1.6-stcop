@@ -40,26 +40,25 @@
 #include "danger_manager.h"		
 #include "GameTaskDefs.h"
 #include "antigas_filter.h"
+#include "sight_manager_space.h"
+#include "detail_path_manager_space.h"
+#include "movement_manager_space.h"
+#include "script_entity_space.h"
+#include "alife_space.h"
+#include "pda_space.h"
+#include "../xrSound/ai_sounds.h"
+#include "GameTaskDefs.h"
+#include "patrol_path_manager_space.h"
+#include "ai_monster_space.h"
+#include "game_object_space.h"
+#include "EntityCondition.h"
+#include "actor_defs.h"
 
-enum EPdaMsg;
-enum ESoundTypes;
-enum ETaskState;
-
-namespace ALife { enum ERelationType; }
-namespace ScriptEntity { enum EActionType; }
-namespace MovementManager { enum EPathType; }
-namespace DetailPathManager { enum EDetailPathType; }
-namespace SightManager { enum ESightType; }
 namespace smart_cover { class object; }
 namespace doors { class door; }
 
 class NET_Packet;
 class CGameTask;
-
-namespace PatrolPathManager { 
-	enum EPatrolStartType;
-	enum EPatrolRouteType;
-};
 
 namespace MemorySpace {
 	struct CMemoryInfo;
@@ -67,28 +66,6 @@ namespace MemorySpace {
 	struct CSoundObject;
 	struct CHitObject;
 	struct CNotYetVisibleObject;
-};
-
-namespace MonsterSpace {
-	enum EBodyState;
-	enum EMovementType;
-	enum EMovementDirection;
-	enum EDirectionType;
-	enum EPathState;
-	enum EObjectAction;
-	enum EMentalState;
-	enum EScriptMonsterMoveAction;
-	enum EScriptMonsterSpeedParam;
-	enum EScriptMonsterAnimAction;
-	enum EScriptMonsterGlobalAction;
-	enum EScriptSoundAnim;
-	enum EMonsterSounds;
-	enum EMonsterHeadAnimType;
-	struct SBoneRotation;
-};
-
-namespace GameObject {
-	enum ECallbackType;
 };
 
 class CGameObject;
@@ -112,14 +89,6 @@ class CScriptGameObject;
 class CZoneCampfire;
 class CPhysicObject;
 class CArtefact;
-
-enum EBoostParams;
-
-namespace ACTOR_DEFS {
-	enum EMovementStates;
-	enum EMoveCommand;
-};
-
 
 #ifdef DEBUG
 	template <typename _object_type>
@@ -149,10 +118,6 @@ namespace ACTOR_DEFS {
 #endif // DEBUG
 
 class CScriptGameObject;
-
-namespace SightManager {
-	enum ESightType;
-}
 
 struct CSightParams {
 	SightManager::ESightType	m_sight_type;
