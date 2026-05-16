@@ -40,7 +40,7 @@ public:
 
 float r_dtex_range = 50.f;
 
-ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float cdist_sq)
+ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float cdist_sq, bool is_hud)
 {
 	if (!!RImplementation.val_bUI)
 	{
@@ -56,6 +56,14 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
 
 	if (CRender::PHASE_NORMAL == RImplementation.phase)
 	{
+		if (is_hud)
+		{
+			if (auto pSh = pVisual->shader->E[SE_R2_HUD]._get())
+			{
+				return pSh;
+			}
+		}
+
 		id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range || psDeviceFlags.test(rsClearBB)) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
 	}
 	else if (CRender::PHASE_REFLECT == RImplementation.phase) 
