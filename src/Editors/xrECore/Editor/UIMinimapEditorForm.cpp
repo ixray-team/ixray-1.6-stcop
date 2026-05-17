@@ -317,6 +317,8 @@ void UIMinimapEditorForm::RenderCanvas()
 						}
 						else 
 							element.RenderSize.x += def.x / m_Zoom;
+
+						element.RenderSize.y = element.RenderSize.x / element.aspectRatio;
 					}
 					else if (m_saveResizeMode == 2) 
 					{
@@ -327,6 +329,8 @@ void UIMinimapEditorForm::RenderCanvas()
 						}
 						else
 							element.RenderSize.y += def.y / m_Zoom;
+
+						element.RenderSize.x = element.RenderSize.y * element.aspectRatio;
 					}
 				}
 
@@ -1273,6 +1277,8 @@ int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 	//el.path = fn;
 	el.FileSize.x = W;
 	el.FileSize.y = H;
+
+	el.aspectRatio = (float)el.FileSize.x / (float)el.FileSize.y;
 
 	ID3DTexture2D* pTexture = nullptr;
 	{

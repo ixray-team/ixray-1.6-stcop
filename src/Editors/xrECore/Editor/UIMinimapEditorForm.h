@@ -12,6 +12,7 @@ private:
 		ImVec2 FileSize;
 		ImTextureID	Texture;
 		xr_string TexturePath;
+		float aspectRatio;
 		
 		bool EdSelected = false;
 		bool EdLocked = false;
