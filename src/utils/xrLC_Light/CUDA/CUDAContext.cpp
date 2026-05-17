@@ -27,14 +27,11 @@ xr_path GetExecutableDir()
 	return xr_path(xr_string(result, count)).parent_path();
 #endif
 }
-extern size_t GetMemory();
-
 // Чтобы CUDA Выделела память CPU - > Heap не рос там где не нужно !
 bool OptixContext::Initialize()
 {
 	clMsg("[Cuda] Memory Used: %u mb", GetCudaMemoryUsed() / 1024 / 1024);
 	
-	size_t Start = GetMemory();
 	// --- 1. Primary context через CUDA Runtime ---
 	CUDA_CHECK(cudaSetDevice(cudaDeviceId));
 
