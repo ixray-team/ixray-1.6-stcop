@@ -9,6 +9,7 @@
 
 // refs
 class	 CKinematics;
+class CSkeletonX;
 struct	SEnumVerticesCallback;
 
 #pragma warning(push)

@@ -10,10 +10,10 @@ IC bool		p_sort			(IBlender* A, IBlender* B)
 	return _stricmp(A->getComment(),B->getComment())<0;
 }
 
-#ifdef __BORLANDC__
-	#define TYPES_EQUAL(A,B) (typeid(A) == typeid(B))
-#else
+#ifdef IXR_WINDOWS
 	#define TYPES_EQUAL(A,B) (typeid(A).raw_name() == typeid(B).raw_name())
+#else
+	#define TYPES_EQUAL(A,B) (typeid(A) == typeid(B))
 #endif
 
 void		IBlender::CreatePalette(xr_vector<IBlender*> &palette)
