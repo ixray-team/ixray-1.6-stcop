@@ -32,6 +32,7 @@ if (NOT WIN32)
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX ".*AMDGPUTransferee.*")
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX ".*NvGPUTransferee.*")
 	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX ".*IntelGPUTransferee.*")
+	list(FILTER XRHI_SRC_FILES EXCLUDE REGEX "imgui_impl_dx(9|11)\\.cpp$")
 endif()
 
 # xrRHI project

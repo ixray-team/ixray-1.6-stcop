@@ -584,6 +584,7 @@ bool CRHI::IsTessPass() const
 
 u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSize)
 {
+#ifdef IXR_WINDOWS
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{
 		u32 Offsets[D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT] = {};
@@ -593,6 +594,7 @@ u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSiz
 		return Strides[0];
 	}
 	else
+#endif
 	{
 		VERIFY(!"Implement me!");
 	}

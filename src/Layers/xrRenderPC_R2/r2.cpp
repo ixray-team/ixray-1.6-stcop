@@ -831,35 +831,33 @@ HRESULT	CRender::shader_compile			(
 
 	if (FAILED(_result))
 	{
-		includer					Includer;
-		LPD3DBLOB pShaderBuf = nullptr;
-		LPD3DBLOB pErrorBuf = nullptr;
+		includer Includer;
+		xr_vector<u8> pShaderBuf;
+		xr_vector<u8> pErrorBuf;
 
-		_result = GRHI->BuildShader(pSrcData, SrcDataLen, "", defines, &Includer, pFunctionName, pTarget, Flags, 0, (void**)&pShaderBuf, (void**)&pErrorBuf);
+		_result = GRHI->BuildShader(pSrcData, SrcDataLen, "", defines, &Includer, pFunctionName, pTarget, Flags, 0, pShaderBuf, pErrorBuf);
 
 		if (SUCCEEDED(_result)) {
-			if (ps_r__common_flags.test(RFLAG_USE_CACHE)) {
+			if (ps_r__common_flags.test(RFLAG_USE_CACHE))
+			{
 				IWriter* file = FS.w_open(file_name);
-				u32 const crc = crc32(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
+				u32 const crc = crc32(pShaderBuf.data(), pShaderBuf.size());
 				file->w_u32(crc);
 				file->w_u32(RealCodeCRC);
-				file->w(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
+				file->w(pShaderBuf.data(), pShaderBuf.size());
 				FS.w_close				(file);
 			}
-			_result					= create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
+			_result					= create_shader(pTarget, (DWORD*)pShaderBuf.data(), pShaderBuf.size(), file_name, result, o.disasm);
 		}
-		else {
-//			Msg						( "! shader compilation failed" );
+		else 
+		{
 			Msg("! %s", file_name);
-			if ( pErrorBuf )
-				Msg("! error: %s",(LPCSTR)pErrorBuf->GetBufferPointer());
+			if (!pErrorBuf.empty())
+				Msg("! error: %s", (LPCSTR)pErrorBuf.data());
 			else
-				Msg					("Can't compile shader hr=0x%08x", _result);
+				Msg("Can't compile shader hr=0x%08x", _result);
 		}
 	}
 
-	//if (!SUCCEEDED(_result)) {
-	//	Msg							( "! FAILED" );
-	//}
-	return							_result;
+	return _result;
 }

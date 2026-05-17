@@ -31,6 +31,10 @@
 #pragma clang diagnostic ignored "-Wswitch-enum"
 #endif
 
+#ifdef IXR_LINUX
+#   define _Use_decl_annotations_
+#endif
+
 _Use_decl_annotations_
 HRESULT DirectX::CreateDDSTextureFromMemory(
     LPDIRECT3DDEVICE9 d3dDevice,
@@ -281,7 +285,7 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(
 _Use_decl_annotations_
 HRESULT DirectX::CreateDDSTextureFromFile(
     LPDIRECT3DDEVICE9 d3dDevice,
-    const wchar_t* fileName,
+    const char* fileName,
     LPDIRECT3DBASETEXTURE9* texture,
     bool generateMipsIfMissing) noexcept
 {
@@ -291,7 +295,7 @@ HRESULT DirectX::CreateDDSTextureFromFile(
 _Use_decl_annotations_
 HRESULT DirectX::CreateDDSTextureFromFileEx(
     LPDIRECT3DDEVICE9 d3dDevice,
-    const wchar_t* fileName,
+    const char* fileName,
     _In_ DWORD usage,
     _In_ D3DPOOL pool,
     bool generateMipsIfMissing,
@@ -336,7 +340,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(
 _Use_decl_annotations_
 HRESULT DirectX::CreateDDSTextureFromFile(
     LPDIRECT3DDEVICE9 d3dDevice,
-    const wchar_t* fileName,
+    const char* fileName,
     LPDIRECT3DTEXTURE9* texture,
     bool generateMipsIfMissing) noexcept
 {
@@ -366,7 +370,7 @@ HRESULT DirectX::CreateDDSTextureFromFile(
 _Use_decl_annotations_
 HRESULT DirectX::CreateDDSTextureFromFile(
     LPDIRECT3DDEVICE9 d3dDevice,
-    const wchar_t* fileName,
+    const char* fileName,
     LPDIRECT3DCUBETEXTURE9* texture) noexcept
 {
     if (texture)
@@ -395,7 +399,7 @@ HRESULT DirectX::CreateDDSTextureFromFile(
 _Use_decl_annotations_
 HRESULT DirectX::CreateDDSTextureFromFile(
     LPDIRECT3DDEVICE9 d3dDevice,
-    const wchar_t* szFileName,
+    const char* szFileName,
     LPDIRECT3DVOLUMETEXTURE9* texture) noexcept
 {
     if (texture)
@@ -425,7 +429,7 @@ HRESULT DirectX::CreateDDSTextureFromFile(
 _Use_decl_annotations_
 HRESULT DirectX::CreateDDSTextureFromFileEx(
     LPDIRECT3DDEVICE9 d3dDevice,
-    const wchar_t* fileName,
+    const char* fileName,
     DWORD usage,
     D3DPOOL pool,
     bool generateMipsIfMissing,
@@ -457,7 +461,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(
 _Use_decl_annotations_
 HRESULT DirectX::CreateDDSTextureFromFileEx(
     LPDIRECT3DDEVICE9 d3dDevice,
-    const wchar_t* fileName,
+    const char* fileName,
     DWORD usage,
     D3DPOOL pool,
     LPDIRECT3DCUBETEXTURE9* texture) noexcept
@@ -488,7 +492,7 @@ HRESULT DirectX::CreateDDSTextureFromFileEx(
 _Use_decl_annotations_
 HRESULT DirectX::CreateDDSTextureFromFileEx(
     LPDIRECT3DDEVICE9 d3dDevice,
-    const wchar_t* szFileName,
+    const char* szFileName,
     DWORD usage,
     D3DPOOL pool,
     LPDIRECT3DVOLUMETEXTURE9* texture) noexcept

@@ -32,9 +32,14 @@
 #include <memory>
 #include <new>
 
+#ifdef IXR_WINDOWS
 #include <wrl/client.h>
 
 using Microsoft::WRL::ComPtr;
+#else
+#define HRESULT_FROM_WIN32(x) E_FAIL
+#define _In_reads_bytes_(x)
+#endif
 
 //--------------------------------------------------------------------------------------
 // Macros
@@ -111,12 +116,40 @@ struct DDS_HEADER
 //--------------------------------------------------------------------------------------
 namespace
 {
+#ifdef IXR_WINDOWS
     struct handle_closer { void operator()(HANDLE h) noexcept { if (h) CloseHandle(h); } };
 
     using ScopedHandle = std::unique_ptr<void, handle_closer>;
 
     inline HANDLE safe_handle(HANDLE h) noexcept { return (h == INVALID_HANDLE_VALUE) ? nullptr : h; }
+#else
+    struct ScopedHandle 
+    { 
+        FileHandle File;
+        ScopedHandle(FileHandle Handle) : File(Handle)
+        {}
 
+        ~ScopedHandle()
+        {
+            if (File >= 0) close(File); 
+        }
+
+        int get()
+        {
+            return File;
+        }
+
+        bool operator!() const
+        {
+            return File < 0;
+        }
+    };
+    
+    inline int safe_handle(int h) noexcept
+    { 
+        return h; 
+    }
+#endif
     //--------------------------------------------------------------------------------------
     HRESULT LoadTextureDataFromMemory(
         _In_reads_(ddsDataSize) const uint8_t* ddsData,
@@ -178,7 +211,7 @@ namespace
 
     //--------------------------------------------------------------------------------------
     HRESULT LoadTextureDataFromFile(
-        _In_z_ const wchar_t* fileName,
+        _In_z_ const char* fileName,
         std::unique_ptr<uint8_t[]>& ddsData,
         const DDS_HEADER** header,
         const uint8_t** bitData,
@@ -192,21 +225,8 @@ namespace
         *bitSize = 0;
 
         // open the file
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) && false
-        ScopedHandle hFile(safe_handle(CreateFile2(fileName,
-            GENERIC_READ,
-            FILE_SHARE_READ,
-            OPEN_EXISTING,
-            nullptr)));
-#else
-        ScopedHandle hFile(safe_handle(CreateFileW(fileName,
-            GENERIC_READ,
-            FILE_SHARE_READ,
-            nullptr,
-            OPEN_EXISTING,
-            FILE_ATTRIBUTE_NORMAL,
-            nullptr)));
-#endif
+
+        ScopedHandle hFile(safe_handle(Platform::CreateFile(fileName, false)));
 
         if (!hFile)
         {
@@ -214,26 +234,16 @@ namespace
         }
 
         // Get the file size
-        FILE_STANDARD_INFO fileInfo;
-        if (!GetFileInformationByHandleEx(hFile.get(), FileStandardInfo, &fileInfo, sizeof(fileInfo)))
-        {
-            return HRESULT_FROM_WIN32(GetLastError());
-        }
-
-        // File is too big for 32-bit allocation, so reject read
-        if (fileInfo.EndOfFile.HighPart > 0)
-        {
-            return E_FAIL;
-        }
-
+        size_t FileSize = Platform::GetFileSize(hFile.get());
+        
         // Need at least enough data to fill the header and magic number to be a valid DDS
-        if (fileInfo.EndOfFile.LowPart < (sizeof(uint32_t) + sizeof(DDS_HEADER)))
+        if (FileSize < (sizeof(uint32_t) + sizeof(DDS_HEADER)))
         {
             return E_FAIL;
         }
 
         // create enough space for the file data
-        ddsData.reset(new (std::nothrow) uint8_t[fileInfo.EndOfFile.LowPart]);
+        ddsData.reset(new (std::nothrow) uint8_t[FileSize]);
         if (!ddsData)
         {
             return E_OUTOFMEMORY;
@@ -241,18 +251,13 @@ namespace
 
         // read the data in
         DWORD bytesRead = 0;
-        if (!ReadFile(hFile.get(),
-            ddsData.get(),
-            fileInfo.EndOfFile.LowPart,
-            &bytesRead,
-            nullptr
-        ))
+        if (!Platform::ReadFile(hFile.get(), ddsData.get(), FileSize))
         {
             ddsData.reset();
             return HRESULT_FROM_WIN32(GetLastError());
         }
 
-        if (bytesRead < fileInfo.EndOfFile.LowPart)
+        if (bytesRead < FileSize)
         {
             ddsData.reset();
             return E_FAIL;
@@ -289,7 +294,7 @@ namespace
         *header = hdr;
         auto offset = sizeof(uint32_t) + sizeof(DDS_HEADER);
         *bitData = ddsData.get() + offset;
-        *bitSize = fileInfo.EndOfFile.LowPart - offset;
+        *bitSize = FileSize - offset;
 
         return S_OK;
     }
@@ -766,7 +771,7 @@ namespace
     HRESULT CreateTextureFromDDS(
         _In_ LPDIRECT3DDEVICE9 device,
         _In_ const DDS_HEADER* header,
-        _In_reads_bytes_(bitSize) const uint8_t* bitData,
+        const uint8_t* bitData,
         _In_ size_t bitSize,
         _In_ DWORD usage,
         _In_ D3DPOOL pool,
@@ -862,7 +867,7 @@ namespace
                         // Copy stride line by line
                         for (size_t h = 0; h < NumRows; h++)
                         {
-                            memcpy_s(dptr, static_cast<size_t>(LockedBox.RowPitch), sptr, RowBytes);
+                            memcpy(dptr, sptr, RowBytes);
                             dptr += LockedBox.RowPitch;
                             sptr += RowBytes;
                         }
@@ -963,7 +968,7 @@ namespace
                         // Copy stride line by line
                         for (size_t r = 0; r < NumRows; r++)
                         {
-                            memcpy_s(pDestBits, static_cast<size_t>(LockedRect.Pitch), pSrcBits, RowBytes);
+                            memcpy(pDestBits, pSrcBits, RowBytes);
                             pDestBits += LockedRect.Pitch;
                             pSrcBits += RowBytes;
                         }
@@ -1048,7 +1053,7 @@ namespace
                     // Copy stride line by line
                     for (UINT h = 0; h < NumRows; h++)
                     {
-                        memcpy_s(pDestBits, static_cast<size_t>(LockedRect.Pitch), pSrcBits, RowBytes);
+                        memcpy(pDestBits, pSrcBits, RowBytes);
                         pDestBits += LockedRect.Pitch;
                         pSrcBits += RowBytes;
                     }
@@ -1092,7 +1097,7 @@ namespace DirectX
 
     HRESULT CreateDDSTextureFromFile(
         _In_ LPDIRECT3DDEVICE9 d3dDevice,
-        _In_z_ const wchar_t* fileName,
+        _In_z_ const char* fileName,
         _Outptr_ LPDIRECT3DBASETEXTURE9* texture,
         bool generateMipsIfMissing = false) noexcept;
 
@@ -1108,7 +1113,7 @@ namespace DirectX
 
     HRESULT CreateDDSTextureFromFileEx(
         _In_ LPDIRECT3DDEVICE9 d3dDevice,
-        _In_z_ const wchar_t* fileName,
+        _In_z_ const char* fileName,
         _In_ DWORD usage,
         _In_ D3DPOOL pool,
         bool generateMipsIfMissing,
@@ -1124,7 +1129,7 @@ namespace DirectX
 
     HRESULT CreateDDSTextureFromFile(
         _In_ LPDIRECT3DDEVICE9 d3dDevice,
-        _In_z_ const wchar_t* fileName,
+        _In_z_ const char* fileName,
         _Outptr_ LPDIRECT3DTEXTURE9* texture,
         bool generateMipsIfMissing = false) noexcept;
 
@@ -1136,7 +1141,7 @@ namespace DirectX
 
     HRESULT CreateDDSTextureFromFile(
         _In_ LPDIRECT3DDEVICE9 d3dDevice,
-        _In_z_ const wchar_t* fileName,
+        _In_z_ const char* fileName,
         _Outptr_ LPDIRECT3DCUBETEXTURE9* texture) noexcept;
 
     HRESULT CreateDDSTextureFromMemory(
@@ -1147,7 +1152,7 @@ namespace DirectX
 
     HRESULT CreateDDSTextureFromFile(
         _In_ LPDIRECT3DDEVICE9 d3dDevice,
-        _In_z_ const wchar_t* fileName,
+        _In_z_ const char* fileName,
         _Outptr_ LPDIRECT3DVOLUMETEXTURE9* texture) noexcept;
 
     // Type-specific extended versions
@@ -1162,7 +1167,7 @@ namespace DirectX
 
     HRESULT CreateDDSTextureFromFileEx(
         _In_ LPDIRECT3DDEVICE9 d3dDevice,
-        _In_z_ const wchar_t* fileName,
+        _In_z_ const char* fileName,
         _In_ DWORD usage,
         _In_ D3DPOOL pool,
         bool generateMipsIfMissing,
@@ -1178,7 +1183,7 @@ namespace DirectX
 
     HRESULT CreateDDSTextureFromFileEx(
         _In_ LPDIRECT3DDEVICE9 d3dDevice,
-        _In_z_ const wchar_t* fileName,
+        _In_z_ const char* fileName,
         _In_ DWORD usage,
         _In_ D3DPOOL pool,
         _Outptr_ LPDIRECT3DCUBETEXTURE9* texture) noexcept;
@@ -1193,7 +1198,7 @@ namespace DirectX
 
     HRESULT CreateDDSTextureFromFileEx(
         _In_ LPDIRECT3DDEVICE9 d3dDevice,
-        _In_z_ const wchar_t* fileName,
+        _In_z_ const char* fileName,
         _In_ DWORD usage,
         _In_ D3DPOOL pool,
         _Outptr_ LPDIRECT3DVOLUMETEXTURE9* texture) noexcept;

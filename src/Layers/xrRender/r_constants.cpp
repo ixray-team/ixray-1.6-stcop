@@ -74,8 +74,8 @@ ref_constant R_constant_table::get(shared_str& S)
 bool	R_constant_table::parse(void* _desc, u32 destination)
 {
 	D3DXSHADER_CONSTANTTABLE* desc = (D3DXSHADER_CONSTANTTABLE*)_desc;
-	D3DXSHADER_CONSTANTINFO* it = (D3DXSHADER_CONSTANTINFO*)(LPBYTE(desc) + desc->ConstantInfo);
-	LPBYTE					 ptr = LPBYTE(desc);
+	D3DXSHADER_CONSTANTINFO* it = (D3DXSHADER_CONSTANTINFO*)((u8*)(desc) + desc->ConstantInfo);
+	u8*					 ptr = (u8*)desc;
 	for (u32 dwCount = desc->Constants; dwCount; dwCount--, it++)
 	{
 		// Name
