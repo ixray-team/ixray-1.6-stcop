@@ -16,7 +16,7 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrSound/ai_sounds.h"
 #ifdef DEBUG
-#	include "phdebug.h"
+#	include "PHDebug.h"
 #endif
 
 #define PLAYING_ANIM_TIME 10000

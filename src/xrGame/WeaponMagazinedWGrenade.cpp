@@ -17,7 +17,7 @@
 #include "Weapons/Components/WeaponAmmoBones.h"
 
 #ifdef DEBUG
-#	include "phdebug.h"
+#	include "PHDebug.h"
 #endif
 
 void CWeaponMagazinedWGrenade::Load(const char* section)
