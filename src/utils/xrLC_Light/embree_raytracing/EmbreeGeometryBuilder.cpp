@@ -6,7 +6,7 @@
 #include <execution>
 #include <array>
  
-void TriangleContainer::RemoveDublicatesVertexs(bool isTransparent, bool enable_msg)
+void TriangleContainer::RemoveDublicatesVertexs( )
 {
     size_t VertexStart = verts_v.size();
 
@@ -88,11 +88,10 @@ void TriangleContainer::RemoveDublicatesVertexs(bool isTransparent, bool enable_
     raw_faces.clear();
     raw_faces.shrink_to_fit();
 
-    if (enable_msg)
-    Msg("$ Geometry %s Remove Dublicate Vertex : from %u to %u", isTransparent? "Transparent" : "Opacue", VertexStart, verts_v.size());
+    Msg("$ GeometryBuffer Remove Dublicate Vertex : from %u to %u", VertexStart, verts_v.size());
 }
  
-void TriangleContainer::RemoveDublicatesFaces(bool isTransparent, bool enable_msg)
+void TriangleContainer::RemoveDublicatesFaces( )
 {
     if (faces_v.empty())        return;
 
@@ -137,10 +136,7 @@ void TriangleContainer::RemoveDublicatesFaces(bool isTransparent, bool enable_ms
     faces_v.swap(new_faces);
     dummy.swap(new_dummy);
  
-    if (enable_msg)
-     Msg("$ Geometry %s Remove Dublicate Triangles : from %u to %u", 
-         isTransparent ? "Transparent" : "Opacue",
-         pFaces, faces_v.size());
+     Msg("$ GeometryBuffer Remove Dublicate Triangles : from %u to %u", pFaces, faces_v.size());
 }
 
 void TriangleContainer::ClearAll()
@@ -154,3 +150,11 @@ void TriangleContainer::ClearAll()
     dummy.shrink_to_fit();
 }
 
+
+void TriangleContainer::ClearFaces()
+{
+    faces_v.clear();
+    verts_v.clear();
+    faces_v.shrink_to_fit();
+    verts_v.shrink_to_fit();
+}

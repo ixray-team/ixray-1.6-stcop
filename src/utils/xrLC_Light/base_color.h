@@ -64,6 +64,22 @@ public:
 		C.rgb.x	=r._r();	C.rgb.y	=g._r();	C.rgb.z	=b._r();
 		C.hemi	=h._r();	C.sun	=s._r();	C._tmp_	=t._r();
 	}
+
+	void					_add(base_color_c C)
+	{
+ 		C.rgb.x += r._r();
+		C.rgb.y += g._r();	
+		C.rgb.z += b._r();
+ 		C.hemi  += h._r();	
+		C.sun   += s._r();	
+
+		r._w(C.rgb.x);		
+		g._w(C.rgb.y);
+		b._w(C.rgb.z);
+		h._w(C.hemi);		
+		s._w(C.sun);		 
+	}
+
 	bool					similar	( const base_color &c, float eps =EPS ) const;
 
 };

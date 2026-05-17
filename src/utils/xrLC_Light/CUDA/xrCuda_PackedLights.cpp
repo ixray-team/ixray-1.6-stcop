@@ -15,7 +15,6 @@ extern void ApplyColorGPU(size_t IndexTask, base_color_c& C);
  
 
 // Initializes
-
 void CUDA_PackedLighting::InitializeGPU()
 {
  	XRay::RayTrace::CUDA::InitializeGPU();
@@ -35,8 +34,7 @@ void CUDA_PackedLighting::DestroyGPU_Model()
 void CUDA_PackedLighting::RestartALL()
 {
 	// start
-	Recalculated = 0;
-	current_flags = 0;
+ 	current_flags = 0;
 
 	// clearing pool
 	task_colors.clear();
