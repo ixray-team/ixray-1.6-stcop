@@ -65,7 +65,6 @@ void WeaponUsageStatistic::SaveData()
 	if (aPlayersStatistic.empty()) return;
 
 	string64		GameType;
-	SYSTEMTIME		Time;	
 	switch ( GameID() )
 	{
 	case eGameIDDeathmatch:				xr_sprintf(GameType, "dm"); break;
@@ -76,9 +75,21 @@ void WeaponUsageStatistic::SaveData()
 		return;
 		break;
 	};
-	GetLocalTime(&Time);	
-	xr_sprintf(mFileName, "(%s)_(%s)_%02d.%02d.%02d_%02d.%02d.%02d.wus", *(Level().name()), GameType, Time.wMonth, Time.wDay, Time.wYear, Time.wHour, Time.wMinute, Time.wSecond);
 
+	auto now = std::chrono::system_clock::now();
+	auto time = std::chrono::system_clock::to_time_t(now);
+	auto local = *std::localtime(&time);
+
+	xr_sprintf(mFileName, "(%s)_(%s)_%02d.%02d.%02d_%02d.%02d.%02d.wus",
+	    Level().name().c_str(),
+	    GameType,
+	    local.tm_mon + 1,     
+	    local.tm_mday,        
+	    local.tm_year + 1900, 
+	    local.tm_hour,        
+	    local.tm_min,         
+	    local.tm_sec          
+	);
 
 	//---------------------------------------------------------
 	FS.update_path			(mFileName,"$logs$",mFileName);

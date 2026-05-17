@@ -3,7 +3,7 @@
 #include "game_sv_mp_script.h"
 #include "xrServer_script_macroses.h"
 #include "xrServer.h"
-#include "xrserver_objects_alife_monsters.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 #include "Level.h"
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"

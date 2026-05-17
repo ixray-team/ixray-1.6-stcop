@@ -7,7 +7,7 @@ shared_str const CGameSpy_SAKE::TryToTranslate(SAKERequestResult const & request
 {
 	string16 digit_dest;
 	string256 tmp_string = {};
-	_itoa_s(request_result, digit_dest, 10);
+	_itoa(request_result, digit_dest, 10);
 	xr_strconcat(
 		tmp_string,
 		"mp_sake_database_request_error_",
@@ -19,7 +19,7 @@ shared_str const CGameSpy_SAKE::TryToTranslate(SAKEStartRequestResult const & re
 {
 	string16 digit_dest;
 	string256 tmp_string = {};
-	_itoa_s(request_result, digit_dest, 10);
+	_itoa(request_result, digit_dest, 10);
 	xr_strconcat(
 		tmp_string,
 		"mp_sake_database_start_request_error_",
@@ -30,6 +30,7 @@ shared_str const CGameSpy_SAKE::TryToTranslate(SAKEStartRequestResult const & re
 
 void CGameSpy_SAKE::LoadGameSpySAKE()
 {
+#ifdef XR_MP_BUILD
 	GAMESPY_LOAD_FN(xrGS_sakeStartup);
 	GAMESPY_LOAD_FN(xrGS_sakeShutdown);
 	GAMESPY_LOAD_FN(xrGS_sakeSetProfile);
@@ -37,6 +38,7 @@ void CGameSpy_SAKE::LoadGameSpySAKE()
 	GAMESPY_LOAD_FN(xrGS_sakeGetMyRecords);
 	GAMESPY_LOAD_FN(xrGS_sakeCreateRecord);
 	GAMESPY_LOAD_FN(xrGS_sakeUpdateRecord);
+#endif
 }
 
 void CGameSpy_SAKE::Init()

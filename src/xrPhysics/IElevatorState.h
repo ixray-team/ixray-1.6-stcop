@@ -18,5 +18,5 @@ public:
 	virtual Estate	State		()							= 0;
 	virtual	void	NetRelcase	( IPhysicsShellHolder* O )	= 0;
 protected:
-	virtual	~IElevatorState() = 0 {}
+	virtual	~IElevatorState() {}
 };

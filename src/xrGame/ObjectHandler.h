@@ -3,10 +3,7 @@
 #if !USE_OLD_OBJECT_PLANNER
 #include "InventoryOwner.h"
 #include "graph_engine_space.h"
-
-namespace MonsterSpace {
-	enum EObjectAction;
-}
+#include "ai_monster_space.h"
 
 class CAI_Stalker;
 class CWeapon;

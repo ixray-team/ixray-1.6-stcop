@@ -22,8 +22,6 @@
 
 #include "ui/UICDkey.h"
 
-#include <shellapi.h>
-
 #include "object_broker.h"
 
 #include "../xrCore/discord/discord.h"
@@ -32,6 +30,10 @@
 
 #include "../xrCore/git_version.h"
 #include "ImUtils/ImUtils.h"
+
+#ifdef XR_MP_BUILD
+#	include <shellapi.h>
+#endif
 
 //#define DEMO_BUILD
 
@@ -617,6 +619,7 @@ void CMainMenu::OnNoNewPatchFound()
 
 void CMainMenu::OnDownloadPatch(CUIWindow*, void*)
 {
+#ifdef IXR_WINDOWS
 	CGameSpy_Available GSA;
 	shared_str result_string;
 	if (!GSA.CheckAvailableServices(result_string))
@@ -647,6 +650,7 @@ void CMainMenu::OnDownloadPatch(CUIWindow*, void*)
 	m_sPDProgress.Status		= "";
 
 	m_pGameSpyFull->GetGameSpyHTTP()->DownloadFile(*m_sPatchURL, *m_sPatchFileName);
+#endif
 }
 
 void	CMainMenu::OnDownloadPatchError()
@@ -858,10 +862,12 @@ void CMainMenu::OnDownloadMPMap_CopyURL(CUIWindow* w, void* d)
 
 void CMainMenu::OnDownloadMPMap(CUIWindow* w, void* d)
 {
+#ifdef XR_MP_BUILD
 	const char* url = m_downloaded_mp_map_url.c_str();
 	string256 params = {};
 	xr_strconcat(params, "/C start ", url);
 	ShellExecuteA(0, "open", "cmd.exe", params, nullptr, SW_SHOW);
+#endif
 }
 
 demo_info const * CMainMenu::GetDemoInfo(const char* file_name)

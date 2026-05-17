@@ -37,8 +37,8 @@ public:
 	const CSConditionState	&effects			() const;
 	void					add_condition		(const COperatorCondition &condition);
 	void					add_effect			(const COperatorCondition &effect);
-	void					remove_condition	(const typename u32 &condition);
-	void					remove_effect		(const typename u32 &effect);
+	void					remove_condition	(const u32 &condition);
+	void					remove_effect		(const u32 &effect);
 	u16		min_weight			() const;
 	
 	template <typename T>

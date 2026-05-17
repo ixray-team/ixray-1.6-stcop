@@ -17,7 +17,7 @@ CGameSpy_HTTP::~CGameSpy_HTTP()
 
 void CGameSpy_HTTP::LoadGameSpy()
 {
-	//-----------------------------------------------------
+#ifdef XR_MP_BUILD
 	GAMESPY_LOAD_FN(xrGS_ghttpStartup);
 	GAMESPY_LOAD_FN(xrGS_ghttpCleanup);
 	GAMESPY_LOAD_FN(xrGS_ghttpThink);
@@ -27,7 +27,7 @@ void CGameSpy_HTTP::LoadGameSpy()
 	GAMESPY_LOAD_FN(xrGS_ghttpCancelRequest);
 
 	GAMESPY_LOAD_FN(xrGS_GetGameID);
-
+#endif
 }
 
 void CGameSpy_HTTP::StartUp		()

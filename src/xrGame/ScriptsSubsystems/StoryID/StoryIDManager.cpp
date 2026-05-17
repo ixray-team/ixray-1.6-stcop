@@ -102,7 +102,7 @@ void CScriptStoryIDManager::Register(ALife::_OBJECT_ID obj_id, shared_str script
             script_story_id.c_str(),
             ObjExist->ID,
             ObjExist->name(),
-            std::to_string(ObjNew->ID),
+            std::to_string(ObjNew->ID).c_str(),
             ObjNew->name()
             );
     }

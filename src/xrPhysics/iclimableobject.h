@@ -39,5 +39,5 @@ virtual u16				Material			()const=0;
 virtual IPhysicsShellHolder			*cast_IPhysicsShellHolder	()=0;
 
 protected:
-	virtual	~IClimableObject()	=0 {}
+	virtual	~IClimableObject() = default;
 };
