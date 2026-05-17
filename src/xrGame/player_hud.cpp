@@ -1305,19 +1305,22 @@ player_hud::player_hud(bool invert)
 
 	for (u8 i = 0; i < EMovementLayers::eLayersCount; i++)
 	{
-		movement_layer* anm = new movement_layer();
 		layer_name.printf("movement_layer_%d", (EMovementLayers)i);
-		const char* layer_line = pSettings->r_string("hud_movement_layers", *layer_name);
+		if (pSettings->line_exist("hud_movement_layers", layer_name))
+		{
+			const char* layer_line = pSettings->r_string("hud_movement_layers", *layer_name);
 
-		string128 buff = {};
-		_GetItem(layer_line, 0, buff);
-		anm->Load(buff);
-		_GetItem(layer_line, 1, buff);
-		anm->anim->Speed() = (atof(buff) ? atof(buff) : 1.0f);
-		_GetItem(layer_line, 2, buff);
-		anm->power = (atof(buff) ? atof(buff) : 1.0f);
+			movement_layer* anm = new movement_layer();
 
-		m_movement_layers[i] = anm;
+			m_default_movement_layers_params[i].Load("hud_movement_layers", layer_name, false);
+
+			anm->Load(m_default_movement_layers_params[i].camera_name);
+			anm->speed = m_default_movement_layers_params[i].speed_power.x;
+			anm->power = m_default_movement_layers_params[i].speed_power.y;
+			anm->blend_factors = m_default_movement_layers_params[i].blend_params;
+
+			m_movement_layers[i] = anm;
+		}
 	}
 }
 
@@ -1339,6 +1342,7 @@ player_hud::~player_hud()
 	xr_delete(m_animator_item);
 
 	delete_data(m_movement_layers);
+	delete_data(m_script_layers);
 	delete_data(m_bone_callback_params);
 }
 
@@ -1613,10 +1617,7 @@ const Fvector& player_hud::attach_pos() const
 
 void player_hud::LeftArmCallback(CBoneInstance* B)
 {
-	if(!m_attached_items[1])
-		return;
-
-	B->mTransform.mulA_44(m_attached_items[1]?m_transformL:m_transform);
+	B->mTransform.mulA_44(m_transformL);
 	B->mTransform.mulA_44(Fmatrix(m_transform).invert());
 }
 
@@ -1654,12 +1655,107 @@ void player_hud::update(const Fmatrix& cam_trans)
 		Fmatrix attach_offset;
 		attach_offset.setHPB(VPUSH(Fvector(left_hand_active ? m_attached_items[1]->hands_attach_rot() : attach_rot()).mul(PI / 180.f)));//generate and set Euler angles
 		attach_offset.c.set(left_hand_active ? m_attached_items[1]->hands_attach_pos() : attach_pos());
-		m_transformL.mul(trans, left_hand_active ? m_attach_offsetl.set(attach_offset) : m_attach_offsetl.inertion(attach_offset, 1 - Device.fTimeDelta * 10.f));
+		m_transformL.mul(trans, m_attach_offsetl.set(attach_offset));
 	}
 
-	m_model->UpdateTracks();
-	m_model->dcast_PKinematics()->CalculateBones_Invalidate();
-	m_model->dcast_PKinematics()->CalculateBones(true);
+	for (script_layer* anm : m_script_layers)
+	{
+		if (!anm || !anm->anim || (!anm->active && anm->blend_scale == 0.0f))
+		{
+			continue;
+		}
+	
+		bool need_stop = false;
+	
+		if (anm->active)
+		{
+			anm->blend_scale += anm->mix ? Device.fTimeDelta / anm->blend_factors.x : 1.0f;
+		}
+		else
+		{
+			anm->blend_scale -= anm->mix ? Device.fTimeDelta / anm->blend_factors.y : 1.0f;
+		}
+	
+		clamp(anm->blend_scale, 0.0f, 1.0f);
+	
+		if (anm->blend_scale > 0.0f)
+		{
+			if (anm->anim->IsLooped() || anm->anim->anim_param().t_current <= anm->anim->anim_param().max_t)
+			{
+				anm->anim->Update(Device.fTimeDelta);
+			}
+			else
+			{
+				if (anm->state != script_layer::EBlendLayers::eNone)
+				{
+					if (anm->item == 2)
+					{
+						for (int i = 0; i < anm->item; i++)
+						{
+							if (m_attached_items[i] && m_attached_items[i]->m_parent_hud_item)
+							{
+								m_attached_items[i]->m_parent_hud_item->OnBlendEnd(anm->state);
+							}
+						}
+					}
+					else
+					{
+						if (m_attached_items[anm->item] && m_attached_items[anm->item]->m_parent_hud_item)
+						{
+							m_attached_items[anm->item]->m_parent_hud_item->OnBlendEnd(anm->state);
+						}
+					}
+	
+					anm->state = script_layer::EBlendLayers::eNone;
+				}
+
+				need_stop = true;
+			}
+		}
+		else
+		{
+			if (anm->state != script_layer::EBlendLayers::eNone)
+			{
+				if (anm->item == 2)
+				{
+					for (int i = 0; i < anm->item; i++)
+					{
+						if (m_attached_items[i] && m_attached_items[i]->m_parent_hud_item)
+						{
+							m_attached_items[i]->m_parent_hud_item->OnBlendEnd(anm->state);
+						}
+					}
+				}
+				else
+				{
+					if (m_attached_items[anm->item] && m_attached_items[anm->item]->m_parent_hud_item)
+					{
+						m_attached_items[anm->item]->m_parent_hud_item->OnBlendEnd(anm->state);
+					}
+				}
+
+				anm->state = script_layer::EBlendLayers::eNone;
+			}
+	
+			anm->Stop(true);
+			continue;
+		}
+
+		if (anm->part == 0 || anm->part == 2)
+		{
+			m_transform.mulB_43(anm->XFORM());
+		}
+		
+		if (anm->part == 1 || anm->part == 2)
+		{
+			m_transformL.mulB_43(anm->XFORM());
+		}
+
+		if (need_stop)
+		{
+			anm->Stop(!anm->mix);
+		}
+	}
 
 	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend();
 	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend();
@@ -1673,11 +1769,11 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 		if (anm->playing && (need_blend_0 || need_blend_1))
 		{
-			anm->blend_scale += Device.fTimeDelta / 0.4f;
+			anm->blend_scale += Device.fTimeDelta / anm->blend_factors.x;
 		}
 		else
 		{
-			anm->blend_scale -= Device.fTimeDelta / 0.4f;
+			anm->blend_scale -= Device.fTimeDelta / anm->blend_factors.y;
 		}
 
 		clamp(anm->blend_scale, 0.0f, 1.0f);
@@ -1696,6 +1792,10 @@ void player_hud::update(const Fmatrix& cam_trans)
 			}
 		}
 	}
+
+	m_model->UpdateTracks();
+	m_model->dcast_PKinematics()->CalculateBones_Invalidate();
+	m_model->dcast_PKinematics()->CalculateBones(true);
 
 	if(m_attached_items[0])
 		m_attached_items[0]->update(true);
@@ -1907,6 +2007,7 @@ void player_hud::attach_item(CHudItem* item)
 		if (m_attached_items[item_idx])
 		{
 			m_attached_items[item_idx]->m_parent_hud_item->on_b_hud_detach();
+			StopAllBlendAnms(true);
 		}
 
 		m_attached_items[item_idx] = pi;
@@ -1918,11 +2019,10 @@ void player_hud::attach_item(CHudItem* item)
 		}
 
 		item->on_a_hud_attach();
+		UpdateMovementLayers(true);
 	}
 
 	pi->m_parent_hud_item = item;
-
-	g_player_hud->UpdateMovementLayers();
 }
 
 void player_hud::RestoreHandBlends(const char* ignored_part)
@@ -1952,21 +2052,26 @@ void player_hud::RestoreHandBlends(const char* ignored_part)
 		}
 	}
 }
+
 void player_hud::detach_item_idx(u16 idx)
 {
-	if( nullptr==attached_item(idx) )					return;
+	if (attached_item(idx) == nullptr)
+	{
+		return;
+	}
 
 	m_attached_items[idx]->m_parent_hud_item->on_b_hud_detach();
+	StopAllBlendAnms(true);
 
-	m_attached_items[idx]->m_parent_hud_item		= nullptr;
-	m_attached_items[idx]							= nullptr;
+	m_attached_items[idx]->m_parent_hud_item = nullptr;
+	m_attached_items[idx] = nullptr;
 
-	if(idx==1 && m_attached_items[0])
+	if (idx == 1 && m_attached_items[0])
 	{
 		m_attached_items[0]->m_parent_hud_item->OnMovementChanged(mcAnyMove);
 		RestoreHandBlends("right_hand");
 	}
-	else if(idx==0 && m_attached_items[1])
+	else if (idx == 0 && m_attached_items[1])
 	{
 		m_model->PlayCycle(2, m_model->ID_Cycle("hand_idle_doun"), false);
 		m_attached_items[1]->m_parent_hud_item->OnMovementChanged(mcAnyMove);
@@ -1991,7 +2096,7 @@ void player_hud::calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmat
 	result.mulB_43			(offset);
 }
 
-void player_hud::UpdateMovementLayers()
+void player_hud::UpdateMovementLayers(bool reload_anims)
 {
 	CObject* current_entity = Level().CurrentEntity();
 	CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
@@ -2001,40 +2106,87 @@ void player_hud::UpdateMovementLayers()
 		return;
 	}
 
+	bool stop_force = m_attached_items[0] == nullptr && m_attached_items[1] == nullptr;
+
+	if (reload_anims && m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item != nullptr)
+	{
+		for (u8 i = 0; i < EMovementLayers::eLayersCount; i++)
+		{
+			if (!m_movement_layers[i])
+			{
+				continue;
+			}
+
+			const auto& blend_params = m_attached_items[0]->m_parent_hud_item->m_sMovementBlendParams[i];
+			if (blend_params.has_motion)
+			{
+				m_movement_layers[i]->Reload(blend_params.camera_name, blend_params.speed_power, blend_params.blend_params);
+			}
+			else
+			{
+				m_movement_layers[i]->Reload(m_default_movement_layers_params[i].camera_name, m_default_movement_layers_params[i].speed_power, m_default_movement_layers_params[i].blend_params);
+			}
+		}
+	}
+
 	for (movement_layer* anm : m_movement_layers)
 	{
 		if (!anm)
 		{
-			return;
+			continue;
 		}
 
-		anm->Stop(false);
+		anm->Stop(stop_force);
 	}
 
-	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend();
-	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend();
+	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend();
+	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend();
 
-	if (pActor->AnyMove() && (need_blend_0 || need_blend_1))
+	if (!need_blend_0 && !need_blend_1)
 	{
-		if ((pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint) != 0)
+		return;
+	}
+
+	CWeapon* pWeapon = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item != nullptr ? m_attached_items[0]->m_parent_hud_item->cast_weapon() : nullptr;
+
+	u32 state = pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal);
+
+	if (pActor->AnyMove())
+	{
+		if (m_movement_layers[EMovementLayers::eAimWalk] != nullptr && pWeapon != nullptr && pWeapon->IsZoomed())
+		{
+			m_movement_layers[EMovementLayers::eAimWalk]->Play();
+		}
+		else if (m_movement_layers[EMovementLayers::eSprint] != nullptr && (state & ACTOR_DEFS::EMoveCommand::mcSprint) != 0)
 		{
 			m_movement_layers[EMovementLayers::eSprint]->Play();
 		}
-		else if ((pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcAccel) != 0 && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcCrouch) == 0)
+		else if (m_movement_layers[EMovementLayers::eWalkSlow] != nullptr && (state & ACTOR_DEFS::EMoveCommand::mcAccel) != 0 && (state & ACTOR_DEFS::EMoveCommand::mcCrouch) == 0)
 		{
 			m_movement_layers[EMovementLayers::eWalkSlow]->Play();
 		}
-		else if ((pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcAccel) == 0 && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcCrouch) != 0)
+		else if (m_movement_layers[EMovementLayers::eCrouch] != nullptr && (state & ACTOR_DEFS::EMoveCommand::mcAccel) == 0 && (state & ACTOR_DEFS::EMoveCommand::mcCrouch) != 0)
 		{
 			m_movement_layers[EMovementLayers::eCrouch]->Play();
 		}
-		else if ((pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & mcAccel) != 0 && (pActor->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcCrouch) != 0)
+		else if (m_movement_layers[EMovementLayers::eCrouchSlow] != nullptr && (state & ACTOR_DEFS::EMoveCommand::mcAccel) != 0 && (state & ACTOR_DEFS::EMoveCommand::mcCrouch) != 0)
 		{
 			m_movement_layers[EMovementLayers::eCrouchSlow]->Play();
 		}
-		else
+		else if (m_movement_layers[EMovementLayers::eWalk] != nullptr)
 		{
 			m_movement_layers[EMovementLayers::eWalk]->Play();
+		}
+	}
+	else
+	{
+		if (m_movement_layers[EMovementLayers::eIdleAim] != nullptr && pWeapon != nullptr && pWeapon->IsZoomed())
+		{
+			m_movement_layers[EMovementLayers::eIdleAim]->Play();
+		}
+		else if (m_movement_layers[EMovementLayers::eIdle] != nullptr)
+		{
+			m_movement_layers[EMovementLayers::eIdle]->Play();
 		}
 	}
 }
@@ -2124,6 +2276,82 @@ void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 	}
 
 	UpdateMovementLayers();
+}
+
+script_layer* player_hud::PlayBlendAnm(const shared_str& name, float speed, float power, Fvector2 blend_factors, bool looped, bool mix, bool restart, u8 part, u8 item, u8 state)
+{
+	if (restart)
+	{
+		StopBlendAnm(name);
+	}
+
+	for (script_layer* cycle_anim : m_script_layers)
+	{
+		if (cycle_anim->name == name)
+		{
+			cycle_anim->Play(name, speed, power, blend_factors, looped, mix, part, item, state);
+			return cycle_anim;
+		}
+	}
+
+	return m_script_layers.emplace_back(new script_layer(name, speed, power, blend_factors, looped, mix, part, item, state));
+}
+
+void player_hud::StopBlendAnm(const shared_str& name, bool bForce)
+{
+	for (script_layer* anm : m_script_layers)
+	{
+		if (anm->name == name)
+		{
+			anm->Stop(bForce);
+			return;
+		}
+	}
+}
+
+void player_hud::StopAllBlendAnms(bool bForce)
+{
+	for (script_layer* anm : m_script_layers)
+	{
+		anm->Stop(bForce);
+	}
+}
+
+bool player_hud::IsBlendAnmActive(const shared_str& name)
+{
+	for (script_layer* anm : m_script_layers)
+	{
+		if (anm->name == name)
+		{
+			if (anm->active)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+void script_layer::CallStartCallback()
+{
+	if (item == 2)
+	{
+		for (int i = 0; i < item; i++)
+		{
+			if (g_player_hud->attached_item(i) && g_player_hud->attached_item(i)->m_parent_hud_item)
+			{
+				g_player_hud->attached_item(i)->m_parent_hud_item->OnBlendStart(state);
+			}
+		}
+	}
+	else
+	{
+		if (g_player_hud->attached_item(item) && g_player_hud->attached_item(item)->m_parent_hud_item)
+		{
+			g_player_hud->attached_item(item)->m_parent_hud_item->OnBlendStart(state);
+		}
+	}
 }
 
 bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
