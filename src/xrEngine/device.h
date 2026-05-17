@@ -189,8 +189,6 @@ public:
 	void EndRender() override;
 
 public:
-	LRESULT									MsgProc		(HWND,UINT,WPARAM,LPARAM);
-
 	u32										dwPrecacheTotal;
 	void									OnWM_Activate(bool active, bool minimized);
 
