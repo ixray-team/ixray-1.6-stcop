@@ -8,8 +8,6 @@
  
 void TriangleContainer::RemoveDublicatesVertexs( )
 {
-    size_t VertexStart = verts_v.size();
-
     CTimer tStats;
     tStats.Start();
     //----------------------
@@ -29,6 +27,8 @@ void TriangleContainer::RemoveDublicatesVertexs( )
             temp.push_back({ raw_faces[i].v[j], static_cast<uint32_t>(i * 3 + j) });
         }
     }
+    size_t VertexStart = temp.size();
+
     //----------------------
     // 2. Сортируем вершины
     //----------------------
@@ -88,7 +88,8 @@ void TriangleContainer::RemoveDublicatesVertexs( )
     raw_faces.clear();
     raw_faces.shrink_to_fit();
 
-    Msg("$ GeometryBuffer Remove Dublicate Vertex : from %u to %u", VertexStart, verts_v.size());
+    if (useMsg)
+        Msg("$ GeometryBuffer Remove Dublicate Vertex : from %u to %u", VertexStart, verts_v.size());
 }
  
 void TriangleContainer::RemoveDublicatesFaces( )
@@ -136,7 +137,8 @@ void TriangleContainer::RemoveDublicatesFaces( )
     faces_v.swap(new_faces);
     dummy.swap(new_dummy);
  
-     Msg("$ GeometryBuffer Remove Dublicate Triangles : from %u to %u", pFaces, faces_v.size());
+    if (useMsg)
+        Msg("$ GeometryBuffer Remove Dublicate Triangles : from %u to %u", pFaces, faces_v.size());
 }
 
 void TriangleContainer::ClearAll()
