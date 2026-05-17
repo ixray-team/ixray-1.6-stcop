@@ -6,7 +6,7 @@
 #include "Level.h"
 #include "GameObject.h"
 #include "script_game_object.h"
-#include "xrmessages.h"
+#include "xrMessages.h"
 #include "../xrEngine/date_time.h"
 #include "../xrUI/Widgets/UIDialogWnd.h"
 
@@ -69,6 +69,7 @@ CScriptGameObject*	game_cl_mp_script::GetObjectByGameID (u32 id)
 
 const char* game_cl_mp_script::GetRoundTime()
 {
+#ifdef XR_MP_BUILD
 	static string32 bufTime;
 	u64 dt = Level().timeServer()-StartTime();
 
@@ -79,6 +80,9 @@ const char* game_cl_mp_script::GetRoundTime()
 	sprintf_s(bufTime, "%02i:%02i", mins, secs);
 
 	return bufTime;
+#else
+	return nullptr;
+#endif
 }
 
 

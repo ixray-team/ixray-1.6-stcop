@@ -111,13 +111,13 @@ void InitSections()
 
 		if (FS.exist(_game_sounds_, with_format_name))
 		{
-			memcpy_s(imgui_spawn_manager.sound_tip_path, sizeof(imgui_spawn_manager.sound_tip_path), pSoundRelativeName, strlen(pSoundRelativeName));
+		    memcpy(imgui_spawn_manager.sound_tip_path, pSoundRelativeName, strlen(pSoundRelativeName) + 1);
 		}
 	}
 	else
 	{
 		string128 sndName = "device\\pda\\pda_tip";
-		memcpy_s(imgui_spawn_manager.sound_tip_path, sizeof(imgui_spawn_manager.sound_tip_path), sndName, sizeof(sndName));
+		memcpy(imgui_spawn_manager.sound_tip_path, sndName, sizeof(sndName));
 	}
 
 	//xr_set<xr_string> classes = {};
@@ -1086,11 +1086,12 @@ void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 {
 	auto sm_process_button = [](bool is_table, const xr_string_view& section_name, CInifile::Sect* pSection, size_t& number_imgui) {
 		string128 imname{};
-		memcpy_s(imname, sizeof(imname), section_name.data(), section_name.size());
+		memcpy(imname, section_name.data(), section_name.size());
+		imname[section_name.size()] = '\0';
 
 		string16 index{};
 		xr_sprintf(index, sizeof(index), "##%zu", number_imgui);
-		memcpy_s(imname + section_name.size(), sizeof(imname), index, sizeof(index));
+		memcpy(imname + section_name.size(), index, sizeof(index));
 
 		if (SpawnManager_RenderButtonOrImage(pSection, imname))
 		{

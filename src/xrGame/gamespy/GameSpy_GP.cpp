@@ -27,7 +27,7 @@ shared_str CGameSpy_GP::TryToTranslate(GPResult const & res)
 	default:
 		{
 			string16 digit_dest;
-			_itoa_s(res, digit_dest, 10);
+			itoa(res, digit_dest, 10);
 			xr_strconcat(
 				tmp_string,
 				"mp_gp_unknown_error_",
@@ -203,6 +203,7 @@ GPResult CGameSpy_GP::SetUniqueNick(shared_str const & unique_nick,
 
 void CGameSpy_GP::LoadGameSpyGP()
 {
+#ifdef XR_MP_BUILD
 	GAMESPY_LOAD_FN(xrGS_gpInitialize);
 	GAMESPY_LOAD_FN(xrGS_gpDestroy);
 	GAMESPY_LOAD_FN(xrGS_gpProcess);
@@ -217,6 +218,7 @@ void CGameSpy_GP::LoadGameSpyGP()
 	GAMESPY_LOAD_FN(xrGS_gpDeleteProfile);
 	GAMESPY_LOAD_FN(xrGS_gpGetLoginTicket);
 	GAMESPY_LOAD_FN(xrGS_gpRegisterUniqueNickA);
+#endif
 }
 
 void __cdecl CGameSpy_GP::OnGameSpyErrorCb(GPConnection * connection,

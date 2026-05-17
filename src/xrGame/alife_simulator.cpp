@@ -25,7 +25,7 @@
 
 const char* alife_section = "alife";
 
-XRCORE_API xr_hash_map<xr_string, CInifile*>* cached_ini_map;
+extern XRCORE_API xr_hash_map<xr_string, CInifile*>* cached_ini_map;
 
 void restart_all				()
 {

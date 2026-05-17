@@ -20,7 +20,7 @@ struct CCloner
 		}
 
 		template <>
-		IC	static void clone<true>(const T &_1, T &_2)
+		IC void clone<true>(const T &_1, T &_2)
 		{
 			_2 = new std::remove_pointer<T>::type(*_1);
 			CCloner::clone	(*_1,*_2);
@@ -166,7 +166,7 @@ struct CCloner
 		}
 
 		template <>
-		IC	static void clone<true>(const T &_1, T &_2)
+		IC void clone<true>(const T &_1, T &_2)
 		{
 			CHelper3::clone(_1,_2);
 		}

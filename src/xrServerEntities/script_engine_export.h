@@ -63,7 +63,7 @@
 #	include "script_entity_action.h"
 #	include "helicopter.h"
 #	include "game_base.h"
-#	include "demoinfo.h"
+#	include "DemoInfo.h"
 #	include "script_ui_registrator.h"
 #	include "key_binding_registrator.h"
 #	include "console_registrator.h"
@@ -99,11 +99,11 @@
 #	ifdef	DEBUG
 #		include "PHDebug.h"
 #	endif
-#	include "hit.h"
+#	include "Hit.h"
 #	include "PHDestroyable.h"
-#	include "car.h"
+#	include "Car.h"
 #	include "script_lanim.h"
-#	include "artefact.h"
+#	include "Artefact.h"
 #	include "game_cl_single.h"
 #	include "game_base.h"
 #	include "game_sv_base.h"

@@ -381,13 +381,13 @@ const shared_str InventoryUtilities::GetDateAsStringLegacy(ALife::_TIME_ID date,
 	switch (datePrec)
 	{
 	case edpDateToYear:
-		sprintf_s(bufDate, "%04i", year);
+		xr_sprintf(bufDate, "%04i", year);
 		break;
 	case edpDateToMonth:
-		sprintf_s(bufDate, "%02i%c%04i", month, dateSeparator, year);
+		xr_sprintf(bufDate, "%02i%c%04i", month, dateSeparator, year);
 		break;
 	case edpDateToDay:
-		sprintf_s(bufDate, "%02i%c%02i%c%04i", day, dateSeparator, month, dateSeparator, year);
+		xr_sprintf(bufDate, "%02i%c%02i%c%04i", day, dateSeparator, month, dateSeparator, year);
 		break;
 	default:
 		R_ASSERT(!"Unknown type of date precision");
@@ -454,14 +454,14 @@ void InventoryUtilities::UpdateWeight(CUIStatic &wnd, bool withPrefix)
 
 	if (withPrefix)
 	{
-		sprintf_s(prefix, "%%c[default]%s ", *g_pStringTable->translate("ui_inv_weight"));
+		xr_sprintf(prefix, "%%c[default]%s ", *g_pStringTable->translate("ui_inv_weight"));
 	}
 	else
 	{
 		strcpy(prefix, "");
 	}
 
-	sprintf_s(buf, "%s%s%3.1f %s/%5.1f", prefix, cl, total, "%c[UI_orange]", max);
+	xr_sprintf(buf, "%s%s%3.1f %s/%5.1f", prefix, cl, total, "%c[UI_orange]", max);
 	wnd.SetText(buf);
 	//	UIStaticWeight.ClipperOff();
 }

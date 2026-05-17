@@ -833,7 +833,7 @@ void CSE_ALifeAnomalousZone::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 		tNetPacket.r_float		();
 		tNetPacket.r_float		();
 	}
-	if( (m_wVersion == 102) ){ //fuck
+	if(m_wVersion == 102){ //fuck
 		u32 dummy;
 		tNetPacket.r_u32		(dummy);
 	}

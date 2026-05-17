@@ -220,7 +220,7 @@ void CPolterTele::tele_find_objects(xr_vector<CObject*> &objects, const Fvector 
 		enemy.get_enemy()->Center(center);
 
 		if (trace_object(obj, center) ||
-			trace_object(obj, get_head_position(fast_dynamic_cast<CObject*>(enemy.get_enemy()))))
+			trace_object(obj, get_head_position(fast_dynamic_cast<CObject*>((CEntityAlive*)enemy.get_enemy()))))
 		{
 			objects.push_back(obj);
 		}
@@ -386,7 +386,7 @@ void CPolterTele::tele_fire_objects()
 		
 		if (tele_object.get_state() == TS_Raise || tele_object.get_state() == TS_Keep)
 		{
-			Fvector enemy_pos = get_head_position(fast_dynamic_cast<CObject*>(enemy));
+			Fvector enemy_pos = get_head_position(fast_dynamic_cast<CObject*>((CEntityAlive*)enemy));
 			CPhysicsShellHolder* hobj = tele_object.get_object();
 			CWeaponMagazined* weapon_magazined = tele_object.get_object()->cast_weapon_magazined();
 
