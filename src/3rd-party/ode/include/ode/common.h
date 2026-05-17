@@ -162,6 +162,10 @@ typedef dReal dQuaternion[4];
  * up to 15 bytes per allocation, depending on what alloca() returns.
  */
 
+#ifdef __linux__
+#define alloca _alloca
+#endif
+
 #define dALLOCA16(n) \
   ((char*)dEFFICIENT_SIZE(((size_t)(alloca((n)+(EFFICIENT_ALIGNMENT-1))))))
 
