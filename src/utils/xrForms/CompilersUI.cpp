@@ -393,10 +393,13 @@ void DrawCompilerConfig()
 	ImGui::PopID();
 	ImGui::Separator();
 	
+
 	ImGui::BeginDisabled(!gCompilerMode.Embree);
-		ImGui::TextColored(ImVec4(RGBAColor(0, 255, 0, 255)), "(This Only For Build BVH)");
-		ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
-		ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);
+  		ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);		// Замедляет скорость Траверсера
+		ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);			// Замедляет скорость Траверсера
+		ImGui::Checkbox("Embree Instaces MU", &gCompilerMode.EmbreeInstaces);		// Замедляет скорость Траверсера
+  		ImGui::Checkbox("Embree RayPack8", &gCompilerMode.EmbreeRays8);				// x2 скорость Траверсера (AVX2)
+
 	ImGui::EndDisabled();
 
 	ImGui::Separator();
