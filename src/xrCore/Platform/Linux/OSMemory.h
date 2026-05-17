@@ -1,5 +1,6 @@
 #pragma once
 #include <dlfcn.h>
+#include <alloca.h>
 
 #define _msize malloc_usable_size
 #define _expand(p, sz) sz <= _msize(p)
@@ -19,6 +20,8 @@ namespace Platform
             snprintf(Path, sizeof(Path), "lib%s.so", Name);
             module = dlopen(Path, RTLD_NOW);
             if (module == NULL) {
+                printf("%s\n", strerror(errno));
+
                 char exec_path[PATH_MAX] = {};
                 readlink("/proc/self/exe", exec_path, sizeof(exec_path));
 

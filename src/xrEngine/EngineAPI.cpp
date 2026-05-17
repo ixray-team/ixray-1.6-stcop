@@ -210,9 +210,15 @@ void CEngineAPI::CreateRendererList()
 		bool bSupports_r2 = false;
 		bool bSupports_r4 = false;
 
+#ifdef IXR_WINDOWS
 		const char* r1_name	= "xrRender_R1.dll";
 		const char* r2_name	= "xrRender_R2.dll";
 		const char* r4_name	= "xrRender_R4.dll";
+#else
+		const char* r1_name	= "libxrRender_R1.so";
+		const char* r2_name	= "libxrRender_R2.so";
+		const char* r4_name	= "libxrRender_R4.so";
+#endif
 
 		if (Core.ParamsData.test(ECoreParams::perfhud_hack))
 		{

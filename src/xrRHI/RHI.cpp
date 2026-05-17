@@ -474,7 +474,7 @@ void CRHI::GPUStatsBegin() const
 
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{
-#ifdef DEBUG_DRAW
+#if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
 		GPUEvents_BeginRendering();
 #endif
 	}
@@ -490,7 +490,7 @@ const RHI_GPU_EVENT& CRHI::GPUStats() const
 
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{
-#ifdef DEBUG_DRAW
+#if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
 		return GPUEvents_Statistics();
 #endif
 	}
@@ -507,7 +507,7 @@ void CRHI::GPUStatsEnd() const
 
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{
-#ifdef DEBUG_DRAW
+#if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
 		GPUEvents_EndRendering();
 #endif
 	}
