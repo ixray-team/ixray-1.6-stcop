@@ -11,28 +11,25 @@ CarConfig g_CarConfig;
 // ------------------------------------------------------------
 static xr_vector<shared_str> ReadList(CInifile* ini, const char* section, const char* name)
 {
-	xr_vector<shared_str> v;
+    xr_vector<shared_str> v;
 
-	if (!ini->line_exist(section, name))
-		return v;
+    if (!ini->line_exist(section, name))
+        return v;
 
-	const char* S = ini->r_string(section, name);
-	string256 token;
-	xr_strcpy(token, S);
+    const char* S = ini->r_string(section, name);
+    char token[256];
+    xr_strcpy(token, S);
 
-	// Windows-safe strtok_s
-	LPSTR context = nullptr;
-	LPSTR item = strtok_s(token, ", \t", &context);
+    char* item = strtok(token, ", \t");
 
-	while (item)
-	{
-		v.emplace_back(item);
-		item = strtok_s(nullptr, ", \t", &context);
-	}
+    while (item)
+    {
+        v.emplace_back(item);
+        item = strtok(nullptr, ", \t");
+    }
 
-	return v;
+    return v;
 }
-
 
 static void ReadFvector(CInifile* ini, const char* sec, const char* key, Fvector& out)
 {

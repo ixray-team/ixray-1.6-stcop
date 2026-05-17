@@ -17,7 +17,7 @@ template <
 >
 class CVertex {
 public:
-	typedef typename __vertex_id_type						_vertex_id_type;
+	typedef __vertex_id_type						_vertex_id_type;
 	typedef typename _graph_type::CEdge						_edge_type;
 	typedef typename _edge_type::_edge_weight_type			_edge_weight_type;
 	typedef xr_vector<_edge_type>							EDGES;

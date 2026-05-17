@@ -6,7 +6,7 @@ public:
 
 	virtual		void	CollisionHit( u16 source_id, u16 bone_id, float power, const Fvector &dir, Fvector &pos )	=0;
 protected:
-	virtual				~ICollisionDamageReceiver()																	=0{};
+	virtual				~ICollisionDamageReceiver()	{};
 };
 
 struct dContact;

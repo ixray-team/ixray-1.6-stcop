@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIDMStatisticWnd.h"
 #include "../Level.h"
 #include "../game_cl_base_weapon_usage_statistic.h"
@@ -28,11 +28,11 @@ bool	CUIDMStatisticWnd::SetItemData		(Weapon_Statistic* pWS, CUIStatsListItem *p
 	string1024 Text;
 	pItem->FieldsVector[0]->SetText(*pWS->InvName);
 	float Eff = float(pWS->m_dwHitsScored)/((pWS->m_dwBulletsFired != 0) ? (pWS->m_dwBulletsFired) : 1);
-	sprintf_s(Text, "%.2f", Eff); pItem->FieldsVector[1]->SetText(Text);
+	xr_sprintf(Text, "%.2f", Eff); pItem->FieldsVector[1]->SetText(Text);
 	u32 Hits = u32(pWS->m_dwRoundsFired*Eff);
-	sprintf_s(Text, "%d / %d", Hits, pWS->m_dwRoundsFired); 
+	xr_sprintf(Text, "%d / %d", Hits, pWS->m_dwRoundsFired); 
 	pItem->FieldsVector[2]->SetText(Text);
-	sprintf_s(Text, "%d", pWS->m_dwKillsScored); pItem->FieldsVector[3]->SetText(Text);
+	xr_sprintf(Text, "%d", pWS->m_dwKillsScored); pItem->FieldsVector[3]->SetText(Text);
 
 	return true;
 };

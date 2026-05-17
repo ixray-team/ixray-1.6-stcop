@@ -1,9 +1,9 @@
-#ifndef SCREENSHOT_MANAGER_FOR_MP
-#define SCREENSHOT_MANAGER_FOR_MP
+#pragma once
 
 #define RESULT_WIDTH	640
 #define RESULT_HEIGHT	480
 
+#ifdef XR_MP_BUILD
 class screenshot_manager : 
 	public ISheduled
 {
@@ -68,4 +68,4 @@ private:
 #endif
 }; //class screenshot_manager
 
-#endif //#ifndef SCREENSHOT_MANAGER_FOR_MP
+#endif

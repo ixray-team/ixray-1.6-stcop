@@ -170,9 +170,6 @@ protected:
 
 	u32								m_round_start_time;
 	string64						m_round_start_time_str;
-protected:
-	virtual		void				switch_Phase			(u32 new_phase);
-	virtual		void				OnSwitchPhase			(u32 old_phase, u32 new_phase)	{};	
 
 public:
 									game_GameState			();
@@ -183,6 +180,8 @@ public:
 				u32					StartTime				() const						{return m_start_time;};
 	virtual		void				Create					(shared_str& options)				{};
 	virtual		const char*				type_name				() const						{return "base game";};
+	virtual		void				switch_Phase			(u32 new_phase);
+	virtual		void				OnSwitchPhase			(u32 old_phase, u32 new_phase)	{};	
 //for scripting enhancement
 	static		CLASS_ID			getCLASS_ID				(const char* game_type_name, bool bServer);
 	virtual		game_PlayerState*	createPlayerState		(NET_Packet* account_info)		{return new game_PlayerState(account_info); };

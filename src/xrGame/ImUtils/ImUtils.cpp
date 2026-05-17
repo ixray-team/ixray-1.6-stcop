@@ -217,17 +217,17 @@ void CImGuiGameSearchManager::init()
 
 			if (g_pClsidManager && g_pClsidManager->is_monster(id))
 			{
-				memcpy_s(result, sizeof(result), "Monster - ", sizeof("Monster - "));
-				memcpy_s(&result[0] + sizeof("Monster -"), sizeof(result) - sizeof("Monster -"), pTranslatedName, strlen(pTranslatedName));
+			    memcpy(result, "Monster - ", sizeof("Monster - "));
+			    memcpy(&result[0] + sizeof("Monster - ") - 1, pTranslatedName, strlen(pTranslatedName) + 1);
 			}
 			else if (g_pClsidManager && g_pClsidManager->is_weapon(id))
 			{
-				memcpy_s(result, sizeof(result), "Weapon - ", sizeof("Weapon - "));
-				memcpy_s(&result[0] + sizeof("Weapon -"), sizeof(result) - sizeof("Weapon -"), pTranslatedName, strlen(pTranslatedName));
+			    memcpy(result, "Weapon - ", sizeof("Weapon - "));
+			    memcpy(&result[0] + sizeof("Weapon - ") - 1, pTranslatedName, strlen(pTranslatedName) + 1);
 			}
 			else
 			{
-				memcpy_s(result, sizeof(result), pTranslatedName, strlen(pTranslatedName));
+			    memcpy(result, pTranslatedName, strlen(pTranslatedName) + 1);
 			}
 
 			pStr = result;
@@ -239,7 +239,7 @@ void CImGuiGameSearchManager::init()
 				pStr = "FAILED_TO_TRANSLATE";
 		}
 
-		memcpy_s(pPtr, sizeof(category_names[i]), pStr, strlen(pStr));
+		memcpy(pPtr, pStr, strlen(pStr) + 1);
 
 		combo_items[i] = pPtr;
 	}

@@ -2040,7 +2040,9 @@ public:
 };
 
 
-class CCC_TransferMoney : public IConsole_Command {
+class CCC_TransferMoney : 
+	public IConsole_Command 
+{
 public:
 	CCC_TransferMoney(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
 
@@ -2048,8 +2050,6 @@ public:
 	{
 		string4096 buff;
 		xr_strcpy(buff, args);
-
-		static _locale_t current_locale = _create_locale(LC_ALL, "");
 
 		u32 len = xr_strlen(buff);
 		if (0 == len)
@@ -2082,7 +2082,7 @@ public:
 			return;
 		}
 
-		_strlwr_l(_Trim(name), current_locale);
+		strlwr(_Trim(name));
 
 		bool wasSent = false;
 
@@ -2096,7 +2096,7 @@ public:
 
 			string128 player_name;
 			xr_strcpy(player_name, ps->getName());
-			_strlwr_l(player_name, current_locale);
+			strlwr(player_name);
 
 			if (xr_strcmp(player_name, name) == 0)
 			{

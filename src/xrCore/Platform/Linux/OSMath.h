@@ -26,6 +26,18 @@ inline struct tm* _localtime64(const __time64_t* timer)
     return &tm_storage;
 }
 
+struct SYSTEMTIME 
+{
+  std::uint16_t wYear;         // год (1601-30827)
+  std::uint16_t wMonth;        // месяц (1-12)
+  std::uint16_t wDayOfWeek;    // день недели (0=воскресенье, 1=понедельник...)
+  std::uint16_t wDay;          // день месяца (1-31)
+  std::uint16_t wHour;         // час (0-23)
+  std::uint16_t wMinute;       // минуты (0-59)
+  std::uint16_t wSecond;       // секунды (0-59)
+  std::uint16_t wMilliseconds; // миллисекунды (0-999)
+};
+
 namespace Platform
 {
 }
