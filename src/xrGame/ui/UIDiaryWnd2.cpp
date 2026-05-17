@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIDiaryWnd.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"

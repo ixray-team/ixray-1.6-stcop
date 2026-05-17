@@ -15,7 +15,7 @@ CGameSpy_GCD_Server::~CGameSpy_GCD_Server()
 
 void CGameSpy_GCD_Server::LoadGameSpy()
 {
-
+#ifdef XR_MP_BUILD
 	GAMESPY_LOAD_FN(xrGS_gcd_init_qr2);
 	GAMESPY_LOAD_FN(xrGS_gcd_shutdown);
 	GAMESPY_LOAD_FN(xrGS_gcd_authenticate_user);
@@ -23,6 +23,7 @@ void CGameSpy_GCD_Server::LoadGameSpy()
 	GAMESPY_LOAD_FN(xrGS_gcd_disconnect_user);
 	GAMESPY_LOAD_FN(xrGS_gcd_think);
 	GAMESPY_LOAD_FN(xrGS_gcd_getkeyhash);
+#endif
 }
 
 bool CGameSpy_GCD_Server::Init()

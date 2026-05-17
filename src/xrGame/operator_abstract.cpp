@@ -63,7 +63,7 @@ void COperatorAbstract::add_condition	(const COperatorCondition &condition)
 	m_conditions.add_condition	(condition);
 }
 
-void COperatorAbstract::remove_condition(const typename u32 &condition)
+void COperatorAbstract::remove_condition(const u32 &condition)
 {
 	actual						(false);
 	m_conditions.remove_condition(condition);
@@ -75,7 +75,7 @@ void COperatorAbstract::add_effect		(const COperatorCondition &effect)
 	m_effects.add_condition		(effect);
 }
 
-void COperatorAbstract::remove_effect	(const typename u32&effect)
+void COperatorAbstract::remove_effect	(const u32&effect)
 {
 	actual						(false);
 	m_effects.remove_condition	(effect);

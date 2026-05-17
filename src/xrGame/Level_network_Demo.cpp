@@ -18,16 +18,22 @@ void CLevel::PrepareToSaveDemo		()
 	R_ASSERT(!m_DemoPlay);
 	string_path demo_name = "";
 	string_path demo_path;
-	SYSTEMTIME Time;
-	GetLocalTime		(&Time);
-	xr_sprintf			(demo_name, "xray_%02d-%02d-%02d_%02d-%02d-%02d.demo",
-		Time.wMonth,
-		Time.wDay,
-		Time.wYear,
-		Time.wHour,
-		Time.wMinute,
-		Time.wSecond
+	
+	auto now = std::chrono::system_clock::now();
+	auto time = std::chrono::system_clock::to_time_t(now);
+	auto local = *std::localtime(&time);
+
+	xr_sprintf
+	(
+		demo_name, "xray_%02d-%02d-%02d_%02d-%02d-%02d.demo",
+    	local.tm_mon + 1,
+    	local.tm_mday,
+    	local.tm_year + 1900,
+    	local.tm_hour,
+    	local.tm_min,
+    	local.tm_sec
 	);
+
 	Msg					("Demo would be stored in - %s", demo_name);
 	FS.update_path      (demo_path, "$logs$", demo_name);
 	m_writer			= FS.w_open(demo_path);

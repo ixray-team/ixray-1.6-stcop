@@ -13,9 +13,11 @@ CGameSpy_GCD_Client::~CGameSpy_GCD_Client()
 {
 }
 
-void	CGameSpy_GCD_Client::LoadGameSpy()
+void CGameSpy_GCD_Client::LoadGameSpy()
 {
-	GAMESPY_LOAD_FN(xrGS_gcd_compute_response);	
+#ifdef XR_MP_BUILD
+	GAMESPY_LOAD_FN(xrGS_gcd_compute_response);
+#endif
 }
 
 string64	gsCDKey = "";

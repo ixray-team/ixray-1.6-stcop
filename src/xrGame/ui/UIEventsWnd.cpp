@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "UIEventsWnd.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
@@ -290,16 +290,18 @@ void CUIEventsWnd::ShowDescription			(CGameTask* t, int idx)
 
 		if(Actor()->encyclopedia_registry->registry().objects_ptr())
 		{
-			string512	need_group;
-			if(0==idx){
+			string512 need_group;
+			if(0==idx)
+			{
 				strcpy(need_group,*t->m_ID);
-			}else
-			if(o.m_article_key.size())
+			}
+			else if(o.m_article_key.size())
 			{
-				sprintf_s(need_group, "%s/%s", *t->m_ID, *o.m_article_key);
-			}else
+				xr_sprintf(need_group, "%s/%s", *t->m_ID, *o.m_article_key);
+			}
+			else
 			{
-				sprintf_s(need_group, "%s/%d", *t->m_ID, idx);
+				xr_sprintf(need_group, "%s/%d", *t->m_ID, idx);
 			}
 
 			ARTICLE_VECTOR::const_iterator it		= Actor()->encyclopedia_registry->registry().objects_ptr()->begin();

@@ -7,10 +7,7 @@
 
 #ifndef SMART_COVER_TRANSITION_HPP_INCLUDED
 #define SMART_COVER_TRANSITION_HPP_INCLUDED
-
-namespace MonsterSpace {
-	enum EBodyState;
-}; // namespace MonsterSpace
+#include "ai_monster_space.h"
 
 namespace smart_cover {
 namespace transitions {
