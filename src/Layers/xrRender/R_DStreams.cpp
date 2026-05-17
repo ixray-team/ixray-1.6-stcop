@@ -201,7 +201,7 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
 
 	vOffset = mPosition;
 
-	return LPWORD(pLockedData);
+	return (u16*)(pLockedData);
 }
 
 void _IndexStream::Unlock(u32 RealCount)

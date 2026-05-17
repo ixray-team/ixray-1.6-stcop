@@ -7,3 +7,4 @@
 #include "OSStrings.h"
 #include "OSDebug.h"
 #include "OSMemory.h"
+#include "ComPtr.h"

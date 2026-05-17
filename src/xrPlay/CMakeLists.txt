@@ -39,13 +39,12 @@ target_compile_definitions(xrEngine PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 # Linker list
 target_link_libraries(xrEngine PUBLIC xrEngineCore)
 target_link_libraries(xrEngine PUBLIC xrScripts)
+if(IXRAY_USE_R1)
+    add_dependencies(xrEngine xrRender_R1)
+   endif()
 
 if (WIN32)
     add_dependencies(xrEngine xrGame xrRender_R4)
-    if(IXRAY_USE_R1)
-        add_dependencies(xrEngine xrRender_R1)
-    endif()
-
     if(IXRAY_USE_R2)
         add_dependencies(xrEngine xrRender_R2)
     endif()
