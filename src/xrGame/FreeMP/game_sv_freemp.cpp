@@ -136,7 +136,7 @@ void game_sv_freemp::Create(shared_str& options)
 
 	switch_Phase(GAME_PHASE_PENDING);
 
-	::Random.seed(GetTickCount());
+	::Random.seed(SDL_GetTicks());
 	m_CorpseList.clear();
 }
 

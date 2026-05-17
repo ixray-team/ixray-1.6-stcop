@@ -30,7 +30,7 @@ void CEvaluator::setup					(_object_type *object, CPropertyStorage *storage)
 }
 
 TEMPLATE_SPECIALIZATION
-typename bool CEvaluator::evaluate	()
+bool CEvaluator::evaluate	()
 {
 	return				((this->m_storage->property(m_condition_id) == m_value) == m_equality);
 }

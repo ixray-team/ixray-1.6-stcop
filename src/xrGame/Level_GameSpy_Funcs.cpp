@@ -2,12 +2,15 @@
 #include "Level.h"
 #include "xrMessages.h"
 #include "../xrEngine/x_ray.h"
-#include "gamespy/GameSpy_GCD_Client.h"
 
+#ifdef XR_MP_BUILD
+#include "gamespy/GameSpy_GCD_Client.h"
+#endif
 
 #include "../xrEngine/IGame_Persistent.h"
-void						CLevel::OnGameSpyChallenge			(NET_Packet* P)
+void CLevel::OnGameSpyChallenge(NET_Packet* P)
 {
+#ifdef XR_MP_BUILD
 #ifndef MASTER_GOLD
 	Msg("xrGS::CDKey::Level : Responding on Challenge");
 #endif // #ifndef MASTER_GOLD
@@ -26,6 +29,7 @@ void						CLevel::OnGameSpyChallenge			(NET_Packet* P)
 	newP.w_begin	(M_GAMESPY_CDKEY_VALIDATION_CHALLENGE_RESPOND);
 	newP.w_stringZ(ResponseStr);
 	Send(newP, net_flags(true, true, true, true));
+#endif
 
 	g_pGamePersistent->SetLoadStageTitle("st_validating_cdkey");
 	g_pGamePersistent->LoadTitle();

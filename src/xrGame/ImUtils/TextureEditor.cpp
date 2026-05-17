@@ -156,7 +156,7 @@ void RequestHandler_TextureEditor(const SRequestData& req)
 			}
 
 			PROF_EVENT("load_and_validate_all");
-			xr_parallel_for(0ULL, files_vec.size(),
+			xr_parallel_for(size_t(0), files_vec.size(),
 				[](size_t index)
 				{
 					std::string_view fn = files_vec[index];

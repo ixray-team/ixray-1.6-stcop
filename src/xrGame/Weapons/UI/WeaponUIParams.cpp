@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "Weapon.h"
 
 static float normalize(float val, float min, float max)

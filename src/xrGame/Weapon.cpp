@@ -4848,7 +4848,7 @@ static bool is_visible_by_thermovisor(CObject* pointer)
 		return false;
 	}
 
-	return pointer != nullptr ? pointer->cast_entity_alive() : nullptr;
+	return ((pointer != nullptr) ? !!pointer->cast_entity_alive() : false);
 }
 
 bool CWeapon::IsAutoAimHaveTarget()

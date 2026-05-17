@@ -59,8 +59,9 @@ CGameSpy_Browser::~CGameSpy_Browser()
 	}
 };
 
-void	CGameSpy_Browser::LoadGameSpy()
+void CGameSpy_Browser::LoadGameSpy()
 {	
+#ifdef XR_MP_BUILD
 	GAMESPY_LOAD_FN(xrGS_ServerBrowserNewA);	
 	GAMESPY_LOAD_FN(xrGS_ServerBrowserFree);
 	GAMESPY_LOAD_FN(xrGS_ServerBrowserClear);
@@ -106,6 +107,7 @@ void	CGameSpy_Browser::LoadGameSpy()
 	GAMESPY_LOAD_FN(xrGS_GetGameID);
 
 	GAMESPY_LOAD_FN(xrGS_ServerBrowserErrorDescA);
+#endif
 }
 
 static bool services_checked = false;
@@ -280,6 +282,7 @@ void CGameSpy_Browser::GetServerInfoByIndex(ServerInfo* pServerInfo, int idx)
 
 void	CGameSpy_Browser::ReadServerInfo	(ServerInfo* pServerInfo, void* pServer)
 {
+#ifdef XR_MP_BUILD
 	if (!pServer || !pServerInfo)
 		return;
 
@@ -435,7 +438,8 @@ void	CGameSpy_Browser::ReadServerInfo	(ServerInfo* pServerInfo, void* pServer)
 			pServerInfo->m_aTeams.push_back(TI);
 		}		
 	}
-};
+#endif
+}
 
 void CGameSpy_Browser::RefreshQuick(int Index)
 {

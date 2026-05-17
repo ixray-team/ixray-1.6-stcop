@@ -1009,7 +1009,7 @@ void			xrServer::Server_Client_Check	( IClient* CL )
 		return;
 	};
 
-	if( CL->process_id == GetCurrentProcessId() )
+	if( CL->process_id == Platform::GetCurrentProcessId() )
 	{
 		CL->flags.bLocal	= 1;
 		SV_Client			= (xrClientData*)CL;
@@ -1209,7 +1209,7 @@ void xrServer::create_direct_client()
 	SClientConnectData cl_data;
 	cl_data.clientID.set(1);
 	xr_strcpy( cl_data.name, "single_player" );
-	cl_data.process_id = GetCurrentProcessId();
+	cl_data.process_id = Platform::GetCurrentProcessId();
 	
 	new_client( &cl_data );
 }

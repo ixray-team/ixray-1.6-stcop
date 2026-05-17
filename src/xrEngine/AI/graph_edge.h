@@ -12,9 +12,9 @@ template <typename __edge_weight_type, typename __vertex_type>
 class CEdgeBase
 {
 public:
-	typedef typename __edge_weight_type				_edge_weight_type;
-	typedef typename __vertex_type					_vertex_type;
-	typedef typename _vertex_type::_vertex_id_type	_vertex_id_type;
+	typedef __edge_weight_type				_edge_weight_type;
+	typedef __vertex_type					_vertex_type;
+	typedef _vertex_type::_vertex_id_type	_vertex_id_type;
 
 private:
 	_edge_weight_type				m_weight;

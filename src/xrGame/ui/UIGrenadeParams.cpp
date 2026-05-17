@@ -4,7 +4,7 @@
 //	Author		: St4lker0k765
 //	Description : Implementation for grenade params in inventory
 ////////////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "UIGrenadeParams.h"
 #include "../../xrUI/UIXmlInit.h"

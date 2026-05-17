@@ -8,7 +8,10 @@
 #endif
 
 template <typename _Object>
-class CMonsterStateManager : public IStateManagerBase, public CState<_Object> {
+class CMonsterStateManager : 
+	public IStateManagerBase, 
+	public CState<_Object> 
+{
 	typedef CState<_Object> inherited;
 
 public:
@@ -18,7 +21,7 @@ public:
 	virtual void	force_script_state		(EMonsterState state);
 	virtual void	execute_script_state	();
 	virtual	void	critical_finalize		();
-	virtual	void	remove_links			(CObject* object_) = 0 { inherited::remove_links(object_); }
+	virtual	void	remove_links			(CObject* object_) { inherited::remove_links(object_); }
 
 	virtual	EMonsterState get_state_type	();
 
