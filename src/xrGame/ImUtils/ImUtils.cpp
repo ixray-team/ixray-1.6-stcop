@@ -649,7 +649,7 @@ void AllEditors_Shutdown()
 {
 	// texture editor
 	{
-		AllEditors_SendRequests_Sequential(xr_array{
+		AllEditors_SendRequests_Sequential(xr_array<SRequestData, 2>{
 			SRequestData{
 				.editor_type = u32(eImGuiEditorType::kTextureEditor),
 				.request_type = u32(eRequestType_TextureEditor::kWriteSettings)
@@ -658,12 +658,12 @@ void AllEditors_Shutdown()
 				.editor_type = u32(eImGuiEditorType::kTextureEditor),
 				.request_type = u32(eRequestType_TextureEditor::kShutdown)
 			}
-			});
+		});
 	}
 
 	// quest editor
 	{
-		AllEditors_SendRequests_Sequential(xr_array{
+		AllEditors_SendRequests_Sequential(xr_array<SRequestData, 2>{
 			SRequestData{
 				.editor_type = u32(eImGuiEditorType::kQuestEditor),
 				.request_type = u32(eRequestType_QuestEditor::kWriteSettings)
@@ -677,7 +677,7 @@ void AllEditors_Shutdown()
 
 	// omf editor
 	{
-		AllEditors_SendRequests_Sequential(xr_array{
+		AllEditors_SendRequests_Sequential(xr_array<SRequestData, 2>{
 			SRequestData{
 				.editor_type = u32(eImGuiEditorType::kOMFEditor),
 				.request_type = u32(eRequestType_OMFEditor::kWriteSettings)
