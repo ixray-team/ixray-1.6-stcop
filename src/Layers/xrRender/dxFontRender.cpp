@@ -80,7 +80,7 @@ void dxFontRender::OnRender(CGameFont& owner)
 			Y -= 0.5f;
 			Y2 -= 0.5f;
 
-			xr_special_char* UniStr = nullptr; 
+			const xr_special_char* UniStr = nullptr; 
 			bool IsUTF8Str = IsUTF8(str.string);
 			if (IsUTF8Str)
 			{

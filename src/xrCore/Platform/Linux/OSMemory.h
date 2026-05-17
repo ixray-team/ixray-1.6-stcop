@@ -13,7 +13,31 @@ namespace Platform
         strcpy(Path, Name);
         strcat(Path, ".so");
 
-        return dlopen(Path, RTLD_NOW);
+        snprintf(Path, sizeof(Path), "%s.so", Name);
+        void* module = dlopen(Path, RTLD_NOW);
+        if (module == NULL) {
+            snprintf(Path, sizeof(Path), "lib%s.so", Name);
+            module = dlopen(Path, RTLD_NOW);
+            if (module == NULL) {
+                char exec_path[PATH_MAX] = {};
+                readlink("/proc/self/exe", exec_path, sizeof(exec_path));
+
+                int start_of_filename = strlen(exec_path);
+                while (start_of_filename > 0 && exec_path[start_of_filename] != '/') {
+                    exec_path[start_of_filename--] = '\0';
+                }
+                exec_path[start_of_filename--] = '\0';
+
+                snprintf(Path, sizeof(Path), "%s/%s.so", exec_path, Name);
+                module = dlopen(Path, RTLD_NOW);
+                if (module == NULL) {
+                    snprintf(Path, sizeof(Path), "%s/lib%s.so", exec_path, Name);
+                    module = dlopen(Path, RTLD_NOW);
+                }
+            }
+        }
+
+        return module;
     }
 
     inline void* GetAddress(HMODULE Library, const char* Function)
