@@ -74,6 +74,7 @@ static void LoadCustomSettings()
 	}
 }
 
+#ifdef IXR_WINDOWS
 int APIENTRY WinMain
 (
 	HINSTANCE hInstance,
@@ -81,7 +82,19 @@ int APIENTRY WinMain
 	char* lpCmdLine,
 	int nCmdShow
 )
+#else
+int main(int argc, char* argv[])
+#endif
 {
+#ifndef IXR_WINDOWS
+	std::string cmd_line;
+
+	for (int i = 0; i < argc; ++i) {
+		cmd_line += argv[i];
+		cmd_line += " ";
+	}
+#endif
+
 	{
 	PROF_EVENT("START_ENGINE");
 	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS))
@@ -95,7 +108,7 @@ int APIENTRY WinMain
 	Debug._initialize(false);
 
 	// Check for another instance
-#ifdef NO_MULTI_INSTANCES
+#if defined(NO_MULTI_INSTANCES) && defined(IXR_WINDOWS)
 #define STALKER_PRESENCE_MUTEX TEXT("Local\\STALKER-COP")
 
 	HANDLE hCheckPresenceMutex = INVALID_HANDLE_VALUE;
@@ -120,7 +133,11 @@ int APIENTRY WinMain
 	//SDL_HideWindow(g_AppInfo.Window);
 
 	splash::SetProgressStatus(20, "Initializing xrCore");
+#ifdef IXR_WINDOWS
 	EngineLoadStage1(lpCmdLine);
+#else
+	EngineLoadStage1(cmd_line.data());
+#endif
 	//plat
 	std::jthread s(splash::Show);
 #ifdef DEBUG_DRAW
