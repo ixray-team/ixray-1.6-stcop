@@ -1633,7 +1633,15 @@ void CWeaponMagazined::OnShotJammed()
 
 void CWeaponMagazined::OnEmptyClick()
 {
-	PlaySound("sndEmptyClick", get_LastFP());
+	PlaySound(ParentIsActor() && IsMisfire() && m_sounds.FindSoundItem("sndJammedClick", false) ? "sndJammedClick" : "sndEmptyClick", get_LastFP());
+
+	if (HudItemData() != nullptr && m_sFakeShootBlendParams.has_motion)
+	{
+		PlayBlendAnm(m_sFakeShootBlendParams.camera_name,
+			m_sFakeShootBlendParams.speed_power.x, m_sFakeShootBlendParams.speed_power.y,
+			m_sFakeShootBlendParams.blend_params, false, false, true,
+			0, 0, script_layer::EBlendLayers::eNone);
+	}
 }
 
 void CWeaponMagazined::OnAnimationEnd(u8 state) 

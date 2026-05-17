@@ -125,6 +125,11 @@ public:
 	bool ScopeFit(CScope*) const;
 
 	virtual void on_a_hud_attach() override;
+	
+	SBlendParams m_sAimBlendParams[3], m_sGLAimBlendParams[3], m_sFakeShootBlendParams;
+
+	virtual void OnBlendEnd(u8 state) override;
+	virtual void OnBlendStart(u8 state) override;
 
 protected:
 	//время удаления оружия
