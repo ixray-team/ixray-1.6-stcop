@@ -48,17 +48,17 @@ void CObject::MakeMeCrow			()
 	g_pGameLevel->Objects.o_crow	(this);
 }
 
-IC bool CObject::IsFocused() const
+bool CObject::IsFocused() const
 {
 	return g_pGameLevel->CurrentEntity() == this;
 }
 
-IC bool CObject::IsMyCamera() const
+bool CObject::IsMyCamera() const
 {
 	return g_pGameLevel->CurrentViewEntity() == this;
 }
 
-IC bool CObject::isLocalPlayer() const
+bool CObject::isLocalPlayer() const
 {
 	return g_pGameLevel->CurrentControlEntity() == this;
 }
