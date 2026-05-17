@@ -75,7 +75,9 @@ public:
 
 	void					export_cform_rcast	( CDB::CollectorPacked& CL, Fmatrix& xform );
 	void					export_cform_rcast_new (xr_vector<FaceDataEmbree>& faces, Fmatrix& xform);
- 
+
+	xr_vector<FaceDataEmbree>& EmbreeInstanceCopy	();
+
 	u32						find				( const _vertex *v )	const;
 	u32						find				( const _face *v )		const;
 };

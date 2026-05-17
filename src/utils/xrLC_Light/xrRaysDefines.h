@@ -1,4 +1,5 @@
 #pragma once
+// GPU Side
 
 enum ColorsReturnType
 {
@@ -17,52 +18,39 @@ struct RayRecvestIndex
 	Fvector P;
 	Fvector N;
 };
-
-struct RayRecvestCPU
-{
- 	size_t  INDEX_TASK;
-	u8		Jitter = 0; 
-
-	// Task Pos, Dir, Skip
-	Fvector P;
-	Fvector N;
-	void* Skip;
-
-	void SetupParrams(size_t taskID, u8 J, Fvector& Pnew, Fvector& Nnew, void* skip)
-	{
-		INDEX_TASK = taskID;
-		Jitter = J;
- 		P = Pnew;
-		N = Nnew;
-		Skip = skip;
- 	}
-};
-
-#include "R_light.h"
-
-struct RayRecvestLPInfo : RayRecvestCPU
-{
- 	void SetupParramsCopy(RayRecvestCPU& S)
-	{
-		INDEX_TASK	= S.INDEX_TASK;
-		Jitter		= S.Jitter;
-		P			= S.P;
-		N			= S.N;
-		Skip		= S.Skip;
-	}
-
-	// result
-	u8		LType;
-	u8		CType = 0;
-	bool	isSunOrHemi;
-
-	// lighting precomp
-	float   sqD;
-	float   D;
-	float   TaskRange;
-	R_Light Light;
-
-	void*	TaskProcesor;
-};
-
  
+// CPU Side
+
+enum DeflectorLType
+{
+	eDefSun,
+	eDefHemi,
+	eDefRgb
+};
+struct RayTask
+{
+	Fvector wP, wN;
+	float Range;
+	Face* Skip;
+	float attention;
+	DeflectorLType type;
+	base_color_c* Cptr;
+};
+
+struct JiterPixel
+{
+	u32 V, U;
+	Fvector wP, wN; Face* skip;
+	base_color_c C;
+
+	void SetDataRays(u32 tV, u32 tU, Fvector& P, Fvector& N, Face* F)
+	{
+		U = tU;
+		V = tV;
+		C.clear_color();
+
+		wP = P;
+		wN = N;
+		skip = F;
+	};
+};

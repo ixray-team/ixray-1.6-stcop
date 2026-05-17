@@ -79,3 +79,16 @@ void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataEmbree>& faces, Fmatri
 	}
 }
 
+xr_vector<FaceDataEmbree>& xrMU_Model::EmbreeInstanceCopy()
+{
+	thread_local xr_vector<FaceDataEmbree> faces;
+	faces.clear();
+	for (auto& F : m_faces)
+	{
+ 		const Shader_xrLC& SH = F->Shader();
+		if (!SH.flags.bLIGHT_CastShadow) continue;
+
+  		faces.emplace_back(F->v[0]->P, F->v[1]->P, F->v[2]->P, F);
+	}
+	return faces;
+}
