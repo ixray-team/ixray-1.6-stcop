@@ -4,6 +4,7 @@
 
 InternalDX11GPUEventWrapper::InternalDX11GPUEventWrapper(const char* name, const wchar_t* wname)
 {
+#ifdef IXR_WINDOWS
     ID3DUserDefinedAnnotation* pAnnotation = (ID3DUserDefinedAnnotation*)g_pAnnotation;
 
     if (pAnnotation)
@@ -15,10 +16,12 @@ InternalDX11GPUEventWrapper::InternalDX11GPUEventWrapper(const char* name, const
     {
         _index = GPUEvents_PushEvent(name);
     }
+#endif
 }
 
 InternalDX11GPUEventWrapper::~InternalDX11GPUEventWrapper()
 {
+#ifdef IXR_WINDOWS
     ID3DUserDefinedAnnotation* pAnnotation = (ID3DUserDefinedAnnotation*)g_pAnnotation;
 
     if (pAnnotation)
@@ -30,4 +33,5 @@ InternalDX11GPUEventWrapper::~InternalDX11GPUEventWrapper()
     {
         GPUEvents_PopEvent(_index);
     }
+#endif
 }

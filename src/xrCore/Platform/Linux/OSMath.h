@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 
+#ifndef XR_USE_DXVK_NATIVE
 struct RECT
 {
     int left;
@@ -8,9 +9,9 @@ struct RECT
     int right;
     int bottom;
 };
+#endif
 
-inline
-unsigned char _bittest64(std::int64_t *a, std::int64_t b)
+inline unsigned char _bittest64(std::int64_t *a, std::int64_t b)
 {
     auto const value{ *a };
     auto const mask{ 1LL << (b&63) };
