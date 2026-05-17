@@ -995,7 +995,7 @@ Fvector CEntityAlive::get_last_local_point_on_mesh	( Fvector const& last_point, 
 	//костыли для ног
 	if (Level().CurrentViewEntity() == this)
 	{
-		if (CActor* actor = smart_cast<CActor*>(this))
+		if (CActor* actor = smart_cast<CActor*>((CEntityAlive*)this))
 		{
 			if (actor->active_cam() == eacFirstEye && !actor->Holder() && g_player_hud && g_player_hud->m_legs_model)
 			{

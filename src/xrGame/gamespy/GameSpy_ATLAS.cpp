@@ -18,6 +18,7 @@ CGameSpy_ATLAS::~CGameSpy_ATLAS	()
 
 void CGameSpy_ATLAS::LoadGameSpyATLAS()
 {
+#ifdef XR_MP_BUILD
 	GAMESPY_LOAD_FN(xrGS_wsLoginProfile);
 	GAMESPY_LOAD_FN(xrGS_scInitialize);
 	GAMESPY_LOAD_FN(xrGS_scShutdown);
@@ -36,6 +37,7 @@ void CGameSpy_ATLAS::LoadGameSpyATLAS()
 	GAMESPY_LOAD_FN(xrGS_scReportAddStringValue);
 	GAMESPY_LOAD_FN(xrGS_scReportEnd);
 	GAMESPY_LOAD_FN(xrGS_scSubmitReport);
+#endif
 }
 
 void CGameSpy_ATLAS::Init()

@@ -9,13 +9,14 @@
 #pragma once
 #include "../xrEngine/AI/graph_engine_space.h"
 #include "../xrCore/associative_vector.h"
+#include "condition_state.h"
 
 template <
 	typename _operator,
 	typename _condition_evaluator,
 	bool	 _reverse_search = false,
-	typename _operator_ptr = _operator*,
-	typename _condition_evaluator_ptr = _condition_evaluator*
+	typename __operator_ptr = _operator*,
+	typename __condition_evaluator_ptr = _condition_evaluator*
 >
 class CProblemSolver
 {
@@ -29,16 +30,17 @@ private:
 		_operator,
 		_condition_evaluator,
 		_reverse_search,
-		_operator_ptr,
-		_condition_evaluator_ptr
+		__operator_ptr,
+		__condition_evaluator_ptr
 	> self_type;
 
 public:
+	using _operator_ptr = __operator_ptr;
+	using _condition_evaluator_ptr = __condition_evaluator_ptr;
+
 	typedef _operator										COperator;
 	typedef CWorldState										CState;
 	typedef _condition_evaluator							CConditionEvaluator;
-	typedef _operator_ptr									_operator_ptr;
-	typedef _condition_evaluator_ptr						_condition_evaluator_ptr;
 	typedef CState											_index_type;
 
 	struct SOperator
@@ -46,9 +48,9 @@ public:
 		u32	m_operator_id;
 		_operator_ptr m_operator;
 
-		IC SOperator(const u32& operator_id, _operator_ptr _operator) :
+		IC SOperator(const u32& operator_id, _operator_ptr OperatorValue) :
 			m_operator_id(operator_id),
-			m_operator(_operator)
+			m_operator(OperatorValue)
 		{
 		}
 
@@ -124,7 +126,7 @@ public:
 	IC		u16			estimate_edge_weight	(const _index_type	&vertex_index) const;
 
 	// operator interface
-	IC		virtual void				add_operator			(const u32& operator_id,	_operator_ptr _operator);
+	IC		virtual void				add_operator			(const u32& operator_id,	_operator_ptr OperatorValue);
 	IC		virtual void				remove_operator			(const u32& operator_id);
 	IC		_operator_ptr				get_operator			(const u32& operator_id);
 	IC		const OPERATOR_VECTOR		&operators				() const;
