@@ -9,20 +9,14 @@
 #pragma once
 
 #include "action_planner.h"
+#include "ObjectHandlerSpace.h"
+#include "ai_monster_space.h"
 
 class CAI_Stalker;
 class CInventoryItem;
 class CWeapon;
 class CMissile;
 class CFoodItem;
-
-namespace ObjectHandlerSpace {
-	enum EWorldProperties;
-};
-
-namespace MonsterSpace {
-	enum EObjectAction;
-};
 
 class CObjectHandlerPlanner :
 	public CActionPlanner<CAI_Stalker,true>

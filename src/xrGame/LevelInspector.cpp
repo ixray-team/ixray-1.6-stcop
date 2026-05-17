@@ -757,14 +757,39 @@ LevelInspector::~LevelInspector()
 }
 ICF u32 positionToColorWithAlpha(const Fvector& C)
 {
-	//Fvector _T_(C * 0.2f);
-	//_T_ = Fvector{ sin(_T_.x), sin(_T_.y), sin(_T_.z) };
-	//_T_.add(1.0f).mul(0.5f);
-	//_T_.add(100.f).mul(155.f);
-	//return color_rgba(_T_.x, _T_.y, _T_.z, 20u);
-
-	__m128 result = _mm_add_ps(__m128{ 100.f, 100.f, 100.f, 1.f },_mm_mul_ps(_mm_mul_ps(_mm_add_ps(_mm_sin_ps(_mm_mul_ps(__m128{ C.x, C.y, C.z, 1.f }, __m128{ 0.2f, 0.2f, 0.2f, 1.f })), __m128{ 1.f, 1.f, 1.f, 1.f }), __m128{ .5f, .5f, .5f, .5f }), __m128{ 155.f, 155.f, 155.f, 1.f }));
+#ifdef IXR_WINDOWS
+	__m128 result = _mm_add_ps
+	(
+		__m128{ 100.f, 100.f, 100.f, 1.f },
+		_mm_mul_ps
+		(
+			_mm_mul_ps
+			(
+				_mm_add_ps
+				(
+					_mm_sin_ps
+					(
+						_mm_mul_ps
+						(
+							__m128{ C.x, C.y, C.z, 1.f }, 
+							__m128{ 0.2f, 0.2f, 0.2f, 1.f }
+						)
+					), 
+					__m128{ 1.f, 1.f, 1.f, 1.f }
+				), 
+				__m128{ .5f, .5f, .5f, .5f }
+			), 
+			__m128{ 155.f, 155.f, 155.f, 1.f }
+		)
+	);
 	return color_rgba(result.m128_u32[0], result.m128_u32[1], result.m128_u32[2], 20u);
+#else
+	Fvector _T_(C * 0.2f);
+	_T_ = Fvector{ sin(_T_.x), sin(_T_.y), sin(_T_.z) };
+	_T_.add(1.0f).mul(0.5f);
+	_T_.add(100.f).mul(155.f);
+	return color_rgba(_T_.x, _T_.y, _T_.z, 20u);
+#endif
 }
 
 void LevelInspector::OnRender()
@@ -1637,7 +1662,6 @@ void LevelInspector::DrawGameGraph()
 	if(m_links.empty() && m_graphs.empty())
 	{
 		u16 v_cnt = graph.header().vertex_count();
-		static u32 main_thread_id = GetCurrentThreadId();
 		xr_parallel_for(u16(0), v_cnt, [&](u16 global_vid)
 		{
 			PROF_START_THREAD("build_graph_nodes");

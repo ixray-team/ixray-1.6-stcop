@@ -4,8 +4,9 @@
 
 #define REGISTRY_BASE HKEY_CURRENT_USER
 
-bool	ReadRegistryValue(const char* rKeyName, DWORD rKeyType, void* value )
+bool ReadRegistryValue(const char* rKeyName, DWORD rKeyType, void* value )
 {	
+#ifdef IXR_WINDOWS
 	HKEY hKey = 0;	
 	long res = RegOpenKeyExA(REGISTRY_BASE, 
 		REGISTRY_PATH, 0, KEY_READ, &hKey);
@@ -51,11 +52,13 @@ bool	ReadRegistryValue(const char* rKeyName, DWORD rKeyType, void* value )
 	}
 	
 	memcpy(value, rBuf, KeyValueSize);
+#endif
 	return true;
 };
 
 bool WriteRegistryValue(const char* rKeyName, DWORD rKeyType, const void* value)
 {
+#ifdef IXR_WINDOWS
 	HKEY hKey;
 
 	long res = RegCreateKeyExA
@@ -102,30 +105,42 @@ bool WriteRegistryValue(const char* rKeyName, DWORD rKeyType, const void* value)
 	res = RegSetValueExA(hKey, rKeyName, 0, rKeyType, (LPBYTE)value, KeyValueSize);
 
 	if (hKey) RegCloseKey(hKey);
+#endif
 	return true;
 };
 
 bool	ReadRegistry_StrValue	(const char* rKeyName, char* value )
 {
+#ifdef IXR_WINDOWS
 	return ReadRegistryValue(rKeyName, REG_SZ, value);
+#else
+	return true;
+#endif
 }
 
 void	WriteRegistry_StrValue	(const char* rKeyName, const char* value )
 {
+#ifdef IXR_WINDOWS
 	WriteRegistryValue(rKeyName, REG_SZ, value);
+#endif
 }
 
 void	ReadRegistry_DWValue	(const char* rKeyName, DWORD& value )
 {
+#ifdef IXR_WINDOWS
 	ReadRegistryValue(rKeyName, REG_DWORD, &value);
+#endif
 }
 void	WriteRegistry_DWValue	(const char* rKeyName, const DWORD& value )
 {
+#ifdef IXR_WINDOWS
 	WriteRegistryValue(rKeyName, REG_DWORD, &value);
+#endif
 }
 
 u32 const	ReadRegistry_BinaryValue	(const char* rKeyName, u8 * buffer_dest, u32 const buffer_size)
 {
+#ifdef IXR_WINDOWS
 	HKEY hKey = 0;	
 	long res = RegOpenKeyExA(REGISTRY_BASE, REGISTRY_PATH, 0, KEY_READ, &hKey);
 
@@ -152,10 +167,14 @@ u32 const	ReadRegistry_BinaryValue	(const char* rKeyName, u8 * buffer_dest, u32 
 	}
 	
 	return static_cast<u32>(tmp_buffer_size);
+#else
+	return 0;
+#endif
 }
 
 void	WriteRegistry_BinaryValue	(const char* rKeyName, u8 const * buffer_src, u32 const buffer_size)
 {
+#ifdef IXR_WINDOWS
 	HKEY hKey;
 
 	long res = RegOpenKeyExA(REGISTRY_BASE, 
@@ -176,4 +195,5 @@ void	WriteRegistry_BinaryValue	(const char* rKeyName, u8 const * buffer_src, u32
 	res = RegSetValueExA(hKey, rKeyName, 0, REG_BINARY, buffer_src, buffer_size);
 
 	RegCloseKey(hKey);
+#endif
 }

@@ -180,13 +180,13 @@ void CUIStalkersRankingWnd::AddStalkerItem(CUIXml* xml, int num, CSE_ALifeTrader
 	CUIStalkerRankingInfoItem* itm		= new CUIStalkerRankingInfoItem(this);
 	itm->Init							(xml, "item_human", 0);
 
-	sprintf_s								(buff,"%d.",num);
+	xr_sprintf								(buff,"%d.",num);
 	itm->m_text1->SetText				(buff);		
 
-	sprintf_s								(buff,"%s",t->m_character_name.c_str());
+	xr_sprintf								(buff,"%s",t->m_character_name.c_str());
 	itm->m_text2->SetText				(buff);		
 
-	sprintf_s								(buff,"%d",t->m_rank);
+	xr_sprintf								(buff,"%d",t->m_rank);
 	itm->m_text3->SetText				(buff);		
 	itm->m_humanID						= t->object_id();
 	UIList->AddWindow					(itm, true);
@@ -207,14 +207,14 @@ void CUIStalkersRankingWnd::AddActorItem(CUIXml* xml, int num, CSE_ALifeTraderAb
 	itm									= new CUIStalkerRankingInfoItem(this);
 	itm->Init							(xml, "item_actor", 0);
 
-	sprintf_s								(buff,"%d.",num);
+	xr_sprintf								(buff,"%d.",num);
 	itm->m_text1->SetText				(buff);		
 
 
-	sprintf_s								(buff,"%s", t->m_character_name.c_str());
+	xr_sprintf								(buff,"%s", t->m_character_name.c_str());
 	itm->m_text2->SetText				(buff);		
 
-	sprintf_s								(buff,"%d",t->m_rank);
+	xr_sprintf								(buff,"%d",t->m_rank);
 	itm->m_text3->SetText				(buff);		
 
 	itm->m_humanID						= t->object_id();

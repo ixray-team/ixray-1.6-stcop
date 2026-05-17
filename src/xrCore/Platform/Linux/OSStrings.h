@@ -34,6 +34,42 @@ inline void strupr(char* s)
     }
 }
 
+inline char* strtok_s(char* str, const char* delim, char** context) {
+    if (str == NULL && (*context) == NULL) {
+        return NULL;  // Нечего парсить
+    }
+
+    if (str != NULL) {
+        *context = str;  // Начинаем новую строку
+    }
+
+    // Пропускаем ведущие разделители
+    char* token_start = *context;
+    while (*token_start != '\0' && strchr(delim, *token_start) != NULL) {
+        token_start++;
+    }
+
+    if (*token_start == '\0') {
+        *context = NULL;
+        return NULL;  // Больше токенов нет
+    }
+
+    // Ищем конец токена
+    char* token_end = token_start;
+    while (*token_end != '\0' && strchr(delim, *token_end) == NULL) {
+        token_end++;
+    }
+
+    if (*token_end != '\0') {
+        *token_end = '\0';          // Заменяем разделитель на ноль
+        *context = token_end + 1;   // Сохраняем позицию после токена
+    } else {
+        *context = NULL;            // Дошли до конца строки
+    }
+
+    return token_start;
+}
+
 #define _itoa itoa
 inline char* _strlwr(char *str)
 {

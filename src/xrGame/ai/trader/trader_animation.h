@@ -1,12 +1,9 @@
 #pragma once
 
 #include "../../../Include/xrRender/KinematicsAnimated.h"
+#include "ai_monster_space.h"
 
 class CAI_Trader;
-
-namespace MonsterSpace {
-	enum EMonsterHeadAnimType;
-};
 
 class CTraderAnimation {
 	CAI_Trader			*m_trader;
