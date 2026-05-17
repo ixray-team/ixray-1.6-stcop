@@ -807,6 +807,7 @@ void OMFEditor_LoadFile(CImGuiOMFEditor* p_state)
 
 			if (p_state->is_file_loaded)
 			{
+#ifdef IXR_WINDOWS
 				status = Platform::WCHAR_TO_CHAR(local_path, p_state->path);
 				R_ASSERT2(status, "report to developers! Unable to convert your path to multibyte string");
 
@@ -842,6 +843,7 @@ void OMFEditor_LoadFile(CImGuiOMFEditor* p_state)
 				p_state->is_file_loaded = status;
 
 				OMFEditor_Init(p_state, *p_state->omf);
+#endif
 			}
 		}
 	}
@@ -1072,6 +1074,7 @@ void OMFEditor_SwapAnimMarks(
 
 			if (status)
 			{
+#ifdef IXR_WINDOWS
 				status = Platform::WCHAR_TO_CHAR(local_path, pState->path);
 				R_ASSERT(status);
 
@@ -1149,6 +1152,7 @@ void OMFEditor_SwapAnimMarks(
 					pState->temp_omf = nullptr;
 					ShowMessageBox(_eMessageBoxStatus::kWarning, "Warning", "failed to load file!");
 				}
+#endif
 			}
 			else
 			{

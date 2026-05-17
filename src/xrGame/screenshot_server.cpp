@@ -133,6 +133,7 @@ void clientdata_proxy::notify_admin(clientdata_event_t event_for_admin, char con
 
 void clientdata_proxy::save_proxy_screenshot()
 {
+#ifdef XR_MP_BUILD
 	game_cl_mp* clgame = Level().game != nullptr ? Level().game->cast_game_cl_mp() : nullptr;
 	if (!clgame)
 		return;
@@ -159,10 +160,12 @@ void clientdata_proxy::save_proxy_screenshot()
 		my_proxy_mem_file.size(),
 		m_receiver->get_user_param()
 	);
+#endif
 }
 
 void clientdata_proxy::save_proxy_config()
 {
+#ifdef XR_MP_BUILD
 	game_cl_mp* clgame = Level().game != nullptr ? Level().game->cast_game_cl_mp() : nullptr;
 	if (!clgame)
 		return;
@@ -186,12 +189,14 @@ void clientdata_proxy::save_proxy_config()
 		my_proxy_mem_file.pointer(),
 		my_proxy_mem_file.size());
 	FS.w_close					(tmp_writer);
+#endif
 }
 
 void clientdata_proxy::download_screenshot_callback(file_transfer::receiving_status_t status, 
 													u32 downloaded, 
 													u32 total)
 {
+#ifdef XR_MP_BUILD
 	switch (status)
 	{
 	case file_transfer::receiving_data:
@@ -257,12 +262,14 @@ void clientdata_proxy::download_screenshot_callback(file_transfer::receiving_sta
 			}
 		}break;
 	};
+#endif
 }
 
 void clientdata_proxy::download_config_callback(file_transfer::receiving_status_t status, 
 													u32 downloaded, 
 													u32 total)
 {
+#ifdef XR_MP_BUILD
 	switch (status)
 	{
 	case file_transfer::receiving_data:
@@ -328,6 +335,7 @@ void clientdata_proxy::download_config_callback(file_transfer::receiving_status_
 			}
 		}break;
 	};
+#endif
 }
 
 void clientdata_proxy::upload_file_callback(file_transfer::sending_status_t status,

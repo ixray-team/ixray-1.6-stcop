@@ -159,7 +159,7 @@ IC	void CBaseAction::set_property	(const u32 &condition_id, const bool&value)
 }
 
 TEMPLATE_SPECIALIZATION
-IC	const typename bool& CBaseAction::property	(const u32 &condition_id) const
+IC	const bool& CBaseAction::property	(const u32 &condition_id) const
 {
 	VERIFY(m_storage);
 	return (m_storage->property(condition_id));

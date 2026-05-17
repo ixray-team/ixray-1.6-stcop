@@ -15,7 +15,7 @@ CGameSpy_QR2::~CGameSpy_QR2()
 
 void CGameSpy_QR2::LoadGameSpy()
 {
-
+#ifdef XR_MP_BUILD
 	GAMESPY_LOAD_FN(xrGS_RegisteredKey);
 	GAMESPY_LOAD_FN(xrGS_qr2_register_keyA);
 	GAMESPY_LOAD_FN(xrGS_qr2_think);
@@ -32,6 +32,7 @@ void CGameSpy_QR2::LoadGameSpy()
 	GAMESPY_LOAD_FN(xrGS_qr2_initA);
 
 	GAMESPY_LOAD_FN(xrGS_GetGameVersion);
+#endif
 }
 
 void	CGameSpy_QR2::Think	(void* qrec)

@@ -8,6 +8,7 @@
 #include "script_game_object.h"
 
 #include "ScriptsSubsystems/Condlist/CondlistGC.h"
+#include <charconv>
 
 CScriptXRParser::CScriptXRParser() :
 	m_nCurrentIndex{}, m_pLevel(nullptr), m_pXRConditions(nullptr), m_pXREffects(nullptr)

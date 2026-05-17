@@ -67,7 +67,8 @@ void CStateGroupPanicAbstract::setup_substates()
 TEMPLATE_SPECIALIZATION
 void CStateGroupPanicAbstract::check_force_state()
 {
-	if ((this->current_substate == eStatePanic_FaceUnprotectedArea)){
+	if (this->current_substate == eStatePanic_FaceUnprotectedArea)
+	{
 		// если видит врага
 		if (this->object->EnemyMan.get_enemy_time_last_seen() == Device.dwTimeGlobal) {
 			this->select_state(eStatePanic_Run);
