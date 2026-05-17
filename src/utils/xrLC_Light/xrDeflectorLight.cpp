@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "../../xrCore/Collision/cl_intersect.h"
 
 #include "xrDeflector.h"
@@ -24,19 +24,19 @@ void Jitter_Select(Fvector2* &Jitter, u32& Jcount)
 
 	switch (g_params().m_lm_jitter_samples)
 	{
-	case 1:
-		Jcount	= 1;
-		Jitter	= Jitter1;
-		break;
-	case 9:
-		Jcount	= 9;
-		Jitter	= Jitter9;
-		break;
-	case 4:
-	default:
-		Jcount	= 4;
-		Jitter	= Jitter4;
-		break;
+		case 1:
+			Jcount	= 1;
+			Jitter	= Jitter1;
+			break;
+		case 9:
+			Jcount	= 9;
+			Jitter	= Jitter9;
+			break;
+		case 4:
+		default:
+			Jcount	= 4;
+			Jitter	= Jitter4;
+			break;
 	}
 }
  
@@ -149,9 +149,9 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
 
 void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip)
 {
-	auto processLight = [&]<typename T>(R_Light& L, T& accumulator, bool isSunOrHemi)
+ 	auto processLight = [&]<typename T>(R_Light& L, T& accumulator, bool isSunOrHemi)
 	{
-		Fvector Ldir;
+ 		Fvector Ldir;
 		Fvector Pnew = P;
 		Pnew.mad(N, 0.01f);
 		float att = 0.0f;
@@ -165,7 +165,7 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P,
 				if (D <= 0)
 					return;
 
-				float trace = rayTrace(DB, MDL, L, Pnew, Ldir, 1000.f, skip);
+ 				float trace = rayTrace(DB, MDL, L, Pnew, Ldir, 1000.f, skip);
 				att = isSunOrHemi ? L.energy * trace : D * L.energy * trace;
 				break;
 			}
@@ -180,7 +180,7 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P,
 				if (D <= 0)
 					return;
 
-				float R = _sqrt(sqD);
+ 				float R = _sqrt(sqD);
 				float trace = rayTrace(DB, MDL, L, Pnew, Ldir, R, skip);
 				float scale = D * L.energy * trace;
 
@@ -235,11 +235,12 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P,
 		}
 	};
 
+	if (DB != nullptr)
+		DB->ray_options(0);
+
 	// RGB Lights
 	if (!(flags & LP_dont_rgb))
 	{
-		if (DB != nullptr)
-			 DB->ray_options(0);
 		for (R_Light& L : lights.rgb)
 		{
 			processLight(L, C.rgb, false);
@@ -249,8 +250,6 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P,
 	// Sun Lights
 	if (!(flags & LP_dont_sun))
 	{
-		if (DB != nullptr)
-			DB->ray_options(0);
 		for (R_Light& L : lights.sun)
 		{
 			processLight(L, C.sun, true);
@@ -260,8 +259,6 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P,
 	// Hemi Lights
 	if (!(flags & LP_dont_hemi))
 	{
-		if (DB != nullptr)
-			DB->ray_options(0);
 		for (R_Light& L : lights.hemi)
 		{
 			processLight(L, C.hemi, true);
@@ -272,7 +269,7 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P,
 void LightPointNew(EmbreeRayTraceModel* MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip)
 {
 	auto processLight = [&]<typename T>(R_Light & L, T & accumulator, bool isSunOrHemi)
-	{
+	{   
 		Fvector Ldir;
 		Fvector Pnew = P;
 		Pnew.mad(N, 0.01f);
@@ -284,8 +281,7 @@ void LightPointNew(EmbreeRayTraceModel* MDL, base_color_c& C, Fvector& P, Fvecto
 		{
 			Ldir.invert(L.direction);
 			float D = Ldir.dotproduct(N);
-			if (D <= 0)
-				return;
+			if (D <= 0)					return;
 
 			float trace = MDL->RaytraceEmbreeProcess( Pnew, Ldir, 1000.f, skip );
 			att = isSunOrHemi ? L.energy * trace : D * L.energy * trace;
@@ -383,4 +379,98 @@ void LightPointNew(EmbreeRayTraceModel* MDL, base_color_c& C, Fvector& P, Fvecto
 			processLight(L, C.hemi, true);
 		}
 	}
+}
+
+thread_local xr_vector< RayTask > rays;
+void LightPoint_Jitters(xr_vector<JiterPixel>& world_pos, base_lighting& lights, u32 flags)
+{
+	rays.clear();
+	auto processLight = [&](JiterPixel& wPX, DeflectorLType LType, R_Light& L, bool isSunOrHemi)
+	{
+		Fvector Ldir;
+		Fvector Pnew = wPX.wP;
+		Pnew.mad(wPX.wN, 0.01f);
+		float att = 0.0f;
+
+		Fvector P = wPX.wP;
+		Fvector N = wPX.wN;
+		float R = 0;
+
+		switch (L.type)
+		{
+			case LT_DIRECT:
+			{
+				Ldir.invert(L.direction);
+				float D = Ldir.dotproduct(N);
+				if (D <= 0) return;
+
+				att = isSunOrHemi ? L.energy : D * L.energy;
+				R = 1000.0f;
+			} break;
+
+			case LT_POINT:
+			case LT_SECONDARY:
+			{
+				float sqD = P.distance_to_sqr(L.position);
+				if (sqD > L.range2)					return;
+
+				Ldir.sub(L.position, P).normalize_safe();
+				float D = Ldir.dotproduct(N);
+				if (D <= 0)							return;
+ 				R = _sqrt(sqD);
+
+				if (L.type == LT_SECONDARY)
+				{
+ 					D *= -Ldir.dotproduct(L.direction);
+					if (D <= 0)						return;
+ 					
+					att = powf(D, 0.125f) * L.energy * (1 - R / L.range);
+				}
+				else 
+				{
+ 					float scale = D * L.energy;
+					if (isSunOrHemi)
+ 						att = scale / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD);
+ 					else
+ 						att = scale * (1 / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD) - R * L.falloff);
+ 				}  
+
+			} break;
+		}
+
+		rays.emplace_back(Pnew, Ldir, R, wPX.skip, att, LType, &wPX.C);
+	};
+
+	// RGB Lights
+	if (!(flags & LP_dont_rgb))
+	{
+		for (R_Light& L : lights.rgb)
+		{
+			for (auto& wPX : world_pos)	// Именно такой порядок ! (Однонаправленые Лучи)
+				processLight(wPX, DeflectorLType::eDefRgb, L, false);
+		}
+	}
+
+	// Sun Lights
+	if (!(flags & LP_dont_sun))
+	{
+		for (R_Light& L : lights.sun)
+		{
+			for (auto& wPX : world_pos) // Именно такой порядок ! (Однонаправленые Лучи)
+				processLight(wPX, DeflectorLType::eDefSun, L, true);
+		}
+	}
+
+	// Hemi Lights
+	if (!(flags & LP_dont_hemi))
+	{
+		for (R_Light& L : lights.hemi)
+		{
+			for (auto& wPX : world_pos) // Именно такой порядок ! (Однонаправленые Лучи)
+				processLight(wPX, DeflectorLType::eDefHemi, L, true);
+		}
+	}
+ 
+	// Packed Rays Process !
+	EmbreeMain.RaytrraceRayPack(rays);
 }

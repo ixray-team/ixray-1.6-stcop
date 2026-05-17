@@ -108,6 +108,8 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
  
 #include "uv_grid.h"
 thread_local UVGridLazy<UVtri> uv_grid_embree;
+thread_local xr_vector<JiterPixel> EmbreePacket;
+
 void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 {
 	u32 flags = LGetCurrentFlags();
@@ -177,52 +179,121 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 		T.computeAABB(bounds);
 	uv_grid_embree.reset();
 
-	// Lighting itself
-	DB->ray_options	(0);
-   	for (u32 V=0; V<lm.height; V++)
+	// Change to Packet Edition
+	if (gCompilerMode.Embree)
 	{
- 		for (u32 U=0; U<lm.width; U++)	
+		u32 TILE_SIZE = 8;
+ 		// Lighting itself
+ 		for (u32 Y = 0; Y < lm.height; Y += TILE_SIZE)
 		{
- 			u32				Fcount	= 0;
-			base_color_c	C;
-			for (u32 J=0; J<Jcount; J++) 
+			for (u32 X = 0; X < lm.width; X += TILE_SIZE)
 			{
-				// LUMEL space
-				Fvector2 P;
-				P.x = float(U)/dim.x + half.x + Jitter[J].x * JS.x;
-				P.y = float(V)/dim.y + half.y + Jitter[J].y * JS.y;
- 
-				// World space
-				Fvector		wP,wN,B;
- 				for (auto TRI : uv_grid_embree.query(P.x, P.y, UVpolys))  
+ 				EmbreePacket.clear();
+				for (auto tX = X; tX < std::min(lm.width, X + TILE_SIZE); tX++)
+				for (auto tY = Y; tY < std::min(lm.height, Y + TILE_SIZE); tY++)
 				{
-  					if (TRI->isInside(P, B))
+ 					for (u32 J = 0; J < Jcount; J++)
 					{
-						// We found triangle and have barycentric coords
-						Face	*F	= TRI->owner;
- 						GetBarycentricNormalized(F, wP, wN, B);
-  						LightPoint	(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F); 
- 						Fcount		+= 1;
+						// LUMEL space
+						Fvector2 P;
+						P.x = float(tX) / dim.x + half.x + Jitter[J].x * JS.x;
+						P.y = float(tY) / dim.y + half.y + Jitter[J].y * JS.y;
 
-						break;
+						// World space
+						Fvector		wP, wN, B;
+						for (auto TRI : uv_grid_embree.query(P.x, P.y, UVpolys))
+						{
+							if (TRI->isInside(P, B))
+							{
+								// We found triangle and have barycentric coords
+ 								GetBarycentricNormalized(TRI->owner, wP, wN, B);
+								EmbreePacket.emplace_back().SetDataRays(tY, tX, wP, wN, TRI->owner);
+								break;
+							}
+						}
 					}
+ 				}
+
+				LightPoint_Jitters(EmbreePacket, lc_global_data()->L_static(), LGetCurrentFlags());
+
+				for (auto& WP : EmbreePacket)
+				{
+					u32 taskID = WP.V * lm.width + WP.U;
+					lm.surface[taskID]._add(WP.C);
+					lm.samples[taskID] += 1;
 				}
-			} 
-			
-			if (Fcount) 
-			{
-				C.scale			(Fcount);
-				C.mul			(.5f);
- 				lm.surface		[V*lm.width+U]._set(C);
-				lm.marker		[V*lm.width+U] = 255;
 			}
-			else 
+		}
+ 
+		for (u32 Y = 0; Y < lm.height; Y += 1)
+ 		for (u32 X = 0; X < lm.width;  X += 1)
+		{
+			u32 taskID = Y * lm.width + X;
+  			// Apply Colors !
+			u32 Samples = lm.samples[taskID];
+			if (Samples)
 			{
-				lm.surface		[V*lm.width+U]._set(C);	// 0-0-0-0-0
-				lm.marker		[V*lm.width+U] = 0;
+				// Calculate lighting amount
+				base_color_c C;
+				lm.surface[taskID]._get(C);
+				C.scale(Samples);
+				C.mul(.5f);
+				lm.surface[taskID]._set(C);
+				lm.marker[taskID] = 255;
 			}
 		}
 	}
+	else
+	{
+		// Lighting itself
+		DB->ray_options(0);
+		for (u32 V = 0; V < lm.height; V++)
+		{
+			for (u32 U = 0; U < lm.width; U++)
+			{
+				u32				Fcount = 0;
+				base_color_c	C;
+				for (u32 J = 0; J < Jcount; J++)
+				{
+					// LUMEL space
+					Fvector2 P;
+					P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
+					P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
+
+					// World space
+					Fvector		wP, wN, B;
+					for (auto TRI : uv_grid_embree.query(P.x, P.y, UVpolys))
+					{
+						if (TRI->isInside(P, B))
+						{
+							// We found triangle and have barycentric coords
+							Face* F = TRI->owner;
+							GetBarycentricNormalized(F, wP, wN, B);
+							LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F);
+							Fcount += 1;
+
+							break;
+						}
+					}
+				}
+
+				if (Fcount)
+				{
+					C.scale(Fcount);
+					C.mul(.5f);
+					lm.surface[V * lm.width + U]._set(C);
+					lm.marker[V * lm.width + U] = 255;
+				}
+				else
+				{
+					lm.surface[V * lm.width + U]._set(C);	// 0-0-0-0-0
+					lm.marker[V * lm.width + U] = 0;
+				}
+			}
+		}
+
+	}
+	
 
 	// *** Render Edges
 	float texel_size = (1.f/float(std::max(lm.width,lm.height)))/8.f;
