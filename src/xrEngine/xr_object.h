@@ -255,9 +255,9 @@ public:
 	virtual CExplosive* cast_explosive() { return nullptr; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
 
-	IC bool IsFocused() const;
-	IC bool IsMyCamera() const;
-	IC bool isLocalPlayer() const;
+	bool IsFocused() const;
+	bool IsMyCamera() const;
+	bool isLocalPlayer() const;
 
 	virtual void						OnChangeVisual		()					{ }
 	virtual		IPhysicsShell			*physics_shell		()					{ return  0; }
