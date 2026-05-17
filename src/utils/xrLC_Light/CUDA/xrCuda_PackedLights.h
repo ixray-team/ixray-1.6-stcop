@@ -1,34 +1,12 @@
 #pragma once
 #include "xrFace.h"
-#include "base_lighting.h"
 #include "base_color.h"
+#include "xrRaysDefines.h"
 
-#include "lm_layer.h"
-#include "uv_tri.h"
-#include "R_light.h"
-#include "xrMU_Model_Reference.h"
- 
 // Initialize TASKS
 #define MAX_RAYS_PER_TASK   16*1024				// Общее кол-во Задач (на запуск GPU)
 #define MAX_RAYS_PER_GPU	16*1024				// Кол-во задач которое может обработать GPU за 1 заход Слишком большое кол-во вызывает недогруз ГПУ
 
-enum ColorsReturnType
-{
-	eImplicit,
-	eDeflectors,
-	eMumodel,
-	eCommon
-};
-
-struct RayRecvestIndex
-{
-	void*   Owner = 0;
-   	size_t  INDEX_TASK;
- 
-	// Task Pos, Dir, Skip
-	Fvector P;
-	Fvector N;
-};
  
 class CUDA_PackedLighting
 {
@@ -68,9 +46,6 @@ public:
 	// Stats 
 	bool	isInitializedGPU = false;
 	u8	    current_flags = 0;
- 	 
-	// Stats
-	u32		Recalculated = 0;
 };
 
 extern CUDA_PackedLighting GPUTaskinSystem;

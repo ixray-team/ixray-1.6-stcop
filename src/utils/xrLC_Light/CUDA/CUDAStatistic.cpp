@@ -3,8 +3,10 @@
 #include "CUDAContext.h"
 
 // GPU Usage
+#ifdef LCCUDA_BUILD
 #include <nvml.h>
 #pragma comment(lib, "nvml.lib")
+ 
 static bool isStatisticInitilized = false;
 static nvmlDevice_t device = nullptr;
 
@@ -100,3 +102,4 @@ void CudaStatsShutdown()
 		nvmlShutdown();
 }
 
+#endif 

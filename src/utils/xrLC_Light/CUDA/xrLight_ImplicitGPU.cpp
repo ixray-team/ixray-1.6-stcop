@@ -33,24 +33,24 @@ public:
 	void ApplyColors()
 	{
 		for (auto V = 0; V < defl->Height(); V++)
-			for (auto U = 0; U < defl->Width(); U++)
-			{
-				u8 samples = defl->Samples(U, V);
+		for (auto U = 0; U < defl->Width(); U++)
+		{
+			u8 samples = defl->Samples(U, V);
 
-				if (samples)
-				{
-					base_color_c cAdd;
-					defl->Lumel(U, V)._get(cAdd);
-					cAdd.scale(samples);
-					cAdd.mul(0.5f);
-					defl->Lumel(U, V)._set(cAdd);
-					defl->Marker(U, V) = 255;
-				}
-				else
-				{
-					defl->Marker(U, V) = 0;
-				}
+			if (samples)
+			{
+				base_color_c cAdd;
+				defl->Lumel(U, V)._get(cAdd);
+				cAdd.scale(samples);
+				cAdd.mul(0.5f);
+				defl->Lumel(U, V)._set(cAdd);
+				defl->Marker(U, V) = 255;
 			}
+			else
+			{
+				defl->Marker(U, V) = 0;
+			}
+		}
 	}
 
 	void RunTaskGPU()
@@ -81,49 +81,40 @@ public:
 		// Однопоточный режим пока что 
 		xr_atomic_u32 task_height = 0;
 		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TaskID)
+		{
+			while (true)
 			{
-				while (true)
+				auto V = task_height.fetch_add(1);
+				if (V >= defl->Height()) break;
+
+				for (u32 U = 0; U < defl->Width(); U++)
 				{
-					auto V = task_height.fetch_add(1);
-					if (V >= defl->Height()) break;
-
-					for (u32 U = 0; U < defl->Width(); U++)
+					for (u32 SampleID = 0; SampleID < Jcount; SampleID++)
 					{
-						try
-						{
-							for (u32 SampleID = 0; SampleID < Jcount; SampleID++)
-							{
-								// LUMEL space
-								Fvector2				P;
-								P.x = float(U) / dim.x + half.x + Jitter[SampleID].x * JS.x;
-								P.y = float(V) / dim.y + half.y + Jitter[SampleID].y * JS.y;
+						// LUMEL space
+						Fvector2				P;
+						P.x = float(U) / dim.x + half.x + Jitter[SampleID].x * JS.x;
+						P.y = float(V) / dim.y + half.y + Jitter[SampleID].y * JS.y;
 
-								// World space
-								Fvector wP, wN, B;
-								for (auto F : cl_globs.query(P.x, P.y))
-								{
-									_TCF& tc = F->tc[0];
-									if (tc.isInside(P, B))
-									{
-										// We found triangle and have barycentric coords
-										GetBarycentric(F, wP, wN, B);
-										GPUTaskinSystem.LightPointPacked_add_task(GPUTaskinSystem.MakeKey(U, V), nullptr, wP, wN, F);
-									}
-								}
+						// World space
+						Fvector wP, wN, B;
+						for (auto F : cl_globs.query(P.x, P.y))
+						{
+							_TCF& tc = F->tc[0];
+							if (tc.isInside(P, B))
+							{
+								// We found triangle and have barycentric coords
+								GetBarycentric(F, wP, wN, B);
+								GPUTaskinSystem.LightPointPacked_add_task(GPUTaskinSystem.MakeKey(U, V), nullptr, wP, wN, F);
 							}
 						}
-						catch (...)
-						{
-							clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
-						}
 					}
+				}
+  			};
 
-					AditionalData("Current: %u", V);
-				};
-
-				// Остаток доработать 
-				GPUTaskinSystem.LightPointPacked_run_tasks();
-			});
+			// Остаток доработать 
+			GPUTaskinSystem.LightPointPacked_run_tasks();
+		});
 
 		ApplyColors();
 
