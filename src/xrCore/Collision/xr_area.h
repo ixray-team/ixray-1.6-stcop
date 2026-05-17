@@ -1,6 +1,6 @@
 #pragma once
 #include "xr_collide_defs.h"
-#include "../xrCore/FormatParsers/LevelCForm/CFormIO.h"
+#include "../FormatParsers/LevelCForm/CFormIO.h"
 
 // refs
 class ISpatial;
@@ -9,8 +9,8 @@ using ISpatialShared = xr_shared_ptr<ISpatial>;
 class 	ICollisionForm;
 class 	CObject;
 
-#include "../Include/xrRender/FactoryPtr.h"
-#include "../Include/xrRender/ObjectSpaceRender.h"
+#include "../../Include/xrRender/FactoryPtr.h"
+#include "../../Include/xrRender/ObjectSpaceRender.h"
 #include "xrCDB.h"
 
 //-----------------------------------------------------------------------------------------------------------

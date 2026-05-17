@@ -50,8 +50,3 @@ set(FREEIMAGE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeImage.WinMerge.
 
 # Nuget
 set(NVTT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.Nvtt.2020.12.21-open/)
-
-download_single_header(
-    "https://raw.githubusercontent.com/randy408/sal/refs/heads/master/sal.h"
-    "linux/sal.h"
-)
