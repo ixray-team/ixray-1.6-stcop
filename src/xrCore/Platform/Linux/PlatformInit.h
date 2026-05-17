@@ -162,3 +162,7 @@ inline unsigned long GetLastError()
 #ifndef _Return_type_success_
 #define _Return_type_success_(x)
 #endif
+
+#ifndef _In_reads_
+#define _In_reads_(x)
+#endif

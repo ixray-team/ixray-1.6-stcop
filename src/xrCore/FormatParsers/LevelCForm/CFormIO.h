@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../xrEngine/xrLevel.h"
-#include "../xrCore/Collision/xrCDB.h"
+#include "../../../xrEngine/xrLevel.h"
+#include "../../Collision/xrCDB.h"
 
 namespace XRay::CForm
 {

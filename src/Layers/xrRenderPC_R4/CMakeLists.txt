@@ -78,6 +78,8 @@ if (WIN32)
 	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::DXGI)
 	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::DXGUID)
 	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::D3DCompiler)
+else()
+    target_compile_definitions(xrRender_R4 PRIVATE XR_USE_DXVK_NATIVE=1 DXVK_WSI_DRIVER_SDL3=1)
 endif()
 
 ## RenderDoc
