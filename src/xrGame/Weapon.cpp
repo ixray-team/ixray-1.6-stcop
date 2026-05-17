@@ -2961,7 +2961,7 @@ void CWeapon::OnBlendEnd(u8 state)
 				IsGrenadeMode() ? m_sGLAimBlendParams[1].speed_power.x : m_sAimBlendParams[1].speed_power.x,
 				IsGrenadeMode() ? m_sGLAimBlendParams[1].speed_power.y : m_sAimBlendParams[1].speed_power.y,
 				IsGrenadeMode() ? m_sGLAimBlendParams[1].blend_params : m_sAimBlendParams[1].blend_params, true, false, true,
-				(g_player_hud->attached_item(1) ? 0 : 2), 0, script_layer::EBlendLayers::eNone);
+				0, 0, script_layer::EBlendLayers::eNone);
 		}
 		break;
 	}
@@ -2983,7 +2983,7 @@ void CWeapon::OnZoomIn()
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].speed_power.x : m_sAimBlendParams[0].speed_power.x,
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].speed_power.y : m_sAimBlendParams[0].speed_power.y,
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].blend_params : m_sAimBlendParams[0].blend_params, false, false, true,
-			(g_player_hud->attached_item(1) ? 0 : 2), 0, script_layer::EBlendLayers::eAimStart);
+			0, 0, script_layer::EBlendLayers::eAimStart);
 	}
 
 	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
@@ -3035,7 +3035,7 @@ void CWeapon::OnZoomOut()
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].speed_power.x : m_sAimBlendParams[2].speed_power.x,
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].speed_power.y : m_sAimBlendParams[2].speed_power.y,
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].blend_params : m_sAimBlendParams[2].blend_params, false, Mix, true,
-			(g_player_hud->attached_item(1) ? 0 : 2), 0, script_layer::EBlendLayers::eAimEnd);
+			0, 0, script_layer::EBlendLayers::eAimEnd);
 	}
 
 	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;

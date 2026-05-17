@@ -2008,6 +2008,7 @@ void player_hud::attach_item(CHudItem* item)
 		if (m_attached_items[item_idx])
 		{
 			m_attached_items[item_idx]->m_parent_hud_item->on_b_hud_detach();
+			StopAllBlendAnms(true);
 		}
 
 		m_attached_items[item_idx] = pi;
@@ -2053,21 +2054,26 @@ void player_hud::RestoreHandBlends(const char* ignored_part)
 		}
 	}
 }
+
 void player_hud::detach_item_idx(u16 idx)
 {
-	if( nullptr==attached_item(idx) )					return;
+	if (attached_item(idx) == nullptr)
+	{
+		return;
+	}
 
 	m_attached_items[idx]->m_parent_hud_item->on_b_hud_detach();
+	StopAllBlendAnms(true);
 
-	m_attached_items[idx]->m_parent_hud_item		= nullptr;
-	m_attached_items[idx]							= nullptr;
+	m_attached_items[idx]->m_parent_hud_item = nullptr;
+	m_attached_items[idx] = nullptr;
 
-	if(idx==1 && m_attached_items[0])
+	if (idx == 1 && m_attached_items[0])
 	{
 		m_attached_items[0]->m_parent_hud_item->OnMovementChanged(mcAnyMove);
 		RestoreHandBlends("right_hand");
 	}
-	else if(idx==0 && m_attached_items[1])
+	else if (idx == 0 && m_attached_items[1])
 	{
 		m_model->PlayCycle(2, m_model->ID_Cycle("hand_idle_doun"), false);
 		m_attached_items[1]->m_parent_hud_item->OnMovementChanged(mcAnyMove);
@@ -2290,7 +2296,7 @@ void script_layer::CallStartCallback()
 		{
 			if (g_player_hud->attached_item(i) && g_player_hud->attached_item(i)->m_parent_hud_item)
 			{
-				g_player_hud->attached_item(i)->m_parent_hud_item->OnBlendEnd(state);
+				g_player_hud->attached_item(i)->m_parent_hud_item->OnBlendStart(state);
 			}
 		}
 	}
@@ -2298,7 +2304,7 @@ void script_layer::CallStartCallback()
 	{
 		if (g_player_hud->attached_item(item) && g_player_hud->attached_item(item)->m_parent_hud_item)
 		{
-			g_player_hud->attached_item(item)->m_parent_hud_item->OnBlendEnd(state);
+			g_player_hud->attached_item(item)->m_parent_hud_item->OnBlendStart(state);
 		}
 	}
 }
