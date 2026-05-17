@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#ifdef IXR_WINDOWS
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_video.h>
 #include <SDL_Ext/SDL_image.h>
@@ -6,7 +7,7 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "splash.h"
+#include "Splash.h"
 
 #include <Windows.h>
 #include<string>
@@ -517,4 +518,25 @@ namespace splash
         running = false;
     }
 }
+#else
+namespace splash
+{
+    void SetBackground(int)
+    {
 
+    }
+    int Show()
+    {
+        return 1;
+    }
+    void Close()
+    {
+
+    }
+    void SetProgressStatus(int prog, const char* status)
+    {
+
+    }
+}
+
+#endif
