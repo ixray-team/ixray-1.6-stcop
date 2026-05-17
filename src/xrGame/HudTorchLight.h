@@ -53,8 +53,8 @@ public:
 private:
 	ECS_COMPONENT(THudLightTorch)
 		ECS_STRING(Section, "Light Section");
-		ECS_PTR(RenderLight, "Light Ptr");
-		ECS_PTR(OmniLight, "Omni Ptr");
+		//ECS_PTR(RenderLight, "Light Ptr");
+		//ECS_PTR(OmniLight, "Omni Ptr");
 		ECS_VALUE(IsRenderLight, "Is Render Light");
 		ECS_STRING(LightBone, "Light Bone");
 		ECS_STRING(LightDirBoneName, "Light Dir Bone Name");
@@ -109,8 +109,8 @@ public:
 private:
 	ECS_COMPONENT(THudLightLaser)
 		ECS_STRING(Section, "Light Section");
-		ECS_PTR(RenderLight, "Light Ptr");
-		ECS_PTR(OmniLight, "Omni Ptr");
+		//ECS_PTR(RenderLight, "Light Ptr");
+		//ECS_PTR(OmniLight, "Omni Ptr");
 		ECS_VALUE(LaserLightDist, "Laser Light Distance")
 		ECS_VALUE(LaserWorkDist, "Laser Work Distance")
 		ECS_VALUE(LaserMaxDist, "Laser Max Distance")
