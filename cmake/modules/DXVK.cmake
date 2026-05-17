@@ -97,16 +97,56 @@ Cflags: -I\${includedir}
         ERROR_VARIABLE  MESON_INSTALL_ERROR
     )
     
+    # install
+    execute_process(
+        COMMAND ${MESON} install -C ${DXVK_BUILD_DIR}
+        RESULT_VARIABLE MESON_INSTALL_RESULT
+    )
+
     if(NOT MESON_INSTALL_RESULT EQUAL 0)
-        message(FATAL_ERROR "meson install failed: ${MESON_INSTALL_ERROR}")
-    endif()
-    
-    set(DXVK_LIB_DIR "${DXVK_INSTALL_DIR}/lib64")
-    
-    if(NOT EXISTS ${DXVK_LIB_DIR})
-        set(DXVK_LIB_DIR "${DXVK_INSTALL_DIR}/lib")
+        message(FATAL_ERROR "meson install failed")
     endif()
 
-    set(DXVK_LIBRARIES ${DXVK_LIB_DIR}/libdxvk_d3d9.so ${DXVK_LIB_DIR}/libdxvk_d3d11.so CACHE FILEPATH "DXVK native libraries" FORCE)
-    set(DXVK_INCLUDE_DIRS "${DXVK_INSTALL_DIR}/include/dxvk" CACHE PATH "DXVK native include directories" FORCE)
+    # detect actual lib dir
+    find_library(DXVK_D3D9
+        NAMES dxvk_d3d9 libdxvk_d3d9
+        PATHS
+            ${DXVK_INSTALL_DIR}/lib
+            ${DXVK_INSTALL_DIR}/lib64
+            ${DXVK_INSTALL_DIR}/lib/x86_64-linux-gnu
+        NO_DEFAULT_PATH
+        REQUIRED
+    )
+
+    find_library(DXVK_D3D11
+        NAMES dxvk_d3d11 libdxvk_d3d11
+        PATHS
+            ${DXVK_INSTALL_DIR}/lib
+            ${DXVK_INSTALL_DIR}/lib64
+            ${DXVK_INSTALL_DIR}/lib/x86_64-linux-gnu
+        NO_DEFAULT_PATH
+        REQUIRED
+    )
+
+    set(DXVK_LIBRARIES 
+        ${DXVK_D3D9}
+        ${DXVK_D3D11}
+        CACHE PATH "kal" FORCE
+    )
+
+    ##if(NOT MESON_INSTALL_RESULT EQUAL 0)
+    ##    message(FATAL_ERROR "meson install failed: ${MESON_INSTALL_ERROR}")
+    ##endif()
+    ##
+    ##set(DXVK_LIB_DIR "${DXVK_INSTALL_DIR}/lib64")
+    ##
+    ##if(NOT EXISTS ${DXVK_LIB_DIR})
+    ##    set(DXVK_LIB_DIR "${DXVK_INSTALL_DIR}/lib")
+    ##endif()
+
+    ##set(DXVK_LIBRARIES ${DXVK_LIB_DIR}/libdxvk_d3d9.so ${DXVK_LIB_DIR}/libdxvk_d3d11.so CACHE FILEPATH "DXVK native libraries" FORCE)
+    set(DXVK_INCLUDE_DIRS 
+        "${DXVK_INSTALL_DIR}/include/dxvk" 
+        CACHE PATH "DXVK native include directories" FORCE
+    )
 endif()
