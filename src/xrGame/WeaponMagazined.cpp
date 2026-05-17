@@ -1316,12 +1316,38 @@ void CWeaponMagazined::state_Fire(float dt)
 
 			m_bFireSingleShot		= false;
 
-			if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
-				fShotTimeCounter += m_fSingleShootsTimeDelta;
-			else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
-				fShotTimeCounter += m_fBaseDispersionedBulletsTimeDelta;
+			static const bool EnableAlternateRPM = EngineExternal()[EEngineExternalGame::EnableWeaponAlternateRPMSystem];
+
+			if (EnableAlternateRPM)
+			{
+				if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
+				{
+					fShotTimeCounter = m_fSingleShootsTimeDelta;
+				}
+				else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
+				{
+					fShotTimeCounter = m_fBaseDispersionedBulletsTimeDelta;
+				}
+				else
+				{
+					fShotTimeCounter = fOneShotTime;
+				}
+			}
 			else
-				fShotTimeCounter += fOneShotTime;
+			{
+				if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
+				{
+					fShotTimeCounter += m_fSingleShootsTimeDelta;
+				}
+				else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
+				{
+					fShotTimeCounter += m_fBaseDispersionedBulletsTimeDelta;
+				}
+				else
+				{
+					fShotTimeCounter += fOneShotTime;
+				}
+			}
 			
 			if (!infinite_fire() || m_bIAmWeaponRPG7)
 				++m_iShotNum;
@@ -1447,12 +1473,38 @@ void CWeaponMagazined::state_FireChamber(float dt)
 
 			m_bFireSingleShot = false;
 
-			if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
-				fShotTimeCounter += m_fSingleShootsTimeDelta;
-			else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
-				fShotTimeCounter += m_fBaseDispersionedBulletsTimeDelta;
+			static const bool EnableAlternateRPM = EngineExternal()[EEngineExternalGame::EnableWeaponAlternateRPMSystem];
+
+			if (EnableAlternateRPM)
+			{
+				if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
+				{
+					fShotTimeCounter = m_fSingleShootsTimeDelta;
+				}
+				else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
+				{
+					fShotTimeCounter = m_fBaseDispersionedBulletsTimeDelta;
+				}
+				else
+				{
+					fShotTimeCounter = fOneShotTime;
+				}
+			}
 			else
-				fShotTimeCounter += fOneShotTime;
+			{
+				if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
+				{
+					fShotTimeCounter += m_fSingleShootsTimeDelta;
+				}
+				else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
+				{
+					fShotTimeCounter += m_fBaseDispersionedBulletsTimeDelta;
+				}
+				else
+				{
+					fShotTimeCounter += fOneShotTime;
+				}
+			}
 
 			if (!infinite_fire() || m_bIAmWeaponRPG7)
 				++m_iShotNum;
