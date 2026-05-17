@@ -2346,7 +2346,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	{
 	case kWPN_RELOAD:
 		{
-			if (flags & CMD_START && !IsZoomed() && (m_bBlockReload && GetState() == eIdle || !m_bBlockReload))
+			if (flags & CMD_START && (m_bBlockReload && GetState() == eIdle || !m_bBlockReload))
 			{
 				if ((iAmmoElapsed < GetMagCapacity() || IsMisfire()))
 				{
