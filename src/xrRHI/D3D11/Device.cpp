@@ -1,6 +1,13 @@
 #include "Device.h"
-#include "../Drivers/AMDGPUTransferee.h"
 #include "../RHITopologyUtils.h"
+
+#ifdef IXR_WINDOWS
+#	include "../Drivers/AMDGPUTransferee.h"
+#endif
+
+#ifndef _countof
+#	define _countof(array) (sizeof(array) / sizeof(array[0]))
+#endif
 
 #define DX11Device ((ID3D11Device*)RawDevice)
 
@@ -8,6 +15,7 @@ InternalDevice11::InternalDevice11()
 {
 	CreateD3D11();
 
+#ifdef IXR_WINDOWS
 	if (GRHI->DriverExt->GetAMD())
 	{
 		CAMDReader* AMDDriver = (CAMDReader*)GRHI->DriverExt;
@@ -18,6 +26,7 @@ InternalDevice11::InternalDevice11()
 		VertexCache = 32; // Дискретка
 	}
 	else
+#endif
 	{
 		VertexCache = 24; // Intel HD Graphics???
 	}
@@ -246,6 +255,7 @@ bool InternalDevice11::CreateD3D11()
 	UINT createDeviceFlags = 0;
 	bool bHasDebugRender = Core.ParamsData.test(ECoreParams::dxdebug);
 
+#ifdef IXR_WINDOWS
 	if (CAMDReader* AMDReader = GRHI->DriverExt->GetAMD(); AMDReader != nullptr && !bHasDebugRender)
 	{
 		u32 NewFeatureLevel = AMDReader->GetDX11Device((void**)&RawDevice, (void**)&HWRenderContext, (void**)&HWSwapchain);
@@ -254,6 +264,7 @@ bool InternalDevice11::CreateD3D11()
 			FeatureLevel = NewFeatureLevel;
 		}
 	}
+#endif
 
 	if (RawDevice == nullptr)
 	{

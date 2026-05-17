@@ -47,4 +47,32 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_EX ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 # Other 
 function(target_validate_pch target target_path)
+    file(GLOB_RECURSE CORE_SOURCE_PCH_FILES 
+        "${target_path}/[sS][tT][dD][aA][fF][xX].*"
+        "${target_path}/[sS][tT][dD][aA][fF][xX]/*"
+    )
+    
+    file(GLOB_RECURSE CORE_SOURCE_ALL_C_FILES "${target_path}/*.c")
+    set_source_files_properties(${CORE_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+    
+    file(GLOB_RECURSE PCH_HEADER_FOUND "${target_path}/[sS][tT][dD][aA][fF][xX].h")
+    
+    if(PCH_HEADER_FOUND)
+        list(GET PCH_HEADER_FOUND 0 PCH_HEADER_PATH)
+        get_filename_component(PCH_HEADER_NAME "${PCH_HEADER_PATH}" NAME)
+        target_precompile_headers(${target} PRIVATE "${PCH_HEADER_NAME}")
+    else()
+        target_precompile_headers(${target} PRIVATE "stdafx.h")
+    endif()
+    
+    file(GLOB_RECURSE PCH_CPP_FOUND "${target_path}/[sS][tT][dD][aA][fF][xX].cpp")
+    
+    if(PCH_CPP_FOUND)
+        foreach(cpp_file ${PCH_CPP_FOUND})
+            get_filename_component(cpp_name "${cpp_file}" NAME)
+            set_source_files_properties("${cpp_name}" PROPERTIES HEADER_FILE_ONLY TRUE)
+        endforeach()
+    endif()
+    
+    source_group("pch" FILES ${CORE_SOURCE_PCH_FILES})
 endfunction()
