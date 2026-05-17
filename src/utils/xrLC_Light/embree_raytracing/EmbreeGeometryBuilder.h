@@ -68,6 +68,7 @@ struct TriangleContainer
  	
 	// Add Faces
 	void ClearAll();
+	void ClearFaces();
 
  	// Removeing Dublicates
 	struct IndexedVertex
@@ -92,6 +93,6 @@ struct TriangleContainer
 		raw_faces.push_back({ {v1, v2, v3}, F, 0, 0 });
 	};
  
-	void RemoveDublicatesVertexs(bool isTransparent, bool enable_msg);
-	void RemoveDublicatesFaces(bool isTransparent, bool enable_msg);
+	void RemoveDublicatesVertexs();
+	void RemoveDublicatesFaces();
 };
