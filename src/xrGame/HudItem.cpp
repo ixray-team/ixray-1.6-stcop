@@ -77,6 +77,20 @@ void CHudItem::Load(const char* section)
 		LightTorch.NewTorchlight(section);
 	}
 
+	pSettings->read_if_exists<bool>(m_bBlendMovement, hud_sect, "use_blending_movement");
+
+	if (m_bBlendMovement)
+	{
+		m_sMovementBlendParams[EMovementLayers::eWalk].Load(hud_sect, "anim_blend_walk");
+		m_sMovementBlendParams[EMovementLayers::eWalkSlow].Load(hud_sect, "anim_blend_walk_slow");
+		m_sMovementBlendParams[EMovementLayers::eCrouch].Load(hud_sect, "anim_blend_crouch");
+		m_sMovementBlendParams[EMovementLayers::eCrouchSlow].Load(hud_sect, "anim_blend_crouch_slow");
+		m_sMovementBlendParams[EMovementLayers::eSprint].Load(hud_sect, "anim_blend_sprint");
+		m_sMovementBlendParams[EMovementLayers::eIdle].Load(hud_sect, "anim_blend_idle");
+		m_sMovementBlendParams[EMovementLayers::eIdleAim].Load(hud_sect, "anim_blend_idle_aim");
+		m_sMovementBlendParams[EMovementLayers::eAimWalk].Load(hud_sect, "anim_blend_aim_walk");
+	}
+
 	LoadSounds(section);
 }
 
@@ -302,7 +316,10 @@ void CHudItem::OnStateSwitch(u8 S)
 		m_bSwitchSprint = false;
 	}
 
-	g_player_hud->UpdateMovementLayers();
+	if (object().H_Parent() != nullptr && object().H_Parent()->cast_actor() != nullptr)
+	{
+		g_player_hud->UpdateMovementLayers();
+	}
 }
 
 void CHudItem::switch2_Bore()
@@ -1102,6 +1119,11 @@ void CHudItem::PlayBonePartAnim(const shared_str& anim, bool bMixIn)
 
 bool CHudItem::NeedMovementBlend() const
 {
+	if (UseBlendMovement())
+	{
+		return true;
+	}
+
 	const CHUDState::EHudStates state = static_cast<CHUDState::EHudStates>(GetState());
 	return state != CHUDState::EHudStates::eIdle && state != CHUDState::EHudStates::eSprintStart && state != CHUDState::EHudStates::eSprintEnd;
 }
@@ -1110,3 +1132,14 @@ THudLightTorch* CHudItem::GetHudLight()
 {
 	return m_object->GetComponent<THudLightTorch>();
 }
+
+script_layer* CHudItem::PlayBlendAnm(const shared_str& name, float speed, float power, Fvector2 blend_factors, bool looped, bool mix, bool restart, u8 part, u8 item, u8 state)
+{
+	return g_player_hud->PlayBlendAnm(name, speed, power, blend_factors, looped, mix, restart, part, item, state);
+}
+
+void CHudItem::StopBlendAnm(const shared_str& name, bool Force) { g_player_hud->StopBlendAnm(name, Force); }
+
+void CHudItem::StopAllBlendAnms(bool Force, u8 part) { g_player_hud->StopAllBlendAnms(Force); }
+
+bool CHudItem::IsBlendAnmActive(const shared_str& name) { return g_player_hud->IsBlendAnmActive(name); }

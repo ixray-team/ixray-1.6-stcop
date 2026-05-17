@@ -197,6 +197,18 @@ public:
 
 	virtual bool NeedMovementBlend() const;
 
+	script_layer* PlayBlendAnm(const shared_str& name, float speed, float power, Fvector2 blend_factors, bool looped, bool mix, bool restart, u8 part, u8 item, u8 state);
+	void StopBlendAnm(const shared_str& name, bool Force = false);
+	void StopAllBlendAnms(bool Force = false, u8 part = 2);
+	bool IsBlendAnmActive(const shared_str& name);
+
+	virtual void OnBlendEnd(u8 state) {}
+	virtual void OnBlendStart(u8 state) {}
+
+	bool UseBlendMovement() const { return m_bBlendMovement; }
+
+	SBlendParams m_sMovementBlendParams[EMovementLayers::eLayersCount];
+
 	enum EDevicesFlags
 	{
 		df_torch = (1 << 0),
@@ -364,6 +376,7 @@ protected:
 
 	bool						m_bDisableBore;
 	bool						m_bSwitchSprint = false;
+	bool						m_bBlendMovement = false;
 
 	virtual void				SetModelBoneStatus(const char* bone, bool show);
 	virtual void				SetMultipleBonesStatus(const char* section, const char* line, bool show);
