@@ -892,11 +892,11 @@ void RenderTextureEditor()
 		g_imgui_texture_editor.textures.reserve(_kReserve);
 		g_imgui_texture_editor.filter_query.reserve(_kReserve);
 
-		AllEditors_SendRequests_Sequential(xr_array{
+		AllEditors_SendRequests_Sequential(xr_array<SRequestData, 2>{
 			SRequestData{.editor_type = u32(eImGuiEditorType::kTextureEditor),
 			.request_type = u32(eRequestType_TextureEditor::kReadSettings)},
 			SRequestData{.editor_type = u32(eImGuiEditorType::kTextureEditor), .request_type = u32(eRequestType_TextureEditor::kReadAll)}
-			});
+		});
 
 		g_imgui_texture_editor.window_selected_name[0] = 0;
 		std::strcat(g_imgui_texture_editor.window_selected_name, "Selected##TE");
@@ -959,7 +959,7 @@ void RenderTextureEditor()
 						{
 							if (g_imgui_texture_editor.search_input_buffer[0] != 0)
 							{
-								AllEditors_SendRequests_Sequential(xr_array{
+								AllEditors_SendRequests_Sequential(xr_array<SRequestData, 2>{
 									SRequestData{
 										.editor_type = u32(eImGuiEditorType::kTextureEditor),
 										.request_type = u32(eRequestType_TextureEditor::kFilterQuery),
@@ -970,7 +970,7 @@ void RenderTextureEditor()
 										.request_type = u32(eRequestType_TextureEditor::kFilterQuery),
 										.payload = u32(CImGuiTextureEditor::eFilterQueryType::kInvalidFirstExisted)
 									}
-									});
+								});
 							}
 							else
 							{
@@ -993,12 +993,12 @@ void RenderTextureEditor()
 								req.request_type = static_cast<u32>(eRequestType_TextureEditor::kFilterQuery);
 								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kNoFilter);
 
-								AllEditors_SendRequests_Sequential(xr_array{
+								AllEditors_SendRequests_Sequential(xr_array<SRequestData, 2>{
 									req,
 									SRequestData{.editor_type = u32(eImGuiEditorType::kTextureEditor),
 									.request_type = u32(eRequestType_TextureEditor::kFilterQuery),
 									.payload = u32(CImGuiTextureEditor::eFilterQueryType::kSearch)}
-									});
+								});
 							}
 							else
 							{
@@ -1074,13 +1074,13 @@ void RenderTextureEditor()
 								req.request_type = static_cast<u32>(eRequestType_TextureEditor::kFilterQuery);
 								req.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kSearch);
 
-								AllEditors_SendRequests_Sequential(xr_array{
+								AllEditors_SendRequests_Sequential(xr_array<SRequestData, 2>{
 									req,
 									SRequestData{
 										.editor_type = u32(eImGuiEditorType::kTextureEditor),
 										.request_type = u32(eRequestType_TextureEditor::kFilterQuery),
 										.payload = u32(CImGuiTextureEditor::eFilterQueryType::kInvalidFirstExisted)}
-									});
+								});
 							}
 							else
 							{

@@ -90,7 +90,7 @@ extern "C" void dError (int num, const char *msg, ...)
   va_start (ap,msg);
   if (error_function) error_function (num,msg,ap);
   else printMessage (num,"ODE Error",msg,ap);
-  exit (1);
+  //exit (1);
 }
 
 
@@ -101,7 +101,7 @@ extern "C" void dDebug (int num, const char *msg, ...)
   if (debug_function) debug_function (num,msg,ap);
   else printMessage (num,"ODE INTERNAL ERROR",msg,ap);
   // *((char *)0) = 0;   ... commit SEGVicide
-  abort();
+  //abort();
 }
 
 
@@ -135,7 +135,7 @@ void _cdecl dError (int num, const char *msg, ...)
     s[sizeof(s)-1] = 0;
     MessageBoxA(0,s,title,MB_OK | MB_ICONWARNING);
   }
-  exit (1);
+  //exit (1);
 }
 
 
