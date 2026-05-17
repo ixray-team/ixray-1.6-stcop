@@ -338,13 +338,14 @@ IC int _cdecl _ui64toa_s(uint64_t value, char *str, size_t size, int radix)
     return 0;
 }
 
+#ifndef XR_USE_DXVK_NATIVE
+using LARGE_INTEGER = long long;
+using ULARGE_INTEGER = unsigned long long;
+#endif
 
-using LARGE_INTEGER = long long int;
-using ULARGE_INTEGER = unsigned long long int;
-
-IC LARGE_INTEGER _cdecl _atoi64(const char *str)
+IC long long _cdecl _atoi64(const char *str)
 {
-    ULARGE_INTEGER RunningTotal = 0;
+    unsigned long long RunningTotal = 0;
     char bMinus = 0;
 
     while (*str == ' ' || (*str >= '\011' && *str <= '\015'))
