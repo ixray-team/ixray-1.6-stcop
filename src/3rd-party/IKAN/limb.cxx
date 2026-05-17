@@ -31,7 +31,7 @@
  */
 
 //#include <stdio.h>
-//#include <stdlib.h>
+#include <stdlib.h>
 //#include <string.h>
 
 #include "limb.h"
@@ -450,7 +450,7 @@ int Limb::SetGoal(const Matrix  G, int limits)
 static void init_error(const char *msg)
 {
     fprintf(stderr, "You forgot to call SetGoal or SetGoalPos in %s\n", msg);
-    exit(0);
+    //exit(0);
 }
 
 //
