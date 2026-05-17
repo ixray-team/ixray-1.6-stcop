@@ -1110,3 +1110,14 @@ THudLightTorch* CHudItem::GetHudLight()
 {
 	return m_object->GetComponent<THudLightTorch>();
 }
+
+script_layer* CHudItem::PlayBlendAnm(const shared_str& name, float speed, float power, Fvector2 blend_factors, bool looped, bool mix, bool restart, u8 part, u8 item, u8 state)
+{
+	return g_player_hud->PlayBlendAnm(name, speed, power, blend_factors, looped, mix, restart, part, item, state);
+}
+
+void CHudItem::StopBlendAnm(const shared_str& name, bool Force) { g_player_hud->StopBlendAnm(name, Force); }
+
+void CHudItem::StopAllBlendAnms(bool Force, u8 part) { g_player_hud->StopAllBlendAnms(Force); }
+
+bool CHudItem::IsBlendAnmActive(const shared_str& name) { return g_player_hud->IsBlendAnmActive(name); }

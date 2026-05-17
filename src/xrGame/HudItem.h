@@ -197,6 +197,15 @@ public:
 
 	virtual bool NeedMovementBlend() const;
 
+
+	script_layer* PlayBlendAnm(const shared_str& name, float speed, float power, Fvector2 blend_factors, bool looped, bool mix, bool restart, u8 part, u8 item, u8 state);
+	void StopBlendAnm(const shared_str& name, bool Force = false);
+	void StopAllBlendAnms(bool Force = false, u8 part = 2);
+	bool IsBlendAnmActive(const shared_str& name);
+
+	virtual void OnBlendEnd(u8 state) {}
+	virtual void OnBlendStart(u8 state) {}
+
 	enum EDevicesFlags
 	{
 		df_torch = (1 << 0),

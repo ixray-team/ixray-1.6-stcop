@@ -1337,6 +1337,7 @@ player_hud::~player_hud()
 	xr_delete(m_animator_item);
 
 	delete_data(m_movement_layers);
+	delete_data(m_script_layers);
 	delete_data(m_bone_callback_params);
 }
 
@@ -1658,6 +1659,105 @@ void player_hud::update(const Fmatrix& cam_trans)
 	m_model->UpdateTracks();
 	m_model->dcast_PKinematics()->CalculateBones_Invalidate();
 	m_model->dcast_PKinematics()->CalculateBones(true);
+
+	for (script_layer* anm : m_script_layers)
+	{
+		if (!anm || !anm->anim || (!anm->active && anm->blend_scale == 0.0f))
+		{
+			continue;
+		}
+	
+		bool need_stop = false;
+	
+		if (anm->active)
+		{
+			anm->blend_scale += anm->mix ? Device.fTimeDelta / anm->blend_factors.x : 1.0f;
+		}
+		else
+		{
+			anm->blend_scale -= anm->mix ? Device.fTimeDelta / anm->blend_factors.y : 1.0f;
+		}
+	
+		clamp(anm->blend_scale, 0.0f, 1.0f);
+	
+		if (anm->blend_scale > 0.0f)
+		{
+			if (anm->anim->IsLooped() || anm->anim->anim_param().t_current <= anm->anim->anim_param().max_t)
+			{
+				anm->anim->Update(Device.fTimeDelta);
+			}
+			else
+			{
+				if (anm->state != script_layer::EBlendLayers::eNone)
+				{
+					if (anm->item == 2)
+					{
+						for (int i = 0; i < anm->item; i++)
+						{
+							if (m_attached_items[i] && m_attached_items[i]->m_parent_hud_item)
+							{
+								m_attached_items[i]->m_parent_hud_item->OnBlendEnd(anm->state);
+							}
+						}
+					}
+					else
+					{
+						if (m_attached_items[anm->item] && m_attached_items[anm->item]->m_parent_hud_item)
+						{
+							m_attached_items[anm->item]->m_parent_hud_item->OnBlendEnd(anm->state);
+						}
+					}
+	
+					anm->state = script_layer::EBlendLayers::eNone;
+				}
+
+				need_stop = true;
+			}
+		}
+		else
+		{
+			if (anm->state != script_layer::EBlendLayers::eNone)
+			{
+				if (anm->item == 2)
+				{
+					for (int i = 0; i < anm->item; i++)
+					{
+						if (m_attached_items[i] && m_attached_items[i]->m_parent_hud_item)
+						{
+							m_attached_items[i]->m_parent_hud_item->OnBlendEnd(anm->state);
+						}
+					}
+				}
+				else
+				{
+					if (m_attached_items[anm->item] && m_attached_items[anm->item]->m_parent_hud_item)
+					{
+						m_attached_items[anm->item]->m_parent_hud_item->OnBlendEnd(anm->state);
+					}
+				}
+
+				anm->state = script_layer::EBlendLayers::eNone;
+			}
+	
+			anm->Stop(true);
+			continue;
+		}
+
+		if (anm->part == 0 || anm->part == 2)
+		{
+			m_transform.mulB_43(anm->XFORM());
+		}
+		
+		if (anm->part == 1 || anm->part == 2)
+		{
+			m_transformL.mulB_43(anm->XFORM());
+		}
+
+		if (need_stop)
+		{
+			anm->Stop(!anm->mix);
+		}
+	}
 
 	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend();
 	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend();
@@ -2122,6 +2222,82 @@ void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 	}
 
 	UpdateMovementLayers();
+}
+
+script_layer* player_hud::PlayBlendAnm(const shared_str& name, float speed, float power, Fvector2 blend_factors, bool looped, bool mix, bool restart, u8 part, u8 item, u8 state)
+{
+	if (restart)
+	{
+		StopBlendAnm(name);
+	}
+
+	for (script_layer* cycle_anim : m_script_layers)
+	{
+		if (cycle_anim->name == name)
+		{
+			cycle_anim->Play(name, speed, power, blend_factors, looped, mix, part, item, state);
+			return cycle_anim;
+		}
+	}
+
+	return m_script_layers.emplace_back(new script_layer(name, speed, power, blend_factors, looped, mix, part, item, state));
+}
+
+void player_hud::StopBlendAnm(const shared_str& name, bool bForce)
+{
+	for (script_layer* anm : m_script_layers)
+	{
+		if (anm->name == name)
+		{
+			anm->Stop(bForce);
+			return;
+		}
+	}
+}
+
+void player_hud::StopAllBlendAnms(bool bForce)
+{
+	for (script_layer* anm : m_script_layers)
+	{
+		anm->Stop(bForce);
+	}
+}
+
+bool player_hud::IsBlendAnmActive(const shared_str& name)
+{
+	for (script_layer* anm : m_script_layers)
+	{
+		if (anm->name == name)
+		{
+			if (anm->active)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+void script_layer::CallStartCallback()
+{
+	if (item == 2)
+	{
+		for (int i = 0; i < item; i++)
+		{
+			if (g_player_hud->attached_item(i) && g_player_hud->attached_item(i)->m_parent_hud_item)
+			{
+				g_player_hud->attached_item(i)->m_parent_hud_item->OnBlendEnd(state);
+			}
+		}
+	}
+	else
+	{
+		if (g_player_hud->attached_item(item) && g_player_hud->attached_item(item)->m_parent_hud_item)
+		{
+			g_player_hud->attached_item(item)->m_parent_hud_item->OnBlendEnd(state);
+		}
+	}
 }
 
 bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)

@@ -453,6 +453,16 @@ void CWeapon::Load		(const char* section)
 		m_iGrenadeLauncherY = pSettings->r_s32(section, "grenade_launcher_y") * ScaleIcon;
 	}
 
+	m_sAimBlendParams[0].Load(hud_sect, "anim_aim_start");
+	m_sAimBlendParams[1].Load(hud_sect, "anim_aim_idle");
+	m_sAimBlendParams[2].Load(hud_sect, "anim_aim_end");
+
+	m_sGLAimBlendParams[0].Load(hud_sect, "anim_aim_start_g");
+	m_sGLAimBlendParams[1].Load(hud_sect, "anim_aim_idle_g");
+	m_sGLAimBlendParams[2].Load(hud_sect, "anim_aim_end_g");
+
+	m_sFakeShootBlendParams.Load(hud_sect, "anim_fakeshot");
+
 	UpdateAltScope();
 	InitAddons();
 
@@ -1924,11 +1934,11 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 
 						if (!IsZoomed() && !IsPending())
 						{
-							if (GetState() != eIdle)
-							{
-								SwitchState(eIdle);
-							}
-							StopShooting();
+							//if (GetState() != eIdle)
+							//{
+								//SwitchState(eIdle);
+							//}
+							//StopShooting();
 							OnZoomIn();
 						}
 					}
@@ -2918,6 +2928,45 @@ bool CWeapon::GetCurrentRecoilPattern(float& out_x, float& out_y)
 	return true;
 }
 
+void CWeapon::OnBlendStart(u8 state)
+{
+	inherited::OnBlendStart(state);
+	switch (state)
+	{
+	case script_layer::EBlendLayers::eAimStart:
+	{
+		StopBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[2].camera_name : m_sAimBlendParams[2].camera_name, false);
+		StopBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[1].camera_name : m_sAimBlendParams[1].camera_name, true);
+		break;
+	}
+	case script_layer::EBlendLayers::eAimEnd:
+	{
+		StopBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[0].camera_name : m_sAimBlendParams[0].camera_name, false);
+		StopBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[1].camera_name : m_sAimBlendParams[1].camera_name, true);
+		break;
+	}
+	}
+}
+
+void CWeapon::OnBlendEnd(u8 state)
+{
+	inherited::OnBlendEnd(state);
+	switch (state)
+	{
+	case script_layer::EBlendLayers::eAimStart:
+	{
+		if (IsZoomed() && GetHUDmode() && (IsGrenadeMode() ? m_sGLAimBlendParams[1].has_motion : m_sAimBlendParams[1].has_motion))
+		{
+			PlayBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[1].camera_name : m_sAimBlendParams[1].camera_name,
+				IsGrenadeMode() ? m_sGLAimBlendParams[1].speed_power.x : m_sAimBlendParams[1].speed_power.x,
+				IsGrenadeMode() ? m_sGLAimBlendParams[1].speed_power.y : m_sAimBlendParams[1].speed_power.y,
+				IsGrenadeMode() ? m_sGLAimBlendParams[1].blend_params : m_sAimBlendParams[1].blend_params, true, false, true,
+				(g_player_hud->attached_item(1) ? 0 : 2), 0, script_layer::EBlendLayers::eNone);
+		}
+		break;
+	}
+	}
+}
 
 void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor);
 
@@ -2925,9 +2974,17 @@ float LastZoomFactor = 0.f;
 
 void CWeapon::OnZoomIn()
 {
-	StopShooting();
 	m_bSwitchSprint = false;
 	m_zoom_params.m_bIsZoomModeNow		= true;
+
+	if (HudItemData() != nullptr && (IsGrenadeMode() ? m_sGLAimBlendParams[0].has_motion : m_sAimBlendParams[0].has_motion))
+	{
+		PlayBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[0].camera_name : m_sAimBlendParams[0].camera_name,
+			IsGrenadeMode() ? m_sGLAimBlendParams[0].speed_power.x : m_sAimBlendParams[0].speed_power.x,
+			IsGrenadeMode() ? m_sGLAimBlendParams[0].speed_power.y : m_sAimBlendParams[0].speed_power.y,
+			IsGrenadeMode() ? m_sGLAimBlendParams[0].blend_params : m_sAimBlendParams[0].blend_params, false, false, true,
+			(g_player_hud->attached_item(1) ? 0 : 2), 0, script_layer::EBlendLayers::eAimStart);
+	}
 
 	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
 
@@ -2970,6 +3027,16 @@ void CWeapon::OnZoomOut()
 	m_zoom_params.m_bIsZoomModeNow		= false;
 	m_fRTZoomFactor = GetZoomFactor();//store current
 	m_zoom_params.m_fCurrentZoomFactor = g_fov;
+
+	bool Mix = !IsBlendAnmActive(IsGrenadeMode() ? m_sGLAimBlendParams[2].camera_name : m_sAimBlendParams[2].camera_name);
+	if (HudItemData() != nullptr && (IsGrenadeMode() ? m_sGLAimBlendParams[2].has_motion : m_sAimBlendParams[2].has_motion))
+	{
+		PlayBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[2].camera_name : m_sAimBlendParams[2].camera_name,
+			IsGrenadeMode() ? m_sGLAimBlendParams[2].speed_power.x : m_sAimBlendParams[2].speed_power.x,
+			IsGrenadeMode() ? m_sGLAimBlendParams[2].speed_power.y : m_sAimBlendParams[2].speed_power.y,
+			IsGrenadeMode() ? m_sGLAimBlendParams[2].blend_params : m_sAimBlendParams[2].blend_params, false, Mix, true,
+			(g_player_hud->attached_item(1) ? 0 : 2), 0, script_layer::EBlendLayers::eAimEnd);
+	}
 
 	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
 
@@ -3964,6 +4031,16 @@ void CWeapon::UpdateAltScope()
 	if (new_hud != hud_sect)
 	{
 		hud_sect = new_hud;
+
+		m_sAimBlendParams[0].Load(hud_sect, "anim_aim_start");
+		m_sAimBlendParams[1].Load(hud_sect, "anim_aim_idle");
+		m_sAimBlendParams[2].Load(hud_sect, "anim_aim_end");
+
+		m_sGLAimBlendParams[0].Load(hud_sect, "anim_aim_start_g");
+		m_sGLAimBlendParams[1].Load(hud_sect, "anim_aim_idle_g");
+		m_sGLAimBlendParams[2].Load(hud_sect, "anim_aim_end_g");
+
+		m_sFakeShootBlendParams.Load(hud_sect, "anim_fakeshot");
 	}
 
 	hud_sect_cache = hud_sect;
