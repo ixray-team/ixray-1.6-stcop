@@ -19,7 +19,7 @@ else()
     add_compile_options(
         -Wno-null-dereference -Wno-nonnull -Wno-format-truncation -Wno-attributes -Wno-format -Wno-undefined-inline -Wno-unknown-warning-option 
         -Wno-tautological-constant-out-of-range-compare -Wno-macro-redefined -Wno-int-to-pointer-cast -Wno-deprecated-literal-operator
-        -Wno-exceptions
+        -Wno-exceptions -Wno-ignored-pragmas
     )
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++") # ranges
