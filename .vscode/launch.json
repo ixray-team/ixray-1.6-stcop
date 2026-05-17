@@ -11,10 +11,9 @@
             "name": "(lldb) Render Test",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/bin/xrCompress",
-            "args": ["gamedata", "-ltx datapack.ltx"],
-            "stopAtEntry": false,
-            "cwd": "/home/artem/Repos/ixray-1.6-stcop/", //"${workspaceFolder}",
+            "program": "${workspaceFolder}/build/bin/Debug/xrEngine",
+            "cwd": "/home/vertver/.local/share/Steam/steamapps/common/Stalker Call of Pripyat/",
+            "args": [],
             "environment": [
                 {
                     // add the directory where our target was built to the PATHs
@@ -25,7 +24,8 @@
             ],
             "externalConsole": true,
             "MIMode": "gdb",
-            "miDebuggerPath": "/usr/bin/gdb"
+            "miDebuggerPath": "/usr/bin/gdb",
+            "stopAtEntry": false,
         }
     ]
 }

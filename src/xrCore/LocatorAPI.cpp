@@ -527,6 +527,9 @@ bool CLocatorAPI::Recurse(const char* path)
 	size_t oldSize = GetScanCacheBuffer()->size();
 	GetScanCacheBuffer()->reserve(oldSize + 256);
 
+	shared_str str = Platform::ValidPath(path);
+	path = str.c_str();
+
 	if (!std::filesystem::exists(path))
 	{
 		return false;
@@ -545,7 +548,7 @@ bool CLocatorAPI::Recurse(const char* path)
 		scan_chache& chache = GetScanCacheBuffer()->back();
 		chache.dir = elem.is_directory();
 		chache.ftime = xr_chrono_to_time_t(elem.last_write_time());
-		chache.fsize = elem.file_size();
+		chache.fsize = (chache.dir ? 0 : elem.file_size());
 		chache.fileName = elem_path.xfilename();
 	}
 
@@ -557,8 +560,13 @@ bool CLocatorAPI::Recurse(const char* path)
 			auto& chache = GetScanCacheBuffer()->at(i);
 			
 			string_path N;
+#ifdef IXR_WINDOWS
 			VERIFY(path[xr_strlen(path)-1] == '\\');
 			VERIFY(path[xr_strlen(path)-2] != '\\');
+#else
+			VERIFY(path[xr_strlen(path)-1] == '/');
+			VERIFY(path[xr_strlen(path)-2] != '/');
+#endif
 			xr_strcpy(N, sizeof(N), path);
 			xr_strcat(N, chache.fileName.c_str());
 			xr_strlwr(N);
@@ -1338,7 +1346,7 @@ T *CLocatorAPI::r_open_impl	(const char* path, const char* _fname)
 #ifdef IXR_WINDOWS
 	if (!check_for_file(path,_fname,fname,desc))
 #else
-	if (!check_for_file(path,Platform::RestorePath(_fname),fname,desc))
+	if (!check_for_file(path,Platform::ValidPath(_fname),fname,desc))
 #endif
 		return(nullptr);
 

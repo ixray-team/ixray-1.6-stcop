@@ -31,6 +31,7 @@ struct RHI_GPU_EVENT
 	xr_array<RHI_GPU_EVENT_STATS, QUERY_MAX_COUNT> events;
 };
 
+#ifdef IXR_WINDOWS
 #ifdef DEBUG_DRAW
 #	ifdef IXRAY_PROFILER
 #		define GPU_EVENT(Name)	CRHIGPUMark	pixEvent##Name(#Name, L#Name); PROF_EVENT(#Name)
@@ -43,4 +44,7 @@ struct RHI_GPU_EVENT
 #	else
 #		define GPU_EVENT(Name)	{;}
 #	endif
+#endif
+#else
+#define GPU_EVENT(name)
 #endif

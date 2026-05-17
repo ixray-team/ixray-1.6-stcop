@@ -74,10 +74,24 @@ HRESULT CRHIShaderCompilerShell::Build(const void* srcData, size_t srcSize, cons
     cmd << "wine fxc.exe "
         << srcPath
         << " /T " << target
-        << " /E " << entryPoint
-        << " /Fo " << outPath
-        << " > " << errPath << " 2>&1";
+        << " /E " << entryPoint;
 
+    if (defines)
+    {
+        const D3D_SHADER_MACRO* defs = (const D3D_SHADER_MACRO*)defines;
+
+        for (int i = 0; defs[i].Name != nullptr; ++i)
+        {
+            cmd << " /D " << defs[i].Name;
+
+            if (defs[i].Definition)
+                cmd << "=" << defs[i].Definition;
+        }
+    }
+
+    cmd << " /Fo " << outPath
+        << " > " << errPath << " 2>&1";
+    
     int result = std::system(cmd.str().c_str());
 
     // Read compiled blob
