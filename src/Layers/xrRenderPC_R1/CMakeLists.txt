@@ -83,8 +83,12 @@ target_compile_definitions(xrRender_R1 PRIVATE _USRDLL)
 target_link_libraries(xrRender_R1 PRIVATE xrEngineCore)
 target_link_libraries(xrRender_R1 PUBLIC lunasvg)
 target_link_libraries(xrRender_R1 PUBLIC NvTriStrip)
+target_link_libraries(xrRender_R1 PUBLIC DirectX::Mesh)
 
 if (WIN32)
     target_link_libraries(xrRender_R1 PUBLIC DirectX::Tex)
-    target_link_libraries(xrRender_R1 PUBLIC DirectX::Mesh)
+endif()
+
+if (LINUX)
+    target_compile_definitions(xrRender_R1 PRIVATE XR_USE_DXVK_NATIVE=1 DXVK_WSI_DRIVER_SDL3=1)
 endif()
