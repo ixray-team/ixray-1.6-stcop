@@ -131,7 +131,7 @@ ID3DTexture2D* TW_LoadTextureFromTexture(ID3DTexture2D* t_from, int levels_2_ski
 
 #include <string>
 #include <unordered_map>
-#include <ddraw.h>
+//#include <ddraw.h>
 
 shared_str D3DFormatToString(D3DFORMAT format)
 {
@@ -143,6 +143,10 @@ shared_str D3DFormatToString(D3DFORMAT format)
 
 	return "D3DFMT_UNKNOWN";
 }
+
+#ifndef DDPF_FOURCC
+    #define DDPF_FOURCC 0x4
+#endif
 
 void PrintTextureError(HRESULT hr, const char* fname, const void* ddsData, size_t ddsSize, IDirect3DBaseTexture9* pTexture = nullptr, bool PrintMem = true)
 {
@@ -260,7 +264,7 @@ bool CRender::get_texture_metadata(const char* absolute_path, RHITextureMetadata
 		return status;
 
 	DirectX::TexMetadata metadata;
-	HRESULT hr = DirectX::GetMetadataFromDDSMemory(pReader->pointer(), pReader->length(), DirectX::DDS_FLAGS::DDS_FLAGS_NONE, metadata);
+	HRESULT hr = DirectX::GetMetadataFromDDSMemory( static_cast<const uint8_t*>(pReader->pointer()), pReader->length(), DirectX::DDS_FLAGS::DDS_FLAGS_NONE, metadata);
 
 	if (SUCCEEDED(hr))
 	{
@@ -551,8 +555,9 @@ _DDS:
 				xr_strcpy(fn, temp);
 				goto _DDS;
 			}
-			_RELEASE(T_sysmem);
-
+			T_sysmem->Release();
+			T_sysmem = nullptr;
+			
 			ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
 			return pTexture2D;
 		}

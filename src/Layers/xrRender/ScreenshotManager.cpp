@@ -1,15 +1,18 @@
 #include "ScreenshotManager.h"
 #include "stdafx.h"
+
+#ifdef IXR_WINDOWS
 #include <wincodec.h>
 #include <memory>
 
 extern int SM_FOR_SEND_WIDTH;
 extern int SM_FOR_SEND_HEIGHT;
-
 using namespace DirectX;
+#endif
 
 bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, const char* Name, CMemoryWriter* MemoryWriter)
 {
+#ifdef IXR_WINDOWS
 	if (!GRHI || !GRHI->DevicePtr)
 	{
 		return false;
@@ -166,5 +169,6 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 	break;
 	}
 
+#endif
 	return true;
 }

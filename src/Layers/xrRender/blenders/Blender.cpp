@@ -19,7 +19,14 @@ void CBlender_DESC::Setup	(const char* N)
 	_strlwr(cName);
 	
 	xr_strcpy(cComputer,Core.CompName);			// Computer
-	_tzset(); _time32((__time32_t*)&cTime);	// Time
+
+#ifdef IXR_WINDOWS
+	_tzset();
+	_time32((__time32_t*)&cTime);
+#else
+	tzset();
+	time((__time32_t*)&cTime);	// Time
+#endif
 };
 
 //////////////////////////////////////////////////////////////////////
