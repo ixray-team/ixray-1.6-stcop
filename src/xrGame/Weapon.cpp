@@ -3617,7 +3617,7 @@ float CWeapon::Weight() const
 extern bool hud_adj_crosshair;
 bool CWeapon::show_crosshair()
 {
-	return (!m_bTacticalLaserStatus || hud_adj_crosshair) && (!IsPending() || GetState() == eEmptyClick || GetState() == eSprintStart || GetState() == eSprintEnd || GetState() == ePump || GetState() == eSafemodeSwitch) && (!IsZoomed() || !ZoomHideCrosshair());
+	return hud_adj_crosshair || !m_bTacticalLaserStatus && (!IsPending() || GetState() == eEmptyClick || GetState() == eSprintStart || GetState() == eSprintEnd || GetState() == ePump || GetState() == eSafemodeSwitch) && (!IsZoomed() || !ZoomHideCrosshair());
 }
 
 bool CWeapon::use_crosshair() const
