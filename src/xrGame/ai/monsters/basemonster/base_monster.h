@@ -532,7 +532,7 @@ public:
 #ifdef DEBUG
 
 	template <class Type>
-	bool					get_debug_var (const char* var_name, OUT Type& result);
+	bool					get_debug_var (const char* var_name, Type& result);
 
 public:
 	struct SDebugInfo {
@@ -703,7 +703,7 @@ public:
 
 #ifdef DEBUG
 template <class Type>
-bool   CBaseMonster::get_debug_var (const char* var_name, OUT Type& result)
+bool   CBaseMonster::get_debug_var (const char* var_name, Type& result)
 {
 	string256 full_var_name;
 	xr_strconcat(full_var_name, get_monster_class_name(), "_", var_name);

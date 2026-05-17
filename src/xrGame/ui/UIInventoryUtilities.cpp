@@ -627,7 +627,7 @@ void InventoryUtilities::SendInfoToLuaScripts(shared_str info)
 	{
 		int mode = 11; // Talk Dialog hide
 		luabind::functor<void>	funct;
-		if(!ai().script_engine().functor("pda.actor_menu_mode", funct));
+		if(!ai().script_engine().functor("pda.actor_menu_mode", funct))
 			return;
 		funct( mode );
 	}

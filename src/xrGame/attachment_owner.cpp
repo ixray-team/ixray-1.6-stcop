@@ -44,7 +44,7 @@ void CAttachmentOwner::net_Destroy()
 #ifdef DEBUG
 	if (!attached_objects().empty())
 	{
-		Msg("Object %s has attached items :", cast_game_object()->cName());
+		Msg("Object %s has attached items :", cast_game_object()->cName().c_str());
 	}
 #endif
 	R_ASSERT(attached_objects().empty());
