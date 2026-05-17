@@ -157,14 +157,13 @@ typedef dReal dQuaternion[4];
 
 #define dEFFICIENT_SIZE(x) ((((x)-1)|(EFFICIENT_ALIGNMENT-1))+1)
 
+#ifdef __linux__
+#include <alloca.h>
+#endif
 
 /* alloca aligned to the EFFICIENT_ALIGNMENT. note that this can waste
  * up to 15 bytes per allocation, depending on what alloca() returns.
  */
-
-#ifdef __linux__
-#define alloca _alloca
-#endif
 
 #define dALLOCA16(n) \
   ((char*)dEFFICIENT_SIZE(((size_t)(alloca((n)+(EFFICIENT_ALIGNMENT-1))))))

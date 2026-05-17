@@ -62,7 +62,7 @@ void xrLogger::Msg(const char* Msg, va_list argList)
 	formattedMessage[MsgSize] = 0;
 
 #ifdef IXR_LINUX
-	std::cout << formattedMessage;
+	std::cout << formattedMessage << std::endl;
 	return;
 #endif
 
