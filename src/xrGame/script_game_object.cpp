@@ -929,7 +929,7 @@ const char* CScriptGameObject::get_smart_cover_description() const
 
 CGameObject& CScriptGameObject::object() const
 {
-#ifdef DEBUG
+#if defined(DEBUG) && defined(IXR_WINDOWS)
 	__try
 	{
 		if (m_game_object && m_game_object->lua_game_object() == this)
