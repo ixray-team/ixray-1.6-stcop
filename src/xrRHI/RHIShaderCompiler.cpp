@@ -29,7 +29,8 @@ HRESULT CRHIShaderCompilerShell::Build(const void* srcData, size_t srcSize, cons
 	                                   const char* entryPoint, const char* target, u32 flags1, u32 flags2, xr_vector<u8>& code, xr_vector<u8>& errors)
 {
 #ifdef IXR_WINDOWS
-	ID3DBlob* code_blob = nullptr, ID3DBlob* errors_blob = nullptr;
+    ID3DBlob* code_blob = nullptr;
+    ID3DBlob* errors_blob = nullptr;
 	HRESULT hr = D3DCompile(srcData, srcSize, sourceName, (D3D_SHADER_MACRO*)defines, (ID3DInclude*)include, entryPoint, target, flags1, flags2, &code_blob, &errors_blob);
 
 	if (code_blob != nullptr) {
@@ -47,6 +48,7 @@ HRESULT CRHIShaderCompilerShell::Build(const void* srcData, size_t srcSize, cons
 			errors.resize(size);
 			memcpy(errors.data(), errors_blob->GetBufferPointer(), size);
 			errors_blob->Release();
+			errors.push_back('\0');
 		}
 	}
 
