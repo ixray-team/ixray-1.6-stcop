@@ -6,13 +6,13 @@
 
 #ifndef DOORS_DOOR_H_INCLUDED
 #define DOORS_DOOR_H_INCLUDED
-
+#include "doors.h"
 class CPhysicObject;
 
-namespace doors {
+namespace doors
+{
 
 class actor;
-enum door_state;
 
 class door {
 public:

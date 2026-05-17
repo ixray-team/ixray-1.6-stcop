@@ -60,10 +60,12 @@ CGameSpy_Full::~CGameSpy_Full()
 
 void CGameSpy_Full::LoadGameSpy()
 {
-	GAMESPY_LOAD_FN			(xrGS_GetGameVersion);
-	GAMESPY_LOAD_FN			(xrGS_gsCoreInitialize);
-	GAMESPY_LOAD_FN			(xrGS_gsCoreThink);
-	GAMESPY_LOAD_FN			(xrGS_gsCoreShutdown);
+#ifdef XR_MP_BUILD
+	GAMESPY_LOAD_FN(xrGS_GetGameVersion);
+	GAMESPY_LOAD_FN(xrGS_gsCoreInitialize);
+	GAMESPY_LOAD_FN(xrGS_gsCoreThink);
+	GAMESPY_LOAD_FN(xrGS_gsCoreShutdown);
+#endif
 }
 
 void CGameSpy_Full::Update()

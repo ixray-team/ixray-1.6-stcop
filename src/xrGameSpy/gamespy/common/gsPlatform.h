@@ -134,7 +134,7 @@
 	#endif // INSOCK
 
 // LINUX and MACOSX
-#elif defined(_UNIX)
+#elif defined(IXR_LINUX)
 	#include <unistd.h>
 	#include <sys/types.h>
 	#include <sys/socket.h>
@@ -430,11 +430,6 @@ extern "C" {
 #if defined(_WIN32)
 	#define strcasecmp _stricmp
 	#define strncasecmp _strnicmp
-#endif
-
-#if !defined(_WIN32)
-	char *_strlwr(char *string);
-	char *_strupr(char *string);
 #endif
 
 char * goastrdup(const char *src);

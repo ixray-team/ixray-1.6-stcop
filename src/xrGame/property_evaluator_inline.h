@@ -34,13 +34,13 @@ void CEvaluator::Load				(const char* section)
 }
 
 TEMPLATE_SPECIALIZATION
-typename bool CEvaluator::evaluate	()
+bool CEvaluator::evaluate	()
 {
 	return				(0);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	const typename bool& CEvaluator::property(const u32& condition_id) const
+IC const bool& CEvaluator::property(const u32& condition_id) const
 {
 	VERIFY(m_storage);
 	return (m_storage->property(condition_id));

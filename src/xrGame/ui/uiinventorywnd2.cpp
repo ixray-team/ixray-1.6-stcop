@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIInventoryWnd.h"
 #include "../Level.h"
 #include "../Actor.h"

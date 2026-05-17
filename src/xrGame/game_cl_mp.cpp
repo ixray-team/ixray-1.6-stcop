@@ -1500,10 +1500,11 @@ void game_cl_mp::PrepareToReceiveFile(ClientID const & from_client, shared_str c
 	xr_strconcat(dest_file_name,
 		make_file_name(client_session_id.c_str(), screen_shot_fn)		
 	);
+#ifdef XR_MP_BUILD
 	SYSTEMTIME			date_time;
 	GetLocalTime		(&date_time);
 	generate_file_name	(screen_shot_fn, dest_file_name, date_time);
-	
+#endif
 	fr_callback_binder* tmp_binder = get_receiver_cb_binder();
 	if (!tmp_binder)
 	{

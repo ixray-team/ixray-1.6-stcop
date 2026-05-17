@@ -161,6 +161,7 @@ XRCORE_API full_memory_stats_callback_type g_full_memory_stats_callback;
 
 static void full_memory_stats()
 {
+#ifdef IXR_WINDOWS
 	PROF_EVENT("full_memory_stats");
 	Memory.mem_compact();
 	u32		_process_heap = mem_usage_impl((HANDLE)_get_heap_handle(), 0, 0);
@@ -187,6 +188,7 @@ static void full_memory_stats()
 #endif // SEVERAL_ALLOCATORS
 
 	Msg("* [x-ray]: economy: strings[%d K], smem[%d K]", _eco_strings / 1024, _eco_smem);
+#endif
 }
 
 class CCC_MemStats : public IConsole_Command
@@ -1991,16 +1993,17 @@ public:
 					auto& section = l_tpIniFile->r_section(nameSection);
 					if (section.line_exist("faction"))
 					{
-						sprintf_s(script_command, "sim_board.get_sim_board():create_squad(\"%s\", sim_squad_scripted.sim_squad_scripted, sim_board.get_sim_board().smarts_by_names[\"%s\"], nil, \"%s\")", l_tpIniFile->r_string(nameSection, "faction"), GetNearestSmartName(), nameSection);
+						xr_sprintf(script_command, "sim_board.get_sim_board():create_squad(\"%s\", sim_squad_scripted.sim_squad_scripted, sim_board.get_sim_board().smarts_by_names[\"%s\"], nil, \"%s\")", l_tpIniFile->r_string(nameSection, "faction"), GetNearestSmartName(), nameSection);
 					}
 					else
 					{
-						sprintf_s(script_command, "xr_effects.create_squad(db.actor,nil,{\"%s\",\"%s\"})", nameSection, GetNearestSmartName());
+						xr_sprintf(script_command, "xr_effects.create_squad(db.actor,nil,{\"%s\",\"%s\"})", nameSection, GetNearestSmartName());
 					}
 				}
 				else
+				{
 					xr_sprintf(script_command, "xr_effects.create_squad(db.actor,nil,{\"%s\",\"%s\"})", nameSection, GetNearestSmartName());
-
+				}
 				ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->add_script(script_command, true, true);
 			}
 		}
@@ -2470,7 +2473,7 @@ void CCC_RegisterCommands()
 
 	CMD1(CCC_ChangeLanguage, "language");
 
-#ifndef MASTER_GOLD
+#ifdef DEBUG_DRAW
 	CMD1(CCC_SetActorPosition, "set_actor_position");
 	CMD1(CCC_SetWeather, "set_weather");
 	CMD1(CCC_SetGameTime, "set_game_time");
