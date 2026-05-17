@@ -56,6 +56,7 @@ struct IndexedTri
 
 struct TriangleContainer
 {
+	bool useMsg = true;
   	xr_vector<Fvector>				verts_v;
 	xr_vector<Triangle>				faces_v;
 
@@ -95,4 +96,9 @@ struct TriangleContainer
  
 	void RemoveDublicatesVertexs();
 	void RemoveDublicatesFaces();
+	void RemoveDublicates()
+	{
+		RemoveDublicatesVertexs();
+		RemoveDublicatesFaces();
+	};
 };
