@@ -13,6 +13,7 @@ if (WIN32)
     add_compile_options(/MP)
     add_compile_options("$<$<CONFIG:DEBUG>:/Od>" "$<$<CONFIG:DEBUG>:/MD>" "/Ob1")
 else()
+    set(CMAKE_CXX_STANDARD_LIBRARIES "-lstdc++")
     add_compile_options(-fms-extensions)
     #add_compile_options(-fexperimental-library) # stacktrace
     add_compile_options(
