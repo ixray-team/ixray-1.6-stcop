@@ -42,10 +42,12 @@
 #define __stdcall /* __attribute__((__stdcall__)) */
 
 #define CALLBACK
-#define HWND void*
-#define LPARAM void*
-#define WPARAM void*
-#define LPVOID void*
+#ifndef XR_USE_DXVK_NATIVE
+#   define HWND void*
+#   define LPARAM void*
+#   define WPARAM void*
+#   define LPVOID void*
+#endif
 
 #define xr_vectorcall
 
@@ -71,7 +73,7 @@ using UINT_PTR = uint64_t;
 
 using DWORD = uint32_t;
 using BOOL = int32_t;
-using HRESULT = long;
+using HRESULT = int32_t;
 using LRESULT = long;
 using HMODULE = void*;
 using DWORD_PTR = uintptr_t;
@@ -95,3 +97,68 @@ inline unsigned long GetLastError()
 {
     return 0;
 }
+
+
+#ifndef _In_
+#define _In_
+#endif
+
+#ifndef _In_opt_
+#define _In_opt_
+#endif
+
+#ifndef _Out_
+#define _Out_
+#endif
+
+#ifndef _Out_opt_
+#define _Out_opt_
+#endif
+
+#ifndef _Inout_
+#define _Inout_
+#endif
+
+#ifndef _In_z_
+#define _In_z_
+#endif
+
+#ifndef _Outptr_
+#define _Outptr_
+#endif
+
+#ifndef _Outptr_result_maybenull_
+#define _Outptr_result_maybenull_
+#endif
+
+#ifndef _Outptr_result_nullonfailure_
+#define _Outptr_result_nullonfailure_
+#endif
+
+#ifndef _Printf_format_string_
+#define _Printf_format_string_
+#endif
+
+#ifndef __analysis_assume
+#define __analysis_assume(x)
+#endif
+
+#ifndef _Ret_maybenull_
+#define _Ret_maybenull_
+#endif
+
+#ifndef _Post_writable_byte_size_
+#define _Post_writable_byte_size_(x)
+#endif
+
+#ifndef _Analysis_assume_
+#define _Analysis_assume_(x)
+#endif
+
+#ifndef _Success_
+#define _Success_(x)
+#endif
+
+#ifndef _Return_type_success_
+#define _Return_type_success_(x)
+#endif
