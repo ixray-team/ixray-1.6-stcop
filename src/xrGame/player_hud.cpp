@@ -1384,9 +1384,12 @@ void player_hud::load(const shared_str& player_hud_sect)
 	u16 bone_r_finger01 = m_model->dcast_PKinematics()->LL_BoneID("r_finger01");
 	u16 bone_r_finger02 = m_model->dcast_PKinematics()->LL_BoneID("r_finger02");
 	
-	m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger0).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger0]);
-	m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger01).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger01]);
-	m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger02).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger02]);
+	if (bone_r_finger0 != BI_NONE && bone_r_finger01 != BI_NONE && bone_r_finger02 != BI_NONE)
+	{
+		m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger0).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger0]);
+		m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger01).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger01]);
+		m_model->dcast_PKinematics()->LL_GetBoneInstance(bone_r_finger02).set_callback(bctCustom, FingerCallback, m_bone_callback_params[r_finger02]);
+	}
 
 	auto pathOmfs = EngineExternal().GetPlayerHudOmfAdditional();
 	if (pathOmfs && pathOmfs[0])
