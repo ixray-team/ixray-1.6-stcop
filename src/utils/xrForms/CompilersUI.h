@@ -24,8 +24,10 @@ struct CompilersMode
 	bool Embree = true;
 	bool CUDA = true;
 
- 	bool EmbreeBVHCompact = false;
-	bool EmbreeBVHRobust = false;
+ 	bool EmbreeBVHCompact	= false; // Дольше Traversing
+	bool EmbreeBVHRobust	= false; // Дольше Traversing
+	bool EmbreeRays8		= true;  // x2 Speed
+	bool EmbreeInstaces     = false; // Дольше Traversing
 
 	bool ClearTemp = false;
 	bool SkipTHM = false;
