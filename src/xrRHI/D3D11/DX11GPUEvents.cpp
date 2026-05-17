@@ -1,7 +1,9 @@
 #include "../RHI.h"
+#ifdef IXR_WINDOWS
 #include "DX11GPUEvents.h"
 #include <d3d11_1.h>
-#include <wrl/client.h>
+
+#   include <wrl/client.h>
 
 using Microsoft::WRL::ComPtr;
 
@@ -150,3 +152,4 @@ const RHI_GPU_EVENT& GPUEvents_Statistics()
 {
     return events_state.perf;
 }
+#endif

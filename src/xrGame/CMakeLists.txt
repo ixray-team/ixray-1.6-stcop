@@ -196,7 +196,9 @@ add_library(xrGame SHARED ${XGM_SRC_FILES})
 
 if (IXRAY_UNITYBUILD)
 	set_target_properties(xrGame PROPERTIES UNITY_BUILD ON UNITY_BUILD_BATCH_SIZE ${IXRAY_BUILD_BATCH_SIZE})
-	target_compile_options(xrGame PRIVATE /bigobj)
+	if(MSVC)
+    	target_compile_options(xrGame PRIVATE /bigobj)
+	endif()
 	set_source_files_properties(../xrServerEntities/script_engine_export.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 endif()
 
@@ -223,10 +225,10 @@ target_link_libraries(xrGame PUBLIC IKAN)
 
 if (IXRAY_MP)
 	target_link_libraries(xrGame PUBLIC crypto)
-endif()
 
-if (WIN32)
-	target_link_libraries(xrGame PRIVATE "shlwapi.lib")
+	if (WIN32)
+		target_link_libraries(xrGame PRIVATE "shlwapi.lib")
+	endif()
 endif()
 
 # Move precompiled header
