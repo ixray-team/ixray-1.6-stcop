@@ -77,9 +77,16 @@ else()
     set(CMAKE_SKIP_INSTALL_RULES ON)
 
     FetchContent_MakeAvailable(DirectXMesh)
-    target_include_directories(DirectXMesh PUBLIC ${CMAKE_SOURCE_DIR}/linux)
+
+    # SOSAL.H
+    download_single_header(
+        "https://raw.githubusercontent.com/randy408/sal/refs/heads/master/sal.h"
+        "linux/sal.h"
+    )
+    target_include_directories(DirectXMesh PUBLIC ${CMAKE_BINARY_DIR}/_deps_header_only/linux)
     
     if(TARGET DirectXMesh AND NOT TARGET DirectX::Mesh)
         add_library(DirectX::Mesh ALIAS DirectXMesh)
+        target_include_directories(DirectXMesh PUBLIC ${DirectXMesh_SOURCE_DIR}/Utilities)
     endif()
 endif()
