@@ -598,6 +598,40 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
 			}
 		}
 	}
+
+	xr_string ltx_filename	= Scene->LevelPath() + xr_string("level.ltx");
+
+    IWriter* F		= FS.w_open(ltx_filename.c_str());
+
+    if (F)
+    {
+        Fbox 	bb;
+        Fbox 	bg;
+        string256	buff;
+        Scene->GetBox(bb,OBJCLASS_SCENEOBJECT);
+        bool r1 = Scene->GetBox(bg,OBJCLASS_GROUP);
+        if (r1) bb.merge(bg);
+        
+	    ObjectList& shapes 			= Scene->ListObj(OBJCLASS_SHAPE);
+        for (ObjectIt sit=shapes.begin(); sit!=shapes.end(); ++sit)
+        {
+            CEditShape* E 		= smart_cast<CEditShape*>(*sit);
+            R_ASSERT			(E);
+            if(E->m_shape_type==eShapeLevelBound)
+            {
+                E->GetBox		(bb);
+                break;
+            }
+        }
+
+        F->w_string		("[level_map]");
+        sprintf			(buff,"bound_rect = %f,%f,%f,%f", bb.min.x, bb.min.z,bb.max.x, bb.max.z);
+        F->w_string		(buff);
+        sprintf			(buff,"texture = map\\map_%s", Scene->m_LevelOp.m_FNLevelPath.c_str());
+        F->w_string		(buff);
+
+		FS.w_close(F);
+    }
 	
 	if (bRes){
 		if (bNeedOkMsg) ELog.DlgMsg(mtInformation,"Validation OK!");
