@@ -130,3 +130,5 @@ extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, bas
 extern XRLC_LIGHT_API void		LightPointNew	(EmbreeRayTraceModel* MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
 
 extern void UpdateCurrentPhase(LPCSTR text);
+
+void LightPoint_Jitters(xr_vector<JiterPixel>& world_pos, base_lighting& lights, u32 flags);
