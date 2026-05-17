@@ -40,6 +40,8 @@ public:
 	IC bool				IsPlaying		(){return m_MParam.bPlay;}
 
     IC const Fmatrix&	XFORM			(){return m_XFORM;}
+	const SAnimParams& anim_param() { return m_MParam; }
+	bool				IsLooped() const { return bLoop; }
 	float				GetLength		();
 	// Update
 	void				Update			(float dt);
