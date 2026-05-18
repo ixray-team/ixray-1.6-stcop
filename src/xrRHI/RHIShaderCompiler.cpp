@@ -56,13 +56,19 @@ HRESULT CRHIShaderCompilerShell::Build(const void* srcData, size_t srcSize, cons
 #else
     namespace fs = std::filesystem;
 
+#if 0
     char srcPath[L_tmpnam];
     char outPath[L_tmpnam];
     char errPath[L_tmpnam];
+#else
+    char* srcPath = "shader.hlsl";
+    char* outPath = "out.bin";
+    char* errPath = "err.txt";
+#endif
 
-    std::tmpnam(srcPath);
-    std::tmpnam(outPath);
-    std::tmpnam(errPath);
+    //std::tmpnam(srcPath);
+    //std::tmpnam(outPath);
+    //std::tmpnam(errPath);
 
     {
         std::ofstream src(srcPath, std::ios::binary);
@@ -88,6 +94,10 @@ HRESULT CRHIShaderCompilerShell::Build(const void* srcData, size_t srcSize, cons
                 cmd << "=" << defs[i].Definition;
         }
     }
+
+    //cmd << " /I " << "gamedata/shaders/shared";
+    cmd << " /I " << "gamedata/shaders/r1";
+    cmd << " /I " << "gamedata/shaders/r1/shared";
 
     cmd << " /Fo " << outPath
         << " > " << errPath << " 2>&1";

@@ -64,7 +64,7 @@ Cflags: -I\${includedir}
     execute_process(
         COMMAND ${MESON} setup 
                 ${dxvk_SOURCE_DIR} ${DXVK_BUILD_DIR}
-                --buildtype=release
+                --buildtype=debug
                 --prefix=${DXVK_INSTALL_DIR}
                 -Denable_d3d9=true
                 -Denable_d3d11=true
