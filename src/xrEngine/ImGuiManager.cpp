@@ -52,6 +52,7 @@ float GetWindowScale(SDL_Window* window)
 
 void CImGuiManager::InitPlatform()
 {
+#ifdef IXR_WINDOWS
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
@@ -83,6 +84,7 @@ void CImGuiManager::InitPlatform()
 #endif
 
 	PlatformInitCallback();
+#endif
 }
 
 void CImGuiManager::InitHardware()
@@ -165,6 +167,7 @@ void CImGuiManager::BeginRender()
 
 void CImGuiManager::AfterRender()
 {
+#ifdef IXR_WINDOWS
 	ImGuiIO& io = ImGui::GetIO();
 
 	// Update and Render additional Platform Windows
@@ -173,10 +176,12 @@ void CImGuiManager::AfterRender()
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 	}
+#endif
 }
 
 void CImGuiManager::Render()
 {
+#ifdef IXR_WINDOWS
 	ImGui::NewFrame();
 
 #ifdef DEBUG_DRAW
@@ -204,6 +209,7 @@ void CImGuiManager::Render()
 #endif
 
 	ImGui::Render();
+#endif
 
 	RHIUtils::ImGui::DrawData();
 }
@@ -256,7 +262,9 @@ bool CImGuiManager::IsCapturingInputs() const
 
 void CImGuiManager::NewPlatformFrame() const
 {
+#ifdef IXR_WINDOWS
 	PlatformNewFrameCallback();
+#endif
 }
 
 void CImGuiManager::NewHardwareFrame() const

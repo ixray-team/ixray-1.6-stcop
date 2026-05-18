@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
 	splash::SetProgressStatus(10, "Calculating display modes");
 	EnumerateDisplayModes();
 
-	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, SDL_WINDOW_HIDDEN);
+	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, 0);
 	//SDL_HideWindow(g_AppInfo.Window);
 
 	splash::SetProgressStatus(20, "Initializing xrCore");

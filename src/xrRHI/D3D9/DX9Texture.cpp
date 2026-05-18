@@ -398,6 +398,7 @@ u32 DX9DepthStencilView::Release()
 		u32 Counter = Surface->Release();
 		if (Counter == 0)
 		{
+			Surface = nullptr;
 			xr_delete(this);
 		}
 

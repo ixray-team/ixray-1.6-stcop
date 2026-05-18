@@ -4,6 +4,12 @@
 void* xrMemory::mem_alloc(size_t size)
 {
 	stat_calls++;
+
+	if (pAlloc == nullptr)
+	{
+    	return malloc(size);
+	}
+
 	return pAlloc->alloc(size);
 }
 
