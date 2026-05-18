@@ -338,11 +338,18 @@ function actor_binder:update(delta)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)
+	
+	local save_treasure_manager = true
+	
 	printf("actor_binder:save(): self.object:name()='%s'", self.object:name())
 	object_binder.save(self, packet)
 
 	--' Сохраняем уровень сложности
-	packet:w_u8(level.get_game_difficulty())
+	if save_treasure_manager == true then
+		packet:w_u8(level.get_game_difficulty() + 128)
+	else
+		packet:w_u8(level.get_game_difficulty())
+	end
 
 
 	--' Сохраняем данные об отключенном вводе
@@ -357,6 +364,11 @@ function actor_binder:save(packet)
 	self.weather_manager:save(packet)
 
 	sr_psy_antenna.save( packet )
+	
+	if save_treasure_manager == true then
+		treasure_manager.save(packet)      
+	end                                  
+
 	task_manager.save(packet)
 	self.actor_detector:save(packet)	
 end
@@ -368,6 +380,14 @@ function actor_binder:load(reader)
 
 	--' Загружаем уровень сложности
 	local game_difficulty = reader:r_u8()
+	
+	local load_treasure_manager = false      
+	if game_difficulty >= 128 then           
+		game_difficulty = game_difficulty - 128
+		load_treasure_manager = true           
+	end                                      
+
+	
 	get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
 
 	if reader:r_eof() then
@@ -383,6 +403,12 @@ function actor_binder:load(reader)
 	self.weather_manager:load(reader)
 
 	sr_psy_antenna.load(reader)
+	
+	if load_treasure_manager == true then
+		treasure_manager.load(reader)      
+	end                                  
+
+	
 	task_manager.load(reader)
 	self.actor_detector:load(reader)	
 end

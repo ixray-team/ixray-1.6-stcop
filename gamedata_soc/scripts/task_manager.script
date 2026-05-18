@@ -201,9 +201,10 @@ end
 function CRandomTask:load(p)
 	printf("^^^ LOAD")
 	--' Считаем количество записей
+	
 	local i = p:r_u8()
 	for k = 1,i do
-		local id = p:r_stringZ() 
+		local id = p:r_stringZ()
 		self.task_info[id].enabled = p:r_bool()
 		self.task_info[id].enabled_props = p:r_bool()
 		self.task_info[id].status = p:r_stringZ()
@@ -213,8 +214,18 @@ function CRandomTask:load(p)
 			self.task_info[id].selected_target = selected_target
 		end
 		self.task_info[id].last_task_time = utils.r_CTime(p)
-	end
+		
+		if self.task_info[id].type == "defend_lager" then                                                           
+			local defend_object = alife():object(self.task_info[id].selected_target)                                  
+			local sm_ini = defend_object:spawn_ini()                                                                  
+			self.task_info[id].defend_target = utils.cfg_get_number(sm_ini, "random_task", "defend_target", nil, true)
+		end                                                                                                         
 
+	end
+	
+	
+	
+	
 	--' Та же самая процедура с активными тасками
 	local i = p:r_u8()	
 	for k = 1,i do
@@ -297,7 +308,6 @@ function CRandomTask:action_give_task(actor, npc, p1, p2)
 	
 	local objective = SGameTaskObjective(task,1)
 	objective:set_description(task_desc.name)
-
 	--' Выбираем текущую цель квеста
 	if task_desc.target_objects ~= nil then
 		self.task_info[self.task_id_by_yes_phrase_id[p2]].selected_target = task_desc.target_objects[math.random(table.getn(task_desc.target_objects))]
@@ -638,7 +648,7 @@ function CRandomTask:check_task_props(task_id)
 		self.task_info[task_id].enabled_props = false
 		return
 	elseif self.task_info[task_id].type == "find_item" then
-		if self.task_info[task_id].target_objects == nil then
+		if self.task_info[task_id].target_objects == nil or table.getn(self.task_info[task_id].target_objects) == 0 then
 			self.task_info[task_id].enabled_props = false
 			return
 		end

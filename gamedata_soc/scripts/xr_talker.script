@@ -222,7 +222,7 @@ function action_talker_activity:execute()
 		--printf("[%s] state_approaching", self.object:name())
 		if self.object:position():distance_to(talkers[id].whom:position()) < 1.5 then
 			--printf("_bp: near")
-			--self.object:add_animation("udar_0", true)
+			--self.object:add_animation("udar_0", true, false)
 
 			self.object:set_movement_type(move.stand)
 			local phrase, time = this.next_phrase(self.object, talkers[id].whom, nil)

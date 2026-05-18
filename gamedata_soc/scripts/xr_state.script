@@ -259,11 +259,11 @@ end
 function body_state:transanim(object, target_state)
 	if self.tanim[self.current_state][target_state] ~= nil then
 		for k,v in pairs(self.tanim[self.current_state][target_state]) do
-			object:add_animation(v, true)
+			object:add_animation(v, true, false)
 		end
 	end
 	if self.ianim[target_state] ~= nil then
-		object:add_animation(self.ianim[target_state], true)
+		object:add_animation(self.ianim[target_state], true, false)
 	end
 end
 function body_state:weapon_slot()
@@ -319,7 +319,7 @@ function body_state:anim_update(type)
 		self.npc:clear_animations()
 		if self.states.current_state ~= nil then		
 			if self.animations[self.states.current_state].out ~= nil then
-				self.npc:add_animation(self.animations[self.states.current_state].out[self:weapon_slot()], true)
+				self.npc:add_animation(self.animations[self.states.current_state].out[self:weapon_slot()], true, false)
 			end
 		end
 		
@@ -331,10 +331,10 @@ function body_state:anim_update(type)
 			end
 		
 			if self.animations[type].into ~= nil then
-				self.npc:add_animation(self.animations[type].into[self:weapon_slot()], true)				
+				self.npc:add_animation(self.animations[type].into[self:weapon_slot()], true, false)
 			end	
 			if self.animations[type].idle ~= nil then
-				self.npc:add_animation(self.animations[type].idle[self:weapon_slot()], true)
+				self.npc:add_animation(self.animations[type].idle[self:weapon_slot()], true, false)
 			end
 		else
 			self:set_state(xr_state.stand)
@@ -373,14 +373,14 @@ function body_state:anim_update(type)
 			
 			self.npc:clear_animations()
 			if self.animations[self.states.current_state].rnd[self:weapon_slot()][r] ~= nil then
-				self.npc:add_animation (self.animations[self.states.current_state].rnd[self:weapon_slot()][r], true)
+				self.npc:add_animation (self.animations[self.states.current_state].rnd[self:weapon_slot()][r], true, false)
 			else
 				printf("ANIM ERROR: Select wrong animation %d of %d, type: %s, weapon_slot: %d", r,
 							table.getn(self.animations[self.states.current_state].rnd[self:weapon_slot()]),
 							self.states.current_state, self:weapon_slot() )
 			end
 			if self.animations[type].idle ~= nil then
-				self.npc:add_animation (self.animations[self.states.current_state].idle[self:weapon_slot()], true)
+				self.npc:add_animation (self.animations[self.states.current_state].idle[self:weapon_slot()], true, false)
 			end	
 		end
 	end

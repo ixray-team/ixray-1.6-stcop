@@ -37,13 +37,15 @@
 		<options_item entry="mm_net_con_publicserver" group="mm_mp_server"/>
 		<text font="letterica16" r="115" g="114" b="112">mm_mp_publicserver</text>
 	</check_public_server>
-<!--	
-	<check_verify_cdkey x="18" y="65" width="155" height="18">
-		<options_item entry="mm_net_con_publicserver" group="mm_mp_server"/>
-		<text font="letterica16" r="115" g="114" b="112">mm_mp_check_cdkey</text>
-	</check_verify_cdkey>
--->	
-	<check_spectator x="18" y="90" width="155" height="18">
+
+  <cap_max_ping x="18" y="65" width="143" height="23">
+    <text font="letterica16" r="115" g="114" b="112">mm_mp_max_ping</text>
+  </cap_max_ping>
+  <spin_max_ping x="175" y="65" width="45" height="23">
+    <options_item entry="sv_max_ping_limit" group="mm_mp_server"/>
+  </spin_max_ping>
+
+  <check_spectator x="18" y="90" width="155" height="18">
 		<options_item entry="mm_net_con_spectator_on" group="mm_mp_server"/>
 		<text font="letterica16" r="115" g="114" b="112">mm_mp_spectator</text>
 	</check_spectator>

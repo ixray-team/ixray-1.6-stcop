@@ -547,6 +547,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	
 	st.radius = utils.cfg_get_number(ini, section, "radius", npc, false, 20)
 	st.suggested_state = {}
+    st.suggested_state.standing = utils.cfg_get_string(ini, section, "def_state_standing", npc, false, "")
 	st.suggested_state.moving = utils.cfg_get_string(ini, section, "def_state_moving", npc, false, "")
 	st.suggested_state.moving1 = st.suggested_state.moving
 	st.suggested_state.moving2 = st.suggested_state.moving

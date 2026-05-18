@@ -9,9 +9,10 @@ function action_idle:__init(obj, storage)
 	self.st = storage
 end
 
---function action_idle:reset_scheme()
+function action_idle:reset_scheme()
 	--printf("_bp: sr_idle: action_idle:reset_scheme: self.object:name()='%s'", self.object:name())
---end
+	self.st.signals = {}
+end
 
 function action_idle:update(delta)
 	--printf("_br: sr_idle: action_idle:update()")

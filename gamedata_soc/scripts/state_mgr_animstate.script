@@ -334,16 +334,16 @@ function body_state:set_state(id)
 		
 		if lazy == true	then
 			for k,v in pairs(astate.lazy) do
-				self.npc:add_animation(v,true)
+				self.npc:add_animation(v, true, false)
 			end		
 		else
 			for k,v in pairs(astate.nrm) do
-				self.npc:add_animation(v,true)
+				self.npc:add_animation(v, true, false)
 			end
 		end				
 	end
 	if self.idle_anim[id] ~= nil then
-		self.npc:add_animation(self.idle_anim[id],true)
+		self.npc:add_animation(self.idle_anim[id], true, false)
 	end
 	self.current_state = "busy"
 	self.target_state = id
@@ -351,7 +351,7 @@ end
 --' ¬осстанавливаем зацикленную айдловую анимацию
 function body_state:add_idle_animation()
 	if self.idle_anim[self.current_state] ~= nil then
-		self.npc:add_animation(self.idle_anim[self.current_state],true)
+		self.npc:add_animation(self.idle_anim[self.current_state], true, false)
 	end
 end
 --' ≈сть ли дл€ текущего состо€ни€ идлова€ анимаци€

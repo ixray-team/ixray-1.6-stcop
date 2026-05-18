@@ -409,7 +409,7 @@ local level_groups = {
     l04_darkvalley = "group1",
     l04u_labx18 = "group1",
     l05_bar = "group1",
-    l06_Rostok = "group1",
+    l06_rostok = "group1",
     l07_military = "group1",
     l08_yantar = "group1",
     l08u_brainlab = "group1",
@@ -462,7 +462,7 @@ function se_smart_terrain:smart_terrain_accepts_obj( obj, obj_agreement )
 --'			printf( "community=%s rank=%d reputation=%d", community, obj:rank(), obj:reputation() )
 --'		end
 	
-		if not self:check_preset( community, obj:rank(), self.gparams.preset_name ) then
+		if obj_agreement ~= agreed_exclusive and not self:check_preset( community, obj:rank(), self.gparams.preset_name ) then
 			return false
 		end
 

@@ -707,7 +707,7 @@ end
 
 function add_anim(npc, anim, bb)
 --'	printf("ANIMATION [%s] added [%s]", npc:name(), anim)
-	npc:add_animation(anim, bb)
+	npc:add_animation(anim, bb, false)
 end
 
 function clear_anim(npc)

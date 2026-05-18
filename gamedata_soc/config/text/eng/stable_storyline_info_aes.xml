@@ -1,9 +1,0 @@
-	<string id="aes_military_task">
-		<text>Operation Monolith</text>
-	</string>
-	<string id="aes_military_task_head">
-		<text>Situation</text>
-	</string>
-	<string id="aes_soldier_info">
-		<text>Military action plan\n\n Personnel:\n Operation Commander: callsign Quartet\n Seven air assault units: Sapsan, Korshun, Yastreb, Pustelga, Sokol, Grif, Lun. \n Sniper team: Sova\n Support:\n Air: 018, 030, 031, 48, 49, 52\n 51, 64, 65, 098, 097\n Ground: Armadillo 1, Armadillo 2, Armadillo 3\n Situation: Possible strong resistance in the vicinity of the bridge (23,45), gate (26,78) and the road along the main building of the station (12,23-53,76). The enemy is likely to deploy heavy weaponry. \n Expected number of enemy personnel: 70-100. Armored vehicles: none.\n Possible heavy sniper cover from the enemy.\n Weather conditions: Visibility - 700, possible previously unencountered anomalies.</text>
-	</string>

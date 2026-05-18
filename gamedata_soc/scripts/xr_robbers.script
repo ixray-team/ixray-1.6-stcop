@@ -470,7 +470,7 @@ function action_robber_activity:fsm_step()
 		utils.stalker_look_at_stalker(self.object, actor)
 		if self.object:position():distance_to(actor:position()) < 1.5 then
 			self.object:set_movement_type(move.stand)
-			self.object:add_animation("udar_0", true)
+			self.object:add_animation("udar_0", true, false)
 			self.expiration_time = time_global() + 700
 			self.state = state_puncher_waiting_to_grab_money
 		else

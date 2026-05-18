@@ -86,7 +86,7 @@ function action_punch_activity:execute()
 				nil,
 				{ look_object = whom }, 
 				{animation = true})
-			--self.object:add_animation("udar_0", true)
+			--self.object:add_animation("udar_0", true, false)
 			self.expiration_time = time_global() + 700
 			self.state = state_punch
 		else

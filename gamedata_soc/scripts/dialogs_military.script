@@ -12,11 +12,17 @@
 
 -- Оплата долговцем наших услуг по устранению снайпера
 function mil_dolg_payment (stalker, player)
-	dialogs.relocate_money(stalker, 4000, "in")
+    if not has_alife_info("military_scull_give_reward_1") then
+	    dialogs.relocate_money(stalker, 4000, "in")
+        db.actor:give_info_portion("military_scull_give_reward_1")
+    end
 end
 
 function mil_dolg_payment2 (stalker, player)
-	dialogs.relocate_money(stalker, 8000, "in")
+    if not has_alife_info("military_scull_give_reward_2") then
+	    dialogs.relocate_money(stalker, 8000, "in")
+        db.actor:give_info_portion("military_scull_give_reward_2")
+    end
 end
 
 function lukash_payment (stalker, player)

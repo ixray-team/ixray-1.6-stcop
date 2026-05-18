@@ -44,7 +44,7 @@ function mp_join:InitControls(x, y, xml, handler)
 	
 	local btn = xml:Init3tButton("tab_client:btn_direct_ip", self)
 	handler:Register(btn, "btn_direct_ip")	
-	
+	handler.btn_direct_ip = btn
 	handler.filters = {}
 
 	local btn = xml:InitCheck("tab_client:check_empty", self)

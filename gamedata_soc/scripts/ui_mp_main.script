@@ -28,52 +28,52 @@ function mp_main:InitControls()
 	
 	xml:InitStatic("back_video", self)
 	
-	self.map_pic = xml:InitStatic("static_map_pic", self)
-	local bk = xml:InitStatic("background", self)
-	self.map_info= xml:InitMapInfo("cap_map_info", bk)
-	self:Enable(true)	
+	self.map_pic		= xml:InitStatic("static_map_pic", self)
+	local bk			= xml:InitStatic("background", self)
+	self.map_info		= xml:InitMapInfo("cap_map_info", bk)
+	self:Enable			(true)	
 	
-	xml:InitAnimStatic("anim_00", self)
+	xml:InitAnimStatic	("anim_00", self)
 	
-	xml:InitStatic("cap_multiplayer",self)
-	xml:InitStatic("static_player_name",self)
-	self.player_name = xml:InitEditBox("edit_player_name", self)
-	xml:InitStatic("cap_cd_key",self)
-	self.cdkey = xml:InitCDkey("edit_cd_key", self)
-	self:Register(self.cdkey, "edit_cd_key")
+	xml:InitStatic		("cap_multiplayer",self)
+	xml:InitStatic		("static_player_name",self)
+	self.player_name	= xml:InitEditBox("edit_player_name", self)
+	xml:InitStatic		("cap_cd_key",self)
+	self.cdkey			= xml:InitCDkey("edit_cd_key", self)
+	self:Register		(self.cdkey, "edit_cd_key")
 	
 		
-	self.dlg_join = ui_mm_mp_join.mp_join()
+	self.dlg_join		= ui_mm_mp_join.mp_join()
 	self.dlg_join:InitControls(121,224, xml, self)
-	self:AttachChild(self.dlg_join)
+	self:AttachChild	(self.dlg_join)
 	
-	self.dlg_options = ui_mm_mp_options.mp_options()
+	self.dlg_options	= ui_mm_mp_options.mp_options()
 	self.dlg_options:InitControls(121,224, xml, self)
 	self.dlg_options:Show(false)
-	self:AttachChild(self.dlg_options)
+	self:AttachChild	(self.dlg_options)
 
-	self.dlg_server = ui_mm_mp_server.mp_server()
+	self.dlg_server		= ui_mm_mp_server.mp_server()
 	self.dlg_server:InitControls(121,224, xml, self)
 	self.dlg_server:Show(false)
-	self:AttachChild(self.dlg_server)
+	self:AttachChild	(self.dlg_server)
 
-	btn = xml:Init3tButton("btn_create", self)
-	self:Register(btn, "btn_create")
-	self.btn_create = btn
-	btn:Enable(false)
+	btn					= xml:Init3tButton("btn_create", self)
+	self:Register		(btn, "btn_create")
+	self.btn_create		= btn
+	btn:Enable			(false)
 	
-	btn = xml:Init3tButton("btn_join", self)
-	self:Register(btn, "btn_join")
-	self.btn_join = btn
+	btn					= xml:Init3tButton("btn_join", self)
+	self:Register		(btn, "btn_join")
+	self.btn_join		= btn
 	
-	btn = xml:Init3tButton("btn_cancel", self)
-	self:Register(btn, "btn_cancel")
+	btn					= xml:Init3tButton("btn_cancel", self)
+	self:Register		(btn, "btn_cancel")
 	
-	self.tab = xml:InitTab("tab",self)
-	self:Register(self.tab, "tab")
+	self.tab			= xml:InitTab("tab",self)
+	self:Register		(self.tab, "tab")
 	
-	self.message_box = CUIMessageBoxEx()
-	self:Register(self.message_box, "msg_box")	
+	self.message_box	= CUIMessageBoxEx()
+	self:Register		(self.message_box, "msg_box")	
 	
 	
 	self.cap_download				= xml:InitStatic		("download_static",self)
@@ -94,7 +94,17 @@ function mp_main:UpdateControls()
 	local opt = COptionsManager()
 	opt:SetCurrentValues("mm_mp_client")
 	opt:SetCurrentValues("mm_mp_server")
+	opt:SetCurrentValues("mm_mp_srv_filter")
 	self:OnGameModeChange()
+	
+	if( level.present() ) then
+		self.btn_create:Enable	(false)
+		self.btn_join:Enable	(false)
+		self.btn_direct_ip:Enable(false)
+		self.tab:Enable			(false)
+		self.cdkey:Enable		(false)
+		self.player_name:Enable	(false)
+	end
 end
 
 function mp_main:InitCallBacks()
@@ -225,8 +235,14 @@ function mp_main:OnBtn_RefreshQuick()
 end
 
 function mp_main:OnBtn_Calncel()
+	local opt = COptionsManager()
+	opt:SaveValues("mm_mp_client")
+	opt:SaveValues("mm_mp_server")
+	opt:SaveValues("mm_mp_srv_filter")
+
 	self:GetHolder():start_stop_menu	(self.owner, true) --new(show main window)
 	self:GetHolder():start_stop_menu	(self,true)
+
 	self.owner:Show						(true)
 end
 
@@ -245,6 +261,7 @@ function mp_main:OnBtn_Create()
 	local console = get_console()	
 	opt:SaveValues("mm_mp_server")
 	opt:SaveValues("mm_mp_client")
+	opt:SaveValues("mm_mp_srv_filter")
 	self.map_list:SaveMapList()
 	self:GatherServerData()
 	if self.check_dedicated:GetCheck() then
@@ -280,6 +297,12 @@ function mp_main:GatherServerData()
 	if true == tmp then
 		cmdstr = cmdstr .. "/public=1"
 	end
+
+	tmp = self.spin_max_ping:GetText()
+	if string.len(tmp) > 0 then
+		cmdstr = cmdstr .. "/maxping=" .. tmp
+	end
+
 	-- spectator --------------------------------------------------------------------
 	if self.check_spectator:GetCheck() then
 		tmp = self.spin_spectator:GetText()
@@ -420,6 +443,7 @@ function mp_main:OnBtn_Join()
 	local opt = COptionsManager()
 	opt:SaveValues("mm_mp_client")
 	opt:SaveValues("mm_mp_server")
+	opt:SaveValues("mm_mp_srv_filter")
 	
 	self.server_list:SetPlayerName(self.player_name:GetText())	
 	self.server_list:ConnectToSelected()

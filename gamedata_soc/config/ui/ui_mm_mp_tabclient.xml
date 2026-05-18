@@ -107,25 +107,28 @@
 		
 		<check_empty x="570" y="40" width="150" height="18">
 			<text font="letterica16" r="115" g="114" b="112">mm_mp_empty</text>
-		</check_empty>
+      <options_item entry="mm_net_filter_empty" group="mm_mp_srv_filter"/>
+    </check_empty>
 		<check_full x="570" y="65" width="150" height="18">
 			<text font="letterica16" r="115" g="114" b="112">mm_mp_full</text>
-		</check_full>
-		<check_with_pass x="570" y="90" width="150" height="18">
-			<text font="letterica16" r="115" g="114" b="112">mm_mp_withpassword</text>
-		</check_with_pass>
-		<check_without_pass x="570" y="115" width="150" height="18">
-			<text font="letterica16" r="115" g="114" b="112">mm_mp_withoutpassword</text>
-		</check_without_pass>
+      <options_item entry="mm_net_filter_full" group="mm_mp_srv_filter"/>
+    </check_full>
+    <check_with_pass x="570" y="90" width="150" height="18">
+      <text font="letterica16" r="115" g="114" b="112">mm_mp_withpassword</text>
+      <options_item entry="mm_net_filter_pass" group="mm_mp_srv_filter"/>
+    </check_with_pass>
+    <check_without_pass x="570" y="115" width="150" height="18">
+      <text font="letterica16" r="115" g="114" b="112">mm_mp_withoutpassword</text>
+      <options_item entry="mm_net_filter_wo_pass" group="mm_mp_srv_filter"/>
+    </check_without_pass>
 		<check_without_ff x="570" y="140" width="150" height="18">
 			<text font="letterica16" r="115" g="114" b="112">mm_mp_withoutfriendlyfire</text>
-		</check_without_ff>
-		<!--check_without_pb x="570" y="165" width="150" height="18">
-			<text font="letterica16" r="115" g="114" b="112">mm_mp_withoutpunkbuster</text>
-		</check_without_pb-->
-		<check_listen_servers x="570" y="190" width="150" height="18">
-			<text font="letterica16" r="115" g="114" b="112">mm_mp_listenservers</text>
-		</check_listen_servers>		
+      <options_item entry="mm_net_filter_wo_ff" group="mm_mp_srv_filter"/>
+    </check_without_ff>
+    <check_listen_servers x="570" y="190" width="150" height="18">
+      <text font="letterica16" r="115" g="114" b="112">mm_mp_listenservers</text>
+      <options_item entry="mm_net_filter_listen" group="mm_mp_srv_filter"/>
+    </check_listen_servers>		
 		
 		<btn_refresh x="596" y="225" width="111" height="25">
 			<text align="c" font="letterica16" r="188" g="153" b="123" complex_mode="0">mm_mp_refresh</text>	

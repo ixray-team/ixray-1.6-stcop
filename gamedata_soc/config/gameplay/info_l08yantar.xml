@@ -142,6 +142,6 @@
     <info_portion id="scientist_job">
 		<task>yan_scientist_job</task>
     </info_portion>
-
+  <info_portion id="yantar_ecolog_give_reward"></info_portion>
 
 </game_information_portions>

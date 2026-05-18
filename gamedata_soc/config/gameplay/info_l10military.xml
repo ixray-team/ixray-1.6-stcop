@@ -350,7 +350,9 @@
 	<info_portion id="mil_scull_message1"></info_portion>
 	<info_portion id="mil_scull_message2"></info_portion>
 	<info_portion id="mil_sniper_payment"></info_portion>
-	<info_portion id="mil_dolg_c_ignore_false"></info_portion>
+  <info_portion id="mil_dolg_c_ignore_false"></info_portion>
+  <info_portion id="military_scull_give_reward_1"></info_portion>
+  <info_portion id="military_scull_give_reward_2"></info_portion>
 	
 	
 </game_information_portions>

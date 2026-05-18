@@ -7,10 +7,6 @@
 	<back_movie x="148" y="0" width="876" height="400">
 		<texture x="0" y="0" width="876" height="400">ui\ui_mm_main_back_crop</texture>
 	</back_movie>
-
-	<_back_movie x="0" y="0" width="1024" height="512" stretch="1">
-		<texture>ui\ui_vid_back_01</texture>
-	</_back_movie>
 	
 	<fire_movie x="525" y="459" width="128" height="256">
 		<texture>ui\ui_mm_fire</texture>
@@ -23,6 +19,7 @@
 			<texture>ui_menu_move</texture>			
 			<magnifire x="76" y="22" width="232" height="36" stretch="1">
 				<texture>ui\ui_magnifier</texture>
+        <y_offset>0</y_offset>
 			</magnifire>
 			
 			<left_anim x="43" y="37" width="55" height="55" stretch="1" heading="1" alignment="c">
@@ -90,7 +87,8 @@
 	<menu_main_mm btn_height="30" font="graffiti22" a="255" r="0" g="0" b="0">
 		<btn name="btn_ret"			caption="ui_mm_return_game" />
 		<btn name="btn_options"		caption="ui_mm_options_n" />
-		<btn name="btn_credits"		caption="ui_mm_credits" />
+    <btn name="btn_multiplayer"	caption="ui_mm_multiplayer_n" />
+    <btn name="btn_credits"		caption="ui_mm_credits" />
 		<btn name="btn_quit_to_mm"	caption="ui_mm_disconnect" />
 		<btn name="btn_quit"		caption="ui_mm_quit2windows" />
 	</menu_main_mm>

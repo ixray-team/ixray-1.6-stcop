@@ -69,5 +69,23 @@
 	<not_enough_money_other  x="100" y="100" width="800" height="60">
 		<text font="graffiti32"  r="240" g="217" b="182" a="255" align="c">st_not_enough_money_npc</text>
 	</not_enough_money_other>
-		
+
+  <max_ping_warn_1 x="512" y="300" width="360" height="64" alignment="c" ttl="8">
+    <texture x="0" y="0" width="360" height="64" a="30">ui\ui_cm_connection_error</texture>
+    <text x="80" y="50" font="graffiti32" r="238" g="155" b="23" a="255"/>
+  </max_ping_warn_1>
+  <max_ping_warn_2 x="512" y="300" width="360" height="64" alignment="c" ttl="8">
+    <texture x="0" y="0" width="360" height="64" a="64">ui\ui_cm_connection_error</texture>
+    <text x="80" y="50" font="graffiti32" r="238" g="155" b="23" a="255"/>
+  </max_ping_warn_2>
+  <max_ping_warn_3 x="512" y="300" width="360" height="64" alignment="c" ttl="8">
+    <texture x="0" y="0" width="360" height="64" a="160">ui\ui_cm_connection_error</texture>
+    <text x="80" y="50" font="graffiti32" r="238" g="155" b="23" a="255"/>
+  </max_ping_warn_3>
+  <max_ping_warn_4 x="512" y="300" width="360" height="64" alignment="c" ttl="8">
+    <texture x="0" y="0" width="360" height="64" a="255">ui\ui_cm_connection_error</texture>
+    <text x="80" y="50" font="graffiti32" r="238" g="155" b="23" a="255"/>
+  </max_ping_warn_4>
+
+
 </header>

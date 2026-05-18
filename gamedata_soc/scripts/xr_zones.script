@@ -46,8 +46,10 @@ function arena_zone_binder:purge_items()
 	local alife = alife()
 	for k,v in pairs(self.saved_obj) do
 		local obj = alife:object(k)
-		printf("release object %s, id %s", obj:name(), k)
-		alife:release(obj, true)
+		if obj ~= nil then
+            printf("release object %s, id %s", obj:name(), k)
+		    alife:release(obj, true)
+        end
 	end	
 end
 

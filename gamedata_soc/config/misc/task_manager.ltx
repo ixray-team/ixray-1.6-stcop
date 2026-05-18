@@ -228,7 +228,7 @@ time = 86400
 [tm_eliminate_camp_2]
 type = eliminate_lager
 community = actor
-init_condition = {=actor_on_level(L01_Escape) +agroprom_military_case_have}
+init_condition = {=actor_on_level(l01_Escape) +agroprom_military_case_have}
 text = tm_eliminate_camp_2_text
 description = tm_eliminate_camp_2_descr
 parent = trader
@@ -527,7 +527,7 @@ prior = 1
 [barmen_eliminate_camp_2]
 type = eliminate_lager
 community = actor
-init_condition = {=actor_on_level(L06_rostok)}
+init_condition = {=actor_on_level(l06_rostok)}
 text = barmen_eliminate_camp_2_text
 description = barmen_eliminate_camp_2_descr
 parent = barman
@@ -568,7 +568,7 @@ prior = 4
 [barmen_eliminate_camp_5]
 type = eliminate_lager
 community = actor
-init_condition = {=actor_on_level(L06_rostok)}
+init_condition = {=actor_on_level(l06_rostok)}
 text = barmen_eliminate_camp_5_text
 description = barmen_eliminate_camp_5_descr
 parent = barman
@@ -864,11 +864,11 @@ prior = 1
 [ecolog_eliminate_lager_2]
 type = eliminate_lager
 community = actor
-init_condition = {=actor_on_level(L06_rostok) +yan_kill_brain_done}
+init_condition = {=actor_on_level(l06_rostok) +yan_kill_brain_done}
 text = ecolog_eliminate_lager_2_text
 description = ecolog_eliminate_lager_2_descr
 parent = ecolog
-target = ros_smart_monster_2
+target = ros_smart_monster2
 reward_money = 3000
 reward_reputation = +20
 reward_relation = ecolog, 20

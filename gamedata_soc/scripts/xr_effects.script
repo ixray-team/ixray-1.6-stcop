@@ -1712,7 +1712,7 @@ function set_sidorovich_animation (npc)
     end
     --sidor:clear_animations ()
     sidor:play_cycle ("wonder", true)
-    --sidor:add_animation ("idle_looped")
+    --sidor:add_animation ("idle_looped", true, false)
 end
 
 function aes_zombie_hit1 (npc)

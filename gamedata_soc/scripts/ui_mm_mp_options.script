@@ -36,12 +36,16 @@ function mp_options:InitControls(x, y, xml, handler)
 	xml:InitStatic("tab_options:cap_artefact_delay",	self)
 	xml:InitStatic("tab_options:cap_starting_weather",	self)
 	xml:InitStatic("tab_options:cap_rate_of_change",	self)
+	xml:InitStatic("tab_options:cap_max_ping",	self)
 	
 	handler.check_public_server			= xml:InitCheck("tab_options:check_public_server", 			self)
 --	handler.check_verify_cdkey			= xml:InitCheck("tab_options:check_verify_cdkey", 			self)
 	
 	handler.check_spectator				= xml:InitCheck("tab_options:check_spectator",				self)
 	handler.check_allow_voting			= xml:InitCheck("tab_options:check_allow_voting",			self)
+	handler.spin_max_ping				= xml:InitSpinNum("tab_options:spin_max_ping",				self)
+	
+	
 	handler.check_damage_block			= xml:InitCheck("tab_options:check_damage_block",			self)
 	handler.check_auto_team_balance		= xml:InitCheck("tab_options:check_auto_team_balance",		self)
 	handler.check_auto_team_swap		= xml:InitCheck("tab_options:check_auto_team_swap",			self)

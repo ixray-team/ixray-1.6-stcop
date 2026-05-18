@@ -217,7 +217,10 @@ end
 
 
 function professor_for_resque(npc, actor)
-	dialogs.relocate_item_section(npc, "bar_ecolog_flash", "in")
+    if not has_alife_info("rostok_kruglov_give_flash") then
+	    dialogs.relocate_item_section(npc, "bar_ecolog_flash", "in")
+        db.actor:give_info_portion("rostok_kruglov_give_flash")
+    end
 end
 
 -- ********************************************************

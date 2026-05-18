@@ -152,9 +152,9 @@ function action_patrol:callback (mode, number)
     if number == 0 then 
        self.object:clear_animations ()
        self.object:set_movement_type (move.stand)
-       self.object:add_animation ("raciya_0", true)
-       self.object:add_animation ("raciya_1", true)
-       self.object:add_animation ("raciya_2", true)
+       self.object:add_animation ("raciya_0", true, false)
+       self.object:add_animation ("raciya_1", true, false)
+       self.object:add_animation ("raciya_2", true, false)
        self.object:set_movement_type (move.stand)
        self.object:set_sight (look.path_dir, nil, 0)
        self.sub_stage = 0
@@ -197,13 +197,13 @@ function action_patrol:process_radio ()
 
     if self.sub_stage == 1 then
        if count == 1 and self.sounds["seq_cnt"] < 8 then
-          self.object:add_animation ("raciya_2", true)
+          self.object:add_animation ("raciya_2", true, false)
        end
        if self.sounds["seq_cnt"] >= 7 then
           self.sub_stage = 2
           self.object:clear_animations ()
-          self.object:add_animation ("raciya_3", true)
-          self.object:add_animation ("raciya_4", true)
+          self.object:add_animation ("raciya_3", true, false)
+          self.object:add_animation ("raciya_4", true, false)
        else
           xr_sound.sound_update(self.object, self.sounds)
        end

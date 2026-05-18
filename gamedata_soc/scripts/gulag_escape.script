@@ -34,211 +34,211 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 100, state = {0,2},
 			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone",
-			predicate = function(obj_info)
-			            	return obj_info.name == "esc_blokpost_commander"
-			            end
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_post1",
-			idle = 0,
-			prior = 8, state = {0,1,2},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_post2",
-			idle = 0,
-			prior = 8, state = {0,1,2},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_camper_day",
-			idle = 0,
-			prior = 6, state = {0,2},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_patrol_yard",
-			idle = 0,
-			prior = 5, state = {0,1},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_watch_tv1",
-			idle = 0,
-			prior = 2, state = {0},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_watch_tv2",
-			idle = 0,
-			prior = 2, state = {0},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_kamp1",
-			idle = 0,
-			prior = 4, state = {1},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_kamp1",
-			idle = 0,
-			prior = 4, state = {1},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_kamp2",
-			idle = 0,
-			prior = 10, state = {1},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone",
-			predicate = function(obj_info)
-			            	return obj_info.name == "esc_blokpost_commander"
-			            end
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_sleep1",
-			idle = 0,
-			prior = 2, state = {1},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_sleep2",
-			idle = 0,
-			prior = 2, state = {1},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_sleep3",
-			idle = 0,
-			prior = 2, state = {1},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_sleep4",
-			idle = 0,
-			prior = 2, state = {1},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_comander_guard1",
-			idle = 0,
-			prior = 6, state = {2},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_comander_guard2",
-			idle = 0,
-			prior = 6, state = {2},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_camper1",
-			idle = 0,
-			prior = 6, state = {2},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_camper2",
-			idle = 0,
-			prior = 6, state = {2},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_alarm_patrol1",
-			idle = 0,
-			prior = 6, state = {2},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_blockpost_alarm_patrol2",
-			idle = 0,
-			prior = 6, state = {2},
-			position_threshold = 100,
---			online = true,
-			in_rest = "", out_rest = "escape_blockpost_zone"
-		}
-		table.insert(sj, t)
-	end
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone",
+		predicate = function(obj_info)
+		            	return obj_info.name == "esc_blokpost_commander"
+		            end
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_post1",
+		idle = 0,
+		prior = 8, state = {0,1,2},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_post2",
+		idle = 0,
+		prior = 8, state = {0,1,2},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_camper_day",
+		idle = 0,
+		prior = 6, state = {0,2},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_patrol_yard",
+		idle = 0,
+		prior = 5, state = {0,1},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_watch_tv1",
+		idle = 0,
+		prior = 2, state = {0},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_watch_tv2",
+		idle = 0,
+		prior = 2, state = {0},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_kamp1",
+		idle = 0,
+		prior = 4, state = {1},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_kamp1",
+		idle = 0,
+		prior = 4, state = {1},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_kamp2",
+		idle = 0,
+		prior = 10, state = {1},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone",
+		predicate = function(obj_info)
+		            	return obj_info.name == "esc_blokpost_commander"
+		            end
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_sleep1",
+		idle = 0,
+		prior = 2, state = {1},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_sleep2",
+		idle = 0,
+		prior = 2, state = {1},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_sleep3",
+		idle = 0,
+		prior = 2, state = {1},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_sleep4",
+		idle = 0,
+		prior = 2, state = {1},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_comander_guard1",
+		idle = 0,
+		prior = 6, state = {2},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_comander_guard2",
+		idle = 0,
+		prior = 6, state = {2},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_camper1",
+		idle = 0,
+		prior = 6, state = {2},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_camper2",
+		idle = 0,
+		prior = 6, state = {2},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_alarm_patrol1",
+		idle = 0,
+		prior = 6, state = {2},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_blockpost_alarm_patrol2",
+		idle = 0,
+		prior = 6, state = {2},
+		position_threshold = 100,
+			online = true,
+		in_rest = "", out_rest = "escape_blockpost_zone"
+	}
+	table.insert(sj, t)
+end
 
-	--' Спецназ на блокпосте
-	if type == "esc_specnaz" then
-		t = { section = "logic@esc_specnaz_kamp",
-			idle = 0,
-			prior = 5, state = {0},
---			online = true,
-			in_rest = "", out_rest = ""
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_specnaz_kamp",
-			idle = 0,
-			prior = 5, state = {0},
---			online = true,
-			in_rest = "", out_rest = ""
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_specnaz_kamp",
-			idle = 0,
-			prior = 5, state = {0},
---			online = true,
-			in_rest = "", out_rest = ""
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_specnaz_kamp",
-			idle = 0,
-			prior = 5, state = {0},
---			online = true,
-			in_rest = "", out_rest = ""
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_specnaz_kamp",
-			idle = 0,
-			prior = 5, state = {0},
---			online = true,
-			in_rest = "", out_rest = ""
-		}
-		table.insert(sj, t)
-		t = { section = "logic@esc_specnaz_kamp",
-			idle = 0,
-			prior = 5, state = {0},
---			online = true,
+--' Спецназ на блокпосте
+if type == "esc_specnaz" then
+	t = { section = "logic@esc_specnaz_kamp",
+		idle = 0,
+		prior = 5, state = {0},
+			online = true,
+		in_rest = "", out_rest = ""
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_specnaz_kamp",
+		idle = 0,
+		prior = 5, state = {0},
+			online = true,
+		in_rest = "", out_rest = ""
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_specnaz_kamp",
+		idle = 0,
+		prior = 5, state = {0},
+			online = true,
+		in_rest = "", out_rest = ""
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_specnaz_kamp",
+		idle = 0,
+		prior = 5, state = {0},
+			online = true,
+		in_rest = "", out_rest = ""
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_specnaz_kamp",
+		idle = 0,
+		prior = 5, state = {0},
+			online = true,
+		in_rest = "", out_rest = ""
+	}
+	table.insert(sj, t)
+	t = { section = "logic@esc_specnaz_kamp",
+		idle = 0,
+		prior = 5, state = {0},
+			online = true,
 			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
