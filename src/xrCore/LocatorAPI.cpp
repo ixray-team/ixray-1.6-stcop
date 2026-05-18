@@ -929,6 +929,10 @@ xr_vector<char*>* CLocatorAPI::file_list_open			(const char* _path, u32 flags)
 	else					
 		xr_strcpy(N,sizeof(N), _path);
 
+	xr_strcpy(N, Platform::ValidPath(N));
+	
+	xrSRWLockGuard g(m_files_lock, true);
+	
 	file			desc;
 	desc.name		= N;
 	files_it	I 	= m_files.find(desc);
@@ -974,7 +978,7 @@ void	CLocatorAPI::file_list_close	(xr_vector<char*>* &lst)
 	}
 }
 
-int CLocatorAPI::file_list(FS_FileSet& dest, const char* path, u32 flags, const char* mask)
+int CLocatorAPI::file_list(FS_FileSet& dest, const char* path, u32 flags, const char* InputMask)
 {
 	R_ASSERT(path);
 	VERIFY(flags);
@@ -991,6 +995,9 @@ int CLocatorAPI::file_list(FS_FileSet& dest, const char* path, u32 flags, const 
 	desc.name = N;
 	files_it	I = m_files.find(desc);
 	if (I == m_files.end())	return 0;
+
+	string128 mask;
+	xr_strcpy(mask, Platform::ValidPath(InputMask));
 
 	SStringVec 		masks;
 	_SequenceToList(masks, mask);
