@@ -28,7 +28,7 @@ local sect_alias = {
 	poltergeist_normal = "poltergeist_weak", poltergeist_strong = "poltergeist_weak",
 	pseudo_gigant_normal = "pseudo_gigant_weak", pseudo_gigant_strong = "pseudo_gigant_weak",
 	controller_normal = "controller_weak", controller_strong = "controller_weak",
-	psy_dog_weak = "psy_dog", psy_dog_normal = "psy_dog", psy_dog_strong = "psy_dog"
+	psy_dog_weak = "psy_dog", psy_dog_normal = "psy_dog", psy_dog_strong = "psy_dog", rad_psy_dog = "psy_dog"
 }
 
 monster_classes = {
@@ -61,8 +61,9 @@ function addKillCount(npc)
 	end
 
 	if killCountProps[sect_name] == nil then
-		print_table(sect_alias)
-		abort("Statistic ERROR: required section [%s] not present, based [%s]", tostring(sect_name), tostring(sect))
+--'		print_table(sect_alias)
+--'		abort("Statistic ERROR: required section [%s] not present, based [%s]", tostring(sect_name), tostring(sect))
+		return
 	end
 	actor_stats.add_points(props, sect_name, 1, killCountProps[sect_name])
 	db.actor:set_character_rank(db.actor:character_rank() + killCountProps[sect_name])
