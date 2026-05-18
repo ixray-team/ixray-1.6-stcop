@@ -17,15 +17,20 @@ struct   vf
         float2  	tbase        :           TEXCOORD0        ;  // base
         float2      tnorm0        :        TEXCOORD1        ;  // nm0
         float2      tnorm1        :        TEXCOORD2        ;  // nm1
-        half3       M1        :        TEXCOORD3        ;
-        half3       M2        :        TEXCOORD4        ;
-        half3       M3        	:        TEXCOORD5        ;
-        half3       v2point     :        TEXCOORD6        ;
-        half4        c0        :          COLOR0                ;
+        float3       M1        :        TEXCOORD3        ;
+        float3       M2        :        TEXCOORD4        ;
+        float3       M3        	:        TEXCOORD5        ;
+        float3       v2point     :        TEXCOORD6        ;
+#ifdef	USE_SOFT_WATER
+#ifdef	NEED_SOFT_WATER
+	float4      tctexgen    :         TEXCOORD7        ;
+#endif	//	USE_SOFT_WATER
+#endif	//	NEED_SOFT_WATER	
+        float4        c0        :          COLOR0                ;
         float          fog        :         FOG                ;
 };
 
-vf main_vs_2_0 (v_vert v)
+vf main(v_vert v)
 {
         vf                 o;
 
@@ -71,10 +76,17 @@ vf main_vs_2_0 (v_vert v)
                 // L_final        = v.N.w        + L_ambient;
 
         o.hpos                 = mul                        (m_VP, P);                        // xform, input in world coords
-		o.fog       = calc_fogging  (v.P);
+		o.fog       = saturate(calc_fogging  (v.P));
 
-		o.c0		= float4		(L_final,1);
+		o.c0		= float4		(L_final, 1);
 
-
+//	Igor: for additional depth dest
+#ifdef	USE_SOFT_WATER
+#ifdef	NEED_SOFT_WATER
+	o.tctexgen = mul( m_texgen, P);
+	float3	Pe	= mul		(m_V,  P);
+	o.tctexgen.z = Pe.z;
+#endif	//	USE_SOFT_WATER
+#endif	//	NEED_SOFT_WATER
         return o;
 }
