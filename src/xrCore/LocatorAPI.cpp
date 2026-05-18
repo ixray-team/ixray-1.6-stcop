@@ -1344,11 +1344,18 @@ T *CLocatorAPI::r_open_impl	(const char* path, const char* _fname)
 	const char*					source_name = &fname[0];
 
 #ifdef IXR_WINDOWS
-	if (!check_for_file(path,_fname,fname,desc))
+	if (!check_for_file(path,_fname,fname,desc)) {
+		return nullptr;
+	}
 #else
-	if (!check_for_file(path,Platform::ValidPath(_fname),fname,desc))
+	if (!check_for_file(path,Platform::ValidPath(_fname),fname,desc)) {
+		xr_string temp_path = fname;
+		std::replace(temp_path.begin(), temp_path.end(), '/', '\\'); 
+		if (!check_for_file(path,temp_path.data(),fname,desc)) {
+			return nullptr;
+		}
+	}
 #endif
-		return(nullptr);
 
 	// OK, analyse
 	if (0xffffffff == desc->vfs)

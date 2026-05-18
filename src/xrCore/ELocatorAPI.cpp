@@ -174,7 +174,7 @@ void ProcessOne	(LPCSTR path, _finddata_t& F, bool root_only, TOnFind on_find_cb
     	if (root_only)					return;
 		if (0==xr_strcmp(F.name,"."))	return;
 		if (0==xr_strcmp(F.name,"..")) 	return;
-		strcat		(N,"\\");
+		strcat		(N, PLATFORM_SLASH_STR);
 	    strcpy		(F.name,N);
         on_find_cb	(F,data);
 		Recurse		(F.name,root_only,on_find_cb,data);
@@ -215,11 +215,11 @@ void __stdcall file_list_cb(_finddata_t& entry, void* data)
 	file_list_cb_data*	D		= (file_list_cb_data*)data;
 
     LPCSTR end_symbol 			= entry.name+xr_strlen(entry.name)-1;
-    if ((*end_symbol)!='\\'){
+    if ((*end_symbol)!=PLATFORM_SLASH){
         // file
         if ((D->flags&FS_ListFiles) == 0)	return;
         LPCSTR entry_begin 		= entry.name+D->base_len;
-        if ((D->flags&FS_RootOnly)&&strstr(entry_begin,"\\"))	return;	// folder in folder
+        if ((D->flags&FS_RootOnly)&&strstr(entry_begin,PLATFORM_SLASH_STR))	return;	// folder in folder
         // check extension
         if (D->masks){
             bool bOK			= false;
@@ -484,11 +484,6 @@ LPCSTR CLocatorAPI::update_path(string_path& dest, LPCSTR initial, LPCSTR src)
 {
     return get_path(initial)->_update(dest,src);
 }
-/*
-void CLocatorAPI::update_path(xr_string& dest, LPCSTR initial, LPCSTR src)
-{
-    return get_path(initial)->_update(dest,src);
-} */
 
 time_t CLocatorAPI::get_file_age(LPCSTR nm)
 {
@@ -511,7 +506,7 @@ BOOL CLocatorAPI::can_write_to_folder(LPCSTR path)
 	if (path&&path[0]){
 		string_path		temp;       
         LPCSTR fn		= "$!#%TEMP%#!$.$$$";
-	    strconcat		(sizeof(temp),temp,path,path[xr_strlen(path)-1]!='\\'?"\\":"",fn);
+	    strconcat		(sizeof(temp),temp,path,path[xr_strlen(path)-1]!=PLATFORM_SLASH?PLATFORM_SLASH_STR:"",fn);
 		FILE* hf		= fopen	(temp, "wb");
 		if (hf==0)		return FALSE;
         else{
