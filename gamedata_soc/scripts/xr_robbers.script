@@ -1,32 +1,32 @@
 ----------------------------------------------------------------------------------------------------
--- Грабители
+-- Р“СЂР°Р±РёС‚РµР»Рё
 ----------------------------------------------------------------------------------------------------
--- Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
+-- Р Р°Р·СЂР°Р±РѕС‚С‡РёРє: Andrey Fidrya (Zmey) af@svitonline.com
 ----------------------------------------------------------------------------------------------------
 
 teams = {}
 
--- Индивидуальные состояния
-local state_none = 0 -- начальное состояние
-local state_going_to_camp_point = 1 -- идти в исходную точку дислокации
-local state_looking_at_bait = 2 -- смотреть на приманку, либо на игрока, если он подошел достаточно близко
-local state_rob_victim = 3 -- состояние, в котором происходит выбор собственно тактики действий
+-- РРЅРґРёРІРёРґСѓР°Р»СЊРЅС‹Рµ СЃРѕСЃС‚РѕСЏРЅРёСЏ
+local state_none = 0 -- РЅР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
+local state_going_to_camp_point = 1 -- РёРґС‚Рё РІ РёСЃС…РѕРґРЅСѓСЋ С‚РѕС‡РєСѓ РґРёСЃР»РѕРєР°С†РёРё
+local state_looking_at_bait = 2 -- СЃРјРѕС‚СЂРµС‚СЊ РЅР° РїСЂРёРјР°РЅРєСѓ, Р»РёР±Рѕ РЅР° РёРіСЂРѕРєР°, РµСЃР»Рё РѕРЅ РїРѕРґРѕС€РµР» РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ Р±Р»РёР·РєРѕ
+local state_rob_victim = 3 -- СЃРѕСЃС‚РѕСЏРЅРёРµ, РІ РєРѕС‚РѕСЂРѕРј РїСЂРѕРёСЃС…РѕРґРёС‚ РІС‹Р±РѕСЂ СЃРѕР±СЃС‚РІРµРЅРЅРѕ С‚Р°РєС‚РёРєРё РґРµР№СЃС‚РІРёР№
 
-local state_leader_waiting_for_plr_to_stop = 4 -- лидер окрикнул игрока и дает ему пару секунд на то, чтобы остановиться
-local state_leader_shouting_drop_your_weapon = 5 -- лидер крикнул игроку, чтобы тот бросил оружие (ждем, пока он кричит)
+local state_leader_waiting_for_plr_to_stop = 4 -- Р»РёРґРµСЂ РѕРєСЂРёРєРЅСѓР» РёРіСЂРѕРєР° Рё РґР°РµС‚ РµРјСѓ РїР°СЂСѓ СЃРµРєСѓРЅРґ РЅР° С‚Рѕ, С‡С‚РѕР±С‹ РѕСЃС‚Р°РЅРѕРІРёС‚СЊСЃСЏ
+local state_leader_shouting_drop_your_weapon = 5 -- Р»РёРґРµСЂ РєСЂРёРєРЅСѓР» РёРіСЂРѕРєСѓ, С‡С‚РѕР±С‹ С‚РѕС‚ Р±СЂРѕСЃРёР» РѕСЂСѓР¶РёРµ (Р¶РґРµРј, РїРѕРєР° РѕРЅ РєСЂРёС‡РёС‚)
 
-local state_helper_waiting_for_leader = 6 -- помощник лидера ждет немного и тоже кричит на игрока
-local state_helper_shouting_stop = 7 -- помощник лидера говорит игроку, чтобы тот не двигался
+local state_helper_waiting_for_leader = 6 -- РїРѕРјРѕС‰РЅРёРє Р»РёРґРµСЂР° Р¶РґРµС‚ РЅРµРјРЅРѕРіРѕ Рё С‚РѕР¶Рµ РєСЂРёС‡РёС‚ РЅР° РёРіСЂРѕРєР°
+local state_helper_shouting_stop = 7 -- РїРѕРјРѕС‰РЅРёРє Р»РёРґРµСЂР° РіРѕРІРѕСЂРёС‚ РёРіСЂРѕРєСѓ, С‡С‚РѕР±С‹ С‚РѕС‚ РЅРµ РґРІРёРіР°Р»СЃСЏ
 
 local state_puncher_waiting_for_plr_to_drop_weapon = 8
 local state_puncher_approaching = 9
 local state_puncher_waiting_to_grab_money = 10
 
-local state_no_more_actions = 11 -- просто смотреть на игрока, больше никаких активных действий (но если нет панчера - в этот момент лидер сам становится им)
+local state_no_more_actions = 11 -- РїСЂРѕСЃС‚Рѕ СЃРјРѕС‚СЂРµС‚СЊ РЅР° РёРіСЂРѕРєР°, Р±РѕР»СЊС€Рµ РЅРёРєР°РєРёС… Р°РєС‚РёРІРЅС‹С… РґРµР№СЃС‚РІРёР№ (РЅРѕ РµСЃР»Рё РЅРµС‚ РїР°РЅС‡РµСЂР° - РІ СЌС‚РѕС‚ РјРѕРјРµРЅС‚ Р»РёРґРµСЂ СЃР°Рј СЃС‚Р°РЅРѕРІРёС‚СЃСЏ РёРј)
 
 local state_end_of_script = 12
 
--- Роли
+-- Р РѕР»Рё
 local role_none = 0
 local role_leader = 1
 local role_helper = 2
@@ -45,7 +45,7 @@ function evaluator_need_robber:evaluate ()
 		if not actor:alive() then
 			return false
 		end
-		-- Если у одного бандита испортилось отношение к игроку, испортить с остальными:
+		-- Р•СЃР»Рё Сѓ РѕРґРЅРѕРіРѕ Р±Р°РЅРґРёС‚Р° РёСЃРїРѕСЂС‚РёР»РѕСЃСЊ РѕС‚РЅРѕС€РµРЅРёРµ Рє РёРіСЂРѕРєСѓ, РёСЃРїРѕСЂС‚РёС‚СЊ СЃ РѕСЃС‚Р°Р»СЊРЅС‹РјРё:
 		local team = this.teams[self.st.team]
 		if team then
 			--utils.trace(script_name(), "_bp: xr_robbers: bad_relation_set = %s",
@@ -101,20 +101,20 @@ function action_robber_activity:initialize()
 end
 
 function register_robber(obj, team)
-	-- Если впервые инициализируется команды, либо скрипт был прерван незапланированным событием, то инициализировать
-	-- все значениями по умолчанию:
+	-- Р•СЃР»Рё РІРїРµСЂРІС‹Рµ РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚СЃСЏ РєРѕРјР°РЅРґС‹, Р»РёР±Рѕ СЃРєСЂРёРїС‚ Р±С‹Р» РїСЂРµСЂРІР°РЅ РЅРµР·Р°РїР»Р°РЅРёСЂРѕРІР°РЅРЅС‹Рј СЃРѕР±С‹С‚РёРµРј, С‚Рѕ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ
+	-- РІСЃРµ Р·РЅР°С‡РµРЅРёСЏРјРё РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ:
 	if not this.teams[team] or this.teams[team].interrupted_and_blocked_until then
 		local team_info = {
 			rob_state = false,
 			robbers = {},
-			plr_stop_pos = nil, -- точка, в которой игрок остановился после оклика
-			plr_hunt = false, -- если true, бандиты становятся агрессивными к игроку (охотятся на него)
-			plr_num_bullets = nil, -- сколько патронов было у игрока, когда его заметили (nil - еще не знают)
-			plr_warned = false, -- если игрок двигался с места и его уже предупреждали, что это делать нельзя
+			plr_stop_pos = nil, -- С‚РѕС‡РєР°, РІ РєРѕС‚РѕСЂРѕР№ РёРіСЂРѕРє РѕСЃС‚Р°РЅРѕРІРёР»СЃСЏ РїРѕСЃР»Рµ РѕРєР»РёРєР°
+			plr_hunt = false, -- РµСЃР»Рё true, Р±Р°РЅРґРёС‚С‹ СЃС‚Р°РЅРѕРІСЏС‚СЃСЏ Р°РіСЂРµСЃСЃРёРІРЅС‹РјРё Рє РёРіСЂРѕРєСѓ (РѕС…РѕС‚СЏС‚СЃСЏ РЅР° РЅРµРіРѕ)
+			plr_num_bullets = nil, -- СЃРєРѕР»СЊРєРѕ РїР°С‚СЂРѕРЅРѕРІ Р±С‹Р»Рѕ Сѓ РёРіСЂРѕРєР°, РєРѕРіРґР° РµРіРѕ Р·Р°РјРµС‚РёР»Рё (nil - РµС‰Рµ РЅРµ Р·РЅР°СЋС‚)
+			plr_warned = false, -- РµСЃР»Рё РёРіСЂРѕРє РґРІРёРіР°Р»СЃСЏ СЃ РјРµСЃС‚Р° Рё РµРіРѕ СѓР¶Рµ РїСЂРµРґСѓРїСЂРµР¶РґР°Р»Рё, С‡С‚Рѕ СЌС‚Рѕ РґРµР»Р°С‚СЊ РЅРµР»СЊР·СЏ
 			approach_player_now = false,
 			bad_relation_set = false,
-			interrupted_and_blocked_until = nil -- если скрипт прерван незапланированным событием, заблокировать
-			-- его выполнение до данного времени у всей команды
+			interrupted_and_blocked_until = nil -- РµСЃР»Рё СЃРєСЂРёРїС‚ РїСЂРµСЂРІР°РЅ РЅРµР·Р°РїР»Р°РЅРёСЂРѕРІР°РЅРЅС‹Рј СЃРѕР±С‹С‚РёРµРј, Р·Р°Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ
+			-- РµРіРѕ РІС‹РїРѕР»РЅРµРЅРёРµ РґРѕ РґР°РЅРЅРѕРіРѕ РІСЂРµРјРµРЅРё Сѓ РІСЃРµР№ РєРѕРјР°РЅРґС‹
 		}
 		this.teams[team] = team_info
 	end
@@ -173,7 +173,7 @@ end
 
 function action_robber_activity:pick_role()
 	local robbers = this.teams[self.st.team].robbers
-	local nearest_without_role = nil -- ближайший к приманке без роли
+	local nearest_without_role = nil -- Р±Р»РёР¶Р°Р№С€РёР№ Рє РїСЂРёРјР°РЅРєРµ Р±РµР· СЂРѕР»Рё
 	local min_dist = nil
 	
 	local found_leader = nil
@@ -215,7 +215,7 @@ function action_robber_activity:pick_role()
 	--utils.trace(script_name(), "...nearest_without_role=%s, self=%s", robbers[nearest_without_role].object:name(),
 	--	self.object:name())
 	if nearest_without_role ~= self.object:id() then
-		return role_none -- мне пока что не нужна роль, есть лучшие претенденты (ближе чем я к жертве и без роли)
+		return role_none -- РјРЅРµ РїРѕРєР° С‡С‚Рѕ РЅРµ РЅСѓР¶РЅР° СЂРѕР»СЊ, РµСЃС‚СЊ Р»СѓС‡С€РёРµ РїСЂРµС‚РµРЅРґРµРЅС‚С‹ (Р±Р»РёР¶Рµ С‡РµРј СЏ Рє Р¶РµСЂС‚РІРµ Рё Р±РµР· СЂРѕР»Рё)
 	end
 
 	if not found_leader then
@@ -229,7 +229,7 @@ function action_robber_activity:pick_role()
 	return role_none
 end
 
--- Возвращает true, если никому не присвоена заданная роль
+-- Р’РѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё РЅРёРєРѕРјСѓ РЅРµ РїСЂРёСЃРІРѕРµРЅР° Р·Р°РґР°РЅРЅР°СЏ СЂРѕР»СЊ
 function action_robber_activity:no_role(which_role)
 	local robbers = this.teams[self.st.team].robbers
         for key, val in pairs(robbers) do
@@ -328,7 +328,7 @@ function action_robber_activity:fsm_step()
 
 	if self.state == state_looking_at_bait then
 		local dist = distance_between(self.object, actor)
-		team.robbers[self.object:id()].dist_to_actor = dist -- для выбора ролей
+		team.robbers[self.object:id()].dist_to_actor = dist -- РґР»СЏ РІС‹Р±РѕСЂР° СЂРѕР»РµР№
 		--utils.trace(script_name(), "_bp: xr_robbers: dist = %d", dist)
 		local see_actor = self.object:see(actor)
 		if dist <= 20 and see_actor then
@@ -368,12 +368,12 @@ function action_robber_activity:fsm_step()
 	end
 
 	if self.state == state_rob_victim then
-		-- Выбрать роль:
+		-- Р’С‹Р±СЂР°С‚СЊ СЂРѕР»СЊ:
 		self.role = self:pick_role()
 		team.robbers[self.object:id()].role = self.role
 
 		if not self.role then
-			-- Для меня все еще нет роли, просто смотреть на сталкера
+			-- Р”Р»СЏ РјРµРЅСЏ РІСЃРµ РµС‰Рµ РЅРµС‚ СЂРѕР»Рё, РїСЂРѕСЃС‚Рѕ СЃРјРѕС‚СЂРµС‚СЊ РЅР° СЃС‚Р°Р»РєРµСЂР°
 			--utils.trace(script_name(), "_bp: xr_robbers: no role for me")
 			utils.stalker_look_at_stalker(self.object, actor)
 		elseif self.role == role_leader then
@@ -453,7 +453,7 @@ function action_robber_activity:fsm_step()
 		if not isweapon or time_global() >= self.expiration_time then
 			if not isweapon then
 				team.plr_num_bullets = -1
-				-- чтобы если он опять поднимет оружие, кол-во патронов было бы уже другим
+				-- С‡С‚РѕР±С‹ РµСЃР»Рё РѕРЅ РѕРїСЏС‚СЊ РїРѕРґРЅРёРјРµС‚ РѕСЂСѓР¶РёРµ, РєРѕР»-РІРѕ РїР°С‚СЂРѕРЅРѕРІ Р±С‹Р»Рѕ Р±С‹ СѓР¶Рµ РґСЂСѓРіРёРј
 			end
 			self.wpn_activated = false
 			self.object:set_path_type(game_object.level_path)
@@ -516,12 +516,12 @@ function action_robber_activity:fsm_step()
 	if self.state == state_no_more_actions then
 		--printf("state_no_more_actions")
 		utils.stalker_look_at_stalker(self.object, actor)
-		-- больше ничего не делать
+		-- Р±РѕР»СЊС€Рµ РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°С‚СЊ
 		return
 	end
 	if self.state == state_end_of_script then
 		utils.stalker_look_at_stalker(self.object, actor)
-		-- ничего не делать
+		-- РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°С‚СЊ
 		return
 	end
 
@@ -553,7 +553,7 @@ function add_to_binder(npc, char_ini)
 	local operators    = {}
 	local properties  = {}
 
-	-- FIXME: тут будет robber
+	-- FIXME: С‚СѓС‚ Р±СѓРґРµС‚ robber
 	npc:add_sound([[script_replics\bandit_1\replics\bandit_ambush_]],
 			20, snd_type.talk, 2, 1, xr_sounds_id.zmey_robber_base)
 
@@ -586,7 +586,7 @@ function add_to_binder(npc, char_ini)
 	end
 end
 
--- Включение грабителя
+-- Р’РєР»СЋС‡РµРЅРёРµ РіСЂР°Р±РёС‚РµР»СЏ
 --
 function set_robber(object, activated_by_script, enabled, team, path_rob, dist, zone_rob)
 	printf("set_robber called: object:name()='%s', team='%s', path_rob='%s'",
@@ -608,11 +608,11 @@ function set_robber(object, activated_by_script, enabled, team, path_rob, dist, 
 
 	st.path_rob = utils.conf_get_string(char_ini, "robber", "path_rob", path_rob, object, true)
 
-	-- Настройка приманки:
+	-- РќР°СЃС‚СЂРѕР№РєР° РїСЂРёРјР°РЅРєРё:
 	st.dist = utils.conf_get_number(char_ini, "robber", "dist", dist, object, false)
 	st.zone_rob = utils.conf_get_string(char_ini, "robber", "zone_rob", zone_rob, object, false)
 
-	-- Кидать ошибку на попытку использовать старые настройки:
+	-- РљРёРґР°С‚СЊ РѕС€РёР±РєСѓ РЅР° РїРѕРїС‹С‚РєСѓ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ СЃС‚Р°СЂС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё:
 	if utils.conf_get_string(char_ini, "robber", "bait_path", bait_path, object, false) or
 	   utils.conf_get_string(char_ini, "robber", "bait_object", bait_object, object, false) or
 	   utils.conf_get_bool(char_ini, "robber", "bait_self", bait_self, object, false) then

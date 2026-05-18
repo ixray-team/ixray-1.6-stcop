@@ -257,13 +257,13 @@ function load_states(gname, type)
 	if type == "dar_poltergeist_ring" then        
 		return function(gulag)
 			if not has_alife_info("dar_codelock1_unlock") then
-				return 3 -- оффлайн все
+				return 3 -- РѕС„С„Р»Р°Р№РЅ РІСЃРµ
 			elseif has_alife_info("dar_ring_spawn1") and not has_alife_info("dar_ring_spawn2") then
-				return 1 -- онлайн 2
+				return 1 -- РѕРЅР»Р°Р№РЅ 2
 			elseif has_alife_info("dar_ring_spawn2") then
-				return 2 -- онлайн 3
+				return 2 -- РѕРЅР»Р°Р№РЅ 3
 			else			
-				return 0 -- онлайн 1
+				return 0 -- РѕРЅР»Р°Р№РЅ 1
 			end
 		end
 	end

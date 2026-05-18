@@ -5,7 +5,7 @@
 function bind(obj)
 	printf("_bp: monster.bind: name='%s', id='%d'", obj:name(), obj:id())
 
-	-- Для спауна
+	-- Р”Р»СЏ СЃРїР°СѓРЅР°
 	--xr_spawner.spawn_client(obj)
 
 	local new_binder = generic_object_binder(obj)
@@ -26,7 +26,7 @@ end
 function generic_object_binder:reinit()
 	object_binder.reinit(self)
 
-	-- У торговца нет поддержки перемещения
+	-- РЈ С‚РѕСЂРіРѕРІС†Р° РЅРµС‚ РїРѕРґРґРµСЂР¶РєРё РїРµСЂРµРјРµС‰РµРЅРёСЏ
 	if self.object:clsid() ~= clsid.script_trader then
 		self.object:set_patrol_extrapolate_callback(generic_object_binder.extrapolate_callback, self)
 	end
@@ -46,7 +46,7 @@ function generic_object_binder:update(delta)
 --	printf("_bp: generic_object_binder: UPDATE [name='%s' time=%d]",
 --		self.object:name(), time_global())
 
-	-- Апдейт торговли
+	-- РђРїРґРµР№С‚ С‚РѕСЂРіРѕРІР»Рё
 	if self.object:clsid() == clsid.script_trader then
 		trade_manager.update(self.object)
 	end
@@ -103,7 +103,7 @@ function generic_object_binder:death_callback(victim, who)
 
 	smart_terrain.on_death( self.object:id() )
 
-	--' Наносим небольшой импульс вперед.
+	--' РќР°РЅРѕСЃРёРј РЅРµР±РѕР»СЊС€РѕР№ РёРјРїСѓР»СЊСЃ РІРїРµСЂРµРґ.
 	local h = hit()
 	h.draftsman = self.object
 	h.type = hit.fire_wound

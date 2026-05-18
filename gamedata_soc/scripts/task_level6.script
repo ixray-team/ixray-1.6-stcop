@@ -1,7 +1,7 @@
 function main ()
     task_level4.main (false)        
 -------------------------------------------------------------------------------
--- Задачи c бара
+-- Р—Р°РґР°С‡Рё c Р±Р°СЂР°
 -------------------------------------------------------------------------------
     local actor = db.actor
     
@@ -47,10 +47,10 @@ function main ()
     actor:give_info_portion ("sar_monolith_call")    
 
 
-    -- Создадим различные объекты, которые нам необходимы
+    -- РЎРѕР·РґР°РґРёРј СЂР°Р·Р»РёС‡РЅС‹Рµ РѕР±СЉРµРєС‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅР°Рј РЅРµРѕР±С…РѕРґРёРјС‹
 	alife():create ("good_psy_helmet", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
 
-    -- Создадим различные объекты, которые нам необходимы
+    -- РЎРѕР·РґР°РґРёРј СЂР°Р·Р»РёС‡РЅС‹Рµ РѕР±СЉРµРєС‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅР°Рј РЅРµРѕР±С…РѕРґРёРјС‹
 	alife():create ("wpn_val", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
 	    for a = 1, 12, 1 do
 	        alife():create ("ammo_9x39_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())

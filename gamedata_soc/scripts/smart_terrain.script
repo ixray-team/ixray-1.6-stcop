@@ -1,7 +1,7 @@
 --[[------------------------------------------------------------------------------------------------------------------
-Smart Terrain (механизм, организовывающий всех сталкеров и некоторых монстров в сцены)
-Чугай Александр
-!без симуляции не работает!
+Smart Terrain (РјРµС…Р°РЅРёР·Рј, РѕСЂРіР°РЅРёР·РѕРІС‹РІР°СЋС‰РёР№ РІСЃРµС… СЃС‚Р°Р»РєРµСЂРѕРІ Рё РЅРµРєРѕС‚РѕСЂС‹С… РјРѕРЅСЃС‚СЂРѕРІ РІ СЃС†РµРЅС‹)
+Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ
+!Р±РµР· СЃРёРјСѓР»СЏС†РёРё РЅРµ СЂР°Р±РѕС‚Р°РµС‚!
 --------------------------------------------------------------------------------------------------------------------]]
 
 --function printf()
@@ -27,8 +27,8 @@ local smart_terrains_by_name = {}
 
 exclusives = {}
 
---[[ список всех серверных объектов смартов, которые зарегистрированы в симуляторе
-Формат:
+--[[ СЃРїРёСЃРѕРє РІСЃРµС… СЃРµСЂРІРµСЂРЅС‹С… РѕР±СЉРµРєС‚РѕРІ СЃРјР°СЂС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅС‹ РІ СЃРёРјСѓР»СЏС‚РѕСЂРµ
+Р¤РѕСЂРјР°С‚:
 	smart_terrains = {
 		level_name = { id=obj, id=obj, ... },
 		level_name = { id=obj, id=obj, ... },
@@ -37,10 +37,10 @@ exclusives = {}
 ]]
 
 ----------------------------------------------------------------------------------------------------------------------
--- Разные полезные функции
+-- Р Р°Р·РЅС‹Рµ РїРѕР»РµР·РЅС‹Рµ С„СѓРЅРєС†РёРё
 ----------------------------------------------------------------------------------------------------------------------
--------------- помощники для чтения ini (custom data) -------------------
--- TODO убрать их
+-------------- РїРѕРјРѕС‰РЅРёРєРё РґР»СЏ С‡С‚РµРЅРёСЏ ini (custom data) -------------------
+-- TODO СѓР±СЂР°С‚СЊ РёС…
 function r_str( spawn_ini, section, line, default )
 	if spawn_ini:line_exist( section, line ) then
 		return spawn_ini:r_string( section, line )
@@ -59,7 +59,7 @@ end
 
 function r_2nums( spawn_ini, section, line, def1, def2 )
 	if spawn_ini:line_exist( section, line ) then
-		-- если default-ов больше, чем значений в ini, то забить недостающие последним значением из ini
+		-- РµСЃР»Рё default-РѕРІ Р±РѕР»СЊС€Рµ, С‡РµРј Р·РЅР°С‡РµРЅРёР№ РІ ini, С‚Рѕ Р·Р°Р±РёС‚СЊ РЅРµРґРѕСЃС‚Р°СЋС‰РёРµ РїРѕСЃР»РµРґРЅРёРј Р·РЅР°С‡РµРЅРёРµРј РёР· ini
 		local t = parse_nums( spawn_ini:r_string( section, line ) )
 		local n = table.getn( t )
 
@@ -76,8 +76,8 @@ function r_2nums( spawn_ini, section, line, def1, def2 )
 end
 
 ----------------------------------------------------------------------------------------------------------------------
--- Класс "se_smart_terrain". Обеспечивает поддержку smart terrain в ОФЛАЙНЕ.
--- Унаследован от скриптовой зоны.
+-- РљР»Р°СЃСЃ "se_smart_terrain". РћР±РµСЃРїРµС‡РёРІР°РµС‚ РїРѕРґРґРµСЂР¶РєСѓ smart terrain РІ РћР¤Р›РђР™РќР•.
+-- РЈРЅР°СЃР»РµРґРѕРІР°РЅ РѕС‚ СЃРєСЂРёРїС‚РѕРІРѕР№ Р·РѕРЅС‹.
 ----------------------------------------------------------------------------------------------------------------------
 class "se_smart_terrain" ( cse_alife_smart_zone )
 
@@ -102,7 +102,7 @@ function se_smart_terrain:print()
 	end
 end
 
--- сохранение
+-- СЃРѕС…СЂР°РЅРµРЅРёРµ
 function se_smart_terrain:STATE_Write( packet )
 --	log( "se_smart_terrain::STATE_Write called!" )
 	cse_alife_smart_zone.STATE_Write( self, packet )
@@ -141,7 +141,7 @@ function se_smart_terrain:STATE_Write( packet )
 	end
 end
 
--- восстановление
+-- РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ
 function se_smart_terrain:STATE_Read( packet, size )
 --	log( "se_smart_terrain::STATE_Read called!" )
 	cse_alife_smart_zone.STATE_Read( self, packet, size )
@@ -151,7 +151,7 @@ function se_smart_terrain:STATE_Read( packet, size )
 	
 	self:read_params()
 
-	-- под LevelEditor не пытаться читать из пакета ничего
+	-- РїРѕРґ LevelEditor РЅРµ РїС‹С‚Р°С‚СЊСЃСЏ С‡РёС‚Р°С‚СЊ РёР· РїР°РєРµС‚Р° РЅРёС‡РµРіРѕ
 	if editor() then
 		return
 	end
@@ -163,7 +163,7 @@ function se_smart_terrain:STATE_Read( packet, size )
 
 	self.gulag_working = packet:r_bool()
 
-	-- если есть работающий гулаг
+	-- РµСЃР»Рё РµСЃС‚СЊ СЂР°Р±РѕС‚Р°СЋС‰РёР№ РіСѓР»Р°Рі
 	if self.gulag_working then
 		self.check_time = CTime_0
 
@@ -194,9 +194,9 @@ function se_smart_terrain:STATE_Read( packet, size )
 --	self:print()
 end
 
--- инициализировать работу смарт террейна.
--- после этой функции смарт ПОЛНОСТЬЮ работоспособен.
--- вызывается из всех мест, которые могут вызвать другие объекты:
+-- РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ СЂР°Р±РѕС‚Сѓ СЃРјР°СЂС‚ С‚РµСЂСЂРµР№РЅР°.
+-- РїРѕСЃР»Рµ СЌС‚РѕР№ С„СѓРЅРєС†РёРё СЃРјР°СЂС‚ РџРћР›РќРћРЎРўР¬Р® СЂР°Р±РѕС‚РѕСЃРїРѕСЃРѕР±РµРЅ.
+-- РІС‹Р·С‹РІР°РµС‚СЃСЏ РёР· РІСЃРµС… РјРµСЃС‚, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ РІС‹Р·РІР°С‚СЊ РґСЂСѓРіРёРµ РѕР±СЉРµРєС‚С‹:
 --   se_smart_terrain:enabled()
 --   se_smart_terrain:update()
 --   xr_gulag.setup_gulag_and_logic_on_spawn()
@@ -215,7 +215,7 @@ function se_smart_terrain:initialize_if_needed()
 	end
 end
 
--- зарезервировать места для эксклюзивных персонажей
+-- Р·Р°СЂРµР·РµСЂРІРёСЂРѕРІР°С‚СЊ РјРµСЃС‚Р° РґР»СЏ СЌРєСЃРєР»СЋР·РёРІРЅС‹С… РїРµСЂСЃРѕРЅР°Р¶РµР№
 function se_smart_terrain:preserve_exclusives()
 	local e = exclusives[self:name()]
 
@@ -232,7 +232,7 @@ function se_smart_terrain:preserve_exclusives()
 	end
 end
 
--- получить серверные объекты персонажей
+-- РїРѕР»СѓС‡РёС‚СЊ СЃРµСЂРІРµСЂРЅС‹Рµ РѕР±СЉРµРєС‚С‹ РїРµСЂСЃРѕРЅР°Р¶РµР№
 function se_smart_terrain:get_se_objs()
 	local sim = alife()
 	local obj
@@ -250,9 +250,9 @@ function se_smart_terrain:get_se_objs()
 	end
 end
 
--- заполнить информацию о персонаже
--- у монстров нету метода profile_name()
--- TODO передавать в предикаты не npc_info, а объект
+-- Р·Р°РїРѕР»РЅРёС‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РїРµСЂСЃРѕРЅР°Р¶Рµ
+-- Сѓ РјРѕРЅСЃС‚СЂРѕРІ РЅРµС‚Сѓ РјРµС‚РѕРґР° profile_name()
+-- TODO РїРµСЂРµРґР°РІР°С‚СЊ РІ РїСЂРµРґРёРєР°С‚С‹ РЅРµ npc_info, Р° РѕР±СЉРµРєС‚
 function se_smart_terrain:fill_npc_info( obj, npc_info )
 	if not npc_info then
 		npc_info = {}
@@ -286,9 +286,9 @@ function se_smart_terrain:fill_npc_info( obj, npc_info )
 	return npc_info
 end
 
--- возвращает:
--- а) если сталкер: группировку сталкера и true
--- б) если монстр:  вид монстра и false
+-- РІРѕР·РІСЂР°С‰Р°РµС‚:
+-- Р°) РµСЃР»Рё СЃС‚Р°Р»РєРµСЂ: РіСЂСѓРїРїРёСЂРѕРІРєСѓ СЃС‚Р°Р»РєРµСЂР° Рё true
+-- Р±) РµСЃР»Рё РјРѕРЅСЃС‚СЂ:  РІРёРґ РјРѕРЅСЃС‚СЂР° Рё false
 function se_smart_terrain:get_obj_community( obj )
 	local cls = obj:clsid()
 
@@ -299,8 +299,8 @@ function se_smart_terrain:get_obj_community( obj )
 	end
 end
 
--- инициализация.
--- чтение custom data.
+-- РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ.
+-- С‡С‚РµРЅРёРµ custom data.
 function se_smart_terrain:read_params()
 	local ini  = self:spawn_ini()
 	local sect = "smart_terrain"
@@ -322,13 +322,13 @@ function se_smart_terrain:read_params()
 
 	local gp       = {}
 
-	self.npc_info  = {}          -- group и squad для каждого npc
-	self.gparams   = gp          -- настройки гулага
+	self.npc_info  = {}          -- group Рё squad РґР»СЏ РєР°Р¶РґРѕРіРѕ npc
+	self.gparams   = gp          -- РЅР°СЃС‚СЂРѕР№РєРё РіСѓР»Р°РіР°
 
 	gp.type        = ini:r_string( sect, "type" )
 	gp.preset_name = r_str ( ini, sect, "preset" )
 --'	printf("%s read_params preset name [%s]", self:name(), tostring(gp.preset_name))
-	gp.capacity    = r_num ( ini, sect, "capacity", 100 ) -- ёмкость. а настоящая ёмкость = min(эта_ёмкость, ёмкость гулага)
+	gp.capacity    = r_num ( ini, sect, "capacity", 100 ) -- С‘РјРєРѕСЃС‚СЊ. Р° РЅР°СЃС‚РѕСЏС‰Р°СЏ С‘РјРєРѕСЃС‚СЊ = min(СЌС‚Р°_С‘РјРєРѕСЃС‚СЊ, С‘РјРєРѕСЃС‚СЊ РіСѓР»Р°РіР°)
 	gp.squad       = r_num ( ini, sect, "squad" )
 
 	gp.idle_min,     gp.idle_max      = r_2nums( ini, sect, "idle",       0,     0 )
@@ -374,8 +374,8 @@ function se_smart_terrain:read_params()
 	self.gulag_working = false
 end
 
--- подходит ли персонаж по предустановкам.
--- если такой предустановки нету, то он всегда подходит.
+-- РїРѕРґС…РѕРґРёС‚ Р»Рё РїРµСЂСЃРѕРЅР°Р¶ РїРѕ РїСЂРµРґСѓСЃС‚Р°РЅРѕРІРєР°Рј.
+-- РµСЃР»Рё С‚Р°РєРѕР№ РїСЂРµРґСѓСЃС‚Р°РЅРѕРІРєРё РЅРµС‚Сѓ, С‚Рѕ РѕРЅ РІСЃРµРіРґР° РїРѕРґС…РѕРґРёС‚.
 function se_smart_terrain:check_preset( npc_community, npc_rank, preset_name )
 	local preset = smart_terrain_params.get_preset( preset_name )
 
@@ -394,12 +394,12 @@ function se_smart_terrain:check_preset( npc_community, npc_rank, preset_name )
 	end
 end
 
---[[ подходит ли объект гулагу?
-1) если объект не согласен сюда идти, то smart terrain его не возьмёт
-2) если объект согласен идти куда угодно, то проверить, есть ли ещё места, подходит ли он гулагу,
-   подходит ли он хоть на одну работу
-3) если объект согласен идти только в этот смарт, то принимаем даже если нету места (он вытеснит кого-то), проверить,
-   подходит ли он гулагу, подходит ли он хоть на одну работу
+--[[ РїРѕРґС…РѕРґРёС‚ Р»Рё РѕР±СЉРµРєС‚ РіСѓР»Р°РіСѓ?
+1) РµСЃР»Рё РѕР±СЉРµРєС‚ РЅРµ СЃРѕРіР»Р°СЃРµРЅ СЃСЋРґР° РёРґС‚Рё, С‚Рѕ smart terrain РµРіРѕ РЅРµ РІРѕР·СЊРјС‘С‚
+2) РµСЃР»Рё РѕР±СЉРµРєС‚ СЃРѕРіР»Р°СЃРµРЅ РёРґС‚Рё РєСѓРґР° СѓРіРѕРґРЅРѕ, С‚Рѕ РїСЂРѕРІРµСЂРёС‚СЊ, РµСЃС‚СЊ Р»Рё РµС‰С‘ РјРµСЃС‚Р°, РїРѕРґС…РѕРґРёС‚ Р»Рё РѕРЅ РіСѓР»Р°РіСѓ,
+   РїРѕРґС…РѕРґРёС‚ Р»Рё РѕРЅ С…РѕС‚СЊ РЅР° РѕРґРЅСѓ СЂР°Р±РѕС‚Сѓ
+3) РµСЃР»Рё РѕР±СЉРµРєС‚ СЃРѕРіР»Р°СЃРµРЅ РёРґС‚Рё С‚РѕР»СЊРєРѕ РІ СЌС‚РѕС‚ СЃРјР°СЂС‚, С‚Рѕ РїСЂРёРЅРёРјР°РµРј РґР°Р¶Рµ РµСЃР»Рё РЅРµС‚Сѓ РјРµСЃС‚Р° (РѕРЅ РІС‹С‚РµСЃРЅРёС‚ РєРѕРіРѕ-С‚Рѕ), РїСЂРѕРІРµСЂРёС‚СЊ,
+   РїРѕРґС…РѕРґРёС‚ Р»Рё РѕРЅ РіСѓР»Р°РіСѓ, РїРѕРґС…РѕРґРёС‚ Р»Рё РѕРЅ С…РѕС‚СЊ РЅР° РѕРґРЅСѓ СЂР°Р±РѕС‚Сѓ
 ]]
 local level_groups = {
     l01_escape = "group1",
@@ -437,7 +437,7 @@ function se_smart_terrain:smart_terrain_accepts_obj( obj, obj_agreement )
 	then
 		local community, is_stalker = self:get_obj_community( obj )
 
-        --' Проверка что смарттеррейн и НПС находятся в одном кластере уровней (чтобы не ходили через БАР)
+        --' РџСЂРѕРІРµСЂРєР° С‡С‚Рѕ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅ Рё РќРџРЎ РЅР°С…РѕРґСЏС‚СЃСЏ РІ РѕРґРЅРѕРј РєР»Р°СЃС‚РµСЂРµ СѓСЂРѕРІРЅРµР№ (С‡С‚РѕР±С‹ РЅРµ С…РѕРґРёР»Рё С‡РµСЂРµР· Р‘РђР )
         local smart_level_group = self:get_level_name()
         local npc_level_group = alife():level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())
 
@@ -484,17 +484,17 @@ function se_smart_terrain:smart_terrain_accepts_obj( obj, obj_agreement )
 	end
 end
 
---[[ подходит ли гулаг объекту?
-у объекта в custom data прописаны условия для некоторых smart_terrains:
+--[[ РїРѕРґС…РѕРґРёС‚ Р»Рё РіСѓР»Р°Рі РѕР±СЉРµРєС‚Сѓ?
+Сѓ РѕР±СЉРµРєС‚Р° РІ custom data РїСЂРѕРїРёСЃР°РЅС‹ СѓСЃР»РѕРІРёСЏ РґР»СЏ РЅРµРєРѕС‚РѕСЂС‹С… smart_terrains:
 	<smart_terrain_name1> = <condlist1>
 	<smart_terrain_name2> = <condlist2>
 	...
-Если для какого-то smart_terrain условие выполнилось, он называется эксклюзивным.
-Если у объекта появился хоть один эксклюзивный smart terrain, то он будет согласен идти только в него.
-Если не появилось ни одного эксклюзивного, то он согласен идти в любой.
+Р•СЃР»Рё РґР»СЏ РєР°РєРѕРіРѕ-С‚Рѕ smart_terrain СѓСЃР»РѕРІРёРµ РІС‹РїРѕР»РЅРёР»РѕСЃСЊ, РѕРЅ РЅР°Р·С‹РІР°РµС‚СЃСЏ СЌРєСЃРєР»СЋР·РёРІРЅС‹Рј.
+Р•СЃР»Рё Сѓ РѕР±СЉРµРєС‚Р° РїРѕСЏРІРёР»СЃСЏ С…РѕС‚СЊ РѕРґРёРЅ СЌРєСЃРєР»СЋР·РёРІРЅС‹Р№ smart terrain, С‚Рѕ РѕРЅ Р±СѓРґРµС‚ СЃРѕРіР»Р°СЃРµРЅ РёРґС‚Рё С‚РѕР»СЊРєРѕ РІ РЅРµРіРѕ.
+Р•СЃР»Рё РЅРµ РїРѕСЏРІРёР»РѕСЃСЊ РЅРё РѕРґРЅРѕРіРѕ СЌРєСЃРєР»СЋР·РёРІРЅРѕРіРѕ, С‚Рѕ РѕРЅ СЃРѕРіР»Р°СЃРµРЅ РёРґС‚Рё РІ Р»СЋР±РѕР№.
 ]]
--- TODO а если в начале эксклюзивный, а потом в любой?
--- вариант: any=condlist
+-- TODO Р° РµСЃР»Рё РІ РЅР°С‡Р°Р»Рµ СЌРєСЃРєР»СЋР·РёРІРЅС‹Р№, Р° РїРѕС‚РѕРј РІ Р»СЋР±РѕР№?
+-- РІР°СЂРёР°РЅС‚: any=condlist
 function se_smart_terrain:obj_accepts_smart_terrain( obj )
 	if obj.smart_terrain_conditions then
 		local any_exclusive = false
@@ -513,14 +513,14 @@ function se_smart_terrain:obj_accepts_smart_terrain( obj )
 					return agreed_exclusive
 				end
 			else
-				--' Если текущий смарттеррейн эксклюзивный и недоступен
+				--' Р•СЃР»Рё С‚РµРєСѓС‰РёР№ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅ СЌРєСЃРєР»СЋР·РёРІРЅС‹Р№ Рё РЅРµРґРѕСЃС‚СѓРїРµРЅ
 				if name == self:name() then
 					return disagreed
 				end
 			end
 		end
 
-		--' Надо убедиться что эксклюзивный смарттеррейн доступен, прежде чем запрещать все остальные
+		--' РќР°РґРѕ СѓР±РµРґРёС‚СЊСЃСЏ С‡С‚Рѕ СЌРєСЃРєР»СЋР·РёРІРЅС‹Р№ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅ РґРѕСЃС‚СѓРїРµРЅ, РїСЂРµР¶РґРµ С‡РµРј Р·Р°РїСЂРµС‰Р°С‚СЊ РІСЃРµ РѕСЃС‚Р°Р»СЊРЅС‹Рµ
 --'		if any_exclusive then
 --'			if obj:name() == "gar_bandit_agr_10" then
 --'				printf("[%s] obj_accepts_smart_terrain[%s] = disagreed. excl=%s", self:name(), obj:name(), tostring(any_exclusive))
@@ -536,9 +536,9 @@ function se_smart_terrain:obj_accepts_smart_terrain( obj )
 	return agreed
 end
 
--- может ли объект быть добавлен в smart terrain?
--- вызывается симулятором при поиске задания для объекта/группы.
--- если объект - группа, то вернёт true только если все объекты в группе вернут true
+-- РјРѕР¶РµС‚ Р»Рё РѕР±СЉРµРєС‚ Р±С‹С‚СЊ РґРѕР±Р°РІР»РµРЅ РІ smart terrain?
+-- РІС‹Р·С‹РІР°РµС‚СЃСЏ СЃРёРјСѓР»СЏС‚РѕСЂРѕРј РїСЂРё РїРѕРёСЃРєРµ Р·Р°РґР°РЅРёСЏ РґР»СЏ РѕР±СЉРµРєС‚Р°/РіСЂСѓРїРїС‹.
+-- РµСЃР»Рё РѕР±СЉРµРєС‚ - РіСЂСѓРїРїР°, С‚Рѕ РІРµСЂРЅС‘С‚ true С‚РѕР»СЊРєРѕ РµСЃР»Рё РІСЃРµ РѕР±СЉРµРєС‚С‹ РІ РіСЂСѓРїРїРµ РІРµСЂРЅСѓС‚ true
 function se_smart_terrain:enabled(obj)
 	-- DEBUG
 	if self.disabled then
@@ -571,13 +571,13 @@ function se_smart_terrain:enabled(obj)
 	end
 end
 
--- возвращает меру подходящести персонажа смарттерейну.
--- вызывается для всех смарттерейнов, которые вернули true из enabled
--- для того, чтобы выбрать тот единственный, в который персонаж всё-таки пойдёт.
--- критерии:
---   1) если объект уже бывал в других смартах, то чем больше свободных работ на уровне этого смарта, тем лучше
---   2) иначе ближе - лучше
--- TODO Оптимизировать
+-- РІРѕР·РІСЂР°С‰Р°РµС‚ РјРµСЂСѓ РїРѕРґС…РѕРґСЏС‰РµСЃС‚Рё РїРµСЂСЃРѕРЅР°Р¶Р° СЃРјР°СЂС‚С‚РµСЂРµР№РЅСѓ.
+-- РІС‹Р·С‹РІР°РµС‚СЃСЏ РґР»СЏ РІСЃРµС… СЃРјР°СЂС‚С‚РµСЂРµР№РЅРѕРІ, РєРѕС‚РѕСЂС‹Рµ РІРµСЂРЅСѓР»Рё true РёР· enabled
+-- РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ РІС‹Р±СЂР°С‚СЊ С‚РѕС‚ РµРґРёРЅСЃС‚РІРµРЅРЅС‹Р№, РІ РєРѕС‚РѕСЂС‹Р№ РїРµСЂСЃРѕРЅР°Р¶ РІСЃС‘-С‚Р°РєРё РїРѕР№РґС‘С‚.
+-- РєСЂРёС‚РµСЂРёРё:
+--   1) РµСЃР»Рё РѕР±СЉРµРєС‚ СѓР¶Рµ Р±С‹РІР°Р» РІ РґСЂСѓРіРёС… СЃРјР°СЂС‚Р°С…, С‚Рѕ С‡РµРј Р±РѕР»СЊС€Рµ СЃРІРѕР±РѕРґРЅС‹С… СЂР°Р±РѕС‚ РЅР° СѓСЂРѕРІРЅРµ СЌС‚РѕРіРѕ СЃРјР°СЂС‚Р°, С‚РµРј Р»СѓС‡С€Рµ
+--   2) РёРЅР°С‡Рµ Р±Р»РёР¶Рµ - Р»СѓС‡С€Рµ
+-- TODO РћРїС‚РёРјРёР·РёСЂРѕРІР°С‚СЊ
 function se_smart_terrain:suitable( obj )
 --'	if obj:name() == "esc_wolf" then
 --'		printf("[%s] suitable [%s]", self:name(), obj:name())
@@ -585,9 +585,9 @@ function se_smart_terrain:suitable( obj )
 
 	local v = 0
 	
-	--' Повысить подходящесть эксклюзивного смарттеррейна
+	--' РџРѕРІС‹СЃРёС‚СЊ РїРѕРґС…РѕРґСЏС‰РµСЃС‚СЊ СЌРєСЃРєР»СЋР·РёРІРЅРѕРіРѕ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅР°
 	if self:obj_accepts_smart_terrain(obj) == agreed_exclusive then
-		v = 100000 --'Так чтобы все эксклюзивные были заведомо лучше
+		v = 100000 --'РўР°Рє С‡С‚РѕР±С‹ РІСЃРµ СЌРєСЃРєР»СЋР·РёРІРЅС‹Рµ Р±С‹Р»Рё Р·Р°РІРµРґРѕРјРѕ Р»СѓС‡С€Рµ
 	end
 
 	for id, strn in pairs( smart_terrains[self:get_level_name()] ) do
@@ -608,15 +608,15 @@ function se_smart_terrain:suitable( obj )
 	return v
 end
 
--- добавить npc в smart terrain.
--- если места нету или нету свободных подходящих работ, то
--- вытолкнуть из этого smart terrain с подходящей работы объект, который попал в него не эксклюзивно.
+-- РґРѕР±Р°РІРёС‚СЊ npc РІ smart terrain.
+-- РµСЃР»Рё РјРµСЃС‚Р° РЅРµС‚Сѓ РёР»Рё РЅРµС‚Сѓ СЃРІРѕР±РѕРґРЅС‹С… РїРѕРґС…РѕРґСЏС‰РёС… СЂР°Р±РѕС‚, С‚Рѕ
+-- РІС‹С‚РѕР»РєРЅСѓС‚СЊ РёР· СЌС‚РѕРіРѕ smart terrain СЃ РїРѕРґС…РѕРґСЏС‰РµР№ СЂР°Р±РѕС‚С‹ РѕР±СЉРµРєС‚, РєРѕС‚РѕСЂС‹Р№ РїРѕРїР°Р» РІ РЅРµРіРѕ РЅРµ СЌРєСЃРєР»СЋР·РёРІРЅРѕ.
 function se_smart_terrain:register_npc( obj )
 
 	printf( "[smart_terrain %s] register called obj=%s gulag_type=%s", self:name(), obj:name(), self.gparams.type )
 
 	local npc_info = {
-		-- старые squad и group
+		-- СЃС‚Р°СЂС‹Рµ squad Рё group
 		o_group        = obj:g_group(),
 		o_squad        = obj:g_squad(),
 
@@ -665,12 +665,12 @@ function se_smart_terrain:register_npc( obj )
 --	printf( "[smart_terrain %s] added %s to gulag type=%s", self:name(), obj:name(), self.gparams.type )
 end
 
--- отпустить npc
--- TODO а если такого объекта уже нету?
+-- РѕС‚РїСѓСЃС‚РёС‚СЊ npc
+-- TODO Р° РµСЃР»Рё С‚Р°РєРѕРіРѕ РѕР±СЉРµРєС‚Р° СѓР¶Рµ РЅРµС‚Сѓ?
 function se_smart_terrain:unregister_npc( obj )
 	local n = self.npc_info[obj.id]
 
-	--' Если анрегистрим мертвого эксклюзивного НПС, нужно уменьшить счетчик эксклюзивности
+	--' Р•СЃР»Рё Р°РЅСЂРµРіРёСЃС‚СЂРёРј РјРµСЂС‚РІРѕРіРѕ СЌРєСЃРєР»СЋР·РёРІРЅРѕРіРѕ РќРџРЎ, РЅСѓР¶РЅРѕ СѓРјРµРЅСЊС€РёС‚СЊ СЃС‡РµС‚С‡РёРє СЌРєСЃРєР»СЋР·РёРІРЅРѕСЃС‚Рё
 	if not obj:alive() and obj.smart_terrain_conditions then
 		local any_exclusive = false
 		local s
@@ -680,7 +680,7 @@ function se_smart_terrain:unregister_npc( obj )
 
 			if s ~= nil then
 			 	if name == self:name() then
-					--' уменьшаем счетчик
+					--' СѓРјРµРЅСЊС€Р°РµРј СЃС‡РµС‚С‡РёРє
 					self.exclusives = self.exclusives - 1
 					self.gulag.capacity_non_exclusive = self.gulag.capacity_non_exclusive + 1
 				end
@@ -718,7 +718,7 @@ function se_smart_terrain:unregister_npc( obj )
 	printf( "[smart_terrain %s] removed %s from gulag type=%s, strn_id=%s", self:name(), obj:name() or "<<<nil>>>", self.gparams.type, obj:smart_terrain_id())
 end
 
--- изменть ранг сталкера при регистрации в смарт
+-- РёР·РјРµРЅС‚СЊ СЂР°РЅРі СЃС‚Р°Р»РєРµСЂР° РїСЂРё СЂРµРіРёСЃС‚СЂР°С†РёРё РІ СЃРјР°СЂС‚
 function se_smart_terrain:update_obj_rank( obj )
 	local community, is_stalker = self:get_obj_community( obj )
 
@@ -731,9 +731,9 @@ function se_smart_terrain:update_obj_rank( obj )
 	end
 end
 
--- выгнать из-под смарттеррейна первого попавшегося неэксклюзивного персонажа,
--- который занимает работу, подходящую новому персонажу.
--- TODO а если я выгоню кого-то, а его работа не подойдёт по idle ?
+-- РІС‹РіРЅР°С‚СЊ РёР·-РїРѕРґ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅР° РїРµСЂРІРѕРіРѕ РїРѕРїР°РІС€РµРіРѕСЃСЏ РЅРµСЌРєСЃРєР»СЋР·РёРІРЅРѕРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р°,
+-- РєРѕС‚РѕСЂС‹Р№ Р·Р°РЅРёРјР°РµС‚ СЂР°Р±РѕС‚Сѓ, РїРѕРґС…РѕРґСЏС‰СѓСЋ РЅРѕРІРѕРјСѓ РїРµСЂСЃРѕРЅР°Р¶Сѓ.
+-- TODO Р° РµСЃР»Рё СЏ РІС‹РіРѕРЅСЋ РєРѕРіРѕ-С‚Рѕ, Р° РµРіРѕ СЂР°Р±РѕС‚Р° РЅРµ РїРѕРґРѕР№РґС‘С‚ РїРѕ idle ?
 function se_smart_terrain:kick_someone_non_exclusive( new_npc_info )
 	for obj_id, npc_info in pairs( self.npc_info ) do
 		if not npc_info.exclusive and self.gulag:obj1_job_suits_obj2( obj_id, new_npc_info ) then
@@ -746,17 +746,17 @@ function se_smart_terrain:kick_someone_non_exclusive( new_npc_info )
 	abort( "[smart_terrain %s] can't add npc, all are exclusive or there are no suitable jobs", self:name() )
 end
 
--- выдать объекту задание.
+-- РІС‹РґР°С‚СЊ РѕР±СЉРµРєС‚Сѓ Р·Р°РґР°РЅРёРµ.
 function se_smart_terrain:task( obj )
 	local path_name = self.gulag:get_obj_job_path_name( obj.id )
 	if not path_name then
 		printf("[smart_terrain %s] task: obj=%s job_path=nil, CLEARING", self:name(), obj:name() )
-		self:unregister_npc(obj) --'Затычка против вылета.
+		self:unregister_npc(obj) --'Р—Р°С‚С‹С‡РєР° РїСЂРѕС‚РёРІ РІС‹Р»РµС‚Р°.
 		return CALifeSmartTerrainTask("simulation_default_path")
 	end
 
 --'	printf("SEETING TASK PATH %s = %s", obj:name(), path_name)
-	--' Пробуем проапдейтить типс чувака на карте
+	--' РџСЂРѕР±СѓРµРј РїСЂРѕР°РїРґРµР№С‚РёС‚СЊ С‚РёРїСЃ С‡СѓРІР°РєР° РЅР° РєР°СЂС‚Рµ
 --'	if sim_statistic.show_stalker_spot == true and obj:alive() then
 --'		local community, rank = sim_statistic.getNpcType(obj)
 --'		local spot = "alife_presentation_monstr"
@@ -771,7 +771,7 @@ function se_smart_terrain:task( obj )
 	return CALifeSmartTerrainTask( path_name )
 end
 
--- может ли данный гулаг создаться в данный момент?
+-- РјРѕР¶РµС‚ Р»Рё РґР°РЅРЅС‹Р№ РіСѓР»Р°Рі СЃРѕР·РґР°С‚СЊСЃСЏ РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚?
 function se_smart_terrain:is_gulag_available()
 	if self.gparams.cond then
 		local bb = xr_logic.pick_section_from_condlist( db.actor_proxy, self, self.gparams.cond ) ~= nil
@@ -790,7 +790,7 @@ function se_smart_terrain:is_gulag_available()
 end
 function se_smart_terrain:show_smart_debug_spot(avail)
 	if sim_statistic.show_smart_spot == true then
-		--' Показать отметку
+		--' РџРѕРєР°Р·Р°С‚СЊ РѕС‚РјРµС‚РєСѓ
 		local str = self:name().." ("..tostring(self.gulag.state)..")\\n".."pop = "..tostring(self.gulag:get_population()).."("..tostring(self.gulag.capacity_non_exclusive)..":"..tostring(self.gulag.capacity)..") comed = "..tostring(self.gulag:get_population_comed())
 
 		if self.debug_avail ~= avail then
@@ -814,7 +814,7 @@ function se_smart_terrain:show_smart_debug_spot(avail)
 		end
 		 self.spot_showed = true
 	else
-		--' Убрать отметку
+		--' РЈР±СЂР°С‚СЊ РѕС‚РјРµС‚РєСѓ
 		if self.spot_showed == nil then
 			return
 		end
@@ -826,12 +826,12 @@ function se_smart_terrain:show_smart_debug_spot(avail)
 		end		
 	end
 end
--- установка/снятие блокировки приёма персонажей
+-- СѓСЃС‚Р°РЅРѕРІРєР°/СЃРЅСЏС‚РёРµ Р±Р»РѕРєРёСЂРѕРІРєРё РїСЂРёС‘РјР° РїРµСЂСЃРѕРЅР°Р¶РµР№
 function se_smart_terrain:lock_population( need_lock )
 	self.population_locked = need_lock
 end
 
--- в гулаг поступил первый персонаж и он начинает работать
+-- РІ РіСѓР»Р°Рі РїРѕСЃС‚СѓРїРёР» РїРµСЂРІС‹Р№ РїРµСЂСЃРѕРЅР°Р¶ Рё РѕРЅ РЅР°С‡РёРЅР°РµС‚ СЂР°Р±РѕС‚Р°С‚СЊ
 function se_smart_terrain:create_gulag()
 	self.duration_end = game.CTime()
 --	self.duration_end:setHMSms( 0, 0, 0, math.random( self.gparams.duration_min * h2ms, self.gparams.duration_max * h2ms ) )
@@ -845,8 +845,8 @@ function se_smart_terrain:create_gulag()
 	self.gulag_working = true
 end
 
--- всех освободить, убить гулаг,
--- создать новый нерабочий гулаг, зарезервировать в нём места для эксклюзивных
+-- РІСЃРµС… РѕСЃРІРѕР±РѕРґРёС‚СЊ, СѓР±РёС‚СЊ РіСѓР»Р°Рі,
+-- СЃРѕР·РґР°С‚СЊ РЅРѕРІС‹Р№ РЅРµСЂР°Р±РѕС‡РёР№ РіСѓР»Р°Рі, Р·Р°СЂРµР·РµСЂРІРёСЂРѕРІР°С‚СЊ РІ РЅС‘Рј РјРµСЃС‚Р° РґР»СЏ СЌРєСЃРєР»СЋР·РёРІРЅС‹С…
 function se_smart_terrain:remove_gulag( disable )
 	-- DEBUG
 	self.disabled = disable
@@ -858,7 +858,7 @@ function se_smart_terrain:remove_gulag( disable )
 
 	printf( "[smart_terrain %s] removed gulag type=%s", self:name(), self.gparams.type )
 
-	-- освободить всех персонажей
+	-- РѕСЃРІРѕР±РѕРґРёС‚СЊ РІСЃРµС… РїРµСЂСЃРѕРЅР°Р¶РµР№
 	for id, npc_info in pairs( self.npc_info ) do
 		self:unregister_npc( npc_info.se_obj )
 	end
@@ -881,7 +881,7 @@ function se_smart_terrain:remove_gulag( disable )
 --'	self:show_smart_debug_spot(false)
 end
 
--- заполняет таблицу monster_classes
+-- Р·Р°РїРѕР»РЅСЏРµС‚ С‚Р°Р±Р»РёС†Сѓ monster_classes
 function se_smart_terrain:fill_monster_classes()
 	if not monster_classes then
 		monster_classes = {
@@ -905,7 +905,7 @@ function se_smart_terrain:fill_monster_classes()
 	end
 end
 
--- возвращает название уровня, на котором находится smart terrain
+-- РІРѕР·РІСЂР°С‰Р°РµС‚ РЅР°Р·РІР°РЅРёРµ СѓСЂРѕРІРЅСЏ, РЅР° РєРѕС‚РѕСЂРѕРј РЅР°С…РѕРґРёС‚СЃСЏ smart terrain
 function se_smart_terrain:get_level_name()
 --	return "chugai_test"
 
@@ -939,8 +939,8 @@ function se_smart_terrain:get_level_name()
 	return ln]]
 end
 
--- регистрация объекта в симуляторе.
--- вызывается симулятором.
+-- СЂРµРіРёСЃС‚СЂР°С†РёСЏ РѕР±СЉРµРєС‚Р° РІ СЃРёРјСѓР»СЏС‚РѕСЂРµ.
+-- РІС‹Р·С‹РІР°РµС‚СЃСЏ СЃРёРјСѓР»СЏС‚РѕСЂРѕРј.
 function se_smart_terrain:on_register()
 	cse_alife_smart_zone.on_register( self )
 
@@ -949,7 +949,7 @@ function se_smart_terrain:on_register()
 end
 
 function se_smart_terrain:register_if_needed()
-	--' Если уже зарегистрены то ничего не делать.
+	--' Р•СЃР»Рё СѓР¶Рµ Р·Р°СЂРµРіРёСЃС‚СЂРµРЅС‹ С‚Рѕ РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°С‚СЊ.
 	if self.registred == true then
 		return
 	end
@@ -988,14 +988,14 @@ function se_smart_terrain:register_if_needed()
 
 	sim_statistic.reinit()
 
-	-- Регистрация в таскменеджере
+	-- Р РµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_random_task():register_target(self)
 end
 
 
 
--- дерегистрация объекта в симуляторе.
--- вызывается симулятором.
+-- РґРµСЂРµРіРёСЃС‚СЂР°С†РёСЏ РѕР±СЉРµРєС‚Р° РІ СЃРёРјСѓР»СЏС‚РѕСЂРµ.
+-- РІС‹Р·С‹РІР°РµС‚СЃСЏ СЃРёРјСѓР»СЏС‚РѕСЂРѕРј.
 function se_smart_terrain:on_unregister()
 	cse_alife_smart_zone.on_unregister( self )
 
@@ -1016,14 +1016,14 @@ function se_smart_terrain:on_unregister()
 	db.actor_proxy:deinit()
 end
 
--- вызвать спавнер, если настроен.
+-- РІС‹Р·РІР°С‚СЊ СЃРїР°РІРЅРµСЂ, РµСЃР»Рё РЅР°СЃС‚СЂРѕРµРЅ.
 function se_smart_terrain:call_respawn()
 	if self.gparams.respawn then
 		se_respawn.spawn( self.gparams.respawn )
 	end
 end
 
--- возвращает строку с принимаемыми группировками и рангами
+-- РІРѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ СЃ РїСЂРёРЅРёРјР°РµРјС‹РјРё РіСЂСѓРїРїРёСЂРѕРІРєР°РјРё Рё СЂР°РЅРіР°РјРё
 function se_smart_terrain:stat_get_accepted_communities()
 	local comms = {}
 
@@ -1063,7 +1063,7 @@ function se_smart_terrain:stat_get_accepted_communities()
 	return s
 end
 
--- вывод статистики смарта
+-- РІС‹РІРѕРґ СЃС‚Р°С‚РёСЃС‚РёРєРё СЃРјР°СЂС‚Р°
 function se_smart_terrain:stat()
 	local s = self:get_level_name() .. " " .. self:name()
 
@@ -1089,10 +1089,10 @@ function se_smart_terrain:stat()
 	return avail, pop, cap
 end
 
--- Обновление.
--- В онлайне вызывается через binder.
--- Также может вызваться принудительно из xr_effects
--- Если мужиков в гулаге больше не осталось или условия существования гулага не выполняются, то убрать гулаг.
+-- РћР±РЅРѕРІР»РµРЅРёРµ.
+-- Р’ РѕРЅР»Р°Р№РЅРµ РІС‹Р·С‹РІР°РµС‚СЃСЏ С‡РµСЂРµР· binder.
+-- РўР°РєР¶Рµ РјРѕР¶РµС‚ РІС‹Р·РІР°С‚СЊСЃСЏ РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅРѕ РёР· xr_effects
+-- Р•СЃР»Рё РјСѓР¶РёРєРѕРІ РІ РіСѓР»Р°РіРµ Р±РѕР»СЊС€Рµ РЅРµ РѕСЃС‚Р°Р»РѕСЃСЊ РёР»Рё СѓСЃР»РѕРІРёСЏ СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ РіСѓР»Р°РіР° РЅРµ РІС‹РїРѕР»РЅСЏСЋС‚СЃСЏ, С‚Рѕ СѓР±СЂР°С‚СЊ РіСѓР»Р°Рі.
 function se_smart_terrain:update()
 --	log( "se_smart_terrain::update called!" )
 	cse_alife_smart_zone.update( self )
@@ -1107,7 +1107,7 @@ function se_smart_terrain:update()
 		if self.check_time < game.get_game_time() then
 			self.check_time = game.get_game_time() + check_period
 
-			--' проверять, не собрался ли кто-то к этому времени уже уходить
+			--' РїСЂРѕРІРµСЂСЏС‚СЊ, РЅРµ СЃРѕР±СЂР°Р»СЃСЏ Р»Рё РєС‚Рѕ-С‚Рѕ Рє СЌС‚РѕРјСѓ РІСЂРµРјРµРЅРё СѓР¶Рµ СѓС…РѕРґРёС‚СЊ
 			for id, npc_info in pairs( self.npc_info ) do
 				if npc_info.cond and xr_logic.pick_section_from_condlist( db.actor_proxy, npc_info.se_obj, npc_info.cond ) == nil then
 					printf("[smart_terrain %s] leaving %s", self:name(), npc_info.name)
@@ -1143,7 +1143,7 @@ function on_death( obj_id )
 end
 
 -----------------------
---' Удаляет объект из смарттеррейнов.
+--' РЈРґР°Р»СЏРµС‚ РѕР±СЉРµРєС‚ РёР· СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅРѕРІ.
 function unregister_npc(npc)
 	local sim = alife()
 
@@ -1162,8 +1162,8 @@ end
 
 
 --------------------
--- прочитать секцию [smart_terrains]
--- вызывается объектами, которые могут ходить под smart terrain
+-- РїСЂРѕС‡РёС‚Р°С‚СЊ СЃРµРєС†РёСЋ [smart_terrains]
+-- РІС‹Р·С‹РІР°РµС‚СЃСЏ РѕР±СЉРµРєС‚Р°РјРё, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ С…РѕРґРёС‚СЊ РїРѕРґ smart terrain
 function read_smart_terrain_conditions( self )
 	if self.ini and self.ini:section_exist( smart_section ) then
 		local conds = {}
@@ -1186,7 +1186,7 @@ function read_smart_terrain_conditions( self )
 end
 
 --------------------
--- Вывод статистики по всем смартам в симуляции
+-- Р’С‹РІРѕРґ СЃС‚Р°С‚РёСЃС‚РёРєРё РїРѕ РІСЃРµРј СЃРјР°СЂС‚Р°Рј РІ СЃРёРјСѓР»СЏС†РёРё
 function stat()
 	printf( "--------------- Smart terrains statistics START ----------------------" )
 

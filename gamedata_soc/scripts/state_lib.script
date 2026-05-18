@@ -1,11 +1,11 @@
 ----------------------------------------------------------------------------------------------------------------------
---	Библиотека состояний тела
---	автор: Диденко Руслан (Stohe)
+--	Р‘РёР±Р»РёРѕС‚РµРєР° СЃРѕСЃС‚РѕСЏРЅРёР№ С‚РµР»Р°
+--	Р°РІС‚РѕСЂ: Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe)
 --	TODO: 
 ----------------------------------------------------------------------------------------------------------------------
 
 states = {
-	-- Дефолтовый
+	-- Р”РµС„РѕР»С‚РѕРІС‹Р№
 	idle = {	weapon = nil,
 				movement = nil,
 				mental = nil,
@@ -14,7 +14,7 @@ states = {
 				animation = nil
 			},
 
-	-- Ходячие состояния
+	-- РҐРѕРґСЏС‡РёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 	walk = {	weapon = "strapped",
 				movement = move.walk,
 				mental = anim.free,
@@ -114,7 +114,7 @@ states = {
 				animation = nil
 			},
 
-	-- Стоячие состояния
+	-- РЎС‚РѕСЏС‡РёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 	wait = {	weapon = "strapped",
 				movement = move.stand,
 				mental = anim.free,
@@ -284,7 +284,7 @@ states = {
 				animstate = "stand",
 				animation = "hide"
 			},
-	-- Сидячие состояния
+	-- РЎРёРґСЏС‡РёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 	sit = {		weapon = "strapped",
 				movement = move.stand,
 				mental = anim.free,
@@ -526,7 +526,7 @@ states = {
 			
 			
 
-	-- Раненый
+	-- Р Р°РЅРµРЅС‹Р№
 	wounded = {	weapon = "strapped",
 				movement = move.stand,
 				mental = anim.danger,
@@ -596,7 +596,7 @@ states = {
 				animation = "trans_zombied"
 			},
 
-	-- Пси раненый
+	-- РџСЃРё СЂР°РЅРµРЅС‹Р№
 	psy_pain = {weapon = "drop",
 				movement = move.stand,
 				mental = anim.free,
@@ -620,7 +620,7 @@ states = {
 				animstate = "stand",
 				animation = "psy_shoot"
 			},
-	-- Псих в баре
+	-- РџСЃРёС… РІ Р±Р°СЂРµ
 	psycho_pain = {weapon = "none",
 				movement = move.stand,
 				mental = anim.free,
@@ -636,7 +636,7 @@ states = {
 				animstate = "stand",
 				animation = "psycho_shoot"
 				},
-	-- Бармен
+	-- Р‘Р°СЂРјРµРЅ
 	bar_fas = {	weapon = "strapped",
 				movement = move.stand,
 				mental = anim.free,
@@ -730,7 +730,7 @@ states = {
 				animation = "barman_talk"
 			},
 
-	--  Доктор в мертвом городе
+	--  Р”РѕРєС‚РѕСЂ РІ РјРµСЂС‚РІРѕРј РіРѕСЂРѕРґРµ
 	doctor_wakeup = {weapon = "none",
 				movement = move.stand,
 				mental = anim.free,
@@ -738,7 +738,7 @@ states = {
 				animstate = "stand",
 				animation = "doctor_wakeup"
 			},
-	--  Профессор на Янтаре
+	--  РџСЂРѕС„РµСЃСЃРѕСЂ РЅР° РЇРЅС‚Р°СЂРµ
 	yan_professor_walk = {	weapon = "none",
 				movement = move.walk,
 				mental = anim.free,

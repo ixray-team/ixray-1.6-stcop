@@ -1,9 +1,9 @@
 --[[------------------------------------------------------------------------------------------------------------------
-Êëàññ zone_sound. Ïğîèãğîâêà çâóêîâ ïğè âõîäå â çîíó. Ğàçğåøåíèå ïğîèãğîâêè ğàíäîìíîé îçâó÷êè â çîíå.
-×óãàé Ñàøà
+ĞšĞ»Ğ°ÑÑ zone_sound. ĞŸÑ€Ğ¾Ğ¸Ğ³Ñ€Ğ¾Ğ²ĞºĞ° Ğ·Ğ²ÑƒĞºĞ¾Ğ² Ğ¿Ñ€Ğ¸ Ğ²Ñ…Ğ¾Ğ´Ğµ Ğ² Ğ·Ğ¾Ğ½Ñƒ. Ğ Ğ°Ğ·Ñ€ĞµÑˆĞµĞ½Ğ¸Ğµ Ğ¿Ñ€Ğ¾Ğ¸Ğ³Ñ€Ğ¾Ğ²ĞºĞ¸ Ñ€Ğ°Ğ½Ğ´Ğ¾Ğ¼Ğ½Ğ¾Ğ¹ Ğ¾Ğ·Ğ²ÑƒÑ‡ĞºĞ¸ Ğ² Ğ·Ğ¾Ğ½Ğµ.
+Ğ§ÑƒĞ³Ğ°Ğ¹ Ğ¡Ğ°ÑˆĞ°
 --------------------------------------------------------------------------------------------------------------------]]
 
--- òèïû çâóêîâ äëÿ çîí
+-- Ñ‚Ğ¸Ğ¿Ñ‹ Ğ·Ğ²ÑƒĞºĞ¾Ğ² Ğ´Ğ»Ñ Ğ·Ğ¾Ğ½
 local sound_types = {
 	floor_wooden = {
 		"ambient\\floor_creak1",
@@ -58,7 +58,7 @@ local sound_types = {
 }
 
 
--- âêëş÷èòü â dest âñå ıëåìåíòû èç src. Òàáëèöû èíäåêñèğîâàíû
+-- Ğ²ĞºĞ»ÑÑ‡Ğ¸Ñ‚ÑŒ Ğ² dest Ğ²ÑĞµ ÑĞ»ĞµĞ¼ĞµĞ½Ñ‚Ñ‹ Ğ¸Ğ· src. Ğ¢Ğ°Ğ±Ğ»Ğ¸Ñ†Ñ‹ Ğ¸Ğ½Ğ´ĞµĞºÑĞ¸Ñ€Ğ¾Ğ²Ğ°Ğ½Ñ‹
 function table_include( dest, src )
 	if dest and src then
 		for i, v in src do
@@ -67,7 +67,7 @@ function table_include( dest, src )
 	end
 end
 
--- ïğî÷èòàòü ÷èñëî èç ini
+-- Ğ¿Ñ€Ğ¾Ñ‡Ğ¸Ñ‚Ğ°Ñ‚ÑŒ Ñ‡Ğ¸ÑĞ»Ğ¾ Ğ¸Ğ· ini
 function r_num( spawn_ini, section, line, default )
 	if spawn_ini:line_exist( section, line ) then
 		return spawn_ini:r_float( section, line )
@@ -109,7 +109,7 @@ function zone_sound:__init( zone, binder, ini )
 
 --	printf( table.concat( self.sound_names, "  " ) )
 	self.delay   = r_num( ini, sect, "delay", 0 )
-	self.idle    = r_num( ini, sect, "idle",  0 ) * 1000 -- ñåêóíäû->ìñ
+	self.idle    = r_num( ini, sect, "idle",  0 ) * 1000 -- ÑĞµĞºÑƒĞ½Ğ´Ñ‹->Ğ¼Ñ
 	self.rnd     = r_num( ini, sect, "rnd", 100 )
 
 	self.idle_end = 0

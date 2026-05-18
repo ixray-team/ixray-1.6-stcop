@@ -14,7 +14,7 @@ function main()
 
          printf("Enabled manual invisible")
 
-         //Включаем ручное управление
+         //Р’РєР»СЋС‡Р°РµРј СЂСѓС‡РЅРѕРµ СѓРїСЂР°РІР»РµРЅРёРµ
          monstr:set_manual_invisibility(true)
 
          if(monstr:get_manual_invisibility()) then
@@ -25,7 +25,7 @@ function main()
 
          wait(2000)
 
-         //Делаем невидемым
+         //Р”РµР»Р°РµРј РЅРµРІРёРґРµРјС‹Рј
          monstr:set_invisible(true)
 
          wait(2000)
@@ -38,7 +38,7 @@ function main()
 
          wait(2000)
 
-         //Делаем видимым
+         //Р”РµР»Р°РµРј РІРёРґРёРјС‹Рј
          monstr:set_invisible(false)
 
          wait(2000)
@@ -51,7 +51,7 @@ function main()
 
          wait(2000)
 
-         //Отключаем ручное управление
+         //РћС‚РєР»СЋС‡Р°РµРј СЂСѓС‡РЅРѕРµ СѓРїСЂР°РІР»РµРЅРёРµ
          monstr:set_manual_invisibility(false)
 
          if(monstr:get_manual_invisibility()) then

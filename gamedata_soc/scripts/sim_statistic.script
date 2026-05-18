@@ -1,4 +1,4 @@
--- Сбор информации о том, какие сталкеры и в каком количестве обитают в симуляции
+-- РЎР±РѕСЂ РёРЅС„РѕСЂРјР°С†РёРё Рѕ С‚РѕРј, РєР°РєРёРµ СЃС‚Р°Р»РєРµСЂС‹ Рё РІ РєР°РєРѕРј РєРѕР»РёС‡РµСЃС‚РІРµ РѕР±РёС‚Р°СЋС‚ РІ СЃРёРјСѓР»СЏС†РёРё
 
 function getNpcType(npc)
 	local cls = npc:clsid()
@@ -20,7 +20,7 @@ function getNpcType(npc)
 end
 
 
--- Была ли произведена реинициализация после лоада.
+-- Р‘С‹Р»Р° Р»Рё РїСЂРѕРёР·РІРµРґРµРЅР° СЂРµРёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїРѕСЃР»Рµ Р»РѕР°РґР°.
 local reinit_complete = false
 local simulator = nil
 
@@ -69,32 +69,32 @@ function simulation_statistic:pstats(npc)
 end
 
 
--- На первом вызове апдейта снимаем флаг о том, что реинициализация уже произведена
+-- РќР° РїРµСЂРІРѕРј РІС‹Р·РѕРІРµ Р°РїРґРµР№С‚Р° СЃРЅРёРјР°РµРј С„Р»Р°Рі Рѕ С‚РѕРј, С‡С‚Рѕ СЂРµРёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СѓР¶Рµ РїСЂРѕРёР·РІРµРґРµРЅР°
 function update()
 	reinit_complete = false
 end
--- Вызывать на регистре смарттеррейна
+-- Р’С‹Р·С‹РІР°С‚СЊ РЅР° СЂРµРіРёСЃС‚СЂРµ СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅР°
 function reinit()
 	if reinit_complete == false then
 		simulator = nil
 		reinit_complete = true
 	end
 end
--- Регистрация чувака
+-- Р РµРіРёСЃС‚СЂР°С†РёСЏ С‡СѓРІР°РєР°
 function add(npc)
 	if simulator == nil then
 		simulator = simulation_statistic()
 	end
 	simulator:add(npc)
 end
--- Неригистрация
+-- РќРµСЂРёРіРёСЃС‚СЂР°С†РёСЏ
 function remove(npc)
 	if simulator == nil then
 		return
 	end
 	simulator:remove(npc)
 end
--- Проверка сколько всего сталкеров есть в симуляции
+-- РџСЂРѕРІРµСЂРєР° СЃРєРѕР»СЊРєРѕ РІСЃРµРіРѕ СЃС‚Р°Р»РєРµСЂРѕРІ РµСЃС‚СЊ РІ СЃРёРјСѓР»СЏС†РёРё
 function simNpcCount(community, rank)
 	if simulator == nil then
 		return 0
@@ -112,7 +112,7 @@ end
 
 
 
---' Отметка всех сталкеров мапспотами. Дебаговая фича!!!
+--' РћС‚РјРµС‚РєР° РІСЃРµС… СЃС‚Р°Р»РєРµСЂРѕРІ РјР°РїСЃРїРѕС‚Р°РјРё. Р”РµР±Р°РіРѕРІР°СЏ С„РёС‡Р°!!!
 show_stalker_spot = true
 function unmark_all_stalkers()
 	show_stalker_spot = false
@@ -121,7 +121,7 @@ function mark_all_stalkers()
 	show_stalker_spot = true
 end
 
---' Отметка всех монстров мапспотами. Дебаговая фича!!!
+--' РћС‚РјРµС‚РєР° РІСЃРµС… РјРѕРЅСЃС‚СЂРѕРІ РјР°РїСЃРїРѕС‚Р°РјРё. Р”РµР±Р°РіРѕРІР°СЏ С„РёС‡Р°!!!
 show_monster_spot = true
 function unmark_all_monsters()
 	show_monster_spot = false
@@ -135,11 +135,11 @@ end
 
 
 
---' Статистика респавнеров
+--' РЎС‚Р°С‚РёСЃС‚РёРєР° СЂРµСЃРїР°РІРЅРµСЂРѕРІ
 local reg_objects_respawn = {}
 local show_respawn_spot = false
 function register_respawn(obj)
-	--' Не отбражать респавнеры с событийным спауном
+	--' РќРµ РѕС‚Р±СЂР°Р¶Р°С‚СЊ СЂРµСЃРїР°РІРЅРµСЂС‹ СЃ СЃРѕР±С‹С‚РёР№РЅС‹Рј СЃРїР°СѓРЅРѕРј
 	if obj.item_spawn ~= false then
 		return
 	end
@@ -215,7 +215,7 @@ function mark_all_respawns()
 end
 
 
---' Статистика смарттеррейнов
+--' РЎС‚Р°С‚РёСЃС‚РёРєР° СЃРјР°СЂС‚С‚РµСЂСЂРµР№РЅРѕРІ
 show_smart_spot = false
 function unmark_all_smarts()
 	show_smart_spot = false

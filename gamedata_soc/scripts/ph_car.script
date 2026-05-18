@@ -1,9 +1,9 @@
 ----------------------------------------------------------------------------------------------------
 -- Physic vehicle control
 ----------------------------------------------------------------------------------------------------
--- Исходный скрипт: Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
--- Перевод на xr_logic: Andrey Fidrya (Zmey) af@svitonline.com
--- Доработка для БТР: Oleg Kreptul (Haron) haronk@ukr.net
+-- РСЃС…РѕРґРЅС‹Р№ СЃРєСЂРёРїС‚: Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
+-- РџРµСЂРµРІРѕРґ РЅР° xr_logic: Andrey Fidrya (Zmey) af@svitonline.com
+-- Р”РѕСЂР°Р±РѕС‚РєР° РґР»СЏ Р‘РўР : Oleg Kreptul (Haron) haronk@ukr.net
 ----------------------------------------------------------------------------------------------------
 function printf() end
 
@@ -284,7 +284,7 @@ function action_car:reset_scheme(loading)
 	                end
 	            end
         	    
-	            -- точки прострела для первой точки движения
+	            -- С‚РѕС‡РєРё РїСЂРѕСЃС‚СЂРµР»Р° РґР»СЏ РїРµСЂРІРѕР№ С‚РѕС‡РєРё РґРІРёР¶РµРЅРёСЏ
 	            self:change_fire_pts()
             	
 	            if self.st.auto_fire then
@@ -472,7 +472,7 @@ function action_car:go_to_walkpoint(pt)
 			self.state_moving = state_moving_fwd
 		end
 	else
-		-- Поворачиваться нужно, но в какую сторону?
+		-- РџРѕРІРѕСЂР°С‡РёРІР°С‚СЊСЃСЏ РЅСѓР¶РЅРѕ, РЅРѕ РІ РєР°РєСѓСЋ СЃС‚РѕСЂРѕРЅСѓ?
 		local rotate_left = utils.angle_left_xz(self.object:direction(), 
 		                                        utils.vector_copy_by_val(self.path_walk:point(pt)
 		                                                                ):sub(self.object:position()))
@@ -598,13 +598,13 @@ function action_car:walk_arrival_callback(index)
         printf("car <fire>: fire_rep = %d", self.fire_rep)
     end
 
-	-- Выбрать следующую точку езды:
+	-- Р’С‹Р±СЂР°С‚СЊ СЃР»РµРґСѓСЋС‰СѓСЋ С‚РѕС‡РєСѓ РµР·РґС‹:
 	self.target_walk_pt = self:get_next_walkpoint()
 	printf("car <move>: target_walk_pt = %s.", utils.to_str(self.target_walk_pt))
 	--if not self.target_walk_pt then
 	--    printf("car <move>: stop moving.")
 	--    self:stop_car()
-		-- Остановить машину
+		-- РћСЃС‚Р°РЅРѕРІРёС‚СЊ РјР°С€РёРЅСѓ
 	    --if self.state_cannon == state_cannon_stop then
 		--    xr_logic.mob_capture(self.object, true)
 		--end
@@ -614,7 +614,7 @@ function action_car:walk_arrival_callback(index)
 	--end
 
     if self.target_walk_pt >= 0 then
-	    -- Если эта точка рядом и уже приехали - не ждать апдейта, чтобы вызвать callback
+	    -- Р•СЃР»Рё СЌС‚Р° С‚РѕС‡РєР° СЂСЏРґРѕРј Рё СѓР¶Рµ РїСЂРёРµС…Р°Р»Рё - РЅРµ Р¶РґР°С‚СЊ Р°РїРґРµР№С‚Р°, С‡С‚РѕР±С‹ РІС‹Р·РІР°С‚СЊ callback
 	    if self:at_target_walkpoint() then
 		    self:walk_arrival_callback(self.target_walk_pt)
         else
@@ -652,7 +652,7 @@ function action_car:change_fire_pts()
     
     local fire_idx
     if self.target_walk_pt >= 0 then
-	    -- Значение флагов огневых точек, котые будем искать:
+	    -- Р—РЅР°С‡РµРЅРёРµ С„Р»Р°РіРѕРІ РѕРіРЅРµРІС‹С… С‚РѕС‡РµРє, РєРѕС‚С‹Рµ Р±СѓРґРµРј РёСЃРєР°С‚СЊ:
 	    local fire_flags = self.path_walk_info[self.target_walk_pt].flags
     	
 	    if fire_flags:get() == 0 then
@@ -757,7 +757,7 @@ function action_car:fire_arrival_callback(cur_index)
     printf("car <fire>: action_car:fire_arrival_callback(%s)", utils.to_str(cur_index))
     if self.state_cannon == state_cannon_delay then
         printf("car <fire>: 1.delay mode off.")
-	    -- Выбрать следующую точку езды:
+	    -- Р’С‹Р±СЂР°С‚СЊ СЃР»РµРґСѓСЋС‰СѓСЋ С‚РѕС‡РєСѓ РµР·РґС‹:
 	    self.target_fire_pt_idx, self.target_fire_pt = self:get_next_firepoint()
 
 	    if self.target_fire_pt then
@@ -834,10 +834,10 @@ function action_car:fire_arrival_callback(cur_index)
         --self:rot_to_firepoint(nil)
         self:set_shooting(self.state_shooting)
     else
-	    -- Выбрать следующую точку стрельбы:
+	    -- Р’С‹Р±СЂР°С‚СЊ СЃР»РµРґСѓСЋС‰СѓСЋ С‚РѕС‡РєСѓ СЃС‚СЂРµР»СЊР±С‹:
 	    self.target_fire_pt_idx, self.target_fire_pt = self:get_next_firepoint()
 
-	    -- Если мы уже целимся в эту точку - не ждать апдейта, чтобы вызвать callback
+	    -- Р•СЃР»Рё РјС‹ СѓР¶Рµ С†РµР»РёРјСЃСЏ РІ СЌС‚Сѓ С‚РѕС‡РєСѓ - РЅРµ Р¶РґР°С‚СЊ Р°РїРґРµР№С‚Р°, С‡С‚РѕР±С‹ РІС‹Р·РІР°С‚СЊ callback
 	    if self.target_fire_pt then
             printf("car <fire>: 2.rotate mode on.")
 		    self.state_cannon = state_cannon_rotate
@@ -896,7 +896,7 @@ end
 
 function action_car:fastcall()
 	if db.storage[self.object:id()].active_scheme ~= "ph_car" then
-		-- Если активная схема - не машина, снять быстрый апдейт
+		-- Р•СЃР»Рё Р°РєС‚РёРІРЅР°СЏ СЃС…РµРјР° - РЅРµ РјР°С€РёРЅР°, СЃРЅСЏС‚СЊ Р±С‹СЃС‚СЂС‹Р№ Р°РїРґРµР№С‚
 		return true
 	end
 	
@@ -960,7 +960,7 @@ function action_car:destroy_car()
 	printf("car <destroy>: END =================================")
 end
 
--- Вернуть true, если апдейты больше не нужны
+-- Р’РµСЂРЅСѓС‚СЊ true, РµСЃР»Рё Р°РїРґРµР№С‚С‹ Р±РѕР»СЊС€Рµ РЅРµ РЅСѓР¶РЅС‹
 function action_car:fast_update()
 	printf("car <state>: START FAST UPDATE ======================================================")
 	printf("car <state>: check moving1 - [%d][%d]", self.state_moving, self.target_walk_pt)
@@ -1009,7 +1009,7 @@ function action_car:fast_update()
 	        --end
 	        printf("car <state>: stopped")
 	        self:destroy_car()
-			return true -- апдейты больше не нужны
+			return true -- Р°РїРґРµР№С‚С‹ Р±РѕР»СЊС€Рµ РЅРµ РЅСѓР¶РЅС‹
 		end
 		return false
 	end
@@ -1046,13 +1046,13 @@ function action_car:fast_update()
 	    if self.target_walk_pt >= 0 then
 	        if self:at_target_walkpoint() then
 	            printf("car <move>: at target point")
-	            -- если нет флага ожидания стрельбы или мы уже отстрелялись или пошли в цикле обратно
+	            -- РµСЃР»Рё РЅРµС‚ С„Р»Р°РіР° РѕР¶РёРґР°РЅРёСЏ СЃС‚СЂРµР»СЊР±С‹ РёР»Рё РјС‹ СѓР¶Рµ РѕС‚СЃС‚СЂРµР»СЏР»РёСЃСЊ РёР»Рё РїРѕС€Р»Рё РІ С†РёРєР»Рµ РѕР±СЂР°С‚РЅРѕ
 	            if not self.fire_wait or self.state_cannon == state_cannon_stop then --self.fire_rot_dir == -1 then
 	                    --printf("car <move>: car go to the new point.")
-		                -- Прибыли, выбрать новую точку
+		                -- РџСЂРёР±С‹Р»Рё, РІС‹Р±СЂР°С‚СЊ РЅРѕРІСѓСЋ С‚РѕС‡РєСѓ
 		                self:walk_arrival_callback(self.target_walk_pt)
 		                printf("car <move>: new target = %s", utils.to_str(self.target_walk_pt))
-		                -- меняем точки отстрела
+		                -- РјРµРЅСЏРµРј С‚РѕС‡РєРё РѕС‚СЃС‚СЂРµР»Р°
 		                self:change_fire_pts()
 	            else
 	                printf("car <move>: 1.car stopped.")
@@ -1063,7 +1063,7 @@ function action_car:fast_update()
 	            end
 	        else
 	            printf("car <move>: car keep going.")
-		        -- Продолжать ехать, или поворачиваться
+		        -- РџСЂРѕРґРѕР»Р¶Р°С‚СЊ РµС…Р°С‚СЊ, РёР»Рё РїРѕРІРѕСЂР°С‡РёРІР°С‚СЊСЃСЏ
 		        self:go_to_walkpoint(self.target_walk_pt)
 	        end
 	    else
@@ -1110,7 +1110,7 @@ function action_car:fast_update()
 	            else
 	                if self.car:CanHit() or self.target_fire_pt_idx == 0 then
 		                printf("car <fire>: 2.new fire point.")
-		                -- Прибыли, выбрать новую точку
+		                -- РџСЂРёР±С‹Р»Рё, РІС‹Р±СЂР°С‚СЊ РЅРѕРІСѓСЋ С‚РѕС‡РєСѓ
 		                self:fire_arrival_callback(self.target_fire_pt_idx)
 		            end
 	            end
@@ -1196,7 +1196,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 
 	local new_action = action_car(npc, storage)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 
@@ -1219,7 +1219,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	    st.on_target_vis    = xr_logic.cfg_get_string_and_condlist(ini, section, "on_target_vis", npc)
 	    st.on_target_nvis   = xr_logic.cfg_get_string_and_condlist(ini, section, "on_target_nvis", npc)
 
-	    st.path_walk_info   = nil -- Будут инициализированы в reset(), сейчас пути могут быть еще не загружены.
+	    st.path_walk_info   = nil -- Р‘СѓРґСѓС‚ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅС‹ РІ reset(), СЃРµР№С‡Р°СЃ РїСѓС‚Рё РјРѕРіСѓС‚ Р±С‹С‚СЊ РµС‰Рµ РЅРµ Р·Р°РіСЂСѓР¶РµРЅС‹.
 	    st.path_fire_info   = nil
 	else
 	    st.show_tips    = utils.cfg_get_bool(ini,   section, "show_tips",  npc, false, true)

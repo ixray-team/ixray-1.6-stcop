@@ -46,14 +46,14 @@ function action_assistance:initialize()
 end
 function action_assistance:execute()
 	action_base.execute(self)
-	--'1. Если мы находимся за большим радиусом - необходимо выбрать новую точку
+	--'1. Р•СЃР»Рё РјС‹ РЅР°С…РѕРґРёРјСЃСЏ Р·Р° Р±РѕР»СЊС€РёРј СЂР°РґРёСѓСЃРѕРј - РЅРµРѕР±С…РѕРґРёРјРѕ РІС‹Р±СЂР°С‚СЊ РЅРѕРІСѓСЋ С‚РѕС‡РєСѓ
 	if self.a.assist_point == nil or
 	   (self.object:position():distance_to(self.a.actor:position()) >= self.a.desired_distance and
 	   level.vertex_position(self.a.assist_point):distance_to(self.a.actor:position()) >= 2*self.a.desired_distance)
 	then
 		self.a.assist_point = select_position(self.object, self.a)
 	end
-	--'2. Двигаемся на точку: если точка далеко - бежим, иначе идем
+	--'2. Р”РІРёРіР°РµРјСЃСЏ РЅР° С‚РѕС‡РєСѓ: РµСЃР»Рё С‚РѕС‡РєР° РґР°Р»РµРєРѕ - Р±РµР¶РёРј, РёРЅР°С‡Рµ РёРґРµРј
 	if self.a.assist_point ~= nil then 
 			self.object:set_path_type(game_object.level_path)
 			self.object:set_dest_level_vertex_id(self.a.assist_point)
@@ -76,7 +76,7 @@ function action_assistance:execute()
 	end
 	self.object:set_movement_type(self.move_type)	
 	
-	--'4. Если стоим на точке - петь песенки и прочую херню
+	--'4. Р•СЃР»Рё СЃС‚РѕРёРј РЅР° С‚РѕС‡РєРµ - РїРµС‚СЊ РїРµСЃРµРЅРєРё Рё РїСЂРѕС‡СѓСЋ С…РµСЂРЅСЋ
 	xr_sound.sound_update(self.object, self.sound_wait) 
 
 	if self.a.actor:alive() == false then
@@ -95,14 +95,14 @@ function action_assistance:finalize()
 	end
 end
 
---' Выбор новой позиции
+--' Р’С‹Р±РѕСЂ РЅРѕРІРѕР№ РїРѕР·РёС†РёРё
 function select_position(npc, st)
 	local node_1_vertex_id = nil
 	local node_1_distance = nil
 	local node_2_vertex_id = nil
 	local node_2_distance = nil
 
-	--' проверяем точку слева от актера
+	--' РїСЂРѕРІРµСЂСЏРµРј С‚РѕС‡РєСѓ СЃР»РµРІР° РѕС‚ Р°РєС‚РµСЂР°
 	desired_direction = vector_rotate_y(st.actor:direction(), math.random(50,60) )
 	node_1_vertex_id = level.vertex_in_direction (  st.actor:level_vertex_id(),
 													desired_direction,
@@ -110,7 +110,7 @@ function select_position(npc, st)
 	if npc:accessible(node_1_vertex_id) ~= true or node_1_vertex_id == st.actor:level_vertex_id() then			
 		node_1_vertex_id = nil
 	end
-	--' проверяем точку справа от актера
+	--' РїСЂРѕРІРµСЂСЏРµРј С‚РѕС‡РєСѓ СЃРїСЂР°РІР° РѕС‚ Р°РєС‚РµСЂР°
 	desired_direction = vector_rotate_y(st.actor:direction(), -math.random(50,60) )
 	node_2_vertex_id = level.vertex_in_direction (  st.actor:level_vertex_id(),
 													desired_direction,
@@ -119,7 +119,7 @@ function select_position(npc, st)
 		node_2_vertex_id = nil
 	end
 	
-	--'Проверяем растояния до точек
+	--'РџСЂРѕРІРµСЂСЏРµРј СЂР°СЃС‚РѕСЏРЅРёСЏ РґРѕ С‚РѕС‡РµРє
 	if node_1_vertex_id ~= nil then
 		node_1_distance = npc:position():distance_to_sqr(level.vertex_position(node_1_vertex_id))
 	else
@@ -131,9 +131,9 @@ function select_position(npc, st)
 		node_2_distance = -1
 	end
 	
-	--' Выбираем ближайшую из существующих
+	--' Р’С‹Р±РёСЂР°РµРј Р±Р»РёР¶Р°Р№С€СѓСЋ РёР· СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёС…
 	if node_1_distance == -1 and node_2_distance == -1 then
-		--' Не смогли найти точку, ругаться
+		--' РќРµ СЃРјРѕРіР»Рё РЅР°Р№С‚Рё С‚РѕС‡РєСѓ, СЂСѓРіР°С‚СЊСЃСЏ
 		return -1
 	end
 	if node_1_distance == -1 then

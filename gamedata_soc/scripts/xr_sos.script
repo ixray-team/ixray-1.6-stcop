@@ -7,7 +7,7 @@
 --	file ext:	script
 --	author:		Sidorovich
 --	
---	purpose:	Помощник, мать его... 
+--	purpose:	РџРѕРјРѕС‰РЅРёРє, РјР°С‚СЊ РµРіРѕ... 
 ----------------------------------------------------------------------
 
 local   sos_ignore      =   0
@@ -50,17 +50,17 @@ function decide (npc, sos)
     local health = npc.health
     local rel = npc:relation (sos)
     
-    --Если у нас нет оружия или патронов, то пошел он подальше
+    --Р•СЃР»Рё Сѓ РЅР°СЃ РЅРµС‚ РѕСЂСѓР¶РёСЏ РёР»Рё РїР°С‚СЂРѕРЅРѕРІ, С‚Рѕ РїРѕС€РµР» РѕРЅ РїРѕРґР°Р»СЊС€Рµ
     if wpn_code == wpn_bad then return sos_ignore end
 
-    -- Если мужик друг и у нас более 50 оборотов здоровья, то идем на помощь
+    -- Р•СЃР»Рё РјСѓР¶РёРє РґСЂСѓРі Рё Сѓ РЅР°СЃ Р±РѕР»РµРµ 50 РѕР±РѕСЂРѕС‚РѕРІ Р·РґРѕСЂРѕРІСЊСЏ, С‚Рѕ РёРґРµРј РЅР° РїРѕРјРѕС‰СЊ
     if rel == game_object.friend then
        npc:set_goodwill (100, sos) 
        if health < 0.5 then return sos_ignore end
        return sos_help
     end
     
-    -- Нейтрал и чайник.  
+    -- РќРµР№С‚СЂР°Р» Рё С‡Р°Р№РЅРёРє.  
     if rel == game_object.neutral or rel == game_object.dummy then
        npc:set_goodwill (50, sos) 
        if math.random (1, 100) < throwing_probability and wpn_code == wpn_good and health >= 0.9 then
@@ -71,7 +71,7 @@ function decide (npc, sos)
        return sos_mercant 
     end
 
-    -- Враг. Идем его мочить, если у нас хорошее вооружение и здоровья не менее 90%       
+    -- Р’СЂР°Рі. РРґРµРј РµРіРѕ РјРѕС‡РёС‚СЊ, РµСЃР»Рё Сѓ РЅР°СЃ С…РѕСЂРѕС€РµРµ РІРѕРѕСЂСѓР¶РµРЅРёРµ Рё Р·РґРѕСЂРѕРІСЊСЏ РЅРµ РјРµРЅРµРµ 90%       
     if rel == game_object.enemy then
        npc:set_goodwill (0, sos) 
        if wpn_code == wpn_good and health >= 0.9 then
@@ -79,7 +79,7 @@ function decide (npc, sos)
        end
     end      
     
-    -- не поддается классификации - пошел вон
+    -- РЅРµ РїРѕРґРґР°РµС‚СЃСЏ РєР»Р°СЃСЃРёС„РёРєР°С†РёРё - РїРѕС€РµР» РІРѕРЅ
     return sos_ignore
 end
 -----------------------------------------------------------------------
@@ -87,7 +87,7 @@ end
 
 
 -----------------------------------------------------------------------
--- Эвалуатор включения схемы
+-- Р­РІР°Р»СѓР°С‚РѕСЂ РІРєР»СЋС‡РµРЅРёСЏ СЃС…РµРјС‹
 class "evaluator_enabled" (property_evaluator)
 -----------------------
 function evaluator_enabled:__init (name, storage) super (nil, name)
@@ -101,7 +101,7 @@ end
 
 
 -----------------------------------------------------------------------
--- Эвалуатор доступности сообщения SOS
+-- Р­РІР°Р»СѓР°С‚РѕСЂ РґРѕСЃС‚СѓРїРЅРѕСЃС‚Рё СЃРѕРѕР±С‰РµРЅРёСЏ SOS
 class "evaluator_pda" (property_evaluator)
 -----------------------
 function evaluator_pda:__init (name, storage) super (nil, name)
@@ -122,7 +122,7 @@ end
 
 
 -----------------------------------------------------------------------
--- Эвалуатор необходимости идти за игроком
+-- Р­РІР°Р»СѓР°С‚РѕСЂ РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РёРґС‚Рё Р·Р° РёРіСЂРѕРєРѕРј
 class "evaluator_follow" (property_evaluator)
 -----------------------
 function evaluator_follow:__init (name, storage) super (nil, name)
@@ -135,7 +135,7 @@ end
 -----------------------------------------------------------------------
 
 -----------------------------------------------------------------------
--- Эвалуатор выбора действия
+-- Р­РІР°Р»СѓР°С‚РѕСЂ РІС‹Р±РѕСЂР° РґРµР№СЃС‚РІРёСЏ
 class "evaluator_action" (property_evaluator)
 -----------------------
 function evaluator_action:__init (name, storage) super (nil, name)
@@ -150,7 +150,7 @@ end
 
 
 -----------------------------------------------------------------------
--- Эвалуатор, который говорит, что была (или не была) инициирована система помощи.
+-- Р­РІР°Р»СѓР°С‚РѕСЂ, РєРѕС‚РѕСЂС‹Р№ РіРѕРІРѕСЂРёС‚, С‡С‚Рѕ Р±С‹Р»Р° (РёР»Рё РЅРµ Р±С‹Р»Р°) РёРЅРёС†РёРёСЂРѕРІР°РЅР° СЃРёСЃС‚РµРјР° РїРѕРјРѕС‰Рё.
 class "evaluator_init" (property_evaluator)
 -----------------------
 function evaluator_init:__init (name, storage) super (nil, name)
@@ -164,7 +164,7 @@ end
 
 
 -----------------------------------------------------------------------
--- Инициализация помощи (экшен-заглушка, служит только для определения типа помощи.
+-- РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїРѕРјРѕС‰Рё (СЌРєС€РµРЅ-Р·Р°РіР»СѓС€РєР°, СЃР»СѓР¶РёС‚ С‚РѕР»СЊРєРѕ РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ С‚РёРїР° РїРѕРјРѕС‰Рё.
 class "action_initialize" (action_base)
 -----------------------
 function action_initialize:__init (name, storage) super (nil, name)
@@ -197,7 +197,7 @@ end
 
 
 -----------------------------------------------------------------------
--- Идем помогать
+-- РРґРµРј РїРѕРјРѕРіР°С‚СЊ
 class "action_help" (action_base)
 -----------------------
 function action_help:__init (name, storage) super (nil, name)
@@ -244,7 +244,7 @@ end
 function action_help:execute ()
     action_base.execute (self)
     
-    --если мы в процессе болтовни, то ничего не делаем
+    --РµСЃР»Рё РјС‹ РІ РїСЂРѕС†РµСЃСЃРµ Р±РѕР»С‚РѕРІРЅРё, С‚Рѕ РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
     if self.object:is_talking () == true then
        self.object:set_movement_type (move.stand)
        self.dialog_out = true
@@ -267,7 +267,7 @@ function action_help:execute ()
     
     local dist = distance_between (self.object, self.a.npc)
     
-    --обрабатываем ожидание диалога
+    --РѕР±СЂР°Р±Р°С‚С‹РІР°РµРј РѕР¶РёРґР°РЅРёРµ РґРёР°Р»РѕРіР°
     if distance_between (self.object, self.a.npc) < 1 then
        if self.dialog_first == false then
           self.dialog_first = true

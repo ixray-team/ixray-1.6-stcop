@@ -1,5 +1,5 @@
 --
--- Ğàçğàáîò÷èê: Andrey Fidrya (af@svitonline.com) aka Zmey
+-- Ğ Ğ°Ğ·Ñ€Ğ°Ğ±Ğ¾Ñ‚Ñ‡Ğ¸Ğº: Andrey Fidrya (af@svitonline.com) aka Zmey
 -- 
 
 --[postprocess_psi]
@@ -71,7 +71,7 @@ function pp_radar:process(pp)
 		--printf("force = %d", force)
 	
 		local tm = time_global()
-		local slowd = distance * 0.05 -- ÷åì áîëüøå ìíîæèòåëü, òåì ìåäëåííåé êîëåáàíèÿ
+		local slowd = distance * 0.05 -- Ñ‡ĞµĞ¼ Ğ±Ğ¾Ğ»ÑŒÑˆĞµ Ğ¼Ğ½Ğ¾Ğ¶Ğ¸Ñ‚ĞµĞ»ÑŒ, Ñ‚ĞµĞ¼ Ğ¼ĞµĞ´Ğ»ĞµĞ½Ğ½ĞµĞ¹ ĞºĞ¾Ğ»ĞµĞ±Ğ°Ğ½Ğ¸Ñ
 		if slowd > 1 then
 			tm = (tm / slowd) / 10
 		end
@@ -79,9 +79,9 @@ function pp_radar:process(pp)
 		local percent = math.mod(tm, 200)
 		if percent > 100 then
 			percent = 200 - percent
-			percent = percent * 5 -- ïàäàòü â 5 ğàç áûñòğåå, ÷åì ğîñòè
+			percent = percent * 5 -- Ğ¿Ğ°Ğ´Ğ°Ñ‚ÑŒ Ğ² 5 Ñ€Ğ°Ğ· Ğ±Ñ‹ÑÑ‚Ñ€ĞµĞµ, Ñ‡ĞµĞ¼ Ñ€Ğ¾ÑÑ‚Ğ¸
 		else
-			--percent = percent * 5 -- ğîñòè â 5 ğàç áûñòğåå, ÷åì ñïàäàòü
+			--percent = percent * 5 -- Ñ€Ğ¾ÑÑ‚Ğ¸ Ğ² 5 Ñ€Ğ°Ğ· Ğ±Ñ‹ÑÑ‚Ñ€ĞµĞµ, Ñ‡ĞµĞ¼ ÑĞ¿Ğ°Ğ´Ğ°Ñ‚ÑŒ
 		end
 
 		if percent > 100 then

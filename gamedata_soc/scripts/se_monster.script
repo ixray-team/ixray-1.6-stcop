@@ -1,7 +1,7 @@
 --[[
-Изменения script_version:
-	4 - сохранение поля job_online
-	5 - сохранение поля was_in_smart_terrain
+РР·РјРµРЅРµРЅРёСЏ script_version:
+	4 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ job_online
+	5 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ was_in_smart_terrain
 ]]
 
 class "se_monster" (cse_alife_monster_base)
@@ -18,15 +18,15 @@ function se_monster:__init (section) super (section)
 	self.check_distance = false
 	self.min_distance   = 150
 
-	-- этот флаг берётся из работы смарта
-	-- true     = всегда в онлайне
-	-- false    = всегда в офлайне
-	-- condlist = условие, которое отпределяет true или false
-	-- nil      = смарту всё равно
+	-- СЌС‚РѕС‚ С„Р»Р°Рі Р±РµСЂС‘С‚СЃСЏ РёР· СЂР°Р±РѕС‚С‹ СЃРјР°СЂС‚Р°
+	-- true     = РІСЃРµРіРґР° РІ РѕРЅР»Р°Р№РЅРµ
+	-- false    = РІСЃРµРіРґР° РІ РѕС„Р»Р°Р№РЅРµ
+	-- condlist = СѓСЃР»РѕРІРёРµ, РєРѕС‚РѕСЂРѕРµ РѕС‚РїСЂРµРґРµР»СЏРµС‚ true РёР»Рё false
+	-- nil      = СЃРјР°СЂС‚Сѓ РІСЃС‘ СЂР°РІРЅРѕ
 	self.job_online          = nil
 	self.job_online_condlist = nil
 
-	-- посещал ли сталкер хоть один smart_terrain
+	-- РїРѕСЃРµС‰Р°Р» Р»Рё СЃС‚Р°Р»РєРµСЂ С…РѕС‚СЊ РѕРґРёРЅ smart_terrain
 	self.was_in_smart_terrain = false
 end
 --------------------
@@ -88,28 +88,28 @@ function se_monster:can_switch_online ()
 
 --'	self:get_ini()
 
-    --стандартная проверка у родителя, если нет спавнера или игрок помер
+    --СЃС‚Р°РЅРґР°СЂС‚РЅР°СЏ РїСЂРѕРІРµСЂРєР° Сѓ СЂРѕРґРёС‚РµР»СЏ, РµСЃР»Рё РЅРµС‚ СЃРїР°РІРЅРµСЂР° РёР»Рё РёРіСЂРѕРє РїРѕРјРµСЂ
 	if self.ini == nil or self.spawner_present == false then --or (db.actor ~= nil and db.actor:alive () == false)
 	--if self.ini == nil or self.spawner_present == false or db.actor == nil
 	    return cse_alife_monster_base.can_switch_online (self)
 	end
 
 	if self.online == false then
-   	    -- если игрока нет, то в оффлайн
+   	    -- РµСЃР»Рё РёРіСЂРѕРєР° РЅРµС‚, С‚Рѕ РІ РѕС„С„Р»Р°Р№РЅ
         if db.actor == nil or db.actor:alive () == false then return false end
 
-        --если задана дистанция проверки, то проверим.
+        --РµСЃР»Рё Р·Р°РґР°РЅР° РґРёСЃС‚Р°РЅС†РёСЏ РїСЂРѕРІРµСЂРєРё, С‚Рѕ РїСЂРѕРІРµСЂРёРј.
         if self.check_distance == true then
            --printf ("Check distance")
-           --получим позицию.
+           --РїРѕР»СѓС‡РёРј РїРѕР·РёС†РёСЋ.
            local pos = level.vertex_position (self.m_level_vertex_id)
-            -- проверим дистанцию до игрока. если меньше требуемой, то от винта
+            -- РїСЂРѕРІРµСЂРёРј РґРёСЃС‚Р°РЅС†РёСЋ РґРѕ РёРіСЂРѕРєР°. РµСЃР»Рё РјРµРЅСЊС€Рµ С‚СЂРµР±СѓРµРјРѕР№, С‚Рѕ РѕС‚ РІРёРЅС‚Р°
             if pos:distance_to (db.actor:position ()) < self.min_distance then
                --printf ("Check distance 1")
                return false
             end
         end
-        --все проверки прошли - финал, вызов спавнера
+        --РІСЃРµ РїСЂРѕРІРµСЂРєРё РїСЂРѕС€Р»Рё - С„РёРЅР°Р», РІС‹Р·РѕРІ СЃРїР°РІРЅРµСЂР°
 	    return xr_spawner.check_spawn (self) and cse_alife_monster_base.can_switch_online (self)
     else
         if db.actor == nil or db.actor:alive () == false then return true end
@@ -118,7 +118,7 @@ function se_monster:can_switch_online ()
         end
         if self.check_distance == true then
            local pos = level.vertex_position (self.m_level_vertex_id)
-           -- проверим дистанцию до игрока. если больше требуемой, то от винта
+           -- РїСЂРѕРІРµСЂРёРј РґРёСЃС‚Р°РЅС†РёСЋ РґРѕ РёРіСЂРѕРєР°. РµСЃР»Рё Р±РѕР»СЊС€Рµ С‚СЂРµР±СѓРµРјРѕР№, С‚Рѕ РѕС‚ РІРёРЅС‚Р°
            if pos:distance_to (db.actor:position ()) > self.min_distance then
               return false
            end
@@ -177,7 +177,7 @@ function se_monster:on_register()
 
 	--'self:fill_exclusives()
 
-	--' Нарисовать мапспот с собой
+	--' РќР°СЂРёСЃРѕРІР°С‚СЊ РјР°РїСЃРїРѕС‚ СЃ СЃРѕР±РѕР№
 --'	if self:alive() and sim_statistic.show_monster_spot == true then
 --'		local community, rank = sim_statistic.getNpcType(self)
 --'		level.map_add_object_spot_ser(self.id, "alife_presentation_monstr", self:name().." "..community)
@@ -187,7 +187,7 @@ end
 function se_monster:on_unregister()
 	cse_alife_monster_base.on_unregister( self )
 
-	--' Убрать мапспот с собой
+	--' РЈР±СЂР°С‚СЊ РјР°РїСЃРїРѕС‚ СЃ СЃРѕР±РѕР№
 --'	if sim_statistic.show_monster_spot == true then
 --'		local community, rank = sim_statistic.getNpcType(self)
 --'		level.map_remove_object_spot(self.id, "alife_presentation_monstr")
@@ -199,7 +199,7 @@ end
 function se_monster:on_death(killer)
 	cse_alife_monster_base.on_death(self, killer)
 
-	--' Убрать мапспот с собой
+	--' РЈР±СЂР°С‚СЊ РјР°РїСЃРїРѕС‚ СЃ СЃРѕР±РѕР№
 	if sim_statistic.show_monster_spot == true then
 		local community, rank = sim_statistic.getNpcType(self)
 		level.map_remove_object_spot(self.id, "alife_presentation_monstr")

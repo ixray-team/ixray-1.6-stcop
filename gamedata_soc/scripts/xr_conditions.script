@@ -1,13 +1,13 @@
 
--- Каждая функция в этом файле используется как условие xr_logic: {=функция !функция}
--- Если в функцию необходимо передавать параметры, то:  {=функция(парам1:парам2:...) !функция(парам1:парам2:...)}
--- Формат: function f(actor, npc). В случае передачи параметров: function f(actor, npc, p).
--- Детали реализации нужно помещать в файл xr_conditions_impl.script, а не в этот файл.
+-- РљР°Р¶РґР°СЏ С„СѓРЅРєС†РёСЏ РІ СЌС‚РѕРј С„Р°Р№Р»Рµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РєР°Рє СѓСЃР»РѕРІРёРµ xr_logic: {=С„СѓРЅРєС†РёСЏ !С„СѓРЅРєС†РёСЏ}
+-- Р•СЃР»Рё РІ С„СѓРЅРєС†РёСЋ РЅРµРѕР±С…РѕРґРёРјРѕ РїРµСЂРµРґР°РІР°С‚СЊ РїР°СЂР°РјРµС‚СЂС‹, С‚Рѕ:  {=С„СѓРЅРєС†РёСЏ(РїР°СЂР°Рј1:РїР°СЂР°Рј2:...) !С„СѓРЅРєС†РёСЏ(РїР°СЂР°Рј1:РїР°СЂР°Рј2:...)}
+-- Р¤РѕСЂРјР°С‚: function f(actor, npc). Р’ СЃР»СѓС‡Р°Рµ РїРµСЂРµРґР°С‡Рё РїР°СЂР°РјРµС‚СЂРѕРІ: function f(actor, npc, p).
+-- Р”РµС‚Р°Р»Рё СЂРµР°Р»РёР·Р°С†РёРё РЅСѓР¶РЅРѕ РїРѕРјРµС‰Р°С‚СЊ РІ С„Р°Р№Р» xr_conditions_impl.script, Р° РЅРµ РІ СЌС‚РѕС‚ С„Р°Р№Р».
 
 -- ----------------------------------------------------------------------------------------------------
--- Общие функции
+-- РћР±С‰РёРµ С„СѓРЅРєС†РёРё
 -- ----------------------------------------------------------------------------------------------------
--- видим ли мы еще "черный экран" или нет?
+-- РІРёРґРёРј Р»Рё РјС‹ РµС‰Рµ "С‡РµСЂРЅС‹Р№ СЌРєСЂР°РЅ" РёР»Рё РЅРµС‚?
 function black_screen(actor, npc)
 	return device().precache_frame > 1
 end
@@ -17,7 +17,7 @@ function is_actor_sleeping(actor, npc)
     return db.actor:is_actor_sleeping()
 end
 
--- проверка, что актер жив
+-- РїСЂРѕРІРµСЂРєР°, С‡С‚Рѕ Р°РєС‚РµСЂ Р¶РёРІ
 function actor_alive(actor, npc)
     if db.actor and db.actor:alive() then
 	    return true
@@ -25,7 +25,7 @@ function actor_alive(actor, npc)
 	return false
 end
 
--- проверка, что актер мертв
+-- РїСЂРѕРІРµСЂРєР°, С‡С‚Рѕ Р°РєС‚РµСЂ РјРµСЂС‚РІ
 function actor_dead(actor, npc)
     if db.actor and not db.actor:alive() then
 	    return true
@@ -57,8 +57,8 @@ function dist_to_actor_ge(actor, npc, p)
     return d and npc:position():distance_to_sqr(actor:position()) >= d * d
 end
 
--- проверка того что дистанция до обьекта <= заданной
--- параметры: [sid,dist]
+-- РїСЂРѕРІРµСЂРєР° С‚РѕРіРѕ С‡С‚Рѕ РґРёСЃС‚Р°РЅС†РёСЏ РґРѕ РѕР±СЊРµРєС‚Р° <= Р·Р°РґР°РЅРЅРѕР№
+-- РїР°СЂР°РјРµС‚СЂС‹: [sid,dist]
 function distance_to_obj_le(actor, npc, p)
     local npc1 = level_object_by_sid(p[1])
     if npc1 then
@@ -69,8 +69,8 @@ function distance_to_obj_le(actor, npc, p)
 	return false
 end
 
--- проверка того что дистанция до обьекта >= заданной
--- параметры: [sid,dist]
+-- РїСЂРѕРІРµСЂРєР° С‚РѕРіРѕ С‡С‚Рѕ РґРёСЃС‚Р°РЅС†РёСЏ РґРѕ РѕР±СЊРµРєС‚Р° >= Р·Р°РґР°РЅРЅРѕР№
+-- РїР°СЂР°РјРµС‚СЂС‹: [sid,dist]
 function distance_to_obj_ge(actor, npc, p)
     local npc1 = level_object_by_sid(p[1])
     if npc1 then
@@ -81,11 +81,11 @@ function distance_to_obj_ge(actor, npc, p)
 	return false
 end
 
--- проверка того что npc находится в заданной зоне
--- !!! ВЫЗЫВАТЬ ТОЛЬКО ИЗ SPACE RESTRICTOR !!!
--- параметры: [sid1:sid2:...]
--- !!! НЕКОРРЕКТНО РАБОТАЕТ ДЛЯ ОБЬЕКТОВ В offline'e !!!
--- !!! ДЛЯ ГАРАНТИИ ИСПОЛЬЗОВАТЬ one_obj_in_zone !!!
+-- РїСЂРѕРІРµСЂРєР° С‚РѕРіРѕ С‡С‚Рѕ npc РЅР°С…РѕРґРёС‚СЃСЏ РІ Р·Р°РґР°РЅРЅРѕР№ Р·РѕРЅРµ
+-- !!! Р’Р«Р—Р«Р’РђРўР¬ РўРћР›Р¬РљРћ РР— SPACE RESTRICTOR !!!
+-- РїР°СЂР°РјРµС‚СЂС‹: [sid1:sid2:...]
+-- !!! РќР•РљРћР Р Р•РљРўРќРћ Р РђР‘РћРўРђР•Рў Р”Р›РЇ РћР‘Р¬Р•РљРўРћР’ Р’ offline'e !!!
+-- !!! Р”Р›РЇ Р“РђР РђРќРўРР РРЎРџРћР›Р¬Р—РћР’РђРўР¬ one_obj_in_zone !!!
 function obj_in_zone(actor, zone, p)
     local npc1, i, v = 0, 0, 0
 	for i, v in pairs(p) do
@@ -97,8 +97,8 @@ function obj_in_zone(actor, zone, p)
     return false
 end
 
--- параметры: [sid:def*] def=true|false
--- * параметр не обязателен
+-- РїР°СЂР°РјРµС‚СЂС‹: [sid:def*] def=true|false
+-- * РїР°СЂР°РјРµС‚СЂ РЅРµ РѕР±СЏР·Р°С‚РµР»РµРЅ
 function one_obj_in_zone(actor, zone, p)
     --local def_offline = (p[2] ~= "false") -- default (true) result if npc in offline
 	local obj1 = level_object_by_sid(p[1])
@@ -122,19 +122,19 @@ function actor_out_zone(actor, npc, p)
 	return not utils.npc_in_zone(db.actor, db.zone_by_name[p[1]])
 end
 
--- true, если здоровье npc <= заданному значению
--- false в противном случае
+-- true, РµСЃР»Рё Р·РґРѕСЂРѕРІСЊРµ npc <= Р·Р°РґР°РЅРЅРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ
+-- false РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ
 function health_le(actor, npc, p)
     return p[1] and npc.health < p[1]
 end
 
--- true, если здоровье вертолёта <= заданному значению
--- false в противном случае
+-- true, РµСЃР»Рё Р·РґРѕСЂРѕРІСЊРµ РІРµСЂС‚РѕР»С‘С‚Р° <= Р·Р°РґР°РЅРЅРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ
+-- false РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ
 function heli_health_le(actor, obj, p)
     return p[1] and obj:get_helicopter():GetfHealth() < p[1]
 end
 
--- видит ли вертолёт npc (по story id)
+-- РІРёРґРёС‚ Р»Рё РІРµСЂС‚РѕР»С‘С‚ npc (РїРѕ story id)
 function heli_see_npc(actor, obj, p)
 	if p[1] then
 		local o = level_object_by_sid( p[1] )
@@ -145,8 +145,8 @@ function heli_see_npc(actor, obj, p)
 	end
 end
 
--- Проверка на принадлежность врага к одной из групп
--- (можно задавать несколько через двоеточие)
+-- РџСЂРѕРІРµСЂРєР° РЅР° РїСЂРёРЅР°РґР»РµР¶РЅРѕСЃС‚СЊ РІСЂР°РіР° Рє РѕРґРЅРѕР№ РёР· РіСЂСѓРїРї
+-- (РјРѕР¶РЅРѕ Р·Р°РґР°РІР°С‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ С‡РµСЂРµР· РґРІРѕРµС‚РѕС‡РёРµ)
 function enemy_group(actor, npc, p)
 	local g = db.storage[npc:id()].enemy:group()
 	local i, v = 0, 0
@@ -221,8 +221,8 @@ function npc_profile(actor, npc, p)
 end
 
 
--- Проверка того что удар был нанесен кем-то из npc указанных в списке.
--- Параметры это story_id персонажей. Можно задавать несколько story_id.
+-- РџСЂРѕРІРµСЂРєР° С‚РѕРіРѕ С‡С‚Рѕ СѓРґР°СЂ Р±С‹Р» РЅР°РЅРµСЃРµРЅ РєРµРј-С‚Рѕ РёР· npc СѓРєР°Р·Р°РЅРЅС‹С… РІ СЃРїРёСЃРєРµ.
+-- РџР°СЂР°РјРµС‚СЂС‹ СЌС‚Рѕ story_id РїРµСЂСЃРѕРЅР°Р¶РµР№. РњРѕР¶РЅРѕ Р·Р°РґР°РІР°С‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ story_id.
 function hitted_by(actor, npc, p)
 	local npc1
 	local t = db.storage[npc:id()].hit
@@ -238,7 +238,7 @@ function hitted_by(actor, npc, p)
 	return false
 end
 
--- Проверка, что лучшее оружие персонажа - пистолет
+-- РџСЂРѕРІРµСЂРєР°, С‡С‚Рѕ Р»СѓС‡С€РµРµ РѕСЂСѓР¶РёРµ РїРµСЂСЃРѕРЅР°Р¶Р° - РїРёСЃС‚РѕР»РµС‚
 function best_pistol(actor, npc)
 	local pistol = npc:item_in_slot(1)
 	if pistol ~= nil then
@@ -265,8 +265,8 @@ function best_pistol(actor, npc)
 ]]
 end
 
--- Проверка того что персонаж был убит кем-то из npc указанных в списке.
--- Параметры это story_id персонажей. Можно задавать несколько story_id.
+-- РџСЂРѕРІРµСЂРєР° С‚РѕРіРѕ С‡С‚Рѕ РїРµСЂСЃРѕРЅР°Р¶ Р±С‹Р» СѓР±РёС‚ РєРµРј-С‚Рѕ РёР· npc СѓРєР°Р·Р°РЅРЅС‹С… РІ СЃРїРёСЃРєРµ.
+-- РџР°СЂР°РјРµС‚СЂС‹ СЌС‚Рѕ story_id РїРµСЂСЃРѕРЅР°Р¶РµР№. РњРѕР¶РЅРѕ Р·Р°РґР°РІР°С‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ story_id.
 function killed_by(actor, npc, p)
 	local npc1
 	local t = db.storage[npc:id()].death
@@ -282,9 +282,9 @@ function killed_by(actor, npc, p)
 	return false
 end
 
--- проверка (по story_id) все ли проверяемые сталкеры живы
--- TODO: исправить ситуацию, когда выдается неправильный результат для обьектов, которые
---       не успели проспавниться.
+-- РїСЂРѕРІРµСЂРєР° (РїРѕ story_id) РІСЃРµ Р»Рё РїСЂРѕРІРµСЂСЏРµРјС‹Рµ СЃС‚Р°Р»РєРµСЂС‹ Р¶РёРІС‹
+-- TODO: РёСЃРїСЂР°РІРёС‚СЊ СЃРёС‚СѓР°С†РёСЋ, РєРѕРіРґР° РІС‹РґР°РµС‚СЃСЏ РЅРµРїСЂР°РІРёР»СЊРЅС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚ РґР»СЏ РѕР±СЊРµРєС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ
+--       РЅРµ СѓСЃРїРµР»Рё РїСЂРѕСЃРїР°РІРЅРёС‚СЊСЃСЏ.
 function is_alive_all(actor, npc, p)
 	local npc1
 	for i, v in pairs(p) do
@@ -296,9 +296,9 @@ function is_alive_all(actor, npc, p)
 	return true
 end
 
--- проверка (по story_id) того, что чотя бы один из проверяемых сталкеров жив
--- TODO: исправить ситуацию, когда выдается неправильный результат для обьектов, которые
---       не успели проспавниться.
+-- РїСЂРѕРІРµСЂРєР° (РїРѕ story_id) С‚РѕРіРѕ, С‡С‚Рѕ С‡РѕС‚СЏ Р±С‹ РѕРґРёРЅ РёР· РїСЂРѕРІРµСЂСЏРµРјС‹С… СЃС‚Р°Р»РєРµСЂРѕРІ Р¶РёРІ
+-- TODO: РёСЃРїСЂР°РІРёС‚СЊ СЃРёС‚СѓР°С†РёСЋ, РєРѕРіРґР° РІС‹РґР°РµС‚СЃСЏ РЅРµРїСЂР°РІРёР»СЊРЅС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚ РґР»СЏ РѕР±СЊРµРєС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ
+--       РЅРµ СѓСЃРїРµР»Рё РїСЂРѕСЃРїР°РІРЅРёС‚СЊСЃСЏ.
 function is_alive_one(actor, npc, p)
 	local npc1
 	for i, v in pairs(p) do
@@ -310,18 +310,18 @@ function is_alive_one(actor, npc, p)
 	return false
 end
 
--- проверка (по story_id) того, что проверяемыq npc жив
--- TODO: исправить ситуацию, когда выдается неправильный результат для обьектов, которые
---       не успели проспавниться.
+-- РїСЂРѕРІРµСЂРєР° (РїРѕ story_id) С‚РѕРіРѕ, С‡С‚Рѕ РїСЂРѕРІРµСЂСЏРµРјС‹q npc Р¶РёРІ
+-- TODO: РёСЃРїСЂР°РІРёС‚СЊ СЃРёС‚СѓР°С†РёСЋ, РєРѕРіРґР° РІС‹РґР°РµС‚СЃСЏ РЅРµРїСЂР°РІРёР»СЊРЅС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚ РґР»СЏ РѕР±СЊРµРєС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ
+--       РЅРµ СѓСЃРїРµР»Рё РїСЂРѕСЃРїР°РІРЅРёС‚СЊСЃСЏ.
 function is_alive(actor, npc, p)
 	local npc1
 	npc1 = level_object_by_sid(p[1])
 	return npc1 and npc1:alive()
 end
 
--- проверка (по story_id) все ли проверяемые сталкеры мертвы
--- TODO: исправить ситуацию, когда выдается неправильный результат для обьектов, которые
---       не успели проспавниться.
+-- РїСЂРѕРІРµСЂРєР° (РїРѕ story_id) РІСЃРµ Р»Рё РїСЂРѕРІРµСЂСЏРµРјС‹Рµ СЃС‚Р°Р»РєРµСЂС‹ РјРµСЂС‚РІС‹
+-- TODO: РёСЃРїСЂР°РІРёС‚СЊ СЃРёС‚СѓР°С†РёСЋ, РєРѕРіРґР° РІС‹РґР°РµС‚СЃСЏ РЅРµРїСЂР°РІРёР»СЊРЅС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚ РґР»СЏ РѕР±СЊРµРєС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ
+--       РЅРµ СѓСЃРїРµР»Рё РїСЂРѕСЃРїР°РІРЅРёС‚СЊСЃСЏ.
 function is_dead_all(actor, npc, p)
 	local npc1
 	for i, v in pairs(p) do
@@ -337,9 +337,9 @@ function is_dead_all(actor, npc, p)
 	return true
 end
 
--- проверка (по story_id) того, что хотя бы один из проверяемых сталкеров мертв
--- TODO: исправить ситуацию, когда выдается неправильный результат для обьектов, которые
---       не успели проспавниться.
+-- РїСЂРѕРІРµСЂРєР° (РїРѕ story_id) С‚РѕРіРѕ, С‡С‚Рѕ С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ РёР· РїСЂРѕРІРµСЂСЏРµРјС‹С… СЃС‚Р°Р»РєРµСЂРѕРІ РјРµСЂС‚РІ
+-- TODO: РёСЃРїСЂР°РІРёС‚СЊ СЃРёС‚СѓР°С†РёСЋ, РєРѕРіРґР° РІС‹РґР°РµС‚СЃСЏ РЅРµРїСЂР°РІРёР»СЊРЅС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚ РґР»СЏ РѕР±СЊРµРєС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ
+--       РЅРµ СѓСЃРїРµР»Рё РїСЂРѕСЃРїР°РІРЅРёС‚СЊСЃСЏ.
 function is_dead_one(actor, npc, p)
 	local npc1
 	for i, v in pairs(p) do
@@ -352,16 +352,16 @@ function is_dead_one(actor, npc, p)
 	return false
 end
 
--- проверка (по story_id) того, что хотя бы один из проверяемых сталкеров мертв
--- TODO: исправить ситуацию, когда выдается неправильный результат для обьектов, которые
---       не успели проспавниться.
+-- РїСЂРѕРІРµСЂРєР° (РїРѕ story_id) С‚РѕРіРѕ, С‡С‚Рѕ С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ РёР· РїСЂРѕРІРµСЂСЏРµРјС‹С… СЃС‚Р°Р»РєРµСЂРѕРІ РјРµСЂС‚РІ
+-- TODO: РёСЃРїСЂР°РІРёС‚СЊ СЃРёС‚СѓР°С†РёСЋ, РєРѕРіРґР° РІС‹РґР°РµС‚СЃСЏ РЅРµРїСЂР°РІРёР»СЊРЅС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚ РґР»СЏ РѕР±СЊРµРєС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ
+--       РЅРµ СѓСЃРїРµР»Рё РїСЂРѕСЃРїР°РІРЅРёС‚СЊСЃСЏ.
 function is_dead(actor, npc, p)
 	local npc1
 	npc1 = level_object_by_sid(p[1])
 	return not npc1 or not npc1:alive()
 end
 
--- проверка (по story_id) того, что нашим врагом есть хотя бы кото-то один из списка
+-- РїСЂРѕРІРµСЂРєР° (РїРѕ story_id) С‚РѕРіРѕ, С‡С‚Рѕ РЅР°С€РёРј РІСЂР°РіРѕРј РµСЃС‚СЊ С…РѕС‚СЏ Р±С‹ РєРѕС‚Рѕ-С‚Рѕ РѕРґРёРЅ РёР· СЃРїРёСЃРєР°
 function check_fighting(actor, npc, p)
 	local enemy = db.storage[npc:id()].enemy
 	local sid
@@ -393,32 +393,32 @@ function val_nap1_check_fighting(actor, npc, p)
 	return false
 end
 
--- true, если гулага с таким именем (или story id) не существует или в нём нет никого
+-- true, РµСЃР»Рё РіСѓР»Р°РіР° СЃ С‚Р°РєРёРј РёРјРµРЅРµРј (РёР»Рё story id) РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚ РёР»Рё РІ РЅС‘Рј РЅРµС‚ РЅРёРєРѕРіРѕ
 function gulag_empty(actor, npc, p)
 	return ( not p[1] ) or ( xr_gulag.getGulagPopulationComed( p[1] ) == 0 )
 end
 
--- true, если  в указанном гулаге народу меньше чем надо.
+-- true, РµСЃР»Рё  РІ СѓРєР°Р·Р°РЅРЅРѕРј РіСѓР»Р°РіРµ РЅР°СЂРѕРґСѓ РјРµРЅСЊС€Рµ С‡РµРј РЅР°РґРѕ.
 function gulag_population_le(actor, npc, p)
 	return ( not p[1] or not p[2] ) or ( xr_gulag.getGulagPopulation( p[1] ) <= p[2] )
 end
 
--- true, если  в указанном гулаге народу больше чем надо.
+-- true, РµСЃР»Рё  РІ СѓРєР°Р·Р°РЅРЅРѕРј РіСѓР»Р°РіРµ РЅР°СЂРѕРґСѓ Р±РѕР»СЊС€Рµ С‡РµРј РЅР°РґРѕ.
 function gulag_population_ge(actor, npc, p)
 	return ( not p[1] or not p[2] ) or ( xr_gulag.getGulagPopulation( p[1] ) >= p[2] )
 end
 
--- true, если  в указанном гулаге пришло народу меньше чем надо.
+-- true, РµСЃР»Рё  РІ СѓРєР°Р·Р°РЅРЅРѕРј РіСѓР»Р°РіРµ РїСЂРёС€Р»Рѕ РЅР°СЂРѕРґСѓ РјРµРЅСЊС€Рµ С‡РµРј РЅР°РґРѕ.
 function gulag_population_comed_le(actor, npc, p)
 	return ( not p[1] or not p[2] ) or ( xr_gulag.getGulagPopulationComed( p[1] ) <= p[2] )
 end
 
--- true, если  в указанном гулаге пришло народу больше чем надо.
+-- true, РµСЃР»Рё  РІ СѓРєР°Р·Р°РЅРЅРѕРј РіСѓР»Р°РіРµ РїСЂРёС€Р»Рѕ РЅР°СЂРѕРґСѓ Р±РѕР»СЊС€Рµ С‡РµРј РЅР°РґРѕ.
 function gulag_population_comed_ge(actor, npc, p)
 	return ( not p[1] or not p[2] ) or ( xr_gulag.getGulagPopulationComed( p[1] ) >= p[2] )
 end
 
--- возвращает количество опасных персонажей в гулаге(живых и не раненных).
+-- РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РѕРїР°СЃРЅС‹С… РїРµСЂСЃРѕРЅР°Р¶РµР№ РІ РіСѓР»Р°РіРµ(Р¶РёРІС‹С… Рё РЅРµ СЂР°РЅРµРЅРЅС‹С…).
 function gulag_population_active(actor, npc, p)
 	 local gulag = xr_gulag.get_gulag_by_name( p[1] )
 
@@ -482,18 +482,18 @@ function gulag_population_active_le(actor, npc, p)
 	return val <= p[2]
 end
 
--- true, если в указанном гулаге потери больше или равны заданным
+-- true, РµСЃР»Рё РІ СѓРєР°Р·Р°РЅРЅРѕРј РіСѓР»Р°РіРµ РїРѕС‚РµСЂРё Р±РѕР»СЊС€Рµ РёР»Рё СЂР°РІРЅС‹ Р·Р°РґР°РЅРЅС‹Рј
 function gulag_casualities_ge(actor, npc, p)
 	return ( p[1] ~= nil and p[2] ~= nil ) and ( xr_gulag.getCasualities( p[1] ) >= p[2] )
 end
 
--- true, если у актёра в инвентаре есть указанный предмет
--- false, если нету, либо не задана секция предмета
+-- true, РµСЃР»Рё Сѓ Р°РєС‚С‘СЂР° РІ РёРЅРІРµРЅС‚Р°СЂРµ РµСЃС‚СЊ СѓРєР°Р·Р°РЅРЅС‹Р№ РїСЂРµРґРјРµС‚
+-- false, РµСЃР»Рё РЅРµС‚Сѓ, Р»РёР±Рѕ РЅРµ Р·Р°РґР°РЅР° СЃРµРєС†РёСЏ РїСЂРµРґРјРµС‚Р°
 function actor_has_item(actor, npc, p)
 	return p[1] ~= nil and actor:object( p[1] ) ~= nil
 end
 
--- возвращает true, если в текущей схеме персонажа взведён указанный сигнал.
+-- РІРѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё РІ С‚РµРєСѓС‰РµР№ СЃС…РµРјРµ РїРµСЂСЃРѕРЅР°Р¶Р° РІР·РІРµРґС‘РЅ СѓРєР°Р·Р°РЅРЅС‹Р№ СЃРёРіРЅР°Р».
 function signal(actor, npc, p)
 	if p[1] then
 		local st   = db.storage[npc:id()]
@@ -505,7 +505,7 @@ function signal(actor, npc, p)
 	end
 end
 
--- возвращает true, если значение указанного счётчика актёра больше указанного числа
+-- РІРѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё Р·РЅР°С‡РµРЅРёРµ СѓРєР°Р·Р°РЅРЅРѕРіРѕ СЃС‡С‘С‚С‡РёРєР° Р°РєС‚С‘СЂР° Р±РѕР»СЊС€Рµ СѓРєР°Р·Р°РЅРЅРѕРіРѕ С‡РёСЃР»Р°
 function counter_greater(actor, npc, p)
 	if p[1] and p[2] then
 		local c = xr_logic.pstor_retrieve(actor, p[1], 0)
@@ -515,19 +515,19 @@ function counter_greater(actor, npc, p)
 	end
 end
 
--- определяет нечётность интервала игрового времени. интервал нужно передать в p[1]
+-- РѕРїСЂРµРґРµР»СЏРµС‚ РЅРµС‡С‘С‚РЅРѕСЃС‚СЊ РёРЅС‚РµСЂРІР°Р»Р° РёРіСЂРѕРІРѕРіРѕ РІСЂРµРјРµРЅРё. РёРЅС‚РµСЂРІР°Р» РЅСѓР¶РЅРѕ РїРµСЂРµРґР°С‚СЊ РІ p[1]
 function odd_time_interval(actor, npc, p)
 	return odd( game.time() / p[1] )
 end
 
--- текущий враг на расстоянии больше или равном заданному расстоянию
--- для combat_ignore
+-- С‚РµРєСѓС‰РёР№ РІСЂР°Рі РЅР° СЂР°СЃСЃС‚РѕСЏРЅРёРё Р±РѕР»СЊС€Рµ РёР»Рё СЂР°РІРЅРѕРј Р·Р°РґР°РЅРЅРѕРјСѓ СЂР°СЃСЃС‚РѕСЏРЅРёСЋ
+-- РґР»СЏ combat_ignore
 function fighting_dist_ge(actor, npc, p)
 	return db.storage[npc:id()].enemy:position():distance_to( npc:position() ) >= p[1]
 end
 
 -------------------------------------------------------------------------------------------------------
--- Функции поддержки kamp
+-- Р¤СѓРЅРєС†РёРё РїРѕРґРґРµСЂР¶РєРё kamp
 function _kamp_talk(actor, npc)
 	if xr_kamp.kamp_stalkers[npc:id()] then
 		return xr_kamp.kamp_stalkers[npc:id()]
@@ -555,7 +555,7 @@ function see_enemy(actor, npc)
 end
 
 
--- DELME: для тестов: {=test_condition_actor_near}
+-- DELME: РґР»СЏ С‚РµСЃС‚РѕРІ: {=test_condition_actor_near}
 function test_condition_actor_near(actor, npc)
 	if distance_between(actor, npc) <= 3 then
 		return true
@@ -575,7 +575,7 @@ function see_actor(actor, npc)
 	return npc:alive() and npc:see(actor)
 end
 
--- видит ли вертолёт актера
+-- РІРёРґРёС‚ Р»Рё РІРµСЂС‚РѕР»С‘С‚ Р°РєС‚РµСЂР°
 function heli_see_actor(actor, obj)
 	return obj:get_helicopter():isVisible(actor)
 end
@@ -630,14 +630,14 @@ function heavy_wounded(actor, npc)
 end
 
 --[[
-Проверка на заданный период времени
-Время задается в минутах
-Параметры: (time_shift:period_min)
-           time_shift - периодичность срабатывания
-           period - период срабатывания на котором мы получаем true
+РџСЂРѕРІРµСЂРєР° РЅР° Р·Р°РґР°РЅРЅС‹Р№ РїРµСЂРёРѕРґ РІСЂРµРјРµРЅРё
+Р’СЂРµРјСЏ Р·Р°РґР°РµС‚СЃСЏ РІ РјРёРЅСѓС‚Р°С…
+РџР°СЂР°РјРµС‚СЂС‹: (time_shift:period_min)
+           time_shift - РїРµСЂРёРѕРґРёС‡РЅРѕСЃС‚СЊ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ
+           period - РїРµСЂРёРѕРґ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ РЅР° РєРѕС‚РѕСЂРѕРј РјС‹ РїРѕР»СѓС‡Р°РµРј true
 
-Примеры:
-time_period(60:10) - возвращает true каждый час на протяжении первых 10 минут
+РџСЂРёРјРµСЂС‹:
+time_period(60:10) - РІРѕР·РІСЂР°С‰Р°РµС‚ true РєР°Р¶РґС‹Р№ С‡Р°СЃ РЅР° РїСЂРѕС‚СЏР¶РµРЅРёРё РїРµСЂРІС‹С… 10 РјРёРЅСѓС‚
 --]]
 function time_period(actor, npc, p)
     local tshift, period = p[1], p[2]
@@ -681,7 +681,7 @@ function mob_was_hit(actor, npc)
 	return false
 end
 
--- текущий враг актёр?
+-- С‚РµРєСѓС‰РёР№ РІСЂР°Рі Р°РєС‚С‘СЂ?
 function fighting_actor(actor, npc)
     local enemy = db.storage[npc:id()].enemy
     return enemy and enemy:id() == actor:id()
@@ -692,18 +692,18 @@ function dont_fighting_actor(actor, npc)
     return enemy and enemy:id() ~= actor:id()
 end
 
--- текущий враг на расстоянии больше или равном 20м
+-- С‚РµРєСѓС‰РёР№ РІСЂР°Рі РЅР° СЂР°СЃСЃС‚РѕСЏРЅРёРё Р±РѕР»СЊС€Рµ РёР»Рё СЂР°РІРЅРѕРј 20Рј
 function fighting_dist_ge_20(actor, npc)
 	return db.storage[npc:id()].enemy:position():distance_to_sqr( npc:position() ) >= 400 -- 20^2
 end
 
--- расстояние до текущего реального врага больше или равно заданного значения
+-- СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ С‚РµРєСѓС‰РµРіРѕ СЂРµР°Р»СЊРЅРѕРіРѕ РІСЂР°РіР° Р±РѕР»СЊС€Рµ РёР»Рё СЂР°РІРЅРѕ Р·Р°РґР°РЅРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ
 function dist_to_enemy_ge(actor, npc, p)
     local d, enemy = p[1], npc:best_enemy()
 	return d and enemy and enemy:position():distance_to_sqr(npc:position()) >= d * d
 end
 
--- расстояние до текущего реального врага меньше или равно заданного значения
+-- СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ С‚РµРєСѓС‰РµРіРѕ СЂРµР°Р»СЊРЅРѕРіРѕ РІСЂР°РіР° РјРµРЅСЊС€Рµ РёР»Рё СЂР°РІРЅРѕ Р·Р°РґР°РЅРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ
 function dist_to_enemy_le(actor, npc, p)
     local d, enemy = p[1], npc:best_enemy()
 	return d and enemy and enemy:position():distance_to_sqr(npc:position()) <= d * d
@@ -815,7 +815,7 @@ function val_bandits_ci_actor(actor, npc, p)
 	return false
 end
 
--- параметры: [dist]
+-- РїР°СЂР°РјРµС‚СЂС‹: [dist]
 function val_escort_captive_dist_to_guards_ge(actor, npc, p)
     local d2 = p[1] * p[1]
 
@@ -1156,8 +1156,8 @@ end
 -- Special for Agroprom
 -------------------------------------------------------------------------------------
 
-function agr_boars_nest_dead(actor, npc)		-- название функции
-		local g = xr_gulag.fraction["agr_boar_nest"]  -- имя гулага
+function agr_boars_nest_dead(actor, npc)		-- РЅР°Р·РІР°РЅРёРµ С„СѓРЅРєС†РёРё
+		local g = xr_gulag.fraction["agr_boar_nest"]  -- РёРјСЏ РіСѓР»Р°РіР°
 		return (not g) or (g:get_population() == 0)
 end
 

@@ -59,10 +59,10 @@ function main (need_items)
 	
 	alife():create ("cit_doctors_key", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
 
-    -- Создадим различные объекты, которые нам необходимы
+    -- РЎРѕР·РґР°РґРёРј СЂР°Р·Р»РёС‡РЅС‹Рµ РѕР±СЉРµРєС‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅР°Рј РЅРµРѕР±С…РѕРґРёРјС‹
 	alife():create ("good_psy_helmet", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
 
-    -- Создадим различные объекты, которые нам необходимы
+    -- РЎРѕР·РґР°РґРёРј СЂР°Р·Р»РёС‡РЅС‹Рµ РѕР±СЉРµРєС‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅР°Рј РЅРµРѕР±С…РѕРґРёРјС‹
 	alife():create ("wpn_g36", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
 	    for a = 1, 12, 1 do
 	        alife():create ("ammo_5.56x45_ss190", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())

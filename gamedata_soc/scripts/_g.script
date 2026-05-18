@@ -2,13 +2,13 @@ if (jit == nil) then
 	profiler.setup_hook	()
 end
 
-schemes = {} -- соответствие схем модулям
-stypes = {} -- типы схем
+schemes = {} -- СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ СЃС…РµРј РјРѕРґСѓР»СЏРј
+stypes = {} -- С‚РёРїС‹ СЃС…РµРј
 
--- Загружает схему из файла на диске и активирует в мотиваторе.
--- Здесь:
--- 	filename - имя файла, в котором реализована схема, без расширения
--- 	scheme - имя схемы
+-- Р—Р°РіСЂСѓР¶Р°РµС‚ СЃС…РµРјСѓ РёР· С„Р°Р№Р»Р° РЅР° РґРёСЃРєРµ Рё Р°РєС‚РёРІРёСЂСѓРµС‚ РІ РјРѕС‚РёРІР°С‚РѕСЂРµ.
+-- Р—РґРµСЃСЊ:
+-- 	filename - РёРјСЏ С„Р°Р№Р»Р°, РІ РєРѕС‚РѕСЂРѕРј СЂРµР°Р»РёР·РѕРІР°РЅР° СЃС…РµРјР°, Р±РµР· СЂР°СЃС€РёСЂРµРЅРёСЏ
+-- 	scheme - РёРјСЏ СЃС…РµРјС‹
 function load_scheme(filename, scheme, stype)
 	schemes[scheme] = filename
 	stypes[scheme] = stype
@@ -97,7 +97,7 @@ function debug_get_level_object(obj_name)
     while res == nil do
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!! НЕ ЗАКОММЕНТАРИВАЙТЕ, ИНАЧЕ НЕ БУДЕТ ВИДНО ОШИБОК ПРИ РАССТАНОВКЕ ОБЪЕКТОВ !!!!!
+// !!!!! РќР• Р—РђРљРћРњРњР•РќРўРђР РР’РђР™РўР•, РРќРђР§Р• РќР• Р‘РЈР”Р•Рў Р’РР”РќРћ РћРЁРР‘РћРљ РџР Р Р РђРЎРЎРўРђРќРћР’РљР• РћР‘РЄР•РљРўРћР’ !!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         printf("get_level_object() is waiting for object \"%s\"", obj_name)
 
@@ -120,14 +120,14 @@ function distance_between(obj1, obj2)
     return obj1:position():distance_to(obj2:position())
 end
 
-// Если один объект nil, например нет актера, то считаем, что он далеко
+// Р•СЃР»Рё РѕРґРёРЅ РѕР±СЉРµРєС‚ nil, РЅР°РїСЂРёРјРµСЂ РЅРµС‚ Р°РєС‚РµСЂР°, С‚Рѕ СЃС‡РёС‚Р°РµРј, С‡С‚Рѕ РѕРЅ РґР°Р»РµРєРѕ
 function distance_between_safe(obj1, obj2)
     if(obj1 == nil or obj2 == nil) then return 100000 end
 	return obj1:position():distance_to(obj2:position())
 end
 
 
---' Проверка на инфопоршны, даже если игрока не существует
+--' РџСЂРѕРІРµСЂРєР° РЅР° РёРЅС„РѕРїРѕСЂС€РЅС‹, РґР°Р¶Рµ РµСЃР»Рё РёРіСЂРѕРєР° РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚
 function has_alife_info(info_id)
 	local aa = alife()
 	if aa == nil then
@@ -138,24 +138,24 @@ end
 
 
 --------------------------------------------------
--- іласс LUA реализуі   ий Finite State Machine
--- для управления персонажами
+-- С–Р»Р°СЃСЃ LUA СЂРµР°Р»РёР·СѓС–   РёР№ Finite State Machine
+-- РґР»СЏ СѓРїСЂР°РІР»РµРЅРёСЏ РїРµСЂСЃРѕРЅР°Р¶Р°РјРё
 --------------------------------------------------
 class 'FSM'
 
---  инициализация путем задания объекта Non-Player Character
+--  РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїСѓС‚РµРј Р·Р°РґР°РЅРёСЏ РѕР±СЉРµРєС‚Р° Non-Player Character
 function FSM:__init(script_name, npc_obj)
-    -- указатель на подконтрольнvй NPC
+    -- СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїРѕРґРєРѕРЅС‚СЂРѕР»СЊРЅvР№ NPC
     self.npc = npc_obj
-    -- строка - имя скрипта, которvй запускает игру
+    -- СЃС‚СЂРѕРєР° - РёРјСЏ СЃРєСЂРёРїС‚Р°, РєРѕС‚РѕСЂvР№ Р·Р°РїСѓСЃРєР°РµС‚ РёРіСЂСѓ
     self.script_name = script_name
-    -- матрица, задаі   ая граф переходов состояний
-    -- реализуется как двумерная таблица
+    -- РјР°С‚СЂРёС†Р°, Р·Р°РґР°С–   Р°СЏ РіСЂР°С„ РїРµСЂРµС…РѕРґРѕРІ СЃРѕСЃС‚РѕСЏРЅРёР№
+    -- СЂРµР°Р»РёР·СѓРµС‚СЃСЏ РєР°Рє РґРІСѓРјРµСЂРЅР°СЏ С‚Р°Р±Р»РёС†Р°
     self.transition_matrix = {[0] = {}}
-    -- номер теку   его состояния
+    -- РЅРѕРјРµСЂ С‚РµРєСѓ   РµРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ
     self.current_state = 0
 
-    -- флаг того, что машина вклічена
+    -- С„Р»Р°Рі С‚РѕРіРѕ, С‡С‚Рѕ РјР°С€РёРЅР° РІРєР»С–С‡РµРЅР°
     self.machine_running = true
 
     printf("inialization FSM for NPC %s", self.npc:name())
@@ -177,8 +177,8 @@ function FSM:stop()
 end
 
 
---  добавление указателя на булеву
---  функциі условия перехода
+--  РґРѕР±Р°РІР»РµРЅРёРµ СѓРєР°Р·Р°С‚РµР»СЏ РЅР° Р±СѓР»РµРІСѓ
+--  С„СѓРЅРєС†РёС– СѓСЃР»РѕРІРёСЏ РїРµСЂРµС…РѕРґР°
 function FSM:set_transition(from_state_num, to_state_num, cond_func)
     printf("in setting transition %d, %d ", from_state_num, to_state_num)
 
@@ -189,7 +189,7 @@ function FSM:set_transition(from_state_num, to_state_num, cond_func)
     end
 end
 
--- единичная проверка FSM
+-- РµРґРёРЅРёС‡РЅР°СЏ РїСЂРѕРІРµСЂРєР° FSM
 function FSM:run()
     local transition_vector = self.transition_matrix[self.current_state]
     table.foreach(transition_vector,
@@ -213,7 +213,7 @@ function FSM:run()
 end
 
 
--- запуск бесконечного цикла FSM
+-- Р·Р°РїСѓСЃРє Р±РµСЃРєРѕРЅРµС‡РЅРѕРіРѕ С†РёРєР»Р° FSM
 function FSM:run_loop()
     printf("running FSM loop for NPC %s", self.npc:name())
 
@@ -245,13 +245,13 @@ function FSM:run_loop()
     end
 end
 
--- взятие под контроль скрипта NPC (переход из нулевого состояния)
+-- РІР·СЏС‚РёРµ РїРѕРґ РєРѕРЅС‚СЂРѕР»СЊ СЃРєСЂРёРїС‚Р° NPC (РїРµСЂРµС…РѕРґ РёР· РЅСѓР»РµРІРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ)
 function FSM:set_script_control()
     printf("set script control for FSM of NPC %s", self.npc:name())
     self.npc:script(true, self.script_name)
 end
 
--- отпускание из под контроля скрипта NPC (переход в нулевое состояние)
+-- РѕС‚РїСѓСЃРєР°РЅРёРµ РёР· РїРѕРґ РєРѕРЅС‚СЂРѕР»СЏ СЃРєСЂРёРїС‚Р° NPC (РїРµСЂРµС…РѕРґ РІ РЅСѓР»РµРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ)
 function FSM:reset_script_control()
     printf("reset script control for FSM of NPC %s", self.npc:name())
     self.npc:script(false, self.script_name)
@@ -287,7 +287,7 @@ function script_object:update()
 end
 
 --
--- іередача персонажу информации
+-- С–РµСЂРµРґР°С‡Р° РїРµСЂСЃРѕРЅР°Р¶Сѓ РёРЅС„РѕСЂРјР°С†РёРё
 --
 
 function GiveInfoViaPda(obj_receiver, obj_sender, info_number)
@@ -299,22 +299,22 @@ end
 -- Functions and variables added by Zmey
 --------------------------------------------------
 
--- іонстанта, которуі использовать в местах, где нужно задать неограниченное время действия
+-- С–РѕРЅСЃС‚Р°РЅС‚Р°, РєРѕС‚РѕСЂСѓС– РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РІ РјРµСЃС‚Р°С…, РіРґРµ РЅСѓР¶РЅРѕ Р·Р°РґР°С‚СЊ РЅРµРѕРіСЂР°РЅРёС‡РµРЅРЅРѕРµ РІСЂРµРјСЏ РґРµР№СЃС‚РІРёСЏ
 time_infinite = 100000000
 
--- =азвание скрипта, которvй в даннvй момент находится в отладке
--- (в этом скрипте будут срабатvвать вvзовv функции debug_log)
+-- =Р°Р·РІР°РЅРёРµ СЃРєСЂРёРїС‚Р°, РєРѕС‚РѕСЂvР№ РІ РґР°РЅРЅvР№ РјРѕРјРµРЅС‚ РЅР°С…РѕРґРёС‚СЃСЏ РІ РѕС‚Р»Р°РґРєРµ
+-- (РІ СЌС‚РѕРј СЃРєСЂРёРїС‚Рµ Р±СѓРґСѓС‚ СЃСЂР°Р±Р°С‚vРІР°С‚СЊ РІvР·РѕРІv С„СѓРЅРєС†РёРё debug_log)
 debug_script_name = ""
 
--- Tvводит в лог строчку, если script_name == debug_script_name
--- Lспользуется для отрадки сценариев
+-- TvРІРѕРґРёС‚ РІ Р»РѕРі СЃС‚СЂРѕС‡РєСѓ, РµСЃР»Рё script_name == debug_script_name
+-- LСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РѕС‚СЂР°РґРєРё СЃС†РµРЅР°СЂРёРµРІ
 function debug_log(script_name, fmt, ...)
 	if debug_script_name == script_name then
 		log(string.format(fmt, ...))
 	end
 end
 
--- +сли в даннvй момент вvполняется какое-то действие, прерvвает его и отклічает скриптовvй режим
+-- +СЃР»Рё РІ РґР°РЅРЅvР№ РјРѕРјРµРЅС‚ РІvРїРѕР»РЅСЏРµС‚СЃСЏ РєР°РєРѕРµ-С‚Рѕ РґРµР№СЃС‚РІРёРµ, РїСЂРµСЂvРІР°РµС‚ РµРіРѕ Рё РѕС‚РєР»С–С‡Р°РµС‚ СЃРєСЂРёРїС‚РѕРІvР№ СЂРµР¶РёРј
 function interrupt_action(who, script_name)
   if who:get_script() then
     who:script(false, script_name)
@@ -541,7 +541,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- Evaluators
 ----------------------------------------------------------------------------------------------------------------------
--- зарезервированv id с номерами от 0 до 256 для создания стандартнvх эвалуаторов.
+-- Р·Р°СЂРµР·РµСЂРІРёСЂРѕРІР°РЅv id СЃ РЅРѕРјРµСЂР°РјРё РѕС‚ 0 РґРѕ 256 РґР»СЏ СЃРѕР·РґР°РЅРёСЏ СЃС‚Р°РЅРґР°СЂС‚РЅvС… СЌРІР°Р»СѓР°С‚РѕСЂРѕРІ.
 
 --Constant evaluator
 class "const_evaluator" (property_evaluator)
@@ -645,8 +645,8 @@ function random_number (min_value, max_value)
     end
 end
 
--- ‚аҐ¬п бгв®Є ў ¬б
--- —гЈ ©
+-- вЂљР°ТђВ¬Рї Р±РіРІВ®Р„ Сћ В¬Р±
+-- вЂ”РіР€В В©
 local ms_per_day = 24 * 60 * 60 * 1000
 function day_time()
     return math.mod( game.time(), ms_per_day )
@@ -657,8 +657,8 @@ function local_hours()
     return math.floor( math.mod( game.time()/1000, 86400 )/ 3600 )
 end
 
--- Ї абЁв бва®Єг ўЁ¤  "   , ЎЎЎ, ўўў..." ў в Ў«Ёжг { "   ", "ЎЎЎ", "ўўў", ... }
--- —гЈ ©
+-- Р‡В Р°Р±РЃРІ Р±РІР°В®Р„Рі СћРЃВ¤В  "В В В , РЋРЋРЋ, СћСћСћ..." Сћ РІВ РЋВ«РЃР¶Рі { "В В В ", "РЋРЋРЋ", "СћСћСћ", ... }
+-- вЂ”РіР€В В©
 function parse_names( s )
     local t = {}
     for name in string.gfind( s, "([%w_\\]+)%p*" ) do
@@ -688,8 +688,8 @@ function parse_key_value( s )
 end
 
 
--- Ї абЁв бва®Єг ўЁ¤  "n1, n2, n3..." ў в Ў«Ёжг { n1, n2, n3, ... } Ј¤Ґ n1, n2, n3... - жҐ«лҐ зЁб« 
--- —гЈ ©
+-- Р‡В Р°Р±РЃРІ Р±РІР°В®Р„Рі СћРЃВ¤В  "n1, n2, n3..." Сћ РІВ РЋВ«РЃР¶Рі { n1, n2, n3, ... } Р€В¤Тђ n1, n2, n3... - Р¶ТђВ«Р»Тђ Р·РЃР±В«В 
+-- вЂ”РіР€В В©
 --[[function parse_nums( s )
     local t = {}
 
@@ -700,7 +700,7 @@ end
     return t
 end]]
 
--- Ї абЁв бва®Єг ўЁ¤  "n1, n2, n3..." ў в Ў«Ёжг { n1, n2, n3, ... } Ј¤Ґ n1, n2, n3... - ¤а®Ў­лҐ зЁб« 
+-- Р‡В Р°Р±РЃРІ Р±РІР°В®Р„Рі СћРЃВ¤В  "n1, n2, n3..." Сћ РІВ РЋВ«РЃР¶Рі { n1, n2, n3, ... } Р€В¤Тђ n1, n2, n3... - В¤Р°В®РЋВ­Р»Тђ Р·РЃР±В«В 
 function parse_nums( s )
 	local t = {}
 
@@ -711,7 +711,7 @@ function parse_nums( s )
 	return t
 end
 
--- Їа®ўҐапҐв, Ґбвм «Ё ®ЎкҐЄв ў ®­« ©­Ґ
+-- Р‡Р°В®СћТђР°РїТђРІ, ТђР±РІРј В«РЃ В®РЋРєТђР„РІ Сћ В®В­В«В В©В­Тђ
 function is_object_online(obj_id)
 	return level.object_by_id(obj_id) ~= nil
 end
@@ -728,7 +728,7 @@ function get_clsid(npc)
 --    end
 end
 
--- Їа®ўҐапҐв ®аг¦ЁҐ «Ё нв® (ЇҐаҐ¤ ў вм game_object)
+-- Р‡Р°В®СћТђР°РїТђРІ В®Р°РіВ¦РЃТђ В«РЃ РЅРІВ® (Р‡ТђР°ТђВ¤В СћВ РІРј game_object)
 function isWeapon(object)
     local id = get_clsid(object)
     if id == nil then return false end
@@ -756,7 +756,7 @@ function isWeapon(object)
     else return false end
 end
 
---Tvчисляет yaw в радианах
+--TvС‡РёСЃР»СЏРµС‚ yaw РІ СЂР°РґРёР°РЅР°С…
 function yaw( v1, v2 )
     return  math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) )
 end
@@ -772,7 +772,7 @@ function vector_cross (v1, v2)
     return vector ():set (v1.y  * v2.z  - v1.z  * v2.y, v1.z  * v2.x  - v1.x  * v2.z, v1.x  * v2.y  - v1.y  * v2.x)
 end
 
-//Вращает вектор вокруг оси y против часовой стрелки
+//Р’СЂР°С‰Р°РµС‚ РІРµРєС‚РѕСЂ РІРѕРєСЂСѓРі РѕСЃРё y РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё
 
 function vector_rotate_y (v, angle)
     angle = angle * 0.017453292519943295769236907684886
@@ -781,16 +781,16 @@ function vector_rotate_y (v, angle)
     return vector ():set (v.x * c - v.z * s, v.y, v.x * s + v.z * c)
 end
 
--- очистка таблицы
+-- РѕС‡РёСЃС‚РєР° С‚Р°Р±Р»РёС†С‹
 function clear_table (t)
     while table.getn (t) > 0 do
           table.remove (t, table.getn (t))
     end
 end
 
---€бЇ®«м§гҐв ¤«п ¬®­бва®ў. ‚лЎ®а в®зЄЁ, Єг¤  Ё¤вЁ ў ­ҐЄ®в®а®¬ а ¤ЁгбҐ Ё зв®Ў в®зЄ  Ўл«  ¤ «миҐ ­  а ббв®п­ЁЁ
--- min_radius ®в вҐЄгйҐ© Ї®§ЁжЁЁ(Ґб«Ё нв® Ї®«гзЁвбп). center_id - жҐ­ва Ї®§ЁжЁЁ, ў®ЄагЈ Є®в®а®© ¦ЁўҐ¬,
--- position_id - вгЄгй п Ї®§ЁжЁп, radius - ў Є Є®¬ а ¤ЁгбҐ ўлЎЁа вм в®зЄг, min_radius - ¬Ё­Ё¬ «м­®Ґ а ббв®п­ЁҐ, ®в вҐЄгйҐ© Ї®§ЁжЁЁ ¤® ­®ў®© в®зЄЁ.
+--в‚¬Р±Р‡В®В«РјВ§РіТђРІ В¤В«Рї В¬В®В­Р±РІР°В®Сћ. вЂљР»РЋВ®Р° РІВ®Р·Р„РЃ, Р„РіВ¤В  РЃВ¤РІРЃ Сћ В­ТђР„В®РІВ®Р°В®В¬ Р°В В¤РЃРіР±Тђ РЃ Р·РІВ®РЋ РІВ®Р·Р„В  РЋР»В«В  В¤В В«РјРёТђ В­В  Р°В Р±Р±РІВ®РїВ­РЃРЃ
+-- min_radius В®РІ РІТђР„РіР№ТђВ© Р‡В®В§РЃР¶РЃРЃ(ТђР±В«РЃ РЅРІВ® Р‡В®В«РіР·РЃРІР±Рї). center_id - Р¶ТђВ­РІР° Р‡В®В§РЃР¶РЃРЃ, СћВ®Р„Р°РіР€ Р„В®РІВ®Р°В®В© В¦РЃСћТђВ¬,
+-- position_id - РІРіР„РіР№В Рї Р‡В®В§РЃР¶РЃРї, radius - Сћ Р„В Р„В®В¬ Р°В В¤РЃРіР±Тђ СћР»РЋРЃР°В РІРј РІВ®Р·Р„Рі, min_radius - В¬РЃВ­РЃВ¬В В«РјВ­В®Тђ Р°В Р±Р±РІВ®РїВ­РЃТђ, В®РІ РІТђР„РіР№ТђВ© Р‡В®В§РЃР¶РЃРЃ В¤В® В­В®СћВ®В© РІВ®Р·Р„РЃ.
 function new_point(center_id, position_id,radius, min_radius)
     local dir = vector():set(math.random(-1000, 1000)/1000.0, 0.0001, math.random(-1000, 1000)/1000.0)
     local pos = level.vertex_in_direction(center_id, dir, radius)
@@ -886,7 +886,7 @@ function object_type(obj)
         type = "none"
     end
 
-    -- Їа®ўҐапҐ¬ ­Ґ вагЇ «Ё нв®
+    -- Р‡Р°В®СћТђР°РїТђВ¬ В­Тђ РІР°РіР‡ В«РЃ РЅРІВ®
     if type == "stalker" or
        type == "monstr" then
         if obj:alive() == false then
@@ -898,7 +898,7 @@ function object_type(obj)
 end
 
 
-// Является ли оbj монстром
+// РЇРІР»СЏРµС‚СЃСЏ Р»Рё Рѕbj РјРѕРЅСЃС‚СЂРѕРј
 function is_object_monster(obj)
 	local otype = get_clsid(obj)
 	if(otype == clsid.crow			or
@@ -920,14 +920,14 @@ function is_object_monster(obj)
 	return false
 end
 
---ў®§ўа й Ґв Їа®Ё§ў®«м­го в®зЄг ЇгвЁ г Є®в®а®© гбв ­®ў«Ґ­ ЎЁв
-function point_with_bit(patrol_path, bit, old_point)      -- old_point - Ё­¤ҐЄб в®зЄЁ, Є®в®аго ­Ґ ­ ¤® ўлЎЁа вм,
-  local points = {}                                       -- Ї а ¬Ґва ­Ґ ®Ўп§ вҐ«м­л©( ­ ЇаЁ¬Ґа вҐЄгйҐ© в®зЄЁ )
+--СћВ®В§СћР°В Р№В ТђРІ Р‡Р°В®РЃВ§СћВ®В«РјВ­РіРѕ РІВ®Р·Р„Рі Р‡РіРІРЃ Рі Р„В®РІВ®Р°В®В© РіР±РІВ В­В®СћВ«ТђВ­ РЋРЃРІ
+function point_with_bit(patrol_path, bit, old_point)      -- old_point - РЃВ­В¤ТђР„Р± РІВ®Р·Р„РЃ, Р„В®РІВ®Р°РіРѕ В­Тђ В­В В¤В® СћР»РЋРЃР°В РІРј,
+  local points = {}                                       -- Р‡В Р°В В¬ТђРІР° В­Тђ В®РЋРїВ§В РІТђВ«РјВ­Р»В©( В­В Р‡Р°РЃВ¬ТђР° РІТђР„РіР№ТђВ© РІВ®Р·Р„РЃ )
 
     for i = 0, patrol_path:count()-1 do
-      --„®Ў®ў«пҐ¬ ў в Ў«Ёжг в®зЄЁ б ­г¦­л¬ ЎЁв®¬
+      --вЂћВ®РЋВ®СћВ«РїТђВ¬ Сћ РІВ РЋВ«РЃР¶Рі РІВ®Р·Р„РЃ Р± В­РіВ¦В­Р»В¬ РЋРЃРІВ®В¬
       if( patrol_path:flag(i, bit)) then
-            --„®Ў ў«пҐ¬ в®зЄг Ґб«Ё old_point == nil Ё«Ё ­®ў п в®зЄ  ­Ґ б®ўЇ ¤ Ґв б old_point
+            --вЂћВ®РЋВ СћВ«РїТђВ¬ РІВ®Р·Р„Рі ТђР±В«РЃ old_point == nil РЃВ«РЃ В­В®СћВ Рї РІВ®Р·Р„В  В­Тђ Р±В®СћР‡В В¤В ТђРІ Р± old_point
             if(old_point == nil) then
                 table.insert(points, patrol_path:point(i))
             elseif(old_point ~= i) then
@@ -947,14 +947,14 @@ function point_with_bit(patrol_path, bit, old_point)      -- old_point - Ё­¤ҐЄб 
     end
 end
 
---ў®§ўа й Ґв Їа®Ё§ў®«м­го в®зЄг ЇгвЁ г Є®в®а®© гбв ­®ў«Ґ­ ЎЁв
-function point_with_bit_id(patrol_path, bit, old_point)        -- old_point - Ё­¤ҐЄб в®зЄЁ, Є®в®аго ­Ґ ­ ¤® ўлЎЁа вм,
-    local points = {}                                          -- Ї а ¬Ґва ­Ґ ®Ўп§ вҐ«м­л©( ­ ЇаЁ¬Ґа вҐЄгйҐ© в®зЄЁ )
+--СћВ®В§СћР°В Р№В ТђРІ Р‡Р°В®РЃВ§СћВ®В«РјВ­РіРѕ РІВ®Р·Р„Рі Р‡РіРІРЃ Рі Р„В®РІВ®Р°В®В© РіР±РІВ В­В®СћВ«ТђВ­ РЋРЃРІ
+function point_with_bit_id(patrol_path, bit, old_point)        -- old_point - РЃВ­В¤ТђР„Р± РІВ®Р·Р„РЃ, Р„В®РІВ®Р°РіРѕ В­Тђ В­В В¤В® СћР»РЋРЃР°В РІРј,
+    local points = {}                                          -- Р‡В Р°В В¬ТђРІР° В­Тђ В®РЋРїВ§В РІТђВ«РјВ­Р»В©( В­В Р‡Р°РЃВ¬ТђР° РІТђР„РіР№ТђВ© РІВ®Р·Р„РЃ )
 
     for i = 0, patrol_path:count()-1 do
-      --„®Ў®ў«пҐ¬ ў в Ў«Ёжг в®зЄЁ б ­г¦­л¬ ЎЁв®¬
+      --вЂћВ®РЋВ®СћВ«РїТђВ¬ Сћ РІВ РЋВ«РЃР¶Рі РІВ®Р·Р„РЃ Р± В­РіВ¦В­Р»В¬ РЋРЃРІВ®В¬
       if( patrol_path:flag(i, bit)) then
-            --„®Ў ў«пҐ¬ в®зЄг Ґб«Ё old_point == nil Ё«Ё ­®ў п в®зЄ  ­Ґ б®ўЇ ¤ Ґв б old_point
+            --вЂћВ®РЋВ СћВ«РїТђВ¬ РІВ®Р·Р„Рі ТђР±В«РЃ old_point == nil РЃВ«РЃ В­В®СћВ Рї РІВ®Р·Р„В  В­Тђ Р±В®СћР‡В В¤В ТђРІ Р± old_point
             if(old_point == nil) then
                 table.insert(points, i)
             elseif(old_point ~= i) then
@@ -974,7 +974,7 @@ function point_with_bit_id(patrol_path, bit, old_point)        -- old_point - Ё­
     end
 end
 
---‚®§ўа й Ґв Ё­¤ҐЄб б ¬®© Ў«Ё¦­Ґ© в®зЄЁ ЇгвЁ б § ¤ ­л¬ ЎЁв®¬, ®в вҐЄгйҐ© в®зЄЁ
+--вЂљВ®В§СћР°В Р№В ТђРІ РЃВ­В¤ТђР„Р± Р±В В¬В®В© РЋВ«РЃВ¦В­ТђВ© РІВ®Р·Р„РЃ Р‡РіРІРЃ Р± В§В В¤В В­Р»В¬ РЋРЃРІВ®В¬, В®РІ РІТђР„РіР№ТђВ© РІВ®Р·Р„РЃ
 function near_point_with_bit(point, patrol_path, bit)
     local new_point = nil
     local index     = nil
@@ -983,7 +983,7 @@ function near_point_with_bit(point, patrol_path, bit)
     for i = 0, patrol_path:count()-1 do
         if( patrol_path:flag(i, bit) ) then
             if(new_point == nil or patrol_path:point(i):distance_to(point) < dist) then
-                --…б«Ё нв  в®зЄ  ЇҐаў п Ё§ ­ иҐ¤иЁебп, «ЁЎ® ®в ­ҐҐ Їгвм Ў«Ё¦Ґ, в® § Ї®¬Ё­ Ґ¬ ҐҐ
+                --вЂ¦Р±В«РЃ РЅРІВ  РІВ®Р·Р„В  Р‡ТђР°СћВ Рї РЃВ§ В­В РёТђВ¤РёРЃРµР±Рї, В«РЃРЋВ® В®РІ В­ТђТђ Р‡РіРІРј РЋВ«РЃВ¦Тђ, РІВ® В§В Р‡В®В¬РЃВ­В ТђВ¬ ТђТђ
                 new_point   = patrol_path:point(i)
                 index       = i
                 dist        = new_point:distance_to(point)
@@ -994,7 +994,7 @@ function near_point_with_bit(point, patrol_path, bit)
     return index
 end
 
--- ђҐЄгабЁў­ п а бЇҐз вЄ  в Ў«Ёжл
+-- С’ТђР„РіР°Р±РЃСћВ­В Рї Р°В Р±Р‡ТђР·В РІР„В  РІВ РЋВ«РЃР¶Р»
 function print_table(table, subs)
   local sub
   if subs ~= nil then
@@ -1108,7 +1108,7 @@ function id_by_sid( sid )
 	return nil
 end
 
--- Крешнуть игру (после вывода сообщения об ошибке в лог)
+-- РљСЂРµС€РЅСѓС‚СЊ РёРіСЂСѓ (РїРѕСЃР»Рµ РІС‹РІРѕРґР° СЃРѕРѕР±С‰РµРЅРёСЏ РѕР± РѕС€РёР±РєРµ РІ Р»РѕРі)
 function abort(fmt, ...)
 	local reason = string.format(fmt, ...)
 	assert("ERROR: " .. reason)
@@ -1128,7 +1128,7 @@ function set_inactivate_input_time(delta)
 	db.storage[db.actor:id()].disable_input_idle = delta
 	level.disable_input()
 end
--- Принимает: позицию положения, позицию куда смотреть, время сна в минутах.
+-- РџСЂРёРЅРёРјР°РµС‚: РїРѕР·РёС†РёСЋ РїРѕР»РѕР¶РµРЅРёСЏ, РїРѕР·РёС†РёСЋ РєСѓРґР° СЃРјРѕС‚СЂРµС‚СЊ, РІСЂРµРјСЏ СЃРЅР° РІ РјРёРЅСѓС‚Р°С….
 function set_sleep_relocate(point, look, timeout)
 	db.storage[db.actor:id()].sleep_relocate_time = game.get_game_time()
 	db.storage[db.actor:id()].sleep_relocate_idle = timeout*60
@@ -1139,12 +1139,12 @@ function set_sleep_relocate(point, look, timeout)
 	--db.actor:actor_sleep(0, timeout)
 end
 
--- проверяет целую часть числа на нечётность
+-- РїСЂРѕРІРµСЂСЏРµС‚ С†РµР»СѓСЋ С‡Р°СЃС‚СЊ С‡РёСЃР»Р° РЅР° РЅРµС‡С‘С‚РЅРѕСЃС‚СЊ
 function odd( x )
 	return math.floor( x * 0.5 ) * 2 == math.floor( x )
 end
 
---' Усталость
+--' РЈСЃС‚Р°Р»РѕСЃС‚СЊ
 function on_actor_critical_power()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_11_weakness")
@@ -1157,7 +1157,7 @@ end
 function on_actor_critical_max_power()
 end
 
---' Кровотечение
+--' РљСЂРѕРІРѕС‚РµС‡РµРЅРёРµ
 function on_actor_bleeding()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_8_wound")
@@ -1170,7 +1170,7 @@ end
 function on_actor_satiety()
 end
 
---' Радиация
+--' Р Р°РґРёР°С†РёСЏ
 function on_actor_radiation()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_6_radiation")
@@ -1180,7 +1180,7 @@ function on_actor_radiation()
 	end
 end
 
---' Заклинило оружие
+--' Р—Р°РєР»РёРЅРёР»Рѕ РѕСЂСѓР¶РёРµ
 function on_actor_weapon_jammed()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_9_weapon")
@@ -1190,7 +1190,7 @@ function on_actor_weapon_jammed()
 	end
 end
 
---' не может ходить изза веса
+--' РЅРµ РјРѕР¶РµС‚ С…РѕРґРёС‚СЊ РёР·Р·Р° РІРµСЃР°
 function on_actor_cant_walk_weight()
 	if has_alife_info("esc_trader_newbie") then
 		game.start_tutorial("part_14_overload")
@@ -1200,7 +1200,7 @@ function on_actor_cant_walk_weight()
 	end
 end
 
---' пси воздействие
+--' РїСЃРё РІРѕР·РґРµР№СЃС‚РІРёРµ
 function on_actor_psy()
 end
 

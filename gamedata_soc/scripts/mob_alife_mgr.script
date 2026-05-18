@@ -25,13 +25,13 @@ function issue_combat_event(obj)
 end
 
 function alife_control(obj, actor, mode)
-	-- Мертвые монстры сразу отпускаются под alife
+	-- РњРµСЂС‚РІС‹Рµ РјРѕРЅСЃС‚СЂС‹ СЃСЂР°Р·Сѓ РѕС‚РїСѓСЃРєР°СЋС‚СЃСЏ РїРѕРґ alife
 	if not obj:alive() then
 		xr_logic.mob_release(obj)
 		return true
 	end
 
-	-- Монстры, у которых есть враг - также должны работать в alife
+	-- РњРѕРЅСЃС‚СЂС‹, Сѓ РєРѕС‚РѕСЂС‹С… РµСЃС‚СЊ РІСЂР°Рі - С‚Р°РєР¶Рµ РґРѕР»Р¶РЅС‹ СЂР°Р±РѕС‚Р°С‚СЊ РІ alife
 	local enemy = obj:get_enemy()
 	if enemy then
 		--printf("_bp: got enemy")
@@ -45,15 +45,15 @@ function alife_control(obj, actor, mode)
 		end
 	end
 	
-	-- Отпускать в alife монстров, которых обстреляли
+	-- РћС‚РїСѓСЃРєР°С‚СЊ РІ alife РјРѕРЅСЃС‚СЂРѕРІ, РєРѕС‚РѕСЂС‹С… РѕР±СЃС‚СЂРµР»СЏР»Рё
 	local h = obj:get_monster_hit_info()
 	if h.who and h.time ~= 0 then
 		if mode.braindead then
-			-- Braindead монстры не уходят из под скрипта даже если их обстрелять
+			-- Braindead РјРѕРЅСЃС‚СЂС‹ РЅРµ СѓС…РѕРґСЏС‚ РёР· РїРѕРґ СЃРєСЂРёРїС‚Р° РґР°Р¶Рµ РµСЃР»Рё РёС… РѕР±СЃС‚СЂРµР»СЏС‚СЊ
 			return false
 		end
 		if h.who:id() == actor:id() and mode.actor_friendly then
-			-- Если хотя бы раз был атакован actor-ом, то больше не дружественен к нему
+			-- Р•СЃР»Рё С…РѕС‚СЏ Р±С‹ СЂР°Р· Р±С‹Р» Р°С‚Р°РєРѕРІР°РЅ actor-РѕРј, С‚Рѕ Р±РѕР»СЊС€Рµ РЅРµ РґСЂСѓР¶РµСЃС‚РІРµРЅРµРЅ Рє РЅРµРјСѓ
 			mode.actor_friendly = false
 		end
 		--printf("_bp [%s]: h.who:name() = %s", obj:name(), h.who:name())
@@ -62,7 +62,7 @@ function alife_control(obj, actor, mode)
 		return true
 	end
 
-	-- Остальные монстры работают под схемой
+	-- РћСЃС‚Р°Р»СЊРЅС‹Рµ РјРѕРЅСЃС‚СЂС‹ СЂР°Р±РѕС‚Р°СЋС‚ РїРѕРґ СЃС…РµРјРѕР№
 	return false
 end
 

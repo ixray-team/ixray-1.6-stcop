@@ -10,7 +10,7 @@ function load_job(sj, gname, type, squad, groups)
 			idle = 0,
 			prior = 5, state = {0},
 				predicate = function(obj) 
-        			return obj:profile_name() == "dolg_specnazî,	
+        			return obj:profile_name() == "dolg_specnaz‚Äù,	
 			squad = squad, groups = groups[1],
 			in_rest = "", out_rest = ""
 		}

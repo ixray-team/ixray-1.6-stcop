@@ -520,9 +520,9 @@ function load_states(gname, type)
 	end
 
 	if type == "rad_entrance" then
---- 0 все сидят, один стоит
---- 1 все стоят
---- 2 все сидят
+--- 0 РІСЃРµ СЃРёРґСЏС‚, РѕРґРёРЅ СЃС‚РѕРёС‚
+--- 1 РІСЃРµ СЃС‚РѕСЏС‚
+--- 2 РІСЃРµ СЃРёРґСЏС‚
 		return function(gulag)
 			local actor = db.actor
 			if not actor then
@@ -541,8 +541,8 @@ function load_states(gname, type)
 	end
 
 	if type == "rad_valley" then
---- 0 все сидят
---- 1 все стоят
+--- 0 РІСЃРµ СЃРёРґСЏС‚
+--- 1 РІСЃРµ СЃС‚РѕСЏС‚
 		return function(gulag)
 			local actor = db.actor
 			if not actor then

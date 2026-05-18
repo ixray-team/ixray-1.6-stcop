@@ -1,9 +1,9 @@
 ---------------------------------------------------------------------------------------------------------------------
---	Ñõåìà ðåàêöèè íà ðàçäðàæèòåëè
---	àâòîð: Äèäåíêî Ðóñëàí (Stohe)
+--	Ð¡Ñ…ÐµÐ¼Ð° Ñ€ÐµÐ°ÐºÑ†Ð¸Ð¸ Ð½Ð° Ñ€Ð°Ð·Ð´Ñ€Ð°Ð¶Ð¸Ñ‚ÐµÐ»Ð¸
+--	Ð°Ð²Ñ‚Ð¾Ñ€: Ð”Ð¸Ð´ÐµÐ½ÐºÐ¾ Ð ÑƒÑÐ»Ð°Ð½ (Stohe)
 ----------------------------------------------------------------------------------------------------------------------
 
--- Âðåìÿ èíåðöèè äëÿ âûõîäà èç ðåàêöèè
+-- Ð’Ñ€ÐµÐ¼Ñ Ð¸Ð½ÐµÑ€Ñ†Ð¸Ð¸ Ð´Ð»Ñ Ð²Ñ‹Ñ…Ð¾Ð´Ð° Ð¸Ð· Ñ€ÐµÐ°ÐºÑ†Ð¸Ð¸
 local reaction_inertion_time = 3*60
 
 local sounds = {}
@@ -13,7 +13,7 @@ local k,v = 0,0
 ----------------------------------------------------------------------------------------------------------------------
 --Evaluators
 ----------------------------------------------------------------------------------------------------------------------
--- Ýâàëóàòîð óêàçûâàåò ÷òî åñòü íîâûé ðàçäðàæèòåëü
+-- Ð­Ð²Ð°Ð»ÑƒÐ°Ñ‚Ð¾Ñ€ ÑƒÐºÐ°Ð·Ñ‹Ð²Ð°ÐµÑ‚ Ñ‡Ñ‚Ð¾ ÐµÑÑ‚ÑŒ Ð½Ð¾Ð²Ñ‹Ð¹ Ñ€Ð°Ð·Ð´Ñ€Ð°Ð¶Ð¸Ñ‚ÐµÐ»ÑŒ
 class "evaluator_new" (property_evaluator)
 function evaluator_new:__init(name, storage) super (nil, name)
 	self.a = storage
@@ -26,14 +26,14 @@ function evaluator_new:evaluate()
 	if self.mgr == nil then
 		self.mgr = self.object:motivation_action_manager()
 	end	
-	-- åñëè åñòü âðàãè - íàäî íå ðåàãèðîâàòü.
+	-- ÐµÑÐ»Ð¸ ÐµÑÑ‚ÑŒ Ð²Ñ€Ð°Ð³Ð¸ - Ð½Ð°Ð´Ð¾ Ð½Ðµ Ñ€ÐµÐ°Ð³Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ.
 	if self.mgr:evaluator(stalker_ids.property_enemy):evaluate() then
 		return false
 	end
 
 	self.a.evn:calculate()
 	self.a.evn:print()
-	-- Íåîáõîäèìî íå çàáûòü âñòàâèòü èíåðöèþ âîçâðàòà.
+	-- ÐÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð½Ðµ Ð·Ð°Ð±Ñ‹Ñ‚ÑŒ Ð²ÑÑ‚Ð°Ð²Ð¸Ñ‚ÑŒ Ð¸Ð½ÐµÑ€Ñ†Ð¸ÑŽ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‚Ð°.
 	if self.a.reaction_time ~= nil and
 	   game.get_game_time():diffSec(self.a.reaction_time) >= reaction_inertion_time
 	then
@@ -49,7 +49,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 --Actions
 ----------------------------------------------------------------------------------------------------------------------
--- Îáðàáîòêà ðàçäðàæèòåëÿ
+-- ÐžÐ±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ° Ñ€Ð°Ð·Ð´Ñ€Ð°Ð¶Ð¸Ñ‚ÐµÐ»Ñ
 class "action_reaction_wait" (action_base)
 function action_reaction_wait:__init (npc_name,action_name, storage) super (nil, action_name)
 	self.a = storage
@@ -111,7 +111,7 @@ end
 function set_reactions(npc, ini, scheme, section)
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 end
--- Âûçûâàåòñÿ íà ïåðåêëþ÷åíèè íà íîâóþ ñåêöèþ. Ïðîèçâîäèò âû÷èòûâàíèå íàñòðîåê èç òåêóùåé ñåêöèè.
+-- Ð’Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ Ð½Ð° Ð¿ÐµÑ€ÐµÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ð¸ Ð½Ð° Ð½Ð¾Ð²ÑƒÑŽ ÑÐµÐºÑ†Ð¸ÑŽ. ÐŸÑ€Ð¾Ð¸Ð·Ð²Ð¾Ð´Ð¸Ñ‚ Ð²Ñ‹Ñ‡Ð¸Ñ‚Ñ‹Ð²Ð°Ð½Ð¸Ðµ Ð½Ð°ÑÑ‚Ñ€Ð¾ÐµÐº Ð¸Ð· Ñ‚ÐµÐºÑƒÑ‰ÐµÐ¹ ÑÐµÐºÑ†Ð¸Ð¸.
 function reset_reactions(npc, scheme, st, section)
 	local reac_section = utils.cfg_get_string(st.ini, section, "reactions", npc, false, "")
 
@@ -140,23 +140,23 @@ end
 class "events"
 function events:__init(npc)
 	self.npc = npc
-	self.arhive = {} -- ìàññèâ äåñêðèïòîðîâ ðàçäðàæèòåëåé
-	self.used = {} -- îáðàáîòàííûå îáúåêòû, íåêîòîðîå âðåìÿ ðàçäðàæèòåëè ïî íèì ó÷èòûâàòüñÿ íå áóäóò
+	self.arhive = {} -- Ð¼Ð°ÑÑÐ¸Ð² Ð´ÐµÑÐºÑ€Ð¸Ð¿Ñ‚Ð¾Ñ€Ð¾Ð² Ñ€Ð°Ð·Ð´Ñ€Ð°Ð¶Ð¸Ñ‚ÐµÐ»ÐµÐ¹
+	self.used = {} -- Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ð½Ð½Ñ‹Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹, Ð½ÐµÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ðµ Ð²Ñ€ÐµÐ¼Ñ Ñ€Ð°Ð·Ð´Ñ€Ð°Ð¶Ð¸Ñ‚ÐµÐ»Ð¸ Ð¿Ð¾ Ð½Ð¸Ð¼ ÑƒÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°Ñ‚ÑŒÑÑ Ð½Ðµ Ð±ÑƒÐ´ÑƒÑ‚
 
 	self.time_memory = 20*60*1000
-	self.visio	= 0.25 		-- åñëè îáúåêò âèäåí
+	self.visio	= 0.25 		-- ÐµÑÐ»Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð²Ð¸Ð´ÐµÐ½
 end
-function events:calculate()  -- Ïðîèçâîäèòü ïåðåðàñ÷åò è îáíîâëåíèå ðàçäðàæèòåëåé äëÿ òåêóùåãî ýëåìåíòà
+function events:calculate()  -- ÐŸÑ€Ð¾Ð¸Ð·Ð²Ð¾Ð´Ð¸Ñ‚ÑŒ Ð¿ÐµÑ€ÐµÑ€Ð°ÑÑ‡ÐµÑ‚ Ð¸ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ Ñ€Ð°Ð·Ð´Ñ€Ð°Ð¶Ð¸Ñ‚ÐµÐ»ÐµÐ¹ Ð´Ð»Ñ Ñ‚ÐµÐºÑƒÑ‰ÐµÐ³Ð¾ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð°
 	self.arhive = {}
 
-	-- óäàëÿòü îáðàáîòàííûå óñòàðåâøèå ðàçäðàæèòåëè
+	-- ÑƒÐ´Ð°Ð»ÑÑ‚ÑŒ Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ð½Ð½Ñ‹Ðµ ÑƒÑÑ‚Ð°Ñ€ÐµÐ²ÑˆÐ¸Ðµ Ñ€Ð°Ð·Ð´Ñ€Ð°Ð¶Ð¸Ñ‚ÐµÐ»Ð¸
 	for k,v in pairs(self.used) do
 		if game.time() - v >= self.time_memory then
 			self.used[k] = nil
 		end
 	end
 
-	-- îïðåäåëÿåì ÷òî íàì èçâåñòíî î âèäèìîñòè îáúåêòà
+	-- Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÑÐµÐ¼ Ñ‡Ñ‚Ð¾ Ð½Ð°Ð¼ Ð¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾ Ð¾ Ð²Ð¸Ð´Ð¸Ð¼Ð¾ÑÑ‚Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
 	local vtable = self.npc:not_yet_visible_objects()
 	if vtable == nil then return false end
 	for v in vtable do
@@ -170,7 +170,7 @@ function events:calculateObject(v)
 		return false
 	end
 
-	-- ðåàãèðîâàòü òîëüêî íà ñòàëêåðîâ è ìîíñòðîâ
+	-- Ñ€ÐµÐ°Ð³Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð½Ð° ÑÑ‚Ð°Ð»ÐºÐµÑ€Ð¾Ð² Ð¸ Ð¼Ð¾Ð½ÑÑ‚Ñ€Ð¾Ð²
 	local type = self:type(vo)
 	
 	if type == "none" then
@@ -190,11 +190,11 @@ function events:calculateObject(v)
 		self:markAsUsed(vo:id())
 	end
 
-	-- çàíîñèì ðàçäðàæèòåëü â ïàìÿòü
+	-- Ð·Ð°Ð½Ð¾ÑÐ¸Ð¼ Ñ€Ð°Ð·Ð´Ñ€Ð°Ð¶Ð¸Ñ‚ÐµÐ»ÑŒ Ð² Ð¿Ð°Ð¼ÑÑ‚ÑŒ
 	if self.arhive[vo:id()] == nil then
 		self.arhive[vo:id()] = {name = vo:name()}
 	end
-	-- óêàçûâàåì, ÷òî íàì î íåì èçâåñòíî
+	-- ÑƒÐºÐ°Ð·Ñ‹Ð²Ð°ÐµÐ¼, Ñ‡Ñ‚Ð¾ Ð½Ð°Ð¼ Ð¾ Ð½ÐµÐ¼ Ð¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾
 	local arhive_vo = self.arhive[vo:id()]
 	
 	arhive_vo.position 		= vo:position()
@@ -202,7 +202,7 @@ function events:calculateObject(v)
 	arhive_vo.time			= game.time()
 	arhive_vo.id			= vo:id()
 end
-function events:get_event(tt)  -- Âûäàåò íàèáîëåå ïðèîðèòåòíûé ðàçäðàæèòåëü
+function events:get_event(tt)  -- Ð’Ñ‹Ð´Ð°ÐµÑ‚ Ð½Ð°Ð¸Ð±Ð¾Ð»ÐµÐµ Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚Ð½Ñ‹Ð¹ Ñ€Ð°Ð·Ð´Ñ€Ð°Ð¶Ð¸Ñ‚ÐµÐ»ÑŒ
 	local prior = nil
 
 	local key,value = 0,0
@@ -221,7 +221,7 @@ function events:get_eventObject(prior, v)
 		return true
 	end
 
-	-- Ïðèîðèòåò ïî êà÷åñòâó çàìå÷àíèÿ
+	-- ÐŸÑ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚ Ð¿Ð¾ ÐºÐ°Ñ‡ÐµÑÑ‚Ð²Ñƒ Ð·Ð°Ð¼ÐµÑ‡Ð°Ð½Ð¸Ñ
 	if v.visibility > self.arhive[prior].visibility then
 		return true
 	end

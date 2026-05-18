@@ -2,9 +2,9 @@
 -- Disable actor's weapon
 ----------------------------------------------------------------------------------------------------
 
-local state_nowhere = 0 -- схема только что включилась
-local state_inside = 1 -- актер внутри
-local state_outside = 2 -- актер снаружи
+local state_nowhere = 0 -- СЃС…РµРјР° С‚РѕР»СЊРєРѕ С‡С‚Рѕ РІРєР»СЋС‡РёР»Р°СЃСЊ
+local state_inside = 1 -- Р°РєС‚РµСЂ РІРЅСѓС‚СЂРё
+local state_outside = 2 -- Р°РєС‚РµСЂ СЃРЅР°СЂСѓР¶Рё
 
 class "action_no_weapon"
 
@@ -16,7 +16,7 @@ end
 function action_no_weapon:reset_scheme()
 	--printf("_bp: sr_idle: action_no_weapon:reset_scheme: self.object:name()='%s'", self.object:name())
 	
-	self.state = state_nowhere -- еще неясно, в зоне он, или нет
+	self.state = state_nowhere -- РµС‰Рµ РЅРµСЏСЃРЅРѕ, РІ Р·РѕРЅРµ РѕРЅ, РёР»Рё РЅРµС‚
 	
 	self:switch_state(db.actor)
 end
@@ -71,7 +71,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 
 	local new_action = action_no_weapon(npc, storage)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 

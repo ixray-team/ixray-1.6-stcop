@@ -1,7 +1,7 @@
 local object_list		= {}
 local smart_terrains	= {}
 
--- Бюреры отдельные по углам
+-- Р‘СЋСЂРµСЂС‹ РѕС‚РґРµР»СЊРЅС‹Рµ РїРѕ СѓРіР»Р°Рј
 object_list["test0"] = {
 	"dar_m_burer_e_0001",
 	"dar_m_burer_e_0002",
@@ -9,24 +9,24 @@ object_list["test0"] = {
 }
 
 
--- Бюреры под гулагом-элюдером
+-- Р‘СЋСЂРµСЂС‹ РїРѕРґ РіСѓР»Р°РіРѕРј-СЌР»СЋРґРµСЂРѕРј
 object_list["test1"] = {
 --	"dar_m_burer_e_0004",
 	"dar_m_burer_e_0005"
 --	"dar_m_burer_e_0006"
 }
--- Полтергейст (гулаг в ком.центре)
+-- РџРѕР»С‚РµСЂРіРµР№СЃС‚ (РіСѓР»Р°Рі РІ РєРѕРј.С†РµРЅС‚СЂРµ)
 object_list["test2"] = {
 	"dar_m_poltergeist_e",
 	"dar_m_poltergeist_e_0000",
 	"dar_m_poltergeist_e_0001"
 }
--- Полтергейст в комнате с кодом
+-- РџРѕР»С‚РµСЂРіРµР№СЃС‚ РІ РєРѕРјРЅР°С‚Рµ СЃ РєРѕРґРѕРј
 object_list["test3"] = {
 	"dar_m_poltergeist_e_0002",
 	"dar_m_poltergeist_e_0003"
 }
--- Снорки на верхнем этаже
+-- РЎРЅРѕСЂРєРё РЅР° РІРµСЂС…РЅРµРј СЌС‚Р°Р¶Рµ
 object_list["test4"] = {
 	"dar_m_snork_1",
 	"dar_m_snork_11",
@@ -39,7 +39,7 @@ object_list["test4"] = {
 	"dar_m_snork_333"
 }
 
--- Тушканы внизу
+-- РўСѓС€РєР°РЅС‹ РІРЅРёР·Сѓ
 object_list["test5"] = {
 	"dar_m_tushkano_e",
 	"dar_m_tushkano_e_0000",

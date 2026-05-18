@@ -1,9 +1,9 @@
---' Äèäåíêî Ðóñëàí (Stohe), ×óãàé Àëåêñàíäð (Chugai)
+--' Ð”Ð¸Ð´ÐµÐ½ÐºÐ¾ Ð ÑƒÑÐ»Ð°Ð½ (Stohe), Ð§ÑƒÐ³Ð°Ð¹ ÐÐ»ÐµÐºÑÐ°Ð½Ð´Ñ€ (Chugai)
 
 --function printf()
 --end
 
---' â ðàáîòàõ ïîëå object õðàíèò id îáúåêòà
+--' Ð² Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ñ… Ð¿Ð¾Ð»Ðµ object Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ id Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
 
 level_gulags = {gulag_general, gulag_escape, gulag_garbage, gulag_agroprom, gulag_agroprom_underground, gulag_dark_valley, gulag_labx18, gulag_bar,
                 gulag_military, gulag_radar, gulag_radar_u, gulag_yantar, gulag_pripyat, gulag_kishka, gulag_sarcofag,
@@ -18,8 +18,8 @@ level_groups = {l01_escape = 1, l02_garbage = 2, l03_agroprom = 3, l03u_agr_unde
 local gulag_tasks_file_name  = "misc\\gulag_tasks.ltx"
 local gulag_tasks_ltx        = ini_file( gulag_tasks_file_name )
 
-local job_position_threshold = 120 --'50  -- ðàññòîÿíèå äî ìåñòà ðàáîòû ïðè êîòîðîì ïåðñîíàæ â îíëàéíå ñ÷èòàåòñÿ äîñòèãøèì ìåñòà ðàáîòû
-local job_idle_after_death   = 600 -- â òå÷åíèè òàêîãî ïåðèîäà âðåìåíè ïîñëå ñìåðòè ïåðñîíàæà åãî ðàáîòà áóäåò íåäîñòóïíà
+local job_position_threshold = 120 --'50  -- Ñ€Ð°ÑÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð´Ð¾ Ð¼ÐµÑÑ‚Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ð¿Ñ€Ð¸ ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¼ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½Ðµ ÑÑ‡Ð¸Ñ‚Ð°ÐµÑ‚ÑÑ Ð´Ð¾ÑÑ‚Ð¸Ð³ÑˆÐ¸Ð¼ Ð¼ÐµÑÑ‚Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹
+local job_idle_after_death   = 600 -- Ð² Ñ‚ÐµÑ‡ÐµÐ½Ð¸Ð¸ Ñ‚Ð°ÐºÐ¾Ð³Ð¾ Ð¿ÐµÑ€Ð¸Ð¾Ð´Ð° Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸ Ð¿Ð¾ÑÐ»Ðµ ÑÐ¼ÐµÑ€Ñ‚Ð¸ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð° ÐµÐ³Ð¾ Ñ€Ð°Ð±Ð¾Ñ‚Ð° Ð±ÑƒÐ´ÐµÑ‚ Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð°
 
 idle_nil  = nil
 idle_once = -1
@@ -30,7 +30,7 @@ local path_fields = { "path_walk", "path_main", "path_home", "center_point" }
 -----------------------------------------------------------------------
 class "gulag"
 
--- êîíñòðóêòîð
+-- ÐºÐ¾Ð½ÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€
 function gulag:__init(smrttrn, type, squad, groups, npc_info, capacity)
 	self.smrttrn  = smrttrn
 	self.name     = smrttrn:name()
@@ -38,20 +38,20 @@ function gulag:__init(smrttrn, type, squad, groups, npc_info, capacity)
 	self.squad    = squad
 	self.groups   = groups or {}
 	self.npc_info = npc_info
-	self.capacity = capacity     -- îáùàÿ ¸ìêîñòü ãóëàãà
---	self.capacity_non_exclusive  -  ¸ìêîñòü ãóëàãà äëÿ íåýêñêëþçèâíûõ ïåðñîíàæåé
+	self.capacity = capacity     -- Ð¾Ð±Ñ‰Ð°Ñ Ñ‘Ð¼ÐºÐ¾ÑÑ‚ÑŒ Ð³ÑƒÐ»Ð°Ð³Ð°
+--	self.capacity_non_exclusive  -  Ñ‘Ð¼ÐºÐ¾ÑÑ‚ÑŒ Ð³ÑƒÐ»Ð°Ð³Ð° Ð´Ð»Ñ Ð½ÐµÑÐºÑÐºÐ»ÑŽÐ·Ð¸Ð²Ð½Ñ‹Ñ… Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ÐµÐ¹
 	
-	self.population = 0					-- Íàñåëåíèå ãóëàãà
-	self.population_comed = 0			-- Óæå ïðèøåäøåå íàñåëåíèå ãóëàãà
-	self.population_non_exclusive = 0	-- Íåýêñêëþçèâíîå íàñåëåíèå
+	self.population = 0					-- ÐÐ°ÑÐµÐ»ÐµÐ½Ð¸Ðµ Ð³ÑƒÐ»Ð°Ð³Ð°
+	self.population_comed = 0			-- Ð£Ð¶Ðµ Ð¿Ñ€Ð¸ÑˆÐµÐ´ÑˆÐµÐµ Ð½Ð°ÑÐµÐ»ÐµÐ½Ð¸Ðµ Ð³ÑƒÐ»Ð°Ð³Ð°
+	self.population_non_exclusive = 0	-- ÐÐµÑÐºÑÐºÐ»ÑŽÐ·Ð¸Ð²Ð½Ð¾Ðµ Ð½Ð°ÑÐµÐ»ÐµÐ½Ð¸Ðµ
 
 
 
-	self.Object                 = {} -- îáúåêòû ïî id. Çíà÷åíèÿ: nil-íåòó òàêîãî, true-åñòü â îôëàéíå, game_object-åñòü â îíëàéí
-	self.Object_begin_job       = {} -- ïî id. true/nil äîñòèã ëè îáúåêò ìåñòà ñâîåé ðàáîòû
-	self.Object_didnt_begin_job = {} -- ïî id. íà÷èíàë ëè îáúåêò õîòÿ áû ðàç ëþáóþ ðàáîòó ñ ìîìåíòà äîáàâëåíèÿ ïîä ñìàðò
-	self.ObjectJob              = {} -- ïî id. íîìåð ðàáîòû äëÿ êàæäîãî ïåðñîíàæà
-	self.JobLoaded              = {} -- äëÿ êàæäîé ðàáîòû çàãðóæåííûå èç save äàííûå
+	self.Object                 = {} -- Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹ Ð¿Ð¾ id. Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ: nil-Ð½ÐµÑ‚Ñƒ Ñ‚Ð°ÐºÐ¾Ð³Ð¾, true-ÐµÑÑ‚ÑŒ Ð² Ð¾Ñ„Ð»Ð°Ð¹Ð½Ðµ, game_object-ÐµÑÑ‚ÑŒ Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½
+	self.Object_begin_job       = {} -- Ð¿Ð¾ id. true/nil Ð´Ð¾ÑÑ‚Ð¸Ð³ Ð»Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð¼ÐµÑÑ‚Ð° ÑÐ²Ð¾ÐµÐ¹ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹
+	self.Object_didnt_begin_job = {} -- Ð¿Ð¾ id. Ð½Ð°Ñ‡Ð¸Ð½Ð°Ð» Ð»Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚ Ñ…Ð¾Ñ‚Ñ Ð±Ñ‹ Ñ€Ð°Ð· Ð»ÑŽÐ±ÑƒÑŽ Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ Ñ Ð¼Ð¾Ð¼ÐµÐ½Ñ‚Ð° Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ñ Ð¿Ð¾Ð´ ÑÐ¼Ð°Ñ€Ñ‚
+	self.ObjectJob              = {} -- Ð¿Ð¾ id. Ð½Ð¾Ð¼ÐµÑ€ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ð´Ð»Ñ ÐºÐ°Ð¶Ð´Ð¾Ð³Ð¾ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð°
+	self.JobLoaded              = {} -- Ð´Ð»Ñ ÐºÐ°Ð¶Ð´Ð¾Ð¹ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ð·Ð°Ð³Ñ€ÑƒÐ¶ÐµÐ½Ð½Ñ‹Ðµ Ð¸Ð· save Ð´Ð°Ð½Ð½Ñ‹Ðµ
 	self.Job_avail_in_state     = nil
 
 	self.state      = 0
@@ -60,9 +60,9 @@ function gulag:__init(smrttrn, type, squad, groups, npc_info, capacity)
 	self.casualities = 0
 end
 
--- çàãðóçêà ðàáîò
+-- Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° Ñ€Ð°Ð±Ð¾Ñ‚
 function gulag:load_jobs()
-	self.Job                  = {} -- ðàáîòû
+	self.Job                  = {} -- Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹
 	self.Job_avail_in_state_0 = {}
 
 	gulag_tasks.loadJob( self.Job, self.name, self.type, self.squad, self.groups, self )
@@ -94,12 +94,12 @@ function gulag:load_jobs()
 --	self:validate_jobs()
 end
 
--- ïðîâåðêè ïðàâèëüíîñòè íàáîðà ðàáîò.
--- à) â ëþáîì ñîñòîÿíèè êîë-âî 100-íî äîñòóïíûõ ðàáîò äîëæíî áûòü >= ¸ìêîñòè ñìàðòà
+-- Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ¸ Ð¿Ñ€Ð°Ð²Ð¸Ð»ÑŒÐ½Ð¾ÑÑ‚Ð¸ Ð½Ð°Ð±Ð¾Ñ€Ð° Ñ€Ð°Ð±Ð¾Ñ‚.
+-- Ð°) Ð² Ð»ÑŽÐ±Ð¾Ð¼ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ð¸ ÐºÐ¾Ð»-Ð²Ð¾ 100-Ð½Ð¾ Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ñ‹Ñ… Ñ€Ð°Ð±Ð¾Ñ‚ Ð´Ð¾Ð»Ð¶Ð½Ð¾ Ð±Ñ‹Ñ‚ÑŒ >= Ñ‘Ð¼ÐºÐ¾ÑÑ‚Ð¸ ÑÐ¼Ð°Ñ€Ñ‚Ð°
 function gulag:validate_jobs()
 	local jobs_avail_in_states = {}
 
-	-- à)
+	-- Ð°)
 	for i, job in ipairs( self.Job ) do
 		if job.predicate == nil and
 		   job.idle == 0 and
@@ -120,10 +120,10 @@ function gulag:validate_jobs()
 	end
 end
 
--- ïîäãîòîâêà ãóëàãà ê ðàáîòå
+-- Ð¿Ð¾Ð´Ð³Ð¾Ñ‚Ð¾Ð²ÐºÐ° Ð³ÑƒÐ»Ð°Ð³Ð° Ðº Ñ€Ð°Ð±Ð¾Ñ‚Ðµ
 function gulag:initialize()
-	self.ObjectJobPathName = {} --' ïî id. èìÿ ïàòðóëüíîãî ïóòè ìåñòà ðàáîòû ïåðñîíàæà
-	self.restrictors       = {} --' ïî id. íàçíà÷åííûå ãóëàãîì ðåñòðèêòîðû äëÿ êàæäîãî ïåðñîíàæà
+	self.ObjectJobPathName = {} --' Ð¿Ð¾ id. Ð¸Ð¼Ñ Ð¿Ð°Ñ‚Ñ€ÑƒÐ»ÑŒÐ½Ð¾Ð³Ð¾ Ð¿ÑƒÑ‚Ð¸ Ð¼ÐµÑÑ‚Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð°
+	self.restrictors       = {} --' Ð¿Ð¾ id. Ð½Ð°Ð·Ð½Ð°Ñ‡ÐµÐ½Ð½Ñ‹Ðµ Ð³ÑƒÐ»Ð°Ð³Ð¾Ð¼ Ñ€ÐµÑÑ‚Ñ€Ð¸ÐºÑ‚Ð¾Ñ€Ñ‹ Ð´Ð»Ñ ÐºÐ°Ð¶Ð´Ð¾Ð³Ð¾ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð°
 
 	self:prepare_jobs()
 
@@ -141,9 +141,9 @@ function gulag:initialize()
 	self.JobLoaded = nil
 end
 
--- ïîäãîòîâèòü ðàáîòû.
--- ïîäãîòîâèòü äàííûå î ìåñòîïîëîæåíèè êàæäîé ðàáîòû; î îáúåêòå, êîòîðûé íà íåé çàíÿò.
--- ïîäñ÷èòàòü ¸ìêîñòü = min(êîë-âî ðàáîò â 0 ñîñòîÿíèè, ïîëå capacity â custom data)
+-- Ð¿Ð¾Ð´Ð³Ð¾Ñ‚Ð¾Ð²Ð¸Ñ‚ÑŒ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹.
+-- Ð¿Ð¾Ð´Ð³Ð¾Ñ‚Ð¾Ð²Ð¸Ñ‚ÑŒ Ð´Ð°Ð½Ð½Ñ‹Ðµ Ð¾ Ð¼ÐµÑÑ‚Ð¾Ð¿Ð¾Ð»Ð¾Ð¶ÐµÐ½Ð¸Ð¸ ÐºÐ°Ð¶Ð´Ð¾Ð¹ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹; Ð¾ Ð¾Ð±ÑŠÐµÐºÑ‚Ðµ, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ Ð½Ð° Ð½ÐµÐ¹ Ð·Ð°Ð½ÑÑ‚.
+-- Ð¿Ð¾Ð´ÑÑ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ Ñ‘Ð¼ÐºÐ¾ÑÑ‚ÑŒ = min(ÐºÐ¾Ð»-Ð²Ð¾ Ñ€Ð°Ð±Ð¾Ñ‚ Ð² 0 ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ð¸, Ð¿Ð¾Ð»Ðµ capacity Ð² custom data)
 function gulag:prepare_jobs()
 	local ptrl, path_name
 	local job_loaded
@@ -176,9 +176,9 @@ function gulag:prepare_jobs()
 	end
 end
 
--- ñîñòàâèòü ñïèñîê ðàáîò ñóùåñòâóþùèõ â äàííîì ñîñòîÿíèè ãóëàãà.
--- îñâîáîæäåíèå npc ñ ðàáîò, íå ñóùåñòâóþùèõ â äàííîì ñîñòîÿíèè.
--- îáíóëèòü fill_idle äëÿ âñåõ ðàáîò.
+-- ÑÐ¾ÑÑ‚Ð°Ð²Ð¸Ñ‚ÑŒ ÑÐ¿Ð¸ÑÐ¾Ðº Ñ€Ð°Ð±Ð¾Ñ‚ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÑŽÑ‰Ð¸Ñ… Ð² Ð´Ð°Ð½Ð½Ð¾Ð¼ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ð¸ Ð³ÑƒÐ»Ð°Ð³Ð°.
+-- Ð¾ÑÐ²Ð¾Ð±Ð¾Ð¶Ð´ÐµÐ½Ð¸Ðµ npc Ñ Ñ€Ð°Ð±Ð¾Ñ‚, Ð½Ðµ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÑŽÑ‰Ð¸Ñ… Ð² Ð´Ð°Ð½Ð½Ð¾Ð¼ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ð¸.
+-- Ð¾Ð±Ð½ÑƒÐ»Ð¸Ñ‚ÑŒ fill_idle Ð´Ð»Ñ Ð²ÑÐµÑ… Ñ€Ð°Ð±Ð¾Ñ‚.
 function gulag:prepare_jobs_for_new_state()
 	local Job_avail_in_state = {}
 
@@ -209,8 +209,8 @@ function gulag:job_exists_in_state_0( job )
 	return false
 end
 
--- ïîäãðóçêà ltx ñ ñåêöèÿìè ëîãèêè äëÿ ðàáîò.
--- ìîæåò ïîäãðóçèòü ëèáî äèíàìè÷åñêèé ltx, ëèáî ñòàòè÷åñêèé (gulag_tasks.ltx)
+-- Ð¿Ð¾Ð´Ð³Ñ€ÑƒÐ·ÐºÐ° ltx Ñ ÑÐµÐºÑ†Ð¸ÑÐ¼Ð¸ Ð»Ð¾Ð³Ð¸ÐºÐ¸ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚.
+-- Ð¼Ð¾Ð¶ÐµÑ‚ Ð¿Ð¾Ð´Ð³Ñ€ÑƒÐ·Ð¸Ñ‚ÑŒ Ð»Ð¸Ð±Ð¾ Ð´Ð¸Ð½Ð°Ð¼Ð¸Ñ‡ÐµÑÐºÐ¸Ð¹ ltx, Ð»Ð¸Ð±Ð¾ ÑÑ‚Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸Ð¹ (gulag_tasks.ltx)
 function gulag:init_ltx(name, type)
 	local ltx, ltx_name = gulag_tasks.loadLtx(name, type)
 
@@ -223,7 +223,7 @@ function gulag:init_ltx(name, type)
 	end
 end
 
--- ïîëó÷èòü èìÿ ïóòè ìåñòà ðàáîòû
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¸Ð¼Ñ Ð¿ÑƒÑ‚Ð¸ Ð¼ÐµÑÑ‚Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹
 function gulag:get_job_path_name( job )
 	local section = job.section
 
@@ -245,7 +245,7 @@ function gulag:get_job_path_name( job )
 		abort( "gulag: ltx=%s, there is no path in section %s", self.ltx_name, active_section )
 	end
 
-	if path_field == "center_point" then --' TODO óáðàòü çàòûê
+	if path_field == "center_point" then --' TODO ÑƒÐ±Ñ€Ð°Ñ‚ÑŒ Ð·Ð°Ñ‚Ñ‹Ðº
 		local path_name = self.name .. "_" .. self.ltx:r_string( active_section, path_field )
 
 		if level.patrol_path_exists( path_name .. "_task" ) then
@@ -258,7 +258,7 @@ function gulag:get_job_path_name( job )
 	end
 end
 
--- ñîõðàíåíèÿ îáùåãî ñîñòîÿíèÿ ãóëàãà
+-- ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ Ð¾Ð±Ñ‰ÐµÐ³Ð¾ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ñ Ð³ÑƒÐ»Ð°Ð³Ð°
 function gulag:save_common( packet )
 	packet:w_u8( self.casualities )
 	packet:w_u8( self.state )
@@ -277,7 +277,7 @@ function gulag:save_common( packet )
 	end
 end
 
--- âîññòàíîâëåíèå îáùåãî ñîñòîÿíèÿ ãóëàãà
+-- Ð²Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ Ð¾Ð±Ñ‰ÐµÐ³Ð¾ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ñ Ð³ÑƒÐ»Ð°Ð³Ð°
 function gulag:load_common( packet )
 	self.casualities = packet:r_u8()
 	self.state       = packet:r_u8()
@@ -309,14 +309,14 @@ function gulag:load_common( packet )
 	end
 end
 
--- ñîõðàíåíèå èíôîðìàöèè îá îáúåêòå
+-- ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ðµ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¸ Ð¾Ð± Ð¾Ð±ÑŠÐµÐºÑ‚Ðµ
 function gulag:save_obj( packet, obj_id )
 	packet:w_bool ( self.Object_begin_job[obj_id] )
 	packet:w_bool ( self.Object_didnt_begin_job[obj_id] )
 	packet:w_u8   ( self.ObjectJob[obj_id] or 0 )
 end
 
--- âîññòàíîâëåíèå èíôîðìàöèè îá îáúåêòå
+-- Ð²Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¸ Ð¾Ð± Ð¾Ð±ÑŠÐµÐºÑ‚Ðµ
 function gulag:load_obj( packet, obj_id )
 	self.Object[obj_id]           = true
 
@@ -329,9 +329,9 @@ function gulag:load_obj( packet, obj_id )
 	end
 end
 
--- äîáàâèòü îáúåêò ïîä ãóëàã.
--- ïðè äîáàâëåíèÿ îáúåêòà îí ïîìå÷àåòñÿ êàê îôëàéíîâûé.
--- âûçûâàåòñÿ òîëüêî èç se_smart_terrain:register_npc()
+-- Ð´Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð¿Ð¾Ð´ Ð³ÑƒÐ»Ð°Ð³.
+-- Ð¿Ñ€Ð¸ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° Ð¾Ð½ Ð¿Ð¾Ð¼ÐµÑ‡Ð°ÐµÑ‚ÑÑ ÐºÐ°Ðº Ð¾Ñ„Ð»Ð°Ð¹Ð½Ð¾Ð²Ñ‹Ð¹.
+-- Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð¸Ð· se_smart_terrain:register_npc()
 function gulag:addObject( obj_id )
 	self.Object_begin_job[obj_id]       = false
 	self.Object_didnt_begin_job[obj_id] = true
@@ -344,8 +344,8 @@ function gulag:addObject( obj_id )
 	end
 end
 
--- íàñòðîèòü ïåðñîíàæà íà ðàáîòó â îôëàéíå.
--- åñëè îí â ýòî âðåìÿ â îíëàéíå, òî âûçâàòü object_setup_online
+-- Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¸Ñ‚ÑŒ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð° Ð½Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ Ð² Ð¾Ñ„Ð»Ð°Ð¹Ð½Ðµ.
+-- ÐµÑÐ»Ð¸ Ð¾Ð½ Ð² ÑÑ‚Ð¾ Ð²Ñ€ÐµÐ¼Ñ Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½Ðµ, Ñ‚Ð¾ Ð²Ñ‹Ð·Ð²Ð°Ñ‚ÑŒ object_setup_online
 function gulag:object_setup_offline( obj_id, was_online )
 	printf( "[smart_terrain %s] gulag: object_setup_offline: obj=%s", self.name, self.npc_info[obj_id].name )
 
@@ -361,9 +361,9 @@ function gulag:object_setup_offline( obj_id, was_online )
 	end
 end
 
--- íàñòðîèòü ïåðñîíàæà íà ðàáîòó â îíëàéíå.
--- âûçûâàåòñÿ ó ïåðñîíàæåé èç net_spawn() è èç gulag:object_setup_offline()
--- åñëè îí óæå ïðèø¸ë íà ðàáîòó, íàñòðîèòü åìó ëîãèêó è ðåñòðèêòîðû (ïðè íåîáõîäèìîñòè).
+-- Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¸Ñ‚ÑŒ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð° Ð½Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½Ðµ.
+-- Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ Ñƒ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ÐµÐ¹ Ð¸Ð· net_spawn() Ð¸ Ð¸Ð· gulag:object_setup_offline()
+-- ÐµÑÐ»Ð¸ Ð¾Ð½ ÑƒÐ¶Ðµ Ð¿Ñ€Ð¸ÑˆÑ‘Ð» Ð½Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ, Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¸Ñ‚ÑŒ ÐµÐ¼Ñƒ Ð»Ð¾Ð³Ð¸ÐºÑƒ Ð¸ Ñ€ÐµÑÑ‚Ñ€Ð¸ÐºÑ‚Ð¾Ñ€Ñ‹ (Ð¿Ñ€Ð¸ Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ÑÑ‚Ð¸).
 -- obj=game_object
 function gulag:object_setup_online( obj_id, obj, need_setup_logic, need_setup_restrictors )
 	printf( "[smart_terrain %s] gulag: object_setup_online: obj=%s need_setup_logic=%s need_setup_restrictors=%s", self.name, obj:name(), tostring(need_setup_logic), tostring(need_setup_restrictors) )
@@ -383,9 +383,9 @@ function gulag:object_setup_online( obj_id, obj, need_setup_logic, need_setup_re
 	end
 end
 
--- óäàëèòü îáúåêò èç ãóëàãà.
--- âûçûâàåòñÿ òîëüêî èç se_smart_terrain:unregister_npc() !
--- åñëè îáúåêò æèâ è îí â îíëàéíå, òî ïåðåèíèöèàëèçèðîâàòü ëîãèêó.
+-- ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð¸Ð· Ð³ÑƒÐ»Ð°Ð³Ð°.
+-- Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð¸Ð· se_smart_terrain:unregister_npc() !
+-- ÐµÑÐ»Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð¶Ð¸Ð² Ð¸ Ð¾Ð½ Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½Ðµ, Ñ‚Ð¾ Ð¿ÐµÑ€ÐµÐ¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð»Ð¾Ð³Ð¸ÐºÑƒ.
 function gulag:removeObject( obj_id )
 	self:free_obj_and_reinit( obj_id )
 
@@ -399,7 +399,7 @@ function gulag:removeObject( obj_id )
 	end
 end
 
--- Îáíîâëåíèå ãóëàãà.
+-- ÐžÐ±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ Ð³ÑƒÐ»Ð°Ð³Ð°.
 function gulag:update()
 	if not self.stateBegin then
 		self.stateBegin = game.get_game_time()
@@ -418,12 +418,12 @@ function gulag:update()
 	self:print()
 end
 
--- óáèðàåò ì¸ðòâûõ.
--- ñëåäèò, êòî ïðûãíóë â îôëàéí è íå ñîîáùèë îá ýòîì (ñëó÷àåòñÿ ïðè ïåðåõîäå ñ óðîâíÿ íà óðîâåíü
--- êîãäà áèíäåð ñìàðòòåððåéíà óáèâàåòñÿ äî ïåðñîíàæà).
--- ñëåäèò, äîø¸ë ëè ïåðñîíàæ äî ìåñòà ðàáîòû.
--- èçìåíåíÿåò ïîòåðè â ëàãåðå.
--- âûçûâàåòñÿ èç gulag:update() è smart_terrain.on_death()
+-- ÑƒÐ±Ð¸Ñ€Ð°ÐµÑ‚ Ð¼Ñ‘Ñ€Ñ‚Ð²Ñ‹Ñ….
+-- ÑÐ»ÐµÐ´Ð¸Ñ‚, ÐºÑ‚Ð¾ Ð¿Ñ€Ñ‹Ð³Ð½ÑƒÐ» Ð² Ð¾Ñ„Ð»Ð°Ð¹Ð½ Ð¸ Ð½Ðµ ÑÐ¾Ð¾Ð±Ñ‰Ð¸Ð» Ð¾Ð± ÑÑ‚Ð¾Ð¼ (ÑÐ»ÑƒÑ‡Ð°ÐµÑ‚ÑÑ Ð¿Ñ€Ð¸ Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´Ðµ Ñ ÑƒÑ€Ð¾Ð²Ð½Ñ Ð½Ð° ÑƒÑ€Ð¾Ð²ÐµÐ½ÑŒ
+-- ÐºÐ¾Ð³Ð´Ð° Ð±Ð¸Ð½Ð´ÐµÑ€ ÑÐ¼Ð°Ñ€Ñ‚Ñ‚ÐµÑ€Ñ€ÐµÐ¹Ð½Ð° ÑƒÐ±Ð¸Ð²Ð°ÐµÑ‚ÑÑ Ð´Ð¾ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð°).
+-- ÑÐ»ÐµÐ´Ð¸Ñ‚, Ð´Ð¾ÑˆÑ‘Ð» Ð»Ð¸ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ Ð´Ð¾ Ð¼ÐµÑÑ‚Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹.
+-- Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½ÑÐµÑ‚ Ð¿Ð¾Ñ‚ÐµÑ€Ð¸ Ð² Ð»Ð°Ð³ÐµÑ€Ðµ.
+-- Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ Ð¸Ð· gulag:update() Ð¸ smart_terrain.on_death()
 function gulag:update_objs()
 	local obj, cl_obj, online
 
@@ -439,7 +439,7 @@ function gulag:update_objs()
 	end
 end
 
---' Óáèðàíèå ìåðòâîãî ÷óâàêà. Âûçûâàåòñÿ èç ñìàðòòåððåéíà
+--' Ð£Ð±Ð¸Ñ€Ð°Ð½Ð¸Ðµ Ð¼ÐµÑ€Ñ‚Ð²Ð¾Ð³Ð¾ Ñ‡ÑƒÐ²Ð°ÐºÐ°. Ð’Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ Ð¸Ð· ÑÐ¼Ð°Ñ€Ñ‚Ñ‚ÐµÑ€Ñ€ÐµÐ¹Ð½Ð°
 function gulag:clear_dead(obj_id)
 	printf( "[smart_terrain %s] gulag: Clear_dead: obj=%s", self.name, self.npc_info[obj_id].name)
 
@@ -465,19 +465,19 @@ function gulag:update_beginning_jobs()
 	end
 end
 
--- ìîæíî ëè îáúåêòó íà÷àòü ðàáîòàòü?
--- äëÿ ýòîãî ïðîâåðèòü, íå íà ðàáîòå ëè óæå.
--- åñëè íåò, òî ïðîâåðèòü, äîñòèã ëè îáúåêò ìåñòà ðàáîòû.
--- óñëîâèÿ äîñòèæåíèÿ ïåðñîíàæåì ìåñòà ðàáîòû:
--- à) â îôëàéíå: ïåðñîíàæ ïðèø¸ë íà íóæíóþ òî÷êó ãðàôà
--- á) â îíëàéíå: ïåðñîíàæ ïðîäîø¸ë íà ðàññòîÿíèå job_position_threshold
+-- Ð¼Ð¾Ð¶Ð½Ð¾ Ð»Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚Ñƒ Ð½Ð°Ñ‡Ð°Ñ‚ÑŒ Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ñ‚ÑŒ?
+-- Ð´Ð»Ñ ÑÑ‚Ð¾Ð³Ð¾ Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ, Ð½Ðµ Ð½Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ðµ Ð»Ð¸ ÑƒÐ¶Ðµ.
+-- ÐµÑÐ»Ð¸ Ð½ÐµÑ‚, Ñ‚Ð¾ Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ, Ð´Ð¾ÑÑ‚Ð¸Ð³ Ð»Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð¼ÐµÑÑ‚Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹.
+-- ÑƒÑÐ»Ð¾Ð²Ð¸Ñ Ð´Ð¾ÑÑ‚Ð¸Ð¶ÐµÐ½Ð¸Ñ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ÐµÐ¼ Ð¼ÐµÑÑ‚Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹:
+-- Ð°) Ð² Ð¾Ñ„Ð»Ð°Ð¹Ð½Ðµ: Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ Ð¿Ñ€Ð¸ÑˆÑ‘Ð» Ð½Ð° Ð½ÑƒÐ¶Ð½ÑƒÑŽ Ñ‚Ð¾Ñ‡ÐºÑƒ Ð³Ñ€Ð°Ñ„Ð°
+-- Ð±) Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½Ðµ: Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ Ð¿Ñ€Ð¾Ð´Ð¾ÑˆÑ‘Ð» Ð½Ð° Ñ€Ð°ÑÑÑ‚Ð¾ÑÐ½Ð¸Ðµ job_position_threshold
 function gulag:can_obj_begin_job( obj_id, obj )
 	local jobN = self.ObjectJob[obj_id]
 
 	if jobN and not self.Object_begin_job[obj_id] then
 		local job = self.Job[jobN]
 		
-		--' Ñïåøë êåéñ, ïðîâåðêà òîëüêî ïî âåðòåêñàì ãðàôà
+		--' Ð¡Ð¿ÐµÑˆÐ» ÐºÐµÐ¹Ñ, Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð¿Ð¾ Ð²ÐµÑ€Ñ‚ÐµÐºÑÐ°Ð¼ Ð³Ñ€Ð°Ñ„Ð°
 		if job.position_threshold == "graph" then
 			local obj_gv, obj_pos = self:get_obj_game_vertex_and_position( obj_id )
 			local job_gv          = game_graph():vertex( job.game_vertex_id )
@@ -493,8 +493,8 @@ function gulag:can_obj_begin_job( obj_id, obj )
 	end
 end
 
--- ñìåíèòü ñîñòîÿíèå ãóëàãà.
--- Âîçîáíîâëÿåì âñå ðàáîòû, äîñòóïíûå äëÿ íàïîëíåíèÿ òîëüêî îäèí ðàç.
+-- ÑÐ¼ÐµÐ½Ð¸Ñ‚ÑŒ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð³ÑƒÐ»Ð°Ð³Ð°.
+-- Ð’Ð¾Ð·Ð¾Ð±Ð½Ð¾Ð²Ð»ÑÐµÐ¼ Ð²ÑÐµ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹, Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ñ‹Ðµ Ð´Ð»Ñ Ð½Ð°Ð¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ñ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð¾Ð´Ð¸Ð½ Ñ€Ð°Ð·.
 function gulag:changeState(state)
 	if self.state ~= state then
 		self.state      = state
@@ -504,9 +504,9 @@ function gulag:changeState(state)
 	end
 end
 
--- åñòü ëè â òåêóùåì ñîñòîÿíèè äëÿ îáúåêòà õîòü îäíà ïîäõîäÿùàÿ ðàáîòà?
--- åñëè ïåðñîíàæ ÍÅ ýêñêëþçèâíûé, òî èùåò òîëüêî ñâîáîäíûå ðàáîòû,
--- åñëè ïåðñîíàæ ýêñêëþçèâíûé - èùåò ñâîáîäíûå ðàáîòû è ðàáîòû, çàíÿòûå íå ýêñêëþçèâíûìè ïåðñîíàæàìè.
+-- ÐµÑÑ‚ÑŒ Ð»Ð¸ Ð² Ñ‚ÐµÐºÑƒÑ‰ÐµÐ¼ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ð¸ Ð´Ð»Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° Ñ…Ð¾Ñ‚ÑŒ Ð¾Ð´Ð½Ð° Ð¿Ð¾Ð´Ñ…Ð¾Ð´ÑÑ‰Ð°Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ð°?
+-- ÐµÑÐ»Ð¸ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ ÐÐ• ÑÐºÑÐºÐ»ÑŽÐ·Ð¸Ð²Ð½Ñ‹Ð¹, Ñ‚Ð¾ Ð¸Ñ‰ÐµÑ‚ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ ÑÐ²Ð¾Ð±Ð¾Ð´Ð½Ñ‹Ðµ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹,
+-- ÐµÑÐ»Ð¸ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ ÑÐºÑÐºÐ»ÑŽÐ·Ð¸Ð²Ð½Ñ‹Ð¹ - Ð¸Ñ‰ÐµÑ‚ ÑÐ²Ð¾Ð±Ð¾Ð´Ð½Ñ‹Ðµ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ð¸ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹, Ð·Ð°Ð½ÑÑ‚Ñ‹Ðµ Ð½Ðµ ÑÐºÑÐºÐ»ÑŽÐ·Ð¸Ð²Ð½Ñ‹Ð¼Ð¸ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð°Ð¼Ð¸.
 function gulag:is_there_any_suitable_job( npc_info, exclusive )
 	for i, job in ipairs( self.Job_avail_in_state ) do
 		if ( not job.predicate or job.predicate( npc_info, self ) ) and self:availJob( job ) then
@@ -523,9 +523,9 @@ function gulag:is_there_any_suitable_job( npc_info, exclusive )
 	return false
 end
 
--- ïîäõîäèò ëè ðàáîòà ïåðâîãî ïåðñîíàæà âòîðîìó?
--- obj_id   - id ïåðâîãî ïåðñîíàæà
--- npc_info - èíôîðìàöèÿ î âòîðîì ïåðñîíàæå
+-- Ð¿Ð¾Ð´Ñ…Ð¾Ð´Ð¸Ñ‚ Ð»Ð¸ Ñ€Ð°Ð±Ð¾Ñ‚Ð° Ð¿ÐµÑ€Ð²Ð¾Ð³Ð¾ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð° Ð²Ñ‚Ð¾Ñ€Ð¾Ð¼Ñƒ?
+-- obj_id   - id Ð¿ÐµÑ€Ð²Ð¾Ð³Ð¾ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð°
+-- npc_info - Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ñ Ð¾ Ð²Ñ‚Ð¾Ñ€Ð¾Ð¼ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ðµ
 function gulag:obj1_job_suits_obj2( obj_id, npc_info )
 	local job = self.Job[self.ObjectJob[obj_id]]
 
@@ -537,7 +537,7 @@ function gulag:obj1_job_suits_obj2( obj_id, npc_info )
 	return not job.predicate or job.predicate( npc_info, self )
 end
 
--- ñóùåñòâóåò ëè óêàçàííîå ñîñòîÿíèå â òàáëè÷êå?
+-- ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÐµÑ‚ Ð»Ð¸ ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ð¾Ðµ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð² Ñ‚Ð°Ð±Ð»Ð¸Ñ‡ÐºÐµ?
 function gulag:availState(st, state)
 	for k,v in ipairs( st ) do
 		if v == state then
@@ -548,9 +548,9 @@ function gulag:availState(st, state)
 	return false
 end
 
--- äîñòóïíà ëè ðàáîòà?
--- ðàáîòà äîñòóïíà, êîãäà âðåìÿ idle èñòåêëî (èëè íå çàäàíî)
--- è çàíÿòà ðàáîòà, îò êîòîðîé çàâèñèò äàííàÿ ðàáîòà.
+-- Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð° Ð»Ð¸ Ñ€Ð°Ð±Ð¾Ñ‚Ð°?
+-- Ñ€Ð°Ð±Ð¾Ñ‚Ð° Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð°, ÐºÐ¾Ð³Ð´Ð° Ð²Ñ€ÐµÐ¼Ñ idle Ð¸ÑÑ‚ÐµÐºÐ»Ð¾ (Ð¸Ð»Ð¸ Ð½Ðµ Ð·Ð°Ð´Ð°Ð½Ð¾)
+-- Ð¸ Ð·Ð°Ð½ÑÑ‚Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ð°, Ð¾Ñ‚ ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¹ Ð·Ð°Ð²Ð¸ÑÐ¸Ñ‚ Ð´Ð°Ð½Ð½Ð°Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ð°.
 function gulag:availJob(job)
 	if job.begin == nil or game.time() - job.begin > job.idle then
 		if job.idle_after_death_end == nil or job.idle_after_death_end < game.time() then
@@ -568,7 +568,7 @@ function gulag:availJob(job)
 	return false
 end
 
--- Òåêóùàÿ ðàáîòà äîñòóïíà, åñëè íå èñòåêëî åå âðåìÿ è çàíÿòà ðàáîòà, îò êîòîðîé îíà çàâèñèò
+-- Ð¢ÐµÐºÑƒÑ‰Ð°Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ð° Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð°, ÐµÑÐ»Ð¸ Ð½Ðµ Ð¸ÑÑ‚ÐµÐºÐ»Ð¾ ÐµÐµ Ð²Ñ€ÐµÐ¼Ñ Ð¸ Ð·Ð°Ð½ÑÑ‚Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ð°, Ð¾Ñ‚ ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¹ Ð¾Ð½Ð° Ð·Ð°Ð²Ð¸ÑÐ¸Ñ‚
 function gulag:availCurrent(job)
 	if job.timeout == nil or
 	   job.begin == nil or game.time() - job.begin < job.timeout
@@ -579,9 +579,9 @@ function gulag:availCurrent(job)
 	end
 end
 
--- ñîñòàâèòü ñïèñîê äîñòóïíûõ äëÿ ðàñïðåäåëåíèÿ ðàáîò.
--- îñâîáîæäåíèå npc ñ ðàáîò, ñòàâøèõ íåäîñòóïíûìè (íàïðèìåð, âûøåë timeout).
--- òàêæå îñâîáîæäåíèå íåäîøåäøèõ äî ñâîèõ ðàáîò.
+-- ÑÐ¾ÑÑ‚Ð°Ð²Ð¸Ñ‚ÑŒ ÑÐ¿Ð¸ÑÐ¾Ðº Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ñ‹Ñ… Ð´Ð»Ñ Ñ€Ð°ÑÐ¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ñ Ñ€Ð°Ð±Ð¾Ñ‚.
+-- Ð¾ÑÐ²Ð¾Ð±Ð¾Ð¶Ð´ÐµÐ½Ð¸Ðµ npc Ñ Ñ€Ð°Ð±Ð¾Ñ‚, ÑÑ‚Ð°Ð²ÑˆÐ¸Ñ… Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ñ‹Ð¼Ð¸ (Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€, Ð²Ñ‹ÑˆÐµÐ» timeout).
+-- Ñ‚Ð°ÐºÐ¶Ðµ Ð¾ÑÐ²Ð¾Ð±Ð¾Ð¶Ð´ÐµÐ½Ð¸Ðµ Ð½ÐµÐ´Ð¾ÑˆÐµÐ´ÑˆÐ¸Ñ… Ð´Ð¾ ÑÐ²Ð¾Ð¸Ñ… Ñ€Ð°Ð±Ð¾Ñ‚.
 function gulag:prepare_available_jobs()
 	local Job_avail = {}
 
@@ -600,7 +600,7 @@ function gulag:prepare_available_jobs()
 	return Job_avail
 end
 
--- ñîñòàâèòü ñïèñîê ïåðñîíàæåé, äîñòóïíûõ äëÿ ðàñïðåäåëåíèÿ ïî ñâîáîäíûì ðàáîòàì
+-- ÑÐ¾ÑÑ‚Ð°Ð²Ð¸Ñ‚ÑŒ ÑÐ¿Ð¸ÑÐ¾Ðº Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ÐµÐ¹, Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ñ‹Ñ… Ð´Ð»Ñ Ñ€Ð°ÑÐ¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ñ Ð¿Ð¾ ÑÐ²Ð¾Ð±Ð¾Ð´Ð½Ñ‹Ð¼ Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ð¼
 function gulag:get_available_objs()
 	local obj_avail = {}
 
@@ -613,9 +613,9 @@ function gulag:get_available_objs()
 	return obj_avail
 end
 
--- ïîñ÷èòàòü óñëîâíîå ðàññòîÿíèå îò ïåðñîíàæà äî ìåñòà óêàçàííîé ðàáîòû.
--- åñëè íà îäíîì óðîâíå, òî ñ÷èòàòü ïî ëîêàëüíûì ïîçèöèÿì, èíà÷å ïî ãëîáàëüíûì ïîçèöèÿì âåðøèí ãåéì-ãðàôà.
--- èñïîëüçóåòñÿ äëÿ îïðåäåëåíèÿ áëèæàéøåãî ê ìåñòó ðàáîòû ïåðñîíàæà.
+-- Ð¿Ð¾ÑÑ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ ÑƒÑÐ»Ð¾Ð²Ð½Ð¾Ðµ Ñ€Ð°ÑÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð¾Ñ‚ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð° Ð´Ð¾ Ð¼ÐµÑÑ‚Ð° ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ð¾Ð¹ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹.
+-- ÐµÑÐ»Ð¸ Ð½Ð° Ð¾Ð´Ð½Ð¾Ð¼ ÑƒÑ€Ð¾Ð²Ð½Ðµ, Ñ‚Ð¾ ÑÑ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ Ð¿Ð¾ Ð»Ð¾ÐºÐ°Ð»ÑŒÐ½Ñ‹Ð¼ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑÐ¼, Ð¸Ð½Ð°Ñ‡Ðµ Ð¿Ð¾ Ð³Ð»Ð¾Ð±Ð°Ð»ÑŒÐ½Ñ‹Ð¼ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑÐ¼ Ð²ÐµÑ€ÑˆÐ¸Ð½ Ð³ÐµÐ¹Ð¼-Ð³Ñ€Ð°Ñ„Ð°.
+-- Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ð´Ð»Ñ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ñ Ð±Ð»Ð¸Ð¶Ð°Ð¹ÑˆÐµÐ³Ð¾ Ðº Ð¼ÐµÑÑ‚Ñƒ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð°.
 function gulag:distance_to_job_location( obj_id, job )
 	local obj_gv, obj_pos = self:get_obj_game_vertex_and_position( obj_id )
 	local job_gv          = game_graph():vertex( job.game_vertex_id )
@@ -628,8 +628,8 @@ function gulag:distance_to_job_location( obj_id, job )
 	end
 end
 
--- ïîëó÷èòü òî÷êó ãðàôà, íà êîòîðîé íàõîäèòñÿ ïåðñîíàæ è åãî ëîêàëüíûå êîîðäèíàòû íà óðîâíå
--- â çàâèñèìîñòè îò òîãî, â îôëàéíå èëè â îíëàéíå ïåðñîíàæ, áåð¸òñÿ ïî ðàçíîìó
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ‚Ð¾Ñ‡ÐºÑƒ Ð³Ñ€Ð°Ñ„Ð°, Ð½Ð° ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¹ Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ Ð¸ ÐµÐ³Ð¾ Ð»Ð¾ÐºÐ°Ð»ÑŒÐ½Ñ‹Ðµ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ñ‹ Ð½Ð° ÑƒÑ€Ð¾Ð²Ð½Ðµ
+-- Ð² Ð·Ð°Ð²Ð¸ÑÐ¸Ð¼Ð¾ÑÑ‚Ð¸ Ð¾Ñ‚ Ñ‚Ð¾Ð³Ð¾, Ð² Ð¾Ñ„Ð»Ð°Ð¹Ð½Ðµ Ð¸Ð»Ð¸ Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½Ðµ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶, Ð±ÐµÑ€Ñ‘Ñ‚ÑÑ Ð¿Ð¾ Ñ€Ð°Ð·Ð½Ð¾Ð¼Ñƒ
 function gulag:get_obj_game_vertex_and_position( obj_id )
 	local obj = self.Object[obj_id]
 
@@ -642,7 +642,7 @@ function gulag:get_obj_game_vertex_and_position( obj_id )
 	end
 end
 
--- íàéòè áëèæàéøåãî ïîäõîäÿùåãî ïåðñîíàæà èç ñïèñêà
+-- Ð½Ð°Ð¹Ñ‚Ð¸ Ð±Ð»Ð¸Ð¶Ð°Ð¹ÑˆÐµÐ³Ð¾ Ð¿Ð¾Ð´Ñ…Ð¾Ð´ÑÑ‰ÐµÐ³Ð¾ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð° Ð¸Ð· ÑÐ¿Ð¸ÑÐºÐ°
 function gulag:find_nearest_suitable_obj( objs, job )
 	local predicate = job.predicate
 	local min_dist  = 1000000
@@ -663,7 +663,7 @@ function gulag:find_nearest_suitable_obj( objs, job )
 	return obj_nearest
 end
 
--- ïîñ÷èòàòü òàáëè÷êó ðàññòîÿíèé îò âñåõ ïåðñîíàæåé ê âñåì ðàáîòàì çàäàííîãî ïðèîðèòåòà
+-- Ð¿Ð¾ÑÑ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ Ñ‚Ð°Ð±Ð»Ð¸Ñ‡ÐºÑƒ Ñ€Ð°ÑÑÑ‚Ð¾ÑÐ½Ð¸Ð¹ Ð¾Ñ‚ Ð²ÑÐµÑ… Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ÐµÐ¹ Ðº Ð²ÑÐµÐ¼ Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ð¼ Ð·Ð°Ð´Ð°Ð½Ð½Ð¾Ð³Ð¾ Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚Ð°
 function gulag:calc_distance_table( jobs, objs, prior_block_start )
 	local block_priority = jobs[prior_block_start].prior
 	local predicate
@@ -696,7 +696,7 @@ function gulag:calc_distance_table( jobs, objs, prior_block_start )
 	return dists, i - 1
 end
 
--- íàçíà÷èòü ïåðñîíàæåé íà áëèæàéøèå ðàáîòû èñïîëüçóÿ òàáëè÷êó ðàññòîÿíèé
+-- Ð½Ð°Ð·Ð½Ð°Ñ‡Ð¸Ñ‚ÑŒ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ÐµÐ¹ Ð½Ð° Ð±Ð»Ð¸Ð¶Ð°Ð¹ÑˆÐ¸Ðµ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÑ Ñ‚Ð°Ð±Ð»Ð¸Ñ‡ÐºÑƒ Ñ€Ð°ÑÑÑ‚Ð¾ÑÐ½Ð¸Ð¹
 function gulag:assign_jobs_using_distance_table( jobs, objs, dists )
 	for i, t in ipairs( dists ) do
 		if objs[t.obj_id] and not t.job.object then
@@ -706,8 +706,8 @@ function gulag:assign_jobs_using_distance_table( jobs, objs, dists )
 	end
 end
 
--- íàéòè çàíÿòûõ ïåðñîíàæåé, êîòîðûå ìîãóò çàíÿòü çàäàííóþ ðàáîòó.
--- ïîèñê âåä¸òñÿ íà÷èíàÿ ñ ñàìûõ íèçêîïðèîðèòåòíûõ ðàáîò
+-- Ð½Ð°Ð¹Ñ‚Ð¸ Ð·Ð°Ð½ÑÑ‚Ñ‹Ñ… Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ÐµÐ¹, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð¼Ð¾Ð³ÑƒÑ‚ Ð·Ð°Ð½ÑÑ‚ÑŒ Ð·Ð°Ð´Ð°Ð½Ð½ÑƒÑŽ Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ.
+-- Ð¿Ð¾Ð¸ÑÐº Ð²ÐµÐ´Ñ‘Ñ‚ÑÑ Ð½Ð°Ñ‡Ð¸Ð½Ð°Ñ Ñ ÑÐ°Ð¼Ñ‹Ñ… Ð½Ð¸Ð·ÐºÐ¾Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚Ð½Ñ‹Ñ… Ñ€Ð°Ð±Ð¾Ñ‚
 function gulag:find_obj_on_jobLow_for_jobHigh( Job_avail, job_high )
 	local n = table.getn( Job_avail )
 	local i = n
@@ -740,7 +740,7 @@ function gulag:find_obj_on_jobLow_for_jobHigh( Job_avail, job_high )
 	end
 end
 
--- äëÿ âñåõ ñâîáîäíûõ ðàáîò çàäàííîãî ïðèîðèòåòà ïîïûòàòüñÿ íàéòè è íàçíà÷èòü ïåðñîíàæåé ñ ðàáîò ñ áîëåå íèçêèì ïðèîðèòåòîì
+-- Ð´Ð»Ñ Ð²ÑÐµÑ… ÑÐ²Ð¾Ð±Ð¾Ð´Ð½Ñ‹Ñ… Ñ€Ð°Ð±Ð¾Ñ‚ Ð·Ð°Ð´Ð°Ð½Ð½Ð¾Ð³Ð¾ Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚Ð° Ð¿Ð¾Ð¿Ñ‹Ñ‚Ð°Ñ‚ÑŒÑÑ Ð½Ð°Ð¹Ñ‚Ð¸ Ð¸ Ð½Ð°Ð·Ð½Ð°Ñ‡Ð¸Ñ‚ÑŒ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ÐµÐ¹ Ñ Ñ€Ð°Ð±Ð¾Ñ‚ Ñ Ð±Ð¾Ð»ÐµÐµ Ð½Ð¸Ð·ÐºÐ¸Ð¼ Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚Ð¾Ð¼
 function gulag:try_to_fill_free_high_prior_jobs( jobs, prior_block_start, prior_block_end )
 	local obj_id
 
@@ -757,9 +757,9 @@ function gulag:try_to_fill_free_high_prior_jobs( jobs, prior_block_start, prior_
 	end
 end
 
--- ðàñïðåäåëåíèå ðàáîò.
--- ïðè ðàñïðåäåëåíèè íåäîøåäøèå ïåðñîíàæè ïðèðàâíèâàþòñÿ ê ñâîáîäíûì.
--- ðàáîòû ñ îäèíàêîâûì ïðèîðèòåòîì îáúåäèíÿþòñÿ â áëîêè
+-- Ñ€Ð°ÑÐ¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ðµ Ñ€Ð°Ð±Ð¾Ñ‚.
+-- Ð¿Ñ€Ð¸ Ñ€Ð°ÑÐ¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ð¸ Ð½ÐµÐ´Ð¾ÑˆÐµÐ´ÑˆÐ¸Ðµ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð¸ Ð¿Ñ€Ð¸Ñ€Ð°Ð²Ð½Ð¸Ð²Ð°ÑŽÑ‚ÑÑ Ðº ÑÐ²Ð¾Ð±Ð¾Ð´Ð½Ñ‹Ð¼.
+-- Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ Ð¾Ð´Ð¸Ð½Ð°ÐºÐ¾Ð²Ñ‹Ð¼ Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚Ð¾Ð¼ Ð¾Ð±ÑŠÐµÐ´Ð¸Ð½ÑÑŽÑ‚ÑÑ Ð² Ð±Ð»Ð¾ÐºÐ¸
 function gulag:updateJob()
 	local Job_avail = self:prepare_available_jobs()
 
@@ -781,7 +781,7 @@ function gulag:updateJob()
 	end
 end
 
--- âûâîä òåêóùåãî ñîñòîÿíèÿ ãóëàãà (ðàáîòû, îáúåêòû, ñîñòîÿíèå, íàñåëåíèå)
+-- Ð²Ñ‹Ð²Ð¾Ð´ Ñ‚ÐµÐºÑƒÑ‰ÐµÐ³Ð¾ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ñ Ð³ÑƒÐ»Ð°Ð³Ð° (Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹, Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹, ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ, Ð½Ð°ÑÐµÐ»ÐµÐ½Ð¸Ðµ)
 function gulag:print()
 	local npc_info, going
 
@@ -821,22 +821,22 @@ function gulag:print()
 	end
 end
 
--- ïîëó÷èòü êîëè÷åñòâî æèâûõ îáúåêòîâ ïîä ñìàðòîì
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ Ð¶Ð¸Ð²Ñ‹Ñ… Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð² Ð¿Ð¾Ð´ ÑÐ¼Ð°Ñ€Ñ‚Ð¾Ð¼
 function gulag:get_population()
 	return self.population
 end
 
--- ïîëó÷èòü êîëè÷åñòâî æèâûõ ïðèøåäøèõ îáúåêòîâ ïîä ñìàðòîì
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ Ð¶Ð¸Ð²Ñ‹Ñ… Ð¿Ñ€Ð¸ÑˆÐµÐ´ÑˆÐ¸Ñ… Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð² Ð¿Ð¾Ð´ ÑÐ¼Ð°Ñ€Ñ‚Ð¾Ð¼
 function gulag:get_population_comed()
 	return self.population_comed
 end
 
--- ïîëó÷èòü êîëè÷åñòâî æèâûõ íåýêñêëþçèâíûõ îáúåêòîâ ïîä ñìàðòîì
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ Ð¶Ð¸Ð²Ñ‹Ñ… Ð½ÐµÑÐºÑÐºÐ»ÑŽÐ·Ð¸Ð²Ð½Ñ‹Ñ… Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð² Ð¿Ð¾Ð´ ÑÐ¼Ð°Ñ€Ñ‚Ð¾Ð¼
 function gulag:get_non_exclusive_population()
 	return self.population_non_exclusive
 end
 
--- ïîëó÷èòü òèï îáúåêòà (ñòàëêåð/ìîíñòð)
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ‚Ð¸Ð¿ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° (ÑÑ‚Ð°Ð»ÐºÐµÑ€/Ð¼Ð¾Ð½ÑÑ‚Ñ€)
 function gulag:get_stype( obj_id )
 	if IsStalker( nil, self.npc_info[obj_id].class_id ) then
 		return modules.stype_stalker
@@ -847,7 +847,7 @@ function gulag:get_stype( obj_id )
 	end
 end
 
--- íàñòðîèòü ëîãèêó äëÿ îáúåêòà, êîòîðûé â îíëàéíå.
+-- Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¸Ñ‚ÑŒ Ð»Ð¾Ð³Ð¸ÐºÑƒ Ð´Ð»Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½Ðµ.
 -- obj=game_object
 function gulag:setup_logic( obj, section )
 	xr_logic.configure_schemes( obj, self.ltx, self.ltx_name, self:get_stype(obj:id()), section, self.name )
@@ -860,18 +860,18 @@ function gulag:setup_logic( obj, section )
 	xr_logic.activate_by_section( obj, self.ltx, sect, false )
 end
 
--- óñòàíîâèòü squad è group â ñîîòâåòñòâèè ñ ðàáîòîé
+-- ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ squad Ð¸ group Ð² ÑÐ¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²Ð¸Ð¸ Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ð¾Ð¹
 function gulag:setup_squad_and_group( obj_id, job )
 	local npc_info = self.npc_info[obj_id]
 
-	-- îíëàéí?
+	-- Ð¾Ð½Ð»Ð°Ð¹Ð½?
 	if self.Object[obj_id] ~= true then
 		local obj = self.Object[obj_id]
 
 		local squad = level_groups[level.name()]
 		if not obj:alive() then
 			printf("CHANGE TEAM [%s] to [%s][%s][%s]. Object is DEAD, clearing", obj:name(), npc_info.team, squad or npc_info.o_squad, job.group or npc_info.o_group)
-			self:clear_dead(obj_id) --'Çàòû÷êà ïðîòèâ âûëåòà.
+			self:clear_dead(obj_id) --'Ð—Ð°Ñ‚Ñ‹Ñ‡ÐºÐ° Ð¿Ñ€Ð¾Ñ‚Ð¸Ð² Ð²Ñ‹Ð»ÐµÑ‚Ð°.
 			return
 		end
 
@@ -891,7 +891,7 @@ function gulag:setup_squad_and_group( obj_id, job )
 	end
 end
 
--- óñòàíîâèòü npc ðàáîòó, ê íåé ðåñòðèêòîðû, íàñòðîèòü ëîãèêó, ïîìåíÿòü squad, group
+-- ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ npc Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ, Ðº Ð½ÐµÐ¹ Ñ€ÐµÑÑ‚Ñ€Ð¸ÐºÑ‚Ð¾Ñ€Ñ‹, Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¸Ñ‚ÑŒ Ð»Ð¾Ð³Ð¸ÐºÑƒ, Ð¿Ð¾Ð¼ÐµÐ½ÑÑ‚ÑŒ squad, group
 function gulag:setJob(obj_id, job)
 	printf( "[smart_terrain %s] gulag: setJob: obj=%s job=%d %s", self.name, self.npc_info[obj_id].name, job.num, job.section )
 
@@ -906,11 +906,11 @@ function gulag:setJob(obj_id, job)
 	self:setup_squad_and_group( obj_id, job )
 end
 
--- çàñòóïèòü íà ðàáîòó.
--- âûçûâàåòñÿ êîãäà ïåðñîíàæ äîñòèã ìåñòà ðàáîòû.
--- óñòàíîâêà âðåìåíè íà÷àëà ðàáîòû.
--- åñëè â îíëàéíå, òî íàñòðîéêà ëîãèêè è ðåñòðèêòîðîâ.
--- âûçâàòü ñïàâíåð.
+-- Ð·Ð°ÑÑ‚ÑƒÐ¿Ð¸Ñ‚ÑŒ Ð½Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ.
+-- Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ ÐºÐ¾Ð³Ð´Ð° Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ Ð´Ð¾ÑÑ‚Ð¸Ð³ Ð¼ÐµÑÑ‚Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹.
+-- ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐ° Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸ Ð½Ð°Ñ‡Ð°Ð»Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹.
+-- ÐµÑÐ»Ð¸ Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½Ðµ, Ñ‚Ð¾ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ° Ð»Ð¾Ð³Ð¸ÐºÐ¸ Ð¸ Ñ€ÐµÑÑ‚Ñ€Ð¸ÐºÑ‚Ð¾Ñ€Ð¾Ð².
+-- Ð²Ñ‹Ð·Ð²Ð°Ñ‚ÑŒ ÑÐ¿Ð°Ð²Ð½ÐµÑ€.
 function gulag:beginJob( obj_id )
 	local job = self.Job[self.ObjectJob[obj_id]]
 	printf( "[smart_terrain %s] gulag: beginJob: obj=%s job=%d %s", self.name, self.npc_info[obj_id].name, job.num, job.section )
@@ -944,10 +944,10 @@ function gulag:beginJob( obj_id )
 		self.Object_didnt_begin_job[obj_id] = false
 	end
 	
-	self.population_comed = self.population_comed + 1 --' Óâåëè÷èâàåì ñ÷åò÷èê ïðèøåäøèõ ïåðñîíàæåé
+	self.population_comed = self.population_comed + 1 --' Ð£Ð²ÐµÐ»Ð¸Ñ‡Ð¸Ð²Ð°ÐµÐ¼ ÑÑ‡ÐµÑ‚Ñ‡Ð¸Ðº Ð¿Ñ€Ð¸ÑˆÐµÐ´ÑˆÐ¸Ñ… Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ÐµÐ¹
 end
 
--- óñòàíîâèòü ñåðâåðíîìó îáúåêòó ïåðñîíàæà óïðàëåíèå ïåðåêëþ÷åíèÿ îíëàéí/îôëàéí
+-- ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ ÑÐµÑ€Ð²ÐµÑ€Ð½Ð¾Ð¼Ñƒ Ð¾Ð±ÑŠÐµÐºÑ‚Ñƒ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð° ÑƒÐ¿Ñ€Ð°Ð»ÐµÐ½Ð¸Ðµ Ð¿ÐµÑ€ÐµÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ñ Ð¾Ð½Ð»Ð°Ð¹Ð½/Ð¾Ñ„Ð»Ð°Ð¹Ð½
 function gulag:setup_job_online( se_obj, job )
 	if job then
 		se_obj.job_online_condlist = job.online_condlist
@@ -958,7 +958,7 @@ function gulag:setup_job_online( se_obj, job )
 	end
 end
 
--- óñòàíîâèòü îáúåêòó ðåñòðèêòîðû â îíëàéíå.
+-- ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚Ñƒ Ñ€ÐµÑÑ‚Ñ€Ð¸ÐºÑ‚Ð¾Ñ€Ñ‹ Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½Ðµ.
 -- obj - game_object
 function gulag:set_restrictions(obj, r_out, r_in, r_info)
 --'	printf( "RESTR [%s] HAVE (IN)  : %s", obj:name(), obj:in_restrictions() )
@@ -966,7 +966,7 @@ function gulag:set_restrictions(obj, r_out, r_in, r_info)
 --'	printf( "RESTR [%s] NEED (IN)  : %s", obj:name(), r_in )
 --'	printf( "RESTR [%s] NEED (OUT) : %s", obj:name(), r_out )
 
-	-- óçíàòü, êàêèå ðåñòðèêòîðû óæå áûëè íàçíà÷åíû ýòèì ãóëàãîì
+	-- ÑƒÐ·Ð½Ð°Ñ‚ÑŒ, ÐºÐ°ÐºÐ¸Ðµ Ñ€ÐµÑÑ‚Ñ€Ð¸ÐºÑ‚Ð¾Ñ€Ñ‹ ÑƒÐ¶Ðµ Ð±Ñ‹Ð»Ð¸ Ð½Ð°Ð·Ð½Ð°Ñ‡ÐµÐ½Ñ‹ ÑÑ‚Ð¸Ð¼ Ð³ÑƒÐ»Ð°Ð³Ð¾Ð¼
 	local restr = self.restrictors[obj:id()]
 
 	if not restr then
@@ -977,7 +977,7 @@ function gulag:set_restrictions(obj, r_out, r_in, r_info)
 	local r_in_old  = restr.r_in  or ""
 	local r_out_old = restr.r_out or ""
 
-	-- óäàëèòü òå, ÷òî áûëè ïðîñòàâëåíû ãóëàãîì
+	-- ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑŒ Ñ‚Ðµ, Ñ‡Ñ‚Ð¾ Ð±Ñ‹Ð»Ð¸ Ð¿Ñ€Ð¾ÑÑ‚Ð°Ð²Ð»ÐµÐ½Ñ‹ Ð³ÑƒÐ»Ð°Ð³Ð¾Ð¼
 	local change_r_in, change_r_out = "", ""
 
 	if r_in_old ~= "" and r_in_old ~= r_in then
@@ -994,7 +994,7 @@ function gulag:set_restrictions(obj, r_out, r_in, r_info)
 		obj:remove_restrictions( change_r_out, change_r_in )
 	end
 
-	-- ïîñòàâèòü íîâûå
+	-- Ð¿Ð¾ÑÑ‚Ð°Ð²Ð¸Ñ‚ÑŒ Ð½Ð¾Ð²Ñ‹Ðµ
 	change_r_in, change_r_out = "", ""
 
 	if r_in ~= "" and r_in_old ~= r_in then
@@ -1015,13 +1015,13 @@ function gulag:set_restrictions(obj, r_out, r_in, r_info)
 --'	printf( "RESTR [%s] AFTER (IN) : %s", obj:name(), obj:in_restrictions()  )
 --'	printf( "RESTR [%s] AFTER (OUT): %s", obj:name(), obj:out_restrictions() )
 
-	-- èíôîðìàöèîííûé ðåñòðèêòîð
+	-- Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¾Ð½Ð½Ñ‹Ð¹ Ñ€ÐµÑÑ‚Ñ€Ð¸ÐºÑ‚Ð¾Ñ€
 	db.info_restr[obj:id()] = r_info
 
 --'	printf( "INFO [%s] RESTR      : %s", obj:name(), utils.to_str( r_info ) )
 end
 
--- óáðàòü çàïèñè î òîì, ÷òî ñìàðò óñòàíàâëèâàë îáúåêòó ðåñòðèêòîðû.
+-- ÑƒÐ±Ñ€Ð°Ñ‚ÑŒ Ð·Ð°Ð¿Ð¸ÑÐ¸ Ð¾ Ñ‚Ð¾Ð¼, Ñ‡Ñ‚Ð¾ ÑÐ¼Ð°Ñ€Ñ‚ ÑƒÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°Ð» Ð¾Ð±ÑŠÐµÐºÑ‚Ñƒ Ñ€ÐµÑÑ‚Ñ€Ð¸ÐºÑ‚Ð¾Ñ€Ñ‹.
 -- obj - game_object
 function gulag:clear_restrictors_info( obj_id )
 	self.restrictors[obj_id] = nil
@@ -1029,18 +1029,18 @@ function gulag:clear_restrictors_info( obj_id )
 	db.info_restr[obj_id] = nil
 end
 
--- ïîëó÷èòü ðàáîòó, êîòîðóþ çàíèìàåò îáúåêò
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ, ÐºÐ¾Ñ‚Ð¾Ñ€ÑƒÑŽ Ð·Ð°Ð½Ð¸Ð¼Ð°ÐµÑ‚ Ð¾Ð±ÑŠÐµÐºÑ‚
 function gulag:getJob(obj_id)
 	local jobN = self.ObjectJob[obj_id]
 	return jobN and self.Job[jobN]
 end
 
--- âîçâðàùàåò èìÿ ïóòè ìåñòà ðàáîòû ïåðñîíàæà
+-- Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð¸Ð¼Ñ Ð¿ÑƒÑ‚Ð¸ Ð¼ÐµÑÑ‚Ð° Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð°
 function gulag:get_obj_job_path_name( obj_id )
 	return self.ObjectJobPathName[obj_id]
 end
 
--- îñâîáîäèòü îáúåêò îò ðàáîòû
+-- Ð¾ÑÐ²Ð¾Ð±Ð¾Ð´Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð¾Ñ‚ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹
 function gulag:free_obj( obj_id )
 	local jobN = self.ObjectJob[obj_id]
 	if jobN then
@@ -1067,9 +1067,9 @@ function gulag:free_obj( obj_id )
 	end
 end
 
--- îñâîáîäèòü îáúåêò îò ðàáîòû è ïåðåèíèöèàëèçèðîâàòü ëîãèêó.
--- åñëè ñòàëêåð â îíëàéíå è íà÷àë ðàáîòó, òî ñáðîñèòü åãî ñõåìó ïîâåäåíèÿ
--- êàê áóäòî îí òîëüêî ÷òî çàãðóçèëñÿ
+-- Ð¾ÑÐ²Ð¾Ð±Ð¾Ð´Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð¾Ñ‚ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ð¸ Ð¿ÐµÑ€ÐµÐ¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð»Ð¾Ð³Ð¸ÐºÑƒ.
+-- ÐµÑÐ»Ð¸ ÑÑ‚Ð°Ð»ÐºÐµÑ€ Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½Ðµ Ð¸ Ð½Ð°Ñ‡Ð°Ð» Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ, Ñ‚Ð¾ ÑÐ±Ñ€Ð¾ÑÐ¸Ñ‚ÑŒ ÐµÐ³Ð¾ ÑÑ…ÐµÐ¼Ñƒ Ð¿Ð¾Ð²ÐµÐ´ÐµÐ½Ð¸Ñ
+-- ÐºÐ°Ðº Ð±ÑƒÐ´Ñ‚Ð¾ Ð¾Ð½ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ñ‡Ñ‚Ð¾ Ð·Ð°Ð³Ñ€ÑƒÐ·Ð¸Ð»ÑÑ
 function gulag:free_obj_and_reinit( obj_id )
 	self:free_obj(obj_id)
 
@@ -1079,7 +1079,7 @@ function gulag:free_obj_and_reinit( obj_id )
 	end
 end
 
--- ïîëó÷èòü id îáúåêòà, âûïîëíÿþùåãî ðàáîòó
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ id Ð¾Ð±ÑŠÐµÐºÑ‚Ð°, Ð²Ñ‹Ð¿Ð¾Ð»Ð½ÑÑŽÑ‰ÐµÐ³Ð¾ Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ
 function gulag:idNPCOnJob(job_name)
 	for k,v in ipairs( self.Job ) do
 		if v.section == job_name then
@@ -1091,17 +1091,17 @@ function gulag:idNPCOnJob(job_name)
 	return nil
 end
 
--- ïîëó÷èòü ïîòåðè
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¿Ð¾Ñ‚ÐµÑ€Ð¸
 function gulag:getCasualities()
 	return self.casualities
 end
 
--- èçìåíèòü ïîòåðè
+-- Ð¸Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ Ð¿Ð¾Ñ‚ÐµÑ€Ð¸
 function gulag:changeCasualities(delta)
 	self.casualities = self.casualities + delta
 end
 
--- TODO ñåðâåðíûå îáúåêòû
+-- TODO ÑÐµÑ€Ð²ÐµÑ€Ð½Ñ‹Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹
 function gulag:set_relation( relation, target_obj )
 	for obj_id, obj in pairs( self.Object ) do
 		if obj ~= true and level.object_by_id( obj_id ) ~= nil then
@@ -1118,7 +1118,7 @@ function gulag:set_goodwill( relation, target_obj )
 	end
 end
 
--- ÿâëÿåòñÿ ëè ïåðñîíàæ âðàãîì õîòÿáû êîìó-òî èç äàííîãî ñìàðòà?
+-- ÑÐ²Ð»ÑÐµÑ‚ÑÑ Ð»Ð¸ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ Ð²Ñ€Ð°Ð³Ð¾Ð¼ Ñ…Ð¾Ñ‚ÑÐ±Ñ‹ ÐºÐ¾Ð¼Ñƒ-Ñ‚Ð¾ Ð¸Ð· Ð´Ð°Ð½Ð½Ð¾Ð³Ð¾ ÑÐ¼Ð°Ñ€Ñ‚Ð°?
 function gulag:npc_is_enemy_to_anybody( target_obj )
 	for obj_id, obj in pairs( self.Object ) do
 		if obj ~= true and
@@ -1132,7 +1132,7 @@ function gulag:npc_is_enemy_to_anybody( target_obj )
 	return false
 end
 
--- ïîëó÷èòü ïåðñîíàæà, êîòîðûé â îíëàéíå, è êîòîðûé áëèæå âñåãî ê óêàçàííîé ïîçèöèè
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð°, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½Ðµ, Ð¸ ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ Ð±Ð»Ð¸Ð¶Ðµ Ð²ÑÐµÐ³Ð¾ Ðº ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ð¾Ð¹ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ð¸
 function gulag:get_nearest_online_obj( pos )
 	local min_dist    = 100000000
 	local nearest_obj = nil
@@ -1155,11 +1155,11 @@ function gulag:get_nearest_online_obj( pos )
 end
 
 ----------------------------------------------------------------------------------------------------------------------
--- Ôóíêöèè, êîòîðûå ìîãóò âûçûâàòüñÿ èçâíå
+-- Ð¤ÑƒÐ½ÐºÑ†Ð¸Ð¸, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð¼Ð¾Ð³ÑƒÑ‚ Ð²Ñ‹Ð·Ñ‹Ð²Ð°Ñ‚ÑŒÑÑ Ð¸Ð·Ð²Ð½Ðµ
 ----------------------------------------------------------------------------------------------------------------------
 
--- óñòàíîâèòü ëîãèêó è ñîîáùèòü ñìàðòó, ÷òî îáúåêò ïåðåø¸ë â îíëàéí.
--- âûçûâàåòñÿ èç net_spawn() îáúåêòîâ
+-- ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð»Ð¾Ð³Ð¸ÐºÑƒ Ð¸ ÑÐ¾Ð¾Ð±Ñ‰Ð¸Ñ‚ÑŒ ÑÐ¼Ð°Ñ€Ñ‚Ñƒ, Ñ‡Ñ‚Ð¾ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð¿ÐµÑ€ÐµÑˆÑ‘Ð» Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½.
+-- Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ Ð¸Ð· net_spawn() Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð²
 function setup_gulag_and_logic_on_spawn( obj, st, sobject, stype, loaded )
 	local sim = alife()
 	if sim then
@@ -1193,8 +1193,8 @@ function setup_gulag_and_logic_on_spawn( obj, st, sobject, stype, loaded )
 	end
 end
 
--- ïîëó÷èòü ãóëàã ïî èìåíè ñìàðòà.
--- ðàáîòàåò òîëüêî äëÿ ñìàðòîâ, êîòîðûå â îíëàéíå.
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð³ÑƒÐ»Ð°Ð³ Ð¿Ð¾ Ð¸Ð¼ÐµÐ½Ð¸ ÑÐ¼Ð°Ñ€Ñ‚Ð°.
+-- Ñ€Ð°Ð±Ð¾Ñ‚Ð°ÐµÑ‚ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð´Ð»Ñ ÑÐ¼Ð°Ñ€Ñ‚Ð¾Ð², ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½Ðµ.
 function get_gulag_by_name( name )
 	local go_strn = db.zone_by_name[name]
 
@@ -1209,8 +1209,8 @@ function get_gulag_by_name( name )
 	end
 end
 
--- ïîëó÷èòü ãóëàã ïî story id ñìàðòà
--- ðàáîòàåò âñåãäà
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð³ÑƒÐ»Ð°Ð³ Ð¿Ð¾ story id ÑÐ¼Ð°Ñ€Ñ‚Ð°
+-- Ñ€Ð°Ð±Ð¾Ñ‚Ð°ÐµÑ‚ Ð²ÑÐµÐ³Ð´Ð°
 function get_gulag_by_sid( sid )
 	local strn = alife():story_object( sid )
 
@@ -1219,7 +1219,7 @@ function get_gulag_by_sid( sid )
 	return strn.gulag
 end
 
--- ïîëó÷èòü ãóëàã ïî èìåíè èëè story id ñìàðòà
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð³ÑƒÐ»Ð°Ð³ Ð¿Ð¾ Ð¸Ð¼ÐµÐ½Ð¸ Ð¸Ð»Ð¸ story id ÑÐ¼Ð°Ñ€Ñ‚Ð°
 function get_gulag( name_or_sid )
 	if type( name_or_sid ) == "number" then
 		return get_gulag_by_sid( name_or_sid )
@@ -1228,7 +1228,7 @@ function get_gulag( name_or_sid )
 	end
 end
 
--- ïîëó÷èòü ãóëàã ïåðñîíàæà
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð³ÑƒÐ»Ð°Ð³ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð°
 -- obj=game_object
 function get_npc_gulag( obj )
 	local sim = alife()
@@ -1246,7 +1246,7 @@ function get_npc_gulag( obj )
 	end
 end
 
--- ïîëó÷èòü êîë-âî íàñåëåíèÿ ñìàðòà ïî èìåíè
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð»-Ð²Ð¾ Ð½Ð°ÑÐµÐ»ÐµÐ½Ð¸Ñ ÑÐ¼Ð°Ñ€Ñ‚Ð° Ð¿Ð¾ Ð¸Ð¼ÐµÐ½Ð¸
 function getGulagPopulation( name_or_sid )
 	local gulag = get_gulag( name_or_sid )
 
@@ -1254,14 +1254,14 @@ function getGulagPopulation( name_or_sid )
 	return ( gulag and gulag:get_population_comed() ) or 0
 end
 
--- ïîëó÷èòü êîë-âî íàñåëåíèÿ ñìàðòà ïî èìåíè (òîëüêî ïðèøåäøèå ïåðñîíàæè)
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð»-Ð²Ð¾ Ð½Ð°ÑÐµÐ»ÐµÐ½Ð¸Ñ ÑÐ¼Ð°Ñ€Ñ‚Ð° Ð¿Ð¾ Ð¸Ð¼ÐµÐ½Ð¸ (Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð¿Ñ€Ð¸ÑˆÐµÐ´ÑˆÐ¸Ðµ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð¸)
 function getGulagPopulationComed( name_or_sid )
 	local gulag = get_gulag( name_or_sid )
 
 	return ( gulag and gulag:get_population_comed() ) or 0
 end
 
--- óñòàíîâèòü îòíîøåíèå âñåõ ÷ëåíîâ ñìàðòà ê óêàçàííîìó îáúåêòó
+-- ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¾Ñ‚Ð½Ð¾ÑˆÐµÐ½Ð¸Ðµ Ð²ÑÐµÑ… Ñ‡Ð»ÐµÐ½Ð¾Ð² ÑÐ¼Ð°Ñ€Ñ‚Ð° Ðº ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ð¾Ð¼Ñƒ Ð¾Ð±ÑŠÐµÐºÑ‚Ñƒ
 function setGulagRelation( name_or_sid, relation, target_obj )
 	local gulag = get_gulag( name_or_sid )
 
@@ -1270,7 +1270,7 @@ function setGulagRelation( name_or_sid, relation, target_obj )
 	end
 end
 
--- óñòàíîâèòü ðàñïîëîæåíèíå âñåõ ÷ëåíîâ ñìàðòà ê óêàçàííîìó îáúåêòó
+-- ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ñ€Ð°ÑÐ¿Ð¾Ð»Ð¾Ð¶ÐµÐ½Ð¸Ð½Ðµ Ð²ÑÐµÑ… Ñ‡Ð»ÐµÐ½Ð¾Ð² ÑÐ¼Ð°Ñ€Ñ‚Ð° Ðº ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ð¾Ð¼Ñƒ Ð¾Ð±ÑŠÐµÐºÑ‚Ñƒ
 function setGulagGoodwill( name_or_sid, goodwill, target_obj )
 	local gulag = get_gulag( name_or_sid )
 
@@ -1279,24 +1279,24 @@ function setGulagGoodwill( name_or_sid, goodwill, target_obj )
 	end
 end
 
--- ñäåëàòü óêàçàííîãî ïåðñîíàæà âðàãîì âñåõ ïåðñîíàæåé ñìàðòà
+-- ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ð¾Ð³Ð¾ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð° Ð²Ñ€Ð°Ð³Ð¾Ð¼ Ð²ÑÐµÑ… Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ÐµÐ¹ ÑÐ¼Ð°Ñ€Ñ‚Ð°
 function setGulagEnemy( name_or_sid, target_obj )
 	setGulagRelation( name_or_sid, game_object.enemy, target_obj )
 end
 
--- ñäåëàòü óêàçàííîãî ïåðñîíàæà âðàãîì âñåõ ïåðñîíàæåé ñìàðòà, êîòîðûå â îíëàéíå
+-- ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ð¾Ð³Ð¾ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð° Ð²Ñ€Ð°Ð³Ð¾Ð¼ Ð²ÑÐµÑ… Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶ÐµÐ¹ ÑÐ¼Ð°Ñ€Ñ‚Ð°, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð² Ð¾Ð½Ð»Ð°Ð¹Ð½Ðµ
 function setGulagNeutral( name_or_sid, target_obj )
 	setGulagRelation( name_or_sid, game_object.neutral, target_obj )
 end
 
--- ïîëó÷èòü íîìåð ñîñòîÿíèÿ ñìàðòà ïî èìåíè
+-- Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð½Ð¾Ð¼ÐµÑ€ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ñ ÑÐ¼Ð°Ñ€Ñ‚Ð° Ð¿Ð¾ Ð¸Ð¼ÐµÐ½Ð¸
 function getGulagState( name_or_sid )
 	local gulag = get_gulag( name_or_sid )
 
 	return ( gulag and gulag.state ) or 0
 end
 
--- îñâîáîäèòü ïåðñîíàæà îò ðàáîòû.
+-- Ð¾ÑÐ²Ð¾Ð±Ð¾Ð´Ð¸Ñ‚ÑŒ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð° Ð¾Ñ‚ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹.
 -- obj=game_object
 function resetJob( obj )
 	printf( "gulag resetJob: obj=%s", obj:name() )
@@ -1322,9 +1322,9 @@ function getCasualities( name_or_sid )
 	return ( gulag and gulag:getCasualities() ) or 0
 end
 
--- íå íàõîäèòñÿ ëè èñòî÷íèê èíôîðìàöèè âíå èíôîðìàöèîííîãî ðåñòðèêòîðà?
--- åñëè âíå, òî èíôîðìàöèÿ áóäåò çàïðåùåíà
--- ôóíêöèÿ êåøèðóåò game_object ðåñòðèêòîðà
+-- Ð½Ðµ Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð»Ð¸ Ð¸ÑÑ‚Ð¾Ñ‡Ð½Ð¸Ðº Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¸ Ð²Ð½Ðµ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¾Ð½Ð½Ð¾Ð³Ð¾ Ñ€ÐµÑÑ‚Ñ€Ð¸ÐºÑ‚Ð¾Ñ€Ð°?
+-- ÐµÑÐ»Ð¸ Ð²Ð½Ðµ, Ñ‚Ð¾ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ñ Ð±ÑƒÐ´ÐµÑ‚ Ð·Ð°Ð¿Ñ€ÐµÑ‰ÐµÐ½Ð°
+-- Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ ÐºÐµÑˆÐ¸Ñ€ÑƒÐµÑ‚ game_object Ñ€ÐµÑÑ‚Ñ€Ð¸ÐºÑ‚Ð¾Ñ€Ð°
 function is_info_restricted( obj_id, info_pos )
 	local r = db.info_restr[obj_id]
 

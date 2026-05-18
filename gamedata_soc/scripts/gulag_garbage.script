@@ -1413,16 +1413,16 @@ function load_states(gname, type)
 				
 				if gulag.state == 3 then
 					if xr_gulag.getGulagPopulation("gar_hellcar_group") > 0 then
-						return 3 -- в бою
+						return 3 -- РІ Р±РѕСЋ
 					end	
 				end
 				
 				if xr_gulag.getGulagPopulation("gar_hellcar_group") == 0 and has_alife_info("gar_bandits_raid")then
-						return 2 -- в кемпе
+						return 2 -- РІ РєРµРјРїРµ
 					elseif has_alife_info("gar_bandits_raid") and not has_alife_info("gar_counter_fire") then
-						return 1  -- идут
+						return 1  -- РёРґСѓС‚
 					else
-						return 0  -- ждут
+						return 0  -- Р¶РґСѓС‚
 				end
 			else
 				return gulag.state
@@ -1544,9 +1544,9 @@ function load_states(gname, type)
 	if type == "gar_dolg_blokpost" then
 		return function(gulag)
 			if has_alife_info("gar_test_info2") then
-				return 1 -- кабаны атакуют
+				return 1 -- РєР°Р±Р°РЅС‹ Р°С‚Р°РєСѓСЋС‚
 			else
-				return 0 -- спокойное состояние
+				return 0 -- СЃРїРѕРєРѕР№РЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 			end
 		end
 	end

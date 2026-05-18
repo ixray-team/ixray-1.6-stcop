@@ -39,7 +39,7 @@ function proceed()
 	end     	
 
 
---' Туториальный труп
+--' РўСѓС‚РѕСЂРёР°Р»СЊРЅС‹Р№ С‚СЂСѓРї
 	if has_alife_info("escape_blockpost_case") and
 	   not has_alife_info("escape_blockpost_case_have") and 
 	   actor:object("quest_case_01") ~= nil
@@ -131,7 +131,7 @@ end
 
 function process_info_portion(info_id)
 
-	--' пометки на карте
+	--' РїРѕРјРµС‚РєРё РЅР° РєР°СЂС‚Рµ
 	
 	if info_id == "esc_tutorial_secret_place" then
 		level_tasks.add_location(025, "green_location", "tutorial_secret_place1")

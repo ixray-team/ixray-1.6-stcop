@@ -1,9 +1,9 @@
 --[[------------------------------------------------------------------------------------------------------------------
-Управление вертолётом для Escape. Патрулирование, убийство новичков возле вагончика.
-Чугай Саша
+РЈРїСЂР°РІР»РµРЅРёРµ РІРµСЂС‚РѕР»С‘С‚РѕРј РґР»СЏ Escape. РџР°С‚СЂСѓР»РёСЂРѕРІР°РЅРёРµ, СѓР±РёР№СЃС‚РІРѕ РЅРѕРІРёС‡РєРѕРІ РІРѕР·Р»Рµ РІР°РіРѕРЅС‡РёРєР°.
+Р§СѓРіР°Р№ РЎР°С€Р°
 
-Сделать:
-	- убрать внешний скрипт. ВСЁ ПЕРЕДЕЛАТЬ
+РЎРґРµР»Р°С‚СЊ:
+	- СѓР±СЂР°С‚СЊ РІРЅРµС€РЅРёР№ СЃРєСЂРёРїС‚. Р’РЎРЃ РџР•Р Р•Р”Р•Р›РђРўР¬
 --------------------------------------------------------------------------------------------------------------------]]
 
 local heli_mgr
@@ -19,7 +19,7 @@ local state_stay        = 5
 
 local state_init
 
--- нужно сохранять
+-- РЅСѓР¶РЅРѕ СЃРѕС…СЂР°РЅСЏС‚СЊ
 local state
 local wounded_id
 local newbies = {}
@@ -86,14 +86,14 @@ end
 function update()
 	actor_dist = actor:position():distance_to_sqr( wounded_tip:position() )
 
-	-- вертолёт стоит в stay-point
+	-- РІРµСЂС‚РѕР»С‘С‚ СЃС‚РѕРёС‚ РІ stay-point
 	if state == state_before then
 		if state_init then
 --			heli_mgr:set_path( "heli_path_tutorial" )
 			heli_mgr.not_die = true
 			heli_mgr.heliObject:TurnEngineSound( false )
 
-			-- запомнить ID новичков и тут же их спрятать
+			-- Р·Р°РїРѕРјРЅРёС‚СЊ ID РЅРѕРІРёС‡РєРѕРІ Рё С‚СѓС‚ Р¶Рµ РёС… СЃРїСЂСЏС‚Р°С‚СЊ
 --[[			wounded_id = get_level_object( "esc_vagon_wounded" ):id()
 			table.insert( newbies, get_level_object( "esc_vagon_newbie1" ):id() )
 			table.insert( newbies, get_level_object( "esc_vagon_newbie2" ):id() )
@@ -118,7 +118,7 @@ function update()
 		end
 	end
 
-	-- ждём рождения новичков
+	-- Р¶РґС‘Рј СЂРѕР¶РґРµРЅРёСЏ РЅРѕРІРёС‡РєРѕРІ
 	if state == state_wait_spawn then
 		if state_init then
 --[[			local sim = alife()
@@ -158,14 +158,14 @@ function update()
 		end
 	end	
 
-	-- вертолёт летит к новичкам
+	-- РІРµСЂС‚РѕР»С‘С‚ Р»РµС‚РёС‚ Рє РЅРѕРІРёС‡РєР°Рј
 	if state == state_heli_fly then
 		if state_init then
 			heli_mgr.heliObject:TurnEngineSound( true )
 
 			heli_mgr:set_enemy( newbies[1], 1000 )
 
-			-- до определённого расстояния не стрелять
+			-- РґРѕ РѕРїСЂРµРґРµР»С‘РЅРЅРѕРіРѕ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ РЅРµ СЃС‚СЂРµР»СЏС‚СЊ
 			heli_mgr.heliObject.m_use_rocket_on_attack = false
 			heli_mgr.heliObject.m_use_mgun_on_attack   = false
 
@@ -177,7 +177,7 @@ function update()
 		end
 	end
 
-	-- перестрелка с вертолётом
+	-- РїРµСЂРµСЃС‚СЂРµР»РєР° СЃ РІРµСЂС‚РѕР»С‘С‚РѕРј
 	if state == state_heli_attack then
 		if state_init then
 			attack_end = game.CTime()
@@ -197,15 +197,15 @@ function update()
 			state_init = false
 		end
 
-		-- если актёр близко, то атаковать его
+		-- РµСЃР»Рё Р°РєС‚С‘СЂ Р±Р»РёР·РєРѕ, С‚Рѕ Р°С‚Р°РєРѕРІР°С‚СЊ РµРіРѕ
 --		if not actor_is_victim and actor_dist < 30*30 then
 --			table.insert( newbies, actor )
 --			actor_is_victim = true
 --		end
 
-		-- вертолёт атакует новичков
+		-- РІРµСЂС‚РѕР»С‘С‚ Р°С‚Р°РєСѓРµС‚ РЅРѕРІРёС‡РєРѕРІ
 		if not heli_mgr.enemy then
-			-- актёра атаковать только один раз
+			-- Р°РєС‚С‘СЂР° Р°С‚Р°РєРѕРІР°С‚СЊ С‚РѕР»СЊРєРѕ РѕРґРёРЅ СЂР°Р·
 			if newbies[1] and newbies[1]:id() == actor:id() then
 				if actor_was_attacked then
 					table.remove( newbies, 1 )
@@ -222,15 +222,15 @@ function update()
 			end
 		end
 
-		-- если все умерли
+		-- РµСЃР»Рё РІСЃРµ СѓРјРµСЂР»Рё
 		if table.getn( newbies ) == 0 then
 --			printf("_ch: 2 %s", game.get_game_time:timeToString(game.CTime.TimeToMilisecs))
 			chst( state_after )
 		end
 
-		-- если прошло время
+		-- РµСЃР»Рё РїСЂРѕС€Р»Рѕ РІСЂРµРјСЏ
 --[[		if attack_end < game.get_game_time() and not actor_is_victim then
-			-- убить всех живых
+			-- СѓР±РёС‚СЊ РІСЃРµС… Р¶РёРІС‹С…
 			for i, npc in pairs(newbies) do
 				npc:kill( heli_mgr.heli )
 			end
@@ -239,7 +239,7 @@ function update()
 		end]]
 	end
 
-	-- сцена закончена
+	-- СЃС†РµРЅР° Р·Р°РєРѕРЅС‡РµРЅР°
 	if state == state_after then
 		if state_init then
 --			local sim = alife()
@@ -248,7 +248,7 @@ function update()
 --			end
 
 
-			-- отправить вертолёт патрулировать уровень
+			-- РѕС‚РїСЂР°РІРёС‚СЊ РІРµСЂС‚РѕР»С‘С‚ РїР°С‚СЂСѓР»РёСЂРѕРІР°С‚СЊ СѓСЂРѕРІРµРЅСЊ
 			heli_mgr:set_path( "heli_path_patrol" )
 			heli_mgr.not_die = false
 
@@ -280,7 +280,7 @@ function update()
 		end
 	end
 
-	-- рождение раненого
+	-- СЂРѕР¶РґРµРЅРёРµ СЂР°РЅРµРЅРѕРіРѕ
 	if ( state ~= state_before and actor_dist < 50*50 ) and
 	   not has_alife_info( "tutorial_wounded_must_spawn" )
 	then

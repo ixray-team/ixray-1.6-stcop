@@ -4,16 +4,16 @@
 
 
 ----------------------------------------------------------------------------------------------------
--- Телохранители
+-- РўРµР»РѕС…СЂР°РЅРёС‚РµР»Рё
 ----------------------------------------------------------------------------------------------------
--- Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
+-- Р Р°Р·СЂР°Р±РѕС‚С‡РёРє: Andrey Fidrya (Zmey) af@svitonline.com
 ----------------------------------------------------------------------------------------------------
 
--- Время, когда игрока в прошлый раз предупреждали убрать оружие (чтобы часто не повторяться):
--- Ассоциативный массив, где ключом выступает имя из customdata переменной path_center.
+-- Р’СЂРµРјСЏ, РєРѕРіРґР° РёРіСЂРѕРєР° РІ РїСЂРѕС€Р»С‹Р№ СЂР°Р· РїСЂРµРґСѓРїСЂРµР¶РґР°Р»Рё СѓР±СЂР°С‚СЊ РѕСЂСѓР¶РёРµ (С‡С‚РѕР±С‹ С‡Р°СЃС‚Рѕ РЅРµ РїРѕРІС‚РѕСЂСЏС‚СЊСЃСЏ):
+-- РђСЃСЃРѕС†РёР°С‚РёРІРЅС‹Р№ РјР°СЃСЃРёРІ, РіРґРµ РєР»СЋС‡РѕРј РІС‹СЃС‚СѓРїР°РµС‚ РёРјСЏ РёР· customdata РїРµСЂРµРјРµРЅРЅРѕР№ path_center.
 bg_warn_rem_weapon_times = {}
 
--- Запомненная информация об оружие, если изменится (т.е. играть начал стрелять или перезаряжаться) - атаковать игрока
+-- Р—Р°РїРѕРјРЅРµРЅРЅР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ РѕР± РѕСЂСѓР¶РёРµ, РµСЃР»Рё РёР·РјРµРЅРёС‚СЃСЏ (С‚.Рµ. РёРіСЂР°С‚СЊ РЅР°С‡Р°Р» СЃС‚СЂРµР»СЏС‚СЊ РёР»Рё РїРµСЂРµР·Р°СЂСЏР¶Р°С‚СЊСЃСЏ) - Р°С‚Р°РєРѕРІР°С‚СЊ РёРіСЂРѕРєР°
 bg_wpn_info = {}
 
 local state_none = 0
@@ -66,7 +66,7 @@ function action_bodyguard_activity:initialize()
 end
 
 function action_bodyguard_activity:reset_scheme()
-	-- TODO: выбирать активный путь в зависимости от погоды (сделать выбор функцией)
+	-- TODO: РІС‹Р±РёСЂР°С‚СЊ Р°РєС‚РёРІРЅС‹Р№ РїСѓС‚СЊ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РїРѕРіРѕРґС‹ (СЃРґРµР»Р°С‚СЊ РІС‹Р±РѕСЂ С„СѓРЅРєС†РёРµР№)
 	self.patrol_main = patrol(self.st.path_main)
 	if not self.patrol_main then
 		abort("object '%s': unable to find path_main '%s' on the map",
@@ -121,12 +121,12 @@ function action_bodyguard_activity:waypoint_callback(obj, action_type, index)
 	self.object:set_movement_type(move.stand)
 	self.state = state_standing
 
-	self.object:clear_animations () -- не играть анимацию во время поворота!
-	self.expiration_time = time_global() + 1500; -- дать 100 мс на поворот
-	self:look_at_waypoint(1) -- поворачиваемся
+	self.object:clear_animations () -- РЅРµ РёРіСЂР°С‚СЊ Р°РЅРёРјР°С†РёСЋ РІРѕ РІСЂРµРјСЏ РїРѕРІРѕСЂРѕС‚Р°!
+	self.expiration_time = time_global() + 1500; -- РґР°С‚СЊ 100 РјСЃ РЅР° РїРѕРІРѕСЂРѕС‚
+	self:look_at_waypoint(1) -- РїРѕРІРѕСЂР°С‡РёРІР°РµРјСЃСЏ
 end
 
--- Посмотреть в направлении указанной точки текущего маршрута
+-- РџРѕСЃРјРѕС‚СЂРµС‚СЊ РІ РЅР°РїСЂР°РІР»РµРЅРёРё СѓРєР°Р·Р°РЅРЅРѕР№ С‚РѕС‡РєРё С‚РµРєСѓС‰РµРіРѕ РјР°СЂС€СЂСѓС‚Р°
 function action_bodyguard_activity:look_at_waypoint(pt)
 	local way = patrol(self.object:patrol())
 	local look_pt = utils.vector_copy_by_val(way:point(pt)):sub(self.object:position ())
@@ -217,7 +217,7 @@ function action_bodyguard_activity:execute()
 			self.object:set_sight(look.direction, look_pt, 0)
 		else
 			self.object:set_mental_state(anim.free)
-			self:look_at_waypoint(1) -- поворачиваемся
+			self:look_at_waypoint(1) -- РїРѕРІРѕСЂР°С‡РёРІР°РµРјСЃСЏ
 		end
 	end
 end
@@ -263,11 +263,11 @@ function add_to_binder(npc, char_ini)
 	end
 end
 
--- enable - будет ли работать схема в принципе
--- path_main - где телохранитель обычно стоит
--- path_side - куда телохранитель отходит
--- path_center - центральная точка (от нее вычисляются все расстояния)
--- zone_grd - зона, в пределах которой при обнаружении игрока с оружием, по нему откроют огонь
+-- enable - Р±СѓРґРµС‚ Р»Рё СЂР°Р±РѕС‚Р°С‚СЊ СЃС…РµРјР° РІ РїСЂРёРЅС†РёРїРµ
+-- path_main - РіРґРµ С‚РµР»РѕС…СЂР°РЅРёС‚РµР»СЊ РѕР±С‹С‡РЅРѕ СЃС‚РѕРёС‚
+-- path_side - РєСѓРґР° С‚РµР»РѕС…СЂР°РЅРёС‚РµР»СЊ РѕС‚С…РѕРґРёС‚
+-- path_center - С†РµРЅС‚СЂР°Р»СЊРЅР°СЏ С‚РѕС‡РєР° (РѕС‚ РЅРµРµ РІС‹С‡РёСЃР»СЏСЋС‚СЃСЏ РІСЃРµ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ)
+-- zone_grd - Р·РѕРЅР°, РІ РїСЂРµРґРµР»Р°С… РєРѕС‚РѕСЂРѕР№ РїСЂРё РѕР±РЅР°СЂСѓР¶РµРЅРёРё РёРіСЂРѕРєР° СЃ РѕСЂСѓР¶РёРµРј, РїРѕ РЅРµРјСѓ РѕС‚РєСЂРѕСЋС‚ РѕРіРѕРЅСЊ
 function set_bodyguard(object, enable, path_main, path_side, path_center, zone_grd, zone_grd2, block_unarmed)
 	local char_ini = object:spawn_ini()
 	local st = xr_motivator.storage[object:id()].bodyguard

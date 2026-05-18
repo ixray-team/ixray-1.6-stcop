@@ -32,11 +32,11 @@ function load_job( sj, gname, type, squad, groups )
 		end
 	end
 
-	------------------ НИИ Агропром. База военных ------------------------------------------
-	-- состояния: 0-день, 1-ночь, 2-пересменка, 3-тревога
+	------------------ РќРР РђРіСЂРѕРїСЂРѕРј. Р‘Р°Р·Р° РІРѕРµРЅРЅС‹С… ------------------------------------------
+	-- СЃРѕСЃС‚РѕСЏРЅРёСЏ: 0-РґРµРЅСЊ, 1-РЅРѕС‡СЊ, 2-РїРµСЂРµСЃРјРµРЅРєР°, 3-С‚СЂРµРІРѕРіР°
 	if type == "agr_nii" then
 
-		-- командир
+		-- РєРѕРјР°РЅРґРёСЂ
 		t = { section = "logic@agr_nii_day_commander",
 			idle = 0, position_threshold = 150, 
 			prior = 9, state = {0},
@@ -76,7 +76,7 @@ function load_job( sj, gname, type, squad, groups )
 			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
-		-- пост на северных воротах
+		-- РїРѕСЃС‚ РЅР° СЃРµРІРµСЂРЅС‹С… РІРѕСЂРѕС‚Р°С…
 		t = { section = "logic@agr_nii_north_gate_walker1",
 			idle = 0, position_threshold = 150, 
 			prior = 5, state = {0,1,2,3},
@@ -95,7 +95,7 @@ function load_job( sj, gname, type, squad, groups )
 			in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
 		}
 		table.insert(sj, t)
-		-- пост на восточных воротах
+		-- РїРѕСЃС‚ РЅР° РІРѕСЃС‚РѕС‡РЅС‹С… РІРѕСЂРѕС‚Р°С…
 		t = { section = "logic@agr_nii_east_gate_walker1",
 			idle = 0, position_threshold = 150, 
 			prior = 5, state = {0,1,2,3},
@@ -108,7 +108,7 @@ function load_job( sj, gname, type, squad, groups )
 			in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
 		}
 		table.insert(sj, t)
-		-- 1-й этаж основного здания
+		-- 1-Р№ СЌС‚Р°Р¶ РѕСЃРЅРѕРІРЅРѕРіРѕ Р·РґР°РЅРёСЏ
 		t = { section = "logic@agr_nii_floor1_day_walker1",
 			idle = 0, position_threshold = 150, 
 			prior = 3, state = {0},
@@ -133,7 +133,7 @@ function load_job( sj, gname, type, squad, groups )
 			in_rest = "", out_rest = "agr_nii_sr_building"
 		}
         table.insert(sj, t)
-		-- 2-й этаж основного здания
+		-- 2-Р№ СЌС‚Р°Р¶ РѕСЃРЅРѕРІРЅРѕРіРѕ Р·РґР°РЅРёСЏ
 		t = { section = "logic@agr_nii_floor2_day_walker1",
 			idle = 0, position_threshold = 150, 
 			prior = 3, state = {0},
@@ -152,7 +152,7 @@ function load_job( sj, gname, type, squad, groups )
 			in_rest = "", out_rest = "agr_nii_sr_building"
 		}
 		table.insert(sj, t)
-		-- 3-й этаж основного здания
+		-- 3-Р№ СЌС‚Р°Р¶ РѕСЃРЅРѕРІРЅРѕРіРѕ Р·РґР°РЅРёСЏ
 		t = { section = "logic@agr_nii_floor3_walker1",
 			idle = 0, position_threshold = 150, 
 			prior = 4, state = {0,1,3},
@@ -171,7 +171,7 @@ function load_job( sj, gname, type, squad, groups )
 			in_rest = "", out_rest = "agr_nii_3_floor"
 		}
 		table.insert(sj, t)
-		-- дневные патрули
+		-- РґРЅРµРІРЅС‹Рµ РїР°С‚СЂСѓР»Рё
 		t = { section = "logic@agr_nii_day_patrol_walker1",
 			idle = 0, position_threshold = 150, 
 			prior = 2, state = {0},
@@ -202,7 +202,7 @@ function load_job( sj, gname, type, squad, groups )
 			in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
 		}
 		table.insert(sj, t)
-		-- патрули в тревоге
+		-- РїР°С‚СЂСѓР»Рё РІ С‚СЂРµРІРѕРіРµ
 		for i = 1, 5 do
 			t = { section = "logic@agr_nii_alarm_patrol_walker"..i,
 				idle = 0, position_threshold = 150, 
@@ -211,7 +211,7 @@ function load_job( sj, gname, type, squad, groups )
 			}
 			table.insert(sj, t)
 		end
-		-- дневные отдыхающие
+		-- РґРЅРµРІРЅС‹Рµ РѕС‚РґС‹С…Р°СЋС‰РёРµ
 		for i = 1, 2 do
 			t = { section = "logic@agr_nii_rest_walker"..i,
 				idle = 0, position_threshold = 150, 
@@ -220,7 +220,7 @@ function load_job( sj, gname, type, squad, groups )
 			}
 			table.insert(sj, t)
 		end
-		-- ночные отдыхающие
+		-- РЅРѕС‡РЅС‹Рµ РѕС‚РґС‹С…Р°СЋС‰РёРµ
 		for i = 1, 11 do
 			t = { section = "logic@agr_nii_sleeper"..i,
 				idle = 0, position_threshold = 150, 
@@ -231,9 +231,9 @@ function load_job( sj, gname, type, squad, groups )
 		end
 	end
 
-	------------------ Солдаты атакующие группу Крота ------------------------------------------
+	------------------ РЎРѕР»РґР°С‚С‹ Р°С‚Р°РєСѓСЋС‰РёРµ РіСЂСѓРїРїСѓ РљСЂРѕС‚Р° ------------------------------------------
 	if type == "agr_factory_assault" then
-		-- идут к обороняющимся
+		-- РёРґСѓС‚ Рє РѕР±РѕСЂРѕРЅСЏСЋС‰РёРјСЃСЏ
 		t = { section = "logic@agr_factory_assault_walker1",
 			idle = 0, position_threshold = 150, 
 			prior = 0, state = {0},
@@ -314,7 +314,7 @@ function load_job( sj, gname, type, squad, groups )
 			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
-		-- сражаются на улице
+		-- СЃСЂР°Р¶Р°СЋС‚СЃСЏ РЅР° СѓР»РёС†Рµ
 		for i = 1, 8 do
 			t = { section = "logic@agr_factory_assault_skirmish_walker"..i,
 				idle = 0, position_threshold = 150, 
@@ -324,7 +324,7 @@ function load_job( sj, gname, type, squad, groups )
 			}
 			table.insert(sj, t)
 		end
-		-- идут к Кроту
+		-- РёРґСѓС‚ Рє РљСЂРѕС‚Сѓ
 		for i = 1, 8 do
 			t = { section = "logic@agr_factory_assault_bld_walker"..i,
 				idle = 0, position_threshold = 150, 
@@ -336,9 +336,9 @@ function load_job( sj, gname, type, squad, groups )
 		end
 	end
 
-	------------------ Сталкеры из группы Крота ------------------------------------------
+	------------------ РЎС‚Р°Р»РєРµСЂС‹ РёР· РіСЂСѓРїРїС‹ РљСЂРѕС‚Р° ------------------------------------------
 	if type == "agr_factory_defence" then
-		-- ждут военных
+		-- Р¶РґСѓС‚ РІРѕРµРЅРЅС‹С…
 		for i = 1, 6 do
 			t = { section = "logic@agr_factory_defence_walker"..i,
 				idle = 0, position_threshold = 150, 
@@ -348,7 +348,7 @@ function load_job( sj, gname, type, squad, groups )
 			}
 			table.insert(sj, t)
 		end
-		-- отстреливаются от военных
+		-- РѕС‚СЃС‚СЂРµР»РёРІР°СЋС‚СЃСЏ РѕС‚ РІРѕРµРЅРЅС‹С…
 		for i = 1, 6 do
 			t = { section = "logic@agr_factory_defence_skirmish_walker"..i,
 				idle = 0, position_threshold = 150, 
@@ -358,7 +358,7 @@ function load_job( sj, gname, type, squad, groups )
 			}
 			table.insert(sj, t)
 		end
-		-- бегут помогать Кроту
+		-- Р±РµРіСѓС‚ РїРѕРјРѕРіР°С‚СЊ РљСЂРѕС‚Сѓ
 		for i = 1, 9 do
 			t = { section = "logic@agr_factory_defence_krot_walker"..i,
 				idle = 0, position_threshold = 150, 
@@ -368,7 +368,7 @@ function load_job( sj, gname, type, squad, groups )
 			}
 			table.insert(sj, t)
 		end
-		-- бегут по путям к колодцу и стоят там
+		-- Р±РµРіСѓС‚ РїРѕ РїСѓС‚СЏРј Рє РєРѕР»РѕРґС†Сѓ Рё СЃС‚РѕСЏС‚ С‚Р°Рј
 		for i = 1, 9 do
 			t = { section = "logic@agr_factory_defence_to_well_walker"..i,
 				idle = 0, position_threshold = 150, 
@@ -379,7 +379,7 @@ function load_job( sj, gname, type, squad, groups )
 			table.insert(sj, t)
 		end
 
------- Сталкеры ждут начала атаки ---------------------------------------------------------------
+------ РЎС‚Р°Р»РєРµСЂС‹ Р¶РґСѓС‚ РЅР°С‡Р°Р»Р° Р°С‚Р°РєРё ---------------------------------------------------------------
         for i = 1, 3 do
 			t = { section = "logic@agr_factory_defence_waiting_stalker"..i,
 				idle = 0, position_threshold = 150, 
@@ -391,9 +391,9 @@ function load_job( sj, gname, type, squad, groups )
 		end
 	end
 
-	------------------ Солдаты удерживают Крота ------------------------------------------
+	------------------ РЎРѕР»РґР°С‚С‹ СѓРґРµСЂР¶РёРІР°СЋС‚ РљСЂРѕС‚Р° ------------------------------------------
 	if type == "agr_factory_hold" then
-		-- стреляют по точкам
+		-- СЃС‚СЂРµР»СЏСЋС‚ РїРѕ С‚РѕС‡РєР°Рј
 		for i = 1, 3 do
 			t = { section = "logic@agr_factory_hold_fake_walker"..i,
 				idle = 0, position_threshold = 150, 
@@ -403,7 +403,7 @@ function load_job( sj, gname, type, squad, groups )
 			}
 			table.insert(sj, t)
 		end
-		-- срываются в универсальный бой под рестриктором
+		-- СЃСЂС‹РІР°СЋС‚СЃСЏ РІ СѓРЅРёРІРµСЂСЃР°Р»СЊРЅС‹Р№ Р±РѕР№ РїРѕРґ СЂРµСЃС‚СЂРёРєС‚РѕСЂРѕРј
 		for i = 1, 3 do
 			t = { section = "logic@agr_factory_hold_walker"..i,
 				idle = 0, position_threshold = 150, 
@@ -413,7 +413,7 @@ function load_job( sj, gname, type, squad, groups )
 			}
 			table.insert(sj, t)
 		end
-		-- Убили Крота. Ходят по путям без рестрикторов
+		-- РЈР±РёР»Рё РљСЂРѕС‚Р°. РҐРѕРґСЏС‚ РїРѕ РїСѓС‚СЏРј Р±РµР· СЂРµСЃС‚СЂРёРєС‚РѕСЂРѕРІ
 		for i = 1, 3 do
 			t = { section = "logic@agr_factory_hold_walker"..i,
 				idle = 0, position_threshold = 150, 
@@ -457,11 +457,11 @@ function load_states( gname, type )
 			end
 
 			if level.get_time_hours() >= 6 and level.get_time_hours() < 21 then
-				return 0  -- день
+				return 0  -- РґРµРЅСЊ
 			elseif level.get_time_hours() >= 23 then
-				return 2  -- ночь c пересменкой
+				return 2  -- РЅРѕС‡СЊ c РїРµСЂРµСЃРјРµРЅРєРѕР№
 			else
-				return 1  -- ночь
+				return 1  -- РЅРѕС‡СЊ
 			end
 		end
 	end
@@ -552,7 +552,7 @@ function load_states( gname, type )
 				if has_alife_info( "agr_krot_dead" ) then
 					return 2
 				elseif has_alife_info( "agr_krot_skirmish_start" ) then
-					-- раздать всем хиты, чтоб не ходили спокойно
+					-- СЂР°Р·РґР°С‚СЊ РІСЃРµРј С…РёС‚С‹, С‡С‚РѕР± РЅРµ С…РѕРґРёР»Рё СЃРїРѕРєРѕР№РЅРѕ
 					local h     = hit()
 					h.power     = 0.01
 					h.direction = vector():set( 1, 0, 0 )

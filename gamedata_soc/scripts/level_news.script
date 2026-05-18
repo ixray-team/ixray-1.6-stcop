@@ -122,13 +122,13 @@ function get_random_news()
 	local actor = db.actor
 	local avail = {}
 	for k,v in pairs(news) do
-		--' Âçÿòü åùå íåçàşçàííûå íüşñû
+		--' Ğ’Ğ·ÑÑ‚ÑŒ ĞµÑ‰Ğµ Ğ½ĞµĞ·Ğ°ÑĞ·Ğ°Ğ½Ğ½Ñ‹Ğµ Ğ½ÑŒÑÑÑ‹
 		if v.begin == nil then
 			table.insert(avail, k)
-		--' Îáíóëèòü óñòàğåâøèå íüşñû			
+		--' ĞĞ±Ğ½ÑƒĞ»Ğ¸Ñ‚ÑŒ ÑƒÑÑ‚Ğ°Ñ€ĞµĞ²ÑˆĞ¸Ğµ Ğ½ÑŒÑÑÑ‹			
 		elseif game.time() - v.begin > v.timeout then
 			v.begin = nil
-		--' Óäàëÿòü óñòàğåâøèå èíôî ïîğøåíû
+		--' Ğ£Ğ´Ğ°Ğ»ÑÑ‚ÑŒ ÑƒÑÑ‚Ğ°Ñ€ĞµĞ²ÑˆĞ¸Ğµ Ğ¸Ğ½Ñ„Ğ¾ Ğ¿Ğ¾Ñ€ÑˆĞµĞ½Ñ‹
 		elseif game.time() - v.begin > v.idle then
 			--' insert delete info here
 		end

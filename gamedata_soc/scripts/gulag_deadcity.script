@@ -819,10 +819,10 @@ end
 gulags.cit_beasts.job = function(sj, gname, type, squad, groups)
     local ltx = ""
 
-	-- Проверяем наличие моб_хом.
+	-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РјРѕР±_С…РѕРј.
 	local i = 1
 	while level.patrol_path_exists(gname .. "_home_" .. i) do
-		-- Необходимо вычитать количество работ из названия точки пути.
+		-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 		local way_name = gname .. "_home_" .. i
 		local ptr = patrol(way_name)
 		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -832,7 +832,7 @@ gulags.cit_beasts.job = function(sj, gname, type, squad, groups)
 		end
 
 		for i = 1, job_count do
-			-- добавляем должность
+			-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 			t = { section = "logic@" .. way_name,
 				idle = 0,
 				prior = 1, state = {0}, squad = squad, group = groups[1],
@@ -842,7 +842,7 @@ gulags.cit_beasts.job = function(sj, gname, type, squad, groups)
 			table.insert(sj, t)
 		end
 
-		-- добавляем описание должности в лтх.
+		-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 		local job_ltx = "[logic@" .. way_name .. "]\n" ..
 						"active = mob_home@" .. way_name .. "\n" ..
 

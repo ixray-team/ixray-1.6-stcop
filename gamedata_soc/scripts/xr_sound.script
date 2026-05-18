@@ -1,7 +1,7 @@
 ---------------------------------------------------------------------------------------------------------------------
---	Схема озвучки
---	автор:  Диденко Руслан  (Stohe)
---	update: Чугай Александр (Chugai)
+--	РЎС…РµРјР° РѕР·РІСѓС‡РєРё
+--	Р°РІС‚РѕСЂ:  Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ  (Stohe)
+--	update: Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ (Chugai)
 ----------------------------------------------------------------------------------------------------------------------
 key_by_id = {}
 group_idle = {}
@@ -12,7 +12,7 @@ group_idle = {}
 function get_sound(path, tt, npc)
 	if path == nil then return nil end
 	if path.exec == nil then
-		-- чтение настроек темы
+		-- С‡С‚РµРЅРёРµ РЅР°СЃС‚СЂРѕРµРє С‚РµРјС‹
 		tt.into_id = path.into_id
 		tt.into_max = path.max_ids[npc:id()].into_max
 		tt.into_last = nil
@@ -28,11 +28,11 @@ function get_sound(path, tt, npc)
 		get_sound(path.types[path.exec(path.types, npc)], tt, npc)
 	end
 end
--- Формирование ключа персонажа
+-- Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РєР»СЋС‡Р° РїРµСЂСЃРѕРЅР°Р¶Р°
 function get_key(npc)
 	local key
 
-	-- формирование ключа
+	-- С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ РєР»СЋС‡Р°
 	local overrides = xr_logic.generic_scheme_overrides(npc)
 	if overrides and
 	   overrides.soundgroup 
@@ -42,7 +42,7 @@ function get_key(npc)
 		key = utils.to_str(npc:id())
 	end
 	
-	-- апдейт таблиц :) не менять!
+	-- Р°РїРґРµР№С‚ С‚Р°Р±Р»РёС† :) РЅРµ РјРµРЅСЏС‚СЊ!
 	if xr_sound.key_by_id[npc:id()] ~= key then
 		if xr_sound.group_idle[xr_sound.key_by_id[npc:id()]] ~= nil	then
 		   xr_sound.group_idle[xr_sound.key_by_id[npc:id()]].num_in_group = xr_sound.group_idle[xr_sound.key_by_id[npc:id()]].num_in_group - 1
@@ -58,7 +58,7 @@ function get_key(npc)
 end
 	
 -----------------------------------------------------------------------------------------------------------------------------------
---	Установка и распарсивание тем в файлы.
+--	РЈСЃС‚Р°РЅРѕРІРєР° Рё СЂР°СЃРїР°СЂСЃРёРІР°РЅРёРµ С‚РµРј РІ С„Р°Р№Р»С‹.
 -----------------------------------------------------------------------------------------------------------------------------------
 function set_sound(npc, sound, now, into_timeout)
 --	printf("*SND* [%s] try to change SND to [%s]", npc:name(), tostring(sound))
@@ -73,7 +73,7 @@ function set_sound(npc, sound, now, into_timeout)
 --		else
 --			printf("*SND* change SND [%s] to [%s] for [%s]", tostring(db.sound[npc_id].theme), tostring(sound), npc:name())
 --		end
-		-- Туточки надобно распарсить имена тем в их id
+		-- РўСѓС‚РѕС‡РєРё РЅР°РґРѕР±РЅРѕ СЂР°СЃРїР°СЂСЃРёС‚СЊ РёРјРµРЅР° С‚РµРј РІ РёС… id
 		if sound == nil then sound = "" end
 		if db.sound[npc_id] == nil then db.sound[npc_id] = {} end
 		db.sound[npc_id].theme = sound
@@ -96,7 +96,7 @@ function set_sound(npc, sound, now, into_timeout)
 			
 			
 		end
-		-- Устанавливаем входную паузу
+		-- РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІС…РѕРґРЅСѓСЋ РїР°СѓР·Сѓ
 		local key = get_key(npc)
 		xr_sound.group_idle[key].begin = time_global()
 		if into_timeout then
@@ -127,8 +127,8 @@ function update(npc)
 	local key = get_key(npc)
 	local npc_id = npc:id()
 	
-	--' Если задана тема, то нужно играть ее.
-	--' Если не задана, то нужно играть idle, при условии что у нас нет врагов и денжеров.
+	--' Р•СЃР»Рё Р·Р°РґР°РЅР° С‚РµРјР°, С‚Рѕ РЅСѓР¶РЅРѕ РёРіСЂР°С‚СЊ РµРµ.
+	--' Р•СЃР»Рё РЅРµ Р·Р°РґР°РЅР°, С‚Рѕ РЅСѓР¶РЅРѕ РёРіСЂР°С‚СЊ idle, РїСЂРё СѓСЃР»РѕРІРёРё С‡С‚Рѕ Сѓ РЅР°СЃ РЅРµС‚ РІСЂР°РіРѕРІ Рё РґРµРЅР¶РµСЂРѕРІ.
 	if db.sound[npc_id] ~= nil and db.sound[npc_id].snd == nil then
 		return 
 	end	
@@ -172,7 +172,7 @@ end
 
 
 function play_sound(npc, themes, timeout)
-	-- нужно составить список тем
+	-- РЅСѓР¶РЅРѕ СЃРѕСЃС‚Р°РІРёС‚СЊ СЃРїРёСЃРѕРє С‚РµРј
 	local snd_table = {}
 	local t = 0		
 	for k,v in pairs(themes) do
@@ -188,7 +188,7 @@ function play_sound(npc, themes, timeout)
 	--printf("*")
 	--print_table(snd_table)
 	if t == 0 then return end
-	-- из списка тем выбираем одну.	
+	-- РёР· СЃРїРёСЃРєР° С‚РµРј РІС‹Р±РёСЂР°РµРј РѕРґРЅСѓ.	
 	local snd = snd_table[math.random(0, t-1)]
 	if snd ~= nil then
 		--printf("!")
@@ -200,7 +200,7 @@ function play_sound(npc, themes, timeout)
 		if group_table.last_snd	== nil then
 			group_table.last_snd = {}
 		end
-		-- необходимо ли нам играть into или rnd звуки
+		-- РЅРµРѕР±С…РѕРґРёРјРѕ Р»Рё РЅР°Рј РёРіСЂР°С‚СЊ into РёР»Рё rnd Р·РІСѓРєРё
 		if snd.into_max ~= nil and
 			snd.into_max > 0
 		then
@@ -212,7 +212,7 @@ function play_sound(npc, themes, timeout)
 				end
 			end
 			
-			-- играем входные
+			-- РёРіСЂР°РµРј РІС…РѕРґРЅС‹Рµ
 			if db.sound[npc_id].last_snd[snd.into_id] == nil then db.sound[npc_id].last_snd[snd.into_id] = -1 end
 			
 			--printf("*SND* play seq [%s] for [%s]", db.sound[npc_id].last_snd[snd.into_id]+1, npc:name())
@@ -225,13 +225,13 @@ function play_sound(npc, themes, timeout)
 		if snd.rnd_max ~= nil and
 			snd.rnd_max > 0
 		then
-			-- играем рандомные
+			-- РёРіСЂР°РµРј СЂР°РЅРґРѕРјРЅС‹Рµ
 			local s = 0
 			if snd.rnd_max == 1 then
 				s = 0
 			else
-				-- Если прошлый раз проигрывался такой же набор тем
-				-- то учитывать последний звук для группы.
+				-- Р•СЃР»Рё РїСЂРѕС€Р»С‹Р№ СЂР°Р· РїСЂРѕРёРіСЂС‹РІР°Р»СЃСЏ С‚Р°РєРѕР№ Р¶Рµ РЅР°Р±РѕСЂ С‚РµРј
+				-- С‚Рѕ СѓС‡РёС‚С‹РІР°С‚СЊ РїРѕСЃР»РµРґРЅРёР№ Р·РІСѓРє РґР»СЏ РіСЂСѓРїРїС‹.
 --				if db.sound[npc_id].last_snd[snd.rnd_id] ~= nil then
 				if group_table.last_snd[snd.rnd_id] ~= nil then
 					s = math.random(0, snd.rnd_max-2)
@@ -277,7 +277,7 @@ local actor_sound = {}
 function set_actor_sound(sound)
 	printf("*ACTOR SND* try to change SND to [%s]", tostring(sound))
 	if actor_sound.theme ~= sound then
-		--' Туточки надобно распарсить имена тем в их id
+		--' РўСѓС‚РѕС‡РєРё РЅР°РґРѕР±РЅРѕ СЂР°СЃРїР°СЂСЃРёС‚СЊ РёРјРµРЅР° С‚РµРј РІ РёС… id
 		if sound == nil then sound = "" end		
 		actor_sound.theme = sound
 		actor_sound.begin = nil
@@ -307,7 +307,7 @@ function update_actor()
 	then
 		actor_sound.begin = time_global()
 		
-		--' Тут надо отыграть звук
+		--' РўСѓС‚ РЅР°РґРѕ РѕС‚С‹РіСЂР°С‚СЊ Р·РІСѓРє
 		local sound = theme.sounds[math.random(table.getn(theme.sounds))]
 		if sound ~= nil then
 			sound:play(db.actor, 0, sound_object.s2d)
@@ -319,7 +319,7 @@ end
 
 
 
---' Таблица для хранения созданных саунд обжектов.
+--' РўР°Р±Р»РёС†Р° РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЃРѕР·РґР°РЅРЅС‹С… СЃР°СѓРЅРґ РѕР±Р¶РµРєС‚РѕРІ.
 sound_object_by_theme = {}
 --' type = [random|seq|looped]
 function get_sound_object(theme, t_type)
@@ -336,7 +336,7 @@ function get_sound_object(theme, t_type)
 		t_type = "random"
 	end
 
-	--' Выбор следующего айдишника
+	--' Р’С‹Р±РѕСЂ СЃР»РµРґСѓСЋС‰РµРіРѕ Р°Р№РґРёС€РЅРёРєР°
 	local play_id = -1
 	local table_size = table.getn(sound_theme.ph_snd_themes[theme])
 	if sound_object_by_theme[theme].last_id == nil then
@@ -373,7 +373,7 @@ function get_sound_object(theme, t_type)
 	if play_id == -1 then
 		return
 	end
-	--' Проверяем создан ли у нас соответствующий саунд обжект или его надо создать
+	--' РџСЂРѕРІРµСЂСЏРµРј СЃРѕР·РґР°РЅ Р»Рё Сѓ РЅР°СЃ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ СЃР°СѓРЅРґ РѕР±Р¶РµРєС‚ РёР»Рё РµРіРѕ РЅР°РґРѕ СЃРѕР·РґР°С‚СЊ
 	if sound_object_by_theme[theme][play_id] == nil then
 		if type(sound_theme.ph_snd_themes[theme][play_id]) == "table" then
 			sound_object_by_theme[theme][play_id.."_r"] = get_safe_sound_object(sound_theme.ph_snd_themes[theme][play_id][1].."_r")
@@ -385,7 +385,7 @@ function get_sound_object(theme, t_type)
 
 	sound_object_by_theme[theme].last_id = play_id
 
-	--' Возвращаем саунд обжект
+	--' Р’РѕР·РІСЂР°С‰Р°РµРј СЃР°СѓРЅРґ РѕР±Р¶РµРєС‚
 	if type(sound_theme.ph_snd_themes[theme][play_id]) == "table" then
 		return sound_object_by_theme[theme][play_id.."_r"], sound_object_by_theme[theme][play_id.."_l"]
 	else
@@ -394,7 +394,7 @@ function get_sound_object(theme, t_type)
 end
 
 local sound_object_by_path = {}
---' Обертка вокруг функции, возвращающий звуковой объект.
+--' РћР±РµСЂС‚РєР° РІРѕРєСЂСѓРі С„СѓРЅРєС†РёРё, РІРѕР·РІСЂР°С‰Р°СЋС‰РёР№ Р·РІСѓРєРѕРІРѕР№ РѕР±СЉРµРєС‚.
 function get_safe_sound_object(path)
 	if sound_object_by_path[path] == nil then
 		sound_object_by_path[path] = sound_object(path)

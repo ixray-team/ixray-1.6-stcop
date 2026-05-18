@@ -1,7 +1,7 @@
 local t = {}
 
 function load_job(sj, gname, type, squad, groups)
-	-- Ïîñåòèòåëè Äîëãà
+	-- ÐŸÐ¾ÑÐµÑ‚Ð¸Ñ‚ÐµÐ»Ð¸ Ð”Ð¾Ð»Ð³Ð°
 	if type == "bar_visitors" then
 		t = { section = "logic@bar_visitors_kamp1",
 			idle = 0,
@@ -158,7 +158,7 @@ function load_job(sj, gname, type, squad, groups)
 		}
 		table.insert(sj, t)		    
 		
-		-- Áîé íà àðåíå
+		-- Ð‘Ð¾Ð¹ Ð½Ð° Ð°Ñ€ÐµÐ½Ðµ
 		t = { section = "logic@bar_visitors_arena_1",
 			idle = 0, timeout = 0,
 			prior = 7, state = {2}, squad = squad, group = groups[1],
@@ -210,7 +210,7 @@ function load_job(sj, gname, type, squad, groups)
 	
 	end
 	
-	-- Ãóëàã ëàìåðîâ Äîëãà âíóòðè áàçû Äîëãà
+	-- Ð“ÑƒÐ»Ð°Ð³ Ð»Ð°Ð¼ÐµÑ€Ð¾Ð² Ð”Ð¾Ð»Ð³Ð° Ð²Ð½ÑƒÑ‚Ñ€Ð¸ Ð±Ð°Ð·Ñ‹ Ð”Ð¾Ð»Ð³Ð°
 	if type == "bar_dolg_general" then
 		t = { section = "logic1@bar_dolg_general_guard_left",
 			idle = 0,
@@ -325,7 +325,7 @@ function load_job(sj, gname, type, squad, groups)
 
 	end
 
-	-- Ãóëàã âåòåðàíîâ Äîëãà âíóòðè áàçû Äîëãà
+	-- Ð“ÑƒÐ»Ð°Ð³ Ð²ÐµÑ‚ÐµÑ€Ð°Ð½Ð¾Ð² Ð”Ð¾Ð»Ð³Ð° Ð²Ð½ÑƒÑ‚Ñ€Ð¸ Ð±Ð°Ð·Ñ‹ Ð”Ð¾Ð»Ð³Ð°
 	if type == "bar_dolg_veterans" then
 		t = { section = "logic3@bar_dolg_veterans_gates1", 
 			idle = 0,
@@ -371,7 +371,7 @@ function load_job(sj, gname, type, squad, groups)
 		table.insert(sj, t)
 	end
 
-	-- Ãóëàã â áóíêåðå Äîëãà
+	-- Ð“ÑƒÐ»Ð°Ð³ Ð² Ð±ÑƒÐ½ÐºÐµÑ€Ðµ Ð”Ð¾Ð»Ð³Ð°
 	if type == "bar_dolg_bunker" then
 		t = { section = "logic2@bar_dolg_bunker", 
 			idle = 0,
@@ -404,7 +404,7 @@ function load_job(sj, gname, type, squad, groups)
 		
 	end
 
-    -- Ãóëàã ñòàëêåðîâ íà çàñòàâå 1
+    -- Ð“ÑƒÐ»Ð°Ð³ ÑÑ‚Ð°Ð»ÐºÐµÑ€Ð¾Ð² Ð½Ð° Ð·Ð°ÑÑ‚Ð°Ð²Ðµ 1
 
     if type == "bar_zastava" then 
         t = { section = "logic@bar_dolg_zastava1_cammander_1",
@@ -428,7 +428,7 @@ function load_job(sj, gname, type, squad, groups)
         end
     end
 
-    -- Ãóëàã ñòàëêåðîâ íà çàñòàâå 2
+    -- Ð“ÑƒÐ»Ð°Ð³ ÑÑ‚Ð°Ð»ÐºÐµÑ€Ð¾Ð² Ð½Ð° Ð·Ð°ÑÑ‚Ð°Ð²Ðµ 2
 
     if type == "bar_zastava_2" then 
         for i = 1,3 do
@@ -442,7 +442,7 @@ function load_job(sj, gname, type, squad, groups)
         end
     end
 
-	-- Ãóëàã íåõîðîøèõ ñòàëêåðîâ âåòåðàíîâ íà Äèêîé òåððèòîðèè
+	-- Ð“ÑƒÐ»Ð°Ð³ Ð½ÐµÑ…Ð¾Ñ€Ð¾ÑˆÐ¸Ñ… ÑÑ‚Ð°Ð»ÐºÐµÑ€Ð¾Ð² Ð²ÐµÑ‚ÐµÑ€Ð°Ð½Ð¾Ð² Ð½Ð° Ð”Ð¸ÐºÐ¾Ð¹ Ñ‚ÐµÑ€Ñ€Ð¸Ñ‚Ð¾Ñ€Ð¸Ð¸
 	if type == "bar_evil_veterans" then
 		t = { section = "logic@bar_evil_veterans_walker1", 
 			idle = 0,
@@ -527,7 +527,7 @@ function load_job(sj, gname, type, squad, groups)
 		table.insert(sj, t)
 	end
 
-	-- Ó÷åííûå, çàùèùàþùèå èíôó îò ñâîáîäû
+	-- Ð£Ñ‡ÐµÐ½Ð½Ñ‹Ðµ, Ð·Ð°Ñ‰Ð¸Ñ‰Ð°ÑŽÑ‰Ð¸Ðµ Ð¸Ð½Ñ„Ñƒ Ð¾Ñ‚ ÑÐ²Ð¾Ð±Ð¾Ð´Ñ‹
 	if type == "bar_ecolog_crush" then
 		t = { section = "logic@bar_ecolog_crush_sniper_1", 
 			idle = 0,
@@ -572,10 +572,10 @@ function load_job(sj, gname, type, squad, groups)
         
     end
 
-	-- Ñâîáîäà, àòàêóþùàÿ ó÷åííûõ ñ öåëüþ îòíèìàíèÿ èíôû
+	-- Ð¡Ð²Ð¾Ð±Ð¾Ð´Ð°, Ð°Ñ‚Ð°ÐºÑƒÑŽÑ‰Ð°Ñ ÑƒÑ‡ÐµÐ½Ð½Ñ‹Ñ… Ñ Ñ†ÐµÐ»ÑŒÑŽ Ð¾Ñ‚Ð½Ð¸Ð¼Ð°Ð½Ð¸Ñ Ð¸Ð½Ñ„Ñ‹
 	if type == "bar_freedom_attack" then
 		
-	--íà÷àëî ñöåíû {0}
+	--Ð½Ð°Ñ‡Ð°Ð»Ð¾ ÑÑ†ÐµÐ½Ñ‹ {0}
 		t = { section = "logic@bar_freedom_attack_sniper_1", 
 			idle = 0,
 			prior = 5, state = {0}, squad = squad, group = groups[0],
@@ -750,7 +750,7 @@ function load_job(sj, gname, type, squad, groups)
 		}
 		table.insert(sj, t)
 		
-	-- ïîãîíÿ çà Êðóãëîâûì	{2}
+	-- Ð¿Ð¾Ð³Ð¾Ð½Ñ Ð·Ð° ÐšÑ€ÑƒÐ³Ð»Ð¾Ð²Ñ‹Ð¼	{2}
         t = { section = "logic@bar_freedom_attack_chaser_1", 
 			idle = 0,
 			prior = 5, state = {2}, squad = squad, group = groups[0],
@@ -834,7 +834,7 @@ function load_job(sj, gname, type, squad, groups)
 		table.insert(sj, t)
 		
 
-	-- îòäûõ ñâîáîäû {3}
+	-- Ð¾Ñ‚Ð´Ñ‹Ñ… ÑÐ²Ð¾Ð±Ð¾Ð´Ñ‹ {3}
 		
 		t = { section = "logic@bar_freedom_attack_camper_1_relax", 
 			idle = 0,
@@ -957,7 +957,7 @@ function load_job(sj, gname, type, squad, groups)
 	
 	end
 	
-	-- Çàñàäà áîåâèêîâ Íàåìíèêîâ íà ñòðîéêå
+	-- Ð—Ð°ÑÐ°Ð´Ð° Ð±Ð¾ÐµÐ²Ð¸ÐºÐ¾Ð² ÐÐ°ÐµÐ¼Ð½Ð¸ÐºÐ¾Ð² Ð½Ð° ÑÑ‚Ñ€Ð¾Ð¹ÐºÐµ
 	if type == "bar_killers_ambush" then
 		t = { section = "logic@bar_svoboda_ambush_sniper_1", 
 			idle = 0,
@@ -1124,7 +1124,7 @@ end
 function load_states(gname, type)
 	if type == "bar_visitors" then
 		return function(gulag)
-			-- Ïðîâåðêà áîÿ íà àðåíå
+			-- ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð±Ð¾Ñ Ð½Ð° Ð°Ñ€ÐµÐ½Ðµ
 			if has_alife_info("bar_arena_start") and
 			   not has_alife_info("bar_arena_actor_victory") and
 			   not has_alife_info("bar_arena_actor_lose") and
@@ -1157,16 +1157,16 @@ function load_states(gname, type)
 				for k,v in pairs(gulag.Object) do
 					if v ~= true and v:best_enemy() ~= nil then
    						gulag.alarm_start = game.get_game_time()
-   						return 2 -- òðåâîãà
+   						return 2 -- Ñ‚Ñ€ÐµÐ²Ð¾Ð³Ð°
 					end
 				end		
 		
 				if gulag.alarm_start == nil or
 					game.get_game_time():diffSec(gulag.alarm_start) > 300 then
 					if level.get_time_hours() >= 6 and level.get_time_hours() <= 22 then
-						return 0  -- äåíü
+						return 0  -- Ð´ÐµÐ½ÑŒ
 					else
-						return 1  -- íî÷ü
+						return 1  -- Ð½Ð¾Ñ‡ÑŒ
 					end
 				else
 					return 2
@@ -1178,16 +1178,16 @@ function load_states(gname, type)
 				for k,v in pairs(gulag.Object) do
 					if v ~= true and v:best_enemy() ~= nil then
    						gulag.alarm_start = game.get_game_time()
-   						return 2 -- òðåâîãà
+   						return 2 -- Ñ‚Ñ€ÐµÐ²Ð¾Ð³Ð°
 					end
 				end		
 		
 				if gulag.alarm_start == nil or
 					game.get_game_time():diffSec(gulag.alarm_start) > 300 then
 					if level.get_time_hours() >= 6 and level.get_time_hours() <= 22 then
-						return 0  -- äåíü
+						return 0  -- Ð´ÐµÐ½ÑŒ
 					else
-						return 1  -- íî÷ü
+						return 1  -- Ð½Ð¾Ñ‡ÑŒ
 					end
 				else
 					return 2
@@ -1205,16 +1205,16 @@ function load_states(gname, type)
 				for k,v in pairs(gulag.Object) do
 					if v ~= true and v:best_enemy() ~= nil then
    						gulag.alarm_start = game.get_game_time()
-   						return 2 -- òðåâîãà
+   						return 2 -- Ñ‚Ñ€ÐµÐ²Ð¾Ð³Ð°
 					end
 				end		
 		
 				if gulag.alarm_start == nil or
 					game.get_game_time():diffSec(gulag.alarm_start) > 300 then
 					if level.get_time_hours() >= 6 and level.get_time_hours() <= 22 then
-						return 0  -- äåíü
+						return 0  -- Ð´ÐµÐ½ÑŒ
 					else
-						return 1  -- íî÷ü
+						return 1  -- Ð½Ð¾Ñ‡ÑŒ
 					end
 				else
 					return 2

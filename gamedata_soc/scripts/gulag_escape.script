@@ -198,7 +198,7 @@ function load_job(sj, gname, type, squad, groups)
 	table.insert(sj, t)
 end
 
---' Спецназ на блокпосте
+--' РЎРїРµС†РЅР°Р· РЅР° Р±Р»РѕРєРїРѕСЃС‚Рµ
 if type == "esc_specnaz" then
 	t = { section = "logic@esc_specnaz_kamp",
 		idle = 0,
@@ -289,9 +289,9 @@ if type == "esc_specnaz" then
 
 
 
-	--' Лагерь новичков на Escape
+	--' Р›Р°РіРµСЂСЊ РЅРѕРІРёС‡РєРѕРІ РЅР° Escape
 	if type == "esc_lager" then
-		-- охранники
+		-- РѕС…СЂР°РЅРЅРёРєРё
 		t = { section = "logic@esc_lager_zoneguard1",
 			idle = 0,
 			prior = 9, state = {0, 1},
@@ -316,7 +316,7 @@ if type == "esc_specnaz" then
 			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
 		}
 		table.insert(sj, t)
-		-- у костра днём
+		-- Сѓ РєРѕСЃС‚СЂР° РґРЅС‘Рј
 		t = { section = "logic@esc_lager_kamp1",
 			idle = 0,
 			prior = 6, state = {0},
@@ -335,7 +335,7 @@ if type == "esc_specnaz" then
 			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
 		}
 		table.insert(sj, t)
-		-- Волк, собственной персоной.
+		-- Р’РѕР»Рє, СЃРѕР±СЃС‚РІРµРЅРЅРѕР№ РїРµСЂСЃРѕРЅРѕР№.
 		t = { section = "logic@esc_lager_volk",
 			idle = 0,
 			prior = 16, state = {0,1},
@@ -345,7 +345,7 @@ if type == "esc_specnaz" then
 						end
 		}
 		table.insert(sj, t)
-		-- Шустрый
+		-- РЁСѓСЃС‚СЂС‹Р№
 		t = { section = "logic@esc_lager_shustryi",
 			idle = 0,
 			prior = 16, state = {0,1},
@@ -367,7 +367,7 @@ if type == "esc_specnaz" then
 		}
 		table.insert(sj, t)
 		
-		-- Фанат
+		-- Р¤Р°РЅР°С‚
 		t = { section = "logic@esc_lager_fanat",
 			idle = 0,
 			prior = 16, state = {0,1},
@@ -378,7 +378,7 @@ if type == "esc_specnaz" then
 		}
 		table.insert(sj, t)
 
-		-- спящие ночью
+		-- СЃРїСЏС‰РёРµ РЅРѕС‡СЊСЋ
 		t = { section = "logic@esc_lager_sleeper1",
 			idle = 0,
 			prior = 3, state = {1},
@@ -397,7 +397,7 @@ if type == "esc_specnaz" then
 			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
 		}
 		table.insert(sj, t)
-		-- спящие ночью и днёи
+		-- СЃРїСЏС‰РёРµ РЅРѕС‡СЊСЋ Рё РґРЅС‘Рё
 		t = { section = "logic@esc_lager_sleeper5",
 			idle = 0,
 			prior = 5, state = {0,1},
@@ -509,9 +509,9 @@ if type == "esc_specnaz" then
 		table.insert(sj, t)
 	end
 
-	--' Бандиты на фабрике
+	--' Р‘Р°РЅРґРёС‚С‹ РЅР° С„Р°Р±СЂРёРєРµ
 	if type == "esc_fabrika_bandit" then
-		-- часовые днём
+		-- С‡Р°СЃРѕРІС‹Рµ РґРЅС‘Рј
 		t = { section = "logic@esc_fabrika_bandit_walker1",
 			idle = 0,
 			prior = 2, state = {0},
@@ -539,7 +539,7 @@ if type == "esc_specnaz" then
 						end
 		}
 		table.insert(sj, t)
-		-- сидящие у костра
+		-- СЃРёРґСЏС‰РёРµ Сѓ РєРѕСЃС‚СЂР°
 		t = { section = "logic@esc_fabrika_bandit_kamp",
 			idle = 0,
 			prior = 1, state = {0},
@@ -552,7 +552,7 @@ if type == "esc_specnaz" then
 			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
 		}
 		table.insert(sj, t)
-		-- аларм
+		-- Р°Р»Р°СЂРј
 		t = { section = "camper@esc_fabrika_bandit_walker1",
 			idle = 0,
 			prior = 5, state = {2},
@@ -597,9 +597,9 @@ if type == "esc_specnaz" then
 		table.insert(sj, t)
 	end
 
-	--' Солдаты на мосту
+	--' РЎРѕР»РґР°С‚С‹ РЅР° РјРѕСЃС‚Сѓ
 	if type == "esc_bridge" then
-		-- часовые днём
+		-- С‡Р°СЃРѕРІС‹Рµ РґРЅС‘Рј
 		t = { section = "logic@esc_bridge_post1",
 			idle = 0,
 			prior = 7, state = {0},
@@ -665,7 +665,7 @@ if type == "esc_specnaz" then
 		table.insert(sj, t)
 	end
 
-	--' Наемники, атакующие новичков.
+	--' РќР°РµРјРЅРёРєРё, Р°С‚Р°РєСѓСЋС‰РёРµ РЅРѕРІРёС‡РєРѕРІ.
 	if type == "esc_killers" then
 		t = { section = "logic@esc_killer_leader_raid",
 			idle = 0,
@@ -2025,7 +2025,7 @@ function load_states(gname, type)
 				if v ~= true and v:best_enemy() ~= nil then
 					gulag.alarm_start = game.get_game_time()
 					actor:give_info_portion("esc_blockpost_alarm")
-					return 2 -- тревога
+					return 2 -- С‚СЂРµРІРѕРіР°
 				end
 			end
 
@@ -2033,9 +2033,9 @@ function load_states(gname, type)
 				game.get_game_time():diffSec(gulag.alarm_start) > 300 then
 				if level.get_time_hours() >= 6 and level.get_time_hours() <= 22 then
 				actor:give_info_portion("esc_blockpost_normal")
-					return 0  -- день
+					return 0  -- РґРµРЅСЊ
 				else
-					return 1  -- ночь
+					return 1  -- РЅРѕС‡СЊ
 				end
 			else
 				return 2
@@ -2052,11 +2052,11 @@ function load_states(gname, type)
 				return gulag.state
 			end
 			if has_alife_info("escape_lager_help") and has_alife_info("escape_lager_killers_die") then
-				return 2 -- оборона лагеря
+				return 2 -- РѕР±РѕСЂРѕРЅР° Р»Р°РіРµСЂСЏ
 			elseif level.get_time_hours() >= 5 and level.get_time_hours() <= 22 then
-				return 0  -- день
+				return 0  -- РґРµРЅСЊ
 			else
-				return 1  -- ночь
+				return 1  -- РЅРѕС‡СЊ
 			end
 		end
 	end
@@ -2065,9 +2065,9 @@ function load_states(gname, type)
 		return function(gulag)
 			if db.actor ~= nil then
 				if ( level.get_time_hours() >= 5 and level.get_time_hours() <= 22 ) then
-					return 0  -- день
+					return 0  -- РґРµРЅСЊ
 				else
-					return 1  -- ночь
+					return 1  -- РЅРѕС‡СЊ
 				end
 			else
 				return gulag.state
@@ -2081,13 +2081,13 @@ function load_states(gname, type)
 				for k,v in pairs(gulag.Object) do
 					if v ~= true and v:best_enemy() ~= nil then
    						gulag.alarm_start = game.get_game_time()
-   						return 2 -- тревога
+   						return 2 -- С‚СЂРµРІРѕРіР°
 					end
 				end
 
 				if gulag.alarm_start == nil or
 					game.get_game_time():diffSec(gulag.alarm_start) > 300 then
-					return 0  -- день
+					return 0  -- РґРµРЅСЊ
 				else
 					return 2
 				end
@@ -2098,11 +2098,11 @@ function load_states(gname, type)
 		return function(gulag)
 			local actor = db.actor
 			if not has_alife_info("escape_stalker_dog_spawn") then
-				return 0 -- оффлайн
+				return 0 -- РѕС„С„Р»Р°Р№РЅ
 			elseif (has_alife_info("escape_stalker_dog_spawn") and not has_alife_info("escape_stalker_done")) or has_alife_info("esc_dogs_return") then 
-				return 2 -- онлайн
+				return 2 -- РѕРЅР»Р°Р№РЅ
 			else
-				return 1 -- атака
+				return 1 -- Р°С‚Р°РєР°
 			end
 		end
 	end
@@ -2263,15 +2263,15 @@ function load_states(gname, type)
 	if type == "esc_assault" then
 		return function(gulag)
 			if has_alife_info("esc_kill_bandits_quest_have") and not has_alife_info("esc_assault_start") then
-				return 1 -- сидят у костра
+				return 1 -- СЃРёРґСЏС‚ Сѓ РєРѕСЃС‚СЂР°
 			elseif has_alife_info("esc_assault_start") and not has_alife_info("esc_kill_bandits_quest_kill") then
-				return 2 -- атакуют фабрику
+				return 2 -- Р°С‚Р°РєСѓСЋС‚ С„Р°Р±СЂРёРєСѓ
 			elseif has_alife_info("esc_kill_bandits_quest_kill") and (not has_alife_info("esc_kill_bandits_quest_done") or not has_alife_info("esc_petruha_great")) then
-				return 3 -- идут домой	
+				return 3 -- РёРґСѓС‚ РґРѕРјРѕР№	
 			elseif has_alife_info("esc_kill_bandits_quest_done") or has_alife_info("esc_petruha_great") then
-				return 4 -- идут домой
+				return 4 -- РёРґСѓС‚ РґРѕРјРѕР№
 			else
-				return 0 -- сидят в оффлайне
+				return 0 -- СЃРёРґСЏС‚ РІ РѕС„С„Р»Р°Р№РЅРµ
 			end
 		end
 	end

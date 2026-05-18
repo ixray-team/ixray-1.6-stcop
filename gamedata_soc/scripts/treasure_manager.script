@@ -5,7 +5,7 @@ function parse_spawns(line)
 		return {}
 	end
 
-	--' если default-ов больше, чем значений в ini, то забить недостающие последним значением из ini
+	--' РµСЃР»Рё default-РѕРІ Р±РѕР»СЊС€Рµ, С‡РµРј Р·РЅР°С‡РµРЅРёР№ РІ ini, С‚Рѕ Р·Р°Р±РёС‚СЊ РЅРµРґРѕСЃС‚Р°СЋС‰РёРµ РїРѕСЃР»РµРґРЅРёРј Р·РЅР°С‡РµРЅРёРµРј РёР· ini
 	local t = se_respawn.parse_names(line)
 	local n = table.getn(t)
 		
@@ -15,16 +15,16 @@ function parse_spawns(line)
 	while k <= n do
 		local spawn = {}
 		spawn.section = t[k]
-		-- Проверяем что это не последняя запись
+		-- РџСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ СЌС‚Рѕ РЅРµ РїРѕСЃР»РµРґРЅСЏСЏ Р·Р°РїРёСЃСЊ
 		if t[k+1] ~= nil then
 			local p = tonumber(t[k+1])
-			-- проверяем что вторым числом задана вероятность, а не другая секция спавну
+			-- РїСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ РІС‚РѕСЂС‹Рј С‡РёСЃР»РѕРј Р·Р°РґР°РЅР° РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ, Р° РЅРµ РґСЂСѓРіР°СЏ СЃРµРєС†РёСЏ СЃРїР°РІРЅСѓ
 			if p then
-				-- забиваем число
+				-- Р·Р°Р±РёРІР°РµРј С‡РёСЃР»Рѕ
 				spawn.prob = p
 				k = k + 2
 			else
-				-- забиваем дефолт 1
+				-- Р·Р°Р±РёРІР°РµРј РґРµС„РѕР»С‚ 1
 				spawn.prob = 1
 				k = k + 1
 			end
@@ -40,17 +40,17 @@ end
 
 class "CTreasure"
 function CTreasure:__init()
-	--' На конструкторе вычитываем LTX и создаем заготовки квестов.
+	--' РќР° РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРµ РІС‹С‡РёС‚С‹РІР°РµРј LTX Рё СЃРѕР·РґР°РµРј Р·Р°РіРѕС‚РѕРІРєРё РєРІРµСЃС‚РѕРІ.
 	self.ini = ini_file("misc\\treasure_manager.ltx")
 
-	--' Итерируемся по всем настройкам фраз
+	--' РС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ РІСЃРµРј РЅР°СЃС‚СЂРѕР№РєР°Рј С„СЂР°Р·
 	if not self.ini:section_exist("list") then
 		abort("There is no section [list] in treasure_manager.ltx")
 	end
 	local n = self.ini:line_count("list")
 	local id, value = "",""
 
-	--' начальная установка
+	--' РЅР°С‡Р°Р»СЊРЅР°СЏ СѓСЃС‚Р°РЅРѕРІРєР°
 	self.treasure_info = {}
 
 	for i=0,n-1 do
@@ -76,23 +76,23 @@ function CTreasure:__init()
 
 		self.treasure_info[id].condlist		= xr_logic.parse_condlist(db.actor, "treasure_manager", "condlist", utils.cfg_get_string(self.ini, id, "condlist", nil, false, "", ""))
 		
-		--' Отметим тайник как новый
+		--' РћС‚РјРµС‚РёРј С‚Р°Р№РЅРёРє РєР°Рє РЅРѕРІС‹Р№
 		self.treasure_info[id].active = false
 		self.treasure_info[id].done = false
 
 		--print_table(self.treasure_info)
 	end
 
-	--' Вспомогательные таблицы для облегчения поиска
+	--' Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С‚Р°Р±Р»РёС†С‹ РґР»СЏ РѕР±Р»РµРіС‡РµРЅРёСЏ РїРѕРёСЃРєР°
 	self.treasure_by_target = {}
 	for k,v in pairs(self.treasure_info) do
 		self.treasure_by_target[v.target] = k	
 	end
 end
---' Юзание инициатора (возможность выдать тайник)
+--' Р®Р·Р°РЅРёРµ РёРЅРёС†РёР°С‚РѕСЂР° (РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РІС‹РґР°С‚СЊ С‚Р°Р№РЅРёРє)
 function CTreasure:use(npc)
 	printf("TREASURE USE")
-	--' Нужно рандомно выбрать один из тайников.
+	--' РќСѓР¶РЅРѕ СЂР°РЅРґРѕРјРЅРѕ РІС‹Р±СЂР°С‚СЊ РѕРґРёРЅ РёР· С‚Р°Р№РЅРёРєРѕРІ.
 	local avail = {}
 	local tr_sum = 0
 	for k,v in pairs(self.treasure_info) do
@@ -127,32 +127,32 @@ function CTreasure:use(npc)
 	for k,v in pairs(avail) do
 		tr_w = tr_w - v.prob
 		if tr_w <= 0 then
-			--' Выдать тайник
+			--' Р’С‹РґР°С‚СЊ С‚Р°Р№РЅРёРє
 			self:give_treasure(v.k)
 			break
 		end
 	end
 end
---' Сохранение
+--' РЎРѕС…СЂР°РЅРµРЅРёРµ
 function CTreasure:check()
-	--' Проверка тайников
+	--' РџСЂРѕРІРµСЂРєР° С‚Р°Р№РЅРёРєРѕРІ
 	for k,v in pairs(self.treasure_info) do
-		--' Выдать тайник
+		--' Р’С‹РґР°С‚СЊ С‚Р°Р№РЅРёРє
 		self:give_treasure(k)
 	end
 end
---' Выдача тайника
+--' Р’С‹РґР°С‡Р° С‚Р°Р№РЅРёРєР°
 function CTreasure:give_treasure(k)
 	local v = self.treasure_info[k]
 	local obj = alife():story_object(v.target)
 	if obj ~= nil then
 		news_manager.send_treasure(v.name)
 
-		--' Пометить на карте		
+		--' РџРѕРјРµС‚РёС‚СЊ РЅР° РєР°СЂС‚Рµ		
 		local text = "%c[255,238,155,23]"..game.translate_string(v.name).."\\n".."%c[default]"..game.translate_string(v.description)
 		level.map_add_object_spot_ser(obj.id, "treasure", text)
 
-		--' Сгенерить вещи
+		--' РЎРіРµРЅРµСЂРёС‚СЊ РІРµС‰Рё
 		for kk,vv in pairs(v.items) do
 			if ammo_section[vv.section] == true then
 				se_respawn.create_ammo(vv.section,	
@@ -172,14 +172,14 @@ function CTreasure:give_treasure(k)
 			end
 		end
 		
-		--' Пометим тайник как выданный
+		--' РџРѕРјРµС‚РёРј С‚Р°Р№РЅРёРє РєР°Рє РІС‹РґР°РЅРЅС‹Р№
 		self.treasure_info[k].active = true
 		self.treasure_info[k].done = true
 	else
 		printf("TREASURE %s, target doesnt exist", k)
 	end
 end
---' Снимаем отметку с тайника
+--' РЎРЅРёРјР°РµРј РѕС‚РјРµС‚РєСѓ СЃ С‚Р°Р№РЅРёРєР°
 function CTreasure:treasure_empty(box, box_story_id)
 	printf("!!! treasure empty")
 	local k = self.treasure_by_target[box_story_id]
@@ -191,9 +191,9 @@ function CTreasure:treasure_empty(box, box_story_id)
 	self.treasure_info[k].active = false
 	level.map_remove_object_spot(box:id(), "treasure")
 end
---' Сохранение
+--' РЎРѕС…СЂР°РЅРµРЅРёРµ
 function CTreasure:save(p)
-	--' Сохраняем размер таблицы
+	--' РЎРѕС…СЂР°РЅСЏРµРј СЂР°Р·РјРµСЂ С‚Р°Р±Р»РёС†С‹
 	local size = 0
 	for k,v in pairs(self.treasure_info) do
 		size = size + 1
@@ -205,7 +205,7 @@ function CTreasure:save(p)
 		p:w_bool(v.done)
 	end
 end
---' Загрузка
+--' Р—Р°РіСЂСѓР·РєР°
 function CTreasure:load(p)
 	local t = p:r_u16()
 	for i = 1,t do

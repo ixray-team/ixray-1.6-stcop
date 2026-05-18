@@ -1,5 +1,5 @@
 
---Взнос Долгу для прохода на территорию
+--Р’Р·РЅРѕСЃ Р”РѕР»РіСѓ РґР»СЏ РїСЂРѕС…РѕРґР° РЅР° С‚РµСЂСЂРёС‚РѕСЂРёСЋ
 function has_dolg_deposite(actor, npc)
 	return actor:money() >= 1000
 end
@@ -8,7 +8,7 @@ function give_dolg_deposite(actor, npc)
 	dialogs.relocate_money(npc, 1000, "out")
 end
 
---Бармен в комнате
+--Р‘Р°СЂРјРµРЅ РІ РєРѕРјРЅР°С‚Рµ
 function give_agroprom_documents(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "quest_case_02", "out")
 end
@@ -66,9 +66,9 @@ end
 
 
 -- ********************************************************
---			БАРМЕН В КОМНАТЕ
+--			Р‘РђР РњР•Рќ Р’ РљРћРњРќРђРўР•
 -- ********************************************************
--- Документы с дарклаба
+-- Р”РѕРєСѓРјРµРЅС‚С‹ СЃ РґР°СЂРєР»Р°Р±Р°
 function barman_need_darklab_documents(actor,npc)
 	if not has_alife_info("bar_darklab_document_start")
 	then
@@ -101,7 +101,7 @@ function give_darklab_reward(first_speaker, second_speaker)
 	dialogs.relocate_money(second_speaker, 10000, "in")
 end
 
--- Документы с Янтаря
+-- Р”РѕРєСѓРјРµРЅС‚С‹ СЃ РЇРЅС‚Р°СЂСЏ
 function barman_x16_given(actor,npc)
 	if has_alife_info("bar_x16_documents_start") and
 	   not has_alife_info("bar_x16_documents_done")
@@ -111,7 +111,7 @@ function barman_x16_given(actor,npc)
 	return false
 end
 
--- Документы из янтаря
+-- Р”РѕРєСѓРјРµРЅС‚С‹ РёР· СЏРЅС‚Р°СЂСЏ
 function have_x16_documents(first_speaker, second_speaker)
   	return first_speaker:object("lab_x16_documents") ~= nil
 end
@@ -122,7 +122,7 @@ function give_x16_reward(first_speaker, second_speaker)
 	dialogs.relocate_money(second_speaker, 15000, "in")
 end
 
--- Выдача задания на отключение радара
+-- Р’С‹РґР°С‡Р° Р·Р°РґР°РЅРёСЏ РЅР° РѕС‚РєР»СЋС‡РµРЅРёРµ СЂР°РґР°СЂР°
 function barman_need_radar(actor,npc)
 	if has_alife_info("bar_deactivate_radar_start")	then
 		return true
@@ -131,9 +131,9 @@ function barman_need_radar(actor,npc)
 end
 
 -- ********************************************************
---			БАРМЕН ЗА ПРИЛАВКОМ
+--			Р‘РђР РњР•Рќ Р—Рђ РџР РР›РђР’РљРћРњ
 -- ********************************************************
---Долг архивные документы
+--Р”РѕР»Рі Р°СЂС…РёРІРЅС‹Рµ РґРѕРєСѓРјРµРЅС‚С‹
 function have_dolg_arhive_document(first_speaker, second_speaker)
   	return first_speaker:object("dolg_arhive_documents") ~= nil
 end
@@ -141,7 +141,7 @@ end
 function give_dolg_arhive_document(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "dolg_arhive_documents", "out")
 end
--- Флешка ученных с ростка
+-- Р¤Р»РµС€РєР° СѓС‡РµРЅРЅС‹С… СЃ СЂРѕСЃС‚РєР°
 function actor_have_research(first_speaker, second_speaker)
   	return first_speaker:object("bar_ecolog_flash") ~= nil
 end
@@ -154,9 +154,9 @@ end
 
 
 -- ********************************************************
---			Лидер Долга
+--			Р›РёРґРµСЂ Р”РѕР»РіР°
 -- ********************************************************
---Свобода РГ-6
+--РЎРІРѕР±РѕРґР° Р Р“-6
 function have_rg6(first_speaker, second_speaker)
   	return first_speaker:object("wpn_rg-6") ~= nil
 end
@@ -174,7 +174,7 @@ function enter_to_dolg(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "dolg_scientific_outfit", "in")
 end
 
---Фамильное ружье охотника
+--Р¤Р°РјРёР»СЊРЅРѕРµ СЂСѓР¶СЊРµ РѕС…РѕС‚РЅРёРєР°
 function have_hunters_toz(first_speaker, second_speaker)
   	return first_speaker:object("hunters_toz") ~= nil
 end
@@ -186,7 +186,7 @@ function have_hunter_reward(first_speaker, second_speaker)
 end
 
 
--- Оплата информации осведомителю.
+-- РћРїР»Р°С‚Р° РёРЅС„РѕСЂРјР°С†РёРё РѕСЃРІРµРґРѕРјРёС‚РµР»СЋ.
 function has_money_for_informer_1(actor, npc)
 	return actor:money() >= 4000
 end
@@ -303,7 +303,7 @@ function arena_rank_check_false ()
 	return not arena_rank_check_true ()
 end
 
--- Отметка интересных мест на карте
+-- РћС‚РјРµС‚РєР° РёРЅС‚РµСЂРµСЃРЅС‹С… РјРµСЃС‚ РЅР° РєР°СЂС‚Рµ
 function locate_bar_bar(actor,npc)
 	local sim = alife()
 	if sim == nil then

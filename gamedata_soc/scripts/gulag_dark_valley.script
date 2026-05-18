@@ -128,7 +128,7 @@ end
 --------------------------------------------------------------------------
 
 --------------------------------------------------------------------------
--- Escort (сцена спасения пленного долговца)
+-- Escort (СЃС†РµРЅР° СЃРїР°СЃРµРЅРёСЏ РїР»РµРЅРЅРѕРіРѕ РґРѕР»РіРѕРІС†Р°)
 --------------------------------------------------------------------------
 -- Predicates ------------------------------------------------------------
 function e_predicate_n(npc_info) -- nap1
@@ -153,13 +153,13 @@ end
 
 -- Jobs ------------------------------------------------------------------
 gulags.val_escort.job = function(sj, gname, type, squad, groups)
--- игнорирование
+-- РёРіРЅРѕСЂРёСЂРѕРІР°РЅРёРµ
     local ltx = "[meet@ignore_abuse]\n" ..
                 "use             = false\n" ..
                 "use_wpn         = false\n" ..
                 "abuse           = false\n"
 
-    -- напарник с которым спасаем пленного
+    -- РЅР°РїР°СЂРЅРёРє СЃ РєРѕС‚РѕСЂС‹Рј СЃРїР°СЃР°РµРј РїР»РµРЅРЅРѕРіРѕ
     t = { section = "logic@" .. gname .. "_nap1",
         idle = 0,
         prior = 1, state = {0},
@@ -171,7 +171,7 @@ gulags.val_escort.job = function(sj, gname, type, squad, groups)
     table.insert(sj, t)
     ltx = ltx.."#include \"scripts\\val_escort_nap1.ltx\"\n"
 
-    -- пленный
+    -- РїР»РµРЅРЅС‹Р№
     t = { section = "logic@" .. gname .. "_captive",
         idle = 0,
         prior = 1, state = {0},
@@ -184,7 +184,7 @@ gulags.val_escort.job = function(sj, gname, type, squad, groups)
     table.insert(sj, t)
     ltx = ltx.."#include \"scripts\\val_escort_captive.ltx\"\n"
 
-    -- охранники ведущие пленного
+    -- РѕС…СЂР°РЅРЅРёРєРё РІРµРґСѓС‰РёРµ РїР»РµРЅРЅРѕРіРѕ
     t = { section = "logic@" .. gname .. "_guard",
         idle = 0,
         prior = 1, state = {0},
@@ -284,7 +284,7 @@ gulags.val_escort.job = function(sj, gname, type, squad, groups)
                --"anim                = wait\n" ..
                --"on_info             = %=" .. gname .. "_guard_free%\n"
 
-    -- раненый бандит в начале сцены
+    -- СЂР°РЅРµРЅС‹Р№ Р±Р°РЅРґРёС‚ РІ РЅР°С‡Р°Р»Рµ СЃС†РµРЅС‹
     t = { section = "logic@" .. gname .. "_halfdead",
         idle = 0,
         prior = 1, state = {0},
@@ -320,8 +320,8 @@ gulags.val_escort.job = function(sj, gname, type, squad, groups)
                "combat_ignore_cond  = always\n" ..
 
                --------------------------------------------------------------------------
-               -- фраза: Не-еет!!! Не убивай меня! Твоего напарника, сейчас будут вести на Базу Монолита.
-               --        Это все, что я знаю...бля-буду...
+               -- С„СЂР°Р·Р°: РќРµ-РµРµС‚!!! РќРµ СѓР±РёРІР°Р№ РјРµРЅСЏ! РўРІРѕРµРіРѕ РЅР°РїР°СЂРЅРёРєР°, СЃРµР№С‡Р°СЃ Р±СѓРґСѓС‚ РІРµСЃС‚Рё РЅР° Р‘Р°Р·Сѓ РњРѕРЅРѕР»РёС‚Р°.
+               --        Р­С‚Рѕ РІСЃРµ, С‡С‚Рѕ СЏ Р·РЅР°СЋ...Р±Р»СЏ-Р±СѓРґСѓ...
                --------------------------------------------------------------------------
                "[remark@" .. gname .. "_halfdead_phrase]\n" ..
                "anim                = wounded_heavy ;wait\n" ..
@@ -342,7 +342,7 @@ end
 
 
 --------------------------------------------------------------------------
--- Sacrifice (сцена возле ямы на главной базе бандитов)
+-- Sacrifice (СЃС†РµРЅР° РІРѕР·Р»Рµ СЏРјС‹ РЅР° РіР»Р°РІРЅРѕР№ Р±Р°Р·Рµ Р±Р°РЅРґРёС‚РѕРІ)
 --------------------------------------------------------------------------
 -- Predicates ------------------------------------------------------------
 function scf_predicate_v(npc_info) -- victim
@@ -363,7 +363,7 @@ end
 
 -- Jobs ------------------------------------------------------------------
 gulags.val_sacrifice.job = function(sj, gname, type, squad, groups)
-    -- пленный, которого убивают
+    -- РїР»РµРЅРЅС‹Р№, РєРѕС‚РѕСЂРѕРіРѕ СѓР±РёРІР°СЋС‚
     t = { section = "logic@" .. gname .. "_victim",
         idle = 0,
         prior = 1, state = {0},
@@ -374,7 +374,7 @@ gulags.val_sacrifice.job = function(sj, gname, type, squad, groups)
     }
     table.insert(sj, t)
 
-    -- охранники
+    -- РѕС…СЂР°РЅРЅРёРєРё
     t = { section = "logic@" .. gname .. "_guard1",
         idle = 0,
         prior = 1, state = {0},
@@ -395,7 +395,7 @@ gulags.val_sacrifice.job = function(sj, gname, type, squad, groups)
     }
     table.insert(sj, t)
 
-    -- бандит над трубой
+    -- Р±Р°РЅРґРёС‚ РЅР°Рґ С‚СЂСѓР±РѕР№
     t = { section = "logic@" .. gname .. "_tunnel_bandit",
         idle = 0,
         prior = 1, state = {0},
@@ -416,7 +416,7 @@ gulags.val_sacrifice.job = function(sj, gname, type, squad, groups)
                 --"ignore_distance_sound      = 4\n" ..
                 --"danger_inertion_time_sound = 2000\n" ..
 
-                -- встреча отключена
+                -- РІСЃС‚СЂРµС‡Р° РѕС‚РєР»СЋС‡РµРЅР°
                 "[meet@" .. gname .. "]\n" ..
                 "meet_state     = 0|guard\n" ..
                 "meet_state_wpn = 0|guard\n" ..
@@ -435,7 +435,7 @@ end
 
 
 --------------------------------------------------------------------------
--- Prisoner (заключенный за решеткой в подвале на главной базе бандитов)
+-- Prisoner (Р·Р°РєР»СЋС‡РµРЅРЅС‹Р№ Р·Р° СЂРµС€РµС‚РєРѕР№ РІ РїРѕРґРІР°Р»Рµ РЅР° РіР»Р°РІРЅРѕР№ Р±Р°Р·Рµ Р±Р°РЅРґРёС‚РѕРІ)
 --------------------------------------------------------------------------
 -- Predicates ------------------------------------------------------------
 function p_predicate(npc_info) -- prisoner
@@ -444,7 +444,7 @@ end
 
 -- Jobs ------------------------------------------------------------------
 gulags.val_prisoner.job = function(sj, gname, type, squad, groups)
-    -- за решеткой
+    -- Р·Р° СЂРµС€РµС‚РєРѕР№
     t = { section = "logic@" .. gname,
         idle = 0,
         prior = 1, state = {0},
@@ -455,7 +455,7 @@ gulags.val_prisoner.job = function(sj, gname, type, squad, groups)
     }
     table.insert(sj, t)
 
-    -- свободен
+    -- СЃРІРѕР±РѕРґРµРЅ
     t = { section = "logic@" .. gname .. "_free",
         idle = 0,
         prior = 1, state = {1},
@@ -479,7 +479,7 @@ end
 
 
 --------------------------------------------------------------------------
--- Sos (раненый на заправке и кровосос)
+-- Sos (СЂР°РЅРµРЅС‹Р№ РЅР° Р·Р°РїСЂР°РІРєРµ Рё РєСЂРѕРІРѕСЃРѕСЃ)
 --------------------------------------------------------------------------
 -- Predicates ------------------------------------------------------------
 function sos_predicate_w(npc_info) -- wounded
@@ -494,7 +494,7 @@ end
 gulags.val_sos.job = function(sj, gname, type, squad, groups)
     local ltx = ""
 
-    -- раненый сталкер
+    -- СЂР°РЅРµРЅС‹Р№ СЃС‚Р°Р»РєРµСЂ
     t = { section = "logic@" .. gname .. "_wounded",
         idle = 0,
         prior = 1, state = {0},
@@ -571,7 +571,7 @@ gulags.val_sos.job = function(sj, gname, type, squad, groups)
                "on_signal             = arrived | %+val_sos_scene_end%\n" ..
                "combat_ignore_cond    = always\n"
 
-    -- кровосос
+    -- РєСЂРѕРІРѕСЃРѕСЃ
     t = { section = "logic@" .. gname .. "_bs",
         idle = 0,
         prior = 1, state = {0},
@@ -601,7 +601,7 @@ end
 
 
 --------------------------------------------------------------------------
--- Robbers (грабители на ферме)
+-- Robbers (РіСЂР°Р±РёС‚РµР»Рё РЅР° С„РµСЂРјРµ)
 --------------------------------------------------------------------------
 -- Predicates ------------------------------------------------------------
 
@@ -628,7 +628,7 @@ gulags.val_rob.job = function(sj, gname, type, squad, groups)
                 "center_point    = kamp\n" ..
                 "meet            = meet@" .. gname .. "_warn\n"
 
-    -- главный грабителей, с которым разговариваем
+    -- РіР»Р°РІРЅС‹Р№ РіСЂР°Р±РёС‚РµР»РµР№, СЃ РєРѕС‚РѕСЂС‹Рј СЂР°Р·РіРѕРІР°СЂРёРІР°РµРј
     t = { section = "logic@" .. gname .. "_leader",
         idle = 0,
         prior = 3, state = {0},
@@ -638,7 +638,7 @@ gulags.val_rob.job = function(sj, gname, type, squad, groups)
     table.insert(sj, t)
     ltx = ltx.."#include \"scripts\\val_rob_leader.ltx\"\n"
 
-    -- охранники на входах в здание фермы
+    -- РѕС…СЂР°РЅРЅРёРєРё РЅР° РІС…РѕРґР°С… РІ Р·РґР°РЅРёРµ С„РµСЂРјС‹
     for i = 1, 2 do
         t = { section = "logic@" .. gname .. "_guard" .. i,
             idle = 0,
@@ -657,7 +657,7 @@ gulags.val_rob.job = function(sj, gname, type, squad, groups)
                    "meet      = meet@" .. gname .. "_warn\n"
     end
 
-    -- простые сталкеры внутри фермы вокруг костра
+    -- РїСЂРѕСЃС‚С‹Рµ СЃС‚Р°Р»РєРµСЂС‹ РІРЅСѓС‚СЂРё С„РµСЂРјС‹ РІРѕРєСЂСѓРі РєРѕСЃС‚СЂР°
     for i = 1, 5 do
         t = { section = "logic@" .. gname .. "_kamp",
             idle = 0,
@@ -676,7 +676,7 @@ end
 
 
 --------------------------------------------------------------------------
--- Bandits (главная база бандитов)
+-- Bandits (РіР»Р°РІРЅР°СЏ Р±Р°Р·Р° Р±Р°РЅРґРёС‚РѕРІ)
 --------------------------------------------------------------------------
 -- Predicates ------------------------------------------------------------
 function lb_predicate1(npc_info) 
@@ -704,7 +704,7 @@ gulags.val_lager_bandits.job = function(sj, gname, type, squad, groups)
     --local combat_ignore = "combat_ignore_cond = {=check_fighting(400) -val_escort_captive_enemy}, {=check_fighting(401) -val_sacrifice_finish}, {=check_fighting(402) -val_prisoner_free}\n"
     local combat_ignore = "{=check_fighting(400) -val_escort_captive_enemy}, {=check_fighting(401) -val_sacrifice_finish}, {=check_fighting(402) -val_prisoner_free}\n"
 
-    -- БОРОВ
+    -- Р‘РћР РћР’
     t = { section = "logic@" .. gname .. "_leader_normal",
         idle = 0,
 		position_threshold = "graph",
@@ -766,7 +766,7 @@ gulags.val_lager_bandits.job = function(sj, gname, type, squad, groups)
                --"show_spot = false\n" ..
                "combat_ignore_cond = " .. combat_ignore
 
-    -- ОХРАННИКИ БОРОВА
+    -- РћРҐР РђРќРќРРљР Р‘РћР РћР’Рђ
     for i = 1, 3 do
         t = { section = "logic@" .. gname .. "_bodyguard_normal" .. i,
             idle = 0,
@@ -824,7 +824,7 @@ gulags.val_lager_bandits.job = function(sj, gname, type, squad, groups)
                    "combat_ignore_cond = " .. combat_ignore
     end
 
-    -- СИДЯЩИЕ В КЕМПЕ 1 ВОЗЛЕ БОРОВА И В КЕМПЕ 2 НА ВТОРОМ ЭТАЖЕ
+    -- РЎРР”РЇР©РР• Р’ РљР•РњРџР• 1 Р’РћР—Р›Р• Р‘РћР РћР’Рђ Р Р’ РљР•РњРџР• 2 РќРђ Р’РўРћР РћРњ Р­РўРђР–Р•
     restr = {gname .. "_main_building_restrictor", gname .. "_nedostroyka_restrictor", gname .. "_nedostroyka_restrictor", gname .. "_restrictor"}
     onlineid = {"{+val_lager_bandits_show_leader_company}", "{+val_lager_bandits_show_nedostroyka_company}", "{+val_lager_bandits_show_nedostroyka_company}"}
     local pr = {7, 5, 5, 2}
@@ -882,7 +882,7 @@ gulags.val_lager_bandits.job = function(sj, gname, type, squad, groups)
         end
     end
 
-    -- БАНДИТЫ
+    -- Р‘РђРќР”РРўР«
     local quantity = {2, 4, 1, 4}
 
     -- guards
@@ -1132,7 +1132,7 @@ end
 
 
 --------------------------------------------------------------------------
--- Offline group (гулаг для держания сталкеров в оффлайне до определенного момента)
+-- Offline group (РіСѓР»Р°Рі РґР»СЏ РґРµСЂР¶Р°РЅРёСЏ СЃС‚Р°Р»РєРµСЂРѕРІ РІ РѕС„С„Р»Р°Р№РЅРµ РґРѕ РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ РјРѕРјРµРЅС‚Р°)
 --------------------------------------------------------------------------
 -- Predicates ------------------------------------------------------------
 
@@ -1154,7 +1154,7 @@ gulags.offline_group.job = function(sj, gname, type, squad, groups)
         local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
         local job_count, prior = 5, 1
 
-        -- Необходимо вычитать количество работ из названия точки пути.
+        -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
         if wp_prop.count ~= nil then
             job_count = wp_prop.count
         end
@@ -1164,7 +1164,7 @@ gulags.offline_group.job = function(sj, gname, type, squad, groups)
         end
 
         for i = 1, job_count do
-            -- добавляем должность
+            -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
             t = { section = "logic@" .. way_name,
                 idle = 0,
                 prior = prior, state = {0}, squad = squad, group = groups[1],
@@ -1174,7 +1174,7 @@ gulags.offline_group.job = function(sj, gname, type, squad, groups)
             table.insert(sj, t)
         end
 
-        -- добавляем описание должности в лтх.
+        -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
         ltx = ltx .. "[logic@" .. way_name .. "]\n" ..
                      "active    = remark@" .. way_name .. "\n" ..
 
@@ -1189,7 +1189,7 @@ end
 
 
 --------------------------------------------------------------------------
--- Soldiers raid group (аналог general_lager только с дополнительными рестрикторами)
+-- Soldiers raid group (Р°РЅР°Р»РѕРі general_lager С‚РѕР»СЊРєРѕ СЃ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹РјРё СЂРµСЃС‚СЂРёРєС‚РѕСЂР°РјРё)
 --------------------------------------------------------------------------
 -- Predicates ------------------------------------------------------------
 
@@ -1202,10 +1202,10 @@ gulags.val_soldiers_raid.job = function(sj, gname, type, squad, groups)
           
     local idstr = gname .. "_guard"
     while level.patrol_path_exists(idstr .. "_" .. i .. "_walk") do
-        -- Необходимо вычитать количество работ из названия точки пути.
+        -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
         local way_name = idstr .. "_" .. i .. "_walk"
 
-        -- добавляем должность
+        -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
         t = { section = "logic@" .. idstr .. i,
             idle = 0,
             prior = 1, state = {0}, squad = squad, group = groups[1],
@@ -1214,7 +1214,7 @@ gulags.val_soldiers_raid.job = function(sj, gname, type, squad, groups)
         }
         table.insert(sj, t)
 
-        -- добавляем описание должности в лтх.
+        -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
         ltx = ltx.."[logic@" .. idstr .. i .. "]\n" ..
                    "active = camper@" .. idstr .. i .. "\n" ..
 
@@ -1237,7 +1237,7 @@ gulags.val_soldiers_raid.job = function(sj, gname, type, squad, groups)
     i = 1
     idstr = gname .. "_raid"
     while level.patrol_path_exists(idstr .. "_" .. i .. "_walk") do
-        -- Необходимо вычитать количество работ из названия точки пути.
+        -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
         local way_name = idstr .. "_" .. i .. "_walk"
 		local ptr = patrol(way_name)
 		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -1246,7 +1246,7 @@ gulags.val_soldiers_raid.job = function(sj, gname, type, squad, groups)
 		end
 
 		for j = 1, job_count do
-            -- добавляем должность
+            -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
             t = { section = "logic@" .. idstr .. i,
                 idle = 0,
                 prior = 1, state = {1}, squad = squad, group = groups[1],
@@ -1256,7 +1256,7 @@ gulags.val_soldiers_raid.job = function(sj, gname, type, squad, groups)
             table.insert(sj, t)
         end
 
-        -- добавляем описание должности в лтх.
+        -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
         ltx = ltx.."[logic@" .. idstr .. i .. "]\n" ..
                    "active = patrol@" .. idstr .. i .. "\n" ..
 
@@ -1293,7 +1293,7 @@ end
 
 
 --------------------------------------------------------------------------
--- WatchTower (смотровые вышки)
+-- WatchTower (СЃРјРѕС‚СЂРѕРІС‹Рµ РІС‹С€РєРё)
 --------------------------------------------------------------------------
 -- Predicates ------------------------------------------------------------
 function wt_predicate_g(npc_info, gulag) -- guard
@@ -1308,13 +1308,13 @@ end
 gulags.val_watchtower.job = function(sj, gname, type, squad, groups)
     local i, ltx = 1, ""
 
-    -- Проверяем наличие часовых на вышке.
+    -- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ С‡Р°СЃРѕРІС‹С… РЅР° РІС‹С€РєРµ.
     local idstr = gname .. "_guard"
     while level.patrol_path_exists(idstr .. "_" .. i .. "_walk") do
-        -- Необходимо вычитать количество работ из названия точки пути.
+        -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
         local way_name = idstr .. "_" .. i .. "_walk"
 
-        -- добавляем должность
+        -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
         t = { section = "logic@" .. idstr,
             idle = 0,
             prior = 1, state = {0}, squad = squad, group = groups[1],
@@ -1323,7 +1323,7 @@ gulags.val_watchtower.job = function(sj, gname, type, squad, groups)
         }
         table.insert(sj, t)
 
-        -- добавляем описание должности в лтх.
+        -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
         ltx = ltx.."[logic@" .. idstr .. "]\n" ..
                    "active = walker@" .. idstr .. "\n" ..
 
@@ -1340,11 +1340,11 @@ gulags.val_watchtower.job = function(sj, gname, type, squad, groups)
         i = i + 1
     end
 
-    -- Проверяем наличие снайперов на вышке.
+    -- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СЃРЅР°Р№РїРµСЂРѕРІ РЅР° РІС‹С€РєРµ.
     i = 1
     idstr = gname .. "_sniper"
     while level.patrol_path_exists(idstr .. "_" .. i .."_walk") do
-        -- Необходимо вычитать количество работ из названия точки пути.
+        -- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
         local way_name = idstr .. "_" .. i .."_walk"
         local ptr = patrol(way_name)
         local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -1362,7 +1362,7 @@ gulags.val_watchtower.job = function(sj, gname, type, squad, groups)
             end
         end
 
-        -- добавляем должность
+        -- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
         t = { section = "logic@" .. idstr,
             idle = 0,
             prior = 2, state = {0}, squad = squad, group = groups[1],
@@ -1372,7 +1372,7 @@ gulags.val_watchtower.job = function(sj, gname, type, squad, groups)
         }
         table.insert(sj, t)
 
-        -- добавляем описание должности в лтх.
+        -- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
         ltx = ltx.."[logic@" .. idstr .. "]\n" ..
                    "active = camper@" .. idstr .. "\n" ..
 

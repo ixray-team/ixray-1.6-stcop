@@ -1,41 +1,41 @@
 
--- Разговор. Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
+-- Р Р°Р·РіРѕРІРѕСЂ. Р Р°Р·СЂР°Р±РѕС‚С‡РёРє: Andrey Fidrya (Zmey) af@svitonline.com
 
--- Настройка:
+-- РќР°СЃС‚СЂРѕР№РєР°:
 
 local aftertalk_disable_time = 30000
 
 local transitions = {}
 
 transitions[1] = {
-	phrase = 0, -- номер фразы
+	phrase = 0, -- РЅРѕРјРµСЂ С„СЂР°Р·С‹
 	duration = 3000,
 	-- Preconditions:
 	previous_phrase = nil
 }
 
 transitions[2] = {
-	phrase = 1, -- номер фразы
+	phrase = 1, -- РЅРѕРјРµСЂ С„СЂР°Р·С‹
 	duration = 3000,
 	-- Preconditions:
 	previous_phrase = 1
 }
 
 transitions[3] = {
-	phrase = 2, -- номер фразы
+	phrase = 2, -- РЅРѕРјРµСЂ С„СЂР°Р·С‹
 	duration = 3000,
 	-- Preconditions:
 	previous_phrase = 2
 }
 
 transitions[4] = {
-	phrase = 2, -- номер фразы
+	phrase = 2, -- РЅРѕРјРµСЂ С„СЂР°Р·С‹
 	duration = 3000,
 	-- Preconditions:
 	previous_phrase = 2
 }
 
--- Глобальные переменные:
+-- Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ:
 
 local state_none = 0
 local state_approaching = 1
@@ -82,7 +82,7 @@ end
 ---------------------------------------------------------------------------------------------------------------------
 --Evaluators
 ----------------------------------------------------------------------------------------------------------------------
--- Константа
+-- РљРѕРЅСЃС‚Р°РЅС‚Р°
 class "evaluator_need_talker" (property_evaluator)
 
 function evaluator_need_talker:__init(storage, name) super (nil, name)
@@ -166,7 +166,7 @@ end
 ---------------------------------------------------------------------------------------------------------------------
 --Actions
 ----------------------------------------------------------------------------------------------------------------------
--- Обычное поведение
+-- РћР±С‹С‡РЅРѕРµ РїРѕРІРµРґРµРЅРёРµ
 class "action_talker_activity" (action_base)
 function action_talker_activity:__init (npc_name, action_name, storage) super (nil, action_name)
 	self.stor = storage
@@ -288,7 +288,7 @@ function add_to_binder(npc)
 	local operators    = {}
 	local properties  = {}
 
-	-- FIXME: тут будет talker
+	-- FIXME: С‚СѓС‚ Р±СѓРґРµС‚ talker
 	npc:add_sound([[script_replics\bandit_1\replics\bandit_ambush_]],
 			20, snd_type.talk, 2, 1, xr_sounds_id.zmey_talker_base)
 
@@ -311,7 +311,7 @@ function add_to_binder(npc)
 	new_action:add_precondition(world_property(properties["need_talker"], false))
 end
 
--- функции
+-- С„СѓРЅРєС†РёРё
 function vector_copy_by_val(vec)
 	local newvec = vector()
 	newvec.x = vec.x

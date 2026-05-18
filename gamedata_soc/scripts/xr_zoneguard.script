@@ -1,14 +1,14 @@
 ----------------------------------------------------------------------------------------------------
--- Охранники
+-- РћС…СЂР°РЅРЅРёРєРё
 ----------------------------------------------------------------------------------------------------
--- Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
+-- Р Р°Р·СЂР°Р±РѕС‚С‡РёРє: Andrey Fidrya (Zmey) af@svitonline.com
 ----------------------------------------------------------------------------------------------------
 
--- Если охранник еще не прибыл на свой путь, то разрешается атаковать
--- игрока не ближе N метров от центра охраняемой зоны
+-- Р•СЃР»Рё РѕС…СЂР°РЅРЅРёРє РµС‰Рµ РЅРµ РїСЂРёР±С‹Р» РЅР° СЃРІРѕР№ РїСѓС‚СЊ, С‚Рѕ СЂР°Р·СЂРµС€Р°РµС‚СЃСЏ Р°С‚Р°РєРѕРІР°С‚СЊ
+-- РёРіСЂРѕРєР° РЅРµ Р±Р»РёР¶Рµ N РјРµС‚СЂРѕРІ РѕС‚ С†РµРЅС‚СЂР° РѕС…СЂР°РЅСЏРµРјРѕР№ Р·РѕРЅС‹
 local not_on_pos_max_kill_distance = 20
 
--- Если зоны не появятся в течение 15 секунд - сообщить об ошибке
+-- Р•СЃР»Рё Р·РѕРЅС‹ РЅРµ РїРѕСЏРІСЏС‚СЃСЏ РІ С‚РµС‡РµРЅРёРµ 15 СЃРµРєСѓРЅРґ - СЃРѕРѕР±С‰РёС‚СЊ РѕР± РѕС€РёР±РєРµ
 local zone_appear_in_db_wait_timeout = 15000
 
 teams = {}
@@ -51,7 +51,7 @@ function action_zoneguard_activity:initialize()
 
 	--xr_reactions.add_rule(self.object, "ignore")
 
-	--self.object:enable_talk() -- теперь делается с помощью meet_talk_enabled = true
+	--self.object:enable_talk() -- С‚РµРїРµСЂСЊ РґРµР»Р°РµС‚СЃСЏ СЃ РїРѕРјРѕС‰СЊСЋ meet_talk_enabled = true
 
 	self.move_mgr:initialize()
 
@@ -251,9 +251,9 @@ function action_zoneguard_activity:fsm_step()
 			if see_actor and self.st.zone_guard_obj:inside(actor:position()) then
 				if not self:ignore_actor(actor) then
 					-- FIXME:
-					-- Вместо set_relation используем hit с нулевой силой,
-					-- чтобы на игрока обиделась вся группа, а не только
-					-- один zoneguard.
+					-- Р’РјРµСЃС‚Рѕ set_relation РёСЃРїРѕР»СЊР·СѓРµРј hit СЃ РЅСѓР»РµРІРѕР№ СЃРёР»РѕР№,
+					-- С‡С‚РѕР±С‹ РЅР° РёРіСЂРѕРєР° РѕР±РёРґРµР»Р°СЃСЊ РІСЃСЏ РіСЂСѓРїРїР°, Р° РЅРµ С‚РѕР»СЊРєРѕ
+					-- РѕРґРёРЅ zoneguard.
 					--self.object:set_relation(game_object.enemy, actor)
 					local h = hit()
 					h.power = 0
@@ -338,8 +338,8 @@ function action_zoneguard_activity:fsm_step()
 
 	if self.state == state_going_to_plr then
 		if distance_between(self.object, actor) >= 3 then
-			-- Второй параметр false т.к. состояние обновлять не нужно,
-			-- нужно обновить только место назначения.
+			-- Р’С‚РѕСЂРѕР№ РїР°СЂР°РјРµС‚СЂ false С‚.Рє. СЃРѕСЃС‚РѕСЏРЅРёРµ РѕР±РЅРѕРІР»СЏС‚СЊ РЅРµ РЅСѓР¶РЅРѕ,
+			-- РЅСѓР¶РЅРѕ РѕР±РЅРѕРІРёС‚СЊ С‚РѕР»СЊРєРѕ РјРµСЃС‚Рѕ РЅР°Р·РЅР°С‡РµРЅРёСЏ.
 			self:go_to_actor(actor, false)
 		else
 			self:stand_still(actor)
@@ -395,7 +395,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	new_action:add_precondition(world_property(properties["need_zoneguard"], false))
 end
 
--- enable - будет ли работать схема в принципе
+-- enable - Р±СѓРґРµС‚ Р»Рё СЂР°Р±РѕС‚Р°С‚СЊ СЃС…РµРјР° РІ РїСЂРёРЅС†РёРїРµ
 function set_scheme(npc, ini, scheme, section, gulag_name)
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 
@@ -417,8 +417,8 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.snd_anim_sync = utils.cfg_get_bool      (ini, section, "snd_anim_sync",  npc, false)
 	--printf("_bp: st.anim == %s", st.anim)
 	
-	st.path_walk_info = nil -- Будут инициализированы в reset(), сейчас пути могут быть еще
-	st.path_look_info = nil -- не загружены.
+	st.path_walk_info = nil -- Р‘СѓРґСѓС‚ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅС‹ РІ reset(), СЃРµР№С‡Р°СЃ РїСѓС‚Рё РјРѕРіСѓС‚ Р±С‹С‚СЊ РµС‰Рµ
+	st.path_look_info = nil -- РЅРµ Р·Р°РіСЂСѓР¶РµРЅС‹.
 	st.zone_guard_obj = nil
 	st.zone_warn_obj = nil
 

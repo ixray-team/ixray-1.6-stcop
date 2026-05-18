@@ -4,25 +4,25 @@ function main (need_items)
     
     local actor = db.actor
 -------------------------------------------------------------------------------
--- Задачи DeadCity
+-- Р—Р°РґР°С‡Рё DeadCity
 -------------------------------------------------------------------------------
-    -- Встречаемся с доктором
+    -- Р’СЃС‚СЂРµС‡Р°РµРјСЃСЏ СЃ РґРѕРєС‚РѕСЂРѕРј
     --actor:give_info_portion ("cit_jail_actor_wake")    
-    -- Задачка доктора на Припять
+    -- Р—Р°РґР°С‡РєР° РґРѕРєС‚РѕСЂР° РЅР° РџСЂРёРїСЏС‚СЊ
     --actor:give_info_portion ("cit_jail_doctor_pryp_task")
-    -- Найти свое оружие
+    -- РќР°Р№С‚Рё СЃРІРѕРµ РѕСЂСѓР¶РёРµ
     --actor:give_info_portion ("cit_jail_doctor_weapon_task")    
     --actor:give_info_portion ("cit_jail_doctor_weapon_task_end")    
-    -- Спастись с DeadCity
+    -- РЎРїР°СЃС‚РёСЃСЊ СЃ DeadCity
     --actor:give_info_portion ("cit_jail_doctor_escape_task")    
     --actor:give_info_portion ("cit_actor_in_sewer")    
     --actor:give_info_portion ("cit_jail_doctor_escape_task_end")    
-    -- документы наемников    
+    -- РґРѕРєСѓРјРµРЅС‚С‹ РЅР°РµРјРЅРёРєРѕРІ    
     --actor:give_info_portion ("cit_documents_need")    
     --actor:give_info_portion ("cit_documents_find")    
     --actor:give_info_portion ("cit_documents_give")    
 -------------------------------------------------------------------------------
--- Задачи c бара
+-- Р—Р°РґР°С‡Рё c Р±Р°СЂР°
 -------------------------------------------------------------------------------
     actor:give_info_portion ("bar_deactivate_radar_start")    
     
@@ -31,7 +31,7 @@ function main (need_items)
     alife():create ("good_psy_helmet", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
     alife():create ("bad_psy_helmet", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
     
-    -- Создадим различные объекты, которые нам необходимы
+    -- РЎРѕР·РґР°РґРёРј СЂР°Р·Р»РёС‡РЅС‹Рµ РѕР±СЉРµРєС‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅР°Рј РЅРµРѕР±С…РѕРґРёРјС‹
  	alife():create ("cit_doctors_key", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
 	    alife():create ("wpn_sig550", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
 	    for a = 1, 10, 1 do

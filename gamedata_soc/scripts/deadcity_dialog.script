@@ -5,7 +5,7 @@ function take_key(npc, actor)
     dialogs.relocate_item_section(npc, "cit_doctors_key", "in")
 end
 
--- Витек ищет дядю
+-- Р’РёС‚РµРє РёС‰РµС‚ РґСЏРґСЋ
 function have_vp_info(actor, npc)
   	return actor:object("cit_vp_pda") ~= nil
 end
@@ -23,7 +23,7 @@ function have_docs_or_map(actor, npc)
   	return actor:object("cit_killers_documents") ~= nil or actor:object("cit_deadcity_maps") ~= nil
 end
 
--- Документы наемников.
+-- Р”РѕРєСѓРјРµРЅС‚С‹ РЅР°РµРјРЅРёРєРѕРІ.
 function have_killers_documents(actor, npc)
   	return actor:object("cit_killers_documents") ~= nil
 end
@@ -36,7 +36,7 @@ function give_killer_doc_reward(npc, actor)
 	dialogs.relocate_money(npc, 2000, "in")
 end
 
--- Карта Deadcity
+-- РљР°СЂС‚Р° Deadcity
 function have_deadcity_map(actor, npc)
   	return actor:object("cit_deadcity_maps") ~= nil
 end
@@ -49,7 +49,7 @@ function give_killer_maps_reward(npc, actor)
 	dialogs.relocate_money(npc, 3000, "in")
 end
 
--- Лидер наемников.
+-- Р›РёРґРµСЂ РЅР°РµРјРЅРёРєРѕРІ.
 function leader_killer_die(actor, npc)
   	return actor:object("cit_leader_killer_pda") ~= nil
 end

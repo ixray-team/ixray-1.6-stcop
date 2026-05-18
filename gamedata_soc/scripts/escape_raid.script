@@ -5,21 +5,21 @@ zone = nil
 
 -------------------------------------------------------------------------
 function add_member (npc)
-    --проверим: а наш ли это мужик ?
+    --РїСЂРѕРІРµСЂРёРј: Р° РЅР°С€ Р»Рё СЌС‚Рѕ РјСѓР¶РёРє ?
     local ini = npc:spawn_ini ()
     if ini == nil or ini:section_exist ("escape_raid") == false then 
        return 
     end
-    --наш, блин. Если уже есть, то пшел вон.
+    --РЅР°С€, Р±Р»РёРЅ. Р•СЃР»Рё СѓР¶Рµ РµСЃС‚СЊ, С‚Рѕ РїС€РµР» РІРѕРЅ.
     for a = 1, table.getn (members), 1 do
         if members[a] == npc.id then 
            return 
         end
     end    
-    --нету :( Внесем нахала в черный список.
+    --РЅРµС‚Сѓ :( Р’РЅРµСЃРµРј РЅР°С…Р°Р»Р° РІ С‡РµСЂРЅС‹Р№ СЃРїРёСЃРѕРє.
     table.insert (members, npc.id)
     printf ("Stalker %s is added to list", npc:name ())
-    -- и изгоним из мира живых
+    -- Рё РёР·РіРѕРЅРёРј РёР· РјРёСЂР° Р¶РёРІС‹С…
     this.switch_offline (npc.id)    
 end
 
@@ -27,13 +27,13 @@ end
 -------------------------------------------------------------------------
 function start_raid ()
     if zone == nil then return end
-    -- пошла жара !!!
+    -- РїРѕС€Р»Р° Р¶Р°СЂР° !!!
     zone.raid_wait = device ():time_global ()
     for a = 1, table.getn (members), 1 do
         this.switch_online (members[a])
         printf ("Switch to online stalker with id %d", members[a])
     end
-    --в идеале, здесь нужно рассортировать команды в случае гибели отдельных мужиков
+    --РІ РёРґРµР°Р»Рµ, Р·РґРµСЃСЊ РЅСѓР¶РЅРѕ СЂР°СЃСЃРѕСЂС‚РёСЂРѕРІР°С‚СЊ РєРѕРјР°РЅРґС‹ РІ СЃР»СѓС‡Р°Рµ РіРёР±РµР»Рё РѕС‚РґРµР»СЊРЅС‹С… РјСѓР¶РёРєРѕРІ
 end
 
 
@@ -41,7 +41,7 @@ end
 class "escape_raid"
 -----------------------
 function escape_raid:__init (zone, ini)
-    -- абсолютный стандарт
+    -- Р°Р±СЃРѕР»СЋС‚РЅС‹Р№ СЃС‚Р°РЅРґР°СЂС‚
     self.ini_ok = true
     printf ("Zone %s is added to binder", zone:name ())
     self.time = 0
@@ -57,33 +57,33 @@ function escape_raid:on_enter (obj)
        end
     end   
            
-    -- наш ли мужик приперся. Если нет, то проигнорируем.
+    -- РЅР°С€ Р»Рё РјСѓР¶РёРє РїСЂРёРїРµСЂСЃСЏ. Р•СЃР»Рё РЅРµС‚, С‚Рѕ РїСЂРѕРёРіРЅРѕСЂРёСЂСѓРµРј.
     local ini = obj:spawn_ini ()
     if ini == nil or ini:section_exist ("escape_raid") == false then
        return
     end
-    -- и сколько же вас разбрелось ?
+    -- Рё СЃРєРѕР»СЊРєРѕ Р¶Рµ РІР°СЃ СЂР°Р·Р±СЂРµР»РѕСЃСЊ ?
     local size = table.getn (moved)
-    -- никого :(
+    -- РЅРёРєРѕРіРѕ :(
     if size == 0 then return end
-    --пороемся в реестре покинувших зону и отметим вход
+    --РїРѕСЂРѕРµРјСЃСЏ РІ СЂРµРµСЃС‚СЂРµ РїРѕРєРёРЅСѓРІС€РёС… Р·РѕРЅСѓ Рё РѕС‚РјРµС‚РёРј РІС…РѕРґ
     for a = 1, size, 1 do
         if moved[a].id == obj:id () then
            moved[a].out = false
         end
     end
-    --чекнем по поводу безвременной кончины.
-    -- если жив и где-то лазит, то обождем
+    --С‡РµРєРЅРµРј РїРѕ РїРѕРІРѕРґСѓ Р±РµР·РІСЂРµРјРµРЅРЅРѕР№ РєРѕРЅС‡РёРЅС‹.
+    -- РµСЃР»Рё Р¶РёРІ Рё РіРґРµ-С‚Рѕ Р»Р°Р·РёС‚, С‚Рѕ РѕР±РѕР¶РґРµРј
     for a = 1, size, 1 do
         if moved[a].out == true then
            if moved[a].object:alive () == false then 
-              -- надо удалить мужика из списков нашей партии
+              -- РЅР°РґРѕ СѓРґР°Р»РёС‚СЊ РјСѓР¶РёРєР° РёР· СЃРїРёСЃРєРѕРІ РЅР°С€РµР№ РїР°СЂС‚РёРё
               for b = 1, table.getn (members), 1 do
                   if members[b] == moved[a].id then
                      table.remove (members, b)
                   end
               end
-              -- и вообще - он уже пришел :)        
+              -- Рё РІРѕРѕР±С‰Рµ - РѕРЅ СѓР¶Рµ РїСЂРёС€РµР» :)        
               moved[a].out = false
            else 
               return 
@@ -91,11 +91,11 @@ function escape_raid:on_enter (obj)
         end   
     end
     self.time = device ():time_global ()
-    -- все вернулись. По могилам !!!
+    -- РІСЃРµ РІРµСЂРЅСѓР»РёСЃСЊ. РџРѕ РјРѕРіРёР»Р°Рј !!!
     for a = 1, size, 1 do
         this.switch_offline (moved[a].id)
     end
-    -- реестр умножим на 0
+    -- СЂРµРµСЃС‚СЂ СѓРјРЅРѕР¶РёРј РЅР° 0
     moved = {}
 end
 -----------------------
@@ -107,8 +107,8 @@ function escape_raid:on_leave (obj)
           self.time = 0  
        end
     end   
-    -- на всякий случай проверим, а ниш ли это мужик, а то
-    -- ходют тут всякие...
+    -- РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ РїСЂРѕРІРµСЂРёРј, Р° РЅРёС€ Р»Рё СЌС‚Рѕ РјСѓР¶РёРє, Р° С‚Рѕ
+    -- С…РѕРґСЋС‚ С‚СѓС‚ РІСЃСЏРєРёРµ...
     local present = false
     for a = 1, table.getn (members), 1 do 
         if obj:id () == members[a] then
@@ -116,16 +116,16 @@ function escape_raid:on_leave (obj)
            break
         end
     end
-    -- случайно забрел...
+    -- СЃР»СѓС‡Р°Р№РЅРѕ Р·Р°Р±СЂРµР»...
     if present == false then return end
-    --проверим: а не выходил ли он ?
+    --РїСЂРѕРІРµСЂРёРј: Р° РЅРµ РІС‹С…РѕРґРёР» Р»Рё РѕРЅ ?
     for a = 1, table.getn (moved), 1 do
         if moved[a].id == obj:id () then
            moved[a].out = true
            return 
         end
     end        
-    -- зарегистрируем выход
+    -- Р·Р°СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј РІС‹С…РѕРґ
     local t = {object = obj, id = obj:id (), out = true}
     printf ("Stalker %s is outed", obj:name ())
     table.insert (moved, t)

@@ -2,18 +2,18 @@ function main (need_items)
 
     task_level2.main (false)        
     ----------------------------------------------------------------------------------
-    -- Задачи DarkValley
+    -- Р—Р°РґР°С‡Рё DarkValley
     ----------------------------------------------------------------------------------
     
     db.actor:give_info_portion ("dar_document4")
     db.actor:give_info_portion ("dar_actor_got_docs")
     db.actor:give_info_portion ("val_raid_start")
     
-    -- Документы из Х18
+    -- Р”РѕРєСѓРјРµРЅС‚С‹ РёР· РҐ18
     db.actor:give_info_portion ("val_actor_has_borov_key")
     db.actor:give_info_portion ("val_x18_door_open")
     db.actor:give_info_portion ("bar_darklab_document_done")
-    -- Спасение рядового Райана
+    -- РЎРїР°СЃРµРЅРёРµ СЂСЏРґРѕРІРѕРіРѕ Р Р°Р№Р°РЅР°
     db.actor:give_info_portion ("val_escort_task_start")
     db.actor:give_info_portion ("val_escort_start")
     db.actor:give_info_portion ("val_escort_combat")
@@ -30,7 +30,7 @@ function main (need_items)
     db.actor:give_info_portion ("val_show_pipe_zone")
     
     
-    -- Разговоры с зеками
+    -- Р Р°Р·РіРѕРІРѕСЂС‹ СЃ Р·РµРєР°РјРё
     db.actor:give_info_portion ("val_escort_begin")
     db.actor:give_info_portion ("val_escort_help_prisoner_task")
     db.actor:give_info_portion ("val_prisoner_free")
@@ -38,12 +38,12 @@ function main (need_items)
     db.actor:give_info_portion ("val_prisoner_give_info")
     db.actor:give_info_portion ("val_prisoner_scene_end")
     
-    -- Спесение еще одного рядового Райана с заправки
+    -- РЎРїРµСЃРµРЅРёРµ РµС‰Рµ РѕРґРЅРѕРіРѕ СЂСЏРґРѕРІРѕРіРѕ Р Р°Р№Р°РЅР° СЃ Р·Р°РїСЂР°РІРєРё
     db.actor:give_info_portion ("val_sos_start_task")
     db.actor:give_info_portion ("val_sos_got_medkit")
     db.actor:give_info_portion ("val_sos_task_finish")
     db.actor:give_info_portion ("val_sos_scene_end")
-    -- ящик с блокпоста
+    -- СЏС‰РёРє СЃ Р±Р»РѕРєРїРѕСЃС‚Р°
     db.actor:give_info_portion ("escape_blockpost_case")
     db.actor:give_info_portion ("escape_blockpost_case_have")
     db.actor:give_info_portion ("escape_blockpost_case_done")
@@ -65,7 +65,7 @@ function main (need_items)
     db.actor:give_info_portion ("val_actor_behind_gate")
     
     
-    -- отбивание наемников    
+    -- РѕС‚Р±РёРІР°РЅРёРµ РЅР°РµРјРЅРёРєРѕРІ    
     db.actor:give_info_portion ("escape_lager_help")    
     db.actor:give_info_portion ("escape_lager_killers_die")    
     db.actor:give_info_portion ("escape_lager_complete")    
@@ -78,14 +78,14 @@ function main (need_items)
     db.actor:give_info_portion ("cit_documents_need")    
     
     
-    -- документы из лаборатории x-16
+    -- РґРѕРєСѓРјРµРЅС‚С‹ РёР· Р»Р°Р±РѕСЂР°С‚РѕСЂРёРё x-16
     db.actor:give_info_portion ("bar_darklab_document_done")
     db.actor:give_info_portion ("bar_x16_documents_start")
 
 
     if need_items ~= nil and need_items == false then return end
     local actor = db.actor
-    -- Создадим различные объекты, которые нам необходимы
+    -- РЎРѕР·РґР°РґРёРј СЂР°Р·Р»РёС‡РЅС‹Рµ РѕР±СЉРµРєС‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅР°Рј РЅРµРѕР±С…РѕРґРёРјС‹
 	    alife():create ("wpn_lr300", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
 	    alife():create ("ammo_5.56x45_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
 	    alife():create ("ammo_5.56x45_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())

@@ -124,13 +124,13 @@ function send_tip(actor, news_id, timeout, sender, showtime, sender_id)
 			local npc = sim:story_object(sender_id)
 			if npc ~= nil then
 				if npc.online then
-					--в онлайне проверяем на раненность
+					--РІ РѕРЅР»Р°Р№РЅРµ РїСЂРѕРІРµСЂСЏРµРј РЅР° СЂР°РЅРµРЅРЅРѕСЃС‚СЊ
 					if xr_wounded.is_heavy_wounded_by_id(npc.id) then
 						printf("[PDA]Cannot send tips [%s], sender is heavy wounded", tostring(news_id))
 						return false
 					end
 				end
-				-- в других случаях только на смерть
+				-- РІ РґСЂСѓРіРёС… СЃР»СѓС‡Р°СЏС… С‚РѕР»СЊРєРѕ РЅР° СЃРјРµСЂС‚СЊ
 				if npc:alive() == 1 then
 					printf("[PDA]Cannot send tips [%s], sender is dead", tostring(news_id))
 					return false
@@ -142,13 +142,13 @@ function send_tip(actor, news_id, timeout, sender, showtime, sender_id)
 	if timeout == nil then timeout = 0 end
 	if showtime == nil then showtime = 5000 end
 
-	--' Играем дефолтный звук
+	--' РРіСЂР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ Р·РІСѓРє
 	pda_tips:play(db.actor, timeout, sound_object.s2d)
 	if news[news_id] ~= nil then
-		--' Играем звук забитый
+		--' РРіСЂР°РµРј Р·РІСѓРє Р·Р°Р±РёС‚С‹Р№
 		news[news_id]:play(db.actor, timeout+1, sound_object.s2d)
 
-		--' Необходимо поставить время показа по длине сцены
+		--' РќРµРѕР±С…РѕРґРёРјРѕ РїРѕСЃС‚Р°РІРёС‚СЊ РІСЂРµРјСЏ РїРѕРєР°Р·Р° РїРѕ РґР»РёРЅРµ СЃС†РµРЅС‹
 		local length = news[news_id]:length()
 		if length > showtime then
 			showtime = length
@@ -170,7 +170,7 @@ function send_tip_nosound(actor, news_id, timeout, sender)
 
 	timeout = 0
 
-	--' Играем дефолтный звук
+	--' РРіСЂР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ Р·РІСѓРє
 	pda_tips:play(db.actor, timeout, sound_object.s2d)
 	local news_sound = news[news_id]
 
@@ -186,10 +186,10 @@ local action_descr_by_type = {
 function send_task(actor, type, task, objective)
 	if db.actor == nil then return false end
 	
-	--' Берем координаты из текстуры таска
+	--' Р‘РµСЂРµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РёР· С‚РµРєСЃС‚СѓСЂС‹ С‚Р°СЃРєР°
     local task_texture, task_rect = get_texture_info("ui_iconsTotal_"..task:get_id(), "ui_iconsTotal_locations")
         
-	--' Играем дефолтный звук
+	--' РРіСЂР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ Р·РІСѓРє
 	pda_task:play(db.actor, 0, sound_object.s2d)
 
 	local news_text = "%c[255,160,160,160]"..game.translate_string(action_descr_by_type[type]).."\\n".."%c[default]"..game.translate_string(task:get_title())
@@ -203,7 +203,7 @@ function send_task(actor, type, task, objective)
 	if type == "new" or
 		type == "update"
 	then
-		--' Выдать новое подзадание
+		--' Р’С‹РґР°С‚СЊ РЅРѕРІРѕРµ РїРѕРґР·Р°РґР°РЅРёРµ
 		if task:get_objectives_cnt() == objective:get_idx()+1 then
 			return
 		end
@@ -221,7 +221,7 @@ function send_encyclopedy(type, title)
 		pda_news:play(db.actor, 0, sound_object.s2d)
 
 
-		--' Берем координаты из текстуры таска
+		--' Р‘РµСЂРµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РёР· С‚РµРєСЃС‚СѓСЂС‹ С‚Р°СЃРєР°
 		local task_texture, task_rect = get_texture_info("ui_iconsTotal_locations", "ui_iconsTotal_locations")
 		local news_text = "%c[255,160,160,160]"..game.translate_string("st_found_new_pda").."\\n".."%c[default]"..game.translate_string(title)
 		if db.actor:is_talking() then	
@@ -247,7 +247,7 @@ end
 
 function relocate_item(actor, type, item)
 	if db.actor == nil then return false end
-	--' Играем дефолтный звук
+	--' РРіСЂР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ Р·РІСѓРє
 	if type == "in" then
 		local task_texture, task_rect = get_texture_info("ui_iconsTotal_found_thing")
 		local news_text = "%c[255,160,160,160]"..game.translate_string("general_in_item").."\\n".."%c[default]"..game.translate_string(get_inv_name(item))		
@@ -271,7 +271,7 @@ function relocate_money(actor, type, amount)
 	if db.actor == nil then return false end
 
 
-	--' Играем дефолтный звук
+	--' РРіСЂР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ Р·РІСѓРє
 	if type == "in" then
 		local task_texture, task_rect = get_texture_info("ui_iconsTotal_found_money")
 		local news_text = "%c[255,160,160,160]"..game.translate_string("general_in_money").."\\n".."%c[default]"..game.translate_string(tostring(amount))

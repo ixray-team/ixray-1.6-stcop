@@ -1,8 +1,8 @@
 --[[
-Изменения script_version:
-	3 - сохранение поля job_online
-	5 - сохранение поля was_in_smart_terrain
-	6 - сохранение поля death_droped
+РР·РјРµРЅРµРЅРёСЏ script_version:
+	3 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ job_online
+	5 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ was_in_smart_terrain
+	6 - СЃРѕС…СЂР°РЅРµРЅРёРµ РїРѕР»СЏ death_droped
 ]]
 
 class "se_stalker"	(cse_alife_human_stalker)
@@ -16,18 +16,18 @@ function se_stalker:__init (section) super (section)
 	self.smart_terrain_conditions = nil
 	self.smart_terrain_conditions_initialized = false
 
-	-- этот флаг берётся из работы смарта
-	-- true     = всегда в онлайне
-	-- false    = всегда в офлайне
-	-- condlist = условие, которое отпределяет true или false
-	-- nil      = смарту всё равно
+	-- СЌС‚РѕС‚ С„Р»Р°Рі Р±РµСЂС‘С‚СЃСЏ РёР· СЂР°Р±РѕС‚С‹ СЃРјР°СЂС‚Р°
+	-- true     = РІСЃРµРіРґР° РІ РѕРЅР»Р°Р№РЅРµ
+	-- false    = РІСЃРµРіРґР° РІ РѕС„Р»Р°Р№РЅРµ
+	-- condlist = СѓСЃР»РѕРІРёРµ, РєРѕС‚РѕСЂРѕРµ РѕС‚РїСЂРµРґРµР»СЏРµС‚ true РёР»Рё false
+	-- nil      = СЃРјР°СЂС‚Сѓ РІСЃС‘ СЂР°РІРЅРѕ
 	self.job_online          = nil
 	self.job_online_condlist = nil
 
-	-- посещал ли сталкер хоть один smart_terrain
+	-- РїРѕСЃРµС‰Р°Р» Р»Рё СЃС‚Р°Р»РєРµСЂ С…РѕС‚СЊ РѕРґРёРЅ smart_terrain
 	self.was_in_smart_terrain = false
 
-	self.death_droped = false --'Генерил ли персонаж выпадаемые предметы или нет.
+	self.death_droped = false --'Р“РµРЅРµСЂРёР» Р»Рё РїРµСЂСЃРѕРЅР°Р¶ РІС‹РїР°РґР°РµРјС‹Рµ РїСЂРµРґРјРµС‚С‹ РёР»Рё РЅРµС‚.
 
 	--' Test for dima
 	self.dont_spawn_online = false
@@ -149,7 +149,7 @@ function se_stalker:on_register()
 		end
 	end
 
-	--' Регистрация в таскменеджере
+	--' Р РµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_random_task():register_target(self)
 
 	if self:alive() and self:smart_terrain_id() == 65535 then
@@ -157,7 +157,7 @@ function se_stalker:on_register()
 	end
 
 
-	--' Нарисовать мапспот с собой
+	--' РќР°СЂРёСЃРѕРІР°С‚СЊ РјР°РїСЃРїРѕС‚ СЃ СЃРѕР±РѕР№
 --'	if sim_statistic.show_stalker_spot == true and self:alive() then
 --'		local community, rank = sim_statistic.getNpcType(self)
 --'		level.map_add_object_spot_ser(self.id, "alife_presentation_"..community, self:name().." "..community)
@@ -167,7 +167,7 @@ end
 function se_stalker:on_unregister()
 	cse_alife_human_stalker.on_unregister(self)
 
-	--' Убрать мапспот с собой
+	--' РЈР±СЂР°С‚СЊ РјР°РїСЃРїРѕС‚ СЃ СЃРѕР±РѕР№
 --'	if sim_statistic.show_stalker_spot == true then
 --'		local community, rank = sim_statistic.getNpcType(self)
 --'		level.map_remove_object_spot(self.id, "alife_presentation_"..community)
@@ -175,7 +175,7 @@ function se_stalker:on_unregister()
 
 	smart_terrain.unregister_npc(self)
 
-	--' Отрегистрация в таскменеджере
+	--' РћС‚СЂРµРіРёСЃС‚СЂР°С†РёСЏ РІ С‚Р°СЃРєРјРµРЅРµРґР¶РµСЂРµ
 	task_manager.get_random_task():unregister_target(self)
 	
 	if(actor_stats.remove_from_ranking~=nil)then
@@ -198,7 +198,7 @@ end
 function se_stalker:on_death(killer)
 	cse_alife_human_stalker.on_death(self, killer)
 
-	--' Убрать мапспот с собой
+	--' РЈР±СЂР°С‚СЊ РјР°РїСЃРїРѕС‚ СЃ СЃРѕР±РѕР№
 	if sim_statistic.show_stalker_spot == true then
 		local community, rank = sim_statistic.getNpcType(self)
 		level.map_remove_object_spot(self.id, "alife_presentation_"..community)
@@ -220,7 +220,7 @@ end
 
 
 
---'Торговец
+--'РўРѕСЂРіРѕРІРµС†
 class "se_trader" (cse_alife_trader)
 function se_trader:__init (section) super (section)
 end

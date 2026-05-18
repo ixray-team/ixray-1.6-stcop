@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------------------------------------------
---	Ñõåìà èçìåíåíèé ïîëîæåíèÿ òåëà
---	àâòîğ: Äèäåíêî Ğóñëàí (Stohe)
+--	Ğ¡Ñ…ĞµĞ¼Ğ° Ğ¸Ğ·Ğ¼ĞµĞ½ĞµĞ½Ğ¸Ğ¹ Ğ¿Ğ¾Ğ»Ğ¾Ğ¶ĞµĞ½Ğ¸Ñ Ñ‚ĞµĞ»Ğ°
+--	Ğ°Ğ²Ñ‚Ğ¾Ñ€: Ğ”Ğ¸Ğ´ĞµĞ½ĞºĞ¾ Ğ ÑƒÑĞ»Ğ°Ğ½ (Stohe)
 --	TODO: 
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -229,7 +229,7 @@ function body_state:__init(npc)
 	}
 	--print_table(self.animations)
 end
---' Ïğîâåğÿåò çàêîí÷èëè ëè ìû èçìåíåíèå ïîëîæåíèÿ òåëà
+--' ĞŸÑ€Ğ¾Ğ²ĞµÑ€ÑĞµÑ‚ Ğ·Ğ°ĞºĞ¾Ğ½Ñ‡Ğ¸Ğ»Ğ¸ Ğ»Ğ¸ Ğ¼Ñ‹ Ğ¸Ğ·Ğ¼ĞµĞ½ĞµĞ½Ğ¸Ğµ Ğ¿Ğ¾Ğ»Ğ¾Ğ¶ĞµĞ½Ğ¸Ñ Ñ‚ĞµĞ»Ğ°
 function body_state:finish_state()
 	if self.target_state == xr_state.stand and 
 	   self.npc:animation_count() == 0
@@ -301,7 +301,7 @@ function body_state:weapon_slot()
 	return 0
 end
 function body_state:anim_update(type)
-	--' Îïğåäåëÿåì - ıòî ó íàñ âêëş÷åíèå íîâîé àíèìàöèè èëè ïğîäîëæåíèå ñòàğîé
+	--' ĞĞ¿Ñ€ĞµĞ´ĞµĞ»ÑĞµĞ¼ - ÑÑ‚Ğ¾ Ñƒ Ğ½Ğ°Ñ Ğ²ĞºĞ»ÑÑ‡ĞµĞ½Ğ¸Ğµ Ğ½Ğ¾Ğ²Ğ¾Ğ¹ Ğ°Ğ½Ğ¸Ğ¼Ğ°Ñ†Ğ¸Ğ¸ Ğ¸Ğ»Ğ¸ Ğ¿Ñ€Ğ¾Ğ´Ğ¾Ğ»Ğ¶ĞµĞ½Ğ¸Ğµ ÑÑ‚Ğ°Ñ€Ğ¾Ğ¹
 	if type ~= self.states.current_state then
 		if type ~= nil then
 			printf("ANIMS: |%s| for %s", type, self.npc:name())
@@ -309,13 +309,13 @@ function body_state:anim_update(type)
 			printf("ANIMS: |nil| for %s", self.npc:name())
 		end
 		
-		--' Ïğîâåğêà íà ñóùåñòâîâàíèå òåìû
+		--' ĞŸÑ€Ğ¾Ğ²ĞµÑ€ĞºĞ° Ğ½Ğ° ÑÑƒÑ‰ĞµÑÑ‚Ğ²Ğ¾Ğ²Ğ°Ğ½Ğ¸Ğµ Ñ‚ĞµĞ¼Ñ‹
 		if type ~= nil and self.animations[type] == nil then
 			printf("ERROR: Non existen ANIM STATEd called: %s", type)
 			return
 		end
 		
-		--' çàâåğøåíèå ñòàğîé
+		--' Ğ·Ğ°Ğ²ĞµÑ€ÑˆĞµĞ½Ğ¸Ğµ ÑÑ‚Ğ°Ñ€Ğ¾Ğ¹
 		self.npc:clear_animations()
 		if self.states.current_state ~= nil then		
 			if self.animations[self.states.current_state].out ~= nil then
@@ -323,9 +323,9 @@ function body_state:anim_update(type)
 			end
 		end
 		
-		--' ïğîñòàíîâêà íîâîé
+		--' Ğ¿Ñ€Ğ¾ÑÑ‚Ğ°Ğ½Ğ¾Ğ²ĞºĞ° Ğ½Ğ¾Ğ²Ğ¾Ğ¹
 		if type ~= nil then
-			--' Ïğîâåğêà ñîîòâåòñòâèÿ ñîñòîÿíèÿ.
+			--' ĞŸÑ€Ğ¾Ğ²ĞµÑ€ĞºĞ° ÑĞ¾Ğ¾Ñ‚Ğ²ĞµÑ‚ÑÑ‚Ğ²Ğ¸Ñ ÑĞ¾ÑÑ‚Ğ¾ÑĞ½Ğ¸Ñ.
 			if self.current_state ~= self.animations[type].state_id then
 				self:set_state(self.animations[type].state_id)
 			end
@@ -345,13 +345,13 @@ function body_state:anim_update(type)
 		self.states.idle = nil
 	end
 
-	--' Îïğåäåëÿåì íóæíî ëè äîáàâëÿòü àíèìàöèş èëè æäàòü
+	--' ĞĞ¿Ñ€ĞµĞ´ĞµĞ»ÑĞµĞ¼ Ğ½ÑƒĞ¶Ğ½Ğ¾ Ğ»Ğ¸ Ğ´Ğ¾Ğ±Ğ°Ğ²Ğ»ÑÑ‚ÑŒ Ğ°Ğ½Ğ¸Ğ¼Ğ°Ñ†Ğ¸Ñ Ğ¸Ğ»Ğ¸ Ğ¶Ğ´Ğ°Ñ‚ÑŒ
 	if (self.states.begin == nil or
 	   time_global() - self.states.begin > self.states.idle) and
 	   self.npc:animation_count() <= 1 and
 	   self.states.current_state ~= nil
 	then
-		--' Îïğåäåëåíèå ïğîìåæóòêîâ âğåìåíè ìåæäó àíèìàöèÿìè
+		--' ĞĞ¿Ñ€ĞµĞ´ĞµĞ»ĞµĞ½Ğ¸Ğµ Ğ¿Ñ€Ğ¾Ğ¼ĞµĞ¶ÑƒÑ‚ĞºĞ¾Ğ² Ğ²Ñ€ĞµĞ¼ĞµĞ½Ğ¸ Ğ¼ĞµĞ¶Ğ´Ñƒ Ğ°Ğ½Ğ¸Ğ¼Ğ°Ñ†Ğ¸ÑĞ¼Ğ¸
 		self.states.begin = time_global()
 		self.states.idle = (math.random(self.animations[self.states.current_state].prop.maxidle) + 
 										self.animations[self.states.current_state].prop.sumidle) * 1000
@@ -392,7 +392,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- Functions
 ----------------------------------------------------------------------------------------------------------------------
--- Ïğîâåğêà, èçìåíèëîñü ëè óæå ïîëîæåíèå òåëà èëè íåò
+-- ĞŸÑ€Ğ¾Ğ²ĞµÑ€ĞºĞ°, Ğ¸Ğ·Ğ¼ĞµĞ½Ğ¸Ğ»Ğ¾ÑÑŒ Ğ»Ğ¸ ÑƒĞ¶Ğµ Ğ¿Ğ¾Ğ»Ğ¾Ğ¶ĞµĞ½Ğ¸Ğµ Ñ‚ĞµĞ»Ğ° Ğ¸Ğ»Ğ¸ Ğ½ĞµÑ‚
 function finish_state(npc)
 	return db.storage[npc:id()].state:finish_state()
 end

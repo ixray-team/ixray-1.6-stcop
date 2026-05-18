@@ -10,7 +10,7 @@
 --	purpose:	dialog support for military
 -------------------------------------------------------------------------
 
--- Оплата долговцем наших услуг по устранению снайпера
+-- РћРїР»Р°С‚Р° РґРѕР»РіРѕРІС†РµРј РЅР°С€РёС… СѓСЃР»СѓРі РїРѕ СѓСЃС‚СЂР°РЅРµРЅРёСЋ СЃРЅР°Р№РїРµСЂР°
 function mil_dolg_payment (stalker, player)
     if not has_alife_info("military_scull_give_reward_1") then
 	    dialogs.relocate_money(stalker, 4000, "in")
@@ -29,13 +29,13 @@ function lukash_payment (stalker, player)
     dialogs.relocate_money (stalker, 7000, "in")
 end
 
--- Отмечаем провал задачи
+-- РћС‚РјРµС‡Р°РµРј РїСЂРѕРІР°Р» Р·Р°РґР°С‡Рё
 function mil_dolg_sniper_failed (stalker, player)
     level_tasks.set_task_state (task.fail, "mil_kill_sniper", 0)
     level_tasks.set_task_state (task.fail, "mil_kill_sniper", 1)
 end
 
--- отмечаем выполнение задачи
+-- РѕС‚РјРµС‡Р°РµРј РІС‹РїРѕР»РЅРµРЅРёРµ Р·Р°РґР°С‡Рё
 function mil_dolg_sniper_complete (stalker, player)
     level_tasks.set_task_state (task.completed, "mil_kill_sniper", 0)
 end

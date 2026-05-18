@@ -1,7 +1,7 @@
 ---------------------------------------------------------------------------------------------------------------------
---	Схема озвучки
---	автор:  Диденко Руслан  (Stohe)
---	update: Чугай Александр (Chugai)
+--	РЎС…РµРјР° РѕР·РІСѓС‡РєРё
+--	Р°РІС‚РѕСЂ:  Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ  (Stohe)
+--	update: Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ (Chugai)
 ----------------------------------------------------------------------------------------------------------------------
 nstl = 64
 
@@ -113,7 +113,7 @@ ph_snd_themes["radar_thunder"] = {"ambient\\radar_2"}
 ph_snd_themes["radar_sparks"] = {"ambient\\radarsparks_1"}
 ph_snd_themes["aes_teleport"] = {"anomaly\\teleport_incoming"}
 
-ph_snd_themes["yan_antenna"] = {{"characters_voice\\scenario\\yantar\\psy_voices_1"}} --' Стерео
+ph_snd_themes["yan_antenna"] = {{"characters_voice\\scenario\\yantar\\psy_voices_1"}} --' РЎС‚РµСЂРµРѕ
 
 ph_snd_themes["radar_meh_on"] = {"ambient\\cooling_run"}
 ph_snd_themes["radar_meh_off"] = {"ambient\\cooling_stop"}                               
@@ -181,7 +181,7 @@ ph_snd_themes["x16_switch_2"] = {"ambient\\x16\\switch_2"}
 ph_snd_themes["x18_firedoor"] = {"anomaly\\fireball_idle"}
 ph_snd_themes["mon_poltergeist"] = {"anomaly\\anomaly_gravy_hit1"}
 
-ph_snd_themes["psy_voices"] = {{[[characters_voice\scenario\yantar\psy_voices_1]]}} --' Стерео
+ph_snd_themes["psy_voices"] = {{[[characters_voice\scenario\yantar\psy_voices_1]]}} --' РЎС‚РµСЂРµРѕ
 
 ph_snd_themes["heli_explosion"] = {[[weapons\heli_explosion]]}
 
@@ -224,7 +224,7 @@ function combat_class(avail_types, npc)
 end
 
 -------------------------------------------------------------------------
--- ЗВУКИ СТАЛКЕРОВ
+-- Р—Р’РЈРљР РЎРўРђР›РљР•Р РћР’
 -------------------------------------------------------------------------
 local sounds_base = stalker_ids.sound_script + 10000
 function id()
@@ -233,19 +233,19 @@ function id()
 end
 
 theme = {
-	-- погода
+	-- РїРѕРіРѕРґР°
 	weather = {	exec = sound_theme.weather_class, 
 				types = {weather_bad	= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 						 weather_good	= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}} }},
 
-	-- состояния тела
+	-- СЃРѕСЃС‚РѕСЏРЅРёСЏ С‚РµР»Р°
 	state = {	exec = sound_theme.combat_class, 
 				types = {state	= {min_snd = 60, max_snd = 90, rnd = 25, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}}} },
 	
 
 	sleep				= {min_snd = 10, max_snd = 15, rnd = 75, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 
-	-- просьба о помощи
+	-- РїСЂРѕСЃСЊР±Р° Рѕ РїРѕРјРѕС‰Рё
 	help				= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	help_see			= {min_snd = 5, max_snd = 10, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	help_see_tutor		= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
@@ -254,22 +254,22 @@ theme = {
 	wounded_psy			= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	wounded_psy_shoot	= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 
-	-- окрик
+	-- РѕРєСЂРёРє
 	hail				= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 
-	-- ожидание
+	-- РѕР¶РёРґР°РЅРёРµ
 	wait				= {min_snd = 7, max_snd = 10, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 
 	-- speech
     speech				= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
     speech1				= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
     
-	-- угрозы
+	-- СѓРіСЂРѕР·С‹
 	threat_weap			= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	threat_back			= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	threat_stop			= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 
-	-- реакции
+	-- СЂРµР°РєС†РёРё
 --	reac_hear				= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	reac_see				= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 --	reac_crps_monstr		= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
@@ -282,7 +282,7 @@ theme = {
 	reac_music				= {min_snd = 1, max_snd = 2, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	reac_joke				= {min_snd = 1, max_snd = 2, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 
-	-- болтовня
+	-- Р±РѕР»С‚РѕРІРЅСЏ
 	talk_hello				= {min_snd = 5, max_snd = 7, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	talk_hello_friend		= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	talk_bye				= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
@@ -290,7 +290,7 @@ theme = {
 	talk_reject				= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	talk_abuse				= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 
-	-- реакции на юзание
+	-- СЂРµР°РєС†РёРё РЅР° СЋР·Р°РЅРёРµ
 	use_yes_fight			= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	use_yes_sleep			= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	use_yes_kamp			= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
@@ -301,28 +301,28 @@ theme = {
 	use_no_default			= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	use_abuse				= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 
-	-- бой
+	-- Р±РѕР№
 	fight_attack			= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	zombied_fight_attack	= {min_snd = 5, max_snd = 10,rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	fight_search			= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	fight_enemy				= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	
-	-- торговля
+	-- С‚РѕСЂРіРѕРІР»СЏ
 	trade_yes				= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	trade_no				= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 
-	-- игра на губной гармошке
+	-- РёРіСЂР° РЅР° РіСѓР±РЅРѕР№ РіР°СЂРјРѕС€РєРµ
 	intro_music				= {min_snd = 3, max_snd = 5, rnd = 25, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	harmonica				= {min_snd = 3, max_snd = 5, rnd = 25, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 
-	-- игра на гитаре
+	-- РёРіСЂР° РЅР° РіРёС‚Р°СЂРµ
 	guitar					= {min_snd = 3, max_snd = 5, rnd = 25, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	
-	-- шутки, прибаутки
+	-- С€СѓС‚РєРё, РїСЂРёР±Р°СѓС‚РєРё
 	intro_joke				= {min_snd = 3, max_snd = 5, rnd = 25, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	joke					= {min_snd = 3, max_snd = 5, rnd = 25, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 
-	-- Истории
+	-- РСЃС‚РѕСЂРёРё
 	story_01				= {min_snd = 3, max_snd = 5, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {},
 					depence	= {	[2] = {theme = "story_reac_cool_info", min = 1, max = 1},
 								[3] = {theme = "story_reac_continue", min = 2, max = 3},
@@ -399,7 +399,7 @@ theme = {
 	story_reac_yes				= {min_snd = 1, max_snd = 1, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	
 
-	-- УНИКАЛЬНЫЕ ТЕМЫ	
+	-- РЈРќРРљРђР›Р¬РќР«Р• РўР•РњР«	
 	-- Escape
 	esc_tolik_help				= {min_snd = 7, max_snd = 10, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
 	esc_guard_camp				= {min_snd = 7, max_snd = 10, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}},
@@ -652,7 +652,7 @@ theme = {
     mil_cherep_hi                 = {min_snd = 1, max_snd = 3, rnd = 100, prior = 5, rnd_id = id(), into_id = id(), max_ids = {}}
 }
    
---' В темах для игрока интервал задается в миллисекундах!!!
+--' Р’ С‚РµРјР°С… РґР»СЏ РёРіСЂРѕРєР° РёРЅС‚РµСЂРІР°Р» Р·Р°РґР°РµС‚СЃСЏ РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…!!!
 actor_theme = {
 	level_border_detector = {min_snd = 10, max_snd = 100,
 							 sounds = {xr_sound.get_safe_sound_object([[detectors\geiger_1]]),
@@ -667,25 +667,25 @@ actor_theme = {
 }
    										
 function select_sound_from_ltx(obj, section, ltx)
---	1. проверка по story_id
+--	1. РїСЂРѕРІРµСЂРєР° РїРѕ story_id
 	local c = obj:story_id()
 	if ltx:line_exist(section, utils.to_str(c)) then
 		return ltx:r_string(section, utils.to_str(c))
 	end
 
---	2. проверка по npc_profile
+--	2. РїСЂРѕРІРµСЂРєР° РїРѕ npc_profile
 	c = obj:profile_name()
 	if ltx:line_exist(section, c) then
 		return ltx:r_string(section, c)
 	end
 
---	3. проверка по character_community
+--	3. РїСЂРѕРІРµСЂРєР° РїРѕ character_community
 	c = obj:character_community()
 	if ltx:line_exist(section, c) then
 		return ltx:r_string(section, c)
 	end
 	
---	4. загрузка дефолта
+--	4. Р·Р°РіСЂСѓР·РєР° РґРµС„РѕР»С‚Р°
 	if ltx:line_exist(section, "stalker") then
 		return ltx:r_string(section, "stalker")
 	else
@@ -704,7 +704,7 @@ end
 function load_sound(obj)
 	local k,v = 0,0
 	
-	-- загрузка звуков на основе данных ltx
+	-- Р·Р°РіСЂСѓР·РєР° Р·РІСѓРєРѕРІ РЅР° РѕСЃРЅРѕРІРµ РґР°РЅРЅС‹С… ltx
 	function load_sound_from_ltx(obj, name, tbl)		
 		tbl.max_ids[obj:id()] = {}
 		if snd_ini:section_exist(name.."_rnd") then		
@@ -774,7 +774,7 @@ function load_sound(obj)
 
 	load_theme_sound(obj, theme)
 
-	-- делаем заготовку в db.sound
+	-- РґРµР»Р°РµРј Р·Р°РіРѕС‚РѕРІРєСѓ РІ db.sound
 	db.sound[obj:id()] = {}
 	
 ----	printf("All sounds loaded for %s, section %s", obj:name(), obj:section())

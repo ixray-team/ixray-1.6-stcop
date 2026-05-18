@@ -22,12 +22,12 @@ function load_job(sj, gname, type, squad, groups, st)
 		  "syndata			= backoff@threat_weap\n"..
 		  "precond			= visibility\n"
 		  
-	-- УНИВЕРСАЛЬНЫЙ ЛАГЕРЬ СТАЛКЕРОВ
+	-- РЈРќРР’Р•Р РЎРђР›Р¬РќР«Р™ Р›РђР“Р•Р Р¬ РЎРўРђР›РљР•Р РћР’
 	if type == "general_lager" then
-		-- Проверяем наличие кампов.
+		-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РєР°РјРїРѕРІ.
 		local it = 1
 		while level.patrol_path_exists(gname.."_kamp_"..it) do
-			-- Необходимо вычитать количество работ из названия точки пути.
+			-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 			local way_name = gname.."_kamp_"..it
 			local ptr = patrol(way_name)
 			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -37,7 +37,7 @@ function load_job(sj, gname, type, squad, groups, st)
 			end
 
 			for i = 1, job_count do
-				-- добавляем должность
+				-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 				t = { section = "logic@"..way_name,
 					idle = 0,
 					prior = 8-i, state = {0,1}, squad = squad, group = groups[1],
@@ -47,7 +47,7 @@ function load_job(sj, gname, type, squad, groups, st)
 				table.insert(sj, t)
 			end
 
-			-- добавляем описание должности в лтх.
+			-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 			local job_ltx = "[logic@"..way_name.."]\n"..
 							"active = kamp@"..way_name.."\n"..
 
@@ -59,13 +59,13 @@ function load_job(sj, gname, type, squad, groups, st)
 			it = it + 1
 		end
 
-		-- Проверяем наличие путей для сна.
+		-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№ РґР»СЏ СЃРЅР°.
 		it = 1
 		while level.patrol_path_exists(gname.."_sleep_"..it) do
-			-- Необходимо вычитать количество работ из названия точки пути.
+			-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 			local way_name = gname.."_sleep_"..it
 
-			-- добавляем должность
+			-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 			t = { section = "logic@"..way_name,
 				idle = 0,
 				prior = 4, state = {0,1}, squad = squad, group = groups[1],
@@ -74,7 +74,7 @@ function load_job(sj, gname, type, squad, groups, st)
 			}
 			table.insert(sj, t)
 
-			-- добавляем описание должности в лтх.
+			-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 			local job_ltx = "[logic@"..way_name.."]\n"..
 							"active = sleeper@"..way_name.."\n"..
 
@@ -86,13 +86,13 @@ function load_job(sj, gname, type, squad, groups, st)
 		end
 
 
-		-- Проверяем наличие путей брожения внутри лагеря.
+		-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№ Р±СЂРѕР¶РµРЅРёСЏ РІРЅСѓС‚СЂРё Р»Р°РіРµСЂСЏ.
 		it = 1
 		while level.patrol_path_exists(gname.."_walker_"..it.."_walk") do
-			-- Необходимо вычитать количество работ из названия точки пути.
+			-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 			local way_name = gname.."_walker_"..it.."_walk"
 
-			-- добавляем должность
+			-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 			t = { section = "logic@"..way_name,
 				idle = math.random(40,60)*60*1000, timeout = math.random(10,20)*60*1000,
 				prior = 5, state = {0,1}, squad = squad, group = groups[1],
@@ -101,7 +101,7 @@ function load_job(sj, gname, type, squad, groups, st)
 			}
 			table.insert(sj, t)
 
-			-- добавляем описание должности в лтх.
+			-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 			local job_ltx = "[logic@"..way_name.."]\n"..
 							"active = walker@"..way_name.."\n"..
 
@@ -117,13 +117,13 @@ function load_job(sj, gname, type, squad, groups, st)
 			it = it + 1
 		end
 
-		-- Проверяем наличие путей брожения внутри лагеря(без таймаута).
+		-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№ Р±СЂРѕР¶РµРЅРёСЏ РІРЅСѓС‚СЂРё Р»Р°РіРµСЂСЏ(Р±РµР· С‚Р°Р№РјР°СѓС‚Р°).
 		it = 1
 		while level.patrol_path_exists(gname.."_walker2_"..it.."_walk") do
-			-- Необходимо вычитать количество работ из названия точки пути.
+			-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 			local way_name = gname.."_walker2_"..it.."_walk"
 
-			-- добавляем должность
+			-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 			t = { section = "logic@"..way_name,
 				idle = 0,
 				prior = 5, state = {0,1}, squad = squad, group = groups[1],
@@ -132,7 +132,7 @@ function load_job(sj, gname, type, squad, groups, st)
 			}
 			table.insert(sj, t)
 
-			-- добавляем описание должности в лтх.
+			-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 			local job_ltx = "[logic@"..way_name.."]\n"..
 							"active = walker@"..way_name.."\n"..
 
@@ -148,10 +148,10 @@ function load_job(sj, gname, type, squad, groups, st)
 			it = it + 1
 		end
 
-		-- Проверяем наличие патрулей обхода в лагере.
+		-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РїР°С‚СЂСѓР»РµР№ РѕР±С…РѕРґР° РІ Р»Р°РіРµСЂРµ.
 		it = 1
 		while level.patrol_path_exists(gname.."_patrol_"..it.."_walk") do
-			-- Необходимо вычитать количество работ из названия точки пути.
+			-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 			local way_name = gname.."_patrol_"..it.."_walk"
 			local ptr = patrol(way_name)
 			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -161,7 +161,7 @@ function load_job(sj, gname, type, squad, groups, st)
 			end
 
 			for i = 1, job_count do
-				-- добавляем должность
+				-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 				t = { section = "logic@"..way_name,
 					idle = math.random(60,120)*60*1000,
 					prior = 6, state = {0,1}, squad = squad, group = groups[1],
@@ -171,7 +171,7 @@ function load_job(sj, gname, type, squad, groups, st)
 				table.insert(sj, t)
 			end
 
-			-- добавляем описание должности в лтх.
+			-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 			local job_ltx = "[logic@"..way_name.."]\n"..
 							"active = patrol@"..way_name.."\n"..
 
@@ -189,13 +189,13 @@ function load_job(sj, gname, type, squad, groups, st)
 			it = it + 1
 		end
 
-		-- Проверяем наличие часовых в лагере.
+		-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ С‡Р°СЃРѕРІС‹С… РІ Р»Р°РіРµСЂРµ.
 		it = 1
 		while level.patrol_path_exists(gname.."_guard_"..it.."_walk") do
-			-- Необходимо вычитать количество работ из названия точки пути.
+			-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 			local way_name = gname.."_guard_"..it.."_walk"
 
-			-- добавляем должность
+			-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 			t = { section = "logic@"..way_name,
 				idle = 0,
 				prior = 7, state = {0,1}, squad = squad, group = groups[1],
@@ -204,7 +204,7 @@ function load_job(sj, gname, type, squad, groups, st)
 			}
 			table.insert(sj, t)
 
-			-- добавляем описание должности в лтх.
+			-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 			local job_ltx = "[logic@"..way_name.."]\n"..
 							"active = camper@"..way_name.."\n"..
 
@@ -220,13 +220,13 @@ function load_job(sj, gname, type, squad, groups, st)
 			it = it + 1
 		end
 
-		-- Проверяем наличие снайперов в лагере.
+		-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СЃРЅР°Р№РїРµСЂРѕРІ РІ Р»Р°РіРµСЂРµ.
 		it = 1
 		while level.patrol_path_exists(gname.."_sniper_"..it.."_walk") do
-			-- Необходимо вычитать количество работ из названия точки пути.
+			-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 			local way_name = gname.."_sniper_"..it.."_walk"
 
-			-- добавляем должность
+			-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 			t = { section = "logic@"..way_name,
 				idle = 0,
 				prior = 10, state = {0,1}, squad = squad, group = groups[1],
@@ -238,7 +238,7 @@ function load_job(sj, gname, type, squad, groups, st)
 			}
 			table.insert(sj, t)
 
-			-- добавляем описание должности в лтх.
+			-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 			local job_ltx = "[logic@"..way_name.."]\n"..
 							"active = camper@"..way_name.."\n"..
 
@@ -251,11 +251,11 @@ function load_job(sj, gname, type, squad, groups, st)
 			it = it + 1
 		end
 
-		-- Проверяем возможность вырулить в рейд (наличие путей, алгоритм переключения)
+		-- РџСЂРѕРІРµСЂСЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РІС‹СЂСѓР»РёС‚СЊ РІ СЂРµР№Рґ (РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№, Р°Р»РіРѕСЂРёС‚Рј РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ)
 		it = 1
 		local job_count = 5
 		while level.patrol_path_exists(gname.."_raid_"..it.."_walk") do
-			-- Необходимо вычитать количество работ из названия точки пути.
+			-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 			local way_name = gname.."_raid_"..it.."_walk"
 			local ptr = patrol(way_name)
 			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -264,7 +264,7 @@ function load_job(sj, gname, type, squad, groups, st)
 			end
 
 			for i = 1, job_count do
-				-- добавляем должность
+				-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 				t = { section = "logic@"..way_name,
 					idle = 0,
 					prior = 10, state = {1}, squad = squad, group = groups[1],
@@ -275,7 +275,7 @@ function load_job(sj, gname, type, squad, groups, st)
 				table.insert(sj, t)
 			end
 
-			-- добавляем описание должности в лтх.
+			-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 			local job_ltx = "[logic@"..way_name.."]\n"..
 							"active = patrol@"..way_name.."\n"..
 
@@ -294,12 +294,12 @@ function load_job(sj, gname, type, squad, groups, st)
 
 	end
 
-	-- УНИВЕРСАЛЬНОЕ ЛОГОВО МОНСТРОВ
+	-- РЈРќРР’Р•Р РЎРђР›Р¬РќРћР• Р›РћР“РћР’Рћ РњРћРќРЎРўР РћР’
 	if type == "general_lair" then
-		-- Проверяем наличие моб_хом.
+		-- РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РјРѕР±_С…РѕРј.
 		local it = 1
 		while level.patrol_path_exists(gname.."_home_"..it) do
-			-- Необходимо вычитать количество работ из названия точки пути.
+			-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 			local way_name = gname.."_home_"..it
 			local ptr = patrol(way_name)
 			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -309,7 +309,7 @@ function load_job(sj, gname, type, squad, groups, st)
 			end
 
 			for i = 1, job_count do
-				-- добавляем должность
+				-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 				t = { section = "logic@"..way_name,
 					idle = 0,
 					prior = 5, state = {0,1}, squad = squad, group = groups[1],
@@ -319,7 +319,7 @@ function load_job(sj, gname, type, squad, groups, st)
 				table.insert(sj, t)
 			end
 
-			-- добавляем описание должности в лтх.
+			-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 			local job_ltx = "[logic@"..way_name.."]\n"..
 							"active = mob_home@"..way_name.."\n"..
 
@@ -330,16 +330,16 @@ function load_job(sj, gname, type, squad, groups, st)
 			it = it + 1
 		end
 
-		-- Необходим fake_death с патрульным путем
+		-- РќРµРѕР±С…РѕРґРёРј fake_death СЃ РїР°С‚СЂСѓР»СЊРЅС‹Рј РїСѓС‚РµРј
 
 
 
-		-- Необходима атака в лице mob_home с agressive
-		-- Проверяем возможность вырулить в рейд (наличие путей, алгоритм переключения)
+		-- РќРµРѕР±С…РѕРґРёРјР° Р°С‚Р°РєР° РІ Р»РёС†Рµ mob_home СЃ agressive
+		-- РџСЂРѕРІРµСЂСЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РІС‹СЂСѓР»РёС‚СЊ РІ СЂРµР№Рґ (РЅР°Р»РёС‡РёРµ РїСѓС‚РµР№, Р°Р»РіРѕСЂРёС‚Рј РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ)
 		it = 1
 		local job_count = 5
 		while level.patrol_path_exists(gname.."_raid_"..it) do
-			-- Необходимо вычитать количество работ из названия точки пути.
+			-- РќРµРѕР±С…РѕРґРёРјРѕ РІС‹С‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‚ РёР· РЅР°Р·РІР°РЅРёСЏ С‚РѕС‡РєРё РїСѓС‚Рё.
 			local way_name = gname.."_raid_"..it
 			local ptr = patrol(way_name)
 			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
@@ -348,7 +348,7 @@ function load_job(sj, gname, type, squad, groups, st)
 			end
 
 			for i = 1, job_count do
-				-- добавляем должность
+				-- РґРѕР±Р°РІР»СЏРµРј РґРѕР»Р¶РЅРѕСЃС‚СЊ
 				t = { section = "logic@"..way_name,
 					idle = 0,
 					prior = 10, state = {1}, squad = squad, group = groups[1],
@@ -359,7 +359,7 @@ function load_job(sj, gname, type, squad, groups, st)
 				table.insert(sj, t)
 			end
 
-			-- добавляем описание должности в лтх.
+			-- РґРѕР±Р°РІР»СЏРµРј РѕРїРёСЃР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ Р»С‚С….
 			local job_ltx = "[logic@"..way_name.."]\n"..
 							"active = mob_home@"..way_name.."\n"..
 

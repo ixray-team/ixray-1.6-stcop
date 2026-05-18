@@ -1,6 +1,6 @@
 --[[------------------------------------------------------------------------------------------------------------------
-Игнорирование врагов
-Чугай Александр
+РРіРЅРѕСЂРёСЂРѕРІР°РЅРёРµ РІСЂР°РіРѕРІ
+Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ
 --------------------------------------------------------------------------------------------------------------------]]
 
 function is_enemy( obj, enemy, st )
@@ -62,7 +62,7 @@ function action_process_enemy:hit_callback(obj, amount, local_direction, who, bo
 
 --	printf("_bp: action_process_enemy: hit_callback(): obj='%s'", obj:name())
 	if amount == 0 then
-		-- Кто-то стрельнул в воздух
+		-- РљС‚Рѕ-С‚Рѕ СЃС‚СЂРµР»СЊРЅСѓР» РІ РІРѕР·РґСѓС…
 		return
 	end
 
@@ -93,7 +93,7 @@ function set_combat_ignore_checker( npc, ini, scheme, section )
 --	printf( "xr_combat_ignore: SET ENEMY_CALLBACK, obj=%s", npc:name() )
 	npc:set_enemy_callback( st.action.enemy_callback, st.action )
 
-	-- Подписываемся на hit callback-и:
+	-- РџРѕРґРїРёСЃС‹РІР°РµРјСЃСЏ РЅР° hit callback-Рё:
 	xr_logic.subscribe_action_for_events( npc, st, st.action )
 
 end
@@ -101,8 +101,8 @@ end
 function disable_scheme( npc, scheme )
 	npc:set_enemy_callback()
 
-	-- Отписываемся от hit callback. Это делать обязательно, потому что иначе при переключении на другой набор
-	-- схем, в котором нет перехвата боя, продолжится вызываться callback в старом подписанном action-е.
+	-- РћС‚РїРёСЃС‹РІР°РµРјСЃСЏ РѕС‚ hit callback. Р­С‚Рѕ РґРµР»Р°С‚СЊ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РёРЅР°С‡Рµ РїСЂРё РїРµСЂРµРєР»СЋС‡РµРЅРёРё РЅР° РґСЂСѓРіРѕР№ РЅР°Р±РѕСЂ
+	-- СЃС…РµРј, РІ РєРѕС‚РѕСЂРѕРј РЅРµС‚ РїРµСЂРµС…РІР°С‚Р° Р±РѕСЏ, РїСЂРѕРґРѕР»Р¶РёС‚СЃСЏ РІС‹Р·С‹РІР°С‚СЊСЃСЏ callback РІ СЃС‚Р°СЂРѕРј РїРѕРґРїРёСЃР°РЅРЅРѕРј action-Рµ.
 	local st = db.storage[npc:id()][scheme]
 	if st then
 		xr_logic.unsubscribe_action_from_events(npc, st, st.action)

@@ -1,20 +1,20 @@
 --[[------------------------------------------------------------------------------------------------------------------
-Управление вертолётом
-Чугай Саша
+РЈРїСЂР°РІР»РµРЅРёРµ РІРµСЂС‚РѕР»С‘С‚РѕРј
+Р§СѓРіР°Р№ РЎР°С€Р°
 
-Сделать:
-	- настройки в ltx
-	- улёт в безопасное место
+РЎРґРµР»Р°С‚СЊ:
+	- РЅР°СЃС‚СЂРѕР№РєРё РІ ltx
+	- СѓР»С‘С‚ РІ Р±РµР·РѕРїР°СЃРЅРѕРµ РјРµСЃС‚Рѕ
 --------------------------------------------------------------------------------------------------------------------]]
 
 local ltx = ini_file("creatures\\helicopter.ltx")
 
 local state, health, altitude, v, power, impulse, hit_type, enemy_type
 
-local pass_dist    = 100  -- расстояние, на которое вертолёт отлетит перед следующим заходом для атаки
+local pass_dist    = 100  -- СЂР°СЃСЃС‚РѕСЏРЅРёРµ, РЅР° РєРѕС‚РѕСЂРѕРµ РІРµСЂС‚РѕР»С‘С‚ РѕС‚Р»РµС‚РёС‚ РїРµСЂРµРґ СЃР»РµРґСѓСЋС‰РёРј Р·Р°С…РѕРґРѕРј РґР»СЏ Р°С‚Р°РєРё
 local def_patrol_speed, def_attack_speed = 30, 40
 local max_attack_passes = 3
-local zone_attack_probability = 33  -- вероятность того, что вертолёт начнёт атаковать сталкера, вошедшего в какую-то зону
+local zone_attack_probability = 33  -- РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ С‚РѕРіРѕ, С‡С‚Рѕ РІРµСЂС‚РѕР»С‘С‚ РЅР°С‡РЅС‘С‚ Р°С‚Р°РєРѕРІР°С‚СЊ СЃС‚Р°Р»РєРµСЂР°, РІРѕС€РµРґС€РµРіРѕ РІ РєР°РєСѓСЋ-С‚Рѕ Р·РѕРЅСѓ
 
 ----------
 
@@ -54,7 +54,7 @@ function HeliManager:HeliOnHit( power, impulse, hit_type, enemy_id )
 		return
 	end
 
-	-- количество оставшихся заходов для атаки
+	-- РєРѕР»РёС‡РµСЃС‚РІРѕ РѕСЃС‚Р°РІС€РёС…СЃСЏ Р·Р°С…РѕРґРѕРІ РґР»СЏ Р°С‚Р°РєРё
 	self.attack_passes = self.attack_passes
 
 	if self.heliObject:GetState() == CHelicopter.eMovingByAttackTraj then
@@ -66,7 +66,7 @@ function HeliManager:HeliOnHit( power, impulse, hit_type, enemy_id )
 	self:set_enemy( enemy )
 end
 
--- не использует информацию из net_packet!
+-- РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ РёР· net_packet!
 function HeliManager:HeliOnPoint( distance, position, path_idx )
 --	format:
 --	local dist_to_point =	p:r_float()
@@ -80,11 +80,11 @@ function HeliManager:HeliOnPoint( distance, position, path_idx )
 --	printf( "on_point_range_dist = %d", self.heliObject.on_point_range_dist )
 
 	printf( "[heli] OnPoint" )
-	-- если пролетел над позицией во время атаки
+	-- РµСЃР»Рё РїСЂРѕР»РµС‚РµР» РЅР°Рґ РїРѕР·РёС†РёРµР№ РІРѕ РІСЂРµРјСЏ Р°С‚Р°РєРё
 	if self.heliObject:GetState() == CHelicopter.eMovingByAttackTraj then
 		if self.attack_passes > 0 then
 			if self.attack_pass_state == 0 then
-				-- отлетаем чуть-чуть
+				-- РѕС‚Р»РµС‚Р°РµРј С‡СѓС‚СЊ-С‡СѓС‚СЊ
 				v        = self.heli:direction()
 				self.p1  = self.heli:position():add( vector():set( v ):mul( pass_dist ) )
 
@@ -96,7 +96,7 @@ function HeliManager:HeliOnPoint( distance, position, path_idx )
 				self.attack_pass_state = 1
 				printf( "0" )
 --[[			elseif self.attack_pass_state == 1 then
-				-- заходим вправо
+				-- Р·Р°С…РѕРґРёРј РІРїСЂР°РІРѕ
 				self.heliObject:SetDestPosition( self.p2 )
 				--self.heliObject:SetCurrVelocity( patrol_speed )
 
@@ -106,7 +106,7 @@ function HeliManager:HeliOnPoint( distance, position, path_idx )
 			else
 				printf( "2" )
 				if is_object_online( self.enemy:id() ) and self.enemy:alive() then
-					-- опять заходим на врага
+					-- РѕРїСЏС‚СЊ Р·Р°С…РѕРґРёРј РЅР° РІСЂР°РіР°
 					self.heliObject:SetDestPosition( self.enemy:position() )
 					--self.heliObject:SetCurrVelocity( attack_speed )
 					--self.heliObject.on_point_range_dist = 10
@@ -123,13 +123,13 @@ function HeliManager:HeliOnPoint( distance, position, path_idx )
 --		self.heliObject:SetCurrVelocity(35)  -- m/sec (max)
 	end
 
-	-- прилетели на stay_point
+	-- РїСЂРёР»РµС‚РµР»Рё РЅР° stay_point
 	if self.heliObject:GetState() == CHelicopter.eMovingToPoint and not self.path then
 		self.heliObject:SetCurrVelocity( 0 )
 	end
 end
 
--- закончить атаку
+-- Р·Р°РєРѕРЅС‡РёС‚СЊ Р°С‚Р°РєСѓ
 function HeliManager:finish_attack()
 	if self.path then
 		self.heliObject:GoPatrolByPatrolPath( self.path, 0 )  --0==from_idx
@@ -178,7 +178,7 @@ function HeliManager:update()
 	end
 
 	if state == CHelicopter.eDead then
-		-- вертолёт должен взорваться, если высота меньше 3 м или он замедлил падение (меньше 1 м за 0.5 с)
+		-- РІРµСЂС‚РѕР»С‘С‚ РґРѕР»Р¶РµРЅ РІР·РѕСЂРІР°С‚СЊСЃСЏ, РµСЃР»Рё РІС‹СЃРѕС‚Р° РјРµРЅСЊС€Рµ 3 Рј РёР»Рё РѕРЅ Р·Р°РјРµРґР»РёР» РїР°РґРµРЅРёРµ (РјРµРЅСЊС€Рµ 1 Рј Р·Р° 0.5 СЃ)
 		altitude = self.heliObject:GetRealAltitude()
 
 		if altitude < 3.0 then

@@ -13,9 +13,9 @@ function gen_phrase_id_str()
 	return tostring(intro_id)
 end
 
---' Необходимо сформировать набор предикатов  table[string_id] = predicate()
+--' РќРµРѕР±С…РѕРґРёРјРѕ СЃС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РЅР°Р±РѕСЂ РїСЂРµРґРёРєР°С‚РѕРІ  table[string_id] = predicate()
 function fill_phrase_table()
-	--' Итерируемся по всем настройкам фраз
+	--' РС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ РІСЃРµРј РЅР°СЃС‚СЂРѕР№РєР°Рј С„СЂР°Р·
 	if not phrase_ini:section_exist("list") then
 		abort("There is no section [list] in dialog_manager.ltx")
 	end
@@ -29,7 +29,7 @@ function fill_phrase_table()
 		if not phrase_ini:section_exist(id) then
 			abort("There is no section [%s] in dialog_manager.ltx", id)
 		end		
-		--' 2. Необходимо сформировать набор предикатов  table[string_id] = predicate()
+		--' 2. РќРµРѕР±С…РѕРґРёРјРѕ СЃС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РЅР°Р±РѕСЂ РїСЂРµРґРёРєР°С‚РѕРІ  table[string_id] = predicate()
 		if not phrase_ini:line_exist(id, "category") then
 			abort("Dialog manager error: not categoried section [%s]", id)
 		end
@@ -77,8 +77,8 @@ function fill_phrase_table()
 	end
 end
 
--- Необходимо создать стартовый диалог, с разветвлением на третьем уровне, где каждая фраза будет иметь
--- одну и ту же функцию в прекондишне
+-- РќРµРѕР±С…РѕРґРёРјРѕ СЃРѕР·РґР°С‚СЊ СЃС‚Р°СЂС‚РѕРІС‹Р№ РґРёР°Р»РѕРі, СЃ СЂР°Р·РІРµС‚РІР»РµРЅРёРµРј РЅР° С‚СЂРµС‚СЊРµРј СѓСЂРѕРІРЅРµ, РіРґРµ РєР°Р¶РґР°СЏ С„СЂР°Р·Р° Р±СѓРґРµС‚ РёРјРµС‚СЊ
+-- РѕРґРЅСѓ Рё С‚Сѓ Р¶Рµ С„СѓРЅРєС†РёСЋ РІ РїСЂРµРєРѕРЅРґРёС€РЅРµ
 function init_intro_dialog(dlg)
 	local phr = dlg:AddPhrase("","0","",-10000)
 		phr = dlg:AddPhrase("","1","0",-10000)
@@ -90,8 +90,8 @@ function init_intro_dialog(dlg)
 		if phr then
 			local phrase_script = phr:GetPhraseScript()
 			phrase_script:AddPrecondition("dialog_manager.precondition_intro")
-			--' Этот экшн запоминает последнюю фразу, чтобы персонаж говорил одно и то же.
-			--' Для фразы просьбы о помощи его добавлять не надо.
+			--' Р­С‚РѕС‚ СЌРєС€РЅ Р·Р°РїРѕРјРёРЅР°РµС‚ РїРѕСЃР»РµРґРЅСЋСЋ С„СЂР°Р·Сѓ, С‡С‚РѕР±С‹ РїРµСЂСЃРѕРЅР°Р¶ РіРѕРІРѕСЂРёР» РѕРґРЅРѕ Рё С‚Рѕ Р¶Рµ.
+			--' Р”Р»СЏ С„СЂР°Р·С‹ РїСЂРѕСЃСЊР±С‹ Рѕ РїРѕРјРѕС‰Рё РµРіРѕ РґРѕР±Р°РІР»СЏС‚СЊ РЅРµ РЅР°РґРѕ.
 			if v.wounded == "false" then
 				phrase_script:AddAction("dialog_manager.phrase_action_intro")		
 			end
@@ -99,8 +99,8 @@ function init_intro_dialog(dlg)
 	end
 end
 
--- Необходимо создать диалог актера, с разветвлением на втором уровне, где каждая фраза будет иметь
--- одну и ту же функцию в прекондишне.
+-- РќРµРѕР±С…РѕРґРёРјРѕ СЃРѕР·РґР°С‚СЊ РґРёР°Р»РѕРі Р°РєС‚РµСЂР°, СЃ СЂР°Р·РІРµС‚РІР»РµРЅРёРµРј РЅР° РІС‚РѕСЂРѕРј СѓСЂРѕРІРЅРµ, РіРґРµ РєР°Р¶РґР°СЏ С„СЂР°Р·Р° Р±СѓРґРµС‚ РёРјРµС‚СЊ
+-- РѕРґРЅСѓ Рё С‚Сѓ Р¶Рµ С„СѓРЅРєС†РёСЋ РІ РїСЂРµРєРѕРЅРґРёС€РЅРµ.
 function init_cool_info_dialog(dlg)
 	local phr = dlg:AddPhrase("dm_general_cool_info","0","",-10000)
 	
@@ -129,7 +129,7 @@ function init_cool_info_dialog(dlg)
 	end
 end
 
--- Диалоги помощи раненным
+-- Р”РёР°Р»РѕРіРё РїРѕРјРѕС‰Рё СЂР°РЅРµРЅРЅС‹Рј
 function init_help_wounded_medkit_dialog(dlg)
 	local phr = dlg:AddPhrase("dm_general_help_medkit","0","",-10000)
 	local phrase_script = phr:GetPhraseScript()
@@ -224,7 +224,7 @@ end
 
 function precondition(npc, actor, tbl, sel_tbl, p1, p2, p3)
 
-	--' Надо проверить доступна ли запомненная фраза
+	--' РќР°РґРѕ РїСЂРѕРІРµСЂРёС‚СЊ РґРѕСЃС‚СѓРїРЅР° Р»Рё Р·Р°РїРѕРјРЅРµРЅРЅР°СЏ С„СЂР°Р·Р°
 	if ( (sel_tbl ~= nil) and (sel_tbl[npc:id()] ~= nil) ) then
 		
 		local lll = sel_tbl[npc:id()]
@@ -253,20 +253,20 @@ function precondition(npc, actor, tbl, sel_tbl, p1, p2, p3)
 		end
 		
 		local value, number = calculate_predicate(npc, ttt )
-		--' Если запомненная фраза недоступна - необходимо забыть ее
+		--' Р•СЃР»Рё Р·Р°РїРѕРјРЅРµРЅРЅР°СЏ С„СЂР°Р·Р° РЅРµРґРѕСЃС‚СѓРїРЅР° - РЅРµРѕР±С…РѕРґРёРјРѕ Р·Р°Р±С‹С‚СЊ РµРµ
 		if value == false then
 			printf("*** restore memory phrase")
 			sel_tbl[npc:id()] = nil
 		end
 	end	
 
-	--' Получить фразу по номеру:
+	--' РџРѕР»СѓС‡РёС‚СЊ С„СЂР°Р·Сѓ РїРѕ РЅРѕРјРµСЂСѓ:
 	local phrase = tbl[p3]
 
 
-	--' Проверка на повторяемость фраз.
+	--' РџСЂРѕРІРµСЂРєР° РЅР° РїРѕРІС‚РѕСЂСЏРµРјРѕСЃС‚СЊ С„СЂР°Р·.
 	if ( (sel_tbl ~= nil) and (sel_tbl[npc:id()] ~= nil) ) then
-		--' Если проверяется не запомненная фраза
+		--' Р•СЃР»Рё РїСЂРѕРІРµСЂСЏРµС‚СЃСЏ РЅРµ Р·Р°РїРѕРјРЅРµРЅРЅР°СЏ С„СЂР°Р·Р°
 		if (sel_tbl[npc:id()].phrase ~= phrase.phr_id) then
 			printf("*** not memory phrase [%s] ~= [%s]", sel_tbl[npc:id()].phrase, phrase.phr_id)
 			return false
@@ -276,7 +276,7 @@ function precondition(npc, actor, tbl, sel_tbl, p1, p2, p3)
 		end
 	end	
 
-	--' Определяем доступна ли эта фраза:
+	--' РћРїСЂРµРґРµР»СЏРµРј РґРѕСЃС‚СѓРїРЅР° Р»Рё СЌС‚Р° С„СЂР°Р·Р°:
 	local value, number = calculate_predicate(npc, phrase)
 	return value
 end
@@ -354,7 +354,7 @@ function calculate_predicate(npc, tbl, settings)
 end
 
 		
---' Прекондишн, можно ли разрешать диалоги с болтовней ("расскажи мне о" например)
+--' РџСЂРµРєРѕРЅРґРёС€РЅ, РјРѕР¶РЅРѕ Р»Рё СЂР°Р·СЂРµС€Р°С‚СЊ РґРёР°Р»РѕРіРё СЃ Р±РѕР»С‚РѕРІРЅРµР№ ("СЂР°СЃСЃРєР°Р¶Рё РјРЅРµ Рѕ" РЅР°РїСЂРёРјРµСЂ)
 function precondition_info_global(actor, npc)
 	if xr_wounded.is_wounded(npc) or
 	   xr_wounded.is_heavy_wounded_by_id(npc:id()) or
@@ -366,7 +366,7 @@ function precondition_info_global(actor, npc)
 end
 
 	
---' Сохранение информации о выбранных фразах
+--' РЎРѕС…СЂР°РЅРµРЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё Рѕ РІС‹Р±СЂР°РЅРЅС‹С… С„СЂР°Р·Р°С…
 function save(npc, p)
 	if selected_phrase_by_id.intro[npc:id()] == nil then
 		p:w_stringZ("-1")

@@ -2,15 +2,15 @@ function main (need_items)
     task_level1.main (false)
     local actor = db.actor
 -------------------------------------------------------------------------------
--- Задачи Escape
+-- Р—Р°РґР°С‡Рё Escape
 -------------------------------------------------------------------------------
-        -- открытие двери у торговца
+        -- РѕС‚РєСЂС‹С‚РёРµ РґРІРµСЂРё Сѓ С‚РѕСЂРіРѕРІС†Р°
         db.actor:give_info_portion ("esc_trader_can_leave")
-        -- туториальная задача с артефактом
+        -- С‚СѓС‚РѕСЂРёР°Р»СЊРЅР°СЏ Р·Р°РґР°С‡Р° СЃ Р°СЂС‚РµС„Р°РєС‚РѕРј
         db.actor:give_info_portion ("tutorial_artefact_start")
         db.actor:give_info_portion ("tutorial_artefact_gain")
         db.actor:give_info_portion ("tutorial_artefact_done")
-        -- туториальная задача с раненым
+        -- С‚СѓС‚РѕСЂРёР°Р»СЊРЅР°СЏ Р·Р°РґР°С‡Р° СЃ СЂР°РЅРµРЅС‹Рј
         db.actor:give_info_portion ("tutorial_wounded_start")
         db.actor:give_info_portion ("tutorial_wounded_help")
         db.actor:give_info_portion ("esc_serious_talk")
@@ -24,7 +24,7 @@ function main (need_items)
         db.actor:give_info_portion ("esc_first_novice_dead")
         db.actor:give_info_portion ("esc_heli_attack")
         
-        -- задание Волка на динамит
+        -- Р·Р°РґР°РЅРёРµ Р’РѕР»РєР° РЅР° РґРёРЅР°РјРёС‚
         db.actor:give_info_portion ("escape_factory_assault_say_hello")
         db.actor:give_info_portion ("esc_petruha_great")
         db.actor:give_info_portion ("esc_kill_bandits_quest_kill")
@@ -33,11 +33,11 @@ function main (need_items)
         db.actor:give_info_portion ("tutorial_wounded_give_info")
   
   
-        -- задание торговца на бандитов на фабрике
+        -- Р·Р°РґР°РЅРёРµ С‚РѕСЂРіРѕРІС†Р° РЅР° Р±Р°РЅРґРёС‚РѕРІ РЅР° С„Р°Р±СЂРёРєРµ
         db.actor:give_info_portion ("esc_kill_bandits_quest_have")
         db.actor:give_info_portion ("esc_kill_bandits_quest_kill")
         db.actor:give_info_portion ("esc_kill_bandits_quest_done")
-        -- задание торговца на Лиса
+        -- Р·Р°РґР°РЅРёРµ С‚РѕСЂРіРѕРІС†Р° РЅР° Р›РёСЃР°
         db.actor:give_info_portion ("escape_stalker_meet")
         db.actor:give_info_portion ("escape_fox_heal")
         db.actor:give_info_portion ("escape_stalker_done")
@@ -47,19 +47,19 @@ function main (need_items)
         db.actor:give_info_portion ("escape_stalker_dog_die")
         
         
-        -- мочилово лишнего народа
+        -- РјРѕС‡РёР»РѕРІРѕ Р»РёС€РЅРµРіРѕ РЅР°СЂРѕРґР°
         --this.kill_entity_by_sid (12)
         --this.kill_entity_by_sid (13)
         --this.kill_entity_by_sid (4)
 -------------------------------------------------------------------------------
--- Задачи Garbage
+-- Р—Р°РґР°С‡Рё Garbage
 -------------------------------------------------------------------------------
-        -- Серый в гараже
+        -- РЎРµСЂС‹Р№ РІ РіР°СЂР°Р¶Рµ
         db.actor:give_info_portion ("garbage_meetstalker_start")
         db.actor:give_info_portion ("garbage_meetstalker_done")
         db.actor:give_info_portion ("gar_seryi_change_st")
 
-        -- отбивание бандитов 
+        -- РѕС‚Р±РёРІР°РЅРёРµ Р±Р°РЅРґРёС‚РѕРІ 
         db.actor:give_info_portion ("gar_hellcar_help")
         db.actor:give_info_portion ("gar_start_quest")
         db.actor:give_info_portion ("gar_bandits_killed")
@@ -70,7 +70,7 @@ function main (need_items)
         db.actor:give_info_portion ("gar_hellcar_dialog_end")
         db.actor:give_info_portion ("gar_hellcar_thanks")
         
-        -- завал кабанов
+        -- Р·Р°РІР°Р» РєР°Р±Р°РЅРѕРІ
         db.actor:give_info_portion ("gar_kill_boars_quest")
         db.actor:give_info_portion ("gar_kill_boars_done")
         db.actor:give_info_portion ("gar_kill_boars_request")
@@ -78,7 +78,7 @@ function main (need_items)
        
         db.actor:give_info_portion ("gar_test_info2")
 
-        -- новичок в туннеле
+        -- РЅРѕРІРёС‡РѕРє РІ С‚СѓРЅРЅРµР»Рµ
         db.actor:give_info_portion ("gar_help_newbie")
         db.actor:give_info_portion ("gar_help_newbie_done")
         db.actor:give_info_portion ("gar_help_newbie_reward")
@@ -88,15 +88,15 @@ function main (need_items)
         db.actor:give_info_portion ("gar_dm_novice_change_st")
         db.actor:give_info_portion ("gar_dm_bandits_change_st")
         
-        -- мочилово лишнего народа
+        -- РјРѕС‡РёР»РѕРІРѕ Р»РёС€РЅРµРіРѕ РЅР°СЂРѕРґР°
 -------------------------------------------------------------------------------
--- Задачи Agroprom
+-- Р—Р°РґР°С‡Рё Agroprom
 -------------------------------------------------------------------------------
-        -- задание торговца на документы с Агропрома
+        -- Р·Р°РґР°РЅРёРµ С‚РѕСЂРіРѕРІС†Р° РЅР° РґРѕРєСѓРјРµРЅС‚С‹ СЃ РђРіСЂРѕРїСЂРѕРјР°
         db.actor:give_info_portion ("agroprom_military_case")
         db.actor:give_info_portion ("agroprom_military_case_have")
         db.actor:give_info_portion ("agroprom_military_case_done")
-        -- встреча с Кротовой бандой
+        -- РІСЃС‚СЂРµС‡Р° СЃ РљСЂРѕС‚РѕРІРѕР№ Р±Р°РЅРґРѕР№
         db.actor:give_info_portion ("agr_krot_band_start")
         db.actor:give_info_portion ("agr_krot_met")
         db.actor:give_info_portion ("agr_krot_task_complete")
@@ -104,14 +104,14 @@ function main (need_items)
         db.actor:give_info_portion ("agr_meet_krot_band_done")
         db.actor:give_info_portion ("agr_krot_secret_info")
         
-        -- нахождение флешки в тайнике Стрелка
+        -- РЅР°С…РѕР¶РґРµРЅРёРµ С„Р»РµС€РєРё РІ С‚Р°Р№РЅРёРєРµ РЎС‚СЂРµР»РєР°
         db.actor:give_info_portion ("agr_find_gunslinger_cache_start")
         db.actor:give_info_portion ("agr_find_gunslinger_cache_found")
         db.actor:give_info_portion ("agr_find_gunslinger_cache_final")
-        -- помощь каким-то сталкерам...
+        -- РїРѕРјРѕС‰СЊ РєР°РєРёРј-С‚Рѕ СЃС‚Р°Р»РєРµСЂР°Рј...
         db.actor:give_info_portion ("agr_help_stalkers_start")
         db.actor:give_info_portion ("agr_help_stalkers_assault_dead")
-        -- Помочь Кроту
+        -- РџРѕРјРѕС‡СЊ РљСЂРѕС‚Сѓ
         db.actor:give_info_portion ("agr_help_krot_start")
         db.actor:give_info_portion ("agr_help_krot_done")
         db.actor:give_info_portion ("agr_factory_heli_start")
@@ -127,15 +127,15 @@ function main (need_items)
         db.actor:give_info_portion ("val_show_zones")
 
 -------------------------------------------------------------------------------
--- Основная задача для связки 2 (Документы из лаборатории DarkValley Underground)
+-- РћСЃРЅРѕРІРЅР°СЏ Р·Р°РґР°С‡Р° РґР»СЏ СЃРІСЏР·РєРё 2 (Р”РѕРєСѓРјРµРЅС‚С‹ РёР· Р»Р°Р±РѕСЂР°С‚РѕСЂРёРё DarkValley Underground)
 -------------------------------------------------------------------------------
-        -- появление Фаната
+        -- РїРѕСЏРІР»РµРЅРёРµ Р¤Р°РЅР°С‚Р°
         db.actor:give_info_portion ("esc_fanat_spawn")
         db.actor:give_info_portion ("bar_darklab_document_start")
         
     if need_items ~= nil and need_items == false then return end
     local actor = db.actor
-    -- Создадим различные объекты, которые нам необходимы
+    -- РЎРѕР·РґР°РґРёРј СЂР°Р·Р»РёС‡РЅС‹Рµ РѕР±СЉРµРєС‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅР°Рј РЅРµРѕР±С…РѕРґРёРјС‹
 	alife():create ("wpn_abakan", db.actor:position (), db.actor:level_vertex_id (),db.actor:game_vertex_id (), db.actor:id())
 	alife():create ("ammo_5.45x39_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
 	alife():create ("ammo_5.45x39_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())

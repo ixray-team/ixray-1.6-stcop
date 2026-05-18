@@ -8,7 +8,7 @@ end
 
 function WeatherManager:reset()
 	--printf					("WeatherManager:WeatherManager():Reset()")
-	-- Загрузить кондлист с погодой.
+	-- Р—Р°РіСЂСѓР·РёС‚СЊ РєРѕРЅРґР»РёСЃС‚ СЃ РїРѕРіРѕРґРѕР№.
 	local ini = ini_file("game.ltx")
 	local weather = utils.cfg_get_string(ini, level.name(), "weathers", db.actor, false, "", "default")
 	local postprocess = utils.cfg_get_string(ini, level.name(), "postprocess", db.actor, false, "")
@@ -21,7 +21,7 @@ function WeatherManager:reset()
 	end	
 
 	if weather == "default" then
-		-- сетим дефолтовую погоду
+		-- СЃРµС‚РёРј РґРµС„РѕР»С‚РѕРІСѓСЋ РїРѕРіРѕРґСѓ
 		self.weather_list = xr_logic.parse_condlist(db.actor, level.name(), "weather", "default")
 	else		
 		self.weather_list = xr_logic.parse_condlist(db.actor, level.name(), "weather", weather)

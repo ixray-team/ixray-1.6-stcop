@@ -3,7 +3,7 @@ function main (need_items)
     task_level3.main (false)
         
 -------------------------------------------------------------------------------
--- Задачи Bar
+-- Р—Р°РґР°С‡Рё Bar
 -------------------------------------------------------------------------------
     db.actor:give_info_portion ("bar_ecolog_crush_heli_start")
     db.actor:give_info_portion ("bar_ecolog_crush_heli_down")
@@ -15,33 +15,33 @@ function main (need_items)
 
 
     
-    -- мочилово безумных ветеранов
+    -- РјРѕС‡РёР»РѕРІРѕ Р±РµР·СѓРјРЅС‹С… РІРµС‚РµСЂР°РЅРѕРІ
     --db.actor:give_info_portion ("bar_kill_veteran_start")
     --db.actor:give_info_portion ("bar_dolg_veteran_done")
-    -- фамильное ружье
+    -- С„Р°РјРёР»СЊРЅРѕРµ СЂСѓР¶СЊРµ
     db.actor:give_info_portion ("bar_bar_hunter_quest_start")
     db.actor:give_info_portion ("bar_bar_hunter_quest_finish")
-    -- убиение мозга
+    -- СѓР±РёРµРЅРёРµ РјРѕР·РіР°
     db.actor:give_info_portion ("yan_kill_brain_task_start")
     db.actor:give_info_portion ("yan_labx16_switcher_primary_off")
     db.actor:give_info_portion ("yan_x16_documents_gain")
     db.actor:give_info_portion ("yan_kill_brain_done")
-    -- труп Призрака
+    -- С‚СЂСѓРї РџСЂРёР·СЂР°РєР°
     db.actor:give_info_portion ("yantar_vasilyev_info")
     db.actor:give_info_portion ("labx16_find")
     db.actor:give_info_portion ("yantar_find_ghost_task_end")
-    -- флешка Васильева
+    -- С„Р»РµС€РєР° Р’Р°СЃРёР»СЊРµРІР°
     db.actor:give_info_portion ("yan_find_vasilyev_start")    
     db.actor:give_info_portion ("yan_find_vasilyev_end")
-    -- какой-то ученый
+    -- РєР°РєРѕР№-С‚Рѕ СѓС‡РµРЅС‹Р№
     db.actor:give_info_portion ("yan_scientist_return_task")
     db.actor:give_info_portion ("yan_find_vasilyev_start")
-    -- теперь еще и Семенов затесался...
+    -- С‚РµРїРµСЂСЊ РµС‰Рµ Рё РЎРµРјРµРЅРѕРІ Р·Р°С‚РµСЃР°Р»СЃСЏ...
     db.actor:give_info_portion ("yan_find_scientist_semenov_start")
     db.actor:give_info_portion ("yan_scientist_return_to_bunker")
     db.actor:give_info_portion ("yan_find_scientist_done")
     db.actor:give_info_portion ("yan_kruglov_after_actor")
-    -- опять какой-то ученый... задрали
+    -- РѕРїСЏС‚СЊ РєР°РєРѕР№-С‚Рѕ СѓС‡РµРЅС‹Р№... Р·Р°РґСЂР°Р»Рё
     db.actor:give_info_portion ("yan_find_scientist_start")
     db.actor:give_info_portion ("yan_psi_zone_find_done")
     
@@ -55,10 +55,10 @@ function main (need_items)
 
     db.actor:give_info_portion ("yan_provodnik_spawn")
     
-    -- отмечаемся у начальника отдела кадров
+    -- РѕС‚РјРµС‡Р°РµРјСЃСЏ Сѓ РЅР°С‡Р°Р»СЊРЅРёРєР° РѕС‚РґРµР»Р° РєР°РґСЂРѕРІ
     db.actor:give_info_portion ("bar_dolg_base_rules_start")
     db.actor:give_info_portion ("bar_dolg_base_rules_talk")
-    -- задача на вступление в Долг
+    -- Р·Р°РґР°С‡Р° РЅР° РІСЃС‚СѓРїР»РµРЅРёРµ РІ Р”РѕР»Рі
     --db.actor:give_info_portion ("bar_dolg_community_start")
     db.actor:give_info_portion ("bar_dolg_veteran_done")
     --db.actor:give_info_portion ("bar_svoboda_rg6_done")
@@ -71,13 +71,13 @@ function main (need_items)
     
 
 
-    -- инфопоршен на поиск доктора    
+    -- РёРЅС„РѕРїРѕСЂС€РµРЅ РЅР° РїРѕРёСЃРє РґРѕРєС‚РѕСЂР°    
     --db.actor:give_info_portion ("esc_find_doctor_start")
 
 
     if need_items ~= nil and need_items == false then return end
     local actor = db.actor
-    -- Создадим различные объекты, которые нам необходимы
+    -- РЎРѕР·РґР°РґРёРј СЂР°Р·Р»РёС‡РЅС‹Рµ РѕР±СЉРµРєС‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅР°Рј РЅРµРѕР±С…РѕРґРёРјС‹
 	    alife():create ("wpn_groza", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
 	    alife():create ("ammo_9x39_sp5", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
 	    alife():create ("ammo_9x39_sp5", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
@@ -148,47 +148,47 @@ end
 
 function main2 (need_items)
 -------------------------------------------------------------------------------
--- Задачи Bar
+-- Р—Р°РґР°С‡Рё Bar
 -------------------------------------------------------------------------------
-    -- мочилово безумных ветеранов
+    -- РјРѕС‡РёР»РѕРІРѕ Р±РµР·СѓРјРЅС‹С… РІРµС‚РµСЂР°РЅРѕРІ
     db.actor:give_info_portion ("bar_kill_veteran_start")
     db.actor:give_info_portion ("bar_dolg_veteran_done")
-    -- фамильное ружье
+    -- С„Р°РјРёР»СЊРЅРѕРµ СЂСѓР¶СЊРµ
     db.actor:give_info_portion ("bar_bar_hunter_quest_start")
     db.actor:give_info_portion ("bar_bar_hunter_quest_finish")
-    -- убиение мозга
+    -- СѓР±РёРµРЅРёРµ РјРѕР·РіР°
     db.actor:give_info_portion ("yan_kill_brain_task_start")
     db.actor:give_info_portion ("yan_labx16_switcher_primary_off")
     db.actor:give_info_portion ("yan_kill_brain_done")
-    -- труп Призрака
+    -- С‚СЂСѓРї РџСЂРёР·СЂР°РєР°
     db.actor:give_info_portion ("yantar_vasilyev_info")
     db.actor:give_info_portion ("labx16_find")
     db.actor:give_info_portion ("yantar_find_ghost_task_end")
-    -- флешка Васильева
+    -- С„Р»РµС€РєР° Р’Р°СЃРёР»СЊРµРІР°
     db.actor:give_info_portion ("yan_find_vasilyev_start")    
     db.actor:give_info_portion ("yan_find_vasilyev_end")
-    -- какой-то ученый
+    -- РєР°РєРѕР№-С‚Рѕ СѓС‡РµРЅС‹Р№
     db.actor:give_info_portion ("yan_scientist_return_task")
     db.actor:give_info_portion ("yan_find_vasilyev_start")
-    -- теперь еще и Семенов затесался...
+    -- С‚РµРїРµСЂСЊ РµС‰Рµ Рё РЎРµРјРµРЅРѕРІ Р·Р°С‚РµСЃР°Р»СЃСЏ...
     db.actor:give_info_portion ("yan_find_scientist_semenov_start")
     db.actor:give_info_portion ("yan_kruglov_after_actor")
     db.actor:give_info_portion ("yan_scientist_return_to_bunker")
     db.actor:give_info_portion ("yan_find_scientist_done")
-    -- опять какой-то ученый... задрали
+    -- РѕРїСЏС‚СЊ РєР°РєРѕР№-С‚Рѕ СѓС‡РµРЅС‹Р№... Р·Р°РґСЂР°Р»Рё
     db.actor:give_info_portion ("yan_find_scientist_start")
     db.actor:give_info_portion ("yan_kruglov_after_actor")
     db.actor:give_info_portion ("yan_scientist_return_to_bunker")
     db.actor:give_info_portion ("yan_find_scientist_done")
-    -- отмечаемся у начальника отдела кадров
+    -- РѕС‚РјРµС‡Р°РµРјСЃСЏ Сѓ РЅР°С‡Р°Р»СЊРЅРёРєР° РѕС‚РґРµР»Р° РєР°РґСЂРѕРІ
     db.actor:give_info_portion ("bar_dolg_base_rules_start")
     db.actor:give_info_portion ("bar_dolg_base_rules_talk")
-    -- инфопоршен на поиск доктора    
+    -- РёРЅС„РѕРїРѕСЂС€РµРЅ РЅР° РїРѕРёСЃРє РґРѕРєС‚РѕСЂР°    
     db.actor:give_info_portion ("esc_find_doctor_start")
     
     if need_items ~= nil and need_items == false then return end
     local actor = db.actor
-    -- Создадим различные объекты, которые нам необходимы
+    -- РЎРѕР·РґР°РґРёРј СЂР°Р·Р»РёС‡РЅС‹Рµ РѕР±СЉРµРєС‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅР°Рј РЅРµРѕР±С…РѕРґРёРјС‹
 	    alife():create ("wpn_groza", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
 	    alife():create ("ammo_9x39_sp5", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
 	    alife():create ("ammo_9x39_sp5", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())

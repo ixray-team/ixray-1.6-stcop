@@ -1,9 +1,9 @@
 --[[------------------------------------------------------------------------------------------------
 Helicopter movement
-Чугай Александр
+Р§СѓРіР°Р№ РђР»РµРєСЃР°РЅРґСЂ
 
-Сделать:
-	- летать зацикленно
+РЎРґРµР»Р°С‚СЊ:
+	- Р»РµС‚Р°С‚СЊ Р·Р°С†РёРєР»РµРЅРЅРѕ
 --------------------------------------------------------------------------------------------------]]
 
 local default_wait_time = 5000
@@ -152,7 +152,7 @@ function heli_move:waypoint_callback( obj, action_type, index )
 	self.was_callback = true
 end
 
--- поиск точки для смотрения по флажкам
+-- РїРѕРёСЃРє С‚РѕС‡РєРё РґР»СЏ СЃРјРѕС‚СЂРµРЅРёСЏ РїРѕ С„Р»Р°Р¶РєР°Рј
 function heli_move:search_look_waypoint( index )
 	if not self.patrol_look then
 		return nil
@@ -163,7 +163,7 @@ function heli_move:search_look_waypoint( index )
 		return nil
 	end
 
-	local pt_chosen_idx = move_mgr.choose_look_point( self.patrol_look, self.path_look_info, search_for ) -- индекс выбранной точки
+	local pt_chosen_idx = move_mgr.choose_look_point( self.patrol_look, self.path_look_info, search_for ) -- РёРЅРґРµРєСЃ РІС‹Р±СЂР°РЅРЅРѕР№ С‚РѕС‡РєРё
 
 	if pt_chosen_idx then
 		return pt_chosen_idx
@@ -216,7 +216,7 @@ function heli_move:check_health_flags()
 	end
 end
 
--- просмотреть флажки следующующей точки пути и продолжить движение соответствующим образом
+-- РїСЂРѕСЃРјРѕС‚СЂРµС‚СЊ С„Р»Р°Р¶РєРё СЃР»РµРґСѓСЋС‰СѓСЋС‰РµР№ С‚РѕС‡РєРё РїСѓС‚Рё Рё РїСЂРѕРґРѕР»Р¶РёС‚СЊ РґРІРёР¶РµРЅРёРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРј РѕР±СЂР°Р·РѕРј
 function heli_move:update_movement_state()
 	self.state = state_move
 
@@ -243,7 +243,7 @@ function heli_move:update_movement_state()
 	end
 end
 
--- подготовить обычный полёт к следующей точке
+-- РїРѕРґРіРѕС‚РѕРІРёС‚СЊ РѕР±С‹С‡РЅС‹Р№ РїРѕР»С‘С‚ Рє СЃР»РµРґСѓСЋС‰РµР№ С‚РѕС‡РєРµ
 function heli_move:prepare_move()
 	if self.heliObject:GetState() ~= CHelicopter.eMovPatrolPath or self.next_index == 0 then
 		printf( "heli_move: starting patrol '%s' from point %d", self.a.path_move, self.next_index )
@@ -256,20 +256,20 @@ function heli_move:prepare_move()
 		self.heliObject:GoPatrolByPatrolPath( self.a.path_move, self.next_index )
 	end
 
-	-- смотреть вперёд
+	-- СЃРјРѕС‚СЂРµС‚СЊ РІРїРµСЂС‘Рґ
 	self.heliObject:LookAtPoint( dummy_vector, false )
 
-	-- атаковать выбранную точку уже на подлёте, если задано "e" в следующей точке path_move
+	-- Р°С‚Р°РєРѕРІР°С‚СЊ РІС‹Р±СЂР°РЅРЅСѓСЋ С‚РѕС‡РєСѓ СѓР¶Рµ РЅР° РїРѕРґР»С‘С‚Рµ, РµСЃР»Рё Р·Р°РґР°РЅРѕ "e" РІ СЃР»РµРґСѓСЋС‰РµР№ С‚РѕС‡РєРµ path_move
 	self:process_attack_params( self.path_move_info, self.next_index )
 end
 
--- подготовить полёт к следующей точке с учётом того, что в ней мы будем смотреть в точку из path_look
+-- РїРѕРґРіРѕС‚РѕРІРёС‚СЊ РїРѕР»С‘С‚ Рє СЃР»РµРґСѓСЋС‰РµР№ С‚РѕС‡РєРµ СЃ СѓС‡С‘С‚РѕРј С‚РѕРіРѕ, С‡С‚Рѕ РІ РЅРµР№ РјС‹ Р±СѓРґРµРј СЃРјРѕС‚СЂРµС‚СЊ РІ С‚РѕС‡РєСѓ РёР· path_look
 function heli_move:prepare_look()
 	printf( "heli_move: going to look in the next point %d", self.next_index )
 
 	self.look_duration = self:waypoint_param_num( self.path_look_info, self.look_index, "t" )
 
-	-- если нужно задержаться в следующей точке, то отправить в точку (destspeed=0), иначе отправить по пути (destspeed="dv")
+	-- РµСЃР»Рё РЅСѓР¶РЅРѕ Р·Р°РґРµСЂР¶Р°С‚СЊСЃСЏ РІ СЃР»РµРґСѓСЋС‰РµР№ С‚РѕС‡РєРµ, С‚Рѕ РѕС‚РїСЂР°РІРёС‚СЊ РІ С‚РѕС‡РєСѓ (destspeed=0), РёРЅР°С‡Рµ РѕС‚РїСЂР°РІРёС‚СЊ РїРѕ РїСѓС‚Рё (destspeed="dv")
 	if self.look_duration then
 		printf( "heli_move: sent to position" )
 
@@ -284,19 +284,19 @@ function heli_move:prepare_look()
 
 	self.heliObject:LookAtPoint( self.patrol_look:point( self.look_index ), true )
 
-	-- атаковать выбранную точку уже на подлёте, если задано "e" в следующей точке path_move
+	-- Р°С‚Р°РєРѕРІР°С‚СЊ РІС‹Р±СЂР°РЅРЅСѓСЋ С‚РѕС‡РєСѓ СѓР¶Рµ РЅР° РїРѕРґР»С‘С‚Рµ, РµСЃР»Рё Р·Р°РґР°РЅРѕ "e" РІ СЃР»РµРґСѓСЋС‰РµР№ С‚РѕС‡РєРµ path_move
 	self:process_attack_params( self.path_move_info, self.next_index )
 
 	printf( "heli_move: dest speed = %d", self.heliObject:GetSpeedInDestPoint( 0 ) )
 end
 
--- мы на точке, в которой прописано смотрение в другую точку
+-- РјС‹ РЅР° С‚РѕС‡РєРµ, РІ РєРѕС‚РѕСЂРѕР№ РїСЂРѕРїРёСЃР°РЅРѕ СЃРјРѕС‚СЂРµРЅРёРµ РІ РґСЂСѓРіСѓСЋ С‚РѕС‡РєСѓ
 function heli_move:update_look_state()
 	printf( "heli_move: start looking" )
 
 	self.state = state_look
 
-	-- если хотели задержаться, то посчитать время окончания задержки, иначе оно уже наступило
+	-- РµСЃР»Рё С…РѕС‚РµР»Рё Р·Р°РґРµСЂР¶Р°С‚СЊСЃСЏ, С‚Рѕ РїРѕСЃС‡РёС‚Р°С‚СЊ РІСЂРµРјСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РґРµСЂР¶РєРё, РёРЅР°С‡Рµ РѕРЅРѕ СѓР¶Рµ РЅР°СЃС‚СѓРїРёР»Рѕ
 	if self.look_duration then
 		self.look_finish_time = self.look_duration + time_global()
 
@@ -306,8 +306,8 @@ function heli_move:update_look_state()
 	end
 end
 
--- установка врага (цели) или сброс.
--- вызывается на каждой вершине пути
+-- СѓСЃС‚Р°РЅРѕРІРєР° РІСЂР°РіР° (С†РµР»Рё) РёР»Рё СЃР±СЂРѕСЃ.
+-- РІС‹Р·С‹РІР°РµС‚СЃСЏ РЅР° РєР°Р¶РґРѕР№ РІРµСЂС€РёРЅРµ РїСѓС‚Рё
 function heli_move:process_attack_params( path_info, index )
 	local wpns = self:waypoint_param( path_info, index, "w" )
 
@@ -370,7 +370,7 @@ function add_to_binder( npc, ini, scheme, section, storage )
 
 	local new_action = heli_move( npc, storage )
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events( npc, storage, new_action )
 end
 
@@ -385,8 +385,8 @@ function set_scheme( npc, ini, scheme, section )
 	a.rocket_delay     = utils.cfg_get_number( ini, section, "rocket_delay",     npc, false, nil  )
 	a.default_velocity = utils.cfg_get_number( ini, section, "default_velocity", npc, false, default_velocity )
 
-	a.path_move_info = nil -- Будут инициализированы в reset(), сейчас пути могут быть еще
-	a.path_look_info = nil -- не загружены.
+	a.path_move_info = nil -- Р‘СѓРґСѓС‚ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅС‹ РІ reset(), СЃРµР№С‡Р°СЃ РїСѓС‚Рё РјРѕРіСѓС‚ Р±С‹С‚СЊ РµС‰Рµ
+	a.path_look_info = nil -- РЅРµ Р·Р°РіСЂСѓР¶РµРЅС‹.
 
 	local st = db.storage[npc:id()]
 	st.combat:read_custom_data( ini, section )
