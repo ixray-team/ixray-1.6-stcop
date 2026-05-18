@@ -390,7 +390,7 @@ void dxRenderDeviceRender::End()
 		PROF_EVENT("Async Screenshot");
 		DoAsyncScreenshot();
 	}
-#ifdef DEBUG_DRAW
+#if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
 	{
 		PROF_EVENT("ImGui EndRender");
 		CImGuiManager& MyImGui = CImGuiManager::Instance();

@@ -257,7 +257,7 @@ public:
 	void Initialize_SVGStorage();
 
 private:
-	CSVGStorage* m_pStorageSVG;
+	CSVGStorage* m_pStorageSVG = nullptr;
 	
 #ifdef USE_DX11
 	map_DS	m_ds;
