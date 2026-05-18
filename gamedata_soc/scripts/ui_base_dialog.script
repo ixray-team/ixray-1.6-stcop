@@ -150,19 +150,6 @@ function base_dialog:InitControls(caption)
 	self.message_box:SetAutoDelete(true)
 	self.message_box:SetWindowName("message_box")
 	self:AttachChild(self.message_box)	
---	self.message_box:SetFont(GetFontLetterica25())
---	self.message_box:Init("ui\\ui_frame_dialog",self.message_rect.x, 
---										 self.message_rect.y, 
---										 self.message_rect.width, 
---										 self.message_rect.height)
---	self.message_box:SetStyle(0)	
---	self.message_box:Hide()
---	self:Register(self.message_box)
-
---	self.message_box:AutoCenter()
-
-	-- CODE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>	
-	
 end
 
 function base_dialog:OnKeyboard(dik, keyboard_action)

@@ -53,6 +53,8 @@
 		<command id="kb_screenshot"					exe="screenshot"/>
 		<command id="kb_quit"						exe="quit"/>
 		<command id="kb_console"					exe="console"/>
+		<command id="ui_mm_save_game"				exe="quick_save"/>
+		<command id="ui_mm_load_game"				exe="quick_load"/>
 	</group>
 	<group name="kb_grp_multiplayer">
 		<command id="kb_artefact"					exe="artefact"/>

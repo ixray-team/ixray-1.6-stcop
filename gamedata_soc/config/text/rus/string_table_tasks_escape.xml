@@ -25,7 +25,7 @@
 	<string id="esc_blockpost_case_to_trader_2">
 		<text>Принести ящик торговцу</text>
 	</string>
-	<string id="esc_defend_lager_from_killers">
+	<string id="esc_defend_lager">
 		<text>Защитить лагерь новичков от наемников</text>
 	</string>
 	<string id="esc_defend_lager_from_killers_0">
@@ -131,10 +131,10 @@
 		<text>Обратиться к бармену за работой</text>
 	</string>
 	<string id="yan_scientist_job">
-		<text>Помощь ученным</text>
+		<text>Помощь ученым</text>
 	</string>
 	<string id="yan_scientist_job_text">
-		<text>Предложить свою помощь ученным</text>
+		<text>Предложить свою помощь ученым</text>
 	</string>
 	<string id="find_railroad_passage">
 		<text>Пробраться за железнодорожную насыпь</text>

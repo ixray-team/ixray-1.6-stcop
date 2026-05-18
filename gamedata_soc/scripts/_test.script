@@ -108,7 +108,7 @@ function wwwww_main()
 	game.start_tutorial("part_1_pda")
 end
 
-function __main()
+function main()
    local h 		= hit()
    h.power 		= 0.05
    h.direction 	= vector():set(0, 0, 1)
@@ -130,7 +130,7 @@ function __main()
 
 end
 
-function main()
+function __main()
 	local task = CGameTask()
 
 	task:load("artefact")

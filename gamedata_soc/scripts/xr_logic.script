@@ -1064,7 +1064,13 @@ function cfg_get_overrides(ini, section, npc)
 	l.combat_type       = cfg_get_condlist(ini, section, "combat_type", npc)
 	l.on_combat         = cfg_get_condlist(ini, section, "on_combat", npc)
 	l.companion_enabled = utils.cfg_get_bool(ini, section, "companion_enabled", npc, false)
-	l.soundgroup		= utils.cfg_get_string(ini, section, "soundgroup", npc, false, "")
+
+	if string.find(section, "kamp") ~= nil then
+		l.soundgroup		= utils.cfg_get_string(ini, section, "center_point", npc, false, "")
+	else
+		l.soundgroup		= utils.cfg_get_string(ini, section, "soundgroup", npc, false, "")
+	end
+
 
 	return l
 end

@@ -1094,7 +1094,8 @@ gulags.pri_monolith.job = function(sj, gname, type, squad, groups)
 
     -- walkers (одиночные патрули вокруг базы)
     prior = {8, 7, 8, 12, 12, 7}
-    state1_restr = {"", "_kolos_restr", "_base_restr", "", "", "_hotel_restr"}
+    --'state1_restr = {"", "_kolos_restr", "_base_restr", "", "", "_hotel_restr"}
+	state1_restr = {"", "_kolos_restr", "_base_restr", "", "", ""}
     local pred_pl = {m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_s, m_predicate_all}
 	for i, v in pairs({1, 3, 4, 5, 6, 8}) do
         --- state: main
@@ -1139,7 +1140,8 @@ gulags.pri_monolith.job = function(sj, gname, type, squad, groups)
     -- followers (парные патрули перед базой)
     prior = {8, 8, 8, 8}
     state1_kamp  = {"_fight_in_kolos", "_fight_in_hotel"}
-    state1_restr = {"_kolos_restr",    "_hotel_restr"}
+    --'state1_restr = {"_kolos_restr",    "_hotel_restr"}
+	state1_restr = {"_kolos_restr",    ""}
     for i, v in pairs({7, 10}) do
         for j = 1, 2 do
             --- state: main

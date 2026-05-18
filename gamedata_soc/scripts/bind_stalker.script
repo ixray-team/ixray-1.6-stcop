@@ -6,6 +6,13 @@ function actor_init    (npc)
 	npc:bind_object(actor_binder(npc))
 end
 
+local game_difficulty_by_num = {
+	[0] = "gd_novice",
+	[1] = "gd_stalker",
+	[2] = "gd_veteran",
+	[3] = "gd_master"
+	}
+
 lasthealth  = 0
 lasttime	= 0
 post_process = 0
@@ -334,6 +341,10 @@ function actor_binder:save(packet)
 	printf("actor_binder:save(): self.object:name()='%s'", self.object:name())
 	object_binder.save(self, packet)
 
+	--' Сохраняем уровень сложности
+	packet:w_u8(level.get_game_difficulty())
+
+
 	--' Сохраняем данные об отключенном вводе
 	if self.st.disable_input_time == nil then
 		packet:w_bool(false)
@@ -354,6 +365,10 @@ function actor_binder:load(reader)
 	printf("actor_binder:load(): self.object:name()='%s'", self.object:name())
 	object_binder.load(self, reader)
 	printf("actor_binder:object_binder.load(): self.object:name()='%s'", self.object:name())
+
+	--' Загружаем уровень сложности
+	local game_difficulty = reader:r_u8()
+	get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
 
 	if reader:r_eof() then
 		abort("SAVE FILE IS CORRUPT")

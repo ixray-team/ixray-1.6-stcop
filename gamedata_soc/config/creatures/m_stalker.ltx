@@ -407,8 +407,8 @@ sound_anomaly_death				= fight\death\anomaly_
 sound_hit						= fight\hit\hit_
 sound_humming					= states\idle\idle_
 sound_alarm						= fight\enemy\enemy_
-sound_backup					= fight\backup\backup_
-sound_detour					= fight\detour\detour_
+sound_backup					= fight\backup\backup_,fight\threat\threat_close_
+sound_detour					= fight\detour\detour_,fight\fire\fire_,fight\threat\threat_close_
 sound_friendly_fire				= fight\friendly_fire\friendly_fire_
 sound_panic_human				= states\panic_human\panic_human_
 sound_panic_monster				= states\panic_monster\panic_monster_
@@ -429,7 +429,7 @@ sound_attack_no_allies				= fight\fire\fire_,fight\threat\threat_distant_
 sound_attack_allies_single_enemy	= fight\attack\attack_,fight\attack\attack_one_,fight\fire\fire_
 sound_attack_allies_several_enemies	= fight\attack\attack_,fight\attack\attack_many_,fight\fire\fire_
 sound_search1_no_allies				= fight\threat\threat_distant_
-sound_search1_with_allies			= fight\searching_enemy\search_
+sound_search1_with_allies			= fight\searching_enemy\search_,fight\searching_enemy\enemy_lost_
 
 ;---STEP MANAGER------------------------------------------------------
 LegsCount						= 2
@@ -514,3 +514,19 @@ ph_character_have_wounded_state = true; имеет ли персонаж состояние раненый
 $spawn = "stalkers\stalker_trader"			; option for Level Editor
 use_single_item_rule = off
 can_select_items	 = off
+
+[stalker_sakharov]:stalker_trader
+$spawn							= "stalkers\stalker_sakharov"
+immunities_sect					= stalker_immunities_sakharov
+
+[stalker_immunities_sakharov]
+burn_immunity 				= 0.0				;коэффициенты иммунитета 
+strike_immunity 			= 0.0
+shock_immunity 				= 0.0
+wound_immunity				= 0.0
+radiation_immunity 			= 0.0
+telepatic_immunity 			= 0.0
+chemical_burn_immunity 		= 0.0
+explosion_immunity 			= 0.0
+fire_wound_immunity  		= 0.0 
+wound_2_immunity  			= 0.0

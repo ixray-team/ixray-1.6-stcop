@@ -456,6 +456,14 @@ function CRandomTask:task_fail(p1, p2)
 			abort("WRONG RANDOM TASK %s %s", tostring(p1), tostring(p2))
 		end
 
+		--' Проверяем что жив, выдавший квест.
+		local parent = alife():story_object(story_by_parent[sel_task.parent])
+		if parent == nil or (parent.alive ~= nil and not parent:alive()) then
+			self.task_info[self.active_task_by_type[p1]].status = "failed"
+			self.task_info[self.active_task_by_type[p1]].last_task_time = game.get_game_time()
+			return true		
+		end
+
 		if sel_task.status == "refused" or sel_task.status == "failed" then
 			self.task_info[self.active_task_by_type[p1]].last_task_time = game.get_game_time()
 			return true
@@ -552,6 +560,12 @@ function CRandomTask:task_avail(actor, npc, p1, p2, p3, calculate)
 end
 --' Проверка свойств таска
 function CRandomTask:check_task_props(task_id)
+	--' Проверка по активным заданиям данного типа у вендора.
+	if self.active_task_by_type[self.task_info[task_id].complex_type] ~= nil then
+		self.task_info[task_id].enabled_props = false
+		return
+	end
+
 	--' Проверка по кондлисту
 	if xr_logic.pick_section_from_condlist(db.actor, db.actor, self.task_info[task_id].condlist) == nil then
 		self.task_info[task_id].enabled_props = false
@@ -631,6 +645,18 @@ function CRandomTask:check_task_props(task_id)
 		for k,v in pairs(self.task_info[task_id].target_objects) do
 			local obj = alife():object(v)
 			if obj ~= nil then
+				--' Нужно игнорировать предметы, которые находяться у вендоров.
+				if obj.parent_id ~= nil then
+					for kk,vv in pairs(parent_by_story) do
+						local parent = alife():story_object(kk)
+						if parent ~= nil and obj.parent_id == parent.id then
+							--' Игнорим предмет
+							self.task_info[task_id].enabled_props = false
+							return							
+						end
+					end
+				end
+
 				self.task_info[task_id].enabled_props = true
 				return
 			end	
@@ -890,8 +916,6 @@ function CRandomTask:stats(obj)
 		end
 	end
 end
-
-
 function get_random_task()
 	if random_task == nil then
 		random_task = CRandomTask()

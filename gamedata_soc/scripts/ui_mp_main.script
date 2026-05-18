@@ -84,6 +84,10 @@ function mp_main:InitControls()
 	
 	xml:InitStatic					("static_gs_logo",self)
 
+	local _ver = xml:InitStatic		("static_version",self)
+	local mm						= main_menu.get_main_menu()
+	_ver:SetText					("ver. " .. mm:GetGSVer())
+
 end
 
 function mp_main:UpdateControls()
@@ -395,7 +399,7 @@ function mp_main:GatherServerData()
 
 	-- pda hunt -------------------------------------------------------------------------
 	if self.check_pda_hunt:GetCheck() then
-		cmdstr = cmdstr .. "/pdahunt=1" .. tmp
+		cmdstr = cmdstr .. "/pdahunt=1"
 	end	
 	
 	-- warm up time ---------------------------------------------------------------------

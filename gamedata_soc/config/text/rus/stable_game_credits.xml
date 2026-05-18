@@ -257,7 +257,7 @@
 		<text>- Редакторы</text>
 	</string>
 	<string id="st_iassenev_ai">
-		<text>Дмистрий Ясенев</text>
+		<text>Дмитрий Ясенев</text>
 	</string>
 	<string id="st_iassenev_ai2">
 		<text>- ИИ/Симуляция</text>
@@ -1944,13 +1944,13 @@
 		<text>Владимиру Авдееву</text>
 	</string>
 	<string id="st_thanks_chernobyl">
-		<text>Александру Новикову, Игорю Грамоткину </text>
+		<text>Генеральному директору ЧАЭС Игорю Грамоткину,</text>
 	</string>
 	<string id="st_thanks_chernobyl2">
-		<text>и остальному персоналу и администрации</text>
+		<text>заместителю технического директора по безопасности ЧАЭС Александру Новикову</text>
 	</string>
 	<string id="st_thanks_chernobyl3">">
-		<text>Чернобыльской электростанции за поддержку</text>
+		<text>а также остальному персоналу и администрации Чернобыльской Электростанции за поддержку</text>
 	</string>
 	<string id="st_thanks_administration">
 		<text>Администрации Зоны отчуждения за разрешение</text>
@@ -1977,12 +1977,13 @@
 	<string id="st_line_vert">
 		<text>|</text>
 	</string>
-	<string id="st_thanks_naumov">
+ 	<string id="st_thanks_naumov">
 		<text>Александру Наумову за огромный информационный  </text>
 	</string>
 	<string id="st_thanks_naumov2">
 		<text>вклад и за его благородную миссию</text>
 	</string>
+
 	<string id="st_thanks_merregnon">
 		<text>Томасу Боэкеру, Маркусу Холлеру</text>
 	</string>
@@ -2031,13 +2032,49 @@
 	<string id="st_thanks_fanbase8">
 		<text>Николая Дашевского, Abe, Антона Бровко, Mario, fen1x,</text>
 	</string>
+
 	<string id="st_thanks_fanbase9">
-		<text>Алана Ногуейра да Гаму и всех остальных многочисленных</text>
+		<text>Диму Кудрявцева, Рубена Коса, Лева Соколова aka Davinci,</text>
 	</string>
 	<string id="st_thanks_fanbase10">
-		<text>поклонников по всему миру, которые страстно поддерживали </text>
+		<text>Максима Попенкера, Алексей Шоленберг, DEICIDE[NBF],</text>
 	</string>
 	<string id="st_thanks_fanbase11">
+		<text>Круглов Павел aka BuHHu-nyx, Малыхин Алексей, Holoduk,</text>
+	</string>
+	<string id="st_thanks_fanbase12">
+		<text>Вячеслав Романченко, Ян Олешковский aka Mad Dog,</text>
+	</string>
+	<string id="st_thanks_fanbase13">
+		<text>Samael aka Ариманов, RVCool, Lestat, Сергей Пивин, Gall,</text>
+	</string>
+	<string id="st_thanks_fanbase14">
+		<text>Critic, Дмитрий “DoN Rumata” Козлов, Кондратьев С.А.,</text>
+	</string>
+	<string id="st_thanks_fanbase15">
+		<text>Дмитрий Калинин, Макс Тарасов, Андрей Рогозин aka Raga,</text>
+	</string>
+	<string id="st_thanks_fanbase16">
+		<text>Михаил Алесич, Пъедимон Алессандро, Bad, Marf, Vantala,</text>
+	</string>
+	<string id="st_thanks_fanbase17">
+		<text>Behringer, DA_Star, STALKER Sanek, Дейв Миллер (P R E Y),</text>
+	</string>
+
+	<string id="st_thanks_fanbase18">
+		<text>Goodspeed, Ian_C, Grisly Silence, Midnight Rambler, Dale Oleverio,</text>
+	</string>
+	<string id="st_thanks_fanbase19">
+		<text>ruintertained, UltimateGecko, Snowgim, Franz La Zerte, Chickenballz,</text>
+	</string>
+
+	<string id="st_thanks_fanbase20">
+		<text>Алана Ногуейра да Гаму и всех остальных многочисленных</text>
+	</string>
+	<string id="st_thanks_fanbase21">
+		<text>поклонников по всему миру, которые страстно поддерживали </text>
+	</string>
+	<string id="st_thanks_fanbase22">
 		<text>S.T.A.L.K.E.R. на протяжении всех этих лет</text>
 	</string>
 	<string id="st_thanks_all">
@@ -2051,6 +2088,62 @@
 	</string>
 	<string id="st_thanks_all4">
 		<text>Ваши благие дела не будут забыты!</text>
+	</string>
+
+	<string id="st_thanks_license1">
+		<text>Мы хотели бы выразить огромную признательность следующим Open-source проектам:</text>
+	</string>
+
+	<string id="st_thanks_license2">
+		<text>ode.org за физический движок (Open Dynamic Engine, ODE)</text>
+	</string>
+	<string id="st_thanks_license3">
+		<text>lua.org за язык скриптования (Lua)</text>
+	</string>
+	<string id="st_thanks_license4">
+		<text>luajit.luaforge.net за оптимизирующий на лету компилятор Lua (LuaJIT)</text>
+	</string>
+	<string id="st_thanks_license5">
+		<text>www.rasterbar.com/products/luabind.html за компоновочную библиотеку Lua (Luabind)</text>
+	</string>
+	<string id="st_thanks_license6">
+		<text>xiph.org за видео (Theora) и аудио (Vorbis) кодеки</text>
+	</string>
+	<string id="st_thanks_license7">
+		<text>jrsoftware.org за инсталлятор (Inno Setup)</text>
+	</string>
+	<string id="st_thanks_license8">
+		<text>openal.org за аудио библиотеку (OpenAL)</text>
+	</string>
+	<string id="st_thanks_license9">
+		<text>boost.org за библиотеку шаблонов (Boost)</text>
+	</string>
+	<string id="st_thanks_license10">
+		<text>sourceforge.net/projects/loki-lib за библиотеку шаблонов (Loki)</text>
+	</string>
+	<string id="st_thanks_license11">
+		<text>Don Clugston (codeproject.com/cpp/FastDelegate.asp http://www.codeproject.com/cpp/FastDelegate.asp)</text>
+	</string>
+	<string id="st_thanks_license12">
+		<text>за его библиотеку fastdelegate (fastdelegate)</text>
+	</string>
+
+	<string id="st_thanks_license13">
+		<text>intelle-soft.com за бесплатную библиотеку отлавливания глюков BugTrap</text>
+	</string>
+
+	<string id="st_thanks_license14">
+		<text>Отдельная благодарность компаниям, которые помогали нам с оптимизацией игры:</text>
+	</string>
+
+	<string id="st_thanks_license15">
+		<text>Intel</text>
+	</string>
+	<string id="st_thanks_license16">
+		<text>AMD</text>
+	</string>
+	<string id="st_thanks_license17">
+		<text>nVidia</text>
 	</string>
 
         <string id="st_ui_art">

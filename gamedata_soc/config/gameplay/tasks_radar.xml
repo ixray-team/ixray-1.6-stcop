@@ -45,6 +45,7 @@
 			<text>pripyat_task_title</text>
 			<icon x="50" y="50" width="50" height="50">ui\ui_icons_task</icon>
 			<infoportion_complete>pri_stadium_reached</infoportion_complete>
+			<infoportion_complete>pri_stadium_scene_start</infoportion_complete>
 		</objective>
 		<objective>
 			<text>pripyat_task_objective_1</text>
@@ -59,5 +60,7 @@
 			<object_story_id>pri_stadium_entrance</object_story_id>
 			<map_location_hidden>1</map_location_hidden>
 			<infoportion_complete>pri_stadium_reached</infoportion_complete>
+			<infoportion_complete>pri_stadium_scene_start</infoportion_complete>
+			
 		</objective>
 	</game_task>

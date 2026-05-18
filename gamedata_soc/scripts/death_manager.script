@@ -109,23 +109,17 @@ end
 class "drop_manager"
 function drop_manager:__init(npc)
 	self.npc = npc
-	self.dropped = false
-end
-function drop_manager:save(packet)
-	packet:w_bool(self.dropped)
-end
-function drop_manager:load(packet)
-	self.dropped = packet:r_bool()
 end
 function drop_manager:create_release_item()
-	if self.dropped == true then
+	--' Спрашиваем у серверного объекта генерились ли предметы
+	local se_obj = alife():object(self.npc:id())
+	if se_obj.death_droped == true then
 		return
 	end
-	self.dropped = true
+	se_obj.death_droped = true
 
     --' Запускаем итератор на удаление предметов
     self.npc:iterate_inventory(keep_item, self.npc)
-
 
     --' Проверка на отсутствие спауна лута
     local ini = self.npc:spawn_ini()

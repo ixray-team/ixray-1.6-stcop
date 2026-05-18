@@ -30,7 +30,7 @@
 		</item>
 
 		<item><!--Твои Задания расположены в первом разделе ПДА.-->
-			<length_sec>3</length_sec>
+			<length_sec>4</length_sec>
 			<pause_state>off</pause_state>
 			<guard_key/>
 			<cursor_pos/>
@@ -64,7 +64,7 @@
 		</item>
 		
 		<item><!--Запомни - каждое новое задание автоматически переключает целеуказание на мини-карте на себя-->
-			<length_sec>8</length_sec>
+			<length_sec>9</length_sec>
 			<pause_state>off</pause_state>
 			<guard_key/>
 			<sound>characters_voice\scenario\trader\trader_tutorial_pda_4</sound>
@@ -75,7 +75,7 @@
 		</item>
 
 		<item><!--Дальше: Второй раздел ПДА - это Карта.-->
-			<length_sec>4</length_sec>
+			<length_sec>5</length_sec>
 			<pause_state>off</pause_state>
 			<guard_key/>
 			<sound>characters_voice\scenario\trader\trader_tutorial_pda_5</sound>
@@ -91,7 +91,7 @@
 		</item>
 
 		<item><!--…кнопки над картой позволят тебе увеличивать или уменьшать карту…кхе-->
-			<length_sec>6</length_sec>
+			<length_sec>5</length_sec>
 			<pause_state>off</pause_state>
 			<guard_key/>
 			<sound>characters_voice\scenario\trader\trader_tutorial_pda_6</sound>
@@ -128,7 +128,7 @@
 		</item>
 
 		<delme_item><!--…Еще сможешь добавлять или убирать собственные пометки на карте... -->
-			<length_sec>5</length_sec>
+			<length_sec>6</length_sec>
 			<pause_state>off</pause_state>
 			<guard_key/>
 			<sound>characters_voice\scenario\trader\trader_tutorial_pda_8</sound>
@@ -150,7 +150,7 @@
 		</delme_item>
 
 		<item><!--вобщем разберешься…там не сложно…В ПДА есть раздел Контакты -->
-			<length_sec>7</length_sec>
+			<length_sec>8</length_sec>
 			<pause_state>off</pause_state>
 			<guard_key/>
 			<sound>characters_voice\scenario\trader\trader_tutorial_pda_9</sound>
@@ -187,7 +187,7 @@
 		<item><!--…Будь осторожен, если рядом враги, на визоре они отмечаются красным, 
 					друзья отмечены зеленым, нейтралы - желтым. А..ну и ПДА мертвых сталкеров подсвечиваются серым. 
 					В мародерстве помогает. гы-ыы…Что еще?...ах да есть Дневник…-->
-			<length_sec>21</length_sec>
+			<length_sec>22</length_sec>
 			<pause_state>off</pause_state>
 			<guard_key/>
 			<function_on_start>mob_trader.on_start_tutorial_item_1</function_on_start>
@@ -241,7 +241,7 @@
 		</item>
 		
 		<item><!--ну там все просто..э-эээ...Далее....Энциклопедия..К-хе-->
-			<length_sec>5</length_sec>
+			<length_sec>6</length_sec>
 			<pause_state>off</pause_state>
 			<guard_key/>
 			<sound>characters_voice\scenario\trader\trader_tutorial_pda_14_1</sound>
@@ -258,7 +258,7 @@
 
 		<item><!--В нее заносится информация о Зоне и советы по выживанию, которые ты найдешь или получишь 
 					от сталкеров.... В принципе все.. -->
-			<length_sec>10</length_sec>
+			<length_sec>11</length_sec>
 			<pause_state>off</pause_state>
 			<guard_key/>
 			<sound>characters_voice\scenario\trader\trader_tutorial_pda_15</sound>
@@ -277,7 +277,7 @@
 					Моя рация тянет в радиусе 30 километров и я тебя всегда найду. 
 					Будешь получать от меня задания и последние новости. А на первых порах помогу советом. 
 					Все ясно или повторить для тех кто в танке? Гы-гы.-->
-			<length_sec>30</length_sec>
+			<length_sec>31</length_sec>
 			<pause_state>off</pause_state>
 			<guard_key/>
 			<disabled_key>use</disabled_key>

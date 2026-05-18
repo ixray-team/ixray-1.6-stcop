@@ -2,15 +2,15 @@
 	<vote_wnd x="130" y="640" width="250" height="120" stretch="1">
 		<texture>ui_frame_01</texture>
 	
-		<static_str_message x="10" y="5" width="240" height="20">
+		<static_str_message x="10" y="5" width="240" height="20" complex_mode="1">
 			<text font="letterica16" r="255" g="255" b="255" a="230">test1</text>
 		</static_str_message>
 		
-		<static_time_message x="10" y="40" width="240" height="20">
+		<static_time_message x="10" y="40" width="240" height="20" complex_mode="1">
 			<text font="letterica16" r="255" g="255" b="255" a="230">test3</text>
 		</static_time_message>
 
-		<static_hint x="10" y="60" width="350" height="60">
+		<static_hint x="10" y="60" width="350" height="60" complex_mode="1">
 			<text font="letterica16" r="255" g="255" b="255" a="130">mp_vote_hint</text>
 		</static_hint>
 	</vote_wnd>

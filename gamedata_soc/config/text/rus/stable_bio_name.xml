@@ -854,19 +854,19 @@
 		<text>Ветеран исследований Зоны. Участвовал в первых экспедициях 2007 года.</text>
 	</string>
 	<string id="yan_saharov_name">
-		<text>Профессор Сахаров</text>
+		<text>Сахаров</text>
 	</string>
 	<string id="yan_semenov_bio">
 		<text>Научный сотрудник мобильной лаборатории. Детальная информация отсутствует.</text>
 	</string>
 	<string id="yan_semenov_name">
-		<text>Ассистент Семенов</text>
+		<text>Семенов</text>
 	</string>
 	<string id="yan_vasilyev_name">
 		<text>Васильев</text>
 	</string>
 	<string id="zombie_name">
-		<text>Зомбированный сталкер</text>
+		<text>Зомбированный</text>
 	</string>
 	<string id="actor_name">
 		<text>Меченый</text>

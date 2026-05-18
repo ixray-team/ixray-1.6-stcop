@@ -71,6 +71,13 @@ function options_dialog:InitControls()
 	self.message_box = CUIMessageBoxEx()
 	
 	self.b_r2_restart_shown		= false
+	
+	self.cap_download				= xml:InitStatic		("download_static",self)
+	self.text_download				= xml:InitStatic		("download_text",self)
+	self.download_progress			= xml:InitProgressBar	("progress_download", self)
+	self.btn_cancel_download		= xml:Init3tButton		("btn_cancel_download", self)
+	self:Register					(self.btn_cancel_download, "btn_cancel_download")
+	
 end
 
 function options_dialog:UpdateControls()
@@ -133,6 +140,8 @@ function options_dialog:InitCallBacks()
 	self:AddCallback("btn_simply_graphic",	ui_events.BUTTON_CLICKED,	self.OnSimplyGraphic,		self)	
 	self:AddCallback("btn_keyb_default",	ui_events.BUTTON_CLICKED,	self.OnBtnDefault,			self)
 	self:AddCallback("btn_check_updates",	ui_events.BUTTON_CLICKED,	self.OnBtnCheckUpdates,		self)
+
+	self:AddCallback("btn_cancel_download",	ui_events.BUTTON_CLICKED,	self.OnBtn_CancelDownload,	self)
 	
 end
 
@@ -143,7 +152,8 @@ end
 
 function options_dialog:OnBtnDefault()
 	local console			= get_console()
-	console:execute			("cfg_load default_controls")
+--	console:execute			("cfg_load default_controls")
+	console:execute			("unbindall")
 
 	local opt				= COptionsManager()
 	opt:SetCurrentValues	("mm_opt_controls")
@@ -265,3 +275,30 @@ function options_dialog:OnKeyboard(dik, keyboard_action)
 	return res
 end
 
+function options_dialog:Update()
+	CUIScriptWnd.Update(self)
+	
+	local mm = main_menu.get_main_menu()
+	local sss = mm:GetPatchProgress()
+	
+	if sss:GetInProgress() then
+		self.text_download:Show					(true)
+		self.cap_download:Show					(true)
+		self.download_progress:Show				(true)
+		local _progr							= sss:GetProgress()
+		self.download_progress:SetProgressPos	(_progr)
+		local str								= string.format("%.0f%%(%s)",_progr,sss:GetFlieName())
+		self.text_download:SetText				(str)
+		self.btn_cancel_download:Show			(true)
+	else
+		self.text_download:Show					(false)
+		self.cap_download:Show					(false)
+		self.download_progress:Show				(false)
+		self.btn_cancel_download:Show			(false)
+	end
+end
+
+function options_dialog:OnBtn_CancelDownload()
+	local mm = main_menu.get_main_menu()
+	mm:CancelDownload()
+end

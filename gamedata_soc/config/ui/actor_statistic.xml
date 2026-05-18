@@ -158,7 +158,7 @@
 			<text_0 x="0" y="0" width="20" height="20">
 				<text align="l" x="0" y="0" font="letterica18" a="200"/>
 			</text_0>
-			<text_1 x="30" y="0" width="270" height="20">
+			<text_1 x="30" y="0" width="270" height="20" complex_mode="1">
 				<text align="l" x="0" y="0" font="letterica18" a="200"/>
 			</text_1>
 			<text_2 x="290" y="0" width="30" height="20">

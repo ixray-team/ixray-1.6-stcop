@@ -1,15 +1,15 @@
 
 	<game_task id="mil_kill_sniper" prio="300">
-		<title>mil_quest_kill_sniper</title>
+		<title>mil_kill_sniper</title>
 		<objective>
-			<text>mil_quest_kill_sniper</text>
+			<text>mil_kill_sniper</text>
 			<icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
 			<infoportion_fail>mil_dolg_task_fail</infoportion_fail>
 			<infoportion_complete>mil_dolg_skull_sniper_end</infoportion_complete>
 			<article>mil_dolg_kill_sniper</article>
 		</objective>
 		<objective>
-			<text>mil_quest_kill_sniper</text>
+			<text>mil_kill_sniper</text>
 			<icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
             <map_location_type hint="mil_freedom_sniper">green_location</map_location_type>
             <object_story_id>Mil_Sniper</object_story_id>
@@ -33,7 +33,7 @@
 	</game_task>
 		
 	<game_task id="mil_kill_lukash" prio="295">
-		<title>mil_dolg_assault_headquarter</title>
+		<title>mil_kill_lukash</title>
 		<objective>
 			<text>mil_dolg_assault_freedom</text>
 			<icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
@@ -69,7 +69,7 @@
 			<function_fail>mil_tasks.dolg_job_fail2</function_fail>
 		</objective>
 		<objective>
-			<text>mil_dolg_assault_headquarter</text>
+			<text>mil_kill_lukash</text>
 			<icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
             <map_location_type hint="mil_kill_lukash_hint">blue_location</map_location_type>
             <object_story_id>Mil_Lukash</object_story_id>
@@ -92,16 +92,16 @@
 	</game_task>
 	
 	<game_task id="mil_mad_job" prio="295">
-		<title>mil_take_flash</title>
+		<title>mil_mad_job</title>
 		<objective>
-			<text>mil_take_flash</text>
+			<text>mil_mad_job</text>
 			<icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
 			<infoportion_complete>mil_max_job_complete</infoportion_complete>
 			<function_fail>mil_tasks.max_job_failed</function_fail>
 			<article>mil_mad_flash_job</article>
 		</objective>
 		<objective>
-			<text>mil_take_flash</text>
+			<text>mil_mad_job</text>
 			<icon x="0" y="0" width="50" height="50">ui\ui_icons_task</icon>
             <map_location_type hint="mil_crazy_hint">blue_location</map_location_type>
             <object_story_id>Mil_Crazy</object_story_id>
@@ -221,9 +221,9 @@
 	</game_task>
 	
 	<game_task id="mil_blockpost_job" prio="290">
-		<title>mil_blockpost_help</title>
+		<title>mil_blockpost_job</title>
 		<objective>
-			<text>mil_blockpost_help</text>
+			<text>mil_blockpost_job</text>
 			<icon>ui_iconsTotal_mil_blockpost_job</icon>
 			<infoportion_complete>mil_fblockpost_quest_reward</infoportion_complete>
 			<function_fail>mil_tasks.fblockpost_job_failed</function_fail>
@@ -310,6 +310,7 @@
             <map_location_type hint="mil_watertower_hint">green_location</map_location_type>
             <object_story_id>Mil_WaterTower</object_story_id>
 			<infoportion_set_complete>mil_controller_dead</infoportion_set_complete>
+			<infoportion_set_complete>mil_hunt_ready</infoportion_set_complete>
 			<function_complete>mil_tasks.bloodsuckers_dead</function_complete>
             <infoportion_fail>mil_miser_task_failed</infoportion_fail>
 		</objective>

@@ -262,6 +262,6 @@
 		<text>Онлайн услуги S.T.A.L.K.E.R. недоступны.</text>
 	</string>
 	<string id="ui_st_err_sb_master_server_conn_fail">
-		<text>Невозможно присоединиться к главному серверу</text>
+		<text>Невозможно присоединиться к мастер-серверу</text>
 	</string>
 </string_table>

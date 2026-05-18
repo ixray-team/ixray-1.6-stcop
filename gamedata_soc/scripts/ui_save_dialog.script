@@ -172,7 +172,7 @@ end
 
 function save_dialog:OnButton_ok_clicked()
 	-- prepare message box
-	local message_box	= self:GetMessageBox("message_box")
+	local message_box	= self.message_box
 	local main_frame	= self:GetFrameWindow("main_frame")	
 	
 	-- Get file name

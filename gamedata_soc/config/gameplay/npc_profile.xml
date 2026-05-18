@@ -9,6 +9,10 @@
 	<character id="default">
 		<class>Stalker_general</class>
 	</character>
+	<character id="mp_actor">
+		<class>mp_actor</class>
+		<specific_character>mp_actor</specific_character>
+	</character>
 
 <!-- Escape -->
 	<character id="escape_trader">	

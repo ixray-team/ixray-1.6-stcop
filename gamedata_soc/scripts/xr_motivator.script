@@ -60,9 +60,6 @@ function motivator_binder:reinit()
 
 	--memusage.collect_info(self.object, "after_statemgr")
 	--memusage.collect_info(self.object, "reinit_end")
-
-	--' Инициализируем генератор вещей при смерти
-	self.death_manager = death_manager.drop_manager(self.object)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function motivator_binder:net_spawn(sobject)
@@ -178,7 +175,7 @@ function motivator_binder:death_callback(victim, who)
 
 	smart_terrain.on_death( self.object:id() )
 	
-    self.death_manager:create_release_item()
+	death_manager.drop_manager(self.object):create_release_item()
 
 	self:clear_callbacks()
 
@@ -222,17 +219,9 @@ end
 function motivator_binder:update(delta)
 	object_binder.update(self, delta)
 
-	--' КАМИКАДЗЕ!
---'	if self.object:alive() then
---'		self.object:change_team(1, math.random(20), math.random(20))
---'		self.object:change_team(2, math.random(20), math.random(20))
---'		self.object:change_team(3, math.random(20), math.random(20))
---'	end
-
-
     if self.first_update == false then
         if self.object:alive() == false then
-            self.death_manager:create_release_item()
+			death_manager.drop_manager(self.object):create_release_item()
         end        
         self.first_update = true
     end
@@ -331,7 +320,6 @@ function motivator_binder:save(packet)
 	xr_logic.save_obj(self.object, packet)
 	dialog_manager.save(self.object, packet)
 	trade_manager.save(self.object, packet)
-	self.death_manager:save(packet)
 end
 
 function motivator_binder:load(reader)
@@ -351,7 +339,6 @@ function motivator_binder:load(reader)
 	xr_logic.load_obj(self.object, reader)
 	dialog_manager.load(self.object, reader)
 	trade_manager.load(self.object, reader)
-	self.death_manager:load(reader)
 end
 
 function motivator_binder:hear_callback(self, who, sound_type, sound_position, sound_power)

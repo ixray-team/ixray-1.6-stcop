@@ -2,6 +2,7 @@
 »зменени€ script_version:
 	3 - сохранение пол€ job_online
 	5 - сохранение пол€ was_in_smart_terrain
+	6 - сохранение пол€ death_droped
 ]]
 
 class "se_stalker"	(cse_alife_human_stalker)
@@ -25,6 +26,8 @@ function se_stalker:__init (section) super (section)
 
 	-- посещал ли сталкер хоть один smart_terrain
 	self.was_in_smart_terrain = false
+
+	self.death_droped = false --'√енерил ли персонаж выпадаемые предметы или нет.
 
 	--' Test for dima
 	self.dont_spawn_online = false
@@ -99,6 +102,7 @@ function se_stalker:STATE_Write (packet)
 	end
 
 	packet:w_bool(self.was_in_smart_terrain)
+	packet:w_bool(self.death_droped )
 end
 --------------------
 function se_stalker:STATE_Read (packet, size)
@@ -122,6 +126,9 @@ function se_stalker:STATE_Read (packet, size)
 
 	if self.script_version >= 5 then
 		self.was_in_smart_terrain = packet:r_bool()
+	end
+	if self.script_version >= 6 then
+		self.death_droped = packet:r_bool()
 	end
 end
 --------------------
@@ -181,6 +188,11 @@ function se_stalker:on_unregister()
 		end
 		actor_stats.remove_from_ranking(self.id)
 	end
+end
+--------------------
+function se_stalker:on_spawn()
+	cse_alife_human_stalker.on_spawn(self)
+
 end
 --------------------
 function se_stalker:on_death(killer)

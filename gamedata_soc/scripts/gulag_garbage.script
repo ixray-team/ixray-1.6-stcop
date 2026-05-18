@@ -1356,7 +1356,7 @@ function load_job(sj, gname, type, squad, groups)
 		t = { section = "logic@gar_psevdowounded_2",
 			idle = 0,
 			prior = 3, state = {0},
-			in_rest = "", out_rest = "",
+			in_rest = "", out_rest = "gar_sniper_in_restrictor",
 			predicate = function(obj_info) 
         					return obj_info.name == "gar_sniper_bandit"			           
 						end

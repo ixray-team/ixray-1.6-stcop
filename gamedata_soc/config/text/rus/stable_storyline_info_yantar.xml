@@ -34,10 +34,10 @@
 	<string id="journal_after_kill_brain_name">
 		<text>Второй сон</text>
 	</string>
-	<string id="journal_before_vasilyev_PDA">
+	<string id="journal_before_vasilyev_pda">
 		<text>Ну вот я почти в шаге от одного из людей Стрелка. Призрак, с одним из ученых ушел в подземную лабораторию Х16. Одно «но» - я врядли найду его живым. Ученый вернулся оттуда один и погиб уже на подходе к лагерю. Ученые выдали мне некое защитное устройство для защиты от этого неизвестного излучения. Надеюсь оно оправдает себя. Они хотят чтобы я проник во внутрь и отключил источник излучения - тогда они смогут изучить все на месте. Ну что ж, с Богом.</text>
 	</string>
-	<string id="journal_before_vasilyev_PDA_name">
+	<string id="journal_before_vasilyev_pda_name">
 		<text>В шаге от Призрака</text>
 	</string>
 	<string id="storyline_ghost_info">

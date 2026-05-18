@@ -1,4 +1,4 @@
-	<string id="mil_blockpost_help">
+	<string id="mil_blockpost_job">
 		<text>Оказать помощь блокпосту Свободы "Барьер"</text>
 	</string>
 	<string id="mil_courier">
@@ -31,7 +31,7 @@
 	<string id="mil_dolg_assault_freedom">
 		<text>Помочь отряду Долга в устранении Лукаша</text>
 	</string>
-	<string id="mil_dolg_assault_headquarter">
+	<string id="mil_kill_lukash">
 		<text>Убить Лукаша</text>
 	</string>
 	<string id="mil_dolg_assault_support">
@@ -97,7 +97,7 @@
 	<string id="mil_put_flash_to_max">
 		<text>Отдать флешку Максу</text>
 	</string>
-	<string id="mil_quest_kill_sniper">
+	<string id="mil_kill_sniper">
 		<text>Убить снайпера на вышке</text>
 	</string>
 	<string id="mil_quest_report_dolg">
@@ -121,7 +121,7 @@
 	<string id="mil_sniper">
 		<text>Снайпер</text>
 	</string>
-	<string id="mil_take_flash">
+	<string id="mil_mad_job">
 		<text>Получить флешку у безумного снайпера</text>
 	</string>
 	<string id="mil_talk_cook">

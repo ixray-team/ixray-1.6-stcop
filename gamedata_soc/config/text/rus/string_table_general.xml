@@ -37,7 +37,7 @@
 		<text>опытный</text>
 	</string>
 	<string id="Found_PDA">
-		<text>найденные КПК</text>
+		<text>Найденные КПК</text>
 	</string>
 	<string id="freedom">
 		<text>Свобода</text>
@@ -145,7 +145,7 @@
 		<text>ветеран</text>
 	</string>
 	<string id="zombied">
-		<text>Зомбированный</text>
+		<text>зомби</text>
 	</string>
 	<string id="Btn_Cancel">
 		<text>Отменить</text>

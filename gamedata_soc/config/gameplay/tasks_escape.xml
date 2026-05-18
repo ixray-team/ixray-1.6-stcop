@@ -113,7 +113,7 @@
 	</game_task>
 
 	<game_task id="esc_defend_lager" prio="385">
-		<title>esc_defend_lager_from_killers</title>
+		<title>esc_defend_lager</title>
 		<objective>
 			<text>esc_defend_lager_from_killers_0</text>
 			<icon>ui_iconsTotal_esc_defend_lager</icon>

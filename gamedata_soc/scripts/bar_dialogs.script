@@ -161,6 +161,11 @@ function have_rg6(first_speaker, second_speaker)
   	return first_speaker:object("wpn_rg-6") ~= nil
 end
 
+function dont_have_rg6(first_speaker, second_speaker)
+  	return first_speaker:object("wpn_rg-6") == nil or not has_alife_info("mil_svoboda_rg6_gain")
+end
+
+
 function give_rg6(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "wpn_rg-6", "out")
 end

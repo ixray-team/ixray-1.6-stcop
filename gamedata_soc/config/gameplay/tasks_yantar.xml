@@ -132,9 +132,9 @@
 </game_task>
 
 <game_task id="yan_find_vasilyev_task" prio="340">
-		<title>yan_find_lab</title>
+		<title>yan_find_vasilyev_task</title>
 		<objective>
-			<text>yan_find_lab</text>
+			<text>yan_find_vasilyev_task</text>
 			<icon>ui_iconsTotal_yan_find_vasilyev_task</icon>
 			<infoportion_complete>yan_find_laboratory_end</infoportion_complete>
 			<article>descr_yan_find_lab</article>
@@ -147,8 +147,8 @@
 			<function_call_complete>yantar_tasks.yantar_vasilyev_spam</function_call_complete>
 		</objective>
 		<objective>
-			<text>yan_find_lab</text>
-			<map_location_type hint="yan_find_lab">green_location</map_location_type>
+			<text>yan_find_vasilyev_task</text>
+			<map_location_type hint="yan_find_vasilyev_task">green_location</map_location_type>
 			<object_story_id>yan_mapspot_from_vasilyev</object_story_id>
 			<map_location_hidden>1</map_location_hidden>
 			<infoportion_complete>yan_find_laboratory_end</infoportion_complete>

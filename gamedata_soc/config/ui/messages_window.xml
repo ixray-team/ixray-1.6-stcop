@@ -16,12 +16,12 @@
 
     <!-- PREFIX -->
 	<chat_prefix x="20" y="385" width="70" height="30">
-		<text font="letterica18" r="238" g="224" b="198" vert_align="c" complex_mode="0"></text>
+		<text font="letterica18" r="238" g="224" b="198" vert_align="c" complex_mode="0"/>
 	</chat_prefix>
 
 	<!-- EDIT BOX -->
-	<chat_edit_box x="90" y="385" width="900" height="30" >
-		<text font="letterica18" r="238" g="224" b="198" vert_align="c" complex_mode="0"></text>
+	<chat_edit_box x="90" y="385" width="800" height="30" >
+		<text font="letterica18" r="238" g="224" b="198" vert_align="c" complex_mode="0"/>
 	</chat_edit_box>
 
 	<!-- CHAT LOG -->

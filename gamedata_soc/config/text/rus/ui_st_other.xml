@@ -109,7 +109,7 @@
 		<text>Вещи Меченого</text>
 	</string>
 	<string id="st_game_over_press_jump">
-		<text>нажмите ($$ACTION_JUMP$$) для выхода в главное меню</text>
+		<text>Нажмите ($$ACTION_JUMP$$) для выхода в главное меню</text>
 	</string>
 	<string id="st_level">
 		<text>Уровень</text>
@@ -215,5 +215,20 @@
 	</string>
 	<string id="ui_st_connecting_to_masterserver">
 		<text>Присоединение к мастер-серверу</text>
+	</string>
+	<string id="mp_only_one_voting">
+		<text>Разрешено только одно активное голосование</text>
+	</string>
+	<string id="ui_st_patch_download_success">
+		<text>Патч успешно скачан. Установить?</text>
+	</string>
+	<string id="ui_st_patch_download_error">
+		<text>Невозможно скачать патч.</text>
+	</string>
+	<string id="ui_st_load_game_confirm">
+		<text>Загрузка игры приведет к потере несохраненных данных. Желаете продолжить?</text>
+	</string>
+	<string id="ui_st_invalid_saved_game">
+		<text>Не совпадает версия сохранённой игры или сохранённая игра испорчена.</text>
 	</string>
 </string_table>
