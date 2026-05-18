@@ -30,6 +30,9 @@ using errno_t = int;
 #define SH_DENYWR 0
 #define _SH_DENYNO 0
 
+#define PLATFORM_SLASH '/'
+#define PLATFORM_SLASH_STR "/"
+
 #define xr_fseek fseeko
 #define xr_ftell ftello
 
