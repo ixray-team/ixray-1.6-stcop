@@ -65,6 +65,10 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 	}
 #endif
 
+#if defined(IXR_LINUX) 
+	setenv("DXVK_WSI_DRIVER", "SDL3", 1);
+#endif
+
 	APILevel = NewAPILevel;
 
 	switch (NewAPILevel)

@@ -45,7 +45,6 @@ jobs:
         config:
           - Debug
           - RelWithDebInfo
-          - Release
 
     runs-on: ${{ matrix.system }}
 
@@ -123,7 +122,6 @@ jobs:
         config:
           - Debug
           - RelWithDebInfo
-          - Release
 
     defaults:
       run:
@@ -180,7 +178,11 @@ jobs:
           liblzo2-2 \
           liblzo2-dev \
           libogg-dev \
-          libyaml-cpp-dev
+          libyaml-cpp-dev \
+          meson \
+          glslang-tools \
+          libvulkan-dev \
+          spirv-headers
 
       - name: Configure targets
         run: |
