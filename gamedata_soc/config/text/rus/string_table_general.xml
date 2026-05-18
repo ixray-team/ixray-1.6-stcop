@@ -183,9 +183,6 @@
 	<string id="st_search_treasure">
 		<text>Обыскать тайник ($$ACTION_USE$$)</text>
 	</string>
-	<string id="inventory_item_use">
-		<text>Поднять предмет ($$ACTION_USE$$)</text>
-	</string>
 	<string id="ui_mm_check_updates">
 		<text>Обновления</text>
 	</string>

@@ -171,24 +171,6 @@
 	<string id="st_loading_sectors_portals">
 		<text>Загрузка секторов и порталов</text>
 	</string>
-	<string id="ui_st_conn_version_differs">
-		<text>Ошибка соединения: Отличаются версии.</text>
-	</string>
-	<string id="ui_st_conn_cdkey_invalid">
-		<text>Ошибка соединения: Неверный CD-Key.</text>
-	</string>
-	<string id="ui_st_conn_cdkey_in_use">
-		<text>Ошибка соединения: Такой CD-Key уже используется.</text>
-	</string>
-	<string id="ui_st_conn_cdkey_disabled">
-		<text>Ошибка соединения: Ваш CD-Key заблокирован. Свяжитесь со службой поддержки.</text>
-	</string>
-	<string id="ui_st_conn_new_patch">
-		<text>Доступен новый патч. \n Версия: %s\n %s\n Хотите загрузить его сейчас?</text>
-	</string>
-	<string id="ui_st_conn_no_new_patch">
-		<text>Нет новых патчей</text>
-	</string>
 	<string id="ui_mm_delete_existing_file_q">
 		<text>Вы действительно хотите удалить файл?</text>
 	</string>

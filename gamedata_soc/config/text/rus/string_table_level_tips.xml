@@ -6,14 +6,8 @@
 	<string id="car_character_use">
 		<text>Открыть дверь ($$ACTION_USE$$)</text>
 	</string>
-	<string id="character_use">
-		<text>Говорить ($$ACTION_USE$$)</text>
-	</string>
 	<string id="dead_character_use_or_drag">
 		<text>Обыскать труп ($$ACTION_USE$$) \n Тащить труп (SHIFT+$$ACTION_USE$$)</text>
-	</string>
-	<string id="dead_character_use">
-		<text>Обыскать труп ($$ACTION_USE$$)</text>
 	</string>
 	<string id="general_complete_task">
 		<text>Задание выполнено:</text>
@@ -47,9 +41,6 @@
 	</string>
 	<string id="general_update_task">
 		<text>Задание обновлено:</text>
-	</string>
-	<string id="physic_shell_use">
-		<text>Двигать объект ($$ACTION_USE$$)</text>
 	</string>
 	<string id="st_codelock">
 		<text>Кодовый замок ($$ACTION_USE$$)</text>
