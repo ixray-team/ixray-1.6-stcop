@@ -244,7 +244,7 @@ function add_to_binder(npc, char_ini)
 		properties["need_bodyguard"] = xr_evaluators_id.zmey_bodyguard_base + 1
 		operators["action_bodyguard"]  = xr_actions_id.zmey_bodyguard_base + 1
 
-		-- // evaluators
+		-- evaluators
 		manager:add_evaluator (properties["need_bodyguard"], this.evaluator_need_bodyguard(xr_motivator.storage[npc:id()].bodyguard, "bodyguard_need_bodyguard"))
 
 		local new_action = this.action_bodyguard_activity(npc, "action_bodyguard_activity", xr_motivator.storage[npc:id()].bodyguard)

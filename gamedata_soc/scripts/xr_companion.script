@@ -295,7 +295,7 @@ function add_to_binder(npc)
 	properties["wound"]            = xr_evaluators_id.sidor_wounded_base + 1
 	operators["action_companion"]   = xr_actions_id.zmey_companion_base + 1
 
-	-- // evaluators
+	-- evaluators
 	manager:add_evaluator (properties["need_companion"],   this.evaluator_need_companion  (db.storage[npc:id()].companion, "companion_need_companion"))
 
 	local new_action = this.action_companion_activity(npc, "action_companion_activity", db.storage[npc:id()].companion)

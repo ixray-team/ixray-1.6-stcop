@@ -98,7 +98,7 @@ function ce_switcher:use(who)
 	return true;
 end
 
-/*
+--[[
 class "switcher_handler"
 
 function switcher_handler:on_use(what,who)
@@ -134,4 +134,4 @@ function main()
 		
 end
 
-*/
+]]--

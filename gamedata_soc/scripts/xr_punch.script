@@ -139,7 +139,7 @@ function add_to_binder(npc)
 	properties["need_punch"]   = xr_evaluators_id.zmey_punch_base + 1
 	operators["action_punch"]   = xr_actions_id.zmey_punch_base + 1
 
-	-- // evaluators
+	-- evaluators
 	manager:add_evaluator (properties["need_punch"],   this.evaluator_need_punch  (db.storage[npc:id()].punch, "punch_need_punch"))
 
 	local new_action = this.action_punch_activity(npc, "action_punch_activity", db.storage[npc:id()].punch)

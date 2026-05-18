@@ -371,7 +371,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	properties["need_zoneguard"] = xr_evaluators_id.zmey_zoneguard_base + 1
 	operators["action_zoneguard"]  = xr_actions_id.zmey_zoneguard_base + 1
 
-	-- // evaluators
+	-- evaluators
 	manager:add_evaluator(properties["need_zoneguard"],
 	this.evaluator_need_zoneguard(db.storage[npc:id()].zoneguard, "zoneguard_need"))
 

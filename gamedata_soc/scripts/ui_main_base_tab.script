@@ -22,7 +22,7 @@ function main_base_tab:InitControls(x, y)
 	self.main_rect.y = 0 
 	self.main_rect.width = 257
 	self.main_rect.height = 270
-	// huge btn struct with all common parameters
+	-- huge btn struct with all common parameters
 	self.btn = {}
 	self.btn.indent = -1
 	self.btn.x = 0

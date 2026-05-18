@@ -297,7 +297,7 @@ function add_to_binder(npc)
 	properties["need_talker"]   = xr_evaluators_id.zmey_talker_base + 1
 	operators["action_talker"]   = xr_actions_id.zmey_talker_base + 1
 
-	-- // evaluators
+	-- evaluators
 	manager:add_evaluator (properties["need_talker"],   this.evaluator_need_talker  (xr_motivator.storage[npc:id()].talker, "talker_need"))
 
 	local new_action = this.action_talker_activity(npc, "action_talker_activity", xr_motivator.storage[npc:id()].talker)

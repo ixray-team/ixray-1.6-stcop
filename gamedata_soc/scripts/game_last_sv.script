@@ -372,11 +372,11 @@ function game_sv_LastStanding:InitZoneCallback()
     zone:set_callback( self,"on_enter_zone", true )
     zone:set_callback( self,"on_exit_zone",  false )
 end
-//comments:
-// at first we have to add scripted zone on our map
-// LevelEditor.exe, open map
-// place shape(sphere or box)for zone on the map:6.Shape->Sphere add
-// 7.SpawnElements->ai->script_zone add
-// assign shape for zone: Attach object-> pick to shape
-// assign name for the script_zone object (right mouse button->properties)
-//
+--comments:
+-- at first we have to add scripted zone on our map
+-- LevelEditor.exe, open map
+-- place shape(sphere or box)for zone on the map:6.Shape->Sphere add
+-- 7.SpawnElements->ai->script_zone add
+-- assign shape for zone: Attach object-> pick to shape
+-- assign name for the script_zone object (right mouse button->properties)
+--

@@ -1,6 +1,4 @@
---///////////////////////////////////////////////////
---///////////////////////////////////////////////////
---///////////////////////////////////////////////////
+-----------------------------------------------------
 class "motivation_global"	(motivation)
 
 function motivation_global:__init(motivations) super()
@@ -28,9 +26,7 @@ class "motivation_final"	(motivation_action)
 function motivation_final:__init(goal) super(goal)
 end
 
---///////////////////////////////////////////////////
---///////////////////////////////////////////////////
---///////////////////////////////////////////////////
+-----------------------------------------------------
 class "evaluator_const"		(property_evaluator)
 
 function evaluator_const:__init(value) super()
@@ -41,9 +37,7 @@ function evaluator_const:evaluate()
 	return					self.value
 end
 
---///////////////////////////////////////////////////
---///////////////////////////////////////////////////
---///////////////////////////////////////////////////
+-----------------------------------------------------
 class "evaluator_alive"		(property_evaluator)
 
 function evaluator_alive:__init() super()
@@ -53,9 +47,7 @@ function evaluator_alive:evaluate()
 	return					self.object:alive()
 end
 
---///////////////////////////////////////////////////
---///////////////////////////////////////////////////
---///////////////////////////////////////////////////
+-----------------------------------------------------
 class "action_alive"			(action_base)
 
 function action_alive:__init() super()
@@ -90,9 +82,7 @@ function action_alive:finalize()
 	action_base.finalize	(self)
 end
 
---///////////////////////////////////////////////////
---///////////////////////////////////////////////////
---///////////////////////////////////////////////////
+-----------------------------------------------------
 class "stalker_binder" (object_binder)
 
 function stalker_binder:__init		(object) super(object)
@@ -128,7 +118,7 @@ function stalker_binder:reload		(section)
 	operators["dead"]		= 0
 	operators["free"]		= 1
 
-	-- // motivations
+	-- motivations
 	manager:add_motivation	(motivations["global"],		this.motivation_global(motivations))
 
 	goal:clear				()
@@ -144,12 +134,12 @@ printf	("It works!!!")
 	manager:add_connection	(motivations["global"],		motivations["dead"])
 	manager:add_connection	(motivations["global"],		motivations["alive"])
 
-	-- // evaluators
+	-- evaluators
 	manager:add_evaluator	(properties["alive"],		this.evaluator_alive	())
 	manager:add_evaluator	(properties["dead"],		this.evaluator_const	(false))
 	manager:add_evaluator	(properties["solved"],		this.evaluator_const	(false))
 
-	-- // operators/actions
+	-- operators/actions
 	local					action = action_base()
 	action:add_precondition	(world_property(properties["alive"],	false))
 	action:add_precondition	(world_property(properties["dead"],		false))

@@ -408,7 +408,7 @@ function mp_main:GatherServerData()
 			cmdstr = cmdstr .. "/astime=" .. tmp
 		end
 		
-		if self.tab_respawn:GetActiveIndex() == 2 then // artefact capture selected
+		if self.tab_respawn:GetActiveIndex() == 2 then -- artefact capture selected
 			cmdstr = cmdstr .. "/reinf=-1"
 		else
 			tmp = self.spin_reinforcement:GetText()

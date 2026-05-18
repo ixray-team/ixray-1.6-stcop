@@ -149,7 +149,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	
   	operators["action_sleeper"]   	= xr_actions_id.zmey_sleeper_base + 1
 
-  	-- // evaluators
+  	-- evaluators
   	manager:add_evaluator (properties["need_sleeper"],   this.evaluator_need_sleeper  ("sleeper_need_sleep", db.storage[npc:id()].sleeper))
 
   	local action = this.action_sleeper_activity(npc, "action_sleeper_activity", db.storage[npc:id()].sleeper)

@@ -562,7 +562,7 @@ function add_to_binder(npc, char_ini)
 	properties["need_robber"] = xr_evaluators_id.zmey_robber_base + 1
 	operators["action_robber"] = xr_actions_id.zmey_robber_base + 1
 
-	-- // evaluators
+	-- evaluators
 	manager:add_evaluator(properties["need_robber"], this.evaluator_need_robber(xr_motivator.storage[npc:id()].robber, "robber_need"))
 
 	local new_action = this.action_robber_activity(npc, "action_robber_activity", xr_motivator.storage[npc:id()].robber)

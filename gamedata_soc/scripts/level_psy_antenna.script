@@ -16,31 +16,31 @@ pa_phase={
 	phStopping							= 3
 }
 function PsyAntenna:__init				()
-// ----------------------------------------------------------------------------------------
-// settings
-// ----------------------------------------------------------------------------------------
-// phantom gen
-// ----------------------------------------------------------------------------------------
-	self.phantom_max 					= 0 //8 //10	// max phantoms
-	self.phantom_spawn_probability		= 0.1;	// spawn probability (0..1)
-	self.phantom_spawn_radius			= 30.0;	// average radius 30.0m +-15m
-	self.phantom_spawn_height			= 2.5 //3	// average height from actor pos +-1.5m
-	// antenna
-	self.hit_amplitude					= 1.0;	// hit_amplitude*hit_factor.a
-	// pause time [from]=to
+-- ----------------------------------------------------------------------------------------
+-- settings
+-- ----------------------------------------------------------------------------------------
+-- phantom gen
+-- ----------------------------------------------------------------------------------------
+	self.phantom_max 					= 0 --8 --10	-- max phantoms
+	self.phantom_spawn_probability		= 0.1;	-- spawn probability (0..1)
+	self.phantom_spawn_radius			= 30.0;	-- average radius 30.0m +-15m
+	self.phantom_spawn_height			= 2.5 --3	-- average height from actor pos +-1.5m
+	-- antenna
+	self.hit_amplitude					= 1.0;	-- hit_amplitude*hit_factor.a
+	-- pause time [from]=to
 	self.idle_time						= {};
 	self.idle_time[20]					= 21;
-// ----------------------------------------------------------------------------------------
-// postprocess
-// ----------------------------------------------------------------------------------------
-	self.base_amplitude					= color(0.2,0.15,0.0);		// max base color diff			[0.0-0.5]
-	self.gray_amplitude					= 0.5;						// gray max intensity			[0.0-1.0]
-	self.add_factor						= 0.1;	//0.3				// factor * color_animator(RGB)	[0.0-1.0]
-	self.dual_amplitude					= 0.075 //0.05				// H&V same						[0.0-0.2]
-	self.gray_color						= color(0.33,0.33,0.33);	// RGB							[0.0-1.0]
-	self.noise_var						= noise(0.9,0.3,30);		// intensity, grain, fps		[0.0-1.0,0.0-1.0,1-100]
-// ----------------------------------------------------------------------------------------
-// class variables initialize
+-- ----------------------------------------------------------------------------------------
+-- postprocess
+-- ----------------------------------------------------------------------------------------
+	self.base_amplitude					= color(0.2,0.15,0.0);		-- max base color diff			[0.0-0.5]
+	self.gray_amplitude					= 0.5;						-- gray max intensity			[0.0-1.0]
+	self.add_factor						= 0.1;	--0.3				-- factor * color_animator(RGB)	[0.0-1.0]
+	self.dual_amplitude					= 0.075 --0.05				-- H&V same						[0.0-0.2]
+	self.gray_color						= color(0.33,0.33,0.33);	-- RGB							[0.0-1.0]
+	self.noise_var						= noise(0.9,0.3,30);		-- intensity, grain, fps		[0.0-1.0,0.0-1.0,1-100]
+-- ----------------------------------------------------------------------------------------
+-- class variables initialize
 	self.phase 							= pa_phase.phIdle;
 	self.power_factor					= fcolor();
 	self.eff_time						= 0;
@@ -82,7 +82,7 @@ function PsyAntenna:update_postprocess	()
 	self.pp.params.color_add 			= color(self.power_factor.r*self.add_factor,self.power_factor.g*self.add_factor,self.power_factor.b*self.add_factor);
 	self.pp.params.gray					= self.gray_amplitude*self.intensity;
 	self.pp.params.dual					= duality(self.dual_amplitude*self.power_factor.a,self.dual_amplitude*self.power_factor.a);
-//	self.pp.params.noise				= self.noise_var;
+--	self.pp.params.noise				= self.noise_var;
 end
 function PsyAntenna:update_psy_hit		(dt)
 	local d_time						= time_global()-self.hit_time;

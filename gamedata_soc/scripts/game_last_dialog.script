@@ -11,7 +11,7 @@ end
 
 function uiDialog:__init() super()
    self:SetFont(GetFontMedium()) --set base font for dialog.
-/*  set of registered in game fonts:
+--[[  set of registered in game fonts:
     function GetFontArialN21Russian();
     function GetFontGraffiti32Russian();
     function GetFontDI();
@@ -26,7 +26,7 @@ function uiDialog:__init() super()
     function GetFontBigDigit();
     function GetFontHeaderEurope();
     function GetFontGraffiti50Russian();
-*/
+]]--
    self:InitControls()
    self:InitCallBacks()
 end
@@ -154,7 +154,7 @@ function uiDialog:OnButton_ok_clicked()
 
    local edt = self:GetEditBox("edit_1")
 -- take control by name, dependent on type
-/*
+--[[
     function GetCheckButton(string);
     function GetFrameLineWnd(string);
     function GetPropertiesBox(string);
@@ -170,7 +170,7 @@ function uiDialog:OnButton_ok_clicked()
     function GetRadioButton(string);
     function GetFrameWindow(string);
 
-*/
+]]--
    local t = edt:GetText()
 
    printf("text is =%s",t)

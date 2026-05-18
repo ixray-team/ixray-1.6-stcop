@@ -238,12 +238,12 @@ function PostProcess:__init (ini_file)
 
     self.pp = PPData (self)
     self.pp:start ()
-    self.pp.params.color_base = color (0.5, 0.5, 0.5)               // max base color diff       [0.0-0.5]
-    self.pp.params.color_gray = color (0.0, 0.0, 0.0)               // RGB                       [0.0-1.0]
-    self.pp.params.color_add  = color (0.0, 0.0, 0.0)               // RGB                       [0.0-1.0]
-    self.pp.params.gray       = 0.0                                 // gray max intensity        [0.0-1.0]
+    self.pp.params.color_base = color (0.5, 0.5, 0.5)               -- max base color diff       [0.0-0.5]
+    self.pp.params.color_gray = color (0.0, 0.0, 0.0)               -- RGB                       [0.0-1.0]
+    self.pp.params.color_add  = color (0.0, 0.0, 0.0)               -- RGB                       [0.0-1.0]
+    self.pp.params.gray       = 0.0                                 -- gray max intensity        [0.0-1.0]
     self.pp.params.dual       = duality (0.0, 0.0)
-    self.pp.params.noise      = noise   (0.0, 0.0, 30)              // intensity, grain, fps     [0.0-1.0,0.0-1.0,1-100]
+    self.pp.params.noise      = noise   (0.0, 0.0, 30)              -- intensity, grain, fps     [0.0-1.0,0.0-1.0,1-100]
     
     self.update_called = false
 end

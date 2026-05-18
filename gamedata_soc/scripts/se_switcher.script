@@ -51,7 +51,7 @@ end
 
 
 --  -------------------------------------------------------------
-/*
+--[[
 local ps_local	= self:GetLocalPlayer()
 
 local health_msg = "---"
@@ -75,4 +75,4 @@ end
 self.m_health_wnd:SetHealth(health_msg)
 self.m_gunbox_wnd:SetAmmo(ammo_msg)
 
-*/
+]]--

@@ -5,34 +5,34 @@
 
 class "PsyAntenna"
 function PsyAntenna:__init				()
-// ----------------------------------------------------------------------------------------
-// settings
-// ----------------------------------------------------------------------------------------
-// phantom gen
-// ----------------------------------------------------------------------------------------
-	self.phantom_max 					= 8 //10	// max phantoms
-	self.phantom_spawn_probability		= 0	// spawn probability (0..1)
-	self.phantom_spawn_radius			= 30.0	// average radius 30.0m +-15m
-	self.phantom_spawn_height			= 2.5 //3	// average height from actor pos +-1.5m
-	self.phantom_fov					= 45   // ширина сектора перед глазами актёра, в котором могут рождаться фантомы
-	// antenna
-	self.hit_amplitude					= 1.0	// размер хита = self.hit_amplitude*self.hit_intensity
-// ----------------------------------------------------------------------------------------
-// class variables initialize
-// ----------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------
+-- settings
+-- ----------------------------------------------------------------------------------------
+-- phantom gen
+-- ----------------------------------------------------------------------------------------
+	self.phantom_max 					= 8 --10	-- max phantoms
+	self.phantom_spawn_probability		= 0	-- spawn probability (0..1)
+	self.phantom_spawn_radius			= 30.0	-- average radius 30.0m +-15m
+	self.phantom_spawn_height			= 2.5 --3	-- average height from actor pos +-1.5m
+	self.phantom_fov					= 45   -- ширина сектора перед глазами актёра, в котором могут рождаться фантомы
+	-- antenna
+	self.hit_amplitude					= 1.0	-- размер хита = self.hit_amplitude*self.hit_intensity
+-- ----------------------------------------------------------------------------------------
+-- class variables initialize
+-- ----------------------------------------------------------------------------------------
 	self.eff_time						= 0
 	self.hit_time						= 0
 	self.phantom_time                   = 0
-	self.intensity_inertion				= 0.05	// скорость изменения интенсивности ед/секунду
+	self.intensity_inertion				= 0.05	-- скорость изменения интенсивности ед/секунду
 	self.hit_intensity					= 0
 	self.sound_intensity				= 0
-	self.sound_intensity_base			= 0	// базовая интенсивность. к ней стремится текущая со скоростью self.intensity_inertion	
+	self.sound_intensity_base			= 0	-- базовая интенсивность. к ней стремится текущая со скоростью self.intensity_inertion	
 	self.postprocess_count				= 0  --'счетчик зарегистрированных постпроцессов
 	self.postprocess					= {} --'контейнер постпроцессов
 
-// ----------------------------------------------------------------------------------------
-// sound
-// ----------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------
+-- sound
+-- ----------------------------------------------------------------------------------------
 	self.sound_initialized				= false
 
 	self.sound_obj_right, self.sound_obj_left = xr_sound.get_sound_object("psy_voices", "random")

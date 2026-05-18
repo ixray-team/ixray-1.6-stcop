@@ -1,4 +1,4 @@
- /*
+--[[
 function l_spot    (shader, t_base, t_second, t_detail)
   r1_lspot   (shader, t_base, "model_def_spot")
 end
@@ -41,7 +41,7 @@ function normal    (shader, t_base, t_second, t_detail)
   shader:sampler  ("s_env")        :texture  ("sky\\sky_5_cube")
       : clamp()
 end
-*/
+]]--
 
 function l_spot    (shader, t_base, t_second, t_detail)
   r1_lspot   (shader, t_base, "model_def_spot")

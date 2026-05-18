@@ -13,7 +13,7 @@ function main()
          wait(5000)
          reset_action(npc, script_name())
 
-         //action(npc, anim("fake_death_2_2"), cond(cond.anim_end))
+         --action(npc, anim("fake_death_2_2"), cond(cond.anim_end))
          action(npc, move(move.walk_fwd, level.actor():position()), cond(cond.time_end, 10000))
 
          while(npc:action()) do

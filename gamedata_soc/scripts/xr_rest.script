@@ -277,11 +277,11 @@ function action_rest:execute ()
 end
 ----------------------
 function  action_rest:finalize ()
-//    if self.object:best_enemy () ~= nil then
-//       printf ("ANIMATIONS CLEARED") 
-//       self.object:clear_animations ()
-//       self.object:set_item (object.deactivate, self.object:active_item ())
-//    end    
+--    if self.object:best_enemy () ~= nil then
+--       printf ("ANIMATIONS CLEARED") 
+--       self.object:clear_animations ()
+--       self.object:set_item (object.deactivate, self.object:active_item ())
+--    end    
     action_base.finalize (self)
 end    
 ----------------------

@@ -9,7 +9,7 @@ function l_special  (shader, t_base, t_second, t_detail)
   shader:sampler  ("s_distort")   :texture  ("pfx\\pfx_dist_glass3")
 end
 
-/*
+--[[
 function normal_hq(shader, t_base, t_second, t_detail)
   shader:begin    ("model_env_hq","model_env_hq")
       : fog       (true)
@@ -24,7 +24,7 @@ function normal_hq(shader, t_base, t_second, t_detail)
     : f_linear   ()
     : project     (true)
 end
-*/
+]]--
 
 function normal   (shader, t_base, t_second, t_detail)
   shader:begin    ("model_env_lq","model_env_lq")

@@ -104,7 +104,7 @@ function save_dialog:InitControls()
 end
 
 function save_dialog:InitCallBacks()
-    // main frame buttons
+    -- main frame buttons
 	self:AddCallback("button_ok",     ui_events.BUTTON_CLICKED, 			self.OnButton_ok_clicked,		self)
 	self:AddCallback("button_cancel", ui_events.BUTTON_CLICKED, 			self.OnButton_cancel_clicked,	self)
 	self:AddCallback("button_del",	  ui_events.BUTTON_CLICKED,             self.OnButton_del_clicked,	self)
@@ -179,7 +179,7 @@ function save_dialog:OnButton_ok_clicked()
 	local edit_box		= self:GetEditBox("edit_filename")
 	self.new_save		= edit_box:GetText()
 	
-	// check for empty name
+	-- check for empty name
 	if string.len(self.new_save) == 0 then
 		self.mbox_mode = 0
 		self.message_box:Init("message_box_empty_file_name")		
@@ -187,7 +187,7 @@ function save_dialog:OnButton_ok_clicked()
 		return
 	end
 	
-	// check for match name
+	-- check for match name
 	local f = getFS()
 	local flist = f:file_list_open("$game_saves$",FS.FS_ListFiles)
 	local file_struct = f:exist("$game_saves$", self.new_save .. ".sav" )

@@ -91,7 +91,7 @@ jon_sniper_see_monster  = id_start + 5011           --5030
 jon_sniper_see_enemy    = id_start + 5012           --5031
 jon_sniper_enemy_near   = id_start + 5013           --5034
 jon_sniper_enemy_is  = id_start + 5014           --5035
-//+5 занято
+--+5 занято
 
 jon_outcast    = id_start + 5020
 jon_outcast_replics     = id_start + 5021

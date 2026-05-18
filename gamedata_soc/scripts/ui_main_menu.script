@@ -26,7 +26,7 @@ function main_menu:InitControls()
     xml:InitStatic("back_movie", self)
     xml:InitStatic("background", self)
     xml:InitStatic("fire_movie", self)
-    self.shniaga = xml:InitMMShniaga("shniaga_wnd",self);
+    self.shniaga = xml:InitMMShniaga("shniaga_wnd",self)
 	
 	self.message_box = CUIMessageBoxEx()
 	self:Register(self.message_box, "msg_box")	
@@ -100,10 +100,10 @@ end
 
 function main_menu:OnButton_last_save()
 	if (alife() == nil) then
-		self:LoadLastSave	();
+		self:LoadLastSave	()
 		return
 	end
-	
+
 	self.mbox_mode			= 1
 	self.message_box:Init	("message_box_confirm_load_save")
 	self:GetHolder():start_stop_menu(self.message_box, true)
@@ -150,7 +150,7 @@ end
 function main_menu:OnButton_new_novice_game()
 	local console = get_console()
 	console:execute("g_game_difficulty gd_novice")
-	self:StartGame()	
+	self:StartGame()
 end
 
 function main_menu:OnButton_new_stalker_game()
@@ -198,7 +198,7 @@ function main_menu:OnButton_save_clicked()
 		self.save_dlg = ui_save_dialog.save_dialog()
 		self.save_dlg.owner = self
 	end
-	
+
 	self:GetHolder():start_stop_menu(self.save_dlg, true)
 	self:GetHolder():start_stop_menu(self, true) --new
 	self:Show(false)
@@ -221,7 +221,7 @@ function main_menu:OnButton_load_clicked()
 		self.load_dlg = ui_load_dialog.load_dialog()
 		self.load_dlg.owner = self
 	end
-	
+
 	self:GetHolder():start_stop_menu(self.load_dlg, true)
 	self:GetHolder():start_stop_menu(self, true) --new
 	self:Show(false)

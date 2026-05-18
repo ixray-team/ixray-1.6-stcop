@@ -198,13 +198,13 @@ function load_common (obj, sounds_base)
               }
               }
               
-    //themes["commander_patrol"] =
-              //{
-              //{
-              //sounds_base,
-              //obj:add_sound ("Scripts\\Patrol\\Commander1_",   20, snd_type.talk, 2, 1, id ()),
-              //}
-              //}
+    --themes["commander_patrol"] =
+              --{
+              --{
+              --sounds_base,
+              --obj:add_sound ("Scripts\\Patrol\\Commander1_",   20, snd_type.talk, 2, 1, id ()),
+              --}
+              --}
 
 	themes["commander_agroprom"] =
     		{

@@ -95,7 +95,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 
      operators["action_test"] = xr_actions_id.zmey_test_base + 1
 
-       -- // evaluators
+       -- evaluators
     manager:add_evaluator(properties["need_test"], this.evaluator_need_test(storage))
 
     local new_action = this.action_test_activity(npc, "action_test_activity", storage)

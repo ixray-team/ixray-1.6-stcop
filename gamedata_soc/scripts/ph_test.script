@@ -36,8 +36,8 @@ function main()
    
    local ph_object = level_object_by_sid (014)
    ph_object:set_use_callback(callback)
-   //local door        = get_level_object("physic_object0001")
-   //door:set_use_callback(door_callback)
+   --local door        = get_level_object("physic_object0001")
+   --door:set_use_callback(door_callback)
 
 	if(ph_object) then
 		local physics_shell=ph_object:get_physics_shell()

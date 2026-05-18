@@ -96,9 +96,9 @@ function debug_get_level_object(obj_name)
     local res = level.debug_object(obj_name)
     while res == nil do
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!! НЕ ЗАКОММЕНТАРИВАЙТЕ, ИНАЧЕ НЕ БУДЕТ ВИДНО ОШИБОК ПРИ РАССТАНОВКЕ ОБЪЕКТОВ !!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+-- !!!!! НЕ ЗАКОММЕНТАРИВАЙТЕ, ИНАЧЕ НЕ БУДЕТ ВИДНО ОШИБОК ПРИ РАССТАНОВКЕ ОБЪЕКТОВ !!!!!
+-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         printf("get_level_object() is waiting for object \"%s\"", obj_name)
 
         res         = level.object(obj_name)
@@ -120,7 +120,7 @@ function distance_between(obj1, obj2)
     return obj1:position():distance_to(obj2:position())
 end
 
-// Если один объект nil, например нет актера, то считаем, что он далеко
+-- Если один объект nil, например нет актера, то считаем, что он далеко
 function distance_between_safe(obj1, obj2)
     if(obj1 == nil or obj2 == nil) then return 100000 end
 	return obj1:position():distance_to(obj2:position())
@@ -772,7 +772,7 @@ function vector_cross (v1, v2)
     return vector ():set (v1.y  * v2.z  - v1.z  * v2.y, v1.z  * v2.x  - v1.x  * v2.z, v1.x  * v2.y  - v1.y  * v2.x)
 end
 
-//Вращает вектор вокруг оси y против часовой стрелки
+--Вращает вектор вокруг оси y против часовой стрелки
 
 function vector_rotate_y (v, angle)
     angle = angle * 0.017453292519943295769236907684886
@@ -898,7 +898,7 @@ function object_type(obj)
 end
 
 
-// Является ли оbj монстром
+-- Является ли оbj монстром
 function is_object_monster(obj)
 	local otype = get_clsid(obj)
 	if(otype == clsid.crow			or
