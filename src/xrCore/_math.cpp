@@ -212,7 +212,13 @@ void	__cdecl thread_entry	(void*	_params )	{
 	// call
 	entry				(arglist);
 }
-
+#ifndef IXR_WINDOWS
+void* pthread_entry(void* params)
+{
+	thread_entry(params);
+	return nullptr;
+}
+#endif
 
 ThreadID thread_spawn	(thread_t*	entry, const char*	name, unsigned	stack, void* arglist )
 {
@@ -224,11 +230,17 @@ ThreadID thread_spawn	(thread_t*	entry, const char*	name, unsigned	stack, void* 
 #ifdef IXR_WINDOWS
 	return (ThreadID)_beginthread		(thread_entry,stack,startup);
 #else
-    pthread_t handle;
-    pthread_attr_t attr;
-    pthread_attr_init(&attr);
-    pthread_create(&handle, &attr, 0, arglist);
-    pthread_attr_destroy(&attr);
+	pthread_t handle;
+	pthread_attr_t attr;
+	pthread_attr_init(&attr);
+    
+	if (stack > 0)
+	{
+		pthread_attr_setstacksize(&attr, stack);
+	}
+
+	pthread_create(&handle, &attr, pthread_entry, startup);
+	pthread_attr_destroy(&attr);
 
 	return (ThreadID)handle;
 #endif
