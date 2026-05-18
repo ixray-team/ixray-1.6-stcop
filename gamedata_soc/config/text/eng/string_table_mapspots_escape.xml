@@ -1,0 +1,48 @@
+	<string id="blokpost_case">
+		<text>Briefcase with docs</text>
+	</string>
+	<string id="esc_fox">
+		<text>Wounded Fox.</text>
+	</string>
+	<string id="esc_mill">
+		<text>Abandoned mill. The wounded brother was last seen somewhere around here.</text>
+	</string>
+	<string id="escape_trader">
+		<text>Trader.</text>
+	</string>
+	<string id="factory_bandits">
+		<text>Bandits at the factory.</text>
+	</string>
+	<string id="killers_team">
+		<text>An unknown group of Mercs.</text>
+	</string>
+	<string id="novice_leader">
+		<text>Rookie camp leader.</text>
+	</string>
+	<string id="soldiers_bridge">
+		<text>Military checkpoint at the destroyed bridge. The soldiers are known to take bribes to let people go through.</text>
+	</string>
+	<string id="tutorial_artefact">
+		<text>Artifact.</text>
+	</string>
+	<string id="tutorial_bandits">
+		<text>Bandits who have stopped our scout.</text>
+	</string>
+	<string id="tutorial_secret">
+		<text>Dead stalker's stash.</text>
+	</string>
+	<string id="tutorial_secret_place1">
+		<text>Dead stalker's stash.</text>
+	</string>
+	<string id="tutorial_secret_shustryi">
+		<text>Nimble's stash.</text>
+	</string>
+	<string id="tutorial_wounded">
+		<text>Nimble, a prisoner.</text>
+	</string>
+	<string id="volk">
+		<text>Wolf, the leader of the rookie camp.</text>
+	</string>
+	<string id="wolfs_rangers">
+		<text>Wolf's scouts.</text>
+	</string>

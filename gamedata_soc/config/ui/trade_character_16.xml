@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <window>
-	<icon_static x="15" y="35" width="124" height="108"/>
+	<icon_static x="15" y="35" width="110" height="108"/>
 	
 	<name_static x="21" y="7" width="115" height="22">
 		<text font="graffiti22" r="238" g="155" b="23" complex_mode="0"/>

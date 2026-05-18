@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="ui_map_desc_mp_agroprom_large">
+		<text>A strange place. The silent building has its share of secrets, but the stalkers are drawn to the numerous artifacts that can be found here, despite the danger. Quick moves and accurate shots will make you Lady Luck's favorite stalker.</text>
+	</string>
+	<string id="ui_map_desc_mp_agroprom_short">
+		<text>A strange place. The silent building has its share of secrets, but the stalkers are drawn to the numerous artifacts that can be found here, despite the danger.</text>
+	</string>
+	<string id="ui_map_desc_mp_atp_large">
+		<text>The bus and trolley park is the Zone's lobby. Tractors, buses and trucks have stopped in their tracks forever. No artifacts have ever been reported, but the place is popular with experienced stalkers who hunt down rookies and grab what they can. Take cover in buildings and behind various equipment and watch out for enemies up on the roofs.</text>
+	</string>
+	<string id="ui_map_desc_mp_atp_short">
+		<text>The bus and trolley park is the Zone's lobby. Tractors, buses and trucks have stopped in their tracks forever.</text>
+	</string>
+	<string id="ui_map_desc_mp_bath_large">
+		<text>This mysterious place holds a strange attraction for people. Who built that experimental pool and what for - that will forever remain a secret. No artifacts are to be found here. Only the remnants of strange machines and devices attract stalkers here. Keep your eyes on the roofs and remember that the radiation level is extremely high in this area.</text>
+	</string>
+	<string id="ui_map_desc_mp_bath_short">
+		<text>This mysterious place holds a strange attraction for people. Who built that experimental pool and what for - that will forever remain a secret.</text>
+	</string>
+	<string id="ui_map_desc_mp_factory_large">
+		<text>A gloomy abandoned factory. There is no telling how many stalkers have found their demise in these walls. All kinds of anomalies abound and it still draws stalkers in like a magnet, since valuable artifacts can be found here. But watch out for the radiation levels!</text>
+	</string>
+	<string id="ui_map_desc_mp_factory_short">
+		<text>A gloomy abandoned factory. There is no telling how many stalkers have found their demise in these walls.</text>
+	</string>
+	<string id="ui_map_desc_mp_garbage_large">
+		<text>This is a section of the huge dump where mountains of radioactive trash were brought after the disaster in '86... things like dilapidated cranes, hardware, and so on. You can find some remnants of old facilities and a huge hangar. All this is close to the entrance to the Zone and many artifacts are lying around. That's what brings in stalkers looking for easy pickings.</text>
+	</string>
+	<string id="ui_map_desc_mp_garbage_short">
+		<text>This is a section of the huge dump where mountains of radioactive trash were brought after the disaster in '86... things like dilapidated cranes, hardware, and so on</text>
+	</string>
+	<string id="ui_map_desc_mp_lost_village_large">
+		<text>A deserted, godforsaken village deep inside the Zone. The small, shallow, rusty-colored lake filled with car wrecks breeds a subconscious fear in the hearts of the Zone's explorers. Beware of snipers, but keep in mind that the Zone favors the brave.</text>
+	</string>
+	<string id="ui_map_desc_mp_lost_village_short">
+		<text>A deserted, godforsaken village deep inside the Zone. The small, shallow, rusty-colored lake filled with car wrecks breeds a subconscious fear in the hearts of the Zone's explorers.</text>
+	</string>
+	<string id="ui_map_desc_mp_military_1_large">
+		<text>A disaffected army base with broken-down trucks and APCs left to rot, some barracks, and a ruined command center. But it's not what it seems. The base is rich in artifacts and the enemy can be hiding behind every corner. Prove your mettle and collect the reward!</text>
+	</string>
+	<string id="ui_map_desc_mp_military_1_short">
+		<text>A disaffected army base with broken-down trucks and APCs left to rot, some barracks, and a ruined command center.</text>
+	</string>
+	<string id="ui_map_desc_mp_military_2_large">
+		<text>This old village is a sinister place and a death-trap. But, if you've come this far despite all the risks, be prepared to die a sudden death. Since no place is safe here, may your scope and your silencer keep you in one piece.</text>
+	</string>
+	<string id="ui_map_desc_mp_military_2_short">
+		<text>This old village is a sinister place and a death-trap. But, if you've come this far despite all the risks, be prepared to die a sudden death.</text>
+	</string>
+	<string id="ui_map_desc_mp_prypiat_large">
+		<text>The city of Pripyat is the former residence of the workers of NPP, or what's left of it. The ruins of this industrial skeleton contain quite an immediate danger. You truly need to guard your life here.</text>
+	</string>
+	<string id="ui_map_desc_mp_prypiat_short">
+		<text>The city of Pripyat isn't far from NPP - the heirloom of the Chernobyl catastrophe.</text>
+	</string>
+	<string id="ui_map_desc_mp_railraod_short">
+		<text>A small railroad station at the factory Rostok.</text>
+	</string>
+	<string id="ui_map_desc_mp_railroad_large">
+		<text>A small railroad station at the factory Rostok. The rusted train cars and diesel locomotives now stand at an eternal fork in the road. The many artifacts found here lure in desperate stalkers from all over the Zone.</text>
+	</string>
+	<string id="ui_map_desc_mp_rostok_large">
+		<text>Under heaps of metal and behind walls of concrete, this factory holds a special kind of silence. Last century, it bustled of activity with the workers hurrying to their shift with slogans booming from the loudspeakers...But now the factory has done its share of work.</text>
+	</string>
+	<string id="ui_map_desc_mp_rostok_short">
+		<text>The abandoned factory holds a deep silence under heaps of metal and behind walls of concrete.</text>
+	</string>
+	<string id="ui_map_desc_mp_workshop_large">
+		<text>The outskirts of the Rostok factory before Duty's arrival. This dilapidated area is nonetheless very rich in artifacts. The empty hangars and warehouses teem with a hundred dangers every step of the way. Be extremely careful and keep a close watch on the white tower.</text>
+	</string>
+	<string id="ui_map_desc_mp_workshop_short">
+		<text>The outskirts of the Rostok factory before Duty's arrival. This dilapidated area is nonetheless very rich in artifacts.</text>
+	</string>
+</string_table>

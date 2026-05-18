@@ -2109,8 +2109,20 @@
 				<auto_static start_time="417" length_sec="52" x="185" y="40" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti50" color="ui_clr_1">st_special_thanks</text>
 				</auto_static>
-				<auto_static start_time="417" length_sec="5" x="185" y="220" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="417" length_sec="5" x="185" y="120" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti32" color="white">st_thanks_avdeev</text>
+				</auto_static>
+				<auto_static start_time="417" length_sec="5" x="185" y="150" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_special_thanks_1</text>
+				</auto_static>
+				<auto_static start_time="417" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_special_thanks_2</text>
+				</auto_static>
+				<auto_static start_time="417" length_sec="5" x="185" y="210" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_special_thanks_3</text>
+				</auto_static>
+				<auto_static start_time="417" length_sec="5" x="185" y="240" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_special_thanks_4</text>
 				</auto_static>
 
 				<!-- next frame -->

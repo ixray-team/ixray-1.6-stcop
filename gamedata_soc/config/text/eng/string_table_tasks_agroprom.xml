@@ -1,0 +1,78 @@
+	<string id="agr_find_ghost">
+		<text>Find out what happened to Ghost</text>
+	</string>
+	<string id="agr_gunslinger_cache">
+		<text>Strelok's stash</text>
+	</string>
+	<string id="agr_help_krot">
+		<text>Save Mole</text>
+	</string>
+	<string id="agr_help_krot_0">
+		<text>Help Mole fight off the soldiers</text>
+	</string>
+	<string id="agr_help_krot_1">
+		<text>Kill the soldiers</text>
+	</string>
+	<string id="agr_help_krot_2">
+		<text>Save Mole</text>
+	</string>
+	<string id="agr_help_stalkers">
+		<text>Help the stalkers</text>
+	</string>
+	<string id="agr_help_stalkers_0">
+		<text>Help the stalkers fight off the soldiers</text>
+	</string>
+	<string id="agr_help_stalkers_1">
+		<text>Kill the soldiers</text>
+	</string>
+	<string id="agr_help_stalkers_2">
+		<text>Help the stalkers fight off the soldiers</text>
+	</string>
+	<string id="agr_krot">
+		<text>Meet the stalkers</text>
+	</string>
+	<string id="agr_meet_krot_band">
+		<text>Get information about Strelok</text>
+	</string>
+	<string id="agr_meet_krot_band_0">
+		<text>Get information from Mole</text>
+	</string>
+	<string id="agr_meet_krot_band_1">
+		<text>Meet Mole's group</text>
+	</string>
+	<string id="agr_meet_krot_band_2">
+		<text>Get info from Mole</text>
+	</string>
+	<string id="agroprom_find_gunslinger_cache">
+		<text>Find Strelok's group's stash</text>
+	</string>
+	<string id="agroprom_find_gunslinger_cache_0">
+		<text>Find Strelok's group's stash</text>
+	</string>
+	<string id="agroprom_find_gunslinger_cache_1">
+		<text>Find the stash</text>
+	</string>
+	<string id="agroprom_find_gunslinger_cache_2">
+		<text>Find information about Strelok in the stash</text>
+	</string>
+	<string id="agroprom_find_gunslinger_cache_3">
+		<text>Find the way out of the underground</text>
+	</string>
+	<string id="agroprom_find_stalker_phantom">
+		<text>Find Ghost</text>
+	</string>
+	<string id="agroprom_find_stalker_phantom_0">
+		<text>Ghost knows where Strelok is.</text>
+	</string>
+	<string id="agroprom_get_military_documents">
+		<text>Find the militaries' documents</text>
+	</string>
+	<string id="agroprom_get_military_documents_0">
+		<text>Agroprom Research Institute</text>
+	</string>
+	<string id="agroprom_get_military_documents_1">
+		<text>Steal the militaries' documents</text>
+	</string>
+	<string id="agroprom_get_military_documents_2">
+		<text>Take the documents to the Barkeep</text>
+	</string>

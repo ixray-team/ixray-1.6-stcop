@@ -1943,6 +1943,19 @@
 	<string id="st_thanks_avdeev">
 		<text>Владимиру Авдееву</text>
 	</string>
+	<string id="st_special_thanks_1">
+		<text>Sveta</text>
+	</string>
+	<string id="st_special_thanks_2">
+		<text>Ладимир</text>
+	</string>
+	<string id="st_special_thanks_3">
+		<text>Menno Wittebrood</text>
+	</string>
+	<string id="st_special_thanks_4">
+		<text>Jason Meyer</text>
+	</string>
+
 	<string id="st_thanks_chernobyl">
 		<text>Генеральному директору ЧАЭС Игорю Грамоткину,</text>
 	</string>

@@ -38,9 +38,9 @@ local simMaxCount = {
 }
 
 local idle_spawn_preset = {
-	seldom = 300, 
-	medium = 300, 
-	often = 300
+	seldom = 60*60,
+	medium = 60*60,
+	often = 60*60
 }
 
 -- Список респавнеров, для сбора статистики
@@ -254,6 +254,12 @@ function se_respawn:on_register()
 	self.str_conditions = r_str(ini, section_name, "conditions", 100) 
 	self.conditions = xr_logic.parse_condlist(self, section_name, "conditions", self.str_conditions)
 	self.respawn_radius = r_num(ini, section_name, "respawn_radius", -1)
+
+	--' Спешкейс, чтобы сохранить совместимость сейвов.
+	if self:name() == "mil_freedom_barier_respawn_1" then
+		self.respawn_radius = -1
+	end
+
 	self.parent	= r_num(ini, section_name, "parent", nil)
 	self.item_spawn	= r_bool(ini, section_name, "item_spawn", false)
 	
