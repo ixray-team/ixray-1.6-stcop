@@ -595,6 +595,10 @@ function pick_section_from_condlist(actor, npc, condlist)
 					    end
 				    end
 					func_ref = xr_conditions[infop.func]
+                    if type(func_ref) ~= "function" then
+                        abort("object '%s': pick_section_from_condlist: object '%s' in xr_conditions.script is " ..
+						    "not a function", if_then_else(npc, npc:name(), "nil"), infop.func)
+					end
 				else
 					local namespace = splitted[1]
 					local func = splitted[2]
@@ -603,6 +607,10 @@ function pick_section_from_condlist(actor, npc, condlist)
 							"not defined in %s.script", if_then_else(npc, npc:name(), "nil"), func, namespace)
 					end
 					func_ref = _G[namespace][func]
+                    if type(func_ref) ~= "function" then
+                        abort("object '%s': pick_section_from_condlist: object '%s' in %s.script is " ..
+						    "not a function", if_then_else(npc, npc:name(), "nil"), func, namespace)
+					end
 				end
 				if infop.params then
 					if func_ref(actor, npc, infop.params) then
@@ -664,6 +672,10 @@ function pick_section_from_condlist(actor, npc, condlist)
 						    	"not defined in xr_effects.script", if_then_else(npc, npc:name(), "nil"), infop.func)
 						end
 						func_ref = xr_effects[infop.func]
+                        if type(func_ref) ~= "function" then
+                            abort("object '%s': pick_section_from_condlist: object '%s' in xr_effects.script is " ..
+						    	"not a function", if_then_else(npc, npc:name(), "nil"), infop.func)
+						end
 					else
 						local namespace = splitted[1]
 						local func = splitted[2]
@@ -672,6 +684,10 @@ function pick_section_from_condlist(actor, npc, condlist)
 								"not defined in %s.script", if_then_else(npc, npc:name(), "nil"), func, namespace)
 						end
 						func_ref = _G[namespace][func]
+                        if type(func_ref) ~= "function" then
+                            abort("object '%s': pick_section_from_condlist: object '%s' in %s.script is " ..
+						    	"not a function", if_then_else(npc, npc:name(), "nil"), func, namespace)
+						end
 					end
 					if infop.params then
 						func_ref(actor, npc, infop.params)
