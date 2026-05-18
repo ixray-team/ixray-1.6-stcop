@@ -61,11 +61,6 @@ void xrLogger::Msg(const char* Msg, va_list argList)
 
 	formattedMessage[MsgSize] = 0;
 
-#ifdef IXR_LINUX
-	std::cout << formattedMessage << std::endl;
-	return;
-#endif
-
 	if (IsDebuggerPresent() && bFastDebugLog)
 	{
 		OutputDebugStringA(formattedMessage);
@@ -119,9 +114,8 @@ void xrLogger::InitLog()
 		theLogger = new xrLogger;
 		xrLogger::logData = new xr_queue <xrLogger::LogRecord>;
 	}
-#ifdef IXR_WINDOWS
+
 	thread_spawn(LogThreadEntryStartup, "X-Ray Log Thread", 0, nullptr);
-#endif
 }
 
 void xrLogger::FlushLog()

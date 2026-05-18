@@ -7,8 +7,11 @@
 bool CRenderDevice::on_event	(SDL_Event& Event)
 {
 	PROF_EVENT("CRenderDevice::on_event");
+
+#ifdef IXR_WINDOWS
 	ImGui_ImplSDL3_ProcessEvent(&Event);
-	
+#endif
+
 	// this is needed because default event handler that goes after if (SDL_GetWindowID(g_AppInfo.Window) != Event.window.windowID) is not reachable
 	switch (Event.type)
 	{
