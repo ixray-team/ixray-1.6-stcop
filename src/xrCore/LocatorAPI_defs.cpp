@@ -83,6 +83,7 @@ const char* FS_Path::_update(string_path& dest, const char* src)const
 	string_path			temp;
 	xr_strcpy			(temp, sizeof(temp), src);
 	xr_strconcat(dest, m_Path, temp);
+	xr_strcpy			(dest, Platform::ValidPath( dest));
 	return xr_strlwr	(dest);
 }
 
