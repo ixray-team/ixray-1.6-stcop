@@ -1,0 +1,11 @@
+function normal   (shader, t_base, t_second, t_detail)
+	shader:begin	("model_scope_lense","model_scope_lense")
+      : fog			(false)
+      : zb			(true,false)
+      : blend		(true,blend.srcalpha,blend.invsrcalpha)
+      : aref		(false,0)
+      : sorting		(2,true)
+      : distort		(false)
+	shader:sampler  ("s_base")		:texture	(t_base)
+	shader:sampler  ("s_vp2")		:texture	("$user$viewport2")
+end

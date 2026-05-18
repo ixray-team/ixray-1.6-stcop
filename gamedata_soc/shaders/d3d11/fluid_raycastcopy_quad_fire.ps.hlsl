@@ -1,0 +1,4 @@
+#define RENDER_FIRE
+
+#include "fluid_raycastcopy_quad.ps.hlsl"
+// main
