@@ -90,7 +90,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 	GRHI = new CRHI;
 
 	fill_vid_mode_list();
-
+#if IXR_WINDOWS
 	CImGuiManager& ImManager = CImGuiManager::Instance();
 
 	ImManager.PlatformNewFrameCallback = ImGui_ImplSDL3_NewFrame;
@@ -232,7 +232,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
 	});
-
+#endif
 	GRHI->CreateDevice(API);
 
 	Device.TargetWidth = psCurrentVidMode[0];
