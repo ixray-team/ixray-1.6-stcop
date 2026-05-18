@@ -1,0 +1,12 @@
+function main()
+         local trader = get_level_object("escape_trader")
+         trader:script(true, script_name())
+
+         while(true) do
+               if(trader:action() == nil) then
+                  action(trader, anim("vstuplenie"), cond(cond.anim_end))
+               end
+
+               wait()
+         end
+end

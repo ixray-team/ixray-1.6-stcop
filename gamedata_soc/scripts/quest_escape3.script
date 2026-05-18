@@ -1,0 +1,6 @@
+function main()
+	quest_yantar.main()
+
+	db.actor:give_info_portion("esc_find_doctor_start")
+	db.actor:give_info_portion("yan_provodnik_spawn")
+end

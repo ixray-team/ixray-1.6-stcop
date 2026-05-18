@@ -1,0 +1,66 @@
+[logic]
+active = walker@at_hole
+combat_ignore = combat_ignore
+trade = misc\trade_barman.ltx
+inv_max_weight = 10000
+ 
+[walker@at_hole]
+path_walk = bar_barman_hole_walk
+path_look = bar_barman_hole_look
+def_state_standing = barman_wait_free
+def_state_moving1 = barman_walk_free
+def_state_moving2 = barman_walk_free
+def_state_moving3 = barman_walk_free
+meet = meet@at_hole
+danger = danger_condition@barman
+on_info = {=actor_in_zone(bar_barman_meet_zone_1)} walker@zone_1, {=actor_in_zone(bar_barman_meet_zone_2)} walker@zone_2,{=actor_in_zone(bar_barman_meet_zone_3)} walker@zone_3, walker@at_hole
+
+[walker@zone_1]
+path_walk = barman_zone_1_walk
+path_look = barman_zone_1_look
+def_state_standing = barman_wait_free
+def_state_moving1 = barman_walk_free
+def_state_moving2 = barman_walk_free
+def_state_moving3 = barman_walk_free
+meet = meet@at_hole
+danger = danger_condition@barman
+on_info = {=actor_in_zone(bar_barman_meet_zone_1)} walker@zone_1, {=actor_in_zone(bar_barman_meet_zone_2)} walker@zone_2,{=actor_in_zone(bar_barman_meet_zone_3)} walker@zone_3, walker@at_hole
+
+[walker@zone_2]
+path_walk = barman_zone_2_walk
+path_look = barman_zone_2_look
+def_state_standing = barman_wait_free
+def_state_moving1 = barman_walk_free
+def_state_moving2 = barman_walk_free
+def_state_moving3 = barman_walk_free
+meet = meet@at_hole
+danger = danger_condition@barman
+on_info = {=actor_in_zone(bar_barman_meet_zone_1)} walker@zone_1, {=actor_in_zone(bar_barman_meet_zone_2)} walker@zone_2,{=actor_in_zone(bar_barman_meet_zone_3)} walker@zone_3, walker@at_hole
+
+[walker@zone_3]
+path_walk = barman_zone_3_walk
+path_look = barman_zone_3_look
+def_state_standing = barman_wait_free
+def_state_moving1 = barman_walk_free
+def_state_moving2 = barman_walk_free
+def_state_moving3 = barman_walk_free
+meet = meet@at_hole
+danger = danger_condition@barman
+on_info = {=actor_in_zone(bar_barman_meet_zone_1)} walker@zone_1, {=actor_in_zone(bar_barman_meet_zone_2)} walker@zone_2,{=actor_in_zone(bar_barman_meet_zone_3)} walker@zone_3, walker@at_hole
+
+
+
+[meet@at_hole]
+meet_state = 2|barman_talk_free@bar_bar_barmen_hello
+meet_state_wpn = 2|barman_talk_free@bar_bar_barmen_hello
+victim = 2|actor
+victim_wpn = 2|actor
+use = true
+use_wpn = true
+meet_dialog		=  bar_bar_barmen_start
+
+[danger_condition@barman]
+ignore_distance       = 0
+
+[combat_ignore]
+combat_ignore_cond = always

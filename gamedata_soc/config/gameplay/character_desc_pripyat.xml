@@ -1,0 +1,874 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+<!------------------------- MONOLITH ----------------------->
+<!-------------------------- AMBUSH ------------------------>
+    <specific_character id="pri_monolith_ambush_default1" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon>ui_npc_u_stalker_mo_head_1</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_common_bio</bio>
+
+        <class>pri_monolith_ambush</class>
+        <community>monolith</community>
+
+        <rank>793</rank>
+        <reputation>-675</reputation>
+
+        <visual>actors\monolit\stalker_mo_head_1</visual>
+        <snd_config>characters_voice\human_02\monolith\</snd_config>
+  		<crouch_type>-1</crouch_type>
+
+        <supplies>
+            [spawn] \n
+			wpn_sig220 \n
+			ammo_11.43x23_fmj \n
+			wpn_lr300 \n
+			ammo_5.56x45_ap = 1 \n
+            device_torch \n
+#include "gameplay\character_drugs.xml"
+        </supplies>
+        
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+    <specific_character id="pri_monolith_ambush_default2" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon>ui_npc_u_stalker_mo_mask</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_common_bio</bio>
+
+        <class>pri_monolith_ambush</class>
+        <community>monolith</community>
+
+        <rank>755</rank>
+        <reputation>-649</reputation>
+
+        <visual>actors\monolit\stalker_mo_mask</visual>
+        <snd_config>characters_voice\human_01\monolith\</snd_config>
+  		<crouch_type>-1</crouch_type>
+
+        <supplies>
+            [spawn] \n
+            wpn_walther \n
+            ammo_9x19_pbp = 1 \n
+			wpn_lr300 \n
+			ammo_5.56x45_ap = 1 \n
+            device_torch \n
+#include "gameplay\character_drugs.xml"
+        </supplies>
+        
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+<!---------------------- AMBUSH SPECNAZ -------------------->
+    <specific_character id="pri_monolith_ambush_specnaz_default1" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon>ui_npc_u_stalker_mo_hood_9</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_common_bio</bio>
+
+        <class>pri_monolith_ambush_specnaz</class>
+        <community>monolith</community>
+
+        <rank>836</rank>
+        <reputation>-727</reputation>
+
+        <visual>actors\monolit\stalker_mo_hood_9</visual>
+        <snd_config>characters_voice\human_03\monolith\</snd_config>
+  		<crouch_type>-1</crouch_type>
+        <supplies>
+            [spawn] \n
+			wpn_sig220 \n
+			ammo_11.43x23_hydro \n
+            wpn_groza \n
+            ammo_9x39_ap = 1 \n
+            device_torch \n
+#include "gameplay\character_drugs.xml"
+        </supplies>
+        
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+    <specific_character id="pri_monolith_ambush_specnaz_default2" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon>ui_npc_u_stalker_mo_hood_9</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_common_bio</bio>
+
+        <class>pri_monolith_ambush_specnaz</class>
+        <community>monolith</community>
+
+        <rank>811</rank>
+        <reputation>-820</reputation>
+
+        <visual>actors\monolit\stalker_mo_hood_9</visual>
+        <snd_config>characters_voice\human_03\monolith\</snd_config>
+  		<crouch_type>-1</crouch_type>
+        <supplies>
+            [spawn] \n
+			wpn_sig220 \n
+			ammo_11.43x23_hydro \n
+            wpn_groza \n
+            ammo_9x39_sp5 = 1 \n
+            grenade_f1 = 1 \n
+            device_torch \n
+#include "gameplay\character_drugs.xml"
+        </supplies>
+        
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+<!------------------------ AMBUSH EXO ---------------------->
+    <specific_character id="pri_monolith_ambush_exo_default1" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon>ui_npc_u_stalker_mo_exo</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_common_bio</bio>
+
+        <class>pri_monolith_ambush_exo</class>
+        <community>monolith</community>
+
+        <rank>920</rank>
+        <reputation>-895</reputation>
+
+        <visual>actors\monolit\stalker_mo_exo</visual>
+        <snd_config>characters_voice\human_03\monolith\</snd_config>
+  		<crouch_type>0</crouch_type>
+        <supplies>
+            [spawn] \n
+			wpn_sig220 \n
+			ammo_11.43x23_hydro \n
+            wpn_groza \n
+            ammo_9x39_ap = 1 \n
+            grenade_f1 = 2 \n
+            device_torch \n
+#include "gameplay\character_drugs.xml"
+        </supplies>
+        
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+    <specific_character id="pri_monolith_ambush_exo_default2" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon>ui_npc_u_stalker_mo_exo</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_common_bio</bio>
+
+        <class>pri_monolith_ambush_exo</class>
+        <community>monolith</community>
+
+        <rank>903</rank>
+        <reputation>-904</reputation>
+
+        <visual>actors\monolit\stalker_mo_exo</visual>
+        <snd_config>characters_voice\human_03\monolith\</snd_config>
+  		<crouch_type>0</crouch_type>
+        <supplies>
+            [spawn] \n
+            wpn_walther \n
+            ammo_9x19_pbp = 1 \n
+            wpn_groza \n
+            ammo_9x39_ap = 2 \n
+            device_torch \n
+#include "gameplay\character_drugs.xml"
+        </supplies>
+					
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+<!-------------------------- REGULAR ----------------------->
+    <specific_character id="pri_monolith_regular_default1" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon>ui_npc_u_stalker_mo_head_1</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_regular_bio</bio>
+
+        <class>pri_monolith_regular</class>
+        <community>monolith</community>
+
+
+        <rank>378</rank>
+        <reputation>-552</reputation>
+
+        <visual>actors\monolit\stalker_mo_head_1</visual>
+        <snd_config>characters_voice\human_02\monolith\</snd_config>
+  		<crouch_type>-1</crouch_type>
+        <supplies>
+            [spawn] \n
+            wpn_fort \n
+            ammo_9x18_fmj = 1 \n
+            wpn_wincheaster1300 \n
+            ammo_12x76_zhekan = 1 \n
+#include "gameplay\character_drugs.xml"
+        </supplies>
+        
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+    <specific_character id="pri_monolith_regular_default2" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon>ui_npc_u_stalker_mo_mask</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_regular_bio</bio>
+
+        <class>pri_monolith_regular</class>
+        <community>monolith</community>
+
+
+        <rank>441</rank>
+        <reputation>-579</reputation>
+
+        <visual>actors\monolit\stalker_mo_mask</visual>
+        <snd_config>characters_voice\human_01\monolith\</snd_config>
+  		<crouch_type>-1</crouch_type>
+        <supplies>
+            [spawn] \n
+			wpn_sig220 \n
+			ammo_11.43x23_hydro \n
+			wpn_lr300 \n
+			ammo_5.56x45_ap = 1 \n
+#include "gameplay\character_drugs.xml"
+        </supplies>
+        
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+    <specific_character id="pri_monolith_regular_default3" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon>ui_npc_u_stalker_mo_head_1</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_regular_bio</bio>
+
+        <class>pri_monolith_regular</class>
+        <community>monolith</community>
+
+
+        <rank>413</rank>
+        <reputation>-508</reputation>
+
+        <visual>actors\monolit\stalker_mo_head_1</visual>
+        <snd_config>characters_voice\human_02\monolith\</snd_config>
+  		<crouch_type>-1</crouch_type>
+        <supplies>
+            [spawn] \n
+            wpn_fort \n
+            ammo_9x18_fmj = 1 \n
+            wpn_ak74 \n
+            ammo_5.45x39_ap = 1 \n
+#include "gameplay\character_drugs.xml"
+        </supplies>
+        
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+    <specific_character id="pri_monolith_regular_default4" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon>ui_npc_u_stalker_mo_mask</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_regular_bio</bio>
+
+        <class>pri_monolith_regular</class>
+        <community>monolith</community>
+
+
+        <rank>534</rank>
+        <reputation>-627</reputation>
+
+        <visual>actors\monolit\stalker_mo_mask</visual>
+        <snd_config>characters_voice\human_01\monolith\</snd_config>
+  		<crouch_type>-1</crouch_type>
+        <supplies>
+            [spawn] \n
+			wpn_sig220 \n
+			ammo_11.43x23_hydro \n
+            wpn_l85 \n
+            ammo_5.56x45_ap = 1 \n
+#include "gameplay\character_drugs.xml"
+        </supplies>
+        
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+<!-------------------------- SPECNAZ ----------------------->
+    <specific_character id="pri_monolith_specnaz_default1" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon>ui_npc_u_stalker_mo_hood_9</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_specnaz_bio</bio>
+
+        <class>pri_monolith_specnaz</class>
+        <community>monolith</community>
+
+
+        <rank>784</rank>
+        <reputation>-748</reputation>
+
+        <visual>actors\monolit\stalker_mo_hood_9</visual>
+        <snd_config>characters_voice\human_03\monolith\</snd_config>
+  		<crouch_type>-1</crouch_type>
+        <supplies>
+            [spawn] \n
+            wpn_usp \n
+            ammo_11.43x23_fmj = 1 \n
+            wpn_lr300 \n
+            ammo_5.56x45_ap = 2 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+        </supplies>
+        
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+    <specific_character id="pri_monolith_specnaz_default2" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon>ui_npc_u_stalker_mo_nauchniy</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_specnaz_bio</bio>
+
+        <class>pri_monolith_specnaz</class>
+        <community>monolith</community>
+
+
+        <rank>682</rank>
+        <reputation>-800</reputation>
+
+        <visual>actors\monolit\stalker_mo_nauchniy</visual>
+        <snd_config>characters_voice\human_03\monolith\</snd_config>
+  		<crouch_type>-1</crouch_type>
+        <supplies>
+            [spawn] \n
+            wpn_walther \n
+            ammo_9x19_fmj  = 1 \n
+            wpn_abakan \n
+            ammo_5.45x39_ap = 2 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+        </supplies>
+        
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+<!---------------------------- EXO ------------------------->
+    <specific_character id="pri_monolith_exo_default1" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon>ui_npc_u_stalker_mo_exo</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_exo_bio</bio>
+
+        <class>pri_monolith_exo</class>
+        <community>monolith</community>
+
+
+        <rank>925</rank>
+        <reputation>-943</reputation>
+
+        <visual>actors\monolit\stalker_mo_exo</visual>
+        <snd_config>characters_voice\human_03\monolith\</snd_config>
+  		<crouch_type>0</crouch_type>
+        <supplies>
+            [spawn] \n
+            wpn_usp \n
+            ammo_11.43x23_fmj = 1 \n
+			wpn_g36 \n
+			ammo_5.56x45_ap = 1 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+        </supplies>
+        
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+    <specific_character id="pri_monolith_exo_default2" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon>ui_npc_u_stalker_mo_exo</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_exo_bio</bio>
+
+        <class>pri_monolith_exo</class>
+        <community>monolith</community>
+
+
+        <rank>955</rank>
+        <reputation>-899</reputation>
+
+        <visual>actors\monolit\stalker_mo_exo</visual>
+        <snd_config>characters_voice\human_03\monolith\</snd_config>
+  		<crouch_type>0</crouch_type>
+        <supplies>
+            [spawn] \n
+            wpn_walther \n
+            ammo_9x19_fmj  = 1 \n
+            wpn_lr300 \n
+            ammo_5.56x45_ap = 2 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+        </supplies>
+        
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+<!-------------------------- LEADER ------------------------>
+    <specific_character id="pri_monolith_leader" team_default = "1">
+        <name>pri_monolith_leader_name</name>
+        <icon>ui_npc_u_stalker_mo_exo</icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>pri_monolith_leader_bio</bio>
+
+        <class>pri_monolith_leader</class>
+        <community>monolith</community>
+
+
+        <rank>989</rank>
+        <reputation>-998</reputation>
+
+        <visual>actors\monolit\stalker_mo_exo</visual>
+        <snd_config>characters_voice\human_03\monolith\</snd_config>
+  		<crouch_type>-1</crouch_type>
+        <supplies>
+            [spawn] \n
+			wpn_usp  \n
+			ammo_11.43x23_hydro = 1 \n
+            wpn_vintorez \n
+            ammo_9x39_ap = 3 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+        </supplies>
+        
+#include "gameplay\character_criticals_1.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+<!-------------------------- STALKER ----------------------->
+<!------------------------- FOLLOWERS ---------------------->
+	<specific_character id="pri_followers_bomber" team_default = "1">
+		<name>pri_followers_bomber_name</name>
+		<icon>ui_npc_u_stalker_neytral_exoskeleton</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+
+		<class>pri_followers_bomber</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+			
+		<rank>941</rank>
+		<reputation>18</reputation>
+
+		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_fmj \n
+            wpn_lr300 \n
+            ammo_5.56x45_ap = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_2.xml"
+		
+		<money min="5000" max="10000" infinitive="0"/>
+			
+#include "gameplay\character_dialogs.xml"
+	</specific_character>
+
+	<specific_character id="pri_followers_leader" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_exoskeleton</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+
+		<class>pri_followers_leader</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+			
+		<rank>960</rank>
+		<reputation>18</reputation>
+
+		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_fmj \n
+            wpn_val \n
+            ammo_9x39_ap = 3 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_2.xml"
+		
+		<money min="5000" max="10000" infinitive="0"/>
+			
+#include "gameplay\character_dialogs.xml"		
+	</specific_character>
+
+	<specific_character id="pri_followers_stalker1" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_exoskeleton</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+
+		<class>pri_followers</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+			
+		<rank>937</rank>
+		<reputation>18</reputation>
+
+		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_fmj \n
+            wpn_sig550 \n
+            ammo_5.56x45_ap = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_2.xml"
+		
+		<money min="5000" max="10000" infinitive="0"/>
+			
+#include "gameplay\character_dialogs.xml"		
+	</specific_character>
+
+	<specific_character id="pri_followers_stalker2" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_exoskeleton</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+
+		<class>pri_followers</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+			
+		<rank>911</rank>
+		<reputation>19</reputation>
+
+		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+            wpn_usp \n
+            ammo_11.43x23_fmj = 1 \n
+            wpn_lr300 \n
+            ammo_5.56x45_ap = 3 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_2.xml"
+		
+		<money min="5000" max="10000" infinitive="0"/>
+			
+#include "gameplay\character_dialogs.xml"		
+	</specific_character>
+
+	<specific_character id="pri_followers_stalker3" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_exoskeleton</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+
+		<class>pri_followers</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+			
+		<rank>940</rank>
+		<reputation>12</reputation>
+
+		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+            wpn_walther \n
+            ammo_9x19_pbp = 1 \n
+            wpn_val \n
+            ammo_9x39_ap = 2 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_2.xml"
+		
+		<money min="5000" max="10000" infinitive="0"/>
+			
+#include "gameplay\character_dialogs.xml"		
+	</specific_character>
+
+	<specific_character id="pri_followers_stalker4" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_exoskeleton</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+
+		<class>pri_followers</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+			
+		<rank>905</rank>
+		<reputation>15</reputation>
+
+		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+            wpn_usp \n
+            ammo_11.43x23_fmj = 1 \n
+			wpn_val \n
+			ammo_9x39_sp5 = 1 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_2.xml"
+		
+		<money min="5000" max="10000" infinitive="0"/>
+			
+#include "gameplay\character_dialogs.xml"		
+	</specific_character>
+
+	<specific_character id="pri_followers_stalker5" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_exoskeleton</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>sim_stalker_master_bio</bio>
+
+		<class>pri_followers</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+			
+		<rank>957</rank>
+		<reputation>13</reputation>
+
+		<visual>actors\neytral\stalker_neytral_exoskeleton</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+            wpn_walther \n
+            ammo_9x19_pbp = 1 \n
+            wpn_groza \n
+            ammo_9x39_ap = 2 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_2.xml"
+		
+		<money min="5000" max="10000" infinitive="0"/>
+			
+#include "gameplay\character_dialogs.xml"		
+	</specific_character>
+
+<!-------------------------- SOLDIER ----------------------->
+<!-------------------------- SUICIDE ----------------------->
+	<specific_character id="pri_soldier_suicide_default1" team_default = "1">
+		<name>pri_zombied_soldier_name</name>
+		<icon>ui_npc_u_soldier_spetsnaz</icon>
+		<map_icon x="1" y="2"></map_icon>
+		<bio>pri_zombied_soldier_bio</bio>
+
+		<class>pri_soldier_suicide</class>
+		<community>zombied</community> <terrain_sect>stalker_zombied_terrain</terrain_sect>
+		
+		<rank>344</rank>
+		<reputation>-242</reputation>
+
+		<visual>actors\soldier\soldier_spetsnaz</visual>
+		<snd_config>characters_voice\human_02\military\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_sig220 \n
+			ammo_11.43x23_hydro \n
+		</supplies>	
+		
+#include "gameplay\character_criticals_6.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+	<specific_character id="pri_soldier_suicide_default2" team_default = "1">
+		<name>pri_zombied_soldier_name</name>
+		<icon>ui_npc_u_soldier_bandana</icon>
+		<map_icon x="1" y="2"></map_icon>
+		<bio>pri_zombied_soldier_bio</bio>
+
+		<class>pri_soldier_suicide</class>
+		<community>zombied</community> <terrain_sect>stalker_zombied_terrain</terrain_sect>
+		
+		<rank>376</rank>
+		<reputation>-286</reputation>
+
+		<visual>actors\soldier\soldier_bandana</visual>
+		<snd_config>characters_voice\human_02\military\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_sig220 \n
+			ammo_11.43x23_hydro \n
+		</supplies>	
+		
+#include "gameplay\character_criticals_5.xml"
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+<!---------------------- ZOMBIED ----------------------------->
+	<specific_character id="pri_zombied_suicide_default1" team_default = "1">
+		<name>pri_zombied_stalker_name</name>
+		<icon>ui_npc_u_stalker_zombie_specnaz</icon>
+		<map_icon x="7" y="0"></map_icon>
+		<bio>pri_zombied_stalker_bio</bio>
+
+		<class>pri_zombied_suicide</class>
+		<community>zombied</community> <terrain_sect>stalker_zombied_terrain</terrain_sect>
+		
+		<rank>538</rank>
+		<reputation>-303</reputation>
+
+		<visual>actors\stalker_zombi\stalker_zombie_specnaz</visual>
+		<snd_config>characters_voice\human_02\zombied\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_sig220 \n
+			ammo_11.43x23_hydro \n
+#include "gameplay\character_drugs.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_1.xml"
+			
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+	<specific_character id="pri_zombied_default1" team_default = "1">
+		<name>pri_zombied_stalker_name</name>
+		<icon>ui_npc_u_stalker_zombie_specnaz</icon>
+		<map_icon x="7" y="0"></map_icon>
+		<bio>pri_zombied_stalker_bio</bio>
+
+		<class>pri_zombied</class>
+		<community>zombied</community> <terrain_sect>stalker_zombied_terrain</terrain_sect>
+		
+		<rank>512</rank>
+		<reputation>-338</reputation>
+
+		<visual>actors\stalker_zombi\stalker_zombie_specnaz</visual>
+		<snd_config>characters_voice\human_02\zombied\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_sig220 \n
+			ammo_11.43x23_hydro \n
+			wpn_lr300 \n
+			ammo_5.56x45_ap = 1 \n
+#include "gameplay\character_drugs.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_1.xml"
+			
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+<!--------------------------- VETERANS----------------------->
+	<specific_character id="pri_zombied_veteran_default1" team_default = "1">
+		<name>pri_zombied_stalker_name</name>
+		<icon>ui_npc_u_stalker_zombie_specnaz</icon>
+		<map_icon x="7" y="0"></map_icon>
+		<bio>pri_zombied_stalker_bio</bio>
+
+		<class>pri_zombied_veteran</class>
+		<community>zombied</community> <terrain_sect>stalker_zombied_terrain</terrain_sect>
+		
+		<rank>737</rank>
+		<reputation>-487</reputation>
+
+		<visual>actors\stalker_zombi\stalker_zombie_specnaz</visual>
+		<snd_config>characters_voice\human_02\zombied\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+            wpn_sig220 \n
+            ammo_11.43x23_fmj = 1 \n
+			wpn_abakan \n
+			ammo_5.45x39_ap = 1 \n
+#include "gameplay\character_drugs.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_1.xml"
+			
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+	<specific_character id="pri_zombied_veteran_default2" team_default = "1">
+		<name>pri_zombied_stalker_name</name>
+		<icon>ui_npc_u_stalker_zombie_specnaz</icon>
+		<map_icon x="7" y="0"></map_icon>
+		<bio>pri_zombied_stalker_bio</bio>
+
+		<class>pri_zombied_veteran</class>
+		<community>zombied</community> <terrain_sect>stalker_zombied_terrain</terrain_sect>
+		
+		<rank>816</rank>
+		<reputation>-576</reputation>
+
+		<visual>actors\stalker_zombi\stalker_zombie_specnaz</visual>
+		<snd_config>characters_voice\human_02\zombied\</snd_config>
+  		<crouch_type>0</crouch_type>
+		<supplies>
+			[spawn] \n
+			wpn_spas12 \n
+			ammo_12x76_dart = 1 \n
+#include "gameplay\character_drugs.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_1.xml"
+			
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+</xml>

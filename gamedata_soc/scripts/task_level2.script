@@ -1,0 +1,181 @@
+function main (need_items)
+    task_level1.main (false)
+    local actor = db.actor
+-------------------------------------------------------------------------------
+-- Задачи Escape
+-------------------------------------------------------------------------------
+        -- открытие двери у торговца
+        db.actor:give_info_portion ("esc_trader_can_leave")
+        -- туториальная задача с артефактом
+        db.actor:give_info_portion ("tutorial_artefact_start")
+        db.actor:give_info_portion ("tutorial_artefact_gain")
+        db.actor:give_info_portion ("tutorial_artefact_done")
+        -- туториальная задача с раненым
+        db.actor:give_info_portion ("tutorial_wounded_start")
+        db.actor:give_info_portion ("tutorial_wounded_help")
+        db.actor:give_info_portion ("esc_serious_talk")
+        db.actor:give_info_portion ("esc_second_novice_dead")
+        db.actor:give_info_portion ("tutorial_wounded_give_info")
+        db.actor:give_info_portion ("tutorial_wounded_must_spawn")
+        db.actor:give_info_portion ("tutorial_end")
+        db.actor:give_info_portion ("tutorial_wounded_volk_greet")
+        db.actor:give_info_portion ("esc_wounded_arrive")
+        db.actor:give_info_portion ("esc_wolf_say")
+        db.actor:give_info_portion ("esc_first_novice_dead")
+        db.actor:give_info_portion ("esc_heli_attack")
+        
+        -- задание Волка на динамит
+        db.actor:give_info_portion ("escape_factory_assault_say_hello")
+        db.actor:give_info_portion ("esc_petruha_great")
+        db.actor:give_info_portion ("esc_kill_bandits_quest_kill")
+        db.actor:give_info_portion ("esc_serious_talk")
+        db.actor:give_info_portion ("esc_kill_bandits_quest_have")
+        db.actor:give_info_portion ("tutorial_wounded_give_info")
+  
+  
+        -- задание торговца на бандитов на фабрике
+        db.actor:give_info_portion ("esc_kill_bandits_quest_have")
+        db.actor:give_info_portion ("esc_kill_bandits_quest_kill")
+        db.actor:give_info_portion ("esc_kill_bandits_quest_done")
+        -- задание торговца на Лиса
+        db.actor:give_info_portion ("escape_stalker_meet")
+        db.actor:give_info_portion ("escape_fox_heal")
+        db.actor:give_info_portion ("escape_stalker_done")
+        
+        db.actor:give_info_portion ("escape_stalker_give")
+        db.actor:give_info_portion ("esc_dogs_return")
+        db.actor:give_info_portion ("escape_stalker_dog_die")
+        
+        
+        -- мочилово лишнего народа
+        --this.kill_entity_by_sid (12)
+        --this.kill_entity_by_sid (13)
+        --this.kill_entity_by_sid (4)
+-------------------------------------------------------------------------------
+-- Задачи Garbage
+-------------------------------------------------------------------------------
+        -- Серый в гараже
+        db.actor:give_info_portion ("garbage_meetstalker_start")
+        db.actor:give_info_portion ("garbage_meetstalker_done")
+        db.actor:give_info_portion ("gar_seryi_change_st")
+
+        -- отбивание бандитов 
+        db.actor:give_info_portion ("gar_hellcar_help")
+        db.actor:give_info_portion ("gar_start_quest")
+        db.actor:give_info_portion ("gar_bandits_killed")
+        db.actor:give_info_portion ("gar_bandit_leader_dead")
+        db.actor:give_info_portion ("gar_start_graveyard")
+        db.actor:give_info_portion ("gar_no_mapspot")
+        db.actor:give_info_portion ("gar_after_battle")
+        db.actor:give_info_portion ("gar_hellcar_dialog_end")
+        db.actor:give_info_portion ("gar_hellcar_thanks")
+        
+        -- завал кабанов
+        db.actor:give_info_portion ("gar_kill_boars_quest")
+        db.actor:give_info_portion ("gar_kill_boars_done")
+        db.actor:give_info_portion ("gar_kill_boars_request")
+        db.actor:give_info_portion ("gar_free_pass")
+       
+        db.actor:give_info_portion ("gar_test_info2")
+
+        -- новичок в туннеле
+        db.actor:give_info_portion ("gar_help_newbie")
+        db.actor:give_info_portion ("gar_help_newbie_done")
+        db.actor:give_info_portion ("gar_help_newbie_reward")
+        db.actor:give_info_portion ("gar_help_newbie_exit")
+
+        db.actor:give_info_portion ("gar_dm_end")
+        db.actor:give_info_portion ("gar_dm_novice_change_st")
+        db.actor:give_info_portion ("gar_dm_bandits_change_st")
+        
+        -- мочилово лишнего народа
+-------------------------------------------------------------------------------
+-- Задачи Agroprom
+-------------------------------------------------------------------------------
+        -- задание торговца на документы с Агропрома
+        db.actor:give_info_portion ("agroprom_military_case")
+        db.actor:give_info_portion ("agroprom_military_case_have")
+        db.actor:give_info_portion ("agroprom_military_case_done")
+        -- встреча с Кротовой бандой
+        db.actor:give_info_portion ("agr_krot_band_start")
+        db.actor:give_info_portion ("agr_krot_met")
+        db.actor:give_info_portion ("agr_krot_task_complete")
+
+        db.actor:give_info_portion ("agr_meet_krot_band_done")
+        db.actor:give_info_portion ("agr_krot_secret_info")
+        
+        -- нахождение флешки в тайнике Стрелка
+        db.actor:give_info_portion ("agr_find_gunslinger_cache_start")
+        db.actor:give_info_portion ("agr_find_gunslinger_cache_found")
+        db.actor:give_info_portion ("agr_find_gunslinger_cache_final")
+        -- помощь каким-то сталкерам...
+        db.actor:give_info_portion ("agr_help_stalkers_start")
+        db.actor:give_info_portion ("agr_help_stalkers_assault_dead")
+        -- Помочь Кроту
+        db.actor:give_info_portion ("agr_help_krot_start")
+        db.actor:give_info_portion ("agr_help_krot_done")
+        db.actor:give_info_portion ("agr_factory_heli_start")
+
+
+        db.actor:give_info_portion ("agr_factory_assault_start")
+        printf("fuck")
+        db.actor:give_info_portion ("agroprom_find_stalker_phantom")
+        db.actor:give_info_portion ("agr_krot_skirmish_start")
+
+        db.actor:give_info_portion ("bar_darklab_document_start")
+        db.actor:give_info_portion ("val_actor_has_barman_key")
+        db.actor:give_info_portion ("val_show_zones")
+
+-------------------------------------------------------------------------------
+-- Основная задача для связки 2 (Документы из лаборатории DarkValley Underground)
+-------------------------------------------------------------------------------
+        -- появление Фаната
+        db.actor:give_info_portion ("esc_fanat_spawn")
+        db.actor:give_info_portion ("bar_darklab_document_start")
+        
+    if need_items ~= nil and need_items == false then return end
+    local actor = db.actor
+    -- Создадим различные объекты, которые нам необходимы
+	alife():create ("wpn_abakan", db.actor:position (), db.actor:level_vertex_id (),db.actor:game_vertex_id (), db.actor:id())
+	alife():create ("ammo_5.45x39_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("ammo_5.45x39_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("ammo_5.45x39_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("ammo_5.45x39_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("ammo_5.45x39_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("ammo_5.45x39_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("ammo_5.45x39_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("ammo_5.45x39_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("wpn_addon_scope", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("grenade_f1", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("grenade_f1", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("grenade_f1", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("medkit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("medkit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("medkit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("medkit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("antirad", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("antirad", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("bread", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("kolbasa", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("conserva", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("device_torch", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("detector_simple", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("wpn_usp", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("ammo_11.43x23_hydro", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("ammo_11.43x23_hydro", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("ammo_11.43x23_hydro", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("stalker_outfit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+        
+    alife():create ("wpn_knife", db.actor:position (), db.actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	alife():create ("wpn_binoc", db.actor:position (), db.actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+        
+
+end        

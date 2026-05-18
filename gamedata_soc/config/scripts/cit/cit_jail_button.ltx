@@ -1,0 +1,24 @@
+[logic]
+active      = ph_button@locked
+
+[ph_button@locked]
+anim_blend  = false
+anim        = button_false
+on_info     = {+cit_jail_door_opened} ph_button@unlocked
+on_info2    = {+cit_button_broken} ph_idle@button_broken ;%+cit_jail_door_opened%
+on_press    = ph_button@unlocked %+cit_jail_door_opened%
+
+[ph_button@unlocked]
+anim_blend  = false
+anim        = button_true
+on_info     = {-cit_jail_door_opened} ph_button@locked
+on_info2    = {+cit_button_broken} ph_idle@button_broken ;%+cit_jail_door_opened%
+on_press    = ph_button@locked %-cit_jail_door_opened%
+
+[ph_idle@button_broken]
+on_timer    = 2000 | ph_button@broken %+cit_jail_door_opened%
+
+[ph_button@broken]
+anim_blend  = false
+anim        = button_true
+on_info     = nil

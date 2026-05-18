@@ -1,0 +1,59 @@
+[logic]
+active = ph_idle@wait
+
+; ждем начала сцены
+[ph_idle@wait]
+on_death_info   = pri_wave3_btr_dead
+on_info         = {+pri_wave3_start} ph_car@start ;{+pri_wave3_start -pri_wave2_end} ph_car@kill_actor, {+pri_wave3_start} ph_car@main
+
+; выезжаем на позицию. актер - враг
+[ph_car@start]
+path_walk       = pri_wave3_btr_walk
+target          = actor
+on_death_info   = pri_wave3_btr_dead
+on_signal       = arrived | ph_car@hunt_actor %+pri_wave3_btr_arrived%
+
+; охота на актера
+[ph_car@hunt_actor]
+target          = actor
+track_target    = true
+on_death_info   = pri_wave3_btr_dead
+on_info         = {+pri_wave3_bomber_on_position} ph_car@wait_bomber
+
+; ждем чтоб убить гранатометчика
+[ph_car@wait_bomber]
+target          = actor
+on_death_info   = pri_wave3_btr_dead
+on_timer        = 1000 | ph_car@kill_bomber
+
+; убиваем гранатометчика
+[ph_car@kill_bomber]
+target          = 806
+on_death_info   = pri_wave3_btr_dead
+on_info         = {+pri_bomber_dead} ph_car@point_fire
+
+; даем игроку время шоб подобрать гранатомет
+[ph_car@point_fire]
+path_fire       = pri_wave3_btr_look
+fire_repeat     = inf
+auto_fire       = true
+on_death_info   = pri_wave3_btr_dead
+on_timer        = 4000 | ph_car@fight_actor2
+
+; стреляем по точкам
+[ph_car@fire]
+;path_walk       = pri_wave3_btr_walk
+path_fire       = pri_wave3_btr_look
+fire_repeat     = inf
+auto_fire       = true
+on_target_vis   = actor | ph_car@fight_actor2
+on_death_info   = pri_wave3_btr_dead
+on_timer        = 5000 | ph_car@fight_actor2
+
+; стреляем по актеру
+[ph_car@fight_actor2]
+target          = actor
+track_target    = true
+on_death_info   = pri_wave3_btr_dead
+;on_target_nvis  = actor | {+pri_wave3_btr_arrived} ph_car@fire_stay, ph_car@fire
+on_timer        = 5000 | ph_car@fire

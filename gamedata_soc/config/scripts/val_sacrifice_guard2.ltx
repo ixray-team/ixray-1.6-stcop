@@ -1,0 +1,48 @@
+[logic@val_sacrifice_guard2]
+active          = camper@val_sacrifice_guard2_wait
+on_combat       = combat@val_sacrifice
+on_death        = death@val_sacrifice_guard2
+combat_ignore   = combat_ignore
+
+[death@val_sacrifice_guard2]
+on_info     = %+val_sacrifice_guard2_dead%
+on_info2    = {+val_sacrifice_guard1_dead} %+val_sacrifice_finish%
+;on_info3    = {=killed_by_actor} %+val_sacrifice_plr_detected +val_sacrifice_finish%
+
+;--------------------------------------------------------------------------
+; ждем пока первый охранник произнесет свою первую фразу
+;--------------------------------------------------------------------------
+[camper@val_sacrifice_guard2_wait]
+path_walk                   = guard2_walk 
+path_look                   = guard2_look
+def_state_campering         = guard
+def_state_campering_fire    = guard_fire
+def_state_moving            = patrol
+def_state_moving_fire       = patrol_fire
+on_info                     = {+val_sacrifice_guard1_phrase1_end} remark@val_sacrifice_guard2_phrase1
+danger                      = danger@val_sacrifice_guard
+combat_ignore_cond          = {=check_fighting(401)}
+
+;--------------------------------------------------------------------------
+; фраза: Да он уже достал, в натуре! На этой неделе уже 3 раза туда...
+;--------------------------------------------------------------------------
+[remark@val_sacrifice_guard2_phrase1]
+anim                = guard_na
+snd                 = speech
+target              = 404
+on_signal           = sound_end | remark@val_sacrifice_guard2_phrase2
+meet                = no_meet
+danger              = danger@val_sacrifice_guard
+combat_ignore_cond  = {=check_fighting(401)}
+
+;--------------------------------------------------------------------------
+; фраза: Ш-ш-ш-ш.. Слышал? Что-то у меня дурное предчувствие. Короче, не хочется мне из Лагеря уходить.
+;--------------------------------------------------------------------------
+[remark@val_sacrifice_guard2_phrase2]
+anim                = guard
+snd                 = speech
+target              = 404
+on_signal           = sound_end | %+val_sacrifice_guard2_phrase2_end%
+meet                = no_meet
+danger              = danger@val_sacrifice_guard
+combat_ignore_cond  = {=check_fighting(401)}

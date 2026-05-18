@@ -1,0 +1,159 @@
+-- File:        UI_MULTIPALYER_BASE.SCRIPT
+-- Description: Common for for <Find Server> and <Create Server> menues
+--              Has - [edit field "Player"]
+--                    [check box "don't catch input"] (temp control - DON'T forget to remove from release :)
+--                    [button "CD Key"]
+-- Created:     21.12.2004
+-- Author:      Serhiy 0. Vynnychenko
+-- Mail:        narrator@gsc-game.kiev.ua
+--
+-- Copyright 2004 GSC Game World
+--
+
+class "multiplayer_base" (CUIScriptWnd)
+
+function multiplayer_base:__init() super()
+end
+
+function multiplayer_base:__finalize()
+end
+
+function multiplayer_base:InitControls()
+	-- init common data
+	self.indent = 10
+	self.button_indent = -1
+	self.screen   = {x = 0, y = 0, width = 1024, height = 768}
+	
+	-- rect of tab
+	self.main_rect = {x = 0, y = 0, width = 800, height = 500}
+	self.main_rect.x = (self.screen.width - self.main_rect.width)/2
+	self.main_rect.y = (self.screen.height - self.main_rect.height)/2
+	
+	-----------------------------------------------------------------
+	self.left_align_x   = self.indent
+	self.right_align_x  = self.main_rect.width - self.indent
+	self.top_align_y    = self.indent
+	self.bottom_align_y = self.main_rect.height - self.indent
+	------------------------------------------------------------------
+	-- button template
+	self.btn_rect  = {x = self.left_align_x, 
+					  y = self.top_align_y, 
+					  width = 256, 
+					  height = 33  }
+		
+	-- Fonts
+	self.caption_font = GetFontLetterica25()
+	self.text_font    = GetFontArialN21Russian()
+	self.edit_font    = GetFontLetterica25()
+	self.button_font  = GetFontLetterica25()
+	
+	-- init controls cordinates
+	local s_player_rect = {x = self.left_align_x, y = self.top_align_y, width = 90, height = 33}
+		
+	local e_player_rect = {x = s_player_rect.x + s_player_rect.width,
+						   y = s_player_rect.y,
+						   width = s_player_rect.width,
+						   height = s_player_rect.height}
+						   
+	local s_CDkey_rect  = {x = self.left_align_x, 
+						   y = s_player_rect.y + s_player_rect.height + self.indent, 
+						   width = s_player_rect.width, 
+						   height = s_player_rect.height}
+						   
+	local btn_CDkey_rect ={x = s_CDkey_rect.x + s_CDkey_rect.width,
+						   y = s_CDkey_rect.y,
+						   width = self.btn_rect.width,
+						   height = s_CDkey_rect.height}
+						   
+	self.new_top = btn_CDkey_rect.y + btn_CDkey_rect.height + self.indent
+	
+	-- INIT DATA>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	
+	-- <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CODE
+	-- init self position and size
+	self:Init(self.main_rect.x, 
+			  self.main_rect.y,
+			  self.main_rect.width,
+			  self.main_rect.height)
+	-- MAIN FRAME WINDOW
+	self.main_frame = CUIFrameWindow()
+	self.main_frame:SetAutoDelete(true)
+	self.main_frame:SetWindowName("main_frame")
+	self.main_frame:Init("ui\\ui_frame", 0, 0,
+						 self.main_rect.width,
+						 self.main_rect.height)
+	self:AttachChild(self.main_frame)
+	
+	-- init controls
+	-- Player Name
+	local static = CUIStatic()
+	static:Init(s_player_rect.x, s_player_rect.y, s_player_rect.width, s_player_rect.height)
+	static:SetFont(self.text_font)
+	static:SetText("Player :")
+	static:SetTextY(-1)
+	self.main_frame:AttachChild(static)
+			-- TEMP frame
+	local frame = CUIFrameWindow()
+	frame:Init("ui\\ui_frame_very_small", s_player_rect.x, s_player_rect.y, s_player_rect.width, s_player_rect.height)	
+	self.main_frame:AttachChild(frame)
+	
+	local frame = CUIFrameWindow()
+	frame:Init("ui\\ui_frame_very_small", e_player_rect.x, e_player_rect.y, e_player_rect.width, e_player_rect.height)	
+	self.main_frame:AttachChild(frame)
+	
+	local edit = CUIEditBox()
+	edit:Init(e_player_rect.x, e_player_rect.y, e_player_rect.width, e_player_rect.height)
+	edit:SetFont(self.edit_font)
+	edit:SetTextY(-1)
+	edit:SetText("Devil")
+	self.main_frame:AttachChild(edit)
+	
+	-- CD Key
+	static = CUIStatic()
+	static:Init(s_CDkey_rect.x, s_CDkey_rect.y, s_CDkey_rect.width, s_CDkey_rect.height)
+	static:SetFont(self.text_font)
+	static:SetText("CD Key: ")
+	static:SetTextY(-1)
+	self.main_frame:AttachChild(static)
+	
+			-- TEMP frame
+	local frame = CUIFrameWindow()
+	frame:Init("ui\\ui_frame_very_small", s_CDkey_rect.x, s_CDkey_rect.y, s_CDkey_rect.width, s_CDkey_rect.height)	
+	self.main_frame:AttachChild(frame)
+	
+	local btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_cd_key")
+	btn:Init("ui\\ui_btn_mm", btn_CDkey_rect.x, btn_CDkey_rect.y, btn_CDkey_rect.width, btn_CDkey_rect.height)
+	btn:SetText("1111-1111-1111-1111")
+	btn:SetFont(self.button_font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(-1)
+	self:Register(btn)
+	self.main_frame:AttachChild(btn)	
+	
+	
+	self:SetAutoDelete(true)
+end
+
+function multiplayer_base:InitCallbacks()
+	self:AddCallback("btn_cd_key",    ui_events.BUTTON_CLICKED,	self.OnButton_cd_key,	self)
+end
+
+function multiplayer_base:OnButton_cd_key()
+
+end
+
+function multiplayer_base:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	
+	DIK_RETURN = 28
+	WINDOW_KEY_PRESSED = 6
+	
+	local bind = dik_to_bind(dik)
+	if bind == key_bindings.kQUIT then
+		self:GetHolder():start_stop_menu(self,true)
+	end  
+
+	return true
+end

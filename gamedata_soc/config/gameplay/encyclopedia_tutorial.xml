@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<encyclopedia>
+    <!-- LIST OF ENCYCLOPEDIA ENTRIES -->
+
+   <article id="tutorial_binocular" name="binocular" group="tutorial">
+        <text>binoc_tutorial</text>
+    </article>
+   <article id="tutorial_crouch" name="crouch" group="tutorial">
+        <text>crouch_tutorial</text>
+    </article>
+   <article id="tutorial_hide_weapon" name="hide_weapon" group="tutorial">
+        <text>hide_weapon_tutorial</text>
+    </article>
+   <article id="tutorial_jump" name="jump" group="tutorial">
+        <text>jump_tutorial</text>
+    </article>
+   <article id="tutorial_overload" name="overload" group="tutorial">
+        <text>overload_tutorial</text>
+    </article>
+   <article id="tutorial_radiation" name="radiation" group="tutorial">
+        <text>radiation_tutorial</text>
+    </article>
+   <article id="tutorial_relation" name="relation" group="tutorial">
+        <text>relation_tutorial</text>
+    </article>
+   <article id="tutorial_sprint" name="sprint" group="tutorial">
+        <text>sprint_tutorial</text>
+    </article>
+   <article id="tutorial_weakness" name="weakness" group="tutorial">
+        <text>weakness_tutorial</text>
+    </article>
+   <article id="tutorial_weapon" name="weapon" group="tutorial">
+        <text>weapon_tutorial</text>
+    </article>
+   <article id="tutorial_wound" name="wound" group="tutorial">
+        <text>wound_tutorial</text>
+    </article>
+
+</encyclopedia>
+

@@ -1,0 +1,592 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+<!------------------------- STALKER ------------------------>
+<!-------------------------- DOCTOR ------------------------>
+    <specific_character id="cit_doctor" team_default = "1">
+        <name>cit_doctor_name</name>
+        <icon>ui_npc_u_izgoy</icon>
+        <map_icon x="6" y="0"></map_icon>
+        <bio>cit_doctor_bio</bio>
+
+        <class>cit_doctor</class>
+        <community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+        <rank>859</rank>
+        <reputation>145</reputation>
+
+        <visual>actors\izgoy\izgoy</visual>
+        <snd_config>characters_voice\human_02\stalker\</snd_config>
+        <supplies>
+            [spawn] \n
+            cit_doctors_key \n
+#include "gameplay\character_food.xml"
+<!-- #include "gameplay\character_drugs.xml" -->
+        </supplies>
+
+        <start_dialog>cit_doctor_hello_dialog</start_dialog>
+        <actor_dialog>cit_doctor_main_dialog</actor_dialog>
+        <actor_dialog>cit_doctor_escape_dialog</actor_dialog>
+#include "gameplay\character_dialogs.xml"
+    </specific_character>
+
+<!----------------------------- KILLERS ------------------------->
+<!----------------------------- GENERAL ------------------------->
+	<specific_character id="cit_killer_general1" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="18" y="8"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>cit_killer_general_bio</bio>
+
+		<class>cit_killer_general</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+
+		<rank>480</rank>
+		<reputation>-98</reputation>
+		
+		<snd_config>characters_voice\human_02\killer\</snd_config>
+		
+		<visual>actors\killer\stalker_ki_head_1</visual>
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_fmj = 1 \n
+			wpn_lr300 \n
+			ammo_5.56x45_ss190 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+	<specific_character id="cit_killer_general2" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="28" y="6"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>cit_killer_general_bio</bio>
+
+		<class>cit_killer_general</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+
+		<rank>521</rank>
+		<reputation>-124</reputation>
+		
+		<snd_config>characters_voice\human_02\killer\</snd_config>
+		
+		<visual>actors\killer\stalker_ki_mask</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_fmj = 1 \n
+			wpn_lr300 \n
+			ammo_5.56x45_ap = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+<!----------------------------- VETERAN ------------------------->
+	<specific_character id="cit_killer_veteran1" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="18" y="8"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>cit_killer_general_bio</bio>
+
+		<class>cit_killer_veteran</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+
+		<rank>844</rank>
+		<reputation>-137</reputation>
+		
+		<snd_config>characters_voice\human_02\killer\</snd_config>
+		
+		<visual>actors\killer\stalker_ki_head_1</visual>
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_fmj = 1 \n
+			wpn_sig550 \n
+			ammo_5.56x45_ss190 = 1 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+	<specific_character id="cit_killer_veteran2" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="28" y="6"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>cit_killer_general_bio</bio>
+
+		<class>cit_killer_veteran</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+
+		<rank>765</rank>
+		<reputation>-129</reputation>
+		
+		<snd_config>characters_voice\human_02\killer\</snd_config>
+		
+		<visual>actors\killer\stalker_ki_mask</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_fmj = 1 \n
+			wpn_sig550 \n
+			ammo_5.56x45_ss190 = 1 \n
+			ammo_5.56x45_ap = 1 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+<!------------------------------ NAUCHNIY ----------------------->
+	<specific_character id="cit_killer_nauchniy" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="14" y="0"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>cit_killer_exo_bio</bio>
+
+		<class>cit_killer_nauchniy</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+		
+		<rank>908</rank>
+		<reputation>-125</reputation>
+	
+		<snd_config>characters_voice\human_03\killer\</snd_config>
+		
+		<visual>actors\killer\stalker_ki_nauchniy</visual>
+		<supplies>
+			[spawn] \n
+			wpn_walther \n
+			ammo_9x19_pbp = 2 \n
+			wpn_sig550 \n
+			ammo_5.56x45_ss190 = 1 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+<!------------------------------ EXO ----------------------->
+	<specific_character id="cit_killer_exo" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="30" y="6"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>cit_killer_exo_bio</bio>
+
+		<class>cit_killer_exo</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+		
+		<rank>954</rank>
+		<reputation>-139</reputation>
+	
+		<snd_config>characters_voice\human_03\killer\</snd_config>
+		
+		<visual>actors\killer\stalker_ki_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_pbp = 3 \n
+			wpn_sig550 \n
+			ammo_5.56x45_ss190 = 2 \n
+			ammo_5.56x45_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+	<specific_character id="cit_killer_exo_sniper" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="30" y="6"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>cit_killer_exo_bio</bio>
+
+		<class>cit_killer_exo_sniper</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+		
+		<rank>970</rank>
+		<reputation>-142</reputation>
+	
+		<snd_config>characters_voice\human_03\killer\</snd_config>
+			
+		<visual>actors\killer\stalker_ki_exoskeleton</visual>
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_pbp = 3 \n
+			wpn_sig550 = 1,scope silencer \n
+			ammo_5.56x45_ss190 = 2 \n
+			ammo_5.56x45_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+<!---------------------------- LEADER ---------------------->
+	<specific_character id="cit_killer_leader" team_default = "1">
+		<name>cit_killers_leader_name</name>
+		<icon x="18" y="6"></icon>
+		<map_icon x="2" y="0"></map_icon>
+		<bio>cit_killers_leader_bio</bio>
+
+		<class>cit_killer_leader</class>
+		<community>killer</community> <terrain_sect>stalker_killer_terrain</terrain_sect>
+		
+		<rank>999</rank>
+		<reputation>-150</reputation>
+	
+		<snd_config>characters_voice\human_02\killer\</snd_config>
+		
+		<visual>actors\killer\stalker_ki_head_2</visual>
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_pbp = 4 \n
+			wpn_sig550 = 1,scope launcher \n
+			ammo_5.56x45_ss190 = 3 \n
+			ammo_5.56x45_ap = 3 \n
+			outfit_killer_m2 \n
+			device_torch \n
+			cit_leader_killer_pda \n
+			cit_killers_documents \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+<!-------------------------- BANDITS ----------------------->
+<!--------------------------- DRUNK ------------------------>
+    <specific_character id="cit_bandit_drunk" team_default = "1">
+        <name>GENERATE_NAME_stalker</name>
+        <icon x="24" y="10"></icon>
+        <map_icon x="3" y="0"></map_icon>
+        <bio>cit_bandit_drunk_bio</bio>
+
+        <class>cit_bandit_drunk</class>
+        <community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+
+        <rank>306</rank>
+        <reputation>-58</reputation>
+
+        <visual>actors\bandit\stalker_bandit_drunk</visual>
+        <snd_config>characters_voice\human_02\bandit\</snd_config>
+        <supplies>
+            [spawn] \n
+            vodka = 3 \n
+			wpn_hpsa \n
+			ammo_9x19_pbp = 1 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+        </supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+    </specific_character>
+
+<!---------------------------BANDIT GENERAL---------------------->
+	<specific_character id="cit_bandit_general_defaul1t" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="14" y="4"></icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>cit_bandit_general_bio</bio>
+		
+		<class>cit_bandit_general</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>397</rank>
+		<reputation>-88</reputation>
+
+		<visual>actors\bandit\stalker_bandit_3</visual>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_pbp = 1 \n	
+			wpn_l85 \n
+			ammo_5.56x45_ss190 = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+	<specific_character id="cit_bandit_general_default2" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="28" y="2"></icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>cit_bandit_general_bio</bio>
+		
+		<class>cit_bandit_general</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>458</rank>
+		<reputation>-103</reputation>
+
+		<visual>actors\bandit\stalker_bandit_4</visual>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<supplies>
+			[spawn] \n
+			wpn_hpsa \n
+			ammo_9x19_pbp = 1 \n
+			wpn_ak74 \n
+			ammo_5.45x39_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+	<specific_character id="cit_bandit_general_default3" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="28" y="2"></icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>cit_bandit_general_bio</bio>
+		
+		<class>cit_bandit_general</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>530</rank>
+		<reputation>-120</reputation>
+
+		<visual>actors\bandit\stalker_bandit_5</visual>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<supplies>
+			[spawn] \n
+			wpn_hpsa \n
+			ammo_9x19_pbp = 1 \n
+			wpn_ak74 \n
+			ammo_5.45x39_fmj = 2 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+	<specific_character id="cit_bandit_general_default4" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="24" y="6"></icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>cit_bandit_general_bio</bio>
+				
+		<class>cit_bandit_general</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>550</rank>
+		<reputation>-104</reputation>
+
+		<visual>actors\bandit\stalker_bandit_8</visual>
+		<snd_config>characters_voice\human_03\bandit\</snd_config>
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_pbp = 1 \n	
+			wpn_ak74 \n
+			ammo_5.45x39_fmj = 1 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+	
+<!---------------------------BANDIT VETERAN---------------------->
+	<specific_character id="cit_bandit_veteran_default1" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="22" y="14"></icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>cit_bandit_veteran_bio</bio>
+		
+		<class>cit_bandit_veteran</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>660</rank>
+		<reputation>-123</reputation>
+
+		<visual>actors\bandit\stalker_bandit_master</visual>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<supplies>
+			[spawn] \n
+			wpn_hpsa \n
+			ammo_9x19_pbp = 2 \n
+			wpn_l85 \n
+			ammo_5.56x45_ss190 = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+	<specific_character id="cit_bandit_veteran_default2" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="24" y="14"></icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>cit_bandit_veteran_bio</bio>
+		
+		<class>cit_bandit_veteran</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>747</rank>
+		<reputation>-133</reputation>
+
+		<visual>actors\bandit\stalker_bandit_veteran</visual>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_pbp = 1 \n	
+			wpn_l85 \n
+			ammo_5.56x45_ap = 1 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+	<specific_character id="cit_bandit_veteran_default3" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="24" y="14"></icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>cit_bandit_veteran_bio</bio>
+
+		<class>cit_bandit_veteran</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>810</rank>
+		<reputation>-127</reputation>
+
+		<visual>actors\bandit\stalker_bandit_veteran</visual>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_pbp = 2 \n
+			wpn_ak74 \n
+			ammo_5.45x39_ap = 2 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+<!-------------------------- VETERAN BEST ----------------------->
+	<specific_character id="cit_bandit_veteran_best" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon x="22" y="14"></icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>cit_bandit_veteran_bio</bio>
+		
+		<class>cit_bandit_veteran_best</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>889</rank>
+		<reputation>-141</reputation>
+
+		<visual>actors\bandit\stalker_bandit_master</visual>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<supplies>
+			[spawn] \n
+			wpn_hpsa \n
+			ammo_9x19_pbp = 3 \n
+			wpn_l85 \n
+			ammo_5.56x45_ss190 = 3 \n
+			ammo_5.56x45_ap = 2 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+<!-------------------------- LEADER ----------------------->
+	<specific_character id="cit_bandit_leader" team_default = "1">
+		<name>cit_bandits_leader_name</name>
+		<icon x="22" y="14"></icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>cit_bandits_leader_bio</bio>
+		
+		<class>cit_bandit_leader</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>931</rank>
+		<reputation>-146</reputation>
+
+		<visual>actors\bandit\stalker_bandit_master</visual>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<supplies>
+			[spawn] \n
+			wpn_hpsa \n
+			ammo_9x19_pbp = 3 \n
+			wpn_l85 = 1,silencer \n
+			ammo_5.56x45_ss190 = 3 \n
+			ammo_5.56x45_ap = 2 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+					
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+<!----------------------- Василий Петрович ---------------------->
+	<specific_character id="cit_vp" team_default = "1">
+		<name>cit_vp_name</name>
+		<icon x="24" y="4"></icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>cit_vp_bio</bio>
+
+		<class>cit_vp</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>630</rank>
+		<reputation>132</reputation>
+		
+		<snd_config>characters_voice\human_02\stalker\</snd_config>
+
+		<visual>actors\neytral\stalker_neytral_hood_2</visual>
+		<supplies>
+			[spawn] \n
+			wpn_fort \n
+			ammo_9x18_fmj = 1 \n
+			wpn_ak74u \n
+			ammo_5.45x39_ap = 1 \n
+			device_torch \n
+			cit_vp_pda \n
+		</supplies>
+
+#include "gameplay\character_dialogs.xml"		
+	</specific_character>
+</xml>

@@ -1,0 +1,7 @@
+function main()
+         scr_trader.init()
+         while(true) do
+               scr_trader.execute()
+               wait()
+         end
+end

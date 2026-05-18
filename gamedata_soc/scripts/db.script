@@ -1,0 +1,77 @@
+--[[------------------------------------------------------------------------------------------------
+База данных живых онлайновых объектов, зон и рестрикторов, актёра
+Чугай Александр
+--------------------------------------------------------------------------------------------------]]
+
+zone_by_name        = {}
+sl_by_name          = {}
+storage             = {}
+sound               = {}
+actor               = nil
+actor_proxy         = actor_proxy.actor_proxy()
+heli                = {}
+camp_storage        = {}
+story_by_id	        = {}
+smart_terrain_by_id = {}
+trader				= nil
+info_restr          = {}
+strn_by_respawn     = {}
+
+function add_obj( obj )
+end
+
+function del_obj( obj )
+	storage   [obj:id()] = nil
+end
+
+
+function add_zone( zone )
+	zone_by_name[zone:name()] = zone
+	add_obj( zone )
+end
+
+function del_zone( zone )
+	zone_by_name[zone:name()] = nil
+	del_obj( zone )
+end
+
+
+function add_sl( sl )
+	sl_by_name[sl:name()] = sl
+	add_obj( sl )
+end
+
+function del_sl( sl )
+	sl_by_name[sl:name()] = nil
+	del_obj( sl )
+end
+
+
+function add_actor( obj )
+	actor = obj
+	actor_proxy:net_spawn( obj )
+	add_obj( obj )
+end
+
+function del_actor()
+	del_obj( actor )
+	actor_proxy:net_destroy()
+	actor = nil
+end
+
+
+function add_heli(obj)	
+	heli[obj:id()] = obj
+end	
+function del_heli(obj)
+	heli[obj:id()] = nil
+end	
+
+
+function add_smart_terrain( obj )
+	smart_terrain_by_id[obj.id] = obj
+end
+
+function del_smart_terrain( obj )
+	smart_terrain_by_id[obj.id] = nil
+end

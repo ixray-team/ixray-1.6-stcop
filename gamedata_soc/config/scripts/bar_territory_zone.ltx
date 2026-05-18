@@ -1,0 +1,10 @@
+[logic]
+active = sr_territory@outside
+
+[sr_territory@outside]
+on_actor_inside = sr_territory@inside
+
+[sr_territory@inside]
+on_actor_outside = sr_territory@outside
+territory_hit = {-bar_dolg_territory_1_hit -bar_arena_fight_begin -bar_arena_fight} %+bar_dolg_territory_1_hit =bar_territory_logic%, {-bar_dolg_territory_2_hit -bar_arena_fight_begin -bar_arena_fight} %+bar_dolg_territory_2_hit =bar_territory_logic%, {-bar_dolg_territory_3_hit -bar_arena_fight_begin -bar_arena_fight} %+bar_dolg_territory_3_hit =bar_territory_logic%
+territory_death = {-bar_dolg_territory_kill -bar_arena_fight_begin -bar_arena_fight} %+bar_dolg_territory_kill =bar_territory_logic%

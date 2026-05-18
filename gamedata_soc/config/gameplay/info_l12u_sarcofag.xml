@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+	<!-- Вскрытие управления -->
+	<info_portion id="sar_secret_door_find"></info_portion>
+	<info_portion id="sar_start_decoding"></info_portion>
+	<info_portion id="sar_access_decoding"></info_portion>
+	<info_portion id="sar_finish_decoding"></info_portion>
+	<info_portion id="sar_fail_decoding">
+		<disable>sar_start_decoding</disable>
+	</info_portion>
+	<info_portion id="sar_enter_command_center">
+		<task>sar_monolith_destroy</task>
+	</info_portion>
+	
+	<!-- спавн монолитовцев -->
+	<info_portion id="sar_monolith_spawn1"></info_portion>
+	<info_portion id="sar_monolith_spawn2"></info_portion>
+	<info_portion id="sar_monolith_spawn3"></info_portion>
+	<info_portion id="sar_monolith_spawn4"></info_portion>
+	<info_portion id="sar_monolith_spawn5"></info_portion>
+	<info_portion id="sar_monolith_spawn6"></info_portion>
+	<info_portion id="sar_monolith_spawn7"></info_portion>
+	<info_portion id="sar_monolith_spawn8"></info_portion>
+	<info_portion id="sar_start_teleport"></info_portion>
+	<info_portion id="sar_end_teleport"></info_portion>
+	
+	
+	<!-- разрушение Монолита -->
+	<info_portion id="sar_monolith_generator_find"></info_portion>
+	<info_portion id="sar_monolith_damaged"></info_portion>
+	<info_portion id="sar_monolith_heavy_damaged"></info_portion>
+	<info_portion id="sar_monolith_destroy"></info_portion>
+	<info_portion id="sar_monolith_off"></info_portion>
+	
+	<info_portion id="sar_monolith_down_1"></info_portion>
+	<info_portion id="sar_monolith_down_2"></info_portion>
+	<info_portion id="sar_monolith_down_3"></info_portion>
+	<info_portion id="sar_monolith_down_4"></info_portion>
+	<info_portion id="sar_monolith_down_5"></info_portion>
+	<info_portion id="sar_monolith_down_6"></info_portion>
+	
+	
+	<info_portion id="sar_monolith_recharged">
+		<task>sar_warlab</task>
+		<article>zones_mystery</article>
+		<article>sl_monolith_off</article>
+	</info_portion>
+	<info_portion id="sar_warlab_go"></info_portion>
+	
+	<!-- поиск Монолита -->
+	<info_portion id="sar_monolith_call">
+		<task>sar_monolith</task>
+	</info_portion>
+	<info_portion id="sar_monolith_find"></info_portion>
+	<info_portion id="sar_monolith_go"></info_portion>
+	
+	<info_portion id="mon_ambush"></info_portion>
+	
+	<info_portion id="mon_1_trigger"></info_portion>
+	<info_portion id="mon_2_trigger"></info_portion>
+	<info_portion id="mon_3_trigger"></info_portion>
+	
+	<!---------------- Sarcofag 2 ------------------->
+	<info_portion id="sar2_teleport_start"></info_portion>
+	<info_portion id="sar2_monolith_rock"></info_portion>
+	<info_portion id="sar2_monolith_end"></info_portion>
+
+	<info_portion id="sar2_monolith_miracle"></info_portion>
+	
+	<!---------------- Spawn_stalkers --------------->
+	
+	<info_portion id="sar2_spawn_1"></info_portion>
+	<info_portion id="sar2_spawn_2"></info_portion>
+	<info_portion id="sar2_spawn_3"></info_portion>
+	<info_portion id="sar2_spawn_4"></info_portion>
+	<info_portion id="sar2_spawn_5"></info_portion>
+	<info_portion id="sar2_spawn_6"></info_portion>
+	<info_portion id="sar2_spawn_7"></info_portion>
+	<info_portion id="sar2_spawn_8"></info_portion>
+	<info_portion id="sar2_spawn_9"></info_portion>
+	<info_portion id="sar2_spawn_10"></info_portion>
+	<info_portion id="sar2_spawn_11"></info_portion>
+	<info_portion id="sar2_spawn_12"></info_portion>
+	<info_portion id="sar2_spawn_13"></info_portion>
+	<info_portion id="sar2_spawn_14"></info_portion>
+	<info_portion id="sar2_spawn_15"></info_portion>
+	<info_portion id="sar2_spawn_16"></info_portion>
+	<info_portion id="sar2_spawn_17"></info_portion>
+	<info_portion id="sar2_spawn_18"></info_portion>
+	<info_portion id="sar2_spawn_19"></info_portion>
+	<info_portion id="sar2_spawn_20"></info_portion>
+	<info_portion id="sar2_spawn_21"></info_portion>
+	<info_portion id="sar2_spawn_22"></info_portion>
+	<info_portion id="sar2_spawn_23"></info_portion>
+	<info_portion id="sar2_spawn_24"></info_portion>
+	<info_portion id="sar2_spawn_25"></info_portion>
+	<info_portion id="sar2_spawn_26"></info_portion>
+	<info_portion id="sar2_spawn_27"></info_portion>
+	<info_portion id="sar2_spawn_28"></info_portion>
+	<info_portion id="sar2_spawn_29"></info_portion>
+	<info_portion id="sar2_spawn_30"></info_portion>
+	<info_portion id="sar2_spawn_31"></info_portion>
+	<info_portion id="sar2_spawn_32"></info_portion>
+	<info_portion id="sar2_spawn_33"></info_portion>
+	<info_portion id="sar2_spawn_34"></info_portion>
+	<info_portion id="sar2_spawn_35"></info_portion>
+	<info_portion id="sar2_spawn_36"></info_portion>
+	<info_portion id="sar2_spawn_37"></info_portion>
+	<info_portion id="sar2_spawn_38"></info_portion>
+	<info_portion id="sar2_spawn_39"></info_portion>
+	<info_portion id="sar2_spawn_40"></info_portion>
+	<info_portion id="sar2_spawn_41"></info_portion>
+	<info_portion id="sar2_spawn_42"></info_portion>
+	<info_portion id="sar2_spawn_43"></info_portion>
+	<info_portion id="sar2_spawn_44"></info_portion>
+	<info_portion id="sar2_spawn_45"></info_portion>
+	<info_portion id="sar2_spawn_46"></info_portion>
+	<info_portion id="sar2_spawn_47"></info_portion>
+	<info_portion id="sar2_spawn_48"></info_portion>
+	<info_portion id="sar2_spawn_49"></info_portion>
+	<info_portion id="sar2_spawn_50"></info_portion>
+	<info_portion id="sar2_spawn_51"></info_portion>
+	<info_portion id="sar2_spawn_52"></info_portion>
+	<info_portion id="sar2_spawn_53"></info_portion>
+	<info_portion id="sar2_spawn_54"></info_portion>
+	<info_portion id="sar2_spawn_55"></info_portion>
+	<info_portion id="sar2_spawn_56"></info_portion>
+	<info_portion id="sar2_spawn_57"></info_portion>
+	<info_portion id="sar2_spawn_58"></info_portion>
+	<info_portion id="sar2_spawn_59"></info_portion>
+	<info_portion id="sar2_spawn_60"></info_portion>
+	
+	<info_portion id="sar2_death_1"></info_portion>
+	<info_portion id="sar2_death_2"></info_portion>
+	<info_portion id="sar2_death_3"></info_portion>
+	<info_portion id="sar2_death_4"></info_portion>
+	<info_portion id="sar2_death_5"></info_portion>
+	<info_portion id="sar2_death_6"></info_portion>
+	<info_portion id="sar2_death_7"></info_portion>
+	<info_portion id="sar2_death_8"></info_portion>
+	<info_portion id="sar2_death_9"></info_portion>
+	<info_portion id="sar2_death_10"></info_portion>
+	<info_portion id="sar2_death_11"></info_portion>
+	<info_portion id="sar2_death_12"></info_portion>
+	<info_portion id="sar2_death_13"></info_portion>
+	<info_portion id="sar2_death_14"></info_portion>
+	<info_portion id="sar2_death_15"></info_portion>
+	<info_portion id="sar2_death_16"></info_portion>
+	<info_portion id="sar2_death_17"></info_portion>
+	<info_portion id="sar2_death_18"></info_portion>
+	<info_portion id="sar2_death_19"></info_portion>
+	<info_portion id="sar2_death_20"></info_portion>
+	<info_portion id="sar2_death_21"></info_portion>
+	<info_portion id="sar2_death_22"></info_portion>
+	<info_portion id="sar2_death_23"></info_portion>
+	<info_portion id="sar2_death_24"></info_portion>
+	<info_portion id="sar2_death_25"></info_portion>
+	<info_portion id="sar2_death_26"></info_portion>
+	<info_portion id="sar2_death_27"></info_portion>
+	<info_portion id="sar2_death_28"></info_portion>
+	<info_portion id="sar2_death_29"></info_portion>
+	<info_portion id="sar2_death_30"></info_portion>
+	<info_portion id="sar2_death_31"></info_portion>
+	<info_portion id="sar2_death_32"></info_portion>
+	<info_portion id="sar2_death_33"></info_portion>
+	<info_portion id="sar2_death_34"></info_portion>
+	<info_portion id="sar2_death_35"></info_portion>
+	<info_portion id="sar2_death_36"></info_portion>
+	<info_portion id="sar2_death_37"></info_portion>
+	<info_portion id="sar2_death_38"></info_portion>
+	<info_portion id="sar2_death_39"></info_portion>
+	<info_portion id="sar2_death_40"></info_portion>
+	<info_portion id="sar2_death_41"></info_portion>
+	<info_portion id="sar2_death_42"></info_portion>
+	<info_portion id="sar2_death_43"></info_portion>
+	<info_portion id="sar2_death_44"></info_portion>
+	<info_portion id="sar2_death_45"></info_portion>
+	<info_portion id="sar2_death_46"></info_portion>
+	<info_portion id="sar2_death_47"></info_portion>
+	<info_portion id="sar2_death_48"></info_portion>
+	<info_portion id="sar2_death_49"></info_portion>
+	<info_portion id="sar2_death_50"></info_portion>
+	<info_portion id="sar2_death_51"></info_portion>
+	<info_portion id="sar2_death_52"></info_portion>
+	<info_portion id="sar2_death_53"></info_portion>
+	<info_portion id="sar2_death_54"></info_portion>
+	<info_portion id="sar2_death_55"></info_portion>
+	<info_portion id="sar2_death_56"></info_portion>
+	<info_portion id="sar2_death_57"></info_portion>
+	<info_portion id="sar2_death_58"></info_portion>
+	<info_portion id="sar2_death_59"></info_portion>
+	<info_portion id="sar2_death_60"></info_portion>
+	
+	<info_portion id="mon_door_unlocked"></info_portion>
+	
+	<info_portion id="sar_mon_poltergeist_1_spawn"></info_portion>
+	<info_portion id="sar_mon_poltergeist_2_spawn"></info_portion>
+	<info_portion id="sar_mon_poltergeist_3_spawn"></info_portion>
+	<info_portion id="sar_mon_poltergeist_1_dead"></info_portion>
+	<info_portion id="sar_mon_poltergeist_2_dead"></info_portion>
+	<info_portion id="sar_mon_poltergeist_3_dead"></info_portion>
+	<info_portion id="oso_init_dialog"></info_portion>
+	
+	
+	
+</game_information_portions>

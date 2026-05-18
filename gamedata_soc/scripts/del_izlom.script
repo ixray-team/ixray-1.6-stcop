@@ -1,0 +1,17 @@
+function main()
+      local izlom = get_level_object("izlom")
+
+      izlom:script(true, script_name())
+
+      if(level.actor() == nil) then return end
+
+      printf("start attack")
+
+      action(izlom, act(act.attack, level.actor()), cond(cond.time_end, 10000))
+
+      wait(10000)
+
+      printf("end attack")
+
+      izlom:script(false, script_name())
+end

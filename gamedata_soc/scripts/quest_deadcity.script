@@ -1,0 +1,6 @@
+function main()
+	quest_escape3.main()
+	
+	db.actor:give_info_portion("cit_level_fake_start")
+
+end

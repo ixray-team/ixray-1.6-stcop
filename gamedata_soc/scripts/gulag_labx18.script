@@ -1,0 +1,329 @@
+local t = {}
+
+function load_job(sj, gname, type, squad, groups)
+--'--------------------------------------------------------------------------	
+--' Labx18
+--'--------------------------------------------------------------------------	
+	if type == "dar_com_center_poltergeist" then
+	    t = { section = "logic@com_center_poltergeist",
+		    idle = 0,
+		    prior = 5, state = {0},
+		    in_rest = "", out_rest = "dar_poltergeist_territory",
+	    }
+	    table.insert(sj, t)
+	end
+	
+	if type == "dar_poltergeist_ring" then
+	    t = { section = "logic@dar_poltergeist_ring_base",
+		    idle = 0,
+		    prior = 10, state = {0},
+		    online = true,
+		    in_rest = "", out_rest = "",
+	    }
+	    table.insert(sj, t)
+	    t = { section = "logic@dar_poltergeist_ring_1_1",
+		    idle = 0,
+		    prior = 5, state = {0,2,3},
+		    online = false,
+		    in_rest = "", out_rest = "",
+	    }
+	    table.insert(sj, t)
+	    t = { section = "logic@dar_poltergeist_ring_1_2",
+		    idle = 0,
+		    prior = 5, state = {0,2,3},
+		    online = false,
+		    in_rest = "", out_rest = "",
+	    }
+	    table.insert(sj, t)
+	    t = { section = "logic@dar_poltergeist_ring_end",
+		    idle = 0,
+		    prior = 5, state = {0,1,3},
+		    online = false,
+		    in_rest = "", out_rest = "",
+	    }
+	    table.insert(sj, t)
+	    t = { section = "logic@dar_poltergeist_ring_end",
+		    idle = 0,
+		    prior = 5, state = {0,1,3},
+		    online = false,
+		    in_rest = "", out_rest = "",
+	    }
+	    table.insert(sj, t)
+	    t = { section = "logic@dar_poltergeist_ring_end",
+		    idle = 0,
+		    prior = 5, state = {0,1,3},
+		    online = false,
+		    in_rest = "", out_rest = "",
+	    }
+	    table.insert(sj, t)
+	    t = { section = "logic@dar_poltergeist_ring_1_1",
+		    idle = 0,
+		    prior = 10, state = {1},
+		    online = true,
+		    in_rest = "", out_rest = "",
+	    }
+	    table.insert(sj, t)
+	    t = { section = "logic@dar_poltergeist_ring_1_2",
+		    idle = 0,
+		    prior = 10, state = {1},
+		    online = true,
+		    in_rest = "", out_rest = "",
+	    }
+	    table.insert(sj, t)
+	    t = { section = "logic@dar_poltergeist_ring_base",
+		    idle = 0,
+		    prior = 5, state = {1,2,3},
+		    online = false,
+		    in_rest = "", out_rest = "",
+	    }
+	    table.insert(sj, t)
+	     t = { section = "logic@dar_poltergeist_ring_end",
+		    idle = 0,
+		    prior = 10, state = {2},
+		    online = true,
+		    in_rest = "", out_rest = "",
+	    }
+	    table.insert(sj, t)
+	    t = { section = "logic@dar_poltergeist_ring_end",
+		    idle = 0,
+		    prior = 10, state = {2},
+		    online = true,
+		    in_rest = "", out_rest = "",
+	    }
+	    table.insert(sj, t)
+	    t = { section = "logic@dar_poltergeist_ring_end",
+		    idle = 0,
+		    prior = 10, state = {2},
+		    online = true,
+		    in_rest = "", out_rest = "",
+	    }
+	    table.insert(sj, t)
+	end
+	
+
+	if type == "dar_poltergeist_tele" then
+	    t = { section = "logic@dar_poltergeist",
+		    idle = 0,
+		    prior = 5, state = {0},
+		    in_rest = "", out_rest = "dar_poltergeist_tele_restr",
+	    }
+	    table.insert(sj, t)
+	end
+
+	if type == "dar_poltergeist_tele_round" then
+	    t = { section = "logic@dar_poltergeist",
+		    idle = 0,
+		    prior = 5, state = {0},
+		    in_rest = "", out_rest = "dar_poltergeist_tele_round_restr",
+	    }
+	    table.insert(sj, t)
+	end
+
+	if type == "dar_com_center_tushkano" then
+		 for i = 1, 8 do
+		 t = { section = "logic@com_center_tushkano",
+			    idle = 0,
+			    prior = 5, state = {0},
+			    in_rest = "", out_rest = "dar_com_center_tushkano_rest",
+		 }
+		 table.insert(sj, t)
+		end
+	end
+
+	if type == "dar_upper_big_tushkano" then
+        for i = 1, 8 do
+		    t = { section = "logic@com_center_tushkano",
+			    idle = 0,
+			    prior = 5, state = {0},
+			    in_rest = "", out_rest = "dar_upper_tushkano",
+		    }
+		    table.insert(sj, t)
+        end
+	end
+
+	if type == "dar_upper_small_tushkano" then
+        for i = 1, 4 do
+		    t = { section = "logic@com_center_tushkano",
+			    idle = 0,
+			    prior = 5, state = {0},
+			    in_rest = "", out_rest = "dar_upper_tushkano",
+		    }
+		    table.insert(sj, t)
+        end
+	end
+
+	if type == "dar_lower_tushkano" then
+        for i = 1, 6 do
+		    t = { section = "logic@com_center_tushkano",
+			    idle = 0,
+			    prior = 5, state = {0},
+			    in_rest = "", out_rest = "dar_lower_tushkano_restr",
+		    }
+		    table.insert(sj, t)
+        end
+	end
+
+	if type == "dar_angar_gigant" then
+		t = { section = "logic@angar_gigant",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = "dar_angar_gigant_territory",
+		}
+		table.insert(sj, t)
+	end
+
+	if type == "dar_military_scout" then
+       	t = { section = "logic@dar_military_scout_hide",
+		    idle = 0,
+		    prior = 5, state = {0},
+            online = "{+x18_actor_fall}",
+		    in_rest = "", out_rest = "",
+		}
+		table.insert(sj, t)
+       	t = { section = "logic@dar_military_scout_camper1",
+			idle = 0,
+			prior = 5, state = {0},
+			online = "{+x18_actor_fall}",
+			in_rest = "", out_rest = "",
+		}
+		table.insert(sj, t)
+		t = { section = "logic@dar_military_scout_camper2",
+			idle = 0,
+			prior = 5, state = {0},
+			online = "{+x18_actor_fall}",
+			in_rest = "", out_rest = "",
+		}
+		table.insert(sj, t)
+		t = { section = "logic@dar_military_scout_camper3",
+			idle = 0,
+			prior = 5, state = {0},
+			online = "{+x18_actor_fall}",
+			in_rest = "", out_rest = "",
+		}
+		table.insert(sj, t)
+
+	end
+
+
+
+end
+
+
+
+
+function load_states(gname, type)
+	if type == "dar_com_center_poltergeist" then        
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "dar_poltergeist_tele" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "dar_com_center_tushkano" then        
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "dar_upper_big_tushkano" then        
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "dar_upper_small_tushkano" then        
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "dar_lower_tushkano" then        
+		return function(gulag)
+			return 0
+		end
+	end
+	
+	if type == "dar_angar_gigant" then        
+		return function(gulag)
+			return 0
+		end
+	end
+	
+	if type == "dar_poltergeist_ring" then        
+		return function(gulag)
+			if not has_alife_info("dar_codelock1_unlock") then
+				return 3 -- оффлайн все
+			elseif has_alife_info("dar_ring_spawn1") and not has_alife_info("dar_ring_spawn2") then
+				return 1 -- онлайн 2
+			elseif has_alife_info("dar_ring_spawn2") then
+				return 2 -- онлайн 3
+			else			
+				return 0 -- онлайн 1
+			end
+		end
+	end
+	
+
+	if type == "dar_military_scout" then        
+		return function(gulag)
+          		return 0
+			end
+	end
+	
+end
+
+--------------------------------------------------------------------------
+-- Dynamic ltx
+--------------------------------------------------------------------------
+function load_ltx(gname, type)
+	return nil
+end
+
+function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
+	if gulag_type == "dar_military_scout" then
+        return se_obj:profile_name() == "dar_military_scout"
+    end
+
+	return false
+end
+
+function checkMonster(npc_community, gulag_type, npc_rank, se_obj)
+	if gulag_type == "dar_com_center_poltergeist" then
+		return npc_community == "poltergeist"
+	end
+
+    if gulag_type == "dar_poltergeist_tele" then
+		return npc_community == "poltergeist"
+	end
+
+	if gulag_type == "dar_com_center_tushkano" then
+		return npc_community == "tushkano"
+	end
+
+	if gulag_type == "dar_upper_big_tushkano" then
+		return npc_community == "tushkano"
+	end
+
+	if gulag_type == "dar_upper_small_tushkano" then
+		return npc_community == "tushkano"
+	end
+
+	if gulag_type == "dar_lower_tushkano" then
+		return npc_community == "tushkano"
+	end
+		
+	if gulag_type == "dar_angar_gigant" then
+		return npc_community == "pseudo_gigant"
+	end
+	
+	if gulag_type == "dar_poltergeist_ring" then
+		return npc_community == "poltergeist"
+	end
+
+	return false
+end

@@ -1,0 +1,9 @@
+function main ()
+        local obj = level_object_by_sid (704)
+        if obj == nil then
+           printf ("OBJECT NOT FOUND")
+           return
+        end
+        //printf ("Object founded")
+        obj:set_const_force (vector ():set (0, 1, 1), 10000, 1000)
+end

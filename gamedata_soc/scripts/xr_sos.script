@@ -1,0 +1,537 @@
+---------------------------------------------------------------------
+--	created:	2004/08/31
+--	created:	25:08:2004   16:52
+--	filename: 	d:\selo\gamedata\scripts\xr_sos.script
+--	file path:	d:\selo\gamedata\scripts
+--	file base:	xr_sos
+--	file ext:	script
+--	author:		Sidorovich
+--	
+--	purpose:	Помощник, мать его... 
+----------------------------------------------------------------------
+
+local   sos_ignore      =   0
+local   sos_help        =   1
+local   sos_mercant     =   2
+local   sos_kill        =   3
+
+local   wpn_cool        =   0
+local   wpn_poor        =   1
+local   wpn_bad         =   2
+
+local   scream_zone     =   20
+
+local   attempts        =   2
+local   timeout         =   20000
+
+local   throwing_probability =   1
+
+local   follow_distance =   2
+local   follow_time     =   600000
+
+
+
+-----------------------------------------------------------------------
+-- Some functions
+-----------------------------------------------------------------------
+function check_weapon (npc)
+    local wpn = npc:best_weapon ()
+    if wpn == nil then return wpn_bad end
+    local num = wpn:get_ammo_total ()
+    if num == 0 then return wpn_bad
+    elseif num <= 30 then return wpn_poor
+    end
+    return wpn_good
+end
+-----------------------------------------------------------------------
+function decide (npc, sos)
+
+    local wpn_code = this.check_weapon (npc)
+    local health = npc.health
+    local rel = npc:relation (sos)
+    
+    --Если у нас нет оружия или патронов, то пошел он подальше
+    if wpn_code == wpn_bad then return sos_ignore end
+
+    -- Если мужик друг и у нас более 50 оборотов здоровья, то идем на помощь
+    if rel == game_object.friend then
+       npc:set_goodwill (100, sos) 
+       if health < 0.5 then return sos_ignore end
+       return sos_help
+    end
+    
+    -- Нейтрал и чайник.  
+    if rel == game_object.neutral or rel == game_object.dummy then
+       npc:set_goodwill (50, sos) 
+       if math.random (1, 100) < throwing_probability and wpn_code == wpn_good and health >= 0.9 then
+          return sos_kill 
+       end      
+       if health < 0.75 then return sos_ignore end
+       if math.random (1, 100) < 50 then return sos_help end 
+       return sos_mercant 
+    end
+
+    -- Враг. Идем его мочить, если у нас хорошее вооружение и здоровья не менее 90%       
+    if rel == game_object.enemy then
+       npc:set_goodwill (0, sos) 
+       if wpn_code == wpn_good and health >= 0.9 then
+          return sos_kill
+       end
+    end      
+    
+    -- не поддается классификации - пошел вон
+    return sos_ignore
+end
+-----------------------------------------------------------------------
+
+
+
+-----------------------------------------------------------------------
+-- Эвалуатор включения схемы
+class "evaluator_enabled" (property_evaluator)
+-----------------------
+function evaluator_enabled:__init (name, storage) super (nil, name)
+    self.a = storage
+end
+-----------------------
+function evaluator_enabled:evaluate ()
+    return self.a.enabled
+end
+-----------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------
+-- Эвалуатор доступности сообщения SOS
+class "evaluator_pda" (property_evaluator)
+-----------------------
+function evaluator_pda:__init (name, storage) super (nil, name)
+    self.a = storage
+end
+-----------------------
+function evaluator_pda:evaluate ()
+    if self.a.npc == nil or self.a.npc:alive () == false then
+       self.a.npc = nil 
+       self.object:set_start_dialog ("hello_dialog")
+       self.a.initialized = false
+       return false 
+    end   
+    
+    return true
+end
+-----------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------
+-- Эвалуатор необходимости идти за игроком
+class "evaluator_follow" (property_evaluator)
+-----------------------
+function evaluator_follow:__init (name, storage) super (nil, name)
+    self.a = storage
+end
+-----------------------
+function evaluator_follow:evaluate ()
+    return self.a.need_follow
+end
+-----------------------------------------------------------------------
+
+-----------------------------------------------------------------------
+-- Эвалуатор выбора действия
+class "evaluator_action" (property_evaluator)
+-----------------------
+function evaluator_action:__init (name, storage) super (nil, name)
+    self.a = storage
+end 
+-----------------------
+function evaluator_action:evaluate ()
+    if self.a.code == sos_help or self.a.code == sos_mercant then return false end
+    return true 
+end
+-----------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------
+-- Эвалуатор, который говорит, что была (или не была) инициирована система помощи.
+class "evaluator_init" (property_evaluator)
+-----------------------
+function evaluator_init:__init (name, storage) super (nil, name)
+    self.a = storage
+end
+-----------------------
+function evaluator_init:evaluate ()
+    return self.a.initialized
+end
+-----------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------
+-- Инициализация помощи (экшен-заглушка, служит только для определения типа помощи.
+class "action_initialize" (action_base)
+-----------------------
+function action_initialize:__init (name, storage) super (nil, name)
+    self.a = storage
+end
+-----------------------
+function action_initialize:initialize ()
+    action_base.initialize (self)
+    self.a.code = this.decide (self.object, self.a.npc)
+    if self.a.code == sos_ignore then
+       self.object:send_pda_message(4, self.a.npc)
+       self.a.npc = nil
+       self.object:set_start_dialog ("hello_dialog")
+    else
+       self.a.initialized = true
+       self.a.need_follow = false
+       self.object:set_start_dialog ("stalker_helper")
+    end        
+end    
+-----------------------
+function action_initialize:execute ()
+    action_base.execute (self)
+end    
+-----------------------
+function action_initialize:finalize ()
+    action_base.finalize (self)
+end    
+-----------------------------------------------------------------------
+
+
+
+-----------------------------------------------------------------------
+-- Идем помогать
+class "action_help" (action_base)
+-----------------------
+function action_help:__init (name, storage) super (nil, name)
+    self.a = storage
+    self.vertex_id = -1
+    self.scream = false
+    self.current_attempt = 0
+    self.see_time = 0
+    self.dialog_first = false
+    self.dialog_out = false
+end
+-----------------------
+function action_help:initialize ()
+    action_base.initialize (self)
+    
+    self.vertex_id = self.a.npc:level_vertex_id ()
+
+    self.object:clear_animations          ()
+--	self.object:set_node_evaluator        ()
+--	self.object:set_path_evaluator        ()
+    self.object:set_desired_position      ()
+    self.object:set_item                  (object.activate, self.object:best_weapon ())
+    self.object:set_detail_path_type      (move.line)
+    self.object:set_body_state            (move.standing)
+    self.object:set_movement_type         (move.walk)
+    self.object:set_path_type             (game_object.level_path)
+    self.object:set_mental_state          (anim.free)
+    self.object:set_sight                 (look.path_dir, nil, 0)
+    self.object:set_dest_level_vertex_id  (self.vertex_id)
+    
+    self.current_attempt = 0
+    self.see_time = 0
+    self.move_time = 0
+    
+  	self.act = {
+  	           type = 1,
+		       begin = nil,
+		       time = 6
+		       }
+    self.dialog_first = false
+    self.dialog_out = false
+end    
+-----------------------
+function action_help:execute ()
+    action_base.execute (self)
+    
+    --если мы в процессе болтовни, то ничего не делаем
+    if self.object:is_talking () == true then
+       self.object:set_movement_type (move.stand)
+       self.dialog_out = true
+       return 
+    end    
+    
+    if self.dialog_out == true then
+       self.object:set_start_dialog ("hello_dialog")
+       return
+    end    
+    
+    local v = level.vertex_position (self.vertex_id)
+    if v:distance_to (self.object:position ()) < scream_zone and self.scream == false then
+       self.scream = true
+       xr_sounds.play_sound (self.object, 0, "sos", 1)
+       return
+    end
+    
+    if self:work_with_kill () == true then return end
+    
+    local dist = distance_between (self.object, self.a.npc)
+    
+    --обрабатываем ожидание диалога
+    if distance_between (self.object, self.a.npc) < 1 then
+       if self.dialog_first == false then
+          self.dialog_first = true
+          self.see_time = device ():time_global ()
+          self.object:enable_talk ()
+          self.a.npc:run_talk_dialog (self.object)
+       end
+       self.object:set_movement_type (move.stand)
+       self:wait_for_player2 ()
+       if device ():time_global () - self.see_time > 10000 then
+          self.a.npc = nil
+          self.object:set_start_dialog ("hello_dialog")
+          printf ("FUCK YOU 2 !!!")
+       end   
+       return 
+    end     
+
+    if self.object:see (self.a.npc) == true then
+       self.object:clear_animations () 
+       self.vertex_id = self.a.npc:level_vertex_id ()
+       self.object:set_dest_level_vertex_id  (self.vertex_id)
+       self.object:set_movement_type (move.walk)
+       if self.see_time == 0 then
+          if dist < 15 then 
+             printf ("Initialize time on %f distance", dist)
+             self.see_time = device ():time_global ()
+          end   
+       end   
+    else
+       if self.object:level_vertex_id () == self.vertex_id then
+          self.object:set_movement_type (move.stand)
+          self:wait_for_player ()
+          if self.see_time == 0 then 
+             xr_sounds.play_sound (self.object, 0, "sos", 2)
+             self.see_time = device ():time_global ()
+          end   
+       end
+    end        
+    
+    if self.see_time ~= 0 then
+       if device ():time_global () - self.see_time > timeout then
+          printf ("FUCK YOU !!!")
+          self.a.npc = nil
+          self.object:set_start_dialog ("hello_dialog")
+       end
+       return
+    end
+end    
+-----------------------
+function action_help:finalize ()
+    action_base.finalize (self)
+    self.scream = false
+    self.object:clear_animations ()
+end    
+-----------------------
+function action_help:work_with_kill ()
+
+    if self.a.code ~= sos_kill then return false end
+    
+    if self.object:see (self.a.npc) then
+       self.vertex_id = self.a.npc:level_vertex_id ()
+       self.object:set_dest_level_vertex_id  (self.vertex_id)
+       if distance_between (self.object, self.a.npc) < 10 then
+          self.object:set_relation (game_object.enemy, self.a.npc)
+          self.a.npc = nil
+          self.object:set_start_dialog ("hello_dialog")
+       end    
+    else 
+       if self.vertex_id == self.object:level_vertex_id () then
+          self:wait_for_player ()    
+       end   
+    end   
+    return true
+end
+-----------------------
+function action_help:wait_for_player ()
+
+    if self.act.type == 1 then
+       self.act.begin = device():time_global () / 1000
+       self.act.type = 2
+       local dir = vector ():set (math.random (10) - 5, 0, math.random (10) - 5)
+       self.object:set_sight (look.direction, dir, 0)
+       self.object:set_body_state (move.standing)
+    else
+       xr_state.anim_update ("idle", self.object)
+       if (device():time_global () / 1000 - self.act.begin) > self.act.time then
+          self.act.type = 1
+       end
+    end
+    
+end
+-----------------------
+function action_help:wait_for_player2 ()
+
+    if self.act.type == 1 then
+       self.act.begin = time_global() / 1000
+       self.act.type = 2
+       local dir = self.a.npc:position ():sub (self.object:position ())
+       dir:normalize ()
+       self.object:set_sight (look.direction, dir, 0)
+       self.object:set_body_state (move.standing)
+    else
+       xr_state.anim_update ("idle", self.object)
+       if (device():time_global () / 1000 - self.act.begin) > self.act.time then
+          self.act.type = 1
+       end
+    end
+    
+end
+-----------------------------------------------------------------------
+
+
+
+-----------------------------------------------------------------------
+class "action_follow_npc" (action_base)
+-----------------------
+function action_follow_npc:__init (name, storage) super (nil, name)
+    self.a = storage
+    self.dir = vector ():set (0, 0, 1)
+    self.move_time = 0
+    self.vertex = -1
+end
+-----------------------
+function action_follow_npc:initialize ()
+    action_base.initialize (self)
+    
+    self.object:clear_animations          ()
+--	self.object:set_node_evaluator        ()
+--	self.object:set_path_evaluator        ()
+    self.object:set_desired_position      ()
+    self.object:set_item                  (object.activate, self.object:best_weapon ())
+    self.object:set_detail_path_type      (move.line)
+    self.object:set_body_state            (move.standing)
+    self.object:set_movement_type         (move.walk)
+    self.object:set_path_type             (game_object.level_path)
+    self.object:set_mental_state          (anim.free)
+    self.object:set_sight                 (look.path_dir, nil, 0)
+    
+    self:calc_pos ()
+    self.object:set_dest_level_vertex_id  (self.vertex)
+    
+    self.move_time = 0
+end
+-----------------------
+function action_follow_npc:execute ()
+    action_base.execute (self)
+    
+    if self.move_time == 0 then
+       self.move_time = device ():time_global ()
+    end
+    
+    self:calc_pos ()
+    self.object:set_dest_level_vertex_id  (self.vertex)
+    
+    local dist = distance_between (self.object, self.a.npc)
+    if dist > follow_distance * 5 then
+       self.object:set_movement_type         (move.run)
+       self.object:set_mental_state          (anim.danger)
+    elseif dist < follow_distance * 2 and dist > follow_distance then
+       self.object:set_movement_type         (move.walk)
+       self.object:set_mental_state          (anim.free)
+    elseif dist < follow_distance then
+       self.object:set_movement_type         (move.stand)
+    end   
+       
+    if device ():time_global () - self.move_time > follow_time then 
+       printf ("FINITA LA COMEDIA !")
+       self.a.npc = nil
+       self.object:set_start_dialog ("hello_dialog")
+    end    
+        
+end
+-----------------------
+function action_follow_npc:finalize ()
+    action_base.finalize (self)
+    self.object:set_start_dialog ("hello_dialog")
+    self.object:clear_animations ()
+end
+-----------------------
+function action_follow_npc:calc_pos ()
+    self.vertex = level.vertex_in_direction (self.a.npc:level_vertex_id (), self.dir, follow_distance)
+end
+-----------------------------------------------------------------------
+
+
+
+
+
+-----------------------------------------------------------------------
+function add_to_binder (obj, char_ini)
+
+    if char_ini == nil or char_ini:section_exist ("sos") == false then return end
+    
+    this.set_sos (obj)
+    
+	local operators		= {}
+	local properties	= {}
+
+	properties["enabled"]           = xr_evaluators_id.sidor_sos + 0
+	properties["pda"]               = xr_evaluators_id.sidor_sos + 1
+	properties["init"]              = xr_evaluators_id.sidor_sos + 2
+	properties["action"]            = xr_evaluators_id.sidor_sos + 3
+	properties["follow"]            = xr_evaluators_id.sidor_sos + 4
+	properties["contact"]		    = xr_evaluators_id.stohe_meet_base + 1         
+
+ 	operators["init"]               = xr_actions_id.sidor_act_sos + 0
+	operators["kill"]               = xr_actions_id.sidor_act_sos + 1
+	operators["help"]               = xr_actions_id.sidor_act_sos + 2
+	operators["follow"]             = xr_actions_id.sidor_act_sos + 3
+	
+	local manager  = obj:motivation_action_manager ()
+  	manager:add_evaluator (properties["enabled"], this.evaluator_enabled ("property_enabled", db.storage[obj:id()].sos))
+  	manager:add_evaluator (properties["pda"],     this.evaluator_pda     ("property_pda", db.storage[obj:id()].sos))
+  	manager:add_evaluator (properties["init"],    this.evaluator_init    ("property_init", db.storage[obj:id()].sos))
+  	manager:add_evaluator (properties["action"],  this.evaluator_action  ("property_action", db.storage[obj:id()].sos))
+  	manager:add_evaluator (properties["follow"],  this.evaluator_follow  ("property_follow", db.storage[obj:id()].sos))
+
+  	local action = this.action_initialize ("action_initialize", db.storage[obj:id()].sos)
+   	action:add_precondition     	(world_property (stalker_ids.property_alive,    true))
+   	action:add_precondition     	(world_property (stalker_ids.property_enemy,    false))
+   	action:add_precondition     	(world_property (properties["enabled"],         true))
+    action:add_precondition         (world_property (properties["pda"],             true))
+	action:add_precondition		    (world_property (properties["init"], 	        false))
+   	action:add_effect           	(world_property (properties["init"],            true))
+   	manager:add_action              (operators["init"], action)
+
+  	action = this.action_help       ("action_help", db.storage[obj:id()].sos)
+   	action:add_precondition     	(world_property (stalker_ids.property_alive,    true))
+   	action:add_precondition     	(world_property (stalker_ids.property_enemy,    false))
+   	action:add_precondition     	(world_property (properties["enabled"],         true))
+    action:add_precondition         (world_property (properties["pda"],             true))
+	action:add_precondition		    (world_property (properties["init"], 	        true))
+	action:add_precondition		    (world_property (properties["follow"], 	        false))
+	--action:add_precondition         (world_property(properties["contact"],	        false))
+	action:add_effect           	(world_property (properties["pda"],             false))
+   	manager:add_action              (operators["help"], action)
+
+  	action = this.action_follow_npc ("action_follow", db.storage[obj:id()].sos)
+   	action:add_precondition     	(world_property (stalker_ids.property_alive,    true))
+   	action:add_precondition     	(world_property (stalker_ids.property_enemy,    false))
+   	action:add_precondition     	(world_property (properties["enabled"],         true))
+    action:add_precondition         (world_property (properties["pda"],             true))
+	action:add_precondition		    (world_property (properties["init"], 	        true))
+	action:add_precondition		    (world_property (properties["follow"], 	        true))
+   	action:add_effect           	(world_property (properties["pda"],             false))
+   	manager:add_action              (operators["follow"], action)
+
+   	action = manager:action (xr_actions_id.alife)
+   	action:add_precondition (world_property (properties["pda"],  false))
+	
+end
+-----------------------------------------------------------------------
+function set_sos (npc, enabled)
+	local char_ini = npc:spawn_ini()
+	local st = db.storage[npc:id()].sos
+    if enabled == nil then
+       if char_ini:section_exist ("sos") == true and char_ini:line_exist("sos", "enabled") == true then
+          st.enabled = char_ini:r_bool("sos", "enabled")
+       else 
+          st.enabled = false   
+       end
+    else
+       st.enabled = enabled     
+    end
+end
+-----------------------------------------------------------------------
+    

@@ -1,0 +1,260 @@
+--[[------------------------------------------------------------------------------------------------------------------
+Управление вертолётом
+Чугай Саша
+
+Сделать:
+	- настройки в ltx
+	- улёт в безопасное место
+--------------------------------------------------------------------------------------------------------------------]]
+
+local ltx = ini_file("creatures\\helicopter.ltx")
+
+local state, health, altitude, v, power, impulse, hit_type, enemy_type
+
+local pass_dist    = 100  -- расстояние, на которое вертолёт отлетит перед следующим заходом для атаки
+local def_patrol_speed, def_attack_speed = 30, 40
+local max_attack_passes = 3
+local zone_attack_probability = 33  -- вероятность того, что вертолёт начнёт атаковать сталкера, вошедшего в какую-то зону
+
+----------
+
+class "HeliManager"
+
+function HeliManager:__init()
+end
+
+function HeliManager:initialize( sid, path, patrol_speed, attack_speed )
+	self.heli       = escape_heli.get_level_object_by_sid( sid )
+	self.heliObject = self.heli:get_helicopter()
+
+--	self.heli:AddEventCallback( CHelicopter.on_point, self, "HeliOnPoint" )
+--	self.heli:AddEventCallback( CHelicopter.on_hit,   self, "HeliOnHit" )
+	self.heli:set_callback( callback.helicopter_on_hit,   HeliManager.HeliOnHit,   self )
+	self.heli:set_callback( callback.helicopter_on_point, HeliManager.HeliOnPoint, self )
+
+	self.path              = path
+	self.patrol_speed      = patrol_speed or def_patrol_speed
+	self.attack_speed      = attack_speed or def_attack_speed
+	self.b_exploded        = false
+	self.b_prepared_to_die = false
+	self.stay_point        = self.heli:position()
+	self.altitude          = self.heliObject:GetCurrAltitude()
+
+	if ltx:line_exist( "helicopter", "attack_altitude" ) then
+		self.attack_altitude = ltx:r_float( "helicopter", "attack_altitude" )
+	else
+		self.attack_altitude = self.altitude
+	end
+end
+
+function HeliManager:HeliOnHit( power, impulse, hit_type, enemy_id )
+--	printf( "HeliOnHit" )
+
+	if self.b_prepared_to_die then
+		return
+	end
+
+	-- количество оставшихся заходов для атаки
+	self.attack_passes = self.attack_passes
+
+	if self.heliObject:GetState() == CHelicopter.eMovingByAttackTraj then
+		return
+	end
+
+	local enemy = level.object_by_id( enemy_id )
+	printf( "[heli] enemy name = %s", enemy:name() )
+	self:set_enemy( enemy )
+end
+
+-- не использует информацию из net_packet!
+function HeliManager:HeliOnPoint( distance, position, path_idx )
+--	format:
+--	local dist_to_point =	p:r_float()
+--	local point  = p:r_vec3()
+--	local path_idx = p:r_s16() ; -- ==-1 if no path moving
+
+--	if self.heliObject:GetState() == CHelicopter.eMovingToPoint then
+		--select next point
+--	end
+
+--	printf( "on_point_range_dist = %d", self.heliObject.on_point_range_dist )
+
+	printf( "[heli] OnPoint" )
+	-- если пролетел над позицией во время атаки
+	if self.heliObject:GetState() == CHelicopter.eMovingByAttackTraj then
+		if self.attack_passes > 0 then
+			if self.attack_pass_state == 0 then
+				-- отлетаем чуть-чуть
+				v        = self.heli:direction()
+				self.p1  = self.heli:position():add( vector():set( v ):mul( pass_dist ) )
+
+				self.heliObject:SetDestPosition( self.p1 )
+
+--				v.x, v.z = v.z, -v.x
+--				self.p2  = self.p1:add( v:mul( pass_dist * 1.5 ) )
+
+				self.attack_pass_state = 1
+				printf( "0" )
+--[[			elseif self.attack_pass_state == 1 then
+				-- заходим вправо
+				self.heliObject:SetDestPosition( self.p2 )
+				--self.heliObject:SetCurrVelocity( patrol_speed )
+
+				self.attack_pass_state = 2
+
+				printf( "1" ) ]]
+			else
+				printf( "2" )
+				if is_object_online( self.enemy:id() ) and self.enemy:alive() then
+					-- опять заходим на врага
+					self.heliObject:SetDestPosition( self.enemy:position() )
+					--self.heliObject:SetCurrVelocity( attack_speed )
+					--self.heliObject.on_point_range_dist = 10
+
+					self.attack_pass_state = 0
+					self.attack_passes     = self.attack_passes - 1
+				else
+					self:finish_attack()
+				end
+			end
+		else
+			self:finish_attack()
+		end
+--		self.heliObject:SetCurrVelocity(35)  -- m/sec (max)
+	end
+
+	-- прилетели на stay_point
+	if self.heliObject:GetState() == CHelicopter.eMovingToPoint and not self.path then
+		self.heliObject:SetCurrVelocity( 0 )
+	end
+end
+
+-- закончить атаку
+function HeliManager:finish_attack()
+	if self.path then
+		self.heliObject:GoPatrolByPatrolPath( self.path, 0 )  --0==from_idx
+		self.heliObject:SetCurrVelocity( self.patrol_speed )
+		self.heliObject:SetCurrAltitude( self.altitude )
+	else
+		self:send_to_stay_point()
+	end
+
+	self.heliObject:SetEnemy( nil )
+	self.enemy = nil
+
+	self.attack_pass_state = 0
+	--self.heliObject.on_point_range_dist = 10
+
+	printf( "[heli] attack finished" )
+end
+
+function HeliManager:update()
+	if self.b_exploded then
+		return false
+	end	
+
+	state = self.heliObject:GetState()
+
+	if state == CHelicopter.eIdleState and self.path then
+		self.heliObject:GoPatrolByPatrolPath( self.path, 0 ) --0==from_idx
+		self.heliObject:SetCurrVelocity( self.patrol_speed ) -- m/sec (max)
+		self.heliObject:SetCurrAltitude( self.altitude )
+	end
+
+	health = self.heliObject:GetfHealth()
+
+	if self.b_prepared_to_die == false and state ~= CHelicopter.eDead and health < 0.3 then
+		self.b_prepared_to_die = true
+		self.heliObject:PrepareDie()
+		printf( "[heli] prepare to die" )
+	end
+
+	if state ~= CHelicopter.eDead and health <= 0.05 and not self.not_die then
+		printf( "[heli] DIE" )
+		self.heliObject:Die()
+
+		self.last_alt       = self.heliObject:GetRealAltitude()
+		self.alt_check_time = time_global() + 1000
+	end
+
+	if state == CHelicopter.eDead then
+		-- вертолёт должен взорваться, если высота меньше 3 м или он замедлил падение (меньше 1 м за 0.5 с)
+		altitude = self.heliObject:GetRealAltitude()
+
+		if altitude < 3.0 then
+			self.b_exploded = true
+			printf("[heli] EXPLODE")
+			self.heliObject:Explode()
+		end
+
+		if self.alt_check_time < time_global() then
+			self.alt_check_time = time_global() + 500
+
+			if self.last_alt - altitude < 1 then
+				self.b_exploded = true
+				printf("[heli] EXPLODE (hanged)")
+				self.heliObject:Explode()
+			end
+
+			self.last_alt = altitude
+		end
+	end
+
+	return true
+end
+
+function HeliManager:set_enemy( enemy, attack_passes )
+	if enemy then
+		self.enemy = enemy
+
+		printf( "[heli] attack %s", enemy:name() )
+		self.heliObject:SetEnemy( enemy )
+		self.heliObject:SetCurrAltitude( self.attack_altitude )
+		self.heliObject:SetCurrVelocity( self.attack_speed ) -- m/sec (max)
+		self.heliObject:SetState( CHelicopter.eMovingByAttackTraj )
+
+		self.attack_pass_state = 0
+		self.attack_passes     = attack_passes or max_attack_passes
+--		self.heliObject.on_point_range_dist = 30
+
+		if self.heli:position():distance_to_sqr( self.enemy:position() ) >= pass_dist * pass_dist then
+--			printf( "fly straight" )
+			self.heliObject:SetDestPosition( enemy:position() )
+		else
+--			printf( "fly far" )
+			self:HeliOnPoint()
+		end
+	end
+end
+
+function HeliManager:send_to_stay_point()
+	self.heliObject:SetCurrAltitude( 3 )
+	self.heliObject:SetDestPosition( self.stay_point )
+	self.heliObject:SetState( CHelicopter.eMovingToPoint )
+	self.heliObject:SetCurrVelocity( self.patrol_speed )
+	self.heliObject:SetEnemy( nil )
+	self.enemy = nil
+	self.path  = nil
+end
+
+function HeliManager:set_path( path_name )
+	self.path  = path_name
+	self.enemy = nil
+	self.heliObject:SetEnemy( nil )
+	self.heliObject:SetState( CHelicopter.eIdleState )
+end
+
+function HeliManager:set_zones( ... )
+	for i = 1, arg.n do
+		get_level_object( arg[i] ):set_callback( self, "on_enter", true )
+	end
+end
+
+function HeliManager:on_enter( zone, obj )
+	if object_type( obj ) == "stalker" and
+	   obj:character_community() ~= "military" and
+	   math.random( 100 ) <= zone_attack_probability
+	then
+		self:set_enemy( obj )
+	end
+end

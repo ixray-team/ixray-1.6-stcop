@@ -1,0 +1,138 @@
+-- File:        UI_MULTIPLAYER_FIND.SCRIPT
+-- Description: Find Server dialog for Multiplayer menu
+-- Created:     02.12.2004
+-- Author:      Serhiy O. Vynnychenko
+-- Mail:        narrator@gsc-game.com
+--
+
+
+function main()
+	local dlg = ui_multiplayer_find.multiplayer_find_dialog()
+	level.start_stop_menu(dlg,true)
+	while true do
+		wait(3000)
+	end
+end
+
+
+class "multiplayer_find_dialog" (ui_multiplayer_base.multiplayer_base)
+
+function multiplayer_find_dialog:__init() super()
+	self:InitControls()
+	self:InitCallbacks()
+end
+
+function multiplayer_find_dialog:__finalize()
+end
+
+function multiplayer_find_dialog:InitControls()
+	ui_multiplayer_base.multiplayer_base.InitControls(self)
+	
+	----- DATA ----	
+	
+	-- three frames
+--	|---------|-----------|
+--	|   1     |    2      |
+--	|_________|___________|
+--	|                     |
+--	|         3           |
+--	|_____________________|
+	local frame_lt_rect = {x = self.left_align_x, y = self.new_top, width = (400 - 2*self.indent), height = 150}
+	local frame_rt_rect = {x = frame_lt_rect.x + frame_lt_rect.width,
+						   y = frame_lt_rect.y,
+						   width = 0,
+						   height = frame_lt_rect.height}
+	frame_rt_rect.width = self.main_rect.width - frame_lt_rect.width - 2*self.indent
+	
+	-- TAB RECT (LAN or INTERNET)
+	local tab_net_rect = {x = frame_lt_rect.x, y = frame_lt_rect.y, width = frame_lt_rect.width, height = 30}
+	-- left button of tab
+	local tab_lb_rect  = {x = tab_net_rect.x, y = tab_net_rect.y, width = tab_net_rect.width/2, height = tab_net_rect.height}
+	local tab_rb_rect  = {x = tab_lb_rect.x + tab_lb_rect.width, y = tab_lb_rect.y, width = tab_net_rect.width - tab_lb_rect.width, height = tab_net_rect.height}
+	
+	local btn_refr_rect = {x = self.left_align_x, y = tab_net_rect.y + tab_net_rect.height + self.indent,
+						   width = self.btn_rect.width, height = self.btn_rect.height}
+	local btn_qrefr_rect ={x = self.left_align_x, y = btn_refr_rect.y + btn_refr_rect.height + self.indent,
+						   width = self.btn_rect.width, height = self.btn_rect.height}
+	
+	-- Bottom align
+	local btn_back_rect   = {0,
+							 y = self.bottom_align_y - self.btn_rect.height,							 
+							 width = self.btn_rect.width,
+							 height = self.btn_rect.height}	
+	btn_back_rect.x = self.main_rect.width - btn_back_rect.width - self.indent
+	
+	-- frames
+	local frame = CUIFrameWindow()
+	frame:Init("ui\\ui_frame_very_small", frame_lt_rect.x, frame_lt_rect.y, frame_lt_rect.width, frame_lt_rect.height)
+	self.main_frame:AttachChild(frame)
+	
+	local frame = CUIFrameWindow()
+	frame:Init("ui\\ui_frame_very_small", frame_rt_rect.x, frame_rt_rect.y, frame_rt_rect.width, frame_rt_rect.height)
+	self.main_frame:AttachChild(frame)
+	
+	
+	
+	-- TAB: select Intertnet or LAN
+	local tab = CUITabControl()
+	tab:Init(tab_net_rect.x, tab_net_rect.y, tab_net_rect.width, tab_net_rect.height);
+	self.main_frame:AttachChild(tab)
+			-- TEMP frame for tab
+	local frame = CUIFrameWindow()
+	frame:Init("ui\\ui_frame_very_small", tab_net_rect.x, tab_net_rect.y, tab_net_rect.width, tab_net_rect.height)	
+	self.main_frame:AttachChild(frame)
+			-- TEMP frame for left button of tab
+	frame = CUIFrameWindow()
+	frame:Init("ui\\ui_frame_very_small", tab_lb_rect.x, tab_lb_rect.y, tab_lb_rect.width, tab_lb_rect.height)	
+	self.main_frame:AttachChild(frame)
+			-- TEMP frame for right button of tab
+	frame = CUIFrameWindow()
+	frame:Init("ui\\ui_frame_very_small", tab_rb_rect.x, tab_rb_rect.y, tab_rb_rect.width, tab_rb_rect.height)	
+	self.main_frame:AttachChild(frame)
+	
+	--------->> REFRESH Button
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_refresh")
+	btn:Init("ui\\ui_btn_mm", btn_refr_rect.x, btn_refr_rect.y, btn_refr_rect.width, btn_refr_rect.height)
+	btn:SetText("Refresh List")
+	btn:SetFont(self.button_font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.button_indent)
+	self:Register(btn)
+	self.main_frame:AttachChild(btn)
+	
+	--------->> QUICK REFRESH Button
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_refresh")
+	btn:Init("ui\\ui_btn_mm", btn_qrefr_rect.x, btn_qrefr_rect.y, btn_qrefr_rect.width, btn_qrefr_rect.height)
+	btn:SetText("Quick Refresh")
+	btn:SetFont(self.button_font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.button_indent)
+	self:Register(btn)
+	self.main_frame:AttachChild(btn)
+	
+	
+	--------->> BACK
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_back")
+	btn:Init("ui\\ui_btn_mm", btn_back_rect.x, btn_back_rect.y, btn_back_rect.width, btn_back_rect.height)
+	btn:SetText("Back")
+	btn:SetFont(self.button_font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.button_indent)
+	self:Register(btn)
+	self.main_frame:AttachChild(btn)	
+end
+
+function multiplayer_find_dialog:InitCallbacks()
+	ui_multiplayer_base.multiplayer_base.InitCallbacks(self)
+	self:AddCallback("btn_back",			ui_events.BUTTON_CLICKED, self.OnButton_back, self)
+end
+
+function multiplayer_find_dialog:OnButton_back()
+	self:GetHolder():start_stop_menu(self, true)
+end

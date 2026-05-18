@@ -1,0 +1,667 @@
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ESCAPE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; ”никальные квестовые артефакты
+[af_blood_tutorial]:af_blood
+$spawn				= "devices\quest_items\tutorial_blood"
+quest_item			= true
+
+[quest_case_01]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\quest_case_01"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_merger.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description         = item_case_esc_desc
+
+inv_name			= item_case_esc_name
+inv_name_short		= item_case_esc_name
+inv_weight			= 0
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 8
+inv_grid_y			= 18
+cost				= 50
+
+[dynamite]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\dynamite"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= physics\box\expl_dinamit.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description         = item_dynamite_esc_desc
+
+inv_name			= item_dynamite_esc_name
+inv_name_short		= item_dynamite_esc_name
+inv_weight			= 0
+
+inv_grid_width		= 2
+inv_grid_height		= 2
+inv_grid_x			= 4
+inv_grid_y			= 18
+cost				= 0
+
+
+[esc_wounded_flash]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\esc_wounded_flash"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_minipda.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description         = item_flash_esc_desc
+
+inv_name			= item_flash_esc_name
+inv_name_short		= item_flash_esc_name
+inv_weight			= 0
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 11
+inv_grid_y			= 23
+cost				= 0
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; GARBAGE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; AGROPROM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[gunslinger_flash]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\gunslinger_flash"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_minipda.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description         = item_flash_gslinger_agro_desc
+
+inv_name			= item_flash_gslinger_agro_name
+inv_name_short		= item_flash_gslinger_agro_name
+inv_weight			= 0
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 11
+inv_grid_y			= 23
+cost				= 0
+
+
+[quest_case_02]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\quest_case_02"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_merger.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description         = item_quest_case_02_desc
+inv_name			= item_quest_case_02_name
+inv_name_short		= item_quest_case_02_name
+inv_weight			= 0
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 8
+inv_grid_y			= 18
+cost				= 1000
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Dark Valley
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[val_key_to_underground]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\val_key_to_underground"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_flash_2.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description			= item_key_x18_desc
+
+inv_name			= item_key_x18_name
+inv_name_short		= item_key_x18_name
+inv_weight			= 0
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 3
+inv_grid_y			= 19
+cost				= 0
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; BAR ROSTOK
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[bar_tiran_pda]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\bar_tiran_pda"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_pda.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description			= item_pda_tiran_desc
+
+inv_name			= item_pda_tiran_name
+inv_name_short		= item_pda_tiran_name
+inv_weight			= 0
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 6
+inv_grid_y			= 13
+cost				= 0
+
+
+[bar_lucky_pda]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\bar_lucky_pda"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_pda.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description			= item_pda_lucky_desc
+
+inv_name			= item_pda_lucky_name
+inv_name_short		= item_pda_lucky_name
+inv_weight			= 0
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 6
+inv_grid_y			= 13
+cost				= 0
+
+[bar_ecolog_flash]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\bar_ecolog_flash"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_minipda.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description			= item_flash_eco_rost_desc
+
+inv_name			= item_flash_eco_rost_name
+inv_name_short		= item_flash_eco_rost_name
+inv_weight			= 0
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 11
+inv_grid_y			= 23
+cost				= 0
+
+
+[lab_x16_documents]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\yan_x16_documents"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_document_2.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description			= item_doc_x16_desc
+
+inv_name			= item_doc_x16_name
+inv_name_short		= item_doc_x16_name
+inv_weight			= 0
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 6
+inv_grid_y			= 18
+cost				= 0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Yantar
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[good_psy_helmet]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\good_psy_helmet"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_psi_helmet.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description         = yan_good_psy_helmet_desc
+
+inv_name			= yan_good_psy_helmet_name
+inv_name_short		= yan_good_psy_helmet_name
+inv_weight			= 0
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 2
+inv_grid_y			= 18
+cost				= 1000
+
+[bad_psy_helmet]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\bad_psy_helmet"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_psi_helmet.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description         = yan_bad_psy_helmet_desc
+
+inv_name			= yan_bad_psy_helmet_name
+inv_name_short		= yan_bad_psy_helmet_name
+inv_weight			= 0
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 2
+inv_grid_y			= 18
+cost				= 1000
+
+
+[kruglov_flash]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\kruglov_flash"
+$prefetch 			= 32
+class				= D_SIMDET
+cform				= skeleton
+visual				= equipments\item_datchik3.ogf
+radius				= 10	;15
+buzzer_radius		= 1.5
+noise				= zone_mosquito_bald       ;detectors\geiger_noise_loop 
+buzzer				= zone_mosquito_bald       ;detectors\DA-2_alarm_loop
+quest_item			= true
+
+ef_detector_type	= 1
+
+;описание распознаваемых детектором зон
+zone_class_1		= zone_mosquito_bald
+zone_sound_1_		= detectors\DA-2_beep1
+zone_min_freq_1		= 0.1	;0.5
+zone_max_freq_1		= 40
+	
+zone_class_2		= zone_mincer
+zone_sound_2_		= detectors\DA-2_beep1 
+zone_min_freq_2		= 0.1
+zone_max_freq_2		= 20
+
+zone_class_3		= zone_radioactive
+zone_sound_3_		= detectors\geiger_click3 
+zone_min_freq_3		= 1
+zone_max_freq_3		= 20
+
+zone_class_4		= zone_gravi_zone
+zone_sound_4_		= detectors\DA-2_beep1
+zone_min_freq_4		= 0.5
+zone_max_freq_4		= 30
+
+description			= item_detector_yantar_desc
+
+inv_name			= item_detector_yantar_name
+inv_name_short		= item_detector_yantar_name
+inv_weight			= 0
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 5
+inv_grid_y			= 14
+cost				= 1500	;30
+;belt				= true;
+default_to_ruck		= false
+
+attach_angle_offset		= -0.160570,-1.425061,-0.361283
+attach_position_offset	= 0.160570,-0.060214,0.020071
+attach_bone_name		= bip01_l_hand
+auto_attach				= false
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Military
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[crazy_flash]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\crazy_flash"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_minipda.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description			= item_flash_crazy_mil_desc
+
+inv_name			= item_flash_crazy_mil_name
+inv_name_short		= item_flash_crazy_mil_name
+inv_weight			= 0
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 11
+inv_grid_y			= 23
+cost				= 0
+
+[mil_svoboda_leader_pda]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\mil_svoboda_leader_pda"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_minipda.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+inv_name			= Svoboda Leader PDA
+inv_name_short		= Svoboda Leader PDA
+inv_weight			= 0
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 5
+inv_grid_y			= 14
+cost				= 0
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Laboratory X18
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[dar_pass_flash]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\dar_pass_flash"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_flash_2.ogf
+radius				= 1
+quest_item			= true
+
+inv_name			= "Scientist" Flash card
+inv_name_short		= "Scientist" flash
+inv_weight			= 0
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 3
+inv_grid_y			= 19
+cost				= 0
+
+[dar_pass_document]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\dar_pass_document"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_document_2.ogf
+radius				= 1
+quest_item			= true
+
+inv_name			= CodeX-18
+inv_name_short		= CodeX-18
+inv_weight			= 0
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 7
+inv_grid_y			= 18
+cost				= 0
+
+[dar_document1]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\dar_document1"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_document_1.ogf
+radius				= 1
+quest_item			= true
+
+description			= item_doc_x18_desc
+
+inv_name			= item_doc_x18p1_name
+inv_name_short		= item_doc_x18p1_name
+inv_weight			= 0
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 6
+inv_grid_y			= 19
+cost				= 1000
+
+[dar_document2]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\dar_document2"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_document_1.ogf
+radius				= 1
+quest_item			= true
+
+description			= item_doc_x18_desc
+
+inv_name			= item_doc_x18p2_name
+inv_name_short		= item_doc_x18p2_name
+inv_weight			= 0
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 6
+inv_grid_y			= 19
+cost				= 1000
+
+[dar_document3]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\dar_document3"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_document_1.ogf
+radius				= 1
+quest_item			= true
+
+description			= item_doc_x18_desc
+
+inv_name			= item_doc_x18p3_name
+inv_name_short		= item_doc_x18p3_name
+inv_weight			= 0
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 6
+inv_grid_y			= 19
+cost				= 1000
+
+[dar_document4]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\dar_document4"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_document_1.ogf
+radius				= 1
+quest_item			= true
+
+description			= item_doc_x18_desc
+
+inv_name			= item_doc_x18p4_name
+inv_name_short		= item_doc_x18p4_name
+inv_weight			= 0
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 6
+inv_grid_y			= 19
+cost				= 0
+
+[dar_document5]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\dar_document5"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_document_1.ogf
+radius				= 1
+quest_item			= true
+
+description			= item_doc_x18_desc
+
+inv_name			= item_doc_x18p5_name
+inv_name_short		= item_doc_x18p5_name
+inv_weight			= 0
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 6
+inv_grid_y			= 19
+cost				= 1000
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; RADAR
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PRIPYAT'
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[pri_decoder_documents]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\decoder_documents"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_document_01.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description			= item_docs_hiden_pri_desc
+
+inv_name			= item_docs_hiden_pri_name
+inv_name_short		= item_docs_hiden_pri_name
+inv_weight			= 0
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x			= 6
+inv_grid_y			= 19
+cost				= 0
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Dead City
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[cit_doctors_key]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\cit_doctors_key"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_flash_2.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+inv_name			= cit_doctors_key_desc
+inv_name_short		= cit_doctors_key_short_desc
+inv_weight			= 0
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 3
+inv_grid_y			= 19
+cost				= 0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Sarcofag
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[decoder]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "devices\quest_items\decoder"
+;$prefetch 			= 32
+class				= II_ATTCH
+cform				= skeleton
+visual				= equipments\item_decoder.ogf
+radius				= 1
+;script_binding		= stalker.object_init
+quest_item			= true
+
+description			= item_decoder_desc
+
+inv_name			= item_decoder_name	
+inv_name_short		= item_decoder_name
+inv_weight			= 0
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 11
+inv_grid_y			= 3
+cost				= 50

@@ -1,0 +1,34 @@
+class "game_last_playerState"(game_PlayerState)
+
+function game_last_playerState:__init() super()
+   self.lifecount = 0
+end
+
+function game_last_playerState:__finalize  ()
+end
+
+function game_last_playerState:clear ()
+
+     game_PlayerState.clear(self)
+
+      self.lifecount = -1
+
+end
+
+
+
+function game_last_playerState:net_Export (P)
+
+      game_PlayerState.net_Export(self,P)
+      P:w_u32(   self.lifecount )
+
+end
+
+
+
+function game_last_playerState:net_Import (P)
+
+   game_PlayerState.net_Import(self,P)
+   self.lifecount = P:r_u32()
+
+end

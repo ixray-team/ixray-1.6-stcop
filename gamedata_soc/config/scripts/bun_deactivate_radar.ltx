@@ -1,0 +1,20 @@
+[logic]
+active    = sr_idle@wait
+ 
+[sr_idle@wait]
+on_info = {+bar_deactivate_radar_done} sr_sound_act@psy_sound %=run_cam_effector(radar_stop:2506:false)%
+
+[sr_sound_act@psy_sound]
+snd = affects\psy_blackout
+stereo = true
+on_timer  = 10500| {-bun_actor_fall} %=disable_ui +bun_actor_fall =run_postprocess(agr_u_fade)%
+on_signal = sound_end | sr_idle@sleep %=start_radar_dream +sar_monolith_call +bun_antenna_off%
+
+[sr_idle@sleep]
+on_info  = {+bun_patrol_start} sr_sound_act@monolith_call %=run_cam_effector(prison_1:2506:false)%
+
+
+[sr_sound_act@monolith_call]
+snd = characters_voice\scenario\sarcofag\monolith_call_1
+;stereo = true 
+on_signal = sound_end|nil %=enable_ui%

@@ -1,0 +1,7 @@
+
+function main()
+
+	level.add_pp_effector("effector_controller_aura", 999, true)
+	level.set_pp_effector_factor(999, 1.0)
+
+end

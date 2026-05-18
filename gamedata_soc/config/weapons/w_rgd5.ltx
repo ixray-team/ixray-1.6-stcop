@@ -1,0 +1,107 @@
+[grenade_rgd5]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn 				= "weapons\grenades\rgd5"
+$prefetch			= 128
+class				= G_RGD5
+cform				= skeleton
+visual				= weapons\grenade\wpn_rgd_5.ogf
+inv_name			= grenade-rgd5
+inv_name_short		= grenade-rgd5
+inv_weight			= 0.35	;.1
+description			= enc_weapons1_grenade-rgd5
+
+;belt				= true
+ef_weapon_type		= 10
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 10
+inv_grid_y			= 9
+
+kill_msg_x			= 240
+kill_msg_y			= 123
+kill_msg_width		= 14
+kill_msg_height		= 23
+
+animation_slot		= 7
+single_handed		= 0
+
+slot				= 3
+hud					= grenade_rgd5_hud
+force_min				= 10	; ~30% от максимума
+force_const				= 25;20
+force_max				= 30
+force_grow_speed		= 15;2 ;30
+
+destroy_time		= 2500;3500
+
+cost				= 100	;40
+
+;-----------------------------------------------------------------------------------
+blast				= 1.50
+blast_r				= 8
+blast_impulse		= 250
+;delete
+blast_impulse_factor = 1
+
+frags				= 12
+frags_r				= 15
+frag_hit			= 1.5
+frag_hit_impulse	= 240
+
+hit_type_blast		= explosion
+hit_type_frag		= fire_wound
+
+up_throw_factor		 = 1.2
+;-----------------------------------------------------------------------------------
+
+explode_particles	= explosions\explosion_01
+
+
+light_color		         = 1.9,1.4,0.5
+light_range		         = 14.0
+light_time 		         = 0.85
+
+;трассы от осколков
+fragment_speed				= 200
+
+explode_duration		 = 5		;подолжительность взрыва (с)
+
+;звуки
+snd_explode = weapons\t_rgd5_explosion     ;rgd5_explode
+snd_checkout = weapons\generic_checkout
+
+attach_position_offset	= -0.053,-0.089,0.0
+attach_angle_offset		= 0,0,0
+attach_bone_name		= 
+
+// should be deleted after update
+position_offset			 = 0.0,0.0,0.0
+angle_offset			 = 1.570790,1.570790,3.92699
+
+throw_point				 = 0,0.3,0.2
+throw_dir				 = 0,0,1
+wm_size                  = 0.1
+;wallmarks
+wallmark_section		 = explosion_marks
+
+[grenade_rgd5_hud]
+fire_point          = 0.05, 0.0, 0.1
+fire_bone           = grenade_0
+orientation         = 0,0,0
+position            = 0,0,0
+visual              = weapons\grenade\wpn_rgd_5_hud.ogf
+
+throw_point				 = 0.0,0.4,0.3
+;throw_point			= -0.05,-0.10,0.05
+throw_dir			= 0,0,1
+
+anim_show			= draw
+anim_hide			= holster_0
+anim_idle			= idle_0
+anim_playing		= idle_01
+anim_throw_begin	= attack_0_begin
+anim_throw_idle		= attack_0_idle
+anim_throw_act		= attack_0_act	
+anim_throw_end		= attack_0_end

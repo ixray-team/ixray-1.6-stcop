@@ -1,0 +1,107 @@
+-- File:        UI_MAIN_NEW_TAB.SCRIPT
+-- Description: New Game Tab for Main Menu
+-- Created:     20.12.2004
+-- Author:      Serhiy 0. Vynnychenko
+-- Mail:        narrator@gsc-game.kiev.ua
+--
+-- Copyright 2004 GSC Game World
+--
+
+class "main_new_tab" (ui_main_base_tab.main_base_tab)
+
+function main_new_tab:__init() super()
+end
+
+function main_new_tab:__finalize()
+end
+
+function main_new_tab:InitControls(x, y, handler)
+	ui_main_base_tab.main_base_tab.InitControls(self, x, y)
+	
+	local btn_easy_rect   = {x = self.btn.x,
+							 y = self.btn.y,
+							 width = self.btn.width,
+							 height = self.btn.height}
+							 
+	local btn_normal_rect = {x = self.btn.x,
+							 y = btn_easy_rect.y + btn_easy_rect.height,
+							 width = self.btn.width,
+							 height = self.btn.height}
+							 
+	local btn_hard_rect   = {x = self.btn.x,
+							 y = btn_normal_rect.y + btn_normal_rect.height ,
+							 width = self.btn.width,
+							 height = self.btn.height}
+	
+	local btn_spawn_rect  = {x = self.btn.x,
+							 y = btn_hard_rect.y + btn_hard_rect.height ,
+							 width = self.btn.width,
+							 height = self.btn.height}
+							 
+	local btn_back_rect   = {x = self.btn.x,
+							 y = self.main_rect.height - self.btn.height,
+							 width = self.btn.width,
+							 height = self.btn.height}
+						
+	------->> NOVICE
+ 	btn = CUI3tButton()	
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_novice")
+	btn:Init(self.btn.texture, btn_easy_rect.x, btn_easy_rect.y, btn_easy_rect.width, btn_easy_rect.height)
+	btn:SetText("Novice")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+	handler:Register(btn)
+	self:AttachChild(btn)
+	
+	--------->> STALKER
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_stalker")
+	btn:Init(self.btn.texture, btn_normal_rect.x, btn_normal_rect.y, btn_normal_rect.width, btn_normal_rect.height)
+	btn:SetText("Stalker")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+	handler:Register(btn)
+	self:AttachChild(btn)	
+	
+	--------->> VETERAN
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_veteran")
+	btn:Init(self.btn.texture, btn_hard_rect.x, btn_hard_rect.y, btn_hard_rect.width, btn_hard_rect.height)
+	btn:SetText("Veteran")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+	handler:Register(btn)
+	self:AttachChild(btn)	
+
+
+	--------->> MASTER
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_master")
+	btn:Init(self.btn.texture, btn_spawn_rect.x, btn_spawn_rect.y, btn_spawn_rect.width, btn_spawn_rect.height)
+	btn:SetText("Master")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+	handler:Register(btn)
+	self:AttachChild(btn)
+
+	
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_new_back")
+	btn:Init(self.btn.texture, btn_back_rect.x, btn_back_rect.y, btn_back_rect.width, btn_back_rect.height)
+	btn:SetText("Back")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+	handler:Register(btn)
+	self:AttachChild(btn)
+end
+

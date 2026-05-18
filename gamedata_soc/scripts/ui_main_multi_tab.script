@@ -1,0 +1,71 @@
+-- File:        UI_MAIN_MULTI_TAB.SCRIPT
+-- Description: Multiplayer tab for Main Menu
+-- Created:     20.12.2004
+-- Author:      Serhiy 0. Vynnychenko
+-- Mail:        narrator@gsc-game.kiev.ua
+--
+-- Copyright 2004 GSC Game World
+--
+
+class "main_multi_tab" (ui_main_base_tab.main_base_tab)
+
+function main_multi_tab:__init() super()
+end
+
+function main_multi_tab:__finalize() 
+end
+
+function main_multi_tab:InitControls(x, y, handler)
+	ui_main_base_tab.main_base_tab.InitControls(self, x, y)
+	
+	local btn_find_rect   = {x = self.btn.x,
+							 y = self.btn.y,
+							 width = self.btn.width,
+							 height = self.btn.height}
+							 
+	local btn_create_rect = {x = self.btn.x,
+							 y = btn_find_rect.y + btn_find_rect.height ,
+							 width = self.btn.width,
+							 height = self.btn.height}
+							 
+	local btn_back_rect   = {x = self.btn.x,
+							 y = self.main_rect.height - self.btn.height,
+							 width = self.btn.width,
+							 height = self.btn.height}
+							 
+ 	btn = CUI3tButton()	
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_findsrv")
+	btn:Init(self.btn.texture, btn_find_rect.x, btn_find_rect.y, btn_find_rect.width, btn_find_rect.height)
+	btn:SetText("Find Server")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+	handler:Register(btn)
+	self:AttachChild(btn)
+		
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_createsrv")
+	btn:Init(self.btn.texture, btn_create_rect.x, btn_create_rect.y, btn_create_rect.width, btn_create_rect.height)
+	btn:SetText("Create Server")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+	btn:Enable(false)
+	handler:Register(btn)
+	self:AttachChild(btn)	
+		
+	
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_multy_back")
+	btn:Init(self.btn.texture, btn_back_rect.x, btn_back_rect.y, btn_back_rect.width, btn_back_rect.height)
+	btn:SetText("Back")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+	handler:Register(btn)
+	self:AttachChild(btn)
+end
+

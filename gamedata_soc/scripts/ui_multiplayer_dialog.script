@@ -1,0 +1,106 @@
+-- File:        UI_MULTIPLAYER_DIALOG.SCRIPT
+-- Description: Multiplayer dialog
+-- Created:     02.12.2004
+-- Author:      Serhiy O. Vynnychenk0
+-- Mail:        narrator@gsc-game.com
+--
+--
+
+function main()
+	local dlg = ui_multiplayer_dialog.multiplayer_dialog()
+	level.start_stop_menu(dlg,true)
+		while true do
+		wait(3000)
+	end
+end
+
+
+class "multiplayer_dialog" (ui_base_dialog.base_dialog)
+
+function multiplayer_dialog:__init() super()
+	self:InitControls()
+	self:InitCallbacks()
+end
+
+function multiplayer_dialog:__finalize()
+end
+
+function multiplayer_dialog:InitControls()
+	ui_base_dialog.base_dialog.InitControls(self, "Multiplayer")
+
+	----- DATA ----
+	----- BUTTONS --->>>
+	local btn_find_rect   = {x = self.btn_rect.x,
+							 y = self.top_align_y,
+							 width = self.btn_rect.width,
+							 height = self.btn_rect.height}
+							 
+	local btn_create_rect = {x = self.btn_rect.x,
+							 y = btn_find_rect.y + btn_find_rect.height + self.indent,
+							 width = self.btn_rect.width,
+							 height = self.btn_rect.height}	
+	-- Bottom align
+	local btn_back_rect   = {x = self.btn_rect.x,
+							 y = self.bottom_align_y - self.btn_rect.height,							 
+							 width = self.btn_rect.width,
+							 height = self.btn_rect.height}	
+	
+	----- CODE -------
+	------>> BUTTONS
+	--------->> FIND SERVER
+    local btn = CUIButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_find_server")
+	btn:Init("ui\\ui_button_01", btn_find_rect.x, btn_find_rect.y, btn_find_rect.width, btn_find_rect.height)
+	btn:SetText("Find Server")
+	btn:SetFont(self.button_font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.button_indent)
+	self:Register(btn)
+	self.main_frame:AttachChild(btn)	
+
+	--------->> CREATE SERVER
+	btn = CUIButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_create_server")
+	btn:Init("ui\\ui_button_01", btn_create_rect.x, btn_create_rect.y, btn_create_rect.width, btn_create_rect.height)
+	btn:SetText("Create Server")
+	btn:SetFont(self.button_font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.button_indent)
+	self:Register(btn)
+	self.main_frame:AttachChild(btn)	
+	
+	--------->> BACK
+	btn = CUIButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_back")
+	btn:Init("ui\\ui_button_01", btn_back_rect.x, btn_back_rect.y, btn_back_rect.width, btn_back_rect.height)
+	btn:SetText("Back")
+	btn:SetFont(self.button_font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.button_indent)
+	self:Register(btn)
+	self.main_frame:AttachChild(btn)
+
+end
+
+function multiplayer_dialog:InitCallbacks()
+	self:AddCallback("btn_find_server",		ui_events.BUTTON_CLICKED, self.OnButton_find,	self)
+	self:AddCallback("btn_create_server",	ui_events.BUTTON_CLICKED, self.OnButton_create,	self)
+	self:AddCallback("btn_back",			ui_events.BUTTON_CLICKED, self.OnButton_back,	self)
+end
+
+function multiplayer_dialog:OnButton_find()
+	local dlg = ui_multiplayer_find.multiplayer_find_dialog()
+	self:GetHolder():start_stop_menu(dlg, true)	
+end
+
+function multiplayer_dialog:OnButton_create()
+	local dlg = ui_multiplayer_create.multiplayer_create_dialog()
+	self:GetHolder():start_stop_menu(dlg, true)	
+end
+
+function multiplayer_dialog:OnButton_back()
+	self:GetHolder():start_stop_menu(self, true)
+end

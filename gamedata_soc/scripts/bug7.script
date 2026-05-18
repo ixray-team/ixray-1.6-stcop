@@ -1,0 +1,19 @@
+function main()
+	tbl = {
+	        func = function(param)
+    	            print("func: " .. param)
+        	end
+	}
+
+	local ind1 = function(...) tbl.func(unpack(arg)) end
+	local ind2 = tbl.func
+
+	local ind3 = {}
+	ind3["func"] = tbl.func
+
+	tbl.func("direct call")
+	ind1("indirect call 1")
+	ind2("indirect call 2")
+	ind3["func"]("indirect call 3")
+
+end

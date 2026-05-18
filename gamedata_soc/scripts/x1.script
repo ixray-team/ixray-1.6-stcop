@@ -1,0 +1,4 @@
+function main ()
+    level.add_pp_effector ("proba.ppe", 1974, false)
+    level.set_weather_fx ("surge_day")
+end

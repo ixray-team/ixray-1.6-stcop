@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<w>
+	<!-- CAR_HEALTH -->
+	<car_health_static x="0" y="0" width="155" height="34">
+		<texture>ui_hud_shkala_car</texture>
+		<auto_static x="3" y="12" width="19" height="18">
+			<texture>ui_hud_icon_car</texture>
+		</auto_static>
+	</car_health_static>
+
+	<!-- car health bar -->
+	<car_health_progress_bar x="33" y="18" width="110" height="10" horz="1" min="0" max="100" pos="0">
+		<progress>
+			<texture>ui_hud_shk_car</texture>
+		</progress>
+	</car_health_progress_bar>
+	
+</w>

@@ -1,0 +1,54 @@
+class "se_artefact"	(cse_alife_item_artefact)
+
+function se_artefact:__init (section) super (section)
+    if section == "af_electra_flash" or 
+       section == "af_electra_moonlight" or
+       section == "af_electra_sparkler" then
+       self.is_day_night = true
+    else
+       self.is_day_night = false
+    end 
+end
+--------------------
+function se_artefact:can_switch_offline ()
+     return cse_alife_item_artefact.can_switch_offline (self)
+end
+--------------------
+function se_artefact:can_switch_online ()
+    if self.is_day_night == false then
+       return cse_alife_item_artefact.can_switch_online (self)
+    end
+    
+    -- обработаем ситуацию, когда актер дал дуба или вообще отсутствует
+    if db.actor == nil or db.actor:alive () == false then
+       return self.online  --просто вернем текущее состояние. 
+    end
+    
+    --printf ("CAN_SWITCH_ONLINE called")
+    
+    -- если есть родитель, то ничего не ломаем.
+    if self.parent_id ~= 65535 then
+       return true 
+    end   
+    
+    if self.online == true then --обработаем ситуацию, когда артефакт в онлайне
+       --если ночь (или актера нет или он дал дуба, то мы в онлайне и остаемся 
+       if utils.electro_art_enabled () == true then 
+          return true
+       end   
+       if level.vertex_position (self.m_level_vertex_id):distance_to (db.actor:position ()) < 50 then
+          return true  --если актер слишком близко, то оставляем все как есть
+       end
+       return false -- актер далеко - в оффлайн.
+    else --обработаем ситуацию, когда арефакт в оффлайне
+       if utils.electro_art_enabled () == false then --если день, то ничего не делаем
+          return false
+       end 
+       
+       if level.vertex_position (self.m_level_vertex_id):distance_to (db.actor:position ()) < 50 then
+          return false  --если актер слишком близко, то оставляем все как есть
+       end
+       return true -- актер далеко - в онлайн.
+    end   
+end
+--------------------

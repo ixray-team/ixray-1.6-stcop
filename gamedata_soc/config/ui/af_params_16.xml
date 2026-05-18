@@ -1,0 +1,64 @@
+
+	<af_params x="0" y="0" width="194" height="1">
+		<static_health_restore_speed width="194" height="20" complex_mode="1">
+			<texture>ui_inv_icon_health_restore_speed</texture>
+			<text font="letterica16" x="13" y="0"/>
+		</static_health_restore_speed>
+
+		<static_radiation_restore_speed width="194" height="20" complex_mode="1">
+			<texture>ui_inv_icon_radiation_restore_speed</texture>
+			<text font="letterica16" x="13" y="0"/>
+		</static_radiation_restore_speed>
+
+		<static_satiety_restore_speed width="194" height="20" complex_mode="1">
+			<texture>ui_inv_icon_satiety_restore_speed</texture>
+			<text font="letterica16" x="13" y="0"/>
+		</static_satiety_restore_speed>
+
+		<static_power_restore_speed width="194" height="20" complex_mode="1">
+			<texture>ui_inv_icon_power_restore_speed</texture>
+			<text font="letterica16" x="13" y="0"/>
+		</static_power_restore_speed>
+
+		<static_bleeding_restore_speed width="194" height="20" complex_mode="1">
+			<texture>ui_inv_icon_bleeding_restore_speed</texture>
+			<text font="letterica16" x="13" y="0"/>
+		</static_bleeding_restore_speed>
+
+		<static_burn_immunity width="194" height="20" complex_mode="1">
+			<texture>ui_inv_icon_burn_immunity</texture>
+			<text font="letterica16" x="13" y="0"/>
+		</static_burn_immunity>
+		<static_strike_immunity width="194" height="20" complex_mode="1">
+			<texture>ui_inv_icon_strike_immunity</texture>
+			<text font="letterica16" x="13" y="0"/>
+		</static_strike_immunity>
+		<static_shock_immunity width="194" height="20" complex_mode="1">
+			<texture>ui_inv_icon_shock_immunity</texture>
+			<text font="letterica16" x="13" y="0"/>
+		</static_shock_immunity>
+		<static_wound_immunity width="194" height="20" complex_mode="1">
+			<texture>ui_inv_icon_wound_immunity</texture>
+			<text font="letterica16" x="13" y="0"/>
+		</static_wound_immunity>
+		<static_radiation_immunity width="194" height="20" complex_mode="1">
+			<texture>ui_inv_icon_radiation_immunity</texture>
+			<text font="letterica16" x="13" y="0"/>
+		</static_radiation_immunity>
+		<static_telepatic_immunity width="194" height="20" complex_mode="1">
+			<texture>ui_inv_icon_telepatic_immunity</texture>
+			<text font="letterica16" x="13" y="0"/>
+		</static_telepatic_immunity>
+		<static_chemical_burn_immunity width="194" height="20" complex_mode="1">
+			<texture>ui_icons_newPDA_showpers_e</texture>
+			<text font="letterica16" x="13" y="0"/>			
+		</static_chemical_burn_immunity>
+		<static_explosion_immunity width="194" height="20" complex_mode="1">
+			<texture>ui_inv_icon_explosion_immunity</texture>
+			<text font="letterica16" x="13" y="0"/>
+		</static_explosion_immunity>
+		<static_fire_wound_immunity width="194" height="20" complex_mode="1">
+			<texture>ui_inv_icon_fire_wound_immunity</texture>
+			<text font="letterica16" x="13" y="0"/>
+		</static_fire_wound_immunity>
+	</af_params>

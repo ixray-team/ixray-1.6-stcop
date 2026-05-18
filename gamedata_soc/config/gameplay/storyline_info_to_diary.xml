@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<encyclopedia>
+#include "gameplay\storyline_info_escape.xml"
+#include "gameplay\storyline_info_garbage.xml"
+#include "gameplay\storyline_info_agroprom.xml"
+#include "gameplay\storyline_info_bar.xml"
+#include "gameplay\storyline_info_darkvalley.xml"
+#include "gameplay\storyline_info_deadcity.xml"
+#include "gameplay\storyline_info_military.xml"
+#include "gameplay\storyline_info_radar.xml"
+#include "gameplay\storyline_info_aes.xml"
+#include "gameplay\storyline_info_pripyat.xml"
+#include "gameplay\storyline_info_sarcofag.xml"
+#include "gameplay\storyline_info_yantar.xml"    
+#include "gameplay\storyline_info_taskmanager.xml"
+#include "gameplay\stories.xml"
+
+</encyclopedia>

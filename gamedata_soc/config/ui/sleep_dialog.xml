@@ -1,0 +1,67 @@
+﻿<?xml version='1.0' encoding="UTF-8"?>
+<!-- SLEEP DIALOG IN INVENTORY MENU -->
+<window>
+	<!-- ICON -->
+	<icon_static x="0" y="0" width="64" height="64" scale="0.5"></icon_static>
+
+	<!-- NAME -->
+	<static x="20" y="35" width="240" height="60">
+		<text x="0" y="0" font="letterica18" r="255" g="128" b="64"></text>
+	</static>
+
+	<!-- INFO PANELS -->
+	<curr_time_static x="98" y="35" width="150" height="40">
+	<!--	<texture>ui\ui_button_01</texture> -->
+		<text x="0" y="0" font="letterica18" r="255" g="128" b="64">CurrTime</text>
+	</curr_time_static>
+	<rest_amount_static x="118" y="75" width="110" height="40">
+	<!--	<texture>ui\ui_button_02</texture> -->
+		<text x="0" y="0" font="letterica18" r="255" g="128" b="64">Rest</text>
+	</rest_amount_static>
+
+	<!-- PLUS, MINUS BUTTON -->
+	<plus_button x="23" y="60" width="50" height="40">
+		<texture>ui\ui_button_01</texture>
+		<text>+</text>
+	</plus_button>
+	<minus_button x="193" y="60" width="50" height="40">
+		<texture>ui\ui_button_01</texture>
+		<text>-</text>
+	</minus_button>
+
+	<!-- FIXED AMOUNT INCREASE -->
+	<inc_button x="58" y="110" width="150" height="40">
+		<texture>ui\ui_button_01</texture>
+		<text>1 Hour</text>
+	</inc_button>
+	<inc_button x="58" y="160" width="150" height="40">
+		<texture>ui\ui_button_01</texture>
+		<text>4 Hours</text>
+	</inc_button>
+	<inc_button x="58" y="210" width="150" height="40">
+		<texture>ui\ui_button_01</texture>
+		<text>8 Hours</text>
+	</inc_button>
+
+	<!-- REST UNTIL MORNING AND EVENING -->
+	<to_morning_button x="58" y="260" width="150" height="40" to_hour="8" to_min="10">
+		<texture>ui\ui_button_01</texture>
+		<text>To Morning</text>
+	</to_morning_button>
+	<to_evening_button x="58" y="310" width="150" height="40" to_hour="22" to_min="30">
+		<texture>ui\ui_button_01</texture>
+		<text>To Evening</text>
+	</to_evening_button>
+
+	<!-- CLOSE AND REST -->
+	<rest_button x="3" y="450" width="124" height="40">
+		<texture>ui\ui_button_01</texture>
+		<text>Rest</text>
+	</rest_button>
+	<close_button x="133" y="450" width="124" height="40">
+		<texture>ui\ui_button_01</texture>
+		<text>Close</text>
+	</close_button>
+
+</window>
+

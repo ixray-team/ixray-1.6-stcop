@@ -1,0 +1,40 @@
+class "opt_sound" (CUIWindow)
+
+function opt_sound:__init() super()
+end
+
+function opt_sound:__finalize()
+
+end
+
+function opt_sound:InitControls(x, y, xml, handler)
+
+	self:Init(x,y, 738, 416)
+	self:SetAutoDelete(true)
+	
+	self.bk = xml:InitFrame("frame", self)
+	
+--	local c
+
+	xml:InitStatic("tab_sound:cap_mastervolume",		self)
+	xml:InitStatic("tab_sound:cap_musicvolume",		self)
+--	xml:InitStatic("tab_sound:cap_sfxvolume",		self)
+--	xml:InitStatic("tab_sound:cap_voicevolume",		self)
+--	xml:InitStatic("tab_sound:cap_soundquality",		self)	
+	
+--	c = xml:InitCheck("tab_sound:check_reverse",	self)
+--	c:Enable(false)
+	xml:InitCheck("tab_sound:check_eax",			self)
+
+--	c = xml:InitSpinText("tab_sound:list_speakersetup",	self)
+--	c:Enable(false)
+--	xml:InitSpinText("tab_sound:list_soundquality",	self)
+	
+	xml:InitTrackBar("tab_sound:track_musicvolume",	self)
+	xml:InitTrackBar("tab_sound:track_mastervolume",self)
+--	c = xml:InitTrackBar("tab_sound:track_voice",	self)
+--	c:Enable(false)
+
+--	btn = xml:Init3tButton("tab_sound:btn_default_set",	self)	
+--	handler:Register(btn, "btn_default_sound")
+end

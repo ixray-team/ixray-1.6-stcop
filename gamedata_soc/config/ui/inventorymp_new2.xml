@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window x="0" y="0" w="640" h="480" r="227" g="121" b="222" texture="1">
+
+	<!-- BAG WINDOW -->
+	<bag_background_static x="10" y="260" width="350" height="440">
+		<texture>ui\ui_dg_inventory_multiplayer</texture>
+		<text x="40" y="7" font="graffiti22" r="255" g="255" b="255" a="130">Items List</text>
+	</bag_background_static>
+
+	<!-- DESCRIPTION WINDOW -->
+	<desc_static x="340" y="260" width="420" height="400">
+		<texture>ui\ui_dg_info_multiplayer</texture>
+		<text x="20" y="195" font="graffiti22" r="255" g="255" b="255" a="130">Description</text>
+	</desc_static>
+
+	<!-- CHARACTER WINDOW -->
+	<personal_static x="790" y="260" width="200" height="400">
+		<texture>ui\ui_dg_personal_multiplayer</texture>
+		<text x="60" y="7" font="graffiti22" r="255" g="255" b="255" a="130">Personal</text>
+	</personal_static>
+
+	<!-- BELT STATIC BACKGROUND-->
+	<static x="15" y="140" width="1024" height="128">
+		<texture>ui\ui_inv_belt</texture>
+		<text x="25" y="2" font="graffiti22" r="255" g="255" b="255" a="130">Belt</text>
+	</static>
+
+	<!-- SLOTS BACKGROUND -->
+	<slots_static x="15" y="0" width="1024" height="128">
+		<texture>ui\ui_inv_quick_slots</texture>
+	</slots_static>
+
+	
+	<!-- BELT LIST -->
+	<dragdrop_list x="32" y="174" width="1024" height="60"
+			cell_width = "53" cell_height="50"
+			rows_num="1" cols_num="18"></dragdrop_list>
+	<!-- BAG LIST -->
+	<dragdrop_list x="30" y="40" width="400" height="350"
+			cell_width = "40" cell_height="40"
+			rows_num="24" cols_num="6" rows_num_view="9"></dragdrop_list>
+
+	<!-- SLOTS LISTS -->
+	<dragdrop_list x="43" y="14" width="120" height="120"
+			cell_width = "53" cell_height="53"
+			rows_num="2" cols_num="2"></dragdrop_list>
+
+	<dragdrop_list x="188" y="14" width="120" height="120"
+			cell_width = "53" cell_height="53"
+			rows_num="2" cols_num="2"></dragdrop_list>
+
+	<dragdrop_list x="333" y="14" width="320" height="120"
+			cell_width = "53" cell_height="53"
+			rows_num="2" cols_num="6"></dragdrop_list>
+
+	<dragdrop_list x="690" y="14" width="100" height="120"
+			cell_width = "53" cell_height="53"
+			rows_num="2" cols_num="2"></dragdrop_list>
+
+	<dragdrop_list x="838" y="14" width="150" height="120"
+			cell_width = "53" cell_height="53"
+			rows_num="2" cols_num="3"></dragdrop_list>
+
+	<!-- OUTFIT SLOT -->
+	<dragdrop_list x="828" y="314" width="150" height="220"
+			cell_width = "53" cell_height="53"
+			rows_num="4" cols_num="4" show_grid="0"></dragdrop_list>
+
+	<!-- STATIC BCAKGROUND FOR MP TABCONTROL -->
+	<static x="0" y="690" width="1024" height="128">
+		<texture>ui\ui_dg_bottom_multiplayer</texture>
+	</static>
+
+	<!-- TOTAL MONEY AMOUNT -->
+	<total_money_header_static x="610" y="300" width="200" height="50">
+		<text font="small" r="240" g="217" b="182">You have:</text>
+	</total_money_header_static>
+
+	<total_money_static x="610" y="310" width="200" height="50">
+		<text font="graffiti50" r="238" g="155" b="23">You have:</text>
+	</total_money_static>
+
+	<!-- ITEM COST -->
+	<item_cost_header_static x="610" y="370" width="200" height="50">
+		<text font="small" r="240" g="217" b="182">Item Price:</text>
+	</item_cost_header_static>
+
+	<item_cost_static x="610" y="380" width="200" height="50">
+		<text font="graffiti50" r="240" g="217" b="182">Item Price:</text>
+	</item_cost_static>
+
+	<!-- CHARACTER ICON -->
+	<outfit_static x="858" y="314" width="150" height="220"></outfit_static>
+
+	<!-- TAB CONTROL FOR WEAPON TYPE SELECT -->
+	<tab x="0" y="690" width="1014" height="78">
+		<!-- BUTTONS -->
+		<button x="15" y="10" width="150" height="65" accel="2">
+			<texture>ui\ui_mp_icon_small_weapons</texture>
+		</button>
+		<button x="183" y="10" width="150" height="65" accel="3">
+			<texture>ui\ui_mp_icon_main_guns</texture>
+		</button>
+		<button x="353" y="10" width="150" height="65" accel="4">
+			<texture>ui\ui_mp_icon_grenades</texture>
+		</button>
+		<button x="522" y="10" width="150" height="65" accel="5">
+			<texture>ui\ui_mp_icon_suits</texture>
+		</button>
+		<button x="691" y="10" width="150" height="65" accel="6">
+			<texture>ui\ui_mp_icon_equipment</texture>
+		</button>
+	</tab>
+
+	<!-- OK DIALOG BUTTON -->
+	<ok_button x="870" y="700" width="140" height="30" accel="28">
+		<texture></texture>
+		<text font="normal" r="238" g="155" b="23">Accept</text>
+	</ok_button>
+
+	<!-- CANCEL DIALOG BUTTON -->
+	<cancel_button x="870" y="740" width="140" height="30" accel="1">
+		<texture></texture>
+		<text font="normal" r="238" g="155" b="23">Cancel</text>
+	</cancel_button>
+
+	<!-- WEAPON DESCRIPTION LIST -->
+	<wpn_descr_list x="22" y="230" width="387" height="155" item_height="16" active_bg="0">
+        <font font="letterica16" r="240" g="217" b="182"></font>
+	</wpn_descr_list>
+
+</window>

@@ -1,0 +1,69 @@
+[logic]
+active = remark@spawn
+;on_death = death
+on_hit = hit
+combat_ignore = combat_ignore
+
+;[death]
+;on_info = {=killed_by(412)} %=hit_npc(412:bip01_head:300:1700)%
+
+[hit]
+on_info = {-val_opendoor_plr_detected =hit_by_actor} nil %+val_opendoor_plr_detected +val_opendoor_end%
+on_info2 = {=hitted_by(412)} nil %=hit_npc(412:bip01_head:400:2700)%
+
+[combat_ignore]
+
+;--------------------------------------------------------------------------
+; стандартный диалог
+;--------------------------------------------------------------------------
+[meet@def]
+meet_state = 5|guard
+meet_state_wpn = 10|threat@threat_weap
+victim = 10|actor
+victim_wpn = 10|actor
+use = true
+
+;--------------------------------------------------------------------------
+; схемы
+;--------------------------------------------------------------------------
+[remark@spawn]
+no_move = true
+on_info = {+val_opendoor_start} camper@start
+combat_ignore_cond = always
+
+[camper@start]
+path_walk = val_opendoor_monolith_walk
+path_look = val_opendoor_monolith_look
+def_state_moving = assault
+def_state_campering = threat
+def_state_campering_fire = threat_fire
+no_retreat = true
+radius = 0
+;meet = meet@def
+on_signal = victim_start | %+val_opendoor_victim_start%
+;on_info = {+val_opendoor_victim_start} camper@fight
+on_info = {=is_dead_one(411)} camper@wait
+;on_info2 = {+val_opendoor_plr_detected} nil
+combat_ignore_cond = {!check_fighting(411)} ;{=fighting_actor -val_opendoor_plr_detected}
+wounded = wounded
+
+[camper@wait]
+path_walk = val_opendoor_monolith_walk
+path_look = val_opendoor_monolith_look
+def_state_moving = assault
+def_state_campering = threat
+def_state_campering_fire = threat_fire
+radius = 0
+no_retreat = true
+;meet = meet@def
+on_info = {=is_dead_one(412)} nil %+val_opendoor_end%
+;on_info2 = {+val_opendoor_plr_detected} nil
+combat_ignore_cond = always
+wounded = wounded
+
+[wounded]
+hp_state = 0|help_me@help
+hp_state_see = 0|wounded@help_see
+hp_victim = 0|nil
+hp_fight = 0|false
+hp_cover = 0|false

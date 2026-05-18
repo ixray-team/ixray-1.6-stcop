@@ -1,0 +1,3 @@
+function main()
+	alife():create_ammo("ammo_9x18_fmj",db.actor:position(),db.actor:level_vertex_id(),db.actor:game_vertex_id(),65535, 3)
+end

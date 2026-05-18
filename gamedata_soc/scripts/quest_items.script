@@ -1,0 +1,82 @@
+
+
+
+function main()
+	local level = level.name()
+    local spawn_items = {}
+	table.insert(spawn_items, "wpn_fn2000")
+	table.insert(spawn_items, "device_torch")
+	table.insert(spawn_items, "wpn_knife")
+	
+	for i = 1,3 do
+		table.insert(spawn_items, "medkit")
+		table.insert(spawn_items, "antirad")
+	end
+	for i = 1,10 do
+		table.insert(spawn_items, "bandage")
+		table.insert(spawn_items, "conserva")
+	end
+	
+	if level == "l01_escape" then
+	elseif level == "l02_garbage" then
+		table.insert(spawn_items, "bandit_outfit")
+	elseif level == "l03_agroprom" then
+		table.insert(spawn_items, "stalker_outfit")						
+	elseif level == "l03u_agr_underground" then
+		table.insert(spawn_items, "stalker_outfit")
+	elseif level == "l04_darkvalley" then
+		table.insert(spawn_items, "stalker_outfit")
+	elseif level == "k01_darkscape" then
+		table.insert(spawn_items, "stalker_outfit")
+	elseif level == "l04u_labx18" then
+		table.insert(spawn_items, "stalker_outfit")
+	elseif level == "l05_bar" then
+		table.insert(spawn_items, "stalker_outfit")
+	--	table.insert(spawn_items, "quest_case_02")
+	--	table.insert(spawn_items, "bar_darklab_documents")
+	--	table.insert(spawn_items, "lab_x16_documents")		
+	elseif level == "l06_Rostok" then
+		table.insert(spawn_items, "dolg_outfit")
+	elseif level == "l07_military" then
+		table.insert(spawn_items, "dolg_outfit")
+	elseif level == "l08_yantar" then
+		table.insert(spawn_items, "dolg_outfit")
+	elseif level == "l08u_brainlab" then
+		table.insert(spawn_items, "protection_outfit")
+	--	table.insert(spawn_items, "good_psy_helmet")
+	elseif level == "l10_radar" then
+		table.insert(spawn_items, "protection_outfit")
+	--	table.insert(spawn_items, "good_psy_helmet")		
+	elseif level == "l10u_bunker" then
+		table.insert(spawn_items, "protection_outfit")
+	--	table.insert(spawn_items, "good_psy_helmet")
+	elseif level == "l11_pripyat" then
+		table.insert(spawn_items, "military_outfit")
+	--	table.insert(spawn_items, "good_psy_helmet")
+	--	table.insert(spawn_items, "cit_doctors_key")
+	elseif level == "l12_stancia" then
+		table.insert(spawn_items, "military_outfit")
+	--	table.insert(spawn_items, "good_psy_helmet")
+	elseif level == "l12u_sarcofag" then
+		table.insert(spawn_items, "exo_outfit")
+	--	table.insert(spawn_items, "decoder")
+	--	table.insert(spawn_items, "good_psy_helmet")
+	elseif level == "l12u_control_monolith" then
+		table.insert(spawn_items, "exo_outfit")
+	--	table.insert(spawn_items, "decoder")
+	--	table.insert(spawn_items, "good_psy_helmet")
+	elseif level == "l12_stancia_2" then
+		table.insert(spawn_items, "exo_outfit")
+	--	table.insert(spawn_items, "good_psy_helmet")
+	end
+
+	local k,v = 0,0
+	for k,v in pairs(spawn_items) do
+		alife():create(v,	
+						db.actor:position(),
+						db.actor:level_vertex_id(),	
+						db.actor:game_vertex_id(), 
+						db.actor:id())
+	end	
+	 db.actor:activate_slot(3)
+end

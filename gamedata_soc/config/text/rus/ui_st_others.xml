@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="ui_st_conn_version_differs">
+		<text>Ошибка соединения: Отличаются версии.</text>
+	</string>
+	<string id="ui_st_conn_cdkey_invalid">
+		<text>Ошибка соединения: Неверный CD-Key.</text>
+	</string>
+	<string id="ui_st_conn_cdkey_in_use">
+		<text>Ошибка соединения: Такой CD-key уже используется.</text>
+	</string>
+	<string id="ui_st_conn_cdkey_disabled">
+		<text>Ошибка соединения: Ваш CD-Key заблокирован. Связитесь со службой поддержки.</text>
+	</string>
+	<string id="ui_st_conn_new_patch">
+		<text>Доступен новый патч. \n Версия: %s\n %s\n Хотите загрузить его сейчас?</text>
+	</string>
+	<string id="ui_st_conn_no_new_patch">
+		<text>Нет новых патчей</text>
+	</string>
+</string_table>

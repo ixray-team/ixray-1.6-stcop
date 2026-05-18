@@ -1,0 +1,406 @@
+;*****************************************************************
+; Yantar zombies
+;*****************************************************************
+[logic@yantar_zombies_kamp1]
+active = kamp@yantar_zombies_kamp1
+
+[kamp@yantar_zombies_kamp1]
+center_point = kamp_1
+
+
+[logic@yantar_zombies_kamp2]
+active = kamp@yantar_zombies_kamp2
+
+[kamp@yantar_zombies_kamp2]
+center_point = kamp_2
+
+
+[logic@yantar_zombies_kamp3]
+active = kamp@yantar_zombies_kamp3
+
+[kamp@yantar_zombies_kamp3]
+center_point = kamp_3
+
+[logic@yantar_zombies_kamp4]
+active = kamp@yantar_zombies_kamp4
+
+[kamp@yantar_zombies_kamp4]
+center_point = kamp_4
+
+[logic@yantar_zombies_walker]
+active = walker@yantar_zombies_walker
+
+[walker@yantar_zombies_walker]
+path_walk = walker_walk	
+sound_idle = state
+;****************************************************
+;Yantar scientist
+;***************************************************
+
+[wounded@ignore_scientist]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false
+
+[logic@scientist_offline]
+active = walker@scientist_offline
+
+[walker@scientist_offline]
+path_walk = offline_walk
+path_look = ucheniy_talk_look
+wounded = wounded@ignore_scientist
+
+[logic@scientist_out_rest]
+active = walker@scientist_start
+on_death = death@scientist
+combat_ignore = combat_ignore
+meet = meet@scientist
+
+[walker@scientist_start]
+path_walk = ucheniy_talk_walk
+path_look = ucheniy_talk_look
+combat_ignore_cond = always
+on_info = {+yantar_kruglov_phrase_1} remark@yan_scientist_talk_1
+danger = danger_condition@1
+meet = no_meet
+wounded = wounded@ignore_scientist
+
+[remark@yan_scientist_talk_1]
+snd = yantar_kruglov_to_professor_1
+anim = wait
+target = 902
+on_timer = 2500 | walker@kruglov_talk %+yantar_professor_phrase_2%
+combat_ignore_cond = always
+danger = danger_condition@1
+meet = no_meet
+wounded = wounded@ignore_scientist
+
+[walker@kruglov_talk]
+path_walk = bunker_walk
+path_look = bunker_look
+combat_ignore_cond = always
+on_info = {+yan_kruglov_after_actor +yan_scientist_point_to_1} walker@door_2
+danger = danger_condition@1
+meet = meet@scientist
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+wounded = wounded@ignore_scientist
+
+[walker@door_2]
+path_walk = walk_door_2
+on_signal = door_2 |  %+yan_scientist_door_2_open +yan_scientist_gulag_state_2%
+combat_ignore_cond = always
+danger = danger_condition@1
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+[logic@scientist_not_in_rest]
+active = walker@door_1
+on_death = death@scientist
+combat_ignore = combat_ignore
+meet = no_meet
+
+[walker@door_1]
+path_walk = walk_door_1
+on_signal = door_1 | camper@scientist_2 %+yan_scientist_door_1_open -yan_scientist_door_2_open%
+combat_ignore_cond = always
+danger = danger_condition@1
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+[camper@scientist_2]
+path_walk = help_walk
+path_look = help_look
+combat_ignore_cond = always
+on_signal = doors_close | camper@scientist_wait_2 %-yan_scientist_door_1_open%
+meet = no_meet
+radius = 0
+no_retreat = true
+danger = danger_condition@1
+wounded = wounded@ignore_scientist
+
+[camper@scientist_wait_2]
+path_walk = wait_walk
+path_look = help_look
+combat_ignore_cond = {=fighting_actor =fighting_dist_ge(20)}
+def_state_moving = assault
+radius = 0
+no_retreat = true
+on_info = {!see_enemy} camper@scientist_3
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+[camper@scientist_3]
+path_walk = help_walk_1
+path_look = help_look_1
+combat_ignore_cond = {=fighting_actor =fighting_dist_ge(20)}
+meet = no_meet
+on_signal = arrived_1 | camper@scientist_wait_3 
+def_state_moving = assault
+radius = 0
+no_retreat = true
+danger = danger_condition@1
+wounded = wounded@ignore_scientist
+
+[camper@scientist_wait_3]
+path_walk = wait_walk_1
+path_look = help_look_1
+combat_ignore_cond = {=fighting_actor =fighting_dist_ge(20)}
+def_state_moving = assault
+radius = 0
+no_retreat = true
+on_timer = 10000 | {!see_enemy} remark@scientist_4 
+on_info = {!see_enemy =rostok_dist_to_actor_le(6)} remark@scientist_4 
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+[remark@scientist_4]
+snd = yantar_kruglov_radiation_quest_2
+anim = guard
+target = actor
+on_signal = sound_end | remark@scientist_41 
+combat_ignore_cond = always
+danger = danger_condition@1
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+
+[remark@scientist_41]
+anim = probe_1
+target = actor
+on_signal = sound_end | camper@scientist_4 %=yan_gluk%
+combat_ignore_cond = always
+danger = danger_condition@1
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+[camper@scientist_4]
+path_walk = help_walk_2
+path_look = help_look_2
+combat_ignore_cond = {=fighting_actor =fighting_dist_ge(20)}
+meet = no_meet
+on_signal = arrived_2 | camper@scientist_wait_4 
+def_state_moving = assault
+radius = 0
+no_retreat = true
+danger = danger_condition@1
+;on_timer = 7000 | {-yantar_kruglov_talk} %=yantar_kruglov_talk +yantar_kruglov_talk%
+wounded = wounded@ignore_scientist
+
+[camper@scientist_wait_4]
+path_walk = wait_walk_2
+path_look = help_look_2
+combat_ignore_cond = {=fighting_actor =fighting_dist_ge(20)}
+def_state_moving = assault
+radius = 0
+no_retreat = true
+on_timer = 10000 | remark@scientist_5 
+on_info = {!see_enemy =rostok_dist_to_actor_le(4)} remark@scientist_5 
+wounded = wounded@ignore_scientist
+danger = danger_condition@1
+meet = no_meet
+
+[remark@scientist_5]
+anim = probe_2
+on_signal = sound_end | camper@scientist_5 %=yan_gluk%
+combat_ignore_cond = always
+danger = danger_condition@1
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+
+[camper@scientist_5]
+path_walk = help_walk_3
+path_look = help_look_3
+combat_ignore_cond = {=fighting_actor =fighting_dist_ge(20)}
+meet = no_meet
+on_signal = arrived_3 | remark@scientist_wounded_1 %+yan_scientist_researching% 
+def_state_moving = assault
+radius = 0
+no_retreat = true
+danger = danger_condition@1
+wounded = wounded@ignore_scientist
+
+[remark@scientist_wounded_1]
+anim = probe_3
+target = actor
+on_signal = sound_end | walker@scientist_wounded_1 %+yan_spawn_ghost%
+on_timer = 6000 | %+yan_spawn_ghost%
+combat_ignore_cond = always
+danger = danger_condition@1
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+
+[walker@scientist_wounded_1]
+path_walk = wounded_walk
+on_timer = 12000 | walker@scientist_wounded 
+combat_ignore_cond = always
+danger = danger_condition@1
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+[walker@scientist_wounded]
+path_walk = wounded_walk
+wounded = wounded@yan_scientist
+combat_ignore_cond = always
+on_info = {+yan_scientist_return_to_bunker} remark@scientist_return_to_bunker
+danger = danger_condition@1
+
+[remark@scientist_return_to_bunker]
+snd = yantar_kruglov_radiation_quest_8
+anim = guard
+target = actor
+on_signal = sound_end | remark@scientist_return_to_bunker_1
+combat_ignore_cond = always
+danger = danger_condition@1
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+[remark@scientist_return_to_bunker_1]
+snd = yantar_kruglov_radiation_quest_9
+anim = guard
+target = actor
+on_signal = sound_end | camper@scientist_return_to_bunker
+combat_ignore_cond = always
+danger = danger_condition@1
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+[camper@scientist_return_to_bunker]
+path_walk = return_walk
+path_look = help_look_3
+combat_ignore_cond = {=fighting_actor =fighting_dist_ge(20)}
+on_signal = door_1_open | walker@scientist_return_door_1 %+yan_scientist_door_1_open%
+def_state_moving = assault
+meet = no_meet
+radius = 0
+danger = danger_condition@1
+wounded = wounded@ignore_scientist
+
+[walker@scientist_return_door_1]
+path_walk = door_1_walk
+combat_ignore_cond = always
+on_signal = door_2_open | %-yan_scientist_door_1_open +yan_scientist_door_2_open -yan_scientist_gulag_state_2 +yan_scientist_gulag_state_3%
+danger = danger_condition@1
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+[logic@scientist_return_out_rest]
+active = walker@scientist_return_out_rest
+
+[walker@scientist_return_out_rest]
+path_walk = door_2_walk
+on_signal = doors_close | walker@go_to_scientist %-yan_scientist_door_2_open%
+combat_ignore_cond = always
+danger = danger_condition@1
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+[walker@go_to_scientist]
+path_walk = ucheniy_talk_walk
+path_look = ucheniy_talk_look
+combat_ignore_cond = always
+on_signal = arrived | remark@talk_about_research %+yan_find_scientist_done%
+danger = danger_condition@1
+def_state_moving = walk
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+[remark@talk_about_research]
+snd = yantar_kruglov_radiation_quest_10
+anim = wait
+target = 902
+on_signal = sound_end | walker@go_away %+yantar_scientist_talk_helmet%
+wounded = wounded@ignore_scientist
+meet = no_meet
+
+[walker@go_away]
+path_walk = bunker_walk
+path_look = bunker_look
+combat_ignore_cond = always
+def_state_moving = walk
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+wounded = wounded@ignore_scientist
+
+[wounded@yan_scientist]
+hp_state = 102|help_me@yantar_kruglov_radiation_quest_7|101|wounded_heavy@yantar_kruglov_radiation_quest_7
+hp_state_see = 102|wounded@yantar_kruglov_radiation_quest_7|101|wounded_heavy@yantar_kruglov_radiation_quest_7
+psy_state = 50|{=best_pistol}psy_armed,psy_pain@wounded_psy|20| {=best_pistol}psy_shoot,psy_pain@{=best_pistol}wounded_psy_shoot,wounded_psy
+hp_cover = 30|true|10|false
+hp_fight = 30|true|10|false
+help_start_dialog = yantar_wounded_scientist
+
+
+[meet@scientist]
+meet_state 		= 1 | wait
+meet_state_wpn 	= 1 | wait
+victim 			= 2 | actor
+victim_wpn 		= 2 | actor
+use                     = true
+use_wpn                 = true
+
+[meet@scientist_1]
+meet_state 			= 0 | guard
+meet_state_wpn 		= 0 | guard
+use                 = true
+use_wpn             = true
+
+[death@scientist]
+on_info = %+yan_scientist_die%  
+
+[danger_condition@1]
+ignore_distance       = 0
+ignore_distance_grenade = 1
+ignore_distance_corpse  = 0
+ignore_distance_hit     = 1
+ignore_distance_sound   = 0 
+danger_inertion_time_grenade = 1
+danger_inertion_time_corpse = 1
+danger_inertion_time_hit = 1
+danger_inertion_time_sound = 1
+danger_inertion_time_ricochet = 1
+
+;========================================================
+; Tonnel Snorks
+;========================================================
+
+[logic@yan_tonnel_snork_home_1]
+active = mob_home@yan_tonnel_snork_home_1
+
+[mob_home@yan_tonnel_snork_home_1]
+path_home = home_1
+home_min_radius = 20
+home_max_radius = 40
+
+[logic@yan_tonnel_snork_home_2]
+active = mob_home@yan_tonnel_snork_home_2
+
+[mob_home@yan_tonnel_snork_home_2]
+path_home = home_2
+home_min_radius = 20
+home_max_radius = 40
+
+[logic@yan_tonnel_snork_home_3]
+active = mob_home@yan_tonnel_snork_home_3
+
+[mob_home@yan_tonnel_snork_home_3]
+path_home = home_3
+home_min_radius = 15
+home_max_radius = 30
+
+

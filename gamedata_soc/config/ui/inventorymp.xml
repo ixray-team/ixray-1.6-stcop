@@ -1,0 +1,357 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window x="0" y="0" w="640" h="480" r="227" g="121" b="222" texture="1">
+
+	<main x=0 y=0 width=1024 height=768/>
+
+	<slots_background x="0" y="80" height="172" width="1024">
+		<texture>ui_slots_belt</texture>
+	</slots_background>
+
+	<background x="0" y="200" width="1024" height="477">
+		<texture>ui_inventory_mp_buy</texture>
+	</background>
+
+	<btn_pistol_silencer x="262" y="77" width="22" height="22" hint="ui_inv_silencer_pistol">
+		<texture>ui_beltbut_silencer</texture>
+	</btn_pistol_silencer>
+	
+	<btn_pistol_bullets x="159" y="199" width="22" height="22" hint="ui_inv_ammo_pistol">
+		<texture>ui_beltbut_patrons</texture>
+	</btn_pistol_bullets>
+	
+	<btn_rifle_scope x="619" y="11" width="22" height="22" hint="ui_inv_scope_rifle">
+		<texture>ui_beltbut_aim</texture>		
+	</btn_rifle_scope>
+	
+	<btn_rifle_silencer x="619" y="33" width="22" height="22" hint="ui_inv_silencer_rifle">
+		<texture>ui_beltbut_silencer</texture>		
+	</btn_rifle_silencer>
+	
+	<btn_riffle_granadelauncher x="619" y="55" width="22" height="22" hint="ui_inv_granadelauncher_rifle">
+		<texture>ui_beltbut_granadeBig</texture>
+	</btn_riffle_granadelauncher>
+	
+	<btn_rifle_bullets x="517" y="176" width="22" height="22" hint="ui_inv_ammo_rifle">
+		<texture>ui_beltbut_patrons</texture>
+	</btn_rifle_bullets>	
+	
+	<btn_riffle_granades x="517" y="199" width="22" height="22" hint="ui_inv_granades_rifle">
+		<texture>ui_beltbut_granadeBig</texture>
+	</btn_riffle_granades>	
+
+	<!-- BAG WINDOW -->
+	<bag_background_static x="10" y="234" width="350" height="440">
+		<text x="30" y="10" font="graffiti22" r="231" g="153" b="22" align="l">ui_inv_items_list</text>
+	</bag_background_static>
+	
+	<!-- BACK BUTTON FOR BAG -->
+	<bag_back_btn x="199" y="3" width="100" height="32">
+			<texture_offset x="-26" y="0"/>
+			<texture>ui\ui_btn_mp_back</texture>			
+			<sound_t>weapons\generic_close</sound_t>
+	</bag_back_btn>
+
+	<!-- DESCRIPTION WINDOW -->
+	<desc_static x="340" y="235" width="420" height="400">		
+		<text x="20" y="10" font="graffiti22" r="231" g="153" b="22">ui_inv_description</text>
+		<rank_icon x="10" y="36" width="32" height="32"/>
+	</desc_static>
+	
+	<!-- money -->
+	<money_info x="802" y="546" width="112" height="34">
+		<text font="graffiti22" r="231" g="153" b="22" align="c" vert_align="c"/>
+	</money_info>	
+
+	
+	<!-- BAG LIST -->
+	<dragdrop_list_bag x="30" y="40" width="260" height="350"
+			cell_width = "40" cell_height="40"
+			rows_num="2" cols_num="6" group_similar="1" unlimited="1"/>
+
+	<belt_list x="581" y="116" width="421" height="100"
+			cell_width = "50" cell_height="50"
+			rows_num="2" cols_num="8" group_similar="1"/>
+	
+	<pistol_list x="37" y="140" width="120" height="50"
+			cell_width = "53" cell_height="50"
+			rows_num="1" cols_num="2" />
+			
+	<rifle_list x="230" y="123" width="320" height="100"
+			cell_width = "53" cell_height="50"
+			rows_num="2" cols_num="6" />
+			
+	<outfit_list x="840" y="280" width="100" height="250"
+			cell_width = "53" cell_height="53"
+			rows_num="4" cols_num="4" />
+
+
+	<!-- TAB CONTROL FOR WEAPON TYPE SELECT -->
+	<tab x="0" y="701" width="1014" height="200">
+		<!-- BUTTONS -->
+		<button x="18" y="0" width="150" height="52" accel="k1">
+			<texture_offset x="-18" y="-62"/>
+			<texture_t>ui\ui_btn_sec_t</texture_t>
+			<texture_e>ui\ui_btn_mp_e</texture_e>
+			<texture_d>ui\ui_btn_mp_d</texture_d>
+			<texture_h>ui\ui_btn_mp_h</texture_h>
+			<text font="graffiti19" align="c">ui_inv_pistols</text>
+			<text_color>
+				<e r="181" g="170" b="148"/>
+				<d r="181" g="170" b="148"/>
+				<t r="181" g="170" b="148"/>				
+				<h r="231" g="153" b="22"/>
+			</text_color>
+			<sound_t>weapons\generic_close</sound_t>
+			<hint x="15" y="-26" width="29" height="29">
+				<text font="letterica25" x="0" y="-4" align="c">1</text>
+				<text_color>
+					<e a="255" r="255" g="255" b="0"/>
+					<d a="255" r="87" g="87" b="72"/>					
+					<h a="255" r="255" g="226" b="79"/>
+					<t a="0" r="0" g="0" b="0"/>
+				</text_color>
+			</hint>
+						
+		</button>
+		<button x="202" y="0" width="150" height="52" accel="k2">
+			<texture_offset x="-18" y="-62"/>
+			<texture_t>ui\ui_btn_prim_t</texture_t>
+			<texture_e>ui\ui_btn_mp_e</texture_e>
+			<texture_d>ui\ui_btn_mp_d</texture_d>
+			<texture_h>ui\ui_btn_mp_h</texture_h>
+			<text font="graffiti19" align="c">ui_inv_primary_weapons</text>
+			<text_color>
+				<e r="181" g="170" b="148"/>
+				<d r="181" g="170" b="148"/>
+				<t r="181" g="170" b="148"/>				
+				<h r="255" g="187" b="51"/>
+			</text_color>
+			<sound_t>weapons\generic_close</sound_t>
+			<hint x="15" y="-26" width="29" height="29">
+				<text font="letterica25" x="0" y="-4" align="c">2</text>
+				<text_color>
+					<e a="255" r="255" g="255" b="0"/>
+					<d a="255" r="87" g="87" b="72"/>					
+					<h a="255" r="255" g="226" b="79"/>
+					<t a="0" r="0" g="0" b="0"/>
+				</text_color>
+			</hint>
+		</button>
+		<button x="386" y="0" width="150" height="52" accel="k3">
+			<texture_offset x="-18" y="-62"/>
+			<texture_t>ui\ui_btn_gren_t</texture_t>
+			<texture_e>ui\ui_btn_mp_e</texture_e>
+			<texture_d>ui\ui_btn_mp_d</texture_d>
+			<texture_h>ui\ui_btn_mp_h</texture_h>
+			<text font="graffiti19" align="c">ui_inv_granades</text>
+			<text_color>
+				<e r="181" g="170" b="148"/>
+				<d r="181" g="170" b="148"/>
+				<t r="181" g="170" b="148"/>		
+				<h r="255" g="187" b="51"/>
+			</text_color>
+			<sound_t>weapons\generic_close</sound_t>
+			<hint x="15" y="-26" width="29" height="29">
+				<text font="letterica25" x="0" y="-4" align="c">3</text>
+				<text_color>
+					<e a="255" r="255" g="255" b="0"/>
+					<d a="255" r="87" g="87" b="72"/>					
+					<h a="255" r="255" g="226" b="79"/>
+					<t a="0" r="0" g="0" b="0"/>
+				</text_color>
+			</hint>
+		</button>
+		<button x="570" y="0" width="150" height="52" accel="k4">
+			<texture_offset x="-18" y="-62"/>
+			<texture_t>ui\ui_btn_suit_t</texture_t>
+			<texture_e>ui\ui_btn_mp_e</texture_e>
+			<texture_d>ui\ui_btn_mp_d</texture_d>
+			<texture_h>ui\ui_btn_mp_h</texture_h>
+			<text font="graffiti19" align="c">ui_inv_outfits</text>
+			<text_color>
+				<e r="181" g="170" b="148"/>
+				<d r="181" g="170" b="148"/>
+				<t r="181" g="170" b="148"/>			
+				<h r="255" g="187" b="51"/>
+			</text_color>
+			<sound_t>weapons\generic_close</sound_t>
+			<hint x="15" y="-26" width="29" height="29">
+				<text font="letterica25" x="0" y="-4" align="c">4</text>
+				<text_color>
+					<e a="255" r="255" g="255" b="0"/>
+					<d a="255" r="87" g="87" b="72"/>					
+					<h a="255" r="255" g="226" b="79"/>
+					<t a="0" r="0" g="0" b="0"/>
+				</text_color>
+			</hint>
+		</button>
+		<button x="753" y="0" width="150" height="52" accel="k5">
+			<texture_offset x="-18" y="-62"/>
+			<texture_t>ui\ui_btn_equip_t</texture_t>
+			<texture_e>ui\ui_btn_mp_e</texture_e>
+			<texture_d>ui\ui_btn_mp_d</texture_d>
+			<texture_h>ui\ui_btn_mp_h</texture_h>
+			<text font="graffiti19" align="c">ui_inv_equipment</text>
+			<text_color>
+				<e r="181" g="170" b="148"/>
+				<d r="181" g="170" b="148"/>
+				<t r="181" g="170" b="148"/>				
+				<h r="255" g="187" b="51"/>
+			</text_color>
+			<sound_t>weapons\generic_close</sound_t>
+			<hint x="15" y="-26" width="29" height="29">
+				<text font="letterica25" x="0" y="-4" align="c">5</text>
+				<text_color>
+					<e a="255" r="255" g="255" b="0"/>
+					<d a="255" r="87" g="87" b="72"/>					
+					<h a="255" r="255" g="226" b="79"/>
+					<t a="0" r="0" g="0" b="0"/>
+				</text_color>
+			</hint>
+		</button>
+	</tab>
+		
+	<btn_bag_shotgun x="5" y="30" width="150" height="52">
+			<texture_offset x="-18" y="-62"/>
+			<texture_t>ui\ui_btn_shotgun_t</texture_t>
+			<texture_e>ui\ui_btn_primary_e</texture_e>
+			<texture_h>ui\ui_btn_shotgun_t</texture_h>
+			<text font="graffiti19" align="c">ui_inv_shotguns</text>
+			<text_color>
+				<e r="181" g="170" b="148"/>
+				<h r="255" g="187" b="51"/>
+				<t r="255" g="187" b="51"/>
+			</text_color>			
+			<sound_h>weapons\gen_empty</sound_h>
+			<sound_t>weapons\generic_close</sound_t>	
+			<hint x="15" y="-26" width="29" height="29">
+				<text font="letterica25" x="0" y="-4" align="c">1</text>
+				<text_color>
+					<e a="255" r="255" g="255" b="0"/>
+					<d a="255" r="87" g="87" b="72"/>					
+					<h a="255" r="255" g="226" b="79"/>
+					<t a="0" r="0" g="0" b="0"/>
+				</text_color>
+			</hint>		
+	</btn_bag_shotgun>	
+	<btn_bag_assault x="5" y="122" width="150" height="52">
+			<texture_offset x="-18" y="-62"/>
+			<texture_t>ui\ui_btn_assault_t</texture_t>
+			<texture_e>ui\ui_btn_primary_e</texture_e>
+			<texture_h>ui\ui_btn_assault_t</texture_h>
+			<text font="graffiti19" align="c">ui_inv_rifles</text>
+			<text_color>
+				<e r="181" g="170" b="148"/>
+				<h r="255" g="187" b="51"/>
+				<t r="255" g="187" b="51"/>
+			</text_color>
+			<sound_h>weapons\gen_empty</sound_h>
+			<sound_t>weapons\generic_close</sound_t>
+			<hint x="15" y="-26" width="29" height="29">
+				<text font="letterica25" x="0" y="-4" align="c">2</text>
+				<text_color>
+					<e a="255" r="255" g="255" b="0"/>
+					<d a="255" r="87" g="87" b="72"/>					
+					<h a="255" r="255" g="226" b="79"/>
+					<t a="0" r="0" g="0" b="0"/>
+				</text_color>
+			</hint>
+	</btn_bag_assault>
+	<btn_bag_sniper x="5" y="214" width="150" height="52">
+			<texture_offset x="-18" y="-62"/>
+			<texture_t>ui\ui_btn_sniper_t</texture_t>
+			<texture_e>ui\ui_btn_primary_e</texture_e>
+			<texture_h>ui\ui_btn_sniper_t</texture_h>
+			<text font="graffiti19" align="c">ui_inv_sniper_rifles</text>
+			<text_color>
+				<e r="181" g="170" b="148"/>
+				<h r="255" g="187" b="51"/>
+				<t r="255" g="187" b="51"/>
+			</text_color>
+			<sound_h>weapons\gen_empty</sound_h>
+			<sound_t>weapons\generic_close</sound_t>
+			<hint x="15" y="-26" width="29" height="29">
+				<text font="letterica25" x="0" y="-4" align="c">3</text>
+				<text_color>
+					<e a="255" r="255" g="255" b="0"/>
+					<d a="255" r="87" g="87" b="72"/>					
+					<h a="255" r="255" g="226" b="79"/>
+					<t a="0" r="0" g="0" b="0"/>
+				</text_color>
+			</hint>
+	</btn_bag_sniper>
+	<btn_bag_heavy x="5" y="306" width="150" height="52">
+			<texture_offset x="-18" y="-62"/>
+			<texture_t>ui\ui_btn_heavy_t</texture_t>
+			<texture_e>ui\ui_btn_primary_e</texture_e>
+			<texture_h>ui\ui_btn_heavy_t</texture_h>
+			<text font="graffiti19" align="c">ui_inv_heavy_weapons</text>
+			<text_color>
+				<e r="181" g="170" b="148"/>
+				<h r="255" g="187" b="51"/>
+				<t r="255" g="187" b="51"/>
+			</text_color>
+			<sound_h>weapons\gen_empty</sound_h>
+			<sound_t>weapons\generic_close</sound_t>
+			<hint x="15" y="-26" width="29" height="29">
+				<text font="letterica25" x="0" y="-4" align="c">4</text>
+				<text_color>
+					<e a="255" r="255" g="255" b="0"/>
+					<d a="255" r="87" g="87" b="72"/>					
+					<h a="255" r="255" g="226" b="79"/>
+					<t a="0" r="0" g="0" b="0"/>
+				</text_color>
+			</hint>
+	</btn_bag_heavy>
+
+	<!-- OK DIALOG BUTTON -->
+	<ok_button x="931" y="682" width="79" height="30" accel="kRETURN">		
+		<texture_offset x="-8" y="-23"/>
+		<texture_e>ui\ui_mp_buy_ok_e</texture_e>
+		<texture_t>ui\ui_mp_buy_ok_h</texture_t>
+		<texture_h>ui\ui_mp_buy_ok_h</texture_h>
+		<text font="graffiti22" align="c">ui_inv_ok</text>
+		<text_color>
+			<e r="156" g="122" b="46"/>
+			<h r="255" g="255" b="180"/>
+			<t r="255" g="255" b="180"/>
+		</text_color>		
+	</ok_button>
+
+	<!-- CANCEL DIALOG BUTTON -->
+	<cancel_button x="931" y="724" width="79" height="30" accel="kESCAPE">
+		<texture_offset x="-8" y="-23"/>
+		<texture_e>ui\ui_mp_buy_ok_e</texture_e>
+		<texture_t>ui\ui_mp_buy_ok_h</texture_t>
+		<texture_h>ui\ui_mp_buy_ok_h</texture_h>
+		<text font="graffiti22" align="c">ui_inv_cancel</text>		
+		<text_color>
+			<e r="156" g="122" b="46"/>
+			<h r="255" g="255" b="180"/>
+			<t r="255" g="255" b="180"/>
+		</text_color>
+	</cancel_button>
+	
+	<clear_button x="840" y="611" width="145" height="48">
+		<texture_offset x="-42" y="0"/>
+		<texture_e>ui\ui_btn_mp_avto_e</texture_e>
+		<texture_t>ui\ui_btn_mp_avto_t</texture_t>
+		<texture_h>ui\ui_btn_mp_avto_h</texture_h>
+		<text font="graffiti22" align="c">ui_inv_clear</text>
+		<text_color>
+			<e r="156" g="122" b="46"/>
+			<h r="255" g="255" b="180"/>
+			<t r="255" g="255" b="180"/>
+		</text_color>
+		<sound_t>weapons\generic_close</sound_t>
+		<hint x="-42" y="12" width="29" height="29">
+			<text font="letterica25" x="0" y="-1" align="c">C</text>
+			<text_color>
+				<e a="255" r="255" g="255" b="0"/>
+				<d a="255" r="87" g="87" b="72"/>					
+				<h a="255" r="255" g="226" b="79"/>
+				<t a="255" r="255" g="226" b="79"/>
+			</text_color>
+		</hint>
+	</clear_button>	
+</window>

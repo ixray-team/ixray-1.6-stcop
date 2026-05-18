@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding="windows-1251"?>
+<string_table>
+	<string id="news_escape_blockpost_attack">
+		<text>Default news</text>
+		<text ln="rus">Всем прием…Братва, на блокпост не
+		суйтесь..Какие-то придурки напали на патруль…Вобщем там сейчас гарячо…Наверняка
+		опять карательный рейд будет.</text>
+	</string>
+	
+	<string id="news_escape_blockpost_case">
+		<text>Default news</text>
+		<text ln="rus">Недавно на блокпосте взяли курьера Бармена с
+		товаром…Вобщем, лакомый кусочек – ящик с артефактами, где-то у командира поста
+		лежит…Так, что если кому жить надоело – может рискнуть.</text>
+	</string>
+	
+	<string id="news_escape_electra">
+		<text>Default news</text>
+		<text ln="rus">Всем внимание. На север от моста на заставе,
+		метрах в 100 за брошенным БТР-ом
+		наткнулся на скопление «Электр»…Кому инфа пригодится – с того пиво.</text>
+	</string>
+	
+	<string id="new_escape_bridge">
+		<text>Default news</text>
+		<text ln="rus">Народ, вояки опять возобновили патруль под разрушенным
+		мостом на заставе. И вроде снайпер ихний там засел…рассмотреть где не успел –
+		пришлось оттуда сматывать…</text>
+	</string>
+	
+	<string id="news_escape_bandits">
+		<text>Default news</text>
+		<text ln="rus">Всем прием…На заводе на заставе опять бандюки обосновались.
+		Хабар у сталкеров отбирают…Кто там поблизости из «опытных» пугните тварей…За
+		мной не заржавеет.</text>
+	</string>
+	
+	<string id="news_escape_dogs">
+		<text>Default news</text>
+		<text ln="rus">К востоку от моста на заставе видел стаю собак –
+		в 20-30 штыков:)…Так что делайте выводы, господа…</text>
+	</string>
+	
+	<string id="news_escape_artefact">
+		<text>Default news</text>
+		<text ln="rus">Господа сталкеры…Срочно нужна «Ночная
+		звезда»...Плачу приличные бабки…Говорят на заставе с прошлого Выброса одна до
+		сих пор есть…</text>
+	</string>
+	
+	<string id="news_garbage_marked">
+		<text>Default news</text>
+		<text ln="rus">…Васька говорит еще один меченый появился,
+		только от торговца ушел. Ты знаешь, что делать…</text>
+	</string>
+	
+	<string id="news_garbage_fedya">
+		<text>Default news</text>
+		<text ln="rus">Федьку Черного кто-то пристрелил в гаражах… Чую,
+		блин, опять бандиты появились.</text>
+	</string>
+	
+	<string id="news_garbage_dolina">
+		<text>Default news</text>
+		<text ln="rus">Не суйтесь в Темную Долину, оттуда щас лезут
+		зомбаки, толпами… Берегите патроны, млин. Давно уже пора было зачистить долину.
+		И куда только Долг смотрит?</text>
+	</string>
+	
+	<string id="news_garbage_dolg">
+		<text>Default news</text>
+		<text ln="rus">Кажись только, что на свалке видел несколько
+		боевиков из Долга. Интересно, за кем они пришли?</text>
+	</string>
+	
+	<string id="news_garbage_herovo">
+		<text>Default news</text>
+		<text ln="rus">…худо мне, ребята, зацепило таки меня. Если кто
+		возле ржавого озера, подсобите, за мной не заржавеет… Вобщем, постараюсь сам
+		выкарабкаться, а там посмотрим.</text>
+	</string>
+
+	<string id="news_garbage_gunslinger">
+		<text>Default news</text>
+		<text ln="rus">Стрелок вернулся! Только что от знающих людей
+		услыхал… Из самого центра вернулся! Значит можно, значит, блин, скоро будем
+		большой прорыв делать к центру, а там и посмотрим кто кого…</text>
+	</string>
+
+	<string id="news_garbage_garage">
+		<text>Default news</text>
+		<text ln="rus">В гаражах три человека засело… Всем осторожнее,
+		похоже это урки опять за старое взялись.</text>
+	</string>
+
+	<string id="news_garbage_dogs">
+		<text>Default news</text>
+		<text ln="rus">Я на Свалке, тут дофига слепых псов набежало…
+		Похоже из центра пришли новые стаи, всем быть осторожнее.</text>
+	</string>
+
+	<string id="news_agroprom_mili">
+		<text>Default news</text>
+		<text ln="rus">Всем аккуратнее. Похоже что тут всерьез и надолго обосновались военные.
+        База у них расположена в здании института. Видел несколько десятков человек и снайпера на крыше.</text>
+	</string>
+
+	<string id="news_agroprom_box">
+		<text>Default news</text>
+		<text ln="rus">Подслушал из разговора патрульных, что военные все что найдут собирают на третьем
+        этаже в здании института. Есть есть желающие рискнуть ради наживы - попробуйте пробраться.</text>
+	</string> 
+
+
+</string_table>

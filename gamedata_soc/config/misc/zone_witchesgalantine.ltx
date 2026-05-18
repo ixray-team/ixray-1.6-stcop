@@ -1,0 +1,127 @@
+[zone_witches_galantine]
+GroupControlSection	= spawn_group_zone
+$spawn 			= "zones\witches galantine"
+$prefetch 		= 16
+class			= ZS_MBALD
+hit_impulse_scale	= .03
+effective_radius	= 0.75 ;размер радиуса в процентах от оригинального, где действует зона
+sound			= zone_mosquito_bald
+postprocess		= postprocess_electra
+
+ef_anomaly_type			= 1
+ef_weapon_type			= 13
+
+artefacts		= af_electra_sparkler,0.7, af_electra_flash, 0.25, af_electra_moonlight, 0.05
+BirthProbability = 0.1
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 0.99
+max_start_power		= 1.00
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+idle_particles		= anomaly2\electra_idle
+blowout_particles	= anomaly2\electra2_blast
+
+hit_small_particles			= anomaly2\electra_entrance_small
+hit_big_particles			= anomaly2\electra_damage_02_smoke
+idle_small_particles		= anomaly2\electra_damage_01_smoke
+idle_big_particles			= anomaly2\electra_damage_02_smoke
+entrance_small_particles	= anomaly2\electra_entrance_small
+entrance_big_particles		= anomaly2\emi_entrance_big_00
+
+idle_sound			= anomaly\electra_idle1; anomaly_gravy_idle
+blowout_sound		= anomaly\electra_blast1
+hit_sound			= anomaly\electra_hit
+entrance_sound		= anomaly\electra_hit
+
+blowout_light		= on
+light_color		    = 0.8,0.9,1
+light_range		    = 30.0
+light_time 		    = 1;0.35
+light_height		= 1.5			;подъем источника света на высоту
+
+idle_light			= off
+
+hit_type		= shock
+
+disable_time		= 50	;время игнорирования неживого объекта в зоне (-1 если не нужно)
+disable_time_small	= 500		;время игнорирования маленького неживого объекта в зоне (-1 если не нужно)
+disable_idle_time	= 100	;время отключения idle партиклов
+
+awaking_time		= 100
+blowout_time		= 1000	
+accamulate_time		= 1000
+
+ignore_nonalive		= false
+ignore_small		= false
+ignore_artefacts	= true
+
+visible_by_detector = on
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ветер
+blowout_wind		= off
+
+blowout_wind_time_start     = 0
+blowout_wind_time_peak      = 150
+blowout_wind_time_end		= 299
+blowout_wind_power			= 0.2			;сила поднимаего ветра (от 0 до 1), в момент blowout_wind_time_peak 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;рождение артефактов во время срабатывания
+spawn_blowout_artefacts = off
+
+
+
+[zone_witches_galantine_weak]:zone_witches_galantine
+$spawn 			= "zones\witches galantine weak"
+
+artefacts		= af_electra_sparkler,0.8, af_electra_flash, 0.2, af_electra_moonlight, 0.0
+BirthProbability = 0.1
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 0.49
+max_start_power		= 0.50
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 1
+artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
+artefact_spawn_rnd	= 50  ;вероятность заспавнить артефакт в процентах.
+
+
+[zone_witches_galantine_average]:zone_witches_galantine
+$spawn 			= "zones\witches galantine average"
+
+artefacts		= af_electra_sparkler,0.6, af_electra_flash, 0.4, af_electra_moonlight, 0.0
+BirthProbability = 0.1
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 1.19
+max_start_power		= 1.20
+attenuation			= 1
+period				= 1
+min_artefact_count	= 1
+max_artefact_count	= 1
+artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
+artefact_spawn_rnd	= 70  ;вероятность заспавнить артефакт в процентах.
+
+
+[zone_witches_galantine_strong]:zone_witches_galantine
+$spawn 			= "zones\witches galantine strong"
+
+artefacts		= af_electra_sparkler,0.2, af_electra_flash, 0.6, af_electra_moonlight, 0.2
+BirthProbability = 0.1
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 1.99
+max_start_power		= 2.00
+attenuation			= 1
+period				= 1
+min_artefact_count	= 1
+max_artefact_count	= 2
+artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
+artefact_spawn_rnd	= 90  ;вероятность заспавнить артефакт в процентах.

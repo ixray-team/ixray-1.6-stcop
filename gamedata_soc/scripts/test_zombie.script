@@ -1,0 +1,26 @@
+function main()
+         local npc = get_level_object("zombie")
+         npc:script(true, script_name())
+
+         printf("Sit idle")
+         action(npc, anim(anim.sit_idle, 0), cond(cond.time_end, 5000))
+         wait(5000)
+
+         printf("fake death")
+         action(npc, anim("fake_death_2_0"), cond(cond.anim_end))
+         action(npc, anim("fake_death_2_1"), cond(cond.time_end, 500000))
+
+         wait(5000)
+         reset_action(npc, script_name())
+
+         //action(npc, anim("fake_death_2_2"), cond(cond.anim_end))
+         action(npc, move(move.walk_fwd, level.actor():position()), cond(cond.time_end, 10000))
+
+         while(npc:action()) do
+               wait()
+         end
+
+
+         npc:script(false, script_name())
+end
+

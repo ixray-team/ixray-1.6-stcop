@@ -1,0 +1,65 @@
+local enter = false
+local need_reset = false
+
+function on_enter( zone, obj )
+	if( level.actor() == nil ) then return end
+
+    if( obj:id() == level.actor():id() ) then
+		printf( "enter" )
+    	enter = true
+        need_reset = true
+    end
+end
+
+function on_exit( zone, obj )
+    if( level.actor() == nil ) then return end
+
+    if( obj:id() == level.actor():id() ) then
+        enter = false
+        printf( "Exit" )
+    end
+end
+
+function main()
+    zone = get_level_object( "script_zone" )
+    zone:set_callback( this.on_enter, true )
+    zone:set_callback( this.on_exit,  false )
+
+	local obj = get_level_object( "anomaly")
+    obj:script( true, this.script_name() )
+
+    while( true ) do
+		printf( "Hello" )
+        if( need_reset ) then
+        	reset_action( obj, this.script_name() )
+            need_reset = false
+        end
+
+        if( obj:action() == nil ) then
+	        if( enter == false ) then
+	            this.action2( obj, anim( "idle" ), cond( cond.anim_end ) )
+	        else
+	            this.action2( obj, anim( "blast" ), cond( cond.anim_end ) )
+	        end
+		end
+        wait()
+    end
+end
+
+function action2(obj,...)
+    local act = entity_action()
+    local i = 1
+    while true do
+        if (arg[i] ~= nil) then
+            act:set_action(arg[i])
+        else
+            break
+        end
+        i = i + 1
+    end
+    if (obj ~= nil) then
+        obj:command(act,false)
+    end
+    return  entity_action(act)
+end
+

@@ -1,0 +1,12 @@
+-- stalker story debug
+function main()
+	local actor = db.actor
+	local i1 = "stalker_story_"
+	local i2
+	for i = 1, 20 do
+		i2 = i1 .. i
+		actor:give_info_portion( i2 )
+	end
+
+	
+end

@@ -1,0 +1,1528 @@
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_pb]:wpn_pb
+$spawn              		= ""
+class           	        = W_PM
+ammo_class			 		= mp_ammo_9x18_fmj, mp_ammo_9x18_pmm
+tracers	= off
+
+fire_dispersion_base		= 0.18;0.2;0.3;0.35 	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         	= 0.6	;скорость возврата в исходное положение
+cam_dispersion          	= 0.3	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 1.5	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.9
+PDM_disp_accel_factor 		= 0.9
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power        	        = 0.5;34
+hit_impulse		 	= 56
+hit_type 		 	= fire_wound
+
+fire_distance    	        = 1000
+bullet_speed			= 290;начальная скорость пули
+rpm              	        = 260
+; end ttc
+
+;addons
+scope_status				= 0
+silencer_status				= 1
+grenade_launcher_status		= 0
+;-----------------------------------------------------------------------------------
+[mp_wpn_pm]:wpn_pm
+$spawn              		= ""
+class           	        = W_PM
+silencer_name  			= mp_wpn_addon_silencer
+ammo_class			 		= mp_ammo_9x18_fmj, mp_ammo_9x18_pmm
+tracers	= off
+
+fire_dispersion_base		= 0.22;0.25;0.35;0.4 	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         	= 1.0	;скорость возврата в исходное положение
+cam_dispersion          	= 0.4	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 5.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 1.0	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor= 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.7
+PDM_disp_accel_factor 		= 0.7
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power                	= 0.55;32
+hit_impulse		 	= 70
+hit_type = fire_wound
+
+fire_distance            	= 1000
+bullet_speed			= 290;начальная скорость пули
+rpm                      	= 300
+; end ttc
+
+
+silencer_hit_power       	= 29
+silencer_hit_impulse	 	= 60
+silencer_fire_distance   	= 100
+silencer_bullet_speed	 	= 220
+
+;addons
+scope_status				= 0
+silencer_status				= 2
+grenade_launcher_status		= 0
+
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_fort]:wpn_fort
+$spawn              		= ""
+class           	        = W_PM
+silencer_name  			= mp_wpn_addon_silencer
+ammo_class		 			= mp_ammo_9x18_fmj, mp_ammo_9x18_pmm
+tracers	= off
+
+fire_dispersion_base		= 0.125;0.15;0.3;0.37  ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         	= 0.7	;скорость возврата в исходное положение
+cam_dispersion          	= 0.35	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.7	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.6
+PDM_disp_accel_factor 		= 0.6
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power                	= 0.55;34
+hit_impulse		 	= 77
+hit_type 			= fire_wound
+
+fire_distance            	= 1000
+bullet_speed			= 300;начальная скорость пули
+rpm                      	= 300
+; end ttc
+
+silencer_hit_power       	= 31
+silencer_hit_impulse	 	= 60
+silencer_fire_distance   	= 100
+silencer_bullet_speed	 	= 220
+
+;addons
+scope_status				= 0
+silencer_status				= 2
+grenade_launcher_status		= 0
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_hpsa]:wpn_hpsa
+$spawn              	= ""
+class           	        = W_HPSA
+silencer_name  				= mp_wpn_addon_silencer
+ammo_class		 			= mp_ammo_9x19_fmj, mp_ammo_9x19_pbp
+tracers	= off
+
+fire_dispersion_base		= 0.11;0.125;0.22;0.27 		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         	= 1.2	;скорость возврата в исходное положение
+cam_dispersion          	= 0.6	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 1.2	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	    ;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003	;увеличение износа при каждом выстреле
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.8
+PDM_disp_accel_factor 		= 0.8
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+
+hit_power                	= 0.6;42
+hit_impulse		 	= 87,5
+hit_type 			= fire_wound
+fire_distance            	= 1000
+
+bullet_speed			= 355;начальная скорость пули
+rpm                      	= 280;240
+; end ttc
+
+silencer_hit_power       	= 36
+silencer_hit_impulse	 	= 60
+silencer_fire_distance   	= 100
+silencer_bullet_speed	 	= 230
+
+;addons
+scope_status				= 0
+silencer_status				= 2
+grenade_launcher_status		= 0
+
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_walther]:wpn_walther
+$spawn              		= ""
+class						= W_WALTHR
+silencer_name  			= mp_wpn_addon_silencer
+ammo_class		 			= mp_ammo_9x19_fmj, mp_ammo_9x19_pbp 
+tracers	= off
+
+fire_dispersion_base		= 0.115;0.12;0.22;0.3 	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         	= 0.85	;скорость возврата в исходное положение
+cam_dispersion          	= 0.47	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.7	;(degree) size of step camera moved in horizontal position while shooting
+
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.5
+PDM_disp_accel_factor 		= 0.5
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power                	= 0.65;39
+hit_impulse		 	= 87.5
+hit_type 			= fire_wound	
+
+fire_distance            	= 1000
+bullet_speed		 	= 280
+rpm                      	= 315
+; end ttc
+
+silencer_hit_power       	= 35
+silencer_hit_impulse	 	= 100
+silencer_fire_distance   	= 100
+silencer_bullet_speed	 	= 280
+
+;addons
+scope_status				= 0							; 0 - no addon
+silencer_status				= 2							; 1 - permanent
+grenade_launcher_status		= 0		
+;-----------------------------------------------------------------------------------
+[mp_wpn_beretta]:wpn_beretta
+$spawn              	 	= ""
+class                    	= W_FORT
+silencer_name  			= mp_wpn_addon_silencer
+ammo_class		 			= mp_ammo_9x19_fmj, mp_ammo_9x19_pbp
+tracers	= off
+
+fire_dispersion_base		= 0.1;0.12;0.2;0.26 		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         	= 1.3		;скорость возврата в исходное положение
+cam_dispersion          	= 0.65		;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0		;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0		;максимальный угол отдачи
+cam_max_angle_horz		= 10.0		;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.9		;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5		;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	    	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003	;увеличение износа при каждом выстреле
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.8
+PDM_disp_accel_factor 		= 0.8
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power                	= 0.69;45;43
+hit_impulse		 	= 87.5
+hit_type 			= fire_wound	
+
+fire_distance            	= 1000
+bullet_speed		 	= 300
+rpm                      	= 250
+rpm_empty_click 	 	= 250
+; end ttc
+
+silencer_hit_power       	= 40
+silencer_hit_impulse	 	= 80
+silencer_fire_distance   	= 100
+silencer_bullet_speed	 	= 240
+
+;addons
+scope_status				= 0
+silencer_status				= 2
+grenade_launcher_status		= 0
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_colt1911]:wpn_colt1911
+$spawn              	= ""
+class                    	= W_FORT
+ammo_class		 			= mp_ammo_11.43x23_fmj, mp_ammo_11.43x23_hydro
+tracers	= off
+
+silencer_name  			= mp_wpn_addon_silencer
+
+fire_dispersion_base		= 0.075;0.085;0.18;0.22	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         	= 3.0	;скорость возврата в исходное положение
+cam_dispersion          	= 1.5	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.6	;(degree) size of step camera moved in horizontal position while shooting
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.9
+PDM_disp_accel_factor 		= 0.9
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+
+; ttc
+hit_power                	= 0.84;53
+hit_impulse		 	= 105
+hit_type 			= fire_wound
+
+fire_distance            	= 1000
+bullet_speed			= 285;начальная скорость пули
+rpm                      	= 290;250
+; end ttc
+
+silencer_hit_power       	= 45
+silencer_hit_impulse	 	= 100
+silencer_fire_distance   	= 100
+silencer_bullet_speed	 	= 280
+
+;addons
+scope_status				= 0
+silencer_status				= 2
+grenade_launcher_status		= 0
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_usp]:wpn_usp
+$spawn              		= ""
+class                    	= W_USP45
+silencer_name  			= mp_wpn_addon_silencer
+ammo_class		 			= mp_ammo_11.43x23_fmj, mp_ammo_11.43x23_hydro 
+tracers	= off
+
+;базовая дисперсия
+fire_dispersion_base		= 0.1;0.125;0.22;0.28	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         	= 1.2	;скорость возврата в исходное положение
+cam_dispersion          	= 0.6	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.6	;(degree) size of step camera moved in horizontal position while shooting
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.6
+PDM_disp_accel_factor 		= 0.6
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power                	= 0.78;55;45
+hit_impulse		 	= 105.5
+hit_type 			= fire_wound
+
+fire_distance            	= 1000
+bullet_speed			= 265;начальная скорость пули
+rpm                      	= 325
+; end ttc
+
+silencer_hit_power       	= 40
+silencer_hit_impulse	 	= 80
+silencer_fire_distance   	= 100
+silencer_bullet_speed	 	= 300
+
+;addons
+scope_status				= 0
+silencer_status				= 2
+grenade_launcher_status		= 0
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_sig220]:wpn_sig220
+$spawn              	= ""
+class                    	= W_FORT
+silencer_name  			= mp_wpn_addon_silencer
+ammo_class		 			= mp_ammo_11.43x23_fmj, mp_ammo_11.43x23_hydro
+tracers	= off
+
+fire_dispersion_base		= 0.08;0.1;0.19;0.24	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         	= 1.2	;скорость возврата в исходное положение
+cam_dispersion          	= 0.6	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 5.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.4	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.75
+PDM_disp_accel_factor 		= 0.75
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power                	= 0.74;50
+hit_impulse		 	= 105.5
+hit_type 			= fire_wound	
+
+fire_distance            	= 1000
+bullet_speed		 	= 280
+rpm                      	= 315;270
+; end ttc
+
+silencer_hit_power       	= 45
+silencer_hit_impulse	 	= 90
+silencer_fire_distance   	= 100
+silencer_bullet_speed	 	= 240
+
+;addons
+scope_status				= 0
+silencer_status				= 2
+grenade_launcher_status		= 0
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_desert_eagle]:wpn_desert_eagle
+$spawn              		= ""
+class                    	= W_FORT
+ammo_class		 			= mp_ammo_11.43x23_fmj, mp_ammo_11.43x23_hydro
+tracers	= off
+
+silencer_name  			= mp_wpn_addon_silencer
+
+fire_dispersion_base		= 0.05;0.1;0.14;0.2  ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.3f
+
+;отдача
+cam_relax_speed         	= 10.0;20.0;10.0	;скорость возврата в исходное положение
+cam_dispersion          	= 3.0	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 2.75;5.0;0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0;90.0	;максимальный угол отдачи
+cam_max_angle_horz		= 20.0;10.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 2.5;1.5	;(degree) size of step camera moved in horizontal position while shooting
+
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.1
+PDM_disp_accel_factor 		= 1.1
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power                	= 1.5
+hit_impulse		 	= 120
+hit_type 			= fire_wound
+
+fire_distance            	= 1000
+bullet_speed			= 300;300			
+rpm                      	= 300;200
+; end ttc
+
+silencer_hit_power       	= 50
+silencer_hit_impulse	 	= 60
+silencer_fire_distance   	= 100
+silencer_bullet_speed	 	= 250
+
+;addons
+scope_status				= 0
+silencer_status				= 2
+grenade_launcher_status		= 0
+
+;-----------------------------------------------------------------------------------
+[mp_wpn_bm16]:wpn_bm16
+$spawn              	= ""
+class                    	= W_BM16
+ammo_class		 			= mp_ammo_12x70_buck,mp_ammo_12x76_zhekan,mp_ammo_12x76_dart
+tracers	= off
+
+fire_dispersion_base		= 0.425;0.4;2;1.5  	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.0;1.3f
+
+;отдача
+cam_relax_speed         	= 7.0	;скорость возврата в исходное положение
+cam_dispersion          	= 4.0	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 5.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 20.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 2.5	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+hit_power        		= 1.8;1.4;1.30;70;35;45
+hit_impulse      		= 210
+hit_type 			= fire_wound
+
+fire_distance            	= 200
+bullet_speed			= 290;начальная скорость пули
+rpm                      	= 150
+; end ttc
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.1;1.8
+PDM_disp_accel_factor 		= 1.1;1.8
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;addons
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_toz34]:wpn_toz34
+$spawn              	= ""
+class                    = W_BM16
+ammo_class		 = mp_ammo_12x70_buck, mp_ammo_12x76_zhekan, mp_ammo_12x76_dart 
+tracers	= off
+
+fire_dispersion_base		= 0.275;0.35;1.3;1.5  	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.3f
+
+;отдача
+cam_relax_speed         	= 7.0	;скорость возврата в исходное положение
+cam_dispersion          	= 4.0	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 5.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 20.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 2.5	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.5;2.0
+PDM_disp_accel_factor 		= 1.5;2.0
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power        		= 1.8;1.40;60;35
+hit_impulse      		= 210
+hit_type 			= fire_wound
+
+fire_distance            	= 200
+bullet_speed			= 290;начальная скорость пули
+rpm                      	= 1000
+
+;addons
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+;-----------------------------------------------------------------------------------
+[mp_wpn_wincheaster1300]:wpn_wincheaster1300
+$spawn              			= ""
+class                    	= W_SHOTGN
+ammo_class		 			= mp_ammo_12x70_buck, mp_ammo_12x76_zhekan, mp_ammo_12x76_dart, 
+fire_modes				= 1
+tracers	= off
+
+fire_dispersion_base		= 0.35;1.4;1.7 	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.5f
+
+;отдача
+cam_relax_speed         	= 10.0	;скорость возврата в исходное положение
+cam_dispersion          	= 8.0	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 90.0	;максимальный угол отдачи
+cam_max_angle_horz		= 30.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 6.0	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.5;1.7
+PDM_disp_accel_factor 		= 1.5;1.7
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power        		= 1.8;1.5;100;50
+hit_impulse      		= 210
+hit_type 			= fire_wound
+
+fire_distance            	= 200
+bullet_speed			= 280;начальная скорость пули
+rpm                      	= 100
+
+;addons
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_spas12]:wpn_spas12
+$spawn              	= ""
+class                    	= W_SHOTGN
+ammo_class		 			= mp_ammo_12x70_buck, mp_ammo_12x76_zhekan, mp_ammo_12x76_dart 
+fire_modes				= 1
+tracers	= off
+
+fire_dispersion_base		= 0.3;0.15;0.7;1.6 	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.5f
+
+;отдача
+cam_relax_speed         	= 10.0	;скорость возврата в исходное положение
+cam_dispersion          	= 8.0	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 90.0	;максимальный угол отдачи
+cam_max_angle_horz		= 30.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 6.0	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.4;1.7
+PDM_disp_accel_factor 		= 1.4;1.7
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power        		= 2;1.50;80;35;111
+hit_impulse      		= 210
+hit_type 			= fire_wound
+
+fire_distance            	= 200
+bullet_speed			= 280;начальная скорость пули
+rpm                      	= 150
+; end ttc
+
+;addons
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_ak74u]:wpn_ak74u
+$spawn              			= ""
+class               	= W_LR300
+silencer_name  				= mp_wpn_addon_silencer
+ammo_class				= mp_ammo_5.45x39_fmj, mp_ammo_5.45x39_ap  ; name of the ltx-section of used ammo 
+tracers	= on
+tracers_color_ID = 0
+
+fire_dispersion_base			= 0.3;0.26;0.24;0.22;0.2;		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor			= 1.09f
+
+;отдача
+cam_relax_speed         		= 0.4;0.3		;скорость возврата в исходное положение
+cam_dispersion          		= 0.3		;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.19;0.20;0.15		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 0.9		;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle				= 30.0		;максимальный угол отдачи
+cam_max_angle_horz			= 30.0		;(degree) maximum shot horizontal degree 
+cam_step_angle_horz			= 1.1		;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor 	= 5		;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 			= 0.0003	;вероятность осечки при максимальном износе 
+condition_shot_dec 			= 0.00003	;увеличение износа при каждом выстреле
+
+
+PDM_disp_base 				= 1.0
+PDM_disp_vel_factor 			= 0.95
+PDM_disp_accel_factor 			= 0.95
+PDM_crouch	 			= 1.0
+PDM_crouch_no_acc 			= 1.0
+
+; ttc
+hit_power                		= 0.7;60;68		;size of damage by bullet
+hit_impulse		 		= 140		;size of physic impulse by bullet	
+hit_type 				= fire_wound 	;[] type of the wound
+
+fire_distance            		= 1000		;maximum fire distance that bullet can fly
+bullet_speed				= 600; 790		;starting bullet speed
+rpm                      		= 735		;max round per minute
+
+silencer_hit_power       		= 25
+silencer_hit_impulse	 		= 120
+silencer_fire_distance   		= 250
+silencer_bullet_speed	 		= 600
+
+;addons
+scope_status				= 0							; 0 - no addon
+silencer_status				= 2							; 1 - permanent
+grenade_launcher_status		= 0							; 2 - attachable
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_ak74]:wpn_ak74
+$spawn              			= ""
+class               	= W_AK74			; class of the weapon that corresponding to CPP class
+scope_name 					= mp_wpn_addon_scope
+silencer_name  				= mp_wpn_addon_silencer
+grenade_launcher_name 			= mp_wpn_addon_grenade_launcher
+ammo_class				= mp_ammo_5.45x39_fmj, mp_ammo_5.45x39_ap  ; name of the ltx-section of used ammo 
+grenade_class				= mp_ammo_vog-25, mp_ammo_vog-25p
+tracers	= on
+tracers_color_ID = 0
+
+;params of weapon recoil
+fire_dispersion_base			= 0.125;0.14;0.18;0.2		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor			= 1.25f
+;отдача
+cam_relax_speed         		= 0.75;0.6;0.15		;скорость возврата в исходное положение
+cam_dispersion          		= 0.15		;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.3		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 0.9		;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle				= 30.0	    	;максимальный угол отдачи
+cam_max_angle_horz			= 20.0		;(degree) maximum shot horizontal degree 
+cam_step_angle_horz			= 1.0		;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor 	= 5	    	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 			= 0.0003	;вероятность осечки при максимальном износе 
+condition_shot_dec 			= 0.00003	;увеличение износа при каждом выстреле
+
+
+PDM_disp_base 				= 1.0
+PDM_disp_vel_factor 			= 1.3
+PDM_disp_accel_factor 			= 1.3
+PDM_crouch	 			= 1.0
+PDM_crouch_no_acc 			= 1.0
+
+; ttc
+hit_power                		= 0.81;0.825;90		; size of damage by bullet
+hit_impulse		 		= 140		; size of physic impulse by bullet	
+hit_type 				= fire_wound 	; [] type of the wound
+fire_distance            		= 1000		; maximum fire distance that bullet can fly
+bullet_speed				= 900; starting bullet speed
+rpm                      		= 600		; max round per minute
+
+;params when silencer is attached 
+;similar to corresponding params without prefix silencer_
+
+silencer_hit_power       	= 25
+silencer_hit_impulse	 	= 120
+silencer_fire_distance   	= 250
+silencer_bullet_speed	 	= 600
+
+;addons
+scope_status				= 2							; 0 - no addon
+silencer_status				= 2							; 1 - permanent
+grenade_launcher_status		= 2							; 2 - attachable
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_mp5]:wpn_mp5
+$spawn              		= ""
+class                   = W_LR300
+silencer_name  			= mp_wpn_addon_silencer
+ammo_class		 		= mp_ammo_9x19_fmj, mp_ammo_9x19_pbp 
+tracers	= on
+tracers_color_ID = 2
+
+fire_dispersion_base		= 0.18;0.19;0.25;0.3;0.4;0.3;0.25 	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.07f
+
+;отдача
+cam_relax_speed        		= 0.2	;скорость возврата в исходное положение
+cam_dispersion         		= 0.2	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.05	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 0.5;0.4	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 9.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.3	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 0.8
+PDM_disp_accel_factor 		= 0.8
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+;ttc
+hit_power        		= 0.58;56
+hit_impulse		 	= 140
+hit_type 			= fire_wound
+
+fire_distance          	 	= 1000
+bullet_speed			= 420;начальная скорость пули
+rpm                     	= 800
+; end ttc
+
+silencer_hit_power       	= 35
+silencer_hit_impulse	 	= 120
+silencer_fire_distance   	= 250
+silencer_bullet_speed	 	= 290
+
+;addons
+scope_status			= 0
+silencer_status			= 2
+grenade_launcher_status	= 0
+;-----------------------------------------------------------------------------------
+[mp_wpn_l85]:wpn_l85
+$spawn              		= ""
+class               	= W_AK74
+scope_name 			= mp_wpn_addon_scope
+silencer_name  			= mp_wpn_addon_silencer
+grenade_launcher_name 		= mp_wpn_addon_grenade_launcher_m203
+ammo_class				= mp_ammo_5.56x45_ss190, mp_ammo_5.56x45_ap
+grenade_class			= mp_ammo_m209
+tracers	= on
+tracers_color_ID = 2
+
+fire_dispersion_base		= 0.08;0.085;0.16;0.165;0.18;0.2;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.35f
+
+;отдача
+cam_relax_speed        		= 3;2;0.5	;скорость возврата в исходное положение
+cam_dispersion         		= 0.4;0.65;0.5	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.2;0.25;0.1	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 0.85;1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.55	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.001	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.4
+PDM_disp_accel_factor 		= 1.4
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power                	= 0.75;0.7125;85
+hit_impulse		 	= 140
+hit_type 			= fire_wound 	
+
+fire_distance            	= 1000
+bullet_speed			= 950;начальная скорость пули
+rpm                      	= 650
+; end ttc
+
+silencer_hit_power       	= 45
+silencer_hit_impulse	 	= 120
+silencer_fire_distance   	= 250
+silencer_bullet_speed	 	= 600
+
+;addons
+scope_status				= 1
+silencer_status				= 2
+grenade_launcher_status		= 2
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_lr300]:wpn_lr300
+$spawn              	= ""
+class               	= W_AK74
+silencer_name  			= mp_wpn_addon_silencer
+scope_name 					= mp_wpn_addon_scope_susat
+ammo_class		 			= mp_ammo_5.56x45_ss190, mp_ammo_5.56x45_ap
+grenade_launcher_name 		= mp_wpn_addon_grenade_launcher_m203
+grenade_class				= mp_ammo_m209
+tracers	= on
+tracers_color_ID = 2
+
+fire_dispersion_base		= 0.1;0.11;0.165;0.17;0.18 	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.2f
+
+;отдача
+cam_relax_speed        		= 0.35;0.15	;скорость возврата в исходное положение
+cam_dispersion         		= 0.15	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.15	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 5.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.4	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.0009 ;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.0001 ;увеличение износа при каждом выстреле
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.2
+PDM_disp_accel_factor 		= 1.2
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power        		= 0.84;0.76;67;94
+hit_impulse		 	= 140
+hit_type 			= fire_wound
+
+fire_distance            	= 400
+bullet_speed			= 750;930	;начальная скорость пули
+rpm                      	= 750
+; end ttc	
+
+;addons
+scope_status				= 2
+silencer_status				= 2
+grenade_launcher_status		= 2
+;-----------------------------------------------------------------------------------
+[mp_wpn_abakan]:wpn_abakan
+$spawn              			= ""
+class               	= W_AK74
+scope_name 				= mp_wpn_addon_scope
+silencer_name  				= mp_wpn_addon_silencer
+grenade_launcher_name 			= mp_wpn_addon_grenade_launcher
+ammo_class				= mp_ammo_5.45x39_fmj, mp_ammo_5.45x39_ap  ; name of the ltx-section of used ammo 
+grenade_class				= mp_ammo_vog-25, mp_ammo_vog-25p
+tracers	= on
+tracers_color_ID = 0
+
+;params of weapon recoil
+
+fire_dispersion_base			= 0.12;0.165;0.185;0.15;		;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor			= 1.3f
+
+;отдача
+cam_relax_speed         		= 0.6;0.75;0.125		;скорость возврата в исходное положение
+cam_dispersion          		= 0.14;0.15;0.125		;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc			= 0.23;0.25		;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac			= 0.9		;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle				= 30.0	    	;максимальный угол отдачи
+cam_max_angle_horz			= 15.0		;(degree) maximum shot horizontal degree 
+cam_step_angle_horz			= 0.9		;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor 	= 5	    	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 			= 0.0003	;вероятность осечки при максимальном износе 
+condition_shot_dec 			= 0.00003	;увеличение износа при каждом выстреле
+
+
+PDM_disp_base 				= 1.0
+PDM_disp_vel_factor 			= 1.3
+PDM_disp_accel_factor 			= 1.3
+PDM_crouch	 			= 1.0
+PDM_crouch_no_acc 			= 1.0
+
+; ttc
+hit_power                		= 0.9;85		; size of damage by bullet
+hit_impulse		 		= 140		; size of physic impulse by bullet	
+hit_type 				= fire_wound 	; [] type of the wound
+
+fire_distance            		= 1000						; maximum fire distance that bullet can fly
+bullet_speed				= 900; starting bullet speed
+rpm                      		= 700;800;600
+
+silencer_hit_power       		= 25
+silencer_hit_impulse	 		= 120
+silencer_fire_distance   		= 600
+silencer_bullet_speed	 		= 310
+
+;addons
+scope_status				= 2							; 0 - no addon
+silencer_status				= 0							; 1 - permanent
+grenade_launcher_status		= 0						    ; 2 - attachable
+
+;addons
+scope_status				= 2							; 0 - no addon
+silencer_status				= 2							; 1 - permanent
+grenade_launcher_status		= 2							; 2 - attachable
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_sig550]:wpn_sig550
+scope_name 			= mp_wpn_addon_scope_susat
+silencer_name  			= mp_wpn_addon_silencer
+grenade_launcher_name 		= mp_wpn_addon_grenade_launcher_m203
+ammo_class				= mp_ammo_5.56x45_ss190, mp_ammo_5.56x45_ap
+grenade_class			= mp_ammo_m209
+tracers	= on
+tracers_color_ID = 2
+
+$spawn              		= ""
+class               	= W_AK74
+
+fire_dispersion_base		= 0.05;0.14;0.13	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.4f
+
+;отдача
+cam_relax_speed        		= 0.8;0.25	;скорость возврата в исходное положение
+cam_dispersion         		= 0.2;0.25	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.1;0.12;0.1	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 6.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.4	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.45
+PDM_disp_accel_factor 		= 1.45
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+
+hit_power        		= 0.88;95;104
+hit_impulse		 	= 140
+hit_type 			= fire_wound
+
+fire_distance           	= 1000
+bullet_speed			= 970;начальная скорость пули
+rpm                     	= 700
+; end ttc
+
+;addons
+scope_status				= 2
+silencer_status				= 2
+grenade_launcher_status		= 2
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_groza]:wpn_groza
+$spawn              		= ""
+class               	= W_GROZA
+scope_name 			= mp_wpn_addon_scope		; section name for the attachable scope
+silencer_name  			= mp_wpn_addon_silencer		; section name for the attachable silencer
+ammo_class		 		= mp_ammo_9x39_pab9, mp_ammo_9x39_ap;	mp_ammo_9x39_sp5
+grenade_class			= mp_ammo_vog-25, mp_ammo_vog-25p
+tracers	= on
+tracers_color_ID = 0
+
+fire_dispersion_base		= 0.06;0.075;0.135;0.16;0.18	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.05f
+
+;отдача
+cam_relax_speed         	= 1;0.4;0.3	;скорость возврата в исходное положение
+cam_dispersion          	= 0.3;0.33;0.3	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.13;0.14;0.12	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 0.75	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 9.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.85	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.1
+PDM_disp_accel_factor 		= 1.1
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power               	= 0.95;107
+hit_impulse		 	= 154
+hit_type 			= fire_wound
+
+fire_distance           	= 1000
+bullet_speed			= 500;400 ;начальная скорость пули
+rpm                    		= 700;750
+
+grenade_vel			= 76
+; end ttc
+
+silencer_hit_power       	= 55
+silencer_hit_impulse	 	= 120
+silencer_fire_distance   	= 250
+silencer_bullet_speed	 	= 280
+
+;addons
+scope_status			= 2
+silencer_status			= 2
+grenade_launcher_status	= 1
+;-----------------------------------------------------------------------------------
+[mp_wpn_g36]:wpn_g36
+$spawn              			= ""
+class               		= W_AK74
+ammo_class					= mp_ammo_5.56x45_ss190, mp_ammo_5.56x45_ap
+grenade_class			= mp_ammo_m209
+silencer_name  				= mp_wpn_addon_silencer
+grenade_launcher_name 		= mp_wpn_addon_grenade_launcher_m203
+tracers	= on
+tracers_color_ID = 2
+
+fire_dispersion_base		= 0.08;0.165;0.15;0.14 	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.15f
+
+;отдача
+cam_relax_speed         	= 0.2	;скорость возврата в исходное положение
+cam_dispersion          	= 0.1;0.125;0.2	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.05;0.07	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 0.9;0.95	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 9.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.5	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+
+PDM_disp_base 			= 1.25
+PDM_disp_vel_factor 		= 1.05
+PDM_disp_accel_factor 		= 1.05
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power                	= 0.8;90
+hit_impulse		        = 105
+hit_type 			= fire_wound
+
+fire_distance            	= 400
+bullet_speed			= 900;925	;начальная скорость пули
+rpm                      	= 750;850
+; end ttc
+
+;addons
+scope_status				= 1
+silencer_status				= 2
+grenade_launcher_status		= 2
+;-----------------------------------------------------------------------------------
+
+
+[mp_wpn_fn2000]:wpn_fn2000
+$spawn              		= ""
+silencer_name  			= mp_wpn_addon_silencer
+class                    = W_GROZA
+ammo_class		         = mp_ammo_5.56x45_ss190, mp_ammo_5.56x45_ap
+grenade_class			= mp_ammo_m209
+tracers	= on
+tracers_color_ID = 2
+
+fire_dispersion_base		= 0.1;0.15;0.17;0.2 	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.15f
+
+;отдача
+cam_relax_speed         	= 1;0.35;1;0.2	;скорость возврата в исходное положение
+cam_dispersion          	= 0.1;0.15;0.2	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.08;0.1	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		=1.0;1.1; 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 9.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.6	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.05
+PDM_disp_accel_factor 		= 1.05
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power                	= 0.86;95;110;160;89
+hit_impulse		        = 105
+hit_type 			= fire_wound
+
+fire_distance            	= 400
+bullet_speed			= 925;начальная скорость пули
+rpm                      	= 860
+; end ttc
+
+;addons
+scope_status				= 1
+silencer_status				= 2
+grenade_launcher_status		= 1
+zoom_enabled				= true
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_val]:wpn_val
+$spawn              	= ""
+class               	= W_VAL
+ammo_class		 			= mp_ammo_9x39_pab9, mp_ammo_9x39_ap; mp_ammo_9x39_sp5  
+tracers	= on
+tracers_color_ID = 0
+
+fire_dispersion_base		= 0.03;0.065;0.08;0.12	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.04f
+
+;отдача
+cam_relax_speed         	= 1;0.8;0.3	;скорость возврата в исходное положение
+cam_dispersion          	= 0.3	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.05;0.1;0.05	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 20.0	;максимальный угол отдачи
+cam_max_angle_horz		= 10.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.4	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.0001;0.00003 ;увеличение износа при каждом выстреле
+
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.2
+PDM_disp_accel_factor 		= 1.2
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power        		= 1;107
+hit_impulse		 	= 95
+hit_type 			= fire_wound
+
+fire_distance   	        = 1000
+bullet_speed			= 500;425;380;начальная скорость пули
+rpm             		= 800
+
+scope_name 				= mp_wpn_addon_scope
+
+;addons
+scope_status				= 0
+silencer_status				= 1
+grenade_launcher_status		= 0
+;-----------------------------------------------------------------------------------
+
+
+[mp_wpn_vintorez]:wpn_vintorez
+$spawn              		= ""
+class               	= W_VINT
+ammo_class		 			= mp_ammo_9x39_pab9, mp_ammo_9x39_ap  ;mp_ammo_9x39_sp5
+tracers	= on
+tracers_color_ID = 0
+
+fire_dispersion_base		= 0.025;0.05	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+control_inertion_factor		= 1.04f
+
+;отдача
+cam_relax_speed         	= 1.1;0.75;0.125	;скорость возврата в исходное положение
+cam_dispersion          	= 0.135;0.125	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.25;0.23	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 30.0	;максимальный угол отдачи
+cam_max_angle_horz		= 5.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.3	;(degree) size of step camera moved in horizontal position while shooting
+
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.001;0.002 ;увеличение износа при каждом выстреле
+
+preffered_fire_mode		= 1
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.2
+PDM_disp_accel_factor 		= 1.2
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power                	= 1;107
+hit_impulse		        = 87
+hit_type 			= fire_wound
+
+fire_distance            	= 1000
+bullet_speed			= 475;425;380	;начальная скорость пули
+rpm                      	= 800;600
+
+;addons
+scope_status				= 1
+silencer_status				= 1
+grenade_launcher_status		= 0
+zoom_enabled				= true
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_svd]:wpn_svd
+$spawn              		= ""
+class               	= W_SVD
+sprint_allowed			= false
+control_inertion_factor		= 2.2f
+ammo_class				= mp_ammo_7.62x54_7h1, mp_ammo_7.62x54_ap; mp_ammo_7.62x54_7h14
+tracers	= on
+tracers_color_ID = 0
+
+fire_dispersion_base		= 0.001;0.03	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+	
+;отдача
+cam_relax_speed         	= 5.0;4.0	;скорость возврата в исходное положение
+cam_dispersion          	= 1.25;3.0	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 60.0	;максимальный угол отдачи
+cam_max_angle_horz		= 3.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.25	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003 ;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+PDM_disp_base 			= 6.0
+PDM_disp_vel_factor 		= 1.2;0.9
+PDM_disp_accel_factor 		= 1.65;1.0
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power               	= 2.6;2.40;335
+hit_impulse		 	= 245
+hit_type 			= fire_wound
+
+fire_distance           	= 1000
+bullet_speed		 	= 1000;850	;начальная скорость пули
+rpm                     	= 90;120
+; end ttc
+
+;addons
+scope_status				= 1
+silencer_status				= 0
+grenade_launcher_status		= 0
+zoom_enabled				= true
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_svu]:wpn_svu
+$spawn              	= ""
+class               	= W_SVU
+sprint_allowed			= false
+control_inertion_factor		= 1.6f
+ammo_class		 		= mp_ammo_7.62x54_7h1, mp_ammo_7.62x54_ap; mp_ammo_7.62x54_7h14
+tracers	= on
+tracers_color_ID = 0
+
+fire_dispersion_base		= 0.001;0.0015;0.04;0.05	;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+	
+;отдача
+cam_relax_speed         	= 6.0;5.0;6.0	;скорость возврата в исходное положение
+cam_dispersion          	= 1.3;4.0	;увеличения угла (в градусах) с каждым выстрелом
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_max_angle			= 60.0	;максимальный угол отдачи
+cam_max_angle_horz		= 3.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.6	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.003	;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+PDM_disp_base 			= 5.0;6.0
+PDM_disp_vel_factor 		= 1.15;0.9
+PDM_disp_accel_factor 		= 1.55;1.0
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+; ttc
+hit_power               	= 2.6;2.35;214;325
+hit_impulse	        	= 224
+hit_type 			= fire_wound
+
+fire_distance           	= 1000
+bullet_speed			= 1000;830	;начальная скорость пули
+rpm                     	= 100;160;150;250
+; end ttc
+
+;addons
+scope_status			= 1
+silencer_status			= 0
+grenade_launcher_status	= 0
+zoom_enabled			= true
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_gauss]:wpn_gauss
+$spawn              		= ""
+class                   = W_SVD
+ammo_class				= mp_ammo_gauss
+tracers	= on
+tracers_color_ID = 1
+
+sprint_allowed			= false
+control_inertion_factor		= 1.4f
+
+fire_dispersion_base		= 0.002 ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+
+;отдача
+cam_relax_speed         	= 0.05	;скорость возврата в исходное положение
+cam_dispersion          	= 0.05	;увеличения угла (в градусах) с каждым выстрелом
+cam_max_angle			= 4.0	;максимальный угол отдачи
+cam_dispertion_frac		= 1.0	;ствол будет подыматься на cam_dispersion*cam_dispertion_frac +- cam_dispersion*(1-cam_dispertion_frac)
+cam_dispersion_inc		= 0.0	;увеличениe cam_dispersion с каждым выстрелом
+cam_max_angle_horz		= 5.0	;(degree) maximum shot horizontal degree 
+cam_step_angle_horz		= 0.5	;(degree) size of step camera moved in horizontal position while shooting
+
+fire_dispersion_condition_factor = 5	;увеличение дисперсии в процентах при максимальном износе 
+misfire_probability 		= 0.0003 ;вероятность осечки при максимальном износе 
+condition_shot_dec 		= 0.00003 ;увеличение износа при каждом выстреле
+
+; ttc
+
+PDM_disp_base 			= 1.0
+PDM_disp_vel_factor 		= 1.5
+PDM_disp_accel_factor 		= 1.5
+PDM_crouch	 		= 1.0
+PDM_crouch_no_acc 		= 1.0
+
+hit_power               	= 5
+hit_impulse		 	= 300
+hit_type 			= fire_wound
+
+fire_distance           	= 800
+bullet_speed		 	= 1500;начальная скорость пули
+rpm                     	= 30
+; end ttc
+
+;addons
+scope_status			= 1
+silencer_status			= 0
+grenade_launcher_status	= 0
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_binoc]:wpn_binoc
+$spawn              	= ""
+class                   = W_BINOC
+vision_present			= true
+ammo_class		 		= mp_ammo_9x18_fmj
+
+
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_knife]:wpn_knife
+class                   = W_KNIFE
+$spawn              	= ""
+ammo_class				= mp_ammo_9x18_fmj
+
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_rg-6]:wpn_rg-6
+$spawn              	= ""
+class                   = W_RG6
+ammo_class		 			= mp_ammo_vog-25, mp_ammo_vog-25p
+hit_power        			= 3.50;75
+fire_dispersion_base		= 1.0;0.5 
+sprint_allowed =0 
+
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_rpg7]:wpn_rpg7
+$spawn              		= ""
+ammo_class		 	= mp_ammo_og-7b
+rocket_class			= mp_wpn_rpg7_missile
+control_inertion_factor		= 3.0f
+sprint_allowed			= false
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_rpg7_missile]:wpn_rpg7_missile
+$spawn              	= ""
+//class                   = W_RPG7
+
+;-----------------------------------------------------------------------------------
+
+[mp_wpn_fake_missile]:wpn_fake_missile
+$spawn              	= ""
+[mp_wpn_fake_missile1]:wpn_fake_missile1
+$spawn              	= ""
+[mp_wpn_fake_missile2]:wpn_fake_missile2
+$spawn              	= ""
+[mp_wpn_addon_scope]:wpn_addon_scope
+$spawn              	= ""
+class					= W_SCOPE
+[mp_wpn_addon_scope_susat]:wpn_addon_scope_susat
+$spawn              	= ""
+class					= W_SCOPE
+[mp_wpn_addon_silencer]:wpn_addon_silencer
+$spawn              	= ""
+class					= W_SILENC
+[mp_wpn_addon_grenade_launcher]:wpn_addon_grenade_launcher
+$spawn              	= ""
+class					= W_GLAUNC
+[mp_wpn_addon_grenade_launcher_m203]:wpn_addon_grenade_launcher_m203
+$spawn              	= ""
+class					= W_GLAUNC
+
+[mp_grenade_f1]:grenade_f1
+$spawn              	= ""
+can_be_unlimited = false
+
+[mp_grenade_rgd5]:grenade_rgd5
+$spawn              	= ""
+can_be_unlimited = false
+
+[mp_grenade_gd-05]:grenade_gd-05
+$spawn              	= ""
+can_be_unlimited = false
+
+[mp_ammo_vog-25]:ammo_vog-25
+$spawn              	= ""
+fake_grenade_name = mp_wpn_fake_missile
+can_be_unlimited = false
+
+
+[mp_ammo_vog-25p]:ammo_vog-25p
+$spawn              	= ""
+fake_grenade_name = mp_wpn_fake_missile1
+can_be_unlimited = false
+
+[mp_ammo_m209]:ammo_m209
+$spawn              	= ""
+fake_grenade_name = mp_wpn_fake_missile2
+can_be_unlimited = false
+
+[mp_ammo_og-7b]:ammo_og-7b
+$spawn              	= ""
+can_be_unlimited = false
+
+

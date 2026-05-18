@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding="windows-1251"?>
+<string_table>
+
+	<string id="escape_talk_about_garbage__0">
+		<text ln="rus">Расскажи мне об этом месте.</text>
+		<text>Tell me about the place.</text>
+	</string>
+
+	<string id="escape_talk_about_garbage__10">
+		<text ln="rus">Это большая вонючая свалка, куда после аварии в 86
+		году свозили горы радиоактивного мусора...
+		Разбитые краны, техника... Можно найти останки старых построек. Можно встретить
+		мутантов. Здесь, в основном, новички крутятся и, само собой, бандиты, куда ж
+		без них. Можно найти артефакты по мелочи, но лучше здесь надолго не
+		останавливаться. Дальше очень много радиационных очагов, без защиты туда нельзя.</text>
+		<text>It's a big stinky dump, where piles of radioactive trash was brought after the accident of 1986...
+		Smashed cranes, vehicles... You can locate rubble of old structures. Mutants can be encountered too. 
+		Most frequently newbies roam around here, and, well, bandits - you canТt do without those. Small 
+		artefacts can be found, but you'd better not stay here for long. Further there are loads of radiation 
+		spots, impassable without protection.</text>
+	</string>
+
+	<string id="escape_talk_about_garbage__1">
+		<text ln="rus">А куда ведут дороги?</text>
+		<text>And where do these roads lead?</text>
+	</string>
+
+	<string id="escape_talk_about_garbage__21">
+		<text ln="rus">Если идти со Свалки на юг, то можно придти
+		к границе Зоны и блокпосту, если пойдешь по
+		свалке на север, то выберешься к бару сталкеров, на западе территория
+		Агропрома, на востоке Темная долина.</text>
+		<text>If you go southwards from the Dump, you can reach the Zone border and army post, 
+		if you go along the dump to the north, you'll get to the stalker bar, to the west lies 
+		Agroprom area, while the Dark valley is in the east.</text>
+	</string>
+
+</string_table>

@@ -1,0 +1,16 @@
+function main()
+	local dog = get_level_object("monster")
+
+	dog:script(true, this.script_name())
+
+    	while(true)do
+	
+		if( dog:action() == nil ) then
+            		action(dog, anim(anim.turn, 0), look( look.point, get_actor()), cond(cond.look_end))
+			--action(dog, anim(anim.attack, 0), sound(sound.attack), cond(cond.time_end, 1000))
+        	end
+    		
+		wait()
+    	end
+
+end

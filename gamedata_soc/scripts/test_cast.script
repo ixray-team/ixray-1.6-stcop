@@ -1,0 +1,9 @@
+function main()
+	local id = get_level_object( "stalker" ):id()
+
+	local oT = cast_alife_object_to_trader_abstract( alife():object( id ) )
+
+	printf( "1" )
+	printf( oT:community() )
+	printf( "2" )
+end

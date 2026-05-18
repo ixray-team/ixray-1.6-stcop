@@ -1,0 +1,143 @@
+news = {}
+
+function main()
+	fill_news()
+	delta = 10*60*1000
+	begin = nil
+	rnd = 100 --'70
+	
+	while true do
+		if begin == nil or
+			game.time() - begin > delta 
+		then			
+			if math.random(100) < rnd then
+				get_random_news()
+			end
+			begin = game.time()
+		end		
+		--printf("%d of %d",game.time() - begin, delta)
+		wait()
+	end
+end
+
+function fill_news()
+	local level_name = level.name()
+	
+	if level_name == "l01_escape" then
+		t = { info = "news_escape_blockpost_attack",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)					
+		t = { info = "news_escape_blockpost_case",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)					
+		t = { info = "news_escape_electra",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)					
+		t = { info = "new_escape_bridge",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)					
+		t = { info = "news_escape_bandits",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)					
+		t = { info = "news_escape_dogs",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)					
+		t = { info = "news_escape_artefact",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)					
+	end
+
+	if level_name == "l02_garbage" then
+		t = { info = "news_garbage_marked",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)					
+		t = { info = "news_garbage_fedya",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)					
+		t = { info = "news_garbage_dolina",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)					
+		t = { info = "news_garbage_dolg",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)					
+		t = { info = "news_garbage_herovo",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)
+		t = { info = "news_garbage_gunslinger",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)
+		t = { info = "news_garbage_garage",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)
+		t = { info = "news_garbage_dogs",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)
+	end	
+
+	if level_name == "l03_agroprom" then
+		t = { info = "news_agroprom_mili",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)
+		t = { info = "news_agroprom_box",
+			idle = 5*60*1000,
+			timeout = 12*60*60*1000,
+			begin = nil }
+		table.insert(news, t)					
+	end	
+end
+
+function get_random_news()
+	local actor = db.actor
+	local avail = {}
+	for k,v in pairs(news) do
+		--' Взять еще незаюзанные ньюсы
+		if v.begin == nil then
+			table.insert(avail, k)
+		--' Обнулить устаревшие ньюсы			
+		elseif game.time() - v.begin > v.timeout then
+			v.begin = nil
+		--' Удалять устаревшие инфо поршены
+		elseif game.time() - v.begin > v.idle then
+			--' insert delete info here
+		end
+	end
+
+	if table.getn(avail) > 0 then
+		local t = avail[math.random(table.getn(avail))]
+		news[t].begin = game.time()
+	end
+	
+--	print_table(news)
+end

@@ -1,0 +1,13 @@
+function main()
+	quest_darkvalley.main()
+
+	db.actor:give_info_portion("bar_darklab_document_start")
+	db.actor:give_info_portion("bar_darklab_document_gain")
+	db.actor:give_info_portion("bar_darklab_document_done")
+
+	db.actor:give_info_portion("val_player_knows_password")
+	db.actor:give_info_portion("val_x18_door_open")
+	db.actor:give_info_portion("val_raid_start")
+	db.actor:give_info_portion("val_come_to_trader_task")
+	db.actor:give_info_portion("val_chase_start")
+end

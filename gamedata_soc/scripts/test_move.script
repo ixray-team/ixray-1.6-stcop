@@ -1,0 +1,25 @@
+local index = 0
+
+function movement(obj, type, _ind)
+         if(_ind == index) then return end
+         index = _ind
+         reset_action(obj, script_name())
+         action(obj, anim(anim.look_around, 0), cond(cond.time_end, 2000))
+end
+
+function main()
+    local npc = get_level_object("blood_sucker")
+    npc:set_callback(movement, game_object.movement)
+
+    npc:script(true, script_name())
+
+     while(true) do
+           if(npc:action() == nil) then
+              action(npc, move(move.run_fwd, patrol("way", patrol.next, patrol.continue, true, index)), cond(cond.move_end))
+           end
+           wait()
+    end
+
+    npc:script(false, script_name())
+
+end

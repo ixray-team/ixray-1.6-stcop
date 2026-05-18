@@ -1,0 +1,170 @@
+
+-- Punch. Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
+
+punch = {}
+
+local state_end = 0
+local state_approaching = 1
+local state_punch = 2
+
+-- Отправляет игрока в сон с последующей телепортацией (данные о телепортации
+-- берутся из заранее заполненной в диалоговой функции таблицы).
+function put_actor_to_sleep_instantly()
+	local whom = db.actor
+	
+	local actor_st = db.storage[whom:id()].punch
+	if not actor_st then
+		actor_st = {}
+		db.storage[whom:id()].punch = actor_st
+	end
+	actor_st.enabled = true
+
+	whom:actor_sleep(0, 30)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+class "evaluator_need_punch" (property_evaluator)
+
+function evaluator_need_punch:__init(storage, name) super (nil, name)
+	self.st = storage
+end
+
+function evaluator_need_punch:evaluate ()
+	--printf("evaluator_need_punch:evaluate()")
+	return self.st.enabled
+end
+
+----------------------------------------------------------------------------------------------------------------------
+class "action_punch_activity" (action_base)
+
+function action_punch_activity:__init(npc_name, action_name, storage) super (nil, action_name)
+	self.st = storage
+end
+
+function action_punch_activity:initialize()
+	--printf("_bp: action_punch_activity: initialize")
+	action_base.initialize(self)
+--	self.object:set_node_evaluator()
+--	self.object:set_path_evaluator()
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+
+	local whom = db.actor
+
+	whom:stop_talk()
+	self.object:set_path_type(game_object.level_path)
+	self.object:set_detail_path_type(move.line)
+	self.object:set_desired_direction(whom:direction())
+	self.object:set_dest_level_vertex_id(whom:level_vertex_id())
+	state_mgr.set_state(self.object, "run",
+		nil,
+		nil,
+		{ look_object = whom }, 
+		{animation = true})
+	self.state = state_approaching
+
+	--xr_reactions.add_rule(self.object, "ignore")
+end
+
+function action_punch_activity:execute()
+	action_base.execute(self)
+
+	--printf("exec!")
+	local whom = db.actor
+
+	if not whom:alive() then
+		self.st.enabled = false
+		return
+	end
+
+	if self.state == state_approaching then
+		--printf("approaching")
+		if self.object:position():distance_to(whom:position()) < 1.5 then
+			self.object:set_movement_type(move.stand)
+			state_mgr.set_state(self.object, "punch",
+				nil,
+				nil,
+				{ look_object = whom }, 
+				{animation = true})
+			--self.object:add_animation("udar_0", true)
+			self.expiration_time = time_global() + 700
+			self.state = state_punch
+		else
+			self.object:set_desired_direction(whom:direction())
+			local vert_id = whom:level_vertex_id()
+			if self.object:accessible(vert_id) then
+				self.object:set_dest_level_vertex_id(vert_id)
+			end
+		end
+		return
+	end
+
+	if self.state == state_punch then
+		if time_global() >= self.expiration_time then
+			local actor_st = db.storage[whom:id()].punch
+			if not actor_st then
+				actor_st = {}
+				db.storage[whom:id()].punch = actor_st
+			end
+			actor_st.enabled = true
+
+			self.state = state_end
+
+			whom:actor_sleep(0, 30)
+		end
+		return
+	end
+	
+	if self.state == state_end then
+		local actor_st = db.storage[whom:id()].punch
+		if not actor_st.enabled then
+			self.st.enabled = false
+		end
+	end
+end
+
+
+function action_punch_activity:finalize()
+	action_base.finalize(self)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc)
+	--printf("_bp: add_to_binder (punch)")
+	local operators    = {}
+	local properties  = {}
+
+	local manager = npc:motivation_action_manager()
+
+	properties["need_punch"]   = xr_evaluators_id.zmey_punch_base + 1
+	operators["action_punch"]   = xr_actions_id.zmey_punch_base + 1
+
+	-- // evaluators
+	manager:add_evaluator (properties["need_punch"],   this.evaluator_need_punch  (db.storage[npc:id()].punch, "punch_need_punch"))
+
+	local new_action = this.action_punch_activity(npc, "action_punch_activity", db.storage[npc:id()].punch)
+	new_action:add_precondition    (world_property(stalker_ids.property_alive,   true))
+	new_action:add_precondition    (world_property(stalker_ids.property_enemy,   false))
+	new_action:add_precondition	   (world_property(stalker_ids.property_anomaly,false))
+	new_action:add_precondition    (world_property(properties["need_punch"],   true))
+	new_action:add_effect(world_property(properties["need_punch"], false))
+	manager:add_action(operators["action_punch"], new_action)
+
+	new_action = manager:action(xr_actions_id.alife)
+	new_action:add_precondition(world_property(properties["need_punch"], false))
+end
+
+function set_scheme(object, ini, scheme, section)
+	local st = xr_logic.assign_storage_and_bind(object, ini, scheme, section)
+
+	st.enabled = false
+end
+
+function disable_scheme(npc, scheme)
+	local st = db.storage[npc:id()][scheme]
+	if st then
+		st.enabled = false
+	end
+end
+
+

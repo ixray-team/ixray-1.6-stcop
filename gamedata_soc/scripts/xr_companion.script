@@ -1,0 +1,326 @@
+----------------------------------------------------------------------------------------------------
+-- Companion
+----------------------------------------------------------------------------------------------------
+-- Разработчик: Serhiy Vynnychenko (narrator@gsc-game.kiev.ua)
+-- Доработки: Andrey Fidrya (Zmey) af@svitonline.com
+----------------------------------------------------------------------------------------------------
+
+local desired_distance = 3
+local min_distance = 1.5
+
+local keep_state_min_time = 1000 -- переключившись в состояние (бег, ходьба, спринт), не переключаться в другое N ms
+
+local dist_walk = 6 -- < dist_run
+local dist_run = 20
+-- otherwise - sprint
+
+local sound_wait = "weather,state"
+
+-- Модели поведения:
+beh_walk_simple = 0
+beh_walk_near = 1
+beh_walk_ignore = 2
+beh_wait_simple = 3
+beh_wait_near = 4
+beh_wait_ignore = 5
+
+local mt_stand = 0
+local mt_walk = 1
+local mt_run = 2
+local mt_sprint = 3
+
+----------------------------------------------------------------------------------------------------------------------
+class "evaluator_need_companion" (property_evaluator)
+
+function evaluator_need_companion:__init(storage, name) super (nil, name)
+	self.st = storage
+end
+
+function evaluator_need_companion:evaluate()
+	--printf("_bp: evaluator_need_companion:evaluate(): name='%s', self.st.enabled=%s",
+	--	self.object:name(), utils.to_str(self.st.enabled))
+	return self.st.enabled
+end
+
+----------------------------------------------------------------------------------------------------------------------
+class "action_companion_activity" (action_base)
+
+function action_companion_activity:__init(npc_name, action_name, storage) super (nil, action_name)
+	self.st = storage
+end
+
+function action_companion_activity:initialize()
+	--printf("_bp: action_companion_activity: initialize")
+	action_base.initialize(self)
+--	self.object:set_node_evaluator()
+--	self.object:set_path_evaluator()
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+
+	self.object:enable_talk()	
+
+	self.assist_point = nil
+	--self.dir_approaching = true
+	
+	self.last_state = "guard_na"
+	state_mgr.set_state(self.object, self.last_state,
+		nil, nil, nil, { animation = true })
+	
+	self.keep_state_until = time_global()
+end
+
+function action_companion_activity:beh_walk_simple()
+	local actor = db.actor
+
+	local select_new_pt = false
+	
+	--if self.assist_point == nil then
+	--	select_new_pt = true
+	--else
+		local dist_from_self_to_actor = self.object:position():distance_to(actor:position())
+		local dist_from_assist_pt_to_actor
+		if self.assist_point then
+			dist_from_assist_pt_to_actor = level.vertex_position(self.assist_point):distance_to(actor:position())
+		else
+			dist_from_assist_pt_to_actor = nil
+		end
+		if dist_from_self_to_actor >= desired_distance and
+		   (not dist_from_assist_pt_to_actor or
+		    dist_from_assist_pt_to_actor >= desired_distance * 2) then
+			select_new_pt = true
+			--self.dir_approaching = true
+		--elseif self.dir_approaching and
+		--   dist_from_self_to_actor < min_distance and
+		--   dist_from_assist_pt_to_actor < min_distance * 2 then
+		--	select_new_pt = true
+			--self.dir_approaching = false
+		end
+	--end
+	
+	-- 1. Если мы находимся за большим радиусом - необходимо выбрать новую точку
+	if select_new_pt then
+		self.assist_point = select_position(self.object, self.st)
+		if not self.assist_point then
+			return
+		end
+	elseif not self.assist_point then
+		return
+	end
+
+	-- 2. Двигаемся на точку: если точка далеко - бежим, иначе идем
+	self.object:set_path_type(game_object.level_path)
+	self.object:set_dest_level_vertex_id(self.assist_point)
+
+	local dist_to_assist_pt = level.vertex_position(self.assist_point):distance_to(self.object:position())
+	
+	printf("_bp: action_companion_activity:execute(): name='%s', dist_to_assist_pt=%s",
+		self.object:name(), dist_to_assist_pt)
+
+	local new_state
+
+	if self.object:level_vertex_id() == self.assist_point then
+		-- Уже пришли на точку отхода, разрешить еще раз начать отход
+		-- (случай, когда игрок подошел слишком близко к ассистенту)
+		--self.dir_approaching = true
+
+		new_state = "guard_na"
+	else
+		local t = time_global()
+		if t >= self.keep_state_until then
+			self.keep_state_until = t + keep_state_min_time
+
+			--printf("_bp: move_mgr: distance to destination waypoint: %d", dist_to_assist_pt)
+			if dist_to_assist_pt <= dist_walk then
+				new_state = "patrol"
+			elseif dist_to_assist_pt <= dist_run then
+				new_state = "rush"
+			else
+				new_state = "sprint"
+			end
+		end
+	end
+	
+	if new_state and new_state ~= self.last_state then
+		state_mgr.set_state(self.object, new_state,
+			nil, nil, nil, { animation = true })
+		self.last_state = new_state
+	end 
+
+	-- 4. Если стоим на точке - петь песенки и прочую херню
+	xr_sound.set_sound(self.object, sound_wait) 
+end
+
+function action_companion_activity:beh_wait_simple()
+	local actor = db.actor
+
+	local new_state = "guard_na"
+	if new_state ~= self.last_state then
+		state_mgr.set_state(self.object, new_state,
+			nil, nil, nil, { animation = true })
+		self.last_state = new_state
+	end 
+
+	-- 4. Если стоим на точке - петь песенки и прочую херню
+	xr_sound.set_sound(self.object, sound_wait) 
+end
+
+function action_companion_activity:execute()
+	action_base.execute(self)
+
+	if self.st.behavior == beh_walk_simple then
+		self:beh_walk_simple()
+	elseif self.st.behavior == beh_wait_simple then
+		self:beh_wait_simple()
+	end
+end
+
+function action_companion_activity:finalize()
+	--local enemy = self.object:best_enemy()
+	--if enemy then
+	--	xr_sound.set_sound(self.object, get_sound_for_enemy(enemy))
+	--end
+
+	xr_sound.set_sound(self.object, nil) 
+
+	action_base.finalize(self)
+end
+
+--' Выбор новой позиции
+function select_position(npc, st)
+	local node_1_vertex_id = nil
+	local node_1_distance = nil
+	local node_2_vertex_id = nil
+	local node_2_distance = nil
+
+	local actor = db.actor
+
+	-- проверяем точку слева от актера
+	desired_direction = vector_rotate_y(actor:direction(), math.random(50,60) )
+	node_1_vertex_id = level.vertex_in_direction(actor:level_vertex_id(),
+		desired_direction,
+		desired_distance)
+	if npc:accessible(node_1_vertex_id) ~= true or node_1_vertex_id == actor:level_vertex_id() then			
+		node_1_vertex_id = nil
+	end
+	-- проверяем точку справа от актера
+	desired_direction = vector_rotate_y(actor:direction(), -math.random(50,60) )
+	node_2_vertex_id = level.vertex_in_direction (  actor:level_vertex_id(),
+		desired_direction,
+		desired_distance )
+	if npc:accessible(node_2_vertex_id) ~= true or node_2_vertex_id == actor:level_vertex_id() then			
+		node_2_vertex_id = nil
+	end
+	
+	-- Проверяем растояния до точек
+	if node_1_vertex_id ~= nil then
+		node_1_distance = npc:position():distance_to_sqr(level.vertex_position(node_1_vertex_id))
+	else
+		node_1_distance = -1
+	end
+	if node_2_vertex_id ~= nil then
+		node_2_distance = npc:position():distance_to_sqr(level.vertex_position(node_2_vertex_id))
+	else
+		node_2_distance = -1
+	end
+	
+	-- Выбираем ближайшую из существующих
+	if node_1_distance == -1 and node_2_distance == -1 then
+		--' Не смогли найти точку, ругаться
+		return nil
+	end
+	if node_1_distance == -1 then
+		return node_2_vertex_id
+	end
+	if node_2_distance == -1 then
+		return node_1_vertex_id
+	end
+	if node_1_distance < node_2_distance then
+		return node_1_vertex_id
+	else
+		return node_2_vertex_id
+	end
+end
+
+--[[
+ПОТЕНЦИАЛЬНО УСТАРЕЛО
+function get_sound_for_enemy(enemy)
+	local otype = enemy:clsid()
+
+	local sound = { rnd = 100, maxidle = 1, sumidle = 0}
+
+	if 	otype == clsid.actor or
+  	   	otype == clsid.soldier or
+	   	otype == clsid.script_stalker or
+	   	otype == clsid.trader
+	then
+		sound.themes = {"reac_find_enemy"}
+	elseif 	otype == clsid.crow or
+		otype == clsid.rat or
+		otype == clsid.rat_group or
+		otype == clsid.zombie or
+		otype == clsid.flesh or
+		otype == clsid.controller or
+		otype == clsid.bloodsucker or
+		otype == clsid.burer or
+		otype == clsid.chimera or
+		otype == clsid.boar or
+		otype == clsid.flesh_group or
+		otype == clsid.dog_red or
+		otype == clsid.dog_black or
+		otype == clsid.pseudo_gigant
+	then
+		sound.themes = {"reac_find_monstr"}
+	end
+
+	return sound
+end
+--]]
+
+function vector_rotate_y (v, angle)
+    angle = angle * 0.017453292519943295769236907684886
+    local c = math.cos (angle)
+    local s = math.sin (angle)
+    return vector ():set (v.x * c - v.z * s, v.y, v.x * s + v.z * c)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc)
+	--printf("_bp: add_to_binder (companion)")
+	local operators    = {}
+	local properties  = {}
+
+	local manager = npc:motivation_action_manager()
+
+	properties["need_companion"]   = xr_evaluators_id.zmey_companion_base + 1
+	properties["wound"]            = xr_evaluators_id.sidor_wounded_base + 1
+	operators["action_companion"]   = xr_actions_id.zmey_companion_base + 1
+
+	-- // evaluators
+	manager:add_evaluator (properties["need_companion"],   this.evaluator_need_companion  (db.storage[npc:id()].companion, "companion_need_companion"))
+
+	local new_action = this.action_companion_activity(npc, "action_companion_activity", db.storage[npc:id()].companion)
+	new_action:add_precondition    (world_property(stalker_ids.property_alive,   true))
+	new_action:add_precondition    (world_property(stalker_ids.property_enemy,   false))
+	new_action:add_precondition		   (world_property(properties["wound"],			false))
+	new_action:add_precondition    (world_property(properties["need_companion"],   true))
+	new_action:add_effect(world_property(properties["need_companion"], false))
+	manager:add_action(operators["action_companion"], new_action)
+
+	new_action = manager:action(xr_actions_id.alife)
+	new_action:add_precondition(world_property(properties["need_companion"], false))
+end
+
+function set_scheme(object, ini, scheme, section)
+	local st = xr_logic.assign_storage_and_bind(object, ini, scheme, section)
+
+	st.enabled = false
+	st.behavior = beh_walk_simple
+end
+
+function disable_scheme(npc, scheme)
+	local st = db.storage[npc:id()][scheme]
+	if st then
+		st.enabled = false
+	end
+end
+

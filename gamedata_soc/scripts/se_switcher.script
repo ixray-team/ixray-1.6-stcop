@@ -1,0 +1,78 @@
+--server entity
+function _printf(ss)
+--if editor() == false then
+--	printf(ss)
+--end	
+end
+
+
+class "cse_switcher" (CSE_AbstractVisual)
+
+function cse_switcher:__init(sect) super(sect)
+	self.m_state = 0
+	_printf("cse_switcher:Constructor done")
+end
+
+function cse_switcher:STATE_Read(packet, size)
+	_printf("cse_switcher:STATE_Read called")
+	CSE_AbstractVisual.STATE_Read(self, packet, size)
+	self.m_state = packet:r_u32()
+	_printf("cse_switcher:STATE_Read done")
+end
+
+function cse_switcher:STATE_Write(packet)
+	_printf("cse_switcher:STATE_Write called")
+	CSE_AbstractVisual.STATE_Write(self, packet)
+	packet:w_u32(self.m_state)
+	_printf("cse_switcher:STATE_Write done")
+end
+
+
+function cse_switcher:UPDATE_Read(packet)
+	_printf("cse_switcher:UPDATE_Read called")
+	CSE_AbstractVisual.UPDATE_Read(self, packet)
+	self.m_state = packet:r_u32()
+	_printf("cse_switcher:UPDATE_Read done")
+end
+
+function cse_switcher:UPDATE_Write(packet)
+	_printf("cse_switcher:UPDATE_Write called")
+	CSE_AbstractVisual.UPDATE_Write(self, packet)
+	packet:w_u32(self.m_state)
+	_printf("cse_switcher:UPDATE_Write done")
+end
+
+function cse_switcher:FillProps(pref, values)
+	CSE_AbstractVisual.FillProps(self, pref, values)
+	
+	local						prefix = pref .. "\\switcher\\"
+	properties_helper():create_u32		(values, prefix .. "state",self,"m_state")
+end
+
+
+--  -------------------------------------------------------------
+/*
+local ps_local	= self:GetLocalPlayer()
+
+local health_msg = "---"
+local ammo_msg = "Ammo: --/--"
+
+local game_object = self:GetObjectByGameID(ps_local.GameID)
+
+if game_object ~=nil then
+  local h = game_object.health
+  if h ~= nil then
+    health_msg = string.format("%d", (h * 100.0))
+  end
+    local a = game_object:get_ammo_in_magazine()
+    local t = game_object:get_ammo_total()
+			   
+  if a ~= nil and t ~= nil then
+    ammo_msg = string.format("Ammo: %d/%d", a, t)
+  end
+end
+
+self.m_health_wnd:SetHealth(health_msg)
+self.m_gunbox_wnd:SetAmmo(ammo_msg)
+
+*/

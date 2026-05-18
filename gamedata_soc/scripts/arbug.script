@@ -1,0 +1,6 @@
+function set_ar(object_name)
+	local obj = level.object("m_stalker_e")
+	local weapon = obj:object(object_name)
+//	printf("%s",weapon:name())
+	obj:set_item(object.aim1,weapon)
+end

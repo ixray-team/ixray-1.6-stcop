@@ -1,0 +1,18 @@
+[logic]
+active = {+agr_help_stalkers_start} nil, sr_sound
+
+[sr_sound]
+snd = ambient\gunfire_2
+position = agr_factory_gunfire
+on_actor_inside = %+agr_factory_assault_start% sr_idle@sos
+
+[sr_idle@sos]
+on_timer = 7000 | %+agr_help_stalkers_start =agr_krot_sos% sr_idle
+
+[sr_idle]
+on_info = {+agr_help_stalkers_done} sr_idle@help_krot
+
+[sr_idle@help_krot]
+on_info = %=agr_krot_sos_1_2% sr_idle@nil
+
+[sr_idle@nil]

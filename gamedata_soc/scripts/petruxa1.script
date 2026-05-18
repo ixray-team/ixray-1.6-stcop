@@ -1,0 +1,68 @@
+function main ()
+-------------------------------------------------------------------------------
+-- Задачи Escape
+-------------------------------------------------------------------------------
+        -- открытие двери у торговца
+        db.actor:give_info_portion ("esc_trader_can_leave")
+        -- туториальная задача с артефактом
+        db.actor:give_info_portion ("tutorial_artefact_start")
+        db.actor:give_info_portion ("tutorial_artefact_gain")
+        db.actor:give_info_portion ("tutorial_artefact_done")
+        -- туториальная задача с раненым
+        db.actor:give_info_portion ("tutorial_wounded_start")
+        db.actor:give_info_portion ("tutorial_wounded_help")
+        db.actor:give_info_portion ("esc_serious_talk")
+        -- задание Волка на динамит
+        db.actor:give_info_portion ("escape_dynamite_start")
+        db.actor:give_info_portion ("escape_factory_assault_say_hello")
+        db.actor:give_info_portion ("escape_dynamite_have")
+        db.actor:give_info_portion ("escape_dynamite_done")
+        db.actor:give_info_portion ("esc_path_to_lager")
+        -- задание торговца на бандитов на фабрике
+        db.actor:give_info_portion ("esc_kill_bandits_quest_have")
+        db.actor:give_info_portion ("escape_dynamite_start")
+        db.actor:give_info_portion ("esc_kill_bandits_quest_kill")
+        db.actor:give_info_portion ("esc_kill_bandits_quest_done")
+        -- задание торговца на Лиса
+        db.actor:give_info_portion ("escape_stalker_meet")
+        db.actor:give_info_portion ("escape_fox_heal")
+        db.actor:give_info_portion ("escape_stalker_done")
+        -- мочилово лишнего народа
+        --this.kill_entity_by_sid (12)
+        --this.kill_entity_by_sid (13)
+        --this.kill_entity_by_sid (4)
+-------------------------------------------------------------------------------
+-- Задачи Garbage
+-------------------------------------------------------------------------------
+        -- Серый в гараже
+        db.actor:give_info_portion ("garbage_meetstalker_start")
+        db.actor:give_info_portion ("garbage_meetstalker_done")
+        -- завал кабанов
+        db.actor:give_info_portion ("gar_kill_boars_quest")
+        db.actor:give_info_portion ("gar_kill_boars_done")
+        db.actor:give_info_portion ("gar_kill_boars_request")
+        db.actor:give_info_portion ("gar_free_pass")
+        -- отбивание бандитов 
+        db.actor:give_info_portion ("gar_hellcar_help")
+        db.actor:give_info_portion ("gar_bandits_killed")
+        db.actor:give_info_portion ("gar_hellcar_dialog_end")
+        -- новичок в туннеле
+        db.actor:give_info_portion ("gar_help_newbie")
+        db.actor:give_info_portion ("gar_help_newbie_done")
+        db.actor:give_info_portion ("gar_help_newbie_reward")
+-------------------------------------------------------------------------------
+-- Задачи Agroprom
+-------------------------------------------------------------------------------
+        -- задание торговца на документы с Агропрома
+        db.actor:give_info_portion ("agroprom_military_case")
+        db.actor:give_info_portion ("agroprom_military_case_have")
+        db.actor:give_info_portion ("agroprom_military_case_done")
+        -- встреча с Кротовой бандой
+        db.actor:give_info_portion ("agr_krot_band_start")
+        db.actor:give_info_portion ("agr_krot_met")
+        db.actor:give_info_portion ("agr_krot_task_complete")
+        -- разговор  с военным
+        db.actor:give_info_portion ("agr_nii_security_plan_flash_have")
+        db.actor:give_info_portion ("agr_zaz_location")
+        
+end

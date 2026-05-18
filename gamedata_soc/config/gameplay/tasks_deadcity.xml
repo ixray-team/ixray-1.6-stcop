@@ -1,0 +1,200 @@
+<game_task id="cit_documents">
+    <title>
+        cit_killers_documents
+    </title>
+    <objective key="0">
+        <icon height="50" width="50" x="100" y="0">
+            ui\ui_icons_task
+        </icon>
+        <infoportion_complete>
+            cit_documents_give
+        </infoportion_complete>
+        <function_fail>
+            deadcity_tasks.documents_task_fail
+        </function_fail>
+    </objective>
+    <objective key="1">
+        <text>
+            cit_compromat_documents_1
+        </text>
+        <icon height="50" width="50" x="350" y="150">
+            ui\ui_icons_task
+        </icon>
+        <infoportion_complete>
+            cit_documents_find
+        </infoportion_complete>
+    </objective>
+    <objective key="2">
+        <text>
+            cit_compromat_documents_2
+        </text>
+        <icon height="50" width="50" x="100" y="0">
+            ui\ui_icons_task
+        </icon>
+        <map_location_type hint="cit_compromat_documents_2_hint">
+            blue_location
+        </map_location_type>
+        <object_story_id>
+            Escape_Trader
+        </object_story_id>
+    </objective>
+</game_task>
+<game_task id="cit_killers_base">
+    <title>
+        cit_killers_base_location
+    </title>
+    <objective key="0">
+        <icon height="50" width="50" x="150" y="0">
+            ui\ui_icons_task
+        </icon>
+        <infoportion_complete>
+            cit_map_give
+        </infoportion_complete>
+        <function_fail>
+            deadcity_tasks.map_task_fail
+        </function_fail>
+    </objective>
+    <objective key="1">
+        <text>
+            cit_killers_base_location_1
+        </text>
+        <icon height="50" width="50" x="100" y="50">
+            ui\ui_icons_task
+        </icon>
+        <infoportion_complete>
+            cit_map_find
+        </infoportion_complete>
+    </objective>
+    <objective key="2">
+        <text>
+            cit_killers_base_location_2
+        </text>
+        <icon height="50" width="50" x="150" y="0">
+            ui\ui_icons_task
+        </icon>
+    </objective>
+</game_task>
+<game_task id="cit_doctor_task">
+    <title>
+        cit_doctor_task
+    </title>
+    <objective key="0">
+        <icon height="50" width="50" x="100" y="50">
+            ui\ui_icons_task
+        </icon>
+        <infoportion_complete>
+            pri_monolith_decoder_got
+        </infoportion_complete>
+    </objective>
+    <objective key="1">
+        <text>
+            cit_doctor_task_1
+        </text>
+        <icon height="50" width="50" x="100" y="50">
+            ui\ui_icons_task
+        </icon>
+        <map_location_type hint="cit_doctor_task_1_hint">
+            blue_location
+        </map_location_type>
+        <object_story_id>
+            pri_hotel_zone
+        </object_story_id>
+        <infoportion_complete>
+            pri_actor_in_hotel
+        </infoportion_complete>
+    </objective>
+    <objective key="2">
+        <text>
+            cit_doctor_task_2
+        </text>
+        <icon height="50" width="50" x="0" y="0">
+            ui\ui_icons_task
+        </icon>
+        
+        <map_location_type hint="cit_doctor_task_2">green_location</map_location_type>
+			<object_story_id>pri_decoder_room_door</object_story_id>		
+        
+        <infoportion_complete>
+            pri_actor_in_hiding_place
+        </infoportion_complete>
+    </objective>
+    <objective key="3">
+        <text>
+            cit_doctor_task_3
+        </text>
+        <icon height="50" width="50" x="0" y="0">
+            ui\ui_icons_task
+        </icon>
+        <infoportion_complete>
+            pri_monolith_decoder_got
+        </infoportion_complete>
+    </objective>
+</game_task>
+<game_task id="cit_doctor_weapon_task">
+    <title>
+        cit_doctor_weapon_task
+    </title>
+    <objective key="0">
+        <icon height="50" width="50" x="0" y="0">
+            ui\ui_icons_task
+        </icon>
+        <infoportion_complete>
+            cit_jail_doctor_weapon_task_end
+        </infoportion_complete>
+    </objective>
+    <objective key="1">
+        <text>
+            cit_doctor_weapon_task_1
+        </text>
+        <icon height="50" width="50" x="0" y="0">
+            ui\ui_icons_task
+        </icon>
+        <map_location_type hint="cit_doctor_weapon_task_1_hint">
+            blue_location
+        </map_location_type>
+        <object_story_id>
+            cit_actor_weapon_zone
+        </object_story_id>
+    </objective>
+</game_task>
+<game_task id="cit_doctor_escape_task">
+    <title>
+        cit_doctor_escape_task
+    </title>
+    <objective key="0">
+        <icon height="50" width="50" x="50" y="150">
+            ui\ui_icons_task
+        </icon>
+        <infoportion_complete>
+            cit_jail_doctor_escape_task_end
+        </infoportion_complete>
+    </objective>
+    <objective key="1">
+        <text>
+            cit_doctor_escape_task_1
+        </text>
+        <icon height="50" width="50" x="100" y="50">
+            ui\ui_icons_task
+        </icon>
+        <infoportion_complete>
+            cit_actor_is_free
+        </infoportion_complete>
+    </objective>
+    <objective key="3">
+        <text>
+            cit_doctor_escape_task_3
+        </text>
+        <icon height="50" width="50" x="100" y="50">
+            ui\ui_icons_task
+        </icon>
+        <map_location_type hint="cit_doctor_escape_task_3_hint">
+            green_location
+        </map_location_type>
+        <object_story_id>
+            cit_level_exit_zone
+        </object_story_id>
+        <infoportion_complete>
+            cit_jail_doctor_escape_task_end
+        </infoportion_complete>
+    </objective>
+</game_task>

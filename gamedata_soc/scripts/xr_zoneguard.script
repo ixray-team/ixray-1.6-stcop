@@ -1,0 +1,429 @@
+----------------------------------------------------------------------------------------------------
+-- ќхранники
+----------------------------------------------------------------------------------------------------
+-- –азработчик: Andrey Fidrya (Zmey) af@svitonline.com
+----------------------------------------------------------------------------------------------------
+
+-- ≈сли охранник еще не прибыл на свой путь, то разрешаетс€ атаковать
+-- игрока не ближе N метров от центра охран€емой зоны
+local not_on_pos_max_kill_distance = 20
+
+-- ≈сли зоны не по€в€тс€ в течение 15 секунд - сообщить об ошибке
+local zone_appear_in_db_wait_timeout = 15000
+
+teams = {}
+
+local state_none = 0
+local state_walking = 1
+local state_going_to_plr = 2
+local state_standing = 3
+
+local body_state_free = 0
+local body_state_danger = 1
+
+----------------------------------------------------------------------------------------------------------------------
+class "evaluator_need_zoneguard" (property_evaluator)
+
+function evaluator_need_zoneguard:__init(storage, name) super(nil, name)
+	self.st = storage
+end
+
+function evaluator_need_zoneguard:evaluate()
+  	return xr_logic.is_active(self.object, self.st)
+end
+
+---------------------------------------------------------------------------------------------------------------------
+class "action_zoneguard_activity" (action_base)
+
+function action_zoneguard_activity:__init(npc_name, action_name, storage) super(nil, action_name)
+	self.st = storage
+	self.move_mgr = move_mgr.move_mgr(storage.npc)
+	self.was_reset = false
+end
+
+function action_zoneguard_activity:initialize()
+	--printf("_bp: action_zoneguard_activity: initialize")
+	action_base.initialize(self)
+	self.object:set_node_evaluator()
+	self.object:set_path_evaluator()
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+
+	--xr_reactions.add_rule(self.object, "ignore")
+
+	--self.object:enable_talk() -- теперь делаетс€ с помощью meet_talk_enabled = true
+
+	self.move_mgr:initialize()
+
+	self:reset_scheme()
+end
+
+function action_zoneguard_activity:activate_scheme()
+	self.was_reset = false
+end
+
+function action_zoneguard_activity:reset_scheme()
+	self.was_reset = true
+
+	if not teams[self.st.team] then
+		teams[self.st.team] = {}
+	end
+
+	self:reset_trigger()
+
+	--xr_state.anim_update(nil, self.object)
+	--self.object:clear_animations()
+	
+	if self.st.path_walk_info == nil then
+		self.st.path_walk_info = utils.path_parse_waypoints(self.st.path_walk)
+	end
+	if self.st.path_look_info == nil then
+		self.st.path_look_info = utils.path_parse_waypoints(self.st.path_look)
+	end
+
+	self.move_mgr:reset(self.st.path_walk, self.st.path_walk_info,
+		self.st.path_look, self.st.path_look_info,
+		self.st.walker_team)
+
+	self.talked = false
+
+	self.snd = {}
+	if self.st.snd_greet then
+		--self.snd.rnd = snd_prob
+		--self.snd.maxidle = 3
+		--self.snd.sumidle = 2
+		self.snd.themes = self.st.snd_greet
+	end
+	self.sound_activated = false
+
+	self.state = state_walking
+
+	self.zone_appear_wait_end_time = nil
+end	
+
+function action_zoneguard_activity:reset_trigger()
+	local who_triggered = teams[self.st.team].triggered
+	if who_triggered and who_triggered == self.object:id() then
+		teams[self.st.team].triggered = nil
+	end
+end
+
+function action_zoneguard_activity:talk_with_plr(actor)
+	if self.st.enable_dialog and not self.talked then
+		if not self.object:is_talking() then
+			--self.object:switch_to_talk()
+			actor:run_talk_dialog(self.object)
+			self.talked = true
+		end
+	end
+end
+
+function action_zoneguard_activity:get_sug_body_state(actor)
+	if self.st.no_danger or self.object:relation(actor) == game_object.friend then
+		return body_state_free --"guard"
+	else
+		return body_state_danger --"threat"
+	end
+end
+
+function action_zoneguard_activity:go_to_actor(actor, update_state)
+	self.object:set_path_type(game_object.level_path)
+	local target_vert = actor:level_vertex_id()
+	if self.object:accessible(target_vert) then
+		self.object:set_dest_level_vertex_id(target_vert)
+	end
+
+	if update_state then	
+		local sug_body_state = self:get_sug_body_state(actor)
+		state_mgr.set_state(self.object,
+			if_then_else(sug_body_state == body_state_free, "run",	"assault"),
+			nil,
+			nil,
+			{ look_object = actor }, 
+			{animation = true})
+	end
+end
+
+function action_zoneguard_activity:stand_still(actor)
+	local sug_body_state = self:get_sug_body_state(actor)
+	local snd
+	if self.st.snd_anim_sync and self.st.snd_greet then
+		snd = self.st.snd_greet
+	else
+		snd = nil
+	end
+	if self.st.anim then
+		state_mgr.set_state(self.object, self.st.anim, nil, nil,
+			{ look_object = actor }, {animation = true}, snd)
+	else
+		state_mgr.set_state(self.object,
+			if_then_else(sug_body_state == body_state_free, "guard", "threat"),
+			nil,
+			nil,
+			{ look_object = actor }, {animation = true}, snd)
+	end
+end
+	
+function action_zoneguard_activity:execute()
+	action_base.execute(self)
+
+	if not self.was_reset then
+		self:reset_scheme()
+	end
+
+	local prev_state
+	repeat
+		prev_state = self.state
+		self:fsm_step()
+	until prev_state == self.state
+end
+
+function action_zoneguard_activity:ignore_actor(actor)
+	if self.st.ignore_friends and self.object:relation(actor) == game_object.friend then
+		return true
+	end
+	if self.st.ignore_cond and xr_logic.pick_section_from_condlist(actor, self.object,
+	     self.st.ignore_cond.condlist) ~= nil then
+	     return true
+	end
+
+	return false
+end
+
+function action_zoneguard_activity:fsm_step()
+	if not self.st.zone_guard_obj and self.st.zone_guard then
+		self.st.zone_guard_obj = db.zone_by_name[self.st.zone_guard]
+		if self.st.zone_guard_obj then
+			if self.st.zone_guard_obj:clsid() == clsid.script_zone then
+				abort("object '%s': you must use a restrictor instead of script zone '%s'",
+				            self.object:name(), self.st.zone_guard)
+			end
+			self.zone_appear_wait_end_time = nil
+		else
+			--printf("_bp: object '%s': waiting for zone_guard '%s'",
+			--	self.object:name(), self.st.zone_guard)
+			if not self.zone_appear_wait_end_time then
+				self.zone_appear_wait_end_time = time_global() + zone_appear_in_db_wait_timeout
+			elseif time_global() >= self.zone_appear_wait_end_time then
+				abort("object '%s': unable to find zone_guard '%s' on the map",
+					self.object:name(), self.st.zone_guard)
+			end
+			return
+		end
+	end
+
+	if not self.st.zone_warn_obj then
+		self.st.zone_warn_obj = db.zone_by_name[self.st.zone_warn]
+		if self.st.zone_warn_obj then
+			if self.st.zone_warn_obj:clsid() == clsid.script_zone then
+				abort("object '%s': you must use a restrictor instead of script zone '%s'",
+				            self.object:name(), self.st.zone_warn)
+			end
+			self.zone_appear_wait_end_time = nil
+		else
+			--printf("_bp: object '%s': waiting for zone_warn '%s'",
+			--	self.object:name(), self.st.zone_warn)
+			if not self.zone_appear_wait_end_time then
+				self.zone_appear_wait_end_time = time_global() + zone_appear_in_db_wait_timeout
+			elseif time_global() >= self.zone_appear_wait_end_time then
+				abort("object '%s': unable to find zone_warn '%s' on the map",
+					self.object:name(), self.st.zone_warn)
+			end
+			return
+		end
+	end
+
+	local actor = db.actor
+	if not actor then
+		return
+	end
+
+	if self.sound_activated and distance_between(self.object, actor) <= 5 then
+		--printf("_bp: zoneguard: sound_update: maxidle = %d, sumidle = %s", self.snd.maxidle, self.snd.sumidle)
+		xr_sound.set_sound(self.object, self.snd.themes)
+	else
+		xr_sound.set_sound(self.object, nil)
+	end
+	
+	local see_actor = self.object:see(actor)
+	if self.st.zone_guard_obj then
+		if self.move_mgr:arrived_to_first_waypoint() or distance_between(self.object, self.st.zone_guard_obj) <= not_on_pos_max_kill_distance then
+			if see_actor and self.st.zone_guard_obj:inside(actor:position()) then
+				if not self:ignore_actor(actor) then
+					-- FIXME:
+					-- ¬место set_relation используем hit с нулевой силой,
+					-- чтобы на игрока обиделась вс€ группа, а не только
+					-- один zoneguard.
+					--self.object:set_relation(game_object.enemy, actor)
+					local h = hit()
+					h.power = 0
+					h.direction = self.object:direction()
+					h.bone = "bip01_spine"
+					h.draftsman = actor
+					h.impulse = 0
+					h.type = hit.wound
+					self.object:hit(h)
+				end
+			end
+		end
+	end
+
+	if self.state == state_walking then
+		if actor:alive() and see_actor and self.st.zone_warn_obj:inside(actor:position()) and
+		   teams[self.st.team].triggered == nil and
+		   not self:ignore_actor(actor) and
+		   self.move_mgr:arrived_to_first_waypoint()
+		then
+			if not self.st.no_move then
+				self:go_to_actor(actor, true)
+				self.state = state_going_to_plr
+			else
+				self:stand_still(actor)
+				self.state = state_standing
+			end
+			--utils.stalker_look_at_stalker(self.object, actor)
+			teams[self.st.team].triggered = self.object:id()
+
+			if self.st.snd_greet and not self.sound_activated then
+				--xr_sound.sound_update(self.object, self.snd)
+				self.sound_activated = true
+			end
+		else
+			self.move_mgr:update()
+			if self.move_mgr:arrived_to_first_waypoint() then
+				if xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
+					return
+				end
+			end
+		end
+		return
+	end
+
+	if xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
+		return
+	end
+
+	if self.state ~= state_walking and
+			(not actor:alive() or not self.st.zone_warn_obj:inside(actor:position())) then
+		self.move_mgr:reset(self.st.path_walk, self.st.path_walk_info,
+				self.st.path_look, self.st.path_look_info, self.st.walker_team)
+		self:reset_trigger()
+		self.talked = false
+		self.sound_activated = false
+		self.state = state_walking
+		return
+	end
+
+	--self.object:set_item(object.idle, self.object:best_weapon())
+	--utils.stalker_look_at_stalker(self.object, actor)
+
+	if self.state == state_standing then
+		if not self.st.no_move then
+			if distance_between(self.object, actor) >= 4 then
+				self:go_to_actor(actor, true)
+				self.state = state_going_to_plr
+				return
+			end
+		else
+			if distance_between(self.object, actor) < 3 then
+				self:talk_with_plr(actor)
+			end
+		end
+		--if self.st.anim then
+			--printf("_bp: anim_update: %s", self.st.anim)
+			--xr_state.anim_update(self.st.anim, self.object)
+		--end
+		return
+	end
+
+	if self.state == state_going_to_plr then
+		if distance_between(self.object, actor) >= 3 then
+			-- ¬торой параметр false т.к. состо€ние обновл€ть не нужно,
+			-- нужно обновить только место назначени€.
+			self:go_to_actor(actor, false)
+		else
+			self:stand_still(actor)
+			self:talk_with_plr(actor)
+			self.state = state_standing
+		end
+		return
+	end
+end
+
+function action_zoneguard_activity:finalize()
+	--self.object:disable_talk()
+
+	self:reset_trigger()
+	self.move_mgr:finalize()
+
+	xr_sound.set_sound(self.object, nil)
+	
+	action_base.finalize(self)
+end
+
+---------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+	local operators    = {}
+	local properties  = {}
+
+	local manager = npc:motivation_action_manager()
+
+	properties["need_zoneguard"] = xr_evaluators_id.zmey_zoneguard_base + 1
+	operators["action_zoneguard"]  = xr_actions_id.zmey_zoneguard_base + 1
+
+	-- // evaluators
+	manager:add_evaluator(properties["need_zoneguard"],
+	this.evaluator_need_zoneguard(db.storage[npc:id()].zoneguard, "zoneguard_need"))
+
+	local new_action = this.action_zoneguard_activity(npc, "action_zoneguard_activity", storage)
+	new_action:add_precondition(world_property(stalker_ids.property_alive, true))
+
+	-- added by Dima
+	if nil ~= stalker_ids.property_danger then
+		new_action:add_precondition(world_property(stalker_ids.property_danger, false))
+	end
+	
+	new_action:add_precondition(world_property(stalker_ids.property_enemy, false))
+	new_action:add_precondition(world_property(properties["need_zoneguard"], true))
+	xr_motivator.addCommonPrecondition(new_action)
+	new_action:add_effect(world_property(properties["need_zoneguard"], false))
+	manager:add_action(operators["action_zoneguard"], new_action)
+
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+
+	new_action = manager:action(xr_actions_id.alife)
+	new_action:add_precondition(world_property(properties["need_zoneguard"], false))
+end
+
+-- enable - будет ли работать схема в принципе
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+
+	st.logic     = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+
+	st.path_walk = utils.cfg_get_string        (ini, section, "path_walk",      npc, true,  gulag_name)
+	st.path_look = utils.cfg_get_string        (ini, section, "path_look",      npc, false, gulag_name)
+	st.team = utils.cfg_get_string             (ini, section, "team",           npc, true,  gulag_name)
+	st.zone_guard = utils.cfg_get_string       (ini, section, "zone_guard",     npc, false, gulag_name)
+	st.zone_warn = utils.cfg_get_string        (ini, section, "zone_warn",      npc, true,  gulag_name)
+	st.walker_team = utils.cfg_get_string      (ini, section, "walker_team",    npc, false, gulag_name)
+	st.no_move = utils.cfg_get_bool            (ini, section, "no_move",        npc, false)
+	st.snd_greet = utils.cfg_get_string        (ini, section, "snd_greet",      npc, false, "")
+	st.enable_dialog = utils.cfg_get_bool      (ini, section, "enable_dialog",  npc, false)
+	st.ignore_friends = utils.cfg_get_bool     (ini, section, "ignore_friends", npc, false)
+	st.ignore_cond = xr_logic.cfg_get_condlist (ini, section, "ignore_cond",    npc)
+	st.no_danger = utils.cfg_get_bool          (ini, section, "no_danger",      npc, false)
+	st.anim = utils.cfg_get_string             (ini, section, "anim",           npc, false, "")
+	st.snd_anim_sync = utils.cfg_get_bool      (ini, section, "snd_anim_sync",  npc, false)
+	--printf("_bp: st.anim == %s", st.anim)
+	
+	st.path_walk_info = nil -- Ѕудут инициализированы в reset(), сейчас пути могут быть еще
+	st.path_look_info = nil -- не загружены.
+	st.zone_guard_obj = nil
+	st.zone_warn_obj = nil
+
+	if not st.walker_team then
+		st.walker_team = st.team
+	end
+end
+

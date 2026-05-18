@@ -1,0 +1,131 @@
+<!-- garbage quest locations and spots-->
+	<gar_seryi_location hint="gar_seriy" store="1">
+		<level_map spot="gar_seryi_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="gar_seryi_spot" pointer="quest_pointer"></mini_map>
+	</gar_seryi_location>
+
+	<gar_boars_nest_location hint="gar_boars_nest" store="1">
+		<level_map spot="gar_boars_nest_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="gar_boars_nest_spot" pointer="quest_pointer"></mini_map>
+	</gar_boars_nest_location>
+	
+	<gar_bandits_leader_location hint="gar_bandits_leader" store="1">
+		<level_map spot="gar_bandits_leader_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="gar_bandits_leader_spot" pointer="quest_pointer"></mini_map>
+	</gar_bandits_leader_location>
+	
+	<gar_hellcar_location hint="gar_hellcar" store="1">
+		<level_map spot="gar_hellcar_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="gar_hellcar_spot" pointer="quest_pointer"></mini_map>
+	</gar_hellcar_location>
+	
+	<gar_dolg_blockpost_location hint="gar_dolg_blokpost" store="1">
+		<level_map spot="gar_dolg_blockpost_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="gar_dolg_blockpost_spot" pointer="quest_pointer"></mini_map>
+	</gar_dolg_blockpost_location>
+	
+	<gar_wounded_location hint="gar_wounded_help" store="1">
+		<level_map spot="gar_wounded_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="gar_wounded_spot" pointer="quest_pointer"></mini_map>
+	</gar_wounded_location>
+	
+	<gar_bandit_post_location hint="gar_bandit_post" store="1">
+		<level_map spot="gar_bandit_post_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="gar_bandit_post_spot" pointer="quest_pointer"></mini_map>
+	</gar_bandit_post_location>
+	
+	<gar_tunnel_newbie_location hint="gar_newbie" store="1">
+		<level_map spot="gar_tunnel_newbie_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="gar_tunnel_newbie_spot" pointer="quest_pointer"></mini_map>
+	</gar_tunnel_newbie_location>
+	
+	<!-- Fake location with spots -->
+	<gar_spot_swamp_location hint="gar_swamp" store="1">
+		<level_map spot="crlc_big_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="crlc_big_spot" pointer="quest_pointer"></mini_map>
+	</gar_spot_swamp_location>
+	
+	<gar_spot_secret1_location hint="gar_secret1" store="1">
+		<level_map spot="crlc_small_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="crlc_small_spot" pointer="quest_pointer"></mini_map>
+	</gar_spot_secret1_location>
+	
+	<gar_spot_dogs_forest_location hint="gar_dogs_in_forest" store="1">
+		<level_map spot="crlc_big_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="crlc_big_spot" pointer="quest_pointer"></mini_map>
+	</gar_spot_dogs_forest_location>
+	
+	<gar_spot_angar_location hint="gar_angar" store="1">
+		<level_map spot="crlc_mdl_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="crlc_mdl_spot" pointer="quest_pointer"></mini_map>
+	</gar_spot_angar_location>		
+	
+	<gar_spot_tunnel_location hint="gar_tunnel" store="1">
+		<level_map spot="crlc_small_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="crlc_small_spot" pointer="quest_pointer"></mini_map>
+	</gar_spot_tunnel_location>
+	
+	<gar_spot_car_graveyard_location hint="gar_car_graveyard" store="1">
+		<level_map spot="crlc_big_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="crlc_big_spot" pointer="quest_pointer"></mini_map>
+	</gar_spot_car_graveyard_location>
+	
+	<gar_spot_bandit_agr_location hint="gar_bandit_agr" store="1">
+		<level_map spot="crlc_mdl_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="crlc_mdl_spot" pointer="quest_pointer"></mini_map>
+	</gar_spot_bandit_agr_location>
+	
+	<gar_spot_dolg_blokpost_location hint="gar_dolg_blokpost" store="1">
+		<level_map spot="crlc_mdl_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="crlc_mdl_spot" pointer="quest_pointer"></mini_map>
+	</gar_spot_dolg_blokpost_location>
+	
+	<gar_spot_trash1_location hint="gar_trash1" store="1">
+		<level_map spot="crlc_big_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="crlc_big_spot" pointer="quest_pointer"></mini_map>
+	</gar_spot_trash1_location>	
+
+	<gar_spot_trash2_location hint="gar_trash1" store="1">
+		<level_map spot="crlc_big_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="crlc_big_spot" pointer="quest_pointer"></mini_map>
+	</gar_spot_trash2_location>		
+	
+	<gar_spot_trash3_location hint="gar_trash1" store="1">
+		<level_map spot="crlc_big_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="crlc_big_spot" pointer="quest_pointer"></mini_map>
+	</gar_spot_trash3_location>		
+	
+	
+	<!-- spots -->
+	<gar_seryi_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="32" y="0" width="32" height="32">ui\ui_icons_map</texture>
+	</gar_seryi_spot>
+	
+	<gar_boars_nest_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="0" y="32" width="32" height="32">ui\ui_icons_map</texture>
+	</gar_boars_nest_spot>
+	
+	<gar_bandits_leader_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="96" y="64" width="32" height="32">ui\ui_icons_map</texture>
+	</gar_bandits_leader_spot>
+	
+	<gar_hellcar_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="160" y="0" width="32" height="32">ui\ui_icons_map</texture>
+	</gar_hellcar_spot>
+	
+	<gar_dolg_blockpost_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="128" y="0" width="32" height="32">ui\ui_icons_map</texture>
+	</gar_dolg_blockpost_spot>
+	
+	<gar_wounded_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="224" y="64" width="32" height="32">ui\ui_icons_map</texture>
+	</gar_wounded_spot>
+	
+	<gar_bandit_post_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="96" y="64" width="32" height="32">ui\ui_icons_map</texture>
+	</gar_bandit_post_spot>
+
+	<gar_tunnel_newbie_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="0" y="0" width="32" height="32">ui\ui_icons_map</texture>
+	</gar_tunnel_newbie_spot>
+	

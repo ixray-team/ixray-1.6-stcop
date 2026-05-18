@@ -1,0 +1,27 @@
+﻿<?xml version='1.0' encoding="UTF-8"?>
+<!-- OLD OLD OLD ALL!!! REMOVE AFTER UPDATE-->
+<!-- JOBS SUBWINDOW WINDOW -->
+<window>
+   	<msglog_frame_window x="20" y="260" width="350" height="440">
+   		<texture>ui_frame</texture>
+		<base_texture>ui\ui_frame</base_texture>
+		<left_top_texture x="15" y="20">ui\ui_inv_list_over_lt</left_top_texture>
+		<left_bottom_texture x="19" y="155">ui\ui_frame_over_lb</left_bottom_texture>
+		<title x="20" y="0" width="240" height="60"><text font="header" r="255" g="255" b="255">Items List</text></title>
+	</msglog_frame_window>
+
+
+    <cntd_frame_line x="5" y="14" width="490" height="18">
+        <title x="10" y="1" width="435" height="18">
+            <text font="letterica16" r="255" g="255" b="255"></text>
+        </title>
+        <texture>ui_string_03</texture>
+        <base_texture>ui\ui_string_03</base_texture>
+    </cntd_frame_line>
+
+	
+	<!-- TASKS LIST -->
+	<list x="5" y="35" width="430" height="450" item_height="18"></list>
+
+</window>
+

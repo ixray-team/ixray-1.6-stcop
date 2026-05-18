@@ -1,0 +1,327 @@
+---------------------------------------------------------------------------------------------------------------------
+--	Схема реакции на раздражители
+--	автор: Диденко Руслан (Stohe)
+----------------------------------------------------------------------------------------------------------------------
+
+-- Время инерции для выхода из реакции
+local reaction_inertion_time = 3*60
+
+local sounds = {}
+--'ignore
+--'silence
+local k,v = 0,0
+----------------------------------------------------------------------------------------------------------------------
+--Evaluators
+----------------------------------------------------------------------------------------------------------------------
+-- Эвалуатор указывает что есть новый раздражитель
+class "evaluator_new" (property_evaluator)
+function evaluator_new:__init(name, storage) super (nil, name)
+	self.a = storage
+end
+function evaluator_new:evaluate()
+	if self.object:alive() == false then
+		return false
+	end
+
+	if self.mgr == nil then
+		self.mgr = self.object:motivation_action_manager()
+	end	
+	-- если есть враги - надо не реагировать.
+	if self.mgr:evaluator(stalker_ids.property_enemy):evaluate() then
+		return false
+	end
+
+	self.a.evn:calculate()
+	self.a.evn:print()
+	-- Необходимо не забыть вставить инерцию возврата.
+	if self.a.reaction_time ~= nil and
+	   game.get_game_time():diffSec(self.a.reaction_time) >= reaction_inertion_time
+	then
+		return true
+	end
+
+	if self.a.evn:ruleExist("ignore") == true then
+		return false
+	end
+	return self.a.evn:isEvents()
+end
+
+----------------------------------------------------------------------------------------------------------------------
+--Actions
+----------------------------------------------------------------------------------------------------------------------
+-- Обработка раздражителя
+class "action_reaction_wait" (action_base)
+function action_reaction_wait:__init (npc_name,action_name, storage) super (nil, action_name)
+	self.a = storage
+	self.near_object = false
+end
+function action_reaction_wait:initialize()
+	action_base.initialize(self)
+--	self.object:set_node_evaluator()
+--	self.object:set_path_evaluator()
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+end
+function action_reaction_wait:execute()
+	action_base.execute(self)
+	local tt = self.a.evn:get_event(self.object)
+	if tt ~= nil then
+		if tt.visibility >= self.object:visibility_threshold() then
+			self.a.evn:markAsUsed(tt.id)
+			self.a.reaction_time = nil
+			return
+		end
+		self.a.reaction_time = game.get_game_time()
+		state_mgr.set_state(self.object, "caution", nil, nil, {look_position = tt.position}, {animation = true}, "reac_see")
+	end
+end
+function action_reaction_wait:finalize()	
+	action_base.finalize (self)
+end
+----------------------------------------------------------------------------------------------------------------------
+-- binder
+----------------------------------------------------------------------------------------------------------------------
+function add_to_binder(object, char_ini, scheme, section, st)
+	local operators		= {}
+	local properties	= {}
+
+	local manager = object:motivation_action_manager()
+
+	properties["event"] 	= xr_evaluators_id.reaction
+
+	operators["wait"] 		= xr_actions_id.stohe_reactions_base + 0
+
+	-- Evaluators
+	manager:add_evaluator (properties["event"], 		this.evaluator_new("reaction_event", st))
+
+	-- Actions
+	local action = this.action_reaction_wait (object:name(),"action_reaction_wait", st)
+	action:add_precondition		(world_property(stalker_ids.property_alive,    true))
+	action:add_precondition		(world_property(stalker_ids.property_enemy,    false))
+	action:add_precondition		(world_property(properties["event"],           true))
+	action:add_effect		(world_property(properties["event"], false))
+	manager:add_action (operators["wait"], action)
+
+	action = manager:action (xr_actions_id.alife)
+	action:add_precondition	    (world_property(properties["event"],           false))
+	
+	st.evn = events(object, st)
+end
+
+function set_reactions(npc, ini, scheme, section)
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+end
+-- Вызывается на переключении на новую секцию. Производит вычитывание настроек из текущей секции.
+function reset_reactions(npc, scheme, st, section)
+	local reac_section = utils.cfg_get_string(st.ini, section, "reactions", npc, false, "")
+
+	xr_reactions.reset_rules(npc)
+    if reac_section ~= nil then
+    	local i = 1
+        while st.ini:line_exist(reac_section, "rule_"..i) == true do
+			xr_reactions.add_rule(npc, st.ini:r_string(reac_section, "rule_"..i))
+            i = i + 1
+        end
+    end	
+end
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+-- Classs
+----------------------------------------------------------------------------------------------------------------------
+class "events"
+function events:__init(npc)
+	self.npc = npc
+	self.arhive = {} -- массив дескрипторов раздражителей
+	self.used = {} -- обработанные объекты, некоторое время раздражители по ним учитываться не будут
+
+	self.time_memory = 20*60*1000
+	self.visio	= 0.25 		-- если объект виден
+end
+function events:calculate()  -- Производить перерасчет и обновление раздражителей для текущего элемента
+	self.arhive = {}
+
+	-- удалять обработанные устаревшие раздражители
+	for k,v in pairs(self.used) do
+		if game.time() - v >= self.time_memory then
+			self.used[k] = nil
+		end
+	end
+
+	-- определяем что нам известно о видимости объекта
+	local vtable = self.npc:not_yet_visible_objects()
+	if vtable == nil then return false end
+	for v in vtable do
+		self:calculateObject(v)
+	end
+end
+function events:calculateObject(v)
+	local vo = v:object()
+	
+	if v.value < self.visio * self.npc:visibility_threshold() then
+		return false
+	end
+
+	-- реагировать только на сталкеров и монстров
+	local type = self:type(vo)
+	
+	if type == "none" then
+		return false
+	end
+
+	if type == "stalker" and
+	  (self.npc:relation(vo) ~= game_object.enemy or
+	   xr_combat_ignore.is_enemy(self.npc, vo) == false)
+	then
+		return false
+	end
+
+	if self:ruleExist("ignore") and
+		v.value >= self.npc:visibility_threshold()
+	then
+		self:markAsUsed(vo:id())
+	end
+
+	-- заносим раздражитель в память
+	if self.arhive[vo:id()] == nil then
+		self.arhive[vo:id()] = {name = vo:name()}
+	end
+	-- указываем, что нам о нем известно
+	local arhive_vo = self.arhive[vo:id()]
+	
+	arhive_vo.position 		= vo:position()
+	arhive_vo.visibility	= v.value
+	arhive_vo.time			= game.time()
+	arhive_vo.id			= vo:id()
+end
+function events:get_event(tt)  -- Выдает наиболее приоритетный раздражитель
+	local prior = nil
+
+	local key,value = 0,0
+	for key,value in pairs(self.arhive) do
+		if self:get_eventObject(prior, value) == true then
+			prior = key
+		end
+	end
+	if prior == nil then
+		return nil
+	end	
+	return self.arhive[prior]
+end
+function events:get_eventObject(prior, v)
+	if prior == nil then
+		return true
+	end
+
+	-- Приоритет по качеству замечания
+	if v.visibility > self.arhive[prior].visibility then
+		return true
+	end
+	
+	return false
+end
+function events:markAsUsed(npc)
+	if npc ~= nil then
+		if self.used[npc] ~= nil then
+			self.used[npc] = game.time()
+		else
+			table.insert(self.used, npc, game.time())
+		end
+	end
+end
+function events:removeFromUsed(npc)
+	if self.used[npc] ~= nil then
+		table.remove(self.used, npc)
+	end
+end
+function events:isEvents()
+	local key,value = 0,0
+	for key,value in pairs(self.arhive) do
+		local exst = false
+		for k,v in pairs(self.used) do
+			if key == k then
+				exst = true
+				break
+			end
+		end
+		if not exst then
+			return true
+		end
+	end
+	return false
+end
+function events:printid(key)
+	value = self.arhive[key]
+	if value ~= nil then
+		printf("------------------------ Object: %d --- %s", key, value.name)
+		if value.visibility then 	printf("Visibility: %.3f", value.visibility)
+					else 	printf("Visibility: nil") end
+		if value.time then 		printf("Time: %d", value.time)
+					else 	printf("Time: nil") end
+		if value.position then 		printf("Position: [%d][%d][%d]", value.position.x, value.position.y, value.position.z)
+					else 	printf("Position: nil") end
+	end
+end
+function events:print()
+	local i,key,value = 0,0,0
+	for key,value in pairs(self.arhive) do
+		if i == 0 then
+			printf("--------------------------------------------------------------")
+			printf("Print Start [%s]", self.npc:name())
+			printf("--------------------------------------------------------------")
+		end
+		i = i + 1
+		self:printid(key)
+	end
+end
+function events:type(obj)
+	local otype = get_clsid(obj)
+	local type = "none"
+
+	if 	IsStalker (obj) == true	then
+		if obj:alive() == true then
+			type = "stalker"
+		end
+	elseif IsMonster (obj) == true then
+		if obj:alive() == true then
+			type = "monstr"
+		end
+	end
+	return type
+end
+function events:ruleExist(rule)
+	if self.npc == nil then return false end
+
+	if self.rules[rule] == true then
+		return true
+	end
+	return false
+end
+function events:ruleAdd(rule)
+	self.rules[rule] = true
+end
+function events:ruleRemove(rule)
+	self.rules[rule] = nil
+end
+function events:ruleClear()
+	self.rules = {}
+end
+
+
+function add_rule(obj, rule)
+	db.storage[obj:id()].reactions.evn:ruleAdd(rule)		
+end
+function reset_rules(obj)
+	db.storage[obj:id()].reactions.evn:ruleClear()
+end
+function remove_rule(obj, rule)
+	db.storage[obj:id()].reactions.evn:ruleRemove(rule)
+end

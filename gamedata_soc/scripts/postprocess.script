@@ -1,0 +1,328 @@
+
+local pi_2 = 1.57079632679489661923
+local func_sinus = 0
+local func_cosinus = 1
+local func_linear = 2
+
+function printf () end
+
+
+class "PPData" (effector)
+----------------
+function PPData:__init (host) super (1003,10000000)
+    self.params = effector_params ()
+    self.host = host
+    self.time = time_global ()
+end
+----------------
+function PPData:process (pp)
+	printf	("0")
+    effector.process (self, pp)
+	printf	("1")
+    local t = time_global ()
+	printf	("2")
+    --if t - self.time ~= 0 then
+       self.host:update2 ((t - self.time) * 0.001)
+	printf	("3")
+       self.time = t
+       pp:assign (self.params)
+	printf	("4")
+    --end    
+    return true
+end
+
+function PPData:__finalize()
+	printf	("PPData::~PPData() called!")
+end
+----------------
+
+
+----------------
+class "PPEffector"
+----------------
+function PPEffector:__init (ini_file, section)
+    self.settings = {}
+    self.section = section
+    self.current_func = 0
+    self.base = 0.0
+    self.func_time = 0.0
+    self.base_time = 0.0
+    self.current_value = 0.0
+    self.value = 0.0
+    self.time = 0.0
+    self.end_func = false
+    if ini_file:section_exist (section) then
+       for a = 1, 16, 1 do
+           param = string.format ("fx_set_%d", a)
+           if ini_file:line_exist (section, param) then
+              self:parse_fx_data (ini_file:r_string (section, param), self.settings)
+           end
+       end
+    end
+    
+    if table.getn (self.settings) > 1 then
+       if ini_file:line_exist (section, "init_value") then
+          self.settings[1].start_value = ini_file:r_float (section, "init_value")
+       end   
+    end    
+        
+    self:set_next_function ()
+end
+----------------
+function PPEffector:parse_data (str)
+    local t = {}
+    local size = string.len (str)
+        local pos = 1
+    while true do
+          local start, finish = string.find (str, ",", pos)
+          if start == nil then start = size + 1 end
+          local temp = string.sub (str, pos, start - 1)
+          table.insert (t, temp)
+          pos = start + 1
+          if finish == nil then break end
+    end
+    return t
+end
+----------------
+function PPEffector:parse_fx_data (str, t)
+    local temp = self:parse_data (str)
+    if table.getn (temp) < 5 then
+       return 0.0
+    end
+    local ins = {}
+    ins.func = temp[1]
+    ins.time = tonumber (temp[2])
+    ins.scale = tonumber (temp[3])
+    ins.init_value = tonumber (temp[4])
+    ins.intensity = tonumber (temp[5])
+    ins.start_value = 0.0
+    if table.getn (temp) == 6 then
+       ins.base_offset = tonumber (temp[6])
+    else
+       ins.base_offset = 0
+    end
+    table.insert (t, ins)
+    return ins.time
+end
+----------------
+function PPEffector:get_work_time ()
+    local ftime = 0.0
+    for a = 1, table.getn (self.settings), 1 do
+        ftime = ftime + self.settings[a].time
+    end
+    return ftime
+end
+----------------
+function PPEffector:sin_func (delta)
+    local v = pi_2 / self.base_time * delta * self.settings[self.current_func].scale
+    self.value = v + self.value
+    return math.sin (self.value)
+end
+----------------
+function PPEffector:cos_func (delta)
+    local v = pi_2 / self.func_time * delta * self.settings[self.current_func].scale
+    self.value = v + self.value
+    return math.cos (self.value)
+end
+----------------
+function PPEffector:lin_func (delta)
+    self.value = self.value + delta * self.settings[self.current_func].scale
+    return self.value
+end
+----------------
+function PPEffector:update (delta)
+    if table.getn (self.settings) == 0 then
+       return self.current_value
+    end
+
+    if self.end_func == true then
+       return 0.0 --self.current_value
+    end
+
+    self.time = self.time + delta
+    
+    local v = 0.0
+    if self.settings[self.current_func].func == "linear" then
+       v = self:lin_func (delta)
+    elseif self.settings[self.current_func].func == "sinus" then
+       v = self:sin_func (delta)
+    elseif self.settings[self.current_func].func == "cosinus" then
+       v = self:cos_func (delta)
+    else
+       v = 0.0
+    end
+
+
+    v = v * self.settings[self.current_func].intensity + self.base + self.settings[self.current_func].base_offset
+    
+    
+    if v > 1.0 then v = 1.0 end
+    if v < -1.0 then v = -1.0 end
+
+    self.current_value = v
+
+    if self.time > self.func_time then
+       self:set_next_function ()
+    end
+    
+    return v
+end
+----------------
+function PPEffector:set_next_function ()
+    if table.getn (self.settings) == 0 then
+       self.end_func = true
+       return
+    end
+
+    self.current_func = self.current_func + 1
+
+    if self.current_func > table.getn (self.settings) then
+       self.end_func = true
+       return
+    end
+
+    self.func_time = self.time + self.settings[self.current_func].time
+    self.base_time = self.settings[self.current_func].time
+    self.base = self.current_value
+    self.value = self.settings[self.current_func].init_value * pi_2
+end
+----------------
+function PPEffector:reset ()
+    self.time = 0.0
+    self.value = 0.0
+    self.current_func = 0
+    self.func_time = 0.0
+    self.end_func = false
+    self.current_value = 0.0
+    self.base = 0.0
+    self:set_next_function ()
+    
+    if self.current_func == 1 then
+       if self.settings[self.current_func].func == "linear" then
+          self.current_value = self.settings[self.current_func].start_value
+       else
+          self.base = self.settings[self.current_func].start_value
+       end
+    end      
+end
+
+
+----------------
+class "PostProcess"
+----------------
+function PostProcess:__init (ini_file)
+    -- load color base effects
+    self.base_r = PPEffector (ini_file, "color_base_red")
+    self.base_g = PPEffector (ini_file, "color_base_green")
+    self.base_b = PPEffector (ini_file, "color_base_blue")
+    -- load color gray effects
+    self.gray_r = PPEffector (ini_file, "color_gray_red")
+    self.gray_g = PPEffector (ini_file, "color_gray_green")
+    self.gray_b = PPEffector (ini_file, "color_gray_blue")
+    -- load add color effects
+    self.add_r = PPEffector (ini_file, "color_add_red")
+    self.add_g = PPEffector (ini_file, "color_add_green")
+    self.add_b = PPEffector (ini_file, "color_add_blue")
+    -- load gray effects
+    self.gray =  PPEffector (ini_file, "gray")
+    -- load duality horizontal effect
+    self.duality_h =  PPEffector (ini_file, "duality_h")
+    -- load duality vertical effect
+    self.duality_v =  PPEffector (ini_file, "duality_v")
+    -- load noise intensity effect
+    self.noise_i = PPEffector (ini_file, "noise_intensity")
+    -- load noise granularuty effect
+    self.noise_g = PPEffector (ini_file, "noise_granularity")
+    -- load noise FPS effect
+    self.noise_f = PPEffector (ini_file, "noise_fps")
+
+    self.pp = PPData (self)
+    self.pp:start ()
+    self.pp.params.color_base = color (0.5, 0.5, 0.5)               // max base color diff       [0.0-0.5]
+    self.pp.params.color_gray = color (0.0, 0.0, 0.0)               // RGB                       [0.0-1.0]
+    self.pp.params.color_add  = color (0.0, 0.0, 0.0)               // RGB                       [0.0-1.0]
+    self.pp.params.gray       = 0.0                                 // gray max intensity        [0.0-1.0]
+    self.pp.params.dual       = duality (0.0, 0.0)
+    self.pp.params.noise      = noise   (0.0, 0.0, 30)              // intensity, grain, fps     [0.0-1.0,0.0-1.0,1-100]
+    
+    self.update_called = false
+end
+----------------
+function PostProcess:reset ()
+    self.base_r:reset ()
+    self.base_g:reset ()
+    self.base_b:reset ()
+    self.gray_r:reset ()
+    self.gray_g:reset ()
+    self.gray_b:reset ()
+    self.add_r:reset ()
+    self.add_g:reset ()
+    self.add_b:reset ()
+    self.gray:reset ()
+    self.duality_h:reset ()
+    self.duality_v:reset ()
+    self.noise_i:reset ()
+    self.noise_g:reset ()
+    self.noise_f:reset ()
+end
+----------------
+function PostProcess:update2 (delta)
+
+    self.pp.params.color_base   = color             (self.base_r:update (delta) + 0.5, self.base_g:update (delta) + 0.5, self.base_b:update (delta) + 0.5)
+    self.pp.params.color_gray   = color             (self.gray_r:update (delta), self.gray_g:update (delta), self.gray_b:update (delta))
+    self.pp.params.color_add    = color             (self.add_r:update (delta), self.add_g:update (delta), self.add_b:update (delta))
+    self.pp.params.gray         = self.gray:update  (delta)
+    self.pp.params.dual         = duality           (self.duality_h:update (delta), self.duality_v:update (delta))
+    self.pp.params.noise        = noise             (self.noise_i:update (delta), self.noise_g:update (delta), self.noise_f:update (delta) * 100 + 1)
+    
+    self.update_called = true
+end    
+----------------
+function PostProcess:update ()
+
+    if self.update_called == false then
+       return false
+    end   
+    
+    if self.base_r.end_func == true and 
+       self.base_g.end_func == true and  
+       self.base_b.end_func == true and  
+       self.gray_r.end_func == true and  
+       self.gray_g.end_func == true and  
+       self.gray_b.end_func == true and  
+       self.add_r.end_func == true and  
+       self.add_g.end_func == true and  
+       self.add_b.end_func == true and  
+       self.gray.end_func == true and  
+       self.duality_h.end_func == true and  
+       self.duality_v.end_func == true and  
+       self.noise_i.end_func == true and  
+       self.noise_g.end_func == true and  
+       self.noise_f.end_func == true then
+--       if self.pp ~= nil then
+--          self.pp:finish ()
+--          self.pp = nil
+--       end   
+       return true
+    end   
+    return false
+end
+
+----------------
+function main ()
+    local process = PostProcess (ini_file ("scripts\\proba.ltx"))
+    level.set_weather_fx ("surge_day")
+        local prev_time        = time_global ()
+        while 1 do
+                        wait ();
+                        local dt = time_global () - prev_time;
+                        prev_time = time_global()
+                        if process:update () == true then
+                           break
+                        end
+        end
+end
+-- run_string set_postprocess ("scripts\\sincos.ltx")
+
+
+--run_string level_object_by_sid (728).clsid = 0

@@ -1,0 +1,75 @@
+local object_list		= {}
+local smart_terrains	= {}
+
+-- Бюреры отдельные по углам
+object_list["test0"] = {
+	"dar_m_burer_e_0001",
+	"dar_m_burer_e_0002",
+	"dar_m_burer_e_0003"		
+}
+
+
+-- Бюреры под гулагом-элюдером
+object_list["test1"] = {
+--	"dar_m_burer_e_0004",
+	"dar_m_burer_e_0005"
+--	"dar_m_burer_e_0006"
+}
+-- Полтергейст (гулаг в ком.центре)
+object_list["test2"] = {
+	"dar_m_poltergeist_e",
+	"dar_m_poltergeist_e_0000",
+	"dar_m_poltergeist_e_0001"
+}
+-- Полтергейст в комнате с кодом
+object_list["test3"] = {
+	"dar_m_poltergeist_e_0002",
+	"dar_m_poltergeist_e_0003"
+}
+-- Снорки на верхнем этаже
+object_list["test4"] = {
+	"dar_m_snork_1",
+	"dar_m_snork_11",
+	"dar_m_snork_111",
+	"dar_m_snork_2",
+	"dar_m_snork_22",
+	"dar_m_snork_222",
+	"dar_m_snork_3",
+	"dar_m_snork_33",
+	"dar_m_snork_333"
+}
+
+-- Тушканы внизу
+object_list["test5"] = {
+	"dar_m_tushkano_e",
+	"dar_m_tushkano_e_0000",
+	"dar_m_tushkano_e_0001",
+	"dar_m_tushkano_e_0002",
+	"dar_m_tushkano_e_0003",
+	"dar_m_tushkano_e_0004",
+	"dar_m_tushkano_e_0005",
+	"dar_m_tushkano_e_0006",
+	"dar_m_tushkano_e_0007",
+	"dar_m_tushkano_e_0008",
+	"dar_m_tushkano_e_0009",
+	"dar_m_tushkano_e_0010",
+	"dar_m_tushkano_e_0011",
+	"dar_m_tushkano_e_0012"
+}
+
+-- define smart terrains
+smart_terrains["test1"] = {
+	"dar_burer_ring"
+}
+
+smart_terrains["test2"] = {
+	"dar_com_center_poltergeist"
+}
+
+------------------------------------------------------------------------------
+-- Base Run function (load extern)
+------------------------------------------------------------------------------
+function r(index)
+	test_utils.setup_test(object_list, smart_terrains)
+	test_utils.run_test(index)
+end

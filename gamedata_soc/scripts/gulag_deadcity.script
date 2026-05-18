@@ -1,0 +1,857 @@
+--------------------------------------------------------------------------
+-- Stuff
+--------------------------------------------------------------------------
+function printf() end
+
+--------------------------------------------------------------------------
+-- Member counts
+--------------------------------------------------------------------------
+local bandits_kamp_count = 6
+
+--------------------------------------------------------------------------
+-- States
+--------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------
+-- General
+--------------------------------------------------------------------------
+local t = {}
+local gulags = {cit_bandits = {comm = {"bandit"}},
+                cit_killers = {comm = {"killer"}},
+                cit_beasts  = {comm = false}}
+
+-- Job -------------------------------------------------------------------
+function load_job(sj, gname, type, squad, groups)
+    local g = gulags[type]
+    if g then
+        g.job(sj, gname, type, squad, groups)
+    end
+end
+
+-- State -----------------------------------------------------------------
+function check_state_stub(gulag)
+    return 0
+end
+
+function load_states(gname, type)
+    local g = gulags[type]
+
+    if g then
+        return g.state or check_state_stub
+    end
+
+	return nil
+end
+	    
+-- Dynamic ltx -----------------------------------------------------------
+function load_ltx(gname, type)
+    local g = gulags[type]
+    if g then
+        return g.ltx
+    end
+
+	return nil
+end
+
+-- Check communities -----------------------------------------------------
+local function checkCommon(npc_community, gulag_type, npc_rank, se_obj, stalker)
+    local g = gulags[gulag_type]
+    if g then
+        if g.comm then
+            if type(g.comm) == "function" then
+                return g.comm(npc_community, gulag_type, npc_rank, se_obj, stalker)
+            end
+            if type(g.comm) == "boolean" then
+                return g.comm == stalker
+            end
+
+            local i, v = 0, 0
+            for i, v in pairs(g.comm) do
+                if npc_community == v then
+                    return true
+                end
+            end
+            if i > 0 then
+                return false
+            end
+        end
+        return true
+    end
+	return false
+end
+
+function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
+	return checkCommon(npc_community, gulag_type, npc_rank, se_obj, true)
+end
+
+function checkMonster(npc_community, gulag_type, npc_rank, se_obj)
+	return checkCommon(npc_community, gulag_type, npc_rank, se_obj, false)
+end
+
+
+--------------------------------------------------------------------------
+-- Gulags
+--------------------------------------------------------------------------
+local combat_ignore = "combat_ignore_cond = {=cit_combat_ignore(cit_actor_is_free)}\n" --=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}\n"
+local combat_ignore2 = "combat_ignore_cond  = {=cit_combat_ignore(cit_actor_out_killers_base)}\n" --=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}, {=enemy_gulag(cit_kanaliz1:cit_kanaliz2:cit_kanaliz3)}\n"
+
+--------------------------------------------------------------------------
+-- Killers
+--------------------------------------------------------------------------
+-- Predicates ------------------------------------------------------------
+function k_predicate_l(data)
+	return data.profile_name == "cit_killer_leader"
+end
+
+function k_predicate_e(data)
+	return data.profile_name == "cit_killer_exo"
+end
+
+function k_predicate_es(data)
+	return data.profile_name == "cit_killer_exo_sniper"
+end
+
+function k_predicate_v(data)
+	return data.profile_name == "cit_killer_veteran"
+end
+
+function k_predicate_g(data)
+	return data.profile_name == "cit_killer_general"
+end
+
+-- Jobs ------------------------------------------------------------------
+gulags.cit_killers.job = function(sj, gname, type, squad, groups)
+    local i, v, j = 0, 0, 0
+    local prior, pred, gr = 0, 0, 0
+    local ltx = ""
+
+    ltx = ltx.."[danger_killers]\n" ..
+               "ignore_distance        = 50\n" ..
+               "danger_inertion_time   = 60000\n" ..
+               "danger_expiration_time = 40000\n"
+
+    -- leader
+	t = { section = "logic@" .. gname .. "_leader",
+		idle = 0,
+		prior = 16, state = {0},
+		squad = squad, group = groups[6],
+		in_rest = "cit_jail_restr", out_rest = "",
+		predicate = k_predicate_l
+	}
+	table.insert(sj, t)
+
+	ltx = ltx.."[logic@" .. gname .. "_leader]\n" ..
+               "active          = patrol@" .. gname .. "_leader_attack\n" ..
+               "combat_ignore   = combat_ignore\n" ..
+
+               "[patrol@" .. gname .. "_leader_attack]\n" ..
+               "path_walk           = leader_attack_walk\n" ..
+               "path_look           = leader_attack_look\n" ..
+               "commander           = true\n" ..
+               "show_spot           = false\n" ..
+               "on_info             = {+cit_heli_end} patrol@" .. gname .. "_leader\n" ..
+               "soundgroup          = cit_killers_leader_sg\n" ..
+               --"danger              = danger_killers\n" ..
+               combat_ignore ..
+               --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n" ..
+
+               "[patrol@" .. gname .. "_leader]\n" ..
+               "path_walk           = leader_walk\n" ..
+               "path_look           = leader_look\n" ..
+               "commander           = true\n" ..
+               "show_spot           = false\n" ..
+               --"on_info             = {+cit_jail_guard2_talk_to_guard1 -cit_heli_end} patrol@" .. gname .. "_leader_attack\n" ..
+               "soundgroup          = cit_killers_leader_sg\n" ..
+               --"danger              = danger_killers\n" ..
+               combat_ignore
+               --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+
+    -- leader guards
+    for i = 1, 2 do
+	    t = { section = "logic@" .. gname .. "_leader_guard" .. i,
+		    idle = 0,
+		    prior = 15, state = {0},
+		    squad = squad, group = groups[6],
+		    in_rest = "cit_jail_restr", out_rest = "",
+		    predicate = k_predicate_e
+	    }
+	    table.insert(sj, t)
+
+	    ltx = ltx.."[logic@" .. gname .. "_leader_guard" .. i .. "]\n" ..
+                   "active          = patrol@" .. gname .. "_base_patrol" .. i .. "_attack\n" ..
+                   "combat_ignore   = combat_ignore\n" ..
+
+                   "[patrol@" .. gname .. "_base_patrol" .. i .. "_attack]\n" ..
+                   "path_walk           = leader_attack_walk\n" ..
+                   "path_look           = leader_attack_look\n" ..
+                   "formation           = line\n" ..
+                   "show_spot           = false\n" ..
+                   "on_info             = {+cit_heli_end} patrol@" .. gname .. "_base_patrol" .. i .. "\n" ..
+                   "soundgroup          = " .. gname .. "_leader_sg\n" ..
+                   --"danger              = danger_killers\n" ..
+                   combat_ignore ..
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n" ..
+
+                   "[patrol@" .. gname .. "_base_patrol" .. i .. "]\n" ..
+                   "path_walk           = leader_walk\n" ..
+                   "path_look           = leader_look\n" ..
+                   "formation           = line\n" ..
+                   "show_spot           = false\n" ..
+                   "soundgroup          = " .. gname .. "_leader_sg\n" ..
+                   --"danger              = danger_killers\n" ..
+                   combat_ignore
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+    end
+
+    -- jail guard
+	t = { section = "logic@" .. gname .. "_jail_guard",
+		idle = 0,
+		prior = 2, state = {0}, -- 13
+		squad = squad, group = groups[5],
+		in_rest = "cit_jail_restr", out_rest = "",
+		predicate = k_predicate_v
+	}
+	table.insert(sj, t)
+
+	ltx = ltx.."#include \"scripts\\cit\\cit_jail_guard1.ltx\"\n"
+
+    -- base guard
+	t = { section = "logic@" .. gname .. "_base_guard",
+		idle = 0,
+		prior = 12, state = {0}, -- 12
+		squad = squad, group = groups[6],
+		in_rest = "cit_jail_restr", out_rest = "",
+		predicate = k_predicate_v
+	}
+	table.insert(sj, t)
+
+	ltx = ltx.."#include \"scripts\\cit\\cit_jail_guard2.ltx\"\n"
+
+    -- base patrol
+	t = { section = "logic@" .. gname .. "_base_patrol",
+		idle = 0,
+		prior = 11, state = {0},
+		squad = squad, group = groups[6],
+		in_rest = "cit_selmag_up_floor_restr", out_rest = "",
+		predicate = k_predicate_v
+	}
+	table.insert(sj, t)
+
+	ltx = ltx.."[logic@" .. gname .. "_base_patrol]\n" ..
+                "active          = camper@" .. gname .. "_base_patrol\n" ..
+                "combat_ignore   = combat_ignore\n" ..
+
+                "[camper@" .. gname .. "_base_patrol]\n" ..
+                "path_walk           = base_patrol_walk\n" ..
+                "path_look           = base_patrol_look\n" ..
+                "radius              = 12\n" ..
+                "no_retreat          = true\n" ..
+                "heli_hunter         = {+cit_heli_start -cit_heli_end}\n" ..
+                --"danger              = danger_killers\n" ..
+                --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n"
+                combat_ignore
+                --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+
+    -- snipers
+    for i = 1, 4 do
+	    t = { section = "logic@" .. gname .. "_sniper" .. i,
+		    idle = 0,
+		    prior = 11, state = {0},
+		    squad = squad, group = groups[8],
+		    in_rest = "cit_selmag_restr", out_rest = "",
+    		online = true,
+		    predicate = k_predicate_es
+	    }
+	    table.insert(sj, t)
+
+	    ltx = ltx.."[logic@" .. gname .. "_sniper" .. i .. "]\n" ..
+                   "active              = camper@" .. gname .. "_sniper" .. i .. "\n" ..
+                   "combat_ignore       = combat_ignore\n" ..
+
+                   "[camper@" .. gname .. "_sniper" .. i .. "]\n" ..
+                   "path_walk                   = sniper" .. i .. "_walk\n" ..
+                   "path_look                   = sniper" .. i .. "_look\n" ..
+                   "sniper                      = true\n" ..
+                   "def_state_campering         = threat\n" ..
+                   "def_state_campering_fire    = threat_sniper_fire\n" ..
+                   --"danger                      = danger_bandits\n" ..
+                   combat_ignore
+                   --"combat_ignore_cond          = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+    end
+
+    -- walkers between kamps
+    local start_kamp = {1, 2}
+    local kamp_change = {{2, 3, 1}, {4, 3, 2}}
+    local delays = {{18, 30, 20}, {25, 40, 20}}
+    local d, kc = 0, 0
+
+    for i = 1, 2 do
+	    t = { section = "logic@" .. gname .. "_free" .. i .. "_in_kamp",
+		    idle = 0,
+		    prior = 100 + i, state = {0}, -- 9
+		    squad = squad, group = groups[9],
+		    in_rest = "cit_selmag_restr", out_rest = "",
+		    predicate = k_predicate_e
+	    }
+	    table.insert(sj, t)
+
+        d = delays[i]
+        kc = kamp_change[i]
+        ltx = ltx.."[logic@" .. gname .. "_free" .. i .. "_in_kamp]\n" ..
+                   "active          = walker@" .. gname .. "_free" .. i .. "_to_kamp" .. start_kamp[i] .. "\n" ..
+                   "combat_ignore   = combat_ignore\n"
+
+        for j, v in pairs(kc) do
+            ltx = ltx.."[walker@" .. gname .. "_free" .. i .. "_to_kamp" .. j .. "]\n" ..
+                       "path_walk           = near_kamp" .. j .. "_walk\n" ..
+                       "path_look           = kamp" .. j .. "\n" ..
+                       "def_state_moving1   = patrol\n" ..
+                       "def_state_moving2   = patrol\n" ..
+                       "def_state_moving3   = patrol\n" ..
+                       "on_signal           = arrived | kamp@" .. gname .. "_free" .. i .. "_in_kamp" .. j .. "\n" ..
+                       "danger              = danger_killers\n" ..
+                       combat_ignore ..
+                       --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n" ..
+
+                       "[kamp@" .. gname .. "_free" .. i .. "_in_kamp" .. j .. "]\n" ..
+                       "center_point        = kamp" .. j .. "\n" ..
+                       "def_state_moving    = patrol\n" ..
+                       "on_timer            = " .. d[j] .. "000 | walker@" .. gname .. "_free" .. i .. "_to_kamp" .. v .. "\n" ..
+                       "soundgroup          = " .. gname .. "_kamp" .. j .. "_sg\n" ..
+                       combat_ignore2
+                       --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+        end
+    end
+
+    -- patrols in kamp
+    prior = {3, 5, 7}
+    delays = {25, 30, 60}
+    local kamps, k = {3, 2, 4}, 0
+    for i, v in pairs({2, 1, 1}) do
+        k = kamps[i]
+        for j = 1, v do
+	        t = { section = "logic@" .. gname .. "_kamp" .. k .. "_patrol",
+		        idle = 0,
+		        prior = prior[i], state = {0},
+		        squad = squad, group = groups[k],
+		        in_rest = "cit_selmag_restr", out_rest = "",
+		        predicate = k_predicate_g
+	        }
+	        table.insert(sj, t)
+	    end
+
+	    ltx = ltx.."[logic@" .. gname .. "_kamp" .. k .. "_patrol]\n" ..
+                   "active          = patrol@" .. gname .. "_kamp" .. k .. "_patrol\n" ..
+                   "combat_ignore   = combat_ignore\n" ..
+
+                   "[patrol@" .. gname .. "_kamp" .. k .. "_patrol]\n" ..
+                   "path_walk           = kamp" .. k .. "_patrol_walk\n" ..
+                   --"path_look           = kamp" .. k .. "\n" ..
+                   "formation           = line\n" ..
+                   "on_signal           = arrived | kamp@" .. gname .. "_kamp" .. k .. "_patrol\n" ..
+                   combat_ignore2 ..
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n" ..
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n" ..
+
+                   "[kamp@" .. gname .. "_kamp" .. k .. "_patrol]\n" ..
+                   "center_point        = kamp" .. k .. "\n" ..
+                   "on_timer            = " .. delays[i] .. "000 | patrol@" .. gname .. "_kamp" .. k .. "_patrol\n" ..
+                   "soundgroup          = " .. gname .. "_kamp" .. k .. "_sg\n" ..
+                   combat_ignore2
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n"
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+    end
+
+    -- free stalkers
+    delays = {{90, 120}, {120, 100}, {75, 90}}
+    for i = 1, 3 do
+	    t = { section = "logic@" .. gname .. "_free_stalker" .. i,
+		    idle = 0,
+		    prior = 1, state = {0}, --14
+		    squad = squad, group = groups[5],
+		    in_rest = "cit_jail_restr", out_rest = "",
+		    predicate = k_predicate_v
+	    }
+	    table.insert(sj, t)
+
+        d = delays[i]
+        ltx = ltx.."[logic@" .. gname .. "_free_stalker" .. i .. "]\n" ..
+                   "active          = kamp@" .. gname .. "_free_stalker" .. i .. "_kamp5_begin\n" ..
+                   "combat_ignore   = combat_ignore\n" ..
+
+                   "[kamp@" .. gname .. "_free_stalker" .. i .. "_kamp5_begin]\n" ..
+                   "center_point        = kamp5\n" ..
+                   "on_info             = {+cit_heli_scene_start} camper@" .. gname .. "_free_stalker" .. i .. "_attack %=hit_npc(1201:bip01_spine:0:0.1)%\n" ..
+                   "soundgroup          = " .. gname .. "_kamp5_sg\n" ..
+                   "combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n" ..
+
+                   "[camper@" .. gname .. "_free_stalker" .. i .. "_attack]\n" ..
+                   "path_walk           = free_stalker" .. i .. "_attack_walk\n" ..
+                   "path_look           = free_stalker" .. i .. "_attack_look\n" ..
+                   --"no_retreat          = true\n" ..
+                   "radius              = 8\n" ..
+                   "def_state_moving    = assault\n" ..
+                   "def_state_campering = hide\n" ..
+                   "heli_hunter         = true\n" .. --{+cit_heli_start} true, false\n" ..
+                   "on_info             = {+cit_heli_end} walker@" .. gname .. "_free_stalker" .. i .. "\n" ..
+                   combat_ignore ..
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n" ..
+
+                   "[walker@" .. gname .. "_free_stalker" .. i .. "]\n" ..
+                   "path_walk           = free_stalker" .. i .. "_walk\n" ..
+                   "path_look           = free_stalker" .. i .. "_look\n" ..
+                   "def_state_moving1   = patrol\n" ..
+                   "def_state_moving2   = patrol\n" ..
+                   "def_state_moving3   = patrol\n" ..
+                   "on_timer            = " .. d[2] .. "000 | kamp@" .. gname .. "_free_stalker" .. i .. "_kamp5\n" ..
+                   --"on_info             = {+cit_jail_guard1_close_door -cit_button_broken} kamp@" .. gname .. "_free_stalker" .. i .. "_kamp5\n" ..
+                   --"on_info2            = {+cit_heli_start -cit_heli_end} walker@" .. gname .. "_free_stalker" .. i .. "_attack\n" ..
+                   combat_ignore ..
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n" ..
+
+                   "[kamp@" .. gname .. "_free_stalker" .. i .. "_kamp5]\n" ..
+                   "center_point        = kamp5\n" ..
+                   "on_timer            = " .. d[1] .. "000 | walker@" .. gname .. "_free_stalker" .. i .. "\n" ..
+                   --"on_info             = {+cit_heli_start -cit_heli_end} walker@" .. gname .. "_free_stalker" .. i .. "_attack\n" ..
+                   --"on_info2            = {+cit_jail_doctor_leave -cit_heli_end} walker@" .. gname .. "_free_stalker" .. i .. "_attack\n" ..
+                   "soundgroup          = " .. gname .. "_kamp5_sg\n" ..
+                   combat_ignore
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+    end
+
+    -- kamps
+    prior = {2, 4, 1, 6}
+    pred = {k_predicate_v, k_predicate_v, k_predicate_g, k_predicate_v}
+    for i, v in pairs({2, 2, 2, 1}) do
+        for j = 1, v do
+	        t = { section = "logic@" .. gname .. "_kamp" .. i,
+		        idle = 0,
+		        prior = prior[i], state = {0},
+		        squad = squad, group = groups[i],
+		        in_rest = "cit_selmag_restr", out_rest = "",
+		        predicate = pred[i]
+	        }
+	        table.insert(sj, t)
+        end
+
+        ltx = ltx.."[logic@" .. gname .. "_kamp" .. i .. "]\n" ..
+                   "active          = kamp@" .. gname .. "_kamp" .. i .. "\n" ..
+                   "combat_ignore   = combat_ignore\n" ..
+
+                   "[kamp@" .. gname .. "_kamp" .. i .. "]\n" ..
+                   "center_point        = kamp" .. i .. "\n" ..
+                   "def_state_moving    = run\n" ..
+                   "soundgroup          = " .. gname .. "_kamp" .. i .. "_sg\n" ..
+                   --"danger              = danger_killers\n" ..
+                   combat_ignore2
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n"
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+    end
+
+    -- gate guards
+    pred = {k_predicate_e, k_predicate_v}
+    for i = 1, 2 do
+	    t = { section = "logic@" .. gname .. "_gate2_guard" .. i,
+		    idle = 0,
+		    prior = 8, state = {0},
+		    squad = squad, group = groups[9 + i],
+		    in_rest = "cit_selmag_restr", out_rest = "",
+		    predicate = pred[i]
+	    }
+	    table.insert(sj, t)
+
+	    ltx = ltx.."[logic@" .. gname .. "_gate2_guard" .. i .. "]\n" ..
+                   "active          = walker@" .. gname .. "_gate2_guard" .. i .. "\n" ..
+                   "combat_ignore   = combat_ignore\n" ..
+
+                   "[walker@" .. gname .. "_gate2_guard" .. i .. "]\n" ..
+                   "path_walk           = gate2_guard" .. i .. "_walk\n" ..
+                   "path_look           = gate2_guard" .. i .. "_look\n" ..
+                   "soundgroup          = cit_gate2_sg\n" ..
+                   combat_ignore2
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n"
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+    end
+
+    -- road patrols
+    for i = 1, 3 do
+	    t = { section = "logic@" .. gname .. "_road_patrol" .. i,
+		    idle = 0,
+		    prior = 10, state = {0},
+		    squad = squad, group = groups[7],
+		    in_rest = "cit_selmag_up_floor_restr", out_rest = "",
+		    predicate = k_predicate_v
+	    }
+	    table.insert(sj, t)
+
+	    ltx = ltx.."[logic@" .. gname .. "_road_patrol" .. i .. "]\n" ..
+                   "active          = walker@" .. gname .. "_road_patrol" .. i .. "\n" ..
+                   "combat_ignore   = combat_ignore\n" ..
+--[[
+                   "[camper@" .. gname .. "_road_patrol" .. i .. "]\n" ..
+                   "path_walk           = road_patrol" .. i .. "_walk\n" ..
+                   "path_look           = road_patrol" .. i .. "_look\n" ..
+                   "no_retreat          = true\n" ..
+                   "radius              = 25\n" ..
+--]]
+                   "[walker@" .. gname .. "_road_patrol" .. i .. "]\n" ..
+                   "path_walk           = road_patrol" .. i .. "_walk\n" ..
+                   "path_look           = road_patrol" .. i .. "_look\n" ..
+                   "def_state_moving1   = patrol\n" ..
+                   "def_state_moving2   = patrol\n" ..
+                   "def_state_moving3   = patrol\n" ..
+
+                   "heli_hunter         = {+cit_heli_start -cit_heli_end}\n" ..
+                   --"danger              = danger_killers\n" ..
+                   combat_ignore
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+    end
+
+    gulags.cit_killers.ltx = ltx
+end
+
+
+--------------------------------------------------------------------------
+-- Bandits
+--------------------------------------------------------------------------
+-- Predicates ------------------------------------------------------------
+function b_predicate_vb(data)
+	return data.profile_name == "cit_bandit_veteran_best"
+end
+
+function b_predicate_v(data)
+	return data.profile_name == "cit_bandit_veteran"
+end
+
+function b_predicate_g(data)
+	return data.profile_name == "cit_bandit_general"
+end
+
+function b_predicate_d(data)
+	return data.profile_name == "cit_bandit_drunk"
+end
+
+-- Jobs ------------------------------------------------------------------
+gulags.cit_bandits.job = function(sj, gname, type, squad, groups)
+    local i, v, j = 0, 0, 0
+    local prior, pred, gr = 0, 0, 0
+    local ltx = ""
+
+    ltx = ltx.."[danger_bandits]\n" ..
+               "ignore_distance = 30\n"
+
+    -- leader
+	t = { section = "logic@" .. gname .. "_leader",
+		idle = 0,
+		prior = 17, state = {0},
+		squad = squad, group = groups[6],
+		in_rest = "cit_selmag_restr", out_rest = "",
+		predicate = b_predicate_vb
+	}
+	table.insert(sj, t)
+
+	ltx = ltx.."[logic@" .. gname .. "_leader]\n" ..
+               "active              = walker@" .. gname .. "_leader\n" ..
+               "combat_ignore       = combat_ignore\n" ..
+
+               "[walker@" .. gname .. "_leader]\n" ..
+               "path_walk           = leader_walk\n" ..
+               "path_look           = leader_look\n" ..
+               --"danger              = danger_bandits\n" ..
+               combat_ignore2
+               --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n"
+               --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+
+    -- leader guards
+    for i, v in pairs({16, 15}) do
+	    t = { section = "logic@" .. gname .. "_leader_guard" .. i,
+		    idle = 0,
+		    prior = v, state = {0},
+		    squad = squad, group = groups[6],
+		    in_rest = "cit_selmag_restr", out_rest = "",
+		    predicate = b_predicate_vb
+	    }
+	    table.insert(sj, t)
+
+	    ltx = ltx.."[logic@" .. gname .. "_leader_guard" .. i .. "]\n" ..
+                   "active              = walker@" .. gname .. "_leader_guard" .. i .. "\n" ..
+                   "combat_ignore       = combat_ignore\n" ..
+
+                   "[walker@" .. gname .. "_leader_guard" .. i .. "]\n" ..
+                   "path_walk           = leader_guard" .. i .. "_walk\n" ..
+                   "path_look           = leader_guard" .. i .. "_look\n" ..
+                   --"danger              = danger_bandits\n" ..
+                   combat_ignore2
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n"
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+    end
+
+    -- walkers between kamps
+    local start_kamp = {1, 3, 4}
+    local kamp_change = {{3, 2, 4, 1}, {1, 4, 2, 3}, {3, 4, 1, 2}}
+    local delays = {{20, 30, 22, 28}, { 25, 10, 14, 12}, {11, 17, 19, 24}}
+    local d, kc = 0, 0
+
+    for i = 1, 3 do
+	    t = { section = "logic@" .. gname .. "_free" .. i .. "_in_kamp",
+		    idle = 0,
+		    prior = 9, state = {0},
+		    squad = squad, group = groups[11],
+		    in_rest = "cit_selmag_restr", out_rest = "",
+		    predicate = b_predicate_v
+	    }
+	    table.insert(sj, t)
+
+        d = delays[i]
+        kc = kamp_change[i]
+        ltx = ltx.."[logic@" .. gname .. "_free" .. i .. "_in_kamp]\n" ..
+                   "active          = walker@" .. gname .. "_free" .. i .. "_to_kamp" .. start_kamp[i] .. "\n" ..
+                   "combat_ignore   = combat_ignore\n"
+        for j, v in pairs(kc) do
+            ltx = ltx.."[walker@" .. gname .. "_free" .. i .. "_to_kamp" .. j .. "]\n" ..
+                       "path_walk           = near_kamp" .. j .. "_walk\n" ..
+                       "path_look           = kamp" .. j .. "\n" ..
+                       "def_state_moving1   = patrol\n" ..
+                       "def_state_moving2   = patrol\n" ..
+                       "def_state_moving3   = patrol\n" ..
+                       "on_signal           = arrived | kamp@" .. gname .. "_free" .. i .. "_in_kamp" .. j .. "\n" ..
+                       --"danger              = danger_bandits\n" ..
+                       combat_ignore ..
+                       --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n" ..
+                       --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n" ..
+
+                       "[kamp@" .. gname .. "_free" .. i .. "_in_kamp" .. j .. "]\n" ..
+                       "center_point        = kamp" .. j .. "\n" ..
+                       "def_state_moving    = patrol\n" ..
+                       "on_timer            = " .. d[j] .. "000 | walker@" .. gname .. "_free" .. i .. "_to_kamp" .. v .. "\n" ..
+                       "soundgroup          = " .. gname .. "_kamp" .. j .. "_sg\n" ..
+                       --"danger              = danger_bandits\n" ..
+                       combat_ignore2
+                       --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n"
+                       --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+        end
+    end
+
+    -- patrols in kamp
+    prior = {9, 2, 6}
+    local kamps, k = {1, 2, 4}, 0
+    delays = {40, 120, 60}
+    for i, v in pairs({2, 1, 1}) do
+        k = kamps[i]
+        for j = 1, v do
+	        t = { section = "logic@" .. gname .. "_kamp" .. k .. "_patrol",
+		        idle = 0,
+		        prior = prior[i], state = {0},
+		        squad = squad, group = groups[k],
+		        in_rest = "cit_selmag_restr", out_rest = "",
+		        predicate = b_predicate_v
+	        }
+	        table.insert(sj, t)
+	    end
+
+	    ltx = ltx.."[logic@" .. gname .. "_kamp" .. k .. "_patrol]\n" ..
+                   "active      = patrol@" .. gname .. "_kamp" .. k .. "_patrol\n" ..
+                   "combat_ignore   = combat_ignore\n" ..
+
+                   "[patrol@" .. gname .. "_kamp" .. k .. "_patrol]\n" ..
+                   "path_walk  = kamp" .. k .. "_patrol_walk\n" ..
+                   --"path_look  = kamp" .. k .. "\n" ..
+                   "formation  = line\n" ..
+                   "on_signal  = arrived | kamp@" .. gname .. "_kamp" .. k .. "_patrol\n" ..
+                   --"danger              = danger_bandits\n" ..
+                   combat_ignore2 ..
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n" ..
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n" ..
+
+                   "[kamp@" .. gname .. "_kamp" .. k .. "_patrol]\n" ..
+                   "center_point        = kamp" .. k .. "\n" ..
+                   "on_timer            = " .. delays[i] .. "000 | patrol@" .. gname .. "_kamp" .. k .. "_patrol\n" ..
+                   "soundgroup          = " .. gname .. "_kamp" .. k .. "_sg\n" ..
+                   --"danger              = danger_bandits\n" ..
+                   combat_ignore2
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n"
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+    end
+
+    -- kamps
+    prior = {8, 2, 4, 5}
+    for i, v in pairs({2, 1, 1, 2}) do
+        for j = 1, v do
+	        t = { section = "logic@" .. gname .. "_kamp" .. i,
+		        idle = 0,
+		        prior = prior[i], state = {0},
+		        squad = squad, group = groups[i],
+		        in_rest = "cit_selmag_restr", out_rest = "",
+		        predicate = b_predicate_g
+	        }
+	        table.insert(sj, t)
+        end
+
+        ltx = ltx.."[logic@" .. gname .. "_kamp" .. i .. "]\n" ..
+                   "active          = kamp@" .. gname .. "_kamp" .. i .. "\n" ..
+                   "combat_ignore   = combat_ignore\n" ..
+
+                   "[kamp@" .. gname .. "_kamp" .. i .. "]\n" ..
+                   "center_point        = kamp" .. i .. "\n" ..
+                   "def_state_moving    = run\n" ..
+                   "soundgroup          = " .. gname .. "_kamp" .. i .. "_sg\n" ..
+                   --"danger              = danger_bandits\n" ..
+                   combat_ignore2
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n"
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+    end
+
+    -- base guards
+    pred = {b_predicate_vb, b_predicate_v}
+    for i, v in pairs({13, 14}) do
+	    t = { section = "logic@" .. gname .. "_base_guard" .. i,
+		    idle = 0,
+		    prior = v, state = {0},
+		    squad = squad, group = groups[7],
+		    in_rest = "cit_selmag_restr", out_rest = "",
+		    predicate = pred[i]
+	    }
+	    table.insert(sj, t)
+
+	    ltx = ltx.."[logic@" .. gname .. "_base_guard" .. i .. "]\n" ..
+                   "active          = walker@" .. gname .. "_base_guard" .. i .. "\n" ..
+                   "combat_ignore   = combat_ignore\n" ..
+
+                   "[walker@" .. gname .. "_base_guard" .. i .. "]\n" ..
+                   "path_walk           = base_guard" .. i .. "_walk\n" ..
+                   --"path_look           = base_guard" .. i .. "_look\n" ..
+                   --"danger              = danger_bandits\n" ..
+                   combat_ignore2
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n"
+                   --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+    end
+
+    -- patrol in center
+    for i = 1, 2 do
+	    t = { section = "logic@" .. gname .. "_center_patrol",
+		    idle = 0,
+		    prior = 10, state = {0},
+		    squad = squad, group = groups[8],
+		    in_rest = "cit_selmag_restr", out_rest = "",
+		    predicate = b_predicate_v
+	    }
+	    table.insert(sj, t)
+    end
+
+	ltx = ltx.."[logic@" .. gname .. "_center_patrol]\n" ..
+               "active      = patrol@" .. gname .. "_center_patrol\n" ..
+               "combat_ignore   = combat_ignore\n" ..
+
+               "[patrol@" .. gname .. "_center_patrol]\n" ..
+               "path_walk  = center_patrol_walk\n" ..
+               --"path_look  = center_patrol_look\n" ..
+               "formation  = line\n" ..
+               "soundgroup          = " .. gname .. "_center_patrol_sg\n" ..
+               --"danger              = danger_bandits\n" ..
+               combat_ignore
+               --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n"
+               --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+
+    -- gate guards
+    prior = {12, 7}
+    pred = {b_predicate_vb, b_predicate_v}
+    gr = {10, 9}
+    for i, v in pairs({3, 2}) do
+        for j = 1, v do
+	        t = { section = "logic@" .. gname .. "_gate" .. i .. "_guard" .. j,
+		        idle = 0,
+		        prior = prior[i], state = {0},
+		        squad = squad, group = groups[gr[i]],
+		        in_rest = "cit_selmag_restr", out_rest = "",
+		        predicate = pred[i]
+	        }
+	        table.insert(sj, t)
+
+	        ltx = ltx.."[logic@" .. gname .. "_gate" .. i .. "_guard" .. j .. "]\n" ..
+                       "active      = walker@" .. gname .. "_gate" .. i .. "_guard" .. j .. "\n" ..
+                       "combat_ignore   = combat_ignore\n" ..
+
+                       "[walker@" .. gname .. "_gate" .. i .. "_guard" .. j .. "]\n" ..
+                       "path_walk  = gate" .. i .. "_guard" .. j .. "_walk\n" ..
+                       "path_look  = gate" .. i .. "_guard" .. j .. "_look\n" ..
+                       "soundgroup          = cit_gate" .. i .. "_sg\n" ..
+                       combat_ignore2
+                       --"combat_ignore_cond  = {=fighting_actor -cit_actor_out_killers_base}, {=check_fighting(1200)}\n"
+                       --"combat_ignore_cond  = {=fighting_actor -cit_actor_is_free}, {=check_fighting(1200)}\n"
+        end
+    end
+
+    -- drunken
+    for i = 1, 2 do
+	    t = { section = "logic@" .. gname .. "_drunken" .. i,
+		    idle = 0,
+		    prior = 1, state = {0},
+		    squad = squad, group = groups[12],
+		    in_rest = "cit_selmag_restr", out_rest = "",
+		    predicate = b_predicate_d
+	    }
+	    table.insert(sj, t)
+
+	    ltx = ltx.."[logic@" .. gname .. "_drunken" .. i .. "]\n" ..
+                   "active          = walker@" .. gname .. "_drunken" .. i .. "\n" ..
+                   "combat_ignore   = combat_ignore\n" ..
+
+                   "[walker@" .. gname .. "_drunken" .. i .. "]\n" ..
+                   "path_walk           = drunken" .. i .. "_walk\n" ..
+                   --"path_look           = drunken" .. i .. "_look\n"..
+                   "def_state_moving1   = walk\n" ..
+                   "def_state_moving2   = walk\n" ..
+                   "def_state_moving3   = walk\n" ..
+                   "combat_ignore_cond  = always\n"
+    end
+
+    gulags.cit_bandits.ltx = ltx
+end
+
+
+--------------------------------------------------------------------------
+-- Beasts
+--------------------------------------------------------------------------
+-- Predicates ------------------------------------------------------------
+
+-- Jobs ------------------------------------------------------------------
+gulags.cit_beasts.job = function(sj, gname, type, squad, groups)
+    local ltx = ""
+
+	-- Проверяем наличие моб_хом.
+	local i = 1
+	while level.patrol_path_exists(gname .. "_home_" .. i) do
+		-- Необходимо вычитать количество работ из названия точки пути.
+		local way_name = gname .. "_home_" .. i
+		local ptr = patrol(way_name)
+		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+		local job_count = 10
+		if wp_prop.count ~= nil then
+			job_count = wp_prop.count
+		end
+
+		for i = 1, job_count do
+			-- добавляем должность
+			t = { section = "logic@" .. way_name,
+				idle = 0,
+				prior = 1, state = {0}, squad = squad, group = groups[1],
+				position_threshold = 20,
+				in_rest = "", out_rest = gname .. "_restr"
+			}
+			table.insert(sj, t)
+		end
+
+		-- добавляем описание должности в лтх.
+		local job_ltx = "[logic@" .. way_name .. "]\n" ..
+						"active = mob_home@" .. way_name .. "\n" ..
+
+						"[mob_home@" .. way_name .. "]\n" ..
+						"path_home = home_" .. i .. "\n"
+
+		ltx = ltx..job_ltx
+		i = i + 1
+	end
+
+    gulags.cit_beasts.ltx = ltx
+end

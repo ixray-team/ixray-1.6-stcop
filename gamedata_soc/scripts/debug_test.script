@@ -1,0 +1,26 @@
+function a()
+	local a = 10/0
+   printf( "Hello %s")
+   return a
+end
+
+function main()
+	local dog = get_level_object( "m_dog1" )
+
+  --  printf( "Hello %s")
+
+   wait( 10000 ) 
+   this:a()    
+   
+   local actor = get_actor()
+    if( actor ) then printf( "get actor" ) end
+
+    actor:object( "box" )
+    printf( "end" )
+
+--    dog:script( true, this.script_name() )
+--    this:a()
+
+--    action( dog, act( act.eat, nil ), cond( cond.time_end, 2000 ) )
+
+end

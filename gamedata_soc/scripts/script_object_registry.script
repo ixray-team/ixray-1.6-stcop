@@ -1,0 +1,39 @@
+-- function printf(fmt,...)
+-- 	print(string.format(fmt,unpack(arg)))
+-- end
+
+class "AK74_custom" 
+class "AK74_custom_2" 
+
+
+function AK74_custom:__init()
+   self.m_name = "my name is AK74_custom"
+end
+
+function AK74_custom:get_name()
+   return self.m_name
+end
+
+function AK74_custom_2:__init()
+   self.m_name = "my name is AK74_custom_2"
+end
+
+function AK74_custom_2:get_name()
+   return self.m_name
+end
+
+
+
+local script_objects={AK74_custom, AK74_custom_2}
+
+
+
+function create_class(clsName)
+   return clsName()
+end
+
+
+for i in script_objects do
+   local		cls  = create_class(script_objects[i])
+   print		(cls:get_name())
+end

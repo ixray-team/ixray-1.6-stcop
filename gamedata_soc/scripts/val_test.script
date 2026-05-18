@@ -1,0 +1,139 @@
+-----------------------------------------------------------------------------------
+-- Test Definitions
+-----------------------------------------------------------------------------------
+local object_list		= {}
+local smart_terrains	= {}
+
+-- 1
+object_list["test1"] = {
+"val_borov",
+"val_bodyguard3",
+"val_bs_victim",
+"val_bs_killer1",
+"val_bs_killer2",
+"val_bodyguard2",
+"val_bodyguard1",
+"val_lager_bandit04",
+"val_lager_bandit03",
+"val_lager_bandit05",
+"val_lager_bandit06",
+"val_lager_bandit07",
+"val_lager_bandit08",
+"val_lager_bandit09",
+"val_lager_bandit10",
+"val_lager_bandit11",
+"val_lager_bandit12",
+"val_lager_bandit13",
+"val_lager_bandit14",
+"val_lager_bandit15",
+"val_lager_bandit16",
+"val_lager_bandit17",
+"val_lager_bandit18",
+"val_prisoner_captive",
+"val_lager_bandit01",
+"val_tunnel_bandit",
+"val_lager_bandit02",
+"val_sacrifice_victim",
+"val_sacrifice_guard1",
+"val_sacrifice_guard2",
+"val_escort_captive",
+"val_escort_guard2",
+"val_escort_guard1",
+"val_escort_nap1",
+"val_escort_bandit_halfdead",
+"val_escort_bandit1_dead",
+"val_escort_bandit2_dead",
+"val_exit1_ambush_soldier2",
+"val_exit1_ambush_soldier1",
+"val_exit1_ambush_soldier4",
+"val_exit1_ambush_soldier3",
+"val_rob_leader",
+"val_rob_helper1",
+"val_rob_helper2",
+"val_rob_guard2",
+"val_rob_guard1",
+"val_sos_wounded",
+"val_sos_dead1",
+"val_sos_dead2",
+"val_x18_exit_base_bandit_0000",
+"val_x18_exit_base_bandit_0001",
+"val_x18_exit_base_bandit_0002",
+"val_x18_exit_base_bandit_0003",
+"val_x18_exit_base_bandit_0004",
+"val_x18_exit_base_bandit_0005",
+"val_x18_exit_base_bandit_0006",
+"val_x18_exit_base_bandit_0007",
+"val_x18_exit_base_bandit_0008",
+"val_x18_exit_base_bandit_0009",
+"val_x18_exit_base_bandit_0010",
+"val_soldiers_raid_stalker_0000",
+"val_soldiers_raid_stalker_0001",
+"val_soldiers_raid_stalker_0002",
+"val_soldiers_raid_stalker_0003",
+"val_soldiers_raid_stalker_0004",
+"val_soldiers_raid_stalker_0005",
+"val_soldiers_raid_stalker_0006",
+"val_soldiers_raid_stalker_0007",
+"val_soldiers_raid_stalker_0008",
+"val_soldiers_raid_stalker_0009",
+"val_soldiers_raid_stalker_0010",
+"val_soldiers_raid_stalker_0011",
+"val_soldiers_raid_stalker_0012",
+"val_soldiers_raid_stalker_0013",
+"val_soldiers_raid_stalker_0014",
+"val_soldiers_raid_stalker_0015",
+"val_soldiers_raid_stalker_0016",
+"val_soldiers_raid_stalker_0017",
+"val_soldiers_raid_stalker_0018",
+"val_soldiers_raid_stalker_0019",
+"val_soldiers_raid_stalker_0020",
+"val_soldiers_raid_stalker_0021",
+"val_soldiers_raid_stalker_0022",
+"val_soldiers_raid_stalker_0023",
+"val_soldiers_raid_stalker_0024",
+"val_soldiers_raid_stalker_0025",
+"val_soldiers_raid_stalker_0026",
+"val_soldiers_raid_stalker_0027",
+"val_soldiers_raid_stalker_0028",
+"val_soldiers_raid_stalker_0029"
+}
+
+
+-- define smart terrains
+smart_terrains["test1"] = {
+	"val_escort",
+	"val_sacrifice",
+	"val_prisoner",
+	"val_rob",
+	"val_lager_bandits",
+    "val_x18_exit_base",
+    "val_main_gulag1",
+    "val_main_gulag2",
+    "val_soldiers_raid_off",
+    "val_exit1_ambush"
+}
+
+-- 2
+object_list["test2"] = {
+"val_sos_bs"
+}
+
+-- define smart terrains
+smart_terrains["test2"] = {
+}
+
+------------------------------------------------------------------------------
+-- Base Run function (load extern)
+------------------------------------------------------------------------------
+function r(index)
+	test_utils.setup_test(object_list, smart_terrains)
+	test_utils.run_test(index)
+end
+
+------------------------------------------------------------------------------
+-- Main function (called on level load)
+------------------------------------------------------------------------------
+function main()
+	test_utils.setup_test(object_list, smart_terrains)
+	test_utils.run_global()
+end

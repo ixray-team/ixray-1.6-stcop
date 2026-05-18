@@ -1,0 +1,10 @@
+function yantar_give_bad_psy_helmet(first_speaker, second_speaker)
+	dialogs.relocate_item_section(second_speaker, "bad_psy_helmet", "in")
+end
+function yantar_give_good_psy_helmet(first_speaker, second_speaker)
+	dialogs.relocate_item_section(second_speaker, "good_psy_helmet", "in")
+end
+
+function yantar_give_quest_artefact(first_speaker, second_speaker)
+	dialogs.relocate_item_section(second_speaker, "af_cristall_flower", "in")
+end

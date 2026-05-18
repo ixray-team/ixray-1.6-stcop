@@ -1,0 +1,78 @@
+----------------------------------------------------------------------------------------------------
+-- Do nothing
+----------------------------------------------------------------------------------------------------
+
+class "action_tip"
+
+function action_tip:__init(obj, storage)
+	self.object = obj
+	self.st = storage
+end
+
+function action_tip:reset_scheme()
+	--printf("_bp: sr_idle: action_tip:reset_scheme: self.object:name()='%s'", self.object:name())
+	self.st.tips_sended = false
+	self.st.signals = {}
+end
+
+function action_tip:update(delta)
+	--printf("_br: sr_idle: action_tip:update()")
+
+	--if not xr_logic.is_active(self.object, self.st) then
+	--	return
+	--end
+
+	local actor = db.actor
+	if not actor then
+		return
+	end
+
+	if self.object:inside(actor:position()) then
+		--print_table(self.st.conditions)	
+		--printf("condlist %s", utils.to_str(xr_logic.pick_section_from_condlist(actor, nil, self.st.conditions.condlist)))
+		if self.st.conditions == nil or
+		   xr_logic.pick_section_from_condlist(actor, nil, self.st.conditions.condlist) ~= nil
+		then
+		    if self.st.tips_sended == false then
+--'			   if self.st.type == "tips" then
+  			      news_manager.send_tip( actor, self.st.info, self.st.timeout, self.st.sender, self.st.showtime )
+--'			   elseif self.st.type == "news" then
+--'				  news_manager.send_news( actor, self.st.info, self.st.timeout, self.st.showtime )
+--'			   end
+			   if self.st.single == true then
+			      self.st.signals["tip_sended"] = true  
+			      self.st.tips_sended = true
+			   end     
+			end   
+		end
+	end
+
+	if xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
+		return
+	end	
+end
+
+---------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+	printf("DEBUG: add_to_binder: scheme='%s', section='%s'", scheme, section)
+
+	local new_action = action_tip(npc, storage)
+
+	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+end
+
+function set_scheme(obj, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
+
+	st.info     = utils.cfg_get_string( ini, section, "name",     obj, true,  "", "" )
+	st.type     = utils.cfg_get_string( ini, section, "type",     obj, false, "", "news" )
+	st.sender   = utils.cfg_get_string( ini, section, "sender",   obj, false, "", nil )
+	st.timeout  = utils.cfg_get_number( ini, section, "timeout",  obj, false,     nil )
+	st.showtime = utils.cfg_get_number( ini, section, "showtime", obj, false,     nil )
+    st.single   = utils.cfg_get_bool  ( ini, section, "single",   obj, false, false)
+
+	st.conditions = xr_logic.cfg_get_condlist( ini, section, "cond", obj )
+end
+

@@ -1,0 +1,102 @@
+-- File:        UI_MULTIPLAYER_CREATE_BASE_TAB.SCRIPT
+-- Description: Base tab for Multiplayer Create Server Dialog
+-- Created:     02.12.2004
+-- Author:      Serhiy 0. Vynnychenk0
+-- Mail:        narrator@gsc-game.com
+--
+-- Copyright 2004 GSC Game World
+--
+
+function main()
+	local dlg = ui_multiplayer_base_tab.multiplayer_base_tab()
+	level.start_stop_menu(dlg,true)
+	dlg:InitControls("Test base tab", 200, 200)
+	while true do
+		wait(3000)
+	end
+end
+
+class "multiplayer_base_tab" (CUIScriptWnd)
+
+function multiplayer_base_tab:__init() super()
+		 
+end
+
+function multiplayer_base_tab:__finalize()
+end
+
+
+function multiplayer_base_tab:InitControls(caption, x_pos, y_pos, width, height)
+		--<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< INIT DATA
+	self.indent = 10
+	self.button_indent = -1
+	self.screen   = {x = 0, y = 0, width = 1024, height = 768}
+	
+	-- rect of tab
+	self.main_rect = {x = 0, y = 0, width = 400, height = 350}
+	if x_pos ~= nil then
+		self.main_rect.x = x_pos
+	end
+	if y_pos ~= nil then
+		self.main_rect.y = y_pos
+	end
+	if width ~= nil then
+		self.main_rect.width = width
+	end
+	if height ~= nil then
+		self.main_rect.height = height
+	end
+	-----------------------------------------------------------------
+	self.left_align_x   = self.indent
+	self.right_align_x  = self.main_rect.width - self.indent
+	self.top_align_y    = self.indent
+	self.bottom_align_y = self.main_rect.height - self.indent
+	------------------------------------------------------------------
+	-- button template
+	self.btn_rect  = {x = 0, 
+					  y = 0, 
+					  width = 135, 
+					  height = 40 }
+	self.btn_rect.x = (self.main_rect.width - self.btn_rect.width)/2	
+	
+	-- Fonts
+	self.caption_font = GetFontLetterica25()
+	self.edit_font    = GetFontLetterica25()
+	self.button_font  = GetFontLetterica25()		
+	
+	-- INIT DATA>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	
+	-- <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CODE
+	-- init self position and size
+	self:Init(self.main_rect.x, 
+			  self.main_rect.y,
+			  self.main_rect.width,
+			  self.main_rect.height)
+	-- MAIN FRAME WINDOW
+	self.main_frame = CUIFrameWindow()
+	self.main_frame:SetAutoDelete(true)
+	self.main_frame:SetWindowName("main_frame")
+	self.main_frame:Init("ui\\ui_frame", 0, 0,
+						 self.main_rect.width,
+						 self.main_rect.height)
+	self:AttachChild(self.main_frame)
+	
+	
+	self:SetAutoDelete(true)
+	-- CODE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+end
+
+function multiplayer_base_tab:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	
+	DIK_RETURN = 28
+	WINDOW_KEY_PRESSED = 6
+	
+	local bind = dik_to_bind(dik)
+	if bind == key_bindings.kQUIT then
+--			level.start_stop_menu(self,true)
+	end  
+
+	return true
+end
+

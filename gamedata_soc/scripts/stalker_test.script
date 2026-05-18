@@ -1,0 +1,239 @@
+-- define class const evaluator
+class "const_evaluator"		(property_evaluator)
+
+function const_evaluator:__init(value) super()
+	self.value				= value
+	printf					("evaluator is constructed!")
+end
+
+function const_evaluator:evaluate()
+	printf					("evaluator is asked for the value!")
+	return					self.value
+end
+
+-- define class random evaluator
+class "random_evaluator"		(property_evaluator)
+
+function random_evaluator:__init() super()
+	printf					("evaluator is constructed!")
+end
+
+function random_evaluator:evaluate()
+	printf					("evaluator is asked for the value!")
+	if (math.random() < 0.5) then
+		return				(true)
+	else
+		return				(false)
+	end
+end
+
+-- define class custom action
+class "custom_action"		(action_base)
+
+function custom_action:__init(weight,object,name) super(object,name)
+	self.m_weight			= weight
+	self.name				= name
+	printf					("action %s is constructed!",self.name)
+end
+
+function custom_action:weight(world_state0,world_state1)
+	printf					("action %s is asked for the weight!",self.name)
+	return					self.m_weight
+end
+
+function custom_action:initialize()
+	action_base.initialize	(self)
+	printf					("action %s is initialized!",self.name)
+end
+
+function custom_action:execute()
+	action_base.execute		(self)
+	printf					("action %s is executed!",self.name)
+end
+
+function custom_action:finalize()
+	action_base.finalize	(self)
+	printf					("action %s is finalized!",self.name)
+end
+
+-- define class custom planner
+class "custom_planner" 		(action_planner)
+
+function custom_planner:__init	() super()
+	printf					("planner is constructed!")
+end
+
+function custom_planner:reinit	(obj)
+	action_planner.reinit	(self, obj)
+	printf					("planner is reinitialized!")
+end
+
+function main()
+
+	stalker			= get_level_object("m_stalker_e")
+	stalker:script	(true,this.script_name())
+	
+	action(
+		stalker,
+		move		(move.standing,move.walk,move.line,patrol("way0000",patrol.nearest,patrol.continue)),
+		cond		(cond.move_end)
+	)
+
+	while true do
+		wait		()
+	end
+
+	stalker:script	(false,this.script_name())
+
+	if true then
+		return
+	end
+
+
+	-- define world properties
+	local property_id0		= 0
+	local property_id1		= 1
+	local property_id2		= 2
+	local property_id3		= 3
+	local property_id4		= 4
+	local property_id5		= 5
+	local property_id6		= 6
+	local property_id7		= 7
+	
+	-- define action identifiers
+	local action_id0		= 0
+	local action_id1		= 1
+	local action_id2		= 2
+	local action_id3		= 3
+	local action_id4		= 4
+	local action_id5		= 5
+	local action_id6		= 6
+	local action_id7		= 7
+
+	-- define evaluators
+	local eval0				= stalker_test.const_evaluator(false)
+	local eval1				= stalker_test.const_evaluator(true)
+	local eval2				= stalker_test.const_evaluator(false)
+	local eval3				= stalker_test.const_evaluator(false)
+	local eval4				= stalker_test.random_evaluator()
+	local eval5				= stalker_test.random_evaluator()
+	local eval6				= stalker_test.const_evaluator(false)
+	local eval7				= stalker_test.random_evaluator()
+	
+	-- define actions
+	local action0			= stalker_test.custom_action(1,nil,"action0")
+	local action1			= stalker_test.custom_action(1,nil,"action1")
+	local action2			= stalker_test.custom_action(1,nil,"action2")
+	local action3			= stalker_test.custom_action(1,nil,"action3")
+	local action4			= stalker_test.custom_action(1,nil,"action4")
+	local action5			= stalker_test.custom_action(1,nil,"action5")
+	local action6			= stalker_test.custom_action(1,nil,"action6")
+	local action7			= stalker_test.custom_action(1,nil,"action7")
+	
+	-- define action conditions and effects
+--[[
+condition  0 : 0 1 0 0 ? ? 0 ? 
+condition  1 : 1 1 1 1 1 1 1 1 
+operator   0 : 1 ? 1 ? ? ? 1 ?  -> ? 0 ? 1 1 ? 0 ? 
+operator   1 : ? ? ? ? ? ? ? 0  -> ? ? 0 0 ? ? 1 ? 
+operator   2 : ? ? ? 1 ? ? ? 1  -> 1 ? 0 ? ? ? ? 0 
+operator   3 : ? ? 1 ? ? 1 ? 0  -> 0 ? ? 1 ? ? ? ? 
+operator   4 : ? ? ? ? ? ? ? ?  -> ? 0 ? ? ? ? ? 1 
+operator   5 : ? 0 ? ? ? ? ? ?  -> ? ? ? 1 1 0 ? ? 
+operator   6 : ? ? ? ? ? ? 0 1  -> ? 1 1 ? ? ? 1 ? 
+operator   7 : ? ? ? ? ? ? ? ?  -> 0 ? ? 0 0 1 ? 0 
+]]
+	
+	action0:add_precondition(world_property(property_id0,true))
+	action0:add_precondition(world_property(property_id2,true))
+	action0:add_precondition(world_property(property_id6,true))
+	action0:add_effect		(world_property(property_id1,false))
+	action0:add_effect		(world_property(property_id3,true))
+	action0:add_effect		(world_property(property_id4,true))
+	action0:add_effect		(world_property(property_id6,false))
+	
+	action1:add_precondition(world_property(property_id7,false))
+	action1:add_effect		(world_property(property_id2,false))
+	action1:add_effect		(world_property(property_id3,false))
+	action1:add_effect		(world_property(property_id6,true))
+	
+	action2:add_precondition(world_property(property_id3,true))
+	action2:add_precondition(world_property(property_id7,true))
+	action2:add_effect		(world_property(property_id0,true))
+	action2:add_effect		(world_property(property_id2,false))
+	action2:add_effect		(world_property(property_id7,false))
+	
+	action3:add_precondition(world_property(property_id2,true))
+	action3:add_precondition(world_property(property_id5,true))
+	action3:add_precondition(world_property(property_id7,false))
+	action3:add_effect		(world_property(property_id0,false))
+	action3:add_effect		(world_property(property_id3,true))
+	
+	action4:add_effect		(world_property(property_id1,false))
+	action4:add_effect		(world_property(property_id7,true))
+	
+	action5:add_precondition(world_property(property_id1,false))
+	action5:add_effect		(world_property(property_id3,true))
+	action5:add_effect		(world_property(property_id4,true))
+	action5:add_effect		(world_property(property_id5,false))
+	
+	action6:add_precondition(world_property(property_id6,false))
+	action6:add_precondition(world_property(property_id7,true))
+	action6:add_effect		(world_property(property_id1,true))
+	action6:add_effect		(world_property(property_id2,true))
+	action6:add_effect		(world_property(property_id6,true))
+	
+	action7:add_effect		(world_property(property_id0,false))
+	action7:add_effect		(world_property(property_id3,false))
+	action7:add_effect		(world_property(property_id4,false))
+	action7:add_effect		(world_property(property_id5,true))
+	action7:add_effect		(world_property(property_id7,false))
+	
+	-- define planner
+	local planner			= stalker_test.custom_planner()
+	planner:reinit			(get_actor(),false)
+	
+	-- add evaluators
+	planner:add_evaluator	(property_id0,eval0)
+	planner:add_evaluator	(property_id1,eval1)
+	planner:add_evaluator	(property_id2,eval2)
+	planner:add_evaluator	(property_id3,eval3)
+	planner:add_evaluator	(property_id4,eval4)
+	planner:add_evaluator	(property_id5,eval5)
+	planner:add_evaluator	(property_id6,eval6)
+	planner:add_evaluator	(property_id7,eval7)
+	
+	-- add actions
+	planner:add_action		(action_id0,action0)
+	planner:add_action		(action_id1,action1)
+	planner:add_action		(action_id2,action2)
+	planner:add_action		(action_id3,action3)
+	planner:add_action		(action_id4,action4)
+	planner:add_action		(action_id5,action5)
+	planner:add_action		(action_id6,action6)
+	planner:add_action		(action_id7,action7)
+	
+	-- define goal
+	local 					goal = world_state()			
+	goal:add_property		(world_property(property_id0,true))
+	goal:add_property		(world_property(property_id1,true))
+	goal:add_property		(world_property(property_id2,true))
+	goal:add_property		(world_property(property_id3,true))
+	goal:add_property		(world_property(property_id4,true))
+	goal:add_property		(world_property(property_id5,true))
+	goal:add_property		(world_property(property_id6,true))
+	goal:add_property		(world_property(property_id7,true))
+	
+	-- setup goal
+	planner:set_goal_world_state(goal)
+	
+	-- update cycle
+	while true do
+		planner:update		(1000)
+		wait				(1000)
+		planner:set_goal_world_state(world_state())
+		planner:set_goal_world_state(goal)
+	end
+	
+	-- the end
+end

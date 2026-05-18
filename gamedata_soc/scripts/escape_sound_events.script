@@ -1,0 +1,28 @@
+function main()
+--[[    local actor = get_actor()
+
+    xr_events.SoundEvent( get_level_object( "sound_zone_01" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0000" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0001" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0002" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0003" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0004" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0005" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0006" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0007" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0008" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0009" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0010" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0011" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0012" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0013" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0014" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0015" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0016" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0017" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0018" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0019" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+    xr_events.SoundEvent( get_level_object( "sound_zone_0020" ), actor, "ambient\\floor_creak1", "ambient\\floor_creak2", "ambient\\floor_creak3")
+
+    wait( time_infinite )]]
+end

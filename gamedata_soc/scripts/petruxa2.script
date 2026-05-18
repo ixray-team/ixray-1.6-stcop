@@ -1,0 +1,14 @@
+function main ()
+    task_level2.main ()
+
+    -- Спасение рядового Райана
+    db.actor:give_info_portion ("val_escort_task_start")
+    db.actor:give_info_portion ("val_escort_actor_helped")
+    db.actor:give_info_portion ("val_escort_guard1_dead")
+    db.actor:give_info_portion ("val_escort_guard2_dead")
+    -- Спесение еще одного рядового Райана с заправки
+    db.actor:give_info_portion ("val_sos_start_task")
+    db.actor:give_info_portion ("val_sos_got_medkit")
+    -- Документы из Х18
+    db.actor:give_info_portion ("val_x18_door_open")
+end

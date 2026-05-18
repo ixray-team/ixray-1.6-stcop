@@ -1,0 +1,60 @@
+function main()
+
+	wait(1000)
+	local 	actor = get_actor()
+	GiveInfoViaPda(actor, actor, "actor_start")
+
+	actor:set_task_state("task1", 0, task.fail)
+	actor:set_task_state("task2", 1, task.completed)
+
+
+	while true do
+	wait()
+	end
+end
+
+
+function test_text(first_speaker, second_speaker)
+	printf("jobs for you %s, second %s", first_speaker:name(), second_speaker:name())
+	return "jobs for you\\njobs for you\\nit's a jobs for you"
+end
+
+
+function test_action(first_speaker, second_speaker)
+	printf("phrase action first %s, second %s", first_speaker:name(), second_speaker:name())
+	local 	actor = get_actor()
+	GiveInfoViaPda(actor, actor, "trader_talk_about")
+end
+
+function test_action1(first_speaker, second_speaker)
+	printf("1111action first %s, second %s", first_speaker:name(), second_speaker:name())
+end
+
+
+function test_predicate(first_speaker, second_speaker)
+	printf("predicate first %s, second %s", first_speaker:name(), second_speaker:name())
+	return true
+end
+
+
+function test_predicate1(first_speaker, second_speaker)
+	printf("11111predicate first %s, second %s", first_speaker:name(), second_speaker:name())
+	return false
+end
+
+function test_task1(task_acomplisher)
+	printf("task 1 %s", task_acomplisher:name())
+	return task.completed
+end
+
+function test_task2(task_acomplisher)
+	printf("task 2 %s", task_acomplisher:name())
+	return task.fail
+end
+
+function test_task3(task_acomplisher)
+	printf("task 3 %s", task_acomplisher:name())
+	return task.in_progress
+end
+
+

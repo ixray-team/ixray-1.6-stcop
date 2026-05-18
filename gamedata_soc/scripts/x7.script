@@ -1,0 +1,3 @@
+function main ()
+    db.actor:give_info_portion ("aes_actor_road")
+end

@@ -1,0 +1,191 @@
+
+--' Смотрим ли мы сейчас туда, куда нужно или нет?
+class "eva_state_mgr_direction" (property_evaluator)
+function eva_state_mgr_direction:__init(name, st) super (nil, name)
+	self.st = st
+end
+function eva_state_mgr_direction:evaluate()
+    local sight_type = self.object:sight_params()
+    
+	-- Если задан объект на который смотреть
+	if self.st.look_object ~= nil then
+		if sight_type.m_object == nil or
+           sight_type.m_object:id() ~= self.st.look_object or
+		   self.st.point_obj_dir ~= look_object_type(self.object, self.st)
+		then
+			return false
+		end
+		
+		self:callback()
+		return true
+	end
+
+	-- Если задана позиция в которую смотреть
+	if self.st.look_position ~= nil then
+        if sight_type.m_sight_type ~= look_position_type(self.object, self.st) then
+            return false
+        end
+
+
+		local dir = vector():sub(self.st.look_position, self.object:position())
+		if look_object_type(self.object, self.st) == true then
+			dir.y = 0
+		end		
+        if utils.vector_cmp_prec(sight_type.m_vector, dir, 0.01) ~= true then
+            --printf("%s false vector", self.object:name())
+            --printf("%s %s %s", sight_type.m_vector.x, sight_type.m_vector.y, sight_type.m_vector.z)
+            --printf("%s %s %s", dir.x, dir.y, dir.z)
+            return false
+        end
+
+		self:callback()
+		return true
+	end
+
+	-- Если не задано куда смотреть.
+	-- И если мы до этого куда то смотрели
+	if sight_type.m_object ~= nil then        
+		return false	
+	end
+		
+	--' Или если мы смотрели не так как надо
+    if sight_type.m_sight_type ~= look_position_type(self.object, self.st) then
+        return false
+    end
+
+	self:callback()
+	return true
+end
+function eva_state_mgr_direction:callback()
+	if self.st.callback ~= nil and
+	   self.st.callback.turn_end_func ~= nil
+	then
+		self.st.callback.turn_end_func(self.st.callback.obj)
+		if self.st.callback ~= nil	then
+			self.st.callback.turn_end_func = nil
+		end
+	end
+end
+
+class "eva_state_mgr_direction_search" (property_evaluator)
+function eva_state_mgr_direction_search:__init(name, st) super (nil, name)
+	self.st = st
+end
+function eva_state_mgr_direction_search:evaluate()
+	if self.st.look_position ~= nil or self.st.look_object ~= nil then
+		return false
+	end
+	return true
+end
+
+--' Поворачиваемся ли мы сейчас
+class "eva_state_mgr_direction_turning" (property_evaluator)
+function eva_state_mgr_direction_turning:__init(name, st) super (nil, name)
+	self.st = st
+end
+function eva_state_mgr_direction_turning:evaluate()
+	return self.object:is_body_turning()
+end
+
+
+
+--' Включаем поворот
+class "act_state_mgr_direction_turn" (action_base)
+function act_state_mgr_direction_turn:__init(name, st) super (nil, name)
+	self.st = st
+end
+function act_state_mgr_direction_turn:initialize()
+	action_base.initialize(self)
+	self:turn()
+end
+function act_state_mgr_direction_turn:execute()
+	action_base.execute(self)
+	self:turn()
+end
+function act_state_mgr_direction_turn:finalize()
+	action_base.finalize(self)
+end
+function act_state_mgr_direction_turn:turn()
+	self.st.point_obj_dir = look_object_type(self.object, self.st)
+	
+	if self.st.look_object ~= nil and
+	   level.object_by_id(self.st.look_object) ~= nil 
+	then		
+		look_at_object(self.object, self.st)
+	elseif self.st.look_position ~= nil then
+		local dir = vector():sub(self.st.look_position, self.object:position())
+		if self.st.point_obj_dir == true then
+			dir.y = 0
+		end
+		self.object:set_sight(look.direction, dir, true)
+	end
+end
+
+
+--' Включаем поворот в никуда
+class "act_state_mgr_direction_search" (action_base)
+function act_state_mgr_direction_search:__init(name, st) super (nil, name)
+	self.st = st
+end
+function act_state_mgr_direction_search:initialize()
+	action_base.initialize(self)
+--'    printf("set sight %s nil", self.object:name())
+    self.object:set_sight(look_position_type(self.object, self.st), nil, 0)
+end
+function act_state_mgr_direction_search:execute()
+	action_base.execute(self)
+end
+function act_state_mgr_direction_search:finalize()
+	action_base.finalize(self)
+end
+
+function look_at_object(npc, st)
+	st.point_obj_dir = look_object_type(npc, st)
+	if st.point_obj_dir == true then
+		npc:set_sight(level.object_by_id(st.look_object),true, false, true)
+	else
+		npc:set_sight(level.object_by_id(st.look_object),true, true)	
+	end									
+
+end
+
+local look_direction_states = {
+	threat = true,
+	threat_na = true,
+	wait_na = true,
+	guard_na = true
+	}
+
+function look_object_type(npc, st)	
+	--' Возвращает true  если нужно смотреть по направлению
+	--' false - нужно смотреть на объект
+	if look_direction_states[st.target_state] == true then
+		return true
+	end
+	return state_lib.states[st.target_state].animation ~= nil
+end
+
+function look_position_type(npc, st)
+    if st == nil then
+        return look.path_dir
+    end
+
+    --' Для движения
+	if not st.planner:evaluator(st.properties["movement_stand"]):evaluate() then
+        if st.look_position ~= nil then
+            return look.direction
+        end
+        return look.path_dir       
+    end
+
+    --' Смотрим в позицию
+    if st.look_position ~= nil then
+         return look.direction
+    end
+
+    --' Никуда не смотрим
+    if state_lib.states[st.target_state].direction then
+		return state_lib.states[st.target_state].direction
+    end
+    return look.danger
+end

@@ -1,0 +1,48 @@
+function main()
+	
+	local	obj = get_level_object("m_car0000")
+
+	obj:script(true,car.script_name())                                                                                
+	action(                                                                                                       
+	    obj,                                                                                                      
+	    move(move.on),
+	    object("phy_door_left",object.activate),
+	    cond(cond.time_end,1000)
+	)                                                                                                             
+	action(
+	    obj,
+	    move(move.back,3),
+	    object("phy_door_right",object.activate),
+	    cond(cond.time_end,4000)
+	)                                                                                                             
+	action(                                                                                                       
+	    obj,
+	    move(move.fwd + move.left,6),
+	    object("phy_door_left",object.deactivate),
+	    cond(cond.time_end,4000)
+	)                                                                                                             
+	action(                                                                                                       
+	    obj,
+	    move(move.fwd + move.right,5),
+	    object("phy_door_right",object.deactivate),
+	    cond(cond.time_end,4000)
+	)                                                                                                             
+	action(                                                                                                       
+	    obj,
+	    move(move.back,4),
+	    object("phy_door_rear",object.use),
+	    cond(cond.time_end,4000)
+	)                                                                                                             
+	action(                                                                                                       
+	    obj,
+	    move(move.back,4),
+	    object("phy_door_rear",object.use),
+	    cond(cond.time_end,8000)
+	)                                                                                                             
+
+	while obj:action() do                                                        
+	    wait			()                                                                                                    
+	end                                                                                                           
+	                                                                                                              
+	obj:script(false,car.script_name())                                                                               
+end

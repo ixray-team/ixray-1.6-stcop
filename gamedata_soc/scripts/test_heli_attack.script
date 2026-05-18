@@ -1,0 +1,15 @@
+local heli_mgr
+
+function main()
+	heli_mgr = xr_heli.HeliManager()
+	heli_mgr:initialize( "heli", "path_heli" )
+	heli_mgr:set_zones( "heli_attack1" )
+
+	while true do
+		if not heli_mgr:update() then
+			break
+		end
+
+		wait()
+	end
+end

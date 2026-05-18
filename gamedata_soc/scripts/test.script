@@ -1,0 +1,16 @@
+function main()
+	game.start_tutorial("part_1_pda")
+end
+
+
+function pnv1()
+	level.add_pp_effector("nightvision_bad.ppe", 1034, true)
+end
+
+function pnv2()
+	level.add_pp_effector("nightvision_good.ppe", 1034, true)
+end
+
+function clear()
+	level.remove_pp_effector(1034)
+end

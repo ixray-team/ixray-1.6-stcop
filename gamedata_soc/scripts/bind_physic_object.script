@@ -1,0 +1,188 @@
+----------------------------------------------------------------------------------------------------
+-- Physic objects binding
+----------------------------------------------------------------------------------------------------
+-- Разработчик: Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
+-- Доработки: Andrey Fidrya (Zmey) af@svitonline.com
+----------------------------------------------------------------------------------------------------
+
+function init(obj)
+	printf("_bp: init(): name='%s'", obj:name())
+
+	----------------------------------------------------------------------------------------
+	-- Старые схемы
+	----------------------------------------------------------------------------------------
+
+	local ini = obj:spawn_ini()
+	if ini and ini:section_exist("animation") then
+		--obj:bind_object(handing_lamp_binder(obj))
+		abort("object '%s': animation section is deprecated, use logic + impulse combination",
+			obj:name())
+		return
+	end
+
+	----------------------------------------------------------------------------------------
+	-- Новые схемы
+	----------------------------------------------------------------------------------------
+
+	-- Биндить предмет нет смысла, если у него нет секции logic
+	if not ini or not ini:section_exist("logic") then
+		-- Прожектор нужно биндить даже без logic
+		if ini and not ini:section_exist("drop_box") then
+			if obj:clsid() ~= clsid.projector then
+				return
+			end
+		end
+	end
+	
+	db.storage[obj:id()] = { }
+	local new_binder = generic_physics_binder(obj)
+	obj:bind_object(new_binder)
+end
+
+---------------------------------------------------------------------------------------------
+class "generic_physics_binder" (object_binder)
+function generic_physics_binder:__init(obj) super(obj)
+	self.initialized = false
+	self.loaded = false
+end 
+
+function generic_physics_binder:reload(section)
+	object_binder.reload(self, section)
+end
+
+function generic_physics_binder:reinit()
+	object_binder.reinit(self)
+
+	--printf("generic_physics_binder:reinit()")
+
+	--printf("_bp: generic_physics_binder: %s", self.object:name())
+	db.storage[self.object:id()] = { }
+
+	self.st = db.storage[self.object:id()]
+end
+
+function generic_physics_binder:update(delta)
+	object_binder.update(self, delta)
+
+	if not self.initialized and db.actor then
+		self.initialized = true
+		xr_logic.initialize_obj(self.object, self.st, self.loaded, db.actor, modules.stype_item)        
+
+        --' Запускаем ассоциированный с объектом партикл.
+        local particle = utils.cfg_get_string(self.st.ini, self.st.section_logic, "particle", self.object, false, "", nil)
+        if particle ~= nil then
+            self.particle = particles_object(particle)
+            self.particle:play_at_pos(self.object:position())
+        end
+
+        --' Дизаблим ассоциированный с объектом граф
+        local graph_point_marker = utils.cfg_get_string(self.st.ini, self.st.section_logic, "graph_point_marker", self.object, false, "", nil)
+        if graph_point_marker ~= nil then
+            self.disable_graph_point = patrol(graph_point_marker):game_vertex_id(0)
+            game_graph():accessible(self.disable_graph_point, false)
+            printf("GRAPH POINT DISABLED")
+        end
+        
+      
+		 
+	end
+
+	if self.st.active_section ~= nil or (self.object:spawn_ini() ~= nil and self.object:spawn_ini():section_exist("drop_box") == true) then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "update", delta)
+		self.object:set_callback(callback.hit, generic_physics_binder.hit_callback, self)
+		self.object:set_callback(callback.death, generic_physics_binder.death_callback, self)
+		self.object:set_callback(callback.use_object, generic_physics_binder.use_callback, self)
+	end
+end
+
+function generic_physics_binder:net_spawn(data)
+	if not object_binder.net_spawn(self, data) then
+		return false
+	end
+
+	if self.object:clsid() == clsid.projector then
+		db.add_sl(self.object)
+	end
+
+	if self.object:spawn_ini() ~= nil and self.object:spawn_ini():section_exist("drop_box") == true then
+		self.box_items = xr_box.ph_item_box(self.object)
+	end
+
+	return true
+end
+
+function generic_physics_binder:net_destroy()
+	local st = db.storage[self.object:id()]
+	if st.active_scheme then
+		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")
+	end
+
+    if self.particle ~= nil then
+        self.particle:stop()
+    end
+
+	db.del_sl(self.object)
+
+	db.storage[self.object:id()] = nil
+
+	object_binder.net_destroy(self)
+end
+
+function generic_physics_binder:net_save_relevant()
+	--printf("generic_physics_binder:net_save_relevant(): self.object:name()='%s'", self.object:name())
+	return true
+end
+
+function generic_physics_binder:save(packet)
+	--printf("generic_physics_binder:save(): self.object:name()='%s'", self.object:name())
+	object_binder.save(self, packet)
+
+	xr_logic.save_obj(self.object, packet)
+end
+
+function generic_physics_binder:load(reader)
+	self.loaded = true
+
+	--printf("generic_physics_binder:load(): self.object:name()='%s'", self.object:name())
+	object_binder.load(self, reader)
+
+	xr_logic.load_obj(self.object, reader)
+end
+
+function generic_physics_binder:use_callback(obj, who)
+	--xr_use.notify_on_use(obj, who)
+	if self.st.active_section then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "use_callback", obj, who)
+	end
+end
+
+function generic_physics_binder:hit_callback(obj, amount, local_direction, who, bone_index)
+	printf("_bp: generic_physics_binder:hit_callback: obj='%s'", obj:name())
+	if self.st.ph_on_hit then
+		xr_logic.issue_event(self.object, self.st.ph_on_hit, "hit_callback", obj, amount, local_direction, who, bone_index)
+	end
+	if self.st.active_section then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "hit_callback", obj, amount, local_direction, who, bone_index)
+	end
+end
+
+function generic_physics_binder:death_callback(victim, who)
+	printf("_bp: generic_physics_binder:death_callback: obj='%s'", victim:name())
+	if self.st.active_section then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "death_callback", victim, who)
+	end
+
+    if self.particle ~= nil then
+        self.particle:stop()
+    end
+
+    if self.disable_graph_point ~= nil then
+        game_graph():accessible(self.disable_graph_point, true)
+        printf("GRAPH POINT ENABLED")
+    end
+	
+	if self.object:spawn_ini() ~= nil and self.object:spawn_ini():section_exist("drop_box") == true then
+		self.box_items:spawn_items()
+	end
+    
+end

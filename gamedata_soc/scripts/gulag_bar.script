@@ -1,0 +1,1340 @@
+local t = {}
+
+function load_job(sj, gname, type, squad, groups)
+	-- Посетители Долга
+	if type == "bar_visitors" then
+		t = { section = "logic@bar_visitors_kamp1",
+			idle = 0,
+			prior = 9, state = {0,1,2}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp1",
+			idle = 0,
+			prior = 8, state = {0,1,2}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp1",
+			idle = 0,
+			prior = 7, state = {0,1,2}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp1",
+			idle = 0,
+			prior = 6, state = {0,1,2}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp1",
+			idle = 0,
+			prior = 5, state = {0,1,2}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp1",
+			idle = 0,
+			prior = 4, state = {0,1,2}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+
+		t = { section = "logic@bar_visitors_kamp2",
+			idle = 0,
+			prior = 9, state = {0,1,2}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp2",
+			idle = 0,
+			prior = 8, state = {0,1,2}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp2",
+			idle = 0,
+			prior = 7, state = {0,1,2}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp2",
+			idle = 0, 
+			prior = 6, state = {0,1,2}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp2",
+			idle = 0, 
+			prior = 5, state = {0,1,2}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp2",
+			idle = 0,
+			prior = 4, state = {0,1,2}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+
+		t = { section = "logic@bar_visitors_kamp3",
+			idle = 0,
+			prior = 9, state = {0,1,2}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp3",
+			idle = 0,
+			prior = 8, state = {0,1,2}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp3",
+			idle = 0,
+			prior = 7, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp3",
+			idle = 0,
+			prior = 6, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp3",
+			idle = 0, 
+			prior = 5, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+
+		t = { section = "logic@bar_visitors_kamp4",
+			idle = 0,
+			prior = 6, state = {0,2}, squad = squad, group = groups[5],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp4",
+			idle = 0,
+			prior = 6, state = {0,2}, squad = squad, group = groups[5],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_kamp4",
+			idle = 0, 
+			prior = 6, state = {0,2}, squad = squad, group = groups[5],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+
+		t = { section = "logic@bar_visitors_walker",
+			idle = 0, 
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_walker",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_walker",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_walker",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_walker",
+			idle = 0, timeout = math.random(10,20)*60*1000,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		
+		-- Бой на арене
+		t = { section = "logic@bar_visitors_arena_1",
+			idle = 0, timeout = 0,
+			prior = 7, state = {2}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_arena_2",
+			idle = 0, timeout = 0,
+			prior = 7, state = {2}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_arena_3",
+			idle = 0, timeout = 0,
+			prior = 7, state = {2}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_arena_4",
+			idle = 0, timeout = 0,
+			prior = 7, state = {2}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_arena_5",
+			idle = 0, timeout = 0,
+			prior = 7, state = {2}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_arena_6",
+			idle = 0, timeout = 0,
+			prior = 7, state = {2}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_arena_7",
+			idle = 0, timeout = 0,
+			prior = 7, state = {2}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_visitors_arena_8",
+			idle = 0, timeout = 0,
+			prior = 7, state = {2}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+	
+	end
+	
+	-- Гулаг ламеров Долга внутри базы Долга
+	if type == "bar_dolg_general" then
+		t = { section = "logic1@bar_dolg_general_guard_left",
+			idle = 0,
+			prior = 8, state = {0,1,2}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic2@bar_dolg_general_guard_right",
+			idle = 0,
+			prior = 8, state = {0,1,2}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic3@bar_dolg_general_guard_center",
+			idle = 0,
+			prior = 9, state = {0,1,2}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}",
+			predicate = function(obj_info)
+			           	return obj_info.profile_name == "bar_dolg_guard_commander"
+			        end
+			
+        }
+		table.insert(sj, t)		
+        
+      	t = { section = "logic4@bar_dolg_general_kamp",
+			idle = 0,
+			prior = 5, state = {0,1}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic4@bar_dolg_general_kamp",
+			idle = 0,
+			prior = 5, state = {0,1}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic4@bar_dolg_general_kamp",
+			idle = 0,
+			prior = 5, state = {0,1}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic4@bar_dolg_general_kamp",
+			idle = 0,
+			prior = 5, state = {0,1}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic4@bar_dolg_general_kamp",
+			idle = 0,
+			prior = 5, state = {0,1}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+
+
+		t = { section = "logic5@bar_dolg_general_patrol1", 
+			idle = 5*60*60*1000,
+			prior = 6, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)
+		t = { section = "logic6@bar_dolg_general_patrol2", 
+			idle = 5*60*60*1000,
+			prior = 6, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)
+
+
+		t = { section = "logic6@bar_dolg_general_camper",
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)
+		t = { section = "logic7@bar_dolg_general_camper",
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)
+		t = { section = "logic8@bar_dolg_general_camper",
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)
+		t = { section = "logic9@bar_dolg_general_camper",
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)
+		t = { section = "logic10@bar_dolg_general_camper",
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)
+
+
+	end
+
+	-- Гулаг ветеранов Долга внутри базы Долга
+	if type == "bar_dolg_veterans" then
+		t = { section = "logic3@bar_dolg_veterans_gates1", 
+			idle = 0,
+			prior = 7, state = {0,1}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)
+		t = { section = "logic4@bar_dolg_veterans_gates2", 
+			idle = 0,
+			prior = 7, state = {0,1}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)
+		t = { section = "logic1@bar_dolg_veterans_guard_bunker1", 
+			idle = 0,
+			prior = 9, state = {0,1,2}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)
+		t = { section = "logic2@bar_dolg_veterans_guard_bunker2", 
+			idle = 0,
+			prior = 9, state = {0,1,2}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)
+		t = { section = "logic5@bar_dolg_veterans_gates_alarm1", 
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)	
+		t = { section = "logic6@bar_dolg_veterans_gates_alarm2", 
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "",
+					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+		}
+		table.insert(sj, t)
+	end
+
+	-- Гулаг в бункере Долга
+	if type == "bar_dolg_bunker" then
+		t = { section = "logic2@bar_dolg_bunker", 
+			idle = 0,
+			prior = 10, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "bar_dolg_bunker_restrictor",
+					online = "{=actor_in_zone(bar_bunker_online_restrictor)}"
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic3@bar_dolg_bunker", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "bar_dolg_bunker_restrictor",
+					online = "{=actor_in_zone(bar_bunker_online_restrictor)}"
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic4@bar_dolg_bunker", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "bar_dolg_bunker_restrictor",
+					online = "{=actor_in_zone(bar_bunker_online_restrictor)}"
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic5@bar_dolg_bunker", 
+			idle = 0,
+			prior = 4, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "bar_dolg_bunker_restrictor",
+					online = "{=actor_in_zone(bar_bunker_online_restrictor)}"
+		}
+		table.insert(sj, t)		    
+		
+	end
+
+    -- Гулаг сталкеров на заставе 1
+
+    if type == "bar_zastava" then 
+        t = { section = "logic@bar_dolg_zastava1_cammander_1",
+        idle = 0,
+        prior = 9, state = {0},
+        in_rest = "", out_rest = "bar_zastava_restrictor",
+					online = "{=actor_in_zone(bar_zastava_online_restrictor)}",
+		predicate = function(obj_info)
+			           	return obj_info.profile_name == "bar_zastava_commander_1"
+			        end
+        }
+		table.insert(sj, t)	
+        for i = 1,3 do
+            t = { section = "logic@bar_dolg_zastava1_walker"..i,
+                    idle = 0,
+                    prior = 8, state = {0},
+                    in_rest = "", out_rest = "bar_zastava_restrictor",
+					online = "{=actor_in_zone(bar_zastava_online_restrictor)}"
+                }
+		    table.insert(sj, t)
+        end
+    end
+
+    -- Гулаг сталкеров на заставе 2
+
+    if type == "bar_zastava_2" then 
+        for i = 1,3 do
+            t = { section = "logic@bar_dolg_zastava2_walker"..i,
+                    idle = 0,
+                    prior = 9, state = {0},
+                    in_rest = "", out_rest = "bar_zastava_restrictor_2",
+					online = "{=actor_in_zone(bar_zastava2_online_restrictor)}"   
+                }
+		    table.insert(sj, t)
+        end
+    end
+
+	-- Гулаг нехороших сталкеров ветеранов на Дикой территории
+	if type == "bar_evil_veterans" then
+		t = { section = "logic@bar_evil_veterans_walker1", 
+			idle = 0,
+			prior = 7, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_evil_veterans_kamp1", 
+			idle = 0,
+			prior = 7, state = {1}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_evil_veterans_walker2", 
+			idle = 0,
+			prior = 7, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_evil_veterans_kamp2", 
+			idle = 0,
+			prior = 7, state = {1}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		    
+		t = { section = "logic@bar_evil_veterans_walker3", 
+			idle = 0,
+			prior = 7, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_evil_veterans_kamp3", 
+			idle = 0,
+			prior = 7, state = {1}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		
+		t = { section = "logic@bar_evil_veterans_camper4", 
+			idle = 0,
+			prior = 7, state = {0,2}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_evil_veterans_camper1", 
+			idle = 0,
+			prior = 9, state = {0,1,2}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+				         	return obj_info.profile_name == "bar_crazy_veterans_lucky"
+			            end
+		}
+		table.insert(sj, t)
+        t = { section = "logic@bar_evil_veterans_camper1", 
+			idle = 0,
+			prior = 1, state = {0,1,2}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_evil_veterans_kamp4", 
+			idle = 0,
+			prior = 7, state = {1}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)		
+		t = { section = "logic@bar_evil_veterans_alarm1", 
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)	
+		t = { section = "logic@bar_evil_veterans_alarm2", 
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_evil_veterans_alarm3", 
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+
+	-- Ученные, защищающие инфу от свободы
+	if type == "bar_ecolog_crush" then
+		t = { section = "logic@bar_ecolog_crush_sniper_1", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_ecolog_crush_sniper_2", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_ecolog_crush_sniper_3", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_ecolog_crush_sniper_4", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_ecolog_professor", 
+			idle = 0,
+			prior = 10, state = {0}, squad = squad, group = groups[0],
+			online = true,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+				         	return obj_info.story_id == 503
+   			            end
+		}
+		table.insert(sj, t)
+        t = { section = "logic@bar_ecolog_professor", 
+			idle = 0,
+			prior = 2, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+        
+    end
+
+	-- Свобода, атакующая ученных с целью отнимания инфы
+	if type == "bar_freedom_attack" then
+		
+	--начало сцены {0}
+		t = { section = "logic@bar_freedom_attack_sniper_1", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_sniper_2", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_sniper_3", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_sniper_4", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_guard_1", 
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = "", online = true ,
+            predicate = function(obj_info)
+				         	return obj_info.profile_name == "bar_killer_rpg"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_guard_2", 
+			idle = 0,
+			prior = 2, state = {0}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_commander", 
+			idle = 0,
+			prior = 9, state = {0,1}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = "",
+			predicate = function(obj_info)
+				         	return obj_info.profile_name == "bar_svoboda_attack_commander"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_camper_5", 
+			idle = 0,
+			prior = 2, state = {0}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_camper_6", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_offline_walker", 
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = "",
+		predicate = function(obj_info)
+				         	return obj_info.story_id == 601
+			            end		
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_offline_walker", 
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = "",
+		predicate = function(obj_info)
+				         	return obj_info.story_id == 602
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_offline_walker", 
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = "",
+		predicate = function(obj_info)
+				         	return obj_info.story_id == 603
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_offline_walker", 
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = "",
+		predicate = function(obj_info)
+				         	return obj_info.story_id == 604
+			            end
+		}
+		table.insert(sj, t)
+		
+		
+		
+		
+	-- attack actor	{1}	
+		t = { section = "logic@bar_freedom_attack_sniper_7", 
+			idle = 0,
+			prior = 2, state = {1,2}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_sniper_c1", 
+			idle = 0,
+			prior = 2, state = {1,2}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_sniper_c2", 
+			idle = 0,
+			prior = 2, state = {1,2}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_sniper_c3", 
+			idle = 0,
+			prior = 2, state = {1,2}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_sniper_c4", 
+			idle = 0,
+			prior = 2, state = {1,2}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_guard_c1", 
+			idle = 0,
+			prior = 2, state = {1,2}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_guard_c2", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_camper6_c1", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_camper7", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_camper8", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_camper9", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_camper10", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = ""
+		}
+		table.insert(sj, t)
+		
+	-- погоня за Кругловым	{2}
+        t = { section = "logic@bar_freedom_attack_chaser_1", 
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = "rostok_chase_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_chaser_2", 
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[0],
+			in_rest = "", position_threshold = 150,out_rest = "rostok_chase_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_chaser_3", 
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[0],
+			in_rest = "", position_threshold = 150,out_rest = "rostok_chase_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_chaser_4", 
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = "rostok_chase_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_chaser_5", 
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = "rostok_chase_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_chaser_6", 
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = "rostok_chase_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_chaser_7", 
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = "rostok_chase_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_chaser_8", 
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = "rostok_chase_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_chaser_9", 
+			idle = 0,
+			prior = 5, state = {2}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = "rostok_chase_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_chaser_10", 
+			idle = 0,
+			prior = 5, state = {2,3}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = "rostok_chase_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_chaser_11", 
+			idle = 0,
+			prior = 5, state = {2,3}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = "rostok_chase_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_chaser_12", 
+			idle = 0,
+			prior = 2, state = {2,3}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = "rostok_chase_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_chaser_13", 
+			idle = 0,
+			prior = 2, state = {2}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 150, out_rest = "rostok_chase_restrictor",
+			predicate = function(obj_info)
+				         	return obj_info.profile_name == "bar_svoboda_attack_commander"
+			            end
+		}
+		table.insert(sj, t)
+		
+
+	-- отдых свободы {3}
+		
+		t = { section = "logic@bar_freedom_attack_camper_1_relax", 
+			idle = 0,
+			prior = 8, state = {3}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_camper_2_relax", 
+			idle = 0,
+			prior = 8, state = {3}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		
+		t = { section = "logic@bar_freedom_attack_camper_3_relax", 
+			idle = 0,
+			prior = 7, state = {3}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_camper_4_relax", 
+			idle = 0,
+			prior = 6, state = {3}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_camper_5_relax", 
+			idle = 0,
+			prior = 6, state = {3}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_camper_6_relax", 
+			idle = 0,
+			prior = 5, state = {3}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_camper_7_relax", 
+			idle = 0,
+			prior = 6, state = {3}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_camper_8_relax", 
+			idle = 0,
+			prior = 5, state = {3}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_attack_camper_9_relax", 
+			idle = 0,
+			prior = 5, state = {3}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		
+		t = { section = "logic@bar_freedom_attack_commander_relax", 
+			idle = 0,
+			prior = 10, state = {3}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = "",
+			predicate = function(obj_info)
+				         	return obj_info.profile_name == "bar_svoboda_attack_commander"
+			            end
+		}
+		table.insert(sj, t)		
+	end		
+	-- killers na stroyke
+	
+	if type == "bar_freedom_chasers_attack" then
+		t = { section = "logic@bar_freedom_chaser_attack_1", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_chaser_attack_2", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_chaser_attack_3", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_chaser_attack_4", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_chaser_attack_hide_1", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_chaser_attack_hide_2", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_chaser_attack_hide_3", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_freedom_chaser_attack_hide_4", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "",position_threshold = 100, out_rest = ""
+		}
+		table.insert(sj, t)
+		
+	
+	end
+	
+	-- Засада боевиков Наемников на стройке
+	if type == "bar_killers_ambush" then
+		t = { section = "logic@bar_svoboda_ambush_sniper_1", 
+			idle = 0,
+			prior = 4, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_svoboda_ambush_sniper_2", 
+			idle = 0,
+			prior = 4, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+				         	return obj_info.profile_name == "killer_sniper"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_svoboda_ambush_sniper_3", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_svoboda_ambush_sniper_4", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_svoboda_ambush_sniper_5", 
+			idle = 0,
+			prior = 6, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+				         	return obj_info.profile_name == "bar_killer_ambush_tiran"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_svoboda_ambush_sniper_6", 
+			idle = 0,
+			prior = 6, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+				         	return obj_info.profile_name == "killer_sniper"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_svoboda_ambush_sniper_7", 
+			idle = 0,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+
+
+
+	--- MONSTERS GULAGS
+
+
+
+
+	-- ARENA MONSTERS
+	if type == "bar_arena_monstr" then
+		t = { section = "logic@bar_arena_monstr_pseudodog", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "bar_arena_sr",
+			predicate = function(obj_info)
+				         	return obj_info.section_name == "pseudodog_arena"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_arena_monstr_pseudodog_none", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "bar_arena_sr",
+			predicate = function(obj_info)
+				         	return obj_info.section_name == "pseudodog_arena"
+			            end
+		}
+		table.insert(sj, t)
+
+		t = { section = "logic@bar_arena_monstr_snork", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "bar_arena_sr",
+			predicate = function(obj_info)
+				         	return obj_info.section_name == "snork_arena"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_arena_monstr_snork_none", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "bar_arena_sr",
+			predicate = function(obj_info)
+				         	return obj_info.section_name == "snork_arena"
+			            end
+		}
+		table.insert(sj, t)
+
+		t = { section = "logic@bar_arena_monstr_bloodsucker", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "bar_arena_sr",
+			predicate = function(obj_info)
+				         	return obj_info.section_name == "bloodsucker_arena"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_arena_monstr_bloodsucker_none", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "bar_arena_sr",
+			predicate = function(obj_info)
+				         	return obj_info.section_name == "bloodsucker_arena"
+			            end
+		}
+		table.insert(sj, t)
+
+		t = { section = "logic@bar_arena_monstr_burer", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "bar_arena_sr",
+			predicate = function(obj_info)
+				         	return obj_info.section_name == "burer_arena"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_arena_monstr_burer_none", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "bar_arena_sr",
+			predicate = function(obj_info)
+				         	return obj_info.section_name == "burer_arena"
+			            end
+		}
+		table.insert(sj, t)
+
+		t = { section = "logic@bar_arena_monstr_savage", 
+			idle = 0,
+			prior = 5, state = {1}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "bar_arena_sr",
+			predicate = function(obj_info)
+				         	return obj_info.community == "arena_enemy"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@bar_arena_monstr_savage_none", 
+			idle = 0,
+			prior = 5, state = {0}, squad = squad, group = groups[0],
+			in_rest = "", out_rest = "bar_arena_sr",
+			predicate = function(obj_info)
+				         	return obj_info.community == "arena_enemy"
+			            end
+		}
+		table.insert(sj, t)
+	end
+
+
+	
+end
+
+function load_states(gname, type)
+	if type == "bar_visitors" then
+		return function(gulag)
+			-- Проверка боя на арене
+			if has_alife_info("bar_arena_start") and
+			   not has_alife_info("bar_arena_actor_victory") and
+			   not has_alife_info("bar_arena_actor_lose") and
+			   not has_alife_info("bar_arena_actor_afraid") and
+			   not has_alife_info("bar_arena_actor_dead")
+			then
+				return 2
+			end
+			
+			if level.rain_factor() > 0.07 then
+				return 1
+			end
+			return 0
+		end
+	end
+
+    if type == "bar_zastava" then
+		return function(gulag)
+			return 0
+		end
+    end
+
+    if type == "bar_zastava_2" then
+		return function(gulag)
+			return 0
+		end
+    end
+	if type == "bar_dolg_general" then
+		return function (gulag)
+				for k,v in pairs(gulag.Object) do
+					if v ~= true and v:best_enemy() ~= nil then
+   						gulag.alarm_start = game.get_game_time()
+   						return 2 -- тревога
+					end
+				end		
+		
+				if gulag.alarm_start == nil or
+					game.get_game_time():diffSec(gulag.alarm_start) > 300 then
+					if level.get_time_hours() >= 6 and level.get_time_hours() <= 22 then
+						return 0  -- день
+					else
+						return 1  -- ночь
+					end
+				else
+					return 2
+				end
+		end
+	end
+	if type == "bar_dolg_veterans" then        
+		return function (gulag)
+				for k,v in pairs(gulag.Object) do
+					if v ~= true and v:best_enemy() ~= nil then
+   						gulag.alarm_start = game.get_game_time()
+   						return 2 -- тревога
+					end
+				end		
+		
+				if gulag.alarm_start == nil or
+					game.get_game_time():diffSec(gulag.alarm_start) > 300 then
+					if level.get_time_hours() >= 6 and level.get_time_hours() <= 22 then
+						return 0  -- день
+					else
+						return 1  -- ночь
+					end
+				else
+					return 2
+				end
+		end
+	end
+	if type == "bar_dolg_bunker" then        
+		return function (gulag)
+				return 0
+		end
+	end
+	
+	if type == "bar_evil_veterans" then        
+		return function (gulag)
+				for k,v in pairs(gulag.Object) do
+					if v ~= true and v:best_enemy() ~= nil then
+   						gulag.alarm_start = game.get_game_time()
+   						return 2 -- тревога
+					end
+				end		
+		
+				if gulag.alarm_start == nil or
+					game.get_game_time():diffSec(gulag.alarm_start) > 300 then
+					if level.get_time_hours() >= 6 and level.get_time_hours() <= 22 then
+						return 0  -- день
+					else
+						return 1  -- ночь
+					end
+				else
+					return 2
+				end
+		end
+	end
+
+	if type == "bar_freedom_attack" then        
+		return function (gulag)
+			if has_alife_info("bar_freedom_attack_ecolog") and
+			   not has_alife_info("bar_rescue_research_chasing_start") and 
+               not has_alife_info("bar_heli_scene_professor_die") then
+				 return 1 -- actor enemy
+			end
+			if has_alife_info("bar_rescue_research_chasing_start") and
+			   not has_alife_info("bar_heli_scene_professor_die") then
+				 return 2 -- start chasing			
+			end
+			if has_alife_info("bar_heli_scene_professor_die") then
+			     return 3 -- relax
+			end	 
+			return 0
+		end
+	end
+	if type == "bar_freedom_chasers_attack" then        
+		return function (gulag)
+			if has_alife_info("bar_bandits_alive") then
+				return 0
+			end
+			return 1
+		end
+	end
+	if type == "bar_ecolog_crush" then        
+		return function (gulag)
+			    return 0
+		end
+	end
+	if type == "bar_killers_ambush" then        
+		return function (gulag)
+			return 0
+		end
+	end
+
+	
+	if type == "bar_arena_monstr" then
+		return function(gulag)
+			if has_alife_info("bar_arena_state_1")
+			then
+				return 1
+			end
+			return 0
+		end
+	end
+
+end
+
+--------------------------------------------------------------------------
+-- Dynamic ltx
+--------------------------------------------------------------------------
+function load_ltx(gname, type)
+	return nil
+end
+
+function checkStalker(npc_community, gulag_type)
+	if gulag_type == "bar_dolg_general" then
+		return npc_community == "dolg"
+	end
+	if gulag_type == "bar_dolg_veterans" then
+		return npc_community == "dolg"
+	end
+	if gulag_type == "bar_dolg_bunker" then
+		return npc_community == "dolg"
+	end
+	if gulag_type == "bar_zastava" then
+		return npc_community == "dolg"
+	end
+	if gulag_type == "bar_zastava_2" then
+		return npc_community == "dolg"
+	end
+	if gulag_type == "bar_evil_veterans" then
+		return npc_community == "bandit"
+	end
+	if gulag_type == "bar_freedom_attack" then
+		return npc_community == "killer"
+	end
+	if gulag_type == "bar_freedom_chasers_attack" then
+		return npc_community == "killer"
+	end
+	if gulag_type == "bar_killers_ambush" then
+		return npc_community == "killer"
+	end
+	if gulag_type == "bar_ecolog_crush" then
+		return npc_community == "ecolog"
+	end
+	if gulag_type == "bar_visitors" then
+		return true
+	end
+	if gulag_type == "bar_arena_monstr" then
+		return true
+	end
+	
+	return false
+end
+
+function checkMonster(npc_community, gulag_type, npc_rank, se_obj)
+		
+	if gulag_type == "bar_arena_monstr" then
+		if npc_community == "arena_enemy" then
+			return true
+		end
+		local se_obj_name = se_obj:section_name()
+		if se_obj_name == "pseudodog_arena" or
+		   se_obj_name == "snork_arena" or
+		   se_obj_name == "bloodsucker_arena" or
+		   se_obj_name == "burer_arena"
+		then
+			return true
+		end
+		return false
+	end
+		
+	return false
+end

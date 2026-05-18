@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window>
+
+	<left_character_icon x="15" y="32" width="150" height="220"  stretch="1">
+		<texture>ui_charinfo_left</texture>
+		<texture_offset x="-11" y="0"/>
+	</left_character_icon>
+	
+	<right_character_icon x="850" y="32" width="150" height="220" stretch="1">
+		<texture>ui_charinfo_right</texture>
+	</right_character_icon>
+	
+	<top_background x=0 y=0 width=1024 height=128>
+		<texture>ui\ui_top_background</texture>
+	</top_background>
+
+	<bottom_background x=0 y=736 width=1024 height=32>
+		<texture>ui\ui_bottom_background</texture>
+	</bottom_background>
+	<!-- BUTTONS -->
+	<button x="437" y="726" width="157" height="48" hR="255" hB="83" hG="179" highlight_text="1">
+		<texture>ui_button_main01</texture>
+		<text align="c"	font="graffiti22" r="238" g="153" b="26">ui_st_trade</text>
+	</button>
+
+	<frame_line_window x="218" y="42" width="600" height="470" vertical="1">
+		<texture>ui_talk_dialogue</texture>		
+		<title x="25" y="3" width="190" height="22">
+			<text font="graffiti22" r="238" g="153" b="26" complex_mode="0"/>
+		</title>
+	</frame_line_window>
+
+	<frame_line_window x="218" y="485" width="600" height="250" vertical="1">
+		<texture>ui_talk_dialogue2</texture>		
+		<title x="25" y="60" width="190" height="22">
+			<text font="graffiti22" r="238" g="153" b="26" complex_mode="0"/>
+		</title>
+	</frame_line_window>
+
+	<questions_list x="20" y="100" width="557" height="125" right_ident="5" always_show_scroll="0"/>
+
+	<answers_list x="20" y="46" width="557" height="377" right_ident="0" always_show_scroll="0"/>
+
+
+	<question_item x="0" y="0" width="557" height="20" min_height="13">
+		<content_text x="0" y="0" width="550" height="20">
+		<text font="letterica18" r="255" g="232" b="208" align="l"/>
+		<text_color>
+			<t r="231" g="168" b="12"/> <e r="255" g="232" b="208"/> <h r="255" g="255" b="255"/>
+		</text_color>
+		
+		</content_text>
+	</question_item>
+	
+	<other_answer_item x="0" y="0" width="557" height="0" min_height="13" bottom_footer="5">
+		<name_caption x="0" y="0" width="550" height="10">
+			<text font="graffiti22" r="238" g="153" b="26" complex_mode="0"/>
+		</name_caption>
+		
+		<content_text x="20" y="22" width="520" height="10" complex_mode="1">
+			<text font="letterica18" r="216" g="186" b="140"/>
+		</content_text>
+	</other_answer_item>
+
+	<actor_answer_item x="0" y="0" width="557" height="0" min_height="13" bottom_footer="10">
+		<name_caption x="0" y="0" width="550" height="10">
+			<text font="graffiti22" r="135" g="183" b="116" complex_mode="0"/>
+		</name_caption>
+		
+		<content_text x="20" y="22" width="520" height="10" complex_mode="1">
+			<text font="letterica18" r="255" g="232" b="208"/>
+		</content_text>
+	</actor_answer_item>
+
+	<iconed_answer_item x="0" y="0" width="557" height="0" min_height="30" bottom_footer="5">
+		<name_caption x="0" y="0" width="0" height="0"/>
+		
+		<content_text x="75" y="0" width="520" height="29" complex_mode="1">
+			<text font="letterica16" r="255" g="255" b="255"/>
+		</content_text>
+		
+		<msg_icon x="20" y="3" width="49" height="29">
+		</msg_icon>
+	</iconed_answer_item>
+
+
+	<iconed_trade_info x="0" y="0" width="557" height="0" min_height="20" bottom_footer="5">
+		<name_caption x="0" y="0" width="0" height="0"/>
+		
+		<content_text x="65" y="2" width="520" height="20" complex_mode="1">
+			<text font="letterica18" r="216" g="186" b="140"/>
+		</content_text>
+		
+		<msg_icon x="20" y="0" width="34" height="20">
+		</msg_icon>
+	</iconed_trade_info>
+	
+</window>

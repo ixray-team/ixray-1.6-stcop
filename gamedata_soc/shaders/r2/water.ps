@@ -1,0 +1,74 @@
+#include "common.h"
+
+struct   vf
+{
+        float4         hpos        :         POSITION        ;
+           float2  tbase        :        TEXCOORD0        ;  // base
+           float2         tnorm0        :        TEXCOORD1        ;  // nm0
+           float2         tnorm1        :        TEXCOORD2        ;  // nm1
+        half3         M1                :        TEXCOORD3        ;
+        half3         M2                :        TEXCOORD4        ;
+        half3         M3                :        TEXCOORD5        ;
+        half3        v2point        :        TEXCOORD6        ;
+           half4        c0                :          COLOR0                ;
+        float          fog        :         FOG                ;
+};
+
+uniform        sampler2D                s_nmap;
+uniform        samplerCUBE                s_env0;
+uniform        samplerCUBE                s_env1;
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel
+/*
+half4   main         ( v2p I )  : COLOR
+{
+
+        half4        t_base                = tex2D   (s_base,I.tbase);
+        half3        t_env                = texCUBE  (s_env, I.tenv);
+
+        half3        refl                = lerp    (t_env,t_base,I.c0.a);
+        half3        color                = lerp    (refl, t_base,t_base.a);
+        half3        final                = color*I.c0*2  ;
+
+        half        alpha_shift        = saturate(.5-I.c0.a);
+        half        alpha_add        = alpha_shift*alpha_shift;
+        half        alpha                = t_base.a;
+        // out
+  return  half4   (final,   t_base.a );  //t_base.a + (1-I.c0.a));  //half4  (final, t_base.a );
+}
+*/
+
+half4   main_ps_2_0  ( vf I )          : COLOR
+{
+        half4        base                 = tex2D           (s_base,I.tbase);
+        half3        n0                        = tex2D           (s_nmap,I.tnorm0);
+        half3        n1                        = tex2D           (s_nmap,I.tnorm1);
+        half3        Navg                = n0 + n1 - 1        ;
+
+        half3         Nw                     = mul                (half3x3(I.M1, I.M2, I.M3), Navg);
+                        Nw                        = normalize        (Nw);
+        half3         v2point           = normalize        (I.v2point);
+        half3        vreflect        	= reflect        (v2point, Nw)        ;
+                        vreflect.y      = vreflect.y*2-1;                                // fake remapping
+        half3        env0               = texCUBE          (s_env0, vreflect);
+        half3        env1               = texCUBE          (s_env1, vreflect);
+        half3         env               = lerp                (env0,env1,L_ambient.w);
+
+        half          fresnel                = saturate        (dot(vreflect,v2point));
+        half         amount             = 0.15h+0.25h*pow        (fresnel,9);                        // 1=full env, 0=no env
+
+        half3        c_reflection       = env*amount        ;
+        half3        final              = lerp(c_reflection,base.rgb,base.a)        ;
+					 final*=I.c0*2		;
+
+        // tonemap
+#ifdef        USE_VTF
+//                final                *= I.c0.w        ;
+#else
+//                 final                 *= tex2D        (s_tonemap,I.tbase).x        ;        // any TC - OK
+#endif
+
+        // out
+        return  half4   (final, 1 )                ;
+}

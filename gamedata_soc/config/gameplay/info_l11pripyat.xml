@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding="windows-1251"?>
+<game_information_portions>
+    <info_portion id="pri_followers_mission_accept"></info_portion>
+    <info_portion id="pri_followers_leader_phrase1_end"></info_portion>
+    <info_portion id="pri_helicopters_start"></info_portion>
+    <info_portion id="pri_followers_start"></info_portion>
+    <info_portion id="pri_followers_heli_look"></info_portion>
+    <info_portion id="pri_helicopters2_start"></info_portion>
+    <info_portion id="pri_helicopter_die"></info_portion>
+    <info_portion id="pri_followers_scene_end"></info_portion>
+	<info_portion id="pri_followers_all_dead"></info_portion>
+
+    <info_portion id="pri_bomber_dead"></info_portion>
+    <info_portion id="pri_followers_actor_enemy"></info_portion>
+    <info_portion id="pri_followers_actor_leave"></info_portion>
+    <info_portion id="pri_followers_leader_give_info"></info_portion>
+
+    <info_portion id="pri_wave1_start"></info_portion>
+    <info_portion id="pri_wave1_hide"></info_portion>
+    <info_portion id="pri_wave1_monolith1_on_position"></info_portion>
+    <info_portion id="pri_wave1_monolith1_dead"></info_portion>
+    <info_portion id="pri_wave1_monolith2_dead"></info_portion>
+    <info_portion id="pri_wave1_monolith3_dead"></info_portion>
+    <info_portion id="pri_wave1_monolith4_dead"></info_portion>
+    <info_portion id="pri_wave1_end"></info_portion>
+
+    <info_portion id="pri_wave2_start"></info_portion>
+    <info_portion id="pri_wave2_start_phrase"></info_portion>
+    <info_portion id="pri_wave2_monolith1_dead"></info_portion>
+    <info_portion id="pri_wave2_monolith2_dead"></info_portion>
+    <info_portion id="pri_wave2_monolith3_dead"></info_portion>
+    <info_portion id="pri_wave2_monolith4_dead"></info_portion>
+    <info_portion id="pri_wave2_monolith5_dead"></info_portion>
+    <info_portion id="pri_wave2_monolith6_dead"></info_portion>
+    <info_portion id="pri_wave2_monolith7_dead"></info_portion>
+    <info_portion id="pri_wave2_monolith8_dead"></info_portion>
+    <info_portion id="pri_wave2_monolith9_dead"></info_portion>
+    <info_portion id="pri_wave2_end"></info_portion>
+
+    <info_portion id="pri_wave3_start"></info_portion>
+    <info_portion id="pri_wave3_btr_arrived"></info_portion>
+    <info_portion id="pri_wave3_bomber_on_position"></info_portion>
+    <info_portion id="pri_wave3_btr_dead"></info_portion>
+    <info_portion id="pri_wave3_end"></info_portion>
+
+    <info_portion id="pri_wave4_start"></info_portion>
+    <info_portion id="pri_wave4_start_phrase"></info_portion>
+    <info_portion id="pri_wave4_monolith1_dead"></info_portion>
+    <info_portion id="pri_wave4_monolith2_dead"></info_portion>
+    <info_portion id="pri_wave4_monolith3_dead"></info_portion>
+    <info_portion id="pri_wave4_monolith4_dead"></info_portion>
+    <info_portion id="pri_wave4_monolith5_dead"></info_portion>
+    <info_portion id="pri_wave4_monolith6_dead"></info_portion>
+    <info_portion id="pri_wave4_monolith7_dead"></info_portion>
+    <info_portion id="pri_wave4_monolith8_dead"></info_portion>
+    <info_portion id="pri_wave4_end"></info_portion>
+
+    <info_portion id="pri_wave5_fake_start"></info_portion>
+    <info_portion id="pri_wave5_start"></info_portion>
+    <info_portion id="pri_wave5_leader_phrase_start"></info_portion>
+    <info_portion id="pri_wave5_leader_phrase_end"></info_portion>
+    <info_portion id="pri_wave5_monolith1_dead"></info_portion>
+    <info_portion id="pri_wave5_monolith2_dead"></info_portion>
+    <info_portion id="pri_wave5_monolith3_dead"></info_portion>
+    <info_portion id="pri_wave5_monolith4_dead"></info_portion>
+    <info_portion id="pri_wave5_end"></info_portion>
+
+    <info_portion id="pri_wave6_start"></info_portion>
+    <info_portion id="pri_wave6_monolith1_dead"></info_portion>
+    <info_portion id="pri_wave6_monolith2_dead"></info_portion>
+    <info_portion id="pri_wave6_monolith3_dead"></info_portion>
+    <info_portion id="pri_wave6_end"></info_portion>
+
+    <info_portion id="pri_wave7_start"></info_portion>
+    <info_portion id="pri_wave7_sound_start"></info_portion>
+    <info_portion id="pri_wave7_leader_phrase_start"></info_portion>
+    <info_portion id="pri_wave7_leader_phrase_end"></info_portion>
+    <info_portion id="pri_wave7_monolith1_dead"></info_portion>
+    <info_portion id="pri_wave7_monolith2_dead"></info_portion>
+    <info_portion id="pri_wave7_monolith3_dead"></info_portion>
+    <info_portion id="pri_wave7_monolith4_dead"></info_portion>
+    <info_portion id="pri_wave7_monolith5_dead"></info_portion>
+    <info_portion id="pri_wave7_monolith6_dead"></info_portion>
+    <info_portion id="pri_wave7_monolith7_dead"></info_portion>
+    <info_portion id="pri_wave7_end"></info_portion>
+
+    <info_portion id="pri_undeground_respawn_start"></info_portion>
+
+    <info_portion id="pri_show_zones"></info_portion>
+
+    <info_portion id="pri_corner_start"></info_portion>
+    <info_portion id="pri_corner_end"></info_portion>
+
+    <info_portion id="pri_cat_dog_start"></info_portion>
+    <info_portion id="pri_kamaz_start"></info_portion>
+
+    <info_portion id="pri_zombied_scene_start"></info_portion>
+    <info_portion id="pri_zombied_scene_end"></info_portion>
+    <info_portion id="pri_zombied_victim1_dead"></info_portion>
+    <info_portion id="pri_zombied_victim2_dead"></info_portion>
+    <info_portion id="pri_victim1_suicide"></info_portion>
+    <info_portion id="pri_victim2_suicide"></info_portion>
+
+    <info_portion id="pri_monolith_snipers_free"></info_portion>
+    <info_portion id="pri_monolith_base_attacked"></info_portion>
+    <info_portion id="pri_monolith_base_attack_leader_zone"></info_portion>
+    
+    <info_portion id="pri_monolith_base_attack_altar_zone"></info_portion>
+    <info_portion id="pri_monolith_spawn1"></info_portion>
+    <info_portion id="pri_monolith_spawn2"></info_portion>
+
+    <info_portion id="pri_actor_in_hotel"></info_portion>
+    <info_portion id="pri_actor_in_hiding_place"></info_portion>
+
+    <info_portion id="pri_stadium_scene_start"></info_portion>
+    <info_portion id="pri_stadium_heli_start"></info_portion>
+    <info_portion id="pri_stadium_scene_end"></info_portion>
+	<info_portion id="pri_stadium_reached"></info_portion>
+
+    <info_portion id="pri_monolith_decoder_got">
+        <task>sar_secret_lab</task>
+        <article>sar_secret_lab_info</article>
+    </info_portion>
+
+    <info_portion id="pri_decoder_docs_conclusion_info">
+	    <article>pri_decoder_docs_conclusion_art</article>
+    </info_portion>
+
+    <info_portion id="pri_test_psy_hit"></info_portion>
+    <info_portion id="pri_monolith_respawn_1"></info_portion>
+    <info_portion id="pri_snork_respawn_n_1"></info_portion>
+   
+    <!--DELME: only for presentation -->
+    <info_portion id="pri_aes_mapspot">
+	</info_portion>
+    
+</game_information_portions>

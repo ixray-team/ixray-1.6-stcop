@@ -1,0 +1,14 @@
+function main()
+	printf( "start" )
+	local dog = get_level_object("m_dog1")
+
+    dog:script(true, this.script_name() )
+
+    new_action(dog)
+
+    while(dog:action()) do
+    	wait()
+    end
+
+    dog:script(false, this.script_name() )
+end

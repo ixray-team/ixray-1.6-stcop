@@ -1,0 +1,48 @@
+	<string id="gar_angar">
+		<text>Заброшенный ангар.</text>
+	</string>
+	<string id="gar_bandit_agr">
+		<text>Лагерь бандитов на выходе с Агропрома.</text>
+	</string>
+	<string id="gar_bandit_post">
+		<text>Укрепрайон бандитов по дороге на Агропром.</text>
+	</string>
+	<string id="gar_bandits_leader">
+		<text>Рейд бандитов возглавляемый паханом.</text>
+	</string>
+	<string id="gar_boars_nest">
+		<text>Скопление кабанов.</text>
+	</string>
+	<string id="gar_car_graveyard">
+		<text>Кладбище брошенной техники.</text>
+	</string>
+	<string id="gar_dogs_in_forest">
+		<text>Лес, в котором много собак.</text>
+	</string>
+	<string id="gar_dolg_blokpost">
+		<text>Блокпост Долга по дороге к Бару.</text>
+	</string>
+	<string id="gar_hellcar">
+		<text>Группа сталкеров-нейтралов зовет на помощь.</text>
+	</string>
+	<string id="gar_newbie">
+		<text>Новичок, испуганный и уставший.</text>
+	</string>
+	<string id="gar_secret1">
+		<text>Тайник, оставленный новичком.</text>
+	</string>
+	<string id="gar_seriy">
+		<text>Группа Серого.</text>
+	</string>
+	<string id="gar_swamp">
+		<text>Гримпенская трясина.</text>
+	</string>
+	<string id="gar_trash1">
+		<text>Кучи мусора с аномалиями и артефактами.</text>
+	</string>
+	<string id="gar_tunnel">
+		<text>Железнодорожный тоннель.</text>
+	</string>
+	<string id="gar_wounded_help">
+		<text>Сигнал SOS. Очевидно, раненый сталкер.</text>
+	</string>

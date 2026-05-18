@@ -1,0 +1,750 @@
+;-------------------------------------------------------------------------------------------------
+;-- Military Freedom base
+;-------------------------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------------------------
+;normal state
+[danger@mil_freedom]
+ignore_distance = 0
+;-------------------------------------------------------------------------------------------------
+;------------------------------------- Lukash --------------------------------------
+[logic@mil_freedom_lukash]
+active = walker1@mil_freedom_lukash
+actor_dialogs = dialogs@mil_freedom_lukash
+on_combat = combat@mil_freedom_max
+on_death = on_death@mil_freedom_lukash
+
+
+[on_death@mil_freedom_lukash]
+on_info = %+mil_lukash_dead +mil_kill_svoboda_leader_killed =mil_bomb_explode +sar2_death_49%
+
+[walker1@mil_freedom_lukash]
+path_walk = leader_walk
+path_look = leader_look
+on_info = {+mil_bodyguard_talk} remark1@mil_freedom_lukash
+on_info2 = {+mil_lukash_dolg_task_complete} walker2@mil_freedom_lukash
+meet = meet@mil_freedom_lukash
+danger = danger@mil_freedom
+
+[remark1@mil_freedom_lukash]
+no_rotate = true
+no_move = true
+snd = mil_guard_to_max
+anim = wait_rac
+on_signal = sound_end | walker2@mil_freedom_lukash %-mil_bodyguard_talk%
+danger = danger@mil_freedom
+target = actor
+
+[dialogs@mil_freedom_lukash]
+id = mil_lukash_dialog_rg6, mil_lukash_dialog_after
+
+[meet@mil_freedom_lukash]
+meet_state = 4|ward|6|ward@talk_hello
+meet_state_wpn = 5|ward
+victim = 10|actor
+victim_wpn = 10|actor
+use = true
+use_wpn = false
+meet_dialog = mil_leader_start_dialog
+
+[walker2@mil_freedom_lukash]
+path_walk = leader_walk
+path_look = leader_look
+on_info = {+mil_bodyguard_talk} remark1@mil_freedom_lukash
+meet = meet2@mil_freedom_lukash
+danger = danger@mil_freedom
+
+[meet2@mil_freedom_lukash]
+meet_state = 5|ward
+meet_state_wpn = 5|ward
+victim = 10|actor
+victim_wpn = 10|actor
+use = true
+use_wpn = false
+meet_dialog = mil_leader_start_dialog
+
+
+;------------------------------------- Повар --------------------------------------
+[logic@mil_freedom_cook]
+active = walker1@mil_freedom_cook
+actor_dialogs = dialogs@mil_freedom_cook
+on_death = on_death@mil_freedom_cook
+
+[on_death@mil_freedom_cook]
+on_info = %+mil_cook_dead +sar2_death_31%
+
+[walker1@mil_freedom_cook]
+path_walk = cook_walk1
+path_look = cook_look1
+on_info = {+mil_freedom_under_attack} camper1@mil_freedom_cook
+meet = meet@mil_freedom_cook
+danger = danger_condition@mil_freedom_cook
+
+[meet@mil_freedom_cook]
+meet_dialog = mil_cook_dialog
+use = true
+use_wpn = true
+meet_state = 5|sit
+victim = 5|actor
+victim_wpn = 5|actor
+
+[camper1@mil_freedom_cook]
+path_walk = cook_walk2
+path_look = cook_look2
+radius = 0
+on_info = {-mil_freedom_under_attack} walker1@mil_freedom_cook
+no_retreat = true
+danger = danger_condition@mil_freedom_cook
+
+[danger_condition@mil_freedom_cook]
+ignore_distance = 0
+ignore_types = corpse
+
+[dialogs@mil_freedom_cook]
+id = mil_cook_common1,mil_cook_common2,mil_cook_common3,mil_cook_common4,mil_cook_common5,mil_cook_common6,mil_cook_drink_for_rg6_1,mil_cook_drink_for_rg6_2,mil_cook_drink_for_rg6_3,mil_cook_drink_question_about_rg6_1,mil_cook_drink_question_about_rg6_2,mil_cook_drink_question_about_rg6_3
+
+
+-----------------------------------------------------------
+pl:убираем состояние раненого для снайпера
+-----------------------------------------------------------
+[wounded_ignore@mil_sniper]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false 
+-------------------------
+;Снайпер на первой вышке (на него задание дает Череп)
+-------------------------
+
+[logic@mil_freedom_sniper1]
+active = camper1@mil_freedom_sniper1
+on_death = on_death@mil_freedom_sniper1
+combat_ignore = combat_ignore@mil_freedom_sniper1
+
+[combat_ignore@mil_freedom_sniper1]
+
+[on_death@mil_freedom_sniper1]
+on_info = %+mil_sniper_dead%
+
+[camper1@mil_freedom_sniper1]
+path_walk = camp_walk4
+path_look = camp_look4
+sniper = true
+enemy_idle = 60000
+radius = 20
+combat_ignore_cond = {-mil_sniper_get_job}
+wounded = wounded_ignore@mil_sniper
+
+-------------------------
+;Снайпер на второй вышке (средняя, в центре базы) (mil_sniper2)
+-------------------------
+[logic@mil_freedom_sniper2]
+active = camper1@mil_freedom_sniper2
+on_combat = combat@mil_freedom_sniper2
+on_death = on_death@mil_freedom_sniper2
+
+[on_death@mil_freedom_sniper2]
+on_info = %=mil_sniper_dead +mil_sniper2_dead%
+
+[combat@mil_freedom_sniper2]
+on_info = {-mil_freedom_under_attack +mil_dolg_before_explode} camper1@mil_freedom_sniper2 %+mil_freedom_under_attack%
+
+[camper1@mil_freedom_sniper2]
+path_walk = sniper_walk1
+path_look = sniper_look1
+radius = 0
+no_retreat = true
+on_info = {+mil_freedom_under_attack} camper2@mil_freedom_sniper2
+danger = danger_condition@mil_freedom_sniper2
+wounded = wounded_ignore@mil_sniper
+
+[camper2@mil_freedom_sniper2]
+path_walk = sniper_defense_walk1
+path_look = sniper_defense_look1
+sniper = true
+radius = 0
+on_info = {-mil_freedom_under_attack} camper1@mil_freedom_sniper2
+danger = danger_condition@mil_freedom_sniper2
+wounded = wounded_ignore@mil_sniper
+
+[danger_condition@mil_freedom_sniper2]
+ignore_distance = 0
+ignore_types = corpse
+
+
+
+-------------------------
+;Снайпер на третьей вышке (справа от пролома в заборе) (mil_sniper1)
+-------------------------
+
+[logic@mil_freedom_sniper5]
+active = camper1@mil_freedom_sniper5
+on_combat = combat@mil_freedom_sniper5
+on_death = on_death@mil_freedom_sniper5
+
+[on_death@mil_freedom_sniper5]
+on_info = %=mil_sniper_dead +mil_sniper1_dead%
+
+[combat@mil_freedom_sniper5]
+on_info = {-mil_freedom_under_attack +mil_dolg_before_explode} camper1@mil_freedom_sniper5 %+mil_freedom_under_attack%
+
+[camper1@mil_freedom_sniper5]
+path_walk = sniper_walk2
+path_look = sniper_look2
+radius = 0
+no_retreat = true
+on_info = {+mil_freedom_under_attack} camper2@mil_freedom_sniper5
+wounded = wounded_ignore@mil_sniper
+
+[camper2@mil_freedom_sniper5]
+path_walk = sniper_defense_walk2
+path_look = sniper_defense_look2
+sniper = true
+radius = 0
+on_info = {-mil_freedom_under_attack} camper1@mil_freedom_sniper5
+wounded = wounded_ignore@mil_sniper
+
+
+-------------------------
+;Снайпер на пятой вышке (возле шлагбаума) (mil_sniper3)
+-------------------------
+[logic@mil_freedom_sniper3]
+active = walker1@mil_freedom_sniper3
+on_combat = combat@mil_freedom_sniper3
+on_death = on_death@mil_freedom_sniper3
+
+[on_death@mil_freedom_sniper3]
+on_info = %=mil_sniper_dead +mil_sniper3_dead%
+
+[combat@mil_freedom_sniper3]
+on_info = {-mil_freedom_under_attack +mil_dolg_before_explode} camper1@mil_freedom_sniper3 %+mil_freedom_under_attack%
+
+[walker1@mil_freedom_sniper3]
+path_walk = path_walk10
+path_look = path_look10
+on_info = {+mil_freedom_under_attack} camper1@mil_freedom_sniper3
+danger = danger_condition@mil_freedom_sniper3
+wounded = wounded_ignore@mil_sniper
+
+[camper1@mil_freedom_sniper3]
+path_walk = camp_walk10
+path_look = camp_look10
+radius = 20
+on_info = {-mil_freedom_under_attack} walker1@mil_freedom_sniper3
+sniper = true
+wounded = wounded_ignore@mil_sniper
+
+[danger_condition@mil_freedom_sniper3]
+ignore_distance = 0
+ignore_types = corpse
+
+-------------------------
+;Снайпер на четвертой вышке (возле центрального здания)
+-------------------------
+[logic@mil_freedom_sniper4]
+active = camper1@mil_freedom_sniper4
+on_combat = combat@mil_freedom_sniper4
+
+[combat@mil_freedom_sniper4]
+on_info = {-mil_freedom_under_attack +mil_dolg_before_explode} camper1@mil_freedom_sniper4 %+mil_freedom_under_attack%
+
+[camper1@mil_freedom_sniper4]
+path_walk = sniper_walk3
+path_look = sniper_look3
+radius = 0
+no_retreat = true
+on_info = {+mil_freedom_under_attack} camper2@mil_freedom_sniper4
+danger = danger_condition@mil_freedom_sniper4
+wounded = wounded_ignore@mil_sniper
+
+[camper2@mil_freedom_sniper4]
+path_walk = sniper_defense_walk3
+path_look = sniper_defense_look3
+sniper = true
+radius = 0
+on_info = {-mil_freedom_under_attack} camper1@mil_freedom_sniper4
+danger = danger_condition@mil_freedom_sniper4
+wounded = wounded_ignore@mil_sniper
+
+[danger_condition@mil_freedom_sniper4]
+ignore_distance = 0
+ignore_types = corpse
+
+;------------------------------------- Скряга --------------------------------------
+[logic@mil_freedom_trader]
+active = walker1@mil_freedom_trader
+on_combat = combat@mil_freedom_max
+trade = misc\trade_freedom.ltx
+on_death = death@mil_freedom_trader
+
+[death@mil_freedom_trader]
+on_info = %+sar2_death_48%
+
+[walker1@mil_freedom_trader]
+path_walk = trader_walk1
+path_look = trader_look1
+meet = meet@mil_freedom_trader
+danger = danger@mil_freedom
+
+[meet@mil_freedrader]
+meet_state = 5|wait_trade@talk_hello
+meet_state_wpn = 5|backoff@threat_weap
+victim = 5|actor
+victim_wpn = 5|actor
+use = true
+use_wpn = false
+meet_dialog = mil_trader_dialog
+
+;------------------------------------- Охранник арсенала --------------------------
+[logic@mil_freedom_aguard]
+active = camper@mil_freedom_aguard
+on_combat = combat
+
+[camper@mil_freedom_aguard]
+path_walk = armory_walk_warn
+path_look = armory_look_warn
+;on_info = {!is_day} kamp1@mil_freedom_aguard
+meet = meet@mil_freedom_aguard
+danger = danger_condition@mil_freedom_aguard
+radius = 1
+
+[meet@mil_freedom_aguard]
+meet_dialog = mil_guard_arsenal_dialog
+use = true
+use_wpn = false
+meet_state = 2|backoff@threat_back
+meet_sate_wpn = 2|backoff@threat_back
+victim = 5|actor
+victim_wpn = 5|actor
+
+[kamp1@mil_freedom_aguard]
+center_point = aguard_kamp
+on_info = {=is_day} camper@mil_freedom_aguard
+danger = danger_condition@mil_freedom_aguard
+
+[danger_condition@mil_freedom_aguard]
+ignore_distance = 0
+ignore_types = corpse
+
+
+
+;------------------------------------- Охранник у Лукаша -------------------------
+[logic@mil_freedom_guard1]
+active = walker1@mil_freedom_guard1
+on_combat = combat@mil_freedom_max
+
+[walker1@mil_freedom_guard1]
+path_walk = zoneguard_walk_warn
+path_look = zoneguard_look_warn
+meet = on_meet@mil_freedom_guard1
+on_info = {+mil_lukash_guard_talked} walker2@mil_freedom_guard1
+danger = danger@mil_freedom
+
+[on_meet@mil_freedom_guard1]
+meet_state = 10|guard
+meet_state_wpn = 10|backoff@threat_weap
+victim = 10|actor
+victim_wpn = 10|actor
+use = true
+use_wpn = false
+meet_dialog = mil_bodyguard_dialog
+
+[walker2@mil_freedom_guard1]
+path_walk = zoneguard_walk_warn2
+path_look = zoneguard_look_warn2
+danger = danger@mil_freedom
+meet = no_meet
+;------------------------------------- Телохранитель 1 --------------------------
+[logic@mil_freedom_bodyguard1]
+active = walker1@mil_freedom_bodyguard1
+on_combat = combat@mil_freedom_max
+on_death = death@mil_freedom_bodyguard1
+
+[death@mil_freedom_bodyguard1]
+on_info = %+sar2_death_32%
+
+[walker1@mil_freedom_bodyguard1]
+path_walk = zoneguard_walk_kill2
+path_look = zoneguard_look_kill2
+meet = meet@mil_freedom_bodyguard1
+on_info = {+mil_bodyguard_kill} camper2@mil_freedom_bodyguard1
+danger = danger@mil_freedom
+
+[meet@mil_freedom_bodyguard1]
+meet_state = 7 | guard
+meet_state_wpn = 7|threat_fire     ;  pl: %=killactor =set_actor_enemy_for_freedom%
+victim = 7|actor
+victim_wpn = 7|actor
+use	= false
+use_wpn = false
+
+
+;[zoneguard1@mil_freedom_bodyguard1]
+;path_walk = zoneguard_walk_kill2
+;path_look = zoneguard_look_kill2
+;zone_warn = leader_kill_zone
+;no_move = true
+;on_actor_in_zone = mil_freedom_leader_kill_zone | {=actor_has_weapon} camper2@mil_freedom_bodyguard1 %=actor_enemy%
+;team = freedom_bodyguards1
+
+[camper2@mil_freedom_bodyguard1]
+radius = 1
+path_walk = zoneguard_walk_kill2
+path_look = zoneguard_look_kill2
+no_retreat = true
+def_state_moving_fire = threat_fire
+def_state_campering_fire = threat_fire
+danger = danger@mil_freedom
+
+
+
+;------------------------------------- Телохранитель 2 --------------------------
+[logic@mil_freedom_bodyguard2]
+active = walker1@mil_freedom_bodyguard2
+on_combat = combat@mil_freedom_max
+on_death = death@mil_freedom_bodyguard1
+
+[walker1@mil_freedom_bodyguard2]
+path_walk = zoneguard_walk_kill1
+path_look = zoneguard_look_kill1
+meet = meet@mil_freedom_bodyguard1
+on_info = {+mil_bodyguard_kill} camper2@mil_freedom_bodyguard2
+danger = danger@mil_freedom
+
+
+[camper2@mil_freedom_bodyguard2]
+radius = 1
+path_walk = zoneguard_walk_kill1
+path_look = zoneguard_look_kill1
+no_retreat = true
+def_state_moving_fire = threat_fire
+def_state_campering_fire = threat_fire
+danger = danger@mil_freedom
+
+
+;------------------------------------- Max --------------------------------------
+[logic@mil_freedom_max]
+on_combat = combat@mil_freedom_max
+combat_ignore = combat_ignore@mil_freedom_max
+actor_dialogs = dialogs@mil_freedom_max
+on_death = death@mil_freedom_max
+active = walker1@mil_freedom_max
+
+[death@mil_freedom_max]
+on_info = %+mil_max_dead +sar2_death_47%
+
+[on_meet@mil_freedom_max]
+meet_state = 10|ward@mil_max_to_actor|3|ward
+meet_state_wpn = 10|ward@mil_max_to_actor|3|ward
+victim = 10|actor
+victim_wpn = 10|actor
+use = true
+use_wpn = true
+meet_dialog = mil_max_dialog
+
+[dialogs@mil_freedom_max]
+id = mil_max_dialog_common1,mil_max_dialog_common2,mil_max_dialog_common3
+
+[combat_ignore@mil_freedom_max]
+
+[combat@mil_freedom_max]
+on_info = {+mil_dolg_before_explode} %+mil_freedom_under_attack%
+
+[walker1@mil_freedom_max]
+path_walk = max_walk
+path_look = max_look
+meet = on_meet@mil_freedom_max
+danger = danger@mil_freedom
+
+
+
+;----------------------------------- Мужик у костра 1-----------------------
+[logic@mil_freedom_stalker1]
+active = kamp@mil_freedom_stalker1
+on_combat = combat@mil_freedom_max
+combat_ignore = combat_ignore@mil_freedom_stalker1
+
+[combat_ignore@mil_freedom_stalker1]
+
+[kamp@mil_freedom_stalker1]
+center_point = camp_center1
+danger = danger@mil_freedom
+path_walk = camp_center1_task
+radius = 3
+
+;----------------------------------- Мужик у костра 2-----------------------
+[logic@mil_freedom_stalker2]
+active = kamp@mil_freedom_stalker2
+on_combat = combat@mil_freedom_max
+combat_ignore = combat_ignore@mil_freedom_stalker2
+
+[combat_ignore@mil_freedom_stalker2]
+
+[kamp@mil_freedom_stalker2]
+center_point = camp_center1
+danger = danger@mil_freedom
+path_walk = camp_center1_task
+radius = 3
+
+;----------------------------------- Патрульный мужик (одиночка)-----------------------
+[logic@mil_freedom_stalker4]
+active = walker1@mil_freedom_stalker4
+on_combat = combat@mil_freedom_max
+combat_ignore = combat_ignore@mil_freedom_stalker4
+
+[on_meet@mil_freedom_stalker4]
+meet_state = 10|ward@mil_max_to_actor
+meet_state_wpn = 10|backoff@threat_weap
+victim = 10|nil|10|actor
+victim_wpn = 10|nil|10|actor
+use = true
+use_wpn = false
+meet_dialog = mil_patrol_dialog1
+
+;Niieieiia ninoiyiea
+[walker1@mil_freedom_stalker4]
+path_walk = patrol_path2
+path_look = patrol_look2
+meet = on_meet@mil_freedom_stalker4
+on_info = {+mil_patrol1_talk} walker2@mil_freedom_stalker4
+danger = danger@mil_freedom
+
+[walker2@mil_freedom_stalker4]
+path_walk = patrol_path2
+path_look = patrol_look2
+danger = danger@mil_freedom
+
+
+;----------------------------------- Патрульный командир -----------------------
+[logic@mil_freedom_stalker5]
+active = walker1@mil_freedom_stalker5
+on_combat = combat@mil_freedom_max
+combat_ignore = combat_ignore@mil_freedom_stalker5
+
+[on_meet@mil_freedom_stalker5]
+meet_state = 10|ward@mil_max_to_actor
+meet_state_wpn = 10|backoff@threat_weap
+victim = 10|nil|10|actor
+victim_wpn = 10|nil|10|actor
+use = true
+use_wpn = false
+meet_dialog = mil_patrol_dialog2
+
+[walker1@mil_freedom_stalker5]
+path_walk = patrol_path1
+path_look = patrol_look1
+meet = on_meet@mil_freedom_stalker5
+on_info = {+mil_patrol2_talk} walker2@mil_freedom_stalker5
+danger = danger@mil_freedom
+
+[walker2@mil_freedom_stalker5]
+path_walk = patrol_path1
+path_look = patrol_look1
+danger = danger@mil_freedom
+
+
+
+
+;----------------------------------- Охранник на входе -----------------------
+[logic@mil_freedom_stalker8]
+active = walker1@mil_freedom_stalker8
+on_combat = combat@mil_freedom_max
+actor_dialogs = dialogs@mil_freedom_stalker8
+
+[dialogs@mil_freedom_stalker8]
+id = mil_zoneguard_common1,mil_zoneguard_common2
+
+[walker1@mil_freedom_stalker8]
+path_walk = path_walk12
+path_look = path_look12
+meet = meet@mil_freedom_stalker8
+danger = danger@mil_freedom
+on_info = {+mil_zoneguard_talk} walker2@mil_freedom_stalker8
+
+[meet@mil_freedom_stalker8]
+meet_state = 5|wait@talk_hello
+meet_state_wpn = 5|wait@talk_hello
+;meet_state = 10|{+mil_zoneguard_talk}wait, threat@ {+mil_zoneguard_talk} mil_freedom_zoneguard, mil_freedom_zoneguard|5|guard
+;meet_state_wpn = 10|{+mil_zoneguard_talk} wait, threat@ {+mil_zoneguard_talk} mil_freedom_zoneguard, mil_freedom_zoneguard|5|guard
+victim = 10|actor
+victim_wpn = 10|actor
+use	= true
+use_wpn = true
+zone = mil_freedom_kill_enter_zone|{-mil_zoneguard_talk} true
+meet_dialog = mil_zoneguard_dialog
+
+[walker2@mil_freedom_stalker8]
+path_walk = path_walk12
+path_look = path_look12
+danger = danger@mil_freedom
+
+
+
+;----------------------------------- Мужик на входе 1 -----------------------
+[logic@mil_freedom_stalker9]
+active = camper1@mil_freedom_stalker9
+combat_ignore = combat_ignore@mil_freedom_stalker8
+on_combat = combat@mil_freedom_max
+
+[combat_ignore@mil_freedom_stalker9]
+
+[camper1@mil_freedom_stalker9]
+path_walk = camp_walk3
+path_look = camp_look3
+wounded_enabled = false
+danger = danger@mil_freedom
+
+;----------------------------------- Мужик на входе 2 -----------------------
+[logic@mil_freedom_stalker10]
+active = camper1@mil_freedom_stalker10
+combat_ignore = combat_ignore@mil_freedom_stalker10
+on_combat = combat@mil_freedom_max
+
+[combat_ignore@mil_freedom_stalker10]
+
+[camper1@mil_freedom_stalker10]
+path_walk = camp_walk5
+path_look = camp_look5
+wounded_enabled = false
+danger = danger@mil_freedom
+
+
+
+;------------------------------------- stalker11 -----------------------------
+[logic@mil_freedom_walker1]
+active = walker1@mil_freedom
+on_combat = combat@mil_freedom_max
+
+[walker1@mil_freedom]
+path_walk = gulag_walk1
+path_look = gulag_look1
+danger = danger@mil_freedom
+
+;------------------------------------- stalker12 -----------------------------
+[logic@mil_freedom_walker2]
+active = walker2@mil_freedom
+on_combat = combat@mil_freedom_max
+
+[walker2@mil_freedom]
+path_walk = gulag_walk2
+path_look = gulag_look2
+danger = danger@mil_freedom
+
+;------------------------------------- stalker13 -----------------------------
+[logic@mil_freedom_walker3]
+active = walker3@mil_freedom
+on_combat = combat@mil_freedom_max
+
+[walker3@mil_freedom]
+path_walk = gulag_walk3
+path_look = gulag_look3
+danger = danger@mil_freedom
+;------------------------------------- stalker14 -----------------------------
+[logic@mil_freedom_walker4]
+active = walker4@mil_freedom
+on_combat = combat@mil_freedom_max
+
+[walker4@mil_freedom]
+path_walk = gulag_walk4
+path_look = gulag_look4
+danger = danger@mil_freedom
+
+;------------------------------------- stalker15 -----------------------------
+[logic@mil_freedom_kamp1]
+active = kamp10@mil_freedom
+on_combat = combat@mil_freedom_max
+
+[kamp10@mil_freedom]
+center_point = camp_center1
+danger = danger@mil_freedom
+path_walk = camp_center1_task
+radius = 3
+
+;------------------------------------- stalker16 -----------------------------
+[logic@mil_freedom_kamp2]
+active = kamp20@mil_freedom
+on_combat = combat@mil_freedom_max
+
+[kamp20@mil_freedom]
+center_point = camp_center1
+danger = danger@mil_freedom
+path_walk = camp_center1_task
+radius = 3
+
+;------------------------------------- stalker17 -----------------------------
+[logic@mil_freedom_kamp3]
+active = kamp3@mil_freedom
+on_combat = combat@mil_freedom_max
+
+[kamp3@mil_freedom]
+center_point = camp_center1
+danger = danger@mil_freedom
+path_walk = camp_center1_task
+radius = 3
+
+;------------------------------------- stalker18 -----------------------------
+[logic@mil_freedom_sleep1]
+active = sleeper11@mil_freedom
+on_combat = combat@mil_freedom_max
+
+[sleeper11@mil_freedom]
+path_main = gulag_sleep1
+danger = danger@mil_freedom
+path_walk = gulag_sleep1_task
+radius = 3
+
+;------------------------------------- stalker19 -----------------------------
+[logic@mil_freedom_sleep2]
+active = sleeper200@mil_freedom
+on_combat = combat@mil_freedom_max
+
+[sleeper200@mil_freedom]
+path_main = gulag_sleep1
+danger = danger@mil_freedom
+path_walk = gulag_sleep1_task
+radius = 3
+
+;------------------------------------- Screw -----------------------------
+[logic@mil_freedom_walker7]
+active = walker7@mil_freedom
+on_combat = combat@mil_freedom_max
+on_death = death@mil_freedom_walker7
+
+[death@mil_freedom_walker7]
+on_info = %+sar2_death_46%
+
+[walker7@mil_freedom]
+path_walk = gulag_walk5
+path_look = gulag_look5
+meet = meet@mil_freedom_screw
+danger = danger@mil_freedom
+
+[meet@mil_freedom_screw]
+meet_state = 5|ward@talk_hello
+meet_state_wpn = 5|ward
+victim = 5|actor
+victim_wpn = 5|actor
+use = true
+use_wpn = true
+meet_dialog = mil_screw_dialog
+
+;------------------------------------- stalker22 -----------------------------
+[logic@mil_freedom_walker5]
+active = walker5@mil_freedom
+on_combat = combat@mil_freedom_max
+
+[walker5@mil_freedom]
+path_walk = gulag_walk6
+path_look = gulag_look6
+danger = danger@mil_freedom
+
+;------------------------------------- stalker23 -----------------------------
+[logic@mil_freedom_camper6]
+active = camper6@mil_freedom
+on_combat = combat@mil_freedom_max
+
+[camper6@mil_freedom]
+path_walk = gulag_walk7
+path_look = gulag_look7
+danger = danger@mil_freedom
+

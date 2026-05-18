@@ -1,0 +1,152 @@
+;*****************************************************************
+;Command center poltergeist
+;*****************************************************************
+[logic@dar_poltergeist]
+active = mob_home@dar_poltergeist
+
+[mob_home@dar_poltergeist]
+path_home = home
+home_min_radius = 20
+home_max_radius = 25
+
+
+[logic@com_center_poltergeist]
+active = mob_walker@com_center_poltergeist
+on_death = mob_death@com_center_poltergeist
+
+[mob_death@com_center_poltergeist]
+on_info =%+dar_door3_free%
+
+[mob_walker@com_center_poltergeist]
+path_walk = walk_1
+braindead = true
+on_actor_in_zone = dar_poltergeist_territory | mob_home@com_center_actor_inside %=play_snd(monsters\poltergeist\die_0)%
+
+[mob_home@com_center_actor_inside]
+path_home = home
+home_min_radius = 20
+home_max_radius = 25
+on_actor_not_in_zone = dar_poltergeist_territory | mob_walker@com_center_poltergeist
+ 
+ 
+
+[logic@angar_gigant]
+active = mob_home@angar_gigant
+
+[mob_home@angar_gigant]
+path_home = home
+home_min_radius = 35
+home_max_radius = 40
+on_actor_dist_le_nvis = 35 | {=actor_in_zone(dar_angar_gigant_territory)} mob_home@angar_gigant_2 %=bar_arena_hit =play_snd(monsters\giant\giant_underground_0)%
+
+[mob_home@angar_gigant_2]
+path_home = home
+home_min_radius = 25
+home_max_radius = 30
+
+[logic@com_center_tushkano]
+active = mob_home@com_center_tushkano
+
+[mob_home@com_center_tushkano]
+path_home = home
+home_min_radius = 10
+home_max_radius = 15
+
+
+;**************************************
+;Poltergeist ring
+;**************************************
+
+[logic@dar_poltergeist_ring_base]
+active = mob_home@dar_poltergeist_ring_base
+on_death = mob_death@dar_poltergeist_ring_base
+
+[mob_home@dar_poltergeist_ring_base]
+path_home = way
+
+[mob_death@dar_poltergeist_ring_base]
+on_info = %+dar_ring_spawn1%
+
+
+[logic@dar_poltergeist_ring_1_1]
+active = mob_home@dar_poltergeist_ring_1_1
+on_death = mob_death@dar_poltergeist_ring_1_1
+
+[mob_home@dar_poltergeist_ring_1_1]
+path_home = way
+
+[mob_death@dar_poltergeist_ring_1_1]
+on_info = %+dar_ring_spawn2_1%
+
+
+[logic@dar_poltergeist_ring_1_2]
+active = mob_home@dar_poltergeist_ring_1_2
+on_death = mob_death@dar_poltergeist_ring_1_2
+
+[mob_home@dar_poltergeist_ring_1_2]
+path_home = way
+
+[mob_death@dar_poltergeist_ring_1_2]
+on_info = %+dar_ring_spawn2_2%
+
+
+[logic@dar_poltergeist_ring_end]
+active = mob_home@dar_poltergeist_ring_end
+
+[mob_home@dar_poltergeist_ring_end]
+path_home = way
+
+;*****************************************************************
+;Military assault
+;*****************************************************************
+[logic@dar_military_scout_hide]
+active = camper@dar_military_scout_hide
+
+[camper@dar_military_scout_hide]
+path_walk = walk_hide
+path_look = look_hide
+def_state_moving = assault
+def_state_campering = hide_na
+radius = 10
+danger = danger_condition@scout
+
+[logic@dar_military_scout_camper1]
+active = camper@dar_military_scout_camper1
+
+[camper@dar_military_scout_camper1]
+path_walk = camper1_walk
+path_look = camper1_look
+def_state_moving = assault
+def_state_campering = hide_na
+radius = 10
+danger = danger_condition@scout
+
+[logic@dar_military_scout_camper2]
+active = camper@dar_military_scout_camper2
+
+[camper@dar_military_scout_camper2]
+path_walk = camper2_walk
+path_look = camper2_look
+def_state_moving = assault
+def_state_campering = hide_na
+radius = 10
+danger = danger_condition@scout
+
+[logic@dar_military_scout_camper3]
+active = camper@dar_military_scout_camper3
+
+[camper@dar_military_scout_camper3]
+path_walk = camper3_walk
+path_look = camper3_look
+def_state_moving = assault
+def_state_campering = hide_na
+radius = 10
+danger = danger_condition@scout
+
+[danger_condition@scout]
+ignore_distance       = 10
+ignore_distance_grenade = 10
+ignore_distance_corpse  = 0
+ignore_distance_danger_hit     = 20
+ignore_distance_sound   = 0 
+danger_inertion_time_hit = 1

@@ -1,0 +1,88 @@
+--------------------------------------------------------------------------------
+-- Author:	Jim 
+-- Desc:	script for monster tests
+-- Updated:	21 dec 2004	
+--------------------------------------------------------------------------------
+
+function set_action2(obj)
+	action (obj, object(object.turn_on), cond(cond.time_end, 1000))
+	action (obj, look(patrol("way"):point(0), 0.6, 0.6), cond (cond.look_end))
+	action (obj, look(patrol("way"):point(1), 0.6, 0.6), cond (cond.look_end)) 
+	action (obj, look(level.actor():position(), 0.6, 0.6), cond (cond.look_end)) 
+	action (obj, object(object.turn_off), cond(cond.time_end, 1000))
+	action (obj, look(patrol("way"):point(0), 0.6, 0.6), cond (cond.look_end))
+	action (obj, look(patrol("way"):point(1), 0.6, 0.6), cond (cond.look_end)) 
+end
+
+
+function on_trade_start(str)
+    --printf("%s",str)    
+    printf("[TRADE START] callback")
+
+end
+
+function on_trade_stop()
+    printf("[TRADE STOP] callback")
+end
+
+function on_trade_sell_buy_item(item, bool_sell, money)
+    printf("[TRADE SELL BUY ITEM] callback")
+
+    if (bool_sell) then
+        printf("Trader sold item [%s] and got money [%u]", item:name(), money)
+    else 
+        printf("Trader bought item [%s] and spend money [%u]", item:name(), money)
+    end
+end
+
+function on_trade_perform_operation(money_come, money_go)
+    printf("[TRADE PERFROM OPERATION] callback")
+
+    printf("Trader spend [%u] and got [%u] money", money_come, money_go)    
+end
+
+
+
+function main()
+
+	local monster		= debug_get_level_object("trader")
+
+    
+    monster:set_callback(callback.trade_start,               on_trade_start, "obana!");
+    monster:set_callback(callback.trade_stop,                on_trade_stop);
+    monster:set_callback(callback.trade_sell_buy_item,       on_trade_sell_buy_item);
+    monster:set_callback(callback.trade_perform_operation,   on_trade_perform_operation);
+
+
+//	monster:script		( true, script_name() )
+
+
+//	while true do
+//		
+//		action(	monster, 
+//				move( move.run_fwd, patrol( "way2", patrol.start, patrol.continue) ),
+//				cond( cond.time_end, 10000 )
+//		)
+//		
+//		while monster:action() do 
+//			wait() 
+//		end
+//		
+//		
+//		obj:script			( true, script_name() )
+//
+//		set_action			(obj)
+//		
+//		while obj:action() do 
+//			wait() 
+//		end
+//
+//		obj:script			( false, script_name() )		
+//
+//	end
+
+	
+//	monster:script		( false, script_name() )
+    
+
+end

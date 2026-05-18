@@ -1,0 +1,13 @@
+﻿<?xml version='1.0' encoding="UTF-8"?>
+<!-- CHARACTER INFO IN THE MAINGAME WINDOW CONTACT -->
+<window>
+	<!-- ICON -->
+	<icon_static x="0" y="0" width="64" height="64" scale="0.5"></icon_static>
+
+	<!-- NAME -->
+	<static x="20" y="35" width="240" height="60">
+		<text x="0" y="0" font="letterica18" r="255" g="128" b="64"></text>
+	</static>
+
+</window>
+

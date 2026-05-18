@@ -1,0 +1,38 @@
+﻿<?xml version='1.0' encoding="UTF-8"?>
+<!-- !!!! OLD OLD OLD!!!! REMOVE ME!!! CHARACTER INFO IN THE PDA CONTACT -->
+<window>
+
+	<!-- ICON -->
+	<icon_static x="260" y="5" width="128" height="64">
+		<text x="16" y="0" font="letterica18" r="225" g="225" b="250"></text>
+	</icon_static>
+	
+	<!-- MASK FRAME -->
+	<mask_frame_window x="0" y="0" width="10" height="10">
+		<texture>ui_pda_frame2</texture>
+		<base_texture>ui\ui_pda_frame2</base_texture>
+	</mask_frame_window>
+	
+	<!-- NAME -->
+	<static x="0" y="0" width="260" height="18">
+		<text x="16" y="0" font="letterica18" r="225" g="225" b="250"></text>
+	</static>
+
+	<!-- CHARACTER RELATED INFO: COMMUNITY, RANK, ALLY STATUS -->
+	<charinfo_mt_static	x="0" y="0" width="252" height="40">
+		<!-- GROUP CAPTION -->
+		<phrase x="0" y="20" font="letterica16" r="128" g="128" b="128" a="255">community</phrase>
+		<!-- GROUP -->
+		<phrase x="43" y="20" font="letterica16" r="150" g="150" b="180" a="255"></phrase>
+		<!-- RANK CAPTION -->
+		<phrase x="110" y="20" font="letterica16" r="128" g="128" b="128" a="255">Rank:</phrase>
+		<!-- RANK -->
+		<phrase x="150" y="20" font="letterica16" r="150" g="150" b="180" a="255"></phrase>
+		<!-- REALTION CAPTION -->
+		<phrase x="0" y="38" font="letterica16" r="128" g="128" b="128" a="255">Reputation:</phrase>
+		<!-- RELATION -->
+		<phrase x="70" y="38" font="letterica16" r="150" g="150" b="180" a="255"></phrase>
+	</charinfo_mt_static>
+
+</window>
+

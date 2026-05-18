@@ -1,0 +1,56 @@
+
+function main()
+
+	local f = getFS()
+	local fs_list = f:file_list_open_ex("$game_saves$",FS.FS_ListFiles,"*.*")
+	local sz = fs_list:Size()
+	
+	printf("---not sorted")
+	for it=0,sz-1 do
+	local fl = fs_list:GetAt(it)
+		printf("file name=%s; file_size=%d;file_modif=%s",fl:NameFull(),fl:Size(),fl:Modif() )
+	end
+	
+	printf("---FS_sort_by_name_up")
+	fs_list:Sort(FS.FS_sort_by_name_up)
+	for it=0,sz-1 do
+	local fl = fs_list:GetAt(it)
+		printf("file name=%s; file_size=%d;file_modif=%s",fl:NameFull(),fl:Size(),fl:Modif() )
+	end
+
+	printf("---FS_sort_by_name_down")
+	fs_list:Sort(FS.FS_sort_by_name_down)
+	for it=0,sz-1 do
+	local fl = fs_list:GetAt(it)
+		printf("file name=%s; file_size=%d;file_modif=%s",fl:NameFull(),fl:Size(),fl:Modif() )
+	end
+
+	printf("---FS_sort_by_size_up")
+	fs_list:Sort(FS.FS_sort_by_size_up)
+	for it=0,sz-1 do
+	local fl = fs_list:GetAt(it)
+		printf("file name=%s; file_size=%d;file_modif=%s",fl:NameFull(),fl:Size(),fl:Modif() )
+	end
+
+	printf("---FS_sort_by_size_down")
+	fs_list:Sort(FS.FS_sort_by_size_down)
+	for it=0,sz-1 do
+	local fl = fs_list:GetAt(it)
+		printf("file name=%s; file_size=%d;file_modif=%s",fl:NameFull(),fl:Size(),fl:Modif() )
+	end
+
+	printf("---FS_sort_by_modif_up")
+	fs_list:Sort(FS.FS_sort_by_modif_up)
+	for it=0,sz-1 do
+	local fl = fs_list:GetAt(it)
+		printf("file name=%s; file_size=%d;file_modif=%s",fl:NameFull(),fl:Size(),fl:Modif() )
+	end
+	
+	printf("---FS_sort_by_modif_down")
+	fs_list:Sort(FS.FS_sort_by_modif_down)
+	for it=0,sz-1 do
+	local fl = fs_list:GetAt(it)
+		printf("file name=%s; file_size=%d;file_modif=%s",fl:NameFull(),fl:Size(),fl:Modif() )
+	end
+	
+end

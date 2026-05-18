@@ -1,0 +1,4 @@
+function kill()
+	local obj = level.object("m_stalker_e")
+	obj:kill(obj)
+end

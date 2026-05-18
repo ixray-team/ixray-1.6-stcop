@@ -1,0 +1,11 @@
+function intr()
+	local obj = level.object("m_stalker_e")
+	local motivation_action_manager = obj:motivation_action_manager()
+	local evaluator = motivation_action_manager:evaluator(stalker_ids.property_alive)
+	local value = evaluator:evaluate()
+	if (value) then
+		printf	("TRUE")
+	else
+		printf	("FALSE")
+	end
+end

@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+  <info_portion id="storyline_actor_start">
+    <task>storyline_eliminate_gunslinger</task>
+  </info_portion>
+
+  <info_portion id="global_dialogs">
+    <dialog>actor_break_dialog</dialog>
+<!--    <dialog>actor_help_wounded</dialog>   -->
+  </info_portion>
+
+
+  <info_portion id="terrain_test">
+  </info_portion>
+
+
+  <!-- special info portion that sends to actor when it
+    use in-game UI (PDA, Inventory, etc)-->
+    
+    <info_portion id="ui_pda">
+		<disable>ui_pda_hide</disable>
+    </info_portion>
+    <info_portion id="ui_pda_hide">
+		<disable>ui_pda</disable>
+    </info_portion>
+          
+   <info_portion id="ui_pda_contacts"></info_portion>
+   <info_portion id="ui_pda_contacts_hide"></info_portion>
+   
+   <info_portion id="ui_pda_map_local"></info_portion>
+   <info_portion id="ui_pda_map_global"></info_portion>
+   
+   <info_portion id="ui_pda_news"></info_portion>
+   <info_portion id="ui_pda_news_hide"></info_portion>
+   
+   <info_portion id="ui_pda_jobs_failed"></info_portion>
+   <info_portion id="ui_pda_jobs_accomplished"></info_portion>
+   <info_portion id="ui_pda_jobs_current"></info_portion>
+   
+    <info_portion id="ui_pda_jobs">
+		<disable>ui_pda_jobs_hide</disable>
+    </info_portion>
+    <info_portion id="ui_pda_jobs_hide">
+		<disable>ui_pda_jobs</disable>
+    </info_portion>
+
+   
+   <info_portion id="ui_pda_contracts"></info_portion>
+   
+   <info_portion id="ui_pda_diary"></info_portion>
+   <info_portion id="ui_pda_diary_hide"></info_portion>
+      
+   
+   <info_portion id="ui_pda_encyclopedia"></info_portion>
+   <info_portion id="ui_pda_encyclopedia_hide"></info_portion>
+   
+   <info_portion id="ui_pda_actor_info"></info_portion>
+   <info_portion id="ui_pda_ranking"></info_portion>
+   <info_portion id="ui_pda_events"></info_portion>
+   
+   <info_portion id="ui_inventory">
+		<disable>ui_inventory_hide</disable>
+   </info_portion>
+   <info_portion id="ui_inventory_hide">
+		<disable>ui_inventory</disable>
+   </info_portion>
+
+    <info_portion id="ui_talk">
+		<disable>ui_talk_hide</disable>
+    </info_portion>
+    <info_portion id="ui_talk_hide">
+		<disable>ui_talk</disable>
+    </info_portion>
+
+    <info_portion id="ui_trade">
+		<disable>ui_trade_hide</disable>
+    </info_portion>
+    <info_portion id="ui_trade_hide">
+		<disable>ui_trade</disable>
+    </info_portion>
+
+    <info_portion id="ui_car_body">
+		<disable>ui_car_body_hide</disable>
+    </info_portion>
+    <info_portion id="ui_car_body_hide">
+		<disable>ui_car_body</disable>
+    </info_portion>
+
+
+   <info_portion id="tutorial_part_15_hide_weapon"></info_portion>
+
+
+	<info_portion id="autojump_enabled"></info_portion>
+
+</game_information_portions>

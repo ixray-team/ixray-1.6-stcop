@@ -1,0 +1,110 @@
+--[[------------------------------------------------------------------------------------------------------------------
+Игнорирование врагов
+Чугай Александр
+--------------------------------------------------------------------------------------------------------------------]]
+
+function is_enemy( obj, enemy, st )
+
+	if obj:critically_wounded() then
+		return true
+	end
+
+	if not st then
+		st = db.storage[obj:id()].combat_ignore
+
+		if not st then
+			return true
+		end
+	end
+
+	if not st.enabled then
+		return true
+	end
+
+	local overrides = xr_logic.generic_scheme_overrides( obj )
+
+	db.storage[obj:id()].enemy = enemy
+
+	if overrides and
+	   overrides.combat_ignore and
+	   db.actor and
+	   xr_logic.pick_section_from_condlist( db.actor, obj, overrides.combat_ignore.condlist ) ~= nil
+	then
+		obj:enable_memory_object( enemy, false )
+		return false
+	end
+
+	return true
+end
+----------------------------------------------------------------------------------------------------------------------
+
+class "action_process_enemy"
+
+function action_process_enemy:__init( obj, storage )
+	self.object = obj
+	self.st     = storage
+end
+
+function action_process_enemy:enemy_callback( obj, enemy )
+	local obj_pos = self.object:position()
+	local ene_pos = enemy:position()
+--'	printf("FOUND ENEMY [%s](%s,%s,%s) -> [%s](%s,%s,%s)", self.object:name(), obj_pos.x, obj_pos.y, obj_pos.z,
+--'														   enemy:name(), ene_pos.x, ene_pos.y, ene_pos.z)
+
+
+	return is_enemy( obj, enemy, self.st )
+end
+
+function action_process_enemy:hit_callback(obj, amount, local_direction, who, bone_index)
+	if who == nil then	
+		return
+	end
+
+--	printf("_bp: action_process_enemy: hit_callback(): obj='%s'", obj:name())
+	if amount == 0 then
+		-- Кто-то стрельнул в воздух
+		return
+	end
+
+	
+	if who:id() == db.actor:id() then
+		local overrides = xr_logic.generic_scheme_overrides( obj )
+		if not overrides or not overrides.combat_ignore_keep_when_attacked then
+			printf("_bp: action_process_enemy: hit_callback(): obj='%s': SCHEME DISABLED", obj:name())
+			self.st.enabled = false
+		end
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+-- binder
+----------------------------------------------------------------------------------------------------------------------
+function add_to_binder( npc, ini, scheme, section, storage )
+	local new_action = this.action_process_enemy( npc, storage )
+	storage.action = new_action
+end
+
+function set_combat_ignore_checker( npc, ini, scheme, section )
+--	printf("_bp: set_combat_ignore_checker: npc='%s'", npc:name())
+	local st = xr_logic.assign_storage_and_bind( npc, ini, scheme, section )
+--	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	st.enabled = true
+
+--	printf( "xr_combat_ignore: SET ENEMY_CALLBACK, obj=%s", npc:name() )
+	npc:set_enemy_callback( st.action.enemy_callback, st.action )
+
+	-- Подписываемся на hit callback-и:
+	xr_logic.subscribe_action_for_events( npc, st, st.action )
+
+end
+
+function disable_scheme( npc, scheme )
+	npc:set_enemy_callback()
+
+	-- Отписываемся от hit callback. Это делать обязательно, потому что иначе при переключении на другой набор
+	-- схем, в котором нет перехвата боя, продолжится вызываться callback в старом подписанном action-е.
+	local st = db.storage[npc:id()][scheme]
+	if st then
+		xr_logic.unsubscribe_action_from_events(npc, st, st.action)
+	end
+end

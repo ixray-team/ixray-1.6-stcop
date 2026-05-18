@@ -1,0 +1,159 @@
+local registred_items = {}
+
+class "se_outfit" (cse_alife_item_custom_outfit)
+function se_outfit:__init (section) super (section)
+end
+function se_outfit:on_register()
+	cse_alife_item_custom_outfit.on_register( self )
+	-- Регистрация в таскменеджере
+	task_manager.get_random_task():register_target(self)
+	
+	-- Собираем статистику по предметам.
+	if registred_items[self:section_name()] == nil then
+		registred_items[self:section_name()] = 1
+	else
+		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
+	end
+end
+function se_outfit:on_unregister()
+	--' Отрегистрация в таскменеджере
+	task_manager.get_random_task():unregister_target(self)
+end
+
+class "se_weapon" (cse_alife_item_weapon)
+function se_weapon:__init (section) super (section)
+end
+function se_weapon:on_register()
+	cse_alife_item_weapon.on_register( self )
+	-- Регистрация в таскменеджере
+	task_manager.get_random_task():register_target(self)
+
+	-- Собираем статистику по предметам.
+	if registred_items[self:section_name()] == nil then
+		registred_items[self:section_name()] = 1
+	else
+		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
+	end
+end
+function se_weapon:on_unregister()
+	--' Отрегистрация в таскменеджере
+	task_manager.get_random_task():unregister_target(self)
+end
+
+class "se_weapon_shotgun" (cse_alife_item_weapon_shotgun)
+function se_weapon_shotgun:__init (section) super (section)
+end
+function se_weapon_shotgun:on_register()
+	cse_alife_item_weapon_shotgun.on_register( self )
+	-- Регистрация в таскменеджере
+	task_manager.get_random_task():register_target(self)
+
+	-- Собираем статистику по предметам.
+	if registred_items[self:section_name()] == nil then
+		registred_items[self:section_name()] = 1
+	else
+		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
+	end
+end
+function se_weapon_shotgun:on_unregister()
+	--' Отрегистрация в таскменеджере
+	task_manager.get_random_task():unregister_target(self)
+end
+
+
+class "se_weapon_magazined" (cse_alife_item_weapon_magazined)
+function se_weapon_magazined:__init (section) super (section)
+end
+function se_weapon_magazined:on_register()
+	cse_alife_item_weapon_magazined.on_register( self )
+	-- Регистрация в таскменеджере
+	task_manager.get_random_task():register_target(self)
+
+	-- Собираем статистику по предметам.
+	if registred_items[self:section_name()] == nil then
+		registred_items[self:section_name()] = 1
+	else
+		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
+	end
+end
+function se_weapon_magazined:on_unregister()
+	--' Отрегистрация в таскменеджере
+	task_manager.get_random_task():unregister_target(self)
+end
+
+class "se_weapon_magazined_w_gl" (cse_alife_item_weapon_magazined_w_gl)
+function se_weapon_magazined_w_gl:__init (section) super (section)
+end
+function se_weapon_magazined_w_gl:on_register()
+	cse_alife_item_weapon_magazined_w_gl.on_register( self )
+	-- Регистрация в таскменеджере
+	task_manager.get_random_task():register_target(self)
+
+	-- Собираем статистику по предметам.
+	if registred_items[self:section_name()] == nil then
+		registred_items[self:section_name()] = 1
+	else
+		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
+	end
+end
+function se_weapon_magazined_w_gl:on_unregister()
+	--' Отрегистрация в таскменеджере
+	task_manager.get_random_task():unregister_target(self)
+end
+
+class "se_item"	(cse_alife_item)
+function se_item:__init (section) super (section)
+end
+function se_item:on_register()
+	cse_alife_item.on_register( self )
+	-- Регистрация в таскменеджере
+	task_manager.get_random_task():register_target(self)
+
+	-- Собираем статистику по предметам.
+	if registred_items[self:section_name()] == nil then
+		registred_items[self:section_name()] = 1
+	else
+		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
+	end	
+end
+function se_item:on_unregister()
+	--' Отрегистрация в таскменеджере
+	task_manager.get_random_task():unregister_target(self)
+end
+
+class "se_item_torch" (cse_alife_item_torch)
+function se_item_torch:__init (section) super (section)
+end
+function se_item_torch:on_register()
+	cse_alife_item_torch.on_register( self )
+	-- Регистрация в таскменеджере
+	task_manager.get_random_task():register_target(self)
+
+	-- Собираем статистику по предметам.
+	if registred_items[self:section_name()] == nil then
+		registred_items[self:section_name()] = 1
+	else
+		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
+	end	
+end
+function se_item_torch:on_unregister()
+	--' Отрегистрация в таскменеджере
+	task_manager.get_random_task():unregister_target(self)
+end
+
+
+--' ФИзобъекты
+class "se_physic" (cse_alife_object_physic)
+function se_physic:__init (section) super (section)
+end
+function se_physic:keep_saved_data_anyway()
+	return true
+end
+
+
+function stats()
+	printf("*** SIM ITEMS STATISTIC ***")
+	for k,v in pairs(registred_items) do
+		printf("item = %s, num = %s", k, v)
+	end
+end

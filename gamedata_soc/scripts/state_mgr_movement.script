@@ -1,0 +1,125 @@
+
+
+--' ПЕРЕМЕЩЕНИЕ
+--' мы уже находимся в необходимом состоянии?
+class "eva_state_mgr_movement" (property_evaluator)
+function eva_state_mgr_movement:__init(name, st) super (nil, name)
+	self.st = st
+end
+function eva_state_mgr_movement:evaluate()
+--	printf("MOVE: %s",utils.to_str((state_lib.states[self.st.target_state].movement == nil) or
+--		   (state_lib.states[self.st.target_state].movement == self.object:target_movement_type())))
+--	printf("MOVE: %s",utils.to_str(self.object:target_movement_type()))
+		   
+	return (state_lib.states[self.st.target_state].movement == nil) or
+		   (state_lib.states[self.st.target_state].movement == self.object:target_movement_type())
+--		   (state_lib.states[self.st.target_state].movement == self.object:movement_type())		   
+end
+--' нужно ли нам идти
+class "eva_state_mgr_movement_walk" (property_evaluator)
+function eva_state_mgr_movement_walk:__init(name, st) super (nil, name)
+	self.st = st
+end
+function eva_state_mgr_movement_walk:evaluate()
+	return state_lib.states[self.st.target_state].movement == move.walk
+end
+--' нужно ли нам бежать
+class "eva_state_mgr_movement_run" (property_evaluator)
+function eva_state_mgr_movement_run:__init(name, st) super (nil, name)
+	self.st = st
+end
+function eva_state_mgr_movement_run:evaluate()
+	return state_lib.states[self.st.target_state].movement == move.run
+end
+--' нужно ли нам стоять
+class "eva_state_mgr_movement_stand" (property_evaluator)
+function eva_state_mgr_movement_stand:__init(name, st) super (nil, name)
+	self.st = st
+end
+function eva_state_mgr_movement_stand:evaluate()
+	return state_lib.states[self.st.target_state].movement == move.stand
+end
+--' стоим ли мы
+class "eva_state_mgr_movement_stand_now" (property_evaluator)
+function eva_state_mgr_movement_stand_now:__init(name, st) super (nil, name)
+	self.st = st
+end
+function eva_state_mgr_movement_stand_now:evaluate()
+	return self.object:target_movement_type() == move.stand
+--	return self.object:movement_type() == move.stand
+end
+
+
+--' Включаем ходьбу
+class "act_state_mgr_movement_walk" (action_base)
+function act_state_mgr_movement_walk:__init(name, st) super (nil, name)
+	self.st = st
+end
+function act_state_mgr_movement_walk:initialize()
+	action_base.initialize(self)
+
+	self.object:set_movement_type(move.walk)
+	self.object:movement_enabled(true)
+
+	if not self.st.planner:evaluator(self.st.properties["direction"]):evaluate() then
+		if self.st.planner:evaluator(self.st.properties["direction_search"]):evaluate() then
+			self.object:set_sight(state_mgr_direction.look_position_type(self.object, self.st), nil, 0)
+		else
+			self.st.planner:action(self.st.operators["direction_turn"]):turn()
+		end
+	end
+end
+function act_state_mgr_movement_walk:execute()
+	action_base.execute(self)
+end
+function act_state_mgr_movement_walk:finalize()
+	action_base.finalize(self)
+end
+--' Включаем бег
+class "act_state_mgr_movement_run" (action_base)
+function act_state_mgr_movement_run:__init(name, st) super (nil, name)
+	self.st = st
+end
+function act_state_mgr_movement_run:initialize()
+	action_base.initialize(self)
+
+	self.object:set_movement_type(move.run)
+	self.object:movement_enabled(true)
+
+	if not self.st.planner:evaluator(self.st.properties["direction"]):evaluate() then
+		if self.st.planner:evaluator(self.st.properties["direction_search"]):evaluate() then
+			self.object:set_sight(state_mgr_direction.look_position_type(self.object, self.st), nil, 0)
+		else
+			self.st.planner:action(self.st.operators["direction_turn"]):turn()
+		end
+	end
+end
+function act_state_mgr_movement_run:execute()
+	action_base.execute(self)
+end
+function act_state_mgr_movement_run:finalize()
+	action_base.finalize(self)
+end
+--' Включаем стояние на месте
+class "act_state_mgr_movement_stand" (action_base)
+function act_state_mgr_movement_stand:__init(name, st) super (nil, name)
+	self.st = st
+end
+function act_state_mgr_movement_stand:initialize()
+	action_base.initialize(self)
+	self.object:set_movement_type(move.stand)
+
+	if not self.st.planner:evaluator(self.st.properties["direction"]):evaluate() then
+		if self.st.planner:evaluator(self.st.properties["direction_search"]):evaluate() then
+			self.object:set_sight(state_mgr_direction.look_position_type(self.object, self.st), nil, 0)
+		else
+			self.st.planner:action(self.st.operators["direction_turn"]):turn()
+		end
+	end
+end
+function act_state_mgr_movement_stand:execute()
+	action_base.execute(self)
+end
+function act_state_mgr_movement_stand:finalize()
+	action_base.finalize(self)
+end

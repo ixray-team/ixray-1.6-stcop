@@ -1,0 +1,88 @@
+-- File:        UI_MULTIPLAYER_GAMETYPE_TAB.SCRIPT
+-- Description: "Game Type" tab for Create Server Dialog
+-- Created:     03.12.2004
+-- Author:      Serhiy 0. Vynnychenk0
+-- Mail:        narrator@gsc-game.com
+--
+-- Copyright:   2004 GSC Game World
+--
+
+class "gametype_tab" (ui_multiplayer_base_tab.multiplayer_base_tab)
+
+function gametype_tab:__init() super()
+end
+
+function gametype_tab:__finalize() 
+end
+
+function gametype_tab:InitControls(x_pos, y_pos, width, height)
+	ui_multiplayer_base_tab.multiplayer_base_tab.InitControls(self, "Game Type", x_pos, y_pos, width, height)
+	
+	local rbtn_rect = {}
+	rbtn_rect.width = 350
+	rbtn_rect.height = 40
+	
+	local rbtn_group_rect = {}
+	rbtn_group_rect.height = rbtn_rect.height*3 + self.indent*2
+	rbtn_group_rect.y = (self.main_rect.height - rbtn_group_rect.height)/2 - 100
+	rbtn_group_rect.x = (self.main_rect.width - rbtn_rect.width)/2
+	
+	local rbtn_dm_rect	= { x		= rbtn_group_rect.x,
+							y		= rbtn_group_rect.y,
+							width	= rbtn_rect.width,
+							height	= rbtn_rect.height}
+	local rbtn_tdm_rect	= { x		= rbtn_group_rect.x,
+							y		= rbtn_group_rect.y + rbtn_rect.height + self.indent,
+							width	= rbtn_rect.width,
+							height	= rbtn_rect.height}
+	local rbtn_ah_rect	= { x		= rbtn_group_rect.x,
+							y		= rbtn_group_rect.y + rbtn_rect.height*2 + self.indent*2,
+							width	= rbtn_rect.width,
+							height	= rbtn_rect.height}
+	
+	-- Radio group
+	local rgroup = CUIRadioGroup()	
+	rgroup:SetAutoDelete(true)
+	rgroup:SetWindowName("radio_group")
+	rgroup:Init(self.main_rect.x, self.main_rect.y, self.main_rect.width, self.main_rect.height)
+	self.main_frame:AttachChild(rgroup)
+	
+
+	-- Radio buttons
+	local rbtn = CUIRadioButton()
+	rbtn:SetAutoDelete(true)
+	rbtn:SetWindowName("rbtn_dm")	
+	rbtn:Init(rbtn_dm_rect.x, rbtn_dm_rect.y, rbtn_dm_rect.width, rbtn_dm_rect.height)
+	rbtn:SetFont(self.button_font)
+	rbtn:SetText("Death Match")
+	rbtn:SetTextAlign(CGameFont.alCenter)
+	rbtn:SetTextY(-1)
+	self:Register(rbtn)	
+	rgroup:AttachChild(rbtn)	
+
+	rbtn = CUIRadioButton()
+	rbtn:SetWindowName("rbtn_tdm")
+	rbtn:SetAutoDelete(true)
+	rbtn:Init(rbtn_tdm_rect.x, rbtn_tdm_rect.y, rbtn_tdm_rect.width, rbtn_tdm_rect.height)
+	rbtn:SetFont(self.button_font)
+	rbtn:SetText("Team Death Match")
+	rbtn:SetTextAlign(CGameFont.alCenter)
+	rbtn:SetTextY(-1)
+	self:Register(rbtn)
+	rgroup:AttachChild(rbtn)	
+	
+	rbtn = CUIRadioButton()
+	rbtn:SetWindowName("rbtn_ah")
+	rbtn:SetAutoDelete(true)
+	rbtn:Init(rbtn_ah_rect.x, rbtn_ah_rect.y, rbtn_ah_rect.width, rbtn_ah_rect.height)
+	rbtn:SetFont(self.button_font)
+	rbtn:SetText("Artefact Hunt")
+	rbtn:SetTextAlign(CGameFont.alCenter)
+	rbtn:SetTextY(-1)
+	self:Register(rbtn)
+	rgroup:AttachChild(rbtn)	
+end
+
+function gametype_tab:InitCallbacks()
+end
+

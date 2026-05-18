@@ -1,0 +1,31 @@
+-- chugai's debug script
+
+function get_actor()
+	while not db.actor do
+		wait()
+	end
+
+	return db.actor
+end
+
+function main()
+--	get_actor():give_info_portion( "tutorial_artefact_start" )
+--	get_actor():give_info_portion( "tutorial_artefact_gain" )
+--	get_actor():give_info_portion( "tutorial_wounded_start" )
+--	get_actor():give_info_portion( "tutorial_wounded_help" )
+--	get_actor():give_info_portion( "tutorial_wounded_must_spawn" )
+
+	get_actor():give_info_portion( "agr_krot_band_start" )
+--	get_actor():give_info_portion( "agr_krot_band_done" )
+
+	get_actor():give_info_portion( "agroprom_military_case" )
+
+--	get_actor():give_info_portion( "agr_help_stalkers_defence_dead" )
+--	get_actor():give_info_portion( "agr_help_stalkers_done" )
+
+--	get_actor():give_info_portion( "agr_collector_entrance_info" )
+--	get_actor():give_info_portion( "agr_nii_security_shedule_file_have" )
+--	get_actor():give_info_portion( "agr_nii_security_plan_flash_have" )
+--	get_actor():give_info_portion( "agr_find_gunslinger_cache_start" )
+--	get_actor():give_info_portion( "agr_krot_secret_info" )
+end

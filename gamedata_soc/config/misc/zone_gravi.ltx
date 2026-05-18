@@ -1,0 +1,211 @@
+[zone_gravi_zone]
+GroupControlSection	= spawn_group_zone
+$spawn 			= "zones\gravi zone"
+$prefetch 		= 16
+class			= ZS_GALAN
+
+ef_anomaly_type			= 5
+ef_weapon_type			= 17
+
+sound			= zone_mosquito_bald
+postprocess		= postprocess_gravi
+
+artefacts		= af_vyvert,0.8, af_gravi, 0.2, af_gold_fish, 0.00
+BirthProbability = 0.2;0.1
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 0.99
+max_start_power		= 1.00
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+
+idle_particles		= anomaly2\gravity_idle
+blowout_particles	= anomaly2\gravity_blast_final00 ;gravity_blast_03
+tearing_particles	=anomaly2\body_tear_00
+torn_particles      =anomaly2\body_tear_01
+
+hit_small_particles			= hit_fx\hit_metal_02
+hit_big_particles			= anomaly2\gravity_damage_02_blood2
+idle_small_particles		= anomaly2\gravity_damage_01_smoke
+idle_big_particles			= anomaly2\gravity_damage_02_smoke
+entrance_small_particles	= anomaly2\gravi_anomaly_shield_00
+entrance_big_particles		= anomaly2\gravi_anomaly_00;
+
+tele_particles_small		= anomaly2\gravity_damage_01_smoke	;anomaly2\gravity_damage_01_smoke
+tele_particles_big			= anomaly2\gravity_damage_02_smoke	
+
+
+idle_sound			= anomaly\gravi_idle00							;постоянный звук
+blowout_sound		= anomaly\gravi_blowout6; anomaly_gravy_blast01	;во время выброса(удара) в центре аномалии	
+hit_sound			= anomaly\anomaly_gravy_hit1						;на персонаже, когда тот получает хит
+body_tearing_sound	= anomaly\anomaly_body_tear_1						;звук разрывания трупа
+entrance_sound		= anomaly\gravi_idle01								;при попадании объекта в аномалию
+
+hit_type		= strike
+hit_impulse_scale	= 0.2;0.5;0.1			;соотношение физического импульса и силы хита
+effective_radius	= 0.75 ;размер радиуса в процентах от оригинального, где действует зона
+
+disable_time		= 5000	;время игнорирования неживого объекта в зоне (-1 если не нужно)
+disable_time_small	= 500		;время игнорирования маленького неживого объекта в зоне (-1 если не нужно)
+disable_idle_time	= 100;-1	;время отключения idle партиклов
+
+ignore_nonalive		= false
+ignore_small		= true
+ignore_artefacts	= true
+
+blowout_light		= on
+light_color		    = 1.4,1.6,1.3
+light_range		    = 30.0
+light_time 		    = 0.8;0.35
+light_height		= 1.5			;подъем источника света на высоту
+
+idle_light			= off
+
+awaking_time		= 300;1000
+blowout_time		= 2500	
+accamulate_time		= 1000
+
+
+blowout_light_time		= 2100
+blowout_explosion_time	= 2100
+
+;параметры телекинеза для зоны
+throw_in_impulse			= 		2000;3000;4000		;сила импульса втягивания (для тела 100кг)
+throw_out_impulse			=		4000;		;сила выбрасывания взрывом
+throw_in_impulse_alive		= 		400;600 800	;сила импульса втягивания для живых
+throw_in_atten				= 		2;8			;коэфф. затягивания (чем меньше, тем плавнее затягивает)
+blowout_radius_percent		= 		0.8		;радиус (в процентах от всего радиуса) непосредственно выброса
+actor_blowout_radius_percent=		0.5
+
+tele_height				= 0.05;	3.5	;высота подъема телекинеза 
+time_to_tele			= 5000		;время деражания объекта в воздухе
+tele_pause				= 5000		;пауза перед тем как снова поднять упавший объект
+
+visible_by_detector = on
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ветер
+blowout_wind		= on
+
+blowout_wind_time_start     = 0
+blowout_wind_time_peak      = 1500
+blowout_wind_time_end		= 2501; 2499
+blowout_wind_power			= 0.5			;сила поднимаего ветра (от 0 до 1), в момент blowout_wind_time_peak 
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;рождение артефактов во время срабатывания
+spawn_blowout_artefacts = on   ;on
+
+artefact_spawn_probability = 0.14;0.07				;вероятность, что во время срабатывания аномалии будет рожден артефакт
+artefact_spawn_particles = anomaly2\gravi_anomaly_shield_00	;партиклы, которые отыграются на месте рождения артефакта (опционально)
+artefact_born_sound =  anomaly\anomaly_gravy_hit1		;звук, который отыграются на месте рождения артефакта (опционально)
+
+throw_out_power = 20			;импульс с которым артефакт будет выброшен из зоны в произвольном направлении
+artefact_spawn_height = 1		;(м) высота на центром зоны где будет рожден артефакт
+
+
+[zone_gravi_zone_weak]:zone_gravi_zone
+$spawn 			= "zones\gravi_zone_weak"
+hit_impulse_scale	= 0.1
+effective_radius	= 0.7
+
+BirthProbability = 0.2
+artefacts		= af_vyvert,0.8, af_gravi, 0.2, af_gold_fish, 0.0
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 0.49
+max_start_power		= 0.5
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 1
+artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
+artefact_spawn_rnd	= 50  ;вероятность заспавнить артефакт в процентах.
+
+throw_in_impulse			= 		1000	;сила импульса втягивания (для тела 100кг)
+throw_out_impulse			=		4000	;сила выбрасывания взрывом
+throw_in_impulse_alive		= 		300	;сила импульса втягивания для живых
+throw_in_atten				= 	1.2		;коэфф. затягивания (чем меньше, тем плавнее затягивает)
+blowout_radius_percent		= 	0.6	;радиус (в процентах от всего радиуса) непосредственно выброса
+actor_blowout_radius_percent=   0.6
+
+awaking_time		= 200
+blowout_time		= 2500	
+accamulate_time		= 1000
+
+; Не производящая артефактов слабая аномалия
+[zone_gravi_zone_weak_noart]:zone_gravi_zone_weak
+$spawn 			= "zones\gravi_zone_weak_noart"
+spawn_blowout_artefacts = off
+min_artefact_count	= 0
+max_artefact_count	= 0
+artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
+
+[zone_gravi_zone_average]:zone_gravi_zone
+$spawn 			= "zones\gravi zone_average"
+hit_impulse_scale	= 0.1
+effective_radius	= 0.8 
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 1.19
+max_start_power		= 1.20
+attenuation			= 1
+period				= 1
+min_artefact_count	= 1
+max_artefact_count	= 1
+artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
+artefact_spawn_rnd	= 70  ;вероятность заспавнить артефакт в процентах.
+
+throw_in_impulse			= 		1000	;сила импульса втягивания (для тела 100кг)
+throw_out_impulse			=		4000	;сила выбрасывания взрывом
+throw_in_impulse_alive		= 		450	;сила импульса втягивания для живых
+throw_in_atten				= 	1.2		;коэфф. затягивания (чем меньше, тем плавнее затягивает)
+blowout_radius_percent		=  0.6	;радиус (в процентах от всего радиуса) непосредственно выброса
+actor_blowout_radius_percent=  0.6
+
+BirthProbability = 0.2
+artefacts		= af_vyvert,0.6, af_gravi, 0.4, af_gold_fish, 0.0
+
+
+awaking_time		= 100
+blowout_time		= 2500	
+accamulate_time		= 1000
+
+[zone_gravi_zone_strong]:zone_gravi_zone
+$spawn 			= "zones\gravi zone_strong"
+
+hit_impulse_scale	= 0.3
+effective_radius	= 0.9 
+
+;----------- Anomaly settings -----------------------
+min_start_power		= 1.99
+max_start_power		= 2.00
+attenuation			= 1
+period				= 1
+min_artefact_count	= 1
+max_artefact_count	= 2
+artefact_spawn_idle	= 24  ;насколько часто спонить артефакты в офлайне, в часах
+artefact_spawn_rnd	= 90  ;вероятность заспавнить артефакт в процентах.
+
+throw_in_impulse			= 		1000	;сила импульса втягивания (для тела 100кг)
+throw_out_impulse			=		4000	;сила выбрасывания взрывом
+throw_in_impulse_alive		= 		600	;сила импульса втягивания для живых
+throw_in_atten				= 	1.2		;коэфф. затягивания (чем меньше, тем плавнее затягивает)
+blowout_radius_percent		= 	0.6	;радиус (в процентах от всего радиуса) непосредственно выброса
+actor_blowout_radius_percent=	0.6
+
+BirthProbability = 0.2
+artefacts		= af_vyvert,0.2, af_gravi, 0.6, af_gold_fish, 0.2
+
+awaking_time		= 50
+blowout_time		= 2500	
+accamulate_time		= 1000
+
+[zone_gravi_zone_killing]:zone_gravi_zone_average
+$spawn 			= "zones\gravi zone_killing"

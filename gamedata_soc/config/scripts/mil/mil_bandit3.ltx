@@ -1,0 +1,13 @@
+[logic]
+active = {=is_day} camper1, kamp1
+
+[kamp1]
+center_point = mil_monolith_camp_center
+patrol_path_1 = mil_monolith_guard_way
+path_look_1 = mil_monolith_guard_look
+on_info = {=is_day} camper1
+
+[camper1]
+path_walk = mil_monolith_camp_walk3
+path_look = mil_monolith_camp_look3
+on_info = {!is_day} kamp1

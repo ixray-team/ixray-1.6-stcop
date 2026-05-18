@@ -1,0 +1,215 @@
+#include "gulag_general.ltx"
+#include "gulag_escape.ltx"
+#include "gulag_garbage.ltx"
+#include "gulag_dark_valley.ltx"
+#include "gulag_labx18.ltx"
+#include "gulag_bar.ltx"
+#include "gulag_radar.ltx"
+#include "gulag_radar_u.ltx"
+#include "gulag_agroprom.ltx"
+#include "gulag_military.ltx"
+#include "gulag_yantar.ltx"
+#include "gulag_pripyat.ltx"
+#include "gulag_kishka.ltx"
+#include "gulag_sarcofag.ltx"
+#include "gulag_deadcity.ltx"
+
+;-------------------------------------------------------------------------------------------------
+;-- test
+;-------------------------------------------------------------------------------------------------
+[logic@walker1]
+active = walker1
+
+[walker1]
+path_walk = pw1
+path_look = pl1
+
+
+[logic@walker2]
+active = walker2
+
+[walker2]
+path_walk = pw2
+path_look = pl2
+
+
+[logic@walker3]
+active = walker3
+
+[walker3]
+path_walk = pw3
+path_look = pl3
+
+;-------------------------------------------------------------------------------------------------
+;-- test1
+;-------------------------------------------------------------------------------------------------
+[logic@test1_sleeper1]
+active = sleeper1@test1
+
+[sleeper1@test1]
+path_main = sleep_1
+
+
+[logic@test1_walker1]
+active = walker1@test1
+
+[walker1@test1]
+path_walk = walk_1
+
+
+;-------------------------------------------------------------------------------------------------
+;-- test2
+;-------------------------------------------------------------------------------------------------
+[logic@test2_kamp1]
+active = kamp1@test2
+
+[kamp1@test2]
+center_point = kamp1
+
+
+;-------------------------------------------------------------------------------------------------
+;-- test_restr_changer
+;-------------------------------------------------------------------------------------------------
+[logic@test_restr_changer_walker]
+active = remark@test_restr_changer_walker
+
+[remark@test_restr_changer_walker]
+anim = wait
+
+;-------------------------------------------------------------------------------------------------
+;-- test_out
+;-------------------------------------------------------------------------------------------------
+[logic@test_out_sleeper1]
+active = sleeper1@test_out
+
+[sleeper1@test_out]
+path_main = sleep_1
+
+
+[logic@test_out_walker1]
+active = walker1@test_out
+
+[walker1@test_out]
+path_walk = walk_1
+
+;-------------------------------------------------------------------------------------------------
+;-- test_mob
+;-------------------------------------------------------------------------------------------------
+[logic@test_mob_mob_walker]
+active = mob_walker@test_mob
+
+[mob_walker@test_mob]
+path_walk = walk1
+path_look = look1
+
+[logic@test_mob_mob_home]
+active = mob_home@test_mob
+
+[mob_home@test_mob]
+path_home = home1
+
+;-------------------------------------------------------------------------------------------------
+;-- test_mob
+;-------------------------------------------------------------------------------------------------
+[logic@test_mob1_mob_walker]
+active = mob_walker@test_mob1
+
+[mob_walker@test_mob1]
+path_walk = walk1
+path_look = look1
+
+[logic@test_mob1_mob_home]
+active = mob_home@test_mob1
+
+[mob_home@test_mob1]
+path_home = home1
+
+;-------------------------------------------------------------------------------------------------
+;-- ”ниверсальный гулаг "кэмперы"
+;-------------------------------------------------------------------------------------------------
+[logic@campers_camper1]
+active = camper1@campers
+
+[camper1@campers]
+path_walk = camper_walk1
+path_look = camper_look1
+meet_enabled = true
+
+
+[logic@campers_camper2]
+active = camper2@campers
+
+[camper2@campers]
+path_walk = camper_walk2
+path_look = camper_look2
+meet_enabled = true
+
+
+[logic@campers_camper3]
+active = camper3@campers
+
+[camper3@campers]
+path_walk = camper_walk3
+path_look = camper_look3
+meet_enabled = true
+
+;-------------------------------------------------------------------------------------------------
+;-- ”ниверсальный гулаг "ходоки" (walkers)
+;-------------------------------------------------------------------------------------------------
+[logic@walkers_walker1]
+active = walker1@walkers
+
+[walker1@walkers]
+path_walk = walker_walk1
+path_look = walker_look1
+meet_enabled = true
+
+
+[logic@walkers_walker2]
+active = walker2@walkers
+
+[walker2@walkers]
+path_walk = walker_walk2
+path_look = walker_look2
+meet_enabled = true
+
+
+[logic@walkers_walker3]
+active = walker3@walkers
+
+[walker3@walkers]
+path_walk = walker_walk3
+path_look = walker_look3
+meet_enabled = true
+
+;-------------------------------------------------------------------------------------------------
+;-- ”ниверсальный гулаг "поиск" (тот же walker)
+;-------------------------------------------------------------------------------------------------
+[logic@search_walker]
+active = walker@search
+
+[walker@search]
+path_walk = search_walk
+path_look = search_look
+meet_enabled = true
+
+;-------------------------------------------------------------------------------------------------
+;-- ”ниверсальный гулаг "отдых"
+;-------------------------------------------------------------------------------------------------
+[logic@rest_rest]
+active = rest@rest
+
+[rest@rest]
+path_rest = rest
+meet_talk_enabled = true
+on_signal = rest_end | {~50} walker@rest, {~100} sleeper@rest
+
+[walker@rest]
+path_walk = rest_walk
+path_look = rest_look
+meet_enabled = true
+on_timer  = 50000 | {~50} rest@rest, {~100} sleeper@rest
+
+[sleeper@rest]
+path_main = sleep
+on_timer  = 100000 | {~50} walker@rest, {~100} rest@rest

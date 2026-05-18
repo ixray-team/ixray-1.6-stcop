@@ -1,0 +1,105 @@
+--[[----------------------------------------------------------------------------------------------
+Распарсевание и хранение настроек смарт террейнов
+Чугай Александр
+------------------------------------------------------------------------------------------------]]
+
+local params_loaded = false
+
+local stay_times
+
+--[[ кешированные предустановок рангов и группировок
+формат:
+	presets = {
+		preset_name1 = {
+			community1 = {rank_min1,rank_max1},
+			community2 = {rank_min2,rank_max2},
+			...
+		},
+		preset_name2 = false,
+		...
+	}
+false означает, что пытались прочитать, но не нашли такой предустановки
+]]
+local presets = {}
+
+-- возвращает таблицу с предустановкой или false
+function read_preset( preset_name )
+	local ltx = ini_file( "misc\\smart_terrain_presets.ltx" )
+
+	if ltx and ltx:section_exist( preset_name ) then
+		local preset = {}
+		local result, field, str
+		local t
+		local n = ltx:line_count( preset_name )
+		local rank_min, rank_max, rank_interval
+
+		for i = 0, n-1 do
+			result, field, str = ltx:r_line( preset_name, i, "", "" )
+
+			t = parse_names( str )
+
+			rank_min, rank_max = 10000, 0
+
+			for i, rank_name in ipairs( t ) do
+				rank_interval = ranks.get_rank_interval( rank_name )
+
+				if rank_interval[1] < rank_min then
+					rank_min = rank_interval[1]
+				end
+
+				if rank_interval[2] > rank_max then
+					rank_max = rank_interval[2]
+				end
+			end
+
+			preset[field] = { rank_min, rank_max }
+		end
+
+		return preset
+	else
+		return false
+	end
+end
+
+-- загрузить различные общие для всех смартов настройки
+function load_params()
+	params_loaded = true
+
+	local ltx = system_ini()
+
+	stay_times = {}
+
+	local result, field, str
+	local n = ltx:line_count( "smart_terrain_stay_time" )
+
+	for i = 0, n-1 do
+		result, field, str = ltx:r_line( "smart_terrain_stay_time", i, "", "" )
+
+		stay_times[field] = parse_nums( str )
+	end
+end
+
+-- получить временной интервал
+function get_stay_time_interval( name )
+	if not params_loaded then
+		load_params()
+--		print_table( stay_times )
+	end
+
+	if not stay_times[name] then
+		abort( "unknown stay_time interval '%s'", name )
+--		name = "default"
+	end
+
+	return stay_times[name][1], stay_times[name][2]
+end
+
+-- получить предустановку
+function get_preset( preset_name )
+	if presets[preset_name] == nil then
+		presets[preset_name] = read_preset( preset_name )
+	end
+
+	return presets[preset_name]
+end
+

@@ -1,0 +1,36 @@
+<article id="yan_vasilyev_info" name="yan_vasilyev_pda" group="Found_PDA" article_type="journal">
+        <text>storyline_vasilyev_info</text>
+</article>
+<article id="descr_yan_kill_brain" name="" group="yan_kill_brain_task/0" article_type="task">
+        <text>descr_yan_kill_brain</text>
+</article>
+<article id="descr_yan_kill_brain_2" name="" group="yan_kill_brain_task_2/0" article_type="task">
+        <text>descr_yan_kill_brain_2</text>
+</article>
+<article id="descr_yan_find_scientist" name="" group="yan_find_scientist/0" article_type="task">
+        <text>descr_yan_find_scientist</text>
+</article>
+<article id="descr_yan_scientist_return_task" name="" group="yan_scientist_return_task/0" article_type="task">
+        <text>descr_yan_scientist_return_task</text>
+</article>
+<article id="descr_yan_find_lab" name="" group="yan_find_vasilyev_task/0" article_type="task">
+        <text>descr_yan_find_lab</text>
+</article>
+<article id="descr_yan_find_ghost_task" name="" group="yan_find_ghost_task/0" article_type="task">
+        <text>descr_yan_find_ghost_task</text>
+</article>
+<article id="descr_yan_provodnik_task" name="" group="yan_provodnik_task/0" article_type="task">
+        <text>descr_yan_provodnik_task</text>
+</article>
+<article id="descr_yan_find_scientist_semenov" name="" group="yan_find_scientist_semenov/0" article_type="task">
+        <text>descr_yan_find_scientist_semenov</text>
+</article>
+<article id="journal_after_kill_brain" name="journal_after_kill_brain_name" group="memuars" article_type="journal">
+        <text>journal_after_kill_brain</text>
+</article>
+<article id="journal_after_find_ghost" name="journal_after_find_ghost_name" group="memuars" article_type="journal">
+        <text>journal_after_find_ghost</text>
+</article>
+<article id="journal_before_vasilyev_pda" name="journal_before_vasilyev_pda_name" group="memuars" article_type="journal">
+        <text>journal_before_vasilyev_pda</text>
+</article>

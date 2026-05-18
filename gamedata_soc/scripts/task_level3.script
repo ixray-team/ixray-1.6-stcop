@@ -1,0 +1,140 @@
+function main (need_items)
+
+    task_level2.main (false)        
+    ----------------------------------------------------------------------------------
+    -- Задачи DarkValley
+    ----------------------------------------------------------------------------------
+    
+    db.actor:give_info_portion ("dar_document4")
+    db.actor:give_info_portion ("dar_actor_got_docs")
+    db.actor:give_info_portion ("val_raid_start")
+    
+    -- Документы из Х18
+    db.actor:give_info_portion ("val_actor_has_borov_key")
+    db.actor:give_info_portion ("val_x18_door_open")
+    db.actor:give_info_portion ("bar_darklab_document_done")
+    -- Спасение рядового Райана
+    db.actor:give_info_portion ("val_escort_task_start")
+    db.actor:give_info_portion ("val_escort_start")
+    db.actor:give_info_portion ("val_escort_combat")
+    db.actor:give_info_portion ("val_escort_nap1_start_combat")
+    db.actor:give_info_portion ("val_escort_actor_helped")
+    db.actor:give_info_portion ("val_escort_guard1_dead")
+    db.actor:give_info_portion ("val_escort_guard2_dead")
+    db.actor:give_info_portion ("val_escort_guards_free")
+    db.actor:give_info_portion ("val_escort_captive_give_info")
+    db.actor:give_info_portion ("val_escort_got_reward")
+    db.actor:give_info_portion ("val_escort_scene_end")
+    
+    db.actor:give_info_portion ("val_show_zones")
+    db.actor:give_info_portion ("val_show_pipe_zone")
+    
+    
+    -- Разговоры с зеками
+    db.actor:give_info_portion ("val_escort_begin")
+    db.actor:give_info_portion ("val_escort_help_prisoner_task")
+    db.actor:give_info_portion ("val_prisoner_free")
+    db.actor:give_info_portion ("val_prisoner_task_finish")
+    db.actor:give_info_portion ("val_prisoner_give_info")
+    db.actor:give_info_portion ("val_prisoner_scene_end")
+    
+    -- Спесение еще одного рядового Райана с заправки
+    db.actor:give_info_portion ("val_sos_start_task")
+    db.actor:give_info_portion ("val_sos_got_medkit")
+    db.actor:give_info_portion ("val_sos_task_finish")
+    db.actor:give_info_portion ("val_sos_scene_end")
+    -- ящик с блокпоста
+    db.actor:give_info_portion ("escape_blockpost_case")
+    db.actor:give_info_portion ("escape_blockpost_case_have")
+    db.actor:give_info_portion ("escape_blockpost_case_done")
+    
+    db.actor:give_info_portion ("val_tunnel_talk_start")
+    db.actor:give_info_portion ("val_tunnel_bandit_leave")
+    db.actor:give_info_portion ("val_tunnel_finish")
+    
+    db.actor:give_info_portion ("val_sacrifice_spawn")
+    db.actor:give_info_portion ("val_sacrifice_start")
+    db.actor:give_info_portion ("val_sacrifice_finish")
+
+    db.actor:give_info_portion ("val_rob_buying")
+
+    db.actor:give_info_portion ("val_player_knows_password")
+    
+    db.actor:give_info_portion ("val_come_to_trader_task")
+    db.actor:give_info_portion ("val_chase_start")
+    db.actor:give_info_portion ("val_actor_behind_gate")
+    
+    
+    -- отбивание наемников    
+    db.actor:give_info_portion ("escape_lager_help")    
+    db.actor:give_info_portion ("escape_lager_killers_die")    
+    db.actor:give_info_portion ("escape_lager_complete")    
+    db.actor:give_info_portion ("esc_fanat_spawn")    
+    
+    db.actor:give_info_portion ("agroprom_military_case_have")    
+    db.actor:give_info_portion ("esc_trader_return")    
+    db.actor:give_info_portion ("esc_darklab_documents_read")    
+    db.actor:give_info_portion ("esc_return")    
+    db.actor:give_info_portion ("cit_documents_need")    
+    
+    
+    -- документы из лаборатории x-16
+    db.actor:give_info_portion ("bar_darklab_document_done")
+    db.actor:give_info_portion ("bar_x16_documents_start")
+
+
+    if need_items ~= nil and need_items == false then return end
+    local actor = db.actor
+    -- Создадим различные объекты, которые нам необходимы
+	    alife():create ("wpn_lr300", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("ammo_5.56x45_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("ammo_5.56x45_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("ammo_5.56x45_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("ammo_5.56x45_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("ammo_5.56x45_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("ammo_5.56x45_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("ammo_5.56x45_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("wpn_addon_scope_susat", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("grenade_f1", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("grenade_f1", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("grenade_f1", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("grenade_f1", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("grenade_f1", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("medkit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("medkit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("medkit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("medkit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("medkit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("medkit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("medkit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("medkit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("antirad", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("antirad", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("antirad", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("bread", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("kolbasa", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("conserva", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("device_torch", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("detector_simple", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("wpn_beretta", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("ammo_9x19_fmj", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("ammo_9x19_fmj", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("ammo_9x19_fmj", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("scientific_outfit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+    
+    alife():create ("wpn_knife", db.actor:position (), db.actor:level_vertex_id (),db.actor:game_vertex_id (), db.actor:id())
+	alife():create ("wpn_binoc", db.actor:position (), db.actor:level_vertex_id (),db.actor:game_vertex_id (), db.actor:id())
+
+end

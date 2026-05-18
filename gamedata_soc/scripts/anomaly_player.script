@@ -1,0 +1,40 @@
+function main()
+	local	script_table = {
+		{"script_object0000","idle"},
+		{"script_object0001","idle"},
+		{"script_object0002","idle"},
+		{"script_object0003","idle"},
+		{"script_object0004","idle"},
+		{"script_object0005","idle"},
+		{"script_object0006","idle"},
+		{"script_object0007","idle"},
+		{"script_object0008","idle"},
+		{"script_object0009","idle"},
+		{"script_object0010","idle"},
+		{"script_object0011","idle"},
+		{"script_object0012","idle"},
+		{"script_object0013","idle"},
+		{"script_object0014","idle"},
+		{"script_object0015","idle"},
+		{"script_object0016","idle"},
+		{"script_object0017","idle"},
+		{"script_object0018","idle"},
+		{"script_object0019","idle"},
+		{"script_object0020","idle"},
+		{"script_object0021","idle"}
+	--	{"script_object", "idle"}
+	}
+	local	object_table = {}
+	for a=1,table.getn(script_table),1 do
+	    if level.object (script_table[a][1]) ~= nil then
+		   object_table[a] = script_object(script_table[a][1],anomaly_player:script_name(),anim(script_table[a][2]),cond(cond.anim_end))
+		end   
+	end
+    while true do
+		for a = 1, table.getn (object_table), 1 do
+			object_table[a]:update()
+			wait()
+		end
+		wait()
+    end
+end

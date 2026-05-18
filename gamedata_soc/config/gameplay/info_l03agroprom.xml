@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+
+	<info_portion id="agroprom_military_case">
+		<task>agroprom_get_military_documents</task>
+		<article>sl_first_deep_raid</article>
+	</info_portion>
+	<info_portion id="agroprom_military_case_have">
+		<article>agr_military_case</article>
+		<article>journal_after_agroprom_documents</article>
+	</info_portion>
+	<info_portion id="agroprom_military_case_done">
+	</info_portion>
+	<info_portion id="agroprom_military_case_learn">
+	</info_portion>
+
+	<info_portion id="agr_meet_krot_band_done">
+	</info_portion>
+	<info_portion id="agr_krot_band_start">
+		<task>agr_meet_krot_band</task>
+	</info_portion>
+	<info_portion id="agr_can_ask_krot_about_gunslinger">
+	</info_portion>
+	<info_portion id="agr_krot_band_done">
+		<disable>agr_krot_band_start</disable>
+		<disable>agr_can_ask_krot_about_gunslinger</disable>
+	</info_portion>
+	<info_portion id="agr_krot_task_complete">
+		<article>agr_journal_krot</article>
+	</info_portion>
+
+	<info_portion id="agr_find_gunslinger_cache_start">
+		<task>agroprom_find_gunslinger_cache</task>
+	</info_portion>
+	<info_portion id="agr_find_ghost_start">
+		<task>agr_find_ghost</task>
+		<article>storyline_gunslinger_flash_info</article>
+	</info_portion>
+	<info_portion id="agr_find_gunslinger_cache_found">
+	</info_portion>
+	<info_portion id="agr_find_gunslinger_cache_done">
+		<disable>agr_find_gunslinger_cache_start</disable>
+	</info_portion>
+	<info_portion id="agr_find_gunslinger_cache_final">
+		<article>agr_journal_cache</article>
+	</info_portion>
+
+	<info_portion id="agr_krot_secret_info">
+	</info_portion>
+
+
+	<info_portion id="agroprom_find_stalker_phantom">
+		<task>agroprom_find_stalker_phantom</task>
+		<article>storyline_gunslinger_flash_info</article>
+	</info_portion>
+	<info_portion id="agroprom_find_stalker_phantom_done">
+		<disable>agroprom_find_stalker_phantom</disable>
+	</info_portion>
+
+	<info_portion id="agr_rush_start">
+	</info_portion>
+
+	<info_portion id="agr_warning_recieved">
+	</info_portion>
+
+	<info_portion id="agr_factory_heli_start">
+	</info_portion>
+	<info_portion id="agr_factory_assault_start">
+	</info_portion>
+	<info_portion id="agr_factory_assault_skirmish">
+	</info_portion>
+	<info_portion id="agr_help_stalkers_start">
+		<task>agr_help_stalkers</task>
+	</info_portion>
+	<info_portion id="agr_help_stalkers_assault_dead">
+	</info_portion>
+	<info_portion id="agr_help_stalkers_defence_dead">
+	</info_portion>
+	<info_portion id="agr_help_stalkers_done">
+		<disable>agr_help_stalkers_start</disable>
+	</info_portion>
+
+	<info_portion id="agr_krot_skirmish_start">
+	</info_portion>
+	<info_portion id="agr_krot_dead">
+	</info_portion>
+	<info_portion id="agr_help_krot_start">
+		<task>agr_help_krot</task>
+	</info_portion>
+	<info_portion id="agr_help_krot_done">
+		<disable>agr_help_krot_start</disable>
+	</info_portion>
+	<info_portion id="agr_krot_met">
+	</info_portion>
+
+	<info_portion id="agr_factory_spawn_spetsnaz">
+	</info_portion>
+	<info_portion id="agr_factory_spawn_spetznaz_start">
+	</info_portion>
+	<info_portion id="agr_krot_go_to_well">
+	</info_portion>
+
+
+
+    <info_portion id="agr_pda_soldiers_rats">
+		<article>agr_rats_n_soldiers</article>
+    </info_portion>
+    
+    <info_portion id="agr_sold_about_ratcatcher">    
+    </info_portion>
+
+    <info_portion id="agr_collector_entrance_info">    
+    </info_portion>
+    
+    <info_portion id="agr_captains_chamber_info">    
+    </info_portion>
+
+    <info_portion id="agr_nii_alarm">
+    </info_portion>
+    <info_portion id="agr_nii_rupor_off">
+    </info_portion>
+    <info_portion id="agr_nii_sniper_alarm">
+    </info_portion>
+    <info_portion id="agr_nii_sniper_hit">
+    </info_portion>
+
+    <info_portion id="agr_nii_helicopter_atack">
+    </info_portion>
+    
+    <info_portion id="agr_start_boar_hunt">
+    </info_portion>
+ 
+	<info_portion id="agr_nii_security_shedule_file_have">
+		<article>agr_nii_security_shedule</article>
+	</info_portion>
+	
+	<info_portion id="agr_nii_security_plan_flash_have">
+		<article>agr_nii_security_plan</article>
+	</info_portion>
+	
+	<info_portion id="agr_nii_fab_mil_task">
+		<article>agr_nii_fab_mil_task</article>
+	</info_portion>
+		
+	<info_portion id="agr_ratcatcher_friend">
+	</info_portion>
+	
+	<info_portion id="agr_zaz_location">
+	</info_portion>
+	
+	<info_portion id="agr_zaz_found">
+	</info_portion>	
+		
+	<info_portion id="agr_factory_location">
+	</info_portion>		
+	
+	<info_portion id="agr_nii_location">
+	</info_portion>	 		
+	<info_portion id="agr_knockdown">
+	</info_portion>	 
+	<info_portion id="agr_sniper_killed_1">
+	</info_portion>	 
+	<info_portion id="agr_sniper_killed_2">
+	</info_portion>	 
+	<info_portion id="agr_sniper_killed_3">
+	</info_portion>	 
+	<info_portion id="agr_attack_begin">
+	</info_portion>	 
+	<info_portion id="agr_doc_wakeup">
+	</info_portion>	
+	<info_portion id="agr_need_respawn">
+	</info_portion>	 
+
+
+	<info_portion id="agr_u_zombie_start"></info_portion>	 
+	<info_portion id="agr_u_controller_start"></info_portion>	 
+	<info_portion id="agr_u_bloodsucker_start"></info_portion>
+	<info_portion id="agr_gunslinger_flash_have"></info_portion>
+	<info_portion id="agr_factory_heli_scene_end"></info_portion>
+	
+		 

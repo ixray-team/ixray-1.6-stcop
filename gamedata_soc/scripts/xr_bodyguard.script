@@ -1,0 +1,288 @@
+----------------------------------------------------------------------------------------------------
+-- THIS SCRIPT IS DEPRECATED
+----------------------------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------------------------
+-- “елохранители
+----------------------------------------------------------------------------------------------------
+-- –азработчик: Andrey Fidrya (Zmey) af@svitonline.com
+----------------------------------------------------------------------------------------------------
+
+-- ¬рем€, когда игрока в прошлый раз предупреждали убрать оружие (чтобы часто не повтор€тьс€):
+-- јссоциативный массив, где ключом выступает им€ из customdata переменной path_center.
+bg_warn_rem_weapon_times = {}
+
+-- «апомненна€ информаци€ об оружие, если изменитс€ (т.е. играть начал стрел€ть или перезар€жатьс€) - атаковать игрока
+bg_wpn_info = {}
+
+local state_none = 0
+local state_moving = 1
+local state_standing = 2
+
+----------------------------------------------------------------------------------------------------------------------
+class "evaluator_need_bodyguard" (property_evaluator)
+
+function evaluator_need_bodyguard:__init(storage, name) super(nil, name)
+	self.st = storage
+end
+
+function evaluator_need_bodyguard:evaluate()
+	return self.st.enabled
+end
+
+---------------------------------------------------------------------------------------------------------------------
+class "action_bodyguard_activity" (action_base)
+
+function action_bodyguard_activity:__init(npc_name, action_name, storage) super(nil, action_name)
+	self.st = storage
+end
+
+function action_bodyguard_activity:initialize()
+	--printf("_bp: action_bodyguard_activity: initialize")
+	action_base.initialize(self)
+--	self.object:set_node_evaluator()
+--	self.object:set_path_evaluator()
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+
+	self.object:clear_animations()
+
+	self.object:set_item(object.idle, self.object:best_weapon())
+	self.object:set_detail_path_type(move.line)
+	self.object:set_body_state(move.standing)
+	self.object:set_mental_state(anim.danger)
+	self.object:set_movement_type(move.run)
+	self.object:set_path_type(game_object.patrol_path)
+	self.object:set_mental_state(anim.free)
+	self.object:set_sight(look.danger, nil, 0)
+	--self.object:set_sight(look.path_dir, nil, 0)
+	--self.object:set_sight(look.danger, nil, 0)
+
+	xr_reactions.add_rule(self.object, "ignore")
+
+	self.object:set_callback(self, "waypoint_callback", game_object.movement)
+	self:reset_scheme()
+end
+
+function action_bodyguard_activity:reset_scheme()
+	-- TODO: выбирать активный путь в зависимости от погоды (сделать выбор функцией)
+	self.patrol_main = patrol(self.st.path_main)
+	if not self.patrol_main then
+		abort("object '%s': unable to find path_main '%s' on the map",
+			self.object:name(), self.st.path_main)
+	end
+
+	self.patrol_side = patrol(self.st.path_side)
+	if not self.patrol_side then
+		abort("object '%s': unable to find path_side '%s' on the map",
+			self.object:name(), self.st.path_side)
+	end
+
+	self.patrol_center = patrol(self.st.path_center)
+	if not self.patrol_center then
+		abort("object '%s': unable to find path_center '%s' on the map",
+			self.object:name(), self.st.path_center)
+	end
+
+	self.zone_grd_obj = level.object(self.st.zone_grd)
+	if not self.zone_grd_obj then
+		abort("object '%s': unable to find zone_grd '%s' on the map",
+			self.object:name(), self.st.zone_grd)
+	end
+	
+	if self.st.zone_grd2 then
+		self.zone_grd2_obj = level.object(self.st.zone_grd2)
+		if not self.zone_grd2_obj then
+			abort("object '%s': unable to find zone_grd2 '%s' on the map",
+				self.object:name(), self.st.zone_grd2)
+		end
+	end
+	
+	self.path_active = self.st.path_main
+
+	self.object:set_item(object.idle, self.object:best_weapon())
+	self.object:set_detail_path_type(move.line)
+	self.object:set_body_state(move.standing)
+	self.object:set_mental_state(anim.free)
+	self.object:set_movement_type(move.walk)
+	self.object:set_path_type(game_object.patrol_path)
+	self.object:set_patrol_path(self.path_active, patrol.start, patrol.continue, true)
+	self.object:set_sight(look.danger, nil, 0)
+
+	self.state = state_moving
+end	
+
+function action_bodyguard_activity:waypoint_callback(obj, action_type, index)
+	if index == -1 then
+		return
+	end
+
+	self.object:set_movement_type(move.stand)
+	self.state = state_standing
+
+	self.object:clear_animations () -- не играть анимацию во врем€ поворота!
+	self.expiration_time = time_global() + 1500; -- дать 100 мс на поворот
+	self:look_at_waypoint(1) -- поворачиваемс€
+end
+
+-- ѕосмотреть в направлении указанной точки текущего маршрута
+function action_bodyguard_activity:look_at_waypoint(pt)
+	local way = patrol(self.object:patrol())
+	local look_pt = utils.vector_copy_by_val(way:point(pt)):sub(self.object:position ())
+	self.object:set_sight(look.direction, look_pt, 0)
+end
+
+function action_bodyguard_activity:execute()
+	action_base.execute(self)
+
+	self.object:set_item(object.idle, self.object:best_weapon())
+
+	if self.state == state_standing then
+		local actor = level.actor()
+		local dist_center = 0
+		if actor then
+			dist_center = self.patrol_center:point(0):distance_to(actor:position())
+
+			local active_item = actor:active_item()
+			
+			local has_weapon
+			if not self.st.block_unarmed then
+				has_weapon = active_item and isWeapon(active_item)
+			else
+				has_weapon = true
+			end
+			
+		        if has_weapon or dist_center > 5 then
+				if has_weapon and dist_center <= 5 and
+				   bg_wpn_info[self.st.path_center] and
+				   not utils.wpn_info_equal(bg_wpn_info[self.st.path_center], utils.wpn_info_get(actor)) then
+					if self.object:relation(actor) ~= game_object.enemy then
+						self.object:set_relation(game_object.enemy, actor)
+					end
+				end
+			
+				if has_weapon and dist_center <= 5 and
+				   (not this.bg_warn_rem_weapon_times[self.st.path_center] or time_global() > this.bg_warn_rem_weapon_times[self.st.path_center] + 60000) then
+					self.object:play_sound(xr_sounds_id.zmey_bodyguard_base, 1, 0, 1, 0, 1)
+					this.bg_warn_rem_weapon_times[self.st.path_center] = time_global()
+					this.bg_wpn_info[self.st.path_center] = utils.wpn_info_get(actor)
+				elseif dist_center > 5 and this.bg_warn_rem_weapon_times[self.st.path_center] then
+					this.bg_warn_rem_weapon_times[self.st.path_center] = nil
+					this.bg_wpn_info[self.st.path_center] = nil
+				end
+
+				--printf("_bp: has_weapon=%s, in_zone=%s", utils.to_str(has_weapon),
+				--	utils.to_str(xr_zones.is_in_zone(actor, self.zone_grd_obj:id())))
+				if has_weapon and
+				   (
+				        xr_zones.is_in_zone(actor, self.zone_grd_obj:id()) or
+					(
+				              self.zone_grd2_obj and xr_zones.is_in_zone(actor, self.zone_grd2_obj:id())
+					)
+				   ) then
+					if self.object:relation(actor) ~= game_object.enemy then
+						self.object:set_relation(game_object.enemy, actor)
+					end
+				elseif self.path_active ~= self.st.path_main then
+					if has_weapon and dist_center <= 5 then
+						self.object:play_sound(xr_sounds_id.zmey_bodyguard_base, 1, 0, 1, 0, 1)
+						this.bg_warn_rem_weapon_times[self.st.path_center] = time_global()
+					end
+
+					self.path_active = self.st.path_main
+					self.object:set_movement_type(move.walk)
+					self.object:set_path_type(game_object.patrol_path)
+					self.object:set_patrol_path(self.path_active, patrol.start, patrol.continue, true)
+					self.state = state_moving
+				end
+			else
+				if self.path_active ~= self.st.path_side then
+					self.path_active = self.st.path_side
+					self.object:set_movement_type(move.walk)
+					self.object:set_path_type(game_object.patrol_path)
+					self.object:set_patrol_path(self.path_active, patrol.start, patrol.continue, true)
+					self.state = state_moving
+				end
+			end
+		end
+
+		if actor and dist_center <= 10 and dist_center >= 2 then
+			if self.path_active ~= self.st.path_main then
+				self.object:set_mental_state(anim.free)
+			else
+				self.object:set_mental_state(anim.danger)
+			end
+			local look_pt = utils.vector_copy_by_val(actor:position()):sub(self.object:position())
+			self.object:set_sight(look.direction, look_pt, 0)
+		else
+			self.object:set_mental_state(anim.free)
+			self:look_at_waypoint(1) -- поворачиваемс€
+		end
+	end
+end
+
+function action_bodyguard_activity:finalize()
+	--printf("_bp: FINALIZE")
+	self.object:clear_callback(game_object.movement)
+	self.object:clear_animations()
+
+	action_base.finalize(self)
+end
+
+---------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc, char_ini)
+	if char_ini == nil or char_ini:section_exist ("bodyguard") == true then
+	printf("_bp: Bodyguard add to binder for %s", npc:name())
+		local operators    = {}
+		local properties  = {}
+
+		npc:add_sound("Scripts\\trader\\pryach_orujie", 20, snd_type.talk, 2, 1, xr_sounds_id.zmey_bodyguard_base)
+
+		local manager = npc:motivation_action_manager()
+
+		properties["need_bodyguard"] = xr_evaluators_id.zmey_bodyguard_base + 1
+		operators["action_bodyguard"]  = xr_actions_id.zmey_bodyguard_base + 1
+
+		-- // evaluators
+		manager:add_evaluator (properties["need_bodyguard"], this.evaluator_need_bodyguard(xr_motivator.storage[npc:id()].bodyguard, "bodyguard_need_bodyguard"))
+
+		local new_action = this.action_bodyguard_activity(npc, "action_bodyguard_activity", xr_motivator.storage[npc:id()].bodyguard)
+		new_action:add_precondition(world_property(stalker_ids.property_alive, true))
+		new_action:add_precondition(world_property(stalker_ids.property_enemy, false))
+		new_action:add_precondition(world_property(properties["need_bodyguard"], true))
+		new_action:add_effect(world_property(properties["need_bodyguard"], false))
+		manager:add_action(operators["action_bodyguard"], new_action)
+
+		new_action = manager:action(xr_actions_id.alife)
+		new_action:add_precondition(world_property(properties["need_bodyguard"], false))
+	
+		if char_ini ~= nil then
+			xr_bodyguard.set_bodyguard(npc)
+		end
+	end
+end
+
+-- enable - будет ли работать схема в принципе
+-- path_main - где телохранитель обычно стоит
+-- path_side - куда телохранитель отходит
+-- path_center - центральна€ точка (от нее вычисл€ютс€ все рассто€ни€)
+-- zone_grd - зона, в пределах которой при обнаружении игрока с оружием, по нему откроют огонь
+function set_bodyguard(object, enable, path_main, path_side, path_center, zone_grd, zone_grd2, block_unarmed)
+	local char_ini = object:spawn_ini()
+	local st = xr_motivator.storage[object:id()].bodyguard
+
+	st.enabled = utils.conf_get_bool(char_ini, "bodyguard", "enabled", enable, object, true)
+	st.path_main = utils.conf_get_string(char_ini, "bodyguard", "path_main", path_main, object, true)
+	st.path_side = utils.conf_get_string(char_ini, "bodyguard", "path_side", path_side, object, true)
+	st.path_center = utils.conf_get_string(char_ini, "bodyguard", "path_center", path_center, object, true)
+	st.zone_grd = utils.conf_get_string(char_ini, "bodyguard", "zone_grd", zone_grd, object, true)
+	st.zone_grd2 = utils.conf_get_string(char_ini, "bodyguard", "zone_grd2", zone_grd2, object, false)
+	st.block_unarmed = utils.conf_get_bool(char_ini, "bodyguard", "block_unarmed", block_unarmed, object, true)
+
+	if st.action ~= nil then
+		st.action.reset_scheme(st.action)
+	end
+	xr_motivator.checkStorage(object)
+end
+

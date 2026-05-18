@@ -1,0 +1,307 @@
+--[[------------------------------------------------------------------------------------------------------------------
+Управление вертолётом для Escape. Патрулирование, убийство новичков возле вагончика.
+Чугай Саша
+
+Сделать:
+	- убрать внешний скрипт. ВСЁ ПЕРЕДЕЛАТЬ
+--------------------------------------------------------------------------------------------------------------------]]
+
+local heli_mgr
+local actor, actor_dist
+local wounded_tip
+
+local state_before      = 0
+local state_wait_spawn  = 1
+local state_heli_fly    = 2
+local state_heli_attack = 3
+local state_after       = 4
+local state_stay        = 5
+
+local state_init
+
+-- нужно сохранять
+local state
+local wounded_id
+local newbies = {}
+local attack_end
+local actor_is_victim
+local actor_was_attacked
+
+local wounded_spawn_time
+local fly_away_time
+
+
+function get_actor()
+	while not db.actor do
+		wait()
+	end
+
+	return db.actor
+end
+
+function get_zone( name )
+	local o
+
+	o = db.zone_by_name[name]
+
+	while not o do
+		wait()
+		o = db.zone_by_name[name]
+	end
+
+	return o
+end
+
+function get_level_object_by_id( id )
+	local o
+
+	o = level.object_by_id( id )
+
+	while not o do
+		wait()
+		o = level.object_by_id( id )
+	end
+
+	return o
+end
+
+function get_level_object_by_sid( sid )
+	local sim = alife()
+
+	if sim then
+		local se_obj = sim:story_object( sid )
+		if se_obj then
+			return get_level_object_by_id( se_obj.id )
+		end
+	end
+
+	return nil
+end
+
+function chst( new_state )
+	state      = new_state
+	state_init = true
+end
+
+function update()
+	actor_dist = actor:position():distance_to_sqr( wounded_tip:position() )
+
+	-- вертолёт стоит в stay-point
+	if state == state_before then
+		if state_init then
+--			heli_mgr:set_path( "heli_path_tutorial" )
+			heli_mgr.not_die = true
+			heli_mgr.heliObject:TurnEngineSound( false )
+
+			-- запомнить ID новичков и тут же их спрятать
+--[[			wounded_id = get_level_object( "esc_vagon_wounded" ):id()
+			table.insert( newbies, get_level_object( "esc_vagon_newbie1" ):id() )
+			table.insert( newbies, get_level_object( "esc_vagon_newbie2" ):id() )
+
+			local sim = alife()
+			if sim then
+				sim:set_switch_online(  wounded_id, false )
+				sim:set_switch_offline( wounded_id, true )
+
+				sim:set_switch_online(  newbies[1], false )
+				sim:set_switch_offline( newbies[1], true )
+
+				sim:set_switch_online(  newbies[2], false )
+				sim:set_switch_offline( newbies[2], true )
+			end]]
+
+			state_init = false
+		end
+
+		if has_alife_info( "tutorial_artefact_gain" ) then
+			chst( state_wait_spawn )
+		end
+	end
+
+	-- ждём рождения новичков
+	if state == state_wait_spawn then
+		if state_init then
+--[[			local sim = alife()
+			if sim then
+				sim:set_switch_online(  newbies[1], true )
+				sim:set_switch_offline( newbies[1], false )
+
+				sim:set_switch_online(  newbies[2], true )
+				sim:set_switch_offline( newbies[2], false )
+			end]]
+
+			state_init = false
+		end
+
+--[[		if type( newbies[1] ) == "number" then
+			newbies[1] = level.debug_object( "esc_vagon_newbie1" ) or newbies[1]
+		end
+
+		if type( newbies[2] ) == "number" then
+			newbies[2] = level.debug_object( "esc_vagon_newbie2" ) or newbies[2]
+		end
+
+		if type( newbies[1] ) ~= "number" and type( newbies[2] ) ~= "number" then
+			chst( state_heli_fly )
+		end]]
+
+		if not newbies[1] then
+			newbies[1] = get_level_object_by_sid( 12 ) --"esc_vagon_newbie1"
+		end
+
+		if not newbies[2] then
+			newbies[2] = get_level_object_by_sid( 13 ) -- "esc_vagon_newbie2"
+		end
+
+		if newbies[1] and newbies[2] then
+			chst( state_heli_fly )
+		end
+	end	
+
+	-- вертолёт летит к новичкам
+	if state == state_heli_fly then
+		if state_init then
+			heli_mgr.heliObject:TurnEngineSound( true )
+
+			heli_mgr:set_enemy( newbies[1], 1000 )
+
+			-- до определённого расстояния не стрелять
+			heli_mgr.heliObject.m_use_rocket_on_attack = false
+			heli_mgr.heliObject.m_use_mgun_on_attack   = false
+
+			state_init = false
+		end
+
+		if heli_mgr.heli:position():distance_to_sqr( newbies[1]:position() ) <= 70 * 70 then
+			chst( state_heli_attack )
+		end
+	end
+
+	-- перестрелка с вертолётом
+	if state == state_heli_attack then
+		if state_init then
+			attack_end = game.CTime()
+			attack_end:setHMS( 0, 8, 0 )
+			attack_end:add( game.get_game_time() )
+			
+--			printf("_ch: 1 %s", attack_end:timeToString(game.CTime.TimeToMilisecs))
+
+			local snd = sound_object( [[characters_voice\human_01\scenario\helicopter\heli_attack]] )
+			snd:play_at_pos( newbies[1], newbies[1]:position() )
+
+			heli_mgr.heliObject.m_use_mgun_on_attack   = true
+			heli_mgr.heliObject.m_use_rocket_on_attack = true
+
+			actor:give_info_portion( "tutorial_heli_attack" )
+			
+			state_init = false
+		end
+
+		-- если актёр близко, то атаковать его
+--		if not actor_is_victim and actor_dist < 30*30 then
+--			table.insert( newbies, actor )
+--			actor_is_victim = true
+--		end
+
+		-- вертолёт атакует новичков
+		if not heli_mgr.enemy then
+			-- актёра атаковать только один раз
+			if newbies[1] and newbies[1]:id() == actor:id() then
+				if actor_was_attacked then
+					table.remove( newbies, 1 )
+				else
+					actor_was_attacked = true
+				end
+			end
+
+			heli_mgr:set_enemy( newbies[1], 3 )
+		else
+			if not heli_mgr.enemy:alive() then
+				table.remove( newbies, 1 )
+				heli_mgr:set_enemy( newbies[1], 3 )
+			end
+		end
+
+		-- если все умерли
+		if table.getn( newbies ) == 0 then
+--			printf("_ch: 2 %s", game.get_game_time:timeToString(game.CTime.TimeToMilisecs))
+			chst( state_after )
+		end
+
+		-- если прошло время
+--[[		if attack_end < game.get_game_time() and not actor_is_victim then
+			-- убить всех живых
+			for i, npc in pairs(newbies) do
+				npc:kill( heli_mgr.heli )
+			end
+
+			chst( state_after )
+		end]]
+	end
+
+	-- сцена закончена
+	if state == state_after then
+		if state_init then
+--			local sim = alife()
+--			if sim then
+--				sim:set_switch_online( wounded_id, true )
+--			end
+
+
+			-- отправить вертолёт патрулировать уровень
+			heli_mgr:set_path( "heli_path_patrol" )
+			heli_mgr.not_die = false
+
+			fly_away_time = game.CTime()
+			fly_away_time:setHMS( 0, 10, 0)
+			fly_away_time:add( game.get_game_time() )
+
+			wounded_spawn_time = time_global() + 2000
+
+			state_init = false
+		end
+
+		if wounded_spawn_time < time_global() and
+		   not has_alife_info( "tutorial_wounded_must_spawn" )
+		then
+			actor:give_info_portion( "tutorial_wounded_must_spawn" )
+		end
+
+		if game.get_game_time() > fly_away_time then
+			chst( state_stay )
+		end
+	end
+
+	if state == state_stay then
+		if state_init then
+			heli_mgr:send_to_stay_point()
+
+			state_init = false
+		end
+	end
+
+	-- рождение раненого
+	if ( state ~= state_before and actor_dist < 50*50 ) and
+	   not has_alife_info( "tutorial_wounded_must_spawn" )
+	then
+		actor:give_info_portion( "tutorial_wounded_must_spawn" )
+	end
+end
+
+function main()
+	actor       = get_actor()
+	wounded_tip = get_zone( "esc_vagon_dummy" )
+
+	heli_mgr = xr_heli.HeliManager()
+	heli_mgr:initialize( 14, nil, 30, 30 )
+
+	if not state then
+		chst( state_before )
+	end
+
+	while true do
+		update()
+		heli_mgr:update()
+		wait()
+	end
+end

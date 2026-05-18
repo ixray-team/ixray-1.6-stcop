@@ -1,0 +1,38 @@
+------------------------------------------------------------------------------------
+-- Agroprom Krot
+------------------------------------------------------------------------------------
+function sell_krot_flash(first_speaker, second_speaker)
+	first_speaker:transfer_item(first_speaker:object("krot_flash"), second_speaker)
+    second_speaker:transfer_money(2000, first_speaker)
+end
+
+function sell_krot_flash_to_friend(first_speaker, second_speaker)
+	first_speaker:transfer_item(first_speaker:object("krot_flash"), second_speaker)
+    second_speaker:transfer_money(1000, first_speaker)
+end
+
+function krot_give_flash(first_speaker, second_speaker)
+	first_speaker:transfer_item(first_speaker:object("krot_flash"), second_speaker)
+end
+
+function give_krot_reward (first_speaker, second_speaker)
+		dialogs.relocate_money(second_speaker, 3000, "in")
+end
+
+------------------------------------------------------------------------------------
+-- Talks about Ratcatcher
+------------------------------------------------------------------------------------
+
+function has_30_money(first_speaker, second_speaker)
+	return first_speaker:money() >= 30
+end
+
+
+function not_has_30_money(first_speaker, second_speaker)
+	return first_speaker:money() < 30
+end
+
+
+function give_30_money_to_stalker_for_info_about_ratcatcher(first_speaker, second_speaker)
+	first_speaker:transfer_money(30, second_speaker)
+end

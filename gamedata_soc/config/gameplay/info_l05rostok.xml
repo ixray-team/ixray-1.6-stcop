@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+
+<game_information_portions>
+    <info_portion id="rostok_heli_start">
+    </info_portion>
+
+    <info_portion id="rostok_heli_down">
+    </info_portion>
+</game_information_portions>

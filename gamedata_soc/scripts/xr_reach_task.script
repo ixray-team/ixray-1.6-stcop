@@ -1,0 +1,84 @@
+--[[----------------------------------------------------------------------------------------------------------
+Схема, ведущяя сталкера к месту его работы под smart terrain.
+Приводит сталкера к месту работы единожды. Дальше сталкер ходит под обычными схемами.
+Чугай Александр (chugai)
+------------------------------------------------------------------------------------------------------------]]
+
+-- свойство "дошёл ли сталкер к месту работы?"
+
+class "evaluator_reached_strn_job_location" ( property_evaluator )
+
+function evaluator_reached_strn_job_location:__init( name, glob_stor ) super ( nil, name )
+	self.gst = glob_stor
+end
+
+-- TODO а если точка внутри рестриктора? например kamp
+function evaluator_reached_strn_job_location:evaluate()
+	if self.gst.gulag and not self.gst.gulag:has_obj_reached_job_location( self.object:id() ) then
+		if self.object:level_vertex_id() == self.gst.gulag:obj_job_location( self.object:id() ) then
+			self.gst.gulag:beginJob( self.object:id() )
+			return true
+		else
+			return false
+		end
+	else
+		return true
+	end
+end
+
+--------------------------------------------------------------------------------------------------------------
+-- действие "довести сталкера к месту работы"
+
+class "action_reach_strn_job_location" ( action_base )
+
+function action_reach_strn_job_location:__init( name, glob_stor )  super ( nil, name )
+	self.gst = glob_stor
+end
+
+function action_reach_strn_job_location:initialize()
+	action_base.initialize( self )
+
+--	self.object:set_node_evaluator      ()
+--	self.object:set_path_evaluator      ()
+    self.object:set_desired_direction   ()
+	self.object:set_detail_path_type    ( move.line )
+	self.object:set_path_type           ( game_object.level_path )
+
+	state_mgr.set_state( self.object, "assault" )
+end
+
+function action_reach_strn_job_location:execute()
+	action_base.execute( self )
+
+	local v_id = self.gst.gulag:obj_job_location( self.object:id() )
+
+	if v_id then
+		self.object:set_dest_level_vertex_id( v_id )
+	end
+end
+
+function action_reach_strn_job_location:finalize()
+	action_base.finalize( self )
+end
+
+--------------------------------------------------------------------------------------------------------------
+
+function add_to_binder( npc )
+	local gst = db.storage[npc:id()]
+
+   	local manager = npc:motivation_action_manager()
+
+	manager:add_evaluator( xr_evaluators_id.reached_strn_job_location, evaluator_reached_strn_job_location( "reached_strn_job_location", gst ) )
+
+	local action = action_reach_strn_job_location( "reach_strn_job_location", gst )
+	action:add_precondition( world_property( stalker_ids.property_alive,                  true  ) )
+	action:add_precondition( world_property( stalker_ids.property_enemy,                  false ) )
+	action:add_precondition( world_property( stalker_ids.property_danger,                 false ) )
+	action:add_precondition( world_property( stalker_ids.property_anomaly,                false ) )
+	action:add_precondition( world_property( xr_evaluators_id.reached_strn_job_location,  false ) )
+	action:add_effect      ( world_property( xr_evaluators_id.reached_strn_job_location,  true  ) )
+	manager:add_action( xr_actions_id.reach_strn_job_location, action )
+
+	action = manager:action( xr_actions_id.alife )
+	action:add_precondition( world_property( xr_evaluators_id.reached_strn_job_location,  true  ) )
+end

@@ -1,0 +1,122 @@
+function normalize(val)
+	if val > 100 then
+		val = 100
+	elseif val < 1 then
+		val  = 1
+	end
+	
+	return val
+end
+
+
+function read_if_exist(ltx, section, value, default)
+	if ltx:line_exist(section,value) then
+		return ltx:r_float(section,value)
+	else
+		return default
+	end
+end
+
+function GetRPM(section)
+	local ltx = system_ini()
+	
+	local rpm = ltx:r_float(section,"rpm")
+	local mag_size = ltx:r_float(section,"ammo_mag_size")
+	
+	if rpm > 200 then
+		rpm = math.pow((rpm - 200)/720,2)*100 + 15
+	else
+		rpm = rpm/14
+	end
+	
+	if mag_size < 5	then
+		rpm = 30
+	end	  
+	
+	return normalize(rpm)
+end
+
+function GetDamage(section)
+	local ltx = system_ini()
+	local val = ltx:r_float(section,"hit_power")
+	
+
+--	if val < 1.36 then
+--		val = val*100-46
+--	else
+--		val = 90 + math.pow(val/2.3,2)*10
+--	end
+	
+	return normalize((100*val - 25) * (100/85) )	
+end
+
+function GetDamageMP(section)
+	local ltx = system_ini()
+	local val = ltx:r_float(section,"hit_power")
+		
+	if val < 1.05 then
+		val = val*100-30
+	else
+		val = 75 + math.pow(val/4,2)*25
+	end
+	
+	return normalize(val)	
+end
+
+function GetHandling(section)
+	local ltx = system_ini()
+	local val	
+	local control_inertion_factor
+	
+	if ltx:line_exist(section,"control_inertion_factor") then
+		control_inertion_factor = ltx:r_float(section,"control_inertion_factor")
+	else
+		control_inertion_factor = 1
+	end
+	
+	local PDM_disp_base 		= read_if_exist(ltx, section, "PDM_disp_base", 1) 	
+	local PDM_disp_vel_factor	= read_if_exist(ltx, section, "PDM_disp_vel_factor", 1) 
+	
+	if control_inertion_factor < 2 and PDM_disp_base < 1.5 then
+		val = (1 - math.pow(PDM_disp_vel_factor - 0.5, 2) + math.pow(2 - control_inertion_factor,2))*50	
+	else
+		val = 15 - (2*PDM_disp_base + control_inertion_factor)
+	end	
+	
+	return normalize(val) 
+end
+
+function GetAccuracy(section)
+	local ltx = system_ini()
+			
+	local fire_dispersion_base	= ltx:r_float(section,"fire_dispersion_base")
+	local cam_dispersion		= ltx:r_float(section,"cam_dispersion")
+	local cam_dispersion_inc 	= read_if_exist(ltx, section, "cam_dispertion_inc", 0) 	
+	local cam_dispersion_frac 	= read_if_exist(ltx, section, "cam_dispertion_frac", 1) 
+	local cam_step_angle_horz	= ltx:r_float(section,"cam_step_angle_horz")
+	local rpm 			= ltx:r_float(section,"rpm")
+	local ammo_list			= ltx:r_string(section,"ammo_class")
+	
+	local pos  = string.find(ammo_list,",",1)
+	local k_disp
+	if nil ~= pos then
+		local ammo = string.sub(ammo_list,1,pos - 1)
+		k_disp				= ltx:r_float(ammo, "k_disp");
+	else
+		k_disp				= ltx:r_float(ammo_list, "k_disp");
+	end
+	
+	if k_disp > 3.5 then	
+		k_disp = 0.3
+	end
+
+	local fir = math.log10(1/(fire_dispersion_base*k_disp))
+	local inc = math.log10(1/(cam_dispersion/10 + cam_dispersion_inc))
+	local dis = math.log10(1/(cam_dispersion*cam_step_angle_horz))
+	local fra = math.pow(cam_dispersion_frac,1.5)
+	
+	
+	val =  30*fir + 15*dis*fra + 0.02*rpm*inc*fra
+
+	return normalize(val)
+end

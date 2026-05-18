@@ -1,0 +1,25 @@
+function main ()
+    task_level2.main ()
+    -- теперь еще и Семенов затесался...
+    db.actor:give_info_portion ("yan_find_scientist_semenov_start")
+    db.actor:give_info_portion ("yan_kruglov_after_actor")
+    db.actor:give_info_portion ("yan_scientist_return_to_bunker")
+    db.actor:give_info_portion ("yan_find_scientist_done")
+    -- опять какой-то ученый... задрали
+    db.actor:give_info_portion ("yan_find_scientist_start")
+    db.actor:give_info_portion ("yan_kruglov_after_actor")
+    db.actor:give_info_portion ("yan_scientist_return_to_bunker")
+    db.actor:give_info_portion ("yan_find_scientist_done")
+    -- убиение мозга
+    db.actor:give_info_portion ("yan_kill_brain_task_start")
+    db.actor:give_info_portion ("yan_labx16_switcher_primary_off")
+    db.actor:give_info_portion ("yan_kill_brain_done")
+    -- труп Призрака
+    db.actor:give_info_portion ("yantar_vasilyev_info")
+    db.actor:give_info_portion ("labx16_find")
+    db.actor:give_info_portion ("yantar_find_ghost_task_end")
+    -- флешка Васильева
+    db.actor:give_info_portion ("yan_find_vasilyev_start")    
+    db.actor:give_info_portion ("yan_find_vasilyev_end")
+    
+end

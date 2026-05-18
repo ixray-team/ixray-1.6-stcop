@@ -1,0 +1,8 @@
+function main()
+	local t1 = {}
+	t1[1]    = 10
+	
+	local i = 0
+	i = table.getn(t1)
+	printf("i = %d", i)
+end

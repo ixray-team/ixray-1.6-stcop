@@ -1,0 +1,47 @@
+----------------------------------------------------------------------------------------------------
+-- Схема котроля за территорией
+----------------------------------------------------------------------------------------------------
+
+territory = {}
+
+class "danger_territory"
+function danger_territory:__init(obj, storage)
+	self.object = obj
+	self.st = storage
+end
+function danger_territory:update(delta)
+	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+		return
+	end	
+end
+function danger_territory:deactivate(delta)
+	sr_danger.territory[self.object:name()] = nil
+end
+
+---------------------------------------------------------------------------------------------------------------------
+function add_to_binder(obj, ini, scheme, section, storage)
+	local new_action = danger_territory(obj, storage)
+	xr_logic.subscribe_action_for_events(obj, storage, new_action)
+end
+
+function set_scheme(obj, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
+	sr_danger.territory[obj:name()] = true
+end
+
+-- Проверяет отсеивается ли денжер по настройкам зоны.
+-- Если возвращает true, то денжер отсеивается и его проверять не следует.
+function check_danger_position(position)
+	local key,value = 0,0
+	local t = 0
+	for key,value in pairs(sr_danger.territory) do
+		t = db.zone_by_name[key]
+		if t then
+			if t:inside(position) then
+				return true
+			end
+		end
+	end
+	return false
+end

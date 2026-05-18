@@ -1,0 +1,302 @@
+----------------------------------------------------------------------------------------------------
+-- Remark
+----------------------------------------------------------------------------------------------------
+-- Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
+-- Изменения: Didenko Ruslan.
+----------------------------------------------------------------------------------------------------
+
+local state_initial = 0
+local state_animation = 1
+local state_sound = 2
+local state_finish = 3
+
+local body_state_free = 0
+local body_state_danger = 1
+
+---------------------------------------------------------------------------------------------------------------------
+class "evaluator_need_remark" (property_evaluator)
+function evaluator_need_remark:__init(storage, name) super(nil, name)
+  	self.st = storage
+end
+function evaluator_need_remark:evaluate()
+  	return xr_logic.is_active(self.object, self.st)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+class "action_remark_activity" (action_base)
+function action_remark_activity:__init (npc_name, action_name, storage) super(nil, action_name)
+	self.st = storage
+end
+function action_remark_activity:initialize()
+	action_base.initialize(self)
+--	self.object:set_node_evaluator()
+--	self.object:set_path_evaluator()
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+	xr_sound.set_sound(self.object, nil)
+end
+function action_remark_activity:activate_scheme()
+    self.st.signals = {}
+    self.sound_end_signalled = false
+    self.action_end_signalled = false
+    self.anim_end_signalled = false
+
+	-- Определим нужно ли нам отыгрывать анимацию/поворачиваться на объект.
+	self.anim_scheduled = true
+	
+	-- Определим нужно ли нам отыгрывать отдельно звук после поворота.
+	if self.st.snd_anim_sync == false and
+	   self.st.snd ~= nil 
+	then
+		self.snd_scheduled = true
+	else
+		self.snd_scheduled = false
+	end
+
+	self.snd_started = false
+	
+	-- Задаем стартовое состояние
+	self.state = state_initial
+	self.tips_sound = nil
+end
+function action_remark_activity:get_target()
+	local look_tbl = {}
+
+	--' Если таргет не проинициализирован, то запускаем инициализатор.
+	if self.st.target_init == false then
+		self.st.target_position, self.st.target_id, self.st.target_init = initialize_gulag_target(self.object, self.st.target)
+		if st.target_init == false then
+			return nil
+		end
+	end
+
+    if self.st.target_actor == true then
+        look_tbl.look_object = db.actor
+    end
+
+    if self.st.target_id then
+        look_tbl.look_object = level.object_by_id(self.st.target_id)
+    end
+
+    if self.st.target_position then
+        look_tbl.look_position = self.st.target_position
+    end
+
+    return look_tbl
+end
+function action_remark_activity:turn_end_callback()
+	printf("TURN END CALLBACK CALLED")
+--	self.state = state_sound
+--	self:update()
+end
+function action_remark_activity:time_callback()
+	printf("TIME CALLBACK CALLED")
+	self.state = state_sound
+	self:update()
+end
+function action_remark_activity:update()
+	--' 1. Мы должны повернуться на объект.
+	--printf("REMARK: [%s] state[%s]", self.object:name(), self.state)
+	if self.state == state_initial then
+		local cb = { obj = self, func = self.time_callback, turn_end_func = self.turn_end_callback }
+		local synsound
+		if self.st.snd_anim_sync == true then
+			self.snd_started = true
+			synsound = self.st.snd
+		else
+			synsound = nil
+		end
+		local target = self:get_target()
+		if target == nil then
+			return
+		end
+		
+		state_mgr.set_state(self.object, self.st.anim, cb, 0, target, { animation = self.st.anim_reset }, synsound)			
+		self.state = state_animation
+		
+	--' Ожидание колбека от стейтменеджера
+	elseif self.state == state_animation then
+	
+	--' 2. Мы должны отыграть фразу.
+	elseif self.state == state_sound then
+		--' Должны выдать сигнал anim_end
+		if self.anim_end_signalled == false then
+			self.anim_end_signalled = true
+			self.st.signals["anim_end"] = true
+		end
+	
+		if self.snd_scheduled == true then
+			self.snd_started = true
+			xr_sound.set_sound_play(self.object, self.st.snd, 50)
+		end
+		--' Нужно выдать связанный типс.
+		if self.st.tips_id ~= nil then
+			self.tips_sound = news_manager.send_tip_nosound(db.actor, self.st.tips_id, self.st.sender)
+			if self.tips_sound ~= nil then
+				--' Играем звук забитый
+				self.tips_sound:play(db.actor, 0, sound_object.s2d)
+			end
+		end
+
+	
+		self.state = state_finish
+		
+	--' 3. Мы должны выдать сигнал об окончании действия
+	--' должны выдать сигнал action_end
+	--' должны выдать сигнал sound_end
+	elseif self.state == state_finish then
+		--' Проверить что звук уже запущен:
+		if self.snd_started == true then
+			if self.object:active_sound_count() ~= 0 then
+				self.snd_started = false
+			end
+		end
+	
+		if self.snd_started == false and self.object:active_sound_count() == 0 then
+			if self.sound_end_signalled == false then
+				self.st.signals["sound_end"] = true
+				self.sound_end_signalled = true
+			end
+		end
+
+		if self.sound_end_signalled == true and
+		   self.anim_end_signalled == true
+		then
+			if self.action_end_signalled == false then
+				self.st.signals["action_end"] = true
+				self.action_end_signalled = true
+			end
+		end
+	end
+	
+end
+function action_remark_activity:execute()
+	action_base.execute(self)
+
+	--' Try to switch to another scheme:
+	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+		return
+	end
+	self:update()
+end
+function action_remark_activity:finalize()
+	if self.tips_sound ~= nil then
+		self.tips_sound:stop()
+	end
+	action_base.finalize(self)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+--remark binder
+----------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+		printf("DEBUG: add_to_binder [%s]: scheme='%s', section='%s'", npc:name(), scheme, section)
+  		local operators	= {}
+	  	local properties  = {}
+		
+	   	local manager = npc:motivation_action_manager()
+
+		properties["event"]			= xr_evaluators_id.reaction
+	 	properties["need_remark"]	= xr_evaluators_id.zmey_remark_base + 1
+		
+	 	operators["action_remark"] = xr_actions_id.zmey_remark_base + 1
+
+	   	-- // evaluators
+		manager:add_evaluator(properties["need_remark"], this.evaluator_need_remark(storage, "remark_need_remark"))
+
+		local new_action = this.action_remark_activity(npc, "action_remark_activity", storage)
+		new_action:add_precondition(world_property(stalker_ids.property_alive, true))
+		new_action:add_precondition(world_property(stalker_ids.property_danger,false))
+		new_action:add_precondition(world_property(stalker_ids.property_enemy, false))
+		new_action:add_precondition(world_property(stalker_ids.property_anomaly,false))
+		new_action:add_precondition(world_property(properties["need_remark"], true))
+		xr_motivator.addCommonPrecondition(new_action)
+	   	new_action:add_effect(world_property(properties["need_remark"], false))
+		manager:add_action(operators["action_remark"], new_action)
+
+		-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+		xr_logic.subscribe_action_for_events(npc, storage, new_action)
+
+	  	new_action = manager:action(xr_actions_id.alife)
+	  	new_action:add_precondition(world_property(properties["need_remark"], false))
+end
+
+
+function parse_target(target)
+    local pos = string.find(target, ",")
+    if pos then
+        return string.sub(target, 1, pos - 1), string.sub(target, pos + 1)
+    else
+        return target, nil
+    end
+end
+function initialize_gulag_target(npc, target)
+    local gulag = xr_gulag.get_npc_gulag(npc)
+    local param1, param2 = parse_target(target)
+	-- Возможные варианты:
+	-- Передана работа в гулаге чувака
+	-- Передана работа и идентификатор гулага
+	-- Передан патрульный путь и номер вейпоинта.
+	-- На выход нужно дать: либо target_id либо target_position
+	
+	-- Если вторым параметром передано число, то это однозначно патрульный путь.
+	local wp_id = tonumber(param2)
+	if wp_id then
+		return patrol(param1):point(wp_id), nil, true
+	end
+    if param2 then
+        gulag = xr_gulag.get_gulag_by_name(param2)
+    end
+    if gulag then
+        return nil, gulag:idNPCOnJob(param1), true
+    end
+    
+    return nil, nil, false
+end
+
+
+-- Включение схемы
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	printf("DEBUG: set_scheme: scheme='%s', section='%s'", scheme, section)
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	printf("DEBUG: set_scheme: storage assigned")
+
+	st.logic     = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+
+	st.snd_anim_sync = utils.cfg_get_bool(ini, section, "snd_anim_sync", npc, false)
+	
+	st.snd			= utils.cfg_get_string(ini, section, "snd", npc, false, "", nil)
+	st.anim			= utils.cfg_get_string(ini, section, "anim", npc, false, "", "wait")
+	st.tips_id		= utils.cfg_get_string(ini, section, "tips", npc, false, "")
+	if st.tips_id then
+		st.sender	= utils.cfg_get_string(ini, section, "tips_sender", npc, false, "")
+	end
+		
+	if st.anim == "idle" then
+		abort("remark <abort>: object '%s', xr_remark.set_scheme: anim field cannot be [idle]", npc:name())
+	end
+
+	st.anim_reset = utils.cfg_get_bool(ini, section, "anim_reset", npc, false, true)
+	
+	st.target = utils.cfg_get_string          (ini, section,   "target",          npc, false, "", "nil")
+	st.target_id = nil
+	st.target_position = nil
+    if st.target and st.target ~= "nil" then
+	    if st.target == "actor" then
+		    st.target_actor = true
+		    st.target_init = true
+	    else
+			st.target_actor = false
+	        local sid = tonumber(st.target)
+	        if sid then
+		        st.target_id = id_by_sid(sid)
+		        if not st.target_id then
+		            abort("remark <error>: Wrong story id [%s] for [%s] in section [%s].", st.target, npc:name(), section)
+		        end
+		        st.target_init = true
+            else
+				st.target_position, st.target_id, st.target_init = initialize_gulag_target(npc, st.target)
+            end
+	    end
+    end    	
+end

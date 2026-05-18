@@ -1,0 +1,92 @@
+local active = false
+local enemy
+
+function activate()
+	active = true
+end
+
+function deactivate()
+	active = false
+end
+
+function set_enemy( obj )
+	enemy = obj
+end
+
+function onHeliEvent(p)
+		local str = p:r_stringZ()
+      printf(str)
+end
+
+function main()
+--	local heli = get_level_object( "heli" )
+	local heli = get_level_object( "helicopter" )
+   heli:AddEventCallback(1,onHeliEvent)
+
+	while true do
+		active = true
+		while not active do
+			wait()
+		end
+
+--		heli:heli_go_by_patrol_path( "way_raid_heli" )
+		heli:heli_go_by_patrol_path( "heli_way_1" )
+		wait( 1000 ) -- чтобы update сработал у вертолёта
+
+		local t = heli:heli_last_point_time() * 1000
+
+		printf( "[raid_heli] BEGIN PATROL" )
+
+		while active and not enemy and time_global() < t do
+			wait()
+		end
+
+		printf( "[raid_heli] PATROL IS FINISHED OR INTERRUPTED" )
+
+		if enemy then
+			printf( "[raid_heli] AIR ATTACK!" )
+			heli:air_attack( enemy )
+			wait( 1000 )
+			while heli:air_attack_active() and active do
+				wait()
+			end
+			printf( "[raid_heli] FIN AIR ATTACK!" )
+			enemy = nil
+		end
+	end
+
+--	enemy = get_actor()
+--[[
+	while active do
+		heli:heli_go_to_point( path:point( pnt + 1 ), path:point( pnt ), 0 )
+		wait( 200 ) -- чтобы update сработал у вертолёта
+
+		local t = heli:heli_last_point_time() * 1000
+		if not start then
+			t = t - 1000
+			start = false
+		end
+
+		printf( "%d -> %d", pnt, pnt + 1 )
+
+		while t > time_global() and active and not enemy do
+			wait()
+		end
+
+		if enemy then
+			printf( "AIR ATTACK!" )
+			heli:air_attack( enemy )
+			wait( 1000 )
+			while heli:air_attack_active() and active do
+				wait()
+			end
+			printf( "FIN AIR ATTACK!" )
+			enemy = nil
+		else
+			pnt = pnt + 2
+			if pnt >= path:count() then
+				pnt = 0
+			end
+		end
+	end]]
+end

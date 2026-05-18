@@ -1,0 +1,397 @@
+--[[------------------------------------------------------------------------------------------------
+Helicopter movement
+Чугай Александр
+
+Сделать:
+	- летать зацикленно
+--------------------------------------------------------------------------------------------------]]
+
+local default_wait_time = 5000
+
+local dummy_vector = vector()
+
+local state_move = 0
+local state_look = 1
+
+local default_velocity = utils.cfg_get_number( system_ini(), "helicopter", "velocity", nil, true )
+
+----------------------------------------------------------------------------------------------------
+class "heli_move"
+
+function heli_move:__init( obj, storage )
+	self.object     = obj
+	self.heliObject = obj:get_helicopter()
+	self.a          = storage
+	self.combat_mgr = db.storage[obj:id()].combat
+end
+
+function heli_move:reset_scheme( loading )
+	printf("heli_move: reset_scheme: %s", self.object:name())
+
+	self.a.signals = {}
+
+	self.heliObject:TurnEngineSound( self.a.engine_sound )
+
+	self.patrol_move = patrol(self.a.path_move)
+	if not self.patrol_move then
+		abort("object '%s': unable to find path_move '%s' on the map",
+			self.object:name(), self.a.path_move)
+	end
+
+	if self.a.path_look then
+		self.patrol_look = patrol(self.a.path_look)
+		if not self.patrol_look then
+			abort("object '%s': unable to find path_look '%s' on the map",
+				self.object:name(), self.a.path_look)
+		end
+	else
+		self.patrol_look = nil
+	end
+
+	if self.a.path_move_info == nil then
+		self.a.path_move_info = utils.path_parse_waypoints(self.a.path_move)
+		self.path_move_info = self.a.path_move_info
+	end
+
+	if self.a.path_look_info == nil then
+		self.a.path_look_info = utils.path_parse_waypoints(self.a.path_look)
+		self.path_look_info = self.a.path_look_info
+	end
+
+	self.default_velocity = self.a.default_velocity
+
+	if loading then
+		self.state            = xr_logic.pstor_retrieve( self.object, "st"  )
+		self.last_index       = xr_logic.pstor_retrieve( self.object, "li"  ) or nil
+		self.next_index       = xr_logic.pstor_retrieve( self.object, "ni"  ) or nil
+		self.look_index       = xr_logic.pstor_retrieve( self.object, "lki" ) or nil
+		self.look_finish_time = xr_logic.pstor_retrieve( self.object, "lft" ) or nil
+		self.look_duration    = xr_logic.pstor_retrieve( self.object, "ld"  ) or nil
+		self.was_callback     = xr_logic.pstor_retrieve( self.object, "wc"  )
+
+		if self.look_finish_time then
+			self.look_finish_time = self.look_finish_time + time_global()
+		end
+	else
+		self.heliObject:ClearEnemy()
+
+		self.heliObject:SetMaxVelocity( self.default_velocity )
+
+		self.state            = nil
+		self.last_index       = nil
+		self.next_index       = nil
+		self.look_index       = nil
+		self.look_finish_time = nil
+		self.look_duration    = nil
+		self.was_callback     = false
+
+		self:update_movement_state()
+	end
+end
+
+function heli_move:save()
+	local lft = self.look_finish_time and ( self.look_finish_time - time_global() )
+
+	xr_logic.pstor_store( self.object, "st",  self.state )
+	xr_logic.pstor_store( self.object, "li",  self.last_index       or false )
+	xr_logic.pstor_store( self.object, "ni",  self.next_index       or false )
+	xr_logic.pstor_store( self.object, "lki", self.look_index       or false )
+	xr_logic.pstor_store( self.object, "lft", lft                   or false )
+	xr_logic.pstor_store( self.object, "ld",  self.look_duration    or false )
+	xr_logic.pstor_store( self.object, "wc",  self.was_callback )
+end
+
+function heli_move:update( delta )
+--	if self.object:name() == "heli_" and not self.combat_mgr:is_there_enemy() then
+--		local o = level_object_by_sid( 302 )
+--		self.combat_mgr.enemy_id = o and o:id()
+--	end
+
+	if xr_logic.try_switch_to_another_section( self.object, self.a, db.actor ) then
+		return
+	end
+
+	if self.combat_mgr:update() then
+		return
+	end
+
+	if self.was_callback then
+		if self.look_index then
+			self:update_look_state()
+		else
+			self:update_movement_state()
+		end
+
+		self.was_callback = false
+	end
+
+	if self.state == state_look then
+		if self.look_finish_time < time_global() then
+			self:update_movement_state()
+		end
+	end
+end
+
+function heli_move:waypoint_callback( obj, action_type, index )
+	if self.combat_mgr:waypoint_callback() then
+		return
+	end
+
+	if index == self.last_index then
+		return
+	end
+
+	printf("heli_move:waypoint_callback(): name=%s, index=%d", self.object:name(), index)
+
+	if index ~= -1 then
+		self.last_index = index
+	else
+		self.last_index = self.next_index
+	end
+
+	self.was_callback = true
+end
+
+-- поиск точки для смотрения по флажкам
+function heli_move:search_look_waypoint( index )
+	if not self.patrol_look then
+		return nil
+	end
+
+	local search_for = self.path_move_info[index].flags
+	if search_for:get() == 0 then
+		return nil
+	end
+
+	local pt_chosen_idx = move_mgr.choose_look_point( self.patrol_look, self.path_look_info, search_for ) -- индекс выбранной точки
+
+	if pt_chosen_idx then
+		return pt_chosen_idx
+	else
+		abort("object '%s': path_move '%s', index %d: cannot find corresponding point(s) on path_look '%s'",
+			self.object:name(), self.path_move, index, self.path_look)
+	end
+end
+
+function heli_move:waypoint_param_num( path_info, idx, field, default )
+	local v
+	local wpnt = path_info[idx]
+
+	if wpnt then
+		v = wpnt[field]
+	end
+
+	return ( v and tonumber( v ) ) or default
+end
+
+function heli_move:waypoint_param( path_info, idx, field, default )
+	local v
+	local wpnt = path_info[idx]
+
+	if wpnt then
+		v = wpnt[field]
+	end
+
+	return v or default
+end
+
+function heli_move:check_signals()
+	local sig  = self:waypoint_param( self.path_move_info, self.last_index, "sig" )
+	if sig then
+		printf( "heli_move: check_signals: sig=%s", sig )
+		self.a.signals[sig] = true
+	end
+end
+
+function heli_move:check_health_flags()
+	local flame = self:waypoint_param( self.path_move_info, self.last_index, "flame" )
+	local die   = self:waypoint_param( self.path_move_info, self.last_index, "die" )
+
+	if flame then
+		bind_heli.heli_start_flame( self.object )
+	end
+
+	if die then
+		bind_heli.heli_die( self.object )
+	end
+end
+
+-- просмотреть флажки следующующей точки пути и продолжить движение соответствующим образом
+function heli_move:update_movement_state()
+	self.state = state_move
+
+	if not self.last_index then
+		self.next_index = 0
+	else
+		self.next_index = self.last_index + 1
+
+		if self.next_index >= self.patrol_move:count() then
+			self.next_index = 0
+		end
+	end
+
+	self:check_signals()
+
+	self:check_health_flags()
+
+	self.look_index = self:search_look_waypoint( self.next_index )
+
+	if self.look_index then
+		self:prepare_look()
+	else
+		self:prepare_move()
+	end
+end
+
+-- подготовить обычный полёт к следующей точке
+function heli_move:prepare_move()
+	if self.heliObject:GetState() ~= CHelicopter.eMovPatrolPath or self.next_index == 0 then
+		printf( "heli_move: starting patrol '%s' from point %d", self.a.path_move, self.next_index )
+--		self.object:info_clear()
+--		self.object:info_add( tostring( "next point: " .. self.next_index ) )
+
+		self.heliObject:SetMaxVelocity     ( self:waypoint_param_num( self.path_move_info, self.last_index, "v",  self.default_velocity ) )
+		self.heliObject:SetSpeedInDestPoint( self:waypoint_param_num( self.path_move_info, self.next_index, "dv", self.default_velocity ) )
+
+		self.heliObject:GoPatrolByPatrolPath( self.a.path_move, self.next_index )
+	end
+
+	-- смотреть вперёд
+	self.heliObject:LookAtPoint( dummy_vector, false )
+
+	-- атаковать выбранную точку уже на подлёте, если задано "e" в следующей точке path_move
+	self:process_attack_params( self.path_move_info, self.next_index )
+end
+
+-- подготовить полёт к следующей точке с учётом того, что в ней мы будем смотреть в точку из path_look
+function heli_move:prepare_look()
+	printf( "heli_move: going to look in the next point %d", self.next_index )
+
+	self.look_duration = self:waypoint_param_num( self.path_look_info, self.look_index, "t" )
+
+	-- если нужно задержаться в следующей точке, то отправить в точку (destspeed=0), иначе отправить по пути (destspeed="dv")
+	if self.look_duration then
+		printf( "heli_move: sent to position" )
+
+		self.heliObject:SetSpeedInDestPoint( 0 )
+		self.heliObject:SetDestPosition( self.patrol_move:point( self.next_index ) )
+	else
+		printf( "heli_move: sent to patrol path" )
+
+		self.heliObject:SetSpeedInDestPoint( self:waypoint_param_num( self.path_move_info, self.next_index, "dv", self.default_velocity ) )
+		self.heliObject:GoPatrolByPatrolPath( self.a.path_move, self.next_index )
+	end
+
+	self.heliObject:LookAtPoint( self.patrol_look:point( self.look_index ), true )
+
+	-- атаковать выбранную точку уже на подлёте, если задано "e" в следующей точке path_move
+	self:process_attack_params( self.path_move_info, self.next_index )
+
+	printf( "heli_move: dest speed = %d", self.heliObject:GetSpeedInDestPoint( 0 ) )
+end
+
+-- мы на точке, в которой прописано смотрение в другую точку
+function heli_move:update_look_state()
+	printf( "heli_move: start looking" )
+
+	self.state = state_look
+
+	-- если хотели задержаться, то посчитать время окончания задержки, иначе оно уже наступило
+	if self.look_duration then
+		self.look_finish_time = self.look_duration + time_global()
+
+		self:process_attack_params( self.path_look_info, self.look_index )
+	else
+		self.look_finish_time = 0
+	end
+end
+
+-- установка врага (цели) или сброс.
+-- вызывается на каждой вершине пути
+function heli_move:process_attack_params( path_info, index )
+	local wpns = self:waypoint_param( path_info, index, "w" )
+
+	self.heliObject.m_use_mgun_on_attack   = wpns == nil or wpns == "1"
+	self.heliObject.m_use_rocket_on_attack = wpns == nil or wpns == "2"
+
+	self.heliObject.m_max_mgun_dist = 1000
+
+	--printf( "mgun=%s rockets=%s", tostring(self.heliObject.m_use_mgun_on_attack), tostring(self.heliObject.m_use_rocket_on_attack ))
+
+	local target = self:waypoint_param( path_info, index, "e" )
+
+	if target == nil then
+		printf( "heli_move: not attacking" )
+		self.heliObject:ClearEnemy()
+
+		return
+	end
+
+	if self.a.rocket_delay then
+		printf( "set rocket delay = %d", self.a.rocket_delay )
+		self.heliObject.m_time_between_rocket_attack = self.a.rocket_delay
+	end
+
+	if target == "true" then
+		if self.look_index then
+			printf( "heli_move: attacking point!" )
+		else
+			abort( "heli_move: you specified 'e' in path_mave, but didn't set any flags!" )
+		end
+
+		self.heliObject:SetEnemy( self.patrol_look:point( self.look_index ) )
+
+	elseif target == "actor" or target == "a" then
+		printf( "heli_move: attacking the actor!" )
+
+		if db.actor then
+			self.heliObject:LookAtPoint( db.actor:position(), true )
+			self.heliObject:SetEnemy( db.actor )
+		else
+			self.heliObject:ClearEnemy()
+		end
+	else
+		printf( "heli_move: attacking object sid=%s", target )
+
+		local obj = level_object_by_sid( tonumber( target ) )
+
+		if obj then
+			self.heliObject:SetEnemy( obj )
+		else
+			self.heliObject:ClearEnemy()
+		end
+	end
+end
+
+---------------------------------------------------------------------------------------------------------------------
+
+function add_to_binder( npc, ini, scheme, section, storage )
+	printf( "DEBUG: add_to_binder: npc:name()='%s', scheme='%s', section='%s'", npc:name(), scheme, section )
+
+	local new_action = heli_move( npc, storage )
+
+	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	xr_logic.subscribe_action_for_events( npc, storage, new_action )
+end
+
+function set_scheme( npc, ini, scheme, section )
+	local a = xr_logic.assign_storage_and_bind( npc, ini, scheme, section )
+
+	a.logic = xr_logic.cfg_get_switch_conditions( ini, section, npc )
+
+	a.path_move        = utils.cfg_get_string( ini, section, "path_move",        npc, true,  ""   )
+	a.path_look        = utils.cfg_get_string( ini, section, "path_look",        npc, false, ""   )
+	a.engine_sound     = utils.cfg_get_bool  ( ini, section, "engine_sound",     npc, false, true )
+	a.rocket_delay     = utils.cfg_get_number( ini, section, "rocket_delay",     npc, false, nil  )
+	a.default_velocity = utils.cfg_get_number( ini, section, "default_velocity", npc, false, default_velocity )
+
+	a.path_move_info = nil -- Будут инициализированы в reset(), сейчас пути могут быть еще
+	a.path_look_info = nil -- не загружены.
+
+	local st = db.storage[npc:id()]
+	st.combat:read_custom_data( ini, section )
+
+	st.invulnerable = utils.cfg_get_bool( ini, section, "invulnerable", npc, false, false )
+	st.immortal     = utils.cfg_get_bool( ini, section, "immortal",     npc, false, false )
+	st.mute         = utils.cfg_get_bool( ini, section, "mute",         npc, false, false )
+end

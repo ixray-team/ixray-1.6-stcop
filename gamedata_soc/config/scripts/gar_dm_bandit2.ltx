@@ -1,0 +1,54 @@
+[logic]
+active = walker1
+on_death = death
+on_combat = combat
+on_hit = hit
+
+[death]
+on_info = %+gar_dm_bandit2_dead =gar_dm_bandits_fight%
+
+[combat]
+on_info = %=disable_combat_handler =gar_dm_bandits_fight%
+
+[hit]
+on_info = %=gar_dm_bandits_fight%
+
+[walker1]
+path_walk = bandit2_walk
+path_look = bandit2_look
+on_info = {+gar_dm_novice_asked_for_help -gar_dm_bandit_warned_plr =gar_dm_nearest_bandit} remark1 %+gar_dm_bandit_warned_plr%
+on_info2 = {+gar_dm_novice_dead} nil, {+gar_dm_bandit2_warn_plr -gar_dm_bandit2_warned_plr =gar_dm_2nd_nearest_bandit} remark2 %+gar_dm_bandit2_warned_plr%
+on_info3 = {+gar_dm_bandit2_demand} remark@demand %-gar_dm_bandit2_demand%
+reactions = ignore
+danger = danger_condition
+
+[remark@demand]
+no_move = true
+no_rotate = true
+snd = gar_dm_bandit_demand
+anim = claim
+on_signal = sound_end | walker1 %+gar_dm_newbie_no_money%
+on_info = {+gar_dm_novice_asked_for_help -gar_dm_bandit_warned_plr =gar_dm_nearest_bandit} remark1 %+gar_dm_bandit_warned_plr%
+on_info2 = {+gar_dm_novice_dead} nil, {+gar_dm_bandit2_warn_plr -gar_dm_bandit2_warned_plr =gar_dm_2nd_nearest_bandit} remark2 %+gar_dm_bandit2_warned_plr%
+reactions = ignore
+danger = danger_condition
+
+[remark1]
+no_move = true
+snd = gar_dm_bandit_backoff1
+anim = backoff
+on_signal = sound_end | %+gar_dm_bandit2_warn_plr%
+on_info = {+gar_dm_novice_dead} nil
+reactions = ignore
+danger = danger_condition
+
+[remark2]
+no_move = true
+snd = gar_dm_bandit_backoff2
+anim = backoff2
+on_info = {+gar_dm_novice_dead} nil
+reactions = ignore
+danger = danger_condition
+
+[danger_condition]
+ignore_distance = 5

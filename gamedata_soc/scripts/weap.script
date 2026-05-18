@@ -1,0 +1,65 @@
+function main()
+	local level = level.name()
+    	local spawn_items = {	"wpn_pm",
+				"wpn_pb",
+				"wpn_fort",
+				"wpn_walther",
+				"wpn_sig220",
+				"wpn_colt1911",
+				"wpn_usp",
+				"wpn_desert_eagle",
+				"wpn_bm16",			
+				"wpn_wincheaster1300",
+				"wpn_spas12",
+				"wpn_ak74u",
+				"wpn_mp5",
+				"wpn_ak74",
+				"wpn_abakan",
+				"wpn_l85",
+				"wpn_lr300",
+				"wpn_sig550",			
+				"wpn_groza",
+				"wpn_val",
+				"wpn_vintorez",
+				"wpn_svu",
+				"wpn_svd",
+				"wpn_rg-6",
+				"wpn_rpg7",
+				"wpn_gauss",
+				"wpn_addon_scope",
+				"wpn_addon_scope_susat",
+				"wpn_addon_silencer",
+				"wpn_addon_grenade_launcher",
+				"wpn_addon_grenade_launcher_m203",
+				"bandit_outfit",
+				"killer_outfit",
+				"monolit_outfit",
+				"soldier_outfit",
+				"specops_outfit",			
+				"military_outfit",			
+				"stalker_outfit",			
+				"scientific_outfit",		
+				"exo_outfit",
+				"svoboda_light_outfit",	
+				"svoboda_heavy_outfit",	
+				"dolg_outfit",	
+				"dolg_scientific_outfit",	
+				"ecolog_outfit",			
+				"protection_outfit"	
+			    }
+	for i = 1,30 do
+		table.insert(spawn_items, "grenade_f1")
+		table.insert(spawn_items, "grenade_rgd5")
+	end
+	
+	
+		local k,v = 0,0
+	for k,v in pairs(spawn_items) do
+		alife():create(v,	
+						db.actor:position(),
+						db.actor:level_vertex_id(),	
+						db.actor:game_vertex_id(), 
+						db.actor:id())
+	end	
+	 db.actor:activate_slot(3)
+end

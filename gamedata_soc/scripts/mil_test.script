@@ -1,0 +1,209 @@
+-----------------------------------------------------------------------------------
+-- Test Definitions
+-----------------------------------------------------------------------------------
+local object_list		= {}
+local smart_terrains	= {}
+
+-- 1
+object_list["test1"] = {
+    "mil_stalker0012",
+    "mil_dolg_stalker0002",
+    "mil_dolg_stalker0006",
+    "mil_dolg_stalker0004",
+    "mil_dolg_stalker0003",
+    "mil_dolg_stalker0000",
+    "mil_dolg_stalker0007",
+    "mil_dolg_stalker0005",
+    "mil_freedom_member0016",
+    "mil_freedom_member0004",
+    "mil_freedom_member0006",
+    "mil_freedom_member0022",
+    "mil_freedom_member0023",
+    "mil_freedom_stalker0004",
+    "mil_freedom_stalker0010",
+    "mil_freedom_member0018",
+    "mil_freedom_member0002",
+    "mil_freedom_member0015",
+    "mil_freedom_member0005",
+    "mil_freedom_member0017",
+    "mil_freedom_member0019",
+    "mil_freedom_member0011",
+    "mil_freedom_member0012",
+    "mil_freedom_member0014",
+    "mil_freedom_stalker0026",
+    "mil_freedom_member0021",
+    "mil_freedom_member0009",
+    "mil_freedom_member0008",
+    "mil_freedom_member0010",
+    "mil_freedom_member0007",
+    "mil_freedom_member0013",
+    "mil_freedom_member0020",
+    "mil_freedom_member0003",
+    "mil_patrol_stalker0013",
+    "mil_patrol_stalker0014",
+    "mil_patrol_stalker_0000",
+    "mil_ara_guard2",
+    "mil_ara",
+    "mil_ara_guard1",
+    "mil_ara_guard3",
+    "mil_freedom_member0001",
+    "mil_m_boar_e0003",
+    "mil_m_boar_e0006",
+    "mil_m_flesh_e0005",
+    "mil_m_flesh_e_0000",
+    "mil_m_zombie_e0009",
+    "mil_m_zombie_e0010",
+    "mil_m_zombie_e0011",
+    "mil_m_zombie_e0012",
+    "mil_m_zombie_e0013",
+    "mil_m_zombie_e0014",
+    "mil_m_zombie_e0016",
+    "mil_m_zombie_e0018",
+    "mil_m_zombie_e0019",
+    "mil_m_zombie_e0022",
+    "mil_m_zombie_e_0000",
+    "mil_stalker_0001",
+    "mil_stalker_0002",
+    "mil_dolg_stalker0001",
+    "mil_freedom_member0024",
+    "mil_freedom_member0026",
+    "mil_blockpost_freedomstalker001",
+    "mil_blockpost_freedomstalker002",
+    "mil_blockpost_freedomstalker003",
+    "mil_blockpost_freedomstalker006",
+    "mil_blockpost_freedomstalker004",
+    "mil_blockpost_freedomstalker005",
+    "mil_blockpost_freedomstalker007",
+    "mil_blockpost_neutralstalker004",
+    "mil_blockpost_neutralstalker003",
+    "mil_blockpost_neutralstalker001",
+    "mil_blockpost_neutralstalker002",
+    "mil_blockpost_neutralstalker005",
+    "mil_freedom_member0025",
+    "mil_m_bloodsucker_e",
+    "mil_m_bloodsucker_e_0000",
+    "mil_m_chimera_e",
+    "mil_m_chimera_e_0000",
+    "mil_m_snork_e",
+    "mil_m_chimera_e_0001",
+    "mil_m_bloodsucker_e_0001",
+    "mil_m_chimera_e_0002",
+    "mil_m_chimera_e_0003",
+    "mil_m_boar_e_0001",
+    "mil_m_boar_e_0002",
+    "mil_m_boar_e_0003",
+    "mil_m_boar_e_0004",
+    "mil_m_boar_e_0008",
+    "mil_m_boar_e_0009",
+    "mil_stalker_monolith",
+    "mil_stalker_monolith_0000",
+    "mil_stalker_monolith_0006",
+    "mil_stalker_monolith_0007",
+    "mil_stalker_monolith_0008",
+    "mil_stalker_monolith_0011",
+    "mil_stalker_monolith_0012",
+    "mil_stalker_monolith_0013",
+    "mil_m_boar_e_0000",
+    "mil_m_boar_e_0005",
+    "mil_m_chimera_e_0004",
+    "mil_m_chimera_e_0005",
+    "mil_m_chimera_e_0006",
+    "mil_m_chimera_e_0007",
+    "mil_m_chimera_e_0008",
+    "mil_m_chimera_e_0009",
+    "mil_flesh_strong",
+    "mil_flesh_strong_0000",
+    "mil_flesh_strong_0001",
+    "mil_flesh_strong_0002",
+    "mil_flesh_strong_0003",
+    "mil_dog_strong",
+    "mil_dog_strong_0000",
+    "mil_dog_strong_0001",
+    "mil_dog_strong_0002",
+    "mil_dog_strong_0003",
+    "mil_dog_strong_0004",
+    "mil_stalker",
+    "mil_stalker_0000",
+    "mil_pseudodog_strong",
+    "mil_pseudodog_strong_0000",
+    "mil_pseudodog_strong_0001",
+    "mil_pseudodog_strong_0002",
+    "mil_pseudodog_strong_0003",
+    "mil_pseudodog_strong_0004",
+    "mil_flesh_strong_0004",
+    "mil_flesh_strong_0005",
+    "mil_flesh_strong_0006",
+    "mil_boar_strong",
+    "mil_boar_strong_0000",
+    "mil_boar_strong_0001",
+    "mil_stalker_monolith_0001",
+    "mil_zombie_normal",
+    "mil_zombie_normal_0000",
+    "mil_zombie_normal_0001"
+}
+                                     
+
+-- define smart terrains
+smart_terrains["test1"] = {
+   "mil_freedom", "mil_fblockpost", "mil_fneutral" 
+}
+
+-- Controller Test
+object_list["test2"] = {
+    "mil_m_controller_e"
+}
+
+
+object_list["test3"] = {
+	"mil_bloodsucker_mil_0000",
+	"mil_bloodsucker_mil_0001",
+	"mil_bloodsucker_mil_0002",
+	"mil_bloodsucker_mil_0003",
+	"mil_bloodsucker_mil_0004",
+	"mil_bloodsucker_mil_0005",
+	"mil_bloodsucker_mil_0006",
+	"mil_bloodsucker_mil_0007"
+}
+
+object_list["test4"] = {
+    "mil_bloodsucker_mil"
+}
+
+object_list["test5"] = {
+    "mil_stalker0023",
+    "mil_stalker0024",
+    "mil_stalker0025"
+--	"mil_bloodsucker_mil_0008"
+}
+
+------------------------------------------------------------------------------
+-- Base Run function (load extern)
+------------------------------------------------------------------------------
+function r(index)
+
+    if (index == 2) then
+       db.actor:give_info_portion ("mil_controller_ready") 
+    end
+
+    if (index == 5) then
+       	db.actor:give_info_portion ("mil_hunt_ready") 
+    end
+
+	if (index == 100) then
+		db.actor:give_info_portion ("mil_village_bloodsucker1")
+	end
+	
+	--test_utils.setup_test(object_list, smart_terrains)
+	--test_utils.run_test(index)
+end
+
+------------------------------------------------------------------------------
+-- Main function (called on level load)
+------------------------------------------------------------------------------
+function main()
+	test_utils.setup_test(object_list, smart_terrains)
+	test_utils.run_global()
+end
+
+
+

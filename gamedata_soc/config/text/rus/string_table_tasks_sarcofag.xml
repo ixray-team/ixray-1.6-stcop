@@ -1,0 +1,48 @@
+	<string id="sar_monolith">
+		<text>Исполнитель желаний</text>
+	</string>
+	<string id="sar_monolith_0">
+		<text>Прийти к Монолиту</text>
+	</string>
+	<string id="sar_monolith_1">
+		<text>Проникнуть в саркофаг</text>
+	</string>
+	<string id="sar_monolith_2">
+		<text>Найти исполнитель желаний</text>
+	</string>
+	<string id="sar_monolith_destroy">
+		<text>Загадка Монолита</text>
+	</string>
+	<string id="sar_monolith_destroy_0">
+		<text>Проникнуть в секретную лабораторию</text>
+	</string>
+	<string id="sar_monolith_destroy_1">
+		<text>Разгадать загадку Монолита</text>
+	</string>
+	<string id="sar_monolith_destroy_2">
+		<text>Уничтожить генераторы питания Монолита</text>
+	</string>
+	<string id="sar_perception">
+		<text>Загадка Зоны</text>
+	</string>
+	<string id="sar_perception_1">
+		<text>Встретится с теми, кто стоял за Монолитом</text>
+	</string>
+	<string id="sar_perception_2">
+		<text>Найти секретную лабораторию и встретить "кукловодов"</text>
+	</string>
+	<string id="sar_secret_lab">
+		<text>Секретная лаборатория</text>
+	</string>
+	<string id="sar_secret_lab_0">
+		<text>Попасть в секретный бункер</text>
+	</string>
+	<string id="sar_secret_lab_1">
+		<text>Найти тайную дверь</text>
+	</string>
+	<string id="sar_secret_lab_2">
+		<text>Открыть ее с помощью декодера</text>
+	</string>
+	<string id="sar_secret_lab_3">
+		<text>Разведать, что находится за дверью</text>
+	</string>

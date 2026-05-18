@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding="UTF-8"?>
+
+<!-- Интерфейс перетаскивания элементов из машины и трупа нам в инвентарь -->
+
+<window x="0" y="0" w="640" h="480" r="227" g="121" b="222" texture="1">
+
+	<!-- ICONS OF CHARACTERS -->	
+	<static_icon x="27" y="22" width="256" height="256">
+		<texture>ui\ui_trade_character</texture>
+	</static_icon>
+	<static_icon x="818" y="22"  width="143" height="199">
+		<texture mirror="h" width="141" height="199">ui\ui_trade_character</texture>
+	</static_icon>
+
+	<!-- OUR BAG -->
+	<frame_window x="20" y="270" width="290" height="450">
+		<texture>ui_frame</texture>
+		<base_texture>ui\ui_frame</base_texture>
+		<left_top_texture x="15" y="20">ui\ui_inv_list_over_lt</left_top_texture>
+		<left_bottom_texture x="19" y="155">ui\ui_frame_over_lb</left_bottom_texture>
+	</frame_window>
+
+	<dragdrop_list x="20" y="20" width="240" height="450"
+			cell_width = "40" cell_height="40"
+			rows_num="18" cols_num="6" rows_num_view="10" unlimited="1"></dragdrop_list>
+
+
+	<!-- OTHERS BAG -->
+	<frame_window x="705" y="270" width="290" height="450">
+		<texture>ui_frame</texture>
+		<base_texture>ui\ui_frame</base_texture>
+		<left_top_texture x="15" y="20">ui\ui_inv_list_over_lt</left_top_texture>
+		<left_bottom_texture x="19" y="155">ui\ui_frame_over_lb</left_bottom_texture>
+	</frame_window>
+
+	<dragdrop_list x="20" y="24" width="240" height="400"
+			cell_width = "40" cell_height="40"
+			rows_num="18" cols_num="6" rows_num_view="10" unlimited="1"></dragdrop_list>
+
+	<!-- DESCRIPTION WINDOW -->
+	<frame_window x="375" y="274" width="267" height="500">
+		<texture>ui_frame</texture>
+		<base_texture>ui\ui_frame</base_texture>
+		<left_top_texture x="5" y="10">ui\ui_inv_info_over_lt</left_top_texture>
+		<title x="0" y="0" width="240" height="60"><text font="header" r="255" g="255" b="255">Description</text></title>
+	</frame_window>
+
+
+</window>
+

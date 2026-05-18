@@ -1,0 +1,716 @@
+
+--'--------------------------------------------------------------------------
+--' AGROPROM
+--'--------------------------------------------------------------------------
+
+local t = {}
+
+function load_job( sj, gname, type, squad, groups )
+
+
+	if type == "agr_road_patrol1" then
+		for i = 1, 5 do
+			t = { section = "logic@agr_road_patrol1"..i,
+				idle = 0,
+				prior = 5, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = "agr_patrol_1_space_restrictor"
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	if type == "agr_road_patrol2" then
+		for i = 1, 2 do
+			t = { section = "logic@agr_road_patrol2"..i,
+				idle = 0,
+				prior = 5, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	------------------ НИИ Агропром. База военных ------------------------------------------
+	-- состояния: 0-день, 1-ночь, 2-пересменка, 3-тревога
+	if type == "agr_nii" then
+
+		-- командир
+		t = { section = "logic@agr_nii_day_commander",
+			idle = 0, position_threshold = 150, 
+			prior = 9, state = {0},
+			predicate = function(obj_info)
+			            	return obj_info.name == "agr_nii_commander"
+			            end,
+			in_rest = "", out_rest = "agr_nii_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_night_commander",
+			idle = 0, position_threshold = 150, 
+			prior = 9, state = {1,2},
+			predicate = function(obj_info)
+			            	return obj_info.name == "agr_nii_commander"
+			            end,
+			in_rest = "", out_rest = "agr_nii_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_night_commander",
+			idle = 0, position_threshold = 150, 
+			prior = 1, state = {1,2},
+			in_rest = "", out_rest = "agr_nii_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_alarm_commander",
+			idle = 0, position_threshold = 150, 
+			prior = 9, state = {3},
+			predicate = function(obj_info)
+			            	return obj_info.name == "agr_nii_commander"
+			            end,
+			in_rest = "", out_rest = "agr_nii_sr_building"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_alarm_commander",
+			idle = 0, position_threshold = 150, 
+			prior = 1, state = {3},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		-- пост на северных воротах
+		t = { section = "logic@agr_nii_north_gate_walker1",
+			idle = 0, position_threshold = 150, 
+			prior = 5, state = {0,1,2,3},
+			in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_north_gate_walker2",
+			idle = 0, position_threshold = 150, 
+			prior = 5, state = {0,1,2,3},
+			in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_north_gate_walker3",
+			idle = 0, position_threshold = 150, 
+			prior = 5, state = {0,1,2,3},
+			in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
+		}
+		table.insert(sj, t)
+		-- пост на восточных воротах
+		t = { section = "logic@agr_nii_east_gate_walker1",
+			idle = 0, position_threshold = 150, 
+			prior = 5, state = {0,1,2,3},
+			in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_east_gate_walker2",
+			idle = 0, position_threshold = 150, 
+			prior = 5, state = {0,1,2,3},
+			in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
+		}
+		table.insert(sj, t)
+		-- 1-й этаж основного здания
+		t = { section = "logic@agr_nii_floor1_day_walker1",
+			idle = 0, position_threshold = 150, 
+			prior = 3, state = {0},
+			in_rest = "", out_rest = "agr_nii_sr_building"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_floor1_alarm_walker1",
+			idle = 0, position_threshold = 150, 
+			prior = 3, state = {3},
+			in_rest = "", out_rest = "agr_nii_sr_building"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_floor1_day_walker2",
+			idle = 0, position_threshold = 150, 
+			prior = 3, state = {0,1,3},
+			in_rest = "", out_rest = "agr_nii_sr_building"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_floor1_alarm_walker2",
+			idle = 0, position_threshold = 150, 
+			prior = 3, state = {3},
+			in_rest = "", out_rest = "agr_nii_sr_building"
+		}
+        table.insert(sj, t)
+		-- 2-й этаж основного здания
+		t = { section = "logic@agr_nii_floor2_day_walker1",
+			idle = 0, position_threshold = 150, 
+			prior = 3, state = {0},
+			in_rest = "", out_rest = "agr_nii_sr_building"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_floor2_alarm_walker1",
+			idle = 0, position_threshold = 150, 
+			prior = 3, state = {3},
+			in_rest = "", out_rest = "agr_nii_sr_building"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_floor2_day_walker2",
+			idle = 0, position_threshold = 150, 
+			prior = 3, state = {0,3},
+			in_rest = "", out_rest = "agr_nii_sr_building"
+		}
+		table.insert(sj, t)
+		-- 3-й этаж основного здания
+		t = { section = "logic@agr_nii_floor3_walker1",
+			idle = 0, position_threshold = 150, 
+			prior = 4, state = {0,1,3},
+			in_rest = "", out_rest = "agr_nii_3_floor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_floor3_walker2",
+			idle = 0, position_threshold = 150, 
+			prior = 4, state = {0,1,3},
+			in_rest = "", out_rest = "agr_nii_3_floor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_floor3_walker3",
+			idle = 0, position_threshold = 150, 
+			prior = 4, state = {0,1},
+			in_rest = "", out_rest = "agr_nii_3_floor"
+		}
+		table.insert(sj, t)
+		-- дневные патрули
+		t = { section = "logic@agr_nii_day_patrol_walker1",
+			idle = 0, position_threshold = 150, 
+			prior = 2, state = {0},
+			in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_day_patrol_walker2",
+			idle = 0, position_threshold = 150, 
+			prior = 2, state = {0},
+			in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_day_patrol_walker3",
+			idle = 0, position_threshold = 150, 
+			prior = 2, state = {0},
+			in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_day_patrol_walker4",
+			idle = 0, position_threshold = 150, 
+			prior = 2, state = {0},
+			in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_nii_day_patrol_walker5",
+			idle = 0, position_threshold = 150, 
+			prior = 2, state = {0},
+			in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
+		}
+		table.insert(sj, t)
+		-- патрули в тревоге
+		for i = 1, 5 do
+			t = { section = "logic@agr_nii_alarm_patrol_walker"..i,
+				idle = 0, position_threshold = 150, 
+				prior = 4, state = {3},
+				in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
+			}
+			table.insert(sj, t)
+		end
+		-- дневные отдыхающие
+		for i = 1, 2 do
+			t = { section = "logic@agr_nii_rest_walker"..i,
+				idle = 0, position_threshold = 150, 
+				prior = 0, state = {0},
+				in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
+			}
+			table.insert(sj, t)
+		end
+		-- ночные отдыхающие
+		for i = 1, 11 do
+			t = { section = "logic@agr_nii_sleeper"..i,
+				idle = 0, position_threshold = 150, 
+				prior = 0, state = {1,2},
+				in_rest = "agr_nii_sr_building", out_rest = "agr_nii_space_restrictor"
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	------------------ Солдаты атакующие группу Крота ------------------------------------------
+	if type == "agr_factory_assault" then
+		-- идут к обороняющимся
+		t = { section = "logic@agr_factory_assault_walker1",
+			idle = 0, position_threshold = 150, 
+			prior = 0, state = {0},
+			squad = squad, group = groups[1],
+			predicate = function(obj_info)
+			            	return obj_info.name == "agr_factory_assault_soldier1"
+			            end,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_factory_assault_walker2",
+			idle = 0, position_threshold = 150, 
+			prior = 0, state = {0},
+			squad = squad, group = groups[1],
+			predicate = function(obj_info)
+			            	return obj_info.name == "agr_factory_assault_soldier2"
+			            end,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_factory_assault_walker3",
+			idle = 0, position_threshold = 150, 
+			prior = 0, state = {0},
+			squad = squad, group = groups[1],
+			predicate = function(obj_info)
+			            	return obj_info.name == "agr_factory_assault_soldier3"
+			            end,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_factory_assault_walker4",
+			idle = 0, position_threshold = 150, 
+			prior = 0, state = {0},
+			squad = squad, group = groups[1],
+			predicate = function(obj_info)
+			            	return obj_info.name == "agr_factory_assault_soldier4"
+			            end,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_factory_assault_walker5",
+			idle = 0, position_threshold = 150, 
+			prior = 0, state = {0},
+			squad = squad, group = groups[1],
+			predicate = function(obj_info)
+			            	return obj_info.name == "agr_factory_assault_soldier5"
+			            end,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_factory_assault_walker6",
+			idle = 0, position_threshold = 150, 
+			prior = 0, state = {0},
+			squad = squad, group = groups[1],
+			predicate = function(obj_info)
+			            	return obj_info.name == "agr_factory_assault_soldier6"
+			            end,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_factory_assault_walker7",
+			idle = 0, position_threshold = 150, 
+			prior = 0, state = {0},
+			squad = squad, group = groups[1],
+			predicate = function(obj_info)
+			            	return obj_info.name == "agr_factory_assault_soldier7"
+			            end,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@agr_factory_assault_walker8",
+			idle = 0, position_threshold = 150, 
+			prior = 0, state = {0},
+			squad = squad, group = groups[1],
+			predicate = function(obj_info)
+			            	return obj_info.name == "agr_factory_assault_soldier8"
+			            end,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		-- сражаются на улице
+		for i = 1, 8 do
+			t = { section = "logic@agr_factory_assault_skirmish_walker"..i,
+				idle = 0, position_threshold = 150, 
+				prior = 0, state = {1},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = "agr_factory_skirmish"
+			}
+			table.insert(sj, t)
+		end
+		-- идут к Кроту
+		for i = 1, 8 do
+			t = { section = "logic@agr_factory_assault_bld_walker"..i,
+				idle = 0, position_threshold = 150, 
+				prior = 0, state = {2},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = "agr_factory_hold_restrictor"
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	------------------ Сталкеры из группы Крота ------------------------------------------
+	if type == "agr_factory_defence" then
+		-- ждут военных
+		for i = 1, 6 do
+			t = { section = "logic@agr_factory_defence_walker"..i,
+				idle = 0, position_threshold = 150, 
+				prior = 0, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = "agr_factory_skirmish_defence"
+			}
+			table.insert(sj, t)
+		end
+		-- отстреливаются от военных
+		for i = 1, 6 do
+			t = { section = "logic@agr_factory_defence_skirmish_walker"..i,
+				idle = 0, position_threshold = 150, 
+				prior = 0, state = {1},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = "agr_factory_skirmish_defence"
+			}
+			table.insert(sj, t)
+		end
+		-- бегут помогать Кроту
+		for i = 1, 9 do
+			t = { section = "logic@agr_factory_defence_krot_walker"..i,
+				idle = 0, position_threshold = 150, 
+				prior = 0, state = {2},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+		-- бегут по путям к колодцу и стоят там
+		for i = 1, 9 do
+			t = { section = "logic@agr_factory_defence_to_well_walker"..i,
+				idle = 0, position_threshold = 150, 
+				prior = 0, state = {3},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+
+------ Сталкеры ждут начала атаки ---------------------------------------------------------------
+        for i = 1, 3 do
+			t = { section = "logic@agr_factory_defence_waiting_stalker"..i,
+				idle = 0, position_threshold = 150, 
+				prior = 0, state = {0,1},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+	------------------ Солдаты удерживают Крота ------------------------------------------
+	if type == "agr_factory_hold" then
+		-- стреляют по точкам
+		for i = 1, 3 do
+			t = { section = "logic@agr_factory_hold_fake_walker"..i,
+				idle = 0, position_threshold = 150, 
+				prior = 0, state = {0},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = "agr_factory_hold_restrictor"
+			}
+			table.insert(sj, t)
+		end
+		-- срываются в универсальный бой под рестриктором
+		for i = 1, 3 do
+			t = { section = "logic@agr_factory_hold_walker"..i,
+				idle = 0, position_threshold = 150, 
+				prior = 0, state = {1},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = "agr_factory_hold_restrictor"
+			}
+			table.insert(sj, t)
+		end
+		-- Убили Крота. Ходят по путям без рестрикторов
+		for i = 1, 3 do
+			t = { section = "logic@agr_factory_hold_walker"..i,
+				idle = 0, position_threshold = 150, 
+				prior = 0, state = {2},
+				squad = squad, group = groups[1],
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+		end
+	end
+
+end
+
+function load_states( gname, type )
+	if type == "agr_nii" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+
+			local be
+			local alarm = false
+
+			if has_alife_info( "agr_nii_sniper_alarm" ) then
+				alarm = true
+			else
+				for k, v in pairs(gulag.Object) do
+					if v ~= true and v:best_enemy() ~= nil and v:best_enemy():id() == actor:id() then
+						alarm = true
+						break
+					end
+				end
+			end
+
+			if alarm then
+				actor:give_info_portion( "agr_nii_alarm" )
+				return 3
+			else
+				actor:disable_info_portion( "agr_nii_alarm" )
+			end
+
+			if level.get_time_hours() >= 6 and level.get_time_hours() < 21 then
+				return 0  -- день
+			elseif level.get_time_hours() >= 23 then
+				return 2  -- ночь c пересменкой
+			else
+				return 1  -- ночь
+			end
+		end
+	end
+
+	if type == "agr_factory_assault" then
+		return function( gulag )
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+
+			if gulag.state == 0 then
+				if has_alife_info( "agr_factory_assault_skirmish" ) then
+					return 1
+				else
+					return 0
+				end
+			elseif gulag.state == 1 then
+				if xr_gulag.getGulagPopulation( "agr_factory_defence" ) == 0 then
+					if not has_alife_info( "agr_help_stalkers_done" ) then
+						actor:give_info_portion( "agr_help_stalkers_done" )
+						actor:give_info_portion( "agr_help_stalkers_defence_dead" )	
+					end
+				end
+
+				if has_alife_info( "agr_krot_skirmish_start" ) and
+				   has_alife_info( "agr_help_stalkers_done" ) or
+				   xr_conditions.gulag_empty(nil, nil, {"agr_factory_defence"})
+				then
+					--actor:give_info_portion( "agr_krot_skirmish_start" )	
+					return 2
+				else
+					return 1
+				end
+			else
+				return 2
+			end
+		end
+	end
+
+	if type == "agr_factory_defence" then
+		return function( gulag )
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+
+			if gulag.state == 0 then
+--				for k, v in pairs(gulag.Object) do
+--					if v:best_enemy() then
+--						return 1
+--					end
+--				end
+--				return 0
+
+				if has_alife_info( "agr_factory_assault_skirmish" ) then
+					return 1
+				else
+					return 0
+				end
+
+			elseif gulag.state == 1 then
+				if xr_conditions.gulag_population_active( actor, nil, {"agr_factory_assault"} ) > 0 then
+					return 1
+				else
+					actor:give_info_portion( "agr_help_stalkers_done" )
+					actor:give_info_portion( "agr_help_stalkers_assault_dead" )
+					return 2
+				end
+			else
+				if has_alife_info( "agr_krot_go_to_well" ) then
+					return 3
+				else
+					return 2
+				end
+			end
+		end
+	end
+
+	if type == "agr_factory_hold" then
+		return function( gulag )
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+
+			if gulag.state == 0 then
+				if has_alife_info( "agr_krot_dead" ) then
+					return 2
+				elseif has_alife_info( "agr_krot_skirmish_start" ) then
+					-- раздать всем хиты, чтоб не ходили спокойно
+					local h     = hit()
+					h.power     = 0.01
+					h.direction = vector():set( 1, 0, 0 )
+					h.draftsman = actor
+					h.impulse   = 1
+					h.type      = hit.wound
+
+					for k, v in pairs(gulag.Object) do
+						if v ~= true then
+							v:hit( h )
+						end
+					end
+
+					return 1
+				else
+					return 0
+				end
+			elseif gulag.state == 1 then
+				if has_alife_info( "agr_krot_dead" ) then
+					return 2
+				else
+					return 1
+				end
+			else
+				return 2
+			end
+		end
+	end
+
+
+
+	if type == "agr_road_patrol1" then
+		return function( gulag )
+				return 0			
+		end
+	end
+
+	if type == "agr_road_patrol2" then
+		return function( gulag )
+				return 0			
+		end
+	end
+	return nil
+end
+
+--------------------------------------------------------------------------
+-- Dynamic ltx
+--------------------------------------------------------------------------
+function load_ltx(gname, type)
+	if type == "agr_road_patrol1" then
+		return load_ltx_agr_road_patrol1(gname, type)
+	end
+	if type == "agr_road_patrol2" then
+		return load_ltx_agr_road_patrol2(gname, type)
+	end
+	return nil
+end
+
+function load_ltx_agr_road_patrol1(gname, type)
+    local i, res = 0, ""
+	for i = 1, 2 do
+	res = res .. "[logic@" .. gname .. i .. "]\n" ..
+					"active = walker1@" .. gname .. i .. "\n" ..
+					"info=info@about_rats\n" ..
+
+					"[walker1@" .. gname .. i .. "]\n" ..
+					"team=aaa\n" ..
+					"path_walk = walk_1_" .. i .. "\n" ..
+					"path_look = look_1_" .. i .. "\n" ..
+					"danger=danger_condition@" .. gname .. "\n" ..
+					"on_signal=end_1_"..i.."|walker2@" .. gname .. i .. "\n" ..
+
+					"[walker2@" .. gname .. i .. "]\n" ..
+					"team=bbb\n" ..
+					"path_walk = walk_2_" .. i .. "\n" ..
+					"path_look = look_2_" .. i .. "\n" ..
+					"danger=danger_condition@" .. gname .. "\n" ..
+					"on_signal=end_2_"..i.."|walker1@" .. gname .. i .. "\n" 
+
+	end
+	for i = 3, 4 do
+	res = res .. "[logic@" .. gname .. i .. "]\n" ..
+					"active = walker@" .. gname .. i .. "\n" ..
+					"info=info@about_rats\n" ..
+
+					"[walker@" .. gname ..  i .. "]\n" ..
+					"path_walk = zastava2_stand" .. i .. "\n" ..
+					"path_look = zastava2_way_look_hide\n" ..
+					"danger=danger_condition@" .. gname .. "\n" 
+	end
+	for i = 5, 5 do
+	res = res .. "[logic@" .. gname .. i .. "]\n" ..
+					"active = walker@" .. gname .. i .. "\n" ..
+					"info=info@about_rats\n" ..
+
+					"[walker@" .. gname ..  i .. "]\n" ..
+					"path_walk = zastava2_stand" .. i .. "\n" ..
+					"path_look = zastava2_way_look\n" ..
+					"danger=danger_condition@" .. gname .. "\n" 
+	end
+
+	res = res ..	"[danger_condition@" .. gname .. "]\n" ..
+					"danger_expiration_time = 6000\n" ..
+					"danger_inertion_time =  9000\n" ..
+					"[info@about_rats]\n" ..
+					"in = agr_pda_soldiers_rats\n"
+
+	return res
+end
+
+function load_ltx_agr_road_patrol2(gname, type)
+    local i, res = 0, ""
+	for i = 1, 2 do
+	res = res .. "[logic@" .. gname .. i .. "]\n" ..
+					"active = walker1@" .. gname .. i .. "\n" ..
+					"info=info@about_rats\n" ..
+
+					"[walker1@" .. gname .. i .. "]\n" ..
+					"team=aa\n" ..
+					"path_walk = walk" .. i .. "_1\n" ..
+					"path_look = look" .. i .. "_1\n" ..
+					"danger=danger_condition@" .. gname .. "\n" ..
+					"on_signal=end"..i.."_1|walker2@" .. gname .. i .. "\n" ..
+
+					"[walker2@" .. gname .. i .. "]\n" ..
+					"team=bb\n" ..
+					"path_walk = walk" .. i .. "_2\n" ..
+					"path_look = look" .. i .. "_2\n" ..
+					"danger=danger_condition@" .. gname .. "\n" ..
+					"on_signal=end"..i.."_2|walker1@" .. gname .. i .. "\n" 
+	end
+
+	res = res ..	"[danger_condition@" .. gname .. "]\n" ..
+					"danger_expiration_time = 6000\n" ..
+					"danger_inertion_time =  9000\n" ..
+					"[info@about_rats]\n" ..
+					"in = agr_pda_soldiers_rats\n"
+
+	return res
+end
+
+
+function checkStalker( npc_community, gulag_type )
+	if gulag_type == "agr_nii" or 
+			gulag_type == "agr_factory_assault" or 
+			gulag_type == "agr_road_patrol1" or 
+			gulag_type == "agr_road_patrol2" or 
+			gulag_type == "agr_factory_hold" then
+		return npc_community == "military"
+	end
+
+	if gulag_type == "agr_factory_defence" then
+		return npc_community == "stalker"
+	end
+
+	return false
+end
+
+function checkMonster( npc_community, gulag_type )
+	return false
+end

@@ -1,0 +1,23 @@
+function main()
+
+	local dog    = get_level_object( "m_dog1" )
+	local corpse = get_level_object( "corpse" )
+
+    dog:script( true, this.script_name() )
+    wait( 2000 )
+
+    action( dog, move(move.walk_fwd, corpse), cond(cond.move_end) )
+    action( dog, anim(anim.turn, 0), look( look.point, corpse:position()), cond( cond.time_end, 10000))
+
+    while(dog:action()) do
+    	if( dog:get_corpse() ) then
+        	printf( "corpse is" )
+        else
+        	printf( "corpse nil" )
+        end
+
+        wait()
+    end
+
+    dog:script( false, this.script_name() )
+end

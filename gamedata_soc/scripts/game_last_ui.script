@@ -1,0 +1,84 @@
+class "ui_game_LastStanding" (UIGame_custom_script)
+
+function ui_game_LastStanding:__init() super()
+	printf		("ui_game_LastStanding::ui_game_LastStanding() called!")
+   self.m_frag_list        = CUIWindow()
+   self.m_players_list  = CUIWindow()
+
+   self.m_life_total_caption = "life_total"
+   self:AddCustomMessage(self.m_life_total_caption, 0, -0.90, 0.03, GetFontDI(), CGameFont.alCenter, GetARGB(255,255,0,0),"")
+
+   self.m_todo_caption = "todo"
+   self:AddCustomMessage(self.m_todo_caption, 0, 0.9, 0.02, GetFontDI(), CGameFont.alCenter, GetARGB(255,0,255,0),"")
+
+end
+
+function ui_game_LastStanding:__finalize()
+	printf		("ui_game_LastStanding::~ui_game_LastStanding() called!")
+   self.m_players_list:DetachAll()
+   self.m_frag_list:DetachAll()
+
+end
+
+
+function ui_game_LastStanding:Init()
+   
+   local frag_list         = CUIDMFragList()
+   local players_list   = CUIDMPlayerList()
+   frag_list:SetAutoDelete(true)
+   players_list:SetAutoDelete(true)
+
+   local ScreenW = device().width
+   local ScreenH = device().height
+   local R = frag_list:GetFrameRect()
+   local FrameW = R.right - R.left
+   local FrameH = R.bottom - R.top
+   frag_list:SetWndRect( (ScreenW-FrameW)/2, (ScreenH - FrameH)/2, FrameW, FrameH )
+   self.m_frag_list:AttachChild(frag_list)
+
+   R = players_list:GetFrameRect()
+   FrameW = R.right - R.left
+   FrameH = R.bottom - R.top
+   players_list:SetWndRect( (ScreenW-FrameW)/2, (ScreenH - FrameH)/2, FrameW, FrameH )
+   self.m_players_list:AttachChild(players_list)
+
+   
+end
+
+function ui_game_LastStanding:SetClGame(cl_game)
+   UIGame_custom_script.SetClGame(self, cl_game)
+   self.m_cl_game = cl_game
+end
+
+function ui_game_LastStanding:IR_OnKeyboardPress(key)
+   local r = UIGame_custom_script.IR_OnKeyboardPress(self, key)
+
+   return r
+end
+
+
+function ui_game_LastStanding:ShowFragList	(bShow)
+
+	if(bShow==true) then
+		self:AddDialogToRender(self.m_frag_list)
+	else
+		self:RemoveDialogToRender(self.m_frag_list);
+   end
+end
+
+function ui_game_LastStanding:ShowPlayersList			(bShow)
+
+	if(bShow==true) then
+		self:AddDialogToRender(self.m_players_list)
+	else
+		self:RemoveDialogToRender(self.m_players_list)
+   end
+end
+
+function ui_game_LastStanding:SetLifeCaption(str)
+   		self:CustomMessageOut(self.m_life_total_caption, str, GetARGB(255,255,0,0))
+end
+
+function ui_game_LastStanding:SetTodoCaption(str)
+   		self:CustomMessageOut(self.m_todo_caption, str, GetARGB(255,0,255,0))
+end

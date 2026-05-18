@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="windows-1251" standalone="yes" ?>
+<string_table>
+    <string id="dolg_kvest1_0">
+        <text>Сталкер, ты именно тот, кто нам нужен.</text>
+    </string>
+    <string id="dolg_kvest1_01">
+        <text>О чем это ты?</text>
+    </string>
+    <string id="dolg_kvest1_02">
+        <text>У тебя есть замечательная возможность послужить делу Долга, а Долг хорошо платит за услуги оказанные ему. Ты заинтересован?</text>
+    </string>
+    <string id="dolg_kvest1_03">
+        <text>Почему вы сами не решите эту проблему?</text>
+    </string>
+    <string id="dolg_kvest1_031">
+        <text>У нас нет подходящего снайперского оружия, а мы не идиоты лезть на открытую местность. А ты сможешь подойти намного ближе.</text>
+    </string>
+    <string id="dolg_kvest1_032">
+        <text>Я подумаю.</text>
+    </string>
+    <string id="dolg_kvest1_04">
+        <text>Да, сколько?</text>
+    </string>
+    <string id="dolg_kvest1_05">
+        <text>Люблю деловой подход. Твоя задача состоит в том чтобы убрать двух снайперов с вышек. Как только ты закончишь - мы атакуем. Платим 3000.</text>
+    </string>
+    <string id="dolg_kvest1_06">
+        <text>Хорошо.</text>
+    </string>
+    <string id="mil_dolg_done_svoboda_quest_0">
+        <text>опачки, вот он твой рг6</text>
+    </string>
+    <string id="mil_dolg_done_svoboda_quest_1">
+        <text>на тебе тортик.</text>
+    </string>
+    <string id="mil_dolg_get_svoboda_quest_0">
+        <text>Хочу помоь, чо могу сделать?</text>
+    </string>
+    <string id="mil_dolg_get_svoboda_quest_1">
+        <text>Да, сопри РГ6</text>
+    </string>
+    <string id="mil_dolg_get_svoboda_quest_11">
+        <text>да</text>
+    </string>
+    <string id="mil_dolg_get_svoboda_quest_12">
+        <text>нет</text>
+    </string>
+    <string id="mil_dolg_get_svoboda_quest_2">
+        <text>Нет. сами справимся</text>
+    </string>
+    <string id="mil_dolg_get_svoboda_quest_3">
+        <text>Ты ничего пока нет.</text>
+    </string>
+    <string id="mil_dolg_start_dialog_11">
+        <text>Ты мне нужен</text>
+    </string>
+    <string id="mil_dolg_start_dialog_21">
+        <text>Ты знаешь чо делать</text>
+    </string>
+    <string id="mil_dolg_start_dialog_31">
+        <text>Спасибо что помого, чем могу служить?</text>
+    </string>
+</string_table>

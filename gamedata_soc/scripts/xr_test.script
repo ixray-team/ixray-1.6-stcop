@@ -1,0 +1,137 @@
+----------------------------------------------------------------------------------------------------
+-- Walkers который не реагирует на врагов
+----------------------------------------------------------------------------------------------------
+-- Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
+----------------------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------------------------------------
+class "evaluator_need_test" (property_evaluator)
+
+function evaluator_need_test:__init(storage) super()
+    self.st = storage
+end
+
+function evaluator_need_test:evaluate()
+    return xr_logic.is_active(self.object, self.st)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+class "action_test_activity" (action_base)
+
+function action_test_activity:__init (npc_name, action_name, storage) super(nil, action_name)
+  self.st = storage
+  self.move_mgr = move_mgr.move_mgr(storage.npc)
+  self.was_reset  = false
+end
+
+function action_test_activity:initialize()
+  --printf("_bp: action_test_activity: initialize")
+  action_base.initialize(self)
+  self.object:set_node_evaluator()
+  self.object:set_path_evaluator()
+  self.object:set_desired_position()
+  self.object:set_desired_direction()
+
+  self.move_mgr:initialize()
+
+  --printf("initiz")
+  self.initialized = true
+
+  self:reset_scheme()
+end
+
+
+function action_test_activity:reset_scheme()
+  --printf("reset_scheme, initialized=%s", utils.to_str(self.initialized))
+  if not self.initialized then
+    return
+  end
+
+  self.object:clear_animations()
+
+  if self.st.path_walk_info == nil then
+    self.st.path_walk_info = utils.path_parse_waypoints(self.st.path_walk)
+  end
+  if self.st.path_look_info == nil then
+    self.st.path_look_info = utils.path_parse_waypoints(self.st.path_look)
+  end
+
+  self.move_mgr:reset(self.st.path_walk, self.st.path_walk_info, self.st.path_look, self.st.path_look_info, self.st.team)
+end
+
+function action_test_activity:execute()
+  action_base.execute(self)
+  self.move_mgr:update()
+
+  if self.move_mgr:arrived_to_first_waypoint() then
+    local actor = level.actor()
+    if actor then
+      if xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
+        return
+      end
+    end
+  end
+end
+
+function action_test_activity:finalize()
+  self.move_mgr:finalize()
+  self.object:clear_animations()
+  action_base.finalize(self)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+--test binder
+----------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+    printf("________________________________________bind_stalker test")
+	printf("DEBUG: add_to_binder: scheme='%s', section='%s'", scheme, section)
+      local operators  = {}
+      local properties  = {}
+
+       local manager = npc:motivation_action_manager()
+
+    properties["event"] = xr_evaluators_id.reaction
+     properties["need_test"] = xr_evaluators_id.zmey_test_base + 1
+
+     operators["action_test"] = xr_actions_id.zmey_test_base + 1
+
+       -- // evaluators
+    manager:add_evaluator(properties["need_test"], this.evaluator_need_test(storage))
+
+    local new_action = this.action_test_activity(npc, "action_test_activity", storage)
+    new_action:add_precondition(world_property(stalker_ids.property_alive, true))
+    new_action:add_precondition(world_property(properties["need_test"], true))
+    new_action:add_precondition(world_property(properties["event"], false))
+    xr_motivator.addCommonPrecondition(new_action)
+    new_action:add_effect(world_property(properties["need_test"], false))
+    manager:add_action(operators["action_test"], new_action)
+
+    -- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+    xr_logic.subscribe_action_for_events(npc, storage, new_action)
+
+    new_action = manager:action(xr_actions_id.alife)
+    new_action:add_precondition(world_property(properties["need_test"], false))
+end
+
+-- Включение схемы
+--
+-- enabled - включена ли схема
+-- path_walk - основной путь, по которому ходит охранник
+-- path_look [опционально] - путь, куда смотрит охранник
+-- team [опционально] - команда для синхронизации
+--
+function set_scheme(npc, ini, scheme, section, gulag_name)
+  printf("DEBUG: set_scheme: scheme='%s', section='%s'", scheme, section)
+  local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+  printf("DEBUG: set_scheme: storage assigned")
+
+  st.logic     = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+
+  st.path_walk = utils.cfg_get_string(ini, section, "path_walk", npc, true,  gulag_name)
+  st.path_look = utils.cfg_get_string(ini, section, "path_look", npc, false, gulag_name)
+  st.team      = utils.cfg_get_string(ini, section, "team",      npc, false, gulag_name)
+
+  st.path_walk_info = nil -- Будут инициализированы в reset(), сейчас пути могут быть еще
+  st.path_look_info = nil -- не загружены.
+end
+

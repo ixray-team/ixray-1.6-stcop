@@ -1,0 +1,12 @@
+local on = true
+local n  = 1000000
+
+function update()
+	if on then
+		local x = 0.5
+
+		for i = 1, n do
+			x = math.sin( math.random() )
+		end
+	end
+end

@@ -1,0 +1,27 @@
+--[[------------------------------------------------------------------------------------------------------------------
+Управление вертолётом для Escape
+Чугай Саша
+--------------------------------------------------------------------------------------------------------------------]]
+
+local heli_mgr
+
+function main()
+	heli_mgr = xr_heli.HeliManager()
+	heli_mgr:initialize( "heli", "way_raid_heli" )
+--	heli_mgr:initialize( "heli", "w" )
+
+--	local t = time_global() + 10000
+	while true do
+		if not heli_mgr:update() then
+			break
+		end
+
+--		if t and t < time_global() then
+--			t = nil
+--			heli_mgr:send_to_stay_point()
+--			printf( "TO STAY POINT" )
+--		end
+
+		wait()
+	end
+end

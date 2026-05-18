@@ -1,0 +1,35 @@
+
+local position  = nil
+local direction = nil
+local time_rest = 10000
+
+function rest_fnc( npc )
+
+	action( npc, 
+	   move( move.run_fwd, patrol( "test", patrol.start, patrol.stop ) ),
+	   cond( cond.move_end )
+	)
+   
+end
+
+function main()
+	printf("Start")
+	
+	local monster = get_level_object("test_subject")
+
+	monster:script( true, script_name() )
+	
+	 while ( true ) do
+
+		 if( monster:action() == nil ) then
+			this.rest_fnc( monster )
+		 end
+		 wait()
+
+	 end
+	
+	monster:script( false, script_name() )
+
+end
+
+ 

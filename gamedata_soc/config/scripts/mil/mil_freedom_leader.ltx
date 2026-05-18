@@ -1,0 +1,14 @@
+[logic]
+active = walker1
+
+[walker1]
+path_walk = mil_leader_walk
+path_look = mil_leader_look
+on_info = {+mil_freedom_under_attack} camper1
+
+
+[camper1]
+path_walk = mil_defense_walk1
+path_look = mil_defense_look1
+radius = 5
+on_info = {-mil_freedom_under_attack} walker1

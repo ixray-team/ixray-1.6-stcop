@@ -1,0 +1,14 @@
+[logic]
+active = ph_button@locked
+
+[ph_button@locked]
+anim_blend = false
+anim = button_false
+;on_info = {+val_prisoner_door_unlocked} ph_button@unlocked
+on_press = ph_button@unlocked %+val_prisoner_door_unlocked =smart_terrain_force_update(val_prisoner)%
+
+[ph_button@unlocked]
+anim_blend = false
+anim = button_true
+;on_info = {-val_prisoner_door_unlocked} ph_button@locked
+;on_press = ph_button@locked %-val_prisoner_door_unlocked%

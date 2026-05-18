@@ -1,0 +1,6 @@
+function main()
+	test_fly.dist = 5
+	test_fly.flying = true
+	test_fly.tm_end = nil
+	test_fly.time_limit = 1500
+end

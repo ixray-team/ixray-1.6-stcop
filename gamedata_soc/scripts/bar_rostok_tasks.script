@@ -1,0 +1,60 @@
+function proceed()
+    local actor = db.actor
+	-- Bar Rostok
+	-- выдача информации с флешки профессора
+	if not has_alife_info("bar_ecolog_research_normal") and
+	   not has_alife_info("bar_ecolog_research_corrupted") and
+	   actor:object("bar_ecolog_flash") 
+	then
+		if has_alife_info("bar_rescue_research_corruped") then
+			actor:give_info_portion("bar_ecolog_research_corrupted")
+		else
+			actor:give_info_portion("bar_ecolog_research_normal")
+		end
+	end
+end
+
+function process_info_portion(info_id)
+	if  info_id == "bar_dolg_petrenko" then
+		level_tasks.add_location(506, "green_location", "bar_petrenko")
+		return true		
+	elseif info_id == "bar_dolg_community_start" then
+		level_tasks.remove_location(506, "green_location", "bar_petrenko")
+		return true		
+	end
+	return false
+end
+
+function has_hunter_rifle(task, objective)
+	if db.actor ~= nil then
+		return db.actor:object("hunters_toz") ~= nil
+	end
+	return false
+end
+
+function has_lucky_pda(task, objective)
+	return db.actor:object("bar_lucky_pda") ~= nil
+end
+
+function has_tiran_pda(task, objective)
+	return db.actor:object("bar_tiran_pda") ~= nil
+end
+
+function has_x16_documents(task, objective)
+	if db.actor ~= nil then
+		return db.actor:object("lab_x16_documents") ~= nil
+	end
+	return false
+end
+
+function has_professor_research(task, objective)
+	if db.actor ~= nil then
+		return db.actor:object("bar_ecolog_flash") ~= nil
+	end	
+	return false
+end
+
+function has_dolg_arhive_documents(task, objective)
+	return db.actor:object("dolg_arhive_documents") ~= nil
+end
+

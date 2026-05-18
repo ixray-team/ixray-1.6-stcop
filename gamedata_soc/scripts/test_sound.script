@@ -1,0 +1,113 @@
+
+class "test"
+function test:__init( name, nom )
+	self.npc    = get_level_object( name )
+    self.i      = 0
+    self.use    = nom
+    self.pos    = self.npc:position()
+    self.npc:script( true, this.script_name() )
+    action( self.npc, anim( anim.sleep, 0 ), cond( cond.time_end, 100000000000000000 ) )
+end
+
+function test:start()
+    if( self.use == 0 ) then return end
+    reset_action( self.npc, this.script_name() )
+    action( self.npc, move( move.walk_fwd, patrol( "way2" ) ), cond( cond.time_end, 3000 ) )
+    i = 1
+end
+
+function test:select_sound()
+	if( i == 1 ) then
+        printf( "idle" )
+        action( self.npc, move( move.walk_fwd, patrol( "way2" ) ), sound( sound.idle, 1000 ), cond( cond.time_end, 10000 ) )
+        i = 2
+    elseif( i == 2 ) then
+        printf( "eat" )
+        action( self.npc, move( move.walk_fwd, patrol( "way2" ) ), sound( sound.eat, 1000 ), cond( cond.time_end, 10000 ) )
+        i = 3
+    elseif( i == 3 ) then
+        printf( "attack" )
+        action( self.npc, move( move.walk_fwd, patrol( "way2" ) ), sound( sound.attack, 1000 ), cond( cond.time_end, 10000 ) )
+        i = 4
+    elseif( i == 4 ) then
+        printf( "attack_hit" )
+        action( self.npc, move( move.walk_fwd, patrol( "way2" ) ), sound( sound.attack_hit, 1000 ), cond( cond.time_end, 10000 ) )
+        i = 5
+    elseif( i == 5 ) then
+        printf( "take_damage" )
+        action( self.npc, move( move.walk_fwd, patrol( "way2" ) ), sound( sound.take_damage, 1000 ), cond( cond.time_end, 10000 ) )
+        i = 6
+    elseif( i == 6 ) then
+        printf( "die" )
+        action( self.npc, move( move.walk_fwd, patrol( "way2" ) ), sound( sound.die, 1000 ), cond( cond.time_end, 10000 ) )
+        i = 7
+    elseif( i == 7 ) then
+        printf( "threaten" )
+        action( self.npc, move( move.walk_fwd, patrol( "way2" ) ), sound( sound.threaten, 1000 ), cond( cond.time_end, 10000 ) )
+        i = 8
+    elseif( i == 8 ) then
+        printf( "steal" )
+        action( self.npc, move( move.walk_fwd, patrol( "way2" ) ), sound( sound.steal, 1000 ), cond( cond.time_end, 10000 ) )
+        i = 9
+    elseif( i == 9 ) then
+        printf( "panic" )
+        action( self.npc, move( move.walk_fwd, patrol( "way2" ) ), sound( sound.panic, 1000 ), cond( cond.time_end, 10000 ) )
+        i = 10
+    elseif( i == 10 ) then
+        printf( "growling" )
+        action( self.npc, move( move.walk_fwd, patrol( "way2" ) ), sound( sound.growling, 1000 ), cond( cond.time_end, 10000 ) )
+		i = 11
+	elseif( i == 11 ) then
+        action( self.npc, move( move.walk_fwd, patrol( "way2" ) ), sound( sound.growling, 1000 ), cond( cond.time_end, 10000 ) )
+        action( self.npc, move( move.walk_fwd, self.pos ), cond( cond.move_end ) )
+        i = 1
+        action( self.npc, anim( anim.sleep, 0 ), cond( cond.time_end, 100000000000000000 ) )
+        return true
+	end
+
+    return false
+end
+
+function test:update()
+	if( self.use == 0 ) then return true end
+
+	if( self.npc:action() == nil ) then
+    	return self:select_sound()
+    end
+	return false
+end
+
+local monstr = {
+                    { "burer1",       0 },
+                    { "boar1",  	  0 },       --Напротив монтра стоит 1 - монстр используется, 0 - не используется
+                    { "flesh1", 	  0 },
+                    { "chimera1", 	  0 },
+                    { "bloodsucker1", 0 },
+                    { "gigant1", 	  0 },
+                    { "pseudodog1",   0 },
+                    { "controller1",  0 },
+                    { "dog1",         1 }
+              }
+
+
+function main()
+
+    local m   = {}
+    local i   = 1
+
+    for i = 1, table.getn( monstr ) do
+    	table.insert( m, this.test( monstr[i][1], monstr[i][2] ) )
+    end
+
+	m[i]:start()
+
+    while( true ) do
+		if( m[i]:update() ) then     --Этот монстр проиграл все звуки
+        	i = i + 1
+            if( i > table.getn( m ) ) then i = 1 end
+            m[i]:start()
+        end
+
+        wait()
+    end
+end

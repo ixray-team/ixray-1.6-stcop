@@ -1,0 +1,18 @@
+function main ()
+  for k,v in db.obj_by_id do
+    if v:name () == "max" then
+       v:set_community_goodwill (-5000, db.actor)
+       printf ("GOODWILL SET")         
+       
+	   printf ("comm goodwill=%d",v:community_goodwill(db.actor))
+	   
+	   printf ("npc goodwill=%d",v:goodwill(db.actor))
+	   
+--	   v:set_goodwill(-5000, db.actor)
+--	   printf ("comm goodwill=%d",v:community_goodwill(db.actor))
+--	   printf ("npc goodwill=%d",v:goodwill(db.actor))
+	   
+	   return
+    end
+  end
+end

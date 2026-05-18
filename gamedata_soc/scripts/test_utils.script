@@ -1,0 +1,167 @@
+
+local object_list		= {}
+local smart_terrains	= {}
+
+------------------------------------------------------------------------------
+-- Services
+------------------------------------------------------------------------------
+
+-- Check if object online
+function object_online(object_id)
+	return (alife() == nil) or alife():object(object_id).online
+end
+
+function is_object_online(name)
+	return (alife() == nil) or (level.debug_object(name) ~= nil)
+end
+
+-- Get object id
+function get_object_id(name)
+	if is_object_online(name) then
+		return level.debug_object(name):id()
+	else 
+		return alife():object(name).id
+	end
+end
+
+-- check if anme is correct and object is on level
+function object_on_level(name)
+	if is_object_online(name) then
+		return (level.debug_object(name) ~= nil)
+	else 
+		return (alife():object(name) ~= nil)
+	end
+end
+
+
+
+-- Move all offline
+function offline_all()
+	for test_name, test_name_table in pairs(object_list) do
+		for index, obj_name in pairs(test_name_table) do
+			
+			if (object_on_level(tostring(obj_name))) then
+				local obj_id = get_object_id(tostring(obj_name))
+				alife():set_switch_online	(obj_id,false)
+				alife():set_switch_offline	(obj_id,true)
+			end
+		end
+	end
+end
+
+-- except test name
+function offline_all_except(except_name)
+	for test_name, test_name_table in pairs(object_list) do
+		if (except_name ~= test_name) then
+			for index, obj_name in pairs(test_name_table) do
+
+				if (object_on_level(tostring(obj_name))) then
+					local obj_id = get_object_id(tostring(obj_name))
+					alife():set_switch_online	(obj_id,false)
+					alife():set_switch_offline	(obj_id,true)
+				end
+		
+			end
+		end
+	end
+end
+
+
+
+-- Move online objects that are in scene index 
+function online_scene(scene_name)
+	for test_name, test_name_table in pairs(object_list) do
+		if (scene_name == test_name) then
+			for index, obj_name in pairs(test_name_table) do
+
+				if (object_on_level(tostring(obj_name))) then
+					if ( not is_object_online(tostring(obj_name))) then
+						local obj_id = get_object_id(tostring(obj_name))
+						
+						alife():set_switch_online	(obj_id,true)
+						alife():set_switch_offline	(obj_id,false)
+					end		
+				end
+			end
+		end
+	end
+end
+
+-- gulag in test
+function is_gulag_in_test(gulag_name, test_name)
+	if smart_terrains[test_name] == nil then 
+		return false 
+	end
+	for index, cur_gulag_name in pairs(smart_terrains[test_name]) do
+		if gulag_name == cur_gulag_name then
+			return true
+		end
+	end
+	return false
+end
+
+
+-- remove all gulags except test name
+function remove_gulags_except(test_name)
+	-- check
+	if (smart_terrains == nil) then 
+		if (db.smart_terrain_by_id ~= nil) then
+			printf(":: TEST : WARNING: there are gulags that not removed!!!")
+		end
+		return
+	else 
+		if (db.smart_terrain_by_id == nil) then
+			printf(":: TEST : ERROR: there are NO gulags on level")
+		end
+	end
+	
+	-- remove
+	for k, v in pairs(db.smart_terrain_by_id) do
+		if (is_gulag_in_test(v:name(), test_name) == false) then
+			v:remove_gulag(true)
+		end
+	end
+end
+
+
+-- Debug info
+function debug()
+	for test_name, test_name_table in pairs(object_id_list) do
+		printf(":: TEST : test [%s]", tostring(test_name))
+		for index, obj_id in pairs(test_name_table) do
+			printf(":: TEST : getting object [id=%u]", tonumber(obj_id))
+			local obj =	alife():object(tonumber(obj_id))
+			if (obj ~= nil) then
+				printf(":: TEST : obj_name = [%s] id =[%u]",obj:name(), tonumber(obj_id))
+			end
+		end
+	end
+end
+
+
+
+------------------------------------------------------------------------------
+-- Base routines
+------------------------------------------------------------------------------
+
+function setup_test(obj_list, smart_terr_list)
+	object_list		= obj_list
+	smart_terrains	= smart_terr_list
+end
+
+
+function run_test(index)
+	local test_name = "test" .. tostring(index)
+
+	remove_gulags_except(test_name)	
+	offline_all_except(test_name)
+	wait_game(2000)
+	online_scene(test_name)
+end
+
+-- Execute Base
+function run_global()
+	wait_game(2000)
+	offline_all()
+end
+

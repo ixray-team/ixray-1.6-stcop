@@ -1,0 +1,37 @@
+
+local position  = nil
+local direction = nil
+local time_rest = 10000
+
+function rest_fnc( npc )
+
+	action( npc, 
+	   move( move.walk_fwd, patrol( "way0000", patrol.start, patrol.stop ) ),
+	   cond( cond.move_end )
+	)
+   
+end
+
+function main()
+	
+	local monster = get_level_object("del")
+
+	position  = monster:position()
+	direction = monster:direction()
+
+	monster:script( true, this.script_name() )
+	
+	 while ( true ) do
+
+		 if( monster:action() == nil ) then
+			this.rest_fnc( monster )
+		 end
+		 wait()
+
+	 end
+	
+	monster:script( false, this.script_name() )
+
+end
+
+ 

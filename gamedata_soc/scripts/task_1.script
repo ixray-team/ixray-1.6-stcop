@@ -1,0 +1,58 @@
+function main ()
+
+local infos_table = {"esc_kill_gunslinger",
+"storyline_actor_start",
+"global_dialogs",
+"level_changer_icons",
+"esc_blockpost_normal",
+"esc_trader_experienced",
+"esc_trader_tutorial_chosen",
+"esc_trader_can_leave",
+"tutorial_artefact_start",
+"tutorial_flesh_start",
+"tutorial_flesh_die",
+"tips_esc_trader_about_anomalies",
+"tutorial_artefact_gain",
+"tutorial_artefact_done",
+"tutorial_wounded_start",
+"esc_kill_bandits_quest_have",
+"esc_petruha_report",
+"esc_heli_go",
+"esc_tutorial_secret",
+"tutorial_wounded_help",
+"tutorial_end",
+"esc_heli_direct",
+"escape_factory_assault_say_hello",
+"esc_bandits_start",
+"esc_bandits_assault",
+"esc_assault_start",
+"tutorial_wounded_heal",
+"esc_prison",
+"esc_kill_bandits_quest_kill",
+"esc_petruha_report2",
+"tutorial_wounded_give_info",
+"esc_shustryi_secret",
+"esc_boar_dogs_restrictor",
+"esc_kill_bandits_quest_done",
+"esc_petruha_great",
+"esc_serious_talk",
+"agroprom_military_case",
+"esc_close_door",
+"esc_bridge_pass_fire",
+"escape_stalker_meet",
+"escape_stalker_help",
+"escape_stalker_dog_spawn",
+"escape_fox_heal",
+"escape_stalker_give",
+"garbage_meetstalker_start",
+"escape_stalker_done",
+"encyclopedy_zone_locations_escape",
+"encyclopedy_mutant_rat_general"
+}
+local actor = db.actor
+
+	for k,v in pairs(infos_table) do
+		actor:give_info_portion(v)
+	end	
+quest_items.main()
+end 

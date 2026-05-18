@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding="windows-1251"?>
+<string_table>
+
+	<string id="escape_talk_about_agroprom__0">
+		<text ln="rus">Расскажи мне об этом месте.</text>
+		<text>Tell me about this place.</text>
+	</string>
+
+	<string id="escape_talk_about_agroprom__10">
+		<text ln="rus">Спасибо.</text>
+		<text>Спасибо.</text>
+	</string>
+
+	<string id="escape_talk_about_agroprom__1">
+		<text ln="rus">Сталкеры называют эту территорию мертвой, тут
+		слишком сильная радиация... Если продвигаться вглубь местности, то выйдешь на
+		радиоактивные равнины, можно найти мелкое ржавое озеро. Все озеро заполнено
+		останками машин, одна большая куча ржавого хлама, слегка покрытая водой. Еще
+		можно найти старый институт и фабрику, только она слишком обросла какой-то
+		мутированной гадостью. Без противогаза не ходи, на раз схлопочешь дозу.</text>
+		<text>Stalkers call this territory dead, radiation is too strong here... If you go deep into the area, you`ll reach the radioactive plains 
+        and find shallow rusty lake. All lake is filled with remains of vehicles - a heap of rusty trash, covered with water. You can also find
+        old scientific research institute and a factory, but I is all covered with some mutated muck. Don`t go there without gas-mask, too  
+        dangerous.</text>
+	</string>
+
+	<string id="escape_talk_about_agroprom__2">
+		<text ln="rus">А что есть рядом?</text>
+		<text>And what is nearby?</text>
+	</string>
+
+	<string id="escape_talk_about_agroprom__21">
+		<text ln="rus">Если идти на восток, то попадешь на Свалку. 
+		Пойдешь на север - попадешь на берег озера Янтарь, там еще, по
+		слухам, научный лагерь есть.</text>
+		<text>If you go East, you`ll reach the Garbage. 
+        Go North - you`ll reach the Yantar lake, rumors tell there is a scientists camp there.</text>
+	</string>
+
+
+</string_table>

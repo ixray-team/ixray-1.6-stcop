@@ -1,0 +1,117 @@
+;--------------------------------------------------------------------------------
+;--- Dreams ---------------------------------------------------------------------
+;--------------------------------------------------------------------------------
+[dreams]
+regular_probability = 50
+scenario            = scenario1, scenario2, scenario3
+regular             = regular_dream1, regular_dream2, regular_dream3
+dream_types         = nightmare, normal, happy
+
+;--------------------------------------------------------------------------------
+;--- Regular dreams -------------------------------------------------------------
+;--------------------------------------------------------------------------------
+[regular_dream1]
+dream       = sleep\aes_sky_red
+probability = 10
+type        = nightmare
+
+[regular_dream2]
+dream       = sleep\esc_sky_01
+probability = 5
+type        = normal
+
+[regular_dream3]
+dream       = sleep\Movie-003_Rats_OutPut-010
+probability = 8
+type        = happy
+
+;--------------------------------------------------------------------------------
+;--- Scenario dreams ---------------------------------------------------------------
+;--------------------------------------------------------------------------------
+[scenario1]
+dream       = sleep\Movie-003_Rats_OutPut-010
+;to_regular  = 3,normal
+cond        = {+agr_military_documents_done}
+
+[scenario2]
+dream       = sleep\Movie-003_Rats_OutPut-010
+;to_regular  = 3,normal
+cond        = {+agr_military_documents_done}
+
+[scenario3]
+dream       = sleep\Movie-003_Rats_OutPut-010
+;to_regular  = 3,normal
+cond        = {+agr_military_documents_done}
+
+;--------------------------------------------------------------------------------
+;--- Level specific -------------------------------------------------------------
+;--------------------------------------------------------------------------------
+[L01_Escape]
+probability = 5
+types = happy,normal
+
+[L02_Garbage]
+probability = 5
+
+[L03_Agroprom]
+probability = 10
+
+[l03u_agr_underground]
+probability = 30
+
+[L05_Bar]
+probability = 15
+
+[l04_darkvalley]
+probability = 50
+
+[l04u_LabX18]
+probability = 70
+
+[k01_darkscape]
+probability = 20
+
+[L06_rostok]
+probability = 20
+
+[l08_yantar]
+probability = 70
+
+[l08u_brainlab]
+probability = 80
+
+[L09_Deadcity]
+probability = 40
+
+[L13_DeadMil]
+probability = 30
+
+[L07_Military]
+probability = 35
+
+[l10u_bunker]
+probability = 30
+
+[l10_radar]
+probability = 75
+
+[L17_Radar_Underground]
+probability = 85
+
+[L11_Pripyat]
+probability = 80
+
+[L12_Stancia]
+probability = 85
+
+[L12U_Sarcofag]
+probability = 90
+
+[l12u_control_monolith]
+probability = 95
+
+[L12_Stancia_2]
+probability = 100
+
+[l23_final_battle]
+probability = 100

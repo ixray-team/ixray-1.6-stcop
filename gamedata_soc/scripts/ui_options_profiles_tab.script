@@ -1,0 +1,99 @@
+-- File:        UI_OPTIONS_PROFILES_TAB.SCRIPT
+-- Description: Profiles Tab for Options dialog
+-- Created:     01.12.2004
+-- Author:      Serhiy O. Vynnychenko
+-- Mail:        narrator@gsc-game.kiev.ua
+
+function main()
+	local dlg = ui_options_profiles_tab.options_profiles_tab()
+	level.start_stop_menu(dlg,true)
+	dlg:InitControls(200, 200)
+	while true do
+		wait(3000)
+	end
+end
+
+class "options_profiles_tab" (ui_options_base_tab.options_base_tab)
+
+function options_profiles_tab:__init() super()
+end
+
+function options_profiles_tab:__finalize()
+end
+
+function options_profiles_tab:InitControls(x_pos, y_pos)
+	ui_options_base_tab.options_base_tab.InitControls(self, "profiles", x_pos, y_pos)
+	--<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< INIT DATA
+	local info_rect    = {x = self.left_align_x,
+						  y = self.top_align_y,
+						  width = 300,
+						  height = self.btn_rect.height}
+	local edit_rect    = {x = 0,
+						  y = info_rect.y + info_rect.height + self.indent,
+						  width = 100,
+						  height = self.btn_rect.height}
+	edit_rect.x = self.main_rect.width - edit_rect.width - self.indent
+	local btn_add_rect = {x = edit_rect.x,
+						  y = edit_rect.y + edit_rect.height + self.indent,
+						  width = edit_rect.width,
+						  height = self.btn_rect.height}
+	local btn_del_rect = {x = edit_rect.x,
+						  y = btn_add_rect.y + btn_add_rect.height + self.indent,
+						  width = edit_rect.width,
+						  height = self.btn_rect.height}						  
+	local lst_rect     = {x = info_rect.x,
+						  y = info_rect.y + info_rect.height + self.indent,
+						  width = 0,
+						  height = 0}
+	lst_rect.width  = self.main_rect.width - lst_rect.x - edit_rect.width - self.indent*2
+	lst_rect.height = self.main_rect.height - lst_rect.y - self.indent
+	
+	-- INIT DATA>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>	
+	-- <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< CODE
+	-- INFO
+    local frame = CUIFrameWindow()
+	frame:SetAutoDelete(true)
+	frame:SetWindowName("info_label")
+	frame:Init("ui\\ui_frame_very_small", info_rect.x, info_rect.y, info_rect.width, info_rect.height)
+	self.main_frame:AttachChild(frame)
+	
+	local caption = CUIStatic()
+	caption:SetAutoDelete(true)
+	caption:SetWindowName("caption")
+	caption:Init(info_rect.x, info_rect.y, info_rect.width, info_rect.height)
+	caption:SetTextAlign(CGameFont.alLeft)
+	caption:SetFont(self.caption_font);
+	caption:SetText("Current Profile: xxx")
+	self.main_frame:AttachChild(caption)
+	
+	-- LIST
+	frame = CUIFrameWindow()
+	frame:SetAutoDelete(true)
+	frame:SetWindowName("list_frame")
+	frame:Init("ui\\ui_frame_very_small", lst_rect.x, lst_rect.y, lst_rect.width, lst_rect.height)
+	self.main_frame:AttachChild(frame)
+	
+	-- EDIT
+	frame = CUIFrameWindow()
+	frame:SetAutoDelete(true)
+	frame:SetWindowName("edit_frame")
+	frame:Init("ui\\ui_frame_very_small", edit_rect.x, edit_rect.y, edit_rect.width, edit_rect.height)
+	self.main_frame:AttachChild(frame)
+	
+	-- ADD BUTTON
+	frame = CUIFrameWindow()
+	frame:SetAutoDelete(true)
+	frame:SetWindowName("btn_add")
+	frame:Init("ui\\ui_frame_very_small", btn_add_rect.x, btn_add_rect.y, btn_add_rect.width, btn_add_rect.height)
+	self.main_frame:AttachChild(frame)
+	
+	-- DEL BUTTON
+	frame = CUIFrameWindow()
+	frame:SetAutoDelete(true)
+	frame:SetWindowName("btn_del")
+	frame:Init("ui\\ui_frame_very_small", btn_del_rect.x, btn_del_rect.y, btn_del_rect.width, btn_del_rect.height)
+	self.main_frame:AttachChild(frame)
+	
+	-- CODE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	
+end

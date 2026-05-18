@@ -1,0 +1,38 @@
+[logic]
+active = remark@spawn
+on_death = death
+combat_ignore = combat_ignore
+
+[death]
+on_info = %+val_opendoor_soldier_start%
+
+[combat_ignore]
+
+;--------------------------------------------------------------------------
+; схемы
+;--------------------------------------------------------------------------
+[remark@spawn]
+no_move = true
+on_info = {+val_opendoor_start} camper@start
+combat_ignore_cond = always
+
+[camper@start]
+path_walk = val_opendoor_victim_walk
+path_look = val_opendoor_victim_look
+radius = 0
+def_state_moving = rush
+def_state_campering = threat
+def_state_campering_fire = threat_fire
+no_retreat = true
+on_info = {=is_dead_one(410)} nil
+on_info2 = {+val_opendoor_plr_detected} nil
+on_timer = 4000 | nil
+combat_ignore_cond = always
+wounded = wounded
+
+[wounded]
+hp_state = 3|help_me@help
+hp_state_see = 3|wounded@help_see
+hp_victim = 3|nil
+hp_fight = 3|false
+hp_cover = 3|false

@@ -1,0 +1,416 @@
+;-----------Outfits-----------
+
+[outfit_novice_m1]:novice_outfit	;Аномальная куртка новичка
+$spawn              			= "outfit\uniq\outfit_novice_m1"
+inv_name						= novice_outfit_name_m
+inv_name_short					= novice_outfit_name_m
+description						= novice_outfit_description_m
+health_restore_speed			= 0.0006
+satiety_restore_speed			= 0.001
+bleeding_restore_speed			= -0.006
+power_restore_speed				= 0.003
+inv_grid_x						= 12
+inv_grid_y						= 21
+; TODO Уменьшить износ
+
+[outfit_bandit_m1]:bandit_outfit	;Уплотненный бандитский костюм
+$spawn              			= "outfit\uniq\outfit_bandit_m1"
+inv_name						= bandit_outfit_name_m
+inv_name_short					= bandit_outfit_name_m
+description						= bandit_outfit_description_m
+bones_koeff_protection			= plasch_antigas_damage
+fire_wound_protection  			= 0.28
+inv_grid_x						= 14
+inv_grid_y						= 21
+; TODO Уменьшить износ
+
+[outfit_dolg_m1]:dolg_outfit	;Охотничий комбинезон Долга
+$spawn							= "outfit\uniq\outfit_dolg_m1"
+inv_name						= dolg_outfit_name_m1
+inv_name_short					= dolg_outfit_name_m1
+description						= dolg_outfit_description_m1
+wound_protection				= 0.7 ; TODO Нужна защита от монстров
+inv_grid_x						= 16
+inv_grid_y						= 21
+; TODO Уменьшить износ
+
+[outfit_killer_m1]:killer_outfit	;Укрепленный комбинезон Наемника
+$spawn							= "outfit\uniq\outfit_killer_m1"
+inv_name						= killer_outfit_name_m1
+inv_name_short					= killer_outfit_name_m1
+description						= killer_outfit_description_m1
+wound_protection				= 0.6 ; TODO Нужна защита от монстров
+bones_koeff_protection			= gilet_antigas_damage ; TODO Нужна защита от пуль
+inv_grid_x						= 18
+inv_grid_y						= 21
+nightvision_sect				= effector_nightvision_bad
+; TODO Уменьшить износ
+
+[outfit_specnaz_m1]:specops_outfit	;Модифицированный армейский бронекостюм
+$spawn							= "outfit\uniq\outfit_specnaz_m1"
+inv_name						= specnaz_outfit_name_m1
+inv_name_short					= specnaz_outfit_name_m1
+description						= specnaz_outfit_description_m1
+bleeding_restore_speed			= -0.006
+inv_grid_x						= 18
+inv_grid_y						= 24
+; TODO Уменьшить износ
+
+[outfit_stalker_m1]:stalker_outfit	;Комбинезон призрачного сталкера
+$spawn							= "outfit\uniq\outfit_stalker_m1"
+inv_name						= stalker_outfit_name_m1
+inv_name_short					= stalker_outfit_name_m1
+description						= stalker_outfit_description_m1
+health_restore_speed			= 0.0006
+inv_grid_x						= 16
+inv_grid_y						= 24
+; TODO Уменьшить износ
+
+[outfit_stalker_m2]:stalker_outfit	;Куртка и рюкзак бывалого
+$spawn							= "outfit\uniq\outfit_stalker_m2"
+inv_name						= stalker_outfit_name_m2
+inv_name_short					= stalker_outfit_name_m2
+description						= stalker_outfit_description_m2
+additional_inventory_weight		= 10
+additional_inventory_weight2	= 20
+cost							= 18000
+inv_grid_x						= 16
+inv_grid_y						= 24
+; TODO Уменьшить износ
+
+[outfit_svoboda_m1]:svoboda_light_outfit	;Модифицированный комбинезон свободы
+$spawn							= "outfit\uniq\outfit_svoboda_m1"
+inv_name						= svoboda_outfit_name_m1
+inv_name_short					= svoboda_outfit_name_m1
+description						= svoboda_outfit_description_m1
+shock_protection 				= 0.9
+;strike_protection 				= 0.1
+inv_grid_x						= 12
+inv_grid_y						= 24
+nightvision_sect				= effector_nightvision_bad
+; TODO Уменьшить износ
+
+[outfit_exo_m1]:exo_outfit	;Модифицированный экзоскелет
+$spawn							= "outfit\uniq\outfit_exo_m1"
+inv_name						= exo_outfit_name_m1
+inv_name_short					= exo_outfit_name_m1
+description						= exo_outfit_description_m1
+inv_grid_x						= 14
+inv_grid_y						= 24
+nightvision_sect				= effector_nightvision_good
+; TODO Уменьшить износ
+
+
+;-----------Weapons-----------
+
+[wpn_ak74_m1]:wpn_ak74	;Скорострельный АК-74
+$spawn             				= "weapons\uniq\wpn_ak74_m1"	
+description						= enc_weapons1_wpn-ak74_m1
+inv_name	        			= wpn-ak74_m1
+inv_name_short					= wpn-ak74_m1
+rpm                      		= 850
+condition_shot_dec 				= 0.0001
+cam_dispersion					= 0.05		
+cam_dispersion_inc				= 0.1
+inv_grid_x						= 0
+inv_grid_y						= 30
+
+[wpn_abakan_m1]:wpn_abakan	;АH-94 снайперский
+$spawn              			= "weapons\uniq\wpn_abakan_m1"	
+description						= enc_weapons1_wpn-abakan_m1
+inv_name	        			= wpn-abakan_m1
+inv_name_short					= wpn-abakan_m1
+fire_dispersion_base			= 0.12
+scope_status					= 1
+scope_zoom_factor				= 20
+scope_texture					= wpn\wpn_crosshair
+condition_shot_dec 				= 0.0001
+inv_grid_x						= 0
+inv_grid_y						= 20
+
+[wpn_fort_m1]:wpn_fort	;Экспериментальный Fort
+$spawn              			= "weapons\uniq\wpn_fort_m1"
+inv_name						= wpn-fort_m
+inv_name_short					= wpn-fort_m
+description						= enc_weapons1_wpn-fort_m1
+ammo_mag_size		 			= 15
+condition_shot_dec 				= 0.0001
+inv_grid_x						= 10
+inv_grid_y						= 21
+
+[wpn_ak74u_m1]:wpn_ak74u	;АК-74у спецназ
+$spawn             				= "weapons\uniq\wpn_ak74u_m1"
+description						= enc_weapons1_wpn-ak74u_m1
+inv_name	        			= wpn-ak74u_m1
+inv_name_short					= wpn-ak74u_m1
+silencer_status					= 1
+condition_shot_dec 				= 0.00003
+inv_grid_x						= 5
+inv_grid_y						= 20
+inv_grid_width					= 5
+
+smoke_particles 				= weapons\generic_shoot_00
+flame_particles					= 
+light_disabled					= true
+snd_shoot					= weapons\w_ak74_shot1 
+snd_shoot1					= weapons\w_ak74_shot1 
+snd_shoot2					= weapons\w_ak74_shot1 
+snd_shoot3					= weapons\w_ak74_shot1 
+
+[wpn_mp5_m1]:wpn_mp5	;Модифицированный МП5
+$spawn             				= "weapons\uniq\wpn_mp5_m1"
+description						= enc_weapons1_wpn-mp5_m1
+inv_name	        			= wpn-mp5_m1
+inv_name_short					= wpn-mp5_m1
+ammo_class		 				= ammo_9x18_fmj, ammo_9x18_pmm
+condition_shot_dec 				= 0.00003
+inv_grid_x						= 5
+inv_grid_y						= 33
+
+[wpn_groza_m1]:wpn_groza	;Гроза генерала Воронина
+$spawn             				= "weapons\uniq\wpn_groza_m1"	
+description						= enc_weapons1_wpn-groza_m1
+inv_name	        			= wpn-groza_m1
+inv_name_short					= wpn-groza_m1
+ammo_class						= ammo_5.45x39_fmj, ammo_5.45x39_ap
+condition_shot_dec 				= 0.00005
+inv_grid_x						= 5
+inv_grid_y						= 29
+
+[wpn_spas12_m1]:wpn_spas12	;Спас-12 Хантера
+$spawn             				= "weapons\uniq\wpn_spas12_m1"	
+description						= enc_weapons1_wpn-spas12_m1
+inv_name						= wpn-spas12_m1
+inv_name_short					= wpn-spas12_m1
+fire_dispersion_base			= 0.25
+condition_shot_dec 				= 0.00015
+inv_grid_x						= 0
+inv_grid_y						= 34
+
+[wpn_winchester_m1]:wpn_wincheaster1300	;Боевой винчестер
+$spawn             				= "weapons\uniq\wpn_winchester_m1"	
+description						= enc_weapons1_wpn-winchester_m1
+inv_name	        			= wpn-winchester_m1
+inv_name_short					= wpn-winchester_m1
+hit_power        				= 0.9
+hit_impulse      				= 250
+ammo_mag_size		 			= 5
+condition_shot_dec 				= 0.00015
+inv_grid_x						= 0
+inv_grid_y						= 35
+
+[wpn_l85_m1]:wpn_l85	;Сбалансированная L85
+$spawn             				= "weapons\uniq\wpn_l85_m1"	
+description						= enc_weapons1_wpn-l85_m1
+inv_name	        			= wpn-l85_m1
+inv_name_short					= wpn-l85_m1
+cam_dispersion					= 0.05		
+cam_dispersion_inc				= 0.1
+condition_shot_dec 				= 0.00005
+inv_grid_x						= 5
+inv_grid_y						= 25
+
+[wpn_lr300_m1]:wpn_lr300	;LR300 М1
+$spawn             				= "weapons\uniq\wpn_lr300_m1"	
+description						= enc_weapons1_wpn-lr300_m1
+inv_name						= wpn-lr300_m1
+inv_name_short					= wpn-lr300_m1
+rpm								= 300
+fire_dispersion_base			= 0.09
+scope_texture					= wpn\wpn_crosshair_l85
+scope_status					= 1
+silencer_status					= 1
+condition_shot_dec 				= 0.00005
+inv_grid_x						= 0
+inv_grid_y						= 26
+
+smoke_particles 				= weapons\generic_shoot_00
+flame_particles					= 
+light_disabled					= true
+
+snd_shoot					= weapons\w_ak74_shot1 
+
+[wpn_svd_m1]:wpn_svd	;СВД "Дальнобойщик"
+$spawn             				= "weapons\uniq\wpn_svd_m1"	
+description						= enc_weapons1_wpn-svd_m1
+inv_name						= wpn-svd_m1
+inv_name_short					= wpn-svd_m1
+cam_dispersion					= 0.9
+cam_step_angle_horz				= 0.1
+scope_zoom_factor				= 10
+scope_status					= 1
+condition_shot_dec 				= 0.00055
+inv_grid_x						= 5
+inv_grid_y						= 23
+
+[wpn_sig_m1]:wpn_sig550	;Штурмовой SiG
+$spawn             				= "weapons\uniq\wpn_sig_m1"	
+description						= enc_weapons1_wpn-sig_m1
+inv_name						= wpn-sig_m1
+inv_name_short					= wpn-sig_m1
+scope_status					= 0
+silencer_status					= 0
+grenade_launcher_status			= 0
+inv_weight						= 2.2
+condition_shot_dec 				= 0.00005
+inv_grid_x						= 0
+inv_grid_y						= 32
+
+[wpn_eagle_m1]:wpn_desert_eagle	;Большой Бэн
+$spawn             				= "weapons\uniq\wpn_eagle_m1"	
+description						= enc_weapons1_wpn-eagle_m1
+inv_name						= wpn-eagle_m1
+inv_name_short					= wpn-eagle_m1
+ammo_class						= ammo_9x39_sp5, ammo_9x39_ap, ammo_9x39_pab9
+hit_power               		= 0.67
+condition_shot_dec				= 0.0003
+inv_grid_x						= 9
+inv_grid_y						= 22
+
+[wpn_colt_m1]:wpn_colt1911	;Модифицированный кольт
+$spawn             				= "weapons\uniq\wpn_colt_m1"	
+description						= enc_weapons1_wpn-colt_m1
+inv_name						= wpn-colt_m1
+inv_name_short					= wpn-colt_m1
+silencer_status					= 1
+condition_shot_dec 				= 0.00033
+inv_grid_x						= 18
+inv_grid_y						= 20
+
+smoke_particles 				= weapons\generic_shoot_00
+flame_particles					= 
+light_disabled					= true
+
+snd_shoot			= weapons\pb_shoot
+
+
+[wpn_val_m1]:wpn_val	;Модифицированный Вал
+$spawn             				= "weapons\uniq\wpn_val_m1"	
+description						= enc_weapons1_wpn-val_m1
+inv_name						= wpn-val_m1
+inv_name_short					= wpn-val_m1
+scope_status					= 2
+scope_texture					= wpn\wpn_crosshair
+condition_shot_dec 				= 0.00005
+inv_grid_x						= 5
+inv_grid_y						= 31
+
+[wpn_mp5_m2]:wpn_mp5	;Модифицированный МП5
+$spawn             				= "weapons\uniq\wpn_mp5_m2"
+description						= enc_weapons1_wpn-mp5_m2
+inv_name	        			= wpn-mp5_m2
+inv_name_short					= wpn-mp5_m2
+silencer_status					= 1
+fire_dispersion_base			= 0.15
+condition_shot_dec 				= 0.00003
+inv_grid_x						= 5
+inv_grid_y						= 22
+inv_grid_width					= 4
+
+smoke_particles 				= weapons\generic_shoot_00
+flame_particles					= 
+light_disabled					= true
+
+snd_shoot						= weapons\w_ak74_shot1 
+
+[wpn_abakan_m2]:wpn_abakan	;АH-94 штурмовой
+$spawn              			= "weapons\uniq\wpn_abakan_m2"	
+description						= enc_weapons1_wpn-abakan_m2
+inv_name	        			= wpn-abakan_m2
+inv_name_short					= wpn-abakan_m2
+grenade_launcher_status			= 1
+grenade_vel						= 76
+condition_shot_dec 				= 0.00003
+inv_grid_x						= 0
+inv_grid_y						= 28
+
+[wpn_l85_m2]:wpn_l85	;Облегченная l85
+$spawn             				= "weapons\uniq\wpn_l85_m2"	
+description						= enc_weapons1_wpn-l85_m2
+inv_name	        			= wpn-l85_m2
+inv_name_short					= wpn-l85_m2
+silencer_status					= 1
+inv_weight						= 3
+condition_shot_dec 				= 0.00005
+inv_grid_x						= 0
+inv_grid_y						= 24
+
+smoke_particles 				= weapons\generic_shoot_00
+flame_particles					= 
+light_disabled					= true
+
+snd_shoot					= weapons\w_ak74_shot1 
+
+
+
+[wpn_sig_m2]:wpn_sig550	;SiG снайперский
+$spawn             				= "weapons\uniq\wpn_sig_m2"	
+description						= enc_weapons1_wpn-sig_m2
+inv_name						= wpn-sig_m2
+inv_name_short					= wpn-sig_m2
+scope_status					= 1
+scope_zoom_factor				= 20
+scope_texture					= wpn\wpn_crosshair_l85
+condition_shot_dec 				= 0.00005
+inv_grid_x						= 0
+inv_grid_y						= 22
+
+[wpn_rg6_m1]:wpn_rg-6	;РГ-6 м209
+$spawn             				= "weapons\uniq\wpn_rg6_m1"	
+description						= enc_weapons1_wpn-rg6_m1
+inv_name						= wpn-rg6_m1
+inv_name_short					= wpn-rg6_m1
+ammo_class		 				= ammo_m209
+condition_shot_dec 				= 0.00001
+inv_grid_x						= 5
+inv_grid_y						= 27
+
+[wpn_walther_m1]:wpn_walther	;Вальтер 9x18
+$spawn             				= "weapons\uniq\wpn_walther_m1"	
+description						= enc_weapons1_wpn-walther_m1
+inv_name	        			= wpn-walther_m1
+inv_name_short					= wpn-walther_m1
+ammo_class		 				= ammo_9x18_fmj, ammo_9x18_pmm
+condition_shot_dec 				= 0.00015
+inv_grid_x						= 11
+inv_grid_y						= 21
+
+
+;-----------Arena-----------
+[wpn_pm_arena]:wpn_pm;
+$spawn             		= "weapons\arena\wpn_pm_arena"
+
+[wpn_mp5_arena]:wpn_mp5;
+$spawn             		= "weapons\arena\wpn_mp5_arena"
+
+[wpn_toz34_arena]:wpn_bm16;
+$spawn             		= "weapons\arena\wpn_toz34_arena"
+
+[wpn_spas12_arena]:wpn_spas12;
+$spawn             		= "weapons\arena\wpn_spas12_arena"
+
+[wpn_ak74_arena]:wpn_ak74;
+$spawn             		= "weapons\arena\wpn_ak74_arena"
+
+[wpn_bm16_arena]:wpn_bm16;
+$spawn             		= "weapons\arena\wpn_bm16_arena"
+
+[wpn_ak74u_arena]:wpn_ak74u;
+$spawn             		= "weapons\arena\wpn_ak74u_arena"
+
+[wpn_val_arena]:wpn_val;
+$spawn             		= "weapons\arena\wpn_val_arena"
+
+[wpn_groza_arena]:wpn_groza;
+$spawn             		= "weapons\arena\wpn_groza_arena"
+
+[wpn_fn2000_arena]:wpn_fn2000;
+$spawn             		= "weapons\arena\wpn_fn2000_arena"
+
+[wpn_g36_arena]:wpn_g36;
+$spawn             		= "weapons\arena\wpn_g36_arena"
+
+
+
+[hunters_toz]:wpn_bm16
+$spawn                  = "devices\uniq\hunters_toz"					; option for Level Editor

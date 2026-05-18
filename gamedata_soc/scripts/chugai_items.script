@@ -1,0 +1,32 @@
+local spawn_items = {}
+
+function main()
+--[[	table.insert(spawn_items, "device_torch")
+
+	for i = 1,3 do table.insert(spawn_items, "medkit") end
+	for i = 1,10 do table.insert(spawn_items, "bandage") end
+	for i = 1,10 do table.insert(spawn_items, "antirad") end
+]]
+	table.insert(spawn_items, "bandit_outfit")
+--[[
+	table.insert(spawn_items, "wpn_abakan")
+	for i = 1, 7 do table.insert(spawn_items, "ammo_5.45x39_ap") end
+	table.insert(spawn_items, "wpn_addon_grenade_launcher")
+	table.insert(spawn_items, "wpn_addon_scope")
+
+	table.insert(spawn_items, "wpn_lr300")
+	for i = 1, 5 do table.insert(spawn_items, "ammo_5.56x45_ss190") end
+	for i = 1, 4 do table.insert(spawn_items, "ammo_5.56x45_ap") end
+
+	table.insert(spawn_items, "wpn_mp5")
+	table.insert(spawn_items, "wpn_beretta")
+	for i = 1, 5 do table.insert(spawn_items, "ammo_9x19_pbp") end
+]]
+	local k,v = 0,0
+	for k,v in pairs(spawn_items) do
+		alife():create(v,	
+						db.actor:position(),
+						db.actor:level_vertex_id(),	
+						db.actor:game_vertex_id())
+	end	
+end

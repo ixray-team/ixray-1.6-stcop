@@ -1,0 +1,13 @@
+﻿<?xml version='1.0' encoding="UTF-8"?>
+<!-- для описания всевозможных предметов в игре -->
+<string_table>
+	<string id="item test1">
+		<text>This is a ITEM test string</text>
+		<text ln="rus">Тоже самое но на русском</text>
+		<text ln="de">die deutsche Sprache</text>
+	</string>
+	<string id="item test2">
+		<text>This is a another ITEM test string</text>
+	</string>
+</string_table>
+

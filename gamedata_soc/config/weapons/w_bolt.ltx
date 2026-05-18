@@ -1,0 +1,65 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; BOLT
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[bolt]:identity_immunities
+class				= II_BOLT
+cform				= skeleton
+visual				= weapons\bolt\wpn_bolt.ogf
+inv_name			= st_bolt
+$prefetch 			= 16
+inv_name_short		= st_bolt
+inv_weight			= .0
+
+ef_weapon_type		= 1
+
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x			= 0
+inv_grid_y			= 0
+
+animation_slot		= 7 ;6
+single_handed		= 0
+
+slot				= 5
+hud					= bolt_hud
+force_min			= 10
+force_const			= 20
+force_max			= 30
+force_grow_speed	= 3
+
+destroy_time		= 3000
+
+attach_position_offset	= -0.021,-0.075,0.0
+attach_angle_offset		= 0,0,0
+attach_bone_name		= 
+
+// should be deleted after update
+position_offset			 = 0.0,0.0,0.0
+angle_offset			 = 1.570790,1.570790,3.92699
+
+cost				= 0
+
+throw_point			= 0,0.4,0.5
+throw_dir			= 0,0,1
+
+
+[bolt_hud]
+fire_point          = 0.05, 0.0, 0.1
+fire_bone           = bolt_0
+
+orientation         = 0,0,0
+position            = 0,0,0
+visual              = weapons\bolt\wpn_bolt_hud.ogf
+
+throw_point			= 0,0.4,0.3
+throw_dir			= 0,0,0
+
+anim_show			= draw
+anim_hide			= holster_0
+anim_idle			= idle_0
+anim_playing		= idle_01
+anim_throw_begin	              = attack_0_begin
+anim_throw_idle		= attack_0_idle
+anim_throw_act		= attack_0_act	
+anim_throw_end		= attack_0_end

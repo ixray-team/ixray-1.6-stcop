@@ -1,0 +1,32 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+sar_start_decoding} sr_idle@spawn1 %+sar_start_teleport%
+
+[sr_idle@spawn1]
+on_timer = 2000| sr_idle@spawn2 %+sar_monolith_spawn1%
+
+[sr_idle@spawn2]
+on_timer = 2000| sr_idle@spawn3 %+sar_monolith_spawn2%
+
+[sr_idle@spawn3]
+on_timer = 2000| sr_idle@spawn4 %+sar_monolith_spawn3%
+
+[sr_idle@spawn4]
+on_timer = 2000| sr_idle@spawn5 %+sar_monolith_spawn4%
+
+[sr_idle@spawn5]
+on_timer = 2000| sr_idle@spawn6 %+sar_monolith_spawn5%
+
+[sr_idle@spawn6]
+on_timer = 2000| sr_idle@spawn7 %+sar_monolith_spawn6%
+
+[sr_idle@spawn7]
+on_timer = 2000| sr_idle@spawn8 %+sar_monolith_spawn7%
+
+[sr_idle@spawn8]
+on_timer = 2000| sr_idle@end %+sar_monolith_spawn8%
+
+[sr_idle@end]
+on_timer = 2000| nil %+sar_end_teleport%

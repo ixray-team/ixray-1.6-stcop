@@ -1,0 +1,138 @@
+--[[------------------------------------------------------------------------------------------------------------------
+Переключение боевых схем
+--------------------------------------------------------------------------------------------------------------------]]
+
+
+function set_combat_type( npc, actor, t )
+	-- это нужно для функций в xr_conditions.script
+	db.storage[npc:id()].enemy = npc:best_enemy()
+
+	local script_combat_type = xr_logic.pick_section_from_condlist( actor, npc, t.combat_type.condlist )
+
+	if script_combat_type == "nil" then
+		script_combat_type = nil
+	end
+
+	if script_combat_type == "monolith" then
+		script_combat_type = nil
+	end
+
+	db.storage[npc:id()].script_combat_type = script_combat_type
+
+	return script_combat_type ~= nil
+end
+
+----------------------------------------------------------------------------------------------------------------------
+-- Эвалуатор переключения между скриптовым и движковым боем
+-- false - engine combat, true - script combat
+----------------------------------------------------------------------------------------------------------------------
+class "evaluator_check_combat" (property_evaluator)
+
+function evaluator_check_combat:__init(name, storage) super (nil, name)
+	self.st = storage
+end
+
+function evaluator_check_combat:evaluate()
+	if self.st.enabled and self.object:best_enemy() then
+		local actor = db.actor
+		if not actor then
+			return false
+		end
+
+		if db.storage[self.object:id()].active_scheme then
+			local overrides = xr_logic.generic_scheme_overrides( self.object )
+
+			if overrides and overrides.on_combat then
+				xr_logic.pick_section_from_condlist( actor, self.object, overrides.on_combat.condlist )
+			end
+
+			if not xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
+				-- взять из overrides, иначе из секции on_combat
+				if overrides and overrides.combat_type then
+					return set_combat_type( self.object, actor, overrides )
+				else
+--					db.storage[self.object:id()].script_combat_type = nil
+--					return false
+					return self.st.combat_type ~= nil and set_combat_type( self.object, actor, self.st )
+				end
+			end
+		else
+			-- если нет активной секции, то тип боя взять из секции on_combat
+			return self.st.combat_type ~= nil and set_combat_type( self.object, actor, self.st )
+		end
+	end
+
+	return false
+end
+
+----------------------------------------------------------------------------------------------------------------------
+-- Дублирующий эвалуатор врагов для планировщика скриптового боя
+----------------------------------------------------------------------------------------------------------------------
+class "evaluator_enemy" (property_evaluator)
+
+function evaluator_enemy:__init(name) super (nil, name)
+end
+
+function evaluator_enemy:evaluate()
+	return self.object:best_enemy() ~= nil
+end
+
+----------------------------------------------------------------------------------------------------------------------
+-- binder
+----------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+	local manager = npc:motivation_action_manager()
+
+	manager:add_evaluator( xr_evaluators_id.script_combat, this.evaluator_check_combat("script_combat",storage) )
+
+	local action = manager:action(stalker_ids.action_combat_planner)
+	action:add_precondition(world_property(xr_evaluators_id.script_combat, false))
+
+	----------
+
+--[[	local planner = planner_action( nil, "script_combat_planner" )
+	planner:setup( npc )
+
+	planner:add_evaluator( stalker_ids.property_enemy,     evaluator_enemy( "is_there_enemy" ) )
+	planner:add_evaluator( xr_evaluators_id.script_combat, evaluator_check_combat("combat_check",storage) )
+
+	planner:add_precondition( world_property( xr_evaluators_id.script_combat, true ) )
+	planner:add_precondition( world_property( stalker_ids.property_enemy,     true ) )
+	planner:add_effect      ( world_property( stalker_ids.property_enemy,     false ) )
+
+    manager:add_action( xr_actions_id.script_combat_planner, planner )
+
+	xr_combat_zombied.add_to_binder( npc, ini, storage, planner )]]
+
+	xr_combat_zombied.add_to_binder ( npc, ini, storage, manager )
+--	xr_combat_monolith.add_to_binder( npc, ini, storage, manager )
+	xr_combat_camper.add_to_binder  ( npc, ini, storage, manager )
+end
+
+function set_combat_checker(npc, ini, scheme, section)
+	local is_zombied = npc:section() == "stalker_zombied"
+
+	if section or is_zombied then
+		local st      = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+		st.logic      = xr_logic.cfg_get_switch_conditions(ini, section, npc)		
+		st.enabled    = true
+
+		st.combat_type = xr_logic.cfg_get_condlist(ini, section, "combat_type", npc)
+
+		-- зомбированные сражаются по умолчанию на зомбированной боевой схеме
+		if not st.combat_type and is_zombied then
+			st.combat_type = { condlist = xr_logic.parse_condlist(npc, section, "", "zombied") }
+		end
+
+		if st.combat_type then
+			set_combat_type( npc, db.actor, st )
+		end
+	end
+end
+
+function disable_scheme(npc, scheme)
+	local st = db.storage[npc:id()][scheme]
+	if st then
+		st.enabled = false
+	end
+end

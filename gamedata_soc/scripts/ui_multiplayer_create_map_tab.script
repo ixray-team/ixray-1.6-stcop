@@ -1,0 +1,59 @@
+-- File:        UI_MULTIPLAYER_CREATE_MAP_TAB.SCRIPT
+-- Description: Map Tab for Multiplayer Create Server dialog
+-- Created:     02.12.2004
+-- Author:      Serhiy 0. Vynnychenk0
+-- Mail         narrator@gsc-game.com
+--
+
+function main()
+	local dlg = ui_multiplayer_create_map_tab.create_map_tab()
+	level.start_stop_menu(dlg,true)	
+	while true do
+		wait(3000)
+	end
+end
+
+class "create_map_tab" (ui_multiplayer_create_base_tab.multiplayer_create_base_tab)
+
+function create_map_tab:__init() super()
+	self:InitControls()
+	self:InitCallbacks()
+end
+
+function create_map_tab:__finalize()
+end
+
+function create_map_tab:InitConrols(x_pos, y_pos)
+	ui_multiplayer_create_base_tab.multiplayer_create_base_tab.InitControls(self, "Map", x_pos, y_pos)
+	
+	----- DATA ----
+	----- BUTTONS --->>>
+	
+	
+	-- Bottom align
+	local btn_back_rect   = {0,
+							 y = self.bottom_align_y - self.btn_rect.height,							 
+							 width = self.btn_rect.width,
+							 height = self.btn_rect.height}	
+	btn_back_rect.x = self.main_rect.width - btn_back_rect.width - self.indent
+	
+	--------->> BACK
+	btn = CUIButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_back")
+	btn:Init("ui\\ui_button_01", btn_back_rect.x, btn_back_rect.y, btn_back_rect.width, btn_back_rect.height)
+	btn:SetText("Back")
+	btn:SetFont(self.button_font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.button_indent)
+	self:Register(btn)
+	self.main_frame:AttachChild(btn)	
+end
+
+function create_map_tab:InitCallbacks()
+	self:AddCallback("btn_back",			ui_events.BUTTON_CLICKED, self, "OnButton_back")
+end
+
+function create_map_tab:OnButton_back()
+	level.start_stop_manu(self, true)
+end

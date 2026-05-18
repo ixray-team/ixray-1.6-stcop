@@ -1,0 +1,48 @@
+	<string id="blokpost_case">
+		<text>Кейс с документами</text>
+	</string>
+	<string id="esc_fox">
+		<text>Раненый Лис.</text>
+	</string>
+	<string id="esc_mill">
+		<text>Заброшенная мельница. Где-то здесь последний раз видели пропавшего братка</text>
+	</string>
+	<string id="escape_trader">
+		<text>Торговец.</text>
+	</string>
+	<string id="factory_bandits">
+		<text>Бандиты на фабрике.</text>
+	</string>
+	<string id="killers_team">
+		<text>Группа неизвестных наемников.</text>
+	</string>
+	<string id="novice_leader">
+		<text>Лидер лагеря новичков.</text>
+	</string>
+	<string id="soldiers_bridge">
+		<text>Пост военных у разрушенного моста. Иногда за проход через мост берут взятку.</text>
+	</string>
+	<string id="tutorial_artefact">
+		<text>Артефакт.</text>
+	</string>
+	<string id="tutorial_bandits">
+		<text>Бандиты, зажавшие разведчика.</text>
+	</string>
+	<string id="tutorial_secret">
+		<text>Тайник, оставленный погибшим сталкером.</text>
+	</string>
+	<string id="tutorial_secret_place1">
+		<text>Тайник, оставленный погибшим сталкером.</text>
+	</string>
+	<string id="tutorial_secret_shustryi">
+		<text>Тайник, оставленный Шустрым.</text>
+	</string>
+	<string id="tutorial_wounded">
+		<text>Пленный "Шустрый".</text>
+	</string>
+	<string id="volk">
+		<text>Волк, лидер лагеря новичков.</text>
+	</string>
+	<string id="wolfs_rangers">
+		<text>Разведчики из группы Волка.</text>
+	</string>

@@ -1,0 +1,27 @@
+state = 1
+function main()
+	local dog = get_level_object("m_dog1")
+
+	state = 1
+    local new_state = state
+
+    dog:script(true, this.script_name())
+
+    action( dog, move(move.walk_fwd, patrol("way") ), cond(cond.move_end) )
+
+    while(true) do
+		if(state ~= new_state) then
+        	reset_action(dog, this.script_name())
+            new_state = state
+            if(state == 1) then
+            	action( dog, move(move.walk_fwd, patrol("way", patrol.nearest, patrol.continue) ), cond(cond.move_end) )
+            elseif( state == 2) then
+                action( dog, move(move.run_fwd, patrol("way", patrol.nearest, patrol.continue) ), cond(cond.move_end) )
+			else
+                action( dog, move(move.steal, patrol("way", patrol.nearest, patrol.continue) ), cond(cond.move_end) )
+            end
+        end
+
+        wait()
+    end
+end

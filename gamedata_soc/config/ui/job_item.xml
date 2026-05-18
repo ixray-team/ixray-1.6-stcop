@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window>
+
+	<task_root_item x="0" y="0" width="320" height="40">
+		<image x="8" y="16" width="83" height="47"/>
+		
+		<caption x="93" y="16" width="180" height="18" complex_mode="1">
+			<text align="l" x="0" y="0" font="letterica18"/>
+		</caption>
+
+		<caption_time x="93" y="86" width="210" height="18">
+			<text align="l" x="0" y="0" font="letterica16" r="150" g="150" b="180" a="255"/>
+		</caption_time>
+		<rem_time x="93" y="50" width="210" height="18" _light_anim="ui_too_slow_blinking" la_cyclic="1" la_texture="0" la_text="1" la_alpha="1">
+			<text align="l" x="0" y="0" font="letterica16" r="150" g="150" b="180" a="255"/>
+		</rem_time>
+
+		<switch_description_btn x="272" y="16" width="20" height="20" check_mode="1" hint="pda_switch_description_btn_hint">
+			<texture>ui_icons_newPDA_showtext</texture>
+		</switch_description_btn>
+
+		<location_btn x="272" y="40" width="20" height="20" check_mode="1" hint="pda_show_location_btn_hint">
+			<texture>ui_icons_newPDA_showMarkonmap</texture>
+		</location_btn>
+
+	</task_root_item>
+
+	<task_sub_item x="0" y="0" width="320" height="38">
+		<state_image x="8" y="10" width="11" height="11"/>
+
+		<description x="25" y="8" width="220" height="16" complex_mode="1">
+			<text align="l" x="0" y="0" font="letterica16" r="255" g="255" b="255" a="255"/>
+			<text_colors>
+				<accomplished	r="150" g="150" b="180" a="255"/>
+				<failed			r="150" g="150" b="180" a="255"/>
+				<active			r="128" g="128" b="128" a="255"/>
+			</text_colors>
+		</description>
+		
+		<active_objecttive_image x="249" y="4" width="19" height="19" stretch="1" light_anim="ui_too_slow_blinking" la_cyclic="1" la_texture="1" la_text="0" la_alpha="1">
+			<texture>ui_cur_task</texture>
+		</active_objecttive_image>
+		
+		<show_pointer_btn x="249" y="4" width="18" height="18" check_mode="1" hint="pda_show_pointer_btn_hint">
+			<texture>ui_icons_newPDA_setSelect</texture>
+		</show_pointer_btn>
+
+		<show_descr_btn x="272" y="4" width="21" height="19" check_mode="1" hint="pda_show_descr_btn_hint">
+			<texture>ui_icons_newPDA_gomark</texture>
+		</show_descr_btn>
+
+	</task_sub_item>
+	
+	
+	<notused_task_user_item x="0" y="0" width="320" height="32">
+		<image x="8" y="4" width="32" height="32"/>
+
+		<caption x="50" y="5" width="140" height="16">
+			<text x="0" y="0" font="letterica18"/>
+		</caption>
+
+		<description x="8" y="38" width="290" height="16">
+			<text x="0" y="0" font="letterica16" r="150" g="150" b="180" a="255"/>
+		</description>
+
+		<location_btn x="270" y="5" width="20" height="20" check_mode="1" hint="pda_show_location_btn_hint">
+			<texture>ui_icons_newPDA_showMarkonmap</texture>
+		</location_btn>
+
+		<show_pointer_btn x="245" y="5" width="18" height="18" check_mode="1" hint="pda_show_pointer_btn_hint">
+			<texture>ui_icons_newPDA_setSelect</texture>
+		</show_pointer_btn>
+
+		<remove_btn x="220" y="5" width="20" height="20" check_mode="0" hint="pda_remove_btn_hint">
+			<texture>ui_icons_newPDA_mapMarDel</texture>
+		</remove_btn>
+
+		<edit_text_btn x="195" y="5" width="20" height="20" check_mode="0" hint="pda_edit_user_task_btn_hint">
+			<texture>ui_icons_newPDA_editUserSpot</texture>
+		</edit_text_btn>
+
+	</notused_task_user_item>
+	
+	<notused_edit_user_item x="0" y="0" width="1024" height="768">
+		<background x="412" y="284" width="300" height="200">
+			<texture>ui_icons_PDA_dialog</texture>
+			
+			<edit_caption x="10" y="10" width="275" height="20">
+				<texture>ui_icons_PDA_dialog_string</texture>
+				<text x="0" y="0" font="letterica18"/>
+			</edit_caption>
+	
+			<edit_description x="10" y="35" width="275" height="130">
+				<texture>ui_icons_PDA_dialog_frame</texture>
+				<text x="0" y="0" font="letterica18"/>
+			</edit_description>
+			
+		<ok_btn x="45" y="170" width="60" height="20" check_mode="0">
+			<texture_>ui_icons_newPDA_mapMarDel</texture_>
+			<text x="0" y="0" font="letterica18">Btn_OK</text>
+			<text_color>
+				<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</ok_btn>
+		
+		<cancel_btn x="155" y="170" width="60" height="20" check_mode="0">
+			<texture_>ui_icons_newPDA_mapMarDel</texture_>
+			<text x="0" y="0" font="letterica18">Btn_Cancel</text>
+			<text_color>
+				<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</cancel_btn>
+			
+		</background>
+	
+	
+	</notused_edit_user_item>
+	
+</window>
+
+"letterica16"

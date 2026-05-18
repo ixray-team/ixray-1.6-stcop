@@ -1,0 +1,187 @@
+-----------------------------------------------------------------------------------
+-- Monster binding
+-----------------------------------------------------------------------------------
+
+function bind(obj)
+	printf("_bp: monster.bind: name='%s', id='%d'", obj:name(), obj:id())
+
+	-- Для спауна
+	--xr_spawner.spawn_client(obj)
+
+	local new_binder = generic_object_binder(obj)
+	obj:bind_object(new_binder)
+end
+
+------------------------------------------------------------------------------------
+class "generic_object_binder" (object_binder)
+
+function generic_object_binder:__init(obj) super(obj)
+	self.loaded = false
+end 
+
+function generic_object_binder:reload(section)
+	object_binder.reload(self, section)
+end
+
+function generic_object_binder:reinit()
+	object_binder.reinit(self)
+
+	-- У торговца нет поддержки перемещения
+	if self.object:clsid() ~= clsid.script_trader then
+		self.object:set_patrol_extrapolate_callback(generic_object_binder.extrapolate_callback, self)
+	end
+
+	db.storage[self.object:id()] = { }
+
+	self.st = db.storage[self.object:id()]
+
+	self.object:set_callback(callback.patrol_path_in_point, self.waypoint_callback, self)
+	self.object:set_callback(callback.hit,					self.hit_callback,		self)
+	self.object:set_callback(callback.death,				self.death_callback,	self)
+end
+
+function generic_object_binder:update(delta)
+	object_binder.update(self, delta)
+
+--	printf("_bp: generic_object_binder: UPDATE [name='%s' time=%d]",
+--		self.object:name(), time_global())
+
+	-- Апдейт торговли
+	if self.object:clsid() == clsid.script_trader then
+		trade_manager.update(self.object)
+	end
+
+	if self.object:alive() then
+		if self.object:is_talk_enabled() then
+			self.object:set_tip_text("character_use")
+		else
+			self.object:set_tip_text("")
+		end
+	else
+		self.object:set_tip_text_default()
+	end
+
+
+	if self.st.active_section ~= nil then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "update", delta)
+	end
+end
+
+function generic_object_binder:extrapolate_callback()
+	local cur_pt = self.object:get_current_point_index()
+
+    if self.object:get_script ()	== false then 
+       return false
+    end    
+    
+	if patrol(self.object:patrol()):flags(cur_pt):get() == 0 then
+		--printf("_bp: generic_object_binder: extrapolate_callback: cur_pt = %d: true", cur_pt)
+		return true
+	end
+	--printf("_bp: generic_object_binder: extrapolate_callback: cur_pt = %d: false", cur_pt)
+	return false
+end
+
+function generic_object_binder:waypoint_callback(obj, action_type, index)
+	if self.st.active_section ~= nil then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "waypoint_callback", obj, action_type, index)
+	end
+end
+
+function generic_object_binder:death_callback(victim, who)
+	if who:id() == db.actor:id() then
+		xr_statistic.addKillCount(self.object)
+	end
+
+	if self.st.mob_death then
+		xr_logic.issue_event(self.object, self.st.mob_death, "death_callback", victim, who)
+	end
+
+	if self.st.active_section then
+		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "death_callback", victim, who)
+	end
+
+	smart_terrain.on_death( self.object:id() )
+
+	--' Наносим небольшой импульс вперед.
+	local h = hit()
+	h.draftsman = self.object
+	h.type = hit.fire_wound
+	h.direction = db.actor:position():sub(self.object:position())
+	h:bone("pelvis")
+	h.power = 1
+	h.impulse = 10
+	self.object:hit(h)
+
+end
+
+function generic_object_binder:hit_callback(obj, amount, local_direction, who, bone_index)
+--	printf("HIT_CALLBACK: [%s] amount[%s]", obj:name(), amount)
+	if self.st.hit then
+		xr_logic.issue_event(self.object, self.st.hit, "hit_callback", obj, amount, local_direction, who, bone_index)
+	end
+end
+
+function generic_object_binder:net_spawn(sobject)
+	if not object_binder.net_spawn(self, sobject) then
+		return false
+	end
+
+	db.add_obj(self.object)
+
+	xr_gulag.setup_gulag_and_logic_on_spawn( self.object, self.st, sobject, modules.stype_mobile, self.loaded )
+
+	return true
+end
+
+function generic_object_binder:net_destroy()
+	self.object:set_callback(callback.death,				nil)
+	self.object:set_callback(callback.patrol_path_in_point, nil)
+	self.object:set_callback(callback.hit,					nil)
+
+	local st = db.storage[self.object:id()]
+	if st and st.active_scheme then
+		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")
+	end
+	
+	db.del_obj(self.object)
+	db.storage[self.object:id()] = nil
+
+	object_binder.net_destroy(self)
+end 
+
+function generic_object_binder:reload(section)
+	object_binder.reload(self, section)
+	--printf("generic_object_binder:reload(): self.object:name()='%s'", self.object:name())
+end
+
+function generic_object_binder:net_save_relevant()
+	--printf("generic_object_binder:net_save_relevant(): self.object:name()='%s'", self.object:name())
+	return true
+end
+
+function generic_object_binder:save(packet)
+	printf("generic_object_binder:save(): self.object:name()='%s'", self.object:name())
+	object_binder.save(self, packet)
+
+	xr_logic.save_obj(self.object, packet)
+	if self.object:clsid() == clsid.script_trader then
+		trade_manager.save(self.object, packet)
+	end
+end
+
+function generic_object_binder:load(reader)
+	self.loaded = true
+
+	printf("generic_object_binder:load(): self.object:name()='%s'", self.object:name())
+	object_binder.load(self, reader)
+
+	if reader:r_eof() then
+		abort("SAVE FILE IS CORRUPT")
+	end
+
+	xr_logic.load_obj(self.object, reader)
+	if self.object:clsid() == clsid.script_trader then
+		trade_manager.load(self.object, reader)
+	end
+end

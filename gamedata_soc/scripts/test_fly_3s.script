@@ -1,0 +1,7 @@
+function main()
+	test_fly.dist = 100
+	test_fly.flying = false
+	test_fly.tm_end = device():time_global() + 3000
+	test_fly.time_limit = nil
+end
+

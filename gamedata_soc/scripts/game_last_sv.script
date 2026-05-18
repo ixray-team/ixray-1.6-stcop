@@ -1,0 +1,382 @@
+class "game_sv_LastStanding" (game_sv_mp_script)
+
+---------------------------------------------------------
+function game_sv_LastStanding:__init() super()
+	self.type = game_types.game_types.GAME_LASTSTANDING
+
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:__finalize  ()
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:createPlayerState()
+   return game_last_ps.game_last_playerState()
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:type_name   ()
+	return "laststanding"
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:Create   (str)
+   game_sv_mp_script.Create(self, str)
+   self.lifecount = self:get_option_i (str,"lifecount",5) --5 is default value
+
+   self:loadGameOptions()
+
+   self:switch_Phase(game_phases.GAME_PHASE_PENDING);
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:Update	()
+	
+game_sv_mp_script.Update	(self)
+
+local foo = 1
+      if self:Phase() == game_phases.GAME_PHASE_INPROGRESS then
+			self:checkForRoundEnd()
+      elseif self:Phase() == game_phases.GAME_PHASE_PENDING then
+			self:checkForRoundStart()
+      end
+
+	self:InitZoneCallback()
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:OnPlayerConnect	(cl_id_who)
+
+	local	ps_who	=	self:get_id	(cl_id_who)
+
+	ps_who:clear()
+   ps_who.team = 0
+	ps_who.Skip = false
+
+   local rp = RPoint()
+   rp.P:set(0,5,0)
+   rp.A:set(0,0,0)
+	self:SpawnPlayer(cl_id_who, self.spectator_entity, "", rp)
+
+   local P = net_packet()
+   self:GenerateGameMessage (P)
+   P:w_u32				(game_messages.GAME_EVENT_PLAYER_CONNECTED)
+   P:w_stringZ			(self:get_player_name_id(cl_id_who) )
+   self:u_EventSend(P)
+
+   self:signal_Syncronize()
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:OnPlayerDisconnect(cl_id_who, player_name)
+   
+   self:KillPlayer(cl_id_who)
+
+   local P = net_packet()
+   self:GenerateGameMessage (P)
+   P:w_u32				   (game_messages.GAME_EVENT_PLAYER_DISCONNECTED)
+   P:w_stringZ			(player_name)
+   self:u_EventSend(P)
+
+   self:signal_Syncronize()
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:initializeNewPlayer(ps)
+	local		cnt		= self:get_players_count	()
+	local    min = 9999999
+   for	it=0, cnt-1 	do
+		local ps_		=	self:get_it	(it)
+      if ps_.lifecount>0 and ps_.lifecount < min  then   min = ps_.lifecount    end
+   end
+
+   ps.lifecount = min
+
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:net_Export_State		( P, cl_id_to)
+
+	game_sv_mp_script.net_Export_State(self, P, cl_id_to)
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:OnEvent (P, type, time, cl_id )
+   if type == game_messages.GAME_EVENT_PLAYER_READY then
+      self:player_ready(cl_id)
+
+  elseif type == game_messages.GAME_EVENT_PLAYER_CONNECTED then
+      local cl_id = P:r_clientID()
+      self:OnPlayerConnect(cl_id)
+
+   elseif type == game_messages.GAME_EVENT_PLAYER_DISCONNECTED then
+      local cl_id = P:r_clientID()
+      local player_name =P:r_stringZ()
+      self:OnPlayerDisconnect(cl_id, player_name)
+   elseif type == game_messages.GAME_EVENT_PLAYER_KILL then --on "g_kill" console command
+		
+ 	 local	ps_who	=	self:get_id	(cl_id)
+     self:KillPlayer(cl_id, ps_who.GameID)
+
+   elseif type == game_messages.GAME_EVENT_PLAYER_KILLED then
+      local cl_id_killer    = P:r_clientID()
+      local cl_id_killed   = P:r_clientID()
+      self:OnPlayerKillPlayer(cl_id_killer, cl_id_killed)
+   else
+      game_sv_mp_script.OnEvent (self, P, type, time, cl_id )
+  end      
+end
+
+
+---------------------------------------------------------
+function game_sv_LastStanding:player_ready (player_cl_id )
+	
+   local	ps_who	=	self:get_id	(player_cl_id)
+   if self:Phase() == game_phases.GAME_PHASE_PENDING then
+      if ps_who:testFlag(game_player_flags.GAME_PLAYER_FLAG_READY)==true then
+         ps_who:resetFlag(game_player_flags.GAME_PLAYER_FLAG_READY)
+      else
+         ps_who:setFlag(game_player_flags.GAME_PLAYER_FLAG_READY)
+      end
+   elseif self:Phase() == game_phases.GAME_PHASE_INPROGRESS then
+
+          local r_p = self:GetRespawnPoint(1)
+         self:SpawnPlayer(player_cl_id, self.actor_entity, "", r_p)
+         self:SpawnItemsForActor(ps_who.GameID)
+         self:initializeNewPlayer(ps_who)
+  end
+
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:all_players_ready()
+
+	local		cnt		= self:get_players_count	()
+	local		ready_cnt	= 0
+
+
+	for	it=0, cnt-1 	do
+	
+		local ps		=	self:get_it	(it)
+		if (  (ps.Skip==true) or 
+            (ps:testFlag(game_player_flags.GAME_PLAYER_FLAG_READY)==true)) then
+         ready_cnt = ready_cnt+1
+      end
+   end
+
+	if (ready_cnt == cnt) then 
+      self:signal_Syncronize()
+      return true
+   else
+      return false
+   end
+
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:checkForRoundEnd()
+	local		cnt		= self:get_players_count	()
+   local    in_game_cnt = cnt;
+	for	it=0, cnt-1 	do
+		local ps		=	self:get_it	(it)
+      if ps.lifecount == 0 then
+         in_game_cnt = in_game_cnt-1
+      end
+   end
+
+    if (cnt>1 and in_game_cnt == 1) or (cnt==1 and in_game_cnt == 0) then
+         self:OnRoundEnd()
+   end
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:OnRoundEnd()
+   self:switch_Phase(game_phases.GAME_PHASE_PENDING)
+   local P = net_packet()
+
+   local winner = "unknown"
+	local		cnt		= self:get_players_count	()
+	for	it=0, cnt-1 	do
+		local ps		=	self:get_it	(it)
+      if ps.lifecount ~= 0 then
+         winner = ps:getName()
+      end
+   end
+   local msg = string.format("Round is over. Winner is %s",winner)
+
+   self:GenerateGameMessage (P)
+   P:w_u32				   (game_messages.GAME_EVENT_ROUND_END)
+   P:w_stringZ			(msg)
+   self:u_EventSend(P)
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:checkForRoundStart()
+      
+   if self:all_players_ready()==true then
+         self:OnRoundStart()
+      end
+end
+
+
+---------------------------------------------------------
+function game_sv_LastStanding:OnRoundStart()
+   game_sv_mp_script.OnRoundStart(self)
+
+
+--spawn all players
+	local		cnt		= self:get_players_count	()
+	for	it=0, cnt-1 	do
+		local ps		=	self:get_it	(it)
+      ps:clear()
+      if ps.Skip ~= true then
+         local clientID = self:get_it_2_id(it)
+
+          local r_p = self:GetRespawnPoint(1)
+          self:SpawnPlayer( clientID, self.actor_entity, "", r_p )
+          self:SpawnItemsForActor(ps.GameID) 
+          ps.lifecount = self.lifecount
+         
+    end
+   end
+
+	self:InitZoneCallback()
+	
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:GetRespawnPoint(team_idx)
+      local sz = self:getRPcount(team_idx)
+      local idx = math.random(sz-1)
+      
+      local rp = self:getRP(team_idx,idx)
+      return rp
+end 
+---------------------------------------------------------
+function game_sv_LastStanding:OnPlayerHitPlayer(game_id_hitter, game_id_hitted, P)
+      local ps_hitter = self:get_eid(game_id_hitter)
+      local ps_hitted = self:get_eid(game_id_hitted)
+
+      if ps_hitted == nil or ps_hitter == nil or ps_hitted.GameID==ps_hitter.GameID then return end
+      --for example:
+      local impulse = self:GetHitParamsImpulse(P)
+      local power = self:GetHitParamsPower(P)
+      impulse        = impulse* 1.01
+      power          = power * 1.01
+
+      self:SetHitParams(P, impulse, power)
+end
+
+
+---------------------------------------------------------
+function game_sv_LastStanding:OnPlayerKillPlayer(cl_id_killer, cl_id_killed)
+   local	ps_killer	=	self:get_id	(cl_id_killer)
+   local	ps_killed	=	self:get_id	(cl_id_killed)
+
+
+   ps_killed.lifecount = ps_killed.lifecount -1
+   ps_killed.deaths = ps_killed.deaths+1
+   ps_killed:setFlag(game_player_flags.GAME_PLAYER_FLAG_VERY_VERY_DEAD)
+   if ps_killed.GameID ~=ps_killer.GameID then 
+      ps_killer.kills = ps_killer.kills+1
+   end
+   
+   self:SendPlayerKilledMessage(cl_id_killer, cl_id_killed)
+   self:signal_Syncronize()
+end
+
+---------------------------------------------------------
+function game_sv_LastStanding:SpawnItemsForActor(actorGameID) 
+
+   for wpn_it in self.default_items do
+      self:SpawnWeaponForActor(actorGameID, self.default_items[wpn_it].Section, self.default_items[wpn_it].Scope, self.default_items[wpn_it].GrenadeLauncher, self.default_items[wpn_it].Silencer)
+   end
+end
+
+
+---------------------------------------------------------
+function game_sv_LastStanding:loadGameOptions()
+   local ini_file_name        = "mp\\laststanding_game.ltx"
+   local ini_section_name = "game_laststanding_options"
+   local game_settings = ini_file(ini_file_name)
+   if game_settings == nil then
+      printf("----Cannot open LTX file %s", ini_file_name)
+      return
+   end
+   
+   if game_settings:section_exist(ini_section_name) then
+         self.actor_entity = game_settings:r_string(ini_section_name, "actor_entity")
+         self.spectator_entity = game_settings:r_string(ini_section_name, "spectator_entity")
+         self.default_items = {}
+         
+         local def_weapons = game_settings:r_string(ini_section_name, "default_weapons")
+         local idx = string.find(def_weapons, ";")
+          if idx~=nil then def_weapons = string.sub(def_weapons, 0, eee-1 ) end
+         
+         for itm in string.gfind(def_weapons, '[^, ]+') do 
+            local wpn_sect=itm
+            local idx_bg = string.find(wpn_sect,"{")
+            local idx_end = string.find(wpn_sect,"}")
+            local isScope                       = false
+            local isGrenadeLauncher    = false
+            local isSilencer                    = false
+            if idx_bg~=nil then
+               wpn_sect = string.sub(wpn_sect, 0, idx_bg-1)
+               local addons = string.sub(itm, idx_bg, idx_end)
+            
+               if string.find(addons,"Scope")~=nil then isScope=true end
+               if string.find(addons,"GrenadeLauncher")~=nil then isGrenadeLauncher=true end
+               if string.find(addons,"Silencer")~=nil then isSilencer=true end
+         end
+
+         local wpn_struct={}
+         wpn_struct.Section                           = wpn_sect
+         wpn_struct.Scope 	                           = isScope
+         wpn_struct.GrenadeLauncher          = isGrenadeLauncher
+         wpn_struct.Silencer                          = isSilencer
+         self.default_items[table.getn(self.default_items)+1] = wpn_struct
+
+         end
+   else
+      printf("----Cannot find section %s in LTX file %s", ini_section_name, ini_file_name)
+      return
+   end
+
+end
+
+function game_sv_LastStanding:on_enter_zone( zone, obj )
+	local _clsid = get_clsid(obj)
+	if _clsid==clsid.actor then
+		local who = self:get_eid( obj:id() )
+		--who= is game_last_playerState type
+		printf( "---------- player %s entered the zone",who:getName() )
+	end
+	
+end
+
+function game_sv_LastStanding:on_exit_zone( zone, obj )
+	local _clsid = get_clsid(obj)
+	if _clsid==clsid.actor then
+		local who = self:get_eid( obj:id() )
+		--who= is game_last_playerState type
+		printf( "---------- player %s left the zone",who:getName() )
+	end
+end
+
+function game_sv_LastStanding:InitZoneCallback()
+    local zone = level.object( "our_script_zone" )
+	if zone==nil then 
+		return
+	end
+    zone:set_callback( self,"on_enter_zone", true )
+    zone:set_callback( self,"on_exit_zone",  false )
+end
+//comments:
+// at first we have to add scripted zone on our map
+// LevelEditor.exe, open map
+// place shape(sphere or box)for zone on the map:6.Shape->Sphere add
+// 7.SpawnElements->ai->script_zone add
+// assign shape for zone: Attach object-> pick to shape
+// assign name for the script_zone object (right mouse button->properties)
+//

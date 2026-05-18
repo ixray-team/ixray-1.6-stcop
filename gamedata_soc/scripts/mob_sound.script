@@ -1,0 +1,135 @@
+----------------------------------------------------------------------------------------------------
+-- Озвучка монстров
+----------------------------------------------------------------------------------------------------
+-- Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
+-- Исходный скрипт (trader): Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
+----------------------------------------------------------------------------------------------------
+
+local snd = {
+	trader_come_here = {
+		-- Подойди-ка... Надо бы ситуацию прояснить.
+		[[characters_voice\scenario\trader\trader1a]]
+	},
+
+	trader_come_here2 = {
+		-- Ну, че стоишь? Подходи - не кусаюсь.
+		[[characters_voice\scenario\trader\trader1b]]
+	},
+
+	trader_monolog1 = {
+		[[characters_voice\scenario\trader\trader_monolog1]]
+	},
+
+	trader_tut_choice = {
+		[[characters_voice\scenario\trader\trader_dialog_choice]]
+	},
+
+	trader_map_quest_1 = {
+		[[characters_voice\scenario\trader\trader_tutorial_map_quest_1]]
+	},
+
+	trader_pda_on_1 = {
+		[[characters_voice\scenario\trader\trader_tutorial_pda_on_1]]
+	},
+
+	trader_pda_on_2 = {
+		[[characters_voice\scenario\trader\trader_tutorial_pda_on_2]]
+	},
+
+	trader_pda_on_3 = {
+		[[characters_voice\scenario\trader\trader_tutorial_pda_on_3]]
+	},
+
+	trader_pda_1 = {
+		[[characters_voice\scenario\trader\trader_tutorial_pda_1]]
+	},
+	
+	trader_map_on_1 = {
+		[[characters_voice\scenario\trader\trader_tutorial_map_on_1]]
+	},
+
+	trader_map_on_2 = {
+		[[characters_voice\scenario\trader\trader_tutorial_map_on_2]]
+	},
+
+	trader_map_on_3 = {
+		[[characters_voice\scenario\trader\trader_tutorial_map_on_3]]
+	},
+
+	trader_tutorial_alarm = {
+		[[characters_voice\scenario\trader\trader_tutorial_rejection_1]]
+	},
+
+	trader_go_help_tolik = {
+		[[characters_voice\scenario\trader\trader_tutorial_go_help_tolik_2]]
+	},
+
+
+	trader_hello_what_have_you_got = {
+		[[characters_voice\scenario\trader\trader_script1a_1]],
+		[[characters_voice\scenario\trader\trader_script1a_2]],
+		[[characters_voice\scenario\trader\trader_script1a_3]],
+		[[characters_voice\scenario\trader\trader_script1a_4]],
+		[[characters_voice\scenario\trader\trader_script1a_5]]
+	},
+
+	trader_bye = {
+		[[characters_voice\scenario\trader\trader3c]],
+		[[characters_voice\scenario\trader\trader_script1c_5]]
+	},
+
+	trader_exchanged = {
+		[[characters_voice\scenario\trader\trader_script1c_1]]
+	},
+
+	trader_good_trade = {
+		[[characters_voice\scenario\trader\trader_script1c_2]],
+		[[characters_voice\scenario\trader\trader_script1c_3]],
+		[[characters_voice\scenario\trader\trader_script1c_4]]
+	},
+
+	trader_bad_trade = {
+		[[characters_voice\scenario\trader\trader_script1c_6]],
+		[[characters_voice\scenario\trader\trader_script1c_7]],
+		[[characters_voice\scenario\trader\trader_script1c_8]],
+		[[characters_voice\scenario\trader\trader_script1c_9]]
+	},
+
+	-- UNUSED:
+	go_out = {
+			[[characters_voice\scenario\trader\trader_script1b_1]],
+			[[characters_voice\scenario\trader\trader_script1b_2]],
+			[[characters_voice\scenario\trader\trader_script1b_3]],
+			[[characters_voice\scenario\trader\trader_script1b_4]],
+			[[characters_voice\scenario\trader\trader_script1b_5]]
+	},
+
+	monolog2 = {
+			[[characters_voice\scenario\trader\trader_monolog2]]
+	},
+
+	monolog3 = {
+			[[characters_voice\scenario\trader\trader_script1b_1]]
+	}
+
+}
+
+function pick_sound_from_set(npc, set, last_sound_info)
+	local sndset = snd[set]
+	if not sndset then
+		printf("_bp: no sndset")
+		return nil
+	end
+	-- 1) Выбираем случайный звук из набора:
+	local chance = 1
+	local picked_snd = nil
+	for n, s in pairs(snd[set]) do
+		if math.random(chance) == 1 then
+			picked_snd = s
+		end
+		chance = chance + 1
+	end
+	printf("_bp: picked_snd")
+	return picked_snd
+end
+

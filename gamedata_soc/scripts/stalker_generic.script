@@ -1,0 +1,103 @@
+----------------------------------------------------------------------------------------------------------------------
+-- STALKER NPC INFO
+----------------------------------------------------------------------------------------------------------------------
+function set_npc_info(npc, ini, scheme, section)
+	printf("INFO SECTION [%s]", utils.to_str(section))
+
+	local in_info	= get_infos_from_data(npc, utils.cfg_get_string(ini, section, "in", npc, false, ""))
+	local out_info	= get_infos_from_data(npc, utils.cfg_get_string(ini, section, "out", npc, false, ""))
+
+	for k,v in pairs(in_info) do
+		npc:give_info_portion(v)
+	end
+	for k,v in pairs(out_info) do
+		npc:disable_info_portion(v)
+	end
+end
+function get_infos_from_data(npc, s)
+--	printf("get_infos_from_data [%s]", utils.to_str(s))
+	local t = {}
+    if s then
+		for name in string.gfind( s, "(%|*[^%|]+%|*)%p*" ) do
+--			printf("[%s]", utils.to_str(name))
+			local condlist = xr_logic.parse_condlist(npc, "in", name, name)
+			if condlist then
+				table.insert(t, xr_logic.pick_section_from_condlist(db.actor, npc, condlist))
+			end
+		end
+	end
+    return t
+end
+
+
+----------------------------------------------------------------------------------------------------------------------
+-- STALKER IGNORE MONSTER THRESHOLD
+----------------------------------------------------------------------------------------------------------------------
+-- Вызывается на переключении на новую секцию. Производит вычитывание настроек из текущей секции.
+function reset_threshold(npc, scheme, st, section)
+	local threshold_section
+	if scheme == nil or scheme == "nil" then
+		threshold_section = utils.cfg_get_string(st.ini, st.section_logic, "threshold", npc, false, "")
+	else
+		threshold_section = utils.cfg_get_string(st.ini, section, "threshold", npc, false, "")
+	end
+	
+	printf("THRESHOLD SECTION [%s]", utils.to_str(threshold_section))
+	if threshold_section then
+		local max_ignore_distance	= utils.cfg_get_number(st.ini, threshold_section, "max_ignore_distance", npc, false)
+		if max_ignore_distance then
+			npc:max_ignore_monster_distance(max_ignore_distance)
+		else
+			npc:restore_max_ignore_monster_distance()
+		end
+		local ignore_monster		= utils.cfg_get_number(st.ini, threshold_section, "ignore_monster", npc, false)
+		if ignore_monster then
+			npc:ignore_monster_threshold(ignore_monster)
+		else
+			npc:restore_ignore_monster_threshold()
+		end
+	end
+end
+
+
+----------------------------------------------------------------------------------------------------------------------
+-- STALKER MAP SHOW
+----------------------------------------------------------------------------------------------------------------------
+-- Вызывается на переключении на новую секцию. Производит вычитывание настроек из текущей секции.
+function reset_show_spot(npc, scheme, st, section)
+	local spot_section
+	if scheme == nil or scheme == "nil" then
+		spot_section = utils.cfg_get_string(st.ini, st.section_logic, "show_spot", npc, false, "")
+	else
+		spot_section = utils.cfg_get_string(st.ini, section, "show_spot", npc, false, "")
+	end
+	printf("STALKER SPOT SECTION [%s]", utils.to_str(spot_section))
+
+	if spot_section == nil then
+		spot_section = "true"
+	end
+	
+    local spot = "false"
+    if npc:character_community() ~= "zombied" then
+	    local spot_condlist = xr_logic.parse_condlist(npc, section, "show_spot", spot_section)
+	    spot = xr_logic.pick_section_from_condlist(db.actor, npc, spot_condlist)
+    end
+
+	local sim  = alife()
+	if not sim then
+		return
+	end
+
+	local obj  = sim:object(npc:id())
+
+	if obj then
+		if spot == "false" then
+			-- прячем
+			obj:visible_for_map(false)
+		else
+			-- ставим
+			obj:visible_for_map(true)
+		end
+	end
+end
+

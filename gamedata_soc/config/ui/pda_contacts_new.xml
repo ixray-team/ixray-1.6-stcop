@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window>
+
+ 	<main_wnd x="110" y="90" width="761" height="475"/>
+    <left_frame_window x="0" y="0" width="448" height="475" a="80">
+		<texture>ui_pda_frame_sub</texture>        
+    </left_frame_window>
+
+    <left_frame_line x="8" y="17" width="434" height="27">
+        <title x="10" y="1" width="435" height="18">
+            <text font="letterica25" r="255" g="255" b="250">Contacts</text>
+        </title>
+        <texture>ui_string_02</texture>        
+    </left_frame_line>
+
+    <right_frame_window x="463" y="0" width="298" height="475" a="80">
+		<texture>ui_pda_frame_sub</texture>
+    </right_frame_window>
+
+    <right_frame_line x="8" y="17" width="284" height="21">
+        <texture>ui_string_03</texture>        
+    </right_frame_line>
+
+	<list x="20" y="53" width="422" height="416" always_show_scroll="1" can_select="1" scroll_profile="pda"/>
+	<detail_list x="20" y="48" width="272" height="421" always_show_scroll="1" left_ident="5" scroll_profile="pda"/>
+
+    <a_static x="395" y="-3" width="32" height="32" frames="16" duration="1000" columns="8" frame_width="32" frame_height="32" cyclic="1" autoplay="1">
+        <texture>ui\ui_pda_anims_03</texture>
+    </a_static>
+
+	<left_auto_static x="8" y="53" width="4" height="400">
+		<texture>ui\ui_pda_vertical_line_r_l</texture>
+	</left_auto_static>
+	<left_auto_static x="416" y="53" width="4" height="400">
+		<texture>ui\ui_pda_vertical_line_r_r</texture>
+	</left_auto_static>
+	<left_auto_static x="14" y="53" width="405" height="2" stretch="1">
+		<texture>ui\ui_pda_horizontal_line</texture>
+	</left_auto_static>
+
+	<right_auto_static x="8" y="52" width="4" height="420">
+		<texture>ui\ui_pda_vertical_line_r_l</texture>
+	</right_auto_static>
+	<right_auto_static x="269" y="52" width="4" height="420">
+		<texture>ui\ui_pda_vertical_line_r_r</texture>
+	</right_auto_static>
+	<right_auto_static x="8" y="48" width="262" height="2" stretch="1">
+		<texture>ui\ui_pda_horizontal_line</texture>
+	</right_auto_static>
+</window>

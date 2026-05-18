@@ -1,0 +1,23 @@
+[logic]
+active = walker1
+on_death = death
+
+[death]
+on_info = %=val_suicide_stalker_died%
+
+[walker1]
+path_walk = val_suicide_walk
+path_look = val_suicide_look
+meet_dialog = val_suicider_dialog
+meet_talk_enabled = true
+meet_state = wait_na
+on_info = {+val_suicide_artefact_given} remark@die
+
+[remark@die]
+no_move = true
+no_rotate = true
+anim = suicide
+snd = val_suicide_before_death
+snd_anim_sync = true
+on_signal = action_end | nil %=val_suicide_kill_self%
+

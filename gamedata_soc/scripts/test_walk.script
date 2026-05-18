@@ -1,0 +1,17 @@
+function main()
+	local monstr		= get_level_object("monster")
+	monstr:script(true, script_name())
+	
+	while(true) do
+		if(monstr:action() == nil) then
+			
+			action(monstr, move(	move.walk_fwd, 
+								patrol("way", patrol.nearest, patrol.continue, true)),
+								cond(cond.time_end,5000))
+			action(monstr, anim(anim.look_around, 0), cond(cond.time_end, 4000))
+			
+		end
+		
+		wait()
+	end
+end

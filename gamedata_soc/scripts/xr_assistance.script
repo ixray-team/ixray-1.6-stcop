@@ -1,0 +1,230 @@
+--
+-- DELME (renamed to xr_companion)
+--
+
+-- Author: Serhiy Vynnychenko (narrator@gsc-game.kiev.ua)
+-- ver 1.2.1
+--------------------------------------------------------------------------------
+-- EVALUATORS
+--------------------------------------------------------------------------------
+--' ASSISTANCE
+class "evaluator_assistance" (property_evaluator)
+function evaluator_assistance:__init(storage, name) super(nil, name)
+	self.a = storage
+end
+function evaluator_assistance:evaluate()
+	return self.a.actor ~= nil
+end
+
+--------------------------
+-- ACTIONS
+--------------------------
+--' ASSISTANCE
+class "action_assistance" (action_base)
+function action_assistance:__init (npc_name, action_name, storage) super(nil, action_name)
+	self.a = storage
+
+	self.sound_wait = {idle = 0,
+		     begin = nil,
+		     maxidle = 5, 
+		     sumidle = 7,
+   		     rnd = 80,
+		     lastsound = nil,	
+		     themes = {"weather", "state"}}
+end
+function action_assistance:initialize()
+	action_base.initialize(self)
+--	self.object:set_node_evaluator() 
+--	self.object:set_path_evaluator() 
+	self.object:set_desired_position() 
+	self.object:set_desired_direction()
+
+	self.object:set_mental_state(anim.free)
+	self.object:set_item(object.idle, self.object:best_weapon())
+	self.move_type = move.stand
+	self.object:enable_talk()	
+end
+function action_assistance:execute()
+	action_base.execute(self)
+	--'1. Если мы находимся за большим радиусом - необходимо выбрать новую точку
+	if self.a.assist_point == nil or
+	   (self.object:position():distance_to(self.a.actor:position()) >= self.a.desired_distance and
+	   level.vertex_position(self.a.assist_point):distance_to(self.a.actor:position()) >= 2*self.a.desired_distance)
+	then
+		self.a.assist_point = select_position(self.object, self.a)
+	end
+	--'2. Двигаемся на точку: если точка далеко - бежим, иначе идем
+	if self.a.assist_point ~= nil then 
+			self.object:set_path_type(game_object.level_path)
+			self.object:set_dest_level_vertex_id(self.a.assist_point)
+			self.object:set_sight(look.path_dir, nil, 0)
+			self.object:set_desired_direction()
+	end
+
+	if level.vertex_position(self.a.assist_point):distance_to(self.object:position()) < 1 then
+		self.move_type = move.stand
+	end
+	if level.vertex_position(self.a.assist_point):distance_to(self.object:position()) >= 1 and
+		self.move_type == move.stand
+	then
+		self.move_type = move.walk
+	end
+	if level.vertex_position(self.a.assist_point):distance_to(self.object:position()) >= 10 and
+		self.move_type == move.stand or self.move_type == move.walk
+	then
+		self.move_type = move.run		
+	end
+	self.object:set_movement_type(self.move_type)	
+	
+	--'4. Если стоим на точке - петь песенки и прочую херню
+	xr_sound.sound_update(self.object, self.sound_wait) 
+
+	if self.a.actor:alive() == false then
+		self.a.actor = nil
+		return
+	end
+	
+end
+function action_assistance:finalize()
+	action_base.finalize(self)
+	self.object:disable_talk()
+	xr_state.anim_update(nil, self.object)
+	local enemy = self.object:best_enemy()
+	if enemy ~= nil then
+		xr_sound.sound_update(self.object, xr_assistance.get_sound_for_enemy(enemy))
+	end
+end
+
+--' Выбор новой позиции
+function select_position(npc, st)
+	local node_1_vertex_id = nil
+	local node_1_distance = nil
+	local node_2_vertex_id = nil
+	local node_2_distance = nil
+
+	--' проверяем точку слева от актера
+	desired_direction = vector_rotate_y(st.actor:direction(), math.random(50,60) )
+	node_1_vertex_id = level.vertex_in_direction (  st.actor:level_vertex_id(),
+													desired_direction,
+													st.desired_distance )
+	if npc:accessible(node_1_vertex_id) ~= true or node_1_vertex_id == st.actor:level_vertex_id() then			
+		node_1_vertex_id = nil
+	end
+	--' проверяем точку справа от актера
+	desired_direction = vector_rotate_y(st.actor:direction(), -math.random(50,60) )
+	node_2_vertex_id = level.vertex_in_direction (  st.actor:level_vertex_id(),
+													desired_direction,
+													st.desired_distance )
+	if npc:accessible(node_2_vertex_id) ~= true or node_2_vertex_id == st.actor:level_vertex_id() then			
+		node_2_vertex_id = nil
+	end
+	
+	--'Проверяем растояния до точек
+	if node_1_vertex_id ~= nil then
+		node_1_distance = npc:position():distance_to_sqr(level.vertex_position(node_1_vertex_id))
+	else
+		node_1_distance = -1
+	end
+	if node_2_vertex_id ~= nil then
+		node_2_distance = npc:position():distance_to_sqr(level.vertex_position(node_2_vertex_id))
+	else
+		node_2_distance = -1
+	end
+	
+	--' Выбираем ближайшую из существующих
+	if node_1_distance == -1 and node_2_distance == -1 then
+		--' Не смогли найти точку, ругаться
+		return -1
+	end
+	if node_1_distance == -1 then
+		return node_2_vertex_id
+	end
+	if node_2_distance == -1 then
+		return node_1_vertex_id
+	end
+	if node_1_distance < node_2_distance then
+		return node_1_vertex_id
+	else
+		return node_2_vertex_id
+	end
+end
+
+----------------------------------------------------------------
+-- BINDER
+----------------------------------------------------------------
+function add_to_binder(npc, char_ini)
+	local operators  = {}
+	local properties = {}
+	
+	db.storage[npc:id()].assistance = {
+			actor = nil,
+			desired_distance = 5,			
+			assist_point = nil
+	}	
+	
+	local manager = npc:motivation_action_manager()
+
+	properties["need_assistance"]		= xr_evaluators_id.assistance + 1
+
+	operators["action_assistance"]      = xr_actions_id.assistance + 1
+	operators["action_change_position"] = xr_actions_id.assistance + 2
+
+	manager:add_evaluator (properties["need_assistance"],		evaluator_assistance		(db.storage[npc:id()].assistance, "assistance_assistance"))
+
+	local action = action_assistance(npc, "action_assistance", db.storage[npc:id()].assistance)
+	action:add_precondition (world_property(stalker_ids.property_alive,			true))
+	action:add_precondition (world_property(stalker_ids.property_enemy,			false))
+	action:add_precondition (world_property(properties["need_assistance"],		true))
+	action:add_effect (world_property(properties["need_assistance"], false))
+	manager:add_action (operators["action_assistance"], action)
+
+	local action = manager:action(xr_actions_id.alife)
+	action:add_precondition (world_property(properties["need_assistance"],      false))
+end
+function set_assistance(object, victim)
+	db.storage[object:id()].assistance.actor = victim
+end
+
+-----------------------------------------------------------------
+-- SCRIPT FUNCTIONS
+-----------------------------------------------------------------
+function get_sound_for_enemy(enemy)
+	local otype = enemy:clsid()
+
+	local sound = { rnd = 100, maxidle = 1, sumidle = 0}
+
+	if 	otype == clsid.actor or
+  	   	otype == clsid.soldier or
+	   	otype == clsid.script_stalker or
+	   	otype == clsid.trader
+	then
+		sound.themes = {"reac_find_enemy"}
+	elseif 	otype == clsid.crow or
+		otype == clsid.rat or
+		otype == clsid.rat_group or
+		otype == clsid.zombie or
+		otype == clsid.flesh or
+		otype == clsid.controller or
+		otype == clsid.bloodsucker or
+		otype == clsid.burer or
+		otype == clsid.chimera or
+		otype == clsid.boar or
+		otype == clsid.flesh_group or
+		otype == clsid.dog_red or
+		otype == clsid.dog_black or
+		otype == clsid.pseudo_gigant
+	then
+		sound.themes = {"reac_find_monstr"}
+	end
+
+	return sound
+end
+------------------------------------------------------------------
+-- COMMON FUNCTIONS
+------------------------------------------------------------------
+function vector_rotate_y (v, angle)
+    angle = angle * 0.017453292519943295769236907684886
+    local c = math.cos (angle)
+    local s = math.sin (angle)
+    return vector ():set (v.x * c - v.z * s, v.y, v.x * s + v.z * c)
+end

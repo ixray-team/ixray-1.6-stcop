@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="windows-1251" standalone="yes" ?>
+<string_table>
+    <string id="barman_dialog_0">
+        <text>default text</text>
+    </string>
+    <string id="barmen_dialog_2">
+        <text>text in default</text>
+    </string>
+    <string id="barmen_dialog_0">
+        <text>Привет, Меченый. Вован уже рассказал о тебе. Стрелка значит ищешь, ну что ж, кой чего знаю о нем.</text>
+    </string>
+    <string id="barmen_dialog_1">
+        <text>text in default</text>
+    </string>
+    <string id="1_2">
+        <text>text in default</text>
+    </string>
+    <string id="1_12">
+        <text>text in default</text>
+    </string>
+    <string id="1_1">
+        <text>text in default</text>
+    </string>
+    <string id="1_11">
+        <text>sdfdssdfsdf</text>
+    </string>
+    <string id="1_111">
+        <text>text in defaultdfsdf</text>
+    </string>
+    <string id="1_0">
+        <text>111</text>
+    </string>
+    <string id="Good by." />
+    <string id="" />
+    <string id="Я не хочу с тобой разговаривать." />
+    <string id="aa_0">
+        <text>default text</text>
+    </string>
+</string_table>

@@ -1,0 +1,14 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = sr_sound_act
+
+[sr_sound_act]
+theme = sar_monolith_call
+delay = 10000
+delay_max = 15000
+stereo = true
+on_info = {+sar2_monolith_miracle} sr_idle@end
+
+[sr_idle@end]

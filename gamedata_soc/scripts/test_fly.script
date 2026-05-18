@@ -1,0 +1,54 @@
+flying = false
+tm_end = nil
+dist = 100
+time_limit = nil
+
+function main()
+	while true do
+		if flying or (tm_end and tm_end >= device():time_global()) then
+			for k, v in db.storage do
+				if k and k ~= db.actor:id() then
+					local npc = level.object_by_id(k)
+					local otype = object_type(npc)
+					local p1 = db.actor:position()
+					local p2 = npc:position()
+					p1.y = 0
+					p2.y = 0
+					if p1:distance_to(p2) < dist then
+						if not v or not v.flying_stop or v.flying_stop < device():time_global() then
+							if v and not v.flying_stop and time_limit then
+								v.flying_Stop = device():time_global() + time_limit
+							end
+							if otype == "stalker" or otype == "monstr" or otype == "corpse" then
+								local height = npc:position().y
+								local v = utils.vector_copy_by_val(npc:direction())
+								local imp
+								if height < 30 then
+									v.x = 0
+									v.y = 1
+									v.z = 0
+									imp = 2000
+								else
+									v.x = (math.random() * 2) - 1
+									v.y = (math.random() * 2) - 1
+									v.z = (math.random() * 2) - 1
+									imp = 500
+								end
+								local h = hit()
+								h.power = 1000
+								--h.direction = vector_rotate_y(npc:direction(), 90)
+								h.direction = v
+								h.bone = "bip01_head"
+								h.draftsman = npc
+								h.impulse = imp
+								h.type = hit.wound
+								npc:hit(h)
+							end
+						end
+					end
+				end
+			end
+		end
+		wait()
+	end
+end

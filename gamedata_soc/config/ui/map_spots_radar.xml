@@ -1,0 +1,11 @@
+<!-- radar quest locations and spots-->
+	<rad_antenna_location hint="rad_antenna" store="1">
+		<level_map spot="rad_antenna_spot" pointer="quest_pointer"></level_map>
+		<mini_map  spot="rad_antenna_spot" pointer="quest_pointer"></mini_map>
+	</rad_antenna_location>
+
+    <rad_antenna_spot x="0" y="0" width="32" height="32" alignment="c">
+		<texture x="32" y="160" width="32" height="32">ui\ui_icons_map</texture>
+	</rad_antenna_spot>
+
+	

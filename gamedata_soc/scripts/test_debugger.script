@@ -1,0 +1,30 @@
+function dd()
+	local xxx = 5555
+  -- level.object()
+end
+
+function dd_()
+	q()
+   f = 7
+end
+
+function q()
+   r = 8
+end
+
+function s()
+	dd_()
+	local w = 5
+end
+
+function main()
+   local d = 8
+    local zz = 5	
+   dd()
+   qq = 5	
+  
+end
+
+--this.main()
+s()
+main()

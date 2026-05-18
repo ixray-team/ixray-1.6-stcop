@@ -1,0 +1,152 @@
+local members = {}
+local moved = {}
+zone = nil
+
+
+-------------------------------------------------------------------------
+function add_member (npc)
+    --проверим: а наш ли это мужик ?
+    local ini = npc:spawn_ini ()
+    if ini == nil or ini:section_exist ("escape_raid") == false then 
+       return 
+    end
+    --наш, блин. Если уже есть, то пшел вон.
+    for a = 1, table.getn (members), 1 do
+        if members[a] == npc.id then 
+           return 
+        end
+    end    
+    --нету :( Внесем нахала в черный список.
+    table.insert (members, npc.id)
+    printf ("Stalker %s is added to list", npc:name ())
+    -- и изгоним из мира живых
+    this.switch_offline (npc.id)    
+end
+
+
+-------------------------------------------------------------------------
+function start_raid ()
+    if zone == nil then return end
+    -- пошла жара !!!
+    zone.raid_wait = device ():time_global ()
+    for a = 1, table.getn (members), 1 do
+        this.switch_online (members[a])
+        printf ("Switch to online stalker with id %d", members[a])
+    end
+    --в идеале, здесь нужно рассортировать команды в случае гибели отдельных мужиков
+end
+
+
+-------------------------------------------------------------------------
+class "escape_raid"
+-----------------------
+function escape_raid:__init (zone, ini)
+    -- абсолютный стандарт
+    self.ini_ok = true
+    printf ("Zone %s is added to binder", zone:name ())
+    self.time = 0
+    self.raid_wait = 0
+end
+-----------------------
+function escape_raid:on_enter (obj)
+    if self.raid_wait ~= 0 then
+       if device ():time_global () - self.raid_wait > 20000 then
+          self.raid_wait = 0
+       else
+          return   
+       end
+    end   
+           
+    -- наш ли мужик приперся. Если нет, то проигнорируем.
+    local ini = obj:spawn_ini ()
+    if ini == nil or ini:section_exist ("escape_raid") == false then
+       return
+    end
+    -- и сколько же вас разбрелось ?
+    local size = table.getn (moved)
+    -- никого :(
+    if size == 0 then return end
+    --пороемся в реестре покинувших зону и отметим вход
+    for a = 1, size, 1 do
+        if moved[a].id == obj:id () then
+           moved[a].out = false
+        end
+    end
+    --чекнем по поводу безвременной кончины.
+    -- если жив и где-то лазит, то обождем
+    for a = 1, size, 1 do
+        if moved[a].out == true then
+           if moved[a].object:alive () == false then 
+              -- надо удалить мужика из списков нашей партии
+              for b = 1, table.getn (members), 1 do
+                  if members[b] == moved[a].id then
+                     table.remove (members, b)
+                  end
+              end
+              -- и вообще - он уже пришел :)        
+              moved[a].out = false
+           else 
+              return 
+           end
+        end   
+    end
+    self.time = device ():time_global ()
+    -- все вернулись. По могилам !!!
+    for a = 1, size, 1 do
+        this.switch_offline (moved[a].id)
+    end
+    -- реестр умножим на 0
+    moved = {}
+end
+-----------------------
+function escape_raid:on_leave (obj)
+    if self.time ~= 0 then
+       if device ():time_global () - self.time < 20000 then 
+          return 
+       else 
+          self.time = 0  
+       end
+    end   
+    -- на всякий случай проверим, а ниш ли это мужик, а то
+    -- ходют тут всякие...
+    local present = false
+    for a = 1, table.getn (members), 1 do 
+        if obj:id () == members[a] then
+           present = true
+           break
+        end
+    end
+    -- случайно забрел...
+    if present == false then return end
+    --проверим: а не выходил ли он ?
+    for a = 1, table.getn (moved), 1 do
+        if moved[a].id == obj:id () then
+           moved[a].out = true
+           return 
+        end
+    end        
+    -- зарегистрируем выход
+    local t = {object = obj, id = obj:id (), out = true}
+    printf ("Stalker %s is outed", obj:name ())
+    table.insert (moved, t)
+end
+
+
+
+-------------------------------------------------------------------------------------------
+function switch_online (id)
+    if id == -1 then return end
+    local sim = alife ()
+    if sim ~= nil then
+       sim:set_switch_online  (id, true)
+       sim:set_switch_offline (id, false)
+    end
+end
+-------------------------------------------------------------------------------------------
+function switch_offline (id)
+    local sim = alife ()
+    if sim ~= nil then
+       sim:set_switch_online  (id, false)
+       sim:set_switch_offline (id, true)
+    end
+end

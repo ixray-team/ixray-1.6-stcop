@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding="UTF-8"?>
+
+<window>
+
+	<main x=0 y=0 width=1024 height=768/>
+
+	<static_icon x="30" y="22" width="150" height="220" stretch="1">
+		<texture_offset x="-11" y="0"/>
+		<texture>ui_charinfo_left</texture>
+	</static_icon>
+	
+	<static_icon x="870" y="22" width="150" height="220" stretch="1">
+		<texture>ui_charinfo_right</texture>
+	</static_icon>
+
+	<our_bag_static x="30" y="270" width="333" height="450" stretch="1">
+		<texture width="305" height="455">ui\ui_dg_inventory_exchange_trade</texture>
+		<text x="30" y="8" font="graffiti22" r="238" g="153" b="26" complex_mode="1"/>
+	</our_bag_static>
+
+	<dragdrop_list_our x="29" y="35" width="279" height="410"
+			cell_width = "31" cell_height="41" rows_num="10" cols_num="9" 
+			unlimited="1" group_similar="1"/>
+
+	<others_bag_static x="675" y="270" width="333" height="455" stretch="1">
+		<texture mirror="h" width="305" height="455">ui\ui_dg_inventory_exchange_trade</texture>
+		<text x="25" y="8" font="graffiti22" r="255" g="255" b="255" a="128">items</text>
+	</others_bag_static>
+
+	<dragdrop_list_other x="29" y="35" width="279" height="410"
+			cell_width="31" cell_height="41" rows_num="10" cols_num="9" 
+			unlimited="1" group_similar="1"/>
+
+	<frame_window x="385" y="274" width="267" height="460">
+		<texture>ui_frame</texture>		
+		<_left_top_texture x="5" y="10">ui\ui_inv_info_over_lt</_left_top_texture>
+	</frame_window>
+
+	<descr_static x="5" y="184" width="260" height="270" stretch="1">
+		<texture width="258" height="271">ui\ui_inv_info_over_b</texture>
+	</descr_static>
+
+	<auto_static x="395" y="461" width="220" height="30">
+		<text font="graffiti22" r="255" g="255" b="255" a="128">Description</text>
+	</auto_static>
+
+	<top_background x=0 y=0 width=1024 height=128>
+		<texture>ui\ui_top_background</texture>
+	</top_background>
+
+	<bottom_background x=0 y=736 width=1024 height=32>
+		<texture>ui\ui_bottom_background</texture>
+	</bottom_background>
+
+	<take_all_btn x="830" y="725" width="157" height="48" hR="255" hB="83" hG="179" highlight_text="1">
+        <texture>ui_button_main01</texture>
+        <text align="c" font="graffiti22" r="238" g="153" b="26">Take All</text>
+	</take_all_btn>
+
+</window>
+

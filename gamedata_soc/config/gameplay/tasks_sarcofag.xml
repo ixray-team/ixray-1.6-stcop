@@ -1,0 +1,83 @@
+
+<game_task id="sar_monolith" prio="282">
+		<title>sar_monolith</title>
+		<objective>
+			<text>sar_monolith_0</text>
+			<icon>ui_iconsTotal_sar_monolith</icon>
+			<infoportion_complete>sar_monolith_go</infoportion_complete>
+			<infoportion_fail>sar_monolith_destroy</infoportion_fail>
+			<article>sar_monolith_call_info</article>
+		</objective>
+		<objective>
+			<text>sar_monolith_1</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="sar_monolith_1">green_location</map_location_type>			
+			<object_story_id>sar_monolith_find</object_story_id>
+			<infoportion_complete>sar_monolith_find</infoportion_complete>
+		</objective>
+		<objective>
+			<text>sar_monolith_2</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="sar_monolith_hint">green_location</map_location_type>
+			<map_location_hidden>1</map_location_hidden>
+			<object_story_id>sar_monolith</object_story_id>
+			<infoportion_complete>sar_monolith_go</infoportion_complete>
+		</objective>
+</game_task>
+
+<game_task id="sar_secret_lab" prio="245">
+		<title>sar_secret_lab</title>
+		<objective>
+			<text>sar_secret_lab_0</text>
+			<icon>ui_iconsTotal_sar_secret_lab</icon>
+			<infoportion_complete>sar_enter_command_center</infoportion_complete>
+		</objective>
+		<objective>
+			<text>sar_secret_lab_1</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_hidden>1</map_location_hidden>
+			<infoportion_complete>sar_secret_door_find</infoportion_complete>
+		</objective>
+		<objective>
+			<text>sar_secret_lab_2</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="sar_secret_door_hint">green_location</map_location_type>
+			<map_location_hidden>1</map_location_hidden>
+			<object_story_id>sar_secret_door</object_story_id>
+			<infoportion_complete>sar_finish_decoding</infoportion_complete>		
+		</objective>
+		<objective>
+			<text>sar_secret_lab_3</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<infoportion_complete>sar_enter_command_center</infoportion_complete>
+		</objective>
+</game_task>
+
+<game_task id="sar_monolith_destroy" prio="240">
+		<title>sar_monolith_destroy</title>
+		<objective>
+			<text>sar_monolith_destroy_0</text>
+			<icon>ui_iconsTotal_sar_monolith_destroy</icon>
+			<infoportion_complete>sar_monolith_destroy</infoportion_complete>
+			<article>sar_command_center_info</article> 
+		</objective>
+		<objective>
+			<text>sar_monolith_destroy_1</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<infoportion_complete>sar_monolith_destory</infoportion_complete>
+		</objective>
+</game_task>
+
+<game_task id="sar_warlab" prio="235">
+		<title>sar_perception</title>
+		<objective>
+			<text>sar_perception_0</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+		</objective>
+		<objective>
+			<text>sar_perception_1</text>
+			<icon x="100" y="50" width="50" height="50">ui\ui_icons_task</icon>
+			<map_location_type hint="sar_warlab_hint">green_location</map_location_type>
+			<object_story_id>warlab</object_story_id>
+		</objective>
+</game_task>

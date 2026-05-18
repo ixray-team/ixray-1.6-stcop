@@ -1,0 +1,1356 @@
+;-------------------------------------------------------------------------------------------------
+;-- AGROPROM. База военных на НИИ Агропром
+;-------------------------------------------------------------------------------------------------
+
+[info@agr_nii_about_rats]
+in = agr_pda_soldiers_rats
+
+;---------------------- командир ---------------------
+[logic@agr_nii_day_commander]
+active = walker@agr_nii_day_commander
+info = info@agr_nii_about_rats
+
+[walker@agr_nii_day_commander]
+path_walk = day_commander_walk
+path_look = day_commander_look
+
+
+[logic@agr_nii_night_commander]
+active = sleeper@agr_nii_night_commander
+info = info@agr_nii_about_rats
+
+[sleeper@agr_nii_night_commander]
+path_main = night_commander_sleep
+
+
+[logic@agr_nii_alarm_commander]
+active = camper@agr_nii_alarm_commander
+info = info@agr_nii_about_rats
+
+[camper@agr_nii_alarm_commander]
+radius = 8
+path_walk = alarm_commander_walk
+path_look = alarm_commander_look
+
+;------------------ пост на северных воротах -----------------------
+[logic@agr_nii_north_gate_walker1]
+active = walker1@agr_nii_north_gate
+info = info@agr_nii_about_rats
+
+[walker1@agr_nii_north_gate]
+path_walk = north_gate_walk1
+path_look = north_gate_look1
+on_info   = {+agr_nii_alarm} walker1@agr_nii_north_gate_alarm
+
+[walker1@agr_nii_north_gate_alarm]
+path_walk = north_gate_alarm_walk1
+path_look = north_gate_alarm_look1
+on_info   = {-agr_nii_alarm} walker1@agr_nii_north_gate
+
+
+[logic@agr_nii_north_gate_walker2]
+active = walker2@agr_nii_north_gate
+info = info@agr_nii_about_rats
+
+[walker2@agr_nii_north_gate]
+path_walk = north_gate_walk2
+path_look = north_gate_look2
+on_info   = {+agr_nii_alarm} walker2@agr_nii_north_gate_alarm
+
+[walker2@agr_nii_north_gate_alarm]
+path_walk = north_gate_alarm_walk2
+path_look = north_gate_alarm_look2
+on_info   = {-agr_nii_alarm} walker2@agr_nii_north_gate
+
+
+[logic@agr_nii_north_gate_walker3]
+active = walker3@agr_nii_north_gate
+info = info@agr_nii_about_rats
+
+[walker3@agr_nii_north_gate]
+path_walk = north_gate_walk3
+path_look = north_gate_look3
+on_info   = {+agr_nii_alarm} walker3@agr_nii_north_gate_alarm
+
+[walker3@agr_nii_north_gate_alarm]
+path_walk = north_gate_alarm_walk3
+path_look = north_gate_alarm_look3
+on_info   = {-agr_nii_alarm} walker3@agr_nii_north_gate
+
+;------------------ пост на восточных воротах -----------------------
+[logic@agr_nii_east_gate_walker1]
+active = walker1@agr_nii_east_gate
+info = info@agr_nii_about_rats
+
+[walker1@agr_nii_east_gate]
+path_walk = east_gate_walk1
+path_look = east_gate_look1
+on_info   = {+agr_nii_alarm} walker1@agr_nii_east_gate_alarm
+
+[walker1@agr_nii_east_gate_alarm]
+path_walk = east_gate_alarm_walk1
+path_look = east_gate_alarm_look1
+on_info   = {-agr_nii_alarm} walker1@agr_nii_east_gate
+
+
+[logic@agr_nii_east_gate_walker2]
+active = walker2@agr_nii_east_gate
+info = info@agr_nii_about_rats
+
+[walker2@agr_nii_east_gate]
+path_walk = east_gate_walk2
+path_look = east_gate_look2
+on_info   = {+agr_nii_alarm} walker2@agr_nii_east_gate_alarm
+
+[walker2@agr_nii_east_gate_alarm]
+path_walk = east_gate_alarm_walk2
+path_look = east_gate_alarm_look2
+on_info   = {-agr_nii_alarm} walker2@agr_nii_east_gate
+
+;------------------ 1-й этаж основного здания -----------------------
+[logic@agr_nii_floor1_day_walker1]
+active = walker1@agr_nii_floor1_day
+info = info@agr_nii_about_rats
+
+[walker1@agr_nii_floor1_day]
+path_walk = floor1_day_walk1
+path_look = floor1_day_look1
+
+
+[logic@agr_nii_floor1_alarm_walker1]
+active = walker1@agr_nii_floor1_alarm
+info = info@agr_nii_about_rats
+
+[walker1@agr_nii_floor1_alarm]
+path_walk = floor1_alarm_walk1
+path_look = floor1_alarm_look1
+
+
+[logic@agr_nii_floor1_day_walker2]
+active = walker2@agr_nii_floor1_day
+info = info@agr_nii_about_rats
+
+[walker2@agr_nii_floor1_day]
+path_walk = floor1_day_walk2
+path_look = floor1_day_look2
+
+
+[logic@agr_nii_floor1_alarm_walker2]
+active = camper2@agr_nii_floor1_alarm
+info = info@agr_nii_about_rats
+
+[camper2@agr_nii_floor1_alarm]
+path_walk = floor1_alarm_walk1
+path_look = floor1_alarm_look1
+radius = 3
+
+;------------------ 2-й этаж основного здания -----------------------
+[logic@agr_nii_floor2_day_walker1]
+active = walker1@agr_nii_floor2_day
+info = info@agr_nii_about_rats
+
+[walker1@agr_nii_floor2_day]
+path_walk = floor2_day_walk1
+path_look = floor2_day_look1
+
+
+[logic@agr_nii_floor2_alarm_walker1]
+active = walker1@agr_nii_floor2_alarm
+info = info@agr_nii_about_rats
+
+[walker1@agr_nii_floor2_alarm]
+path_walk = floor2_alarm_walk1
+path_look = floor2_alarm_look1
+
+
+[logic@agr_nii_floor2_day_walker2]
+active = walker2@agr_nii_floor2_day
+info = info@agr_nii_about_rats
+
+[walker2@agr_nii_floor2_day]
+path_walk = floor2_day_walk2
+path_look = floor2_day_look2
+
+
+
+;------------------ 3-й этаж основного здания -----------------------
+[logic@agr_nii_floor3_walker1]
+active = walker1@agr_nii_floor3
+info = info@agr_nii_about_rats
+
+[walker1@agr_nii_floor3]
+path_walk = floor3_walk1
+path_look = floor3_look1
+on_info   = {+agr_nii_alarm} camper1@agr_nii_floor3_alarm
+
+[camper1@agr_nii_floor3_alarm]
+path_walk = floor3_alarm_walk1
+path_look = floor3_alarm_look1
+radius = 10
+on_info   = {-agr_nii_alarm} walker1@agr_nii_floor3
+
+
+[logic@agr_nii_floor3_walker2]
+active = walker2@agr_nii_floor3
+info = info@agr_nii_about_rats
+
+[walker2@agr_nii_floor3]
+path_walk = floor3_walk2
+path_look = floor3_look2
+on_info   = {+agr_nii_alarm} camper2@agr_nii_floor3_alarm
+
+[camper2@agr_nii_floor3_alarm]
+path_walk = floor3_alarm_walk2
+path_look = floor3_alarm_look2
+radius = 10
+on_info   = {-agr_nii_alarm} walker2@agr_nii_floor3
+
+
+[logic@agr_nii_floor3_walker3]
+active = walker3@agr_nii_floor3
+info = info@agr_nii_about_rats
+
+[walker3@agr_nii_floor3]
+path_walk = floor3_walk3
+path_look = floor3_look3
+on_info   = {+agr_nii_alarm} camper3@agr_nii_floor3_alarm
+
+[camper3@agr_nii_floor3_alarm]
+path_walk = sniper_roof_walk1
+path_look = sniper_roof_look1
+radius = 10
+on_info   = {-agr_nii_alarm} walker3@agr_nii_floor3
+
+
+;------------------ дневные патрули -----------------------
+[logic@agr_nii_day_patrol_walker1]
+active = walker1@agr_nii_day_patrol
+info = info@agr_nii_about_rats
+
+[walker1@agr_nii_day_patrol]
+path_walk = day_patrol_walk1
+path_look = day_patrol_look1
+
+
+[logic@agr_nii_day_patrol_walker2]
+active = walker2@agr_nii_day_patrol
+info = info@agr_nii_about_rats
+
+[walker2@agr_nii_day_patrol]
+path_walk = day_patrol_walk2
+path_look = day_patrol_look2
+
+[logic@agr_nii_day_patrol_walker3]
+active = walker3@agr_nii_day_patrol
+info = info@agr_nii_about_rats
+
+[walker3@agr_nii_day_patrol]
+path_walk = day_patrol_walk3
+path_look = day_patrol_look3
+
+[logic@agr_nii_day_patrol_walker4]
+active = walker4@agr_nii_day_patrol
+info = info@agr_nii_about_rats
+
+[walker4@agr_nii_day_patrol]
+path_walk = day_patrol_walk4
+path_look = day_patrol_look4
+
+[logic@agr_nii_day_patrol_walker5]
+active = walker5@agr_nii_day_patrol
+info = info@agr_nii_about_rats
+
+[walker5@agr_nii_day_patrol]
+path_walk = day_patrol_walk5
+path_look = day_patrol_look5
+
+;------------------ патрули в тревоге -----------------------
+[logic@agr_nii_alarm_patrol_walker1]
+active = walker1@agr_nii_alarm_patrol
+info = info@agr_nii_about_rats
+
+[walker1@agr_nii_alarm_patrol]
+path_walk = alarm_patrol_walk1
+path_look = alarm_patrol_look1
+
+
+[logic@agr_nii_alarm_patrol_walker2]
+active = walker2@agr_nii_alarm_patrol
+info = info@agr_nii_about_rats
+
+[walker2@agr_nii_alarm_patrol]
+path_walk = alarm_patrol_walk2
+path_look = alarm_patrol_look2
+
+
+[logic@agr_nii_alarm_patrol_walker3]
+active = walker3@agr_nii_alarm_patrol
+info = info@agr_nii_about_rats
+
+[walker3@agr_nii_alarm_patrol]
+path_walk = alarm_patrol_walk3
+path_look = alarm_patrol_look3
+
+
+[logic@agr_nii_alarm_patrol_walker4]
+active = walker4@agr_nii_alarm_patrol
+info = info@agr_nii_about_rats
+
+[walker4@agr_nii_alarm_patrol]
+path_walk = alarm_patrol_walk3
+path_look = alarm_patrol_look3
+
+
+[logic@agr_nii_alarm_patrol_walker5]
+active = walker5@agr_nii_alarm_patrol
+info = info@agr_nii_about_rats
+
+[walker5@agr_nii_alarm_patrol]
+path_walk = alarm_patrol_walk4
+path_look = alarm_patrol_look4
+
+;------------------ дневные отдыхающие -----------------------
+[logic@agr_nii_rest_walker1]
+active = walker1@agr_nii_rest
+info = info@agr_nii_about_rats
+
+[walker1@agr_nii_rest]
+path_walk = rest_walk1
+path_look = rest_look
+
+
+[logic@agr_nii_rest_walker2]
+active = walker2@agr_nii_rest
+info = info@agr_nii_about_rats
+
+[walker2@agr_nii_rest]
+path_walk = rest_walk2
+path_look = rest_look
+
+
+;------------------ ночные отдыхающие -----------------------
+[logic@agr_nii_sleeper1]
+active = sleeper1@agr_nii
+info = info@agr_nii_about_rats
+
+[sleeper1@agr_nii]
+path_main = sleep1
+
+
+[logic@agr_nii_sleeper2]
+active = sleeper2@agr_nii
+info = info@agr_nii_about_rats
+
+[sleeper2@agr_nii]
+path_main = sleep2
+
+
+[logic@agr_nii_sleeper3]
+active = sleeper3@agr_nii
+info = info@agr_nii_about_rats
+
+[sleeper3@agr_nii]
+path_main = sleep3
+
+
+[logic@agr_nii_sleeper4]
+active = sleeper4@agr_nii
+info = info@agr_nii_about_rats
+
+[sleeper4@agr_nii]
+path_main = sleep4
+
+
+[logic@agr_nii_sleeper5]
+active = sleeper5@agr_nii
+info = info@agr_nii_about_rats
+
+[sleeper5@agr_nii]
+path_main = sleep5
+
+
+[logic@agr_nii_sleeper6]
+active = sleeper6@agr_nii
+info = info@agr_nii_about_rats
+
+[sleeper6@agr_nii]
+path_main = sleep6
+
+
+[logic@agr_nii_sleeper7]
+active = sleeper7@agr_nii
+info = info@agr_nii_about_rats
+
+[sleeper7@agr_nii]
+path_main = sleep7
+
+
+[logic@agr_nii_sleeper8]
+active = sleeper8@agr_nii
+info = info@agr_nii_about_rats
+
+[sleeper8@agr_nii]
+path_main = sleep8
+
+
+[logic@agr_nii_sleeper9]
+active = sleeper9@agr_nii
+info = info@agr_nii_about_rats
+
+[sleeper9@agr_nii]
+path_main = sleep9
+
+
+[logic@agr_nii_sleeper10]
+active = sleeper10@agr_nii
+info = info@agr_nii_about_rats
+
+[sleeper10@agr_nii]
+path_main = sleep10
+
+[logic@agr_nii_sleeper11]
+active = sleeper11@agr_nii
+info = info@agr_nii_about_rats
+
+[sleeper11@agr_nii]
+path_main = sleep11
+
+;-------------------------------------------------------------------------------------------------
+;-- AGROPROM. Солдаты на фабрике 
+;-------------------------------------------------------------------------------------------------
+; -------------- подкрадываются к сталкерам Крота -----------------------
+[combat_ignore@agr_factory_assault]
+
+[info@about_nii]
+; инфо на пда военных с фабрики ведущая игрока в квесте с документами
+in = agr_nii_fab_mil_task
+
+[logic@agr_factory_assault_walker1]
+active = walker1@agr_factory_assault
+combat_ignore = combat_ignore@agr_factory_assault
+;info = info@about_nii 
+
+[walker1@agr_factory_assault]
+path_walk = walk1
+;path_look = look10
+combat_ignore_cond = always
+team = agr_assault
+on_signal = s | %+agr_factory_assault_skirmish%
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_assault_walker2]
+active = walker2@agr_factory_assault
+combat_ignore = combat_ignore@agr_factory_assault
+;info = info@about_nii
+
+[walker2@agr_factory_assault]
+path_walk = walk2
+;path_look = look2
+combat_ignore_cond = always
+team = agr_assault
+on_signal = s | %+agr_factory_assault_skirmish%
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_assault_walker3]
+active = walker3@agr_factory_assault
+combat_ignore = combat_ignore@agr_factory_assault
+;info = info@about_nii
+
+[walker3@agr_factory_assault]
+path_walk = walk3
+;path_look = look3
+combat_ignore_cond = always
+team = agr_assault
+on_signal = s | %+agr_factory_assault_skirmish%
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_assault_walker4]
+active = walker4@agr_factory_assault
+combat_ignore = combat_ignore@agr_factory_assault
+;info = info@about_nii
+
+[walker4@agr_factory_assault]
+path_walk = walk4
+;path_look = look4
+combat_ignore_cond = always
+team = agr_assault
+on_signal = s | %+agr_factory_assault_skirmish%
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_assault_walker5]
+active = walker5@agr_factory_assault
+combat_ignore = combat_ignore@agr_factory_assault
+;info = info@about_nii
+
+[walker5@agr_factory_assault]
+path_walk = walk5
+;path_look = look5
+combat_ignore_cond = always
+team = agr_assault
+on_signal = s | %+agr_factory_assault_skirmish%
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_assault_walker6]
+active = walker6@agr_factory_assault
+combat_ignore = combat_ignore@agr_factory_assault
+;info = info@about_nii
+
+[walker6@agr_factory_assault]
+path_walk = walk6
+;path_look = look6
+combat_ignore_cond = always
+team = agr_assault
+on_signal = s | %+agr_factory_assault_skirmish%
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_assault_walker7]
+active = walker7@agr_factory_assault
+combat_ignore = combat_ignore@agr_factory_assault
+;info = info@about_nii
+
+[walker7@agr_factory_assault]
+path_walk = walk7
+;path_look = look7
+combat_ignore_cond = always
+team = agr_assault
+on_signal = s | %+agr_factory_assault_skirmish%
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_assault_walker8]
+active = walker8@agr_factory_assault
+combat_ignore = combat_ignore@agr_factory_assault
+;info = info@about_nii
+
+[walker8@agr_factory_assault]
+path_walk = walk8
+;path_look = look8
+combat_ignore_cond = always
+team = agr_assault
+on_signal = s | %+agr_factory_assault_skirmish%
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+;--------------------------- дерутся с группой Крота. -------------------------
+[logic@agr_factory_assault_skirmish_walker1]
+active = walker1@agr_factory_assault_skirmish
+;info = info@about_nii
+
+[walker1@agr_factory_assault_skirmish]
+path_walk = skirmish_walk1
+;path_look = skirmish_look1
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_assault_skirmish_walker2]
+active = walker2@agr_factory_assault_skirmish
+;info = info@about_nii
+
+[walker2@agr_factory_assault_skirmish]
+path_walk = skirmish_walk2
+;path_look = skirmish_look2
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_assault_skirmish_walker3]
+active = walker3@agr_factory_assault_skirmish
+;info = info@about_nii
+
+[walker3@agr_factory_assault_skirmish]
+path_walk = skirmish_walk3
+;path_look = skirmish_look3
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_assault_skirmish_walker4]
+active = walker4@agr_factory_assault_skirmish
+;info = info@about_nii
+
+[walker4@agr_factory_assault_skirmish]
+path_walk = skirmish_walk4
+;path_look = skirmish_look4
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_assault_skirmish_walker5]
+active = walker5@agr_factory_assault_skirmish
+;info = info@about_nii
+
+[walker5@agr_factory_assault_skirmish]
+path_walk = skirmish_walk5
+;path_look = skirmish_look5
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_assault_skirmish_walker6]
+active = walker6@agr_factory_assault_skirmish
+;info = info@about_nii
+
+[walker6@agr_factory_assault_skirmish]
+path_walk = skirmish_walk6
+;path_look = skirmish_look6
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_assault_skirmish_walker7]
+active = walker7@agr_factory_assault_skirmish
+;info = info@about_nii
+
+[walker7@agr_factory_assault_skirmish]
+path_walk = skirmish_walk7
+;path_look = skirmish_look7
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_assault_skirmish_walker8]
+active = walker8@agr_factory_assault_skirmish
+;info = info@about_nii
+
+[walker8@agr_factory_assault_skirmish]
+path_walk = skirmish_walk8
+;path_look = skirmish_look8
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+;--------------------------- идут добивать в дом -------------------------
+
+[danger_condition@agr_factory_assault]
+ignore_distance = 10
+
+
+[logic@agr_factory_assault_bld_walker1]
+active = walker1@agr_factory_assault_bld
+;info = info@about_nii
+
+[walker1@agr_factory_assault_bld]
+path_walk = bld_walk1
+;path_look = bld_look1
+danger = danger_condition@agr_factory_assault
+
+
+[logic@agr_factory_assault_bld_walker2]
+active = walker2@agr_factory_assault_bld
+;info = info@about_nii
+
+[walker2@agr_factory_assault_bld]
+path_walk = bld_walk2
+;path_look = bld_look2
+danger = danger_condition@agr_factory_assault
+
+
+[logic@agr_factory_assault_bld_walker3]
+active = walker3@agr_factory_assault_bld
+;info = info@about_nii
+
+[walker3@agr_factory_assault_bld]
+path_walk = bld_walk3
+;path_look = bld_look3
+danger = danger_condition@agr_factory_assault
+
+
+[logic@agr_factory_assault_bld_walker4]
+active = walker4@agr_factory_assault_bld
+;info = info@about_nii
+
+[walker4@agr_factory_assault_bld]
+path_walk = bld_walk4
+;path_look = bld_look4
+danger = danger_condition@agr_factory_assault
+
+
+[logic@agr_factory_assault_bld_walker5]
+active = walker5@agr_factory_assault_bld
+;info = info@about_nii
+
+[walker5@agr_factory_assault_bld]
+path_walk = bld_walk5
+;path_look = bld_look5
+danger = danger_condition@agr_factory_assault
+
+
+[logic@agr_factory_assault_bld_walker6]
+active = walker6@agr_factory_assault_bld
+;info = info@about_nii
+
+[walker6@agr_factory_assault_bld]
+path_walk = bld_walk6
+;path_look = bld_look6
+danger = danger_condition@agr_factory_assault
+
+
+[logic@agr_factory_assault_bld_walker7]
+active = walker7@agr_factory_assault_bld
+;info = info@about_nii
+
+[walker7@agr_factory_assault_bld]
+path_walk = bld_walk7
+;path_look = bld_look7
+danger = danger_condition@agr_factory_assault
+
+
+[logic@agr_factory_assault_bld_walker8]
+active = walker8@agr_factory_assault_bld
+;info = info@about_nii
+
+[walker8@agr_factory_assault_bld]
+path_walk = bld_walk8
+;path_look = bld_look8
+danger = danger_condition@agr_factory_assault
+
+;-------------------------------------------------------------------------------------------------
+;-- AGROPROM. Группа Крота
+;-------------------------------------------------------------------------------------------------
+
+; ------------------- ждут атаки -----------------------
+[combat_ignore@agr_factory_defence]
+
+[logic@agr_factory_defence_walker1]
+active = walker1@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker1@agr_factory_defence]
+path_walk = walk1
+path_look = look1
+;combat_ignore_cond = always
+def_state_moving1 = raid
+def_state_moving2 = raid
+
+[logic@agr_factory_defence_walker2]
+active = walker2@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker2@agr_factory_defence]
+path_walk = walk2
+path_look = look2
+;combat_ignore_cond = always
+def_state_moving1 = raid
+def_state_moving2 = raid
+
+
+[logic@agr_factory_defence_walker3]
+active = walker3@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker3@agr_factory_defence]
+path_walk = walk3
+path_look = look3
+;combat_ignore_cond = always
+def_state_moving1 = raid
+def_state_moving2 = raid
+
+
+[logic@agr_factory_defence_walker4]
+active = walker4@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker4@agr_factory_defence]
+path_walk = walk4
+path_look = look4
+;combat_ignore_cond = always
+def_state_moving1 = raid
+def_state_moving2 = raid
+
+
+[logic@agr_factory_defence_walker5]
+active = walker5@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker5@agr_factory_defence]
+path_walk = walk5
+path_look = look5
+;combat_ignore_cond = always
+def_state_moving1 = raid
+def_state_moving2 = raid
+
+
+[logic@agr_factory_defence_walker6]
+active = walker6@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker6@agr_factory_defence]
+path_walk = walk6
+path_look = look6
+;combat_ignore_cond = always
+def_state_moving1 = raid
+def_state_moving2 = raid
+
+
+;---------------- отстреливаются от военных -----------------
+[logic@agr_factory_defence_skirmish_walker1]
+active = walker1@agr_factory_defence_skirmish
+
+[walker1@agr_factory_defence_skirmish]
+path_walk = walk1
+path_look = look1
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_defence_skirmish_walker2]
+active = walker2@agr_factory_defence_skirmish
+
+[walker2@agr_factory_defence_skirmish]
+path_walk = walk2
+path_look = look2
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_defence_skirmish_walker3]
+active = walker3@agr_factory_defence_skirmish
+
+[walker3@agr_factory_defence_skirmish]
+path_walk = walk3
+path_look = look3
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_defence_skirmish_walker4]
+active = walker4@agr_factory_defence_skirmish
+
+[walker4@agr_factory_defence_skirmish]
+path_walk = walk4
+path_look = look4
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+[logic@agr_factory_defence_skirmish_walker5]
+active = walker5@agr_factory_defence_skirmish
+
+[walker5@agr_factory_defence_skirmish]
+path_walk = walk5
+path_look = look5
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+
+[logic@agr_factory_defence_skirmish_walker6]
+active = walker6@agr_factory_defence_skirmish
+
+[walker6@agr_factory_defence_skirmish]
+path_walk = walk6
+path_look = look6
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+danger = danger_condition@agr_factory_defence_ignore_corpses
+
+;---------------- помогают Кроту -----------------
+
+[danger_condition@agr_factory_defence_ignore_corpses]
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+ignore_distance = 0
+danger_inertion_time_grenade = 0
+danger_inertion_time_hit = 4000
+danger_inertion_time_ricochet = 0
+danger_inertion_time_corpse = 0
+danger_inertion_time_sound = 0
+
+[danger_condition@agr_factory_defence]
+ignore_distance = 0
+
+[wounded@agr_factory_defence]
+hp_state = 10|wounded_heavy@help_heavy
+hp_state_see = 10|wounded_heavy@help_heavy
+hp_victim = 10|nil
+hp_cover = 10|false
+hp_fight = 10|false
+
+
+[logic@agr_factory_defence_krot_walker1]
+active = walker1@agr_factory_defence_krot
+actor_dialogs = actor_dialogs@agr_factory_defence
+
+[walker1@agr_factory_defence_krot]
+path_walk = krot_walk1
+;path_look = krot_look1
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence_ignore_corpses
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[logic@agr_factory_defence_krot_walker2]
+active = walker2@agr_factory_defence_krot
+actor_dialogs = actor_dialogs@agr_factory_defence
+
+[walker2@agr_factory_defence_krot]
+path_walk = krot_walk2
+;path_look = krot_look2
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence_ignore_corpses
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[logic@agr_factory_defence_krot_walker3]
+active = walker3@agr_factory_defence_krot
+actor_dialogs = actor_dialogs@agr_factory_defence
+
+[walker3@agr_factory_defence_krot]
+path_walk = krot_walk3
+;path_look = krot_look3
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence_ignore_corpses
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[logic@agr_factory_defence_krot_walker4]
+active = walker4@agr_factory_defence_krot
+actor_dialogs = actor_dialogs@agr_factory_defence
+
+[walker4@agr_factory_defence_krot]
+path_walk = krot_walk4
+;path_look = krot_look4
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence_ignore_corpses
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[logic@agr_factory_defence_krot_walker5]
+active = walker5@agr_factory_defence_krot
+actor_dialogs = actor_dialogs@agr_factory_defence
+
+[walker5@agr_factory_defence_krot]
+path_walk = krot_walk5
+;path_look = krot_look5
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence_ignore_corpses
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[logic@agr_factory_defence_krot_walker6]
+active = walker6@agr_factory_defence_krot
+actor_dialogs = actor_dialogs@agr_factory_defence
+
+[walker6@agr_factory_defence_krot]
+path_walk = krot_walk6
+;path_look = krot_look6
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence_ignore_corpses
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[logic@agr_factory_defence_krot_walker7]
+active = walker7@agr_factory_defence_krot
+actor_dialogs = actor_dialogs@agr_factory_defence
+
+[walker7@agr_factory_defence_krot]
+path_walk = krot_walk7
+;path_look = krot_look7
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence_ignore_corpses
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[logic@agr_factory_defence_krot_walker8]
+active = walker8@agr_factory_defence_krot
+actor_dialogs = actor_dialogs@agr_factory_defence
+
+[walker8@agr_factory_defence_krot]
+path_walk = krot_walk8
+;path_look = krot_look8
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence_ignore_corpses
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[logic@agr_factory_defence_krot_walker9]
+active = walker9@agr_factory_defence_krot
+actor_dialogs = actor_dialogs@agr_factory_defence
+
+[walker9@agr_factory_defence_krot]
+path_walk = krot_walk9
+;path_look = krot_look9
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence_ignore_corpses
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+;---------------- Бегут к колодцу и стоят там -----------------
+
+[actor_dialogs@agr_factory_defence]
+id = agr_factory_stalker_about
+
+
+[logic@agr_factory_defence_to_well_walker1]
+active = walker1@agr_factory_defence_to_well
+actor_dialogs = actor_dialogs@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker1@agr_factory_defence_to_well]
+path_walk = to_well_walk1
+on_signal = well | walker1@agr_factory_defence_well
+danger = danger_condition@agr_factory_defence
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker1@agr_factory_defence_well]
+path_walk = well_walk1
+path_look = well_look1
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence
+
+
+[logic@agr_factory_defence_to_well_walker2]
+active = walker2@agr_factory_defence_to_well
+actor_dialogs = actor_dialogs@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker2@agr_factory_defence_to_well]
+path_walk = to_well_walk2
+on_signal = well | walker2@agr_factory_defence_well
+danger = danger_condition@agr_factory_defence
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker2@agr_factory_defence_well]
+path_walk = well_walk2
+path_look = well_look2
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence
+
+
+[logic@agr_factory_defence_to_well_walker3]
+active = walker3@agr_factory_defence_to_well
+actor_dialogs = actor_dialogs@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker3@agr_factory_defence_to_well]
+path_walk = to_well_walk3
+on_signal = well | walker3@agr_factory_defence_well
+danger = danger_condition@agr_factory_defence
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker3@agr_factory_defence_well]
+path_walk = well_walk3
+path_look = well_look3
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence
+
+
+[logic@agr_factory_defence_to_well_walker4]
+active = walker4@agr_factory_defence_to_well
+actor_dialogs = actor_dialogs@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker4@agr_factory_defence_to_well]
+path_walk = to_well_walk4
+on_signal = well | walker4@agr_factory_defence_well
+danger = danger_condition@agr_factory_defence
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker4@agr_factory_defence_well]
+path_walk = well_walk4
+path_look = well_look4
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence
+
+
+[logic@agr_factory_defence_to_well_walker5]
+active = walker5@agr_factory_defence_to_well
+actor_dialogs = actor_dialogs@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker5@agr_factory_defence_to_well]
+path_walk = to_well_walk5
+on_signal = well | walker5@agr_factory_defence_well
+danger = danger_condition@agr_factory_defence
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker5@agr_factory_defence_well]
+path_walk = well_walk5
+path_look = well_look5
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence
+
+
+[logic@agr_factory_defence_to_well_walker6]
+active = walker6@agr_factory_defence_to_well
+actor_dialogs = actor_dialogs@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker6@agr_factory_defence_to_well]
+path_walk = to_well_walk6
+on_signal = well | walker6@agr_factory_defence_well
+danger = danger_condition@agr_factory_defence
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore = combat_ignore@agr_factory_defence
+
+
+[walker6@agr_factory_defence_well]
+path_walk = well_walk6
+path_look = well_look6
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence
+
+
+[logic@agr_factory_defence_to_well_walker7]
+active = walker7@agr_factory_defence_to_well
+actor_dialogs = actor_dialogs@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker7@agr_factory_defence_to_well]
+path_walk = to_well_walk7
+on_signal = well | walker7@agr_factory_defence_well
+danger = danger_condition@agr_factory_defence
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore = combat_ignore@agr_factory_defence
+
+
+[walker7@agr_factory_defence_well]
+path_walk = well_walk7
+path_look = well_look7
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence
+
+[logic@agr_factory_defence_to_well_walker8]
+active = walker8@agr_factory_defence_to_well
+actor_dialogs = actor_dialogs@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker8@agr_factory_defence_to_well]
+path_walk = to_well_walk8
+on_signal = well | walker8@agr_factory_defence_well
+danger = danger_condition@agr_factory_defence
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore = combat_ignore@agr_factory_defence
+
+
+[walker8@agr_factory_defence_well]
+path_walk = well_walk8
+path_look = well_look8
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence
+
+[logic@agr_factory_defence_to_well_walker9]
+active = walker9@agr_factory_defence_to_well
+actor_dialogs = actor_dialogs@agr_factory_defence
+combat_ignore = combat_ignore@agr_factory_defence
+
+[walker9@agr_factory_defence_to_well]
+path_walk = to_well_walk9
+on_signal = well | walker9@agr_factory_defence_well
+danger = danger_condition@agr_factory_defence
+wounded = wounded@agr_factory_defence
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore = combat_ignore@agr_factory_defence
+
+
+[walker9@agr_factory_defence_well]
+path_walk = well_walk9
+path_look = well_look9
+meet = meet@agr_factory_defence
+danger = danger_condition@agr_factory_defence
+
+
+
+
+[meet@agr_factory_defence]
+meet_state = 2 | guard
+meet_state_wpn = 2 | guard
+victim = 2 | actor
+victim_wpn = 2 | actor
+use = true
+use_wpn = true
+
+
+;------ Сталкеры ждут начала атаки ---------------------------------------------------------------
+
+ [logic@agr_factory_defence_waiting_stalker1]
+ active = walker@agr_factory_defence_waiting_stalker1
+ combat_ignore = combat_ignore@agr_factory_defence
+ 
+ [walker@agr_factory_defence_waiting_stalker1]
+ path_walk = waiting_walk_1
+ path_look = waiting_look_1
+ combat_ignore_cond = combat_ignore@agr_factory_defence
+ meet = no_meet
+ on_info = {=rostok_dist_to_actor_le(15)} remark@agr_factory_defence_waiting_stalker1, {+agr_help_krot_start} remark@agr_factory_defence_waiting_stalker1                      
+ danger = danger_condition@agr_factory_defence
+ 
+ [remark@agr_factory_defence_waiting_stalker1]
+ anim = hide
+ snd = agr_stalker_help_3
+ target = 303
+ on_signal = sound_end | camper@agr_factory_defence_waiting_stalker1 %+agr_attack_begin%
+ danger = danger_condition@agr_factory_defence
+ combat_ignore_cond = always
+ 
+ [camper@agr_factory_defence_waiting_stalker1]
+ path_walk = attack_camper_1
+ path_look = attack_camper_look
+ def_state_moving = assault
+ no_retreat = true
+ radius = 10
+ danger = danger_condition@agr_factory_defence
+ on_signal = univ | walker1@agr_factory_defence_waiting_stalker1
+ 
+ [walker1@agr_factory_defence_waiting_stalker1]
+ path_walk = attack_camper_1
+ path_look = attack_camper_look
+  
+ [logic@agr_factory_defence_waiting_stalker2]
+ active = walker@agr_factory_defence_waiting_stalker2
+ combat_ignore = combat_ignore@agr_factory_defence
+ 
+ [walker@agr_factory_defence_waiting_stalker2]
+ path_walk = waiting_walk_2
+ path_look = waiting_look_2
+ combat_ignore_cond = combat_ignore@agr_factory_defence
+ meet = no_meet
+ on_info = {+agr_attack_begin} camper@agr_factory_defence_waiting_stalker2
+ danger = danger_condition@agr_factory_defence
+
+ [camper@agr_factory_defence_waiting_stalker2]
+ path_walk = attack_camper_2
+ path_look = attack_camper_look
+ def_state_moving = assault
+ no_retreat = true
+ radius = 10
+ danger = danger_condition@agr_factory_defence
+ on_signal = univ | walker1@agr_factory_defence_waiting_stalker2
+ 
+ [walker1@agr_factory_defence_waiting_stalker2]
+ path_walk = attack_camper_2
+ path_look = attack_camper_look
+ 
+ 
+ [logic@agr_factory_defence_waiting_stalker3]
+ active = walker@agr_factory_defence_waiting_stalker3
+ combat_ignore = combat_ignore@agr_factory_defence
+ 
+ [walker@agr_factory_defence_waiting_stalker3]
+ path_walk = waiting_walk_3
+ path_look = waiting_look_3
+ combat_ignore_cond = combat_ignore@agr_factory_defence
+ meet = no_meet
+ on_info = {+agr_attack_begin} camper@agr_factory_defence_waiting_stalker3
+ danger = danger_condition@agr_factory_defence
+ 
+ [camper@agr_factory_defence_waiting_stalker3]
+ path_walk = attack_camper_3
+ path_look = attack_camper_look
+ def_state_moving = assault
+ no_retreat = true 
+ radius = 10
+ danger = danger_condition@agr_factory_defence
+ on_signal = univ | walker1@agr_factory_defence_waiting_stalker3
+ 
+ [walker1@agr_factory_defence_waiting_stalker3]
+ path_walk = attack_camper_3
+ path_look = attack_camper_look
+ 
+ 
+ 
+ 
+ 
+ ;-------------------------------------------------------------------------------------------------
+;-- AGROPROM Удерживающие Крота солдаты
+;-------------------------------------------------------------------------------------------------
+
+; ------------------ стреляют по точкам -----------------------
+[combat_ignore@agr_factory_hold_fake]
+
+[on_hit@agr_factory_hold_fake]
+on_info = {=hit_by_actor} %+agr_krot_skirmish_start%
+;on_info = %+agr_krot_skirmish_start%
+
+[logic@agr_factory_hold_fake_walker1]
+active = walker1@agr_factory_hold_fake
+combat_ignore = combat_ignore@agr_factory_hold_fake
+on_hit = on_hit@agr_factory_hold_fake
+
+[walker1@agr_factory_hold_fake]
+path_walk = fake_walk1
+path_look = fake_look1
+combat_ignore_cond = {-agr_krot_skirmish_start}
+
+
+[logic@agr_factory_hold_fake_walker2]
+active = walker2@agr_factory_hold_fake
+combat_ignore = combat_ignore@agr_factory_hold_fake
+on_hit = on_hit@agr_factory_hold_fake
+
+[walker2@agr_factory_hold_fake]
+path_walk = fake_walk2
+path_look = fake_look2
+combat_ignore_cond = {-agr_krot_skirmish_start}
+
+
+[logic@agr_factory_hold_fake_walker3]
+active = walker3@agr_factory_hold_fake
+combat_ignore = combat_ignore@agr_factory_hold_fake
+on_hit = on_hit@agr_factory_hold_fake
+
+[walker3@agr_factory_hold_fake]
+path_walk = fake_walk3
+path_look = fake_look3
+combat_ignore_cond = {-agr_krot_skirmish_start}
+
+; ------------------ а) срываются в универсальный бой под рестриктором --------------------
+; ------------------ б) Убили Крота. Ходят по путям без рестрикторов ----------------------
+[logic@agr_factory_hold_walker1]
+active = walker1@agr_factory_hold
+
+[walker1@agr_factory_hold]
+path_walk = walk1
+path_look = look1
+
+
+[logic@agr_factory_hold_walker2]
+active = walker2@agr_factory_hold
+
+[walker2@agr_factory_hold]
+path_walk = walk2
+path_look = look2
+
+
+[logic@agr_factory_hold_walker3]
+active = walker3@agr_factory_hold
+
+[walker3@agr_factory_hold]
+path_walk = walk3
+path_look = look3
+
+

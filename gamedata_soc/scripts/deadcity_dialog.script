@@ -1,0 +1,63 @@
+function printf() end
+
+-- transfer key from doctor
+function take_key(npc, actor)
+    dialogs.relocate_item_section(npc, "cit_doctors_key", "in")
+end
+
+-- Витек ищет дядю
+function have_vp_info(actor, npc)
+  	return actor:object("cit_vp_pda") ~= nil
+end
+
+function not_vp_info(actor, npc)
+	return not this.have_vp_info(actor, npc)
+end
+
+function give_vp_pda(actor, npc)
+	dialogs.relocate_item_section(npc, "cit_vp_pda", "out")
+	dialogs.relocate_money(npc, 1500, "in")
+end
+
+function have_docs_or_map(actor, npc)
+  	return actor:object("cit_killers_documents") ~= nil or actor:object("cit_deadcity_maps") ~= nil
+end
+
+-- Документы наемников.
+function have_killers_documents(actor, npc)
+  	return actor:object("cit_killers_documents") ~= nil
+end
+
+function give_killer_doc(actor, npc)
+	dialogs.relocate_item_section(npc, "cit_killers_documents", "out")
+end
+
+function give_killer_doc_reward(npc, actor)
+	dialogs.relocate_money(npc, 2000, "in")
+end
+
+-- Карта Deadcity
+function have_deadcity_map(actor, npc)
+  	return actor:object("cit_deadcity_maps") ~= nil
+end
+
+function give_killers_maps(actor, npc)
+	dialogs.relocate_item_section(npc, "cit_deadcity_maps", "out")
+end
+
+function give_killer_maps_reward(npc, actor)
+	dialogs.relocate_money(npc, 3000, "in")
+end
+
+-- Лидер наемников.
+function leader_killer_die(actor, npc)
+  	return actor:object("cit_leader_killer_pda") ~= nil
+end
+
+function give_leader_pda(actor, npc)
+	dialogs.relocate_item_section(npc, "cit_leader_killer_pda", "out")
+end
+
+function give_leader_die_reward(npc, actor)
+	dialogs.relocate_money(npc, 3000, "in")
+end

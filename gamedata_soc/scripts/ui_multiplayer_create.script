@@ -1,0 +1,97 @@
+-- File:        UI_MULTIPLAYER_CREATE.SCRIPT
+-- Description: Create Server dialog for Multiplayer menu
+-- Created:     02.12.2004
+-- Author:      Serhiy 0. Vynnychenk0
+-- Mail:        narrator@gsc-game.com
+--
+
+class "multiplayer_create_dialog" (ui_base_dialog.base_dialog)
+
+function multiplayer_create_dialog:__init() super()
+	self:InitControls()
+	self:InitCallbacks()
+end
+
+function multiplayer_create_dialog:__finalize()	
+end
+
+function multiplayer_create_dialog:InitControls()
+	ui_base_dialog.base_dialog.InitControls(self, "Create Server")
+	
+	----- DATA ----
+	----- BUTTONS --->>>
+	local btn_gametype_rect	 = {x = self.left_align_x,
+								y = self.top_align_y,
+								width = self.btn_rect.width,
+								height = self.btn_rect.height}
+	-- Bottom align
+	local btn_back_rect		 = {x = 0,
+								y = self.bottom_align_y - self.btn_rect.height,
+								width = self.btn_rect.width,
+								height = self.btn_rect.height}	
+	btn_back_rect.x = self.main_rect.width - btn_back_rect.width - self.indent
+	local btn_start_rect	 = {x = 0,
+								y = self.bottom_align_y - self.btn_rect.height,
+								width = self.btn_rect.width,
+								height = self.btn_rect.height}
+	btn_start_rect.x = btn_back_rect.x - btn_start_rect.width - self.indent
+	local tab_rect			 = {x = self.left_align_x,
+								y = btn_gametype_rect.x + btn_gametype_rect.height + self.indent,
+								width = self.main_rect.width - self.indent*2,
+								height = 0}
+	tab_rect.height = self.main_rect.height - tab_rect.x - (self.main_rect.height - btn_back_rect.y)
+	
+	--------->> GAME TYPE
+	btn = CUIButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_gametype")
+	btn:Init("ui\\ui_button_01", btn_gametype_rect.x, btn_gametype_rect.y, btn_gametype_rect.width, btn_gametype_rect.height)
+	btn:SetText("Game Type")
+	btn:SetFont(self.button_font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.button_indent)
+	self:Register(btn)
+	self.main_frame:AttachChild(btn)	
+	
+	--------->> BACK
+	btn = CUIButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_back")
+	btn:Init("ui\\ui_button_01", btn_back_rect.x, btn_back_rect.y, btn_back_rect.width, btn_back_rect.height)
+	btn:SetText("Back")
+	btn:SetFont(self.button_font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.button_indent)
+	self:Register(btn)
+	self.main_frame:AttachChild(btn)	
+	
+	--------->> START
+	btn = CUIButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_start")
+	btn:Init("ui\\ui_button_01", btn_start_rect.x, btn_start_rect.y, btn_start_rect.width, btn_start_rect.height)
+	btn:SetText("Start")
+	btn:SetFont(self.button_font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.button_indent)
+	self:Register(btn)
+	self.main_frame:AttachChild(btn)	
+	
+	self.map_tab = ui_multiplayer_map_tab.map_tab()
+	self.map_tab:InitControls(tab_rect.x, tab_rect.y, tab_rect.width, tab_rect.height)
+	self.main_frame:AttachChild(self.map_tab)
+	
+	
+	self.gametype_tab = ui_multiplayer_gametype_tab.gametype_tab()
+	self.gametype_tab:InitControls(tab_rect.x, tab_rect.y, tab_rect.width, tab_rect.height)
+	self.main_frame:AttachChild(self.gametype_tab)
+	self.gametype_tab:Show(true)
+end
+
+function multiplayer_create_dialog:InitCallbacks()
+	self:AddCallback("btn_back",			ui_events.BUTTON_CLICKED, self.OnButton_back, self)
+end
+
+function multiplayer_create_dialog:OnButton_back()
+	level.start_stop_menu(self, true)
+end

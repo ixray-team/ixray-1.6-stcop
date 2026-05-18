@@ -1,0 +1,97 @@
+
+class "test_avi_dlg" (CUIScriptWnd)
+
+function test_avi_dlg:__init() super()
+   self:SetFont(GetFontMedium()) --set base font for dialog.
+   
+   self:InitControls()
+end
+
+function test_avi_dlg:__finalize()
+local f = 0
+end
+
+function test_avi_dlg:InitControls()
+
+	self.indent = 18	
+	self.button_indent = -1 
+	self.screen    = {x = 0, y = 0, width = 1024, height = 768}
+	
+	-- rect of main window
+	self.main_rect = {x = 0, y = 0,
+					  width  = 1024,
+					  height = 512}
+	self.main_rect.x = (self.screen.width  - self.main_rect.width )/2
+	self.main_rect.y = (self.screen.height - self.main_rect.height)
+	-----------------------------------------------------------------
+	self.left_align_x   = self.indent
+	self.right_align_x  = self.main_rect.width - self.indent
+	self.top_align_y    = self.indent
+	self.bottom_align_y = self.main_rect.height - self.indent
+	------------------------------------------------------------------
+	
+
+	-- init self position and size
+	self:Init(self.screen.x, 
+			  self.screen.y, 
+			  self.screen.width, 
+			  self.screen.height)
+			  
+	-- BACKGROUND 
+	self.background = CUIStatic()
+	self.background:SetAutoDelete(true)
+	self.background:SetWindowName("background")
+	
+	self.background:Init("ui\\ui_start_avi",self.screen.x, self.screen.y, self.screen.width, self.screen.height)
+	self.background:SetStretchTexture(true)
+	self:AttachChild(self.background)
+	
+end
+
+
+
+function main()
+
+	if _G.g_start_avi==nil then
+		_G.g_start_avi=false
+	end
+
+	while _G.g_start_avi ~= true do
+		wait()
+	end
+
+
+	local dlg = test_avi_dlg()
+	
+	local snd = xr_sound.get_safe_sound_object(
+		"characters_voice\\human_01\\scenario\\gunslinger\\start_dream_l",
+		sound_object.s2d
+	)
+	local actor = db.actor
+	local snd_pos = actor:position()
+	snd_pos.y = snd_pos.y + 1.5
+
+	--wait for first frame
+	while device().precache_frame > 1 do
+		wait()
+	end
+	
+	if level.disable_input ~= nil then
+		level.disable_input()
+	end
+	level.add_dialog_to_render(dlg)
+	level.hide_indicators()
+	snd:play_at_pos(actor,snd_pos)
+
+	wait(16000)
+	level.remove_dialog_to_render(dlg)
+	level.show_indicators()
+
+	_G.g_start_avi = false
+
+	if level.enable_input ~= nil then
+		level.enable_input()
+	end
+
+end
+

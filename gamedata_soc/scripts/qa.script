@@ -1,0 +1,27 @@
+
+local object_list = {}
+
+object_list["test1"] = {
+		"mil_bloodsucker_strong",
+		"mil_blood1"
+}
+
+object_list["test2"] = {
+		"monster"
+}
+
+------------------------------------------------------------------------------
+-- Base Run function (load extern)
+------------------------------------------------------------------------------
+function r(index)
+	test_utils.setup_test(object_list, nil)
+	test_utils.run_test(index)
+end
+
+------------------------------------------------------------------------------
+-- Main function (called on level load)
+------------------------------------------------------------------------------
+function main()
+	test_utils.setup_test(object_list, nil)
+	test_utils.run_global()
+end

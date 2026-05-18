@@ -1,0 +1,27 @@
+[logic]
+active = kamp1
+
+[kamp1]
+center_point = mil_dolg_camp_center
+on_info = {+mil_dolg_attack -mil_dolg_mission_complete} walker1
+
+[walker1]
+path_walk = mil_dolg_attack_way2
+path_look = mil_dolg_attack_look1
+def_state_moving1 = run
+on_signal = arrive | walker2
+
+[walker2]
+path_walk = mil_dolg_attack_way2_2
+on_signal = ignore | walker3
+def_state_moving1 = run
+combat_ignore = always
+
+[walker3]
+path_walk = mil_dolg_attack_way2_3
+def_state_moving1 = run
+on_signal = final | walker4 %+mil_dolg_mission_complete%
+
+[walker4]
+path_walk = mil_dolg_return2
+on_signal = return | kamp1

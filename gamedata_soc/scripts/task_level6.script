@@ -1,0 +1,88 @@
+function main ()
+    task_level4.main (false)        
+-------------------------------------------------------------------------------
+-- Задачи c бара
+-------------------------------------------------------------------------------
+    local actor = db.actor
+    
+    actor:give_info_portion ("bar_deactivate_radar_start")    
+    actor:give_info_portion ("bar_deactivate_radar_done")
+    
+    actor:give_info_portion ("rad_start_suicide")    
+    actor:give_info_portion ("rad_start_svoboda_vs_dolg")    
+    actor:give_info_portion ("rad_here_i_come")    
+    actor:give_info_portion ("rad_pre_drop_barrel3")    
+    actor:give_info_portion ("rad_pre_drop_barrel4")    
+    actor:give_info_portion ("rad_drop_barrel1")    
+    actor:give_info_portion ("rad_drop_barrel2")    
+    actor:give_info_portion ("rad_drop_barrel3")    
+    actor:give_info_portion ("rad_drop_barrel4")    
+    actor:give_info_portion ("rad_drop_barrel5")    
+    
+    actor:give_info_portion ("rad_start_ambush_after_tramplin")    
+    actor:give_info_portion ("rad_start_ambush_before_tramplin")    
+ 
+ 
+    actor:give_info_portion ("rad_start_far_road_ambush")    
+    actor:give_info_portion ("rad_start_far_road_btr_ambush")    
+ 
+    actor:give_info_portion ("rad_start_ambush_after_valley")    
+    actor:give_info_portion ("rad_start_ambush_in_antenna_tunnel")    
+ 
+    actor:give_info_portion ("rad_allow_suicide")    
+    actor:give_info_portion ("rad_pre_start_monolith_vs_military")    
+ 
+    actor:give_info_portion ("rad_start_monolith_vs_military")    
+ 
+ 
+    actor:give_info_portion ("bun_patrol_start")    
+ 
+    actor:give_info_portion ("bun_ptr1")    
+    actor:give_info_portion ("bun_ptr2")    
+    actor:give_info_portion ("bun_ptr3")    
+    actor:give_info_portion ("bun_ptr4")    
+ 
+    actor:give_info_portion ("bun_antenna_off")    
+    
+    actor:give_info_portion ("sar_monolith_call")    
+
+
+    -- Создадим различные объекты, которые нам необходимы
+	alife():create ("good_psy_helmet", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+
+    -- Создадим различные объекты, которые нам необходимы
+	alife():create ("wpn_val", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    for a = 1, 12, 1 do
+	        alife():create ("ammo_9x39_ap", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+        end	        
+	    alife():create ("wpn_addon_scope", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+        for a = 1, 10, 1 do	    
+	        alife():create ("grenade_f1", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    end
+        for a = 1, 12, 1 do	    
+	        alife():create ("medkit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    end
+        for a = 1, 25, 1 do	    
+	        alife():create ("bandage", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    end
+        for a = 1, 8, 1 do	    
+	        alife():create ("antirad", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    end
+	    alife():create ("bread", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("bread", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("kolbasa", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("kolbasa", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("conserva", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("conserva", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("conserva", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("device_torch", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("detector_simple", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("wpn_colt1911", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("ammo_11.43x23_fmj", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("ammo_11.43x23_fmj", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("ammo_11.43x23_fmj", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())
+	    alife():create ("military_outfit", actor:position (), actor:level_vertex_id (),actor:game_vertex_id (), db.actor:id())    
+	
+    alife():create ("wpn_knife", db.actor:position (), db.actor:level_vertex_id (),db.actor:game_vertex_id (), db.actor:id())
+	alife():create ("wpn_binoc", db.actor:position (), db.actor:level_vertex_id (),db.actor:game_vertex_id (), db.actor:id())
+end

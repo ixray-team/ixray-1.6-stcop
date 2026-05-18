@@ -1,0 +1,2396 @@
+local t = {}
+
+function load_job(sj, gname, type, squad, groups)
+--'--------------------------------------------------------------------------
+--' ESCAPE
+--'--------------------------------------------------------------------------
+	--' Escape blockpost
+	if type == "esc_blokpost" then
+		t = { section = "logic@esc_blockpost_patrol1",
+			idle = 0,
+			prior = 8, state = {0},
+			position_threshold = 100,
+			online = true,
+			in_rest = "", out_rest = "esc_blockpost_patrol_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_follower1",
+			idle = 0,
+			prior = 7, state = {0},
+			position_threshold = 100,
+			online = true,
+			in_rest = "", out_rest = "esc_blockpost_patrol_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_follower2",
+			idle = 0,
+			prior = 7, state = {0},
+			position_threshold = 100,
+			online = true,
+			in_rest = "", out_rest = "esc_blockpost_patrol_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_commander_day",
+			idle = 0,
+			prior = 100, state = {0,2},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			predicate = function(obj_info)
+			            	return obj_info.name == "esc_blokpost_commander"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_post1",
+			idle = 0,
+			prior = 8, state = {0,1,2},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_post2",
+			idle = 0,
+			prior = 8, state = {0,1,2},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_camper_day",
+			idle = 0,
+			prior = 6, state = {0,2},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_patrol_yard",
+			idle = 0,
+			prior = 5, state = {0,1},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_watch_tv1",
+			idle = 0,
+			prior = 2, state = {0},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_watch_tv2",
+			idle = 0,
+			prior = 2, state = {0},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_kamp1",
+			idle = 0,
+			prior = 4, state = {1},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_kamp1",
+			idle = 0,
+			prior = 4, state = {1},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_kamp2",
+			idle = 0,
+			prior = 10, state = {1},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone",
+			predicate = function(obj_info)
+			            	return obj_info.name == "esc_blokpost_commander"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_sleep1",
+			idle = 0,
+			prior = 2, state = {1},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_sleep2",
+			idle = 0,
+			prior = 2, state = {1},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_sleep3",
+			idle = 0,
+			prior = 2, state = {1},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_sleep4",
+			idle = 0,
+			prior = 2, state = {1},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_comander_guard1",
+			idle = 0,
+			prior = 6, state = {2},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_comander_guard2",
+			idle = 0,
+			prior = 6, state = {2},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_camper1",
+			idle = 0,
+			prior = 6, state = {2},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_camper2",
+			idle = 0,
+			prior = 6, state = {2},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_alarm_patrol1",
+			idle = 0,
+			prior = 6, state = {2},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_blockpost_alarm_patrol2",
+			idle = 0,
+			prior = 6, state = {2},
+			position_threshold = 100,
+--			online = true,
+			in_rest = "", out_rest = "escape_blockpost_zone"
+		}
+		table.insert(sj, t)
+	end
+
+	--' Спецназ на блокпосте
+	if type == "esc_specnaz" then
+		t = { section = "logic@esc_specnaz_kamp",
+			idle = 0,
+			prior = 5, state = {0},
+--			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_specnaz_kamp",
+			idle = 0,
+			prior = 5, state = {0},
+--			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_specnaz_kamp",
+			idle = 0,
+			prior = 5, state = {0},
+--			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_specnaz_kamp",
+			idle = 0,
+			prior = 5, state = {0},
+--			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_specnaz_kamp",
+			idle = 0,
+			prior = 5, state = {0},
+--			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_specnaz_kamp",
+			idle = 0,
+			prior = 5, state = {0},
+--			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_specnaz_raid1",
+			idle = 0,
+			prior = 10, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_specnaz_raid2",
+			idle = 0,
+			prior = 10, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_specnaz_follower1",
+			idle = 0,
+			prior = 7, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_specnaz_follower2",
+			idle = 0,
+			prior = 7, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_specnaz_follower3",
+			idle = 0,
+			prior = 7, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_specnaz_follower4",
+			idle = 0,
+			prior = 7, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+
+
+
+
+	--' Лагерь новичков на Escape
+	if type == "esc_lager" then
+		-- охранники
+		t = { section = "logic@esc_lager_zoneguard1",
+			idle = 0,
+			prior = 9, state = {0, 1},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_zoneguard2",
+			idle = 0,
+			prior = 9, state = {0, 1},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_walker3",
+			idle = 0,
+			prior = 8, state = {0, 1},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_walker4",
+			idle = 0,
+			prior = 8, state = {0, 1},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		-- у костра днём
+		t = { section = "logic@esc_lager_kamp1",
+			idle = 0,
+			prior = 6, state = {0},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_kamp1",
+			idle = 0,
+			prior = 6, state = {0},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_kamp1",
+			idle = 0,
+			prior = 6, state = {0},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		-- Волк, собственной персоной.
+		t = { section = "logic@esc_lager_volk",
+			idle = 0,
+			prior = 16, state = {0,1},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
+			predicate = function(obj_info)
+        					return obj_info.profile_name == "esc_wolf"
+						end
+		}
+		table.insert(sj, t)
+		-- Шустрый
+		t = { section = "logic@esc_lager_shustryi",
+			idle = 0,
+			prior = 16, state = {0,1},
+            online = true,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+        					return obj_info.profile_name == "esc_shustryi"
+						end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_kamp1",
+			idle = 0,
+			prior = 16, state = {2},
+            online = true,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+        					return obj_info.profile_name == "esc_shustryi"
+						end
+		}
+		table.insert(sj, t)
+		
+		-- Фанат
+		t = { section = "logic@esc_lager_fanat",
+			idle = 0,
+			prior = 16, state = {0,1},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
+			predicate = function(obj_info)
+        					return obj_info.profile_name == "esc_fanat"
+						end
+		}
+		table.insert(sj, t)
+
+		-- спящие ночью
+		t = { section = "logic@esc_lager_sleeper1",
+			idle = 0,
+			prior = 3, state = {1},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_sleeper2",
+			idle = 0,
+			prior = 3, state = {1},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_kamp1",
+			idle = 0,
+			prior = 3, state = {1},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		-- спящие ночью и днёи
+		t = { section = "logic@esc_lager_sleeper5",
+			idle = 0,
+			prior = 5, state = {0,1},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_kamp1",
+			idle = 0,
+			prior = 0, state = {0,1},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_sleeper7",
+			idle = 0,
+			prior = 0, state = {0,1},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+
+		t = { section = "logic@esc_lager_defend1",
+			idle = 0,
+			prior = 15, state = {2},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_defend2",
+			idle = 0,
+			prior = 14, state = {2},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_defend3",
+			idle = 0,
+			prior = 13, state = {2},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_defend4",
+			idle = 0,
+			prior = 12, state = {2},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_defend5",
+			idle = 0,
+			prior = 11, state = {2},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_defend6",
+			idle = 0,
+			prior = 10, state = {2},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_defend7",
+			idle = 0,
+			prior = 9, state = {2},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_defend8",
+			idle = 0,
+			prior = 8, state = {2},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_defend9",
+			idle = 0,
+			prior = 16, state = {2},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
+			predicate = function(obj_info)
+        					return obj_info.name == "esc_novice_attacker1"
+						end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_defend10",
+			idle = 0,
+			prior = 16, state = {2},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
+			predicate = function(obj_info)
+        					return obj_info.name == "esc_vagon_wounded"
+						end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_defend11",
+			idle = 0,
+			prior = 5, state = {2},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_defend12",
+			idle = 0,
+			prior = 20, state = {2},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
+			predicate = function(obj_info)
+        					return obj_info.profile_name == "esc_fanat"
+						end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_lager_defend13",
+			idle = 0,
+			prior = 20, state = {2},
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
+			predicate = function(obj_info)
+        					return obj_info.profile_name == "esc_wolf" and not (has_alife_info("agroprom_military_case_have") and has_alife_info("esc_fanat_spawn"))
+						end
+		}
+		table.insert(sj, t)
+	end
+
+	--' Бандиты на фабрике
+	if type == "esc_fabrika_bandit" then
+		-- часовые днём
+		t = { section = "logic@esc_fabrika_bandit_walker1",
+			idle = 0,
+			prior = 2, state = {0},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_fabrika_bandit_walker2",
+			idle = 0,
+			prior = 2, state = {0},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_fabrika_bandit_walker3",
+			idle = 0,
+			prior = 2, state = {0},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_fabrika_bandit_walker4",
+			idle = 5,
+			prior = 10, state = {0,2},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor",
+				redicate = function(obj_info)
+        					return obj_info.name == "esc_factory_prisoner_guard"
+						end
+		}
+		table.insert(sj, t)
+		-- сидящие у костра
+		t = { section = "logic@esc_fabrika_bandit_kamp",
+			idle = 0,
+			prior = 1, state = {0},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_fabrika_bandit_kamp",
+			idle = 0,
+			prior = 1, state = {0},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		-- аларм
+		t = { section = "camper@esc_fabrika_bandit_walker1",
+			idle = 0,
+			prior = 5, state = {2},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "camper@esc_fabrika_bandit_walker2",
+			idle = 0,
+			prior = 5, state = {2},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "camper@esc_fabrika_bandit_walker3",
+			idle = 0,
+			prior = 5, state = {2},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+--		t = { section = "camper@esc_fabrika_bandit_walker4",
+--			idle = 0,
+--			prior = 5, state = {2},
+--			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+--		}
+--		table.insert(sj, t)
+		t = { section = "camper@esc_fabrika_bandit_walker5",
+			idle = 0,
+			prior = 2, state = {2},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "camper@esc_fabrika_bandit_walker6",
+			idle = 0,
+			prior = 2, state = {2},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "camper@esc_fabrika_bandit_walker7",
+			idle = 0,
+			prior = 5, state = {0,2},
+			in_rest = "esc_prison_zone", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+	end
+
+	--' Солдаты на мосту
+	if type == "esc_bridge" then
+		-- часовые днём
+		t = { section = "logic@esc_bridge_post1",
+			idle = 0,
+			prior = 7, state = {0},
+			in_rest = "", out_rest = "escape_bridge_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_bridge_post2",
+			idle = 0,
+			prior = 15, state = {0,1},
+			in_rest = "", out_rest = "escape_bridge_zone",
+			predicate = function(obj_info)
+			            	return obj_info.profile_name == "esc_soldier_commander"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_bridge_post3",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = "escape_bridge_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_bridge_post4",
+			idle = 0,
+			prior = 10, state = {0},
+			in_rest = "", out_rest = "escape_bridge_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_bridge_post5",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = "escape_bridge_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_bridge_post6",
+			idle = 0,
+			prior = 8, state = {0,1},
+			in_rest = "", out_rest = "escape_bridge_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_bridge_kamp1",
+			idle = 0,
+			prior = 2, state = {1},
+			in_rest = "", out_rest = "escape_bridge_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_bridge_kamp3",
+			idle = 0,
+			prior = 2, state = {1},
+			in_rest = "", out_rest = "escape_bridge_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_bridge_kamp4",
+			idle = 0,
+			prior = 2, state = {1},
+			in_rest = "", out_rest = "escape_bridge_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_bridge_patrol",
+			idle = 0,
+			prior = 5, state = {1},
+			in_rest = "", out_rest = "escape_bridge_zone"
+		}
+		table.insert(sj, t)
+	end
+
+	--' Наемники, атакующие новичков.
+	if type == "esc_killers" then
+		t = { section = "logic@esc_killer_leader_raid",
+			idle = 0,
+			prior = 10, state = {4},
+			in_rest = "", out_rest = "",
+			online = true,
+			predicate = function(obj_info)
+			            	return obj_info.profile_name == "esc_killer_master"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer1_raid",
+			idle = 0,
+			prior = 8, state = {4},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer2_raid",
+			idle = 0,
+			prior = 8, state = {4},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer1_follower",
+			idle = 0,
+			prior = 7, state = {4},
+			online = true,
+			in_rest = "", out_rest = "",
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer1_follower",
+			idle = 0,
+			prior = 7, state = {4},
+			online = true,
+			in_rest = "", out_rest = "",
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer2_follower",
+			idle = 0,
+			prior = 7, state = {4},
+			online = true,
+			in_rest = "", out_rest = "",
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer2_follower",
+			idle = 0,
+			prior = 7, state = {4},
+			online = true,
+			in_rest = "", out_rest = "",
+		}
+		table.insert(sj, t)
+
+
+		t = { section = "logic@esc_killer_fight",
+			idle = 0,
+			prior = 15, state = {1},
+			online = true,
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone",
+			position_threshold = 400,
+			predicate = function(obj_info)
+			            	return obj_info.profile_name == "esc_killer_master"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_fight",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			position_threshold = 400,
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_fight",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			position_threshold = 400,
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_fight",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			position_threshold = 400,
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_fight",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			position_threshold = 400,
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_fight",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			position_threshold = 400,
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_fight",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			position_threshold = 400,
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_fight",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			position_threshold = 400,
+			in_rest = "", out_rest = "esc_lager_guard_kill_zone"
+		}
+		table.insert(sj, t)
+
+		t = { section = "logic@esc_killer_kamp",
+			idle = 0,
+			prior = 15, state = {2},
+			in_rest = "", out_rest = "",
+			position_threshold = 400,
+			predicate = function(obj_info)
+			            	return obj_info.profile_name == "esc_killer_master"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp",
+			idle = 0,
+			prior = 5, state = {2},
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp",
+			idle = 0,
+			prior = 5, state = {2},
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp",
+			idle = 0,
+			prior = 5, state = {2},
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp",
+			idle = 0,
+			prior = 5, state = {2},
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp",
+			idle = 0,
+			prior = 5, state = {2},
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp",
+			idle = 0,
+			prior = 5, state = {2},
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp",
+			idle = 0,
+			prior = 5, state = {2},
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+
+		t = { section = "logic@esc_killer_kamp_wait",
+			idle = 0,
+			prior = 5, state = {3},
+			online = true,
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp_wait",
+			idle = 0,
+			prior = 5, state = {3},
+			online = true,
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp_wait",
+			idle = 0,
+			prior = 5, state = {3},
+			online = true,
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp_wait",
+			idle = 0,
+			prior = 15, state = {3},
+			in_rest = "", out_rest = "",
+			online = true,
+			position_threshold = 400,
+			predicate = function(obj_info)
+			            	return obj_info.profile_name == "esc_killer_master"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp_wait",
+			idle = 0,
+			prior = 5, state = {3},
+			online = true,
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp_guard1",
+			idle = 0,
+			prior = 8, state = {3},
+			online = true,
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp_guard2",
+			idle = 0,
+			prior = 8, state = {3},
+			online = true,
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp_guard3",
+			idle = 0,
+			prior = 8, state = {3},
+			online = true,
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		
+		t = { section = "logic@esc_killer_kamp_offline",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp_offline",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp_offline",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp_offline",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp_offline",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp_offline",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp_offline",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_killer_kamp_offline",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			position_threshold = 400,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+
+
+	if type == "esc_dogs_to_fox" then
+		t = { section = "logic@esc_dogs_to_fox_home",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			position_threshold = 100,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_to_fox_home",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			position_threshold = 100,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_to_fox_home",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			position_threshold = 100,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_to_fox_home",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			position_threshold = 100,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_to_fox_home",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			position_threshold = 100,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_to_fox_home",
+			idle = 0,
+			prior = 5, state = {2},
+			position_threshold = 100,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_to_fox_home",
+			idle = 0,
+			prior = 5, state = {2},
+			position_threshold = 100,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_to_fox_home",
+			idle = 0,
+			prior = 5, state = {2},
+			position_threshold = 100,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_to_fox_home",
+			idle = 0,
+			prior = 5, state = {2},
+			position_threshold = 100,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_to_fox_home",
+			idle = 0,
+			prior = 5, state = {2},
+			position_threshold = 100,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_to_fox",
+			idle = 0,
+			prior = 5, state = {1},
+			position_threshold = 100,
+			in_rest = "", out_rest = "esc_dogs_fox_attack"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_to_fox",
+			idle = 0,
+			prior = 5, state = {1},
+			position_threshold = 100,
+			in_rest = "", out_rest = "esc_dogs_fox_attack"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_to_fox",
+			idle = 0,
+			prior = 5, state = {1},
+			position_threshold = 100,
+			in_rest = "", out_rest = "esc_dogs_fox_attack"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_to_fox",
+			idle = 0,
+			prior = 5, state = {1},
+			position_threshold = 100,
+			in_rest = "", out_rest = "esc_dogs_fox_attack"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_to_fox",
+			idle = 0,
+			prior = 5, state = {1},
+			position_threshold = 100,
+			in_rest = "", out_rest = "esc_dogs_fox_attack"
+		}
+		table.insert(sj, t)
+
+	end
+
+	if type == "esc_dogs_swarm" then
+		t = { section = "logic@esc_dogs_swarm1",
+			idle = 0,
+			prior = 5, state = {0},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm1",
+			idle = 0,
+			prior = 5, state = {0},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm1",
+			idle = 0,
+			prior = 5, state = {0},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm1",
+			idle = 0,
+			prior = 5, state = {0},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm1",
+			idle = 0,
+			prior = 5, state = {0},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm1",
+			idle = 0,
+			prior = 5, state = {0},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm1",
+			idle = 0,
+			prior = 5, state = {0},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm1",
+			idle = 0,
+			prior = 5, state = {0},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm1",
+			idle = 0,
+			prior = 5, state = {0},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm1",
+			idle = 0,
+			prior = 5, state = {0},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+
+		t = { section = "logic@esc_dogs_swarm3",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm3",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm3",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm3",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm3",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm3",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm3",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm3",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm3",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm3",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+
+		t = { section = "logic@esc_dogs_swarm2",
+			idle = 0,
+			prior = 5, state = {2},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm2",
+			idle = 0,
+			prior = 5, state = {2},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm2",
+			idle = 0,
+			prior = 5, state = {2},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm2",
+			idle = 0,
+			prior = 5, state = {2},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm2",
+			idle = 0,
+			prior = 5, state = {2},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm2",
+			idle = 0,
+			prior = 5, state = {2},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm2",
+			idle = 0,
+			prior = 5, state = {2},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm2",
+			idle = 0,
+			prior = 5, state = {2},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm2",
+			idle = 0,
+			prior = 5, state = {2},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_dogs_swarm2",
+			idle = 0,
+			prior = 5, state = {2},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+
+	if type == "esc_boars_dogs" then
+		t = { section = "logic@esc_boars_dogs_old",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs_old",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs_old",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs_old",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs_old",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs_old",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs_old",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs_old",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs_old",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs_old",
+			idle = 0,
+			prior = 5, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+
+		t = { section = "logic@esc_boars_dogs",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_boars_dogs",
+			idle = 0,
+			prior = 5, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+
+	end
+
+	if type == "esc_ambush" then
+		t = { section = "logic@esc_ambush1",
+			idle = 0,
+			prior = 8, state = {0},
+			in_rest = "", out_rest = "esc_ambush_out_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_ambush2",
+			idle = 0,
+			prior = 8, state = {0},
+			in_rest = "", out_rest = "esc_ambush_out_restrictor"
+		}
+		table.insert(sj, t)
+	end
+
+	if type == "esc_corps" then
+		
+		t = { section = "logic@esc_corps_wounded",
+			idle = 4,
+			prior = 10, state = {0},
+			online = false,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+        					return obj_info.name == "esc_vagon_wounded"
+						end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_corps_wounded",
+			idle = 0,
+			prior = 10, state = {1},
+			online = true,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+        					return obj_info.name == "esc_vagon_wounded"
+						end
+		}
+		table.insert(sj, t)
+	end
+
+	if type == "esc_assault" then
+		t = { section = "logic@esc_assault1",
+			idle = 0,
+			prior = 8, state = {1},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_assault2",
+			idle = 0,
+			prior = 9, state = {1},
+			online = true,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+        					return obj_info.name == "esc_novice_attacker2"
+						end			
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_assault3",
+			idle = 0,
+			prior = 10, state = {1},
+			online = true,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+        					return obj_info.name == "esc_novice_attacker1"
+						end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_assault1",
+			idle = 0,
+			prior = 8, state = {0},
+			online = false,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_assault2",
+			idle = 0,
+			prior = 9, state = {0},
+			online = false,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+        					return obj_info.name == "esc_novice_attacker2"
+						end			
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_assault3",
+			idle = 0,
+			prior = 10, state = {0},
+			online = false,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+        					return obj_info.name == "esc_novice_attacker1"
+						end
+		}
+		table.insert(sj, t)
+		
+		t = { section = "logic@esc_assault_fight1",
+			idle = 0,
+			prior = 8, state = {2},
+			online = true,
+			position_threshold = 100,
+			in_rest = "", out_rest = "esc_fabrika_bandit_space_restrictor"
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_assault_fight2",
+			idle = 0,
+			prior = 9, state = {2},
+			online = true,
+			position_threshold = 100,
+			in_rest = "", out_rest = "esc_fabrika_bandit_space_restrictor",
+			predicate = function(obj_info)
+        					return obj_info.name == "esc_novice_attacker2"
+						end			
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_assault_fight3",
+			idle = 0,
+			prior = 10, state = {2},
+			online = true,
+			position_threshold = 100,
+			in_rest = "", out_rest = "esc_fabrika_bandit_space_restrictor",
+			predicate = function(obj_info)
+        					return obj_info.name == "esc_novice_attacker1"
+						end
+		}
+		table.insert(sj, t)
+		
+		t = { section = "logic@esc_assault_home1",
+			idle = 0,
+			prior = 8, state = {3},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_assault_home2",
+			idle = 0,
+			prior = 9, state = {3},
+			online = true,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+        					return obj_info.name == "esc_novice_attacker2"
+						end			
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_assault_home_leader",
+			idle = 0,
+			prior = 10, state = {3},
+			online = true,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+        					return obj_info.name == "esc_novice_attacker1"
+						end
+		}
+		table.insert(sj, t)
+		
+		t = { section = "logic@esc_assault_kamp",
+			idle = 0,
+			prior = 8, state = {4},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_assault_kamp",
+			idle = 0,
+			prior = 9, state = {4},
+			online = true,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+        					return obj_info.name == "esc_novice_attacker2"
+						end			
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_assault_kamp",
+			idle = 0,
+			prior = 10, state = {4},
+			online = true,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+        					return obj_info.name == "esc_novice_attacker1"
+						end
+		}
+		table.insert(sj, t)
+	end
+
+	if type == "esc_zombie_1" then
+		t = { section = "logic@esc_zombie_1_fd",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_fd",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_3_fd",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_4_fd",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_5_fd",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_6_fd",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+
+	if type == "esc_zombie_2" then
+		t = { section = "logic@esc_zombie_2_home",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home4",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home2",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home2",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home2",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home2",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home2",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home3",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home3",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home3",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home3",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home3",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home4",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home4",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home4",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_zombie_2_home4",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+
+	if type == "esc_flesh_1" then
+		t = { section = "logic@esc_flesh_1_camp",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_flesh_1_camp",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_flesh_1_camp",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+
+	if type == "esc_flesh_2" then
+		t = { section = "logic@esc_flesh_2_camp",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_flesh_2_camp",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_flesh_2_camp",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	
+	if type == "esc_bridge_boar" then
+		t = { section = "logic@esc_bridge_boar",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_bridge_boar",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_bridge_boar",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_bridge_boar",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_bridge_boar",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	
+	if type == "esc_small_home1" then
+		t = { section = "logic@esc_small_home1",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_small_home1",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	
+	if type == "esc_small_home2" then
+		t = { section = "logic@esc_small_home2",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_small_home2",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	
+	if type == "esc_small_home3" then
+		t = { section = "logic@esc_small_home3",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_small_home3",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_small_home3",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	
+	if type == "esc_small_home4" then
+		t = { section = "logic@esc_small_home4",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_small_home4",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	
+	if type == "esc_small_home5" then
+		t = { section = "logic@esc_small_home5",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_small_home5",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	
+	if type == "esc_small_home6" then
+		t = { section = "logic@esc_small_home6",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_small_home6",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+
+	if type == "esc_stalker_camp" then
+		t = { section = "logic@esc_stalker_camp_provodnik",
+			idle = 0,
+			prior = 10, state = {0},
+			online = false,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+			            	return obj_info.profile_name == "esc_provodnik"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_stalker_fox",
+			idle = 0,
+			prior = 10, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+			            	return obj_info.profile_name == "esc_fox"
+			            end
+		}
+		table.insert(sj, t)
+
+		t = { section = "logic@esc_stalker_camp_provodnik",
+			idle = 0,
+			prior = 10, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+			            	return obj_info.profile_name == "esc_provodnik"
+			            end
+		}
+		table.insert(sj, t)
+		t = { section = "logic@esc_stalker_camp1",
+			idle = 0,
+			prior = 8, state = {1},
+			online = false,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+			            	return obj_info.profile_name == "esc_fox"
+			            end
+		}
+		table.insert(sj, t)
+	end
+	
+end
+
+function load_states(gname, type)
+
+	if type == "esc_blokpost" then
+		return function (gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+
+			for k,v in pairs(gulag.Object) do
+				if v ~= true and v:best_enemy() ~= nil then
+					gulag.alarm_start = game.get_game_time()
+					actor:give_info_portion("esc_blockpost_alarm")
+					return 2 -- тревога
+				end
+			end
+
+			if gulag.alarm_start == nil or
+				game.get_game_time():diffSec(gulag.alarm_start) > 300 then
+				if level.get_time_hours() >= 6 and level.get_time_hours() <= 22 then
+				actor:give_info_portion("esc_blockpost_normal")
+					return 0  -- день
+				else
+					return 1  -- ночь
+				end
+			else
+				return 2
+			end
+		end
+	end
+
+
+
+	if type == "esc_lager" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+			if has_alife_info("escape_lager_help") and has_alife_info("escape_lager_killers_die") then
+				return 2 -- оборона лагеря
+			elseif level.get_time_hours() >= 5 and level.get_time_hours() <= 22 then
+				return 0  -- день
+			else
+				return 1  -- ночь
+			end
+		end
+	end
+
+	if type == "esc_bridge" then
+		return function(gulag)
+			if db.actor ~= nil then
+				if ( level.get_time_hours() >= 5 and level.get_time_hours() <= 22 ) then
+					return 0  -- день
+				else
+					return 1  -- ночь
+				end
+			else
+				return gulag.state
+			end
+		end
+	end
+
+
+	if type == "esc_fabrika_bandit" then
+		return function(gulag)
+				for k,v in pairs(gulag.Object) do
+					if v ~= true and v:best_enemy() ~= nil then
+   						gulag.alarm_start = game.get_game_time()
+   						return 2 -- тревога
+					end
+				end
+
+				if gulag.alarm_start == nil or
+					game.get_game_time():diffSec(gulag.alarm_start) > 300 then
+					return 0  -- день
+				else
+					return 2
+				end
+		end
+	end
+
+	if type == "esc_dogs_to_fox" then
+		return function(gulag)
+			local actor = db.actor
+			if not has_alife_info("escape_stalker_dog_spawn") then
+				return 0 -- оффлайн
+			elseif (has_alife_info("escape_stalker_dog_spawn") and not has_alife_info("escape_stalker_done")) or has_alife_info("esc_dogs_return") then 
+				return 2 -- онлайн
+			else
+				return 1 -- атака
+			end
+		end
+	end
+
+	if type == "esc_specnaz" then
+		return function(gulag)
+			local actor = db.actor
+			if has_alife_info("esc_raid1_start") then
+				return 1
+			end
+			return 0
+		end
+	end
+
+
+	if type == "esc_boars_dogs" then
+	    return function(gulag)
+			if has_alife_info("tutorial_wounded_give_info") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+
+
+	if type == "esc_killers" then
+		return function(gulag)
+			local actor = db.actor
+			if not actor then
+				return gulag.state
+			end
+			if not has_alife_info("escape_lager_spawn_killers") then
+				return 0 -- offline
+			elseif has_alife_info("escape_lager_spawn_killers") and not has_alife_info("esc_killers_raid") then
+				return 3 -- wait
+			elseif has_alife_info("esc_killers_raid") and not has_alife_info("esc_open_killer_fire") then
+				return 4 -- raid
+			elseif has_alife_info("esc_open_killer_fire") and xr_gulag.getGulagPopulationComed("esc_lager") > 0 then
+				return 1 -- fight
+			elseif has_alife_info("esc_open_killer_fire") and xr_gulag.getGulagPopulationComed("esc_lager") <= 0 then
+				return 2 -- kamp
+			end
+			return gulag.state
+		end
+	end
+
+	if type == "esc_dogs_swarm" then
+		return function(gulag)
+			if game.get_game_time():diffSec(gulag.stateBegin) > 900 then
+				if gulag.state == 0 then
+					return 1
+				elseif gulag.state == 1 then
+					return 2
+				elseif gulag.state == 2 then
+					return 0
+				end
+			else
+				return gulag.state
+			end
+		end
+	end
+
+	if type == "esc_ambush" then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type == "esc_corps" then
+		return function(gulag)
+			if has_alife_info("tutorial_wounded_start") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+
+	if type == "esc_zombie_1" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "esc_zombie_2" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "esc_flesh_1" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "esc_flesh_2" then
+		return function(gulag)
+			return 0
+		end
+	end
+	
+	if type == "esc_bridge_boar" then
+		return function(gulag)
+			return 0
+		end
+	end
+	
+	if type == "esc_small_home1" then
+		return function(gulag)
+			return 0
+		end
+	end
+	
+	if type == "esc_small_home2" then
+		return function(gulag)
+			return 0
+		end
+	end
+	
+	if type == "esc_small_home3" then
+		return function(gulag)
+			return 0
+		end
+	end
+	
+	if type == "esc_small_home4" then
+		return function(gulag)
+			return 0
+		end
+	end
+	
+	if type == "esc_small_home5" then
+		return function(gulag)
+			return 0
+		end
+	end
+	
+	if type == "esc_small_home6" then
+		return function(gulag)
+			return 0
+		end
+	end
+
+	if type == "esc_stalker_camp" then
+		return function(gulag)
+			if has_alife_info("yan_provodnik_spawn") then
+				return 1
+			else
+				return 0
+			end
+		end
+	end
+	
+	
+
+
+	if type == "esc_assault" then
+		return function(gulag)
+			if has_alife_info("esc_kill_bandits_quest_have") and not has_alife_info("esc_assault_start") then
+				return 1 -- сидят у костра
+			elseif has_alife_info("esc_assault_start") and not has_alife_info("esc_kill_bandits_quest_kill") then
+				return 2 -- атакуют фабрику
+			elseif has_alife_info("esc_kill_bandits_quest_kill") and (not has_alife_info("esc_kill_bandits_quest_done") or not has_alife_info("esc_petruha_great")) then
+				return 3 -- идут домой	
+			elseif has_alife_info("esc_kill_bandits_quest_done") or has_alife_info("esc_petruha_great") then
+				return 4 -- идут домой
+			else
+				return 0 -- сидят в оффлайне
+			end
+		end
+	end
+
+end
+
+
+
+--------------------------------------------------------------------------
+-- Dynamic ltx
+--------------------------------------------------------------------------
+function load_ltx(gname, type)
+	return nil
+end
+
+function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
+
+	if gulag_type == "esc_bridge" then
+		return npc_community == "military"
+	end
+
+	if gulag_type == "esc_specnaz" then
+		return se_obj:profile_name() == "esc_soldier_specnaz"
+	end
+
+	if gulag_type == "esc_blokpost" then
+		return npc_community == "military"
+	end
+
+	if gulag_type == "esc_killers" then
+		return npc_community == "killer"
+	end
+
+	if gulag_type == "esc_lager" then
+		return npc_community == "stalker"
+	end
+
+	if gulag_type == "esc_fabrika_bandit" then
+		return npc_community == "bandit"
+	end
+
+	if gulag_type == "esc_ambush" then
+		return npc_community == "bandit"
+	end
+
+	if gulag_type == "esc_corps" then
+		return npc_community == "stalker"
+	end
+
+	if gulag_type == "esc_assault" then
+		return npc_community == "stalker"
+	end
+
+	if gulag_type == "esc_stalker_camp" then
+		return npc_community == "stalker"
+	end
+	
+	
+	return false
+end
+
+function checkMonster(npc_community, gulag_type)
+
+	if gulag_type == "esc_dogs_to_fox" then
+		return npc_community == "dog"
+	end
+
+	if gulag_type == "esc_dogs_swarm" then
+		return npc_community == "dog"
+	end
+
+	if gulag_type == "esc_boars_dogs" then
+		return npc_community == "dog" or
+			npc_community == "boar"
+	end
+
+	if gulag_type == "esc_zombie_1" then
+		return npc_community == "zombie"
+	end
+
+	if gulag_type == "esc_zombie_2" then
+		return npc_community == "zombie"
+	end
+
+	if gulag_type == "esc_flesh_1" then
+		return npc_community == "flesh"
+	end
+
+	if gulag_type == "esc_flesh_2" then
+		return npc_community == "flesh"
+	end
+	
+	if gulag_type == "esc_bridge_boar" then
+		return npc_community == "boar"
+	end
+	
+	if gulag_type == "esc_small_home1" then
+		return npc_community == "boar"
+	end
+	
+	if gulag_type == "esc_small_home2" then
+		return npc_community == "boar"
+	end
+	
+	if gulag_type == "esc_small_home3" then
+		return npc_community == "dog"
+	end
+	
+	if gulag_type == "esc_small_home4" then
+		return npc_community == "dog"
+	end
+	
+	if gulag_type == "esc_small_home5" then
+		return npc_community == "dog"
+	end
+	
+	if gulag_type == "esc_small_home6" then
+		return npc_community == "flesh"
+	end
+	
+	return false
+end

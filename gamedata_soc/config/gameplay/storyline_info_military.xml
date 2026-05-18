@@ -1,0 +1,77 @@
+<article id="mil_actor_main_quest" name = "Military main task" group="Diary">
+	<texture x="50" y="150" width="50" height="50">ui\ui_icons_task</texture>
+    <text>mil_actor_main_quest</text>
+</article>
+
+<article id="mil_crazy_flash_info" name="Crazy stalker flash" group="Diary" article_type="info">
+	<texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+    <text>mil_crazy_flash_info</text>
+</article>
+
+<article id="mil_flash_ugrumy" name="Ugrumy flash" group="Diary" article_type="info">
+	<texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+    <text>mil_flash_ugrumy_descr</text>
+</article>
+    
+<article id="mil_courier_doc" name="Courier document" group="Diary" article_type="info">
+	<texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+    <text>mil_courier_doc_descr</text>
+</article>
+
+<article id="mil_flash_bandit" name="Bandit flash" group="Diary" article_type="info">
+	<texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+    <text>mil_flash_bandit_descr</text>
+</article>
+
+<article id="mil_flash_max" name="Max flash" group="Diary" article_type="info">
+	<texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+    <text>mil_flash_max_descr</text>
+</article>
+
+<article id="mil_dolg_kill_sniper" name="dolg_kill_sniper" group="Diary" article_type="info">
+	<texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+    <text>mil_dolg_kill_sniper_descr</text>
+</article>
+
+<article id="mil_dolg_kill_lukash" name="mil_dolg_kill_lukash" group="Diary" article_type="info">
+	<texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+    <text>mil_dolg_kill_lukash_descr</text>
+</article>
+
+<article id="mil_mad_flash_job" name="mil_mad_flash_job" group="Diary" article_type="info">
+	<texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+    <text>mil_mad_flash_job_descr</text>
+</article>
+
+<article id="mil_lukash_job_descr" name="mil_lukash_job_descr" group="mil_lukash_job/0" article_type="task">	
+    <text>mil_lukash_job_descr</text>
+</article>
+
+<article id="mil_courier_job_descr" name="mil_courier_job_descr" group="mil_courier_job/0" article_type="task">
+    <text>mil_courier_job_descr</text>
+</article>
+
+<article id="mil_blockpost_job_descr" name="mil_blockpost_job" group="mil_blockpost_job/0" article_type="task">
+    <text>mil_blockpost_job_descr</text>
+</article>
+
+<article id="mil_freedom_rg6_task_descr" name="mil_freedom_rg6_task" group="mil_freedom_rg6_task/0" article_type="task">
+    <text>mil_freedom_rg6_task_descr</text>
+</article>
+
+
+<article id="mil_hunters_task_descr" name="mil_hunters_task_descr" group="Diary" article_type="info">
+	<texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+    <text>mil_hunters_task_descr</text>
+</article>
+
+<article id="mil_go_to_miser_descr" name="mil_go_to_miser_descr" group="Diary" article_type="info">
+	<texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+    <text>mil_go_to_miser_descr</text>
+</article>
+
+
+<article id="mil_hunters_task_descr2" name="mil_hunters_task_descr" group="Diary" article_type="info">
+	<texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+    <text>mil_hunters_task_descr</text>
+</article>

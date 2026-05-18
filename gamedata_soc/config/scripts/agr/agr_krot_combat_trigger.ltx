@@ -1,0 +1,9 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+agr_help_krot_start} sr_idle@combat_trigger
+
+[sr_idle@combat_trigger]
+on_actor_inside = %+agr_krot_skirmish_start =agr_hold_enemy% nil
+on_game_timer   = 1200 | %+agr_krot_skirmish_start =agr_hold_enemy% nil

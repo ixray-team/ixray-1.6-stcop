@@ -1,0 +1,280 @@
+local patrols = {
+                --command 1
+                   {
+                   on_patrol = false,
+                   script_zone = "raid_script_zone",
+                   zone_obj = nil,
+                      {
+                      name = "raid_0_commander",
+                      id = -1,
+                      on_move = false,
+                      dead = false,
+                      npc = nil
+                      },
+                      {
+                      name = "raid_0_soldier_1",
+                      id = -1,
+                      on_move = false,
+                      dead = false,
+                      npc = nil
+                      },
+                      {
+                      name = "raid_0_soldier_2",
+                      id = -1,
+                      on_move = false,
+                      dead = false,
+                      npc = nil
+                      }
+                   },
+                --command 2
+                   {
+                   on_patrol = false,
+                   script_zone = "raid_script_zone",
+                   zone_obj = nil,
+                      {
+                      name = "raid_1_commander",
+                      id = -1,
+                      on_move = false,
+                      dead = false,
+                      npc = nil
+                      },
+                      {
+                      name = "raid_1_soldier_1",
+                      id = -1,
+                      on_move = false,
+                      dead = false,
+                      npc = nil
+                      },
+                      {
+                      name = "raid_1_soldier_2",
+                      id = -1,
+                      on_move = false,
+                      dead = false,
+                      npc = nil
+                      }
+                   },
+                --command 3
+                   {
+                   on_patrol = false,
+                   script_zone = "raid_script_zone",
+                   zone_obj = nil,
+                      {
+                      name = "raid_2_commander",
+                      id = -1,
+                      on_move = false,
+                      dead = false,
+                      npc = nil
+                      },
+                      {
+                      name = "raid_2_soldier_1",
+                      id = -1,
+                      on_move = false,
+                      dead = false,
+                      npc = nil
+                      },
+                      {
+                      name = "raid_2_soldier_2",
+                      id = -1,
+                      on_move = false,
+                      dead = false,
+                      npc = nil
+                      }
+                   }
+                }
+                
+local patrol_params = 
+                {
+                --first path
+                {
+                path_name = "patrol_path",
+                escape_path = "escape_path"
+                }
+                --second path
+                }
+-------------------------------------------------------------------------------------------
+local wait_for_start_patrol     =   0
+local wait_for_patrol_finish    =   1
+local patrol_finished           =   2
+
+local raid_needed               =   false
+
+local time_delay = 0
+
+local current_state             =   wait_for_start_patrol
+-------------------------------------------------------------------------------------------
+function main ()
+    for a = 1, table.getn (patrols), 1 do
+        patrols[a].zone_obj = get_level_object (patrols[a].script_zone)
+        patrols[a].zone_obj:set_callback (this.on_enter, true)
+        for b = 1, table.getn (patrols[a]), 1 do
+            local npc = get_level_object (patrols[a][b].name)
+            patrols[a][b].id = npc:id ()
+            this.switch_offline (npc, a, b)
+            patrols[a][b].on_move = false
+       end   
+    end
+    
+    
+    while true do
+          this.wait_for_start ()
+          this.wait_for_finish ()
+          wait (1000)
+    end        
+       
+end
+-------------------------------------------------------------------------------------------
+function wait_for_start ()
+   
+    if xr_gulag.needRaid ("escape_blockpost") == false then return end
+    
+    local raid_moved = false
+    for a = 1, table.getn (patrols), 1 do
+        if patrols[a].on_patrol == false and this.patrols_available (a) == true then
+           for b = 1, table.getn (patrols[a]), 1 do
+               time_delay = device ():time_global () + 300000
+               this.switch_online (a, b)           
+               patrols[a][b].on_move = true
+           end
+           if raid_moved == false then
+              escape_raid_heli.activate ()
+              xr_gulag.startRaid ("escape_blockpost")
+              raid_moved = true
+           end   
+           patrols[a].on_patrol = true
+           time_delay = device ():time_global () + 300000
+        end   
+    end
+end
+-------------------------------------------------------------------------------------------
+function wait_for_finish ()
+    this.check_for_deaths ()
+    if time_delay ~= 0 then
+       if device ():time_global () - time_delay  > 0 then
+          time_delay = 0
+       end    
+    end    
+end
+-------------------------------------------------------------------------------------------
+function check_for_deaths ()
+    for a = 1, table.getn (patrols), 1 do
+        for b = 1, table.getn (patrols[a]), 1 do
+            if patrols[a].on_patrol == false then break end
+            if patrols[a][b].on_move == true then
+               if patrols[a][b].npc == nil or patrols[a][b].npc:alive () == false then
+                  patrols[a][b].dead = true
+               end
+            end      
+        end
+        this.check_need_raid (a)
+    end        
+end
+-------------------------------------------------------------------------------------------
+function on_enter (zone, obj)
+    if time_delay ~= 0 then return end
+    printf ("Object %s entered to sone %s at %d time", obj:name (), zone:name (), device ():time_global ())
+    if obj == nil or zone == nil then return end
+    for a = 1, table.getn (patrols), 1 do
+        for b = 1, table.getn (patrols[a]), 1 do
+            if obj:id () == patrols[a][b].id then
+               if patrols[a][b].on_move == true then
+                  patrols[a][b].on_move = false
+                  this.switch_offline (obj, a, b) 
+                  escape_raid_heli.deactivate ()
+                  this.check_for_return ()
+               end   
+            end      
+        end                          
+    end         
+end
+-------------------------------------------------------------------------------------------
+function switch_online (a, b)
+    --if npc == nil or npc:alive () == false then return end
+    local sim = alife ()
+    if sim ~= nil then
+       sim:set_switch_online  (patrols[a][b].id, true) 
+       sim:set_switch_offline (patrols[a][b].id, false)
+       local npc = get_level_object (patrols[a][b].name)
+       if b == 1 then xr_comm_ptr.set_patrol (npc, true)
+       else xr_follower.set_follower (npc, true) 
+       patrols[a][b].npc = npc
+       printf ("Object %s move to online at %d time", npc:name (), device ():time_global ())
+       end   
+    else
+       if b == 1 then 
+          db.storage[patrols[a][b].id].patrol.enabled = true
+       else   
+          db.storage[patrols[a][b].id].follower.enabled = true
+       end   
+       patrols[a][b].npc = get_level_object (patrols[a][b].name)
+       xr_sleeper.set_sleeper (patrols[a][b].npc, false)
+    end   
+end
+-------------------------------------------------------------------------------------------
+function switch_offline (npc, a, b)
+
+    if npc == nil or npc:alive () == false then return end
+    local sim = alife ()
+    if sim ~= nil then
+       sim:set_switch_online  (patrols[a][b].id, false) 
+       sim:set_switch_offline (patrols[a][b].id, true)
+       printf ("Object %s move to offline at %d time", npc:name (), device ():time_global ())
+    else
+       if b == 1 then 
+          db.storage[patrols[a][b].id].patrol.enabled = false
+       else   
+          db.storage[patrols[a][b].id].follower.enabled = false
+       end   
+       xr_sleeper.set_sleeper (npc, true)
+    end   
+end
+-------------------------------------------------------------------------------------------
+function check_for_return ()
+    local res = false
+    for a = 1, table.getn (patrols), 1 do
+        res = false
+        for b = 1, table.getn (patrols[a]), 1 do
+            if patrols[a][b].dead == false and patrols[a][b].on_move == true then 
+               res = true
+            end
+        end
+        if res == false then
+           patrols[a].on_patrol = false
+           this.check_need_raid (a)
+        end   
+    end        
+end
+-------------------------------------------------------------------------------------------
+function patrols_available (a)
+    local count = 0
+    for b = 1, table.getn (patrols[a]), 1 do 
+        if patrols[a][b].dead == true then 
+           count = count + 1
+        end    
+    end
+    if count >= 2 then return false end
+    return true    
+end
+-------------------------------------------------------------------------------------------
+function is_all_patrols_return ()
+    for a = 1, table.getn (patrols), 1 do
+        if patrols[a].on_patrol == true then return false end     
+    end
+    return true    
+end
+-------------------------------------------------------------------------------------------
+function check_need_raid (a)
+
+    local count = 0
+    for c = 1, table.getn (patrols[a]), 1 do
+        if patrols[a][c].dead == true then 
+           count = count + 1 
+        end
+    end
+    
+--    if true then return end
+    
+    if count >= 2 then
+       raid_needed = true
+   --    printf ("RAID NEEDED !!!")
+    end   
+end

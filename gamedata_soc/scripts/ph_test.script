@@ -1,0 +1,100 @@
+
+
+
+
+function main()
+
+	local function callback(ph_object,actor)
+        if(ph_object) then
+         local physics_shell=ph_object:get_physics_shell()
+         if(physics_shell)  then 
+            local dir = actor:direction()
+            physics_shell:apply_force(dir.x*100000,100000,dir.z*100000)
+            end
+      end
+   end
+   
+   local function door_callback(door,actor)
+
+       --local door        = get_level_object("physic_object0001")
+      -- local ph_shell= door:get_physics_shell()
+       --local joint=ph_shell:get_joint_by_bone_name("door")
+
+      local low_limit=0
+      local hi_limit=0
+       low_limit, hi_limit = joint:get_limits(low_limit,hi_limit,0)
+      printf   ("[%f][%f]",low_limit,hi_limit)
+
+      local angle=joint:get_axis_angle(0)
+      if angle-low_limit>hi_limit-angle 
+         then
+                joint:set_max_force_and_velocity(100,-1.5,0)
+         else
+                joint:set_max_force_and_velocity(100,1.5,0)
+      end
+    end
+   
+   local ph_object = level_object_by_sid (014)
+   ph_object:set_use_callback(callback)
+   //local door        = get_level_object("physic_object0001")
+   //door:set_use_callback(door_callback)
+
+	if(ph_object) then
+		local physics_shell=ph_object:get_physics_shell()
+		local joint1=physics_shell:get_joint_by_bone_name("bip01_l_forearm")
+		local joint2=physics_shell:get_joint_by_bone_name("bip01_r_forearm")
+
+		local joint3=physics_shell:get_joint_by_bone_name("bip01_l_upperarm")
+		local joint4=physics_shell:get_joint_by_bone_name("bip01_r_upperarm")
+
+		local joint5=physics_shell:get_joint_by_bone_name("bip01_l_calf")
+		local joint6=physics_shell:get_joint_by_bone_name("bip01_r_calf")
+
+      local joint7=physics_shell:get_joint_by_bone_name("bip01_l_thigh")
+		local joint8=physics_shell:get_joint_by_bone_name("bip01_r_thigh")
+       
+      local joint9=physics_shell:get_joint_by_bone_name("bip01_head")
+
+      local function joints_go(force,vel)
+            joint1:set_max_force_and_velocity(force,vel,2)
+            joint2:set_max_force_and_velocity(force,vel,2)
+
+            joint3:set_max_force_and_velocity(force,vel,1)
+            joint3:set_max_force_and_velocity(force,vel,2)
+            joint3:set_max_force_and_velocity(force,vel,0)
+
+            joint4:set_max_force_and_velocity(force,-vel,1)
+            joint4:set_max_force_and_velocity(force,vel,2)
+            joint4:set_max_force_and_velocity(force,-vel,0)
+
+            joint5:set_max_force_and_velocity(1.5*force,0,1)
+            joint5:set_max_force_and_velocity(1.5*force,vel,2)
+            joint6:set_max_force_and_velocity(1.5*force,0,1)
+            joint6:set_max_force_and_velocity(1.5*force,vel,2)
+
+           joint7:set_max_force_and_velocity(3*force,vel,0)
+           joint7:set_max_force_and_velocity(3*force,vel,1)
+           joint7:set_max_force_and_velocity(2*force,-vel,2)
+
+            joint8:set_max_force_and_velocity(3*force,-vel,0)
+            joint8:set_max_force_and_velocity(3*force,-vel,1)
+            joint8:set_max_force_and_velocity(2*force,-vel,2)
+
+            joint9:set_max_force_and_velocity(1.5*force,vel,0)
+      end
+            wait(4000)
+      local i
+      for i=0, 1000,1
+         do
+               joints_go(100,-1.5)
+            wait(4000)
+                joints_go(50,0)
+            wait(50)
+                joints_go(100,1.5)
+            wait(4000)
+               joints_go(50,0)
+            wait(50)
+          end
+      joints_go(0,0)
+	end 
+end

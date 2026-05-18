@@ -1,0 +1,240 @@
+-- Сбор информации о том, какие сталкеры и в каком количестве обитают в симуляции
+
+function getNpcType(npc)
+	local cls = npc:clsid()
+
+	if cls == clsid.script_stalker then
+		local community = npc:community()
+		
+		local rank = ranks.get_obj_rank_name(npc)
+		return community, rank
+	else
+		local community = xr_statistic.monster_classes[cls]
+		if community == nil then
+			abort("Statistic ERROR: cannot find monstr class for clsid[%s]", get_clsid(npc))
+		end
+	
+		local rank = ranks.get_obj_rank_name(npc)
+		return community, rank
+	end
+end
+
+
+-- Была ли произведена реинициализация после лоада.
+local reinit_complete = false
+local simulator = nil
+
+class "simulation_statistic"
+function simulation_statistic:__init()
+	self.objects = {}
+	self.allocation = {}
+end
+function simulation_statistic:add(npc)
+	local community, rank = getNpcType(npc)
+	self.objects[npc.id] = {community = community, rank = rank}
+	if self.allocation[community] == nil then
+		self.allocation[community] = {}
+	end
+	if self.allocation[community][rank] == nil then
+		self.allocation[community][rank] = 0
+	end
+	self.allocation[community][rank] = self.allocation[community][rank] + 1
+end
+function simulation_statistic:remove(npc)
+	if self.objects[npc.id] ~= nil then
+		local community, rank = self.objects[npc.id].community, self.objects[npc.id].rank
+		self.allocation[community][rank] = self.allocation[community][rank] - 1
+		self.objects[npc.id] = nil
+	end
+end
+function simulation_statistic:simNpcCount(community, rank)
+	if self.allocation[community] == nil then
+		return 0
+	end
+	if self.allocation[community][rank] == nil then
+		return 0
+	end
+	return self.allocation[community][rank]
+end
+function simulation_statistic:pstats(npc)
+	printf("*** SIMULATION POPULATION STATISTIC ***")
+	print_table(self.allocation)
+	local sum = 0
+	for k,v in pairs(self.allocation) do
+		for kk,vv in pairs(v) do
+			sum = sum + vv
+		end	
+	end
+	printf("TOTAL: [%s]", sum)		
+end
+
+
+-- На первом вызове апдейта снимаем флаг о том, что реинициализация уже произведена
+function update()
+	reinit_complete = false
+end
+-- Вызывать на регистре смарттеррейна
+function reinit()
+	if reinit_complete == false then
+		simulator = nil
+		reinit_complete = true
+	end
+end
+-- Регистрация чувака
+function add(npc)
+	if simulator == nil then
+		simulator = simulation_statistic()
+	end
+	simulator:add(npc)
+end
+-- Неригистрация
+function remove(npc)
+	if simulator == nil then
+		return
+	end
+	simulator:remove(npc)
+end
+-- Проверка сколько всего сталкеров есть в симуляции
+function simNpcCount(community, rank)
+	if simulator == nil then
+		return 0
+	end
+	return simulator:simNpcCount(community, rank)
+end
+
+function pstats()
+	if simulator == nil then
+		return
+	end
+	simulator:pstats(npc)
+end
+
+
+
+
+--' Отметка всех сталкеров мапспотами. Дебаговая фича!!!
+show_stalker_spot = true
+function unmark_all_stalkers()
+	show_stalker_spot = false
+end
+function mark_all_stalkers()
+	show_stalker_spot = true
+end
+
+--' Отметка всех монстров мапспотами. Дебаговая фича!!!
+show_monster_spot = true
+function unmark_all_monsters()
+	show_monster_spot = false
+end
+function mark_all_monsters()
+	if show_monster_spot == true then
+		unmark_all_monsters()
+		return
+	end
+end
+
+
+
+--' Статистика респавнеров
+local reg_objects_respawn = {}
+local show_respawn_spot = false
+function register_respawn(obj)
+	--' Не отбражать респавнеры с событийным спауном
+	if obj.item_spawn ~= false then
+		return
+	end
+	local section = obj.str_conditions.."\\n"
+	for k,v in pairs(obj.respawn_section) do
+		section = section .. v.section .. "=" .. v.prob .. "\\n"
+	end
+	reg_objects_respawn[obj.id] = {section = section, enabled = false, max_count = obj.max_count, count = 0}
+	if show_respawn_spot == true then
+		mark_respawn(obj.id)
+	end
+end
+function unregister_respawn(obj)
+	reg_objects_respawn[obj.id] = nil
+end
+function respawn_enabled(obj, enabled)
+	if obj.item_spawn ~= false then
+		return
+	end
+	local gg = table.getn(obj.spawned_obj)
+	if reg_objects_respawn[obj.id].enabled == enabled and
+	   reg_objects_respawn[obj.id].count == gg
+	then
+		return
+	end
+	if show_respawn_spot == true then
+		unmark_respawn(obj.id)
+	end
+	reg_objects_respawn[obj.id].enabled = enabled
+	reg_objects_respawn[obj.id].count = gg
+	if show_respawn_spot == true then
+		mark_respawn(obj.id)
+	end
+end
+function mark_respawn(obj_id)
+	local rr = reg_objects_respawn[obj_id]
+	if rr.exist ~= true then
+		local str = rr.section.."spawned "..tostring(rr.count).."("..rr.max_count..")"
+		if rr.enabled then
+			level.map_add_object_spot(obj_id, "alife_presentation_respawn_on", str)
+		else
+			level.map_add_object_spot(obj_id, "alife_presentation_respawn_off", str)
+		end
+		reg_objects_respawn[obj_id].exist = true
+	end
+end
+function unmark_respawn(obj_id)
+	local rr = reg_objects_respawn[obj_id]
+	if rr.exist == true then
+		if rr.enabled then
+			level.map_remove_object_spot(obj_id, "alife_presentation_respawn_on")
+		else
+			level.map_remove_object_spot(obj_id, "alife_presentation_respawn_off")
+		end
+		reg_objects_respawn[obj_id].exist = nil
+	end
+end
+function unmark_all_respawns()
+	show_respawn_spot = false
+	for k,v in pairs(reg_objects_respawn) do
+		unmark_respawn(obj_id)			
+	end
+end
+function mark_all_respawns()
+	if show_respawn_spot == true then
+		unmark_all_respawns()
+		return
+	end
+	show_respawn_spot = true
+	for k,v in pairs(reg_objects_respawn) do		
+		mark_respawn(k)
+	end
+end
+
+
+--' Статистика смарттеррейнов
+show_smart_spot = false
+function unmark_all_smarts()
+	show_smart_spot = false
+end
+function mark_all_smarts()
+	if show_smart_spot == true then
+		show_smart_spot = false
+		return
+	end
+	show_smart_spot = true
+end
+
+
+
+function mark_all_npc()
+	mark_all_stalkers()
+	mark_all_monsters()
+end
+function mark_all_addon()
+	mark_all_respawns()
+	mark_all_smarts()
+end

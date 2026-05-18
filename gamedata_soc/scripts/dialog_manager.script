@@ -1,0 +1,357 @@
+local phrase_ini = ini_file("misc\\dialog_manager.ltx")
+
+local intro_id = 100
+
+phrase = {
+	intro = {},
+	cool_info = {},
+	help_thanks = {}
+	}
+
+function get_id()
+	intro_id = intro_id + 1
+	return intro_id
+end
+
+--' Необходимо сформировать набор предикатов  table[string_id] = predicate()
+function fill_phrase_table()
+	--' Итерируемся по всем настройкам фраз
+	if not phrase_ini:section_exist("list") then
+		abort("There is no section [list] in dialog_manager.ltx")
+	end
+	local n = phrase_ini:line_count("list")
+	local id, value = "",""
+	local category = ""
+	
+	for i=0,n-1 do
+		result, id, value	= phrase_ini:r_line("list",i,"","")
+		
+		if not phrase_ini:section_exist(id) then
+			abort("There is no section [%s] in dialog_manager.ltx", id)
+		end		
+		--' 2. Необходимо сформировать набор предикатов  table[string_id] = predicate()
+		if not phrase_ini:line_exist(id, "category") then
+			abort("Dialog manager error: not categoried section [%s]", id)
+		end
+		category = phrase_ini:r_string(id, "category")
+		local tt = {}
+		tt.name = id
+		if phrase_ini:line_exist(id, "community") then
+			tt.community = phrase_ini:r_string(id, "community")
+		end
+		if phrase_ini:line_exist(id, "npc_community") then
+			tt.npc_community = phrase_ini:r_string(id, "npc_community")
+		end
+		if phrase_ini:line_exist(id, "relation") then
+			tt.relation = phrase_ini:r_string(id, "relation")
+		end
+		if phrase_ini:line_exist(id, "npc_rank") then
+			tt.npc_rank = phrase_ini:r_u32(id, "npc_rank")
+		end
+		if phrase_ini:line_exist(id, "level") then
+			tt.level = phrase_ini:r_string(id, "level")
+		end
+		if phrase_ini:line_exist(id, "condlist") then
+			tt.condlist = xr_logic.parse_condlist(db.actor, "dialog_manager", "condlist", phrase_ini:r_string(id, "condlist"))
+		end
+		if phrase_ini:line_exist(id, "smart_terrain") then
+			tt.smart_terrain = phrase_ini:r_string(id, "smart_terrain")
+		end					
+		if phrase_ini:line_exist(id, "cost") then
+			tt.price = phrase_ini:r_u32(id, "cost")
+		end					
+		if phrase_ini:line_exist(id, "article_info") then
+			tt.article_info = parse_names(phrase_ini:r_string(id, "article_info"))
+		end					
+		if phrase_ini:line_exist(id, "treasure") then
+			tt.treasure = phrase_ini:r_string(id, "treasure")
+		end					
+		if phrase_ini:line_exist(id, "wounded") then
+			tt.wounded = phrase_ini:r_string(id, "wounded")
+		else
+			tt.wounded = "false"
+		end
+		tt.phr_id = get_id()
+		tt.phr_id2 = get_id()
+		phrase[category][tt.phr_id] = tt
+	end
+end
+
+-- Необходимо создать стартовый диалог, с разветвлением на третьем уровне, где каждая фраза будет иметь
+-- одну и ту же функцию в прекондишне
+function init_intro_dialog(dlg)
+	local phr = dlg:AddPhrase("",0,-1,-10000)
+		phr = dlg:AddPhrase("",1,0,-10000)
+
+	local k,v = 0,0
+	for k,v in pairs(phrase.intro) do
+		phr = dlg:AddPhrase(v.name, v.phr_id, 1, -10000)
+		
+		if phr then
+			local phrase_script = phr:GetPhraseScript()
+			phrase_script:AddPrecondition("dialog_manager.precondition_intro")
+			--' Этот экшн запоминает последнюю фразу, чтобы персонаж говорил одно и то же.
+			--' Для фразы просьбы о помощи его добавлять не надо.
+			if v.wounded == "false" then
+				phrase_script:AddAction("dialog_manager.phrase_action_intro")		
+			end
+		end
+	end
+end
+
+-- Необходимо создать диалог актера, с разветвлением на втором уровне, где каждая фраза будет иметь
+-- одну и ту же функцию в прекондишне.
+function init_cool_info_dialog(dlg)
+	local phr = dlg:AddPhrase("dm_general_cool_info",0,-1,-10000)
+	
+	local phr_def = dlg:AddPhrase("dm_general_cool_info_no_more",1,0,-10000)
+	local phrase_script = phr_def:GetPhraseScript()
+	phrase_script:AddPrecondition("dialog_manager.precondition_cool_info_no_more")
+
+	local k,v,kk,vv = 0,0,0,0
+	for k,v in pairs(phrase.cool_info) do
+		phr = dlg:AddPhrase(v.name,v.phr_id,0,-10000)
+		if phr then
+			local phrase_script = phr:GetPhraseScript()
+			phrase_script:AddPrecondition("dialog_manager.precondition_cool_info")
+			phrase_script:AddAction("dialog_manager.cool_info_treasure")
+			phrase_script:AddAction("dialog_manager.phrase_action_cool_info")
+			
+			if v.article_info ~= nil then
+				phr = dlg:AddPhrase("",v.phr_id2,v.phr_id,-10000)		
+				phrase_script = phr:GetPhraseScript()
+								
+				for kk,vv in pairs(v.article_info) do
+					phrase_script:AddGiveInfo(vv)
+				end
+			end
+		end
+	end
+end
+
+-- Диалоги помощи раненным
+function init_help_wounded_medkit_dialog(dlg)
+	local phr = dlg:AddPhrase("dm_general_help_medkit",0,-1,-10000)
+	local phrase_script = phr:GetPhraseScript()
+	phrase_script:AddAction("dialogs.transfer_medkit")
+	
+	local k,v = 0,0
+	for k,v in pairs(phrase.help_thanks) do
+		phr = dlg:AddPhrase(v.name,v.phr_id,0,-10000)		
+		if phr then
+			phrase_script = phr:GetPhraseScript()
+			phrase_script:AddPrecondition("dialog_manager.precondition_help_thanks")
+		end
+	end
+end
+
+local call_count, max_count = 0,0
+local tmp_tbl = {}
+local show_tbl = {}
+
+selected_phrase_by_id = {
+	intro = {},
+	cool_info = {},
+	action_info = {}
+}
+
+function phrase_action_intro(npc, actor, p1, p2)
+	phrase_action(npc, actor, selected_phrase_by_id.intro, p2)
+end
+function phrase_action_cool_info(npc, actor, p1, p2)
+	phrase_action(npc, actor, selected_phrase_by_id.cool_info, p2, true)
+end
+function cool_info_treasure(npc, actor, p1, p2)
+	for k,v in pairs(phrase.cool_info) do
+		if v.phr_id == p2 then
+			if v.treasure == nil then
+				return
+			end
+			treasure_manager.get_treasure_manager():give_treasure(v.treasure)
+		end
+	end
+end
+
+function phrase_action(npc, actor, sel_tbl, p2, one_time)
+	local cc = 0
+	if one_time == true then
+		if sel_tbl[npc:id()] ~= nil then
+			cc = sel_tbl[npc:id()].count + 1	
+		else
+			cc = 1
+		end
+	end
+
+	sel_tbl[npc:id()] = {phrase = p2, count = cc}
+end
+
+
+function precondition_intro(npc, actor, p1, p2, p3)
+	return precondition(npc, actor, phrase.intro, selected_phrase_by_id.intro, p1, p2, p3)
+end
+function precondition_cool_info(npc, actor, p1, p2, p3)
+	return precondition(npc, actor, phrase.cool_info, selected_phrase_by_id.cool_info, p1, p2, p3)
+end
+function precondition_cool_info_no_more(npc, actor, p1, p2, p3)
+	if selected_phrase_by_id.cool_info == nil or selected_phrase_by_id.cool_info[npc:id()] == nil then
+		return false
+	end
+	if selected_phrase_by_id.cool_info[npc:id()].count >= 1 then
+		return true
+	end 
+	return false
+end
+function precondition_help_thanks(npc, actor, p1, p2, p3)
+	return precondition(npc, actor, phrase.help_thanks, nil, p1, p2, p3)
+end
+
+function precondition(npc, actor, tbl, sel_tbl, p1, p2, p3)
+	--' Получить фразу по номеру:
+	local phrase = tbl[p3]
+
+	--' Надо проверить доступна ли запомненная фраза
+	if sel_tbl ~= nil and sel_tbl[npc:id()] ~= nil then
+		local value, number = calculate_predicate(npc, tbl[sel_tbl[npc:id()].phrase])
+		--' Если запомненная фраза недоступна - необходимо забыть ее
+		if value == false then
+			printf("*** restore memory phrase")
+			sel_tbl[npc:id()] = nil
+		end
+	end	
+
+	--' Проверка на повторяемость фраз.
+	if sel_tbl ~= nil and sel_tbl[npc:id()] ~= nil then
+		--' Если проверяется не запомненная фраза
+		if sel_tbl[npc:id()].phrase ~= phrase.phr_id then
+			printf("*** not memory phrase [%s] ~= [%s]", sel_tbl[npc:id()].phrase, phrase.phr_id)
+			return false
+		end
+		if sel_tbl[npc:id()].count >= 1 then
+			return false
+		end
+	end	
+
+	--' Определяем доступна ли эта фраза:
+	local value, number = calculate_predicate(npc, phrase)
+	return value
+end
+
+function calculate_predicate(npc, tbl, settings)
+	local property_num = 0
+	local k,v = 0,0
+	if tbl.community ~= nil then
+		if tbl.community ~= db.actor:character_community() then return false,0 end
+		property_num = property_num + 1		
+	end
+	if tbl.npc_community ~= nil then
+		if tbl.npc_community ~= npc:character_community() then return false,0 end
+		property_num = property_num + 1		
+	end
+	if tbl.relation ~= nil then
+		if (tbl.relation == "friend" and npc:relation(db.actor) ~= game_object.friend) or
+		   (tbl.relation == "neutral" and npc:relation(db.actor) ~= game_object.neutral) or
+		   (tbl.relation == "enemy" and npc:relation(db.actor) ~= game_object.enemy)
+		then 
+			return false,0 
+		end
+		property_num = property_num + 1		
+	end
+	if tbl.npc_rank ~= nil then
+		if tbl.npc_rank > npc:character_rank() then return false,0 end
+		property_num = property_num + 1		
+	end
+	if tbl.level ~= nil then
+		if tbl.level ~= level.name() then return false,0 end
+		property_num = property_num + 1		
+	end
+	if tbl.condlist ~= nil then
+		if xr_logic.pick_section_from_condlist(db.actor, db.actor, tbl.condlist) ~= "true" then return false,0 end
+		property_num = property_num + table.getn(tbl.condlist.infop_check)
+	end
+	if tbl.smart_terrain ~= nil then
+		if tbl.smart_terrain ~= xr_gulag.isUnderFraction(npc) then return false,0 end
+		property_num = property_num + 1		
+	end
+	if tbl.wounded ~= nil then
+		if tbl.wounded == "true" and not
+		   (xr_wounded.is_wounded(npc) or
+		    xr_wounded.is_heavy_wounded_by_id(npc:id()) or
+		    xr_wounded.is_psy_wounded_by_id(npc:id()))
+		then
+			return false,0
+		end
+		if tbl.wounded == "false" and
+		   (xr_wounded.is_wounded(npc) or
+		    xr_wounded.is_heavy_wounded_by_id(npc:id()) or
+		    xr_wounded.is_psy_wounded_by_id(npc:id()))
+		then
+			return false,0
+		end
+		property_num = property_num + 1		
+	end
+	if tbl.price ~= nil then
+		if (db.actor:money() < tbl.price) and
+		   (settings == nil or settings.no_price ~= true) 
+		then
+			return false,0 
+		end
+		
+		if tbl.article_info ~= nil then
+			for k,v in pairs(tbl.article_info) do
+				if has_alife_info(v) then
+					return false,0
+				end
+			end				
+		end
+	end
+	
+	return true, property_num
+end
+
+		
+--' Прекондишн, можно ли разрешать диалоги с болтовней ("расскажи мне о" например)
+function precondition_info_global(actor, npc)
+	if xr_wounded.is_wounded(npc) or
+	   xr_wounded.is_heavy_wounded_by_id(npc:id()) or
+	   xr_wounded.is_psy_wounded_by_id(npc:id())
+	then
+		return false
+	end
+	return true
+end
+
+	
+--' Сохранение информации о выбранных фразах
+function save(npc, p)
+	if selected_phrase_by_id.intro[npc:id()] == nil then
+		p:w_s16(-1)
+	else
+		p:w_s16(selected_phrase_by_id.intro[npc:id()].phrase)
+	end
+	if selected_phrase_by_id.cool_info[npc:id()] == nil then
+		p:w_s16(-1)
+	else
+		p:w_s16(selected_phrase_by_id.cool_info[npc:id()].phrase)
+	end
+end
+function load(npc, reader)
+	if selected_phrase_by_id == nil then
+		selected_phrase_by_id = {
+			intro = {},
+			cool_info = {},
+			action_info = {}
+		}
+	end
+	local flag = reader:r_s16()
+	if flag ~= -1 then
+		selected_phrase_by_id.intro[npc:id()] = {phrase = flag, count = 0}
+	else
+		selected_phrase_by_id.intro[npc:id()] = nil
+	end
+	flag = reader:r_s16()
+	if flag ~= -1 then
+		selected_phrase_by_id.cool_info[npc:id()] = {phrase = flag, count = 0}
+	else
+		selected_phrase_by_id.cool_info[npc:id()] = nil
+	end
+end

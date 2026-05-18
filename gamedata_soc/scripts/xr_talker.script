@@ -1,0 +1,343 @@
+
+-- Разговор. Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
+
+-- Настройка:
+
+local aftertalk_disable_time = 30000
+
+local transitions = {}
+
+transitions[1] = {
+	phrase = 0, -- номер фразы
+	duration = 3000,
+	-- Preconditions:
+	previous_phrase = nil
+}
+
+transitions[2] = {
+	phrase = 1, -- номер фразы
+	duration = 3000,
+	-- Preconditions:
+	previous_phrase = 1
+}
+
+transitions[3] = {
+	phrase = 2, -- номер фразы
+	duration = 3000,
+	-- Preconditions:
+	previous_phrase = 2
+}
+
+transitions[4] = {
+	phrase = 2, -- номер фразы
+	duration = 3000,
+	-- Preconditions:
+	previous_phrase = 2
+}
+
+-- Глобальные переменные:
+
+local state_none = 0
+local state_approaching = 1
+local state_talking = 2
+local state_listening = 3
+local state_waiting = 4
+
+local talkers = {
+}
+
+function has_anything_to_tell()
+	return true
+end
+
+function next_phrase(ch, vict, previous_phrase)
+	local result = nil
+
+	local n = 0
+	
+	for k, v in pairs(transitions) do
+		if v.previous_phrase == previous_phrase then
+			n = n + 1
+			if math.random(1, n) == 1 then
+				result = k
+			end
+		end
+	end
+
+	if result == nil then
+		return nil
+	end
+	return result, transitions[result].duration
+end
+
+function stop_talking(id)
+	local dis_until = time_global() + aftertalk_disable_time
+	talkers[id].state = state_none
+	talkers[id].disabled_until = dis_until
+	talkers[talkers[id].whom:id()].state = state_none
+	talkers[talkers[id].whom:id()].disabled_until = dis_until
+end
+
+
+---------------------------------------------------------------------------------------------------------------------
+--Evaluators
+----------------------------------------------------------------------------------------------------------------------
+-- Константа
+class "evaluator_need_talker" (property_evaluator)
+
+function evaluator_need_talker:__init(storage, name) super (nil, name)
+	self.stor = storage
+end
+
+function evaluator_need_talker:new_state()
+	local ns = {
+		state = state_none,
+		whom = nil,
+		expiration_time = 0,
+		previous_phrase = nil,
+		disabled_until = 0,
+	}
+	return ns
+end
+
+function evaluator_need_talker:evaluate ()
+	if not self.stor.enabled then
+		return false
+	end
+
+	local id = self.object:id()
+	
+	if talkers[id] then
+		if talkers[id].state ~= state_none then
+			if not talkers[id].whom:alive() then
+				this.stop_talking(id)
+				return false
+			end
+			return true
+		end
+
+		if time_global() < talkers[id].disabled_until then
+			return false
+		end
+	end
+
+	if not this.has_anything_to_tell() then
+		return false
+	end
+
+	local vtable = self.object:not_yet_visible_objects()
+	if vtable == nil then
+		return false
+	end
+	for o in vtable do
+		local vo = o:object()
+		local vo_id = vo:id()
+		if is_object_online(vo_id) and vo:alive() then
+			local otype = get_clsid(vo)
+			if otype == clsid.soldier or otype == clsid.script_stalker then
+				if o.value >= self.object:visibility_threshold() then
+					local distance = vo:position():distance_to(self.object:position())
+					--printf("dist: %d", distance)
+					if distance < 5 and
+					   (not talkers[vo_id] or time_global() >= talkers[vo_id].disabled_until) and
+					   (not talkers[vo_id] or talkers[vo_id].state == state_none) then
+						if not talkers[id] then
+							talkers[id] = self.new_state()
+						end
+						if talkers[id].state == state_none then
+							talkers[id].state = state_approaching
+							talkers[id].whom = vo
+							if not talkers[vo_id] then
+								talkers[vo_id] = self.new_state()
+							end
+							talkers[vo_id].state = state_approaching
+							talkers[vo_id].whom = self.object
+							return true
+						end
+					end
+				end
+			end
+		end
+	end
+
+	return false
+end
+
+---------------------------------------------------------------------------------------------------------------------
+--Actions
+----------------------------------------------------------------------------------------------------------------------
+-- Обычное поведение
+class "action_talker_activity" (action_base)
+function action_talker_activity:__init (npc_name, action_name, storage) super (nil, action_name)
+	self.stor = storage
+end
+
+function action_talker_activity:initialize()
+	--printf("_bp: action_talker_activity: initialize")
+	action_base.initialize(self)
+--	self.object:set_node_evaluator()
+--	self.object:set_path_evaluator()
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+
+	self.object:clear_animations()
+
+	self.object:set_mental_state(anim.free)
+	self.object:set_sight(look.search, nil, 0)
+	--self.object:set_sight(look.path_dir, nil, 0)
+	--self.object:set_sight(look.danger, nil, 0)
+
+	--xr_reactions.add_rule(self.object, "ignore")
+end
+
+function action_talker_activity:say(what)
+	self.object:play_sound(xr_sounds_id.zmey_talker_base, 1, 0, 1, 0, what)
+end
+
+function action_talker_activity:is_weapon(active_item)
+	return active_item and isWeapon(get_clsid(active_item))
+end
+
+function action_talker_activity:execute()
+	--printf("[%s] talker", self.object:name())
+	local id = self.object:id()
+	if not talkers[id] then
+		return
+	end
+
+	--if talkers[id].state == state_talking or talkers[id].state == state_listening then
+		--local pos = talkers[id].whom:position()
+		--pos.y = pos.y + 0.8
+		--self.object:set_sight(look.fire_point, pos, 0)
+		local pos = talkers[id].whom:position()
+		local look_pt = this.vector_copy_by_val(pos):sub(self.object:position())
+		self.object:set_sight(look.direction, look_pt, 0)
+	--end
+
+	if talkers[id].state == state_none then
+		return
+	end
+
+	if talkers[id].state == state_approaching then
+		--printf("[%s] state_approaching", self.object:name())
+		if self.object:position():distance_to(talkers[id].whom:position()) < 1.5 then
+			--printf("_bp: near")
+			--self.object:add_animation("udar_0", true)
+
+			self.object:set_movement_type(move.stand)
+			local phrase, time = this.next_phrase(self.object, talkers[id].whom, nil)
+			talkers[id].previous_phrase = phrase
+			if phrase == nil then
+				--printf("_bp: nil phrase")
+				this.stop_talking(id)
+				return
+			end
+			self.object:play_sound(xr_sounds_id.zmey_talker_base, 1, 0, 1, 0, phrase)
+			talkers[id].expiration_time = time_global() + time
+			talkers[id].state = state_talking
+
+			talkers[id].whom:set_movement_type(move.stand)
+			talkers[talkers[id].whom:id()].state = state_listening
+		else
+			local whom = talkers[id].whom
+			self.object:set_detail_path_type(move.line)
+			self.object:set_body_state(move.standing)
+			self.object:set_movement_type(move.walk)
+			self.object:set_path_type(game_object.level_path)
+			self.object:set_desired_direction(whom:direction())
+			self.object:set_dest_level_vertex_id(whom:level_vertex_id())
+		end
+		return
+	end
+
+	if talkers[id].state == state_talking then
+		if time_global() >= talkers[id].expiration_time then
+			local phrase, time = this.next_phrase(self.object, talkers[id].whom, talkers[id].previous_phrase)
+			talkers[talkers[id].whom:id()].previous_phrase = phrase
+			if not phrase then
+				this.stop_talking(id)
+				return
+			end
+			talkers[id].whom:play_sound(xr_sounds_id.zmey_talker_base, 1, 0, 1, 0, phrase)
+			talkers[talkers[id].whom:id()].expiration_time = time_global() + time
+			talkers[talkers[id].whom:id()].state = state_talking
+			
+			talkers[id].state = state_listening
+		end
+		return
+	end
+end
+
+function action_talker_activity:finalize()
+	--printf("_bp: FINALIZE")
+	self.object:clear_animations()
+
+	local id = self.object:id()
+	if talkers[id] then
+		this.stop_talking(id)
+	end
+
+	action_base.finalize(self)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+--Guard binder
+----------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc)
+	--printf("_bp: add_to_binder (talker)")
+	local operators    = {}
+	local properties  = {}
+
+	-- FIXME: тут будет talker
+	npc:add_sound([[script_replics\bandit_1\replics\bandit_ambush_]],
+			20, snd_type.talk, 2, 1, xr_sounds_id.zmey_talker_base)
+
+	local manager = npc:motivation_action_manager()
+
+	properties["need_talker"]   = xr_evaluators_id.zmey_talker_base + 1
+	operators["action_talker"]   = xr_actions_id.zmey_talker_base + 1
+
+	-- // evaluators
+	manager:add_evaluator (properties["need_talker"],   this.evaluator_need_talker  (xr_motivator.storage[npc:id()].talker, "talker_need"))
+
+	local new_action = this.action_talker_activity(npc, "action_talker_activity", xr_motivator.storage[npc:id()].talker)
+	new_action:add_precondition    (world_property(stalker_ids.property_alive,   true))
+	new_action:add_precondition    (world_property(stalker_ids.property_enemy,   false))
+	new_action:add_precondition    (world_property(properties["need_talker"],   true))
+	new_action:add_effect(world_property(properties["need_talker"], false))
+	manager:add_action(operators["action_talker"], new_action)
+
+	new_action = manager:action(xr_actions_id.alife)
+	new_action:add_precondition(world_property(properties["need_talker"], false))
+end
+
+-- функции
+function vector_copy_by_val(vec)
+	local newvec = vector()
+	newvec.x = vec.x
+	newvec.y = vec.y
+	newvec.z = vec.z
+	return newvec
+end
+
+function set_talker(object, enable)
+	-- 
+	local char_ini = object:spawn_ini()
+	local st = xr_motivator.storage[object:id()].talker
+	if enable == nil then
+	    	if char_ini:section_exist ("talker") == true then
+        		if char_ini:line_exist("talker", "enabled") == true then
+                		st.enabled = char_ini:r_bool("talker", "enabled")
+			else
+				st.enabled = false
+		        end
+		else
+			st.enabled = false
+		end
+	else
+		st.enabled = enable		
+	end	
+
+
+	xr_motivator.checkStorage(object)
+end

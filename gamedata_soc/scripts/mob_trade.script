@@ -1,0 +1,92 @@
+----------------------------------------------------------------------------------------------------
+-- Mob trade
+----------------------------------------------------------------------------------------------------
+-- Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
+----------------------------------------------------------------------------------------------------
+
+class "mob_trade"
+
+function mob_trade:__init(obj, storage)
+	self.object = obj
+	self.st = storage
+end
+
+function mob_trade:reset_scheme()
+end
+
+function mob_trade:update(delta)
+end
+
+function mob_trade:storage_trade_section()
+	local trade = db.storage[self.object:id()].trade
+	if not trade then
+		trade = {}
+		db.storage[self.object:id()].trade = trade
+	end
+	return trade
+end
+
+function mob_trade:start_trade(zone, obj)
+	printf("_bp: mob_trade: start_trade")
+
+	local trade = self:storage_trade_section()
+	trade.trading = true
+	trade.exchanged = false
+
+	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+		return
+	end
+end
+
+function mob_trade:end_trade()
+	printf("_bp: mob_trade: end_trade")
+
+	local trade = self:storage_trade_section()
+	trade.trading = false
+
+	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+		return
+	end
+end
+
+function mob_trade:on_trade(obj, type)
+	printf("_bp: mob_trade: on_trade")
+
+	local trade = self:storage_trade_section()
+	trade.exchanged = true
+
+	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+		return
+	end
+end
+
+---------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+	printf("DEBUG: add_to_binder: npc:name()='%s', scheme='%s', section='%s'", npc:name(), scheme, section)
+
+ 	local action = mob_trade(npc, storage)
+	storage.action = action
+end
+
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	if npc:clsid() ~= clsid.script_trader then
+		abort("object '%s': attempt to use mob_trade script on non-trader mobile", npc:name())
+	end
+
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	
+	npc:set_callback(callback.trade_start, st.action.start_trade, st.action)
+	npc:set_callback(callback.trade_stop, st.action.end_trade, st.action)
+	npc:set_callback(callback.trade_perform_operation , st.action.on_trade, st.action)
+	
+end
+
+function disable_scheme(npc, scheme)
+	if npc:clsid() == clsid.script_trader then
+		npc:set_callback(callback.trade_start, nil)
+		npc:set_callback(callback.trade_stop, nil)
+		npc:set_callback(callback.trade_perform_operation, nil)
+	end
+end
+

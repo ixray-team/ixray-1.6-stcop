@@ -1,0 +1,16 @@
+<ui_texture>
+    <file_name>ui\ui_statistics</file_name>
+    <texture id="ui_statTwo_t" x="0" y="0" width="845" height="98" />
+    <texture id="ui_statTwo_b" x="4" y="267" width="839" height="58" />
+    <texture id="ui_statTwo_lineDiv" x="6" y="327" width="1" height="16" />
+    <texture id="ui_statTwo_tabdiv_l" x="9" y="325" width="402" height="25" />
+    <texture id="ui_statTwo_tabdiv_r" x="411" y="325" width="402" height="25" />
+    <texture id="ui_string_statTwo_b" x="813" y="325" width="32" height="15" />
+    <texture id="ui_string_statTwo_back" x="813" y="325" width="32" height="15" />
+    <texture id="ui_string_statTwo_e" x="813" y="325" width="32" height="15" />
+    <texture id="ui_statOne_t" x="0" y="350" width="446" height="95" />
+    <texture id="ui_statOne_b" x="0" y="445" width="447" height="58" />
+    <texture id="ui_statOne_tabdiv" x="0" y="503" width="411" height="25" />
+    <texture id="ui_statOne_back" x="447" y="350" width="440" height="163" />
+    <texture id="ui_statTwo_back" x="11" y="98" width="832" height="162" />
+</ui_texture>

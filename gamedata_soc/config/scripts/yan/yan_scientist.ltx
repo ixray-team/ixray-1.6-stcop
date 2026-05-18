@@ -1,0 +1,154 @@
+[logic]
+active = walker@yan_start
+actor_dialogs = actor_dialogs
+combat_ignore = combat_ignore
+trade = misc\trade_ecolog.ltx
+inv_max_weight = 10000
+
+[walker@yan_start]
+path_walk = yan_ucheniy_walk_talk
+path_look = yan_ucheniy_look_talk
+combat_ignore_cond = always
+on_info = {+yantar_scientists_talk} remark@yan_professor_talk_1
+danger = danger_condition@yan_ecolog
+def_state_standing = yan_professor_wait
+def_state_moving1 = yan_professor_walk
+def_state_moving2 = yan_professor_walk
+def_state_moving3 = yan_professor_walk
+meet = no_meet
+
+[remark@yan_professor_talk_1]
+snd = yantar_professor_to_kruglov_1
+anim = yan_professor_wait
+target = logic@scientist_out_rest, yan_scientist
+on_timer = 5000 | %+yantar_kruglov_phrase_1%
+on_info = {+yantar_professor_phrase_2} remark@yan_professor_talk_2
+combat_ignore_cond = always
+danger = danger_condition@yan_ecolog
+meet = no_meet
+
+[remark@yan_professor_talk_2]
+snd = yantar_professor_to_kruglov_2
+anim = yan_professor_wait
+target = logic@scientist_out_rest, yan_scientist
+on_timer = 5000 | walker@yan_1 %+yantar_kruglov_phrase_2%
+combat_ignore_cond = always
+danger = danger_condition@yan_ecolog
+meet = no_meet
+
+[walker@yan_1]
+path_walk = yan_ucheniy_walk
+path_look = yan_ucheniy_look
+combat_ignore_cond = always
+on_info = {+yan_actor_talk_ucheniy} walker@yan_2
+on_info2 = {+yan_find_scientist_done} walker@scientist_quest_good	
+danger = danger_condition@yan_ecolog
+def_state_standing = yan_professor_wait
+def_state_moving1 = yan_professor_walk
+def_state_moving2 = yan_professor_walk
+def_state_moving3 = yan_professor_walk
+meet = meet@yan_general_scientist_1
+
+[walker@scientist_quest_good]
+path_walk = yan_ucheniy_walk_talk
+path_look = yan_ucheniy_look_talk
+combat_ignore_cond = always
+on_info = {+yantar_scientist_talk_helmet} remark@talk_about_helmet
+danger = danger_condition@yan_ecolog
+def_state_standing = yan_professor_wait
+def_state_moving1 = yan_professor_walk
+def_state_moving2 = yan_professor_walk
+def_state_moving3 = yan_professor_walk
+meet = meet@yan_general_scientist_1
+
+[remark@talk_about_helmet]
+snd = yantar_professor_radiation_quest_2
+anim = yan_professor_wait
+target = logic@scientist_out_rest, yan_scientist
+meet = no_meet
+combat_ignore_cond = always
+on_signal = sound_end | walker@go_to_room %-yantar_scientist_talk_helmet%
+danger = danger_condition@yan_ecolog
+
+[walker@go_to_room]
+path_walk = yan_general_scientist_room_walk
+path_look = yan_general_scientist_room_look
+on_signal = make_helmet | remark@make_helmet
+combat_ignore_cond = always
+danger = danger_condition@yan_ecolog
+meet = no_meet
+def_state_standing = yan_professor_wait
+def_state_moving1 = yan_professor_walk
+def_state_moving2 = yan_professor_walk
+def_state_moving3 = yan_professor_walk
+
+[remark@make_helmet]
+anim = mode_shlem
+target = 920
+combat_ignore_cond = always
+on_signal = action_end | walker@go_to_actor
+danger = danger_condition@yan_ecolog
+meet = no_meet
+
+[walker@go_to_actor]
+path_walk = yan_ucheniy_walk_talk
+path_look = yan_ucheniy_look_talk
+combat_ignore_cond = always
+on_info = {+yan_kill_brain_task_start} walker@yan_2
+danger = danger_condition@yan_ecolog
+def_state_standing = yan_professor_wait
+def_state_moving1 = yan_professor_walk
+def_state_moving2 = yan_professor_walk
+def_state_moving3 = yan_professor_walk
+meet = meet@yan_general_scientist_1
+
+[walker@yan_2]
+path_walk = yan_ucheniy_walk_talk
+path_look = yan_ucheniy_look_talk
+combat_ignore_cond = always
+on_info = {-yan_actor_talk_ucheniy} walker@yan_1
+on_info2 = {+yantar_scientist_talk_helmet} remark@talk_about_helmet
+meet = meet@yan_general_scientist_1
+danger = danger_condition@yan_ecolog
+def_state_standing = yan_professor_wait
+def_state_moving1 = yan_professor_walk
+def_state_moving2 = yan_professor_walk
+def_state_moving3 = yan_professor_walk
+
+
+
+[meet@yan_general_scientist]
+meet_state 		= 2 | yan_professor_wait@yantar_professor_talk_1
+meet_state_wpn 	= 2 | yan_professor_wait@yantar_professor_talk_1
+victim 			= 2 | actor
+victim_wpn 		= nil
+use             = true
+use_wpn         = false
+
+[meet@yan_general_scientist_1]
+meet_state 		= 1 | yan_professor_wait@yantar_professor_talk_1
+meet_state_wpn 	= 1 | yan_professor_wait@yantar_professor_talk_1
+victim 			= 1 | actor
+victim_wpn 		= nil
+use             = true
+use_wpn         = false
+abuse = false
+precond = usability
+
+[meet@no_talk]
+meet_state 		= 1 | yan_professor_wait@yantar_professor_talk_1
+meet_state_wpn 	= 1 | yan_professor_wait@yantar_professor_talk_1
+victim 			= 1 | actor
+victim_wpn 		= nil
+use             = false
+use_wpn         = false
+abuse = false
+
+[danger_condition@yan_ecolog]
+ignore_distance = 0
+
+[actor_dialogs]
+id = yantar_general_ucheniy_talk_start,yantar_general_ucheniy_talk_end
+
+[combat_ignore]
+combat_ignore_cond = always

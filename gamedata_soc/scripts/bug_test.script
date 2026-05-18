@@ -1,0 +1,187 @@
+--///////////////////////////////////////////////////
+--///////////////////////////////////////////////////
+--///////////////////////////////////////////////////
+class "motivation_global"	(motivation)
+
+function motivation_global:__init(motivations) super()
+	self.motivations		= motivations
+end
+
+function motivation_global:evaluate(motivation_id)
+	if self.motivations["alive"] == motivation_id then
+		if self.object:alive() == true then
+			return			1.0
+		else
+			return			0.0
+		end
+	else
+		if self.object:alive() == false then
+			return			1.0
+		else
+			return			0.0
+		end
+	end
+end
+
+class "motivation_final"	(motivation_action)
+
+function motivation_final:__init(goal) super(goal)
+end
+
+--///////////////////////////////////////////////////
+--///////////////////////////////////////////////////
+--///////////////////////////////////////////////////
+class "evaluator_const"		(property_evaluator)
+
+function evaluator_const:__init(value) super()
+	self.value				= value
+end
+
+function evaluator_const:evaluate()
+	return					self.value
+end
+
+--///////////////////////////////////////////////////
+--///////////////////////////////////////////////////
+--///////////////////////////////////////////////////
+class "evaluator_alive"		(property_evaluator)
+
+function evaluator_alive:__init() super()
+end
+
+function evaluator_alive:evaluate()
+	return					self.object:alive()
+end
+
+--///////////////////////////////////////////////////
+--///////////////////////////////////////////////////
+--///////////////////////////////////////////////////
+class "action_alive"			(action_base)
+
+function action_alive:__init() super()
+end
+
+function action_alive:initialize()
+	action_base.initialize				(self)
+
+--	self.object:set_node_evaluator		()
+--	self.object:set_path_evaluator		()
+	self.object:set_desired_position	()
+	self.object:set_desired_direction	()
+	printf								("script action is initialized!")
+end
+
+function action_alive:execute()
+	action_base.execute					(self)
+	
+
+	self.object:set_sight				(look.search,nil,0);
+
+	self.object:set_item				(object.idle);
+
+	self.object:set_path_type			(game_object.game_path)
+	self.object:set_detail_path_type	(move.line)
+	self.object:set_body_state			(move.standing)
+	self.object:set_movement_type		(move.walk)
+	self.object:set_mental_state		(anim.free)
+end
+
+function action_alive:finalize()
+	action_base.finalize	(self)
+end
+
+--///////////////////////////////////////////////////
+--///////////////////////////////////////////////////
+--///////////////////////////////////////////////////
+class "stalker_binder" (object_binder)
+
+function stalker_binder:__init		(object) super(object)
+	printf					("Binded object for core object %s is constructed!",object:name())
+end
+
+function stalker_binder:__finalize	()
+	printf					("Binded object for core object %s is destroyed!",self.object:name())
+end
+
+function stalker_binder:reinit		()
+	object_binder.reinit	(self)
+end
+
+function stalker_binder:reload		(section)
+	object_binder.reload	(self,section)
+	local					motivations	= {}
+	local					operators	= {}
+	local					properties	= {}
+	local					manager		= self.object:motivation_action_manager()
+	local					goal		= world_state()
+	
+	manager:clear			()
+
+	motivations["global"]	= 0
+	motivations["dead"]		= 1
+	motivations["alive"]	= 2
+
+	properties["alive"]		= 0
+	properties["dead"]		= 1
+	properties["solved"]	= 2
+
+	operators["dead"]		= 0
+	operators["free"]		= 1
+
+	-- // motivations
+	manager:add_motivation	(motivations["global"],		this.motivation_global(motivations))
+
+	goal:clear				()
+	goal:add_property		(world_property(properties["dead"],	true))
+printf	("Right now will be crash")
+	manager:add_motivation	(motivations["dead"],		this.motivation_final(goal))
+printf	("It works!!!")
+
+	goal:clear				()
+	goal:add_property		(world_property(properties["solved"],true))
+	manager:add_motivation	(motivations["alive"],		motivation_action(goal))
+  
+	manager:add_connection	(motivations["global"],		motivations["dead"])
+	manager:add_connection	(motivations["global"],		motivations["alive"])
+
+	-- // evaluators
+	manager:add_evaluator	(properties["alive"],		this.evaluator_alive	())
+	manager:add_evaluator	(properties["dead"],		this.evaluator_const	(false))
+	manager:add_evaluator	(properties["solved"],		this.evaluator_const	(false))
+
+	-- // operators/actions
+	local					action = action_base()
+	action:add_precondition	(world_property(properties["alive"],	false))
+	action:add_precondition	(world_property(properties["dead"],		false))
+	action:add_effect		(world_property(properties["dead"],		true))
+	manager:add_action		(operators["dead"],			action)
+
+	action					= this.action_alive()
+	action:add_precondition	(world_property(properties["alive"],	true))
+	action:add_precondition	(world_property(properties["solved"],	false))
+	action:add_effect		(world_property(properties["solved"],	true))
+	manager:add_action		(operators["free"],			action)
+end
+
+function stalker_binder:net_spawn	(server_object)
+	if (object_binder.net_spawn(self,server_object) == false) then
+		return		false
+	end
+	return			true
+end
+
+function stalker_binder:net_destroy	()
+	object_binder.net_destroy	(self)
+end
+
+function stalker_binder:net_export	(packet)
+	object_binder.net_export	(self,packet)
+end
+
+function stalker_binder:net_import	(packet)
+	object_binder.net_import	(self,packet)
+end
+
+function init		(obj)
+	obj:bind_object	(this.stalker_binder(obj))
+end

@@ -1,0 +1,249 @@
+[logic@val_escort_captive]
+active          = patrol@val_escort_captive_wait
+on_death        = death@val_escort_captive
+danger          = danger@val_escort_captive
+combat_ignore   = combat_ignore
+
+[death@val_escort_captive]
+on_info     = %+val_escort_captive_dead%
+;on_info2    = {+val_escort_nap1_dead} %+val_escort_scene_end%
+
+;--------------------------------------------------------------------------
+; стандартный диалог
+;--------------------------------------------------------------------------
+[meet@val_escort_captive_talk]
+meet_dialog     = val_escort_captive_dialog
+meet_state      = 3|wait
+meet_state_wpn  = 3|wait
+victim          = 30|actor
+victim_wpn      = 20|actor
+use             = true
+use_wpn         = true
+
+[wounded@val_escort_captive]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false
+
+[danger@val_escort_captive]
+ignore_types                    = corpse
+ignore_distance_sound           = 2
+ignore_distance_corpse    = 0
+danger_inertion_time_hit        = 1000
+danger_inertion_time_sound      = 500
+danger_inertion_time_ricochet   = 1000
+
+[danger@val_escort_captive_free]
+ignore_types                    = corpse
+ignore_distance_sound           = 10
+ignore_distance_corpse    = 0
+
+;--------------------------------------------------------------------------
+; 
+;--------------------------------------------------------------------------
+[patrol@val_escort_captive_wait]
+path_walk           = captive_wait_walk
+path_look           = captive_wait_look
+commander           = true
+formation           = back
+on_info             = {+val_escort_start} walker@val_escort_captive_go, {+val_escort_nap1_dead} walker@val_escort_captive_go %+val_escort_start% ;patrol
+on_info2            = {+val_escort_guard1_dead +val_escort_guard2_dead} follower@val_escort_captive_go_to_nap1 %+val_escort_captive_enemy%
+danger              = danger@val_escort_captive
+combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; 
+;--------------------------------------------------------------------------
+[patrol@val_escort_captive_go]
+path_walk           = captive_walk
+path_look           = captive_look
+commander           = true
+formation           = back
+on_signal           = fight | {-val_escort_nap1_dead} camper@val_escort_captive_cover %+val_escort_combat -val_escort_wait%
+on_signal2          = move_end | %+val_escort_captive_enemy%
+on_info             = {+val_escort_combat} camper@val_escort_captive_cover
+on_info2            = {+val_escort_guard1_combat} remark@val_escort_captive_hide, {+val_escort_guard2_combat} remark@val_escort_captive_hide
+;on_info3            = {=val_escort_captive_dist_to_guards_ge(10)} remark@val_escort_captive_hide
+meet                = no_meet
+danger              = danger@val_escort_captive
+wounded             = wounded@val_escort_captive
+combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; 
+;--------------------------------------------------------------------------
+[walker@val_escort_captive_go]
+path_walk           = captive_walk
+path_look           = captive_look
+on_signal           = fight | {-val_escort_nap1_dead} camper@val_escort_captive_cover %+val_escort_combat -val_escort_wait%
+on_signal2          = move_end | %+val_escort_captive_enemy%
+on_info             = {+val_escort_guard1_dead +val_escort_guard2_dead} follower@val_escort_captive_go_to_nap1
+on_info2            = {+val_escort_combat} camper@val_escort_captive_cover
+on_info3            = {+val_escort_guard1_combat} remark@val_escort_captive_hide, {+val_escort_guard2_combat} remark@val_escort_captive_hide
+on_info4            = {=val_escort_captive_dist_to_guards_ge(10)} remark@val_escort_captive_hide
+meet                = no_meet
+danger              = danger@val_escort_captive
+wounded             = wounded@val_escort_captive
+combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; 
+;--------------------------------------------------------------------------
+[remark@val_escort_captive_hide]
+anim                = hide
+on_info             = {+val_escort_guard1_dead +val_escort_guard2_dead} follower@val_escort_captive_go_to_nap1
+on_info2            = {+val_escort_combat} camper@val_escort_captive_cover
+on_info3            = {-val_escort_guard1_combat -val_escort_guard2_combat =val_escort_captive_dist_to_guards_le(7)} walker@val_escort_captive_go
+on_info4            = {=val_escort_captive_dist_to_guards_ge(35)} camper@val_escort_captive_cover %+val_escort_captive_enemy%
+on_timer            = 70000 | camper@val_escort_captive_cover %+val_escort_captive_enemy%
+meet                = no_meet
+wounded             = wounded@val_escort_captive
+danger              = danger@val_escort_captive
+combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; 
+;--------------------------------------------------------------------------
+[camper@val_escort_captive_cover]
+path_walk           = captive_hide_walk
+path_look           = captive_hide_look
+no_retreat          = true
+radius              = 1
+def_state_moving    = sprint
+def_state_campering = hide
+on_info             = {+val_escort_guard1_dead +val_escort_guard2_dead} follower@val_escort_captive_go_to_nap1 %+val_escort_captive_enemy%
+on_info2            = {+val_escort_nap1_dead =dist_to_actor_ge(30)} follower@val_escort_captive_go_to_nap1 %+val_escort_captive_enemy%
+meet                = no_meet
+danger              = danger@val_escort_captive
+wounded             = wounded@val_escort_captive
+combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; 
+;--------------------------------------------------------------------------
+[follower@val_escort_captive_go_to_nap1]
+leader              = 406 ;logic@val_escort_nap1
+distance            = 0.5
+stub_for_corpse     = true
+dont_change_job     = true
+on_signal           = leader_dead | remark@val_escort_captive_check_state
+on_info             = {=distance_to_obj_le(406:3)} remark@val_escort_captive_check_state
+on_timer            = 20000 | remark@val_escort_captive_check_state
+meet                = no_meet
+danger              = danger@val_escort_captive
+;wounded             = wounded@val_escort_captive
+;combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+[remark@val_escort_captive_check_state]
+anim                = wait_na
+target              = 406 ;logic@val_escort_nap1
+on_info             = {-val_escort_nap1_dead} remark@val_escort_captive_phrase1, remark@val_escort_captive_phrase2
+meet                = no_meet
+danger              = danger@val_escort_captive
+;wounded             = wounded@val_escort_captive
+;combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; фраза: Черт подери!!!...Эх-ххх...Пусть земля тебе будет пухом, дружище.
+;--------------------------------------------------------------------------
+[remark@val_escort_captive_phrase2]
+anim                = wait_na
+snd                 = val_escort_dead
+;target              = 406
+on_signal           = sound_end | {+val_escort_actor_helped} remark@val_escort_captive_talk_phrase, patrol@val_escort_captive_leave
+on_timer            = 20000 | {+val_escort_actor_helped} remark@val_escort_captive_talk_phrase, patrol@val_escort_captive_leave
+meet                = no_meet
+danger              = danger@val_escort_captive
+;wounded             = wounded@val_escort_captive
+;combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; фраза: Пуля! Спасибо, друг. Я блин уже с жизнью попрощался!!
+;--------------------------------------------------------------------------
+[remark@val_escort_captive_phrase1]
+anim                = wait
+snd                 = val_escort_captive_phrase2
+target              = 406 ;logic@val_escort_nap1
+on_signal           = sound_end | {+val_escort_actor_helped} remark@val_escort_captive_wait1 %+val_escort_captive_phrase1_end%, remark@val_escort_captive_wait2 %+val_escort_captive_phrase1_end%
+meet                = no_meet
+danger              = danger@val_escort_captive
+;wounded             = wounded@val_escort_captive
+combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; ждем когда nap1 скажет фразу: Это вот сталкера благодари. Он мне помог.
+;--------------------------------------------------------------------------
+[remark@val_escort_captive_wait1]
+anim                = wait_na
+target              = 406 ;logic@val_escort_nap1
+on_info             = {+val_escort_nap1_phrase1_end} remark@val_escort_captive_phrase3 %=give_items(wpn_beretta:ammo_9x19_fmj:medkit:bandage)%
+meet                = no_meet
+danger              = danger@val_escort_captive
+;wounded             = wounded@val_escort_captive
+;combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; фраза: Спасибо, чувак!
+;--------------------------------------------------------------------------
+[remark@val_escort_captive_phrase3]
+anim                = wait_na
+snd                 = val_escort_captive_phrase3
+target              = actor
+on_signal           = sound_end | remark@val_escort_captive_talk ;remark@val_escort_captive_talk_phrase
+meet                = no_meet
+danger              = danger@val_escort_captive
+;wounded             = wounded@val_escort_captive
+;combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; фраза: Подходи пообщаемся.
+;--------------------------------------------------------------------------
+[remark@val_escort_captive_talk_phrase]
+anim                = wait
+snd                 = val_escort_phrase_invite
+target              = actor
+on_signal           = sound_end | remark@val_escort_captive_talk
+meet                = no_meet ;meet@val_escort_captive_talk
+danger              = danger@val_escort_captive
+;wounded             = wounded@val_escort_captive
+;combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; диалог
+;--------------------------------------------------------------------------
+[remark@val_escort_captive_talk]
+anim                    = wait
+target                  = actor
+;on_timer               = 60000 | patrol@val_escort_captive_leave
+on_actor_dist_ge_nvis   = 30 | patrol@val_escort_captive_leave
+meet                    = meet@val_escort_captive_talk
+danger                  = danger@val_escort_captive_free
+;wounded                 = wounded@val_escort_captive
+;combat_ignore_cond      = always
+
+;--------------------------------------------------------------------------
+; ждем когда nap1 скажет фразу: Жив-здоров? Тогда возвращаемся на Базу за подмогой.
+;--------------------------------------------------------------------------
+[remark@val_escort_captive_wait2]
+anim                = wait
+target              = 406 ;logic@val_escort_nap1
+on_info             = {+val_escort_nap1_phrase2_end} patrol@val_escort_captive_leave %=give_items(wpn_beretta:ammo_9x19_fmj:medkit:bandage)%
+meet                = no_meet
+danger              = danger@val_escort_captive_free
+;wounded             = wounded@val_escort_captive
+;combat_ignore_cond  = always
+
+;--------------------------------------------------------------------------
+; уходим с уровня
+;--------------------------------------------------------------------------
+[patrol@val_escort_captive_leave]
+path_walk           = leave_walk
+path_look           = leave_look
+formation           = line
+on_signal           = arrived | %+val_escort_captive_offline +val_escort_scene_end%
+meet                = meet@val_escort_captive_talk
+danger              = danger@val_escort_captive_free
+;combat_ignore_cond  = always

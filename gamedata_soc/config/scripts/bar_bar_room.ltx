@@ -1,0 +1,9 @@
+[logic]
+active = sr_idle@work
+
+[sr_idle@work]
+on_actor_outside = {+bar_barman_stay_room} %+bar_barman_need_hole%
+on_info = {+bar_psih_come -bar_psih_done} sr_idle@wait
+
+[sr_idle@wait]
+on_info = {+bar_psih_done} sr_idle@work

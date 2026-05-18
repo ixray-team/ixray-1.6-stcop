@@ -1,0 +1,71 @@
+--[[
+function _main()
+	game_over_dlg = ui_game_over.dlg_game_over()
+	level.start_stop_menu(game_over_dlg,true)
+end
+
+class "dlg_game_over" (CUIScriptWnd)
+
+function dlg_game_over:__init() super()
+   self:InitControls()
+end
+
+function dlg_game_over:__finalize()
+end
+
+function dlg_game_over:InitControls()
+    local xml 			= CScriptXmlInit()
+    xml:ParseFile		("ui_game_over.xml")
+	xml:InitWindow		("main",0,self)
+     
+	local st 			= xml:InitStatic("background", self)
+	self.scroll_view 	= xml:InitScrollView("scroll", st)
+	
+	for nm = 0, 30 do
+	local pth = "item_"..nm
+	
+	 local itm = xml:InitStatic		(pth, nil)
+	
+	if itm ~= nil then
+		xml:InitAutoStaticGroup		(pth..":auto", itm)
+		self.scroll_view:AddWindow	(itm, true)
+		else 
+			break
+		end
+	end
+	
+	self.scroll_view:ScrollToBegin()
+	self.min_pos = self.scroll_view:GetMinScrollPos()
+	self.max_pos = self.scroll_view:GetMaxScrollPos()
+	self.cur_pos = self.min_pos
+	self.scroll_view:SetScrollPos(self.cur_pos)
+	self.start_time = time_global()
+	
+end
+
+function dlg_game_over:Update()
+	CUIScriptWnd.Update(self)
+	
+	local dt = time_global()-self.start_time
+	
+	self.cur_pos = self.min_pos+dt*0.35
+	
+	self.scroll_view:SetScrollPos(self.cur_pos)
+	
+--	if(self.cur_pos>=(self.max_pos)) then
+--			self:GetHolder():start_stop_menu(self,true)
+--	end
+	
+end
+
+function dlg_game_over:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+	if dik == DIK_keys.DIK_ESCAPE then
+			self:GetHolder():start_stop_menu(self,true)
+		end
+	end
+	return true
+end
+]]

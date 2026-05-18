@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window>
+	<!-- PDA OFF BUTTON -->
+	<off_button x="0" y="0" width="1" height="1">
+		<texture>ui\ui_pda_button</texture>
+		<text x="0" y="0" font="letterica18" r="255" g="255" b="255"/>
+	</off_button>
+
+
+	<main x=0 y=0 width=1024 height=768/>
+	<background_static x="3" y="20" width="891" height="643">
+		<texture>ui_PDA</texture>
+	</background_static>
+
+
+	<!-- Main buttons background -->
+	<mbbackground_frame_line x="110" y="574" width="591" height="32">
+		<texture>ui_string_01</texture>		
+	</mbbackground_frame_line>
+
+	<!-- TIME DISPLAY BACKGROUND -->
+	<timer_frame_line x="710" y="573" width="161" height="32">
+		<texture>ui_string_01</texture>		
+		<title x="10" y="7" width="140" height="18">
+			<text font="letterica18" r="255" g="255" b="255" complex_mode="0"/>
+		</title>
+	</timer_frame_line>
+                   
+	<!-- TAB CONTROL -->
+	<tab x="129" y="573" width="550" height="30">
+		<!-- BUTTONS -->
+		<button x="0" y="7" width="50" height="20" hint="pda_btn_quests_hint">
+			<text align="l" x="0" y="0" font="letterica18" r="255" g="255" b="255">pda_btn_quests</text>
+			<text_color>
+				<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</button>
+		<button x="65" y="7" width="40" height="20" hint="pda_btn_map_hint">
+			<text align="l" x="0" y="0" font="letterica18" r="255" g="255" b="255">pda_btn_map</text>
+			<text_color>
+				<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</button> 
+		<button x="120" y="7" width="60" height="20" hint="pda_btn_diary_hint">
+			<text align="l" x="0" y="0" font="letterica18" r="255" g="255" b="255">pda_btn_diary</text>
+			<text_color>
+				<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</button>
+		<button x="195" y="7" width="60" height="20" hint="pda_btn_contacts_hint">
+			<text align="l" x="0" y="0" font="letterica18" r="255" g="255" b="255">pda_btn_contacts</text>
+			<text_color>
+				<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</button>
+		<button x="275" y="7" width="53" height="20" hint="pda_btn_ranking_hint">
+			<text align="l" x="0" y="0" font="letterica18" r="255" g="255" b="255">pda_btn_ranking</text>
+			<text_color>
+				<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</button>
+		<button x="345" y="7" width="78" height="20" hint="pda_btn_statistics_hint">
+			<text align="l" x="0" y="0" font="letterica18" r="255" g="255" b="255">pda_btn_statistics</text>
+			<text_color>
+				<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</button>
+		<button x="440" y="7" width="100" height="20" hint="pda_btn_encyclopedia_hint">
+			<text align="l" x="0" y="0" font="letterica18" r="255" g="255" b="255">pda_btn_encyclopedia</text>
+			<text_color>
+				<t r="231" g="168" b="12"/> <d r="181" g="170" b="148"/> <e r="127" g="127" b="127"/> <h r="255" g="255" b="255"/>
+			</text_color>
+		</button>
+	</tab>
+
+
+	<updated_section_static x="0" y="0" width="9" height="11">
+		<texture>ui_pda_m_noupdate</texture>
+	</updated_section_static>
+	
+	<old_section_static x="0" y="0" width="9" height="11">
+		<texture>ui_pda_m_update</texture>
+	</old_section_static>
+	
+</window>

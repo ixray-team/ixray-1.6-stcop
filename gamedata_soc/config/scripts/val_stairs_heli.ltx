@@ -1,0 +1,67 @@
+[logic]
+active = heli_move@wait
+
+[heli_move@wait]
+path_move    = val_stairs_heli_wait_move
+engine_sound = false
+combat_enemy = nil
+immortal     = true
+on_info      = {+val_raid_start} heli_move@ready
+
+[heli_move@ready]
+path_move    = val_stairs_heli_ready_move
+path_look    = val_stairs_heli_ready_look
+engine_sound = true
+combat_enemy = nil
+immortal     = true
+on_info2     = {=heli_health_le(25) ~25} heli_move@die1, {=heli_health_le(25) ~50} heli_move@die2, {=heli_health_le(25) ~75} heli_move@die3, {=heli_health_le(25)} heli_move@die4
+on_info      = {+val_stairs_start} heli_move@start
+
+[heli_move@start]
+path_move    = val_stairs_heli_move
+path_look    = val_stairs_heli_look
+combat_enemy = nil
+on_info      = {=heli_health_le(25) ~25} heli_move@die1, {=heli_health_le(25) ~50} heli_move@die2, {=heli_health_le(25) ~75} heli_move@die3, {=heli_health_le(25)} heli_move@die4
+on_signal    = arrived | heli_move@patrol1 %+val_stairs_heli_arrived%
+
+[heli_move@patrol1]
+path_move         = val_monolith_heli_move
+path_look         = val_monolith_heli_look
+combat_enemy      = actor
+combat_use_rocket = false
+combat_use_mgun   = true
+;invulnerable     = true
+immortal          = true
+on_info2          = {=heli_health_le(25) ~25} heli_move@die1, {=heli_health_le(25) ~50} heli_move@die2, {=heli_health_le(25) ~75} heli_move@die3, {=heli_health_le(25)} heli_move@die4
+on_info           = {+val_opendoor_start -val_opendoor_end} heli_move@patrol2, {+val_exit_gate_show} heli_move@patrol2
+
+[heli_move@patrol2]
+path_move         = val_monolith_heli_move
+path_look         = val_monolith_heli_look
+combat_use_rocket = false
+combat_use_mgun   = true
+combat_enemy      = nil
+;invulnerable     = true
+immortal          = true
+on_info2          = {=heli_health_le(25) ~25} heli_move@die1, {=heli_health_le(25) ~50} heli_move@die2, {=heli_health_le(25) ~75} heli_move@die3, {=heli_health_le(25)} heli_move@die4
+on_info           = {+val_opendoor_end -val_exit_gate_show} heli_move@patrol1
+
+[heli_move@die1]
+path_move     = val_monolith_heli_die_move1
+combat_ignore = true
+immortal      = true
+
+[heli_move@die2]
+path_move     = val_monolith_heli_die_move2
+combat_ignore = true
+immortal      = true
+
+[heli_move@die3]
+path_move     = val_monolith_heli_die_move3
+combat_ignore = true
+immortal      = true
+
+[heli_move@die4]
+path_move     = val_monolith_heli_die_move4
+combat_ignore = true
+immortal      = true

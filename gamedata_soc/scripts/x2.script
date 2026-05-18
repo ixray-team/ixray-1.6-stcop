@@ -1,0 +1,3 @@
+function main ()
+    zone_spawner.activate_by_infoportion ("escape_factory_quest")
+end

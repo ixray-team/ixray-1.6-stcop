@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<!-- CONTRACTS SUBWINDOW -->
+<window>
+	<list x="18" y="170" width="430" height="360" item_height="16">
+		<font font="letterica18" r="225" g="225" b="250"></font>
+	</list>
+	<window x="18" y="51" width="430" height="424"/>
+
+	<!-- MASK FRAME -->
+	<mask_frame_window x="0" y="0" width="10" height="10">
+		<texture>ui_pda_frame2</texture>		
+	</mask_frame_window>
+</window>
+

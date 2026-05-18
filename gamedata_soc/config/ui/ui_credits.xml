@@ -1,0 +1,2262 @@
+
+	<credits_seq>
+		<global_wnd x="0" y="0" width="1024" height="768">
+			
+			<auto_static x="0" y="0" width="728" height="660" stretch = "1">		
+						<texture x="0" y="0" width="728" height="660">ui\ui_mm_credits_back</texture>
+			</auto_static>
+			
+			
+			<auto_static x="0" y="0" width="1024" height="768">
+				<texture x="0" y="0" width="1024" height="768">ui\ui_static_mm_back_06</texture>
+			</auto_static>
+			<auto_static x="524" y="641" width="256" height="128">
+				<texture>ui\ui_mm_coal</texture>
+			</auto_static>
+			
+			
+		</global_wnd>
+		
+		<play_each_item>1</play_each_item>
+
+		<item>
+			<length_sec>472</length_sec>
+			<pause_state>on</pause_state>
+			<function_on_stop>xr_effects.after_credits</function_on_stop>
+			<guard_key/>
+			<pause_sound>on</pause_sound>
+			<sound>Music\credits</sound>
+			<cursor_pos/>
+			<pda_section/>
+			<grab_input>1</grab_input>
+			<main_wnd>
+			
+	
+				<auto_static start_time="0" length_sec="127" x="186" y="40" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti50" color="white">st_stuff</text>
+				</auto_static>
+
+		
+				<auto_static start_time="2" length_sec="5" x="185" y="250" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_producer</text>
+				</auto_static>
+				<auto_static start_time="2" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_gsc</text>	
+				</auto_static>
+
+					
+				<auto_static start_time="7" length_sec="5" x="185" y="250" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_project_lead</text>
+				</auto_static>
+				<auto_static start_time="7" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_bolshakov</text>	
+				</auto_static>
+
+
+				<auto_static start_time="12" length_sec="5" x="185" y="210" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_lead_designer</text>
+				</auto_static>
+				<auto_static start_time="12" length_sec="5" x="185" y="270" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_prokhorov</text>	
+				</auto_static>
+				<auto_static start_time="12" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_yuriy_negrobov</text>	
+				</auto_static>
+				
+				
+				<auto_static start_time="17" length_sec="10" x="185" y="210" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_lead_programmers</text>
+				</auto_static>
+				<auto_static start_time="17" length_sec="5" x="185" y="270" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_shyshkovtsov</text>	
+				</auto_static>
+				<auto_static start_time="17" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_maksymchuk</text>	
+				</auto_static>
+			
+				
+				<auto_static start_time="22" length_sec="5" x="185" y="270" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_iassenev</text>	
+				</auto_static>
+				<auto_static start_time="22" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_kolomiets</text>	
+				</auto_static>
+
+
+				<auto_static start_time="27" length_sec="30" x="185" y="110" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_art_department</text>
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="160" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="letterica25" color="ui_clr_1">st_level_design</text>
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="160" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="letterica25" color="ui_clr_1">st_level_design2</text>
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="210" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_tkachenko</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="210" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_tkachenko2</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="237" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_kurbatov</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="237" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_kurbatov2</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="264" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_tuz</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="264" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_tuz2</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="291" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_demidenko</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="291" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_demidenko2</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="318" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_zaitsev</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="318" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_zaitsev2</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="345" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_pavlenko</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="345" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_pavlenko2</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="372" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_efimov</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="372" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_efimov2</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="399" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_shpilevoy</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="399" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_shpilevoy2</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="426" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_suprun</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="426" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_suprun2</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="453" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_karmalskiy</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="453" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_karmalskiy2</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="480" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_petrovskiy</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="480" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_petrovskiy2</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="507" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_shelekhov</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="507" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_shelekhov2</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="534" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_pshenichniy</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="534" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_pshenichniy2</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="561" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_grabovskiy</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="561" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_grabovskiy2</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="124" y="588" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_karpenko</text>	
+				</auto_static>
+				<auto_static start_time="27" length_sec="10" x="436" y="588" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_karpenko2</text>	
+				</auto_static>
+												
+
+				<auto_static start_time="37" length_sec="10" x="185" y="160" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_animation</text>
+				</auto_static>
+				<auto_static start_time="37" length_sec="10" x="185" y="215" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_lead_animator</text>
+				</auto_static>
+				<auto_static start_time="37" length_sec="10" x="124" y="250" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_vladimir_korunchak</text>	
+				</auto_static>
+				<auto_static start_time="37" length_sec="10" x="436" y="250" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_vladimir_korunchak2</text>	
+				</auto_static>
+				<auto_static start_time="37" length_sec="10" x="185" y="305" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_animators</text>
+				</auto_static>
+				<auto_static start_time="37" length_sec="10" x="124" y="340" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_kravcova</text>	
+				</auto_static>
+				<auto_static start_time="37" length_sec="10" x="436" y="340" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_kravcova2</text>	
+				</auto_static>
+				<auto_static start_time="37" length_sec="10" x="124" y="375" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_sergiy_volchanov</text>	
+				</auto_static>
+				<auto_static start_time="37" length_sec="10" x="436" y="375" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_sergiy_volchanov2</text>	
+				</auto_static>
+				<auto_static start_time="37" length_sec="10" x="124" y="410" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_olga_volchanova</text>	
+				</auto_static>
+				<auto_static start_time="37" length_sec="10" x="436" y="410" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_olga_volchanova2</text>	
+				</auto_static>
+				
+				<auto_static start_time="37" length_sec="10" x="185" y="465" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_character_models</text>	
+				</auto_static>
+				<auto_static start_time="37" length_sec="10" x="124" y="500" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_goncharenko</text>	
+				</auto_static>
+				<auto_static start_time="37" length_sec="10" x="436" y="500" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_goncharenko2</text>	
+				</auto_static>
+				<auto_static start_time="37" length_sec="10" x="124" y="535" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_konovalchuk</text>	
+				</auto_static>
+				<auto_static start_time="37" length_sec="10" x="436" y="535" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_konovalchuk2</text>	
+				</auto_static>	
+		
+				
+				<auto_static start_time="47" length_sec="10" x="185" y="160" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_textures</text>
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="124" y="200" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_podorvaniy</text>	
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="436" y="200" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_podorvaniy2</text>	
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="124" y="240" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_kovach</text>	
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="436" y="240" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_kovach2</text>	
+				</auto_static>
+				
+				<auto_static start_time="47" length_sec="10" x="182" y="290" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_art</text>
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="124" y="330" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_lukash</text>	
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="436" y="330" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_lukash2</text>	
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="124" y="370" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_khivrenko</text>	
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="436" y="370" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_khivrenko2</text>	
+				</auto_static>
+				
+				<auto_static start_time="47" length_sec="10" x="124" y="420" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="letterica25" color="ui_clr_1">st_ui_art</text>	
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="436" y="420" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="letterica25" color="ui_clr_1">st_ui_art2</text>	
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="124" y="460" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_nesin</text>	
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="436" y="460" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_nesin2</text>	
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="124" y="500" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_troekurova</text>	
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="436" y="500" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_troekurova2</text>	
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="124" y="540" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_kotov</text>	
+				</auto_static>
+				<auto_static start_time="47" length_sec="10" x="436" y="540" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_kotov2</text>	
+				</auto_static>
+		
+			
+				<auto_static start_time="57" length_sec="25" x="185" y="120" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_programming_department_full</text>
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="185" y="170" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_engine</text>
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="117" y="220" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_shyshkovtsov_render</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="429" y="220" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_shyshkovtsov_render2</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="117" y="255" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_maksymchuk_editors</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="429" y="255" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_maksymchuk_editors2</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="117" y="290" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_iassenev_ai</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="429" y="290" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_iassenev_ai2</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="117" y="325" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_kolomiets_gameplay</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="429" y="325" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_kolomiets_gameplay2</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="117" y="360" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_maximov</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="429" y="360" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_maximov2</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="117" y="395" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_slipchenko</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="429" y="395" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_slipchenko2</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="117" y="430" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_gemeitsev</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="429" y="430" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_gemeitsev2</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="117" y="465" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_ivantsov_optimization</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="429" y="465" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_ivantsov_optimization2</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="117" y="500" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_dobronravin</text>	
+				</auto_static>
+				<auto_static start_time="57" length_sec="10" x="429" y="500" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_dobronravin2</text>	
+				</auto_static>
+	
+		
+				<auto_static start_time="67" length_sec="10" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_gameplay_tools</text>
+				</auto_static>
+				<auto_static start_time="67" length_sec="10" x="124" y="240" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_didenko</text>	
+				</auto_static>
+				<auto_static start_time="67" length_sec="10" x="436" y="240" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_didenko2</text>	
+				</auto_static>
+				<auto_static start_time="67" length_sec="10" x="124" y="305" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_chugai</text>	
+				</auto_static>
+				<auto_static start_time="67" length_sec="10" x="436" y="305" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_chugai2</text>	
+				</auto_static>
+				<auto_static start_time="67" length_sec="10" x="124" y="345" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_fidrya</text>	
+				</auto_static>
+				<auto_static start_time="67" length_sec="10" x="436" y="345" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_fidrya2</text>	
+				</auto_static>
+				<auto_static start_time="67" length_sec="10" x="124" y="385" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_khryptul</text>	
+				</auto_static>
+				<auto_static start_time="67" length_sec="10" x="436" y="385" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_khryptul2</text>	
+				</auto_static>
+				<auto_static start_time="67" length_sec="10" x="124" y="425" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_eugene_negrobov</text>	
+				</auto_static>
+				<auto_static start_time="67" length_sec="10" x="436" y="425" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_eugene_negrobov2</text>	
+				</auto_static>
+				<auto_static start_time="67" length_sec="10" x="124" y="465" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_plichko</text>	
+				</auto_static>
+				<auto_static start_time="67" length_sec="10" x="436" y="465" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_plichko2</text>	
+				</auto_static>
+				<auto_static start_time="67" length_sec="10" x="124" y="505" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_tunduk</text>	
+				</auto_static>
+				<auto_static start_time="67" length_sec="10" x="436" y="505" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_tunduk2</text>	
+				</auto_static>
+				
+
+				<auto_static start_time="77" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_additional_programming</text>
+				</auto_static>				
+				<auto_static start_time="77" length_sec="5" x="124" y="240" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_nikolaev</text>	
+				</auto_static>
+				<auto_static start_time="77" length_sec="5" x="436" y="240" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_nikolaev2</text>	
+				</auto_static>
+				<auto_static start_time="77" length_sec="5" x="124" y="280" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_vinnichenko</text>	
+				</auto_static>
+				<auto_static start_time="77" length_sec="5" x="436" y="280" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_vinnichenko2</text>	
+				</auto_static>
+				<auto_static start_time="77" length_sec="5" x="124" y="320" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_reutsky</text>	
+				</auto_static>
+				<auto_static start_time="77" length_sec="5" x="436" y="320" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_reutsky2</text>	
+				</auto_static>
+				<auto_static start_time="77" length_sec="5" x="124" y="360" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_marchenko</text>	
+				</auto_static>
+				<auto_static start_time="77" length_sec="5" x="436" y="360" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_marchenko2</text>	
+				</auto_static>	
+
+
+				<auto_static start_time="82" length_sec="10" x="124" y="115" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="letterica25" color="ui_clr_1">st_gamedesign_department</text>
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="436" y="115" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="letterica25" color="ui_clr_1">st_gamedesign_department2</text>
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="124" y="170" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_sityanov</text>	
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="436" y="170" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_sityanov2</text>	
+				</auto_static>	
+				<auto_static start_time="82" length_sec="10" x="124" y="225" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_aristov</text>	
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="436" y="225" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_aristov2</text>	
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="124" y="260" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_veretiannikov</text>	
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="436" y="260" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_veretiannikov2</text>	
+				</auto_static>	
+				<auto_static start_time="82" length_sec="10" x="124" y="295" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_verpahovskiy</text>	
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="436" y="295" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_verpahovskiy2</text>	
+				</auto_static>	
+				<auto_static start_time="82" length_sec="10" x="124" y="330" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_volvach</text>	
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="436" y="330" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_volvach2</text>	
+				</auto_static>	
+				<auto_static start_time="82" length_sec="10" x="124" y="365" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_dushynsky</text>	
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="436" y="365" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_dushynsky2</text>	
+				</auto_static>	
+				<auto_static start_time="82" length_sec="10" x="124" y="400" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_konstantinov</text>	
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="436" y="400" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_konstantinov2</text>	
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="124" y="435" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_kuzmin</text>	
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="436" y="435" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_kuzmin2</text>	
+				</auto_static>	
+				<auto_static start_time="82" length_sec="10" x="124" y="470" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_lekhno</text>	
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="436" y="470" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_lekhno2</text>	
+				</auto_static>	
+				<auto_static start_time="82" length_sec="10" x="124" y="505" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_nekhaychuk</text>	
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="436" y="505" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_nekhaychuk2</text>	
+				</auto_static>	
+				<auto_static start_time="82" length_sec="10" x="124" y="540" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_shyshkin</text>	
+				</auto_static>
+				<auto_static start_time="82" length_sec="10" x="436" y="540" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_shyshkin2</text>	
+				</auto_static>			
+				
+
+				<auto_static start_time="92" length_sec="5" x="185" y="130" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_sound_producer</text>
+				</auto_static>
+				<auto_static start_time="92" length_sec="5" x="185" y="170" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_kuzmenko</text>	
+				</auto_static>			
+				<auto_static start_time="92" length_sec="5" x="185" y="240" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_original_music</text>
+				</auto_static>
+				<auto_static start_time="92" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_mooze</text>	
+				</auto_static>
+				<auto_static start_time="92" length_sec="5" x="185" y="350" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_additional_music</text>	
+				</auto_static>		
+				<auto_static start_time="92" length_sec="5" x="185" y="390" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_firelake</text>	
+				</auto_static>	
+				<auto_static start_time="92" length_sec="5" x="185" y="430" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_holler</text>	
+				</auto_static>	
+				<auto_static start_time="92" length_sec="5" x="185" y="470" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_addaraya</text>	
+				</auto_static>	
+				
+				
+				<auto_static start_time="97" length_sec="5" x="185" y="210" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_localization_department</text>
+				</auto_static>
+				<auto_static start_time="97" length_sec="5" x="185" y="270" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_kuchma</text>	
+				</auto_static>	
+				<auto_static start_time="97" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_litvinenko</text>	
+				</auto_static>		
+						
+
+				<auto_static start_time="102" length_sec="5" x="185" y="170" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_qa_department</text>
+				</auto_static>
+				<auto_static start_time="102" length_sec="5" x="124" y="230" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_dyukov</text>
+				</auto_static>
+				<auto_static start_time="102" length_sec="5" x="436" y="230" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_dyukov2</text>
+				</auto_static>	
+				<auto_static start_time="102" length_sec="5" x="124" y="270" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_krivets</text>
+				</auto_static>
+				<auto_static start_time="102" length_sec="5" x="436" y="270" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_krivets2</text>
+				</auto_static>	
+				<auto_static start_time="102" length_sec="5" x="124" y="310" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_scripal</text>
+				</auto_static>
+				<auto_static start_time="102" length_sec="5" x="436" y="310" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_scripal2</text>
+				</auto_static>	
+				<auto_static start_time="102" length_sec="5" x="124" y="350" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_bragin</text>
+				</auto_static>
+				<auto_static start_time="102" length_sec="5" x="436" y="350" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_bragin2</text>
+				</auto_static>	
+				<auto_static start_time="102" length_sec="5" x="124" y="390" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_naprasniy</text>
+				</auto_static>
+				<auto_static start_time="102" length_sec="5" x="436" y="390" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_naprasniy2</text>
+				</auto_static>
+
+
+				<auto_static start_time="107" length_sec="5" x="185" y="170" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_pr_department</text>
+				</auto_static>
+				<auto_static start_time="107" length_sec="5" x="185" y="230" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_yavorsky</text>	
+				</auto_static>	
+				<auto_static start_time="107" length_sec="5" x="185" y="270" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_yeltyshev</text>	
+				</auto_static>	
+				<auto_static start_time="107" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ananyev</text>	
+				</auto_static>	
+				<auto_static start_time="107" length_sec="5" x="185" y="350" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_besarab</text>	
+				</auto_static>	
+				<auto_static start_time="107" length_sec="5" x="185" y="390" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_terlyuk</text>	
+				</auto_static>	
+
+
+				<auto_static start_time="112" length_sec="5" x="185" y="210" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_sales_department</text>
+				</auto_static>
+				<auto_static start_time="112" length_sec="5" x="185" y="270" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_grushko</text>	
+				</auto_static>	
+				<auto_static start_time="112" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_boyko</text>	
+				</auto_static>	
+
+
+				<auto_static start_time="117" length_sec="10" x="185" y="115" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_russian_voice</text>
+				</auto_static>
+
+				<auto_static start_time="117" length_sec="10" x="124" y="170" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_vilkov</text>	
+				</auto_static>
+				<auto_static start_time="117" length_sec="10" x="436" y="170" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_vilkov2</text>	
+				</auto_static>
+				<auto_static start_time="117" length_sec="10" x="124" y="205" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_bogush</text>	
+				</auto_static>
+				<auto_static start_time="117" length_sec="10" x="436" y="205" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_bogush2</text>	
+				</auto_static>	
+				<auto_static start_time="117" length_sec="10" x="124" y="240" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_podubinskiy</text>	
+				</auto_static>
+				<auto_static start_time="117" length_sec="10" x="436" y="240" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_podubinskiy2</text>	
+				</auto_static>	
+				<auto_static start_time="117" length_sec="10" x="124" y="275" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_girich</text>	
+				</auto_static>
+				<auto_static start_time="117" length_sec="10" x="436" y="275" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_girich2</text>	
+				</auto_static>	
+				<auto_static start_time="117" length_sec="10" x="124" y="310" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_malukha</text>	
+				</auto_static>
+				<auto_static start_time="117" length_sec="10" x="436" y="310" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_malukha2</text>	
+				</auto_static>	
+				<auto_static start_time="117" length_sec="10" x="124" y="345" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_german</text>	
+				</auto_static>
+				<auto_static start_time="117" length_sec="10" x="436" y="345" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_german2</text>	
+				</auto_static>
+				<auto_static start_time="117" length_sec="10" x="124" y="380" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_rozin</text>	
+				</auto_static>
+				<auto_static start_time="117" length_sec="10" x="436" y="380" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_rozin2</text>	
+				</auto_static>	
+				<auto_static start_time="117" length_sec="10" x="124" y="415" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_borisenok</text>	
+				</auto_static>
+				<auto_static start_time="117" length_sec="10" x="436" y="415" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_borisenok2</text>	
+				</auto_static>	
+				<auto_static start_time="117" length_sec="10" x="124" y="450" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_stalchuk</text>	
+				</auto_static>
+				<auto_static start_time="117" length_sec="10" x="436" y="450" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_stalchuk2</text>	
+				</auto_static>	
+				<auto_static start_time="117" length_sec="10" x="124" y="485" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_gofurov</text>	
+				</auto_static>
+				<auto_static start_time="117" length_sec="10" x="436" y="485" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_gofurov2</text>	
+				</auto_static>	
+				<auto_static start_time="117" length_sec="10" x="124" y="520" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_tereschuk</text>	
+				</auto_static>
+				<auto_static start_time="117" length_sec="10" x="436" y="520" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_tereschuk2</text>	
+				</auto_static>
+				
+
+				<!--        THQ          -->
+
+				<!-- next frame -->	
+				<auto_static start_time="128" length_sec="67" x="186" y="40" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti50" color="white">st_thq</text>
+				</auto_static>
+			
+				<auto_static start_time="130" length_sec="60" x="183" y="120" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_qa</text>
+				</auto_static>
+				<auto_static start_time="130" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_directorqa</text>
+				</auto_static>
+				<auto_static start_time="130" length_sec="5" x="185" y="240" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_vallejo</text>	
+				</auto_static>
+				
+				
+				<!-- next frame -->
+				<auto_static start_time="135" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_qamanagers</text>
+				</auto_static>
+				<auto_static start_time="135" length_sec="5" x="185" y="240" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_waibel</text>	
+				</auto_static>
+				<auto_static start_time="135" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_motoda</text>	
+				</auto_static>
+				
+				
+				<!-- next frame -->
+				<auto_static start_time="140" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_test_supervisor</text>
+				</auto_static>
+				<auto_static start_time="140" length_sec="5" x="185" y="220" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_sapienza</text>	
+				</auto_static>
+				<auto_static start_time="140" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_test_lead</text>	
+				</auto_static>
+				<auto_static start_time="140" length_sec="5" x="185" y="320" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_wong</text>	
+				</auto_static>
+				<auto_static start_time="140" length_sec="5" x="185" y="360" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_bloch</text>	
+				</auto_static>
+				<auto_static start_time="140" length_sec="5" x="185" y="400" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_leippi</text>	
+				</auto_static>
+				
+
+				<!-- next frame -->
+				<auto_static start_time="145" length_sec="20" x="181" y="160" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_testers</text>
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="200" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_blais</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="200" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_blais2</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="227" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_lopez</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="227" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_lopez2</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="254" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_aarsvold</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="254" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_aarsvold2</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="281" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_aguilar</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="281" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_aguilar2</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="308" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_letwinch</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="308" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_letwinch2</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="335" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_wiemer</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="335" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_wiemer2</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="362" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_deerson</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="362" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_deerson2</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="389" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_whitebread</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="389" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_whitebread2</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="416" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_swartz</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="416" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_swartz2</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="443" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_fiorentine</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="443" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_fiorentine2</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="470" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_rand</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="470" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_rand2</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="497" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_tharp</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="497" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_tharp2</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="524" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_padovan</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="524" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_padovan2</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="551" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_castaneda</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="551" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_castaneda2</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="124" y="578" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_plianpho</text>	
+				</auto_static>
+				<auto_static start_time="145" length_sec="10" x="436" y="578" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_plianpho2</text>	
+				</auto_static>
+
+
+				<!-- next frame -->
+				<auto_static start_time="155" length_sec="10" x="124" y="200" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_moore</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="200" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_moore2</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="124" y="227" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_heeter</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="227" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_heeter2</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="124" y="254" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_oldfield</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="254" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_oldfield2</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="124" y="281" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_mejia</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="281" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_mejia2</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="124" y="308" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_donnell</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="308" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_donnell2</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="124" y="335" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_escobar</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="335" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_escobar2</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="124" y="362" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_johnson</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="362" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_johnson2</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="124" y="389" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_allman</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="389" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_allman2</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="124" y="416" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_tester</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="416" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_tester2</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="124" y="443" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_wright</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="443" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_wright2</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="124" y="470" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_malloy</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="470" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_malloy2</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="124" y="497" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_thurman</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="497" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_thurman2</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="124" y="524" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_fong</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="524" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_fong2</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="124" y="551" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_sexton</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="551" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_sexton2</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="124" y="578" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_kemp</text>	
+				</auto_static>
+				<auto_static start_time="155" length_sec="10" x="436" y="578" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_kemp2</text>	
+				</auto_static>
+												
+				
+				<!-- next frame -->	
+				<auto_static start_time="165" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_pc_specialist</text>
+				</auto_static>
+				<auto_static start_time="165" length_sec="5" x="185" y="215" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_gonzalez</text>	
+				</auto_static>	
+				<auto_static start_time="165" length_sec="5" x="185" y="275" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_pcsupervisor</text>
+				</auto_static>
+				<auto_static start_time="165" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_krenz</text>	
+				</auto_static>			
+				<auto_static start_time="165" length_sec="5" x="185" y="370" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_qatechnicians</text>
+				</auto_static>
+				<auto_static start_time="165" length_sec="5" x="185" y="405" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_jones</text>	
+				</auto_static>
+				<auto_static start_time="165" length_sec="5" x="185" y="440" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_zlotnicki</text>	
+				</auto_static>		
+				<auto_static start_time="165" length_sec="5" x="185" y="475" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_drolet</text>	
+				</auto_static>	
+
+
+				<!-- next frame -->	
+				<auto_static start_time="170" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_mastering_lab_supervisor</text>
+				</auto_static>
+				<auto_static start_time="170" length_sec="5" x="124" y="220" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_dunnet</text>	
+				</auto_static>
+				<auto_static start_time="170" length_sec="5" x="436" y="220" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_dunnet2</text>	
+				</auto_static>
+				<auto_static start_time="170" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_mastering_lab_technicians</text>	
+				</auto_static>		
+				<auto_static start_time="170" length_sec="5" x="124" y="320" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_peters</text>	
+				</auto_static>
+				<auto_static start_time="170" length_sec="5" x="436" y="320" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_peters2</text>	
+				</auto_static>
+				<auto_static start_time="170" length_sec="5" x="124" y="350" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_arnold</text>	
+				</auto_static>
+				<auto_static start_time="170" length_sec="5" x="436" y="350" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_arnold2</text>	
+				</auto_static>
+				<auto_static start_time="170" length_sec="5" x="124" y="380" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_salguero</text>	
+				</auto_static>
+				<auto_static start_time="170" length_sec="5" x="436" y="380" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_salguero2</text>	
+				</auto_static>
+				<auto_static start_time="170" length_sec="5" x="124" y="410" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_fell</text>	
+				</auto_static>
+				<auto_static start_time="170" length_sec="5" x="436" y="410" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_fell2</text>	
+				</auto_static>	
+				<auto_static start_time="170" length_sec="5" x="185" y="470" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_remastering_project_manager</text>
+				</auto_static>
+				<auto_static start_time="170" length_sec="5" x="124" y="510" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_batarse</text>	
+				</auto_static>
+				<auto_static start_time="170" length_sec="5" x="436" y="510" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_batarse2</text>	
+				</auto_static>
+				
+
+				<!-- next frame -->	
+				<auto_static start_time="175" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_database_administrator</text>
+				</auto_static>
+				<auto_static start_time="175" length_sec="5" x="185" y="220" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_gill</text>	
+				</auto_static>			
+				<auto_static start_time="175" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_database_applications_engineer</text>
+				</auto_static>
+				<auto_static start_time="175" length_sec="5" x="185" y="320" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_kincaid</text>	
+				</auto_static>
+
+
+				<!-- next frame -->	
+				<auto_static start_time="180" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_game_evaluation_team</text>
+				</auto_static>
+				<auto_static start_time="180" length_sec="5" x="124" y="220" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_frazier</text>	
+				</auto_static>
+				<auto_static start_time="180" length_sec="5" x="436" y="220" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_frazier2</text>	
+				</auto_static>
+				<auto_static start_time="180" length_sec="5" x="124" y="260" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_elzie</text>	
+				</auto_static>
+				<auto_static start_time="180" length_sec="5" x="436" y="260" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_elzie2</text>	
+				</auto_static>
+				<auto_static start_time="180" length_sec="5" x="124" y="300" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_weiss</text>	
+				</auto_static>
+				<auto_static start_time="180" length_sec="5" x="436" y="300" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_weiss2</text>	
+				</auto_static>
+				<auto_static start_time="180" length_sec="5" x="124" y="340" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_emerson</text>	
+				</auto_static>
+				<auto_static start_time="180" length_sec="5" x="436" y="340" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_emerson2</text>	
+				</auto_static>	
+				<auto_static start_time="180" length_sec="5" x="191" y="400" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_human_factors_design_specialist</text>
+				</auto_static>
+				<auto_static start_time="180" length_sec="5" x="124" y="440" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_kowalewski</text>	
+				</auto_static>
+				<auto_static start_time="180" length_sec="5" x="436" y="440" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_kowalewski2</text>	
+				</auto_static>
+				<auto_static start_time="180" length_sec="5" x="124" y="480" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_wilson</text>	
+				</auto_static>
+				<auto_static start_time="180" length_sec="5" x="436" y="480" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_wilson2</text>	
+				</auto_static>	
+
+				<!-- next frame -->	
+				<auto_static start_time="185" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_qa_operations_coordinator</text>
+				</auto_static>
+				<auto_static start_time="185" length_sec="5" x="185" y="220" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_nelson</text>	
+				</auto_static>			
+				<auto_static start_time="185" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_hr_generalist</text>
+				</auto_static>
+				<auto_static start_time="185" length_sec="5" x="185" y="320" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_waldman</text>	
+				</auto_static>
+
+				<!-- next frame -->	
+				<auto_static start_time="190" length_sec="5" x="185" y="250" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_qa_special_thanks</text>
+				</auto_static>
+				<auto_static start_time="190" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_wagman</text>	
+				</auto_static>	
+
+				<!-- next frame -->	
+				<auto_static start_time="196" length_sec="60" x="185" y="40" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti50" color="white">st_thq_h</text>
+				</auto_static>
+				<auto_static start_time="196" length_sec="60" x="185" y="80" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_headquarters</text>
+				</auto_static>
+				
+				<auto_static start_time="196" length_sec="10" x="185" y="160" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_executive_staff</text>
+				</auto_static>		
+				<auto_static start_time="196" length_sec="5" x="185" y="235" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_executive_vice_president</text>
+				</auto_static>
+				<auto_static start_time="196" length_sec="5" x="185" y="265" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_worldwide_studios</text>
+				</auto_static>
+				<auto_static start_time="196" length_sec="5" x="185" y="315" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_sorenson</text>	
+				</auto_static>
+
+
+				<!-- next frame -->				
+				<auto_static start_time="201" length_sec="5" x="185" y="235" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_executive_vice_president</text>
+				</auto_static>
+				<auto_static start_time="201" length_sec="5" x="185" y="265" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_worldwide_publishing</text>
+				</auto_static>
+				<auto_static start_time="201" length_sec="5" x="185" y="315" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_flock</text>	
+				</auto_static>	
+
+
+				<!-- next frame -->	
+				<auto_static start_time="206" length_sec="20" x="185" y="160" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_product_development</text>
+				</auto_static>		
+				<auto_static start_time="206" length_sec="5" x="185" y="235" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_senior_vice_president</text>
+				</auto_static>
+				<auto_static start_time="206" length_sec="5" x="185" y="265" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_product_development_s</text>
+				</auto_static>
+				<auto_static start_time="206" length_sec="5" x="185" y="315" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_dauterman</text>	
+				</auto_static>
+				
+
+				<!-- next frame -->	
+				<auto_static start_time="211" length_sec="5" x="185" y="235" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_executive_producer</text>
+				</auto_static>		
+				<auto_static start_time="211" length_sec="5" x="185" y="275" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_sharpe</text>
+				</auto_static>
+				<auto_static start_time="211" length_sec="5" x="185" y="350" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_associate_producer</text>
+				</auto_static>		
+				<auto_static start_time="211" length_sec="5" x="185" y="390" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_icenbice</text>
+				</auto_static>		
+				
+
+				<!-- next frame -->	
+				<auto_static start_time="216" length_sec="5" x="185" y="235" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_senior_global_localization_manager</text>
+				</auto_static>		
+				<auto_static start_time="216" length_sec="5" x="185" y="275" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_small</text>
+				</auto_static>
+				<auto_static start_time="216" length_sec="5" x="185" y="350" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_european_localization_director</text>
+				</auto_static>		
+				<auto_static start_time="216" length_sec="5" x="185" y="390" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_dieck</text>
+				</auto_static>		
+
+
+				<!-- next frame -->	
+				<auto_static start_time="221" length_sec="5" x="185" y="235" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_european_localization_engineer</text>
+				</auto_static>		
+				<auto_static start_time="221" length_sec="5" x="185" y="275" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_kurtz</text>
+				</auto_static>
+				<auto_static start_time="221" length_sec="5" x="185" y="350" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_localization_technician</text>
+				</auto_static>		
+				<auto_static start_time="221" length_sec="5" x="185" y="390" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_herbertz</text>
+				</auto_static>	
+								
+				
+				<!-- next frame -->	
+				<auto_static start_time="226" length_sec="30" x="185" y="150" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_global_brand_management</text>
+				</auto_static>		
+				<auto_static start_time="226" length_sec="5" x="185" y="215" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_senior_vice_president</text>
+				</auto_static>
+				<auto_static start_time="226" length_sec="5" x="185" y="245" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_worldwide_publishing</text>
+				</auto_static>
+				<auto_static start_time="226" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_aniello</text>	
+				</auto_static>
+				
+
+				<!-- next frame -->	
+				<auto_static start_time="231" length_sec="5" x="185" y="210" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_director_global_brand_management</text>
+				</auto_static>
+				<auto_static start_time="231" length_sec="5" x="185" y="250" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_pattison</text>	
+				</auto_static>			
+				<auto_static start_time="231" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_director_global_brand</text>
+				</auto_static>
+				<auto_static start_time="231" length_sec="5" x="185" y="350" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_carraway</text>	
+				</auto_static>
+				<auto_static start_time="231" length_sec="5" x="185" y="410" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_senior_global_brand_manager</text>	
+				</auto_static>		
+				<auto_static start_time="231" length_sec="5" x="185" y="450" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_torode</text>	
+				</auto_static>	
+
+
+				<!-- next frame -->	
+				<auto_static start_time="236" length_sec="5" x="185" y="210" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_global_brand_manager</text>
+				</auto_static>		
+				<auto_static start_time="236" length_sec="5" x="185" y="250" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_claudia_kuehl</text>
+				</auto_static>
+				<auto_static start_time="236" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_brand_manager</text>
+				</auto_static>		
+				<auto_static start_time="236" length_sec="5" x="185" y="350" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_robinson</text>
+				</auto_static>
+				
+
+				<!-- next frame -->	
+				<auto_static start_time="241" length_sec="5" x="185" y="210" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_assistant_global_brand_manager</text>
+				</auto_static>
+				<auto_static start_time="241" length_sec="5" x="185" y="240" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_newall</text>	
+				</auto_static>			
+				<auto_static start_time="241" length_sec="5" x="185" y="300" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_vice_president</text>
+				</auto_static>
+				<auto_static start_time="241" length_sec="5" x="185" y="330" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_corporate_communications</text>
+				</auto_static>
+				<auto_static start_time="241" length_sec="5" x="185" y="360" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_pieri</text>	
+				</auto_static>
+				<auto_static start_time="241" length_sec="5" x="185" y="420" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_global_pr_manager</text>	
+				</auto_static>		
+				<auto_static start_time="241" length_sec="5" x="185" y="450" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_cunis</text>	
+				</auto_static>	
+				
+				
+				<!-- next frame -->	
+				<auto_static start_time="246" length_sec="5" x="185" y="210" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_media_relations_manager</text>
+				</auto_static>
+				<auto_static start_time="246" length_sec="5" x="185" y="250" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_cassel</text>	
+				</auto_static>			
+				<auto_static start_time="246" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_media_relations_manager</text>
+				</auto_static>
+				<auto_static start_time="246" length_sec="5" x="185" y="350" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_vanasin</text>	
+				</auto_static>
+				<auto_static start_time="246" length_sec="5" x="185" y="410" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_online_manager</text>	
+				</auto_static>		
+				<auto_static start_time="246" length_sec="5" x="185" y="450" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_huw_beynon</text>	
+				</auto_static>	
+
+				
+				<!-- next frame -->	
+				<auto_static start_time="251" length_sec="5" x="185" y="210" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_legal</text>
+				</auto_static>
+				<auto_static start_time="251" length_sec="5" x="124" y="270" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_carrillo</text>
+				</auto_static>
+				<auto_static start_time="251" length_sec="5" x="436" y="270" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_carrillo2</text>
+				</auto_static>	
+				<auto_static start_time="251" length_sec="5" x="124" y="310" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_fingerman</text>
+				</auto_static>
+				<auto_static start_time="251" length_sec="5" x="436" y="310" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_fingerman2</text>
+				</auto_static>	
+				<auto_static start_time="251" length_sec="5" x="124" y="350" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_carlson</text>
+				</auto_static>
+				<auto_static start_time="251" length_sec="5" x="436" y="350" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_carlson2</text>
+				</auto_static>	
+				<auto_static start_time="251" length_sec="5" x="124" y="390" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_kennedy</text>
+				</auto_static>
+				<auto_static start_time="251" length_sec="5" x="436" y="390" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_kennedy2</text>
+				</auto_static>	
+				
+			
+				<!-- next frame -->	
+				<auto_static start_time="256" length_sec="55" x="186" y="40" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti50" color="white">st_thq</text>
+				</auto_static>				
+
+				<auto_static start_time="256" length_sec="10" x="185" y="140" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_creative_services</text>
+				</auto_static>		
+				<auto_static start_time="256" length_sec="5" x="185" y="220" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_director_creative_services</text>
+				</auto_static>
+				<auto_static start_time="256" length_sec="5" x="185" y="260" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_liebeskind</text>	
+				</auto_static>	
+				<auto_static start_time="256" length_sec="5" x="185" y="340" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_creative_services_manager</text>
+				</auto_static>
+				<auto_static start_time="256" length_sec="5" x="185" y="380" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_somdal</text>	
+				</auto_static>		
+				
+				
+				<!-- next frame -->	
+				<auto_static start_time="261" length_sec="5" x="185" y="220" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_video_production_manager</text>
+				</auto_static>
+				<auto_static start_time="261" length_sec="5" x="185" y="260" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_folino</text>	
+				</auto_static>	
+				<auto_static start_time="261" length_sec="5" x="185" y="340" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_video_production_coordinator</text>
+				</auto_static>
+				<auto_static start_time="261" length_sec="5" x="185" y="380" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_rivas</text>	
+				</auto_static>			
+
+
+				<!-- next frame -->	
+				<auto_static start_time="266" length_sec="40" x="185" y="120" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_thq_international</text>
+				</auto_static>		
+				<auto_static start_time="266" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_svp_european_publishing</text>
+				</auto_static>
+				<auto_static start_time="266" length_sec="5" x="185" y="220" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_curran</text>	
+				</auto_static>	
+				<auto_static start_time="266" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_uk_product_manager</text>
+				</auto_static>
+				<auto_static start_time="266" length_sec="5" x="185" y="320" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_laura_disney</text>	
+				</auto_static>	
+
+
+				<!-- next frame -->	
+				<auto_static start_time="271" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_uk_pr_manager</text>
+				</auto_static>
+				<auto_static start_time="271" length_sec="5" x="185" y="220" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_helen_jones</text>	
+				</auto_static>	
+				<auto_static start_time="271" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_export_marketing_manager</text>
+				</auto_static>
+				<auto_static start_time="271" length_sec="5" x="185" y="320" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_shepherd</text>	
+				</auto_static>		
+				<auto_static start_time="271" length_sec="5" x="185" y="360" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_keighrann</text>	
+				</auto_static>	
+				<auto_static start_time="271" length_sec="5" x="185" y="420" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_product_manager_germany</text>
+				</auto_static>
+				<auto_static start_time="271" length_sec="5" x="185" y="460" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_skrok</text>	
+				</auto_static>		
+				
+
+				<!-- next frame -->					
+				<auto_static start_time="276" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_head_of_pr_germany</text>
+				</auto_static>
+				<auto_static start_time="276" length_sec="5" x="185" y="220" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_reckenthaler</text>	
+				</auto_static>	
+				<auto_static start_time="276" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_marketing_manager_nordic</text>
+				</auto_static>
+				<auto_static start_time="276" length_sec="5" x="185" y="320" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_viby</text>	
+				</auto_static>		
+				<auto_static start_time="276" length_sec="5" x="185" y="380" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_pr_manager_nordic</text>
+				</auto_static>
+				<auto_static start_time="276" length_sec="5" x="185" y="420" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_jakobsen</text>	
+				</auto_static>		
+				
+
+				<!-- next frame -->	
+				<auto_static start_time="281" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_senior_product_manager_france</text>
+				</auto_static>
+				<auto_static start_time="281" length_sec="5" x="185" y="220" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_goldstein</text>	
+				</auto_static>	
+				<auto_static start_time="281" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_pr_manager_france</text>
+				</auto_static>
+				<auto_static start_time="281" length_sec="5" x="185" y="320" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_benzadon</text>	
+				</auto_static>		
+
+
+				<!-- next frame -->	
+				<auto_static start_time="286" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_product_manager_spain</text>
+				</auto_static>
+				<auto_static start_time="286" length_sec="5" x="185" y="220" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_manu</text>	
+				</auto_static>	
+				<auto_static start_time="286" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_pr_manager_spain</text>
+				</auto_static>
+				<auto_static start_time="286" length_sec="5" x="185" y="320" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_vazquez</text>	
+				</auto_static>		
+				<auto_static start_time="286" length_sec="5" x="185" y="380" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_marketing_and_pr_manager_benelux</text>
+				</auto_static>
+				<auto_static start_time="286" length_sec="5" x="185" y="420" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_wolff</text>	
+				</auto_static>	
+
+
+				<!-- next frame -->	
+				<auto_static start_time="291" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_product_manager_asia_pacific</text>
+				</auto_static>
+				<auto_static start_time="291" length_sec="5" x="185" y="210" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_chris_wright</text>	
+				</auto_static>	
+				<auto_static start_time="291" length_sec="5" x="185" y="270" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_pr_promotions_coordinator</text>
+				</auto_static>
+				<auto_static start_time="291" length_sec="5" x="185" y="300" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_asia_pacific</text>
+				</auto_static>
+				<auto_static start_time="291" length_sec="5" x="185" y="330" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_taylor</text>	
+				</auto_static>		
+				<auto_static start_time="291" length_sec="5" x="185" y="390" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_korea_product_manager</text>
+				</auto_static>
+				<auto_static start_time="291" length_sec="5" x="185" y="420" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_jung</text>	
+				</auto_static>	
+				<auto_static start_time="291" length_sec="5" x="185" y="480" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_japan_product_manager</text>
+				</auto_static>
+				<auto_static start_time="291" length_sec="5" x="185" y="510" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_takahiro_morita</text>	
+				</auto_static>	
+
+
+				<!-- next frame -->	
+				<auto_static start_time="296" length_sec="10" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_international_art_director</text>
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="185" y="220" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_enzmann</text>	
+				</auto_static>	
+				<auto_static start_time="296" length_sec="10" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_dtp_operator</text>
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="117" y="320" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_johnen</text>	
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="429" y="320" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_johnen2</text>	
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="117" y="360" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_tapper</text>	
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="429" y="360" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_tapper2</text>	
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="117" y="400" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_offenberg</text>	
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="429" y="400" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_offenberg2</text>	
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="117" y="440" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_spangenberg</text>	
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="429" y="440" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_spangenberg2</text>	
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="117" y="480" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_stauvermann</text>	
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="429" y="480" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_stauvermann2</text>	
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="117" y="520" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_sackers</text>	
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="429" y="520" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_sackers2</text>	
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="117" y="560" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_stell</text>	
+				</auto_static>
+				<auto_static start_time="296" length_sec="10" x="429" y="560" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_stell2</text>	
+				</auto_static>
+
+
+				<!-- next frame -->											
+				<auto_static start_time="306" length_sec="4" x="185" y="250" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_additional_writing</text>
+				</auto_static>
+				<auto_static start_time="306" length_sec="4" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_adams</text>	
+				</auto_static>		
+				
+
+				<!-- next frame -->	
+				<auto_static start_time="311" length_sec="25" x="185" y="50" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_cd_centre</text>
+				</auto_static>		
+				<auto_static start_time="311" length_sec="5" x="185" y="140" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_pm</text>
+				</auto_static>
+				<auto_static start_time="311" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_grzywaczewski</text>	
+				</auto_static>	
+				<auto_static start_time="311" length_sec="5" x="185" y="260" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_lead_testers</text>
+				</auto_static>
+				<auto_static start_time="311" length_sec="5" x="185" y="300" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_watroba</text>	
+				</auto_static>	
+				<auto_static start_time="311" length_sec="5" x="185" y="340" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_pustul</text>	
+				</auto_static>	
+				<auto_static start_time="311" length_sec="5" x="185" y="380" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_wojtania</text>	
+				</auto_static>	
+				<auto_static start_time="311" length_sec="5" x="185" y="420" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_stranowski</text>	
+				</auto_static>	
+
+
+				<!-- next frame -->
+				<auto_static start_time="316" length_sec="20" x="436" y="110" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_cd_testers</text>
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="124" y="170" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_piotrowski</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="170" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_piotrowski2</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="124" y="197" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_spolny</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="197" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_spolny2</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="124" y="224" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_skoczek</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="224" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_skoczek2</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="124" y="251" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_slupecki</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="251" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_slupecki2</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="124" y="278" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_dybiec</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="278" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_dybiec2</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="124" y="305" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_wielebski</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="305" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_wielebski2</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="124" y="332" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_chorek</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="332" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_chorek2</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="124" y="359" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_zajdel</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="359" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_zajdel2</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="124" y="386" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_jadczak</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="386" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_jadczak2</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="124" y="413" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_falak</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="413" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_falak2</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="124" y="440" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_sulkowski</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="440" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_sulkowski2</text>	
+				</auto_static>		
+				<auto_static start_time="316" length_sec="10" x="124" y="467" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_krukowski</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="467" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_krukowski2</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="124" y="494" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_jozwik</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="494" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_jozwik2</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="124" y="521" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_szczytowski</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="521" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_szczytowski2</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="124" y="548" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_pomianowski</text>	
+				</auto_static>
+				<auto_static start_time="316" length_sec="10" x="436" y="548" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_pomianowski2</text>	
+				</auto_static>
+
+
+				<auto_static start_time="326" length_sec="10" x="124" y="170" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_przyjemski</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="170" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_przyjemski2</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="124" y="197" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_bucko</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="197" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_bucko2</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="124" y="224" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_iwanow</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="224" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_iwanow2</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="124" y="251" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">krol</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="251" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">krol2</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="124" y="278" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_roguski</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="278" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_roguski2</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="124" y="305" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_wonko</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="305" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_wonko2</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="124" y="332" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_jedrzejewski</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="332" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_jedrzejewski2</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="124" y="359" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_kohorewicz</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="359" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_kohorewicz2</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="124" y="386" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_polkowski</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="386" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_polkowski2</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="124" y="413" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_rzadca</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="413" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_rzadca2</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="124" y="440" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_gorzkowski</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="440" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_gorzkowski2</text>	
+				</auto_static>		
+				<auto_static start_time="326" length_sec="10" x="124" y="467" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_dobrodziej</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="467" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_dobrodziej2</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="124" y="494" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_rzeznicki</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="494" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_rzeznicki2</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="124" y="521" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_pawlowski</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="521" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_pawlowski2</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="124" y="548" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_chotnicki</text>	
+				</auto_static>
+				<auto_static start_time="326" length_sec="10" x="436" y="548" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_chotnicki2</text>	
+				</auto_static>
+		
+		
+				<auto_static start_time="336" length_sec="5" x="185" y="170" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_thanks_cd_projekt</text>
+				</auto_static>
+				<auto_static start_time="336" length_sec="5" x="185" y="230" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_graj</text>	
+				</auto_static>	
+				<auto_static start_time="336" length_sec="5" x="185" y="270" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_dabrowski</text>	
+				</auto_static>	
+				<auto_static start_time="336" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_lewandowska</text>	
+				</auto_static>	
+				<auto_static start_time="336" length_sec="5" x="185" y="350" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_centkowski</text>	
+				</auto_static>	
+				
+				
+								
+				<!--     linguistic testing performed by     -->		
+							
+				<!-- next frame -->					
+				<auto_static start_time="342" length_sec="6" x="185" y="150" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_linguistic_testing_performed</text>
+				</auto_static>
+				<auto_static start_time="342" length_sec="6" x="185" y="190" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_by_babel_media</text>
+				</auto_static>
+				<auto_static start_time="343" length_sec="5" x="185" y="250" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_cleve</text>	
+				</auto_static>	
+				<auto_static start_time="343" length_sec="5" x="185" y="290" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_lungo</text>	
+				</auto_static>	
+				<auto_static start_time="343" length_sec="5" x="185" y="330" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_luu</text>	
+				</auto_static>	
+				<auto_static start_time="343" length_sec="5" x="185" y="370" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_diez</text>	
+				</auto_static>	
+			
+				
+				<!-- next frame -->	
+				<auto_static start_time="348" length_sec="5" x="185" y="140" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_english_audio_recorded</text>
+				</auto_static>
+				<auto_static start_time="348" length_sec="5" x="185" y="180" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_by_voiceworks_productions</text>	
+				</auto_static>	
+				<auto_static start_time="348" length_sec="5" x="185" y="240" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_sound_designed</text>
+				</auto_static>
+				<auto_static start_time="348" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_by_bob</text>	
+				</auto_static>		
+				<auto_static start_time="348" length_sec="5" x="185" y="340" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_sound_supervisors</text>
+				</auto_static>
+				<auto_static start_time="348" length_sec="5" x="185" y="380" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_barnabas</text>	
+				</auto_static>	
+				<auto_static start_time="348" length_sec="5" x="185" y="420" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_paul_arnold</text>	
+				</auto_static>					
+				
+
+				<!-- next frame -->					
+				<auto_static start_time="353" length_sec="10" x="185" y="90" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_sound_designers</text>
+				</auto_static>
+				<auto_static start_time="353" length_sec="10" x="185" y="130" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_paul_arnold</text>	
+				</auto_static>	
+				<auto_static start_time="353" length_sec="10" x="185" y="170" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_brock</text>	
+				</auto_static>	
+				<auto_static start_time="353" length_sec="10" x="185" y="210" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_dave_sullivan</text>	
+				</auto_static>	
+				<auto_static start_time="353" length_sec="10" x="185" y="250" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_barnabas</text>	
+				</auto_static>				
+				<auto_static start_time="353" length_sec="10" x="185" y="320" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_weapons_recorded</text>
+				</auto_static>
+				<auto_static start_time="353" length_sec="10" x="85" y="360" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_crawford_private_range</text>	
+				</auto_static>	
+				<auto_static start_time="353" length_sec="10" x="85" y="390" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_texas_tactical</text>	
+				</auto_static>	
+				<auto_static start_time="353" length_sec="10" x="85" y="420" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_stevens</text>	
+				</auto_static>					
+				<auto_static start_time="353" length_sec="10" x="85" y="450" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_disused_pit</text>	
+				</auto_static>	
+
+
+				<!-- next frame -->					
+				<auto_static start_time="363" length_sec="10" x="185" y="110" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_gun</text>
+				</auto_static>
+				<auto_static start_time="363" length_sec="10" x="185" y="150" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_crawford</text>	
+				</auto_static>	
+				<auto_static start_time="363" length_sec="10" x="185" y="190" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_marco</text>	
+				</auto_static>	
+				<auto_static start_time="363" length_sec="10" x="185" y="230" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_ou</text>	
+				</auto_static>	
+				<auto_static start_time="363" length_sec="10" x="185" y="270" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_steve_stevens</text>	
+				</auto_static>		
+				<auto_static start_time="363" length_sec="10" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_meeker</text>	
+				</auto_static>			
+				<auto_static start_time="363" length_sec="10" x="85" y="380" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_recording_post</text>	
+				</auto_static>	
+				<auto_static start_time="363" length_sec="10" x="85" y="410" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">creature</text>	
+				</auto_static>					
+				<auto_static start_time="363" length_sec="10" x="85" y="440" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">foley</text>	
+				</auto_static>									
+				
+								
+				<!--               PLASTIC WAX                 -->
+				
+				<!-- next frame -->	
+				<auto_static start_time="374" length_sec="41" x="186" y="40" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti50" color="white">st_wax</text>
+				</auto_static>	
+				<auto_static start_time="375" length_sec="5" x="185" y="250" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_director</text>
+				</auto_static>
+				<auto_static start_time="375" length_sec="5" x="185" y="310" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_maddams</text>	
+				</auto_static>	
+
+
+				<!-- next frame -->	
+				<auto_static start_time="380" length_sec="5" x="185" y="130" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_wax_executive_producer</text>
+				</auto_static>
+				<auto_static start_time="380" length_sec="5" x="185" y="170" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_pittorino</text>
+				</auto_static>
+				<auto_static start_time="380" length_sec="5" x="185" y="240" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_producers</text>	
+				</auto_static>		
+				<auto_static start_time="380" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_kreibig</text>
+				</auto_static>
+				<auto_static start_time="380" length_sec="5" x="185" y="320" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_tolliday</text>
+				</auto_static>
+				<auto_static start_time="380" length_sec="5" x="185" y="360" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_whitham</text>
+				</auto_static>
+				<auto_static start_time="380" length_sec="5" x="185" y="430" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_production_manager</text>
+				</auto_static>
+				<auto_static start_time="380" length_sec="5" x="185" y="470" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_simmons</text>
+				</auto_static>
+
+
+				<!-- next frame -->	
+				<auto_static start_time="385" length_sec="5" x="185" y="130" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_modeling_lead</text>
+				</auto_static>
+				<auto_static start_time="385" length_sec="5" x="185" y="170" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_guy_robinson</text>
+				</auto_static>
+				<auto_static start_time="385" length_sec="5" x="185" y="240" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_modeling</text>
+				</auto_static>
+				<auto_static start_time="385" length_sec="5" x="124" y="280" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_mahoney</text>
+				</auto_static>
+				<auto_static start_time="385" length_sec="5" x="436" y="280" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_mahoney2</text>
+				</auto_static>	
+				<auto_static start_time="385" length_sec="5" x="124" y="320" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_paget</text>
+				</auto_static>
+				<auto_static start_time="385" length_sec="5" x="436" y="320" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_paget2</text>
+				</auto_static>	
+				<auto_static start_time="385" length_sec="5" x="124" y="360" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_baker</text>
+				</auto_static>
+				<auto_static start_time="385" length_sec="5" x="436" y="360" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_baker2</text>
+				</auto_static>	
+				<auto_static start_time="385" length_sec="5" x="124" y="400" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_little</text>
+				</auto_static>
+				<auto_static start_time="385" length_sec="5" x="436" y="400" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_little2</text>
+				</auto_static>	
+				<auto_static start_time="385" length_sec="5" x="124" y="440" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_wood</text>
+				</auto_static>
+				<auto_static start_time="385" length_sec="5" x="436" y="440" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_wood2</text>
+				</auto_static>	
+				<auto_static start_time="385" length_sec="5" x="124" y="480" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_pritchard</text>
+				</auto_static>
+				<auto_static start_time="385" length_sec="5" x="436" y="480" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_pritchard2</text>
+				</auto_static>	
+				
+				
+				<!-- next frame -->	
+				<auto_static start_time="390" length_sec="5" x="185" y="130" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_texture_lead</text>
+				</auto_static>
+				<auto_static start_time="390" length_sec="5" x="185" y="170" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_pedlow</text>	
+				</auto_static>	
+				<auto_static start_time="390" length_sec="5" x="185" y="240" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_texture_artist</text>
+				</auto_static>
+				<auto_static start_time="390" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_tyrone_maddams</text>	
+				</auto_static>		
+				<auto_static start_time="390" length_sec="5" x="185" y="350" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_mocap</text>
+				</auto_static>
+				<auto_static start_time="390" length_sec="5" x="185" y="390" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_azad</text>	
+				</auto_static>	
+				<auto_static start_time="390" length_sec="5" x="185" y="460" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_animation_mocap</text>
+				</auto_static>
+				<auto_static start_time="390" length_sec="5" x="185" y="500" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_maniscalco</text>	
+				</auto_static>					
+				
+
+				<!-- next frame -->	
+				<auto_static start_time="395" length_sec="5" x="185" y="140" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_animation_lead</text>
+				</auto_static>
+				<auto_static start_time="395" length_sec="5" x="124" y="180" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_simper</text>
+				</auto_static>
+				<auto_static start_time="395" length_sec="5" x="436" y="180" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_simper2</text>
+				</auto_static>	
+				<auto_static start_time="395" length_sec="5" x="185" y="260" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_wax_animation</text>
+				</auto_static>
+				<auto_static start_time="395" length_sec="5" x="124" y="300" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_chris_wilson</text>
+				</auto_static>
+				<auto_static start_time="395" length_sec="5" x="436" y="300" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_chris_wilson2</text>
+				</auto_static>	
+				<auto_static start_time="395" length_sec="5" x="124" y="340" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_kerrigan</text>
+				</auto_static>
+				<auto_static start_time="395" length_sec="5" x="436" y="340" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_kerrigan2</text>
+				</auto_static>	
+				<auto_static start_time="395" length_sec="5" x="124" y="380" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_to</text>
+				</auto_static>
+				<auto_static start_time="395" length_sec="5" x="436" y="380" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_to2</text>
+				</auto_static>	
+				<auto_static start_time="395" length_sec="5" x="124" y="420" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_willis</text>
+				</auto_static>
+				<auto_static start_time="395" length_sec="5" x="436" y="420" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_willis2</text>
+				</auto_static>	
+				
+				
+				<!-- next frame -->	
+				<auto_static start_time="400" length_sec="5" x="185" y="170" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_lighting_rendering_lead</text>
+				</auto_static>
+				<auto_static start_time="400" length_sec="5" x="185" y="210" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_brown</text>	
+				</auto_static>	
+				<auto_static start_time="400" length_sec="5" x="185" y="320" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_lighting_rendering</text>
+				</auto_static>
+				<auto_static start_time="400" length_sec="5" x="185" y="360" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_douglass</text>	
+				</auto_static>	
+	
+	
+				<!-- next frame -->	
+				<auto_static start_time="405" length_sec="5" x="185" y="150" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_compositing_lead</text>
+				</auto_static>
+				<auto_static start_time="405" length_sec="5" x="185" y="190" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_roberts</text>	
+				</auto_static>	
+				<auto_static start_time="405" length_sec="5" x="185" y="290" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_compositing</text>
+				</auto_static>
+				<auto_static start_time="405" length_sec="5" x="185" y="330" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_adam_jones</text>	
+				</auto_static>				
+				<auto_static start_time="405" length_sec="5" x="185" y="370" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_french</text>	
+				</auto_static>					
+				<auto_static start_time="405" length_sec="5" x="185" y="410" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_spinaze</text>	
+				</auto_static>	
+				
+
+				<!-- next frame -->	
+				<auto_static start_time="410" length_sec="5" x="185" y="120" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_fx</text>
+				</auto_static>
+				<auto_static start_time="410" length_sec="5" x="124" y="160" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_allan</text>
+				</auto_static>
+				<auto_static start_time="410" length_sec="5" x="436" y="160" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_allan2</text>
+				</auto_static>	
+				<auto_static start_time="410" length_sec="5" x="124" y="200" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_cheng</text>
+				</auto_static>
+				<auto_static start_time="410" length_sec="5" x="436" y="200" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_cheng2</text>
+				</auto_static>	
+				<auto_static start_time="410" length_sec="5" x="124" y="240" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_harris</text>
+				</auto_static>
+				<auto_static start_time="410" length_sec="5" x="436" y="240" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_harris2</text>
+				</auto_static>	
+				<auto_static start_time="410" length_sec="5" x="124" y="280" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="r" font="graffiti32" color="white">st_macgowan</text>
+				</auto_static>
+				<auto_static start_time="410" length_sec="5" x="436" y="280" width="0" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="l" font="graffiti32" color="white">st_macgowan2</text>
+				</auto_static>	
+				<auto_static start_time="410" length_sec="5" x="185" y="350" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_cloth_fx</text>
+				</auto_static>
+				<auto_static start_time="410" length_sec="5" x="185" y="390" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_eye_candy_animation</text>	
+				</auto_static>	
+				<auto_static start_time="410" length_sec="5" x="185" y="460" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="letterica25" color="ui_clr_1">st_sound_design_and_compositing</text>
+				</auto_static>
+				<auto_static start_time="410" length_sec="5" x="185" y="500" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_spoard</text>	
+				</auto_static>	
+				
+				
+				
+																											
+				<!--               SPECIAL THANKS                 -->
+					
+				<!-- next frame -->	
+				<auto_static start_time="417" length_sec="52" x="185" y="40" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti50" color="ui_clr_1">st_special_thanks</text>
+				</auto_static>
+				<auto_static start_time="417" length_sec="5" x="185" y="220" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="white">st_thanks_avdeev</text>	
+				</auto_static>	
+				
+				<!-- next frame -->	
+				<auto_static start_time="422" length_sec="12" x="85" y="140" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_chernobyl</text>	
+				</auto_static>	
+				<auto_static start_time="422" length_sec="12" x="85" y="170" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_chernobyl2</text>	
+				</auto_static>	
+				<auto_static start_time="422" length_sec="12" x="85" y="200" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_chernobyl3</text>	
+				</auto_static>	
+									
+				<!-- next frame -->	
+				<auto_static start_time="426" length_sec="8" x="85" y="250" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_administration</text>	
+				</auto_static>	
+				<auto_static start_time="426" length_sec="8" x="85" y="280" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_administration2</text>	
+				</auto_static>							
+
+				<!-- next frame -->	
+				<auto_static start_time="429" length_sec="5" x="85" y="330" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_chernobylinterinform</text>	
+				</auto_static>					
+				<auto_static start_time="429" length_sec="5" x="85" y="360" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_chernobylinterinform2</text>	
+				</auto_static>					
+				<auto_static start_time="429" length_sec="5" x="85" y="390" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_chernobylinterinform3</text>	
+				</auto_static>	
+				<auto_static start_time="429" length_sec="5" x="85" y="420" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_chernobylinterinform4</text>	
+				</auto_static>	
+				<auto_static start_time="429" length_sec="5" x="57" y="309" width="600" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_line_horiz</text>	
+				</auto_static>	
+				<auto_static start_time="429" length_sec="5" x="61" y="309" width="600" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_line_horiz</text>	
+				</auto_static>	
+				<auto_static start_time="429" length_sec="5" x="57" y="334" width="600" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_line_horiz</text>	
+				</auto_static>	
+				<auto_static start_time="429" length_sec="5" x="61" y="334" width="600" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_line_horiz</text>	
+				</auto_static>	
+				<auto_static start_time="429" length_sec="5" x="273" y="325" width="40" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_line_vert</text>	
+				</auto_static>	
+				<auto_static start_time="429" length_sec="5" x="273" y="333" width="40" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_line_vert</text>	
+				</auto_static>	
+				<auto_static start_time="429" length_sec="5" x="404" y="325" width="40" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_line_vert</text>	
+				</auto_static>	
+				<auto_static start_time="429" length_sec="5" x="404" y="333" width="40" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_line_vert</text>	
+				</auto_static>					
+			
+
+				<!-- next frame -->	
+				<auto_static start_time="434" length_sec="5" x="85" y="210" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_naumov</text>	
+				</auto_static>	
+				<auto_static start_time="434" length_sec="5" x="85" y="240" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_naumov2</text>	
+				</auto_static>
+
+				<!-- next frame -->	
+				<auto_static start_time="439" length_sec="10" x="85" y="170" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_merregnon</text>	
+				</auto_static>	
+				<auto_static start_time="439" length_sec="10" x="85" y="200" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_merregnon2</text>	
+				</auto_static>	
+				<auto_static start_time="439" length_sec="10" x="85" y="230" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_merregnon3</text>	
+				</auto_static>	
+				<auto_static start_time="439" length_sec="10" x="85" y="260" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_merregnon4</text>	
+				</auto_static>	
+				<auto_static start_time="439" length_sec="10" x="85" y="290" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_merregnon5</text>	
+				</auto_static>	
+
+				<!-- next frame -->	
+				<auto_static start_time="444" length_sec="5" x="85" y="350" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_firelake</text>	
+				</auto_static>	
+				<auto_static start_time="444" length_sec="5" x="85" y="380" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_firelake2</text>	
+				</auto_static>	
+				<auto_static start_time="444" length_sec="5" x="85" y="410" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_firelake3</text>	
+				</auto_static>	
+
+				<!-- next frame -->	
+				<auto_static start_time="449" length_sec="10" x="85" y="140" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_fanbase</text>	
+				</auto_static>
+				<auto_static start_time="449" length_sec="10" x="85" y="170" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_fanbase2</text>	
+				</auto_static>
+				<auto_static start_time="449" length_sec="10" x="85" y="200" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_fanbase3</text>	
+				</auto_static>
+				<auto_static start_time="449" length_sec="10" x="85" y="230" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_fanbase4</text>	
+				</auto_static>
+				<auto_static start_time="449" length_sec="10" x="85" y="260" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_fanbase5</text>	
+				</auto_static>
+				<auto_static start_time="449" length_sec="10" x="85" y="290" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_fanbase6</text>	
+				</auto_static>
+				<auto_static start_time="449" length_sec="10" x="85" y="320" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_fanbase7</text>	
+				</auto_static>
+				<auto_static start_time="449" length_sec="10" x="85" y="350" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_fanbase8</text>	
+				</auto_static>
+				<auto_static start_time="449" length_sec="10" x="85" y="380" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_fanbase9</text>	
+				</auto_static>
+				<auto_static start_time="449" length_sec="10" x="85" y="410" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_fanbase10</text>	
+				</auto_static>
+				<auto_static start_time="449" length_sec="10" x="85" y="440" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_fanbase11</text>	
+				</auto_static>
+
+				<!-- next frame -->	
+				<auto_static start_time="459" length_sec="10" x="85" y="240" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_all</text>
+				</auto_static>	
+				<auto_static start_time="459" length_sec="10" x="85" y="270" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_all2</text>
+				</auto_static>	
+				<auto_static start_time="459" length_sec="10" x="85" y="300" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_all3</text>
+				</auto_static>	
+				<auto_static start_time="459" length_sec="10" x="85" y="330" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti22" color="white">st_thanks_all4</text>
+				</auto_static>	
+				
+			</main_wnd>
+		</item>
+
+	</credits_seq>

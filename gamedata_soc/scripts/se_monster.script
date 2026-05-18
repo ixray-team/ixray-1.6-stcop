@@ -1,0 +1,218 @@
+--[[
+Изменения script_version:
+	4 - сохранение поля job_online
+	5 - сохранение поля was_in_smart_terrain
+]]
+
+class "se_monster" (cse_alife_monster_base)
+--------------------
+function se_monster:__init (section) super (section)
+	self.ini = nil
+	self.ini_initialized = false
+
+	self.spawner_present = false
+
+	self.smart_terrain_conditions = nil
+	self.smart_terrain_conditions_initialized = false
+
+	self.check_distance = false
+	self.min_distance   = 150
+
+	-- этот флаг берётся из работы смарта
+	-- true     = всегда в онлайне
+	-- false    = всегда в офлайне
+	-- condlist = условие, которое отпределяет true или false
+	-- nil      = смарту всё равно
+	self.job_online          = nil
+	self.job_online_condlist = nil
+
+	-- посещал ли сталкер хоть один smart_terrain
+	self.was_in_smart_terrain = false
+end
+--------------------
+function se_monster:get_ini()
+	if not self.ini_initialized then
+		self.ini             = self:spawn_ini ()
+		self.ini_initialized = true
+
+		self.spawner_present = self.ini:section_exist ("spawner")
+
+		if self.ini ~= nil and self.spawner_present == true then
+		   if self.ini:line_exist ("spawner", "check_distance") == true then
+		      self.check_distance = self.ini:r_bool ("spawner", "check_distance")
+		      if self.check_distance == nil then self.check_distance = false end
+		      if self.ini:line_exist ("spawner", "min_distance") == true then
+		         self.min_distance = self.ini:r_u32 ("spawner", "min_distance")
+		      end
+		   end
+
+		   if self.min_distance == nil then
+		      local sys = system_ini()
+		      if sys ~= nil and sys:line_exist ("alife", "switch_distance") == true then
+		         self.min_distance = sys:r_u32 ("alife", "switch_distance") - 50
+		         if self.min_distance == nil then
+		            self.min_distance = 150
+		         else
+		            if self.min_distance <= 50 then
+		               abort ("SE_MONSTER - SWITCH DISTANCE IS TOO SMALL !!!")
+		            end
+		         end
+		      else
+		         self.min_distance = 150
+		      end
+		   end
+		end
+	end
+end
+--------------------
+function se_monster:get_job_online()
+	if self.job_online_condlist == nil then
+		return self.job_online
+	else
+		return xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.job_online) ~= nil
+	end
+end
+--------------------
+function se_monster:can_switch_offline ()
+	if self:get_job_online() ~= nil then
+		return not self:get_job_online()
+	else
+		return cse_alife_monster_base.can_switch_offline (self)
+	end
+end
+--------------------
+function se_monster:can_switch_online ()
+	if self:get_job_online() ~= nil then
+		return self:get_job_online()
+	end
+
+--'	self:get_ini()
+
+    --стандартная проверка у родителя, если нет спавнера или игрок помер
+	if self.ini == nil or self.spawner_present == false then --or (db.actor ~= nil and db.actor:alive () == false)
+	--if self.ini == nil or self.spawner_present == false or db.actor == nil
+	    return cse_alife_monster_base.can_switch_online (self)
+	end
+
+	if self.online == false then
+   	    -- если игрока нет, то в оффлайн
+        if db.actor == nil or db.actor:alive () == false then return false end
+
+        --если задана дистанция проверки, то проверим.
+        if self.check_distance == true then
+           --printf ("Check distance")
+           --получим позицию.
+           local pos = level.vertex_position (self.m_level_vertex_id)
+            -- проверим дистанцию до игрока. если меньше требуемой, то от винта
+            if pos:distance_to (db.actor:position ()) < self.min_distance then
+               --printf ("Check distance 1")
+               return false
+            end
+        end
+        --все проверки прошли - финал, вызов спавнера
+	    return xr_spawner.check_spawn (self) and cse_alife_monster_base.can_switch_online (self)
+    else
+        if db.actor == nil or db.actor:alive () == false then return true end
+        if xr_spawner.check_spawn (self) == true then
+           return true
+        end
+        if self.check_distance == true then
+           local pos = level.vertex_position (self.m_level_vertex_id)
+           -- проверим дистанцию до игрока. если больше требуемой, то от винта
+           if pos:distance_to (db.actor:position ()) > self.min_distance then
+              return false
+           end
+        end
+        return cse_alife_monster_base.can_switch_online (self)
+    end
+end
+--------------------
+function se_monster:STATE_Write(packet)
+	cse_alife_monster_base.STATE_Write (self, packet)
+
+	if self.job_online == true then
+		packet:w_u8(0)
+	elseif self.job_online == false then
+		packet:w_u8(1)
+	elseif self.job_online == nil then
+		packet:w_u8(2)
+	else
+		packet:w_u8(3)
+		packet:w_stringZ(self.job_online_condlist)
+	end
+
+	packet:w_bool(self.was_in_smart_terrain)
+end
+--------------------
+function se_monster:STATE_Read(packet, size)
+	cse_alife_monster_base.STATE_Read (self, packet, size)
+
+	if self.script_version >= 4 then
+		local t = packet:r_u8()
+
+		if t == 0 then
+			self.job_online = true
+		elseif t == 1 then
+			self.job_online = false
+		elseif t == 2 then
+			self.job_online = nil
+		else
+			self.job_online_condlist = packet:r_stringZ()
+
+			self.job_online = xr_logic.parse_condlist(nil, "se_monster:STATE_Read", "job_online", self.job_online_condlist)
+		end
+	end
+
+	if self.script_version >= 5 then
+		self.was_in_smart_terrain = packet:r_bool()
+	end
+end
+--------------------
+function se_monster:on_before_register()
+	self:fill_exclusives()
+end
+--------------------
+function se_monster:on_register()
+	cse_alife_monster_base.on_register( self )
+
+	--'self:fill_exclusives()
+
+	--' Нарисовать мапспот с собой
+--'	if self:alive() and sim_statistic.show_monster_spot == true then
+--'		local community, rank = sim_statistic.getNpcType(self)
+--'		level.map_add_object_spot_ser(self.id, "alife_presentation_monstr", self:name().." "..community)
+--'	end
+end
+--------------------
+function se_monster:on_unregister()
+	cse_alife_monster_base.on_unregister( self )
+
+	--' Убрать мапспот с собой
+--'	if sim_statistic.show_monster_spot == true then
+--'		local community, rank = sim_statistic.getNpcType(self)
+--'		level.map_remove_object_spot(self.id, "alife_presentation_monstr")
+--'	end
+
+	smart_terrain.unregister_npc(self)
+end
+--------------------
+function se_monster:on_death(killer)
+	cse_alife_monster_base.on_death(self, killer)
+
+	--' Убрать мапспот с собой
+	if sim_statistic.show_monster_spot == true then
+		local community, rank = sim_statistic.getNpcType(self)
+		level.map_remove_object_spot(self.id, "alife_presentation_monstr")
+	end
+end
+--------------------
+function se_monster:fill_exclusives()
+	self:get_ini()
+	self.smart_terrain_conditions             = smart_terrain.read_smart_terrain_conditions( self )
+
+	if self.smart_terrain_conditions then
+		for name, condlist in pairs(self.smart_terrain_conditions) do
+			smart_terrain.exclusives[name] = (smart_terrain.exclusives[name] or 0) + 1
+		end
+	end
+end

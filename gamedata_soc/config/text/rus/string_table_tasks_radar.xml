@@ -1,0 +1,21 @@
+	<string id="pripyat_task_objective_1">
+		<text>Следовать за группой сталкеров</text>
+	</string>
+	<string id="pripyat_task_objective_2">
+		<text>Найти выход на ЧАЭС</text>
+	</string>
+	<string id="pripyat_task_title">
+		<text>Встретиться с группой сталкеров</text>
+	</string>
+	<string id="rad_antenna">
+		<text>Антенны</text>
+	</string>
+	<string id="rad_get_to_aes">
+		<text>Найти вход в Саркофаг на ЧАЭС</text>
+	</string>
+	<string id="rad_get_to_aes_0">
+		<text>Пройти на территорию станции</text>
+	</string>
+	<string id="rad_get_to_aes_1">
+		<text>Найти вход в саркофаг</text>
+	</string>

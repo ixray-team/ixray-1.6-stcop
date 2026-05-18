@@ -1,0 +1,65 @@
+-- second passing bedug script
+function get_actor()
+	while not db.actor do
+		wait()
+	end
+
+	return db.actor
+end
+
+function main()
+--escape		
+		get_actor():give_info_portion( "esc_kill_bandits_quest_kill" )
+		get_actor():give_info_portion( "esc_find_doctor_start" )
+		get_actor():give_info_portion( "escape_stalker_done" )
+		get_actor():give_info_portion( "escape_lager_killers_die" )
+		get_actor():give_info_portion( "esc_path_to_lager" )
+		get_actor():give_info_portion( "esc_return" )
+--garbitch
+
+		get_actor():give_info_portion( "gar_hellcar_dialog_end" )
+		get_actor():give_info_portion( "gar_hellcar_death" )
+		get_actor():give_info_portion( "garbage_meetstalker_end" )
+		get_actor():give_info_portion( "gar_free_pass" )
+--agroprom
+		get_actor():give_info_portion( "agroprom_military_case_done" )
+
+--darkvalley
+--darkscape		get_actor():give_info_portion( "" )
+
+
+--rostok
+		get_actor():give_info_portion( "bar_rescue_research_done" )
+		get_actor():give_info_portion( "bar_rescue_research_fail" )
+		get_actor():give_info_portion( "bar_kill_veteran_start" )
+		get_actor():give_info_portion( "bar_kill_veteran_killed" )
+		get_actor():give_info_portion( "bar_kill_svoboda_ambush_start" )
+		get_actor():give_info_portion( "bar_kill_svoboda_ambush_killed" )
+		get_actor():give_info_portion( "bar_bar_hunter_quest_finish" )
+		get_actor():give_info_portion( "bar_deactivate_radar_done" )
+
+
+--yantar
+		get_actor():give_info_portion( "yan_kill_brain_done" )
+--military
+		get_actor():give_info_portion( "mil_crazy_dead" )
+		get_actor():give_info_portion( "mil_dolg_dead" )
+		get_actor():give_info_portion( "mil_lukash_dead" )
+		get_actor():give_info_portion( "mil_controller_dead" )
+		get_actor():give_info_portion( "mil_leader_quest2_failed" )
+		get_actor():give_info_portion( "mil_leader_quest2_complete" )
+		get_actor():give_info_portion( "mil_fblockpost_quest_complete" )
+
+--radar
+		get_actor():give_info_portion( "rad_start_svoboda_vs_dolg" )
+		get_actor():give_info_portion( "rad_start_monolith_vs_military" )
+
+--pripyat
+		get_actor():give_info_portion( "pri_wave7_end" )
+		get_actor():give_info_portion( "pri_followers_actor_leave" )
+		get_actor():give_info_portion( "pri_followers_task_end" )
+		get_actor():give_info_portion( "pri_stadium_scene_end" )
+		get_actor():give_info_portion( "pri_zombied_scene_end" )
+
+	
+end

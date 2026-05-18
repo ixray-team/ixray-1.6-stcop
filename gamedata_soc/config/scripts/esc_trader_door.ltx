@@ -1,0 +1,24 @@
+[logic]
+active = ph_door@locked
+
+[ph_door@locked]
+locked = true
+snd_open_start = trader_door_unlock
+on_info = {+esc_trader_can_leave} ph_door@closed %=play_snd(device\door_servomotor)%
+
+[ph_door@closed]
+closed = true
+locked = false
+on_use = ph_door@open %-esc_close_door%
+snd_open_start = trader_door_open_start
+snd_close_start = trader_door_close_start
+snd_close_stop = trader_door_close_stop
+
+[ph_door@open]
+closed = false
+locked = false
+on_use = ph_door@closed
+on_info = {+esc_close_door} ph_door@closed
+snd_open_start = trader_door_open_start
+snd_close_start = trader_door_close_start
+snd_close_stop = trader_door_close_stop

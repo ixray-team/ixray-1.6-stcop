@@ -1,0 +1,27 @@
+;---------------------------------------------------------------------------
+;√улаг мутантов у выхода на –адар.
+;«адача - по определенному количеству мутантов ломитьс€ на блокпост "Ѕарьер"
+;---------------------------------------------------------------------------
+
+;первое состо€ние - mob_home, в котором мутанты собираютс€
+[logic@mil_monster1]
+active = mob_home@monster1
+
+[mob_home@monster1]
+path_home = home1
+home_min_radius = 10
+home_max_radius = 30
+
+
+
+;второе состо€ние - mob_home, в котором мутанты бегут в другой mob_home
+[logic@mil_monster2]
+active = mob_home@monster2
+
+[mob_home@monster2]
+path_home = home2
+home_min_radius = 10
+home_max_radius = 30
+aggressive_home
+
+

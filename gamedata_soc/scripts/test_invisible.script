@@ -1,0 +1,64 @@
+function main()
+         local monstr = get_level_object("monster")
+
+         monstr:script(true, script_name())
+         action(monstr, anim(anim.stand_idle, 0), cond(cond.time_end, 1000000))
+
+         if(monstr:get_manual_invisibility()) then
+            printf("now manual invisibility enabled. Error")
+         else
+            printf("now manual invisibility disabled")
+         end
+
+         wait(3000)
+
+         printf("Enabled manual invisible")
+
+         //Включаем ручное управление
+         monstr:set_manual_invisibility(true)
+
+         if(monstr:get_manual_invisibility()) then
+            printf("now manual invisibility enabled")
+         else
+            printf("now manual invisibility disabled. Error")
+         end
+
+         wait(2000)
+
+         //Делаем невидемым
+         monstr:set_invisible(true)
+
+         wait(2000)
+
+         if(monstr:get_invisible()) then
+            printf("monstr is invisible")
+         else
+             printf("monst is visible. Error")
+         end
+
+         wait(2000)
+
+         //Делаем видимым
+         monstr:set_invisible(false)
+
+         wait(2000)
+
+         if(monstr:get_invisible()) then
+            printf("monstr is invisible. Error")
+         else
+             printf("monst is visible")
+         end
+
+         wait(2000)
+
+         //Отключаем ручное управление
+         monstr:set_manual_invisibility(false)
+
+         if(monstr:get_manual_invisibility()) then
+            printf("now manual invisibility enabled. Error")
+         else
+            printf("now manual invisibility disabled")
+         end
+
+         monstr:script(false, script_name())
+end

@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<encyclopedia>
+    <!-- LIST OF ENCYCLOPEDIA ENTRIES -->
+
+
+    <!-------------------------------- Crow ----------------------------->
+
+
+    <article id="mutant_crow_general" name="Crow" group="Mutants">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_mutant_crow_general</text>
+    </article>
+
+    <!-------------------------------- FLESH ----------------------------->
+
+
+    <article id="mutant_flesh_general" name="Flesh" group="Mutants">
+        <texture>ui_npc_monster_flesh</texture>
+        <text>enc_mutant_flesh_general</text>
+    </article>
+   
+    <!-------------------------------- BLIND DOG ----------------------------->
+
+    <article id="mutant_blind_general" name="Blind" group="Mutants">
+        <texture>ui_npc_monster_dog</texture>
+        <text>enc_mutant_blind_general</text>
+    </article>
+    
+     <!-------------------------------- TUSHKANO ----------------------------->
+
+    <article id="mutant_tushkano" name="Tushkano" group="Mutants">
+        <texture>ui_npc_monster_tushkano</texture>
+        <text>enc_mutant_tushkano</text>
+    </article>
+
+
+    <!-------------------------------- Boar ----------------------------->
+
+    <article id="mutant_boar_general" name="Boar" group="Mutants">
+        <texture>ui_npc_monster_mutant_boar</texture>
+        <text>enc_mutant_boar_general</text>
+    </article>
+
+
+    <!-------------------------------- PSEUDODOG ----------------------------->
+
+    <article id="mutant_pseudodog_general" name="Pseudodog" group="Mutants">
+        <texture>ui_npc_monster_pseudodog_grey</texture>
+        <text>enc_mutant_pseudodog_general</text>
+    </article>
+  
+    <!-------------------------------- Bloodsucker ----------------------------->
+
+    <article id="mutant_bloodsucker_general" name="Bloodsucker" group="Mutants">
+        <texture>ui_npc_monster_krovosos</texture>
+        <text>enc_mutant_bloodsucker_general</text>
+    </article>
+
+    <!-------------------------------- Pseudogiant ----------------------------->
+
+    <article id="mutant_pseudogiant_general" name="Pseudogiant" group="Mutants">
+        <texture>ui_npc_monster_psevdogigant</texture>
+        <text>enc_mutant_pseudogiant_general</text>
+    </article>
+
+
+    <!-------------------------------- Poltergeist ----------------------------->
+
+    <article id="mutant_poltergeist_general" name="Poltergeist" group="Mutants">
+        <texture>ui_npc_monster_poltergeist</texture>
+        <text>enc_mutant_poltergeist_general</text>
+    </article>
+
+    <!-------------------------------- Controller ----------------------------->
+
+    <article id="mutant_controller_general" name="Controller" group="Mutants">
+        <texture>ui_npc_monster_kontroler_4</texture>
+        <text>enc_mutant_controller_general</text>
+    </article>
+
+
+    <!-------------------------------- Zombie ----------------------------->
+
+    <article id="mutant_zombie_general" name="Zombie" group="Mutants">
+        <texture x="500" y="150" width="100" height="100">ui\ui_icon_photo</texture>
+        <text>enc_mutant_zombie_general</text>
+    </article>
+
+
+    <!-------------------------------- Snork ----------------------------->
+
+    <article id="mutant_snork_general" name="Snork" group="Mutants">
+        <texture>ui_npc_monster_snork</texture>
+        <text>enc_mutant_snork_general</text>
+    </article>
+
+
+
+</encyclopedia>
+

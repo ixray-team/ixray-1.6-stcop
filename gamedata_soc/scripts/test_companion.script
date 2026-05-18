@@ -1,0 +1,10 @@
+function main()
+	for k, v in db.storage do
+		if v then
+			if not v.companion then
+				v.companion = {}
+			end
+			v.companion.enabled = true
+		end
+	end
+end

@@ -1,0 +1,10 @@
+[general]
+name 								= "Stalker game (generic)"
+description_short 		= "S.T.A.L.K.E.R shadow of chernobyl"
+description_long 	= "S.T.A.L.K.E.R is unlike any first-person shooter you've ever played or imagined"
+version 						= "1.1.1"
+www 								= "www.gsc-game.kiev.ua
+command_line				= "start server(selo/single) client(localhost)"
+image                = andy_pic.bmp
+
+creator ="Anton Bolshakov	CyLLlKA	Descruo	Jim	Jon	Koan	LeSTAT	MadMax	ManOwaR	Narrator	PROF	Rainbow	Shyshkin	Sidorovich	Stohe	Tuz	Yuriy	alexmx	chugai	dandy	descruo	dima Oles"

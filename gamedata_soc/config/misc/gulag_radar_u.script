@@ -1,0 +1,256 @@
+;-------------------------------------------------------------------------------------------------
+;-- RADAR ANTENA
+;-------------------------------------------------------------------------------------------------
+[logic@rad_alarm]
+active = walker@rad_alarm
+
+[walker@rad_alarm]
+path_walk = alarm_walk
+danger=danger_condition
+
+[danger_condition]
+danger_expiration_time = 60000
+danger_inertion_time =  90000
+;-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
+
+
+
+;--------Свобода
+[logic@rad_svoboda]
+active = walker@rad_svoboda
+combat_ignore=combat_ignore
+
+[walker@rad_svoboda]
+combat_ignore_cond = {-rad_start_svoboda_vs_dolg}
+path_walk = way_svoboda
+path_look = way_look
+on_info = {+rad_start_svoboda_vs_dolg} kamp@svoboda_vs_dolg1
+
+[walker1@rad_svoboda]
+path_walk = way_dolg
+path_look = way_look
+
+
+[logic@rad_svoboda1]
+active = walker@rad_svoboda1
+combat_ignore=combat_ignore
+
+[walker@rad_svoboda1]
+combat_ignore_cond = {-rad_start_svoboda_vs_dolg}
+path_walk = way_svoboda_0000
+path_look = way_look
+on_info = {+rad_start_svoboda_vs_dolg} kamp@svoboda_vs_dolg1
+
+[logic@rad_svoboda2]
+active = walker@rad_svoboda2
+combat_ignore=combat_ignore
+
+[walker@rad_svoboda2]
+combat_ignore_cond = {-rad_start_svoboda_vs_dolg}
+path_walk = way_svoboda_0001
+path_look = way_look
+on_info = {+rad_start_svoboda_vs_dolg} kamp@svoboda_vs_dolg1
+
+[logic@rad_svoboda3]
+active = walker@rad_svoboda3
+combat_ignore=combat_ignore
+
+[walker@rad_svoboda3]
+combat_ignore_cond = {-rad_start_svoboda_vs_dolg}
+path_walk = way_svoboda_0002
+path_look = way_look
+on_info = {+rad_start_svoboda_vs_dolg} kamp@svoboda_vs_dolg1
+
+
+[logic@rad_svoboda4]
+active = walker@rad_svoboda4
+combat_ignore=combat_ignore
+
+[walker@rad_svoboda4]
+combat_ignore_cond = {-rad_start_svoboda_vs_dolg}
+path_walk = way_svoboda_0003
+path_look = way_look
+on_info = {+rad_start_svoboda_vs_dolg} kamp@svoboda_vs_dolg1
+
+[logic@rad_svoboda5]
+active = walker@rad_svoboda5
+combat_ignore=combat_ignore
+
+[walker@rad_svoboda5]
+combat_ignore_cond = {-rad_start_svoboda_vs_dolg}
+path_walk = way_svoboda_0004
+path_look = way_look
+on_info = {+rad_start_svoboda_vs_dolg} kamp@svoboda_vs_dolg1
+
+
+;--------Долг
+[logic@rad_dolg]
+active = walker@rad_dolg
+combat_ignore=combat_ignore
+
+[walker@rad_dolg]
+combat_ignore_cond = {-rad_start_svoboda_vs_dolg}
+path_walk = way_dolg
+path_look = way_look
+on_info = {+rad_start_svoboda_vs_dolg} kamp@svoboda_vs_dolg
+
+[walker1@rad_dolg]
+path_walk = way_dolg
+path_look = way_look
+
+[logic@rad_dolg1]
+active = walker@rad_dolg1
+combat_ignore=combat_ignore
+
+[walker@rad_dolg1]
+combat_ignore_cond = {-rad_start_svoboda_vs_dolg}
+path_walk = way_dolg_0000
+path_look = way_look
+on_info = {+rad_start_svoboda_vs_dolg} kamp@svoboda_vs_dolg
+[logic@rad_dolg2]
+active = walker@rad_dolg2
+combat_ignore=combat_ignore
+
+[walker@rad_dolg2]
+combat_ignore_cond = {-rad_start_svoboda_vs_dolg}
+path_walk = way_dolg_0001
+path_look = way_look
+on_info = {+rad_start_svoboda_vs_dolg} kamp@svoboda_vs_dolg
+
+[logic@rad_dolg3]
+active = walker@rad_dolg3
+combat_ignore=combat_ignore
+
+[walker@rad_dolg3]
+combat_ignore_cond = {-rad_start_svoboda_vs_dolg}
+path_walk = way_dolg_0002
+path_look = way_look
+on_info = {+rad_start_svoboda_vs_dolg} kamp@svoboda_vs_dolg
+
+[logic@rad_dolg4]
+active = walker@rad_dolg4
+combat_ignore=combat_ignore
+
+[walker@rad_dolg4]
+combat_ignore_cond = {-rad_start_svoboda_vs_dolg}
+path_walk = way_dolg_0003
+path_look = way_look
+on_info = {+rad_start_svoboda_vs_dolg} kamp@svoboda_vs_dolg
+
+[logic@rad_dolg5]
+active = walker@rad_dolg5
+combat_ignore=combat_ignore
+
+[walker@rad_dolg5]
+combat_ignore_cond = {-rad_start_svoboda_vs_dolg}
+path_walk = way_dolg_0004
+path_look = way_look
+on_info = {+rad_start_svoboda_vs_dolg} kamp@svoboda_vs_dolg
+
+[kamp@svoboda_vs_dolg]
+center_point = kamp_center
+radius = 3
+
+[kamp@svoboda_vs_dolg1]
+center_point = kamp_center1
+radius = 3
+ 
+----------------кулак на входе-----------------
+
+[logic@rad_entrance_binocular0]
+active = walker@rad_entrance_binocular0
+on_combat = combat@rad_monolith
+
+[walker@rad_entrance_binocular0]
+path_walk = binocular0_walk
+path_look = look
+danger=danger_condition
+
+
+[logic@rad_entrance_binocular1]
+active = walker@rad_entrance_binocular1
+on_combat = combat@rad_monolith
+
+[walker@rad_entrance_binocular1]
+path_walk = binocular1_walk
+path_look = look_binoc
+danger=danger_condition
+
+
+[logic@rad_entrance_kamp]
+active = kamp@rad_entrance_kamp
+on_combat = combat@rad_monolith
+
+[kamp@rad_entrance_kamp]
+danger=danger_condition
+center_point = kamp
+radius = 4
+
+[logic@rad_entrance_walker1]
+active = walker@rad_entrance_walker1
+on_combat = combat@rad_monolith
+
+[walker@rad_entrance_walker1]
+path_walk = walker1
+path_look = look
+danger=danger_condition
+
+
+[logic@rad_entrance_walker2]
+active = walker@rad_entrance_walker2
+on_combat = combat@rad_monolith
+
+[walker@rad_entrance_walker2]
+path_walk = walker2
+path_look = look
+danger=danger_condition
+
+
+[logic@rad_entrance_walker3]
+active = walker@rad_entrance_walker3
+on_combat = combat@rad_monolith
+
+[walker@rad_entrance_walker3]
+path_walk = walker3
+path_look = look
+danger=danger_condition
+
+[rad_monolith]
+combat_type = monolith
+
+----------------кулак v долине-----------------
+[logic@rad_valley_kamp]
+active = kamp@rad_valley_kamp
+on_combat = combat@rad_monolith
+
+[kamp@rad_valley_kamp]
+center_point = kamp
+radius = 3
+
+[logic@rad_valley_walk1]
+active = walker@rad_valley_walk1
+on_combat = combat@rad_monolith
+
+[walker@rad_valley_walk1]
+path_walk = walk1
+path_look = look
+danger=danger_condition
+
+[logic@rad_valley_walk2]
+active = walker@rad_valley_walk2
+on_combat = combat@rad_monolith
+
+[walker@rad_valley_walk2]
+path_walk = walk2
+path_look = look
+danger=danger_condition
+
+[logic@rad_valley_walk3]
+active = walker@rad_valley_walk3
+on_combat = combat@rad_monolith
+
+[walker@rad_valley_walk3]
+path_walk = walk3
+path_look = look
+danger=danger_condition

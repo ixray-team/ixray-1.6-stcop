@@ -1,0 +1,170 @@
+-- File:        UI_MAIN_MAIN_TAB.SCRIPT
+-- Description: main tab for main menu :)
+-- Created:     16.12.2004
+-- Author:      Serhiy 0. Vynnychenk0
+-- Mail:        narrator@gsc-game.kiev.ua
+--
+-- Copyright 2004 GSC Game World
+--
+
+class "main_main_tab" (ui_main_base_tab.main_base_tab)
+
+function main_main_tab:__init() super()
+	
+end
+
+function main_main_tab:__finalize()
+	
+end
+
+function main_main_tab:InitControls(x, y, handler)
+	ui_main_base_tab.main_base_tab.InitControls(self, x, y)
+	
+	local btn_new_rect    = {x = self.btn.x,
+							 y = self.btn.y,
+							 width = self.btn.width,
+							 height = self.btn.height}
+							 
+	local btn_load_rect   = {x = self.btn.x,
+							 y = btn_new_rect.y + btn_new_rect.height ,
+							 width = self.btn.width,
+							 height = self.btn.height}
+							 
+	local btn_save_rect   = {x = self.btn.x,
+							 y = btn_load_rect.y + btn_load_rect.height ,
+							 width = self.btn.width,
+							 height = self.btn.height}
+							 
+	local btn_multi_rect  = {x = self.btn.x,
+							 y = btn_save_rect.y + btn_save_rect.height ,
+							 width = self.btn.width,
+							 height = self.btn.height}
+	
+	local btn_opt_rect    = {x = self.btn.x,
+							 y = btn_multi_rect.y + btn_multi_rect.height ,
+							 width = self.btn.width,
+							 height = self.btn.height}
+
+	local btn_bonus_rect  = {x = self.btn.x,
+							 y = btn_opt_rect.y + btn_opt_rect.height,
+							 width = self.btn.width,
+							 height = self.btn.height}
+							 
+	local btn_quit_rect   = {x = self.btn.x,
+							 y = self.main_rect.height - self.btn.height,
+							 width = self.btn.width,
+							 height = self.btn.height}
+							 
+		----- CODE -------
+-------- BUTTONS ------------------------------- 
+	--------->> NEW GAME
+	btn = CUI3tButton()	
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_new_game")
+	btn:Init(self.btn.texture, btn_new_rect.x, btn_new_rect.y, btn_new_rect.width, btn_new_rect.height)
+	btn:SetText("New game")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+	handler:Register(btn)
+	self:AttachChild(btn)
+	
+	btn:Enable(not level.present())
+		
+	--------->> LOAD Game	
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_load")
+	btn:Init(self.btn.texture, btn_load_rect.x, btn_load_rect.y, btn_load_rect.width, btn_load_rect.height)
+	btn:SetText("Load Game")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+--	btn:Enable(false)
+	handler:Register(btn)
+	self:AttachChild(btn)	
+	
+	--------->> SAVE Game	
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_save")
+	btn:Init(self.btn.texture, btn_save_rect.x, btn_save_rect.y, btn_save_rect.width, btn_save_rect.height)
+	btn:SetText("Save Game")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+--	btn:Enable(false)
+	handler:Register(btn)
+	self:AttachChild(btn)	
+	
+	btn:Enable(level.present())
+	
+		
+	--------->> MULTIPLAYER
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_multiplayer")
+	btn:Init(self.btn.texture, btn_multi_rect.x, btn_multi_rect.y, btn_multi_rect.width, btn_multi_rect.height)
+	btn:SetText("Multiplayer")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+	handler:Register(btn)
+	self:AttachChild(btn)
+	
+	btn:Enable(not level.present())
+	
+	--------->> OPTIONS
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_options")
+	btn:Init(self.btn.texture, btn_opt_rect.x, btn_opt_rect.y, btn_opt_rect.width, btn_opt_rect.height)
+	btn:SetText("Options")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+	handler:Register(btn)
+	self:AttachChild(btn)
+	
+--	btn:Enable(false)
+	
+	--------->> QUIT TO WINDOWS
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_quit")
+	btn:Init(self.btn.texture, btn_quit_rect.x, btn_quit_rect.y, btn_quit_rect.width, btn_quit_rect.height)
+	btn:SetText("Quit to Windows")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+	handler:Register(btn)
+	self:AttachChild(btn)
+	
+	--------->> BONUS
+	btn = CUI3tButton()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("btn_bonus")
+	btn:Init(self.btn.texture, btn_bonus_rect.x, btn_bonus_rect.y, btn_bonus_rect.width, btn_bonus_rect.height)
+	btn:SetText("Bonus")
+	btn:SetFont(self.btn.font)
+	btn:SetTextAlign(CGameFont.alCenter)
+	btn:SetTextY(self.btn.indent)
+	handler:Register(btn)
+	self:AttachChild(btn)
+	
+	btn:Enable(false)
+	
+	
+--[[	btn = CUIComboBox()
+	btn:SetAutoDelete(true)
+	btn:SetWindowName("combo")
+	btn:Init(btn_bonus_rect.x, btn_bonus_rect.y, btn_bonus_rect.width)	
+	btn:AddItem("item1")
+	btn:AddItem("item2")
+	btn:AddItem("item3")
+	btn:AddItem("item4")
+	btn:AddItem("item super", true)
+	handler:Register(btn)
+	self:AttachChild(btn)
+]]
+end

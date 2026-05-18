@@ -1,0 +1,10 @@
+function main()
+	local dog = get_level_object("dog")
+
+    dog:script(true, this.script_name())
+    action(dog, move(move.walk_fwd, patrol("way1", patrol.start, patrol.continue):point(0)), cond(cond.move_end) )
+    action(dog, anim(anim.sit_idle, 0), cond(cond.time_end, 3000) )
+    action(dog, move(move.walk_fwd, patrol("way1", patrol.start, patrol.continue)), cond(cond.time_end, 400000) )
+
+    wait(10000000)
+end

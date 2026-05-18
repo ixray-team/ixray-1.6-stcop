@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window>
+
+	<map_wnd>
+		<main_wnd x="110" y="90" width="761" height="475"> 
+			<text_hint x="735" y="450" width="100" height="22" complex_mode="1">
+				<text font="graffiti22"/>
+			</text_hint>
+
+
+			<map_header_frame_line x="8" y="17" width="747" height="21">
+				<title x="10" y="1" width="435" height="18">
+					<text font="letterica16" r="255" g="255" b="255"/>
+				</title>
+				<texture>ui_string_03</texture>
+
+				<tool_bar x="0" y="6" width = "100" height="16">
+					<global_map_btn x="5" y="1" width="21" height="15" check_mode="0" hint="global_map_btn_hint">
+					<window_name>global_map_btn</window_name>
+							<texture>ui_icons_newPDA_compas</texture>
+					</global_map_btn>
+					<actor_btn x="27" y="1" width="21" height="15"  hint="actor_btn_hint">
+						<window_name>actor_btn</window_name>
+						<texture>ui_icons_newPDA_showpers</texture>
+					</actor_btn>	
+					<notused_add_spot_btn x="60" y="1" width="21" height="15" check_mode="1" hint="add_spot_btn_hint">
+						<window_name>add_spot_btn</window_name>
+						<texture>ui_icons_newPDA_perssign</texture>
+					</notused_add_spot_btn>								
+
+					<zoom_in_btn x="120" y="2" width="21" height="15" check_mode="1" hint="zoom_in_btn_hint">
+						<window_name>zoom_in_btn</window_name>
+						<texture>ui_icons_newPDA_zoom</texture>
+					</zoom_in_btn>								
+
+					<zoom_out_btn x="142" y="2" width="21" height="15" check_mode="1" hint="zoom_out_btn_hint">
+						<window_name>zoom_out_btn</window_name>
+						<texture>ui_icons_newPDA_ZoomMin</texture>
+					</zoom_out_btn>												
+				</tool_bar>					
+				
+			</map_header_frame_line>
+
+			<main_map_frame x="0" y="0" width="761" height="475" a="90">
+				<texture>ui_pda_frame_sub</texture>				
+				<level_frame x="8" y="41" width="725" height="406"/>
+			</main_map_frame>
+		</main_wnd>
+	</map_wnd>
+	
+</window>
