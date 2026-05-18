@@ -3,44 +3,46 @@
 
 	<main x="0" y="0" width="1024" height="768"/>
 
-	<static_icon x="30" y="22" width="150" height="220" stretch="1">
-		<texture_offset x="-11" y="0"/>
+	<static_icon x="15" y="32" width="150" height="220"  stretch="1">
 		<texture>ui_charinfo_left</texture>
+		<texture_offset x="-11" y="0"/>
 	</static_icon>
 	
-	<static_icon x="870" y="22" width="150" height="220" stretch="1">
+	<static_icon x="850" y="32" width="150" height="220" stretch="1">
 		<texture>ui_charinfo_right</texture>
 	</static_icon>
 
-	<our_bag_static x="30" y="270" width="333" height="450" stretch="1">
-		<texture width="305" height="455">ui\ui_dg_inventory_exchange_trade</texture>
+	<our_bag_static x="35" y="270" width="570" height="513" stretch="1">
+		<texture>ui\ui_dg_inventory_exchange_trade</texture>
 		<text x="30" y="8" font="graffiti22" r="238" g="153" b="26" complex_mode="1"/>
 	</our_bag_static>
 
-	<dragdrop_list_our x="29" y="35" width="279" height="410"
-			cell_width = "31" cell_height="41" rows_num="10" cols_num="9" 
+	<dragdrop_list_our x="25" y="35" width="306" height="410"
+			cell_width="29" cell_height="39" rows_num="10" cols_num="10" 
 			unlimited="1" group_similar="1"/>
 
-	<others_bag_static x="675" y="270" width="333" height="455" stretch="1">
-		<texture mirror="h" width="305" height="455">ui\ui_dg_inventory_exchange_trade</texture>
-		<text x="25" y="8" font="graffiti22" r="255" g="255" b="255" a="128">st_items</text>
+	<others_bag_static x="675" y="270" width="570" height="513" stretch="1">
+		<texture>ui\ui_dg_inventory_exchange_trade</texture>
+		<text x="30" y="8" font="graffiti22" r="238" g="153" b="26">st_items</text>
 	</others_bag_static>
 
-	<dragdrop_list_other x="29" y="35" width="279" height="410"
-			cell_width="31" cell_height="41" rows_num="10" cols_num="9" 
+	<dragdrop_list_other x="25" y="35" width="290" height="410"
+			cell_width="29" cell_height="39" rows_num="10" cols_num="10" 
 			unlimited="1" group_similar="1"/>
 
-	<frame_window x="385" y="274" width="267" height="460">
+	<frame_window x="385" y="274" width="267" height="452">
 		<texture>ui_frame</texture>		
-		<_left_top_texture x="5" y="10">ui\ui_inv_info_over_lt</_left_top_texture>
+		<auto_static x="0" y="-13" width="280" height="75" stretch="1">
+			<texture>ui\ui_inv_info_over_lt</texture>
+		</auto_static>
 	</frame_window>
 
-	<descr_static x="5" y="184" width="260" height="270" stretch="1">
+	<descr_static x="5" y="184" width="260" height="260" stretch="1">
 		<texture width="258" height="271">ui\ui_inv_info_over_b</texture>
 	</descr_static>
 
-	<auto_static x="395" y="461" width="220" height="30">
-		<text font="graffiti22" r="255" g="255" b="255" a="128">ui_st_description</text>
+	<auto_static x="405" y="461" width="220" height="30">
+		<text font="graffiti22" r="238" g="153" b="26">ui_st_description</text>
 	</auto_static>
 
 	<top_background x="0" y="0" width="1024" height="128">

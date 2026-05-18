@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <window>
 
-	<static_icon x="27" y="22" width="200" height="218">
+	<static_icon x="15" y="32" width="200" height="218">
 		<texture>ui_charinfo_left</texture>
 		<texture_offset x="-11" y="0"/>
 	</static_icon>
-	<static_icon x="800" y="22" width="200" height="218">
+	<static_icon x="820" y="32" width="200" height="218">
 		<texture>ui_charinfo_right</texture>
 	</static_icon>
 
@@ -45,8 +45,9 @@
 
 
 	<!-- OTHERS BAG -->
-	<others_bag_static x="705" y="270" width="305" height="455">
+	<others_bag_static x="715" y="270" width="262" height="455">
 		<texture mirror="h" width="305" height="455">ui\ui_dg_inventory_exchange_trade</texture>
+	<texture_offset x="-10" y="0"/>
 	</others_bag_static>
 
 	<other_money_static x="168" y="-17" width="119" height="46">
@@ -63,7 +64,7 @@
 		<texture>ui\ui_trade_list_back</texture>
 	</static>
 
-	<dragdrop_list x="31" y="37" width="303" height="164"
+	<dragdrop_list x="38" y="37" width="303" height="164"
 			cell_width = "41" cell_height="41"
 			rows_num="4" cols_num="7" 
 			group_similar="1" unlimited="1"/>
@@ -74,7 +75,7 @@
 		<texture>ui\ui_trade_list_back</texture>
 	</static>
 
-	<dragdrop_list x="31" y="37" width="303" height="164"
+	<dragdrop_list x="38" y="37" width="303" height="164"
 			cell_width = "41" cell_height="41"
 			rows_num="4" cols_num="7" 
 			group_similar="1" unlimited="1"/>
@@ -84,14 +85,14 @@
 		<texture>ui_frame_03</texture>		
 	</desc_frame_window>
 
-	<desc_static x="225" y="22" width="507" height="232">
+	<desc_static x="212" y="22" width="607" height="232" stretch="1">
 		<texture>ui_hud_frame_buyM</texture>		
 	</desc_static>
 
 	<price_mt_static x="35" y="10" width="347" height="40">
 		<phrase x="0" y="0" width="170" font="graffiti22" r="238" g="153" b="26">ui_st_your_items</phrase>
-		<phrase x="175" y="0" font="graffiti22" r="220" g="185" b="140">ui_st_price</phrase>
-		<phrase x="230" y="0" font="graffiti22" r="240" g="215" b="185"></phrase>
+		<phrase x="170" y="0" font="graffiti22" r="220" g="185" b="140">ui_st_price</phrase>
+		<phrase x="215" y="0" font="graffiti22" r="240" g="215" b="185"></phrase>
 	</price_mt_static>
 
 </window>

@@ -14,7 +14,7 @@
     <texture id="ui_icon_RADIOACTIVITY" x="307" y="0" width="19" height="19" />
     <texture id="ui_icon_ENDURANCE" x="326" y="0" width="19" height="19" />
     <texture id="ui_icon_BLOOD" x="307" y="19" width="19" height="19" />
-    <texture id="ui_slots_belt" x="0" y="749" width="1024" height="172" />
+    <texture id="ui_slots_belt" x="0" y="750" width="1024" height="171" />
     <texture id="ui_scale_three" x="210" y="39" width="59" height="179" />
     <texture id="ui_scale_blue_1" x="334" y="41" width="9" height="128" />
     <texture id="ui_scale_yellow_1" x="316" y="41" width="9" height="128" />

@@ -73,47 +73,47 @@
 		
 		<static_burn_immunity x="0" y="0" width="230" height="15" complex_mode="1">
 			<texture>ui_inv_icon_burn_immunity</texture>
-			<text font="letterica16" x="17" y="0" color="ui_clr_1"/>
+			<text font="letterica16" x="19" y="0" color="ui_clr_1"/>
 		</static_burn_immunity>
 		
 		<static_strike_immunity x="0" y="0" width="230" height="15" complex_mode="1">
 			<texture>ui_inv_icon_strike_immunity</texture>
-			<text font="letterica16" x="17" y="0" color="ui_clr_1"/>
+			<text font="letterica16" x="19" y="0" color="ui_clr_1"/>
 		</static_strike_immunity>
 		
 		<static_shock_immunity x="0" y="0" width="230" height="15" complex_mode="1">
 			<texture>ui_inv_icon_shock_immunity</texture>
-			<text font="letterica16" x="17" y="0" color="ui_clr_1"/>
+			<text font="letterica16" x="19" y="0" color="ui_clr_1"/>
 		</static_shock_immunity>
 		
 		<static_wound_immunity x="0" y="0" width="230" height="15" complex_mode="1">
 			<texture>ui_inv_icon_wound_immunity</texture>
-			<text font="letterica16" x="17" y="0" color="ui_clr_1"/>
+			<text font="letterica16" x="19" y="0" color="ui_clr_1"/>
 		</static_wound_immunity>
 		
 		<static_radiation_immunity x="0" y="0" width="230" height="15" complex_mode="1">
 			<texture>ui_inv_icon_radiation_immunity</texture>
-			<text font="letterica16" x="17" y="0" color="ui_clr_1"/>
+			<text font="letterica16" x="19" y="0" color="ui_clr_1"/>
 		</static_radiation_immunity>
 		
 		<static_telepatic_immunity x="0" y="0" width="230" height="15" complex_mode="1">
 			<texture>ui_inv_icon_telepatic_immunity</texture>
-			<text font="letterica16" x="17" y="0" color="ui_clr_1"/>
+			<text font="letterica16" x="19" y="0" color="ui_clr_1"/>
 		</static_telepatic_immunity>
 		
 		<static_chemical_burn_immunity x="0" y="0" width="230" height="15" complex_mode="1">
 			<texture>ui_inv_icon_chemical_burn_immunity</texture>
-			<text font="letterica16" x="17" y="0" color="ui_clr_1"/>
+			<text font="letterica16" x="19" y="0" color="ui_clr_1"/>
 		</static_chemical_burn_immunity>
 		
 		<static_explosion_immunity x="0" y="0" width="230" height="15" complex_mode="1">
 			<texture>ui_inv_icon_explosion_immunity</texture>
-			<text font="letterica16" x="17" y="0" color="ui_clr_1"/>
+			<text font="letterica16" x="19" y="0" color="ui_clr_1"/>
 		</static_explosion_immunity>
 		
 		<static_fire_wound_immunity x="0" y="0" width="230" height="15" complex_mode="1">
 			<texture>ui_inv_icon_fire_wound_immunity</texture>
-			<text font="letterica16" x="17" y="0" color="ui_clr_1"/>
+			<text font="letterica16" x="19" y="0" color="ui_clr_1"/>
 		</static_fire_wound_immunity>
 		
 	</outfit_info>

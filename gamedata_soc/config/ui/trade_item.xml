@@ -18,8 +18,8 @@
 		<text  align="l" x="0" y="0" font="letterica18" r="240" g="217" b="182"/>
 	</static_weight>
 
-	<static_cost x="455" y="13" width="110" height="18">
-		<text  align="l" x="0" y="0" font="graffiti32" r="240" g="215" b="185"/>
+	<static_cost x="478" y="13" width="110" height="18">
+		<text  align="l" x="0" y="0" font="graffiti22" r="240" g="215" b="185"/>
 	</static_cost>
 
 

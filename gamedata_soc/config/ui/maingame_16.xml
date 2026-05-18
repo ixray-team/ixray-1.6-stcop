@@ -6,7 +6,7 @@
 	
 	<static_health x="900" y="660" width="123" height="34" stretch="1">
 		<texture>ui_hud_shkala_health</texture>
-		<auto_static x="5" y="10" width="14" height="18" stretch="1">
+		<auto_static x="3" y="9" width="14" height="18" stretch="1">
 			<texture>ui_hud_icon_health</texture>
 		</auto_static>
 	</static_health>
@@ -17,9 +17,9 @@
 		</progress>
 	</progress_bar_health>
 
-	<static_armor x="900" y="622" width="123" height="34" stretch="1">
+	<static_armor x="900" y="626" width="122" height="34" stretch="1">
 		<texture>ui_hud_shkala_armor</texture>		
-		<auto_static x="5" y="6" width="14" height="18" stretch="1">
+		<auto_static x="3" y="5" width="14" height="18" stretch="1">
 			<texture>ui_hud_icon_armour</texture>
 		</auto_static>
 	</static_armor>

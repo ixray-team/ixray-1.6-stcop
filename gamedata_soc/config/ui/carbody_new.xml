@@ -3,45 +3,45 @@
 
 	<main x="0" y="0" width="1024" height="768"/>
 
-	<static_icon x="27" y="22" width="200" height="200">
+	<static_icon x="15" y="32" width="200" height="218">
 		<texture>ui_charinfo_left</texture>
 		<texture_offset x="-11" y="0"/>
 	</static_icon>
-	<static_icon x="800" y="22" width="200" height="200">
+	<static_icon x="820" y="32" width="200" height="218">
 		<texture>ui_charinfo_right</texture>
 	</static_icon>
 
-	<our_bag_static x="20" y="270" width="290" height="450">
+	<our_bag_static x="20" y="260" width="520" height="518" stretch="1">
 		<texture>ui\ui_dg_inventory_exchange_trade</texture>
 		<text x="30" y="8" font="graffiti22" r="238" g="153" b="26" complex_mode="1"/>
 	</our_bag_static>
 
-	<dragdrop_list_our x="29" y="35" width="262" height="410"
-			cell_width = "41" cell_height="41" rows_num="10" cols_num="6" 
+	<dragdrop_list_our x="22" y="35" width="283" height="418"
+			cell_width = "38" cell_height="38" rows_num="11" cols_num="7" 
 			unlimited="1" group_similar="1"/>
 
-	<others_bag_static x="685" y="270" width="305" height="455">
-		<texture mirror="h" width="305" height="455">ui\ui_dg_inventory_exchange_trade</texture>
-		<text x="25" y="8" font="graffiti22" r="255" g="255" b="255" a="128">st_items</text>
+	<others_bag_static x="683" y="260" width="520" height="518" stretch="1">
+		<texture>ui\ui_dg_inventory_exchange_trade</texture>
+		<text x="30" y="8" font="graffiti22" r="238" g="153" b="26">st_items</text>
 	</others_bag_static>
 
-	<dragdrop_list_other x="29" y="35" width="262" height="410"
-			cell_width="41" cell_height="41" rows_num="10" cols_num="6" 
+	<dragdrop_list_other x="22" y="35" width="283" height="418"
+			cell_width="38" cell_height="38" rows_num="11" cols_num="7" 
 			unlimited="1" group_similar="1"/>
 
-	<frame_window x="375" y="274" width="267" height="460">
+	<frame_window x="355" y="262" width="310" height="455">
 		<texture>ui_frame</texture>		
 		<auto_static x="5" y="-10">
 			<texture>ui\ui_inv_info_over_lt</texture>
 		</auto_static>
 	</frame_window>
 
-	<descr_static x="5" y="180" width="260" height="310">
+	<descr_static x="5" y="180" width="595" height="505" stretch="1">
 		<texture>ui\ui_inv_info_over_b</texture>
 	</descr_static>
 
-	<auto_static x="395" y="461" width="220" height="30">
-		<text font="graffiti22" r="255" g="255" b="255" a="128">ui_st_description</text>
+	<auto_static x="380" y="448" width="220" height="30">
+		<text font="graffiti22" r="238" g="153" b="26">ui_st_description</text>
 	</auto_static>
 
 	<top_background x="0" y="0" width="1024" height="128">

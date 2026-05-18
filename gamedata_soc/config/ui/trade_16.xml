@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <window x="0" y="0" w="640" h="480" r="227" g="121" b="222" texture="1">
 
-	<static_icon x="27" y="22" width="150" height="220" stretch="1">
+	<static_icon x="15" y="32" width="150" height="220"  stretch="1">
 		<texture>ui_charinfo_left</texture>
 		<texture_offset x="-11" y="0"/>
 	</static_icon>
-	<static_icon x="850" y="22" width="150" height="220" stretch="1">
+	<static_icon x="850" y="32" width="150" height="220" stretch="1">
 		<texture>ui_charinfo_right</texture>
 	</static_icon>
 
@@ -38,7 +38,7 @@
 		<text align="c" y="10" font="graffiti22" r="238" g="155" b="23" complex_mode="0"/>
 	</our_money_static>
 
-	<dragdrop_list x="29" y="37" width="296" height="410"
+	<dragdrop_list x="29" y="37" width="295" height="410"
 			cell_width = "31" cell_height="41" rows_num="10" cols_num="9" 
 			group_similar="1" unlimited="1"/>
 
@@ -52,7 +52,7 @@
 		<text align="c" y="10" font="graffiti22" r="238" g="155" b="23" complex_mode="0"/>
 	</other_money_static>
 
-	<dragdrop_list x="29" y="35" width="296" height="410"
+	<dragdrop_list x="29" y="35" width="295" height="410"
 			cell_width = "31" cell_height="41" rows_num="10" cols_num="9" 
 			group_similar="1" unlimited="1"/>
 
