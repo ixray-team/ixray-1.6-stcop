@@ -17,15 +17,16 @@ public:
 		fName		= name;
 		const xr_special_char* wName = Platform::ANSI_TO_TCHAR_U8(name);
 		VerifyPath	(*fName);
+#ifdef IXR_WINDOWS
         if (exclusive){
     		int handle	= _wopen(wName,_O_WRONLY|_O_TRUNC|_O_CREAT|_O_BINARY,SH_DENYWR);
-
-#ifdef IXR_WINDOWS
     		if (handle==-1)
     			Msg	("!Can't create file: '%s'. Error: '%s'.",*fName,_sys_errlist[errno]);
-#endif
     		hf		= _wfdopen(handle,TEXT("wb"));
-        }else{
+        }
+        else
+#endif
+        {
 			_wfopen_s(&hf, wName, TEXT("wb"));
 			if (hf==nullptr)
             {
