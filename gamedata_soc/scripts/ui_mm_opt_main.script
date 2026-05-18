@@ -101,11 +101,6 @@ function options_dialog:UpdateControls()
 	opt:SetCurrentValues("mm_opt_controls")
 
 	opt:SetCurrentValues("key_binding")
-
-	if not xrRender_test_r2_hw() then
-		self.combo_r2:SetCurrentID		(0)
-		self.combo_r2:Enable			(false)
-	end
 	
 	self:UpdateDependControls()
 end

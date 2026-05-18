@@ -8085,7 +8085,6 @@ namespace  {
     function GetTextureRect(string);
     function GetFontGraffiti19Russian();
     function ef_storage();
-    function xrRender_test_r2_hw();
     function user_name();
     function GetARGB(number, number, number, number);
     function script_server_object_version();
