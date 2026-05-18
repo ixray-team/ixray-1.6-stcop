@@ -85,6 +85,7 @@ Snd_ThreadProc(void* data)
 {
     PROF_THREAD("Sound Thread");
 
+#ifdef IXR_WINDOWS
     Snd_Initialize();
     while (backend.is_running) {
         PROF_EVENT("Sound: WASAPI update");
@@ -126,6 +127,7 @@ Snd_ThreadProc(void* data)
     }
 
     Snd_Shutdown();
+#endif
 }
 
 void XRay::Sound::Backend::Initialize(audio_render_callback render_callback, audio_precache_callback precache_callback)

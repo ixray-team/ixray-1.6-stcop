@@ -42,5 +42,7 @@ void CHWCaps::Update()
 	else												bScissor	= false;
 
 	// DEV INFO
-	iGPUNum = GRHI->DriverExt->GetGPUCount();
+	if (GRHI->DriverExt != nullptr) {
+		iGPUNum = GRHI->DriverExt->GetGPUCount();
+	}
 }
