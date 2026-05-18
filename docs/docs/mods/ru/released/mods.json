@@ -8,6 +8,24 @@
   },
   "mods": [
     {
+      "id": "aiw",
+      "title": "Alone in Windstorm: Fallen Bear",
+      "description": "Суровое будущее после мирового ядерного конфликта. Местом действия сюжета станет один из регионов Дальнего Востока",
+      "author": "AIW Team",
+      "score": "Ap-Pro: 9.5",
+      "link": "https://ap-pro.ru/forums/topic/14527-alone-in-windstorm-fallen-bear/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B0%D0%B8%D0%B2.png"
+    },
+    {
+      "id": "fnas",
+      "title": "Five Nights at Sidorovich’s",
+      "description": "Внутри «Деревни Новичков» образовалась неизвестная аномалия. Военная разведка докладывает, что аномалия влияет на некоторых людей, их назвали «подверженными»",
+      "author": "Emmis",
+      "score": "Ap-Pro: 9.2",
+      "link": "https://ap-pro.ru/forums/topic/14527-alone-in-windstorm-fallen-bear/",
+      "image": "https://i.postimg.cc/VLxx7ddd/logo.png"
+    },
+    {
       "id": "awakening-2055",
       "title": "Пробуждение. 2055",
       "description": "История со своей вселенной, не связанной с миром STALKER. Главный герой волей случая переносится в будущее, попадая в мир, переживший ядерную войну.",

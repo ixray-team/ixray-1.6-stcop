@@ -90,6 +90,21 @@ export const mainSidebar: DefaultTheme.Sidebar = [
       { text: 'Шрифты', link: '/interface/fonts' },
       { text: 'XML Expression', link: '/interface/xml-expression' },
       { text: 'SVG иконки', link: '/interface/svg-icons' },
+      {
+        text: 'Новые возможности UI',
+        collapsed: true,
+        items: [
+          { text: 'Обзор и переключатели', link: '/interface/ui-advanced-features' },
+          { text: 'Горизонтальный компас, миникарта', link: '/interface/hud-compass-minimap-motion-icon' },
+          { text: 'Быстрые слоты', link: '/interface/hud-quick-slots-panel' },
+          { text: 'Навигационная личная метка', link: '/interface/map-personal-navigation-marker' },
+          { text: 'Сортировка инвентаря', link: '/interface/inventory-sort-tabs' },
+          { text: 'Патроны, оружие, режим огня', link: '/interface/hud-weapon-ammo-fire-mode' },
+          { text: 'Состояние предмета и проценты', link: '/interface/item-condition-percent-display' },
+          { text: 'Радиальные индикаторы', link: '/interface/radial-progress-shape' },
+          { text: 'Прогресс бар веса', link: '/interface/weight-progress-bar' },
+        ],
+      },
     ],
   },
   {

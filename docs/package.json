@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "vitepress": "^2.0.0-alpha.15",
+    "vitepress": "^2.0.0-alpha.17",
     "vitepress-plugin-lightbox": "^1.0.3"
   },
   "dependencies": {
