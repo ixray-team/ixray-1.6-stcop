@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <window>
 
-
 	<list x="20" y="87" width="420" height="370" item_height = "18">
 		<font font="letterica18" r="255" g="255" b="255"></font>
 	</list>
@@ -11,7 +10,6 @@
 	<mask_frame_window x="0" y="0" width="1" height="1">
 		<texture>ui_pda_frame2</texture>		
 	</mask_frame_window>
-	
 		
 	<main_wnd x="110" y="90" width="761" height="455"/>
 

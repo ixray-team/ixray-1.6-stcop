@@ -8,7 +8,7 @@
 		</list>
 	</properties_box>
 	
-	<main x=0 y=0 width=1024 height=768/>
+	<main x="0" y="0" width="1024" height="768"/>
 	
 	<belt_slots x="0" y="80" width="1024" height="172">
 		<texture>ui_slots_belt</texture>		
@@ -18,7 +18,7 @@
 		<texture>ui_inventory_main</texture>
 	</back>
 
-	<bottom_static x=0 y=736 width=1024 height=32 >
+	<bottom_static x="0" y="736" width="1024" height="32">
 		<texture>ui\ui_bottom_background</texture>
 	</bottom_static>
 
@@ -118,7 +118,7 @@
 		
 	</outfit_info>
 
-	<static_personal x=1 y=285 width=100 height=260/>
+	<static_personal x="1" y="285" width="100" height="260"/>
 
     <rank x="736" y="272" width="75" height="65">
 		<texture>ui_inventory_rank</texture>
@@ -158,7 +158,7 @@
     </progress_bar_rank>
     
     <time_static x="15" y="730" width="200" height="30">        
-		<texture x=0 y=0 width=190 height=36>ui\ui_dg_time</texture>
+		<texture x="0" y="0" width="190" height="36">ui\ui_dg_time</texture>
         <text x="20" y="8" font="letterica16" r="240" g="217" b="182" a="255">ui_inv_time</text>
 	</time_static>
 

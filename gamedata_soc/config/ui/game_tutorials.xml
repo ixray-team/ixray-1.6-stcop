@@ -7,7 +7,7 @@
 	<function_on_stop>xr_effects.esc_init_dialod</function_on_stop>
 <!--
 		<global_wnd x="0" y="0" width="1024" height="768">
-			<auto_static x=900 y="10" width="150" height="50">
+			<auto_static x="900" y="10" width="150" height="50">
 				<text font="graffiti22" r="255" g="0" b="0" a="255">pda_tutorial</text>
 			</auto_static>
 		</global_wnd>

@@ -21,7 +21,7 @@
 		</level>
 	</items_hierarchy>
 	
-	<main x=0 y=0 width=1024 height=768>
+	<main x="0" y="0" width="1024" height="768">
 		<auto_static x="0" y="0" width="1024" height="768" stretch="1">
 			<texture x="0" y="0" width="1024" height="768">ui_bm_back</texture>
 		</auto_static>

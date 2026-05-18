@@ -1,4 +1,3 @@
-
 <?xml version='1.0' encoding="UTF-8"?>
 <window>
 
@@ -155,19 +154,18 @@
 						</tool_bar>					
 
 					</map_header_frame_line>
-				
-				 
+
 					<main_map_frame x="0" y="0" width="409" height="475" a="90">
 						<texture>ui_pda_frame_sub</texture>
-							<level_frame x="8" y="41" width="373" height="406">
+						<level_frame x="8" y="41" width="373" height="406">
 						</level_frame>
 					</main_map_frame>
 				</main_wnd>
 
 			</map_wnd>		
 		</right_frame>
-	
+
 	</main_wnd>
-	
+
 </window>
 

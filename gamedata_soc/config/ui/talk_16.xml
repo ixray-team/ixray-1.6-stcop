@@ -10,11 +10,11 @@
 		<texture>ui_charinfo_right</texture>
 	</right_character_icon>
 	
-	<top_background x=0 y=0 width=1024 height=128>
+	<top_background x="0" y="0" width="1024" height="128">
 		<texture>ui\ui_top_background</texture>
 	</top_background>
 
-	<bottom_background x=0 y=736 width=1024 height=32>
+	<bottom_background x="0" y="736" width="1024" height="32">
 		<texture>ui\ui_bottom_background</texture>
 	</bottom_background>
 	<!-- BUTTONS -->

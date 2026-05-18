@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <window x="0" y="0" w="640" h="480" r="227" g="121" b="222" texture="1">
 
-	<main x=0 y=0 width=1024 height=768/>
+	<main x="0" y="0" width="1024" height="768"/>
 
 	<slots_background x="0" y="80" height="172" width="1024">
 		<texture>ui_slots_belt</texture>

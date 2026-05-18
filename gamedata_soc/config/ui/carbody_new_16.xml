@@ -1,8 +1,7 @@
 <?xml version='1.0' encoding="UTF-8"?>
-
 <window>
 
-	<main x=0 y=0 width=1024 height=768/>
+	<main x="0" y="0" width="1024" height="768"/>
 
 	<static_icon x="30" y="22" width="150" height="220" stretch="1">
 		<texture_offset x="-11" y="0"/>
@@ -24,7 +23,7 @@
 
 	<others_bag_static x="675" y="270" width="333" height="455" stretch="1">
 		<texture mirror="h" width="305" height="455">ui\ui_dg_inventory_exchange_trade</texture>
-		<text x="25" y="8" font="graffiti22" r="255" g="255" b="255" a="128">items</text>
+		<text x="25" y="8" font="graffiti22" r="255" g="255" b="255" a="128">st_items</text>
 	</others_bag_static>
 
 	<dragdrop_list_other x="29" y="35" width="279" height="410"
@@ -41,20 +40,20 @@
 	</descr_static>
 
 	<auto_static x="395" y="461" width="220" height="30">
-		<text font="graffiti22" r="255" g="255" b="255" a="128">Description</text>
+		<text font="graffiti22" r="255" g="255" b="255" a="128">ui_st_description</text>
 	</auto_static>
 
-	<top_background x=0 y=0 width=1024 height=128>
+	<top_background x="0" y="0" width="1024" height="128">
 		<texture>ui\ui_top_background</texture>
 	</top_background>
 
-	<bottom_background x=0 y=736 width=1024 height=32>
+	<bottom_background x="0" y="736" width="1024" height="32">
 		<texture>ui\ui_bottom_background</texture>
 	</bottom_background>
 
 	<take_all_btn x="830" y="725" width="157" height="48" hR="255" hB="83" hG="179" highlight_text="1">
         <texture>ui_button_main01</texture>
-        <text align="c" font="graffiti22" r="238" g="153" b="26">Take All</text>
+        <text align="c" font="graffiti22" r="238" g="153" b="26">ui_st_take_all</text>
 	</take_all_btn>
 
 </window>

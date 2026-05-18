@@ -4,19 +4,19 @@
 		<text>активировать артефакт</text>
 	</string>
 	<string id="st_attach_gl_to_rifle">
-		<text>прицепить гранатомет к винтовке</text>
+		<text>Прицепить гранатомет к винтовке</text>
 	</string>
 	<string id="st_attach_scope_to_pistol">
-		<text>прицепить прицел к пистолету</text>
+		<text>Прицепить прицел к пистолету</text>
 	</string>
 	<string id="st_attach_scope_to_rifle">
-		<text>прицепить прицел к винтовке</text>
+		<text>Прицепить прицел к винтовке</text>
 	</string>
 	<string id="st_attach_silencer_to_pistol">
-		<text>прицепить глушитель к пистолету</text>
+		<text>Прицепить глушитель к пистолету</text>
 	</string>
 	<string id="st_attach_silencer_to_rifle">
-		<text>прицепить глушитель к винтовке</text>
+		<text>Прицепить глушитель к винтовке</text>
 	</string>
 	<string id="st_base_cost">
 		<text>цена</text>
@@ -25,49 +25,49 @@
 		<text>состояние</text>
 	</string>
 	<string id="st_detach_gl">
-		<text>отсоединить гранатомет</text>
+		<text>Отсоединить гранатомет</text>
 	</string>
 	<string id="st_detach_scope">
-		<text>отсоединить прицел</text>
+		<text>Отсоединить прицел</text>
 	</string>
 	<string id="st_detach_silencer">
-		<text>отсоединить глушитель</text>
+		<text>Отсоединить глушитель</text>
 	</string>
 	<string id="st_dress_outfit">
-		<text>одеть костюм</text>
+		<text>Надеть костюм</text>
 	</string>
 	<string id="st_drop">
-		<text>выбросить</text>
+		<text>Выбросить</text>
 	</string>
 	<string id="st_drop_all">
-		<text>выбросить все</text>
+		<text>Выбросить все</text>
 	</string>
 	<string id="st_eat">
-		<text>съесть</text>
+		<text>Съесть</text>
 	</string>
 	<string id="st_move_on_belt">
-		<text>повесить на пояс</text>
+		<text>Повесить на пояс</text>
 	</string>
 	<string id="st_move_to_bag">
-		<text>убрать в рюкзак</text>
+		<text>Убрать в рюкзак</text>
 	</string>
 	<string id="st_move_to_slot">
-		<text>переместить в слот</text>
+		<text>Переместить в слот</text>
 	</string>
 	<string id="st_sell_item">
-		<text>продать предмет</text>
+		<text>Продать предмет</text>
 	</string>
 	<string id="st_undress_outfit">
-		<text>снять костюм</text>
+		<text>Снять костюм</text>
 	</string>
 	<string id="st_unload_magazine">
-		<text>разрядить</text>
+		<text>Разрядить</text>
 	</string>
 	<string id="st_use">
-		<text>использовать</text>
+		<text>Использовать</text>
 	</string>
 	<string id="st_weight">
-		<text>вес</text>
+		<text>Вес</text>
 	</string>
 	<string id="ui_inv_accuracy">
 		<text>Точность</text>
@@ -250,10 +250,10 @@
 		<text>Ограничение по количеству</text>
 	</string>
 	<string id="ui_inv_has">
-		<text>сейчас</text>
+		<text>Сейчас</text>
 	</string>
 	<string id="ui_inv_need">
-		<text>необходимо</text>
+		<text>Необходимо</text>
 	</string>
 	<string id="ui_inv_you_already_have">
 		<text>Уже есть</text>

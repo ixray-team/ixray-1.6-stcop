@@ -2254,7 +2254,7 @@
 					<text align="c" font="graffiti22" color="white">st_thanks_fanbase11</text>
 				</auto_static>
 
-                                 <!-- next frame -->
+				<!-- next frame -->
 				<auto_static start_time="459" length_sec="10" x="85" y="140" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="white">st_thanks_fanbase12</text>
 				</auto_static>
@@ -2304,7 +2304,7 @@
 					<text align="c" font="graffiti22" color="white">st_thanks_all4</text>
 				</auto_static>
 
-                                 				<!-- next frame -->
+				<!-- next frame -->
 				<auto_static start_time="479" length_sec="10" x="85" y="140" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="white">st_thanks_license1</text>
 				</auto_static>
@@ -2342,7 +2342,7 @@
 					<text align="c" font="graffiti22" color="white">st_thanks_license12</text>
 				</auto_static>
 
-                       		<!-- next frame -->
+				<!-- next frame -->
 				<auto_static start_time="489" length_sec="10" x="85" y="240" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="white">st_thanks_license13</text>
 				</auto_static>

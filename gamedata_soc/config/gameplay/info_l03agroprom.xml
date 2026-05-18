@@ -1,7 +1,5 @@
 <?xml version='1.0' encoding="windows-1251"?>
-
 <game_information_portions>
-
 	<info_portion id="agroprom_military_case">
 		<task>agroprom_get_military_documents</task>
 		<article>sl_first_deep_raid</article>
@@ -178,5 +176,4 @@
 	<info_portion id="agr_u_bloodsucker_start"></info_portion>
 	<info_portion id="agr_gunslinger_flash_have"></info_portion>
 	<info_portion id="agr_factory_heli_scene_end"></info_portion>
-	
-		 
+</game_information_portions>

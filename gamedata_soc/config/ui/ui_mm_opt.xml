@@ -262,12 +262,12 @@
 		<_cap_soundquality x="20" y="70" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_sound_quality</text>
 		</_cap_soundquality>
-		
+
 		<check_eax x="20" y="70" width="143" height="21">
 			<options_item entry="snd_efx" group="mm_opt_sound"/>
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_eax</text>
 		</check_eax>
-		
+
 		<track_mastervolume x="194" y="20" width="245" height="21">
 			<options_item entry="snd_volume_eff" group="mm_opt_sound"/>
 		</track_mastervolume>

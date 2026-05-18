@@ -67,7 +67,7 @@
 		<text>Показать записи игрока</text>
 	</string>
 	<string id="pda_btn_map">
-		<text>План</text>
+		<text>Карта</text>
 	</string>
 	<string id="pda_btn_map_hint">
 		<text>Показать карту Зоны</text>
@@ -103,7 +103,7 @@
 		<text>Репутация</text>
 	</string>
 	<string id="pda_btn_statistics">
-		<text>Данные</text>
+		<text>Статистика</text>
 	</string>
 	<string id="pda_btn_statistics_hint">
 		<text>Показать статистику по прохождению</text>
