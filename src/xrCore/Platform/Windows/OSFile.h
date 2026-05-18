@@ -11,6 +11,9 @@ class FS_Path;
 #define xr_ftell ftell
 #endif
 
+#define PLATFORM_SLASH '\\'
+#define PLATFORM_SLASH_STR "\\"
+
 namespace Platform
 {
     constexpr const char* kPreferredSeparator = "\\";
