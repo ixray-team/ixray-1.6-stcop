@@ -164,12 +164,21 @@
 		<picture x="35" y="65" width="77" height="77">
 			<texture>ui_frame_error_sign_info</texture>
 		</picture>
-		
-		<cap_password x="180" y="70" width="112" height="24">
+
+		<cap_user_password x="180" y="55" width="112" height="24">
+			<text font="letterica16" r="207" g="155" b="80">mm_mp_userpassword</text>
+		</cap_user_password>
+
+		<cap_password x="180" y="85" width="112" height="24">
 			<text font="letterica16" r="207" g="155" b="80">mm_mp_password</text>
 		</cap_password>
 		
-		<edit_password x="294" y="70" width="170" height="24" password="1">
+		<edit_user_password x="294" y="55" width="170" height="24" password="1">
+			<text font="letterica16" r="207" g="155" b="80"/>
+			<texture>ui_linetextSmall_e</texture>
+		</edit_user_password>
+
+		<edit_password x="294" y="85" width="170" height="24" password="1">
 			<text font="letterica16" r="207" g="155" b="80"></text>
 			<texture>ui_linetextSmall_e</texture>
 		</edit_password>		
@@ -594,4 +603,39 @@
 			<texture>ui_button_ordinary</texture>
 		</button_ok>
 	</msg_box_connect_to_master_server>
+
+  <msg_box_kicked_by_server type="ok" x="200" y="250" width="510" height="206">
+    <texture>ui_frame_error</texture>
+
+    <picture x="35" y="65" width="77" height="77">
+      <texture>ui_frame_error_sign_alarm</texture>
+    </picture>
+
+    <message_text x="170" y="40" width="310" height="60" complex_mode="1">
+      <text x="0" y="0" r="216" g="186" b="140" font="letterica18">ui_st_kicked_by_server</text>
+    </message_text>
+
+    <button_ok x="370" y="154" width="117" height="29" check_mode="0">
+      <text x="0" y="0" font="letterica16"  r="216" g="186" b="140" >ui_st_btn_ok</text>
+      <texture>ui_button_ordinary</texture>
+    </button_ok>
+  </msg_box_kicked_by_server>
+
+  <msg_box_error_loading type="ok" x="200" y="250" width="510" height="206">
+    <texture>ui_frame_error</texture>
+
+    <picture x="35" y="65" width="77" height="77">
+      <texture>ui_frame_error_sign_alarm</texture>
+    </picture>
+
+    <message_text x="170" y="40" width="310" height="60" complex_mode="1">
+      <text x="0" y="0" r="216" g="186" b="140" font="letterica18">ui_st_error_loading</text>
+    </message_text>
+
+    <button_ok x="370" y="154" width="117" height="29" check_mode="0">
+      <text x="0" y="0" font="letterica16"  r="216" g="186" b="140" >ui_st_btn_ok</text>
+      <texture>ui_button_ordinary</texture>
+    </button_ok>
+  </msg_box_error_loading>
+
 </window>

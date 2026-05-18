@@ -117,8 +117,7 @@ function mp_main:InitCallBacks()
 	self:AddCallback("check_with_pass",		ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
 	self:AddCallback("check_without_pass",	ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
 	self:AddCallback("check_without_ff",	ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
---	self:AddCallback("check_without_pb",	ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
-	self:AddCallback("check_listen_servers",ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)	
+	self:AddCallback("check_listen_servers",ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
 	
 	self:AddCallback("btn_direct_ip",		ui_events.BUTTON_CLICKED,	self.OnBtn_DirectIP,self)
 	
@@ -180,7 +179,6 @@ function mp_main:OnFilterChange()
 	sf.with_pass		= self.filters.btn_check_with_pass:GetCheck()
 	sf.without_pass		= self.filters.btn_check_without_pass:GetCheck()
 	sf.without_ff		= self.filters.btn_check_without_ff:GetCheck()
---	sf.without_pb		= self.filters.btn_check_without_pb:GetCheck()
 	sf.listen_servers	= self.filters.btn_check_listen_servers:GetCheck()
 	
 	self.server_list:SetFilters(sf)
@@ -445,7 +443,7 @@ function mp_main:OnBtn_Join()
 	opt:SaveValues("mm_mp_server")
 	opt:SaveValues("mm_mp_srv_filter")
 	
-	self.server_list:SetPlayerName(self.player_name:GetText())	
+	self.server_list:SetPlayerName(self.player_name:GetText())
 	self.server_list:ConnectToSelected()
 end
 

@@ -19,13 +19,18 @@
 	<cap_multiplayer x="270" y="93" width="378" height="33">
 		<text font="graffiti22" r="215" g="195" b="170" complex_mode="0">ui_mm_multiplayer</text>
 	</cap_multiplayer>
-	<static_player_name x="137" y="143" width="100" height="24">		
+	<static_player_name x="137" y="143" width="100" height="24">
 		<text font="letterica16" r="129" g="123" b="113" complex_mode="0">mm_mp_player_name</text>
 	</static_player_name>
 	<edit_player_name x="237" y="143" width="215" height="24" max_symb_count="17">
 		<options_item entry="mm_net_player_name" group="mm_mp_client"/>
 		<text font="letterica18" r="235" g="219" b="185"/>
 	</edit_player_name>
+
+	<edit_player_pass x="470" y="143" width="100" height="24" max_symb_count="17">
+		<text font="letterica18" r="235" g="219" b="185"/>
+	</edit_player_pass>
+	
 	<cap_cd_key x="561" y="143" width="70" height="24">
 		<text font="letterica16" r="129" g="123" b="113" complex_mode="0">mm_mp_cd_key</text>
 	</cap_cd_key>

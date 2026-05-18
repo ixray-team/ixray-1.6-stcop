@@ -337,7 +337,9 @@ function motivator_binder:load(reader)
 	self.treasure_processed = reader:r_bool()
 
 	xr_logic.load_obj(self.object, reader)
-	dialog_manager.load(self.object, reader)
+
+	self.npc_script_version = alife():object(self.object:id()).script_version
+	dialog_manager.load(self.object, reader, self.npc_script_version)
 	trade_manager.load(self.object, reader)
 end
 

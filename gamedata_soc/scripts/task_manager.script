@@ -66,76 +66,78 @@ function CRandomTask:__init()
 			abort("There is no section [%s] in task_manager.ltx", id)
 		end		
 
-		self.task_info[id] = {}
+		self.task_info[tostring(id)]			= {}
+		local curr_task_info					= self.task_info[tostring(id)]
+		
 		if not self.task_ini:line_exist(id, "type") then
 			abort("Task manager error: no type in section [%s]", id)
 		end
 
-		self.task_info[id].type			= self.task_ini:r_string(id, "type")			
+		curr_task_info.type			= self.task_ini:r_string(id, "type")			
 
-		self.task_info[id].name			= id
+		curr_task_info.name			= id
 		if self.task_ini:line_exist(id, "parent") then
-			self.task_info[id].parent		= self.task_ini:r_string(id, "parent")
-			self.task_info[id].complex_type = self.task_info[id].type .. "_" .. self.task_info[id].parent
+			curr_task_info.parent		= self.task_ini:r_string(id, "parent")
+			curr_task_info.complex_type = curr_task_info.type .. "_" .. self.task_info[id].parent
 		else
-			self.task_info[id].parent		= "nil"
-			self.task_info[id].complex_type = self.task_info[id].type
+			curr_task_info.parent		= "nil"
+			curr_task_info.complex_type = curr_task_info.type
 		end
 		if self.task_ini:line_exist(id, "target") then
-			self.task_info[id].target		= self.task_ini:r_string(id, "target")
+			curr_task_info.target		= self.task_ini:r_string(id, "target")
 		end
 		if self.task_ini:line_exist(id, "text") then
-			self.task_info[id].text			= self.task_ini:r_string(id, "text")
+			curr_task_info.text			= self.task_ini:r_string(id, "text")
 		end
 		if self.task_ini:line_exist(id, "description") then
-			self.task_info[id].description	= self.task_ini:r_string(id, "description")				
+			curr_task_info.description	= self.task_ini:r_string(id, "description")				
 		end
-		self.task_info[id].time	= utils.cfg_get_number(self.task_ini, id, "time", nil, false)
+		curr_task_info.time				= utils.cfg_get_number(self.task_ini, id, "time", nil, false)
 
-		self.task_info[id].idle_time	= utils.cfg_get_number(self.task_ini, id, "idle_time", nil, false, 24*60*60) --' Время между выдачами задания (в игровых секундах)
-		self.task_info[id].prior		= utils.cfg_get_number(self.task_ini, id, "prior", nil, false, 0) --' Приоритет квеста, выдаются доступные квесты с наименьшим приоритетом
+		curr_task_info.idle_time		= utils.cfg_get_number(self.task_ini, id, "idle_time", nil, false, 24*60*60) --' Время между выдачами задания (в игровых секундах)
+		curr_task_info.prior			= utils.cfg_get_number(self.task_ini, id, "prior", nil, false, 0) --' Приоритет квеста, выдаются доступные квесты с наименьшим приоритетом
 	
 		if self.task_ini:line_exist(id, "init_condition") then
-			self.task_info[id].init_condition = xr_logic.parse_condlist(db.actor, "task_manager", "init_condition", self.task_ini:r_string(id, "init_condition"))
+			curr_task_info.init_condition = xr_logic.parse_condlist(db.actor, "task_manager", "init_condition", self.task_ini:r_string(id, "init_condition"))
 		end
 
 		local sss = utils.cfg_get_string(self.task_ini, id, "reward_item", nil, false, "")
 		if sss ~= nil then
-			self.task_info[id].reward_item = se_respawn.parse_names(sss) 
+			curr_task_info.reward_item = se_respawn.parse_names(sss) 
 		else
-			self.task_info[id].reward_item = sss
+			curr_task_info.reward_item = sss
 		end
-		self.task_info[id].reward_money = utils.cfg_get_number(self.task_ini, id, "reward_money", nil, false)		
+		curr_task_info.reward_money = utils.cfg_get_number(self.task_ini, id, "reward_money", nil, false)		
 	
 		if self.task_ini:line_exist(id, "community") then
-			self.task_info[id].community = self.task_ini:r_string(id, "community")
+			curr_task_info.community = self.task_ini:r_string(id, "community")
 		end		
 
-		self.task_info[id].reward_rank = utils.cfg_get_number(self.task_ini, id, "reward_rank", nil, false, 0)
-		self.task_info[id].reward_reputation = utils.cfg_get_number(self.task_ini, id, "reward_reputation", nil, false)
-		self.task_info[id].reward_relation = parse_key_value(utils.cfg_get_string(self.task_ini, id, "reward_relation", nil, false, ""))
+		curr_task_info.reward_rank			= utils.cfg_get_number(self.task_ini, id, "reward_rank", nil, false, 0)
+		curr_task_info.reward_reputation	= utils.cfg_get_number(self.task_ini, id, "reward_reputation", nil, false)
+		curr_task_info.reward_relation		= parse_key_value(utils.cfg_get_string(self.task_ini, id, "reward_relation", nil, false, ""))
 		
 		if self.task_ini:line_exist(id, "condlist") then
-			self.task_info[id].condlist = xr_logic.parse_condlist(db.actor, "task_manager", "condlist", self.task_ini:r_string(id, "condlist"))
+			curr_task_info.condlist			= xr_logic.parse_condlist(db.actor, "task_manager", "condlist", self.task_ini:r_string(id, "condlist"))
 		else
-			self.task_info[id].condlist = xr_logic.parse_condlist(db.actor, "task_manager", "condlist", "true")
+			curr_task_info.condlist			= xr_logic.parse_condlist(db.actor, "task_manager", "condlist", "true")
 		end		
 	
-		self.task_info[id].need_return = utils.cfg_get_bool(self.task_ini, id, "need_return", nil, false, true)
+		curr_task_info.need_return			= utils.cfg_get_bool(self.task_ini, id, "need_return", nil, false, true)
 
-		self.task_info[id].init_phrase_id = self:get_id()
-		self.task_info[id].desc_phrase_id = self:get_id()
-		self.task_info[id].yes_phrase_id = self:get_id()
-		self.task_info[id].no_phrase_id = self:get_id()
+		curr_task_info.init_phrase_id		= self:gen_phrase_id()
+		curr_task_info.desc_phrase_id		= self:gen_phrase_id()
+		curr_task_info.yes_phrase_id		= self:gen_phrase_id()
+		curr_task_info.no_phrase_id			= self:gen_phrase_id()
 
 		--' По умолчанию квест доступен для выдачи
-		self.task_info[id].enabled = true
+		curr_task_info.enabled				= true
 		--' Доступен ли квест по своим свойствам. По умолчанию всегда недоступен.
 		--' Этот параметр зависит от наличия целей для квестов и того срабатывает ли прекондишн квеста
-		self.task_info[id].enabled_props = false
+		curr_task_info.enabled_props		= false
 
 		--' Статус квеста, может быть: "normal", "selected", "completed", "refused", "failed", "rewarded"
-		self.task_info[id].status = "normal"
+		curr_task_info.status				= "normal"
 	end
 
 	--' Создание дополнительных ассоциативных таблиц для облегчения поиска
@@ -159,9 +161,9 @@ function CRandomTask:__init()
 		table.insert(self.task_id_by_parent[v.parent], k)
 
 		--' По id фразы согласия на квест
-		self.task_id_by_yes_phrase_id[v.yes_phrase_id] = k
+		self.task_id_by_yes_phrase_id[tostring(v.yes_phrase_id)] = k
 		--' По id фразы выдачи квеста.
-		self.task_id_by_init_phrase_id[v.init_phrase_id] = k
+		self.task_id_by_init_phrase_id[tostring(v.init_phrase_id)] = k
 		--' По самовыдаваемости
 		if v.init_condition ~= nil then
 			table.insert(self.task_id_self_inited, k)
@@ -234,9 +236,9 @@ function CRandomTask:load(p)
 	end
 end
 --' Генератор уникальных ID для фраз
-function CRandomTask:get_id()
+function CRandomTask:gen_phrase_id()
 	self.task_phrase_id = self.task_phrase_id + 1
-	return self.task_phrase_id
+	return tostring(self.task_phrase_id)
 end
 --' Возвращает идентификатор вендора, с которым мы говорим
 function CRandomTask:get_parent(npc)
@@ -699,33 +701,33 @@ function CRandomTask:active_task(actor, npc, p1, p2, p3)
 end
 --' Создается диалог актера, в котором будут выдаваться задания.
 function CRandomTask:init_task_dialog(dlg, parent)
-	local phr = dlg:AddPhrase("tm_seek_new_job",0,-1,-10000)
+	local phr = dlg:AddPhrase("tm_seek_new_job","0","",-10000)
 	local phrase_script = phr:GetPhraseScript()
 
-	phr = dlg:AddPhrase("tm_"..parent.."_list_job",1,0,-10000)
+	phr = dlg:AddPhrase("tm_"..parent.."_list_job","1","0",-10000)
 	phrase_script = phr:GetPhraseScript()
 	phrase_script:AddAction("task_manager.action_task_show")
 	phrase_script:AddPrecondition("task_manager.precondition_vendor_can_task")
 		
-	phr = dlg:AddPhrase("tm_"..parent.."_has_no_job",2,0,-10000)
+	phr = dlg:AddPhrase("tm_"..parent.."_has_no_job","2","0",-10000)
 	phrase_script = phr:GetPhraseScript()
 	phrase_script:AddPrecondition("task_manager.precondition_vendor_cannot_task")
 	
 	for k,v in pairs(self.task_id_by_parent[parent]) do
-		phr = dlg:AddPhrase(self.task_info[v].name, self.task_info[v].init_phrase_id, 1, -10000)		
+		phr = dlg:AddPhrase(self.task_info[v].name, tostring(self.task_info[v].init_phrase_id), "1", -10000)		
 		phrase_script = phr:GetPhraseScript()
 		phrase_script:AddPrecondition("task_manager.precondition_task_avail")
 
-		phr = dlg:AddPhrase(self.task_info[v].text, self.task_info[v].desc_phrase_id, self.task_info[v].init_phrase_id, -10000)
+		phr = dlg:AddPhrase(self.task_info[v].text, tostring(self.task_info[v].desc_phrase_id), tostring(self.task_info[v].init_phrase_id), -10000)
 		
-		phr = dlg:AddPhrase("tm_seek_job_yes", self.task_info[v].yes_phrase_id, self.task_info[v].desc_phrase_id, -10000)
+		phr = dlg:AddPhrase("tm_seek_job_yes", tostring(self.task_info[v].yes_phrase_id), tostring(self.task_info[v].desc_phrase_id), -10000)
 		phrase_script = phr:GetPhraseScript()
 		phrase_script:AddAction("task_manager.action_give_task")
 
-		phr = dlg:AddPhrase("tm_seek_job_no", self.task_info[v].no_phrase_id, self.task_info[v].desc_phrase_id, -10000)
+		phr = dlg:AddPhrase("tm_seek_job_no", tostring(self.task_info[v].no_phrase_id), tostring(self.task_info[v].desc_phrase_id), -10000)
 	end
 
-	dlg:AddPhrase("tm_seek_job_abandon",3,1,-10000)
+	dlg:AddPhrase("tm_seek_job_abandon","3","1",-10000)
 end
 --' Функция, в которой будет выдаваться вещевая награда за выполненные квесты
 function CRandomTask:task_reward(npc, actor, p1, p2)
@@ -810,32 +812,32 @@ function CRandomTask:task_reward_storyline(task)
 end
 --' Создается диалог актера, в котором будут приниматься задания
 function CRandomTask:init_reward_dialog(dlg, parent)
-	local phr = dlg:AddPhrase("tm_reward_job",0,-1,-10000)
+	local phr = dlg:AddPhrase("tm_reward_job","0","",-10000)
 	local phrase_script = phr:GetPhraseScript()
 
-	phr = dlg:AddPhrase("tm_"..parent.."_job_complete", 1, 0, -10000)
+	phr = dlg:AddPhrase("tm_"..parent.."_job_complete", "1", "0", -10000)
 	phrase_script = phr:GetPhraseScript()
 	phrase_script:AddAction("task_manager.action_task_reward")
 	phrase_script:AddPrecondition("task_manager.precondition_have_completed_job")
 			
-	phr = dlg:AddPhrase("tm_"..parent.."_job_ask", 2, 0, -10000)
+	phr = dlg:AddPhrase("tm_"..parent.."_job_ask", "2", "0", -10000)
 	phrase_script = phr:GetPhraseScript()
 	phrase_script:AddPrecondition("task_manager.precondition_dont_have_completed_job")
 
 	
 	-- Список возможных квестов трейдера.
 	for k,v in pairs(self.task_id_by_parent[parent]) do
-		phr = dlg:AddPhrase(self.task_info[v].name, self.task_info[v].init_phrase_id, 2, -10000)
+		phr = dlg:AddPhrase(self.task_info[v].name, tostring(self.task_info[v].init_phrase_id), "2", -10000)
 		phrase_script = phr:GetPhraseScript()		
 		phrase_script:AddPrecondition("task_manager.precondition_active_task")
 		
-		phr = dlg:AddPhrase("tm_"..parent.."_job_what", self.task_info[v].desc_phrase_id, self.task_info[v].init_phrase_id, -10000)
+		phr = dlg:AddPhrase("tm_"..parent.."_job_what", tostring(self.task_info[v].desc_phrase_id), tostring(self.task_info[v].init_phrase_id), -10000)
 		
-		phr = dlg:AddPhrase("tm_job_refuse", self.task_info[v].yes_phrase_id, self.task_info[v].desc_phrase_id, -10000)
+		phr = dlg:AddPhrase("tm_job_refuse", tostring(self.task_info[v].yes_phrase_id), tostring(self.task_info[v].desc_phrase_id), -10000)
 		phrase_script = phr:GetPhraseScript()
 		phrase_script:AddAction("task_manager.action_refuse_task")
 			
-		phr = dlg:AddPhrase("tm_job_nothing", self.task_info[v].no_phrase_id, self.task_info[v].desc_phrase_id,-10000)
+		phr = dlg:AddPhrase("tm_job_nothing", tostring(self.task_info[v].no_phrase_id), tostring(self.task_info[v].desc_phrase_id),-10000)
 	end
 
 end

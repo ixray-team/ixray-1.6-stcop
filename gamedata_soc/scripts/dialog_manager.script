@@ -8,9 +8,9 @@ phrase = {
 	help_thanks = {}
 	}
 
-function get_id()
+function gen_phrase_id_str()
 	intro_id = intro_id + 1
-	return intro_id
+	return tostring(intro_id)
 end
 
 --' Необходимо сформировать набор предикатов  table[string_id] = predicate()
@@ -71,8 +71,8 @@ function fill_phrase_table()
 		else
 			tt.wounded = "false"
 		end
-		tt.phr_id = get_id()
-		tt.phr_id2 = get_id()
+		tt.phr_id			= gen_phrase_id_str()
+		tt.phr_id2			= gen_phrase_id_str()
 		phrase[category][tt.phr_id] = tt
 	end
 end
@@ -80,12 +80,12 @@ end
 -- Необходимо создать стартовый диалог, с разветвлением на третьем уровне, где каждая фраза будет иметь
 -- одну и ту же функцию в прекондишне
 function init_intro_dialog(dlg)
-	local phr = dlg:AddPhrase("",0,-1,-10000)
-		phr = dlg:AddPhrase("",1,0,-10000)
+	local phr = dlg:AddPhrase("","0","",-10000)
+		phr = dlg:AddPhrase("","1","0",-10000)
 
 	local k,v = 0,0
 	for k,v in pairs(phrase.intro) do
-		phr = dlg:AddPhrase(v.name, v.phr_id, 1, -10000)
+		phr = dlg:AddPhrase(v.name, v.phr_id, "1", -10000)
 		
 		if phr then
 			local phrase_script = phr:GetPhraseScript()
@@ -102,15 +102,15 @@ end
 -- Необходимо создать диалог актера, с разветвлением на втором уровне, где каждая фраза будет иметь
 -- одну и ту же функцию в прекондишне.
 function init_cool_info_dialog(dlg)
-	local phr = dlg:AddPhrase("dm_general_cool_info",0,-1,-10000)
+	local phr = dlg:AddPhrase("dm_general_cool_info","0","",-10000)
 	
-	local phr_def = dlg:AddPhrase("dm_general_cool_info_no_more",1,0,-10000)
+	local phr_def = dlg:AddPhrase("dm_general_cool_info_no_more","1","0",-10000)
 	local phrase_script = phr_def:GetPhraseScript()
 	phrase_script:AddPrecondition("dialog_manager.precondition_cool_info_no_more")
 
 	local k,v,kk,vv = 0,0,0,0
 	for k,v in pairs(phrase.cool_info) do
-		phr = dlg:AddPhrase(v.name,v.phr_id,0,-10000)
+		phr = dlg:AddPhrase(v.name,v.phr_id,"0",-10000)
 		if phr then
 			local phrase_script = phr:GetPhraseScript()
 			phrase_script:AddPrecondition("dialog_manager.precondition_cool_info")
@@ -131,13 +131,13 @@ end
 
 -- Диалоги помощи раненным
 function init_help_wounded_medkit_dialog(dlg)
-	local phr = dlg:AddPhrase("dm_general_help_medkit",0,-1,-10000)
+	local phr = dlg:AddPhrase("dm_general_help_medkit","0","",-10000)
 	local phrase_script = phr:GetPhraseScript()
 	phrase_script:AddAction("dialogs.transfer_medkit")
 	
 	local k,v = 0,0
 	for k,v in pairs(phrase.help_thanks) do
-		phr = dlg:AddPhrase(v.name,v.phr_id,0,-10000)		
+		phr = dlg:AddPhrase(v.name,v.phr_id,"0",-10000)		
 		if phr then
 			phrase_script = phr:GetPhraseScript()
 			phrase_script:AddPrecondition("dialog_manager.precondition_help_thanks")
@@ -201,17 +201,58 @@ function precondition_cool_info_no_more(npc, actor, p1, p2, p3)
 	end 
 	return false
 end
+
 function precondition_help_thanks(npc, actor, p1, p2, p3)
 	return precondition(npc, actor, phrase.help_thanks, nil, p1, p2, p3)
 end
 
+function get_t_size(t)
+
+	local counter = 0
+	for i,v in pairs(t) do
+		counter = counter+1
+	end
+
+	return counter
+end
+
+function draw_t_keys(t)
+	for i,v in pairs(t) do
+		printf("key [%s]", tostring(i))
+	end
+end
+
 function precondition(npc, actor, tbl, sel_tbl, p1, p2, p3)
-	--' Получить фразу по номеру:
-	local phrase = tbl[p3]
 
 	--' Надо проверить доступна ли запомненная фраза
-	if sel_tbl ~= nil and sel_tbl[npc:id()] ~= nil then
-		local value, number = calculate_predicate(npc, tbl[sel_tbl[npc:id()].phrase])
+	if ( (sel_tbl ~= nil) and (sel_tbl[npc:id()] ~= nil) ) then
+		
+		local lll = sel_tbl[npc:id()]
+		if (lll==nil) then
+			printf("lll is nil")
+		end
+		local ttt = tbl[lll.phrase]
+
+		if (ttt==nil) then
+			printf("!!! %s", lll.phrase)
+			print_table(tbl)
+			local a = lll.phrase + 1
+--[[		
+		
+			printf("%d", get_t_size(tbl))
+			printf("%d", get_t_size(sel_tbl))
+			printf("needed phrase=[%s]",lll.phrase)
+			printf("----")
+			draw_t_keys(sel_tbl)
+			printf("----")
+			printf("%d", get_t_size(phrase))
+			printf("%d", get_t_size(phrase.intro))
+			printf("%d", get_t_size(phrase.cool_info))
+			printf("%d", get_t_size(phrase.help_thanks))
+]]			
+		end
+		
+		local value, number = calculate_predicate(npc, ttt )
 		--' Если запомненная фраза недоступна - необходимо забыть ее
 		if value == false then
 			printf("*** restore memory phrase")
@@ -219,14 +260,18 @@ function precondition(npc, actor, tbl, sel_tbl, p1, p2, p3)
 		end
 	end	
 
+	--' Получить фразу по номеру:
+	local phrase = tbl[p3]
+
+
 	--' Проверка на повторяемость фраз.
-	if sel_tbl ~= nil and sel_tbl[npc:id()] ~= nil then
+	if ( (sel_tbl ~= nil) and (sel_tbl[npc:id()] ~= nil) ) then
 		--' Если проверяется не запомненная фраза
-		if sel_tbl[npc:id()].phrase ~= phrase.phr_id then
+		if (sel_tbl[npc:id()].phrase ~= phrase.phr_id) then
 			printf("*** not memory phrase [%s] ~= [%s]", sel_tbl[npc:id()].phrase, phrase.phr_id)
 			return false
 		end
-		if sel_tbl[npc:id()].count >= 1 then
+		if (sel_tbl[npc:id()].count >= 1) then
 			return false
 		end
 	end	
@@ -324,17 +369,17 @@ end
 --' Сохранение информации о выбранных фразах
 function save(npc, p)
 	if selected_phrase_by_id.intro[npc:id()] == nil then
-		p:w_s16(-1)
+		p:w_stringZ("-1")
 	else
-		p:w_s16(selected_phrase_by_id.intro[npc:id()].phrase)
+		p:w_stringZ(selected_phrase_by_id.intro[npc:id()].phrase)
 	end
 	if selected_phrase_by_id.cool_info[npc:id()] == nil then
-		p:w_s16(-1)
+		p:w_stringZ("-1")
 	else
-		p:w_s16(selected_phrase_by_id.cool_info[npc:id()].phrase)
+		p:w_stringZ(selected_phrase_by_id.cool_info[npc:id()].phrase)
 	end
 end
-function load(npc, reader)
+function load(npc, reader, ver)
 	if selected_phrase_by_id == nil then
 		selected_phrase_by_id = {
 			intro = {},
@@ -342,16 +387,30 @@ function load(npc, reader)
 			action_info = {}
 		}
 	end
-	local flag = reader:r_s16()
-	if flag ~= -1 then
+	
+	
+	local flag = nil
+	if ver >= 7 then
+		flag = reader:r_stringZ()
+	else
+		flag = tostring(reader:r_s16())
+	end
+	
+	if flag ~= "-1" then
 		selected_phrase_by_id.intro[npc:id()] = {phrase = flag, count = 0}
 	else
 		selected_phrase_by_id.intro[npc:id()] = nil
 	end
-	flag = reader:r_s16()
-	if flag ~= -1 then
+
+	if ver >= 7 then
+		flag = reader:r_stringZ()
+	else
+		flag = tostring(reader:r_s16())
+	end
+	if flag ~= "-1" then
 		selected_phrase_by_id.cool_info[npc:id()] = {phrase = flag, count = 0}
 	else
 		selected_phrase_by_id.cool_info[npc:id()] = nil
 	end
+	
 end

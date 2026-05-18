@@ -72,12 +72,6 @@ function mp_join:InitControls(x, y, xml, handler)
 	handler.filters.btn_check_without_ff = btn
 	btn:SetCheck(true)
 
---	btn = xml:InitCheck("tab_client:check_without_pb", self)
---	btn:Enable(false)
---	handler:Register(btn, "check_without_pb")
---	handler.filters.btn_check_without_pb = btn
---	btn:SetCheck(true)
-	
 	btn = xml:InitCheck("tab_client:check_listen_servers", self)
 	handler:Register(btn, "check_listen_servers")
 	handler.filters.btn_check_listen_servers = btn

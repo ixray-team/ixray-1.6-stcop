@@ -125,7 +125,7 @@
 			<text font="letterica16" r="115" g="114" b="112">mm_mp_withoutfriendlyfire</text>
       <options_item entry="mm_net_filter_wo_ff" group="mm_mp_srv_filter"/>
     </check_without_ff>
-    <check_listen_servers x="570" y="190" width="150" height="18">
+    <check_listen_servers x="570" y="165" width="150" height="18">
       <text font="letterica16" r="115" g="114" b="112">mm_mp_listenservers</text>
       <options_item entry="mm_net_filter_listen" group="mm_mp_srv_filter"/>
     </check_listen_servers>		
