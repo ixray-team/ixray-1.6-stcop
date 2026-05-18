@@ -90,7 +90,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 	GRHI = new CRHI;
 
 	fill_vid_mode_list();
-#if IXR_WINDOWS
+#ifdef IXR_WINDOWS
 	CImGuiManager& ImManager = CImGuiManager::Instance();
 
 	ImManager.PlatformNewFrameCallback = ImGui_ImplSDL3_NewFrame;
@@ -336,8 +336,10 @@ void CRenderDevice::BeginRender()
 {
 	PROF_EVENT("CRenderDevice::BeginRender");
 
+#ifdef IXR_WINDOWS
 	CImGuiManager::Instance().NewPlatformFrame();
 	CImGuiManager::Instance().UpdateCapture();
+#endif
 }
 
 extern int main_menu_fps_limit, fps_limit;
