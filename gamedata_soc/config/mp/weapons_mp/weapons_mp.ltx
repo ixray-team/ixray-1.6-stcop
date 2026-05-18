@@ -278,7 +278,6 @@ hit_type 			= fire_wound
 fire_distance            	= 1000
 bullet_speed		 	= 300
 rpm                      	= 250
-rpm_empty_click 	 	= 250
 ; end ttc
 
 silencer_hit_power       	= 40
@@ -1471,12 +1470,6 @@ $spawn              	= ""
 
 ;-----------------------------------------------------------------------------------
 
-[mp_wpn_fake_missile]:wpn_fake_missile
-$spawn              	= ""
-[mp_wpn_fake_missile1]:wpn_fake_missile1
-$spawn              	= ""
-[mp_wpn_fake_missile2]:wpn_fake_missile2
-$spawn              	= ""
 [mp_wpn_addon_scope]:wpn_addon_scope
 $spawn              	= ""
 class					= W_SCOPE
@@ -1526,3 +1519,42 @@ $spawn              	= ""
 can_be_unlimited = false
 
 
+;-----mp_ammo_vog-25
+[mp_wpn_fake_missile]:wpn_fake_missile
+
+blast				= 1.6 ;1.3 ;2.00
+blast_r				= 4 ;3 ;5		; RADIUS
+blast_impulse			= 250 ;270
+
+
+frags				= 4
+frags_r				= 20 ;15 ;25
+frag_hit			= 1.2 ;0.9 ;1.50
+frag_hit_impulse		= 200 ;220
+
+
+;---mp_ammo_m209
+[mp_wpn_fake_missile2]:wpn_fake_missile2
+
+blast				= 1.6 ;1.3 ;2.00
+blast_r				= 4 ;6
+blast_impulse			= 270 ;250
+
+
+frags				= 4
+frags_r				= 15 ;25
+frag_hit			= 0.9 ;1.50
+frag_hit_impulse		= 220 ;200
+
+;??????---mp_ammo_vog-25p
+[mp_wpn_fake_missile1]:wpn_fake_missile1
+
+blast				= 1.7 ;1.3 ;2.00
+blast_r				= 5 ;6
+blast_impulse			= 300 ;270 ;350
+
+
+frags				= 6
+frags_r				= 20
+frag_hit			= 1.3 ;1 ;1.50
+frag_hit_impulse		= 200 ;220

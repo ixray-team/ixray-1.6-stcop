@@ -72,6 +72,11 @@ function mp_join:InitControls(x, y, xml, handler)
 	handler.filters.btn_check_without_ff = btn
 	btn:SetCheck(true)
 
+	btn = xml:InitCheck("tab_client:check_with_battleye", self)
+	handler:Register(btn, "check_with_battleye")
+	btn:SetCheck(false)
+	handler.filters.btn_check_with_battleye = btn
+
 	btn = xml:InitCheck("tab_client:check_listen_servers", self)
 	handler:Register(btn, "check_listen_servers")
 	handler.filters.btn_check_listen_servers = btn

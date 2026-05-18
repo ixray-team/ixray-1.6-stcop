@@ -38,10 +38,15 @@
 		<text font="letterica16" r="115" g="114" b="112">mm_mp_publicserver</text>
 	</check_public_server>
 
+  <check_use_battleye x="18" y="62" width="155" height="18">
+    <options_item entry="mm_net_use_battleye" group="mm_mp_server"/>
+    <text font="letterica16" r="115" g="114" b="112">BattlEye</text>
+  </check_use_battleye>
+  
   <cap_max_ping x="18" y="85" width="143" height="23">
-    <text font="letterica16" r="115" g="114" b="112">mm_mp_max_ping</text>
+    <text font="letterica16" r="115" g="114" b="112">Max ping</text>
   </cap_max_ping>
-  <spin_max_ping x="175" y="85" width="45" height="23">
+  <spin_max_ping x="175" y="85" width="55" height="23">
     <options_item entry="sv_max_ping_limit" group="mm_mp_server"/>
   </spin_max_ping>
 
@@ -59,12 +64,10 @@
     <options_item entry="mm_net_con_spectator_on" group="mm_mp_server"/>
     <text font="letterica16" r="115" g="114" b="112">mm_mp_spectator</text>
   </check_spectator>
-  
-    <spin_spectator x="175" y="110" width="45" height="23">
+  <spin_spectator x="175" y="110" width="45" height="23">
 		<options_item entry="mm_net_con_spectator" group="mm_mp_server"/>
 	</spin_spectator>
-
-    <spin_force_respawn x="175" y="185" width="45" height="23">
+	<spin_force_respawn x="175" y="185" width="45" height="23">
 		<options_item entry="sv_forcerespawn" group="mm_mp_server"/>
 	</spin_force_respawn>
 	<spin_reinforcement x="175" y="210" width="45" height="23">
@@ -211,5 +214,11 @@
 		<options_item entry="sv_spectr_freelook" group="mm_mp_server"/>
 	</check_spec_freelook>
 
-	
+<!--
+  <check_battleye_auto_update x="519" y="300" width="143" height="18">
+    <options_item entry="mm_net_battleye_auto_update" group="mm_mp_server"/>
+    <text font="letterica16" r="115" g="114" b="112">mm_mp_battleye_auto_update</text>
+  </check_battleye_auto_update>
+-->
+
 </tab_options>

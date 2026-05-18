@@ -117,7 +117,8 @@ function mp_main:InitCallBacks()
 	self:AddCallback("check_with_pass",		ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
 	self:AddCallback("check_without_pass",	ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
 	self:AddCallback("check_without_ff",	ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
-	self:AddCallback("check_listen_servers",ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
+	self:AddCallback("check_with_battleye",	ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)
+	self:AddCallback("check_listen_servers",ui_events.BUTTON_CLICKED,	self.OnFilterChange,self)	
 	
 	self:AddCallback("btn_direct_ip",		ui_events.BUTTON_CLICKED,	self.OnBtn_DirectIP,self)
 	
@@ -179,6 +180,7 @@ function mp_main:OnFilterChange()
 	sf.with_pass		= self.filters.btn_check_with_pass:GetCheck()
 	sf.without_pass		= self.filters.btn_check_without_pass:GetCheck()
 	sf.without_ff		= self.filters.btn_check_without_ff:GetCheck()
+	sf.with_battleye	= self.filters.btn_check_with_battleye:GetCheck()
 	sf.listen_servers	= self.filters.btn_check_listen_servers:GetCheck()
 	
 	self.server_list:SetFilters(sf)
@@ -296,6 +298,21 @@ function mp_main:GatherServerData()
 		cmdstr = cmdstr .. "/public=1"
 	end
 
+	tmp = self.check_use_battleye:GetCheck()
+    tmp = tmp and self.check_public_server:GetCheck()
+	if true == tmp then
+		cmdstr = cmdstr .. "/battleye=1"
+	else
+		cmdstr = cmdstr .. "/battleye=0"
+	end
+
+--   tmp = self.check_battleye_auto_update:GetCheck()
+--	if true == tmp then
+--		cmdstr = cmdstr .. "/battleye_update=1"
+--	else
+--		cmdstr = cmdstr .. "/battleye_update=0"
+--	end
+	
 	tmp = self.spin_max_ping:GetText()
 	if string.len(tmp) > 0 then
 		cmdstr = cmdstr .. "/maxping=" .. tmp

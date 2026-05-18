@@ -129,7 +129,11 @@
       <text font="letterica16" r="115" g="114" b="112">mm_mp_listenservers</text>
       <options_item entry="mm_net_filter_listen" group="mm_mp_srv_filter"/>
     </check_listen_servers>		
-		
+    <check_with_battleye x="570" y="190" width="150" height="18">
+      <text font="letterica16" r="115" g="114" b="112">BattlEye</text>
+      <options_item entry="mm_net_filter_battleye" group="mm_mp_srv_filter"/>
+    </check_with_battleye>
+
 		<btn_refresh x="596" y="225" width="111" height="25">
 			<text align="c" font="letterica16" r="188" g="153" b="123" complex_mode="0">mm_mp_refresh</text>	
 			<texture>ui_button_ordinary</texture>
