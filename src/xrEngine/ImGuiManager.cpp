@@ -105,7 +105,9 @@ void CImGuiManager::Destroy(bool HardwareOnly)
 		return;
 	}
 
+#ifdef IXR_WINDOWS
 	PlatformDestroyCallback();
+#endif
 
 	for (IReader* FontPtr : ImGuiFontsPtr)
 	{

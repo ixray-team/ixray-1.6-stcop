@@ -15,11 +15,13 @@ namespace Platform
         strcat(Path, ".so");
 
         snprintf(Path, sizeof(Path), "%s.so", Name);
-        void* module = dlopen(Path, RTLD_NOW);
-        if (module == NULL) {
+        void* module = dlopen(Path, RTLD_NOW | RTLD_GLOBAL);
+        if (module == nullptr)
+        {
             snprintf(Path, sizeof(Path), "lib%s.so", Name);
-            module = dlopen(Path, RTLD_NOW);
-            if (module == NULL) {
+            module = dlopen(Path, RTLD_NOW | RTLD_GLOBAL);
+            if (module == nullptr)
+            {
                 printf("%s\n", strerror(errno));
 
                 char exec_path[PATH_MAX] = {};
@@ -32,10 +34,11 @@ namespace Platform
                 exec_path[start_of_filename--] = '\0';
 
                 snprintf(Path, sizeof(Path), "%s/%s.so", exec_path, Name);
-                module = dlopen(Path, RTLD_NOW);
-                if (module == NULL) {
+                module = dlopen(Path, RTLD_NOW | RTLD_GLOBAL);
+                if (module == nullptr)
+                {
                     snprintf(Path, sizeof(Path), "%s/lib%s.so", exec_path, Name);
-                    module = dlopen(Path, RTLD_NOW);
+                    module = dlopen(Path, RTLD_NOW | RTLD_GLOBAL);
                 }
             }
         }

@@ -316,7 +316,7 @@ void gen_logo_name(string_path& dest, const char* level_name, int num)
 	xr_strconcat(dest, "intro\\intro_", level_name);
 
 	u32 len = xr_strlen(dest);
-	if (dest[len - 1] == '\\')
+	if (dest[len - 1] == Platform::kPreferredSeparator[0])
 		dest[len - 1] = 0;
 
 	string16 buff;
@@ -401,7 +401,7 @@ int CApplication::Level_ID(const char* name, const char* ver, bool bSet)
 		Level_Scan();
 
 	string256 buffer;
-	xr_strconcat(buffer, name, "\\");
+	xr_strconcat(buffer, name, Platform::kPreferredSeparator);
 	for (u32 I = 0; I < Levels.size(); ++I)
 	{
 		if (0 == _stricmp(buffer, Levels[I].folder))

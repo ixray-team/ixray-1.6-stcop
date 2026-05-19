@@ -87,7 +87,7 @@ dxRender_Visual*	CModelPool::Instance_Duplicate	(dxRender_Visual* V)
 	return N;
 }
 
-dxRender_Visual*	CModelPool::Instance_Load		(const char* N, bool allow_register)
+dxRender_Visual*	CModelPool::Instance_Load		(const char* InputName, bool allow_register)
 {
 	PROF_EVENT(__FUNCTION__);
 	dxRender_Visual	*V;
@@ -95,13 +95,25 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* N, bool allow_register)
 	string_path		name;
 
 	// Add default ext if no ext at all
-	if (nullptr==strext(N))	xr_strconcat(name,N,".ogf");
-	else				xr_strcpy	(name,sizeof(name),N);
+	string_path N = {};
+	xr_strcpy(N, Platform::ValidPath(InputName));
+
+	if (nullptr==strext(N))
+	{
+		xr_strconcat(name, N, ".ogf");
+	}
+	else
+	{	
+		xr_strcpy(name, sizeof(name), N);
+	}
 
 	// Load data from MESHES or LEVEL
-	if (!FS.exist(N))	{
+	if (!FS.exist(N))
+	{
 		if (!FS.exist(fn, "$level$", name))
-			if (!FS.exist(fn, _game_meshes_, name)){
+		{
+			if (!FS.exist(fn, _game_meshes_, name))
+			{
 #ifdef _EDITOR
 				Msg("! Can't find model file '%s'.",name);
 #else            
@@ -109,22 +121,28 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* N, bool allow_register)
 #endif
 				return nullptr;
 			}
-	} else {
-		xr_strcpy			(fn,N);
+		}
+	}
+	else 
+	{
+		xr_strcpy(fn,N);
 	}
 	
 	// Actual loading
-	IReader*			data	= FS.r_open(fn);
-	ogf_header			H;
-	data->r_chunk_safe	(OGF_HEADER,&H,sizeof(H));
-	V = Instance_Create (H.type);
-	V->Load				(N,data,0);
-	FS.r_close			(data);
+	IReader* data = FS.r_open(fn);
+	ogf_header H;
+	data->r_chunk_safe(OGF_HEADER,&H,sizeof(H));
+	V = Instance_Create(H.type);
+	V->Load(N,data,0);
+	FS.r_close(data);
 	g_pGamePersistent->RegisterModel(V);
 
 	// Registration
-	if (allow_register) Instance_Register(N,V);
-
+	if (allow_register)
+	{
+		Instance_Register(N,V);
+	}
+	
 	return V;
 }
 
