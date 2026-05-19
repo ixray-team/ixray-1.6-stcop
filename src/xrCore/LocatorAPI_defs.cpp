@@ -28,7 +28,12 @@ FS_Path::FS_Path	(const char* _Root, const char* _Add, const char* _DefExt, cons
 	string_path		temp;
     xr_strcpy		(temp,sizeof(temp),_Root); 
     if (_Add) 		xr_strcat(temp,_Add);
-	if (temp[0] && temp[xr_strlen(temp)-1]!='\\') xr_strcat(temp,"\\");
+
+	if (temp[0] && temp[xr_strlen(temp)-1] != Platform::kPreferredSeparator[0]) 
+	{
+		xr_strcat(temp,Platform::kPreferredSeparator);
+	}
+
 	m_Path			= xr_strlwr(xr_strdup(temp));
 	m_DefExt		= _DefExt?xr_strlwr(xr_strdup(_DefExt)):nullptr;
 	m_FilterCaption	= _FilterCaption?xr_strlwr(xr_strdup(_FilterCaption)):nullptr;
@@ -46,7 +51,7 @@ FS_Path::~FS_Path	()
 	xr_free	(m_FilterCaption);
 }
 
-void	FS_Path::_set	(const char* add)
+void FS_Path::_set(const char* add)
 {
 	// m_Add
 	R_ASSERT		(add);
@@ -56,22 +61,34 @@ void	FS_Path::_set	(const char* add)
 	// m_Path
 	string_path		temp;
 	xr_strconcat(temp,m_Root,m_Add);
-	if (temp[xr_strlen(temp)-1]!='\\') xr_strcat(temp,"\\");
+	if (temp[xr_strlen(temp)-1]!= Platform::kPreferredSeparator[0])
+	{
+		xr_strcat(temp, Platform::kPreferredSeparator);
+	}
+	
 	xr_free			(m_Path);
 	m_Path			= xr_strlwr(xr_strdup(temp));
 }
 
-void	FS_Path::_set_root	(const char* root)
+void FS_Path::_set_root(const char* root)
 {
 	string_path		temp;
 	xr_strcpy		( temp, root );
-	if (m_Root[0] && m_Root[xr_strlen(m_Root)-1]!='\\') xr_strcat(temp,"\\");
+	if (m_Root[0] && m_Root[xr_strlen(m_Root)-1]!=Platform::kPreferredSeparator[0])
+	{
+		xr_strcat(temp,Platform::kPreferredSeparator);
+	}
+	
 	xr_free			(m_Root);
 	m_Root			= xr_strlwr(xr_strdup(temp));
 
 	// m_Path
 	xr_strconcat(temp,m_Root,m_Add ? m_Add : "");
-	if (*temp && temp[xr_strlen(temp)-1]!='\\') xr_strcat(temp,"\\");
+	if (*temp && temp[xr_strlen(temp)-1]!=Platform::kPreferredSeparator[0])
+	{
+		xr_strcat(temp,Platform::kPreferredSeparator);
+	}
+	
 	xr_free			(m_Path);
 	m_Path			= xr_strlwr(xr_strdup(temp));
 }
