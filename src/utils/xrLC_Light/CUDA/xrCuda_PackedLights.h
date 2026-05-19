@@ -2,11 +2,6 @@
 #include "xrFace.h"
 #include "base_color.h"
 #include "xrRaysDefines.h"
-
-// Initialize TASKS
-#define MAX_RAYS_PER_TASK   16*1024				// Общее кол-во Задач (на запуск GPU)
-#define MAX_RAYS_PER_GPU	16*1024				// Кол-во задач которое может обработать GPU за 1 заход Слишком большое кол-во вызывает недогруз ГПУ
-
  
 class CUDA_PackedLighting
 {
