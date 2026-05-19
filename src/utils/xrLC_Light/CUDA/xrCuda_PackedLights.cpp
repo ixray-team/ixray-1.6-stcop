@@ -14,6 +14,11 @@ thread_local xr_vector<RayRecvestIndex>	recvest_array;
 extern void ApplyColorGPU(size_t IndexTask, base_color_c& C);
  
 
+// Initialize TASKS
+#define MAX_RAYS_PER_TASK   1024*1024				// Общее кол-во Задач (на запуск GPU)
+#define MAX_RAYS_PER_GPU	1024*1024				// Кол-во задач которое может обработать GPU за 1 заход Слишком большое кол-во вызывает недогруз ГПУ
+
+
 // Initializes
 void CUDA_PackedLighting::InitializeGPU()
 {
@@ -60,18 +65,18 @@ void CUDA_PackedLighting::LightPointPacked_run_tasks()
  	if (recvest_array.size() <= 0) return;
 
  	// Initialize
-	XRay::RayTrace::CUDA::RayTraceInitialize( current_flags );
+	XRay::RayTrace::CUDA::RayTraceInitialize( current_flags, MAX_RAYS_PER_TASK );
 
 	// Tasks
- 	for (size_t RayIndex = 0; RayIndex < recvest_array.size(); RayIndex++)
-		XRay::RayTrace::CUDA::RayTraceAddRay(recvest_array[RayIndex], RayIndex);
+ 	for (size_t RecvestID = 0; RecvestID < recvest_array.size(); RecvestID++)
+		XRay::RayTrace::CUDA::RayTraceAddRay(recvest_array[RecvestID], RecvestID);
 
 	// Запускаем трейсинг
 	XRay::RayTrace::CUDA::RayTraceRun();
 
 	// Получаем результаты
 	auto& colors = XRay::RayTrace::CUDA::RayTraceResult();
-	for (auto RecvestID = 0; RecvestID < recvest_array.size(); RecvestID++)
+	for (size_t RecvestID = 0; RecvestID < recvest_array.size(); RecvestID++)
 	{
 		auto& RAY_INFO = recvest_array[RecvestID];
  		 
