@@ -71,7 +71,12 @@ private:
     int							m_iLockRescan	; 
     void						check_pathes	();
 
+	xrSRWLock					m_files_lock	;
+
+public:
 	files_set					m_files			;
+
+private:
 	bool						bNoRecurse		;
 
 	xrCriticalSection			m_auth_lock		;

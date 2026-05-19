@@ -883,6 +883,13 @@ void CLocatorAPI::_destroy()
 const CLocatorAPI::file* CLocatorAPI::exist			(const char* fn)
 {
 	files_it it = file_find_it(fn);
+
+	if (it == m_files.end()) {
+		xr_string temp_path = fn;
+		std::replace(temp_path.begin(), temp_path.end(), '/', '\\'); 
+		it = file_find_it(temp_path.data());
+	}
+
 	return (it != m_files.end()) ? &(*it) : nullptr;
 }
 
@@ -930,13 +937,23 @@ xr_vector<char*>* CLocatorAPI::file_list_open			(const char* _path, u32 flags)
 		xr_strcpy(N,sizeof(N), _path);
 
 	xr_strcpy(N, Platform::ValidPath(N));
-	
+
 	xrSRWLockGuard g(m_files_lock, true);
 	
 	file			desc;
 	desc.name		= N;
 	files_it	I 	= m_files.find(desc);
-	if (I==m_files.end())	return nullptr;
+	if (I==m_files.end())	{
+		for (int i = 0; i < strlen(N); ++i) {
+			if (N[i] == '/') N[i] = '\\';
+		}
+
+		I = m_files.find(desc);
+
+		if (I==m_files.end())	{
+			return nullptr;
+		}
+	}
 	
 	xr_vector<char*>*	dest	= new xr_vector<char*>();
 
@@ -1320,25 +1337,38 @@ void CLocatorAPI::copy_file_to_build	(T *&r, const char* source_name)
 bool CLocatorAPI::check_for_file	(const char* path, const char* _fname, string_path& fname, const file *&desc)
 {
 	// проверить нужно ли пересканировать пути
-	check_pathes			();
+	check_pathes();
 
 	// correct path
-	xr_strcpy				(fname,_fname);
-	xr_strlwr				(fname);
+	xr_strcpy(fname,_fname);
+	xr_strlwr(fname);
 	if (path&&path[0])
-		update_path			(fname,path,fname);
+		update_path(fname,path,fname);
 
 	// Search entry
-	file					desc_f;
-	desc_f.name				= fname;
+	file desc_f;
+	desc_f.name	= fname;
 
-	files_it				I = m_files.find(desc_f);
-	if (I == m_files.end())
-		return				(false);
+	files_it I = m_files.find(desc_f);
+
+	if (I == m_files.end()) {
+#ifndef IXR_WINDOWS
+		xr_string temp_path = fname;
+		std::replace(temp_path.begin(), temp_path.end(), '/', '\\'); 
+		desc_f.name = temp_path.data();
+		
+		I = m_files.find(desc_f);
+		if (I == m_files.end()) {
+			return false;
+		}
+#else
+		return false;
+#endif
+	}
 
 	++dwOpenCounter;
-	desc					= &*I;
-	return					(true);
+	desc = &*I;
+	return true;
 }
 
 template <typename T>
@@ -1356,13 +1386,20 @@ T *CLocatorAPI::r_open_impl	(const char* path, const char* _fname)
 	}
 #else
 	if (!check_for_file(path,Platform::ValidPath(_fname),fname,desc)) {
-		xr_string temp_path = fname;
+		memset(fname, 0, sizeof(fname));
+		xr_string temp_path = Platform::ValidPath(_fname);
 		std::replace(temp_path.begin(), temp_path.end(), '/', '\\'); 
 		if (!check_for_file(path,temp_path.data(),fname,desc)) {
-			return nullptr;
+			if (!check_for_file(path,_fname,fname,desc)) {
+				return nullptr;
+			}
 		}
 	}
 #endif
+
+/*
+
+*/
 
 	// OK, analyse
 	if (0xffffffff == desc->vfs)
