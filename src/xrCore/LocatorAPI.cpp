@@ -505,7 +505,7 @@ void CLocatorAPI::ProcessOne(const char* path, system_file* F)
 		if (0 == xr_strcmp(F->name, ".."))	
 			return;
 
-		xr_strcat(N, "\\");
+		xr_strcat(N, Platform::kPreferredSeparator);
 		Register(N, 0xffffffff, 0, 0, F->size, F->size, F->time_write);
 		Recurse(N);
 	}
@@ -622,13 +622,10 @@ bool CLocatorAPI::Recurse(const char* path)
 			auto& chache = GetScanCacheBuffer()->at(i);
 			
 			string_path N;
-#ifdef IXR_WINDOWS
-			VERIFY(path[xr_strlen(path)-1] == '\\');
-			VERIFY(path[xr_strlen(path)-2] != '\\');
-#else
-			VERIFY(path[xr_strlen(path)-1] == '/');
-			VERIFY(path[xr_strlen(path)-2] != '/');
-#endif
+			
+			VERIFY(path[xr_strlen(path)-1] == Platform::kPreferredSeparator[0]);
+			VERIFY(path[xr_strlen(path)-2] != Platform::kPreferredSeparator[0]);
+			
 			xr_strcpy(N, sizeof(N), path);
 			xr_strcat(N, chache.fileName.c_str());
 			xr_strlwr(N);
@@ -645,12 +642,12 @@ bool CLocatorAPI::Recurse(const char* path)
 					if (GetScannedDirsBuffer()->find(N) == GetScannedDirsBuffer()->end())
 					{
 						GetScannedDirsBuffer()->insert(N);
-						xr_strcat(N, "\\");
+						xr_strcat(N, Platform::kPreferredSeparator);
 						Recurse(N);
 					}
 				} else
 				{
-					xr_strcat(N, "\\");
+					xr_strcat(N, Platform::kPreferredSeparator);
 					Recurse(N);
 				}
 			}
@@ -685,7 +682,7 @@ void *FileDownload			(const char* file_name, const int &file_handle, intptr_t&fi
 void CLocatorAPI::setup_fs_path		(const char* fs_name, string_path &fs_path)
 {
 	xr_strcpy			(fs_path,fs_name ? fs_name : "");
-	LPSTR				slash = strrchr(fs_path,'\\');
+	LPSTR				slash = strrchr(fs_path,Platform::kPreferredSeparator[0]);
 	if (!slash)
 		slash			= strrchr(fs_path,'/');
 	if (!slash) {
@@ -1073,31 +1070,61 @@ xr_vector<char*>* CLocatorAPI::file_list_open			(const char* _path, u32 flags)
 	for (++I; I!=m_files.end(); I++)
 	{
 		const file& entry = *I;
-		if (0!=strncmp(entry.name,N,base_len))	break;	// end of list
+		if (0!=strncmp(entry.name,N,base_len))
+		{
+			break;	// end of list
+		}
+
 		const char* end_symbol = entry.name+xr_strlen(entry.name)-1;
-		if ((*end_symbol) !='\\')	{
+		if ((*end_symbol) != Platform::kPreferredSeparator[0])
+		{
 			// file
-			if ((flags&FS_ListFiles) == 0)	continue;
+			if ((flags&FS_ListFiles) == 0)
+			{
+				continue;
+			}
 
 			const char* entry_begin = entry.name+base_len;
-			if ((flags&FS_RootOnly)&& strchr(entry_begin,'\\'))	continue;	// folder in folder
-			dest->push_back			(xr_strdup(entry_begin));
-			LPSTR fname 			= dest->back();
-			if (flags&FS_ClampExt)	if (nullptr!=strext(fname)) *strext(fname)=0;
-		} else {
+			if ((flags&FS_RootOnly) && strchr(entry_begin, Platform::kPreferredSeparator[0]))
+			{
+				// folder in folder
+				continue;
+			}
+
+			dest->push_back(xr_strdup(entry_begin));
+			LPSTR fname = dest->back();
+			if (flags&FS_ClampExt)
+			{
+				if (nullptr != strext(fname))
+				{
+					*strext(fname) = 0;
+				}
+			}
+		}
+		else
+		{
 			// folder
-			if ((flags&FS_ListFolders) == 0)continue;
-			const char* entry_begin = entry.name+base_len;
+			if ((flags&FS_ListFolders) == 0)
+			{
+				continue;
+			}
+
+			const char* entry_begin = entry.name + base_len;
 			
-			if ((flags&FS_RootOnly)&&(strchr(entry_begin,'\\')!=end_symbol))	continue;	// folder in folder
-			
+			if ((flags&FS_RootOnly) && (strchr(entry_begin, Platform::kPreferredSeparator[0]) != end_symbol))
+			{
+				// folder in folder
+				continue;
+			}
+
 			dest->push_back	(xr_strdup(entry_begin));
 		}
 	}
+
 	return dest;
 }
 
-void	CLocatorAPI::file_list_close	(xr_vector<char*>* &lst)
+void CLocatorAPI::file_list_close(xr_vector<char*>* &lst)
 {
 	if (lst) 
 	{
@@ -1140,14 +1167,14 @@ int CLocatorAPI::file_list(FS_FileSet& dest, const char* path, u32 flags, const 
 		const file& entry = *I;
 		if (0 != strncmp(entry.name, N, base_len))	break;	// end of list
 		const char* end_symbol = entry.name + xr_strlen(entry.name) - 1;
-		if ((*end_symbol) != '\\')
+		if ((*end_symbol) != Platform::kPreferredSeparator[0])
 		{
 			// file
 			if ((flags & FS_ListFiles) == 0)	
 				continue;
 
 			const char* entry_begin = entry.name + base_len;
-			if ((flags & FS_RootOnly) && strchr(entry_begin, '\\'))	
+			if ((flags & FS_RootOnly) && strchr(entry_begin, Platform::kPreferredSeparator[0]))	
 				continue;	// folder in folder
 
 			// check extension
@@ -1188,7 +1215,7 @@ int CLocatorAPI::file_list(FS_FileSet& dest, const char* path, u32 flags, const 
 
 			const char* entry_begin = entry.name + base_len;
 
-			if ((flags & FS_RootOnly) && (strchr(entry_begin, '\\') != end_symbol)) {
+			if ((flags & FS_RootOnly) && (strchr(entry_begin, Platform::kPreferredSeparator[0]) != end_symbol)) {
 				continue;	// folder in folder
 			}
 
@@ -1215,7 +1242,7 @@ void CLocatorAPI::check_cached_files	(LPSTR fname, const u32 &fname_size, const 
 	if (len_file <= len_base)
 		return;
 
-	if ((len_base == 1) && (*path_base == '\\'))
+	if ((len_base == 1) && (*path_base == Platform::kPreferredSeparator[0]))
 		len_base	= 0;
 
 	if (0!=memcmp(path_base,fname,len_base))
@@ -1667,18 +1694,21 @@ xr_string CLocatorAPI::fix_path(const xr_string& file)
 	return TempPath;
 }
 
-CLocatorAPI::files_it CLocatorAPI::file_find_it(const char* fname)
+CLocatorAPI::files_it CLocatorAPI::file_find_it(const char* InputPath)
 {
 	// проверить нужно ли пересканировать пути
 	check_pathes	();
 
-	file			desc_f;
-	string_path		file_name;
-	VERIFY			(xr_strlen(fname)*sizeof(char) < sizeof(file_name));
-	xr_strcpy		(file_name,sizeof(file_name),fname);
-	desc_f.name		= file_name;
-	files_it I		= m_files.find(desc_f);
-	return			(I);
+	string_path file_name;
+
+	VERIFY(xr_strlen(InputPath)*sizeof(char) < sizeof(file_name));
+	xr_strcpy(file_name,sizeof(file_name),InputPath);
+	xr_strcpy(file_name, Platform::ValidPath(file_name));
+	
+	file desc_f;
+	desc_f.name = file_name;
+	files_it I = m_files.find(desc_f);
+	return (I);
 }
 
 bool CLocatorAPI::TryLoad(const xr_string& File)
@@ -1729,7 +1759,7 @@ bool CLocatorAPI::dir_delete(const char* path,const char* nm,bool remove_files)
 			if (0 != strncmp(entry.name, fpath, base_len))	break;	// end of list
 			const char* end_symbol = entry.name + xr_strlen(entry.name) - 1;
 
-			if ((*end_symbol) != '\\')
+			if ((*end_symbol) != Platform::kPreferredSeparator[0])
 			{
 				if (!remove_files)
 					return false;
@@ -1749,7 +1779,7 @@ bool CLocatorAPI::dir_delete(const char* path,const char* nm,bool remove_files)
 	for (; r_it != folders.rend(); r_it++)
 	{
 		const char* end_symbol = r_it->name + xr_strlen(r_it->name) - 1;
-		if ((*end_symbol) == '\\')
+		if ((*end_symbol) == Platform::kPreferredSeparator[0])
 		{
 			_rmdir(r_it->name);
 			m_files.erase(*r_it);
@@ -1976,7 +2006,7 @@ void CLocatorAPI::rescan_path(const char* full_path, bool bRecurse)
 			}
 	
 			const char* entry_begin = entry.name + base_len;
-			if (!bRecurse && strchr(entry_begin, '\\'))
+			if (!bRecurse && strchr(entry_begin, Platform::kPreferredSeparator[0]))
 			{
 				continue;
 			}
@@ -2082,7 +2112,7 @@ bool CLocatorAPI::can_write_to_folder(const char* path)
 	{
 		string_path		temp;       
 		const char* fn		= "$!#%TEMP%#!$.$$$";
-		xr_strconcat(temp, path, path[xr_strlen(path) - 1] != '\\' ? "\\" : "", fn);
+		xr_strconcat(temp, path, path[xr_strlen(path) - 1] != Platform::kPreferredSeparator[0] ? Platform::kPreferredSeparator : "", fn);
 
 		FILE* hf;
 		fopen_s(&hf, temp, "wb");

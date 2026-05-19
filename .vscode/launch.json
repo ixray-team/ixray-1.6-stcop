@@ -12,7 +12,7 @@
             "type": "lldb-dap",
             "request": "launch",
             "program": "${workspaceFolder}/build/bin/Debug/xrEngine",
-            "cwd": "${workspaceFolder}",
+            "cwd": "/home/fx/github/stalker",
             "args": [],
             "env": {
                 "LD_LIBRARY_PATH": "${workspaceFolder}/build/bin/Debug"

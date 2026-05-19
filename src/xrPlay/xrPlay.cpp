@@ -86,6 +86,7 @@ int APIENTRY WinMain
 int main(int argc, char* argv[])
 #endif
 {
+	std::cout << "RTTI enabled: " << (typeid(int).name() ? "yes" : "no") << std::endl;
 #ifndef IXR_WINDOWS
 	std::string cmd_line;
 
