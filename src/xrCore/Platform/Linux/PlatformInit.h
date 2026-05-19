@@ -35,7 +35,7 @@
 #	define USE_CXX_STACKTRACE 0
 #endif
 
-#define __declspec(t)
+#define __declspec(t) __attribute__((visibility("default")))
 #define __forceinline inline
 #define _cdecl /* __attribute__((__cdecl__)) */
 #define __cdecl /* __attribute__((__cdecl__)) */

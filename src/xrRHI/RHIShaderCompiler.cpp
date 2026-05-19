@@ -1,17 +1,6 @@
 #include "RHI.h"
 #include "RHIShaderCompiler.h"
-
-#ifdef IXR_WINDOWS
-#	include <d3dcompiler.h>
-#else
-struct D3D_SHADER_MACRO
-{
-    const char* Name;
-    const char* Definition;
-};
-
-
-#endif
+#include <d3dcompiler.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -25,8 +14,9 @@ CRHIShaderCompilerShell::CRHIShaderCompilerShell(ERHI_API_LAYER API) :
 {
 }
 
-HRESULT CRHIShaderCompilerShell::Build(const void* srcData, size_t srcSize, const char* sourceName, const void* defines, void* include, 
-	                                   const char* entryPoint, const char* target, u32 flags1, u32 flags2, xr_vector<u8>& code, xr_vector<u8>& errors)
+HRESULT CRHIShaderCompilerShell::Build([[maybe_unused]] const char* shader_dir,
+    const void* srcData, size_t srcSize, const char* sourceName, const void* defines, void* include, 
+	const char* entryPoint, const char* target, u32 flags1, u32 flags2, xr_vector<u8>& code, xr_vector<u8>& errors)
 {
 #ifdef IXR_WINDOWS
     ID3DBlob* code_blob = nullptr;
@@ -82,6 +72,11 @@ HRESULT CRHIShaderCompilerShell::Build(const void* srcData, size_t srcSize, cons
         << " /T " << target
         << " /E " << entryPoint;
 
+    if (flags1 & D3DCOMPILE_PACK_MATRIX_ROW_MAJOR)
+    {
+        cmd << " /Zpr";  // row-major
+    }
+
     if (defines)
     {
         const D3D_SHADER_MACRO* defs = (const D3D_SHADER_MACRO*)defines;
@@ -94,10 +89,9 @@ HRESULT CRHIShaderCompilerShell::Build(const void* srcData, size_t srcSize, cons
                 cmd << "=" << defs[i].Definition;
         }
     }
-
-    //cmd << " /I " << "gamedata/shaders/shared";
-    cmd << " /I " << "gamedata/shaders/r1";
-    cmd << " /I " << "gamedata/shaders/r1/shared";
+    
+    cmd << " /I " << "gamedata/shaders/" << shader_dir;
+    cmd << " /I " << "gamedata/shaders/" << shader_dir << "/shared";
 
     cmd << " /Fo " << outPath
         << " > " << errPath << " 2>&1";
