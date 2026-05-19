@@ -1373,7 +1373,8 @@ void player_hud::load(const shared_str& player_hud_sect)
 
 	const shared_str& model_name = pSettings->r_string(player_hud_sect, "visual");
 
-	m_model = smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name.c_str()));
+	auto CreatedModel = ::Render->model_Create(model_name.c_str());
+	m_model = dynamic_cast<IKinematicsAnimated*>(CreatedModel);
 
 	u16 bone_r_finger0 = m_model->dcast_PKinematics()->LL_BoneID("r_finger0");
 	u16 bone_r_finger01 = m_model->dcast_PKinematics()->LL_BoneID("r_finger01");

@@ -2,26 +2,37 @@
 #include "stdafx.h"
 
 #ifdef IXR_WINDOWS
-#include <wincodec.h>
-#include <memory>
+#	include <wincodec.h>
+#	include <memory>
+#endif
+
+#ifdef IXR_LINUX
+#	define STB_IMAGE_WRITE_IMPLEMENTATION
+#	define NULL 0
+#	include <stb/stb_image_write.h>
+#endif
 
 extern int SM_FOR_SEND_WIDTH;
 extern int SM_FOR_SEND_HEIGHT;
 using namespace DirectX;
-#endif
+
 
 bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, const char* Name, CMemoryWriter* MemoryWriter)
 {
-#ifdef IXR_WINDOWS
 	if (!GRHI || !GRHI->DevicePtr)
 	{
 		return false;
 	}
 
 	IRHIRenderTargetView* Rtv = GRHI->GetRenderTargetView(0);
-	if (!Rtv)
+	if (Rtv == nullptr)
 	{
-		return false;
+		Rtv = RTarget;
+
+		if (Rtv == nullptr)
+		{
+			return false;
+		}
 	}
 
 	u32 Width = 0;
@@ -54,6 +65,15 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 		memcpy(DstPixels + (size_t)Y * DstRow, Buffer.get() + (size_t)Y * RowPitch, DstRow);
 	}
 
+#ifdef IXR_LINUX
+	// Convert BGRA to RGBA for stb_image_write
+	for (u32 i = 0; i < Width * Height; ++i)
+	{
+		u8* pixel = DstPixels + i * 4;
+		std::swap(pixel[0], pixel[2]);
+	}
+#endif
+
 	Blob Saved = {};
 
 	switch (Mode)
@@ -67,16 +87,49 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 			return false;
 		}
 
+#ifdef IXR_WINDOWS
 		Hr = SaveToDDSMemory(*Small.GetImage(0,0,0), DirectX::DDS_FLAGS_NONE, Saved);
 		if (FAILED(Hr))
 		{
 			return false;
 		}
-
+		
 		auto Fs = FS.w_open(Name);
 		R_ASSERT(Fs);
 		Fs->w(Saved.GetBufferPointer(), (u32)Saved.GetBufferSize());
 		FS.w_close(Fs);
+#else
+		// Linux: save directly to file as PNG
+		const Image* SrcImg = Small.GetImage(0,0,0);
+		
+		auto Fs = FS.w_open(Name);
+		if (Fs)
+		{
+			struct CallbackData
+			{
+				IWriter* fs;
+			} cbData = {Fs};
+			
+			stbi_write_png_to_func(
+				[](void* context, void* data, int size) {
+					CallbackData* cb = (CallbackData*)context;
+					cb->fs->w(data, size);
+				},
+				&cbData, SrcImg->width, SrcImg->height, 4, SrcImg->pixels, SrcImg->width * 4
+			);
+			FS.w_close(Fs);
+			Hr = S_OK;
+		}
+		else
+		{
+			Hr = E_FAIL;
+		}
+		
+		if (FAILED(Hr))
+		{
+			return false;
+		}
+#endif
 	}
 	break;
 
@@ -89,12 +142,13 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 			return false;
 		}
 
+#ifdef IXR_WINDOWS
 		Hr = SaveToDDSMemory(*Small.GetImage(0,0,0), DDS_FLAGS::DDS_FLAGS_NONE, Saved);
 		if (FAILED(Hr))
 		{
 			return false;
 		}
-
+		
 		if (!MemoryWriter)
 		{
 			auto Fs = FS.w_open(Name);
@@ -106,6 +160,58 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 		{
 			MemoryWriter->w(Saved.GetBufferPointer(), (u32)Saved.GetBufferSize());
 		}
+#else
+		// Linux: save directly to file or memory writer as PNG
+		const Image* SrcImg = Small.GetImage(0,0,0);
+		
+		if (!MemoryWriter)
+		{
+			auto Fs = FS.w_open(Name);
+			if (Fs)
+			{
+				struct CallbackData
+				{
+					IWriter* fs;
+				} cbData = {Fs};
+				
+				stbi_write_png_to_func(
+					[](void* context, void* data, int size) {
+						CallbackData* cb = (CallbackData*)context;
+						cb->fs->w(data, size);
+					},
+					&cbData, SrcImg->width, SrcImg->height, 4, SrcImg->pixels, SrcImg->width * 4
+				);
+				FS.w_close(Fs);
+				Hr = S_OK;
+			}
+			else
+			{
+				Hr = E_FAIL;
+			}
+		}
+		else
+		{
+			// Write to memory writer via custom callback
+			struct CallbackData
+			{
+				CMemoryWriter* writer;
+			} cbData = {MemoryWriter};
+			
+			stbi_write_png_to_func(
+				[](void* context, void* data, int size) {
+					CallbackData* cb = (CallbackData*)context;
+					cb->writer->w(data, size);
+				},
+				&cbData, SrcImg->width, SrcImg->height, 4, SrcImg->pixels, SrcImg->width * 4
+			);
+			Hr = S_OK;
+		}
+		
+		if (FAILED(Hr))
+		{
+			return false;
+		}
+#endif
 	}
 	break;
 
@@ -119,26 +225,128 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 			LvlName = g_pStringTable->translate(g_pGameLevel->name().c_str()).c_str();
 		}
 
+		const Image* SrcImg = Img.GetImage(0,0,0);
+		int W = SrcImg->width;
+		int H = SrcImg->height;
+
+#ifdef IXR_WINDOWS
 		if (ps_screenshot_format == 0)
 		{
 			xr_sprintf(Buf, sizeof(Buf), "ss_%s_%s_(%s).jpg", Core.UserName, timestamp(TStamp), LvlName.c_str());
-			Hr = SaveToWICMemory(*Img.GetImage(0,0,0), WIC_FLAGS::WIC_FLAGS_FORCE_SRGB, GUID_ContainerFormatJpeg, Saved);
+			Hr = SaveToWICMemory(*SrcImg, WIC_FLAGS::WIC_FLAGS_FORCE_SRGB, GUID_ContainerFormatJpeg, Saved);
 		}
 		else if (ps_screenshot_format == 1)
 		{
 			xr_sprintf(Buf, sizeof(Buf), "ss_%s_%s_(%s).tga", Core.UserName, timestamp(TStamp), LvlName.c_str());
-			Hr = SaveToTGAMemory(*Img.GetImage(0,0,0), TGA_FLAGS::TGA_FLAGS_FORCE_SRGB, Saved);
+			Hr = SaveToTGAMemory(*SrcImg, TGA_FLAGS::TGA_FLAGS_FORCE_SRGB, Saved);
 		}
-		else if (ps_screenshot_format == 2)
+		else // ps_screenshot_format == 2
 		{
 			xr_sprintf(Buf, sizeof(Buf), "ss_%s_%s_(%s).png", Core.UserName, timestamp(TStamp), LvlName.c_str());
-			Hr = SaveToWICMemory(*Img.GetImage(0,0,0), WIC_FLAGS::WIC_FLAGS_FORCE_SRGB, GUID_ContainerFormatPng, Saved);
+			Hr = SaveToWICMemory(*SrcImg, WIC_FLAGS::WIC_FLAGS_FORCE_SRGB, GUID_ContainerFormatPng, Saved);
 		}
-
+		
+		if (FAILED(Hr))
+		{
+			return false;
+		}
+		
 		auto Fs = FS.w_open("$screenshots$", Buf);
 		R_ASSERT(Fs);
 		Fs->w(Saved.GetBufferPointer(), (u32)Saved.GetBufferSize());
 		FS.w_close(Fs);
+#else
+		// Linux implementation using stb_image_write
+		if (ps_screenshot_format == 0) // JPEG
+		{
+			xr_sprintf(Buf, sizeof(Buf), "ss_%s_%s_(%s).jpg", Core.UserName, timestamp(TStamp), LvlName.c_str());
+			auto Fs = FS.w_open("$screenshots$", Buf);
+			if (Fs)
+			{
+				struct CallbackData
+				{
+					IWriter* fs;
+				} cbData = {Fs};
+				
+				stbi_write_jpg_to_func
+				(
+					[](void* context, void* data, int size)
+					{
+						CallbackData* cb = (CallbackData*)context;
+						cb->fs->w(data, size);
+					},
+					&cbData, W, H, 4, SrcImg->pixels, 90
+				);
+				FS.w_close(Fs);
+				Hr = S_OK;
+			}
+			else
+			{
+				Hr = E_FAIL;
+			}
+		}
+		else if (ps_screenshot_format == 1) // TGA
+		{
+			xr_sprintf(Buf, sizeof(Buf), "ss_%s_%s_(%s).tga", Core.UserName, timestamp(TStamp), LvlName.c_str());
+			auto Fs = FS.w_open("$screenshots$", Buf);
+			if (Fs)
+			{
+				struct CallbackData
+				{
+					IWriter* fs;
+				} cbData = {Fs};
+				
+				stbi_write_tga_to_func
+				(
+					[](void* context, void* data, int size)
+					{
+						CallbackData* cb = (CallbackData*)context;
+						cb->fs->w(data, size);
+					},
+					&cbData, W, H, 4, SrcImg->pixels
+				);
+				FS.w_close(Fs);
+				Hr = S_OK;
+			}
+			else
+			{
+				Hr = E_FAIL;
+			}
+		}
+		else // ps_screenshot_format == 2, PNG
+		{
+			xr_sprintf(Buf, sizeof(Buf), "ss_%s_%s_(%s).png", Core.UserName, timestamp(TStamp), LvlName.c_str());
+			auto Fs = FS.w_open("$screenshots$", Buf);
+			if (Fs)
+			{
+				struct CallbackData
+				{
+					IWriter* fs;
+				} cbData = {Fs};
+				
+				stbi_write_png_to_func
+				(
+					[](void* context, void* data, int size) 
+					{
+						CallbackData* cb = (CallbackData*)context;
+						cb->fs->w(data, size);
+					},
+					&cbData, W, H, 4, SrcImg->pixels, W * 4
+				);
+				FS.w_close(Fs);
+				Hr = S_OK;
+			}
+			else
+			{
+				Hr = E_FAIL;
+			}
+		}
+		
+		if (FAILED(Hr))
+		{
+			return false;
+		}
+#endif
 	}
 	break;
 
@@ -152,12 +360,13 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 			return false;
 		}
 
+#ifdef IXR_WINDOWS
 		Hr = SaveToTGAMemory(*Small.GetImage(0,0,0), TGA_FLAGS::TGA_FLAGS_NONE, Saved);
 		if (FAILED(Hr))
 		{
 			return false;
 		}
-
+		
 		string_path Buf;
 		VERIFY(Name);
 		xr_strconcat(Buf, Name, ".tga");
@@ -165,10 +374,44 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 		R_ASSERT(Fs);
 		Fs->w(Saved.GetBufferPointer(), (u32)Saved.GetBufferSize());
 		FS.w_close(Fs);
+#else
+		// Linux: save as TGA directly to file
+		const Image* SrcImg = Small.GetImage(0,0,0);
+		string_path TgaBuf;
+		VERIFY(Name);
+		xr_strconcat(TgaBuf, Name, ".tga");
+		
+		auto Fs = FS.w_open("$screenshots$", TgaBuf);
+		if (Fs)
+		{
+			struct CallbackData
+			{
+				IWriter* fs;
+			} cbData = {Fs};
+			
+			stbi_write_tga_to_func(
+				[](void* context, void* data, int size) {
+					CallbackData* cb = (CallbackData*)context;
+					cb->fs->w(data, size);
+				},
+				&cbData, SrcImg->width, SrcImg->height, 4, SrcImg->pixels
+			);
+			FS.w_close(Fs);
+			Hr = S_OK;
+		}
+		else
+		{
+			Hr = E_FAIL;
+		}
+		
+		if (FAILED(Hr))
+		{
+			return false;
+		}
+#endif
 	}
 	break;
 	}
 
-#endif
 	return true;
 }
