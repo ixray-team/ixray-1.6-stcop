@@ -136,9 +136,13 @@ D3DPRESENT_PARAMETERS InternalDevice9::GetPresentParameter(int Width = psCurrent
 	P.MultiSampleQuality = 0;
 
 	// Windoze
+#ifdef IXR_WINDOWS
 	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
-	P.SwapEffect = !psDeviceFlags.is(rsFullscreen) ? D3DSWAPEFFECT_COPY : D3DSWAPEFFECT_DISCARD;
 	P.hDeviceWindow = hwnd;
+#else
+	P.hDeviceWindow = g_AppInfo.Window;
+#endif
+	P.SwapEffect = !psDeviceFlags.is(rsFullscreen) ? D3DSWAPEFFECT_COPY : D3DSWAPEFFECT_DISCARD;
 	P.Windowed = !psDeviceFlags.is(rsFullscreen);
 
 	// Depth/stencil
@@ -204,7 +208,12 @@ void InternalDevice9::ResizeBuffers(u32 Width, u32 Height)
 	}
 	else
 	{
+#ifdef IXR_WINDOWS
 		HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+#else
+		HWND hwnd = (HWND)g_AppInfo.Window;
+#endif
+
 		HRESULT hr = D3D->CreateDevice
 		(
 			D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd,
@@ -296,7 +305,12 @@ bool InternalDevice9::CreateD3D9()
 	auto P = GetPresentParameter();
 	if (RawDevice == nullptr)
 	{
+#ifdef IXR_WINDOWS
 		HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+#else
+		HWND hwnd = (HWND)g_AppInfo.Window;
+#endif
+
 		HRESULT hr = D3D->CreateDevice
 		(
 			D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd,
