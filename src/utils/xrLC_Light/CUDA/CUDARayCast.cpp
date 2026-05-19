@@ -415,11 +415,11 @@ xr_concurrent_vector<RayTracer*> ThreadsRayTracers;
 thread_local RayTracer GPURayTracer;
  
 // Raytracer Initialize
-void XRay::RayTrace::CUDA::RayTraceInitialize(u8 CurrentFlags)
+void XRay::RayTrace::CUDA::RayTraceInitialize(u8 CurrentFlags, size_t MaxRays)
 {
 	if (!GPURayTracer.isInitialized)
 	{
-		GPURayTracer.Init(MAX_RAYS_PER_GPU);
+		GPURayTracer.Init(MaxRays);
 		ThreadsRayTracers.push_back(&GPURayTracer);
 	}
 	
