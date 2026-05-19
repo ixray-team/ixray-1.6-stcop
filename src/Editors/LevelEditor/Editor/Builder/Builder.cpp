@@ -76,6 +76,7 @@ bool SceneBuilder::Compile(bool b_selected_only, bool show_message )
             VERIFY_COMPILE		(RenumerateSectors(), 		"Failed to renumerate sectors","");
             VERIFY_COMPILE		(CompileStatic(false),	  		"Failed static remote build","");
             VERIFY_COMPILE		(EvictResource(),	  		"Failed to evict resource","");
+			VERIFY_COMPILE(BuildAIMap(Scene->IsAIMapDefaultLegacy),				"Failed to build AI-Map.","");
             VERIFY_COMPILE		(BuildLTX(),		  		"Failed to build level description","");
             VERIFY_COMPILE		(BuildGame(),		  		"Failed to build game","");
             VERIFY_COMPILE		(BuildSceneStat(),			"Failed to build scene statistic","");
