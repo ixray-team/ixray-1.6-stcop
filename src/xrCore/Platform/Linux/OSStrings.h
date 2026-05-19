@@ -12,11 +12,12 @@
 #define vsprintf_s(dest, size, format, args) vsprintf(dest, format, args)
 #define strlwr _strlwr
 #define sscanf_s sscanf
+
 inline const char* itoa(float val)
 {
-    static std::string temp;
-    temp = std::to_string(val).c_str();
-    return temp.c_str();
+    static char buffer[64];
+    snprintf(buffer, sizeof(buffer), "%g", val);
+    return buffer;
 }
 
 inline const char* itoa(float val, char* str, [[maybe_unused]]size_t size)
@@ -205,13 +206,28 @@ inline int strcat_s(char * dest, size_t num, const char * source)
 
 inline int vsnprintf_s(char* buffer, size_t size, size_t, const char* format, va_list list)
 {
-    //TODO add bound check
-    return vsnprintf(buffer, size, format, list);
+    if (buffer == nullptr || size == 0)
+        return -1;
+    
+    std::vector<char> temp(size);
+    int result = vsnprintf(temp.data(), size, format, list);
+    
+    if (result >= 0 && (size_t)result < size)
+    {
+        memcpy(buffer, temp.data(), result + 1);
+    } 
+    else if (result >= 0 && size > 0)
+    {
+        memcpy(buffer, temp.data(), size - 1);
+        buffer[size - 1] = '\0';
+    }
+    
+    return result;
 }
 
 IC bool IsCharAlphaNumeric(char ch)
 {
-    return iswctype (ch, wctype("upper") | wctype("lower") | wctype("digit"));
+    return std::isalnum(ch);
 }
 
 #include <stdint.h>

@@ -407,7 +407,7 @@ CRenderTarget::CRenderTarget		()
 				{
 					for(u32 x = 0; x < TEX_material_LdotN; x++)
 					{
-						u16* p = (u16*)(LPBYTE(R.pBits) + slice * R.SlicePitch + y * R.RowPitch + x * 2);
+						u16* p = (u16*)((u8*)(R.pBits) + slice * R.SlicePitch + y * R.RowPitch + x * 2);
 						float	ld = float(x) / float(TEX_material_LdotN - 1);
 						float	ls = float(y) / float(TEX_material_LdotH - 1) + EPS_S;
 						ls *= powf(ld, 1 / 32.f);
@@ -486,7 +486,7 @@ CRenderTarget::CRenderTarget		()
 				DWORD data[TEX_jitter_count];
 				generate_jitter(data, TEX_jitter_count);
 				for(u32 it2 = 0; it2 < TEX_jitter_count; it2++) {
-					u32* p = (u32*)(LPBYTE(R[it2].pBits) + y * R[it2].Pitch + x * 4);
+					u32* p = (u32*)((u8*)(R[it2].pBits) + y * R[it2].Pitch + x * 4);
 					*p = data[it2];
 				}
 			}

@@ -9,6 +9,7 @@ public:
 
 	HRESULT Build
 	(
+		const char* shader_dir,
 		const void* srcData, size_t srcSize, const char* sourceName, const void* defines, void* include,
 		const char* entryPoint, const char* target, u32 flags1, u32 flags2, xr_vector<u8>& code, xr_vector<u8>& errors
 	);
