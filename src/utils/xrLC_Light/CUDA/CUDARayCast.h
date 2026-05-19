@@ -44,7 +44,7 @@ namespace XRay::RayTrace::CUDA
     void UnloadingModel();
  
     // Ray Trace Call
-    void RayTraceInitialize(u8 CurrentFlags);
+    void RayTraceInitialize(u8 CurrentFlags, size_t MaxRays);
 
     void RayTraceAddRay(RayRecvestIndex& ray, size_t index);
     void RayTraceRun();
