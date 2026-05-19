@@ -139,9 +139,35 @@ namespace Platform
     IC const char* ValidPath(const char* In)
     {
         static std::string NewPath;
-        NewPath = In;
+        NewPath.clear();
 
-        std::replace(NewPath.begin(), NewPath.end(), '\\', '/');
+        bool LastWasSlash = false;
+        int pos = 0;
+
+        for (const char* p = In; *p; ++p)
+        {
+            char c = *p;
+
+            if (c == '\\')
+                c = '/';
+            
+            if (c == '/')
+            {
+                if (!LastWasSlash || pos < 2)
+                {
+                    NewPath += c;
+                    LastWasSlash = true;
+                    pos++;
+                }
+            }
+            else
+            {
+                NewPath += c;
+                LastWasSlash = false;
+                pos++;
+            }
+        }
+
         return NewPath.c_str();
     }
 

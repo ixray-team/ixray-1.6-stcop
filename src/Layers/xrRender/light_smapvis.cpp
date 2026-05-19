@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "light.h"
 #include "FBasicVisual.h"
 
