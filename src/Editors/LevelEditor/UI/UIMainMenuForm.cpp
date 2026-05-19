@@ -209,6 +209,7 @@ void UIMainMenuForm::Draw()
 			if (ImGui::BeginMenuI("Make", ICON_FA_WRENCH))
 			{
 				DrawMenuItem("Make All", COMMAND_BUILD);
+				ImGui::Checkbox("Compile AI Map as Legacy", &Scene->IsAIMapDefaultLegacy);
 				ImGui::Separator();
 				DrawMenuItem("Make Game", COMMAND_MAKE_GAME);
 				DrawMenuItem("Make Puddles", COMMAND_MAKE_PUDDLES);
