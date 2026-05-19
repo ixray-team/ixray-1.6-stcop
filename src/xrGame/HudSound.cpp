@@ -252,11 +252,6 @@ sndShot is played, it will play all the sound items with the same alias.
 //----------------------------------------------------------
 HUD_SOUND_COLLECTION_LAYERED::~HUD_SOUND_COLLECTION_LAYERED()
 {
-	for (HUD_SOUND_COLLECTION& it : m_sound_items)
-	{
-		it.~HUD_SOUND_COLLECTION();
-	}
-
 	m_sound_items.clear();
 }
 

@@ -75,6 +75,7 @@ static void LoadCustomSettings()
 
 int ENTRY_FUNCTION(ENTRY_ARGS)
 {
+	std::cout << "RTTI enabled: " << (typeid(int).name() ? "yes" : "no") << std::endl;
 #ifndef IXR_WINDOWS
 	std::string cmd_line;
 
