@@ -12,9 +12,14 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer)
 	VERIFY(!m_bMakeAsyncSS);
 
 	IRHIRenderTargetView* Rtv = GRHI->GetRenderTargetView(0);
-	if (!Rtv)
+	if (Rtv == nullptr)
 	{
-		return;
+		Rtv = RTarget;
+
+		if (Rtv == nullptr)
+		{
+			return;
+		}
 	}
 
 	u32 Width = 0;

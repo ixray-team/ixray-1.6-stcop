@@ -26,5 +26,8 @@ void CHWCaps::Update()
 
 	// DEV INFO
 
-	iGPUNum = GRHI->DriverExt->GetGPUCount();;
+	if (GRHI->DriverExt != nullptr)
+	{
+		iGPUNum = GRHI->DriverExt->GetGPUCount();
+	}
 }

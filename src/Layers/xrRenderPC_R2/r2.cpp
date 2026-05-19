@@ -162,7 +162,10 @@ void CRender::create()
 	// SMAP / DST
 	o.HW_smap_FORMAT = (u32)ERHI_FORMAT::R24_UNORM_X8_TYPELESS;
 	
-	o.nvstencil = !!GRHI->DriverExt->GetNV();
+	if (GRHI->DriverExt != nullptr)
+	{
+		o.nvstencil = !!GRHI->DriverExt->GetNV();
+	}
 
 	if (Core.ParamsData.test(ECoreParams::nonvs))
 		o.nvstencil	= false;
@@ -837,7 +840,7 @@ HRESULT	CRender::shader_compile			(
 		xr_vector<u8> pShaderBuf;
 		xr_vector<u8> pErrorBuf;
 
-		_result = GRHI->BuildShader(pSrcData, SrcDataLen, "", defines, &Includer, pFunctionName, pTarget, Flags, 0, pShaderBuf, pErrorBuf);
+		_result = GRHI->BuildShader("r2", pSrcData, SrcDataLen, "", defines, &Includer, pFunctionName, pTarget, Flags, 0, pShaderBuf, pErrorBuf);
 
 		if (SUCCEEDED(_result)) {
 			if (ps_r__common_flags.test(RFLAG_USE_CACHE))

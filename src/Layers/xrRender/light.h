@@ -4,7 +4,7 @@
 #include "../../xrCore/Collision/ISpatial.h"
 //#include "../../xrEngine/xr_object.h"
 #if (RENDER==R_R2) || (RENDER==R_R4)
-#	include "light_package.h"
+#	include "Light_Package.h"
 #	include "light_smapvis.h"
 #endif //(RENDER==R_R2) || (RENDER==R_R4)
 

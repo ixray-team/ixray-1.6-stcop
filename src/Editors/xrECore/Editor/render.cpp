@@ -912,7 +912,7 @@ HRESULT	CRender::shader_compile(
 		xr_vector<u8> pShaderBuf;
 		xr_vector<u8> pErrorBuf;
 
-		_result = GRHI->BuildShader(pSrcData, SrcDataLen, "", defines, &Includer, pFunctionName, pTarget, Flags, 0, pShaderBuf, pErrorBuf);
+		_result = GRHI->BuildShader("editor", pSrcData, SrcDataLen, "", defines, &Includer, pFunctionName, pTarget, Flags, 0, pShaderBuf, pErrorBuf);
 
 		if (SUCCEEDED(_result))
 		{

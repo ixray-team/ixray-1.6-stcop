@@ -606,9 +606,9 @@ u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSiz
 	return u32(-1);
 }
 
-HRESULT CRHI::BuildShader(const void* srcData, size_t srcSize, const char* sourceName, const void* defines, void* include, const char* entryPoint, const char* target, u32 flags1, u32 flags2, xr_vector<u8>& code, xr_vector<u8>& errors)
+HRESULT CRHI::BuildShader(const char* shader_dir, const void* srcData, size_t srcSize, const char* sourceName, const void* defines, void* include, const char* entryPoint, const char* target, u32 flags1, u32 flags2, xr_vector<u8>& code, xr_vector<u8>& errors)
 {
-	return ShaderCompiler->Build(srcData, srcSize, sourceName, defines, include, entryPoint, target, flags1, flags2, code, errors);
+	return ShaderCompiler->Build(shader_dir, srcData, srcSize, sourceName, defines, include, entryPoint, target, flags1, flags2, code, errors);
 }
 
 void CRHI::EvictManagedResources()
