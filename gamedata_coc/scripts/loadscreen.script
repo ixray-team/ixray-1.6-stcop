@@ -1,0 +1,10 @@
+local tip_count = 24
+
+function get_tip_number(level_name)
+	math.randomseed(os.time())
+	return math.random(1,tip_count)
+end
+
+function get_mp_tip_number(level_name)
+	return get_tip_number(level_name)
+end

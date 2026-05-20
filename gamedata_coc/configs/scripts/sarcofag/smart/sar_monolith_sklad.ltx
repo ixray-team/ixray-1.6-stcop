@@ -1,0 +1,20 @@
+[smart_terrain]
+squad_id = 2
+max_population = 5
+respawn_params = respawn@sar_monolith_sklad
+respawn_idle = 30000
+respawn_radius = 300
+
+[respawn@sar_monolith_sklad]
+spawn_rats
+
+[spawn_rats]
+spawn_squads = simulation_rats
+spawn_num = {+sar_secret_door_find} 5, 0
+
+[exclusive]
+sar_monolith_sklad_patrol1 = sarcofag\sar_monolith_sklad_logic.ltx
+sar_monolith_sklad_patrol2 = sarcofag\sar_monolith_sklad_logic.ltx
+sar_monolith_sklad_guard1 = sarcofag\sar_monolith_sklad_logic.ltx
+sar_monolith_sklad_guard2 = sarcofag\sar_monolith_sklad_logic.ltx
+sar_monolith_sklad_patrol_ambush = sarcofag\sar_monolith_sklad_logic.ltx

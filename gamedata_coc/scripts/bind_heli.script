@@ -1,0 +1,295 @@
+--[[------------------------------------------------------------------------------------------------
+Helicoter binding
+Чугай Александр
+
+Сделать:
+	- настройки в ltx
+	
+-- edited by Alundaio for smart_terrain usage
+--------------------------------------------------------------------------------------------------]]
+
+
+---------------------------------------------------------------------------------------------
+-- Функция для бинда
+---------------------------------------------------------------------------------------------
+
+function bind( obj )
+	if alife() then
+		obj:bind_object( heli_binder(obj,ini) )
+	end
+end
+
+---------------------------------------------------------------------------------------------
+-- Биндер вертолётов
+---------------------------------------------------------------------------------------------
+class "heli_binder" ( object_binder )
+
+function heli_binder:__init(obj) super( obj )
+	self.initialized = false
+	self.loaded      = false
+	self.heli_fire = heli_fire.get_heli_firer(obj)
+end
+
+function heli_binder:reload( section )
+	object_binder.reload( self, section )
+end
+
+function heli_binder:reinit()
+	object_binder.reinit( self )
+
+	--printf( "heli_binder:reinit()" )
+
+	self.st = {}
+	db.storage[self.object:id()] = self.st
+
+	self.st.heliObject = self.object:get_helicopter()
+
+	self.object:set_callback( callback.helicopter_on_point, self.on_point, self )
+	self.object:set_callback( callback.helicopter_on_hit,   self.on_hit,   self )
+
+	self.st.combat = heli_combat.heli_combat( self.object, self.st.heliObject )
+
+	self.last_hit_snd_timeout = 0
+
+	self.flame_start_health   = system_ini():r_float_ex("helicopter","flame_start_health") or 0.1
+
+	local spawn_ini = self.object:spawn_ini()
+	self.snd_hit	= spawn_ini and spawn_ini:r_string_ex("helicopter","snd_hit") or "heli_hit"
+	self.snd_damage = spawn_ini and spawn_ini:r_string_ex("helicopter","snd_damage") or "heli_damaged"
+	self.snd_down	= spawn_ini and spawn_ini:r_string_ex("helicopter","snd_down") or "heli_down"
+
+	-- на случай загрузки
+	self.st.last_alt       = self.st.heliObject:GetRealAltitude()
+	self.st.alt_check_time = time_global() + 1000
+end
+
+function heli_binder:update( delta )
+	object_binder.update( self, delta )
+	--alun_utils.debug_write("heli update start")
+
+	--printf( "heli_binder update" )
+--	printf( "%d", self.object:level_vertex_light( db.actor:level_vertex_id() ) )
+
+	if not self.initialized and db.actor then
+		self.initialized = true
+		xr_logic.initialize_obj( self.object, self.st, self.loaded, db.actor, modules.stype_heli )
+	end
+
+	if self.st.active_section ~= nil then
+		xr_logic.issue_event( self.object, self.st[self.st.active_scheme], "update", delta )
+	end
+
+	self.object:info_clear()
+	local active_section = db.storage[self.object:id()].active_section
+	if active_section then
+		self.object:info_add('section -- ' .. active_section)
+	end
+	self:check_health()
+
+	xr_sound.update(self.object:id())
+	
+	-- heli alife simulation
+	if (heli_alife) then
+		self.sobject = not self.sobject and alife():object(self.object:id()) or self.sobject
+		if (self.sobject and self.sobject.player_id) then
+			heli_alife.update(self.object,self.sobject,self.st.heliObject)
+		end
+	end
+	--alun_utils.debug_write("heli update end")
+end
+
+function heli_binder:net_spawn( sobject )
+	if not object_binder.net_spawn( self, sobject ) then
+		return false
+	end
+	
+	if (sobject.m_smart_terrain_id) then
+		smart_terrain.setup_gulag_and_logic_on_spawn(self.object, self.st, sobject, modules.stype_heli, self.loaded)
+	end
+
+	db.add_obj(self.object)
+	db.add_heli(self.object)
+	
+	self.st.heliObject = self.object:get_helicopter()
+	
+	self.sobject = not self.sobject and alife():object(self.object:id()) or self.sobject
+
+	return true
+end
+
+function heli_binder:net_destroy()
+	self.object:set_callback(callback.helicopter_on_point,nil)
+	self.object:set_callback(callback.helicopter_on_hit,nil)
+	
+	db.del_obj( self.object )
+	db.del_heli( self.object )
+
+	object_binder.net_destroy( self )
+end
+
+function heli_binder:net_save_relevant()
+	return true
+end
+
+function heli_binder:save( packet )
+	object_binder.save( self, packet )
+	set_save_marker(packet, "save", false, "heli_binder")
+	--printf( "heli_binder: save")
+
+	xr_logic.save_obj( self.object, packet )
+	 set_save_marker(packet, "save", true, "heli_binder")
+	self.st.combat:save( packet )
+end
+
+function heli_binder:load( packet )
+	self.loaded = true
+	set_save_marker(packet, "load", false, "heli_binder")
+	--printf("generic_object_binder:load(): self.object:name()='%s'", self.object:name())
+	object_binder.load( self, packet )
+
+	--printf( "heli_binder: load")
+
+	xr_logic.load_obj( self.object, packet )
+	set_save_marker(packet, "load", true, "heli_binder")
+	self.st.combat:load( packet )
+end
+
+function heli_binder:check_health()
+	local heli = self.st.heliObject
+
+	--printf( "heli health: %d", heli:GetfHealth() )
+
+	if not heli.m_dead then
+		local health = get_heli_health(heli,self.st)
+
+		if health < self.flame_start_health and not heli.m_flame_started then
+			heli_start_flame( self.object )
+			xr_sound.set_sound_play(self.object:id(), self.snd_damage)
+		end
+
+		if health <= 0.005 and not self.st.immortal then
+			heli_die( self.object )
+			xr_sound.set_sound_play(self.object:id(), self.snd_down)
+			
+			local se_obj = alife():object(self.object:id())
+			if (se_obj) then 
+				if (se_obj.respawn_point_id and se_obj.respawn_point_prop_section) then
+					local smart = alife():object(se_obj.respawn_point_id)
+					if smart == nil then
+						return
+					end
+					smart.already_spawned[se_obj.respawn_point_prop_section].num = smart.already_spawned[se_obj.respawn_point_prop_section].num - 1
+				end
+				local strn_id = se_obj.m_smart_terrain_id
+				if strn_id and strn_id ~= 65535 then
+					local smart = alife():object(strn_id)
+					if smart ~= nil then
+						smart:unregister_npc(se_obj)
+						se_obj.m_smart_terrain_id = nil
+					end
+				end
+			end			
+		end
+	end
+end
+
+------------------------------ callbacks ---------------------------------
+function heli_binder:on_hit( power, impulse, hit_type, enemy_id )
+	--printf( "heli_binder: hit callback")
+
+	local enemy = db.storage[enemy_id] and db.storage[enemy_id].object --level.object_by_id(enemy_id)
+	if not (enemy) then 
+		return 
+	end 
+	
+	self.heli_fire.enemy = enemy
+	--self.heli_fire:update_hit()
+	
+	if self.st.hit then
+		xr_logic.issue_event( self.object, self.st.hit, "hit_callback", self.object, power, nil, enemy, nil )
+	end
+	
+	-- is simulation heli
+	if (self.sobject and self.sobject.player_id) then
+		if (enemy_id == 0) then 
+			utils.save_var(db.actor,"heli_enemy_flag",true)
+		else 
+			db.storage[enemy_id].heli_enemy_flag = true
+		end
+		if (db.storage[self.object:id()]) then
+			db.storage[self.object:id()].hitted_by = enemy_id
+		end
+	end
+	
+	-- пилоты ругаются по рации
+	if self.last_hit_snd_timeout < time_global() then
+		xr_sound.set_sound_play(self.object:id(), self.snd_hit)
+		self.last_hit_snd_timeout = time_global() + math.random( 4000, 8000 )
+	end
+	
+	if (get_heli_health(self.st.heliObject,self.st) < 0.005) then
+		xr_statistic.inc_counter("heli_kills")
+	end
+	
+	-- Down to Earth achievement
+	if (db.actor and enemy:id() == 0) then
+		local itm = db.actor:active_item()
+		if (itm and itm:section() == "wpn_rpg7") then
+			local health = get_heli_health(self.st.heliObject,self.st)
+			if (health <= 0.005) then
+				xr_statistic.inc_counter("heli_rocket_kills")
+			end
+		end
+	end
+	
+	SendScriptCallback("heli_on_hit_callback",self.object,power,nil,enemy,nil)
+end
+
+function heli_binder:on_point( distance, position, path_idx )
+	if self.st.active_section ~= nil then
+		xr_logic.issue_event( self.object, self.st[self.st.active_scheme], "waypoint_callback", self.object, nil, path_idx )
+	end
+end
+
+--------------------------------------------------------------------------
+function get_heli_health( heli, st )
+	local health
+	if st.invulnerable then
+		health = 1
+		heli:SetfHealth( health )
+	else
+		health = heli:GetfHealth()
+		if health < 0 then
+			heli:SetfHealth( 0 )
+			health = 0
+		end
+	end
+	return health
+end
+
+function is_heli_alive( obj )
+	return get_heli_health(obj:get_helicopter(), db.storage[obj:id()]) > 0.005
+end
+
+function heli_start_flame( obj )
+	obj:get_helicopter():StartFlame()
+end
+
+function heli_die( obj )
+	-- mar_base_owl_stalker_trader_task_1
+	if (level.name() == "k00_marsh") then 
+		if (xr_conditions.has_task_not_completed(nil,nil,{"mar_base_owl_stalker_trader_task_2"}) == true) then 
+			xr_effects.set_task_completed(nil,nil,{"mar_base_owl_stalker_trader_task_2"})
+		end
+	end
+
+	obj:set_callback(callback.helicopter_on_point,nil)
+	obj:set_callback(callback.helicopter_on_hit,nil)
+	
+	local heli = obj:get_helicopter()
+	local st   = db.storage[obj:id()]
+	heli:Die()
+	db.del_heli(obj)
+	st.last_alt       = heli:GetRealAltitude()
+	st.alt_check_time = time_global() + 1000
+end

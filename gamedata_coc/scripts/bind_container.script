@@ -1,0 +1,150 @@
+containers = {}
+curBoxID = nil
+
+function bind(obj)
+    obj:bind_object(container_binder(obj))
+end
+-----------------------------
+function calculate_weight(se_inv_box,base)
+	local inv_box = level.object_by_id(se_inv_box.id)
+	if not (inv_box) then 
+		return 
+	end
+	
+	local transfer = {}
+	local total_weight = 0
+	local function add_items(inv_box, item)
+		if (containers[item:id()] and containers[item:id()].id) then
+			table.insert(transfer,item)
+		else
+			-- add weight to total
+			total_weight = total_weight + (item:weight() or 0)
+		end
+	end
+
+	-- iterate all items in the inventory box
+	inv_box:iterate_inventory_box(add_items, inv_box)
+	
+	if (#transfer > 0) then
+		for i,item in ipairs(transfer) do
+			inv_box:transfer_item(item,db.actor)
+		end
+		local hud = get_hud()
+		if (hud) then
+			hud:HideActorMenu() -- this is needed or item won't be removed
+		end
+		--inv_box:use(db.actor)
+	end
+	
+	return base + total_weight
+end
+
+local function use_container(id,pid)
+	local box = id and level.object_by_id(id)
+	if (box) then
+		--level.map_add_object_spot(id, "ui_pda2_actor_box_location", "st_ui_pda_actor_box") -- debug
+		curBoxID = pid
+		local hud = get_hud()
+		if (hud) then
+			hud:HideActorMenu()
+		end
+		box:use(db.actor)
+		return true -- destroy timed event
+	end 
+	return false -- repeat timed event
+end 
+
+-- called from item section in items.ltx
+function access_inventory(obj)
+	local id = obj:id()
+	local se_inv_box = containers[id] and containers[id].id and alife():object(containers[id].id)
+	if not (se_inv_box) then
+		-- position under map
+		local pos = utils.vector_copy_by_val(level.get_bounding_volume().min)
+		pos.y = pos.y + 50
+		
+		-- create inventory_box_s
+		se_inv_box = alife():create("hidden_box",pos,level.vertex_id(pos),db.actor:game_vertex_id())
+	end
+	if (se_inv_box) then
+		-- shouldn't be possible but very safe incase some sort of save corruption
+		if not (IsInvbox(nil,se_inv_box:clsid())) then
+			containers[id].id = nil
+			return 
+		end
+		
+		-- force strictly online
+		alife():set_switch_online(se_inv_box.id,true)
+		alife():set_switch_offline(se_inv_box.id,false)
+		
+		containers[id].id = se_inv_box.id
+		
+		-- Object will come online next update so wait
+		CreateTimeEvent(id,"container",0,use_container,se_inv_box.id,id)
+	end
+end
+--------------------------------------------------------------------------------
+-- Class "container_binder"
+--------------------------------------------------------------------------------
+class "container_binder" (object_binder)
+-- Class constructor
+function container_binder:__init(obj) super(obj)
+
+end
+-- Class update
+function container_binder:update(delta)
+    object_binder.update(self, delta)
+	-- If actor menu is in dead body search mode then check if it's our ID; if so calculate_weight
+	if (actor_menu.dead_body_searching and curBoxID == self.object:id()) then
+		local se_inv_box = containers[curBoxID].id and alife():object(containers[curBoxID].id)
+		if (se_inv_box) then
+			self.object:set_weight(calculate_weight(se_inv_box,system_ini():r_float_ex(self.object:section(),"inv_weight")))
+		end
+	end
+end
+
+-- Reload object
+function container_binder:reload(section)
+    object_binder.reload(self, section)
+end
+-- Reinitialize object
+function container_binder:reinit()
+    object_binder.reinit(self)
+end
+-- Net spawn
+function container_binder:net_spawn(sobject)
+    if not(object_binder.net_spawn(self, sobject)) then
+        return false
+    end
+	containers[sobject.id] = containers[sobject.id] or {}
+    return true
+end
+-- Net destroy
+function container_binder:net_destroy()
+	containers[self.object:id()] = nil
+	object_binder.net_destroy(self)
+end
+-- Standart function for save
+function container_binder:net_save_relevant()
+	return true
+end
+-- Saving container
+function container_binder:save(stpk)
+	object_binder.save(self, stpk)
+	stpk:w_stringZ(tostring(containers[self.object:id()].id))
+end
+-- Loading container
+function container_binder:load(stpk)
+	object_binder.load(self, stpk)
+	local id = self.object:id()
+	containers[id] = containers[id] or {}
+	containers[id].id = tonumber(stpk:r_stringZ())
+	
+	local se_inv_box = containers[id].id and alife():object(containers[id].id)
+	if (se_inv_box) then 
+		--level.map_add_object_spot(se_inv_box.id, "ui_pda2_actor_box_location", "st_ui_pda_actor_box") -- debug
+		alife():set_switch_online(se_inv_box.id,true)
+		alife():set_switch_offline(se_inv_box.id,false)
+		self.object:set_weight(calculate_weight(se_inv_box,system_ini():r_float_ex(self.object:section(),"inv_weight")))
+	end
+end

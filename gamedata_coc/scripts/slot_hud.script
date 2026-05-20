@@ -1,0 +1,117 @@
+--//  Shows belted artifacts on primary hud
+
+local HUD,belted_arts
+
+function activate_hud()
+	belted_arts = {}
+	RegisterScriptCallback("actor_item_to_belt",actor_item_to_belt)
+	RegisterScriptCallback("actor_item_to_ruck",actor_item_to_ruck)
+	RegisterScriptCallback("actor_on_item_drop",actor_on_item_drop)
+	RegisterScriptCallback("actor_on_net_destroy",actor_on_net_destroy)
+	open_hud()
+	db.actor:inventory_for_each(
+		function (item)
+			if IsArtefact(item) and db.actor:is_on_belt(item) then
+				belted_arts[item:id()] = item:section()
+			end
+		end
+	)		
+	HUD:update_hud()
+end
+
+function deactivate_hud()
+	belted_arts = nil
+	close_hud()
+	UnregisterScriptCallback("actor_item_to_belt",actor_item_to_belt)
+	UnregisterScriptCallback("actor_item_to_ruck", actor_item_to_ruck)
+	UnregisterScriptCallback("actor_on_item_drop",actor_on_item_drop)
+	UnregisterScriptCallback("actor_on_net_destroy",actor_on_net_destroy)
+end
+
+function open_hud()
+	if HUD == nil then
+		HUD = slot_hud()
+		get_hud():AddDialogToRender(HUD)
+	end
+end
+
+function close_hud()
+	if HUD ~= nil then
+		get_hud():RemoveDialogToRender(HUD)
+		HUD = nil
+	end
+end
+
+function actor_on_net_destroy()
+	close_hud()
+end
+
+function on_game_start()
+	if (axr_main.config:r_value("mm_options","enable_slot_hud",1,false) == false) then return end
+	local function actor_on_first_update()
+		activate_hud()
+	end
+	RegisterScriptCallback("actor_on_first_update",actor_on_first_update)
+end
+
+function actor_on_item_drop(item)
+	if not IsArtefact(item) then
+		return
+	end
+	local art_id = item:id()
+	if belted_arts[art_id] then 
+		belted_arts[art_id] = nil
+	end
+	HUD:update_hud(item)
+end
+
+function actor_item_to_ruck(item)
+	if IsArtefact(item) then
+		belted_arts[item:id()] = nil
+		HUD:update_hud(item)
+	end
+end
+
+function actor_item_to_belt(item)
+	if IsArtefact(item) then
+		belted_arts[item:id()] = item:section()
+		HUD:update_hud(item)
+	end
+end
+
+class "slot_hud" (CUIScriptWnd)
+function slot_hud:__init() super()
+	self.slot = {}
+	self.ini = system_ini()
+	self:InitControls()
+end
+
+function slot_hud:__finalize() end
+
+function slot_hud:InitControls()
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_slot_hud.xml")
+	self.static_back = xml:InitStatic("static_slot_back", self)
+	self.static_back:Show(false)
+	for i=1, 5 do
+		self.slot[i] = xml:InitStatic("static_slot_back:slot_"..i, self.static_back)
+		self.slot[i]:InitTexture("ui\\ui_icon_equipment")
+	end
+end
+
+function slot_hud:update_hud(item)
+	local cnt = 0
+	for id, sec in pairs(belted_arts) do
+		cnt = cnt + 1
+		local x1 = (self.ini:r_float_ex(sec,"inv_grid_x")or 0)*50
+		local y1 = (self.ini:r_float_ex(sec,"inv_grid_y")or 0)*50
+		local x2 = x1 + 50
+		local y2 = y1 + 50
+		self.slot[cnt]:SetTextureRect(Frect():set(x1,y1,x2,y2))
+		self.slot[cnt]:Show(true)
+	end
+	for i=cnt+1,5 do
+		self.slot[i]:Show(false)
+	end
+	self.static_back:Show(table.size(belted_arts) > 0)
+end

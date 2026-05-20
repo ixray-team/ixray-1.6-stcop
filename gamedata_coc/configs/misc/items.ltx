@@ -1,0 +1,1654 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;	FOOD
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[bread]:booster
+$spawn                                   = "food and drugs\bread"
+visual                                   = dynamics\devices\dev_bred\dev_bred.ogf
+description                              = st_bread_descr
+
+inv_name                                 = st_bread
+inv_name_short                           = st_bread
+inv_weight                               = 0.3	                                       ;0.2
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 18
+inv_grid_y                               = 1
+cost                                     = 150
+
+attach_angle_offset                      = -0.287979, 1.560923, 1.544060
+attach_position_offset                   = 0.096910, -0.013594, 0.107925
+attach_bone_name                         = bip01_r_hand
+auto_attach                              = false
+
+// should be deleted after update        =
+bone_name                                = bip01_r_hand
+position_offset                          = 0.0,0.0,0.0
+angle_offset                             = 1.570790,1.570790,3.92699
+
+boost_time                               = 30.0
+boost_health_restore                     = 0.0002
+eat_satiety                              = 0.6
+eat_alcohol                              = -0.03
+
+use_sound                                = interface\inv_food
+
+[kolbasa]:booster
+$spawn                                   = "food and drugs\kolbasa"
+visual                                   = dynamics\devices\dev_kolbasa\dev_kolbasa.ogf
+description                              = st_kolbasa_descr
+
+inv_name                                 = st_kolbasa
+inv_name_short                           = st_kolbasa
+inv_weight                               = 0.4
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 7
+inv_grid_y                               = 2
+cost                                     = 200
+
+attach_angle_offset                      = 0.440521, 1.378287, -0.644026
+attach_position_offset                   = 0.104196, -0.010821, 0.076969
+attach_bone_name                         = bip01_r_hand
+auto_attach                              = false
+
+// should be deleted after update        =
+bone_name                                = bip01_r_hand
+position_offset                          = 0.0,0.0,0.0
+angle_offset                             = 1.570790,1.570790,3.92699
+
+boost_time                               = 40.0
+boost_health_restore                     = 0.0002
+eat_satiety                              = 0.8
+eat_alcohol                              = -0.04
+
+use_sound                                = interface\inv_food
+
+[conserva]:booster
+$spawn                                   = "food and drugs\conserva"
+visual                                   = dynamics\devices\dev_conserv\dev_conserv.ogf
+description                              = st_conserva_descr
+
+inv_name                                 = st_conserva
+inv_name_short                           = st_conserva
+inv_weight                               = 0.5
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 19
+inv_grid_y                               = 1
+cost                                     = 250
+
+boost_time                               = 50.0
+boost_health_restore                     = 0.0002
+eat_satiety                              = 1
+eat_alcohol                              = -0.05
+
+attach_angle_offset                      = 0.440521, 1.378287, -0.644026
+attach_position_offset                   = 0.104196, -0.010821, 0.076969
+attach_bone_name                         = bip01_r_hand
+auto_attach                              = false
+
+// should be deleted after update        =
+bone_name                                = bip01_r_hand
+position_offset                          = 0.0,0.0,0.0
+angle_offset                             = 1.570790,1.570790,3.92699
+
+use_sound                                = interface\inv_food
+
+[vodka]:booster
+$spawn                                   = "food and drugs\vodka"
+cform                                    = skeleton
+visual                                   = dynamics\devices\dev_vodka\dev_vodka.ogf
+description                              = st_vodka_descr
+
+inv_name                                 = st_vodka
+inv_name_short                           = st_vodka
+inv_weight                               = 0.9
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 18
+inv_grid_y                               = 2
+cost                                     = 40
+
+attach_angle_offset                      = 0.000000, 0.000000, 0.000000
+attach_position_offset                   = 0.087266, -0.078540, 0.052360
+attach_bone_name                         = bip01_r_hand
+auto_attach                              = false
+
+bone_name                                = bip01_r_hand
+position_offset                          = 0.0,0.0,0.0
+angle_offset                             = 1.570790,1.570790,3.92699
+
+break_particles                          = destroy_fx\destroy_bottle
+break_sound                              = material\bottle\collide\bottle_break_1
+
+boost_time                               = 120.0
+boost_radiation_restore                  = 0.001
+eat_alcohol                              = 0.1
+eat_satiety                              = -0.2
+
+use_sound                                = interface\inv_vodka
+
+use_condition                            = true
+max_uses                                 = 3
+remove_after_use                         = true
+empty_weight                             = 0.4
+allow_repair                             = false
+
+[vodka_script]:vodka ; ia eniieuciaaou
+$spawn                                   = "food and drugs\vodka_script"
+inv_weight                               = 0
+
+[guitar_a]:identity_immunities
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "food and drugs\guitar_a"
+cform                                    = skeleton
+class                                    = II_ATTCH
+visual                                   = dynamics\devices\dev_guitar\dev_guitar.ogf
+cost                                     = 35
+inv_name                                 = st_guitar_name
+inv_name_short                           = st_guitar_name
+description                              = st_guitar_descr
+inv_weight                               = 1.5
+inv_grid_width                           = 4
+inv_grid_height                          = 2
+inv_grid_x                               = 0
+inv_grid_y                               = 21
+attach_angle_offset                      = -0.415, -1.262, 0.808
+;-1.512, -1.392, -0.242
+attach_position_offset                   = -0.014, 0.010, 0.020
+;0.010, -0.090, 0.000
+attach_bone_name                         = bip01_l_hand
+auto_attach                              = false
+can_trade								 = false 
+
+[harmonica_a]:identity_immunities
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "food and drugs\harmonica_a"
+cform                                    = skeleton
+class                                    = II_ATTCH
+visual                                   = dynamics\devices\dev_harmonica\dev_harmonica.ogf
+cost                                     = 35
+inv_name                                 = "harmonica"
+inv_name_short                           = "harmonica"
+inv_weight                               = 0.35
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 1
+inv_grid_y                               = 4
+attach_angle_offset                      = 0.000000, -1.204452, -1.262921
+attach_position_offset                   = 0.081856, -0.035081, 0.011694
+attach_bone_name                         = bip01_l_hand
+auto_attach                              = false
+can_trade								 = false 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;	Scaner B6
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[anomaly_scaner]:identity_immunities
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "equipment\anomaly_scaner"
+cform                                    = skeleton
+class                                    = II_ATTCH
+visual                                   = dynamics\devices\dev_datchik_2\dev_datchik_2.ogf
+cost                                     = 0
+inv_name                                 = "hand_radio"
+inv_name_short                           = "hand_radio"
+inv_weight                               = 0.5
+inv_grid_width                           = 2
+inv_grid_height                          = 1
+inv_grid_x                               = 14
+inv_grid_y                               = 7
+attach_angle_offset                      = -1.571,-1.308,-1.458	                                       ;onoaiaaeeaaaons a ?aaeaiao Angle*PI/180
+attach_position_offset                   = 0.105, -0.004, 0.003
+attach_bone_name                         = bip01_l_hand
+auto_attach                              = false
+can_trade								 = false 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;	MEDICAL
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[energy_drink]:vodka
+$spawn                                   = "food and drugs\energy_drink"
+inv_name                                 = st_energy_drink
+inv_name_short                           = st_energy_drink
+visual                                   = dynamics\devices\dev_drink_stalker\dev_drink_stalker
+description                              = st_energy_drink_descr
+cost                                     = 50
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 6	                                       ;19 ;11
+inv_grid_y                               = 2	                                       ;7  ;0
+inv_weight                               = 0.3
+
+attach_angle_offset                      = 0.000000, 0.000000, 0.000000
+attach_position_offset                   = 0.087266, -0.078540, 0.052360
+attach_bone_name                         = bip01_r_hand
+auto_attach                              = false
+
+boost_time                               = 60.0
+boost_radiation_restore                  = 0
+boost_power_restore                      = 0.005	                                       ;0.001
+
+eat_alcohol                              = 0.0
+eat_satiety                              = 0.0
+
+use_sound                                = interface\inv_softdrink
+empty_weight                             = 0.01
+max_uses                                 = 2
+
+[bandage]:booster
+$spawn                                   = "food and drugs\bandage"
+visual                                   = dynamics\devices\dev_bandage\dev_bandage.ogf
+description                              = st_bandage_descr
+
+inv_name                                 = st_bandage
+inv_name_short                           = st_bandage
+inv_weight                               = 0.05	                                       ;0.2
+cost                                     = 80
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 17
+inv_grid_y                               = 1
+
+boost_time                               = 5.0
+boost_bleeding_restore                   = 0.02
+
+use_sound                                = interface\inv_bandage
+
+;antirad new
+[antirad]:booster
+$spawn                                   = "food and drugs\antirad"
+visual                                   = dynamics\devices\dev_antirad\dev_antirad.ogf
+inv_name                                 = st_antirad
+inv_name_short                           = st_antirad
+description                              = st_antirad_descr
+inv_weight                               = 0.01
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 16
+inv_grid_y                               = 1
+cost                                     = 250
+
+;eatable item
+;eat_radiation = -0.5
+
+boost_time                               = 10.0
+boost_radiation_restore                  = 0.01
+
+use_sound                                = interface\inv_pills
+
+;medikits new
+[medkit_script]:booster ;Do not use! Used in xr_wounded
+;$spawn 				= "food and drugs\medkit_script"
+visual                                   = dynamics\devices\dev_aptechka\dev_aptechka_low.ogf
+inv_name                                 = st_medkit
+inv_name_short                           = st_medkit
+description                              = st_medkit_descr
+inv_weight                               = 0.1
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 8
+inv_grid_y                               = 2
+cost                                     = 300
+
+;eatable item
+eat_health                               = 0.5
+eat_max_power                            = 0.1
+eat_radiation                            = -0.05
+wounds_heal_perc                         = 0.1
+
+use_sound                                = interface\inv_medkit
+
+;AI Tweaks xr_help_wounded
+attach_angle_offset                      = -2.6,2.3,0
+attach_position_offset                   = 0.156, -0.035081, 0.05
+attach_bone_name                         = bip01_l_hand
+auto_attach                              = false
+can_trade								 = false 
+
+[medkit]:booster
+$spawn                                   = "food and drugs\medkit"
+visual                                   = dynamics\devices\dev_aptechka\dev_aptechka_low.ogf
+inv_name                                 = st_medkit
+inv_name_short                           = st_medkit
+description                              = st_medkit_descr
+inv_weight                               = 0.1
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 8
+inv_grid_y                               = 2
+cost                                     = 250
+
+boost_time                               = 10.0
+boost_health_restore                     = 0.01
+boost_radiation_restore                  = 0.0
+boost_bleeding_restore                   = 0.005
+
+use_sound                                = interface\inv_medkit
+
+use_condition                            = true
+max_uses                                 = 2
+remove_after_use                         = true
+empty_weight                             = 0.02
+
+[medkit_army]:booster
+$spawn                                   = "food and drugs\medkit_army"
+visual                                   = dynamics\devices\dev_aptechka\dev_aptechka_high.ogf
+inv_name                                 = st_medkit_army
+inv_name_short                           = st_medkit_army
+description                              = st_medkit_army_descr
+inv_weight                               = 0.1
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 9
+inv_grid_y                               = 2
+cost                                     = 650
+
+boost_time                               = 5.0
+boost_health_restore                     = 0.02
+boost_radiation_restore                  = 0.0
+boost_bleeding_restore                   = 0.02
+
+use_sound                                = interface\inv_medkit
+
+use_condition                            = true
+max_uses                                 = 2
+remove_after_use                         = true
+empty_weight                             = 0.02
+
+[medkit_scientic]:booster
+$spawn                                   = "food and drugs\medkit_scientic"
+visual                                   = dynamics\devices\dev_aptechka\dev_aptechka_mid.ogf
+inv_name                                 = st_medkit_science
+inv_name_short                           = st_medkit_science
+description                              = st_medkit_science_descr
+inv_weight                               = 0.1
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 10
+inv_grid_y                               = 2
+cost                                     = 800
+
+boost_time                               = 10.0
+boost_health_restore                     = 0.01
+boost_radiation_restore                  = 0.01
+boost_bleeding_restore                   = 0.005
+
+use_sound                                = interface\inv_medkit
+
+use_condition                            = true
+max_uses                                 = 2
+remove_after_use                         = true
+empty_weight                             = 0.02
+
+;boosters
+[drug_booster]:booster
+$spawn                                   = "food and drugs\drug_booster"
+visual                                   = dynamics\equipments\medical\drug_booster.ogf
+inv_name                                 = st_drug_booster
+inv_name_short                           = st_drug_booster
+description                              = st_drug_booster_descr
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 2
+inv_grid_y                               = 2
+cost                                     = 200
+
+boost_time                               = 300.0
+boost_max_weight                         = 20.0
+
+use_sound                                = interface\inv_softdrink
+inv_weight                               = 0.1
+
+[drug_coagulant]:booster
+$spawn                                   = "food and drugs\drug_coagulant"
+visual                                   = dynamics\equipments\medical\drug_coagulant.ogf
+inv_name                                 = st_drug_coagulant
+inv_name_short                           = st_drug_coagulant
+description                              = st_drug_coagulant_descr
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 3
+inv_grid_y                               = 2
+cost                                     = 200
+
+boost_time                               = 30.0
+;boost_wound_immunity	= 1
+boost_bleeding_restore                   = 0.0015
+
+use_sound                                = interface\inv_pills
+
+use_condition                            = true
+max_uses                                 = 5
+remove_after_use                         = true
+empty_weight                             = 0.01
+
+[drug_psy_blockade]:booster
+$spawn                                   = "food and drugs\drug_psy_blockade"
+visual                                   = dynamics\equipments\medical\drug_psy_blockade.ogf
+inv_name                                 = st_drug_psy_blockade
+inv_name_short                           = st_drug_psy_blockade
+description                              = st_drug_psy_blockade_descr
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 4
+inv_grid_y                               = 2
+cost                                     = 550
+
+boost_time                               = 60.0
+;boost_telepat_immunity	= 0.05
+boost_telepat_protection                 = 0.05
+
+use_sound                                = interface\inv_pills
+
+use_condition                            = true
+max_uses                                 = 5
+remove_after_use                         = true
+empty_weight                             = 0.01
+
+[drug_antidot]:booster
+$spawn                                   = "food and drugs\drug_antidot"
+visual                                   = dynamics\equipments\medical\drug_antidot.ogf
+inv_name                                 = st_drug_antidot
+inv_name_short                           = st_drug_antidot
+description                              = st_drug_antidot_descr
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 1
+inv_grid_y                               = 2
+cost                                     = 300
+
+boost_time                               = 100.0
+;boost_chemburn_immunity	= 0.1
+boost_chemburn_protection                = 0.1
+
+use_sound                                = interface\inv_pills
+
+use_condition                            = true
+max_uses                                 = 3
+remove_after_use                         = true
+empty_weight                             = 0.01
+
+[drug_radioprotector]:booster
+$spawn                                   = "food and drugs\drug_radioprotector"
+visual                                   = dynamics\equipments\medical\drug_radioprotector.ogf
+inv_name                                 = st_drug_radioprotector
+inv_name_short                           = st_drug_radioprotector
+description                              = st_drug_radioprotector_descr
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 5
+inv_grid_y                               = 2
+cost                                     = 300
+
+boost_time                               = 150.0
+;boost_radiation_immunity	= 0.015
+boost_radiation_protection               = 0.015
+
+use_sound                                = interface\inv_pills
+
+use_condition                            = true
+max_uses                                 = 2
+remove_after_use                         = true
+empty_weight                             = 0.01
+
+[drug_anabiotic]:booster
+$spawn                                   = "food and drugs\drug_anabiotic"
+visual                                   = dynamics\equipments\medical\drug_anabiotic.ogf
+inv_name                                 = st_drug_anabiotic
+inv_name_short                           = st_drug_anabiotic
+description                              = st_drug_anabiotic_descr
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 0
+inv_grid_y                               = 2
+cost                                     = 1000
+
+use_sound                                = interface\inv_pills
+
+;boosters below are not used for now
+;[health_restore_booster]:booster
+;$spawn 					= "food and drugs\health_restore_booster"
+;boost_time				= 20.0
+;boost_health_restore	= 0.1
+;
+;[max_weight_booster]:booster
+;$spawn 				= "food and drugs\max_weight_booster"
+;boost_time			= 20.0
+;boost_max_weight	= 100.0
+;
+;[wound_immunity_booster]:booster
+;$spawn 					= "food and drugs\wound_immunity_booster"
+;boost_time				= 20.0
+;boost_wound_immunity	= 1
+;
+;[telepat_immunity_booster]:booster
+;$spawn 					= "food and drugs\telepat_immunity_booster"
+;boost_time				= 20.0
+;boost_telepat_immunity	= 1
+;
+;[chemburn_immunity_booster]:booster
+;$spawn 					= "food and drugs\chemburn_immunity_booster"
+;boost_time				= 20.0
+;boost_chemburn_immunity	= 1
+;
+;[radiation_restore_booster]:booster
+;$spawn 					= "food and drugs\radiation_restore_booster"
+;boost_time				= 20.0
+;boost_radiation_restore	= 0.1
+;
+;[shock_immunity_booster]:booster
+;$spawn 					= "food and drugs\shock_immunity_booster"
+;boost_time				= 20.0
+;boost_shock_immunity	= 1
+;
+;[power_restore_booster]:booster
+;$spawn 				= "food and drugs\power_restore_booster"
+;boost_time			= 20.0
+;boost_power_restore	= 0.1
+;
+;[bleeding_restore_booster]:booster
+;$spawn 					= "food and drugs\bleeding_restore_booster"
+;boost_time				= 20.0
+;boost_bleeding_restore	= 0.1
+;
+;[burn_immunity_booster]:booster
+;$spawn 				= "food and drugs\burn_immunity_booster"
+;boost_time			= 20.0
+;boost_burn_immunity	= 1
+;
+;[explosion_immunity_booster]:booster
+;$spawn 						= "food and drugs\explosion_immunity_booster"
+;boost_time					= 20.0
+;boost_explosion_immunity	= 1
+;
+;[fire_wound_immunity_booster]:booster
+;$spawn 						= "food and drugs\fire_wound_immunity_booster"
+;boost_time					= 20.0
+;boost_fire_wound_immunity	= 1
+;
+;[strike_immunity_booster]:booster
+;$spawn 					= "food and drugs\strike_immunity_booster"
+;boost_time				= 20.0
+;boost_strike_immunity	= 1
+;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;	DEVICES
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[device_pda]:identity_immunities
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "devices\pda"
+$prefetch                                = 16
+class                                    = D_PDA	                                       ;Change to S_PDA if you want to use se_item.se_explosive script binding!
+cform                                    = skeleton
+visual                                   = dynamics\devices\dev_pda\dev_pda.ogf
+description                              = st_pda_descr
+radius                                   = 68	                                       ; 50
+slot                                     = 7
+default_to_ruck                          = false
+sprint_allowed                           = true
+control_inertion_factor                  = 1
+script_binding                           = bind_physic_object.init
+
+inv_name                                 = st_pda_name
+inv_name_short                           = st_pda_name
+inv_weight                               = 0.1	                                       ;0.2
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 7
+inv_grid_y                               = 3
+cost                                     = 0
+attach_angle_offset                      = -1.303,0.107,-1.702	                                       ;onoaiaaeeaaaony a ?aaeaiao Angle*PI/180
+attach_position_offset                   = 0.14,0.001,0.02
+attach_bone_name                         = bip01_l_hand
+auto_attach                              = false
+
+[dev_flash_1]:identity_immunities
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "devices\dev_flash_1"
+$prefetch                                = 16
+class                                    = D_PDA
+cform                                    = skeleton
+visual                                   = dynamics\devices\dev_flash_1\dev_flash_1.ogf
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 8
+inv_grid_y                               = 3
+
+slot                                     = 7
+radius                                   = 50
+default_to_ruck                          = false
+inv_weight                               = 0.05
+
+inv_name                                 = st_pda_name
+inv_name_short                           = st_pda_name
+description                              = st_pda_descr
+cost                                     = 0
+can_trade                                = false
+
+[dev_flash_2]:identity_immunities
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "devices\dev_flash_2"
+$prefetch                                = 16
+class                                    = D_PDA
+cform                                    = skeleton
+visual                                   = dynamics\devices\dev_flash_2\dev_flash_2.ogf
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 9
+inv_grid_y                               = 3
+
+slot                                     = 7
+radius                                   = 50
+default_to_ruck                          = false
+inv_weight                               = 0.05
+
+inv_name                                 = st_pda_name
+inv_name_short                           = st_pda_name
+description                              = st_pda_descr
+cost                                     = 0
+can_trade                                = false
+
+[device_torch]:identity_immunities
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "devices\torch"
+$prefetch                                = 32
+class                                    = TORCH_S
+cform                                    = skeleton
+visual                                   = dynamics\devices\dev_torch_light\dev_torch_light.ogf
+description                              = st_device_torch_descr
+cost                                     = 0
+inv_name                                 = st_device_torch_name
+inv_name_short                           = st_device_torch_name
+inv_weight                               = 0.0
+inv_grid_width                           = 2
+inv_grid_height                          = 1
+inv_grid_x                               = 14
+inv_grid_y                               = 7
+
+;aauu? iaeucy oi?aiaaou
+can_trade                                = true
+
+position                                 = 0.35,0.25,0.0
+light_trace_bone                         = lights_bone
+
+attach_angle_offset                      = 3.062, 0.008, -1.532
+attach_position_offset                   = 0.134, -0.007, 0.09
+
+attach_bone_name                         = bip01_head
+auto_attach                              = false
+
+night_vision                             = on
+night_vision_texture                     = wpn\wpn_night
+night_vision_effector                    = postprocess_night
+
+snd_night_vision_on                      = weapons\nv_start
+snd_night_vision_off                     = weapons\nv_off
+snd_night_vision_idle                    = weapons\nv_loop
+snd_night_vision_broken                  = weapons\nv_off
+
+night_vision_recharge_time               = 6	                                       ;(c) a?aiy ca?yaee aeeaioeyoi?a
+night_vision_recharge_time_min           = 2	                                       ;(c) iei. a?aiy ca?yaee aeeaioeyoi?a, iinea eioi?iai ono-ai o?a ii?ao ?aaioaou
+night_vision_discharge_time              = 20	                                       ;(c) a?aiy ?ac?yaee (?aaiou) ono?ienoaa iinea iieiie ca?yaee
+slot                                     = 9
+default_to_ruck                          = false
+sprint_allowed                           = true
+control_inertion_factor                  = 1
+disabled_maps                            = ai_test,ai_test2, andy_test_
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;	OTHERS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[wpn_vodka_hud]:identity_immunities,hud_base
+fire_point                               = 0.0, 0.0, 0.06
+fire_bone                                = bip01_head
+orientation                              = 0, 0, 0
+position                                 = 0, 0, 0
+visual                                   = dynamics\devices\dev_vodka\dev_vodka.ogf
+
+anim_idle                                = vodka_2
+anim_show                                = vodka_1
+anim_hide                                = vodka_4
+anim_play                                = vodka_5
+anim_prepare                             = vodka_5
+anim_eat                                 = vodka_3
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;; MINES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;Swartz - Added landmines below.
+
+[wpn_mine]:identity_immunities
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "devices\play"
+cform                                    = skeleton
+class                                    = II_ANTIR
+visual                                   = dynamics\weapons\wpn_pfm1\wpn_pfm1.ogf
+inv_vol                                  = 1
+
+inv_name                                 = st_wpn_mine_name
+inv_name_short                           = st_wpn_mine_name
+description                              = st_wpn_mine_descr
+
+inv_weight                               = 0.751
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 0
+inv_grid_y                               = 3
+cost                                     = 1000
+
+attach_angle_offset                      = -1.5708,0.1919,3.1416	                                       ;onoaiaaeeaaaons a ?aaeaiao Angle*PI/180
+attach_position_offset                   = 0.075, 0.066, 0.023
+attach_bone_name                         = bip01_l_hand
+auto_attach                              = false
+
+; eatable item
+eat_health                               = 0
+eat_satiety                              = 0
+eat_power                                = 0
+eat_radiation                            = 0
+eat_alcohol                              = 0
+
+wounds_heal_perc                         = 0
+
+; For actor only!
+[mine_actor]:explosive_barrel
+
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "sm\scripts\mina_blow"
+$prefetch                                = 16
+class                                    = II_EXPLO
+cform                                    = skeleton
+
+script_binding                           = m_mines.add_actor_mine
+
+visual                                   = dynamics\weapons\wpn_pfm1\wpn_pfm1.ogf
+
+inv_name                                 =
+inv_name_short                           =
+inv_weight                               = 0.751
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 25
+inv_grid_y                               = 2
+;aauu iaaicii?ii iiaia?aou
+can_take                                 = false
+
+cost                                     = 1500
+;-------------------------------------------------------------------------------
+blast                                    = 3.18
+blast_r                                  = 2.26
+blast_impulse                            = 66
+;delete
+blast_impulse_factor                     = 0.85
+
+
+frags                                    = 0
+frags_r                                  = 0
+frag_hit                                 = 0.04
+frag_hit_impulse                         = 8
+
+hit_type_blast                           = explosion
+hit_type_frag                            = fire_wound
+
+up_throw_factor                          = 0.3
+;-------------------------------------------------------------------------------
+wm_size                                  = 0.01
+
+explode_particles                        = explosions\explosion_01
+
+light_color                              = 1.9,1.4,0.5
+light_range                              = 25.0
+light_time                               = 0.85
+
+;o?annu io ineieeia
+fragment_speed                           = 170	                                       ;nei?inou ineieeia (i/n)
+
+explode_duration                         = 0	                                       ;iiaie?eoaeuiinou ac?uaa (n)
+time_to_explode                          = 0.f
+
+;caoee
+snd_explode                              = weapons\rgd5_explode
+immunities_sect                          = personnel_mine_immunities_sect
+;wallmarks
+wallmark_section                         = explosion_marks
+
+;
+;[mine_proximity]
+;script_binding		= m_mines.add_neutral_mine
+
+[mine_proximity]:explosive_barrel
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "devices\proximity mine"
+cform                                    = skeleton
+class                                    = II_EXPLO
+visual                                   = dynamics\weapons\wpn_mine\wpn_mine_2.ogf
+script_binding                           = m_mines.add_neutral_mine
+
+inv_name                                 =
+inv_name_short                           =
+inv_weight                               = 0.751
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 25
+inv_grid_y                               = 2
+;aauu iaaicii?ii iiaia?aou
+can_take                                 = false
+
+cost                                     = 1500
+;-------------------------------------------------------------------------------
+blast                                    = 3.18
+blast_r                                  = 2.26
+blast_impulse                            = 66
+;delete
+blast_impulse_factor                     = 0.85
+
+
+frags                                    = 0
+frags_r                                  = 0
+frag_hit                                 = 0.04
+frag_hit_impulse                         = 8
+
+hit_type_blast                           = explosion
+hit_type_frag                            = fire_wound
+
+up_throw_factor                          = 0.3
+;-------------------------------------------------------------------------------
+wm_size                                  = 0.01
+
+explode_particles                        = explosions\explosion_01
+
+light_color                              = 1.9,1.4,0.5
+light_range                              = 25.0
+light_time                               = 0.85
+
+;o?annu io ineieeia
+fragment_speed                           = 170	                                       ;nei?inou ineieeia (i/n)
+
+explode_duration                         = 0	                                       ;iiaie?eoaeuiinou ac?uaa (n)
+time_to_explode                          = 0.f
+
+;caoee
+snd_explode                              = weapons\rgd5_explode
+immunities_sect                          = personnel_mine_immunities_sect
+;wallmarks
+wallmark_section                         = explosion_marks
+
+[personnel_mine_immunities_sect]
+;eiyooeoeaiou aey iiiaaaiee ?acee?iuie oeiaie oeoia
+burn_immunity                            = 0.0
+strike_immunity                          = 0
+shock_immunity                           = 0
+wound_immunity                           = 0.35
+radiation_immunity                       = 0
+telepatic_immunity                       = 0
+chemical_burn_immunity                   = 0
+explosion_immunity                       = 0.85
+fire_wound_immunity                      = 0.95
+
+; food item
+animation_slot                           = 4
+;hud item
+hud                                      = wpn_vodka_hud
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[stick_bred]:identity_immunities
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "food and drugs\stick_bred"
+cform                                    = skeleton
+class                                    = II_ATTCH
+visual                                   = stick_bred.ogf
+cost                                     = 0
+inv_name                                 = "stick_bred"
+inv_name_short                           = "stick_bred"
+inv_weight                               = .5
+inv_grid_width                           = 2
+inv_grid_height                          = 1
+inv_grid_x                               = 11
+inv_grid_y                               = 9
+attach_angle_offset                      = 4.3,0.3,0
+attach_position_offset                   = -0.2,-0.32,0.235
+attach_bone_name                         = bip01_r_hand
+auto_attach                              = false
+bone_name                                = bip01_r_hand
+position_offset                          = 0.0,0.0,0.0
+angle_offset                             = 0,0,0
+can_trade								 = false 
+[stick_kolbasa]:identity_immunities
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "food and drugs\stick_kolbasa"
+cform                                    = skeleton
+class                                    = II_ATTCH
+visual                                   = stick_kolbasa.ogf
+cost                                     = 0
+inv_name                                 = "stick_kolbasa"
+inv_name_short                           = "stick_kolbasa"
+inv_weight                               = .5
+inv_grid_width                           = 2
+inv_grid_height                          = 1
+inv_grid_x                               = 16
+inv_grid_y                               = 12
+attach_angle_offset                      = 4.3,0.3,0
+attach_position_offset                   = -0.2,-0.32,0.235
+attach_bone_name                         = bip01_r_hand
+auto_attach                              = false
+bone_name                                = bip01_r_hand
+position_offset                          = 0.0,0.0,0.0
+angle_offset                             = 0,0,0
+can_trade								 = false 
+[stick_kolbasa_bred]:identity_immunities
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "food and drugs\stick_kolbasa_bred"
+cform                                    = skeleton
+class                                    = II_ATTCH
+visual                                   = stick_kolbasa_bred.ogf
+cost                                     = 0
+inv_name                                 = "stick_kolbasa_bred"
+inv_name_short                           = "stick_kolbasa_bred"
+inv_weight                               = .5
+inv_grid_width                           = 2
+inv_grid_height                          = 1
+inv_grid_x                               = 11
+inv_grid_y                               = 9
+attach_angle_offset                      = 4.3,0.3,0
+attach_position_offset                   = -0.2,-0.32,0.235
+attach_bone_name                         = bip01_r_hand
+auto_attach                              = false
+bone_name                                = bip01_r_hand
+position_offset                          = 0.0,0.0,0.0
+angle_offset                             = 0,0,0
+can_trade								 = false 
+[csky_patch]:identity_immunities
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "devices\monster_items\mutant_psevdodog_tail"
+;$prefetch 				= 32
+class                                    = II_ATTCH
+cform                                    = skeleton
+visual                                   = dynamics\tfw_badges\tfw_badge_csky.ogf
+radius                                   = 1
+inv_name                                 = csky_patch
+inv_name_short                           = csky_patch
+description                              = csky_patch_description
+inv_weight                               = 0.01
+can_trade                                = on
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 17
+inv_grid_y                               = 3
+cost                                     = 50
+auto_attach                              = false
+
+[freedom_patch]:csky_patch
+visual                                   = dynamics\tfw_badges\tfw_badge_freedom.ogf
+inv_name                                 = freedom_patch
+inv_name_short                           = freedom_patch
+description                              = freedom_patch_description
+inv_grid_x                               = 0
+inv_grid_y                               = 4
+
+[stalker_patch]:csky_patch
+visual                                   = dynamics\tfw_badges\tfw_badge_defiance.ogf
+inv_name                                 = stalker_patch
+inv_name_short                           = stalker_patch
+description                              = stalker_patch_description
+inv_grid_x                               = 1
+inv_grid_y                               = 5
+
+[ecolog_patch]:csky_patch
+visual                                   = dynamics\tfw_badges\tfw_badge_ecolog.ogf
+inv_name                                 = ecolog_patch
+inv_name_short                           = ecolog_patch
+description                              = ecolog_patch_description
+inv_grid_x                               = 19
+inv_grid_y                               = 3
+
+[bandit_patch]:csky_patch
+visual                                   = dynamics\tfw_badges\tfw_badge_bandit.ogf
+inv_name                                 = bandit_patch
+inv_name_short                           = bandit_patch
+description                              = bandit_patch_description
+inv_grid_x                               = 16
+inv_grid_y                               = 3
+
+[duty_patch]:csky_patch
+visual                                   = dynamics\tfw_badges\tfw_badge_dolg.ogf
+inv_name                                 = duty_patch
+inv_name_short                           = duty_patch
+description                              = duty_patch_description
+inv_grid_x                               = 18
+inv_grid_y                               = 3
+
+[monolith_patch]:csky_patch
+visual                                   = dynamics\tfw_badges\tfw_badge_monolith.ogf
+inv_name                                 = monolith_patch
+inv_name_short                           = monolith_patch
+description                              = monolith_patch_description
+inv_grid_x                               = 3
+inv_grid_y                               = 4
+
+[army_patch]:csky_patch
+visual                                   = dynamics\tfw_badges\tfw_badge_military.ogf
+inv_name                                 = army_patch
+inv_name_short                           = army_patch
+description                              = army_patch_description
+inv_grid_x                               = 14
+inv_grid_y                               = 3
+
+[merc_patch]:csky_patch
+visual                                   = dynamics\tfw_badges\tfw_badge_merc.ogf
+inv_name                                 = merc_patch
+inv_name_short                           = merc_patch
+description                              = merc_patch_description
+inv_grid_x                               = 2
+inv_grid_y                               = 4
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;; NON-EATABLE MONSTER ITEMS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[mutant_part_general]:identity_immunities
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "devices\monster_items\mutant_part_general"
+class                                    = II_ATTCH
+cform                                    = skeleton
+visual                                   = dynamics\equipments\item_psevdodog_tail.ogf
+radius                                   = 1
+inv_weight                               = 0.2
+can_trade                                = on
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+
+[mutant_part_krovosos_jaw]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_krovosos_jaw"
+visual                                   = dynamics\equipments\item_krovosos_jaw.ogf
+inv_weight                               = 0.324
+inv_name                                 = mutant_krovosos_jaw
+inv_name_short                           = mutant_krovosos_jaw
+description                              = mutant_krovosos_jaw_description
+inv_grid_x                               = 14
+inv_grid_y                               = 4
+cost                                     = 1500
+
+[mutant_part_boar_leg]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_boar_leg"
+visual                                   = dynamics\equipments\item_boar_leg.ogf
+inv_weight                               = 0.468
+inv_name                                 = mutant_boar_leg
+inv_name_short                           = mutant_boar_leg
+description                              = mutant_boar_leg_description
+inv_grid_x                               = 4
+inv_grid_y                               = 4
+cost                                     = 500
+
+[mutant_part_chimera_kogot]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_chimera_cogot"
+visual                                   = dynamics\equipments\item_chimera_cogot.ogf
+inv_weight                               = 0.244
+inv_name                                 = mutant_chimera_cogot
+inv_name_short                           = mutant_chimera_cogot
+description                              = mutant_chimera_cogot_description
+inv_grid_x                               = 8
+inv_grid_y                               = 4
+cost                                     = 1500
+
+[mutant_part_chimera_claw]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_chimera_claw"
+visual                                   = dynamics\equipments\item_chimera_cogot.ogf
+inv_weight                               = 0.244
+inv_name                                 = mutant_chimera_claw
+inv_name_short                           = mutant_chimera_claw
+description                              = mutant_chimera_claw_description
+inv_grid_x                               = 7
+inv_grid_y                               = 4
+cost                                     = 3500
+
+[mutant_part_dog_tail]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_dog_tail"
+visual                                   = dynamics\equipments\item_dog_tail.ogf
+inv_weight                               = 0.174
+inv_name                                 = mutant_dog_tail
+inv_name_short                           = mutant_dog_tail
+description                              = mutant_dog_tail_description
+inv_grid_x                               = 11
+inv_grid_y                               = 4
+cost                                     = 400
+
+[mutant_part_flesh_eye]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_flesh_eye"
+visual                                   = dynamics\equipments\item_flesh_eye.ogf
+inv_weight                               = 0.046
+inv_name                                 = mutant_flesh_eye
+inv_name_short                           = mutant_flesh_eye
+description                              = mutant_flesh_eye_description
+inv_grid_x                               = 12
+inv_grid_y                               = 4
+cost                                     = 400
+
+[mutant_part_psevdodog_tail]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_psevdodog_tail"
+visual                                   = dynamics\equipments\item_psevdodog_tail.ogf
+inv_weight                               = 0.213
+inv_name                                 = mutant_psevdodog_tail
+inv_name_short                           = mutant_psevdodog_tail
+description                              = mutant_psevdodog_tail_description
+inv_grid_x                               = 17
+inv_grid_y                               = 4
+cost                                     = 500
+
+[mutant_part_snork_leg]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_snork_leg"
+visual                                   = dynamics\equipments\item_snork_leg.ogf
+inv_weight                               = 0.446
+inv_name                                 = mutant_snork_leg
+inv_name_short                           = mutant_snork_leg
+description                              = mutant_snork_leg_description
+inv_grid_x                               = 18
+inv_grid_y                               = 4
+cost                                     = 600
+
+[mutant_part_snork_hand]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_snork_hand"
+visual                                   = dynamics\zpf\raw_snork.ogf
+inv_weight                               = 0.136
+inv_name                                 = mutant_snork_hand
+inv_name_short                           = mutant_snork_hand
+description                              = mutant_snork_hand_description
+inv_grid_x                               = 0	                                       ;17
+inv_grid_y                               = 5	                                       ;28
+cost                                     = 500
+
+[mutant_part_tushkano_head]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_tushkano_head"
+visual                                   = dynamics\equipments\item_tushkano_head.ogf
+inv_weight                               = 0.112
+inv_name                                 = mutant_tushkano_head
+inv_name_short                           = mutant_tushkano_head
+description                              = mutant_tushkano_head_description
+inv_grid_x                               = 19
+inv_grid_y                               = 4
+cost                                     = 200
+
+[mutant_part_pseudogigant_hand]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_pseudogigant_hand"
+visual                                   = dynamics\equipments\psevdogigant_hand.ogf
+inv_weight                               = 0.368
+inv_name                                 = mutant_pseudogigant_hand
+inv_name_short                           = mutant_pseudogigant_hand
+description                              = mutant_pseudogigant_hand_description
+inv_grid_x                               = 16
+inv_grid_y                               = 4
+cost                                     = 5550
+
+[mutant_part_pseudogigant_eye]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_flesh_eye"
+visual                                   = dynamics\equipments\item_flesh_eye.ogf
+inv_weight                               = 0.068
+inv_name                                 = mutant_pseudogigant_eye
+inv_name_short                           = mutant_pseudogigant_eye
+description                              = mutant_pseudogigant_eye_description
+inv_grid_x                               = 15
+inv_grid_y                               = 4
+cost                                     = 6500
+
+[mutant_part_controller_glass]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_controller_glas"
+visual                                   = dynamics\equipments\poltergeist_glas.ogf
+inv_weight                               = 0.095
+inv_name                                 = mutant_controller_brain
+inv_name_short                           = mutant_controller_brain
+description                              = mutant_controller_brain_description
+inv_grid_x                               = 9
+inv_grid_y                               = 4
+cost                                     = 5000
+
+[mutant_part_controller_hand]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_controller_glas"
+visual                                   = dynamics\equipments\item_controller_hand.ogf
+inv_weight                               = 0.212
+inv_name                                 = mutant_controller_hand
+inv_name_short                           = mutant_controller_hand
+description                              = mutant_controller_hand_description
+inv_grid_x                               = 10
+inv_grid_y                               = 4
+cost                                     = 4800
+
+[mutant_part_burer_hand]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_burer_hand"
+visual                                   = dynamics\equipments\item_burer_hand.ogf
+inv_weight                               = 0.234
+inv_name                                 = mutant_burer_hand
+inv_name_short                           = mutant_burer_hand
+description                              = mutant_burer_hand_description
+inv_grid_x                               = 5
+inv_grid_y                               = 4
+cost                                     = 2400
+
+[mutant_part_cat_tail]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_psevdodog_tail"
+visual                                   = dynamics\equipments\tail_cat.ogf
+inv_name                                 = mutant_cat_tail
+inv_name_short                           = mutant_cat_tail
+description                              = mutant_cat_tail_description
+inv_weight                               = 0.262
+inv_grid_x                               = 6
+inv_grid_y                               = 4
+cost                                     = 500
+
+[mutant_part_fracture_hand]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_controller_hand"
+visual                                   = dynamics\equipments\fracture_hand.ogf
+inv_name                                 = mutant_fracture_hand
+inv_name_short                           = mutant_fracture_hand
+description                              = mutant_fracture_hand_description
+inv_weight                               = 0.243
+inv_grid_x                               = 13
+inv_grid_y                               = 4
+cost                                     = 400
+
+[mutant_part_zombi_hand]:mutant_part_general
+$spawn                                   = "devices\monster_items\mutant_burer_hand"
+visual                                   = dynamics\equipments\item_zombie_hand.ogf
+inv_name                                 = mutant_zombi_hand
+inv_name_short                           = mutant_zombi_hand
+description                              = mutant_zombi_hand_description
+inv_weight                               = 0.184
+inv_grid_x                               = 0
+inv_grid_y                               = 5
+cost                                     = 300
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;; EATABLE MONSTER ITEMS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[mutant_part_general_meat]:booster
+$spawn                                   = "devices\monster_items\mutant_part_general"
+visual                                   = dynamics\zpf\raw_flesh.ogf
+
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_weight                               = 0.2
+
+attach_angle_offset                      = 0.440521, 1.378287, -0.644026
+attach_position_offset                   = 0.104196, -0.010821, 0.076969
+attach_bone_name                         = bip01_r_hand
+auto_attach                              = false
+
+// should be deleted after update        =
+bone_name                                = bip01_r_hand
+position_offset                          = 0.0,0.0,0.0 0.117
+angle_offset                             = 1.570790,1.570790,3.92699
+
+eat_satiety                              = 0.114
+eat_radiation                            = 0.232
+eat_sleepiness                           = 0.026
+eat_health                               = -0.07
+eat_alcohol                              = -0.01
+
+[mutant_part_flesh_meat]:mutant_part_general_meat
+$spawn                                   = "devices\monster_items\mutant_flesh_meat"
+visual                                   = dynamics\zpf\raw_flesh.ogf
+inv_weight                               = 0.336
+inv_name                                 = mutant_flesh_meat
+inv_name_short                           = mutant_flesh_meat
+description                              = mutant_flesh_meat_description
+inv_grid_x                               = 14	                                       ;16
+inv_grid_y                               = 2	                                       ;25
+cost                                     = 20
+
+eat_satiety                              = 0.429
+eat_radiation                            = 0.349
+eat_sleepiness                           = 0.0209
+eat_health                               = -0.082
+eat_alcohol                              = -0.02
+
+[mutant_part_boar_chop]:mutant_part_general_meat
+$spawn                                   = "devices\monster_items\mutant_boar_chop"
+visual                                   = dynamics\zpf\raw_boar.ogf
+inv_weight                               = 0.389
+inv_name                                 = mutant_boar_chop
+inv_name_short                           = mutant_boar_chop
+description                              = mutant_boar_chop_description
+inv_grid_x                               = 11	                                       ;17
+inv_grid_y                               = 2	                                       ;26
+cost                                     = 50
+
+eat_satiety                              = 0.497
+eat_radiation                            = 0.367
+eat_sleepiness                           = 0.0238
+eat_health                               = -0.092
+eat_alcohol                              = -0.02
+
+
+[mutant_part_dog_meat]:mutant_part_general_meat
+$spawn                                   = "devices\monster_items\mutant_dog_meat"
+visual                                   = dynamics\zpf\raw_dog.ogf
+inv_weight                               = 0.146
+inv_name                                 = mutant_dog_meat
+inv_name_short                           = mutant_dog_meat
+description                              = mutant_dog_meat_description
+inv_grid_x                               = 13	                                       ;16
+inv_grid_y                               = 2	                                       ;26
+cost                                     = 30
+
+eat_satiety                              = 0.146
+eat_radiation                            = 0.121
+eat_sleepiness                           = 0.0099
+eat_health                               = -0.034
+
+
+[mutant_part_psevdodog_meat]:mutant_part_general_meat
+$spawn                                   = "devices\monster_items\mutant_psevdodog_meat"
+visual                                   = dynamics\zpf\raw_dog.ogf
+inv_weight                               = 0.321
+inv_name                                 = mutant_psevdodog_meat
+inv_name_short                           = mutant_psevdodog_meat
+description                              = mutant_psevdodog_meat_description
+inv_grid_x                               = 16	                                       ;19
+inv_grid_y                               = 2	                                       ;25
+cost                                     = 40
+
+eat_satiety                              = 0.197
+eat_radiation                            = 0.159
+eat_sleepiness                           = 0.0132
+eat_health                               = -0.046
+
+
+
+[mutant_part_krovosos_meat]:mutant_part_general_meat
+$spawn                                   = "devices\monster_items\mutant_krovosos_meat"
+visual                                   = dynamics\zpf\raw_tushkano.ogf
+inv_weight                               = 0.351
+inv_name                                 = mutant_krovosos_meat
+inv_name_short                           = mutant_krovosos_meat
+description                              = mutant_krovosos_meat_description
+inv_grid_x                               = 15	                                       ;16
+inv_grid_y                               = 2	                                       ;28
+cost                                     = 50
+
+eat_satiety                              = 0.638
+eat_radiation                            = 0.323
+eat_sleepiness                           = 0.0195
+eat_health                               = -0.063
+eat_alcohol                              = -0.03
+
+
+[mutant_part_chimera_meat]:mutant_part_general_meat
+$spawn                                   = "devices\monster_items\mutant_chimera_meat"
+visual                                   = dynamics\zpf\meat_chimera.ogf
+inv_weight                               = 0.519
+inv_name                                 = mutant_chimera_meat
+inv_name_short                           = mutant_chimera_meat
+description                              = mutant_chimera_meat_description
+inv_grid_x                               = 12	                                       ;19
+inv_grid_y                               = 2	                                       ;28
+cost                                     = 200
+
+eat_satiety                              = 0.714
+eat_radiation                            = 0.398
+eat_sleepiness                           = 0.031
+eat_health                               = -0.095
+eat_alcohol                              = -0.03
+
+[mutant_part_tushkano_meat]:mutant_part_general_meat
+$spawn                                   = "devices\monster_items\mutant_tushkano_meat"
+visual                                   = dynamics\zpf\raw_tushkano.ogf
+inv_weight                               = 0.086
+inv_name                                 = mutant_tushkano_meat
+inv_name_short                           = mutant_tushkano_meat
+description                              = mutant_tushkano_meat_description
+inv_grid_x                               = 17	                                       ;17
+inv_grid_y                               = 2	                                       ;27
+cost                                     = 30
+
+eat_satiety                              = 0.094
+eat_radiation                            = 0.073
+eat_sleepiness                           = 0.054
+eat_health                               = -0.018
+
+[itm_gunsmith_toolkit]:booster
+$spawn                                   = "devices\repair_kit_10"
+description                              = st_itm_gunsmith_toolkit_descr
+inv_name                                 = st_itm_gunsmith_toolkit
+inv_name_short                           = st_itm_gunsmith_toolkit
+can_trade                                = true
+quest_item                               = false
+cost                                     = 2400
+inv_weight                               = 3.65
+visual                                   = dynamics\devices\dev_instrument_1\dev_instrument_1.ogf
+inv_grid_width                           = 2
+inv_grid_height                          = 2
+inv_grid_x                               = 14
+inv_grid_y                               = 10
+
+repair_min_condition                     = 0.00	                                       ;Min required condition to use
+repair_max_condition                     = 0.75	                                       ;Max required condition to use
+repair_add_condition                     = 0.25	                                       ;Amount of condition added to repaired item
+repair_part_bonus                        = 0.10	                                       ;Amount bonus to add_condition if parts are used
+repair_use_parts                         = true	                                       ;Allows the use of lesser conditioned weapons to be used for parts to add overall bonus to repair
+repair_type                              = weapon	                                       ;weapon or outfit
+repair_refuse                            =	                                       ;Add sections separated by commas that cannot be repaired by this item
+repair_only                              =	                                       ;Add sections separated by commas that exclude all sections but these
+repair_parts_include                     =	                                       ;Add sections of items to include to be considered repair parts
+repair_parts_exclude                     =	                                       ;Add sections of items to exclude from being considered repair parts
+
+use_condition                            = true
+max_uses                                 = 3
+remove_after_use                         = false
+empty_weight                             = 1.65
+
+[itm_outfit_toolkit]:itm_gunsmith_toolkit
+description                              = st_itm_outfit_toolkit_descr
+inv_name                                 = st_itm_outfit_toolkit
+inv_name_short                           = st_itm_outfit_toolkit
+inv_weight                               = 1.65
+visual                                   = dynamics\equipments\item_sewingkit.ogf
+
+inv_grid_height                          = 1
+inv_grid_x                               = 18
+inv_grid_y                               = 23
+
+repair_type                              = outfit	                                       ;weapon or outfit
+
+max_uses                                 = 3
+empty_weight                             = 0.8
+
+[itm_repairkit_tier_1]:itm_gunsmith_toolkit
+inv_grid_x                               = 6
+inv_grid_y                               = 7
+inv_grid_width                           = 2
+inv_grid_height                          = 1
+inv_weight                               = 3.5
+
+cost                                     = 2000
+visual                                   = dynamics\equipments\quest\box_toolkit_1.ogf
+
+description                              = st_itm_repairkit_tier_1_descr
+inv_name                                 = st_itm_repairkit_tier_1_name
+inv_name_short                           = st_itm_repairkit_tier_1_name
+
+use_condition                            = false
+
+[itm_repairkit_tier_2]:itm_repairkit_tier_1
+inv_grid_x                               = 8
+inv_grid_y                               = 7
+inv_grid_width                           = 2
+inv_grid_height                          = 1
+inv_weight                               = 3
+
+cost                                     = 2500
+visual                                   = dynamics\equipments\quest\box_toolkit_2.ogf
+
+description                              = st_itm_repairkit_tier_2_descr
+inv_name                                 = st_itm_repairkit_tier_2_name
+inv_name_short                           = st_itm_repairkit_tier_2_name
+
+[itm_repairkit_tier_3]:itm_repairkit_tier_2
+inv_grid_x                               = 10
+inv_grid_y                               = 7
+inv_grid_width                           = 2
+inv_grid_height                          = 1
+inv_weight                               = 2.5
+
+cost                                     = 3500
+visual                                   = dynamics\equipments\quest\box_toolkit_3.ogf
+
+description                              = st_itm_repairkit_tier_3_descr
+inv_name                                 = st_itm_repairkit_tier_3_name
+inv_name_short                           = st_itm_repairkit_tier_3_name
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; For Information broker
+[itm_pda_common]:device_pda
+[itm_pda_uncommon]:device_pda
+[itm_pda_rare]:device_pda
+
+[itm_backpack]:booster
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "food and drugs\antirad"
+$prefetch                                = 32
+class                                    = II_ANTIR
+cform                                    = skeleton
+visual                                   = dynamics\devices\dev_rukzak\dev_rukzak.ogf
+description                              = st_itm_backpack_desc
+inv_weight                               = 1
+inv_name                                 = st_itm_backpack_name
+inv_name_short                           = st_itm_backpack_name
+inv_grid_width                           = 2
+inv_grid_height                          = 2
+inv_grid_x                               = 16
+inv_grid_y                               = 10
+cost                                     = 700
+eat_health                               = 0
+eat_satiety                              = 0
+eat_power                                = 0
+eat_radiation                            = 0
+eat_alcohol                              = 0
+wounds_heal_perc                         = 0
+animation_slot                           = 4
+hud                                      = wpn_vodka_hud
+slot                                     = -1
+;use_sound								 = interface\inv_open
+
+[test_container]:itm_backpack
+use1_functor                             = bind_container.access_inventory
+use1_text                                = st_open
+script_binding                           = bind_container.bind
+remove_after_use                         = false
+dont_stack                               = true
+
+[artefact_container]:test_container
+visual 									 = dynamics\box\konteyner_03b.ogf
+empty_weight							 = 5.0
+inv_weight								 = 5.0
+inv_name                                 = st_itm_artefact_container_name
+inv_name_short                           = st_itm_artefact_container_name
+inv_grid_width                           = 2
+inv_grid_height                          = 2
+inv_grid_x                               = 4
+inv_grid_y                               = 39
+cost                                     = 5000
+
+[itm_sleepbag]:booster
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "food and drugs\antirad"
+$prefetch                                = 32
+class                                    = II_ANTIR
+cform                                    = skeleton
+visual                                   = dynamics\equipments\item_sleepbag.ogf
+inv_weight                               = 1
+description                              = st_itm_sleepbag_desc
+inv_name                                 = st_itm_sleepbag_name
+inv_name_short                           = st_itm_sleepbag_name
+inv_grid_width                           = 2
+inv_grid_height                          = 2
+inv_grid_x                               = 18
+inv_grid_y                               = 10
+cost                                     = 1580
+eat_health                               = 0
+eat_satiety                              = 0
+eat_power                                = 0
+eat_radiation                            = 0
+eat_alcohol                              = 0
+wounds_heal_perc                         = 0
+animation_slot                           = 4
+hud                                      = wpn_vodka_hud
+placeable_section                        = ph_sleepbag	                                       ;Section of placeable physics object
+
+[itm_actor_backpack]:itm_backpack
+inv_name                                 = st_itm_actor_backpack_name
+inv_name_short                           = st_itm_actor_backpack_name
+inv_grid_width                           = 1
+inv_grid_height                          = 1
+inv_grid_x                               = 19
+inv_grid_y                               = 2
+
+[itm_deployable_mgun]:booster
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+$spawn                                   = "food and drugs\antirad"
+$prefetch                                = 32
+class                                    = II_ANTIR
+cform                                    = skeleton
+visual                                   = dynamics\weapons\wpn_mounted\wpn_mounted_pkm_trenoga.ogf
+description                              = st_itm_deployable_mgun_desc
+inv_weight                               = 11.5
+inv_name                                 = st_itm_deployable_mgun_name
+inv_name_short                           = st_itm_deployable_mgun_name
+inv_grid_height                          = 2
+inv_grid_width                           = 6
+inv_grid_x                               = 6
+inv_grid_y                               = 31
+cost                                     = 23700
+eat_health                               = 0
+eat_satiety                              = 0
+eat_power                                = 0
+eat_radiation                            = 0
+eat_alcohol                              = 0
+wounds_heal_perc                         = 0
+animation_slot                           = 4
+hud                                      = wpn_vodka_hud
+slot                                     = -1

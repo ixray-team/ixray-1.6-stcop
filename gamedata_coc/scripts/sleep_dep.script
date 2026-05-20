@@ -1,0 +1,260 @@
+--// -----------------		sleep deprivation for CoC		---------------------
+--// author	: 	Nuor
+--// version:	1.23 (alt)
+--// created:	4-09-2016
+--// last edit:	4-24-2016
+--//------------------------------------------------------------------------------
+last_sleep, no_sleep, caff_chk 	= nil,nil,nil -- to change defaults, edit below in 'activate_feature' function
+local items,force,start_blur,itn_mul,pwr_rate,rng_factor,caff_max,last_warning,die_chance,last_chk,pwr_chk, _tmr
+
+feature_is_active = nil
+local function main_loop()
+	local tg = time_global()
+	if (_tmr and tg < _tmr) then 
+		return false 
+	end
+	_tmr = tg + 2000
+	
+	if not (db.actor) then
+		return false
+	end 
+	
+	--printf("last_chk=%s last_sleep=%s",last_chk and game.get_game_time():diffSec(last_chk) or "nil",last_sleep)
+	if db.actor:has_info("actor_is_sleeping") then
+		last_sleep 	= 0
+		level.remove_pp_effector(999)
+	end
+	
+	--//	drain power when exhausted
+	if last_sleep > start_blur then
+		local tg = time_global()
+		if (pwr_chk == nil or tg > pwr_chk) then 
+			if (db.actor.power > 0) then
+				db.actor.power = pwr_rate*(1+((last_sleep-start_blur)*rng_factor))
+			end
+			pwr_chk = tg+100
+		end
+	end
+
+	if (last_chk and game.get_game_time():diffSec(last_chk) < 3600) then 
+		return false
+	end
+	
+	last_chk = game.get_game_time()
+		
+	last_sleep = last_sleep + 1
+	caff_chk = caff_chk > 1 and caff_chk - 1 or 0
+	test_blur()
+	
+	return false
+end
+
+function activate_feature()
+	if (feature_is_active) then
+		return 
+	end
+	feature_is_active = true
+	
+	last_sleep 				= 0
+	no_sleep 				= 1 				--// change "no_sleep" to 0 to allow sleep spam
+	caff_chk 				= 0	
+	
+	force 					= 60				--// time between sleeps that triggers passing out
+	start_blur 				= 16				--// time between sleeps when vision blur starts 
+	itn_mul 				= 0.2				--// blur intensity multiplier
+	pwr_rate,rng_factor 	= -0.00065, 0.08		--// power reduction rate ,high/low range multiplier - lower is flatter
+	caff_max				= 3					--// max energy drinks per hr
+	last_warning 			= 3					--// # of hourly warnings before passing out
+	die_chance 				= 0.01				--// chance of dying if actor passes out
+	--last_chk, pwr_chk		= 0, 0				--// hourly and power update counters
+
+	items = {
+	--	Vanilla.
+	--	Alcoholic drinks.
+		vodka				= 3,
+		vodka_script		= 3,
+		
+	--	Energy drinks.
+		energy_drink		= -4,
+		
+	--	Medical supplies.
+		antirad				= 2,
+--		bandage				= 1,
+		drug_anabiotic		= 1,
+		drug_antidot		= 1,
+		drug_coagulant		= 1,
+		drug_psy_blockade	= 1,
+		drug_radioprotector	= 1,
+		medkit				= 2,
+		medkit_army			= 3,
+		medkit_scientic 	= 4,
+		medkit_script		= 2,
+		
+	-----------------------------
+		
+	--	"Items Addon" by 2C. (Compatibility)
+	--	Alcoholic drinks.
+		beer				= 2,
+		medo				= 3,
+		
+	--	Energy drinks.
+		mbk					= -4,
+		wild_drink			= -2,
+		
+	--	Medical supplies
+		drug_cat_eye		= 2,
+		drug_engine			= -4,	-- LSD
+--		bio_bandage			= 2,
+		medkit_elite		= 4,
+		psy_complex			= 2,
+		
+	-----------------------------
+
+	--	"Item Soup" by /sg/. (Compatibility)
+	--	Alcoholic drinks.
+		vodka_1				= 3,
+		vodka_2				= 3,
+		vodka_3				= 3,
+		vodka_4				= 3,
+		beer_1				= 2,
+		beer_2				= 2,
+		beer_can_1			= 2,
+		beer_can_2			= 2,
+		beer_large_1		= 3,
+		beer_large_2		= 3,
+		
+	--	Energy drinks.
+		cocacola			= -2,
+		guru				= -3,
+		redbull				= -4,
+		
+	--	Medical supplies.
+		amphetamines_1		= -3,
+		amphetamines_2		= -3,
+		amphetamines_3	 	= -3,
+		amphetamines_4		= -3,
+--		bandage_israeli		= 1,
+		diazepam			= 2,
+		
+	--	Tobacco products.
+		cigarettes_1		= 1,
+		cigarettes_2		= 1,
+		cigarettes_3		= 1,
+		cigarettes_russian	= 1,
+		cuban				= 2,
+		lucky				= 1,
+		marlboro			= 1
+	}	
+	
+	RegisterScriptCallback("actor_on_item_use",actor_on_item_use)
+	if (USE_MARSHAL) then
+		RegisterScriptCallback("save_state",save_state)
+		RegisterScriptCallback("load_state",load_state)
+	end
+	AddUniqueCall(main_loop)
+end 
+
+function deactivate_feature()
+	if not (feature_is_active) then
+		return 
+	end
+	feature_is_active = false
+		
+	RemoveUniqueCall(main_loop)
+	UnregisterScriptCallback("actor_on_item_use",actor_on_item_use)
+	if (USE_MARSHAL) then
+		UnregisterScriptCallback("save_state",save_state)
+		UnregisterScriptCallback("load_state",load_state)
+	end
+	alife_storage_manager.get_state().sleep_deprived = nil
+end 
+
+function on_game_start()
+	if (axr_main.config:r_value("mm_options","enable_sleep_deprived",1,false) == false) then
+		return 
+	end
+	local function actor_on_first_update()
+		activate_feature()
+		if last_sleep > start_blur then
+			level.add_pp_effector("yantar_underground_psi.ppe", 999, true)
+			level.set_pp_effector_factor(999, (last_sleep-start_blur) * itn_mul)
+			if last_sleep >= (force - last_warning + 1) then
+				SetHudMsg(game.translate_string("st_sleep_exhausted_final"),5)
+			else
+				SetHudMsg(game.translate_string("st_sleep_exhausted"),4)
+			end
+		end
+	end
+	RegisterScriptCallback("actor_on_first_update",actor_on_first_update)
+end
+
+----// add to bind_stalker or bind_stalker_ext save/load if used. //--
+function save(package)	-- sleep_dep.save -> actor_binder:save()
+	if (USE_MARSHAL) then
+		return
+	end
+	package:w_u8(last_sleep)
+	--package:w_u16(last_chk)
+	package:w_u8(caff_chk)
+end
+function load(package)	-- sleep_dep.load -> actor_binder:load()
+	if (USE_MARSHAL) then
+		return
+	end
+	last_sleep  = package:r_u8() or 0
+	--last_chk 	= package:r_u16() or 0
+	caff_chk 	= package:r_u8() or 0
+end
+--//--------------------------------------------------------------//--
+function save_state(m_data)
+	if (USE_MARSHAL) then
+		m_data.sleep_deprived = m_data.sleep_deprived or {}
+		m_data.sleep_deprived["last_sleep"] = last_sleep
+		m_data.sleep_deprived["caff"] = caff_chk
+	end
+end
+
+function load_state(m_data)
+	if (USE_MARSHAL) then
+		last_sleep = m_data.sleep_deprived and m_data.sleep_deprived.last_sleep or 0
+		caff_chk = m_data.sleep_deprived and m_data.sleep_deprived.caff or 0
+	end
+end
+
+function actor_on_item_use(item)
+	for i,j in pairs(items) do
+		if item:section() == i then
+--			if i == "energy_drink" then
+			if j < 0 then
+				caff_chk = caff_chk + 1
+				if caff_chk > caff_max then break end
+			end
+			last_sleep = last_sleep + j
+			test_blur()
+			break
+		end
+	end
+end
+
+function test_blur()
+	level.remove_pp_effector(999)
+	if last_sleep > force then
+		force_sleep()
+	elseif last_sleep > start_blur then
+		level.add_pp_effector("yantar_underground_psi.ppe", 999, true)
+		level.set_pp_effector_factor(999, (last_sleep-start_blur) * itn_mul)
+		if last_sleep >= (force - last_warning + 1) then
+			SetHudMsg(game.translate_string("st_sleep_exhausted_final"),5)
+		else
+			SetHudMsg(game.translate_string("st_sleep_exhausted"),4)
+		end
+	end
+end
+
+function force_sleep()
+	ui_sleep_dialog.sleep_forced()
+	if (math.random(1,100)/100) < die_chance then
+		SetHudMsg(game.translate_string("st_sleep_deprived"),5)
+		db.actor:kill(db.actor)
+	end
+end

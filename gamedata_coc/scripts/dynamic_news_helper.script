@@ -1,0 +1,823 @@
+local level_name={
+ ["zaton"]={"in Zaton,"},
+ ["jupiter"]={"in Jupiter,"},
+ ["pripyat"]={"in Outskirts,"},
+ ["jupiter_underground"]={"in the Pripyat Underground,"},
+ ["labx8"]={"in Lab X-8,"},
+ ["l01_escape"]={"in Cordon,"},
+ ["l02_garbage"]={"in the Garbage,"},
+ ["l03_agroprom"]={"in Agroprom,"},
+ ["k01_darkscape"]={"in Darkscape,"},
+ ["l04_darkvalley"]={"in Dark Valley,"},
+ ["l05_bar"]={"in Rostok,"},
+ ["l06_rostok"]={"in the Wild Territory,"},
+ ["l07_military"]={"in the Army Warehouses,"},
+ ["l08_yantar"]={"in Yantar,"},
+ ["l09_deadcity"]={"in Dead City,"},
+ ["l10_limansk"]={"in Limansk,"},
+ ["l10_radar"]={"in Radar,"},
+ ["l10_red_forest"]={"in Red Forest,"},
+ ["l11_pripyat"]={"in Pripyat,"},
+ ["k02_trucks_cemetery"]={"in the Truck Cemetery,"},
+ ["k00_marsh"]={"in the Great Swamp,"}
+}
+
+local all_points={
+ ["zaton"]={
+  [1]={p_daleko="the Claw anomaly",p_blizko="at the Claw anomaly",p={-33.0228,0.4555,-200.7156}}, 
+  [2]={p_daleko="the Iron Forest anomaly",p_blizko="at the Iron Forest anomaly",p={-355.6813,40.0176,-325.4126}},
+  [3]={p_daleko="the sawmill",p_blizko="at the sawmill",p={-349.0496,18.3864,345.0177}},
+  [4]={p_daleko="the antenna complex",p_blizko="at the antenna complex",p={-400.3414,6.4376,-9.3092}},
+  [5]={p_daleko="the waste processing plant",p_blizko="at the waste processing plant",p={321.9968,33.2427,-403.7212}},
+  [6]={p_daleko="the Circus anomaly",p_blizko="at the Circus anomaly",p={0.5964,20.9242,-332.0877}},
+  [7]={p_daleko="the ranger station",p_blizko="at the ranger station",p={420.0504,36.2633,-17.5632}},
+  [8]={p_daleko="Skadovsk",p_blizko="at Skadovsk",p={132.5715,-7.3392,185.0458}},
+  [9]={p_daleko="the burnt village",p_blizko="at the burnt village",p={-48.5605,24.1285,303.5849}},
+  [10]={p_daleko="the Boiler anomaly",p_blizko="at the Boiler anomaly",p={421.4176,-4.357,413.4552}},
+  [11]={p_daleko="the swamp",p_blizko="in the swamp",p={-355.5159,7.6103,250.3168}},
+  [12]={p_daleko="Izumrudnoye",p_blizko="at Izumrudnoye",p={-173.2566,7.7176,99.8053}},
+  [13]={p_daleko="Shevchenko",p_blizko="at the Shevchenko",p={11.8022,-5.1532,35.2991}},
+  [14]={p_daleko="the dredge station",p_blizko="at the dredge station",p={394.4182,-5.8341,228.9845}},
+  [15]={p_daleko="the dock cranes",p_blizko="at the dock cranes",p={212.8967,6.8029,14.0857}},
+  [16]={p_daleko="the Oakpine anomaly",p_blizko="at the Oakpine anomaly",p={-283.9678,21.0929,-136.5675}},
+  [17]={p_daleko="the refuelling station",p_blizko="at the refuelling station",p={-103.5785,-5.4548,-220.5178}},
+  [18]={p_daleko="the old barge",p_blizko="at the old barge",p={152.5881,-6.8237,-139.0262}},
+  [19]={p_daleko="the Scar anomaly",p_blizko="at the Scar anomaly",p={323.3748,-5.2372,-219.5806}},
+  [20]={p_daleko="Preobrazhensky bridge",p_blizko="at Preobrazhensky bridge",p={429.9237,20.2642,-182.6681}},
+  [21]={p_daleko="the southern plateau",p_blizko="at the southern plateau",p={77.0241,39.0102,-478.4914}},
+  [22]={p_daleko="the workshop substation",p_blizko="at the workshop substation",p={-135.3534,24.5687,-412.9718}} 
+ },
+ ["jupiter"]={
+  [1]={p_daleko="the Ash Heap anomaly",p_blizko="at the Ash Heap anomaly",p={-349.75,3.9878,407.8909}},
+  [2]={p_daleko="the tower",p_blizko="at the tower",p={-161.104,3.594,390.616}},
+  [3]={p_daleko="the substation",p_blizko="at the substation",p={73.6377,4.6632,324.0991}},
+  [4]={p_daleko="the Plavni anomaly",p_blizko="at the Plavni anomaly",p={228.0958,-4.8275,404.7565}},
+  [5]={p_daleko="the cement factory",p_blizko="at the cement factory",p={356.3688,33.4261,335.5996}},
+  [6]={p_daleko="Kopachi",p_blizko="at Kopachi",p={-341.2063,-3.9061,235.3816}},
+  [7]={p_daleko="Yanov",p_blizko="at Yanov",p={-51.0059,3.4884,199.2509}},
+  [8]={p_daleko="the quarry",p_blizko="at the quarry",p={276.5087,-29.4639,163.2693}},
+  [9]={p_daleko="the mobile lab",p_blizko="at the mobile lab",p={-196.3071,-3.748,72.5475}},
+  [10]={p_daleko="the Volkhov complex",p_blizko="at the Volkhov complex",p={-360.9959,11.2529,-6.6707}},
+  [11]={p_daleko="the anomalous grove",p_blizko="at the anomalous grove",p={55.7362,10.5284,-18.2494}},
+  [12]={p_daleko="the parking lot",p_blizko="at the parking lot",p={-108.4109,-0.3887,-145.4128}},
+  [13]={p_daleko="the checkpoint",p_blizko="at the checkpoint",p={43.5119,23.9638,-190.6825}},
+  [14]={p_daleko="the Bitumen anomaly",p_blizko="at the Bitumen anomaly",p={213.3307,0.5969,-70.0109}},
+  [15]={p_daleko="the eastern tunnel",p_blizko="at the eastern tunnel",p={399.7508,4.505,-103.8042}},
+  [16]={p_daleko="the storage containers",p_blizko="at the storage containers",p={-412.9768,-0.0092,-343.6718}},
+  [17]={p_daleko="the ventilation complex",p_blizko="at the ventilation complex",p={-65.5894,23.7972,-322.6659}},
+  [18]={p_daleko="the helipad",p_blizko="at the helipad",p={-128.901,26.8013,-470.7353}},
+  [19]={p_daleko="the Concrete Bath anomaly",p_blizko="at the Concrete Bath anomaly",p={234.1494,15.171,-316.6919}},
+  [20]={p_daleko="the Jupiter factory",p_blizko="at the Jupiter factory",p={277.403,27.6236,-231.8324}}
+ },
+ ["pripyat"]={
+  [1]={p_daleko="the Prometheus theater",p_blizko="at the Prometheus theater",p={81.8565,-16.6709,-1054.051}},
+  [2]={p_daleko="the river port",p_blizko="at the river port",p={293.7553,0.6782,231.0446}},
+  [3]={p_daleko="the old KBO",p_blizko="at the old KBO",p={11.1927,4.4952,277.1345}},
+  [4]={p_daleko="the school",p_blizko="at the school",p={56.3268,1.6092,127.6943}},
+  [5]={p_daleko="the hospital",p_blizko="at the hospital",p={222.1708,-0.2035,32.2432}},
+  [6]={p_daleko="KBO Jubilee",p_blizko="at KBO Jubilee",p={-59.2026,8.6021,94.3039}},
+  [7]={p_daleko="the laundromat",p_blizko="at the laundromat",p={154.753,-0.0955,-185.3917}},
+  [8]={p_daleko="the playground",p_blizko="at the playground",p={-109.6032,4.1258,-105.4647}},
+  [9]={p_daleko="the dormitory",p_blizko="at the dormitory",p={46.9189,16.5275,-139.9859}},
+  [10]={p_daleko="the grocery store",p_blizko="at the grocery store",p={-198.7285,-0.1768,-199.4987}},
+  [11]={p_daleko="the department store",p_blizko="at the department store",p={-101.6807,0.5108,-257.1676}},
+  [12]={p_daleko="the book store",p_blizko="at the book store",p={-181.141,0.5491,-347.6817}},
+  [13]={p_daleko="the Volcano anomaly",p_blizko="at the Volcano anomaly",p={-177.9315,-0.5841,-30.081}},
+  [14]={p_daleko="the Vine anomaly",p_blizko="at the Vine anomaly",p={154.266,0.0355,216.7533}}
+ },
+ ["jupiter_underground"]={
+  [1]={p_daleko="the tunnels",p_blizko="in the tunnels",p={0,0,0}}
+ },
+ ["labx8"]={
+  [1]={p_daleko="the lab",p_blizko="in the lab",p={0,0,0}}
+ },
+ ["l01_escape"]={
+  [1]={p_daleko="the southern checkpoint",p_blizko="at the southern checkpoint",p={-156.24,-28.86,-344.82}},
+  [2]={p_daleko="the rookie village",p_blizko="in the rookie village",p={-190.00,-18.32,-147.271}},
+  [3]={p_daleko="the trash pit",p_blizko="by the trash pit",p={-215.80,-7.90,-39.57}},
+  [4]={p_daleko="the car park",p_blizko="at the car park",p={86.19,-6.59,-16.25}},
+  [5]={p_daleko="the railway embankment",p_blizko="by the railway embankment",p={58.50,3.05,135.78}},
+  [6]={p_daleko="the farm",p_blizko="at the farm",p={18.44,2.03,277.14}},
+  [7]={p_daleko="the anomaly in the woods",p_blizko="at the anomaly in the woods",p={104.92,2.94,510.45}},
+  [8]={p_daleko="the train tunnel",p_blizko="by the train tunnel",p={319.45,13.92,219.38}},
+  [9]={p_daleko="the northern checkpoint",p_blizko="by the northern checkpoint",p={17.83,17.45,661.86}}
+ },
+ ["l02_garbage"]={
+  [1]={p_daleko="the Rostok checkpoint",p_blizko="at the Rostok checkpoint",p={37.24,2.14,225.37}},
+  [2]={p_daleko="the Synapse anomaly",p_blizko="at the Synapse anomaly",p={-213.44,0.43,105.17}},
+  [3]={p_daleko="the Depot",p_blizko="at the Depot",p={-112.15,2.02,10.16}},
+  [4]={p_daleko="the vehicle graveyard",p_blizko="by the vehicle graveyard",p={-77.65,-0.95,-211.41}},
+  [5]={p_daleko="the swamp",p_blizko="by the swamp",p={94.49,1.75,-143.77}},
+  [6]={p_daleko="the anomaly by the road",p_blizko="at the anomaly by the road",p={94.77,-1.31,-257.22}},
+  [7]={p_daleko="the road to Cordon",p_blizko="at the exit to Cordon",p={36.25,2.13,-303.03}}
+ },
+ ["l03_agroprom"]={
+  [1]={p_daleko="the anomaly on the hill",p_blizko="by the anomalies on the hill",p={160.72,9.81,96.51}},
+  [2]={p_daleko="the northern complex",p_blizko="by the northern complex",p={26.26,1.46,-6.70}},
+  [3]={p_daleko="the anomaly to the south",p_blizko="by the anomalies to the south",p={12.68,0.13,-256.75}},
+  [4]={p_daleko="the southern complex",p_blizko="at the southern complex",p={-126.75,1.45,-183.51}},
+  [5]={p_daleko="the Bedrock Claws anomaly",p_blizko="at the Bedrock Claws anomaly",p={-194.71,1.23,-41.46}},
+  [6]={p_daleko="the swamps",p_blizko="by the swamp",p={-214.78,3.58,58.75}}
+ },
+ ["k01_darkscape"]={
+  [1]={p_daleko="the road to Cordon",p_blizko="at the exit to Cordon",p={-587.87,-0.10,-411.62}},
+  [2]={p_daleko="the gas station",p_blizko="at the gas station",p={427.23,-0.12,-362.48}},
+  [3]={p_daleko="the sawmill",p_blizko="at the sawmill",p={255.27,1.14,-189.09}},
+  [4]={p_daleko="the bridge",p_blizko="on the bridge",p={400.78,-1.30,285.05}},
+  [5]={p_daleko="the road to Dark Valley",p_blizko="at the exit to Dark Valley",p={-405.64,2.82,623.14}}
+ },
+ ["l04_darkvalley"]={
+  [1]={p_daleko="the abandoned farm",p_blizko="at the abandoned farm",p={-112.69,2.30,-485.54}},
+  [2]={p_daleko="the Glowing Pit anomaly",p_blizko="by the Glowing Pit anomaly",p={91.62,3.32,-481.87}},
+  [3]={p_daleko="the moving fireball",p_blizko="by the fireball",p={134.25,2.23,-309.97}},
+  [4]={p_daleko="the factory",p_blizko="at the factory",p={7.68,1.45,-102.67}},
+  [5]={p_daleko="the gas station",p_blizko="at the gas station",p={112.59,1.70,-66.32}},
+  [6]={p_daleko="the bandit base",p_blizko="at the bandit base",p={30.21,1.66,14.56}},
+  [7]={p_daleko="the exit to the Garbage",p_blizko="at the exit to the Garbage",p={-146.82,2.39,-196.14}}
+ },
+ ["l05_bar"]={
+  [1]={p_daleko="the western checkpoint",p_blizko="at the western checkpoint",p={89.20,1.65,139.18}},
+  [2]={p_daleko="the entrance to the bar",p_blizko="at the bar entrance",p={130.31,1.80,47.00}},
+  [3]={p_daleko="the Duty base",p_blizko="at the Duty base",p={205.14,1.61,96.77}},
+  [4]={p_daleko="the road to the Army Warehouses",p_blizko="on the road to the Army Warehouses",p={37.67,-1.41,301.72}}
+ },
+ ["l06_rostok"]={
+  [1]={p_daleko="the road to Yantar",p_blizko="on the road to Yantar",p={-83.34,-14.13,-218.59}},
+  [2]={p_daleko="the burning tunnel",p_blizko="in the burning tunnel",p={-158.44,-4.35,-87.61}},
+  [3]={p_daleko="the construction site",p_blizko="at the construction site",p={-236.53,1.65,53.01}},
+  [4]={p_daleko="the parking lot",p_blizko="by the parking lot",p={-30.32,1.66,144.36}},
+  [5]={p_daleko="the road to Rostok",p_blizko="at the exit to Rostok",p={31.64,1.04,139.91}}
+ },
+ ["l07_military"]={
+  [1]={p_daleko="the old farmstead",p_blizko="at the old farmstead",p={-304.69,-20.42,49.06}},
+  [2]={p_daleko="the anomaly on the southern hill",p_blizko="on the southern hill",p={-182.28,-7.18,20.62}},
+  [3]={p_daleko="the Freedom base",p_blizko="at the Freedom base",p={-7.50,-4.53,33.44}},
+  [4]={p_daleko="the old shack",p_blizko="at the old shack",p={54.76,-9.58,125.94}},
+  [5]={p_daleko="the abandoned village",p_blizko="in the old village",p={-289.24,-21.03,237.12}},
+  [6]={p_daleko="the road to Dead City",p_blizko="at the exit to Dead City",p={-15.75,-1.53,438.12}},
+  [7]={p_daleko="the road to Radar",p_blizko="by the road to Radar",p={-198.25,-2.75,419.77}}
+ },
+ ["l08_yantar"]={
+  [1]={p_daleko="the anomaly behind the plant",p_blizko="at the anomaly behind the plant",p={-16.30,-10.83,-243.71}},
+  [2]={p_daleko="the mobile lab",p_blizko="by the mobile lab",p={31.51,-10.08,-272.61}},
+  [3]={p_daleko="the plant",p_blizko="at the plant",p={-169.33,4.70,-157.45}},
+  [4]={p_daleko="the entrance to the plant",p_blizko="by the plant entrance",p={102.32,1.60,-39.23}},
+  [5]={p_daleko="the road to Dead City",p_blizko="at the exit to Dead City",p={-21.81,2.15,3.46}}
+ },
+ ["l09_deadcity"]={
+  [1]={p_daleko="the tunnel to the Army Warehouses",p_blizko="near the tunnel to the Army Warehouses",p={154.53,-1.47,-24.22}},
+  [2]={p_daleko="the road to Yantar",p_blizko="on the road to Yantar",p={-9.47,1.92,-201.10}},
+  [3]={p_daleko="the mercenary base",p_blizko="at the merc base",p={-39.93,3.39,31.96}},
+  [4]={p_daleko="the road to Limansk",p_blizko="at the exit to Limansk",p={-59.58,2.74,96.50}}
+ },
+ ["l10_limansk"]={
+  [1]={p_daleko="the road to Dead City",p_blizko="at the exit to Dead City",p={-46.64,-3.35,-239.41}},
+  [2]={p_daleko="the tunnel to Red Forest",p_blizko="by the tunnel to Red Forest",p={4.10,1.65,-359.17}}
+ },
+ ["l10_red_forest"]={
+  [1]={p_daleko="the bridge",p_blizko="at the bridge",p={-119.31,1.78,-270.63}},
+  [2]={p_daleko="the Superconductor anomaly",p_blizko="at the Superconductor anomaly",p={-2.74,-1.55,-231.93}},
+  [3]={p_daleko="the tunnel camp",p_blizko="by the tunnel camp",p={208.88,-4.89,-107.13}},
+  [4]={p_daleko="the road to Radar",p_blizko="near the exit to Radar",p={124.43,1.79,-271.92}},
+  [5]={p_daleko="the open field",p_blizko="in the field",p={-85.20,3.93,-56.17}},
+  [6]={p_daleko="the road to Jupiter",p_blizko="on the road to Jupiter",p={-56.60,2.05,-31.23}}
+ },
+ ["l11_pripyat"]={
+  [1]={p_daleko="the road to Radar",p_blizko="on the road to Radar",p={4.03,-0.04,-256.47}},
+  [2]={p_daleko="the Monolith base",p_blizko="at the Monolith base",p={6.42,1.65,159.31}}
+ },
+ ["l10_radar"]={
+  [1]={p_daleko="the antennas",p_blizko="at the antennas",p={12.27,1.36,-64.97}},
+  [2]={p_daleko="the road to Pripyat",p_blizko="on the road to Pripyat",p={384.88,-32.47,140.24}}
+ },
+ ["k02_trucks_cemetery"]={
+  [1]={p_daleko="the way to Rostok",p_blizko="by the exit to Rostok",p={-216.822,6.515,139.917}},
+  [2]={p_daleko="the helicopters",p_blizko="by the helicopters",p={85.541,4.834,62.382}},
+  [3]={p_daleko="the fire trucks",p_blizko="by the fire trucks",p={87.560,6.566,203.660}},
+  [4]={p_daleko="the radioactive hills",p_blizko="on the radioactive hills",p={-39.466,10.116,340.233}},
+  [5]={p_daleko="the north eastern checkpoint",p_blizko="by the north east checkpoint",p={219.70,7.659,304.560}},
+  [6]={p_daleko="the hill in the woods",p_blizko="by the hill in the woods",p={-10.543,24.334,-88.519}},
+  [7]={p_daleko="the valley",p_blizko="in the valley",p={-139.040,1.867,-37.843}},
+  [8]={p_daleko="the containers",p_blizko="by the containers",p={-91.354,6.600,-299.094}},
+  [9]={p_daleko="the southern parking lot",p_blizko="at the southern parking lot",p={50.707,13.272,-371.740}}
+ },
+ ["k00_marsh"]={
+  [1]={p_daleko="the Clear Sky base",p_blizko="at the Clear Sky base",p={-144.95,2.29,-29338}},
+  [2]={p_daleko="the fishery",p_blizko="at the fishery",p={37.51,5.32,-228.54}},
+  [3]={p_daleko="the pump station",p_blizko="at the pump station",p={-3.75,5.01,10.89}},
+  [4]={p_daleko="the anomaly cluster",p_blizko="by the anomaly cluster",p={-254.83,2.19,-110.17}},
+  [5]={p_daleko="the road to Agroprom",p_blizko="at the exit to Agroprom",p={165.38,12.61,535.36}},
+  [6]={p_daleko="the machine yard",p_blizko="at the machine yard",p={417.38,5.32,236.78}},
+  [7]={p_daleko="the burnt house",p_blizko="by the burnt house",p={280.52,5.50,61.02}},
+  [8]={p_daleko="the southern checkpoint",p_blizko="at the southern checkpoint",p={486.19,4.36,-175.46}},
+  [9]={p_daleko="the old church",p_blizko="by the old church",p={285.02,1.80,-160.70}}
+ }
+}
+
+local function get_object_levelname(obj)
+	if not (obj) then 
+		return "nil"
+	end 
+	
+	local gvid = obj.m_game_vertex_id or obj.game_vertex_id and obj:game_vertex_id()
+	if not (gvid) then 
+		return "nil"
+	end
+	
+	local gg = game_graph()
+	if (gg:valid_vertex_id(gvid)) then
+		cvertex = gg:vertex(gvid)
+		return alife():level_name(cvertex:level_id())
+	end
+			
+	return "nil"
+end
+
+function GetPointDescription(obj)
+	local level = get_object_levelname(obj)
+	local point = type(obj.position) == "function" and obj:position() or obj.position
+	
+	local dist = 10000
+	local angle = 0
+	local m_s = level and level_name[level] and level_name[level][1] or ""
+	
+	if not (level and all_points[level] and point) then
+		return m_s
+	end
+	
+	local m_str =""
+	local m_str0 =""
+	local m_point =nil
+	local m_points = all_points[level]
+	local m_dist,dx,dy,radians = 0,0,0,0
+
+	for key0,value in pairs(m_points) do
+		m_point = vector():set(value["p"][1],value["p"][2],value["p"][3])
+		if (m_point) then
+			m_dist = m_point:distance_to(point)
+			if (m_dist < dist) then
+				dist=m_dist
+				m_str=value["p_daleko"]
+				m_str0=value["p_blizko"]
+				dx=point.x-m_point.x
+				dy=point.z-m_point.z
+				radians = math.atan2(dy,dx)
+				if(radians)then
+					angle=radians*57
+					if(angle < 0)then 
+						angle = angle+360 
+					end
+					if(angle > 360)then 
+						angle = angle-360 
+					end
+				end
+			end
+		end
+	end
+	
+	if dist<=20 then
+		return m_s .. " " .. m_str0
+	elseif dist<50 then
+		return m_s .. " near " .. m_str
+	elseif dist<100 then
+		return m_s .. " by " .. m_str
+	end
+	
+	if(angle>=330 or angle<=30)then
+		return m_s .. " east of " .. m_str
+	elseif(angle>30 and angle<=60)then
+		return m_s .. " north east of " .. m_str
+	elseif(angle>60 and angle<=120)then
+		return m_s .. " north of " .. m_str
+	elseif(angle>120 and angle<=150)then
+		return m_s .. " north west of " .. m_str
+	elseif(angle>150 and angle<=210)then
+		return m_s .. " west of " .. m_str
+	elseif(angle>210 and angle<=240)then
+		return m_s .. " south west of " .. m_str
+	elseif(angle>240 and angle<= 300)then
+		return m_s .. " south of " .. m_str
+	elseif(angle>300 and angle<=330)then
+		return m_s .. " south east of " .. m_str
+	end
+		
+	return m_s .. " close to " .. m_str
+end
+
+local tips_icons = {
+	dolg     	= "ui_icon_news_news_dolg",
+	freedom  	= "ui_icon_news_news_svoboda",
+	army     	= "ui_icon_news_news_voen_stalk",
+	stalker  	= "ui_iconsTotal_grouping",
+	csky  	= "ui_iconsTotal_grouping",
+    killer   	= "ui_icon_news_news_naim",
+    bandit   	= "ui_icon_news_news_bandos",
+	deth	 	= "ui_icon_news_deth",
+	all		 	= "ui_icon_news_all",
+	signal		="ui_inGame2_Istoriya_dolga",
+	surge 		= "ui_inGame2_Vibros",
+	default		="ui_iconsTotal_grouping"
+}
+function send_tip(msg, header, timeout, showtime, sender, sound,icon_by)
+	if not (msg and db.actor) then 
+		return false
+	end
+	
+	msg = "%c[default]" .. game.translate_string(msg)
+	header = header or game.translate_string("st_tip")
+	timeout = timeout or 0 
+	showtime = showtime or 7
+	sender = sender or "default"
+
+	if sound =="news" then
+		player = sound_object([[device\pda\pda_tip]])
+	elseif sound == "danger" then
+		player = sound_object([[device\pda\pda_alarm]])
+	elseif sound == nil then
+		player = sound_object([[device\pda\pda_tip]])
+	end
+  
+	player:play(db.actor,timeout,sound_object.s2d)
+  
+	if icon_by=="gr" then
+		ui_sender = tips_icons[sender]
+	elseif  icon_by=="npc" then
+		ui_sender = sender
+	elseif icon_by==nil then
+		ui_sender = tips_icons[sender]
+	end
+  
+	if not (ui_sender) then
+		return false 
+	end
+
+	db.actor:give_game_news(header, msg, ui_sender, timeout*1000, showtime*1000)
+
+	return true
+end
+
+local Community = {
+
+	["actor"]={
+	"a stalker",
+	"a loner",
+	"some stalker",
+	"some loner",
+	"stalker",
+	"Loner",
+	"stalkers",
+	"loners",
+	"stalkers",
+	"loners",
+	"We need help!",
+	"Help us!",
+	"Need help, please.",
+	"Help!"},
+	
+	["stalker"]={
+	"a stalker",
+	"a loner",
+	"some stalker",
+	"some loner",
+	"stalker",
+	"Loner",
+	"stalkers",
+	"loners",
+	"some stalkers",
+	"loners",
+	"Guys, we need some help!",
+	"Help us!",
+	"Help us out!",
+	"Brothers, help!"},
+	
+	["monolith"]={
+	"a Monolith",
+	"one of the Monolith",
+	"some Monolith troop",
+	"a Monolith",
+	"default",
+	"Monolith",
+	"Monolith",
+	"Monolith troops",
+	"Monolith",
+	"Monolith forces",
+	"Brothers, help us!",
+	"Brothers, help!",
+	"We need help, brothers!",
+	"Help!"},
+	
+	["army"]={
+	"a soldier",
+	"an army guy",
+	"some soldier",
+	"some army guy",
+	"army",
+	"Military",
+	"soldiers",
+	"Spetsnaz",
+	"some soldiers",
+	"the military",
+	"Requesting support!",
+	"We need backup!",
+	"Requesting reinforcements!",
+	"Squad to base! Requesting immediate reinforcements!"},
+	
+	["killer"]={
+	"a merc",
+	"one of the mercs",
+	"some merc",
+	"one of the mercs",
+	"killer",
+	"Mercenary",
+	"mercs",
+	"mercenaries",
+	"some mercs",
+	"mercenaries",
+	"Requesting backup!",
+	"We need backup!",
+	"Requesting support!",
+	"Send backup!"},
+	
+	["ecolog"]={
+	"a scientist",
+	"an egghead",
+	"some ecologist",
+	"some egghead",
+	"default",
+	"Ecologist",
+	"scientists",
+	"ecologists",
+	"some scientists",
+	"eggheads",
+	"Help! Somebody please help us!",
+	"Please help! Someone!",
+	"This is a remote science team, requesting assistance!",
+	"Someone, help!"},
+	
+	["dolg"]={
+	"a Dutier",
+	"a guy from Duty",
+	"some guy from Duty",
+	"one of the guys from Duty",
+	"dolg",
+	"Duty",
+	"Duty",
+	"Duty soldiers",
+	"Duty",
+	"Duty forces",
+	"We need backup!",
+	"Requesting backup!",
+	"Requesting immediate support!",
+	"We need reinforcements!"},
+	
+	["freedom"]={
+	"a Freedomer",
+	"a guy from Freedom",
+	"some guy from Freedom",
+	"one of the guys from Freedom",
+	"freedom",
+	"Freedom",
+	"Freedom",
+	"Freedom stalkers",
+	"Freedom",
+	"Freedom forces",
+	"Guys, help!",
+	"We need some help over here!",
+	"Hey, help us out!",
+	"Shit, help!"},
+	
+	["bandit"]={
+	"a bandit",
+	"a bandit",
+	"a bandit",
+	"some bandit",
+	"bandit",
+	"Bandit",
+	"bandits",
+	"thugs",
+	"some bandits",
+	"thugs",
+	"Yo, help us out!",
+	"We need some fucking help!",
+	"We're in some deep shit here, boys!",
+	"Hey hey hey, we need help!"},
+	
+	["csky"]={
+	"a Clear Sky stalker",
+	"a guy from Clear Sky",
+	"one of the guys from Clear Sky",
+	"some guy from Clear Sky",
+	"Clear Sky",
+	"Clear Sky",
+	"Clear Sky",
+	"Clear Sky",
+	"Clear Sky",
+	"Clear Sky stalkers",
+	"Help us out!",
+	"This is Clear Sky, we need help!",
+	"Stalkers, help us!",
+	"Help!"},
+	
+	["zombied"]={
+	"a zombie",
+	"some zombie",
+	"some zombie",
+	"a zombie",
+	"zombie",
+	"Zombie",
+	"zombies",
+	"zombies",
+	"some zombies",
+	"zombies",
+	"Uuuuhh!",
+	"Urrr!",
+	"Hrrrr!",
+	"Uuurrh..."}
+}
+
+
+function GetCommunityDescription(obj,index)
+	local comm = obj:character_community()
+	if (obj:id() == 0 and comm ~= "actor") then 
+		comm = comm:sub(7)
+	end 
+	return Community[comm] and Community[comm][index] or "some asshole"
+end
+
+local monster_classes={
+ [clsid.boar_s]={
+ "boar",
+ "Boar",
+ "a boar",
+ "boars",
+ "We got attacked by a boar",
+ "We ran into boars",
+ "We were attacked by a pack of boars",
+ "We ran into some boars",
+ "A pack of wild boars",
+ "a boar"},
+ 
+ [clsid.dog_s]={
+ "dog",
+ "Dog",
+ "a dog",
+ "dogs",
+ "We got attacked by a dog",
+ "We ran into a dog",
+ "We were attacked by a pack of dogs",
+ "We ran into a pack of dogs",
+ "A pack of dogs",
+ "a dog"},
+ 
+ [clsid.flesh_s]={
+ "flesh",
+ "Flesh",
+ "a flesh",
+ "flesh",
+ "We were attacked by a flesh",
+ "We ran into a flesh",
+ "We got rushed by a pound of flesh",
+ "We got attacked by flesh",
+ "A pound of flesh",
+ "a flesh"},
+ 
+ [clsid.pseudodog_s]={
+ "pseudodog",
+ "Pseudodog",
+ "a pseudodog",
+ "pseudodogs",
+ "We were attacked by a pseudodog",
+ "A pseudodog jumped us",
+ "We got hit by a pack of pseudodogs",
+ "We ran into a pack of pseudodogs",
+ "A pack of pseudodogs",
+ "a pseudodog"},
+ 
+ [clsid.snork_s]={
+ "snork",
+ "Snork",
+ "a snork",
+ "snorks",
+ "We got jumped by a snork",
+ "We ran into a snork",
+ "We got attacked by a bunch of snorks",
+ "We ran into a bunch of snorks",
+ "A group of snorks",
+ "a snork"},
+ 
+ [clsid.bloodsucker_s]={
+ "bloodsucker",
+ "Bloodsucker",
+ "bloodsuckers",
+ "bloodsucker",
+ "We got ambushed by a bloodsucker",
+ "A bloodsucker ambushed us",
+ "We got attacked by bloodsuckers",
+ "We got ambushed by a bunch of bloodsuckers",
+ "A pack of bloodsuckers",
+ "a bloodsucker"},
+ 
+ [clsid.burer_s]={
+ "burer",
+ "Burer",
+ "a burer",
+ "burers",
+ "We were attacked by a burer",
+ "We ran into a burer",
+ "We got attacked by burers",
+ "We ran into some burers",
+ "A bunch of burers",
+ "a burer"},
+ 
+ [clsid.chimera_s]={
+ "chimera",
+ "Chimera",
+ "a chimera",
+ "chimeras",
+ "We were attacked by a chimera",
+ "We got jumped by a chimera",
+ "We were attacked by chimeras",
+ "We got ambushed by chimeras",
+ "A pack of chimeras",
+ "a chimera"},
+ 
+ [clsid.controller_s]={
+ "controller",
+ "Controller",
+ "a controller",
+ "controllers",
+ "We got attacked by a controller",
+ "A controller ambushed us",
+ "We got attacked by a couple controllers",
+ "We ran into a school of controllers",
+ "A school of controllers",
+ "a controller"},
+ 
+ [clsid.poltergeist_s]={
+ "poltergeist",
+ "Poltergeist",
+ "a poltergeist",
+ "poltergeists",
+ "We got hit by a poltergeist",
+ "We ran into a poltergeist",
+ "We got attacked by poltergeists",
+ "We ran into poltergeists",
+ "A couple poltergeists",
+ "a poltergeist"},
+ 
+ [clsid.gigant_s]={
+ "pseudo_gigant",
+ "Pseudogiant",
+ "a pseudogiant",
+ "pseudogiants",
+ "We got attacked by a pseudogiant",
+ "We ran into a pseudogiant",
+ "We got attacked by pseudogiants",
+ "We were attacked by pseudogiants",
+ "A couple pseudogiants",
+ "a pseudogiant"},
+ 
+ [clsid.tushkano_s]={
+ "tushkano",
+ "Tushkano",
+ "a tushkano",
+ "tushkano",
+ "We got rushed by tushkano",
+ "Tushkano attacked us",
+ "We got rushed by a pack of tushkano",
+ "We got hit by a pack of tushkano",
+ "A pack of tushkano",
+ "a tushkano"},
+ 
+ [clsid.psy_dog_s]={
+ "psy_dog",
+ "Psy-dog",
+ "a psy-dog",
+ "psy-dogs",
+ "We got attacked by a psy-dog",
+ "We got ambushed by a psy-dog",
+ "We ran into a pack of psy-dogs",
+ "We got attacked by psy-dogs",
+ "A pack of psy-dogs",
+ "a psy-dog"},
+ 
+ [clsid.psy_dog_phantom_s]={
+ "psy_dog_phantom",
+ "Phantom",
+ "a phantom",
+ "phantoms",
+ "We got attacked by a psy-dog",
+ "We ran into a psy-dog",
+ "We got ambushed by psy-dogs",
+ "We ran into a pack of psy-dogs",
+ "A pack of psy-dogs",
+ "a psy-dog"},
+ 
+ [clsid.script_stalker]={
+ "zombied",
+ "Zombie",
+ "a zombie",
+ "zombies",
+ "We got attacked by a zombie",
+ "We ran into a zombie",
+ "We got attacked by zombies",
+ "We ran into a bunch of zombies",
+ "A squad of zombies",
+ "a zombie"},
+ 
+ [clsid.cat_s]={
+ "cat",
+ "Cat",
+ "a cat",
+ "cats",
+ "We got ambushed by a cat",
+ "We ran into a cat",
+ "We were attacked by a pack of cats",
+ "We got jumped by some fucking cats",
+ "A group of cats",
+ "a cat"}, 
+
+ [clsid.fracture_s]={
+ "fracture",
+ "Fracture",
+ "a fracture",
+ "fractures",
+ "We were attacked by a fracture",
+ "We ran into a fracture",
+ "We got attacked by a bunch of fractures",
+ "Fractures attacked us",
+ "A group of fractures",
+ "a fracture"},
+ 
+ [clsid.zombie_s]={
+ "zombie",
+ "Zombie",
+ "a zombie",
+ "zombies",
+ "We were attacked by a zombie",
+ "We ran into a zombie",
+ "We got attacked by zombies",
+ "We ran into some zombies",
+ "A bunch of zombies",
+ "a zombie"},
+ 
+ [clsid.rat_s]={
+ "rat",
+ "Rat",
+ "a rat",
+ "rats",
+ "We got attacked by rats",
+ "Fucking rats attacked us",
+ "We got rushed by a ton of rats",
+ "We got attacked by a bunch of rats",
+ "A bunch of rats",
+ "a rat"}
+}
+
+function GetMonsterDescription(obj,index)
+	local cls = obj:clsid()
+	if not (IsMonster(nil,cls)) then 
+		return "not a monster"
+	end
+	return monster_classes[cls][index or 1] or ""
+end
+
+local WpnClass ={
+	[1]={"Unknown","shots","fully automatic","shoot","shooting at","kill","dunk","slammed"},
+	[2]={"Gunshot wounds","some rifle fire","fully automatic","shoot","shooting at","kill","dunk","slammed"},
+	[3]={"Gunshot wound","some small arms fire","pistol","shoot","take shots at","kill","dunk","slammed"},
+	[4]={"Gunshot wounds","sniper fire","long-rifle","shoot","firing at","kill","dunk","slammed"},
+	[5]={"Gunshot wounds","a shotgun","shotgun","shoot","shooting at","kill","dunk","slammed"},
+	[6]={"Knife wounds","some melee","knife","stab","stab","stab","dunk","slammed"},
+	[7]={"Explosive trauma","an explosion","grenade","blow the shit out of","fuck up","blow up","dunk","slammed"},
+	[8]={"Shrapnel wound","an explosion","grenade","hurl a grenade at","blow up","fuck up","dunk","slammed"}
+}
+
+function GetWeaponClass(obj)
+	local wpn = obj:active_item()
+	if not (wpn) then 
+		return 1 
+	end
+	local cls = wpn:clsid()
+	if (IsRifle(nil,cls)) then
+		return wpn:weapon_is_silencer() and 9 or 2
+	elseif (IsPistol(nil,cls)) then 
+		return wpn:weapon_is_silencer() and 9 or 3
+	elseif (IsSniper(nil,cls)) then
+		return wpn:weapon_is_silencer() and 9 or 4
+	elseif (IsShotgun(nil,cls)) then 
+		return 5
+	elseif (cls == clsid.wpn_knife_s) then 
+		return 1 --6
+	elseif (IsLauncher(nil,cls)) then
+		return 7
+	elseif (cls == clsid.wpn_grenade_f1 or cls == clsid.wpn_grenade_rgd5) then 
+		return 8
+	end
+	return 1
+end 
+
+function GetWeaponDescription(obj,index)
+	local cls = GetWeaponClass(obj)
+	return WpnClass[cls] and WpnClass[cls][index or 1]
+end

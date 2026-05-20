@@ -1,0 +1,406 @@
+--[[
+------------------------------------------------------------------------------------------------------------------
+-- Treasure randomizer
+-- by Alundaio
+------------------------------------------------------------------------------------------------------------------
+This script spawns loot, randomly, inside all INVBOX class objects. Loot is determined on new game start and stored
+within the .scoc as a string. When the cache is opened, the loot is spawned.
+
+A list of all valid item sections is generated automatically by parsing all of system_ini(). From this list, loot can be obtained. If you do not 
+want a certain section from being spawned, put it in 'plugins\coc_treasure_manager.ltx' 'ignore_sections'.
+
+A valid item section is determined by several factors:
+1. It must have can_trade = true
+2. It must have quest_item = false 
+3. It must not have '_mp' in it's section name
+4. It must have a valid 'inv_name' value
+5. 'cost' must be greater than 0
+
+To debug or to obtain a list of valid item sections, simply enable DEV_DEBUG (-dbg in command line).
+You shall find a 'valid_item_sections.ltx' in your main game directory after you start a new game.
+
+To debug the actual results, start a new game. Then while in the loadscreen menu ctrl+left-click on the new 'autosave'. You 
+will find the <filename>.lua in your savegame folder. Search the file for 'caches'
+--]]
+
+caches = {}
+local caches_count = 0
+
+local ltx = ini_file("plugins\\coc_treasure_manager.ltx")
+local valid_item_list = nil
+------------------------------------------------------------------------------------------------------------------
+--							PRIVATE
+------------------------------------------------------------------------------------------------------------------
+local function on_game_load()
+	if (caches_count > 0) then
+		return
+	end
+
+	local sim = alife()
+	for i=1, 65535 do
+		local se_obj = sim:object(i)
+		if (se_obj) then
+			if (IsInvbox(nil,se_obj:clsid())) then
+				caches[se_obj.id] = false
+				caches_count = caches_count + 1
+			--elseif (se_obj:spawn_ini() and se_obj:spawn_ini():section_exist("drop_box")) then 
+			--	box_caches[se_obj.id] = false
+			--	box_caches_count = caches_count + 1
+			end
+		end
+	end
+
+	for i=1, math.floor(caches_count/2) do
+		create_random_stash(true,"stash")
+	end
+	
+	-- remove all unused stashes from the list
+	--[[
+	for k,v in pairs(caches) do 
+		if (v == false) then 
+			caches[k] = nil
+		end
+	end
+	--]]
+end
+
+local function actor_on_item_take_from_box(box,itm)
+	if (caches[box:id()] == true) then
+		caches[box:id()] = false
+		local hud = get_hud()
+		if (hud and box:is_inv_box_empty()) then
+			hud:HideActorMenu()
+		end
+		level.map_remove_object_spot(box:id(), "treasure")
+		xr_statistic.inc_counter("stashes_found")
+		news_manager.send_treasure(1)
+	end
+end
+
+local function save_state(data)
+	--alun_utils.debug_write("coc_treasure_manager.save_state")
+	if (caches_count <= 0) then
+		return
+	end
+
+	if not (data.coc_treasure_manager) then
+		data.coc_treasure_manager = {}
+	end
+
+	data.coc_treasure_manager.caches_count = caches_count
+	data.coc_treasure_manager.caches = caches
+end
+
+local function load_state(data)
+	if not (data.coc_treasure_manager) then
+		return
+	end
+
+	caches_count = data.coc_treasure_manager.caches_count or caches_count
+	caches = data.coc_treasure_manager.caches or caches
+
+	data.coc_treasure_manager.caches_count = nil
+	data.coc_treasure_manager.caches = nil
+end
+
+local function physic_object_on_use_callback(box,who)
+	if (IsInvbox(box)) then
+		try_spawn_treasure(box)
+	end
+end
+------------------------------------------------------------------------------------------------------------------
+--							ON GAME START
+------------------------------------------------------------------------------------------------------------------
+function on_game_start()
+	RegisterScriptCallback("on_game_load",on_game_load)
+	RegisterScriptCallback("actor_on_item_take_from_box",actor_on_item_take_from_box)
+	RegisterScriptCallback("save_state",save_state)
+	RegisterScriptCallback("load_state",load_state)
+	RegisterScriptCallback("physic_object_on_use_callback",physic_object_on_use_callback)
+end
+
+-------------------------------------------------------------------------------------------------------------------
+
+last_secret = nil
+function create_random_stash(no_spot,hint,bonus_items)
+	last_secret = nil
+
+	if (caches_count <= 0) then
+		return
+	end
+
+	last_secret = true
+	
+	local sim = alife()
+
+	-- create a temporary table to use math.random
+	local t = {}
+	for id,v in pairs(caches) do
+		-- false means box is available
+		if (v == false) then
+			table.insert(t,id)
+		end
+	end
+
+	local index = #t > 0 and math.random(#t)
+	if not (index) then
+		return
+	end
+
+	local id = t[index]
+	local se_box = id and sim:object(id)
+	if not (se_box) then 
+		caches[id] = nil
+		caches_count = caches_count - 1
+		return
+	end
+	
+	if not (valid_item_list) then 
+		valid_item_list = get_valid_item_sections()
+	end
+	
+	local spawned_item = bonus_items or {}
+	local max_weight = math.random(80,130)
+	
+	if (has_alife_info("achieved_rag_and_bone")) then
+		max_weight = max_weight + 30
+	end
+	
+	local ini = system_ini()
+	local function is_consumable(section)
+		local v = ini:r_string_ex(section,"class","")
+		return v == "S_FOOD" or v == "II_FOOD"
+	end
+	
+	local function is_outfit(section)
+		local v = ini:r_string_ex(section,"class","")
+		return v == "EQU_STLK" or v == "E_STLK" or v == "EQU_HLMET" or v == "E_HLMET"
+	end
+	
+	local function is_weapon(section)
+		local v = ini:r_string_ex(section,"class","")
+		return string.find(v,"WP_") ~= nil
+	end
+	
+	local function try_spawn_item(sec,min,max,chance,weight)
+		if (max_weight >= weight) then 
+			local new_max = math.random(min,max)
+			for i=1,new_max do
+				if ((math.random(1,100)/100) <= chance) then 
+					table.insert(spawned_item,sec)
+					max_weight = max_weight - weight
+				end
+			end
+		end
+	end
+	
+	local allow_item = true
+	-- iterate most expensive to least expensive or visa versa. Highest cost has highest weight. Consumables have higher max. Outfits have high weights.
+	local functor = random_choice(function(t,a,b) return t[a] > t[b] end,function(t,a,b) return t[a] < t[b] end)
+	for section,cost in spairs(valid_item_list,functor) do
+		
+		-- prevent a stash from having more than a single outfit or weapon
+		local skip = false
+		local bWeapon = is_weapon(section)
+		local bOutfit = not bWeapon and is_outfit(section)
+		if (bWeapon or bOutfit) then
+			if (allow_item) then
+				allow_item = false
+			else 
+				skip = true
+			end
+		end
+		
+		if not (skip) then
+			-- decide for each section based on chance, weight and item classification
+			if (cost <= 500) then
+				if (is_consumable(section)) then
+					try_spawn_item(section,1,4,0.25,10)
+				elseif (bOutfit) then
+					try_spawn_item(section,1,1,0.25,40)
+				elseif (bWeapon) then
+					try_spawn_item(section,1,1,0.25,40)
+				else
+					try_spawn_item(section,1,1,0.25,40)
+				end
+			elseif (cost <= 1000) then
+				if (is_consumable(section)) then
+					try_spawn_item(section,1,4,0.15,15)
+				elseif (bOutfit) then
+					try_spawn_item(section,1,1,0.15,50)
+				elseif (bWeapon) then
+					try_spawn_item(section,1,1,0.15,50)
+				else
+					try_spawn_item(section,1,1,0.15,50)
+				end
+			elseif (cost <= 3000) then
+				if (bOutfit) then
+					try_spawn_item(section,1,1,0.10,55)
+				elseif (bWeapon) then
+					try_spawn_item(section,1,1,0.10,45)
+				else 
+					try_spawn_item(section,1,1,0.10,45)
+				end
+			elseif (cost <= 5000) then
+				if (bOutfit) then
+					try_spawn_item(section,1,1,0.08,60)
+				elseif (bWeapon) then
+					try_spawn_item(section,1,1,0.08,50)
+				else 
+					try_spawn_item(section,1,1,0.08,50)
+				end
+			elseif (cost <= 10000) then
+				try_spawn_item(section,1,1,0.01,90)
+			elseif (cost <= 15000) then 
+				try_spawn_item(section,1,1,0.01,100)
+			elseif (cost <= 20000) then
+				try_spawn_item(section,1,1,0.01,110)
+			else
+				try_spawn_item(section,1,1,0.01,120)
+			end
+		end 
+		
+		if (max_weight <= 0) then
+			break
+		end
+	end
+	
+	if (#spawned_item > 0) then
+		-- create map spot
+		if (no_spot ~= true and level.map_has_object_spot(id,"treasure") == 0) then
+			level.map_add_object_spot_ser(id, "treasure", hint or "")
+			news_manager.send_treasure(0)
+		end
+		caches[id] = table.concat(spawned_item,",")
+	else
+		caches[id] = false
+	end
+end
+
+function try_spawn_treasure(box)
+	local id = box:id()
+	
+	--printf("try_spawn_treasure [%s]",caches[id])
+
+	if not (caches[id]) then 
+		return 
+	end 
+
+	if not (type(caches[id]) == "string") then 
+		return
+	end
+	
+	local spawned_item = alun_utils.str_explode(caches[id],",")
+	caches[id] = true
+	
+	local sec,ammos,ct,ammo_type,ammo_section
+	local ini = system_ini()
+	local sim = alife()
+	for i=1,#spawned_item do
+		sec = spawned_item[i]
+		if (sec ~= "" and ini:section_exist(sec)) then
+		
+			if (utils.is_ammo(sec)) then 
+				create_ammo(sec,box:position(),box:level_vertex_id(),box:game_vertex_id(),id,math.random(10,30))
+			else
+				-- since we spawning on parent, we don't want to register object or packetdata will be inaccurate
+				local se_obj = sim:create(sec,box:position(),0,0,id,false)
+				if (se_obj) then
+					local cls = se_obj:clsid()
+					if (IsWeapon(nil,cls) and cls ~= clsid.wpn_knife_s) then
+						--printf("coc_treasure_manager: item is fa")
+						local data = stpk_utils.get_weapon_data(se_obj)
+						if (data) then
+							-- Create random addon flag for weapon
+							flag = 0
+							
+							if (ini:r_float_ex(sec,"scope_status")) then
+								flag = flag + 1
+							end
+
+							if (ini:r_float_ex(sec,"grenade_launcher_status")) then
+								flag = flag + 2
+							end
+
+							if (ini:r_float_ex(sec,"silencer_status")) then
+								flag = flag + 4
+							end
+
+							flag = math.random(0,flag)
+
+							-- Create random ammo type
+							ammos = alun_utils.parse_list(ini,sec,"ammo_class")
+							ct = ammos and #ammos
+							ammo_type = ammos and ct and math.random(0,ct-1) or 0
+							ammo_section = ammo_type and ammos[ammo_type+1]
+
+							data.addon_flags = flag
+							data.ammo_type = ammo_type
+							data.condition = (math.random(70)+30)/100
+							stpk_utils.set_weapon_data(data,se_obj)
+						end
+						--printf("coc_treasure_manager: item is fa- end")
+					end 
+					-- because we didn't register, we do it now, manually
+					alife():register(se_obj)
+				end
+			end
+		else
+			printf("coc_treasure_manager.script: invalid section %s",sec)
+		end
+	end
+end
+
+function save(pk)
+	if (USE_MARSHAL) then 
+		return 
+	end
+	pk:w_u16(caches_count)
+	for id,v in pairs(caches) do
+		pk:w_u16(id)
+		pk:w_bool(v)
+	end
+end
+
+function load(pk)
+	if (USE_MARSHAL) then 
+		return 
+	end
+	caches_count = pk:r_u16()
+	for i=1,caches_count do
+		caches[pk:r_u16()] = pk:r_bool()
+	end
+end
+
+function get_valid_item_sections()
+	local t = {}
+	local ini = system_ini()
+	ini:section_for_each(function(section)
+		if not (ltx:line_exist("ignore_sections",section)) then
+			if (ini:r_bool_ex(section,"can_trade",true) == true) then
+				if (ini:r_bool_ex(section,"quest_item",false) == false) then
+					if not (string.find(section,"mp_")) then
+						local name = ini:r_string_ex(section,"inv_name")
+						if (name and name ~= "" and name ~= "default") then
+							local cost = ini:r_float_ex(section,"cost") or 0
+							if (cost > 0) then
+								t[section] = cost
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+	)
+	
+	-- List of all items in game that are not quest items
+	if (DEV_DEBUG) then
+		local cfg = io.open("valid_item_sections.ltx","w+")
+		for k,v in pairs(t) do 
+			cfg:write(k.."\n")
+		end
+		cfg:close()
+	end
+	return t
+end

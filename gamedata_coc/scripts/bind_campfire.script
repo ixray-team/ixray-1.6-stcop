@@ -1,0 +1,171 @@
+--'******************************************************
+--'*	Биндер объекта костра .
+--'******************************************************
+-- name your campfires in SDK <smart_name>_campfire_<number> if you want them to be lit by NPCs
+
+
+-- For use with Marshal save state system
+local function save_state(m_data)
+	--alun_utils.debug_write("bind_campfire:save_state")
+	empty_table(m_data.campfire_states)
+	for smart,t in pairs(db.campfire_table_by_smart_names) do 
+		for id,binder in pairs(t) do 
+			if (binder and binder.campfire) then
+				if (binder.campfire:is_on()) then 
+					if not (m_data.campfire_states) then 
+						m_data.campfire_states = {}
+					end
+					m_data.campfire_states[id] = true
+				end
+			end
+		end
+	end
+end 
+
+-------------------------------------------------------------------
+-------------------------------------------------------------------
+function bind(obj)
+	obj:bind_object(campfire_binder(obj))
+end
+-------------------------------------------------------------------
+-------------------------------------------------------------------
+
+class "campfire_binder" (object_binder)
+function campfire_binder:__init(obj) super(obj)
+	self.campfire = obj:get_campfire()
+	if (USE_MARSHAL) then 
+		RegisterScriptCallback("save_state",save_state)
+	end
+end
+
+function campfire_binder:reload(section)
+	object_binder.reload(self, section)
+end
+
+function campfire_binder:reinit()
+	object_binder.reinit(self)
+end
+
+function campfire_binder:net_spawn(server_object)
+	if not object_binder.net_spawn(self, server_object) then
+		return false
+	end
+
+	local id = self.object:id()
+	local m_data = alife_storage_manager.get_state()
+	if (m_data and m_data.campfire_states and m_data.campfire_states[id]) then 
+		-- do not turn off campfire on game load
+		m_data.campfire_states[id] = nil
+	else
+		if (self.campfire and self.campfire:is_on()) then
+			self.campfire:turn_off()
+		end
+		
+		--if (render_get_dx_level() == 655361) then 
+		--	self.object:disable_anomaly()
+		--end
+	end
+	
+	local smart_name = string.gsub(self.object:name(), "_campfire_%d*", "")
+	if SIMBOARD.smarts_by_names[smart_name] then
+		if db.campfire_table_by_smart_names[smart_name] == nil then
+			db.campfire_table_by_smart_names[smart_name] = {}
+		end
+		db.campfire_table_by_smart_names[smart_name][id] = self
+	end
+	
+	--[[
+	self.object:set_callback(callback.use_object, self.use_campfire, self)
+	
+	if (self.campfire) then
+		if (self.campfire:is_on()) then
+			self.object:set_tip_text("st_ignite_fire")
+		else 
+			self.object:set_tip_text("st_extinguish_fire")
+		end
+	end
+	--]]
+	
+	return true
+end
+
+function campfire_binder:net_destroy(server_object)
+	local smart_name = string.gsub(self.object:name(), "_campfire_%d*", "")
+	if SIMBOARD.smarts_by_names[smart_name] then
+		if (db.campfire_table_by_smart_names[smart_name]) then 
+			db.campfire_table_by_smart_names[smart_name][self.object:id()] = nil
+		end
+	end
+	
+	--[[
+	self.object:set_callback(callback.use_object, nil)
+	self.object:set_tip_text("")
+	--]]
+	
+	object_binder.net_destroy(self)
+end 
+
+function campfire_binder:update(delta)
+	object_binder.update(self, delta)
+end
+
+--[[
+function campfire_binder:use_campfire()
+	if not (self.campfire) then 
+		return 
+	end 
+	
+	if (self.campfire:is_on()) then
+		self.campfire:turn_off()
+		self.object:set_tip_text("st_ignite_fire")
+	else 
+		self.campfire:turn_on()
+		self.object:set_tip_text("st_extinguish_fire")
+	end
+end
+--]]
+
+--[[
+function turn_on_campfires_by_smart_name(smart_name,use_rand)
+	local smart_campfires = db.campfire_table_by_smart_names[smart_name]
+	if smart_campfires ~= nil and not is_empty(smart_campfires) then
+		for k,v in pairs (smart_campfires) do
+			if (v.object) then
+				if (render_get_dx_level() == 655361) then 
+					v.object:enable_anomaly()
+				end
+			end
+			if (v.campfire and not v.campfire:is_on()) then
+				v.campfire:turn_on()
+			end
+		end
+	end
+end
+--]]
+
+function turn_off_campfires_by_smart_name(smart_name,use_rand)
+	local smart_campfires = db.campfire_table_by_smart_names[smart_name]
+	if smart_campfires ~= nil and not is_empty(smart_campfires) then
+		for k,v in pairs (smart_campfires) do
+			if (math.random(100) < 20) then
+				-- shouldn't be needed with Open Xray because of DX11 lighting fix
+				--if (v.object) then
+				--	if (render_get_dx_level() == 655361) then 
+				--		v.object:disable_anomaly()
+				--	end
+				--end
+				if (v.campfire and v.campfire:is_on()) then
+					v.campfire:turn_off()
+				end
+			end
+		end
+	end
+end
+
+
+
+
+
+
+
+

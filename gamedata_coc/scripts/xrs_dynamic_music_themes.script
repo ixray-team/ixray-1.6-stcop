@@ -1,0 +1,33 @@
+--[[
+xStream 02.2008
+]]
+themes={
+	    {
+	        files={
+	                "music\\combat\\theme1_part_1",
+	                "music\\combat\\theme1_part_2",
+	                "music\\combat\\theme1_part_3"
+	              },
+	    },
+	    {
+	        files={
+	                "music\\combat\\theme2_part_1",
+	                "music\\combat\\theme2_part_2",
+	                "music\\combat\\theme2_part_3"
+	              },
+	    },
+	    {
+	        files={
+	                "music\\combat\\theme3_part_1",
+	                "music\\combat\\theme3_part_2",
+	                "music\\combat\\theme3_part_3"
+	              },
+	    },
+	    {
+	        files={
+	                "music\\combat\\theme4_part_1",
+	                "music\\combat\\theme4_part_2",
+	                "music\\combat\\theme4_part_3"
+	              }
+	    }
+       }

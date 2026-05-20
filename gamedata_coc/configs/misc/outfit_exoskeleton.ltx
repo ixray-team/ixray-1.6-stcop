@@ -1,0 +1,349 @@
+;---------------------------------------------------------------------------------------------
+;		BASE
+;---------------------------------------------------------------------------------------------
+[outfit_exo_base]
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+class                                    = EQU_STLK	;Change to E_STLK if you want to use se_item.se_outfit script binding
+cform                                    = skeleton
+
+additional_inventory_weight              = 0	                                       ; +max_walk_weight
+additional_inventory_weight2             = 0	                                       ;	+40 kg
+player_hud_section                       = actor_hud_05
+
+discovery_dependency                     =
+installed_upgrades                       =
+
+ef_equipment_type                        = 5
+slot                                     = 6
+
+full_icon_name                           = npc_icon_exo_outfit
+full_scale_icon                          = 2,11
+
+sprint_allowed                           = false
+helmet_avaliable                         = false
+default_to_ruck                          = false
+
+hit_fraction_actor                       = 0.25
+control_inertion_factor                  = 2.5
+
+upgrades                                 = up_gr_firstab_exo_outfit, up_gr_seconab_exo_outfit, up_gr_thirdab_exo_outfit, up_gr_fourtab_exo_outfit, up_gr_fifthab_exo_outfit
+upgrade_scheme                           = upgrade_scheme_exo_outfit
+
+bones_koeff_protection                   = actor_armor_exo
+
+; MEDIUM RESISTANCE
+burn_protection                          = 0.0533
+shock_protection                         = 0.2133
+radiation_protection                     = 0.0080
+chemical_burn_protection                 = 0.0533
+telepatic_protection                     = 0.0588
+strike_protection                        = 0.3350
+explosion_protection                     = 0.3150
+wound_protection                         = 0.3150
+
+immunities_sect                          = sect_exo_outfit_immunities
+
+inv_grid_width                           = 2
+inv_grid_height                          = 3
+
+[sect_exo_outfit_immunities]
+burn_immunity                            = 0.02	                                       ;коэффициенты иммунитета самого костюма
+strike_immunity                          = 0.02
+shock_immunity                           = 0.06
+wound_immunity                           = 0.02
+radiation_immunity                       = 0.0
+telepatic_immunity                       = 0.0
+chemical_burn_immunity                   = 0.02
+explosion_immunity                       = 0.02
+fire_wound_immunity                      = 0.02
+
+[sect_exo_outfit_immunities_add]
+burn_immunity                            = -0.01	                                       ;коэффициенты иммунитета самого костюма
+strike_immunity                          = -0.01
+shock_immunity                           = -0.01
+wound_immunity                           = -0.01
+radiation_immunity                       = 0.0
+telepatic_immunity                       = 0.0
+chemical_burn_immunity                   = -0.01
+explosion_immunity                       = -0.01
+fire_wound_immunity                      = -0.0025
+
+;---------------------------------------------------------------------------------------------
+;		FREEDOM EXOSKELETON
+;---------------------------------------------------------------------------------------------
+[svoboda_exo_outfit]:outfit_exo_base
+$spawn                                   = "outfit\freedom_exo_outfit"
+visual                                   = dynamics\outfit\freedom_exo_outfit
+actor_visual                             = actors\stalker_freedom\stalker_freedom_4.ogf
+npc_visual                               = actors\stalker_freedom\stalker_freedom_4.ogf
+player_hud_section                       = actor_hud_freedom_exo
+
+inv_name                                 = svoboda_exo_outfit_name
+inv_name_short                           = svoboda_exo_outfit_name
+description                              = svoboda_exo_outfit_description
+
+inv_weight                               = 20.0
+
+inv_grid_x                               = 12
+inv_grid_y                               = 18
+
+upgr_icon_x                              = 935
+upgr_icon_y                              = 670
+upgr_icon_width                          = 304
+upgr_icon_height                         = 159
+
+cost                                     = 75500
+
+; MEDIUM RESISTANCE
+burn_protection                          = 0.0633
+shock_protection                         = 0.2533
+radiation_protection                     = 0.0095
+chemical_burn_protection                 = 0.0633
+strike_protection                        = 0.2800
+explosion_protection                     = 0.2800
+wound_protection                         = 0.2800
+
+bones_koeff_protection                   = actor_armor_freedom_exo
+
+power_loss                               = 1.0
+additional_inventory_weight              = 30
+additional_inventory_weight2             = 30
+artefact_count                           = 1
+
+character_portrait						 = ui_inGame2_Freedom_4
+
+;---------------------------------------------------------------------------------------------
+;		BANDIT EXOSKELETON
+;---------------------------------------------------------------------------------------------
+[bandit_exo_outfit]:outfit_exo_base
+$spawn                                   = "outfit\bandit_exo_outfit"
+visual                                   = dynamics\outfit\bandit_exo_outfit
+actor_visual                             = actors\stalker_bandit\stalker_bandit_exo.ogf
+npc_visual                               = actors\stalker_bandit\stalker_bandit_exo.ogf
+player_hud_section                       = actor_hud_bandit_exo
+
+inv_name                                 = bandit_exo_outfit_name
+inv_name_short                           = bandit_exo_outfit_name
+description                              = bandit_exo_outfit_description
+
+inv_weight                               = 22.5
+
+inv_grid_x                               = 2
+inv_grid_y                               = 36
+
+upgr_icon_x                              = 2500
+upgr_icon_y                              = 0
+upgr_icon_width                          = 350
+upgr_icon_height                         = 200
+
+cost                                     = 75500
+
+; MEDIUM RESISTANCE
+burn_protection                          = 0.0433
+shock_protection                         = 0.1733
+radiation_protection                     = 0.0065
+chemical_burn_protection                 = 0.0433
+strike_protection                        = 0.2975
+explosion_protection                     = 0.2975
+wound_protection                         = 0.2975
+
+bones_koeff_protection                   = actor_armor_bandit_exo
+
+power_loss                               = 1.05
+additional_inventory_weight              = 30
+additional_inventory_weight2             = 30
+artefact_count                           = 1
+
+character_portrait						 = ui_inGame2_merc_4
+
+;---------------------------------------------------------------------------------------------
+;		EXOSKELETON
+;---------------------------------------------------------------------------------------------
+[exo_outfit]:outfit_exo_base
+$spawn                                   = "outfit\exo_outfit"
+visual                                   = dynamics\outfit\exo_outfit
+actor_visual                             = actors\stalker_neutral\stalker_neutral_4.ogf
+npc_visual                               = actors\stalker_neutral\stalker_neutral_4.ogf
+player_hud_section                       = actor_hud_exo
+
+inv_name                                 = exo_outfit_name
+inv_name_short                           = exo_outfit_name
+description                              = exo_outfit_description
+
+inv_weight                               = 25.0
+
+inv_grid_x                               = 14
+inv_grid_y                               = 15
+
+upgr_icon_x                              = 334
+upgr_icon_y                              = 450
+upgr_icon_width                          = 303
+upgr_icon_height                         = 159
+
+cost                                     = 70500
+
+power_loss                               = 1.1
+additional_inventory_weight              = 30
+additional_inventory_weight2             = 30
+artefact_count                           = 1
+
+character_portrait						 = ui_inGame2_neutral_4
+
+;---------------------------------------------------------------------------------------------
+;		MERCENARY EXOSKELETON
+;---------------------------------------------------------------------------------------------
+[merc_exo_outfit]:outfit_exo_base
+$spawn                                   = "outfit\merc_exo_outfit"
+visual                                   = dynamics\outfit\merc_exo_outfit
+actor_visual                             = actors\stalker_merc\stalker_merc_4.ogf
+npc_visual                               = actors\stalker_merc\stalker_merc_4.ogf
+player_hud_section                       = actor_hud_merc_exo
+
+inv_name                                 = merc_exo_outfit_name
+inv_name_short                           = merc_exo_outfit_name
+description                              = merc_exo_outfit_description
+
+inv_weight                               = 25.0
+
+inv_grid_x                               = 16
+inv_grid_y                               = 17
+
+upgr_icon_x                              = 1550
+upgr_icon_y                              = 670
+upgr_icon_width                          = 304
+upgr_icon_height                         = 159
+
+cost                                     = 75500
+
+power_loss                               = 1.1
+additional_inventory_weight              = 30
+additional_inventory_weight2             = 30
+artefact_count                           = 2
+
+character_portrait						 = ui_inGame2_merc_4
+
+;---------------------------------------------------------------------------------------------
+;		MONOLITH EXOSKELETON
+;---------------------------------------------------------------------------------------------
+[monolith_exo_outfit]:outfit_exo_base
+$spawn                                   = "outfit\monolith_exo_outfit"
+visual                                   = dynamics\outfit\monolith_exo_outfit
+actor_visual                             = actors\stalker_monolith\stalker_monolith_4.ogf
+npc_visual                               = actors\stalker_monolith\stalker_monolith_4.ogf
+player_hud_section                       = actor_hud_monolith_exo
+
+inv_name                                 = monolith_exo_outfit_name
+inv_name_short                           = monolith_exo_outfit_name
+description                              = monolith_exo_outfit_description
+
+inv_weight                               = 25.0
+
+inv_grid_x                               = 4
+inv_grid_y                               = 36
+
+upgr_icon_x                              = 1540
+upgr_icon_y                              = 510
+upgr_icon_width                          = 304
+upgr_icon_height                         = 159
+
+cost                                     = 55500
+
+; MEDIUM RESISTANCE
+radiation_protection                     = 0.0214
+telepatic_protection                     = 0.0
+
+power_loss                               = 1.1
+additional_inventory_weight              = 30
+additional_inventory_weight2             = 30
+artefact_count                           = 2
+
+character_portrait						 = ui_inGame2_monolit_4
+
+;---------------------------------------------------------------------------------------------
+;		DUTY EXOSKELETON
+;---------------------------------------------------------------------------------------------
+[dolg_exo_outfit]:outfit_exo_base
+$spawn                                   = "outfit\duty_exo_outfit"
+visual                                   = dynamics\outfit\dolg_exo_outfit
+actor_visual                             = actors\stalker_dolg\stalker_dolg_4.ogf
+npc_visual                               = actors\stalker_dolg\stalker_dolg_4.ogf
+player_hud_section                       = actor_hud_dolg_exo
+
+inv_name                                 = dolg_exo_outfit_name
+inv_name_short                           = dolg_exo_outfit_name
+description                              = dolg_exo_outfit_description
+
+inv_weight                               = 27.5
+
+inv_grid_x                               = 2
+inv_grid_y                               = 15
+
+upgr_icon_x                              = 1242
+upgr_icon_y                              = 670
+upgr_icon_width                          = 304
+upgr_icon_height                         = 159
+
+cost                                     = 75500
+
+; MEDIUM RESISTANCE
+burn_protection                          = 0.0433
+shock_protection                         = 0.1733
+radiation_protection                     = 0.0065
+chemical_burn_protection                 = 0.0433
+strike_protection                        = 0.3325
+explosion_protection                     = 0.3325
+wound_protection                         = 0.3325
+
+bones_koeff_protection                   = actor_armor_duty_exo
+
+power_loss                               = 1.15
+additional_inventory_weight              = 30
+additional_inventory_weight2             = 30
+artefact_count                           = 0
+
+character_portrait						 = ui_inGame2_Dolg_4
+
+;---------------------------------------------------------------------------------------------
+;		MILITARY EXOSKELETON
+;---------------------------------------------------------------------------------------------
+[military_exo_outfit]:outfit_exo_base
+$spawn                                   = "outfit\military_exo_outfit"
+visual                                   = dynamics\outfit\military_exo_outfit
+actor_visual                             = actors\stalker_soldier\stalker_military_exo.ogf
+npc_visual                               = actors\stalker_soldier\stalker_military_exo.ogf
+player_hud_section                       = actor_hud_military_exo
+
+inv_name                                 = military_exo_outfit_name
+inv_name_short                           = military_exo_outfit_name
+description                              = military_exo_outfit_description
+
+inv_weight                               = 30.0
+
+inv_grid_x                               = 0
+inv_grid_y                               = 36
+
+upgr_icon_x                              = 1850
+upgr_icon_y                              = 1000
+upgr_icon_width                          = 350
+upgr_icon_height                         = 200
+
+cost                                     = 75500
+
+; MEDIUM RESISTANCE
+burn_protection                          = 0.0333
+shock_protection                         = 0.1333
+radiation_protection                     = 0.0050
+chemical_burn_protection                 = 0.0333
+strike_protection                        = 0.3500
+explosion_protection                     = 0.3500
+wound_protection                         = 0.3500
+
+bones_koeff_protection                   = actor_armor_military_exo
+
+power_loss                               = 1.20
+additional_inventory_weight              = 30
+additional_inventory_weight2             = 30
+artefact_count                           = 0
+
+character_portrait						 = ui_inGame2_monolit_4

@@ -1,0 +1,330 @@
+;---------------------------------------------------------------------------------------------
+;		BASE
+;---------------------------------------------------------------------------------------------
+[outfit_novice_base]
+GroupControlSection                      = spawn_group
+discovery_dependency                     =
+class                                    = EQU_STLK	;Change to E_STLK if you want to use se_item.se_outfit script binding
+cform                                    = skeleton
+
+player_hud_section                       = actor_hud_05
+
+additional_inventory_weight              = 0	                                       ; +max_walk_weight
+additional_inventory_weight2             = 0	                                       ;	+40 kg
+
+default_to_ruck                          = false
+sprint_allowed                           = true
+control_inertion_factor                  = 1
+
+ef_equipment_type                        = 3
+
+full_icon_name                           = npc_icon_novice_outfit
+
+slot                                     = 6
+full_scale_icon                          = 0,11
+
+inv_grid_x         = 14
+inv_grid_y         = 12
+
+upgrades                                 = up_gr_firstab_novice_outfit, up_gr_seconab_novice_outfit, up_gr_thirdab_novice_outfit
+installed_upgrades                       =
+upgrade_scheme                           = upgrade_scheme_novice_outfit
+
+artefact_count                           = 0
+hit_fraction_actor                       = 0.75
+
+; NO RESISTANCE
+burn_protection                          = 0.0133
+shock_protection                         = 0.0533
+radiation_protection                     = 0.0020
+chemical_burn_protection                 = 0.0133
+telepatic_protection                     = 0.0
+strike_protection                        = 0.0175
+explosion_protection                     = 0.0175
+wound_protection                         = 0.0175
+
+inv_weight                               = 1.0
+
+immunities_sect                          = sect_novice_outfit_immunities
+
+cost                                     = 1500
+
+power_loss                               = 0.65
+
+bones_koeff_protection                   = actor_armor_novice
+
+inv_grid_width                           = 2
+inv_grid_height                          = 2
+
+character_portrait							 = ui_inGame2_neutral_1
+
+[sect_novice_outfit_immunities]
+burn_immunity                            = 0.025	                                       ;коэффициенты иммунитета самого костюма
+strike_immunity                          = 0.0
+shock_immunity                           = 0.025
+wound_immunity                           = 0.025
+radiation_immunity                       = 0.0
+telepatic_immunity                       = 0.0
+chemical_burn_immunity                   = 0.025
+explosion_immunity                       = 0.025
+fire_wound_immunity                      = 0.01
+
+[sect_novice_outfit_immunities_add]
+burn_immunity                            = -0.01	                                       ;коэффициенты иммунитета самого костюма
+strike_immunity                          = 0.0
+shock_immunity                           = -0.01
+wound_immunity                           = -0.01
+radiation_immunity                       = 0.0
+telepatic_immunity                       = 0.0
+chemical_burn_immunity                   = -0.01
+explosion_immunity                       = -0.01
+fire_wound_immunity                      = -0.005
+;---------------------------------------------------------------------------------------------
+;       CS Novice Outfit
+;---------------------------------------------------------------------------------------------
+[cs_novice_outfit]:outfit_novice_base
+$spawn                                   = "outfit\cs_novice_outfit"
+visual                                   = dynamics\outfit\cs_rookie_outfit
+actor_visual                             = actors\stalker_nebo\stalker_nebo_r2.ogf
+npc_visual                               = actors\stalker_nebo\stalker_nebo_r2.ogf
+player_hud_section                       = actor_hud_cs_novice
+
+
+inv_name                                 = csky_novice_outfit_name
+inv_name_short                           = csky_novice_outfit_name
+description                              = novice_outfit_description
+
+inv_grid_x         = 12
+inv_grid_y         = 11
+
+upgr_icon_x                              = 935
+upgr_icon_y                              = 340
+upgr_icon_width                          = 303
+upgr_icon_height                         = 162
+
+character_portrait						 = ui_inGame2_csky_1
+
+;---------------------------------------------------------------------------------------------
+;		Novice Outfit
+;---------------------------------------------------------------------------------------------
+[novice_outfit]:outfit_novice_base
+$spawn                                   = "outfit\novice_outfit"
+visual                                   = dynamics\outfit\rookie_outfit
+actor_visual                             = actors\stalker_neutral\stalker_neutral_1.ogf
+npc_visual                               = actors\stalker_neutral\stalker_neutral_1.ogf
+player_hud_section                       = actor_hud_loner_novice
+
+inv_name                                 = novice_outfit_name
+inv_name_short                           = novice_outfit_name
+description                              = novice_outfit_description
+
+upgr_icon_x                              = 935
+upgr_icon_y                              = 340
+upgr_icon_width                          = 303
+upgr_icon_height                         = 162
+
+character_portrait						 = ui_inGame2_neutral_0
+
+;---------------------------------------------------------------------------------------------
+;		Bandit Novice Outfit
+;---------------------------------------------------------------------------------------------
+[bandit_novice_outfit]:outfit_novice_base
+$spawn                                   = "outfit\novice_outfit"
+visual                                   = dynamics\outfit\bandit_outfit
+actor_visual                             = actors\stalker_bandit\stalker_bandit_1.ogf
+npc_visual                               = actors\stalker_bandit\stalker_bandit_1.ogf
+player_hud_section                       = actor_hud_bandit_novice
+
+
+inv_name                                 = bandit_novice_outfit_name
+inv_name_short                           = bandit_novice_outfit_name
+description                              = bandit_novice_outfit_description
+
+inv_grid_x         = 10
+inv_grid_y         = 11
+
+upgr_icon_x                              = 1239
+upgr_icon_y                              = 340
+upgr_icon_width                          = 303
+upgr_icon_height                         = 162
+
+character_portrait						 = ui_inGame2_bandit_1
+
+;---------------------------------------------------------------------------------------------
+;		Freedom Novice Outfit
+;---------------------------------------------------------------------------------------------
+[svoboda_novice_outfit]:outfit_novice_base
+$spawn                                   = "outfit\novice_outfit_freedom"
+visual                                   = dynamics\outfit\freedom_rookie_outfit
+actor_visual                             = actors\stalker_neutral\stalker_neutral_1.ogf
+npc_visual                               = actors\stalker_neutral\stalker_neutral_1.ogf
+player_hud_section                       = actor_hud_freedom_novice
+
+
+inv_name                                 = svoboda_novice_outfit_name
+inv_name_short                           = svoboda_novice_outfit_name
+description                              = novice_outfit_description
+
+
+upgr_icon_x                              = 935
+upgr_icon_y                              = 340
+upgr_icon_width                          = 303
+upgr_icon_height                         = 162
+
+character_portrait						 = ui_inGame2_freedom_0
+;---------------------------------------------------------------------------------------------
+;		Duty Novice Outfit
+;---------------------------------------------------------------------------------------------
+[dolg_novice_outfit]:outfit_novice_base
+$spawn                                   = "outfit\novice_outfit_duty"
+visual                                   = dynamics\outfit\duty_rookie_outfit
+actor_visual                             = actors\stalker_dolg\stalker_dolg_0.ogf
+npc_visual                               = actors\stalker_dolg\stalker_dolg_0.ogf
+player_hud_section                       = actor_hud_duty_novice
+
+
+inv_name                                 = dolg_novice_outfit_name
+inv_name_short                           = dolg_novice_outfit_name
+description                              = novice_outfit_description
+
+inv_grid_x         = 10
+inv_grid_y         = 11
+
+upgr_icon_x                              = 1239
+upgr_icon_y                              = 340
+upgr_icon_width                          = 303
+upgr_icon_height                         = 162
+
+character_portrait						 = ui_inGame2_Dolg_0
+
+;---------------------------------------------------------------------------------------------
+;       Monolith Novice Outfit
+;---------------------------------------------------------------------------------------------
+[monolith_novice_outfit]:outfit_novice_base
+$spawn                                   = "outfit\novice_outfit_monolith"
+visual                                   = dynamics\outfit\rookie_outfit
+actor_visual                             = actors\stalker_neutral\stalker_neutral_1.ogf
+npc_visual                               = actors\stalker_neutral\stalker_neutral_1.ogf
+player_hud_section                       = actor_hud_monolith_novice
+
+
+inv_name                                 = monolith_novice_outfit_name
+inv_name_short                           = monolith_novice_outfit_name
+description                              = novice_outfit_description
+
+inv_grid_x         = 16
+inv_grid_y         = 12
+
+upgr_icon_x                              = 935
+upgr_icon_y                              = 340
+upgr_icon_width                          = 303
+upgr_icon_height                         = 162
+
+character_portrait						 = ui_inGame2_monolit_1
+
+;---------------------------------------------------------------------------------------------
+;		Military Novice Outfit
+;---------------------------------------------------------------------------------------------
+[military_novice_outfit]:outfit_novice_base
+$spawn                                   = "outfit\novice_outfit_military"
+visual                                   = dynamics\outfit\rookie_outfit
+actor_visual                             = actors\stalker_neutral\stalker_neutral_1.ogf
+npc_visual                               = actors\stalker_neutral\stalker_neutral_1.ogf
+player_hud_section                       = actor_hud_military_novice
+
+inv_name                                 = military_novice_outfit_name
+inv_name_short                           = military_novice_outfit_name
+description                              = novice_outfit_description
+
+upgr_icon_x                              = 935
+upgr_icon_y                              = 340
+upgr_icon_width                          = 303
+upgr_icon_height                         = 162
+
+character_portrait						 = ui_inGame2_Soldier_1
+
+;---------------------------------------------------------------------------------------------
+;		Mercenary Novice Outfit
+;---------------------------------------------------------------------------------------------
+[merc_novice_outfit]:outfit_novice_base
+$spawn                                   = "outfit\novice_outfit_merc"
+visual                                   = dynamics\outfit\rookie_outfit
+actor_visual                             = actors\stalker_neutral\stalker_neutral_1.ogf
+npc_visual                               = actors\stalker_neutral\stalker_neutral_1.ogf
+player_hud_section                       = actor_hud_merc_novice
+
+inv_name                                 = merc_novice_outfit_name
+inv_name_short                           = merc_novice_outfit_name
+description                              = novice_outfit_description
+
+upgr_icon_x                              = 935
+upgr_icon_y                              = 340
+upgr_icon_width                          = 303
+upgr_icon_height                         = 162
+
+character_portrait							 = ui_inGame2_merc_sun1
+
+;---------------------------------------------------------------------------------------------
+;		Trench Coat
+;---------------------------------------------------------------------------------------------
+[trenchcoat_outfit]:outfit_novice_base
+$spawn                                   = "outfit\trenchcoat_outfit"
+visual                                   = dynamics\outfit\novice_outfit
+actor_visual                             = actors\stalker_bandit\stalker_bandit_3_mask.ogf
+npc_visual                               = actors\stalker_bandit\stalker_bandit_3_mask.ogf
+player_hud_section                       = actor_hud_bandit_trench
+
+
+inv_name                                 = trenchcoat_outfit_name
+inv_name_short                           = trenchcoat_outfit_name
+description                              = trenchcoat_outfit_description
+inv_weight                               = 1.5
+
+inv_grid_height    = 3
+inv_grid_x         = 16
+inv_grid_y         = 31
+
+upgr_icon_x                              = 636
+upgr_icon_y                              = 0
+upgr_icon_width                          = 303
+upgr_icon_height                         = 162
+
+cost                                     = 1500
+
+immunities_sect                          = sect_trenchcoat_outfit_immunities
+
+; NO RESISTANCE
+burn_protection                          = 0.0233
+shock_protection                         = 0.0933
+radiation_protection                     = 0.0035
+chemical_burn_protection                 = 0.0233
+telepatic_protection                     = 0.0
+strike_protection                        = 0.0350
+explosion_protection                     = 0.0350
+wound_protection                         = 0.0350
+
+bones_koeff_protection                   = actor_armor_trench
+
+character_portrait							 = ui_inGame2_bandit_3_mask
+
+[sect_trenchcoat_outfit_immunities]
+burn_immunity                            = 0.05	                                       ;коэффициенты иммунитета самого костюма
+strike_immunity                          = 0.0
+shock_immunity                           = 0.05
+wound_immunity                           = 0.05
+radiation_immunity                       = 0.0
+telepatic_immunity                       = 0.0
+chemical_burn_immunity                   = 0.05
+explosion_immunity                       = 0.05
+fire_wound_immunity                      = 0.02
+
+[sect_trenchcoat_outfit_immunities_add]
+burn_immunity                            = -0.01	                                       ;коэффициенты иммунитета самого костюма
+strike_immunity                          = 0.0
+shock_immunity                           = -0.01
+wound_immunity                           = -0.01
+radiation_immunity                       = 0.0
+telepatic_immunity                       = 0.0
+chemical_burn_immunity                   = -0.01
+explosion_immunity                       = -0.01
+fire_wound_immunity                      = -0.005

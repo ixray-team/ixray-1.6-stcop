@@ -1,0 +1,270 @@
+local item_by_community = {}
+local item_count = {}
+local always_keep_item = {}
+local item_by_story_id
+local death_ini = ini_file("misc\\death_generic.ltx")
+
+function init_drop_settings()
+	-- Create a list by community of the percent chance to spawn an item
+	local community_list = { "stalker", "dolg", "freedom", "bandit", "army", "zombied", "ecolog", "killer", "monolith", "csky" }
+	for k,v in pairs(community_list) do
+		item_by_community[v] = {}
+		if death_ini:section_exist(v) then
+			local n = death_ini:line_count(v)
+			local id, value = "", ""
+			for i=0,n-1 do
+				result, id, value	= death_ini:r_line_ex(v,i,"","")
+				item_by_community[v][id] = tonumber(value) or 0
+			end
+		end
+	end
+
+	local n = death_ini:line_count("item_count")
+	local id, value = "", ""
+	for i=0,n-1 do
+		local result, id, value	= death_ini:r_line_ex("item_count",i,"","")
+		local p = alun_utils.str_explode(value,",")
+		if (p and p[1] and p[2]) then
+			item_count[id] = {tonumber(p[1]) or 0,tonumber(p[2]) or 0}
+		end
+	end
+	
+ 	-- Create a list of item sections that npc must keep
+	local n = death_ini:line_count("keep_items")
+	for i=0,n-1 do
+		local result, id, value	= death_ini:r_line_ex("keep_items",i,"","")
+		if value == "true" then
+			always_keep_item[id] = true
+		end
+	end
+	
+	-- Create a list of item sections that npc must keep
+	local n = death_ini:line_count("spawn_by_story_id")
+	for i=0,n-1 do
+		if not (item_by_story_id) then 
+			item_by_story_id = {}
+		end
+		local result, id, value	= death_ini:r_line_ex("spawn_by_story_id",i,"","")
+		item_by_story_id[id] = value
+	end
+end
+
+-- this will actually occur every time corpse spawn unless already looted
+function decide_items_to_keep(npc)
+	local death_dropped = utils.se_obj_load_var(npc:id(),npc:name(),"death_dropped")
+	if (death_dropped) then
+		return
+	end
+	npc:iterate_inventory(keep_item, npc)
+end
+
+function create_release_item(npc)
+	local death_dropped = utils.se_obj_load_var(npc:id(),npc:name(),"death_dropped")
+	if (death_dropped) then
+		return
+	end
+	utils.se_obj_save_var(npc:id(),npc:name(),"death_dropped",true)
+	
+	decide_items_to_keep(npc)
+	
+	-- spawn items by story id
+	local sid = item_by_story_id and get_object_story_id(npc:id())
+	if (sid and item_by_story_id[sid]) then
+		local p = xr_logic.pick_section_from_condlist(db.actor,npc,alun_utils.parse_condlist(item_by_story_id[sid]))
+		--local p = alun_utils.str_explode(item_by_story_id[sid],",")
+		--printf("sid=%s p=%s",sid,p)
+		if (p and p ~= "" and p ~= "nil") then
+			create_items(npc, p, 1, 100)
+		end
+	end
+
+	local ini = npc:spawn_ini()
+	if ini and ini:section_exist("dont_spawn_loot") then
+		return
+	end
+	
+	local st = db.storage[npc:id()]
+	if (st and st.ini and st.section_logic and st.ini:line_exist(st.section_logic,"dont_spawn_loot")) then 
+		return
+	end
+
+	local spawn_items = item_by_community[character_community(npc)]
+	if spawn_items == nil then
+		return
+	end
+	
+	try_spawn_ammo(npc,spawn_items)
+	
+	local grenade_classes = { 
+								["ammo_m209"] = true,
+								["ammo_vog-25"] = true,
+								["ammo_og-7b"] = true
+							}
+	for sec,v in pairs(spawn_items) do
+		if (v > 0 and item_count[sec] and not utils.is_ammo(sec) and not grenade_classes[sec]) then
+			local number = math.random(item_count[sec][1], item_count[sec][2])
+			create_items(npc, sec, number, v)
+		end
+	end
+end
+
+function try_spawn_ammo(npc,spawn_items)
+	local ini = system_ini()
+	local ammo_class,sec,number
+	local function itr(npc,itm)
+		if (IsWeapon(nil,itm:clsid()) and not npc:marked_dropped(itm)) then
+			ammo_class = alun_utils.parse_list(ini,itm:section(),"ammo_class")
+			-- randomly spawn only 1 ammo type per found weapon
+			if (#ammo_class > 0) then
+				sec = ammo_class[math.random(1,#ammo_class)]
+				if (sec) then 
+					if (item_count[sec]) then
+						number = math.random(item_count[sec][1], item_count[sec][2])
+					else 
+						number = math.random(1,15)
+					end
+					if (number > 0 and system_ini():section_exist(sec)) then
+						create_ammo(sec,npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id(),number)
+					end
+				end
+			end
+			-- spawn grenade ammo if there is launcher attached
+			if (ini:r_float_ex(itm:section(),"grenade_launcher_status") > 0) then
+				ammo_class = alun_utils.parse_list(ini,itm:section(),"grenade_class")
+				for i=1,#ammo_class do
+					sec = ammo_class[i]
+					if (sec) then
+						if (item_count[sec]) then
+							number = math.random(item_count[sec][1], item_count[sec][2])
+						else 
+							number = math.random(0,2)
+						end
+						if (number > 0 and system_ini():section_exist(sec)) then 
+							create_ammo(sec,npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id(),number)
+						end
+					end
+				end
+			end
+		end
+	end
+	npc:iterate_inventory(itr,npc)
+end
+
+--' Функция вызывается для каждого предмета, если вернет false то предмет удалится.
+function keep_item(npc, item)
+	if not (item) then 
+		return 
+	end 
+	
+	local section = item:section()
+	if (always_keep_item[section]) then 
+		return 
+	end 
+	
+	local se_item = alife():object(item:id())
+	if not (se_item) then 
+		return
+	end
+	
+	local ini = npc:spawn_ini()
+	if ini and ini:section_exist("dont_keep_items") then
+		alife():release(se_item, true)
+		return
+	end
+	
+	local st = db.storage[npc:id()]
+	if (st and st.ini and st.section_logic and st.ini:line_exist(st.section_logic,"dont_keep_items")) then
+		alife():release(se_item, true)
+		return
+	end 
+	
+	-- release all animation objects
+	if (section == "bolt" or section == "medkit_script" or section == "guitar_a" or section == "harmonica_a" or section == "wpn_binoc" or section == "anim_binoc" or section == "anim_knife" 
+		or section == "device_torch" or section == "device_pda" or section == "hand_radio" or section == "hand_radio_r") then
+		alife():release(se_item, true)
+		return 
+	end
+	
+	local m = item:get_max_uses()
+	if (m > 0) then 
+		local r = math.random(0,m)
+		item:set_remaining_uses(r)
+		if (r == 0) then 
+			alife():release(se_item, true)
+		end
+		return
+	end
+	
+	if IsArtefact(item) then
+		return
+	end
+
+	local cls = item:clsid()
+	if IsWeapon(item,cls) and not(cls==clsid.wpn_grenade_rgd5_s or cls==clsid.wpn_grenade_f1_s) then
+		set_weapon_drop_condition(npc,item)
+		return
+	end
+	
+	if (item:is_ammo() ~= true and xr_corpse_detection.lootable_table and xr_corpse_detection.lootable_table[section] and math.random(1,100) < 65) then
+		return
+	end
+	
+	alife():release(se_item, true)
+end
+
+function set_weapon_drop_condition(npc,itm)
+	local condition  = (math.random(40)+30)/100
+	--printf("condition [%s]", tostring(condition))
+	itm:set_condition(condition)
+	
+	if (IsWeapon(nil,itm:clsid()) and not npc:marked_dropped(itm)) then
+		local ini = system_ini()
+		local sec,number
+		local ammo_class = alun_utils.parse_list(ini,itm:section(),"ammo_class")
+		-- randomly spawn only 1 ammo type per found weapon
+		if (#ammo_class > 0) then
+			sec = ammo_class[math.random(1,#ammo_class)]
+			if (sec and item_count[sec]) then 
+				number = math.random(item_count[sec][1], item_count[sec][2])
+				if (number > 0 and system_ini():section_exist(sec)) then
+					create_ammo(sec,npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id(),number)
+				end
+			end
+		end
+		-- spawn grenade ammo if there is launcher attached
+		if (ini:r_float_ex(itm:section(),"grenade_launcher_status") > 0) then
+			ammo_class = alun_utils.parse_list(ini,itm:section(),"grenade_class")
+			for i=1,#ammo_class do
+				sec = ammo_class[i]
+				if (sec and item_count[sec]) then 
+					number = math.random(item_count[sec][1], item_count[sec][2])
+					if (number > 0 and system_ini():section_exist(sec)) then 
+						create_ammo(sec,npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id(),number)
+					end
+				end
+			end
+		end
+	end
+end
+
+--' Функция спавнит необходимое число предметов
+function create_items(npc, section, number, rnd)
+	if not (system_ini():section_exist(section)) then 
+		--printf("death_manager: ERROR: trying to spawn section that doesn't exist! %s",section)
+		return 
+	end 
+	
+	--printf("death_dropped: create %s=%s",section,number)
+	if (utils.is_ammo(section))then
+		if number > 0 then
+			create_ammo(section,npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id(),number)
+		end
+	else
+		for i=1,number do
+			--' Проверяем вероятность появить каждый объект в отдельности
+			if (math.random(1,100)/100) <=  rnd then
+				alife():create(section,npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id())
+			end
+		end
+	end
+end

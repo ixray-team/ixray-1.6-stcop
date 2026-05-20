@@ -1,0 +1,29 @@
+[smart_terrain]
+squad_id = 34
+max_population = 1
+respawn_only_smart = true
+respawn_params = respawn@pri_sim_12
+respawn_idle = 60000
+
+
+[respawn@pri_sim_12]
+;sim_tushkano
+;spawn_monster
+spawn_tushkano
+spawn_heavy_guys
+
+;[sim_tushkano]
+;spawn_squads = simulation_tushkano, simulation_rat, simulation_rats
+;spawn_num = {+pri_a18_use_idol_done} 2, 0
+
+;[spawn_monster]
+;spawn_squads = simulation_burer, simulation_gigant, simulation_chimera
+;spawn_num = {+pri_a18_use_idol_done} 2, 0
+
+[spawn_tushkano]
+spawn_squads = simulation_tushkano, simulation_rat, simulation_rats
+spawn_num = 2
+
+[spawn_heavy_guys]
+spawn_squads = simulation_burer, simulation_gigant, simulation_chimera
+spawn_num = 2

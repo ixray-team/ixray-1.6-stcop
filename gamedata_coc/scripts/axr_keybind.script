@@ -1,0 +1,343 @@
+-- Handler for scripted keybinds
+
+
+-- keybind_name = default
+-- To add new keybinds, simplay add name here and default keypress. Then make an action.<name> function for it. Param passed is true if pressed or false if released
+-- In engine there has been 15 custom dik binds made for script use (ie. kCUSTOM1 to kCUSTOM15)
+-- This allows the ability to set the keybind through game options or console instead. Otherwise use DIK_keys and value will be stored in axr_options.ini
+local keybinds = {
+					["companion_cycle_combat_mode"] = "kCUSTOM1",
+					["companion_cycle_move_mode"] 	= "kCUSTOM2",
+					["companion_move_to_point"] 	= "kCUSTOM3",
+					["companion_cycle_stealth"] 	= "kCUSTOM4",
+					["companion_cycle_looting"] 	= "kCUSTOM5",
+					["debug_demo_record"]			= "DIK_NUMPAD0",
+					["debug_select_object"] 		= "DIK_NUMPAD9",
+					["debug_attachment_ui"] 		= "DIK_INSERT",
+					["debug_test"] 					= "DIK_NUMPADENTER",
+					--["debug_reload_game"]			= "DIK_END",
+					["debug_hold_action"]			= "DIK_NUMPAD8"
+}
+
+local action = {}
+------------------------------------------------------------------
+-- Keypress actions
+------------------------------------------------------------------
+function action.companion_cycle_combat_mode(p)
+	if (p==1) then 
+		axr_companions.cycle_companions_combat_mode()
+	end
+end
+
+function action.companion_cycle_move_mode(p)
+	if (p==1) then 
+		axr_companions.cycle_companions_move_mode()
+	end
+end
+
+function action.companion_move_to_point(p)
+	axr_companions.move_to_point(p)
+end
+
+function action.companion_cycle_stealth(p)
+	if not (p==1) then
+		return 
+	end
+	for id,squad in pairs(axr_companions.companion_squads) do 
+		if (squad and squad.commander_id) then
+			for k in squad:squad_members() do
+				if not (xrs_kill_wounded.hostage_list[k.id]) then
+					st = db.storage[k.id]
+					local member = st and st.object
+					if (member and member:alive()) then
+						if ( member:has_info("npcx_beh_substate_stealth") ) then
+							member:disable_info_portion("npcx_beh_substate_stealth")
+							SetHudMsg("Companion stealth mode disabled",8)
+						else
+							member:give_info_portion("npcx_beh_substate_stealth")
+							SetHudMsg("Companion stealth mode enabled",8)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+function action.companion_cycle_looting(p)
+	if not (p==1) then
+		return 
+	end
+	for id,squad in pairs(axr_companions.companion_squads) do 
+		if (squad and squad.commander_id) then
+			for k in squad:squad_members() do
+				if not (xrs_kill_wounded.hostage_list[k.id]) then
+					st = db.storage[k.id]
+					local member = st and st.object
+					if (member and member:alive()) then
+						axr_companions.switch_companion_gather_items(member)
+						axr_companions.switch_companion_loot_corpses(member)
+					end
+				end
+			end
+		end
+	end
+end
+
+function action.debug_demo_record(p)
+	if not (DEV_DEBUG) then 
+		return 
+	end
+	if (p==1) then
+		get_console():execute("demo_record t")
+	end
+end
+
+function action.debug_attachment_ui(p)
+	if not (DEV_DEBUG) then 
+		return 
+	end
+	if (p==1) then
+		if not (this.debug_ui_attach) then 
+			this.debug_ui_attach = ui_debug_main.debug_ui_attach()
+		end 
+		
+		if (this.debug_ui_attach) then 
+			if not (this.debug_ui_attach:IsShown()) then 
+				this.debug_ui_attach:ShowDialog(true)
+			else
+				this.debug_ui_attach:HideDialog()
+			end
+		end
+	end
+end 
+
+function action.debug_select_object(p)
+	if not (DEV_DEBUG) then 
+		return 
+	end
+	if (p==1) then 
+		DEBUG_NPC = level.get_target_obj and level.get_target_obj()
+		if (DEBUG_NPC) then 
+			SetHudMsg(strformat("%s Hold then release key to new position",DEBUG_NPC:name()),8)
+		end
+	elseif (p==0) then
+		if (DEBUG_NPC) then
+			local r = level.get_target_dist and level.get_target_dist()
+			if (r) then
+				if (IsStalker(DEBUG_NPC) or IsMonster(DEBUG_NPC)) then
+					local lvid = level.vertex_in_direction(level.vertex_id(device().cam_pos),device().cam_dir,r)
+					if (lvid) then 
+						DEBUG_NPC:set_npc_position(level.vertex_position(lvid))
+					end
+				else
+					local pos = vector():set(device().cam_pos)
+					pos:add(device().cam_dir:mul(r))
+					
+					local lvid = level.vertex_id(pos)
+					if (lvid < 4294967295) then
+						TeleportObject(DEBUG_NPC:id(),pos,lvid,db.actor:game_vertex_id())
+					else 
+						SetHudMsg(game.translate_string("st_invalid_position"),4)
+					end
+				end
+			end
+			SetHudMsg("",1)
+		end	
+	end 
+end
+
+function action.debug_test(p)
+	if not (DEV_DEBUG) then 
+		return 
+	end 
+	if (p==1) then
+	
+		local valid = {
+			["string"] = true,
+			["number"] = true,
+			["table"] = true,
+			["function"] = true,
+			["userdata"] = false		
+		}
+		
+		local function addTab(s,n)
+			local l = string.len(s)
+			for i=1,n-l do
+				s = s .. " "
+			end
+			return s
+		end
+	
+		local txt = ""
+		for k,v in pairs(_G) do 
+			if (valid[type(k)] == true) then 
+				txt = txt .. addTab(tostring(k),40)
+			elseif (valid[type(k)] == false) then 
+				txt = txt .. addTab("userdata",40)
+			end
+			
+			if (valid[type(v)] == true) then 
+				txt = txt ..  " = " .. tostring(v) .. "\n"
+			elseif (valid[type(v)] == false) then 
+				txt = txt .. " = userdata\n"
+			else 
+				txt = txt .. "\n"
+			end
+		end
+		
+		local f = io.open("_g_print_table.txt","wb")
+		if (f) then 
+			f:write(txt)
+			f:close()
+		end
+	
+		--[[ clones active weapon
+		if (db.actor) then 
+			local wpn = db.actor:active_item()
+			if (wpn and IsWeapon(wpn)) then 
+				local se_wpn = alife():object(wpn:id())
+				if (se_wpn) then 
+					alife():clone_weapon(se_wpn,se_wpn:section_name(),se_wpn.position,se_wpn.m_level_vertex_id,se_wpn.m_game_vertex_id,0)
+				end
+				
+				local function itr(section)
+					printf("%s",section)
+				end
+				
+				wpn:iterate_installed_upgrades(itr)
+			end
+		end
+		--]]
+		
+		--xr_effects.disable_generator_zones()
+		-- RELEASES TASK GIVER FOR ALL TASKS WITH task_giver_id; useful for testing how a task works when giver is dead
+		--[[
+		local debug_task_infos = task_manager.get_task_manager().task_info
+		local task_ini = task_manager.task_ini
+		for k,v in pairs(debug_task_infos) do
+			local squad = v.task_giver_id and alife():object(v.task_giver_id)
+			if (squad) then
+				if (squad:clsid() == clsid.online_offline_group_s) then
+					printf("%s removing squad task giver!",k)
+					SIMBOARD:assign_squad_to_smart(squad, nil)
+					squad:remove_squad()
+				elseif (IsStalker(squad)) then
+					printf("%s removing npc task giver!",k)
+					alife():release(squad,true)
+				end
+			end
+		end
+		--]]
+		
+		-- SET ALL ACTIVE TASKS TO COMPLETE STAGE
+
+		--[[
+		local debug_task_infos = task_manager.get_task_manager().task_info
+		local task_ini = task_manager.task_ini
+		for k,v in pairs(debug_task_infos) do
+			local stage = task_ini:r_float_ex(k, "stage_complete") or 0
+			if (stage > 0 and stage ~= 255) then 
+				v.stage = stage
+			end
+		end
+		--]]
+	end
+end
+
+function action.debug_reload_game(p)
+	-- Reloads game files in-game so that application does not need restart
+	if not (DEV_DEBUG) then 
+		return 
+	end 
+	if (p==0) then
+		local fs = getFS()
+		fs:rescan_path('$game_config$')
+		fs:rescan_path('$game_scripts$')
+		reload_system_ini()
+		local p = net_packet()
+		p:w_begin(15) -- reload game
+		level.send(p,true)
+	end
+end
+
+function action.debug_hold_action(p)
+	if (p == 1) then 
+		_G.DEV_DEBUG_HOLD_ACTION_1 = true
+		local squad
+		local sim = alife()
+		for i=1,65534 do 
+			squad = sim:object(i)
+			if (squad and squad:clsid() == clsid.online_offline_group_s) then
+				if (squad.first_update) then
+					squad:hide()
+				end
+			end
+		end
+	elseif (p == 0) then
+		_G.DEV_DEBUG_HOLD_ACTION_1 = false
+	end
+end
+-------------------------------------------
+-- callbacks
+-------------------------------------------
+local function on_key_release(key)
+	for k,v in pairs(keybinds) do 
+		if (action[k]) then 
+			if (key_bindings[v]) then 
+				if (key_bindings[v] == dik_to_bind(key)) then 
+					action[k](0)
+				end
+			elseif (key == DIK_keys[axr_main.config:r_value("global_keybinds",k,0,"")]) then
+				action[k](0)
+			end
+		end
+	end 
+end
+
+local function on_key_press(key)
+	--printf("kCUSTOM1=%s key=%s dik_to_bind=%s",key_bindings.kCUSTOM1,key,dik_to_bind(key))
+	for k,v in pairs(keybinds) do 
+		if (action[k]) then 
+			if (key_bindings[v]) then 
+				if (key_bindings[v] == dik_to_bind(key)) then 
+					action[k](1)
+				end
+			elseif (key == DIK_keys[axr_main.config:r_value("global_keybinds",k,0,"")]) then
+				action[k](1)
+			end
+		end
+	end 
+end
+
+local function on_key_hold(key)
+	for k,v in pairs(keybinds) do 
+		if (action[k]) then 
+			if (key_bindings[v]) then 
+				if (key_bindings[v] == dik_to_bind(key)) then 
+					action[k](2)
+				end
+			elseif (key == DIK_keys[axr_main.config:r_value("global_keybinds",k,0,"")]) then
+				action[k](2)
+			end
+		end
+	end 
+end
+
+function on_game_start()
+	RegisterScriptCallback("on_key_press",on_key_press)
+	RegisterScriptCallback("on_key_release",on_key_release)
+	RegisterScriptCallback("on_key_hold",on_key_hold)
+	
+	local need_save
+	for k,v in pairs(keybinds) do 
+		if not (axr_main.config:line_exist("global_keybinds",k)) then 
+			axr_main.config:w_value("global_keybinds",k,v)
+			need_save = true
+		end
+	end 
+	
+	if (need_save) then
+		axr_main.config:save()
+	end
+end 

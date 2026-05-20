@@ -1,0 +1,103 @@
+-- if return game_object then it ignores engine. If return nil, then engine tries to find item to kill
+-- called from engine!
+function update_best_weapon(npc,cur_wpn)
+	--[[
+	local st = db.storage[npc:id()]
+	if not (st) then 
+		return cur_wpn
+	end 
+
+	-- we want to choose new best_weapon every n seconds unless we don't have one
+	local tg = time_global()
+	if (cur_wpn and st._choose_bw_timer and tg < st._choose_bw_timer) then
+		return cur_wpn
+	end 
+	
+	st._choose_bw_timer = tg+10000
+	
+	-- weapon priority
+	local prior = {}
+	
+	local be = npc:best_enemy()
+	if (be) then 
+		if (IsMonster(nil,be:clsid())) then 
+			if (be:position():distance_to_sqr(npc:position()) > 2500) then 
+				prior[#prior+1] = _G.IsRifle
+				prior[#prior+1] = _G.IsSniper
+				prior[#prior+1] = _G.IsPistol
+				prior[#prior+1] = _G.IsShotgun
+				prior[#prior+1] = _G.IsLauncher
+			else 
+				prior[#prior+1] = _G.IsShotgun 
+				prior[#prior+1] = _G.IsRifle
+				prior[#prior+1] = _G.IsPistol
+				prior[#prior+1] = _G.IsSniper
+				prior[#prior+1] = _G.IsLauncher
+			end
+		elseif (be:position():distance_to_sqr(npc:position()) > 1000) then 
+			prior[#prior+1] = _G.IsSniper
+			prior[#prior+1] = _G.IsRifle
+			prior[#prior+1] = _G.IsPistol
+			prior[#prior+1] = _G.IsShotgun
+			prior[#prior+1] = _G.IsLauncher
+		elseif (be:position():distance_to_sqr(npc:position()) > 2500) then 
+			prior[#prior+1] = _G.IsRifle
+			prior[#prior+1] = _G.IsSniper
+			prior[#prior+1] = _G.IsPistol
+			prior[#prior+1] = _G.IsShotgun
+			prior[#prior+1] = _G.IsLauncher
+		else 
+			prior[#prior+1] = _G.IsRifle
+			prior[#prior+1] = _G.IsShotgun
+			prior[#prior+1] = _G.IsPistol
+			prior[#prior+1] = _G.IsSniper
+			prior[#prior+1] = _G.IsLauncher
+		end
+	elseif (axr_npc_vs_heli.is_under_npc_vs_heli(npc)) then
+		prior[#prior+1] = _G.IsLauncher 
+		prior[#prior+1] = _G.IsSniper 
+		prior[#prior+1] = _G.IsRifle
+		prior[#prior+1] = _G.IsPistol
+		prior[#prior+1] = _G.IsShotgun
+	else
+		prior[#prior+1] = _G.IsRifle
+		prior[#prior+1] = _G.IsSniper
+		prior[#prior+1] = _G.IsPistol
+		prior[#prior+1] = _G.IsShotgun
+		prior[#prior+1] = _G.IsLauncher
+	end
+
+	local ini = system_ini()
+	local best_weapons = {}
+	
+	local function itr(npc,wpn)
+		local cls = wpn:clsid()
+		if (IsWeapon(nil,cls) ~= true) then 
+			return false
+		end
+		--if (wpn:get_ammo_in_magazine() > 0) then
+			for i=1,#prior do 
+				if (prior[i](nil,cls)) then
+					best_weapons[wpn] = ini:r_float_ex(wpn:section(),"cost")
+					break
+				end
+			end
+		--end
+		return false
+	end
+	
+	npc:iterate_inventory(itr,npc)
+
+	
+	for wpn,cost in spairs(best_weapons,function(t,a,b) return t[a] > t[b] end) do 
+		DEBUG_NPC = level.get_target_obj and level.get_target_obj()
+		if (DEBUG_NPC) then 
+			SetHudMsg(strformat("%s bw=%s",DEBUG_NPC:name(),wpn and wpn:name()),2)
+		end
+		return wpn
+	end
+
+	--]]
+	return
+end
+

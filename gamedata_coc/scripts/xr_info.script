@@ -1,0 +1,10 @@
+function setup_known_info(npc,char_ini,known_info)
+	known_info = known_info or "known_info"
+	if char_ini:section_exist(known_info) then
+		local n = char_ini:line_count(known_info)
+		for i=0,n-1 do
+			local result, id, value = char_ini:r_line(known_info,i,"","")
+			npc:give_info_portion(id)
+		end
+	end
+end

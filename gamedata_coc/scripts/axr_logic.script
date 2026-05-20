@@ -1,0 +1,82 @@
+--[[
+Copyright (C) 2012 Alundaio
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License-]]
+--]]
+
+function set_new_scheme_and_logic(npc,scheme,section,logic,gulag,ini_filename)
+	if not (npc) then 
+		printf("set_new_scheme_and_logic npc is nil!")
+	end 
+	
+	local st = db.storage[npc:id()]
+	--utils.save_var(npc,"old_active_section", st.active_section)
+	--utils.save_var(npc,"old_section_logic", st.section_logic)
+	--utils.save_var(npc,"old_ini_filename", st.ini_filename)
+
+	-- Store new ini
+	db.storage[npc:id()].ini_filename = ini_filename
+	db.storage[npc:id()].ini = ini_file(ini_filename)
+	if not (st.ini) then 
+		printf("Error: set_new_scheme_and_logic: cannot find ini %s",ini_filename)
+		return
+	end
+
+	-- Set new section logic
+	db.storage[npc:id()].section_logic = logic
+
+	-- Select new active section
+	local new_section = section or xr_logic.determine_section_to_activate(npc, st.ini, st.section_logic)
+
+	-- Switch to new section
+	xr_logic.switch_to_section(npc, st.ini, new_section)
+	db.storage[npc:id()].overrides = xr_logic.cfg_get_overrides(st.ini, new_section, npc)
+end
+
+function restore_scheme_and_logic(npc)
+	local st = db.storage[npc:id()]
+	st.ini_filename = "<customdata>"
+	st.ini = xr_logic.get_customdata_or_ini_file(npc, st.ini_filename)
+	st.active_section = nil
+	st.active_scheme = nil
+	st.section_logic = "logic"
+	xr_logic.switch_to_section(npc,nil,nil)
+	-- Load old logic
+	--[[
+	st.ini_filename = utils.load_var(npc,"old_ini_filename", st.loaded_ini_filename)
+	--st.ini = ini_file(st.ini_filename)
+	if (not st.ini_filename) or (string.find(st.ini_filename,"*")) or (string.find(st.ini_filename,"<customdata>")) then
+		st.ini_filename = "<customdata>"
+		st.ini = xr_logic.get_customdata_or_ini_file(npc, st.ini_filename)
+		st.active_section = nil
+		st.active_scheme = nil
+		st.section_logic = "logic"
+		xr_logic.switch_to_section(npc,nil,nil)
+	else
+		local active_section = utils.load_var(npc,"old_active_section", st.active_section)
+		local section_logic = utils.load_var(npc,"old_section_logic", st.section_logic)
+
+		st.ini = ini_file(st.ini_filename)
+		local section = st.ini:section_exist(active_section) and active_section or xr_logic.determine_section_to_activate(npc, st.ini, section_logic)
+		st.section = section
+
+		xr_logic.switch_to_section(npc,st.ini,section)
+		db.storage[npc:id()].overrides = xr_logic.cfg_get_overrides(st.ini, section, npc)
+	end
+	--]]
+end
+
+function reset_logic(npc,st)
+	st.ini_filename = "<customdata>"
+	st.ini = xr_logic.get_customdata_or_ini_file(npc, st.ini_filename)
+	st.active_section = nil
+	st.active_scheme = nil
+	st.section_logic = "logic"
+	xr_logic.switch_to_section(npc,nil,nil)
+end
+
+function str_from_condlist(obj,ini,section,field)
+	local str = section and ini and ini:section_exist(section) and ini:line_exist(section,field) and ini:r_string_ex(section,field) or "nil"
+	local condlist = xr_logic.parse_condlist(obj,section,field,str)
+	return xr_logic.pick_section_from_condlist(db.actor,obj,condlist)
+end
+

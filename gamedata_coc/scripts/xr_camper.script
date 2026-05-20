@@ -1,0 +1,585 @@
+----------------------------------------------------------------------------------------------------------------------
+--'	Схема кемпер. Чудак с бальшой пушкой ходит и отстреливает живность.
+--'	автор: Диденко Руслан (Stohe)
+--'	TODO:
+----------------------------------------------------------------------------------------------------------------------
+--function printf()
+--end
+
+----------------------------------------------------------------------------------------------------------------------
+-- EVALUATORS
+----------------------------------------------------------------------------------------------------------------------
+--' Условие завершения скрипта
+class "evaluator_end" (property_evaluator)
+function evaluator_end:__init(name, storage) super (nil, name)
+	self.a = storage
+end
+function evaluator_end:evaluate()
+	--alun_utils.debug_write("xr_camper:eva_end")
+	
+	local st = db.storage[self.object:id()]
+	if (st) and (st.corpse_detection and st.corpse_detection.selected_corpse_id) then 
+		return false 
+	end
+	
+	if (IsWounded(self.object)) then 
+		return false 
+	end
+	
+	return not xr_logic.is_active(self.object, self.a)
+end
+
+--' Обычный комбат или кемперский
+class "evaluator_close_combat" (property_evaluator)
+function evaluator_close_combat:__init(name, storage) super (nil, name)
+	self.a = storage
+end
+function evaluator_close_combat:evaluate()
+	--alun_utils.debug_write("xr_camper:eva_close_combat")
+	if not xr_logic.is_active(self.object, self.a) then
+		return true
+	end
+	
+	local st = db.storage[self.object:id()]
+	if (st) and (st.rx_dont_shoot) then 
+		return true 
+	end
+	
+	local be = self.object:best_enemy()
+	if not (be) then
+		return false
+	end
+	
+	if xr_danger.has_danger(self.object) then
+		return true
+	end
+	
+	--[[
+	local a = self.object:memory_time(be)
+	if a then
+		if (time_global() - a < 20000 and self.object:position():distance_to(self.object:memory_position(be)) < self.a.radius) then
+			return true
+		end
+	end
+	--]]
+	-- ^
+	if (self.a.locked or self.object:position():distance_to(be:position()) < self.a.radius) then
+		self.a.locked = true
+		return true 
+	end
+
+	return false
+end
+
+----------------------------------------------------------------------------------------------------------------------
+-- ACTIONS
+----------------------------------------------------------------------------------------------------------------------
+--' Патрулировать территорию по патрульному пути
+
+class "action_patrol" (action_base)
+function action_patrol:__init (npc,action_name,storage) super (nil,action_name)
+	self.a = storage
+	self.move_mgr = db.storage[npc:id()].move_mgr
+	self.a.scan_table = {}
+end
+function action_patrol:initialize()
+	action_base.initialize(self)
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+
+	self:reset_scheme()
+	self.enemy_position = nil
+end
+function action_patrol:reset_scheme()
+	--alun_utils.debug_write("action_patrol:reset_scheme")
+	state_mgr.set_state(self.object, "patrol")
+	self.a.signals = {}
+	self.a.scan_table = {}
+	if self.a.sniper == true then
+		self.move_mgr:reset(self.a.path_walk,utils.path_parse_waypoints(self.a.path_walk),nil,nil,nil,self.a.suggested_state,{obj=self,func=self.process_point})
+		local path = self.a.path_look and patrol(self.a.path_look)
+		if path ~= nil then
+			for k = 0, path:count() - 1 do
+				for i = 0, 31 do
+					if path:flag(k, i) then
+						if self.a.scan_table[i] == nil then
+							self.a.scan_table[i] = {}
+						end
+						table.insert(self.a.scan_table[i], {key = k, pos = path:point(k)})
+					end
+				end
+			end
+		end
+		if (self.object:sniper_update_rate() == false) then
+			self.object:sniper_update_rate(true)
+		end
+	else
+		self.move_mgr:reset(self.a.path_walk,utils.path_parse_waypoints(self.a.path_walk),self.a.path_look,utils.path_parse_waypoints(self.a.path_look),nil,self.a.suggested_state,{obj=self,func=self.process_point})
+		if self.object:sniper_update_rate() == true then
+			self.object:sniper_update_rate(false)
+		end
+	end
+	self.a.last_look_point = nil
+	self.a.cur_look_point = nil
+	self.a.scan_begin = nil
+end
+function action_patrol:activate_scheme()
+	self:reset_scheme()
+end
+function action_patrol:can_shoot()
+	return self.a.shoot == "always" or self.a.shoot == "terminal" and self.move_mgr:standing_on_terminal_waypoint() or false
+end
+function action_patrol:execute()
+	--alun_utils.debug_write("action_patrol:execute")
+	action_base.execute (self)
+
+	local npc = self.object
+	local be = npc:best_enemy()
+	local tg = time_global()
+	
+	if not (be) then
+		if (self:process_danger()) then
+			return
+		end
+		
+		if (self:on_place()) then
+			if (self.a.sniper and self.a.wp_flag) then 
+				self.scantime = self.scantime or tg
+				self:scan(self.a.wp_flag)
+
+				if not (self.move_mgr:standing_on_terminal_waypoint()) then
+					if (self.scantime and tg - self.scantime >= self.a.scantime_free) then
+						self.move_mgr:continue()
+						self.move_mgr:update()
+					end
+				end
+			else 
+				self.move_mgr:continue()
+				self.move_mgr:update()
+				self.scantime = nil
+			end
+		else 
+			self.move_mgr:continue()
+			self.move_mgr:update()
+			self.scantime = nil
+		end
+		return
+	end
+	
+	local mem_time = npc:memory_time(be) or nil
+
+	if (npc:see(be) and self:can_shoot()) then
+		if (self.__keep_body_state_until==nil or tg > self.__keep_body_state_until) then
+			local dir = vector():sub(be:position(),npc:position())
+			self.__keep_body_state_until = tg+3000
+			if (npc:body_state() ~= move.crouch) then
+				--if not (math.abs(be:position().y-npc:position().y) > 3.5) then
+					if (level.high_cover_in_direction(npc:level_vertex_id(),dir) < 0.2) then 
+						self.stand = false
+					end
+				--end
+			else
+				if (math.abs(be:position().y-npc:position().y) > 3.5) or (level.high_cover_in_direction(npc:level_vertex_id(),dir) >= 0.2) then 
+					self.stand = true 
+				end
+			end
+		end
+		
+		local dir = vector():sub(alun_utils.safe_bone_pos(be,"bip01_neck"),npc:bone_position("bip01_r_finger02"))
+		if (self.stand) then 
+			state_mgr.set_state(npc,self.a.sniper and "threat_sniper_fire" or "threat_fire", nil, nil, {look_object = be}, {fast_set = true})
+		else 
+			state_mgr.set_state(npc,self.a.sniper and "hide_sniper_fire" or "hide_fire", nil, nil, {look_object = be}, {fast_set = true})
+		end
+		
+		--xr_sound.set_sound_play(self.object:id(), self.a.attack_sound)
+		return
+	end
+	
+	local memory_position = npc:memory_position(be)
+	if (memory_position) and (self.enemy_position == nil or not utils.vector_cmp(memory_position,self.enemy_position)) then 
+		self.enemy_position = vector():set(memory_position)
+		if self.a.sniper == true then
+			local position = vector():set(npc:position())
+			local direction = vector():set(self.enemy_position.x - position.x,0,self.enemy_position.z - position.z)
+			direction:normalize()
+			local wide_sight = npc:position():distance_to(self.enemy_position)*math.tan(self.a.enemy_disp)
+
+			self.point_0 = vector():set(self.enemy_position.x + wide_sight*direction.z,self.enemy_position.y,self.enemy_position.z - wide_sight*direction.x)
+			self.point_2 = vector():set(self.enemy_position.x - wide_sight*direction.z,self.enemy_position.y,self.enemy_position.z + wide_sight*direction.x)
+
+			self.a.scan_table[-1] = {}
+			table.insert(self.a.scan_table[-1], {key = 0, pos =self.point_0})
+			table.insert(self.a.scan_table[-1], {key = 1, pos =self.enemy_position})
+			table.insert(self.a.scan_table[-1], {key = 2, pos =self.point_2})
+		end
+	end
+	
+	if (self:on_place()) then
+		if (self.__keep_body_state_until==nil or tg > self.__keep_body_state_until) then
+			local dir = self.enemy_position and vector():sub(self.enemy_position,npc:position()) or npc:direction()
+			self.__keep_body_state_until = tg+3000
+			if (npc:body_state() ~= move.crouch) then
+				--if not (math.abs(self.enemy_position.y-npc:position().y) > 3.5) then
+					if (level.high_cover_in_direction(npc:level_vertex_id(),dir) < 0.2) then 
+						self.stand = false
+					end
+				--end
+			else
+				if ( (self.enemy_position and math.abs(self.enemy_position.y-npc:position().y) > 3.5)) or (level.high_cover_in_direction(npc:level_vertex_id(),dir) >= 0.2) then 
+					self.stand = true 
+				end
+			end
+		end
+		
+		if (self.a.sniper) then 
+			if (mem_time and tg - mem_time < self.a.post_enemy_wait) then
+				if (self.stand) then 
+					state_mgr.set_state(npc, "threat_na", nil, nil, {look_position = self.enemy_position})
+				else 
+					state_mgr.set_state(npc, "hide_na", nil, nil, {look_position = self.enemy_position})
+				end
+			else
+				self:scan(-1)
+			end
+		else
+			if (self.stand) then 
+				state_mgr.set_state(npc, "threat_na", nil, nil, {look_position = self.enemy_position})
+			else 
+				state_mgr.set_state(npc, "hide_na", nil, nil, {look_position = self.enemy_position})
+			end
+		end
+		return
+	end
+	
+	if (mem_time and time_global() - mem_time > self.a.idle) then
+		self.move_mgr:continue()
+	end
+
+	self.move_mgr:update()
+end
+
+function action_patrol:process_danger()
+	local best_danger = self.object:best_danger()
+	if best_danger == nil then
+		return false
+	end
+	local best_danger_object = best_danger:object()
+	local bd_type = best_danger:type()
+	local tg = time_global()
+	local passed_time = tg - best_danger:time()
+	
+	local urgent_danger = best_danger_object and (IsMonster(best_danger_object) or (IsStalker(best_danger_object) and self.object:relation(best_danger_object) >= game_object.enemy)) and (bd_type == danger_object.attacked) and passed_time < 3000
+	if not (urgent_danger) then 
+		if not (xr_danger.has_danger(self.object)) then
+			return false
+		end
+	end 
+	
+	if self.danger ~= true then
+		self.danger = true
+		self.object:play_sound(stalker_ids.sound_alarm, 1, 0, 1, 0)
+	end
+
+	local bd_pos = urgent_danger and best_danger_object:position() or best_danger:position()
+	if (self.__keep_body_state_until==nil or tg > self.__keep_body_state_until) then
+		local dir = bd_pos and vector():sub(bd_pos,self.object:position()) or self.object:direction()
+		self.__keep_body_state_until = tg+3000
+		if (self.object:body_state() ~= move.crouch) then
+			if (level.high_cover_in_direction(self.object:level_vertex_id(),dir) < 0.2) then 
+				self.stand = false
+			end	
+		else
+			if (level.high_cover_in_direction(self.object:level_vertex_id(),dir) >= 0.2) then 
+				self.stand = true 
+			end
+		end
+	end
+	
+	if (self.stand) then 
+		state_mgr.set_state(self.object, "threat_na", nil, nil, {look_position = bd_pos})
+	else 
+		state_mgr.set_state(self.object, "hide_na", nil, nil, {look_position = bd_pos})
+	end
+	
+	return true
+end
+function action_patrol:scan(flag)
+	if (flag == nil or self.a.scan_table[flag] == nil) then
+		return
+	end
+
+	if self.flag ~= flag then
+		self.flag = flag
+		self.a.scan_begin = nil
+		self.a.cur_look_point = nil
+		self.a.last_look_point = nil
+	end
+
+	if self.a.scan_begin == nil or
+		 time_global() - self.a.scan_begin > self.a.time_scan_delta then
+
+		self.next_point = self:get_next_point(flag)
+		if self.a.cur_look_point == nil then
+			self.a.cur_look_point = 1
+		end
+		if self.a.last_look_point == nil then
+			self.a.last_look_point = self.next_point
+		end
+
+		--printf("Look at [%s][%s]", utils.to_str(self.a.last_look_point.key), utils.to_str(self.a.cur_look_point))
+		self.look_position = self.a.last_look_point.pos
+		self.dest_position = self.next_point.pos
+		self.look_point = vector():set(self.look_position.x + self.a.cur_look_point * (self.dest_position.x - self.look_position.x)/self.a.scandelta,
+										 self.look_position.y + self.a.cur_look_point * (self.dest_position.y - self.look_position.y)/self.a.scandelta,
+										 self.look_position.z + self.a.cur_look_point * (self.dest_position.z - self.look_position.z)/self.a.scandelta)
+										
+		
+		local npc = self.object
+		local tg = time_global()
+		if (self.__keep_body_state_until==nil or tg > self.__keep_body_state_until) then
+			local dir = self.look_point and vector():sub(self.look_point,npc:position()) or npc:direction()
+			self.__keep_body_state_until = tg+3000
+			if (npc:body_state() ~= move.crouch) then
+				if (level.high_cover_in_direction(npc:level_vertex_id(),dir) < 0.2) then 
+					self.stand = false
+				end	
+			else
+				if (level.high_cover_in_direction(npc:level_vertex_id(),dir) >= 0.2) then 
+					self.stand = true 
+				end
+			end
+		end
+	
+		if (self.stand) then 
+			state_mgr.set_state(npc, "threat_na", nil, nil, {look_position = self.look_point})
+		else 
+			state_mgr.set_state(npc, "hide_na", nil, nil, {look_position = self.look_point})
+		end
+		
+		if self.a.cur_look_point >= self.a.scandelta then
+			self.a.cur_look_point = nil
+			self.a.last_look_point = self.next_point
+		else
+			if self.a.scan_begin ~= nil then
+				self.a.cur_look_point = self.a.cur_look_point + (time_global() - self.a.scan_begin)/self.a.time_scan_delta
+			else
+				self.a.cur_look_point = self.a.cur_look_point + 1
+			end
+		end
+		self.a.scan_begin = time_global()
+	end
+end
+function action_patrol:get_next_point(flag)
+	local next = false
+
+	if self.a.last_look_point == nil then
+		table.sort(self.a.scan_table[flag], function(a,b) return a.key < b.key end)
+	end
+--	print_table(self.a.scan_table[flag])
+	for k,v in pairs(self.a.scan_table[flag]) do
+		if self.a.last_look_point == nil then
+			return v
+		end
+		if next == true then
+			return v
+		end
+		if self.a.last_look_point.key == v.key then
+			next = true
+		end
+	end
+	if next == true then
+		if self.a.last_look_point.key == 0 then
+			table.sort(self.a.scan_table[flag], function(a,b) return a.key < b.key end)
+		else
+			table.sort(self.a.scan_table[flag], function(a,b) return a.key > b.key end)
+		end
+	end
+	return self.a.last_look_point
+end
+function action_patrol:process_point(mode, number)
+	return false
+end
+function action_patrol:finalize()
+	self.move_mgr:finalize()
+	action_base.finalize (self)
+end
+function action_patrol:on_place()
+		if self.a.no_retreat == true then return false end
+
+	local path = patrol(self.a.path_walk)
+	if path ~= nil then
+		for k = 0, path:count() - 1 do
+			if utils.stalker_at_waypoint(self.object, patrol(self.a.path_walk), k) then
+				for i = 0, 31 do
+					if path:flag(k, i) then
+						self.a.wp_flag = i
+						return true
+					end
+				end
+				self.a.wp_flag = nil
+				return false
+			end
+		end
+		self.a.wp_flag = nil
+		return false
+	end
+end
+function action_patrol:hit_callback(obj, amount, local_direction, who, bone_index)
+	--[[
+	if (bone_index == "from_death_callback") then 
+		return 
+	end
+	if (obj and amount > 0 and who and (IsStalker(who) or IsMonster(who)) and who:alive()) then
+		obj:enable_memory_object(who,true)
+	end
+	--]]
+end
+----------------------------------------------------------------------------------------------------------------------
+-- BINDER
+----------------------------------------------------------------------------------------------------------------------
+function add_to_binder(object, ini, scheme, section, storage)
+		local operators	= {}
+		local properties  = {}
+
+		local manager = object:motivation_action_manager()
+
+		operators["patrol"]			= xr_actions_id.stohe_camper_base + 1
+		operators["search_corpse"]	= xr_actions_id.corpse_exist
+		operators["help_wounded"]	= xr_actions_id.wounded_exist
+
+		properties["end"]			= xr_evaluators_id.stohe_camper_base + 1
+		properties["can_fight"]		= xr_evaluators_id.sidor_wounded_base + 1
+		properties["close_combat"]	= xr_evaluators_id.stohe_camper_base + 2
+		properties["state_mgr_logic_active"] 	= xr_evaluators_id.state_mgr + 4
+
+		manager:add_evaluator (properties["end"], this.evaluator_end("camper_end", storage))
+		manager:add_evaluator (properties["close_combat"], this.evaluator_close_combat("camper_close_combat", storage))
+
+		local action = this.action_patrol (object,"action_camper_patrol", storage)
+		action:add_precondition	(world_property(stalker_ids.property_alive, true))
+		action:add_precondition	(world_property(properties["end"],			false))
+		action:add_precondition	(world_property(properties["close_combat"],	false))
+		action:add_precondition	(world_property(properties["can_fight"],	true))
+		action:add_precondition (world_property(stalker_ids.property_danger,false))
+		action:add_precondition	(world_property(stalker_ids.property_anomaly,false))
+
+	-- Дубляж common_precondition без подбора вещей.
+	action:add_precondition (world_property(xr_evaluators_id.stohe_meet_base + 1,false))
+	action:add_precondition (world_property(xr_evaluators_id.sidor_wounded_base + 0,  false))
+	action:add_precondition (world_property(xr_evaluators_id.abuse_base, false))
+	
+	if (_G.schemes["facer"]) then
+		action:add_precondition(world_property(xrs_facer.evid_facer,false))
+		action:add_precondition(world_property(xrs_facer.evid_steal_up_facer,false))
+	end
+	
+	if (_G.schemes["rx_ff"]) then 
+		action:add_precondition(world_property(rx_ff.evaid,false))
+	end
+
+
+	action:add_effect (world_property(properties["end"],				true))
+	action:add_effect (world_property(stalker_ids.property_enemy,		false))
+	action:add_effect (world_property(properties["state_mgr_logic_active"], false))
+	manager:add_action (operators["patrol"], action)
+	xr_logic.subscribe_action_for_events(object, storage, action)
+
+	action = manager:action (xr_actions_id.alife)
+	action:add_precondition	(world_property(properties["end"],			true))
+
+	action = manager:action (stalker_ids.action_gather_items)
+	action:add_precondition	(world_property(properties["end"],			true))
+
+	if (xr_gather_items.actid) then
+		action = manager:action (xr_gather_items.actid)
+		action:add_precondition	(world_property(properties["end"],true))
+	end
+	
+	if (_G.schemes["corpse_detection"]) then
+		action = manager:action (operators["search_corpse"])
+		action:add_precondition	(world_property(properties["end"],true))
+	end
+	
+	if (_G.schemes["npc_vs_heli"]) then 
+		action = manager:action(axr_npc_vs_heli.actid)
+		action:add_precondition(world_property(properties["end"],true))
+	end
+
+	if (_G.schemes["fight_from_cover"]) then 
+		action = manager:action(axr_fight_from_cover.actid)
+		action:add_precondition(world_property(properties["end"],true))
+	end
+	
+	if (_G.schemes["stalker_panic"]) then 
+		action = manager:action(axr_stalker_panic.actid)
+		action:add_precondition(world_property(properties["end"],true))
+	end
+	
+	if (_G.schemes["turn_on_campfire"]) then 
+		action = manager:action(axr_turn_on_campfire.actid)
+		action:add_precondition(world_property(properties["end"],true))
+	end
+	
+	if (_G.schemes["kill_wounded"]) then 
+		action = manager:action(xrs_kill_wounded.actid)
+		action:add_precondition(world_property(properties["end"],true))		
+	end
+	
+	action = manager:action (xr_actions_id.wounded_exist)
+	action:add_precondition	(world_property(properties["end"],true))
+	
+	if (xr_danger.actid) then
+		action = manager:action(xr_danger.actid)
+		action:add_precondition(world_property(properties["end"],true))
+	end
+
+	action = manager:action (stalker_ids.action_combat_planner)
+	action:add_precondition (world_property(properties["close_combat"],	true))
+	action:add_effect (world_property(properties["close_combat"],	false))
+	action:add_effect (world_property(properties["state_mgr_logic_active"], false))
+	action:add_effect (world_property(properties["end"],				true))
+end
+
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+
+	st.path_walk = utils.prefix_r_string(ini,section,"path_walk",gulag_name)
+	st.path_look = utils.prefix_r_string(ini,section,"path_look",gulag_name)
+
+	if st.path_walk == st.path_look then
+		abort("You are trying to set 'path_look' equal to 'path_walk' in section [%s] for npc [%s]", section, npc:name())
+	end
+
+	st.sniper = ini:r_bool_ex(section,"sniper",false) 
+	st.no_retreat = ini:r_bool_ex(section,"no_retreat") or false
+	st.shoot = ini:r_string_ex(section,"shoot") or "always"
+	st.sniper_anim = ini:r_string_ex(section,"sniper_anim") or "hide_na"
+	if st.sniper == true and st.no_retreat == true then
+		_G.abort("ERROR: NPC [%s] Section [%s]. No_retreat not available for SNIPER.", npc:name(), section)
+	end
+
+	st.radius = ini:r_float_ex(section,"radius") or 20
+	st.suggested_state = {}
+	st.suggested_state.moving = ini:r_string_ex(section,"def_state_moving")
+	st.suggested_state.moving_fire = ini:r_string_ex(section,"def_state_moving_fire")
+	st.suggested_state.campering = ini:r_string_ex(section,"def_state_campering")
+	st.suggested_state.standing = ini:r_string_ex(section,"def_state_standing") or st.suggested_state.campering
+	st.suggested_state.campering_fire = ini:r_string_ex(section,"def_state_campering_fire")
+	st.scantime_free = ini:r_float_ex(section,"scantime_free") or 60000
+	st.attack_sound = ini:r_string_ex(section,"attack_sound") or "fight_attack"
+
+	if st.attack_sound == "false" then
+		st.attack_sound = nil
+	end
+
+	-- Время забывания врага
+	st.idle = ini:r_float_ex(section,"enemy_idle") or 60000
+	st.post_enemy_wait = 5000 -- время, которое мы ждем врага, смотря в его последнюю позицию.
+	st.enemy_disp = 7/57.2957 -- Угол в пределах которого снайпер ведет поиск потерянного врага.
+
+	st.scandelta = 30
+	st.timedelta = 4000
+	st.time_scan_delta = st.timedelta/st.scandelta
+end
