@@ -107,95 +107,103 @@ jobs:
 
   pack-assets:
     name: 'Pack assets'
-
-    needs:
-      - build-engine
-
+    needs: [build-engine]
     strategy:
       matrix:
-        system:
-          - windows-latest
-
+        system: [windows-latest]
     runs-on: ${{ matrix.system }}
-
+  
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-
+  
       - name: Setup compressor
         uses: ixray-team/setup-compressor@v0.1
         with:
           codebase: '1.6-stcop'
-
-      - name: Generate patch
+  
+      - name: Generate patches
         run: |
-          ${{ github.workspace }}/util/generate-patch.bat `
-            xrCompress.exe
-          type `
-            *.log
-          move `
-            ${{ github.workspace }}/gamedata `
-            ${{ github.workspace }}/gamedata_full
-          move `
-            ${{ github.workspace }}/patch `
-            ${{ github.workspace }}/gamedata
-
-      - name: Upload assets
-        uses: actions/upload-artifact@v7
+          ${{ github.workspace }}/util/generate-patch.bat xrCompress.exe
+          type *.log
+  
+      - name: Upload assets (CoP)
+        shell: cmd
+        run: |
+          if exist gamedata rd /s /q gamedata
+          xcopy /e /i patch gamedata
+      - uses: actions/upload-artifact@v7
         with:
-          name: engine-assets-${{ github.sha }}
+          name: engine-assets-cop-${{ github.sha }}
           path: |
             gamedata/
             .xrignore
             fsgame.ltx
           include-hidden-files: true
-
+  
+      - name: Upload assets (CS)
+        shell: cmd
+        run: |
+          if exist gamedata rd /s /q gamedata
+          xcopy /e /i patch_cs gamedata
+      - uses: actions/upload-artifact@v7
+        with:
+          name: engine-assets-cs-${{ github.sha }}
+          path: |
+            gamedata/
+            .xrignore
+            fsgame.ltx
+          include-hidden-files: true
+  
+      - name: Upload assets (SoC)
+        shell: cmd
+        run: |
+          if exist gamedata rd /s /q gamedata
+          xcopy /e /i patch_soc gamedata
+      - uses: actions/upload-artifact@v7
+        with:
+          name: engine-assets-soc-${{ github.sha }}
+          path: |
+            gamedata/
+            .xrignore
+            fsgame.ltx
+          include-hidden-files: true
   publish-engine:
-    name: 'Publish engine'
-
-    needs:
-      - pack-assets
-
+    name: 'Publish engine ${{ matrix.variant }}'
+    needs: [pack-assets]
     strategy:
       matrix:
-        system:
-          - windows-latest
-        platform:
-          - x64
-        preset:
-          - Engine
-        config:
-          - RelWithDebInfo
-
+        system: [windows-latest]
+        platform: [x64]
+        preset: [Engine]
+        config: [RelWithDebInfo]
+        variant: [cop, cs, soc]
     runs-on: ${{ matrix.system }}
-
+  
     steps:
-      - name: Get engine
+      - name: Get engine binaries
         uses: actions/download-artifact@v8
         with:
           name: engine-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/
-
-      - name: Get assets
+  
+      - name: Get assets (${{ matrix.variant }})
         uses: actions/download-artifact@v8
         with:
-          name: engine-assets-${{ github.sha }}
+          name: engine-assets-${{ matrix.variant }}-${{ github.sha }}
           path: ./
-
-      - name: Move files
+  
+      - name: Move binaries to ./bin
         run: |
-          mkdir `
-            ${{ github.workspace }}/bin
-          move `
-            ${{ github.workspace }}/build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.* `
-            ${{ github.workspace }}/bin
-
-      - name: Upload engine
+          mkdir ${{ github.workspace }}/bin
+          move ${{ github.workspace }}/build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.* ${{ github.workspace }}/bin
+  
+      - name: Upload publish artifact (${{ matrix.variant }})
         uses: actions/upload-artifact@v7
         with:
-          name: engine-publish-${{ matrix.system }}-${{ matrix.platform }}-${{ github.sha }}
+          name: engine-publish-${{ matrix.variant }}-${{ matrix.system }}-${{ matrix.platform }}-${{ github.sha }}
           path: |
             bin/
             gamedata/
