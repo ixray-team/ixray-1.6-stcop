@@ -89,7 +89,7 @@ function transfer_medkit(first_speaker, second_speaker)
 
 	alife():create("medkit_script", second_speaker:position(), second_speaker:level_vertex_id(), second_speaker:game_vertex_id(), second_speaker:id())
 
-	--' ��� ���� �������� ������� ��� �������������.
+	--' Тут надо анлочить аптечку для использования.
 	xr_wounded.unlock_medkit(second_speaker)
 
 	if second_speaker:relation(first_speaker) ~= game_object.enemy then
@@ -113,7 +113,7 @@ function relocate_item_section(victim, section, type, amount)
 		end
 		for i = 1, amount do
 			if type == "in" then
-			--' ����������� ����� ������ ��������� ��������.
+			--' Трансферить нужно только квестовые предметы.
 				if quest_section[section] == true and victim ~= nil and victim:object(section) ~= nil then
 					victim:transfer_item(victim:object(section), db.actor)
 				else
@@ -407,7 +407,7 @@ end
 -----------------------------------------------------------------------------------
 -- TRADE
 -----------------------------------------------------------------------------------
---' ������������� ��������
+--' Инициализация торговли
 function trade_init(seller, buyer)
 	db.storage[seller:id()].meet.begin_wait_to_see.begin = time_global()/1000
 	xr_position.setPosition(db.storage[seller:id()].meet.Seller,
@@ -430,14 +430,14 @@ function dont_want_trade(seller, buyer)
 end
 
 ----------------------------------------------------------------------------------
--- ����� ������� ��������� ��������� � ��������!!!
+-- Новые функции трансфера предметов в диалогах!!!
 ----------------------------------------------------------------------------------
 
 function relocate_item_section_to_actor(first_speaker, second_speaker, section, amount)
-	-- ������� ������� ��� �� ��� �����
+	-- Сначала выясним кто из них актер
 	local npc = who_is_npc(first_speaker, second_speaker)
 	local v = 0
-	--' ����������� ����� ������ ��������� ��������.
+	--' Трансферить нужно только квестовые предметы.
 	if not amount then
 		amount = 1
 	end
@@ -514,7 +514,7 @@ function who_is_actor(first_speaker, second_speaker)
 	return npc
 end
 
---section - ��� ������ ��� ��������; amount - ����������, ����� ��������� ������ "all"
+--section - Имя секции для передачи; amount - количество, также принимает стринг "all"
 function relocate_item_section_from_actor(first_speaker, second_speaker, section, amount)
 	local npc = who_is_npc(first_speaker, second_speaker)
 	local actor = who_is_actor(first_speaker, second_speaker)
