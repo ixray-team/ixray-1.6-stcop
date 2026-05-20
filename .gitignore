@@ -68,8 +68,8 @@ packages/
 
 # Temporary files
 temp/
-gamedata_origin/
-patch/
+gamedata*_origin/
+patch*/
 
 # Generated files
 imgui.ini
