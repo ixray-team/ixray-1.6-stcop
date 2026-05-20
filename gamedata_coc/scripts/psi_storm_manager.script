@@ -24,7 +24,8 @@ local diff_game_sec			= -1
 
 class "CPsiStormManager"
 function CPsiStormManager:__init()
-
+	self.humanParticles = {}
+	self.vortexes 		= {}
 end
 
 function CPsiStormManager:initialize()
@@ -32,7 +33,7 @@ function CPsiStormManager:initialize()
 	if not (self._state_loaded) then 
 		self.game_time_factor=level.get_time_factor()
 		self.last_psi_storm_time = game.get_game_time()
-		self.inited_time = self.last_psi_storm_time
+		self.inited_time = game.get_game_time()
 		self.started = false
 		self.finished = true
 		self.task_given = nil
@@ -60,6 +61,9 @@ function CPsiStormManager:initialize()
 end
 
 function CPsiStormManager:start(manual)
+	if not (self._state_loaded) then 
+		self:initialize()
+	end
 	self.game_time_factor=level.get_time_factor()
 
 	local Y, M, D, h, m, s, ms = 0, 0, 0, 0, 0, 0, 0
@@ -84,6 +88,11 @@ function CPsiStormManager:start(manual)
 		self.hitFactor=0
 		self.stages = empty_table(self.stages)
 		self.vortexes = empty_table(self.vortexes)
+		for k,v in pairs(self.humanParticles) do 
+			if (v:playing()) then
+				v:stop()
+			end
+		end 
 		self.humanParticles = empty_table(self.humanParticles)
 		self.next_vortex_at = nil
 		level.set_time_factor(10)
@@ -91,20 +100,19 @@ function CPsiStormManager:start(manual)
 	end
 end
 
-function CPsiStormManager:new_psi_storm_time(reset)
-	if reset then
-		self.last_psi_storm_time 	= game.get_game_time()
-	end
+function CPsiStormManager:new_psi_storm_time()
 	self.last_psi_storm_time 	= game.get_game_time()
 	
 	local freq = atmosfear_options.config and atmosfear_options.config:r_value("atmosfear_current_parameters","opt_psi_storm_freq",2,24) or 24
 	self._delta = math.random(math.floor(freq/2)*3600, freq*3600)
 
+	local SM = surge_manager.get_surge_manager()
+	local last_surge_time = SM and SM.last_surge_time or game.get_game_time()
 	local g_time = game.get_game_time()
 	local psi_storm_start = math.floor(self._delta - g_time:diffSec(self.last_psi_storm_time))
 	local psi_storm_end = math.floor(self._delta+3600 - g_time:diffSec(self.last_psi_storm_time))
-	local surge_start = math.floor(surge_manager.SurgeManager._delta - g_time:diffSec(surge_manager.SurgeManager.last_surge_time))
-	local surge_end = math.floor(surge_manager.SurgeManager._delta+3600 - g_time:diffSec(surge_manager.SurgeManager.last_surge_time))
+	local surge_start = math.floor(SM._delta - g_time:diffSec(last_surge_time))
+	local surge_end = math.floor(SM._delta+3600 - g_time:diffSec(last_surge_time))
 	if ((psi_storm_end > surge_start) and (psi_storm_end < surge_end)) then
 		--1h earlier
 		self._delta=self._delta-3600
@@ -116,6 +124,12 @@ function CPsiStormManager:new_psi_storm_time(reset)
 end
 
 function CPsiStormManager:skip_psi_storm()
+	if not (self.inited_time) then 
+		self.inited_time = game.get_game_time()
+	end
+	if not (self.last_psi_storm_time) then 
+		self.last_psi_storm_time = game.get_game_time()
+	end
 	local Y, M, D, h, m, s, ms = 0, 0, 0, 0, 0, 0, 0
 	Y, M, D, h, m, s, ms = self.inited_time:get(Y, M, D, h, m, s, ms)
 	self.last_psi_storm_time:set(Y, M, D, h, m, s + self.psi_storm_duration, ms)
@@ -134,6 +148,12 @@ function CPsiStormManager:skip_psi_storm()
 end
 
 function CPsiStormManager:finish(manual)
+	if (self.started) then 
+		xr_statistic.inc_counter("storms")
+		surge_manager.get_surge_manager():respawn_artefacts_and_replace_anomaly_zone()
+		surge_manager.get_surge_manager():toggle_level_artefact_respawns()	
+	end
+	
 	self.started 			= false
 	self.finished 			= true
 	self.last_psi_storm_time 	= game.get_game_time()
@@ -165,14 +185,15 @@ function CPsiStormManager:finish(manual)
 	prev_sec = 0
 	
 	for k,v in pairs(self.humanParticles) do 
-		v:stop()
+		if (v:playing()) then
+			v:stop()
+		end
 	end 
 	
 	self.humanParticles = empty_table(self.humanParticles)
 	self.vortexes = empty_table(self.vortexes)
 	self.stages = empty_table(self.stages)
 
-	xr_statistic.inc_counter("storms")
 	level.set_time_factor(self.game_time_factor)
 end
 
@@ -193,9 +214,28 @@ end
 function CPsiStormManager:update()
 	if not (self._state_loaded) then 
 		self:initialize()
-	end 
+		return
+	end
+
+	if not (self.first_update) then 
+		self.first_update = true
+		local level_name = level.name()
+		if (level_name == "l11_hospital" or level_weathers.valid_levels[level_name] ~= true) then 
+			if (self.started) then 
+				self:finish()
+			else
+				self:skip_psi_storm()
+			end			
+			return
+		end
+		local diff_sec = math.ceil(game.get_game_time():diffSec(self.inited_time)/level.get_time_factor())
+		if (diff_sec + 6 > self.psi_storm_duration) then
+			self:skip_psi_storm()
+			return
+		end
+	end
 	
-	if not(self.started) then
+	if not (self.started) then
 		local g_time = game.get_game_time()
 		if(self.time_forwarded) then
 			local diff = math.abs(self._delta - g_time:diffSec(self.last_psi_storm_time))
@@ -209,68 +249,72 @@ function CPsiStormManager:update()
 		end
 		self:start()
 		return
+	elseif (surge_manager.is_started()) then 
+		self:skip_psi_storm()
 	end
 
 	diff_sec = math.ceil(game.get_game_time():diffSec(self.inited_time)/level.get_time_factor())
+	if (diff_sec >= self.psi_storm_duration) then 
+		self:finish()
+		return 
+	end 
+	
 	local actor_pos=db.actor:position()
 	if(prev_sec~=diff_sec) then
 		prev_sec = diff_sec
-		local level_name = level.name()
-		if(level_name == "l11_hospital" or level_weathers.valid_levels[level_name] ~= true or atmosfear_options.config:r_value("atmosfear_current_parameters","opt_enable_psi_storm",2,1)==0) then
+
+		if(atmosfear_options.config:r_value("atmosfear_current_parameters","opt_enable_psi_storm",2,1)==0) then
 			self:finish()
 			return
 		end
-		if(diff_sec>=self.psi_storm_duration) then
-			self:finish()
-		else
-			surge_manager.SurgeManager:calculate_best_surge_cover()
-			-- psi storm begins -----------------------------------------------------------------------------------------------------------------------------------------
-			if (diff_sec>=0) and (self.stages['beginning']==nil) then
-				if (level.get_time_hours() >= 5 and level.get_time_hours() <= 20) then
-					level.set_weather_fx("fx_psi_storm_day")
-				else
-					level.set_weather_fx("fx_psi_storm_night")
-				end
-				self.stages['beginning']=true
+
+		surge_manager.SurgeManager:calculate_best_surge_cover()
+		-- psi storm begins -----------------------------------------------------------------------------------------------------------------------------------------
+		if (diff_sec>=0) and (self.stages['beginning']==nil) then
+			if (level.get_time_hours() >= 5 and level.get_time_hours() <= 20) then
+				level.set_weather_fx("fx_psi_storm_day")
+			else
+				level.set_weather_fx("fx_psi_storm_night")
 			end
-			-- siren warning -----------------------------------------------------------------------------------------------------------------------------------------
-			if (diff_sec>=10) and (self.stages['siren']==nil) and (atmosfear_options.config:r_value("atmosfear_current_parameters","opt_psi_storm_warning",0,"siren")=="siren") then
-				self:launch_rockets()
-				surge_manager.SurgeManager:play_siren_sound()
-				self.stages['siren']=true
+			self.stages['beginning']=true
+		end
+		-- siren warning -----------------------------------------------------------------------------------------------------------------------------------------
+		if (diff_sec>=10) and (self.stages['siren']==nil) and (atmosfear_options.config:r_value("atmosfear_current_parameters","opt_psi_storm_warning",0,"siren")=="siren") then
+			self:launch_rockets()
+			surge_manager.SurgeManager:play_siren_sound()
+			self.stages['siren']=true
+		end
+		-- psi storm warning -----------------------------------------------------------------------------------------------------------------------------------------
+		if (diff_sec>=12) and not(self.task_given) then
+			if atmosfear_options.config:r_value("atmosfear_current_parameters","opt_psi_storm_task",0,"give")=="give" then
+				self:give_psi_storm_hide_task()
 			end
-			-- psi storm warning -----------------------------------------------------------------------------------------------------------------------------------------
-			if (diff_sec>=12) and not(self.task_given) then
-				if atmosfear_options.config:r_value("atmosfear_current_parameters","opt_psi_storm_task",0,"give")=="give" then
-					self:give_psi_storm_hide_task()
-				end
-				self.task_given = true
+			self.task_given = true
+		end
+		-- psi storm main phase -----------------------------------------------------------------------------------------------------------------------------------------
+		if (diff_sec>=40) and (diff_sec<=228) then
+			if self.next_vortex_at == nil then
+				self.next_vortex_at = diff_sec + math.random(self.vortex_period_min, self.vortex_period_max)
 			end
-			-- psi storm main phase -----------------------------------------------------------------------------------------------------------------------------------------
-			if (diff_sec>=40) and (diff_sec<=228) then
-				if self.next_vortex_at == nil then
-					self.next_vortex_at = diff_sec + math.random(self.vortex_period_min, self.vortex_period_max)
-				end
-				if self.next_vortex_at == diff_sec then
-					self:vortex()
-					self.next_vortex_at = diff_sec + math.random(self.vortex_period_min, self.vortex_period_max)
-				end
+			if self.next_vortex_at == diff_sec then
+				self:vortex()
+				self.next_vortex_at = diff_sec + math.random(self.vortex_period_min, self.vortex_period_max)
 			end
-			for key,vortex in pairs(self.vortexes) do
-				local life_time=diff_sec-vortex.start_time
-				if life_time>=20 and vortex.hit==false then
-					self:kill_crows_at_pos(vortex.sound_pos)
-					if (atmosfear_options.config:r_value("atmosfear_current_parameters","opt_psi_storm_fate",0,"unhurt")~="unhurt") then
-						self:kill_obj_at_pos(vortex.sound_pos)
-					end
-					if not (surge_manager.actor_in_cover()) then
-						self:vortex_actor_hit(vortex)
-					end
-					vortex.hit=true
+		end
+		for key,vortex in pairs(self.vortexes) do
+			local life_time=diff_sec-vortex.start_time
+			if life_time>=20 and vortex.hit==false then
+				self:kill_crows_at_pos(vortex.sound_pos)
+				if (atmosfear_options.config:r_value("atmosfear_current_parameters","opt_psi_storm_fate",0,"unhurt")~="unhurt") then
+					self:kill_obj_at_pos(vortex.sound_pos)
 				end
-				if life_time>=25 then
-					vortex=nil
+				if not (surge_manager.actor_in_cover()) then
+					self:vortex_actor_hit(vortex)
 				end
+				vortex.hit=true
+			end
+			if life_time>=25 then
+				vortex=nil
 			end
 		end
 	end
@@ -303,24 +347,37 @@ function CPsiStormManager:vortex()
 	end
 end
 
+function CPsiStormManager:finalize()
+	for k,v in pairs(self.vortexes) do 
+		if (v.effect and v.effect:playing()) then 
+			v.effect:stop()
+		end
+	end
+	for k,effect in pairs(self.humanParticles) do 
+		if (effect:playing()) then 
+			effect:stop()
+		end
+	end
+end
+
 function CPsiStormManager:vortex_actor_hit(vortex)
-	if (is_actor_immune()) then 
-		return 
-	end 
-	
 	local hit_power=0
 	local distance = distance_2d(db.actor:position(), vortex.particle_pos)
 	if distance < self.max_distance_psi_hit then
 		hit_power=math.cos(distance * math.pi / self.max_distance_psi_hit)+1
 		local h = hit()
 		h.type = hit.telepatic
-		h.power = surge_manager.SurgeManager:hit_power(hit_power, h.type)
+		if (is_actor_immune() or dialogs_yantar.actor_has_psi_helmet()) then 
+			h.power = 0
+		else 
+			h.power = surge_manager.SurgeManager:hit_power(hit_power, h.type)
+		end		
 		h.impulse = 0
 		h.direction = vector():set(0,0,1)
 		h.draftsman = db.actor
-		if not(atmosfear_options.config:r_value("atmosfear_current_parameters","opt_god_mode",1,false) or utils.load_var(db.actor,"surge_immuned",false)) then
-			db.actor:hit(h)
-		end
+		
+		db.actor:hit(h)
+
 		level.remove_pp_effector(666)
 		level.add_pp_effector("psi_fade.ppe", 666, false)
 		level.set_pp_effector_factor(666,h.power)
@@ -329,13 +386,15 @@ function CPsiStormManager:vortex_actor_hit(vortex)
 		hit_power=math.cos(distance * math.pi / self.max_distance_electro_hit)+1
 		local h = hit()
 		h.type = hit.shock
-		h.power = surge_manager.SurgeManager:hit_power(hit_power, h.type)
+		if (is_actor_immune()) then 
+			h.power = 0
+		else 
+			h.power = surge_manager.SurgeManager:hit_power(hit_power, h.type)
+		end
 		h.impulse = 0
 		h.direction = vector():set(0,0,1)
 		h.draftsman = db.actor
-		if not(atmosfear_options.config:r_value("atmosfear_current_parameters","opt_god_mode",1,false) or utils.load_var(db.actor,"surge_immuned",false)) then
-			db.actor:hit(h)
-		end
+		db.actor:hit(h)
 		level.remove_pp_effector(667)
 		level.add_pp_effector("electro_fade.ppe", 667, false)
 		level.set_pp_effector_factor(667,h.power)
@@ -460,7 +519,7 @@ function CPsiStormManager:kill_crows_at_pos(pos)
 	h.direction = vector():set(0,0,1)
 	h.draftsman = db.actor
 	for k,v in pairs(bind_crow.crow_storage) do
-		local obj = alife():object(v)
+		local obj = alife_object(v)
 		if obj then
 			local crow = level.object_by_id(obj.id)
 			if(crow and crow:alive() and distance_2d(pos, crow:position())<25) then
@@ -491,11 +550,11 @@ function save_state(m_data)
 		mgr._state_loaded = true
 	end
 	
-	m_data.PsiStormManager.finished = mgr.finished
-	m_data.PsiStormManager.started = mgr.started
-	m_data.PsiStormManager.last_psi_storm_time = utils.CTime_to_table(mgr.last_psi_storm_time) or game.get_game_time()
+	m_data.PsiStormManager.finished = mgr.finished == nil and true or mgr.finished
+	m_data.PsiStormManager.started = mgr.started == nil and false or mgr.started
+	m_data.PsiStormManager.last_psi_storm_time = mgr.last_psi_storm_time and utils.CTime_to_table(mgr.last_psi_storm_time) or game.get_game_time()
 	if (mgr.started) then 
-		m_data.PsiStormManager.inited_time = utils.CTime_to_table(mgr.inited_time)
+		m_data.PsiStormManager.inited_time = mgr.inited_time and utils.CTime_to_table(mgr.inited_time) or game.get_game_time()
 		m_data.PsiStormManager.task_given = mgr.task_given
 		m_data.PsiStormManager.game_time_factor = mgr.game_time_factor
 	end
@@ -510,21 +569,29 @@ function load_state(m_data)
 	--alun_utils.debug_write("PsiStormManager:load_state BEFORE")
 	local mgr = get_psi_storm_manager()
 	mgr:initialize()
-	mgr.finished = m_data.PsiStormManager.finished or true
-	mgr.started = m_data.PsiStormManager.started or false
+	mgr.finished = m_data.PsiStormManager.finished
+	mgr.started = m_data.PsiStormManager.started
 	mgr.last_psi_storm_time = m_data.PsiStormManager.last_psi_storm_time and utils.CTime_from_table(m_data.PsiStormManager.last_psi_storm_time) or game.get_game_time()
-	if (mgr.started) then 
-		mgr.inited_time = utils.CTime_from_table(m_data.PsiStormManager.inited_time) or game.get_game_time()
+	if (mgr.started == true and mgr.finished == false) then 
+		mgr.inited_time = m_data.PsiStormManager.inited_time and utils.CTime_from_table(m_data.PsiStormManager.inited_time) or game.get_game_time()
 		mgr.task_given = m_data.PsiStormManager.task_given or false
 		mgr.game_time_factor = m_data.PsiStormManager.game_time_factor or level.get_time_factor()
 		mgr.stages = empty_table(mgr.stages)
+		for k,v in pairs(mgr.humanParticles) do 
+			if (v:playing()) then
+				v:stop()
+			end
+		end 
 		mgr.humanParticles = empty_table(mgr.humanParticles)
 		mgr.vortexes = empty_table(mgr.vortexes)
 		mgr.stages = empty_table(mgr.stages)
+	else 
+		mgr.started = false 
+		mgr.finished = true
 	end
 	mgr._delta = m_data.PsiStormManager._delta
 	mgr._state_loaded = true
-	m_data.PsiStormManager = nil 
+	m_data.PsiStormManager = nil
 	--alun_utils.debug_write("PsiStormManager:save_state AFTER")
 end 
 
@@ -569,6 +636,11 @@ function actor_on_load(binder,packet)
 		mgr.task_given = packet:r_bool()
 		mgr.game_time_factor = packet:r_u32()
 		mgr.stages = empty_table(mgr.stages)
+		for k,v in pairs(mgr.humanParticles) do 
+			if (v:playing()) then
+				v:stop()
+			end
+		end
 		mgr.humanParticles = empty_table(mgr.humanParticles)
 		mgr.vortexes = empty_table(mgr.vortexes)
 		mgr.stages = empty_table(mgr.stages)
@@ -641,7 +713,7 @@ function is_actor_immune()
 	
 	if (utils.load_var(db.actor,"surge_immuned",false) == true) then 
 		return true 
-	end 
+	end
 	
 	-- Actor is a member of the Monolith or Zombified factions.
 	if (character_community(db.actor) == "actor_monolith")

@@ -247,14 +247,13 @@ end
 function add_to_binder(npc,char_ini,scheme,section,st,temp)
 	local manager = npc:motivation_action_manager()
 
-	if (not npc:alive()) or (character_community(npc) == "zombied" or npc:section() == "actor_visual_stalker") then
+	if (not npc:alive()) or (npc:character_community() == "zombied" or npc:section() == "actor_visual_stalker") then
 		manager:add_evaluator(evaid,property_evaluator_const(false))
-		temp.needs_configured = false
-		return 
-	end
-
-	manager:add_evaluator(evaid, eva_turn_on_campfire(npc,"eval_turn_on_campfire", st))
-
+		--temp.needs_configured = false
+	else
+		manager:add_evaluator(evaid, eva_turn_on_campfire(npc,"eval_turn_on_campfire", st))
+	end 
+	
 	local wp = world_property
 	
 	temp.action = act_turn_on_campfire(npc,"action_turn_on_campfire", st)

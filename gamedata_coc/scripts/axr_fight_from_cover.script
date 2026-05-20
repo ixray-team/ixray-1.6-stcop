@@ -99,18 +99,30 @@ function evaluator_fight_from_cover:evaluate()
 		return false 
 	end
 	
-	local bd = npc:best_danger()
-	if (bd and bd:type() == danger_object.grenade and st.danger_flag == true) then
-		return false
-	end 
-	
 	if not (utils.load_var(npc,"fight_from_point")) then -- or IsSniper(npc:best_weapon())) then
 		return false 
+	end
+	
+	local bd = npc:best_danger()
+	if (bd) then 
+		if (bd:type() == danger_object.grenade and st.danger_flag == true) then
+			return false
+		end
 	end
 	
 	local be = npc:best_enemy()
 	if (be and be:alive() and not IsWounded(be)) then
 		return true
+	end
+	
+	if (bd) then
+		if (bd:type() == danger_object.entity_corpse) then 
+			return false 
+		end 
+		local bdo = bd:dependent_object() or bd:object()
+		if (IsStalker(bdo) or IsMonster(bdo)) and (npc:relation(bdo) >= game_object.enemy and xr_danger.danger_in_radius(npc,bd,bd:type()) and xr_combat_ignore.is_enemy(npc, bdo,true)) then
+			return true
+		end
 	end
 
 	return false
@@ -127,6 +139,13 @@ end
 function action_fight_from_cover:initialize()
 	action_base.initialize(self)
 	local npc = self.object
+	local st = db.storage[npc:id()].state_mgr
+	npc:clear_animations()
+	st:set_state("idle", nil, nil, nil, {fast_set = true})
+	st.animation:set_state(nil, true)
+	st.animation:set_control()
+	st.animstate:set_state(nil,true)
+	st.animstate:set_control()
 	npc:set_desired_position()
 	npc:set_desired_direction()
 end
@@ -135,7 +154,7 @@ function action_fight_from_cover:try_go_cover(npc,ene_pos)
 	--alun_utils.debug_write(strformat("action_fight_from_cover:try_go_cover"))
 	local lvid = utils.load_var(npc,"fight_from_point")
 	local pos  = lvid and level.vertex_position(lvid) or npc:position()
-	local vid = alun_utils.find_close_cover(npc,pos,ene_pos,lvid and 1 or 5,1,lvid and 10 or 20)
+	local vid = alun_utils.find_close_cover(npc,pos,ene_pos,lvid and 1 or 5,1,lvid and 3 or 10) or lvid
 	if (validate(npc,vid)) then
 		return lmove(npc,vid,self.st)
 	end
@@ -183,19 +202,26 @@ function action_fight_from_cover:execute()
 	
 	local npc = self.object
 	local enemy = npc:best_enemy()
-	if not (enemy) then
-		return 
-	end
 	
 	-- ensure and enforce path type
 	if (npc:path_type() ~= game_object.level_path) then 
 		npc:set_path_type(game_object.level_path)
 	end
 	
-	local see = npc:see(enemy)
-	--local see_me = enemy:see(npc)
-	local ene_pos = see and alun_utils.safe_bone_pos(enemy,"bip01_neck") or npc:memory_position(enemy) or nil
-
+	local see = enemy and npc:see(enemy)
+	local ene_pos = npc:position()
+	if (enemy) then
+		ene_pos = see and alun_utils.safe_bone_pos(enemy,"bip01_neck") or npc:memory_position(enemy) or enemy:position()
+	end 
+	
+	local bd = npc:best_danger()
+	if (bd) then
+		local bdo = bd:object()
+		if (bdo) then 
+			ene_pos = bdo:position()
+		end
+	end
+		
 	local tg = time_global()
 	if (self.st.vid) then
 		local bw = npc:active_item() and npc:best_weapon()
@@ -249,7 +275,7 @@ function action_fight_from_cover:execute()
 			if not (bw) then 
 				new_state = "sneak_run_no_wpn"
 			else
-				local dist = npc:position():distance_to_sqr(enemy:position())
+				local dist = npc:position():distance_to_sqr(ene_pos)
 				if (dist < 400) then
 					local is_sniper = IsSniper(bw)
 					if (self.stand) then 
@@ -278,7 +304,7 @@ function action_fight_from_cover:execute()
 		end 	
 	end
 	
-	if (self:try_go_cover(npc,ene_pos or enemy:position())) then 
+	if (self:try_go_cover(npc,ene_pos)) then 
 
 	else 
 		self:try_to_strafe(npc)
@@ -303,13 +329,12 @@ end
 function add_to_binder(npc,ini,scheme,section,storage,temp)
 	local manager = npc:motivation_action_manager()
 
-	if (not npc:alive()) or (character_community(npc) == "zombied" or npc:section() == "actor_visual_stalker") then
+	if (not npc:alive()) or (npc:character_community() == "zombied" or npc:section() == "actor_visual_stalker") then
 		manager:add_evaluator(evaid,property_evaluator_const(false))
-		temp.needs_configured = false
-		return 
-	end
-
-	manager:add_evaluator(evaid,evaluator_fight_from_cover(npc,"eva_fight_from_cover",storage))
+		--temp.needs_configured = false
+	else
+		manager:add_evaluator(evaid,evaluator_fight_from_cover(npc,"eva_fight_from_cover",storage))
+	end 
 	
 	temp.action = action_fight_from_cover(npc,"act_fight_from_cover",storage)
 	temp.action:add_precondition(world_property(stalker_ids.property_alive,true))

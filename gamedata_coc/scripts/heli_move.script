@@ -9,7 +9,7 @@ class "heli_move"
 
 function heli_move:__init( obj, storage )
 	self.object     = obj
-	self.sobject 	= alife():object(obj:id())
+	local se_obj 	= alife_object(obj:id())
 	self.heliObject = obj:get_helicopter()
 	self.a          = storage
 	self.st			= db.storage[obj:id()]
@@ -20,7 +20,7 @@ function heli_move:__init( obj, storage )
     self.a.increment = 1
 	
 	-- using alife simulation
-	if (self.sobject and self.sobject.respawn_point_prop_section) then 
+	if (se_obj and se_obj.respawn_point_prop_section) then 
 		self.a.use_combat = true
 	end
 end
@@ -157,9 +157,9 @@ function heli_move:update( delta )
 	
 	self.heli_fire:update_enemy_state()
 	
-	if not (self.a.path_move) then 
+	if (self.a.path_move == nil or self.a.retreat_mode) then 
 		self:update_path_by_logic()
-	end 
+	end
 	
 	if self.was_callback then
 		self:update_movement_state()
@@ -390,7 +390,7 @@ function set_scheme( npc, ini, scheme, section, gulag_name)
 	a.logic = xr_logic.cfg_get_switch_conditions( ini, section, npc )
 
 	local st = db.storage[npc:id()]
-	a.retreat_mode = ini:r_bool_ex(section,"retreat_mode",false)
+	a.retreat_mode = ini:r_float_ex(section,"retreat_mode")
 	
 	if not (retreat_mode) then
 		a.path_move  = utils.prefix_r_string(ini,section,"path_move",gulag_name)

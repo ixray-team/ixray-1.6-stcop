@@ -21,7 +21,7 @@
 
 [hide_from_surge]
 icon = ui_inGame2_Vibros
-prior = 200
+prior = 20
 title_functor = surge_task_title
 descr_functor = surge_task_descr
 target_functor = surge_task_target
@@ -29,32 +29,10 @@ target_functor = surge_task_target
 condlist_0 = {=surge_complete()} complete
 condlist_1 = {!actor_alive()} fail
 
-
-;AtmosFear Fallout
-[hide_from_fallout_rad]
-icon = ui_inGame2_Fallout_rad
-prior = 199
-title_functor = fallout_task_title
-descr_functor = fallout_task_descr
-target_functor = fallout_task_target
-;dont_send_update_news = true
-condlist_0 = {=fallout_complete()} complete
-condlist_1 = {!actor_alive()} fail
-
-[hide_from_fallout_acid]
-icon = ui_inGame2_Fallout_acid
-prior = 199
-title_functor = fallout_task_title
-descr_functor = fallout_task_descr
-target_functor = fallout_task_target
-;dont_send_update_news = true
-condlist_0 = {=fallout_complete()} complete
-condlist_1 = {!actor_alive()} fail
-
 ;AtmosFear Psi Storm
 [hide_from_psi_storm]
 icon = ui_inGame2_psi_storm
-prior = 199
+prior = 20
 title_functor = psi_storm_task_title
 descr_functor = psi_storm_task_descr
 target_functor = psi_storm_task_target

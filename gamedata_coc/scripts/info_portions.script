@@ -67,6 +67,25 @@ local function actor_on_info_callback(actor,info,obj)
 	proceed()
 end
 
+local function on_game_load()
+	db.actor:give_info_portion("ui_pda_hide")	-- because if you change level while PDA is open
+	db.actor:disable_info_portion("tutorial_sleep")
+	db.actor:disable_info_portion("actor_is_sleeping")
+	db.actor:disable_info_portion("sleep_active")
+	-- Retroactive fix for old saves with broken companions (REMOVE IN LATER PATCHES)
+	db.actor:disable_info_portion("npcx_is_companion")
+	db.actor:disable_info_portion("npcx_beh_wait")
+	db.actor:disable_info_portion("npcx_beh_cannot_dismiss")
+	db.actor:disable_info_portion("npcx_beh_patrol_mode")
+	db.actor:disable_info_portion("npcx_beh_ignore_combat")
+	db.actor:disable_info_portion("npcx_beh_ignore_actor_enemies")
+	db.actor:disable_info_portion("npcx_beh_substate_stealth")
+	db.actor:disable_info_portion("npcx_beh_distance_far")
+	db.actor:disable_info_portion("npcx_beh_gather_items")
+	db.actor:disable_info_portion("npcx_beh_loot_corpses")
+end 
+
 function on_game_start()
 	RegisterScriptCallback("actor_on_info_callback",actor_on_info_callback)
+	RegisterScriptCallback("on_game_load",on_game_load)
 end

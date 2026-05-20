@@ -34,6 +34,7 @@ tips_icons = {
 	patriarch				= "ui_inGame2_PD_Lider",
 	radiotherapy			= "ui_inGame2_PD_Otmecheniy_zonoy",
 	rag_and_bone			= "ui_inGame2_PD_RagAndBone",
+	scholar					= "ui_inGame2_PD_Hranitel_tayn",
 	silver_or_lead			= "ui_inGame2_PD_Avtoritet",
 	tourist					= "ui_inGame2_PD_Tourist",
 	well_dressed			= "ui_inGame2_PD_Ohotnik_na_mutantov",
@@ -48,6 +49,7 @@ tips_icons = {
 	got_freedom_heavy_armor	= "ui_inGame2_D_Vipolnil_4_zadaniya_dlya_Swobodi",
 
 	can_resupply			= "ui_inGame2_Pered_zadaniyami_voennih",
+	guide_unlock			= "ui_inGame2_Poslednie_razrabotki",
 	rank_change				= "ui_inGame2_V_poiskah_Soroki",
 	rep_change				= "ui_inGame2_PD_storonnik_ravnovesiya",
 	recent_surge			= "ui_inGame2_V_zone_nedavno_proshel_vibros",

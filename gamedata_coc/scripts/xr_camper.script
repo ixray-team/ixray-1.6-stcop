@@ -439,30 +439,17 @@ end
 -- BINDER
 ----------------------------------------------------------------------------------------------------------------------
 function add_to_binder(object, ini, scheme, section, storage)
-		local operators	= {}
-		local properties  = {}
+	local manager = object:motivation_action_manager()
+	manager:add_evaluator (xr_evaluators_id.stohe_camper_base + 1, this.evaluator_end("camper_end", storage))
+	manager:add_evaluator (xr_evaluators_id.stohe_camper_base + 2, this.evaluator_close_combat("camper_close_combat", storage))
 
-		local manager = object:motivation_action_manager()
-
-		operators["patrol"]			= xr_actions_id.stohe_camper_base + 1
-		operators["search_corpse"]	= xr_actions_id.corpse_exist
-		operators["help_wounded"]	= xr_actions_id.wounded_exist
-
-		properties["end"]			= xr_evaluators_id.stohe_camper_base + 1
-		properties["can_fight"]		= xr_evaluators_id.sidor_wounded_base + 1
-		properties["close_combat"]	= xr_evaluators_id.stohe_camper_base + 2
-		properties["state_mgr_logic_active"] 	= xr_evaluators_id.state_mgr + 4
-
-		manager:add_evaluator (properties["end"], this.evaluator_end("camper_end", storage))
-		manager:add_evaluator (properties["close_combat"], this.evaluator_close_combat("camper_close_combat", storage))
-
-		local action = this.action_patrol (object,"action_camper_patrol", storage)
-		action:add_precondition	(world_property(stalker_ids.property_alive, true))
-		action:add_precondition	(world_property(properties["end"],			false))
-		action:add_precondition	(world_property(properties["close_combat"],	false))
-		action:add_precondition	(world_property(properties["can_fight"],	true))
-		action:add_precondition (world_property(stalker_ids.property_danger,false))
-		action:add_precondition	(world_property(stalker_ids.property_anomaly,false))
+	local action = this.action_patrol (object,"action_camper_patrol", storage)
+	action:add_precondition	(world_property(stalker_ids.property_alive, true))
+	action:add_precondition	(world_property(xr_evaluators_id.stohe_camper_base + 1,			false))
+	action:add_precondition	(world_property(xr_evaluators_id.stohe_camper_base + 2,	false))
+	action:add_precondition	(world_property(xr_evaluators_id.sidor_wounded_base + 1,	true))
+	action:add_precondition (world_property(stalker_ids.property_danger,false))
+	action:add_precondition	(world_property(stalker_ids.property_anomaly,false))
 
 	-- Дубляж common_precondition без подбора вещей.
 	action:add_precondition (world_property(xr_evaluators_id.stohe_meet_base + 1,false))
@@ -479,66 +466,66 @@ function add_to_binder(object, ini, scheme, section, storage)
 	end
 
 
-	action:add_effect (world_property(properties["end"],				true))
+	action:add_effect (world_property(xr_evaluators_id.stohe_camper_base + 1,				true))
 	action:add_effect (world_property(stalker_ids.property_enemy,		false))
-	action:add_effect (world_property(properties["state_mgr_logic_active"], false))
-	manager:add_action (operators["patrol"], action)
+	action:add_effect (world_property(xr_evaluators_id.state_mgr + 4, false))
+	manager:add_action (xr_actions_id.stohe_camper_base + 1, action)
 	xr_logic.subscribe_action_for_events(object, storage, action)
 
 	action = manager:action (xr_actions_id.alife)
-	action:add_precondition	(world_property(properties["end"],			true))
+	action:add_precondition	(world_property(xr_evaluators_id.stohe_camper_base + 1,			true))
 
 	action = manager:action (stalker_ids.action_gather_items)
-	action:add_precondition	(world_property(properties["end"],			true))
+	action:add_precondition	(world_property(xr_evaluators_id.stohe_camper_base + 1,			true))
 
 	if (xr_gather_items.actid) then
 		action = manager:action (xr_gather_items.actid)
-		action:add_precondition	(world_property(properties["end"],true))
+		action:add_precondition	(world_property(xr_evaluators_id.stohe_camper_base + 1,true))
 	end
 	
 	if (_G.schemes["corpse_detection"]) then
-		action = manager:action (operators["search_corpse"])
-		action:add_precondition	(world_property(properties["end"],true))
+		action = manager:action (xr_actions_id.corpse_exist)
+		action:add_precondition	(world_property(xr_evaluators_id.stohe_camper_base + 1,true))
 	end
 	
 	if (_G.schemes["npc_vs_heli"]) then 
 		action = manager:action(axr_npc_vs_heli.actid)
-		action:add_precondition(world_property(properties["end"],true))
+		action:add_precondition(world_property(xr_evaluators_id.stohe_camper_base + 1,true))
 	end
 
 	if (_G.schemes["fight_from_cover"]) then 
 		action = manager:action(axr_fight_from_cover.actid)
-		action:add_precondition(world_property(properties["end"],true))
+		action:add_precondition(world_property(xr_evaluators_id.stohe_camper_base + 1,true))
 	end
 	
 	if (_G.schemes["stalker_panic"]) then 
 		action = manager:action(axr_stalker_panic.actid)
-		action:add_precondition(world_property(properties["end"],true))
+		action:add_precondition(world_property(xr_evaluators_id.stohe_camper_base + 1,true))
 	end
 	
 	if (_G.schemes["turn_on_campfire"]) then 
 		action = manager:action(axr_turn_on_campfire.actid)
-		action:add_precondition(world_property(properties["end"],true))
+		action:add_precondition(world_property(xr_evaluators_id.stohe_camper_base + 1,true))
 	end
 	
 	if (_G.schemes["kill_wounded"]) then 
 		action = manager:action(xrs_kill_wounded.actid)
-		action:add_precondition(world_property(properties["end"],true))		
+		action:add_precondition(world_property(xr_evaluators_id.stohe_camper_base + 1,true))		
 	end
 	
 	action = manager:action (xr_actions_id.wounded_exist)
-	action:add_precondition	(world_property(properties["end"],true))
+	action:add_precondition	(world_property(xr_evaluators_id.stohe_camper_base + 1,true))
 	
 	if (xr_danger.actid) then
 		action = manager:action(xr_danger.actid)
-		action:add_precondition(world_property(properties["end"],true))
+		action:add_precondition(world_property(xr_evaluators_id.stohe_camper_base + 1,true))
 	end
 
 	action = manager:action (stalker_ids.action_combat_planner)
-	action:add_precondition (world_property(properties["close_combat"],	true))
-	action:add_effect (world_property(properties["close_combat"],	false))
-	action:add_effect (world_property(properties["state_mgr_logic_active"], false))
-	action:add_effect (world_property(properties["end"],				true))
+	action:add_precondition (world_property(xr_evaluators_id.stohe_camper_base + 2,	true))
+	action:add_effect (world_property(xr_evaluators_id.stohe_camper_base + 2,	false))
+	action:add_effect (world_property(xr_evaluators_id.state_mgr + 4, false))
+	action:add_effect (world_property(xr_evaluators_id.stohe_camper_base + 1,				true))
 end
 
 function set_scheme(npc, ini, scheme, section, gulag_name)

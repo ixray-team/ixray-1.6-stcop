@@ -40,9 +40,9 @@ function car_binder:net_spawn(data)
 		return false
 	end
 	db.add_obj(self.object)
-	self.object:set_callback(callback.hit, car_binder.hit_callback, self)
-	self.object:set_callback(callback.death, car_binder.death_callback, self)
-	self.object:set_callback(callback.use_object, car_binder.use_callback, self)
+	self.object:set_callback(callback.hit, self.hit_callback, self)
+	self.object:set_callback(callback.death, self.death_callback, self)
+	self.object:set_callback(callback.use_object, self.use_callback, self)
 	return true
 end
 

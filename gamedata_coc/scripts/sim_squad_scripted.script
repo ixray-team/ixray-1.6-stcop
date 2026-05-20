@@ -102,25 +102,22 @@ function sim_squad_scripted:get_script_target()
 		new_target = xr_logic.pick_section_from_condlist(db.actor, self, self.action_condlist)
 	end 
 	
+	-- prevent companions from moving to actor if they cannot teleport and actor is not on same level
+	if (axr_companions.companion_squads[self.id]) then
+		local se_obj = alife_object(self:commander_id())
+		if (self.online ~= true) and (se_obj and utils.se_obj_load_var(se_obj.id,se_obj:name(),"companion_cannot_teleport")) then
+			return self.id
+		end
+		return 0
+	end
+		
 	if (new_target == "actor") then
-		return 0 
+		return 0
 	end
 	
 	local smart = new_target and SIMBOARD.smarts_by_names[new_target]
 	if (smart) then
 		return smart.id
-	end
-	
-	-- prevent companions from moving to actor if they cannot teleport and actor is not on same level
-	if (axr_companions.companion_squads[self.id]) then
-		local gg = game_graph()
-		if (gg:vertex(self.m_game_vertex_id):level_id() ~= gg:vertex(alife().actor().m_game_vertex_id):level_id()) then
-			local se_obj = alife():object(self:commander_id())
-			if (se_obj and utils.se_obj_load_var(se_obj.id,se_obj:name(),"companion_cannot_teleport")) then
-				return self.id 
-			end
-		end
-		return 0
 	end
 end
 
@@ -132,7 +129,7 @@ function sim_squad_scripted:update()
 		local skip = false
 		local sim = alife()
 		local se_actor = sim:actor()
-		local se_obj = self:commander_id() and alife():object(self:commander_id())
+		local se_obj = self:commander_id() and alife_object(self:commander_id())
 		if (se_obj) then
 			if (utils.se_obj_load_var(se_obj.id,se_obj:name(),"companion")) then
 				skip = true
@@ -146,12 +143,12 @@ function sim_squad_scripted:update()
 
 			--printf("m_game_vertex_id=%s actor.m_game_vertex_id=%s",self.m_game_vertex_id,se_actor.m_game_vertex_id)
 			if (se_actor and gg:valid_vertex_id(self.m_game_vertex_id) and gg:valid_vertex_id(se_actor.m_game_vertex_id)) then
-				local level = sim:level_name(gg:vertex(self.m_game_vertex_id):level_id())
+				local level_name = sim:level_name(gg:vertex(self.m_game_vertex_id):level_id())
 				local actor_level = sim:level_name(gg:vertex(se_actor.m_game_vertex_id):level_id())
 
 				-- Disable any squad that is not on actor's level and not linked to actor's level through ai_tweaks\simulation_objects.ltx
-				if (level ~= actor_level) and (self:commander_id() and not sim:has_info(self:commander_id(),"npcx_is_companion")) then
-					if not (string.find(simulation_objects.config:r_value(actor_level,"target_maps",0,""),level)) then
+				if (level_name ~= actor_level) and (self:commander_id() and not sim:has_info(self:commander_id(),"npcx_is_companion")) then
+					if not (string.find(simulation_objects.config:r_value(actor_level,"target_maps",0,""),level_name)) then
 						if (DEACTIVATE_SIM_ON_NON_LINKED_LEVELS) then
 							SIMBOARD.squads[self.id] = nil
 							if (self.smart_id) then
@@ -226,12 +223,11 @@ local function can_help_actor(squad)
 end
 
 local function get_help_target_id(squad)
-	if (IsSurvivalMode()) then
-		if (squad.player_id == "zombied" or _g.is_squad_monster[squad.player_id]) then
+	if (IsSurvivalMode() and squad.dist_to_actor <= 300) then
+		if (squad.player_id == "zombied" or is_squad_monster[squad.player_id]) then
 			return 0
 		end
-	end 
-
+	end
 	return
 end
 
@@ -245,7 +241,10 @@ function sim_squad_scripted:specific_update(script_target_id)
 	end
 	
 	self.assigned_target_id = script_target_id
-		
+	if (self.assigned_target_id == self.id) then 
+		return 
+	end 
+	
 	if (self.smart_id ~= self.assigned_target_id and se_target:clsid() == clsid.smart_terrain) then 
 		self:assign_smart(se_target,self.smart_id)
 	end
@@ -253,9 +252,9 @@ function sim_squad_scripted:specific_update(script_target_id)
 	if (self.current_action) then
 		-- If current action is not finished, then return
 		if (self.current_action == 0) then
-			if not (self.online) then
-				TeleportSquad(self,se_target.position,se_target.m_level_vertex_id,se_target.m_game_vertex_id)
-			end
+			-- if not (self.online) then
+				-- TeleportSquad(self,se_target.position,se_target.m_level_vertex_id,se_target.m_game_vertex_id)
+			-- end
 			if (se_target:am_i_reached(self)) then
 				se_target:on_after_reach(self)
 				self.current_target_id = self.assigned_target_id
@@ -325,7 +324,7 @@ function sim_squad_scripted:generic_update()
 	-- Find a new target
 	local target = SIMBOARD:get_squad_target(self) or SIMBOARD:get_squad_target(self,false,true)
 	if not (target) then
-		printf("squad %s has no target",self:name())
+		--printf("squad %s has no target",self:name())
 		self:on_reach_target(self)
 		
 		-- we have to clear AFTER on_reach_target, not BEFORE so we can get location mask of old smart
@@ -373,7 +372,7 @@ function sim_squad_scripted:remove_squad()
 		if (se_obj) then
 			local smart_id = se_obj.m_smart_terrain_id --se_obj:smart_terrain_id()
 			if (smart_id and smart_id ~= 65535) then
-				local smart = alife():object(smart_id)
+				local smart = alife_object(smart_id)
 				if smart ~= nil then
 					smart:unregister_npc(self)
 				end
@@ -395,7 +394,7 @@ function sim_squad_scripted:remove_npc(npc_id)
 	if (se_obj) then
 		local smart_id = se_obj:smart_terrain_id()
 		if smart_id ~= 65535 then
-			local smart = alife():object(smart_id)
+			local smart = alife_object(smart_id)
 			if smart ~= nil then
 				smart:unregister_npc(self)
 			end
@@ -470,7 +469,7 @@ end
 
 function sim_squad_scripted:assign_smart(smart,old_smart_id)
 	--alun_utils.debug_write(strformat("%s:assign_smart %s",self:name(),smart and smart:name()))
-	local old_smart = old_smart_id and old_smart_id ~= 65535 and alife():object(old_smart_id)
+	local old_smart = old_smart_id and old_smart_id ~= 65535 and alife_object(old_smart_id)
 	if (smart == nil and old_smart == nil) then 
 		return 
 	end 
@@ -501,11 +500,11 @@ function sim_squad_scripted:check_invulnerability()
 		return
 	end
 	local invulnerability = xr_logic.pick_section_from_condlist(db.actor, self, self.invulnerability) == "true"
-	for k in self:squad_members() do
-		local npc_st = db.storage[k.id]
-		local npc = npc_st and npc_st.ini and npc_st.active_section and npc_st.object or nil
-		if (npc) then
-			if npc:invulnerable() ~= invulnerabilty and npc_st.ini:r_bool_ex(npc_st.active_section,"invulnerable",false) then
+	if (invulnerability) then
+		for k in self:squad_members() do
+			local npc_st = db.storage[k.id]
+			local npc = npc_st and npc_st.object
+			if (npc) then
 				npc:invulnerable(invulnerability)
 			end
 		end
@@ -667,7 +666,7 @@ function sim_squad_scripted:create_npc(spawn_smart,pos,lvid,gvid)
 			local id 
 			for i=1, #npcs_list do 
 				id = npcs_list[i]
-				local se_obj = id and alife():object(id)
+				local se_obj = id and alife_object(id)
 				if (se_obj) then 
 					smart:register_npc(se_obj)
 					SIMBOARD:setup_squad_and_group(se_obj)
@@ -906,17 +905,18 @@ function sim_squad_scripted:on_register()
 	story_objects.check_spawn_ini_for_story_id(self)
 	sim_board.get_sim_board().squads[self.id] = self
 	simulation_objects.get_sim_obj_registry():register(self)
+	SendScriptCallback("squad_on_register",self)
 	--alun_utils.debug_write( strformat("%s:on_register end",self:name()) )
 end
 function sim_squad_scripted:on_unregister()
 	--alun_utils.debug_write("sim_squad_scripted:on_unregister")
-	unregister_story_object_by_id(self.id)
 	SendScriptCallback("squad_on_unregister",self)
+	unregister_story_object_by_id(self.id)
 	SIMBOARD.squads[self.id] = nil
 	SIMBOARD:assign_squad_to_smart(self, nil)
 	simulation_objects.get_sim_obj_registry():unregister(self)
 	if self.respawn_point_id ~= nil then
-		local smart = alife():object(self.respawn_point_id)
+		local smart = alife_object(self.respawn_point_id)
 		if smart == nil then
 			return
 		end
@@ -933,7 +933,7 @@ end
 function sim_squad_scripted:can_switch_offline()
 	--[[
 	if (self.current_action == 1) then 
-		local current_target = self.current_target_id and alife():object(self.current_target_id)
+		local current_target = self.current_target_id and alife_object(self.current_target_id)
 		if (current_target.online and current_target.faction_controlled and current_target.faction_war_in_progress == true) then
 			--printf("forced online %s",current_target:name())
 			return false
@@ -943,6 +943,11 @@ function sim_squad_scripted:can_switch_offline()
 	
 	if (IsSurvivalMode()) then
 		return false
+	end
+	
+	-- companions
+	if (axr_companions.companion_squads[self.id]) then 
+		return false 
 	end
 
 	return cse_alife_online_offline_group.can_switch_offline(self)
@@ -1118,8 +1123,8 @@ end
 
 function sim_squad_scripted:get_squad_props()
 	if (DEV_DEBUG and axr_main.config:r_value("mm_options","enable_debug_hud",1,false) == true) then
-		local assigned_target = self.assigned_target_id and alife():object(self.assigned_target_id)
-		local current_target = self.current_target_id and alife():object(self.current_target_id)
+		local assigned_target = self.assigned_target_id and alife_object(self.assigned_target_id)
+		local current_target = self.current_target_id and alife_object(self.current_target_id)
 
 		local t = "%s\\n\\n%s\\n\\nnpcs=%s\\n\\ncurrent_target=%s\\nassigned_target=%s\\n\\n"
 		t = strformat(t,self.disabled and "[disabled]" or "",self:name(),self:npc_count(),self.current_target_id == 0 and "actor" or current_target and current_target:name(),self.assigned_target_id == 0 and "actor" or assigned_target and assigned_target:name())
@@ -1152,7 +1157,7 @@ end
 -- called from engine
 function sim_squad_scripted:get_current_task()
 	--alun_utils.debug_write("sim_self_scripted:get_current_task")
-	local se_target = self.assigned_target_id and alife():object(self.assigned_target_id)
+	local se_target = self.assigned_target_id and alife_object(self.assigned_target_id)
 	if (se_target) then
 		if (se_target:clsid() == clsid.smart_terrain) then
 			local npc_info = se_target.npc_info and se_target.npc_info[self:commander_id()]

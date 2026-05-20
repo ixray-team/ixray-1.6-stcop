@@ -14,6 +14,7 @@ local SKIP_FACTION_SELECTION = false -- TRUE to disable faction selection menu a
 
 class "main_menu" (CUIScriptWnd)
 function main_menu:__init() super()
+	math.randomseed(os.time())
 	self.mbox_mode = 0
     self:InitControls()
     self:InitCallBacks()
@@ -25,6 +26,18 @@ end
 
 function main_menu:__finalize()
 end
+
+function main_menu:Update()
+	CUIScriptWnd.Update(self)
+	-- Warning messages timer 
+	if (self.msg_wnd_timer) then 
+		self.msg_wnd_timer = self.msg_wnd_timer - 1
+		if (self.msg_wnd_timer <= 0) then
+			self.msg_wnd_timer = nil
+			self.msg_wnd:Show(false)
+		end
+	end
+end 
 
 function main_menu:InitControls()
 	self:SetWndRect					(Frect():set(0,0,1024,768))
@@ -41,6 +54,15 @@ function main_menu:InitControls()
 	local _ver = xml:InitStatic		("static_version",self)
 	local mm						= _G.main_menu.get_main_menu()
 	_ver:TextControl():SetText		("Call of Chernobyl ver. " .. (_G.GAME_VERSION))
+	
+	-- Message Window 
+	self.msg_wnd = xml:InitFrame("msg_wnd:background",self)
+	self.msg_wnd:SetAutoDelete(false)
+	self.msg_wnd_text = xml:InitTextWnd("msg_wnd:text",self.msg_wnd)
+	self.msg_wnd_text:SetTextAlignment(2)
+	
+	self.msg_wnd:Show(false)
+	self.msg_wnd:SetColor(GetARGB(255,0,0,0))
 end
 
 function main_menu:Show(f)
@@ -334,4 +356,20 @@ end
 function main_menu:OnMenuReloaded()
 	self:OnButton_options_clicked()
 	self.opt_dlg:OnMenuReloaded()
+end
+
+function main_menu:SetMsg(text,tmr)
+	if (text == "") then 
+		return 
+	end
+	self.msg_wnd:Show(true)
+	self.msg_wnd_text:SetText(text)
+	self.msg_wnd_text:AdjustHeightToText()
+	self.msg_wnd_text:SetWndSize(vector2():set(1024,self.msg_wnd_text:GetHeight()+10))
+	self.msg_wnd_text:SetWndPos(vector2():set(0,20))
+	
+	self.msg_wnd:SetWndSize(vector2():set(1024,self.msg_wnd_text:GetHeight()+44))
+	self.msg_wnd:SetWndPos(vector2():set(0,80))
+
+	self.msg_wnd_timer = 100*tmr
 end

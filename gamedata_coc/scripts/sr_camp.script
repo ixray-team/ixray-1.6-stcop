@@ -306,6 +306,10 @@ function CCampManager:get_npc_role(npc_id, state)
 	end
 
 	local npc_actions = scheme.approved_actions
+	if not (npc_actions) then 
+		return npc_role.noone
+	end 
+	
 	local descr = scheme.description
 	if(state=="harmonica") or (state=="guitar") then
 		descr = descr and descr.."_"..state or state

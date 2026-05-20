@@ -37,7 +37,7 @@ local function on_game_load()
 	end
 
 	local sim = alife()
-	for i=1, 65535 do
+	for i=1, 65534 do
 		local se_obj = sim:object(i)
 		if (se_obj) then
 			if (IsInvbox(nil,se_obj:clsid())) then
@@ -215,7 +215,7 @@ function create_random_stash(no_spot,hint,bonus_items)
 			-- decide for each section based on chance, weight and item classification
 			if (cost <= 500) then
 				if (is_consumable(section)) then
-					try_spawn_item(section,1,4,0.25,10)
+					try_spawn_item(section,1,4,0.25,40)
 				elseif (bOutfit) then
 					try_spawn_item(section,1,1,0.25,40)
 				elseif (bWeapon) then
@@ -225,7 +225,7 @@ function create_random_stash(no_spot,hint,bonus_items)
 				end
 			elseif (cost <= 1000) then
 				if (is_consumable(section)) then
-					try_spawn_item(section,1,4,0.15,15)
+					try_spawn_item(section,1,4,0.15,50)
 				elseif (bOutfit) then
 					try_spawn_item(section,1,1,0.15,50)
 				elseif (bWeapon) then
@@ -377,14 +377,16 @@ function get_valid_item_sections()
 	local ini = system_ini()
 	ini:section_for_each(function(section)
 		if not (ltx:line_exist("ignore_sections",section)) then
-			if (ini:r_bool_ex(section,"can_trade",true) == true) then
-				if (ini:r_bool_ex(section,"quest_item",false) == false) then
-					if not (string.find(section,"mp_")) then
-						local name = ini:r_string_ex(section,"inv_name")
-						if (name and name ~= "" and name ~= "default") then
-							local cost = ini:r_float_ex(section,"cost") or 0
-							if (cost > 0) then
-								t[section] = cost
+			if (ini:line_exist(section,"cform")) then
+				if (ini:r_bool_ex(section,"can_trade",true) == true) then
+					if (ini:r_bool_ex(section,"quest_item",false) == false) then
+						if not (string.find(section,"mp_")) then
+							local name = ini:r_string_ex(section,"inv_name")
+							if (name and name ~= "" and name ~= "default") then
+								local cost = ini:r_float_ex(section,"cost") or 0
+								if (cost > 0) then
+									t[section] = cost
+								end
 							end
 						end
 					end
@@ -395,7 +397,7 @@ function get_valid_item_sections()
 	)
 	
 	-- List of all items in game that are not quest items
-	if (DEV_DEBUG) then
+	if (DEV_DEBUG_DEV) then
 		local cfg = io.open("valid_item_sections.ltx","w+")
 		for k,v in pairs(t) do 
 			cfg:write(k.."\n")

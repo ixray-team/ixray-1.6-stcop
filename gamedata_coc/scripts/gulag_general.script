@@ -1,8 +1,8 @@
 --[[
 Dynamic Gulag
 Rewritten by Alundaio (original: ??? GSC)
-Copyright (C) 2014 Alundaio
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
+
+
 
 
 This script was re-written to overcome some serious performance issues caused by creating new ltx files
@@ -66,6 +66,10 @@ spawn_heli
 [spawn_heli]
 spawn_helicopter = helicopter
 spawn_num = 1
+
+2. create <level_name>_heli_hide waypoint under map near edge
+3. create <level_name>_goto_hide path above map that leads to map edge. Heli will teleport to heli hide from this path
+If there is a heli hide waypoint helicopter will spawn here instead of over smart terrain that spawned them in
 -------------------------------------------------
 --]]
 
@@ -137,11 +141,11 @@ local function precond_exclusive(se_obj,smart,job)
 end
 
 local function precond_heli_hide(se_obj,smart,job)
-	return xr_conditions.surge_started()
+	return xr_conditions.surge_started() or not utils.is_day()
 end 
 
 local function precond_heli(se_obj,smart,job)
-	return not xr_conditions.surge_started()
+	return not xr_conditions.surge_started() and utils.is_day()
 end
 
 local function precond_surge(se_obj, smart, job)
@@ -1122,6 +1126,7 @@ local function init_heli_hide_jobs(smart,heli_jobs,gname)
 	if (ltx) then 
 		job_ltx = [[
 [heli_move@hide]
+path_move		  = %s
 retreat_mode      = 2
 max_velocity      = 60
 max_mgun_dist     = 100
@@ -1136,7 +1141,7 @@ fire_trail        = false
 immortal     	  = true
 mute 			  = true	
 ]]
-		job_ltx = strformat(job_ltx)
+		job_ltx = strformat(job_ltx,level_name.."_heli_hide")
 		ltx = ltx.."\n\n"..job_ltx
 	end 
 	
@@ -1152,6 +1157,7 @@ mute 			  = true
 active = heli_move@%s
 
 [heli_move@%s]
+path_move		  = %s
 retreat_mode 	  = 1
 max_velocity      = 60
 max_mgun_dist     = 100
@@ -1165,7 +1171,7 @@ show_health       = false
 fire_trail        = false
 on_info			  = {=heli_dist_to_max_bounding_le(3)} heli_move@hide
 ]]
-			job_ltx = strformat(job_ltx,name,name,name)
+			job_ltx = strformat(job_ltx,name,name,name,level_name.."_goto_hide")
 
 			ltx = ltx.."\n\n"..job_ltx
 		end
@@ -1308,9 +1314,9 @@ far_distance                   = {=is_wounded} 0, {!is_squad_commander} 0, {!aft
 far_anim                       = {=is_wounded} nil, {!is_squad_commander} nil, {!after_first_meet !actor_friend =actor_has_weapon} threat_na, nil
 far_snd                        = {=is_wounded} nil, {!is_squad_commander} nil, {=actor_enemy} nil, {!after_first_meet !actor_friend =actor_has_weapon} meet_hide_weapon, meet_wait
 far_victim                     = {=is_wounded} nil, {!is_squad_commander} nil, actor
-use                            = {=npc_surrendered} true, {=is_wounded} false, {!is_squad_commander} false, {=actor_enemy} false, {=has_enemy} false,  {=dist_to_actor_le(3)} true, false
+use                            = {=is_wounded} false, {!is_squad_commander} false, {=actor_enemy} false, {=has_enemy} false,  {=dist_to_actor_le(3)} true, false
 snd_on_use                     = {=is_wounded} nil, {=actor_enemy} nil, {!is_squad_commander} meet_use_no_talk_leader,  {=has_enemy} meet_use_no_fight, {=dist_to_actor_le(3)} meet_use_no_default, nil
-meet_dialog                    = {=npc_surrendered} dm_surrender_dialog, nil
+meet_dialog                    = nil
 abuse                          = {=has_enemy} false, true
 trade_enable                   = {=actor_enemy} false, true
 allow_break                    = true
@@ -1326,9 +1332,9 @@ far_distance                   = 0
 far_anim                       = nil
 far_snd                        = nil
 far_victim                     = nil
-use                            = {=npc_surrendered} true, {=is_wounded} false, {!is_squad_commander} false, {=actor_enemy} false, {=has_enemy} false,  {=dist_to_actor_le(3)} true, false
+use                            = {=is_wounded} false, {!is_squad_commander} false, {=actor_enemy} false, {=has_enemy} false,  {=dist_to_actor_le(3)} true, false
 snd_on_use                     = {=is_wounded} nil, {=actor_enemy} nil, {!is_squad_commander} meet_use_no_talk_leader,  {=has_enemy} meet_use_no_fight, {=dist_to_actor_le(3)} meet_use_no_default, nil
-meet_dialog                    = {=npc_surrendered} dm_surrender_dialog, nil
+meet_dialog                    = nil
 abuse                          = {=has_enemy} false, true
 trade_enable                   = true
 allow_break                    = true

@@ -27,7 +27,7 @@ function se_heli:on_unregister()
 
 	--printf("unregister heli %s",self.respawn_point_id)
 	if (self.respawn_point_id and self.respawn_point_prop_section) then
-		local smart = alife():object(self.respawn_point_id)
+		local smart = alife_object(self.respawn_point_id)
 		if smart == nil then
 			return
 		end
@@ -35,7 +35,7 @@ function se_heli:on_unregister()
 	end
 	local strn_id = self.m_smart_terrain_id
 	if strn_id and strn_id ~= 65535 then
-		local smart = alife():object(strn_id)
+		local smart = alife_object(strn_id)
 		if smart ~= nil then
 			smart:unregister_npc(self)
 		end

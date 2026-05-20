@@ -67,7 +67,7 @@
 		<text>Rainbow emitter documents</text>
 	</string>
 		<string id="item_doc_x8_desc">
-		<text>The document refers to the transfer of the research team and all materials to another laboratory far in the north, which will be used to research matters relating to the influence of the noosphere. To enter the lab, use the date of the accident as the code.\n \nThe research team comprised: N.A. Lebedev, E.F. Kalancha and V.I. Suslov.</text>
+		<text>The document refers to the transfer of the research team and all materials to another laboratory far in the north, which will be used to research matters relating to the influence of the noosphere. To enter the lab, use the date of the accident as the code (ddmmyyyy).\n \nThe research team comprised: N.A. Lebedev, E.F. Kalancha and V.I. Suslov.</text>
 	</string>
 	<string id="item_doc_x8_name">
 		<text>Order of Transfer</text>

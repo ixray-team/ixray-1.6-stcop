@@ -103,10 +103,6 @@ files                                    = info_portions, info_upgrades, info_al
 [dialogs]
 files                                    = dialogs, dialogs_yantar, dialogs_marsh, dialogs_redforest, dialogs_katacomb, dialogs_escape, dialogs_bar, dialogs_zaton, dialogs_jupiter, dialogs_pripyat, dialogs_darkvalley, dialogs_warlab
 
-
-[encyclopedia]
-files                                    = encyclopedia_infos
-
 [profiles]
 files                                    = npc_profile
 specific_characters_files                = character_desc_general, character_desc_simulation, character_desc_marsh, character_desc_agroprom, character_desc_darkvalley, character_desc_bar, character_desc_escape, character_desc_red_forest, character_desc_yantar, character_desc_military, character_desc_deadcity, character_desc_katacomb, character_desc_zaton, character_desc_pripyat, character_desc_jupiter, character_desc_underpass, character_desc_sarcofag, character_desc_warlab
@@ -368,10 +364,10 @@ $spawn                                   = "ai\graph point"
 [trade]
 ;коэффициентv изменениљ ценv при торговле в зависимости от отношениљ к персонажу
 ;линейно апроксимируітсљ между значениљ
-buy_price_factor_hostile                 = 1	                                       ;коэффициент покупки при goodwill = -100
-buy_price_factor_friendly                = 1	                                       ;коэффициент покупки при goodwill = 100
-sell_price_factor_hostile                = 1	                                       ;коэффициент покупки при goodwill = -100
-sell_price_factor_friendly               = 1	                                       ;коэффициент покупки при goodwill = 100
+buy_price_factor_hostile                 = 0.05	                                       ;коэффициент покупки при goodwill = -100
+buy_price_factor_friendly                = 0.05                                       ;коэффициент покупки при goodwill = 100
+sell_price_factor_hostile                = 1                                       ;коэффициент покупки при goodwill = -100
+sell_price_factor_friendly               = 1                                       ;коэффициент покупки при goodwill = 100
 
 
 

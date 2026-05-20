@@ -203,9 +203,11 @@ function act_state_mgr_to_idle:execute()
 	action_base.execute(self)
 	if (self.st.target_state ~= "idle") then
 		self.object:clear_animations()
-		self.st:set_state("idle", nil, nil, nil, {fast_set = true})
-		self.st.animation:set_state(nil, true)
+		self.st:set_state("idle",nil,nil,nil,{fast_set = true})
+		self.st.animation:set_state(nil,true)
 		self.st.animation:set_control()
+		self.st.animstate:set_state(nil,true)
+		self.st.animstate:set_control()
 	end
 end
 

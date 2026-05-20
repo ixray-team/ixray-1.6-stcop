@@ -18,4 +18,19 @@
 			</btn_ok>
 		</form>
 	</multi_choice>
+	<context_menu>
+		<file_item>
+			<main width="130" height="18"/>
+			<fn width="130" height="18"/>
+			<fd width="50" height="18"/>
+		</file_item>
+		<form x="0" y="0" width="130" height="200" stretch="1">
+			<list_frame x="0" y="0" width="130" height="200">
+				<texture>ui_icons_PDA_tooltips</texture>
+			</list_frame>
+			<list x="10" y="10" width="105" height="200" item_height="22" can_select="1" always_show_scroll="0">
+				<font font="letterica16"/>
+			</list>
+		</form>
+	</context_menu>
 </w>

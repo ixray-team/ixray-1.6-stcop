@@ -1,9 +1,6 @@
 -- stpk_utils
 -- Alundaio
---[[
-Copyright (C) 2012 Alundaio
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License-]]
---]]
+
 
 local stpk = net_packet()
 local uppk = net_packet()

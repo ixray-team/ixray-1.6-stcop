@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<!-- yan_ecolog_semenov -->
+	<string id="yan_ecolog_semenov_task_1_name">
+		<text>Помочь доценту Семёнову</text>
+	</string>
+	<string id="yan_ecolog_semenov_task_1_text">
+		<text>Нужно сопроводить доцента Семёнова по окрестностям, отыскать и убить несколько мутантов, чтобы учёный мог взять свежие образцы ткани и просканировать тела.</text>
+	</string>
+	<string id="yan_ecolog_semenov_task_1_about">
+		<text>Вы не могли бы помочь мне отыскать пару мутантов для исследований? Скажем... пять разных особей. Ну и, естественно, обеспечить мне безопасность во время проведения замеров. Я заплачу Вам за Вашу работу.</text>
+	</string>
+	<string id="yan_ecolog_semenov_task_1_finish">
+		<text>Спасибо за помощь, сталкер. Я собрал все данные, которые мне нужны. Вот Ваша награда... Заходите еще в нашу лабораторию.</text>
+	</string>
+
+	<string id="yan_stalker_sakharov_task_1_name">
+		<text>Принести %s</text>
+	</string>
+	<string id="yan_stalker_sakharov_task_1_text">
+		<text>Достать образец ткани мутанта: %s.</text>
+	</string>
+	<string id="yan_stalker_sakharov_task_1_about">
+		<text>Мне нужен опытный охотник на мутантов для одного дела. Могу на вас рассчитывать?</text>
+	</string>
+	<string id="yan_stalker_sakharov_task_1_fetch_about">
+		<text>Мне требуются некоторые образцы для исследований, а именно ... %s. Не важно где Вы их достанете, главное чтобы они были как можно свежее. Возвращайтесь в лабораторию как можно быстрее, после того как соберете всё, что мне нужно.</text>
+	</string>
+	<string id="yan_stalker_sakharov_task_1_fetch_finish">
+		<text>Благодарю Вас, молодой человек. Я немедленно приступаю к исследованиям.</text>
+	</string>
+
+	<!-- yan_stalker_sakharov -->
+	<string id="yan_stalker_sakharov_psi_helmet_upgrade_name">
+		<text>Калибровка пси-шлема</text>
+	</string>
+	<string id="yan_stalker_sakharov_psi_helmet_upgrade_text">
+		<text>Профессор Сахаров согласился настроить пси-шлем. Он попросил прийти через несколько дней.</text>
+	</string>
+
+	<string id="brain_machine_deactivate_name">
+		<text>Отключить пси-установку</text>
+	</string>
+	<string id="brain_machine_deactivate_text">
+		<text>Пси-установка своим излучением закрывает проход между Янтарём и Мёртвым Городом. Для её отключения требуются передовые устройства пси-защиты.</text>
+	</string>
+</string_table>

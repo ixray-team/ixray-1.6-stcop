@@ -93,6 +93,10 @@ function evaluator_radio_in_heli:evaluate()
 		return false 
 	end
 	
+	if not (utils.is_day()) then 
+		return false 
+	end
+	
 	local squad = get_object_squad(npc)
 	if not (squad) then 
 		return false 
@@ -115,12 +119,14 @@ function evaluator_radio_in_heli:evaluate()
 		return false 
 	end
 	
+	if (xr_conditions.surge_started()) then 
+		return 
+	end
+	
 	local comm = character_community(npc)
 	for id,o in pairs(db.heli) do 
-		if (se_heli.se_helicopters[id] and se_heli.se_helicopters[id].community == comm) then
-			if (se_heli.se_helicopters[id].help_id == nil) then
-				return true
-			end
+		if (se_heli.se_helicopters[id] and se_heli.se_helicopters[id].help_id == nil and se_heli.se_helicopters[id].community == comm) then
+			return true
 		end
 	end 
 
@@ -202,8 +208,12 @@ function action_radio_in_heli:execute()
 				alun_utils.execute_script_on_squad(be,set_heli_flag)
 			end
 			
-			if (dynamic_news_manager and axr_main.config:r_value("mm_options","enable_dynamic_news",1) and (math.random(1,100)/100) < 0.5) then 
-				dynamic_news_manager.get_dynamic_news():RadioInHeli(npc,be)
+			if not (self.st.dont_spam) then
+				if (dynamic_news_manager and axr_main.config:r_value("mm_options","enable_dynamic_news",1) and (math.random(1,100)/100) < 0.5) then 
+					dynamic_news_manager.get_dynamic_news():RadioInHeli(npc,be)
+				end
+			
+				self.st.dont_spam = true
 			end
 		end
 	else 
@@ -224,13 +234,12 @@ end
 function add_to_binder(npc,ini,scheme,section,storage,temp)
 	local manager = npc:motivation_action_manager()
 	
-	if (not npc:alive()) or (character_community(npc) == "zombied" or npc:section() == "actor_visual_stalker") then
+	if (not npc:alive()) or (npc:character_community() == "zombied" or npc:section() == "actor_visual_stalker") then
 		manager:add_evaluator(evaid,property_evaluator_const(false))
-		temp.needs_configured = false
-		return 
-	end
-
-	manager:add_evaluator(evaid,evaluator_radio_in_heli(npc,"eva_radio_in_heli",storage))
+		--temp.needs_configured = false
+	else
+		manager:add_evaluator(evaid,evaluator_radio_in_heli(npc,"eva_radio_in_heli",storage))
+	end 
 	
 	temp.action = action_radio_in_heli(npc,"act_radio_in_heli",storage)
 	

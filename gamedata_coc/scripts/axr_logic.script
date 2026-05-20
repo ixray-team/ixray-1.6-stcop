@@ -1,8 +1,3 @@
---[[
-Copyright (C) 2012 Alundaio
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License-]]
---]]
-
 function set_new_scheme_and_logic(npc,scheme,section,logic,gulag,ini_filename)
 	if not (npc) then 
 		printf("set_new_scheme_and_logic npc is nil!")

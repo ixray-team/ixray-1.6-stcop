@@ -512,7 +512,7 @@ function animation:process_special_action(action_table)
 		else
 			local se_itm = alife():create(action_table.a,vector(),0,0,self.npc:id())
 			if (se_itm) then
-				CreateTimeEvent(se_itm.id,"delayed_attach",1,delayed_attach,se_itm.id)
+				CreateTimeEvent(se_itm.id,"delayed_attach",0,delayed_attach,se_itm.id)
 			end
 		end
 	end

@@ -103,8 +103,7 @@ function check_spawn_ini_for_story_id(se_obj)
 		return
 	end
 
-	local spawn_sect = se_obj:section_name()
-	local story_id = system_ini():r_string_ex(spawn_sect,"story_id")
+	local story_id = system_ini():r_string_ex(se_obj:section_name(),"story_id")
 	if story_id ~= nil then
 		sor:register(se_obj.id , story_id)
 		return

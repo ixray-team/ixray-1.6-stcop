@@ -174,13 +174,26 @@
 		<text>Patriarch</text>
 	</string>
 	<string id="st_achievement_14_hint">
-		<text>You can recruit larger squads as companions.</text>
+		<text>You can recruit more stalkers as companions.</text>
 	</string>
 	<string id="st_achievement_14_descr">
 		<text>Destroyer of helicopters. Deliverer of PDAs. Stories of your experiences and abilities are renowned throughout the Zone. You have become immortalised; your tales forever spoken of over the Zone's many campfires.</text>
 	</string>
 	<string id="st_achievement_14_unlock">
 		<text>You have unlocked the "Patriarch" achievement.</text>
+	</string>
+	
+	<string id="st_achievement_15_name">
+		<text>S.C.H.O.L.A.R.</text>
+	</string>
+	<string id="st_achievement_15_hint">
+		<text>Hint</text>
+	</string>
+	<string id="st_achievement_15_descr">
+		<text>Description.</text>
+	</string>
+	<string id="st_achievement_15_unlock">
+		<text>You have unlocked the "S.C.H.O.L.A.R." achievement.</text>
 	</string>
 	
 </string_table>

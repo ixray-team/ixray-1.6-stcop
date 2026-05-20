@@ -57,14 +57,15 @@ function trader_object_binder:net_spawn(sobject)
 		return true
 	end
 	
-	if alife():object(self.object:id()) == nil then
-		return false
+	local se_obj = alife_object(self.object:id())
+	if not (se_obj) then 
+		return false 
 	end
 	
 	db.add_obj(self.object)
 	if self.object:clsid() == clsid.script_trader then
 	      --self.object:set_trader_global_anim("idle_spinka")
-		smart_terrain.setup_gulag_and_logic_on_spawn( self.object, self.st, sobject, modules.stype_trader, self.loaded)
+		smart_terrain.setup_gulag_and_logic_on_spawn( self.object, self.st, se_obj, modules.stype_trader, self.loaded)
 	end
 	
 	return true
@@ -94,7 +95,10 @@ function trader_object_binder:net_destroy()
 	
 	db.del_obj(self.object)
 	db.storage[self.object:id()] = nil
-	alife_storage_manager.get_state().game_object[self.object:id()] = nil
+	local m_data = alife_storage_manager.get_state()
+	if (m_data.game_object) then
+		m_data.game_object[self.object:id()] = nil
+	end
 	
 	trade_manager.on_npc_death(self.object)
 	
@@ -181,7 +185,7 @@ function trader_object_binder:load_state()
 	st.loaded_gulag_name = state.xr_logic.gulag_name or ""
 	st.activation_time = state.xr_logic.activation_time and state.xr_logic.activation_time + time_global() or time_global()
 	st.activation_game_time = state.xr_logic.activation_game_time or game.get_game_time()
-	
+	state.xr_logic = nil
 	--xr_sound.npc_load_state(id,state)
 	
 	trade_manager.load_state(id,state)

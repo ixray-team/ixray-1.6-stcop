@@ -204,7 +204,7 @@ function animpoint:position_riched()
 	end
 	if (dist <= self.st.reach_distance) then
 		local dir1 = vector():set(self.smart_direction)
-		local dir2 = vector():set(npc:direction())
+		--local dir2 = vector():set(npc:direction())
 		--npc:set_desired_direction()
 		--npc:set_sight(look.direction, dir1:normalize(), true)
 		state_mgr.set_state(npc, "animpoint_reach", {turn_end_func=function() self.st.am_i_reached = true return end}, nil, {look_dir = dir1})
@@ -217,6 +217,8 @@ function animpoint:position_riched()
 		end
 		--]]
 		return self.st.am_i_reached
+	else 
+		self.st.am_i_reached = false
 	end
 	return false
 end
@@ -396,25 +398,11 @@ end
 -- Smartcover binder
 --------------------------------------------------------------------------------
 function add_to_binder(npc, ini, scheme, section, storage)
-	local operators	= {}
-	local properties  = {}
-
 	local manager = npc:motivation_action_manager()
-	if not (manager) then
-		return
-	end
 
-	properties["need_animpoint"] 			= xr_evaluators_id.animpoint_property + 1
-	properties["reach_animpoint"] 			= xr_evaluators_id.animpoint_property + 2
-
-	properties["state_mgr_logic_active"] 	= xr_evaluators_id.state_mgr + 4
-
- 	operators["action_animpoint"] 			= xr_actions_id.animpoint_action + 1
-	operators["action_reach_animpoint"] 	= xr_actions_id.animpoint_action + 2
-
- 	-- -- evaluators
-	manager:add_evaluator(properties["need_animpoint"], this.evaluator_need_animpoint(storage, "animpoint_need"))
-	manager:add_evaluator(properties["reach_animpoint"], this.evaluator_reach_animpoint(storage, "animpoint_reach"))
+ 	-- evaluators
+	manager:add_evaluator(xr_evaluators_id.animpoint_property + 1, this.evaluator_need_animpoint(storage, "animpoint_need"))
+	manager:add_evaluator(xr_evaluators_id.animpoint_property + 2, this.evaluator_reach_animpoint(storage, "animpoint_reach"))
 
 	storage.animpoint = animpoint(npc, storage)
 
@@ -426,12 +414,12 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	new_action:add_precondition(world_property(stalker_ids.property_anomaly,false))
 	new_action:add_precondition(world_property(stalker_ids.property_enemy,false))
 	new_action:add_precondition(world_property(stalker_ids.property_danger,false))
-	new_action:add_precondition(world_property(properties["need_animpoint"], true))
-	new_action:add_precondition(world_property(properties["reach_animpoint"], false))
+	new_action:add_precondition(world_property(xr_evaluators_id.animpoint_property + 1, true))
+	new_action:add_precondition(world_property(xr_evaluators_id.animpoint_property + 2, false))
 	modules.add_common_precondition(scheme,new_action)
-	new_action:add_effect (world_property(properties["need_animpoint"], false))
-	new_action:add_effect (world_property(properties["state_mgr_logic_active"], false))
-	manager:add_action(operators["action_reach_animpoint"], new_action)
+	new_action:add_effect (world_property(xr_evaluators_id.animpoint_property + 1, false))
+	new_action:add_effect (world_property(xr_evaluators_id.state_mgr + 4, false))
+	manager:add_action(xr_actions_id.animpoint_action + 2, new_action)
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 
 	new_action = this.action_animpoint(npc, "action_animpoint", storage)
@@ -439,16 +427,16 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	new_action:add_precondition(world_property(stalker_ids.property_anomaly,false))
 	new_action:add_precondition(world_property(stalker_ids.property_enemy,false))
 	new_action:add_precondition(world_property(stalker_ids.property_danger,false))
-	new_action:add_precondition(world_property(properties["need_animpoint"], true))
-	new_action:add_precondition(world_property(properties["reach_animpoint"], true))
+	new_action:add_precondition(world_property(xr_evaluators_id.animpoint_property + 1, true))
+	new_action:add_precondition(world_property(xr_evaluators_id.animpoint_property + 2, true))
 	modules.add_common_precondition(scheme,new_action)
-	new_action:add_effect (world_property(properties["need_animpoint"], false))
-	new_action:add_effect (world_property(properties["state_mgr_logic_active"], false))
-	manager:add_action(operators["action_animpoint"], new_action)
+	new_action:add_effect (world_property(xr_evaluators_id.animpoint_property + 1, false))
+	new_action:add_effect (world_property(xr_evaluators_id.state_mgr + 4, false))
+	manager:add_action(xr_actions_id.animpoint_action + 1, new_action)
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 
 	new_action = manager:action(xr_actions_id.alife)
-	new_action:add_precondition(world_property(properties["need_animpoint"], false))
+	new_action:add_precondition(world_property(xr_evaluators_id.animpoint_property + 1, false))
 end
 
 function set_scheme(npc, ini, scheme, section, gulag_name)

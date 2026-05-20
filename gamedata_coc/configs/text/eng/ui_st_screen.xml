@@ -396,4 +396,21 @@
 	<string id="bar_arena_fight_victory">
 		<text>Ho! The challenger killed his opponent in time! He wins!</text>
 	</string>
+	<string id="st_death_count">
+		<text>You've died %s times.</text>
+	</string>
+	
+	<string id="st_screen_kick">
+		<text>Kick</text>
+	</string>
+	<string id="st_screen_field_dress">
+		<text>Field dress</text>
+	</string>
+	<string id="st_nobody_left_to_replace">
+		<text>There is nobody left to replace.</text>
+	</string>
+	
+	<string id="st_nothing_useful">
+		<text>Nothing useful</text>
+	</string>
 </string_table>

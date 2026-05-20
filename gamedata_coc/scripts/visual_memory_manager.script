@@ -9,7 +9,7 @@ function get_visible_value(npc,who,time_delta,time_quant,luminocity,velocity_fac
 	luminocity = luminocity <= 0 and 0.0001 or luminocity
 	
 	if (level_weathers.bLevelUnderground) then 
-		luminocity = luminocity + 0.25
+		luminocity = luminocity + 0.35
 	end
 	
 	-- unaltered formula

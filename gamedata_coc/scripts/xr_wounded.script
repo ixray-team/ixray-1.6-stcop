@@ -15,27 +15,28 @@ function evaluator_wound:__init(name, storage) super(nil, name)
 	self.a = storage
 end
 function evaluator_wound:evaluate ()
-	if not (self.object:alive()) then 
+
+	local o = self.object
+	if not (IsStalker(o) and o:alive()) then 
 		return false 
 	end 
-	if self.object:in_smart_cover() then return false end
-
+	
+	if (o:critically_wounded() or o:in_smart_cover()) then 
+		return false 
+	end
+	
 	if self.a.wounded_set ~= true then return false end
-
+	
 	self.a.wound_manager:update()
-
-	if self.object:critically_wounded() == true then
+	
+	if o:best_enemy() and utils.load_var(o, "wounded_fight") == "true" then
 		return false
 	end
-
-	if self.object:best_enemy() and utils.load_var(self.object, "wounded_fight") == "true" then
+	
+	local state = tostring(utils.load_var(o, "wounded_state"))
+	if (state == "nil") then
 		return false
 	end
-
-	local state = utils.load_var(self.object, "wounded_state")
-	if (state == nil or state == "nil") then 
-		return false
-	end 
 	
 	return true
 end
@@ -83,7 +84,7 @@ function action_wounded:execute()
 			local current_time = time_global()
 			if begin_wounded == nil then
 				utils.save_var(self.object, "begin_wounded", current_time)
-			elseif current_time - begin_wounded > 60000 then
+			elseif current_time - begin_wounded > 90000 then
 				--local sim = alife()
 				--sim:create("medkit_script",npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id())
 				wound_manager:unlock_medkit()
@@ -91,9 +92,11 @@ function action_wounded:execute()
 		end
 	end
 
-	local wound_manager_state = utils.load_var(npc, "wounded_state")
-	
-	if wound_manager_state == "true" then
+	local wound_manager_state = tostring(utils.load_var(npc, "wounded_state"))
+	if wound_manager_state == "nil" then
+		printf("wrong wounded animation %s", self.object:name())
+		return
+	elseif wound_manager_state == "true" then
 		local h = hit()
 		h.power = 0
 		h.direction = self.object:direction()
@@ -117,32 +120,15 @@ function action_wounded:execute()
 		return
 	end
 	
-	db.storage[id].victim_surrender = 65535
+	if (pid ~= nil) then
+		db.storage[id].victim_surrender = 65535
+	end
 
 	local wound_manager_sound = utils.load_var(npc, "wounded_sound")
 	if (wound_manager_sound and wound_manager_sound ~= "nil") then 
 		xr_sound.set_sound_play(npc:id(), wound_manager_sound)
 	end
 
-	if tostring(wound_manager_state) == "nil" then
---		print_table(self.a.hp_state)
---		print_table(self.a.hp_state_see)
-		printf("wrong wounded animation %s", self.object:name())
-		return
-	end
-
-	--[[
-	local state = state_mgr.get_state(npc)
-	if (state ~= wound_manager_state) then
-		local mgr = db.storage[npc:id()].state_mgr
-		if (mgr) then
-			npc:clear_animations()
-			mgr:set_state(wound_manager_state, nil, nil, nil, {fast_set = true})
-			mgr.animation:set_state(nil,true)
-			mgr.animation:set_control()
-		end
-	end
-	--]]
 	state_mgr.set_state(npc,wound_manager_state,nil,nil,nil,{fast_set = true})
 end
 function action_wounded:finalize()
@@ -212,13 +198,13 @@ function Cwound_manager:eat_medkit()
 		self.npc:set_health_ex(1)
 		
 		if self.npc:object("medkit_script") ~= nil then
-			alife():release(alife():object(self.npc:object("medkit_script"):id()), true)
+			alife():release(alife_object(self.npc:object("medkit_script"):id()), true)
 		elseif self.npc:object("medkit") ~= nil then
-			alife():release(alife():object(self.npc:object("medkit"):id()), true)
+			alife():release(alife_object(self.npc:object("medkit"):id()), true)
 		elseif self.npc:object("medkit_army") ~= nil then
-			alife():release(alife():object(self.npc:object("medkit_army"):id()), true)
+			alife():release(alife_object(self.npc:object("medkit_army"):id()), true)
 		elseif self.npc:object("medkit_scientic") ~= nil then
-			alife():release(alife():object(self.npc:object("medkit_scientic"):id()), true)
+			alife():release(alife_object(self.npc:object("medkit_scientic"):id()), true)
 		end
 
 		local begin_wounded = utils.load_var(self.npc, "begin_wounded")

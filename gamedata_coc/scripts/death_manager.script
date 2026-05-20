@@ -24,8 +24,10 @@ function init_drop_settings()
 	for i=0,n-1 do
 		local result, id, value	= death_ini:r_line_ex("item_count",i,"","")
 		local p = alun_utils.str_explode(value,",")
-		if (p and p[1] and p[2]) then
-			item_count[id] = {tonumber(p[1]) or 0,tonumber(p[2]) or 0}
+		if (p) then
+			p[1] = tonumber(p[1]) or 0
+			p[2] = tonumber(p[2]) or p[1]
+			item_count[id] = {p[1],p[2]}
 		end
 	end
 	
@@ -64,8 +66,6 @@ function create_release_item(npc)
 		return
 	end
 	utils.se_obj_save_var(npc:id(),npc:name(),"death_dropped",true)
-	
-	decide_items_to_keep(npc)
 	
 	-- spawn items by story id
 	local sid = item_by_story_id and get_object_story_id(npc:id())
@@ -110,10 +110,12 @@ end
 
 function try_spawn_ammo(npc,spawn_items)
 	local ini = system_ini()
-	local ammo_class,sec,number
+	local class,ammo_class,sec,number
 	local function itr(npc,itm)
 		if (IsWeapon(nil,itm:clsid()) and not npc:marked_dropped(itm)) then
+			class = system_ini():r_string_ex(itm:section(),"class")
 			ammo_class = alun_utils.parse_list(ini,itm:section(),"ammo_class")
+			if (class and class == "WP_KNIFE") then return end
 			-- randomly spawn only 1 ammo type per found weapon
 			if (#ammo_class > 0) then
 				sec = ammo_class[math.random(1,#ammo_class)]
@@ -161,7 +163,7 @@ function keep_item(npc, item)
 		return 
 	end 
 	
-	local se_item = alife():object(item:id())
+	local se_item = alife_object(item:id())
 	if not (se_item) then 
 		return
 	end
@@ -180,7 +182,8 @@ function keep_item(npc, item)
 	
 	-- release all animation objects
 	if (section == "bolt" or section == "medkit_script" or section == "guitar_a" or section == "harmonica_a" or section == "wpn_binoc" or section == "anim_binoc" or section == "anim_knife" 
-		or section == "device_torch" or section == "device_pda" or section == "hand_radio" or section == "hand_radio_r") then
+		or section == "device_torch" or section == "device_pda" or section == "hand_radio" or section == "hand_radio_r" or section == "stick_bred" or section == "stick_kolbasa" or
+		section == "stick_kolbasa_bred") then
 		alife():release(se_item, true)
 		return 
 	end

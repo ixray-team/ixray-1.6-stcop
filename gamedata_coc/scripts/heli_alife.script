@@ -1,7 +1,7 @@
 -- Helicopter Alife Simulator
 -- Alundaio
--- Copyright (C) 2014 Alundaio
--- This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
+-- 
+-- 
 -- current action by id
 -- STAY_ON_TARGET = 0
 -- REACH_TARGET = 1
@@ -92,7 +92,7 @@ local function get_smart_terrain_target(se_obj)
 	end
 
 	if not (most_priority_task) then
-		local smart = se_obj.m_smart_terrain_id and se_obj.m_smart_terrain_id ~= 65535 and alife():object(se_obj.m_smart_terrain_id)
+		local smart = se_obj.m_smart_terrain_id and se_obj.m_smart_terrain_id ~= 65535 and alife_object(se_obj.m_smart_terrain_id)
 		return smart and not smart.disabled and smart
 	end
 

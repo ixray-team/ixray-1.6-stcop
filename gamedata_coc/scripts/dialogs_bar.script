@@ -160,7 +160,7 @@ function arena_has_reward (first_speaker, second_speaker)
 end
 
 function arena_hasnt_reward (actor, npc)
-	return not( has_alife_info("bar_arena_fight_1_reward") or has_alife_info("bar_arena_fight_2_reward") or has_alife_info("bar_arena_fight_3_reward") or has_alife_info("bar_arena_fight_4_reward") or has_alife_info("bar_arena_fight_5_reward") or has_alife_info("bar_arena_fight_6_reward") or has_alife_info("bar_arena_fight_7_reward") or has_alife_info("bar_arena_fight_8_reward")) and not ( has_alife_info("bar_arena_1000_r") or has_alife_info("bar_arena_2000_r") or has_alife_info("bar_arena_3000_r") or has_alife_info("bar_arena_5000_r") or has_alife_info("bar_arena_20_p") or has_alife_info("bar_arena_50_p") or has_alife_info("bar_arena_100_p"))
+	return not arena_has_reward(actor,npc)
 end
 
 function arena_rank_check_true (first_speaker, second_speaker)

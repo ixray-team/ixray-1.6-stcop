@@ -19,8 +19,14 @@ end
 
 function rescue_hostage(a,b)
 	local npc = who_is_npc(a,b)
-	if (npc) then
-		local se_npc = alife():object(npc:id())
+	local squad = get_object_squad(npc)
+	if (squad) then 
+		for k in squad:squad_members() do
+			utils.se_obj_save_var(k.id,k.object:name(),"companion_cannot_teleport",nil)
+			xrs_kill_wounded.hostage_list[k.id] = nil
+		end
+	else 
+		local se_npc = alife_object(npc:id())
 		if (se_npc) then
 			utils.se_obj_save_var(se_npc.id,se_npc:name(),"companion_cannot_teleport",nil)
 			xrs_kill_wounded.hostage_list[se_npc.id] = nil
@@ -466,9 +472,9 @@ function surrender_victim_answers_1(a,b)
 		npc:iterate_inventory(itr,npc)
 
 		if (coc_treasure_manager) then
-			coc_treasure_manager.create_random_stash(nil,npc:character_name().."'s stash")
+			coc_treasure_manager.create_random_stash(nil, strformat(game.translate_string("st_itm_stash_of_character"),npc:character_name()) )
 			if (has_alife_info("achieved_silver_or_lead") and ((math.random(1,100)/100) <= 0.33)) then
-				coc_treasure_manager.create_random_stash(nil,npc:character_name().."'s stash")
+				coc_treasure_manager.create_random_stash(nil,strformat(game.translate_string("st_itm_stash_of_character"),npc:character_name()))
 			end
 		else
 			axr_dynamic_spawn.random_secret()

@@ -1,9 +1,5 @@
 -- axr_debug_tools UI script
 -- Alundaio
---[[
-Copyright (C) 2012 Alundaio
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License-]]
---]]
 UI_ICON_EQUIPMENT_WIDTH = 1024
 UI_ICON_EQUIPMENT_HEIGHT = 2048
 
@@ -19,7 +15,7 @@ id_to_spawn_table = {
 		[9] = "Physic (Misc.)",				
 		[10] = "Squads (Mutant)",			
 		[11] = "Squads (Stalker)",			
-		[12] = "Weapons (Addon)",
+		[12] = "Weapons (Addons)",
 		[13] = "Weapons (Misc.)",
 		[14] = "Weapons (Pistol)",
 		[15] = "Weapons (Rifle)",
@@ -46,7 +42,7 @@ function get_spawn_table(name)
 		sec = "debug_spawner_item_misc"
 	elseif (name == "Items (Consumable)") then
 		sec = "debug_spawner_item_consumable"
-	elseif (name == "Weapons (Addon)") then
+	elseif (name == "Weapons (Addons)") then
 		sec = "debug_spawner_weapon_addon"
 	elseif (name == "Weapons (Pistol)") then
 		sec = "debug_spawner_weapon_pistol"
@@ -199,10 +195,35 @@ function debug_ui:InitControls()
 	-- Dialog Tab
 	self.tab = xml:InitTab("main_dialog:tab", self.dialog)
 	self:Register(self.tab, "tab")
+	
+	-- Message Window 
+	self.msg_wnd = xml:InitFrame("msg_wnd:background",self)
+	self.msg_wnd:SetAutoDelete(false)
+	self.msg_wnd_text = xml:InitTextWnd("msg_wnd:text",self.msg_wnd)
+	self.msg_wnd_text:SetTextAlignment(2)
+	
+	self.msg_wnd:Show(false)
+	self.msg_wnd:SetColor(GetARGB(255,0,0,0))
 end
 
 function debug_ui:SetCurrentValues()
 
+end
+
+function debug_ui:SetMsg(text,tmr)	
+	if (text == "") then 
+		return 
+	end
+	self.msg_wnd:Show(true)
+	self.msg_wnd_text:SetText(text)
+	self.msg_wnd_text:AdjustHeightToText()
+	self.msg_wnd_text:SetWndSize(vector2():set(1024,self.msg_wnd_text:GetHeight()+10))
+	self.msg_wnd_text:SetWndPos(vector2():set(0,20))
+	
+	self.msg_wnd:SetWndSize(vector2():set(1024,self.msg_wnd_text:GetHeight()+44))
+	self.msg_wnd:SetWndPos(vector2():set(0,80))
+
+	self.msg_wnd_timer = 100*tmr
 end
 
 function debug_ui:ShowConsole()
@@ -221,6 +242,14 @@ end
 
 function debug_ui:Update()
 	CUIScriptWnd.Update(self)
+	-- Warning messages timer 
+	if (self.msg_wnd_timer) then 
+		self.msg_wnd_timer = self.msg_wnd_timer - 1
+		if (self.msg_wnd_timer <= 0) then
+			self.msg_wnd_timer = nil
+			self.msg_wnd:Show(false)
+		end
+	end
 end
 
 function debug_ui:InitCallBacks()
@@ -278,11 +307,13 @@ function debug_ui:OnConsoleInput()
 		wrd = string.sub(txt,_strt, _end)
 		wrd = string.lower(wrd)
 	else
+		self:SetMsg("For usage type 'echo help'",5)
 		return "For usage type echo help"
 	end
 
 	if not (debug_cmd_list.command_exists(wrd)) then
 		self:SendOutput("Command %s cannot be found. Type help for a list of commands.",wrd)
+		self:SetMsg(strformat("'%s' cannot be found. Type 'help' for a list of commands.",wrd),5)
 		return
 	end
 
@@ -614,7 +645,7 @@ function debug_ui:spawn_squad(section,smart_name)
 				SIMBOARD:setup_squad_and_group(se_obj)
 			end 
 		end 
-		
+		self:SetMsg(strformat("Squad %s created as ID %s at %s.",squad:name(),squad.id,smart and smart_name or "actor"),5)
 		self:SendOutput("UISpawner: Squad %s created as ID %s at %s.",squad:name(),squad.id,smart and smart_name or "actor")
 		return true
 	end 
@@ -662,6 +693,7 @@ function debug_ui:FindNearest(txt)
 				end
 				self.txt_near:SetText(id)
 			end
+			self:SetMsg(strformat("%s with ID %s found with distance %s",near:name(),id,dist),5)
 			self:SendOutput("%s with ID %s found with distance %s",near:name(),id,dist)
 		else
 			--printf("Could not find object matching name")
@@ -677,7 +709,7 @@ function debug_ui:FillList(name)
 		return
 	end
 
-	self.spawn_list:Clear()
+	self.spawn_list:RemoveAll()
 
 	local spawntbl = get_spawn_table(name)
 
@@ -740,7 +772,7 @@ function debug_ui:FillEditorList(name)
 		return
 	end
 
-	self.editor_spawn_list:Clear()
+	self.editor_spawn_list:RemoveAll()
 
 	local spawntbl = get_spawn_table(name)
 
@@ -877,6 +909,7 @@ function debug_ui:OnButton_create_clicked()
 		end
 	end
 
+	self:SetMsg(strformat("Spawned %s as id %s",se_obj:name(),se_obj.id),5)
 	self:SendOutput("UISpawner: Spawned %s on %s as id %s",se_obj:name(),id == 0 and "Actor" or "level",se_obj.id)
 end
 
@@ -1281,7 +1314,7 @@ function debug_ui:FillAnim()
 	sp = string.sub(sp,0,string.len(sp)-1)
 	lua_extensions.recurse_subdirectories_and_execute(sp,{"ppe","anm"},fill_tbl)
 	-------
-	self.anims_list:Clear()
+	self.anims_list:RemoveAll()
 	for i=1, #anim_tbl do
 		local _itm = set_list_text(22)
 		_itm.sect:SetText(anim_tbl[i].fn)
@@ -1291,14 +1324,20 @@ function debug_ui:FillAnim()
 end
 
 function debug_ui:OnListItemClicked()
-	local item = self.anims_list:GetSelectedItem()
+	local item = self.anims_list:GetSize() > 0 and self.anims_list:GetSelectedItem()
+	if not (item) then 
+		return 
+	end
 	local idx = self.anims_list:GetSelectedIndex()
 	printf("index = %s table size = %s", idx, self.anims_list:GetSize())
 	if not item then printf("missing list item") end
 end
 
 function debug_ui:OnStartAnim()
-	local item = self.anims_list:GetSelectedItem()
+	local item = self.anims_list:GetSize() > 0 and self.anims_list:GetSelectedItem()
+	if not (item) then 
+		return 
+	end
 	local name = item.name
 	printf("name %s",name)
 	if name:find(".anm") then
@@ -1841,6 +1880,8 @@ function debug_ui_attach:OnAttachSave(section)
 	if (reload_system_ini) then 
 		reload_system_ini()
 	end
+	
+	self:SetMsg(strformat("Successfully saved changes to %s",section),5)
 end
 function debug_ui_attach:On_fld_attach_x()
 	self:OnEditAttach("x")
@@ -1987,7 +2028,7 @@ function anim_ui:FillAnim()
 	sp = string.sub(sp,0,string.len(sp)-1)
 	lua_extensions.recurse_subdirectories_and_execute(sp,{"ppe","anm"},fill_tbl)
 	-------
-	self.anims_list:Clear()
+	self.anims_list:RemoveAll()
 	for i=1, #anim_tbl do
 		local _itm = set_list_text(22)
 		_itm.sect:SetText(anim_tbl[i].fn)
@@ -1999,7 +2040,7 @@ end
 function anim_ui:OnStartAnim()
 	local item = self.anims_list:GetSelectedItem()
 	local name = item.name
-	printf("name %s",name)
+	--printf("name %s",name)
 	if name:find(".anm") then
 		level.add_cam_effector(name, 8010, false, "")
 	elseif name:find(".ppe") then

@@ -104,4 +104,36 @@
 		<text>What brings you here?</text>
 	</string>
 	
+	<!-- Ashot and Yar -->
+	<string id="st_jup_yar_reply_1">
+		<text>You go tell %s to get his fat ass over here.</text>
+	</string>
+	<string id="st_jup_yar_reply_2">
+		<text>Doesn't he know I'm busy? Tell him to come over here.</text>
+	</string>
+	<string id="st_jup_yar_reply_3">
+		<text>I don't get paid for walking. Tell him to come to me.</text>
+	</string>
+	<string id="st_jup_yar_reply_4">
+		<text>What? Does he want a wheelchair? Go fetch %s for me.</text>
+	</string>
+	<string id="st_jup_yar_reply_5">
+		<text>Where is %s? I can't fix it until he brings it here.</text>
+	</string>
+	
+	<string id="st_jup_ashot_reply_1">
+		<text>If %s wants it, tell him to come over here and take it from me.</text>
+	</string>
+	<string id="st_jup_ashot_reply_2">
+		<text>Come again? If he wants it, he comes and gets it. Okay?</text>
+	</string>
+	<string id="st_jup_ashot_reply_3">
+		<text>You tell that balding bastard to drag himself over here.</text>
+	</string>
+	<string id="st_jup_ashot_reply_4">
+		<text>I cannot leave my shop alone. He must come to me, 'eh?</text>
+	</string>
+	<string id="st_jup_ashot_reply_5">
+		<text>Do I look like an errand boy? Tell %s to get it himself.</text>
+	</string>
 </string_table>

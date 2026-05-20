@@ -411,7 +411,7 @@ function parse_params(params)
 end
 
 function is_day()
-	return level.get_time_hours() >= 5 and level.get_time_hours() < 22
+	return level.get_time_hours() >= 5 and level.get_time_hours() < 21
 end
 
 function electro_art_enabled ()
@@ -485,10 +485,8 @@ function get_nearest_waypoint(obj, pathname, ptr, cnt)
 end
 
 function npc_in_zone(npc, zone)
-	if (type(zone) == "string") then
-		zone = db.zone_by_name[zone]
-	end
-	return npc ~= nil and zone ~= nil and zone:inside(npc:position())
+	zone = type(zone) == "string" and db.zone_by_name[zone] or zone
+	return npc and zone and zone.inside and zone:inside(npc:position())
 end
 
 ------------------------- запись/загрузка CTime ---------------------------
@@ -846,4 +844,8 @@ function se_obj_load_var(id,name,varname)
 	if (m_data.se_object[id]) then
 		return m_data.se_object[id][varname]
 	end
+end
+
+function pos_in_rect(p,r)
+	return (p.x >= r.x1) and (p.x <= r.x2) and (p.y >= r.y1) and (p.y <= r.y2)
 end

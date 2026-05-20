@@ -39,6 +39,7 @@ function set_esc_2_12_stalker_fanat_as_companion(a,b)
 	if not (squad) then
 		return
 	end
+	axr_companions.companion_squads[squad.id] = squad
 	for k in squad:squad_members() do
 		local npc = k.id and (db.storage[k.id] and db.storage[k.id].object or level.object_by_id(k.id))
 		if (npc) then
@@ -87,6 +88,7 @@ nimble_trade_instead = false
 esc_2_12_buy_item_table = nil
 item_count_by_category = nil
 esc_2_12_costs_table = nil
+local nimble_max_items = 0
 function init_nimble_tables()
 	if (esc_2_12_buy_item_table) then 
 		return
@@ -98,8 +100,8 @@ function init_nimble_tables()
 	
 	local ini = ini_file("plugins\\nimble_orders.ltx")
 	nimble_trade_instead = ini:r_bool_ex("settings","nimble_trade_instead",false)
-	
-	for i=1,7 do 
+	nimble_max_items = ini:r_float_ex("settings","item_count") or 0
+	for i=1,nimble_max_items do 
 		item_count_by_category[i] = ini:r_float_ex("item_count","category_"..i) or 1
 		local str = ini:r_string_ex("costs_table","category_"..i) or "700, 1400, 2800"
 		local t = parse_names(str)
@@ -114,17 +116,17 @@ function init_nimble_tables()
 		local sec = "buy_item_table_"..i
 		local count = ini:line_count(sec)
 		t = empty_table(t)
-		for n=0,count-1 do 
-			local result, id, value = ini:r_line(sec, n, "", "")
-			local item_list = value and value ~= "" and alun_utils.str_explode(value,",") or {}
-			table.insert(item_list,id)
-			table.insert(t,{item=item_list})
+		for n=1,count do 
+			local value = ini:r_string_ex(sec,"item"..n)
+			if (value) then
+				local item_list = value ~= "" and alun_utils.str_explode(value,",") or {}
+				table.insert(t,{item=item_list})
+			end
 		end
 		
 		esc_2_12_buy_item_table[i] = t
 	end
-	
-	alun_utils.print_table(esc_2_12_buy_item_table,"nimble")
+	--alun_utils.print_table(esc_2_12_buy_item_table,"nimble")
 end 
 
 function nimble_can_trade(a,b)
@@ -138,7 +140,7 @@ end
 
 function esc_2_12_randomize_item(first_speaker, second_speaker)
 	init_nimble_tables()
-	for i = 1,7 do
+	for i = 1,nimble_max_items do
 		if has_alife_info("esc_2_12_processing_category_"..tostring(i)) then
 			local esc_2_12_available_items_table = {}
 			for j = 1, item_count_by_category[i] do
@@ -154,7 +156,7 @@ end
 
 function esc_2_12_give_prepay(first_speaker, second_speaker)
 	init_nimble_tables()
-	for i = 1,7 do
+	for i = 1,nimble_max_items do
 		if has_alife_info("esc_2_12_processing_category_"..tostring(i))  then
 			if not has_alife_info("esc_2_12_order_refused") then
 				dialogs.relocate_money_from_actor(first_speaker, second_speaker, esc_2_12_costs_table[i].prepay_agreed)
@@ -169,7 +171,7 @@ end
 
 function esc_2_12_has_prepay(first_speaker, second_speaker)
 	init_nimble_tables()
-	for i = 1,7 do
+	for i = 1,nimble_max_items do
 		if has_alife_info("esc_2_12_processing_category_"..tostring(i))  then
 			if not has_alife_info("esc_2_12_order_refused") then
 				return db.actor:money() >= esc_2_12_costs_table[i].prepay_agreed
@@ -187,7 +189,7 @@ end
 
 function esc_2_12_buy_item(first_speaker, second_speaker)
 	init_nimble_tables()
-	for i = 1,7 do
+	for i = 1,nimble_max_items do
 		if has_alife_info("esc_2_12_processing_category_"..tostring(i)) then
 			for j = 1,#esc_2_12_buy_item_table[i] do
 				if has_alife_info("esc_2_12_ordered_item_"..tostring(i).."_"..tostring(j)) then
@@ -219,7 +221,7 @@ end
 
 function esc_2_12_refuse_item(first_speaker, second_speaker)
 	init_nimble_tables()
-	for i = 1,7 do
+	for i = 1,nimble_max_items do
 		if has_alife_info("esc_2_12_processing_category_"..tostring(i)) then
 			for j = 1,#esc_2_12_buy_item_table[i] do
 				if has_alife_info("esc_2_12_ordered_item_"..tostring(i).."_"..tostring(j)) then
@@ -247,7 +249,7 @@ end
 
 function esc_2_12_has_item_cost(first_speaker, second_speaker)
 	init_nimble_tables()
-	for i = 1,7 do
+	for i = 1,nimble_max_items do
 		if has_alife_info("esc_2_12_processing_category_"..tostring(i)) then
 			return db.actor:money() >= esc_2_12_costs_table[i].cost
 		end

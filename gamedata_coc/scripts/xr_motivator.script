@@ -16,7 +16,7 @@ function motivator_binder:extrapolate_callback(cur_pt)
 		printf("CRITICAL ERROR: game object is nil! %s",self.name)
 		return false
 	end
-		if self.st.active_section then
+	if (self.st.active_section and self.st.active_scheme) then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "extrapolate_callback")
 		if (self.st.move_mgr) then
 			self.st.move_mgr:extrapolate_callback(self.object)
@@ -51,6 +51,11 @@ function motivator_binder:net_spawn(sobject)
 	if not object_binder.net_spawn(self, sobject) then
 		return false
 	end
+	
+	local se_obj = alife_object(self.object:id())
+	if not (se_obj) then 
+		return false 
+	end
 
 	self.object:enable_vision(true)
 	local visual = system_ini():r_string_ex(self.object:section(),"set_visual")
@@ -61,19 +66,30 @@ function motivator_binder:net_spawn(sobject)
 			self.object:set_visual_name(visual)
 		end
 	end
+	
+	-- overrides
+	local m_data = alife_storage_manager.get_se_obj_state(se_obj)
+	if (m_data) then 
+		if (m_data.visual) then 
+			self.object:set_visual_name(m_data.visual)
+		end  
+		if (m_data.icon_name) then 
+			self.object:set_character_icon(m_data.icon_name)
+		end
+	end
 
 	self.object:apply_loophole_direction_distance(1.0)
 
-	self.object:set_callback(callback.use_object, motivator_binder.use_callback, self)
+	self.object:set_callback(callback.use_object, self.use_callback, self)
 	self.object:set_callback(callback.on_item_take, self.on_item_take, self)
 	self.object:set_callback(callback.on_item_drop, self.on_item_drop, self)
 	
 	db.add_obj(self.object)
 	if not self.object:alive() then
 		self.object:death_sound_enabled(false)
-		--alun_utils.debug_write(sobject:name()..":net_spawn() Moving dead body...")
+		--alun_utils.debug_write(se_obj:name()..":net_spawn() Moving dead body...")
 		release_body_manager.get_release_body_manager():moving_dead_body(self.object,true)
-		--alun_utils.debug_write(sobject:name()..":net_spawn() Moving dead body done")
+		--alun_utils.debug_write(se_obj:name()..":net_spawn() Moving dead body done")
 		
 		if not (self.loaded) then
 			local ini = self.object:spawn_ini()
@@ -85,9 +101,9 @@ function motivator_binder:net_spawn(sobject)
 		end
 		
 		-- fix for 'Invalid vertex for object'
-		if not (sobject.m_level_vertex_id < 4294967295 and self.object:accessible(sobject.m_level_vertex_id)) then
-			printf("npc %s has invalid spawning vertex, correcting",sobject:name())
-			local v_id = self.object:accessible_nearest(level.vertex_position(sobject.m_level_vertex_id), vector())
+		if not (se_obj.m_level_vertex_id < 4294967295 and self.object:accessible(se_obj.m_level_vertex_id)) then
+			printf("npc %s has invalid spawning vertex, correcting",se_obj:name())
+			local v_id = self.object:accessible_nearest(level.vertex_position(se_obj.m_level_vertex_id), vector())
 			self.object:set_npc_position(level.vertex_position(v_id))
 		end
 		
@@ -125,15 +141,16 @@ function motivator_binder:net_spawn(sobject)
 	
 	xr_reach_task.add_reach_task_action(self.object)
 	
-	if (utils.se_obj_load_var(sobject.id,sobject:name(),"companion")) then
+	local squad = se_obj.group_id and se_obj.group_id ~= 65535 and alife_object(se_obj.group_id)
+	if (squad and axr_companions.companion_squads[squad.id]) then
 		axr_companions.setup_companion_logic(self.object,self.st,self.loaded)
 	else
 		self.object:disable_info_portion("npcx_is_companion")
 		self.object:disable_info_portion("npcx_beh_cannot_dismiss")
-		smart_terrain.setup_gulag_and_logic_on_spawn(self.object, self.st, sobject, modules.stype_stalker, self.loaded)
+		smart_terrain.setup_gulag_and_logic_on_spawn(self.object, self.st, se_obj, modules.stype_stalker, self.loaded)
 	end
 	
-	local id = sobject.id
+	local id = se_obj.id
 	local force_set_position
 	
 	if (db.offline_objects[id] and db.offline_objects[id].level_vertex_id) then
@@ -155,10 +172,10 @@ function motivator_binder:net_spawn(sobject)
 	self.object:group_throw_time_interval(2000)
 
 	-- start [Alundaio]
-	SendScriptCallback("npc_on_net_spawn",self.object,sobject)
+	SendScriptCallback("npc_on_net_spawn",self.object,se_obj)
 	-- End [Alundaio]
 
-	--alun_utils.debug_write(sobject:name()..":net_spawn() end")
+	--alun_utils.debug_write(se_obj:name()..":net_spawn() end")
 	return true
 end
 function motivator_binder:on_item_take(item)
@@ -205,6 +222,7 @@ function motivator_binder:net_destroy()
 	xr_sound.stop_sounds_by_id(self.object:id())
 	
 	if (self.object:is_talking()) then
+		db.actor:stop_talk()
 		self.object:stop_talk()
 	end
 
@@ -231,7 +249,11 @@ function motivator_binder:net_destroy()
 
 	db.del_obj(self.object)
 	db.delete_enemy(self.object)
-	alife_storage_manager.get_state().game_object[self.object:id()] = nil
+	
+	local m_data = alife_storage_manager.get_state()
+	if (m_data.game_object) then
+		m_data.game_object[self.object:id()] = nil
+	end
 	
 	trade_manager.on_npc_death(self.object)
 	
@@ -252,7 +274,7 @@ function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_i
 		xr_statistic.set_best_weapon(amount)
 	end
 
-	if self.st.active_section then
+	if (self.st.active_section and self.st.active_scheme) then
 		xr_logic.issue_event(obj, self.st[self.st.active_scheme], "hit_callback", obj, amount, local_direction, who, bone_index)
 	end
 	if self.st.combat_ignore then
@@ -316,7 +338,7 @@ function motivator_binder:death_callback(victim, who)
 		utils.save_var(who,"s_kill_count",count)
 		
 		-- npc_statistic
-		local se_obj = alife():object(who:id())
+		local se_obj = alife_object(who:id())
 		if (se_obj) then
 			local m_data = alife_storage_manager.get_se_obj_state(se_obj)
 			if (m_data) then
@@ -362,6 +384,9 @@ function motivator_binder:use_callback(obj, who)
 	--alun_utils.debug_write(strformat("motivator_binder:use_callback %s",obj and obj:name()))
 	if not obj:alive() then
 		death_manager.create_release_item(obj)
+		if lootmoney then
+			lootmoney.lootmoney(obj)
+        end
 		return
 	end
 	trade_manager.update(obj)
@@ -369,7 +394,7 @@ function motivator_binder:use_callback(obj, who)
 	xr_meet.notify_on_use(obj, who)
 	dialog_manager.disabled_phrases[obj:id()] = nil
 	dialog_manager.RandomVal = math.random(1,3)
-	if self.st.active_section then
+	if (self.st.active_scheme) then
 		xr_logic.issue_event(obj, self.st[self.st.active_scheme], "use_callback", obj, who)
 	end
 	-- start [Alundaio]
@@ -564,10 +589,11 @@ function motivator_binder:load_state()
 	st.loaded_gulag_name = state.xr_logic.gulag_name or ""
 	st.activation_time = state.xr_logic.activation_time and state.xr_logic.activation_time + time_global() or time_global()
 	st.activation_game_time = state.xr_logic.activation_game_time or game.get_game_time()
+	state.xr_logic = nil
 	xr_sound.npc_load_state(id,state)
 	trade_manager.load_state(id,state)
 	if (state.pstor_all) then
-		--db.storage[id].pstor = state.pstor_all
+		db.storage[id].pstor = state.pstor_all
 		state.pstor_all = nil
 	end
 

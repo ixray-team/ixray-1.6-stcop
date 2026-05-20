@@ -53,8 +53,9 @@ function action_walker_activity:reset_scheme(loading, npc)
 	if self.st.path_look_info == nil then
 		self.st.path_look_info = utils.path_parse_waypoints(self.st.path_look)
 	end
-
-	self.move_mgr:reset(self.st.path_walk, self.st.path_walk_info, self.st.path_look, self.st.path_look_info, self.st.team, self.st.suggested_state)
+	if (self.move_mgr) then
+		self.move_mgr:reset(self.st.path_walk, self.st.path_walk_info, self.st.path_look, self.st.path_look_info, self.st.team, self.st.suggested_state)
+	end
 end
 function action_walker_activity:execute()
 	action_base.execute(self)

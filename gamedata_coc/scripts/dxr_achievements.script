@@ -14,16 +14,12 @@ end
 -- Returns how many achievements are available.
 function get_achievements_available()
 	local available = 14
+	
 	-- 'Duga Free' and 'Wishful Thinking'.
 	if (has_alife_info("story_mode_disabled")) then
 		available = available - 2
 	end
-	-- 'Radiotherapy'.
-	if (character_community(db.actor) == "actor_monolith"
-	or (character_community(db.actor) == "actor_zombied" and
-	not has_alife_info("actor_made_wish_immortal"))) then
-		available = available - 1
-	end
+	
 	return available
 end
 
@@ -282,7 +278,6 @@ end
 -- Completionist.
 -- Requires all other achievements to be unlocked.
 -- Exception to 'Duga Free' if story mode is disabled.
--- Exception to 'Radiotherapy' if Monolith or Zombified player.
 -- Exception to 'Wishful Thinking' if story mode is disabled.
 function completionist_requirements()
 	return (
@@ -293,10 +288,7 @@ function completionist_requirements()
 			and (has_alife_info("achieved_infopreneur"))
 			and (has_alife_info("achieved_mechanized_warfare"))
 			and (has_alife_info("achieved_patriarch"))
-			and (has_alife_info("achieved_radiotherapy")
-				 or character_community(db.actor) == "actor_monolith"
-				 or (character_community(db.actor) == "actor_zombied" and
-				 not has_alife_info("actor_made_wish_immortal")))
+			and (has_alife_info("achieved_radiotherapy"))
 			and (has_alife_info("achieved_rag_and_bone"))
 			and (has_alife_info("achieved_silver_or_lead"))
 			and (has_alife_info("achieved_tourist"))
@@ -341,10 +333,10 @@ function heavy_pockets_requirements()
 end
 
 -- Infopreneur.
--- Requires player to deliver 50 PDAs.
+-- Requires player to deliver 25 PDAs.
 function infopreneur_requirements()
 	return (
-				(xr_statistic.actor_statistic.pdas_delivered >= 50)
+				(xr_statistic.actor_statistic.pdas_delivered >= 25)
 		)
 end
 
@@ -375,14 +367,9 @@ end
 
 -- Radiotherapy.
 -- Requires 25 emissions and 25 psi-storms to be survived.
--- Requires the player not be in the Monolith of Zombified factions.
--- Exception if the player converted to Zombified faction via immortality wish.
 function radiotherapy_requirements()
 	return (
-				(not character_community(db.actor) == "actor_monolith")
-			and (not character_community(db.actor) == "actor_zombied"
-			or   has_alife_info("actor_made_wish_immortal"))
-			and (xr_statistic.actor_statistic.surges >= 25)
+				(xr_statistic.actor_statistic.surges >= 25)
 			and (xr_statistic.actor_statistic.storms >= 25)
 		)
 end
@@ -503,10 +490,6 @@ function patriarch_rewards()
 	db.actor:give_info_portion("achieved_patriarch")
 	news_manager.send_tip(db.actor, "st_achievement_14_unlock", nil, "patriarch", nil, nil)
 	xr_statistic.inc_achievement("patriarch")
-	
-	-- Works around needing to save and reload.
-	-- Allows larger squads to be recruited immediately.
-	axr_companions.on_game_load()
 end
 
 -- Radiotherapy.

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <game_dialogs>
-<!----------------------------- zat_b22_stalker_medic --------->
     <dialog id="zat_b22_stalker_medic_start">
         <phrase_list>
             <phrase id="0">
@@ -554,7 +553,6 @@
         </phrase_list>
     </dialog>
     <dialog id="zat_b7_bandit_boss_sultan_about">
-        <dont_has_info>zat_b30_sultan_loose</dont_has_info>
         <phrase_list>
             <phrase id="1113">
                 <text>zat_b7_bandit_boss_sultan_about_1113</text>
@@ -2948,11 +2946,9 @@
         </phrase_list>
     </dialog>
     <dialog id="zat_b7_bandit_boss_sultan_intro">
-        <dont_has_info>zat_b7_bandit_boss_sultan_intro</dont_has_info>
         <phrase_list>
             <phrase id="0">
                 <text>zat_b7_bandit_boss_sultan_intro_0</text>
-                <give_info>zat_b7_bandit_boss_sultan_intro</give_info>
             </phrase>
         </phrase_list>
     </dialog>
@@ -3110,7 +3106,7 @@
             </phrase>
         </phrase_list>
     </dialog>
-<!------------------- zat_b3_stalker_tech ------------------------------->
+
     <dialog id="zat_b3_stalker_tech_start">
         <phrase_list>
             <phrase id="12">

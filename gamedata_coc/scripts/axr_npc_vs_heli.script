@@ -362,16 +362,14 @@ end
 function add_to_binder(npc,ini,scheme,section,storage,temp)
 	local manager = npc:motivation_action_manager()
 	
-	if (not npc:alive()) or (character_community(npc) == "zombied" or npc:section() == "actor_visual_stalker") then
+	if (not npc:alive()) or (npc:character_community() == "zombied" or npc:section() == "actor_visual_stalker") then
 		manager:add_evaluator(evaid,property_evaluator_const(false))
-		temp.needs_configured = false
-		return 
+		--temp.needs_configured = false
+	else
+		manager:add_evaluator(evaid,evaluator_npc_vs_heli(npc,"eva_npc_vs_heli",storage))
 	end
-
-	manager:add_evaluator(evaid,evaluator_npc_vs_heli(npc,"eva_npc_vs_heli",storage))
 	
 	temp.action = action_npc_vs_heli(npc,"act_npc_vs_heli",storage)
-	
 	temp.action:add_precondition(world_property(stalker_ids.property_alive,true))
 	temp.action:add_precondition(world_property(stalker_ids.property_danger, false))
 	temp.action:add_precondition(world_property(stalker_ids.property_anomaly,false))

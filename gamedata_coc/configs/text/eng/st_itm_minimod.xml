@@ -63,4 +63,10 @@
 	<string id="st_repair_mod_message_box_condition_to_high">
 		<text>These tools aren't enough to repair this item further.</text>
 	</string>
+	<string id="st_itm_stash">
+		<text>stash</text>
+	</string>
+	<string id="st_itm_stash_of_character">
+		<text>%s's stash</text>
+	</string>
 </string_table>

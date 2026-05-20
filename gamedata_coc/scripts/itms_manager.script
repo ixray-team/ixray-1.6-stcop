@@ -3,10 +3,6 @@
 --
 -- by Alundaio
 ---------------------------------
---[[
-Copyright (C) 2012 Alundaio
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License-]]
---]]
 local ini = ini_file("plugins\\itms_manager.ltx")
 	--Backpack stash mod
 	local BackPackStashEnable = ini:r_bool_ex("backpack_stash","enable",false)
@@ -187,13 +183,13 @@ function on_item_drag_dropped(itm1,itm2,from_slot,to_slot)
 				itm1:set_remaining_uses(r)
 			end
 			if (r <= 0) then 
-				local se_obj = alife():object(itm1:id())
+				local se_obj = alife_object(itm1:id())
 				if (se_obj) then 
 					alife():release(se_obj,true)
 				end
 			end
 		else 
-			local se_obj = alife():object(itm1:id())
+			local se_obj = alife_object(itm1:id())
 			if (se_obj) then 
 				alife():release(se_obj,true)
 			end
@@ -267,7 +263,7 @@ function actor_on_item_drop(obj)
 		end
 
 		utils.save_var(db.actor,"actor_itm_backpack_id",se_itm.id)
-		alife():release( alife():object(obj:id()) )
+		alife():release( alife_object(obj:id()) )
 	end
 	
 	if (db.actor:has_info("actor_made_wish_for_riches")) then 
@@ -346,7 +342,7 @@ function actor_on_item_use(obj)
 			if not (BackPackStashEnableUi) then
 				local count = utils.load_var(db.actor, level_name.."bpk_count", 0)
 				utils.save_var(db.actor, level_name.."bpk_count", count+1)
-				level.map_add_object_spot_ser(se_obj.id, BackPackStashSpot, level_name.." stash "..count+1)
+				level.map_add_object_spot_ser(se_obj.id, BackPackStashSpot, game.translate_string(level_name).." "..game.translate_string("st_itm_stash").." "..count+1)
 			else
 				local hud = get_hud()
 				if (hud) then
@@ -395,7 +391,7 @@ function actor_on_item_use(obj)
 
 		local se_obj = alife():create("inv_actor_backpack",db.actor:position(),db.actor:level_vertex_id(),db.actor:game_vertex_id())
 
-		level.map_add_object_spot_ser(se_obj.id, ActorBackPackSpot, db.actor:character_name().."'s backpack")
+		level.map_add_object_spot_ser(se_obj.id, ActorBackPackSpot, strformat(game.translate_string("st_itm_stash_of_character"),db.actor:character_name()))
 
 		utils.save_var(db.actor,"actor_inv_backpack_id",se_obj.id)
 	end
@@ -451,7 +447,7 @@ function check_actor_backpack()
 		return
 	end
 
-	local se_obj = alife():object(id)
+	local se_obj = alife_object(id)
 	if not (se_obj) then 
 		return 
 	end
@@ -514,7 +510,7 @@ function actor_on_item_take_from_box(box,obj)
 			level.map_remove_object_spot(box:id(), BackPackStashSpot)
 			alife():create("itm_backpack",db.actor:position(),db.actor:level_vertex_id(),db.actor:game_vertex_id(),db.actor:id())
 
-			alife():release( alife():object(box:id()) ,true)
+			alife():release( alife_object(box:id()) ,true)
 		end
 	end
 
@@ -528,7 +524,7 @@ function actor_on_item_take_from_box(box,obj)
 
 			level.map_remove_object_spot(box:id(), BackPackActorSpot)
 
-			alife():release( alife():object(box:id()) ,true)
+			alife():release( alife_object(box:id()) ,true)
 
 			alife():create("itm_actor_backpack",db.actor:position(),db.actor:level_vertex_id(),db.actor:game_vertex_id(),db.actor:id())
 

@@ -238,26 +238,26 @@ function simulation_board:assign_squad_to_smart(squad, smart_id)
 	end
 end
 
+local community_groups = {}
 -- установить squad и group в соответствии с работой
-function simulation_board:setup_squad_and_group(obj)
+function simulation_board:setup_squad_and_group(se_obj)
 	--alun_utils.debug_write(strformat("simulation_board:setup_squad_and_group %s",obj and obj:name()))
 	local sim = alife()
-
-	--' —квад берем из смарта.
-	local squad = obj.group_id and obj.group_id ~= 65535 and sim:object(obj.group_id)
+	local squad = se_obj.group_id and se_obj.group_id ~= 65535 and sim:object(se_obj.group_id)
 	if not (squad) then
-		change_team_squad_group(obj, obj.team, 0, obj.group)
+		change_team_squad_group(se_obj, se_obj.team, se_obj.squad, 0)
 		return
 	end
 	
-	local smart = squad.assigned_target_id and sim:object(squad.assigned_target_id) or squad.smart_id and sim:object(squad.smart_id)
-	local obj_sq = smart and smart.squad_id or obj.squad or 0
-	
-	change_team_squad_group(obj, obj.team, obj_sq, obj.group)
+	local smart = squad.smart_id and sim:object(squad.smart_id)
+	change_team_squad_group(se_obj, se_obj.team, smart and smart.squad_id or se_obj.squad, 1)
 end
 
 --' «аполнение стартового расположени€
 function simulation_board:fill_start_position()
+
+	SendScriptCallback("fill_start_position")
+	
 	if self.start_position_filled == true then
 		return
 	end

@@ -40,13 +40,13 @@ local function npc_on_update(npc,st)
 		return
 	end
 	
-	if not (st.victim_surrender) or (st.victim_surrender ~= 0 and st.victim_surrender ~= 65535) then -- override NPC roll
+	if (st.victim_surrender == nil or st.victim_surrender == 65534) then -- override NPC roll
 		local active_item = db.actor:active_item()
 		if not (active_item and IsWeapon(active_item)) then
 			return
 		end
 
-		if (character_community(npc) == "zombied" or character_community(npc) == "monolith") then
+		if (npc:character_community() == "zombied" or character_community(npc) == "monolith") then
 			return
 		end
 
@@ -203,6 +203,9 @@ end
 
 function act_kill_wounded:reset()
 	self.st.timer = nil
+	if (self.st.vertex_id) then 
+		db.used_level_vertex_ids[self.st.vertex_id] = nil
+	end
 	self.st.vertex_id = nil 
 	self.st.vertex_position = nil
 end 
@@ -226,7 +229,10 @@ function act_kill_wounded:execute()
 
 	local dist = npc:position():distance_to(vo:position())
 	if (dist < MinDistance) then
-		self:reset()
+		--self:reset()
+		state_mgr.set_state(npc,"raid",nil,nil,{look_object = vo})
+		alun_utils.try_go_backward(npc,6)
+		return
 	end
 	
 	local dst = db.storage[npc:id()]
@@ -288,8 +294,9 @@ function act_kill_wounded:begin_kill_wounded(vo)
 	
 	if not (vst.victim_surrender) then
 		if (character_community(vo) ~= "monolith" and character_community(vo) ~= "zombied") then
-			if (CauseSurrenderCommunities[character_community(self.object)] and SurrenderChance > (math.random(1,100)/100) ) then
+			if (CauseSurrenderCommunities[character_community(self.object)] and SurrenderChance >= (math.random(1,100)/100) ) then
 				vst.victim_surrender = self.object:id()
+				printf("victim surrender to %s",vst.victim_surrender)
 			else
 				vst.victim_surrender = 65534
 			end
@@ -352,14 +359,13 @@ end
 function add_to_binder(npc,ini,scheme,section,st,temp)
 	local manager = npc:motivation_action_manager()
 
-	if (not npc:alive()) or (Enable ~= true or character_community(npc) == "zombied" or npc:section() == "actor_visual_stalker") then
+	if (not npc:alive()) or (Enable ~= true or npc:character_community() == "zombied" or npc:section() == "actor_visual_stalker") then
 		manager:add_evaluator(evaid,property_evaluator_const(false))
-		temp.needs_configured = false
-		return 
-	end 
+		--temp.needs_configured = false
+	else 
+		manager:add_evaluator(evaid,eva_kill_wounded("eva_kill_wounded",st))
+	end
 	
-	manager:add_evaluator(evaid,eva_kill_wounded("eva_kill_wounded",st))
-
 	temp.action = act_kill_wounded("act_kill_wounded",st)
 	
 	local wp = world_property
@@ -404,9 +410,9 @@ function configure_actions(npc,ini,scheme,section,stype,temp)
 	end
 end
 
-function add_common_precondition(action)
-	action:add_precondition(world_property(evaid,false))
-end
+-- function add_common_precondition(action)
+	-- action:add_precondition(world_property(evaid,false))
+-- end
 
 function is_under_kill_wounded(npc)
 	local mgr = npc:motivation_action_manager()

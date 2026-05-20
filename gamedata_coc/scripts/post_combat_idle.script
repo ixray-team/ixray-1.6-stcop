@@ -21,20 +21,21 @@ function evaluator_combat_enemy:evaluate()
 	end
 	
 	local best_enemy = npc:best_enemy()
-
 	if (best_enemy and self.st.timer) then
 		self.st.timer = nil
 	end
 
 	local tg = time_global()
 	if (best_enemy == nil and self.st.timer == nil) then
-		if (xr_conditions.surge_started() ~= true and db.storage[npc:id()].active_scheme ~= "camper") then
+		if (npc:has_info("npcx_is_companion")) then
+			--self.st.timer = tg
+		elseif (xr_conditions.surge_started() ~= true and db.storage[npc:id()].active_scheme ~= "camper") then
 			local overrides = db.storage[npc:id()].overrides
 			local min = (overrides and overrides.min_post_combat_time*1000) or 20000
 			local max = (overrides and overrides.max_post_combat_time*1000) or 25000
 			self.st.timer = tg + math.random(min, max)
 		else 
-			self.st.timer = 0
+			--self.st.timer = tg
 		end
  	end
 
@@ -43,27 +44,12 @@ function evaluator_combat_enemy:evaluate()
 	end
 	
 	if (xr_danger.has_danger(npc)) then 
-		return false 
+		return false
 	end
 	
 	if (tg < self.st.timer) then
-		-- Fix freeze after combat or continual corpse shooting after combat
-		-- Why? Because action_sudden_attack seems to be default action when no other combat action is active
-		-- Sometimes post combat idle action doesn't execute after some actions. I don't know why. I tried removing all the preconditions (except property_enemy) to no avail.
-		local mgr = npc:motivation_action_manager()
-		if (mgr and mgr:initialized()) then 
-			local combat_action = mgr:action(stalker_ids.action_combat_planner)
-			local combat_action_planner = cast_planner(combat_action)
-			if (combat_action_planner and combat_action_planner:initialized()) then
-				local cid = combat_action_planner:current_action_id()
-				if (cid == nil or cid == stalker_ids.action_sudden_attack) then
-					self.st.timer = 0
-					return false
-				end 
-			end
-		end
 		return true
-	end 
+	end
 
 	if not (self.st.animation) then
 		return false

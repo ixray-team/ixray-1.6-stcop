@@ -1,7 +1,4 @@
 --[[
-Copyright (C) 2012-2015 Alundaio
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
-
 Callback and module manager for easy plug-in based script management
 by Alundaio
 
@@ -14,9 +11,9 @@ add a on_game_start function
 config = ini_file_ex("axr_options.ltx",true)
 
 -- load default rspec when axr_options created first time
-if not (config:section_exist("temp")) then
+if not (config:section_exist("graphics")) then
 	get_console():execute("cfg_load " .. getFS():update_path('$game_config$', '').."rspec_default.ltx")
-	config:w_value("temp","rspec_default",true)
+	config:w_value("graphics","rspec_default",true)
 	config:save()
 end
 -------------------------------------------------------------------------------------------------
@@ -81,13 +78,18 @@ local intercepts = {
 
 	-- sim_board.script
 	squad_on_npc_creation		= {},
+	fill_start_position			= {},
 	
 	-- sim_squad_scripted.script
 	squad_on_npc_death			= {},
 	squad_on_update				= {},
 	squad_on_add_npc			= {},
+	squad_on_register			= {},
 	squad_on_unregister			= {},
 
+	-- smart_terrain.script 
+	smart_terrain_on_update		= {},
+	
 	-- xr_logic.script
 	on_pstor_save_all			= {},
 	on_pstor_load_all			= {},
@@ -128,8 +130,13 @@ local intercepts = {
 	actor_item_to_ruck			= {},
 	actor_item_to_slot			= {}, 
 	
+	-- level_input.script 
+	level_input_on_key_press	= {},
+	
 	-- pda.script
-	actor_on_leave_dialog		= {},
+	actor_on_leave_dialog			= {},
+	map_spot_menu_add_property		= {},
+	map_spot_menu_property_clicked 	= {},
 
 	-- bind_monster.script
 	monster_on_update				= {},

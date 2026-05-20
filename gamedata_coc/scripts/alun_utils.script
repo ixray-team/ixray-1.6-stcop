@@ -1,6 +1,5 @@
 --[[
-	Copyright (C) 2014 Alundaio
-	This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
+	
 --]]
 
 function get_inv_name(section)
@@ -41,7 +40,11 @@ function print_table(tbl,header,format_only)
 			if (type(v) == "table") then
 				txt = txt .. tab(depth) .. key .. " =\n"..tab(depth).."{\n"
 				depth = depth + 1
-				table_to_string(v,tab(depth))
+				
+				if (depth < 4) then
+					table_to_string(v)
+				end 
+				
 				depth = depth - 1
 				txt = txt .. tab(depth) .. "}"
 			elseif (type(v) == "number" or type(v) == "boolean") then
@@ -87,14 +90,14 @@ function print_table(tbl,header,format_only)
 end
 
 function valid_vertex(npc,vid)
-	return vid and npc:accessible(vid) and vid < 4294967295 and vid
+	return vid and vid < 4294967295 and npc:accessible(vid) and vid
 end
 
 function accessible(npc,point)
 	if (type(point) == "number") then
-		return npc:accessible(point) and point < 4294967295
+		return point < 4294967295 and npc:accessible(point)
 	end
-	return npc:accessible(point) and level.vertex_id(point) < 4294967295
+	return level.vertex_id(point) < 4294967295 and npc:accessible(point)
 end
 
 function is_in_same_squad(obj,npc)
@@ -454,7 +457,7 @@ function nearest_object(s,offline)
 	local min_dist
 	local is_match
 	for i=1, 65535 do
-		local obj = alife():object(i)
+		local obj = alife_object(i)
 		if (obj) then
 			is_match = false
 			if (type(s) == "string" and string.find(obj:name(),s)) then
@@ -837,7 +840,7 @@ end
 function assign_squad_to_smart(squad_id, id)
 	local sim = SIMBOARD
 	if not (sim) then return end
-	local squad = alife():object(squad_id)
+	local squad = alife_object(squad_id)
 	if not (squad) then return end
 	if (squad.smart_id) then
 		sim:exit_smart(squad,squad.smart_id)

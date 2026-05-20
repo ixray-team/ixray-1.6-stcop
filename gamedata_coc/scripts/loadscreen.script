@@ -1,4 +1,4 @@
-local tip_count = 24
+local tip_count = 25
 
 function get_tip_number(level_name)
 	math.randomseed(os.time())

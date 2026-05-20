@@ -83,7 +83,7 @@ function generic_physics_binder:net_destroy()
 	if on_offline_condlist ~= nil then
 		xr_logic.pick_section_from_condlist(db.actor, self.object, on_offline_condlist)
 	end
-	if self.particle ~= nil then
+	if self.particle and self.particle:playing() then
 		self.particle:stop()
 	end
 	db.del_obj(self.object)
@@ -137,25 +137,32 @@ function generic_physics_binder:hit_callback(obj, amount, local_direction, who, 
 end
 
 function generic_physics_binder:death_callback(victim, who)
-	if self.st.active_section then
-		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "death_callback", victim, who)
+	--alun_utils.debug_write(strformat("generic_physics_binder:death_callback %s BEGIN",victim:name()))
+	if (self.st.active_section and self.st.active_scheme) then
+		xr_logic.issue_event(victim, self.st[self.st.active_scheme], "death_callback", victim, who)
 	end
 
-	if self.particle ~= nil then
+	if self.particle and self.particle:playing() then
 		self.particle:stop()
 	end
 	
-	local ini = self.object:spawn_ini()
+	local ini = victim:spawn_ini()
 	if (ini and ini:section_exist("drop_box")) then
-		xr_box.get_box_manager():spawn_items(self.object,who,ini)
-	elseif ((math.random(1,100)/100) < 0.5) then
-		local visual = self.object:get_visual_name()
-		if (visual == [[dynamics\box\box_metall_01]]) then 
-			xr_box.get_box_manager():spawn_items(self.object,who)
-		elseif (visual == [[dynamics\box\box_wood_01]]) then 
-			xr_box.get_box_manager():spawn_items(self.object,who)
-		elseif (visual == [[dynamics\box\box_wood_02]]) then 
-			xr_box.get_box_manager():spawn_items(self.object,who)
+		if (who and who:id() == 0) then 
+			xr_statistic.inc_counter("boxes_smashed")
+		end
+		xr_box.get_box_manager():spawn_items(victim,who,ini)
+	else
+		local visual = victim:get_visual_name()
+		local is_box = (visual == [[dynamics\box\box_metall_01]] or visual == [[dynamics\box\box_wood_01]] or visual == [[dynamics\box\box_wood_02]])
+		if (is_box) then
+			if (who and who:id() == 0) then 
+				xr_statistic.inc_counter("boxes_smashed")
+			end
+			if ((math.random(1,100)/100) < 0.5) then
+				xr_box.get_box_manager():spawn_items(victim,who)
+			end
 		end
 	end
+	--alun_utils.debug_write(strformat("generic_physics_binder:death_callback %s END",victim:name()))
 end

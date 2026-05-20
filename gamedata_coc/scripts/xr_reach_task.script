@@ -8,20 +8,20 @@
 --	—хема патруль дл€ reach_task_location.
 ----------------------------------------------------------------------------------------------------------------------
 local formations = {
-										 { dir = vector ():set (0.7, 0, -.5), dist = 1.2 },
-										 { dir = vector ():set (-0.7, 0, -.5), dist = 1.2 },
-										 { dir = vector ():set (0.4, 0, -1), dist = 2.4 },
-										 { dir = vector ():set (-0.4, 0, -1), dist = 2.4 },
-										 { dir = vector ():set (0.7, 0, -1), dist = 3.6 },
-										 { dir = vector ():set (-0.7, 0, -1), dist = 3.6 },
-										 { dir = vector ():set (0.7, 0, -1), dist = 4.8 },
-										 { dir = vector ():set (-0.7, 0, -1), dist = 4.8 },
-										 { dir = vector ():set (0.7, 0, -1), dist = 6 },
-										 { dir = vector ():set (-0.7, 0, -1), dist = 6 },
-										 { dir = vector ():set (0.7, 0, -1), dist = 7.2 },
-										 { dir = vector ():set (-0.7, 0, -1), dist = 7.2 },
-										 { dir = vector ():set (0.7, 0, -1), dist = 8.4 },
-										 { dir = vector ():set (-0.7, 0, -1), dist = 8.4}
+										 {vector ():set (0.7, 0, -.5), 1.2 },
+										 {vector ():set (-0.7, 0, -.5), 1.2 },
+										 {vector ():set (0.4, 0, -1), 2.4 },
+										 {vector ():set (-0.4, 0, -1), 2.4 },
+										 {vector ():set (0.7, 0, -1), 3.6 },
+										 {vector ():set (-0.7, 0, -1), 3.6 },
+										 {vector ():set (0.7, 0, -1), 4.8 },
+										 {vector ():set (-0.7, 0, -1), 4.8 },
+										 {vector ():set (0.7, 0, -1), 6 },
+										 {vector ():set (-0.7, 0, -1), 6 },
+										 {vector ():set (0.7, 0, -1), 7.2 },
+										 {vector ():set (-0.7, 0, -1), 7.2 },
+										 {vector ():set (0.7, 0, -1), 8.4 },
+										 {vector ():set (-0.7, 0, -1), 8.4}
 										 }
 local function get_npc_command(npc)
 	local squad = get_object_squad(npc)
@@ -54,8 +54,8 @@ local function get_npc_command(npc)
 		end
 	end
 	
-	local dir_s = formations[_index].dir
-	local dist_s = formations[_index].dist
+	local dir_s = formations[_index][1]
+	local dist_s = formations[_index][2]
 
 	local angle = yaw_degree(dir_s, vector():set(0, 0, 1))
 	local vvv = vector_cross(dir_s, vector():set(0, 0, 1))
@@ -151,6 +151,10 @@ end
 
 function action_reach_task_location:finalize()
 	self.object:set_movement_selection_type(game_object.alifeMovementTypeRandom)
+	if (self.st.animation) then
+		self.st.animation:set_state(nil,true)
+		self.st.animation = nil
+	end
 	action_base.finalize(self)
 end
 
@@ -160,7 +164,7 @@ function action_reach_task_location:single_execute(se_obj)
 	npc:set_mental_state(anim.free)
 	npc:set_movement_type(move.walk)
 	
-	local smart = se_obj.m_smart_terrain_id and se_obj.m_smart_terrain_id ~= 65535 and alife():object(se_obj.m_smart_terrain_id)
+	local smart = se_obj.m_smart_terrain_id and se_obj.m_smart_terrain_id ~= 65535 and alife_object(se_obj.m_smart_terrain_id)
 	if (smart == nil or npc:is_talking()) then
 		npc:set_movement_type(move.stand)
 		return 
@@ -248,7 +252,7 @@ function action_reach_task_location:commander_execute(squad)
 	
 	local squad_target = simulation_objects.get_sim_obj_registry().objects[squad.assigned_target_id]
 	if squad_target == nil and squad:get_script_target() ~= nil then
-	 	squad_target = alife():object(squad.assigned_target_id)
+	 	squad_target = alife_object(squad.assigned_target_id)
 	end
 	
 	if (squad_target == nil) then 
@@ -333,7 +337,7 @@ function action_reach_task_location:soldier_execute(squad)
 	
 	local squad_target = simulation_objects.get_sim_obj_registry().objects[squad.assigned_target_id]
 	if squad_target == nil and squad:get_script_target() ~= nil then
-		squad_target = alife():object(squad.assigned_target_id)
+		squad_target = alife_object(squad.assigned_target_id)
 	end
 
 	local lvid,desired_direction = get_npc_command(npc)

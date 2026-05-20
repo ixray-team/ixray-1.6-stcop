@@ -1,9 +1,5 @@
 -- ui_itm_repair
 -- Alundaio
---[[
-Copyright (C) 2012 Alundaio
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License-]]
---]]
 -------------------------------------------------------------------
 class "load_item" (CUIListBoxItem)
 function load_item:__init(height) super(height)
@@ -222,7 +218,7 @@ function repair_ui:OnPartsListItemClicked()
 		return
 	end
 
-	local se_item = item.item_id and alife():object(item.item_id)
+	local se_item = item.item_id and alife_object(item.item_id)
 	if (se_item == nil or not db.actor:object(se_item:section_name())) then
 		self.list_box_parts:RemoveItem(item)
 		return
@@ -268,7 +264,7 @@ function repair_ui:OnListItemClicked()
 		return
 	end
 
-	local se_item = alife():object(item.item_id)
+	local se_item = alife_object(item.item_id)
 	if (se_item == nil or not db.actor:object(se_item:section_name())) then
 		self.list_box:RemoveItem(item)
 		return
@@ -342,7 +338,7 @@ function repair_ui:OnButton_repair()
 	end
 
 	if (self.use_condition and self.object and self.object:get_remaining_uses() <= 0) then 
-		local se_obj = alife():object(self.object:id())
+		local se_obj = alife_object(self.object:id())
 		if (se_obj) then 
 			alife():release(se_obj,true)
 		end
@@ -353,7 +349,7 @@ function repair_ui:OnButton_repair()
 		index = self.list_box_parts:GetSelectedIndex()
 		if (index ~= -1) then
 			item = self.list_box_parts:GetItemByIndex(index)
-			local se_parts = item and item.item_id and alife():object(item.item_id)
+			local se_parts = item and item.item_id and alife_object(item.item_id)
 			if (se_parts) then
 				local sec = se_parts:section_name()
 				bonus = system_ini():r_float_ex(sec,"repair_part_bonus") or self.part_bonus

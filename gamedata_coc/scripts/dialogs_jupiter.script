@@ -2,16 +2,13 @@
 function dm_ashot_and_yar_generate_dialog(a,b)
 	local npc = dialogs.who_is_npc(a,b)
 	local sid = story_objects.get_story_objects_registry():get_story_id(npc:id())
-	local text 
+	local text = {}
 	local target_name = ""
 	
 	if (sid == "jup_b19_freedom_yar") then 
-		text = { 	"You go tell %s to get his fat ass over here.",
-					"Doesn't he know I'm busy? Tell him to come over here.",
-					"I don't get paid for walking. Tell him to come to me.",
-					"What? Does he want a wheelchair? Go fetch %s for me.",
-					"Where is %s? I can't fix it until he brings it here.",
-		}
+		for i=1,5 do 
+			table.insert(text,"st_jup_yar_reply_"..i)
+		end
 		target_name = game.translate_string("jup_a6_freedom_trader_ashot_name")
 		
 		local tsk = task_manager.get_task_manager().task_info["jup_b19_freedom_yar_task_1"]
@@ -19,12 +16,9 @@ function dm_ashot_and_yar_generate_dialog(a,b)
 			tsk.stage = 0
 		end
 	elseif (sid == "jup_a6_freedom_trader_ashot") then 
-		text = { 	"If %s wants it, tell him to come over here and take it from me.",
-					"Come again? If he wants it, he comes and gets it. Okay?",
-					"You tell that balding bastard to drag himself over here.",
-					"I cannot leave my shop alone. He must come to me, 'eh?",
-					"Do I look like an errand boy? Tell %s to get it himself.",
-		}
+		for i=1,5 do 
+			table.insert(text,"st_jup_ashot_reply_"..i)
+		end
 		target_name = game.translate_string("jup_b19_freedom_yar_name")
 		
 		local tsk = task_manager.get_task_manager().task_info["jup_b19_freedom_yar_task_1"]
@@ -34,7 +28,7 @@ function dm_ashot_and_yar_generate_dialog(a,b)
 	end
 	
 	-- returns random text. Replaces %s in the string with message target's character name
-	return strformat (text[math.random(#text)],target_name)
+	return strformat (game.translate_string(text[math.random(#text)]),target_name)
 end
 
 function is_message_receiver(a,b)
@@ -856,16 +850,16 @@ end
 function jup_b6_stalker_dialog_precond(first_speaker, second_speaker)
 	--local npc = dialogs.who_is_npc(first_speaker, second_speaker)
 
-	se_npc = alife():object(npc:id())
+	se_npc = alife_object(npc:id())
 
 	if not(se_npc) then
 		return false
 	end
-	if alife():object(se_npc.group_id) == nil then
+	if alife_object(se_npc.group_id) == nil then
 		return false
 	end
 
-	local squad_name = alife():object(se_npc.group_id):section_name()
+	local squad_name = alife_object(se_npc.group_id):section_name()
 
 	if squad_name ~= nil and squad_name ~= "" then
 		if not has_alife_info("jup_b1_squad_is_dead") and squad_name == "jup_b1_stalker_squad" then

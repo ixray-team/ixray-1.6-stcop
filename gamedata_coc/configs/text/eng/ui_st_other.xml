@@ -49,7 +49,7 @@
 		<text>Loading saved game</text>
 	</string>
 	<string id="st_loading_sectors_portals">
-		<text>Loading sectors & portals</text>
+		<text>Loading sectors and portals</text>
 	</string>
 	<string id="st_loading_shaders">
 		<text>Loading shaders</text>
@@ -472,6 +472,9 @@
 	<string id="st_set_companion_to_follow_state">
 		<text>Follow mode</text>
 	</string>
+	<string id="st_set_companion_to_patrol_state">
+		<text>Patrol mode</text>
+	</string>	
 	<string id="st_move_to_point">
 		<text>Move to point</text>
 	</string>
@@ -484,6 +487,21 @@
 	<string id="st_disable_looting">
 		<text>Looting disabled</text>
 	</string>	
+	<string id="st_set_companion_to_loot_corpse_state">
+		<text>Can loot corpses</text>
+	</string>
+	<string id="st_set_companion_to_loot_items_state">
+		<text>Can pickup items</text>
+	</string>
+	<string id="st_companion_state_stealth_enabled">
+		<text>Companion stealth mode disabled</text>
+	</string>
+	<string id="st_companion_state_stealth_disabled">
+		<text>Companion stealth mode enabled</text>
+	</string>
+	<string id="st_set_companion_to_stealth_state">
+		<text>Stealth mode</text>
+	</string>
 	<!-- Sleep deprivation -->
 	<string id="st_sleep_awake">
 		<text>You do not need to rest</text>
@@ -536,5 +554,18 @@
 	</string>
 	<string id="st_lamp_equipped">
 		<text>Head lamp equipped</text>
+	</string>
+	
+	<string id="st_travel_event">
+		<text>It would be unsafe to travel with enemies nearby</text>
+	</string>
+	<string id="st_travel_overloaded">
+		<text>You are carrying too much weight</text>
+	</string>
+	<string id="st_travel_already_here">
+		<text>You are already at your destination</text>
+	</string>
+	<string id="st_wish_granted">
+		<text>WISH GRANTED!</text>
 	</string>
 </string_table>

@@ -138,8 +138,8 @@ end
 
 -- Called when the cursor focuses on an item.
 function on_item_focus(item)
-	local p = item:parent()
-	if not (p and p:id() == db.actor:id()) then 
+	local parent = item:parent()
+	if not (parent and parent:id() == db.actor:id()) then 
 		return 
 	end
 	
@@ -178,7 +178,7 @@ end
 
 -- Attaches an addon to the weapon.
 function attach_addon(item, weapon)
-	
+	-- Return if the addon or weapon aren't valid.
 	if not (item and weapon) then 
 		return 
 	end 
@@ -197,12 +197,12 @@ function attach_addon(item, weapon)
 	end
 	
 	-- Create objects for the 'before' and 'after' attachment weapons.
-	local old_weapon = alife():object(weapon:id())
+	local old_weapon = alife_object(weapon:id())
 	if (old_weapon) then
 		local new_weapon = alife():clone_weapon(old_weapon, child_section, old_weapon.position, old_weapon.m_level_vertex_id, old_weapon.m_game_vertex_id, old_weapon.parent_id, false)
 		if (new_weapon) then
 			-- Release the addon and old unmodified weapon.
-			local addon_object = alife():object(item:id())
+			local addon_object = alife_object(item:id())
 			alife():release(addon_object, true)
 			alife():release(old_weapon, true)
 			
@@ -214,8 +214,7 @@ end
 
 -- Detaches an addon from the weapon.
 function detach_addon(weapon)
-
-	-- Return if the item is invalid.
+	-- Return if the weapon is not valid.
 	if not (weapon) then
 		return
 	end
@@ -234,7 +233,7 @@ function detach_addon(weapon)
 	end
 	
 	-- Create objects for the 'before' and 'after' detachment weapons.
-	local old_weapon = alife():object(weapon:id())
+	local old_weapon = alife_object(weapon:id())
 	if (old_weapon) then
 		local new_weapon = alife():clone_weapon(old_weapon, parent_section, old_weapon.position, old_weapon.m_level_vertex_id, old_weapon.m_game_vertex_id, old_weapon.parent_id, false)
 		if (new_weapon) then

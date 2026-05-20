@@ -80,9 +80,6 @@ function sleep_dialog:__finalize()
 end
 
 function sleep_dialog:TestAndShow()
-	local bleeding = db.actor.bleeding > 0
-	local radiation = db.actor.radiation > 0
-	
 	if (self.ph_sleepbag_id and self.item_section) then
 		local sim = alife()
 		sim:create(self.item_section,db.actor:position(),0,0,0)
@@ -106,6 +103,9 @@ function sleep_dialog:TestAndShow()
 			end
 		end
 	end
+
+	local bleeding = db.actor.bleeding > 0
+	local radiation = db.actor.radiation > 0
 	
 	-- Prevent sleep if bleeding and/or iradiated.
 	if (bleeding or radiation) then
@@ -173,7 +173,9 @@ function sleep_dialog:OnButtonSleep()
 end
 
 function sleep_dialog:OnButtonCancel()
-	self:HideDialog()
+	if (self:IsShown()) then
+		self:HideDialog()
+	end
 	--db.actor:give_info_portion("tutorial_sleep")
 	disable_info("actor_is_sleeping")
 	disable_info("sleep_active")

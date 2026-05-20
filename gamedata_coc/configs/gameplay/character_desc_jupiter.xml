@@ -2287,16 +2287,6 @@
 #include "gameplay\character_drugs_4.xml"
     </supplies>
     <start_dialog>jup_a6_stalker_barmen_start_dialog</start_dialog>
-    <actor_dialog>jup_a6_stalker_barmen_pripyat_group</actor_dialog>
-    <actor_dialog>jup_a6_stalker_barmen_b4_monolith_squad_dialog</actor_dialog>
-    <actor_dialog>jup_a6_stalker_barmen_b202_about_stole</actor_dialog>
-    <actor_dialog>jup_a6_stalker_barmen_duty_founder_pda</actor_dialog>
-    <actor_dialog>jup_a6_stalker_barmen_jup_b217_pda_sell</actor_dialog>
-    <actor_dialog>jup_a6_stalker_barmen_about_sci_guards</actor_dialog>
-    <actor_dialog>jup_a6_stalker_barmen_about_sci_helpers</actor_dialog>
-    <actor_dialog>jup_a6_stalker_barmen_about_halfartefact_jup_b1</actor_dialog>
-    <actor_dialog>jup_a6_stalker_barmen_about_halfartefact_zat_b14</actor_dialog>
-    <actor_dialog>jup_a6_barmen_oasis_art_sell</actor_dialog>
     <actor_dialog>actor_break_dialog</actor_dialog>
 #include "gameplay\character_criticals_4.xml"
     </specific_character>

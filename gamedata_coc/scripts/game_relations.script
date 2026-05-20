@@ -103,7 +103,7 @@ function set_squad_goodwill(squad_id, new_goodwill)
 			printf("there is no story squad with id [%s]", squad_id)
 			return
 		else
-			squad = alife():object(squad_id)
+			squad = alife_object(squad_id)
 		end
 	end
 	if squad then
@@ -118,7 +118,7 @@ function set_squad_goodwill_to_npc(npc, squad_id, new_goodwill)
 		return 
 	end 
 	local goodwill = tonumber(new_relation) or new_relation == "enemy" and -1000 or new_relation == "friend" and 1000 or 0
-	local squad = squad_id and (get_story_squad(squad_id) or alife():object(squad_id))
+	local squad = squad_id and (get_story_squad(squad_id) or alife_object(squad_id))
 	if squad then
 		local sim = alife()
 		local se_npc = sim:object(npc:id())
@@ -139,7 +139,7 @@ end
 
 function set_squad_community_goodwill(squad_id, community, new_goodwill)
 	local goodwill = tonumber(new_relation) or new_relation == "enemy" and -1000 or new_relation == "friend" and 1000 or 0
-	local squad = squad_id and (get_story_squad(squad_id) or alife():object(squad_id))
+	local squad = squad_id and (get_story_squad(squad_id) or alife_object(squad_id))
 	if squad then
 		for k in squad:squad_members() do
 			local obj = db.storage[k.id] and db.storage[k.id].object or level.object_by_id(k.id)
@@ -198,7 +198,7 @@ function check_all_squad_members(squad_name, relation)
 end
 
 function get_squad_goodwill_to_actor_by_id(squad_id)
-	local squad = alife():object(squad_id)
+	local squad = alife_object(squad_id)
 	if(squad==nil) then
 		printf("No such squad %s in board", tostring(squad_id))
 		return false
@@ -298,7 +298,7 @@ function get_gulag_relation_actor(smart_name, relation)
 end
 
 function get_squad_relation_to_actor_by_id(squad_id)
-	local squad = alife():object(squad_id)
+	local squad = alife_object(squad_id)
 	if(squad==nil) then
 		printf("No such squad %s in board", tostring(squad_id))
 	end

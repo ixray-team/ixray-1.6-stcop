@@ -341,7 +341,13 @@ function pick_section_from_condlist(actor, npc, condlist, p)
 	
 	local infop_conditions_met
 	
-	local npc_id = npc and (type(npc.id) == "function" and npc:id() or npc.id) or nil
+	local npc_id -- npc not actor
+	if (npc) then 
+		npc_id = type(npc.id) == "function" and npc:id() or npc.id
+		if (npc_id == 0) then 
+			npc_id = nil 
+		end
+	end
 
 	for n, cond in pairs(condlist) do
 		infop_conditions_met = true -- изначально считаем, что все условия переключения удовлетворены
@@ -368,6 +374,12 @@ function pick_section_from_condlist(actor, npc, condlist, p)
 						break
 					end
 				end
+			elseif (npc_id and alife():has_info(npc_id,infop.name)) then
+				if not infop.required then
+					--'printf("FAILED: actor has infop '%s', which is NOT needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
+					infop_conditions_met = false -- инфопоршен есть, но он не должен присутствовать
+					break
+				end
 			elseif (has_alife_info(infop.name)) then
 				if not infop.required then
 					--'printf("FAILED: actor has infop '%s', which is NOT needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
@@ -375,12 +387,6 @@ function pick_section_from_condlist(actor, npc, condlist, p)
 					break
 				else
 					--'printf("PASSED: actor has infop '%s', which is needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
-				end
-			elseif (npc_id and alife():has_info(npc_id,infop.name)) then
-				if not infop.required then
-					--'printf("FAILED: actor has infop '%s', which is NOT needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
-					infop_conditions_met = false -- инфопоршен есть, но он не должен присутствовать
-					break
 				end
 			else
 				if infop.required then
@@ -553,12 +559,12 @@ end
 
 function is_active(npc, st)
 	if st.section == nil then
+		callstack()
 		printf("npc '%s': st.section is nil, active section is '%s'",npc:name(), utils.to_str(db.storage[npc:id()].active_section))
 		return false
 	end
-	local is_act = (st.section == db.storage[npc:id()].active_section)
 	-- Текущая секция активна и не сработало ни одно из условий переключения на другие секции
-	return is_act
+	return st.section == db.storage[npc:id()].active_section
 end
 
 
@@ -880,7 +886,8 @@ function cfg_get_overrides(ini, section, npc)
 	l.combat_ignore_keep_when_attacked = ini:r_bool_ex(section, "combat_ignore_keep_when_attacked",false)
 	l.combat_type       = cfg_get_condlist(ini, section, "combat_type", npc)
 	l.on_combat         = cfg_get_condlist(ini, section, "on_combat", npc)
-
+	l.allow_eat 		= ini:r_bool_ex(section, "allow_eat",true)
+	
 	local st = db.storage[npc:id()]
 	if ini:line_exist(st.section_logic, "post_combat_time") then
 		l.min_post_combat_time,l.max_post_combat_time = utils.r_2nums( ini, st.section_logic, "post_combat_time", 10, 15 )

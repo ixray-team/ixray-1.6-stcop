@@ -265,7 +265,7 @@ end
 
 function trigger_fetch_func(task_id)
 	--printf("triiger_fetch_func %s",task_id)
-	local fetch_func = xr_logic.parse_condlist(nil, "task_manager", "condlist", task_manager.task_ini:r_string_ex(task_id,"fetch_func") or "")
+	local fetch_func = xr_logic.parse_condlist(db.actor, "task_manager", "condlist", task_manager.task_ini:r_string_ex(task_id,"fetch_func") or "")
 	if (fetch_func) then 
 		xr_logic.pick_section_from_condlist(db.actor,db.actor,fetch_func)
 	end
@@ -282,7 +282,7 @@ end
 
 function is_task_giver_valid(tsk)
 	local id = tsk.task_giver_id
-	local se_obj = id and alife():object(id)
+	local se_obj = id and alife_object(id)
 	if not (se_obj) then 
 		--printf("is_task_giver_valid se_obj nil id=%s   %s",id,tsk.id)
 		return false 

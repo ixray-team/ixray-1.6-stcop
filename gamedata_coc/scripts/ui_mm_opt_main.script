@@ -84,6 +84,8 @@ function options_dialog:__init() super()
 		self.gameplay_scroll_v:AddWindow(elements[checks[i]],true) 
 		elements[checks[i]]:SetAutoDelete(false)
 	end
+
+	self.message_box = CUIMessageBoxEx()
 end
 
 function options_dialog:__finalize()
@@ -375,7 +377,9 @@ function options_dialog:Update()
 		end
 		self.message_box:SetText(string.format("%s %d %s", game.translate_string("ui_mm_confirm_changes"), 15-(tg-self.timer), game.translate_string("mp_si_sec")))
 		if(tg-self.timer>=15) then
-			self.message_box:HideDialog()
+			if (self.message_box:IsShown()) then
+				self.message_box:HideDialog()
+			end
 			self:OnDiscardChanges()
 		end
 	end
@@ -395,14 +399,20 @@ function options_dialog:OnApplyChanges()
     _G.b_discard_settings_shown = false
 
 	self.owner:ShowDialog(true)
-	self:HideDialog()
+	if (self:IsShown()) then
+		self:HideDialog()
+	end
 	self.owner:Show(true)
 	get_console():execute("vid_restart")
 
-	if false==self.b_restart_system_shown then
+	if not (self.b_restart_system_shown and self.message_box:IsShown()) then
 		local opt = COptionsManager()
 		if opt:NeedSystemRestart() then
 			self.b_restart_system_shown = true
+			self.message_box:InitMessageBox("message_box_restart_game")
+			self.message_box:ShowDialog(true)
+		elseif (self.b__require_restart == true) then 
+			self.b__require_restart = false
 			self.message_box:InitMessageBox("message_box_restart_game")
 			self.message_box:ShowDialog(true)
 		end

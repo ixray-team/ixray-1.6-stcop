@@ -6,11 +6,7 @@
 	- анимация поворота
 ------------------------------------------------------------------------------------------------------------]]
 
-local act_shoot  = 1
-local act_danger = 2
-
 class "evaluator_combat_zombied" ( property_evaluator )
-
 function evaluator_combat_zombied:__init( name, glob_storage ) super ( nil, name )
 	self.gst = glob_storage
 end
@@ -20,12 +16,7 @@ function evaluator_combat_zombied:evaluate()
 		return false 
 	end 
 	
-	local be = self.object:best_enemy()
-	if not (be and be:alive()) then 
-		return false 
-	end 
-	
-	return character_community(self.object) == "zombied"
+	return self.object:character_community() == "zombied"
 end
 
 --------------------------------------------------------------------------------------------------------------
@@ -42,12 +33,12 @@ end
 function action_zombie_shoot:initialize()
 	action_base.initialize( self )
 
---	self.object:set_node_evaluator      ()
---	self.object:set_path_evaluator      ()
-	self.object:set_desired_direction   ()
-	self.object:set_detail_path_type    ( move.line )
+	self.object:set_path_type(game_object.level_path)
+	self.object:set_detail_path_type(move.line)
+	self.object:set_desired_direction()
+
 	self.last_state = nil
-	local be  = self.object:best_enemy()
+	local be = self.object:best_enemy()
 	if (be) then
 		self.enemy_last_seen_pos = be:position()
 		self.enemy_last_seen_vid = be:level_vertex_id()
@@ -55,23 +46,19 @@ function action_zombie_shoot:initialize()
 	self.last_vid   = nil
 	self.valid_path = false
 	self.turn_time  = 0
-	self.st.cur_act = act_shoot
+	self.st.cur_act = 1
 
 --	xr_sound.set_sound_play(self.object:id(), "fight_enemy")
 end
 
 function action_zombie_shoot:set_state( state, be, pos )
 	self.t.look_object = be
-
 	if be then
 		self.t.look_position = self.enemy_last_seen_pos
 	else
 		self.t.look_position = pos
 	end
-
-	state_mgr.set_state( self.object, state, nil, nil, self.t )
-
-	self.last_state = state
+	state_mgr.set_state( self.object, state, nil, nil, self.t, {fast_set = true } )
 end
 
 function action_zombie_shoot:execute()
@@ -119,7 +106,6 @@ function action_zombie_shoot:execute()
 			self.hit_reaction_end_time = time_global() + 5000
 
 			self:set_state( "raid_fire", nil, self.enemy_last_seen_pos )
-
 		elseif self.hit_reaction_end_time > time_global() then
 			--' продолжать идти и стрелять в точку, из которой был нанесён хит
 		else
@@ -166,7 +152,7 @@ function action_zombie_shoot:hit_callback( obj, amount, local_direction, who, bo
 	if who == nil then
 		return
 	end
-	if self.st.cur_act == act_shoot then
+	if self.st.cur_act == 1 then
 		local be = self.object and self.object:best_enemy()
 		-- если получили хит от текущего врага, то мы знаем, где он
 		if be and who:id() == be:id() then
@@ -199,17 +185,13 @@ function action_zombie_go_to_danger:initialize()
 	self.bdo_id      = nil
 	self.bdo_vert_id = nil
 	self.last_sent_vert_id = nil
-	self.st.cur_act = act_danger
+	self.st.cur_act = 2
 end
 
 function action_zombie_go_to_danger:set_state( state, be, pos )
-	if state ~= self.last_state then
-		self.t.look_object   = be
-		self.t.look_position = pos
-		state_mgr.set_state( self.object, state, nil, nil, self.t )
-		self.last_state = state
---		printf( "set state !!!!!!!!!!!" )
-	end
+	self.t.look_object   = be
+	self.t.look_position = pos
+	state_mgr.set_state( self.object, state, nil, nil, self.t, {fast_set = true })
 end
 
 function action_zombie_go_to_danger:execute()
@@ -253,7 +235,7 @@ function action_zombie_go_to_danger:hit_callback( obj, amount, local_direction, 
 		return
 	end
 
-	if self.st.cur_act == act_danger then
+	if self.st.cur_act == 2 then
 		local bd  = self.object:best_danger()
 		if bd then
 			local bdo = bd:object()
@@ -270,20 +252,17 @@ end
 
 --------------------------------------------------------------------------------------------------------------
 
-function add_to_binder( npc, ini, st, planner )
-	local properties  = {}
-
-	properties["state_mgr_logic_active"] 	= xr_evaluators_id.state_mgr + 4
-
-	planner:add_evaluator( xr_evaluators_id.combat_zombied_base, evaluator_combat_zombied( "combat_zombied", db.storage[npc:id()] ) )
+function add_to_binder(npc,ini,scheme,section,st,temp)
+	local manager = npc:motivation_action_manager()
+	manager:add_evaluator( xr_evaluators_id.combat_zombied_base, evaluator_combat_zombied( "combat_zombied", db.storage[npc:id()] ) )
 
 	local action = action_zombie_shoot( "action_zombie_shoot", st )
 	action:add_precondition( world_property( stalker_ids.property_alive,           true  ) )
 	action:add_precondition( world_property( xr_evaluators_id.combat_zombied_base, true  ) )
 	action:add_precondition( world_property( xr_evaluators_id.script_combat,       true  ) )
-	action:add_effect      ( world_property( stalker_ids.property_enemy,           false ) )
-	action:add_effect (world_property(properties["state_mgr_logic_active"], false))
-	planner:add_action( xr_actions_id.combat_zombied_base, action )
+	action:add_effect( world_property( stalker_ids.property_enemy,           false ) )
+	action:add_effect(world_property(xr_evaluators_id.state_mgr + 4, false))
+	manager:add_action( xr_actions_id.combat_zombied_base, action )
 
 	xr_logic.subscribe_action_for_events( npc, st, action )
 
@@ -292,9 +271,9 @@ function add_to_binder( npc, ini, st, planner )
 	action:add_precondition( world_property( xr_evaluators_id.combat_zombied_base, true  ) )
 	action:add_precondition( world_property( stalker_ids.property_enemy,           false ) )
 	action:add_precondition( world_property( stalker_ids.property_danger,          true  ) )
-	action:add_effect      ( world_property( stalker_ids.property_danger,          false ) )
-	action:add_effect (world_property(properties["state_mgr_logic_active"], false))
-	planner:add_action( xr_actions_id.combat_zombied_base + 1, action )
+	action:add_effect( world_property( stalker_ids.property_danger,          false ) )
+	action:add_effect(world_property(xr_evaluators_id.state_mgr + 4, false))
+	manager:add_action( xr_actions_id.combat_zombied_base + 1, action )
 
 	xr_logic.subscribe_action_for_events( npc, st, action )
 end

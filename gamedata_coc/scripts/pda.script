@@ -1,39 +1,83 @@
-local coc_ranking_array_size = 100
+local coc_ranking_array_size = 100				-- Top100
 local coc_ranking_list = {}
+local actor_rank_place
+dialog_closed = false
+
+----------------------------------------------------------------------------
+-- Engine->lua function calls 
+----------------------------------------------------------------------------
+
+-- PDA Tabs 
+-- It's now possible to add new button tabs to pda*.xml.
+-- You can use ActorMenu.get_pda_menu():GetActiveSection() to find out active pda tab
+-- UI returned must be CUIScriptWnd
+function set_active_subdialog(section)
+	--printf("section=%s",section)
+	if (section == "eptTasks") then 
+	
+	elseif (section == "eptRanking") then 
+	
+	elseif (section == "eptLogs") then 
+	
+	elseif (section == "eptRelations") then 
+		return ui_pda_relations_tab.get_ui()
+	elseif (section == "eptContacts") then
+		return ui_pda_contacts_tab.get_ui()
+	elseif (section == "eptEncyclopedia") then
+		return ui_pda_encyclopedia_tab.get_ui()
+	end
+end 
+
+local map_spot_property = {}
+function property_box_clicked(property_ui)
+	local list_item = property_ui:GetSelectedItem()
+	if not (list_item) then 
+		return 
+	end
+	local textControl = list_item:GetTextItem()
+	local prop = textControl:GetText()
+	--printf("prop=%s",prop)
+	SendScriptCallback("map_spot_menu_property_clicked",property_ui,map_spot_property.id,map_spot_property.level_name,prop)
+end 
+
+function property_box_add_properties(property_ui,id,level_name,hint)
+	map_spot_property.id = id 
+	map_spot_property.level_name = level_name
+	-- if (hint and hint ~= "") then
+		-- property_ui:AddItem(hint)
+	-- end
+	SendScriptCallback("map_spot_menu_add_property",property_ui,id,level_name,hint)
+end
 
 -- use actor_menu for other modes
 -- 10 =  Talk dialog  show
 -- 11 =  Talk dialog  hide
-dialog_closed = false
 function actor_menu_mode(mode)
 	if(mode==10) then
-		dialog_wnd_showed()
-	elseif(mode==11) then
-		dialog_wnd_closed()
-	end
-end
-
-function dialog_wnd_showed()
-	dialog_closed = false
-	for k,st in pairs(db.storage) do
-		if (st.object and st.object:is_talking() and st.object:id() ~= db.actor:id()) then
-			local id = st.object:id()
-			inventory_upgrades.victim_id = id -- stupid hack since sidorovich and forester don't have use_callback
-			local sound_theme = xr_sound.sound_table[id]
-			if sound_theme and sound_theme.reset then
-				sound_theme:reset(id)
+		dialog_closed = false
+		for k,st in pairs(db.storage) do
+			if (st.object and st.object:is_talking() and st.object:id() ~= db.actor:id()) then
+				local id = st.object:id()
+				inventory_upgrades.victim_id = id -- stupid hack since sidorovich and forester don't have use_callback
+				local sound_theme = xr_sound.sound_table[id]
+				if sound_theme and sound_theme.reset then
+					sound_theme:reset(id)
+				end
+				local m_data = alife_storage_manager.get_state()
+				if not (m_data.actor_contacts) then 
+					m_data.actor_contacts = {}
+				end
+				m_data.actor_contacts[id] = true
+				break
 			end
-			break
 		end
+		--printf("---:>Talk Dialog show")
+	elseif(mode==11) then
+		--printf("---:>Talk Dialog hide")
+		SendScriptCallback("actor_on_leave_dialog",inventory_upgrades.victim_id)
+		inventory_upgrades.victim_id = nil
+		dialog_closed = true
 	end
-	--printf("---:>Talk Dialog show")
-end
-
-function dialog_wnd_closed()
-	--printf("---:>Talk Dialog hide")
-	inventory_upgrades.victim_id = nil
-	dialog_closed = true
-	SendScriptCallback("actor_on_leave_dialog")
 end
 
 function get_time_elapsed()
@@ -94,6 +138,9 @@ function get_stat(index) -- index= int        return string
 	return ""
 end
 
+----------------------------------------------------------------------------
+-- Engine->lua function calls 
+----------------------------------------------------------------------------
 function fill_primary_objects()
 	local primary_objects_tbl =
 	{	{target="mar_2c_01_anomaly_spot",					hint="st_mar_2c_01_anomaly_spot_name"},
@@ -297,19 +344,21 @@ function add_quick_slot_items_on_game_start()
 	end
 end
 
+----------------------------------------------------------------------------
+-- Scripted Callback Register
+----------------------------------------------------------------------------
 local function npc_on_net_spawn(npc,se_obj)
 	utils.se_obj_save_var(se_obj.id,se_obj:name(),"last_seen_level",level.name())
-	utils.se_obj_save_var(se_obj.id,se_obj:name(),"last_seen_level",game.get_game_time())
+	utils.se_obj_save_var(se_obj.id,se_obj:name(),"last_seen_time",game.get_game_time())
 end
 
 function on_game_start()
 	RegisterScriptCallback("npc_on_net_spawn",npc_on_net_spawn)
 end
----------------------------------------------
--- Character Ranking
----------------------------------------------
 
-local actor_rank_place
+----------------------------------------------------------------------------
+-- Character Ranking
+----------------------------------------------------------------------------
 -- called from info_portions.script
 function calculate_rankings()
 	local t = {}
@@ -354,7 +403,7 @@ function coc_rankings_can_show(index)
 	if (has_alife_info("ui_pda_hide")) then
 		return false
 	end
-	local se_obj = coc_ranking_list[index] ~= nil and alife():object(coc_ranking_list[index])
+	local se_obj = coc_ranking_list[index] ~= nil and alife_object(coc_ranking_list[index])
 	if (se_obj) then
 		return true
 	end
@@ -363,7 +412,7 @@ end
 
 -- called from engine! must return string!
 function coc_rankings_set_name(index)
-	local se_obj = coc_ranking_list[index] ~= nil and alife():object(coc_ranking_list[index])
+	local se_obj = coc_ranking_list[index] ~= nil and alife_object(coc_ranking_list[index])
 	if (se_obj) then
 		return strformat("%s. %s",se_obj.id == 0 and actor_rank_place or index,se_obj:character_name())
 	end
@@ -372,7 +421,7 @@ end
 
 -- called from engine! must return string!
 function coc_rankings_set_hint(index)
-	local se_obj = coc_ranking_list[index] ~= nil and alife():object(coc_ranking_list[index])
+	local se_obj = coc_ranking_list[index] ~= nil and alife_object(coc_ranking_list[index])
 	if (se_obj) then
 		if (se_obj.id == 0) then
 			--TODO: Maybe some stats for player, like rank points per minute; if such a thing is possible.
@@ -389,10 +438,10 @@ function coc_rankings_set_hint(index)
 			local m_data = alife_storage_manager.get_se_obj_state(se_obj)
 			if (m_data) then
 				local last_seen_level = m_data.last_seen_level
-				local last_seen_time = m_data.last_seen_time and m_data.last_seen_time:dateToString(game.CTime.DateToDay)
+				local last_seen_time = m_data.last_seen_time and m_data.last_seen_time.dateToString and m_data.last_seen_time:dateToString(game.CTime.DateToDay)
 				
 				if (last_seen_level and last_seen_time) then
-					return_str = return_str .. game.translate_string("st_last_seen") .. ": " .. game.translate_string(last_seen_level) .. " on " .. last_seen_time
+					return_str = return_str .. game.translate_string("st_last_seen") .. ": " .. game.translate_string(last_seen_level) .. " (" .. last_seen_time .. ")"
 						
 					if (m_data.stalkers_killed) then
 						return_str = return_str .. [[ \n]] .. game.translate_string("st_stalkers_killed") .. ": " .. tostring(m_data.stalkers_killed)
@@ -416,7 +465,7 @@ end
 
 -- called from engine! must return string!
 function coc_rankings_set_description(index)
-	local se_obj = coc_ranking_list[index] ~= nil and alife():object(coc_ranking_list[index])
+	local se_obj = coc_ranking_list[index] ~= nil and alife_object(coc_ranking_list[index])
 	if (se_obj) then
 			local faction_color = "%c[255,255,255,1]"
 		if (game_relations.is_factions_enemies(db.actor:character_community(),se_obj:community())) then
@@ -445,7 +494,7 @@ end
 
 -- called from engine! must return string!
 function coc_rankings_set_icon(index)
-	local se_obj = coc_ranking_list[index] ~= nil and alife():object(coc_ranking_list[index])
+	local se_obj = coc_ranking_list[index] ~= nil and alife_object(coc_ranking_list[index])
 	if (se_obj) then
 		local icon_name
 		if (se_obj.id == 0) then 
@@ -473,6 +522,6 @@ function coc_rankings_set_icon(index)
 end
 
 function coc_rankings_show_border(index)
-	local se_obj = coc_ranking_list[index] ~= nil and alife():object(coc_ranking_list[index])
+	local se_obj = coc_ranking_list[index] ~= nil and alife_object(coc_ranking_list[index])
 	return se_obj and se_obj.id == 0 or false
 end

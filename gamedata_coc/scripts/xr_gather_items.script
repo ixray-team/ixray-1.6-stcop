@@ -151,12 +151,12 @@ function gather_item(npc)
 	local itm = selected_id and selected_id ~= 0 and selected_id ~=65535 and level.object_by_id(selected_id)
 	local loot_table = UseCorpseLootTable ~= true and LootTable or xr_corpse_detection.lootable_table
 	if (itm == nil or loot_table[itm:section()] == nil) then
-		printf("nooooo!  itm=%s lootable=%s",itm and itm:name(), itm and loot_table[itm:section()])
+		--printf("nooooo!  itm=%s lootable=%s",itm and itm:name(), itm and loot_table[itm:section()])
 		return
 	end
 
 	local itm_id = itm:id()
-	local se_itm = alife():object(selected_id)
+	local se_itm = alife_object(selected_id)
 	if not (se_itm) then 
 		return 
 	end
@@ -177,7 +177,7 @@ function gather_item(npc)
 		
 		-- increase NPC rank for stalkering
 		npc:set_character_rank(npc:character_rank()+math.random(15,25))
-		local se_obj = alife():object(id)
+		local se_obj = alife_object(id)
 		-- npc_statistic
 		if (se_obj) then 
 			local m_data = alife_storage_manager.get_se_obj_state(se_obj)
@@ -210,7 +210,7 @@ function eva_gather_itm:find_valid_item()
 	end
 	
 	if (self.st.selected_id) then 
-		local se_itm = self.st.selected_id ~= 0 and self.st.selected_id ~= 65535 and alife():object(self.st.selected_id)
+		local se_itm = self.st.selected_id ~= 0 and self.st.selected_id ~= 65535 and alife_object(self.st.selected_id)
 		if (se_itm and se_itm.parent_id == 65535) then
 			local itm = level.object_by_id(se_itm.id)
 			if (itm) then
@@ -219,6 +219,7 @@ function eva_gather_itm:find_valid_item()
 		end
 		Items[self.st.selected_id] = nil
 		self.st.selected_id = nil 
+		return false
 	end
 
 	local tg = time_global()
@@ -307,7 +308,7 @@ function eva_gather_itm:find_valid_item()
 	self.st.index = self.st.index + 1
 
 	local itm = itm_id and itm_id ~= 0 and itm_id ~= 65535 and level.object_by_id(itm_id)
-	local se_itm = itm and loot_table[itm:section()] and Items[itm_id] == nil and alife():object(itm_id)
+	local se_itm = itm and loot_table[itm:section()] and Items[itm_id] == nil and alife_object(itm_id)
 
 	if not (se_itm and se_itm.parent_id == 65535) then
 		return false
@@ -432,7 +433,7 @@ local function execute_gather_item(npc,self)
 		return
 	end
 
-	local se_itm = self.st.selected_id ~= 65535 and self.st.selected_id ~= 0 and alife():object(self.st.selected_id)
+	local se_itm = self.st.selected_id ~= 65535 and self.st.selected_id ~= 0 and alife_object(self.st.selected_id)
 	local dist = npc:position():distance_to(self.st.vid_pos)
 
 	if (se_itm and IsArtefact(nil,se_itm:clsid())) then
@@ -563,16 +564,14 @@ function add_to_binder(npc,ini,scheme,section,st,temp)
 	manager:add_evaluator(stalker_ids.property_items,evaluator_gather_items("gather_items",st,npc))
 	--manager:add_evaluator(stalker_ids.property_items, property_evaluator_const(false))
 	
-	if (character_community(npc) == "zombied" or npc:section() == "actor_visual_stalker") then
+	if (npc:character_community() == "zombied" or npc:section() == "actor_visual_stalker") then
 		manager:add_evaluator(evaid,property_evaluator_const(false))
-		temp.needs_configured = false
-		return
+		--temp.needs_configured = false
+	else
+		manager:add_evaluator(evaid,eva_gather_itm("eva_gather_itm",st,npc))
 	end
-
-	manager:add_evaluator(evaid,eva_gather_itm("eva_gather_itm",st,npc))
 	
 	temp.action = act_gather_itm("act_gather_itm",st)
-
 	temp.action:add_precondition(wp(stalker_ids.property_alive,true))
 	temp.action:add_precondition(wp(stalker_ids.property_enemy,	false))
 	temp.action:add_precondition(wp(stalker_ids.property_danger,false))

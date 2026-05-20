@@ -370,7 +370,7 @@ function anomaly_zone_binder:turn_off()
 	self.turned_off = true
 	self:disable_anomaly_fields()
 	for k,v in pairs(self.artefact_ways_by_id) do
-		alife():release(alife():object(tonumber(k)), true)
+		alife():release(alife_object(tonumber(k)), true)
 		artefact_ways_by_id[k] = nil
 		artefact_points_by_id[k] = nil
 		parent_zones_by_artefact_id[k] = nil

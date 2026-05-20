@@ -105,6 +105,7 @@ function evaluator_wounded_exist:find_valid_target()
 			db.storage[self.a.selected_id].wounded_already_selected = nil
 		end
 		self.a.selected_id = nil
+		return false
 	end
 
 	if not (db.OnlineStalkers) then
@@ -155,7 +156,7 @@ function evaluator_wounded_exist:find_valid_target()
 		return false 
 	end 
 	
-	local se_obj = alife():object(id)
+	local se_obj = alife_object(id)
 	if not (se_obj) then
 		return false 
 	end
@@ -339,7 +340,7 @@ function action_help_wounded:finalize()
 
 	--[[
 	local medkit = self.object:object("medkit_script")
-	local se_obj = medkit and alife():object(medkit:id())
+	local se_obj = medkit and alife_object(medkit:id())
 	if (se_obj) then
 		alife():release(se_obj,true)
 	end
@@ -360,15 +361,14 @@ end
 function add_to_binder(npc,char_ini,scheme,section,st,temp)
 	local manager = npc:motivation_action_manager()
 
-	if (character_community(npc) == "zombied" or npc:section() == "actor_visual_stalker") then
+	if (npc:character_community() == "zombied" or npc:section() == "actor_visual_stalker") then
 		manager:add_evaluator(xr_evaluators_id.wounded_exist,property_evaluator_const(false))
-		temp.needs_configured = false
-		return 
-	end 
-
-	local wp = world_property
+		--temp.needs_configured = false
+	else
+		manager:add_evaluator(xr_evaluators_id.wounded_exist, evaluator_wounded_exist("wounded_exist", st))
+	end
 	
-	manager:add_evaluator(xr_evaluators_id.wounded_exist, evaluator_wounded_exist("wounded_exist", st))
+	local wp = world_property
 
 	temp.action = action_help_wounded (npc:name(),"action_help_wounded", st)
 	temp.action:add_precondition(wp(stalker_ids.property_alive, true))

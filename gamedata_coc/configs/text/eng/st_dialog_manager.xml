@@ -203,7 +203,7 @@
 		<text>I don't feel comfortable telling you anything.</text>
 	</string>
 	<string id="dm_anomalies_1">
-		<text>Well, the Burner anomaly can be a bit difficult to see, even during daylight you can only see a faint haze. If you piss it off with one of your bolts it'll shoot out a tall pillar of flame in the air, so don't stand too close.</text>
+		<text>Well, the Burner anomaly can be a bit difficult to see, even during daylight you can only see a faint haze. If you piss it off with one of your bolts it'll shoot a tall pillar of flame into the air, so don't stand too close.</text>
 	</string>
 	<string id="dm_anomalies_2">
 		<text>Comet anomalies are a lot like the Burner, both fire-y, only this is a big floating ball of flame, flying about wherever you found it. Best to duck and dive about when near those things otherwise you'll get your ass burnt off.</text>
@@ -293,13 +293,13 @@
 		<text>Did you know that artefacts are almost indestructible? Sometimes it's better to shoot at the artefact to make it jump out of the anomaly, instead of just being sucked directly into it.</text>
 	</string>
 	<string id="dm_anomalies_31">
-		<text>I wish I had known the Zone that I've heard about, the one that was like a no man's land. How can we be rich now? Now that after any emission, a bunch of stalker rush on every anomaly field to pick up their flowers.</text>
+		<text>I wish I had known the Zone that I've heard about, the one that was like a no man's land. How can we be rich now? Now that after any emission, a bunch of stalkers rush on every anomaly field to pick up their flowers.</text>
 	</string>
 	<string id="dm_anomalies_32">
 		<text>Why should I give you any advice? More so when it comes to the business which many of us use for making money? Well, get a good detector and help yourself. The scientists will probably see you what you're looking for.</text>
 	</string>
 	<string id="dm_anomalies_33">
-		<text>Many newcomers fantasize about "the artefact that makes you rich". Don't do this, even if the Zone can be fruitful, it often take a long time and a serious amount of money to get the gear that lets you go inside the most dangerous and then productive areas. Of course, you can be lucky, but knowing this place I wouldn't count this much on that.</text>
+		<text>Many newcomers dream about "the artefact that makes you rich". Even if the Zone can be fruitful, it often take a long time and a serious amount of money to get the gear that lets you go inside the most dangerous and productive areas. Of course, you can be lucky, but knowing this place I wouldn't count so much on that.</text>
 	</string>
 	<string id="dm_anomalies_34">
 		<text>You know where the dredge station is? It's been battered up by gravitational anomalies, but not too bad for an experienced stalker. Just keep throwing bolts as usual. There's also radiation, inside and out - it's like being next to a massive chunk of enriched uranium.</text>
@@ -717,7 +717,7 @@
 		<text>If you ain't got nothin' to deal with radiation poisoning then try to keep yourself alive until you can reach a medic. But then ask yourself: why aren't you carrying any vodka?</text>
 	</string>
 	<string id="dm_tips_30">
-		<text>Run and jump if something looks too far away, your momentum will carry you further. Easy way to get away from some muties as they won't think to jump over shit.</text>
+		<text>Run and jump if something looks too far away, your momentum will carry you farther. Easy way to get away from some muties as they won't think to jump over shit.</text>
 	</string>	
 	<string id="dm_tips_31">
 		<text>Selling artefacts isn't the only way to make some cash: offloading unneeded equipment can be a profitable business, too. Keep in mind that traders aren't usually interested in items that are broke.</text>
@@ -968,7 +968,7 @@
 	<string id="st_surrender_victim_answer_zat_b7_bandit_boss_sultan_bounty_5">
 		<text>...</text>
 	</string>
-<!-------- Broker --->
+<!-- Broker -->
 	<string id="st_broker_query">
 		<text>I may have something valuable you want.</text>
 	</string>
@@ -1261,4 +1261,32 @@
         <text>I guess that is what I should have expected from a rookie.</text>
     </string>
 	
+	<!-- Repair -->
+	<string id="st_inventory_upgrade_reply_1">
+		<text>Your %s will be ready in %s minutes. Come back then.</text>
+	</string>
+	<string id="st_inventory_upgrade_reply_2">
+		<text>Soon your %s will be ready. Come back in %s minutes.</text>
+	</string>
+	<string id="st_inventory_upgrade_reply_3">
+		<text>Urgh, piss off. I'm not drunk yet.</text>
+	</string>
+	<string id="st_inventory_upgrade_reply_4">
+		<text>Your bloody %s will be ready in an hour and %s minutes. I'll be drunk by then.</text>
+	</string>
+	<string id="st_inventory_upgrade_reply_5">
+		<text>It's not easy to repair something when you have the shakes... Come back in about an hour for your %s.</text>
+	</string>
+	<string id="st_inventory_upgrade_reply_6">
+		<text>Hey Stal-- Oh heck, I forgot I was repairing your equipment. Come back for your %s in an hour and %s minutes.</text>
+	</string>
+	<string id="st_inventory_upgrade_reply_7">
+		<text>Your %s will be ready in an hour and %s. So come back then, okay?</text>
+	</string>
+	<string id="st_inventory_upgrade_reply_8">
+		<text>Your %s will be ready in about %s hours and %s. Come back then.</text>
+	</string>
+	<string id="st_inventory_upgrade_reply_9">
+		<text>It's almost ready.</text>
+	</string>
 </string_table>

@@ -38,11 +38,13 @@
     <snd_config>characters_voice\human_01\stalker\</snd_config>
     <rank>16236</rank>
     <reputation>2201</reputation>
-    <money min="10000" max="10000" infinitive="0" />
+    <money min="1000000" max="1000000" infinitive="1" />
     <visual>actors\stalker_neutral\stalker_nimble</visual>
     <supplies>
         [spawn] \n
+		wpn_binoc \n
         device_torch \n
+		wpn_knife \n
         wpn_ak74u \n
         ammo_5.45x39_fmj = 1 \n
         wpn_pm \n

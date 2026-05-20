@@ -15,7 +15,7 @@ function faction_binder:net_spawn(server_object)
 		return false
 	end
 	--' получить ссылку на настоящий серверный объект
-	self.faction = alife():object(self.object:id())
+	self.faction = alife_object(self.object:id())
 	return true
 end
 function faction_binder:update(delta)

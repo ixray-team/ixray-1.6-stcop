@@ -60,16 +60,13 @@ function get_obj_rank_name( obj )
 		read_all_ranks()
 	end
 
-	local obj_rank
-
-	-- HACK
-	if obj.m_story_id ~= nil then
-		obj_rank = obj:rank()
-	else
-		obj_rank = obj:character_rank()
+	local obj_rank = obj.character_rank and obj:character_rank() or obj.rank and obj:rank()
+	if not (obj_rank) then 
+		return ""
 	end
-
-	if IsStalker(obj) then
+	
+	local cls = obj:clsid()
+	if IsStalker(nil,cls) or IsTrader(nil,cls) then
 		return get_rank_name( obj_rank, stalker_rank_intervals ) or stalker_max_rank_name
 	else
 		return get_rank_name( obj_rank, monster_rank_intervals ) or monster_max_rank_name
@@ -82,8 +79,8 @@ function get_se_obj_rank_name( obj )
 	end
 
 	local obj_rank = obj:rank()
-
-	if IsStalker(nil,obj:clsid()) then
+	local cls = obj:clsid()
+	if IsStalker(nil,cls) or IsTrader(nil,cls) then
 		return get_rank_name( obj_rank, stalker_rank_intervals ) or stalker_max_rank_name
 	else
 		return get_rank_name( obj_rank, monster_rank_intervals ) or monster_max_rank_name

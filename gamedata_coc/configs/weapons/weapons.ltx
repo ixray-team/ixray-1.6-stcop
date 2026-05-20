@@ -134,6 +134,31 @@ class                                    = AMMO 	;Change to AMMO_S if you want t
 ;belt				= true;
 slot                                     = -1
 explosive                                = false
+cform = skeleton
+
+[ammo_knife]:ammo_base
+$prefetch                                          = 64
+box_size                                           = 1
+buck_shot                                          = 1
+cost                                               = 1
+impair                                             = 1
+inv_grid_height                                    = 1
+inv_grid_width                                     = 1
+inv_grid_x                                         = 0
+inv_grid_y                                         = 0
+inv_name                                           = "ammo_knife"
+inv_name_short                                     = "ammo_knife"
+inv_weight                                         = 0
+k_air_resistance                                   = 1
+k_ap                                               = 1
+k_disp                                             = 1
+k_dist                                             = 1
+k_hit                                              = 1.5
+k_impulse                                          = 1
+k_pierce                                           = 999
+tracer                                             = off
+visual                                             = dynamics\weapons\wpn_ammo\ammo_9x18_fmj.ogf
+wm_size                                            = 0.05
 
 [ammo_9x18_fmj]:ammo_base
 GroupControlSection                      = spawn_group

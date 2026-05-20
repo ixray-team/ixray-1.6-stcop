@@ -15,25 +15,48 @@ function opt_menu_on_init(menu)
 			end
 		end
 	end}
-	menu.gameplay_options["actor_hud"]			= {default=false, 	debug_only=false, 	typ="check", on_accept=function(handler,optMgr,ctrl)
-		if (level.present() and dynamic_hud) then
-			if (ctrl:GetCheck()) then
-				dynamic_hud.activate_hud()
-			else 
-				dynamic_hud.deactivate_hud()
+	-- localization
+	menu.gameplay_options["localization"] = {default="eng", debug_only=false, typ="list", list={"eng","rus"}, on_accept=function(handler,optMgr,ctrl)
+		local language = ctrl:GetText()
+		if (language and language ~= "") then
+			local loc_ini = ini_file_ex("localization.ltx",true)
+			if (loc_ini:r_value("string_table","language") ~= language) then
+				loc_ini:w_value("string_table","language",language)
+				loc_ini:save()
+				menu.b__require_restart = true
 			end
 		end
 	end}
+	
 	-- slot Hud
-	menu.gameplay_options["slot_hud"]		= {default=false, 	debug_only=false, 	typ="check", on_accept=function(handler,optMgr,ctrl)
-		if (level.present() and slot_hud) then
-			if (ctrl:GetCheck()) then
-				slot_hud.activate_hud()
-			else
-				slot_hud.deactivate_hud()
+	if (slot_hud) then
+		menu.gameplay_options["slot_hud"]		= {default=false, 	debug_only=false, 	typ="check", on_accept=function(handler,optMgr,ctrl)
+			if (level.present() and slot_hud) then
+				if (ctrl:GetCheck()) then
+					slot_hud.activate_hud()
+				else
+					slot_hud.deactivate_hud()
+				end
 			end
+		end}
+	end
+	-- Hardcore AI Aim
+	menu.gameplay_options["hardcore_ai_aim"]		= {default=false, 	debug_only=false, 	typ="check", on_accept=function(handler,optMgr,ctrl)
+		local con = get_console()
+		if (ctrl:GetCheck()) then
+			con:execute("ai_aim_max_angle 20.0")
+			con:execute("ai_aim_min_angle 17.0")
+			con:execute("ai_aim_min_speed 2.00")
+			con:execute("ai_aim_predict_time 0.28")
+		else
+			con:execute("ai_aim_max_angle 0.7854")
+			con:execute("ai_aim_min_angle 0.19635")
+			con:execute("ai_aim_min_speed 0.24")
+			con:execute("ai_aim_predict_time 0.40")
 		end
-	end}
+	end}	
+	-- release dropped items 
+	menu.gameplay_options["release_dropped_items"]	= {default=true, 	debug_only=false, 	typ="check"}
 	-- show_enemy_health
 	menu.gameplay_options["show_enemy_health"]	= {default=false, 	debug_only=true, 	typ="check"}
 	-- radio_mod

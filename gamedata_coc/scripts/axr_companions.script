@@ -1,9 +1,6 @@
 --[[	axr_companions
 
 by Alundaio
-
-	Copyright (C) 2012 Alundaio
-	This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
 -]]
 
 -- SEE configs\ai_tweaks\axr_companions
@@ -11,12 +8,15 @@ allow_only_friends_as_companions = true
 allow_simulation_squads_as_companions = false
 max_actor_squad_size = 0 -- used only for non task companions
 
+-- Companion tables. All companions are added to companion_squads table by their squad id. Only non-task companions are tracked by non_task_companions table.
 companion_squads = {}
+non_task_companions = {}
 ------------------------------------------
 local _current_move_mode = 1
 local _current_combat_mode = 1
-local _draw_part
-
+local _current_stealth_mode = true
+local _particle_valid = nil
+local _particle_invalid = nil
 ------------------------------------------
 -- Localized Functions
 ------------------------------------------
@@ -25,15 +25,7 @@ local function on_fighting_actor(npc)
 		return 
 	end
 	--alun_utils.debug_write(strformat("axr_companions.on_fighting_actor"))
-	if (db.actor:has_info("axr_has_companion")) then
-		for i=1,max_actor_squad_size do
-			local c = utils.load_var(db.actor,"companion_"..i,nil)
-			local obj = c and level.object_by_id(c)
-			if (obj) then
-				alun_utils.set_squad_relation_to_squad(obj,npc,game_object.enemy)
-			end
-		end
-	end
+				
 	for id,squad in pairs(companion_squads) do 
 		xr_combat_ignore.safe_zone_npcs[id] = nil
 		if (squad and squad.commander_id) then
@@ -50,38 +42,38 @@ end
 
 local function squad_on_npc_death(squad,se_npc)
 	--alun_utils.debug_write(strformat("axr_companions.squad_on_npc_death"))
-	if (se_npc and alife():has_info(se_npc.id,"npcx_is_companion") ) then
-		for i=1,max_actor_squad_size do
-			local c = utils.load_var(db.actor,"companion_"..i,nil)
-			if (c == se_npc.id) then
-				utils.save_var(db.actor,"companion_"..i,nil)
-			end
-		end
-		if (get_companion_count() < 1) then
-			db.actor:disable_info_portion("axr_has_companion")
-		end
-		if (squad:npc_count() == 0) then 
-			companion_squads[squad.id] = nil
-		end
+	non_task_companions[se_npc.id] = nil
+	if (squad:npc_count() == 0) then 
+		companion_squads[squad.id] = nil
 	end
 end
 
+local function squad_on_register(squad)
+	if (companion_squads[squad.id] ~= nil) then 
+		companion_squads[squad.id] = squad
+		squad.scripted_target = "actor"
+	end
+	
+	-- backward save compatiblity. remove later
+	for k in squad:squad_members() do 
+		if (k.id and k.object and utils.se_obj_load_var(k.id,k.object:name(),"companion")) then
+			companion_squads[squad.id] = squad
+			squad.scripted_target = "actor"
+			break
+		end
+	end
+end
 local function squad_on_unregister(squad)
 	companion_squads[squad.id] = nil
 end
 
 local function squad_on_update(squad)
 	--alun_utils.debug_write(strformat("axr_companions.squad_on_update - heli_enemy_flag"))
-	local id = squad:commander_id()
-	local sim = alife()
-	if (id and sim:has_info(id,"npcx_is_companion")) then
+	if (companion_squads[squad.id]) then
 		squad.scripted_target = "actor"
-		companion_squads[squad.id] = squad
-		if (utils.load_var(db.actor,"heli_enemy_flag") == true) then
-			for k in squad:squad_members() do
-				if (db.storage[k.id]) then
-					db.storage[k.id].heli_enemy_flag = true
-				end
+		for k in squad:squad_members() do
+			if (db.storage[k.id]) then
+				db.storage[k.id].heli_enemy_flag = utils.load_var(db.actor,"heli_enemy_flag")
 			end
 		end
 	end
@@ -99,23 +91,68 @@ local function on_level_changing()
 	
 	for id,v in pairs(companion_squads) do 
 		local squad = sim:object(id)
-		if (squad and companion_squad_can_teleport(squad)) then
-			TeleportSquad(squad,pos,lvid,gvid)
+		if (squad and squad.commander_id) then 
+			if (companion_squad_can_teleport(squad)) then
+				TeleportSquad(squad,pos,lvid,gvid)
+			end
 		end
 	end
 end
 
----------------------------------
--- Register Callbacks
----------------------------------
-function on_game_load()
-	-- Patriarch achievement doubles allowed squad sizes.
-	local ini = ini_file("ai_tweaks\\axr_companions.ltx")
-	if (has_alife_info("achieved_patriarch")) then
-		max_actor_squad_size = ini:r_float_ex("main","max_actor_squad_size_patriarch") or 4
+local function actor_on_item_drop(item)
+	if (ActorMenu.get_menu_mode() == 4) then 
+		local m_data = alife_storage_manager.get_state()
+		if not (m_data.companion_borrow_item) then
+			m_data.companion_borrow_item = {}
+		end
+		m_data.companion_borrow_item[item:id()] = true
 	end
 end
 
+local function save_state(m_data)
+	m_data.non_task_companions = non_task_companions
+	m_data.companion_squads = {}
+	for id,squad in pairs(companion_squads) do 
+		if (squad and squad.commander_id) then
+			m_data.companion_squads[id] = false
+		end
+	end
+end
+
+local function load_state(m_data) 
+	non_task_companions = m_data.non_task_companions or non_task_companions
+	m_data.non_task_companions = nil
+	if (m_data.companion_squads) then
+		companion_squads = m_data.companion_squads or companion_squads
+		for id,bool in pairs(m_data.companion_squads) do 
+			companion_squads[id] = false
+		end
+	end 
+	m_data.companion_squads = nil
+end
+
+-- backward save compatiblity, remove me later!
+local function on_game_load()
+	local c_idx = 1
+	local cid = alun_utils.load_var(db.actor,"companion_1")
+	while (cid ~= nil) do 
+		local se_obj = alife_object(cid)
+		if (se_obj) then 
+			non_task_companions[se_obj.id] = true
+			local squad = se_obj.group_id and se_obj.group_id ~= 65535 and alife_object(se_obj.group_id)
+			if (squad) then
+				companion_squads[squad.id] = squad
+			end
+		end
+		alun_utils.save_var(db.actor,"companion_"..c_idx,nil)
+		c_idx = c_idx + 1
+		cid = alun_utils.load_var(db.actor,"companion_"..c_idx)
+	end
+end 
+
+---------------------------------
+-- Register Callbacks
+---------------------------------
 function on_game_start()
 	local ini = ini_file("ai_tweaks\\axr_companions.ltx")
 	Enabled = ini:r_bool_ex("main","enable",false)
@@ -123,8 +160,12 @@ function on_game_start()
 	RegisterScriptCallback("npc_on_fighting_actor",on_fighting_actor)
 	RegisterScriptCallback("squad_on_update",squad_on_update)
 	RegisterScriptCallback("squad_on_npc_death",squad_on_npc_death)
+	RegisterScriptCallback("squad_on_register",squad_on_register)
 	RegisterScriptCallback("squad_on_unregister",squad_on_unregister)
 	RegisterScriptCallback("on_level_changing",on_level_changing)
+	RegisterScriptCallback("actor_on_item_drop",actor_on_item_drop)
+	RegisterScriptCallback("save_state",save_state)
+	RegisterScriptCallback("load_state",load_state)
 	RegisterScriptCallback("on_game_load",on_game_load)
 
 	allow_only_friends_as_companions = ini:r_bool_ex("main","allow_only_friends_as_companions",false)
@@ -148,30 +189,25 @@ function companion_squad_can_teleport(squad)
 	return true
 end 
 
+-- doesn't include task companions
 function get_companion_count()
 	local count = 0
-	for i=1,max_actor_squad_size do
-		local c = utils.load_var(db.actor,"companion_"..i,nil)
-		local se_obj = c and alife():object(c)
-		if (se_obj and IsStalker(nil,se_obj:clsid()) and se_obj:alive()) then
-			count = count + 1
-		else 
-			utils.save_var(db.actor,"companion_"..i,nil)
-		end
+	for id,v in pairs(non_task_companions) do
+		count = count + 1
 	end
 	return count
 end
 
+-- includes task companions too
 function list_actor_squad_by_id()
 	local t = {}
-	for i=1,max_actor_squad_size do
-		local c = utils.load_var(db.actor,"companion_"..i,nil)
-		if (c) then
-			local se_obj = alife():object(c)
-			if (se_obj and IsStalker(nil,se_obj:clsid()) and se_obj:alive()) then
-				table.insert(t,c)
-			else 
-				utils.save_var(db.actor,"companion_"..i,nil)
+	for id,squad in spairs(companion_squads, function(t,a,b) return a < b end) do 
+		if (squad and squad.commander_id) then
+			if not (xrs_kill_wounded.hostage_list[squad:commander_id()]) then
+				for k in squad:squad_members() do
+					--printf("member %s",k.id)
+					table.insert(t,k.id)
+				end
 			end
 		end
 	end
@@ -210,103 +246,66 @@ function setup_companion_logic(npc,st,loaded,cannot_dismiss)
 	--printf("setup complete")
 end 
 
-function add_special_task_npc_to_actor_squad(npc)
-	local id = npc:id()
-	local sim = alife()
-	local se_npc = sim:object(id)
-	local unreg_id = se_npc and se_npc.m_smart_terrain_id
-	if (unreg_id and unreg_id ~= 65535) then
-		local unreg = sim:object(unreg_id)
-		if (unreg) then
-			unreg:unregister_npc(se_npc)
-		end
-	end
-	npc:inactualize_patrol_path()
-	npc:give_info_portion("npcx_is_companion")
-	axr_logic.set_new_scheme_and_logic(npc,"beh","beh@base","logic",nil,"scripts\\beh_companion.ltx")
-	setup_companion_logic(npc)
-end 
-
 function add_to_actor_squad(npc)
-	local inserted
 	local id = npc:id()
-	for i=1,max_actor_squad_size do
-		local c = utils.load_var(db.actor,"companion_"..i,nil)
-		if not (c) then
-			utils.save_var(db.actor,"companion_"..i,id)
-			--alun_utils.debug_write("add to actor squad %s in slot %s",npc:name(),i)
-			inserted = true
-			break
-		end
-	end
-
-	if not (inserted) then
-		return
-	end
-
-	if not ( db.actor:has_info("axr_has_companion") ) then
-		db.actor:give_info_portion("axr_has_companion")
-	end
-
-	local sim = alife()
-	local se_npc = sim:object(id)
-	if (se_npc) then
-		utils.se_obj_save_var(se_npc.id,se_npc:name(),"companion",true)
-	end
+	non_task_companions[id] = true
+	utils.se_obj_save_var(id,npc:name(),"companion",true)
+	npc:inactualize_patrol_path()
 	setup_companion_logic(npc,db.storage[id],false)
-	
-	--axr_logic.set_new_scheme_and_logic(npc,"beh","beh@base","logic",nil,"scripts\\beh_companion.ltx")
-	--alun_utils.debug_write("Inserted %s into actor squad",npc:name())
 end
 
 function remove_from_actor_squad(npc)
 	local squad = get_object_squad(npc)
 	if (squad) then 
 		squad.scripted_target = nil
-	end 
+		companion_squads[squad.id] = nil
+	end
 	
-	local se_obj = alife():object(npc:id())
+	non_task_companions[npc:id()] = nil
+	npc:disable_info_portion("npcx_is_companion")
+	npc:disable_info_portion("npcx_beh_cannot_dismiss")
+	axr_logic.restore_scheme_and_logic(npc)
+	
+	local se_obj = alife_object(npc:id())
 	if not (se_obj) then 
-		return 
+		return
 	end
 	
 	utils.se_obj_save_var(se_obj.id,se_obj:name(),"companion",nil)
 	utils.se_obj_save_var(se_obj.id,se_obj:name(),"companion_cannot_dismiss",nil)
 	utils.se_obj_save_var(se_obj.id,se_obj:name(),"companion_cannot_teleport",nil)
-			
-	npc:disable_info_portion("npcx_is_companion")
-	npc:disable_info_portion("npcx_beh_cannot_dismiss")
-	
-	axr_logic.restore_scheme_and_logic(npc)
-
-	local count = 0
-	for i=1,max_actor_squad_size do
-		local c = utils.load_var(db.actor,"companion_"..i,nil)
-		if (c == npc:id()) then
-			utils.save_var(db.actor,"companion_"..i,nil)
-		end
-		count = count + 1
-	end
-	if (get_companion_count() < 1) then
-		db.actor:disable_info_portion("axr_has_companion")
-	end
 end
 
-function can_join_actor(npc)
-	local squad = get_object_squad(npc)
-	if squad ~= nil and squad:commander_id() ~= npc:id() then
-		return false
+function remove_all_from_actor_squad()
+	for id,squad in pairs(companion_squads) do
+		if (squad) then
+			for k in squad:squad_members() do 
+				local se_obj = k.object or alife():object(k.id)
+				if (se_obj) then 
+					squad.scripted_target = nil
+					utils.se_obj_save_var(se_obj.id,se_obj:name(),"companion",nil)
+					utils.se_obj_save_var(se_obj.id,se_obj:name(),"companion_cannot_dismiss",nil)
+					utils.se_obj_save_var(se_obj.id,se_obj:name(),"companion_cannot_teleport",nil)		
+						
+					local member = db.storage[se_obj.id] and db.storage[se_obj.id].object or level.object_by_id(se_obj.id)
+					if (member) then 
+						member:disable_info_portion("npcx_is_companion")
+						member:disable_info_portion("npcx_beh_cannot_dismiss")
+						axr_logic.restore_scheme_and_logic(member)
+					end
+				end
+			end
+		end
+		companion_squads[id] = nil
 	end
 
-	if (get_companion_count() + alun_utils.get_squad_count(npc) <= max_actor_squad_size) then
-		return true
+	for id,b in pairs(non_task_companions) do
+		non_task_companions[id] = nil
 	end
-
-	return false
 end
 
 function set_companion_allow_teleport(npc)
-	local se_obj = alife():object(npc:id())
+	local se_obj = alife_object(npc:id())
 	if not (se_obj) then 
 		return 
 	end
@@ -314,29 +313,14 @@ function set_companion_allow_teleport(npc)
 end 
 
 function set_companion_disable_teleport(npc)
-	local se_obj = alife():object(npc:id())
+	local se_obj = alife_object(npc:id())
 	if not (se_obj) then 
 		return 
 	end
 	utils.se_obj_save_var(se_obj.id,se_obj:name(),"companion_cannot_teleport",true)
 end 
 
-function set_companion_combat_type_camper(npc)
-	npc:disable_info_portion("npcx_beh_combat_tactics_monolith")
-	npc:give_info_portion("npcx_beh_combat_tactics_camper")
-end
-
-function set_companion_combat_type_monolith(npc)
-	npc:disable_info_portion("npcx_beh_combat_tactics_camper")
-	npc:give_info_portion("npcx_beh_combat_tactics_monolith")
-end
-
-function set_companion_combat_type_default(npc)
-	npc:disable_info_portion("npcx_beh_combat_tactics_monolith")
-	npc:disable_info_portion("npcx_beh_combat_tactics_camper")
-end
-
-function set_companion_to_wait_state(npc)
+function set_companion_to_wait_state(npc)	
 	npc:give_info_portion("npcx_beh_wait")
 	utils.save_var(npc,"fight_from_point",npc:level_vertex_id())
 end
@@ -367,10 +351,6 @@ function set_companion_to_stealth_substate(npc)
 	npc:give_info_portion("npcx_beh_substate_stealth")
 end
 
-function set_companion_to_relax_substate(npc)
-	npc:give_info_portion("npcx_beh_substate_relax")
-end
-
 function set_companion_to_default_substate(npc)
 	npc:disable_info_portion("npcx_beh_substate_stealth")
 	npc:disable_info_portion("npcx_beh_substate_relax")
@@ -382,11 +362,6 @@ function switch_companion_distance(npc)
 	else
 		npc:give_info_portion("npcx_beh_distance_far")
 	end
-end
-
-function set_companion_hide_in_cover(npc)
-	npc:give_info_portion("npcx_beh_hide_in_cover")
-	npc:disable_info_portion("npcx_beh_wait")
 end
 
 function switch_companion_patrol_mode(npc)
@@ -435,10 +410,10 @@ function companion_add_waypoints(npc,pos)
 	end
 	local pos = db.actor:position()
 	local s = "5000,patrol | pos:"..pos.x..","..pos.y..","..pos.z
-	utils.se_obj_load_var(npc:id(),npc:name(),"pathpoint"..i,s)--utils.save_var(npc,"pathpoint"..tostring(i),s)
+	utils.se_obj_save_var(npc:id(),npc:name(),"pathpoint"..i,s)--utils.save_var(npc,"pathpoint"..tostring(i),s)
 end
 
-function cycle_companions_combat_mode()
+function cycle_companions_combat_mode(force_mode)
 	local t = {"set_companion_to_attack_state","set_companion_to_ignore_combat_state","set_companion_to_attack_only_actor_combat_enemy_state"}
 	if (_current_combat_mode+1 > #t) then 
 		_current_combat_mode = 1
@@ -446,14 +421,16 @@ function cycle_companions_combat_mode()
 		_current_combat_mode = _current_combat_mode + 1
 	end
 	
+	_current_combat_mode = force_mode or _current_combat_mode
+	
 	SetHudMsg(game.translate_string("st_"..t[_current_combat_mode]),8)
 	
 	local f = this[t[_current_combat_mode]]
 	if (f) then 
 		for id,squad in pairs(companion_squads) do 
 			if (squad and squad.commander_id) then
-				for k in squad:squad_members() do
-					if not (xrs_kill_wounded.hostage_list[k.id]) then
+				if not (xrs_kill_wounded.hostage_list[squad:commander_id()]) then
+					for k in squad:squad_members() do
 						local member = db.storage[k.id] and db.storage[k.id].object
 						if (member and member:alive()) then
 							f(member)
@@ -465,7 +442,7 @@ function cycle_companions_combat_mode()
 	end
 end 
 
-function cycle_companions_move_mode()
+function cycle_companions_move_mode(force_mode)
 	local t = {"set_companion_to_wait_state","set_companion_to_follow_state"}
 	
 	if (_current_move_mode+1 > #t) then 
@@ -474,14 +451,16 @@ function cycle_companions_move_mode()
 		_current_move_mode = _current_move_mode + 1
 	end
 	
+	_current_move_mode = force_mode or _current_move_mode
+	
 	SetHudMsg(game.translate_string("st_"..t[_current_move_mode]),8)
 	
 	local f = this[t[_current_move_mode]]
 	if (f) then 
 		for id,squad in pairs(companion_squads) do 
 			if (squad and squad.commander_id) then
-				for k in squad:squad_members() do
-					if not (xrs_kill_wounded.hostage_list[k.id]) then
+				if not (xrs_kill_wounded.hostage_list[squad:commander_id()]) then
+					for k in squad:squad_members() do
 						st = db.storage[k.id]
 						if (k.id == squad:commander_id()) then 
 							if (st and st.beh) then 
@@ -499,52 +478,230 @@ function cycle_companions_move_mode()
 	end
 end 
 
+function cycle_companions_stealth_mode()
+	for id,squad in pairs(axr_companions.companion_squads) do 
+		if (squad and squad.commander_id) then
+			for k in squad:squad_members() do
+				if not (xrs_kill_wounded.hostage_list[k.id]) then
+					st = db.storage[k.id]
+					local member = st and st.object
+					if (member and member:alive()) then
+						if (_current_stealth_mode) then 
+							member:give_info_portion("npcx_beh_substate_stealth")
+							SetHudMsg(game.translate_string("st_companion_state_stealth_disabled"),8)
+						else 
+							member:disable_info_portion("npcx_beh_substate_stealth")
+							SetHudMsg(game.translate_string("st_companion_state_stealth_enabled"),8)
+						end 
+					end
+				end
+			end
+		end
+	end
+	
+	_current_stealth_mode = not _current_stealth_mode
+end
+
+function get_test_member()
+	for _,squad in pairs(companion_squads) do 
+		if (squad.online) then
+			local id = squad:commander_id()
+			local npc = db.storage[id] and db.storage[id].object 
+			if (npc) then 
+				return npc 
+			end
+		end
+	end
+end
+
 function move_to_point(p)
-	local lvid
 	if (p==1) then 
 		SetHudMsg(game.translate_string("st_hold_then_release"),8)
-		--_draw_part = particles_object("weapons\\light_signal")
-		_draw_part = particles_object("_samples_particles_\\flash_light")
-		--_draw_part = particles_object("static\\net_base_blue")
+		_particle_valid = particles_object("_samples_particles_\\flash_light")
+		_particle_invalid = particles_object("_samples_particles_\\flash_light_red")
 	elseif (p==2) then
-		if (_draw_part) then 
+		if (_particle_valid) then
 			local r = level.get_target_dist and level.get_target_dist()
 			if (r) then
-				lvid = level.vertex_in_direction(level.vertex_id(device().cam_pos),device().cam_dir,r)
-				local pos = level.vertex_position(lvid)
-				--if not(_draw_part:playing()) then
-					_draw_part:play_at_pos(vector():set(pos.x,pos.y-0.5,pos.z))
-				--else 
-				--	_draw_part:move_to(pos,pos)
-				--end
+				local pos = vector():set(device().cam_pos)
+				pos:add(device().cam_dir:mul(r))
+				
+				local lvid = level.vertex_id(pos)
+				local npc = lvid and lvid < 4294967295 and get_test_member()
+				if (npc and npc:accessible(pos)) then 
+					if (_particle_invalid:playing()) then 
+						_particle_invalid:stop()
+					end
+					_particle_valid:play_at_pos(vector():set(pos.x,pos.y-0.5,pos.z))
+				else 
+					if (_particle_valid:playing()) then
+						_particle_valid:stop()
+					end
+					_particle_invalid:play_at_pos(vector():set(pos.x,pos.y-0.5,pos.z))
+				end
 			end
 		end	
 	else
-		if (_draw_part) then
-			_draw_part:stop()
-			_draw_part = nil
+		if (_particle_valid:playing()) then
+			_particle_valid:stop()
 		end
+		_particle_valid = nil
+		
+		if (_particle_invalid:playing()) then 
+			_particle_invalid:stop()
+		end 
+		_particle_invalid = nil
+		
 		local r = level.get_target_dist and level.get_target_dist()
 		if (r) then
-			lvid = level.vertex_in_direction(level.vertex_id(device().cam_pos),device().cam_dir,r)
-			if (lvid) then
-				_current_move_mode = 1
-				SetHudMsg(game.translate_string("st_move_to_point"),8)
-				for id,squad in pairs(companion_squads) do 
-					if (squad and squad.commander_id) then
+			local pos = vector():set(device().cam_pos)
+			pos:add(device().cam_dir:mul(r))
+		
+			local lvid = level.vertex_id(pos)
+				
+			_current_move_mode = 1
+			SetHudMsg(game.translate_string("st_move_to_point"),8)
+			for id,squad in pairs(companion_squads) do 
+				if (squad and squad.commander_id) then
+					if not (xrs_kill_wounded.hostage_list[squad:commander_id()]) then
 						for k in squad:squad_members() do
 							st = db.storage[k.id]
 							local member = st and st.object
 							if (member and member:alive()) then
 								set_companion_to_follow_state(member)
+								if (lvid and lvid >= 4294967295) then
+									lvid = nil
+								end
 								utils.save_var(member,"fight_from_point",lvid)
 							end
-							if (k.id == squad:commander_id() and not xrs_kill_wounded.hostage_list[k.id]) then 
-								if (st and st.beh) then 
+							if (k.id == squad:commander_id()) then
+								if (st and st.beh) then
+									if (lvid) then 
+										if (lvid >= 4294967295) then
+											lvid = nil
+										end
+										if not (member:accessible(lvid)) then
+											lvid = member:accessible_nearest(level.vertex_position(lvid),vector())
+										end
+									end
 									st.beh.rally_lvid = lvid
 								end
 							end
 						end
+					end
+				end
+			end
+		end
+	end
+end
+
+function set_companion_squad_move_mode(mode,npc,squad)
+	local t = {"set_companion_to_wait_state","set_companion_to_follow_state"}
+	local f = this[t[mode]]
+	if (f) then
+		squad = squad or get_object_squad(npc)
+		if (squad and squad.commander_id) then
+			if not (xrs_kill_wounded.hostage_list[squad:commander_id()]) then
+				for k in squad:squad_members() do
+					st = db.storage[k.id]
+					if (k.id == squad:commander_id()) then 
+						if (st and st.beh) then 
+							st.beh.rally_lvid = nil
+						end
+					end
+					local member = st and st.object
+					if (member and member:alive()) then
+						f(member)
+					end
+				end
+			end
+		end
+	end
+end
+
+function set_companion_squad_combat_mode(mode,npc,squad)
+	local t = {"set_companion_to_attack_state","set_companion_to_ignore_combat_state","set_companion_to_attack_only_actor_combat_enemy_state"}
+	local f = this[t[mode]]
+	if (f) then 
+		squad = squad or get_object_squad(npc)
+		if (squad and squad.commander_id) then
+			if not (xrs_kill_wounded.hostage_list[squad:commander_id()]) then
+				for k in squad:squad_members() do
+					local member = db.storage[k.id] and db.storage[k.id].object
+					if (member and member:alive()) then
+						f(member)
+					end
+				end
+			end
+		end
+	end
+end
+
+function set_companion_squad_stealth_mode(mode,npc,squad)
+	squad = squad or get_object_squad(npc)
+	if (squad and squad.commander_id) then
+		if not (xrs_kill_wounded.hostage_list[squad:commander_id()]) then
+			for k in squad:squad_members() do
+				local member = db.storage[k.id] and db.storage[k.id].object
+				if (member and member:alive()) then
+					if (mode == 1) then
+						member:give_info_portion("npcx_beh_substate_stealth")
+					else 
+						member:disable_info_portion("npcx_beh_substate_stealth")
+					end
+				end
+			end
+		end
+	end
+end
+
+function set_companion_squad_distance_mode(mode,npc,squad)
+	squad = squad or get_object_squad(npc)
+	if (squad and squad.commander_id) then
+		if not (xrs_kill_wounded.hostage_list[squad:commander_id()]) then
+			for k in squad:squad_members() do
+				local member = db.storage[k.id] and db.storage[k.id].object
+				if (member and member:alive()) then
+					if (mode == 1) then
+						member:give_info_portion("npcx_beh_distance_far")
+					else 
+						member:disable_info_portion("npcx_beh_distance_far")
+					end
+				end
+			end
+		end
+	end
+end
+
+function set_companion_squad_gather_mode(mode,npc,squad)
+	squad = squad or get_object_squad(npc)
+	if (squad and squad.commander_id) then
+		if not (xrs_kill_wounded.hostage_list[squad:commander_id()]) then
+			for k in squad:squad_members() do
+				local member = db.storage[k.id] and db.storage[k.id].object
+				if (member and member:alive()) then
+					if (mode == 1) then
+						member:give_info_portion("npcx_beh_gather_items")
+					else 
+						member:disable_info_portion("npcx_beh_gather_items")
+					end
+				end
+			end
+		end
+	end
+end
+
+function set_companion_squad_loot_mode(mode,npc,squad)
+	squad = squad or get_object_squad(npc)
+	if (squad and squad.commander_id) then
+		if not (xrs_kill_wounded.hostage_list[squad:commander_id()]) then
+			for k in squad:squad_members() do
+				local member = db.storage[k.id] and db.storage[k.id].object
+				if (member and member:alive()) then
+					if (mode == 1) then
+						member:give_info_portion("npcx_beh_loot_corpses")
+					else 
+						member:disable_info_portion("npcx_beh_loot_corpses")
 					end
 				end
 			end

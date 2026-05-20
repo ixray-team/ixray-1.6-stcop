@@ -89,7 +89,7 @@ min_view_distance   		= 0.4				; min range of cone based on eye_range
 max_view_distance	 		= 1.0				; max range of cone based on eye_range
 visibility_threshold	 	= 30				;Threshold in which object becomes visible based on factors
 always_visible_distance 	= 0					;Distance object is always considered visible (float)
-time_quant					= 0.0052			;step increment to for sight calculations
+time_quant					= 0.0054			;step increment to for sight calculations
 decrease_value				= 0.1				;Decrease over time to overall threshold
 velocity_factor		     	= 0.5				;Higher value = greater bonus to detection speed when target is moving (depended on movement speed)
 luminocity_factor			= 0.70				;Low value = easier to see at night
@@ -104,12 +104,12 @@ still_visible_time          = 0					;The time (milliseconds) that the object is 
 	world					= 0.1	; коэффициент усиления приоритета\силы звука
 
 [stalker_damage]
-default						= 0.5, -1, 0.5
+default						= 0.5, -1, 1.0
 
-bip01_pelvis 				= 0.5, 4, 0.1
-bip01_spine 		 		= 0.8, 4, 0.4
-bip01_spine1 		 		= 0.8, 4, 0.4
-bip01_spine2 		 		= 0.8, 4, 0.4
+bip01_pelvis 				= 0.5, 1, 0.3
+bip01_spine 		 		= 1.0, 1, 0.8
+bip01_spine1 		 		= 1.0, 1, 0.8
+bip01_spine2 		 		= 1.0, 1, 0.8
 bip01_neck 			 		= 1.0, 0, 1.0
 bip01_head 			 		= 2.0, 0, 1.0, 	3
 eyelid_1 			 		= 2.0, 0, 1.0, 	3
@@ -118,22 +118,22 @@ eye_right 			 		= 2.0, 0, 1.0, 	3
 jaw_1 		 		 		= 2.0, 0, 1.0
 
 bip01_l_clavicle	 		= 0.35, 10, 0.45
-bip01_l_upperarm	 		= 0.20, 10, 0.45
-bip01_l_forearm	 	 	    = 0.10, 10, 0.25
+bip01_l_upperarm	 		= 0.25, 10, 0.45
+bip01_l_forearm	 	 	    = 0.25, 10, 0.25
 bip01_l_hand	 	 	    = 0.05, -1, 0.02
-bip01_l_finger0	 	 	    = 0.01, -1, 0.01
-bip01_l_finger01	 		= 0.01, -1, 0.01
-bip01_l_finger02	 		= 0.01, -1, 0.01
-bip01_l_finger1	 	 	    = 0.01, -1, 0.01
-bip01_l_finger11	 		= 0.01, -1, 0.01
-bip01_l_finger12	 		= 0.01, -1, 0.01
-bip01_l_finger2	 	 	    = 0.01, -1, 0.01
-bip01_l_finger21	 		= 0.01, -1, 0.01
-bip01_l_finger22	 		= 0.01, -1, 0.01
+bip01_l_finger0	 	 	    = 0.05, -1, 0.01
+bip01_l_finger01	 		= 0.05, -1, 0.01
+bip01_l_finger02	 		= 0.05, -1, 0.01
+bip01_l_finger1	 	 	    = 0.05, -1, 0.01
+bip01_l_finger11	 		= 0.05, -1, 0.01
+bip01_l_finger12	 		= 0.05, -1, 0.01
+bip01_l_finger2	 	 	    = 0.05, -1, 0.01
+bip01_l_finger21	 		= 0.05, -1, 0.01
+bip01_l_finger22	 		= 0.05, -1, 0.01
 
 bip01_r_clavicle	 		= 0.35, 10, 0.45
-bip01_r_upperarm	 		= 0.20, 10, 0.45
-bip01_r_forearm	 	 		= 0.10, 10, 0.25
+bip01_r_upperarm	 		= 0.25, 10, 0.45
+bip01_r_forearm	 	 		= 0.15, 10, 0.25
 bip01_r_hand	 	 		= 0.05, -1, 0.02
 bip01_r_finger0	 	 		= 0.01, -1, 0.01
 bip01_r_finger01	 		= 0.01, -1, 0.01
@@ -145,13 +145,13 @@ bip01_r_finger2	 	 	 	= 0.01, -1, 0.01
 bip01_r_finger21	 		= 0.01, -1, 0.01
 bip01_r_finger22	 		= 0.01, -1, 0.01
 
-bip01_l_thigh	 	 		= 0.30,  4, 0.45
-bip01_l_calf	 	 		= 0.15,  4, 0.4
-bip01_l_foot	 	 		= 0.05,  4, 0.01
+bip01_l_thigh	 	 		= 0.40,  4, 0.45
+bip01_l_calf	 	 		= 0.35,  4, 0.4
+bip01_l_foot	 	 		= 0.10,  4, 0.01
 bip01_l_toe0	 	 		= 0.01, -1, 0.01
-bip01_r_thigh	 	 		= 0.30,  6, 0.45
-bip01_r_calf	 	 		= 0.15,  6, 0.4
-bip01_r_foot	 	 		= 0.05,  6, 0.01
+bip01_r_thigh	 	 		= 0.40,  6, 0.45
+bip01_r_calf	 	 		= 0.35,  6, 0.4
+bip01_r_foot	 	 		= 0.10,  6, 0.01
 bip01_r_toe0	 	 		= 0.01, -1, 0.01
 
 [critical_wound_head_section]
@@ -228,9 +228,9 @@ shock_immunity 				= 0.5
 wound_immunity				= 0.3
 radiation_immunity 			= 0.5
 telepatic_immunity 			= 0.5
-chemical_burn_immunity 			= 0.5
+chemical_burn_immunity 		= 0.5
 explosion_immunity 			= 0.5
-fire_wound_immunity  			= 1.0
+fire_wound_immunity  		= 1.0
 wound_2_immunity  			= 1.0
 
 [stalker_condition]
@@ -247,7 +247,7 @@ psy_health_v				= 0.01
 health_restore_v            = 0.00003
 
 sleep_health				= 1.0
-sleep_power				= 1.0
+sleep_power					= 1.0
 sleep_satiety				= 1.0
 sleep_radiation 			= 1.0
 sleep_psy_health			= 1.0
@@ -258,7 +258,7 @@ limping_threshold			= 0.05
 
 ;открытые раны
 bleeding_v					= 0.0	;потеря крови при номинальной ране в секунду
-wound_incarnation_v			= 0.03		;крутизна кривой заживления (какой процент раны останется после заживления в игровую секунду)
+wound_incarnation_v			= 0.001		;крутизна кривой заживления (какой процент раны останется после заживления в игровую секунду)
 min_wound_size				= 0.01
 
 [stalker_terrain]
@@ -323,7 +323,7 @@ min_wound_size				= 0.01
 	panic_stand_run_forward		= 7.0
 
 [stalker]:common_ph_friction_params_on_npc_death
-class				= AI_STL_S	;Class identifier
+class					= AI_STL_S	;Class identifier
 
 can_select_items		= on
 
@@ -331,13 +331,13 @@ can_select_items		= on
 ef_creature_type		= 17						;option for evaluation functions
 
 ;---LEVEL EDITOR------------------------------------------------------
-$spawn				= "stalkers\stalker"				;option for Level Editor
-$npc				= on						;option for Level Editor
-visual				= actors\stalker_hero\stalker_hero_1.ogf	;option for Level Editor
+$spawn					= "stalkers\stalker"				;option for Level Editor
+$npc					= on						;option for Level Editor
+visual					= actors\stalker_hero\stalker_hero_1.ogf	;option for Level Editor
 corpse_visual			= dynamics\equipments\item_rukzak.ogf		;option for Level Editor
-custom_data			= default_custom_data.ltx			;option for Level Editor
+custom_data				= default_custom_data.ltx			;option for Level Editor
 character_profile		= default					;option for Level Editor
-use_single_item_rule		= off
+use_single_item_rule	= off
 
 ;---GAME--------------------------------------------------------------
 $prefetch 			= 32
@@ -356,6 +356,7 @@ script_binding			= bind_stalker.init
 
 ;---GROUP SECTIONS----------------------------------------------------
 GroupControlSection		= spawn_group
+SpaceRestrictionSection	= space_restrictor,zone_mine_field
 attachable_items		= device_torch,attachable_item,hand_radio,hand_radio_r,bread,bread_old, vodka, energy_drink, kolbasa, guitar_a, harmonica_a, detector_simple, pri_a15_wpn_svu, pri_a15_wpn_wincheaster1300, pri_a15_wpn_ak74u, pri_a15_wpn_ak74, pri_a15_documents, af_quest_b14_twisted, detector_advanced, detector_elite, device_pda, anomaly_scaner, medkit_script, anim_knife, anim_binoc, stick_bred,stick_kolbasa,stick_kolbasa_bred
 
 ;---SECTIONS----------------------------------------------------------
@@ -528,25 +529,25 @@ ph_character_have_wounded_state = false; имеет ли персонаж состояние раненый
 
 
 ;front/back/left/right
-kill_enertion           = ragdoll_inertion_front_0/ragdoll_inertion_front_3/ragdoll_inertion_front_2/ragdoll_inertion_front_1
+;kill_enertion           = ragdoll_inertion_front_0/ragdoll_inertion_front_3/ragdoll_inertion_front_2/ragdoll_inertion_front_1
 
 
 ;kill_burst				= ragdoll_burst_front_0,ragdoll_burst_front_1/ragdoll_burst_back_0/ragdoll_burst_left_0/ragdoll_burst_right_0
 
 
-kill_shortgun	        = ragdoll_shortgun_front_0,ragdoll_shortgun_front_1,ragdoll_shortgun_front_2,ragdoll_shortgun_front_3,ragdoll_shortgun_front_4,ragdoll_shortgun_front_5,ragdoll_shortgun_front_6,ragdoll_shortgun_front_7,ragdoll_shortgun_front_8/ragdoll_shortgun_back_0,ragdoll_shortgun_back_1,ragdoll_shortgun_back_2,ragdoll_shortgun_back_3,ragdoll_shortgun_back_4,ragdoll_shortgun_back_5,ragdoll_shortgun_back_6/ragdoll_shortgun_left_0,ragdoll_shortgun_left_1,ragdoll_shortgun_left_2/ragdoll_shortgun_right_0,ragdoll_shortgun_right_1
+;kill_shortgun	        = ragdoll_shortgun_front_0,ragdoll_shortgun_front_1,ragdoll_shortgun_front_2,ragdoll_shortgun_front_3,ragdoll_shortgun_front_4,ragdoll_shortgun_front_5,ragdoll_shortgun_front_6,ragdoll_shortgun_front_7,ragdoll_shortgun_front_8/ragdoll_shortgun_back_0,ragdoll_shortgun_back_1,ragdoll_shortgun_back_2,ragdoll_shortgun_back_3,ragdoll_shortgun_back_4,ragdoll_shortgun_back_5,ragdoll_shortgun_back_6/ragdoll_shortgun_left_0,ragdoll_shortgun_left_1,ragdoll_shortgun_left_2/ragdoll_shortgun_right_0,ragdoll_shortgun_right_1
 
 
-kill_headshot		= ragdoll_headshot_front_0,ragdoll_headshot_front_1,ragdoll_headshot_front_2,ragdoll_headshot_front_3,ragdoll_headshot_front_4,ragdoll_headshot_front_5,ragdoll_headshot_front_6,ragdoll_headshot_front_7,ragdoll_headshot_front_8,ragdoll_headshot_front_9,ragdoll_headshot_front_10/ragdoll_headshot_back_0,ragdoll_headshot_back_1,ragdoll_headshot_back_2,ragdoll_headshot_back_3,ragdoll_headshot_back_4,ragdoll_headshot_back_5/ragdoll_headshot_left_0,ragdoll_headshot_left_1,ragdoll_headshot_left_2,ragdoll_headshot_left_3,ragdoll_headshot_left_4,ragdoll_headshot_left_5,ragdoll_headshot_left_6,ragdoll_headshot_left_7/ragdoll_headshot_right_0,ragdoll_headshot_right_1,ragdoll_headshot_right_2,ragdoll_headshot_right_3,ragdoll_headshot_right_4,ragdoll_headshot_right_5,ragdoll_headshot_right_6
+;kill_headshot		= ragdoll_headshot_front_0,ragdoll_headshot_front_1,ragdoll_headshot_front_2,ragdoll_headshot_front_3,ragdoll_headshot_front_4,ragdoll_headshot_front_5,ragdoll_headshot_front_6,ragdoll_headshot_front_7,ragdoll_headshot_front_8,ragdoll_headshot_front_9,ragdoll_headshot_front_10/ragdoll_headshot_back_0,ragdoll_headshot_back_1,ragdoll_headshot_back_2,ragdoll_headshot_back_3,ragdoll_headshot_back_4,ragdoll_headshot_back_5/ragdoll_headshot_left_0,ragdoll_headshot_left_1,ragdoll_headshot_left_2,ragdoll_headshot_left_3,ragdoll_headshot_left_4,ragdoll_headshot_left_5,ragdoll_headshot_left_6,ragdoll_headshot_left_7/ragdoll_headshot_right_0,ragdoll_headshot_right_1,ragdoll_headshot_right_2,ragdoll_headshot_right_3,ragdoll_headshot_right_4,ragdoll_headshot_right_5,ragdoll_headshot_right_6
 
 
-kill_sniper_headshot	= ragdoll_sniper_headshot_front_0,ragdoll_sniper_headshot_front_1,ragdoll_sniper_headshot_front_2/ragdoll_sniper_headshot_back_0/ragdoll_sniper_headshot_left_0/ragdoll_sniper_headshot_right_0
+;kill_sniper_headshot	= ragdoll_sniper_headshot_front_0,ragdoll_sniper_headshot_front_1,ragdoll_sniper_headshot_front_2/ragdoll_sniper_headshot_back_0/ragdoll_sniper_headshot_left_0/ragdoll_sniper_headshot_right_0
 
 
-kill_sniper_body	= ragdoll_sniper_body_front_0,ragdoll_sniper_body_front_1,ragdoll_sniper_body_front_2/ragdoll_sniper_body_back_0,ragdoll_sniper_body_back_1,ragdoll_sniper_body_back_2,ragdoll_sniper_body_back_3/ragdoll_sniper_body_left_0/ragdoll_sniper_body_right_0
+;kill_sniper_body	= ragdoll_sniper_body_front_0,ragdoll_sniper_body_front_1,ragdoll_sniper_body_front_2/ragdoll_sniper_body_back_0,ragdoll_sniper_body_back_1,ragdoll_sniper_body_back_2,ragdoll_sniper_body_back_3/ragdoll_sniper_body_left_0/ragdoll_sniper_body_right_0
 
 
-kill_grenade            = ragdoll_grenade_front_0/ragdoll_grenade_back_0/ragdoll_grenade_left_0/ragdoll_grenade_right_0
+;kill_grenade            = ragdoll_grenade_front_0/ragdoll_grenade_back_0/ragdoll_grenade_left_0/ragdoll_grenade_right_0
 
 ;front-norm_2_rag_doll_front_0,norm_2_rag_doll_front_1,norm_2_rag_doll_front_2/back-norm_2_rag_doll_back_0,norm_2_rag_doll_back_1,norm_2_rag_doll_back_2/right-norm_2_rag_doll_right_0/left-norm_2_rag_doll_left_0
 

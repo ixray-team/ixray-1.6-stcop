@@ -433,8 +433,8 @@
 	<string id="st_cap_check_hardcore">
 		<text>Ironman mode</text>
 	</string>
-	<string id="st_cap_check_hardcore_aim">
-		<text>Hardcore AI aim</text>
+	<string id="st_cap_check_azazel_mode">
+		<text>Azazel mode</text>
 	</string>
 	<string id="ui_mm_debug_hud">
 		<text>Debug hud</text>
@@ -498,5 +498,17 @@
 	</string>
 	<string id="ui_mm_slot_hud">
 		<text>Belt Artifact HUD</text>
+	</string>
+	<string id="ui_mm_show_tracers">
+		<text>Show tracers</text>
+	</string>
+	<string id="ui_mm_release_dropped_items">
+		<text>Remove dropped items</text>
+	</string>
+	<string id="ui_mm_hardcore_ai_aim">
+		<text>Hardcore AI aim</text>
+	</string>
+	<string id="ui_mm_localization">
+		<text>Localization</text>
 	</string>
 </string_table>

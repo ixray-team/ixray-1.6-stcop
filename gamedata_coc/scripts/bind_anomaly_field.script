@@ -76,7 +76,7 @@ function anomaly_field_binder:update(delta)
 	object_binder.update(self, delta)
 	--[[ testing
 	local itr = function(id)
-		local obj = id and alife():object(id)
+		local obj = id and alife_object(id)
 		printf("%s touch_feel id=%s obj=%s",self.object:name(),id,obj and obj:name())
 	end
 	self.object:iterate_feel_touch(itr)

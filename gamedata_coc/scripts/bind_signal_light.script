@@ -1,6 +1,4 @@
 function init(obj)
-	--printf("_bp: init(): name='%s'", obj:name())
-
 	db.storage[obj:id()] = db.storage[obj:id()] and empty_table(db.storage[obj:id()]) or {}
 	local new_binder = signal_light_binder(obj)
 	obj:bind_object(new_binder)
@@ -80,6 +78,9 @@ function signal_light_binder:net_spawn(data)
 end
 
 function signal_light_binder:net_destroy()
+	-- if (self.slow_fly_started) then 
+		-- self:stop_light()
+	-- end
 	db.signal_light[self.object:name()] = nil
 	object_binder.net_destroy(self)
 end

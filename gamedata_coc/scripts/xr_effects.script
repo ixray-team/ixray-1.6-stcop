@@ -3,6 +3,7 @@
 -- ----------------------------------------------------------------------------------------------------
 -- TODO: Remove all unused COP story functions
 
+local DIALOG_LAST_ID = nil
 ---------------------------------------------------------------------------------------------------------------
 -- Initialize a task to find a faction stayed at a smart anywhere on actor current level. ID of smart is tracked in pstor by a given var name
 -- param 1 - var name
@@ -95,6 +96,7 @@ function add_task_companion(actor,npc,p)
 	if not (squad) then 
 		return 
 	end
+	axr_companions.companion_squads[squad.id] = squad
 	for k in squad:squad_members() do
 		local npc = k.id and (db.storage[k.id] and db.storage[k.id].object)
 		if (npc) then
@@ -247,7 +249,7 @@ end
 -- param 5 - is a hostage
 function setup_companion_task(actor,npc,p)
 	local id = p[3] and p[3] ~= "nil" and utils.load_var(db.actor,p[3])
-	local smart = id and alife():object(id) or p[2] and p[2] ~= "nil" and SIMBOARD.smarts_by_names[p[2]]
+	local smart = id and alife_object(id) or p[2] and p[2] ~= "nil" and SIMBOARD.smarts_by_names[p[2]]
 	if not (smart) then 
 		return 
 	end 
@@ -263,6 +265,7 @@ function setup_companion_task(actor,npc,p)
 	squad:create_npc(smart)
 	squad:set_squad_relation()
 
+	axr_companions.companion_squads[squad.id] = squad
 	for k in squad:squad_members() do
 		local se_obj = k.object or k.id and sim:object(k.id)
 		if (se_obj) then
@@ -300,127 +303,157 @@ end
 -- param3+ - sections
 function setup_generic_fetch_task(actor,npc,p)
 	if (p[1] and p[2] and p[3]) then 
-		local sec = #p > 3 and p[math.random(3,#p)] or p[3]
+		local sec = DIALOG_LAST_ID and DIALOG_LAST_ID == inventory_upgrades.victim_id and utils.load_var(db.actor,p[1])
+		DIALOG_LAST_ID = inventory_upgrades.victim_id
 		if (sec and system_ini():section_exist(sec)) then
-			utils.save_var(db.actor,p[1],sec)
-			local count = tonumber(p[2]) or 1
-			if (count > 1) then 
-				utils.save_var(db.actor,p[1].."_count",count)
-			end
 			dialogs._FETCH_TEXT = game.translate_string(system_ini():r_string_ex(sec,"inv_name") or "")
 		else
-			printf("ERROR: xr_effects:setup_generic_fetch_task - invalid section %s",sec)
+			sec = #p > 3 and p[math.random(3,#p)] or p[3]
+			if (sec and system_ini():section_exist(sec)) then
+				utils.save_var(db.actor,p[1],sec)
+				local count = tonumber(p[2]) or 1
+				if (count > 1) then 
+					utils.save_var(db.actor,p[1].."_count",count)
+				end
+				dialogs._FETCH_TEXT = game.translate_string(system_ini():r_string_ex(sec,"inv_name") or "")
+			else
+				printf("ERROR: xr_effects:setup_generic_fetch_task - invalid section %s",sec)
+			end
 		end
 	end
 end
 
 -- param1 - variable name
 function setup_rare_mutant_fetch_task(actor,npc,p)
-	local parts = { 
-	"mutant_part_controller_glass",
-	"mutant_part_controller_hand",
-	"mutant_part_burer_hand",
-	"mutant_part_pseudogigant_eye",
-	"mutant_part_pseudogigant_hand",
-	"mutant_part_chimera_claw",
-	"mutant_part_chimera_kogot"
-	}
-	local part = parts[math.random(#parts)]
-	dialogs._FETCH_TEXT = game.translate_string(system_ini():r_string_ex(part,"inv_name") or "")
-	utils.save_var(db.actor,p[1],part)
+	local part = DIALOG_LAST_ID and DIALOG_LAST_ID == inventory_upgrades.victim_id and utils.load_var(db.actor,p[1])
+	DIALOG_LAST_ID = inventory_upgrades.victim_id
+	if (part and system_ini():section_exist(part)) then 
+		dialogs._FETCH_TEXT = game.translate_string(system_ini():r_string_ex(part,"inv_name") or "")
+	else
+		local parts = { 
+		"mutant_part_controller_glass",
+		"mutant_part_controller_hand",
+		"mutant_part_burer_hand",
+		"mutant_part_pseudogigant_eye",
+		"mutant_part_pseudogigant_hand",
+		"mutant_part_chimera_claw",
+		"mutant_part_chimera_kogot"
+		}
+		part = parts[math.random(#parts)]
+		utils.save_var(db.actor,p[1],part)
+		dialogs._FETCH_TEXT = game.translate_string(system_ini():r_string_ex(part,"inv_name") or "")
+	end
 end 
 
 -- param1 - variable name
 function setup_artefact_fetch_task(actor,npc,p)
-	local arts = {
-	"af_cristall",
-	"af_fireball",
-	"af_dummy_glassbeads",
-	"af_eye",
-	"af_fire",
-	"af_medusa",
-	"af_cristall_flower",
-	"af_night_star",
-	"af_vyvert",
-	"af_gravi",
-	"af_gold_fish",
-	"af_blood",
-	"af_mincer_meat",
-	"af_soul",
-	"af_fuzz_kolobok",
-	"af_baloon",
-	"af_glass",
-	"af_electra_sparkler",
-	"af_electra_flash",
-	"af_electra_moonlight",
-	"af_dummy_battery",
-	"af_dummy_dummy",
-	"af_ice"
-	}
+	local artefact = DIALOG_LAST_ID and DIALOG_LAST_ID == inventory_upgrades.victim_id and utils.load_var(db.actor,p[1])
+	DIALOG_LAST_ID = inventory_upgrades.victim_id
+	if (artefact and system_ini():section_exist(artefact)) then 
+		dialogs._FETCH_TEXT = game.translate_string(system_ini():r_string_ex(artefact,"inv_name") or "")
+	else
+		local arts = {
+		"af_cristall",
+		"af_fireball",
+		"af_dummy_glassbeads",
+		"af_eye",
+		"af_fire",
+		"af_medusa",
+		"af_cristall_flower",
+		"af_night_star",
+		"af_vyvert",
+		"af_gravi",
+		"af_gold_fish",
+		"af_blood",
+		"af_mincer_meat",
+		"af_soul",
+		"af_fuzz_kolobok",
+		"af_baloon",
+		"af_glass",
+		"af_electra_sparkler",
+		"af_electra_flash",
+		"af_electra_moonlight",
+		"af_dummy_battery",
+		"af_dummy_dummy",
+		"af_ice"
+		}
 	
-	local artefact = arts[math.random(#arts)]
-	dialogs._FETCH_TEXT = game.translate_string(system_ini():r_string_ex(artefact,"inv_name") or "")
-	utils.save_var(db.actor,p[1],artefact)
+		artefact = arts[math.random(#arts)]
+		utils.save_var(db.actor,p[1],artefact)
+		dialogs._FETCH_TEXT = game.translate_string(system_ini():r_string_ex(artefact,"inv_name") or "")
+	end
 end 
 
 function setup_weapon_fetch_task(actor,npc,p)
-	local itm = {
-			"wpn_bm16",
-			"wpn_toz34",
-			"wpn_wincheaster1300",
-			"wpn_spas12",
-			"wpn_protecta",
-			"wpn_ak74u",
-			"wpn_mp5",
-			"wpn_ak74",
-			"wpn_abakan",
-			"wpn_l85",
-			"wpn_lr300",
-			"wpn_sig550",
-			"wpn_groza",
-			"wpn_val",
-			"wpn_vintorez",
-			"wpn_svu",
-			"wpn_svd",
-			"wpn_rg-6",
-			"wpn_rpg7",
-			"wpn_g36",
-			"wpn_fn2000",
-			"wpn_pkm"
-	}
-	local wpn = itm[math.random(#itm)]
-	dialogs._FETCH_TEXT = game.translate_string(system_ini():r_string_ex(wpn,"inv_name") or "")
-	utils.save_var(db.actor,p[1],wpn)
+	local wpn = DIALOG_LAST_ID and DIALOG_LAST_ID == inventory_upgrades.victim_id and utils.load_var(db.actor,p[1])
+	DIALOG_LAST_ID = inventory_upgrades.victim_id
+	if (wpn and system_ini():section_exist(wpn)) then 
+		dialogs._FETCH_TEXT = game.translate_string(system_ini():r_string_ex(wpn,"inv_name") or "")
+	else
+		local itm = {
+				"wpn_bm16",
+				"wpn_toz34",
+				"wpn_wincheaster1300",
+				"wpn_spas12",
+				"wpn_protecta",
+				"wpn_ak74u",
+				"wpn_mp5",
+				"wpn_ak74",
+				"wpn_abakan",
+				"wpn_l85",
+				"wpn_lr300",
+				"wpn_sig550",
+				"wpn_groza",
+				"wpn_val",
+				"wpn_vintorez",
+				"wpn_svu",
+				"wpn_svd",
+				"wpn_rg-6",
+				"wpn_rpg7",
+				"wpn_g36",
+				"wpn_fn2000",
+				"wpn_pkm"
+		}
+		wpn = itm[math.random(#itm)]
+		dialogs._FETCH_TEXT = game.translate_string(system_ini():r_string_ex(wpn,"inv_name") or "")
+		utils.save_var(db.actor,p[1],wpn)
+	end
 end 
 
 -- param 1 - var name 
 -- param 2 - min count 
 -- param 3 - max count
 function setup_supplies_fetch_task(actor,npc,p)
-	local itm = {
-				"bandage",
-				"antirad",
-				"medkit",
-				"medkit_army",
-				"medkit_scientic",
+	local itm = DIALOG_LAST_ID and DIALOG_LAST_ID == inventory_upgrades.victim_id and utils.load_var(db.actor,p[1])
+	DIALOG_LAST_ID = inventory_upgrades.victim_id
+	if (itm and system_ini():section_exist(itm)) then 
+		dialogs._FETCH_TEXT = game.translate_string(system_ini():r_string_ex(itm,"inv_name") or "")
+	else
+		local itms = {
+					"bandage",
+					"antirad",
+					"medkit",
+					"medkit_army",
+					"medkit_scientic",
 
-				"drug_booster",
-				"drug_coagulant",
-				"drug_psy_blockade",
-				"drug_antidot",
-				"drug_radioprotector",
-				"drug_anabiotic",
+					"drug_booster",
+					"drug_coagulant",
+					"drug_psy_blockade",
+					"drug_antidot",
+					"drug_radioprotector",
+					"drug_anabiotic",
 
-				"bread",
-				"kolbasa",
-				"conserva",
-				"vodka",
-				"energy_drink"
-				}
-	local itm = itm[math.random(#itm)]
-	dialogs._FETCH_TEXT = game.translate_string(system_ini():r_string_ex(itm,"inv_name") or "")
-	utils.save_var(db.actor,p[1],itm)
-	utils.save_var(db.actor,p[1].."_count",math.random(p[2] and tonumber(p[2]) or 1,p[3] and tonumber(p[3]) or 1))
+					"bread",
+					"kolbasa",
+					"conserva",
+					"vodka",
+					"energy_drink"
+					}
+		itm = itms[math.random(#itms)]
+		dialogs._FETCH_TEXT = game.translate_string(system_ini():r_string_ex(itm,"inv_name") or "")
+		utils.save_var(db.actor,p[1],itm)
+		utils.save_var(db.actor,p[1].."_count",math.random(p[2] and tonumber(p[2]) or 1,p[3] and tonumber(p[3]) or 1))
+	end
 end 
 
 function remove_fetch_item(actor,npc,p)
@@ -438,7 +471,7 @@ end
 
 function unlock_smart(actor,npc,p)
 	local id = p[1] and p[1] ~= "nil" and utils.load_var(db.actor,p[1])
-	local smart = id and alife():object(id)
+	local smart = id and alife_object(id)
 	if (smart) then 
 		smart.locked = nil
 	end
@@ -887,8 +920,7 @@ function teleport_actor(actor, npc, p)
 	end
 
 	for k,v in pairs(db.no_weap_zones) do
-		local zone = db.zone_by_name[k]
-		if utils.npc_in_zone(db.actor, zone) then
+		if utils.npc_in_zone(db.actor, k) then
 			db.no_weap_zones[k] = true
 		end
 	end
@@ -1010,7 +1042,7 @@ function teleport_npc_by_story_id(actor, npc, p)
 		reset_animation(cl_object)
 		cl_object:set_npc_position(position)
 	else
-		alife():object(npc_id).position = position
+		alife_object(npc_id).position = position
 	end
 end
 
@@ -1096,7 +1128,7 @@ function give_item(actor, npc, p)
 	else
 		npc_id = npc:id()
 	end
-	local se_npc = alife():object(npc_id)
+	local se_npc = alife_object(npc_id)
 	if not (se_npc) then 
 		return 
 	end
@@ -1446,7 +1478,7 @@ function remove_npc(actor, npc, p)
 		npc_id = get_story_object_id(p[1])
 	end
 	if npc_id ~= nil then
-		local se_obj = alife():object(npc_id)
+		local se_obj = alife_object(npc_id)
 		if (se_obj) then
 			safe_release_manager.release(se_obj)
 			--alife():release(se_obj, true)
@@ -1845,7 +1877,7 @@ function jup_b219_save_pos()
 	else
 		return
 	end
-	sobj = alife():object(obj:id())
+	sobj = alife_object(obj:id())
 	if sobj then
 		alife():release(sobj, true)
 	end
@@ -1898,14 +1930,14 @@ function spawn_object_in(actor, obj, p)
 	if p[2] == nil then
 		printf("Wrong target_name for 'spawn_object_in' function %s. For object %s", tostring(target_name), obj:name())
 	end
---	local box = alife():object(target_name)
+--	local box = alife_object(target_name)
 --	if(box==nil) then
 
 	printf("xr_effects.spawn_object_in trying to find object %s", tostring(p[2]))
 
 	local target_obj_id = get_story_object_id(p[2])
 	if target_obj_id ~= nil then
-		box = alife():object(target_obj_id)
+		box = alife_object(target_obj_id)
 		if box == nil then
 			printf("xr_effects.spawn_object_in There is no such object %s", p[2])
 		end
@@ -1943,25 +1975,17 @@ end
 
 function destroy_object(actor, obj, p)
 	local sobj
-	if p == nil then
-		sobj = alife():object(obj:id())
-	else
-		if p[1] == nil or p[2] == nil then
-			printf("Wrong parameters in destroy_object function!!!")
+	if (p == nil or p[1] == nil) then
+		sobj = alife_object(obj:id())
+	elseif (p[1] == "story" and p[2] ~= nil) then
+		local id = get_story_object_id(p[2])
+		if not (id) then 
+			printf("destroy_object %s story id doesn't exist!",p[2])
 		end
-		local target_str = nil
-		if p[3] ~= nil then
-			target_str = p[1].."|"..p[2]..","..p[3]
-		else
-			target_str = p[1].."|"..p[2]
-		end
-		local target_position, target_id, target_init = xr_remark.init_target(obj, target_str)
-		if target_id == nil then
-			printf("You are trying to set non-existant target [%s] for object [%s] in section [%s]", target_str, obj:name(), db.storage[obj:id()].active_section)
-		end
-		sobj = alife():object(target_id)
+		sobj = id and alife_object(id)
 	end
-	if sobj == nil then
+	
+	if not (sobj) then
 		return
 	end
 
@@ -2191,19 +2215,19 @@ function create_squad_member(actor, obj, p)
 		level_vertex_id = patrol(spawn_point):level_vertex_id(0)
 		game_vertex_id 	= patrol(spawn_point):game_vertex_id(0)
 	else
-		local commander = alife():object(squad:commander_id())
+		local commander = alife_object(squad:commander_id())
 		position		= commander.position
 		level_vertex_id = commander.m_level_vertex_id
 		game_vertex_id	= commander.m_game_vertex_id
 	end
 	local new_member_id = squad:add_squad_member(squad_member_sect, position,  level_vertex_id, game_vertex_id)
 	
-	local se_obj = new_member_id and alife():object(new_member_id)
+	local se_obj = new_member_id and alife_object(new_member_id)
 	if (se_obj) then 
 		squad_smart:register_npc(se_obj)
+		board:setup_squad_and_group(se_obj)
 	end
-
-	board:setup_squad_and_group(alife():object(new_member_id))
+	
 	--squad_smart:refresh()
 	squad:update()
 end
@@ -2238,7 +2262,7 @@ function kill_squad(actor, obj, p)
 	for k,v in pairs(squad_npcs) do
 		local cl_obj = db.storage[k] and db.storage[k].object
 		if cl_obj == nil then
-			alife():object(tonumber(k)):kill()
+			alife_object(tonumber(k)):kill()
 		else
 			cl_obj:kill(cl_obj)
 		end
@@ -2318,11 +2342,11 @@ function flush_smart_terrain(actor,obj,p)
 		squad.current_action = nil
 		board:assign_squad_to_smart(squad, nil)
 		for k in squad:squad_members() do
-			local se_obj = alife():object(k.id)
+			local se_obj = alife_object(k.id)
 			if (se_obj) then
 				local smart_id = se_obj.m_smart_terrain_id
 				if (smart_id and smart_id ~= 65535) then
-					local smart = alife():object(smart_id)
+					local smart = alife_object(smart_id)
 					if (smart) then
 						smart:unregister_npc(se_obj)
 					end
@@ -2710,7 +2734,7 @@ function add_map_spot(actor, npc, p)
 		local story_id = tonumber(p[1])
 		local id = id_by_sid(story_id)
 		if(id==nil) then
-			local obj = alife():object(p[1])
+			local obj = alife_object(p[1])
 			id = obj and obj.id
 		end
 		if(id~=nil) then
@@ -2736,7 +2760,7 @@ function remove_map_spot(actor, npc, p)
 		local story_id = tonumber(p[1])
 		local id = id_by_sid(story_id)
 		if(id==nil) then
-			local obj = alife():object(p[1])
+			local obj = alife_object(p[1])
 			id = obj and obj.id
 		end
 		if(id~=nil) then
@@ -3118,7 +3142,7 @@ function clear_box(actor, npc, p)
 	inv_box:iterate_inventory_box(add_items, inv_box)
 
 	for k,v in pairs(items_table) do
-		alife():release(alife():object(v:id()), true)
+		alife():release(alife_object(v:id()), true)
 	end
 end
 
@@ -3231,7 +3255,7 @@ function jup_b10_spawn_drunk_dead_items(actor, npc, p)
 		for k,v in pairs(items[cnt]) do
 			local target_obj_id = get_story_object_id(p[1])
 			if target_obj_id ~= nil then
-				box = alife():object(target_obj_id)
+				box = alife_object(target_obj_id)
 				if box == nil then
 					printf("There is no such object %s", p[1])
 				end
@@ -3275,7 +3299,7 @@ function pick_artefact_from_anomaly(actor, npc, p)
 		if npc_id == nil then
 			printf("Couldn't relocate item to NULL in function 'pick_artefact_from_anomaly!'")
 		end
-		se_obj = alife():object(npc_id)
+		se_obj = alife_object(npc_id)
 		if se_obj and (not IsStalker(nil,se_obj:clsid()) or not se_obj:alive()) then
 			printf("Couldn't relocate item to NULL (dead or not stalker) in function 'pick_artefact_from_anomaly!'")
 		end
@@ -3291,14 +3315,14 @@ function pick_artefact_from_anomaly(actor, npc, p)
 	end
 
 	for k,v in pairs(anomal_zone.artefact_ways_by_id) do
-		if alife():object(tonumber(k)) and af_name == alife():object(tonumber(k)):section_name() then
+		if alife_object(tonumber(k)) and af_name == alife_object(tonumber(k)):section_name() then
 			af_id = tonumber(k)
-			af_obj = alife():object(tonumber(k))
+			af_obj = alife_object(tonumber(k))
 			break
 		end
 		if af_name == nil then
 			af_id = tonumber(k)
-			af_obj = alife():object(tonumber(k))
+			af_obj = alife_object(tonumber(k))
 			af_name = af_obj:section_name()
 			break
 		end
@@ -3594,7 +3618,7 @@ function sleep(actor, npc)
 					}
 
 	for k,v in pairs(sleep_zones) do
-		if utils.npc_in_zone(db.actor, db.zone_by_name[v]) then
+		if utils.npc_in_zone(db.actor, v) then
 			ui_sleep_dialog.sleep()
 			give_info("sleep_active")
 		end
@@ -3893,7 +3917,7 @@ function create_cutscene_actor_with_weapon(actor, npc, p)
 		end
 	end
 
-	local actor_weapon = alife():object(active_item:id())
+	local actor_weapon = alife_object(active_item:id())
 	local section_name = actor_weapon:section_name()
 	if section_name == "pri_a17_gauss_rifle" then
 		section_name = "wpn_gauss"
@@ -4068,7 +4092,7 @@ function pri_a28_check_zones()
 	for k,v in pairs(zones_tbl) do
 		story_obj_id = get_story_object_id(v)
 		if story_obj_id then
-			local se_obj = alife():object(story_obj_id)
+			local se_obj = alife_object(story_obj_id)
 			local curr_dist = se_obj.position:distance_to(db.actor:position())
 			if index == 0 then
 				dist = curr_dist
@@ -4143,7 +4167,7 @@ function make_a_wish(actor,npc,p)
 	local action_list = {}
 	
 	action_list[1] = function()
-		error("WISH GRANTED!",2)
+		error(game.translate_string("st_wish_granted"),2)
 		return
 	end
 	
@@ -4155,22 +4179,12 @@ function make_a_wish(actor,npc,p)
 	
 	action_list[3] = function()
 		local sim = alife()
-		local function remove_this_squad(id)
-			local squad = id and sim:object(id)
-			if not (squad) then
-				return true
-			end
-			
-			printf("DEBUG: removing squad %s from the game",squad:name())
-			SIMBOARD:assign_squad_to_smart(squad, nil)
-			squad:remove_squad()
-			return true
-		end
 		local squad
 		for i=1,65534 do
 			squad = sim:object(i)
 			if (squad and squad:clsid() == clsid.online_offline_group_s) then 
-				CreateTimeEvent(squad.id,"remove_this_squad",math.random(1,10),remove_this_squad,squad.id)
+				SIMBOARD:assign_squad_to_smart(squad, nil)
+				squad:remove_squad()
 			end
 		end
 		give_info("actor_made_wish_for_peace")
@@ -4198,7 +4212,7 @@ function make_a_wish(actor,npc,p)
 		local function remove_backpack(id)
 			local function itr(npc,itm)
 				if (itm:section() == "itm_actor_backpack" or itm:section() == "itm_backpack") then
-					local se_itm = alife():object(itm:id())
+					local se_itm = alife_object(itm:id())
 					if (se_itm) then 
 						alife():release(se_itm,true)
 					end
@@ -4208,7 +4222,7 @@ function make_a_wish(actor,npc,p)
 			db.actor:iterate_inventory(itr,db.actor)
 		end
 		
-		CreateTimeEvent(0,"remove_backpack",5,remove_backpack,0)
+		CreateTimeEvent(0,"remove_backpack",1,remove_backpack,0)
 		
 		give_info("actor_made_wish_for_riches")
 		give_info("actor_made_wish")
@@ -4335,17 +4349,17 @@ function change_visual(actor,npc,p)
 	if (not axr_main) then
 		return
 	end
-	local sobj = alife():object(npc:id())
+	local sobj = alife_object(npc:id())
 	if not (sobj) then
 		return
 	end
 	if (axr_main) then
-		CreateTimeEvent(sobj.id,"update_visual",5,update_visual,sobj.id,p[1])
+		CreateTimeEvent(sobj.id,"update_visual",1,update_visual,sobj.id,p[1])
 	end
 end
 
 function switch_offline(actor,npc,p)
-	local se_obj = npc and alife():object(npc:id())
+	local se_obj = npc and alife_object(npc:id())
 	if (se_obj and se_obj:can_switch_offline()) then 
 		se_obj:switch_offline()
 	end
@@ -4353,7 +4367,7 @@ end
 
 ------------------- util functions
 function update_visual(id,vis)
-	local se_npc = id and alife():object(id)
+	local se_npc = id and alife_object(id)
 	if not (se_npc) then
 		return true
 	end
@@ -4430,12 +4444,12 @@ function yan_gluk (actor, npc)
 end
 
 function yan_saharov_message(actor, npc, p)
-	if (p[1] == "1") then
+	if (p[1] == 1) then
 		news_manager.send_tip(db.actor, "st_yan_saharov_message", nil, "saharov", 15000, nil)
 		db.actor:give_info_portion("labx16_find")
-	elseif (p[1] == "2") then
+	elseif (p[1] == 2) then
 		news_manager.send_tip(db.actor, "st_yan_saharov_message_2", nil, "saharov", 20000, nil)
-	elseif (p[1] == "3") then
+	elseif (p[1] == 3) then
 		 news_manager.send_tip(db.actor, "st_yan_saharov_message_3", nil, "saharov", 15000, nil)
 	elseif (p[1] == "free_upgrade") then
 		 news_manager.send_tip(db.actor, "st_yan_saharov_message_free_upgrade", nil, "saharov", 15000, nil)

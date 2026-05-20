@@ -104,14 +104,23 @@ function se_stalker:on_unregister()
 	--alun_utils.debug_write("se_stalker:on_unregister()")
 	local strn_id = self:smart_terrain_id()
 	if strn_id ~= 65535 then
-		local smart = alife():object(strn_id)
+		local smart = alife_object(strn_id)
 		if smart ~= nil then
 			smart:unregister_npc(self)
 		end
 	end
 	db.offline_objects[self.id] = nil
 	-- If object unregisters before saving, it means it was removed from game
-	alife_storage_manager.get_state().se_object[self.id] = nil
+	local m_data = alife_storage_manager.get_state()
+	if (m_data.se_object) then
+		m_data.se_object[self.id] = nil
+	end
+	if (m_data.actor_contacts) then
+		m_data.actor_contacts[self.id] = nil
+	end
+	if (m_data.game_object) then 
+		m_data.game_object[self.id] = nil
+	end
 	unregister_story_object_by_id(self.id)
 	cse_alife_human_stalker.on_unregister(self)
 end
@@ -129,12 +138,16 @@ function se_stalker:on_death(killer)
 
 	smart_terrain.on_death(self)
 
-	local squad = self.group_id and self.group_id < 65535 and alife():object(self.group_id)
+	local squad = self.group_id and self.group_id < 65535 and alife_object(self.group_id)
 	if (squad) then
 		squad:on_npc_death(self,killer)
 	end
 	if (level.map_has_object_spot(self.id,"red_location") == 1) then
 		level.map_remove_object_spot(self.id, "red_location")
+	end
+	local m_data = alife_storage_manager.get_state()
+	if (m_data.actor_contacts) then
+		m_data.actor_contacts[self.id] = nil
 	end
 end
 --------------------
@@ -156,6 +169,16 @@ end
 function se_trader:on_unregister()
 	unregister_story_object_by_id(self.id)
 	cse_alife_trader.on_unregister(self)
+	local m_data = alife_storage_manager.get_state()
+	if (m_data.se_object) then 
+		m_data.se_object[self.id] = nil
+	end
+	if (m_data.game_object) then 
+		m_data.game_object[self.id] = nil
+	end
+	if (m_data.actor_contacts) then
+		m_data.actor_contacts[self.id] = nil
+	end
 end
 
 function se_trader:keep_saved_data_anyway()

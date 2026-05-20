@@ -465,15 +465,13 @@ function add_to_binder(npc,ini,scheme,section,storage,temp)
 	if (not npc:alive()) or (facer_sets.forbiddens.factions and facer_sets.forbiddens.factions[npc:character_community()]) or (facer_sets.ranks and not facer_sets.ranks[ranks.get_obj_rank_name(npc)]) then
 		manager:add_evaluator(evid_facer,property_evaluator_const(false))
 		manager:add_evaluator(evid_steal_up_facer,property_evaluator_const(false))
-		temp.needs_configured = false
-		return 
+		--temp.needs_configured = false
+	else 
+		manager:add_evaluator(evid_facer,evaluator_facer(npc,"eva_facer",storage))
+		manager:add_evaluator(evid_steal_up_facer,evaluator_steal_up(npc,"eva_steal_up_facer",storage))
 	end
 	
 	temp.action = {}
-	
-	manager:add_evaluator(evid_facer,evaluator_facer(npc,"eva_facer",storage))
-	manager:add_evaluator(evid_steal_up_facer,evaluator_steal_up(npc,"eva_steal_up_facer",storage))
-
 	temp.action[actid_facer] = action_facer(npc,"act_facer",storage)
 	temp.action[actid_steal_up_facer] = action_steal_up(npc,"act_steal_up_facer",storage)
 	

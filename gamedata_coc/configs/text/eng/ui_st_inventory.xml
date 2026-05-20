@@ -321,4 +321,10 @@
 	<string id="ui_inv_af_condition">
 		<text>Efficiency</text>
 	</string>
+	<string id="ui_st_usable_parts">
+		<text>Parts</text>
+	</string>
+	<string id="ui_st_repairable_equipment">
+		<text>Repairable</text>
+	</string>
 </string_table>

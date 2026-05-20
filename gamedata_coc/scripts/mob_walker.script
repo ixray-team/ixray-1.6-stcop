@@ -109,7 +109,7 @@ end
 function mob_walker:waypoint_callback(obj, action_type, index)
 	--printf("mob_walker:waypoint_callback(): name=%s, index=%d", self.object:name(), index)
 	if index == -1 or index == nil then
-		printf("ERROR: mob_walker: waypoint_callback: index is %s", if_then_else(index == -1, "-1", "nil"))
+		printf("ERROR: mob_walker: waypoint_callback: index is %s", index)
 		return
 	end
 

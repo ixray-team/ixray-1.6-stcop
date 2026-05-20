@@ -160,8 +160,7 @@ function is_enemy(obj,enemy,no_memory)
 					safe_zone_npcs[cid] = nil
 				else
 					for i,v in ipairs(ignored_zone) do
-						local zone = db.zone_by_name[v]
-						if (zone and utils.npc_in_zone(obj, zone)) then
+						if (utils.npc_in_zone(obj, v)) then
 							safe_zone_npcs[cid] = tg
 							return false
 						end
@@ -174,8 +173,7 @@ function is_enemy(obj,enemy,no_memory)
 					return false
 				else 
 					for i,v in ipairs(ignored_zone) do
-						local zone = db.zone_by_name[v]
-						if (zone and utils.npc_in_zone(enemy, zone)) then
+						if (utils.npc_in_zone(enemy, v)) then
 							safe_zone_npcs[bid] = tg
 							return false
 						end

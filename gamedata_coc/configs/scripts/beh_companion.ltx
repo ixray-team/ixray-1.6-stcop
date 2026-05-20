@@ -34,20 +34,21 @@ gather_items_enabled = {+npcx_beh_gather_items}true, false
 corpse_detection_enabled = {+npcx_beh_loot_corpses} true, false
 actor_dialogs = actor_dialogs
 behavior_state = {+npcx_beh_wait} beh_wait, beh_move
-target = {!is_squad_commander} commander, {=is_squad_commander +npcx_beh_patrol_mode} waypoint, actor
+target = {!is_squad_commander} commander, {=is_squad_commander +npcx_beh_patrol_mode} waypoint, actor_squad
 walk_dist = {+npcx_beh_patrol_mode} 90, 4
 jog_dist = {+npcx_beh_patrol_mode} 150, 8
 run_dist = {+npcx_beh_patrol_mode} 250, {=surge_started} 40, 90
 keep_distance = {+npcx_beh_distance_far} far, near
-near_desired_dist = {+npcx_beh_patrol_mode =is_squad_commander} 1, {!is_squad_commander} 5, 2
-far_desired_dist = {+npcx_beh_patrol_mode =is_squad_commander} 1, {!is_squad_commander} 5, 8
+near_desired_dist = {+npcx_beh_patrol_mode =is_squad_commander} 1, {!is_squad_commander} 3, 3
+far_desired_dist = {+npcx_beh_patrol_mode =is_squad_commander} 1, {!is_squad_commander} 8, 10
 wait_anim = {=is_wounded} nil, {+npcx_beh_substate_stealth} hide, guard
 walk_anim = {=is_wounded} nil, {+npcx_beh_patrol_mode -npcx_beh_substate_stealth} patrol,{+npcx_beh_substate_stealth} sneak, patrol
 jog_anim = {=is_wounded} nil, {+npcx_beh_substate_stealth} sneak_run, rush
 run_anim = {=is_wounded} nil, {+npcx_beh_substate_stealth} assault, assault
 sprint_anim = {=is_wounded} nil, {+npcx_beh_substate_stealth} sprint, sprint
 delay_anim = {=is_wounded} nil, {+npcx_beh_substate_stealth} hide, random_animation
-out_restr = {=actor_in_zone(zat_a2_sr_noweap)} zat_a2_sr_noweap, {=actor_in_zone(jup_a6_sr_noweap)} jup_a6_sr_noweap, {=actor_in_zone(jup_b41_sr_noweap)} jup_b41_sr_noweap
+out_restr = zat_a2_sr_noweap, jup_a6_sr_noweap, jup_b41_sr_noweap
+
 [meet]
 ;reset_distance = 2
 abuse = false
@@ -80,10 +81,10 @@ on_info3 = {=check_squad_name(hostage_companion_task_1)} beh@hostage_1
 ;on_info4 = beh@general       ;IMPORTANT: not a special task squad so use general section; Make sure it's always the last LINE in this section
 
 [meet@ecolog_companion_task_1]:meet
-meet_dialog	= {=is_wounded} axr_companion_medkit, {=check_nearest_smart_dist_le(40:mar_smart_terrain_base)} ecolog_companion_task_1_dialog, nil
+meet_dialog	= {=is_wounded} axr_companion_medkit, {=check_smart_dist_le(40:mar_smart_terrain_base)} ecolog_companion_task_1_dialog, nil
 
 [meet@ecolog_companion_task_2]:meet
-meet_dialog	= {=is_wounded} axr_companion_medkit, {=check_nearest_smart_dist_le(40:jup_b41)} ecolog_companion_task_2_dialog, nil
+meet_dialog	= {=is_wounded} axr_companion_medkit, {=check_smart_dist_le(40:jup_b41)} ecolog_companion_task_2_dialog, nil
 
 [beh@ecolog_companion_task_1]:beh@general
 meet = meet@ecolog_companion_task_1
@@ -103,7 +104,6 @@ mutant_corpse_analysis = {=is_squad_commander =check_task_stage(yan_ecolog_semen
 [meet@bandit_companion_task_1]:meet
 meet_dialog	= {=is_wounded} axr_companion_medkit, bandit_companion_task_1_dialog
 
-;TODO: Add logic to rob stalkers
 [beh@bandit_companion_task_1]:beh@general
 meet = meet@bandit_companion_task_1
 ;on_info1 = 

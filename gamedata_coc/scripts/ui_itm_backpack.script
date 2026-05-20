@@ -1,9 +1,5 @@
 -- ui_itm_backpack
 -- Alundaio
---[[
-Copyright (C) 2012 Alundaio
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License-]]
---]]
 class "backpack_ui" (CUIScriptWnd)
 function backpack_ui:__init(owner,box_id,box_spot) super()
 	self.owner = owner
@@ -58,7 +54,7 @@ function backpack_ui:OnInput()
 		txt = level.name().." stash"
 	end
 
-	local se_obj = alife():object(self.box_id)
+	local se_obj = alife_object(self.box_id)
 	if (se_obj) then
 		level.map_add_object_spot_ser(se_obj.id, self.box_spot, txt)
 	end
@@ -69,7 +65,7 @@ end
 function backpack_ui:OnCancel()
 	level.map_remove_object_spot(self.box_id, self.box_spot)
 	alife():create("itm_backpack",db.actor:position(),db.actor:level_vertex_id(),db.actor:game_vertex_id(),db.actor:id())
-	alife():release( alife():object(self.box_id) ,true)
+	alife():release( alife_object(self.box_id) ,true)
 	self:HideDialog()
 end
 

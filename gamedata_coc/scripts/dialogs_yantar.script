@@ -8,7 +8,7 @@ function upgrade_player_bad_psi_helmet(a,b)
 	local o = db.actor:object("bad_psy_helmet")
 	if (o) then
 		news_manager.relocate_item(db.actor, "out", "bad_psy_helmet")
-		local se_itm = alife():object(o:id())
+		local se_itm = alife_object(o:id())
 		if (se_itm) then
 			alife():release(se_itm,true)
 		end

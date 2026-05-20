@@ -254,7 +254,7 @@ end
 function force_sleep()
 	ui_sleep_dialog.sleep_forced()
 	if (math.random(1,100)/100) < die_chance then
-		SetHudMsg(game.translate_string("st_sleep_deprived"),5)
+		SetHudMsg(game.translate_string("st_sleep_deprived"),10)
 		db.actor:kill(db.actor)
 	end
 end

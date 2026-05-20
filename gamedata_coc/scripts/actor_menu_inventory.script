@@ -44,6 +44,22 @@ function CUIActorMenu_OnItemFocusReceive(itm)
 end
 
 -- called from engine!
-function CUIActorMenu_OnItemFocusLost(itm)
-	SendScriptCallback("CUIActorMenu_OnItemFocusLost",itm)
+-- useful for when doing npc:use(db.actor) when NPC is alive
+-- basically what is available in the corpse loot menu while npc is alive
+function CInventory_ItemAvailableToTrade(npc,item)
+	-- if (xr_corpse_detection.lootable_table[item:section()]) then 
+		-- return true
+	-- end
+	if (db.actor:has_info("ui_pda") and npc:has_info("npcx_is_companion")) then
+		local m_data = alife_storage_manager.get_state()
+		if (m_data and m_data.companion_borrow_item and m_data.companion_borrow_item[item:id()]) then
+			return true
+		end
+		return false
+	else
+		return true
+	end
+	return false
 end
+
+-- called from engine

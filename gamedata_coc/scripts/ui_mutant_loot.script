@@ -1,12 +1,5 @@
 -- ui_loot
 -- Alundaio
--- ponney68
---[[
-   Copyright (C) 2012 Alundaio
-
-   This program is free software; you can redistribute and/or modify
-   it under the terms of the Open S.T.A.L.K.E.R. Mod License version 1.0.
--]]
 -------------------------------------------------------------------
 class "load_item" (CUIListBoxItem)
 function load_item:__init(height) super(height)
@@ -156,7 +149,7 @@ function loot_ui:FillList()
 		local hud = get_hud()
 		if (hud) then
 			hud:AddCustomStatic("can_use_weapon_now", true)
-			hud:GetCustomStatic("can_use_weapon_now"):wnd():TextControl():SetTextST("Nothing useful")
+			hud:GetCustomStatic("can_use_weapon_now"):wnd():TextControl():SetTextST("st_nothing_useful")
 		end
 		itms_manager.ShowMessage = true
 		itms_manager.ShowMessageInit = game.get_game_time()

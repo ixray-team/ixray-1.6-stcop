@@ -2,9 +2,6 @@
 -- axr_dynamic_spawn
 -- Alundaio
 -- Updated 3/10/2014: Now requires use of marshal library for encoding/decoding tables into blobs
-
-	Copyright (C) 2012 Alundaio
-	This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
 --]]
 dynamic_story_id = {}
 secret_stashes = {}
@@ -62,7 +59,7 @@ function on_game_load()
 
 	local sections = {}
 
-	local actor = alife():object(db.actor:id())
+	local actor = alife_object(db.actor:id())
 	-- Find all sections in dynamic_spawn.ltx as well as #include files
 	local deepest
 	local list = {}
@@ -110,7 +107,7 @@ function actor_on_item_take_from_box(box,obj)
 		end
 		level.map_remove_object_spot(box:id(), "treasure")
 		--story_objects.get_story_objects_registry():unregister_by_story_id(sid)
-		--alife():release(alife():object(box:id()),true)
+		--alife():release(alife_object(box:id()),true)
 		xr_statistic.inc_counter("stashes_found")
 		news_manager.send_treasure(1)
 		secret_stashes[sid] = false

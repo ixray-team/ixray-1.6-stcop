@@ -39,7 +39,6 @@ class "heli_combat"
 function heli_combat:__init( object, heliObject )
 	self.st                    = db.storage[object:id()]
 	self.object                = object
-	self.sobject			   = alife():object(object:id())
 	self.heliObject            = heliObject
 	self.initialized           = false
 
@@ -94,8 +93,13 @@ function heli_combat:is_enemy(obj)
 		return false 
 	end
 	
+	local se_obj = alife_object(self.object:id())
+	if not (se_obj and se_obj.community) then 
+		return false 
+	end 
+	
 	if (obj:id() == db.actor:id()) then
-		if (self.sobject and string.find(character_community(obj),self.sobject.community)) then 
+		if (string.find(character_community(obj),se_obj.community)) then 
 			return false 
 		end
 	
@@ -104,9 +108,13 @@ function heli_combat:is_enemy(obj)
 		end
 		return self.actor_always_enemy or false
 	else 
-		if (self.sobject and self.sobject.community == character_community(obj)) then 
+		if (se_obj.community == character_community(obj)) then 
 			return false 
 		end 
+	end 
+	
+	if (IsSurvivalMode()) then
+		return true 
 	end 
 	
 	if not (db.storage[obj:id()] and db.storage[obj:id()].heli_enemy_flag) then 
@@ -504,7 +512,7 @@ function heli_combat:update()
 	end
 	
 	if not (self.enemy_from_custom_data) then
-		if (not self:find_valid_target() or xr_conditions.surge_started()) then
+		if (not self:find_valid_target() or xr_conditions.surge_started() or not utils.is_day()) then
 			self:forget_enemy()
 			--alun_utils.debug_write(strformat("heli_combat:update end 3"))
 			return false

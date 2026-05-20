@@ -90,9 +90,9 @@ function heli_binder:update( delta )
 	
 	-- heli alife simulation
 	if (heli_alife) then
-		self.sobject = not self.sobject and alife():object(self.object:id()) or self.sobject
-		if (self.sobject and self.sobject.player_id) then
-			heli_alife.update(self.object,self.sobject,self.st.heliObject)
+		local se_obj = alife_object(self.object:id())
+		if (se_obj and se_obj.player_id) then
+			heli_alife.update(self.object,se_obj,self.st.heliObject)
 		end
 	end
 	--alun_utils.debug_write("heli update end")
@@ -112,8 +112,6 @@ function heli_binder:net_spawn( sobject )
 	
 	self.st.heliObject = self.object:get_helicopter()
 	
-	self.sobject = not self.sobject and alife():object(self.object:id()) or self.sobject
-
 	return true
 end
 
@@ -171,10 +169,10 @@ function heli_binder:check_health()
 			heli_die( self.object )
 			xr_sound.set_sound_play(self.object:id(), self.snd_down)
 			
-			local se_obj = alife():object(self.object:id())
+			local se_obj = alife_object(self.object:id())
 			if (se_obj) then 
 				if (se_obj.respawn_point_id and se_obj.respawn_point_prop_section) then
-					local smart = alife():object(se_obj.respawn_point_id)
+					local smart = alife_object(se_obj.respawn_point_id)
 					if smart == nil then
 						return
 					end
@@ -182,7 +180,7 @@ function heli_binder:check_health()
 				end
 				local strn_id = se_obj.m_smart_terrain_id
 				if strn_id and strn_id ~= 65535 then
-					local smart = alife():object(strn_id)
+					local smart = alife_object(strn_id)
 					if smart ~= nil then
 						smart:unregister_npc(se_obj)
 						se_obj.m_smart_terrain_id = nil
@@ -210,7 +208,8 @@ function heli_binder:on_hit( power, impulse, hit_type, enemy_id )
 	end
 	
 	-- is simulation heli
-	if (self.sobject and self.sobject.player_id) then
+	local se_obj = alife_object(self.object:id())
+	if (se_obj and se_obj.player_id) then
 		if (enemy_id == 0) then 
 			utils.save_var(db.actor,"heli_enemy_flag",true)
 		else 

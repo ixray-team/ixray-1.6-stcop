@@ -63,7 +63,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function setup_generic_scheme(npc,ini,scheme,section,stype,temp)
 	temp.section = ini:r_string_ex(section,"on_combat") or section
-	temp.is_zombied = character_community(npc) == "zombied"
+	temp.is_zombied = npc:character_community() == "zombied"
 	
 	local st = xr_logic.assign_storage_and_bind(npc,ini,scheme,temp.section,temp)
 	
@@ -89,15 +89,16 @@ function add_to_binder(npc,ini,scheme,section,storage,temp)
 	
 	if (temp.section or temp.is_zombied) then
 		manager:add_evaluator(xr_evaluators_id.script_combat,evaluator_check_combat("script_combat",storage))
-		local action = manager:action(stalker_ids.action_combat_planner)
-		action:add_precondition(world_property(xr_evaluators_id.script_combat, false))
-		xr_combat_zombied.add_to_binder(npc,ini,storage,manager,temp)
-		xr_combat_camper.add_to_binder(npc,ini,storage,manager,temp)
-		xr_combat_monolith.add_to_binder(npc,ini,storage,manager,temp)
+		xr_combat_zombied.add_to_binder(npc,ini,scheme,section,storage,temp)
+		--xr_combat_camper.add_to_binder(npc,ini,storage,manager,temp)
+		--xr_combat_monolith.add_to_binder(npc,ini,storage,manager,temp)
 	else 
 		manager:add_evaluator(xr_evaluators_id.script_combat,property_evaluator_const(false))
-		temp.needs_configured = false
+		--temp.needs_configured = false
 	end
+	
+	local action = manager:action(stalker_ids.action_combat_planner)
+	action:add_precondition(world_property(xr_evaluators_id.script_combat, false))
 end
 
 function disable_scheme(npc,scheme,stype)

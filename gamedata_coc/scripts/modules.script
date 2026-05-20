@@ -13,6 +13,25 @@ stype_trader	    = 5
 ----------------------------------------------------------------------
 -- Загрузка схем:
 ----------------------------------------------------------------------
+-- Generic Schemes
+LoadScheme("xr_meet",				"meet",						stype_stalker)
+LoadScheme("xr_wounded",			"wounded",					stype_stalker)
+LoadScheme("xr_danger",				"danger",					stype_stalker)
+LoadScheme("xr_abuse",				"abuse",					stype_stalker)
+LoadScheme("xr_gather_items",		"gather_items",				stype_stalker)
+LoadScheme("xr_help_wounded",		"help_wounded",				stype_stalker)
+LoadScheme("xr_corpse_detection",	"corpse_detection",			stype_stalker)
+--LoadScheme("axr_stalker_panic",		"stalker_panic",			stype_stalker) -- working but not ideal behavior so it's disabled
+LoadScheme("axr_npc_vs_heli",		"npc_vs_heli",				stype_stalker)
+LoadScheme("axr_npc_vs_box",		"npc_vs_box",				stype_stalker)
+LoadScheme("axr_fight_from_cover",	"fight_from_cover",			stype_stalker)
+LoadScheme("axr_radio_in_heli",		"radio_in_heli",			stype_stalker)
+LoadScheme("axr_turn_on_campfire",	"turn_on_campfire",			stype_stalker)
+LoadScheme("rx_ff",					"rx_ff",					stype_stalker)
+--LoadScheme("rx_gl",					"gl",						stype_stalker) --known to cause issues enable at your own risk
+LoadScheme("xrs_facer",				"facer",					stype_stalker)
+LoadScheme("xrs_kill_wounded", 		"kill_wounded",				stype_stalker)
+--LoadScheme("axr_anomaly_planner",   "evade_anom",				stype_stalker)
 ----------------------------------------------------------------------
 -- Загрузка модулей сталкеров:
 ----------------------------------------------------------------------
@@ -28,7 +47,7 @@ LoadScheme("xr_combat_ignore",					"combat_ignore",	stype_stalker,stype_mobile)
 LoadScheme("xr_combat_zombied",				"combat_zombied",	stype_stalker)
 LoadScheme("xr_patrol",						"patrol",			stype_stalker)
 LoadScheme("xr_smartcover",					"smartcover",		stype_stalker)
-LoadScheme("xr_companion",						"companion",		stype_stalker)
+--LoadScheme("xr_companion",						"companion",		stype_stalker)
 LoadScheme("xr_animpoint",						"animpoint",		stype_stalker)
 LoadScheme("xr_reach_task",					"reach_task",		stype_stalker)
 
@@ -80,30 +99,11 @@ LoadScheme("sr_monster",						"sr_monster",		stype_restrictor)
 LoadScheme("sr_crow_spawner",					"sr_crow_spawner",	stype_restrictor)
 LoadScheme("sr_silence",						"sr_silence",		stype_restrictor)
 LoadScheme("sr_deimos",							"sr_deimos",		stype_restrictor)
-
 ----------
 LoadScheme("axr_beh",				"beh",						stype_stalker)
 LoadScheme("xr_campfire_point",		"campfire_point",			stype_stalker)
 
--- Generic Schemes
-LoadScheme("xr_meet",				"meet",						stype_stalker)
-LoadScheme("xr_wounded",			"wounded",					stype_stalker)
-LoadScheme("xr_danger",				"danger",					stype_stalker)
-LoadScheme("xr_abuse",				"abuse",					stype_stalker)
-LoadScheme("xr_gather_items",		"gather_items",				stype_stalker)
-LoadScheme("xr_help_wounded",		"help_wounded",				stype_stalker)
-LoadScheme("xr_corpse_detection",	"corpse_detection",			stype_stalker)
---LoadScheme("axr_stalker_panic",		"stalker_panic",			stype_stalker) -- working but not ideal behavior so it's disabled
-LoadScheme("axr_npc_vs_heli",		"npc_vs_heli",				stype_stalker)
-LoadScheme("axr_npc_vs_box",		"npc_vs_box",				stype_stalker)
-LoadScheme("axr_fight_from_cover",	"fight_from_cover",			stype_stalker)
-LoadScheme("axr_radio_in_heli",		"radio_in_heli",			stype_stalker)
-LoadScheme("axr_turn_on_campfire",	"turn_on_campfire",			stype_stalker)
-LoadScheme("rx_ff",					"rx_ff",					stype_stalker)
---LoadScheme("rx_gl",					"gl",						stype_stalker) --known to cause issues enable at your own risk
-LoadScheme("xrs_facer",				"facer",					stype_stalker)
-LoadScheme("xrs_kill_wounded", 		"kill_wounded",				stype_stalker)
---LoadScheme("axr_anomaly_planner",   "evade_anom",				stype_stalker)
+
 
 function on_game_start()
 	for scheme,filename in pairs(_G.schemes) do 
@@ -238,10 +238,10 @@ function reset_generic_schemes(npc,scheme,section)
 	elseif st.stype == modules.stype_item then
 		npc:set_callback(callback.use_object, nil)
 		npc:set_nonscript_usable(true)
-		if (get_clsid(npc) == clsid.car) then
-			npc:destroy_car()
-			xr_logic.mob_release(npc)
-		end
+		-- if (get_clsid(npc) == clsid.car) then
+			-- npc:destroy_car()
+			-- xr_logic.mob_release(npc)
+		-- end
 	end
 end 
 
@@ -283,7 +283,7 @@ function add_common_precondition(scheme,action)
 	if (_G.schemes["corpse_detection"]) then
 		action:add_precondition(wp(xr_evaluators_id.corpse_exist, false))
 	end
-	for scheme,filename in pairs(_G.schemes) do 
+	for _scheme,filename in pairs(_G.schemes) do 
 		if (_G[filename] and _G[filename].npc_add_precondition) then 
 			_G[filename].npc_add_precondition(action)
 		end			

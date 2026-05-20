@@ -6,13 +6,11 @@
 
 
 cur_hint = nil
-local issue_condlist = true
 local char_ini = ini_file("item_upgrades.ltx")
 local param_ini = ini_file("misc\\stalkers_upgrade_info.ltx")
 local cur_price_percent = 1
 
 local RepairItemList = {}
-local check_items
 local weapon_upgrades = {}
 local effect_funct
 
@@ -163,16 +161,10 @@ function dm_repair_not_done(a,b)
 		local inv_name = game.translate_string(system_ini():r_string_ex(itm_sec,"inv_name") or "")
 
 		-- TODO: replace with translatable strings
-		local text = { "Your %s will be ready in %s minutes. Come back then.",
-						"Soon your %s will be ready. Come back in %s minutes.",
-						"Urgh, piss off. I'm not drunk yet.",
-						"Your bloody %s will be ready in an hour and %s minutes. I'll be drunk by then.",
-						"It's not easy to repair something when you have the shakes... Come back in about an hour for your %s.",
-						"Hey Stal-- Oh heck, I forgot I was repairing your equipment. Come back for your %s in an hour and %s minutes.",
-						"Your %s will be ready in an hour and %s. So come back then, okay?",
-						"Your %s will be ready in about %s hours and %s. Come back then.",
-						"It's almost ready."
-		}
+		local text = {}
+		for i=1,9 do 
+			table.insert(text,"st_inventory_upgrade_reply_"..i)
+		end
 
 		local function set_text(str,...)
 			local p = {...}
@@ -187,23 +179,23 @@ function dm_repair_not_done(a,b)
 		if (hours < 1) then
 			local m = math.floor(minutes)
 			if (m <= 1) then
-				return set_text(text[9])
+				return set_text(game.translate_string(text[9]))
 			end
 
 			if (npc:section() == "zat_a2_stalker_mechanic") then
-				return set_text(text[math.random(3)],inv_name,m)
+				return set_text(game.translate_string(text[math.random(3)]),inv_name,m)
 			end
-			return set_text(text[math.random(2)],inv_name,m)
+			return set_text(game.translate_string(text[math.random(2)]),inv_name,m)
 		elseif (hours < 2) then
 			local m = math.floor(minutes - 60)
 			if (npc:section() == "zat_a2_stalker_mechanic") then
-				return set_text(text[math.random(3,#text)],inv_name,m)
+				return set_text(game.translate_string(text[math.random(3,#text)]),inv_name,m)
 			end
-			return set_text(text[7],inv_name,m)
+			return set_text(game.translate_string(text[7]),inv_name,m)
 		else
 			local h = math.floor(hours)
 			local m = math.floor(minutes - (60*h))
-			return set_text(text[8],inv_name,h,m)
+			return set_text(game.translate_string(text[8]),inv_name,h,m)
 		end
 	end
 	return "ERROR in dm_repair_not_done no itm_id"
@@ -403,8 +395,6 @@ function property_functor_a(param1, name)
             sum = sum + char_ini:r_float_ex(section_table[i],"ammo_mag_size",0)
         elseif (name == "prop_rpm") then
             sum = sum + math.ceil(char_ini:r_float_ex(section_table[i],"rpm",0)/10)
-        elseif (name == "prop_bullet_speed") then
-            sum = sum + math.ceil(char_ini:r_float_ex(section_table[i],"bullet_speed",0)/10)
 		elseif (name == "prop_dispersion") then
 			val = char_ini:r_float_ex(section_table[i],"fire_dispersion_base") or 0
 			if (val ~= 0) then

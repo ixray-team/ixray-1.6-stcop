@@ -1498,7 +1498,7 @@ function zat_b53_transfer_medkit_to_npc(first_speaker, second_speaker)
 		section = "medkit_scientic"
 	end
 
-	alife():release(alife():object(db.actor:object(section):id()), true)
+	alife():release(alife_object(db.actor:object(section):id()), true)
 
 	news_manager.relocate_item(db.actor, "out", section, 1)
 

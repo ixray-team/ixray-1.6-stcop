@@ -527,19 +527,11 @@
 #include "gameplay\character_drugs_2.xml"
     </supplies>
 #include "gameplay\character_criticals_4.xml"
-    <start_dialog>zat_b7_bandit_boss_sultan_start_dialog</start_dialog>
+    <start_dialog>zat_b7_bandit_boss_sultan_intro_0</start_dialog>
+	<actor_dialog>zat_b7_bandit_boss_sultan_about</actor_dialog>
     <actor_dialog>dm_ordered_task_dialog</actor_dialog>
     <actor_dialog>dm_ordered_task_completed_dialog</actor_dialog>
     <actor_dialog>dm_ordered_task_cancel_dialog</actor_dialog>
-    <actor_dialog>zat_b7_bandit_boss_sultan_b30_start_actor_dialog</actor_dialog>
-    <actor_dialog>zat_b7_bandit_boss_sultan_b30_detectors_actor_dialog</actor_dialog>
-    <actor_dialog>zat_b7_bandit_boss_sultan_b30_compass_actor_dialog</actor_dialog>
-    <actor_dialog>zat_b7_bandit_boss_sultan_b30_compass_give_actor_dialog</actor_dialog>
-    <actor_dialog>zat_b7_bandit_boss_sultan_b30_compass_revert_actor_dialog</actor_dialog>
-    <actor_dialog>zat_b7_bandit_boss_sultan_b30_ruin_actor_dialog</actor_dialog>
-    <actor_dialog>zat_b7_bandit_boss_sultan_b30_barmen_under_actor_dialog</actor_dialog>
-    <actor_dialog>zat_b7_bandit_boss_sultan_b52_about_snag</actor_dialog>
-    <actor_dialog>zat_b7_bandit_boss_sultan_b52_about_nimble</actor_dialog>
     <actor_dialog>zat_b7_bandit_boss_sultan_about</actor_dialog>
     <actor_dialog>actor_break_dialog</actor_dialog>
     </specific_character>

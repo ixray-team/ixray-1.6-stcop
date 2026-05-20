@@ -7,6 +7,8 @@ function on_key_press(dik,bind)
 		elseif (bind == key_bindings.kQUICK_LOAD) then 
 			return action_quick_load()
 		end
+		
+		SendScriptCallback("level_input_on_key_press",dik,bind)
 	end
 	
 	return false

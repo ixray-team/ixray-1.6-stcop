@@ -320,10 +320,12 @@ function action_commander:activate_scheme()
 	if self.st.path_look_info == nil then
 		self.st.path_look_info = utils.path_parse_waypoints(self.st.path_look)
 	end
-	self.move_mgr:reset(self.st.path_walk, self.st.path_walk_info, self.st.path_look, self.st.path_look_info,
-		self.st.team, self.st.suggested_state, {obj = self, func = self.formation_callback})
-
-		patrols[self.st.patrol_key]:set_command(self.object, self.cur_state, self.st.formation)
+	
+	if (self.move_mgr) then
+		self.move_mgr:reset(self.st.path_walk, self.st.path_walk_info, self.st.path_look, self.st.path_look_info,self.st.team, self.st.suggested_state, {obj = self, func = self.formation_callback})
+	end
+	
+	patrols[self.st.patrol_key]:set_command(self.object, self.cur_state, self.st.formation)
 end
 function action_commander:execute()
 	action_base.execute(self)
@@ -419,8 +421,9 @@ function action_patrol:activate_scheme()
 	if self.st.path_look_info == nil then
 		self.st.path_look_info = utils.path_parse_waypoints(self.st.path_look)
 	end
-	self.move_mgr:reset(self.st.path_walk, self.st.path_walk_info, self.st.path_look, self.st.path_look_info,
-		self.st.team, self.st.suggested_state, {obj = self, func = self.formation_callback})
+	if (self.move_mgr) then
+		self.move_mgr:reset(self.st.path_walk, self.st.path_walk_info, self.st.path_look, self.st.path_look_info,self.st.team, self.st.suggested_state, {obj = self, func = self.formation_callback})
+	end
 end
 function action_patrol:execute()
 	action_base.execute (self)

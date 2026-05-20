@@ -5,7 +5,7 @@ function trade_init(npc, cfg)
 	end 
 	
 	-- no use having trade for enemies or zombied (no dialogs)
-	if (npc:relation(db.actor) == game_object.enemy or character_community(npc) == "zombied") then 
+	if (npc:relation(db.actor) == game_object.enemy or npc:character_community() == "zombied") then 
 		return 
 	end
 	
@@ -126,7 +126,7 @@ function load_state(id,m_data)
 		return 
 	end
 	
-	if (character_community(npc) == "zombied") then 
+	if (npc:character_community() == "zombied") then 
 		return 
 	end 
 	
@@ -257,7 +257,7 @@ function get_buy_discount(npc_id)
 		return 1
 	end
 
-	local sect = xr_logic.pick_section_from_condlist(db.actor, nil, xr_logic.parse_condlist(nil, "trader", "discounts", str))
+	local sect = xr_logic.pick_section_from_condlist(db.actor, nil, xr_logic.parse_condlist(db.actor, "trader", "discounts", str))
 	if (sect == nil or sect == "") then 
 		return 1 
 	end

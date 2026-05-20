@@ -24,6 +24,9 @@ m_data.se_object = {}
 -- store stuff only for online objects. When object goes offline this table is purged.
 m_data.game_object = {}
 
+-- PDA known contacts
+m_data.actor_contacts = {}
+
 local function on_pstor_load_all(obj,packet)
 	local id = obj:id()
 	local state = get_game_object_state(obj,false)
@@ -77,17 +80,12 @@ function CALifeStorageManager_before_save(fname)
 	
 	--ProcessEventQueueState(m_data,true)
 	
-	-- clean out se_object table of empty sub tables
-	for k,v in pairs(m_data.se_object) do 
-		if (type(v) == "table" and is_empty(v)) then 
-			v = nil
-		end
-	end
-	
 	-- clean out game_object table of empty sub tables
-	for k,v in pairs(m_data.game_object) do 
-		if (type(v) == "table" and is_empty(v)) then 
-			v = nil 
+	for id,tbl in pairs(m_data.game_object) do 
+		for k,v in pairs(tbl) do
+			if (type(v) == "table" and is_empty(v)) then 
+				m_data.game_object[id][k] = nil
+			end
 		end
 	end
 	
@@ -117,7 +115,7 @@ end
 
 -- called from engine!
 function CALifeStorageManager_save(fname)
-	printf("CALifeStorageManager_save START FINISHED")
+	--printf("CALifeStorageManager_save START FINISHED")
 end 
 
 -- called from engine

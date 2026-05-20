@@ -3,21 +3,22 @@
 	1. 	NEVER keep userdata (ie. engine classes) in global scope, instead keep track of game object id, and grab object in the scope you need it in by using level.object_by_id or db.storage table. 
 		Otherwise object can't deconstruct and you will end up with instances were script binder exists but object doesn't or level object exists but server object doesn't. This is because variables in lua are all references.
 			Ex. _G.npc = level.object_by_id(2342) 
-				alife():release(alife():object(2342))
+				alife():release(alife_object(2342))
 		Above, 'npc' will not be nil but se_obj will be! scripts will blow up. Pure Virtual Function calls may occur! Or quite possibly silent errors like for example when player goes to talk to npc game crashes because self.object is nil
 		Such thing is 'okay' in db.storage, but that is because on net_destroy db.storage[id] is set nil. So if you are keeping track of objects directly in a table, instead of ID 
 		then you absolutely must rid of every single reference to the userdata so that it can be destroy and garbage collected. Otherwise you end up with undetectable issues.
 --]]
-
-
 if (jit == nil) then
 	profiler.setup_hook	()
 end
 
-GAME_VERSION = "1.4.12"
+GAME_VERSION = "1.4.22"
 
 if string.find(command_line(), "-dbg") then
 	DEV_DEBUG = true
+	if string.find(command_line(), "-dbgdev") then -- because users all using dbg, need to hide OP features
+		DEV_DEBUG_DEV = true
+	end
 end
 
 USE_INI_MEMOIZE = true
@@ -42,7 +43,7 @@ b_discard_settings_shown = false
 ----------------------------------------------------------------------
 
 function start_game_callback()
-	math.randomseed(device():time_global ())
+	math.randomseed(os.time())
 	printf("Call of Chernobyl version %s",GAME_VERSION)
 	if (USE_MARSHAL) then
 		printf("using marshal library")
@@ -67,6 +68,14 @@ function start_game_callback()
 	pda.add_quick_slot_items_on_game_start()
 end
 
+function alife_object(id)
+	if (id == nil or id >= 65535) then
+		callstack()
+		printf("ALIFE OBJECT ID IS %s!",id)
+		return
+	end
+	return alife():object(id)
+end
 -------------------------------------------------------------------------------------------------------
 -- 											SCRIPTED CALLBACKS
 -------------------------------------------------------------------------------------------------------
@@ -137,8 +146,7 @@ function CreateTimeEvent(ev_id,act_id,timer,f,...)
 
 	if not (ev_queue[ev_id][act_id]) then
 		ev_queue[ev_id][act_id] = {}
-		ev_queue[ev_id][act_id].game_time = game.get_game_time()
-		ev_queue[ev_id][act_id].timer = timer
+		ev_queue[ev_id][act_id].timer = time_global() + timer*1000
 		ev_queue[ev_id][act_id].f = f
 		ev_queue[ev_id][act_id].p = {...}
 		ev_queue[ev_id].__size = ev_queue[ev_id].__size + 1
@@ -151,17 +159,22 @@ function RemoveTimeEvent(ev_id,act_id)
 	end
 end
 
-function ProcessEventQueue(force)
-	if has_alife_info("sleep_active") then
-		return false
+function ResetTimeEvent(ev_id,act_id,timer)
+	if (ev_queue[ev_id] and ev_queue[ev_id][act_id]) then
+		ev_queue[ev_id][act_id].timer = time_global() + timer*1000
 	end
+end
+
+function ProcessEventQueue(force)
+	-- if (has_alife_info("sleep_active")) then
+		-- return false
+	-- end
 	
 	for event_id,actions in pairs(ev_queue) do
 		for action_id,act in pairs(actions) do
 			--alun_utils.debug_write(strformat("event_queue: event_id=%s action_id=%s",event_id,action_id))
 			if (action_id ~= "__size") then
-				local gt = act.game_time
-				if (gt == nil) or (force) or (game.get_game_time():diffSec(gt) >= act.timer) then
+				if (force) or (time_global() >= act.timer) then
 					if (act.f(unpack(act.p)) == true) then
 						ev_queue[event_id][action_id] = nil
 						ev_queue[event_id].__size = ev_queue[event_id].__size - 1
@@ -253,18 +266,19 @@ function JumpToLevel(new_level)
 	if (level_name == new_level) then
 		return false
 	end
-		local sim,gg = alife(),game_graph()
-		-- first try to find a smart_terrain on specified level
-	if (SIMBOARD) then
-		for name,smart in pairs(SIMBOARD.smarts_by_names) do
-			cvertex = smart and gg:vertex(smart.m_game_vertex_id)
-			if (cvertex and sim:level_name(cvertex:level_id()) == new_level) then
-				ChangeLevel(cvertex:level_point(),cvertex:level_vertex_id(),smart.m_game_vertex_id,vector():set(0,0,0))
-				return true
-			end
+	
+	local cvertex
+	local sim,gg = alife(),game_graph()
+	-- first try to find a smart_terrain on specified level
+	for id,smart in pairs(db.smart_terrain_by_id) do
+		cvertex = smart and gg:vertex(smart.m_game_vertex_id)
+		if (cvertex and sim:level_name(cvertex:level_id()) == new_level) then
+			ChangeLevel(cvertex:level_point(),cvertex:level_vertex_id(),smart.m_game_vertex_id,vector():set(0,0,0))
+			return true
 		end
 	end
-		-- in case level has no smarts then just teleport to first found gvid for level
+
+	-- in case level has no smarts then just teleport to first found gvid for level
 	for gvid=0, 4860 do
 		if gg:valid_vertex_id(gvid) then
 			cvertex = gg:vertex(gvid)
@@ -303,25 +317,24 @@ function TeleportSquad(squad,pos,lvid,gvid)
 end
 
 function IsSurvivalMode()
-	return axr_main.config and axr_main.config:r_value("temp","new_game_survival_mode",1) == true or alife_storage_manager.get_state().enable_survival_mode == true
+	return axr_main.config and axr_main.config:r_value("character_creation","new_game_survival_mode",1) == true or alife_storage_manager.get_state().enable_survival_mode == true
 end
 --------------------------------------------------------------------
 -- Serialization of userdata for Marshal Library
 --------------------------------------------------------------------
 if (marshal) then
-	getmetatable(game.CTime()).__persist = function(self)
-		local Y, M, D, h, m, s, ms = self:get(0,0,0,0,0,0,0)
+	function game_CTime___persist(self)
+		local Y, M, D, h, m, s, ms = 0,0,0,0,0,0,0
+		if (self and self.get) then
+			Y, M, D, h, m, s, ms = self:get(Y, M, D, h, m, s, ms)
+		end
 		return function ()
-			return game.CTime():set(Y or 0, M or 0, D or 0, h or 0, m or 0, s or 0, ms or 0)
+			local t = game.CTime()
+			t:set(Y, M, D, h, m, s, ms)
+			return t
 		end
 	end
-	
-	getmetatable(vector()).__persist = function(self)
-		local x,y,z = self.x,self.y,self.z
-		return function()
-			return vector():set(x or 0,y or 0,z or 0)
-		end
-	end
+	getmetatable(game.CTime()).__persist = game_CTime___persist
 end
 
 -- debug to find objects that shouldn't be calling game_object:alive()
@@ -329,7 +342,7 @@ end
 game_object.alive = function(self)
 	callstack()
 	printf("alive %s",self:name())
-	local se_obj = alife():object(self:id())
+	local se_obj = alife_object(self:id())
 	return se_obj:alive()
 end
 --]]
@@ -338,7 +351,7 @@ function is_empty(t)
 	if not (t) then
 		return true
 	end
-		for i,j in pairs(t) do
+	for i,j in pairs(t) do
 		return false
 	end
 	return true
@@ -397,7 +410,7 @@ function printf(fmt,...)
 		end
 		fmt = string.gsub(fmt,"%%s",sr)
 	end
-		if (log) then
+	if (log) then
 		log(fmt)
 		--get_console():execute("flush")
 	else
@@ -460,38 +473,26 @@ end
 
 function action(obj,...)
 	local arg = {...}
-	local act = entity_action()
-	local i = 1
-	while true do
-		if (arg[i] ~= nil) then
-			act:set_action(arg[i])
-		else
-			break
-		end
-		i = i + 1
-	end
+	local e_act = entity_action()
+	for i=1,#arg do 
+		e_act:set_action(arg[i])
+	end 
 	if (obj ~= nil) then
-		obj:command(act,false)
+		obj:command(e_act,false)
 	end
-	return  entity_action(act)
+	return entity_action(e_act)
 end
 
 function action_first(obj,...)
 	local arg = {...}
-	local act = entity_action()
-	local i = 1
-	while true do
-		if (arg[i] ~= nil) then
-			act:set_action(arg[i])
-		else
-			break
-		end
-		i = i + 1
-	end
+	local e_act = entity_action()
+	for i=1,#arg do 
+		e_act:set_action(arg[i])
+	end 
 	if (obj ~= nil) then
-		obj:command(act,true)
+		obj:command(e_act,true)
 	end
-	return  entity_action(act)
+	return entity_action(e_act)
 end
 
 function round (value)
@@ -630,7 +631,7 @@ function iempty_table (t)
 		return {}
 	end
 	while #t > 0 do
-		t[#t] = nil
+		table.remove(t)
 	end
 	return t
 end
@@ -723,17 +724,24 @@ function store_table(table, subs)
 end
 ----------------------------------------
 function IsWounded(o)
-	--[[
-	local st = o and db.storage[o:id()]
-	return st and st.wounded and st.wounded.wound_manager and tostring(st.wounded.wound_manager.state) ~= "nil" or false
-	local c = o:clsid()
-	return c and c == clsid.script_stalker and o:alive() and o:wounded() or false
-	--]]
-	if (IsStalker(o) and o:alive()) then
-		local st = db.storage[o:id()]
-		return st and st.wounded and st.wounded.wound_manager and tostring(st.wounded.wound_manager.state) ~= "nil" or false
+	if not (o:clsid() == clsid.script_stalker and o:alive()) then 
+		return false 
+	end 
+	
+	if (o:critically_wounded() or o:in_smart_cover()) then 
+		return false 
 	end
-	return false
+	
+	if o:best_enemy() and utils.load_var(o, "wounded_fight") == "true" then
+		return false
+	end
+	
+	local state = tostring(utils.load_var(o, "wounded_state"))
+	if (state == "nil") then
+		return false
+	end
+	
+	return true
 end
 -------------------------------------------------------------------------------------------
 -- 										CLASS TESTING
@@ -876,6 +884,13 @@ function IsStalker(o,c)
 	end
 	return c and (c == clsid.script_stalker or c == clsid.script_actor) or false
 end
+
+function IsTrader(o,c)
+	if not (c) then
+		c = o and o:clsid()
+	end
+	return c and (c == clsid.script_trader) or false
+end 
 
 function IsHelicopter(o,c)
 	if not (c) then
@@ -1263,7 +1278,7 @@ end
 function get_story_se_object(story_obj_id)
 	local obj_id = story_obj_id and story_objects.get_story_objects_registry():get(story_obj_id)
 	if obj_id == nil then return nil end
-	return alife():object(obj_id)
+	return alife_object(obj_id)
 end
 
 function get_story_object(story_obj_id)
@@ -1295,7 +1310,7 @@ function get_object_squad(object,caller)
 		return
 	end
 		if (object.group_id ~= nil and object.group_id ~= 65535) then
-		return alife():object(object.group_id)
+		return alife_object(object.group_id)
 	end
 		local sim = alife()
 	local se_obj = type(object.id) == "function" and sim:object(object:id())
@@ -1304,7 +1319,7 @@ end
 
 function get_story_squad(story_id)
 	local squad_id = get_story_object_id(story_id)
-	return squad_id and alife():object(squad_id)
+	return squad_id and alife_object(squad_id)
 end
 
 --Проверка по временному интервалу.
@@ -1354,16 +1369,56 @@ end
 -- Called before actor hit callback
 -- returning false will ignore the hit completely
 function CActor__BeforeHitCallback(actor,shit,bone_id)
-	--printf("power=%s impuse=%s type=%s dir=%s who=%s",shit.power,shit.impulse,shit.type,shit.direction and vec_to_str(shit.direction),shit.draftsman and shit.draftsman:name())
+	--[[
+	local hit_to_section = {
+		[hit.light_burn] = "light_burn",
+		[hit.burn] = "burn",
+		[hit.strike] = "strike",
+		[hit.shock] = "shock",
+		[hit.wound] = "wound",
+		[hit.radiation] = "radiation",
+		[hit.telepatic] = "telepatic",
+		[hit.chemical_burn] = "chemical_burn",
+		[hit.explosion] = "explosion",
+		[hit.fire_wound] = "fire_wound",
+	}
+	printf("power=%s impuse=%s type=%s dir=%s who=%s",shit.power,shit.impulse,hit_to_section[shit.type],shit.direction and vec_to_str(shit.direction),shit.draftsman and shit.draftsman:name())
+	--]]
+	if (shit.type ~= hit.strike) then
+		if (bind_stalker_ext.invulnerable_time and time_global() < bind_stalker_ext.invulnerable_time) then 
+			if (db.actor) then
+				if (db.actor.bleeding > 0) then 
+					db.actor.bleeding = 0.2
+				end
+				if (db.actor.radiation > 0) then 
+					db.actor.radiation = -1
+				end
+			end
+			bind_stalker_ext.invulnerable_time = bind_stalker_ext.invulnerable_time - 500
+			return false
+		end
+	end
+	
 	if (shit.power > 0) then 
 		if (shit.draftsman and shit.draftsman:id() ~= 0 and IsStalker(shit.draftsman) and shit.draftsman:relation(db.actor) == game_object.friend) then 
 			return false 
 		end
 	end
 	
-	local return_flag = true
-	SendScriptCallback("actor_on_before_hit",shit,bone_id,return_flag)
-	return return_flag
+	local flags = { ret_value = true }
+	SendScriptCallback("actor_on_before_hit",shit,bone_id,flags)
+	return flags.ret_value
+end
+
+-- called in CSE_ALifeDynamicObject::on_unregister()
+-- good place to remove ids from persistent tables
+function CSE_ALifeDynamicObject_on_unregister(id)
+	local m_data = alife_storage_manager.get_state()
+	if (m_data) then 
+		if (m_data.companion_borrow_item) then
+			m_data.companion_borrow_item[id] = nil 
+		end
+	end
 end
 
 get_console():execute("r__clear_models_on_unload 0")

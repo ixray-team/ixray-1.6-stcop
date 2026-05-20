@@ -52,16 +52,16 @@
 		<text>Close PDA</text>
 	</string>
 	<string id="pda_btn_logs">
-		<text>Message history</text>
+		<text>Messages</text>
 	</string>
 	<string id="pda_btn_logs_hint">
 		<text>Show message history</text>
 	</string>
 	<string id="pda_btn_quests">
-		<text>Area map</text>
+		<text>Map</text>
 	</string>
 	<string id="pda_btn_quests_hint">
-		<text>Show the Zone map and task list</text>
+		<text>Show the map and task list</text>
 	</string>
 	<string id="pda_btn_ranking">
 		<text>Statistics</text>
@@ -291,7 +291,198 @@
 	<string id="st_stalkers_killed">
 		<text>Stalkers killed</text>
 	</string>
-	<string id="st_stalkers_killed">
+	<string id="st_mutants_killed">
 		<text>Mutants killed</text>
+	</string>
+	<string id="pda_btn_relations">
+		<text>Relations</text>
+	</string>
+	<string id="pda_btn_relations_hint">
+		<text>Show faction relations</text>
+	</string>
+	<string id="pda_relations_header">
+		<text>Faction Relations</text>
+	</string>
+	<string id="pda_companions_header">
+		<text>Companions</text>
+	</string>
+    <string id="pda_table_value_on">
+        <text>Display text</text>
+    </string>
+    <string id="pda_table_value_off">
+        <text>Display values</text>
+    </string>
+    <string id="pda_companions_auto">
+        <text>Refresh</text>
+    </string>
+    <string id="pda_show_enemy">
+        <text>Display enemies</text>
+    </string>
+	
+    <string id="st_pda_mode_on">
+        <text>On</text>
+    </string>
+    <string id="st_pda_mode_off">
+        <text>Off</text>
+    </string>
+    <string id="st_pda_mode_dist_far">
+        <text>Far</text>
+    </string>
+    <string id="st_pda_mode_dist_near">
+        <text>Near</text>
+    </string>
+    <string id="st_pda_mode_true">
+        <text>True</text>
+    </string>
+    <string id="st_pda_mode_false">
+        <text>False</text>
+    </string>
+    <string id="st_pda_mode_enabled">
+        <text>Enabled</text>
+    </string>
+    <string id="st_pda_mode_disabled">
+        <text>Disabled</text>
+    </string>	
+    <string id="st_pda_distance_state_far">
+        <text>Distance keep far</text>
+    </string>
+    <string id="st_pda_distance_state_near">
+        <text>Distance keep near</text>
+    </string>
+    <string id="st_pda_cant_trade">
+        <text>Task-related stalkers can't trade</text>
+    </string>
+	<!-- PDA Relations Action list -->
+	<string id="st_pda_action_back">
+		<text>Back</text>
+	</string>
+	<string id="st_pda_action_1__1">
+		<text>Lend items</text>
+	</string>
+	<string id="st_pda_action_1__2">
+		<text>Commands</text>
+	</string>
+	<string id="st_pda_action_1__2_2">
+		<text>Movement</text>
+	</string>
+	<string id="st_pda_action_1__2_2_2_on">
+		<text>Follow</text>
+	</string>
+	<string id="st_pda_action_1__2_2_2_off">
+		<text>Wait</text>
+	</string>
+	<string id="st_pda_action_1__2_2_3_on">
+		<text>Distance (near)</text>
+	</string>
+	<string id="st_pda_action_1__2_2_3_off">
+		<text>Distance (far)</text>
+	</string>
+	<string id="st_pda_action_1__2_3">
+		<text>Combat</text>
+	</string>
+	<string id="st_pda_action_1__2_4">
+		<text>Looting</text>
+	</string>
+	<string id="st_pda_action_1__2_5_on">
+		<text>Stealth (disable)</text>
+	</string>
+	<string id="st_pda_action_1__2_5_off">
+		<text>Stealth (enable)</text>
+	</string>
+	<string id="st_pda_action_1__2_3_2">
+		<text>Passive</text>
+	</string>
+	<string id="st_pda_action_1__2_3_3">
+		<text>Defensive</text>
+	</string>
+	<string id="st_pda_action_1__2_3_4">
+		<text>Aggressive</text>
+	</string>
+	<string id="st_pda_action_1__2_4_2_on">
+		<text>Items (disable)</text>
+	</string>
+	<string id="st_pda_action_1__2_4_2_off">
+		<text>Items (enable)</text>
+	</string>
+	<string id="st_pda_action_1__2_4_3_on">
+		<text>Corpses (disable)</text>
+	</string>
+	<string id="st_pda_action_1__2_4_3_off">
+		<text>Corpses (enable)</text>
+	</string>
+	<string id="st_pda_action_back">
+		<text>Back</text>
+	</string>	
+	<string id="pda_btn_contacts">
+		<text>Contacts</text>
+	</string>
+	<string id="pda_btn_contacts_hint">
+		<text>Show contacts</text>
+	</string>
+	<string id="pda_show_known_contacts">
+		<text>Known contacts</text>
+	</string>
+    <string id="pda_msg_all">
+        <text>All</text>
+    </string>
+	
+	<string id="st_mm_pda_statistics">
+		<text>Statistics</text>
+	</string>
+	<string id="st_mm_pda_stalkers_killed">
+		<text>Stalkers killed</text>
+	</string>
+	<string id="st_mm_pda_mutants_killed">
+		<text>Mutants killed</text>
+	</string>
+	<string id="st_mm_pda_artes_found">
+		<text>Artefacts found</text>
+	</string>
+	<string id="st_mm_pda_items_sold">
+		<text>Items sold</text>
+	</string>
+	<string id="st_mm_pda_statistics">
+		<text>Statistics</text>
+	</string>
+	<string id="st_mm_pda_level_travel">
+		<text>Level travel</text>
+	</string>
+	
+	<string id="st_mm_pda_dismissable">
+		<text>Dismissable</text>
+	</string>
+	<string id="st_mm_pda_stealth">
+		<text>Stealth</text>
+	</string>
+	<string id="st_mm_pda_keep_distance">
+		<text>Keep distance</text>
+	</string>
+	<string id="st_mm_pda_loot_corpses">
+		<text>Loot corpses</text>
+	</string>
+	<string id="st_mm_pda_pickup_items">
+		<text>Pickup items</text>
+	</string>
+	<string id="st_mm_pda_combat">
+		<text>Combat</text>
+	</string>
+	<string id="st_mm_pda_movement">
+		<text>Movement</text>
+	</string>
+	<string id="st_mm_pda_states">
+		<text>States</text>
+	</string>
+	<string id="st_mm_pda_location">
+		<text>Location</text>
+	</string>
+	<string id="st_pda_fast_travel">
+		<text>Quick travel</text>
+	</string>
+	<string id="st_pda_display_values">
+		<text>Display Values</text>
+	</string>
+	
+	<string id="st_distance_to">
+		<text>Distance to</text>
 	</string>
 </string_table>

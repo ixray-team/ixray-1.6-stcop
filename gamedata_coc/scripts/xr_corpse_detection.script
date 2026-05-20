@@ -39,21 +39,23 @@ local function on_item_drop(npc,item)
 		return
 	end
 	-- unmark npc as having valuables if they were all removed by actor
-	local se_item = alife():object(item:id())
-	if (se_item and se_item.parent_id == db.actor:id()) then
-		local corpse_contain_any_valuable
-		HasValuableLoot[npc:id()] = nil
-		local function check_item(npc,item)
-			if (lootable_table[item:section()] ~= nil) then
-				corpse_contain_any_valuable = true
-			end
-		end
+	local parent = item:parent()
+	if not (parent and parent:id() == db.actor:id()) then 
+		return 
+	end
 
-		npc:iterate_inventory(check_item,npc)
-
-		if (corpse_contain_any_valuable) then
-			HasValuableLoot[npc:id()] = true
+	local corpse_contain_any_valuable
+	HasValuableLoot[npc:id()] = nil
+	local function check_item(npc,item)
+		if (lootable_table[item:section()] ~= nil) then
+			corpse_contain_any_valuable = true
 		end
+	end
+
+	npc:iterate_inventory(check_item,npc)
+
+	if (corpse_contain_any_valuable) then
+		HasValuableLoot[npc:id()] = true
 	end
 end
 
@@ -242,7 +244,9 @@ function get_all_from_corpse(npc)
 	end
 
 	corpse_npc:iterate_inventory(get_item,corpse_npc)
-
+	if lootmoney then
+		lootmoney.lootmoney_effect(npc, corpse_npc)
+	end
 	if items_value >= 100 then
 		xr_sound.set_sound_play(id,"corpse_loot_good")
 	elseif items_value > 0 and (math.random(1,100)/100) < 0.5 then
@@ -278,6 +282,8 @@ function evaluator_corpse:find_valid_target()
 		if (db.storage[self.a.selected_corpse_id]) then
 			db.storage[self.a.selected_corpse_id].corpse_already_selected = nil
 		end
+		self.a.selected_corpse_id = nil 
+		return false
 	end 
 	
 	local tg = time_global()
@@ -396,7 +402,7 @@ function evaluator_corpse:evaluate()
 	end
 
 	local st = db.storage[npc:id()]
-	if (st) and ((st.active_scheme == "camper") or (st.help_wounded and st.help_wounded.selected_id ~= nil) or (st.gather_items and st.gather_items.selected_id ~= nil)) then 
+	if ((st.active_scheme == "camper") or (st.help_wounded and st.help_wounded.selected_id ~= nil) or (st.gather_items and st.gather_items.selected_id ~= nil)) then
 		return false 
 	end
 
@@ -526,16 +532,14 @@ end
 function add_to_binder(npc,char_ini,scheme,section,st,temp)
 	local manager = npc:motivation_action_manager()
 
-	if (character_community(npc) == "zombied" or npc:section() == "actor_visual_stalker") then
+	if (npc:character_community() == "zombied" or npc:section() == "actor_visual_stalker") then
 		manager:add_evaluator(xr_evaluators_id.corpse_exist,property_evaluator_const(false))
-		temp.needs_configured = false 
-		return
-	end
-
-	manager:add_evaluator(xr_evaluators_id.corpse_exist, evaluator_corpse("corpse_exist", st))
-
+		--temp.needs_configured = false 
+	else
+		manager:add_evaluator(xr_evaluators_id.corpse_exist, evaluator_corpse("corpse_exist", st))
+	end 
+	
 	temp.action = action_search_corpse(npc:name(),"action_search_corpse", st)
-		
 	temp.action:add_precondition(world_property(stalker_ids.property_alive,true))
 	temp.action:add_precondition(world_property(stalker_ids.property_enemy,false))
 	temp.action:add_precondition(world_property(stalker_ids.property_danger,false))
@@ -550,7 +554,7 @@ end
 function configure_actions(npc,ini,scheme,section,stype,temp)
 	temp.action:add_precondition(world_property(xr_gather_items.evaid,false))
 	temp.action:add_precondition(world_property(stalker_ids.property_items,false))
-	temp.action:add_precondition(world_property(xr_evaluators_id.wounded_exist,false))
+	--temp.action:add_precondition(world_property(xr_evaluators_id.wounded_exist,false))
 	temp.action:add_precondition(world_property(xr_evaluators_id.stohe_meet_base + 1,false))
 	temp.action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base,false))
 	temp.action:add_precondition(world_property(xr_evaluators_id.abuse_base, false))

@@ -255,4 +255,16 @@
 	<string id="kb_custom5">
 		<text>Companion toggle looting</text>
 	</string>
+	<string id="kb_custom6">
+		<text>PDA Map</text>
+	</string>
+	<string id="kb_custom7">
+		<text>PDA Relations</text>
+	</string>
+	<string id="kb_custom8">
+		<text>PDA Contacts</text>
+	</string>
+	<string id="kb_custom9">
+		<text>PDA Statistics</text>
+	</string>
 </string_table>

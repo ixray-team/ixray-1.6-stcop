@@ -37,17 +37,18 @@ end
 -- actor_on_net_spawn
 -------------------
 function actor_on_net_spawn()
-
-	-- Uncomment to remove all corpses at beginning of game in case they cause error
-	--[[
-	local sim = alife()
-	for i=1,65534 do 
-		local se_obj = sim:object(i)
-		if (se_obj and (se_obj:clsid() == clsid.script_stalker or IsMonster(nil,se_obj:clsid())) and not se_obj:alive()) then 
-			sim:release(se_obj,true)
-		end
+	local con = get_console()
+	if (axr_main.config:r_value("mm_options","hardcore_ai_aim",1,false)) then
+		con:execute("ai_aim_max_angle 20.0")
+		con:execute("ai_aim_min_angle 17.0")
+		con:execute("ai_aim_min_speed 2.00")
+		con:execute("ai_aim_predict_time 0.28")
+	else
+		con:execute("ai_aim_max_angle 0.7854")
+		con:execute("ai_aim_min_angle 0.19635")
+		con:execute("ai_aim_min_speed 0.24")
+		con:execute("ai_aim_predict_time 0.40")
 	end
-	--]]
 	
 	local sim = alife()
 	for i=1,65534 do
@@ -77,13 +78,22 @@ end
 -------------------
 -- actor_on_update
 -------------------
+invulnerable_time = nil
 function actor_on_first_update(binder,delta)
+	local m_data = alife_storage_manager.get_state()
+	-- check if artefacts can respawn for this level
+	if (m_data.artefact_respawn_levels and m_data.artefact_respawn_levels[level.name()] == true) then 
+		--printf("DEBUG: surge_manager respawn artefacts")
+		surge_manager.get_surge_manager():respawn_artefacts_and_replace_anomaly_zone()
+		m_data.artefact_respawn_levels[level.name()] = false
+	end 
+	invulnerable_time = time_global() + 7000
 	SendScriptCallback("actor_on_first_update",binder,delta)
 end
 
 function actor_on_update(binder,delta)
 	-- WISH GRANTER ZOMBIED-IMMORTALITY
-	if (db.actor:has_info("actor_made_wish_immortal")) then 
+	if (db.actor:has_info("actor_made_wish_immortal") or invulnerable_time and invulnerable_time > time_global() + 7000) then 
 		db.actor.health = 1
 		db.actor.bleeding = 1
 		db.actor.psy_health = 1
@@ -195,7 +205,6 @@ function actor_on_save(binder,packet)
 	
 	if (actor_gv and actor_gv:level_id() ~= sim:level_id()) then
 		--printf("DEBUG: actor changing level")
-		task_manager.get_task_manager():set_task_cancelled("faction_base_defense")
 		SendScriptCallback("on_level_changing")
 	end
 
@@ -244,19 +253,11 @@ end
 -- on_actor_before_death
 ---------------------------------------------
 function actor_on_before_death(binder,whoID)
-	-- if you want to keep actor alive, then use db.actor:set_health_ex(1) and do not use db.actor:kill(db.actor,true)
-	--db.actor:set_health_ex(1)
-	
-	-- FIXED IN ENGINE NOW AS OF 9/16/2016
-	-- This is necessary to avoid engine crash when player dies with holder
-	-- local car = db.actor and db.actor:get_attached_vehicle()
-	-- if (car) then 
-		-- db.actor:detach_vehicle()
-	-- end
-	
-	db.actor:kill(db.actor, true)
-	
-	SendScriptCallback("actor_on_before_death",whoID)
+	local flags = { ret_value = true }
+	SendScriptCallback("actor_on_before_death",whoID,flags)
+	if (flags.ret_value == true) then 
+		db.actor:kill(db.actor, true)	
+	end
 end
 
 ---------------------------------------------
@@ -272,7 +273,7 @@ end
 function actor_on_detach_vehicle(binder,obj)
 	SendScriptCallback("actor_on_detach_vehicle",obj)
 	if (obj:section() == "deployable_mgun") then 
-		local se_obj = alife():object(obj:id())
+		local se_obj = alife_object(obj:id())
 		if (se_obj) then 
 			alife():release(se_obj)
 		end

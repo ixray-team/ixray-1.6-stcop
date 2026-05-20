@@ -90,7 +90,7 @@ function action_npc_vs_box:execute()
 	
 	self.st.__tmr = self.st.__tmr or time_global()+8000
 	if (time_global() > self.st.__tmr) then 
-		local se_obj = alife():object(obj:id())
+		local se_obj = alife_object(obj:id())
 		if (se_obj) then 
 			alife():release(se_obj,true)
 		end
@@ -105,6 +105,8 @@ function action_npc_vs_box:execute()
 	st:set_state("idle", nil, nil, nil, {fast_set = true})
 	st.animation:set_state(nil, true)
 	st.animation:set_control()
+	st.animstate:set_state(nil,true)
+	st.animstate:set_control()
 	
 	self.object:set_mental_state(anim.danger)
 	self.object:set_body_state(move.crouch)
@@ -141,13 +143,12 @@ end
 function add_to_binder(npc,ini,scheme,section,storage,temp)
 	local manager = npc:motivation_action_manager()
 	
-	if (not npc:alive()) or (character_community(npc) == "zombied" or npc:section() == "actor_visual_stalker") then
+	if (not npc:alive()) or (npc:character_community() == "zombied" or npc:section() == "actor_visual_stalker") then
 		manager:add_evaluator(evaid,property_evaluator_const(false))
-		temp.needs_configured = false
-		return 
-	end
-
-	manager:add_evaluator(evaid,evaluator_npc_vs_box(npc,"eva_npc_vs_box",storage))
+		--temp.needs_configured = false
+	else
+		manager:add_evaluator(evaid,evaluator_npc_vs_box(npc,"eva_npc_vs_box",storage))
+	end 
 	
 	temp.action = action_npc_vs_box(npc,"act_npc_vs_box",storage)
 	

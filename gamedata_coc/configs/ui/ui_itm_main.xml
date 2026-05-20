@@ -7,12 +7,12 @@
 		</background>
 
 		<btn_cancel x="45" y="64" width="70" height="28" check_mode="0">
-			<text font="letterica18">Cancel</text>
+			<text font="letterica18">ui_inv_cancel</text>
 			<texture>ui_inGame2_Mp_bigbuttone</texture>
 		</btn_cancel>
 
 		<btn_ok x="115" y="64" width="70" height="28" check_mode="0">
-			<text font="letterica18">OK</text>
+			<text font="letterica18">ui_inv_ok</text>
 			<texture>ui_inGame2_Mp_bigbuttone</texture>
 		</btn_ok>
 
@@ -41,7 +41,7 @@
 			</icon_tool>
 
 			<caption_repair x="285" y="186" width="195" height="50" complex_mode="1">
-				<text font="letterica18">Repairable Equipment</text>
+				<text font="letterica18">ui_st_repairable_equipment</text>
 			</caption_repair>
 			<list_frame x="265" y="202" width="284" height="107">
 				<texture>ui_inGame2_servers_list_frame</texture>
@@ -51,7 +51,7 @@
 			</list>
 
 			<caption_parts x="285" y="32" width="195" height="20">
-				<text font="letterica18">Usable Parts</text>
+				<text font="letterica18">ui_st_usable_parts</text>
 			</caption_parts>
 			<list_frame_parts x="265" y="48" width="284" height="107">
 				<texture>ui_inGame2_servers_list_frame</texture>
@@ -62,7 +62,7 @@
 
 			<btn_repair x="25" y="427" width="80" height="40">
 				<texture>ui_button_main01</texture>
-				<text font="letterica18">Repair</text>
+				<text font="letterica18">kb_repair</text>
 			</btn_repair>
 			<btn_cancel x="130" y="427" width="80" height="40">
 				<texture>ui_button_main01</texture>
@@ -94,7 +94,7 @@
 			</list>
 			<btn_ok x="109" y="430" width="80" height="26">
 				<texture>ui_button_main01</texture>
-				<text font="letterica18">OK</text>
+				<text font="letterica18">ui_inv_ok</text>
 			</btn_ok>
 		</form>
 	</loot>

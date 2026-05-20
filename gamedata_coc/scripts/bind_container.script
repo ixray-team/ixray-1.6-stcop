@@ -57,7 +57,7 @@ end
 -- called from item section in items.ltx
 function access_inventory(obj)
 	local id = obj:id()
-	local se_inv_box = containers[id] and containers[id].id and alife():object(containers[id].id)
+	local se_inv_box = containers[id] and containers[id].id and alife_object(containers[id].id)
 	if not (se_inv_box) then
 		-- position under map
 		local pos = utils.vector_copy_by_val(level.get_bounding_volume().min)
@@ -96,7 +96,7 @@ function container_binder:update(delta)
     object_binder.update(self, delta)
 	-- If actor menu is in dead body search mode then check if it's our ID; if so calculate_weight
 	if (actor_menu.dead_body_searching and curBoxID == self.object:id()) then
-		local se_inv_box = containers[curBoxID].id and alife():object(containers[curBoxID].id)
+		local se_inv_box = containers[curBoxID].id and alife_object(containers[curBoxID].id)
 		if (se_inv_box) then
 			self.object:set_weight(calculate_weight(se_inv_box,system_ini():r_float_ex(self.object:section(),"inv_weight")))
 		end
@@ -140,7 +140,7 @@ function container_binder:load(stpk)
 	containers[id] = containers[id] or {}
 	containers[id].id = tonumber(stpk:r_stringZ())
 	
-	local se_inv_box = containers[id].id and alife():object(containers[id].id)
+	local se_inv_box = containers[id].id and alife_object(containers[id].id)
 	if (se_inv_box) then 
 		--level.map_add_object_spot(se_inv_box.id, "ui_pda2_actor_box_location", "st_ui_pda_actor_box") -- debug
 		alife():set_switch_online(se_inv_box.id,true)

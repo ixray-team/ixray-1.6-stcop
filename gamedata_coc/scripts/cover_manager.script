@@ -36,7 +36,7 @@ function CCover_manager:calculate_covers(position)
 
 	local npc_table = {}
 	for k,v in pairs(self.squads) do
-		local squad = alife():object(k)
+		local squad = alife_object(k)
 		for kk in squad:squad_members() do
 			if db.storage[kk.id] ~= nil then
 				local npc_object = db.storage[kk.id].object

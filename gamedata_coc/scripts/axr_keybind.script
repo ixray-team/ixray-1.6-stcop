@@ -5,21 +5,28 @@
 -- To add new keybinds, simplay add name here and default keypress. Then make an action.<name> function for it. Param passed is true if pressed or false if released
 -- In engine there has been 15 custom dik binds made for script use (ie. kCUSTOM1 to kCUSTOM15)
 -- This allows the ability to set the keybind through game options or console instead. Otherwise use DIK_keys and value will be stored in axr_options.ini
-local keybinds = {
+keybinds = {
 					["companion_cycle_combat_mode"] = "kCUSTOM1",
 					["companion_cycle_move_mode"] 	= "kCUSTOM2",
 					["companion_move_to_point"] 	= "kCUSTOM3",
 					["companion_cycle_stealth"] 	= "kCUSTOM4",
 					["companion_cycle_looting"] 	= "kCUSTOM5",
+					
+					["pda_map"]						= "kCUSTOM6",
+					["pda_relations"]				= "kCUSTOM7",
+					["pda_contacts"]				= "kCUSTOM8",
+					["pda_stats"]					= "kCUSTOM9",
+					["pda_logs"]					= "kCUSTOM10",
+					
 					["debug_demo_record"]			= "DIK_NUMPAD0",
-					["debug_select_object"] 		= "DIK_NUMPAD9",
-					["debug_attachment_ui"] 		= "DIK_INSERT",
+					--["debug_select_object"] 		= "DIK_NUMPAD9",
+					--["debug_attachment_ui"] 		= "DIK_INSERT",
 					["debug_test"] 					= "DIK_NUMPADENTER",
 					--["debug_reload_game"]			= "DIK_END",
-					["debug_hold_action"]			= "DIK_NUMPAD8"
+					--["debug_hold_action"]			= "DIK_NUMPAD8"
 }
 
-local action = {}
+action = {}
 ------------------------------------------------------------------
 -- Keypress actions
 ------------------------------------------------------------------
@@ -43,25 +50,7 @@ function action.companion_cycle_stealth(p)
 	if not (p==1) then
 		return 
 	end
-	for id,squad in pairs(axr_companions.companion_squads) do 
-		if (squad and squad.commander_id) then
-			for k in squad:squad_members() do
-				if not (xrs_kill_wounded.hostage_list[k.id]) then
-					st = db.storage[k.id]
-					local member = st and st.object
-					if (member and member:alive()) then
-						if ( member:has_info("npcx_beh_substate_stealth") ) then
-							member:disable_info_portion("npcx_beh_substate_stealth")
-							SetHudMsg("Companion stealth mode disabled",8)
-						else
-							member:give_info_portion("npcx_beh_substate_stealth")
-							SetHudMsg("Companion stealth mode enabled",8)
-						end
-					end
-				end
-			end
-		end
-	end
+	axr_companions.cycle_companions_stealth_mode()
 end
 
 function action.companion_cycle_looting(p)
@@ -81,6 +70,61 @@ function action.companion_cycle_looting(p)
 				end
 			end
 		end
+	end
+end
+
+function action.pda_map(p)
+	if not (p==1) then
+		return 
+	end
+	local pda_menu = ActorMenu.get_pda_menu()
+	if not (pda_menu:IsShown()) then 
+		pda_menu:ShowDialog(true)
+		pda_menu:SetActiveSubdialog("eptTasks")
+	end
+end 
+
+function action.pda_relations(p)
+	if not (p==1) then
+		return 
+	end
+	local pda_menu = ActorMenu.get_pda_menu()
+	if not (pda_menu:IsShown()) then 
+		pda_menu:ShowDialog(true)
+		pda_menu:SetActiveSubdialog("eptRelations")
+	end
+end 
+
+function action.pda_contacts(p)
+	if not (p==1) then
+		return 
+	end
+	local pda_menu = ActorMenu.get_pda_menu()
+	if not (pda_menu:IsShown()) then 
+		pda_menu:ShowDialog(true)
+		pda_menu:SetActiveSubdialog("eptContacts")
+	end
+end 
+
+function action.pda_stats(p)
+	if not (p==1) then
+		return 
+	end
+	local pda_menu = ActorMenu.get_pda_menu()
+	if not (pda_menu:IsShown()) then 
+		pda_menu:ShowDialog(true)
+		pda_menu:SetActiveSubdialog("eptRanking")
+	end
+end
+
+function action.pda_logs(p)
+	if not (p==1) then
+		return 
+	end
+	local pda_menu = ActorMenu.get_pda_menu()
+	if not (pda_menu:IsShown()) then 
+		pda_menu:ShowDialog(true)
+		pda_menu:SetActiveSubdialog("eptLogs")
 	end
 end
 
@@ -152,7 +196,8 @@ function action.debug_test(p)
 		return 
 	end 
 	if (p==1) then
-	
+		--alun_utils.print_table(story_objects.get_story_objects_registry().story_id)
+		--[[ PRINT _G
 		local valid = {
 			["string"] = true,
 			["number"] = true,
@@ -191,12 +236,13 @@ function action.debug_test(p)
 			f:write(txt)
 			f:close()
 		end
+		--]]
 	
 		--[[ clones active weapon
 		if (db.actor) then 
 			local wpn = db.actor:active_item()
 			if (wpn and IsWeapon(wpn)) then 
-				local se_wpn = alife():object(wpn:id())
+				local se_wpn = alife_object(wpn:id())
 				if (se_wpn) then 
 					alife():clone_weapon(se_wpn,se_wpn:section_name(),se_wpn.position,se_wpn.m_level_vertex_id,se_wpn.m_game_vertex_id,0)
 				end
@@ -216,7 +262,7 @@ function action.debug_test(p)
 		local debug_task_infos = task_manager.get_task_manager().task_info
 		local task_ini = task_manager.task_ini
 		for k,v in pairs(debug_task_infos) do
-			local squad = v.task_giver_id and alife():object(v.task_giver_id)
+			local squad = v.task_giver_id and alife_object(v.task_giver_id)
 			if (squad) then
 				if (squad:clsid() == clsid.online_offline_group_s) then
 					printf("%s removing squad task giver!",k)

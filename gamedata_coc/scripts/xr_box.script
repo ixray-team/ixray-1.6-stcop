@@ -21,7 +21,7 @@ function ph_item_box:__init()
 			local id, value = "", ""
 			for i=0,n-1 do
 				result, id, value = death_ini:r_line(v,i,"","")
-				item_by_community[v][id] = 100*tonumber(value)
+				item_by_community[v][id] = tonumber(value) or 0
 			end
 		end
 	end
@@ -51,20 +51,18 @@ function ph_item_box:__init()
 		min = tonumber(min) * (mul_by_level[id] or 0)
 		max = tonumber(max) * (mul_by_level[id] or 0)
 
-		count_by_level[id] = {min = min, max = max}
+		count_by_level[id] = {min,max}
 	end
 end
 
 function ph_item_box:spawn_items(obj,who,spawn_ini)
-	if (who and who:id() == 0) then 
-		xr_statistic.inc_counter("boxes_smashed")
-	end
-
 	local community
 	if (spawn_ini) then
 		create_obligatory_items(obj,spawn_ini)
 		community = spawn_ini:r_string_ex("drop_box","community")
-	else
+	end
+
+	if (community == nil or community == "def_box") then
 		local community_list = {"small_box_generic", "small_box_ussr", "small_box_nato", "small_box_army", "small_box_science"}
 		community = community_list[math.random(#community_list)]
 	end
@@ -76,7 +74,7 @@ function ph_item_box:spawn_items(obj,who,spawn_ini)
 	
 	for k,v in pairs(spawn_list) do
 		if (v > 0) then
-			local number = math.random(count_by_level[k].min, count_by_level[k].max)
+			local number = math.random(count_by_level[k][1], count_by_level[k][2])
 			if (number > 0) then
 				create_items(obj, k, number, v)
 			end
@@ -85,11 +83,12 @@ function ph_item_box:spawn_items(obj,who,spawn_ini)
 end
 
 function create_items(obj, section, number, rnd)
-	if not (system_ini():section_exist(section)) then 
+	local sys_ini = system_ini()
+	if not (sys_ini:section_exist(section) and sys_ini:line_exist(section,"cform")) then 
 		return 
 	end
 	if (utils.is_ammo(section)) then
-		if math.random(100) <= rnd	then
+		if math.random() <= rnd	then
 			if number > 0 then
 				local position = vector():set(obj:position())
 				position.y = obj:position().y + 0.3 --+ math.random(30,50)/100
@@ -98,7 +97,7 @@ function create_items(obj, section, number, rnd)
 		end
 	else
 		for i=1,number do
-			if math.random(100) <=  rnd then
+			if math.random() <=  rnd then
 				local position = vector():set(obj:position())
 				position.y = obj:position().y + 0.3 --+ math.random(30,50)/100
 				alife():create(section,position,obj:level_vertex_id(),obj:game_vertex_id())
@@ -121,8 +120,9 @@ function create_obligatory_items(obj, spawn_ini)
 		position.y = obj:position().y + 0.3
 			
 		local sim = alife()
+		local sys_ini = system_ini()
 		for i,section in ipairs(items) do
-			if not (system_ini():section_exist(section)) then 
+			if not (sys_ini:section_exist(section) and sys_ini:line_exist(section,"cform")) then 
 				return 
 			end
 			sim:create(section,position,obj:level_vertex_id(),obj:game_vertex_id())

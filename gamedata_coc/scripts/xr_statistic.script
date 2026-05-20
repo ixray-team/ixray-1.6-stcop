@@ -9,6 +9,7 @@ actor_statistic = {
 					artefacts_found = 0,
 					best_monster = nil,
 					boxes_smashed = 0,
+					deaths = 0,
 					enemies_surrendered = 0,
 					favorite_weapon_sect = nil,
 					field_dressings = 0,
@@ -25,6 +26,8 @@ actor_statistic = {
 					tasks_cancelled = 0,
 					tasks_completed = 0,
 					tasks_failed = 0,
+					guide_articles = {},
+					smart_terrain_visited = {},
 					visited = { 
 								["jupiter"] = false,
 								["k00_marsh"] = false,
@@ -85,29 +88,29 @@ monster_classes = {
 rank_rep = {
 			-- Gameplay mechanics.
 			achievements		=	{rnk=0,		rpt=0},
-			arena_battles		=	{rnk=50,	rpt=100},
+			arena_battles		=	{rnk=25,	rpt=100},
 			artefacts_found		=	{rnk=5,		rpt=0},
 			artefacts_detected	=	{rnk=5,		rpt=0},
 			surges				=	{rnk=5,		rpt=0},
 			field_dressings		=	{rnk=1,		rpt=0},
-			boxes_smashed		=	{rnk=5,		rpt=0},
-			enemies_surrendered	=	{rnk=5,		rpt=0},
+			boxes_smashed		=	{rnk=1,		rpt=0},
+			enemies_surrendered	=	{rnk=10,	rpt=0},
 			level_changes		=	{rnk=0,		rpt=0},
 			storms				=	{rnk=5,		rpt=0},
-			tasks_completed		=	{rnk=50,	rpt=100},
+			tasks_completed		=	{rnk=25,	rpt=100},
 			tasks_failed		=	{rnk=0,		rpt=-100},
 			tasks_cancelled		=	{rnk=0,		rpt=-100},
 			killed_monsters		=	{rnk=5,		rpt=0},
-			killed_stalkers		=	{rnk=0,		rpt=0}, -- Handled in game_relations.ltx
+			killed_stalkers		=	{rnk=0,		rpt=0}, -- Not used in vanilla CoC, see below.
 			stashes_found		=	{rnk=10,	rpt=0},
 			pdas_delivered		=	{rnk=10,	rpt=20},
-			heli_kills			=	{rnk=50,	rpt=50},
+			heli_kills			=	{rnk=100,	rpt=50},
 			heli_rocket_kills	=	{rnk=50,	rpt=50},
-			help_wounded		=	{rnk=25,	rpt=50},
+			help_wounded		=	{rnk=10,	rpt=50},
 			
-			-- Gain/loss based on faction relations.
-			-- Used instead of 'stalkers' or game_relations.ltx
-			killed_enemy		=	{rnk=0,		rpt=5},
+			-- Gained or lost reputation based on player's faction's relations.
+			-- Rank is instead handled in 'rank_kill_points' in game_relations.ltx.
+			killed_enemy		=	{rnk=0,		rpt=20},
 			killed_friend		=	{rnk=0,		rpt=-150},
 			killed_neutral		=	{rnk=0,		rpt=-100},
 			
@@ -239,7 +242,7 @@ function inc_counter_artefacts(art_id)
 	if(taken_artefacts[art_id]==nil) then
 		inc_counter("artefacts_found")
 		taken_artefacts[art_id] = art_id
-		local s_art = alife():object(art_id)
+		local s_art = alife_object(art_id)
 		if(s_art and s_art:section_name()) then
 			artefacts_table[s_art:section_name()] = true
 		end
@@ -306,6 +309,15 @@ function get_best_weapon()
 	if (weapon_name == nil) then weapon_name = "wpn_knife" end
 	return game.translate_string(system_ini():r_string_ex(weapon_name, "inv_name"))
 end
+
+function smart_terrain_mark_visited(smart)
+	actor_statistic.smart_terrain_visited[smart:name()] = true
+	if (fast_travel.quick_travel_smarts and fast_travel.quick_travel_smarts[smart:name()]) then 
+		if (level.map_has_object_spot(smart.id, "fast_travel") == 0) then 
+			level.map_add_object_spot(smart.id, "fast_travel", "st_pda_fast_travel")
+		end
+	end
+end 
 
 function save(package)
 	if (USE_MARSHAL) then
@@ -460,11 +472,7 @@ function get_levels_visited_count()
 	return count
 end
 
--- Notes --
--- These methods are disabled in-engine:
--- db.actor:change_character_rank(num)
--- db.actor:set_character_reputation(num)
-
+-- Initialise rank/rep system.
 local ranks, reputations = {}, {}
 function init_ranks_reps()
 	local function parse_str(s)
@@ -485,11 +493,21 @@ end
 
 -- Increment the actor rank.
 function inc_actor_rank(rank)
-	if rank and ((db.actor:character_rank()+rank) <= 14500 and (db.actor:character_rank()+rank) >= 0 and rank >= 0) then
-		db.actor:set_character_rank(db.actor:character_rank() + rank)
-	end
+	-- Update the player rank.
+	rank = rank or 0
+	db.actor:change_character_rank(rank)
+	
+	-- Impose restrictions at double the minimum and maximum rank values.
+	if (db.actor:character_rank() < 0) then db.actor:set_character_rank(0) end
+	if (db.actor:character_rank() > 28000) then db.actor:set_character_rank(28000) end
+	
+	-- Check whether to notify the player.
 	check_actor_rank_change()
---	news_manager.send_tip(db.actor, "Rank: ".. db.actor:character_rank(), nil, "rank_change", nil, nil)
+	
+	-- Display scripted rank increases if debug hud is enabled.
+	if (DEV_DEBUG and axr_main.config:r_value("mm_options","enable_debug_hud", 1, false) == true) then
+		news_manager.send_tip(db.actor, game.translate_string("ui_st_rank") .. ": ".. db.actor:character_rank(), nil, "rank_change", nil, nil)
+	end
 end
 
 -- Check for actor rank change.
@@ -514,11 +532,21 @@ end
 
 -- Increment the actor reputation.
 function inc_actor_reputation(reputation)
-	if reputation and ((db.actor:character_reputation()+reputation) <= 2500 and (db.actor:character_reputation()+reputation) >= -2500) then
-		db.actor:change_character_reputation(reputation)
-	end
---	news_manager.send_tip(db.actor, "Reputation: ".. db.actor:character_reputation(), nil, "rep_change", nil, nil)
+	-- Update the player reputation.
+	reputation = reputation or 0
+	db.actor:change_character_reputation(reputation)
+	
+	-- Impose restrictions at double the minimum and maximum reputation values.
+	if (db.actor:character_reputation() < -5000) then db.actor:set_character_reputation(-5000) end
+	if (db.actor:character_reputation() > 5000) then db.actor:set_character_reputation(5000) end
+	
+	-- Check whether to notify the player.
 	check_actor_reputation_change()
+	
+	-- Display scripted reputation increases if debug hud is enabled.
+	if (DEV_DEBUG and axr_main.config:r_value("mm_options","enable_debug_hud", 1, false) == true) then
+		news_manager.send_tip(db.actor, game.translate_string("ui_st_reputation") .. ": ".. db.actor:character_reputation(), nil, "rep_change", nil, nil)
+	end
 end
 
 -- Check for actor reputation change.

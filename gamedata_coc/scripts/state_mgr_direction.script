@@ -20,6 +20,7 @@ function eva_state_mgr_direction:evaluate()
 		if (look_object_type(self.object, self.st)) then
 			self.st.look_dir.y = 0
 		end
+		
 		self.st.look_dir:normalize()
 		if utils.vector_cmp_prec(sight_type.m_vector, self.st.look_dir, 0.01) ~= true then
 			--alun_utils.debug_write("eva_state_mgr_direction:evaluate() end 8")
@@ -178,6 +179,7 @@ end
 
 local look_direction_states = {
 --	threat = true,
+	animpoint_reach = true,
 	threat_na = true,
 	wait_na = true,
 	guard_na = true,

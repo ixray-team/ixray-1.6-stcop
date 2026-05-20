@@ -571,7 +571,7 @@ function se_smart_terrain:update_jobs()
 				self.arriving_npc[id] = nil
 			end 
 		elseif (se_obj == false) then
-			local sobj = alife():object(id)
+			local sobj = alife_object(id)
 			if (sobj) then 
 				self.arriving_npc[id] = sobj
 			else 
@@ -1128,7 +1128,9 @@ function se_smart_terrain:get_smart_props()
 		if self.respawn_point and self.already_spawned then
 			props = props.."\\nAlready_spawned :\n"
 			for k,v in pairs(self.already_spawned) do
-				props = props.."["..k.."] = "..v.num.."("..xr_logic.pick_section_from_condlist(db.actor, nil,self.respawn_params[k].num)..")\\n"
+				if (v.num and self.respawn_params[k] and self.respawn_params[k].num) then
+					props = props.."["..k.."] = "..v.num.."("..xr_logic.pick_section_from_condlist(db.actor, nil,self.respawn_params[k].num)..")\\n"
+				end
 			end
 		end
 		
@@ -1230,6 +1232,8 @@ function se_smart_terrain:update()
 		return 
 	end
 	
+	SendScriptCallback("smart_terrain_on_update", self)
+	
 	--alun_utils.debug_write(strformat("%s:update ",self:name()))
 	
 	simulation_objects.get_sim_obj_registry():update_avaliability(self)
@@ -1246,10 +1250,14 @@ function se_smart_terrain:update()
 	self.__check_time = tg + 500 + math.max(500, 0.025 * self.dist_to_actor)
 	
 	if (self.online) then
-		local old_dist_to_actor = (nearest_to_actor_smart.id == nil and nearest_to_actor_smart.dist) or sim:object(nearest_to_actor_smart.id).position:distance_to(se_actor.position)
-		if self.dist_to_actor < old_dist_to_actor then
+		local old_smart = nearest_to_actor_smart.id and sim:object(nearest_to_actor_smart.id)
+		local old_dist_to_actor = old_smart and old_smart.position:distance_to(se_actor.position)
+		if (old_dist_to_actor == nil or self.dist_to_actor < old_dist_to_actor) then
 			nearest_to_actor_smart.id = self.id
 			nearest_to_actor_smart.dist = self.dist_to_actor
+			if (self.dist_to_actor <= 50) then 
+				xr_statistic.smart_terrain_mark_visited(self)
+			end
 		end
 		
 		if (self.__campfire_check_time == nil or game.get_game_time():diffSec(self.__campfire_check_time) > 12000) then
@@ -1627,7 +1635,7 @@ function se_smart_terrain:try_respawn()
 			
 			if (sect_to_spawn_params.squads) then
 				local squad
-				if (IsSurvivalMode()) then
+				if (IsSurvivalMode() and math.random(1,100) < 90) then
 					local t = {"simulation_zombie","simulation_zombie","simulation_zombie","simulation_zombie","simulation_zombie","zombied_sim_squad_novice","zombied_sim_squad_advanced","zombied_sim_squad_veteran","simulation_fracture","simulation_snork"}
 					squad = SIMBOARD:create_squad(self, t[math.random(#t)])
 				else 

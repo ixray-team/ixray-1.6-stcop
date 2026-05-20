@@ -17,98 +17,6 @@ local alife = alife
 
 local keep_state_min_time = 2000
 
---[[
-local assoc_tbl = 	{
-						idle = {		director = {"", "_eat_bread", "_eat_kolbasa", "_drink_vodka", "_drink_energy", "_weapon"},
-										listener = {"", "_eat_bread", "_eat_kolbasa", "_drink_vodka", "_drink_energy", "_weapon"}},
-						harmonica = {	director = {"_harmonica"},
-										listener = {"", "_eat_bread", "_eat_kolbasa", "_drink_vodka", "_drink_energy", "_weapon"}},
-						guitar = {		director = {"_guitar"},
-										listener = {"", "_eat_bread", "_eat_kolbasa", "_drink_vodka", "_drink_energy", "_weapon"}},
-						story = {		director = {"", "_weapon"},
-										listener = {"", "_eat_bread", "_eat_kolbasa", "_drink_vodka", "_drink_energy", "_weapon"}},
-					}
-
-local camp_states = {
-						["sit_ass"] = true,
-						["sit_knee"] = true,
-						["animpoint_stay_table"] = true,
-						["animpoint_sit_low"] = true,
-						["animpoint_sit_normal"] = true,
-						["animpoint_sit_high"] = true,
-						["animpoint_stay_wall"] = true
-}
---]]
-
-------------------------------------------
--- Localized Functions
-------------------------------------------
---[[
-local function can_eat_bread(npc)
-	local t = { "bread" }
-	for i=1,#t do
-		if (npc:object(t[i])) then
-			return true
-		end
-	end
-	return false
-end
-
-local function can_drink_energy(npc)
-	local t = { "energy" }
-	for i=1,#t do
-		if (npc:object(t[i])) then
-			return true
-		end
-	end
-	return false
-end
-
-local function can_drink_vodka(npc)
-	local t = { "vodka" }
-	for i=1,#t do
-		if (npc:object(t[i])) then
-			return true
-		end
-	end
-	return false
-end
-
-local function can_eat_kolbasa(npc)
-	local t = { "kolbasa" }
-	for i=1,#t do
-		if (npc:object(t[i])) then
-			return true
-		end
-	end
-	return false
-end
-
-local function can_harmonica(npc)
-	local t = { "harmonica_a" }
-	for i=1,#t do
-		if (npc:object(t[i])) then
-			return true
-		end
-	end
-	return false
-end
-
-local function can_guitar(npc)
-	local t = {"guitar_a"}
-	for i=1,#t do
-		if (npc:object(t[i])) then
-			return true
-		end
-	end
-	return false
-end
-
-local function can_weapon(npc)
-	return npc:best_weapon()
-end
---]]
-
 local function angle_dir(ang)
 	return vector():setHP(ang.y,ang.x):normalize()
 end
@@ -155,10 +63,10 @@ local function init_custom_data(npc, ini, section, st, scheme)
 	st.run_cond 			= xr_logic.parse_condlist(npc, section, "run_anim", ini:r_string_ex(section,"run_anim") or def.run_cond)
 	st.delay_cond 			= xr_logic.parse_condlist(npc, section, "delay_anim", ini:r_string_ex(section,"delay_anim") or def.delay_cond)
 	
-	st.path_end 			= xr_logic.parse_condlist(npc, section, "path_end", ini:r_string_ex(section,"keep_distance") or "nil")
+	st.path_end 			= xr_logic.parse_condlist(npc, section, "path_end", 	ini:r_string_ex(section,"path_end") or "nil")
 	st.sound_idle			= xr_logic.parse_condlist(npc, section, "sound_idle", 	ini:r_string_ex(section, "sound_idle") or "nil")
 	
-	st.use_camp		= ini:r_bool_ex(section,"use_camp",false)
+	st.use_camp			= ini:r_bool_ex(section,"use_camp",false)
 
 	st.signals 			= {}
 
@@ -203,7 +111,7 @@ function action_beh:execute()
 	action_base.execute(self)
 
 	local keep_distance 		= xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.keep_distance)
-	self.st.desired_distance	= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.object, self.st[keep_distance.."_desired_dist"]))
+	self.st.desired_distance	= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.object, self.st[keep_distance.."_desired_dist"])) or 0
 	
 	self.st.behavior 			= xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.behavior_state,"behavior_state") or "beh_wait"
 	
@@ -258,12 +166,12 @@ function action_beh:set_desired_target()
 	local t = self.st.desired_target and empty_table(self.st.desired_target) or {}
 	local function set_position_data(id)
 		local obj = level.object_by_id(id)
-		local sobj = alife():object(id)
+		local sobj = alife_object(id)
 		if (obj) then
 			t.level_vertex_id = obj:level_vertex_id()
 			t.game_vertex_id = obj:game_vertex_id()
 			t.position = obj:position()
-			t.direction = obj:direction()
+			t.direction = self.object:position():sub(t.position)
 			t.object = obj
 		elseif (sobj) then
 			t.level_vertex_id = sobj.m_level_vertex_id
@@ -276,6 +184,26 @@ function action_beh:set_desired_target()
 	local obj = get_story_object(target)
 	if (obj) then
 		set_position_data(obj:id())
+	elseif (target == "actor_squad") then 
+		local sim = alife()
+		local se_obj = sim:object(self.object:id())
+		if (se_obj) then
+			local prev_squad_id = 0
+			for _id,squad in spairs(axr_companions.companion_squads, function(t,a,b) return a < b end) do
+				if (squad and squad.commander_id) then
+					local cid = squad:commander_id()
+					if not (xrs_kill_wounded.hostage_list[cid]) then
+						if not (sim:has_info(cid,"npcx_beh_wait") or sim:has_info(cid,"npcx_beh_patrol_mode")) then 
+							if (se_obj.group_id == _id) then 
+								break
+							end
+							prev_squad_id = squad:commander_id()
+						end
+					end
+				end
+			end
+			set_position_data(prev_squad_id)
+		end
 	elseif (target == "enemy") then
 		local st = db.storage[self.object:id()]
 		local be = self.object:best_enemy() or st and st.enemy_id and level.object_by_id(st.enemy_id)
@@ -413,8 +341,8 @@ function action_beh:set_state()
 	self.keep_state_until = t + keep_state_min_time
 	
 	local new_state = self.st.wait_animation
-	local dist_walk	= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.walk_dist))
-	local dist_jog 	= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.jog_dist))
+	local dist_walk	= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.walk_dist)) or 5
+	local dist_jog 	= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.jog_dist)) or 10
 	
 	if (self.st.assist_point == nil or self.st.assist_point == self.object:level_vertex_id()) then 
 		new_state = self.st.wait_animation
@@ -438,29 +366,29 @@ function position_node:__init(amt)
 end
 
 function position_node:select_best_vertex_id(object,dir,lvid,distance)
-	local closest
+	local closest, node_dir, closest_dist, dist
 	for i=1, #self.node do
-		if	(bit_and(i,1)) then
-			self.node[i].desired_direction = vector_rotate_y(dir, -math.random(50,60))
+		if	(i % 2 == 1) then
+			node_dir = vector_rotate_y(dir, -math.random(0,45))
 		else
-			self.node[i].desired_direction = vector_rotate_y(dir, math.random(50,60))
+			node_dir = vector_rotate_y(dir, math.random(0,45))
 		end
 
-		self.node[i].vertex_id = level.vertex_in_direction(lvid, self.node[i].desired_direction, distance)
+		self.node[i].vertex_id = level.vertex_in_direction(lvid, node_dir, distance)
 
 		if (self.node[i].vertex_id and alun_utils.accessible(object,self.node[i].vertex_id)) then
-			self.node[i].distance = self.node[i].vertex_id == lvid and -1 or object:position():distance_to_sqr(level.vertex_position(self.node[i].vertex_id))
-
+			self.node[i].distance = object:position():distance_to_sqr(level.vertex_position(self.node[i].vertex_id))
+			
 			if not (closest) then
 				closest = self.node[i].vertex_id
-			end
-
-			if (self.node[i-1] and self.node[i-1].distance and self.node[i-1].distance < self.node[i].distance) then
-				closest = self.node[i-1].vertex_id
+			else
+				if (self.node[i-1] and self.node[i-1].distance and self.node[i].distance < self.node[i-1].distance and self.node[i].distance >= distance) then
+					closest = self.node[i].vertex_id
+				end
 			end
 		end
 	end
-	return closest and closest ~= -1 and closest
+	return closest
 end
 
 function action_beh:beh_move()
@@ -468,36 +396,20 @@ function action_beh:beh_move()
 		return
 	end
 
-	if (self.st.desired_target.object and not simulation_objects.is_on_the_same_level(self.object,self.st.desired_target.object)) then
-		local gvid = self.st.desired_target.game_vertex_id or self.st.desired_target.object.m_game_vertex_id
-		self.object:set_dest_game_vertex_id(gvid)
+	if (self.st.rally_lvid) then 
+		self.st.assist_point = self.st.rally_lvid
 	else
-		local select_new_pt = false
-		local target
-
-		local dist_from_self_to_goto_target = self.object:position():distance_to(self.st.desired_target.position)
-
-		if (self.st.rally_lvid or dist_from_self_to_goto_target >= self.st.desired_distance) then
-			select_new_pt = true
-		end
-
-		if ( select_new_pt ) then
-			local node = position_node(2)
-			self.st.assist_point = self.st.rally_lvid or node:select_best_vertex_id(self.object,self.st.desired_target.direction,self.st.desired_target.level_vertex_id,self.st.desired_distance) or self.st.desired_target.level_vertex_id --self.object:level_vertex_id()
-			self.keep_state_until = nil
-		end 
-		
-		if ( self.st.assist_point ) then
-			--self.object:set_dest_level_vertex_id(self.st.assist_point)
-			self.object:set_path_type(game_object.level_path)
-			self.object:set_desired_direction()
-			self.st.assist_point = utils.send_to_nearest_accessible_vertex(self.object,self.st.assist_point,"axr_beh")
-			self.object:set_desired_position(level.vertex_position(self.st.assist_point))
+		if (self.st.assist_point == nil or level.vertex_position(self.st.assist_point):distance_to(self.st.desired_target.position) > self.st.desired_distance) then 
+			self.st.assist_point = self.object:position():distance_to(self.st.desired_target.position) <= self.st.desired_distance and position_node(4):select_best_vertex_id(self.object,self.st.desired_target.direction,self.st.desired_target.level_vertex_id,self.st.desired_distance) or self.st.desired_target.level_vertex_id
 		end
 	end
 	
-	self.dist_to_assist_pt = self.st.assist_point and level.vertex_position(self.st.assist_point):distance_to(self.object:position()) or 0
-	--self.dist_from_self_to_goto_target = dist_from_self_to_goto_target
+	if (self.st.assist_point) then
+		self.object:set_path_type(game_object.level_path)
+		self.st.assist_point = utils.send_to_nearest_accessible_vertex(self.object,self.st.assist_point,"axr_beh")
+	end
+
+	self.dist_to_assist_pt = level.vertex_position(self.st.assist_point):distance_to(self.object:position())
 	self:set_state()
 end
 
@@ -550,6 +462,7 @@ function action_beh:beh_path()
 		local mgr = db.storage[self.object:id()].state_mgr
 		if (mgr) then
 			mgr.animation:set_state(nil)
+			mgr.animstate:set_state(nil)
 			if (mgr.animation.states.anim_marker == nil) then
 				self:increment_waypoint_index()
 				return
@@ -560,48 +473,8 @@ function action_beh:beh_path()
 	local state = state_mgr.get_state(self.object)
 	local new_state = self.st.desired_target.delay_animation or self.st.delay_animation
 
-	--if (self.st.use_camp and camp_states[new_state]) then
 	if (self.st.use_camp) then
-		--[[
-		self:fill_approved_actions(new_state)
-
-		self.camp = sr_camp.get_current_camp(self.object:position())
-		if (self.camp and not self.in_camp) then
-			self.camp:register_npc(self.object:id())
-			self.in_camp = true
-		end
-
-		if (self.in_camp) then
-			local camp_action, is_director = self.camp and self.camp:get_camp_action(self.object:id())
-			if (camp_action) then
-
-				local tbl = is_director and assoc_tbl[camp_action].director or assoc_tbl[camp_action].listener
-				local descr = new_state == "sit_knee" and "sit_ass" or new_state
-
-				local t = {}
-				local found
-				for i=1,#tbl do
-					for n=#self.st.approved_actions, 1, -1 do
-						if (self.st.approved_actions[n].name == descr..tbl[i]) then
-							table.insert(t,self.st.approved_actions[n].name)
-							found = true
-						end
-					end
-				end
-
-				local anm = found and t[math.random(#t)]
-				if (anm and anm ~= "") then
-					if (self.st.desired_target.animpoint) then
-						printf("camp_action = %s",anm)
-						state_mgr.set_state(self.object, anm, nil, nil, nil, {animation_position = self.st.desired_target.animpoint, animation_direction = self.st.desired_target.animpoint_dir})
-					else
-						state_mgr.set_state(self.object, anm)
-					end
-					return
-				end
-			end
-		end
-		--]]
+		-- TODO: Add me
 	elseif (self.in_camp) then
 		self.camp:unregister_npc(self.object:id())
 		self.in_camp = nil
@@ -749,14 +622,14 @@ function action_beh:increment_waypoint_index()
 		end
 	else
 		local new_section = xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.path_end)
-		if (new_section and new_section ~= "nil") then
+		if (new_section and new_section ~= "nil" and new_section ~= "") then
 			if (new_section == "reverse") then
 				self.st.path_reverse = true
-			elseif (new_section ~= "loop") then
-				xr_logic.switch_to_section(self.object, st.ini, new_section)
-				self.st.am_i_reached = nil
+			elseif (new_section == "loop") then
 				self.st.path_index = 1
 			else
+				xr_logic.switch_to_section(self.object, st.ini, new_section)
+				self.st.am_i_reached = nil
 				self.st.path_index = 1
 			end
 		end
@@ -801,7 +674,6 @@ function action_beh:finalize()
 	utils.save_var(self.object,"path_index",1)
 end
 
---
 -------------------------- Scheme Handlers ------------------------------------------------------------
 
 function set_scheme(npc, ini, scheme, section, gulag_name)
@@ -813,7 +685,6 @@ end
 function add_to_binder(npc, ini, scheme, section, storage)
 	local manager = npc:motivation_action_manager()
 	local wp = world_property
-	
 	local evaluator = evaluator_beh(storage, "evaluator_beh")
 	local action = action_beh(npc, "action_beh", storage)
 	
@@ -832,17 +703,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	action:add_precondition( wp(stalker_ids.property_danger,false) )
 	action:add_precondition( wp(stalker_ids.property_anomaly,false) )
 
-	if (_G.schemes["corpse_detection"]) then
-		action:add_precondition( wp(xr_evaluators_id.corpse_exist, false) )
-	end
-	if (_G.schemes["gather_items"]) then
-		action:add_precondition( wp(xr_gather_items.evaid, false) )
-	end
-	--action:add_precondition( wp(stalker_ids.property_items, false) )
-	--action:add_precondition( wp(xr_evaluators_id.wounded_exist,false) )
-	action:add_precondition( wp(xr_evaluators_id.stohe_meet_base + 1, false) )
-	action:add_precondition( wp(xr_evaluators_id.sidor_wounded_base + 0, false) )
-	action:add_precondition( wp(xr_evaluators_id.abuse_base, false) )
+	modules.add_common_precondition(scheme,action)
 
 	action = manager:action(xr_actions_id.alife)
 	action:add_precondition( wp(beh_evid, false) )
@@ -850,12 +711,3 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	action = manager:action(xr_actions_id.state_mgr + 2)
 	action:add_precondition( wp(beh_evid, false) )
 end
-
---[[
-function reset_scheme(loading, npc)
-	local st = db.storage[npc:id()]
-	if (st.beh) then
-		init_custom_data(npc, st.ini, section, st.beh, scheme)
-	end
-end
---]]

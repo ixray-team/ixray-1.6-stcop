@@ -1,11 +1,4 @@
---[[
-		Scripting Dialog Made Easy
-
-Alundaio
-
-Copyright (C) 2012 Alundaio
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License-]]
---]]
+--Scripting Dialog Made Easy
 
 local saved_dialog
 function add_dialog(p_id,id,phrase_id,cond,act)
@@ -194,12 +187,12 @@ function dm_actor_become_companion_guide_precond(actor, npc)
 end
 -------------------------------------------
 function squad_action_description_for_chasing(actor,npc)
-	local target_obj = alife():object(target_id)
+	local target_obj = alife_object(target_id)
 	return "dm_" .. "stalker" .."_chasing_squad_"..alife_character_community(target_obj) --npc:character_community()
 end
 
 function squad_action_description_for_travelling(actor,npc)
-	local target_obj = alife():object(target_id)
+	local target_obj = alife_object(target_id)
 	local smart_name = target_obj:name()
 	local travel_class = travel_manager.get_travel_class()
 
@@ -211,13 +204,13 @@ function squad_action_description_for_travelling(actor,npc)
 end
 
 function precond_squad_target_is_squad(actor,npc)
-	local target_obj = alife():object(target_id)
+	local target_obj = alife_object(target_id)
 	local target_clsid = target_obj:clsid()
 	return target_clsid == clsid.online_offline_group_s
 end
 
 function precond_squad_target_is_smart(actor,npc)
-	local target_obj = alife():object(target_id)
+	local target_obj = alife_object(target_id)
 	local target_clsid = target_obj:clsid()
 	return target_clsid == clsid.smart_terrain
 end
@@ -228,8 +221,20 @@ end
 	Become Companion Dialog Preconditions
 --]]
 
+function is_non_story(actor,npc)
+	local squad = get_object_squad(npc)
+	if not (squad) then 
+		return false 
+	end
+	if (get_object_story_id(squad.id)) then
+		return false
+	end
+	return true
+end 
+
 function is_room_in_actor_squad(actor,npc)
-	if (axr_companions.get_companion_count() + alun_utils.get_squad_count(npc) <= axr_companions.max_actor_squad_size) then
+	local max_size = axr_companions.max_actor_squad_size + (has_alife_info("achieved_patriarch") and 2 or 0)
+	if (axr_companions.get_companion_count() + alun_utils.get_squad_count(npc) <= max_size) then
 		return true
 	end
 	return false
@@ -290,6 +295,8 @@ function become_actor_companion(actor,npc)
 		return
 	end
 
+	axr_companions.companion_squads[squad.id] = squad
+	
 	SIMBOARD:assign_squad_to_smart(squad, nil)
 
 	for k in squad:squad_members() do
@@ -305,7 +312,7 @@ function is_hostage_task_giver(a,b)
 	local npc = dialogs.who_is_npc(a,b)
 	local t = {"simulation_task_7", "simulation_task_8", "simulation_task_9", "simulation_task_10"}
 	local id = npc:id()
-	local se_obj = alife():object(id)
+	local se_obj = alife_object(id)
 	if not (se_obj) then 
 		return false 
 	end

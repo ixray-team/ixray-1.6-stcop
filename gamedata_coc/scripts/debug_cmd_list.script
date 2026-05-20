@@ -851,7 +851,7 @@ function cmd.squad(me,txt,owner,p)
 				id = tonumber(s)
 			end
 
-			squad = alife():object(id)
+			squad = alife_object(id)
 			if not (squad) then
 				return "squad:= improper id used. id:%s",id
 			end
@@ -862,7 +862,7 @@ function cmd.squad(me,txt,owner,p)
 				a_id = tonumber(s)
 			end
 
-			target = alife():object(a_id)
+			target = alife_object(a_id)
 			if not (target) then
 				return "squad:= target by id %s does not exist.",a_id
 			end
@@ -879,7 +879,7 @@ function cmd.squad(me,txt,owner,p)
 				id = tonumber(s)
 			end
 
-			squad = alife():object(id)
+			squad = alife_object(id)
 			if not (squad) then
 				return "squad:= improper id used. id:%s",id
 			end
@@ -890,7 +890,7 @@ function cmd.squad(me,txt,owner,p)
 				a_id = tonumber(s)
 			end
 
-			target = alife():object(a_id)
+			target = alife_object(a_id)
 			if not (target) then
 				return "squad:= assign target does not exist. assign:%s",a_id
 			end
@@ -934,7 +934,7 @@ function cmd.teleport(me,txt,owner,p)
 			who_id = tonumber(s)
 		end
 
-		who = who_id and alife():object(who_id)
+		who = who_id and alife_object(who_id)
 		if not (who) then
 			return "teleport := Wrong argument given or object doesn't exist. who:<%s>",who_id
 		end
@@ -946,7 +946,7 @@ function cmd.teleport(me,txt,owner,p)
 			id = tonumber(s)
 		end
 
-		to_obj = id and alife():object(id)
+		to_obj = id and alife_object(id)
 		if not (to_obj) then
 			return "teleport := Wrong arugment given or object doesn't exist. id:%s",id
 		end
@@ -1408,6 +1408,8 @@ function cmd.weather(me,txt,owner,p)
 				local file = flist:GetAt(it)
 				table.insert(weather_list,file)
 			end
+			
+			flist:Free()
 		end
 
 		wrd = ""
@@ -2037,7 +2039,7 @@ function cmd.antifreeze(me,txt,owner,p)
 			return "antifreeze:= no nearest smart"
 		end 
 		
-		local smart = alife():object(smart_terrain.nearest_to_actor_smart.id)
+		local smart = alife_object(smart_terrain.nearest_to_actor_smart.id)
 		if not (smart) then 
 			return "antifreeze:= smart by id " .. smart_terrain.nearest_to_actor_smart.id .. "does not exist."
 		end 
@@ -2049,8 +2051,8 @@ function cmd.antifreeze(me,txt,owner,p)
 		
 		se_obj.scripted_target = "actor"
 		
-		CreateTimeEvent(se_obj.id,"teleport",5,tele_to_actor,se_obj.id)
-		CreateTimeEvent(se_obj.id,"repeater",10,repeater,se_obj.id)
+		CreateTimeEvent(se_obj.id,"teleport",1,tele_to_actor,se_obj.id)
+		CreateTimeEvent(se_obj.id,"repeater",1,repeater,se_obj.id)
 	end
 	
 	return "antifreeze:= created object and teleported to your position!"

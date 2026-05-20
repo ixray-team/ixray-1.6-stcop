@@ -3,8 +3,49 @@
 <xml>
 	<!-- НОВЫЕ ПРОФИЛЯ -->
 	<character id="actor">
-		<class>Actor</class>
+		<class>actor</class>
 		<specific_character>actor</specific_character>
+	</character>
+	
+	<character id="actor_stalker">
+		<class>actor</class>
+		<specific_character>actor_stalker</specific_character>
+	</character>
+	<character id="actor_bandit">
+		<class>actor</class>
+		<specific_character>actor_bandit</specific_character>
+	</character>
+	<character id="actor_csky">
+		<class>actor</class>
+		<specific_character>actor_csky</specific_character>
+	</character>
+	<character id="actor_dolg">
+		<class>actor</class>
+		<specific_character>actor_dolg</specific_character>
+	</character>
+	<character id="actor_freedom">
+		<class>actor</class>
+		<specific_character>actor_freedom</specific_character>
+	</character>
+	<character id="actor_killer">
+		<class>actor</class>
+		<specific_character>actor_killer</specific_character>
+	</character>
+	<character id="actor_army">
+		<class>actor</class>
+		<specific_character>actor_army</specific_character>
+	</character>
+	<character id="actor_ecolog">
+		<class>actor</class>
+		<specific_character>actor_ecolog</specific_character>
+	</character>
+	<character id="actor_monolith">
+		<class>actor</class>
+		<specific_character>actor_monolith</specific_character>
+	</character>
+	<character id="actor_zombied">
+		<class>actor</class>
+		<specific_character>actor_zombied</specific_character>
 	</character>
 	
 	<character id="default">
@@ -327,7 +368,7 @@
 		<class>bar_arena_savage</class>
 	</character>
 	
-	<!---------ARENA---------------->
+	<!--ARENA-->
 
 	<character id="bar_arena_stalker_1">
 		<class>bar_arena_stalker_1</class>
@@ -1300,13 +1341,10 @@
 		<class>sim_default_stalker_pri_a16</class>
 	</character>
 
-   <!-- ------ SZA Freeplay mod ------->
 	<character id="pri_medic_stalker">
 		<class>pri_medic_stalker</class>
    </character>
-   
-   <!---------------------------------->
-   
+
    <!-- O-Soznanie -->
 	<character id="osoznanie">
 		<class>trader</class>

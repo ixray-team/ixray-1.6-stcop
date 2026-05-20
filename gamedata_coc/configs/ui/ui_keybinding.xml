@@ -66,6 +66,12 @@
 		<command id="kb_custom3"                        exe="custom3"/>
 		<command id="kb_custom4"                        exe="custom4"/>
 		<command id="kb_custom5"                        exe="custom5"/>
-
+		
+		<command id="kb_custom6"                        exe="custom6"/> <!-- PDA MAP -->
+		<command id="kb_custom7"                        exe="custom7"/> <!-- PDA Relations -->
+		<command id="kb_custom8"                        exe="custom8"/> <!-- PDA Contacts -->
+		<command id="kb_custom9"                        exe="custom9"/> <!-- PDA Statistics -->
+		<command id="kb_custom10"                       exe="custom10"/> <!-- PDA Logs -->
+		
 	</group>
 </keybingidg>

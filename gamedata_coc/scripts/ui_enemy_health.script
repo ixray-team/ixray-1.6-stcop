@@ -86,7 +86,7 @@ function on_hit(obj,power,dir,who,bi)
 		local function remove_me()
 			cs_remove()
 		end
-		CreateTimeEvent("ui_enemy_health","cs_remove",30*level.get_time_factor(),remove_me)
+		CreateTimeEvent("ui_enemy_health","cs_remove",10,remove_me)
 		last_id = obj:id()
 	else
 		last_id = nil

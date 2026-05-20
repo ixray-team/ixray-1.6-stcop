@@ -107,6 +107,13 @@
         </actor_level_spot_p>
 
 
+		<fast_travel>
+                <level_map spot="fast_travel_spot"/>
+        </fast_travel>
+        <fast_travel_spot x="0" y="0" width="25" height="25" alignment="c" location_level="1" scale_max="1">
+                <texture>ui_hud_icon_sleep</texture>
+        </fast_travel_spot>
+		
         <level_changer_up>
                 <level_map spot="level_changer_up_spot" pointer="quest_pointer"/>
 				<mini_map spot="level_changer_spot_mini" pointer="quest_pointer"/>

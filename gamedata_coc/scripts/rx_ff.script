@@ -169,7 +169,14 @@ function action_verso:execute()
 	local friend = self.st.friend_id and db.storage[self.st.friend_id] and db.storage[self.st.friend_id].object 
 	if not (self.st.vertex_id) then
 		local be_pos = be:position()
-		self.st.vertex_id = alun_utils.try_to_strafe(npc) or alun_utils.try_go_aside_object(npc,friend,be_pos) or alun_utils.try_go_position(npc,be_pos)
+		local rnd = math.random(1,100)
+		if (rnd < 33) then 
+			self.st.vertex_id = alun_utils.try_to_strafe(npc)
+		elseif (rnd < 66) then 
+			self.st.vertex_id = alun_utils.try_go_position(npc,be_pos)
+		else
+			self.st.vertex_id = alun_utils.try_go_aside_object(npc,friend,be_pos)
+		end
 	end
 	
 	if (self.st.vertex_id == nil or self.st.vertex_id == npc:level_vertex_id()) then
@@ -201,14 +208,13 @@ end
 function add_to_binder(npc,ini,scheme,section,st,temp)
 	local manager = npc:motivation_action_manager()
 
-	if (not npc:alive()) or (character_community(npc) == "zombied" or npc:section() == "actor_visual_stalker") then
+	if (not npc:alive()) or (npc:character_community() == "zombied" or npc:section() == "actor_visual_stalker") then
 		manager:add_evaluator(evaid,property_evaluator_const(false))
-		temp.needs_configured = false
-		return 
-	end
-
-	manager:add_evaluator(evaid,evaluator_dont_shoot(npc,"eva_dont_shoot",st))
-
+		--temp.needs_configured = false
+	else
+		manager:add_evaluator(evaid,evaluator_dont_shoot(npc,"eva_dont_shoot",st))
+	end 
+	
 	temp.action = action_verso(npc,"act_dont_shoot",st)
 	
 	temp.action:add_precondition(world_property(stalker_ids.property_alive,true))

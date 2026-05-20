@@ -16,10 +16,16 @@
 		    <phrase id="0">
                 <text />
                 <next>1</next>
+				<next>2</next>
             </phrase>
 			<phrase id="1">
 				<text />
 				<next>111</next>
+			</phrase>
+			<phrase id="2">
+				<has_info>hostage_companion_task_1_hostage_rescued</has_info>
+				<text>hostage_companion_task_1_start_dialog_1</text>
+				<next>1111</next>
 			</phrase>
 		    <phrase id="111">
 				<dont_has_info>hostage_companion_task_1_hostage_rescued</dont_has_info>
@@ -139,6 +145,7 @@
         </phrase_list>
     </dialog>
 	<dialog id="friendly_companion_dialog">
+		<precondition>dialogs_axr_companion.is_non_story</precondition>
 		<precondition>dialogs_axr_companion.is_not_actor_companion</precondition>
 		<precondition>dialogs_axr_companion.is_actor_friend</precondition>
 		<precondition>dialogs_axr_companion.is_room_in_actor_squad</precondition>

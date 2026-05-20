@@ -11,16 +11,16 @@ local objects_to_release = {}
 ---------------------------------------------------------------
 -- register object to be released safely
 function release(se_obj)
-	objects_to_release[se_obj.id] = true
+	objects_to_release[se_obj.id] = se_obj:name()
 end
 
 ---------------------------------------------------------------
 function execute_destroy_callback()
 	if not (is_empty(objects_to_release)) then
 		local sim = alife()
-		for id,v in pairs(objects_to_release) do
-			local se_obj = alife():object(id)
-			if (se_obj) then
+		for id,name in pairs(objects_to_release) do
+			local se_obj = alife_object(id)
+			if (se_obj and se_obj:name() == name) then
 				if (se_obj.online) then
 					-- prevent from coming online ever again
 					sim:set_switch_online(id,false)
@@ -40,6 +40,8 @@ function execute_destroy_callback()
 						objects_to_release[id] = nil
 					end
 				end
+			else 
+				objects_to_release[id] = nil
 			end
 		end
 	end
@@ -47,12 +49,22 @@ function execute_destroy_callback()
 end
 ---------------------------------------------------------------
 local function actor_on_reinit(binder)
-	objects_to_release = alife_storage_manager.get_state().objects_to_release or objects_to_release
 	AddUniqueCall(execute_destroy_callback)
+end
+
+local function save_state(m_data)
+	m_data.objects_to_release = objects_to_release
+end 
+
+local function load_state(m_data)
+	objects_to_release = m_data.objects_to_release or objects_to_release
+	m_data.objects_to_release = nil
 end
 ----------------------------------------------------------------
 -- ON_GAME_START
 ----------------------------------------------------------------
 function on_game_start()
 	RegisterScriptCallback("actor_on_reinit",actor_on_reinit)
+	RegisterScriptCallback("save_state",save_state)
+	RegisterScriptCallback("load_state",load_state)
 end

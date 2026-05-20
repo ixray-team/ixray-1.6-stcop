@@ -27,9 +27,13 @@ function artefact_binder:net_spawn(server_object)
 --		artefact:FollowByPath(bind_anomaly_zone.artefact_ways_by_id[id],0,vector():set(force_xz,force_y,force_xz))
 	end
 
-	self.first_call = true 
-
-
+	self.first_call = true
+	
+	local m_data = alife_storage_manager.get_state()
+	if (m_data and m_data.artefact_condition and m_data.artefact_condition[self.object:id()]) then 
+		self.object:set_condition(tonumber(m_data.artefact_condition[self.object:id()]) or 1)
+		m_data.artefact_condition[self.object:id()] = nil
+	end
 
 	return true
 end
@@ -65,4 +69,12 @@ end
 function artefact_binder:net_destroy(server_object)
 	db.del_obj(self.object)
 	object_binder.net_destroy(self)
+	
+	if (self.object:condition() < 1) then
+		local m_data = alife_storage_manager.get_state()
+		if not (m_data.artefact_condition) then 
+			m_data.artefact_condition = {}
+		end
+		m_data.artefact_condition[self.object:id()] = self.object:condition()
+	end
 end

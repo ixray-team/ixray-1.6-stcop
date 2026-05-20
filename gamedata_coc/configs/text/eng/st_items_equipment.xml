@@ -166,4 +166,8 @@
 	<string id="st_itm_deployable_mgun_desc">
 		<text>This belt-fed machine gun is a portable modification with a complex two-stage feeding system. Despite its weight and low precision, this LMG has found admirers in the Zone. Used primarily to fight off outnumbering enemy forces during faction conflicts and clear out mutant lairs.</text>
 	</string>
+	
+	<string id="st_memory_stick_name">
+		<text>Memory stick</text>
+	</string>
 </string_table>

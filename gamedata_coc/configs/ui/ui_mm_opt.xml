@@ -637,10 +637,10 @@
 		<char_icon x="280" y="202" width="123" height="87">
 		</char_icon>
 		
-		<check_ai_die_in_anomaly x="162" y="3" width="35" height="29" stretch="1">
+		<check_show_tracers x="162" y="3" width="35" height="29" stretch="1">
 			<texture>ui_inGame2_checkbox</texture>
-			<options_item entry="ai_die_in_anomaly" group="mm_opt_gameplay"/>
-		</check_ai_die_in_anomaly>
+			<options_item entry="g_use_tracers" group="mm_opt_gameplay"/>
+		</check_show_tracers>
 	  
         <cap_check_axr x="45" y="3" width="108" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c"></text>
@@ -720,7 +720,7 @@
         </key_binding>
 
         <btn_default x="338" y="299" width="86" height="24" stretch="1">
-            <text align="c" font="letterica16">Reset</text>
+            <text align="c" font="letterica16">ui_st_reset</text>
             <texture>ui_inGame2_button</texture>
 			<text_color>
 				<e r="210" g="210" b="210"/>

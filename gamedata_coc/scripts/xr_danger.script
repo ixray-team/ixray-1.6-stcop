@@ -90,7 +90,7 @@ local function npc_on_hear_callback(npc,who_id,s_type,dist,sound_power,sound_pos
 
 	--alun_utils.debug_write("xr_danger:hear_callback",true)
 	
-	if (IsWounded(npc) or character_community(npc) == "zombied" or xr_combat_ignore.npc_in_safe_zone(npc)) then
+	if (IsWounded(npc) or npc:character_community() == "zombied" or xr_combat_ignore.npc_in_safe_zone(npc)) then
 		return
 	end
 	
@@ -138,7 +138,7 @@ local function get_rand_vertex(npc,vo)
 	return vo:vertex_in_direction(vo:level_vertex_id(),dir,math_random(MinDistance,MaxDistance))
 end
 
-local function danger_in_radius(npc,best_danger,bd_type)
+function danger_in_radius(npc,best_danger,bd_type)
 	local src = DangerIgnore[ bd_types[bd_type] ]
 	local condlist = xr_logic.parse_condlist(npc,bd_types[bd_type],"danger_object",src)
 	local ignore_distance = condlist and tonumber(xr_logic.pick_section_from_condlist(db.actor,npc,condlist)) or 0
@@ -403,6 +403,8 @@ local function script_action_danger_scripted(npc,st)
 				sm:set_state("assault",nil,nil,{look_position = who_dist and who_dist < 22500 and bdo and bdo:position() or bdo_pos}, {fast_set = true})
 				sm.animation:set_state(nil, true)
 				sm.animation:set_control()
+				sm.animstate:set_state(nil,true)
+				sm.animstate:set_control()
 			end	
 		
 			return
@@ -471,6 +473,8 @@ local function script_action_danger_grenade(npc,st,bd,best_danger_object,depende
 			sm:set_state("threat_danger",nil,nil,{look_position = bdo_pos}, {fast_set = true})
 			sm.animation:set_state(nil, true)
 			sm.animation:set_control()
+			sm.animstate:set_state(nil,true)
+			sm.animstate:set_control()
 		end	
 		st.lvid = utils.send_to_nearest_accessible_vertex(npc,npc:level_vertex_id())
 		return
@@ -506,6 +510,8 @@ local function script_action_danger_grenade(npc,st,bd,best_danger_object,depende
 				sm:set_state("assault",nil,nil,{look_object = dist <= 100 and nil or bdo}, {fast_set = true})
 				sm.animation:set_state(nil, true)
 				sm.animation:set_control()
+				sm.animstate:set_state(nil,true)
+				sm.animstate:set_control()
 			end	
 			
 			return

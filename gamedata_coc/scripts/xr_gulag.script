@@ -22,7 +22,7 @@ end
 -- работает всегда
 function get_gulag_by_sid(sid)
 	local id = get_story_object_id(sid)
-	return id and alife():object(id)
+	return id and alife_object(id)
 end
 
 -- получить гулаг по имени или story id смарта

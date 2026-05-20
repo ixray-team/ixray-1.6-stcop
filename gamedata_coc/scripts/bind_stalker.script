@@ -61,6 +61,13 @@ end
 function actor_binder:net_destroy()
 	--alun_utils.debug_write("actor net destroy start")
 	
+	local sm = surge_manager.get_surge_manager()
+	if (sm) then sm:finalize() end
+	sm = psi_storm_manager.get_psi_storm_manager()
+	if (sm) then sm:finalize() end 
+	sm = level_weathers.get_weather_manager()
+	if (sm) then sm:finalize() end
+	
 	xr_sound.stop_sounds_by_id(self.object:id())
 
 	if(actor_stats.remove_from_ranking~=nil)then
@@ -220,7 +227,7 @@ function actor_binder:update(delta)
 			alife():set_objects_per_update(20)
 			return true
 		end
-		CreateTimeEvent(0,"obj_per_upd",30,set_obj_per_upd)
+		CreateTimeEvent(0,"obj_per_upd",1,set_obj_per_upd)
 		
 		printf("collectgarbage before=%sKb",collectgarbage("count")*1024)
 		collectgarbage("collect")

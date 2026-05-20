@@ -1,8 +1,3 @@
---[[
-Copyright (C) 2013 Alundaio
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License-]]
---]]
-
 local ini
 ------------------------------------------
 -- Localized Functions
@@ -99,7 +94,7 @@ function npc_trade_buy_sell(npc)
 
 	-- increase NPC rank because he is a good boy
 	npc:set_character_rank(npc:character_rank()+math.random(20,30))
-	local se_obj = alife():object(npc:id())
+	local se_obj = alife_object(npc:id())
 	if not (se_obj) then 
 		return 
 	end
@@ -213,7 +208,7 @@ function npc_trade_buy_sell(npc)
 			total_cost = (itm_base_cost * (tonumber(buy_sell[5]) or 1))
 
 			-- If section is ammo, only buy ammo for best weapon
-			if (utils.is_ammo(section) ~= true) or (bw_ammos and bw_ammos[sec]) then
+			if (utils.is_ammo(sec) ~= true) or (bw_ammos and bw_ammos[sec]) then
 				if (item_list[sec]) then
 					-- only buy enough to reach restock goals (param 3)
 					for i=item_list[sec],tonumber(buy_sell[3]) do
