@@ -404,7 +404,7 @@ void CResourceManager::DeferredUpload()
 			to_load.push_back(T);
 	}
 
-#ifndef _EDITOR
+#if !defined(_EDITOR) && defined(IXR_WINDOWS)
 	if (ps_r__common_flags.test(RFLAG_MT_TEX_LOAD)) {
 		// Parallel: load filtered list
 		xr_parallel_foreach(to_load.begin(), to_load.end(), [](CTexture* texPtr) { texPtr->Load(); });
