@@ -30,6 +30,10 @@ else()
         add_link_options("-fuse-ld=lld")
         link_directories(/usr/lib64 /usr/local/lib64)
     endif(LLD_PROGRAM)
+
+    if (IXRAY_ASAN)
+        add_link_options(-fsanitize=address)
+    endif()
 endif()
 
 # Setup packages patches
