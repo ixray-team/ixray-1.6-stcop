@@ -158,7 +158,15 @@ Flags32 ps_r2_ls_flags_ext =
 	R4FLAG_HASHED_ALPHA_TEST
 };
 
-Flags32 ps_r__common_flags = { R2FLAG_USE_BUMP | RFLAG_USE_CACHE | RFLAG_NO_RAM_TEXTURES | RFLAG_MT_TEX_LOAD };
+
+Flags32 ps_r__common_flags = 
+{ 
+	R2FLAG_USE_BUMP | RFLAG_USE_CACHE | RFLAG_NO_RAM_TEXTURES | RFLAG_MT_TEX_LOAD
+#ifndef USE_DX11
+	// FX: Для ебучего dx9 надо ВСЕГДА ОСВОБОЖДАТЬ РЕСУРСЫ
+	| RFLAG_DD_TEX_LOAD
+#endif
+};
 
 int opt_static = 0;
 int opt_dynamic = 0;
