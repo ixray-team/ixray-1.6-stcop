@@ -38,6 +38,9 @@ enum EMovementLayers : u8
 	eCrouch,
 	eCrouchSlow,
 	eSprint,
+	eIdle,
+	eIdleAim,
+	eAimWalk,
 	eLayersCount
 };
 
@@ -443,13 +446,76 @@ struct script_layer
 	}
 };
 
+struct SBlendParams
+{
+	shared_str camera_name;
+	Fvector2 speed_power = { 1.0f, 1.0f };
+	Fvector2 blend_params = { 0.4f, 0.4f };
+
+	bool has_motion = false;
+
+	void Load(const shared_str& section, const shared_str& anim_name, bool add_folder_name = true)
+	{
+		if (pSettings->line_exist(section, anim_name) && pSettings->r_string(section, *anim_name))
+		{
+			shared_str line = pSettings->r_string(section, *anim_name);
+			string512 tmp = {};
+			u8 params_count = _GetItemCount(*line);
+
+			//name
+			_GetItem(*line, 0, tmp);
+			if (add_folder_name)
+			{
+				camera_name.printf("blend\\%s.anm", tmp);
+			}
+			else
+			{
+				camera_name._set(tmp);
+			}
+
+			//speed
+			if (params_count >= 2)
+			{
+				_GetItem(*line, 1, tmp);
+				speed_power.x = atof(tmp) ? atof(tmp) : 1.0f;
+			}
+
+			//power
+			if (params_count >= 3)
+			{
+				_GetItem(*line, 2, tmp);
+				speed_power.y = atof(tmp) ? atof(tmp) : 1.0f;
+			}
+
+			//blend factor +
+			if (params_count >= 4)
+			{
+				_GetItem(*line, 3, tmp);
+				blend_params.x = atof(tmp) ? atof(tmp) : 0.4f;
+			}
+
+			///blend factor -
+			if (params_count >= 5)
+			{
+				_GetItem(*line, 4, tmp);
+				blend_params.y = atof(tmp) ? atof(tmp) : 0.4f;
+			}
+
+			has_motion = true;
+		}
+	}
+};
+
 struct movement_layer
 {
 	Fmatrix m_XFORM;
 
-	float anim_speed = 1.0f;
+	shared_str name;
+
+	float speed = 1.0f;
 	float power = 1.0f;
 	float blend_scale = 0.0f;
+	Fvector2 blend_factors = { 0.4f, 0.4f }; //x+, y-
 
 	bool playing = false;
 
@@ -480,6 +546,7 @@ struct movement_layer
 
 	void Load(const shared_str& anim_name)
 	{
+		name = anim_name;
 		anim->Load(anim_name.c_str());
 	}
 
@@ -497,7 +564,7 @@ struct movement_layer
 		}
 
 		playing = true;
-		anim->Speed() = anim_speed;
+		anim->Speed() = speed;
 		anim->Play(loop);
 	}
 
@@ -512,12 +579,31 @@ struct movement_layer
 
 		playing = false;
 	}
+
+	void Reload(const shared_str& anim_name, Fvector2 speed_power, Fvector2 blend_factors)
+	{
+		if (anim_name.size() == 0)
+		{
+			return;
+		}
+
+		if (name != anim_name)
+		{
+			name = anim_name;
+			anim->Clear();
+			anim->Load(anim_name.c_str());
+		}
+
+		power = speed_power.y;
+		speed = speed_power.x;
+		this->blend_factors = blend_factors;
+	}
 };
 
 struct BoneCallbackParams
 {
-	Fvector m_current = { 0,0,0 };
-	Fvector m_target = { 0,0,0 };
+	Fvector m_current = zero_vel;
+	Fvector m_target = zero_vel;
 };
 
 enum EBoneCallbackParam
@@ -578,6 +664,7 @@ public:
 	s32				m_show_legs = 1;
 	bool			m_need_reload = true;
 	shared_str		NextHUDSect;
+	SBlendParams m_default_movement_layers_params[EMovementLayers::eLayersCount] = {};
 	movement_layer* m_movement_layers[EMovementLayers::eLayersCount] = {};
 	xr_vector<script_layer*> m_script_layers = {};
 
@@ -585,7 +672,7 @@ public:
 	animator_item* create_animator_item(CHudAnimatorBase* animator, const shared_str& section);
 	void			delete_animator_item();
 	animator_item* GetAnimator() { return m_animator_item; }
-	void UpdateMovementLayers();
+	void UpdateMovementLayers(bool reload_anims = false);
 
 	script_layer* PlayBlendAnm(const shared_str& name, float speed, float power, Fvector2 blend_factors, bool looped, bool mix, bool restart, u8 part, u8 item, u8 state);
 	void StopBlendAnm(const shared_str& name, bool bForce = false);

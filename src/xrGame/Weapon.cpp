@@ -2961,7 +2961,7 @@ void CWeapon::OnBlendEnd(u8 state)
 				IsGrenadeMode() ? m_sGLAimBlendParams[1].speed_power.x : m_sAimBlendParams[1].speed_power.x,
 				IsGrenadeMode() ? m_sGLAimBlendParams[1].speed_power.y : m_sAimBlendParams[1].speed_power.y,
 				IsGrenadeMode() ? m_sGLAimBlendParams[1].blend_params : m_sAimBlendParams[1].blend_params, true, false, true,
-				0, 0, script_layer::EBlendLayers::eNone);
+				2, 0, script_layer::EBlendLayers::eNone);
 		}
 		break;
 	}
@@ -2979,11 +2979,12 @@ void CWeapon::OnZoomIn()
 
 	if (HudItemData() != nullptr && (IsGrenadeMode() ? m_sGLAimBlendParams[0].has_motion : m_sAimBlendParams[0].has_motion))
 	{
+		g_player_hud->UpdateMovementLayers();
 		PlayBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[0].camera_name : m_sAimBlendParams[0].camera_name,
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].speed_power.x : m_sAimBlendParams[0].speed_power.x,
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].speed_power.y : m_sAimBlendParams[0].speed_power.y,
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].blend_params : m_sAimBlendParams[0].blend_params, false, false, true,
-			0, 0, script_layer::EBlendLayers::eAimStart);
+			2, 0, script_layer::EBlendLayers::eAimStart);
 	}
 
 	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
@@ -3031,11 +3032,12 @@ void CWeapon::OnZoomOut()
 	bool Mix = !IsBlendAnmActive(IsGrenadeMode() ? m_sGLAimBlendParams[2].camera_name : m_sAimBlendParams[2].camera_name);
 	if (HudItemData() != nullptr && (IsGrenadeMode() ? m_sGLAimBlendParams[2].has_motion : m_sAimBlendParams[2].has_motion))
 	{
+		g_player_hud->UpdateMovementLayers();
 		PlayBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[2].camera_name : m_sAimBlendParams[2].camera_name,
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].speed_power.x : m_sAimBlendParams[2].speed_power.x,
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].speed_power.y : m_sAimBlendParams[2].speed_power.y,
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].blend_params : m_sAimBlendParams[2].blend_params, false, Mix, true,
-			0, 0, script_layer::EBlendLayers::eAimEnd);
+			2, 0, script_layer::EBlendLayers::eAimEnd);
 	}
 
 	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
@@ -4937,6 +4939,11 @@ bool CWeapon::IsAutoAimHaveTarget()
 
 bool CWeapon::NeedMovementBlend() const
 {
+	if (UseBlendMovement())
+	{
+		return true;
+	}
+
 	if (IsZoomed())
 	{
 		return false;

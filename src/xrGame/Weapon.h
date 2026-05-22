@@ -125,60 +125,8 @@ public:
 	bool ScopeFit(CScope*) const;
 
 	virtual void on_a_hud_attach() override;
-
-	struct SBlendParams
-	{
-		shared_str camera_name;
-		Fvector2 speed_power = { 1.0f, 1.0f };
-		Fvector2 blend_params = { 0.4f, 0.4f };
-
-		bool has_motion = false;
-
-		void Load(const shared_str& section, const shared_str& anim_name)
-		{
-			if (pSettings->line_exist(section, anim_name) && pSettings->r_string(section, *anim_name))
-			{
-				shared_str line = pSettings->r_string(section, *anim_name);
-				string512 tmp = {};
-				u8 params_count = _GetItemCount(*line);
-
-				//name
-				_GetItem(*line, 0, tmp);
-				camera_name.printf("blend\\%s.anm", tmp);
-
-				//speed
-				if (params_count >= 2)
-				{
-					_GetItem(*line, 1, tmp);
-					speed_power.x = atof(tmp) ? atof(tmp) : 1.0f;
-				}
-
-				//power
-				if (params_count >= 3)
-				{
-					_GetItem(*line, 2, tmp);
-					speed_power.y = atof(tmp) ? atof(tmp) : 1.0f;
-				}
-
-				//blend factor +
-				if (params_count >= 4)
-				{
-					_GetItem(*line, 3, tmp);
-					blend_params.x = atof(tmp) ? atof(tmp) : 0.4f;
-				}
-
-				///blend factor -
-				if (params_count >= 5)
-				{
-					_GetItem(*line, 4, tmp);
-					blend_params.y = atof(tmp) ? atof(tmp) : 0.4f;
-				}
-
-				has_motion = true;
-			}
-		}
-
-	} m_sAimBlendParams[3], m_sGLAimBlendParams[3], m_sFakeShootBlendParams;
+	
+	SBlendParams m_sAimBlendParams[3], m_sGLAimBlendParams[3], m_sFakeShootBlendParams;
 
 	virtual void OnBlendEnd(u8 state) override;
 	virtual void OnBlendStart(u8 state) override;
