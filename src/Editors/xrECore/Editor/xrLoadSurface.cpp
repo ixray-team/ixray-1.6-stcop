@@ -1,8 +1,5 @@
 #include "stdafx.h"
 
-
-//#include "freeimage/freeimage.h"
-
 struct SExts{
 	xr_vector<LPSTR>	exts;
     void format_register(const char* ext)
