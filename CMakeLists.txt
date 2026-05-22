@@ -70,11 +70,11 @@ include("cmake/github.cmake")
 # Help functions
 include("cmake/functions.cmake")
 
-# Configure NuGet
+# Configure Package Manager
 if (WIN32)
-	include("cmake/windows/nuget.cmake")
-else()
-	include("cmake/linux/nuget.cmake")
+	include("cmake/packages/nuget/nuget.cmake")
+elseif (LINUX)
+	include("cmake/packages/linux/manager.cmake")
 endif()
 
 # SDK folders

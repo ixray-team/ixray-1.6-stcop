@@ -31,6 +31,112 @@ defaults:
     shell: pwsh
 
 jobs:
+  build-engine-linux:
+    name: 'Build engine (Linux)'
+
+    strategy:
+      matrix:
+        system:
+          - ubuntu-latest
+        preset:
+          - Engine
+        platform:
+          - x64
+        config:
+          - Debug
+          - RelWithDebInfo
+          - Release
+
+    defaults:
+      run:
+        shell: bash
+
+    runs-on: ${{ matrix.system }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install LLVM/Clang
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 20
+
+          sudo apt-get update
+
+          sudo apt-get install -y \
+            clang-20 \
+            clang-tools-20 \
+            lldb-20 \
+            lld-20 \
+            libc++-20-dev \
+            libc++abi-20-dev
+
+      - name: Set Clang as default
+        run: |
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-20 100
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-20 100
+          sudo update-alternatives --install /usr/bin/cc cc /usr/bin/clang-20 100
+          sudo update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-20 100
+
+      - name: Verify compiler
+        run: |
+          clang --version
+          clang++ --version
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+
+          sudo apt-get install -y \
+            ninja-build \
+            cmake \
+            libx11-dev \
+            libxext-dev \
+            libxrandr-dev \
+            libxcursor-dev \
+            libxfixes-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxss-dev \
+            libwayland-dev \
+            libdrm-dev \
+            libgbm-dev \
+            libudev-dev \
+            libpipewire-0.3-dev \
+            libibus-1.0-dev \
+            libdbus-1-dev \
+            libtbb-dev \
+            liblzo2-2 \
+            liblzo2-dev \
+            libogg-dev \
+            meson \
+            glslang-tools \
+            libvulkan-dev \
+            spirv-headers
+
+      - name: Configure engine
+        run: |
+          cmake \
+            -S . \
+            -B build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }} \
+            -G "Ninja Multi-Config" \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DIXRAY_ENABLE_RESONANCEAUDIO=OFF \
+            -DIXRAY_CI=ON
+
+      - name: Build engine
+        run: |
+          cmake \
+            --build build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }} \
+            --target xrEngine xrRender_R1 xrRender_R2 xrGame \
+            --config ${{ matrix.config }} \
+            -j$(nproc)
+
   build-engine:
     name: 'Build engine'
 
