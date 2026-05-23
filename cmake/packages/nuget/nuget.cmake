@@ -45,9 +45,6 @@ set(LUAJIT_NAME lua51.dll)
 set(LUAJIT_LIB ${LUAJIT}lib/lua51.lib)
 set(LUAJIT_BIN ${LUAJIT}bin/${LUAJIT_NAME})
 
-# FreeImage
-set(FREEIMAGE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeImage.WinMerge.2023.8.19-open)
-
 # Nuget
 set(NVTT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Nvtt.Runtimes.win-x64.2024.6.1-open/)
 
