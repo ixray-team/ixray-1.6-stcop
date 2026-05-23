@@ -208,54 +208,77 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
 #include "../xrLC_GlobalData.h"
 #include "../xrMU_Model_Reference.h"
 #include <embree_raytracing/EmbreeRayTrace.h>
- 
+#include "global_calculation_data.h"
+
 struct FaceDataEmbree;
 bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, OptixMeshBuffers& outScene)
 {
-    xrLC_GlobalData* globalData = lc_global_data();
-    if (!globalData)        return false;
- 
     OptixGeometryBuilder geometryBuilder;
-    
     size_t StartMemory = GetHeapMemory();
-    // 1. Обрабатываем статическую геометрию
-    for (Face* F : globalData->g_faces())
+
+    if (gCompilerMode.LC)
     {
-        const Shader_xrLC& SH = F->Shader();
-        if (!SH.flags.bLIGHT_CastShadow) { continue; }
+        xrLC_GlobalData* globalData = lc_global_data();
+        if (!globalData)        return false;
 
-        u16 surfaceID = globalData->materials()[F->dwMaterial].surfidx;
-        b_texture& T = globalData->textures()[surfaceID];
 
-        bool isTransparent  = (!T.pSurface.Empty() && T.bHasAlpha);
-        F->flags.bOpaque    = !isTransparent;
-        geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
-    }
-
-    // 2. Обрабатываем MU-референсы
-    xr_vector<FaceDataEmbree> tempBuffer;
-    for (auto ref : globalData->mu_refs())
-    {
-        tempBuffer.clear(); 
-        ref->export_cform_rcast_new(tempBuffer);
-
-        for (auto& pF : tempBuffer)
+        // 1. Обрабатываем статическую геометрию
+        for (Face* F : globalData->g_faces())
         {
-            Face* F = (Face*)pF.ptr;
-            b_material& M = globalData->materials()[F->dwMaterial];
-            b_texture& T = globalData->textures()[M.surfidx];
- 
-            bool isTransparent  = (!T.pSurface.Empty() && T.bHasAlpha);
-            F->flags.bOpaque    = isTransparent;
-            geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
+            const Shader_xrLC& SH = F->Shader();
+            if (!SH.flags.bLIGHT_CastShadow) { continue; }
+
+            u16 surfaceID = globalData->materials()[F->dwMaterial].surfidx;
+            b_texture& T = globalData->textures()[surfaceID];
+
+            bool isTransparent = (!T.pSurface.Empty() && T.bHasAlpha);
+            F->flags.bOpaque = !isTransparent;
+            geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
         }
+
+        // 2. Обрабатываем MU-референсы
+        xr_vector<FaceDataEmbree> tempBuffer;
+        for (auto ref : globalData->mu_refs())
+        {
+            tempBuffer.clear();
+            ref->export_cform_rcast_new(tempBuffer);
+
+            for (auto& pF : tempBuffer)
+            {
+                Face* F = (Face*)pF.ptr;
+                b_material& M = globalData->materials()[F->dwMaterial];
+                b_texture& T = globalData->textures()[M.surfidx];
+
+                bool isTransparent = (!T.pSurface.Empty() && T.bHasAlpha);
+                F->flags.bOpaque = isTransparent;
+                geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
+            }
+        }
+        tempBuffer.clear();
+        tempBuffer.shrink_to_fit();
     }
-    tempBuffer.clear();
-    tempBuffer.shrink_to_fit();
-  
+    else if (gCompilerMode.DO)
+    {
+       auto globalData         = &gl_data;
+       if (!globalData)        return false;
+       
+        // 1. Обрабатываем статическую геометрию
+       for (auto& F : globalData->building_embree_faces)
+       {
+           u16 surfaceID = globalData->g_materials[F.dwMaterial].surfidx;
+           b_texture& T  = globalData->g_textures[surfaceID];
+       
+           bool isTransparent = (!T.pSurface.Empty() && T.bHasAlpha);
+           F.bOpaque = !isTransparent;
+           geometryBuilder.AddFace(&F, F.v1, F.v2, F.v3);
+       }
+    }
+
+ 
+    
     size_t pVertex = geometryBuilder.RawFacesSize() * 3;
     size_t pFaces  = geometryBuilder.RawFacesSize();
-    geometryBuilder.RemoveDublicates_Batched();  
+    geometryBuilder.RemoveDublicates();  
     geometryBuilder.RemoveDublicateFaces();
     Msg("*[GPU Accel Structure] Collected Structure Faces Memory: %u mb", u32( (GetHeapMemory() - StartMemory) / 1024 / 1024));
   

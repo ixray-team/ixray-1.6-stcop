@@ -1,19 +1,13 @@
-#ifndef __GLOBAL_SLOTS_DATA_H__
-#define __GLOBAL_SLOTS_DATA_H__
-
+#pragma once
 #include "DetailFormat.h"
-#include "recalculation.h"
- 
-
 class global_slots_data
 {
 private:
 	DetailHeader					dtH;
 	DetailSlot						*dtS;
 	CVirtualFileRW					*dtFS;
-	recalculation					recalculation_data;
-public:
-	global_slots_data() : dtS( 0 ), dtFS( 0 ), recalculation_data( dtH )	{}
+ public:
+	global_slots_data() : dtS( 0 ), dtFS( 0 ) {}
 
 	void				Load			();
 	void				Free			();
@@ -32,19 +26,10 @@ public:
 	{
 		return dtH.z_size();
 	}
-	IC void set_slot_calculated( int _x, int _z )
-	{
-		recalculation_data.set_slot_calculated( _x, _z );
-	}
-	IC bool calculate_ignore( int _x, int _z ) const
-	{
-		return recalculation_data.skip_slot( _x, _z );
-	}
-
+  
 	IC bool skip_slot( int _x, int _z ) const
 	{
-		return	is_empty( get_slot( _x, _z ) ) ||
-				calculate_ignore( _x, _z ) ;
+		return	is_empty( get_slot( _x, _z ) ) /* || calculate_ignore(_x, _z) */;
 	}
 
 	IC DetailSlot&	get_slot( int _x, int _z )
@@ -62,12 +47,12 @@ public:
 		VERIFY( idx< dtH.slots_count() );
 		return dtS[idx];
 	}
+
 	IC  DetailSlot&	get_slot( u32 idx )
 	{
 		VERIFY( idx< dtH.slots_count() );
 		return dtS[idx];
 	}
-
 
 	IC Fvector& get_slot_box_min( Fvector &min, int _x, int _z ) const
 	{
@@ -78,7 +63,6 @@ public:
 				);
 		return min;
 	}
-
 
 	IC Fvector& get_slot_box_max( Fvector &max, int _x, int _z ) const
 	{
@@ -102,9 +86,3 @@ public:
 	void process_all_pallete();
 
 };
-
-
-
-
-
-#endif //__GLOBAL_SLOTS_DATA_H__
