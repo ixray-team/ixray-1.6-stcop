@@ -27,114 +27,92 @@ enum Flags
 #include "optix_types.h"
 
 // Entry points
+// Entry points
+__device__ float calculate_energy(Hardware_FaceData& F)
+{
+	Hardware_TextureData& T = g_params.textures[F.surfidx];
+	if (!T.pSurface)
+		return 1.0f;
+
+	// barycentrics
+	const float2 bc = optixGetTriangleBarycentrics();
+	float hitU = bc.x;
+	float hitV = bc.y;
+	float b0 = 1.0f - hitU - hitV;
+
+	float2 TC0 = __half22float2(F.TC0[0]);
+	float2 TC1 = __half22float2(F.TC0[1]);
+	float2 TC2 = __half22float2(F.TC0[2]);
+
+	float u = TC0.x * b0 + TC1.x * hitU + TC2.x * hitV;
+	float v = TC0.y * b0 + TC1.y * hitU + TC2.y * hitV;
+
+	int U = (int)floor(u * T.width + 0.5f);
+	int V = (int)floor(v * T.height + 0.5f);
+
+	U = (U % T.width + T.width) % T.width;
+	V = (V % T.height + T.height) % T.height;
+
+	float a = T.pSurface[V * T.width + U] / 255.0f;
+	return a * a;
+}
+
+extern "C" __global__ void __anyhit__ah()
+{
+	const int primID = optixGetPrimitiveIndex();
+
+	Hardware_FaceData& F = g_params.faces[primID];
+	if (F.bOpacue)
+	{
+		optixSetPayload_0(0); // visibility = 0
+		optixTerminateRay();
+		return;
+	}
+
+	// ❗ Embree-equivalent rule: binary cut
+	if (calculate_energy(F) < 0.5f)
+	{
+		optixIgnoreIntersection(); // transparent → continue
+		return;
+	}
+
+	// ❗ hit blocks ray
+	optixSetPayload_0(0);
+	optixTerminateRay();
+}
+
 
 extern "C" __global__ void __miss__ms()
 {
 	// если ничего не встретили -> свет проходит
+	optixSetPayload_0(1);
 }
 
 extern "C" __global__ void __closesthit__ch()
 {
-	optixSetPayload_1(0);
+	optixSetPayload_0(0);
 }
 
-__device__ void calculate_energy(Hardware_FaceData& F, Hardware_TextureData& T, float& energy)
+__device__ float RunOptickTask(Hardware_Vector& P, Hardware_Vector& N, float maxT)
 {
- 	// barycentrics
-	const float2 bc		= optixGetTriangleBarycentrics();
-	float hitU = bc.x;
-	float hitV = bc.y;
- 	float b0			= 1.0f - hitU - hitV;
- 	 
-	// interpolate UV
-	float TC0x = __half2float(F.TC0[0].x);
-	float TC0y = __half2float(F.TC0[0].y);
- 
-	float TC1x = __half2float(F.TC0[1].x);
-	float TC1y = __half2float(F.TC0[1].y);
-
-	float TC2x = __half2float(F.TC0[2].x);
-	float TC2y = __half2float(F.TC0[2].y);
-
-	float u = TC0x * b0 + TC1x * hitU + TC2x * hitV;
-	float v = TC0y * b0 + TC1y * hitU + TC2y * hitV;
-
-	int U = (int) floor (u * float(T.width) + .5f);
-	int V = (int) floor (v * float(T.height) + .5f);
-	U %= T.width;		if (U < 0) U += T.width;
-	V %= T.height;		if (V < 0) V += T.height;
-
-	float a = ( T.pSurface[V * T.width + U] / 255.0f );
-	float Transparency = (1.f - a * a);
-	energy *= Transparency;
-}
- 
-// Косяк возможно в порядке пересечения в Embree идет все по hit_t < prev_t а Optix в разнобой
-
-// Хотя наврятле там только *= opac; поидее порядок не сильно важен
-extern "C" __global__ void __anyhit__ah()
-{
-	// Not used
-	const int primID				= optixGetPrimitiveIndex();
-	unsigned int task_id			= optixGetPayload_0();
- 	unsigned int energy_int			= optixGetPayload_1();
-
- 	float energy					= float(energy_int) / 10000.0f;
- 
-	Hardware_FaceData&    F			= g_params.faces[primID];
-	Hardware_TextureData& T			= g_params.textures[F.surfidx];
-
-	if (F.bOpacue || T.pSurface == nullptr)
-	{
-		// Не имеюь прозрачности  → останавливаемся
- 		optixSetPayload_1(0);
-		optixTerminateRay();
-		return;
-	}
-	  
-	// energy attenuation (LUT)
-	calculate_energy(F, T, energy);				// Проверка тут на воду не понятно почему делает ее темной
-
-	// opaque → остановить
- 	if (energy < ENERGY_MIN)
-	{
-	 	optixSetPayload_1(0);
-		optixTerminateRay();
-		return; // closesthit будет вызван
-	}
-		
-	// transparent → пропускаем и летим дальше
- 	// Тут тоже сделал явное преобразование
-	unsigned int EnergyReturn = float(energy * 10000.0f);
-	optixSetPayload_1(EnergyReturn);
-	optixIgnoreIntersection();
-}
-
-__device__ float RunOptickTask(unsigned int TaskID, Hardware_Vector& P, Hardware_Vector& N, float Range)
-{
+	unsigned int visibility = 1;
 	const float3 origin = P.getVector3();
-	const float3 dir	= N.getVector3();
+	const float3 dir = N.getVector3();
 
-	const float minT    = 1e-3f;
-	const float maxT    = Range;
-	const float RayTime = 0;
-
-	unsigned int Energy = 10000;	// 0.0001 точность
- 	
 	optixTrace(
 		g_params.handle,
-		origin,
-		dir,
-		minT, maxT, RayTime,
+		origin, dir,
+		0.001f,
+		maxT,
+		0.0f,
 		OptixVisibilityMask(255),
+		OPTIX_RAY_FLAG_DISABLE_CLOSESTHIT |
 		OPTIX_RAY_FLAG_ENFORCE_ANYHIT,
 		0, 1, 0,
-		TaskID, Energy
+		visibility
 	);
 
-	// Баг был тут поченил
- 	float EnergyN = float(Energy) / 10000.0f;
- 	return EnergyN < 1.0f ? EnergyN : 1.0f;
+	return visibility ? 1.0f : 0.0f;
 }
 
 __device__ void CalculatePoint(Hardware_Raytask& Task, Hardware_Lighting& L, unsigned int TaskID)
@@ -163,7 +141,7 @@ __device__ void CalculatePoint(Hardware_Raytask& Task, Hardware_Lighting& L, uns
 			if (D <= 0)
 				return;
 
-			float trace = RunOptickTask(TaskID, Pnew, Ldir, 1000.f);
+			float trace = RunOptickTask(Pnew, Ldir, 1000.f);
 			att = isSunOrHemi ? L.energy * trace : D * L.energy * trace;
 		} break;
 
@@ -177,7 +155,7 @@ __device__ void CalculatePoint(Hardware_Raytask& Task, Hardware_Lighting& L, uns
 			if (D <= 0)			return;
 
 			float R		= sqrtf(sqD);
-			float trace = RunOptickTask(TaskID, Pnew, Ldir, R);
+			float trace = RunOptickTask(Pnew, Ldir, R);
 			float scale = D * L.energy * trace;
 
 			if (isSunOrHemi)
@@ -206,7 +184,7 @@ __device__ void CalculatePoint(Hardware_Raytask& Task, Hardware_Lighting& L, uns
 				return;
 
 			float R = sqrtf(sqD);
-			float trace = RunOptickTask(TaskID, Pnew, Ldir, R);
+			float trace = RunOptickTask(Pnew, Ldir, R);
 			att = powf(D, 0.125f) * L.energy * trace * (1.0f - R / L.range);
 		} break;
 
