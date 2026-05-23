@@ -11,34 +11,16 @@
 #include "EmbreeGeometryBuilder.h"
 #include "xrRaysDefines.h"
 
-struct FaceDataEmbree
-{
-	Fvector v1, v2, v3;
-	void* ptr;
-};
+
 
 // ВАЖНЫЙ ПАРАМЕТР TNEAR Для пересечения с водой
 void SetRay1(RTCRay& rayhit, const Fvector& pos, const Fvector& dir, float near_, float range);
-void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float range);
-
 void SetRay4(RTCRay4& rayhit, u32 IDX, const Fvector& pos, const Fvector& dir, float near_, float range);
-void SetRay4(RTCRayHit4& rayhit, u32 IDX, const Fvector& pos, const Fvector& dir, float near_, float range);
-
 void SetRay8(RTCRay8& rayhit, u32 IDX, const Fvector& pos, const Fvector& dir, float near_, float range);
-void SetRay8(RTCRayHit8& rayhit, u32 IDX, const Fvector& pos, const Fvector& dir, float near_, float range);
-
-struct BuildData
-{
-	xr_vector<CDB::TRI> build_faces;
-	xr_vector<Fvector>  build_verts;
-
-	u32		  build_vcnt;
-	u32		  build_fcnt;
-};
-
+ 
 // Vertex, Tri Buffers
-static RTCDevice	EmbreeDevice		= nullptr;
-static bool			isDeviceInitialized = false;
+extern RTCDevice	EmbreeDevice;
+static bool	isDeviceInitialized = false;
 
 const char* GetDeviceConfig();
 void InitializeEmbreeDevice();
@@ -79,7 +61,8 @@ struct RayQueryContext : RTCRayQueryContext
 
 struct alignas(32) UserGeomData
 {
- 	xr_vector<Face*> dummys;
+	u32 DummyType = 0;
+ 	xr_vector<void*> dummys;
 };
 
 
@@ -110,34 +93,32 @@ protected:
 	TriangleContainer			transp_geom;
 	TriangleContainer			opacue_geom;
   
-	void BuildMU_Model(xr_vector<FaceDataEmbree>& faces);
 	void BuildRayTraceModel();
 	void BuildRayTraceModel_Instaced();
-public:
-	// Rcast Model Constructing (Build.cform)
-	BuildData	build_data;
-	void BuildRcast();
 
+	// Details Model
+public:
 	// Loading 
  	float RaytraceEmbreeProcess( Fvector& P, Fvector& N, float range, void* skip);
 	void  RaytrraceRayPack(xr_vector< RayTask >& rays);
 
   
-	void  AttachGeomToScene(bool isMain);
+	void  AttachGeomToScene(bool isMain, u8 uDataType);
 	void  InitializeGeometry();		// Rcast-model
 	void  InitializeGeometry_Model(xr_vector<FaceDataEmbree> & faces); // Single-Models (xrMU-Model)
-  
+	
+	void  InitializeDetails(xr_vector<FaceDataEmbree>& faces);
+
  	void  IntelEmbereUnloadAll();
 	void  RemoveGeometry();
 
 	// Details Loading 
-	RTCScene	IntelSceneDetails = nullptr;
-	RTCGeometry IntelGeometryDetails = nullptr;
-	float RaytraceEmbreeDetails(Fvector& P, Fvector& N, float range);
-	void InitEmbreeDetails();
+ 	// void InitEmbreeDetails();
 	
 	// Instances
 	xr_vector<EmbreeInstancedModel> instanced;
+
+	void UpdateSceneFlags();
 };
 
 extern EmbreeRayTraceModel EmbreeMain;
