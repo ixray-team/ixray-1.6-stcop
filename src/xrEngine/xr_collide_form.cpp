@@ -203,22 +203,34 @@ void CCF_Skeleton::BuildTopLevel()
 	VERIFY(_valid(bv_sphere));
 }
 
-bool CCF_Skeleton::_RayQuery( const collide::ray_defs& Q, collide::rq_results& R)
+bool CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {
-	PROF_EVENT("CCF_Skeleton::_RayQuery")
-	if (dwFrameTL!=Device.dwFrame)			BuildTopLevel();
+	PROF_EVENT("CCF_Skeleton::_RayQuery");
 
+	if (owner == nullptr || owner->getDestroy())
+	{
+		return false;
+	}
+
+	if (dwFrameTL != Device.dwFrame)
+	{
+		BuildTopLevel();
+	}
 
 	Fsphere w_bv_sphere;
-	owner->XFORM().transform_tiny		(w_bv_sphere.P,bv_sphere.P);
-	w_bv_sphere.R						= bv_sphere.R;
+	owner->XFORM().transform_tiny(w_bv_sphere.P,bv_sphere.P);
+	w_bv_sphere.R = bv_sphere.R;
 
 	// 
-	float tgt_dist						= Q.range;
+	float tgt_dist = Q.range;
 	float aft[2];
 	int quant;
-	Fsphere::ERP_Result res				= w_bv_sphere.intersect(Q.start,Q.dir,tgt_dist,quant,aft);
-	if ((Fsphere::rpNone==res)||((Fsphere::rpOriginOutside==res)&&(aft[0]>tgt_dist)) ) return false;
+
+	Fsphere::ERP_Result res = w_bv_sphere.intersect(Q.start,Q.dir,tgt_dist,quant,aft);
+	if ((Fsphere::rpNone == res) || ((Fsphere::rpOriginOutside == res) && (aft[0] > tgt_dist)))
+	{
+		return false;
+	}
 
 	if (dwFrame != Device.dwFrame)		BuildState	();
 	else{
