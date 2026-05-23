@@ -65,7 +65,8 @@ public:
 							~xrMU_Model			();
 	void					clear_mesh			();
 	void					Load				( IReader& F, u32 version );
- 
+	void					Load_Embree			( IReader& F, xr_vector<FaceDataEmbree>& faces);
+
 	void					calc_materials		();
 	void					calc_faceopacity	();
 	void					calc_lighting		( xr_vector<base_color>& dest, const Fmatrix& xform, void* M, base_lighting& lights, u32 flags);
