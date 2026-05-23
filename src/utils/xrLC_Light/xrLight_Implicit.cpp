@@ -32,44 +32,43 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 	// Start threads
 	ThreadTaskID_Implication = 0;
 	xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [](size_t thread)
-		{
-			ImplicitDeflector& defl = cl_globs.DATA();
+	{
+		ImplicitDeflector& defl = cl_globs.DATA();
+	
+		Fvector2* Jitter2D; u32 Jcount;
+		Jitter_Select(Jitter2D, Jcount);
+
+		LummelData Pixel;
+		Pixel.dim.set(float(defl.Width()), float(defl.Height()));
+		Pixel.half.set(.5f / Pixel.dim.x, .5f / Pixel.dim.y);
+		Pixel.JS.set(.499f / Pixel.dim.x, .499f / Pixel.dim.y);
+		Pixel.Jcount = Jcount;
+		Pixel.JD = Jitter2D;
 		
-			Fvector2* Jitter2D; u32 Jcount;
-			Jitter_Select(Jitter2D, Jcount);
+ 		// Размер сетки !
+		u32 TILE_SIZE = 8;
+ 		while (true)
+		{
+			u32 Y = ThreadTaskID_Implication.fetch_add(TILE_SIZE);
+			if (Y >= defl.Height()) break;
 
-			LummelData Pixel;
-			Pixel.dim.set(float(defl.Width()), float(defl.Height()));
-			Pixel.half.set(.5f / Pixel.dim.x, .5f / Pixel.dim.y);
-			Pixel.JS.set(.499f / Pixel.dim.x, .499f / Pixel.dim.y);
-			Pixel.Jcount = Jcount;
-			Pixel.JD = Jitter2D;
-			
-			
-			// Размер сетки !
-			u32 TILE_SIZE = 8;
- 			while (true)
+			AditionalData("Implict Deflector: {%u/%u}", Y, defl.Height());
+			for (u32 X = 0; X < defl.Width(); X += TILE_SIZE)
 			{
-				u32 Y = ThreadTaskID_Implication.fetch_add(TILE_SIZE);
-				if (Y >= defl.Height()) break;
-
-				AditionalData("Implict Deflector: {%u/%u}", Y, defl.Height());
-				for (u32 X = 0; X < defl.Width(); X += TILE_SIZE)
+				EmbreePacket.clear();
+				 				
+				// Packed Way
+ 				for (u32 tX = X; tX < std::min(defl.Width(), X + TILE_SIZE); tX++)
+				for (u32 tY = Y; tY < std::min(defl.Height(), Y + TILE_SIZE); tY++)
 				{
-					EmbreePacket.clear();
-					 
-					// Only Lightpoint 
-					/*
- 					thread_local base_color_c C; 
-					thread_local Fvector wP, wN, B;
+				
+ 					Fvector wP, wN, B;
 					for (auto J = 0; J < Pixel.Jcount; J++)
 					{
-						C.clear_color();
-
 						// LUMEL space
 						Fvector2 P;
-						P.x = float(X) / Pixel.dim.x + Pixel.half.x + Pixel.JD[J].x * Pixel.JS.x;
-						P.y = float(Y) / Pixel.dim.y + Pixel.half.y + Pixel.JD[J].y * Pixel.JS.y;
+						P.x = float(tX) / Pixel.dim.x + Pixel.half.x + Pixel.JD[J].x * Pixel.JS.x;
+						P.y = float(tY) / Pixel.dim.y + Pixel.half.y + Pixel.JD[J].y * Pixel.JS.y;
 
 						// World space
 						for (auto F : cl_globs.query(P.x, P.y))
@@ -79,55 +78,24 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 							{
 								// We found triangle and have barycentric coords
 								GetBarycentric(F, wP, wN, B);
- 								LightPoint(0, 0, C, wP, wN, lc_global_data()->L_static(), LGetCurrentFlags(), F);
-								break;
+								EmbreePacket.emplace_back().SetDataRays(tY, tX, wP, wN, F);
+ 								break;
 							}
 						}
-
-						defl.Lumel(X, Y)._add(C);
-						defl.Samples(X, Y) += 1;
 					}
-					*/
-					
-					// Packed Way
- 					for (u32 tX = X; tX < std::min(defl.Width(), X + TILE_SIZE); tX++)
-					for (u32 tY = Y; tY < std::min(defl.Height(), Y + TILE_SIZE); tY++)
-					{
-					
- 						thread_local Fvector wP, wN, B;
-						for (auto J = 0; J < Pixel.Jcount; J++)
-						{
-							// LUMEL space
-							Fvector2 P;
-							P.x = float(tX) / Pixel.dim.x + Pixel.half.x + Pixel.JD[J].x * Pixel.JS.x;
-							P.y = float(tY) / Pixel.dim.y + Pixel.half.y + Pixel.JD[J].y * Pixel.JS.y;
+				
+				}
 
-							// World space
-							for (auto F : cl_globs.query(P.x, P.y))
-							{
-								_TCF& tc = F->tc[0];
-								if (tc.isInside(P, B))
-								{
-									// We found triangle and have barycentric coords
-									GetBarycentric(F, wP, wN, B);
-									EmbreePacket.emplace_back().SetDataRays(tY, tX, wP, wN, F);
- 									break;
-								}
-							}
-						}
-					
-					}
-
-					LightPoint_Jitters(EmbreePacket, lc_global_data()->L_static(), LGetCurrentFlags());
-					
-					for (auto& WP : EmbreePacket)
-					{
-						defl.Lumel(WP.U, WP.V)._add(WP.C);
-						defl.Samples(WP.U, WP.V) += 1;
-					}
+				LightPoint_Jitters(EmbreePacket, lc_global_data()->L_static(), LGetCurrentFlags());
+				
+				for (auto& WP : EmbreePacket)
+				{
+					defl.Lumel(WP.U, WP.V)._add(WP.C);
+					defl.Samples(WP.U, WP.V) += 1;
 				}
 			}
 		}
+	}
 	);
    
 	// Apply Colors !

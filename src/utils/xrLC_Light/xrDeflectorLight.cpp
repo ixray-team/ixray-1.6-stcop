@@ -474,3 +474,96 @@ void LightPoint_Jitters(xr_vector<JiterPixel>& world_pos, base_lighting& lights,
 	// Packed Rays Process !
 	EmbreeMain.RaytrraceRayPack(rays);
 }
+
+void LightPoint_Details(xr_vector<DetailsTask>& world_pos, base_lighting& lights, u32 flags)
+{
+	rays.clear();
+	auto processLight = [&](DetailsTask& wPX, DeflectorLType LType, R_Light& L, bool isSunOrHemi)
+	{
+		Fvector Ldir;
+		Fvector Pnew = wPX.wP;
+		Pnew.mad(wPX.wN, 0.01f);
+		float att = 0.0f;
+
+		Fvector P = wPX.wP;
+		Fvector N = wPX.wN;
+		float R = 0;
+
+		switch (L.type)
+		{
+			case LT_DIRECT:
+			{
+				Ldir.invert(L.direction);
+				float D = Ldir.dotproduct(N);
+				if (D <= 0) return;
+
+				att = isSunOrHemi ? L.energy : D * L.energy;
+				R = 1000.0f;
+			} break;
+
+			case LT_POINT:
+			case LT_SECONDARY:
+			{
+				float sqD = P.distance_to_sqr(L.position);
+				if (sqD > L.range2)					return;
+ 				 
+				Ldir.sub(L.position, P).normalize_safe();
+				float D = Ldir.dotproduct(N);
+				if (D <= 0)							return;
+				R = _sqrt(sqD);
+
+				if (L.type == LT_SECONDARY)
+				{
+					D *= -Ldir.dotproduct(L.direction);
+					if (D <= 0)						return;
+
+					att = powf(D, 0.125f) * L.energy * (1 - R / L.range);
+				}
+				else
+				{
+					float scale = D * L.energy;
+					if (isSunOrHemi)
+						att = scale / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD);
+					else
+						att = scale * (1 / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD) - R * L.falloff);
+				}
+
+			} break;
+		}
+
+		rays.emplace_back(Pnew, Ldir, R, nullptr, att, LType, &wPX.C);
+	};
+
+	// RGB Lights
+	if (!(flags & LP_dont_rgb))
+	{
+		for (R_Light& L : lights.rgb)
+		{
+			for (auto& wPX : world_pos)	// Именно такой порядок ! (Однонаправленые Лучи)
+				processLight(wPX, DeflectorLType::eDefRgb, L, false);
+		}
+	}
+
+	// Sun Lights
+	if (!(flags & LP_dont_sun))
+	{
+		for (R_Light& L : lights.sun)
+		{
+			for (auto& wPX : world_pos) // Именно такой порядок ! (Однонаправленые Лучи)
+				processLight(wPX, DeflectorLType::eDefSun, L, true);
+		}
+	}
+
+	// Hemi Lights
+	if (!(flags & LP_dont_hemi))
+	{
+		for (R_Light& L : lights.hemi)
+		{
+			for (auto& wPX : world_pos) // Именно такой порядок ! (Однонаправленые Лучи)
+				processLight(wPX, DeflectorLType::eDefHemi, L, true);
+		}
+	}
+
+	// Packed Rays Process !
+	EmbreeMain.RaytrraceRayPack(rays);
+}
