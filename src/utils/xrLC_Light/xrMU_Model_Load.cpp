@@ -45,6 +45,53 @@ void xrMU_Model::Load	( IReader& F, u32 version )
 	clMsg	("* Loading model: '%s' - v(%d/%d), f(%d/%d)",*m_name,m_vertices.size(),b_vertices.size(),m_faces.size(),b_faces.size());
 }
 
+void xrMU_Model::Load_Embree(IReader& F, xr_vector<FaceDataEmbree>& faces)
+{
+	u16 lodID; 
+
+	shared_str name;
+	F.r_stringZ(name);
+
+	// READ: vertices
+	xr_vector<b_vertex>	b_vertices;
+	b_vertices.resize(F.r_u32());
+ 	F.r(&*b_vertices.begin(), (u32)b_vertices.size() * sizeof(b_vertex));
+
+	// READ: faces
+	xr_vector<b_face>	b_faces;
+	b_faces.resize(F.r_u32());
+ 	F.r(&*b_faces.begin(), (u32)b_faces.size() * sizeof(b_face));
+
+
+	// READ: lod-ID
+	F.r(&lodID, 2);
+
+	xr_vector<u32>			sm_groups;
+	sm_groups.resize(b_faces.size());
+ 	F.r(&*sm_groups.begin(), (u32)sm_groups.size() * sizeof(u32));
+
+
+	for (auto& F : b_faces)
+	{
+		FaceDataEmbree faceNew;
+		faceNew.dwMaterial = F.dwMaterial;
+		faceNew.dwMaterialGame = F.dwMaterialGame;
+		faceNew.bOpaque = false;
+		faceNew.v1 = b_vertices[F.v[0]];
+		faceNew.v2 = b_vertices[F.v[1]];
+		faceNew.v3 = b_vertices[F.v[2]];
+
+		// tc
+		faceNew.TC[0] = F.t[0];
+		faceNew.TC[1] = F.t[1];
+		faceNew.TC[2] = F.t[2];
+ 
+		faces.push_back(faceNew);
+  	}
+
+	clMsg("* Loading model: '%s' - v(%d), f(%d)", *m_name, b_vertices.size(), b_faces.size());
+}
+
 _face* xrMU_Model::create_face(_vertex* v0, _vertex* v1, _vertex* v2, b_face& B)
 {
 	_face*	_F			= mu_faces_pool().create();

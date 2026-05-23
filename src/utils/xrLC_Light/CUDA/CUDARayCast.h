@@ -31,7 +31,7 @@ namespace XRay::RayTrace::CUDA
     void InitializeLights();
 
     // Загрузить Faces
-    void InitializeFaces(xr_vector<Face*>& Faces);
+    void InitializeFaces(xr_vector<void*>& Faces);
 
     // Загрузить Альфу Текстур
     void InitializeTexturesAlpha();

@@ -12,13 +12,12 @@
 CUDA_PackedLighting GPUTaskinSystem;
 thread_local xr_vector<RayRecvestIndex>	recvest_array;
 extern void ApplyColorGPU(size_t IndexTask, base_color_c& C);
- 
-
+extern void ApplyColorDetailGPU(size_t IndexTask, base_color_c& C);
+  
 // Initialize TASKS
 #define MAX_RAYS_PER_TASK   1024*1024				// Общее кол-во Задач (на запуск GPU)
 #define MAX_RAYS_PER_GPU	1024*1024				// Кол-во задач которое может обработать GPU за 1 заход Слишком большое кол-во вызывает недогруз ГПУ
-
-
+ 
 // Initializes
 void CUDA_PackedLighting::InitializeGPU()
 {
@@ -87,6 +86,11 @@ void CUDA_PackedLighting::LightPointPacked_run_tasks()
 				ApplyColorGPU(RAY_INFO.INDEX_TASK, colors[RecvestID]);
 			}break;
 		
+			case eDetails:
+			{
+				ApplyColorDetailGPU(RAY_INFO.INDEX_TASK, colors[RecvestID]);
+			}break;
+
 			case eDeflectors:
 			{
 				( (CDeflector*) RAY_INFO.Owner)->ApplyColor(RAY_INFO.INDEX_TASK, colors[RecvestID]);

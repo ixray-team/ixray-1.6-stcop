@@ -189,8 +189,8 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 			for (u32 X = 0; X < lm.width; X += TILE_SIZE)
 			{
  				EmbreePacket.clear();
-				for (auto tX = X; tX < std::min(lm.width, X + TILE_SIZE); tX++)
 				for (auto tY = Y; tY < std::min(lm.height, Y + TILE_SIZE); tY++)
+				for (auto tX = X; tX < std::min(lm.width, X + TILE_SIZE); tX++)
 				{
  					for (u32 J = 0; J < Jcount; J++)
 					{

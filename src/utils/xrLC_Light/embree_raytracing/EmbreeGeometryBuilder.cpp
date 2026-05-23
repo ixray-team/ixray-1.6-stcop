@@ -78,7 +78,7 @@ void TriangleContainer::RemoveDublicatesVertexs( )
         tri.point3 = remap[i * 3 + 2];
         faces_v.push_back(tri);
 
-        auto Face = raw_faces[i].F;
+        auto Face = raw_faces[i].Face;
         dummy.push_back(Face);
     }
 
@@ -160,3 +160,4 @@ void TriangleContainer::ClearFaces()
     faces_v.shrink_to_fit();
     verts_v.shrink_to_fit();
 }
+

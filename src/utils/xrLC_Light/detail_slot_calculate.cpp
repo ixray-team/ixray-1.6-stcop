@@ -6,327 +6,34 @@
 
 #include "stdafx.h"
 #include "detail_slot_calculate.h"
+#include "../xrForms/CompilersUI.h"
 
-#include "base_lighting.h"
-#include "global_calculation_data.h"
-#include "../Shader_xrLC.h"
 #include "../../xrCore/Collision/cl_intersect.h"
-
-#undef LP_DEFAULT
-enum
-{
-	LP_DEFAULT			= 0,
- 	LP_dont_rgb			= (1<<1),
-	LP_dont_hemi		= (1<<2),
-	LP_dont_sun			= (1<<3),
-};
-
-float	color_intensity	(Fcolor& c)
-{
-	float	ntsc		= c.r * 0.2125f + c.g * 0.7154f + c.b * 0.0721f;
-	float	absolute	= c.magnitude_rgb() / 1.7320508075688772935274463415059f;
-	return	ntsc*0.5f + absolute*0.5f;
-}
-
-
-class base_color_new
-{
-public:
-	Fvector					rgb;		// - all static lighting
-	float					hemi;		// - hemisphere
-	float					sun;		// - sun
-	float					_tmp_;		// ???
-	base_color_new()			{ rgb.set(0,0,0); hemi=0; sun=0; _tmp_=0;	}
-
-	void					mul			(float s)									{	rgb.mul(s);	hemi*=s; sun*=s;				};
-	void					add			(float s)									{	rgb.add(s);	hemi+=s; sun+=s;				};
-	void					add			(base_color_new& s)								{	rgb.add(s.rgb);	hemi+=s.hemi; sun+=s.sun;	};
-	void					scale		(int samples)								{	mul	(1.f/float(samples));					};
-	void					max			(base_color_new& s)								{ 	rgb.max(s.rgb); hemi= std::max(hemi,s.hemi); sun= std::max(sun,s.sun); };
-	void					lerp		(base_color_new& A, base_color_new& B, float s)		{ 	rgb.lerp(A.rgb,B.rgb,s); float is=1-s;  hemi=is*A.hemi+s*B.hemi; sun=is*A.sun+s*B.sun; };
-};
-
-
-//IC	u8	u8_clr				(float a)	{ s32 _a = iFloor(a*255.f); clamp(_a,0,255); return u8(_a);		};
-//IC	u8	u8_clr				(float a)	{ s32 _a = iFloor(a*255.f); clamp(_a,0,255); return u8(_a);		};
-
+#include "global_calculation_data.h"
+#include "xrDeflector.h"
 
 //-----------------------------------------------------------------------------------------------------------------
 const int	LIGHT_Count				=	7;
-
-//-----------------------------------------------------------------
-__declspec(thread)		u64			t_start	= 0;
-__declspec(thread)		u64			t_time	= 0;
-__declspec(thread)		u64			t_count	= 0;
-
-
-
-IC bool RayPick(CDB::COLLIDER& DB, Fvector& P, Fvector& D, float r, R_Light& L)
+ 
+bool detail_slot_calculate(u32 _x, u32 _z)
 {
-	// 1. Check cached polygon
-	float _u,_v,range;
-	bool res = CDB::TestRayTri(P,D,L.tri,_u,_v,range,true);
-	if (res) {
-		if (range>0 && range<r) return true;
-	}
+	// Getter - Detail Slot
+	auto& DS = gl_data.slots_data.get_slot(_x, _z);
 
-	// 2. Polygon doesn't pick - real database query
-	t_start			= CPU::GetCLK();
-	DB.ray_query	( &gl_data.RCAST_Model, P, D,r );
-	t_time			+=	CPU::GetCLK()-t_start-CPU::GetTickCount();
-	t_count			+=	1;
+	// Pre Calculation
+	process_pallete(DS);
+	if (gl_data.slots_data.skip_slot(_x, _z))		
+		return false;
+
+	// Slot Calc
+	thread_local xr_vector<u32> box_result;
+ 	thread_local base_lighting Selected;
+	thread_local CDB::COLLIDER DB;
+	thread_local xr_vector<DetailsTask> rayTasks;
 	
-	// 3. Analyze
-	if (0==DB.r_count()) {
-		return false;
-	} else {
-		// cache polygon
-		CDB::RESULT&	rpinf	= *DB.r_begin();
-		CDB::TRI&		T		= gl_data.RCAST_Model.get_tris()[rpinf.id];
-		L.tri[0].set	(rpinf.verts[0]);
-		L.tri[1].set	(rpinf.verts[1]);
-		L.tri[2].set	(rpinf.verts[2]);
-		return true;
-	}
-}
-
-float getLastRP_Scale(CDB::COLLIDER* DB, R_Light& L)//, Face* skip)
-{
-	u32	tris_count = DB->r_count();
-	float	scale = 1.f;
-	Fvector B;
-
-	for (u32 I = 0; I < tris_count; I++)
-	{
-		CDB::RESULT& rpinf = DB->r_begin()[I];
-		// Access to texture
-		CDB::TRI& clT = gl_data.RCAST_Model.get_tris()[rpinf.id];
-		b_rc_face& F = gl_data.g_rc_faces[rpinf.id];
-
-		b_material& M = gl_data.g_materials[F.dwMaterial];
-		b_texture& T = gl_data.g_textures[M.surfidx];
-
-		const Shader_xrLC& SH = shader(F.dwMaterial, *(gl_data.g_shaders_xrlc), gl_data.g_materials);
-
-		if (!SH.flags.bLIGHT_CastShadow)
-			continue;
-
-#ifdef DEBUG
-		const b_BuildTexture& build_texture = gl_data.g_textures[M.surfidx];
-		VERIFY(!!(build_texture.HasSurface()) == !!(!T.pSurface.Empty()));
-#endif
-
-		if (T.pSurface.Empty())
-			T.bHasAlpha = false;
-
-		if (!T.bHasAlpha)
-		{
-			// Opaque poly - cache it
-			L.tri[0].set(rpinf.verts[0]);
-			L.tri[1].set(rpinf.verts[1]);
-			L.tri[2].set(rpinf.verts[2]);
-			return 0;
-		}
-
-		// barycentric coords
-		// note: W,U,V order
-		B.set(1.0f - rpinf.u - rpinf.v, rpinf.u, rpinf.v);
-
-		// calc UV
-		Fvector2* cuv = F.t;
-		Fvector2	uv;
-		uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
-		uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
-
-		int U = iFloor(uv.x * float(T.dwWidth) + .5f);
-		int V = iFloor(uv.y * float(T.dwHeight) + .5f);
-
-		U %= T.dwWidth;
-		if (U < 0)
-		{
-			U += T.dwWidth;
-		}
-
-		V %= T.dwHeight;
-		if (V < 0)
-		{
-			V += T.dwHeight;
-		}
-
-		u32* raw = static_cast<u32*>(*T.pSurface);
-		u32 pixel = raw[V * T.dwWidth + U];
-		u32 pixel_a = color_get_A(pixel);
-		float opac = 1.f - float(pixel_a) / 255.f;
-		scale *= opac;
-	}
-
-	return scale;
-}
-
-#include "embree_raytracing/EmbreeRayTrace.h"
-#include "../xrForms/CompilersUI.h"
-
-float rayTrace	(CDB::COLLIDER* DB, R_Light& L, Fvector& P, Fvector& D, float R)//, Face* skip)
-{
-	if (gCompilerMode.Embree)
-	{
- 		return EmbreeMain.RaytraceEmbreeDetails(P, D, R);
-	}
-	else
-	{
-		R_ASSERT(DB);
-
-		// 1. Check cached polygon
-		float _u, _v, range;
-		bool res = CDB::TestRayTri(P, D, L.tri, _u, _v, range, false);
-		if (res) {
-			if (range > 0 && range < R) return 0;
-		}
-
-		// 2. Polygon doesn't pick - real database query
-		DB->ray_query(&gl_data.RCAST_Model, P, D, R);
-
-		// 3. Analyze polygons and cache nearest if possible
-		if (0 == DB->r_count())
-		{
-			return 1;
-		}
-		else
-		{
-			return getLastRP_Scale(DB, L);//,skip);
-		}
-		return 0;
-	}
-}
-
-void LightPoint(CDB::COLLIDER* DB, base_color_new&C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags)
-{
-	Fvector		Ldir,Pnew;
-	Pnew.mad	(P,N,0.01f);
-
-	if (0==(flags&LP_dont_rgb))
-	{
-		R_Light	*L	= &*lights.rgb.begin(), *E = &*lights.rgb.end();
-		for (;L!=E; L++)
-		{
-			if (L->type==LT_DIRECT) {
-				// Cos
-				Ldir.invert	(L->direction);
-				float D		= Ldir.dotproduct( N );
-				if( D <=0 ) continue;
-
-				// Trace Light
-				float scale	=	D*L->energy*rayTrace(DB,*L,Pnew,Ldir,1000.f);
-				C.rgb.x		+=	scale * L->diffuse.x; 
-				C.rgb.y		+=	scale * L->diffuse.y;
-				C.rgb.z		+=	scale * L->diffuse.z;
-			} else {
-				// Distance
-				float sqD	=	P.distance_to_sqr	(L->position);
-				if (sqD > L->range2) continue;
-
-				// Dir
-				Ldir.sub	(L->position,P);
-				Ldir.normalize_safe();
-				float D		= Ldir.dotproduct( N );
-				if( D <=0 ) continue;
-
-				// Trace Light
-				float R		= _sqrt(sqD);
-				float scale = D*L->energy*rayTrace(DB,*L,Pnew,Ldir,R);
-				float A		= scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
-
-				C.rgb.x += A * L->diffuse.x;
-				C.rgb.y += A * L->diffuse.y;
-				C.rgb.z += A * L->diffuse.z;
-			}
-		}
-	}
-	if (0==(flags&LP_dont_sun))
-	{
-		R_Light	*L	= &*(lights.sun.begin()), *E = &*(lights.sun.end());
-		for (;L!=E; L++)
-		{
-			if (L->type==LT_DIRECT) {
-				// Cos
-				Ldir.invert	(L->direction);
-				float D		= Ldir.dotproduct( N );
-				if( D <=0 ) continue;
-
-				// Trace Light
-				float scale	=	L->energy*rayTrace(DB,*L,Pnew,Ldir,1000.f);
-				C.sun		+=	scale;
-			} else {
-				// Distance
-				float sqD	=	P.distance_to_sqr(L->position);
-				if (sqD > L->range2) continue;
-
-				// Dir
-				Ldir.sub			(L->position,P);
-				Ldir.normalize_safe	();
-				float D				= Ldir.dotproduct( N );
-				if( D <=0 )			continue;
-
-				// Trace Light
-				float R		=	_sqrt(sqD);
-				float scale =	D*L->energy*rayTrace(DB,*L,Pnew,Ldir,R);
-				float A		=	scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
-
-				C.sun		+=	A;
-			}
-		}
-	}
-	if (0==(flags&LP_dont_hemi))
-	{
-		R_Light	*L	= &*lights.hemi.begin(), *E = &*lights.hemi.end();
-		for (;L!=E; L++)
-		{
-			if (L->type==LT_DIRECT) {
-				// Cos
-				Ldir.invert	(L->direction);
-				float D		= Ldir.dotproduct( N );
-				if( D <=0 ) continue;
-
-				// Trace Light
-				Fvector		PMoved;	PMoved.mad	(Pnew,Ldir,0.001f);
-				float scale	=	L->energy*rayTrace(DB,*L,PMoved,Ldir,1000.f);
-				C.hemi		+=	scale;
-			} else {
-				// Distance
-				float sqD	=	P.distance_to_sqr(L->position);
-				if (sqD > L->range2) continue;
-
-				// Dir
-				Ldir.sub			(L->position,P);
-				Ldir.normalize_safe	();
-				float D		=	Ldir.dotproduct( N );
-				if( D <=0 ) continue;
-
-				// Trace Light
-				float R		=	_sqrt(sqD);
-				float scale =	D*L->energy*rayTrace(DB,*L,Pnew,Ldir,R);
-				float A		=	scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
-
-				C.hemi		+=	A;
-			}
-		}
-	}
-}
-
-
-bool detail_slot_process( u32 _x, u32 _z, DetailSlot&	DS )
-{
-	process_pallete( DS );
-	if ( gl_data.slots_data.skip_slot ( _x, _z ) )
-		return false;
-
-	return true;
-}
-
-
-
-bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, xr_vector<u32>& box_result, CDB::COLLIDER &DB, base_lighting	&Selected )
-{
+	DB.ray_options(CDB::OPT_CULL);
+	DB.box_options(CDB::OPT_FULL_TEST);
+	
 	///////////////////////////////////////////////////////////
 	// Build slot BB & sphere
 	Fbox	BB;
@@ -335,31 +42,35 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, xr_vector<u32>& box_
 	Fsphere		S;
 	BB.getsphere( S.P, S.R );
 
-	// Select polygons
-	Fvector				bbC,bbD;
-	BB.get_CD			( bbC, bbD );	bbD.add( 0.01f );
-	DB.box_query		( &gl_data.RCAST_Model, bbC, bbD );
-
-	box_result.clear	();
-	for (CDB::RESULT* I=DB.r_begin(); I!=DB.r_end(); I++) box_result.push_back(I->id);
-	if (box_result.empty())	
-		return false; 
-		//continue;
 
 	CDB::TRI*	tris	= gl_data.RCAST_Model.get_tris().data();
 	Fvector*	verts	= gl_data.RCAST_Model.get_verts().data();
 
 	// select lights
 	Selected.select		( gl_data.g_lights, S.P, S.R );
-
+ 
 	// lighting itself
-	base_color_new		amount;
+	base_color_c	amount;
 	u32				count	= 0;
 	float coeff		= DETAIL_SLOT_SIZE_2/float(LIGHT_Count);
 
+
+	// Select polygons
+	Fvector				bbC, bbD;
+	BB.get_CD(bbC, bbD);	
+	bbD.add(0.01f);
+
+	DB.box_query(&gl_data.RCAST_Model, bbC, bbD);
+
+	box_result.clear();
+	for (auto& R : DB.r_vec())
+		box_result.push_back(R.id);
+	if (box_result.empty())
+		return false;
+
 	for (int x=-LIGHT_Count; x<=LIGHT_Count; x++) 
 	{
-		Fvector		P;
+ 		Fvector		P;
 		P.x			= bbC.x + coeff*float(x);
 
 		for (int z=-LIGHT_Count; z<=LIGHT_Count; z++) 
@@ -369,7 +80,7 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, xr_vector<u32>& box_
 			P.z				= bbC.z + coeff*float(z);
 			P.y				= BB.min.y-5;
 			Fvector	dir;	dir.set		(0,-1,0);
-			Fvector start;	start.set	(P.x,BB.max.y+EPS,P.z);
+			Fvector start;	start.set	(P.x, BB.max.y+EPS, P.z);
 			
 			float		r_u,r_v,r_range;
 			for (xr_vector<u32>::iterator tit = box_result.begin(); tit != box_result.end(); tit++)
@@ -378,8 +89,9 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, xr_vector<u32>& box_
 				Fvector		V[3]	= { verts[T.verts[0]], verts[T.verts[1]], verts[T.verts[2]] };
 				if (CDB::TestRayTri(start,dir,V,r_u,r_v,r_range,true))
 				{
-					if (r_range>=0.f)	{
-						float y_test	= start.y - r_range;
+					if (r_range>=0.f)	
+					{
+						float y_test = start.y - r_range;
 						if (y_test>P.y)	{
 							P.y			= y_test+EPS;
 							t_n.mknormal(V[0],V[1],V[2]);
@@ -389,21 +101,164 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, xr_vector<u32>& box_
 			}
 			if (P.y<BB.min.y) continue;
 			
-			// light point
-			LightPoint		(&DB,amount,P,t_n,Selected,0);
+
+			if (gCompilerMode.Embree)
+			{
+				// light point
+				DetailsTask data;
+				data.SetDataRays(_x, _z, P, t_n, S.R, S.P);
+				rayTasks.push_back(data);
+
+			}
+#ifdef LCCUDA_BUILD
+			else if (gCompilerMode.CUDA)
+			{
+				size_t idx= GPUTaskinSystem.MakeKey(_x, _z);
+
+				GPUTaskinSystem.LightPointPacked_add_task(idx, nullptr, P, t_n, nullptr);
+			}
+#endif
+
 			count			+= 1;
 		}
 	}
 
-	// calculation of luminocity
-	amount.scale		(count);
-	amount.mul			(.5f);
-	DS.c_dir			= DS.w_qclr	(amount.sun,15);
-	DS.c_hemi			= DS.w_qclr	(amount.hemi,15);
-	DS.c_r				= DS.w_qclr	(amount.rgb.x,15);
-	DS.c_g				= DS.w_qclr	(amount.rgb.y,15);
-	DS.c_b				= DS.w_qclr	(amount.rgb.z,15);
+
+	if (gCompilerMode.Embree)
+	{
+		LightPoint_Details(rayTasks, Selected, 0);			// Идеально пакетные пашут ибо 225 из одной позиции запросов !
+ 		for (auto& task : rayTasks)
+ 			amount.add( task.C );
+		rayTasks.clear();
+
+		// calculation of luminocity (225 samples на 1 травинку) может и много :)
+		amount.scale(count);
+		amount.mul(.5f);
+
+		// Пишется результат в (level.details) !
+		DS.c_dir = DS.w_qclr(amount.sun, 15);
+		DS.c_hemi = DS.w_qclr(amount.hemi, 15);
+		DS.c_r = DS.w_qclr(amount.rgb.x, 15);
+		DS.c_g = DS.w_qclr(amount.rgb.y, 15);
+		DS.c_b = DS.w_qclr(amount.rgb.z, 15);
+	}
+
+ 	
 	////////////////////////////////////////////////////////////
 	return true;
+}
+
+#ifdef LCCUDA_BUILD
+#include "CUDA/xrCuda_PackedLights.h"
+xr_vector<u32>			 samples;
+xr_vector<base_color_c>  detail_colors;
+u32 size_x;
+u32 size_z;
+
+void ApplyColorDetailGPU(size_t IndexTask, base_color_c& C) 
+{
+	u32 x = GPUTaskinSystem.GetU(IndexTask);
+	u32 z = GPUTaskinSystem.GetV(IndexTask);	
+	
+	u32 idx = z * size_x + x;
+	samples[idx]++;
+	detail_colors[idx].add(C);
+}
+
+void ApplyColorsGPU()
+{
+	for (auto z = 0; z < gl_data.slots_data.size_z(); z++)
+	for (auto x = 0; x < gl_data.slots_data.size_x(); x++)
+	{
+		// Getter - Detail Slot
+		auto& DS = gl_data.slots_data.get_slot(x, z);
+
+		u32 idx			= z * size_x + x;
+		auto& count		= samples[idx];
+		if (count > 0)
+		{
+			auto& color = detail_colors[idx];
+			color.scale(count);
+			color.mul(.5f);
+
+			// Пишется результат в (level.details) !
+			DS.c_dir = DS.w_qclr(color.sun, 15);
+			DS.c_hemi = DS.w_qclr(color.hemi, 15);
+			DS.c_r = DS.w_qclr(color.rgb.x, 15);
+			DS.c_g = DS.w_qclr(color.rgb.y, 15);
+			DS.c_b = DS.w_qclr(color.rgb.z, 15);
+		}
+ 	}
+}
+#endif
+
+void xrLight_Details()
+{
+	CTimer start_time;
+	start_time.Start();
+
+	static xr_atomic_u32 IndexTask = 0;
+	IndexTask = 0;
+	 
+	if (gCompilerMode.Embree)
+	{
+		Status("Embree Initialize Models ...");
+		EmbreeMain.InitializeDetails(gl_data.building_embree_faces);
+
+		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [](size_t threadID)
+			{
+				while (true)
+				{
+					u32 Z = IndexTask.fetch_add(1);
+					if (Z >= gl_data.slots_data.size_z()) break;
+
+					for (u32 X = 0; X < gl_data.slots_data.size_x(); X++)
+					{
+						detail_slot_calculate(X, Z);
+					}
+
+					clMsg("Processing TaskID[%u/%u]", Z, gl_data.slots_data.size_z());
+				}
+			}
+		);
+	}
+#ifdef LCCUDA_BUILD
+	else
+	{
+ 		size_x = gl_data.slots_data.size_x();
+		size_z = gl_data.slots_data.size_z();
+
+		samples.resize(size_x * size_z);
+		detail_colors.resize(size_x * size_z);
+
+		GPUTaskinSystem.InitializeGPU();
+		GPUTaskinSystem.InitializeGPU_Model();
+
+		GPUTaskinSystem.ColorsMapType = eDetails;
+
+		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [](size_t threadID)
+			{
+				while (true)
+				{
+					u32 Z = IndexTask.fetch_add(1);
+					if (Z >= gl_data.slots_data.size_z()) break;
+
+					for (u32 X = 0; X < gl_data.slots_data.size_x(); X++)
+					{
+						detail_slot_calculate(X, Z);
+					}
+
+					AditionalData("Processing TaskID[%u/%u]", Z, gl_data.slots_data.size_z());
+				}
+				
+				GPUTaskinSystem.LightPointPacked_run_tasks();
+			}
+		);
+
+		ApplyColorsGPU();
+	}
+#endif
+
+	Msg("Total processing: %u ms.", start_time.GetElapsed_ms());
 }
 

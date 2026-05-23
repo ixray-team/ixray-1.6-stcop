@@ -114,7 +114,9 @@ void CBuild::BuildCForm	()
 
 		CL.add_face(
 			T->v[0]->P, T->v[1]->P, T->v[2]->P,
-			T->dwMaterialGame, materials()[T->dwMaterial].sector, T->sm_group
+			T->dwMaterialGame, 
+			materials()[T->dwMaterial].sector,
+			T->sm_group
 		);
 		Progress(p_total += p_cost);		// progress
 	}
@@ -180,7 +182,8 @@ void CBuild::BuildCForm	()
 	level_path.append("level");
 	XRay::CForm::Write(level_path.c_str(), *FormatPtr);
 	
-	/*string_path		fn;
+	/*
+	string_path		fn;
 	IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "level.cform"));
 
 	// Header
@@ -192,7 +195,8 @@ void CBuild::BuildCForm	()
 	MFS->w(&hdr, sizeof(hdr));
  	// Data
 	MFS->w(CL.getV(), (u32)CL.getVS() * sizeof(Fvector));
- 	MFS->w(CL.getT(), (u32)CL.getTS() * sizeof(CDB::TRI));*/
+ 	MFS->w(CL.getT(), (u32)CL.getTS() * sizeof(CDB::TRI));
+	*/
  
 	// Clear pDeflector (it is stored in the same memory space with dwMaterialGame)
 	for (vecFaceIt I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); I++)
