@@ -192,6 +192,12 @@ void xrMU_Model::calc_lighting	()
 		xr_vector<FaceDataEmbree> faces;
  		export_cform_rcast_new(faces, Fidentity);
 
+		for (auto& F : faces)
+		{
+			auto _F = (Face*)F.ptr;
+			_F->CacheOpacity();
+		}
+
 		R_ASSERT(faces.size());
 
 		EmbreeRayTraceModel MDL;
@@ -213,8 +219,6 @@ void xrMU_Model::calc_lighting	()
 		calc_lighting(color, Fidentity, M, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun);
 		xr_delete(M);
  	}
-
-//	clMsg					("model '%s' - REF_lighted.",*m_name);
 }
  
 

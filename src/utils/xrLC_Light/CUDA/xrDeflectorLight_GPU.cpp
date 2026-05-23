@@ -149,7 +149,7 @@ void CDeflector::L_DirectGPU()
 bool CDeflector::ApplyColors()
 {
 	lm_layer& lm = layer;
- 
+
     // Faces Только будет при простом проходе
 	base_color_c C_Zero, Cnew;
  	for (u32 V = 0; V < lm.height; V++)
@@ -173,7 +173,7 @@ bool CDeflector::ApplyColors()
 			}
 		}
 	}
-
+	
 	lm.samples.clear();
 	lm.samples.shrink_to_fit(); // Выгрузка памяти
 	return true;
