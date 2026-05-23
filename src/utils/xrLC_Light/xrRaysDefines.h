@@ -6,6 +6,7 @@ enum ColorsReturnType
 	eImplicit,
 	eDeflectors,
 	eMumodel,
+	eDetails,
 	eCommon
 };
 
@@ -53,4 +54,25 @@ struct JiterPixel
 		wN = N;
 		skip = F;
 	};
+};
+
+struct DetailsTask
+{
+	u32 X, Z;
+	Fvector wP, wN; 
+	base_color_c C;
+	float SRange;
+	Fvector SPosition;
+
+	void SetDataRays(u32 tX, u32 tZ, Fvector& P, Fvector& N, float SR, Fvector SPos)
+	{
+		X = tX;
+		Z = tZ;
+		C.clear_color();
+
+		wP = P;
+		wN = N;
+		SRange = SR;
+		SPosition = SPos;
+ 	};
 };

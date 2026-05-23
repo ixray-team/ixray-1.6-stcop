@@ -18,6 +18,7 @@ extern CBuild* pBuild;
 #include <../xrForms/CompilersUI.h>
 extern CompilersMode gCompilerMode;
 
+// *** Ray Packed Initialize *** //
 void SetRay1(RTCRay& rayhit, const Fvector& pos, const Fvector& dir, float near_, float range)
 {
 	rayhit.dir_x = dir.x;
@@ -33,26 +34,6 @@ void SetRay1(RTCRay& rayhit, const Fvector& pos, const Fvector& dir, float near_
 	rayhit.flags	= 0;
 	rayhit.time		= 0;
 	rayhit.id		= 0; 
-}
-
-void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float range)
-{
-	rayhit.ray.dir_x = dir.x;
-	rayhit.ray.dir_y = dir.y;
-	rayhit.ray.dir_z = dir.z;
-	rayhit.ray.org_x = pos.x;
-	rayhit.ray.org_y = pos.y;
-	rayhit.ray.org_z = pos.z;
-	rayhit.ray.tnear = near_;
-	rayhit.ray.tfar = range;
-	rayhit.ray.mask = (unsigned int)(-1);
-	rayhit.ray.flags = 0;
-
-	rayhit.hit.geomID = RTC_INVALID_GEOMETRY_ID;
-	rayhit.hit.primID = RTC_INVALID_GEOMETRY_ID;
-
-	rayhit.hit.instID[0] = RTC_INVALID_GEOMETRY_ID;
-	rayhit.hit.instPrimID[0] = RTC_INVALID_GEOMETRY_ID;
 }
 
 void SetRay4(RTCRay4& rayhit, u32 idx, const Fvector& pos, const Fvector& dir, float near_, float range)
@@ -72,29 +53,6 @@ void SetRay4(RTCRay4& rayhit, u32 idx, const Fvector& pos, const Fvector& dir, f
 	rayhit.id[idx] = 0;
 }
 
-void SetRay4(RTCRayHit4& rayhit, u32 IDX, const Fvector& pos, const Fvector& dir, float near_, float range)
-{
-	rayhit.ray.dir_x[IDX] = dir.x;
-	rayhit.ray.dir_y[IDX] = dir.y;
-	rayhit.ray.dir_z[IDX] = dir.z;
-	rayhit.ray.org_x[IDX] = pos.x;
-	rayhit.ray.org_y[IDX] = pos.y;
-	rayhit.ray.org_z[IDX] = pos.z;
-	rayhit.ray.tnear[IDX] = near_;
-	rayhit.ray.tfar[IDX] = range;
-
-	rayhit.ray.mask[IDX] = (uint32_t)(-1);
-	rayhit.ray.flags[IDX] = 0;
-	rayhit.ray.time[IDX] = 0;
-	rayhit.ray.id[IDX] = 0;
-
-	rayhit.hit.geomID[IDX] = RTC_INVALID_GEOMETRY_ID;
-	rayhit.hit.primID[IDX] = RTC_INVALID_GEOMETRY_ID;
-
-	rayhit.hit.instID[0][IDX] = RTC_INVALID_GEOMETRY_ID;
-	rayhit.hit.instPrimID[0][IDX] = RTC_INVALID_GEOMETRY_ID;
-}
-
 void SetRay8(RTCRay8& rayhit, u32 idx, const Fvector& pos, const Fvector& dir, float near_, float range)
 {
 	rayhit.dir_x[idx] = dir.x;
@@ -111,154 +69,65 @@ void SetRay8(RTCRay8& rayhit, u32 idx, const Fvector& pos, const Fvector& dir, f
 	rayhit.time[idx] = 0;
 	rayhit.id[idx] = 0;
 }
- 
-void SetRay8(RTCRayHit8& rayhit, u32 IDX, const Fvector& pos, const Fvector& dir, float near_, float range)
+
+// *** Building Raytracing Model for Embree *** //
+void LoadGeomBuffer(RTCGeometry& geom, TriangleContainer& geom_buffer, bool isTransp, u8 ud_geom_type);
+
+void EmbreeInstancedModel::InitializeModel(xr_vector<FaceDataEmbree>& faces)
 {
-	rayhit.ray.dir_x[IDX] = dir.x;
-	rayhit.ray.dir_y[IDX] = dir.y;
-	rayhit.ray.dir_z[IDX] = dir.z;
-	rayhit.ray.org_x[IDX] = pos.x;
-	rayhit.ray.org_y[IDX] = pos.y;
-	rayhit.ray.org_z[IDX] = pos.z;
-	rayhit.ray.tnear[IDX] = near_;
-	rayhit.ray.tfar[IDX] = range;
-
-	rayhit.ray.mask[IDX] = (uint32_t)(-1);
-	rayhit.ray.flags[IDX] = 0;
-	rayhit.ray.time[IDX] = 0;
-	rayhit.ray.id[IDX] = 0;
-
-	rayhit.hit.geomID[IDX] = RTC_INVALID_GEOMETRY_ID;
-	rayhit.hit.primID[IDX] = RTC_INVALID_GEOMETRY_ID;
-
-	rayhit.hit.instID[0][IDX] = RTC_INVALID_GEOMETRY_ID;
-	rayhit.hit.instPrimID[0][IDX] = RTC_INVALID_GEOMETRY_ID;
-}
-
-// OFF PACKED PROCESSING
-void GetEmbreeDeviceProperty(const char* msg, RTCDevice& device, RTCDeviceProperty prop)
-{
-	Msg(" - EmbreeDevProp: %s : %llu", msg, rtcGetDeviceProperty(device, prop));
-}
-  
-extern global_claculation_data	gl_data;
-
-// Exports Rcast Model !
-void EmbreeRayTraceModel::BuildRcast()
-{
-	Status("Start Export Build.cform");
-	TriangleContainer container;
-
-	CTimer tStats;	tStats.Start();
-	Status("[RcastModel] Capturing Faces...");
-	for (auto F : lc_global_data()->g_faces())
-	{
-		const Shader_xrLC& SH = F->Shader();
-		if (!SH.flags.bLIGHT_CastShadow)	continue;
-		container.AddFaceRaw(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
-	}
-
-
-	for (auto ref : lc_global_data()->mu_refs())
-	{
-		xr_vector<FaceDataEmbree> temp_buffer;
-		ref->export_cform_rcast_new(temp_buffer);
-		for (auto& FaceIntel : temp_buffer)
-		{
-			Face* F = (Face*)FaceIntel.ptr;
-			container.AddFaceRaw(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
-		}
-	}
-
-	container.RemoveDublicatesVertexs();	// Обезательно 
-	container.RemoveDublicatesFaces();		// Обезательно 
-
-	clMsg("Build.cform is builded at : %u ms", tStats.GetElapsed_ms());
-
-	tStats.Start();
-
-	string_path				fn;
-	IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "build.cform"));
-	xr_vector<b_rc_face>	rc_faces;
-	rc_faces.resize(container.faces_cnt());
-
-	// Prepare faces
-	for (u32 k = 0; k < container.faces_cnt(); k++)
-	{
-		base_Face* F = container.dummy[k];
-
-		b_rc_face& cf = rc_faces[k];
-		cf.dwMaterial = F->dwMaterial;
-		cf.dwMaterialGame = F->dwMaterialGame;
-
-		Fvector2* cuv = F->getTC0();
-		cf.t[0].set(cuv[0]);
-		cf.t[1].set(cuv[1]);
-		cf.t[2].set(cuv[2]);
-	}
-	MFS->open_chunk(0);
-
-	// Header
-	hdrCFORM hdr;
-	hdr.version = CFormVersions::Vanilla;
-	hdr.vertcount = (u32)container.vertex_cnt();
-	hdr.facecount = (u32)container.faces_cnt();
-	hdr.aabb = pBuild->scene_bb;
-
-	MFS->w(&hdr, sizeof(hdr));
-
-	// Data
-	for (auto Vert : container.vertex())
-	{
-		MFS->w(&Vert, sizeof(Vert));
-	}
-
-	for (auto T : container.faces())
-	{
-		auto TRI = T.Get();
-		MFS->w(&TRI, sizeof(TRI));
-	}
-
-	MFS->close_chunk();
-
-	MFS->open_chunk(1);
-	MFS->w(&*rc_faces.begin(), size_t(rc_faces.size() * sizeof(b_rc_face)));
-	MFS->close_chunk();
-
-	// size_t rqfaces_mem = rc_faces.size() * sizeof(b_rc_face);
-	// size_t vertex_mem  = container.vertex_cnt() * sizeof(Fvector);
-	// size_t faces_mem   = container.faces_cnt() * sizeof(CDB::TRI);
-	// clMsg("Memory Vertex need: %u mb", u32(vertex_mem / 1024 / 1024));
-	// clMsg("Memory Faces need: %u mb", faces_mem / 1024 / 1024);
-	// clMsg("Memory RC_Face need: %u mb", rqfaces_mem / 1024 / 1024);
-	// clMsg("File Saved Size: %u mb", MFS->tell() / 1024 / 1024);
-
-	FS.w_close(MFS);
-
-	clMsg("Build.cform is exported at : %u ms", tStats.GetElapsed_ms());
-}
-
-
-// Building Raytracing Model for Embree
-
-// Instanced Geom
-void EmbreeRayTraceModel::BuildMU_Model(xr_vector<FaceDataEmbree>& faces)
-{
-	opacue_geom.ClearAll();
-	transp_geom.ClearAll();
-
+	TriangleContainer geom_builder_opacue;
+	TriangleContainer geom_builder_transp;
 	for (auto& F : faces)
 	{
-		bool isOpacue = ((Face*)F.ptr)->flags.bOpaque;
- 		auto& buf = isOpacue ? opacue_geom : transp_geom;
-		buf.AddFaceRaw((Face*)F.ptr, F.v1, F.v2, F.v3);
+		Face* Fc = (Face*)F.ptr;
+		auto& geom = Fc->flags.bOpaque ? geom_builder_opacue : geom_builder_transp;
+		geom.AddFaceRaw(F.ptr, F.v1, F.v2, F.v3);
+	}
+	geom_builder_opacue.useMsg = false;
+	geom_builder_transp.useMsg = false;
+
+	geom_builder_opacue.RemoveDublicates();
+	geom_builder_transp.RemoveDublicates();
+
+	InstaceScene = rtcNewScene(EmbreeDevice);
+	rtcSetSceneBuildQuality(InstaceScene, RTC_BUILD_QUALITY_HIGH);
+
+	if (geom_builder_opacue.faces_cnt() > 0)
+	{
+		LoadGeomBuffer(GeometryOpacue, geom_builder_opacue, false, 0);
+		rtcAttachGeometry(InstaceScene, GeometryOpacue);
+		rtcReleaseGeometry(GeometryOpacue);
 	}
 
-	opacue_geom.RemoveDublicatesVertexs();			// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
-	opacue_geom.RemoveDublicatesFaces();
+	if (geom_builder_transp.faces_cnt() > 0)
+	{
+		LoadGeomBuffer(GeometryTransp, geom_builder_transp, true, 0);
+		rtcAttachGeometry(InstaceScene, GeometryTransp);
+		rtcReleaseGeometry(GeometryTransp);
+	}
 
-	transp_geom.RemoveDublicatesVertexs();
-	transp_geom.RemoveDublicatesFaces();
+	rtcCommitScene(InstaceScene);
+}
+
+void EmbreeInstancedModel::SetInstance(RTCScene scene, Fmatrix& xform)
+{
+	// ----------------------------------------------------
+	// Instace Geometry Loading
+	// ----------------------------------------------------
+	RTCGeometry inst = rtcNewGeometry(EmbreeDevice, RTC_GEOMETRY_TYPE_INSTANCE);
+	rtcSetGeometryInstancedScene(inst, InstaceScene);
+
+	float matrix[16];
+	ConvertMatrix(xform, matrix);
+
+	rtcSetGeometryTransform(inst, 0, RTC_FORMAT_FLOAT4X4_COLUMN_MAJOR, matrix);
+
+	// ----------------------------------------------------
+	// Commit instance
+	// ----------------------------------------------------
+	rtcCommitGeometry(inst);
+	rtcAttachGeometry(scene, inst);
+	rtcReleaseGeometry(inst);
 }
 
 
@@ -294,8 +163,6 @@ void EmbreeRayTraceModel::BuildRayTraceModel()
 		}
 	}
 
-
-
 	// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании) 
 	opacue_geom.RemoveDublicates();
  	transp_geom.RemoveDublicates();
@@ -315,4 +182,57 @@ void EmbreeRayTraceModel::BuildRayTraceModel_Instaced()
 	{
 		instanced[MU_REF->model->m_lod_ID].SetInstance(IntelScene, MU_REF->xform);
 	}
+}
+
+
+// Geometry Embree Loading 
+
+void LoadGeomBuffer(RTCGeometry& geom, TriangleContainer& geom_buffer, bool isTransp, u8 ud_geom_type)
+{
+	extern void SetFilter(RTCGeometry geom, bool isTransp);
+
+	geom = rtcNewGeometry(EmbreeDevice, RTC_GEOMETRY_TYPE_TRIANGLE);
+
+	SetFilter(geom, isTransp);
+
+	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, geom_buffer.vertex().data(), 0, sizeof(Fvector), geom_buffer.vertex().size());
+	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, geom_buffer.faces().data(), 0, sizeof(Triangle), geom_buffer.faces().size());
+
+	UserGeomData* data = new UserGeomData();	// Кастомдата для треугольников чтобы не записывать в ctxt
+	data->dummys = geom_buffer.dummy;
+	data->DummyType = ud_geom_type;
+	rtcSetGeometryUserData(geom, data);
+
+	rtcCommitGeometry(geom);
+};
+
+
+void EmbreeRayTraceModel::AttachGeomToScene(bool isMain, u8 uDataType)
+{
+	// Scene Flags !
+	UpdateSceneFlags();
+
+	// Initialize Scene 
+	IntelScene = rtcNewScene(EmbreeDevice);
+	rtcSetSceneFlags(IntelScene, scene_flags);
+	rtcSetSceneBuildQuality(IntelScene, scene_quality);
+
+	if (opacue_geom.faces_cnt() > 0)
+	{
+		LoadGeomBuffer(IntelGeometryNormal, opacue_geom, false, uDataType);
+		rtcAttachGeometry(IntelScene, IntelGeometryNormal);
+		rtcReleaseGeometry(IntelGeometryNormal);
+	}
+
+	if (transp_geom.faces_cnt() > 0)
+	{
+		LoadGeomBuffer(IntelGeometryTransp, transp_geom, true, uDataType);
+		rtcAttachGeometry(IntelScene, IntelGeometryTransp);
+		rtcReleaseGeometry(IntelGeometryTransp);
+	}
+
+	if (isMain)
+		BuildRayTraceModel_Instaced();
+
+	rtcCommitScene(IntelScene);
 }

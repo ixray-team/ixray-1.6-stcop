@@ -230,8 +230,7 @@ bool lm_layer::ApplyBordersFast(u32 checking_ref)
 					}
 				}
 
-				if (count == 0)
-					continue;
+				// if (count == 0) continue;
 
 				accum.scale(count);
 

@@ -1,11 +1,13 @@
 #include "stdafx.h"
+#include "../xrLC_GlobalData.h"
+#include "global_calculation_data.h"
+#include <xrDeflector.h>
+
+// CUDA
 #include "CUDARayCast.h"
 #include "CUDAContext.h"
 #include "CUDAGeometryBuilder.h"
-#include "../xrLC_GlobalData.h"
-#include <xrDeflector.h>
 #include <optix_function_table_definition.h>
-
 // FX: Для данных о CUDA типах
 #include "Vector3HW.cuh"
 
@@ -48,7 +50,7 @@ Hardware_TextureData* gpu_textures = nullptr;
 
 void XRay::RayTrace::CUDA::InitializeLights()
 {
-	auto Lights = lc_global_data()->L_static();
+	auto Lights = gCompilerMode.LC ? lc_global_data()->L_static() : gl_data.g_lights;
  
 	auto Light = [&](R_Light& L, eTypeGPU type)
 		{
@@ -99,55 +101,76 @@ void XRay::RayTrace::CUDA::InitializeLights()
 
 	cudaFreeHost(h_lights);
 	size_lights = numLights;
+
+	Msg("[CUDA] Loaded Lighting: %u size", numLights);
 }
 
-void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<Face*>& Faces)
+void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<void*>& Faces)
 {
 	xr_vector<Hardware_FaceData> faces_host;
 	faces_host.resize(Faces.size());
-
- 	int IndexFace = 0;
-	for (auto& F : Faces)
+ 
+	int IndexFace = 0;
+	bool isLC = gCompilerMode.LC;
+	for (auto& Fv : Faces)
 	{
- 		unsigned short surface = lc_global_data()->materials()[F->dwMaterial].surfidx;
-		Hardware_FaceData& FaceGPU = faces_host[IndexFace];
-		FaceGPU.bOpacue = F->flags.bOpaque;
-		FaceGPU.bWater  = F->flags.bWater;
+		unsigned short surface = 0;
+		Fvector2 * TC = nullptr;
+		bool bOpacue = false;
 
+		if (isLC)
+		{
+			Face* F		= (Face*)Fv;
+ 			surface		= lc_global_data()->materials()[((Face*)F)->dwMaterial].surfidx;
+			TC			= F->getTC0();
+			bOpacue		= F->flags.bOpaque;
+ 		}
+		else
+		{
+			FaceDataEmbree* F = (FaceDataEmbree*)Fv;
+ 			surface		= gl_data.g_materials[F->dwMaterial].surfidx;
+			TC			= F->getTC0();
+			bOpacue		= F->bOpaque;
+		}
+
+		Hardware_FaceData& FaceGPU = faces_host[IndexFace];
+		FaceGPU.bOpacue = bOpacue;
+		FaceGPU.bWater  = false;
 		FaceGPU.surfidx = surface;
 
-		auto TC = F->getTC0();
-		FaceGPU.TC0[0].x = __float2half( TC[0].x );
-		FaceGPU.TC0[0].y = __float2half( TC[0].y );
+		FaceGPU.TC0[0].x = __float2half(TC[0].x);
+		FaceGPU.TC0[0].y = __float2half(TC[0].y);
 
-		FaceGPU.TC0[1].x = __float2half( TC[1].x );
-		FaceGPU.TC0[1].y = __float2half( TC[1].y );
+		FaceGPU.TC0[1].x = __float2half(TC[1].x);
+		FaceGPU.TC0[1].y = __float2half(TC[1].y);
 
- 		FaceGPU.TC0[2].x = __float2half( TC[2].x );
-		FaceGPU.TC0[2].y = __float2half( TC[2].y );
+		FaceGPU.TC0[2].x = __float2half(TC[2].x);
+		FaceGPU.TC0[2].y = __float2half(TC[2].y);
 
 		IndexFace++;
 	}
-
+ 
 	size_t alloc_size = faces_host.size() * sizeof(Hardware_FaceData);
 	CUDA_CHECK( cudaMalloc(&gpu_faces, alloc_size) );
 	CUDA_CHECK( cudaMemcpy(gpu_faces, faces_host.data(), alloc_size, cudaMemcpyHostToDevice));
  
  	size_faces = Faces.size();
 
+	Msg("[GPU DEVICE MEMORY] Faces[%u] Allocated: %u mb", faces_host.size(), alloc_size/ 1024 / 1024);
+
 	// РЕАЛЬНО освобождаем CPU память
 	faces_host.clear();
 	faces_host.shrink_to_fit();
-
-	Msg("[GPU DEVICE MEMORY] Faces[%u] Allocated: %u mb", faces_host.size(), alloc_size/ 1024 / 1024);
 }
 
 void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 {
- 	u32 SizeT = lc_global_data()->textures().size();
+	auto& glTextures = gCompilerMode.LC ? lc_global_data()->textures() : gl_data.g_textures;
+
+ 	u32 SizeT = glTextures.size();
  
 	xr_vector<TextureDataCPU>  Textures;
- 	for (auto& T : lc_global_data()->textures())
+ 	for (auto& T : glTextures)
 	{
 		if (T.pSurface.Empty() || !T.bHasAlpha)
 		{

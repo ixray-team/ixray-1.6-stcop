@@ -21,12 +21,10 @@ enum Flags
 #define LT_DIRECT		0
 #define LT_POINT		1
 #define LT_SECONDARY	2
- 
-#define ENERGY_MIN 0.01f
+#define ENERGY_MIN		0.01f
 
 #include "optix_types.h"
 
-// Entry points
 // Entry points
 __device__ float calculate_energy(Hardware_FaceData& F)
 {
@@ -52,16 +50,18 @@ __device__ float calculate_energy(Hardware_FaceData& F)
 
 	U = (U % T.width + T.width) % T.width;
 	V = (V % T.height + T.height) % T.height;
-
+ 
 	float a = T.pSurface[V * T.width + U] / 255.0f;
-	return a * a;
+  	return (a * a);
 }
+
+
+
 
 extern "C" __global__ void __anyhit__ah()
 {
-	const int primID = optixGetPrimitiveIndex();
-
-	Hardware_FaceData& F = g_params.faces[primID];
+	const int primID	  = optixGetPrimitiveIndex();
+ 	Hardware_FaceData& F = g_params.faces[primID];
 	if (F.bOpacue)
 	{
 		optixSetPayload_0(0); // visibility = 0
@@ -75,10 +75,45 @@ extern "C" __global__ void __anyhit__ah()
 		optixIgnoreIntersection(); // transparent → continue
 		return;
 	}
-
+ 
 	// ❗ hit blocks ray
 	optixSetPayload_0(0);
-	optixTerminateRay();
+ 	optixTerminateRay();
+
+	/*
+	
+	const int primID = optixGetPrimitiveIndex();
+
+	Hardware_FaceData& F = g_params.faces[primID];
+	Hardware_TextureData& T = g_params.textures[F.surfidx];
+
+	if (F.bOpacue || T.pSurface == nullptr)
+	{
+		// Не имеюь прозрачности  → останавливаемся
+		optixSetPayload_1(0);
+		optixTerminateRay();
+		return;
+	}
+
+	unsigned int energy_int = optixGetPayload_1();
+ 	float energy = float(energy_int) / 10000.0f;
+	// energy attenuation (LUT)
+	energy *= ( 1.0f - calculate_energy(F) );				// Проверка тут на воду не понятно почему делает ее темной
+
+	// opaque → остановить
+	if (energy < ENERGY_MIN)
+	{
+		optixSetPayload_1(0);
+		optixTerminateRay();
+		return; // closesthit будет вызван
+	}
+
+	// transparent → пропускаем и летим дальше
+	// Тут тоже сделал явное преобразование
+	unsigned int EnergyReturn = float(energy * 10000.0f);
+	optixSetPayload_1(EnergyReturn);
+	optixIgnoreIntersection();
+	*/
 }
 
 
@@ -96,6 +131,7 @@ extern "C" __global__ void __closesthit__ch()
 __device__ float RunOptickTask(Hardware_Vector& P, Hardware_Vector& N, float maxT)
 {
 	unsigned int visibility = 1;
+	unsigned int Energy = 10000;
 	const float3 origin = P.getVector3();
 	const float3 dir = N.getVector3();
 
@@ -109,10 +145,15 @@ __device__ float RunOptickTask(Hardware_Vector& P, Hardware_Vector& N, float max
 		OPTIX_RAY_FLAG_DISABLE_CLOSESTHIT |
 		OPTIX_RAY_FLAG_ENFORCE_ANYHIT,
 		0, 1, 0,
-		visibility
+		visibility, Energy
 	);
 
 	return visibility ? 1.0f : 0.0f;
+	// visibility ? 1.0f : 0.0f;
+	
+	// Баг был тут поченил
+	// float EnergyN = float(Energy) / 10000.0f;
+	// return EnergyN < 1.0f ? EnergyN : 1.0f;
 }
 
 __device__ void CalculatePoint(Hardware_Raytask& Task, Hardware_Lighting& L, unsigned int TaskID)

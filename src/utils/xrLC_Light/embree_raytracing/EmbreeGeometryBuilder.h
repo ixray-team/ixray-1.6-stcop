@@ -3,6 +3,35 @@
 #include "../../../xrCore/Collision/xrCDB.h"
 #include "xrFace.h"
  
+struct FaceDataEmbree
+{
+	void*				ptr;
+	Fvector				v1, v2, v3;
+
+	bool				bOpaque = false;
+	u16					dwMaterial;
+	u32					dwMaterialGame;
+	Fvector2			TC[3];				// TC
+	Fvector2*			getTC0() { return TC; }
+ 
+	void SetFace(Fvector& v_1, Fvector& v_2, Fvector& v_3, void* P)
+	{
+		v1 = v_1;
+		v2 = v_2;
+		v3 = v_3;
+		ptr = P;
+	};
+
+	void SetMaterial(u16 dwMt, u32 dwMtGame, Fvector2* TCn )
+	{
+		dwMaterial = dwMt;
+		dwMaterialGame = dwMtGame;
+		TC[0] = TCn[0];
+		TC[1] = TCn[1];
+		TC[2] = TCn[2];
+	}
+};
+
 struct Triangle
 {
 	u32 point1, point2, point3;
@@ -23,6 +52,7 @@ struct Triangle
 		point3 = T.verts[2];
 	}
 }; 
+ 
 
 struct IndexedTri
 {
@@ -60,7 +90,7 @@ struct TriangleContainer
   	xr_vector<Fvector>				verts_v;
 	xr_vector<Triangle>				faces_v;
 
- 	xr_vector<Face*>				dummy;
+ 	xr_vector<void*>				dummy;
 
 	xr_vector<Fvector>&				vertex() { return verts_v; }
 	xr_vector<Triangle>&			faces() { return faces_v; }
@@ -79,17 +109,17 @@ struct TriangleContainer
 	};
 
 	// Face Raw
-	struct FaceRaw
+ 	struct FaceRaw
 	{
 		Fvector v[3];
-		Face* F;
+		void* Face;
 
 		u16 material;
 		u16 Sector;
  	};
 
 	xr_vector<FaceRaw> raw_faces;
-	void AddFaceRaw(Face* F, const Fvector& v1, const Fvector& v2, const Fvector& v3)
+	void AddFaceRaw(void* F, const Fvector& v1, const Fvector& v2, const Fvector& v3)
 	{
 		raw_faces.push_back({ {v1, v2, v3}, F, 0, 0 });
 	};
