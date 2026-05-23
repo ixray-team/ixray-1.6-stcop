@@ -203,7 +203,7 @@ void CCF_Skeleton::BuildTopLevel()
 	VERIFY(_valid(bv_sphere));
 }
 
-BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
+bool CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {
 	PROF_EVENT("CCF_Skeleton::_RayQuery");
 
