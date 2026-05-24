@@ -24,7 +24,7 @@ void ErrorLog(LPCSTR caMessage)
 	g_pScriptEngine->error_log("%s",caMessage);
 	g_pScriptEngine->print_stack();
 	
-	R_ASSERT2(0, caMessage);
+	//R_ASSERT2(0, caMessage);
 }
 
 void FlushLogs()
