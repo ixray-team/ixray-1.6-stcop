@@ -9,6 +9,7 @@ FetchContent_Declare(
 set(SDL_SHARED ON CACHE BOOL "" FORCE)
 set(SDL_STATIC OFF CACHE BOOL "" FORCE)
 set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
+set(SDL_REVISION "3.2.22" CACHE STRING "SDL revision" FORCE)
 
 FetchContent_MakeAvailable(SDL3)
 
