@@ -1,20 +1,15 @@
 #include "common.hlsli"
 
-// Texture2D s_base;
-// sampler smp_base;
-
-
-// Pixel
-float4 main(p_TL I) : SV_Target
+float3 main(p_TL I) : SV_Target
 {
-    float4 res = s_base.Sample(smp_base, I.Tex0);
-    //	res.rgb		= lerp( I.Color.rgb, res.rgb, I.Color.a);
-    res.rgb = lerp(res.rgb, I.Color.rgb, I.Color.a);
-    res.a *= I.Color.a;
+	float4 Color = s_base.Sample(smp_rtlinear, I.Tex0);
 
-    //	clip(res-m_AlphaRef);
-    //	clip(res-0.5);
+	Color.w *= GetBorderAtten(I.Tex0);
+	Color.w *= 1.0f - I.Color.w;
 
-    return res;
-    //	return float4(1,1,1,1);
+	Color.xyz = lerp(I.Color.xyz, Color.xyz, Color.w);
+
+	clip(Color.w - EPS_S);
+	return Color.xyz;
 }
+
