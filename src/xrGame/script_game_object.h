@@ -239,6 +239,7 @@ public:
 			void				set_force_anti_aim		(bool force);
 			bool				get_force_anti_aim		();
 
+			void				BillboardSubtitlesDraw(LPCSTR text, u32 text_color, LPCSTR bone_name); // [subs]
 	// Burer
 			void				burer_set_force_gravi_attack (bool force);
 			bool				burer_get_force_gravi_attack ();

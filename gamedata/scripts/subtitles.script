@@ -1,0 +1,264 @@
+-----------------------------------------------------------------------
+-- Emmis, 2026
+-- subtitles
+-----------------------------------------------------------------------
+
+-- public:
+CONFIG = {}
+BS_CONFIG = {}
+
+subs_types = {
+    npc = 1,
+    actor = 2,
+    obj = 3,
+    fake = 4
+}
+
+-- private:
+local subtitles_buffer = {}
+local subtitles = {}
+
+local billboard_subtitles_buffer = {}
+local billboard_subtitles = {}
+
+-----------------------------------------------------------------------
+
+function init()
+    init_general_config()
+    xr_s.register_callback("game_load", on_actor_netspawn, nil)
+	xr_s.register_callback("actor_destroy", on_actor_netdestroy, nil)
+	xr_s.register_callback("update", update, nil)
+end
+
+function init_general_config()
+    local ini = ini_file("subtitles.ltx")
+    local section = "subtitles"
+    local bs_section = "billboard_subtitles"
+
+    if not ini:section_exist(section) then
+		error_log("There is no sections ["..section.."] or ["..bs_section.."] in subtitles.ltx")
+	end
+
+    local screen_pos_parse = parse_names(utils.cfg_get_string(ini, section, "screen_position", nil, false, "", "290,645"))
+    CONFIG.MAX_SUBTITLES = utils.cfg_get_number(ini, section, "max_subtitles", nil, false, 3)
+    CONFIG.MAX_DISTANCE = utils.cfg_get_number(ini, section, "max_distance", nil, false, 30)
+    CONFIG.SCREEN_POS = { x = tonumber(screen_pos_parse[1]), y = tonumber(screen_pos_parse[2])}
+    CONFIG.DEF_NPC_SUBS = utils.cfg_get_bool(ini, section, "def_npc_subtitles", nil, false, false)
+    CONFIG.DEF_ACTOR_SUBS = utils.cfg_get_bool(ini, section, "def_actor_subtitles", nil, false, false)
+    CONFIG.DEF_OBJ_SUBS = utils.cfg_get_bool(ini, section, "def_3d_subtitles", nil, false, false)
+
+    local bs_color_parse = parse_names(utils.cfg_get_string(ini, bs_section, "def_color", nil, false, "", "255,240,240,240"))
+    BS_CONFIG.MAX_SUBTITLES = utils.cfg_get_number(ini, bs_section, "max_subtitles", nil, false, 10)
+    BS_CONFIG.MAX_DISTANCE = utils.cfg_get_number(ini, bs_section, "max_distance", nil, false, 15)
+    BS_CONFIG.DEF_COLOR = GetARGB(tonumber(bs_color_parse[1]), tonumber(bs_color_parse[2]), tonumber(bs_color_parse[3]), tonumber(bs_color_parse[4]))
+    BS_CONFIG.DEF_BONE_NAME = utils.cfg_get_string(ini, bs_section, "def_bone_name", nil, false, "", "bip01_head")
+    BS_CONFIG.DEF_NPC_SUBS = utils.cfg_get_bool(ini, bs_section, "def_npc_subtitles", nil, false, true)
+end
+
+function on_actor_netspawn()
+    printf("subtitles net spawn")
+    ui_subtitles.on_actor_netspawn()
+end
+
+function on_actor_netdestroy()
+    printf("subtitles net destroy")
+    ui_subtitles.on_actor_netdestroy()
+end
+
+-----------------------------------------------------------------------
+
+function add_npc_subtitles(speaker, name, text)
+    add_subtitles_to_buffer(subs_types.npc, speaker, name, text)
+end
+
+function add_actor_subtitles(name, text, sound_obj)
+    add_subtitles_to_buffer(subs_types.actor, db.actor, name, text, sound_obj)
+end
+
+function add_obj_subtitles(speaker, name, text, sound_obj)
+    add_subtitles_to_buffer(subs_types.obj, speaker, name, text, sound_obj)
+end
+
+function add_fake_subtitles(name, text, time, delay)
+    add_subtitles_to_buffer(subs_types.fake, nil, name, text, nil, time + delay + time_global(), delay + time_global())
+end
+
+function add_billboard_subtitles(speaker, text, color, bone_name)
+    add_billboard_subtitles_to_buffer(speaker, text, color, bone_name)
+end
+
+-----------------------------------------------------------------------
+
+function update()
+
+    -- BUFFERS HANDLER
+    if #subtitles_buffer > 0 then
+        for i = 1, CONFIG.MAX_SUBTITLES do
+            if subtitles_buffer[i] then
+                local sub = subtitles_buffer[i]
+                if #subtitles < CONFIG.MAX_SUBTITLES then
+                    if sub.type == subs_types.npc then
+                        if not speaker_is_playing(sub.speaker) then
+                            remove_subtitles_from_buffer(i)
+                        elseif not speaker_is_far_away(sub.speaker, CONFIG.MAX_DISTANCE) then
+                            add_subtitles_from_buffer(sub)
+                            remove_subtitles_from_buffer(i)
+                        end
+                    elseif sub.type == subs_types.actor then
+                        if sub.sound_obj:playing() then
+                            add_subtitles_from_buffer(sub)
+                            remove_subtitles_from_buffer(i)
+                        end
+                    elseif sub.type == subs_types.obj then
+                        if not sub.sound_obj:playing() then
+                            remove_subtitles_from_buffer(i)
+                        elseif not speaker_is_far_away(sub.speaker, CONFIG.MAX_DISTANCE) then
+                            add_subtitles_from_buffer(sub)
+                            remove_subtitles_from_buffer(i)
+                        end
+                    elseif sub.type == subs_types.fake then
+                        if sub.delay < time_global() then
+                            add_subtitles_from_buffer(sub)
+                            remove_subtitles_from_buffer(i)
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    if #billboard_subtitles_buffer > 0 then
+        for i = 1, BS_CONFIG.MAX_SUBTITLES do
+            if billboard_subtitles_buffer[i] then
+                local sub = billboard_subtitles_buffer[i]
+                if #billboard_subtitles < BS_CONFIG.MAX_SUBTITLES then
+                    add_billboard_subtitles_from_buffer(sub)
+                    remove_bullboard_subtitles_from_buffer(i)
+                end
+            end
+        end
+    end
+    -- /BUFFERS HANDLER
+
+    -- SHOWN SUBTITLES HANDLER
+    if #subtitles > 0 then
+        for i = 1, CONFIG.MAX_SUBTITLES do
+            if subtitles[i] then
+                local sub = subtitles[i]
+                if sub.type == subs_types.npc then
+                    if not speaker_is_playing(sub.speaker) then
+                        remove_subtitles(i)
+                    elseif speaker_is_far_away(sub.speaker, CONFIG.MAX_DISTANCE) then
+                        add_subtitles_to_buffer(sub.type, sub.speaker, sub.name, sub.text, sub.sound_obj, sub.time, sub.delay)
+                        remove_subtitles(i)
+                    end
+                elseif sub.type == subs_types.actor then
+                    if not sub.sound_obj:playing() then
+                        remove_subtitles(i)
+                    end
+                elseif sub.type == subs_types.obj then
+                    if not sub.sound_obj:playing() then
+                        remove_subtitles(i)
+                    elseif speaker_is_far_away(sub.speaker, CONFIG.MAX_DISTANCE) then
+                        add_subtitles_to_buffer(sub.type, sub.speaker, sub.name, sub.text, sub.sound_obj, sub.time, sub.delay)
+                        remove_subtitles(i)
+                    end
+                elseif sub.type == subs_types.fake then
+                    if sub.time < time_global() then
+                        remove_subtitles(i)
+                    end
+                end
+            end
+        end
+    end
+
+    if #billboard_subtitles > 0 then
+        for i = 1, BS_CONFIG.MAX_SUBTITLES do
+            if billboard_subtitles[i] then
+                local sub = billboard_subtitles[i]
+                if not speaker_is_playing(sub.speaker) then
+                    remove_billboard_subtitles(i)
+                elseif speaker_is_far_away(sub.speaker, BS_CONFIG.MAX_DISTANCE) then
+                    add_billboard_subtitles_to_buffer(sub.speaker, sub.text, sub.color, sub.bone_name)
+                    remove_billboard_subtitles(i)
+                else
+                    sub.speaker:add_billboard_subtitles(sub.text, sub.color, sub.bone_name)
+                end
+            end
+        end
+    end
+    -- /SHOWN SUBTITLES HANDLER
+
+end
+
+function add_subtitles_to_buffer(type, speaker, name, text, sound_obj, time, delay)
+    table.insert(subtitles_buffer, {
+        type = type,
+        speaker = speaker,
+        name = game.translate_string(name),
+        text = game.translate_string(text),
+        sound_obj = sound_obj,
+        time = time,
+        delay = delay,
+        ui_body = nil
+    })
+end
+
+function add_billboard_subtitles_to_buffer(speaker, text, color, bone_name)
+    table.insert(billboard_subtitles_buffer, {
+        speaker = speaker,
+        text = game.translate_string(text),
+        color = color or BS_CONFIG.DEF_COLOR, --0xfff0f0f0,
+        bone_name = bone_name or BS_CONFIG.DEF_BONE_NAME
+    })
+end
+
+function add_subtitles_from_buffer(sub)
+    if sub.type == subs_types.npc and xrs_dyn_music.npc_table[sub.speaker:id()] == nil then 
+        return
+    end
+
+    table.insert(subtitles, sub)
+    ui_subtitles.get_class():CreateSubtitlesBody(subtitles[#subtitles])
+    ui_subtitles.get_class():ReloadSubtitlesList(subtitles)
+end
+
+function add_billboard_subtitles_from_buffer(sub)
+    if xrs_dyn_music.npc_table[sub.speaker:id()] == nil then 
+        return
+    end
+
+    table.insert(billboard_subtitles, sub)
+end
+
+function remove_subtitles_from_buffer(num)
+    table.remove(subtitles_buffer, num)
+end
+
+function remove_bullboard_subtitles_from_buffer(num)
+    table.remove(billboard_subtitles_buffer, num)
+end
+
+function remove_subtitles(num)
+    ui_subtitles.get_class():RemoveSubtitlesBody(subtitles[num].ui_body)
+    table.remove(subtitles, num)
+    ui_subtitles.get_class():ReloadSubtitlesList(subtitles)
+end
+
+function remove_billboard_subtitles(num)
+    table.remove(billboard_subtitles, num)
+end
+
+-----------------------------------------------------------------------
+
+function speaker_is_playing(speaker)
+    local obj = db.storage[speaker:id()] and db.storage[speaker:id()].object
+	if obj == nil then
+		return false
+	end
+	return obj:active_sound_count() ~= 0
+end
+
+function speaker_is_far_away(speaker, distance)
+    return device().cam_pos:distance_to_sqr(speaker:position()) >= distance * distance
+end

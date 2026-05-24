@@ -1,0 +1,68 @@
+-----------------------------------------------------------------------
+-- Emmis, 2026
+-- ui for subtitles
+-----------------------------------------------------------------------
+
+local ui_class = nil
+
+-----------------------------------------------------------------------
+
+function on_actor_netspawn()
+    ui_class = UiSubtitles()
+    level.add_dialog_to_render(ui_class)
+end
+
+function on_actor_netdestroy()
+    level.remove_dialog_to_render(ui_class)
+	ui_class = nil
+end
+
+function get_class()
+    if ui_class == nil then
+        error_log("class UiSubtitles is nil!")
+    end
+    return ui_class
+end
+
+-----------------------------------------------------------------------
+
+class "UiSubtitles" (CUIScriptWnd)
+
+function UiSubtitles:__init() super()
+    self.xml = CScriptXmlInit()
+	self.xml:ParseFile("ui_subtitles.xml")
+end
+
+function UiSubtitles:CreateSubtitlesBody(subtitles_one)
+    local subtitles_body = self.xml:InitStatic("subtitles_body", self)
+    local name_text = self.xml:InitTextWnd("subtitles_body:name", subtitles_body)
+    local subs_text = self.xml:InitTextWnd("subtitles_body:subs", subtitles_body)
+
+    name_text:SetText(subtitles_one.name..":")
+    subs_text:SetText(subtitles_one.text)
+
+    subtitles_one.ui_body = {
+        static = subtitles_body,
+        height = subtitles_body:GetHeight() + math.floor(#subtitles_one.text / 80) * 20
+    }
+end
+
+function UiSubtitles:RemoveSubtitlesBody(ui_body)
+    ui_body.static:Show(false)
+end
+
+function UiSubtitles:ReloadSubtitlesList(subtitles_table)
+    if not subtitles_table[1] then return end
+
+    subtitles_table[1].ui_body.static:SetWndPos(vector2():set(subtitles.CONFIG.SCREEN_POS.x, subtitles.CONFIG.SCREEN_POS.y))
+
+    for i = 2, subtitles.CONFIG.MAX_SUBTITLES do
+        if subtitles_table[i] then
+            local margin = subtitles_table[i-1].ui_body.static:GetWndPos().y - subtitles_table[i].ui_body.height
+            subtitles_table[i].ui_body.static:SetWndPos(vector2():set(subtitles.CONFIG.SCREEN_POS.x, margin))
+        end
+    end
+end
+
+function UiSubtitles:__finalize()
+end

@@ -3400,3 +3400,15 @@ function jup_b200_count_found(actor)
 	cnt = cnt + xr_logic.pstor_retrieve(actor, "jup_b200_tech_materials_brought_counter", 0)
 	xr_logic.pstor_store(actor, "jup_b200_tech_materials_found_counter", cnt)
 end
+
+-- [subs]
+function fake_subtitles(actor, npc, p)
+	local name = p[1]
+	local text = p[2]
+	local time = 5000
+	local delay = 0
+	if p[3] ~= nil and p[3] ~= "nil" then time = tonumber(p[3]) * 100 end
+	if p[4] ~= nil and p[4] ~= "nil" then delay = tonumber(p[4]) * 100 end
+	subtitles.add_fake_subtitles(name, text, time, delay)
+end
+-- [/subs]
