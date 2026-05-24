@@ -10,24 +10,18 @@
 
 #include "Blender.h"
 
-void CBlender_DESC::Setup	(const char* N)
+void CBlender_DESC::Setup(const char* N)
 {
 	// Name
-	VERIFY(xr_strlen(N)<128);
-	VERIFY(0==strchr(N,'.'));
-	xr_strcpy(cName,N);
+	VERIFY(xr_strlen(N) < 128);
+	VERIFY(0 == strchr(N, '.'));
+	xr_strcpy(cName, N);
 	_strlwr(cName);
-	
-	xr_strcpy(cComputer,Core.CompName);			// Computer
 
-#ifdef IXR_WINDOWS
-	_tzset();
-	_time32((__time32_t*)&cTime);
-#else
-	tzset();
-	time((__time32_t*)&cTime);	// Time
-#endif
-};
+	xr_strcpy(cComputer, Core.CompName);			// Computer
+
+	Platform::GetCurrentUnixTime32((__time32_t*)&cTime);
+}
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
