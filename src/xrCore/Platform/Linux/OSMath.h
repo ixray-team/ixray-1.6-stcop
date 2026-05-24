@@ -41,4 +41,9 @@ struct SYSTEMTIME
 
 namespace Platform
 {
+    inline void GetCurrentUnixTime32(__time32_t* InVar)
+    {
+        tzset();
+        time(InVar);
+    }
 }

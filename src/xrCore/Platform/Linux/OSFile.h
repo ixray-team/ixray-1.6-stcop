@@ -17,7 +17,7 @@ using errno_t = int;
 #define _lseeki64 lseek64
 #define _lseek lseek
 #define _wsopen_s _sopen_s
-
+#define _filelengthi64 _filelength
 #define _O_WRONLY O_WRONLY
 #define _O_RDONLY O_RDONLY
 #define _O_TRUNC O_TRUNC

@@ -3,8 +3,7 @@
 #include "dxUIRender.h"
 #include "dxDebugRender.h"
 
-static void
-call_shit()
+static void RenderEntryLibraryPoint()
 {
 	::Render = &RImplementation;
 	::RenderFactory = &RenderFactoryImpl;
@@ -23,7 +22,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 {
 	switch (ul_reason_for_call)
 	{
-	case DLL_PROCESS_ATTACH: call_shit(); break;
+	case DLL_PROCESS_ATTACH: RenderEntryLibraryPoint(); break;
 	case DLL_THREAD_ATTACH:
 	case DLL_THREAD_DETACH:
 	case DLL_PROCESS_DETACH:
@@ -36,6 +35,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 __attribute__((constructor)) 
 static void on_library_load(void)
 {
-	call_shit();
+	RenderEntryLibraryPoint();
 }
 #endif

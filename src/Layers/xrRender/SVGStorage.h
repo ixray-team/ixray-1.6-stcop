@@ -18,19 +18,11 @@ enum class eSVGStorageFlags : u32
 	kFeatureSVGStorage_Dynamic_Allocation = 1 << 2
 };
 
-#ifdef IXR_WINDOWS
-constexpr const char* _kSVGStorage_DefaultSVGTextureSubPathName = "ui\\ui_vector_error.svg";
-#else
-constexpr const char* _kSVGStorage_DefaultSVGTextureSubPathName = "ui/ui_vector_error.svg";
-#endif
-
-constexpr const char* _kSVGStorage_DefaultSVGTextureName = "ui_vector_error.svg";
+constexpr const char* _kSVGStorage_DefaultSVGTextureSubPathName = "ui" PLATFORM_SLASH_STR "ui_vector_error.svg";
 constexpr const char* _kSVGStorage_DefaultAtlasName = "svgdefaultatlas_";
-constexpr unsigned short _kSVGStorage_MaxSubpathLength = 128;
 constexpr u32 _kSVGStorage_DefaultAtlasID = 10;
 constexpr unsigned char _kSVGStorage_MaxAtlasPlacement = 4;
 constexpr unsigned char _kSVGStorage_MaxElementsPerAtlas = 8;
-constexpr int _kSVGStorage_DefaultAtlasSize = 512;
 constexpr u32 _kSVGStorage_DocumentLruCapacity = 16;
 constexpr u32 _kSVGStorage_DefaultMaxRasterPixels = 1024;
 
