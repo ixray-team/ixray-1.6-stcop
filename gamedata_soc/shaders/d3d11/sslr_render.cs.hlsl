@@ -1,67 +1,46 @@
 #include "common.hlsli"
 #include "reflections.hlsli"
 #include "metalic_roughness_ambient.hlsli"
+#include "metalic_roughness_light.hlsli"
 
 Texture3D s_blue_noise;
 
-// TODO: Это можно упростить потом
-float3 TangentToWorld(in float3 N, in float3 H)
-{
-    float3 UpVector = abs(N.y) < 0.999f ? float3(0.0, 1.0, 0.0) : float3(0.0, 0.0, -1.0);
-    float3 T = normalize(cross(UpVector, N));
-    float3 B = cross(N, T);
-				 
-    return normalize(T * H.x + B * H.y + N * H.z);
-}
+//LVutner: UAVs. See CPP code
+RWTexture2D<float4> u_sslr : register(u0);
+RWTexture2D<float4> u_sslr_data : register(u1);
 
-// Brian Karis, Epic Games "Real Shading in Unreal Engine 4"
-float4 ImportanceSampleGGX(float3 N, float2 Xi, float Roughness)
+[numthreads(8, 8, 1)]
+void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 {
-    float m = Roughness * Roughness;
-    float m2 = m * m;
-		
-    float Phi = 2 * PI * Xi.x;
-				 
-    float CosTheta = sqrt((1.0 - Xi.y) * rcp(1.0 + (m2 - 1.0) * Xi.y));
-    float SinTheta = sqrt(abs(1.0 - CosTheta * CosTheta));
-				 
-    float3 H;
-    H.x = SinTheta * cos(Phi);
-    H.y = SinTheta * sin(Phi);
-    H.z = CosTheta;
-		
-    float d = (CosTheta * m2 - CosTheta) * CosTheta + 1.0f;
-    float D = m2 * rcp(d * d);
-    float pdf = D * CosTheta;
+	//LVutner: Making my life easier.
+	PSInputFullscreen I;
+	I.hpos.xy = float2(DTid.xy) + 0.5; //half-pix
+	I.hpos.zw = float2(0.0, 1.0);
+	I.texcoord = I.hpos.xy * pos_decompression_params2.zw;
 
-	H = TangentToWorld(N, H);
-	
-    return float4(H, pdf);
-}
-
-void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final : SV_Target1)
-{
-    IXrayGbuffer O;
+	IXrayGbuffer O;
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
-	
+
 	if(O.Depth >= 1.0f)
 	{
-		Point = 0.0f;
-		Final = 0.0f;
-		
+		u_sslr[DTid.xy] = (0.0).xxxx;
+		u_sslr_data[DTid.xy] = (0.0).xxxx;
 		return;
 	}
+
+	//LVutner: Init
+	float4 Final = (0.0).xxxx;
+	float4 Point = (0.0).xxxx;	
 	
 	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth);
 	float3 ViewVec = normalize(ReflectPoint);
 	
 	float2 Jitter = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)].xy;
-	
-	Jitter.x = Jitter.x * 0.5f + 0.5f;
-	Jitter.y *= 0.7f;
-	
-	float4 H = ImportanceSampleGGX(mul(m_invV, O.Normal.xyz), Jitter, O.Roughness);
-	H.xyz = mul(m_V, H.xyz);
+
+	//LVutner: VNDF is biased, cause I don't want random fireflies
+	float4 H;
+	H.xyz = sample_vndf_isotropic(O.Normal, -ViewVec, Jitter * float2(1.0, 0.7), O.Roughness * O.Roughness);
+	H.w = pdf_vndf_isotropic(O.Normal, -ViewVec, reflect(ViewVec, H.xyz), O.Roughness * O.Roughness);
 	
 	float3 Reflection = reflect(ViewVec, H.xyz);
 	
@@ -99,10 +78,10 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 	float4 EndProj = mul(O.Depth < 0.02f ? m_P_hud : m_P, float4(SSLR.xyz, 1.0f));
 	EndProj.xy = EndProj.xy * rcp(EndProj.w) * float2(0.5f, -0.5f) + 0.5f;
 	
-	float2 Velocity = s_velocity.Sample(smp_nofilter, EndProj.xy).xy * float2(0.5f, -0.5f);
+	float2 Velocity = s_velocity.SampleLevel(smp_nofilter, EndProj.xy, 0.0).xy * float2(0.5f, -0.5f);
 	float2 PrevSpecularUV = saturate(EndProj.xy - Velocity.xy);
 	
-	Final = s_image.Sample(smp_rtlinear, PrevSpecularUV.xy);
+	Final = s_image.SampleLevel(smp_rtlinear, PrevSpecularUV.xy, 0.0);
 	
 #ifdef USE_OFFSCREEN_REFLECTIONS
 	O.Hemi = isHUDRender ? 1.0f : saturate(O.Hemi * 3.0f);
@@ -133,5 +112,8 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 	Final.xyz = saturate(Final.xyz);
 	
 	Final.w = isHUDRender;
-}
 
+	//LVutner: Write to UAVs
+	u_sslr[DTid.xy] = Final;
+	u_sslr_data[DTid.xy] = Point;
+}
