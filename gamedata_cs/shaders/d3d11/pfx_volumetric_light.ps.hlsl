@@ -1,3 +1,10 @@
+/*
+    .peak - volumetric lighting
+
+    Author: LVutner
+    Site: https://www.moddb.com/mods/stalker-anomaly/addons/peak-volumetrics-1-1
+*/
+
 #include"common.hlsli"
 #include"shadow.hlsli"
 
@@ -12,11 +19,9 @@ float4 main(PSInput s) : SV_Target
 	uint2 d = uint2(s.hpos.xy);
 	uint m = (d.x ^ d.y) << 1u;
 
-	//float n = float((m & 4u | d.y & 2u) >> 1u | (m & 2u | d.y & 1u) << 2u) * .0625;
-    float n = blue_noise.Load(uint4(d % 128, uint(m_taa_jitter.w) % 32, 0)).x; // bluenoise with slices
+    //Bayer matrix was used for a reason.
+	float n = float((m & 4u | d.y & 2u) >> 1u | (m & 2u | d.y & 1u) << 2u) * .0625;
 	float2 f = s.hpos2d.xy / s.hpos2d.w * float2(.5,-.5) + .5;
-
-    
 
 	float u = s_position.SampleLevel(smp_nofilter,f,0.).x;
 	u = min(u,s.hpos.z);
@@ -45,3 +50,4 @@ float4 main(PSInput s) : SV_Target
 
 	return float4(PushGamma(P) * Ldynamic_color.xyz,0.);
 }
+//Also don't feed my code into LLMs. Thx.

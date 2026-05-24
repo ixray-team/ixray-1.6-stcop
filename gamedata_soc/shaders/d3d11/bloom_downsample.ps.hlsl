@@ -19,22 +19,22 @@ float4 main(PSInputFullscreen I) : SV_Target
     float x = 0.5f * downsample_params.z;
     float y = 0.5f * downsample_params.w;
     
-    float3 a = b_image.Sample(smp_rtlinear, float2(center.x - 2.f * x, center.y + 2.f * y)).rgb;
-    float3 b = b_image.Sample(smp_rtlinear, float2(center.x, center.y + 2.f * y)).rgb;
-    float3 c = b_image.Sample(smp_rtlinear, float2(center.x + 2.f * x, center.y + 2.f * y)).rgb;
+    float3 a = clamp(b_image.Sample(smp_rtlinear, float2(center.x - 2.f * x, center.y + 2.f * y)).rgb, 0.0f, 2.0f);
+    float3 b = clamp(b_image.Sample(smp_rtlinear, float2(center.x, center.y + 2.f * y)).rgb, 0.0f, 2.0f);
+    float3 c = clamp(b_image.Sample(smp_rtlinear, float2(center.x + 2.f * x, center.y + 2.f * y)).rgb, 0.0f, 2.0f);
 
-    float3 d = b_image.Sample(smp_rtlinear, float2(center.x - 2.f * x, center.y)).rgb;
-    float3 e = b_image.Sample(smp_rtlinear, float2(center.x, center.y)).rgb;
-    float3 f = b_image.Sample(smp_rtlinear, float2(center.x + 2.f * x, center.y)).rgb;
+    float3 d = clamp(b_image.Sample(smp_rtlinear, float2(center.x - 2.f * x, center.y)).rgb, 0.0f, 2.0f);
+    float3 e = clamp(b_image.Sample(smp_rtlinear, float2(center.x, center.y)).rgb, 0.0f, 2.0f);
+    float3 f = clamp(b_image.Sample(smp_rtlinear, float2(center.x + 2.f * x, center.y)).rgb, 0.0f, 2.0f);
 
-    float3 g = b_image.Sample(smp_rtlinear, float2(center.x - 2.f * x, center.y - 2.f * y)).rgb;
-    float3 h = b_image.Sample(smp_rtlinear, float2(center.x, center.y - 2.f * y)).rgb;
-    float3 i = b_image.Sample(smp_rtlinear, float2(center.x + 2.f * x, center.y - 2.f * y)).rgb;
+    float3 g = clamp(b_image.Sample(smp_rtlinear, float2(center.x - 2.f * x, center.y - 2.f * y)).rgb, 0.0f, 2.0f);
+    float3 h = clamp(b_image.Sample(smp_rtlinear, float2(center.x, center.y - 2.f * y)).rgb, 0.0f, 2.0f);
+    float3 i = clamp(b_image.Sample(smp_rtlinear, float2(center.x + 2.f * x, center.y - 2.f * y)).rgb, 0.0f, 2.0f);
 
-    float3 j = b_image.Sample(smp_rtlinear, float2(center.x - x, center.y + y)).rgb;
-    float3 k = b_image.Sample(smp_rtlinear, float2(center.x + x, center.y + y)).rgb;
-    float3 l = b_image.Sample(smp_rtlinear, float2(center.x - x, center.y - y)).rgb;
-    float3 m = b_image.Sample(smp_rtlinear, float2(center.x + x, center.y - y)).rgb;
+    float3 j = clamp(b_image.Sample(smp_rtlinear, float2(center.x - x, center.y + y)).rgb, 0.0f, 2.0f);
+    float3 k = clamp(b_image.Sample(smp_rtlinear, float2(center.x + x, center.y + y)).rgb, 0.0f, 2.0f);
+    float3 l = clamp(b_image.Sample(smp_rtlinear, float2(center.x - x, center.y - y)).rgb, 0.0f, 2.0f);
+    float3 m = clamp(b_image.Sample(smp_rtlinear, float2(center.x + x, center.y - y)).rgb, 0.0f, 2.0f);
     
     float3 downsample = 0.f;
     downsample += e * 0.125f;
