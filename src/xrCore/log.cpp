@@ -9,10 +9,6 @@ XRCORE_API xr_queue <xrLogger::LogRecord>* xrLogger::logData;
 
 void Log(const char* s)
 {
-#ifdef IXR_LINUX
-	std::cout << s;
-	return;
-#endif
 	if (IsDebuggerPresent())
 	{
 		OutputDebugStringA(s);

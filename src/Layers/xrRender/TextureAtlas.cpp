@@ -15,6 +15,8 @@
 
 #include "../../xrCore/_math.h"
 
+constexpr int SVGStorage_DefaultAtlasSize = 512;
+
 namespace
 {
 IC u64 SvgHashCombineU64(u64 a, u64 b)
@@ -1389,43 +1391,43 @@ CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const xr_string& atlasTab
 	return result;
 }
 
-CSVGStorage::AtlasConnection CSVGStorage::allocate(const xr_string& atlasTableKey, const std::string_view& filesystemSubpath, float requested_width, float requested_height, SVGTintRGBA tint)
+CSVGStorage::AtlasConnection CSVGStorage::allocate(const xr_string& atlasTableKey, const std::string_view& filesystemSubpath, float RequestedWidth, float requested_height, SVGTintRGBA tint)
 {
 	AtlasConnection result;
 
-	if (requested_width <= _kSVGStorage_DefaultAtlasSize && requested_height <= _kSVGStorage_DefaultAtlasSize)
+	if (RequestedWidth <= SVGStorage_DefaultAtlasSize && requested_height <= SVGStorage_DefaultAtlasSize)
 	{
-		char texture_name[32];
+		char TextureName[32];
 
-		xr_sprintf(texture_name, sizeof(texture_name), "svg_atlas_%zu", m_storage_atlases.size());
+		xr_sprintf(TextureName, sizeof(TextureName), "svg_atlas_%zu", m_storage_atlases.size());
 
-		CTextureAtlas atlas;
-		const u32 atlas_id = init_atlas(_kSVGStorage_DefaultAtlasSize, _kSVGStorage_DefaultAtlasSize, texture_name, atlas, true);
-		atlas.setID(atlas_id);
+		CTextureAtlas Atlas;
+		const u32 atlas_id = init_atlas(SVGStorage_DefaultAtlasSize, SVGStorage_DefaultAtlasSize, TextureName, Atlas, true);
+		Atlas.setID(atlas_id);
 
-		R_ASSERT2(requested_height <= atlas.getHeight(), "invalid height! Too big height");
-		R_ASSERT2(requested_width <= atlas.getWidth(), "invalid width! Too big width");
+		R_ASSERT2(requested_height <= Atlas.getHeight(), "invalid height! Too big height");
+		R_ASSERT2(RequestedWidth <= Atlas.getWidth(), "invalid width! Too big width");
 
-		const bool data_insert_status = add_data(atlasTableKey, filesystemSubpath, requested_width, requested_height, atlas, result, tint);
+		const bool DataInsertStatus = add_data(atlasTableKey, filesystemSubpath, RequestedWidth, requested_height, Atlas, result, tint);
 
-		R_ASSERT2(data_insert_status, "failed to insert data to atlas");
+		R_ASSERT2(DataInsertStatus, "failed to insert data to atlas");
 
-		if (data_insert_status)
+		if (DataInsertStatus)
 		{
-			R_ASSERT(atlas.getShader() == nullptr && "must be nullptr!");
+			R_ASSERT(Atlas.getShader() == nullptr && "must be nullptr!");
 
-			atlas.createShader();
+			Atlas.createShader();
 
 #ifdef DEBUG
 			Msg("[svg]: allocated atlas[id:%d;w:%d;h:%d;tex_name:%s] and addded region w: %.2f h: %.2f ",
-				atlas.getID(),
-				atlas.getWidth(), atlas.getHeight(),
-				atlas.getTextureName(),
-				requested_width, requested_height
+				Atlas.getID(),
+				Atlas.getWidth(), Atlas.getHeight(),
+				Atlas.getTextureName(),
+				RequestedWidth, requested_height
 			);
 			++m_debugNewAtlasAllocCount;
 #endif
-			m_storage_atlases.emplace_back(std::move(atlas));
+			m_storage_atlases.emplace_back(std::move(Atlas));
 			const u32 storageIndex = static_cast<u32>(m_storage_atlases.size() - 1);
 			result.atlas_ids[0] = static_cast<char>(storageIndex);
 			m_atlasIdToStorageIndex[m_storage_atlases[storageIndex].getID()] = storageIndex;
