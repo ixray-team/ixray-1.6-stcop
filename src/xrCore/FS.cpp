@@ -38,11 +38,8 @@ bool file_handle_internal(const char* file_name, intptr_t& size, int& file_handl
 			return (false);
 	}
 
-#ifdef IXR_WINDOWS
 	size = _filelengthi64(file_handle);
-#else
-	size = _filelength(file_handle);
-#endif
+	
 	return (true);
 }
 
