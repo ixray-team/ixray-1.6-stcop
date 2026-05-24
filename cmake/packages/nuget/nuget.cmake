@@ -1,15 +1,14 @@
 # Nuget entry
 find_program(NUGET_COMMAND nuget)
 if(NOT NUGET_COMMAND)
-    message("NuGet not found in PATH!")
-    message("Downloading NuGet...")
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/dep/nuget")
+        message("Downloading NuGet...")
         execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/dep/nuget")
         file(DOWNLOAD https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
              "${CMAKE_BINARY_DIR}/dep/nuget/nuget.exe")
+        message("NuGet downloaded: ${NUGET_COMMAND}")
     endif()
     set(NUGET_COMMAND "${CMAKE_BINARY_DIR}/dep/nuget/nuget.exe")
-    message("NuGet downloaded: ${NUGET_COMMAND}")
 else()
     message("NuGet found: ${NUGET_COMMAND}")
 endif()
