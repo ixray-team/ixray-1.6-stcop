@@ -19,7 +19,7 @@ float main(PSInputFullscreen I) : SV_Target
     float2 center = I.texcoord.xy ;
     float3 a = b_image.Sample(smp_rtlinear, float2 (center.x, center.y)).rgb;
     res = dot(a, LUMINANCE_VECTOR);
-    res = max(res, 0.001); // just protec low before log, slightly shifts final exposure lower
+    res = clamp(res, 0.0065, 2.0); // just protec low before log, slightly shifts final exposure lower
     res = log2(res);
 
     return res;

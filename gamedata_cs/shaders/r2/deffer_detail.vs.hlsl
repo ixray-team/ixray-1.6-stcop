@@ -7,28 +7,34 @@ uniform float4 dir2D;
 
 uniform float2x4 array[50];
 
-float3x3 setMatrix (float3 hpb)
+float3x3 QuaternionToMatrix(float4 q)
 {
-        
-    float _ch, _cp, _cb, _sh, _sp, _sb, _cc, _cs, _sc, _ss;
-
-    sincos(hpb.x, _sh, _ch);
-    sincos(hpb.y, _sp, _cp);
-    sincos(hpb.z, _sb, _cb);
+    float xx = q.x * q.x;
+    float yy = q.y * q.y;
+    float zz = q.z * q.z;
+    float xy = q.x * q.y;
+    float xz = q.x * q.z;
+    float yz = q.y * q.z;
+    float wx = q.w * q.x;
+    float wy = q.w * q.y;
+    float wz = q.w * q.z;
     
-    _cc = _ch*_cb; _cs = _ch*_sb; _sc = _sh*_cb; _ss = _sh*_sb;
-	
-    return float3x3(_cc-_sp*_ss, _sp*_sc+_cs, -_cp*_sh,
-					-_cp*_sb, 	 _cp*_cb,	  _sp,
-					_sp*_cs+_sc, _ss-_sp*_cc, _cp*_ch);
-};
+    float3x3 m;
+    m[0] = float3(1.0 - 2.0 * (yy + zz), 2.0 * (xy + wz), 2.0 * (xz - wy));
+    m[1] = float3(2.0 * (xy - wz), 1.0 - 2.0 * (xx + zz), 2.0 * (yz + wx));
+    m[2] = float3(2.0 * (xz + wy), 2.0 * (yz - wx), 1.0 - 2.0 * (xx + yy));
+    return m;
+}
 
 void main(in v_detail I, out p_bumped_new O)
 {
     int i = I.misc.w;
 	float2x4 mm = array[i];
-	
-	float3x3 mmhpb = setMatrix(mm[0].xyz);
+
+    float3 qv = mm[0].xyz;
+    float w = sqrt(max(0.0, 1.0 - dot(qv, qv)));
+    float3x3 m_rotate = QuaternionToMatrix(float4(qv, w));
+
 	float3 posi = float3(mm[1].xyz);
 	
 	float scale = mm[0].w;
@@ -36,9 +42,9 @@ void main(in v_detail I, out p_bumped_new O)
 	float hemi = abs(mm[1].w);
 	float sun = sign(mm[1].w)*0.25f+0.25f;
 
-    float4 m0 = float4(mmhpb[0]*scale, posi.x);
-    float4 m1 = float4(mmhpb[1]*scale, posi.y);
-    float4 m2 = float4(mmhpb[2]*scale, posi.z);
+    float4 m0 = float4(m_rotate[0]*scale, posi.x);
+    float4 m1 = float4(m_rotate[1]*scale, posi.y);
+    float4 m2 = float4(m_rotate[2]*scale, posi.z);
 
     float4 pos;
     pos.x = dot(m0, I.pos);
