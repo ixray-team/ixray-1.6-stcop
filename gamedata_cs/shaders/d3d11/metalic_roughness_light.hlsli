@@ -19,25 +19,17 @@ float ComputeLightAttention(float3 PointToLight, float MinAttention)
 {
     return saturate(1.0f - dot(PointToLight, PointToLight) * MinAttention);
 }
-
-float getSquareFalloffAttenuation(float3 posToLight, float lightInvRadius) 
+// doenitz - improved attenuation function (with correct spelling  :))
+float ComputeLightAttenuation(float3 posToLight, float lightInvRadius2, float falloff)
 {
-    float distanceSquare = dot(posToLight, posToLight);
-    float factor = distanceSquare * lightInvRadius;
-    float smoothFactor = max(1.0 - factor * factor, 0.0);
-    return (smoothFactor * smoothFactor) / max(distanceSquare, 1e-4);
+    float distanceSqr = dot(posToLight, posToLight);
+    float s2 = distanceSqr * lightInvRadius2;
+    float smooth = max(1.0f - s2, 0.0f);
+    return (smooth * smooth) / (1.0f + falloff * s2);
 }
-
-float getSpotAngleAttenuation(float3 l, float3 lightDir,
-        float innerAngle, float outerAngle) {
-    // the scale and offset computations can be done CPU-side
-    float cosOuter = cos(outerAngle);
-    float spotScale = 1.0 / max(cos(innerAngle) - cosOuter, 1e-4);
-    float spotOffset = -cosOuter * spotScale;
-
-    float cd = dot(normalize(-lightDir), l);
-    float attenuation = clamp(cd * spotScale + spotOffset, 0.0, 1.0);
-    return attenuation * attenuation;
+float ComputeLightAttenuation(float3 posToLight, float lightInvRadius2)
+{
+    return ComputeLightAttenuation(posToLight, lightInvRadius2, 3.0f);
 }
 
 float GeometrySmithD(float NdotL, float NdotV, float Roughness)
@@ -93,6 +85,54 @@ float3 SimpleTranslucency(float3 Radiance, float3 Light, float3 Normal)
 
 	float SSS = lerp(saturate(NdotL), Attention, Factor * Factor);
 	return (Radiance) * saturate(3.5f * SSS + 0.1f);
+}
+
+float3 sample_vndf_isotropic(float3 n, float3 wi, float2 u, float alpha)
+{
+	alpha = max(1e-3, alpha);
+
+	// decompose the floattor in parallel and perpendicular components
+	float3 wi_z = -n * dot(wi, n);
+	float3 wi_xy = wi + wi_z;
+ 
+	// warp to the hemisphere configuration
+	float3 wiStd = -normalize(alpha * wi_xy + wi_z);
+ 
+	// sample a spherical cap in (-wiStd.z, 1]
+	float wiStd_z = dot(wiStd, n);
+	float z = 1.0 - u.y * (1.0 + wiStd_z);
+	float sinTheta = sqrt(saturate(1.0f - z * z));
+	float phi = 6.28 * u.x - 3.14;
+	float x = sinTheta * cos(phi);
+	float y = sinTheta * sin(phi);
+	float3 cStd = float3(x, y, z);
+ 
+	// reflect sample to align with normal
+	float3 up = float3(0, 0, 1.000001); // Used for the singularity
+	float3 wr = n + up;
+	float3 c = dot(wr, cStd) * wr / wr.z - cStd;
+ 
+	// compute halfway direction as standard normal
+	float3 wmStd = c + wiStd;
+	float3 wmStd_z = n * dot(n, wmStd);
+	float3 wmStd_xy = wmStd_z - wmStd;
+
+	return normalize(alpha * wmStd_xy + wmStd_z);
+}
+
+float pdf_vndf_isotropic(float3 n, float3 wi, float3 wo, float alpha)
+{
+	alpha = max(1e-3, alpha);
+
+	float alphaSquare = alpha * alpha;
+	float3 wm = normalize(wo + wi);
+	float zm = dot(wm, n);
+	float zi = dot(wi, n);
+	float nrm = rsqrt((zi * zi) * (1.0f - alphaSquare) + alphaSquare);
+	float sigmaStd = (zi * nrm) * 0.5f + 0.5f;
+	float sigmaI = sigmaStd / nrm;
+	float nrmN = (zm * zm) * (alphaSquare - 1.0f) + 1.0f;
+	return alphaSquare / (3.14 * 4.0f * nrmN * nrmN * sigmaI);
 }
 
 #endif
