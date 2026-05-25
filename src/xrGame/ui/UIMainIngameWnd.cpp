@@ -15,6 +15,7 @@
 #include "../PDA.h"
 #include "../xrServerEntities/character_info.h"
 #include "../Inventory.h"
+#include "../InventoryVolumeSystem.h"
 #include "../InventoryWeaponSlotLayout.h"
 #include "UIGameSP.h"
 #include "../WeaponMagazined.h"
@@ -139,6 +140,7 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	m_ind_helmet_broken_svg_inited = false;
 	m_ind_outfit_broken_svg_inited = false;
 	m_ind_overweight_svg_inited = false;
+	m_ind_overvolume_svg_inited = false;
 	m_ind_radiation_svg_inited = false;
 	m_ind_starvation_svg_inited = false;
 
@@ -253,6 +255,8 @@ void CUIMainIngameWnd::Init()
 		m_ind_outfit_broken = UIHelper::CreateStatic(uiXml, "indicator_outfit_broken", indicatorParent);
 	if (uiXml.NavigateToNode("indicator_overweight", 0))
 		m_ind_overweight = UIHelper::CreateStatic(uiXml, "indicator_overweight", indicatorParent);
+	if (uiXml.NavigateToNode("indicator_overvolume", 0))
+		m_ind_overvolume = UIHelper::CreateStatic(uiXml, "indicator_overvolume", indicatorParent);
 
 	auto initSvgForStaticLambda = [](CUIStatic* element, CUIXml& uiXml, bool& svgInited) -> void
 	{
@@ -269,6 +273,7 @@ void CUIMainIngameWnd::Init()
 	initSvgForStaticLambda(m_ind_helmet_broken, uiXml, m_ind_helmet_broken_svg_inited);
 	initSvgForStaticLambda(m_ind_outfit_broken, uiXml, m_ind_outfit_broken_svg_inited);
 	initSvgForStaticLambda(m_ind_overweight, uiXml, m_ind_overweight_svg_inited);
+	initSvgForStaticLambda(m_ind_overvolume, uiXml, m_ind_overvolume_svg_inited);
 	initSvgForStaticLambda(m_ind_radiation, uiXml, m_ind_radiation_svg_inited);
 	initSvgForStaticLambda(m_ind_starvation, uiXml, m_ind_starvation_svg_inited);
 
@@ -1494,6 +1499,26 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 			//	m_ind_overweight->InitTexture("ui_inGame2_circle_Overweight_yellow");
 			else
 				m_ind_overweight->InitTexture("ui_inGame2_circle_Overweight_yellow");
+		}
+	}
+// Overvolume icon
+	if (m_ind_overvolume)
+	{
+		m_ind_overvolume->Show(false);
+		const CInventoryVolumeSystem& volumeSystem = CInventoryVolumeSystem::Get();
+		if (volumeSystem.IsEnabled() && IsGameTypeSingleCompatible())
+		{
+			const float overload = volumeSystem.GetOverloadFactor(*pActor);
+			if (overload >= 0.9f)
+			{
+				m_ind_overvolume->Show(true);
+				if (overload >= 1.25f)
+					m_ind_overvolume->InitTexture("ui_inGame2_circle_overvolume_red");
+				else if (overload >= 1.0f)
+					m_ind_overvolume->InitTexture("ui_inGame2_circle_overvolume_orange");
+				else
+					m_ind_overvolume->InitTexture("ui_inGame2_circle_overvolume_yellow");
+			}
 		}
 	}
 }

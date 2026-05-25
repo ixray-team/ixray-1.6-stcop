@@ -28,6 +28,7 @@
 #include "UITalkWnd.h"
 #include "Car.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../InventoryVolumeSystem.h"
 
 bool is_item_in_list(CUIDragDropListEx* pList, PIItem item);
 // -------------------------------------------------
@@ -207,12 +208,63 @@ void CUIActorMenu::UpdateActor()
 		m_ActorWeightBar->SetProgressPos(totalWeight);
 	}
 
+	const CInventoryVolumeSystem& volumeSystem = CInventoryVolumeSystem::Get();
+	const bool volumeEnabled = volumeSystem.IsEnabled();
+	const bool hasAnyVolumeNode = (m_ActorVolumeBar != nullptr) || (m_ActorVolumeCaption != nullptr)
+		|| (m_ActorVolume != nullptr) || (m_ActorVolumeMax != nullptr);
+	const bool useVolumeLayout = volumeEnabled && hasAnyVolumeNode;
+
+	if (m_ActorVolumeBar != nullptr)
+	{
+		if (volumeEnabled)
+		{
+			float capacity = volumeSystem.GetCapacity(*m_pActorInvOwner);
+			if (capacity < EPS_S)
+			{
+				capacity = EPS_S;
+			}
+			m_ActorVolumeBar->SetRange(0.0f, capacity);
+			m_ActorVolumeBar->SetProgressPos(volumeSystem.CalcRuckVolume(*m_pActorInvOwner));
+		}
+		m_ActorVolumeBar->Show(volumeEnabled);
+	}
+	if (m_ActorVolumeCaption != nullptr)
+	{
+		m_ActorVolumeCaption->Show(volumeEnabled);
+	}
+
+	if (volumeEnabled && (m_ActorVolume != nullptr || m_ActorVolumeMax != nullptr))
+	{
+		InventoryUtilities::UpdateVolumeStr(m_ActorVolume, m_ActorVolumeMax, m_pActorInvOwner);
+	}
+	if (m_ActorVolume != nullptr)
+	{
+		m_ActorVolume->Show(volumeEnabled);
+		if (volumeEnabled)
+		{
+			m_ActorVolume->AdjustWidthToText();
+		}
+	}
+	if (m_ActorVolumeMax != nullptr)
+	{
+		m_ActorVolumeMax->Show(volumeEnabled);
+		if (volumeEnabled)
+		{
+			m_ActorVolumeMax->AdjustWidthToText();
+		}
+	}
+
 	if (m_ActorWeight != nullptr)
 	{
 		m_ActorWeight->AdjustWidthToText();
 	}
 	m_ActorWeightMax->AdjustWidthToText();
 	m_ActorBottomInfo->AdjustWidthToText();
+
+	if (useVolumeLayout)
+	{
+		return;
+	}
 
 	CUIWindow* centerWeight = m_ActorWeightBar != nullptr ? static_cast<CUIWindow*>(m_ActorWeightBar)
 														  : static_cast<CUIWindow*>(m_ActorWeight);

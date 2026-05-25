@@ -12,6 +12,7 @@
 #include "ai_space.h"
 #include "alife_simulator.h"
 #include "Inventory.h"
+#include "InventoryVolumeSystem.h"
 #include "../../xrEngine/string_table.h"
 #include "../inventory_item.h"
 #include "UIInventoryUtilities.h"
@@ -274,7 +275,14 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 			}
 		}
 
-		xr_sprintf				(str, "%3.2f %s", weight, kg_str );
+		if (CInventoryVolumeSystem::Get().IsEnabled())
+		{
+			xr_sprintf(str, "%3.2f %s | V %3.2f", weight, kg_str, CInventoryVolumeSystem::Get().GetItemVolume(*pInvItem));
+		}
+		else
+		{
+			xr_sprintf(str, "%3.2f %s", weight, kg_str);
+		}
 		UIWeight->SetText	(str);
 		
 		pos.x = UIWeight->GetWndPos().x;
