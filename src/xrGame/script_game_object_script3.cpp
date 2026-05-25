@@ -493,7 +493,11 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("get_additional_max_walk_weight",	&CScriptGameObject::GetAdditionalMaxWalkWeight)
 		.def("set_additional_max_walk_weight",	&CScriptGameObject::SetAdditionalMaxWalkWeight)
 		.def("get_total_weight",			&CScriptGameObject::GetTotalWeight)
-		.def("weight",						&CScriptGameObject::Weight)        
+		.def("weight",						&CScriptGameObject::Weight)
+		.def("get_inventory_volume",		&CScriptGameObject::GetInventoryVolume)
+		.def("get_inventory_volume_capacity", &CScriptGameObject::GetInventoryVolumeCapacity)
+		.def("get_inventory_volume_overload", &CScriptGameObject::GetInventoryVolumeOverload)
+		.def("get_item_volume",				&CScriptGameObject::GetItemVolume)
 
 		.def("get_actor_jump_speed",		&CScriptGameObject::GetActorJumpSpeed)
 		.def("set_actor_jump_speed",		&CScriptGameObject::SetActorJumpSpeed)
