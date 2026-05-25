@@ -1,7 +1,7 @@
 #include "common.hlsli"
 
 uniform float4 mblur_params;
-#define MBLUR_SAMPLES 6.0f
+#define MBLUR_SAMPLES 6
 
 inline void SampleImage(inout float4 Final, in float2 SampleUV, in float CenterDepth)
 {
@@ -20,16 +20,13 @@ void main(in PSInputFullscreen I, out float3 Color : SV_Target)
 {	
 	float2 Vel = 0;
 	
-	Vel += s_velocity.SampleLevel(smp_rtlinear, I.texcoord.xy + float2(+0.5f, -0.5f) * mblur_params.zw, 0);
-	Vel += s_velocity.SampleLevel(smp_rtlinear, I.texcoord.xy + float2(+0.5f, +0.5f) * mblur_params.zw, 0);
-	Vel += s_velocity.SampleLevel(smp_rtlinear, I.texcoord.xy + float2(-0.5f, -0.5f) * mblur_params.zw, 0);
-	Vel += s_velocity.SampleLevel(smp_rtlinear, I.texcoord.xy + float2(-0.5f, +0.5f) * mblur_params.zw, 0);
+	Vel += s_velocity.SampleLevel(smp_rtlinear, I.texcoord.xy + float2(+0.5f, -0.5f) * mblur_params.zw, 0).xy;
+	Vel += s_velocity.SampleLevel(smp_rtlinear, I.texcoord.xy + float2(+0.5f, +0.5f) * mblur_params.zw, 0).xy;
+	Vel += s_velocity.SampleLevel(smp_rtlinear, I.texcoord.xy + float2(-0.5f, -0.5f) * mblur_params.zw, 0).xy;
+	Vel += s_velocity.SampleLevel(smp_rtlinear, I.texcoord.xy + float2(-0.5f, +0.5f) * mblur_params.zw, 0).xy;
 	
 	// AVG velocty with "centered" inf
 	Vel *= 0.25f * float2(-0.5f, 0.5f);
-	
-	// Add some noise to get a "dirty" result
-	Vel *= Hash(I.texcoord.xy * m_taa_jitter.z * mblur_params.z) * 0.1f + 0.95f;
 	
 	float CenterDepth = s_position.SampleLevel(smp_rtlinear, I.texcoord.xy, 0).x;
 	
@@ -41,8 +38,11 @@ void main(in PSInputFullscreen I, out float3 Color : SV_Target)
 	float PixelSize = max(mblur_params.z, mblur_params.w);
 	float VelSize = dot(Vel, Vel); PixelSize *= PixelSize;
 	
-	float Step = rcp(MBLUR_SAMPLES * mblur_params.y);
+	float Step = mblur_params.x * rcp(MBLUR_SAMPLES);
 	float L = 0.0f;
+	
+	// Add some noise to get a "dirty" result
+	Step *= Hash(I.texcoord.xy * m_taa_jitter.z * mblur_params.y) * 0.2f + 0.9f;
 	
 	if(VelSize > PixelSize)
 	{
@@ -56,8 +56,7 @@ void main(in PSInputFullscreen I, out float3 Color : SV_Target)
 		}
 	}
 	
-	
-	Color.xyz = Final * rcp(Final.w);
+	Color = Final.xyz * rcp(Final.w);
 	Color = saturate(Color);
 	
 	Color *= rcp(max(0.00001f, 1.0f - Color));
