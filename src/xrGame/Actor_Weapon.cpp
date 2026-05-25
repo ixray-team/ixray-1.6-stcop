@@ -7,6 +7,7 @@
 #include "ActorEffector.h"
 #include "Missile.h"
 #include "Inventory.h"
+#include "InventoryVolumeSystem.h"
 #include "InventoryWeaponSlotLayout.h"
 #include "Weapon.h"
 #include "map_manager.h"
@@ -32,7 +33,7 @@ float CActor::GetWeaponAccuracy() const
 	
 	if ( IsZoomAimingMode() && W && !GetWeaponParam(W, IsRotatingToZoom(), false) )
 	{
-		return m_fDispAim;
+		return m_fDispAim * (1.0f + CInventoryVolumeSystem::Get().GetPenalty(*this).aimSwayPenalty);
 	}
 	float dispersion = m_fDispBase*GetWeaponParam(W, Get_PDM_Base(), 1.0f);
 
@@ -59,7 +60,7 @@ float CActor::GetWeaponAccuracy() const
 			}
 		}
 	}
-	return dispersion;
+	return dispersion * (1.0f + CInventoryVolumeSystem::Get().GetPenalty(*this).aimSwayPenalty);
 }
 
 //возвращает учет движения актора с оружем

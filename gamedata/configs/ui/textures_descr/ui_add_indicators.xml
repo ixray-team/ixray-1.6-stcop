@@ -1,0 +1,18 @@
+<w>
+    <file name="ui\ui_add_indicators">
+	    <texture id="ui_inGame2_circle_thirst_green" x="47" y="4" width="35" height="35" />
+	    <texture id="ui_inGame2_circle_thirst_yellow" x="47" y="46" width="35" height="35" />
+	    <texture id="ui_inGame2_circle_thirst_orange" x="47" y="89" width="35" height="35" />
+	    <texture id="ui_inGame2_circle_thirst_red" x="47" y="132" width="35" height="35" />
+
+	    <texture id="ui_inGame2_circle_sleepiness_green" x="89" y="4" width="35" height="35" />
+	    <texture id="ui_inGame2_circle_sleepiness_yellow" x="89" y="46" width="35" height="35" />
+	    <texture id="ui_inGame2_circle_sleepiness_orange" x="89" y="89" width="35" height="35" />
+	    <texture id="ui_inGame2_circle_sleepiness_red" x="89" y="132" width="35" height="35" />
+
+	    <texture id="ui_inGame2_circle_overvolume_green" x="4" y="4" width="35" height="35" />
+	    <texture id="ui_inGame2_circle_overvolume_yellow" x="4" y="46" width="35" height="35" />
+	    <texture id="ui_inGame2_circle_overvolume_orange" x="4" y="89" width="35" height="35" />
+	    <texture id="ui_inGame2_circle_overvolume_red" x="4" y="132" width="35" height="35" />
+	</file>
+</w>
