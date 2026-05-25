@@ -920,6 +920,7 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 			WatchedPath.data(),
 			[this](const std::string& file, const filewatch::Event Event)
 			{
+				// TODO: Encoding in saves problem!
 				if (CheckSkip(file.c_str()))
 				{
 					return;
@@ -928,25 +929,21 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 				{
 				case filewatch::Event::added:
 					{
-						//Msg("[CLocatorAPI filewatcher] Added %s", file.c_str());
 						FileEventAdd(file.c_str());
 						break;
 					}
 				case filewatch::Event::removed:
 					{
-						//Msg("[CLocatorAPI filewatcher] Removed %s", file.c_str());
 						FileEventDel(file.c_str());
 						break;
 					}
 				case filewatch::Event::renamed_old:
 					{
-						//Msg("[CLocatorAPI filewatcher] Renamed (old) %s", file.c_str());
 						FileEventDel(file.c_str());
 						break;
 					}
 				case filewatch::Event::renamed_new:
 					{
-						//Msg("[CLocatorAPI filewatcher] Renamed (new) %s", file.c_str());
 						FileEventAdd(file.c_str());
 						break;
 					}
@@ -1648,14 +1645,14 @@ IWriter* CLocatorAPI::w_open_ex	(const char* path, const char* _fname)
 	return W;
 }
 
-void CLocatorAPI::w_close(IWriter*& S)
+void CLocatorAPI::w_close(IWriter*& S, bool force_register)
 {
 	if (S)
 		{
 		R_ASSERT(S->fName.size());
 		string_path	fname;
 		xr_strcpy(fname, sizeof(fname), *S->fName);
-		bool bReg = S->valid() && !CFilewatcher::instance().GetFilewatcherActive();
+		bool bReg = S->valid() && (force_register || !CFilewatcher::instance().GetFilewatcherActive());
 		xr_delete(S);
 
 		if (bReg)

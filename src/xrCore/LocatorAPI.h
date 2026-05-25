@@ -185,7 +185,7 @@ public:
 	IC IWriter*					w_open				(const char* N){return w_open(nullptr,N);}
 	IWriter*					w_open_ex			(const char* initial, const char* N);
 	IC IWriter*					w_open_ex			(const char* N){return w_open_ex(nullptr,N);}
-	void						w_close				(IWriter* &S);
+	void						w_close				(IWriter* &S, bool force_register = false);
 	
 	CWriterGuarded wg_open(const char* initial, const char* N);
 	CWriterGuarded wg_open(const char* N);
