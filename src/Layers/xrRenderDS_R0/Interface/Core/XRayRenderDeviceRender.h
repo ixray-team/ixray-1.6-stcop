@@ -46,7 +46,7 @@ public:
 	virtual void	ClearTarget() ;
 	virtual void	SetCacheXform( Fmatrix& mView,  Fmatrix& mProject) ;
 	virtual void	OnAssetsChanged() ;
-
+	virtual void GetRenderScale(float& RenderScale) override;
 	virtual void	ResourcesDumpMemoryUsage();
 	virtual void	ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps);
 	void Reset(SDL_Window* window, u32& dwWidth, u32& dwHeight) override;

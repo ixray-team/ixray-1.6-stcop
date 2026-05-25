@@ -219,9 +219,8 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 #endif // USE_DX11
 	}
 
-	C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_LESS_EQUAL);
-
 #ifdef USE_DX11
+	C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_LESS_EQUAL);
 	if (bump && hq && RImplementation.o.dx11_enable_tessellation && C.TessMethod != CBlender_Compile::NO_TESS)
 	{
 		string256 hs = "tess", ds = "tess";
@@ -352,12 +351,14 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, bool aref, bool blend, const char* detail_replace, bool DO_NOT_FINISH, bool DO_NOT_START)
 {
+#ifdef USE_DX11
 	bool use_wboit = blend && !C.bHudElement && RImplementation.o.dx11_allow_wboit_transparency;
 
 	if (use_wboit)
 	{
 		RImplementation.addShaderOption("USE_WBOIT_TRANSPARENCY");
 	}
+#endif // USE_DX11
 
 	uber_deffer(C, hq, vs, ps, aref && !blend, detail_replace, true, DO_NOT_START);
 
@@ -365,6 +366,7 @@ void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, 
 	{
 		C.PassSET_ZB(TRUE, FALSE);
 
+#ifdef USE_DX11
 		if(use_wboit)
 		{
 			C.PassSET_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE, false, 0);
@@ -375,6 +377,7 @@ void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, 
 			C.SetParams(C.SH->flags.iPriority, false);
 		}
 		else
+#endif // USE_DX11
 		{
 			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, false, 0);
 		}
