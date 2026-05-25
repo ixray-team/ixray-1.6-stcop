@@ -3,41 +3,43 @@
 
 	<main x="0" y="0" width="1024" height="768"/>
 
-	<static_icon x="15" y="32" width="150" height="220"  stretch="1">
+	<static_icon x="30" y="22" width="150" height="220" stretch="1">
+		<texture_offset x="-6" y="0"/>
 		<texture>ui_charinfo_left</texture>
 		<texture_offset x="-11" y="0"/>
 	</static_icon>
 	
-	<static_icon x="850" y="32" width="150" height="220" stretch="1">
+	<static_icon x="870" y="22" width="150" height="220" stretch="1">
+		<texture_offset x="2" y="0"/>
 		<texture>ui_charinfo_right</texture>
 	</static_icon>
 
-	<our_bag_static x="35" y="270" width="570" height="513" stretch="1">
-		<texture>ui\ui_dg_inventory_exchange_trade</texture>
-		<text x="30" y="8" font="graffiti22" r="238" g="153" b="26" complex_mode="1"/>
+	<our_bag_static x="100" y="270" width="270" height="450" stretch="1">
+		<texture width="305" height="455">ui\ui_dg_inventory_exchange_trade</texture>
+		<text x="25" y="8" font="graffiti22" r="238" g="153" b="26" complex_mode="1"/>
 	</our_bag_static>
 
-	<dragdrop_list_our x="25" y="35" width="306" height="410"
-			cell_width="29" cell_height="39" rows_num="10" cols_num="10" 
+	<dragdrop_list_our x="18" y="35" width="248" height="410"
+			cell_width = "31" cell_height="41" rows_num="10" cols_num="8" 
 			unlimited="1" group_similar="1"/>
 
-	<others_bag_static x="675" y="270" width="570" height="513" stretch="1">
-		<texture>ui\ui_dg_inventory_exchange_trade</texture>
-		<text x="30" y="8" font="graffiti22" r="238" g="153" b="26">st_items</text>
+	<others_bag_static x="645" y="270" width="270" height="455" stretch="1">
+		<texture mirror="h" width="305" height="455">ui\ui_dg_inventory_exchange_trade</texture>
+		<text x="25" y="8" font="graffiti22" r="255" g="255" b="255" a="128">st_items</text>
 	</others_bag_static>
 
-	<dragdrop_list_other x="25" y="35" width="290" height="410"
-			cell_width="29" cell_height="39" rows_num="10" cols_num="10" 
+	<dragdrop_list_other x="18" y="35" width="248" height="410"
+			cell_width="31" cell_height="41" rows_num="10" cols_num="8" 
 			unlimited="1" group_similar="1"/>
 
-	<frame_window x="385" y="274" width="267" height="452">
+	<frame_window x="375" y="274" width="252" height="460">
 		<texture>ui_frame</texture>		
-		<auto_static x="0" y="-13" width="280" height="75" stretch="1">
+		<auto_static x="5" y="-10" width="191" height="64" stretch="1">
 			<texture>ui\ui_inv_info_over_lt</texture>
-		</auto_static>
+		</auto_static>	
 	</frame_window>
 
-	<descr_static x="5" y="184" width="260" height="260" stretch="1">
+	<descr_static x="5" y="184" width="245" height="270" stretch="1">
 		<texture width="258" height="271">ui\ui_inv_info_over_b</texture>
 	</descr_static>
 
@@ -45,15 +47,15 @@
 		<text font="graffiti22" r="238" g="153" b="26">ui_st_description</text>
 	</auto_static>
 
-	<top_background x="0" y="0" width="1024" height="128">
+	<top_background x="85" y="0" width="854" height="32" stretch="1">
 		<texture>ui\ui_top_background</texture>
 	</top_background>
 
-	<bottom_background x="0" y="736" width="1024" height="32">
+	<bottom_background x="85" y="736" width="854" height="32" stretch="1">
 		<texture>ui\ui_bottom_background</texture>
 	</bottom_background>
 
-	<take_all_btn x="830" y="725" width="157" height="48" hR="255" hB="83" hG="179" highlight_text="1">
+	<take_all_btn x="790" y="725" width="131" height="48" hR="255" hB="83" hG="179" highlight_text="1" stretch="1">
         <texture>ui_button_main01</texture>
         <text align="c" font="graffiti22" r="238" g="153" b="26">ui_st_take_all</text>
 	</take_all_btn>

@@ -33,30 +33,35 @@ function options_dialog:InitControls()
 	self.dialog = xml:InitStatic("main_dialog:dialog", self)
 	
 	xml:InitStatic("main_dialog:cap_options", self.dialog)
-		
+	
 	self.dlg_video = ui_mm_opt_video.opt_video()
-	self.dlg_video:InitControls(55,74, xml, self)
+	self.dlg_video:InitControls(0,0, xml, self)
 	self.dialog:AttachChild(self.dlg_video)
+	xml:InitWindow("tab_size", 0, self.dlg_video)
 
 	self.dlg_sound = ui_mm_opt_sound.opt_sound()
-	self.dlg_sound:InitControls(55,74, xml, self)
+	self.dlg_sound:InitControls(0,0, xml, self)
 	self.dlg_sound:Show(false)
 	self.dialog:AttachChild(self.dlg_sound)
-	
+	xml:InitWindow("tab_size", 0, self.dlg_sound)
+
 	self.dlg_gameplay = ui_mm_opt_gameplay.opt_gameplay()
-	self.dlg_gameplay:InitControls(55,74, xml, self)
+	self.dlg_gameplay:InitControls(0,0, xml, self)
 	self.dlg_gameplay:Show(false)
 	self.dialog:AttachChild(self.dlg_gameplay)
-	
+	xml:InitWindow("tab_size", 0, self.dlg_gameplay)
+
 	self.dlg_controls = ui_mm_opt_controls.opt_controls()
-	self.dlg_controls:InitControls(55,74, xml, self)
+	self.dlg_controls:InitControls(0,0, xml, self)
 	self.dlg_controls:Show(false)
 	self.dialog:AttachChild(self.dlg_controls)
+	xml:InitWindow("tab_size", 0, self.dlg_controls)
 
 	self.dlg_video_adv = ui_mm_opt_video_adv.opt_video_adv()
-	self.dlg_video_adv:InitControls(55,74, xml, self)
+	self.dlg_video_adv:InitControls(0,0, xml, self)
 	self.dlg_video_adv:Show(false)
 	self.dialog:AttachChild(self.dlg_video_adv)
+	xml:InitWindow("tab_size", 0, self.dlg_video_adv)
 
 	local btn
 	btn = xml:Init3tButton("main_dialog:btn_accept", self.dialog)

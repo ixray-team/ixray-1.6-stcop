@@ -23,7 +23,7 @@
 		
 		<text_desc x="54" y="331" width="465" height="160" always_show_scroll="0" complex_mode="1"/>			
 		
-		<btn_next x="296" y="504" width="117" height="48">
+		<btn_next x="296" y="504" width="117" height="48" stretch="1">
 			<texture>ui_button_main02</texture>
 			<text font="graffiti19" align="c">mp_next</text>
 			<text_color>
@@ -33,7 +33,7 @@
 				<h r="0" g="0" b="0"/>
 			</text_color>
 		</btn_next>
-		<btn_spectator x="414" y="504" width="117" height="48">
+		<btn_spectator x="414" y="504" width="117" height="48" stretch="1">
 			<texture>ui_button_main03</texture>
 			<text font="graffiti19" align="c">mp_spectator</text>
 			<text_color>

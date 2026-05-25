@@ -31,7 +31,7 @@
 			<text r="106" g="95" b="91">team_2_desc</text>
 		</text_desc>
 		
-		<btn_back x="38" y="504" width="157" height="48">
+		<btn_back x="38" y="504" width="117" height="48" stretch="1">
 			<texture>ui_button_main01</texture>
 			<text font="graffiti19" align="c">mp_back</text>
 			<text_color>
@@ -41,7 +41,7 @@
 				<h r="0" g="0" b="0"/>
 			</text_color>
 		</btn_back>		
-		<btn_autoselect x="295" y="504" width="117" height="48">
+		<btn_autoselect x="295" y="504" width="117" height="48" stretch="1">
 			<texture>ui_button_main02</texture>
 			<text font="graffiti19" align="c">mp_auto_select</text>
 			<text_color>
@@ -51,7 +51,7 @@
 				<h r="0" g="0" b="0"/>
 			</text_color>
 		</btn_autoselect>
-		<btn_spectator x="413" y="504" width="117" height="48">
+		<btn_spectator x="413" y="504" width="117" height="48" stretch="1">
 			<texture>ui_button_main03</texture>
 			<text font="graffiti19" align="c">mp_spectator</text>
 			<text_color>

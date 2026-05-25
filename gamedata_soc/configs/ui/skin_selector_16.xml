@@ -34,23 +34,23 @@
 				<texture>ui\ui_mp_skin_select_anim</texture>
 			</a_static_2>
 			
-			<btn_left x="0" y="17" width="24" height="218">
+			<btn_left x="0" y="17" width="24" height="218" stretch="1">
 				<texture>ui_TV_Skin_button_l</texture>								
 			</btn_left>
-			<btn_right x="474" y="17" width="24" height="218">
+			<btn_right x="474" y="17" width="24" height="218" stretch="1">
 				<texture>ui_TV_Skin_button_r</texture>							
 			</btn_right>
 		</image_frames>
-		<image_0 x="70" y="64" width="94" height="215" stretch="1">			
+		<image_0 x="80" y="64" width="70" height="215" stretch="1">			
 			<text font="graffiti32" align="r" vert_align="t">1</text>
 		</image_0>
-		<image_1 x="185" y="64" width="94" height="215" stretch="1">			
+		<image_1 x="200" y="64" width="70" height="215" stretch="1">			
 			<text font="graffiti32" align="r" vert_align="t">2</text>
 		</image_1>
-		<image_2 x="299" y="64" width="94" height="215" stretch="1">			
+		<image_2 x="310" y="64" width="70" height="215" stretch="1">			
 			<text font="graffiti32" align="r" vert_align="t">3</text>
 		</image_2>
-		<image_3 x="412" y="64" width="94" height="215" stretch="1">			
+		<image_3 x="422" y="64" width="70" height="215" stretch="1">			
 			<text font="graffiti32" align="r" vert_align="t">4</text>
 		</image_3>
 		
