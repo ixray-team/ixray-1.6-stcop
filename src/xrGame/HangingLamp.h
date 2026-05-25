@@ -45,7 +45,7 @@ public:
 	virtual			~CHangingLamp	();
 	void			TurnOn			();
 	void			TurnOff			();
-	virtual BOOL	IsOn			(); // FNAS
+	bool			IsActive();
 	virtual void	Load			( LPCSTR section);
 	virtual BOOL	net_Spawn		( CSE_Abstract* DC);
 	virtual void	net_Destroy		();
