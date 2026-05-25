@@ -375,9 +375,10 @@ void CUISequenceSimpleItem::OnKeyboardPress	(int dik)
 	if(!m_flags.test(etiCanBeStopped) )
 	{
 		VERIFY		(m_continue_dik_guard!=kNOTBINDED);
-		if(m_continue_dik_guard==kNOTBINDED)m_flags.set(etiCanBeStopped, true); //not binded action :(
+		if(m_continue_dik_guard==kNOTBINDED)
+			m_flags.set(etiCanBeStopped, true); //not binded action :(
 
-		if(m_continue_dik_guard==kLASTACTION || dik == m_continue_dik_guard)
+		if(m_continue_dik_guard==kLASTACTION || get_binded_action(dik) == m_continue_dik_guard)
 			m_flags.set(etiCanBeStopped, true); //match key
 	}
 
