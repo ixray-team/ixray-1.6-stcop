@@ -72,14 +72,8 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 
 	if (IsGameTypeSingle() && IsZoomed() && GO->cast_actor())
 	{
-		H_Parent()->setEnabled(false);
-		setEnabled(false);
-	
 		collide::rq_result RQ;
-		bool HasPick = Level().ObjectSpace.RayPick(p1, d, 300.0f, collide::rqtStatic, RQ, this);
-
-		setEnabled(true);
-		H_Parent()->setEnabled(true);
+		bool HasPick = Level().ObjectSpace.RayPick(p1, d, 300.0f, collide::rqtStatic, RQ, H_Parent());
 
 		if (HasPick)
 		{
