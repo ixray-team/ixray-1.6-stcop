@@ -58,6 +58,7 @@ enum class EEngineExternalGame
 	EnableTorchOnlyInOutfit,
 	EnableBurerShieldPenetrationWithGauss,
 	EnableWeaponAlternateRPMSystem,
+	EnableInventoryVolume,
 	None
 };
 

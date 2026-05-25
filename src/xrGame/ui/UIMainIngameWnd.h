@@ -55,6 +55,7 @@ public:
 	CUIStatic* m_ind_helmet_broken;
 	CUIStatic* m_ind_outfit_broken;
 	CUIStatic* m_ind_overweight;
+	CUIStatic* m_ind_overvolume;
 
 	CUIStatic* m_ind_bleeding;
 	CUIStatic* m_ind_radiation;
@@ -141,6 +142,7 @@ protected:
 	bool m_ind_helmet_broken_svg_inited;
 	bool m_ind_outfit_broken_svg_inited;
 	bool m_ind_overweight_svg_inited;
+	bool m_ind_overvolume_svg_inited;
 	bool m_ind_radiation_svg_inited;
 	bool m_ind_starvation_svg_inited;
 

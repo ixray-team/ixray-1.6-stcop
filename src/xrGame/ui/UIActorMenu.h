@@ -86,6 +86,10 @@ protected:
 	CUIStatic*					m_ActorWeightMax = nullptr;
 	CUIWindow*					m_ActorWeightRow = nullptr;
 	CUIProgressBar*				m_ActorWeightBar = nullptr;
+	CUIProgressBar*				m_ActorVolumeBar = nullptr;
+	CUIStatic*					m_ActorVolumeCaption = nullptr;
+	CUIStatic*					m_ActorVolume = nullptr;
+	CUIStatic*					m_ActorVolumeMax = nullptr;
 	
 	CUIStatic*					m_PartnerBottomInfo = nullptr;
 	CUIStatic*					m_PartnerWeight = nullptr;
@@ -150,6 +154,7 @@ public:
 protected:			
 	void						Construct							();
 	void						InitActorWeightSection				(CUIXml& uiXml, CUIXmlInit& xmlInit);
+	void						InitActorVolumeSection				(CUIXml& uiXml, CUIXmlInit& xmlInit);
 	void						UpdateActorWeightBarTooltip			();
 	void						InitCallbacks						();
 

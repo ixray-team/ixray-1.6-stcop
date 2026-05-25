@@ -109,6 +109,7 @@ const char* GetTimePeriodAsString	(LPSTR _buff, u32 buff_sz, ALife::_TIME_ID _fr
 // Отобразить вес, который несет (*pInvOwner)
 void UpdateWeight(CUIStatic& wnd, bool withPrefix = false);
 void UpdateWeightStr(CUIStatic* weightLabel, CUIStatic& wnd_max, CInventoryOwner* pInvOwner);
+void UpdateVolumeStr(CUIStatic* volumeLabel, CUIStatic* volumeMax, CInventoryOwner* pInvOwner);
 
 // Функции получения строки-идентификатора ранга и отношения по их числовому идентификатору
 const char*	GetRankAsText				(s32		rankID);

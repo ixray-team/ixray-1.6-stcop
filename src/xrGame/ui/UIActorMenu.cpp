@@ -4,6 +4,7 @@
 #include "../Actor.h"
 #include "UIGameSP.h"
 #include "../Inventory.h"
+#include "../InventoryVolumeSystem.h"
 #include "../inventory_item.h"
 #include "../InventoryBox.h"
 #include "object_broker.h"
@@ -691,19 +692,47 @@ namespace
 		return (viewport.x1 < hintRect.x1) && (viewport.x2 > hintRect.x2) && (viewport.y1 < hintRect.y1)
 			&& (viewport.y2 > hintRect.y2);
 	}
+
+	struct ResolvedNode
+	{
+		const char* path = nullptr;
+		CUIWindow*  parent = nullptr;
+	};
+
+	ResolvedNode ResolveNodePath(CUIXml& xml, CUIWindow* row, CUIWindow* flatParent,
+		const char* rowPath, const char* flatPath)
+	{
+		if (row != nullptr && xml.NavigateToNode(rowPath, 0))
+		{
+			return { rowPath, row };
+		}
+		if (xml.NavigateToNode(flatPath, 0))
+		{
+			return { flatPath, flatParent };
+		}
+		return {};
+	}
 } // namespace
 
 void CUIActorMenu::InitActorWeightSection(CUIXml& uiXml, CUIXmlInit& xmlInit)
 {
-	constexpr const char* kActorWeightRow = "actor_weight_row";
-	constexpr const char* kCaption = "actor_weight_row:actor_weight_caption";
-	constexpr const char* kWeightStatic = "actor_weight_row:actor_weight";
-	constexpr const char* kWeightBar = "actor_weight_row:weight_status_bar";
-	constexpr const char* kWeightMax = "actor_weight_row:actor_weight_max";
+	constexpr const char* kActorWeightRow      = "actor_weight_row";
+
+	constexpr const char* kRowCaption          = "actor_weight_row:actor_weight_caption";
+	constexpr const char* kRowWeightStatic     = "actor_weight_row:actor_weight";
+	constexpr const char* kRowWeightBar        = "actor_weight_row:weight_status_bar";
+	constexpr const char* kRowWeightMax        = "actor_weight_row:actor_weight_max";
+
+	constexpr const char* kFlatCaption         = "actor_weight_caption";
+	constexpr const char* kFlatWeightStatic    = "actor_weight";
+	constexpr const char* kFlatWeightBar       = "weight_status_bar";
+	constexpr const char* kFlatWeightMax       = "actor_weight_max";
 
 	m_ActorWeightRow = nullptr;
 	m_ActorWeightBar = nullptr;
 	m_ActorWeight = nullptr;
+	m_ActorBottomInfo = nullptr;
+	m_ActorWeightMax = nullptr;
 
 	if (uiXml.NavigateToNode(kActorWeightRow, 0))
 	{
@@ -711,45 +740,98 @@ void CUIActorMenu::InitActorWeightSection(CUIXml& uiXml, CUIXmlInit& xmlInit)
 		m_ActorWeightRow->SetAutoDelete(true);
 		AttachChild(m_ActorWeightRow);
 		R_ASSERT2(xmlInit.InitWindow(uiXml, kActorWeightRow, 0, m_ActorWeightRow), kActorWeightRow);
-
-		m_ActorBottomInfo = UIHelper::CreateStatic(uiXml, kCaption, m_ActorWeightRow);
-		R_ASSERT(m_ActorBottomInfo != nullptr);
-
-		if (uiXml.NavigateToNode(kWeightBar, 0))
-		{
-			m_ActorWeightBar = new CUIProgressBar();
-			m_ActorWeightBar->SetAutoDelete(true);
-			m_ActorWeightRow->AttachChild(m_ActorWeightBar);
-			R_ASSERT2(xmlInit.InitProgressBar(uiXml, kWeightBar, 0, m_ActorWeightBar), kWeightBar);
-			m_ActorWeightBar->Enable(true);
-			m_ActorWeightBar->Show(true);
-		}
-		else
-		{
-			m_ActorWeight = UIHelper::CreateStatic(uiXml, kWeightStatic, m_ActorWeightRow);
-			R_ASSERT(m_ActorWeight != nullptr);
-		}
-
-		m_ActorWeightMax = UIHelper::CreateStatic(uiXml, kWeightMax, m_ActorWeightRow);
-		R_ASSERT(m_ActorWeightMax != nullptr);
-		return;
 	}
 
-	m_ActorBottomInfo = UIHelper::CreateStatic(uiXml, "actor_weight_caption", this);
-	m_ActorWeight = UIHelper::CreateStatic(uiXml, "actor_weight", this);
-	m_ActorWeightMax = UIHelper::CreateStatic(uiXml, "actor_weight_max", this);
+	if (const ResolvedNode caption = ResolveNodePath(uiXml, m_ActorWeightRow, this, kRowCaption, kFlatCaption); caption.path != nullptr)
+	{
+		m_ActorBottomInfo = UIHelper::CreateStatic(uiXml, caption.path, caption.parent);
+	}
+	R_ASSERT(m_ActorBottomInfo != nullptr);
+
+	if (const ResolvedNode bar = ResolveNodePath(uiXml, m_ActorWeightRow, this, kRowWeightBar, kFlatWeightBar); bar.path != nullptr)
+	{
+		m_ActorWeightBar = new CUIProgressBar();
+		m_ActorWeightBar->SetAutoDelete(true);
+		bar.parent->AttachChild(m_ActorWeightBar);
+		R_ASSERT2(xmlInit.InitProgressBar(uiXml, bar.path, 0, m_ActorWeightBar), bar.path);
+		m_ActorWeightBar->Enable(true);
+		m_ActorWeightBar->Show(true);
+	}
+	else if (const ResolvedNode weight = ResolveNodePath(uiXml, m_ActorWeightRow, this, kRowWeightStatic, kFlatWeightStatic); weight.path != nullptr)
+	{
+		m_ActorWeight = UIHelper::CreateStatic(uiXml, weight.path, weight.parent);
+	}
+
+	if (const ResolvedNode max = ResolveNodePath(uiXml, m_ActorWeightRow, this, kRowWeightMax, kFlatWeightMax); max.path != nullptr)
+	{
+		m_ActorWeightMax = UIHelper::CreateStatic(uiXml, max.path, max.parent);
+	}
+	R_ASSERT(m_ActorWeightMax != nullptr);
+}
+
+void CUIActorMenu::InitActorVolumeSection(CUIXml& uiXml, CUIXmlInit& xmlInit)
+{
+	constexpr const char* kRowVolumeCaption  = "actor_weight_row:volume_caption";
+	constexpr const char* kRowVolumeBar      = "actor_weight_row:volume_status_bar";
+	constexpr const char* kRowVolumeStatic   = "actor_weight_row:actor_volume";
+	constexpr const char* kRowVolumeMax      = "actor_weight_row:actor_volume_max";
+
+	constexpr const char* kFlatVolumeCaption = "volume_caption";
+	constexpr const char* kFlatVolumeBar     = "volume_status_bar";
+	constexpr const char* kFlatVolumeStatic  = "actor_volume";
+	constexpr const char* kFlatVolumeMax     = "actor_volume_max";
+
+	m_ActorVolumeBar = nullptr;
+	m_ActorVolumeCaption = nullptr;
+	m_ActorVolume = nullptr;
+	m_ActorVolumeMax = nullptr;
+
+	if (const ResolvedNode caption = ResolveNodePath(uiXml, m_ActorWeightRow, this, kRowVolumeCaption, kFlatVolumeCaption); caption.path != nullptr)
+	{
+		m_ActorVolumeCaption = UIHelper::CreateStatic(uiXml, caption.path, caption.parent);
+	}
+
+	if (const ResolvedNode bar = ResolveNodePath(uiXml, m_ActorWeightRow, this, kRowVolumeBar, kFlatVolumeBar); bar.path != nullptr)
+	{
+		m_ActorVolumeBar = new CUIProgressBar();
+		m_ActorVolumeBar->SetAutoDelete(true);
+		bar.parent->AttachChild(m_ActorVolumeBar);
+		R_ASSERT2(xmlInit.InitProgressBar(uiXml, bar.path, 0, m_ActorVolumeBar), bar.path);
+		m_ActorVolumeBar->Enable(true);
+		m_ActorVolumeBar->Show(true);
+	}
+
+	if (const ResolvedNode current = ResolveNodePath(uiXml, m_ActorWeightRow, this, kRowVolumeStatic, kFlatVolumeStatic); current.path != nullptr)
+	{
+		m_ActorVolume = UIHelper::CreateStatic(uiXml, current.path, current.parent);
+	}
+
+	if (const ResolvedNode max = ResolveNodePath(uiXml, m_ActorWeightRow, this, kRowVolumeMax, kFlatVolumeMax); max.path != nullptr)
+	{
+		m_ActorVolumeMax = UIHelper::CreateStatic(uiXml, max.path, max.parent);
+	}
 }
 
 void CUIActorMenu::UpdateActorWeightBarTooltip()
 {
-	if (m_ActorWeightBar == nullptr || m_pActorInvOwner == nullptr)
+	if (m_pActorInvOwner == nullptr)
 	{
 		return;
 	}
 
-	if (!m_ActorWeightBar->CursorOverWindow())
+	CUIProgressBar* hoveredBar = nullptr;
+	if (m_ActorWeightBar != nullptr && m_ActorWeightBar->CursorOverWindow())
 	{
-		if (g_statHint->Owner() == m_ActorWeightBar)
+		hoveredBar = m_ActorWeightBar;
+	}
+	else if (m_ActorVolumeBar != nullptr && m_ActorVolumeBar->CursorOverWindow())
+	{
+		hoveredBar = m_ActorVolumeBar;
+	}
+
+	if (hoveredBar == nullptr)
+	{
+		if (g_statHint->Owner() == m_ActorWeightBar || g_statHint->Owner() == m_ActorVolumeBar)
 		{
 			g_statHint->Discard();
 		}
@@ -761,7 +843,7 @@ void CUIActorMenu::UpdateActorWeightBarTooltip()
 		return;
 	}
 
-	if (Device.dwTimeContinual < m_ActorWeightBar->FocusReceiveTime() + 700)
+	if (Device.dwTimeContinual < hoveredBar->FocusReceiveTime() + 700)
 	{
 		return;
 	}
@@ -772,8 +854,20 @@ void CUIActorMenu::UpdateActorWeightBarTooltip()
 	const char* maxCaption = g_pStringTable->translate("ui_inv_max_weight").c_str();
 
 	string256 hintBuf;
-	xr_sprintf(hintBuf, "%.3f %s\n%s %.3f %s", totalWeight, kgStr, maxCaption, maxCarry, kgStr);
-	g_statHint->SetHintText(m_ActorWeightBar, hintBuf);
+	const CInventoryVolumeSystem& volumeSystem = CInventoryVolumeSystem::Get();
+	if (volumeSystem.IsEnabled())
+	{
+		const float volume = volumeSystem.CalcRuckVolume(*m_pActorInvOwner);
+		const float capacity = volumeSystem.GetCapacity(*m_pActorInvOwner);
+		const float overload = volumeSystem.GetOverloadFactor(*m_pActorInvOwner);
+		xr_sprintf(hintBuf, "%.3f %s\n%s %.3f %s\nV %.3f / %.3f\nOverload %.2f",
+			totalWeight, kgStr, maxCaption, maxCarry, kgStr, volume, capacity, overload);
+	}
+	else
+	{
+		xr_sprintf(hintBuf, "%.3f %s\n%s %.3f %s", totalWeight, kgStr, maxCaption, maxCarry, kgStr);
+	}
+	g_statHint->SetHintText(hoveredBar, hintBuf);
 
 	Fvector2 cursorPos = GetUICursor().GetCursorPosition();
 	Frect visRect;
