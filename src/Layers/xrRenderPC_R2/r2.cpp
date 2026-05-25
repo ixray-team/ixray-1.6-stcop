@@ -39,7 +39,7 @@ public:
 
 float		r_dtex_range		= 50.f;
 //////////////////////////////////////////////////////////////////////////
-ShaderElement*			CRender::rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, float cdist_sq)
+ShaderElement*			CRender::rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, float cdist_sq, bool is_hud)
 {
 	int		id	= SE_R2_SHADOW;
 	if	(CRender::PHASE_NORMAL == RImplementation.phase)

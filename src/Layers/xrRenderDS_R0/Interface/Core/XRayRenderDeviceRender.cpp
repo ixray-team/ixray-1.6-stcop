@@ -126,6 +126,11 @@ void CDS0_RenderDeviceRender::OnAssetsChanged()
 {
 }
 
+void CDS0_RenderDeviceRender::GetRenderScale(float& RenderScale)
+{
+	RenderScale = 1.0f;
+}
+
 void CDS0_RenderDeviceRender::ResourcesDumpMemoryUsage()
 {
 }
