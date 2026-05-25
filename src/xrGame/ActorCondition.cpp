@@ -14,6 +14,8 @@
 #include "object_broker.h"
 #include "Weapon.h"
 #include "ActorHelmet.h"
+#include "InventoryVolumeSystem.h"
+
 #include "PDA.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "UIGameCustom.h"
@@ -236,18 +238,20 @@ void CActorCondition::UpdateCondition()
 	
 	float base_weight			= object().MaxCarryWeight();
 	float cur_weight			= object().inventory().TotalWeight();
+	const SInventoryVolumePenalty volumePenalty = CInventoryVolumeSystem::Get().GetPenalty(object());
+	const float weightFactor = cur_weight / base_weight + volumePenalty.staminaPowerPenalty;
 
 	if (m_object->Holder() == nullptr)
 	{
 		if ((object().mstate_real & mcAnyMove))
 		{
-			ConditionWalk(cur_weight / base_weight,
+			ConditionWalk(weightFactor,
 				isActorAccelerated(object().mstate_real, object().IsZoomAimingMode()),
 				(object().mstate_real & mcSprint) != 0);
 		}
 		else
 		{
-			ConditionStand(cur_weight / base_weight);
+			ConditionStand(weightFactor);
 		}
 
 		if (IsGameTypeSingleCompatible())
@@ -255,7 +259,7 @@ void CActorCondition::UpdateCondition()
 			float k_max_power = 1.0f + std::min(cur_weight, base_weight) / base_weight
 				+ std::max(0.0f, (cur_weight - base_weight) / 10.0f);
 
-			SetMaxPower(GetMaxPower() - m_fPowerLeakSpeed * m_fDeltaTime * k_max_power);
+			SetMaxPower(GetMaxPower() - m_fPowerLeakSpeed * m_fDeltaTime * k_max_power * (1.0f + volumePenalty.staminaPowerPenalty));
 		}
 	}
 	else
@@ -591,6 +595,8 @@ bool CActorCondition::IsCantWalkWeight()
 	if(IsGameTypeSingleCompatible() && !GodMode())
 	{
 		float max_w	= m_object->MaxWalkWeight();
+		const SInventoryVolumePenalty volumePenalty = CInventoryVolumeSystem::Get().GetPenalty(object());
+		max_w = std::max(0.0f, max_w - volumePenalty.maxWalkWeightPenalty);
 
 		if( object().inventory().TotalWeight() > max_w )
 		{

@@ -279,6 +279,9 @@
 	<string id="ui_total_weight">
 		<text>Total weight:</text>
 	</string>
+	<string id="ui_total_volume">
+		<text>Volume:</text>
+	</string>
 	<string id="st_drink">
 		<text>drink</text>
 	</string>

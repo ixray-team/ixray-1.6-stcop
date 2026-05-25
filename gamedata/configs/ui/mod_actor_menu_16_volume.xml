@@ -1,0 +1,11 @@
+<w>
+    <volume_caption x="626" y="700" width="70" height="16" override="add">
+        <text align="r" font="letterica16" color="ui_3">ui_total_volume</text>
+    </volume_caption>
+    <actor_volume x="700" y="700" width="40" height="16" override="add">
+        <text align="c" font="letterica16"/>
+    </actor_volume>
+    <actor_volume_max x="719" y="700" width="80" height="16" override="add">
+        <text align="l" font="letterica16" color="ui_3"/>
+    </actor_volume_max>
+</w>

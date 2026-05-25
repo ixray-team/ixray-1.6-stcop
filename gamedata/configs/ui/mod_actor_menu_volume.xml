@@ -1,0 +1,21 @@
+<w>
+    <volume_caption x="520" y="736" width="70" height="16" override="add">
+        <text align="r" font="letterica16" color="ui_3">ui_total_volume</text>
+    </volume_caption>
+    <volume_status_bar x="592" y="740" width="80" height="8" horz="1" min="0" max="100" pos="0" override="add">
+        <background>
+            <texture>ui_inGame2_hint_wnd_bar_16</texture>
+        </background>
+        <progress>
+            <texture a="180">ui_inGame2_hint_wnd_bar_alfa_line_16</texture>
+        </progress>
+        <min_color r="120" g="220" b="120" a="255"/>
+        <max_color r="220" g="80"  b="80"  a="255"/>
+    </volume_status_bar>
+    <actor_volume x="676" y="736" width="40" height="16" override="add">
+        <text align="c" font="letterica16"/>
+    </actor_volume>
+    <actor_volume_max x="720" y="736" width="80" height="16" override="add">
+        <text align="l" font="letterica16" color="ui_3"/>
+    </actor_volume_max>
+</w>
