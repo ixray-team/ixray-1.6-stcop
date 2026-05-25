@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "Actor.h"
+#include "InventoryVolumeSystem.h"
 #include "Inventory.h"
 #include "Weapon.h"
 #include "../xrEngine/CameraBase.h"
@@ -674,6 +675,11 @@ bool CActor::CanAccelerate()
 
 bool CActor::CanRun()
 {
+	if (CInventoryVolumeSystem::Get().GetPenalty(*this).blockSprint)
+	{
+		return false;
+	}
+
 	const static bool isSprintWhileOverweightDisabled = EngineExternal()[EEngineExternalGame::DisableSprintWhileOverweight];
 	bool can_run = !IsZoomAimingMode() && !(mstate_real & mcLookout);
 	if (isSprintWhileOverweightDisabled)

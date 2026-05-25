@@ -267,6 +267,9 @@
 	<string id="ui_total_weight">
 		<text>Общий вес:</text>
 	</string>
+	<string id="ui_total_volume">
+		<text>Объем:</text>
+	</string>
 	<string id="st_drink">
 		<text>выпить</text>
 	</string>

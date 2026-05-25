@@ -11,6 +11,7 @@
 #include "../../xrEngine/string_table.h"
 #include "../Inventory.h"
 #include "../InventoryOwner.h"
+#include "../InventoryVolumeSystem.h"
 
 #include "../InfoPortion.h"
 #include "game_base_space.h"
@@ -431,7 +432,7 @@ void InventoryUtilities::UpdateWeight(CUIStatic &wnd, bool withPrefix)
 {
 	CInventoryOwner *pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
 	R_ASSERT(pInvOwner);
-	string128 buf;
+	string256 buf;
 	ZeroMemory(buf, sizeof(buf));
 
 	float total = pInvOwner->inventory().CalcTotalWeight();
@@ -469,7 +470,7 @@ void InventoryUtilities::UpdateWeight(CUIStatic &wnd, bool withPrefix)
 void InventoryUtilities::UpdateWeightStr(CUIStatic* weightLabel, CUIStatic& wnd_max, CInventoryOwner* pInvOwner)
 {
 	R_ASSERT(pInvOwner);
-	string128 buf;
+	string256 buf;
 
 	float total = pInvOwner->inventory().CalcTotalWeight();
 	float max = pInvOwner->MaxCarryWeight();
@@ -484,6 +485,42 @@ void InventoryUtilities::UpdateWeightStr(CUIStatic* weightLabel, CUIStatic& wnd_
 	const char* max_str = g_pStringTable->translate("ui_inv_max_weight").c_str();
 	xr_sprintf(buf, "(%s %.1f %s)", max_str, max, kg_str);
 	wnd_max.SetText(buf);
+}
+
+void InventoryUtilities::UpdateVolumeStr(CUIStatic* volumeLabel, CUIStatic* volumeMax, CInventoryOwner* pInvOwner)
+{
+	R_ASSERT(pInvOwner);
+
+	const CInventoryVolumeSystem& volumeSystem = CInventoryVolumeSystem::Get();
+	const bool enabled = volumeSystem.IsEnabled();
+
+	string64 buf = {};
+
+	if (volumeLabel != nullptr)
+	{
+		if (enabled)
+		{
+			xr_sprintf(buf, "%.1f", volumeSystem.CalcRuckVolume(*pInvOwner));
+			volumeLabel->SetText(buf);
+		}
+		else
+		{
+			volumeLabel->SetText("");
+		}
+	}
+
+	if (volumeMax != nullptr)
+	{
+		if (enabled)
+		{
+			xr_sprintf(buf, "/ %.1f", volumeSystem.GetCapacity(*pInvOwner));
+			volumeMax->SetText(buf);
+		}
+		else
+		{
+			volumeMax->SetText("");
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

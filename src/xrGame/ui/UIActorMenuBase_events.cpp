@@ -8,6 +8,7 @@
 #include "../WeaponMagazined.h"
 #include "../trade.h"
 #include "../Inventory.h"
+#include "../InventoryVolumeSystem.h"
 #include "../InventoryWeaponSlotLayout.h"
 #include "../eatable_item_object.h"
 #include "../../xrUI/UICursor.h"
@@ -16,6 +17,11 @@ void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
 
 bool move_item_check( PIItem itm, CInventoryOwner* from, CInventoryOwner* to, bool weight_check )
 {
+	if (!CInventoryVolumeSystem::Get().CanAddToRuck(*to, *itm))
+	{
+		return false;
+	}
+
 	if ( weight_check )
 	{
 		float invWeight		= to->inventory().CalcTotalWeight();
@@ -582,31 +588,46 @@ void CUIActorMenuBase::TakeAllFromPartner(CUIWindow* w, void* d)
 
 void CUIActorMenuBase::TakeAllFromInventoryBox()
 {
-	u16 actor_id = GetInventoryOwner()->object_id();
+	const u16 actor_id = GetInventoryOwner()->object_id();
+	const u16 invbox_id = GetInvBox()->ID();
 	xr_vector<u16> IgnoredItemsIds = {};
 
-	u32 const cnt = GetPartnerList()->ItemsCount();
-	for ( u32 i = 0; i < cnt; ++i )
+	auto tryMoveLambda = [&](PIItem it) -> bool
+	{
+		if (it == nullptr)
+		{
+			return false;
+		}
+
+		if (!CInventoryVolumeSystem::Get().CanAddToRuck(*GetInventoryOwner(), *it))
+		{
+			IgnoredItemsIds.push_back(it->object_id());
+			return false;
+		}
+
+		move_item_from_to(invbox_id, actor_id, it->object_id());
+		return true;
+	};
+
+	const u32 cnt = GetPartnerList()->ItemsCount();
+	for (u32 i = 0; i < cnt; ++i)
 	{
 		CUICellItem* ci = GetPartnerList()->GetItemIdx(i);
 		PIItem item = (PIItem)(ci->m_pData);
 
 		// FFx0001
-		if (!IsAllowTakeFromInvBox(ci)) 
-		{ 
+		if (!IsAllowTakeFromInvBox(ci))
+		{
 			IgnoredItemsIds.push_back(item->object_id());
-
 			continue;
 		}
 
-		for ( u32 j = 0; j < ci->ChildsCount(); ++j )
+		for (u32 j = 0; j < ci->ChildsCount(); ++j)
 		{
-			PIItem j_item = (PIItem)(ci->Child(j)->m_pData);
-			move_item_from_to( GetInvBox()->ID(), actor_id, j_item->object_id());
+			tryMoveLambda((PIItem)(ci->Child(j)->m_pData));
 		}
 
-		
-		move_item_from_to( GetInvBox()->ID(), actor_id, item->object_id());
+		tryMoveLambda(item);
 	}
 
 	GetPartnerList()->ClearAll(true, IgnoredItemsIds); // FFx0001

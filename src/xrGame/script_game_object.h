@@ -998,6 +998,10 @@ public:
 			void		SetAdditionalMaxWalkWeight(float add_max_walk_weight);
 			float		GetTotalWeight() const;
 			float		Weight() const;
+			float		GetInventoryVolume() const;
+			float		GetInventoryVolumeCapacity() const;
+			float		GetInventoryVolumeOverload() const;
+			float		GetItemVolume() const;
 
 			float       GetActorJumpSpeed() const;
 			void        SetActorJumpSpeed(float jump_speed);

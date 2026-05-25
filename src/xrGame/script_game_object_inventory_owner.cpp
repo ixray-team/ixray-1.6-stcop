@@ -6,6 +6,7 @@
 #include "pch_script.h"
 #include "script_game_object.h"
 #include "InventoryOwner.h"
+#include "InventoryVolumeSystem.h"
 #include "PDA.h"
 #include "xrMessages.h"
 #include "character_info.h"
@@ -2316,6 +2317,50 @@ float CScriptGameObject::Weight() const
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CSciptEntity : cannot access class member Weight!");
+	return 0.0f;
+}
+
+float CScriptGameObject::GetInventoryVolume() const
+{
+	if (CInventoryOwner* inventory_owner = object().cast_inventory_owner())
+	{
+		return CInventoryVolumeSystem::Get().CalcRuckVolume(*inventory_owner);
+	}
+
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryOwner : cannot access class member GetInventoryVolume!");
+	return 0.0f;
+}
+
+float CScriptGameObject::GetInventoryVolumeCapacity() const
+{
+	if (CInventoryOwner* inventory_owner = object().cast_inventory_owner())
+	{
+		return CInventoryVolumeSystem::Get().GetCapacity(*inventory_owner);
+	}
+
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryOwner : cannot access class member GetInventoryVolumeCapacity!");
+	return 0.0f;
+}
+
+float CScriptGameObject::GetInventoryVolumeOverload() const
+{
+	if (CInventoryOwner* inventory_owner = object().cast_inventory_owner())
+	{
+		return CInventoryVolumeSystem::Get().GetOverloadFactor(*inventory_owner);
+	}
+
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryOwner : cannot access class member GetInventoryVolumeOverload!");
+	return 1.0f;
+}
+
+float CScriptGameObject::GetItemVolume() const
+{
+	if (CInventoryItem* inventory_item = object().cast_inventory_item())
+	{
+		return CInventoryVolumeSystem::Get().GetItemVolume(*inventory_item);
+	}
+
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryItem : cannot access class member GetItemVolume!");
 	return 0.0f;
 }
 

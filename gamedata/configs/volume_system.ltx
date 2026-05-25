@@ -1,0 +1,215 @@
+[volume_system]
+base_actor_volume                  = 10.0
+default_weight_volume_multiplier   = 1.0
+hard_overload_limit                = 1.4
+block_pickup_at_hard_limit         = true
+recursive_container_volume         = true
+
+[soft_penalties]
+stamina_power_penalty              = 0.25
+max_walk_weight_penalty            = 0.0
+aim_sway_penalty                   = 0.0
+sprint_block_factor                = 1.2
+
+[container_profiles]
+; profile_name = capacity
+outfit_light     = 40.0
+outfit_medium    = 55.0
+outfit_heavy     = 65.0
+outfit_exo       = 90.0
+small_backpack   = 45.0
+medium_backpack  = 61.0
+large_backpack   = 80.0
+
+[outfit_sections]
+; outfit_section = profile_name
+novice_outfit          = outfit_light
+stalker_outfit         = outfit_medium
+svoboda_light_outfit   = outfit_light
+dolg_outfit            = outfit_medium
+scientific_outfit      = outfit_medium
+cs_heavy_outfit        = outfit_heavy
+svoboda_heavy_outfit   = outfit_heavy
+specops_outfit         = outfit_heavy
+military_outfit        = outfit_heavy
+dolg_heavy_outfit      = outfit_heavy
+exo_outfit             = outfit_exo
+
+[outfit_capacity_overrides]
+; outfit_section = absolute_capacity
+; ----- Light: street clothing / jackets -----
+novice_outfit          = 38.0
+svoboda_light_outfit   = 46.0
+; ----- Medium: rigged stalker outfits with pouches -----
+stalker_outfit         = 52.0
+dolg_outfit            = 54.0
+scientific_outfit      = 48.0
+; ----- Heavy: combat rigs with chest pouches and side packs -----
+cs_heavy_outfit        = 62.0
+svoboda_heavy_outfit   = 60.0
+specops_outfit         = 64.0
+military_outfit        = 66.0
+dolg_heavy_outfit      = 68.0
+; ----- Exoskeleton: big rear pouches and frame mounts -----
+exo_outfit             = 90.0
+
+[container_sections]
+; backpack_section = profile_name
+
+[container_capacity_overrides]
+; backpack_section = absolute_capacity
+
+[item_volumes]
+; section_id = absolute volume.
+; Missing sections fall back to Weight() * default_weight_volume_multiplier.
+
+; ----- Food and drinks -----
+bread                      = 0.5
+kolbasa                    = 0.4
+conserva                   = 0.45
+vodka                      = 0.7
+energy_drink               = 0.55
+
+; ----- Medical and chemistry -----
+bandage                    = 0.25
+antirad                    = 0.2
+medkit                     = 0.4
+medkit_army                = 0.4
+medkit_scientic            = 0.4
+drug_booster               = 0.2
+drug_coagulant             = 0.2
+drug_psy_blockade          = 0.2
+drug_antidot               = 0.2
+drug_radioprotector        = 0.2
+drug_anabiotic             = 0.25
+
+; ----- Devices -----
+device_pda                 = 1.5
+device_torch               = 0.6
+detector_simple            = 1.8
+detector_advanced          = 2.5
+detector_elite             = 3.2
+detector_scientific        = 4.0
+
+; ----- Helmets -----
+helm_respirator            = 1.8
+helm_hardhat               = 2.5
+helm_protective            = 3.0
+helm_tactic                = 3.5
+helm_battle                = 4.5
+
+; ----- Cold weapons / utility -----
+;wpn_knife                  = 1.0
+;wpn_binoc                  = 2.5
+;bolt                       = 0.1
+
+; ----- Pistols -----
+wpn_pm                     = 2.5
+wpn_fort                   = 2.8
+wpn_hpsa                   = 3.0
+wpn_beretta                = 3.0
+wpn_walther                = 3.0
+wpn_colt1911               = 3.2
+wpn_sig220                 = 3.2
+wpn_usp                    = 3.2
+wpn_pb                     = 3.5
+wpn_desert_eagle           = 3.8
+
+; ----- Submachine guns -----
+wpn_mp5                    = 12.0
+
+; ----- Shotguns -----
+wpn_bm16                   = 22.0
+wpn_toz34                  = 22.0
+wpn_wincheaster1300        = 23.0
+wpn_protecta               = 24.0
+wpn_spas12                 = 26.0
+
+; ----- Assault rifles -----
+wpn_ak74u                  = 18.0
+wpn_ak74                   = 26.0
+wpn_abakan                 = 28.0
+wpn_l85                    = 28.0
+wpn_lr300                  = 26.0
+wpn_g36                    = 27.0
+wpn_sig550                 = 27.0
+wpn_groza                  = 26.0
+wpn_val                    = 24.0
+wpn_fn2000                 = 28.0
+
+; ----- Sniper rifles -----
+wpn_vintorez               = 25.0
+wpn_svu                    = 28.0
+wpn_svd                    = 32.0
+wpn_gauss                  = 36.0
+
+; ----- Heavy weapons -----
+wpn_rg-6                   = 40.0
+wpn_rpg7                   = 42.0
+wpn_pkm                    = 50.0
+
+; ----- Grenades -----
+grenade_f1                 = 0.6
+grenade_rgd5               = 0.5
+;grenade_gd-05              = 0.5
+
+; ----- Weapon addons -----
+wpn_addon_scope                 = 1.2
+wpn_addon_scope_detector        = 1.5
+wpn_addon_scope_night           = 1.8
+wpn_addon_scope_susat           = 1.5
+wpn_addon_scope_susat_custom    = 1.5
+wpn_addon_scope_susat_dusk      = 1.5
+wpn_addon_scope_susat_night     = 1.8
+wpn_addon_silencer              = 0.8
+wpn_addon_grenade_launcher      = 2.5
+wpn_addon_grenade_launcher_m203 = 2.5
+
+; ----- Ammunition -----
+ammo_9x18_fmj              = 0.3
+ammo_9x18_pmm              = 0.3
+ammo_9x19_fmj              = 0.3
+ammo_9x19_pbp              = 0.3
+ammo_11.43x23_fmj          = 0.35
+ammo_11.43x23_hydro        = 0.35
+ammo_5.45x39_fmj           = 0.4
+ammo_5.45x39_ap            = 0.4
+ammo_5.56x45_ss190         = 0.4
+ammo_5.56x45_ap            = 0.4
+ammo_7.62x54_7h1           = 0.5
+ammo_9x39_pab9             = 0.4
+ammo_9x39_ap               = 0.4
+ammo_12x70_buck            = 0.6
+ammo_12x76_zhekan          = 0.6
+ammo_pkm_100               = 1.5
+ammo_gauss                 = 0.35
+ammo_og-7b                 = 1.5
+ammo_vog-25                = 0.5
+ammo_m209                  = 0.4
+
+; ----- Artefacts -----
+af_medusa                  = 0.15
+af_cristall_flower         = 0.15
+af_night_star              = 0.15
+af_vyvert                  = 0.15
+af_gravi                   = 0.15
+af_gold_fish               = 0.15
+af_cristall                = 0.15
+af_fireball                = 0.15
+af_dummy_glassbeads        = 0.15
+af_eye                     = 0.15
+af_fire                    = 0.15
+af_blood                   = 0.15
+af_mincer_meat             = 0.15
+af_soul                    = 0.15
+af_fuzz_kolobok            = 0.15
+af_baloon                  = 0.15
+af_glass                   = 0.15
+af_electra_sparkler        = 0.15
+af_electra_flash           = 0.15
+af_electra_moonlight       = 0.15
+af_dummy_battery           = 0.15
+af_dummy_dummy             = 0.15
+af_ice                     = 0.15
+af_compass                 = 0.15
+af_oasis_heart             = 0.15

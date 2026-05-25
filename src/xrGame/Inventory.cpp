@@ -9,6 +9,7 @@
 #include "WeaponMagazined.h"
 #include "Grenade.h"
 #include "Actor.h"
+#include "InventoryVolumeSystem.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "ui/UICarBodyWnd.h"
 
@@ -1510,7 +1511,12 @@ bool CInventory::CanPutInBelt(PIItem pIItem)
 //при этом реально ничего не меняется
 bool CInventory::CanPutInRuck(PIItem pIItem) const
 {
-	return !InRuck(pIItem);
+	if (InRuck(pIItem))
+	{
+		return false;
+	}
+
+	return m_pOwner == nullptr || CInventoryVolumeSystem::Get().CanAddToRuck(*m_pOwner, *pIItem);
 }
 
 u32	CInventory::dwfGetObjectCount()
@@ -1573,6 +1579,11 @@ bool CInventory::CanTakeItem(CInventoryItem* inventory_item) const
 	}
 
 	if (!inventory_item->CanTake())
+	{
+		return false;
+	}
+
+	if (!CInventoryVolumeSystem::Get().CanAddToRuck(*m_pOwner, *inventory_item))
 	{
 		return false;
 	}
