@@ -601,23 +601,40 @@ void CPHJoint::SetLimitsVsSecondElement(const float low, const float high,const 
 
 void CPHJoint::Create()
 {
-	if(bActive) return;
-	switch(eType){
+	if (bActive)
+	{
+		return;
+	}
+
+	xrCriticalSectionGuard guard(&JointCS);
+
+	switch (eType)
+	{
 	case ball:					CreateBall();			break;
 	case hinge:					CreateHinge();			break;
 	case hinge2:				CreateHinge2();			break;
 	case full_control:			CreateFullControl();	break;
 	case slider:				CreateSlider();			break;
 	}
-	if(m_destroy_info)
+
+	if (m_destroy_info)
 	{
-		dJointSetFeedback(m_joint,m_destroy_info->JointFeedback());
-		if(m_joint1)dJointSetFeedback(m_joint1,m_destroy_info->JointFeedback());
+		dJointSetFeedback(m_joint, m_destroy_info->JointFeedback());
+		if (m_joint1)
+		{
+			dJointSetFeedback(m_joint1, m_destroy_info->JointFeedback());
+		}
 	}
-	dJointSetData(m_joint,(void*)this);
-	if(m_joint1)dJointSetData(m_joint1,(void*)this);
-	bActive=true;
+
+	dJointSetData(m_joint, (void*)this);
+	if (m_joint1)
+	{
+		dJointSetData(m_joint1, (void*)this);
+	}
+	
+	bActive = true;
 }
+
 void CPHJoint::RunSimulation()
 {
 	pShell->Island().AddJoint(m_joint);
@@ -633,28 +650,38 @@ void CPHJoint::Activate()
 	Create();
 	RunSimulation();
 }
+
 void CPHJoint::Deactivate()
 {
-	if(!bActive) return;
-	switch(eType){
-	case ball:					;
-	case hinge:					;
-	case hinge2:				;
-								if(m_joint->world)pShell->Island().RemoveJoint(m_joint);
-								dJointDestroy(m_joint); 
+	if (!bActive)
+	{
+		return;
+	}
+
+	xrCriticalSectionGuard guard(&JointCS);
+
+	switch (eType)
+	{
+	case ball:;
+	case hinge:;
+	case hinge2:;
+		if (m_joint->world)pShell->Island().RemoveJoint(m_joint);
+		dJointDestroy(m_joint);
 		break;
 	case full_control:
 	case slider:
-								if(m_joint->world)pShell->Island().RemoveJoint(m_joint);
-								if(m_joint1->world)pShell->Island().RemoveJoint(m_joint1);
-								dJointDestroy(m_joint);
-								dJointDestroy(m_joint1);
-		m_joint1=nullptr;
+		if (m_joint->world)pShell->Island().RemoveJoint(m_joint);
+		if (m_joint1->world)pShell->Island().RemoveJoint(m_joint1);
+		dJointDestroy(m_joint);
+		dJointDestroy(m_joint1);
+		m_joint1 = nullptr;
 		break;
 	}
-	m_joint=nullptr;
-	bActive=false;
+	m_joint = nullptr;
+	bActive = false;
+
 }
+
 void CPHJoint::ReattachFirstElement(CPHElement* new_element)
 {
 	Deactivate();

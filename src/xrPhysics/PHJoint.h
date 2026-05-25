@@ -45,6 +45,7 @@ class CPHJoint:
 				xr_vector<SPHAxis>		axes																																																												;
 				Fvector					anchor																																																												;
 				eVs						vs_anchor																																																											;
+	xrCriticalSection JointCS;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////																						
 				void 					CreateBall					()																																																						;
 				void 					CreateHinge					()																																																						;
