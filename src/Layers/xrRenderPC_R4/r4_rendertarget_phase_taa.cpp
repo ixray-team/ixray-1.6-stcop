@@ -22,9 +22,6 @@ void CRenderTarget::phase_mblur()
 		return;
 	}
 
-	auto mblur_power = 0.016f / Device.fTimeDelta;
-	mblur_power *= ps_r4_mblur_power;
-
 	GPU_EVENT(PhaseMBlur);
 
 	for (u32 i = 1; i <= ps_r4_mblur_quality; ++i) 
@@ -33,7 +30,7 @@ void CRenderTarget::phase_mblur()
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 
 		RCache.set_Element(s_taa->E[1]);
-		RCache.set_c("mblur_params", mblur_power / i, i, 1.0f / dwWidth, 1.0f / dwHeight);
+		RCache.set_c("mblur_params", ps_r4_mblur_power / i, i, 1.0f / dwWidth, 1.0f / dwHeight);
 		RCache.set_Geometry(FSTriangleGeom);
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 		GRHI->CopySurface(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
