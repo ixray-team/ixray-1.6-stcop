@@ -20,8 +20,8 @@ if(NOT TARGET SpeexDSP::speexdsp)
         message(STATUS "speexdsp not found, fetching from source...")
         FetchContent_Declare(
             speexdsp
-            GIT_REPOSITORY https://github.com/thewh1teagle/speexdsp.git
-            GIT_TAG        feat/add-cmake
+            GIT_REPOSITORY https://gitlab.xiph.org/xiph/speexdsp.git
+            GIT_TAG        main
         )
         FetchContent_MakeAvailable(speexdsp)
 
