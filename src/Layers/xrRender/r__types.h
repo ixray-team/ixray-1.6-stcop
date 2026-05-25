@@ -124,6 +124,7 @@ const		float				SMAP_near_plane		= .1f	;
 
 const		u32					TEX_material_LdotN	= 128	;	// diffuse,		X, almost linear = small res
 const		u32					TEX_material_LdotH	= 256	;	// specular,	Y
+#define		SE_R2_HUD			5	// hud generation
 
 #if USE_DX11
 const		u32					TEX_material_Count	= 4		;	// Number of materials,	Z
@@ -142,7 +143,6 @@ const		u32					LUMINANCE_size = 16;
 #define		SE_R2_SHADOW		2	// shadow generation
 #define		SE_R2_REFLECTIONS	3	// reflections generation
 #define		SE_R2_UI			4	// ui static generation
-#define		SE_R2_HUD			5	// hud generation
 
 #if USE_DX11
 #define		SE_R2_DETAIL_SHADOW_HQ 2	 // shadow generation (Wind)

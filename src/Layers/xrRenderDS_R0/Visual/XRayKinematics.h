@@ -81,7 +81,7 @@ public:
 	virtual u16 LL_BoneCount() const override { return u16(bones->size()); }
 
 	virtual void LL_SetBonesVisibleAll() override { visimask.set_all(); };
-
+	virtual void BonesHistory_Invalidate() override {}
 public:
 	u16     LL_VisibleBoneCount() { return visimask.count(); }
 	const	CBoneInstance& LL_GetBoneInstance(u16 bone_id) const { VERIFY(bone_id < LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id]; }

@@ -9,6 +9,7 @@
 #include <time.h>
 
 #include "Blender.h"
+#include "../r__types.h"
 
 void CBlender_DESC::Setup(const char* N)
 {

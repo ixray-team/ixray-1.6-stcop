@@ -140,7 +140,7 @@ public:
 
 public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);
-	ShaderElement*					rimp_select_sh_dynamic		(dxRender_Visual	*pVisual, float cdist_sq);
+	ShaderElement*					rimp_select_sh_dynamic		(dxRender_Visual	*pVisual, float cdist_sq, bool is_hud);
 	RHIInputElementDesc*			getVB_Format(int id, size_t* Count, bool	_alt = false);
 	IRHIBuffer*			getVB						(int id, bool	_alt=false);
 	IRHIBuffer*			getIB						(int id, bool	_alt=false);

@@ -25,7 +25,7 @@ using namespace R_dsgraph;
 CRender RImplementation;
 
 //////////////////////////////////////////////////////////////////////////
-ShaderElement*			CRender::rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, float cdist_sq)
+ShaderElement*			CRender::rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, float cdist_sq, bool is_hud)
 {
 	switch (phase)		{
 	case PHASE_NORMAL:	return (RImplementation.L_Projector->shadowing()?pVisual->shader->E[SE_R1_NORMAL_HQ]:pVisual->shader->E[SE_R1_NORMAL_LQ])._get();
