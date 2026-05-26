@@ -1689,57 +1689,13 @@ void player_hud::update(const Fmatrix& cam_trans)
 			}
 			else
 			{
-				if (anm->state != script_layer::EBlendLayers::eNone)
-				{
-					if (anm->item == 2)
-					{
-						for (int i = 0; i < anm->item; i++)
-						{
-							if (m_attached_items[i] && m_attached_items[i]->m_parent_hud_item)
-							{
-								m_attached_items[i]->m_parent_hud_item->OnBlendEnd(anm->state);
-							}
-						}
-					}
-					else
-					{
-						if (m_attached_items[anm->item] && m_attached_items[anm->item]->m_parent_hud_item)
-						{
-							m_attached_items[anm->item]->m_parent_hud_item->OnBlendEnd(anm->state);
-						}
-					}
-	
-					anm->state = script_layer::EBlendLayers::eNone;
-				}
-
+				anm->CallEndCallback();
 				need_stop = true;
 			}
 		}
 		else
 		{
-			if (anm->state != script_layer::EBlendLayers::eNone)
-			{
-				if (anm->item == 2)
-				{
-					for (int i = 0; i < anm->item; i++)
-					{
-						if (m_attached_items[i] && m_attached_items[i]->m_parent_hud_item)
-						{
-							m_attached_items[i]->m_parent_hud_item->OnBlendEnd(anm->state);
-						}
-					}
-				}
-				else
-				{
-					if (m_attached_items[anm->item] && m_attached_items[anm->item]->m_parent_hud_item)
-					{
-						m_attached_items[anm->item]->m_parent_hud_item->OnBlendEnd(anm->state);
-					}
-				}
-
-				anm->state = script_layer::EBlendLayers::eNone;
-			}
-	
+			anm->CallEndCallback();
 			anm->Stop(true);
 			continue;
 		}
@@ -2355,6 +2311,34 @@ void script_layer::CallStartCallback()
 			g_player_hud->attached_item(item)->m_parent_hud_item->OnBlendStart(state);
 		}
 	}
+}
+
+void script_layer::CallEndCallback()
+{
+	if (state == EBlendLayers::eNone)
+	{
+		return;
+	}
+
+	if (item == 2)
+	{
+		for (int i = 0; i < item; i++)
+		{
+			if (g_player_hud->attached_item(i) && g_player_hud->attached_item(i)->m_parent_hud_item)
+			{
+				g_player_hud->attached_item(i)->m_parent_hud_item->OnBlendEnd(state);
+			}
+		}
+	}
+	else
+	{
+		if (g_player_hud->attached_item(item) && g_player_hud->attached_item(item)->m_parent_hud_item)
+		{
+			g_player_hud->attached_item(item)->m_parent_hud_item->OnBlendEnd(state);
+		}
+	}
+
+	state = EBlendLayers::eNone;
 }
 
 bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
