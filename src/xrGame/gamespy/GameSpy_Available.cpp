@@ -23,6 +23,7 @@ void CGameSpy_Available::LoadGameSpy()
 
 bool CGameSpy_Available::CheckAvailableServices(shared_str& resultstr)
 {
+#ifdef XR_MP_BUILD
 	GSIACResult result;
 	xrGS_GSIStartAvailableCheckA();
 
@@ -48,5 +49,6 @@ bool CGameSpy_Available::CheckAvailableServices(shared_str& resultstr)
 	{
 		resultstr = "Success";
 	};
+#endif
 	return true;
 }
