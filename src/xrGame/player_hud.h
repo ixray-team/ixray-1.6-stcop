@@ -398,6 +398,7 @@ struct script_layer
 	}
 
 	void CallStartCallback();
+	void CallEndCallback();
 
 	~script_layer()
 	{
@@ -436,11 +437,16 @@ struct script_layer
 	const Fmatrix& XFORM()
 	{
 		m_XFORM.set(anim->XFORM());
-		Fvector scale = Fvector().set(m_XFORM.m[0][0], m_XFORM.m[1][1], m_XFORM.m[2][2]);
-		m_XFORM.mul(blend_scale * power);
-		m_XFORM.m[0][0] = scale.x;
-		m_XFORM.m[1][1] = scale.y;
-		m_XFORM.m[2][2] = scale.z;
+
+		Fvector rotation = zero_vel, position = zero_vel;
+		m_XFORM.getXYZ(rotation);
+		position = m_XFORM.c;
+
+		position.mul(power * blend_scale);
+		rotation.mul(power * blend_scale);
+
+		m_XFORM.setXYZ(rotation);
+		m_XFORM.translate_over(position);
 
 		return m_XFORM;
 	}
@@ -536,10 +542,16 @@ struct movement_layer
 	const Fmatrix& XFORM()
 	{
 		m_XFORM.set(anim->XFORM());
-		m_XFORM.mul(blend_scale * power);
-		m_XFORM.m[0][0] = 1.0f;
-		m_XFORM.m[1][1] = 1.0f;
-		m_XFORM.m[2][2] = 1.0f;
+
+		Fvector rotation = zero_vel, position = zero_vel;
+		m_XFORM.getXYZ(rotation);
+		position = m_XFORM.c;
+
+		position.mul(power * blend_scale);
+		rotation.mul(power * blend_scale);
+
+		m_XFORM.setXYZ(rotation);
+		m_XFORM.translate_over(position);
 
 		return m_XFORM;
 	}
