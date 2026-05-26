@@ -166,18 +166,26 @@ bool trajectory_check_collision (float 							low,
 			pick.z_axis					=	normalize(box_z_axis);
 			out_trajectory_picks->push_back	(pick);
 		}
-		if(out_collide_tris)
-		{
-			thread_local CDB::COLLIDER obb_collider;
-			Fobb obb;
-			obb.m_rotate.i = box_x_axis.normalize_safe();
-			obb.m_rotate.j = box_y_axis.normalize_safe();
-			obb.m_rotate.k = Fvector(box_z_axis).normalize_safe();
-			obb.m_translate = box_center;
+		thread_local CDB::COLLIDER obb_collider;
+		Fobb obb;
+		Fvector z_axis = box_z_axis;
+		z_axis.normalize_safe();
+		Fvector y_axis = box_y_axis;
+		y_axis.normalize_safe();
+		Fvector x_axis;
+		x_axis.crossproduct(box_y_axis, box_z_axis).normalize_safe();
+		obb.m_rotate.i = x_axis;
+		obb.m_rotate.j = y_axis;
+		obb.m_rotate.k = z_axis;
+		obb.m_translate = box_center;
 
-			obb.m_halfsize = box_size;
-			obb_collider.obb_options(CDB::OPT_FULL_TEST);
-			obb_collider.obb_query(Level().ObjectSpace.GetStaticModel(), obb);
+		obb.m_halfsize.set(box_size.x * 0.5f, box_size.y * 0.5f, box_size.z * 0.5f);
+		obb_collider.obb_options(CDB::OPT_FULL_TEST);
+		obb_collider.obb_query(Level().ObjectSpace.GetStaticModel(), obb);
+		box_result = obb_collider.r_vec().empty();
+
+		if (out_collide_tris)
+		{
 			for (CDB::RESULT& R : obb_collider.r_vec())
 			{
 				out_collide_tris->push_back(R.verts[0]);
@@ -185,7 +193,6 @@ bool trajectory_check_collision (float 							low,
 				out_collide_tris->push_back(R.verts[2]);
 			}
 		}
-		//box_result	=	!Level().ObjectSpace.BoxQuery	(box_center, box_z_axis, box_y_axis, box_size, out_collide_tris);
 	}
 
 	if (ignored_object)
