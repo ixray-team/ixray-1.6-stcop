@@ -126,7 +126,7 @@ public:
 
 	virtual void on_a_hud_attach() override;
 	
-	SBlendParams m_sAimBlendParams[3], m_sGLAimBlendParams[3], m_sFakeShootBlendParams;
+	SBlendParams m_sAimBlendParams[3], m_sGLAimBlendParams[3], m_sSafemodeBlendParams[3], m_sFakeShootBlendParams;
 
 	virtual void OnBlendEnd(u8 state) override;
 	virtual void OnBlendStart(u8 state) override;
