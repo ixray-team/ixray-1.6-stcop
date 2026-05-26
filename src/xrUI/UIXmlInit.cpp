@@ -330,30 +330,31 @@ bool CUIXmlInit::InitAnchoredWindow(CUIXml& xml_doc, LPCSTR path, int index, CUI
 	pWnd->SetSizeModeWidth(widthAuto ? UI_SIZE_MODE_AUTO : UI_SIZE_MODE_FIXED);
 	pWnd->SetSizeModeHeight(heightAuto ? UI_SIZE_MODE_AUTO : UI_SIZE_MODE_FIXED);
 
-	bool isStretchH = (anchorData.anchorMin.x != anchorData.anchorMax.x);
-	bool isStretchV = (anchorData.anchorMin.y != anchorData.anchorMax.y);
+	const bool isStretchH = (anchorData.anchorMin.x != anchorData.anchorMax.x);
+	const bool isStretchV = (anchorData.anchorMin.y != anchorData.anchorMax.y);
 
 	if (isStretchH && isStretchV)
 	{
 		anchorData.offsetMin.set(offsetLeft, offsetTop);
 		anchorData.offsetMax.set(-offsetRight, -offsetBottom);
 	}
-	else if (isStretchH)
-	{
-		float halfH = height * 0.5f;
-		anchorData.offsetMin.set(offsetLeft, -halfH);
-		anchorData.offsetMax.set(-offsetRight, halfH);
-	}
-	else if (isStretchV)
-	{
-		float halfW = width * 0.5f;
-		anchorData.offsetMin.set(-halfW, offsetTop);
-		anchorData.offsetMax.set(halfW, -offsetBottom);
-	}
 	else
 	{
-		anchorData.offsetMin.set(offsetLeft, offsetTop);
-		anchorData.offsetMax.set(offsetLeft + width, offsetTop + height);
+		if (isStretchH)
+		{
+			anchorData.offsetMin.x = offsetLeft;
+			anchorData.offsetMax.x = -offsetRight;
+		}
+		else if (isStretchV)
+		{
+			anchorData.offsetMin.y = offsetTop;
+			anchorData.offsetMax.y = -offsetBottom;
+		}
+		else
+		{
+			anchorData.offsetMin.set(offsetLeft, offsetTop);
+		}
+		SyncAnchorOffsetsFromSize(anchorData, width, height);
 	}
 
 	pWnd->SetAlignment(waNone);

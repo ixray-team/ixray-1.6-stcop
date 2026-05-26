@@ -64,6 +64,7 @@ struct UI_API SAnchorData
 };
 
 UI_API void ComputeAnchoredRect(const Frect& parentRect, const SAnchorData& anchor, Frect& result);
+UI_API void SyncAnchorOffsetsFromSize(SAnchorData& anchorData, float width, float height);
 
 class UI_API CUISimpleWindow
 {

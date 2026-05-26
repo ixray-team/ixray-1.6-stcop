@@ -373,49 +373,12 @@ void CUIWindow::Update()
 	if (GetUseAnchors() && (GetSizeModeWidth() == UI_SIZE_MODE_AUTO || GetSizeModeHeight() == UI_SIZE_MODE_AUTO))
 	{
 		ResolveAutoSize();
-		SAnchorData& ad = GetAnchorData();
-		bool stretchH = (ad.anchorMin.x != ad.anchorMax.x);
-		bool stretchV = (ad.anchorMin.y != ad.anchorMax.y);
-		if (!stretchH && !stretchV)
-		{
-			float w = GetWidth();
-			float h = GetHeight();
-			ad.offsetMax.x = ad.offsetMin.x + w;
-			ad.offsetMax.y = ad.offsetMin.y + h;
-		}
-		else if (stretchH && !stretchV)
-		{
-			float halfH = GetHeight() * 0.5f;
-			ad.offsetMin.y = -halfH;
-			ad.offsetMax.y = halfH;
-		}
-		else if (!stretchH && stretchV)
-		{
-			float halfW = GetWidth() * 0.5f;
-			ad.offsetMin.x = -halfW;
-			ad.offsetMax.x = halfW;
-		}
+		SyncAnchorOffsetsFromSize(GetAnchorData(), GetWidth(), GetHeight());
 	}
 
-	if (GetUseAnchors() && GetParent())
+	if (GetUseAnchors())
 	{
-		Frect anchorRect;
-		ResolveAnchorReferenceRect(anchorRect);
-		Frect parentRect;
-		GetParent()->GetAbsoluteRect(parentRect);
-		Frect ourRect;
-		ComputeAnchoredRect(anchorRect, GetAnchorData(), ourRect);
-		SetWndPos(Fvector2().set(ourRect.x1 - parentRect.x1, ourRect.y1 - parentRect.y1));
-		SetWndSize(Fvector2().set(ourRect.width(), ourRect.height()));
-	}
-	else if (GetUseAnchors() && !GetParent())
-	{
-		Frect parentRect;
-		UI().GetSafeAreaRootRect(parentRect);
-		Frect ourRect;
-		ComputeAnchoredRect(parentRect, GetAnchorData(), ourRect);
-		SetWndPos(Fvector2().set(ourRect.x1, ourRect.y1));
-		SetWndSize(Fvector2().set(ourRect.width(), ourRect.height()));
+		ApplyAnchoredRelativeGeometry();
 	}
 
 	if (GetUICursor().IsVisible())
@@ -504,15 +467,57 @@ void CUIWindow::DetachAll()
 	}
 }
 
+void CUIWindow::ComputeAnchoredAbsoluteRect(Frect& outAbsolute) const
+{
+	if (GetParent() == nullptr)
+	{
+		Frect parentRect;
+		UI().GetSafeAreaRootRect(parentRect);
+		ComputeAnchoredRect(parentRect, GetAnchorData(), outAbsolute);
+		return;
+	}
+
+	AnchorAbsRectDepthGuard depthGuard;
+	if (s_anchorAbsRectDepth > AnchorAbsRectDepthLimit)
+	{
+		LogAnchorAbsRectDepthExceededOnce();
+		Frect refRect;
+		GetParent()->GetAbsoluteRect(refRect);
+		ComputeAnchoredRect(refRect, GetAnchorData(), outAbsolute);
+		return;
+	}
+
+	Frect anchorRect;
+	const_cast<CUIWindow*>(this)->ResolveAnchorReferenceRect(anchorRect);
+	ComputeAnchoredRect(anchorRect, GetAnchorData(), outAbsolute);
+}
+
+void CUIWindow::ApplyAnchoredRelativeGeometry()
+{
+	Frect ourRect;
+	ComputeAnchoredAbsoluteRect(ourRect);
+
+	if (GetParent())
+	{
+		Frect parentRect;
+		GetParent()->GetAbsoluteRect(parentRect);
+		SetWndPos(Fvector2().set(ourRect.x1 - parentRect.x1, ourRect.y1 - parentRect.y1));
+		SetWndSize(Fvector2().set(ourRect.width(), ourRect.height()));
+	}
+	else
+	{
+		SetWndPos(Fvector2().set(ourRect.x1, ourRect.y1));
+		SetWndSize(Fvector2().set(ourRect.width(), ourRect.height()));
+	}
+}
+
 void CUIWindow::GetAbsoluteRect(Frect& r)
 {
 	if (GetParent() == nullptr)
 	{
 		if (GetUseAnchors())
 		{
-			Frect parentRect;
-			UI().GetSafeAreaRootRect(parentRect);
-			ComputeAnchoredRect(parentRect, GetAnchorData(), r);
+			ComputeAnchoredAbsoluteRect(r);
 		}
 		else
 		{
@@ -523,19 +528,7 @@ void CUIWindow::GetAbsoluteRect(Frect& r)
 
 	if (GetUseAnchors())
 	{
-		AnchorAbsRectDepthGuard depthGuard;
-		if (s_anchorAbsRectDepth > AnchorAbsRectDepthLimit)
-		{
-			LogAnchorAbsRectDepthExceededOnce();
-			Frect refRect;
-			GetParent()->GetAbsoluteRect(refRect);
-			ComputeAnchoredRect(refRect, GetAnchorData(), r);
-			return;
-		}
-
-		Frect anchorRect;
-		ResolveAnchorReferenceRect(anchorRect);
-		ComputeAnchoredRect(anchorRect, GetAnchorData(), r);
+		ComputeAnchoredAbsoluteRect(r);
 		return;
 	}
 

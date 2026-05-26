@@ -262,6 +262,9 @@ protected:
 
 	void					MarkDirtyOnParticipatingSiblingsUnderSameParent	(u32 flags);
 
+	void					ComputeAnchoredAbsoluteRect	(Frect& outAbsolute) const;
+	void					ApplyAnchoredRelativeGeometry	();
+
 #ifdef DEBUG
 	int m_dbg_id;
 #endif
