@@ -527,7 +527,7 @@ void CControlAnimationBase::UpdateAnimCount()
 		// проверить, были ли уже загружены данные
 		if ((*it)->count != 0)
 		{
-			return;
+			continue;
 		}
 
 		string128	s, s_temp; 
