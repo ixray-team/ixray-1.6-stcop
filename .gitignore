@@ -21,10 +21,7 @@ XRay.code-workspace
 obj/
 lib/
 bin/
-build/
-build_win32/
-build32/
-build_nounity/
+build*/
 
 # Common logs
 *.log
@@ -81,3 +78,4 @@ cmake-build*/
 
 # Optick
 *.opt
+linux/sal.h
