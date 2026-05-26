@@ -1639,6 +1639,11 @@ bool CUIXmlInit::InitTrackBar(CUIXml& xml_doc, const char* path, int index, CUIT
 			}
 			pWnd->SetStep(xml_doc.ReadAttribFlt(path, index, "step", 0.1f)); // for bool and token it will be 1 always
 			pWnd->SetMagnitude(xml_doc.ReadAttribFlt(path, index, "magnitude", 1.f));
+
+			const int valueMin = xml_doc.ReadAttribInt(path, index, "value_min", -1);
+			const int valueMax = xml_doc.ReadAttribInt(path, index, "value_max", -1);
+			if (valueMin >= 0 && valueMax >= valueMin)
+				pWnd->SetOptIBounds(valueMin, valueMax);
 		}break;
 		case eTrackBarModeToken:
 		{

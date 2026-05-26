@@ -5,12 +5,43 @@
 #include "UITextureMaster.h"
 #include "UIXmlInit.h"
 #include "../../xrEngine/xr_input.h"
+#include "../../xrEngine/XR_IOConsole.h"
 #include "../string_table.h"
 #include <sstream> // for std::ostringstream
 #include <iomanip> // for std::setprecision
 #include "../UICursor.h"
 
 #define DEF_CONTROL_HEIGHT		16.0f
+
+namespace
+{
+struct SLegacyTrackBarOpt
+{
+	int minValue = 0;
+	int maxValue = 0;
+	int* value = nullptr;
+};
+
+bool TryGetLegacyTrackBarOpt(const shared_str& entry, SLegacyTrackBarOpt& out)
+{
+	// Legacy UI options that used runtime console cvars (removed from engine).
+	static int actorSleepTime = 1;
+
+	if (entry == "g_sleep_time")
+	{
+		out.minValue = 1;
+		out.maxValue = 24;
+		out.value = &actorSleepTime;
+		return true;
+	}
+	return false;
+}
+
+bool HasConsoleOpt(const shared_str& entry)
+{
+	return entry.size() && Console->GetCommand(entry.c_str());
+}
+} // namespace
 
 CUITrackBar::CUITrackBar()
 	: m_f_min(0),
@@ -246,6 +277,31 @@ void CUITrackBar::UpdateText()
 void CUITrackBar::SetCurrentOptValue()
 {
 	CUIOptionsItem::SetCurrentOptValue();
+
+	SLegacyTrackBarOpt legacy{};
+	if (!HasConsoleOpt(m_entry) && TryGetLegacyTrackBarOpt(m_entry, legacy))
+	{
+		if (!IsFltMode() && !IsTokenMode())
+		{
+			m_i_min = legacy.minValue;
+			m_i_max = legacy.maxValue;
+			m_i_val = *legacy.value;
+			clamp(m_i_val, m_i_min, m_i_max);
+		}
+		UpdatePos();
+		return;
+	}
+
+	if (!HasConsoleOpt(m_entry))
+	{
+		if (IsFltMode())
+			clamp(m_f_val, m_f_min, m_f_max);
+		else if (!IsTokenMode())
+			clamp(m_i_val, m_i_min, m_i_max);
+		UpdatePos();
+		return;
+	}
+
 	if (IsTokenMode())
 	{
 		const char* val = GetOptStringValue();
@@ -293,7 +349,19 @@ void CUITrackBar::SetCurrentOptValue()
 
 void CUITrackBar::SaveOptValue()
 {
-	CUIOptionsItem::SaveOptValue	();
+	CUIOptionsItem::SaveOptValue();
+
+	SLegacyTrackBarOpt legacy{};
+	if (!HasConsoleOpt(m_entry) && TryGetLegacyTrackBarOpt(m_entry, legacy))
+	{
+		if (!IsFltMode() && !IsTokenMode())
+			*legacy.value = m_i_val;
+		return;
+	}
+
+	if (!HasConsoleOpt(m_entry))
+		return;
+
 	if (IsTokenMode())
 	{
 		if (strcmp("not_an_option", GetEntry()))
