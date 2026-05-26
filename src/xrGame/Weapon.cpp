@@ -463,6 +463,10 @@ void CWeapon::Load		(const char* section)
 
 	m_sFakeShootBlendParams.Load(hud_sect, "anim_fakeshot");
 
+	m_sSafemodeBlendParams[0].Load(hud_sect, "anim_safemode_start");
+	m_sSafemodeBlendParams[1].Load(hud_sect, "anim_safemode_idle");
+	m_sSafemodeBlendParams[2].Load(hud_sect, "anim_safemode_end");
+
 	UpdateAltScope();
 	InitAddons();
 
@@ -1822,7 +1826,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 		}break;
 		case kSAFEMODE:
 		{
-			if (flags & CMD_START && ParentIsActor() && m_bAllowSafemode && (GetState() == eIdle && !IsPending() || GetState() == eSafemodeSwitch))
+			if (flags & CMD_START && ParentIsActor() && m_bAllowSafemode && !IsZoomed() && (GetState() == eIdle && !IsPending() || GetState() == eSafemodeSwitch))
 			{
 				if (CActor* pActor = H_Parent()->cast_actor())
 				{
@@ -1839,7 +1843,23 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 					}
 					else
 					{
-						pActor->SetSafemodeStatus(!pActor->IsSafemode());
+						bool cur_status = pActor->IsSafemode();
+						if (m_sSafemodeBlendParams[0].has_motion && m_sSafemodeBlendParams[1].has_motion && m_sSafemodeBlendParams[2].has_motion)
+						{
+							if (cur_status)
+							{
+								bool Mix = !IsBlendAnmActive(m_sSafemodeBlendParams[2].camera_name);
+								PlayBlendAnm(m_sSafemodeBlendParams[2].camera_name, m_sSafemodeBlendParams[2].speed_power.x, m_sSafemodeBlendParams[2].speed_power.y,
+									m_sSafemodeBlendParams[2].blend_params, false, Mix, true, 2, 0, script_layer::EBlendLayers::eSafemodeOut);
+							}
+							else
+							{
+								PlayBlendAnm(m_sSafemodeBlendParams[0].camera_name, m_sSafemodeBlendParams[0].speed_power.x, m_sSafemodeBlendParams[0].speed_power.y,
+									m_sSafemodeBlendParams[0].blend_params, false, false, true, 2, 0, script_layer::EBlendLayers::eSafemodeIn);
+							}
+						}
+
+						pActor->SetSafemodeStatus(!cur_status);
 					}
 					return true;
 				}
@@ -2941,6 +2961,9 @@ void CWeapon::OnBlendStart(u8 state)
 	{
 	case script_layer::EBlendLayers::eAimStart:
 	{
+		StopBlendAnm(m_sSafemodeBlendParams[0].camera_name, false);
+		StopBlendAnm(m_sSafemodeBlendParams[1].camera_name, true);
+		StopBlendAnm(m_sSafemodeBlendParams[1].camera_name, false);
 		StopBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[2].camera_name : m_sAimBlendParams[2].camera_name, false);
 		StopBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[1].camera_name : m_sAimBlendParams[1].camera_name, true);
 		break;
@@ -2949,6 +2972,18 @@ void CWeapon::OnBlendStart(u8 state)
 	{
 		StopBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[0].camera_name : m_sAimBlendParams[0].camera_name, false);
 		StopBlendAnm(IsGrenadeMode() ? m_sGLAimBlendParams[1].camera_name : m_sAimBlendParams[1].camera_name, true);
+		break;
+	}
+	case script_layer::EBlendLayers::eSafemodeIn:
+	{
+		StopBlendAnm(m_sSafemodeBlendParams[2].camera_name, false);
+		StopBlendAnm(m_sSafemodeBlendParams[1].camera_name, true);
+		break;
+	}
+	case script_layer::EBlendLayers::eSafemodeOut:
+	{
+		StopBlendAnm(m_sSafemodeBlendParams[0].camera_name, false);
+		StopBlendAnm(m_sSafemodeBlendParams[1].camera_name, true);
 		break;
 	}
 	}
@@ -2968,6 +3003,15 @@ void CWeapon::OnBlendEnd(u8 state)
 				IsGrenadeMode() ? m_sGLAimBlendParams[1].speed_power.y : m_sAimBlendParams[1].speed_power.y,
 				IsGrenadeMode() ? m_sGLAimBlendParams[1].blend_params : m_sAimBlendParams[1].blend_params, true, false, true,
 				2, 0, script_layer::EBlendLayers::eNone);
+		}
+		break;
+	}
+	case script_layer::EBlendLayers::eSafemodeIn:
+	{
+		if (GetHUDmode() && m_sSafemodeBlendParams[1].has_motion)
+		{
+			PlayBlendAnm(m_sSafemodeBlendParams[1].camera_name, m_sSafemodeBlendParams[1].speed_power.x, m_sSafemodeBlendParams[1].speed_power.y,
+				m_sSafemodeBlendParams[1].blend_params, true, false, true, 2, 0, script_layer::EBlendLayers::eNone);
 		}
 		break;
 	}
