@@ -67,7 +67,7 @@ void   CChimera::Load (const char* section)
 	anim().AddAnim(eAnimWalkDamaged, ANIM_NAME("AnimWalkDamaged_prefix", "stand_walk_dmg_"), -1, &velocity_walk_dmg, PS_STAND);
 
 	anim().AddAnim(eAnimRun,				ANIM_NAME("AnimRun_prefix", "stand_run_fwd_"),		-1,	&velocity_run,		PS_STAND);
-	anim().AddAnim(eAnimRunDamaged,		ANIM_NAME("AnimWalkDamaged_prefix", "stand_walk_dmg_"),		-1,	&velocity_run_dmg,	PS_STAND);
+	anim().AddAnim(eAnimRunDamaged,		ANIM_NAME("AnimRunDamaged_prefix", "stand_run_dmg_"),		-1,	&velocity_run_dmg,	PS_STAND);
 	anim().AddAnim(eAnimCheckCorpse,		ANIM_NAME("AnimCheckCorpse_prefix", "stand_check_corpse_"),	-1,	&velocity_none,		PS_STAND);
 	anim().AddAnim(eAnimEat,				ANIM_NAME("AnimEat_prefix", "stand_eat_"),			-1, &velocity_none,		PS_STAND);
 	anim().AddAnim(eAnimAttack,			ANIM_NAME("AnimAttack_prefix", "stand_idle_"),			-1, &velocity_turn,		PS_STAND);
