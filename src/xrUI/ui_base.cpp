@@ -269,7 +269,7 @@ static CUIWindow* FindWindowAtPoint(const xr_vector<CUIWindow*>& roots, const xr
 
 	auto findHit = [&](CUIWindow* wnd, auto& findHitLambda) -> CUIWindow*
 	{
-		if (!widgets.count(wnd))
+		if (!IsLiveUIWindow(wnd) || !widgets.count(wnd))
 		{
 			return nullptr;
 		}
@@ -320,12 +320,29 @@ void ui_core::RenderUIDebugger()
 		return;
 	}
 
+	{
+		xr_hash_set<CUIWindow*> prunedWidgets;
+		prunedWidgets.reserve(LastFrameWidgets.size());
+		for (CUIWindow* wnd : LastFrameWidgets)
+		{
+			if (IsLiveUIWindow(wnd))
+			{
+				prunedWidgets.insert(wnd);
+			}
+		}
+		LastFrameWidgets.swap(prunedWidgets);
+	}
+
 	auto BuildTree = [&](const xr_hash_set<CUIWindow*>& widgetSet)
 	{
 		Roots.clear();
 		Roots.reserve(widgetSet.size());
 		for (CUIWindow* window : widgetSet)
 		{
+			if (!IsLiveUIWindow(window))
+			{
+				continue;
+			}
 			CUIWindow* parent = window->GetParent();
 			if (parent == nullptr || widgetSet.count(parent) == 0)
 			{
@@ -336,23 +353,29 @@ void ui_core::RenderUIDebugger()
 
 	auto GetWndName = [](CUIWindow* wndPtr) -> shared_str
 	{
-		if (wndPtr->WindowName().size() > 0)
+		if (!IsLiveUIWindow(wndPtr))
 		{
-			return wndPtr->WindowName();
+			return shared_str();
+		}
+		const shared_str& name = wndPtr->WindowName();
+		if (name.size() > 0)
+		{
+			return name;
 		}
 		return wndPtr->WindowNodeName();
 	};
 
 	static xr_hash_set<CUIWindow*> s_debuggerWidgets;
-	static bool s_lastShowHidden = false;
-	bool needRebuild = (Roots.empty() || (showHidden != s_lastShowHidden));
 	s_debuggerWidgets = LastFrameWidgets;
 	if (showHidden)
 	{
-		s_lastShowHidden = true;
 		xr_hash_set<CUIWindow*> rootsSet;
 		for (CUIWindow* w : LastFrameWidgets)
 		{
+			if (!IsLiveUIWindow(w))
+			{
+				continue;
+			}
 			CUIWindow* p = w;
 			while (p && p->GetParent())
 			{
@@ -365,14 +388,17 @@ void ui_core::RenderUIDebugger()
 		}
 		std::function<void(CUIWindow*)> addRecursive = [&](CUIWindow* w)
 		{
-			if (!w || s_debuggerWidgets.count(w))
+			if (!IsLiveUIWindow(w) || s_debuggerWidgets.count(w))
 			{
 				return;
 			}
 			s_debuggerWidgets.insert(w);
 			for (CUIWindow* child : w->GetChildWndList())
 			{
-				addRecursive(child);
+				if (IsLiveUIWindow(child))
+				{
+					addRecursive(child);
+				}
 			}
 		};
 		for (CUIWindow* r : rootsSet)
@@ -380,15 +406,13 @@ void ui_core::RenderUIDebugger()
 			addRecursive(r);
 		}
 	}
-	else
-	{
-		s_lastShowHidden = false;
-	}
 	const xr_hash_set<CUIWindow*>& debuggerWidgets = s_debuggerWidgets;
 
-	if (needRebuild)
+	BuildTree(debuggerWidgets);
+
+	if (Selected != nullptr && (!IsLiveUIWindow(Selected) || !debuggerWidgets.contains(Selected)))
 	{
-		BuildTree(debuggerWidgets);
+		Selected = nullptr;
 	}
 
 	float screenToClientX = UI_BASE_WIDTH / (float)Device.TargetWidth;
@@ -406,7 +430,7 @@ void ui_core::RenderUIDebugger()
 
 	std::function<bool(CUIWindow*, const xr_string&)> DrawNode = [&](CUIWindow* window, const xr_string& filterLower) -> bool
 	{
-		if (!debuggerWidgets.contains(window))
+		if (!IsLiveUIWindow(window) || !debuggerWidgets.contains(window))
 		{
 			return false;
 		}
@@ -563,7 +587,7 @@ void ui_core::RenderUIDebugger()
 		std::function<void(CUIWindow*, int, bool)> appendWindow;
 		appendWindow = [&output, &appendWindow, &GetWndName](CUIWindow* wnd, int depth, bool asJson) -> void
 		{
-			if (!wnd)
+			if (!IsLiveUIWindow(wnd))
 			{
 				return;
 			}
@@ -626,6 +650,10 @@ void ui_core::RenderUIDebugger()
 			xr_hash_set<CUIWindow*> rootsSet;
 			for (CUIWindow* w : LastFrameWidgets)
 			{
+				if (!IsLiveUIWindow(w))
+				{
+					continue;
+				}
 				CUIWindow* p = w;
 				while (p && p->GetParent())
 				{
@@ -638,14 +666,17 @@ void ui_core::RenderUIDebugger()
 			}
 			std::function<void(CUIWindow*)> addRecursive = [&](CUIWindow* w)
 			{
-				if (!w || debuggerWidgets.count(w))
+				if (!IsLiveUIWindow(w) || debuggerWidgets.count(w))
 				{
 					return;
 				}
 				debuggerWidgets.insert(w);
 				for (CUIWindow* child : w->GetChildWndList())
 				{
-					addRecursive(child);
+					if (IsLiveUIWindow(child))
+					{
+						addRecursive(child);
+					}
 				}
 			};
 			for (CUIWindow* r : rootsSet)
@@ -695,7 +726,7 @@ void ui_core::RenderUIDebugger()
 
 	ImGui::Separator();
 
-	if (Selected != nullptr && debuggerWidgets.contains(Selected))
+	if (Selected != nullptr && IsLiveUIWindow(Selected) && debuggerWidgets.contains(Selected))
 	{
 		ImGui::Text("Selected: %s", GetWndName(Selected).c_str());
 		ImGui::Text("Mode: %s", Selected->GetUseAnchors() ? "Anchored" : "Legacy");
@@ -772,7 +803,7 @@ void ui_core::RenderUIDebugger()
 	ImGui::End();
 
 	imguiWantsMouse = ImGui::GetIO().WantCaptureMouse;
-	if (Selected != nullptr && debuggerWidgets.contains(Selected))
+	if (Selected != nullptr && IsLiveUIWindow(Selected) && debuggerWidgets.contains(Selected))
 	{
 		Fvector2 absPos;
 		Selected->GetAbsolutePos(absPos);
@@ -952,7 +983,7 @@ void ui_core::RenderUIDebugger()
 
 		for (CUIWindow* wnd : debuggerWidgets)
 		{
-			if (!wnd)
+			if (!IsLiveUIWindow(wnd))
 			{
 				continue;
 			}
@@ -1078,6 +1109,10 @@ void ui_core::RenderUIDebugger()
 
 		for (CUIWindow* wnd : LastFrameWidgets)
 		{
+			if (!IsLiveUIWindow(wnd))
+			{
+				continue;
+			}
 			CUIWindow* parent = wnd->GetParent();
 			if (!parent || !debuggerWidgets.contains(parent))
 			{
@@ -1115,7 +1150,7 @@ void ui_core::RenderUIDebugger()
 		const ImU32 colHidden = IM_COL32(128, 128, 255, 100);
 		for (CUIWindow* wnd : debuggerWidgets)
 		{
-			if (!wnd || wnd->IsShown())
+			if (!IsLiveUIWindow(wnd) || wnd->IsShown())
 			{
 				continue;
 			}

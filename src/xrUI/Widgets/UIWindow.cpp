@@ -10,6 +10,44 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "UIBtnHint.h"
 
+#ifdef DEBUG_DRAW
+namespace
+{
+xrCriticalSection s_liveUiWindowsLock;
+xr_hash_set<CUIWindow*> s_liveUiWindows;
+
+void RegisterLiveUIWindow(CUIWindow* wnd)
+{
+	if (wnd == nullptr)
+	{
+		return;
+	}
+	xrCriticalSectionGuard guard(s_liveUiWindowsLock);
+	s_liveUiWindows.insert(wnd);
+}
+
+void UnregisterLiveUIWindow(CUIWindow* wnd)
+{
+	if (wnd == nullptr)
+	{
+		return;
+	}
+	xrCriticalSectionGuard guard(s_liveUiWindowsLock);
+	s_liveUiWindows.erase(wnd);
+}
+} // namespace
+
+bool IsLiveUIWindow(CUIWindow* wnd)
+{
+	if (wnd == nullptr)
+	{
+		return false;
+	}
+	xrCriticalSectionGuard guard(s_liveUiWindowsLock);
+	return s_liveUiWindows.contains(wnd);
+}
+#endif
+
 namespace
 {
 thread_local int s_anchorAbsRectDepth = 0;
@@ -209,6 +247,9 @@ _dirtyFlags(0)
 {
 	Show					(true);
 	Enable					(true);
+#ifdef DEBUG_DRAW
+	RegisterLiveUIWindow(this);
+#endif
 #ifdef LOG_ALL_WNDS
 	ListWndCount++;
 	m_dbg_id = ListWndCount;
@@ -235,6 +276,14 @@ CUIWindow::~CUIWindow()
 		g_pGamePersistent->m_pMainMenu->UnregisterPPDraw(this);
 
 	xr_delete(m_pLayout);
+
+#ifdef DEBUG_DRAW
+	UnregisterLiveUIWindow(this);
+	if (m_pUI_core != nullptr)
+	{
+		UI().LastFrameWidgets.erase(this);
+	}
+#endif
 
 #ifdef LOG_ALL_WNDS
 	xr_vector<DBGList>::iterator _it = dbg_list_wnds.begin();
