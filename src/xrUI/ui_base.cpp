@@ -755,17 +755,25 @@ void ui_core::RenderUIDebugger()
 			{
 				ad.anchorMin.x = (ad.anchorMin.x < 0.0f) ? 0.0f : (ad.anchorMin.x > 1.0f ? 1.0f : ad.anchorMin.x);
 				ad.anchorMin.y = (ad.anchorMin.y < 0.0f) ? 0.0f : (ad.anchorMin.y > 1.0f ? 1.0f : ad.anchorMin.y);
+				Selected->MarkDirty(kAnchorGeometryDirty);
+				Selected->MarkParentLayoutDirty(kAnchorGeometryDirty);
 			}
 			if (ImGui::DragFloat2("anchor_max", reinterpret_cast<float*>(&ad.anchorMax), 0.01f, 0.0f, 1.0f, "%.2f"))
 			{
 				ad.anchorMax.x = (ad.anchorMax.x < 0.0f) ? 0.0f : (ad.anchorMax.x > 1.0f ? 1.0f : ad.anchorMax.x);
 				ad.anchorMax.y = (ad.anchorMax.y < 0.0f) ? 0.0f : (ad.anchorMax.y > 1.0f ? 1.0f : ad.anchorMax.y);
+				Selected->MarkDirty(kAnchorGeometryDirty);
+				Selected->MarkParentLayoutDirty(kAnchorGeometryDirty);
 			}
 			if (ImGui::DragFloat2("offset_min", reinterpret_cast<float*>(&ad.offsetMin), 1.0f))
 			{
+				Selected->MarkDirty(kAnchorGeometryDirty);
+				Selected->MarkParentLayoutDirty(kAnchorGeometryDirty);
 			}
 			if (ImGui::DragFloat2("offset_max", reinterpret_cast<float*>(&ad.offsetMax), 1.0f))
 			{
+				Selected->MarkDirty(kAnchorGeometryDirty);
+				Selected->MarkParentLayoutDirty(kAnchorGeometryDirty);
 			}
 			if (ImGui::Button("Copy coordinates"))
 			{
@@ -876,6 +884,8 @@ void ui_core::RenderUIDebugger()
 						ad.anchorMax.x = (ad.anchorMax.x < 0.0f) ? 0.0f : (ad.anchorMax.x > 1.0f ? 1.0f : ad.anchorMax.x);
 						ad.anchorMax.y = (ad.anchorMax.y < 0.0f) ? 0.0f : (ad.anchorMax.y > 1.0f ? 1.0f : ad.anchorMax.y);
 					}
+					Selected->MarkDirty(kAnchorGeometryDirty);
+					Selected->MarkParentLayoutDirty(kAnchorGeometryDirty);
 					ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
 				}
 			}
@@ -1264,6 +1274,7 @@ ui_core::ui_core()
 	_safeAreaInsetTop			= 0.0f;
 	_safeAreaInsetRight			= 0.0f;
 	_safeAreaInsetBottom		= 0.0f;
+	_safeAreaDirtyGeneration	= 0;
 
 #ifdef DEBUG_DRAW
 	if (!Device.IsEditorMode())
@@ -1298,10 +1309,24 @@ UIScaleModeScope::~UIScaleModeScope()
 
 void ui_core::SetSafeAreaInset(float left, float top, float right, float bottom)
 {
-	_safeAreaInsetLeft	= (left >= 0.0f) ? left : 0.0f;
-	_safeAreaInsetTop	= (top >= 0.0f) ? top : 0.0f;
-	_safeAreaInsetRight	= (right >= 0.0f) ? right : 0.0f;
-	_safeAreaInsetBottom= (bottom >= 0.0f) ? bottom : 0.0f;
+	const float newLeft = (left >= 0.0f) ? left : 0.0f;
+	const float newTop = (top >= 0.0f) ? top : 0.0f;
+	const float newRight = (right >= 0.0f) ? right : 0.0f;
+	const float newBottom = (bottom >= 0.0f) ? bottom : 0.0f;
+
+	if (_safeAreaInsetLeft == newLeft &&
+		_safeAreaInsetTop == newTop &&
+		_safeAreaInsetRight == newRight &&
+		_safeAreaInsetBottom == newBottom)
+	{
+		return;
+	}
+
+	_safeAreaInsetLeft = newLeft;
+	_safeAreaInsetTop = newTop;
+	_safeAreaInsetRight = newRight;
+	_safeAreaInsetBottom = newBottom;
+	++_safeAreaDirtyGeneration;
 }
 
 void ui_core::GetSafeAreaRootRect(Frect& outRect) const

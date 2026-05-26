@@ -274,7 +274,8 @@ m_dwFocusReceiveTime(0),
 m_bCustomDraw(false),
 m_bLoggedMissingAnchorTo(false),
 m_pLayout(nullptr),
-_dirtyFlags(0)
+_dirtyFlags(kAnchorGeometryDirty),
+_lastProcessedSafeAreaGeneration(0)
 {
 	Show					(true);
 	Enable					(true);
@@ -373,9 +374,45 @@ void CUIWindow::SetLayout(ILayoutProvider* layout)
 	if (m_pLayout == layout)
 		return;
 	m_pLayout = layout;
-	const u32 flags = UiDirtyMask(EUIDirtyFlags::Layout) | UiDirtyMask(EUIDirtyFlags::AbsoluteRect);
-	_dirtyFlags |= flags;
-	MarkParentLayoutDirty(flags);
+	MarkDirty(kAnchorGeometryDirty);
+	MarkParentLayoutDirty(kAnchorGeometryDirty);
+}
+
+void CUIWindow::SetWndPos(const Fvector2& pos)
+{
+	if (GetWndPos().similar(pos))
+	{
+		return;
+	}
+	CUISimpleWindow::SetWndPos(pos);
+	MarkDirty(kAnchorGeometryDirty);
+	MarkDirtyOnParticipatingSiblingsUnderSameParent(kAnchorGeometryDirty);
+	MarkAnchoredDescendantsDirty(kAnchorGeometryDirty);
+}
+
+void CUIWindow::SetWndSize(const Fvector2& size)
+{
+	if (GetWndSize().similar(size))
+	{
+		return;
+	}
+	CUISimpleWindow::SetWndSize(size);
+	MarkDirty(kAnchorGeometryDirty);
+	MarkDirtyOnParticipatingSiblingsUnderSameParent(kAnchorGeometryDirty);
+	MarkAnchoredDescendantsDirty(kAnchorGeometryDirty);
+}
+
+void CUIWindow::SetWndRect(const Frect& rect)
+{
+	const Fvector2 prevPos = GetWndPos();
+	const Fvector2 prevSize = GetWndSize();
+	CUISimpleWindow::SetWndRect(rect);
+	if (!prevPos.similar(GetWndPos()) || !prevSize.similar(GetWndSize()))
+	{
+		MarkDirty(kAnchorGeometryDirty);
+		MarkDirtyOnParticipatingSiblingsUnderSameParent(kAnchorGeometryDirty);
+		MarkAnchoredDescendantsDirty(kAnchorGeometryDirty);
+	}
 }
 
 void CUIWindow::MarkDirty(u32 flags)
@@ -396,15 +433,6 @@ void CUIWindow::MarkParentLayoutDirty(u32 flags)
 		parent->MarkDirty(flags);
 }
 
-void CUIWindow::NotifyChildLayoutChanged(CUIWindow* child, u32 flags)
-{
-	R_ASSERT(child);
-	VERIFY(IsChild(child));
-	(void)child;
-	MarkDirty(flags);
-	MarkParentLayoutDirty(flags);
-}
-
 void CUIWindow::MarkDirtyOnParticipatingSiblingsUnderSameParent(u32 flags)
 {
 	CUIWindow* parent = GetParent();
@@ -418,16 +446,32 @@ void CUIWindow::MarkDirtyOnParticipatingSiblingsUnderSameParent(u32 flags)
 	}
 }
 
+void CUIWindow::MarkAnchoredDescendantsDirty(u32 flags)
+{
+	xrCriticalSectionGuard guard(csUi);
+	for (CUIWindow* child : m_ChildWndList)
+	{
+		if (child == nullptr)
+		{
+			continue;
+		}
+		if (child->GetUseAnchors())
+		{
+			child->MarkDirty(flags);
+		}
+		child->MarkAnchoredDescendantsDirty(flags);
+	}
+}
+
 void CUIWindow::SetWindowName(LPCSTR wn)
 {
 	shared_str next = wn ? wn : "";
 	if (next == m_windowName)
 		return;
 	m_windowName = next;
-	const u32 anchorFlags = UiDirtyMask(EUIDirtyFlags::Layout) | UiDirtyMask(EUIDirtyFlags::AbsoluteRect);
-	MarkDirty(anchorFlags);
-	MarkParentLayoutDirty(anchorFlags);
-	MarkDirtyOnParticipatingSiblingsUnderSameParent(anchorFlags);
+	MarkDirty(kAnchorGeometryDirty);
+	MarkParentLayoutDirty(kAnchorGeometryDirty);
+	MarkDirtyOnParticipatingSiblingsUnderSameParent(kAnchorGeometryDirty);
 }
 
 void CUIWindow::Draw(float x, float y)
@@ -449,16 +493,21 @@ void CUIWindow::Update()
 		m_pLayout->LayoutChildren(this);
 	}
 
-	// Resolve auto size and update anchor offsets for anchored elements with wrap content
-	if (GetUseAnchors() && (GetSizeModeWidth() == UI_SIZE_MODE_AUTO || GetSizeModeHeight() == UI_SIZE_MODE_AUTO))
+	if (GetUseAnchors() && ParticipatesInUILayoutDirtyPropagation())
 	{
-		ResolveAutoSize();
-		SyncAnchorOffsetsFromSize(GetAnchorData(), GetWidth(), GetHeight());
-	}
-
-	if (GetUseAnchors())
-	{
-		ApplyAnchoredRelativeGeometry();
+		const bool safeAreaStale = UI().GetSafeAreaDirtyGeneration() != _lastProcessedSafeAreaGeneration;
+		if (IsDirty(kAnchorGeometryDirty) || safeAreaStale)
+		{
+			if (GetSizeModeWidth() == UI_SIZE_MODE_AUTO || GetSizeModeHeight() == UI_SIZE_MODE_AUTO)
+			{
+				ResolveAutoSize();
+				SyncAnchorOffsetsFromSize(GetAnchorData(), GetWidth(), GetHeight());
+			}
+			ApplyAnchoredRelativeGeometry();
+			ClearDirty(kAnchorGeometryDirty);
+			_lastProcessedSafeAreaGeneration = UI().GetSafeAreaDirtyGeneration();
+			MarkAnchoredDescendantsDirty(kAnchorGeometryDirty);
+		}
 	}
 
 	if (GetUICursor().IsVisible())
@@ -583,13 +632,13 @@ void CUIWindow::ApplyAnchoredRelativeGeometry()
 	{
 		Frect parentRect;
 		GetParent()->GetAbsoluteRect(parentRect);
-		SetWndPos(Fvector2().set(ourRect.x1 - parentRect.x1, ourRect.y1 - parentRect.y1));
-		SetWndSize(Fvector2().set(ourRect.width(), ourRect.height()));
+		CUISimpleWindow::SetWndPos(Fvector2().set(ourRect.x1 - parentRect.x1, ourRect.y1 - parentRect.y1));
+		CUISimpleWindow::SetWndSize(Fvector2().set(ourRect.width(), ourRect.height()));
 	}
 	else
 	{
-		SetWndPos(Fvector2().set(ourRect.x1, ourRect.y1));
-		SetWndSize(Fvector2().set(ourRect.width(), ourRect.height()));
+		CUISimpleWindow::SetWndPos(Fvector2().set(ourRect.x1, ourRect.y1));
+		CUISimpleWindow::SetWndSize(Fvector2().set(ourRect.width(), ourRect.height()));
 	}
 }
 
@@ -1031,9 +1080,8 @@ void CUIWindow::SetAnchorTo(LPCSTR targetName)
 		m_bLoggedMissingAnchorTo = false;
 	}
 	m_anchorToWindowName = nextName;
-	const u32 anchorFlags = UiDirtyMask(EUIDirtyFlags::Layout) | UiDirtyMask(EUIDirtyFlags::AbsoluteRect);
-	MarkDirty(anchorFlags);
-	MarkParentLayoutDirty(anchorFlags);
+	MarkDirty(kAnchorGeometryDirty);
+	MarkParentLayoutDirty(kAnchorGeometryDirty);
 }
 
 void CUIWindow::LogMissingAnchorToTargetOnce()
@@ -1135,20 +1183,19 @@ void CUIWindow::SetParent(CUIWindow* pNewParent)
 		return;
 
 	CUIWindow* oldParent = m_pParentWnd;
-	const u32 geometryFlags = UiDirtyMask(EUIDirtyFlags::Layout) | UiDirtyMask(EUIDirtyFlags::AbsoluteRect);
 
-	MarkDirty(geometryFlags);
+	MarkDirty(kAnchorGeometryDirty);
 	if (oldParent != nullptr)
 	{
-		oldParent->MarkDirty(geometryFlags);
+		oldParent->MarkDirty(kAnchorGeometryDirty);
 		for (CUIWindow* ancestor = oldParent->m_pParentWnd; ancestor != nullptr; ancestor = ancestor->m_pParentWnd)
-			ancestor->MarkDirty(geometryFlags);
+			ancestor->MarkDirty(kAnchorGeometryDirty);
 	}
 
 	m_pParentWnd = pNewParent;
 
-	MarkDirty(geometryFlags);
-	MarkParentLayoutDirty(geometryFlags);
+	MarkDirty(kAnchorGeometryDirty);
+	MarkParentLayoutDirty(kAnchorGeometryDirty);
 }
 
 void CUIWindow::ShowChildren(bool show)

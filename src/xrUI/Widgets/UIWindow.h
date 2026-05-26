@@ -21,11 +21,12 @@ enum class EUIDirtyFlags : u32
     None = 0,
     Layout = 1u << 0,
     AbsoluteRect = 1u << 1,
-    Transform = 1u << 2,
-    Measure = 1u << 3,
 };
 
 IC constexpr u32 UiDirtyMask(EUIDirtyFlags flag) { return static_cast<u32>(flag); }
+
+constexpr u32 kAnchorGeometryDirty =
+    UiDirtyMask(EUIDirtyFlags::Layout) | UiDirtyMask(EUIDirtyFlags::AbsoluteRect);
 
 class CUIStatic;
 class CUICellItem;
@@ -141,6 +142,10 @@ public:
 			void			SetWndPos_script	(Fvector2 pos)										{CUISimpleWindow::SetWndPos(pos);}
 			void			SetWndSize_script	(Fvector2 size)										{CUISimpleWindow::SetWndSize(size);}
 
+	virtual void			SetWndPos			(const Fvector2& pos) override;
+	virtual void			SetWndSize			(const Fvector2& size) override;
+	virtual void			SetWndRect			(const Frect& rect) override;
+
 	//прорисовка окна
 	virtual void			Draw				();
 	virtual void			Draw				(float x, float y);
@@ -211,7 +216,6 @@ public:
 	void					ClearDirty			(u32 flagsToClear);
 	IC bool					IsDirty				(u32 flagsMask) const		{ return (_dirtyFlags & flagsMask) != 0; }
 	void					MarkParentLayoutDirty	(u32 flags);
-	void					NotifyChildLayoutChanged	(CUIWindow* child, u32 flags);
 
 	// Expression that provide data for this widget
 	CExpression             m_expression;
@@ -261,8 +265,10 @@ protected:
 	ILayoutProvider*		m_pLayout;
 
 	u32						_dirtyFlags;
+	u32						_lastProcessedSafeAreaGeneration;
 
 	void					MarkDirtyOnParticipatingSiblingsUnderSameParent	(u32 flags);
+	void					MarkAnchoredDescendantsDirty					(u32 flags);
 
 	void					ComputeAnchoredAbsoluteRect	(Frect& outAbsolute) const;
 	void					ApplyAnchoredRelativeGeometry	();

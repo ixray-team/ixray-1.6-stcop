@@ -60,6 +60,7 @@ public:
 
 	void			SetSafeAreaInset					(float left, float top, float right, float bottom);
 	void			GetSafeAreaRootRect				(Frect& outRect)		const;
+	u32				GetSafeAreaDirtyGeneration		()						const	{ return _safeAreaDirtyGeneration; }
 
 	const C2DFrustum& ScreenFrustum					()	const						{return (m_bPostprocess)?m_2DFrustumPP:m_2DFrustum;}
 	C2DFrustum&		ScreenFrustumLIT				()								{return m_FrustumLIT;}
@@ -90,6 +91,7 @@ public:
 	float						_safeAreaInsetTop;
 	float						_safeAreaInsetRight;
 	float						_safeAreaInsetBottom;
+	u32							_safeAreaDirtyGeneration;
 };
 
 class UI_API UIScaleModeScope
