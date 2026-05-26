@@ -179,6 +179,8 @@ public:
 	const shared_str&		GetAnchorTo			() const					{ return m_anchorToWindowName; }
 	LPCSTR					WindowName_script	()							{return m_windowName.c_str();}
 	CUIWindow*				FindChild			(const shared_str name);
+	CUIWindow*				FindAnchorTargetUnderParent	(const shared_str& name) const;
+	bool					IsDescendantWindow			(CUIWindow* wnd) const;
 	void					ResolveAnchorReferenceRect	(Frect& anchorRect);
 	void					LogMissingAnchorToTargetOnce	();
 	// Name of the window by node from XML

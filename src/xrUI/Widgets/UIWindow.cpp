@@ -66,76 +66,107 @@ struct AnchorAbsRectDepthGuard
 
 constexpr int AnchorAbsRectDepthLimit = 32;
 
-void LogAnchorAbsRectDepthExceededOnce()
+void LogInvalidAnchorToOnce(CUIWindow* startWnd, LPCSTR reason)
 {
-	static bool hasLoggedDepthExceeded = false;
-	if (hasLoggedDepthExceeded)
+	static bool hasLogged = false;
+	if (hasLogged || startWnd == nullptr)
 	{
 		return;
 	}
-	hasLoggedDepthExceeded = true;
-	Msg("! UI anchor GetAbsoluteRect recursion depth exceeded (possible anchor_to cycle)");
+	hasLogged = true;
+	LPCSTR startName = startWnd->WindowName().size() != 0
+		? startWnd->WindowName().c_str()
+		: startWnd->WindowNodeName().c_str();
+	CUIWindow* parentWnd = startWnd->GetParent();
+	LPCSTR parentName = "root";
+	if (parentWnd != nullptr)
+	{
+		parentName = parentWnd->WindowName().size() != 0
+			? parentWnd->WindowName().c_str()
+			: parentWnd->WindowNodeName().c_str();
+	}
+	Msg("! UI anchor_to: %s (widget [%s], parent [%s])", reason, startName, parentName);
 }
 
-void LogAnchorToCycleOnce()
+void ApplyAnchorReferenceFallback(CUIWindow* parentWnd, Frect& anchorRect)
 {
-	static bool hasLoggedAnchorToCycle = false;
-	if (hasLoggedAnchorToCycle)
+	if (parentWnd != nullptr)
 	{
-		return;
+		parentWnd->GetAbsoluteRect(anchorRect);
 	}
-	hasLoggedAnchorToCycle = true;
-	Msg("! UI anchor_to: cycle detected while resolving reference rect");
-}
-
-void LogAnchorToChainTooLongOnce()
-{
-	static bool hasLoggedAnchorToChainTooLong = false;
-	if (hasLoggedAnchorToChainTooLong)
+	else
 	{
-		return;
+		UI().GetSafeAreaRootRect(anchorRect);
 	}
-	hasLoggedAnchorToChainTooLong = true;
-	Msg("! UI anchor_to: reference chain exceeds depth limit (possible misconfiguration)");
 }
 
 // Returns true when anchor_to links under parentWnd revisit a window or exceed the depth limit.
 bool HasInvalidAnchorToGraph(CUIWindow* startWnd, CUIWindow* parentWnd)
 {
-	xr_vector<CUIWindow*> visited;
+	if (startWnd == nullptr || parentWnd == nullptr)
+	{
+		return false;
+	}
+
+	const shared_str& startAnchorTo = startWnd->GetAnchorTo();
+	if (startAnchorTo.size() != 0)
+	{
+		if (startAnchorTo == startWnd->WindowName())
+		{
+			LogInvalidAnchorToOnce(startWnd, "self anchor_to is invalid");
+			return true;
+		}
+		CUIWindow* startTarget = parentWnd->FindAnchorTargetUnderParent(startAnchorTo);
+		if (startTarget == startWnd)
+		{
+			LogInvalidAnchorToOnce(startWnd, "anchor_to resolves to self");
+			return true;
+		}
+	}
+
+	xr_set<CUIWindow*> visited;
 	CUIWindow* w = startWnd;
 	while (w != nullptr)
 	{
-		if (w->GetAnchorTo().size() == 0)
+		const shared_str& anchorToName = w->GetAnchorTo();
+		if (anchorToName.size() == 0)
 		{
 			return false;
 		}
 		if (visited.size() >= (size_t)AnchorAbsRectDepthLimit)
 		{
-			LogAnchorToChainTooLongOnce();
+			LogInvalidAnchorToOnce(
+				startWnd,
+				"reference chain exceeds depth limit (possible misconfiguration)");
 			return true;
 		}
-		for (CUIWindow* v : visited)
+		if (!visited.insert(w).second)
 		{
-			if (v == w)
-			{
-				LogAnchorToCycleOnce();
-				return true;
-			}
+			LogInvalidAnchorToOnce(startWnd, "cycle detected while resolving reference rect");
+			return true;
 		}
-		visited.push_back(w);
-		CUIWindow* target = parentWnd->FindChild(w->GetAnchorTo());
-		if (target == nullptr || target == w)
+
+		CUIWindow* target = parentWnd->FindAnchorTargetUnderParent(anchorToName);
+		if (target == nullptr)
 		{
 			return false;
 		}
-		for (CUIWindow* v : visited)
+		if (target == w || target == startWnd)
 		{
-			if (v == target)
-			{
-				LogAnchorToCycleOnce();
-				return true;
-			}
+			LogInvalidAnchorToOnce(startWnd, "cycle detected while resolving reference rect");
+			return true;
+		}
+		if (startWnd->IsDescendantWindow(target))
+		{
+			LogInvalidAnchorToOnce(
+				startWnd,
+				"anchor_to target must not be a descendant of the anchored widget");
+			return true;
+		}
+		if (!visited.insert(target).second)
+		{
+			LogInvalidAnchorToOnce(startWnd, "cycle detected while resolving reference rect");
+			return true;
 		}
 		w = target;
 	}
@@ -529,9 +560,11 @@ void CUIWindow::ComputeAnchoredAbsoluteRect(Frect& outAbsolute) const
 	AnchorAbsRectDepthGuard depthGuard;
 	if (s_anchorAbsRectDepth > AnchorAbsRectDepthLimit)
 	{
-		LogAnchorAbsRectDepthExceededOnce();
+		LogInvalidAnchorToOnce(
+			const_cast<CUIWindow*>(this),
+			"GetAbsoluteRect recursion depth exceeded (possible anchor_to cycle)");
 		Frect refRect;
-		GetParent()->GetAbsoluteRect(refRect);
+		ApplyAnchorReferenceFallback(GetParent(), refRect);
 		ComputeAnchoredRect(refRect, GetAnchorData(), outAbsolute);
 		return;
 	}
@@ -1021,6 +1054,7 @@ void CUIWindow::ResolveAnchorReferenceRect(Frect& anchorRect)
 	CUIWindow* parentWnd = GetParent();
 	if (parentWnd == nullptr)
 	{
+		UI().GetSafeAreaRootRect(anchorRect);
 		return;
 	}
 	if (m_anchorToWindowName.size() == 0)
@@ -1030,20 +1064,51 @@ void CUIWindow::ResolveAnchorReferenceRect(Frect& anchorRect)
 	}
 	if (HasInvalidAnchorToGraph(this, parentWnd))
 	{
-		parentWnd->GetAbsoluteRect(anchorRect);
+		ApplyAnchorReferenceFallback(parentWnd, anchorRect);
 		return;
 	}
-	CUIWindow* targetWnd = parentWnd->FindChild(m_anchorToWindowName);
-	if (targetWnd != nullptr && targetWnd != this)
+	CUIWindow* targetWnd = parentWnd->FindAnchorTargetUnderParent(m_anchorToWindowName);
+	if (targetWnd != nullptr)
 	{
 		targetWnd->GetAbsoluteRect(anchorRect);
 		return;
 	}
-	parentWnd->GetAbsoluteRect(anchorRect);
-	if (targetWnd == nullptr)
+	ApplyAnchorReferenceFallback(parentWnd, anchorRect);
+	LogMissingAnchorToTargetOnce();
+}
+
+CUIWindow* CUIWindow::FindAnchorTargetUnderParent(const shared_str& name) const
+{
+	if (name.size() == 0)
 	{
-		LogMissingAnchorToTargetOnce();
+		return nullptr;
 	}
+	xrCriticalSectionGuard guard(const_cast<xrCriticalSection&>(csUi));
+	for (CUIWindow* child : m_ChildWndList)
+	{
+		if (child->WindowName() == name)
+		{
+			return child;
+		}
+	}
+	return nullptr;
+}
+
+bool CUIWindow::IsDescendantWindow(CUIWindow* wnd) const
+{
+	if (wnd == nullptr)
+	{
+		return false;
+	}
+	xrCriticalSectionGuard guard(const_cast<xrCriticalSection&>(csUi));
+	for (CUIWindow* child : m_ChildWndList)
+	{
+		if (child == wnd || child->IsDescendantWindow(wnd))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 CUIWindow*	CUIWindow::FindChild(const shared_str name)
