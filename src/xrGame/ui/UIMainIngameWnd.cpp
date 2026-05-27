@@ -369,10 +369,38 @@ void CUIMainIngameWnd::Init()
 	UICarPanel.Init();
 	AttachChild(&UICarPanel);
 
-	UIMotionIcon = new CUIMotionIcon();
-	UIMotionIcon->SetAutoDelete(false);
-	const Frect motionHostRect = UIZoneMap->MapFrame().GetWndRect();
-	UIMotionIcon->Init(motionHostRect, false);
+	UIMotionIcon = new CUIMotionIcon(); UIMotionIcon->SetAutoDelete(true);
+	bool independent = false;
+	const bool useCompassBar = EngineExternal()[EEngineExternalUI::UseCompassBar];
+	if (UIZoneMap)
+	{
+		independent = UIMotionIcon->Init(UIZoneMap->MapFrame().GetWndRect(), useCompassBar);
+		if (!independent)
+			UIZoneMap->MapFrame().AttachChild(UIMotionIcon);
+		else
+			AttachChild(UIMotionIcon);
+	}
+	else if (UICompassBar)
+	{
+		independent = UIMotionIcon->Init(Frect(), useCompassBar, true);
+		CUIWindow* layoutFrame = UIMotionIcon->CompassLayoutFrame();
+		if (layoutFrame)
+		{
+			UICompassBar->AttachChild(layoutFrame);
+			layoutFrame->AttachChild(UIMotionIcon);
+			UIMotionIcon->ApplyCompassLayout(UICompassBar);
+		}
+		else
+		{
+			independent = UIMotionIcon->Init(UICompassBar->GetFrame()->GetWndRect(), useCompassBar);
+			if (!independent)
+				UICompassBar->AttachChild(UIMotionIcon);
+			else
+				AttachChild(UIMotionIcon);
+		}
+	}
+	else
+		AttachChild(UIMotionIcon);
 
 	if (uiXml.NavigateToNode("artefact_panel") && IsGameTypeSingle())
 	{
