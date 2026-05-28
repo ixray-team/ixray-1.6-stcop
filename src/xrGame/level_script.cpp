@@ -1823,7 +1823,6 @@ void CLevel::script_register(lua_State *L)
 #endif
 		def("set_time_factor_single", set_time_factor_single), // FNAS
 		
-		def("get_online_objects", &GetOnlineGameObjectsByShapeSpatial, return_stl_iterator),
 		def("search_online_objects_by_sphere", &GetOnlineGameObjectsBySphereSpatial, return_stl_iterator),
 		def("search_online_objects_by_obb_box", &GetOnlineGameObjectsByObbBoxSpatial, return_stl_iterator),
 
