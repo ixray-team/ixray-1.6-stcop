@@ -321,10 +321,7 @@ void CHangingLamp::TurnOff	()
 
 bool CHangingLamp::IsActive()
 {
-	if (!Alive() || m_bState < 1)
-		return false;
-
-	return true;
+	return Alive() && m_bState;
 }
 
 //void CHangingLamp::Hit(float P,Fvector &dir, CObject* who,s16 element,
