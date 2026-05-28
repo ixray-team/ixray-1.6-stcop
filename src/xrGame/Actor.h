@@ -66,6 +66,8 @@ class CCustomDevice;
 class CNightVisionEffector;
 class CHudAnimatorManager;
 
+class CAnimatorCamLerpEffectorConst;
+
 class CActor: 
 	public IGame_Actor, 
 	public CEntityAlive, 
@@ -313,6 +315,10 @@ private:
 	float m_fNoclipSpeedScale = 3.0f;
 
 	bool m_bIsSafemode = false;
+
+	CAnimatorCamLerpEffectorConst* m_pCameraIdle = nullptr;
+
+	void UpdateCameraIdleAnimation();
 
 public:
 	bool					m_bAllowDeathRemove;
