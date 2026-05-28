@@ -6,6 +6,7 @@ on:
       - '**'
     paths:
       - '.github/workflows/**'
+      - 'cmake/**'
       - 'gamedata/**'
       - 'sdk/**'
       - 'src/**'
@@ -17,6 +18,7 @@ on:
       - '**'
     paths:
       - '.github/workflows/**'
+      - 'cmake/**'
       - 'gamedata/**'
       - 'sdk/**'
       - 'src/**'
