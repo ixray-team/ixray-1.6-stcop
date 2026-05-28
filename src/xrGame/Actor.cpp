@@ -147,7 +147,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 
 	pStatGraph				= nullptr;
 
-	m_pActorEffector		= nullptr;
+	m_pActorEffector = new CActorCameraManager();
 
 	SetZoomAimingMode		(false);
 
@@ -196,6 +196,13 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 
 	const static float fovFactor = EngineExternal().GetSprintFovFactor();
 	m_SprintFovFactor = fovFactor;
+
+	string_path	ce_path = {};
+	if (FS.exist(ce_path, "$game_anims$", "camera_effects\\actor_move\\idle.anm"))
+	{
+		m_pCameraIdle = new CAnimatorCamLerpEffectorConst();
+		m_pCameraIdle->SetCyclic(false);
+	}
 }
 
 CActor::~CActor()
@@ -2003,6 +2010,46 @@ void CActor::UpdatePlayerHud()
 	}
 }
 
+void CActor::UpdateCameraIdleAnimation()
+{
+	if (m_pCameraIdle == nullptr)
+	{
+		return;
+	}
+
+	if (!g_Alive())
+	{
+		Cameras().RemoveCamEffector((ECamEffectorType)42069);
+		return;
+	}
+
+	static float idle_camera_factor = 1.0f;
+
+	if ((mstate_real & ACTOR_DEFS::EMoveCommand::mcAnyMove) != 0 || IsZoomAimingMode())
+	{
+		idle_camera_factor -= Device.fTimeDelta / 0.6f;
+	}
+	else
+	{
+		idle_camera_factor += Device.fTimeDelta / 0.6f;
+	}
+	
+	clamp(idle_camera_factor, 0.0f, 1.0f);
+	
+	if (!m_pCameraIdle->Valid())
+	{
+		m_pCameraIdle->SetType((ECamEffectorType)42069);
+		m_pCameraIdle->SetCyclic(true);
+		m_pCameraIdle->SetHudAffect(false);
+		m_pCameraIdle->Start("camera_effects\\actor_move\\idle.anm");
+		Cameras().AddCamEffector(m_pCameraIdle);
+	}
+	else
+	{
+		m_pCameraIdle->SetFactor(idle_camera_factor);
+	}
+}
+
 void CActor::CheckFlyhack()
 {
 	if ((mstate_real & (mcFall)) && !(mstate_real & (mcJump | mcLanding | mcLanding2)))
@@ -2333,6 +2380,8 @@ void CActor::shedule_Update	(u32 DT)
 	}
 
 	pCamBobbing->SetState(mstate_real, conditions().IsLimping(), IsZoomAimingMode());
+
+	UpdateCameraIdleAnimation();
 
 	//звук тяжелого дыхания при уталости и хромании
 	if(this==Level().CurrentControlEntity() && !g_dedicated_server && Holder() == nullptr)
