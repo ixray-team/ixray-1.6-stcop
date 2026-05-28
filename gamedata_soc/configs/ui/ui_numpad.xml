@@ -18,6 +18,21 @@
     <texture id="ui_numpad_void" x="350" y="250" width="72" height="45" />
     <texture id="ui_numpad_key0b" x="483" y="135" width="72" height="45" />
 
+    <texture id="ui_numpad_key07_h" x="571" y="0" width="72" height="45" />
+    <texture id="ui_numpad_key04_h" x="571" y="45" width="72" height="45" />
+    <texture id="ui_numpad_key01_h" x="571" y="90" width="72" height="45" />
+    <texture id="ui_numpad_key00_h" x="571" y="135" width="72" height="45" />
+    <texture id="ui_numpad_key0c_h" x="643" y="135" width="72" height="45" />
+    <texture id="ui_numpad_key02_h" x="643" y="90" width="72" height="45" />
+    <texture id="ui_numpad_key05_h" x="643" y="45" width="72" height="45" />
+    <texture id="ui_numpad_key08_h" x="643" y="0" width="72" height="45" />
+    <texture id="ui_numpad_key09_h" x="715" y="0" width="72" height="45" />
+    <texture id="ui_numpad_key06_h" x="715" y="45" width="72" height="45" />
+    <texture id="ui_numpad_key03_h" x="715" y="90" width="72" height="45" />
+    <texture id="ui_numpad_keyEnter_h" x="571" y="180" width="111" height="45" />
+    <texture id="ui_numpad_keyCancel_h" x="682" y="180" width="111" height="45" />
+    <texture id="ui_numpad_key0b_h" x="715" y="135" width="72" height="45" />
+
     <texture id="ui_talk_dialogue_b"		x="2" y="369"	width="600" height="75" />
     <texture id="ui_talk_dialogue_back"		x="2" y="444"	width="600" height="96" />
     <texture id="ui_talk_dialogue_e"		x="2" y="540"	width="600" height="40" />
