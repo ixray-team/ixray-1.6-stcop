@@ -331,6 +331,7 @@ public:
 	shared_str				m_sBurerKickAnimator;
 	shared_str				m_sFrontKickAnimator;
 	shared_str				m_sBackKickAnimator;
+	shared_str				m_safemode_cams[2] = {};
 
 	void SetHandsJitterTime(u32 time) { _jitter_time_remains = time; }
 	bool IsHandJitter() const { return _jitter_time_remains > 0; }
