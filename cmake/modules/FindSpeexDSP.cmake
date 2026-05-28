@@ -26,15 +26,10 @@ if(NOT TARGET SpeexDSP::speexdsp)
         FetchContent_MakeAvailable(speexdsp)
 
         if(TARGET speexdsp)
-        target_include_directories(speexdsp PUBLIC
-            ${speexdsp_SOURCE_DIR}/include
-            ${speexdsp_SOURCE_DIR}/libspeexdsp
-        )
-
-        if(NOT TARGET SpeexDSP::speexdsp)
-            add_library(SpeexDSP::speexdsp ALIAS speexdsp)
+            if(NOT TARGET SpeexDSP::speexdsp)
+                add_library(SpeexDSP::speexdsp ALIAS speexdsp)
+            endif()
         endif()
-endif()
         
     endif()
 endif()
