@@ -203,6 +203,16 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 		m_pCameraIdle = new CAnimatorCamLerpEffectorConst();
 		m_pCameraIdle->SetCyclic(false);
 	}
+
+	if (FS.exist(ce_path, "$game_anims$", "camera_effects\\actor_move\\safemode_in.anm"))
+	{
+		m_safemode_cams[0] = "camera_effects\\actor_move\\safemode_in.anm";
+	}
+
+	if (FS.exist(ce_path, "$game_anims$", "camera_effects\\actor_move\\safemode_out.anm"))
+	{
+		m_safemode_cams[1] = "camera_effects\\actor_move\\safemode_out.anm";
+	}
 }
 
 CActor::~CActor()
