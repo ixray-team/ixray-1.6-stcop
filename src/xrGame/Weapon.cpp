@@ -1743,16 +1743,6 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 					{
 						if (pActor->IsSafemode())
 						{
-							ResetSubStateTime();
-
-							if (m_eAnimationsFlags.test(EAnimationsFlags::af_safemode_in_out))
-							{
-								SwitchState(eSafemodeSwitch);
-							}
-							else
-							{
-								pActor->SetSafemodeStatus(false);
-							}
 							return false;
 						}
 					}
@@ -1857,6 +1847,15 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 								PlayBlendAnm(m_sSafemodeBlendParams[0].camera_name, m_sSafemodeBlendParams[0].speed_power.x, m_sSafemodeBlendParams[0].speed_power.y,
 									m_sSafemodeBlendParams[0].blend_params, false, false, true, 2, 0, script_layer::EBlendLayers::eSafemodeIn);
 							}
+						}
+
+						if (pActor->m_safemode_cams[0].size() > 0 && pActor->m_safemode_cams[1].size() > 0)
+						{
+							CAnimatorCamEffector* e = new CAnimatorCamEffector();
+							e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
+							e->SetCyclic(false);
+							e->Start(*pActor->m_safemode_cams[cur_status ? 1 : 0]);
+							pActor->Cameras().AddCamEffector(e);
 						}
 
 						pActor->SetSafemodeStatus(!cur_status);
