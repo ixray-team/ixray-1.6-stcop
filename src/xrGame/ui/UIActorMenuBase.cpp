@@ -426,7 +426,7 @@ bool CUIActorMenuBase::CanSetItemToList(PIItem item, CUIDragDropListEx* l, u16& 
 	// Sidearm items keep BaseSlot INV_SLOT_2; map drops onto the dedicated holster list to PISTOL_SLOT_NEW.
 	if (m_pInvList[PISTOL_SLOT_NEW] && l == m_pInvList[PISTOL_SLOT_NEW] && item_slot == INV_SLOT_2)
 	{
-		if (GetInventoryOwner()->inventory().CanPutInSlot(item, PISTOL_SLOT_NEW))
+		if (GetInventoryOwner()->inventory().CanPutInSlot(item, PISTOL_SLOT_NEW, true))
 		{
 			ret_slot	= PISTOL_SLOT_NEW;
 			return		true;
