@@ -505,6 +505,20 @@ void CWeapon::Load		(const char* section)
 		m_hit_probability[i]		= READ_IF_EXISTS(pSettings,r_float,section,temp,1.f);
 	}
 
+	{
+		string_path	ce_path = {};
+		shared_str tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, "cam_safemode_in", "camera_effects\\actor_move\\safemode_in.anm");
+		if (FS.exist(ce_path, "$game_anims$", *tmp))
+		{
+			m_safemode_cams[0] = tmp;
+		}
+
+		tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, "cam_safemode_out", "camera_effects\\actor_move\\safemode_out.anm");
+		if (FS.exist(ce_path, "$game_anims$", *tmp))
+		{
+			m_safemode_cams[1] = tmp;
+		}
+	}
 	
 	m_zoom_params.m_bUseDynamicZoom	= READ_IF_EXISTS(pSettings,r_bool,section,"scope_dynamic_zoom",false);
 	m_zoom_params.m_sUseZoomPostprocess	= READ_IF_EXISTS(pSettings, r_string, section, "scope_nightvision", 0);
@@ -1816,15 +1830,10 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 		}break;
 		case kSAFEMODE:
 		{
-			if (flags & CMD_START && ParentIsActor() && m_bAllowSafemode && !IsZoomed() && (GetState() == eIdle && !IsPending() || GetState() == eSafemodeSwitch))
+			if (flags & CMD_START && ParentIsActor() && AllowSafemode())
 			{
 				if (CActor* pActor = H_Parent()->cast_actor())
 				{
-					if (IsZoomed())
-					{
-						OnZoomOut();
-					}
-
 					ResetSubStateTime();
 
 					if (m_eAnimationsFlags.test(EAnimationsFlags::af_safemode_in_out))
@@ -1849,12 +1858,18 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 							}
 						}
 
-						if (pActor->m_safemode_cams[0].size() > 0 && pActor->m_safemode_cams[1].size() > 0)
+						if (m_eSoundsFlags2.test(ESoundsFlags2::sf_safemode_in_out))
+						{
+							PlaySound(cur_status ? "sndSafemodeOut" : "sndSafemodeIn", get_LastFP());
+						}
+
+						if (m_safemode_cams[0].size() > 0 && m_safemode_cams[1].size() > 0)
 						{
 							CAnimatorCamEffector* e = new CAnimatorCamEffector();
 							e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
 							e->SetCyclic(false);
-							e->Start(*pActor->m_safemode_cams[cur_status ? 1 : 0]);
+							e->SetHudAffect(true);
+							e->Start(*m_safemode_cams[cur_status ? 1 : 0]);
 							pActor->Cameras().AddCamEffector(e);
 						}
 
@@ -1879,7 +1894,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 							{
 								if (pActor->IsSafemode())
 								{
-									ResetSubStateTime();
+									OnSafemodeOut();
 									pActor->SetSafemodeStatus(false);
 								}
 							}
@@ -1934,7 +1949,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 							{
 								if (pActor->IsSafemode())
 								{
-									ResetSubStateTime();
+									OnSafemodeOut();
 									pActor->SetSafemodeStatus(false);
 								}
 							}
@@ -5014,7 +5029,44 @@ bool CWeapon::NeedMovementBlend() const
 bool CWeapon::AllowSafemode() const
 {
 	const u8 state = GetState();
-	return m_bAllowSafemode && (state == eIdle || state == eSafemodeSwitch || state == eSwitchMode);
+	return m_bAllowSafemode && !IsZoomed() && (state == eIdle || state == eSafemodeSwitch || state == eSwitchMode);
+}
+
+void CWeapon::OnSafemodeOut()
+{
+	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+
+	if (pActor == nullptr)
+	{
+		return;
+	}
+
+	ResetSubStateTime();
+
+	if (HudItemData() != nullptr)
+	{
+		if (m_sSafemodeBlendParams[0].has_motion && m_sSafemodeBlendParams[1].has_motion && m_sSafemodeBlendParams[2].has_motion)
+		{
+			bool Mix = !IsBlendAnmActive(m_sSafemodeBlendParams[2].camera_name);
+			PlayBlendAnm(m_sSafemodeBlendParams[2].camera_name, m_sSafemodeBlendParams[2].speed_power.x, m_sSafemodeBlendParams[2].speed_power.y,
+				m_sSafemodeBlendParams[2].blend_params, false, Mix, true, 2, 0, script_layer::EBlendLayers::eSafemodeOut);
+		}
+
+		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_safemode_in_out))
+		{
+			PlaySound("sndSafemodeOut", get_LastFP());
+		}
+
+		if (m_safemode_cams[0].size() > 0 && m_safemode_cams[1].size() > 0)
+		{
+			CAnimatorCamEffector* e = new CAnimatorCamEffector();
+			e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
+			e->SetCyclic(false);
+			e->SetHudAffect(true);
+			e->Start(*m_safemode_cams[1]);
+			pActor->Cameras().AddCamEffector(e);
+		}
+	}
 }
 
 THudLightLaser* CWeapon::GetLightLaser()
