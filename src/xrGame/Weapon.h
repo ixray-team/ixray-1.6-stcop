@@ -440,6 +440,8 @@ protected:
 	shared_str hud_scope;
 	shared_str hud_gl;
 
+	shared_str m_safemode_cams[2] = {};
+
 protected:
 	bool m_bBlockUpdateAmmoBonesShooting = false;
 	bool m_bUseLastAmmoType = false;
@@ -528,6 +530,7 @@ public:
 	virtual	void			ZoomDec				();
 	virtual void			OnZoomIn			();
 	virtual void			OnZoomOut			();
+	void					OnSafemodeOut		();
 	IC		bool			IsZoomed			()	const		{return m_zoom_params.m_bIsZoomModeNow;}
 	IC		bool			IsAltZoomed			()	const		{return m_zoom_params.m_bIsAltZoomModeNow;}
 	CUIStatic*				ZoomTexture			();	
