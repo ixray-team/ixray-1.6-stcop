@@ -74,7 +74,7 @@ extern	bool	g_sv_tdm_bFriendlyIndicators	;
 extern	bool	g_sv_tdm_bFriendlyNames			;
 extern	float	g_sv_tdm_fFriendlyFireModifier	;
 extern	int		g_sv_tdm_iTeamKillLimit			;
-extern	int		g_sv_tdm_bTeamKillPunishment	;
+extern	bool	g_sv_tdm_bTeamKillPunishment	;
 extern	u32		g_sv_ah_dwArtefactRespawnDelta	;
 extern	int		g_sv_ah_dwArtefactsNum			;
 extern	u32		g_sv_ah_dwArtefactStayTime		;
@@ -1804,6 +1804,20 @@ public:
 	  }
 };
 
+class CCC_SV_Boolean : public CCC_Boolean {
+public:
+	CCC_SV_Boolean(const char* N, bool* V, bool _min = false, bool _max = true) :CCC_Boolean(N, V, _min, _max) {};
+
+	virtual void	Execute(const char* args)
+	{
+		CCC_Boolean::Execute(args);
+
+		if (!g_pGameLevel || !Level().Server || !Level().Server->game) return;
+
+		Level().Server->game->signal_Syncronize();
+	}
+};
+
 class CCC_SV_Float : public CCC_Float {
 public:
 	CCC_SV_Float(const char* N, float* V, float _min=0, float _max=1) : CCC_Float(N,V,_min,_max) {};
@@ -2256,46 +2270,46 @@ void register_mp_console_commands()
 	CMD4(CCC_SV_Integer,	"sv_rpoint_freeze_time"		,	(int*)&g_sv_base_dwRPointFreezeTime, 0, 60000);
 	CMD4(CCC_SV_Integer,	"sv_vote_enabled", &g_sv_base_iVotingEnabled, 0, 0x00FF);
 
-	CMD4(CCC_SV_Integer,	"sv_spectr_freefly"			,	(int*)&g_sv_mp_bSpectator_FreeFly	, 0, 1);
-	CMD4(CCC_SV_Integer,	"sv_spectr_firsteye"		,	(int*)&g_sv_mp_bSpectator_FirstEye	, 0, 1);
-	CMD4(CCC_SV_Integer,	"sv_spectr_lookat"			,	(int*)&g_sv_mp_bSpectator_LookAt	, 0, 1);
-	CMD4(CCC_SV_Integer,	"sv_spectr_freelook"		,	(int*)&g_sv_mp_bSpectator_FreeLook	, 0, 1);
-	CMD4(CCC_SV_Integer,	"sv_spectr_teamcamera"		,	(int*)&g_sv_mp_bSpectator_TeamCamera, 0, 1);	
+	CMD2(CCC_SV_Boolean,	"sv_spectr_freefly"			,	&g_sv_mp_bSpectator_FreeFly			);
+	CMD2(CCC_SV_Boolean,	"sv_spectr_firsteye"		,	&g_sv_mp_bSpectator_FirstEye		);
+	CMD2(CCC_SV_Boolean,	"sv_spectr_lookat"			,	&g_sv_mp_bSpectator_LookAt			);
+	CMD2(CCC_SV_Boolean,	"sv_spectr_freelook"		,	&g_sv_mp_bSpectator_FreeLook		);
+	CMD2(CCC_SV_Boolean,	"sv_spectr_teamcamera"		,	&g_sv_mp_bSpectator_TeamCamera		);	
 	
-	CMD4(CCC_SV_Integer,	"sv_vote_participants"		,	(int*)&g_sv_mp_bCountParticipants	,	0,	1);	
+	CMD2(CCC_SV_Boolean,	"sv_vote_participants"		,	&g_sv_mp_bCountParticipants			);	
 	CMD4(CCC_SV_Float,		"sv_vote_quota"				,	&g_sv_mp_fVoteQuota					, 0.0f,1.0f);
 	CMD4(CCC_SV_Float,		"sv_vote_time"				,	&g_sv_mp_fVoteTime					, 0.5f,10.0f);
 
 	CMD4(CCC_SV_Integer,	"sv_forcerespawn"			,	(int*)&g_sv_dm_dwForceRespawn		,	0,3600);	//sec
 	CMD4(CCC_SV_Integer,	"sv_fraglimit"				,	&g_sv_dm_dwFragLimit				,	0,1000);
 	CMD4(CCC_SV_Integer,	"sv_timelimit"				,	&g_sv_dm_dwTimeLimit				,	0,180);		//min
-	CMD4(CCC_SV_Integer,	"sv_dmgblockindicator"		,	(int*)&g_sv_dm_bDamageBlockIndicators,	0, 1);
+	CMD2(CCC_SV_Boolean,	"sv_dmgblockindicator"		,	&g_sv_dm_bDamageBlockIndicators		);
 	CMD4(CCC_SV_Integer,	"sv_dmgblocktime"			,	(int*)&g_sv_dm_dwDamageBlockTime	,	0, 600);	//sec
-	CMD4(CCC_SV_Integer,	"sv_anomalies_enabled"		,	(int*)&g_sv_dm_bAnomaliesEnabled	,	0, 1);
+	CMD2(CCC_SV_Boolean,	"sv_anomalies_enabled"		,	&g_sv_dm_bAnomaliesEnabled			);
 	CMD4(CCC_SV_Integer,	"sv_anomalies_length"		,	(int*)&g_sv_dm_dwAnomalySetLengthTime,	0, 180); //min
-	CMD4(CCC_SV_Integer,	"sv_pda_hunt"				,	(int*)&g_sv_dm_bPDAHunt				,	0, 1);
+	CMD2(CCC_SV_Boolean,	"sv_pda_hunt"				,	&g_sv_dm_bPDAHunt					);
 	CMD4(CCC_SV_Integer,	"sv_warm_up"				,	(int*)&g_sv_dm_dwWarmUp_MaxTime		,	0, 3600); //sec
 
 	CMD4(CCC_Integer,		"sv_max_ping_limit"			,	(int*)&g_sv_dwMaxClientPing		,	1, 2000);
 
-	CMD4(CCC_SV_Integer,	"sv_auto_team_balance"		,	(int*)&g_sv_tdm_bAutoTeamBalance	,	0,1);
-	CMD4(CCC_SV_Integer,	"sv_auto_team_swap"			,	(int*)&g_sv_tdm_bAutoTeamSwap		,	0,1);
-	CMD4(CCC_SV_Integer,	"sv_friendly_indicators"	,	(int*)&g_sv_tdm_bFriendlyIndicators	,	0,1);
-	CMD4(CCC_SV_Integer,	"sv_friendly_names"			,	(int*)&g_sv_tdm_bFriendlyNames		,	0,1);
+	CMD2(CCC_SV_Boolean,	"sv_auto_team_balance"		,	&g_sv_tdm_bAutoTeamBalance			);
+	CMD2(CCC_SV_Boolean,	"sv_auto_team_swap"			,	&g_sv_tdm_bAutoTeamSwap				);
+	CMD2(CCC_SV_Boolean,	"sv_friendly_indicators"	,	&g_sv_tdm_bFriendlyIndicators		);
+	CMD2(CCC_SV_Boolean,	"sv_friendly_names"			,	&g_sv_tdm_bFriendlyNames			);
 	CMD4(CCC_SV_Float,		"sv_friendlyfire"			,	&g_sv_tdm_fFriendlyFireModifier		,	0.0f,2.0f);
 	CMD4(CCC_SV_Integer,	"sv_teamkill_limit"			,	&g_sv_tdm_iTeamKillLimit			,	0,100);
-	CMD4(CCC_SV_Integer,	"sv_teamkill_punish"		,	(int*)&g_sv_tdm_bTeamKillPunishment	,	0,1);
+	CMD2(CCC_SV_Boolean,	"sv_teamkill_punish"		,	&g_sv_tdm_bTeamKillPunishment		);
 
 	CMD4(CCC_SV_Integer,	"sv_artefact_respawn_delta"	,	(int*)&g_sv_ah_dwArtefactRespawnDelta	,0,600);	//sec
 	CMD4(CCC_SV_Integer,	"sv_artefacts_count"		,	(int*)&g_sv_ah_dwArtefactsNum			, 1,100);
 	CMD4(CCC_SV_Integer,	"sv_artefact_stay_time"		,	(int*)&g_sv_ah_dwArtefactStayTime		, 0,180);	//min
 	CMD4(CCC_SV_Integer,	"sv_reinforcement_time"		,	(int*)&g_sv_ah_iReinforcementTime		, -1,3600); //sec
-	CMD4(CCC_SV_Integer,	"sv_bearercantsprint"		,	(int*)&g_sv_ah_bBearerCantSprint				, 0, 1)	;
-	CMD4(CCC_SV_Integer,	"sv_shieldedbases"			,	(int*)&g_sv_ah_bShildedBases					, 0, 1)	;
-	CMD4(CCC_SV_Integer,	"sv_returnplayers"			,	(int*)&g_sv_ah_bAfReturnPlayersToBases		, 0, 1)	;
+	CMD2(CCC_SV_Boolean,	"sv_bearercantsprint"		,	&g_sv_ah_bBearerCantSprint			)	;
+	CMD2(CCC_SV_Boolean,	"sv_shieldedbases"			,	&g_sv_ah_bShildedBases				)	;
+	CMD2(CCC_SV_Boolean,	"sv_returnplayers"			,	&g_sv_ah_bAfReturnPlayersToBases	)	;
 	CMD1(CCC_SwapTeams,		"g_swapteams"				);
 #ifdef DEBUG
-	CMD4(CCC_SV_Integer,	"sv_ignore_money_on_buy"	,	(int*)&g_sv_dm_bDMIgnore_Money_OnBuy,	0, 1);
+	CMD2(CCC_SV_Boolean,	"sv_ignore_money_on_buy"	,	&g_sv_dm_bDMIgnore_Money_OnBuy		);
 #endif
 
 	CMD1(CCC_RadminCmd,		"ra");
@@ -2314,8 +2328,8 @@ void register_mp_console_commands()
 	CMD4(CCC_Integer,		"sv_show_player_scores_time",	(int*)&g_sv_cta_PlayerScoresDelayTime, 1, 20); //sec
 	CMD4(CCC_Integer,		"sv_cta_runkup_to_arts_div",	(int*)&g_sv_cta_rankUpToArtsCountDiv, 0, 10);
 	CMD1(CCC_CompressorStatus,"net_compressor_status");
-	CMD4(CCC_SV_Integer,	"net_compressor_enabled"		,	(int*)&g_net_compressor_enabled	,	0,1);
-	CMD4(CCC_SV_Integer,	"net_compressor_gather_stats"	,	(int*)&g_net_compressor_gather_stats,0,1);
+	CMD2(CCC_SV_Boolean,	"net_compressor_enabled"		,	&g_net_compressor_enabled);
+	CMD2(CCC_SV_Boolean,	"net_compressor_gather_stats"	,	&g_net_compressor_gather_stats);
 	CMD1(CCC_MpStatistics,	"sv_dump_online_statistics");
 	CMD4(CCC_SV_Integer,	"sv_dump_online_statistics_period"	,	(int*)&g_sv_mp_iDumpStatsPeriod	,	0,60); //min
 #ifdef DEBUG
