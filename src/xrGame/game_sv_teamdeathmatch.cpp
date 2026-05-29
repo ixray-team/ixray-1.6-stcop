@@ -21,7 +21,7 @@ bool		g_sv_tdm_bFriendlyNames			= false;
 float		g_sv_tdm_fFriendlyFireModifier	= 1.0f;
 //-------------------------------------------------------
 int			g_sv_tdm_iTeamKillLimit			= 3;
-int			g_sv_tdm_bTeamKillPunishment	= true;
+bool		g_sv_tdm_bTeamKillPunishment	= true;
 //-------------------------------------------------------
 bool	game_sv_TeamDeathmatch::isFriendlyFireEnabled	()	{return (int(g_sv_tdm_fFriendlyFireModifier*100.0f) > 0);};
 float	game_sv_TeamDeathmatch::GetFriendlyFire			()	{ return (int(g_sv_tdm_fFriendlyFireModifier*100.0f) > 0) ? g_sv_tdm_fFriendlyFireModifier : 0.0f;};
