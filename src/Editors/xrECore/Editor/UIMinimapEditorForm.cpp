@@ -2,6 +2,7 @@
 #include "UIMinimapEditorForm.h"
 #include "../../../xrCore/os_clipboard.h"
 #include "imgui.h"
+#include <cmath>
 
 UIMinimapEditorForm*    UIMinimapEditorForm::Form = nullptr;
 
@@ -1070,6 +1071,11 @@ void UIMinimapEditorForm::ReloadMapInfo(const xr_string& fn)
 				el.TexturePath = textureFile;
 				sprintf(texturePath, "%s%s.dds", FS.get_path("$game_textures$")->m_Path, textureFile);
 			}
+
+			Fvector4 bf = levelLtxFile.r_fvector4("level_map", "bound_rect");
+			el.aspectRatio = (std::fabsf(bf.x) + std::fabsf(bf.z)) / (std::fabsf(bf.y) + std::fabsf(bf.w));
+			if ((el.aspectRatio == 0.0f) || (std::isnan(el.aspectRatio)))
+				el.aspectRatio = 1.f;
 		}
 
 		if (texturePath == "")
@@ -1277,8 +1283,6 @@ int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 	//el.path = fn;
 	el.FileSize.x = W;
 	el.FileSize.y = H;
-
-	el.aspectRatio = (float)el.FileSize.x / (float)el.FileSize.y;
 
 	ID3DTexture2D* pTexture = nullptr;
 	{
