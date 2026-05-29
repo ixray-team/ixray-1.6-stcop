@@ -48,7 +48,7 @@ extern	bool		g_sv_tdm_bFriendlyNames;
 extern	float		g_sv_tdm_fFriendlyFireModifier;
 //-------------------------------------------------------------
 extern	int			g_sv_tdm_iTeamKillLimit;
-extern	int			g_sv_tdm_bTeamKillPunishment;
+extern	bool		g_sv_tdm_bTeamKillPunishment;
 //-------------------------------------------------------
 extern	int			g_sv_ah_iReinforcementTime;
 extern	bool		g_sv_ah_bBearerCantSprint;
