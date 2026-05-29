@@ -17,6 +17,7 @@ include("${CMAKE_MODULE_PATHEX}/lunasvg.cmake")
 include("${CMAKE_MODULE_PATHEX}/DirectXMesh.cmake")
 include("${CMAKE_MODULE_PATHEX}/DirectXTex.cmake")
 include("${CMAKE_MODULE_PATHEX}/SteamWorks.cmake")
+include("${CMAKE_MODULE_PATHEX}/DirectXShaderCompiler.cmake")
 
 if (IXRAY_PROFILER_TRACY)
     include("${CMAKE_MODULE_PATHEX}/Tracy.cmake")
