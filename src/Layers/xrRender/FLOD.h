@@ -1,7 +1,7 @@
 #pragma once
 #include "FHierrarhyVisual.h"
 
-class	FLOD	:	public FHierrarhyVisual
+class FLOD: public FHierrarhyVisual
 {
 	typedef FHierrarhyVisual inherited;
 public:
@@ -33,8 +33,21 @@ public:
 	ref_geom		geom		;
 	_face			facets		[8];
 	float			lod_factor	;
+	bool			next_lod_checked = false;
+    bool			has_next_lod = false;
 public:
 	virtual void Render			(float LOD		);									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
 	virtual void Load			(const char* N, IReader *data, u32 dwFlags);
 	virtual void Copy			(dxRender_Visual *pFrom	);
+};
+
+class FMUMeshLODs : public FHierrarhyVisual
+{
+	virtual void Load(const char* N, IReader *data, u32 dwFlags) override;
+};
+
+class FMUMeshLOD : public FHierrarhyVisual
+{
+public:
+	u8 LODLevel = -1;
 };
