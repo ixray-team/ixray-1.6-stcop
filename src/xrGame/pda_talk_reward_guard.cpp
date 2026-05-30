@@ -4,6 +4,7 @@
 
 #include "PhraseScript.h"
 #include "pda_communication.h"
+#include "PdaTalkDialogPolicy.h"
 #include "Actor.h"
 #include "../xrEngine/string_table.h"
 #include "ai_space.h"
@@ -97,7 +98,7 @@ void RunPhraseActions(
         const shared_str& actionName = helper.Actions()[i];
         THROW(*actionName);
 
-        if (PdaCommunication().IsRemotePhraseContext() && IsPhysicalPhraseAction(*actionName))
+        if (PdaTalkDialogPolicy().ShouldDeferPhraseAction(dialogId, phraseId, *actionName))
         {
             deferredPhysical = true;
             continue;

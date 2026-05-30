@@ -8,6 +8,7 @@
 #include "../xrScripts/script_engine.h"
 #include "script_game_object.h"
 #include "Actor.h"
+#include "PdaTalkDialogPolicy.h"
 
 namespace
 {
@@ -445,7 +446,20 @@ bool CPhraseDialog::IsPhraseAvailable(const CPhrase* phrase) const
 		return false;
 	}
 
-	return !IsPdaMode() || !IsPhraseDisabledForPda(phrase->GetID(), phrase->GetText());
+	if (IsPdaMode())
+	{
+		if (IsPhraseDisabledForPda(phrase->GetID(), phrase->GetText()))
+		{
+			return false;
+		}
+
+		if (!PdaTalkDialogPolicy().IsPhraseAllowed(m_DialogId, phrase, true))
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 bool CPhraseDialog::IsPhraseDisabledForPda(const shared_str& phraseId, const char* text) const
