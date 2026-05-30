@@ -443,6 +443,7 @@ protected:
 	shared_str m_safemode_cams[2] = {};
 	shared_str m_aim_cams[2] = {};
 
+	RStringVec m_shot_cams[2] = {};
 
 protected:
 	bool m_bBlockUpdateAmmoBonesShooting = false;
