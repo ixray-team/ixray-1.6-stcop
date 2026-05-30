@@ -200,8 +200,6 @@ protected:
 	virtual void				TryRepairItem						(CUIWindow* w, void* d);
 	void						TryDisassembleItem					(CUIWindow* w, void* d);
 	
-	// trade
-	virtual void				UpdatePrices						();
 
 	// Controller UI
 	virtual void				SetAuxMode							(eActorMenuControllerAuxMode mode);
@@ -221,6 +219,9 @@ public:
 	virtual void				Draw								();
 	virtual void				Update								();
 	virtual void				Show								(bool status);
+
+	// trade
+	virtual void				UpdatePrices						();
 
 	void						CallMessageBoxYesNo					(const char* text);
 	void						CallMessageBoxOK					(const char* text);
