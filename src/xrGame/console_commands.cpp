@@ -53,7 +53,7 @@
 #	include "game_graph.h"
 #	include "CharacterPhysicsSupport.h"
 #endif // DEBUG
-
+#include "ui/UITradeWnd.h"
 #include "ai_object_location.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
@@ -1788,14 +1788,34 @@ public:
 	CCC_GiveMoney(const char* N) : IConsole_Command(N) {
 	}
 
-	virtual void Execute(const char* money) override {
-		if (!g_pGameLevel) {
+	virtual void Execute(const char* money) override 
+	{
+		if (!g_pGameLevel) 
+		{
+			return;
+		}
+
+		int m = atoi(money);
+		if (m == 0)
+		{
+			Msg("! Must specify an integer value");
 			return;
 		}
 
 		if (CActor* actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr)
 		{
-			actor->set_money(actor->get_money() + atoi(money), true);
+			actor->set_money(actor->get_money() + m, true);
+		}
+		if (CurrentGameUI())
+		{
+			if (CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu()->IsShown())
+			{
+				CurrentGameUI()->ActorMenu()->UpdateActor();
+			}
+			if (CurrentGameUI()->TradeWnd() && CurrentGameUI()->TradeWnd()->IsShown())
+			{
+				CurrentGameUI()->TradeWnd()->UpdatePrices();
+			}
 		}
 	}
 };
