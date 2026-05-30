@@ -56,7 +56,7 @@ bool ESceneObjectTool::Validate(bool full_test)
             }
 
             // validate lods
-            if (Scene->IsValidateLODs && full_test && A->IsMUStatic())
+            if (!EPrefs->UseMULODs && Scene->IsValidateLODs && full_test && A->IsMUStatic())
             {
                 CEditableObject* E = A->GetReference(); VERIFY(E);
                 xr_string lod_name = E->GetLODTextureName();

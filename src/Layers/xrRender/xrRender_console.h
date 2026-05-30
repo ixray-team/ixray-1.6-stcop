@@ -39,6 +39,8 @@ extern ECORE_API	float		ps_r__WallmarkSHIFT_V	;
 extern ECORE_API	float		ps_r__GLOD_ssa_start;
 extern ECORE_API	float		ps_r__GLOD_ssa_end	;
 extern ECORE_API	float		ps_r__LOD			;
+extern ECORE_API	float		ps_r__LOD_MU_X		;
+extern ECORE_API	float		ps_r__LOD_MU4_discard;
 extern ECORE_API	float		ps_r__ssaDISCARD	;
 extern ECORE_API	float		ps_r__ssaDONTSORT	;
 extern ECORE_API	float		ps_r__ssaHZBvsTEX	;
