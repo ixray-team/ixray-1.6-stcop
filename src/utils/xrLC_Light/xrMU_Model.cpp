@@ -5,7 +5,7 @@
 #include "vector_clear.h"
 #include "../../xrCore/xrPool.h"
 
-xrMU_Model::xrMU_Model() : m_lod_ID(u16(-1)) 
+xrMU_Model::xrMU_Model() 
 {
 }
 
