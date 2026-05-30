@@ -532,6 +532,32 @@ void CWeapon::Load		(const char* section)
 		}
 	}
 	
+	{
+		auto LoadMoreCameras = [&](RStringVec& vector, const char* param_name, const char* base_camera_name)
+		{
+			string_path	ce_path = {};
+			shared_str tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, param_name, base_camera_name);
+			if (!FS.exist(ce_path, "$game_anims$", *tmp))
+			{
+				return;
+			}
+			vector.push_back(tmp);
+
+			int k = 1;
+
+			tmp.printf("%s%d", base_camera_name, k);
+
+			while (FS.exist(ce_path, "$game_anims$", *tmp))
+			{
+				vector.push_back(tmp);
+				tmp.printf("%s%d", base_camera_name, ++k);
+			}
+		};
+
+		LoadMoreCameras(m_shot_cams[0], "cam_shoot", "camera_effects\\weapon\\base_shoot.anm");
+		LoadMoreCameras(m_shot_cams[1], "cam_aim_shoot", "camera_effects\\weapon\\base_aim_shoot.anm");
+	}
+
 	m_zoom_params.m_bUseDynamicZoom	= READ_IF_EXISTS(pSettings,r_bool,section,"scope_dynamic_zoom",false);
 	m_zoom_params.m_sUseZoomPostprocess	= READ_IF_EXISTS(pSettings, r_string, section, "scope_nightvision", 0);
 	m_zoom_params.m_sUseBinocularVision	= READ_IF_EXISTS(pSettings, r_string, section, "scope_alive_detector", 0);
