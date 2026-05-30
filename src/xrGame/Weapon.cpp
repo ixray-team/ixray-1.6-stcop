@@ -1869,11 +1869,17 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 							}
 						}
 
+						if (m_eSoundsFlags2.test(ESoundsFlags2::sf_safemode_in_out))
+						{
+							PlaySound(cur_status ? "sndSafemodeOut" : "sndSafemodeIn", get_LastFP());
+						}
+
 						if (m_safemode_cams[0].size() > 0 && m_safemode_cams[1].size() > 0)
 						{
 							CAnimatorCamEffector* e = new CAnimatorCamEffector();
 							e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
 							e->SetCyclic(false);
+							e->SetHudAffect(true);
 							e->Start(*m_safemode_cams[cur_status ? 1 : 0]);
 							pActor->Cameras().AddCamEffector(e);
 						}
@@ -5060,20 +5066,29 @@ void CWeapon::OnSafemodeOut()
 
 	ResetSubStateTime();
 
-	if (m_sSafemodeBlendParams[0].has_motion && m_sSafemodeBlendParams[1].has_motion && m_sSafemodeBlendParams[2].has_motion)
+	if (HudItemData() != nullptr)
 	{
-		bool Mix = !IsBlendAnmActive(m_sSafemodeBlendParams[2].camera_name);
-		PlayBlendAnm(m_sSafemodeBlendParams[2].camera_name, m_sSafemodeBlendParams[2].speed_power.x, m_sSafemodeBlendParams[2].speed_power.y,
-			m_sSafemodeBlendParams[2].blend_params, false, Mix, true, 2, 0, script_layer::EBlendLayers::eSafemodeOut);
-	}
+		if (m_sSafemodeBlendParams[0].has_motion && m_sSafemodeBlendParams[1].has_motion && m_sSafemodeBlendParams[2].has_motion)
+		{
+			bool Mix = !IsBlendAnmActive(m_sSafemodeBlendParams[2].camera_name);
+			PlayBlendAnm(m_sSafemodeBlendParams[2].camera_name, m_sSafemodeBlendParams[2].speed_power.x, m_sSafemodeBlendParams[2].speed_power.y,
+				m_sSafemodeBlendParams[2].blend_params, false, Mix, true, 2, 0, script_layer::EBlendLayers::eSafemodeOut);
+		}
 
-	if (m_safemode_cams[0].size() > 0 && m_safemode_cams[1].size() > 0)
-	{
-		CAnimatorCamEffector* e = new CAnimatorCamEffector();
-		e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
-		e->SetCyclic(false);
-		e->Start(*m_safemode_cams[1]);
-		pActor->Cameras().AddCamEffector(e);
+		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_safemode_in_out))
+		{
+			PlaySound("sndSafemodeOut", get_LastFP());
+		}
+
+		if (m_safemode_cams[0].size() > 0 && m_safemode_cams[1].size() > 0)
+		{
+			CAnimatorCamEffector* e = new CAnimatorCamEffector();
+			e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
+			e->SetCyclic(false);
+			e->SetHudAffect(true);
+			e->Start(*m_safemode_cams[1]);
+			pActor->Cameras().AddCamEffector(e);
+		}
 	}
 }
 
