@@ -168,10 +168,10 @@ void CAnomalyZone::Load(const char* section)
 	if (READ_IF_EXISTS(pSettings, r_bool, section, "use_electric_curve", false))
 	{
 		m_use_electric_curve = true;
+		max_blastTimeProcessing = READ_IF_EXISTS(pSettings, r_float, section, "max_curve_damage_time", 5000.0f);
 		m_electric_curve_particle_path = READ_IF_EXISTS(pSettings, r_string, section, "electric_curve_particle_path", "");
 		m_snd_emmiter_electric_core_target_damage.clear();
 		m_snd_emmiter_electric_core_loop.clear();
-
 		m_snd_emmiter_electric_curve_start.clear();
 		m_snd_emmiter_electric_curve_loop.clear();
 		m_snd_emmiter_electric_curve_end.clear();
@@ -480,9 +480,9 @@ bool CAnomalyZone::net_Spawn(CSE_Abstract* DC)
 		{
 			SElectricCurve& curva = m_electric_curves.emplace_back();
 			curva.particleName = m_electric_curve_particle_path;
-			curva.initialPos = m_initial_spawn_position;
-			curva.destinationPos = m_initial_spawn_position;
-			curva.MAX_CURVE_DISTANCE = max_trace_curve_distance;
+			curva.initialPos = XFORM().c;
+			curva.destinationPos = XFORM().c;
+			curva.MAX_CURVE_DISTANCE = m_movement_radius;
 			curva.Disable();
 		}
 	}
@@ -683,7 +683,7 @@ void CAnomalyZone::UpdateMovement(bool isUpdateCL)
 
 	if (m_use_movement_magnetic_on_inside_alive_mode || (m_use_electric_curve && isUpdateCL))
 	{
-		m_best_magnetic_target = ScanObjects(max_trace_curve_distance, XFORM().c);
+		m_best_magnetic_target = ScanObjects(m_movement_radius / 2, XFORM().c, m_initial_spawn_position, m_movement_radius);
 	}
 
 	if (m_use_electric_curve && isUpdateCL)
@@ -699,7 +699,11 @@ void CAnomalyZone::UpdateMovement(bool isUpdateCL)
 	else if (m_use_movement_magnetic_on_inside_alive_mode && m_best_magnetic_target != nullptr)
 	{
 		MoveToFromDelta(m_best_magnetic_target->Position(), movement_magnetic_on_inside_alive_mode_speed);
-	}
+		if (draw_dbg)
+		{
+			HUD().world_prims.append_sphere(m_best_magnetic_target->Position(), 1.25f, color_rgba(10, 10, 10, 255), color_rgba(255, 70, 70, 50));
+		}
+	} 
 	else if (m_use_movement_always_mode)
 	{
 		float dist_to_target = XFORM().c.distance_to_xz_sqr(m_target_position);
@@ -793,6 +797,7 @@ void CAnomalyZone::UpdateElectricCurves(CGameObject* firstObject)
 	Fvector destPosition;
 	collide::rq_result R;
 
+	size_t cnt = lastScannedObjects.size();
 	for (u8 i = 0; i < m_max_count_electric_curves; i++)
 	{
 		SElectricCurve& spline = m_electric_curves[i];
@@ -819,32 +824,50 @@ void CAnomalyZone::UpdateElectricCurves(CGameObject* firstObject)
 				spline.m_max_upd_timer = Random.randF(2000.0f, 5000.0f);
 				spline.m_upd_timer = 0.f;
 
-				for (u8 i = 0; i < 5; i++)
+				bool needTrace = true;
+				if (cnt > 0)
 				{
-					dir.set(0, 0, 0);
-					dir.set(0, 0, 0);
-					dir.random_dir();
-					dir.normalize();
-		
-					if (g_pGameLevel->ObjectSpace.RayPick(startTracePos, dir, max_trace_curve_distance, collide::rqtStatic, R, this))
+					CGameObject* obj = lastScannedObjects[Random.randI(0, cnt - 1)];
+					if (obj != nullptr)
 					{
-						rq_range = R.range;
-
-						if (!m_snd_emmiter_electric_curve_end[i]->IsPlaying())
+						float distance = obj->Position().distance_to(XFORM().c);
+						if (distance <= max_trace_curve_distance && Random.randF(0.0f, 100.0f) <= 100 - ((distance * 100) / max_trace_curve_distance))
 						{
-							m_snd_emmiter_electric_curve_end[i]->PlayRandomSound(nullptr, spline.destinationPos, 0U, 0.f, 1.5f);
+							spline.destinationPos = obj->Position();
+							needTrace = false;
 						}
+					}
+				}
 
-						if (blastTimeProcessing <= 0)
-						{
-							spline.destinationPos = destPosition.mad(XFORM().c, dir, rq_range);
-						}
+				if (needTrace)
+				{
+					for (u8 i = 0; i < 5; i++)
+					{
+						dir.set(0, 0, 0);
+						rq_range = 0.f;
+						dir.random_dir();
+						dir.normalize();
 
-						if (!m_snd_emmiter_electric_curve_start[i]->IsPlaying())
+						if (g_pGameLevel->ObjectSpace.RayPick(startTracePos, dir, max_trace_curve_distance, collide::rqtStatic, R, this))
 						{
-							m_snd_emmiter_electric_curve_start[i]->PlayRandomSound(nullptr, spline.destinationPos, 0U, 0.f, 1.5f);
+							rq_range = R.range;
+
+							if (!m_snd_emmiter_electric_curve_end[i]->IsPlaying())
+							{
+								m_snd_emmiter_electric_curve_end[i]->PlayRandomSound(nullptr, spline.destinationPos, 0U, 0.f, 1.5f);
+							}
+
+							if (blastTimeProcessing <= 0)
+							{
+								spline.destinationPos = destPosition.mad(XFORM().c, dir, rq_range);
+							}
+
+							if (!m_snd_emmiter_electric_curve_start[i]->IsPlaying())
+							{
+								m_snd_emmiter_electric_curve_start[i]->PlayRandomSound(nullptr, spline.destinationPos, 0U, 0.f, 1.5f);
+							}
+							break;
 						}
-						break;
 					}
 				}
 			}
@@ -857,6 +880,7 @@ void CAnomalyZone::OnBlastElectricCurvesUpdate(CGameObject* obj)
 	size_t cnt = lastScannedObjects.size();
 	if (cnt == 0)
 	{
+		blastTimeProcessing = 0;
 		return;
 	}
 
@@ -881,21 +905,36 @@ void CAnomalyZone::OnBlastElectricCurvesUpdate(CGameObject* obj)
 	}
 	else
 	{
+		CGameObject* targetObj = nullptr;
 		for (u8 i = 0; i < m_max_count_electric_curves; i++)
 		{
 			SElectricCurve& spline = m_electric_curves[i];
+			if (obj != nullptr && !obj->getDestroy())
+			{
+				targetObj = obj;
+			}
 
 			if (lastScannedObjects[0] != nullptr && !lastScannedObjects[0]->getDestroy())
 			{
+				targetObj = lastScannedObjects[0];
+			}
+
+			if (targetObj != nullptr)
+			{
 				spline.initialPos.set(XFORM().c);
-				spline.destinationPos.set(lastScannedObjects[0]->Position());
+				spline.destinationPos.set(targetObj->Position());
 			}
 
 			if (i > 0 && i < cnt && lastScannedObjects[i - 1] != nullptr && lastScannedObjects[i] != nullptr && !lastScannedObjects[i - 1]->getDestroy() && !lastScannedObjects[i]->getDestroy())
 			{
-				spline.initialPos.set(lastScannedObjects[i - 1]->Position());
-				spline.destinationPos.set(lastScannedObjects[i]->Position());
+				spline.initialPos.set(lastScannedObjects[i]->Position());
+				spline.destinationPos.set(lastScannedObjects[i - 1]->Position());
 				AffectCurveDamade(lastScannedObjects[i]);
+			}
+
+			if (targetObj == nullptr)
+			{
+				blastTimeProcessing = 0;
 			}
 
 			spline.UpdateMovement();
@@ -906,9 +945,9 @@ void CAnomalyZone::OnBlastElectricCurvesUpdate(CGameObject* obj)
 
 float getObjMass(CGameObject* obj)
 {
-	if (obj->getDestroy())
+	if (obj == nullptr || obj->getDestroy())
 	{
-		return 0.f;
+		return  0.0f;
 	}
 
 	if (CPhysicsShellHolder* pGameObject = obj->cast_physics_shell_holder())
@@ -916,7 +955,7 @@ float getObjMass(CGameObject* obj)
 		return pGameObject->GetMass();
 	}
 
-	return 0.f;
+	return 0.0f;
 }
 
 void  CAnomalyZone::AffectCurveDamade(CGameObject* obj)
@@ -926,15 +965,16 @@ void  CAnomalyZone::AffectCurveDamade(CGameObject* obj)
 		return;
 	}
 
-	float mass = getObjMass(obj);
-
+	float mass = 0.5;// getObjMass(obj);
+	if (mass <= 0.f)
+	{
+		return;
+	}
 
 	Fvector hit_dir;
 	hit_dir.sub(obj->Position(), XFORM().c);
 	hit_dir.normalize();
 	hit_dir.y = hit_dir.y + 0.4f;
-
-	Fvector position_in_bone_space;
 
 	float effective = (100 - (obj->Position().distance_to(XFORM().c) * 100) / max_trace_curve_distance) / 100;
 	float power = effective * m_max_curve_damage;
@@ -942,8 +982,7 @@ void  CAnomalyZone::AffectCurveDamade(CGameObject* obj)
 
 	if (power > 0.0f)
 	{
-		position_in_bone_space.set(0.f, 0.f, 0.f);
-		CreateHit(obj->ID(), ID(), hit_dir, power, 0, position_in_bone_space, impulse, m_eHitTypeBlowout);
+		CreateHit(obj->ID(), ID(), hit_dir, power, 0, zero_vel, impulse, m_eHitTypeBlowout);
 		//PlayHitParticles(obj);
 	}
 }
@@ -951,11 +990,11 @@ void  CAnomalyZone::AffectCurveDamade(CGameObject* obj)
 void CAnomalyZone::OnBlastElectricCurvesProcessing(CGameObject* obj)
 {
 	lastDamagedObject = obj;
-	blastTimeProcessing = 5000.0f;
+	blastTimeProcessing = max_blastTimeProcessing;
 	m_snd_emmiter_electric_core_target_damage[0]->PlayRandomSound(nullptr, obj->Position(), 0U, 0.f, 1.0f);
 }
 
-xr_vector<CGameObject*> CAnomalyZone::GetSortedByDistanceAliveObjects(float distance, Fvector centerPos, u64 mask)
+xr_vector<CGameObject*> CAnomalyZone::GetSortedByDistanceSpatialObjects(float distance, Fvector centerPos, u64 mask)
 {
 	static xr_vector<ISpatialShared> spatial;
 	spatial.clear();
@@ -1005,14 +1044,14 @@ xr_vector<CGameObject*> CAnomalyZone::GetSortedByDistanceAliveObjects(float dist
 	return objects;
 }
 
-CGameObject* CAnomalyZone::ScanObjects(float distance, Fvector center)
+CGameObject* CAnomalyZone::ScanObjects(float scanDistance, Fvector scanCenter, Fvector barierCenter, float barierRadius)
 {
 	u64 mask = (u64)ESPATIAL_TYPE::ACTOR_ALIVE;
 	mask |= (u64)ESPATIAL_TYPE::AI_ALIVE;
 	mask |= (u64)ESPATIAL_TYPE::AI_DEAD;
 	mask |= (u64)ESPATIAL_TYPE::ITEM;
 
-	xr_vector<CGameObject*> objects = GetSortedByDistanceAliveObjects(distance, center, mask);
+	xr_vector<CGameObject*> objects = GetSortedByDistanceSpatialObjects(scanDistance, scanCenter, mask);
 
 	for (CGameObject* obj : objects)
 	{
@@ -1021,7 +1060,13 @@ CGameObject* CAnomalyZone::ScanObjects(float distance, Fvector center)
 			continue;
 		}
 
-		return obj;
+		if (CEntityAlive* entity = obj->cast_entity_alive())
+		{
+			if (entity->g_Alive() && entity->Position().distance_to(barierCenter) <= barierRadius)
+			{
+				return obj;
+			}
+		}
 	}
 
 	return nullptr;

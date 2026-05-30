@@ -345,6 +345,7 @@ protected:
 	Fvector m_target_position;
 	float animTime = 0.0f;
 	float blastTimeProcessing = 0.0f;
+	float max_blastTimeProcessing = 0.0f;
 	CGameObject* lastDamagedObject = nullptr;
 	xr_vector<CGameObject*> lastScannedObjects;
 
@@ -362,13 +363,13 @@ public:
 
 	void					MoveToFromDelta	(Fvector newPos, float speed);
 	Fvector					GetLVPos(Fvector newPos);
-	CGameObject*			ScanObjects(float distance, Fvector center);
+	CGameObject*			ScanObjects(float distance, Fvector scanCenter, Fvector barierCenter, float barierRadius);
 	void					OnActorTakeArtefact(float scan_radius, CArtefact* art, Fvector actorPos);
 	void					UpdateElectricCurves(CGameObject* firstObject);
 	void					UpdateMovement(bool isUpdateCL);
 	void					OnBlastElectricCurvesProcessing(CGameObject* obj);
 	void					OnBlastElectricCurvesUpdate(CGameObject* obj);
-	xr_vector<CGameObject*> GetSortedByDistanceAliveObjects(float distance, Fvector centerPos, u64 mask);
+	xr_vector<CGameObject*> GetSortedByDistanceSpatialObjects(float distance, Fvector centerPos, u64 mask);
 	void					AffectCurveDamade(CGameObject* obj);
 	// optimization FAST/SLOW mode
 public:	
