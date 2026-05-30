@@ -386,7 +386,7 @@ void CUINewsItemWnd::SetupLegacy(GAME_NEWS_DATA& newsData)
 {
 	if (_hasDialogReplicaLayout && newsData.m_type == GAME_NEWS_DATA::eTalk)
 	{
-		const shared_str timeOnly = InventoryUtilities::GetTimeAsString(newsData.receive_time, etpTimeToMinutes);
+		const shared_str timeOnly = InventoryUtilities::GetTimeAsString(newsData.receive_time, InventoryUtilities::etpTimeToMinutes);
 		_uiDate->SetText(timeOnly.c_str());
 		_uiDate->AdjustWidthToText();
 
@@ -473,7 +473,7 @@ void CUINewsItemWnd::SetupStacked(GAME_NEWS_DATA& newsData)
 
 	if (isTalkReplica)
 	{
-		const shared_str timeOnly = InventoryUtilities::GetTimeAsString(newsData.receive_time, etpTimeToMinutes);
+		const shared_str timeOnly = InventoryUtilities::GetTimeAsString(newsData.receive_time, InventoryUtilities::etpTimeToMinutes);
 		if (_uiDate)
 		{
 			_uiDate->SetText(timeOnly.c_str());
