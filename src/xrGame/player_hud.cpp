@@ -595,6 +595,11 @@ void weapon_inertion::Load(const shared_str& section, bool is_16x9)
 	aim_move_to_llookout_offset.Load(section, "hud_aim_move_to_llookout_offset", is_16x9);
 	aim_move_from_llookout_offset.Load(section, "hud_aim_move_from_llookout_offset", is_16x9);
 
+	aim_move_jump_offset.Load(section, "hud_aim_move_jump_offset", is_16x9);
+	aim_move_fall_offset.Load(section, "hud_aim_move_fall_offset", is_16x9);
+	aim_move_landing_offset.Load(section, "hud_aim_move_landing_offset", is_16x9);
+	aim_move_landing2_offset.Load(section, "hud_aim_move_landing2_offset", is_16x9);
+
 	move_rlookout_offset.Load(section, "hud_move_rlookout_offset", is_16x9);
 	move_llookout_offset.Load(section, "hud_move_llookout_offset", is_16x9);
 
@@ -934,6 +939,30 @@ void attachable_hud_item::GetCurrentTargetOffset_aim(weapon_inertion& inertion_p
 	if (fromllookout_time_remains > 0)
 	{
 		AddOffsets(inertion_params.aim_move_from_llookout_offset, pos, rot, koef);
+	}
+
+	if ((real & mcJump) && !(real & mcFall) && !(real & mcLanding) && !(real & mcLanding2))
+	{
+		AddOffsets(inertion_params.aim_move_jump_offset, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if ((real & mcFall) && !(real & mcJump) && !(real & mcLanding) && !(real & mcLanding2))
+	{
+		AddOffsets(inertion_params.aim_move_fall_offset, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if ((real & mcLanding) && !(real & mcJump) && !(real & mcFall) && !(real & mcLanding2))
+	{
+		AddOffsets(inertion_params.aim_move_landing_offset, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if ((real & mcLanding2) && !(real & mcJump) && !(real & mcFall) && !(real & mcLanding))
+	{
+		AddOffsets(inertion_params.aim_move_landing2_offset, pos, rot, koef);
+		factor = 1.0f;
 	}
 }
 
