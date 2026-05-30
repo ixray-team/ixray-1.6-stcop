@@ -21,6 +21,7 @@ float r_ssaDISCARD;
 float r_ssaDONTSORT;
 float r_ssaLOD_A;
 float r_ssaLOD_B;
+float r_ssaLOD_MU0, r_ssaLOD_MU1, r_ssaLOD_MU2, r_ssaLOD_MU3, r_ssaLOD_MU4;
 float r_ssaGLOD_start;
 float r_ssaGLOD_end;
 float r_ssaHZBvsTEX;
@@ -578,6 +579,78 @@ ICF void r_dsgraph_insert_static_lod(dxRender_Visual* pVisual)
 	}
 }
 
+//Seakad: лучше работает
+IC float distance_to_aabb(const Fvector& point,const Fbox& box)
+{
+    float dx = 0.0f;
+    float dy = 0.0f;
+    float dz = 0.0f;
+
+    // X
+    if (point.x < box.min.x)
+        dx = box.min.x - point.x;
+    else if (point.x > box.max.x)
+        dx = point.x - box.max.x;
+
+    // Y
+    if (point.y < box.min.y)
+        dy = box.min.y - point.y;
+    else if (point.y > box.max.y)
+        dy = point.y - box.max.y;
+
+    // Z
+    if (point.z < box.min.z)
+        dz = box.min.z - point.z;
+    else if (point.z > box.max.z)
+        dz = point.z - box.max.z;
+
+    return _sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+IC FMUMeshLOD* SelectLOD(float D, const xr_vector<dxRender_Visual*>& V)
+{
+	VERIFY(!V.empty());
+	switch (V.size())
+	{
+		case 5:
+		{
+			if (D >= r_ssaLOD_MU3 && D < (r_ssaLOD_MU4/(ps_r__LOD_MU4_discard * 0.001f)))
+			{
+				return (FMUMeshLOD*)V[4];
+			}
+		}
+		case 4:
+		{
+			if (D >= r_ssaLOD_MU2 && D < r_ssaLOD_MU3)
+			{
+				return (FMUMeshLOD*)V[3];
+			}
+		}
+		case 3:
+		{
+			if (D >= r_ssaLOD_MU1 && D < r_ssaLOD_MU2)
+			{
+				return (FMUMeshLOD*)V[2];
+			}
+		}
+		case 2:
+		{
+			if (D >= r_ssaLOD_MU0 && D < r_ssaLOD_MU1)
+			{
+				return (FMUMeshLOD*)V[1];
+			}
+		}
+		case 1:
+		{
+			if (D < r_ssaLOD_MU0)
+			{
+				return (FMUMeshLOD*)V.at(0);
+			}
+		}
+	}
+	return nullptr;
+}
+
 void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 {
 	//PROF_EVENT("add_leafs_Static")
@@ -599,29 +672,42 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 		if (Device.vCameraPosition.distance_to_sqr(vis.sphere.P) > _sqr(fog_distance + vis.sphere.R))
 			continue;
 
+		float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);
+
 		// Visual is 100% visible - simply add it
 		switch (pVisual->Type)
 		{
-		case MT_HIERRARHY:
-		{
-			// Add all children, doesn't perform any tests
-			add_leafs_Static(static_cast<FHierrarhyVisual*>(pVisual)->children);
-		}continue;
-		case MT_LOD:
-		{
-			r_dsgraph_insert_static_lod(pVisual);
-		}continue;
-		case MT_TREE_PM:
-		case MT_TREE_ST:
-		{
-			// General type of visual
-			RI.r_dsgraph_insert_static(pVisual);
-		}continue;
-		default:
-		{
-			// General type of visual
-			RI.r_dsgraph_insert_static(pVisual);
-		}continue;
+			case MT_HIERRARHY:
+			{
+				// Add all children, doesn't perform any tests
+				add_leafs_Static(static_cast<FHierrarhyVisual*>(pVisual)->children);
+			}continue;
+			case MT_LOD:
+			{
+				r_dsgraph_insert_static_lod(pVisual);
+			}continue;
+			case MT_MESH_LODS:
+			{
+				FMUMeshLOD* SelectedLOD = SelectLOD(D, static_cast<FMUMeshLODs*>(pVisual)->children);
+				if(SelectedLOD)
+				{
+					add_leafs_Static(SelectedLOD->children);
+				}
+				continue;
+			}
+			case MT_TREE_PM:
+			case MT_TREE_ST:
+			{
+				//PROF_EVENT("CRender::add_leafs_Static: MT_TREE")
+				// General type of visual
+				RI.r_dsgraph_insert_static(pVisual);
+			}continue;
+			default:
+			{
+				//PROF_EVENT("CRender::add_leafs_Static: Default")
+				// General type of visual
+				RI.r_dsgraph_insert_static(pVisual);
+			}continue;
 		}
 	}
 }
@@ -637,7 +723,15 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 	// Check frustum visibility and calculate distance to visual's center
 	EFC_Visible	VIS;
 	vis_data& vis = pVisual->vis;
-	VIS = View->testSAABB(vis.sphere.P,vis.sphere.R,vis.box.data(),planes);
+	if (pVisual->Type == MT_LOD || pVisual->Type == MT_LOD1 || pVisual->Type == MT_LOD2 || pVisual->Type == MT_LOD3 || pVisual->Type == MT_LOD4)
+	{
+		VIS = View->testAABB	(vis.box.data(),planes);
+	}
+	else
+	{
+		VIS = View->testSAABB	(vis.sphere.P,vis.sphere.R,vis.box.data(),planes);
+	}
+
 	if (fcvNone==VIS)		
 		return;
 #if RENDER!=R_R1
@@ -649,6 +743,9 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 	if (Device.vCameraPosition.distance_to_sqr(vis.sphere.P) > _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance + vis.sphere.R))
 		return;
 
+	float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);
+
+	PROF_EVENT("add_Static switch")
 	// If we get here visual is visible or partially visible
 	switch (pVisual->Type)
 	{
@@ -665,11 +762,19 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		{
 			add_leafs_Static(pV->children);
 		}
-	}return;
-	case MT_LOD:
-	{
-		r_dsgraph_insert_static_lod(pVisual);
-	}return;
+		}return;
+		case MT_LOD:
+		{
+			r_dsgraph_insert_static_lod(pVisual);
+		}return;
+		case MT_MESH_LODS:
+		{
+			auto Casted = SelectLOD(D, static_cast<FMUMeshLODs*>(pVisual)->children);
+			if (Casted)
+			{
+				add_leafs_Static(Casted->children);
+			}
+		}
 	case MT_TREE_ST:
 	case MT_TREE_PM:
 	{

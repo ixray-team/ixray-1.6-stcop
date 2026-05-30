@@ -274,6 +274,7 @@ struct OGF_Node :  public OGF_Base
 	}
 };
 
+//LOD0
 struct	OGF_LOD		: public OGF_Node
 {
 	OGF_LOD(int _L, u16 _Sector) : OGF_Node(_L,_Sector) {};
@@ -286,6 +287,114 @@ struct	OGF_LOD		: public OGF_Node
 		u8				c_sun;
 	};
 
+	struct _face
+	{
+		_vertex			v			[4];
+	};
+
+	_face				lod_faces	[8];
+	u32					lod_Material;
+
+	virtual void		Save		(IWriter &fs);
+};
+
+//MeshLods
+struct OGF_MESH_LODS : public OGF_Node
+{
+	OGF_MESH_LODS(int _L, u16 _Sector) : OGF_Node(_L, _Sector) {};
+	
+	virtual void Save(IWriter &fs) override;
+};
+
+//LOD0
+struct OGF_LOD_MU0 : public OGF_Node
+{
+	OGF_LOD_MU0(int _L, u16 _Sector) : OGF_Node(_L,_Sector) {};
+	
+	virtual void Save(IWriter &fs);
+};
+
+//LOD1
+struct	OGF_LOD_MU1		: public OGF_Node
+{
+	OGF_LOD_MU1(int _L, u16 _Sector) : OGF_Node(_L,_Sector) {};
+
+	struct _vertex
+	{
+		Fvector			v;
+		Fvector2		t;
+		u32				c_rgb_hemi;	// rgb,hemi
+		u8				c_sun;
+	};
+	struct _face
+	{
+		_vertex			v			[4];
+	};
+
+	_face				lod_faces	[8];
+	u32					lod_Material;
+
+	virtual void		Save		(IWriter &fs);
+};
+
+//LOD2
+struct	OGF_LOD_MU2		: public OGF_Node
+{
+	OGF_LOD_MU2(int _L, u16 _Sector) : OGF_Node(_L,_Sector) {};
+
+	struct _vertex
+	{
+		Fvector			v;
+		Fvector2		t;
+		u32				c_rgb_hemi;	// rgb,hemi
+		u8				c_sun;
+	};
+	struct _face
+	{
+		_vertex			v			[4];
+	};
+
+	_face				lod_faces	[8];
+	u32					lod_Material;
+
+	virtual void		Save		(IWriter &fs);
+};
+
+//LOD3
+struct	OGF_LOD_MU3		: public OGF_Node
+{
+	OGF_LOD_MU3(int _L, u16 _Sector) : OGF_Node(_L,_Sector) {};
+
+	struct _vertex
+	{
+		Fvector			v;
+		Fvector2		t;
+		u32				c_rgb_hemi;	// rgb,hemi
+		u8				c_sun;
+	};
+	struct _face
+	{
+		_vertex			v			[4];
+	};
+
+	_face				lod_faces	[8];
+	u32					lod_Material;
+
+	virtual void		Save		(IWriter &fs);
+};
+
+//LOD4
+struct	OGF_LOD_MU4		: public OGF_Node
+{
+	OGF_LOD_MU4(int _L, u16 _Sector) : OGF_Node(_L,_Sector) {};
+
+	struct _vertex
+	{
+		Fvector			v;
+		Fvector2		t;
+		u32				c_rgb_hemi;	// rgb,hemi
+		u8				c_sun;
+	};
 	struct _face
 	{
 		_vertex			v			[4];

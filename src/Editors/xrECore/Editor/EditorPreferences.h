@@ -92,6 +92,11 @@ public:
 	xr_string		Compiler_xrAI;
 	xr_string		Compiler_xrLC;
 	xr_string		Compiler_xrDO;
+	bool LODsForAllMU = false;
+
+	// Experimental -> LOD
+	bool UseMULODs = false;
+	bool DisableBillboardLOD = false;
 
 	std::map<std::string, std::string> custom_icons;
 protected:

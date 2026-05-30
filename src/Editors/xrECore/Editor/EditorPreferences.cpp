@@ -228,6 +228,8 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateSText	(props,	"Compilers Path\\xrAI",						&Compiler_xrAI);
 	PHelper().CreateSText	(props, "Compilers Path\\xrDO",						&Compiler_xrDO);
 	
+	PHelper().CreateBool(props, "Compilers\\LODs For All MU", &LODsForAllMU);
+	
 
 	ButtonValue* B = PHelper().CreateButton(props, "Keyboard\\Common\\File", "Load,Save", 0);
 	B->OnBtnClickEvent.bind(this, &CCustomPreferences::OnKeyboardCommonFileClick);
