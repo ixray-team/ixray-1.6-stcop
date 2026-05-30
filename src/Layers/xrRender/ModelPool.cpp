@@ -53,8 +53,50 @@ dxRender_Visual* CModelPool::Instance_Create(u32 type)
 		break;
 #ifndef _EDITOR
 	case MT_LOD:
+	{
 		V	= new FLOD					();
 		break;
+	}
+	case MT_MESH_LODS:
+	{
+		V = new FMUMeshLODs();	
+		break;
+	}
+	case MT_LOD0:
+	{
+		auto New = new FMUMeshLOD();
+		New->LODLevel = 0;
+		V = New;
+		break;
+	}
+	case MT_LOD1:
+	{
+		auto New = new FMUMeshLOD();
+		New->LODLevel = 1;
+		V = New;
+		break;
+	}
+	case MT_LOD2:
+	{
+		auto New = new FMUMeshLOD();
+		New->LODLevel = 2;
+		V = New;
+		break;
+	}
+	case MT_LOD3:
+	{
+		auto New = new FMUMeshLOD();
+		New->LODLevel = 3;
+		V = New;
+		break;
+	}
+	case MT_LOD4:
+	{
+		auto New = new FMUMeshLOD();
+		New->LODLevel = 4;
+		V = New;
+		break;
+	}
 	case MT_TREE_ST:
 		V	= new FTreeVisual_ST		();
 		break;
