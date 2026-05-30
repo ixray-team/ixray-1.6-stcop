@@ -55,6 +55,7 @@ bool ESceneObjectTool::Validate(bool full_test)
                 }
             }
 
+#ifndef MU_LODS_TRUE
             // validate lods
             if (Scene->IsValidateLODs && full_test && A->IsMUStatic())
             {
@@ -81,6 +82,7 @@ bool ESceneObjectTool::Validate(bool full_test)
                 if (age_nm == -1 || age == -1)
                     bRes = false;
             }
+#endif
         }
     );
 
