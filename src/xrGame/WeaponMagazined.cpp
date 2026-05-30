@@ -1655,6 +1655,21 @@ void CWeaponMagazined::OnShot()
 	// Animation
 	PlayAnimShoot();
 
+	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+
+	if (pActor != nullptr && m_shot_cams[0].size() > 0)
+	{
+		CAnimatorCamEffector* e = new CAnimatorCamEffector();
+		e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
+		e->SetCyclic(false);
+		e->SetHudAffect(false);
+
+		bool aim = IsZoomed() && m_shot_cams[1].size() > 0;
+
+		e->Start(*m_shot_cams[aim ? 1 : 0][Random.randI(m_shot_cams[aim ? 1 : 0].size())]);
+		pActor->Cameras().AddCamEffector(e);
+	}
+
 	StartFlameParticle();
 
 	// Shell Drop
