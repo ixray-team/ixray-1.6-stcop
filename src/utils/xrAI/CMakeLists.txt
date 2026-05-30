@@ -6,6 +6,29 @@ file(GLOB_RECURSE XAI_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
 )
+
+file(GLOB_RECURSE XAI_COMPILER
+    "compiler*"
+)
+
+
+file(GLOB_RECURSE XAI_SPAWN
+    "game_spawn*"
+    "level_spawn*"
+    "level_graph*"
+    "game_graph_*"
+)
+
+file(GLOB_RECURSE XAI_SPAWN_WRAPPER
+    "*_wrapper*"
+)
+
+file(GLOB_RECURSE XAI_NAVIGATION
+    "graph*" 
+    "patrol*"
+    "path*"
+)
+
 file(GLOB_RECURSE XAI_SOURCE_ENTT_FILES
     "../../xrEngine/xrLoadSurface.cpp"
     "../../xrServerEntities/alife_human_brain.cpp"
@@ -23,13 +46,26 @@ file(GLOB_RECURSE XAI_SOURCE_ENTT_FILES
     "../../xrServerEntities/xrServer_Object_Base.cpp"
     "../../xrGame/game_level_cross_table.cpp"
 )
+
 # Source groups
 source_group("kernel" FILES ${XAI_SOURCE_ALL_FILES})
 source_group("entt" FILES ${XAI_SOURCE_ENTT_FILES})
+# Source groups by files
+source_group("compiler" FILES ${XAI_COMPILER})
+source_group("navigation" FILES ${XAI_NAVIGATION})
+source_group("spawn" FILES ${XAI_SPAWN})
+source_group("spawn_wrapper" FILES ${XAI_SPAWN_WRAPPER})
 
+ 
 # Apply list
 list(APPEND XAI_SRC_FILES ${XAI_SOURCE_ALL_FILES})
 list(APPEND XAI_SRC_FILES ${XAI_SOURCE_ENTT_FILES})
+
+# Apply list files
+list(APPEND XAI_SRC_FILES ${XAI_COMPILER})
+list(APPEND XAI_SRC_FILES ${XAI_NAVIGATION})
+list(APPEND XAI_SRC_FILES ${XAI_SPAWN})
+list(APPEND XAI_SRC_FILES ${XAI_SPAWN_WRAPPER})
 
 # Remove unused files
 #list(FILTER XAI_SRC_FILES EXCLUDE REGEX "lzo/*.ch")
@@ -61,3 +97,7 @@ target_link_libraries(xrAI PUBLIC "rpcrt4.lib")
 ## DirectX SDK
 target_include_directories(xrAI PRIVATE "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
 target_include_directories(xrAI PRIVATE "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
+
+# Intel Embree
+target_include_directories(xrAI PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3/build/native/include/")
+target_link_libraries(xrAI PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3/runtimes/win-x64/native/Release/embree4.lib")

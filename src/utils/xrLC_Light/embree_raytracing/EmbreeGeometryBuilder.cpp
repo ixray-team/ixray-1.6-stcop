@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "EmbreeGeometryBuilder.h"
 #include "../../../xrCore/Collision/xrCDB.h"
-#include "xrFace.h"
-
+ 
 #include <execution>
 #include <array>
  
