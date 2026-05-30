@@ -110,12 +110,14 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 				rayTasks.push_back(data);
 
 			}
+#ifdef LCCUDA_BUILD
 			else if (gCompilerMode.CUDA)
 			{
 				size_t idx= GPUTaskinSystem.MakeKey(_x, _z);
 
 				GPUTaskinSystem.LightPointPacked_add_task(idx, nullptr, P, t_n, nullptr);
 			}
+#endif
 
 			count			+= 1;
 		}
@@ -146,6 +148,7 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 	return true;
 }
 
+#ifdef LCCUDA_BUILD
 #include "CUDA/xrCuda_PackedLights.h"
 xr_vector<u32>			 samples;
 xr_vector<base_color_c>  detail_colors;
@@ -187,6 +190,7 @@ void ApplyColorsGPU()
 		}
  	}
 }
+#endif
 
 void xrLight_Details()
 {
@@ -218,6 +222,7 @@ void xrLight_Details()
 			}
 		);
 	}
+#ifdef LCCUDA_BUILD
 	else
 	{
  		size_x = gl_data.slots_data.size_x();
@@ -252,6 +257,7 @@ void xrLight_Details()
 
 		ApplyColorsGPU();
 	}
+#endif
 
 	Msg("Total processing: %u ms.", start_time.GetElapsed_ms());
 }
