@@ -519,6 +519,50 @@ void	R_dsgraph_structure::r_dsgraph_render_R1_box	(IRender_Sector* _S, Fbox& BB,
 				}
 			}
 			break;
+		case MT_LOD1:
+			{
+				FLOD		* pV		=	(FLOD*) V;
+				I = pV->children.begin		();
+				E = pV->children.end		();
+				for (; I!=E; I++)		{
+					dxRender_Visual* T				= *I;
+					if (BB.intersect(T->vis.box))	lstVisuals.push_back(T);
+				}
+			}
+			break;
+		case MT_LOD2:
+			{
+				FLOD		* pV		=	(FLOD*) V;
+				I = pV->children.begin		();
+				E = pV->children.end		();
+				for (; I!=E; I++)		{
+					dxRender_Visual* T				= *I;
+					if (BB.intersect(T->vis.box))	lstVisuals.push_back(T);
+				}
+			}
+			break;
+		case MT_LOD3:
+			{
+				FLOD		* pV		=	(FLOD*) V;
+				I = pV->children.begin		();
+				E = pV->children.end		();
+				for (; I!=E; I++)		{
+					dxRender_Visual* T				= *I;
+					if (BB.intersect(T->vis.box))	lstVisuals.push_back(T);
+				}
+			}
+			break;
+		case MT_LOD4:
+			{
+				FLOD		* pV		=	(FLOD*) V;
+				I = pV->children.begin		();
+				E = pV->children.end		();
+				for (; I!=E; I++)		{
+					dxRender_Visual* T				= *I;
+					if (BB.intersect(T->vis.box))	lstVisuals.push_back(T);
+				}
+			}
+			break;
 		default:
 			{
 				// Renderable visual

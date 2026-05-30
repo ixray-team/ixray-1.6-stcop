@@ -21,6 +21,10 @@ enum MT {
 	MT_TREE_PM				=11,
 
 	MT_3DFLUIDVOLUME		=12,
+	MT_LOD1					=14,
+	MT_LOD2					=15,
+	MT_LOD3					=16,
+	MT_LOD4					=17,
 };
 
 enum OGF_Chuncks {
