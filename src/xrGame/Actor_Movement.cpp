@@ -703,10 +703,7 @@ bool CActor::CanSprint()
 
 bool CActor::CanJump()
 {
-	bool can_Jump = 
-		!character_physics_support()->movement()->PHCapture() &&((mstate_real&mcJump)==0) && (m_fJumpTime<=0.f) 
-		&& !m_bJumpKeyPressed &&!IsZoomAimingMode();
-
+	bool can_Jump = !character_physics_support()->movement()->PHCapture() && ((mstate_real & mcJump) == 0) && (m_fJumpTime <= 0.0f) && !m_bJumpKeyPressed;
 	return can_Jump;
 }
 
