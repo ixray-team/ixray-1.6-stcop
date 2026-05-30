@@ -1,17 +1,7 @@
 #pragma once
-
-#include "R_light.h"
-#include "base_lighting.h"
-#include "base_color.h"
-#include "../../xrCore/Collision/xrCDB.h"
-
-#include "xrFace.h"
 #include <embree4/rtcore.h>
-
 #include "EmbreeGeometryBuilder.h"
 #include "xrRaysDefines.h"
-
-
 
 // ВАЖНЫЙ ПАРАМЕТР TNEAR Для пересечения с водой
 void SetRay1(RTCRay& rayhit, const Fvector& pos, const Fvector& dir, float near_, float range);
