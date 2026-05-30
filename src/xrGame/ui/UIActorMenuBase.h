@@ -118,7 +118,6 @@ protected:
 	virtual void				TryRepairItem				(CUIWindow* w, void* d) {}
 	virtual void				UpdateDeadBodyBag			() {}
 	virtual void				SetAuxMode					(eActorMenuControllerAuxMode mode) {}
-	virtual void				UpdatePrices				() {}
 	CUIDragDropListEx*			GetSlotList					(u16 slot_idx);
 	CUIDragDropListEx*			GetDisplayListForItem		(PIItem item, const SInvItemPlace& place);
 	bool						IsSlotHiddenInUi			(u16 slot_idx) const;
@@ -347,4 +346,5 @@ public:
 	virtual bool				OnGamepadKeyAction			(int id, EUIMessages gamepad_action);
 	virtual bool				OnGamepadKeyHold			(int id);
 	virtual bool				StopAnyMove					();
+	virtual void				UpdatePrices				() {}
 };
