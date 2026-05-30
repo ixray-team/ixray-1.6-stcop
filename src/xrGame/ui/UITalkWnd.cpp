@@ -14,6 +14,7 @@
 #include "../PhraseDialog.h"
 #include "../PhraseDialogManager.h"
 #include "../pda_communication.h"
+#include "../PdaTalkDialogPolicy.h"
 #include "../GametaskManager.h"
 
 #include "../game_cl_base.h"
@@ -27,6 +28,14 @@
 #include "GamePersistent.h"
 
 bool EnableTalkDof = true;
+
+namespace
+{
+bool IsTalkDialogAllowedForContext(const DIALOG_SHARED_PTR& dialog, bool isPdaSession)
+{
+	return dialog && PdaTalkDialogPolicy().IsDialogAllowed(dialog->GetDialogID(), isPdaSession);
+}
+} // namespace
 
 CUITalkWnd::CUITalkWnd()
 {
@@ -200,6 +209,11 @@ void CUITalkWnd::InitOthersStartDialog()
 			// Prefer dialogs explicitly marked for PDA, but keep legacy dialogs available.
 			for (const DIALOG_SHARED_PTR& dialog : m_pOthersDialogManager->AvailableDialogs())
 			{
+				if (!IsTalkDialogAllowedForContext(dialog, true))
+				{
+					continue;
+				}
+
 				if (dialog->IsPdaAvailable())
 				{
 					m_pCurrentDialog = dialog;
@@ -209,12 +223,26 @@ void CUITalkWnd::InitOthersStartDialog()
 
 			if (!m_pCurrentDialog)
 			{
-				m_pCurrentDialog = m_pOthersDialogManager->AvailableDialogs().front();
+				for (const DIALOG_SHARED_PTR& dialog : m_pOthersDialogManager->AvailableDialogs())
+				{
+					if (IsTalkDialogAllowedForContext(dialog, true))
+					{
+						m_pCurrentDialog = dialog;
+						break;
+					}
+				}
 			}
 		}
 		else
 		{
-			m_pCurrentDialog = m_pOthersDialogManager->AvailableDialogs().front();
+			for (const DIALOG_SHARED_PTR& dialog : m_pOthersDialogManager->AvailableDialogs())
+			{
+				if (IsTalkDialogAllowedForContext(dialog, false))
+				{
+					m_pCurrentDialog = dialog;
+					break;
+				}
+			}
 		}
 
 		if (!m_pCurrentDialog)
@@ -253,6 +281,10 @@ void CUITalkWnd::UpdateQuestions()
 		for(u32 i=0; i< m_pOurDialogManager->AvailableDialogs().size(); ++i)
 		{
 			const DIALOG_SHARED_PTR& phrase_dialog	= m_pOurDialogManager->AvailableDialogs()[i];
+			if (!IsTalkDialogAllowedForContext(phrase_dialog, isPdaSession))
+			{
+				continue;
+			}
 			//if (phrase_dialog->GetPhraseCount() > 0)
 			{
 				SPhraseInfo phInfo;
@@ -568,16 +600,23 @@ void CUITalkWnd::AskQuestion()
 	//игрок выбрал тему разговора
 	if(TopicMode())
 	{
-		if ( (UITalkDialogWnd->m_ClickedQuestionID =="") ||
-			(!m_pOurDialogManager->HaveAvailableDialog(UITalkDialogWnd->m_ClickedQuestionID)) ) 
+		if (UITalkDialogWnd->m_ClickedQuestionID == "")
 		{
-
-			string128	s;
-			xr_sprintf		(s,"ID = [%s] of selected question is out of range of available dialogs ",UITalkDialogWnd->m_ClickedQuestionID.c_str());
-			VERIFY2(false, s);
+			return;
 		}
 
-		m_pCurrentDialog = m_pOurDialogManager->GetDialogByID( UITalkDialogWnd->m_ClickedQuestionID);
+		if (!m_pOurDialogManager->HaveAvailableDialog(UITalkDialogWnd->m_ClickedQuestionID))
+		{
+			return;
+		}
+
+		const DIALOG_SHARED_PTR& selectedDialog = m_pOurDialogManager->GetDialogByID(UITalkDialogWnd->m_ClickedQuestionID);
+		if (!IsTalkDialogAllowedForContext(selectedDialog, IsPdaMode()))
+		{
+			return;
+		}
+
+		m_pCurrentDialog = selectedDialog;
 		
 		m_pOurDialogManager->InitDialog(m_pOthersDialogManager, m_pCurrentDialog);
 		const bool isPdaSession = IsPdaMode();
