@@ -3676,7 +3676,22 @@ float CWeapon::Weight() const
 extern bool hud_adj_crosshair;
 bool CWeapon::show_crosshair()
 {
-	return (!IsPending() || GetState() == eEmptyClick || GetState() == eSprintStart || GetState() == eSprintEnd) && ((!IsZoomed() || !ZoomHideCrosshair()) || hud_adj_crosshair);
+	return (!IsPending() || GetState() == eEmptyClick || GetState() == eSprintStart || GetState() == eSprintEnd || GetState() == eSafemodeSwitch) && ((!IsZoomed() || !ZoomHideCrosshair()) || hud_adj_crosshair);
+}
+
+bool CWeapon::use_crosshair() const
+{
+	CObject* parent = const_cast<CObject*>(H_Parent());
+
+	if (const CActor* pActor = parent != nullptr ? parent->cast_actor() : nullptr)
+	{
+		if (pActor->IsSafemode())
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 bool CWeapon::show_indicators()
