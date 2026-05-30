@@ -77,8 +77,6 @@ protected:
 
 	bool				bStarted;
 	
-	virtual void		UpdatePrices				();
-
 	enum EListType{eNone,e1st,e2nd,eBoth};
 	void				UpdateLists					(EListType);
 
@@ -114,4 +112,5 @@ public:
 
 	virtual CTrade*				GetActorTrade				() { return m_pTrade; }
 	virtual CTrade*				GetPartnerTrade				() { return m_pOthersTrade; }
+	virtual void				UpdatePrices				();
 };
