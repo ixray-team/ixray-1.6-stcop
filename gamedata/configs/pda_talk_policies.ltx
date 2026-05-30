@@ -1,0 +1,18 @@
+; Dialog policies:
+;   inherit        - engine default (physical actions deferred remotely)
+;   blocked        - hidden in PDA talk (face-to-face unchanged)
+;   info_only      - PDA ok; physical phrase actions deferred until meet
+;   meet_required  - same as info_only for phrase actions
+;   allowed        - full phrase actions even in PDA (explicit opt-in)
+;   pda_only       - visible only in PDA talk, hidden face-to-face
+;
+; Phrase keys use dialog_id:phrase_id
+
+[pda_talk_dialog]
+; Example:
+; dm_some_money_dialog = blocked
+; ixray_pda_beta_smoke_dialog = allowed
+
+[pda_talk_phrase]
+; Example:
+; ixray_pda_beta_smoke_dialog:2 = meet_required
