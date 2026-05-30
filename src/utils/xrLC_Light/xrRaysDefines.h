@@ -28,11 +28,14 @@ enum DeflectorLType
 	eDefHemi,
 	eDefRgb
 };
+
+#include "base_color.h"
+
 struct RayTask
 {
 	Fvector wP, wN;
 	float Range;
-	Face* Skip;
+	void* Skip;
 	float attention;
 	DeflectorLType type;
 	base_color_c* Cptr;
@@ -41,10 +44,10 @@ struct RayTask
 struct JiterPixel
 {
 	u32 V, U;
-	Fvector wP, wN; Face* skip;
+	Fvector wP, wN; void* skip;
 	base_color_c C;
 
-	void SetDataRays(u32 tV, u32 tU, Fvector& P, Fvector& N, Face* F)
+	void SetDataRays(u32 tV, u32 tU, Fvector& P, Fvector& N, void* F)
 	{
 		U = tU;
 		V = tV;

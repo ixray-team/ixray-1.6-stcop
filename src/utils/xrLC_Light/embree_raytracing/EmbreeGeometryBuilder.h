@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../../../xrCore/Collision/xrCDB.h"
-#include "xrFace.h"
  
 struct FaceDataEmbree
 {
