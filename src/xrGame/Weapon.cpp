@@ -518,6 +518,18 @@ void CWeapon::Load		(const char* section)
 		{
 			m_safemode_cams[1] = tmp;
 		}
+
+		tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, "cam_aim_in", "camera_effects\\actor_move\\aim_in.anm");
+		if (FS.exist(ce_path, "$game_anims$", *tmp))
+		{
+			m_aim_cams[0] = tmp;
+		}
+
+		tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, "cam_aim_out", "camera_effects\\actor_move\\aim_out.anm");
+		if (FS.exist(ce_path, "$game_anims$", *tmp))
+		{
+			m_aim_cams[1] = tmp;
+		}
 	}
 	
 	m_zoom_params.m_bUseDynamicZoom	= READ_IF_EXISTS(pSettings,r_bool,section,"scope_dynamic_zoom",false);
@@ -3041,6 +3053,8 @@ void CWeapon::OnZoomIn()
 	m_bSwitchSprint = false;
 	m_zoom_params.m_bIsZoomModeNow		= true;
 
+	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+
 	if (HudItemData() != nullptr && (IsGrenadeMode() ? m_sGLAimBlendParams[0].has_motion : m_sAimBlendParams[0].has_motion))
 	{
 		g_player_hud->UpdateMovementLayers();
@@ -3049,9 +3063,17 @@ void CWeapon::OnZoomIn()
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].speed_power.y : m_sAimBlendParams[0].speed_power.y,
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].blend_params : m_sAimBlendParams[0].blend_params, false, false, true,
 			2, 0, script_layer::EBlendLayers::eAimStart);
-	}
 
-	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+		if (pActor != nullptr && m_aim_cams[0].size() > 0 && m_aim_cams[1].size() > 0)
+		{
+			CAnimatorCamEffector* e = new CAnimatorCamEffector();
+			e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
+			e->SetCyclic(false);
+			e->SetHudAffect(true);
+			e->Start(*m_aim_cams[0]);
+			pActor->Cameras().AddCamEffector(e);
+		}
+	}
 
 	if (pActor != nullptr)
 	{
@@ -3093,6 +3115,8 @@ void CWeapon::OnZoomOut()
 	m_fRTZoomFactor = GetZoomFactor();//store current
 	m_zoom_params.m_fCurrentZoomFactor = g_fov;
 
+	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+
 	bool Mix = !IsBlendAnmActive(IsGrenadeMode() ? m_sGLAimBlendParams[2].camera_name : m_sAimBlendParams[2].camera_name);
 	if (HudItemData() != nullptr && (IsGrenadeMode() ? m_sGLAimBlendParams[2].has_motion : m_sAimBlendParams[2].has_motion))
 	{
@@ -3102,9 +3126,17 @@ void CWeapon::OnZoomOut()
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].speed_power.y : m_sAimBlendParams[2].speed_power.y,
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].blend_params : m_sAimBlendParams[2].blend_params, false, Mix, true,
 			2, 0, script_layer::EBlendLayers::eAimEnd);
-	}
 
-	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+		if (pActor != nullptr && m_aim_cams[0].size() > 0 && m_aim_cams[1].size() > 0)
+		{
+			CAnimatorCamEffector* e = new CAnimatorCamEffector();
+			e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
+			e->SetCyclic(false);
+			e->SetHudAffect(true);
+			e->Start(*m_aim_cams[1]);
+			pActor->Cameras().AddCamEffector(e);
+		}
+	}
 
 	if (pActor != nullptr)
 	{
