@@ -75,6 +75,7 @@ public:
     bool    BuildObject     (CSceneObject* obj);
     bool    BuildEditableObject(CEditableObject* obj, Fmatrix T, CSceneObject* Owner);
     bool    BuildMUObject   (CSceneObject* obj);
+    bool    BuildMUObjectModel   (CSceneObject* obj);
 
     void    Clear 			();
 

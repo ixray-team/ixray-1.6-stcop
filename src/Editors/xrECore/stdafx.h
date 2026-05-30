@@ -38,6 +38,8 @@
 #define			REDITOR 1
 
 
+#define MU_LODS_TRUE
+//#define MU_LODS_TRUE2
 
 #define PropertyGP(a,b)	__declspec( property( get=a, put=b ) )
 #define THROW			FATAL("THROW");

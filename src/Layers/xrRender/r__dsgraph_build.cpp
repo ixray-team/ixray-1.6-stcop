@@ -20,6 +20,7 @@ float r_ssaDISCARD;
 float r_ssaDONTSORT;
 float r_ssaLOD_A;
 float r_ssaLOD_B;
+float r_ssaLOD_MU0, r_ssaLOD_MU1, r_ssaLOD_MU2, r_ssaLOD_MU3, r_ssaLOD_MU4;
 float r_ssaGLOD_start;
 float r_ssaGLOD_end;
 float r_ssaHZBvsTEX;
@@ -140,6 +141,36 @@ ICF	float CalcSSA(float& distSQ, Fvector& C, float R)
 	distSQ = Device.vCameraPosition.distance_to_sqr(C) + EPS;
 	return	R / distSQ;
 }
+
+//Seakad: я пока отключил это говно, потом переделаю/доделаю. 
+// (определяет, есть ли меш после LODx - к примеру, если после LOD2 нет, то LOD2 будет последним) 
+// (не всегда модель позволяет опустить ее полигонаж до LOD4 и даже LOD3, не убив ее качество в нули)
+/*bool HasNextLOD(FLOD* V, u32 next_type)
+{
+    if (V->next_lod_checked)
+        return V->has_next_lod;
+
+    V->next_lod_checked = true;
+    float R = std::max(V->vis.sphere.R,0.5f);
+    for (auto* visual : RImplementation.Visuals)
+    {
+        if (!visual)
+            continue;
+
+        if (visual->Type != next_type)
+            continue;
+
+        float D = visual->vis.sphere.P.distance_to(V->vis.sphere.P);
+        if (D < R)
+        {
+            V->has_next_lod = true;
+            return true;
+        }
+    }
+
+    V->has_next_lod = false;
+    return false;
+}*/
 
 void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fvector& Center)
 {
@@ -553,6 +584,66 @@ ICF void r_dsgraph_insert_static_lod(dxRender_Visual* pVisual)
 	}
 }
 
+//Seakad: лучше работает
+IC float distance_to_aabb(const Fvector& point,const Fbox& box)
+{
+    float dx = 0.0f;
+    float dy = 0.0f;
+    float dz = 0.0f;
+
+    // X
+    if (point.x < box.min.x)
+        dx = box.min.x - point.x;
+    else if (point.x > box.max.x)
+        dx = point.x - box.max.x;
+
+    // Y
+    if (point.y < box.min.y)
+        dy = box.min.y - point.y;
+    else if (point.y > box.max.y)
+        dy = point.y - box.max.y;
+
+    // Z
+    if (point.z < box.min.z)
+        dz = box.min.z - point.z;
+    else if (point.z > box.max.z)
+        dz = point.z - box.max.z;
+
+    return _sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+IC int SelectLOD(float D) //,bool has_lod1,bool has_lod2,bool has_lod3,bool has_lod4
+{
+    /*if (!has_lod1)
+        return 0;
+
+	if (!has_lod2)
+        return 1;
+
+	if (!has_lod3)
+        return 2;
+
+	if (!has_lod4)
+        return 3;*/
+
+	if (D < r_ssaLOD_MU0/ps_r__LOD_MU0_discard)
+        return 0;
+
+    if (D >= r_ssaLOD_MU0 && D <  r_ssaLOD_MU1)
+        return 1;
+
+    if (D >= r_ssaLOD_MU1 && D <  r_ssaLOD_MU2)
+        return 2;
+
+    if (D >= r_ssaLOD_MU2 && D <  r_ssaLOD_MU3)
+        return 3;
+
+    if (D >= r_ssaLOD_MU3 && D <  (r_ssaLOD_MU4/ps_r__LOD_MU4_discard))
+        return 4;
+
+    return -1;
+}
+
 void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 {
 	//PROF_EVENT("add_leafs_Static")
@@ -574,6 +665,16 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 		if (Device.vCameraPosition.distance_to_sqr(vis.sphere.P) > _sqr(fog_distance + vis.sphere.R))
 			continue;
 
+		float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);
+		FLOD* pLOD = (FLOD*)pVisual;
+
+		//bool has_lod1 = HasNextLOD(pLOD, MT_LOD1);
+		//bool has_lod2 = HasNextLOD(pLOD, MT_LOD2);
+		//bool has_lod3 = HasNextLOD(pLOD, MT_LOD3);
+		//bool has_lod4 = HasNextLOD(pLOD, MT_LOD4);
+	
+		int selectedLOD = SelectLOD(D); //,has_lod1,has_lod2,has_lod3,has_lod4
+
 		// Visual is 100% visible - simply add it
 		switch (pVisual->Type)
 		{
@@ -582,10 +683,53 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 			// Add all children, doesn't perform any tests
 			add_leafs_Static(static_cast<FHierrarhyVisual*>(pVisual)->children);
 		}continue;
+#ifndef MU_LODS_TRUE
 		case MT_LOD:
 		{
 			r_dsgraph_insert_static_lod(pVisual);
 		}continue;
+#else
+		case MT_LOD:
+		{
+			FLOD		* pV	=		(FLOD*) pVisual;
+			if (selectedLOD == 0)
+			{
+				add_leafs_Static(pV->children);
+			}
+		}continue;
+		case MT_LOD1:
+		{
+			FLOD		* pV	=		(FLOD*) pVisual;
+			if (selectedLOD == 1)
+			{
+				add_leafs_Static(pV->children);
+			}
+		}continue;
+		case MT_LOD2:
+		{
+			FLOD		* pV	=		(FLOD*) pVisual;
+			if (selectedLOD == 2)
+			{
+				add_leafs_Static(pV->children);
+			}
+		}continue;
+		case MT_LOD3:
+		{
+			FLOD		* pV	=		(FLOD*) pVisual;
+			if (selectedLOD == 3)
+			{
+				add_leafs_Static(pV->children);
+			}
+		}continue;
+	case MT_LOD4:
+		{
+			FLOD		* pV	=		(FLOD*) pVisual;
+			if (selectedLOD == 4)
+			{
+				add_leafs_Static(pV->children);
+			}
+		}continue;
+#endif
 		case MT_TREE_PM:
 		case MT_TREE_ST:
 		{
@@ -612,7 +756,15 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 	// Check frustum visibility and calculate distance to visual's center
 	EFC_Visible	VIS;
 	vis_data& vis = pVisual->vis;
-	VIS = View->testSAABB(vis.sphere.P,vis.sphere.R,vis.box.data(),planes);
+	if (pVisual->Type == MT_LOD || pVisual->Type == MT_LOD1 || pVisual->Type == MT_LOD2 || pVisual->Type == MT_LOD3 || pVisual->Type == MT_LOD4)
+	{
+		VIS = View->testAABB	(vis.box.data(),planes);
+	}
+	else
+	{
+		VIS = View->testSAABB	(vis.sphere.P,vis.sphere.R,vis.box.data(),planes);
+	}
+
 	if (fcvNone==VIS)		
 		return;
 #if RENDER!=R_R1
@@ -623,6 +775,16 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 
 	if (Device.vCameraPosition.distance_to_sqr(vis.sphere.P) > _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance + vis.sphere.R))
 		return;
+
+	float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);
+	FLOD* pLOD = (FLOD*)pVisual;
+
+	//bool has_lod1 = HasNextLOD(pLOD, MT_LOD1);
+	//bool has_lod2 = HasNextLOD(pLOD, MT_LOD2);
+	//bool has_lod3 = HasNextLOD(pLOD, MT_LOD3);
+	//bool has_lod4 = HasNextLOD(pLOD, MT_LOD4);
+	
+	int selectedLOD = SelectLOD(D); //,has_lod1,has_lod2,has_lod3,has_lod4
 
 	// If we get here visual is visible or partially visible
 	switch (pVisual->Type)
@@ -641,10 +803,53 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 			add_leafs_Static(pV->children);
 		}
 	}return;
-	case MT_LOD:
-	{
-		r_dsgraph_insert_static_lod(pVisual);
-	}return;
+#ifndef MU_LODS_TRUE
+		case MT_LOD:
+		{
+			r_dsgraph_insert_static_lod(pVisual);
+		}return;
+#else
+		case MT_LOD:
+		{
+			FLOD		* pV	=		(FLOD*) pVisual;
+			if (selectedLOD == 0)
+			{
+				add_leafs_Static(pV->children);
+			}
+		}return;
+		case MT_LOD1:
+		{
+			FLOD		* pV	=		(FLOD*) pVisual;
+			if (selectedLOD == 1)
+			{
+				add_leafs_Static(pV->children);
+			}
+		}return;
+		case MT_LOD2:
+		{
+			FLOD		* pV	=		(FLOD*) pVisual;
+			if (selectedLOD == 2)
+			{
+				add_leafs_Static(pV->children);
+			}
+		}return;
+		case MT_LOD3:
+		{
+			FLOD		* pV	=		(FLOD*) pVisual;
+			if (selectedLOD == 3)
+			{
+				add_leafs_Static(pV->children);
+			}
+		}return;
+	case MT_LOD4:
+		{
+			FLOD		* pV	=		(FLOD*) pVisual;
+			if (selectedLOD == 4)
+			{
+				add_leafs_Static(pV->children);
+			}
+		}return;
+#endif
 	case MT_TREE_ST:
 	case MT_TREE_PM:
 	{

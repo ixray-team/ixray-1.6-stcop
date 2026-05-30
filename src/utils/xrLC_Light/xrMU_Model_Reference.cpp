@@ -29,6 +29,11 @@ void xrMU_Reference::Load( IReader& F, xr_vector<xrMU_Model*>& mu_models )
   
 void xrMU_Reference::export_cform_game(CDB::CollectorPacked& CL)
 {
+	//Seakad: test skip cform LOD1-4
+	xr_string ref_name_muX = model->m_name.c_str();
+	if ((ref_name_muX.find("lod1") != xr_string::npos) || (ref_name_muX.find("lod2") != xr_string::npos) || (ref_name_muX.find("lod3") != xr_string::npos) || (ref_name_muX.find("lod4") != xr_string::npos))
+		return;
+
 	// Collecting data
 	xrMU_Model::v_faces*	cfFaces		= new xrMU_Model::v_faces();
 	xrMU_Model::v_vertices*	cfVertices	= new xrMU_Model::v_vertices();
