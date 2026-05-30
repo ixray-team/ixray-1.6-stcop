@@ -573,10 +573,6 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		}
 	}
 
-	VERIFY(m_pActorEffector == nullptr);
-
-	m_pActorEffector			= new CActorCameraManager();
-
 	// motions
 	m_bAnimTorsoPlayed			= false;
 	m_current_legs_blend		= 0;

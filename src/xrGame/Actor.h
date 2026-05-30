@@ -69,6 +69,8 @@ class CCustomDevice;
 class CNightVisionEffector;
 class CHudAnimatorManager;
 
+class CAnimatorCamLerpEffectorConst;
+
 class CActor: 
 	public IGame_Actor, 
 	public CEntityAlive, 
@@ -345,6 +347,10 @@ public:
 	virtual bool			can_attach				(const CInventoryItem *inventory_item) const;
 
 	virtual void UpdatePlayerHud() final override;
+
+	CAnimatorCamLerpEffectorConst* m_pCameraIdle = nullptr;
+
+	void UpdateCameraIdleAnimation();
 
 protected:
 	CHolderCustom*			m_holder;
