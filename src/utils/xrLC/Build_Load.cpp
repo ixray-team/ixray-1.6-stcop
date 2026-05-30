@@ -166,12 +166,42 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	F = fs.open_chunk		(EB_MU_models);
 	if (F)
 	{
+		auto F_LODs = fs.open_chunk(EB_MU_Mesh_LODs);
 		while (!F->eof())
 		{
 			mu_models().push_back				(new xrMU_Model());
-			mu_models().back()->Load			(*F, version );
+			auto Model = mu_models().back();
+			Model->Load			(*F, version );
+			if (F_LODs)
+			{
+				Model->UseBillboard = !F_LODs->r_u8();
+				if (Model->UseBillboard)
+				{
+					continue;
+				}
+				auto LODRead = [&](int ID)
+				{
+					Model->LODsID[ID] = F_LODs->r_u32();
+					if (Model->LODsID[ID] != u32(-1))
+					{
+						mu_models().push_back(new xrMU_Model());
+						auto LOD = mu_models().back();
+						LOD->Load(*F, version );
+						LOD->UseBillboard = false;
+						LOD->IsLOD = true;
+					}
+				};
+				LODRead(0);
+				LODRead(1);
+				LODRead(2);
+				LODRead(3);				
+			}
 		}
 		F->close				();
+		if (F_LODs)
+		{
+			F_LODs->close();
+		}
 	}
 	
 	F = fs.open_chunk		(EB_MU_refs);

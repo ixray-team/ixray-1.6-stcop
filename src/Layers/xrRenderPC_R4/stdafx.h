@@ -23,6 +23,7 @@
 #define		R_R4	4
 #define		RENDER	R_R4
 
+#define MU_LODS_TRUE
 #include "../xrRender/particle_core/psystem.h"
 
 #include "../xrRender/HW.h"

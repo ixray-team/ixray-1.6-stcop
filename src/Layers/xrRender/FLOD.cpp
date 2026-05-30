@@ -32,6 +32,7 @@ void FLOD::Load			(const char* N, IReader *data, u32 dwFlags)
 {
 	inherited::Load		(N,data,dwFlags);
 
+#ifndef MU_LODS_OFF_BILLBOARD
 	// LOD-def
 	bool FoundedChunk = !!data->find_chunk(OGF_LODDEF2);
 	R_ASSERT2(FoundedChunk, "Not found chunk OGF_LODDEF2");
@@ -51,6 +52,7 @@ void FLOD::Load			(const char* N, IReader *data, u32 dwFlags)
 		facets[f].N.normalize	(N_);
 		facets[f].N.invert		();
 	}
+#endif
 
 	// VS
 	geom.create(dwDecl, std::size(dwDecl), RCache.Vertex.Buffer(), RCache.QuadIB);
@@ -72,42 +74,22 @@ void FLOD::Copy			(dxRender_Visual *pFrom	)
 	FLOD* F				= (FLOD*)pFrom;
 	geom				= F->geom		;
 	lod_factor			= F->lod_factor	;
+#ifndef MU_LODS_OFF_BILLBOARD
 	CopyMemory		(facets,F->facets,sizeof(facets));
+#endif
 }
+
+void FMUMeshLODs::Load(const char* N, IReader* data, u32 dwFlags)
+{
+	FHierrarhyVisual::Load(N,data,dwFlags);
+	std::ranges::sort(children, [&](dxRender_Visual* A, dxRender_Visual* B)
+	{
+		auto AC = (FMUMeshLOD*)A;
+		auto BC = (FMUMeshLOD*)B;
+		return AC->LODLevel < BC->LODLevel;
+	});
+}
+
 void FLOD::Render		(float LOD)
 {
-	/*
-	Fvector				Ldir;
-	Ldir.sub			(vis.sphere.P,Device.vCameraPosition);
-	Ldir.normalize		();
-
-	int					best_id		= 0;
-	float				best_dot	= Ldir.dotproduct(facets[0].N);
-	float				dot;
-
-	dot	= Ldir.dotproduct	(facets[1].N); if (dot>best_dot) { best_id=1; best_dot=dot; }
-	dot	= Ldir.dotproduct	(facets[2].N); if (dot>best_dot) { best_id=2; best_dot=dot; }
-	dot	= Ldir.dotproduct	(facets[3].N); if (dot>best_dot) { best_id=3; best_dot=dot; }
-	dot	= Ldir.dotproduct	(facets[4].N); if (dot>best_dot) { best_id=4; best_dot=dot; }
-	dot	= Ldir.dotproduct	(facets[5].N); if (dot>best_dot) { best_id=5; best_dot=dot; }
-	dot	= Ldir.dotproduct	(facets[6].N); if (dot>best_dot) { best_id=6; best_dot=dot; }
-	dot	= Ldir.dotproduct	(facets[7].N); if (dot>best_dot) { best_id=7; best_dot=dot; }
-
-#pragma todo("Smooth transitions")
-#pragma todo("5-coloring")
-
-	// Fill VB
-	_face&		F					= facets[best_id];
-	u32			vOffset				= 0;
-	_hw*		V					= (_hw*) RCache.Vertex.Lock(4,geom->vb_stride,vOffset);
-	V[0].set	(F.v[0].v,F.N,F.v[0].c_rgb_hemi,F.v[0].t.x,F.v[0].t.y);
-	V[1].set	(F.v[1].v,F.N,F.v[1].c_rgb_hemi,F.v[1].t.x,F.v[1].t.y);
-	V[2].set	(F.v[2].v,F.N,F.v[2].c_rgb_hemi,F.v[2].t.x,F.v[2].t.y);
-	V[3].set	(F.v[3].v,F.N,F.v[3].c_rgb_hemi,F.v[3].t.x,F.v[3].t.y);
-	RCache.Vertex.Unlock			(4,geom->vb_stride);
-
-	// Draw IT
-	RCache.set_Geometry		(geom);
-	RCache.Render			(D3DPT_TRIANGLEFAN,vOffset,2);
-	*/
 }
