@@ -17,7 +17,7 @@ struct SElectricCurve
 
 	float STEP = 0.05f;
 	float SEGMENT_LENGTH = 0.5f;           // Длина одного сегмента (метров)
-	float ANIMATION_SPEED = 0.001f;        // Скорость анимации (множитель dwTimeDelta)
+	float ANIMATION_SPEED = Random.randF(0.001f, 0.0015f);        // Скорость анимации (множитель dwTimeDelta)
 
 	float MAX_CURVE_DISTANCE = 5.0f;						// Максимальная длинна дуги
 	float PARABOLA_HEIGHT_MULT = Random.randF(0.3f, 0.8f);  // Высота параболы множитель от расстояния
