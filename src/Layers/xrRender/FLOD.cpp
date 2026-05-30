@@ -32,6 +32,7 @@ void FLOD::Load			(const char* N, IReader *data, u32 dwFlags)
 {
 	inherited::Load		(N,data,dwFlags);
 
+#ifndef MU_LODS_OFF_BILLBOARD
 	// LOD-def
 	bool FoundedChunk = !!data->find_chunk(OGF_LODDEF2);
 	R_ASSERT2(FoundedChunk, "Not found chunk OGF_LODDEF2");
@@ -51,6 +52,7 @@ void FLOD::Load			(const char* N, IReader *data, u32 dwFlags)
 		facets[f].N.normalize	(N_);
 		facets[f].N.invert		();
 	}
+#endif
 
 	// VS
 	geom.create(dwDecl, std::size(dwDecl), RCache.Vertex.Buffer(), RCache.QuadIB);
@@ -72,7 +74,9 @@ void FLOD::Copy			(dxRender_Visual *pFrom	)
 	FLOD* F				= (FLOD*)pFrom;
 	geom				= F->geom		;
 	lod_factor			= F->lod_factor	;
+#ifndef MU_LODS_OFF_BILLBOARD
 	CopyMemory		(facets,F->facets,sizeof(facets));
+#endif
 }
 void FLOD::Render		(float LOD)
 {

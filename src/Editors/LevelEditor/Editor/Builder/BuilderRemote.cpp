@@ -852,6 +852,102 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 
 	UI->SetStatus(temp.c_str());
 
+	BuildMUObjectModel(obj);
+
+#ifdef MU_LODS_TRUE
+	//Seakad: Parser lod0 - lod4 (export lod1-lod4)
+    xr_string ref_name1 = obj->m_ReferenceName.c_str();
+	bool LOD0HasSuffix = ref_name1.find("lod0") != xr_string::npos;
+    if (EPrefs->LODsForAllMU || LOD0HasSuffix)
+    {
+	    size_t f1 = ref_name1.find_last_of('\\');
+    	int RF_MU1_FS_I = static_cast<int>(f1);
+
+    	xr_string RF_MUX_add = ref_name1;
+    	xr_string RF_MUX_added = "\\lod";
+    	RF_MUX_add.insert(RF_MU1_FS_I, RF_MUX_added);
+
+    	xr_string ref_new_MU1 = RF_MUX_add;
+    	if (LOD0HasSuffix){
+    		ref_new_MU1.erase(ref_new_MU1.length() - 5);
+		}
+
+    	ref_new_MU1 += "_lod1";
+
+		xr_string ref_new_MU2 = RF_MUX_add;
+    	if (LOD0HasSuffix){
+			ref_new_MU2.erase(ref_new_MU2.length() - 5);
+		}
+		ref_new_MU2 += "_lod2";
+
+		xr_string ref_new_MU3 = RF_MUX_add;
+    	if (LOD0HasSuffix){
+			ref_new_MU3.erase(ref_new_MU3.length() - 5);
+		}
+		ref_new_MU3 += "_lod3";
+
+		xr_string ref_new_MU4 = RF_MUX_add;
+    	if (LOD0HasSuffix){
+			ref_new_MU4.erase(ref_new_MU4.length() - 5);
+		}
+		ref_new_MU4 += "_lod4";
+
+		xr_string ref_new_MU1_check = ref_new_MU1;
+		xr_string ref_new_MU2_check = ref_new_MU2;
+		xr_string ref_new_MU3_check = ref_new_MU3;
+		xr_string ref_new_MU4_check = ref_new_MU4;
+
+		{
+			xr_stack_string_path stack_path;
+			ref_new_MU1_check = FS.update_path(stack_path, _objects_, ref_new_MU1_check.c_str());
+			ref_new_MU1_check += ".object";
+			ref_new_MU2_check = FS.update_path(stack_path, _objects_, ref_new_MU2_check.c_str());
+			ref_new_MU2_check += ".object";
+			ref_new_MU3_check = FS.update_path(stack_path, _objects_, ref_new_MU3_check.c_str());
+			ref_new_MU3_check += ".object";
+			ref_new_MU4_check = FS.update_path(stack_path, _objects_, ref_new_MU4_check.c_str());
+			ref_new_MU4_check += ".object";
+		}
+
+		if (FS.TryLoad(ref_new_MU1_check))
+		{
+			LPCSTR ref_new_MU1_1 = ref_new_MU1.c_str();
+			O = obj->SetReference(ref_new_MU1_1);
+			UI->SetStatus(ref_new_MU1_check.c_str());
+			BuildMUObjectModel(obj);
+		}
+		if (FS.TryLoad(ref_new_MU2_check))
+		{
+			LPCSTR ref_new_MU2_2 = ref_new_MU2.c_str();
+			O = obj->SetReference(ref_new_MU2_2);
+			UI->SetStatus(ref_new_MU2_check.c_str());
+			BuildMUObjectModel(obj);
+		}
+		if (FS.TryLoad(ref_new_MU3_check))
+		{
+			LPCSTR ref_new_MU3_3 = ref_new_MU3.c_str();
+			O = obj->SetReference(ref_new_MU3_3);
+			UI->SetStatus(ref_new_MU3_check.c_str());
+			BuildMUObjectModel(obj);
+		}
+		if (FS.TryLoad(ref_new_MU4_check))
+		{
+			LPCSTR ref_new_MU4_4 = ref_new_MU4.c_str();
+			O = obj->SetReference(ref_new_MU4_4);
+			UI->SetStatus(ref_new_MU4_check.c_str());
+			BuildMUObjectModel(obj);
+		}
+
+		O = obj->SetReference(ref_name1.c_str());
+		R_ASSERT(O);
+	}
+#endif
+	return true;
+}
+
+bool SceneBuilder::BuildMUObjectModel(CSceneObject* obj)
+{
+	CEditableObject *O = obj->GetReference();
 	int model_idx = GetModelIdx( O->GetName() ) ;
 
 	// detect sector
@@ -1441,6 +1537,7 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 	}
 	UI->ProgressEnd(pb);
 // process lods
+#ifndef MU_LODS_TRUE_1 //Seakad: я пока не решил, вырезать полностью билборды, или оставить с пустышкой-текстурой, и с уменьшенным разрешением
 	if (bResult&&!l_lods.empty())
 	{
 		SPBItem* pb = UI->ProgressStart(l_lods.size()*2,"Merge LOD textures...");
@@ -1456,8 +1553,13 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 			I.name			= l_lods[k].lod_name;
 			I.layers.push_back(l_lods[k].data);
 			I.layers.push_back(l_lods[k].ndata);
+#ifndef MU_LODS_TRUE
 			I.w				= LOD_IMAGE_SIZE*LOD_SAMPLE_COUNT;
 			I.h				= LOD_IMAGE_SIZE;
+#else
+			I.w				= 8*LOD_SAMPLE_COUNT;
+			I.h				= 8;
+#endif
 			pb->Inc();
 		}
 
@@ -1492,6 +1594,7 @@ bool SceneBuilder::CompileStatic(bool b_selected_only)
 		UI->ProgressEnd(pb);
 	}
 
+#endif
 // save build    
 	if (bResult && !UI->NeedAbort())
 	{

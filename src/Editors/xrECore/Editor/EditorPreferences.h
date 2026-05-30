@@ -92,6 +92,7 @@ public:
 	xr_string		Compiler_xrAI;
 	xr_string		Compiler_xrLC;
 	xr_string		Compiler_xrDO;
+	bool LODsForAllMU = false;
 
 	std::map<std::string, std::string> custom_icons;
 protected:

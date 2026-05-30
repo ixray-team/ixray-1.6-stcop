@@ -55,6 +55,18 @@ dxRender_Visual* CModelPool::Instance_Create(u32 type)
 	case MT_LOD:
 		V	= new FLOD					();
 		break;
+	case MT_LOD1:
+ 		V	= new FLOD 					();
+ 		break;
+ 	case MT_LOD2:
+ 		V	= new FLOD					();
+ 		break;
+ 	case MT_LOD3:
+ 		V	= new FLOD					();
+ 		break;
+ 	case MT_LOD4:
+ 		V	= new FLOD					();
+ 		break;
 	case MT_TREE_ST:
 		V	= new FTreeVisual_ST		();
 		break;
