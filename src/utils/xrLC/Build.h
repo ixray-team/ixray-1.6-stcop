@@ -107,7 +107,6 @@ public:
 	void	BuildSectors			();
 	
 	// Saving
-	void	SaveOGF();
 	void	SaveLights				(IWriter &fs);
 	void	SaveTREE				(IWriter &fs);
 	void	SaveSectors				(IWriter &fs);
