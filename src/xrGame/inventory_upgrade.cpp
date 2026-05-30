@@ -125,13 +125,15 @@ UpgradeStateResult Upgrade::can_install(CInventoryItem& item, bool loading)
 	res = m_parent_group->can_install(item, *this, loading);
 	if (loading)
 	{
-		return res; // later script check
+		return result_ok; // later script check
 	}
 
-	int script_res = m_preconditions();
-
-	switch (script_res)
+	if (res == result_ok)
 	{
+		int script_res = m_preconditions();
+
+		switch (script_res)
+		{
 		case result_script_ok:
 		{
 			return res;
@@ -160,9 +162,9 @@ UpgradeStateResult Upgrade::can_install(CInventoryItem& item, bool loading)
 
 			return result_e_precondition_quest;
 		} break;
+		}
 	}
-
-	return result_ok;
+	return res;
 }
 
 bool Upgrade::check_scheme_index(Ivector2 const& scheme_index) const
