@@ -47,7 +47,10 @@ public:
 
 public:
 	shared_str				m_name;
-	u16						m_lod_ID;
+	bool UseBillboard = true;
+	u16 m_lod_ID = u16(-1);
+	bool IsLOD = false;
+	u32 LODsID[4] = {u32(-1), u32(-1), u32(-1), u32(-1)};
 	
 	v_vertices				m_vertices;
 	v_faces					m_faces;

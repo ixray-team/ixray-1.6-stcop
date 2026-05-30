@@ -12,6 +12,7 @@ class XRLC_LIGHT_API xrMU_Reference
 {
 public:
 	xrMU_Model*				model;
+	u32 ModelID = u32(-1);
     Fmatrix					xform;
     Flags32					flags;
 	u16						sector;

@@ -5,7 +5,6 @@ class CSceneObject :
 {
 	friend class UIReferenceReplacer;
 
-	shared_str		m_ReferenceName;
 	CEditableObject*m_pReference;
 	void 			ReferenceChange			(PropValue* sender);
 	void			OnChangeShader(PropValue* sender);
@@ -14,6 +13,7 @@ class CSceneObject :
 	void			OnClickClearSurface(ButtonValue*, bool&, bool&);
 public:
 
+	shared_str		m_ReferenceName;
 	SurfaceVec m_Surfaces;
 	enum {
 		//    	flDynamic	= (1<<0),
