@@ -1096,18 +1096,6 @@ public:
 
 };
 
-#ifdef DEBUG
-extern void print_help(lua_State* L);
-
-struct CCC_LuaHelp : public IConsole_Command {
-	CCC_LuaHelp(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-
-	virtual void Execute(const char* args) {
-		print_help(ai().script_engine().lua());
-	}
-};
-#endif
-
 //#ifndef MASTER_GOLD
 #	include "game_graph.h"
 struct CCC_JumpToLevel : public IConsole_Command {
@@ -2704,8 +2692,6 @@ void CCC_RegisterCommands()
     CMD4(CCC_Float, "3d_icons_adjust_value", &g_Adjust3dIconValue, 0.f, 10.f);
 
 #ifdef DEBUG
-	CMD1(CCC_LuaHelp, "lua_help");
-
 	CMD3(CCC_Mask32, "dbg_draw_actor_alive", &dbg_net_Draw_Flags, dbg_draw_actor_alive);
 	CMD3(CCC_Mask32, "dbg_draw_actor_dead", &dbg_net_Draw_Flags, dbg_draw_actor_dead);
 	CMD3(CCC_Mask32, "dbg_draw_customzone", &dbg_net_Draw_Flags, dbg_draw_customzone);

@@ -7,55 +7,59 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
 #include "../../Include/xrRender/KinematicsAnimated.h"
 #include "../ai_debug.h"
+#include "AnimationNames.h"
 
 using ANIM_VECTOR = xr_vector<MotionID>;
 using ANIM_IT = ANIM_VECTOR::iterator;
 
-class CAniVector {
+class CAniVector 
+{
 public:
-	ANIM_VECTOR		A;
-
-			void	Load	(IKinematicsAnimated *tpKinematics, const char* caBaseName);
+	ANIM_VECTOR A;
+	void Load(IKinematicsAnimated* tpKinematics, const char* caBaseName);
 };
 
-template <const char* caBaseNames[]> class CAniFVector {
+template <CStalkerAnimationNames::ECollectionType CollectionType>
+class CAniFVector
+{
 public:
 	ANIM_VECTOR		A;
 
-	IC	void		Load(IKinematicsAnimated *tpKinematics, const char* caBaseName)
+	IC void Load(IKinematicsAnimated* Kinematics, const char* BaseName)
 	{
-		A.clear			();
-		string256		S;
-		int j = 0;
-		for (; caBaseNames[j]; ++j);
-		A.resize		(j);
-		for (int i=0; i<j; ++i) 
+		A.clear();
+		const auto& Names = GAnimationNames.GetCollection(CollectionType);
+		A.resize(Names.size());
+
+		string256 Buffer;
+
+		for (u32 i = 0; i < Names.size(); ++i)
 		{
-			xr_strconcat(S,caBaseName,caBaseNames[i]);
-			A[i]		= tpKinematics->ID_Cycle_Safe(S);
-#ifdef DEBUG
-			if (A[i] && psAI_Flags.test(aiAnimation))
-				Msg		("* Loaded animation %s",S);
-#endif
+			xr_strconcat(Buffer, BaseName, *Names[i]);
+			A[i] = Kinematics->ID_Cycle_Safe(Buffer);
 		}
 	}
 };
 
-template <class TYPE_NAME, const char* caBaseNames[]> class CAniCollection {
+template <class TYPE_NAME, CStalkerAnimationNames::ECollectionType CollectionType>
+class CAniCollection
+{
 public:
-	xr_vector<TYPE_NAME>	A;
+	xr_vector<TYPE_NAME> A;
 
-	IC	void		Load(IKinematicsAnimated *tpKinematics, const char* caBaseName)
+	IC void Load(IKinematicsAnimated* Kinematics, const char* BaseName)
 	{
-		A.clear		();
-		string256	S;
-		int j = 0;
-		for (; caBaseNames[j]; ++j);
-		A.resize	(j);
-		for (int i=0; i<j; ++i)
-			A[i].Load	(tpKinematics, xr_strconcat(S,caBaseName,caBaseNames[i]));
+		A.clear();
+		const auto& Names = GAnimationNames.GetCollection(CollectionType);
+		A.resize(Names.size());
+
+		string256 Buffer;
+
+		for (u32 i = 0; i < Names.size(); ++i)
+		{
+			A[i].Load(Kinematics, xr_strconcat(Buffer, BaseName, *Names[i]));
+		}
 	}
 };

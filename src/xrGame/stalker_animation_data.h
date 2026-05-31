@@ -11,12 +11,12 @@
 #include "stalker_animation_state.h"
 #include "stalker_animation_names.h"
 
-class CStalkerAnimationData {
+class CStalkerAnimationData 
+{
 public:
-	typedef CStalkerAnimationState::WEAPON_ACTIONS				WEAPON_ACTIONS;
-	typedef CAniCollection<WEAPON_ACTIONS,weapon_names>			GLOBAL_ANIMATIONS;
-	typedef CAniCollection<CStalkerAnimationState,state_names>	PART_ANIMATIONS;
-	typedef CAniFVector<head_names>								HEAD_ANIMATIONS;
+	using GLOBAL_ANIMATIONS = CAniCollection<CStalkerAnimationState::WEAPON_ACTIONS, CStalkerAnimationNames::ECollectionType::Weapon>;
+	using PART_ANIMATIONS = CAniCollection<CStalkerAnimationState, CStalkerAnimationNames::ECollectionType::State>;
+	using HEAD_ANIMATIONS = CAniFVector<CStalkerAnimationNames::ECollectionType::Head>;
 
 public:
 	PART_ANIMATIONS		m_part_animations;
@@ -24,5 +24,5 @@ public:
 	GLOBAL_ANIMATIONS	m_global_animations;
 
 public:
-						CStalkerAnimationData	(IKinematicsAnimated *skeleton_animated);
+	CStalkerAnimationData	(IKinematicsAnimated *skeleton_animated);
 };
