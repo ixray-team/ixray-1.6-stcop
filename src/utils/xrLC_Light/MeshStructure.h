@@ -253,8 +253,4 @@ IC void isolate_vertices(bool bProgress, xr_vector<typeVertex*> &vertices )
 	auto _end	= std::remove	(vertices.begin(),vertices.end(),(typeVertex*)0);
  	vertices.erase	(_end,vertices.end());
 	vertices.shrink_to_fit();
- 	
-	
-	// 13080 (Ориг нормали) если capacity 12750mb
-	Memory.mem_compact	();
 }

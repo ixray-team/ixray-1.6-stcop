@@ -14,13 +14,11 @@ bool g_smooth_groups_by_faces = false;
 
 xrLC_GlobalData* data =0;
 
-
 xrLC_GlobalData*	lc_global_data()
 {
 	return data;
 }
 
-xr_vector<base_Face*> FacesStorage;
 void	create_global_data()
 {
 	VERIFY( !inlc_global_data() );
@@ -32,28 +30,15 @@ void	destroy_global_data()
 	if(data)
 		data->clear();
 	xr_delete(data);
-	FacesStorage.clear();
 }
 
 
-xrLC_GlobalData::xrLC_GlobalData() : b_vert_not_register( false )
+xrLC_GlobalData::xrLC_GlobalData()
 {
-	_cl_globs._RCAST_Model = 0;
+	
 }
-
-void	xrLC_GlobalData	::destroy_rcmodel	()
-{
-	xr_delete		(_cl_globs._RCAST_Model);
-}
-
-void	xrLC_GlobalData	::create_rcmodel	(CDB::CollectorPacked& CL)
-{
-	VERIFY(!_cl_globs._RCAST_Model);
-	_cl_globs._RCAST_Model				= new CDB::MODEL();
-	_cl_globs._RCAST_Model->build		(CL.getV(),(int)CL.getVS(),CL.getT(),(int)CL.getTS());
-}
-
-void		xrLC_GlobalData	::				initialize		()
+ 
+void xrLC_GlobalData::initialize()
 {
 }
 
@@ -63,20 +48,14 @@ xrSRWLock NaxGuard;
 XRLC_LIGHT_API base_Face* convert_nax(u32 dummy)
 {
 	xrSRWLockGuard guard(NaxGuard, true);
-
-	if (FacesStorage.size() < dummy) {
-		DebugBreak();
-	}
-
-	return FacesStorage[dummy];
+ 	return lc_global_data()->FacesStorage[dummy];
 }
 
 XRLC_LIGHT_API u32 convert_nax(base_Face* F)
 {
 	xrSRWLockGuard guard(NaxGuard);
-
-	FacesStorage.push_back(F);
-	return FacesStorage.size() - 1;
+ 	lc_global_data()->FacesStorage.push_back(F);
+	return lc_global_data()->FacesStorage.size() - 1;
 }
  
 void	xrLC_GlobalData::mu_models_calc_materials()
@@ -122,12 +101,6 @@ void vec_free(xr_vector<T*>& v)
 void mu_mesh_clear();
 
 // create - destroy 
-
-// typedef poolSS<Vertex, 16 * 1024>	poolVertices;
-// typedef poolSS<Face, 16 * 1024>		poolFaces;
-// static poolVertices	_VertexPool;
-// static poolFaces	_FacePool;
-
 Face* xrLC_GlobalData::create_face()
 {
 	return new Face();
@@ -150,14 +123,17 @@ void xrLC_GlobalData::destroy_vertex(Vertex*& v)
 
 void xrLC_GlobalData::clear() 
 {
+	FacesStorage.clear();
+	FacesStorage.shrink_to_fit();
+
 	// se7kills (Проверил это отгружается хорошо !)
 	for (auto& surface : textures())
 		surface.pSurface.Clear();
  	textures().clear();
 	textures().shrink_to_fit();
 
- 	_cl_globs._materials.clear();
-	_cl_globs._shaders.Unload();
+ 	_materials.clear();
+	_shaders.Unload();
 	clMsg("[xrLC_Remove] mem textures: %u mb", GetHeapMemory() / 1024 / 1024);
 
 	// Пометка чтобы не трогало векторы (_g_faces, _g_vertex) в деструкторе !
@@ -195,8 +171,6 @@ void xrLC_GlobalData::clear()
  	vec_free(_g_deflectors);
 
 	vec_clear(_g_lightmaps);
-	xr_delete(_cl_globs._RCAST_Model);
-
 	clMsg("[xrLC_Remove] mem defl-lmaps: %u mb", GetHeapMemory() / 1024 / 1024);
 }
  
