@@ -18,24 +18,18 @@ class xrMU_Reference;
 class base_Vertex;
 class base_Face;
 
-struct compilers_global_data
+class XRLC_LIGHT_API xrLC_GlobalData
 {
+ 	CMemoryWriter					_err_invalid;
+	CMemoryWriter					_err_multiedge;
+	CMemoryWriter					_err_tjunction;
+
 	xr_vector<b_BuildTexture>		_textures;
 	xr_vector<b_material>			_materials;
 	Shader_xrLC_LIB					_shaders;
 	b_params						_g_params;
 	base_lighting					_L_static;
-	CDB::MODEL* _RCAST_Model;
-};
 
-class XRLC_LIGHT_API xrLC_GlobalData
-{
-
-	compilers_global_data			_cl_globs;
-
-	CMemoryWriter					_err_invalid;
-	CMemoryWriter					_err_multiedge;
-	CMemoryWriter					_err_tjunction;
 
 	// Computing
 	xr_vector<CLightmap*>			_g_lightmaps;
@@ -47,21 +41,25 @@ class XRLC_LIGHT_API xrLC_GlobalData
 	xr_vector<xrMU_Model*>			_mu_models;
 	xr_vector<xrMU_Reference*>		_mu_refs;
 
-private:
-	bool b_vert_not_register;
-
 public:
+	xr_vector<base_Face*>			FacesStorage;
+
 	xrLC_GlobalData();
 	~xrLC_GlobalData();
-
-		IC xr_vector<b_BuildTexture>& textures() { return _cl_globs._textures; }
-		IC xr_vector<CLightmap*>& lightmaps() { return _g_lightmaps; }
-		IC xr_vector<b_material>& materials() { return _cl_globs._materials; }
-		IC Shader_xrLC_LIB& shaders() { return _cl_globs._shaders; }
 		IC CMemoryWriter& err_invalid() { return _err_invalid; }
 		IC CMemoryWriter& err_multiedge() { return _err_multiedge; };
 		IC CMemoryWriter& err_tjunction() { return _err_tjunction; };
-		IC b_params& g_params() { return _cl_globs._g_params; }
+		IC b_params& g_params() { return _g_params; }
+		IC Shader_xrLC_LIB& shaders() { return _shaders; }
+
+
+		IC xr_vector<b_BuildTexture>&	textures()		{ return _textures; }
+		IC xr_vector<CLightmap*>&		lightmaps()		{ return _g_lightmaps; }
+		IC xr_vector<b_material>&		materials()		{ return _materials; }
+
+ 		vecVertex&						g_vertices()	{ return	_g_vertices; }
+		vecFace&						g_faces()		{ return	_g_faces; }
+		vecDefl& g_deflectors() { return	_g_deflectors; }
 
 		Face*						create_face();
 		void						destroy_face(Face*& f);
@@ -69,25 +67,17 @@ public:
 		Vertex*						create_vertex();
 		void						destroy_vertex(Vertex*& f);
 
-		vecVertex& g_vertices()		{ return	_g_vertices; }
-		vecFace& g_faces()			{ return	_g_faces; }
-		vecDefl& g_deflectors()		{ return	_g_deflectors; }
-		bool						b_r_vertices();
-		bool						vert_construct_register() { return !b_r_vertices() && !b_vert_not_register; }
+		bool										b_r_vertices();
+		bool										vert_construct_register() { return !b_r_vertices(); }
 
 
-		base_lighting&				L_static() { return _cl_globs._L_static; }
-		CDB::MODEL*					RCAST_Model() { return _cl_globs._RCAST_Model; }
-		xr_vector<xrMU_Model*>&		mu_models() { return _mu_models; }
-		xr_vector<xrMU_Reference*>& mu_refs() { return _mu_refs; }
+		base_lighting&				L_static()		{ return _L_static; }
+ 		xr_vector<xrMU_Model*>&		mu_models()		{ return _mu_models; }
+		xr_vector<xrMU_Reference*>& mu_refs()		{ return _mu_refs; }
 
  
  		void						initialize		()		;
-		void						destroy_rcmodel	()		;
-
-		void						create_rcmodel	(CDB::CollectorPacked& CL);
-
-  
+   
 // Clearing Data
 		void						clear					();
  		void						mu_models_calc_materials();

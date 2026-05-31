@@ -21,7 +21,6 @@ void	CBuild::LMaps					()
 {
 	g_bEnableStatGather = true;
 
-	mem_Compact();
 	UpdateCurrentPhase("LMaps");
 
 #ifdef LCCUDA_BUILD
@@ -79,49 +78,40 @@ void	CBuild::LMaps					()
 		xr_atomic_u32 LmapsTaskID = 0;
 		xr_parallel_for(0, gCompilerMode.ThreadsPerWork, [&](int THREAD)
 		{
-			CDB::COLLIDER	DB;
-			base_lighting	LightsSelected;
+ 			base_lighting	LightsSelected;
 			while (true)
 			{
 				// Get task
 				u32 IndexTask = LmapsTaskID.fetch_add(1);
 				if (IndexTask >= lc_global_data()->g_deflectors().size()) break;
  				CDeflector* D = lc_global_data()->g_deflectors()[IndexTask];
-				D->Light(&DB, &LightsSelected);
+				D->Light(&LightsSelected);
 				AditionalData("Deflectors: %u / %u", IndexTask, lc_global_data()->g_deflectors().size());
 			}
 		}
 		);
 		clMsg("%f seconds", start_time.GetElapsed_sec());
 	}
+
+
+	xrPhase_MergeLM();
 }
  
 void CBuild::Light()
 {
 	auto InitModel = [this]()
 	{
+		InitializeEmbreeDevice();
+
 #ifdef LCCUDA_BUILD
 		if (gCompilerMode.CUDA)
+		{
+			GPUTaskinSystem.InitializeGPU();
 			GPUTaskinSystem.InitializeGPU_Model();				// Memory Usage 150-300MB !
+		}
 		else
 #endif
-		if (gCompilerMode.Embree)
  			EmbreeMain.InitializeGeometry();
- 		else
-			BuildRapid(false);
-	};
-
-	auto UnloadModel = [this]()
-	{
- 		// Unloading Ray Casting Models !
-		lc_global_data()->destroy_rcmodel();
-
-		if (gCompilerMode.Embree)
-			EmbreeMain.IntelEmbereUnloadAll();
-#ifdef LCCUDA_BUILD
-		if (gCompilerMode.CUDA)
-			GPUTaskinSystem.DestroyGPU_Model();
-#endif
 	};
 
 	auto BuildingUV = [this]()
@@ -169,13 +159,15 @@ void CBuild::Light()
 	//****************************************** Starting MU
 	run_mu_light();
 
- 	//****************************************** Merge LMAPS
-	xrPhase_MergeLM();
-
 	//****************************************** Merge geometry
 	Phase("Merging geometry...");
  	xrPhase_MergeGeometry();
-	UnloadModel();
+
+	// Unloading Ray Casting Models !
+	EmbreeMain.IntelEmbereUnloadAll();
+#ifdef LCCUDA_BUILD
+	GPUTaskinSystem.DestroyGPU_Model();
+#endif
 }
 
 void CBuild::LightVertex	()

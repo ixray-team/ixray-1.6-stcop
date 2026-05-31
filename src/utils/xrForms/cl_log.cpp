@@ -20,8 +20,6 @@ xr_vector<xr_string>& GetLogVector()
 	return myLogVector;
 }
 
-volatile bool				bClose = false;
-
 static char					status[1024] = "";
 static char					additional_data[1024] = "";
 

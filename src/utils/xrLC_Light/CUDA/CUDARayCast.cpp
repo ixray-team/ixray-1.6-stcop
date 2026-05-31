@@ -12,10 +12,10 @@
 #include "Vector3HW.cuh"
 
 // Пример использования:
+static bool isGPUInitialized = false;
 OptixContext optixContext;								// Постоянный буфер !
 OptixMeshBuffers CommitedScene;
-static CUstream cudaStream = nullptr;
-
+ 
 struct TextureDataCPU
 {
 	xr_vector<unsigned char> alpha;
@@ -25,9 +25,12 @@ struct TextureDataCPU
 
 void XRay::RayTrace::CUDA::InitializeGPU()
 {
+	if (isGPUInitialized) return;
+
 	// Однократная инициализация
 	if (optixContext.Initialize())
 	{
+		isGPUInitialized = true;
 		Msg("[OptiX] Successfully initialized OptiX context");
  	}
 	else
@@ -40,17 +43,17 @@ void XRay::RayTrace::CUDA::InitializeGPU()
 xr_vector<Hardware_TextureData> cpu_tex_gpu;
 
 int					  size_lights;
-Hardware_Lighting* gpu_lights = nullptr;			// GPU alloc
+Hardware_Lighting*	  gpu_lights = nullptr;			// GPU alloc
 
 int					  size_faces;
-Hardware_FaceData* gpu_faces = nullptr;
+Hardware_FaceData*	  gpu_faces = nullptr;
 
 int					  size_textures;
 Hardware_TextureData* gpu_textures = nullptr;
 
 void XRay::RayTrace::CUDA::InitializeLights()
 {
-	auto Lights = gCompilerMode.LC ? lc_global_data()->L_static() : gl_data.g_lights;
+	auto Lights = gCompilerMode.builder_type == LCBuildingType::eLC ? lc_global_data()->L_static() : gl_data.g_lights;
  
 	auto Light = [&](R_Light& L, eTypeGPU type)
 		{
@@ -111,7 +114,7 @@ void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<void*>& Faces)
 	faces_host.resize(Faces.size());
  
 	int IndexFace = 0;
-	bool isLC = gCompilerMode.LC;
+	bool isLC = gCompilerMode.builder_type == LCBuildingType::eLC;
 	for (auto& Fv : Faces)
 	{
 		unsigned short surface = 0;
@@ -165,7 +168,7 @@ void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<void*>& Faces)
 
 void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 {
-	auto& glTextures = gCompilerMode.LC ? lc_global_data()->textures() : gl_data.g_textures;
+	auto& glTextures = gCompilerMode.builder_type == LCBuildingType::eLC ? lc_global_data()->textures() : gl_data.g_textures;
 
  	u32 SizeT = glTextures.size();
  
@@ -282,20 +285,22 @@ public:
 	{
 		isInitialized = false;
 
-		if (h_params) cudaFreeHost(&h_params);
-		if (h_rays) cudaFreeHost(&h_rays);
-		if (h_colors) cudaFreeHost(&h_colors);
+		if (h_params) cudaFreeHost(h_params);
+		if (h_rays) cudaFreeHost(h_rays);
+		if (h_colors) cudaFreeHost(h_colors);
 
-		if (d_params) cudaFree(&d_params);
-		if (d_rays) cudaFree(&d_rays);
-		if (d_colors) cudaFree(&d_colors);
+		if (d_params) cudaFree(d_params);
+		if (d_rays) cudaFree(d_rays);
+		if (d_colors) cudaFree(d_colors);
+		GetColors().clear();
+		GetColors().shrink_to_fit();
  	}
 	
 	void Init(int max_rays)
 	{
 		LastIndexTask = 0;
 		current_flags = 0;
-		GetColors().clear();
+		
 
 		this->max_rays = max_rays;
 		CUDA_CHECK(cudaStreamCreate(&stream));
@@ -433,20 +438,14 @@ public:
 	}
 };
 
-xr_concurrent_vector<RayTracer*> ThreadsRayTracers;
-
 thread_local RayTracer GPURayTracer;
  
 // Raytracer Initialize
 void XRay::RayTrace::CUDA::RayTraceInitialize(u8 CurrentFlags, size_t MaxRays)
 {
 	if (!GPURayTracer.isInitialized)
-	{
 		GPURayTracer.Init(MaxRays);
-		ThreadsRayTracers.push_back(&GPURayTracer);
-	}
-	
-	GPURayTracer.current_flags = CurrentFlags; 
+ 	GPURayTracer.current_flags = CurrentFlags; 
 }
 
 void XRay::RayTrace::CUDA::RayTraceAddRay(RayRecvestIndex& task, size_t index)
@@ -464,6 +463,12 @@ xr_vector<base_color_c>& XRay::RayTrace::CUDA::RayTraceResult()
 	return GPURayTracer.GetColors();
 }
 
+void XRay::RayTrace::CUDA::RayTraceUnload()
+{
+	GPURayTracer.ClearDeviceResult();
+	GPURayTracer.ClearingBuffers();
+}
+
 // Загрузка моделей
 void XRay::RayTrace::CUDA::InitializeModel()
 {
@@ -479,21 +484,25 @@ void XRay::RayTrace::CUDA::InitializeModel()
  
 void XRay::RayTrace::CUDA::UnloadingModel()
 {
-	for (auto TRACE : ThreadsRayTracers)
-  		TRACE->ClearingBuffers();
- 	ThreadsRayTracers.clear();
-
-	for (auto& T : cpu_tex_gpu)
+	Phase("CUDA: Cleanump...");
+ 	if (isGPUInitialized)
 	{
-		cudaFree(T.pSurface);
+		for (auto& T : cpu_tex_gpu)
+			cudaFree(T.pSurface);
+
+		// Вычищяем большие буферы данных 
+		cudaFree(gpu_lights);
+		cudaFree(gpu_faces);
+		cudaFree(gpu_textures);
+
+		size_faces = 0;
+		size_lights = 0;
+		size_textures = 0;
+
+		// Вычищаем модель уровня из CUDA
+		cudaFree( & CommitedScene.blasBuffer);
+		cudaFree( & CommitedScene.tlasBuffer);
+  		optixContext.Destroy();
 	}
-	cpu_tex_gpu.clear();
-	cpu_tex_gpu.shrink_to_fit();
-
-	cudaFree(&gpu_textures);
-	cudaFree(&gpu_faces);
-	cudaFree(&gpu_lights);
-
-	cudaFree(&CommitedScene.blasBuffer);
-	cudaFree(&CommitedScene.tlasBuffer);;
+	isGPUInitialized = false;
 }

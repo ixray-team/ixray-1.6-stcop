@@ -4,33 +4,12 @@
 #include "../xrLC/vbm.h"
 #include "FormatParsers/LevelCForm/CFormIO.h"
 #include "FormatParsers/LevelGeom/GeomIO.h"
-
-SWIContainer g_SWI, x_SWI;
-VBContainer g_VB, x_VB;
-IBContainer g_IB, x_IB;
-
-static const char* h_str =
-"The following keys are supported / required:\n"
-"-? or -h   == this help\n"
-"-f<NAME>   == compile level in gamedata/levels/<NAME>/\n"
-"-o         == modify build options\n"
-"-s         == build game spawn data\n"
-"\n"
-"NOTE: The last key is required for any functionality\n";
-
-void Help(const char* h_str);
-
-//string_path INI_FILE;
-
-//extern const char* LEVEL_GRAPH_NAME;
-
-//extern const char* GAME_CONFIG;
-
-extern void clear_temp_folder();
-extern void	xrCompiler(const char* name, bool draft_mode, bool pure_covers, const char* out_name);
-extern void	verify_level_graph(const char* name, bool verbose);
-
 #include "ConverterUI.h"
+
+// SWIContainer g_SWI, x_SWI;
+// VBContainer g_VB, x_VB;
+// IBContainer g_IB, x_IB;
+ 
 
 void StartupConv()
 {

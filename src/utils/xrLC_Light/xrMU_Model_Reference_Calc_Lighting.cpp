@@ -11,7 +11,7 @@
 
 void xrMU_Reference::calc_lighting()
 {
- 	model->calc_lighting(color, xform, inlc_global_data()->RCAST_Model(), inlc_global_data()->L_static(), LGetCurrentFlags() );
+ 	model->calc_lighting(color, xform, EmbreeMain, inlc_global_data()->L_static(), LGetCurrentFlags() );
 
 	R_ASSERT(color.size() == model->color.size());
 

@@ -7,7 +7,7 @@
 extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
  
 // Освещение
-void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
+void CDeflector::Light(base_lighting* LightsSelected)
 {
 	// Geometrical bounds
 	Fbox bb;	
@@ -25,19 +25,17 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 	LightsSelected->select(inlc_global_data()->L_static(), Sphere.P, Sphere.R);
 	lm_layer& lm = layer;
 
-	auto Light = [&](CDB::COLLIDER* DB, base_lighting* LightsSelected)
+	// Claculate
+	if (true)
 	{
- 		// UV
+		// Calculate and fill borders
 		RemapUV(0, 0, lm.width, lm.height, lm.width, lm.height, false);
-			 
-		// Calculate
- 		lm.create(lm.width, lm.height);
-		L_Direct(DB, LightsSelected);
-	};
 
-	// Calculate and fill borders
-	Light(DB, LightsSelected);
- 
+		// Calculate
+		lm.create(lm.width, lm.height);
+		L_Direct(LightsSelected);
+	}
+	
 	lm.ApplyBordersFast(0);
 
 	// Compression
@@ -110,11 +108,11 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 thread_local UVGridLazy<UVtri> uv_grid_embree;
 thread_local xr_vector<JiterPixel> EmbreePacket;
 
-void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
+void CDeflector::L_Direct	( base_lighting* LightsSelected)
 {
 	u32 flags = LGetCurrentFlags();
  
- 	auto EdgeProcessing = [&](CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
+ 	auto EdgeProcessing = [&](  base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
 		{
 			Fvector		vdir;
 			vdir.sub(v2, v1);
@@ -146,7 +144,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 				base_color_c	C;
 				Fvector			P;
 				P.mad(v1, vdir, time);
-				LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, flags, skip); //.
+				LightPoint( EmbreeMain, C, P, N, *LightsSelected, flags, skip); //.
 
 				C.mul(.5f);
 				lm.surface[_y * lm.width + _x]._set(C);
@@ -154,8 +152,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 			}
 		};
 
-	R_ASSERT	(DB);
-	R_ASSERT	(LightsSelected);
+ 	R_ASSERT	(LightsSelected);
 
 	lm_layer&	lm = layer;
 
@@ -243,57 +240,6 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 			}
 		}
 	}
-	else
-	{
-		// Lighting itself
-		DB->ray_options(0);
-		for (u32 V = 0; V < lm.height; V++)
-		{
-			for (u32 U = 0; U < lm.width; U++)
-			{
-				u32				Fcount = 0;
-				base_color_c	C;
-				for (u32 J = 0; J < Jcount; J++)
-				{
-					// LUMEL space
-					Fvector2 P;
-					P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
-					P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
-
-					// World space
-					Fvector		wP, wN, B;
-					for (auto TRI : uv_grid_embree.query(P.x, P.y, UVpolys))
-					{
-						if (TRI->isInside(P, B))
-						{
-							// We found triangle and have barycentric coords
-							Face* F = TRI->owner;
-							GetBarycentricNormalized(F, wP, wN, B);
-							LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F);
-							Fcount += 1;
-
-							break;
-						}
-					}
-				}
-
-				if (Fcount)
-				{
-					C.scale(Fcount);
-					C.mul(.5f);
-					lm.surface[V * lm.width + U]._set(C);
-					lm.marker[V * lm.width + U] = 255;
-				}
-				else
-				{
-					lm.surface[V * lm.width + U]._set(C);	// 0-0-0-0-0
-					lm.marker[V * lm.width + U] = 0;
-				}
-			}
-		}
-
-	}
-	
 
 	// *** Render Edges
 	float texel_size = (1.f/float(std::max(lm.width,lm.height)))/8.f;
@@ -302,8 +248,8 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 		UVtri&		T	= UVpolys[t];
 		Face*		F	= T.owner;
 		R_ASSERT	(F);
-		EdgeProcessing(DB,LightsSelected, T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size,F);
-		EdgeProcessing(DB,LightsSelected, T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size,F);
-		EdgeProcessing(DB,LightsSelected, T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size,F);
+		EdgeProcessing( LightsSelected, T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size,F);
+		EdgeProcessing( LightsSelected, T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size,F);
+		EdgeProcessing( LightsSelected, T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size,F);
 	}
 }

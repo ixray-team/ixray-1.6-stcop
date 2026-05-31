@@ -376,16 +376,14 @@ void DrawCompilerConfig()
 			RadioID += 2 * (int)gCompilerMode.CUDA;
 		}
 
-		ImGui::RadioButton("Use OPCODE", &RadioID, 0);
-		ImGui::RadioButton("Use Intel Embree", &RadioID, 1);
+ 		ImGui::RadioButton("Use Intel Embree", &RadioID, 1);
 #ifdef LCCUDA_BUILD
 		ImGui::RadioButton("Use Nvidia CUDA", &RadioID, 2);
 #endif
 
 		switch (RadioID)
 		{
-		case 0: gCompilerMode.CUDA = false; gCompilerMode.Embree = false; break;
-		case 1: gCompilerMode.CUDA = false; gCompilerMode.Embree = true; break;
+ 		case 1: gCompilerMode.CUDA = false; gCompilerMode.Embree = true; break;
 		case 2: gCompilerMode.CUDA = true;  gCompilerMode.Embree = false; break;
 		default: break;
 		}

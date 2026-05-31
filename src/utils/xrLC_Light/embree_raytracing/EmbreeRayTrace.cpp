@@ -287,6 +287,7 @@ void EmbreeRayTraceModel::IntelEmbereUnloadAll()
 {
 	RemoveGeometry();
 	rtcReleaseDevice(EmbreeDevice);
+	isDeviceInitialized = false;
 }
  
 // Embree Device (Должен быть один)
