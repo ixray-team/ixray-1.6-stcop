@@ -1123,6 +1123,7 @@ bool CUIActorMenuBase::ToActorTrade(CUICellItem* itm, bool b_use_cursor_pos)
 		{
 			SendEvent_Item2Ruck				(iitem, GetInventoryOwner()->object_id());
 		}
+		UpdatePrices();
 		return true;
 	}
 }
@@ -1144,6 +1145,7 @@ void CUIActorMenuBase::ToActorTradeAll(u32 item_amount)
 	// Move parent only when moving entire stack (toMove > childCount)
 	if (toMove > childCount)
 		ToActorTrade(itm, false);
+	UpdatePrices();
 }
 
 bool CUIActorMenuBase::ToPartnerTrade(CUICellItem* itm, bool b_use_cursor_pos)
@@ -1198,6 +1200,8 @@ void CUIActorMenuBase::ToPartnerTradeAll(u32 item_amount)
 	// Move parent only when moving entire stack (toMove > childCount)
 	if (toMove > childCount)
 		ToPartnerTrade(itm, false);
+
+	UpdatePrices();
 }
 
 bool CUIActorMenuBase::ToPartnerTradeBag(CUICellItem* itm, bool b_use_cursor_pos)
@@ -1219,6 +1223,7 @@ bool CUIActorMenuBase::ToPartnerTradeBag(CUICellItem* itm, bool b_use_cursor_pos
 	else
 		new_owner->SetItem(i);
 
+	UpdatePrices();
 	return true;
 }
 
@@ -1238,6 +1243,7 @@ void CUIActorMenuBase::ToPartnerTradeBagAll(u32 item_amount)
 	// Move parent only when moving entire stack (toMove > childCount)
 	if (toMove > childCount)
 		ToPartnerTradeBag(itm, false);
+	UpdatePrices();
 }
 
 bool CUIActorMenuBase::ToDeadBodyBag(CUICellItem* itm, bool b_use_cursor_pos)
