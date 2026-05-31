@@ -563,30 +563,46 @@ public:
 			void				SetMisfireStatus	(bool b)		{ bMisfire = b; }
 			THudLightLaser*		GetLightLaser		();
 
-public:
+protected:
 	u16 m_strap_bone0_id = BI_NONE;
 	u16 m_strap_bone1_id = BI_NONE;
+
 	bool m_strapped_mode_rifle = false;
-	IC		const char*			strap_bone0			() const {return m_strap_bone0;}
-	IC		const char*			strap_bone1			() const {return m_strap_bone1;}
-	IC		void			strapped_mode		(bool value) {m_strapped_mode = value;}
-	IC		bool			strapped_mode		() const {return m_strapped_mode;}
+	bool m_strapped_mode = false;
+
+	bool m_can_be_strapped = false;
 	bool m_can_be_strapped_rifle = false;
 
-protected:
-	const char*					m_strap_bone0 = nullptr;
-	const char*					m_strap_bone1 = nullptr;
-	Fmatrix					m_StrapOffset;
-	Fmatrix m_StrapOffset_alt;
-	bool					m_strapped_mode = false;
-	bool					m_can_be_strapped = false;
+	const char* m_strap_bone0 = nullptr;
+	const char* m_strap_bone1 = nullptr;
 
-	Fmatrix					m_Offset;
 	// 0-используется без участия рук, 1-одна рука, 2-две руки
-	EHandDependence			eHandDependence = EHandDependence::hdNone;
-	bool					m_bIsSingleHanded;
+	EHandDependence eHandDependence = EHandDependence::hdNone;
+	bool m_bIsSingleHanded = false;
 
 public:
+	struct SStrapParams
+	{
+		Fmatrix StrapMatrix = Fidentity;
+		Fvector StrapPosition = zero_vel;
+		Fvector StrapRotation = zero_vel;
+
+		const Fmatrix& GetXFORM()
+		{
+			StrapMatrix.setHPB(VPUSH(Fvector(StrapRotation).mul(PI / 180.0f)));
+			StrapMatrix.translate_over(StrapPosition);
+
+			return StrapMatrix;
+		}
+
+	} m_StrapOffset, m_StrapOffsetAlt, m_ActiveOffset;
+
+	IC const char* strap_bone0() const { return m_strap_bone0; }
+	IC const char* strap_bone1() const { return m_strap_bone1; }
+	IC void strapped_mode(bool value) { m_strapped_mode = value; }
+	IC bool strapped_mode() const { return m_strapped_mode; }
+	IC bool strapped_mode_rifle() const { return m_strapped_mode_rifle; }
+
 	//загружаемые параметры
 	Fvector					vLoadedFirePoint;
 	Fvector					vLoadedFirePoint2;
