@@ -3,29 +3,12 @@
 #include "../xrLC_Light/xrLC_GlobalData.h"
  
 #include <CompilersUI.h>
+extern CompilersMode gCompilerMode;
 
+// xrLC
 CBuild* pBuild = NULL;
 u32		version = 0;
-
-static const char* h_str =
-"The following keys are supported / required:\n"
-"-? or -h	== this help\n"
-"-o			== modify build options\n"
-"-nosun		== disable sun-lighting\n"
-"-skipinvalid\t== skip crash if invalid faces exists\n"
-"-notess	== don`t use tesselate geometry\n"
-"-nosubd	== don`t use subdivide geometry\n"
-"-tex_rgba	== don`t compress lightmap textures\n"
-"-f<NAME>	== compile level in GameData\\Levels\\<NAME>\\\n"
-"\n"
-"NOTE: The last key is required for any functionality\n";
-
-void Help(const char*);
-
-typedef int __cdecl xrOptions(b_params* params, u32 version, bool bRunBuild);
 extern bool g_using_smooth_groups;
-
-extern CompilersMode gCompilerMode;
 
 void StartupLC() 
 {
@@ -88,6 +71,4 @@ void StartupLC()
 
 		PhaseEnd();
 	}
-	    
-	 
 }

@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "CUDAGeometryBuilder.h"
 #include "../../xrLC/Build.h"
+// Scene Global Data
+#include "../xrLC_GlobalData.h"
+#include "../xrMU_Model_Reference.h"
+#include <embree_raytracing/EmbreeRayTrace.h>
+#include "global_calculation_data.h"
 
 bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers)
 {
@@ -203,13 +208,7 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
 
     return true;
 }
- 
-// Scene Global Data
-#include "../xrLC_GlobalData.h"
-#include "../xrMU_Model_Reference.h"
-#include <embree_raytracing/EmbreeRayTrace.h>
-#include "global_calculation_data.h"
-
+  
 struct FaceDataEmbree;
 bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, OptixMeshBuffers& outScene)
 {
@@ -273,9 +272,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
            geometryBuilder.AddFace(&F, F.v1, F.v2, F.v3);
        }
     }
-
  
-    
     size_t pVertex = geometryBuilder.RawFacesSize() * 3;
     size_t pFaces  = geometryBuilder.RawFacesSize();
     geometryBuilder.RemoveDublicates();  

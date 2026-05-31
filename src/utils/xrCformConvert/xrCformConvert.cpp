@@ -63,15 +63,7 @@ void Startup(LPSTR lpCmdLine)
 		make_time(dwTimeConv).c_str()
 	);
 
-	/*if (!gCompilerMode.Silent)
-	{
-		MessageBoxA(nullptr, stats, "Congratulations!", MB_OK | MB_ICONINFORMATION);
-	}*/
-
-	extern volatile bool bClose;
-
 	// Close log
-	bClose = true;
 	xrLogger::FlushLog();
 
 	ShowMainUI = true;

@@ -16,8 +16,17 @@ enum class LCLightmapFormat
 	FORMAT_BC5
 };
 
+enum class LCBuildingType
+{
+	eNone = -1,
+	eLC = 0,
+	eAI = 1, 
+	eDO = 2
+};
+
 struct CompilersMode
 {
+ 	LCBuildingType builder_type = LCBuildingType::eNone;
 	LCLightmapFormat LmapsFormat = LCLightmapFormat::FORMAT_RGBA;
 
 	bool Silent = false;

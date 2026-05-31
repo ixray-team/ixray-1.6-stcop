@@ -3,7 +3,6 @@
 #include "cl_log.h"
 #include "CompilersUI.h"
 
-#include <luabind/luabind.hpp>
 #include <imgui.h>
 #include <timeapi.h>
 
@@ -12,29 +11,6 @@
 
 #include "CompilerIcons.h"
 
-static LPVOID __cdecl luabind_allocator(luabind::memory_allocation_function_parameter const, void const* const pointer, size_t const size)
-{
-	if (!size)
-	{
-		LPVOID	non_const_pointer = const_cast<LPVOID>(pointer);
-		xr_free(non_const_pointer);
-		return	(0);
-	}
-
-	if (!pointer)
-	{
-		return	(Memory.mem_alloc(size));
-	}
-
-	LPVOID non_const_pointer = const_cast<LPVOID>(pointer);
-	return (Memory.mem_realloc(non_const_pointer, size));
-}
-
-void setup_luabind_allocator()
-{
-	luabind::allocator = &luabind_allocator;
-	luabind::allocator_parameter = 0;
-}
 
 extern int item_current_lightmap;
 extern int item_current_cform;
@@ -46,14 +22,6 @@ extern int current_format;
 void StartupAI();
 void StartupLC();
 void StartupDO();
-
-void InitialFactory();
-void DestroyFactory();
-
-void Help(const char* h_str)
-{
-	MessageBoxA(0, h_str, "Command line options", MB_OK | MB_ICONINFORMATION);
-}
 
 CompilersMode gCompilerMode;
 CJsonSerializer* Serializer = nullptr;
@@ -68,93 +36,49 @@ void Startup(LPSTR lpCmdLine)
 	GetIterationData().push_back({ "xrLC" });
 	GetIterationData().push_back({ "xrAI" });
 	GetIterationData().push_back({ "xrDO" });
-
-	u32 dwStartupTime = timeGetTime();
-
-	SetActiveIteration(&(GetIterationData()[0]));
-	u32 dwTimeLC = 0;
-	if (gCompilerMode.LC)
+	 
+	auto InitilizeIteration = [](LCBuildingType Type, bool active, LPCSTR phase)
 	{
-		GetActiveIteration()->status = InProgress;
-		dwTimeLC = timeGetTime();
-		Phase("xrLC Startup");
-		StartupLC();
+		SetActiveIteration(&(GetIterationData()[(int)Type]));
+		gCompilerMode.builder_type = Type;
+		if (active)
+		{
+			GetActiveIteration()->status = InProgress;
+			u32 dwTime = timeGetTime();
+			Phase(phase);
+			
+			if (Type == LCBuildingType::eLC)
+				StartupLC();
+			else if (Type == LCBuildingType::eDO)
+				StartupDO();
+			else if (Type == LCBuildingType::eAI)
+  				StartupAI();
+ 			
+			dwTime = (timeGetTime() - dwTime) / 1000;
 
-		dwTimeLC = (timeGetTime() - dwTimeLC) / 1000;
+			GetActiveIteration()->status = Complete;
+			GetActiveIteration()->elapsed_time = dwTime;
+		}
+		else
+ 			GetActiveIteration()->status = Skip;
+ 	};
 
-		GetActiveIteration()->status = Complete;
-		GetActiveIteration()->elapsed_time = dwTimeLC;
-	}
-	else
-	{
-		GetActiveIteration()->status = Skip;
-	}
-
-	SetActiveIteration(&(GetIterationData()[1]));
-	u32 dwTimeAI = 0;
-	if (gCompilerMode.AI)
-	{
-		GetActiveIteration()->status = InProgress;
-
-		dwTimeAI = timeGetTime();
-		Phase("xrAI Startup");
-
-		setup_luabind_allocator();
-		InitialFactory();
-		StartupAI();
-		DestroyFactory();
-		dwTimeAI = (timeGetTime() - dwTimeAI) / 1000;
-
-		GetActiveIteration()->status = Complete;
-		GetActiveIteration()->elapsed_time = dwTimeLC;
-	}
-	else
-	{
-		GetActiveIteration()->status = Skip;
-	}
-
-	SetActiveIteration(&(GetIterationData()[2]));
-	u32 dwTimeDO = 0;
-	if (gCompilerMode.DO) {
-		GetActiveIteration()->status = InProgress;
-		dwTimeDO = timeGetTime();
-		Phase("xrDO Startup");
-		StartupDO();
-		dwTimeDO = (timeGetTime() - dwTimeDO) / 1000;
-
-		GetActiveIteration()->status = Complete;
-		GetActiveIteration()->elapsed_time = dwTimeLC;
-	}
-	else
-	{
-		GetActiveIteration()->status = Skip;
-	}
+	InitilizeIteration(LCBuildingType::eLC, gCompilerMode.LC, "xrLC Startup");
+	InitilizeIteration(LCBuildingType::eAI, gCompilerMode.AI, "xrAI Startup");
+	InitilizeIteration(LCBuildingType::eDO, gCompilerMode.DO, "xrDO Startup");
 
 	// Show statistic
-	string256 stats;
 	extern xr_string make_time(u32 sec);
-	u32 dwEndTime = timeGetTime();
-
-	xr_sprintf(
-		stats, 
-		"Time elapsed: %s \r\n xrLC: %s\r\n xrAI: %s\r\n xrDO: %s", 
-		make_time((dwEndTime - dwStartupTime) / 1000).c_str(), 
-		make_time(dwTimeLC).c_str(),
-		make_time(dwTimeAI).c_str(), 
-		make_time(dwTimeDO).c_str()
-	);
-
-	AditionalData("Time Elapsed: %s", make_time((dwEndTime - dwStartupTime) / 1000).c_str() );
-
-	if (!gCompilerMode.Silent)
+	for (auto& I : GetIterationData())
 	{
-		MessageBoxA(nullptr, stats, "Congratulations!", MB_OK | MB_ICONINFORMATION);
-	}
+		// Много лога вырубил !
+		// for (auto& PH : I.phases)
+		// 	clMsg("* %40s  : Time elapsed %s", PH.PhaseName.c_str(), make_time(PH.elapsed_time));
 
-	extern volatile bool bClose;
+		clMsg("* Compiler (%s) : Time elapsed: %s ", I.iterationName.c_str(), make_time(I.elapsed_time));
+	} 
 
 	// Close log
-	bClose = true;
 	xrLogger::FlushLog();
 
 	ShowMainUI = true;
