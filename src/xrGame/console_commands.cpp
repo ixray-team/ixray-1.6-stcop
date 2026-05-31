@@ -87,7 +87,6 @@ extern	UI_API bool	g_show_wnd_rect2;
 //-----------------------------------------------------------
 extern	float	g_fTimeFactor;
 extern	bool	b_toggle_weapon_aim;
-//extern  bool	g_old_style_ui_hud;
 
 extern float	g_smart_cover_factor;
 extern int		g_upgrades_log;
