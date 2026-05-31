@@ -75,9 +75,7 @@ void CBuild::xrPhase_AdaptiveHT_calculate()
 		ThreadWorkID_Adaptive = 0;
 		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [](size_t threadID)
 		{
-			CDB::COLLIDER DB;
- 			DB.ray_options(0);
-			while (true)
+  			while (true)
 			{
  				u32 taskID = ThreadWorkID_Adaptive.fetch_add(1);
 				if (taskID >= lc_global_data()->g_vertices().size())	break;
@@ -87,7 +85,7 @@ void CBuild::xrPhase_AdaptiveHT_calculate()
 				Vertex* V = verts[taskID];
 
 				V->normalFromAdj();
-				LightPoint(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb + LP_dont_sun, 0);
+				LightPoint(EmbreeMain, vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb + LP_dont_sun, 0);
 				vC.mul(0.5f);
 				V->C._set(vC);
 			}
