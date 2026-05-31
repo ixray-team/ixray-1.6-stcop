@@ -61,6 +61,8 @@ void Startup(LPSTR lpCmdLine)
 		}
 		else
  			GetActiveIteration()->status = Skip;
+
+		PhaseEnd();
  	};
 
 	InitilizeIteration(LCBuildingType::eLC, gCompilerMode.LC, "xrLC Startup");
