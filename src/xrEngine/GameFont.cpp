@@ -564,6 +564,16 @@ const CGameFont::Glyph* CGameFont::GetGlyphInfo(int ch)
 	return &symbolInfoIterator->second;
 }
 
+bool CGameFont::GetAtlasTexSize(u32& outW, u32& outH) const
+{
+	if (pFontRender == nullptr)
+	{
+		return false;
+	}
+
+	return pFontRender->GetAtlasTexSize(outW, outH);
+}
+
 float CGameFont::WidthOf(int ch)
 {
 	if (ch == '\t' || ch == '\n')

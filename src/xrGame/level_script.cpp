@@ -48,6 +48,7 @@
 #include "inventory_upgrade_manager.h"
 #include "ActorHelmet.h"
 #include "DynamicWallmarkZone.h"
+#include "../xrEngine/WristwatchSettings.h"
 #include "PickupManager.h"
 #include "UIActorMenu.h"
 #include "../xrServerEntities/restriction_space.h"
@@ -296,6 +297,21 @@ void set_time_factor(float time_factor)
 float get_time_factor()
 {
 	return			(Level().GetGameTimeFactor());
+}
+
+void set_wristwatch_surge_state(u32 mode, u32 countdown_sec, u32 until_surge_sec)
+{
+	SetWristwatchSurgeState(static_cast<u8>(mode), countdown_sec, until_surge_sec);
+}
+
+bool is_wristwatch_hud_active()
+{
+	return IsWristwatchHudSessionActive();
+}
+
+bool is_wristwatch_replace_surge_active()
+{
+	return IsWristwatchReplaceSurgeActive();
 }
 
 void set_global_time_factor(float tf) {
@@ -1879,6 +1895,9 @@ void CLevel::script_register(lua_State *L)
 		
 		def("set_time_factor",					set_time_factor),
 		def("get_time_factor",					get_time_factor),
+		def("set_wristwatch_surge_state",		&set_wristwatch_surge_state),
+		def("is_wristwatch_hud_active",			&is_wristwatch_hud_active),
+		def("is_wristwatch_replace_surge_active",	&is_wristwatch_replace_surge_active),
 
 		def("set_global_time_factor", &set_global_time_factor),
 		def("get_global_time_factor", &get_global_time_factor),
