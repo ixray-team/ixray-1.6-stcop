@@ -97,8 +97,6 @@ void CBuild::SaveTREE(IWriter& fs)
 	fs.w(MFS.pointer(), MFS.size());
 	fs.close_chunk();
 
-	mem_Compact();
-
 	{
 		xr_unique_ptr<XRay::Geom::IFormat> FormatPtr = nullptr;
 		switch (gCompilerMode.LC_GeomType)

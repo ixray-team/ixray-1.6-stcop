@@ -9,33 +9,71 @@
 
 #include "../xrAI/factory_api.h"
 #include "../../xrGame/quadtree.h"
-
-static const char* h_str =
-"The following keys are supported / required:\n"
-"-? or -h   == this help\n"
-"-f<NAME>   == compile level in gamedata/levels/<NAME>/\n"
-"-o         == modify build options\n"
-"-s         == build game spawn data\n"
-"\n"
-"NOTE: The last key is required for any functionality\n";
-
-void Help(const char* h_str);
+#include <luabind/luabind.hpp>
+#include "CompilersUI.h"
+extern CompilersMode gCompilerMode;
 
 string_path INI_FILE;
-
 extern const char* LEVEL_GRAPH_NAME;
-
 extern const char* GAME_CONFIG;
 
 extern void clear_temp_folder();
 extern void	xrCompiler(const char* name, bool draft_mode, bool pure_covers, bool skipThm, const char* out_name);
 extern void	verify_level_graph(const char* name, bool verbose);
+ 
+static LPVOID __cdecl luabind_allocator(luabind::memory_allocation_function_parameter const, void const* const pointer, size_t const size)
+{
+	if (!size)
+	{
+		LPVOID	non_const_pointer = const_cast<LPVOID>(pointer);
+		xr_free(non_const_pointer);
+		return	(0);
+	}
 
-#include "CompilersUI.h"
-extern CompilersMode gCompilerMode;
+	if (!pointer)
+	{
+		return	(Memory.mem_alloc(size));
+	}
 
+	LPVOID non_const_pointer = const_cast<LPVOID>(pointer);
+	return (Memory.mem_realloc(non_const_pointer, size));
+}
+
+void setup_luabind_allocator()
+{
+	luabind::allocator = &luabind_allocator;
+	luabind::allocator_parameter = 0;
+}
+
+SEFactory_Create* create_entity = 0;
+SEFactory_Destroy* destroy_entity = 0;
+
+static HMODULE hFactory;
+
+void InitialFactory() {
+	const char* g_name = "xrSE_Factory.dll";
+	Msg("Loading DLL: %s", g_name);
+	hFactory = LoadLibraryA(g_name);
+
+	if (0 == hFactory)		
+		R_CHK(GetLastError());
+
+	R_ASSERT2(hFactory, "Factory DLL raised exception during loading or there is no factory DLL at all");
+
+	create_entity = (SEFactory_Create*)GetProcAddress(hFactory, "create_entity");	R_ASSERT(create_entity);
+	destroy_entity = (SEFactory_Destroy*)GetProcAddress(hFactory, "destroy_entity");	R_ASSERT(destroy_entity);
+}
+
+void DestroyFactory()
+{
+	FreeLibrary(hFactory);
+}
+ 
 void StartupAI()
 {
+	setup_luabind_allocator();
+	InitialFactory();
+
 	// Load project
 	FS.update_path(INI_FILE, "$game_config$", GAME_CONFIG);
 
@@ -118,28 +156,6 @@ void StartupAI()
 		clear_temp_folder();
 		xr_unique_ptr<CGameSpawnConstructor> BuilderSpawn = xr_make_unique<CGameSpawnConstructor>(name, output.data(), start_level, gCompilerMode.AI_NoSeparatorCheck);
 	}
-}
 
-SEFactory_Create* create_entity = 0;
-SEFactory_Destroy* destroy_entity = 0;
-
-static HMODULE hFactory;
-
-void InitialFactory() {
-	const char* g_name = "xrSE_Factory.dll";
-	Msg("Loading DLL: %s", g_name);
-	hFactory = LoadLibraryA(g_name);
-
-	if (0 == hFactory)		
-		R_CHK(GetLastError());
-
-	R_ASSERT2(hFactory, "Factory DLL raised exception during loading or there is no factory DLL at all");
-
-	create_entity = (SEFactory_Create*)GetProcAddress(hFactory, "create_entity");	R_ASSERT(create_entity);
-	destroy_entity = (SEFactory_Destroy*)GetProcAddress(hFactory, "destroy_entity");	R_ASSERT(destroy_entity);
-}
-
-void DestroyFactory()
-{
-	FreeLibrary(hFactory);
+	DestroyFactory();
 }
