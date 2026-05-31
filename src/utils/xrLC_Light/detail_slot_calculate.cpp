@@ -14,7 +14,8 @@
 
 //-----------------------------------------------------------------------------------------------------------------
 const int	LIGHT_Count				=	7;
- 
+thread_local xr_vector<DetailsTask> rayTasks;
+
 bool detail_slot_calculate(u32 _x, u32 _z)
 {
 	// Getter - Detail Slot
@@ -29,7 +30,6 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 	thread_local xr_vector<u32> box_result;
  	thread_local base_lighting Selected;
 	thread_local CDB::COLLIDER DB;
-	thread_local xr_vector<DetailsTask> rayTasks;
 	
 	DB.ray_options(CDB::OPT_CULL);
 	DB.box_options(CDB::OPT_FULL_TEST);
@@ -65,8 +65,8 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 	box_result.clear();
 	for (auto& R : DB.r_vec())
 		box_result.push_back(R.id);
-	if (box_result.empty())
-		return false;
+	
+	if (box_result.empty()) return false;
 
 	for (int x=-LIGHT_Count; x<=LIGHT_Count; x++) 
 	{
@@ -101,8 +101,7 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 			}
 			if (P.y<BB.min.y) continue;
 			
-
-			if (gCompilerMode.Embree)
+ 			if (gCompilerMode.Embree)
 			{
 				// light point
 				DetailsTask data;
@@ -114,8 +113,7 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 			else if (gCompilerMode.CUDA)
 			{
 				size_t idx= GPUTaskinSystem.MakeKey(_x, _z);
-
-				GPUTaskinSystem.LightPointPacked_add_task(idx, nullptr, P, t_n, nullptr);
+ 				GPUTaskinSystem.LightPointPacked_add_task(idx, nullptr, P, t_n, nullptr);
 			}
 #endif
 
@@ -167,8 +165,8 @@ void ApplyColorDetailGPU(size_t IndexTask, base_color_c& C)
 
 void ApplyColorsGPU()
 {
-	for (auto z = 0; z < gl_data.slots_data.size_z(); z++)
 	for (auto x = 0; x < gl_data.slots_data.size_x(); x++)
+	for (auto z = 0; z < gl_data.slots_data.size_z(); z++)
 	{
 		// Getter - Detail Slot
 		auto& DS = gl_data.slots_data.get_slot(x, z);
@@ -182,13 +180,22 @@ void ApplyColorsGPU()
 			color.mul(.5f);
 
 			// Пишется результат в (level.details) !
-			DS.c_dir = DS.w_qclr(color.sun, 15);
-			DS.c_hemi = DS.w_qclr(color.hemi, 15);
-			DS.c_r = DS.w_qclr(color.rgb.x, 15);
-			DS.c_g = DS.w_qclr(color.rgb.y, 15);
-			DS.c_b = DS.w_qclr(color.rgb.z, 15);
+			DS.c_dir	= DS.w_qclr(color.sun, 15);
+			DS.c_hemi	= DS.w_qclr(color.hemi, 15);
+			DS.c_r		= DS.w_qclr(color.rgb.x, 15);
+			DS.c_g		= DS.w_qclr(color.rgb.y, 15);
+			DS.c_b		= DS.w_qclr(color.rgb.z, 15);
+
+			// if (color.hemi > 0.001)
+			// 	Msg("Colors x[%u] z[%u] Hemi: %.3f Sampl: %u", x,z, color.hemi, count);
 		}
  	}
+
+	samples.clear();
+	samples.shrink_to_fit();
+
+	detail_colors.clear();
+	detail_colors.shrink_to_fit();
 }
 #endif
 
@@ -219,6 +226,9 @@ void xrLight_Details()
 
 					clMsg("Processing TaskID[%u/%u]", Z, gl_data.slots_data.size_z());
 				}
+
+				rayTasks.clear();
+				rayTasks.shrink_to_fit();
 			}
 		);
 	}
@@ -241,14 +251,12 @@ void xrLight_Details()
 				while (true)
 				{
 					u32 Z = IndexTask.fetch_add(1);
+					AditionalData("Processing TaskID[%u/%u]", Z, gl_data.slots_data.size_z());
+
 					if (Z >= gl_data.slots_data.size_z()) break;
 
 					for (u32 X = 0; X < gl_data.slots_data.size_x(); X++)
-					{
 						detail_slot_calculate(X, Z);
-					}
-
-					AditionalData("Processing TaskID[%u/%u]", Z, gl_data.slots_data.size_z());
 				}
 				
 				GPUTaskinSystem.LightPointPacked_run_tasks();
