@@ -612,6 +612,7 @@ void RenderToolsInputManagerWindow();
 void RenderToolsRenderDebugSVGStorageViewerWindow();
 void RenderTextureEditor();
 void RenderQuestEditor();
+void Render3rdAdjust();
 
 /* MISCELLANEOUS */
 

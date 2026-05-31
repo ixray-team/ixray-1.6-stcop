@@ -8,50 +8,56 @@
 
 #pragma once
 
-IC	CAttachableItem::CAttachableItem				()
+IC CAttachableItem::CAttachableItem()
 {
-	m_item				= 0;
-	m_offset.identity	();
-	m_bone_name			= "";
-	m_enabled			= true;
-//	m_auto_attach		= true;
+	m_item = 0;
+	m_offset.identity();
+	m_bone_name = "";
+	m_enabled = true;
 #ifdef DEBUG
-	m_valid				= false;
+	m_valid = false;
 #endif
 }
 
-IC	shared_str CAttachableItem::bone_name			() const
+IC shared_str CAttachableItem::bone_name() const
 {
-	VERIFY				(m_valid);
-	return				(m_bone_name);
+	VERIFY(m_valid);
+	return (m_bone_name);
 }
 
-IC	const Fmatrix &CAttachableItem::offset			() const
+IC const Fmatrix& CAttachableItem::offset() const
 {
-	VERIFY				(m_valid);
-	return				(m_offset);
+	VERIFY(m_valid);
+	m_offset.setHPB(VPUSH(m_offset_rotation));
+	m_offset.translate_over(m_offset_position);
+	return m_offset;
 }
 
-IC	u16	 CAttachableItem::bone_id					() const
+IC u16 CAttachableItem::bone_id() const
 {
-	VERIFY				(m_valid);
-	return				(m_bone_id);
+	VERIFY(m_valid);
+	return (m_bone_id);
 }
 
-IC	void CAttachableItem::set_bone_id				(u16 bone_id)
+IC void CAttachableItem::set_bone_id(u16 bone_id)
 {
-	VERIFY				(m_valid);
-	m_bone_id			= bone_id;
+	VERIFY(m_valid);
+	m_bone_id = bone_id;
 }
 
-IC	bool CAttachableItem::enabled					() const
+IC void CAttachableItem::set_bone_name(const shared_str& bone_name)
 {
-//	VERIFY				(m_valid);
-	return				(m_enabled);
+	VERIFY(m_valid);
+	m_bone_name = bone_name;
 }
 
-IC	CInventoryItem &CAttachableItem::item			() const
+IC bool CAttachableItem::enabled() const
 {
-	VERIFY				(m_item);
-	return				(*m_item);
+	return (m_enabled);
+}
+
+IC CInventoryItem& CAttachableItem::item() const
+{
+	VERIFY(m_item);
+	return (*m_item);
 }

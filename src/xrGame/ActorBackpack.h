@@ -18,6 +18,8 @@ public:
     virtual void OnMoveToSlot(const SInvItemPlace& prev) override;
     virtual void OnMoveToRuck(const SInvItemPlace& previous_place) override;
 
+    virtual bool can_be_attached() const override;
+
     virtual CBackpack* cast_backpack() override { return this; }
 
     float m_additional_weight = 0.0f;
