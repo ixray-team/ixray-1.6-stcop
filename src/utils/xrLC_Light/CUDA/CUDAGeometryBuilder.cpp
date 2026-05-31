@@ -215,7 +215,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
     OptixGeometryBuilder geometryBuilder;
     size_t StartMemory = GetHeapMemory();
 
-    if (gCompilerMode.LC)
+    if (gCompilerMode.builder_type == LCBuildingType::eLC)
     {
         xrLC_GlobalData* globalData = lc_global_data();
         if (!globalData)        return false;
@@ -256,7 +256,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
         tempBuffer.clear();
         tempBuffer.shrink_to_fit();
     }
-    else if (gCompilerMode.DO)
+    else if (gCompilerMode.builder_type == LCBuildingType::eDO)
     {
        auto globalData         = &gl_data;
        if (!globalData)        return false;
