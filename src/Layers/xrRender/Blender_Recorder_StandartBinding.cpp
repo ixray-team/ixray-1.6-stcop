@@ -11,6 +11,9 @@
 #include "dxRenderDeviceRender.h"
 #include "../../xrEngine/IGame_Level.h"
 #include "../../xrEngine/date_time.h"
+#include "../../xrEngine/device.h"
+#include "../../xrEngine/WristwatchTypes.h"
+#include "../../xrEngine/WristwatchSettings.h"
 // matrices
 #define	BIND_DECLARE(xf)	\
 class cl_xform_##xf	: public RHIShaderConstant::Setup {	virtual void setup (RHIShaderConstant* C) { RCache.xforms.set_c_##xf (C); } }; \
@@ -623,6 +626,178 @@ static class cl_digiclock : public RHIShaderConstant::Setup
 	}
 } binder_digiclock;
 
+static void SetWristwatchFontGlyph(RHIShaderConstant* C, const Fvector4& glyph, bool fontReady)
+{
+	if (!fontReady)
+	{
+		RCache.set_c(C, 0.0f, 0.0f, 0.0f, 0.0f);
+		return;
+	}
+
+	RCache.set_c(C, glyph.x, glyph.y, glyph.z, glyph.w);
+}
+
+static class cl_m_wristwatch_time : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		const auto& wristwatch = RDEVICE.hudViewportData.wristwatch;
+		if (!wristwatch.isActive)
+		{
+			RCache.set_c(C, 0.0f, 1.0f, 0.0f, 1.0f);
+			return;
+		}
+
+		if (!wristwatch.showAnalogHands && wristwatch.displayType == static_cast<u8>(EWristwatchDisplayType::Digital))
+		{
+			RCache.set_c(C, wristwatch.lcdLayout.x, wristwatch.lcdLayout.y, wristwatch.lcdLayout.z, wristwatch.lcdLayout.w);
+			return;
+		}
+
+		u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
+		split_time(wristwatch.displayGameTime, year, month, day, hours, mins, secs, milisecs);
+
+		const float sF = secs / 60.f;
+		const float mF = (sF + static_cast<float>(mins)) / 60.f;
+		const float hF = (mF + static_cast<float>(hours)) / 12.f;
+
+		RCache.set_c(
+			C,
+			sin(PI_MUL_2 * hF),
+			cos(PI_MUL_2 * hF),
+			sin(PI_MUL_2 * mF),
+			cos(PI_MUL_2 * mF));
+	}
+} binder_m_wristwatch_time;
+
+static class cl_m_wristwatch_time2 : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		const auto& wristwatch = RDEVICE.hudViewportData.wristwatch;
+		if (!wristwatch.isActive)
+		{
+			RCache.set_c(C, 0.0f, 1.0f, 0.0f, 0.0f);
+			return;
+		}
+
+		u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
+		split_time(wristwatch.displayGameTime, year, month, day, hours, mins, secs, milisecs);
+
+		const float sF = secs / 60.f;
+		const float colonBlink = (!wristwatch.showAnalogHands && wristwatch.showLcd && (secs & 1) == 0) ? 1.0f : 0.0f;
+		RCache.set_c(
+			C,
+			sin(PI_MUL_2 * sF),
+			cos(PI_MUL_2 * sF),
+			wristwatch.showAnalogHands ? 1.0f : colonBlink,
+			wristwatch.showLcd ? 1.0f : 0.0f);
+	}
+} binder_m_wristwatch_time2;
+
+static class cl_m_wristwatch_debug : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		const auto& settings = GetWristwatchRuntimeSettings();
+		RCache.set_c(
+			C,
+			static_cast<float>(settings.debugLcdPass),
+			0.0f,
+			0.0f,
+			0.0f);
+	}
+} binder_m_wristwatch_debug;
+
+static class cl_m_wristwatch_lcd : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		const auto& wristwatch = RDEVICE.hudViewportData.wristwatch;
+		if (!wristwatch.isActive || !wristwatch.showLcd)
+		{
+			RCache.set_c(C, 0.0f, 0.0f, 0.0f, 0.0f);
+			return;
+		}
+
+		RCache.set_c(C, wristwatch.lcdDigits.x, wristwatch.lcdDigits.y, wristwatch.lcdDigits.z, wristwatch.lcdDigits.w);
+	}
+} binder_m_wristwatch_lcd;
+
+static class cl_m_wristwatch_fx : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		const auto& wristwatch = RDEVICE.hudViewportData.wristwatch;
+		if (!wristwatch.isActive)
+		{
+			RCache.set_c(C, 0.0f, 0.0f, 0.0f, 0.0f);
+			return;
+		}
+
+		RCache.set_c(
+			C,
+			static_cast<float>(wristwatch.displayType),
+			static_cast<float>(wristwatch.surgeMode),
+			wristwatch.motionIconLuminosity,
+			wristwatch.glitchStrength);
+	}
+} binder_m_wristwatch_fx;
+
+static class cl_m_wristwatch_font_d0 : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		const auto& wristwatch = RDEVICE.hudViewportData.wristwatch;
+		SetWristwatchFontGlyph(C, wristwatch.fontGlyph0, wristwatch.fontReady);
+	}
+} binder_m_wristwatch_font_d0;
+
+static class cl_m_wristwatch_font_d1 : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		const auto& wristwatch = RDEVICE.hudViewportData.wristwatch;
+		SetWristwatchFontGlyph(C, wristwatch.fontGlyph1, wristwatch.fontReady);
+	}
+} binder_m_wristwatch_font_d1;
+
+static class cl_m_wristwatch_font_d2 : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		const auto& wristwatch = RDEVICE.hudViewportData.wristwatch;
+		SetWristwatchFontGlyph(C, wristwatch.fontGlyph2, wristwatch.fontReady);
+	}
+} binder_m_wristwatch_font_d2;
+
+static class cl_m_wristwatch_font_d3 : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		const auto& wristwatch = RDEVICE.hudViewportData.wristwatch;
+		SetWristwatchFontGlyph(C, wristwatch.fontGlyph3, wristwatch.fontReady);
+	}
+} binder_m_wristwatch_font_d3;
+
+static class cl_m_wristwatch_font_colon : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		const auto& wristwatch = RDEVICE.hudViewportData.wristwatch;
+		SetWristwatchFontGlyph(C, wristwatch.fontGlyphColon, wristwatch.fontReady);
+	}
+} binder_m_wristwatch_font_colon;
+
+static class cl_m_wristwatch_font_eight : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		const auto& wristwatch = RDEVICE.hudViewportData.wristwatch;
+		SetWristwatchFontGlyph(C, wristwatch.fontGlyphEight, wristwatch.fontReady);
+	}
+} binder_m_wristwatch_font_eight;
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping()
 {
@@ -716,6 +891,17 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("m_timearrow", &binder_m_timearrow);
 	r_Constant("m_timearrow2", &binder_m_timearrow2);
 	r_Constant("m_digiclock", &binder_digiclock);
+	r_Constant("m_wristwatch_time", &binder_m_wristwatch_time);
+	r_Constant("m_wristwatch_time2", &binder_m_wristwatch_time2);
+	r_Constant("m_wristwatch_debug", &binder_m_wristwatch_debug);
+	r_Constant("m_wristwatch_lcd", &binder_m_wristwatch_lcd);
+	r_Constant("m_wristwatch_fx", &binder_m_wristwatch_fx);
+	r_Constant("m_wristwatch_font_d0", &binder_m_wristwatch_font_d0);
+	r_Constant("m_wristwatch_font_d1", &binder_m_wristwatch_font_d1);
+	r_Constant("m_wristwatch_font_d2", &binder_m_wristwatch_font_d2);
+	r_Constant("m_wristwatch_font_d3", &binder_m_wristwatch_font_d3);
+	r_Constant("m_wristwatch_font_colon", &binder_m_wristwatch_font_colon);
+	r_Constant("m_wristwatch_font_eight", &binder_m_wristwatch_font_eight);
 
 	// detail
 	//if (bDetail	&& detail_scaler)

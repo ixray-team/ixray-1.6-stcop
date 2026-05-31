@@ -260,6 +260,28 @@ void CUIMotionIcon::SetLuminosity(float newPos)
 		_luminosityNormalized = clampr(newPos, 0.f, 1.f);
 }
 
+float CUIMotionIcon::GetLuminosityNormalized() const
+{
+	if (_luminosityOverlay != nullptr)
+	{
+		return _luminosityOverlayCur;
+	}
+
+	if (m_luminosity_progress_shape)
+	{
+		return m_cur_pos / 100.f;
+	}
+
+	if (m_luminosity_progress_bar)
+	{
+		const float rmin = m_luminosity_progress_bar->GetRange_min();
+		const float rmax = m_luminosity_progress_bar->GetRange_max();
+		return (rmax > rmin) ? (m_cur_pos - rmin) / (rmax - rmin) : 0.f;
+	}
+
+	return 0.f;
+}
+
 void CUIMotionIcon::Draw()
 {
 	const static bool disableMotionIcon = EngineExternal()[EEngineExternalUI::DisableMotionIcon];
