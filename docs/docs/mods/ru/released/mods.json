@@ -1,12 +1,29 @@
 ﻿{
   "eyebrow": "Каталог",
   "title": "Список модификаций",
-  "subtitle": "Данные ниже — пример. Подставьте реальные моды или подключите источник данных.",
+  "subtitle": "",
   "labels": {
     "view": "Скачать / открыть",
     "soon": "Скоро"
   },
   "mods": [
+    {
+      "id": "travis",
+      "title": "История Трависа: Эпизод 1 REMAKE",
+      "description": "Это история о возвращении, о долге и о том, как легко потерять человеческий облик в месте, которое само по себе является аномалией. Главный герой — Травис, не новичок, но и не легенда Зоны. Он возвращается за Периметр не за мифическим Клондайком артефактов, а чтобы найти старого друга Гришу.",
+      "author": "FacingSlave",
+      "link": "https://ap-pro.ru/forums/topic/14670-istoriya-travisa-epizod-1-remake/",
+      "image": "https://ap-pro.ru/uploads/monthly_2026_05/2026-05-30_15-37-54.png.93cae4154a6da7918c4a191a538f61ae.png"
+    },
+    {
+      "id": "chsch_2",
+      "title": "Чужой среди чужих 2: Вторая жизнь",
+      "description": "Второй сезон серии модификаций 'Чужой среди чужих' открыт. Первый эпизод под названием 'Вторая жизнь' продолжит историю первой части мода, поэтому для полноты картины советую ознакомиться и с ней.",
+      "author": "It's boomer",
+      "score": "Ap-Pro: 8.3",
+      "link": "https://ap-pro.ru/forums/topic/14579-chuzhoy-sredi-chuzhih-2-vtoraya-zhizn/",
+      "image": "https://sun7-17.userapi.com/s/v1/ig2/Ux0Q8NLB4EHVbLNDG246AHsecKikwflj7INgKAKGluj9s7IU_qJUyQjJ79n7DYzLarogKhhJS-T-8BhM5Ac17Eh1.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x359,640x426,720x479,1062x707&from=bu&cs=1062x0"
+    },
     {
       "id": "aiw",
       "title": "Alone in Windstorm: Fallen Bear",
@@ -21,9 +38,9 @@
       "title": "Five Nights at Sidorovich’s",
       "description": "Внутри «Деревни Новичков» образовалась неизвестная аномалия. Военная разведка докладывает, что аномалия влияет на некоторых людей, их назвали «подверженными»",
       "author": "Emmis",
-      "score": "Ap-Pro: 9.2",
-      "link": "https://ap-pro.ru/forums/topic/14527-alone-in-windstorm-fallen-bear/",
-      "image": "https://i.postimg.cc/VLxx7ddd/logo.png"
+      "score": "Ap-Pro: 8.7",
+      "link": "https://ap-pro.ru/stuff/zov_pripjati/fnas/",
+      "image": "https://ap-pro.ru/uploads/monthly_2026_04/logosiusd.thumb.png.3fa23cb98180b6c0e970453f73d6100c.png"
     },
     {
       "id": "awakening-2055",

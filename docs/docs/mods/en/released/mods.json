@@ -1,12 +1,29 @@
 ﻿{
   "eyebrow": "Catalog",
   "title": "Mods List",
-  "subtitle": "The data below is an example. Replace with real mods or connect a data source.",
+  "subtitle": "",
   "labels": {
     "view": "Download / Open",
     "soon": "Coming soon"
   },
   "mods": [
+    {
+      "id": "travis",
+      "title": "Travis's Story: Episode 1 REMAKE",
+      "description": "This is a story about return, about duty, and about how easily one can lose one's human form in a place that is itself an anomaly. The protagonist is Travis — no rookie, but no legend of the Zone either. He returns beyond the Perimeter not in search of the mythical Klondike of artifacts, but to find an old friend, Grisha.",
+      "author": "FacingSlave",
+      "link": "https://ap-pro.ru/forums/topic/14670-istoriya-travisa-epizod-1-remake/",
+      "image": "https://ap-pro.ru/uploads/monthly_2026_05/2026-05-30_15-37-54.png.93cae4154a6da7918c4a191a538f61ae.png"
+    },
+    {
+      "id": "chsch_2",
+      "title": "A Stranger Among Strangers 2: Second Life",
+      "description": "The second season of the 'A Stranger Among Strangers' mod series is open. The first episode, titled 'Second Life', continues the story from the first part of the mod, so for the full picture I recommend checking that out as well.",
+      "author": "It's boomer",
+      "score": "Ap-Pro: 8.3",
+      "link": "https://ap-pro.ru/forums/topic/14579-chuzhoy-sredi-chuzhih-2-vtoraya-zhizn/",
+      "image": "https://sun7-17.userapi.com/s/v1/ig2/Ux0Q8NLB4EHVbLNDG246AHsecKikwflj7INgKAKGluj9s7IU_qJUyQjJ79n7DYzLarogKhhJS-T-8BhM5Ac17Eh1.jpg?quality=95&as=32x21,48x32,72x48,108x72,160x107,240x160,360x240,480x320,540x359,640x426,720x479,1062x707&from=bu&cs=1062x0"
+    },
     {
       "id": "aiw",
       "title": "Alone in Windstorm: Fallen Bear",
@@ -22,8 +39,8 @@
       "description": "An unknown anomaly appeared inside the “Newbie Village”. Military intelligence reports that it affects some people, who are called the “affected”.",
       "author": "Emmis",
       "score": "Ap-Pro: 9.2",
-      "link": "https://ap-pro.ru/forums/topic/14527-alone-in-windstorm-fallen-bear/",
-      "image": "https://i.postimg.cc/VLxx7ddd/logo.png"
+      "link": "https://ap-pro.ru/stuff/zov_pripjati/fnas/",
+      "image": "https://ap-pro.ru/uploads/monthly_2026_04/logosiusd.thumb.png.3fa23cb98180b6c0e970453f73d6100c.png"
     },
     {
       "id": "awakening-2055",
