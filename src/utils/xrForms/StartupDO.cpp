@@ -2,19 +2,7 @@
 #include "../xrLC_Light/xrLC_Light.h"
 #include "../xrLC_Light/global_calculation_data.h"
 #include "cl_log.h"
-
-extern volatile bool bClose;
-
-static const char* h_str =
-"The following keys are supported / required:\n"
-"-? or -h	== this help\n"
-"-f<NAME>	== compile level in gamedata\\levels\\<NAME>\\\n"
-"-o			== modify build options\n"
-"\n"
-"NOTE: The last key is required for any functionality\n";
-
-void Help(const char*);
-
+ 
 void xrLight_Details();
  
 #include "CompilersUI.h"
@@ -22,8 +10,6 @@ extern CompilersMode gCompilerMode;
 
 void StartupDO()
 {
-	bClose = false;
-
 	for (auto& [Name, Selected] : gCompilerMode.Files)
 	{
 		if (!Selected)

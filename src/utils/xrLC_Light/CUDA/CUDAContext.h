@@ -40,7 +40,9 @@ extern size_t GetCudaMemoryFree();
 class OptixContext
 {
 private:
-    CUcontext cudaContext = nullptr;
+    CUdevice cuDev; // Для удаления 
+    CUcontext cuCtx;// Для удаления 
+
     OptixDeviceContext optixContext = nullptr;
     OptixPipeline m_pipeline = nullptr;
     OptixShaderBindingTable m_sbt = {};
@@ -51,10 +53,8 @@ public:
     void Destroy();
 
     void CreatePipeline(const char* ptxCode);
-
     OptixDeviceContext GetOptixContext() const { return optixContext; }
-    CUcontext GetCudaContext() const { return cudaContext; }
-
+ 
     static void OptixLogCallback(unsigned int level, const char* tag, const char* message, void* cbdata)
     {
         string512 formattedMsg;
@@ -71,4 +71,21 @@ public:
 
     OptixPipeline GetPipeline() const { return m_pipeline; }
     OptixShaderBindingTable& GetSBT() { return m_sbt; }
+
+    // Создание CUDA stream
+    static CUstream CreateCudaStream()
+    {
+        CUstream stream;
+        CUDA_CHECK(cudaStreamCreate(&stream));
+        return stream;
+    }
+
+    // Уничтожение CUDA stream
+    static void DestroyCudaStream(CUstream stream)
+    {
+        if (stream)
+        {
+            CUDA_CHECK(cudaStreamDestroy(stream));
+        }
+    }
 };

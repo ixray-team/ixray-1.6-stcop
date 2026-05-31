@@ -57,9 +57,6 @@ public:
 
 	Shader_xrLC_LIB					&shaders();
 
-
-	void	mem_Compact				();
- 
 public:
 	void	Load					(const b_params& P, const IReader&  fs);
   	void	Run						(const char* path);
@@ -80,8 +77,7 @@ public:
 	void	xrPhase_TangentBasis	();
 
 	void	BuildCForm				();
-	void	BuildRapid				(bool bSave);
-	void	BuildPortals			(IWriter &fs);
+ 	void	BuildPortals			(IWriter &fs);
 	 
 		
 	void	IsolateVertices			(bool bProgress);

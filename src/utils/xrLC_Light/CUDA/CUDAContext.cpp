@@ -40,9 +40,7 @@ bool OptixContext::Initialize()
   	clMsg("[OptiX] Using CUDA device: %s (SM %d.%d)", deviceProps.name, deviceProps.major, deviceProps.minor);
 
 	// --- 2. Получаем primary CUcontext через Driver API ---
-	CUdevice cuDev;
-	CUcontext cuCtx;
-	 
+
  	CUDA_CHECK_2 ( cuDeviceGet(&cuDev, cudaDeviceId) );
 	CUDA_CHECK_2 ( cuDevicePrimaryCtxRetain(&cuCtx, cuDev) );
 	CUDA_CHECK_2 ( cuCtxSetCurrent(cuCtx) );
@@ -76,9 +74,13 @@ void OptixContext::Destroy()
 {
 	if (optixContext)
 	{
- 		OPTIX_CHECK(optixDeviceContextDestroy(optixContext));
+		OPTIX_CHECK(optixDeviceContextDestroy(optixContext));
 		optixContext = nullptr;
 	}
+
+	CUDA_CHECK_2(cuDevicePrimaryCtxRelease_v2(cuDev));
+	CUDA_CHECK(cudaDeviceReset());
+	CUDA_CHECK(cudaDeviceSynchronize());
 }
 
 // Структура для записи SBT

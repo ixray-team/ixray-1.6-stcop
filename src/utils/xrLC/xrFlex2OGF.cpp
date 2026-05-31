@@ -10,13 +10,18 @@
 
 void CBuild::validate_splits			()
 {
+	u32 Errors = 0;
+
 	for (splitIt it=g_XSplit.begin(); it!=g_XSplit.end(); it++)
 	{
 		u32 MODEL_ID		= u32(it-g_XSplit.begin())	;
 		if ((*it)->size() > c_SS_HighVertLimit*2)		{
 			clMsg	("! ERROR: subdiv #%d has more than %d faces (%d)",MODEL_ID,2*c_SS_HighVertLimit,(*it)->size());
+			Errors++;
 		}
 	};
+
+	clMsg("! Validate errors splits: %u", Errors);
 }
 
 void Face2OGF_Vertices( const Face &FF, OGF_Vertex	V[3] ) 

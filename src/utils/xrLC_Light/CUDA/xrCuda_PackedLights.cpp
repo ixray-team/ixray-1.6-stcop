@@ -49,7 +49,7 @@ void CUDA_PackedLighting::LightPointPacked_add_task(size_t IndexTask, void* Owne
 {
 	// MT SAFE
 	if (recvest_array.size() >= MAX_RAYS_PER_TASK - 16)
-		LightPointPacked_run_tasks();
+		LightPointPacked_run_tasks(false);
  
  	RayRecvestIndex task_data;
  	task_data.INDEX_TASK	= IndexTask;
@@ -59,33 +59,33 @@ void CUDA_PackedLighting::LightPointPacked_add_task(size_t IndexTask, void* Owne
 	recvest_array.emplace_back( task_data );
 }
  
-void CUDA_PackedLighting::LightPointPacked_run_tasks()
+void CUDA_PackedLighting::LightPointPacked_run_tasks(bool unload)
 {
- 	if (recvest_array.size() <= 0) return;
-
- 	// Initialize
-	XRay::RayTrace::CUDA::RayTraceInitialize( current_flags, MAX_RAYS_PER_TASK );
-
-	// Tasks
- 	for (size_t RecvestID = 0; RecvestID < recvest_array.size(); RecvestID++)
-		XRay::RayTrace::CUDA::RayTraceAddRay(recvest_array[RecvestID], RecvestID);
-
-	// Запускаем трейсинг
-	XRay::RayTrace::CUDA::RayTraceRun();
-
-	// Получаем результаты
-	auto& colors = XRay::RayTrace::CUDA::RayTraceResult();
-	for (size_t RecvestID = 0; RecvestID < recvest_array.size(); RecvestID++)
+	if (recvest_array.size() > 0)
 	{
-		auto& RAY_INFO = recvest_array[RecvestID];
- 		 
-		switch (ColorsMapType)
+		// Initialize
+		XRay::RayTrace::CUDA::RayTraceInitialize(current_flags, MAX_RAYS_PER_TASK);
+
+		// Tasks
+		for (size_t RecvestID = 0; RecvestID < recvest_array.size(); RecvestID++)
+			XRay::RayTrace::CUDA::RayTraceAddRay(recvest_array[RecvestID], RecvestID);
+
+		// Запускаем трейсинг
+		XRay::RayTrace::CUDA::RayTraceRun();
+
+		// Получаем результаты
+		auto& colors = XRay::RayTrace::CUDA::RayTraceResult();
+		for (size_t RecvestID = 0; RecvestID < recvest_array.size(); RecvestID++)
 		{
+			auto& RAY_INFO = recvest_array[RecvestID];
+
+			switch (ColorsMapType)
+			{
 			case eImplicit:
 			{
 				ApplyColorGPU(RAY_INFO.INDEX_TASK, colors[RecvestID]);
 			}break;
-		
+
 			case eDetails:
 			{
 				ApplyColorDetailGPU(RAY_INFO.INDEX_TASK, colors[RecvestID]);
@@ -93,22 +93,30 @@ void CUDA_PackedLighting::LightPointPacked_run_tasks()
 
 			case eDeflectors:
 			{
-				( (CDeflector*) RAY_INFO.Owner)->ApplyColor(RAY_INFO.INDEX_TASK, colors[RecvestID]);
+				((CDeflector*)RAY_INFO.Owner)->ApplyColor(RAY_INFO.INDEX_TASK, colors[RecvestID]);
 			}break;
-		
+
 			case eMumodel:
 			{
-				( (xrMU_Reference*) RAY_INFO.Owner )->colors_cuda[RAY_INFO.INDEX_TASK].add(colors[RecvestID]);;
+				((xrMU_Reference*)RAY_INFO.Owner)->colors_cuda[RAY_INFO.INDEX_TASK].add(colors[RecvestID]);;
 			}break;
-		
+
 			case eCommon:
 			{
 				task_colors[RAY_INFO.INDEX_TASK].add(colors[RecvestID]);
 			}break;
-		
-		}		
- 	}
 
-	recvest_array.clear();
+			}
+		}
+
+		recvest_array.clear();
+	}
+ 	
+ 	if (unload)
+	{
+		clMsg("* [CUDA] Unloading Rays");
+		recvest_array.shrink_to_fit();
+		XRay::RayTrace::CUDA::RayTraceUnload();
+	}
 }
  

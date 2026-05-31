@@ -12,12 +12,10 @@
 #include "../xrForms/CompilersUI.h"
 
 extern CompilersMode gCompilerMode;
-
-void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip);
-void LightPointNew(EmbreeRayTraceModel* MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
+extern void		LightPoint(EmbreeRayTraceModel& MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
 
 //-----------------------------------------------------------------------
-void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xform, void* MDL, base_lighting& lights, u32 flags)
+void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xform, EmbreeRayTraceModel& MDL, base_lighting& lights, u32 flags)
 {
 	// trans-map
 	typedef	xr_multimap<float,v_vertices>	mapVert;
@@ -66,14 +64,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 			N.random_dir(vN, deg2rad(30.f));
 			P.mad(vP, N, a);
 
-			if (MDL && (gCompilerMode.Embree || gCompilerMode.CUDA) )
-			{
-				LightPointNew	( (EmbreeRayTraceModel*) MDL, vC, P, N, lights, flags, 0);
-			}
-			else
-			{
-				LightPoint(&DB, (CDB::MODEL*)MDL, vC, P, N, lights, flags, 0);
-			}
+			LightPoint(MDL, vC, P, N, lights, flags, 0);
  		}
     
 		// Get ambient factor
@@ -203,22 +194,10 @@ void xrMU_Model::calc_lighting	()
 		EmbreeRayTraceModel MDL;
  		MDL.InitializeGeometry_Model(faces);
 
-		calc_lighting(color, Fidentity, &MDL, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun);
+		calc_lighting(color, Fidentity, MDL, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun);
 
 		MDL.RemoveGeometry();
 	}
-	else
-	{
-		// Export CForm
-		CL.Create(BB, (u32)m_vertices.size(), (u32)m_faces.size());
-		export_cform_rcast(CL, Fidentity);
-
-		CDB::MODEL* M = new CDB::MODEL();
-		M->build(CL.getV(), (u32)CL.getVS(), CL.getT(), (u32)CL.getTS());
-
-		calc_lighting(color, Fidentity, M, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun);
-		xr_delete(M);
- 	}
 }
  
 

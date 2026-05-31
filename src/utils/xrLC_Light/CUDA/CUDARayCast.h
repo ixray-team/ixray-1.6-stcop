@@ -48,6 +48,7 @@ namespace XRay::RayTrace::CUDA
 
     void RayTraceAddRay(RayRecvestIndex& ray, size_t index);
     void RayTraceRun();
+    void RayTraceUnload();
 
     xr_vector<base_color_c>& RayTraceResult();
 }

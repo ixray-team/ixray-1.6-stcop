@@ -187,8 +187,3 @@ void CBuild::xrPhase_UVmap()
 
 	err_save();
 }
-
-void CBuild::mem_Compact()
-{
- 	Memory.mem_compact();
-}
