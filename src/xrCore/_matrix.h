@@ -53,7 +53,7 @@ public:
         };
 		T m[4][4];					// Array
 		T mm[16];
-#ifdef IXR_WINDOWS
+#ifdef IXR_MATH_USE_SSE
 		__m128 xmm[4];
 #endif
 		_vector4<T> row[4];
@@ -157,7 +157,7 @@ public:
 	ICF SelfRef	mul			(const Self &A,const Self &B)
 	{
 		VERIFY	((this!=&A)&&(this!=&B));
-#ifdef IXR_WINDOWS
+#ifdef IXR_MATH_USE_SSE
 		static constexpr unsigned int shuffle_constants[4] = { 0x00U, 0x55U, 0xaaU, 0xffU };
 		if (CPU::ID().hasFeature(CPUFeature::FMA))
 		{
@@ -215,7 +215,7 @@ public:
 		m[1][3] = T(0);
 		m[2][3] = T(0);
 		m[3][3] = T(1);
-#ifdef IXR_WINDOWS
+#ifdef IXR_MATH_USE_SSE
 		static constexpr unsigned int shuffle_constants[4] = { 0x00U, 0x55U, 0xaaU, 0xffU };
 		if (CPU::ID().hasFeature(CPUFeature::FMA))
 		{
