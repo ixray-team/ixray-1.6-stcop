@@ -16,6 +16,7 @@
 #include "../xrRender/dxUIShader.h"
 #include "../../xrCore/git_version.h"
 #include "../xrRender/RenderInterfaceShared.h"
+#include "../xrRender/WristwatchVisual.h"
 
 CRender RImplementation;
 
@@ -213,6 +214,7 @@ void CRender::create()
 
 void CRender::destroy()
 {
+	WristwatchVisual::Shutdown();
 	m_bMakeAsyncSS				= false;
 	::PortalTraverser.destroy	();
 

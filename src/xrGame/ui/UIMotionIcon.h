@@ -64,7 +64,11 @@ public:
 			void			SetLuminosity		(float newPos);
 			void			SetActorVisibility	(u16 who_id, float value);
 			void			ResetVisibility		();
+			float			GetLuminosityNormalized() const;
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUIStatic* ui_cast_static() { return this; }
 };
+
+extern CUIMotionIcon* g_pMotionIcon;
+

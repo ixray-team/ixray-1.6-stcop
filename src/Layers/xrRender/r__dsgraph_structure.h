@@ -82,6 +82,9 @@ public:
 
 				virtual CDB::MODEL* GetHOMModel();
 				virtual xr_vector<u32>* GetHOMInvaltids();
+
+				virtual void wristwatch_reset_model(const shared_str& modelPath) override;
+				virtual void wristwatch_apply_display_shaders(u8 displayType, IKinematics* watchesModel) override;
 public:
 	R_dsgraph_structure	()
 	{
