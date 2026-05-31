@@ -143,10 +143,10 @@ bool CUIItemInfo::InitItemInfo(const char* xml_name)
 	
 	if(uiXml.NavigateToNode("condition_progress",0))
 	{
-		UICondProgresBar = new CUIItemStateDisplay();
+		UICondProgresBar = new CUIProgressBar();
 		AttachChild(UICondProgresBar);
 		UICondProgresBar->SetAutoDelete(true);
-		xml_init.InitItemStateDisplay(uiXml, "condition_progress", 0, UICondProgresBar);
+		xml_init.InitProgressBar(uiXml, "condition_progress", 0, UICondProgresBar);
 	}
 
 	if(uiXml.NavigateToNode("static_no_trade",0))
@@ -313,23 +313,9 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 
 	if (UICondProgresBar)
 	{
+		float cond = pInvItem->GetConditionToShow();
 		UICondProgresBar->Show(true);
-
-		const InventoryUtilities::ConditionDisplayParams display =
-			InventoryUtilities::GetConditionDisplayParams(pInvItem);
-
-		CEatableItem* eatableItem = pInvItem->cast_eatable_item();
-		if (UICondProgresBar->GetPercentFormat() == CUIItemStateDisplay::EPercentFormat::Portion &&
-			eatableItem != nullptr &&
-			display.usePortion &&
-			display.portionMax > 1)
-		{
-			UICondProgresBar->SetPortion(display.portionCurrent, display.portionMax);
-		}
-		else
-		{
-			UICondProgresBar->SetState(display.state);
-		}
+		UICondProgresBar->SetProgressPos(cond * 100.0f + 1.0f - EPS);
 	}
 
 	if ( UITradeTip && IsGameTypeSingleCompatible())
