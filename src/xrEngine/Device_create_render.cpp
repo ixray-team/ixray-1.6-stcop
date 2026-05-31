@@ -142,6 +142,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				//ImGui::MenuItem("Time Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_TimeManager)]);
 				ImGui::MenuItem("Hud Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_HudAdjustManager)]);
 				ImGui::MenuItem("Hud Adjust (Legacy)", nullptr, &States[static_cast<u8>(EditorUI::HudAdjust)]);
+				ImGui::MenuItem("3rd Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_3rdAdjust)]);
 				ImGui::MenuItem("LevelInspector", nullptr, &States[static_cast<u8>(EditorUI::LevelInspector)]);
 				if (ImGui::BeginMenu("Editors##InGame"))
 				{
