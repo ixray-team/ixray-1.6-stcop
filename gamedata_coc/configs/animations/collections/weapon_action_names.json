@@ -1,0 +1,21 @@
+{
+    "Items":
+    [
+        "draw_",
+        "attack_",
+        "drop_",
+        "holster_",
+        "reload_",
+        "pick_",
+        "aim_",
+        "walk_",
+        "run_",
+        "idle_",
+        "prepare_",
+        "strap_",
+        "unstrap_",
+        "look_beack_ls_",
+        "look_beack_rs_",
+        "escape_"
+    ]
+}

@@ -1,0 +1,527 @@
+diff --git a/src/xrGame/ai/ai_monsters_anims.h b/src/xrGame/ai/ai_monsters_anims.h
+index 10eb8fdc1..52e8c659b 100644
+--- a/src/xrGame/ai/ai_monsters_anims.h
++++ b/src/xrGame/ai/ai_monsters_anims.h
+@@ -7,55 +7,59 @@
+ ////////////////////////////////////////////////////////////////////////////
+ 
+ #pragma once
+-
+ #include "../../Include/xrRender/KinematicsAnimated.h"
+ #include "../ai_debug.h"
++#include "AnimationNames.h"
+ 
+ using ANIM_VECTOR = xr_vector<MotionID>;
+ using ANIM_IT = ANIM_VECTOR::iterator;
+ 
+-class CAniVector {
++class CAniVector 
++{
+ public:
+-	ANIM_VECTOR		A;
+-
+-			void	Load	(IKinematicsAnimated *tpKinematics, const char* caBaseName);
++	ANIM_VECTOR A;
++	void Load(IKinematicsAnimated* tpKinematics, const char* caBaseName);
+ };
+ 
+-template <const char* caBaseNames[]> class CAniFVector {
++template <CStalkerAnimationNames::ECollectionType CollectionType>
++class CAniFVector
++{
+ public:
+ 	ANIM_VECTOR		A;
+ 
+-	IC	void		Load(IKinematicsAnimated *tpKinematics, const char* caBaseName)
++	IC void Load(IKinematicsAnimated* Kinematics, const char* BaseName)
+ 	{
+-		A.clear			();
+-		string256		S;
+-		int j = 0;
+-		for (; caBaseNames[j]; ++j);
+-		A.resize		(j);
+-		for (int i=0; i<j; ++i) 
++		A.clear();
++		const auto& Names = GAnimationNames.GetCollection(CollectionType);
++		A.resize(Names.size());
++
++		string256 Buffer;
++
++		for (u32 i = 0; i < Names.size(); ++i)
+ 		{
+-			xr_strconcat(S,caBaseName,caBaseNames[i]);
+-			A[i]		= tpKinematics->ID_Cycle_Safe(S);
+-#ifdef DEBUG
+-			if (A[i] && psAI_Flags.test(aiAnimation))
+-				Msg		("* Loaded animation %s",S);
+-#endif
++			xr_strconcat(Buffer, BaseName, *Names[i]);
++			A[i] = Kinematics->ID_Cycle_Safe(Buffer);
+ 		}
+ 	}
+ };
+ 
+-template <class TYPE_NAME, const char* caBaseNames[]> class CAniCollection {
++template <class TYPE_NAME, CStalkerAnimationNames::ECollectionType CollectionType>
++class CAniCollection
++{
+ public:
+-	xr_vector<TYPE_NAME>	A;
++	xr_vector<TYPE_NAME> A;
+ 
+-	IC	void		Load(IKinematicsAnimated *tpKinematics, const char* caBaseName)
++	IC void Load(IKinematicsAnimated* Kinematics, const char* BaseName)
+ 	{
+-		A.clear		();
+-		string256	S;
+-		int j = 0;
+-		for (; caBaseNames[j]; ++j);
+-		A.resize	(j);
+-		for (int i=0; i<j; ++i)
+-			A[i].Load	(tpKinematics, xr_strconcat(S,caBaseName,caBaseNames[i]));
++		A.clear();
++		const auto& Names = GAnimationNames.GetCollection(CollectionType);
++		A.resize(Names.size());
++
++		string256 Buffer;
++
++		for (u32 i = 0; i < Names.size(); ++i)
++		{
++			A[i].Load(Kinematics, xr_strconcat(Buffer, BaseName, *Names[i]));
++		}
+ 	}
+ };
+\ No newline at end of file
+diff --git a/src/xrGame/ai/ai_monsters_misc.cpp b/src/xrGame/ai/ai_monsters_misc.cpp
+index c2210b8f5..7c8494da9 100644
+--- a/src/xrGame/ai/ai_monsters_misc.cpp
++++ b/src/xrGame/ai/ai_monsters_misc.cpp
+@@ -191,30 +191,33 @@ u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinP
+ 				}
+ }
+ 
+-void CAniVector::Load(IKinematicsAnimated *tpKinematics, const char* caBaseName)
++void CAniVector::Load(IKinematicsAnimated* tpKinematics, const char* caBaseName)
+ {
+-	A.clear		();
++	Msg("%s", caBaseName);
++	A.clear();
+ 	string256	S1, S2;
+ 	MotionID	tpMotionDef;
+-	for (int i=0; ; ++i)
+-		if (!!(tpMotionDef = tpKinematics->ID_Cycle_Safe(xr_strconcat(S1,caBaseName,_itoa(i,S2,10))))) {
++	for (int i = 0; ; ++i)
++	{
++		if (!!(tpMotionDef = tpKinematics->ID_Cycle_Safe(xr_strconcat(S1, caBaseName, _itoa(i, S2, 10)))))
++		{
+ 			A.push_back(tpMotionDef);
+ #ifdef DEBUG
+ 			if (psAI_Flags.test(aiAnimation))
+-				Msg		("* Loaded animation %s",S1);
++				Msg("* Loaded animation %s", S1);
+ #endif
+ 		}
+-		else
+-			if (!!(tpMotionDef = tpKinematics->ID_FX_Safe(xr_strconcat(S1,caBaseName,_itoa(i,S2,10))))) {
++		else if (!!(tpMotionDef = tpKinematics->ID_FX_Safe(xr_strconcat(S1, caBaseName, _itoa(i, S2, 10)))))
++		{
+ 				A.push_back(tpMotionDef);
+ #ifdef DEBUG
+-			if (psAI_Flags.test(aiAnimation))
+-				Msg		("* Loaded animation fx %s",S1);
++				if (psAI_Flags.test(aiAnimation))
++					Msg("* Loaded animation fx %s", S1);
+ #endif
+-			}
+-			else
+-				if (i<10)
+-					continue;
+-				else
+-					break;
++		}
++		else if (i < 10)
++			continue;
++		else
++			break;
++	}
+ }
+diff --git a/src/xrGame/console_commands.cpp b/src/xrGame/console_commands.cpp
+index 851f21017..4cdad121a 100644
+--- a/src/xrGame/console_commands.cpp
++++ b/src/xrGame/console_commands.cpp
+@@ -1096,18 +1096,6 @@ public:
+ 
+ };
+ 
+-#ifdef DEBUG
+-extern void print_help(lua_State* L);
+-
+-struct CCC_LuaHelp : public IConsole_Command {
+-	CCC_LuaHelp(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+-
+-	virtual void Execute(const char* args) {
+-		print_help(ai().script_engine().lua());
+-	}
+-};
+-#endif
+-
+ //#ifndef MASTER_GOLD
+ #	include "game_graph.h"
+ struct CCC_JumpToLevel : public IConsole_Command {
+@@ -2704,8 +2692,6 @@ void CCC_RegisterCommands()
+     CMD4(CCC_Float, "3d_icons_adjust_value", &g_Adjust3dIconValue, 0.f, 10.f);
+ 
+ #ifdef DEBUG
+-	CMD1(CCC_LuaHelp, "lua_help");
+-
+ 	CMD3(CCC_Mask32, "dbg_draw_actor_alive", &dbg_net_Draw_Flags, dbg_draw_actor_alive);
+ 	CMD3(CCC_Mask32, "dbg_draw_actor_dead", &dbg_net_Draw_Flags, dbg_draw_actor_dead);
+ 	CMD3(CCC_Mask32, "dbg_draw_customzone", &dbg_net_Draw_Flags, dbg_draw_customzone);
+diff --git a/src/xrGame/script_engine_help.cpp b/src/xrGame/script_engine_help.cpp
+deleted file mode 100644
+index 28939567f..000000000
+--- a/src/xrGame/script_engine_help.cpp
++++ /dev/null
+@@ -1,15 +0,0 @@
+-////////////////////////////////////////////////////////////////////////////
+-//	Module 		: script_engine_help.cpp
+-//	Created 	: 01.04.2004
+-//  Modified 	: 01.04.2004
+-//	Author		: Dmitriy Iassenev
+-//	Description : Script Engine help
+-////////////////////////////////////////////////////////////////////////////
+-
+-#include "StdAfx.h"
+-#include "pch_script.h"
+-
+-void print_help(lua_State* L)
+-{
+-	Msg("! Release build doesn't support lua-help :(");
+-}
+diff --git a/src/xrGame/stalker_animation_data.cpp b/src/xrGame/stalker_animation_data.cpp
+index 9c2a944e5..a49444302 100644
+--- a/src/xrGame/stalker_animation_data.cpp
++++ b/src/xrGame/stalker_animation_data.cpp
+@@ -8,10 +8,11 @@
+ 
+ #include "StdAfx.h"
+ #include "stalker_animation_data.h"
++#include "AnimationNames.h"
+ 
+-CStalkerAnimationData::CStalkerAnimationData	(IKinematicsAnimated *skeleton_animated)
++CStalkerAnimationData::CStalkerAnimationData(IKinematicsAnimated* skeleton_animated)
+ {
+-	m_part_animations.Load		(skeleton_animated,"");
+-	m_head_animations.Load		(skeleton_animated,"");
+-	m_global_animations.Load	(skeleton_animated,"item_");
+-}
++	m_part_animations.Load(skeleton_animated, "");
++	m_head_animations.Load(skeleton_animated, "");
++	m_global_animations.Load(skeleton_animated, "item_");
++}
+\ No newline at end of file
+diff --git a/src/xrGame/stalker_animation_data.h b/src/xrGame/stalker_animation_data.h
+index f1b9bf2b1..90a50b24d 100644
+--- a/src/xrGame/stalker_animation_data.h
++++ b/src/xrGame/stalker_animation_data.h
+@@ -11,12 +11,12 @@
+ #include "stalker_animation_state.h"
+ #include "stalker_animation_names.h"
+ 
+-class CStalkerAnimationData {
++class CStalkerAnimationData 
++{
+ public:
+-	typedef CStalkerAnimationState::WEAPON_ACTIONS				WEAPON_ACTIONS;
+-	typedef CAniCollection<WEAPON_ACTIONS,weapon_names>			GLOBAL_ANIMATIONS;
+-	typedef CAniCollection<CStalkerAnimationState,state_names>	PART_ANIMATIONS;
+-	typedef CAniFVector<head_names>								HEAD_ANIMATIONS;
++	using GLOBAL_ANIMATIONS = CAniCollection<CStalkerAnimationState::WEAPON_ACTIONS, CStalkerAnimationNames::ECollectionType::Weapon>;
++	using PART_ANIMATIONS = CAniCollection<CStalkerAnimationState, CStalkerAnimationNames::ECollectionType::State>;
++	using HEAD_ANIMATIONS = CAniFVector<CStalkerAnimationNames::ECollectionType::Head>;
+ 
+ public:
+ 	PART_ANIMATIONS		m_part_animations;
+@@ -24,5 +24,5 @@ public:
+ 	GLOBAL_ANIMATIONS	m_global_animations;
+ 
+ public:
+-						CStalkerAnimationData	(IKinematicsAnimated *skeleton_animated);
++	CStalkerAnimationData	(IKinematicsAnimated *skeleton_animated);
+ };
+diff --git a/src/xrGame/stalker_animation_legs.cpp b/src/xrGame/stalker_animation_legs.cpp
+index 8c38f9036..cb9aae18a 100644
+--- a/src/xrGame/stalker_animation_legs.cpp
++++ b/src/xrGame/stalker_animation_legs.cpp
+@@ -247,7 +247,7 @@ MotionID CStalkerAnimationManager::legs_no_move_animation	()
+ 	m_change_direction_time		= Device.dwTimeGlobal;
+ 
+ 	EBodyState					body_state = this->body_state();
+-	const xr_vector<MotionID>	&animation = m_data_storage->m_part_animations.A[body_state].m_in_place->A;
++	const xr_vector<MotionID>	&animation = m_data_storage->m_part_animations.A[body_state].m_in_place.A;
+ 
+ 	stalker_movement_manager_smart_cover		&movement = object().movement();
+ 	const SBoneRotation			&body_orientation = movement.body_orientation();
+diff --git a/src/xrGame/stalker_animation_names.cpp b/src/xrGame/stalker_animation_names.cpp
+deleted file mode 100644
+index 3d7efee25..000000000
+--- a/src/xrGame/stalker_animation_names.cpp
++++ /dev/null
+@@ -1,119 +0,0 @@
+-////////////////////////////////////////////////////////////////////////////
+-//	Module 		: stalker_animation_names.cpp
+-//	Created 	: 25.02.2003
+-//  Modified 	: 19.11.2004
+-//	Author		: Dmitriy Iassenev
+-//	Description : Stalker animation names
+-////////////////////////////////////////////////////////////////////////////
+-
+-#include "StdAfx.h"
+-#include "stalker_animation_names.h"
+-
+-const char* state_names			[] = {
+-	"cr_",
+-	"norm_",
+-	"dmg_norm_",
+-	0
+-};
+-
+-const char* weapon_names			[] = {
+-	"0_",
+-	"1_",
+-	"2_",
+-	"3_",
+-	"4_",
+-	"5_",
+-	"6_",
+-	"7_",
+-	"8_",
+-	"9_",
+-	"10_",
+-	0
+-};
+-
+-const char* weapon_action_names	[] = {
+-	"draw_",			// 0
+-	"attack_",			// 1
+-	"drop_",			// 2
+-	"holster_",			// 3
+-	"reload_",			// 4
+-	"pick_",			// 5
+-	"aim_",				// 6
+-	"walk_",			// 7
+-	"run_",				// 8
+-	"idle_",			// 9
+-	"prepare_",			// 10
+-	"strap_",			// 11
+-	"unstrap_",			// 12
+-	"look_beack_ls_",	// 13
+-	"look_beack_rs_",	// 14
+-	"escape_",			// 15
+-	0
+-};
+-
+-const char* movement_names		[] = {
+-	"walk_",
+-	"run_",
+-	"escape_",
+-	0
+-};
+-
+-const char* movement_action_names[] = {
+-	"fwd_",
+-	"back_",
+-	"ls_",
+-	"rs_",
+-	"0",
+-	0
+-};
+-
+-const char* in_place_names		[] = {
+-	"idle_0",
+-	"idle_1",
+-	"turn_right_0",
+-	"turn_left_0",
+-	"turn_right_1",
+-	"turn_left_1",
+-	"jump_begin",
+-	"jump_idle",
+-	"jump_end",
+-	"jump_end_1",
+-	0
+-};
+-
+-const char* global_names			[] = {
+-	"damage_",						// 0
+-	"escape_",						// 1
+-	"dead_stop_",					// 2
+-	"hello_",						// 3
+-
+-	"1_critical_hit_head_",			// 4
+-	"1_critical_hit_torso_",		// 5
+-	"1_critical_hit_hend_left_",	// 6
+-	"1_critical_hit_hend_right_",	// 7
+-	"1_critical_hit_legs_left_",	// 8
+-	"1_critical_hit_legs_right_",	// 9
+-
+-	"2_critical_hit_head_",			// 10
+-	"2_critical_hit_torso_",		// 11
+-	"2_critical_hit_hend_left_",	// 12
+-	"2_critical_hit_hend_right_",	// 13
+-	"2_critical_hit_legs_left_",	// 14
+-	"2_critical_hit_legs_right_",	// 15
+-
+-	"3_critical_hit_head_",			// 16
+-	"3_critical_hit_torso_",		// 17
+-	"3_critical_hit_hend_left_",	// 18
+-	"3_critical_hit_hend_right_",	// 19
+-	"3_critical_hit_legs_left_",	// 20
+-	"3_critical_hit_legs_right_",	// 21
+-
+-	"panic_stand_",
+-	0
+-};
+-
+-const char* head_names			[] = {
+-	"head_idle_0",
+-	"head_talk_0",
+-	0
+-};
+diff --git a/src/xrGame/stalker_animation_names.h b/src/xrGame/stalker_animation_names.h
+index 1869dd8d9..bae735e1d 100644
+--- a/src/xrGame/stalker_animation_names.h
++++ b/src/xrGame/stalker_animation_names.h
+@@ -5,21 +5,10 @@
+ //	Author		: Dmitriy Iassenev
+ //	Description : Stalker animation names
+ ////////////////////////////////////////////////////////////////////////////
+-
+ #pragma once
+ 
+-extern const char* state_names			[];
+-extern const char* weapon_names			[];
+-extern const char* weapon_action_names	[];
+-extern const char* food_names			[];
+-extern const char* food_action_names		[];
+-extern const char* movement_names		[];
+-extern const char* movement_action_names	[];
+-extern const char* in_place_names		[];
+-extern const char* global_names			[];
+-extern const char* head_names			[];
+-
+-enum ECriticalWoundType {
++enum ECriticalWoundType 
++{
+ 	critical_wound_type_head		= u32(4),
+ 	critical_wound_type_torso,
+ 	critical_wound_type_hand_left,
+diff --git a/src/xrGame/stalker_animation_state.cpp b/src/xrGame/stalker_animation_state.cpp
+index db900a6f8..5b6a18a6d 100644
+--- a/src/xrGame/stalker_animation_state.cpp
++++ b/src/xrGame/stalker_animation_state.cpp
+@@ -1,36 +1,22 @@
+-////////////////////////////////////////////////////////////////////////////
+-//	Module 		: stalker_animation_state.cpp
+-//	Created 	: 25.02.2003
+-//  Modified 	: 19.11.2004
+-//	Author		: Dmitriy Iassenev
+-//	Description : Stalker state animations
+-////////////////////////////////////////////////////////////////////////////
+-
+ #include "StdAfx.h"
+ #include "stalker_animation_state.h"
+ #include "object_broker.h"
+ #include "../Include/xrRender/Kinematics.h"
++#include "AnimationNames.h"
+ 
+-CStalkerAnimationState::CStalkerAnimationState	()
++CStalkerAnimationState::CStalkerAnimationState(const CStalkerAnimationState& stalker_animation_state)
+ {
+-	m_in_place			= new IN_PLACE_ANIMATIONS();
++	clone(stalker_animation_state.m_in_place, m_in_place);
+ }
+ 
+-CStalkerAnimationState::CStalkerAnimationState	(const CStalkerAnimationState &stalker_animation_state)
++void CStalkerAnimationState::Load(IKinematicsAnimated* kinematics, const char* base_name)
+ {
+-	clone				(stalker_animation_state.m_in_place,m_in_place);
+-}
++	string256 S;
++	m_global.Load(kinematics, base_name);
++	
++	const auto& TorsoCollect = GAnimationNames.GetCollection(CStalkerAnimationNames::ECollectionType::Torso);
++	m_torso.Load(kinematics, xr_strconcat(S, base_name, *TorsoCollect[0]));
+ 
+-CStalkerAnimationState::~CStalkerAnimationState	()
+-{
+-	xr_delete			(m_in_place);
+-}
+-
+-void CStalkerAnimationState::Load				(IKinematicsAnimated *kinematics, const char* base_name)
+-{
+-	string256			S;
+-	m_global.Load		(kinematics,base_name);
+-	m_torso.Load		(kinematics, xr_strconcat(S,base_name,"torso_"));
+-	m_movement.Load		(kinematics,base_name);
+-	m_in_place->Load	(kinematics,base_name);
+-}
++	m_movement.Load(kinematics, base_name);
++	m_in_place.Load(kinematics, base_name);
++}
+\ No newline at end of file
+diff --git a/src/xrGame/stalker_animation_state.h b/src/xrGame/stalker_animation_state.h
+index b3238fdf0..4ca855dd3 100644
+--- a/src/xrGame/stalker_animation_state.h
++++ b/src/xrGame/stalker_animation_state.h
+@@ -1,34 +1,27 @@
+-////////////////////////////////////////////////////////////////////////////
+-//	Module 		: stalker_animation_state.h
+-//	Created 	: 25.02.2003
+-//  Modified 	: 19.11.2004
+-//	Author		: Dmitriy Iassenev
+-//	Description : Stalker state animations
+-////////////////////////////////////////////////////////////////////////////
+-
+ #pragma once
+ 
+ #include "ai/ai_monsters_anims.h"
+ #include "stalker_animation_names.h"
+ 
+-class CStalkerAnimationState {
++class CStalkerAnimationState
++{
+ public:
+-	typedef CAniCollection<CAniVector,		movement_action_names>	MOVEMENT_ACTIONS;
+-	typedef CAniCollection<CAniVector,		weapon_action_names>	WEAPON_ACTIONS;
+-	typedef CAniCollection<CAniVector,		global_names>			GLOBAL_ANIMATIONS;
+-	typedef CAniCollection<WEAPON_ACTIONS,	weapon_names>			WEAPON_ANIMATIONS;
+-	typedef CAniCollection<MOVEMENT_ACTIONS,movement_names>			MOVEMENT_ANIMATIONS;
+-	typedef CAniFVector	  <					in_place_names>			IN_PLACE_ANIMATIONS;
++	using MOVEMENT_ACTIONS = CAniCollection<CAniVector, CStalkerAnimationNames::ECollectionType::MovementAction>;
++	using WEAPON_ACTIONS = CAniCollection<CAniVector, CStalkerAnimationNames::ECollectionType::WeaponAction>;
++	using GLOBAL_ANIMATIONS = CAniCollection<CAniVector, CStalkerAnimationNames::ECollectionType::Global>;
++	using WEAPON_ANIMATIONS = CAniCollection<WEAPON_ACTIONS, CStalkerAnimationNames::ECollectionType::Weapon>;
++	using MOVEMENT_ANIMATIONS = CAniCollection<MOVEMENT_ACTIONS, CStalkerAnimationNames::ECollectionType::Movement>;
+ 
+ public:
+-	GLOBAL_ANIMATIONS		m_global;
+-	WEAPON_ANIMATIONS		m_torso;
+-	MOVEMENT_ANIMATIONS		m_movement;
+-	IN_PLACE_ANIMATIONS		*m_in_place;
++	GLOBAL_ANIMATIONS m_global;
++	WEAPON_ANIMATIONS m_torso;
++	MOVEMENT_ANIMATIONS m_movement;
++	CAniFVector<CStalkerAnimationNames::ECollectionType::InPlace> m_in_place;
+ 
+ public:
+-					CStalkerAnimationState	();
+-					CStalkerAnimationState	(const CStalkerAnimationState &animations);
+-	virtual			~CStalkerAnimationState	();
+-			void	Load					(IKinematicsAnimated *kinematics, const char* base_name);
++	CStalkerAnimationState() = default;
++	CStalkerAnimationState(const CStalkerAnimationState& animations);
++	virtual ~CStalkerAnimationState() = default;
++
++	void Load(IKinematicsAnimated* kinematics, const char* base_name);
+ };
+\ No newline at end of file
