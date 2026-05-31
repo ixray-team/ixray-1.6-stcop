@@ -43,12 +43,12 @@ DisableMotionIcon = false				; Disable motion icon
 PdaRearrangeTabButtons = true			; for CS style buttons, where their size depends on text
 UseSavedGameStatic = true				; Use custom static for save games
 DisableHudRenderingOnMaster = false     ; Disable HUD on Master difficulty. Gunslinger Mod style
-ShowQuickSlotByDefault = true           ; Visible quick slots by default
+UseCompassBar = false                   ; true = compass bar (minimap disabled), false = legacy minimap
 InventoryItemCountPrefix = "x"          ; Prefix shown in item counter, quick slots for example
-RenderingType = raster                  ; raster or default = means you need to specify icons by your own (fallback); vector = new way for rendering using svg images;
 
 [physics]
 DeadBodyRagdoll = false                 ; Enable ragdoll body
+DisableCameraMagicField = true          ; Disable camera magic field
 
 [gameplay]
 EnableThirst = false                    ; Thirst
@@ -69,6 +69,8 @@ Enable3DPDA = false						; 3D PDA
 EnableTorchOnlyInOutfit = false			; Gunslinger Mod Style
 EnableBurerShieldPenetrationWithGauss = false ; Option to make damage to burer even when he is under shield if using Gauss
 EnableWeaponAlternateRPMSystem = false ; Call of Chernobyl like RPM
+EnableInventoryVolume = false			; Inventory volume system
+EnableRealBulletPos	= false				; Use real bullet pos for first person mode instead of camera center
 
 ; Dialogs
 DialogFovScale = 0.75 ; Increasing fov during dialogue
@@ -111,4 +113,3 @@ PlayerHudOmfAdditional = dynamics\weapons\hud_hands_animation\*.omf ; Place your
 materials = earth, test1    ; Material names
 left_mark = l_foot          ; left foot wallmark section
 right_mark = r_foot         ; right foot wallmark section
-
