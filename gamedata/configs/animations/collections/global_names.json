@@ -1,0 +1,32 @@
+{
+    "Items":
+    [
+        "damage_",
+        "escape_",
+        "dead_stop_",
+        "hello_",
+
+        "1_critical_hit_head_",
+        "1_critical_hit_torso_",
+        "1_critical_hit_hend_left_",
+        "1_critical_hit_hend_right_",
+        "1_critical_hit_legs_left_",
+        "1_critical_hit_legs_right_",
+
+        "2_critical_hit_head_",
+        "2_critical_hit_torso_",
+        "2_critical_hit_hend_left_",
+        "2_critical_hit_hend_right_",
+        "2_critical_hit_legs_left_",
+        "2_critical_hit_legs_right_",
+
+        "3_critical_hit_head_",
+        "3_critical_hit_torso_",
+        "3_critical_hit_hend_left_",
+        "3_critical_hit_hend_right_",
+        "3_critical_hit_legs_left_",
+        "3_critical_hit_legs_right_",
+
+        "panic_stand_"
+    ]
+}
