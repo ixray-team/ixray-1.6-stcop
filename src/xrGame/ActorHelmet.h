@@ -14,6 +14,8 @@ public:
 	virtual void		OnMoveToSlot			(const SInvItemPlace& previous_place) override;
 	virtual void		OnMoveToRuck			(const SInvItemPlace& previous_place) override;
 
+	virtual bool can_be_attached() const override;
+
 	virtual CHelmet*	cast_helmet				() override { return this; }
 
 	float m_fShowNearestEnemiesDistance = 0.0f;
