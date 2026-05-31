@@ -48,13 +48,6 @@ ENGINE_API extern bool g_3d_scopes;
 CWeapon::CWeapon()
 {
 	SetDefaults();
-
-	m_Offset.identity();
-	m_StrapOffset.identity();
-	m_StrapOffset_alt.identity();
-	m_StrapOffset.identity();
-	m_StrapOffset_alt.identity();
-
 	_last_update_time = Device.dwTimeGlobal;
 }
 
@@ -1745,21 +1738,32 @@ void CWeapon::SetDefaults()
 
 void CWeapon::UpdatePosition(const Fmatrix& trans)
 {
-	Position().set		(trans.c);
+	Position().set(trans.c);
+
 	if (m_strapped_mode || m_strapped_mode_rifle)
-		XFORM().mul(trans, m_StrapOffset);
+	{
+		XFORM().mul(trans, m_StrapOffset.GetXFORM());
+	}
 	else
-		XFORM().mul(trans, m_Offset);
+	{
+		XFORM().mul(trans, m_ActiveOffset.GetXFORM());
+	}
 
 	VERIFY(!fis_zero(DET(renderable.xform)));
 }
 
-void CWeapon::UpdatePosition_alt(const Fmatrix& trans) {
+void CWeapon::UpdatePosition_alt(const Fmatrix& trans)
+{
 	Position().set(trans.c);
+
 	if (m_strapped_mode || m_strapped_mode_rifle)
-		XFORM().mul(trans, m_StrapOffset_alt);
+	{
+		XFORM().mul(trans, m_StrapOffsetAlt.GetXFORM());
+	}
 	else
-		XFORM().mul(trans, m_Offset);
+	{
+		XFORM().mul(trans, m_ActiveOffset.GetXFORM());
+	}
 
 	VERIFY(!fis_zero(DET(renderable.xform)));
 }
@@ -3236,7 +3240,8 @@ void CWeapon::reinit			()
 	CHudItemObject::reinit			();
 }
 
-void CWeapon::reload(const char* section) {
+void CWeapon::reload(const char* section)
+{
 	CShootingObject::reload(section);
 	CHudItemObject::reload(section);
 
@@ -3259,13 +3264,8 @@ void CWeapon::reload(const char* section) {
 	}
 
 	{
-		Fvector pos, ypr;
-		pos = pSettings->r_fvector3(section, "position");
-		ypr = pSettings->r_fvector3(section, "orientation");
-		ypr.mul(PI / 180.f);
-
-		m_Offset.setHPB(ypr.x, ypr.y, ypr.z);
-		m_Offset.translate_over(pos);
+		m_ActiveOffset.StrapPosition = pSettings->r_fvector3(section, "position");
+		m_ActiveOffset.StrapRotation = pSettings->r_fvector3(section, "orientation");
 	}
 
 	if (BaseSlot() == INV_SLOT_3) {
@@ -3282,36 +3282,28 @@ void CWeapon::reload(const char* section) {
 		}
 
 		// Right shoulder strap coordinates:
-		m_StrapOffset = m_Offset;
-		Fvector pos, ypr;
+		m_StrapOffset = m_ActiveOffset;
 		if (pSettings->line_exist(section, "strap_position") &&
 			pSettings->line_exist(section, "strap_orientation")) {
-			pos = pSettings->r_fvector3(section, "strap_position");
-			ypr = pSettings->r_fvector3(section, "strap_orientation");
+			m_StrapOffset.StrapPosition = pSettings->r_fvector3(section, "strap_position");
+			m_StrapOffset.StrapRotation = pSettings->r_fvector3(section, "strap_orientation");
 		}
 		else {
-			pos = Fvector().set(-0.34f, -0.20f, 0.15f);
-			ypr = Fvector().set(-0.0f, 0.0f, 84.0f);
+			m_StrapOffset.StrapPosition = Fvector().set(-0.34f, -0.20f, 0.15f);
+			m_StrapOffset.StrapRotation = Fvector().set(0.0f, 0.0f, 84.0f);
 		}
-		ypr.mul(PI / 180.f);
-		m_StrapOffset.setHPB(ypr.x, ypr.y, ypr.z);
-		m_StrapOffset.translate_over(pos);
 
 		// Left shoulder strap coordinates:
-		m_StrapOffset_alt = m_Offset;
-		Fvector pos_alt, ypr_alt;
+		m_StrapOffsetAlt = m_ActiveOffset;
 		if (pSettings->line_exist(section, "strap_position_alt") &&
 			pSettings->line_exist(section, "strap_orientation_alt")) {
-			pos_alt = pSettings->r_fvector3(section, "strap_position_alt");
-			ypr_alt = pSettings->r_fvector3(section, "strap_orientation_alt");
+			m_StrapOffsetAlt.StrapPosition = pSettings->r_fvector3(section, "strap_position_alt");
+			m_StrapOffsetAlt.StrapRotation = pSettings->r_fvector3(section, "strap_orientation_alt");
 		}
 		else {
-			pos_alt = Fvector().set(-0.34f, 0.20f, 0.15f);
-			ypr_alt = Fvector().set(0.0f, 0.0f, 94.0f);
+			m_StrapOffsetAlt.StrapPosition = Fvector().set(-0.34f, 0.20f, 0.15f);
+			m_StrapOffsetAlt.StrapRotation = Fvector().set(0.0f, 0.0f, 94.0f);
 		}
-		ypr_alt.mul(PI / 180.f);
-		m_StrapOffset_alt.setHPB(ypr_alt.x, ypr_alt.y, ypr_alt.z);
-		m_StrapOffset_alt.translate_over(pos_alt);
 	}
 	else {
 		m_can_be_strapped = false;

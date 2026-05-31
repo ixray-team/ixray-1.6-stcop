@@ -59,3 +59,14 @@ bool CBackpack::install_upgrade_impl(const char* section, bool test)
 
     return result;
 }
+
+bool CBackpack::can_be_attached() const
+{
+    CObject* h_parent = const_cast<CObject*>(H_Parent());
+    if (const CActor* pA = h_parent != nullptr ? h_parent->cast_actor() : nullptr)
+    {
+        return pA->inventory().InSlot(this);
+    }
+
+    return true;
+}
