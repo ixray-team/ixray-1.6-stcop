@@ -789,7 +789,7 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
     PIItem item = actor->inventory().ActiveItem();
     if (item)
     {
-        if (item->cast_bolt() || item->cast_custom_detector() || item->cast_weapon_knife() || item->cast_weapon_binoculars())
+        if (item->cast_bolt() || item->cast_custom_detector() || (m_use_adaptive_ammo_widget && (item->cast_weapon_knife() || item->cast_weapon_binoculars())))
         {
             if (m_ui_weapon_icon)
             {
