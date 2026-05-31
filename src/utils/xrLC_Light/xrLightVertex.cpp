@@ -105,10 +105,7 @@ void LightVertex()
 					base_color_c		vC, old;
 					V->C._get(old);
 
-					CDB::COLLIDER	DB;
-					DB.ray_options(0);
-
-					LightPoint(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, lc_global_data()->L_static(), flags, 0);
+					LightPoint(EmbreeMain, vC, V->P, V->N, lc_global_data()->L_static(), flags, 0);
 
 					vC._tmp_ = v_trans;
 					vC.mul(.5f);

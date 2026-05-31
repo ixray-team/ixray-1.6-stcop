@@ -110,7 +110,7 @@ void CBuild::xrPhase_Subdivide()
 		if ((int(s1.size()) < c_SS_LowVertLimit) || (int(s2.size()) < c_SS_LowVertLimit))
 		{
 			// splitting failed
-			clMsg("! ERROR: model #%d - split fail, faces: %d, s1/s2:%d/%d", X, g_XSplit[X]->size(), s1.size(), s2.size());
+			// clMsg("! ERROR: model #%d - split fail, faces: %d, s1/s2:%d/%d", X, g_XSplit[X]->size(), s1.size(), s2.size());
 			if (iteration_per_edge < 10) {
 				if (g_XSplit[X]->size() > c_SS_LowVertLimit * 4)
 				{

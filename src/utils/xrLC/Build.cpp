@@ -53,27 +53,6 @@ static bool embree_setuped = false;
 CBuild::CBuild()
 {
 	lmapNameID = 0;
-
-	if (gCompilerMode.CUDA || gCompilerMode.Embree)
-	{
-		if (!cuda_setuped || !embree_setuped)
-			Phase("[CUDA,EMBREE] Initialize Devices ...");
-
-		// Se7kills Initialize Device Embree
-#ifdef LCCUDA_BUILD
-		if (gCompilerMode.CUDA && !cuda_setuped)
-		{
-			cuda_setuped = true;
-			GPUTaskinSystem.InitializeGPU();
-		}
-#endif 
-		// На стадии xrMU-Models Нужно !
-		if ((gCompilerMode.CUDA || gCompilerMode.Embree) && !embree_setuped)
-		{
-			embree_setuped = true;
-			InitializeEmbreeDevice();
-		}
-	}
 }
 
 #include "OGF_Face.h"
@@ -202,8 +181,7 @@ void CBuild::Run(const char* P)
 
 	Phase("Building (Level, Build).cform ...");
 	BuildCForm();
- 	mem_Compact();
-
+ 
 	// All lighting + lmaps building and saving
 	Light();
 	RunAfterLight(fs);
@@ -214,8 +192,7 @@ void CBuild::RunAfterLight(IWriter* fs)
 	//****************************************** Convert to OGF
 	Phase("Converting to OGFs...");
 	Flex2OGF();
-	mem_Compact();
-	//****************************************** Export MU-models
+ 	//****************************************** Export MU-models
 	Phase("Converting MU-models to OGFs...");
 	{
 		Status("MU : Models...");
@@ -235,8 +212,7 @@ void CBuild::RunAfterLight(IWriter* fs)
 			export_ogf(*mu_refs()[m]);
 		}
 	}
-	mem_Compact();
-
+ 
 	Status("MU : References...");
 	for (auto mRID = 0; mRID < (mu_refs().size()); mRID++)
 	{
@@ -245,20 +221,17 @@ void CBuild::RunAfterLight(IWriter* fs)
 
 		AditionalData("MU : Refference: %u / %u", mRID, mu_refs().size() );
 	}
-	mem_Compact();
-
+ 
 
 	//****************************************** Build sectors
 	Phase("Building sectors...");
 	BuildSectors();
 	//should be after normals, so that double-sided faces gets separated
 	BuildPortals(*fs);
- 	mem_Compact();
-
+ 
 	//****************************************** Saving MISC stuff
 	Phase("Saving...");
-	mem_Compact();
-	SaveLights(*fs);
+ 	SaveLights(*fs);
 
 	fs->open_chunk(fsL_GLOWS);
  	for (b_glow& G : glows)
