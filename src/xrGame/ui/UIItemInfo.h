@@ -7,7 +7,6 @@ class CUIStatic;
 class CUI3dStatic;
 class CUIScrollView;
 class CUIProgressBar;
-class CUIItemStateDisplay;
 class CUIConditionParams;
 class CUIWpnParams;
 class CUIKnifeParams;
@@ -80,7 +79,7 @@ public:
 	CUIGrenadeParams*		UIGrenadeParams;
 	// legacy
 	CUIStatic*				UICondition;
-	CUIItemStateDisplay*	UICondProgresBar;
+	CUIProgressBar*			UICondProgresBar;
 	CUIProgressBar*			UIFilterCondProgresBar;
 
 	Fvector2			UIItemImageSize; 
