@@ -2963,7 +2963,19 @@ void CWeapon::OnZoomIn()
 	m_bSwitchSprint = false;
 	m_zoom_params.m_bIsZoomModeNow		= true;
 
+	string128 m_aim_cam_in = "camera_effects\\actor_move\\aim_in.anm";
+
 	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+
+	if (pActor != nullptr && HudItemData() != nullptr && m_aim_cam_in != nullptr)
+	{
+		CAnimatorCamEffector* e = new CAnimatorCamEffector();
+		e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
+		e->SetCyclic(false);
+		e->SetHudAffect(true);
+		e->Start(m_aim_cam_in);
+		pActor->Cameras().AddCamEffector(e);
+	}
 
 	if (pActor != nullptr)
 	{
@@ -3018,7 +3030,19 @@ void CWeapon::OnZoomOut()
 	m_fRTZoomFactor = GetZoomFactor();//store current
 	m_zoom_params.m_fCurrentZoomFactor = g_fov;
 
+	string128 m_aim_cam_out = "camera_effects\\actor_move\\aim_out.anm";
+
 	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+
+	if (pActor != nullptr && HudItemData() != nullptr && m_aim_cam_out != nullptr)
+	{
+		CAnimatorCamEffector* e = new CAnimatorCamEffector();
+		e->SetType(ECamEffectorType(Random.randI(32000, 32999)));
+		e->SetCyclic(false);
+		e->SetHudAffect(true);
+		e->Start(m_aim_cam_out);
+		pActor->Cameras().AddCamEffector(e);
+	}
 
 	if (pActor != nullptr)
 	{
