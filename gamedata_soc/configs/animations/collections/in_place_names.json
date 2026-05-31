@@ -1,0 +1,15 @@
+{
+    "Items":
+    [
+        "idle_0",
+        "idle_1",
+        "turn_right_0",
+        "turn_left_0",
+        "turn_right_1",
+        "turn_left_1",
+        "jump_begin",
+        "jump_idle",
+        "jump_end",
+        "jump_end_1"
+    ]
+}
