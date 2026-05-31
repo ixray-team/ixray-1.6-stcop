@@ -696,6 +696,12 @@ public:
 	void StopAllBlendAnms(bool bForce);
 	bool IsBlendAnmActive(const shared_str& name);
 
+	Fmatrix m_attach_offset_watches = Fidentity, m_transform_watches = Fidentity;
+	Fvector m_watches_pos = zero_vel, m_watches_rot = zero_vel;
+	float m_watches_scale = 1.0f;
+	u16 m_watches_bone = BI_NONE;
+	IKinematics* m_model_watches = nullptr;
+
 private:
 	void			update_inertion		(Fmatrix& trans);
 	void			update_additional	(Fmatrix& trans);
