@@ -356,7 +356,7 @@ public:
 	 
 	void TraceRaysNew()
 	{
- 		size_t CurrentWritedRays = LastIndexTask;
+ 		size_t CurrentWritedRays = LastIndexTask; // Size of Rays !
 
   		// Подготавливаем данные на хосте
 		h_params[0] =
