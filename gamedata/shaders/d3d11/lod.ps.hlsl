@@ -50,7 +50,7 @@ void main(in p_bilbord I, out IXRayGbufferPack O)
 	M.Specular = 0.0f;
 #endif
 
-	M.SnowMask = 0.95f;
+	M.MaterialID = FOLIAGE_ID;
 	
 #ifndef DISABLE_MOTION_VECTORS
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;

@@ -90,15 +90,18 @@ void main(p_bumped_new I,
 	M.Material = L_material.w;
 #endif
 
-#ifdef IGNORE_SNOW_MASK
-	M.SnowMask = 0.0f;
-#endif
-
 #ifdef USE_AREF
 	#if !defined(USE_PBR) && defined(USE_TREEWAVE)
 		M.SSS = 1.0f;
 	#endif
-	M.SnowMask = 0.0f;
+#endif
+
+#if defined(USE_TREEWAVE) || defined(USE_AREF)
+	M.MaterialID = FOLIAGE_ID;
+#elif defined(FORWARD_LIGHT)
+	M.MaterialID = OBJECT_ID;
+#else
+	M.MaterialID = BASE_ID;
 #endif
 
 #ifndef DISABLE_MOTION_VECTORS

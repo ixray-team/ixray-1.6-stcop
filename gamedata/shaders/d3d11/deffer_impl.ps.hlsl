@@ -162,11 +162,13 @@ void main(p_bumped_new I, out OutStructure O)
     M.Material = L_material.w;
 #endif
 
-#ifdef IGNORE_SNOW_MASK_ON_TERRAIN
-	M.SnowMask = 0.0f;
-#else
-    M.SnowMask = 1.0f;
-#endif
+// #ifdef IGNORE_SNOW_MASK_ON_TERRAIN
+	// M.MaterialID = BaseID;
+// #else
+    // M.SnowMask = 1.0f;
+// #endif
+
+	M.MaterialID = TERRAIN_ID;
 	
 #ifndef USE_LENGTH_BUFFER
 	#ifndef DISABLE_MOTION_VECTORS
