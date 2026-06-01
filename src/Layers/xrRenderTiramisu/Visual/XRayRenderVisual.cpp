@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "XRayRenderVisual.h"
 
+#include "Resources/LegacyScene/TRenderLegacyScene.h"
+
 CDS0_RenderVisual::CDS0_RenderVisual()
 {
 	Vis.clear();
@@ -23,7 +25,10 @@ void CDS0_RenderVisual::Load(const char* N, IReader* data, u32 dwFlags)
 		R_ASSERT2(hdr.format_version == xrOGF_FormatVersion, "Invalid visual version");
 		
 		Type = hdr.type;
-	//	if (hdr.shader_id)	Shader = GRenderInterface.GetShader(hdr.shader_id);
+		if (hdr.shader_id)
+		{
+			SceneShader = &GRenderResourcesManager->LegacyScene->GetShaders(hdr.shader_id);
+		}
 		Vis.box.set(hdr.bb.min, hdr.bb.max);
 		Vis.sphere.set(hdr.bs.c, hdr.bs.r);
 	}
@@ -61,4 +66,9 @@ vis_data&  CDS0_RenderVisual::getVisData()
 shared_str CDS0_RenderVisual::getDebugName()
 {
 	return DebugName;
+}
+
+bool CDS0_RenderVisual::MakeRenderItem(float LOD,FLegacyVisualRenderItem& RenderItem)
+{
+	return false;
 }

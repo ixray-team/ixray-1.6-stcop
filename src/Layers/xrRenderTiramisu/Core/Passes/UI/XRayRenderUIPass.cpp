@@ -59,9 +59,12 @@ XRayRenderUIPass::XRayRenderUIPass()
 		colorAttachmentDesc.blendEnabled = true;
 		colorAttachmentDesc.colorBlend = { nri::BlendFactor::SRC_ALPHA, nri::BlendFactor::ONE_MINUS_SRC_ALPHA, nri::BlendOp::ADD};
 
-		nri::OutputMergerDesc outputMergerDesc = {};
-		outputMergerDesc.colors = &colorAttachmentDesc;
-		outputMergerDesc.colorNum = 1;
+		nri::OutputMergerDesc OutputMergerDescription = {};
+		OutputMergerDescription.colors = &colorAttachmentDesc;
+		OutputMergerDescription.depthStencilFormat = nri::Format::D24_UNORM_S8_UINT;
+		OutputMergerDescription.depth = {nri::CompareOp::ALWAYS,false,false};
+		OutputMergerDescription.colorNum = 1;
+		
 
 		XRayShaderDefinesContainer ShaderDefinesContainer;
 
@@ -86,7 +89,7 @@ XRayRenderUIPass::XRayRenderUIPass()
 		graphicsPipelineDesc.vertexInput = &vertexInputDesc;
 		graphicsPipelineDesc.inputAssembly = inputAssemblyDesc;
 		graphicsPipelineDesc.rasterization = rasterizationDesc;
-		graphicsPipelineDesc.outputMerger = outputMergerDesc;
+		graphicsPipelineDesc.outputMerger = OutputMergerDescription;
 		graphicsPipelineDesc.shaders = shaderStages;
 		graphicsPipelineDesc.shaderNum = 2;
 		graphicsPipelineDesc.cache = nullptr;
@@ -113,12 +116,12 @@ XRayRenderUIPass::~XRayRenderUIPass()
 void XRayRenderUIPass::Upload(nri::CommandBuffer& CurrentCommandBuffer)
 {
 	g_pGamePersistent->OnRenderPPUI_main();	// PP-UI
+	
+	if (GUIRender.Vertexes.size() >= 16 * 1024* 6)
 	{
-		if (GUIRender.Vertexes.size() >= 64000)
-		{
-			return;
-		}
-
+		return;
+	}
+	{
 		if (FXRayUIVertex* UploadVertexes = static_cast<FXRayUIVertex*>(GRenderDevice.CoreInterface.MapBuffer(*UploadBuffer, 0, nri::WHOLE_SIZE)))
 		{
 			memcpy(UploadVertexes, GUIRender.Vertexes.data(), GUIRender.Vertexes.size() * sizeof(FXRayUIVertex));
@@ -146,41 +149,34 @@ void XRayRenderUIPass::Upload(nri::CommandBuffer& CurrentCommandBuffer)
 
 void XRayRenderUIPass::Render(nri::CommandBuffer& CurrentCommandBuffer)
 {
-	if (GUIRender.Vertexes.size() < 64000)
+	GRenderDevice.CoreInterface.CmdBeginAnnotation(CurrentCommandBuffer,"UI",nri::BGRA_UNUSED);
+	if (GUIRender.Vertexes.size() >= 16 * 1024* 6)
 	{
-		GRenderDevice.CoreInterface.CmdSetPipeline(CurrentCommandBuffer, *Pipeline);
-		GRenderDevice.CoreInterface.CmdSetIndexBuffer(CurrentCommandBuffer, *GRenderResourcesManager->QuadGeometryBuffer, 0, nri::IndexType::UINT16);
-	
-		nri::VertexBufferDesc vertexBufferDesc = {};
-		vertexBufferDesc.buffer = GRenderResourcesManager->QuadGeometryBuffer;
-		vertexBufferDesc.offset = GRenderResourcesManager->QuadGeometryOffset;
-		vertexBufferDesc.stride = sizeof(FXRayUIVertex);
-		GRenderDevice.CoreInterface.CmdSetVertexBuffers(CurrentCommandBuffer, 0, &vertexBufferDesc, 1);
-	
-		
-		GRenderDevice.CoreInterface.CmdDrawIndexed(CurrentCommandBuffer, {6, 1, 0, 0, GRenderResourcesManager->WhiteTexture->GetOrCreateHeapIndex()});
+		GUIRender.Flush();
+		GRenderDevice.CoreInterface.CmdEndAnnotation(CurrentCommandBuffer);
+		return;
 	}
-	if (GUIRender.Vertexes.size() < 64000)
-	{
-		GRenderDevice.CoreInterface.CmdSetPipeline(CurrentCommandBuffer, *Pipeline);
 	
-		nri::VertexBufferDesc VertexBufferDescription = {};
-		VertexBufferDescription.buffer = GeometryBuffer;
-		VertexBufferDescription.offset = 0;
-		VertexBufferDescription.stride = sizeof(FXRayUIVertex);
-		GRenderDevice.CoreInterface.CmdSetVertexBuffers(CurrentCommandBuffer, 0, &VertexBufferDescription, 1);
-		
-		for (const FXRayUIPrimitive& Primitve :GUIRender.Primitivs)
+	GRenderDevice.CoreInterface.CmdSetPipeline(CurrentCommandBuffer, *Pipeline);
+
+	nri::VertexBufferDesc VertexBufferDescription = {};
+	VertexBufferDescription.buffer = GeometryBuffer;
+	VertexBufferDescription.offset = 0;
+	VertexBufferDescription.stride = sizeof(FXRayUIVertex);
+	GRenderDevice.CoreInterface.CmdSetVertexBuffers(CurrentCommandBuffer, 0, &VertexBufferDescription, 1);
+	
+	for (const FXRayUIPrimitive& Primitve :GUIRender.Primitivs)
+	{
+		if (Primitve.VertexCount == 0)
 		{
-			if (Primitve.VertexCount == 0)
-			{
-				continue;
-			}
-			GRenderDevice.CoreInterface.CmdDraw(CurrentCommandBuffer, {Primitve.VertexCount , 1, Primitve.VertexOffset,  Primitve.Texture->GetOrCreateHeapIndex()});
+			continue;
 		}
+		GRenderDevice.CoreInterface.CmdDraw(CurrentCommandBuffer, {Primitve.VertexCount , 1, Primitve.VertexOffset,  Primitve.Texture->GetOrCreateHeapIndex()});
 	}
 	
 	GUIRender.Flush();
+	
+	GRenderDevice.CoreInterface.CmdEndAnnotation(CurrentCommandBuffer);
 }
 
 

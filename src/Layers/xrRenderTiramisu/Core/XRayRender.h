@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "XRayRenderViewport.h"
 
+class TRenderDeferredPass;
 class XRayTexture;
 class XRayRenderTarget2D;
 class XRayTexture2D;
@@ -8,7 +9,8 @@ class XRayRenderUIPass;
 
 struct FXRayRenderConstantBuffer
 {
-    Fvector4 SceneView;
+    Fvector4    SceneView;
+    Fmatrix     ViewProjection;
 };
 
 class XRayRender
@@ -27,7 +29,8 @@ public:
             XRayRenderUIPass*   UIPass = nullptr;
     
     nri::Pipeline*              TestPipeline = nullptr;
-protected:
+
+                            protected:
             void                CreateGlobalConstantBuffer  ();
             void                UpdateGlobalConstantBuffer  ();
     
@@ -49,10 +52,9 @@ protected:
     
     
     XRayRenderTarget2D*         OutputRenderTarget = nullptr;
-    
-    
-    XRayTexture*                TestTexture = nullptr;
-    XRayTexture*                TestTexture2 = nullptr;
+    XRayRenderTarget2D*         DepthRenderTarget = nullptr;
+
+    TRenderDeferredPass*        GeometryPass = nullptr;
 private:
     bool                        IsWaitSubmit = false;
 };

@@ -316,6 +316,10 @@ bool XRayGlobalShadersManager::LoadFromSourceFiles()
 	bResult = bResult && RegisterShader({}, "ui_no_transform", EXRayShaderType::Vertex);
 	bResult = bResult && RegisterShader({}, "ui_screen_transform", EXRayShaderType::Vertex);
 	bResult = bResult && RegisterShader({}, "ui", EXRayShaderType::Pixel);
+	bResult = bResult && RegisterShader({}, "scene_vertex", EXRayShaderType::Vertex);
+	bResult = bResult && RegisterShader({}, "scene_vertex", EXRayShaderType::Pixel);
+	bResult = bResult && RegisterShader({}, "scene_lmap", EXRayShaderType::Vertex);
+	bResult = bResult && RegisterShader({}, "scene_lmap", EXRayShaderType::Pixel);
 	return bResult;
 }
 #endif

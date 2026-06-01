@@ -18,6 +18,7 @@ OutputUI Main
 
     output.InstanceID = NRI_BASE_INSTANCE;
     output.Position.xy = input.Position.xy* ScreenSize.zw*2.f - 1.f;
+    output.Position.y = -output.Position.y;
     output.Position.zw = float2( 0.0, 1.0 );
     output.UV = input.UV;
     output.Color = output.Color;
