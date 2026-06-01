@@ -1751,7 +1751,7 @@ void CWeapon::UpdatePosition(const Fmatrix& trans)
 		XFORM().mul(trans, m_ActiveOffset.GetXFORM());
 	}
 
-	VERIFY				(!fis_zero(DET(renderable.xform)));
+	VERIFY(!fis_zero(DET(renderable.xform)));
 }
 
 void CWeapon::UpdatePosition_alt(const Fmatrix& trans)
@@ -3733,7 +3733,8 @@ float CWeapon::Weight() const
 extern bool hud_adj_crosshair;
 bool CWeapon::show_crosshair()
 {
-	return hud_adj_crosshair || !m_bTacticalLaserStatus && (!IsPending() || GetState() == eEmptyClick || GetState() == eSprintStart || GetState() == eSprintEnd || GetState() == ePump || GetState() == eSafemodeSwitch) && (!IsZoomed() || !ZoomHideCrosshair());
+	const u8 NextState = GetNextState();
+	return hud_adj_crosshair || !m_bTacticalLaserStatus && (!IsPending() || NextState == eEmptyClick || NextState == eSprintStart || NextState == eSprintEnd || NextState == ePump || NextState == eSafemodeSwitch) && NextState != eHidden && (!IsZoomed() || !ZoomHideCrosshair());
 }
 
 bool CWeapon::use_crosshair() const
