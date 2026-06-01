@@ -2,7 +2,9 @@
 
 #include <RedImage/RedImage.hpp>
 
+#include "TRenderResourcesFlusher.h"
 #include "XRayRenderVertexTypes.h"
+#include "LegacyScene/TRenderLegacyScene.h"
 #include "Shaders/Defines/XRayShaderDefinesManager.h"
 #include "Shaders/Global/XRayGlobalShadersManager.h"
 
@@ -57,8 +59,8 @@ void XRayRenderResourcesManager::CreateQuadBuffer()
 		ResourceGroupDesc.buffers = &QuadGeometryBuffer;
 		ResourceGroupDesc.textureNum = 0;
 
-		QuadGeometryMemoryAllocations.resize(1 + GRenderDevice.HelperInterface.CalculateAllocationNumber(*GRenderDevice.Device, ResourceGroupDesc), nullptr);
-		NRI_CHECK(GRenderDevice.HelperInterface.AllocateAndBindMemory(*GRenderDevice.Device, ResourceGroupDesc, QuadGeometryMemoryAllocations.data() + 1));
+		VERIFY(GRenderDevice.HelperInterface.CalculateAllocationNumber(*GRenderDevice.Device, ResourceGroupDesc) == 1);
+		NRI_CHECK(GRenderDevice.HelperInterface.AllocateAndBindMemory(*GRenderDevice.Device, ResourceGroupDesc, &QuadGeometryBufferMemory));
 	}
 	xr_vector<uint8_t> geometryBufferData(IndexDataAlignedSize + VertexDataSize);
 	memcpy(&geometryBufferData[0], QuadIndexData, IndexDataSize);
@@ -140,21 +142,23 @@ XRayRenderResourcesManager::XRayRenderResourcesManager()
 
 XRayRenderResourcesManager::~XRayRenderResourcesManager()
 {
-	delete WhiteTexture;
-	delete BlackTexture;
+	delete LegacyScene;
 	delete TexturesManager;
 	delete DescriptorHeapAllocator;
 	delete GlobalShadersManager;
 	delete ShaderDefinesManager;
+	delete WhiteTexture;
+	delete BlackTexture;
+	delete ResourcesFlusher;
 	
 	if (QuadGeometryBuffer)
 	{
 		GRenderDevice.CoreInterface.DestroyBuffer(QuadGeometryBuffer);
 	}
 	
-	for ( nri::Memory* GeometryMemory : QuadGeometryMemoryAllocations)
+	if ( QuadGeometryBufferMemory)
 	{
-		GRenderDevice.CoreInterface.FreeMemory(GeometryMemory);
+		GRenderDevice.CoreInterface.FreeMemory(QuadGeometryBufferMemory);
 	}
 	
 	if (GlobalPipelineLayout)
@@ -177,10 +181,6 @@ XRayRenderResourcesManager::~XRayRenderResourcesManager()
 void XRayRenderResourcesManager::Initialize()
 {
 	VERIFY(ShaderDefinesManager == nullptr && GlobalShadersManager == nullptr);
-	ShaderDefinesManager = new XRayShaderDefinesManager; 
-	GlobalShadersManager = new XRayGlobalShadersManager(GRenderDevice.GraphicsApi,true,true);
-	DescriptorHeapAllocator = new XRayRenderDescriptorHeapAllocator;
-	TexturesManager = new XRayTexturesManager;
 	
 	{
 		BlackTexture = new XRayTexture2D;
@@ -196,12 +196,24 @@ void XRayRenderResourcesManager::Initialize()
 		WhiteImage.Fill({1.f,1.f,1.f,1.f});
 		R_ASSERT(WhiteTexture->LoadFromImage(WhiteImage,false));
 	}
-	
+	ResourcesFlusher = new TRenderResourcesFlusher;
+	ShaderDefinesManager = new XRayShaderDefinesManager; 
+	GlobalShadersManager = new XRayGlobalShadersManager(GRenderDevice.GraphicsApi,true,true);
+	DescriptorHeapAllocator = new XRayRenderDescriptorHeapAllocator;
+	TexturesManager = new XRayTexturesManager;
+	LegacyScene = new TRenderLegacyScene;
 }
 
 bool XRayRenderResourcesManager::IsCookedMode()
 {
 	return false;
+}
+
+void XRayRenderResourcesManager::FlushNextFrame()
+{
+	TexturesManager->FlushNextFrame();
+	ResourcesFlusher->FlushNextFrame();
+	DescriptorHeapAllocator->FlushNextFrame();
 }
 
 XRayRenderResourcesManager* GRenderResourcesManager = nullptr;

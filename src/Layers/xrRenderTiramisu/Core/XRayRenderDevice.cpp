@@ -11,7 +11,7 @@ XRayRenderDevice::~XRayRenderDevice()
 
 void XRayRenderDevice::Initialize()
 {
-	GraphicsApi = nri::GraphicsAPI::D3D12;
+	GraphicsApi = nri::GraphicsAPI::VK;
 	nri::AdapterDesc CurrentAdapterDescription = GetBestAdapterDescription();
     // Settings
     constexpr bool D3D11_ENABLE_COMMAND_BUFFER_EMULATION = false;

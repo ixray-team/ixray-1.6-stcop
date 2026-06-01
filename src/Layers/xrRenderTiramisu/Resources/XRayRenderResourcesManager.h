@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "XRayRenderDescriptorHeapAllocator.h"
 
+class TRenderResourcesFlusher;
+class TRenderLegacyScene;
 class XRayGlobalShadersManager;
 class XRayShaderDefinesManager;
 
@@ -11,6 +13,7 @@ public:
                                             ~XRayRenderResourcesManager ();
         void                                Initialize                  ();
         bool                                IsCookedMode                ();
+        void                                FlushNextFrame              (); 
         
     
     nri::DescriptorPool*                    GlobalDescriptorPool    = nullptr;
@@ -22,6 +25,8 @@ public:
     XRayGlobalShadersManager*               GlobalShadersManager = nullptr;
     XRayRenderDescriptorHeapAllocator*      DescriptorHeapAllocator = nullptr;
     XRayTexturesManager*                    TexturesManager = nullptr;
+    TRenderLegacyScene*                     LegacyScene = nullptr;
+    TRenderResourcesFlusher*                ResourcesFlusher = nullptr;
     
     nri::Buffer*                            QuadGeometryBuffer = nullptr;
     uint64_t                                QuadGeometryOffset = 0; 
@@ -34,7 +39,7 @@ private:
     
     nri::Descriptor*                        LinearSampler = nullptr;
     
-    xr_vector<nri::Memory*>                 QuadGeometryMemoryAllocations;
+    nri::Memory*                            QuadGeometryBufferMemory = nullptr;
     
 };
 extern XRayRenderResourcesManager* GRenderResourcesManager;

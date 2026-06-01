@@ -109,10 +109,6 @@ public:
 	virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
 
 private:
-		void			LoadBuffers	(CStreamReader* fs);
-		void			LoadVisuals	(IReader* fs);
-		void			LoadSectors	(IReader* fs);
-		void			LoadSWIs	(CStreamReader* base_fs);
 	
 	
 };

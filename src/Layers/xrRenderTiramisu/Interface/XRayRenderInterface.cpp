@@ -5,6 +5,7 @@
 #include "Light/XRayRenderGlow.h"
 #include "Light/XRayObjectSpecific.h"
 #include "Resources/XRayRenderResourcesManager.h"
+#include "Resources/LegacyScene/TRenderLegacyScene.h"
 #include "src/xrCore/stream_reader.h"
 #include "src/xrEngine/IGame_Persistent.h"
 #include "src/xrEngine/xrLevel.h"
@@ -60,52 +61,12 @@ void CDS0_RenderInterface::reset_end()
 
 void CDS0_RenderInterface::level_Load(IReader* fs)
 {
-	R_ASSERT(g_pGamePersistent);
-	IReader* chunk;
-	{
-		chunk = fs->open_chunk(fsL_SHADERS);
-		R_ASSERT2(chunk, "Level doesn't builded correctly.");
-		u32 count = chunk->r_u32();
-		//m_Shader.resize(count);
-		for (u32 i = 0; i < count; i++)	// skip first shader as "reserved" one
-		{
-			string512				n_sh, n_tlist;
-			LPCSTR			n = LPCSTR(chunk->pointer());
-			chunk->skip_stringZ();
-			if (0 == n[0])			continue;
-			xr_strcpy(n_sh, n);
-			LPSTR			delim = strchr(n_sh, '/');
-			*delim = 0;
-			xr_strcpy(n_tlist, delim + 1);
-			Msg("Level shader:%s", n_sh);
-			//GResourcesManager->CompileBlender(m_Shader[i], n_sh, n_tlist);
-		}
-		chunk->close();
-	}
-	{
-		g_pGamePersistent->LoadTitle("st_loading_geometry");
-		g_pGamePersistent->LoadTitle();
-		CStreamReader* geom = FS.rs_open("$level$", "level.geom");
-		R_ASSERT2(geom, "level.geom");
-		LoadBuffers(geom);
-		LoadSWIs(geom);
-		FS.r_close(geom);
-
-		// Visuals
-		g_pGamePersistent->LoadTitle("st_loading_spatial_db");
-		g_pGamePersistent->LoadTitle();
-		chunk = fs->open_chunk(fsL_VISUALS);
-		LoadVisuals(chunk);
-		chunk->close();
-	}
-	LoadSectors(fs);
-
-	// HOM.Load();
-	// GRenderTarget->LoadLevel();
+	GRenderResourcesManager->LegacyScene->LoadLevel(fs);
 }
 
 void CDS0_RenderInterface::level_Unload()
 {
+	GRenderResourcesManager->LegacyScene->Clear();
 }
 
 HRESULT CDS0_RenderInterface::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags, void*& result)
@@ -359,80 +320,12 @@ void CDS0_RenderInterface::OnFrame()
 
 void CDS0_RenderInterface::Calculate()
 {
+	if (GRenderResourcesManager->LegacyScene)
+	{
+		GRenderResourcesManager->LegacyScene->Calculate();
+	}
 }
 
 void CDS0_RenderInterface::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer)
-{
-}
-
-void CDS0_RenderInterface::LoadBuffers(CStreamReader* base_fs)
-{
-	// if (base_fs->find_chunk(fsL_VB))
-	// {
-	// 	// Use DX9-style declarators
-	// 	auto* fs = base_fs->open_chunk(fsL_VB);
-	// 	u32 count = fs->r_u32();
-	// 	m_VertexState.resize(count);
-	// 	m_VertexBuffer.resize(count);
-	// 	for (u32 i = 0; i < count; i++)
-	// 	{
-	// 		u32					buffer_size = (64 + 1) * sizeof(D3DVERTEXELEMEN_D3D9);
-	// 		D3DVERTEXELEMEN_D3D9* dcl = (D3DVERTEXELEMEN_D3D9*)_alloca(buffer_size);
-	// 		fs->r(dcl, buffer_size);
-	// 		fs->advance(-(int)buffer_size);
-	// 		fs->advance(GetSize(dcl));
-	//
-	// 		m_VertexState[i] = ConvertFVF(dcl);
-	// 		u32 vCount = fs->r_u32();
-	// 		u32 vSize = GResourcesManager->GetStride(m_VertexState[i]);
-	// 		Msg("* [Loading VB] %d verts, %d Kb", vCount, (vCount * vSize) / 1024);
-	//
-	// 		u8* pData = xr_alloc<u8>(vCount * vSize);
-	// 		fs->r(pData, vCount * vSize);
-	// 		m_VertexBuffer[i] = BearRenderInterface::CreateVertexBuffer();
-	// 		m_VertexBuffer[i]->Create(vSize, vCount, false, pData);
-	// 		xr_free(pData);
-	//
-	// 	}
-	// 	fs->close();
-	// }
-	// else {
-	// 	FATAL("DX7-style FVFs unsupported");
-	// }
-	// if (base_fs->find_chunk(fsL_IB))
-	// {
-	// 	auto* fs = base_fs->open_chunk(fsL_IB);
-	// 	u32 count = fs->r_u32();
-	// 	m_IndexBuffers.resize(count);
-	// 	for (u32 i = 0; i < count; i++)
-	// 	{
-	// 		u32 iCount = fs->r_u32();
-	// 		Msg("* [Loading IB] %d indices, %d Kb", iCount, (iCount * 2) / 1024);
-	//
-	// 		u32* pData = xr_alloc<u32>(iCount);
-	// 		fs->r(pData, iCount * 2);
-	// 		u16* srcData = (u16*)pData;
-	//
-	// 		for (u32 a = iCount; a != 0; a--)
-	// 		{
-	// 			pData[a - 1] = srcData[a - 1];
-	// 		}
-	// 		m_IndexBuffers[i] = BearRenderInterface::CreateIndexBuffer();
-	// 		m_IndexBuffers[i]->Create(iCount, true, pData);
-	// 		xr_free(pData);
-	// 	}
-	// 	fs->close();
-	// }
-}
-
-void CDS0_RenderInterface::LoadVisuals(IReader* fs)
-{
-}
-
-void CDS0_RenderInterface::LoadSectors(IReader* fs)
-{
-}
-
-void CDS0_RenderInterface::LoadSWIs(CStreamReader* base_fs)
 {
 }
