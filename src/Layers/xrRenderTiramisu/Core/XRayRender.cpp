@@ -217,19 +217,6 @@ void XRayRender::Submit(XRayRenderViewport* ToViewport)
         
         nri::CommandBuffer& CommandBuffer = ToViewport->GetCurrentCommandBuffer();
         
-        {
-            nri::TextureBarrierDesc TextureBarrierDescription = {};
-            TextureBarrierDescription.texture = OutputRenderTarget->Texture;
-            OutputRenderTarget->SetNewAccessLayoutStage(TextureBarrierDescription,{nri::AccessBits::SHADER_RESOURCE, nri::Layout::SHADER_RESOURCE});
-            TextureBarrierDescription.layerNum = 1;
-            TextureBarrierDescription.mipNum = 1;
-        
-            nri::BarrierDesc BarrierDescription = {};
-            BarrierDescription.textureNum = 1;
-            BarrierDescription.textures  = &TextureBarrierDescription;
-            GRenderDevice.CoreInterface.CmdBarrier(CommandBuffer,BarrierDescription);
-        }
-        
         GRenderDevice.CoreInterface.CmdSetPipelineLayout(CommandBuffer, nri::BindPoint::GRAPHICS, *GRenderResourcesManager->GlobalPipelineLayout);
        
         {
@@ -259,7 +246,7 @@ void XRayRender::Submit(XRayRenderViewport* ToViewport)
         
         GRenderDevice.CoreInterface.CmdDrawIndexed(CommandBuffer, {6, 1, 0, 0, OutputRenderTarget->GetOrCreateHeapIndex()});
     }
-    ToViewport->EndRender(SignalSemaphore,WaitSemaphore);
+    ToViewport->EndRender(SignalSemaphore, nullptr);
     IsWaitSubmit = false;
 }
 
@@ -335,23 +322,29 @@ void XRayRender::Render()
         
        
         GRenderDevice.CoreInterface.CmdEndRendering(CurrentCommandBuffer);
+        {
+            nri::TextureBarrierDesc TextureBarrierDescription = {};
+            TextureBarrierDescription.texture = OutputRenderTarget->Texture;
+            TextureBarrierDescription.layerNum = 1;
+            TextureBarrierDescription.mipNum = 1;
+            OutputRenderTarget->SetNewAccessLayoutStage(TextureBarrierDescription, {nri::AccessBits::SHADER_RESOURCE, nri::Layout::SHADER_RESOURCE});
+
+            nri::BarrierDesc BarrierDescription = {};
+            BarrierDescription.textureNum = 1;
+            BarrierDescription.textures = &TextureBarrierDescription;
+            GRenderDevice.CoreInterface.CmdBarrier(CurrentCommandBuffer, BarrierDescription);
+        }
     }
     
     GRenderDevice.CoreInterface.EndCommandBuffer(CurrentCommandBuffer);
     
     {
-        nri::FenceSubmitDesc WaitFencesSubmitDescription[2] = {};
-        WaitFencesSubmitDescription[0].fence = WaitSemaphore;
-        WaitFencesSubmitDescription[0].stages = nri::StageBits::COLOR_ATTACHMENT;
-
         nri::FenceSubmitDesc SignalFencesSubmitDescription[2] = {};
         SignalFencesSubmitDescription[0].fence = SignalSemaphore;
         SignalFencesSubmitDescription[1].fence = FrameFence;
         SignalFencesSubmitDescription[1].value = ++FrameIndex;
         
         nri::QueueSubmitDesc QueueSubmitDescription = {};
-        QueueSubmitDescription.waitFences = WaitFencesSubmitDescription;
-        QueueSubmitDescription.waitFenceNum = 1;
 		
         QueueSubmitDescription.commandBuffers = &QueuedFrame.CommandBuffer;
         QueueSubmitDescription.commandBufferNum = 1;
@@ -367,15 +360,14 @@ void XRayRender::Render()
 
 void XRayRender::WaitGPU()
 {
-    if (FrameFence)
-    {
-        GRenderDevice.CoreInterface.Wait(*FrameFence, FrameIndex);
-    }
     GRenderDevice.CoreInterface.QueueWaitIdle(GRenderDevice.GraphicsQueue);
-    
-    GRenderResourcesManager->DescriptorHeapAllocator->FlushNextFrame();
-    GRenderResourcesManager->DescriptorHeapAllocator->UpdateDescriptorRanges();
-    GRenderResourcesManager->TexturesManager->FlushNextFrame();
+
+    if (GRenderResourcesManager)
+    {
+        GRenderResourcesManager->DescriptorHeapAllocator->FlushNextFrame();
+        GRenderResourcesManager->DescriptorHeapAllocator->UpdateDescriptorRanges();
+        GRenderResourcesManager->TexturesManager->FlushNextFrame();
+    }
 }
 
 void XRayRender::ResizeRenderTarget(uint32_t InWidth, uint32_t InHeight)
