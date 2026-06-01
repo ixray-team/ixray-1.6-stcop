@@ -225,18 +225,17 @@ void DrawLCConfig()
 		ImGui::Separator();
 
 		ImGui::BeginDisabled(!gCompilerMode.LC);
-
- 		ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
-		ImGui::Checkbox("No Smooth Group", &gCompilerMode.LC_NoSMG);
-		ImGui::Checkbox("Noise", &gCompilerMode.LC_Noise);
+ 		ImGui::Checkbox("No Smooth Group", &gCompilerMode.LC_NoSMG);
 		ImGui::Checkbox("Tesselation", &gCompilerMode.LC_Tess);
 		ImGui::Checkbox("Skip invalid faces", &gCompilerMode.LC_SkipInvalidFaces);
-
-		ImGui::Checkbox("Skip Subdivide", &gCompilerMode.LC_NoSubdivide);
-		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
-		ImGui::Checkbox("Skip Tangent", &gCompilerMode.LC_SkipTangent);
-
+ 		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
 		ImGui::Separator();
+
+ 		ImGui::Text( "OGF Optimize: " );
+ 		ImGui::Checkbox("Make TangentBasis", &gCompilerMode.LC_OGF_TANGENT);
+		ImGui::Checkbox("Make Progressive",  &gCompilerMode.LC_OGF_PROGRESSIVE);
+		ImGui::Checkbox("Make Striptify",    &gCompilerMode.LC_OGF_STRIPTIFY);
+ 		ImGui::Separator();
 
 		ImGui::PushID("geom");
 		ImGui::Text("Geom format:");
@@ -301,6 +300,7 @@ void DrawLCConfig()
 		}
   		ImGui::Checkbox("SoC LMaps", &gCompilerMode.LC_legacyLM);
 		ImGui::Checkbox("Skip Static map", &gCompilerMode.LC_SkipStaticMap);
+		ImGui::Checkbox("Skip Sun",        &gCompilerMode.LC_NoSun);
 
 		ImGui::EndDisabled();
 		
