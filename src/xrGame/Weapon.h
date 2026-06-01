@@ -416,6 +416,7 @@ protected:
 	bool m_bUseMosinScheme = false;
 	bool m_AlterZoomAllowed = false;
 	bool m_bAllowSafemode = false;
+	bool m_bAimActions = false;
 
 	bool m_bHaveShell = false;
 	bool m_bNeedPumpState = false;
