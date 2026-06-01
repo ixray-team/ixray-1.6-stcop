@@ -1347,6 +1347,110 @@ player_hud::player_hud(bool invert)
 	}
 }
 
+bool player_hud::HasWatchesBone(const shared_str& boneName) const
+{
+	if (m_model_watches == nullptr)
+	{
+		return false;
+	}
+
+	return m_model_watches->LL_BoneID(boneName) != BI_NONE;
+}
+
+void player_hud::SWatchesBones::Reset()
+{
+	watchHud = BI_NONE;
+	watchUi = BI_NONE;
+	watchHandsH = BI_NONE;
+	watchHandsM = BI_NONE;
+	watchHandsS = BI_NONE;
+	watchLcdHh = BI_NONE;
+	watchLcdHl = BI_NONE;
+	watchLcdMh = BI_NONE;
+	watchLcdMl = BI_NONE;
+	watchTritium = BI_NONE;
+	hasLcdSlots = false;
+}
+
+void player_hud::SWatchesBones::Cache(IKinematics* model)
+{
+	Reset();
+	if (model == nullptr)
+	{
+		return;
+	}
+
+	watchHud = model->LL_BoneID("watch_hud");
+	watchUi = model->LL_BoneID("watch_ui");
+	watchHandsH = model->LL_BoneID("watch_hands_h");
+	watchHandsM = model->LL_BoneID("watch_hands_m");
+	watchHandsS = model->LL_BoneID("watch_hands_s");
+	watchLcdHh = model->LL_BoneID("watch_lcd_hh");
+	watchLcdHl = model->LL_BoneID("watch_lcd_hl");
+	watchLcdMh = model->LL_BoneID("watch_lcd_mh");
+	watchLcdMl = model->LL_BoneID("watch_lcd_ml");
+	watchTritium = model->LL_BoneID("watch_tritium");
+	hasLcdSlots = watchLcdHh != BI_NONE;
+}
+
+void player_hud::CacheWatchesBones()
+{
+	m_watchesBones.Cache(m_model_watches);
+}
+
+void player_hud::SetWatchesBoneVisibleById(u16 boneId, bool visible)
+{
+	if (m_model_watches == nullptr || boneId == BI_NONE)
+	{
+		return;
+	}
+
+	if (m_model_watches->LL_GetBoneVisible(boneId) != visible)
+	{
+		m_model_watches->LL_SetBoneVisible(boneId, visible, false);
+	}
+}
+
+void player_hud::SetWatchesBoneVisible(const shared_str& boneName, bool visible, bool silent)
+{
+	if (m_model_watches == nullptr)
+	{
+		return;
+	}
+
+	const u16 boneId = m_model_watches->LL_BoneID(boneName);
+	if (boneId == BI_NONE)
+	{
+		if (!silent)
+		{
+			R_ASSERT2(0, make_string<const char*>("watches model has no bone [%s]", boneName.c_str()));
+		}
+
+		return;
+	}
+
+	SetWatchesBoneVisibleById(boneId, visible);
+}
+
+void player_hud::ApplyWatchesBoneVisibility(bool showAnalog, bool showLcd, bool hideStaticDialForLcd)
+{
+	if (m_model_watches == nullptr)
+	{
+		return;
+	}
+
+	SetWatchesBoneVisibleById(m_watchesBones.watchHud, true);
+	SetWatchesBoneVisibleById(m_watchesBones.watchUi, !hideStaticDialForLcd);
+	SetWatchesBoneVisibleById(m_watchesBones.watchHandsH, showAnalog);
+	SetWatchesBoneVisibleById(m_watchesBones.watchHandsM, showAnalog);
+	SetWatchesBoneVisibleById(m_watchesBones.watchHandsS, showAnalog);
+	SetWatchesBoneVisibleById(m_watchesBones.watchLcdHh, showLcd);
+	SetWatchesBoneVisibleById(m_watchesBones.watchLcdHl, showLcd);
+	SetWatchesBoneVisibleById(m_watchesBones.watchLcdMh, showLcd);
+	SetWatchesBoneVisibleById(m_watchesBones.watchLcdMl, showLcd);
+	SetWatchesBoneVisibleById(m_watchesBones.watchTritium, false);
+}
+
 player_hud::~player_hud()
 {
 	IRenderVisual* v			= m_model->dcast_RenderVisual();
@@ -1408,6 +1512,7 @@ void player_hud::load(const shared_str& player_hud_sect)
 	{
 		IRenderVisual* v = m_model_watches->dcast_RenderVisual();
 		::Render->model_Delete(v);
+		m_model_watches = nullptr;
 	}
 
 	m_sect_name = player_hud_sect;
@@ -1430,6 +1535,24 @@ void player_hud::load(const shared_str& player_hud_sect)
 		pSettings->read_if_exists<Fvector>(m_watches_pos, player_hud_sect, "watches_pos");
 		pSettings->read_if_exists<Fvector>(m_watches_rot, player_hud_sect, "watches_rot");
 		pSettings->read_if_exists<float>(m_watches_scale, player_hud_sect, "watches_scale");
+
+		SetWatchesBoneVisible("watch_hud", true, true);
+		SetWatchesBoneVisible("watch_ui", true, true);
+		CacheWatchesBones();
+
+		if (m_model_watches != nullptr)
+		{
+			Render->wristwatch_reset_model(clocks_name);
+		}
+	}
+	else
+	{
+		m_model_watches = nullptr;
+		m_watches_bone = BI_NONE;
+		m_watches_pos = zero_vel;
+		m_watches_rot = zero_vel;
+		m_watches_scale = 1.0f;
+		m_watchesBones.Reset();
 	}
 
 	u16 bone_r_finger0 = m_model->dcast_PKinematics()->LL_BoneID("r_finger0");

@@ -297,6 +297,10 @@ public:
 	virtual void					models_Prefetch			()											{};
 	virtual void					models_Clear			(bool b_complete)							{};
 
+	// Wristwatch HUD display mode (runtime shader swap on watches model)
+	virtual void					wristwatch_reset_model(const shared_str& modelPath) {}
+	virtual void					wristwatch_apply_display_shaders(u8 displayType, IKinematics* watchesModel) {}
+
 	// Occlusion culling
 	virtual bool					occ_visible				(vis_data&	V)								{return false;};
 	virtual bool					occ_visible				(Fbox&		B)								{return false;};

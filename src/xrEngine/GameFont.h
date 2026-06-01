@@ -256,6 +256,7 @@ public:
 	}
 
 	const Glyph* GetGlyphInfo(int ch);
+	bool GetAtlasTexSize(u32& outW, u32& outH) const;
 
 	// returns symbol width in pixels
 	float WidthOf(int ch);
