@@ -288,6 +288,18 @@ public:
 		sf_holster_jam_w_gl = (1 << 13),
 		sf_draw_jam_g = (1 << 14),
 		sf_holster_jam_g = (1 << 15),
+		sf_chamber_check_empty = (1 << 16),
+		sf_pump_aim = (1 << 17),
+		sf_pump_last = (1 << 18),
+		sf_pump_aim_last = (1 << 10),
+		sf_pump_empty = (1 << 20),
+		sf_pump_aim_empty = (1 << 21),
+		sf_bore_empty = (1 << 22),
+		sf_bore_jammed = (1 << 23),
+		sf_sprint_start = (1 << 24),
+		sf_sprint_end = (1 << 25),
+		sf_safemode_in_out = (1 << 26),
+		sf_mag_shot = (1 << 27),
 	};
 
 	Flags32 m_eDevicesFlags;

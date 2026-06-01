@@ -408,6 +408,12 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 	{
 		m_sounds.LoadSound(section, "snd_firemode_check", "sndFiremodeCheck", false, m_eSoundReload);
 	}
+
+	if (SoundExist(section, "snd_mag_shot"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_mag_shot, true);
+		m_sounds.LoadSound(section, "snd_mag_shot", "sndMagShot", true, m_eSoundEmptyClick);
+	}
 }
 
 void CWeaponMagazined::FireStart()
@@ -1331,16 +1337,19 @@ void CWeaponMagazined::SelectShotSound()
 
 	m_layered_sounds.PlaySound(m_sSndShotCurrent.c_str(), get_LastFP(), H_Parent(), !!GetHUDmode(), false, true);
 
-	float fAmmoElapsed = (float)get_elapsed;
-	float fmaxMagazineSize_ = GetMagCapacity() + iChamberSize;
-	float factor = fAmmoElapsed / (fmaxMagazineSize_ / 3.0f);
-	if (factor <= 1.0f)
+	if (m_eSoundsFlags2.test(ESoundsFlags2::sf_mag_shot))
 	{
-		clamp(factor, 0.0f, 1.0f);
-		factor = 1.0f - factor;
-		HUD_SOUND_ITEM::SetHudSndGlobalVolumeFactor(factor);
-		PlaySound("sndMagShot", get_LastFP());
-		HUD_SOUND_ITEM::SetHudSndGlobalVolumeFactor(1.0f);
+		float fAmmoElapsed = (float)get_elapsed;
+		float fmaxMagazineSize_ = GetMagCapacity() + iChamberSize;
+		float factor = fAmmoElapsed / (fmaxMagazineSize_ / 3.0f);
+		if (factor <= 1.0f)
+		{
+			clamp(factor, 0.0f, 1.0f);
+			factor = 1.0f - factor;
+			HUD_SOUND_ITEM::SetHudSndGlobalVolumeFactor(factor);
+			PlaySound("sndMagShot", get_LastFP());
+			HUD_SOUND_ITEM::SetHudSndGlobalVolumeFactor(1.0f);
+		}
 	}
 
 	if (m_eSoundsFlags.test(ESoundsFlags::sf_breechblock))
