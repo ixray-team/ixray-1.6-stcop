@@ -234,7 +234,7 @@ void CBuild::xrPhase_MergeLM()
 		CLightmap* lmap = new CLightmap();
 		lc_global_data()->lightmaps().push_back(lmap);
     	
-		if (!gCompilerMode.LC_fast_way)
+		if (gCompilerMode.LC_fast_way)
 		{
 			std::sort(Layer.begin(), Layer.end(), [](CDeflector* d1, CDeflector* d2) {return d1->layer.height < d1->layer.height; });
  			TotalMerged += MergeLmapFast(Layer, lmap);
