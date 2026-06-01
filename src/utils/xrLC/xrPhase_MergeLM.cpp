@@ -131,9 +131,84 @@ u32 MergeLmap_Compact(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 		}
 	});
 
-	Progress(1.f);
-	return MergedCount;
+	Layer.erase(
+		std::remove_if(Layer.begin(), Layer.end(),
+			[](CDeflector* D)
+			{
+				if (D == nullptr)return true;
+				if (D->bMerged) return true;
+				return false;
+			}), Layer.end()
+	);
+  	return MergedCount;
 }
+ 
+u32 MergeLmapFast(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
+{
+	u32 BORDER = gCompilerMode.LC_BORDER;
+
+	u32 OFFSET_SHIFT = 2;
+	u32 OFFSET_START = (2 * BORDER) + OFFSET_SHIFT;
+
+	int _X = OFFSET_START, _Y = OFFSET_START;
+	int _Max_y = 0;
+	u32 MERGED = 0;
+
+	u32 LMSIZE = gCompilerMode.LC_sizeLmaps;
+	for (int it = 0; it < Layer.size(); it++)
+	{
+		if (Layer[it]->bMerged) continue;
+
+		if (_Y > LMSIZE - 32) break;
+
+		lm_layer& L = Layer[it]->layer;
+
+		u32 WIDTH = L.width + (2 * BORDER);
+		u32 HEIGHT = L.height + (2 * BORDER);
+
+		if (_Max_y < HEIGHT)
+			_Max_y = HEIGHT;
+
+		if (_X + WIDTH > LMSIZE - 32)
+		{
+			_X = OFFSET_START;				// Ставим как стартовый
+			_Y += _Max_y + OFFSET_SHIFT;	// Офсетаем не как стартовый
+			_Max_y = 0;
+		}
+
+		L_rect		rT, rS;
+		rS.a.set(_X, _Y);
+		rS.b.set(_X + WIDTH, _Y + HEIGHT);
+		rS.iArea = L.Area();
+		rT = rS;
+
+		// Нужен только в оригенальной LMerge
+		bool		bRotated = false;
+		if (_Y < LMSIZE - HEIGHT)
+		{
+			lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
+			Layer[it]->bMerged = true;
+			Layer[it]->layer.clear_memory();
+			MERGED++;
+		}
+
+		_X += WIDTH + OFFSET_SHIFT; // Офсетаем как стартовый
+	}
+ 
+	// Удаляем то что сделали !
+	Layer.erase(
+		std::remove_if(Layer.begin(), Layer.end(),
+			[](CDeflector* D)
+			{
+				if (D == nullptr)return true;
+				if (D->bMerged) return true;
+				return false;
+			}), Layer.end()
+	);
+
+	return MERGED;
+}
+
 
 void CBuild::xrPhase_MergeLM()
 {
@@ -146,7 +221,6 @@ void CBuild::xrPhase_MergeLM()
  	for (auto D : Layer)
  		materials()[D->GetBaseMaterial()].internal_max_area = std::max(D->layer.Area(), materials()[D->GetBaseMaterial()].internal_max_area);
 	
- 	std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);
 
 	// Merge this layer (which left unmerged)
 	u32 StartSize   = Layer.size();
@@ -159,21 +233,24 @@ void CBuild::xrPhase_MergeLM()
  
 		CLightmap* lmap = new CLightmap();
 		lc_global_data()->lightmaps().push_back(lmap);
-    	placer_perpixel._InitSurface();
- 		
-		// Startup
-  		TotalMerged				+= MergeLmap_Compact(Layer, lmap);
+    	
+		if (!gCompilerMode.LC_fast_way)
+		{
+			std::sort(Layer.begin(), Layer.end(), [](CDeflector* d1, CDeflector* d2) {return d1->layer.height < d1->layer.height; });
+ 			TotalMerged += MergeLmapFast(Layer, lmap);
+		}
+		else
+		{
+			std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);
 
-		// Remove merged lightmaps
-		Layer.erase(
-			std::remove_if(Layer.begin(), Layer.end(), [](CDeflector* D) { return D == nullptr || D->bMerged; }),
-			Layer.end()
-		);
-
+			placer_perpixel._InitSurface();
+ 			TotalMerged += MergeLmap_Compact(Layer, lmap);
+		}
+		 
  		lmap->Save(pBuild->path);
-		Progress(float(TotalMerged / float(StartSize)));
-
-  		clMsg("* [Lightmap: %u] : Merging:[%u/%u]  Time(%u ms)",
+		Progress(1);
+ 
+		clMsg("* [Lightmap: %u] : Merging:[%u/%u]  Time(%u ms)",
 			lc_global_data()->lightmaps().size(), 
 			TotalMerged, StartSize, 
 			tStats.GetElapsed_ms()
