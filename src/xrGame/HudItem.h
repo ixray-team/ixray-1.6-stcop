@@ -324,6 +324,7 @@ public:
 		sf_sprint_start = (1 << 24),
 		sf_sprint_end = (1 << 25),
 		sf_safemode_in_out = (1 << 26),
+		sf_mag_shot = (1 << 27),
 	};
 
 	Flags32 m_eDevicesFlags;
