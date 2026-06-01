@@ -18,7 +18,6 @@ void CDS0_FontRender::Initialize(LPCSTR cShader, LPCSTR cTexture)
 void CDS0_FontRender::OnRender(CGameFont& owner)
 {
 
-	
 }
 
 void CDS0_FontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap)
