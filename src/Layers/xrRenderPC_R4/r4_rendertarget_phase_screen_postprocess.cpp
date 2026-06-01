@@ -108,5 +108,6 @@ void CRenderTarget::PhaseWinter()
 {
 	RCache.set_xform_world(Fidentity);
 	RCache.set_xform_world_old(Fidentity);
+
 	RenderEffect(ScreenPostProcessType::Winter, false);
 }
