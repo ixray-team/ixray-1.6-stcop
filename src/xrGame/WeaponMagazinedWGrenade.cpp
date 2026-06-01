@@ -431,17 +431,21 @@ void CWeaponMagazinedWGrenade::switch2_Showing()
 bool CWeaponMagazinedWGrenade::SwitchMode()
 {
 	if (!IsGrenadeLauncherAttached())
+	{
 		return false;
+	}
 
 	if (!SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfGLAUNCHSWITCH))
 	{
 		return false;
 	}
 
-	bool bUsefulStateToSwitch = (!IsPending() && !IsZoomed() && (GetState() == eIdle || GetState() == eMisfire));
+	bool bUsefulStateToSwitch = !IsPending() && !IsZoomed();
 
 	if (!bUsefulStateToSwitch)
+	{
 		return false;
+	}
 
 	SwitchState(eSwitch);
 
@@ -502,7 +506,7 @@ void CWeaponMagazinedWGrenade::FireStart()
 	{
 		if (!infinite_fire())
 		{
-			if (CurrentState == eIdle || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
+			if (!IsPending() || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
 			{
 				if (m_eAnimationsFlags.test(EAnimationsFlags::af_empty_click))
 				{
