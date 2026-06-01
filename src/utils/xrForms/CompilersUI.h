@@ -45,18 +45,20 @@ struct CompilersMode
 	bool DO = false;
 	bool LC = false;
 
-	bool LC_SkipTangent = false;
- 	bool LC_SkipStaticMap = false;
+	// Geometry Optimizers
+	bool LC_OGF_PROGRESSIVE = true;
+	bool LC_OGF_STRIPTIFY   = true;
+	bool LC_OGF_TANGENT		= true;
+
+  	bool LC_SkipStaticMap = false;
 	bool LC_BackingDisabled = false;
 	bool LC_SaveOFG = false;
 	bool LC_GI = false;
 	bool LC_NoSun = false;
 	bool LC_NoSMG = true;
-	bool LC_Noise = true;
-	bool LC_Tess = true;
+ 	bool LC_Tess = true;
 	bool LC_SkipInvalidFaces = true;
-	bool LC_NoSubdivide = false;
-	bool LC_skipWeld = false;
+ 	bool LC_skipWeld = false;
 	bool LC_legacyLM = false;
 	bool IsOverloadedSettings = false;
 

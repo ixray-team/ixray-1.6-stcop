@@ -4,6 +4,7 @@
 #include "nv_library/NvTriStrip.h"
 #include "nv_library/VertexCache.h"
 #include <DirectXMesh.h>
+#include "../xrForms/CompilersUI.h"
 
 int xrSimulate (xr_vector<u16> &indices, int iCacheSize )
 {
@@ -60,8 +61,7 @@ void xrStripify		(xr_vector<u16> &indices, xr_vector<u16> &perturb, int iCacheSi
 void OGF::Stripify()
 {
 	// Mesh already progressive - don't stripify it
-	if (progressive_test())
-		return;
+	if (progressive_test())		return;
 
 	// fast verts
 	if (!fast_path_data.vertices.empty() && !fast_path_data.faces.empty())
@@ -116,14 +116,13 @@ void OGF::Stripify()
 		}
 	}
 
-	// normal verts
+	if (!gCompilerMode.LC_OGF_STRIPTIFY)			return;
+
+ 	// normal verts
 	try
 	{
-		if (data.faces.empty())
-		{
-			return;
-		}
-
+		if (data.faces.empty()) return;
+ 
 		xr_vector<u16>	indices, permute;
 
 		// Stripify
