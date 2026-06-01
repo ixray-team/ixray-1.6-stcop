@@ -9,16 +9,14 @@ bool	f_valid		(float f)
 	return _finite(f) && !_isnan(f);
 }
 
-bool				SphereValid	(xr_vector<Fvector>& geom, Fsphere& test)
+bool	SphereValid	(xr_vector<Fvector>& geom, Fsphere& test)
 {
 	if (!f_valid(test.P.x) || !f_valid(test.R)) 
 	{
 		clMsg("*** Attention ***: invalid sphere: %f,%f,%f - %f", test.P.x, test.P.y, test.P.z, test.R);
 		return false;
 	}
-
-
-
+	 
 	Fsphere	S = test;
 	S.R += EPS_L;
 	for (xr_vector<Fvector>::iterator I = geom.begin(); I != geom.end(); I++)
@@ -70,22 +68,44 @@ void OGF_Base::CalcBounds(bool useProgressBar)
    	GetGeometry(V);
  
 	//se7kills (Merging Problems Need fix this)	 
+	Fsphere	S1;  Fsphere_compute(S1, &*V.begin(), (u32)V.size()); // Minibal Дольше но нужно кривая геометрия должна тоже попасть !
  	Fsphere	S2 = CalculateSphere(V, bbox);
  	Fsphere S3 = CalculateMagic(V);
 
-	//bool B1 = SphereValid(V, S1);
+	bool B1 = SphereValid(V, S1);
 	bool B2 = SphereValid(V, S2);
 	bool B3 = SphereValid(V, S3); // Куда быстрее чем Miniball 
 
-	// base or FM
-	if (B3 && (S3.R<S2.R))
+	// select best one
+	if (B1 && (S1.R < S2.R))
 	{
-		// FM wins
-		C.set	(S3.P);
-		R	=	S3.R;
-	} else {
-		// Base wins :)
-		C.set	(S2.P);
-		R	=	S2.R;
+		// miniball or FM
+		if (B3 && (S3.R < S1.R))
+		{
+			// FM wins
+			C.set(S3.P);
+			R = S3.R;
+		}
+		else {
+			// MiniBall wins
+			C.set(S1.P);
+			R = S1.R;
+		}
 	}
+	else
+	{
+		// base or FM
+		if (B3 && (S3.R < S2.R))
+		{
+			// FM wins
+			C.set(S3.P);
+			R = S3.R;
+		}
+		else {
+			// Base wins :)
+			C.set(S2.P);
+			R = S2.R;
+		}
+	}
+
 }
