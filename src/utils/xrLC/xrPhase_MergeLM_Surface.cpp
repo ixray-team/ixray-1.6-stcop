@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+﻿#include "StdAfx.h"
 #include "xrPhase_MergeLM_Surface.h"
 #include "../xrForms/CompilersUI.h"
  
@@ -6,7 +6,7 @@ SurfacePlacePerpixel placer_perpixel;
 
 float SurfacePlacePerpixel::GetMaxFilled()
 {
-    return gCompilerMode.LC_sizeFill;
+    return 0.89f; // Не долго и не мало сжимает !
 }
 
 float SurfacePlacePerpixel::GetCurrFilled()
