@@ -91,6 +91,7 @@ static void retrive_data_from_mender_otput( const	 xr_vector< MeshMender::Vertex
 void CBuild::xrPhase_TangentBasis()
 {
 	if (!gCompilerMode.LC_OGF_TANGENT) return;
+	Phase("Building tangent-basis ...");
 
  	xr_vector< MeshMender::Vertex > mender_in_out_verts;
 	xr_vector< unsigned int >		mender_in_out_indices;
