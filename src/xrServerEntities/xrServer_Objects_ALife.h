@@ -597,6 +597,15 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeTeamBaseZone,CSE_ALifeSpaceRestrictor)
 	u8								m_team;
 SERVER_ENTITY_DECLARE_END
 
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeTeamCaptureZone, CSE_ALifeSpaceRestrictor)
+CSE_ALifeTeamCaptureZone(LPCSTR caSection);
+virtual							~CSE_ALifeTeamCaptureZone();
+
+u8								m_team;
+shared_str						m_point_name;
+SERVER_ENTITY_DECLARE_END
+
+
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeInventoryBox,CSE_ALifeDynamicObjectVisual)
 	bool				m_can_take;
 	bool				m_closed;

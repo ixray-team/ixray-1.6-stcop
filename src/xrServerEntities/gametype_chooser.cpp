@@ -18,7 +18,7 @@ void  GameTypeChooser::FillProp(LPCSTR pref, PropItemVec& items)
     PHelper().CreateFlag16  (items, PrepareKey(pref, "Game Type\\artefact hunt"),       	&m_GameType, eGameIDArtefactHunt);
     PHelper().CreateFlag16  (items, PrepareKey(pref, "Game Type\\capture the artefact"),	&m_GameType, eGameIDCaptureTheArtefact);
     PHelper().CreateFlag16  (items, PrepareKey(pref, "Game Type\\domination zone"),     	&m_GameType, eGameIDDominationZone);
-    PHelper().CreateFlag16  (items, PrepareKey(pref, "Game Type\\team domination zone"),	&m_GameType, eGameIDTeamDominationZone);
+    PHelper().CreateFlag16  (items, PrepareKey(pref, "Game Type\\capture points"),	&m_GameType, eGameIDCapturePoints);
 */
  }
 #endif // #ifndef XRGAME_EXPORTS

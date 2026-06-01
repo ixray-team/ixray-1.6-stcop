@@ -144,6 +144,7 @@
 #include "CustomDevice.h"
 #include "Flashlight.h"
 #	include "zonecampfire.h"
+#include "team_capture_zone.h"
 
 #	include "torch.h"
 #	include "pda.h"
@@ -245,7 +246,7 @@ void CObjectFactory::register_classes	()
 #else // NO_XR_GAME
 	ADD(CActor					,CSE_ALifeCreatureActor			,CLSID_OBJECT_ACTOR				,"actor");
 #endif // NO_XR_GAME
-
+	
 	// server entities
 #ifndef NO_SINGLE
 	add<CSE_ALifeGroupTemplate<CSE_ALifeMonsterBase> >			(CLSID_AI_FLESH_GROUP			,"flesh_group");
@@ -395,6 +396,7 @@ void CObjectFactory::register_classes	()
 	ADD(CScriptZone				,CSE_ALifeSpaceRestrictor		,CLSID_SCRIPT_ZONE				,"script_zone");
 	ADD(CSmartZone				,CSE_ALifeSmartZone				,CLSID_SMART_ZONE				,"smart_zone");
 	ADD(CTeamBaseZone			,CSE_ALifeTeamBaseZone			,CLSID_Z_TEAM_BASE				,"team_base_zone");
+	ADD(CTeamCaptureZone		,CSE_ALifeTeamCaptureZone		,CLSID_Z_CAPTURE_BASE,			"team_capture_zone");
 	ADD(CTorridZone				,CSE_ALifeTorridZone			,CLSID_Z_TORRID					,"torrid_zone");
 	ADD(CSpaceRestrictor		,CSE_ALifeSpaceRestrictor		,CLSID_SPACE_RESTRICTOR			,"space_restrictor");
 	ADD(CAmebaZone				,CSE_ALifeZoneVisual			,CLSID_Z_AMEBA					,"ameba_zone");

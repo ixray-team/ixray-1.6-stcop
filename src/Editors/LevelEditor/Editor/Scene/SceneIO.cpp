@@ -137,7 +137,7 @@ void st_LevelOptions::ReadLTX(CInifile& ini)
 	{
 		m_mapUsage.m_GameType.set	(eGameIDCaptureTheArtefact,	ini.r_s32(section, "usage_captretheartefact"));
 
-		m_mapUsage.m_GameType.set	(eGameIDTeamDominationZone,	ini.r_s32(section, "usage_team_domination_zone"));
+		m_mapUsage.m_GameType.set	(eGameIDCapturePoints,	ini.r_s32(section, "usage_team_domination_zone"));
 		if(vers_op==0x00000009)
 			m_mapUsage.m_GameType.set(eGameIDDominationZone,		ini.r_s32(section, "domination_zone"));
 		else

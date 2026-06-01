@@ -213,8 +213,8 @@ LPCSTR GameTypeToString(EGameIDs gt, bool bShort)
 	case eGameIDDominationZone:
 		return (bShort)?"dz":"dominationzone";
 		break;
-	case eGameIDTeamDominationZone:
-		return (bShort)?"tdz":"teamdominationzone";
+	case eGameIDCapturePoints:
+		return (bShort)?"cp":"capturepoints";
 		break;
 	case eGameIDFreeMP:
 		return (bShort) ? "fmp" : "freemp";
@@ -237,8 +237,8 @@ EGameIDs ParseStringToGameType(LPCSTR str)
 		return eGameIDCaptureTheArtefact;
 	else if (!xr_strcmp(str, "dominationzone")) 
 		return eGameIDDominationZone;
-	else if (!xr_strcmp(str, "teamdominationzone")) 
-		return eGameIDTeamDominationZone;
+	else if (!xr_strcmp(str, "capturepoints")) 
+		return eGameIDCapturePoints;
 	else if (!xr_strcmp(str, "freemp") || !xr_strcmp(str, "fmp"))
 		return eGameIDFreeMP;
 	else
