@@ -28,8 +28,42 @@ struct IXRayMaterial
 	float Hemi;
 	float Sun;
 	
-	float SnowMask;
+	uint MaterialID;
+	
+	IXRayMaterial Lerp(in IXRayMaterial B, float Factor)
+	{
+		IXRayMaterial O = this;
+
+	#ifndef USE_LEGACY_LIGHT
+		O.Metalness = lerp(Metalness, B.Metalness, Factor);
+		O.Roughness = lerp(Roughness, B.Roughness, Factor);
+		O.Specular = lerp(Specular, B.Specular, Factor);
+		O.AO = lerp(AO, B.AO, Factor);
+	#else
+		O.Gloss = lerp(Gloss, B.Gloss, Factor);
+		O.Material = lerp(Material, B.Material, Factor);
+	#endif
+
+		O.SSS = lerp(SSS, B.SSS, Factor);
+
+		O.Normal = lerp(Normal, B.Normal, Factor);
+		O.Normal = normalize(O.Normal);
+
+		O.Color = lerp(Color, B.Color, Factor);
+
+		O.Hemi = lerp(Hemi, B.Hemi, Factor);
+		O.Sun = lerp(Sun, B.Sun, Factor);
+
+		return O;
+	}
 };
+
+#define BASE_ID 0
+#define OBJECT_ID 1
+#define TERRAIN_ID 2
+#define FOLIAGE_ID 3
+
+#define MAX_ID 3.0f
 
 struct IXRayGbuffer
 {
@@ -62,7 +96,7 @@ struct IXRayGbuffer
 	float3 View;
 	float ViewDist;
 	
-	float SnowMask;
+	uint MaterialID;
 };
 
 struct IXRayGbufferPack
@@ -177,7 +211,7 @@ inline void GbufferPack(inout IXRayGbufferPack O, inout IXRayMaterial M)
 	
     O.Normal.xy = NormalEncode(M.Normal.xyz) * 0.5f + 0.5f;
 	
-	O.Normal.w = M.SnowMask;
+	O.Normal.w = float(M.MaterialID) / MAX_ID;
 	O.Normal.z = M.Hemi;
 }
 
@@ -217,7 +251,8 @@ inline void GbufferUnpackMaterial(inout IXRayGbufferPack O, inout IXRayMaterial 
 #endif
 
     M.Normal.xyz = NormalDecode(O.Normal.xy * 2.0f - 1.0f);
-    M.SnowMask = O.Normal.w;
+	
+	M.MaterialID = uint(O.Normal.w * MAX_ID);
     M.Hemi = O.Normal.z;
 }
 
@@ -324,7 +359,8 @@ inline void GbufferUnpackNormal(in uint2 TexCoord, inout IXRayGbuffer O)
     float4 Sample = s_normal.Load(uint3(TexCoord, 0));
 	
 	O.Normal.xyz = NormalDecode(Sample.xy * 2.0f - 1.0f);
-	O.SnowMask = Sample.w;
+	O.MaterialID = uint(Sample.w * MAX_ID);
+	
 	O.Hemi = Sample.z;
 	
 #ifdef USE_LEGACY_LIGHT

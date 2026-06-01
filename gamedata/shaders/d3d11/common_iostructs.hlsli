@@ -320,17 +320,15 @@ struct p_bumped_new
     float3 M1 : TEXCOORD2; // nmap 2 eye - 1
     float3 M2 : TEXCOORD3; // nmap 2 eye - 2
     float3 M3 : TEXCOORD4; // nmap 2 eye - 3
-
-	float snow_mask : TEXCOORD5;
 	
 #ifdef USE_LENGTH_BUFFER
 	#ifndef USE_LM_HEMI
-		float3 lmap : TEXCOORD6;
+		float3 lmap : TEXCOORD5;
 	#endif
 #else
 	#ifndef DISABLE_MOTION_VECTORS
-		float4 hpos_curr : TEXCOORD6;
-		float4 hpos_old : TEXCOORD7;
+		float4 hpos_curr : TEXCOORD5;
+		float4 hpos_old : TEXCOORD6;
 	#endif
 #endif
 };

@@ -12,14 +12,6 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 {
     IXRayGbuffer O = (IXRayGbuffer)NULL;
     GbufferUnpack(DTid, O);
-	
-	if(O.Depth >= 1.0f)
-	{
-		u_sslr[DTid.xy] = (0.0).xxxx;
-		u_sslr_data[DTid.xy] = (0.0).xxxx;
-		
-		return;
-	}
 
 	//LVutner: Init
 	float4 Final = (0.0).xxxx;
@@ -29,6 +21,23 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	float3 ReflectPoint = GbufferGetPointRealUnjitter(TexCoord, O.Depth);
 	float3 ViewVec = normalize(ReflectPoint);
+	
+	if(O.Depth >= 1.0f)
+	{
+		Point.xyz = ViewVec * fog_params.z;
+		Point.w = EPS_S;
+		
+		Final.xyz = CompureSpecularIrradance(ViewVec.xyz, 1.0f, 0.2f).xyz;
+		
+		Final.xyz *= rcp(1.0f + Final.xyz);
+		Final.xyz = saturate(Final.xyz);
+		Final.w = 0.0f;
+	
+		u_sslr[DTid.xy] = Final;
+		u_sslr_data[DTid.xy] = Point;
+		
+		return;
+	}
 	
 	float2 Jitter = s_blue_noise[uint3(DTid % 128, uint(m_taa_jitter.w) % 32)].xy;
 

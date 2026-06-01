@@ -72,10 +72,12 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 	if(aref)
 	{
 		RImplementation.addShaderOption("USE_AREF", "1");
+
 #ifdef USE_DX11
 		pTexture->Load();
 
 		ERHI_FORMAT Format = pTexture->get_Format();
+
 		if(Format >= ERHI_FORMAT::BC1_TYPELESS && Format < ERHI_FORMAT::BC2_TYPELESS)
 		{
 			RImplementation.addShaderOption("USE_DXT1_HACK", "1");
@@ -128,6 +130,11 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		RImplementation.addShaderOption("USE_HIGH_QUALITY", "1");
 	}
 
+	if (strstr(vs, "model") != nullptr)
+	{
+		RImplementation.addShaderOption("FORWARD_LIGHT", "1");
+	}
+
 	if(bump)
 	{
 		string512 errorMsg;
@@ -137,7 +144,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		R_ASSERT3(fnameA[0] && xr_strlen(fnameA), errorMsg,  "Missing bump texture\n");
 	}
 
-	string_path temp;
+	string_path temp{};
 
 	static bool UseWinterPass = EngineExternal()[EEngineExternalRender::UseDynamicSnowMask];
 	bool snow_texture = UseWinterPass && FS.exist(temp, _textures_, C.L_textures[0].c_str(), "_snowmask.dds");
@@ -162,7 +169,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 		RImplementation.addShaderOption("USE_IOR_TEXTURE", "1");
 	}
 
-	if(bHasDetailBump)
+	if (bHasDetailBump)
 	{
 		string512 errorMsg;
 		xr_sprintf(errorMsg, "Missing detail texture: %s\n\t\t\tLoading texture: %s", dt, C.L_textures[0].c_str());
