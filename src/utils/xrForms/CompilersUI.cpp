@@ -282,9 +282,6 @@ void DrawLCConfig()
 		ImGui::Text("Border:");		ImGui::SameLine(0, 20);
 		ImGui::InputInt("##LM-Border", &gCompilerMode.LC_BORDER, 1, 1);
 
-		ImGui::Text("Filling:");	ImGui::SameLine(0, 12);
-		ImGui::InputFloat("##LM-Filling", &gCompilerMode.LC_sizeFill, 0.01f, 0.01f);
-
 		ImGui::Text("Size:");		 ImGui::SameLine(0, 35);
 		ImGui::SetNextItemWidth(180);
 		if (ImGui::Combo("##lmaps", &item_current_lightmap, lightmap_resolution, max_resolution))
@@ -298,9 +295,11 @@ void DrawLCConfig()
 		{
 			gCompilerMode.LmapsFormat = static_cast<LCLightmapFormat>(current_format);
 		}
-  		ImGui::Checkbox("SoC LMaps", &gCompilerMode.LC_legacyLM);
-		ImGui::Checkbox("Skip Static map", &gCompilerMode.LC_SkipStaticMap);
-		ImGui::Checkbox("Skip Sun",        &gCompilerMode.LC_NoSun);
+	
+		ImGui::Checkbox("Fast LMaps",		&gCompilerMode.LC_fast_way);
+  		ImGui::Checkbox("SoC LMaps",		&gCompilerMode.LC_legacyLM);
+		ImGui::Checkbox("Skip Static map",  &gCompilerMode.LC_SkipStaticMap);
+		ImGui::Checkbox("Skip Sun",         &gCompilerMode.LC_NoSun);
 
 		ImGui::EndDisabled();
 		
