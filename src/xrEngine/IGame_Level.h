@@ -27,8 +27,8 @@ public:
 	u32		Size()			{ return data.size(); }
 	void	ResetData()		{ data.clear(); }
 
-	void	AddItem( const char* name_,		const char* value_, u32 color_ = RGB(255,255,255) );
-	void	AddItem( shared_str& name_,	const char* value_, u32 color_ = RGB(255,255,255) );
+	void	AddItem( const char* name_,		const char* value_, u32 color_ = 0xFFFFFFFF );
+	void	AddItem( shared_str& name_,	const char* value_, u32 color_ = 0xFFFFFFFF );
 
 	IC SItem_ServerInfo&	operator[] ( u32 id ) { VERIFY( id < max_item ); return data[id]; }
 
@@ -130,10 +130,10 @@ public:
 	ICF void dbg_text_renderer(const Fvector& pos, u32 color = color_rgba(0, 255, 100, 255), shared_str str = "+")
 	{
 		Fvector4		v_res;
-		Device.mFullTransform.transform(v_res, pos);
+		DevicePtr->mFullTransform.transform(v_res, pos);
 
-		float x = (1.f + v_res.x) / 2.f * (Device.Width);
-		float y = (1.f - v_res.y) / 2.f * (Device.Height);
+		float x = (1.f + v_res.x) / 2.f * (DevicePtr->Width);
+		float y = (1.f - v_res.y) / 2.f * (DevicePtr->Height);
 
 		if (v_res.z < 0 || v_res.w < 0)
 			return;

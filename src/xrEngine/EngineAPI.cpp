@@ -44,9 +44,19 @@ ENGINE_API int g_current_renderer = 0;
 
 void CEngineAPI::InitializeNotDedicated()
 {
+	const char* r5_name	= "xrRenderTiramisu";
 	const char* r2_name	= "xrRender_R2";
 	const char* r4_name	= "xrRender_R4";
-
+	if( strstr( Core.Params,"-r5") )
+	{
+		Msg("Loading DLL: %s",	r5_name);
+		hRender = Platform::LoadLibrary(r5_name);
+		if (hRender)
+		{
+			return;
+		}
+	}
+	
 	if (psDeviceFlags.test(rsR4))
 	{
 		// try to initialize R4
@@ -272,6 +282,7 @@ void CEngineAPI::CreateRendererList()
 
 ERHI_API_LAYER CEngineAPI::GetAPI()
 {
+	return ERHI_API_LAYER::NOT_CREATED;
 	if (psDeviceFlags.test(rsR4))
 	{
 		return ERHI_API_LAYER::D3D11;

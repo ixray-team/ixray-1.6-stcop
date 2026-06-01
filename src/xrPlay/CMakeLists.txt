@@ -41,6 +41,8 @@ target_link_libraries(xrEngine PUBLIC xrEngineCore)
 target_link_libraries(xrEngine PUBLIC xrScripts)
 target_link_libraries(xrEngine PUBLIC Steamworks::Steamworks)
 
+add_dependencies(xrEngine xrRenderTiramisu)
+
 if(IXRAY_USE_R1)
     add_dependencies(xrEngine xrRender_R1)
    endif()
