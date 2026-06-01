@@ -1,7 +1,6 @@
 ﻿#include "TRenderLegacyScene.h"
 
 #include "TLegacySceneSector.h"
-#include "build2/_deps/nri-src/Source/Shared/NIS.h"
 #include "Resources/TRenderResourcesFlusher.h"
 #include "src/xrCore/stream_reader.h"
 #include "src/xrEngine/IGame_Level.h"
