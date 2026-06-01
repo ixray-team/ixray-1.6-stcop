@@ -515,7 +515,7 @@ void CWeaponMagazined::FireStart()
 		{
 			if (!IsWorking() || AllowFireWhileWorking())
 			{
-				if (CurrentState == eReload || CurrentState == eShowing || CurrentState == eHiding || CurrentState == eMisfire || CurrentState == eLightMis)
+				if (IsPending())
 				{
 					return;
 				}
@@ -2413,7 +2413,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	{
 	case kWPN_RELOAD:
 		{
-			if (flags & CMD_START && (m_bBlockReload && GetState() == eIdle || !m_bBlockReload))
+			if (flags & CMD_START && (m_bBlockReload && (!IsPending() && GetState() != eFire || GetState() == eIdle) || !m_bBlockReload))
 			{
 				if ((iAmmoElapsed < GetMagCapacity() || IsMisfire()))
 				{
@@ -3391,7 +3391,7 @@ bool CWeaponMagazined::SwitchMode()
  
 void CWeaponMagazined::ChangeFireMode(u16 cmd)
 {
-	if (!HasFireModes() || GetNextState() != eIdle)
+	if (!HasFireModes() || IsPending() && GetNextState() != eIdle)
 	{
 		return;
 	}
@@ -3426,6 +3426,7 @@ void CWeaponMagazined::ChangeFireMode(u16 cmd)
 
 	if (m_eAnimationsFlags.test(EAnimationsFlags::af_firemode))
 	{
+		SetPending(true);
 		SwitchState(eSwitchMode);
 	}
 	else
@@ -3436,7 +3437,7 @@ void CWeaponMagazined::ChangeFireMode(u16 cmd)
 
 void CWeaponMagazined::SwitchGaussScreen()
 {
-	if (GetState() != eIdle)
+	if (IsPending() && GetNextState() != eIdle)
 	{
 		return;
 	}
@@ -3453,6 +3454,7 @@ void CWeaponMagazined::SwitchGaussScreen()
 
 	m_bGaussScreen = !m_bGaussScreen;
 
+	SetPending(true);
 	SwitchState(eSwitchMode);
 }
 
