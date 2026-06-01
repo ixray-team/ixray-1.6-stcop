@@ -652,34 +652,39 @@ void CRender::Render()
 	if(UseWinterPass && g_pGameLevel->UseSnowmask)
 	{
 		GPU_EVENT(PhaseWinter);
-		GRHI->CopySurface(Target->rt_NormalTemp->pSurface, Target->rt_Normal->pSurface);
-		GRHI->CopySurface(Target->rt_SurfaceTemp->pSurface, Target->rt_Surface->pSurface);
 
-		Target->phase_scene_begin();
-		GRHI->SetDepthStencilView(nullptr);
+		Target->u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), nullptr, nullptr, nullptr, nullptr);
 
-		RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
+		GRHI->SetUnorderedAccessViews(Target->rt_Color->pUAView, 0);
+		GRHI->SetUnorderedAccessViews(Target->rt_Normal->pUAView, 1);
+		GRHI->SetUnorderedAccessViews(Target->rt_Surface->pUAView, 2);
+
 		Target->PhaseWinter();
 
-		RCache.set_ColorWriteEnable();
+		GRHI->SetUnorderedAccessViews(NULL, 0);
+		GRHI->SetUnorderedAccessViews(NULL, 1);
+		GRHI->SetUnorderedAccessViews(NULL, 2);
 	}
 
 	// Wall marks
-	if(Wallmarks)	
+	if(Wallmarks)
 	{
 		GPU_EVENT(DEFER_WALLMARKS);
-		Target->phase_wallmarks					();
-		Wallmarks->Render						();				// wallmarks has priority as normal geometry
+
+		Target->phase_wallmarks();
+		Wallmarks->Render();
 	}
 
 	// Update incremental shadowmap-visibility solver
 	{
 		GPU_EVENT(DEFER_FLUSH_OCCLUSION);
-		u32 it=0;
-		for (it=0; it<Lights_LastFrame.size(); it++)
+
+		for (u32 it = 0; it < Lights_LastFrame.size(); it++)
 		{
-			if (0==Lights_LastFrame[it])
+			if (0 == Lights_LastFrame[it])
+			{
 				continue;
+			}
 
 			try
 			{
@@ -690,6 +695,7 @@ void CRender::Render()
 				Msg("! Failed to flush-OCCq on light [%d] %X", it, *(u32*)(&Lights_LastFrame[it]));
 			}
 		}
+
 		Lights_LastFrame.clear	();
 	}
 
