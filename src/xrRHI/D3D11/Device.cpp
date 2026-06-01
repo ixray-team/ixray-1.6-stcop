@@ -189,14 +189,23 @@ void InternalDevice11::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* cons
 		}
 	}
 
+	UINT numRTVs = 0;
+
+	for (UINT i = 0; i < NumViews; i++)
+	{
+		if (s_RTV[i] != nullptr)
+		{
+			numRTVs++;
+		}
+	}
+
 	if (hasUAVs)
 	{
 		HWRenderContext->OMSetRenderTargetsAndUnorderedAccessViews
 		(
 			NumViews, s_RTV, dsv,
-			0,            // UAV start slot
-			NumViews,     // number of UAVs
-			s_UAV,
+			numRTVs, NumViews, s_UAV,
+
 			nullptr
 		);
 	}
