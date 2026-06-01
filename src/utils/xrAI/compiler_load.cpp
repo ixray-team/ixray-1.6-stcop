@@ -62,7 +62,8 @@ void xrLoad(const char* name, bool draft_mode, bool skipThm)
 {
 	FS.get_path("$level$")->_set((LPSTR)name);
 	string256					N;
-	if (!draft_mode) {
+	if (!draft_mode) 
+	{
 		// shaders
 		string_path				N__;
 		FS.update_path(N__, "$game_data$", "shaders_xrlc.xr");
