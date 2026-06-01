@@ -6,7 +6,8 @@ namespace RedImageTool
     class RedImage;
 }
 
-class XRayTexture2D:public XRayTexture
+class XRayTexture2D :
+    public XRayTexture
 {
 public:
             XRayTexture2D   (const shared_str& InName = "None");

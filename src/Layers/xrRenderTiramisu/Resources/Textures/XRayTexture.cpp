@@ -30,5 +30,6 @@ uint32_t XRayTexture::GetOrCreateHeapIndex()
     {
         HeapIndex = GRenderResourcesManager->DescriptorHeapAllocator->Alloc(Descriptor);
     }
+
     return HeapIndex;
 }
