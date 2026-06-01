@@ -7,8 +7,11 @@ void CRHIRenderViewManager::Clear()
 	static IRHIRenderTargetView* NullRTV[RHI_MAX_RENDER_TARGETS] = { nullptr };
 	static IRHIUnorderedAccessView* NullUAV[RHI_MAX_RENDER_TARGETS] = { nullptr };
 
-	GRHI->DevicePtr->SetDSV(nullptr);
-	GRHI->DevicePtr->SetRenderTargets(RHI_MAX_RENDER_TARGETS, NullRTV, NullUAV);
+	if (GRHI->DevicePtr)
+	{
+		GRHI->DevicePtr->SetDSV(nullptr);
+		GRHI->DevicePtr->SetRenderTargets(RHI_MAX_RENDER_TARGETS, NullRTV, NullUAV);
+	}
 }
 
 void CRHIRenderViewManager::SetUnorderedAccessViews(IRHIUnorderedAccessView* pRenderTargetView, u32 ID, bool bForce)

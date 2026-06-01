@@ -33,6 +33,7 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
         add_subdirectory("Layers/xrRenderPC_R4")
         add_subdirectory("xrGame")
     endif()
+    add_subdirectory("Layers/xrRenderTiramisu")
 endif()
 
 if(IXRAY_MP AND NOT IXRAY_COMPRESSOR_ONLY AND IXR_TEST_CI)

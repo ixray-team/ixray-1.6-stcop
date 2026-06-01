@@ -1,0 +1,64 @@
+#pragma once
+#include "Resources/XRayRenderVertexTypes.h"
+
+class XRayTexture;
+
+class CDS0_UIShader :
+	public IUIShader
+{
+public:
+	CDS0_UIShader();
+	~CDS0_UIShader();
+	virtual void Copy(IUIShader& _in);
+	virtual void create(LPCSTR sh, LPCSTR tex = 0);
+	virtual bool inited();
+	virtual void destroy();
+	
+	XRayTexture* Texture = nullptr;
+};
+
+struct FXRayUIPrimitive
+{
+	uint32_t						VertexOffset = 0;
+	uint32_t						VertexCount = 0;
+	IUIRender::ePrimitiveType		PrimitiveType;
+	IUIRender::ePointType			PointType;
+	xr_vector<FXRayUIVertex>		VertexesCache;
+	XRayTexture* Texture			= nullptr;
+};
+class CDS0_UIRender:
+	public IUIRender
+{
+public:
+	CDS0_UIRender();
+	~CDS0_UIRender();
+	virtual void CreateUIGeom();
+	virtual void DestroyUIGeom();
+
+	virtual void SetShader(IUIShader &shader);
+	virtual void SetAlphaRef(int aref);
+	virtual void SetScissor(Irect* rect = NULL);
+	virtual void GetActiveTextureResolution(Fvector2 &res);
+
+	virtual void PushPoint(float x, float y, float z, u32 C, float u, float v);
+
+	virtual void** StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType);
+	virtual void FlushPrimitive();
+	virtual void Flush();
+	virtual LPCSTR	UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name);
+
+	virtual void	CacheSetXformWorld(const Fmatrix& M);
+	virtual void	CacheSetCullMode(ERHI_CULLMODE);
+
+	virtual void zb_enable(u32 val) {};
+
+	virtual Irect GetScissor() const { return Irect(); };
+	
+	xr_vector<FXRayUIVertex>		Vertexes;
+	xr_vector<FXRayUIPrimitive>		Primitivs;
+	IUIShader* CurrentShader		= nullptr;
+	
+private:
+};
+
+extern CDS0_UIRender GUIRender;
