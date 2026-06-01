@@ -236,7 +236,7 @@ void CBuild::xrPhase_MergeLM()
     	
 		if (gCompilerMode.LC_fast_way)
 		{
-			std::sort(Layer.begin(), Layer.end(), [](CDeflector* d1, CDeflector* d2) {return d1->layer.height < d1->layer.height; });
+			std::sort(Layer.begin(), Layer.end(), [](CDeflector* d1, CDeflector* d2) { return d1->layer.height < d2->layer.height; });
  			TotalMerged += MergeLmapFast(Layer, lmap);
 		}
 		else
