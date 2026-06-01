@@ -148,7 +148,32 @@ void CDS0_UIRender::FlushPrimitive()
 	case ptTriList:
 	{
 		const size_t VertexCount = Primitive.VertexesCache.size();
-		Vertexes.insert(Vertexes.end(), Primitive.VertexesCache.begin(), Primitive.VertexesCache.begin() + VertexCount);
+
+		if ((VertexCount % 4) == 0)
+		{
+			for (size_t i = 0; i < VertexCount; i += 4)
+			{
+				const FXRayUIVertex& BL = Primitive.VertexesCache[i + 0];
+				const FXRayUIVertex& TL = Primitive.VertexesCache[i + 1];
+				const FXRayUIVertex& BR = Primitive.VertexesCache[i + 2];
+				const FXRayUIVertex& TR = Primitive.VertexesCache[i + 3];
+
+				Vertexes.push_back(BL);
+				Vertexes.push_back(TL);
+				Vertexes.push_back(BR);
+
+				Vertexes.push_back(BR);
+				Vertexes.push_back(TL);
+				Vertexes.push_back(TR);
+			}
+		}
+		else
+		{
+			Vertexes.insert(
+				Vertexes.end(),
+				Primitive.VertexesCache.begin(),
+				Primitive.VertexesCache.end());
+		}
 		break;
 	}
 	case ptTriStrip:
