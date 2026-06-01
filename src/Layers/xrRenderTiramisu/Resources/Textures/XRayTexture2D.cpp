@@ -43,15 +43,18 @@ nri::Format ConvertFormatToNRI(RedImageTool::RedTexturePixelFormat InFormat,bool
     }
 }
 
-bool XRayTexture2D::LoadFromFile(const char* FilePath,bool bSrgb)
+bool XRayTexture2D::LoadFromFile(const char* FilePath, bool bSrgb)
 {
     RedImageTool::RedImage RedImage;
     
-    if (!RedImage.LoadFromFile(FilePath))
+    IReader* FileReader = FS.r_open(FilePath);
+    if (!RedImage.LoadFromMemory(FileReader->pointer(), FileReader->length()))
     {
+        FS.r_close(FileReader);
         return false;
     }
-    
+    FS.r_close(FileReader);
+
     if (RedImage.GetFormat() == RedImageTool::RedTexturePixelFormat::R8G8B8)
     {
         RedImage.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
