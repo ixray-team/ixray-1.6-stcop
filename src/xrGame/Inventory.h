@@ -63,6 +63,9 @@ public:
 
 	bool CanTakeItem(CInventoryItem* inventory_item) const;
 
+	// Fixes slot/ruck/belt desync (e.g. knife listed in bag while still bound to KNIFE_SLOT).
+	void RepairItemPlacements();
+
 	void Activate(u16 slot, bool bForce = false, bool ForceHide = false);
 	void PutGrenade(CGrenade* new_grenade);
 	PIItem EnsureSlotItemFromRuck(u16 slotId, PIItem itemToSkip = nullptr);
@@ -205,6 +208,11 @@ private:
 	bool IsSlotBlocked(u16 slot_id) const;
 	void TryActivatePrevSlot();
 	void TryDeactivateActiveSlot(bool Force = false);
+
+	void ReconcileItemPlacement(PIItem pIItem);
+	void TryRestorePersistentSlotItem(PIItem pIItem);
+	void ClearItemFromAllSlots(PIItem pIItem);
+	void RemoveItemFromRuckAndBelt(PIItem pIItem);
 
 	const char* m_onItemAvailableToTrade = {};
 	bool m_isItemAvailableToTrade = false;
