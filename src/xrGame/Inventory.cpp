@@ -137,6 +137,134 @@ void CInventory::Clear()
 	InvalidateState();
 }
 
+void CInventory::ClearItemFromAllSlots(PIItem pIItem)
+{
+	if (pIItem == nullptr)
+	{
+		return;
+	}
+
+	for (u16 i = FirstSlot(); i <= LastSlot(); ++i)
+	{
+		if (m_slots[i].m_pIItem != pIItem)
+		{
+			continue;
+		}
+
+		if (GetActiveSlot() == i)
+		{
+			Activate(NO_ACTIVE_SLOT);
+		}
+
+		m_slots[i].m_pIItem = nullptr;
+	}
+}
+
+void CInventory::RemoveItemFromRuckAndBelt(PIItem pIItem)
+{
+	if (pIItem == nullptr)
+	{
+		return;
+	}
+
+	TIItemContainer::iterator it = std::find(m_ruck.begin(), m_ruck.end(), pIItem);
+	if (it != m_ruck.end())
+	{
+		m_ruck.erase(it);
+	}
+
+	it = std::find(m_belt.begin(), m_belt.end(), pIItem);
+	if (it != m_belt.end())
+	{
+		m_belt.erase(it);
+	}
+}
+
+void CInventory::ReconcileItemPlacement(PIItem pIItem)
+{
+	if (pIItem == nullptr)
+	{
+		return;
+	}
+
+	switch (pIItem->CurrPlace())
+	{
+	case eItemPlaceSlot:
+	{
+		const u16 slotId = pIItem->CurrSlot();
+		RemoveItemFromRuckAndBelt(pIItem);
+
+		for (u16 i = FirstSlot(); i <= LastSlot(); ++i)
+		{
+			if (i != slotId && m_slots[i].m_pIItem == pIItem)
+			{
+				m_slots[i].m_pIItem = nullptr;
+			}
+		}
+		break;
+	}
+	case eItemPlaceRuck:
+	{
+		ClearItemFromAllSlots(pIItem);
+		break;
+	}
+	case eItemPlaceBelt:
+	{
+		ClearItemFromAllSlots(pIItem);
+
+		TIItemContainer::iterator it = std::find(m_ruck.begin(), m_ruck.end(), pIItem);
+		if (it != m_ruck.end())
+		{
+			m_ruck.erase(it);
+		}
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void CInventory::TryRestorePersistentSlotItem(PIItem pIItem)
+{
+	if (pIItem == nullptr || pIItem->CurrPlace() != eItemPlaceRuck)
+	{
+		return;
+	}
+
+	const u16 baseSlot = pIItem->BaseSlot();
+	if (baseSlot == NO_ACTIVE_SLOT || !SlotIsPersistent(baseSlot))
+	{
+		return;
+	}
+
+	if (ItemFromSlot(baseSlot) != nullptr)
+	{
+		return;
+	}
+
+	if (CanPutInSlot(pIItem, baseSlot))
+	{
+		Slot(baseSlot, pIItem, true, true);
+	}
+}
+
+void CInventory::RepairItemPlacements()
+{
+	for (PIItem item : m_all)
+	{
+		if (item == nullptr || item->CurrPlace() == eItemPlaceUndefined)
+		{
+			continue;
+		}
+
+		ReconcileItemPlacement(item);
+		TryRestorePersistentSlotItem(item);
+	}
+
+	CalcTotalWeight();
+	InvalidateState();
+}
+
 void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placement)
 {
 	CInventoryItem* pIItem = pObj->cast_inventory_item();
@@ -257,6 +385,9 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 			}
 		}
 	}
+
+	ReconcileItemPlacement(pIItem);
+	TryRestorePersistentSlotItem(pIItem);
 
 	m_pOwner->OnItemTake(pIItem);
 
@@ -510,6 +641,8 @@ bool CInventory::Slot(u16 slot_id, PIItem pIItem, bool bNotActivate, bool strict
 
 	pIItem->object().processing_activate();
 
+	ReconcileItemPlacement(pIItem);
+
 	return true;
 }
 
@@ -557,6 +690,8 @@ bool CInventory::Belt(PIItem pIItem, bool strict_placement)
 	}
 
 	pIItem->object().processing_activate();
+
+	ReconcileItemPlacement(pIItem);
 
 	return true;
 }
@@ -626,6 +761,9 @@ bool CInventory::Ruck(PIItem pIItem, bool strict_placement)
 	{
 		pIItem->object().processing_deactivate();
 	}
+
+	ReconcileItemPlacement(pIItem);
+	TryRestorePersistentSlotItem(pIItem);
 
 	return true;
 }
