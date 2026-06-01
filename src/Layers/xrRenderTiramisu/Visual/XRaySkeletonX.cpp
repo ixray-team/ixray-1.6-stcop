@@ -38,7 +38,7 @@ void CDS0_SkeletonX::AfterLoad(CDS0_Kinematics* parent, u16 child_idx)
 	SetParent(parent);
 	ChildIDX = child_idx;
 }
-void CDS0_SkeletonX::_Load(const char* N, IReader* data, size_t& dwVertCount)
+void CDS0_SkeletonX::_Load(const char* N, IReader* data, uint32_t& dwVertCount)
 {
 	xr_vector<u16>			bids;
 

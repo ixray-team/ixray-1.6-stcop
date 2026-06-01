@@ -73,7 +73,7 @@ protected:
 	};
 
 	void					_Copy(CDS0_SkeletonX* V);
-	void					_Load(const char* N, IReader* data, size_t& dwVertCount);
+	void					_Load(const char* N, IReader* data, uint32_t& dwVertCount);
 
 	virtual void			_Load_hw(CDS0_FVisual& V, void* data) = 0;
 	virtual void			_CollectBoneFaces(CDS0_FVisual* V, size_t iBase, size_t iCount) = 0;

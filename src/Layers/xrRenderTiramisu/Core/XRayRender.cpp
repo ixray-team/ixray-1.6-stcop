@@ -1,5 +1,6 @@
 ﻿#include "XRayRender.h"
 
+#include "Passes/Geometry/TRenderDeferredPass.h"
 #include "Passes/UI/XRayRenderUIPass.h"
 #include "Resources/XRayRenderResourcesManager.h"
 #include "Resources/Shaders/XRayShaderType.h"
@@ -35,15 +36,13 @@ void XRayRender::Initialize()
     
     CreateGlobalConstantBuffer();
     
-    
-    
-    TestTexture = GRenderResourcesManager->TexturesManager->GetTexture("item\\item_access_card.dds");
-    TestTexture2 = GRenderResourcesManager->TexturesManager->GetTexture("ui\\ui_microphone.dds");
-    
     OutputRenderTarget = new XRayRenderTarget2D(1024, 768, nri::Format::RGBA8_UNORM,{} ,"Output");
     OutputRenderTarget->GetOrCreateHeapIndex();
     
+    DepthRenderTarget = new XRayRenderTarget2D(1024, 768, nri::Format::D24_UNORM_S8_UINT,{} ,"Depth");
+    
     UIPass = new XRayRenderUIPass;
+    GeometryPass = new TRenderDeferredPass;
 }
 
 void XRayRender::Destroy()
@@ -75,22 +74,22 @@ void XRayRender::Destroy()
         OutputRenderTarget = nullptr;
     }
     
-    if (TestTexture)
+    if (DepthRenderTarget)
     {
-        GRenderResourcesManager->TexturesManager->Free(TestTexture);
-        TestTexture = nullptr;
-    }
-    
-    if (TestTexture2)
-    {
-        GRenderResourcesManager->TexturesManager->Free(TestTexture2);
-        TestTexture2 = nullptr;
+        delete DepthRenderTarget;
+        DepthRenderTarget = nullptr;
     }
     
     if (UIPass)
     {
         delete UIPass;
         UIPass = nullptr;  
+    }
+    
+    if (GeometryPass)
+    {
+        delete GeometryPass;
+        GeometryPass = nullptr;
     }
 
     if (Pipeline)
@@ -260,8 +259,7 @@ void XRayRender::Render()
     GRenderDevice.CoreInterface.Wait(*FrameFence, FrameIndex >= QueuedFrames.size() ? 1 + FrameIndex - QueuedFrames.size() : 0);
     
     UpdateGlobalConstantBuffer();
-    GRenderResourcesManager->DescriptorHeapAllocator->FlushNextFrame();
-    GRenderResourcesManager->TexturesManager->FlushNextFrame();
+    GRenderResourcesManager->FlushNextFrame();
     
     uint32_t QueuedFrameIndex = FrameIndex % QueuedFrames.size();
     const FXRayQueuedFrame& QueuedFrame = QueuedFrames[QueuedFrameIndex];
@@ -271,20 +269,27 @@ void XRayRender::Render()
     GRenderDevice.CoreInterface.ResetCommandAllocator(*QueuedFrame.CommandAllocator);
     GRenderDevice.CoreInterface.BeginCommandBuffer(CurrentCommandBuffer, GRenderResourcesManager->GlobalDescriptorPool);
     
+    GRenderDevice.CoreInterface.CmdBeginAnnotation(CurrentCommandBuffer,"Main",nri::BGRA_UNUSED);
     {
         {
             UIPass->Upload(CurrentCommandBuffer);
         }
         {
-            nri::TextureBarrierDesc TextureBarrierDescription = {};
-            TextureBarrierDescription.texture = OutputRenderTarget->Texture;
-            TextureBarrierDescription.layerNum = 1;
-            TextureBarrierDescription.mipNum = 1;
-            OutputRenderTarget->SetNewAccessLayoutStage(TextureBarrierDescription,{nri::AccessBits::COLOR_ATTACHMENT, nri::Layout::COLOR_ATTACHMENT});
+            nri::TextureBarrierDesc TextureBarrierDescription[2] = {};
+            TextureBarrierDescription[0].texture = OutputRenderTarget->Texture;
+            TextureBarrierDescription[0].layerNum = 1;
+            TextureBarrierDescription[0].mipNum = 1;
+            OutputRenderTarget->SetNewAccessLayoutStage(TextureBarrierDescription[0],{nri::AccessBits::COLOR_ATTACHMENT, nri::Layout::COLOR_ATTACHMENT});
         
+            TextureBarrierDescription[1].texture = DepthRenderTarget->Texture;
+            TextureBarrierDescription[1].layerNum = 1;
+            TextureBarrierDescription[1].mipNum = 1;
+            DepthRenderTarget->SetNewAccessLayoutStage(TextureBarrierDescription[1],{nri::AccessBits::DEPTH_STENCIL_ATTACHMENT_WRITE, nri::Layout::DEPTH_STENCIL_ATTACHMENT});
+        
+            
             nri::BarrierDesc BarrierDescription = {};
-            BarrierDescription.textureNum = 1;
-            BarrierDescription.textures  = &TextureBarrierDescription;
+            BarrierDescription.textureNum = 2;
+            BarrierDescription.textures  = TextureBarrierDescription;
             GRenderDevice.CoreInterface.CmdBarrier(CurrentCommandBuffer,BarrierDescription);
         }
         {
@@ -296,9 +301,11 @@ void XRayRender::Render()
             nri::RenderingDesc RenderingDescription = {};
             RenderingDescription.colorNum = 1;
             RenderingDescription.colors = &ColorAttachmentDescription;
-
-            GRenderDevice.CoreInterface.CmdBeginRendering(CurrentCommandBuffer, RenderingDescription);
+            RenderingDescription.depth.clearValue = {1,0x0};
+            RenderingDescription.depth.loadOp = nri::LoadOp::CLEAR;
+            RenderingDescription.depth.descriptor = DepthRenderTarget->DescriptorAttachment;
             
+            GRenderDevice.CoreInterface.CmdBeginRendering(CurrentCommandBuffer, RenderingDescription);
         }
         {
             GRenderDevice.CoreInterface.CmdSetPipelineLayout(CurrentCommandBuffer, nri::BindPoint::GRAPHICS, * GRenderResourcesManager->GlobalPipelineLayout);
@@ -316,7 +323,9 @@ void XRayRender::Render()
             const nri::Rect ScissorRect = {0,0,OutputRenderTarget->TextureDescription.width,OutputRenderTarget->TextureDescription.height};
             GRenderDevice.CoreInterface.CmdSetScissors(CurrentCommandBuffer,&ScissorRect,1);
         }
+        
         {
+            GeometryPass->Render(CurrentCommandBuffer);
             UIPass->Render(CurrentCommandBuffer);
         }
         
@@ -336,6 +345,7 @@ void XRayRender::Render()
         }
     }
     
+    GRenderDevice.CoreInterface.CmdEndAnnotation(CurrentCommandBuffer);
     GRenderDevice.CoreInterface.EndCommandBuffer(CurrentCommandBuffer);
     
     {
@@ -364,9 +374,8 @@ void XRayRender::WaitGPU()
 
     if (GRenderResourcesManager)
     {
-        GRenderResourcesManager->DescriptorHeapAllocator->FlushNextFrame();
+        GRenderResourcesManager->FlushNextFrame();
         GRenderResourcesManager->DescriptorHeapAllocator->UpdateDescriptorRanges();
-        GRenderResourcesManager->TexturesManager->FlushNextFrame();
     }
 }
 
@@ -379,6 +388,12 @@ void XRayRender::ResizeRenderTarget(uint32_t InWidth, uint32_t InHeight)
     }
     OutputRenderTarget = new XRayRenderTarget2D(InWidth, InHeight, nri::Format::RGBA8_UNORM,{} ,"Output");
     OutputRenderTarget->GetOrCreateHeapIndex();
+    
+    if (DepthRenderTarget)
+    {
+        delete DepthRenderTarget;
+    }
+    DepthRenderTarget = new XRayRenderTarget2D(InWidth, InHeight, nri::Format::D24_UNORM_S8_UINT,{} ,"Depth");
 }
 
 void XRayRender::CreateGlobalConstantBuffer()
@@ -420,6 +435,9 @@ void XRayRender::UpdateGlobalConstantBuffer()
     if (FXRayRenderConstantBuffer* ConstantBuffer = (FXRayRenderConstantBuffer*)GRenderDevice.CoreInterface.MapBuffer(*GlobalConstantBuffer, 0, sizeof(FXRayRenderConstantBuffer))) 
     {
         ConstantBuffer->SceneView = {(float)OutputRenderTarget->TextureDescription.width,(float)OutputRenderTarget->TextureDescription.height,1.f/OutputRenderTarget->TextureDescription.width,1.f/OutputRenderTarget->TextureDescription.height};
+        ConstantBuffer->ViewProjection = DevicePtr->mFullTransform;
         GRenderDevice.CoreInterface.UnmapBuffer(*GlobalConstantBuffer);
     }
+    
+    
 }

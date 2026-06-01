@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "XRayFHierrarhyVisual.h"
 
+#include "Resources/LegacyScene/TRenderLegacyScene.h"
+
 void CDS0_FHierrarhyVisual::Release()
 {
 	if (!m_DontDelete) {
@@ -20,8 +22,7 @@ void CDS0_FHierrarhyVisual::Load(const char* N, IReader* data, u32 dwFlags)
 		for (u32 i = 0; i < count; i++) {
 
 			u32 ID = data->r_u32();
-			children[i] = nullptr;// GRenderInterface.GetVisual(ID);
-			VERIFY(!"Check Me!");
+			children[i] = GRenderResourcesManager->LegacyScene->GetVisual(ID);
 		}
 		m_DontDelete = true;
 	}
