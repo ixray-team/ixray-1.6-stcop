@@ -498,6 +498,8 @@ void CWeapon::Load		(const char* section)
 		m_hit_probability[i]		= READ_IF_EXISTS(pSettings,r_float,section,temp,1.f);
 	}
 
+	m_bAimActions = READ_IF_EXISTS(pSettings, r_bool, section, "enable_aim_actions", false);
+
 	{
 		string_path	ce_path = {};
 		shared_str tmp = READ_IF_EXISTS(pSettings, r_string, hud_sect, "cam_safemode_in", "camera_effects\\actor_move\\safemode_in.anm");
@@ -1863,7 +1865,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				return true;
 			}
 
-			if (!IsPending() && GetState() == eIdle && !IsZoomed())
+			if ((!IsPending() || GetState() == eIdle) && !IsZoomed())
 			{
 				SwitchState(eKick);
 				return true;
@@ -1943,7 +1945,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 
 						if (!IsZoomed())
 						{
-							if (!IsPending())
+							if ((m_bAimActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out) || !m_bAimActions) && GetState() != eHiding || !IsPending())
 							{
 								if (!CanAimNow())
 								{
@@ -1957,9 +1959,10 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 									return false;
 								}
 
-								if (GetState() != eIdle)
+								if (!m_sAimBlendParams[0].has_motion && GetState() != eIdle)
 								{
 									SwitchState(eIdle);
+									StopShooting();
 								}
 
 								OnZoomIn();
@@ -2008,13 +2011,14 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 							return false;
 						}
 
-						if (!IsZoomed() && !IsPending())
+						if (!IsZoomed() && ((m_bAimActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out) || !m_bAimActions) && GetState() != eHiding || !IsPending()))
 						{
-							//if (GetState() != eIdle)
-							//{
-								//SwitchState(eIdle);
-							//}
-							//StopShooting();
+							if (!m_sAimBlendParams[0].has_motion && GetState() != eIdle)
+							{
+								SwitchState(eIdle);
+								StopShooting();
+							}
+
 							OnZoomIn();
 						}
 					}
@@ -2077,12 +2081,12 @@ bool CWeapon::SwitchAmmoType(u32 flags)
 		return false;
 	}
 
-	if (m_bBlockReload && GetState() != eIdle)
+	if (IsMisfire() && !IsGrenadeMode())
 	{
 		return false;
 	}
 
-	if (IsMisfire() && !IsGrenadeMode())
+	if (m_bBlockReload && (IsPending() || GetState() == eFire))
 	{
 		return false;
 	}
@@ -2108,7 +2112,7 @@ bool CWeapon::SwitchAmmoType(u32 flags)
 	bool b1, b2;
 	do
 	{
-		l_newType = u8((u32(l_newType + 1)) % m_ammoTypes.size());
+		l_newType = (l_newType + 1) % (u8)m_ammoTypes.size();
 		b1 = (l_newType != m_ammoType);
 		b2 = unlimited_ammo() ? false : (!m_pInventory->GetAny(m_ammoTypes[l_newType].c_str()));
 	} while (b1 && b2);
@@ -2459,9 +2463,12 @@ bool CWeapon::IsMisfire() const
 void CWeapon::Reload()
 {
 	StopShooting();
-	OnZoomOut();
-}
 
+	if (!m_bAimActions)
+	{
+		OnZoomOut();
+	}
+}
 
 bool CWeapon::IsGrenadeLauncherAttached() const
 {
@@ -3228,10 +3235,9 @@ void CWeapon::OnMagazineEmpty	()
 	}
 }
 
-
-void CWeapon::reinit			()
+void CWeapon::reinit()
 {
-	CHudItemObject::reinit			();
+	CHudItemObject::reinit();
 }
 
 void CWeapon::reload(const char* section)
@@ -4638,6 +4644,11 @@ void CWeapon::OnMotionMark(u8 state, const motion_marks& mark)
 	{
 		MakeWeaponKick(Device.vCameraPosition, Device.vCameraDirection);
 	}
+
+	if (mark.name == "mm_unpend")
+	{
+		SetPending(false);
+	}
 }
 
 bool CWeapon::ScopeFit(CScope* pIItem) const
@@ -5070,7 +5081,7 @@ bool CWeapon::NeedMovementBlend() const
 bool CWeapon::AllowSafemode() const
 {
 	const u8 state = GetState();
-	return m_bAllowSafemode && !IsZoomed() && (state == eIdle || state == eSafemodeSwitch || state == eSwitchMode);
+	return m_bAllowSafemode && !IsZoomed() && (state == eIdle || !IsPending() || state == eSafemodeSwitch || state == eSwitchMode);
 }
 
 void CWeapon::OnSafemodeOut()
@@ -5114,7 +5125,6 @@ THudLightLaser* CWeapon::GetLightLaser()
 {
 	return GetComponent<THudLightLaser>();
 }
-
 
 float CWeapon::GetAddonRecoil() const
 {
