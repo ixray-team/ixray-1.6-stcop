@@ -277,8 +277,13 @@ bool XRayShaderCompilerDesktop::CompileVK(const XRayShaderDefinesContainer& Defi
 	Arguments.push_back(L"64");
 	Arguments.push_back(L"0");
 
-	//Arguments.push_back(L"-fvk-bind-resource-heap");
-	//Arguments.push_back(L"-fvk-bind-sampler-heap");
+	Arguments.push_back(L"-fvk-bind-resource-heap");
+	Arguments.push_back(L"0");
+	Arguments.push_back(L"0");
+
+	Arguments.push_back(L"-fvk-bind-sampler-heap");
+	Arguments.push_back(L"1");
+	Arguments.push_back(L"1");
 
 
 	if (bDebugShader)
