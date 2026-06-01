@@ -284,14 +284,25 @@ public:
 	void ClearingBuffers()
 	{
 		isInitialized = false;
+		if (isInitialized)
+		{
+			if (h_params) cudaFreeHost(h_params);
+			if (h_rays)   cudaFreeHost(h_rays);
+			if (h_colors) cudaFreeHost(h_colors);
 
-		if (h_params) cudaFreeHost(h_params);
-		if (h_rays) cudaFreeHost(h_rays);
-		if (h_colors) cudaFreeHost(h_colors);
+			if (d_params) cudaFree(d_params);
+			if (d_rays)   cudaFree(d_rays);
+			if (d_colors) cudaFree(d_colors);
 
-		if (d_params) cudaFree(d_params);
-		if (d_rays) cudaFree(d_rays);
-		if (d_colors) cudaFree(d_colors);
+			h_params = nullptr;
+			h_rays   = nullptr;
+			h_colors = nullptr;
+
+			d_params = nullptr;
+			d_rays   = nullptr;
+			d_colors = nullptr;
+		}
+		
 		GetColors().clear();
 		GetColors().shrink_to_fit();
  	}
@@ -301,8 +312,7 @@ public:
 		LastIndexTask = 0;
 		current_flags = 0;
 		
-
-		this->max_rays = max_rays;
+ 		this->max_rays = max_rays;
 		CUDA_CHECK(cudaStreamCreate(&stream));
 
 		// parrams
@@ -341,7 +351,7 @@ public:
 			.Position = make_float3(Task.P.x, Task.P.y, Task.P.z),
 			.Direction = make_float3(Task.N.x, Task.N.y, Task.N.z),
   		};
-		LastIndexTask = INDEX;
+		LastIndexTask = INDEX + 1; //se7kills: CUDA Indexer fixed*
 	}
 	 
 	void TraceRaysNew()
