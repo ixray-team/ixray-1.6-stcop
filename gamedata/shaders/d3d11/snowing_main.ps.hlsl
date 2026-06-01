@@ -7,21 +7,51 @@ struct PSInput
 	float2 texcoord : TEXCOORD0;
 };
 
-void main(PSInput _I, out IXRayGbufferPack O)
-{
-    IXRayGbuffer G = (IXRayGbuffer)NULL;
-    p_bumped_new I;
+RWTexture2D<float4> u_color : register(u0);
+RWTexture2D<float4> u_normal : register(u1);
+RWTexture2D<float4> u_surface : register(u2);
 
-    GbufferUnpack((uint2)_I.hpos.xy, G);
+void main(PSInput _I)
+{
+	IXRayGbufferPack O = (IXRayGbufferPack)NULL;
+	IXRayMaterial M = (IXRayMaterial)NULL;
 	
-	clip(G.SnowMask - 0.00001f);
-	clip(0.9999f - G.Depth);
+	uint2 DTid = uint2(_I.hpos.xy);
+	M.Depth = s_position[DTid];
 	
-    I.position = float4(G.Point.xyz, 1.0f);
-	I.snow_mask = G.SnowMask * smoothstep(0.2f, 0.3f, G.Hemi);
+	if(M.Depth >= 1.0f)
+	{
+		return;
+	}
+	
+	M.Point = GbufferGetPointRealJitter(_I.texcoord, M.Depth);
+	
+	O.Color = u_color[DTid];
+	O.Normal = u_normal[DTid];
+	O.Material = u_surface[DTid];
+	
+	GbufferUnpackMaterial(O, M);
+	
+    p_bumped_new I; IXRayMaterial _M = M;
+	
+    I.position = float4(M.Point.xyz, 1.0f);
 
     float3 P = mul(m_invV, I.position);
-    float3 N = normalize(mul((float3x3)m_invV, G.Normal.xyz));
+    float3 N = normalize(mul((float3x3)m_invV, M.Normal.xyz));
+
+	float snow_mask = smoothstep(0.2f, 0.3f, M.Hemi);
+	snow_mask *= smoothstep(0.2f, 0.6f, N.y);
+	
+	bool object_mask = M.MaterialID == OBJECT_ID || M.MaterialID == FOLIAGE_ID;
+	
+#ifdef IGNORE_SNOW_MASK_ON_TERRAIN
+	object_mask = object_mask || M.MaterialID == TERRAIN_ID;
+#endif
+	
+	if(object_mask)
+	{
+		snow_mask = 0.0f;
+	}
 
     float3 T, B;
     I.tcdh.xy = P.xz * 0.2f;
@@ -41,37 +71,19 @@ void main(PSInput _I, out IXRayGbufferPack O)
     I.M3 = xform[2];
 	
 	I.hpos = _I.hpos;
-	
-#ifndef DISABLE_MOTION_VECTORS
     I.hpos_curr = I.hpos_old = I.hpos;
-    O.Velocity = 0.0f;
-#endif
-
-    IXRayMaterial M = (IXRayMaterial)NULL;
-
-    M.Sun = G.SSS;
-    M.Hemi = G.Hemi;
-
-    M.Depth = G.Point.z;
-    M.Point = G.Point.xyz;
-
+	
     SloadNew(I, M);
 
 	M.Normal = mul(xform, M.Normal);
-    M.Normal = lerp(G.Normal, M.Normal, I.snow_mask);
 	M.Normal = normalize(M.Normal);
 	
-#ifndef USE_LEGACY_LIGHT
-    M.Roughness = lerp(G.Roughness, M.Roughness, I.snow_mask);
-#else
-    M.Gloss = lerp(G.Gloss, M.Gloss, I.snow_mask);
-#endif
+	M = _M.Lerp(M, snow_mask);
 
     GbufferPack(O, M);
 	
-	O.Color.w = I.snow_mask;
-	O.Material.w = I.snow_mask;
-
-	O.Normal.w = 1.0f;
+	u_color[DTid] = O.Color;
+	u_normal[DTid] = O.Normal;
+	u_surface[DTid] = O.Material;
 }
 

@@ -95,7 +95,6 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
 	#endif
 
 	O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
-	O.snow_mask = 0.0;
 #else
     O.tc0 = I.tc.xy;
 #endif

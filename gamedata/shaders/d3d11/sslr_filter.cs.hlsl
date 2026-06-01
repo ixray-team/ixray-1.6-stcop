@@ -69,7 +69,10 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	if(O.Depth >= 1.0f)
 	{
-		u_sslr_temp[DTid.xy] = (0.0).xxxx;
+		float4 FinalColor = s_image.SampleLevel(smp_nofilter, I.texcoord, 0.0f);
+		FinalColor.w = O.ViewDist;
+		
+		u_sslr_temp[DTid.xy] = FinalColor;
 		return;
 	}
 

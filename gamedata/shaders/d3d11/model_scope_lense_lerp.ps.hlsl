@@ -31,7 +31,9 @@ void main(v2p I, float4 pos2d : SV_POSITION, out IXRayForward O)
     float4 t_vp2 = s_image[pos2d.xy];
 	
 	float alpha = m_hud_params.y * m_hud_params.a;
-	t_vp2 *= saturate(alpha * 2.0f - 1.0f);
+	t_vp2.w = saturate(alpha * 2.0f - 1.0f);
+	t_vp2.xyz *= t_vp2.w * t_vp2.w;
+	
 	alpha = saturate(alpha * 2.0f);
 
     float3 final = lerp(t_vp2.xyz, t_base.xyz, t_base.a);

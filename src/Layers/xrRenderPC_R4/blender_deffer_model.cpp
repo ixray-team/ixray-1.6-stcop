@@ -86,7 +86,6 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
 			case SE_R2_NORMAL_HQ:
 			case SE_R2_NORMAL_LQ:
 			{
-				RImplementation.addShaderOption("FORWARD_LIGHT", "1");
 				uber_forward(C, SE_R2_NORMAL_LQ != C.iElement, "deffer_model", "forward_base", true, true);
 				break;
 			}
