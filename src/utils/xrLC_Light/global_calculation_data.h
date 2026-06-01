@@ -21,7 +21,7 @@ struct global_claculation_data
 	b_params							g_params;//////////////////////lc
 	xr_vector<b_material>				g_materials;///////////////////lc
 	xr_vector<b_BuildTexture>			g_textures;////////////////////lc
-	CDB::MODEL							RCAST_Model;///////////////////lc
+	CDB::MODEL*							RCAST_Model;///////////////////lc
 
 	Fbox								LevelBB;//-----------============
 	global_slots_data					slots_data;//-------=============
@@ -32,8 +32,12 @@ struct global_claculation_data
 	// Mu Stuff
 			global_claculation_data		(): g_shaders_xrlc( 0 ) {}
 	void	xrLoad						(bool skipThm);
+	void	xrUnload();
+	
 	void	xrLoadGeometry				(IReader* fs);
 	void	xrCalculateOpacity();
+
+
 };
 
 extern global_claculation_data	gl_data;
