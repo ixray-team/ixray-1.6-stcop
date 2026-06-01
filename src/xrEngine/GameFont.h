@@ -17,6 +17,7 @@ class ENGINE_API CGameFont final
 {
 	friend class dxFontRender;
 	friend class FontRender;
+	friend class CDS0_FontRender;
 
 	enum EStyle : u64
 	{

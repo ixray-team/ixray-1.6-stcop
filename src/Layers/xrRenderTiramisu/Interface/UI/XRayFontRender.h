@@ -1,5 +1,9 @@
 #pragma once
-class CDS0_FontRender:public IFontRender
+
+class XRayTexture2D;
+
+class CDS0_FontRender:
+	public IFontRender
 {
 public:
 	CDS0_FontRender();
@@ -9,4 +13,5 @@ public:
 	void CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap) override;
 
 private:
+	XRayTexture2D* Atlas;
 };
