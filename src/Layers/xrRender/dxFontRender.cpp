@@ -178,6 +178,18 @@ void dxFontRender::OnRender(CGameFont& owner)
 	}
 }
 
+bool dxFontRender::GetAtlasTexSize(u32& outW, u32& outH) const
+{
+	if (!pTexture)
+	{
+		return false;
+	}
+
+	outW = pTexture->get_Width();
+	outH = pTexture->get_Height();
+	return outW > 0 && outH > 0;
+}
+
 void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap)
 {
 	PROF_EVENT("dxFontRender::CreateFontAtlas");
