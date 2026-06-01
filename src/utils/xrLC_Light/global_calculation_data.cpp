@@ -357,8 +357,10 @@ void global_claculation_data::xrLoadGeometry(IReader* fs)
 		}
 		container.useMsg = false;
 		container.RemoveDublicates();
-		xr_vector<Fvector>& verts = RCAST_Model.get_verts();
-		xr_vector<CDB::TRI>& triangles = RCAST_Model.get_tris();
+
+		RCAST_Model = new CDB::MODEL();
+		xr_vector<Fvector>& verts = RCAST_Model->get_verts();
+		xr_vector<CDB::TRI>& triangles = RCAST_Model->get_tris();
 	
 		verts = container.vertex();
 		for (auto& F : container.faces())
@@ -367,7 +369,27 @@ void global_claculation_data::xrLoadGeometry(IReader* fs)
 		}
 
 		Msg("RayQuery Box Model: Faces : %u | Vertex: %u", triangles.size(), verts.size());
-		RCAST_Model.build(verts.data(), verts.size(), triangles.data(), triangles.size(), 
+		RCAST_Model->build(verts.data(), verts.size(), triangles.data(), triangles.size(), 
 			nullptr, nullptr, nullptr, false , false);
 	}
+}
+
+
+void global_claculation_data::xrUnload()
+{
+	slots_data.Free();
+
+	xr_delete(RCAST_Model);
+	xr_delete(g_shaders_xrlc);
+
+	// lights 
+	g_lights.clear();
+
+	// vectors
+	g_shader_compile.clear(); g_shader_compile.shrink_to_fit();
+	g_materials.clear();	  g_materials.shrink_to_fit();
+	g_textures.clear();		  g_textures.shrink_to_fit();
+
+	building_embree_faces.clear(); building_embree_faces.shrink_to_fit();
+
 }

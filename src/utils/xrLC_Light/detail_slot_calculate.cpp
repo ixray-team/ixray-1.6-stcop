@@ -43,8 +43,8 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 	BB.getsphere( S.P, S.R );
 
 
-	CDB::TRI*	tris	= gl_data.RCAST_Model.get_tris().data();
-	Fvector*	verts	= gl_data.RCAST_Model.get_verts().data();
+	CDB::TRI*	tris	= gl_data.RCAST_Model->get_tris().data();
+	Fvector*	verts	= gl_data.RCAST_Model->get_verts().data();
 
 	// select lights
 	Selected.select		( gl_data.g_lights, S.P, S.R );
@@ -60,7 +60,7 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 	BB.get_CD(bbC, bbD);	
 	bbD.add(0.01f);
 
-	DB.box_query(&gl_data.RCAST_Model, bbC, bbD);
+	DB.box_query(gl_data.RCAST_Model, bbC, bbD);
 
 	box_result.clear();
 	for (auto& R : DB.r_vec())
@@ -124,16 +124,16 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 
 	if (gCompilerMode.Embree)
 	{
-		LightPoint_Details(rayTasks, Selected, 0);			// Идеально пакетные пашут ибо 225 из одной позиции запросов !
+		LightPoint_Details(rayTasks, Selected, 0);			// РРґРµР°Р»СЊРЅРѕ РїР°РєРµС‚РЅС‹Рµ РїР°С€СѓС‚ РёР±Рѕ 225 РёР· РѕРґРЅРѕР№ РїРѕР·РёС†РёРё Р·Р°РїСЂРѕСЃРѕРІ !
  		for (auto& task : rayTasks)
  			amount.add( task.C );
 		rayTasks.clear();
 
-		// calculation of luminocity (225 samples на 1 травинку) может и много :)
+		// calculation of luminocity (225 samples РЅР° 1 С‚СЂР°РІРёРЅРєСѓ) РјРѕР¶РµС‚ Рё РјРЅРѕРіРѕ :)
 		amount.scale(count);
 		amount.mul(.5f);
 
-		// Пишется результат в (level.details) !
+		// РџРёС€РµС‚СЃСЏ СЂРµР·СѓР»СЊС‚Р°С‚ РІ (level.details) !
 		DS.c_dir = DS.w_qclr(amount.sun, 15);
 		DS.c_hemi = DS.w_qclr(amount.hemi, 15);
 		DS.c_r = DS.w_qclr(amount.rgb.x, 15);
@@ -179,7 +179,7 @@ void ApplyColorsGPU()
 			color.scale(count);
 			color.mul(.5f);
 
-			// Пишется результат в (level.details) !
+			// РџРёС€РµС‚СЃСЏ СЂРµР·СѓР»СЊС‚Р°С‚ РІ (level.details) !
 			DS.c_dir	= DS.w_qclr(color.sun, 15);
 			DS.c_hemi	= DS.w_qclr(color.hemi, 15);
 			DS.c_r		= DS.w_qclr(color.rgb.x, 15);
@@ -265,6 +265,14 @@ void xrLight_Details()
 
 		ApplyColorsGPU();
 	}
+#endif
+
+	Phase("Unloading data buffers...");
+	gl_data.xrUnload();
+ 
+	EmbreeMain.IntelEmbereUnloadAll();
+#ifdef LCCUDA_BUILD
+	GPUTaskinSystem.DestroyGPU_Model();
 #endif
 
 	Msg("Total processing: %u ms.", start_time.GetElapsed_ms());
