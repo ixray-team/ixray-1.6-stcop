@@ -116,12 +116,9 @@ void CBuild::Light()
 
 	auto BuildingUV = [this]()
 	{
-		Phase("Building Normals...");
 		CalcNormals();
  
-
-		Phase("Building tangent-basis ...");
- 		xrPhase_TangentBasis();
+  		xrPhase_TangentBasis();
 
 		Phase("Building UV...");
 		//****************************************** Resolve materials
