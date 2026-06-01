@@ -42,7 +42,7 @@ float3 main(PSInputFullscreen I) : SV_Target
 	    Bloom = BrokeBloom(Bloom);
     #endif
 	
-    Color.xyz = lerp(Color.xyz, Bloom.xyz * 0.1666f, bloom_params.x);
+    Color.xyz = Color.xyz + Bloom.xyz * 0.1666f * bloom_params.x;
 #else
     Bloom = s_bloom.Sample(smp_rtlinear, I.texcoord);
 
