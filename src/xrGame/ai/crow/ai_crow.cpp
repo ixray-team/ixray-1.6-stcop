@@ -136,6 +136,8 @@ BOOL CAI_Crow::net_Spawn		(CSE_Abstract* DC)
 	setVisible	(TRUE);
 	setEnabled	(TRUE);
 
+	renderable.visual->_ignore_optimization = true;
+
 	// animations
 	IKinematicsAnimated*	M		= smart_cast<IKinematicsAnimated*>(Visual()); R_ASSERT(M);
 	m_Anims.m_death.Load		(M,"death");

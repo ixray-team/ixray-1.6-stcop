@@ -286,13 +286,333 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 	}
 }
 
+#include "r__dsgraph_constants.h"
+
+IC float GetDistFromCamera(const Fvector& from_position)
+// Aproximate, adjusted by fov, distance from camera to position (For right work when looking though binoculars and scopes)
+{
+	float distance = Device.vCameraPosition.distance_to(from_position);
+	float fov_K = BASE_FOV / Device.fFOV;
+	float adjusted_distane = distance / fov_K;
+
+	return adjusted_distane;
+}
+
+IC bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm, Fmatrix& transform_matrix, bool ignore_optimize = false)
+{
+	if (ignore_optimize)
+		return true;
+
+	if ((isStatic && opt_static >= 1) || (!isStatic && opt_dynamic >= 1))
+	{
+		float sphere_volume = pVisual->getVisData().sphere.volume();
+
+		float adjusted_distane = 0;
+
+		if (isStatic)
+			adjusted_distane = GetDistFromCamera(pVisual->vis.sphere.P);
+		else
+			// dynamic geometry position needs to be transformed by transform matrix, to get world coordinates, dont forget ;)
+		{
+			Fvector pos;
+			transform_matrix.transform_tiny(pos, pVisual->vis.sphere.P);
+
+			adjusted_distane = GetDistFromCamera(pos);
+		}
+
+		if (sm && !!ps_r__common_flags.test(RFLAG_OPT_SHAD_GEOM)) // Highest cut off for shadow map
+		{
+			if (sphere_volume < 50000.f && adjusted_distane > 160)
+				// don't need geometry behind the farest sun shadow cascade
+				return false;
+
+			if ((sphere_volume < o_optimize_static_l1_size.z) &&
+				(adjusted_distane > o_optimize_static_l1_dist.z))
+				return false;
+			else if ((sphere_volume < o_optimize_static_l2_size.z) &&
+				(adjusted_distane > o_optimize_static_l2_dist.z))
+				return false;
+			else if ((sphere_volume < o_optimize_static_l3_size.z) &&
+				(adjusted_distane > o_optimize_static_l3_dist.z))
+				return false;
+			else if ((sphere_volume < o_optimize_static_l4_size.z) &&
+				(adjusted_distane > o_optimize_static_l4_dist.z))
+				return false;
+			else if ((sphere_volume < o_optimize_static_l5_size.z) &&
+				(adjusted_distane > o_optimize_static_l5_dist.z))
+				return false;
+			else if ((sphere_volume < o_optimize_static_l6_size.z) &&
+				(adjusted_distane > o_optimize_static_l6_dist.z))
+				return false;
+			else if ((sphere_volume < o_optimize_static_l7_size.z) &&
+				(adjusted_distane > o_optimize_static_l7_dist.z))
+				return false;
+			else if ((sphere_volume < o_optimize_static_l8_size.z) &&
+				(adjusted_distane > o_optimize_static_l8_dist.z))
+				return false;
+			else if ((sphere_volume < o_optimize_static_l9_size.z) &&
+				(adjusted_distane > o_optimize_static_l9_dist.z))
+				return false;
+			else if ((sphere_volume < o_optimize_static_l10_size.z) &&
+				(adjusted_distane > o_optimize_static_l10_dist.z))
+				return false;
+			else if ((sphere_volume < o_optimize_static_l11_size.z) &&
+				(adjusted_distane > o_optimize_static_l11_dist.z))
+				return false;
+			else if ((sphere_volume < o_optimize_static_l12_size.z) &&
+				(adjusted_distane > o_optimize_static_l12_dist.z))
+				return false;
+		}
+
+		if (isStatic)
+		{
+			if (opt_static == 2)
+			{
+				if ((sphere_volume < o_optimize_static_l1_size.y) &&
+					(adjusted_distane > o_optimize_static_l1_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l2_size.y) &&
+					(adjusted_distane > o_optimize_static_l2_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l3_size.y) &&
+					(adjusted_distane > o_optimize_static_l3_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l4_size.y) &&
+					(adjusted_distane > o_optimize_static_l4_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l5_size.y) &&
+					(adjusted_distane > o_optimize_static_l5_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l6_size.y) &&
+					(adjusted_distane > o_optimize_static_l6_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l7_size.y) &&
+					(adjusted_distane > o_optimize_static_l7_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l8_size.y) &&
+					(adjusted_distane > o_optimize_static_l8_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l9_size.y) &&
+					(adjusted_distane > o_optimize_static_l9_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l10_size.y) &&
+					(adjusted_distane > o_optimize_static_l10_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l11_size.y) &&
+					(adjusted_distane > o_optimize_static_l11_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l12_size.y) &&
+					(adjusted_distane > o_optimize_static_l12_dist.y))
+					return false;
+			}
+			else if (opt_static == 3)
+			{
+				if ((sphere_volume < o_optimize_static_l1_size.z) &&
+					(adjusted_distane > o_optimize_static_l1_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l2_size.z) &&
+					(adjusted_distane > o_optimize_static_l2_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l3_size.z) &&
+					(adjusted_distane > o_optimize_static_l3_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l4_size.z) &&
+					(adjusted_distane > o_optimize_static_l4_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l5_size.z) &&
+					(adjusted_distane > o_optimize_static_l5_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l6_size.z) &&
+					(adjusted_distane > o_optimize_static_l6_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l7_size.z) &&
+					(adjusted_distane > o_optimize_static_l7_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l8_size.z) &&
+					(adjusted_distane > o_optimize_static_l8_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l9_size.z) &&
+					(adjusted_distane > o_optimize_static_l9_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l10_size.z) &&
+					(adjusted_distane > o_optimize_static_l10_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l11_size.z) &&
+					(adjusted_distane > o_optimize_static_l11_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l12_size.z) &&
+					(adjusted_distane > o_optimize_static_l12_dist.z))
+					return false;
+			}
+			else if (opt_static == 4)
+			{
+				if ((sphere_volume < o_optimize_static_l1_size.w) &&
+					(adjusted_distane > o_optimize_static_l1_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l2_size.w) &&
+					(adjusted_distane > o_optimize_static_l2_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l3_size.w) &&
+					(adjusted_distane > o_optimize_static_l3_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l4_size.w) &&
+					(adjusted_distane > o_optimize_static_l4_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l5_size.w) &&
+					(adjusted_distane > o_optimize_static_l5_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l6_size.w) &&
+					(adjusted_distane > o_optimize_static_l6_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l7_size.w) &&
+					(adjusted_distane > o_optimize_static_l7_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l8_size.w) &&
+					(adjusted_distane > o_optimize_static_l8_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l9_size.w) &&
+					(adjusted_distane > o_optimize_static_l9_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l10_size.w) &&
+					(adjusted_distane > o_optimize_static_l10_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l11_size.w) &&
+					(adjusted_distane > o_optimize_static_l11_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l12_size.w) &&
+					(adjusted_distane > o_optimize_static_l12_dist.w))
+					return false;
+			}
+			else
+			{
+				if ((sphere_volume < o_optimize_static_l1_size.x) &&
+					(adjusted_distane > o_optimize_static_l1_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l2_size.x) &&
+					(adjusted_distane > o_optimize_static_l2_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l3_size.x) &&
+					(adjusted_distane > o_optimize_static_l3_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l4_size.x) &&
+					(adjusted_distane > o_optimize_static_l4_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l5_size.x) &&
+					(adjusted_distane > o_optimize_static_l5_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l6_size.x) &&
+					(adjusted_distane > o_optimize_static_l6_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l7_size.x) &&
+					(adjusted_distane > o_optimize_static_l7_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l8_size.x) &&
+					(adjusted_distane > o_optimize_static_l8_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l9_size.x) &&
+					(adjusted_distane > o_optimize_static_l9_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l10_size.x) &&
+					(adjusted_distane > o_optimize_static_l10_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l11_size.x) &&
+					(adjusted_distane > o_optimize_static_l11_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_static_l12_size.x) &&
+					(adjusted_distane > o_optimize_static_l12_dist.x))
+					return false;
+			}
+		}
+		else
+		{
+			if (opt_dynamic == 2)
+			{
+				if ((sphere_volume < o_optimize_dynamic_l1_size.y) &&
+					(adjusted_distane > o_optimize_dynamic_l1_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l2_size.y) &&
+					(adjusted_distane > o_optimize_dynamic_l2_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l3_size.y) &&
+					(adjusted_distane > o_optimize_dynamic_l3_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l4_size.y) &&
+					(adjusted_distane > o_optimize_dynamic_l4_dist.y))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l5_size.y) &&
+					(adjusted_distane > o_optimize_dynamic_l5_dist.y))
+					return false;
+			}
+			else if (opt_dynamic == 3)
+			{
+				if ((sphere_volume < o_optimize_dynamic_l1_size.z) &&
+					(adjusted_distane > o_optimize_dynamic_l1_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l2_size.z) &&
+					(adjusted_distane > o_optimize_dynamic_l2_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l3_size.z) &&
+					(adjusted_distane > o_optimize_dynamic_l3_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l4_size.z) &&
+					(adjusted_distane > o_optimize_dynamic_l4_dist.z))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l5_size.z) &&
+					(adjusted_distane > o_optimize_dynamic_l5_dist.z))
+					return false;
+			}
+			else if (opt_dynamic == 4)
+			{
+				if ((sphere_volume < o_optimize_dynamic_l1_size.w) &&
+					(adjusted_distane > o_optimize_dynamic_l1_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l2_size.w) &&
+					(adjusted_distane > o_optimize_dynamic_l2_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l3_size.w) &&
+					(adjusted_distane > o_optimize_dynamic_l3_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l4_size.w) &&
+					(adjusted_distane > o_optimize_dynamic_l4_dist.w))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l5_size.w) &&
+					(adjusted_distane > o_optimize_dynamic_l5_dist.w))
+					return false;
+			}
+			else
+			{
+				if ((sphere_volume < o_optimize_dynamic_l1_size.x) &&
+					(adjusted_distane > o_optimize_dynamic_l1_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l2_size.x) &&
+					(adjusted_distane > o_optimize_dynamic_l2_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l3_size.x) &&
+					(adjusted_distane > o_optimize_dynamic_l3_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l4_size.x) &&
+					(adjusted_distane > o_optimize_dynamic_l4_dist.x))
+					return false;
+				else if ((sphere_volume < o_optimize_dynamic_l5_size.x) &&
+					(adjusted_distane > o_optimize_dynamic_l5_dist.x))
+					return false;
+			}
+		}
+	}
+
+	return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
+void CRender::add_leafs_Dynamic(dxRender_Visual *pVisual, bool ignore)
 {
 	//PROF_EVENT("add_leafs_Dynamic")
 	if (0==pVisual)				return;
+
+	if (!IsValuableToRender(pVisual, false, phase == 1, *val_pTransform, ignore))
+		return;
 
 	// Visual is 100% visible - simply add it
 	xr_vector<dxRender_Visual*>::iterator I,E;	// it may be useful for 'hierrarhy' visual
@@ -305,9 +625,9 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 			xrCriticalSectionGuard guard(&pG->onframe_lock);
 			for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++)	{
 				PS::CParticleGroup::SItem&			I_		= *i_it;
-				if (I_._effect)		add_leafs_Dynamic		(I_._effect);
-				for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_related.begin();	pit!=I_._children_related.end(); pit++)	add_leafs_Dynamic(*pit);
-				for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_free.begin();		pit!=I_._children_free.end();	pit++)	add_leafs_Dynamic(*pit);
+				if (I_._effect)		add_leafs_Dynamic		(I_._effect, ignore);
+				for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_related.begin();	pit!=I_._children_related.end(); pit++)	add_leafs_Dynamic(*pit, ignore);
+				for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_free.begin();		pit!=I_._children_free.end();	pit++)	add_leafs_Dynamic(*pit, ignore);
 			}
 		}
 		return;
@@ -317,7 +637,7 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 			FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
 			I = pV->children.begin	();
 			E = pV->children.end	();
-			for (; I!=E; I++)	add_leafs_Dynamic	(*I);
+			for (; I!=E; I++)	add_leafs_Dynamic	(*I, ignore);
 		}
 		return;
 	case MT_SKELETON_ANIM:
@@ -335,7 +655,7 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 			}
 			if (_use_lod)				
 			{
-				add_leafs_Dynamic			(pV->m_lod)		;
+				add_leafs_Dynamic			(pV->m_lod, ignore)		;
 			} else {
 #if RENDER==R_R1
 				pV->CalculateBones			(TRUE);
@@ -343,7 +663,7 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 #endif
 				I = pV->children.begin		();
 				E = pV->children.end		();
-				for (; I!=E; I++)	add_leafs_Dynamic	(*I);
+				for (; I!=E; I++)	add_leafs_Dynamic	(*I, ignore);
 			}
 		}
 		return;
@@ -366,6 +686,9 @@ void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 	if(RImplementation.phase==CRender::PHASE_NORMAL)
 #endif
 	if (!HOM.visible(pVisual->vis))		return;
+
+	if (!IsValuableToRender(pVisual, true, phase == 1, *val_pTransform, pVisual->_ignore_optimization))
+		return;
 
 	// Visual is 100% visible - simply add it
 	xr_vector<dxRender_Visual*>::iterator I,E;	// it may be usefull for 'hierrarhy' visuals
@@ -453,6 +776,9 @@ void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 BOOL CRender::add_Dynamic(dxRender_Visual *pVisual, u32 planes)
 {
 	//PROF_EVENT("add_Dynamic")
+
+	if (!IsValuableToRender(pVisual, false, phase == 1, *val_pTransform, pVisual->_ignore_optimization))
+		return false;
 
 	// Check frustum visibility and calculate distance to visual's center
 	Fvector		Tpos;	// transformed position
@@ -551,6 +877,9 @@ BOOL CRender::add_Dynamic(dxRender_Visual *pVisual, u32 planes)
 void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 {
 	//PROF_EVENT("add_Static")
+
+	if (!IsValuableToRender(pVisual, true, phase == 1, *val_pTransform, pVisual->_ignore_optimization))
+		return;
 
 	// Check frustum visibility and calculate distance to visual's center
 	EFC_Visible	VIS;

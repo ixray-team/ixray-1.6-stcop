@@ -145,8 +145,8 @@ Flags32 ps_r2_ls_flags_ext =
 
 Flags32 ps_r__common_flags = { R2FLAG_USE_BUMP | RFLAG_NO_RAM_TEXTURES | RFLAG_MT_TEX_LOAD };
 
-int opt_static = 0;
-int opt_dynamic = 0;
+int opt_static = 1;
+int opt_dynamic = 1;
 
 float		ps_r2_df_parallax_h			= 0.02f;
 float		ps_r2_df_parallax_range		= 60.f;
@@ -753,9 +753,12 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask, "r__no_ram_textures", &ps_r__common_flags, RFLAG_NO_RAM_TEXTURES);
 	CMD3(CCC_Mask, "r__mt_texture_load", &ps_r__common_flags, RFLAG_MT_TEX_LOAD);
 	CMD3(CCC_Token, "r_aa", &ps_r2_aa_type, aa_type_token);
-	CMD4(CCC_Integer, "r__optimize_static_geom", &opt_static, 0, 2);
-	CMD4(CCC_Integer, "r__optimize_dynamic_geom", &opt_dynamic, 0, 2);
+
+	// Geometry optimization
+	CMD4(CCC_Integer, "r__optimize_static_geom", &opt_static, 0, 4);
+	CMD4(CCC_Integer, "r__optimize_dynamic_geom", &opt_dynamic, 0, 4);
 	CMD3(CCC_Mask, "r__optimize_shadow_geom", &ps_r__common_flags, RFLAG_OPT_SHAD_GEOM);
+
 	CMD3(CCC_Mask, "r__shader_cache", &ps_r__common_flags, RFLAG_USE_CACHE);
 	CMD3(CCC_Token, "r__screenshot_format", &ps_screenshot_format, screenshot_format_token);
 

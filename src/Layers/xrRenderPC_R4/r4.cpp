@@ -478,10 +478,13 @@ BOOL CRender::occ_visible(Fbox& P) {
 	return HOM.visible(P);
 }
 
-void CRender::add_Visual(IRenderVisual* V) {
-	add_leafs_Dynamic((dxRender_Visual*)V);
+void CRender::add_Visual(IRenderVisual* V)
+{
+	add_leafs_Dynamic((dxRender_Visual*)V, V->_ignore_optimization);
 }
-void CRender::add_Geometry(IRenderVisual* V) {
+
+void CRender::add_Geometry(IRenderVisual* V)
+{
 	add_Static((dxRender_Visual*)V, View->getMask());
 }
 
