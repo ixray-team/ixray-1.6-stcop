@@ -117,6 +117,11 @@ XRayRenderResourcesManager::XRayRenderResourcesManager()
 		pipelineLayoutDesc.descriptorSets = GlobalDescriptorSetDescription;
 		pipelineLayoutDesc.shaderStages =  nri::StageBits::VERTEX_SHADER | nri::StageBits::FRAGMENT_SHADER;
 		pipelineLayoutDesc.flags = nri::PipelineLayoutBits::RESOURCE_HEAP_DIRECTLY_INDEXED | nri::PipelineLayoutBits::SAMPLER_HEAP_DIRECTLY_INDEXED;
+		
+		if (GRenderDevice.GraphicsApi == nri::GraphicsAPI::D3D12)
+		{
+			pipelineLayoutDesc.flags |= nri::PipelineLayoutBits::ENABLE_DRAW_PARAMETERS_EMULATION;
+		}
 
 		NRI_CHECK(GRenderDevice.CoreInterface.CreatePipelineLayout(*GRenderDevice.Device, pipelineLayoutDesc, GlobalPipelineLayout));
 	}
