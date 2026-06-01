@@ -684,6 +684,11 @@ void CUIActorMenuBase::InitInventoryContents(CUIDragDropListEx* pBagList)
 	m_UIPropertiesBox->Hide		();
 	SetCurrentItem				(nullptr);
 
+	if (GetInventoryOwner())
+	{
+		GetInventoryOwner()->inventory().RepairItemPlacements();
+	}
+
 	for (u8 i = 1; i <= LAST_SLOT; ++i)
 	{
 		if (m_pInvList[i])
