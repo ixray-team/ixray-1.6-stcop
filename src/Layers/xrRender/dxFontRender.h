@@ -12,6 +12,7 @@ public:
 	virtual void OnRender(CGameFont& owner);
 
 	virtual void CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap) override;
+	virtual bool GetAtlasTexSize(u32& outW, u32& outH) const override;
 
 private:
 	ref_shader				pShader;

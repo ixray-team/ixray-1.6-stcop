@@ -22,6 +22,7 @@
 #include "EffectorNightVision.h"
 #include "HudAnimatorManager.h"
 #include "nvg.h"
+#include "Wristwatch/WristwatchController.h"
 
 using namespace ACTOR_DEFS;
 
@@ -918,6 +919,7 @@ private:
 	bool m_need_fire_particle = false;
 	bool isGamepadShooting = false;
 	bool isGamepadZooming = false;
+	CWristwatchController _wristwatchController;
 public:
 	virtual void SetActorSleepiness(const float value);
 	virtual void SetActorSatiety(const float value);
