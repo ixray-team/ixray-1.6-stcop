@@ -1,12 +1,8 @@
-// Sector.cpp: implementation of the CSector class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#include "StdAfx.h"
-#include "Build.h"
+#include "stdafx.h"
+#include "build.h"
 #include "Sector.h"
 #include "OGF_Face.h"
-#include <execution>
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -14,7 +10,7 @@
 CSector::CSector(u32 ID)
 {
 	SelfID = ID;
-	TreeRoot=0;
+	TreeRoot = 0;
 }
 
 CSector::~CSector()
@@ -22,27 +18,81 @@ CSector::~CSector()
 
 }
 
-IC bool	ValidateMerge(Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
+IC BOOL	ValidateMerge(Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
 {
 	// Size
 	Fbox	merge;	merge.merge(bb_base, bb);
 	Fvector sz;		merge.getsize(sz);	sz.add(EPS_L);
-	if (sz.x > SLimit)		return false;	// Don't exceed limits (4/3 GEOM)
-	if (sz.y > SLimit)		return false;
-	if (sz.z > SLimit)		return false;
+	if (sz.x > SLimit)		return FALSE;	// Don't exceed limits (4/3 GEOM)
+	if (sz.y > SLimit)		return FALSE;
+	if (sz.z > SLimit)		return FALSE;
 
 	// Volume
 	volume = merge.getvolume();
 
 	// OK
-	return true;
+	return TRUE;
+}
+
+struct GridKey
+{
+	int x, y, z;
+
+	bool operator==(const GridKey& o) const
+	{
+		return x == o.x && y == o.y && z == o.z;
+	}
+};
+
+struct GridKeyHash
+{
+	size_t operator()(const GridKey& k) const
+	{
+		return (size_t)k.x * 73856093 ^
+			(size_t)k.y * 19349663 ^
+			(size_t)k.z * 83492791;
+	}
+};
+
+using Bucket = std::vector<int>;
+using GridMap = std::unordered_map<GridKey, Bucket, GridKeyHash>;
+
+static inline GridKey GetKey(const Fbox& b, float cellSize)
+{
+	Fvector c;
+	b.getcenter(c);
+
+	return {
+		(int)floorf(c.x / cellSize),
+		(int)floorf(c.y / cellSize),
+		(int)floorf(c.z / cellSize)
+	};
+}
+
+static inline void GatherNeighbors(
+	const GridKey& k,
+	const GridMap& grid,
+	std::vector<int>& out)
+{
+	for (int dx = -1; dx <= 1; dx++)
+		for (int dy = -1; dy <= 1; dy++)
+			for (int dz = -1; dz <= 1; dz++)
+			{
+				GridKey nk{ k.x + dx, k.y + dy, k.z + dz };
+
+				auto it = grid.find(nk);
+				if (it == grid.end()) continue;
+
+				const Bucket& b = it->second;
+				out.insert(out.end(), b.begin(), b.end());
+			}
 }
 
 void CSector::BuildHierrarhy()
 {
 	Fvector		scene_size;
 	float		delimiter;
-	bool		bAnyNode = false;
+	BOOL		bAnyNode = FALSE;
 
 	// calc scene BB
 	Fbox& scene_bb = pBuild->scene_bb;
@@ -56,86 +106,106 @@ void CSector::BuildHierrarhy()
 	delimiter = std::max(scene_size.x, std::max(scene_size.y, scene_size.z));
 	delimiter *= 2;
 
-	int		iLevel = 2;
-	float	SizeLimit = c_SS_maxsize / 4.f;
-	if (SizeLimit < 4.f)			SizeLimit = 4.f;
-	if (delimiter <= SizeLimit)	delimiter *= 2;		// just very small level
- 
+	int iLevel = 2;
+	float SizeLimit = c_SS_maxsize / 4.f;
+
+	if (SizeLimit < 4.f)
+		SizeLimit = 4.f;
+
+	if (delimiter <= SizeLimit)
+		delimiter *= 2;
+
+	// ================================
+	// MAIN LOOP (your logic)
+	// ================================
 	for (; SizeLimit <= delimiter; SizeLimit *= 2)
 	{
-		// Собираем кандидатов только этого сектора
-		xr_vector<int> candidates;
-		for (int idx = 0; idx < g_tree.size(); ++idx) {
-			if (!g_tree[idx]->bConnected && g_tree[idx]->Sector == SelfID)
-				candidates.push_back(idx);
+		int iSize = (int)g_tree.size();
+
+		// ================================
+		// GRID BUILD
+		// ================================
+		GridMap grid;
+		float cellSize = SizeLimit * 0.5f;
+
+		for (int i = 0; i < g_tree.size(); i++)
+		{
+			if (g_tree[i]->bConnected) continue;
+			if (g_tree[i]->Sector != SelfID) continue;
+
+			GridKey key = GetKey(g_tree[i]->bbox, cellSize);
+			grid[key].push_back(i);
 		}
 
-		// Сортируем по центру (для быстрой фильтрации по X)
-		std::sort(std::execution::par, candidates.begin(), candidates.end(), [&](int a, int b) 
+		for (int I = 0; I < iSize; I++)
 		{
-			Fvector C1, C2;
-			g_tree[a]->bbox.getcenter(C1);
-			g_tree[b]->bbox.getcenter(C2);
-			return C1.x < C2.x;
-		});
-
-		xr_vector<OGF_Node*> new_nodes;
-
-		AditionalData("Process : %.0f / %.0f | candidates: %u", SizeLimit, delimiter, candidates.size());
-
-		for (int id : candidates)
-		{
-			if (g_tree[id]->bConnected) continue;
+			if (g_tree[I]->bConnected) continue;
+			if (g_tree[I]->Sector != SelfID) continue;
 
 			OGF_Node* pNode = new OGF_Node(iLevel, u16(SelfID));
-			pNode->AddChield(id);
+			pNode->AddChield(I);
 
-			for (;;) {
+			AditionalData("Capturing[%.0f/%.0f] SectorsBest: %d/%d", SizeLimit, delimiter, I, iSize);
+
+			for (;;)
+			{
 				int best_id = -1;
 				float best_volume = flt_max;
 
-				// Поиск только рядом по X
-				Fvector Center;
-				g_tree[id]->bbox.getcenter(Center);
-				const float cx = Center.x;
-				for (int cand : candidates) {
-					if (g_tree[cand]->bConnected) continue;
-					Fvector c2;
-					g_tree[cand]->bbox.getcenter(c2);
-					if (fabsf(c2.x - cx) > SizeLimit)
-						continue;
+				std::vector<int> candidates;
+				candidates.reserve(64);
+
+				GridKey baseKey = GetKey(pNode->bbox, cellSize);
+				GatherNeighbors(baseKey, grid, candidates);
+
+				for (int k = 0; k < candidates.size(); k++)
+				{
+					int J = candidates[k];
+
+					OGF_Base* candidate = g_tree[J];
+
+					if (candidate->bConnected) continue;
+					if (candidate->Sector != SelfID) continue;
 
 					float V;
-					if (ValidateMerge(pNode->bbox, g_tree[cand]->bbox, V, SizeLimit) && V < best_volume) {
-						best_volume = V;
-						best_id = cand;
+					if (ValidateMerge(pNode->bbox, candidate->bbox, V, SizeLimit))
+					{
+						if (V < best_volume)
+						{
+							best_volume = V;
+							best_id = J;
+						}
 					}
 				}
 
-				if (best_id < 0) break;
+				if (best_id < 0)
+					break;
+
 				pNode->AddChield(best_id);
+				g_tree[best_id]->bConnected = true;
 			}
 
-			if (pNode->chields.size() > 1) {
+			if (pNode->chields.size() > 1)
+			{
 				pNode->CalcBounds();
-				new_nodes.push_back(pNode);
+				g_tree.push_back(pNode);
 				bAnyNode = true;
 			}
-			else {
-				g_tree[id]->bConnected = false;
+			else
+			{
+				g_tree[I]->bConnected = false;
 				xr_delete(pNode);
 			}
 		}
 
-		if (!new_nodes.empty()) {
-			g_tree.insert(g_tree.end(), new_nodes.begin(), new_nodes.end());
+		if (iSize != (int)g_tree.size())
 			iLevel++;
-		}
 	}
 
 
 	TreeRoot = 0;
-	if (bAnyNode) TreeRoot = g_tree.back();
+	if (bAnyNode)
+		TreeRoot = g_tree.back();
 	else {
 		for (u32 I = 0; I < g_tree.size(); I++)
 		{
@@ -167,5 +237,5 @@ void CSector::Save(IWriter& fs)
 	fs.w_chunk(fsP_Root, &ID, sizeof(u32));
 
 	// Portals
-	fs.w_chunk(fsP_Portals, &*Portals.begin(), (u32)Portals.size() * sizeof(u16));
+	fs.w_chunk(fsP_Portals, &*Portals.begin(), Portals.size() * sizeof(u16));
 }
