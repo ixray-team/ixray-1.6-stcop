@@ -195,10 +195,7 @@ void SaveCompilerCfg()
 	Serializer->Write("EmbreeBVHRobust", gCompilerMode.EmbreeBVHRobust);
 	Serializer->Write("ClearTemp", gCompilerMode.ClearTemp);
 	Serializer->Write("SkipTHM", gCompilerMode.SkipTHM);
-	Serializer->Write("LC_BackingDisabled", gCompilerMode.LC_BackingDisabled);
-	Serializer->Write("LC_SaveOFG", gCompilerMode.LC_SaveOFG);
-	Serializer->Write("LC_GI", gCompilerMode.LC_GI);
-	
+   	
 	Serializer->Write("LC_SkipStaticMap", gCompilerMode.LC_SkipStaticMap);
 	Serializer->Write("LC_NoSun", gCompilerMode.LC_NoSun);
 	Serializer->Write("LC_NoSMG", gCompilerMode.LC_NoSMG);
@@ -213,8 +210,7 @@ void SaveCompilerCfg()
 	Serializer->Write("ThreadsPerWork", gCompilerMode.ThreadsPerWork);
 	Serializer->Write("LC_Pixels", gCompilerMode.LC_Pixels);
 	Serializer->Write("WeldDistance", gCompilerMode.WeldDistance);
-	Serializer->Write("DO_NoSun", gCompilerMode.DO_NoSun);
-	Serializer->Write("AI_BuildSpawn", gCompilerMode.AI_BuildSpawn);
+ 	Serializer->Write("AI_BuildSpawn", gCompilerMode.AI_BuildSpawn);
 	Serializer->Write("AI_NoSeparatorCheck", gCompilerMode.AI_NoSeparatorCheck);
 	Serializer->Write("AI_FreeMPBuild", gCompilerMode.AI_FreeMPBuild);
 	Serializer->Write("AI_StartActor", gCompilerMode.AI_StartActor);
@@ -230,6 +226,8 @@ void SaveCompilerCfg()
 	Serializer->Write("item_current_geom", item_current_geom);
 	Serializer->Write("item_current_jitter", item_current_jitter);
 	Serializer->Write("item_current_jitter_mu", item_current_jitter_mu);
+
+	Serializer->Write("LC_fast_way", gCompilerMode.LC_fast_way);
 	Serializer->Write("LC_legacyLM", gCompilerMode.LC_legacyLM);
 	Serializer->Write("LC_CformType", gCompilerMode.LC_CformType);
 	Serializer->Write("LC_CFormChunkSize", gCompilerMode.LC_CFormChunkSize);
@@ -276,11 +274,7 @@ int APIENTRY WinMain
 	Serializer->Read("EmbreeBVHRobust", gCompilerMode.EmbreeBVHRobust);
 	Serializer->Read("ClearTemp", gCompilerMode.ClearTemp);
 	Serializer->Read("SkipTHM", gCompilerMode.SkipTHM);
-	Serializer->Read("LC_BackingDisabled", gCompilerMode.LC_BackingDisabled);
-	Serializer->Read("LC_SaveOFG", gCompilerMode.LC_SaveOFG);
-	Serializer->Read("LC_GI", gCompilerMode.LC_GI);
-
-	Serializer->Read("LC_SkipStaticMap", gCompilerMode.LC_SkipStaticMap);
+ 	Serializer->Read("LC_SkipStaticMap", gCompilerMode.LC_SkipStaticMap);
 	Serializer->Read("LC_NoSun", gCompilerMode.LC_NoSun);
 	Serializer->Read("LC_NoSMG", gCompilerMode.LC_NoSMG);
  	Serializer->Read("LC_Tess", gCompilerMode.LC_Tess);
@@ -294,8 +288,7 @@ int APIENTRY WinMain
 	Serializer->Read("ThreadsPerWork", gCompilerMode.ThreadsPerWork);
 	Serializer->Read("LC_Pixels", gCompilerMode.LC_Pixels);
 	Serializer->Read("WeldDistance", gCompilerMode.WeldDistance);
-	Serializer->Read("DO_NoSun", gCompilerMode.DO_NoSun);
-	Serializer->Read("AI_BuildSpawn", gCompilerMode.AI_BuildSpawn);
+ 	Serializer->Read("AI_BuildSpawn", gCompilerMode.AI_BuildSpawn);
 	Serializer->Read("AI_NoSeparatorCheck", gCompilerMode.AI_NoSeparatorCheck);
 	Serializer->Read("AI_FreeMPBuild", gCompilerMode.AI_FreeMPBuild);
 	Serializer->Read("AI_StartActor", gCompilerMode.AI_StartActor);
@@ -310,7 +303,9 @@ int APIENTRY WinMain
 	Serializer->Read("item_current_geom", item_current_geom);
 	Serializer->Read("item_current_jitter", item_current_jitter);
 	Serializer->Read("item_current_jitter_mu", item_current_jitter_mu);
- 	Serializer->Read("LC_legacyLM", gCompilerMode.LC_legacyLM);
+ 	
+	Serializer->Read("LC_fast_way", gCompilerMode.LC_fast_way);
+	Serializer->Read("LC_legacyLM", gCompilerMode.LC_legacyLM);
 	Serializer->Read("LC_CformType", gCompilerMode.LC_CformType);
 	Serializer->Read("LC_CFormChunkSize", gCompilerMode.LC_CFormChunkSize);
 	Serializer->Read("LC_GeomType", gCompilerMode.LC_GeomType);

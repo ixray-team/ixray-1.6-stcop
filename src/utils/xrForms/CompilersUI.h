@@ -50,39 +50,33 @@ struct CompilersMode
 	bool LC_OGF_STRIPTIFY   = true;
 	bool LC_OGF_TANGENT		= true;
 
-  	bool LC_SkipStaticMap = false;
-	bool LC_BackingDisabled = false;
-	bool LC_SaveOFG = false;
-	bool LC_GI = false;
-	bool LC_NoSun = false;
+	// LC Geometry Stuff
+	bool LC_SkipInvalidFaces = true;
 	bool LC_NoSMG = true;
  	bool LC_Tess = true;
-	bool LC_SkipInvalidFaces = true;
  	bool LC_skipWeld = false;
-	bool LC_legacyLM = false;
-	bool IsOverloadedSettings = false;
-
-	int LC_GeomChunkSize = 75;
-
+	 
+	// Geometry Export
+	GeomVanillaType LC_GeomType = GeomVanillaType::Vanilla;
 	CFormVersions LC_CformType = CFormVersions::Vanilla;
 	int LC_CFormChunkSize = 75;
-	
-	int LC_BORDER = 1;
-	int LC_sizeLmaps = 1024 * 4;
-	float LC_sizeFill  = 0.85f;
+	int LC_GeomChunkSize = 75;
+	 
+	// Lightmaps
+ 	int  LC_BORDER = 1;
+	int  LC_sizeLmaps = 1024 * 4;
+	bool LC_legacyLM = false;
+	bool LC_SkipStaticMap = false;
+	bool LC_fast_way = false;
+	bool LC_NoSun = false;
 
+	// Settings Owerride
+	bool IsOverloadedSettings = false;
 	int LC_JSampleMU = 6;
 	int LC_JSample = 9;
-	int ThreadsPerWork = 14;
-	
-	float LC_Pixels  = 10;
-
 	float WeldDistance = 0.005f;
-
-	GeomVanillaType LC_GeomType = GeomVanillaType::Vanilla;
+	float LC_Pixels = 10;
  
-	bool DO_NoSun = false;
-
 	// SPAWN COMPILER
 	bool AI_BuildSpawn = false;
 	char AI_spawn_name[256];
@@ -105,6 +99,9 @@ struct CompilersMode
 	{
 		return compilation_level.c_str();
 	}
+
+	// Потоки !
+	int ThreadsPerWork = 14;
 };
 
 void RenderMainUI();
