@@ -434,6 +434,18 @@ bool CUIActorMenuBase::CanSetItemToList(PIItem item, CUIDragDropListEx* l, u16& 
 		return false;
 	}
 
+	if (InventoryHolsterPistolSlotActiveInSettings() &&
+		m_pInvList[PISTOL_SLOT_NEW] &&
+		l == m_pInvList[INV_SLOT_2] &&
+		InventoryHolsterExclusivePistolFootprint(item))
+	{
+		if (GetInventoryOwner()->inventory().CanPutInSlot(item, PISTOL_SLOT_NEW, true))
+		{
+			ret_slot	= PISTOL_SLOT_NEW;
+			return		true;
+		}
+	}
+
 	if (item_slot == INV_SLOT_3 && l == m_pInvList[INV_SLOT_2] && !InventorySecondarySlotPairingStrict())
 	{
 		ret_slot	= INV_SLOT_2;

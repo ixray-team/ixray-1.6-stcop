@@ -235,22 +235,12 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
 		}
 		if (!placedPreferred)
 		{
-			if (InventoryHolsterPistolSlotActiveInSettings() &&
-				ItemFromSlot(PISTOL_SLOT_NEW) == nullptr &&
-				InventoryHolsterExclusivePistolFootprint(pIItem) &&
-				CanPutInSlot(pIItem, PISTOL_SLOT_NEW))
-			{
-				if (Slot(PISTOL_SLOT_NEW, pIItem, bNotActivate, strict_placement))
-				{
-					result = true;
-				}
-			}
-
 			if (!result && !pIItem->RuckDefault())
 			{
-				if (CanPutInSlot(pIItem, pIItem->BaseSlot()))
+				u16 const equipSlot = InventoryResolveSidearmEquipSlot(pIItem);
+				if (CanPutInSlot(pIItem, equipSlot))
 				{
-					result = Slot(pIItem->BaseSlot(), pIItem, bNotActivate, strict_placement); VERIFY(result);
+					result = Slot(equipSlot, pIItem, bNotActivate, strict_placement); VERIFY(result);
 				}
 				else if (CanPutInBelt(pIItem))
 				{
