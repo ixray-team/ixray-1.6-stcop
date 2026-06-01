@@ -174,6 +174,7 @@ inline void SloadNew(inout p_bumped_new I, inout IXRayMaterial M)
 		
 			#ifdef USE_IOR_TEXTURE
 				M.Specular = s_specular.Sample(smp_base, I.tcdh.xy).x;
+				M.Specular = M.Specular * M.Specular * 0.16f;
 			#endif
 		#endif
 
