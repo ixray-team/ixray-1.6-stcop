@@ -25,9 +25,6 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
         C.PassSET_Blend(true, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
 
         C.r_dx10Texture("s_position", r2_RT_P);
-        C.r_dx10Texture("s_normal", r2_RT_N"_temp");
-        C.r_dx10Texture("s_surface", r2_RT_S"_temp");
-        C.r_dx10Texture("s_diffuse", r2_RT_albedo);
 
         C.r_dx10Sampler("smp_nofilter");
         C.r_dx10Sampler("smp_rtlinear");
@@ -39,14 +36,20 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
         case ScreenPostProcessType::Vignette:
+        {
             C.r_Pass("stub_fullscreen_triangle", "vignette", false, false, false);
             break;
+        }
         case ScreenPostProcessType::Aberration:
+        {
             C.r_Pass("stub_fullscreen_triangle", "chromatic_aberration", false, false, false);
             break;
+        }
         case ScreenPostProcessType::Saturation:
+        {
             C.r_Pass("stub_fullscreen_triangle", "saturation", false, false, false);
             break;
+        }
         case ScreenPostProcessType::Raindrops:
         {
             C.r_Pass("stub_fullscreen_triangle", "raindrops", false, false, false);
