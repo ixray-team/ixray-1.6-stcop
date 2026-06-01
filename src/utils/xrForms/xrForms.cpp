@@ -202,12 +202,10 @@ void SaveCompilerCfg()
 	Serializer->Write("LC_SkipStaticMap", gCompilerMode.LC_SkipStaticMap);
 	Serializer->Write("LC_NoSun", gCompilerMode.LC_NoSun);
 	Serializer->Write("LC_NoSMG", gCompilerMode.LC_NoSMG);
-	Serializer->Write("LC_Noise", gCompilerMode.LC_Noise);
-	Serializer->Write("LC_Tess", gCompilerMode.LC_Tess);
+ 	Serializer->Write("LC_Tess", gCompilerMode.LC_Tess);
 	Serializer->Write("LC_SkipInvalidFaces", gCompilerMode.LC_SkipInvalidFaces);
 	Serializer->Write("LC_tex_format", current_format);
-	Serializer->Write("LC_NoSubdivide", gCompilerMode.LC_NoSubdivide);
-	Serializer->Write("LC_skipWeld", gCompilerMode.LC_skipWeld);
+ 	Serializer->Write("LC_skipWeld", gCompilerMode.LC_skipWeld);
 	Serializer->Write("IsOverloadedSettings", gCompilerMode.IsOverloadedSettings);
 	Serializer->Write("LC_sizeLmaps", gCompilerMode.LC_sizeLmaps);
  	Serializer->Write("LC_JSampleMU", gCompilerMode.LC_JSampleMU);
@@ -226,6 +224,7 @@ void SaveCompilerCfg()
 	Serializer->Write("AI_Draft", gCompilerMode.AI_Draft);
 	Serializer->Write("AI_Verify", gCompilerMode.AI_Verify);
 	Serializer->Write("AI_Verbose", gCompilerMode.AI_Verbose);
+
 	Serializer->Write("item_current_selected", item_current_lightmap);
 	Serializer->Write("item_current_cform", item_current_cform);
 	Serializer->Write("item_current_geom", item_current_geom);
@@ -236,6 +235,12 @@ void SaveCompilerCfg()
 	Serializer->Write("LC_CFormChunkSize", gCompilerMode.LC_CFormChunkSize);
 	Serializer->Write("LC_GeomType", gCompilerMode.LC_GeomType);
 	Serializer->Write("LC_GeomChunkSize", gCompilerMode.LC_GeomChunkSize);
+
+	// new Geometry Optimization off
+	Serializer->Write("LC_Skip_Progressive", gCompilerMode.LC_OGF_PROGRESSIVE);
+	Serializer->Write("LC_Skip_Striptify",   gCompilerMode.LC_OGF_STRIPTIFY);
+	Serializer->Write("LC_Skip_Tangents", gCompilerMode.LC_OGF_TANGENT);
+
 	Serializer->Save();
 }
 
@@ -278,12 +283,10 @@ int APIENTRY WinMain
 	Serializer->Read("LC_SkipStaticMap", gCompilerMode.LC_SkipStaticMap);
 	Serializer->Read("LC_NoSun", gCompilerMode.LC_NoSun);
 	Serializer->Read("LC_NoSMG", gCompilerMode.LC_NoSMG);
-	Serializer->Read("LC_Noise", gCompilerMode.LC_Noise);
-	Serializer->Read("LC_Tess", gCompilerMode.LC_Tess);
+ 	Serializer->Read("LC_Tess", gCompilerMode.LC_Tess);
 	Serializer->Read("LC_SkipInvalidFaces", gCompilerMode.LC_SkipInvalidFaces);
 	Serializer->Read("LC_tex_format", current_format);
-	Serializer->Read("LC_NoSubdivide", gCompilerMode.LC_NoSubdivide);
-	Serializer->Read("LC_skipWeld", gCompilerMode.LC_skipWeld);
+ 	Serializer->Read("LC_skipWeld", gCompilerMode.LC_skipWeld);
 	Serializer->Read("IsOverloadedSettings", gCompilerMode.IsOverloadedSettings);
 	Serializer->Read("LC_sizeLmaps", gCompilerMode.LC_sizeLmaps);
 	Serializer->Read("LC_JSampleMU", gCompilerMode.LC_JSampleMU);
@@ -312,6 +315,11 @@ int APIENTRY WinMain
 	Serializer->Read("LC_CFormChunkSize", gCompilerMode.LC_CFormChunkSize);
 	Serializer->Read("LC_GeomType", gCompilerMode.LC_GeomType);
 	Serializer->Read("LC_GeomChunkSize", gCompilerMode.LC_GeomChunkSize);
+
+	// Geometry
+ 	Serializer->Read("LC_Skip_Progressive", gCompilerMode.LC_OGF_PROGRESSIVE);
+	Serializer->Read("LC_Skip_Striptify", gCompilerMode.LC_OGF_STRIPTIFY);
+	Serializer->Read("LC_Skip_Tangents", gCompilerMode.LC_OGF_TANGENT);
 
 	gCompilerMode.LmapsFormat = (LCLightmapFormat) current_format;
 
