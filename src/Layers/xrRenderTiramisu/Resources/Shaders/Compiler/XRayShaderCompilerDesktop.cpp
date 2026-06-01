@@ -49,23 +49,23 @@ bool XRayShaderCompilerDesktop::CompileDX12(const XRayShaderDefinesContainer& De
 	switch (ShaderType)
 	{
 	case EXRayShaderType::Pixel:
-		Arguments.push_back(L"-Tps_6_8");
+		Arguments.push_back(L"-Tps_6_6");
 		break;
 	case EXRayShaderType::Hull:
-		Arguments.push_back(L"-Ths_6_8");
+		Arguments.push_back(L"-Ths_6_6");
 		break;
 	case EXRayShaderType::Domain:
-		Arguments.push_back(L"-Tds_6_8");
+		Arguments.push_back(L"-Tds_6_6");
 		break;
 	case EXRayShaderType::Geometry:
-		Arguments.push_back(L"-Tgs_6_8");
+		Arguments.push_back(L"-Tgs_6_6");
 		break;
 	case EXRayShaderType::Vertex:
-		Arguments.push_back(L"-Tvs_6_8");
+		Arguments.push_back(L"-Tvs_6_6");
 
 		break;
 	case EXRayShaderType::Compute:
-		Arguments.push_back(L"-Tcs_6_8");
+		Arguments.push_back(L"-Tcs_6_6");
 		break;
 	default:
 		NODEFAULT;
@@ -84,7 +84,10 @@ bool XRayShaderCompilerDesktop::CompileDX12(const XRayShaderDefinesContainer& De
 		Arguments.push_back(L"-D");
 		Arguments.push_back(UniDefine.c_str());
 	}
-
+	
+	Arguments.push_back(L"-D");
+	Arguments.push_back(L"NRI_ENABLE_DRAW_PARAMETERS_EMULATION=1");
+	
 	if (bNeedCreateShaderPDB)
 	{
 		Arguments.push_back(L"-Zi");
@@ -333,6 +336,7 @@ bool XRayShaderCompilerDesktop::CompileVK(const XRayShaderDefinesContainer& Defi
 		Arguments.push_back(L"-D");
 		Arguments.push_back(UniDefine.c_str());
 	}
+	
 
 	if (bNeedCreateShaderPDB)
 	{
