@@ -501,7 +501,7 @@ void CHudItem::OnH_A_Independent()
 
 void CHudItem::on_b_hud_detach()
 {
-	m_sounds.StopAllSounds	();
+	//m_sounds.StopAllSounds	();
 }
 
 void CHudItem::on_a_hud_attach()
