@@ -57,3 +57,4 @@ if(WIN32)
 endif()
 
 include("${CMAKE_MODULE_PATHEX}/FileWatch.cmake")
+include("${CMAKE_MODULE_PATHEX}/nri.cmake")

@@ -1,0 +1,169 @@
+#pragma once
+#include "XRayFHierrarhyVisual.h"
+
+class CDS0_SkeletonX;
+
+class CDS0_Kinematics :
+	public CDS0_FHierrarhyVisual,
+	public IKinematics
+{
+public:
+#ifdef DEBUG
+	bool dbg_single_use_marker;
+#endif
+	void CLBone(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0));
+	virtual CBoneData* CreateBoneData(u16 ID) { return new CBoneData(ID); }
+	virtual void BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0));
+	void BoneChain_Calculate(const CBoneData* bd, CBoneInstance& bi, u8 channel_mask, bool ignore_callbacks);
+	CDS0_SkeletonX* LL_GetChild(u32 idx);
+	virtual void OnCalculateBones();
+	void LL_Validate();
+	CBoneData* LL_GetBoneData(u16 bone_id)
+	{
+
+		VERIFY(bone_id < LL_BoneCount());
+		VERIFY(bones);
+		u32 sz = sizeof(vecBones);
+		u32 sz1 = sizeof(((*bones)[bone_id])->children);
+		Msg("sz: %d", sz);
+		Msg("sz1: %d", sz1);
+		CBoneData* bd = ((*bones)[bone_id]);
+		return bd;
+	}
+
+	VisMask visimask;
+	IC void Visibility_Invalidate() { Update_Visibility = true; };
+	void Visibility_Update();
+	virtual void IBoneInstances_Create();
+	virtual void IBoneInstances_Destroy();
+public:
+	virtual shared_str getDebugName();
+	virtual ~CDS0_Kinematics();
+	CDS0_Kinematics();
+	virtual void Bone_Calculate(CBoneData* bd, Fmatrix* parent);
+
+	virtual void Bone_GetAnimPos(Fmatrix& pos, u16 id, u8 channel_mask, bool ignore_callbacks);
+
+	virtual bool PickBone(const Fmatrix& parent_xform, pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
+	virtual void EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id);
+
+	// Low level interface
+	virtual u16 LL_BoneID(LPCSTR B);
+	virtual u16 LL_BoneID(const shared_str& B);
+	virtual LPCSTR LL_BoneName_dbg(u16 ID);
+
+	virtual CInifile* LL_UserData() { return pUserData; }
+	virtual accel* LL_Bones() { return bone_map_N; }
+
+	virtual CBoneInstance& LL_GetBoneInstance(u16 bone_id)
+	{
+		VERIFY(bone_id < LL_BoneCount());
+		VERIFY(bone_instances);
+		return bone_instances[bone_id];
+	}
+
+	virtual CBoneData& LL_GetData(u16 bone_id) override
+	{
+		VERIFY(bone_id < LL_BoneCount());
+		VERIFY(bones);
+		CBoneData& bd = *((*bones)[bone_id]);
+		return bd;
+	}
+
+	virtual const IBoneData& GetBoneData(u16 bone_id) const override
+	{
+		VERIFY(bone_id < LL_BoneCount());
+		VERIFY(bones);
+		CBoneData& bd = *((*bones)[bone_id]);
+		return bd;
+	}
+
+	virtual u16 LL_BoneCount() const override { return u16(bones->size()); }
+
+	virtual void LL_SetBonesVisibleAll() override { visimask.set_all(); };
+
+public:
+	u16     LL_VisibleBoneCount() { return visimask.count(); }
+	const	CBoneInstance& LL_GetBoneInstance(u16 bone_id) const { VERIFY(bone_id < LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id]; }
+
+	virtual  Fmatrix& LL_GetTransform(u16 bone_id) { return LL_GetBoneInstance(bone_id).mTransform; }
+	virtual const Fmatrix& LL_GetTransform(u16 bone_id) const { return LL_GetBoneInstance(bone_id).mTransform; }
+	virtual   Fmatrix& LL_GetTransform_R(u16 bone_id) { return LL_GetBoneInstance(bone_id).mRenderTransform; } // rendering only
+
+	virtual Fobb& LL_GetBox(u16 bone_id)
+	{
+		VERIFY(bone_id < LL_BoneCount());
+		return (*bones)[bone_id]->obb;
+	}
+	virtual const Fbox& GetBox() const { return Vis.box; }
+
+	virtual void LL_GetBindTransform(xr_vector<Fmatrix>& matrices);
+	virtual void LL_GetBindTransform(buffer_vector<Fmatrix>& matrices);
+	virtual int  LL_GetBoneGroups(xr_vector<xr_vector<u16>>& groups);
+
+	virtual u16  LL_GetBoneRoot() { return iRoot; }
+	virtual void LL_SetBoneRoot(u16 bone_id)
+	{
+		VERIFY(bone_id < LL_BoneCount());
+		iRoot = bone_id;
+	}
+
+	bool LL_GetBoneVisible(u16 bone_id) { VERIFY(bone_id < LL_BoneCount()); return visimask.is(bone_id); }
+	virtual void LL_SetBoneVisible(u16 bone_id, bool val, bool bRecursive);
+	VisMask LL_GetBonesVisible() { return visimask; }
+	void LL_SetBonesVisible(VisMask mask);
+
+	virtual void				Release();
+	// Main functionality
+	virtual void CalculateBones(bool bForceExact = false); // Recalculate skeleton
+	virtual void CalculateBones_Invalidate();
+	virtual void Callback(UpdateCallback C, void* Param)
+	{
+		Update_Callback = C;
+		Update_Callback_Param = Param;
+	}
+	virtual void SetUpdateCallback(UpdateCallback pCallback) { Update_Callback = pCallback; }
+	virtual void SetUpdateCallbackParam(void* pCallbackParam) { Update_Callback_Param = pCallbackParam; }
+
+	virtual UpdateCallback GetUpdateCallback() { return Update_Callback; }
+	virtual void* GetUpdateCallbackParam() { return Update_Callback_Param; }
+	virtual IKinematicsAnimated* dcast_PKinematicsAnimated() { return 0; }
+	virtual IRenderVisual* dcast_RenderVisual() { return this; }
+	virtual IKinematics* dcast_PKinematics() { return this; }
+#ifdef DEBUG_DRAW
+	virtual void DebugRender(Fmatrix& XFORM);
+#endif
+public:
+	UpdateCallback Update_Callback;
+	void* Update_Callback_Param;
+	virtual void Load(const char* N, IReader* data, u32 dwFlags);
+	virtual void Copy(CDS0_RenderVisual* from);
+	virtual void Spawn();
+	virtual void Depart();
+public:
+	CDS0_RenderVisual* m_lod;
+
+	CBoneInstance* bone_instances; // bone instances
+protected:
+	//SkeletonWMVec				wallmarks;
+	u32 wm_frame;
+
+	xr_vector<CDS0_RenderVisual*> children_invisible;
+
+	// Globals
+	CInifile* pUserData;
+	vecBones* bones;			   // all bones	(shared)
+	u16 iRoot;					   // Root bone index
+
+	// Fast search
+	accel* bone_map_N; // bones  associations	(shared)	- sorted by name
+	accel* bone_map_P; // bones  associations	(shared)	- sorted by name-pointer
+
+	bool Update_Visibility;
+	u32 UCalc_Time;
+	s32 UCalc_Visibox;
+
+
+private:
+	bool m_is_original_lod;
+};

@@ -76,7 +76,7 @@ void CRenderDevice::Reset(bool precache)
 	ps_r_scale_mode = ps_proxy_r_scale_mode;
 	u32 dwWidth_before = TargetWidth;
 	u32 dwHeight_before = TargetHeight;
-	float RenderScale_before = GRHI->DevicePtr->RenderScale;
+	float RenderScale_before = GRHI->DevicePtr ? GRHI->DevicePtr->RenderScale : 1.f;
 
 	u32 tm_start = TimerAsync();
 
@@ -85,16 +85,20 @@ void CRenderDevice::Reset(bool precache)
 		ps_render_scale = 1.0f;
 	}
 
-	if(ps_render_scale_preset < 5 && ps_proxy_r_scale_mode > 1)
+	if (GRHI->DevicePtr)
 	{
-		static float ScalePresets[] = {1.0f, 1.5f, 1.724f, 2.0f, 3.0f};
-		GRHI->DevicePtr->RenderScale = 1.0f / ScalePresets[ps_render_scale_preset];
-		ps_render_scale = GRHI->DevicePtr->RenderScale;
+		if(ps_render_scale_preset < 5 && ps_proxy_r_scale_mode > 1)
+		{
+			static float ScalePresets[] = {1.0f, 1.5f, 1.724f, 2.0f, 3.0f};
+			GRHI->DevicePtr->RenderScale = 1.0f / ScalePresets[ps_render_scale_preset];
+			ps_render_scale = GRHI->DevicePtr->RenderScale;
+		}
+		else
+		{
+			GRHI->DevicePtr->RenderScale = ps_render_scale;
+		}
 	}
-	else
-	{
-		GRHI->DevicePtr->RenderScale = ps_render_scale;
-	}
+	
 
 	m_pRender->Reset(g_AppInfo.Window, TargetWidth, TargetHeight);
 
@@ -120,7 +124,7 @@ void CRenderDevice::Reset(bool precache)
 
 	seqDeviceReset.Process<&pureDeviceReset::OnDeviceReset>();
 
-	if (dwWidth_before != TargetWidth || dwHeight_before != TargetHeight || RenderScale_before != GRHI->DevicePtr->RenderScale)
+	if (dwWidth_before != TargetWidth || dwHeight_before != TargetHeight || (GRHI->DevicePtr && RenderScale_before != GRHI->DevicePtr->RenderScale))
 	{
 		seqResolutionChanged.Process<&pureScreenResolutionChanged::OnScreenResolutionChanged>();
 	}

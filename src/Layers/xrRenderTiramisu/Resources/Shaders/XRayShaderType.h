@@ -1,0 +1,15 @@
+#pragma once
+enum class EXRayShaderType
+{
+	Vertex = 0,
+	Hull,
+	Domain,
+	Geometry,
+	Pixel,
+	Compute,
+	Count,
+	ALL,
+	None = 0xFFFF
+};
+
+#define GLOBAL_SHADERS_SHIPPING_NAME "global.shaders"

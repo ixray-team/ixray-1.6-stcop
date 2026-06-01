@@ -1,0 +1,207 @@
+﻿#include "XRayRenderResourcesManager.h"
+
+#include <RedImage/RedImage.hpp>
+
+#include "XRayRenderVertexTypes.h"
+#include "Shaders/Defines/XRayShaderDefinesManager.h"
+#include "Shaders/Global/XRayGlobalShadersManager.h"
+
+void XRayRenderResourcesManager::CreateSamplers()
+{
+	NRI_CHECK(GRenderDevice.CoreInterface.CreateSampler(*GRenderDevice.Device, {{nri::Filter::LINEAR, nri::Filter::LINEAR}}, LinearSampler));
+	
+	const nri::Descriptor* samplers[] = 
+	{
+		LinearSampler,
+		LinearSampler,
+		LinearSampler,
+		LinearSampler,
+	};
+
+	const nri::UpdateDescriptorRangeDesc UpdateDescriptorRangeDescription[] = 
+	{
+		{SamplerDescriptorSet, 0, 0, samplers, 4},
+	};
+		
+	GRenderDevice.CoreInterface.UpdateDescriptorRanges(UpdateDescriptorRangeDescription,1);
+}
+
+void XRayRenderResourcesManager::CreateQuadBuffer()
+{
+	static const FXRayUIVertex QuadVertexData[] =
+	{
+		{{-1.f, -1.f ,0 },0xFFFFFFFF, {0.0f, 0.0f}},
+		{{1.f, -1.f,0 },0xFFFFFFFF, {1.0f, 0.0f}},
+		{{-1.f, 1.f,0 },0xFFFFFFFF, {0.0f, 1.0f}},
+		{{1.f, 1.f,0 },0xFFFFFFFF, {1.0f, 1.0f}},
+	};
+	static const uint16_t QuadIndexData[] = { 0, 1, 2, 1, 3, 2 };
+
+
+	const uint64_t IndexDataSize = sizeof(QuadIndexData);
+	const uint64_t IndexDataAlignedSize = Align(IndexDataSize, 16);
+	const uint64_t VertexDataSize = sizeof(QuadVertexData);
+
+	{ // Geometry buffer
+		nri::BufferDesc bufferDesc = {};
+		bufferDesc.size = IndexDataAlignedSize + VertexDataSize;
+		bufferDesc.usage = nri::BufferUsageBits::VERTEX_BUFFER | nri::BufferUsageBits::INDEX_BUFFER;
+		NRI_CHECK(GRenderDevice.CoreInterface.CreateBuffer(*GRenderDevice.Device, bufferDesc, QuadGeometryBuffer));
+	}
+	QuadGeometryOffset = IndexDataAlignedSize;
+
+	{
+		nri::ResourceGroupDesc ResourceGroupDesc = {};
+		ResourceGroupDesc.memoryLocation = nri::MemoryLocation::DEVICE;
+		ResourceGroupDesc.bufferNum = 1;
+		ResourceGroupDesc.buffers = &QuadGeometryBuffer;
+		ResourceGroupDesc.textureNum = 0;
+
+		QuadGeometryMemoryAllocations.resize(1 + GRenderDevice.HelperInterface.CalculateAllocationNumber(*GRenderDevice.Device, ResourceGroupDesc), nullptr);
+		NRI_CHECK(GRenderDevice.HelperInterface.AllocateAndBindMemory(*GRenderDevice.Device, ResourceGroupDesc, QuadGeometryMemoryAllocations.data() + 1));
+	}
+	xr_vector<uint8_t> geometryBufferData(IndexDataAlignedSize + VertexDataSize);
+	memcpy(&geometryBufferData[0], QuadIndexData, IndexDataSize);
+	memcpy(&geometryBufferData[IndexDataAlignedSize], QuadVertexData, VertexDataSize);
+
+
+	nri::BufferUploadDesc BufferUploadData = {};
+	BufferUploadData.buffer = QuadGeometryBuffer;
+	BufferUploadData.data = geometryBufferData.data();
+	BufferUploadData.after = { nri::AccessBits::INDEX_BUFFER | nri::AccessBits::VERTEX_BUFFER };
+
+	NRI_CHECK(GRenderDevice.HelperInterface.UploadData(*GRenderDevice.GraphicsQueue, nullptr, 0, &BufferUploadData, 1));
+}
+
+XRayRenderResourcesManager::XRayRenderResourcesManager()
+{
+	{
+		nri::DescriptorPoolDesc DescriptorPoolDescription = {};
+		DescriptorPoolDescription.mutableMaxNum = 2048;
+		DescriptorPoolDescription.samplerMaxNum = 4;
+		DescriptorPoolDescription.descriptorSetMaxNum = 2 + 1;
+		DescriptorPoolDescription.constantBufferMaxNum = 1;
+		NRI_CHECK(GRenderDevice.CoreInterface.CreateDescriptorPool(*GRenderDevice.Device, DescriptorPoolDescription, GlobalDescriptorPool));
+	}
+	 
+	{ 
+		nri::DescriptorRangeDesc DescriptorRangeDescriptions[2] = {
+			{ // Resource heap
+				0, // VK binding for "-fvk-bind-resource-heap"
+				2048,
+				nri::DescriptorType::MUTABLE,
+				nri::StageBits::VERTEX_SHADER | nri::StageBits::FRAGMENT_SHADER,
+				nri::DescriptorRangeBits::ARRAY | nri::DescriptorRangeBits::PARTIALLY_BOUND,
+			},
+			{ // Sampler heap
+				1, // VK binding for "-fvk-bind-sampler-heap"
+				4,
+				nri::DescriptorType::SAMPLER,
+				nri::StageBits::VERTEX_SHADER | nri::StageBits::FRAGMENT_SHADER,
+				nri::DescriptorRangeBits::ARRAY | nri::DescriptorRangeBits::PARTIALLY_BOUND,
+			},
+		};
+
+		
+		nri::DescriptorRangeDesc SetConstantBuffer = {0, 1, nri::DescriptorType::CONSTANT_BUFFER, nri::StageBits::ALL};
+		
+		nri::DescriptorSetDesc GlobalDescriptorSetDescription[] = {
+			{0, DescriptorRangeDescriptions + 0, 1},
+			{1, DescriptorRangeDescriptions + 1, 1},
+			{2,&SetConstantBuffer,1}};
+
+		nri::PipelineLayoutDesc pipelineLayoutDesc = {};
+		pipelineLayoutDesc.descriptorSetNum = 3;
+		pipelineLayoutDesc.descriptorSets = GlobalDescriptorSetDescription;
+		pipelineLayoutDesc.shaderStages =  nri::StageBits::VERTEX_SHADER | nri::StageBits::FRAGMENT_SHADER;
+		pipelineLayoutDesc.flags = nri::PipelineLayoutBits::RESOURCE_HEAP_DIRECTLY_INDEXED | nri::PipelineLayoutBits::SAMPLER_HEAP_DIRECTLY_INDEXED;
+
+		NRI_CHECK(GRenderDevice.CoreInterface.CreatePipelineLayout(*GRenderDevice.Device, pipelineLayoutDesc, GlobalPipelineLayout));
+	}
+	{
+		NRI_CHECK(GRenderDevice.CoreInterface.AllocateDescriptorSets(*GlobalDescriptorPool, *GlobalPipelineLayout, 0, &ResourcesDescriptorSet, 1, 0));
+		NRI_CHECK(GRenderDevice.CoreInterface.AllocateDescriptorSets(*GlobalDescriptorPool, *GlobalPipelineLayout, 1, &SamplerDescriptorSet, 1, 0));
+		{
+			uint32_t resourceHeapOffset = uint32_t(-1);
+			uint32_t samplerHeapOffset = uint32_t(-1);
+			GRenderDevice.CoreInterface.GetDescriptorSetOffsets(*ResourcesDescriptorSet, resourceHeapOffset, samplerHeapOffset);
+			R_ASSERT (resourceHeapOffset == 0 && samplerHeapOffset == 0);
+		}
+		{
+			uint32_t resourceHeapOffset = uint32_t(-1);
+			uint32_t samplerHeapOffset = uint32_t(-1);
+			GRenderDevice.CoreInterface.GetDescriptorSetOffsets(*SamplerDescriptorSet, resourceHeapOffset, samplerHeapOffset);
+			R_ASSERT (resourceHeapOffset == 0 && samplerHeapOffset == 0);
+		}
+	}
+	CreateSamplers();
+	CreateQuadBuffer();
+}
+
+XRayRenderResourcesManager::~XRayRenderResourcesManager()
+{
+	delete WhiteTexture;
+	delete BlackTexture;
+	delete TexturesManager;
+	delete DescriptorHeapAllocator;
+	delete GlobalShadersManager;
+	delete ShaderDefinesManager;
+	
+	if (QuadGeometryBuffer)
+	{
+		GRenderDevice.CoreInterface.DestroyBuffer(QuadGeometryBuffer);
+	}
+	
+	for ( nri::Memory* GeometryMemory : QuadGeometryMemoryAllocations)
+	{
+		GRenderDevice.CoreInterface.FreeMemory(GeometryMemory);
+	}
+	
+	if (GlobalPipelineLayout)
+	{
+		GRenderDevice.CoreInterface.DestroyPipelineLayout(GlobalPipelineLayout);
+	}
+	
+	if (GlobalDescriptorPool)
+	{
+		GRenderDevice.CoreInterface.DestroyDescriptorPool(GlobalDescriptorPool);
+	}
+	
+	if (LinearSampler)
+	{
+		GRenderDevice.CoreInterface.DestroyDescriptor(LinearSampler);
+	}
+	
+}
+
+void XRayRenderResourcesManager::Initialize()
+{
+	VERIFY(ShaderDefinesManager == nullptr && GlobalShadersManager == nullptr);
+	ShaderDefinesManager = new XRayShaderDefinesManager; 
+	GlobalShadersManager = new XRayGlobalShadersManager(GRenderDevice.GraphicsApi,true,true);
+	DescriptorHeapAllocator = new XRayRenderDescriptorHeapAllocator;
+	TexturesManager = new XRayTexturesManager;
+	
+	{
+		BlackTexture = new XRayTexture2D;
+		RedImageTool::RedImage BlackImage;
+		BlackImage.Create(1,1,1,1,RedImageTool::RedTexturePixelFormat::R8G8B8A8);
+		BlackImage.Fill({0.f,0.f,0.f,1.f});
+		R_ASSERT(BlackTexture->LoadFromImage(BlackImage,false));
+	}
+	{
+		WhiteTexture = new XRayTexture2D;
+		RedImageTool::RedImage WhiteImage;
+		WhiteImage.Create(1,1,1,1,RedImageTool::RedTexturePixelFormat::R8G8B8A8);
+		WhiteImage.Fill({1.f,1.f,1.f,1.f});
+		R_ASSERT(WhiteTexture->LoadFromImage(WhiteImage,false));
+	}
+	
+}
+
+bool XRayRenderResourcesManager::IsCookedMode()
+{
+	return false;
+}
+
+XRayRenderResourcesManager* GRenderResourcesManager = nullptr;
