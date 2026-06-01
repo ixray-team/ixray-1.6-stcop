@@ -66,8 +66,22 @@ bool InventoryHolsterExclusivePistolFootprint(CInventoryItem* item)
 	{
 		return false;
 	}
-	Irect const gr = item->GetInvGridRect();
-	return gr.x2 == 2 && gr.y2 == 1;
+	return item->BaseSlot() == INV_SLOT_2;
+}
+
+u16 InventoryResolveSidearmEquipSlot(CInventoryItem* item)
+{
+	VERIFY(item);
+	u16 const baseSlot = item->BaseSlot();
+	if (!InventoryHolsterPistolSlotActiveInSettings())
+	{
+		return baseSlot;
+	}
+	if (!InventoryHolsterExclusivePistolFootprint(item))
+	{
+		return baseSlot;
+	}
+	return PISTOL_SLOT_NEW;
 }
 
 u16 InventoryWeaponHotkeyToInventorySlot(u16 gameActionCmd)
