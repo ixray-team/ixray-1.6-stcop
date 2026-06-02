@@ -33,3 +33,7 @@ uint32_t XRayTexture::GetOrCreateHeapIndex()
 
     return HeapIndex;
 }
+
+void XRayTexture::Update()
+{
+}

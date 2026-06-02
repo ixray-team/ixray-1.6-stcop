@@ -4,12 +4,9 @@
 
 XRayTextureSeq::~XRayTextureSeq()
 {
-	for (auto& Frame : FrameTextures)
+	for (XRayTexture*& Textxure : FrameTextures)
 	{
-		if (Frame.Texture)
-		{
-			Owner->Free(Frame.Texture);
-		}
+		Owner->Free(Textxure);
 	}
 
 	FrameTextures.clear();
@@ -17,15 +14,7 @@ XRayTextureSeq::~XRayTextureSeq()
 
 uint32_t XRayTextureSeq::GetOrCreateHeapIndex()
 {
-	auto& CurrentSeqTexture = FrameTextures[CurrentFrame];
-
-	if (CurrentSeqTexture.HeapIndex == INDEX_NONE && Descriptor)
-	{
-		CurrentSeqTexture.HeapIndex = GRenderResourcesManager->DescriptorHeapAllocator->Alloc(Descriptor);
-	}
-
-	HeapIndex = CurrentSeqTexture.HeapIndex;
-	return HeapIndex;
+	return FrameTextures[CurrentFrame]->GetOrCreateHeapIndex();
 }
 
 bool XRayTextureSeq::LoadFromSeqFile(const char* FilePath)
@@ -75,11 +64,7 @@ bool XRayTextureSeq::LoadFromSeqFile(const char* FilePath)
 
 	CurrentFrame = 0;
 	LastUpdateTime = DevicePtr->dwTimeContinual;
-
-	Texture = FrameTextures[0].Texture->Texture;
-	Descriptor = FrameTextures[0].Texture->Descriptor;
-	TextureDescription = FrameTextures[0].Texture->TextureDescription;
-
+	TextureDescription = FrameTextures[0]->TextureDescription;
 	return true;
 }
 
@@ -87,28 +72,10 @@ bool XRayTextureSeq::LoadFrameTexture(const char* TextureName)
 {
 	if (XRayTexture* ExistingTexture = Owner->GetTexture(TextureName))
 	{
-		if (ExistingTexture && ExistingTexture->Texture)
-		{
-			FSeqFrame Frame;
-			Frame.Name = TextureName;
-			Frame.Texture = (XRayTexture2D*)ExistingTexture;
-			ExistingTexture->Counter++;
-			FrameTextures.push_back(Frame);
-			return true;
-		}
-	}
-
-	XRayTexture2D* NewTexture = new XRayTexture2D(TextureName);
-	if (NewTexture->LoadFromFile(TextureName, false))
-	{
-		FSeqFrame Frame;
-		Frame.Name = TextureName;
-		Frame.Texture = NewTexture;
-		FrameTextures.push_back(Frame);
+		FrameTextures.push_back(ExistingTexture);
 		return true;
 	}
-
-	xr_delete(NewTexture);
+	
 	return false;
 }
 
@@ -120,8 +87,8 @@ void XRayTextureSeq::Update()
 	}
 
 	u32	Frame = DevicePtr->dwTimeContinual / MSPF;
-	u32	FrameData = (u32)FrameTextures.size();
-	u32	FrameID = 0;
+	u32	FrameData = FrameTextures.size();
+	u32	FrameID;
 
 	if (bCycles)
 	{
@@ -146,10 +113,6 @@ void XRayTextureSeq::Update()
 	if (FrameID != CurrentFrame)
 	{
 		CurrentFrame = FrameID;
-		auto& CurrentSeqTexture = FrameTextures[CurrentFrame];
-
-		Texture = CurrentSeqTexture.Texture->Texture;
-		Descriptor = CurrentSeqTexture.Texture->Descriptor;
-		TextureDescription = CurrentSeqTexture.Texture->TextureDescription;
+		TextureDescription = FrameTextures[FrameID]->TextureDescription;
 	}
 }
