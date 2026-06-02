@@ -25,6 +25,11 @@ LPCSTR GetDigitalShaderName()
 	return "models\\wristwatch_digital";
 }
 
+LPCSTR GetGlassShaderName()
+{
+	return "models\\wristwatch_glass";
+}
+
 LPCSTR GetHiddenShaderName()
 {
 	return "models\\wristwatch_hidden";
@@ -151,6 +156,7 @@ void ApplyDigitalShaders(CKinematics& kinematics)
 
 	const u16 watchUiBone = kinematics.LL_BoneID("watch_ui");
 	const LPCSTR digitalShader = GetDigitalShaderName();
+	const LPCSTR glassShader = GetGlassShaderName();
 	const LPCSTR hiddenShader = GetHiddenShaderName();
 
 	string_path digitalTextures;
@@ -188,7 +194,7 @@ void ApplyDigitalShaders(CKinematics& kinematics)
 		{
 			if (hasWatchUiMesh)
 			{
-				child->shader.create(hiddenShader, backup.texture.c_str());
+				child->shader.create(glassShader, backup.texture.c_str());
 			}
 			else
 			{
@@ -237,7 +243,7 @@ void WristwatchVisual::ApplyDisplayShaders(EWristwatchDisplayType displayType, I
 		return;
 	}
 
-	if (displayType == EWristwatchDisplayType::Digital)
+	if (displayType == EWristwatchDisplayType::Digital || displayType == EWristwatchDisplayType::Hybrid)
 	{
 		ApplyDigitalShaders(*kinematics);
 	}
