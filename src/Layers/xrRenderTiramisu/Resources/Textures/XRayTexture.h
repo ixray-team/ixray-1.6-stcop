@@ -7,7 +7,9 @@ class XRayTexture
 public:
 							XRayTexture             (const shared_str& InName = "None");
 	virtual					~XRayTexture            ();
-	virtual uint32_t		GetOrCreateHeapIndex    ();
+	virtual u32				GetOrCreateHeapIndex    ();
+	virtual bool			IsDynamic				() {return false;};
+	virtual void			Update					();
 	
 	nri::Descriptor*        Descriptor = nullptr;
 	nri::Texture*           Texture = nullptr;

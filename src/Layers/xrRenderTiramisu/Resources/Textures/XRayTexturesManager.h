@@ -13,7 +13,7 @@ public:
 	void            Copy                   (XRayTexture* texture);
 
 private:
-	xr_map<shared_str, XRayTextureSeq*> TexturesSeq;
+	xr_map<shared_str, XRayTexture*>	TexturesDynamic;
 	xr_map<shared_str, XRayTexture*>    Textures;
 	xr_map<shared_str, XRayTexture*>    FreeTexturesNextFrame;
 	xr_set<shared_str>                  ErrorTextures;

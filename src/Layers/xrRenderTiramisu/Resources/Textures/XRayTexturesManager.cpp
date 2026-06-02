@@ -23,6 +23,10 @@ XRayTexture* XRayTexturesManager::GetTexture(const shared_str& InName, bool bSrg
         {
             XRayTexture* Result = Iterator->second;
             FreeTexturesNextFrame.erase(Iterator);
+            if (Result->IsDynamic())
+            {
+                TexturesDynamic.insert({InName,Result});
+            }
             Textures.insert({InName,Result});
             Result->Counter = 1;
             return Result; 
@@ -32,8 +36,7 @@ XRayTexture* XRayTexturesManager::GetTexture(const shared_str& InName, bool bSrg
     auto Iterator = Textures.find(InName);
     if (Iterator == Textures.end())
     {
-        XRayTexture2D* NewTexture2D = new XRayTexture2D(InName);
-        NewTexture2D->Owner = this;
+        XRayTexture* NewTexture = nullptr;
         {
             auto LambdaFixTextureName = [](LPSTR fn)
             {
@@ -54,6 +57,9 @@ XRayTexture* XRayTexturesManager::GetTexture(const shared_str& InName, bool bSrg
            
             if (FS.exist(FilePathName, "$level$", FileName, ".dds") || FS.exist(FilePathName, "$game_saves$", FileName, ".dds") || FS.exist(FilePathName, _game_textures_, FileName, ".dds"))
             {
+                XRayTexture2D* NewTexture2D = new XRayTexture2D(InName);
+                NewTexture2D->Owner = this;
+                NewTexture = NewTexture2D;
                 Msg("* Loaded Texture: %s", FilePathName);
                 if (!NewTexture2D->LoadFromFile(FilePathName,bSrgb))
                 {
@@ -65,20 +71,18 @@ XRayTexture* XRayTexturesManager::GetTexture(const shared_str& InName, bool bSrg
             }
             else if (FS.exist(FilePathName, _game_textures_, FileName, ".seq"))
             {
-                xr_delete(NewTexture2D);
                 XRayTextureSeq* NewTextureSeq = new XRayTextureSeq(InName);
-                NewTexture2D = NewTextureSeq;
-                NewTexture2D->Owner = this;
+                NewTextureSeq->Owner = this;
+                NewTexture = NewTextureSeq;
 
                 if (!NewTextureSeq->LoadFromSeqFile(FilePathName))
                 {
                     Msg("! Can't loaded texture: %s", FileName);
                     xr_delete(NewTextureSeq);
-                    NewTexture2D = nullptr;
                     ErrorTextures.insert(InName);
                     return GRenderResourcesManager->BlackTexture;
                 }
-                TexturesSeq[InName] = NewTextureSeq;
+                TexturesDynamic[InName] = NewTextureSeq;
             }
             else
             {
@@ -87,7 +91,8 @@ XRayTexture* XRayTexturesManager::GetTexture(const shared_str& InName, bool bSrg
                 return GRenderResourcesManager->BlackTexture;
             }
         }
-        Iterator = Textures.insert({InName,NewTexture2D}).first;
+        
+        Iterator = Textures.insert({InName,NewTexture}).first;
     }
     else
     {
@@ -107,9 +112,9 @@ void XRayTexturesManager::Free(XRayTexture* InTexture)
     {
         Textures.erase(InTexture->Name);
 
-        if (TexturesSeq.contains(InTexture->Name))
+        if (TexturesDynamic.contains(InTexture->Name))
         {
-            TexturesSeq.erase(InTexture->Name);
+            TexturesDynamic.erase(InTexture->Name);
         }
 
         FreeTexturesNextFrame.insert({InTexture->Name,InTexture});
@@ -124,9 +129,9 @@ void XRayTexturesManager::FlushNextFrame()
     }
     FreeTexturesNextFrame.clear();
 
-    for (auto& [_, Seq] : TexturesSeq)
+    for (auto& [Name, Texture] : TexturesDynamic)
     {
-        Seq->Update();
+        Texture->Update();
     }
 }
 
