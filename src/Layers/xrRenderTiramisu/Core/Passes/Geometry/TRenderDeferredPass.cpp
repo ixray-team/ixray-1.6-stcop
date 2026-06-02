@@ -1,6 +1,9 @@
 ﻿#include "TRenderDeferredPass.h"
 
-#include "Resources/LegacyScene/TRenderLegacyScene.h"
+#include "Legacy/Scene/TLegacyRenderGraph.h"
+#include "Legacy/Scene/TLegacyScene.h"
+#include "Legacy/Visual/XRayRenderVisual.h"
+
 
 TRenderDeferredPass::TRenderDeferredPass()
 {
@@ -34,18 +37,18 @@ TRenderDeferredPass::TRenderDeferredPass()
     	OutputMergerDescription.depth = {nri::CompareOp::LESS,true,false};
 		OutputMergerDescription.colorNum = 1;
 
-		XRayShaderDefinesContainer ShaderDefinesContainer;
+		TShaderDefinesContainer ShaderDefinesContainer;
 
 		nri::ShaderDesc ShaderStagesDescription[2] = {};
 		{
-			const xr_vector<char>& ShaderCode = GRenderResourcesManager->GlobalShadersManager->GetShader(PixelShaderName, EXRayShaderType::Vertex, ShaderDefinesContainer);
+			const xr_vector<char>& ShaderCode = GRenderResourcesManager->GlobalShadersManager->GetShader(PixelShaderName, EShaderType::Vertex, ShaderDefinesContainer);
 			ShaderStagesDescription[0].stage = nri::StageBits::VERTEX_SHADER;
 			ShaderStagesDescription[0].bytecode = ShaderCode.data();
 			ShaderStagesDescription[0].size = ShaderCode.size();
 			ShaderStagesDescription[0].entryPointName = "Main";
 		}
 		{
-			const xr_vector<char>& ShaderCode = GRenderResourcesManager->GlobalShadersManager->GetShader(VertexShaderName,EXRayShaderType::Pixel,ShaderDefinesContainer);
+			const xr_vector<char>& ShaderCode = GRenderResourcesManager->GlobalShadersManager->GetShader(VertexShaderName,EShaderType::Pixel,ShaderDefinesContainer);
 			ShaderStagesDescription[1].stage = nri::StageBits::FRAGMENT_SHADER;
 			ShaderStagesDescription[1].bytecode = ShaderCode.data();
 			ShaderStagesDescription[1].size = ShaderCode.size();
@@ -65,8 +68,8 @@ TRenderDeferredPass::TRenderDeferredPass()
 		NRI_CHECK(GRenderDevice.CoreInterface.CreateGraphicsPipeline(*GRenderDevice.Device, GraphicsPipelineDescription, OutPipeline));
 		return OutPipeline;
 	};
-	Pipeline_LightVertex = LambdaCreatePipeline("scene_vertex","scene_vertex",FXRayLegacyLevelVertex_BaseWithLightColor::VertexAttributeDescription);
-	Pipeline_LightMap = LambdaCreatePipeline("scene_lmap","scene_lmap",FXRayLegacyLevelVertex_BaseWithLightMap::VertexAttributeDescription);
+	Pipeline_LightVertex = LambdaCreatePipeline("scene_vertex","scene_vertex",FLegacyLevelVertex_BaseWithLightColor::VertexAttributeDescription);
+	Pipeline_LightMap = LambdaCreatePipeline("scene_lmap","scene_lmap",FLegacyLevelVertex_BaseWithLightMap::VertexAttributeDescription);
 }
 
 TRenderDeferredPass::~TRenderDeferredPass()
@@ -87,11 +90,11 @@ void TRenderDeferredPass::Render(nri::CommandBuffer& CurrentCommandBuffer)
     TLegacyRenderGraph::TRenderList RenderItems = GRenderResourcesManager->LegacyScene->GetRenderGraph().RenderList;
     for (const FLegacyVisualRenderItem& RenderItem :RenderItems)
     {
-    	if (RenderItem.SceneVertexBuffer.VertexType == EXRayLegacyLevelVertexType::BaseWithLightColor)
+    	if (RenderItem.SceneVertexBuffer.VertexType == ELegacyLevelVertexType::BaseWithLightColor)
     	{
     		GRenderDevice.CoreInterface.CmdSetPipeline(CurrentCommandBuffer, *Pipeline_LightVertex);
     	}
-    	else if (RenderItem.SceneVertexBuffer.VertexType == EXRayLegacyLevelVertexType::BaseWithLightMap)
+    	else if (RenderItem.SceneVertexBuffer.VertexType == ELegacyLevelVertexType::BaseWithLightMap)
     	{
     		GRenderDevice.CoreInterface.CmdSetPipeline(CurrentCommandBuffer, *Pipeline_LightMap);
     	}
