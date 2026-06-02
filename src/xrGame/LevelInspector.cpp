@@ -3645,8 +3645,11 @@ void LevelInspector::DrawSpatials()
 						LE.append_aabb(BB, color_rgba(10, 10, 10, 255), !items_present ? positionToColorWithAlpha(n_C) : color_rgba(0, 255, 0, 15));
 					for (ISpatialShared& spatial : N->items)
 					{
-						if (spatial.get() == g_actor->SpatialComponent.get()) continue;
-
+						if (!spatial.get() ||
+							(spatial->spatial.type & ESPATIAL_TYPE::INVALIDSECTOR) != ESPATIAL_TYPE::NONE ||
+							spatial.get() == g_actor->SpatialComponent.get())
+							continue;
+						
 						LE.append_line({ n_C, spatial->spatial.sphere.P, color_rgba(0, 0, 255, 200) });
 					}
 					// recurse
