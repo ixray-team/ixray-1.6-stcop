@@ -12,6 +12,11 @@ XRayRenderDevice::~XRayRenderDevice()
 void XRayRenderDevice::Initialize()
 {
 	GraphicsApi = nri::GraphicsAPI::VK;
+	if (strstr(Core.Params,"-dx12"))
+	{
+		GraphicsApi = nri::GraphicsAPI::D3D12;
+	}
+	
 	nri::AdapterDesc CurrentAdapterDescription = GetBestAdapterDescription();
     // Settings
     constexpr bool D3D11_ENABLE_COMMAND_BUFFER_EMULATION = false;
@@ -19,8 +24,14 @@ void XRayRenderDevice::Initialize()
     // Device
     nri::DeviceCreationDesc deviceCreationDesc = {};
     deviceCreationDesc.graphicsAPI = GraphicsApi;
-    deviceCreationDesc.enableGraphicsAPIValidation = true;
-    deviceCreationDesc.enableNRIValidation = true;
+	if (strstr(Core.Params,"-d3ddebug") || 
+		strstr(Core.Params,"-vkdebug") ||
+		strstr(Core.Params,"-rdebug")||
+		strstr(Core.Params,"-rdbg"))
+	{
+		deviceCreationDesc.enableGraphicsAPIValidation = true;
+		deviceCreationDesc.enableNRIValidation = true;
+	}
     deviceCreationDesc.enableD3D11CommandBufferEmulation = D3D11_ENABLE_COMMAND_BUFFER_EMULATION;
     deviceCreationDesc.disableD3D12EnhancedBarriers = D3D12_DISABLE_ENHANCED_BARRIERS;
     deviceCreationDesc.vkBindingOffsets = VK_BINDING_OFFSETS;
