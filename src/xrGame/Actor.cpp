@@ -264,6 +264,8 @@ void CActor::reload	(const char* section)
 		memory().reload			(section);
 	m_location_manager->reload	(section);
 }
+
+extern bool m_disable_collision_shift;
 void set_box(const char* section, CPHMovementControl &mc, u32 box_num )
 {
 	Fbox	bb;Fvector	vBOX_center,vBOX_size;
@@ -273,7 +275,10 @@ void set_box(const char* section, CPHMovementControl &mc, u32 box_num )
 	vBOX_center= pSettings->r_fvector3	(section, buff	);
 	xr_strconcat(buff, "ph_box",_itoa( box_num, buff1, 10 ),"_size" );
 	vBOX_size	= pSettings->r_fvector3	(section, buff);
-	vBOX_size.y += cammera_into_collision_shift/2.f;
+	if (!m_disable_collision_shift)
+	{
+		vBOX_size.y += cammera_into_collision_shift / 2.f;
+	}
 	bb.set	(vBOX_center,vBOX_center); bb.grow(vBOX_size);
 	mc.SetBox		(box_num,bb);
 }
