@@ -39,7 +39,5 @@ private:
     
     nri::Descriptor*                        LinearSampler = nullptr;
     
-    nri::Memory*                            QuadGeometryBufferMemory = nullptr;
-    
 };
 extern XRayRenderResourcesManager* GRenderResourcesManager;
