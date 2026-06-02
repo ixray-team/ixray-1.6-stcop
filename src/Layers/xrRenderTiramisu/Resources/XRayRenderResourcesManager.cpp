@@ -48,20 +48,11 @@ void XRayRenderResourcesManager::CreateQuadBuffer()
 		nri::BufferDesc bufferDesc = {};
 		bufferDesc.size = IndexDataAlignedSize + VertexDataSize;
 		bufferDesc.usage = nri::BufferUsageBits::VERTEX_BUFFER | nri::BufferUsageBits::INDEX_BUFFER;
-		NRI_CHECK(GRenderDevice.CoreInterface.CreateBuffer(*GRenderDevice.Device, bufferDesc, QuadGeometryBuffer));
+		NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(*GRenderDevice.Device,nri::MemoryLocation::DEVICE , 1.0f, bufferDesc, QuadGeometryBuffer));
 	}
 	QuadGeometryOffset = IndexDataAlignedSize;
 
-	{
-		nri::ResourceGroupDesc ResourceGroupDesc = {};
-		ResourceGroupDesc.memoryLocation = nri::MemoryLocation::DEVICE;
-		ResourceGroupDesc.bufferNum = 1;
-		ResourceGroupDesc.buffers = &QuadGeometryBuffer;
-		ResourceGroupDesc.textureNum = 0;
-
-		VERIFY(GRenderDevice.HelperInterface.CalculateAllocationNumber(*GRenderDevice.Device, ResourceGroupDesc) == 1);
-		NRI_CHECK(GRenderDevice.HelperInterface.AllocateAndBindMemory(*GRenderDevice.Device, ResourceGroupDesc, &QuadGeometryBufferMemory));
-	}
+	
 	xr_vector<uint8_t> geometryBufferData(IndexDataAlignedSize + VertexDataSize);
 	memcpy(&geometryBufferData[0], QuadIndexData, IndexDataSize);
 	memcpy(&geometryBufferData[IndexDataAlignedSize], QuadVertexData, VertexDataSize);
@@ -161,10 +152,6 @@ XRayRenderResourcesManager::~XRayRenderResourcesManager()
 		GRenderDevice.CoreInterface.DestroyBuffer(QuadGeometryBuffer);
 	}
 	
-	if ( QuadGeometryBufferMemory)
-	{
-		GRenderDevice.CoreInterface.FreeMemory(QuadGeometryBufferMemory);
-	}
 	
 	if (GlobalPipelineLayout)
 	{
