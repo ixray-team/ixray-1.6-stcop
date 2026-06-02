@@ -37,10 +37,9 @@ private:
     TLegacySceneSector*                                 GetSectorByRay      (const Fvector& Position, const Fvector& Direction);
     static EXRayLegacyLevelVertexType	                GetAndConvertFVF	(CStreamReader* Reader, uint32_t& OutSize);
     
-    xr_vector<FLegacyVisualSceneVertexBuffer>                 VertexBuffers;
-    xr_vector<FLegacyVisualSceneIndexBuffer>                  IndexBuffers;
+    xr_vector<FLegacyVisualSceneVertexBuffer>           VertexBuffers;
+    xr_vector<FLegacyVisualSceneIndexBuffer>            IndexBuffers;
     
-    nri::Memory*                                        GeometryBufferMemory = nullptr;
     xr_vector<CDS0_RenderVisual*>                       Visuals;
     xr_vector<FLegacySceneShader>                       Shaders;
     xr_vector<xr_unique_ptr<TLegacyScenePortal>>        Portals;

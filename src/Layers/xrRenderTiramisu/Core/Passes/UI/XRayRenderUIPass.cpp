@@ -9,31 +9,14 @@ XRayRenderUIPass::XRayRenderUIPass()
 		nri::BufferDesc BufferDescription = {};
 		BufferDescription.size = 16 * 1024* 6* sizeof(FXRayUIVertex);
 		BufferDescription.usage = nri::BufferUsageBits::VERTEX_BUFFER;
-		NRI_CHECK(GRenderDevice.CoreInterface.CreateBuffer(*GRenderDevice.Device, BufferDescription, GeometryBuffer));
+		NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(*GRenderDevice.Device,nri::MemoryLocation::DEVICE ,0.f, BufferDescription,GeometryBuffer));
 		
-		nri::ResourceGroupDesc ResourceGroupDescription = {};
-		ResourceGroupDescription.memoryLocation = nri::MemoryLocation::DEVICE;
-		ResourceGroupDescription.bufferNum = 1;
-		ResourceGroupDescription.buffers = &GeometryBuffer;
-		ResourceGroupDescription.textureNum = 0;
-
-		VERIFY( GRenderDevice.HelperInterface.CalculateAllocationNumber(*GRenderDevice.Device, ResourceGroupDescription) == 1);
-		NRI_CHECK(GRenderDevice.HelperInterface.AllocateAndBindMemory(*GRenderDevice.Device, ResourceGroupDescription, &GeometryMemory));
 	}
 	 
 	{ 
 		nri::BufferDesc BufferDescription = {};
 		BufferDescription.size = 16 * 1024* 6* sizeof(FXRayUIVertex);
-		NRI_CHECK(GRenderDevice.CoreInterface.CreateBuffer(*GRenderDevice.Device, BufferDescription, UploadBuffer));
-		
-		nri::ResourceGroupDesc ResourceGroupDescription = {};
-		ResourceGroupDescription.memoryLocation = nri::MemoryLocation::DEVICE_UPLOAD;
-		ResourceGroupDescription.bufferNum = 1;
-		ResourceGroupDescription.buffers = &UploadBuffer;
-		ResourceGroupDescription.textureNum = 0;
-
-		VERIFY( GRenderDevice.HelperInterface.CalculateAllocationNumber(*GRenderDevice.Device, ResourceGroupDescription) == 1);
-		NRI_CHECK(GRenderDevice.HelperInterface.AllocateAndBindMemory(*GRenderDevice.Device, ResourceGroupDescription, &UploadBufferMemory));
+		NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(*GRenderDevice.Device,nri::MemoryLocation::DEVICE_UPLOAD ,0, BufferDescription, UploadBuffer));
 	}
 	
 	{
@@ -105,10 +88,7 @@ XRayRenderUIPass::XRayRenderUIPass()
 XRayRenderUIPass::~XRayRenderUIPass()
 {
 	GRenderDevice.CoreInterface.DestroyBuffer(GeometryBuffer);
-	GRenderDevice.CoreInterface.FreeMemory(GeometryMemory);
-	
 	GRenderDevice.CoreInterface.DestroyBuffer(UploadBuffer);
-	GRenderDevice.CoreInterface.FreeMemory(UploadBufferMemory);
 	
 	GRenderDevice.CoreInterface.DestroyPipeline(Pipeline);
 }

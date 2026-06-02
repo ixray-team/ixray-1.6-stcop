@@ -151,8 +151,6 @@ void TRenderLegacyScene::Clear()
 	}
 	GRenderResourcesManager->ResourcesFlusher->Push(GeometryBuffer);
 	GeometryBuffer = nullptr;
-	GRenderResourcesManager->ResourcesFlusher->Push(GeometryBufferMemory);
-	GeometryBufferMemory = nullptr;
 	
 	LastSector = nullptr;
 }
@@ -380,22 +378,13 @@ void TRenderLegacyScene::LoadBuffers(CStreamReader* Reader)
     }
     {
 	    { // Geometry buffer
-	    	nri::BufferDesc bufferDesc = {};
-	    	bufferDesc.size = MegaBuffer.size();
-	    	bufferDesc.usage = nri::BufferUsageBits::VERTEX_BUFFER | nri::BufferUsageBits::INDEX_BUFFER;
-	    	NRI_CHECK(GRenderDevice.CoreInterface.CreateBuffer(*GRenderDevice.Device, bufferDesc, GeometryBuffer));
+	    	nri::BufferDesc BufferDescription = {};
+	    	BufferDescription.size = MegaBuffer.size();
+	    	BufferDescription.usage = nri::BufferUsageBits::VERTEX_BUFFER | nri::BufferUsageBits::INDEX_BUFFER;
+	    	NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(*GRenderDevice.Device,nri::MemoryLocation::DEVICE, 0.f, BufferDescription, GeometryBuffer));
 	    }
-	    {
-	    	nri::ResourceGroupDesc ResourceGroupDesc = {};
-	    	ResourceGroupDesc.memoryLocation = nri::MemoryLocation::DEVICE;
-	    	ResourceGroupDesc.bufferNum = 1;
-	    	ResourceGroupDesc.buffers = &GeometryBuffer;
-	    	ResourceGroupDesc.textureNum = 0;
-	    	VERIFY(GRenderDevice.HelperInterface.CalculateAllocationNumber(*GRenderDevice.Device, ResourceGroupDesc) == 1);
-	    	NRI_CHECK(GRenderDevice.HelperInterface.AllocateAndBindMemory(*GRenderDevice.Device, ResourceGroupDesc, &GeometryBufferMemory));
-	    }
-
-    	nri::BufferUploadDesc BufferUploadData = {};
+	  
+    	nri::BufferUploadDesc BufferUploadData;
     	BufferUploadData.buffer = GeometryBuffer;
     	BufferUploadData.data = MegaBuffer.data();
     	BufferUploadData.after = { nri::AccessBits::INDEX_BUFFER | nri::AccessBits::VERTEX_BUFFER };
