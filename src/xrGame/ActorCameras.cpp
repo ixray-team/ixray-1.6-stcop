@@ -99,11 +99,13 @@ void CActor::cam_UnsetLadder()
 }
 
 float cammera_into_collision_shift = 0.05f;
+
+static bool m_disable_collision_shift = EngineExternal().ShadowOfChernobylMode();
 float CActor::CameraHeight()
 {
 	Fvector						R;
 	character_physics_support()->movement()->Box().getsize		(R);
-	return						m_fCamHeightFactor*( R.y - cammera_into_collision_shift );
+	return						m_fCamHeightFactor*( R.y - (m_disable_collision_shift ? 0.f : cammera_into_collision_shift) );
 }
 
 void CActor::CorrectActorCameraHeight(float& h)
