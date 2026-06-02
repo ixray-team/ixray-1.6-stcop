@@ -190,7 +190,7 @@ void XRayRenderResourcesManager::Initialize()
 	}
 	ResourcesFlusher = new TRenderResourcesFlusher;
 	ShaderDefinesManager = new XRayShaderDefinesManager; 
-	GlobalShadersManager = new XRayGlobalShadersManager(GRenderDevice.GraphicsApi,true,true);
+	GlobalShadersManager = new XRayGlobalShadersManager(GRenderDevice.GraphicsApi,strstr(Core.Params,"-shader_pdb") || strstr(Core.Params,"-shader_debug"),strstr(Core.Params,"-shader_debug"));
 	DescriptorHeapAllocator = new XRayRenderDescriptorHeapAllocator;
 	TexturesManager = new XRayTexturesManager;
 	LegacyScene = new TRenderLegacyScene;
