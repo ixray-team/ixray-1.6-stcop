@@ -22,6 +22,7 @@ struct SWristwatchSettings
 	u32 preSurgeWindow = 600;
 	float radiationGlowMaxMsv = 0.15f;
 	float anomalyGlitchRadius = 8.0f;
+	bool replaceSurgeNotifications = false;
 };
 
 struct SWristwatchSurgeState

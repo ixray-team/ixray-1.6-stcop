@@ -1,73 +1,95 @@
 #include "StdAfx.h"
 #include "WristwatchSurgeProvider.h"
+#include "WristwatchSurgeLuaBridge.h"
 
 #include "../Level.h"
-#include "../ai_space.h"
-#include "../../xrScripts/script_engine.h"
+#include "../../xrEngine/device.h"
+#include "../../xrEngine/WristwatchSettings.h"
 
-namespace
-{
-EWristwatchSurgeMode ClampSurgeMode(u32 mode)
-{
-	if (mode > static_cast<u32>(EWristwatchSurgeMode::ActiveSurge))
-	{
-		return EWristwatchSurgeMode::Normal;
-	}
-
-	return static_cast<EWristwatchSurgeMode>(mode);
-}
-}
-
-SWristwatchSurgeState CWristwatchSurgeProvider::QueryState() const
-{
-	SWristwatchSurgeState state;
-	if (TryCallLuaState(state))
-	{
-		return state;
-	}
-
-	return state;
-}
-
-bool CWristwatchSurgeProvider::TryCallLuaState(SWristwatchSurgeState& outState) const
+bool CWristwatchSurgeProvider::TryRefreshSurgeState()
 {
 	if (!g_pGameLevel || !Level().game)
 	{
 		return false;
 	}
 
-	luabind::functor<luabind::object> functor;
-	if (!ai().script_engine().functor("wristwatch_surge.get_clock_state", functor))
+	const u32 now = Device.dwTimeContinual;
+	if (now < _nextSurgeRefreshMs)
 	{
-		static bool s_luaMissingLogged = false;
-		if (!s_luaMissingLogged)
-		{
-			Msg("! [wristwatch] Lua module wristwatch_surge.get_clock_state is unavailable, using Normal mode");
-			s_luaMissingLogged = true;
-		}
-
-		return false;
+		return true;
 	}
 
-	const luabind::object result = functor();
-	if (result.type() != LUA_TTABLE)
+	_nextSurgeRefreshMs = now + kRefreshIntervalMs;
+	return WristwatchSurgeLuaBridge::RefreshSurgeState();
+}
+
+void CWristwatchSurgeProvider::TrySuppressVanillaNotifications()
+{
+	if (!_replaceSurgeNotifications)
 	{
-		return false;
+		return;
 	}
 
-	const auto readU32 = [&result](const char* key, u32 fallback) -> u32
+	const u32 now = Device.dwTimeContinual;
+	if (now < _nextSuppressMs)
 	{
-		luabind::object value = result[key];
-		if (value.type() == LUA_TNUMBER)
-		{
-			return static_cast<u32>(luabind::object_cast<float>(value));
-		}
+		return;
+	}
 
-		return fallback;
-	};
+	_nextSuppressMs = now + kRefreshIntervalMs;
+	WristwatchSurgeLuaBridge::SuppressVanillaNotifications();
+}
 
-	outState.mode = ClampSurgeMode(readU32("mode", 0));
-	outState.countdownSeconds = readU32("countdown_sec", 0);
-	outState.untilSurgeSeconds = readU32("until_surge_sec", 0);
-	return true;
+SWristwatchSurgeState CWristwatchSurgeProvider::QueryState()
+{
+	if (_watchSessionActive)
+	{
+		TryRefreshSurgeState();
+		TrySuppressVanillaNotifications();
+	}
+
+	return GetWristwatchSurgeState();
+}
+
+void CWristwatchSurgeProvider::OnWatchesActive(const bool replaceSurgeNotifications)
+{
+	_replaceSurgeNotifications = replaceSurgeNotifications;
+
+	if (_watchSessionActive)
+	{
+		return;
+	}
+
+	_watchSessionActive = true;
+	_nextSurgeRefreshMs = 0;
+	_nextSuppressMs = 0;
+
+	SetWristwatchHudSessionActive(true);
+
+	if (_replaceSurgeNotifications && !_notificationHooksInstalled)
+	{
+		WristwatchSurgeLuaBridge::TryInstallNotificationHooks();
+		_notificationHooksInstalled = true;
+	}
+
+	TryRefreshSurgeState();
+	if (_replaceSurgeNotifications)
+	{
+		_nextSuppressMs = 0;
+		TrySuppressVanillaNotifications();
+	}
+}
+
+void CWristwatchSurgeProvider::OnWatchesInactive()
+{
+	if (!_watchSessionActive)
+	{
+		return;
+	}
+
+	_watchSessionActive = false;
+	_replaceSurgeNotifications = false;
+
+	SetWristwatchHudSessionActive(false);
+	SetWristwatchSurgeState(0, 0, 0);
 }

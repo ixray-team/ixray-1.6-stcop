@@ -4,7 +4,19 @@
 namespace
 {
 SWristwatchRuntimeSettings g_wristwatchSettings;
+SWristwatchSurgeState g_surgeState;
 bool g_wristwatchSettingsLoaded = false;
+bool g_hudSessionActive = false;
+
+EWristwatchSurgeMode ClampSurgeMode(u8 mode)
+{
+	if (mode > static_cast<u8>(EWristwatchSurgeMode::ActiveSurge))
+	{
+		return EWristwatchSurgeMode::Normal;
+	}
+
+	return static_cast<EWristwatchSurgeMode>(mode);
+}
 
 EWristwatchDisplayType ToDisplayType(LPCSTR value)
 {
@@ -57,6 +69,12 @@ ENGINE_API void ReloadWristwatchRuntimeSettings()
 	g_wristwatchSettings.game.preSurgeWindow = READ_IF_EXISTS(pSettings, r_u32, "wristwatch_settings", "pre_surge_window", 600);
 	g_wristwatchSettings.game.radiationGlowMaxMsv = READ_IF_EXISTS(pSettings, r_float, "wristwatch_settings", "radiation_glow_max_msv", 0.15f);
 	g_wristwatchSettings.game.anomalyGlitchRadius = READ_IF_EXISTS(pSettings, r_float, "wristwatch_settings", "anomaly_glitch_radius", 8.0f);
+	g_wristwatchSettings.game.replaceSurgeNotifications = READ_IF_EXISTS(
+		pSettings,
+		r_bool,
+		"wristwatch_settings",
+		"replace_surge_notifications",
+		false);
 
 	g_wristwatchSettings.lcdCenterX = READ_IF_EXISTS(pSettings, r_float, "wristwatch_settings", "watches_lcd_center_x", g_wristwatchSettings.lcdCenterX);
 	g_wristwatchSettings.lcdCenterY = READ_IF_EXISTS(pSettings, r_float, "wristwatch_settings", "watches_lcd_center_y", g_wristwatchSettings.lcdCenterY);
@@ -98,4 +116,31 @@ ENGINE_API const SWristwatchRuntimeSettings& GetWristwatchRuntimeSettings()
 	}
 
 	return g_wristwatchSettings;
+}
+
+ENGINE_API void SetWristwatchSurgeState(u8 mode, u32 countdownSeconds, u32 untilSurgeSeconds)
+{
+	g_surgeState.mode = ClampSurgeMode(mode);
+	g_surgeState.countdownSeconds = countdownSeconds;
+	g_surgeState.untilSurgeSeconds = untilSurgeSeconds;
+}
+
+ENGINE_API const SWristwatchSurgeState& GetWristwatchSurgeState()
+{
+	return g_surgeState;
+}
+
+ENGINE_API void SetWristwatchHudSessionActive(const bool active)
+{
+	g_hudSessionActive = active;
+}
+
+ENGINE_API bool IsWristwatchHudSessionActive()
+{
+	return g_hudSessionActive;
+}
+
+ENGINE_API bool IsWristwatchReplaceSurgeActive()
+{
+	return g_hudSessionActive && GetWristwatchRuntimeSettings().game.replaceSurgeNotifications;
 }

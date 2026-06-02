@@ -122,7 +122,23 @@ void CWristwatchController::ApplyDisplayShadersIfNeeded()
 
 void CWristwatchController::Update(CActor& actor)
 {
-	if (!g_pGameLevel || !Level().game || g_player_hud == nullptr || g_player_hud->GetWatchesModel() == nullptr)
+	const bool watchesOnHud = g_pGameLevel != nullptr && Level().game != nullptr && g_player_hud != nullptr
+		&& g_player_hud->GetWatchesModel() != nullptr;
+
+	if (watchesOnHud != _hudWatchesActive)
+	{
+		_hudWatchesActive = watchesOnHud;
+		if (watchesOnHud)
+		{
+			_surgeProvider.OnWatchesActive(_settings.replaceSurgeNotifications);
+		}
+		else
+		{
+			_surgeProvider.OnWatchesInactive();
+		}
+	}
+
+	if (!watchesOnHud)
 	{
 		Device.hudViewportData.wristwatch = {};
 		_hasAppliedDisplayType = false;
