@@ -41,5 +41,6 @@ private:
 	bool _hasFrozenTime = false;
 	EWristwatchDisplayType _lastAppliedDisplayType = EWristwatchDisplayType::Hybrid;
 	bool _hasAppliedDisplayType = false;
+	bool _hudWatchesActive = false;
 	IKinematics* _lastWatchesModel = nullptr;
 };
