@@ -26,7 +26,7 @@ public:
     bool Empty() const;
 
 private:
-    mutable xrCriticalSection Lock;
+    mutable xrSRWLock Lock;
     xr_vector<Command> Pending;
 };
 
