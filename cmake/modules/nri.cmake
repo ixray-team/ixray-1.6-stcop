@@ -6,7 +6,11 @@ FetchContent_Declare(
     GIT_TAG main
 )
 
+set(NRI_ENABLE_IMGUI_EXTENSION TRUE)
+
+
 FetchContent_MakeAvailable(NRI)
+
 
 set_target_properties(NRI PROPERTIES FOLDER "3rd Party")
 set_target_properties(NRI_Shared PROPERTIES FOLDER "3rd Party")

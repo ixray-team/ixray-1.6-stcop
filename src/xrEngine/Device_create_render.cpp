@@ -16,18 +16,22 @@ void DrawMainViewport()
 	const ImGuiViewport* Viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowViewport(Viewport->ID);
 
-	if (g_appLoaded)
+	if (g_appLoaded || GRHI->APILevel == ERHI_API_LAYER::NOT_CREATED)
 	{
 		ImGui::SetNextWindowBgAlpha(0.f);
 	}
 
 	ImGui::SetNextWindowPos(Viewport->Pos);
 	ImGui::SetNextWindowSize(ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
-	if (ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs)) {
-		ImGui::SetCursorPos(ImVec2(0, 0));
-		ImGui::GetWindowDrawList()->AddRect(Viewport->Pos, ImVec2((float)Device.TargetWidth + Viewport->Pos.x, (float)Device.TargetHeight + Viewport->Pos.y), 0xFFFFFFFF);
-		ImGui::SetCursorPos(ImVec2(0, 0));
-		ImGui::Image(GRHI->DevicePtr->RenderSRV, ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
+	if (ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs)) 
+	{
+		if (GRHI->APILevel != ERHI_API_LAYER::NOT_CREATED)
+		{
+			ImGui::SetCursorPos(ImVec2(0, 0));
+			ImGui::GetWindowDrawList()->AddRect(Viewport->Pos, ImVec2((float)Device.TargetWidth + Viewport->Pos.x, (float)Device.TargetHeight + Viewport->Pos.y), 0xFFFFFFFF);
+			ImGui::SetCursorPos(ImVec2(0, 0));
+			ImGui::Image(GRHI->DevicePtr->RenderSRV, ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
+		}
 	}
 	ImGui::End();
 
