@@ -151,6 +151,15 @@ void TRenderUIPass::Render(nri::CommandBuffer& CurrentCommandBuffer)
 		{
 			continue;
 		}
+
+		nri::Rect ScissorRect = { 0, 0, (u16)psCurrentVidMode[0], (u16)psCurrentVidMode[1] };
+
+		if (Primitve.ScissorRect.x1 != Primitve.ScissorRect.x2)
+		{
+			ScissorRect = { (s16)Primitve.ScissorRect.x1, (s16)Primitve.ScissorRect.y1, (u16)(Primitve.ScissorRect.x2 - Primitve.ScissorRect.x1), (u16)(Primitve.ScissorRect.y2 - Primitve.ScissorRect.y1) };
+		}
+
+		GRenderDevice.CoreInterface.CmdSetScissors(CurrentCommandBuffer, &ScissorRect, 1);
 		GRenderDevice.CoreInterface.CmdDraw(CurrentCommandBuffer, {Primitve.VertexCount , 1, Primitve.VertexOffset,  Primitve.Texture->ResourceProxy->GetOrCreateHeapID()});
 	}
 	

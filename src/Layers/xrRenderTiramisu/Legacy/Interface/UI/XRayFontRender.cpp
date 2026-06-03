@@ -144,6 +144,9 @@ void CDS0_FontRender::OnRender(CGameFont& Owner)
 			GUIRender.PushPoint(X, GlyphY2, .0001f, ColorBL, u1, v2);
 			GUIRender.PushPoint(X, GlyphY, .0001f, ColorTL, u1, v1);
 			GUIRender.PushPoint(X2, GlyphY2, .0001f, ColorBR, u2, v2);
+
+			GUIRender.PushPoint(X2, GlyphY2, .0001f, ColorBR, u2, v2);
+			GUIRender.PushPoint(X, GlyphY, .0001f, ColorTL, u1, v1);
 			GUIRender.PushPoint(X2, GlyphY, .0001f, ColorTR, u2, v1);
 
 			X = X2 + GlyphInfo->Abc.abcC + Owner.GetLetterSpacing();

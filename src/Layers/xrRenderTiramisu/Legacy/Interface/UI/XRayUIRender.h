@@ -23,9 +23,11 @@ struct FXRayUIPrimitive
 	uint32_t						VertexCount = 0;
 	IUIRender::ePrimitiveType		PrimitiveType;
 	IUIRender::ePointType			PointType;
-	xr_vector<FUIVertex>		VertexesCache;
+	xr_vector<FUIVertex>			VertexesCache;
 	TRenderTexture* Texture			= nullptr;
+	Irect							ScissorRect;
 };
+
 class CDS0_UIRender:
 	public IUIRender
 {
@@ -52,11 +54,12 @@ public:
 
 	virtual void zb_enable(u32 val) {};
 
-	virtual Irect GetScissor() const { return Irect(); };
+	virtual Irect GetScissor() const { return CurrentScissor; };
 	
 	xr_vector<FUIVertex>		Vertexes;
 	xr_vector<FXRayUIPrimitive>		Primitivs;
 	IUIShader* CurrentShader		= nullptr;
+	Irect CurrentScissor;
 	
 private:
 };
