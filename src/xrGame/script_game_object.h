@@ -949,7 +949,7 @@ public:
 			bool InstallUpgrade(const char* upgrade);
 			bool HasUpgrade(const char* upgrade);
 			void IterateInstalledUpgrades(const luabind::functor<bool>& functor);
-			void SwitchState(u8 state);
+			void SwitchState(u8 state, bool pending = true);
 			u8 GetState();
 			
 			//Works for anything with visual

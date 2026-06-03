@@ -69,7 +69,7 @@ public:
 	IC		void			SetNextState		(u8 v)				{m_nextState = v;}
 	IC		u32				CurrStateTime		() const			{return Device.dwTimeGlobal-m_dw_curr_state_time;}
 	IC		void			ResetSubStateTime	()					{m_dw_curr_substate_time=Device.dwTimeGlobal;}
-	virtual void			SwitchState			(u8 S)				= 0;
+	virtual void			SwitchState			(u8 S, bool pending)				= 0;
 	virtual void			OnStateSwitch		(u8 S)				= 0;
 };
 
@@ -135,7 +135,7 @@ public:
 	bool						IsHiding			()	const		{	return GetState() == eHiding;}
 	bool						IsShowing			()	const		{	return GetState() == eShowing;}
 
-	virtual void				SwitchState			(u8 S);
+	virtual void				SwitchState			(u8 S, bool pending);
 	virtual void				OnStateSwitch		(u8 S);
 
 	virtual void				OnAnimationEnd		(u8 state);
@@ -350,7 +350,7 @@ public:
 
 protected:
 
-	IC		void				SetPending			(bool H)			{ m_huditem_flags.set(fl_pending, H);}
+	IC void						SetPending(bool H) { m_huditem_flags.set(fl_pending, H); }
 	shared_str					hud_sect;
 	shared_str					hud_sect_cache;
 

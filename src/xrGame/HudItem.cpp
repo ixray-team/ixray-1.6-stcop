@@ -184,20 +184,20 @@ void CHudItem::renderable_Render()
 	}
 }
 
-void CHudItem::SwitchState(u8 S)
+void CHudItem::SwitchState(u8 S, bool pending)
 {
-	if (OnClient()) 
+	if (OnClient())
 		return;
 
-	SetNextState( S );
+	SetPending(pending);
+	SetNextState(S);
 
-	if (object().Local() && !object().getDestroy())	
+	if (object().Local() && !object().getDestroy())
 	{
-		// !!! Just single entry for given state !!!
-		NET_Packet				P;
-		object().u_EventGen		(P,GE_WPN_STATE_CHANGE,object().ID());
-		P.w_u8					(S);
-		object().u_EventSend	(P);
+		NET_Packet P;
+		object().u_EventGen(P, GE_WPN_STATE_CHANGE, object().ID());
+		P.w_u8(S);
+		object().u_EventSend(P);
 	}
 }
 
@@ -234,7 +234,7 @@ void CHudItem::OnStateSwitch(u8 S)
 				CCustomDevice* dev = smart_cast<CCustomDevice*>(g_player_hud->attached_item(1)->m_parent_hud_item);
 				if (dev != nullptr && dev->CanDrawHand() && old_state != CMissile::EMissileStates::eThrowEnd)
 				{
-					dev->SwitchState(CCustomDevice::EDeviceStates::eHandDraw);
+					dev->SwitchState(CCustomDevice::EDeviceStates::eHandDraw, false);
 				}
 			}
 		}
@@ -249,7 +249,7 @@ void CHudItem::OnStateSwitch(u8 S)
 				CCustomDevice* dev = smart_cast<CCustomDevice*>(g_player_hud->attached_item(1)->m_parent_hud_item);
 				if (dev != nullptr && dev->CanHideHand())
 				{
-					dev->SwitchState(CCustomDevice::EDeviceStates::eHandHide);
+					dev->SwitchState(CCustomDevice::EDeviceStates::eHandHide, false);
 				}
 			}
 		}
@@ -263,7 +263,6 @@ void CHudItem::OnStateSwitch(u8 S)
 	case eSprintStart:
 	{
 		m_bSwitchSprint = true;
-		SetPending(true);
 		PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint_start"), EHudMixType::eMixAll, eSprintStart);
 		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_sprint_start))
 		{
@@ -274,7 +273,6 @@ void CHudItem::OnStateSwitch(u8 S)
 	case eSprintEnd:
 	{
 		m_bSwitchSprint = false;
-		SetPending(true);
 		PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint_end"), EHudMixType::eMixAll, eSprintEnd);
 		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_sprint_end))
 		{
@@ -289,7 +287,6 @@ void CHudItem::OnStateSwitch(u8 S)
 	}
 	case ePrepareDetector:
 	{
-		SetPending(true);
 		PlayHUDMotion(SetCurrentStateAnimation("anm_prepare_detector"), EHudMixType::eMixAll, ePrepareDetector);
 
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_prepare_detector))
@@ -300,7 +297,6 @@ void CHudItem::OnStateSwitch(u8 S)
 	}
 	case eFinishDetector:
 	{
-		SetPending(true);
 		PlayHUDMotion(SetCurrentStateAnimation("anm_finish_detector"), EHudMixType::eMixAll, eFinishDetector);
 
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_finish_detector))
@@ -324,7 +320,6 @@ void CHudItem::OnStateSwitch(u8 S)
 
 void CHudItem::switch2_Bore()
 {
-	SetPending(false);
 	PlayAnimBore();
 
 	const CObject* root = object().H_Root();
@@ -346,12 +341,12 @@ void CHudItem::OnAnimationEnd(u8 state)
 	case eDeviceSwitch:
 	case eFinishDetector:
 	{
-		SwitchState(eIdle);
+		SwitchState(eIdle, false);
 		break;
 	}
 	case ePrepareDetector:
 	{
-		SwitchState(eIdle);
+		SwitchState(eIdle, false);
 		break;
 	}
 	};
@@ -375,7 +370,7 @@ void CHudItem::DeactivateItem()
 
 void CHudItem::OnMoveToRuck(const SInvItemPlace& prev)
 {
-	SwitchState(eHidden);
+	SwitchState(eHidden, false);
 
 	if (THudLightTorch* LightTorch = m_object->GetComponent<THudLightTorch>())
 	{
@@ -402,10 +397,12 @@ void CHudItem::SendHiddenItem()
 {
 	if (!object().getDestroy())
 	{
-		NET_Packet				P;
-		object().u_EventGen		(P,GE_WPN_STATE_CHANGE,object().ID());
-		P.w_u8					(eHiding);
-		object().u_EventSend	(P, net_flags(true, true, false, true));
+		SetPending(true);
+		SetNextState(eHiding);
+		NET_Packet P;
+		object().u_EventGen(P, GE_WPN_STATE_CHANGE, object().ID());
+		P.w_u8(eHiding);
+		object().u_EventSend(P, net_flags(true, true, false, true));
 	}
 }
 
@@ -717,7 +714,7 @@ bool CHudItem::TryPlayAnimIdle()
 
 				if (!m_bSwitchSprint && m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out))
 				{
-					SwitchState(eSprintStart);
+					SwitchState(eSprintStart, true);
 					return true;
 				}
 
@@ -726,7 +723,7 @@ bool CHudItem::TryPlayAnimIdle()
 			}
 			else if (m_bSwitchSprint && m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out))
 			{
-				SwitchState(eSprintEnd);
+				SwitchState(eSprintEnd, true);
 				return true;
 			}
 			else if (state & ACTOR_DEFS::EMoveCommand::mcAnyMove)
@@ -790,7 +787,6 @@ void CHudItem::PlayAnimIdleSprint()
 
 void CHudItem::PlayAnimDeviceSwitch()
 {
-	SetPending(true);
 	shared_str anim_name;
 	shared_str sound_name;
 
@@ -860,11 +856,11 @@ void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 	{
 		if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) != 0 && GetState() != eSprintStart && GetState() == eSprintEnd)
 		{
-			SwitchState(eSprintStart);
+			SwitchState(eSprintStart, true);
 		}
 		else if ((cmd & ACTOR_DEFS::EMoveCommand::mcSprint) == 0 && GetState() != eSprintEnd && GetState() == eSprintStart)
 		{
-			SwitchState(eSprintEnd);
+			SwitchState(eSprintEnd, true);
 		}
 	}
 }
@@ -1024,7 +1020,7 @@ void CHudItem::OnMotionMark(u8 state, const motion_marks& mark)
 		{
 			if (CCustomDevice* dev = pActor->GetDevice(true))
 			{
-				dev->SwitchState(eShowing);
+				dev->SwitchState(eShowing, true);
 				dev->TurnDetectorInternal(true);
 			}
 		}

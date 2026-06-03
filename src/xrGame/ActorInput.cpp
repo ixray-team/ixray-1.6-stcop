@@ -1604,9 +1604,9 @@ void CActor::SwitchNightVision()
 			}
 
 			itm->m_eDevicesFlags.set(CHudItem::EDevicesFlags::df_nvg, true);
-			itm->SwitchState(CHUDState::eDeviceSwitch);
+			itm->SwitchState(CHUDState::eDeviceSwitch, true);
 			dev->m_eDevicesFlags.set(CCustomDevice::EDevicesFlags::df_nvg, true);
-			dev->SwitchState(CCustomDevice::eDeviceSwitch);
+			dev->SwitchState(CCustomDevice::eDeviceSwitch, true);
 			return;
 		}
 	}
@@ -1631,7 +1631,7 @@ void CActor::SwitchNightVision()
 			}
 
 			itm->m_eDevicesFlags.set(CHudItem::EDevicesFlags::df_nvg, true);
-			itm->SwitchState(CHUDState::eDeviceSwitch);
+			itm->SwitchState(CHUDState::eDeviceSwitch, true);
 			return;
 		}
 	}
@@ -1646,7 +1646,7 @@ void CActor::SwitchNightVision()
 			}
 
 			dev->m_eDevicesFlags.set(CCustomDevice::EDevicesFlags::df_nvg, true);
-			dev->SwitchState(CCustomDevice::eDeviceSwitch);
+			dev->SwitchState(CCustomDevice::eDeviceSwitch, true);
 			return;
 		}
 	}
@@ -1723,9 +1723,9 @@ void CActor::SwitchTorch()
 				}
 
 				itm->m_eDevicesFlags.set(CHudItem::EDevicesFlags::df_torch, true);
-				itm->SwitchState(CHUDState::eDeviceSwitch);
+				itm->SwitchState(CHUDState::eDeviceSwitch, true);
 				dev->m_eDevicesFlags.set(CCustomDevice::EDevicesFlags::df_torch, true);
-				dev->SwitchState(CCustomDevice::eDeviceSwitch);
+				dev->SwitchState(CCustomDevice::eDeviceSwitch, true);
 				return;
 			}
 		}
@@ -1750,7 +1750,7 @@ void CActor::SwitchTorch()
 				}
 
 				itm->m_eDevicesFlags.set(CHudItem::EDevicesFlags::df_torch, true);
-				itm->SwitchState(CHUDState::eDeviceSwitch);
+				itm->SwitchState(CHUDState::eDeviceSwitch, true);
 				return;
 			}
 		}
@@ -1765,7 +1765,7 @@ void CActor::SwitchTorch()
 				}
 
 				dev->m_eDevicesFlags.set(CCustomDevice::EDevicesFlags::df_torch, true);
-				dev->SwitchState(CCustomDevice::eDeviceSwitch);
+				dev->SwitchState(CCustomDevice::eDeviceSwitch, true);
 				return;
 			}
 		}
@@ -1834,9 +1834,9 @@ void CActor::ClearMask()
 			}
 
 			itm->m_eDevicesFlags.set(CHudItem::EDevicesFlags::df_clear_mask, true);
-			itm->SwitchState(CHUDState::eDeviceSwitch);
+			itm->SwitchState(CHUDState::eDeviceSwitch, true);
 			dev->m_eDevicesFlags.set(CCustomDevice::EDevicesFlags::df_clear_mask, true);
-			dev->SwitchState(CCustomDevice::eDeviceSwitch);
+			dev->SwitchState(CCustomDevice::eDeviceSwitch, true);
 			return;
 		}
 	}
@@ -1861,7 +1861,7 @@ void CActor::ClearMask()
 			}
 
 			itm->m_eDevicesFlags.set(CHudItem::EDevicesFlags::df_clear_mask, true);
-			itm->SwitchState(CHUDState::eDeviceSwitch);
+			itm->SwitchState(CHUDState::eDeviceSwitch, true);
 			return;
 		}
 	}
@@ -1876,7 +1876,7 @@ void CActor::ClearMask()
 			}
 
 			dev->m_eDevicesFlags.set(CCustomDevice::EDevicesFlags::df_clear_mask, true);
-			dev->SwitchState(CCustomDevice::eDeviceSwitch);
+			dev->SwitchState(CCustomDevice::eDeviceSwitch, true);
 			return;
 		}
 	}
