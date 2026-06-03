@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "../xrCore/FormatParsers/XML/Expression.h"
 #include "Actor.h"
 #include "CustomOutfit.h"

@@ -6,7 +6,7 @@
 //	Description : Level graph debug functions
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #ifdef DEBUG
 #ifndef AI_COMPILER
@@ -178,17 +178,17 @@ void CLevelGraph::draw_restrictions	()
 	CRandom R;
 
 	for ( ; I != E; ++I) {
-		if (!(*I).second->m_ref_count)
+		if (!I->second->m_ref_count)
 			continue;
-		if (!(*I).second->initialized())
+		if (!I->second->initialized())
 			continue;
 
 		u8 b = u8(R.randI(255));
 		u8 g = u8(R.randI(255));
 		u8 r = u8(R.randI(255));
 
-		xr_vector<u32>::const_iterator	i = (*I).second->border().begin();
-		xr_vector<u32>::const_iterator	e = (*I).second->border().end();
+		xr_vector<u32>::const_iterator	i = I->second->border().begin();
+		xr_vector<u32>::const_iterator	e = I->second->border().end();
 		for ( ; i != e; ++i) {
 			Fvector temp = ai().level_graph().vertex_position(*i);
 			if (!::Render->ViewBase.testSphere_dirty(temp, 0.6f))

@@ -126,7 +126,7 @@ extern XRLC_LIGHT_API void		blit_r			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_laye
 extern void		lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF);
 
 
-extern void UpdateCurrentPhase(LPCSTR text);
+extern void UpdateCurrentPhase(str_c text);
 
 extern XRLC_LIGHT_API void		LightPoint	(EmbreeRayTraceModel& MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
 void LightPoint_Jitters(xr_vector<JiterPixel>& world_pos, base_lighting& lights, u32 flags);

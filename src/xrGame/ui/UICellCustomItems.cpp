@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UICellCustomItems.h"
 #include "UIInventoryUtilities.h"
 #include "../Weapon.h"
@@ -28,7 +28,7 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 {
 	m_pData = (void*)itm;
 
-	const char* icons_texture = pSettings->read_if_exists<LPCSTR>(itm->m_section_id,"icons_texture",nullptr);
+	const char* icons_texture = pSettings->read_if_exists<str_c>(itm->m_section_id,"icons_texture",nullptr);
 
 	const bool isRaster = !(pSettings->line_exist(itm->m_section_id, kUIConfigField_InventoryVectorIcon));
 

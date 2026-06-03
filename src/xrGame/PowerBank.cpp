@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "PowerBank.h"
 #include "PowerCell.h"
 #include "Actor.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "xr_time.h"
 #include "ui/UIInventoryUtilities.h"
 #include "Level.h"
@@ -30,7 +30,7 @@ void ctime_serialize(xrTime* self, ISaveObject* save) {
 	self->Serialize(*save);
 }
 
-LPCSTR	xrTime::dateToString	(int mode)								
+str_c	xrTime::dateToString	(int mode)								
 { 
 	return *InventoryUtilities::GetDateAsString(m_time,(InventoryUtilities::EDatePrecision)mode);
 }

@@ -3,10 +3,10 @@
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../xrRender/blender_fxaa.h"
 
-static LPCSTR		RTname			= "$user$rendertarget";
-static LPCSTR		RTTempName = "$user$rendertarget_temp";
-static LPCSTR		RTname_color_map= "$user$rendertarget_color_map";
-static LPCSTR		RTname_distort	= "$user$distort";
+static str_c		RTname			= "$user$rendertarget";
+static str_c		RTTempName = "$user$rendertarget_temp";
+static str_c		RTname_color_map= "$user$rendertarget_color_map";
+static str_c		RTname_distort	= "$user$distort";
 
 bool UseGasmak = false;
 bool UseRainDrops = false;

@@ -6,7 +6,7 @@
 //	Description : ALife Simulator base class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "alife_simulator_base.h"
 #include "alife_simulator_header.h"
@@ -399,7 +399,7 @@ void CALifeSimulatorBase::assign_death_position(CSE_ALifeCreatureAbstract *tpALi
 	tpALifeCreatureAbstract->m_tGraphID		= tGraphID;
 #ifdef DEBUG
 	if (psAI_Flags.test(aiALife)) {
-		Msg									("[LSS] Generated death position %s[%f][%f][%f] -> [%f][%f][%f] : [%d]",tpALifeCreatureAbstract->name_replace(),VPUSH(tpALifeCreatureAbstract->o_Position),VPUSH((*i).level_point()),(*i).level_vertex_id());
+		Msg									("[LSS] Generated death position %s[%f][%f][%f] -> [%f][%f][%f] : [%d]",tpALifeCreatureAbstract->name_replace(),VPUSH(tpALifeCreatureAbstract->o_Position),VPUSH(i->level_point()),i->level_vertex_id());
 	}
 #endif
 	tpALifeCreatureAbstract->o_Position		= i->level_point();

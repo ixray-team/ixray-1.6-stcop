@@ -6,7 +6,7 @@
 //	Description : ALife Simulator
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "alife_simulator.h"
 #include "xrServer_Objects_ALife.h"
@@ -111,14 +111,14 @@ CALifeSimulator::~CALifeSimulator		()
 	configs_type::iterator i	= m_configs_lru.begin();
 	configs_type::iterator const e	= m_configs_lru.end();
 	for ( ; i != e; ++i )
-		FS.r_close				( (*i).second );
+		FS.r_close				( i->second );
 }
 
 void CALifeSimulator::destroy			()
 {
 	CALifeUpdateManager::destroy();
 	VERIFY						(ai().get_alife());
-	ai().set_alife				(0);
+	ai().set_alife				(nullptr);
 }
 
 void CALifeSimulator::setup_simulator	(CSE_ALifeObject *object)

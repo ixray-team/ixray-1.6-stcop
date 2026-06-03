@@ -17,5 +17,5 @@ IC	CSE_ALifeSmartZone *CALifeSmartTerrainRegistry::object							(const ALife::_O
 {
 	OBJECTS::const_iterator	I = objects().find(id);
 	VERIFY					(I != objects().end());
-	return					((*I).second);
+	return					(I->second);
 }

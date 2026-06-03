@@ -224,15 +224,15 @@ void RenderScenesViewer() {
 	}
 
 	auto lineCount = scenesIni.line_count(levelName);
-	const char* key = nullptr;
-	const char* value = nullptr;
+	str_c key = nullptr;
+	str_c value = nullptr;
 	xr_map<xr_string, xr_vector<xr_string>> scenesTable;
 
 	ImGui::Checkbox("Teleport to scene", &checkTeleport);
 	ImGui::Checkbox("Spawn items", &checkSpawnItems);
 
 	for (u32 i = 0; i < lineCount; i++) {
-		scenesIni.r_line(levelName, i, &key, &value);
+		scenesIni.r_line(levelName, i, key, value);
 		scenesTable[key] = parse_params(value, '|');
 
 		if (ImGui::Button(g_pStringTable->translate(key).c_str())) {

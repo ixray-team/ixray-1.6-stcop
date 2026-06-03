@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "Explosive.h"
 
@@ -135,9 +135,9 @@ void CExplosive::Load(CInifile const *ini,const char* section)
 	m_bDynamicParticles	 = ini->read_if_exists<bool>(section,"dynamic_explosion_particles",false);
 
 	m_bIsGasExplosive = pSettings->read_if_exists<bool>(section,"is_gas_explosive",false);
-	m_sBlastActorCallback = pSettings->read_if_exists<LPCSTR>(section,"actor_blast_callback","");
-	m_sBlastBeginActorCallback = pSettings->read_if_exists<LPCSTR>(section,"actor_blast_begin_callback","");
-	m_sBlastEndActorCallback = pSettings->read_if_exists<LPCSTR>(section,"actor_blast_end_callback","");
+	m_sBlastActorCallback = pSettings->read_if_exists<str_c>(section,"actor_blast_callback","");
+	m_sBlastBeginActorCallback = pSettings->read_if_exists<str_c>(section,"actor_blast_begin_callback","");
+	m_sBlastEndActorCallback = pSettings->read_if_exists<str_c>(section,"actor_blast_end_callback","");
 	m_uBlastUpdateTime = pSettings->read_if_exists<u32>(section,"blast_update_time",2000);
 	m_uParticlesUpdateTime = pSettings->read_if_exists<u32>(section,"particles_update_time",500);
 }

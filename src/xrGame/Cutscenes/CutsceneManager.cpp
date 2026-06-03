@@ -15,7 +15,7 @@ CCutsceneManager& CCutsceneManager::GetInstance()
 	return manager;
 }
 
-void CCutsceneManager::PlayCutscene(LPCSTR section)
+void CCutsceneManager::PlayCutscene(str_c section)
 {
 	auto& Self = GetInstance();
 	R_ASSERT3(!Self.m_pCurrentCutscene, "Attempt to start new cutscene while other plays!", Self.m_pCurrentCutscene->GetName());

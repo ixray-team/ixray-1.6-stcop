@@ -6,7 +6,7 @@
 //	Description : Sight manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "sight_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "stalker_movement_manager_smart_cover.h"
@@ -170,7 +170,7 @@ void CSightManager::setup			(const CSightAction &sight_action)
 	if (m_actions.size() > 1)
 		clear			();
 
-	if (!m_actions.empty() && (*(*m_actions.begin()).second == sight_action))
+	if (!m_actions.empty() && (*m_actions.begin()->second == sight_action))
 		return;
 
 	clear				();
@@ -221,7 +221,7 @@ void CSightManager::remove_links					(CObject *object)
 	setup_actions::iterator	I = actions().begin();
 	setup_actions::iterator	E = actions().end();
 	for ( ; I != E; ++I)
-		(*I).second->remove_links	(object);
+		I->second->remove_links	(object);
 }
 
 Fvector CSightManager::object_position				() const

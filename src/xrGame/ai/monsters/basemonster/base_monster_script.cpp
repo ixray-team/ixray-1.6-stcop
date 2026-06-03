@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "base_monster.h"
 #include "../../../script_entity_action.h"

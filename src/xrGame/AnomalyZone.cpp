@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "../xrEngine/XR_IOConsole.h"
 #include "AnomalyZone.h"
 #include "Hit.h"

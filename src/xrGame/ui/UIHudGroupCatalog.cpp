@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIHudGroupCatalog.h"
 
 #include "../../xrUI/xrUIXmlParser.h"

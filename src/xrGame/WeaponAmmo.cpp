@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "WeaponAmmo.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "xrServer_Objects_ALife_Items.h"

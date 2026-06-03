@@ -110,7 +110,7 @@ IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
 }
 
 
-void CLightmap::Save(LPCSTR path)
+void CLightmap::Save(str_c path)
 {
 	++pBuild->lmapNameID;
  	u32 BORDER = gCompilerMode.LC_BORDER;;
@@ -135,7 +135,7 @@ void CLightmap::Save(LPCSTR path)
 	lm_texture.dwHeight = lm.height;
 	lm_texture.pSurface.Clear();
 
-	// Записываем RGB + SUN
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ RGB + SUN
 	if (true)
 	{
 		string_path				FN;
@@ -177,7 +177,7 @@ void CLightmap::Save(LPCSTR path)
 		}
 	}
  
-	// Записываем Hemi + SUN
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Hemi + SUN
 	if (true)
 	{
  		xr_vector<u32>			hemi_packed;
@@ -209,6 +209,6 @@ void CLightmap::Save(LPCSTR path)
 	}
 	 
 
-	// Освобождаем память
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	lm.clear_memory();
 }

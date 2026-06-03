@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "entity_alive.h"
 #include "InventoryOwner.h"
@@ -934,14 +934,14 @@ Fvector	CEntityAlive::get_new_local_point_on_mesh	( u16& bone_id ) const
 	hit_bone_surface_areas_type::const_iterator i		= m_hit_bone_surface_areas.begin( );
 	hit_bone_surface_areas_type::const_iterator const e	= m_hit_bone_surface_areas.end( );
 	for ( ; i != e; ++i ) {
-		if ( !kinematics->LL_GetBoneVisible((*i).first) )
+		if ( !kinematics->LL_GetBoneVisible(i->first) )
 			continue;
 
-		SBoneShape const& shape			= kinematics->LL_GetData((*i).first).shape;
+		SBoneShape const& shape			= kinematics->LL_GetData(i->first).shape;
 		VERIFY							( shape.type != SBoneShape::stNone );
 		VERIFY							( !shape.flags.is(SBoneShape::sfNoPickable) );
 
-		hit_bones_surface_area			+= (*i).second;
+		hit_bones_surface_area			+= i->second;
 	}
 
 	VERIFY2								( hit_bones_surface_area > 0.f, make_string<const char*>("m_hit_bone_surface_areas[%d]", m_hit_bone_surface_areas.size()) );
@@ -949,21 +949,21 @@ Fvector	CEntityAlive::get_new_local_point_on_mesh	( u16& bone_id ) const
 
 	i									= m_hit_bone_surface_areas.begin( );
 	for (float accumulator = 0.f; i != e; ++i ) {
-		if ( !kinematics->LL_GetBoneVisible((*i).first) )
+		if ( !kinematics->LL_GetBoneVisible(i->first) )
 			continue;
 
-		SBoneShape const& shape			= kinematics->LL_GetData((*i).first).shape;
+		SBoneShape const& shape			= kinematics->LL_GetData(i->first).shape;
 		VERIFY							( shape.type != SBoneShape::stNone );
 		VERIFY							( !shape.flags.is(SBoneShape::sfNoPickable) );
 
-		accumulator						+= (*i).second;
+		accumulator						+= i->second;
 		if ( accumulator >= selected_area )
 			break;
 	}
 
 	VERIFY2								( i != e, make_string<const char*>("m_hit_bone_surface_areas[%d]", m_hit_bone_surface_areas.size()) );
-	SBoneShape const& shape				= kinematics->LL_GetData((*i).first).shape;
-	bone_id								= (*i).first;
+	SBoneShape const& shape				= kinematics->LL_GetData(i->first).shape;
+	bone_id								= i->first;
 	Fvector result						= Fvector().set( flt_max, flt_max, flt_max );
 	switch ( shape.type ) {
 		case SBoneShape::stBox : {

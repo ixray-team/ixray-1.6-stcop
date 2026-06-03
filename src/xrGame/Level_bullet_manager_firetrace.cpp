@@ -3,7 +3,7 @@
 //								(для просчета столкновений и их визуализации)
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Level_Bullet_Manager.h"
 #include "Entity.h"
 #include "../xrEngine/GameMtlLib.h"

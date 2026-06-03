@@ -166,7 +166,6 @@ void CUITextBanner::EffectFlicker()
 
 void CUITextBanner::SetTextColor(u32 cl)
 {
-
 	m_Cl = cl;
 }
 
@@ -174,9 +173,6 @@ void CUITextBanner::SetTextColor(u32 cl)
 
 u32  CUITextBanner::GetTextColor()
 {
-	void SetTextColor			(u32 cl);
-	u32  GetTextColor			();
-
 	return m_Cl;
 }
 

@@ -1,5 +1,5 @@
 // exxZERO Time Stamp AddIn. Document modified at : Thursday, March 07, 2002 14:12:50 , by user : Oles , from computer : OLES
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HitMarker.h"
 #include "../xrEngine/Render.h"
 #include "../xrEngine/LightAnimLibrary.h"
@@ -15,7 +15,7 @@
 CHitMarker::CHitMarker()
 {
 	InitShader( pSettings->r_string( "hud_hitmark", "hit_mark_texture" ) );
-	InitShader_Grenade( pSettings->read_if_exists<LPCSTR>("hud_hitmark","grenade_mark_texture","ui\\ui_hud_grenade_mark"));
+	InitShader_Grenade( pSettings->read_if_exists<str_c>("hud_hitmark","grenade_mark_texture","ui\\ui_hud_grenade_mark"));
 }
 
 void CHitMarker::InitShader( const char* tex_name )

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "TeleWhirlwind.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "PhysicsShellHolder.h"

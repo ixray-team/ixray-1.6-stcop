@@ -6,7 +6,7 @@
 //	Description : Miscellaneous functions for monster "Stalker"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "ai_stalker.h"
 #include "ai_stalker_space.h"
@@ -186,9 +186,9 @@ void CAI_Stalker::process_enemies		()
 	VISIBLES::const_iterator	I = memory().visual().objects().begin();
 	VISIBLES::const_iterator	E = memory().visual().objects().end();
 	for ( ; I != E; ++I) {
-		if (!(*I).visible(mask))
+		if (!I->visible(mask))
 			continue;
-		CGameObject* GO = const_cast<CGameObject*>((*I).m_object);
+		CGameObject* GO = const_cast<CGameObject*>(I->m_object);
 		const CAI_Stalker		*member = GO ? GO->cast_stalker() : NULL;
 		if (!member)
 			continue;

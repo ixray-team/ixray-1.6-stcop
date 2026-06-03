@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "PolterChem.h"
-#include "../PhysicsShellHolder.h"
-#include "../level.h"
-#include "../actor.h"
-#include "../xrPhysics/icolisiondamageinfo.h"
+#include "src/xrGame/Actor.h"
 
 CPolterChem::CPolterChem(IPolterInterface* polter) : inherited(polter) {
 
@@ -13,7 +10,7 @@ CPolterChem::~CPolterChem() {
 
 }
 
-void CPolterChem::load(LPCSTR section){
+void CPolterChem::load(str_c section){
 	inherited::load(section);
 
 }

@@ -9,7 +9,7 @@
 //	- Optional stack layout in item XML: logs_itm_stack, logs_row_stack, logs_text_stack (sp_align, spacing).
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UILogsWnd.h"
 #include "PdaConstants.h"
 #include "PdaUiSound.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Level.h"
 #include "../xrCore/Collision/Frustum.h"
 

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIStatsPlayerList.h"
 #include "../game_cl_base.h"
 #include "../game_cl_artefacthunt.h"

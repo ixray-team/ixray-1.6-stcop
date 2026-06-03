@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "CarLights.h"
 #ifdef DEBUG
 

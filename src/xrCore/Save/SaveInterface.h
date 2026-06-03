@@ -1,6 +1,6 @@
 #pragma once
-#include "Concepts.h"
-#include "memory/xrMemory_subst_msvc.h"
+#include "src/xrCore/Concepts.h"
+#include "src/xrCore/memory/xrMemory_subst_msvc.h"
 
 class xr_string;
 class shared_str;
@@ -56,7 +56,7 @@ public:
 	virtual ISaveObject& operator<<(shared_str& S) = 0;
 
 	// This made only for serialization of crazy strings from script, and not designed for other purposes 
-	virtual xr_string* SerializeEnourmousString(LPCSTR long_str) = 0; // a.k.a. "Fuck you vasyans!"
+	virtual xr_string* SerializeEnourmousString(const char* long_str) = 0; // a.k.a. "Fuck you vasyans!"
 };
 
 class XRCORE_API ISaveObjectStackGuard

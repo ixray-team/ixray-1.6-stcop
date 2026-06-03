@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #ifdef XR_MP_BUILD
 #include "configs_dumper.h"
 #include "configs_common.h"

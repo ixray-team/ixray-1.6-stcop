@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "IRestoresOwner.h"
 
 void IRestoresOwner::Load(const char* section)

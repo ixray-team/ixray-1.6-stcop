@@ -6,7 +6,7 @@
 //	Description : ALife Online Offline Group class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "ai_space.h"
 #include "alife_simulator.h"
@@ -55,7 +55,7 @@ void CSE_ALifeOnlineOfflineGroup::update	()
 {	
 	if (m_bOnline)
 	{
-		MEMBER* commander			= (*m_members.begin()).second;
+		MEMBER* commander			= m_members.begin()->second;
 		o_Position					= commander->o_Position;
 		m_tNodeID					= commander->m_tNodeID;
 		m_tGraphID					= commander->m_tGraphID;
@@ -68,10 +68,10 @@ void CSE_ALifeOnlineOfflineGroup::update	()
 	MEMBERS::iterator			I = m_members.begin();
 	MEMBERS::iterator			E = m_members.end();
 	for ( ; I != E; ++I){
-		((*I).second)->o_Position				= o_Position;
-		((*I).second)->m_tNodeID				= m_tNodeID;
-		((*I).second)->m_tGraphID				= m_tGraphID;
-		((*I).second)->m_fDistance				= m_fDistance;
+		(I->second)->o_Position				= o_Position;
+		(I->second)->m_tNodeID				= m_tNodeID;
+		(I->second)->m_tGraphID				= m_tGraphID;
+		(I->second)->m_fDistance				= m_fDistance;
 	}		
 	return;
 }
@@ -132,11 +132,11 @@ void CSE_ALifeOnlineOfflineGroup::unregister_member						(ALife::_OBJECT_ID memb
 
 	MEMBERS::iterator			I = m_members.find(member_id);
 	VERIFY						(I != m_members.end());
-	VERIFY						((*I).second->m_group_id == ID);
-	(*I).second->m_group_id		= ALife::INVALID_OBJECT_ID;
+	VERIFY						(I->second->m_group_id == ID);
+	I->second->m_group_id		= ALife::INVALID_OBJECT_ID;
 
-	graph.update				((*I).second);
-	alife().scheduled().add		((*I).second);
+	graph.update				(I->second);
+	alife().scheduled().add		(I->second);
 	m_members.erase				(I);
 	
 	if (m_members.empty()) {
@@ -153,13 +153,13 @@ CSE_ALifeOnlineOfflineGroup::MEMBER *CSE_ALifeOnlineOfflineGroup::member(ALife::
 		VERIFY					(no_assert);
 		return					(0);
 	}
-	return						((*I).second);
+	return						(I->second);
 }
 
 bool CSE_ALifeOnlineOfflineGroup::synchronize_location	()
 {	
 	if (m_bOnline){
-		MEMBER					*member = (*m_members.begin()).second;
+		MEMBER					*member = m_members.begin()->second;
 		o_Position				= member->o_Position;
 		m_tNodeID				= member->m_tNodeID;
 		m_tGraphID				= member->m_tGraphID;
@@ -184,10 +184,10 @@ void CSE_ALifeOnlineOfflineGroup::try_switch_online		()
 	MEMBERS::iterator			I = m_members.begin();
 	MEMBERS::iterator			E = m_members.end();
 	for ( ; I != E; ++I) {
-		VERIFY3					((*I).second->g_Alive(),"Incorrect situation : some of the OnlineOffline group members is dead",(*I).second->name_replace());
-		VERIFY3					((*I).second->can_switch_online(),"Incorrect situation : some of the OnlineOffline group members cannot be switched online due to their personal properties",(*I).second->name_replace());
-		VERIFY3					((*I).second->can_switch_offline(),"Incorrect situation : some of the OnlineOffline group members cannot be switched online due to their personal properties",(*I).second->name_replace());
-		if (alife().graph().actor()->o_Position.distance_to((*I).second->o_Position) > alife().online_distance()){
+		VERIFY3					(I->second->g_Alive(),"Incorrect situation : some of the OnlineOffline group members is dead",I->second->name_replace());
+		VERIFY3					(I->second->can_switch_online(),"Incorrect situation : some of the OnlineOffline group members cannot be switched online due to their personal properties",I->second->name_replace());
+		VERIFY3					(I->second->can_switch_offline(),"Incorrect situation : some of the OnlineOffline group members cannot be switched online due to their personal properties",I->second->name_replace());
+		if (alife().graph().actor()->o_Position.distance_to(I->second->o_Position) > alife().online_distance()){
 			continue;
 		}
 		inherited1::try_switch_online	();
@@ -212,11 +212,11 @@ void CSE_ALifeOnlineOfflineGroup::try_switch_offline	()
 	MEMBERS::iterator			I = m_members.begin();
 	MEMBERS::iterator			E = m_members.end();
 	for ( ; I != E; ++I) {
-		VERIFY3					((*I).second->g_Alive(),"Incorrect situation : some of the OnlineOffline group members is dead",(*I).second->name_replace());
-		VERIFY3					((*I).second->can_switch_offline(),"Incorrect situation : some of the OnlineOffline group members cannot be switched online due to their personal properties",(*I).second->name_replace());
-		VERIFY3					((*I).second->can_switch_online(),"Incorrect situation : some of the OnlineOffline group members cannot be switched online due to their personal properties",(*I).second->name_replace());
+		VERIFY3					(I->second->g_Alive(),"Incorrect situation : some of the OnlineOffline group members is dead",I->second->name_replace());
+		VERIFY3					(I->second->can_switch_offline(),"Incorrect situation : some of the OnlineOffline group members cannot be switched online due to their personal properties",I->second->name_replace());
+		VERIFY3					(I->second->can_switch_online(),"Incorrect situation : some of the OnlineOffline group members cannot be switched online due to their personal properties",I->second->name_replace());
 	
-		if (alife().graph().actor()->o_Position.distance_to((*I).second->o_Position) <= alife().offline_distance())
+		if (alife().graph().actor()->o_Position.distance_to(I->second->o_Position) <= alife().offline_distance())
 			return;
 	}
 
@@ -231,7 +231,7 @@ void CSE_ALifeOnlineOfflineGroup::switch_online			()
 	MEMBERS::iterator			I = m_members.begin();
 	MEMBERS::iterator			E = m_members.end();
 	for ( ; I != E; ++I){
-		alife().add_online		((*I).second, false);
+		alife().add_online		(I->second, false);
 	}
 
 	alife().scheduled().remove	(this);
@@ -244,7 +244,7 @@ void CSE_ALifeOnlineOfflineGroup::switch_offline		()
 	m_bOnline					= false;
 
 	if (!m_members.empty()) {
-		MEMBER					*member = (*m_members.begin()).second;
+		MEMBER					*member = m_members.begin()->second;
 		
 		member->synchronize_location();
 
@@ -258,10 +258,10 @@ void CSE_ALifeOnlineOfflineGroup::switch_offline		()
 	MEMBERS::iterator			E = m_members.end();
 	for ( ; I != E; ++I)
 	{
-		if ((*I).second->m_bOnline == true)
+		if (I->second->m_bOnline == true)
 		{
-			(*I).second->clear_client_data();
-			alife().remove_online((*I).second, false);
+			I->second->clear_client_data();
+			alife().remove_online(I->second, false);
 		}
 	}
 
@@ -297,8 +297,8 @@ void CSE_ALifeOnlineOfflineGroup::on_after_game_load	()
 		MEMBERS::const_iterator	I = m_members.begin();
 		MEMBERS::const_iterator	E = m_members.end();
 		for ( ; I != E; ++I, ++i) {
-			VERIFY				(!(*I).second);
-			*i					= (*I).first;
+			VERIFY				(!I->second);
+			*i					= I->first;
 		}
 	}
 
@@ -311,7 +311,7 @@ void CSE_ALifeOnlineOfflineGroup::on_after_game_load	()
 ALife::_OBJECT_ID CSE_ALifeOnlineOfflineGroup::commander_id ( )
 {
 	if (!m_members.empty()) 
-		return (*m_members.begin()).first;
+		return m_members.begin()->first;
 	return ALife::INVALID_OBJECT_ID;	
 }
 
@@ -329,7 +329,7 @@ void CSE_ALifeOnlineOfflineGroup::clear_location_types		(){
 	MEMBERS::iterator			I = m_members.begin();
 	MEMBERS::iterator			E = m_members.end();
 	for ( ; I != E; ++I){
-		(*I).second->m_tpaTerrain.clear();
+		I->second->m_tpaTerrain.clear();
 	}
 }
 
@@ -339,7 +339,7 @@ void CSE_ALifeOnlineOfflineGroup::add_location_type		(const char* mask){
 	MEMBERS::iterator			I = m_members.begin();
 	MEMBERS::iterator			E = m_members.end();
 	for ( ; I != E; ++I){
-		setup_location_types_line((*I).second->m_tpaTerrain, mask);
+		setup_location_types_line(I->second->m_tpaTerrain, mask);
 	}
 }
 
@@ -362,6 +362,6 @@ void CSE_ALifeOnlineOfflineGroup::on_failed_switch_online()
 	MEMBERS::const_iterator	I = m_members.begin();
 	MEMBERS::const_iterator	E = m_members.end();
 	for ( ; I != E; ++I) {
-		(*I).second->clear_client_data();
+		I->second->clear_client_data();
 	}
 }

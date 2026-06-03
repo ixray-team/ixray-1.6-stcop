@@ -2,7 +2,7 @@
 // 
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "HUDCrosshair.h"
 //.#include "UIStaticItem.h"

@@ -3,7 +3,7 @@
 //						стреляющих гранатами и ракетами
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "RocketLauncher.h"
 #include "CustomRocket.h"
 #include "xrServer_Objects_ALife_Items.h"

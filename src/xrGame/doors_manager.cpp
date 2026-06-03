@@ -4,7 +4,7 @@
 //	Copyright (C) GSC Game World - 2009
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "doors_manager.h"
 #include "GameObject.h"
 #include "doors_door.h"

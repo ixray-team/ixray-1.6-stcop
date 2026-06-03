@@ -6,7 +6,7 @@
 //	Description : ALfie time manager class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_time_manager.h"
 #include "../xrEngine/date_time.h"
 

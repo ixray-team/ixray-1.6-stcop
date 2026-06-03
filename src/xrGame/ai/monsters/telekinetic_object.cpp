@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "../../PhysicsShellHolder.h"
 #include "telekinetic_object.h"
 
@@ -179,10 +179,11 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 			entity_alive->conditions().SetPower(entity_alive->conditions().GetPower() - health_loss);
 		}
 		
+		Fvector Dir = linear_vel.GetNormalizedCopy();
 		SHit HDS
 		{
 			health_loss,
-			linear_vel.GetNormalizedCopy(),
+			Dir,
 			ph_self_object,
 			entity_alive->character_physics_support()->movement()->ContactBone(),
 			ph_self_object->Position(),

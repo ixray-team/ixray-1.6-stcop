@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "burer.h"
 #include "../../../../xrPhysics/PhysicsShell.h"
 #include "../../../CharacterPhysicsSupport.h"
@@ -143,7 +143,7 @@ void CBurer::Load(const char* section)
 
 	shield_cooldown = pSettings->read_if_exists<u32>(section, "shield_cooldown", 4000);
 	shield_time = pSettings->read_if_exists<u32>(section, "shield_time", 3000);
-	shield_keep_particle = pSettings->read_if_exists<LPCSTR>(section,"shield_keep_particle",nullptr);
+	shield_keep_particle = pSettings->read_if_exists<str_c>(section,"shield_keep_particle",nullptr);
 	shield_keep_particle_period = pSettings->read_if_exists<u32>(section, "shield_keep_particle_period", 1000);
 
 	shield_penetration_border = pSettings->read_if_exists<float>(section, "shield_penetration_border", shield_penetration_border);

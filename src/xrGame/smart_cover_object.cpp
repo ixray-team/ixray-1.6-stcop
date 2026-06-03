@@ -6,7 +6,7 @@
 //	Description : smart cover object class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "smart_cover_object.h"
 #include "../xrServerEntities/xrServer_Objects_Alife_Smartcovers.h"
@@ -43,13 +43,13 @@ bool smart_cover::object::net_Spawn		(CSE_Abstract *server_entity)
 	ShapeVec::iterator				I = smart_cover->shapes.begin();
 	ShapeVec::iterator				E = smart_cover->shapes.end();
 	for ( ; I != E; ++I) {
-		switch ((*I).type) {
+		switch (I->type) {
 			case 0 : {
-				shape->add_sphere	((*I).data.sphere);
+				shape->add_sphere	(I->data.sphere);
 				break;
 			}
 			case 1 : {
-				shape->add_box		((*I).data.box);
+				shape->add_box		(I->data.box);
 				break;
 			}
 		}
@@ -101,53 +101,56 @@ void dbg_draw_frustum		(float FOV, float _FAR, float A, Fvector &P, Fvector &D, 
 
 void smart_cover::object::OnRender		()
 {
-	return;
-	DRender->OnFrameEnd				();
-	Fvector							l_half; l_half.set(.5f, .5f, .5f);
-	Fmatrix							l_ball, l_box;
-	u32 Color = color_xrgb(0, 255, 0);
+	constexpr bool Disable = true;
+	if constexpr (!Disable)
+	{
+		DRender->OnFrameEnd				();
+		Fvector							l_half; l_half.set(.5f, .5f, .5f);
+		Fmatrix							l_ball, l_box;
+		u32 Color = color_xrgb(0, 255, 0);
 
-	typedef xr_vector<CCF_Shape::shape_def>	Shapes;
-	Shapes							&l_shapes = ((CCF_Shape*)CFORM())->Shapes();
-	Shapes::iterator				l_pShape;
-	CDebugRenderer					&renderer = Level().debug_renderer();
-	for (l_pShape = l_shapes.begin(); l_shapes.end() != l_pShape; ++l_pShape) {
-		switch(l_pShape->type) {
+		typedef xr_vector<CCF_Shape::shape_def>	Shapes;
+		Shapes							&l_shapes = ((CCF_Shape*)CFORM())->Shapes();
+		Shapes::iterator				l_pShape;
+		CDebugRenderer					&renderer = Level().debug_renderer();
+		for (l_pShape = l_shapes.begin(); l_shapes.end() != l_pShape; ++l_pShape) {
+			switch(l_pShape->type) {
 			case 0:	{
-				Fsphere				&l_sphere = l_pShape->data.sphere;
-				l_ball.scale		(l_sphere.R, l_sphere.R, l_sphere.R);
-				Fvector				l_p; XFORM().transform(l_p, l_sphere.P);
-				l_ball.translate_add(l_p);
-				renderer.draw_ellipse(l_ball, Color);
-				break;
+					Fsphere				&l_sphere = l_pShape->data.sphere;
+					l_ball.scale		(l_sphere.R, l_sphere.R, l_sphere.R);
+					Fvector				l_p; XFORM().transform(l_p, l_sphere.P);
+					l_ball.translate_add(l_p);
+					renderer.draw_ellipse(l_ball, Color);
+					break;
 			}
 			case 1:	{
-				l_box.mul			(XFORM(), l_pShape->data.box);
-				renderer.draw_obb	(l_box, l_half, Color);
-				break;
+					l_box.mul			(XFORM(), l_pShape->data.box);
+					renderer.draw_obb	(l_box, l_half, Color);
+					break;
+			}
 			}
 		}
-	}
 
-	if (!m_cover)
-		return;
+		if (!m_cover)
+			return;
 	
-	typedef smart_cover::description::Loopholes::const_iterator const_iterator;
-	const_iterator					I = m_cover->loopholes().begin();
-	const_iterator					E = m_cover->loopholes().end();
-	for ( ; I != E; ++I ) {
-		smart_cover::loophole		*loophole = *I;
-		Fvector						position = m_cover->fov_position(*loophole);
-		Fvector						direction = m_cover->fov_direction(*loophole);
-		Fvector						up = XFORM().j;
-		dbg_draw_frustum			(
-			loophole->fov()*180.f/PI,
-			loophole->range(),
-			1.f,
-			position,
-			direction,
-			up
-		);
+		typedef smart_cover::description::Loopholes::const_iterator const_iterator;
+		const_iterator					I = m_cover->loopholes().begin();
+		const_iterator					E = m_cover->loopholes().end();
+		for ( ; I != E; ++I ) {
+			smart_cover::loophole		*loophole = *I;
+			Fvector						position = m_cover->fov_position(*loophole);
+			Fvector						direction = m_cover->fov_direction(*loophole);
+			Fvector						up = XFORM().j;
+			dbg_draw_frustum			(
+				loophole->fov()*180.f/PI,
+				loophole->range(),
+				1.f,
+				position,
+				direction,
+				up
+			);
+		}
 	}
 }
 #endif // DEBUG
@@ -161,16 +164,16 @@ bool smart_cover::object::inside			(Fvector const &position) const
 	Shapes::const_iterator			i = shape->shapes.begin();
 	Shapes::const_iterator			e = shape->shapes.end();
 	for ( ; i != e; ++i) {
-		switch ((*i).type) {
+		switch (i->type) {
 			case 0 : {
-				if ((*i).data.sphere.P.distance_to(position) <= (*i).data.sphere.R)
+				if (i->data.sphere.P.distance_to(position) <= i->data.sphere.R)
 					return			(true);
 
 				continue;
 			}
 			case 1 : {
 				Fmatrix				matrix;
-				const Fmatrix		&box = (*i).data.box;
+				const Fmatrix		&box = i->data.box;
 				matrix.mul_43		(XFORM(),box);
 				Fvector				A,B[8];
 				Fplane				plane;

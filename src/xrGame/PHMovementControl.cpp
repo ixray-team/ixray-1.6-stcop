@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "PHMovementControl.h"
 
 #include "../xrCore/Collision/cl_intersect.h"

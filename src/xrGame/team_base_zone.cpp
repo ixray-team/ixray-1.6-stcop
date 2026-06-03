@@ -6,7 +6,7 @@
 //	Description : Team base zone object
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "team_base_zone.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "Hit.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "helicopter.h"
 #include "xrServer_Objects_ALife.h"
@@ -172,15 +172,15 @@ bool CHelicopter::net_Spawn(CSE_Abstract*	DC)
 	CExplosive::Load		(pUserData,"explosion");
 	CExplosive::SetInitiator(ID());
 	
-	const char* s = pUserData->r_string("helicopter_definition","hit_section");
+	str_c s = pUserData->r_string("helicopter_definition","hit_section");
 
 	if( pUserData->section_exist(s) ){
 		int lc = pUserData->line_count(s);
-		const char* name;
-		const char* value;
+		str_c name;
+		str_c value;
 		s16 boneID;
 		for (int i=0 ;i<lc; ++i){
-			pUserData->r_line( s, i, &name, &value);
+			pUserData->r_line( s, i, name, value);
 			boneID	=K->LL_BoneID(name);
 			m_hitBones.insert( std::make_pair(boneID, (float)atof(value)) );
 		}

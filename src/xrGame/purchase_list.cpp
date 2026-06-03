@@ -6,7 +6,7 @@
 //	Description : purchase list class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "purchase_list.h"
 #include "InventoryOwner.h"
 #include "GameObject.h"
@@ -45,7 +45,7 @@ void CPurchaseList::process(CInifile& ini_file, const char* section, CInventoryO
 			{
 				if(Item.first.c_str()[0] == '$')
 				{
-					LPCSTR section_name = Item.first.c_str()+1;
+					str_c section_name = Item.first.c_str()+1;
 					self(section_name, count, prob);
 					continue;
 				}
@@ -75,7 +75,7 @@ void CPurchaseList::process(CInifile& ini_file, const char* section, CInventoryO
 		{
 			if(sect.first.c_str()[0] == '$')
 			{
-				LPCSTR section_name = sect.first.c_str()+1;
+				str_c section_name = sect.first.c_str()+1;
 				ProcessMultipleTradeItemsSettingsFunc(section_name, count, prob);
 				continue;
 			}

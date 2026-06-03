@@ -14,12 +14,12 @@ void print_format()
 	printf(help_msg);
 };
 
-void xrcore_log_cb(LPCSTR log_string)
+void xrcore_log_cb(str_c log_string)
 {
 	printf("%s\n", log_string);
 };
 
-void safe_verify(LPCSTR file_name, 
+void safe_verify(str_c file_name, 
 				 mp_anticheat::configs_verifyer & verifyer,
 				 u8* data,
 				 u32 const data_size,
@@ -40,7 +40,7 @@ void safe_verify(LPCSTR file_name,
 	}
 }
 
-void check_file(LPCSTR file_name)
+void check_file(str_c file_name)
 {
 	mp_anticheat::configs_verifyer	tmp_verifyer;
 	IReader*	tmp_reader = FS.r_open(file_name);
@@ -78,7 +78,7 @@ void create_unpack_name(string_path & dst_src_path)
 };
 
 static u32 const max_uncompressed_size = 0x100000; //1 Mb
-void unpack_file(LPCSTR file_name)
+void unpack_file(str_c file_name)
 {
 	mp_anticheat::configs_verifyer	tmp_verifyer;
 	string_path	new_file_name;
@@ -184,7 +184,7 @@ int main(int argc, char ** argv)
 		return EXIT_FAILURE;
 	}
 
-	LPCSTR		file_name = argv[argc - 1];
+	str_c		file_name = argv[argc - 1];
 	string512 cmd_params = {};
 	for (int i = 1; i < argc; ++i)
 	{

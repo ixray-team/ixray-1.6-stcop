@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 
 const char* modify_player_name(const char* src_name, string256 & dest)
 {

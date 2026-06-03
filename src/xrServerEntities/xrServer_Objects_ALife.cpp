@@ -6,7 +6,7 @@
 //	Description : Server objects for ALife simulator
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "game_base_space.h"
@@ -134,13 +134,13 @@ void	SFillPropData::load			()
 		xr_strconcat(caSection, SECTION_HEADER, _itoa(i, T, 10));
 		R_ASSERT(Ini->section_exist(caSection));
 
-		for (k = 0; Ini->r_line(caSection, k, &N, &V); ++k)
+		for (k = 0; Ini->r_line(caSection, k, N, V); ++k)
 		{
 			locations[i].push_back(xr_rtoken(Platform::ANSI_TO_UTF8(V).c_str(), atoi(N)));
 		}
 	}
 
-	for (k = 0; Ini->r_line("graph_points_draw_color_palette",k,&N,&V); ++k)
+	for (k = 0; Ini->r_line("graph_points_draw_color_palette",k,N,V); ++k)
 	{
 		u32 color;
 		if(1==sscanf(V,"%x", &color))
@@ -151,11 +151,9 @@ void	SFillPropData::load			()
 	}
 	
 	// level names/ids
-	VERIFY(level_ids.empty());
-	for (k = 0; Ini->r_line("levels", k, &N, &V); ++k)
-	{
-		level_ids.push_back(Ini->r_string_wb(N, "caption"));
-	}
+	VERIFY					(level_ids.empty());
+	for (k = 0; Ini->r_line("levels",k,N,V); ++k)
+		level_ids.push_back	(Ini->r_string_wb(N,"caption"));
 
 	std::sort(level_ids.begin(), level_ids.end(), [](shared_str ItemA, shared_str ItemB)
 	{
@@ -172,7 +170,7 @@ void	SFillPropData::load			()
 		VERIFY					(story_names.empty());
 		const char* section 			= "story_ids";
 		R_ASSERT				(Ini->section_exist(section));
-		for (k = 0; Ini->r_line(section,k,&N,&V); ++k)
+		for (k = 0; Ini->r_line(section,k,N,V); ++k)
 			story_names.push_back	(xr_rtoken(V,atoi(N)));
 
 		std::sort				(story_names.begin(),story_names.end(),story_name_predicate());
@@ -184,7 +182,7 @@ void	SFillPropData::load			()
 		VERIFY					(spawn_story_names.empty());
 		const char* section 			= "spawn_story_ids";
 		R_ASSERT				(Ini->section_exist(section));
-		for (k = 0; Ini->r_line(section,k,&N,&V); ++k)
+		for (k = 0; Ini->r_line(section,k,N,V); ++k)
 			spawn_story_names.push_back	(xr_rtoken(V,atoi(N)));
 
 		std::sort				(spawn_story_names.begin(),spawn_story_names.end(),story_name_predicate());
@@ -3064,23 +3062,6 @@ void CSE_ALifeInteractiveObject::STATE_Serialize(ISaveObject& Object)
 void CSE_ALifeInteractiveObject::UPDATE_Serialize(ISaveObject& Object)
 {
 	BEGIN_CHUNK(Object,"CSE_ALifeInteractiveObject::UPDATE")
-	{
-		inherited::UPDATE_Serialize(Object);
-	}
-}
-
-void CSE_ALifeTeamCaptureZone::STATE_Serialize(ISaveObject& Object)
-{
-	BEGIN_CHUNK(Object,"CSE_ALifeTeamCaptureZone::STATE")
-	{
-		inherited::STATE_Serialize(Object);
-		Object << m_team << m_point_name;
-	}
-}
-
-void CSE_ALifeTeamCaptureZone::UPDATE_Serialize(ISaveObject& Object)
-{
-	BEGIN_CHUNK(Object,"CSE_ALifeTeamCaptureZone::UPDATE")
 	{
 		inherited::UPDATE_Serialize(Object);
 	}

@@ -2,7 +2,7 @@
 //								все пули и осколки передаются сюда
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Level.h"
 #include "Level_Bullet_Manager.h"
 #include "game_cl_base.h"
@@ -241,8 +241,8 @@ void CBulletManager::Load()
 		m_ExplodeParticles.emplace_back(_GetItem(explode_particles, k, tmp));
 	}
 
-	const char* sh_name = pSettings->read_if_exists<LPCSTR>(bullet_manager_sect,"tracer_shader","effects\\bullet_tracer");
-	const char* tx_name = pSettings->read_if_exists<LPCSTR>(bullet_manager_sect,"tracer_texture","fx\\fx_tracer");
+	const char* sh_name = pSettings->read_if_exists<str_c>(bullet_manager_sect,"tracer_shader","effects\\bullet_tracer");
+	const char* tx_name = pSettings->read_if_exists<str_c>(bullet_manager_sect,"tracer_texture","fx\\fx_tracer");
 	m_circle_size_k = pSettings->read_if_exists<float>(bullet_manager_sect,"fire_circle_k",.5f);
 
 	sh_Tracer->create(sh_name, tx_name);

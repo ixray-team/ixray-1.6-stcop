@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "AdvancedDetector.h"
 #include "ui/ArtefactDetectorUI.h"
 #include "../Include/xrRender/Kinematics.h"

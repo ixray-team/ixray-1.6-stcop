@@ -6,7 +6,7 @@
 //	Description : ALife Online Offline Group brain class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_online_offline_group_brain.h"
 #include "object_broker.h"
 #include "xrServer_Objects_ALife_Monsters.h"

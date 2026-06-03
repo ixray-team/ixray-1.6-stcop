@@ -52,7 +52,7 @@ class CTradeStorageBox final : public CInventoryBox
 
 public:
 	virtual CTradeStorageBox* cast_trade_storage_box() override { return this; }
-	virtual void Load(LPCSTR section) override;
+	virtual void Load(str_c section) override;
 	IC u32 GetFilterSize() { return m_ItemFilter.size(); }
 	IC bool CanStoreItem(shared_str item) { return !m_ItemFilter.contains(item); }
 	

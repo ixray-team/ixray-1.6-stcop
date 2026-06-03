@@ -502,98 +502,10 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions()
 
 
 	Msg("* Completed. Time %3.2f", Timer.GetElapsed_sec());
-	//
-	//	xr_vector<u32>						l_tpaStack;
-	//	SPAWN_STORAGE						zones;
-	//	l_tpaStack.reserve					(1024);
-	//	SPAWN_STORAGE::iterator				I = m_spawns.begin();
-	//	SPAWN_STORAGE::iterator				E = m_spawns.end();
-	//	for ( ; I != E; I++) {
-	//		CSE_ALifeAnomalousZone* zone = (*I)->CastALifeAnomalousZone();
-	//		if (!zone)
-	//			continue;
-	//		CSE_Abstract* Abstract = (*I);
-	////		if (!level_graph().valid_vertex_position(zone->o_Position)) {
-	////			zone->m_artefact_spawn_count	= 0;
-	////			zone->m_artefact_position_offset		= m_level_points.size();
-	////			continue;
-	////		}
-	//
-	//		(*I)->m_tNodeID						= level_graph().vertex((*I)->m_tNodeID, Abstract->o_Position);
-	//		if (!level_graph().valid_vertex_position(Abstract->o_Position) || !level_graph().inside((*I)->m_tNodeID, Abstract->o_Position))
-	//			(*I)->m_tNodeID					= level_graph().vertex(u32(-1), Abstract->o_Position);
-	//		const IGameLevelCrossTable::CCell	&cell = cross_table().vertex((*I)->m_tNodeID);
-	//		(*I)->m_tGraphID					= cell.game_vertex_id();
-	//		(*I)->m_fDistance					= cell.distance();
-	//
-	//		graph_engine().search			(
-	//			level_graph(),
-	//			(*I)->m_tNodeID,
-	//			(*I)->m_tNodeID,
-	//			&l_tpaStack,
-	//			SFlooder<
-	//				float,
-	//				u32,
-	//				u32
-	//			>(
-	//				zone->m_offline_interactive_radius,
-	//				u32(-1),
-	//				u32(-1)
-	//			)
-	//		);
-	//		
-	//		l_tpaStack.erase				(
-	//			std::remove_if(
-	//				l_tpaStack.begin(),
-	//				l_tpaStack.end(),
-	//				remove_too_far_predicate(
-	//					&level_graph(),
-	//					Abstract->o_Position,
-	//					zone->m_offline_interactive_radius
-	//				)
-	//			),
-	//			l_tpaStack.end()
-	//		);
-	///*
-	//		if (zone->m_artefact_spawn_count >= l_tpaStack.size()) 
-	//		{
-	//			zone->m_artefact_spawn_count	= (u16)l_tpaStack.size();
-	//#ifndef IGNORE_ZERO_SPAWN_POSITIONS
-	//			if (!zone->m_artefact_spawn_count) {
-	//				Msg						("! CANNOT GENERATE ARTEFACT SPAWN POSITIONS FOR ZONE [%s] ON LEVEL [%s]",zone->name_replace(),*level().name());
-	//				Msg						("! ZONE [%s] ON LEVEL [%s] IS REMOVED BY AI COMPILER",zone->name_replace(),*level().name());
-	//				R_ASSERT3				(zone->m_story_id == INVALID_STORY_ID,"Cannot remove story object",zone->name_replace());
-	//				R_ASSERT3				(!zone->m_spawn_control,"Cannot remove spawn control object",zone->name_replace());
-	//				zones.push_back			(zone);
-	//				l_tpaStack.clear		();
-	//				continue;
-	//			}
-	//#endif
-	//		}
-	//		else		*/
-	//			std::random_shuffle			(l_tpaStack.begin(),l_tpaStack.end());
-	//
-	//		zone->m_artefact_position_offset= m_level_points.size();
-	//		m_level_points.resize			(zone->m_artefact_position_offset + zone->m_artefact_spawn_count);
-	//
-	////		Msg								("%s  %f [%f][%f][%f] : artefact spawn positions",zone->name_replace(),zone->m_fRadius,VPUSH(zone->o_Position));
-	//
-	//		LEVEL_POINT_STORAGE::iterator	I = m_level_points.begin() + zone->m_artefact_position_offset;
-	//		LEVEL_POINT_STORAGE::iterator	E = m_level_points.end();
-	//		xr_vector<u32>::iterator		i = l_tpaStack.begin();
-	//		for ( ; I != E; ++I, ++i) {
-	//			(*I).tNodeID				= *i;
-	//			(*I).tPoint					= level_graph().vertex_position(*i);
-	//			(*I).fDistance				= cross_table().vertex(*i).distance();
-	////			Msg							("    [%f][%f][%f] : %f",VPUSH((*I).tPoint),zone->o_Position.distance_to((*I).tPoint));
-	//		}
-	//		
-	//		l_tpaStack.clear				();
-	//	}
 
 #ifndef IGNORE_ZERO_SPAWN_POSITIONS
-	I									= std::remove_if(m_spawns.begin(),m_spawns.end(),remove_invalid_zones_predicate(this,&zones));
-	m_spawns.erase						(I,m_spawns.end());
+	I = std::remove_if(m_spawns.begin(),m_spawns.end(),remove_invalid_zones_predicate(this,&zones));
+	m_spawns.erase(I,m_spawns.end());
 #endif
 }
 
@@ -692,10 +604,9 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions_worker()
 		xr_vector<u32>::iterator i = l_tpaStack.begin();
 		for (; I != E; ++I, ++i)
 		{
-			(*I).tNodeID = *i;
-			(*I).tPoint = level_graph().vertex_position(*i);
-			(*I).fDistance = cross_table().vertex(*i).distance();
-			//			Msg							("    [%f][%f][%f] : %f",VPUSH((*I).tPoint),zone->o_Position.distance_to((*I).tPoint));
+			I->tNodeID = *i;
+			I->tPoint = level_graph().vertex_position(*i);
+			I->fDistance = cross_table().vertex(*i).distance();
 		}
 		m_generate_artefact_spawn_positions_worker_mutex.Leave();
 		l_tpaStack.clear();

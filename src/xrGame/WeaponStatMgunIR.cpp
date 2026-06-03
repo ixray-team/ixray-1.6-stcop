@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "WeaponStatMgun.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/xr_input.h"

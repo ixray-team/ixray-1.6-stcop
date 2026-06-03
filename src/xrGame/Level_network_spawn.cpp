@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "xrServer_Objects_ALife_All.h"
 #include "Level.h"
@@ -99,7 +99,7 @@ void CLevel::local_Process_Spawn(NET_Packet& P)
 	//*/
 };
 
-void CLevel::g_cl_Spawn		(LPCSTR name, u8 rp, u16 flags, Fvector pos)
+void CLevel::g_cl_Spawn		(str_c name, u8 rp, u16 flags, Fvector pos)
 {
 	// Create
 	CSE_Abstract*		E	= F_entity_Create(name);

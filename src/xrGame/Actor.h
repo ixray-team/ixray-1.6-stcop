@@ -519,8 +519,8 @@ public:
 
 	CGameObject*			ObjectWeLookingAt			() const {return m_pObjectWeLookingAt;}
 	CInventoryOwner*		PersonWeLookingAt			() const {return m_pPersonWeLookingAt;}
-	LPCSTR					GetDefaultActionForObject	() const {return *m_sDefaultObjAction;}
-	LPCSTR					GetSecondaryDefaultActionForObject	() {return *m_sSecondaryDefaultObjAction;}
+	str_c					GetDefaultActionForObject	() const {return *m_sDefaultObjAction;}
+	str_c					GetSecondaryDefaultActionForObject	() {return *m_sSecondaryDefaultObjAction;}
 protected:
 	CUsableScriptObject*	m_pUsableObject;
 	// Person we're looking at

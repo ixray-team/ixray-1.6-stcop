@@ -6,7 +6,7 @@
 //	Description : AI Behaviour for monster "Stalker"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "ai_stalker.h"
 #include "../ai_monsters_misc.h"
@@ -126,7 +126,7 @@ void CAI_Stalker::reinit			()
 	{
 		//загрузка спецевической звуковой схемы для сталкера согласно m_SpecificCharacter
 		sound().sound_prefix			( //SpecificCharacter().sound_voice_prefix());
-			pSettings->read_if_exists<LPCSTR>(cNameSect().c_str(), "voice_prefix", SpecificCharacter().sound_voice_prefix())
+			pSettings->read_if_exists<str_c>(cNameSect().c_str(), "voice_prefix", SpecificCharacter().sound_voice_prefix())
 		);
 		
 		LoadSounds						(*cNameSect());
@@ -287,7 +287,7 @@ void CAI_Stalker::reload			(const char* section)
 
 	m_can_select_weapon				= true;
 
-	const char* queue_sect				= pSettings->read_if_exists<LPCSTR>(*cNameSect(),"fire_queue_section","");
+	const char* queue_sect				= pSettings->read_if_exists<str_c>(*cNameSect(),"fire_queue_section","");
 	if(xr_strcmp(queue_sect, "") && pSettings->section_exist(queue_sect))
 	{
 		m_pstl_min_queue_size_far			= pSettings->read_if_exists<u32>(queue_sect,"pstl_min_queue_size_far",1);
@@ -1198,7 +1198,7 @@ void CAI_Stalker::fill_bones_body_parts	(const char* bone_id, const ECriticalWou
 	for ( ; I != E; ++I)
 		m_bones_body_parts.insert	(
 			std::make_pair(
-				kinematics->LL_BoneID((*I).first),
+				kinematics->LL_BoneID(I->first),
 				u32(wound_type)
 			)
 		);

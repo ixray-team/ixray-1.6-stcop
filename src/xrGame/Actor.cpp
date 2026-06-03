@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "Actor.h"
 #include "HUDManager.h"
@@ -650,7 +650,7 @@ void CActor::Load	(const char* section )
 		for(int hit_type = 0; hit_type < (int)ALife::eHitTypeMax; ++hit_type)
 		{
 			const char* hit_name = ALife::g_cafHitType2String((ALife::EHitType)hit_type);
-			const char* hit_snds = pSettings->read_if_exists<LPCSTR>(hit_snd_sect,hit_name,"");
+			const char* hit_snds = pSettings->read_if_exists<str_c>(hit_snd_sect,hit_name,"");
 			int cnt = _GetItemCount(hit_snds);
 			string128		tmp;
 			if (hit_type != (int)ALife::eHitTypeLightBurn && hit_type != (int)ALife::eHitTypePhysicStrike)
@@ -671,7 +671,7 @@ void CActor::Load	(const char* section )
 
 				m_HeavyBreathSnd.create(pSettings->r_string(section, "heavy_breath_snd"), st_Effect, SOUND_TYPE_MONSTER_INJURING);
 				m_BloodSnd.create(pSettings->r_string(section, "heavy_blood_snd"), st_Effect, SOUND_TYPE_MONSTER_INJURING);
-				m_DangerSnd.create(pSettings->read_if_exists<LPCSTR>(section, "heavy_danger_snd",pSettings->r_string(section, "heavy_blood_snd")), st_Effect, SOUND_TYPE_MONSTER_INJURING);
+				m_DangerSnd.create(pSettings->read_if_exists<str_c>(section, "heavy_danger_snd",pSettings->r_string(section, "heavy_blood_snd")), st_Effect, SOUND_TYPE_MONSTER_INJURING);
 			}
 		}
 
@@ -697,11 +697,11 @@ void CActor::Load	(const char* section )
 	m_fAgilityCrouchFactor = pSettings->read_if_exists<float>(section, "agility_crouch_factor", 0.98f);
 	m_fAgilityCrouchNoAccelFactor = pSettings->read_if_exists<float>(section, "agility_crouch_no_acc_factor", 0.96f);
 
-	const char* default_outfit = pSettings->read_if_exists<LPCSTR>(section,"default_outfit",nullptr);
+	const char* default_outfit = pSettings->read_if_exists<str_c>(section,"default_outfit",nullptr);
 	SetDefaultVisualOutfit			(default_outfit);
 
-	invincibility_fire_shield_1st	= pSettings->read_if_exists<LPCSTR>(section,"Invincibility_Shield_1st",nullptr);
-	invincibility_fire_shield_3rd	= pSettings->read_if_exists<LPCSTR>(section,"Invincibility_Shield_3rd",nullptr);
+	invincibility_fire_shield_1st	= pSettings->read_if_exists<str_c>(section,"Invincibility_Shield_1st",nullptr);
+	invincibility_fire_shield_3rd	= pSettings->read_if_exists<str_c>(section,"Invincibility_Shield_3rd",nullptr);
 //-----------------------------------------
 	m_AutoPickUp_AABB				= pSettings->read_if_exists<Fvector3>(section,"AutoPickUp_AABB",Fvector().set(0.02f, 0.02f, 0.02f));
 	m_AutoPickUp_AABB_Offset		= pSettings->read_if_exists<Fvector3>(section,"AutoPickUp_AABB_offs",Fvector().set(0, 0, 0));
@@ -717,7 +717,7 @@ void CActor::Load	(const char* section )
 	m_sInventoryBoxUseAction		= "inventory_box_use";
 	m_sWeaponQuickReloadAction		= "weapon_quick_reload";
 	//---------------------------------------------------------------------
-	m_sHeadShotParticle	= pSettings->read_if_exists<LPCSTR>(section,"HeadShotParticle",nullptr);
+	m_sHeadShotParticle	= pSettings->read_if_exists<str_c>(section,"HeadShotParticle",nullptr);
 	m_fLegs_shift = pSettings->read_if_exists<float>("actor_hud","legs_shift_delta",-0.55f);
 
 	m_fActorCameraLanding2Time = pSettings->read_if_exists<float>("gunslinger_base","actor_camera_landing2_time",0.5f);
@@ -2539,7 +2539,7 @@ void CActor::HitArtefactsCondition(SHit& hit)
 		CArtefact* artefact = item->cast_artefact();
 		if (artefact && artefact->DegradationRate())
 		{
-			shared_str hit_absorbation_sect = pSettings->read_if_exists<LPCSTR>(artefact->m_section_id.c_str(),"hit_absorbation_sect","");
+			shared_str hit_absorbation_sect = pSettings->read_if_exists<str_c>(artefact->m_section_id.c_str(),"hit_absorbation_sect","");
 
 			if (hit_absorbation_sect.size() > 0)
 			{

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Bolt.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "../xrEngine/xr_level_controller.h"

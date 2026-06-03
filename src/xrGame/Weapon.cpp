@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Weapon.h"
 #include "entity_alive.h"
 #include "inventory_item_impl.h"
@@ -510,25 +510,25 @@ void CWeapon::Load		(const char* section)
 
 	{
 		string_path	ce_path = {};
-		shared_str tmp = pSettings->read_if_exists<LPCSTR>(hud_sect, "cam_safemode_in", "camera_effects\\actor_move\\safemode_in.anm");
+		shared_str tmp = pSettings->read_if_exists<str_c>(hud_sect, "cam_safemode_in", "camera_effects\\actor_move\\safemode_in.anm");
 		if (FS.exist(ce_path, "$game_anims$", *tmp))
 		{
 			m_safemode_cams[0] = tmp;
 		}
 
-		tmp = pSettings->read_if_exists<LPCSTR>(hud_sect, "cam_safemode_out", "camera_effects\\actor_move\\safemode_out.anm");
+		tmp = pSettings->read_if_exists<str_c>(hud_sect, "cam_safemode_out", "camera_effects\\actor_move\\safemode_out.anm");
 		if (FS.exist(ce_path, "$game_anims$", *tmp))
 		{
 			m_safemode_cams[1] = tmp;
 		}
 
-		tmp = pSettings->read_if_exists<LPCSTR>(hud_sect, "cam_aim_in", "camera_effects\\actor_move\\aim_in.anm");
+		tmp = pSettings->read_if_exists<str_c>(hud_sect, "cam_aim_in", "camera_effects\\actor_move\\aim_in.anm");
 		if (FS.exist(ce_path, "$game_anims$", *tmp))
 		{
 			m_aim_cams[0] = tmp;
 		}
 
-		tmp = pSettings->read_if_exists<LPCSTR>(hud_sect, "cam_aim_out", "camera_effects\\actor_move\\aim_out.anm");
+		tmp = pSettings->read_if_exists<str_c>(hud_sect, "cam_aim_out", "camera_effects\\actor_move\\aim_out.anm");
 		if (FS.exist(ce_path, "$game_anims$", *tmp))
 		{
 			m_aim_cams[1] = tmp;
@@ -539,7 +539,7 @@ void CWeapon::Load		(const char* section)
 		auto LoadMoreCameras = [&](RStringVec& vector, const char* param_name, const char* base_camera_name)
 		{
 			string_path	ce_path = {};
-			shared_str tmp = pSettings->read_if_exists<LPCSTR>(hud_sect, param_name, base_camera_name);
+			shared_str tmp = pSettings->read_if_exists<str_c>(hud_sect, param_name, base_camera_name);
 			if (!FS.exist(ce_path, "$game_anims$", *tmp))
 			{
 				return;
@@ -562,8 +562,8 @@ void CWeapon::Load		(const char* section)
 	}
 
 	m_zoom_params.m_bUseDynamicZoom	= pSettings->read_if_exists<bool>(section,"scope_dynamic_zoom",false);
-	m_zoom_params.m_sUseZoomPostprocess	= pSettings->read_if_exists<LPCSTR>(section,"scope_nightvision",nullptr);
-	m_zoom_params.m_sUseBinocularVision	= pSettings->read_if_exists<LPCSTR>(section,"scope_alive_detector",nullptr);
+	m_zoom_params.m_sUseZoomPostprocess	= pSettings->read_if_exists<str_c>(section,"scope_nightvision",nullptr);
+	m_zoom_params.m_sUseBinocularVision	= pSettings->read_if_exists<str_c>(section,"scope_alive_detector",nullptr);
 
 	if (m_zoom_params.m_sUseBinocularVision.size() > 0)
 	{
@@ -620,7 +620,7 @@ void CWeapon::Load		(const char* section)
 	m_fHudFovGLZoomFactor = pSettings->read_if_exists<float>(hud_sect,"hud_fov_gl_zoom_factor",m_fHudFovFactor);
 	m_HudFovZoom = pSettings->read_if_exists<float>(hud_sect,"hud_fov_zoom",0.0f);
 
-	m_fast_kick_params.material = pSettings->read_if_exists<LPCSTR>(section,"kick_material","objects\\knife");
+	m_fast_kick_params.material = pSettings->read_if_exists<str_c>(section,"kick_material","objects\\knife");
 	m_fast_kick_params.ap = pSettings->read_if_exists<float>(section,"kick_ap",EPS_L);
 	m_fast_kick_params.wallmark_size = pSettings->read_if_exists<float>(section,"kick_wallmark_size",0.05f);
 	m_fast_kick_params.cnt = pSettings->read_if_exists<u32>(section,"kick_hit_count",1);
@@ -4405,10 +4405,10 @@ void CWeapon::LoadCurrentScopeParams(const char* section)
 
 	if (bScopeIsHasTexture)
 	{
-		m_zoom_params.m_sUseZoomPostprocess = pSettings->read_if_exists<LPCSTR>(section,"scope_nightvision",nullptr);
+		m_zoom_params.m_sUseZoomPostprocess = pSettings->read_if_exists<str_c>(section,"scope_nightvision",nullptr);
 		m_zoom_params.m_bUseDynamicZoom = pSettings->read_if_exists<bool>(section,"scope_dynamic_zoom",false);
 
-		m_zoom_params.m_sUseBinocularVision = pSettings->read_if_exists<LPCSTR>(section,"scope_alive_detector",nullptr);
+		m_zoom_params.m_sUseBinocularVision = pSettings->read_if_exists<str_c>(section,"scope_alive_detector",nullptr);
 
 		if (m_zoom_params.m_sUseBinocularVision.size() > 0)
 		{

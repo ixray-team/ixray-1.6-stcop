@@ -3,7 +3,7 @@
 //						(оружие и осколочные гранаты) 	
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "ShootingObject.h"
 #include "WeaponAmmo.h"
@@ -225,7 +225,7 @@ void CShootingObject::Light_Render	(const Fvector& P)
 //////////////////////////////////////////////////////////////////////////
 void CShootingObject::LoadParticle(const char* section, const char* line, xr_shared_ptr<CParticlesObject>& particle)
 {
-	if (LPCSTR pname = pSettings->r_string_nullable(section, line))
+	if (str_c pname = pSettings->r_string_nullable(section, line))
 	{
 		if (const char* pname = pSettings->r_string(section, line))
 		{

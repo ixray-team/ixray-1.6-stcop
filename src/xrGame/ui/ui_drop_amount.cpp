@@ -4,7 +4,7 @@
 //	Author		: St4lker0k765, Desert_Cliff (21.02.2026)
 //	Description : Implementation for custom amount of items for drop
 ////////////////////////////////////////////////////////////////////////////
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ui_drop_amount.h"
 #include "UIActorMenu.h"
 #include "UIGameCustom.h"

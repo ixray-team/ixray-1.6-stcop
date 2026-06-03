@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "monster_hit_memory.h"
 #include "basemonster/base_monster.h"
 

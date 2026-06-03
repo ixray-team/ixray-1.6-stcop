@@ -6,7 +6,7 @@
 //	Description : Patrol path manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "GameObject.h"
 #include "patrol_path_manager.h"
@@ -215,16 +215,16 @@ void CPatrolPathManager::select_point(const Fvector &position, u32 &dest_vertex_
 	
 	// вычислить количество разветвлений
 	for ( ; I != E; ++I) {
-		if ((*I).vertex_id() == m_prev_point_index)
+		if (I->vertex_id() == m_prev_point_index)
 			continue;
 
-		if (!accessible(m_path->vertex((*I).vertex_id())))
+		if (!accessible(m_path->vertex(I->vertex_id())))
 			continue;
 
 		if (count == 0)
-			target				= (*I).vertex_id();
+			target				= I->vertex_id();
 		
-		sum						+= (*I).weight();
+		sum						+= I->weight();
 		++count;
 	}
 
@@ -236,10 +236,10 @@ void CPatrolPathManager::select_point(const Fvector &position, u32 &dest_vertex_
 			}
 			case ePatrolRouteTypeContinue : {
 				for (I = vertex->edges().begin() ; I != E; ++I) {
-					if (!accessible(m_path->vertex((*I).vertex_id())))
+					if (!accessible(m_path->vertex(I->vertex_id())))
 						continue;
 
-					target			= (*I).vertex_id();
+					target			= I->vertex_id();
 					break;
 				}
 				if (target != u32(-1))	break;
@@ -260,16 +260,16 @@ void CPatrolPathManager::select_point(const Fvector &position, u32 &dest_vertex_
 		I				= vertex->edges().begin();
 
 		for ( ; I != E; ++I) {
-			if ((*I).vertex_id() == m_prev_point_index)
+			if (I->vertex_id() == m_prev_point_index)
 				continue;
 
-			if (!accessible(m_path->vertex((*I).vertex_id())))
+			if (!accessible(m_path->vertex(I->vertex_id())))
 				continue;
 
-			sum			+= (*I).weight();
+			sum			+= I->weight();
 
 			if (sum >= fChoosed) {
-				target	= (*I).vertex_id();
+				target	= I->vertex_id();
 				break;
 			}
 		}
@@ -297,10 +297,10 @@ u32 CPatrolPathManager::get_next_point(u32 prev_point_index)
 
 	// вычислить количество разветвлений
 	for ( ; I != E; ++I) {
-		if (!accessible(m_path->vertex((*I).vertex_id())))
+		if (!accessible(m_path->vertex(I->vertex_id())))
 			continue;
 		
-		sum				+= (*I).weight();		
+		sum				+= I->weight();		
 		++count;
 	}
 
@@ -316,13 +316,13 @@ u32 CPatrolPathManager::get_next_point(u32 prev_point_index)
 
 		for ( ; I != E; ++I) {
 
-			if (!accessible(m_path->vertex((*I).vertex_id())))
+			if (!accessible(m_path->vertex(I->vertex_id())))
 				continue;
 
-			sum			+= (*I).weight();
+			sum			+= I->weight();
 
 			if (sum >= fChoosed) {
-				target	= (*I).vertex_id();
+				target	= I->vertex_id();
 				break;
 			}
 		}

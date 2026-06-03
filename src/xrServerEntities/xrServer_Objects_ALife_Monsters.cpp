@@ -6,7 +6,7 @@
 //	Description : Server objects monsters for ALife simulator
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "object_broker.h"
@@ -52,7 +52,7 @@ void setup_location_types_section(GameGraph::TERRAIN_VECTOR &m_vertex_types, CIn
 	CInifile::SectCIt				I = sect.Data.begin();
 	CInifile::SectCIt				E = sect.Data.end();
 	for ( ; I != E; ++I) {
-		const char*						S = *(*I).first;
+		const char*						S = *I->first;
 		string16					I_;
 		u32							N = _GetItemCount(S);
 		
@@ -158,7 +158,7 @@ CSE_ALifeTraderAbstract::CSE_ALifeTraderAbstract(const char* caSection)
 		m_dwMoney 				= pSettings->r_u32(caSection, "money");
 	m_fMaxItemMass				= pSettings->r_float(caSection, "max_item_mass");
 
-	m_sCharacterProfile			= pSettings->read_if_exists<LPCSTR>(caSection,"character_profile","default");
+	m_sCharacterProfile			= pSettings->read_if_exists<str_c>(caSection,"character_profile","default");
 	m_SpecificCharacter			= nullptr;
 
 #ifdef XRGAME_EXPORTS
@@ -2859,7 +2859,7 @@ CSE_ALifeOnlineOfflineGroup::~CSE_ALifeOnlineOfflineGroup	()
 {
 #ifdef XRGAME_EXPORTS
 	while ( !m_members.empty() )
-		unregister_member( (*m_members.begin()).first );
+		unregister_member( m_members.begin()->first );
 	xr_delete					(m_brain);
 #endif
 }
@@ -2883,7 +2883,7 @@ void CSE_ALifeOnlineOfflineGroup::STATE_Write				(NET_Packet &tNetPacket)
 	MEMBERS::iterator			I = m_members.begin();
 	MEMBERS::iterator			E = m_members.end();
 	for ( ; I != E; ++I)
-		save_data				((*I).first,tNetPacket);
+		save_data				(I->first,tNetPacket);
 #endif
 }
 

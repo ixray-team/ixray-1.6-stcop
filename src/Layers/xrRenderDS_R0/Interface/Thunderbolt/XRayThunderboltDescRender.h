@@ -6,6 +6,6 @@ public:
 	CDS0_ThunderboltDescRender();
 	virtual void Copy(IThunderboltDescRender &_in) ;
 
-	virtual void CreateModel(LPCSTR m_name) ;
+	virtual void CreateModel(str_c m_name) ;
 	virtual void DestroyModel() ;
 };

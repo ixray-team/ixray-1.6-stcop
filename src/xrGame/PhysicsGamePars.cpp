@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "PhysicsGamePars.h"
 //float object_damage_factor		=		1.f		; //times increace damage from object collision
 float collide_volume_max		=		200.f	; //max collide sound level

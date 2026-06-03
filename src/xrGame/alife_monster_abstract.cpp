@@ -6,7 +6,7 @@
 //	Description : ALife mnster abstract class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "ai_space.h"
 #include "alife_simulator.h"
@@ -56,89 +56,6 @@ void CSE_ALifeMonsterAbstract::update								()
 		return;
 
 	brain().update					();
-/**
-	GameGraph::_GRAPH_ID	start_game_vertex_id = m_tGraphID;
-	bool				bContinue = true;
-	while (bContinue && bfActive()) {
-		vfCheckForPopulationChanges();
-		bContinue		= false;
-		if (move_offline() && (m_tNextGraphID != m_tGraphID)) {
-			ALife::_TIME_ID				tCurTime = ai().alife().time_manager().game_time();
-			m_fDistanceFromPoint		+= float(tCurTime - m_tTimeID)/1000.f/ai().alife().time_manager().normal_time_factor()*m_fCurSpeed;
-			if (m_fDistanceToPoint - m_fDistanceFromPoint < EPS_L) {
-				bContinue = true;
-				if ((m_fDistanceFromPoint - m_fDistanceToPoint > EPS_L) && (m_fCurSpeed > EPS_L))
-					m_tTimeID			= tCurTime - ALife::_TIME_ID(iFloor((m_fDistanceFromPoint - m_fDistanceToPoint)*1000.f/m_fCurSpeed));
-				m_fDistanceToPoint		= m_fDistanceFromPoint	= 0.0f;
-				m_tPrevGraphID			= m_tGraphID;
-				alife().graph().change	(this,m_tGraphID,m_tNextGraphID);
-				CSE_ALifeGroupAbstract	*tpALifeGroupAbstract = smart_cast<CSE_ALifeGroupAbstract*>(this);
-				if (tpALifeGroupAbstract)
-					tpALifeGroupAbstract->m_bCreateSpawnPositions = true;
-			}
-		}
-		if (move_offline() && (m_tNextGraphID == m_tGraphID)) {
-			GameGraph::_GRAPH_ID tGraphID = m_tNextGraphID;
-			CGameGraph::const_iterator	i,e;
-			GameGraph::TERRAIN_VECTOR	&tpaTerrain = m_tpaTerrain;
-			int							iPointCount = (int)tpaTerrain.size();
-			int							iBranches = 0;
-			ai().game_graph().begin		(tGraphID,i,e);
-			for ( ; i != e; ++i)
-				if ((*i).vertex_id() != m_tPrevGraphID)
-					for (int j=0; j<iPointCount; ++j)
-						if (ai().game_graph().mask(tpaTerrain[j].tMask,ai().game_graph().vertex((*i).vertex_id())->vertex_type()))
-							++iBranches;
-			bool						bOk = false;
-			ai().game_graph().begin		(tGraphID,i,e);
-			if (!iBranches) {
-				for ( ; i != e; ++i) {
-					for (int j=0; j<iPointCount; ++j)
-						if (ai().game_graph().mask(tpaTerrain[j].tMask,ai().game_graph().vertex((*i).vertex_id())->vertex_type())) {
-							m_tNextGraphID = (*i).vertex_id();
-							m_fDistanceToPoint = (*i).distance();
-							bOk = true;
-							break;
-						}
-					if (bOk)
-						break;
-				}
-			}
-			else {
-				int iChosenBranch = randI(0,iBranches);
-				iBranches = 0;
-				for ( ; i != e; ++i)
-					if ((*i).vertex_id() != m_tPrevGraphID) {
-						for (int j=0; j<iPointCount; ++j)
-							if (ai().game_graph().mask(tpaTerrain[j].tMask,ai().game_graph().vertex((*i).vertex_id())->vertex_type()) && ((*i).vertex_id() != m_tPrevGraphID)) {
-								if (iBranches == iChosenBranch) {
-									m_tNextGraphID	= (*i).vertex_id();
-									m_fDistanceToPoint = (*i).distance();
-									bOk = true;
-									break;
-								}
-								++iBranches;
-							}
-							if (bOk)
-								break;
-					}
-			}
-			if (!bOk) {
-				m_fCurSpeed			= 0.0f;
-				m_fDistanceToPoint	= 0.0f;
-				bContinue			= false;
-			}
-			else
-				m_fCurSpeed			= m_fGoingSpeed;
-		}
-		if (start_game_vertex_id != m_tGraphID) {
-#pragma todo("Do not forget to uncomment here!!!")
-//			alife().check_for_interaction(this);
-			start_game_vertex_id	= m_tGraphID;
-		}
-	}
-	m_tTimeID					= ai().alife().time_manager().game_time();
-/**/
 }
 
 void CSE_ALifeMonsterAbstract::on_location_change			() const
@@ -157,25 +74,11 @@ CSE_ALifeItemWeapon	*CSE_ALifeMonsterAbstract::tpfGetBestWeapon(ALife::EHitType 
 ALife::EMeetActionType	CSE_ALifeMonsterAbstract::tfGetActionType(CSE_ALifeSchedulable *tpALifeSchedulable, int iGroupIndex, bool bMutualDetection)
 {
 	return						(ALife::eMeetActionTypeIgnore);
-	/**
-	if (ALife::eCombatTypeMonsterMonster == ai().alife().combat_type()) {
-		CSE_ALifeMonsterAbstract	*l_tpALifeMonsterAbstract = smart_cast<CSE_ALifeMonsterAbstract*>(tpALifeSchedulable);
-		R_ASSERT2					(l_tpALifeMonsterAbstract,"Inconsistent meet action type");
-		return						(ALife::eRelationTypeFriend == ai().alife().relation_type(this,smart_cast<CSE_ALifeMonsterAbstract*>(tpALifeSchedulable)) ? ALife::eMeetActionTypeIgnore : ((bMutualDetection || alife().choose_combat_action(iGroupIndex) == ALife::eCombatActionAttack) ? ALife::eMeetActionTypeAttack : ALife::eMeetActionTypeIgnore));
-	}
-	else
-		if (ALife::eCombatTypeSmartTerrain == ai().alife().combat_type()) {
-			CSE_ALifeSmartZone		*smart_zone = smart_cast<CSE_ALifeSmartZone*>(tpALifeSchedulable);
-			VERIFY					(smart_zone);
-			return					(smart_zone->tfGetActionType(this,iGroupIndex ? 0 : 1,bMutualDetection));
-		}
-		else
-			return					(ALife::eMeetActionTypeAttack);
-	/**/
 }
 
 bool CSE_ALifeMonsterAbstract::bfActive()
 {
+	PROF_EVENT(__FUNCTION__);
 	CSE_ALifeGroupAbstract		*l_tpALifeGroupAbstract = smart_cast<CSE_ALifeGroupAbstract*>(this);
 	return						(/**/interactive() && /**/((l_tpALifeGroupAbstract && (l_tpALifeGroupAbstract->m_wCount > 0)) || (!l_tpALifeGroupAbstract && (get_health() > EPS_L))));
 }

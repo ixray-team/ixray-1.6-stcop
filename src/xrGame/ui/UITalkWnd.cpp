@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UITalkWnd.h"
 #include "UIPdaTalkHost.h"
 #include "UITalkDialogWnd.h"

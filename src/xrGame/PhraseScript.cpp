@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "PhraseScript.h"
 #include "../xrScripts/script_engine.h"

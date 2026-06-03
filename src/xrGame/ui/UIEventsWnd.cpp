@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "UIEventsWnd.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
@@ -195,7 +195,7 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 	
 	for(;it!=tasks.end();++it)
 	{
-		task					= (*it).getGameTask();
+		task					= it->getGameTask();
 		R_ASSERT				(task);
 		R_ASSERT				(task->GetObjectivesCount() > 0);
 

@@ -1,5 +1,5 @@
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "team_capture_zone.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "Hit.h"

@@ -92,7 +92,7 @@ void   text_tree::output (int current_indent, int indent, Columns& columns, OutF
 	for ( ; i!=strings.end(); ++i, ++c )
 	{
 		buffer += *i;
-		size_t num_padding_spaces = *c - (*i).size();
+		size_t num_padding_spaces = *c - i->size();
 		num_padding_spaces -= (i==strings.begin()) ? current_indent : 0;
 
 		if ( strings.size() == 1 )

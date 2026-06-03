@@ -6,7 +6,7 @@
 //	Description : Agent location manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "agent_location_manager.h"
 #include "agent_manager.h"
 #include "agent_member_manager.h"
@@ -97,7 +97,7 @@ bool CAgentLocationManager::suitable	(CAI_Stalker *object, const CCoverPoint *lo
 		CAgentEnemyManager::ENEMIES::const_iterator	I_ = this->object().enemy().enemies().begin();
 		CAgentEnemyManager::ENEMIES::const_iterator	E_ = this->object().enemy().enemies().end();
 		for ( ; I_ != E_; ++I_)
-			if ((*I_).m_enemy_position.distance_to_sqr(location->position()) < _sqr(MIN_SUITABLE_ENEMY_DISTANCE))
+			if (I_->m_enemy_position.distance_to_sqr(location->position()) < _sqr(MIN_SUITABLE_ENEMY_DISTANCE))
 				return				(false);
 	}
 

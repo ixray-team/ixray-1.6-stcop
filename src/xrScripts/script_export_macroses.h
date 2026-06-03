@@ -61,6 +61,7 @@
 #define DEFINE_LUA_WRAPPER_CONST_METHOD_0(v_func_name,ret_type)							\
 		virtual ret_type v_func_name() const											\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				return call_member<ret_type>(this,#v_func_name);						\
 			}																			\
@@ -71,6 +72,7 @@
 		}																				\
 		static ret_type v_func_name##_static(const inherited* ptr)						\
 		{                                                                               \
+			PROF_EVENT(__FUNCTION__); \
 			return ptr->self_type::inherited::v_func_name();							\
 		}
 
@@ -78,6 +80,7 @@
 #define DEFINE_LUA_WRAPPER_CONST_METHOD_1(v_func_name,ret_type,t1)						\
 		virtual ret_type v_func_name(t1 p1) const										\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				return call_member<ret_type>(this,#v_func_name,p1);						\
 			}																			\
@@ -88,16 +91,19 @@
 		}																				\
 		static ret_type v_func_name##_static(const inherited* ptr, t1 p1)				\
 		{                                                                               \
+			PROF_EVENT(__FUNCTION__); \
 			return ptr->self_type::inherited::v_func_name(p1);							\
 		}
 #else // DEBUG
 #define DEFINE_LUA_WRAPPER_CONST_METHOD_1(v_func_name,ret_type,t1)						\
 		virtual ret_type v_func_name(t1 p1) const										\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			return call_member<ret_type>(this,#v_func_name,p1);							\
 		}																				\
 		static ret_type v_func_name##_static(const inherited* ptr, t1 p1)				\
 		{                                                                               \
+			PROF_EVENT(__FUNCTION__); \
 			return ptr->self_type::inherited::v_func_name(p1);							\
 		}
 #endif // DEBUG
@@ -105,6 +111,7 @@
 #define DEFINE_LUA_WRAPPER_METHOD_V0(v_func_name)										\
 		virtual void v_func_name()														\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				call_member<void>(this,#v_func_name);									\
 			}																			\
@@ -119,6 +126,7 @@
 #define DEFINE_LUA_WRAPPER_METHOD_V1(v_func_name,t1)									\
 		virtual void v_func_name(t1 p1)													\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				call_member<void>(this,#v_func_name,p1);								\
 			}																			\
@@ -127,12 +135,14 @@
 		}																				\
 		static void v_func_name##_static(inherited* ptr, t1 p1)							\
 		{                                                                               \
+			PROF_EVENT(__FUNCTION__); \
 			ptr->self_type::inherited::v_func_name(p1);									\
 		}
 
 #define DEFINE_LUA_WRAPPER_METHOD_V2(v_func_name,t1,t2)									\
 		virtual void v_func_name(t1 p1, t2 p2)											\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				call_member<void>(this,#v_func_name,p1,p2);								\
 			}																			\
@@ -141,12 +151,14 @@
 		}																				\
 		static void v_func_name##_static(inherited* ptr, t1 p1, t2 p2)					\
 		{                                                                               \
+			PROF_EVENT(__FUNCTION__); \
 			ptr->self_type::inherited::v_func_name(p1,p2);								\
 		}
 
 #define DEFINE_LUA_WRAPPER_METHOD_V3(v_func_name,t1,t2,t3)								\
 		virtual void v_func_name(t1 p1, t2 p2, t3 p3)									\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				call_member<void>(this,#v_func_name,p1,p2,p3);							\
 			}																			\
@@ -155,12 +167,14 @@
 		}																				\
 		static void v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3 p3)			\
 		{                                                                               \
+			PROF_EVENT(__FUNCTION__); \
 			ptr->self_type::inherited::v_func_name(p1,p2,p3);							\
 		}
 
 #define DEFINE_LUA_WRAPPER_METHOD_V4(v_func_name,t1,t2,t3,t4)							\
 		virtual void v_func_name(t1 p1, t2 p2, t3 p3, t4 p4)							\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				call_member<void>(this,#v_func_name,p1,p2,p3,p4);						\
 			}																			\
@@ -169,12 +183,14 @@
 		}																				\
 		static void v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3 p3, t4 p4)	\
 		{                                                                               \
+			PROF_EVENT(__FUNCTION__); \
 			ptr->self_type::inherited::v_func_name(p1,p2,p3,p4);						\
 		}
 
 #define DEFINE_LUA_WRAPPER_METHOD_0(v_func_name,ret_type)								\
 		virtual ret_type v_func_name()													\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				return call_member<ret_type>(this,#v_func_name);						\
 			}																			\
@@ -185,12 +201,14 @@
 		}																				\
 		static ret_type v_func_name##_static(inherited* ptr)							\
 		{                                                                               \
+			PROF_EVENT(__FUNCTION__); \
 			return ptr->self_type::inherited::v_func_name();							\
 		}
 
 #define DEFINE_LUA_WRAPPER_METHOD_1(v_func_name,ret_type,t1)							\
 		virtual ret_type v_func_name(t1 p1)                                    			\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				return call_member<ret_type>(this,#v_func_name,p1);						\
 			}																			\
@@ -201,12 +219,14 @@
 		}                                   											\
 		static  ret_type v_func_name##_static(inherited* ptr, t1 p1)            		\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			return ptr->self_type::inherited::v_func_name(p1);                          \
 		}
 
 #define DEFINE_LUA_WRAPPER_METHOD_2(v_func_name,ret_type,t1,t2)							\
 		virtual ret_type v_func_name(t1 p1, t2 p2)                                    	\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				return call_member<ret_type>(this,#v_func_name,p1,p2);					\
 			}																			\
@@ -217,12 +237,14 @@
 		}                                   											\
 		static  ret_type v_func_name##_static(inherited* ptr, t1 p1, t2 p2)            	\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			return ptr->self_type::inherited::v_func_name(p1,p2);						\
 		}
 
 #define DEFINE_LUA_WRAPPER_METHOD_3(v_func_name,ret_type,t1,t2,t3)						\
 		virtual ret_type v_func_name(t1 p1, t2 p2, t3 p3)                               \
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				return call_member<ret_type>(this,#v_func_name,p1,p2,p3);				\
 			}																			\
@@ -233,12 +255,14 @@
 		}                                   											\
 		static  ret_type v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3 p3)      \
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			return ptr->self_type::inherited::v_func_name(p1,p2,p3);					\
 		}
 
 #define DEFINE_LUA_WRAPPER_METHOD_4(v_func_name,ret_type,t1,t2,t3,t4)					\
 		virtual ret_type v_func_name(t1 p1, t2 p2, t3 p3, t4 p4)						\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				return call_member<ret_type>(this,#v_func_name,p1,p2,p3,p4);			\
 			}																			\
@@ -249,6 +273,7 @@
 		}                                   											\
 		static  ret_type v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3 p3, t4 p4)\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			return ptr->self_type::inherited::v_func_name(p1,p2,p3,p4);					\
 		}
 
@@ -260,6 +285,7 @@
 #define DEFINE_LUA_WRAPPER_METHOD_R2P1_V1(v_func_name,t1)								\
 		virtual void v_func_name(t1& p1)												\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				call<void>(#v_func_name,&p1);											\
 			}																			\
@@ -268,12 +294,14 @@
 		}                                   											\
 		static  void v_func_name##_static(inherited* ptr, t1* p1)						\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			ptr->self_type::inherited::v_func_name(*p1);								\
 		}
 
 #define DEFINE_LUA_WRAPPER_METHOD_R2P1_V2(v_func_name,t1,t2)							\
 		virtual void v_func_name(t1& p1, t2 p2)											\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				call<void>(#v_func_name,&p1,p2);										\
 			}																			\
@@ -282,12 +310,14 @@
 		}                                   											\
 		static  void v_func_name##_static(inherited* ptr, t1* p1, t2 p2)				\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			ptr->self_type::inherited::v_func_name(*p1,p2);								\
 		}
 
 #define DEFINE_LUA_WRAPPER_METHOD_R2P2_V2(v_func_name,t1,t2)							\
 		virtual void v_func_name(t1 p1, t2& p2)											\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				call<void>(#v_func_name,p1,&p2);										\
 			}																			\
@@ -296,12 +326,14 @@
 		}                                   											\
 		static  void v_func_name##_static(inherited* ptr, t1 p1, t2* p2)				\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			ptr->self_type::inherited::v_func_name(p1,*p2);								\
 		}
 
 #define DEFINE_LUA_WRAPPER_METHOD_R2P1_V4(v_func_name,t1,t2,t3,t4)						\
 		virtual void v_func_name(t1& p1, t2 p2, t3 p3, t4 p4)							\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				call<void>(#v_func_name,&p1,p2,p3,p4);									\
 			}																			\
@@ -310,12 +342,14 @@
 		}                                   											\
 		static  void v_func_name##_static(inherited* ptr, t1* p1, t2 p2, t3 p3, t4 p4)	\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			ptr->self_type::inherited::v_func_name(*p1,p2,p3,p4);						\
 		}
 
 #define DEFINE_LUA_WRAPPER_METHOD_R2P3_V3(v_func_name,t1,t2,t3)							\
 		virtual void v_func_name(t1 p1, t2 p2, t3& p3)									\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			try {																		\
 				call<void>(#v_func_name,p1,p2,&p3);										\
 			}																			\
@@ -324,5 +358,6 @@
 		}                                   											\
 		static  void v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3* p3)			\
 		{																				\
+			PROF_EVENT(__FUNCTION__); \
 			ptr->self_type::inherited::v_func_name(p1,p2,*p3);							\
 		}

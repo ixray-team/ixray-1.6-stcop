@@ -4,7 +4,7 @@
 #include "math.h"
 #include "xrFace.h"
  
-void UpdateCurrentPhase (LPCSTR text)
+void UpdateCurrentPhase (str_c text)
 {
 	const bool Cuda = gCompilerMode.CUDA;
 	const bool Embree = gCompilerMode.Embree;

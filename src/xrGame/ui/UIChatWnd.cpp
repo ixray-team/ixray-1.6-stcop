@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIChatWnd.h"
 #include "UIGameLog.h"
 #include "../../xrUI/Widgets/UIEditBox.h"

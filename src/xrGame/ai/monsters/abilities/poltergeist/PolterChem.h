@@ -11,7 +11,7 @@ public:
 	CPolterChem(IPolterInterface* polter);
 	~CPolterChem() override;
 
-	void	load(LPCSTR section) override;
+	void	load(str_c section) override;
 	void	update_schedule() override;
 	void	update_frame() override;
 	void	on_hide() override;

@@ -1,5 +1,5 @@
 #pragma once
-#include "../xrCore/Save/SaveObject.h"
+#include "src/xrCore/Save/SaveObject.h"
 
 class CArtefact;
 
@@ -15,7 +15,7 @@ public:
 	CArtContainerComponent(void);
 	~CArtContainerComponent(void);
 
-	void Load(LPCSTR section);
+	void Load(str_c section);
 
 	void save(NET_Packet& output_packet);
 	void load(IReader& input_packet);

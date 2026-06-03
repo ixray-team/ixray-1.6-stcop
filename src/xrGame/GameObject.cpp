@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "GameObject.h"
 #include "../Include/xrRender/RenderVisual.h"
@@ -571,7 +571,7 @@ void CGameObject::spawn_supplies()
 	bool bSilencer			=	false;
 	bool bLauncher			=	false;
 
-	for (u32 k = 0, j; spawn_ini()->r_line("spawn",k,&N,&V); k++)
+	for (u32 k = 0, j; spawn_ini()->r_line("spawn",k,N,V); k++)
 	{
 		VERIFY				(xr_strlen(N));
 		j					= 1;

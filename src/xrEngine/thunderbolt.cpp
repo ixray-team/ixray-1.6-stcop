@@ -84,7 +84,7 @@ void SThunderboltCollection::load				(CInifile* pIni, CInifile* thunderbolts, co
 	int tb_count	= pIni->line_count(sect);
 	for (int tb_idx=0; tb_idx<tb_count; tb_idx++){
 		const char*		N, *V;
-		if (pIni->r_line(sect,tb_idx,&N,&V))
+		if (pIni->r_line(sect,tb_idx,N,V))
 			palette.push_back	(g_pGamePersistent->Environment().thunderbolt_description(*thunderbolts, N));
 	}
 }

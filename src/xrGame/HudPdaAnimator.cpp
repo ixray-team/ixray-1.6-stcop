@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HudPdaAnimator.h"
 #include "UIGameCustom.h"
 #include "Inventory.h"
@@ -44,7 +44,7 @@ void CHudPdaAnimator::Load()
 	m_fHudFovZoomFactor = pSettings->read_if_exists<float>(m_section, "hud_fov_zoom_factor", m_fHudFovFactor);
 	m_thumb_rot[0] = pSettings->read_if_exists<float>(m_section, "thumb_rot_x", 0.f);
 	m_thumb_rot[1] = pSettings->read_if_exists<float>(m_section, "thumb_rot_y", 0.f);
-	m_joystick_bone = pSettings->read_if_exists<LPCSTR>(m_section, "joystick_bone", nullptr);
+	m_joystick_bone = pSettings->read_if_exists<str_c>(m_section, "joystick_bone", nullptr);
 }
 
 void CHudPdaAnimator::Update()

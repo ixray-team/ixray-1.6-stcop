@@ -121,7 +121,7 @@ IC	const GameGraph::SLevel &GameGraph::CHeader::level				(const _LEVEL_ID &id) c
 {
 	LEVEL_MAP::const_iterator	I = levels().find(id);
 	R_ASSERT2					(I != levels().end(),make_string<const char*>("there is no specified level in the game graph : %d",id));
-	return						((*I).second);
+	return						(I->second);
 }
 
 IC const GameGraph::SLevel& GameGraph::CHeader::level(const char* level_name) const
@@ -143,8 +143,8 @@ IC	const GameGraph::SLevel *GameGraph::CHeader::level				(const char* level_name
 	LEVEL_MAP::const_iterator	I = levels().begin();
 	LEVEL_MAP::const_iterator	E = levels().end();
 	for ( ; I != E; ++I)
-		if (!xr_strcmp((*I).second.name(),level_name))
-			return				(&(*I).second);
+		if (!xr_strcmp(I->second.name(),level_name))
+			return				(&I->second);
 	
 	return						(0);
 }
@@ -284,7 +284,7 @@ IC	void GameGraph::CHeader::save									(IWriter *writer)
 	LEVEL_MAP::iterator			I = m_levels.begin();
 	LEVEL_MAP::iterator			E = m_levels.end();
 	for ( ; I != E; ++I)
-		(*I).second.save		(writer);
+		I->second.save		(writer);
 }
 
 

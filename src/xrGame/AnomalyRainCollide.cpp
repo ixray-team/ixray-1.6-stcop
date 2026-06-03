@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "object_broker.h"
 #include "AnomalyRainCollide.h"
 

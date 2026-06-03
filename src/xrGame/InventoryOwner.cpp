@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "InventoryOwner.h"
 #include "PDA.h"
@@ -758,7 +758,7 @@ const char* CInventoryOwner::trade_section() const
 {
 	const CGameObject* game_object = smart_cast<const CGameObject*>(this);
 	VERIFY(game_object);
-	return pSettings->read_if_exists<LPCSTR>(game_object->cNameSect(),"trade_section","trade");
+	return pSettings->read_if_exists<str_c>(game_object->cNameSect(),"trade_section","trade");
 }
 
 float CInventoryOwner::deficit_factor(const shared_str& section) const

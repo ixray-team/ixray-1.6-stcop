@@ -5,7 +5,7 @@
 //	Author		: Dmitriy Iassenev
 //	Description : Operator abstract inline functions
 ////////////////////////////////////////////////////////////////////////////
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "operator_abstract.h"
 
 COperatorAbstract::COperatorAbstract	()
@@ -90,21 +90,21 @@ bool COperatorAbstract::applicable_reverse	(const CSConditionState &condition, c
 	typename xr_vector<COperatorCondition>::const_iterator	J = start.conditions().begin();
 	typename xr_vector<COperatorCondition>::const_iterator	EE = start.conditions().end();
 	for ( ; (I != E) && (i != e); )
-		if ((*I).condition() < (*i).condition())
+		if (I->condition() < i->condition())
 			++I;
 		else
-			if ((*I).condition() > (*i).condition()) {
-				while ((J != EE) && ((*J).condition() < (*i).condition()))
+			if (I->condition() > i->condition()) {
+				while ((J != EE) && (J->condition() < i->condition()))
 					++J;
-				if ((J != EE) && ((*J).condition() == (*i).condition())) {
-					if ((*J).value() != (*i).value())
+				if ((J != EE) && (J->condition() == i->condition())) {
+					if (J->value() != i->value())
 						return	(false);
 					++J;
 				}
 				++i;
 			}
 			else {
-				if ((*I).value() != (*i).value())
+				if (I->value() != i->value())
 					return	(false);
 				++I;
 				++i;
@@ -114,13 +114,13 @@ bool COperatorAbstract::applicable_reverse	(const CSConditionState &condition, c
 		return				(true);
 
 	for ( ; (J != EE) && (i != e); )
-		if ((*J).condition() < (*i).condition())
+		if (J->condition() < i->condition())
 			++J;
 		else
-			if ((*J).condition() > (*i).condition())
+			if (J->condition() > i->condition())
 				++i;
 			else {
-				if ((*J).value() != (*i).value())
+				if (J->value() != i->value())
 					return	(false);
 				++J;
 				++i;
@@ -139,11 +139,11 @@ bool COperatorAbstract::apply_reverse	(const CSConditionState &condition, const 
 	typename xr_vector<COperatorCondition>::const_iterator	J = start.conditions().begin();
 	typename xr_vector<COperatorCondition>::const_iterator	EE = start.conditions().end();
 	for ( ; (I != E) && (i != e); )
-		if ((*I).condition() < (*i).condition()) {
-			while ((J != EE) && ((*J).condition() < (*I).condition()))
+		if (I->condition() < i->condition()) {
+			while ((J != EE) && (J->condition() < I->condition()))
 				++J;
-			if ((J != EE) && ((*J).condition() == (*I).condition())) {
-				VERIFY		((*J).value() == (*I).value());
+			if ((J != EE) && (J->condition() == I->condition())) {
+				VERIFY		(J->value() == I->value());
 				changed		= true;
 				++J;
 			}
@@ -152,12 +152,12 @@ bool COperatorAbstract::apply_reverse	(const CSConditionState &condition, const 
 			++I;
 		}
 		else
-			if ((*I).condition() > (*i).condition()) {
+			if (I->condition() > i->condition()) {
 				result_.add_condition_back(*i);
 				++i;
 			}
 			else {
-				if ((*I).value() != (*i).value())
+				if (I->value() != i->value())
 					changed	= true;
 				result_.add_condition_back(*i);
 				++I;
@@ -173,15 +173,15 @@ bool COperatorAbstract::apply_reverse	(const CSConditionState &condition, const 
 	}
 
 	for ( ; (J != EE) && (I != E); )
-		if ((*J).condition() < (*I).condition())
+		if (J->condition() < I->condition())
 			++J;
 		else
-			if ((*J).condition() > (*I).condition()) {
+			if (J->condition() > I->condition()) {
 				result_.add_condition_back(*I);
 				++I;
 			}
 			else {
-				VERIFY		((*J).value() == (*I).value());
+				VERIFY		(J->value() == I->value());
 				changed		= true;
 				++J;
 				++I;
@@ -205,17 +205,17 @@ const typename COperatorAbstract::CSConditionState &COperatorAbstract::apply	(co
 	typename xr_vector<COperatorCondition>::const_iterator	I = condition.conditions().begin();
 	typename xr_vector<COperatorCondition>::const_iterator	E = condition.conditions().end();
 	for ( ; (I != E) && (i != e); )
-		if ((*I).condition() < (*i).condition()) {
+		if (I->condition() < i->condition()) {
 			result_.add_condition_back(*I);
 			++I;
 		}
 		else
-			if ((*I).condition() > (*i).condition()) {
+			if (I->condition() > i->condition()) {
 				result_.add_condition_back(*i);
 				++i;
 			}
 			else {
-				VERIFY			((*I).condition() == (*i).condition());
+				VERIFY			(I->condition() == i->condition());
 				result_.add_condition_back(*i);
 				++I;
 				++i;
@@ -249,15 +249,15 @@ IC u16 COperatorAbstract::min_weight	() const
 	typename xr_vector<COperatorCondition>::const_iterator	i = effects().conditions().begin();
 	typename xr_vector<COperatorCondition>::const_iterator	e = effects().conditions().end();
 	for ( ; (i != e) && (I != E); ) {
-		if ((*I).condition() < (*i).condition())
+		if (I->condition() < i->condition())
 			++I;
 		else
-			if ((*I).condition() > (*i).condition()) {
+			if (I->condition() > i->condition()) {
 				++m_min_weight;
 				++i;
 			}
 			else {
-				if ((*I).value() != (*i).value())
+				if (I->value() != i->value())
 					++m_min_weight;
 				++I;
 				++i;

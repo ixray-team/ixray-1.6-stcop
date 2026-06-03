@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "controller.h"
 #include "controller_state_manager.h"
 

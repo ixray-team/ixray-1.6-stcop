@@ -62,10 +62,10 @@ public:
 	static Shader_xrLC& GetShaderXRLC(const Face& F);
 	static Shader_xrLC& GetShaderXRLC(u32 ID, bool Shared);
 
-	LPCSTR GetMaterialShaderName(const Face& F) const;
-	LPCSTR GetMaterialShaderName(u16 index, bool shared) const;
-	LPCSTR GetMaterialShaderXRLCName(const Face& F) const;
-	LPCSTR GetMaterialShaderXRLCName(u16 index, bool shared) const;
+	str_c GetMaterialShaderName(const Face& F) const;
+	str_c GetMaterialShaderName(u16 index, bool shared) const;
+	str_c GetMaterialShaderXRLCName(const Face& F) const;
+	str_c GetMaterialShaderXRLCName(u16 index, bool shared) const;
 
 	static xr_vector<b_material>& materials();
 	static xr_vector<b_material_shared>& materials_shared();

@@ -6,7 +6,7 @@
 //	Description : Material manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "material_manager.h"
 #include "alife_space.h"
 #include "PHMovementControl.h"
@@ -36,7 +36,7 @@ bool debug_character_material_load = false;
 void CMaterialManager::Load			(const char* section)
 {
 	R_ASSERT3				(pSettings->line_exist(section,"material"),"Material not found in the section ",*(m_object->cNameSect()));
-	m_my_material_idx		= GMLib.GetMaterialIdx(pSettings->read_if_exists<LPCSTR>(section, "material", "default_object"));
+	m_my_material_idx		= GMLib.GetMaterialIdx(pSettings->read_if_exists<str_c>(section, "material", "default_object"));
 	
 #ifdef	DEBUG
 		if( debug_character_material_load )

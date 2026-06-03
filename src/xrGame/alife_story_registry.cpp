@@ -6,7 +6,7 @@
 //	Description : ALife story registry
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_story_registry.h"
 #include "xrServer_Objects_ALife.h"
 #include "ai_space.h"

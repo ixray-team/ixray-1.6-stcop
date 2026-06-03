@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "control_rotation_jump.h"
 #include "basemonster/base_monster.h"
 #include "control_manager.h"

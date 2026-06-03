@@ -1,5 +1,5 @@
 #pragma once
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 
 class CFFxCrypto final
@@ -107,12 +107,12 @@ public:
 	CFFxCrypto();
 	virtual	~CFFxCrypto();
 	
-	const char* CRC64(const char* input);
-    const char* SHA1(const char* input);
-    const char* SHA256(const char* input);
-    const char* Base64Encode(const char* input);
-    const char* Base64Decode(const char* input);
-    const char* XorEncode(const char* input, const char* key);
+	str_c CRC64(str_c input);
+    str_c SHA1(str_c input);
+    str_c SHA256(str_c input);
+    str_c Base64Encode(str_c input);
+    str_c Base64Decode(str_c input);
+    str_c XorEncode(str_c input, str_c key);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION;
 };

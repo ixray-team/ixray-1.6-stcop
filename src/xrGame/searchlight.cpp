@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "searchlight.h"
 #include "../xrEngine/LightAnimLibrary.h"
 #include "script_entity_action.h"

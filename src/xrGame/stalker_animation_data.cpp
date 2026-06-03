@@ -6,7 +6,7 @@
 //	Description : Stalker animation data
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "stalker_animation_data.h"
 #include "AnimationNames.h"
 

@@ -126,7 +126,7 @@ public:
 	virtual float						get_luminocity		()									= 0;
 	virtual float						get_luminocity_hemi	()									= 0;
 	virtual float*						get_luminocity_hemi_cube		()									= 0;
-	virtual void						update_smooth(IRenderable* O = 0) {};
+	virtual void						update_smooth(IRenderable* O = nullptr) {};
 
 	virtual ~IRender_ObjectSpecific()	{};
 };
@@ -224,7 +224,7 @@ public:
 	virtual void					level_Unload			()											{};
 
 	virtual bool					InIndoor				()											{ return false; }
-	virtual size_t					SectorsCount			()											{ return size_t(0); }
+	virtual size_t					SectorsCount			()											{ return 0; }
 
 	virtual HRESULT					shader_compile			(
 		const char*							name,
@@ -239,11 +239,11 @@ public:
 	// Information
 	virtual	void					Statistics				(CGameFont* F	)							{};
 
-	virtual const char*					getShaderPath			()											{return 0;};
-	virtual IRender_Sector*			getSector				(int id)									{return 0;};
-	virtual IRenderVisual*			getVisual				(int id)									{return 0;};
-	virtual IRender_Sector*			detectSector			(const Fvector& P)							{return 0;};
-	virtual IRender_Target*			getTarget				()											{return 0;};
+	virtual const char*					getShaderPath			()											{return nullptr;}
+	virtual IRender_Sector*			getSector				(int id)									{return nullptr;}
+	virtual IRenderVisual*			getVisual				(int id)									{return nullptr;}
+	virtual IRender_Sector*			detectSector			(const Fvector& P)							{return nullptr;}
+	virtual IRender_Target*			getTarget				()											{return nullptr;}
 
 	struct SurfaceParams
 	{
@@ -256,51 +256,51 @@ public:
 
 	// Main 
 	IC		void					set_Frustum				(CFrustum*	O	)							{ VERIFY(O);	View = O;			}
-	virtual void					set_Transform			(Fmatrix&	M	)							{};
-	virtual void					set_LocalTransform		(Fmatrix&	M	)							{};
+	virtual void					set_Transform			(Fmatrix&	M	)							{}
+	virtual void					set_LocalTransform		(Fmatrix&	M	)							{}
 	virtual void					set_UI					(bool 		V	)							= 0;
 	virtual void					set_HUD					(bool 		V	)							{};
-	virtual bool					get_HUD					()											{ return 0; };
-	virtual void					set_Invisible			(bool 		V	)							{};
-	virtual void					flush					()											{};	
-	virtual void					set_Object				(IRenderable*		O	)					{};
-	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	)					{};	// mask screen region as oclluded (-1..1, -1..1)
-	virtual void					add_Visual				(IRenderVisual*	V, bool IgnoreOptimize = false, bool Force = false)	{};	// add visual leaf	(no culling performed at all)
-	virtual void					add_Geometry			(IRenderVisual*	V	)					{};	// add visual(s)	(all culling performed)
-	virtual void					add_StaticWallmark		(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {};
+	virtual bool					get_HUD					()											{ return false; }
+	virtual void					set_Invisible			(bool 		V	)							{}
+	virtual void					flush					()											{};
+	virtual void					set_Object				(IRenderable*		O	)					{}
+	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	)					{}	// mask screen region as oclluded (-1..1, -1..1)
+	virtual void					add_Visual				(IRenderVisual*	V, bool IgnoreOptimize = false, bool Force = false)	{}	// add visual leaf	(no culling performed at all)
+	virtual void					add_Geometry			(IRenderVisual*	V	)					{}	// add visual(s)	(all culling performed)
+	virtual void					add_StaticWallmark		(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {}
 
 	//	Prefer this function when possible
-	virtual void					add_StaticWallmark		(IWallMarkArray *pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false) {};
-	virtual void					clear_static_wallmarks	() {};
+	virtual void					add_StaticWallmark		(IWallMarkArray *pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false) {}
+	virtual void					clear_static_wallmarks	() {}
 
 	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark		(const wm_shader& S, const Fvector& P, float w, float h, float r, CDB::TRI* T, Fvector* V) = 0;
 
 	//	Prefer this function when possible
-	virtual void					add_SkeletonWallmark	(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size) {};
+	virtual void					add_SkeletonWallmark	(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size) {}
 
-	virtual IRender_ObjectSpecific*	ros_create				(IRenderable* parent)						{ return 0; };
-	virtual void					ros_destroy				(IRender_ObjectSpecific* &)					{};
+	virtual IRender_ObjectSpecific*	ros_create				(IRenderable* parent)						{ return nullptr; }
+	virtual void					ros_destroy				(IRender_ObjectSpecific* &)					{}
 
 	// Lighting/glowing
-	virtual IRender_Light*			light_create			()											{ return 0; };
-	virtual void					light_destroy			(IRender_Light* p_)							{ };
-	virtual IRender_Glow*			glow_create				()											{ return 0; };
-	virtual void					glow_destroy			(IRender_Glow* p_)							{ };
+	virtual IRender_Light*			light_create			()											{ return nullptr; }
+	virtual void					light_destroy			(IRender_Light* p_)							{ }
+	virtual IRender_Glow*			glow_create				()											{ return nullptr; }
+	virtual void					glow_destroy			(IRender_Glow* p_)							{ }
 
 	// Models
-	virtual IRenderVisual*			model_CreateParticles	(const char* name)								{return 0;};
-	virtual IRenderVisual*			model_Create			(const char* name, IReader*	data=0)				{return 0;};
-	virtual IRenderVisual*			model_CreateChild		(const char* name, IReader*	data)				{return 0;};
-	virtual IRenderVisual*			model_Duplicate			(IRenderVisual*	V)							{return 0;};
-	virtual void					model_Delete			(IRenderVisual* &	V, bool bDiscard=false)	{};
-	virtual void					model_Delete_Deffered	(IRenderVisual* &	V)						{};
-	virtual void					models_Prefetch			()											{};
-	virtual void					models_Clear			(bool b_complete)							{};
+	virtual IRenderVisual*			model_CreateParticles	(const char* name)								{return nullptr;}
+	virtual IRenderVisual*			model_Create			(const char* name, IReader*	data=nullptr)				{return nullptr;}
+	virtual IRenderVisual*			model_CreateChild		(const char* name, IReader*	data)				{return nullptr;}
+	virtual IRenderVisual*			model_Duplicate			(IRenderVisual*	V)							{return nullptr;}
+	virtual void					model_Delete			(IRenderVisual* &	V, bool bDiscard=false)	{}
+	virtual void					model_Delete_Deffered	(IRenderVisual* &	V)						{}
+	virtual void					models_Prefetch			()											{}
+	virtual void					models_Clear			(bool b_complete)							{}
 
 	// Occlusion culling
-	virtual bool					occ_visible				(vis_data&	V)								{return false;};
-	virtual bool					occ_visible				(Fbox&		B)								{return false;};
-	virtual bool					occ_visible				(sPoly&		P)								{return false;};
+	virtual bool					occ_visible				(vis_data&	V)								{return false;}
+	virtual bool					occ_visible				(Fbox&		B)								{return false;}
+	virtual bool					occ_visible				(sPoly&		P)								{return false;}
 	virtual CDB::MODEL* GetHOMModel() { return nullptr; }
 	virtual xr_vector<u32>* GetHOMInvaltids() { return nullptr; }
 	// Main
@@ -308,16 +308,16 @@ public:
 	virtual void					Render					()											= 0;
 	virtual void					RenderUI				(bool = false)								= 0;
 	
-	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, const char* name = 0) {};
-	virtual	void					Screenshot				(ScreenshotMode mode, CMemoryWriter& memory_writer) {};
-	virtual void					ScreenshotAsyncBegin	() {};
-	virtual void					ScreenshotAsyncEnd		(CMemoryWriter& memory_writer) {};
+	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, const char* name = nullptr) {}
+	virtual	void					Screenshot				(ScreenshotMode mode, CMemoryWriter& memory_writer) {}
+	virtual void					ScreenshotAsyncBegin	() {}
+	virtual void					ScreenshotAsyncEnd		(CMemoryWriter& memory_writer) {}
 
 	// Render mode
-	virtual void					rmNear					()											{};
-	virtual void					rmFar					()											{};
-	virtual void					rmNormal				()											{};
-	virtual u32						memory_usage			()											{ return 0;};
+	virtual void					rmNear					()											{}
+	virtual void					rmFar					()											{}
+	virtual void					rmNormal				()											{}
+	virtual u32						memory_usage			()											{ return 0;}
 
 	virtual IRHISurface* load_texture(const char* fname, u32& msize, bool bStaging=false)=0;
 	virtual bool get_texture_metadata(const char* fname, RHITextureMetadata* p_data) = 0;
@@ -344,7 +344,7 @@ public:
 	// Constructor/destructor
 	virtual ~IRender_interface() = default;
 protected:
-	virtual	void					ScreenshotImpl			(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer) {};
+	virtual	void					ScreenshotImpl			(ScreenshotMode mode, const char* name, CMemoryWriter* memory_writer) {}
 };
 
 //extern ENGINE_API	IRender_interface*	Render;

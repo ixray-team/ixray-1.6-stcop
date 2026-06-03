@@ -41,11 +41,11 @@ bool CSpaceRestrictorWrapper::inside				(const Fvector &position, float radius) 
 	ShapeVec::const_iterator		I = object().shapes.begin();
 	ShapeVec::const_iterator		E = object().shapes.end();
 	for ( ; I != E; ++I) {
-		switch ((*I).type) {
+		switch (I->type) {
 			case 0 : {
 				Fsphere				temp;
-				m_xform.transform_tiny(temp.P,(*I).data.sphere.P);
-				temp.R				= (*I).data.sphere.R;
+				m_xform.transform_tiny(temp.P,I->data.sphere.P);
+				temp.R				= I->data.sphere.R;
 				if (sphere.intersect(temp))
 					return			(true);
 
@@ -53,7 +53,7 @@ bool CSpaceRestrictorWrapper::inside				(const Fvector &position, float radius) 
 			}
 			case 1 : {
 				Fmatrix				temp;
-				temp.mul_43			(m_xform,(*I).data.box);
+				temp.mul_43			(m_xform,I->data.box);
 
 				// Build points
 				Fvector				vertices;

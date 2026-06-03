@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "PdaUiSound.h"
 
 #include "PdaConstants.h"

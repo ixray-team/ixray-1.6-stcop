@@ -6,7 +6,7 @@
 //	Description : Movement manager for patrol paths
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "movement_manager.h"
 #include "patrol_path_manager.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "TeamInfo.h"
 #include "../../xrEngine/string_table.h"
 

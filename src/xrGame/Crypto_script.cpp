@@ -1,5 +1,5 @@
 #pragma once
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "Crypto_script.h"
 
@@ -8,7 +8,7 @@
 CFFxCrypto::CFFxCrypto() {}
 CFFxCrypto::~CFFxCrypto() {}
 
-const char* CFFxCrypto::CRC64(const char* input)
+str_c CFFxCrypto::CRC64(str_c input)
 {
     if (!input)
     {
@@ -36,7 +36,7 @@ const char* CFFxCrypto::CRC64(const char* input)
     return result;
 }
 
-const char* CFFxCrypto::SHA256(const char* input)
+str_c CFFxCrypto::SHA256(str_c input)
 {
     if (!input)
     {
@@ -201,7 +201,7 @@ const char* CFFxCrypto::SHA256(const char* input)
     return result;
 }
 
-const char* CFFxCrypto::SHA1(const char* input)
+str_c CFFxCrypto::SHA1(str_c input)
 {
     if (!input)
     {
@@ -418,7 +418,7 @@ const char* CFFxCrypto::SHA1(const char* input)
     return result;
 }
 
-const char* CFFxCrypto::Base64Encode(const char* input)
+str_c CFFxCrypto::Base64Encode(str_c input)
 {
     if (!input)
     {
@@ -459,7 +459,7 @@ const char* CFFxCrypto::Base64Encode(const char* input)
     return result.c_str();
 }
 
-const char* CFFxCrypto::Base64Decode(const char* input)
+str_c CFFxCrypto::Base64Decode(str_c input)
 {
     if (!input)
     {
@@ -513,7 +513,7 @@ const char* CFFxCrypto::Base64Decode(const char* input)
     return result.c_str();
 }
 
-const char* CFFxCrypto::XorEncode(const char* input, const char* key)
+str_c CFFxCrypto::XorEncode(str_c input, str_c key)
 {
     if (!input || !key) return "";
 

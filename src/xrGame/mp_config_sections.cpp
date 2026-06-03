@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "mp_config_sections.h"
 #include "Weapon.h"
 
@@ -36,11 +36,11 @@ mp_config_sections::mp_config_sections() :
 	m_tmp_dumper(nullptr, false, false, false)
 {
 	u32		gcount	=  pSettings->line_count("mp_item_groups");
-	const char*	line;
-	const char*	name;
+	str_c	line;
+	str_c	name;
 	for (u32 i = 0; i < gcount; ++i)
 	{
-		pSettings->r_line	("mp_item_groups", i, &name, &line);
+		pSettings->r_line	("mp_item_groups", i, name, line);
 		u32 itmcount		= _GetItemCount(line);
 		string256			tmp_single_item;
 		for (u32 j = 0; j < itmcount; ++j)
@@ -122,9 +122,9 @@ void mp_active_params::load_to	(const char* sect_name, CInifile & dest_dumper)
 	u32 lines_count = pSettings->line_count(sect_name);
 	for (u32 i = 0; i < lines_count; ++i)
 	{
-		const char*	line_name = nullptr;
-		const char*	line_value = nullptr;
-		pSettings->r_line		(sect_name, i, &line_name, &line_value);
+		str_c	line_name = nullptr;
+		str_c	line_value = nullptr;
+		pSettings->r_line		(sect_name, i, line_name, line_value);
 		dest_dumper.w_string	(sect_name, line_name, line_value);
 	}
 }

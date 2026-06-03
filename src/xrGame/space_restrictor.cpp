@@ -6,7 +6,7 @@
 //	Description : Space restrictor
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "space_restrictor.h"
 #include "xrServer_Objects_ALife.h"
@@ -173,10 +173,10 @@ void CSpaceRestrictor::prepare			() const
 	SHAPES::const_iterator			I = shape->shapes.begin();
 	SHAPES::const_iterator			E = shape->shapes.end();
 	for ( ; I != E; ++I) {
-		switch ((*I).type) {
+		switch (I->type) {
 			case 0 : { // sphere
 				Fsphere					temp;
-				const Fsphere			&sphere = (*I).data.sphere;
+				const Fsphere			&sphere = I->data.sphere;
 				XFORM().transform_tiny	(temp.P,sphere.P);
 				temp.R					= sphere.R;
 				m_spheres.push_back		(temp);
@@ -184,7 +184,7 @@ void CSpaceRestrictor::prepare			() const
 			}
 			case 1 : { // box
 				Fmatrix					sphere;
-				const Fmatrix			&box = (*I).data.box;
+				const Fmatrix			&box = I->data.box;
 				sphere.mul_43			(XFORM(),box);
 
 				// Build points
@@ -234,7 +234,7 @@ bool CSpaceRestrictor::prepared_inside	(const Fsphere &sphere) const
 		BOXES::const_iterator		E = m_boxes.end();
 		for ( ; I != E; ++I) {
 			for (u32 i=0; i<PLANE_COUNT; ++i)
-				if ((*I).m_planes[i].classify(sphere.P) > sphere.R)
+				if (I->m_planes[i].classify(sphere.P) > sphere.R)
 					goto continue_loop;
 			return					(true);
 continue_loop:

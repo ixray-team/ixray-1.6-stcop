@@ -1,10 +1,11 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIPdaMsgListItem.h"
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../../xrUI/UIXmlInit.h"
 
 void CUIPdaMsgListItem::SetFont(CGameFont* pFont)
 {
+	// TODO: Условие ниже реально требуется?
 	if (&UITimeText)
 		UITimeText.SetFont		(pFont);
 	if (UICaptionText)

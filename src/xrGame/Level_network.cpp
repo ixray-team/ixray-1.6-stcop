@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "Level.h"
 #include "Level_Bullet_Manager.h"
@@ -30,10 +30,8 @@
 #include "ScriptsSubsystems/Condlist/script_xr_effects.h"
 #include "ScriptsSubsystems/Condlist/script_xr_logic.h"
 
-ENGINE_API bool g_dedicated_server;
-
-const int max_objects_size			= 2*1024;
-const int max_objects_size_in_save	= 8*1024;
+constexpr int max_objects_size			= 2*1024;
+constexpr int max_objects_size_in_save	= 8*1024;
 
 extern bool	g_b_ClearGameCaptions;
 

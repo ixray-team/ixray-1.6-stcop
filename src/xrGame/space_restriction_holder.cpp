@@ -6,7 +6,7 @@
 //	Description : Space restriction holder
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "space_restriction_holder.h"
 #include "object_broker.h"
 #include "space_restrictor.h"
@@ -128,7 +128,7 @@ SpaceRestrictionHolder::CBaseRestrictionPtr CSpaceRestrictionHolder::restriction
 	
 	RESTRICTIONS::const_iterator	I = m_restrictions.find(space_restrictors);
 	if (I != m_restrictions.end())
-		return				((*I).second);
+		return				(I->second);
 
 	collect_garbage			();
 
@@ -181,7 +181,7 @@ void CSpaceRestrictionHolder::register_restrictor				(CSpaceRestrictor *space_re
 		return;
 	}
 
-	(*I).second->change_implementation(shape);
+	I->second->change_implementation(shape);
 }
 
 bool try_remove_string				(shared_str &search_string, const shared_str &string_to_search)
@@ -215,7 +215,7 @@ void CSpaceRestrictionHolder::unregister_restrictor			(CSpaceRestrictor *space_r
 	RESTRICTIONS::iterator	I = m_restrictions.find(restrictor_id);
 	VERIFY					(I != m_restrictions.end());
 
-	CSpaceRestrictionBridge	*bridge	= (*I).second;
+	CSpaceRestrictionBridge	*bridge	= I->second;
 	m_restrictions.erase	(I);
 
 	if (try_remove_string(m_default_out_restrictions,restrictor_id))
@@ -237,10 +237,10 @@ IC	void CSpaceRestrictionHolder::collect_garbage			()
 	RESTRICTIONS::iterator	I = m_restrictions.begin(), J;
 	RESTRICTIONS::iterator	E = m_restrictions.end();
 	for ( ; I != E; ) {
-		if (!(*I).second->shape() && !(*I).second->m_ref_count && (Device.dwTimeGlobal >= (*I).second->m_last_time_dec + rest_time_to_delete)) {
+		if (!I->second->shape() && !I->second->m_ref_count && (Device.dwTimeGlobal >= I->second->m_last_time_dec + rest_time_to_delete)) {
 			J				= I;
 			++I;
-			xr_delete		((*J).second);
+			xr_delete		(J->second);
 			m_restrictions.erase(J);
 		}
 		else

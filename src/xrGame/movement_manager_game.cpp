@@ -6,7 +6,7 @@
 //	Description : Movement manager for game paths
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "movement_manager.h"
 #include "alife_simulator.h"
 #include "alife_graph_registry.h"

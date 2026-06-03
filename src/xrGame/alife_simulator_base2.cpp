@@ -6,7 +6,7 @@
 //	Description : ALife Simulator base class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_simulator_base.h"
 #include "relation_registry.h"
 #include "alife_registry_wrappers.h"

@@ -1,14 +1,11 @@
 #include "stdafx.h"
 
-#include "../xrSound/ai_sounds.h"
+#include "src/xrSound/ai_sounds.h"
 #include "ParticlesObject.h"
 #include "PolterAbility.h"
 #include "PolterInterface.h"
-#include "../xrphysics/PhysicsShell.h"
-#include "level.h"
-#include "material_manager.h"
-#include "level_debug.h"
-#include "ai/monsters/BaseMonster/base_monster.h"
+#include "Level.h"
+#include "src/xrGame/ai/monsters/basemonster/base_monster.h"
 
 #include "alife_space.h"
 
@@ -28,7 +25,7 @@ CPolterSpecialAbility::~CPolterSpecialAbility()
 	Particles::Details::Destroy(m_particles_object_electro);
 }
 
-void CPolterSpecialAbility::load(LPCSTR section)
+void CPolterSpecialAbility::load(str_c section)
 {
 	m_particles_hidden					= pSettings->r_string(section,"Particles_Hidden");
 	m_particles_damage					= pSettings->r_string(section,"Particles_Damage");

@@ -107,11 +107,11 @@ void CPatrolPathStorage::save				(IWriter &stream)
 		stream.open_chunk		(i);
 
 		stream.open_chunk		(0);
-        save_data				((*I).first,stream);
+        save_data				(I->first,stream);
 		stream.close_chunk		();
 
 		stream.open_chunk		(1);
-        save_data				((*I).second,stream);
+        save_data				(I->second,stream);
 		stream.close_chunk		();
 
 		stream.close_chunk		();

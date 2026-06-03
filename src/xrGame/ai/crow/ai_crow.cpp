@@ -6,7 +6,7 @@
 //	Description : AI Behaviour for monster "Crow"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "../../../xrPhysics/PhysicsShell.h"
 #include "../../../xrPhysics/phvalide.h"

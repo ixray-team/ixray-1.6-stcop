@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Weapon.h"
 #include "Weapons/Components/WeaponAmmoBones.h"
 #include "WeaponBinocularsVision.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "psy_aura.h"
 #include "basemonster/base_monster.h"
 

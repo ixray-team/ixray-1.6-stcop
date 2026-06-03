@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "ActorCondition.h"
 #include "EntityCondition.h"
@@ -15,7 +15,7 @@ void BoosterForEach(CActorCondition* conditions, const luabind::functor<bool> &f
 	CEntityCondition::BOOSTER_MAP::const_iterator it_e = cur_booster_influences.end();
 	for (; it != it_e; ++it)
 	{
-		if (funct((*it).first, (*it).second.fBoostTime, (*it).second.fBoostValue) == true)
+		if (funct(it->first, it->second.fBoostTime, it->second.fBoostValue) == true)
 			break;
 	}
 }
@@ -32,7 +32,7 @@ void ClearAllBoosters(CActorCondition* conditions)
 	CEntityCondition::BOOSTER_MAP::const_iterator it_e = cur_booster_influences.end();
 	for (; it != it_e; ++it)
 	{
-		conditions->DisableBoostParameters((*it).second);
+		conditions->DisableBoostParameters(it->second);
 	}
 	cur_booster_influences.clear();
 }

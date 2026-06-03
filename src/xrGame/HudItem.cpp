@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "script_game_object.h"
 #include "HudItem.h"
 #include "physic_item.h"
@@ -33,7 +33,7 @@ DLL_Pure *CHudItem::_construct()
 
 void CHudItem::Load(const char* section)
 {
-	hud_sect				= pSettings->read_if_exists<LPCSTR>(section,"hud",nullptr);
+	hud_sect				= pSettings->read_if_exists<str_c>(section,"hud",nullptr);
 	hud_sect_cache = hud_sect;
 
 	if (m_animation_slot != u32(-1))

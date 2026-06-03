@@ -6,7 +6,7 @@
 //	Description : Server objects
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "xrServer_Objects.h"
 #include <magic_enum/magic_enum.hpp>
 #include "game_base_space.h"
@@ -198,7 +198,7 @@ void CSE_Temporary::FillProps				(const char* pref, PropItemVec& values)
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Conditional
 ////////////////////////////////////////////////////////////////////////////
-CSE_Conditional::CSE_Conditional				(LPCSTR caSection) : CSE_Abstract(caSection)
+CSE_Conditional::CSE_Conditional				(str_c caSection) : CSE_Abstract(caSection)
 {
 	m_section_meet_cond = pSettings->r_string(caSection, "meet_cond");
 	m_section_not_meet_cond = pSettings->r_string(caSection, "not_meet_cond");
@@ -245,7 +245,7 @@ void CSE_Conditional::UPDATE_Serialize(ISaveObject& Object)
 }
 
 #ifndef XRGAME_EXPORTS
-void CSE_Conditional::FillProps				(LPCSTR pref, PropItemVec& values)
+void CSE_Conditional::FillProps				(str_c pref, PropItemVec& values)
 {
 };
 #endif // #ifndef XRGAME_EXPORTS

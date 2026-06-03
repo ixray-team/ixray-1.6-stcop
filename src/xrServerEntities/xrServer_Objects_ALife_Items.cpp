@@ -6,7 +6,7 @@
 //	Description : Server objects items for ALife simulator
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "xrMessages.h"
 #include "xrServer_Objects_ALife_Items.h"
 
@@ -1071,7 +1071,7 @@ void CSE_ALifeItemWeaponMagazined::FillProps			(const char* pref, PropItemVec& i
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemWeaponFlamethrower
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeItemFlamethrower::CSE_ALifeItemFlamethrower(LPCSTR caSection) : CSE_ALifeItemWeapon(caSection)
+CSE_ALifeItemFlamethrower::CSE_ALifeItemFlamethrower(str_c caSection) : CSE_ALifeItemWeapon(caSection)
 {
 }
 
@@ -1113,7 +1113,7 @@ void CSE_ALifeItemFlamethrower::UPDATE_Serialize(ISaveObject& Object)
 }
 
 #ifndef XRGAME_EXPORTS
-void CSE_ALifeItemFlamethrower::FillProps(LPCSTR pref, PropItemVec& items)
+void CSE_ALifeItemFlamethrower::FillProps(str_c pref, PropItemVec& items)
 {
 	inherited::FillProps(pref, items);
 }
@@ -1256,7 +1256,7 @@ bool CSE_ALifeItemAmmo::can_switch_offline	() const
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemFuel
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeItemFuel::CSE_ALifeItemFuel(LPCSTR caSection) : CSE_ALifeItem(caSection)
+CSE_ALifeItemFuel::CSE_ALifeItemFuel(str_c caSection) : CSE_ALifeItem(caSection)
 {
 	if (pSettings->section_exist(caSection) && pSettings->line_exist(caSection, "visual"))
 		set_visual(pSettings->r_string(caSection, "visual"));
@@ -1303,7 +1303,7 @@ void CSE_ALifeItemFuel::UPDATE_Serialize(ISaveObject& Object)
 }
 
 #ifndef XRGAME_EXPORTS
-void CSE_ALifeItemFuel::FillProps(LPCSTR pref, PropItemVec& values) {
+void CSE_ALifeItemFuel::FillProps(str_c pref, PropItemVec& values) {
 	inherited::FillProps(pref, values);
 }
 #endif // #ifndef XRGAME_EXPORTS
@@ -1446,7 +1446,7 @@ bool CSE_ALifeItemArtefact::Net_Relevant	()
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemArtefactCombiner
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeItemArtefactCombiner::CSE_ALifeItemArtefactCombiner(LPCSTR caSection) : CSE_ALifeItem(caSection)
+CSE_ALifeItemArtefactCombiner::CSE_ALifeItemArtefactCombiner(str_c caSection) : CSE_ALifeItem(caSection)
 {
 }
 
@@ -1491,7 +1491,7 @@ void CSE_ALifeItemArtefactCombiner::UPDATE_Serialize(ISaveObject& Object)
 }
 
 #ifndef XRGAME_EXPORTS
-void CSE_ALifeItemArtefactCombiner::FillProps(LPCSTR pref, PropItemVec& items)
+void CSE_ALifeItemArtefactCombiner::FillProps(str_c pref, PropItemVec& items)
 {
 	inherited::FillProps(pref,items);
 }

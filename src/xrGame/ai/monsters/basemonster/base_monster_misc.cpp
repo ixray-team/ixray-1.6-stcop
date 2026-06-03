@@ -6,7 +6,7 @@
 //	Description : Miscellanious functions for all the biting monsters
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "base_monster.h"
 #include "../../../EntityCondition.h"
 

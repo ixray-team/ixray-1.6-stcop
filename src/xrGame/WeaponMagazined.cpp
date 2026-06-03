@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 
 #include "WeaponMagazined.h"
@@ -2793,8 +2793,8 @@ void CWeaponMagazined::InitAddons()
 		m_scope_recoil.m_fScopeAttachedRecoil = pSettings->read_if_exists<float>(get_scope_section, "scope_attached_recoil_factor", 1.0f);
 		m_scope_recoil.m_fScopeAttachedRecoilReduction = pSettings->read_if_exists<float>(get_scope_section, "scope_attached_recoil_reduction", 1.0f);
 
-		m_zoom_params.m_sUseBinocularVision = pSettings->read_if_exists<LPCSTR>(get_scope_section,"scope_alive_detector",nullptr);
-		m_zoom_params.m_sUseZoomPostprocess = pSettings->read_if_exists<LPCSTR>(get_scope_section,"scope_nightvision",nullptr);
+		m_zoom_params.m_sUseBinocularVision = pSettings->read_if_exists<str_c>(get_scope_section,"scope_alive_detector",nullptr);
+		m_zoom_params.m_sUseZoomPostprocess = pSettings->read_if_exists<str_c>(get_scope_section,"scope_nightvision",nullptr);
 
 		if (m_zoom_params.m_sUseBinocularVision.size() <= 0)
 		{

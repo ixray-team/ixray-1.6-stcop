@@ -60,7 +60,7 @@ bool IGameGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>&
 		const u8* type = vertex(VertexID)->vertex_type();
 		for (; I != E; ++I)
 		{
-			if (mask((*I).tMask, type))
+			if (mask(I->tMask, type))
 			{
 				return true;
 			}

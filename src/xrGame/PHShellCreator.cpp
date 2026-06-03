@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "PHShellCreator.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "GameObject.h"

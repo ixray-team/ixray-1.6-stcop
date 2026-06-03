@@ -6,7 +6,7 @@
 //	Description : Location manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "location_manager.h"
 #include "GameObject.h"
 

@@ -11,7 +11,7 @@ class CArtCombiner final :
 public:
 	CArtCombiner();
 
-	void Load(LPCSTR section) override;
+	void Load(str_c section) override;
 	bool net_Spawn(CSE_Abstract* DC) override;
 
 	virtual void save(NET_Packet& output_packet) override;

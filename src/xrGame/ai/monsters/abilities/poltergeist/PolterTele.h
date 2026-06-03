@@ -41,7 +41,7 @@ public:
 	CPolterTele(IPolterInterface* polter);
 	~CPolterTele() override;
 
-	void	load(LPCSTR section) override;
+	void	load(str_c section) override;
 	void	update_schedule() override;
 	void	update_frame() override;
 

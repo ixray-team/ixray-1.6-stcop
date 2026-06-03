@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "UIStatsWnd.h"
 #include "../../xrEngine/string_table.h"

@@ -49,6 +49,6 @@ void CPatrolPath::load		(IReader &stream)
 	vertex_iterator	I = vertices().begin();
 	vertex_iterator	E = vertices().end();
 	for ( ; I != E; ++I)
-		(*I).second->data().path	(this);
+		I->second->data().path	(this);
 }
 #endif

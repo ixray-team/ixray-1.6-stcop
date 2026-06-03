@@ -29,7 +29,7 @@ void compute_cover_nodes()
 		if (!CoverBuilder::is_cover(*I))  continue;
 
 		*J = true;
- 		g_covers->insert(new CCoverPoint((*I).Pos, u32(I - B)));
+ 		g_covers->insert(new CCoverPoint(I->Pos, u32(I - B)));
 		IndexTotal++;
 	}
 }
@@ -55,12 +55,12 @@ void compute_non_covers()
 			if (!*J)
 				continue;
 
-			if (((*I).high_cover[0] + (*I).high_cover[1] + (*I).high_cover[2] + (*I).high_cover[3]) >= 4 * .999f) {
-				if (((*I).low_cover[0] + (*I).low_cover[1] + (*I).low_cover[2] + (*I).low_cover[3]) >= 4 * .999f)
+			if ((I->high_cover[0] + I->high_cover[1] + I->high_cover[2] + I->high_cover[3]) >= 4 * .999f) {
+				if ((I->low_cover[0] + I->low_cover[1] + I->low_cover[2] + I->low_cover[3]) >= 4 * .999f)
 					continue;
 			}
 
-			g_covers->insert(new CCoverPoint((*I).Pos, u32(I - B)));
+			g_covers->insert(new CCoverPoint(I->Pos, u32(I - B)));
 		}
 
 		VERIFY(g_covers->size());
@@ -75,14 +75,14 @@ void compute_non_covers()
 	for (; I != E; ++I, ++J) {
 		if (*J) continue;
 
-		g_covers->nearest((*I).Pos, cover_distance, nearest);
+		g_covers->nearest(I->Pos, cover_distance, nearest);
 		if (nearest.empty()) {
 			for (int i = 0; i < 4; ++i) {
-				VERIFY((*I).high_cover[i] == flt_max);
-				(*I).high_cover[i] = 1.f;
+				VERIFY(I->high_cover[i] == flt_max);
+				I->high_cover[i] = 1.f;
 
-				VERIFY((*I).low_cover[i] == flt_max);
-				(*I).low_cover[i] = 1.f;
+				VERIFY(I->low_cover[i] == flt_max);
+				I->low_cover[i] = 1.f;
 			}
 			continue;
 		}
@@ -96,7 +96,7 @@ void compute_non_covers()
 				if (!CoverBuilder::vertex_in_direction(u32(I - B), O->level_vertex_id()))
 					continue;
 
-				float					weight = 1.f / O->position().distance_to((*I).Pos);
+				float					weight = 1.f / O->position().distance_to(I->Pos);
 				cumulative_weight += weight;
 				cover_pairs.push_back(
 					std::make_pair(
@@ -110,37 +110,37 @@ void compute_non_covers()
 		// this is incorrect
 		if (cover_pairs.empty()) {
 			for (int i = 0; i < 4; ++i) {
-				VERIFY((*I).high_cover[i] == flt_max);
-				(*I).high_cover[i] = 1.f;
+				VERIFY(I->high_cover[i] == flt_max);
+				I->high_cover[i] = 1.f;
 
-				VERIFY((*I).low_cover[i] == flt_max);
-				(*I).low_cover[i] = 1.f;
+				VERIFY(I->low_cover[i] == flt_max);
+				I->low_cover[i] = 1.f;
 			}
 			continue;
 		}
 
 		for (int j = 0; j < 4; ++j) {
-			VERIFY((*I).high_cover[j] == flt_max);
-			(*I).high_cover[j] = 0.f;
+			VERIFY(I->high_cover[j] == flt_max);
+			I->high_cover[j] = 0.f;
 
-			VERIFY((*I).low_cover[j] == flt_max);
-			(*I).low_cover[j] = 0.f;
+			VERIFY(I->low_cover[j] == flt_max);
+			I->low_cover[j] = 0.f;
 		}
 
 		auto i = cover_pairs.begin();
 		auto e = cover_pairs.end();
 		for (; i != e; ++i) {
-			vertex& current = g_nodes[(*i).second->level_vertex_id()];
-			float						factor = (*i).first / cumulative_weight;
+			vertex& current = g_nodes[i->second->level_vertex_id()];
+			float						factor = i->first / cumulative_weight;
 			for (int j = 0; j < 4; ++j) {
-				(*I).high_cover[j] += factor * current.high_cover[j];
-				(*I).low_cover[j] += factor * current.low_cover[j];
+				I->high_cover[j] += factor * current.high_cover[j];
+				I->low_cover[j] += factor * current.low_cover[j];
 			}
 		}
 
 		for (int i_ = 0; i_ < 4; ++i_) {
-			clamp((*I).high_cover[i_], 0.f, 1.f);
-			clamp((*I).low_cover[i_], 0.f, 1.f);
+			clamp(I->high_cover[i_], 0.f, 1.f);
+			clamp(I->low_cover[i_], 0.f, 1.f);
 		}
 	}
 

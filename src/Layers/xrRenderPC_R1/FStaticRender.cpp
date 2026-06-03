@@ -152,8 +152,8 @@ void CRender::OnFrame()
 // Implementation
 IRender_ObjectSpecific*	CRender::ros_create				(IRenderable* parent)					{ return new CROS_impl();			}
 void					CRender::ros_destroy			(IRender_ObjectSpecific* &p)			{ xr_delete(p);							}
-IRenderVisual*			CRender::model_Create			(LPCSTR name, IReader* data)			{ return Models->Create(name,data);		}
-IRenderVisual*			CRender::model_CreateChild		(LPCSTR name, IReader* data)			{ return Models->CreateChild(name,data);}
+IRenderVisual*			CRender::model_Create			(str_c name, IReader* data)			{ return Models->Create(name,data);		}
+IRenderVisual*			CRender::model_CreateChild		(str_c name, IReader* data)			{ return Models->CreateChild(name,data);}
 IRenderVisual*			CRender::model_Duplicate		(IRenderVisual* V)						{ return Models->Instance_Duplicate((dxRender_Visual*)V);	}
 void					CRender::model_Delete			(IRenderVisual* &V, bool bDiscard)		
 { 
@@ -186,13 +186,13 @@ void					CRender::model_Delete			(IRender_DetailModel* & F)
 		F				= nullptr;
 	}
 }
-IRenderVisual*			CRender::model_CreatePE			(LPCSTR name)	
+IRenderVisual*			CRender::model_CreatePE			(str_c name)	
 { 
 	PS::CPEDef*	SE		= PSLibrary.FindPED	(name);		R_ASSERT3(SE,"Particle effect doesn't exist",name);
 	return				Models->CreatePE	(SE);
 }
 
-IRenderVisual*			CRender::model_CreateParticles	(LPCSTR name)	
+IRenderVisual*			CRender::model_CreateParticles	(str_c name)	
 { 
 	PS::CPEDef*	SE		= PSLibrary.FindPED	(name);
 	if (SE) return		Models->CreatePE	(SE);
@@ -653,7 +653,7 @@ void CRender::addShaderOption(const char* name, const char* value)
 //--------------------------------------------------------------------------------------------------------------
 class includer : public ID3DInclude {
 public:
-	HRESULT __stdcall Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
+	HRESULT __stdcall Open(D3D_INCLUDE_TYPE IncludeType, str_c pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
 		string_path pname;
 		xr_strconcat(pname, ::Render->getShaderPath(), pFileName);
 		IReader* R = FS.r_open(_game_shaders_, pname);
@@ -684,10 +684,10 @@ public:
 };
 
 static HRESULT create_shader				(
-		LPCSTR const	pTarget,
+		str_c const	pTarget,
 		DWORD const*	buffer,
 		u32	const		buffer_size,
-		LPCSTR const	file_name,
+		str_c const	file_name,
 		void*&			result,
 		bool const		disasm
 	)
@@ -742,11 +742,11 @@ static HRESULT create_shader				(
 }
 
 HRESULT	CRender::shader_compile			(
-		LPCSTR							name,
+		str_c							name,
 		DWORD const*                    pSrcData,
 		UINT                            SrcDataLen,
-		LPCSTR                          pFunctionName,
-		LPCSTR                          pTarget,
+		str_c                          pFunctionName,
+		str_c                          pTarget,
 		DWORD                           Flags,
 		void*&							result
 	)
@@ -892,7 +892,7 @@ HRESULT	CRender::shader_compile			(
 		{
 			Msg("! %s", file_name);
 			if (!pErrorBuf.empty())
-				Msg("! error: %s", (LPCSTR)pErrorBuf.data());
+				Msg("! error: %s", (str_c)pErrorBuf.data());
 			else
 				Msg("Can't compile shader hr=0x%08x", _result);
 		}

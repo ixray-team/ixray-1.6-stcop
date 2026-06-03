@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "base_monster.h"
 #include "../../../ai_space.h"
 #include "../../../Hit.h"
@@ -61,9 +61,9 @@ void CBaseMonster::Load(const char* section)
 	// load parameters from ".ltx" file
 	inherited::Load					(section);
 
-	m_head_bone_name				= pSettings->read_if_exists<LPCSTR>(section,"bone_head","bip01_head");
-	m_left_eye_bone_name			= pSettings->read_if_exists<LPCSTR>(section,"bone_eye_left",nullptr);
-	m_right_eye_bone_name			= pSettings->read_if_exists<LPCSTR>(section,"bone_eye_right",nullptr);
+	m_head_bone_name				= pSettings->read_if_exists<str_c>(section,"bone_head","bip01_head");
+	m_left_eye_bone_name			= pSettings->read_if_exists<str_c>(section,"bone_eye_left",nullptr);
+	m_right_eye_bone_name			= pSettings->read_if_exists<str_c>(section,"bone_eye_right",nullptr);
 
 	m_corpse_cover_evaluator		= new CMonsterCorpseCoverEvaluator	(&movement().restrictions());
 	m_enemy_cover_evaluator			= new CCoverEvaluatorFarFromEnemy	(&movement().restrictions());
@@ -175,9 +175,9 @@ void CBaseMonster::PostLoad (const char* section)
 	{
 		SVelocityParam&	velocity_run		=	move().get_velocity(MonsterMovement::eVelocityParameterRunNormal);
 
-		const char*	attack_on_move_anim_l		=	pSettings->read_if_exists<LPCSTR>(section,"aom_animation_left","stand_attack_run_");
+		const char*	attack_on_move_anim_l		=	pSettings->read_if_exists<str_c>(section,"aom_animation_left","stand_attack_run_");
 		anim().AddAnim (eAnimAttackOnRunLeft, attack_on_move_anim_l, -1, &velocity_run, PS_STAND);
-		const char*	attack_on_move_anim_r		=	pSettings->read_if_exists<LPCSTR>(section,"aom_animation_right","stand_attack_run_");
+		const char*	attack_on_move_anim_r		=	pSettings->read_if_exists<str_c>(section,"aom_animation_right","stand_attack_run_");
 		anim().AddAnim (eAnimAttackOnRunRight, attack_on_move_anim_r, -1, &velocity_run, PS_STAND);
 	}
 
@@ -191,7 +191,7 @@ void CBaseMonster::PostLoad (const char* section)
 		m_anti_aim							=	new anti_aim_ability(this);
 		control().add							(m_anti_aim,  ControlCom::eAntiAim);
 
-		const char*	anti_aim_animation			=	pSettings->read_if_exists<LPCSTR>(section,"anti_aim_animation","stand_attack_");
+		const char*	anti_aim_animation			=	pSettings->read_if_exists<str_c>(section,"anti_aim_animation","stand_attack_");
 		anim().AddAnim							(eAnimAntiAimAbility, anti_aim_animation, -1, 
 												&velocity_stand, PS_STAND);
 		m_anti_aim->load_from_ini				(pSettings, section);
@@ -509,7 +509,7 @@ void CBaseMonster::fill_bones_body_parts	(const char* body_part, CriticalWoundTy
 	for ( ; I != E; ++I)
 		m_bones_body_parts.insert	(
 			std::make_pair(
-				kinematics->LL_BoneID((*I).first),
+				kinematics->LL_BoneID(I->first),
 				u32(wound_type)
 			)
 		);

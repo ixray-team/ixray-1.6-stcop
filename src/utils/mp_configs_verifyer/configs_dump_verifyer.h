@@ -1,5 +1,4 @@
-#ifndef CONFIGS_DUMP_VERIFYER
-#define CONFIGS_DUMP_VERIFYER
+#pragma once
 
 #include "mp_config_sections.h"
 #include "xr_dsa_verifyer.h"
@@ -23,8 +22,8 @@ public:
 private:
 	typedef u8 sha_checksum_t[crypto::xr_sha256::digest_length];
 	bool const	verify_dsign		(u8* data, u32 data_size, sha_checksum_t & sha_checksum);
-	LPCSTR		get_diff			(CInifile & received, CInifile & active_params, string256 & dst_diff);
-	LPCSTR		get_section_diff	(CInifile::Sect* sect_ptr, CInifile & active_params, string256 & dst_diff);
+	str_c		get_diff			(CInifile & received, CInifile & active_params, string256 & dst_diff);
+	str_c		get_section_diff	(CInifile::Sect* sect_ptr, CInifile & active_params, string256 & dst_diff);
 	CMemoryWriter		m_orig_config_body;
 	u32					m_orig_config_end_pos;
 	
@@ -35,5 +34,3 @@ private:
 }; //configs_verifyer
 
 } //namespace mp_anticheat
-
-#endif //#ifndef CONFIGS_DUMP_VERIFYER

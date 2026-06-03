@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "weighted_random.h"
 #include <math.h>
 
@@ -60,7 +60,7 @@ float   weighted_random::generate ()
 			return					a_val;
 		}
 
-		float random1			=	(rand() % RAND_MAX) / (RAND_MAX-1.f);
+		float random1			=	float(rand() % RAND_MAX) / float(RAND_MAX-1);
 		float k1				=	ab_square / (ab_square + bc_square);
 
 		if ( random1 < k1 )
@@ -74,8 +74,8 @@ float   weighted_random::generate ()
 	}
 	else if ( b_weight != -1 )
 	{
-		float random1			=	(rand() % RAND_MAX) / (RAND_MAX-1.f);
-		float random2			=	(rand() % RAND_MAX) / (RAND_MAX-1.f);
+		float random1			=	float(rand() % RAND_MAX) / float(RAND_MAX-1);
+		float random2			=	float(rand() % RAND_MAX) / float(RAND_MAX-1);
 
 		float delta_weight		= std::abs(a_weight - b_weight);
 

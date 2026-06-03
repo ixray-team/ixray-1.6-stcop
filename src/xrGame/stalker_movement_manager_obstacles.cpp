@@ -6,7 +6,7 @@
 //	Description : Stalker movement manager: dynamic obstacles avoidance
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "stalker_movement_manager_obstacles.h"
 #include "stalker_movement_manager_space.h"
 #include "ai_space.h"
@@ -284,10 +284,10 @@ float stalker_movement_manager_obstacles::is_going_through			( Fmatrix const& ma
 	detail_path_type::const_iterator	i = detail().path().begin() + detail().curr_travel_point_index() + 1;
 	detail_path_type::const_iterator	e = detail().path().end();
 	for ( ; i != e; ++i) {
-		float const distance			= get_distance((*(i - 1)).position,(*i).position,start_position,stop_position, .35f);
+		float const distance			= get_distance(((i - 1))->position,i->position,start_position,stop_position, .35f);
 		min_distance					= distance > -1.f ? std::min( min_distance, distance ) : min_distance;
 
-		current_distance				+= (*(i - 1)).position.distance_to((*i).position);
+		current_distance				+= ((i - 1))->position.distance_to(i->position);
 		if ( current_distance > max_distance )
 			return						min_distance == flt_max ? -1.f : min_distance;
 	}

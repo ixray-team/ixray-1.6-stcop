@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "psy_dog.h"
 #include "../../../level_graph.h"
 #include "../../../ai_space.h"
@@ -107,7 +107,7 @@ bool CPsyDog::spawn_phantom()
 	if (!control().path_builder().get_node_in_radius(ai_location().level_vertex_id(), 4,8,5,node)) return false;
 	
  	// set id to created server object
-	const char* phantomSection = pSettings->read_if_exists<LPCSTR>(this->get_section(),"phantom_section","psy_dog_phantom");
+	const char* phantomSection = pSettings->read_if_exists<str_c>(this->get_section(),"phantom_section","psy_dog_phantom");
 	CSE_Abstract* phantom = Level().spawn_item(phantomSection, ai().level_graph().vertex_position(node), node, ALife::INVALID_OBJECT_ID, true);
 	CSE_ALifeMonsterBase	*pSE_Monster = smart_cast<CSE_ALifeMonsterBase*>(phantom);
 	VERIFY(pSE_Monster);

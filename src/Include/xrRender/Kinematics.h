@@ -1,5 +1,3 @@
-#ifndef	Kinematics_included
-#define	Kinematics_included
 #pragma once
 
 #include "../../xrEngine/VisMask.h"
@@ -21,7 +19,8 @@ struct	SEnumVerticesCallback;
 class IKinematics
 {
 public:
-	ALife::_OBJECT_ID parent_object_id = ALife::_OBJECT_ID(-1);
+	virtual ~IKinematics() = default;
+	ALife::_OBJECT_ID parent_object_id = ALife::INVALID_OBJECT_ID;
 	typedef xr_vector<std::pair<shared_str,u16> >	accel;
 	struct	pick_result
 	{
@@ -110,6 +109,4 @@ virtual	const IBoneData&		_BCL	GetBoneData(u16 bone_id) const = 0;
 	virtual shared_str					getDebugName		() = 0;
 };
 
-IC IKinematics* PKinematics (IRenderVisual* V) { return V?V->dcast_PKinematics():0;}
-
-#endif	//	Kinematics_included
+IC IKinematics* PKinematics (IRenderVisual* V) { return V?V->dcast_PKinematics():nullptr;}
