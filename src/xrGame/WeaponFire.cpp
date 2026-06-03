@@ -255,7 +255,7 @@ void CWeapon::StopShooting()
 {
 	if (!ParentIsActor() && GetState() == eFire)
 	{
-		SwitchState(eIdle);
+		SwitchState(eIdle, false);
 	}
 
 	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
