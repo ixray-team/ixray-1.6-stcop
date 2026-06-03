@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "XRayRenderVisual.h"
-
 #include "Legacy/Scene/TLegacyScene.h"
 
 
@@ -28,7 +27,7 @@ void CDS0_RenderVisual::Load(const char* N, IReader* data, u32 dwFlags)
 		Type = hdr.type;
 		if (hdr.shader_id)
 		{
-			SceneShader = &GRenderResourcesManager->LegacyScene->GetShaders(hdr.shader_id);
+			Material = LegacyOwner->GetShaders(hdr.shader_id);
 		}
 		Vis.box.set(hdr.bb.min, hdr.bb.max);
 		Vis.sphere.set(hdr.bs.c, hdr.bs.r);

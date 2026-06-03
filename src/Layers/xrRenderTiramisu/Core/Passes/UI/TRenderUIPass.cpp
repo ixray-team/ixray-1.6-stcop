@@ -151,7 +151,7 @@ void TRenderUIPass::Render(nri::CommandBuffer& CurrentCommandBuffer)
 		{
 			continue;
 		}
-		GRenderDevice.CoreInterface.CmdDraw(CurrentCommandBuffer, {Primitve.VertexCount , 1, Primitve.VertexOffset,  Primitve.Texture->GetOrCreateHeapIndex()});
+		GRenderDevice.CoreInterface.CmdDraw(CurrentCommandBuffer, {Primitve.VertexCount , 1, Primitve.VertexOffset,  Primitve.Texture->ResourceProxy->GetOrCreateHeapID()});
 	}
 	
 	GUIRender.Flush();

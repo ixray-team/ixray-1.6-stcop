@@ -12,10 +12,6 @@ TRenderTextureSeq::~TRenderTextureSeq()
 	FrameTextures.clear();
 }
 
-uint32_t TRenderTextureSeq::GetOrCreateHeapIndex()
-{
-	return FrameTextures[CurrentFrame]->GetOrCreateHeapIndex();
-}
 
 bool TRenderTextureSeq::LoadFromSeqFile(const char* FilePath)
 {

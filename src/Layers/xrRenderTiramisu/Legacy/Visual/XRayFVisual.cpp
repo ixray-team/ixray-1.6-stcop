@@ -39,11 +39,11 @@ void CDS0_FVisual::Load(const char* N, IReader* data, u32 dwFlags)
 	if (data->find_chunk(OGF_GCONTAINER))
 	{
 		Loaded = true;
-		SceneVertexBuffer = GRenderResourcesManager->LegacyScene->GetVertexBuffer(data->r_u32());
+		SceneVertexBuffer = LegacyOwner->GetVertexBuffer(data->r_u32());
 		OffsetVertex = data->r_u32();
 		CountVertex = data->r_u32();
 
-		SceneIndexBuffer = GRenderResourcesManager->LegacyScene->GetIndexBuffer(data->r_u32());
+		SceneIndexBuffer = LegacyOwner->GetIndexBuffer(data->r_u32());
 		OffsetIndex = data->r_u32();
 		CountIndex = data->r_u32();
 	}
@@ -101,17 +101,7 @@ bool CDS0_FVisual::MakeRenderItem(float LOD, FLegacyVisualRenderItem& RenderItem
 	RenderItem.OffsetIndex = OffsetIndex;
 	RenderItem.SceneVertexBuffer = SceneVertexBuffer;
 	RenderItem.SceneIndexBuffer = SceneIndexBuffer;
+	RenderItem.Material = Material;
 	
-	if (SceneShader)
-	{
-		RenderItem.LegacyShaderName = SceneShader->LegacyShaderName;
-		if (!SceneShader->Textures.empty())
-		{
-			RenderItem.Texture = SceneShader->Textures[0];
-		}
-	}
-	
-	RenderItem.VertexBuffer = GRenderResourcesManager->LegacyScene->GeometryBuffer;
-	RenderItem.IndexBuffer = GRenderResourcesManager->LegacyScene->GeometryBuffer;
 	return true;
 }

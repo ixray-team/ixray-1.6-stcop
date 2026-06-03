@@ -2,9 +2,9 @@
 
 #include <RedImage/RedImage.hpp>
 
-#include "TRenderResourcesFlusher.h"
 #include "RenderVertexTypes.h"
-#include "Legacy/Scene/TLegacyScene.h"
+#include "Materials/TRenderMaterialsManager.h"
+#include "Scene/TRenderScene.h"
 #include "Shaders/Defines/TShaderDefinesManager.h"
 #include "Shaders/Global/TGlobalShadersManager.h"
 
@@ -138,14 +138,15 @@ TRenderResourcesManager::TRenderResourcesManager()
 
 TRenderResourcesManager::~TRenderResourcesManager()
 {
-	delete LegacyScene;
+	delete RenderScene;
+	MaterialsManager->Free(DefaultMaterial);
+	delete MaterialsManager;
 	delete TexturesManager;
+	delete WhiteTexture;
+	delete BlackTexture;
 	delete DescriptorHeapAllocator;
 	delete GlobalShadersManager;
 	delete ShaderDefinesManager;
-	delete WhiteTexture;
-	delete BlackTexture;
-	delete ResourcesFlusher;
 	
 	if (QuadGeometryBuffer)
 	{
@@ -188,12 +189,13 @@ void TRenderResourcesManager::Initialize()
 		WhiteImage.Fill({1.f,1.f,1.f,1.f});
 		R_ASSERT(WhiteTexture->LoadFromImage(WhiteImage,false));
 	}
-	ResourcesFlusher = new TRenderResourcesFlusher;
 	ShaderDefinesManager = new TShaderDefinesManager; 
 	GlobalShadersManager = new TGlobalShadersManager(GRenderDevice.GraphicsApi,strstr(Core.Params,"-shader_pdb") || strstr(Core.Params,"-shader_debug"),strstr(Core.Params,"-shader_debug"));
 	DescriptorHeapAllocator = new TRenderDescriptorHeapAllocator;
 	TexturesManager = new TRenderTexturesManager;
-	LegacyScene = new TLegacyScene;
+	MaterialsManager = new TRenderMaterialsManager;
+	DefaultMaterial = MaterialsManager->Get("default");
+	RenderScene = new TRenderScene;
 }
 
 bool TRenderResourcesManager::IsCookedMode()
@@ -204,7 +206,6 @@ bool TRenderResourcesManager::IsCookedMode()
 void TRenderResourcesManager::FlushNextFrame()
 {
 	TexturesManager->FlushNextFrame();
-	ResourcesFlusher->FlushNextFrame();
 	DescriptorHeapAllocator->FlushNextFrame();
 }
 

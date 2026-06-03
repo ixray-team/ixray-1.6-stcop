@@ -69,21 +69,21 @@ TRenderTexture* TRenderTexturesManager::GetTexture(const shared_str& InName, boo
                     return GRenderResourcesManager->BlackTexture;
                 }
             }
-            else if (FS.exist(FilePathName, _game_textures_, FileName, ".seq"))
-            {
-                TRenderTextureSeq* NewTextureSeq = new TRenderTextureSeq(InName);
-                NewTextureSeq->Owner = this;
-                NewTexture = NewTextureSeq;
-
-                if (!NewTextureSeq->LoadFromSeqFile(FilePathName))
-                {
-                    Msg("! Can't loaded texture: %s", FileName);
-                    xr_delete(NewTextureSeq);
-                    ErrorTextures.insert(InName);
-                    return GRenderResourcesManager->BlackTexture;
-                }
-                TexturesDynamic[InName] = NewTextureSeq;
-            }
+            // else if (FS.exist(FilePathName, _game_textures_, FileName, ".seq"))
+            // {
+            //     TRenderTextureSeq* NewTextureSeq = new TRenderTextureSeq(InName);
+            //     NewTextureSeq->Owner = this;
+            //     NewTexture = NewTextureSeq;
+            //
+            //     if (!NewTextureSeq->LoadFromSeqFile(FilePathName))
+            //     {
+            //         Msg("! Can't loaded texture: %s", FileName);
+            //         xr_delete(NewTextureSeq);
+            //         ErrorTextures.insert(InName);
+            //         return GRenderResourcesManager->BlackTexture;
+            //     }
+            //     TexturesDynamic[InName] = NewTextureSeq;
+            // }
             else
             {
                 Msg("! Can't loaded texture: %s", FileName);
@@ -103,7 +103,7 @@ TRenderTexture* TRenderTexturesManager::GetTexture(const shared_str& InName, boo
 
 void TRenderTexturesManager::Free(TRenderTexture* InTexture)
 {
-    if (InTexture->Owner != this)
+    if (!InTexture || InTexture->Owner != this)
     {
         return;
     }

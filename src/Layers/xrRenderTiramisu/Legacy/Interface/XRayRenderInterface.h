@@ -5,11 +5,9 @@
 #include "Core/TRenderViewport.h"
 #include "Extensions/NRIHelper.h"
 #include "Extensions/NRISwapChain.h"
+#include "Legacy/Scene/TLegacyScene.h"
 
 
-	
-
-	
 class CDS0_RenderInterface :
 	public IRender_interface,
 	public pureFrame
@@ -109,7 +107,7 @@ public:
 	virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
 
 private:
-	
+	TLegacyScene LegacyScene;
 	
 };
  extern CDS0_RenderInterface GRenderInterface;
