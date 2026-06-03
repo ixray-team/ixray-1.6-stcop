@@ -3,7 +3,7 @@
 // BastArtefact - артефакт мочалка
 ///////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "BastArtifact.h"
 
 #include "ParticlesObject.h"

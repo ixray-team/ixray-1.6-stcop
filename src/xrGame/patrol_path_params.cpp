@@ -6,7 +6,7 @@
 //	Description : Patrol path parameters class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "patrol_path_params.h"
 #include "patrol_path_manager.h"
@@ -54,7 +54,7 @@ const Fvector &CPatrolPathParams::point	(u32 index) const
 	if (!m_path->vertex(index)) {
 		ai().script_engine().script_log(eLuaMessageTypeError,
 			"Can't get information about patrol point number %d in the patrol way %s", index, *m_path_name);
-		index = (*m_path->vertices().begin()).second->vertex_id();
+		index = m_path->vertices().begin()->second->vertex_id();
 	}
 	VERIFY(m_path->vertex(index));
 	if (!m_path->vertex(index))

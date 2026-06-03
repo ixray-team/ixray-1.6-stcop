@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HolderEntityObject.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrPhysics/PhysicsShell.h"
@@ -52,7 +52,7 @@ void CHolderEntityObject::Load(const char* section)
 	m_exit_position = pSettings->read_if_exists<Fvector3>(section,"exit_pos",Fvector().set(0.0f, 0.0f, 0.0f));
 	m_camera_position = pSettings->read_if_exists<Fvector3>(section,"camera_pos",Fvector().set(0.0f, 0.0f, 0.0f));
 	m_camera_angle = pSettings->read_if_exists<Fvector3>(section,"camera_angle",Fvector().set(0.0f, 0.0f, 0.0f));
-	m_sUseAction = pSettings->read_if_exists<LPCSTR>(section,"use_action_hint",nullptr);
+	m_sUseAction = pSettings->read_if_exists<str_c>(section,"use_action_hint",nullptr);
 }
 
 bool CHolderEntityObject::net_Spawn(CSE_Abstract* DC)

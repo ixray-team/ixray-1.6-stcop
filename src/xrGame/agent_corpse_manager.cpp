@@ -6,7 +6,7 @@
 //	Description : Agent corpse manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "agent_corpse_manager.h"
 #include "member_order.h"
 #include "ai/stalker/ai_stalker.h"
@@ -43,14 +43,14 @@ bool CAgentCorpseManager::process_corpse	(CMemberOrder &member)
 	xr_vector<CMemberCorpse>::iterator	I = m_corpses.begin();
 	xr_vector<CMemberCorpse>::iterator	E = m_corpses.end();
 	for ( ; I != E; ++I) {
-		if (!member.object().memory().visual().visible_now((*I).corpse()))
+		if (!member.object().memory().visual().visible_now(I->corpse()))
 			continue;
 
-		float		dist_sqr = (*I).corpse()->Position().distance_to_sqr(member.object().Position());
+		float		dist_sqr = I->corpse()->Position().distance_to_sqr(member.object().Position());
 		if (dist_sqr < min_dist_sqr) {
 			if	(
-					(*I).reactor() && 
-					((*I).reactor()->Position().distance_to_sqr((*I).corpse()->Position()) <= min_dist_sqr)
+					I->reactor() && 
+					(I->reactor()->Position().distance_to_sqr(I->corpse()->Position()) <= min_dist_sqr)
 				)
 				continue;
 			min_dist_sqr	= dist_sqr;
@@ -83,12 +83,12 @@ void CAgentCorpseManager::react_on_member_death			()
 		MEMBER_CORPSES::iterator	I = m_corpses.begin();
 		MEMBER_CORPSES::iterator	E = m_corpses.end();
 		for ( ; I != E; ++I) {
-			if (!(*I).reactor())
+			if (!I->reactor())
 				continue;
 
-			CMemberOrder::CMemberDeathReaction	&reaction = object().member().member((*I).reactor()).member_death_reaction();
-			reaction.m_member		= (*I).corpse();
-			reaction.m_time			= (*I).time();
+			CMemberOrder::CMemberDeathReaction	&reaction = object().member().member(I->reactor()).member_death_reaction();
+			reaction.m_member		= I->corpse();
+			reaction.m_time			= I->time();
 			reaction.m_processing	= true;
 		}
 

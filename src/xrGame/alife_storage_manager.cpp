@@ -6,7 +6,7 @@
 //	Description : ALife Simulator storage manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_storage_manager.h"
 
 #include "Actor.h"
@@ -65,7 +65,7 @@ void CALifeStorageManager::save(const char* save_name_no_check, bool update_name
 	luabind::functor<void> funct1;
 	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_before_save", funct1))
 	{
-		funct1((LPCSTR)m_save_name);
+		funct1((str_c)m_save_name);
 	}
 	
 	string_path temp;

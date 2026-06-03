@@ -6,7 +6,7 @@
 //	Description : trade parameters class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "trade_parameters.h"
 
 CTradeParameters *CTradeParameters::m_instance = 0;
@@ -19,6 +19,6 @@ void CTradeParameters::process	(action_show, CInifile &ini_file, const shared_st
 	CInifile::SectCIt		I = S.Data.begin();
 	CInifile::SectCIt		E = S.Data.end();
 	for ( ; I != E; ++I)
-		if (!(*I).second.size())
-			m_show.disable	((*I).first);
+		if (!I->second.size())
+			m_show.disable	(I->first);
 }

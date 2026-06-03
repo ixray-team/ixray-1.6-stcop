@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ai_monster_utils.h"
 #include "../../Entity.h"
 #include "../../ai_object_location.h"

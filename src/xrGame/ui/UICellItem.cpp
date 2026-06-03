@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UICellItem.h"
 #include "../../xrUI/UICursor.h"
 #include "../inventory_item.h"
@@ -239,7 +239,7 @@ void AplyFilterIcon(const shared_str& sect_name, CUIStatic* _static, float width
 	_static->GetUIStaticItem().SetTextureRect(texture_rect);
 	_static->SetStretchTexture(true);
 
-	const char* icons_texture = pSettings->read_if_exists<LPCSTR>(sect_name,"icons_texture",nullptr);
+	const char* icons_texture = pSettings->read_if_exists<str_c>(sect_name,"icons_texture",nullptr);
 	_static->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
 
 	float h = height * EngineExternal().GetWeaponIconScaling();

@@ -10,7 +10,7 @@ void CDS0_UIShader::Copy(IUIShader& _in)
 {
 }
 
-void CDS0_UIShader::create(LPCSTR sh, LPCSTR tex)
+void CDS0_UIShader::create(str_c sh, str_c tex)
 {
 }
 
@@ -72,7 +72,7 @@ void CDS0_UIRender::Flush()
 {
 }
 
-LPCSTR CDS0_UIRender::UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name)
+str_c CDS0_UIRender::UpdateShaderName(str_c tex_name, str_c sh_name)
 {
 	string_path buff;
 	return FS.exist(buff, "$game_textures$", tex_name, ".ogm") ? "hud\\movie" : sh_name;

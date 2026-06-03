@@ -208,7 +208,7 @@ ISaveObject& CSaveObjectSave::operator<<(shared_str& S)
 	return *this;
 }
 
-xr_string* CSaveObjectSave::SerializeEnourmousString(LPCSTR long_str)
+xr_string* CSaveObjectSave::SerializeEnourmousString(str_c long_str)
 {
 	GetCurrentChunk()->w_string_long(long_str);
 	return nullptr;
@@ -328,7 +328,7 @@ ISaveObject& CSaveObjectLoad::operator<<(shared_str& S)
 	return *this;
 }
 
-xr_string* CSaveObjectLoad::SerializeEnourmousString(LPCSTR long_str)
+xr_string* CSaveObjectLoad::SerializeEnourmousString(str_c long_str)
 {
 	return GetCurrentChunk()->r_string_long();
 }
@@ -365,7 +365,7 @@ ISaveObject& operator<<(ISaveObject& Object, char& Value) {
 	return Object << (s8&)Value;
 }
 
-XRCORE_API ISaveObject& operator<<(ISaveObject& Object, LPSTR& Value)
+XRCORE_API ISaveObject& operator<<(ISaveObject& Object, char*& Value)
 {
 	if (Object.IsSave()) {
 		shared_str temp = Value;

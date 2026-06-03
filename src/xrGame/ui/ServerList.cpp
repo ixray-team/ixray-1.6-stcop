@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ServerList.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrEngine/string_table.h"
@@ -825,7 +825,7 @@ void CServerList::DestroySrvItems()
 	SrvItems_It it_e	= m_items_cache.end		();
 
 	for(;it!=it_e;++it)
-		xr_delete		( (*it).m_ui_item );
+		xr_delete		( it->m_ui_item );
 }
 
 void CServerList::ClearSrvItems()
@@ -833,7 +833,7 @@ void CServerList::ClearSrvItems()
 	SrvItems_It it			= m_items_cache.begin();
 	SrvItems_It it_e		= m_items_cache.end();
 	for(;it!=it_e;++it)
-		(*it).m_busy = false;
+		it->m_busy = false;
 
 	m_last_retreived_index	= u32(-1);
 }

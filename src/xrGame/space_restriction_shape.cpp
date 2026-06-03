@@ -6,7 +6,7 @@
 //	Description : Space restriction shape
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "space_restriction_shape.h"
 #include "ai_space.h"
 #include "level_graph.h"

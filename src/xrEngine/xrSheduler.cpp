@@ -151,7 +151,7 @@ bool CSheduler::Registered		(ISheduled *object) const
 		ITEMS::const_iterator	I = ItemsRT.begin();
 		ITEMS::const_iterator	E = ItemsRT.end();
 		for ( ; I != E; ++I)
-			if ((*I).Object == object) {
+			if (I->Object == object) {
 //				Msg				("0x%8x found in RT",object);
 				count			= 1;
 				break;
@@ -161,7 +161,7 @@ bool CSheduler::Registered		(ISheduled *object) const
 		ITEMS::const_iterator	I = Items.begin();
 		ITEMS::const_iterator	E = Items.end();
 		for ( ; I != E; ++I)
-			if ((*I).Object == object) {
+			if (I->Object == object) {
 //				Msg				("0x%8x found in non-RT",object);
 				VERIFY			(!count);
 				count			= 1;
@@ -173,7 +173,7 @@ bool CSheduler::Registered		(ISheduled *object) const
 		ITEMS::const_iterator	I = ItemsProcessed.begin();
 		ITEMS::const_iterator	E = ItemsProcessed.end();
 		for ( ; I != E; ++I)
-			if ((*I).Object == object) {
+			if (I->Object == object) {
 //				Msg				("0x%8x found in process items",object);
 				VERIFY			(!count);
 				count			= 1;
@@ -185,8 +185,8 @@ bool CSheduler::Registered		(ISheduled *object) const
 	ITEMS_REG::const_iterator	I = Registration.begin();
 	ITEMS_REG::const_iterator	E = Registration.end();
 	for ( ; I != E; ++I) {
-		if ((*I).Object == object) {
-			if ((*I).OP) {
+		if (I->Object == object) {
+			if (I->OP) {
 //				Msg				("0x%8x found in registration on register",object);
 				VERIFY			(!count);
 				++count;

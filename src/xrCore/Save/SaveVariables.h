@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../xrCore/_types.h"
-#include "../xrCore/_vector4.h"
+#include "src/xrCore/_types.h"
 
 struct SSaveTask;
 class CMemoryBuffer;
@@ -459,11 +458,11 @@ public:
 	CSaveVariableString() = default;
 	CSaveVariableString(const xr_string& Value) : _value(Value.c_str()) {}
 	CSaveVariableString(const shared_str& Value) : _value(Value) {}
-	CSaveVariableString(LPCSTR Value) : _value(Value) {}
+	CSaveVariableString(str_c Value) : _value(Value) {}
 	
 	void SetValue(const xr_string& Value) { _value = Value.c_str(); }
 	void SetValue(const shared_str& Value) { _value = Value; }
-	void SetValue(LPCSTR Value) { _value = Value; }
+	void SetValue(str_c Value) { _value = Value; }
 
 	virtual ESaveVariableType GetVariableType() override { return ESaveVariableType::t_string; }
 	virtual void Write(CMemoryBuffer& Buffer, SSaveTask* Task) override;
@@ -491,11 +490,11 @@ public:
 	CSaveVariableStringLong() = default;
 	CSaveVariableStringLong(const xr_string& Value) : _value(Value.c_str()) {}
 	CSaveVariableStringLong(const shared_str& Value) : _value(Value.c_str()) {}
-	CSaveVariableStringLong(LPCSTR Value) : _value(Value) {}
+	CSaveVariableStringLong(str_c Value) : _value(Value) {}
 	
 	void SetValue(const xr_string& Value) { _value = Value.c_str(); }
 	void SetValue(const shared_str& Value) { _value = Value.c_str(); }
-	void SetValue(LPCSTR Value) { _value = Value; }
+	void SetValue(str_c Value) { _value = Value; }
 
 	virtual ESaveVariableType GetVariableType() override { return ESaveVariableType::t_longstring; }
 	virtual void Write(CMemoryBuffer& Buffer, SSaveTask* Task) override;

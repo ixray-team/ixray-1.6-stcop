@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "UITaskItem.h"
 #include "../../xrUI/UIXmlInit.h"

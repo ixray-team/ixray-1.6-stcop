@@ -6,7 +6,7 @@
 //	Description : ALife monster patrol path manager class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_monster_patrol_path_manager.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "ai_space.h"
@@ -75,21 +75,21 @@ void CALifeMonsterPatrolPathManager::select_nearest			()
 	CPatrolPath::const_vertex_iterator	I = path().vertices().begin();
 	CPatrolPath::const_vertex_iterator	E = path().vertices().end();
 	for ( ; I != E; ++I) {
-		if ((*I).second->data().game_vertex_id() == object().get_object().m_tGraphID) {
-			m_current_vertex_index		= (*I).second->vertex_id();
+		if (I->second->data().game_vertex_id() == object().get_object().m_tGraphID) {
+			m_current_vertex_index		= I->second->vertex_id();
 			break;
 		}
 
 		float							distance = 
 			global_position.distance_to(
-				ai().game_graph().vertex((*I).second->data().game_vertex_id())->game_point()
+				ai().game_graph().vertex(I->second->data().game_vertex_id())->game_point()
 			);
 
 		if (distance >= best_distance)
 			continue;
 
 		best_distance					= distance;
-		m_current_vertex_index			= (*I).second->vertex_id();
+		m_current_vertex_index			= I->second->vertex_id();
 	}
 
 	VERIFY								(m_current_vertex_index < path().vertices().size());
@@ -191,7 +191,7 @@ void CALifeMonsterPatrolPathManager::navigate					()
 	
 	VERIFY								(I != E);
 	m_previous_vertex_index				= m_current_vertex_index;
-	m_current_vertex_index				= (*I).vertex_id();
+	m_current_vertex_index				= I->vertex_id();
 }
 
 void CALifeMonsterPatrolPathManager::update					()

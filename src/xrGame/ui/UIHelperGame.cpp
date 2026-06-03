@@ -5,7 +5,7 @@
 //	Description : UI Helper class implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIHelperGame.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "UIDragDropReferenceList.h"

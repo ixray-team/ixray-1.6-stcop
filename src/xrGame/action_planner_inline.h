@@ -342,13 +342,13 @@ IC	void CPlanner::show				(const char* offset)
 				auto i = (*I).m_operator->conditions().conditions().begin();
 				auto e = (*I).m_operator->conditions().conditions().end();
 				for ( ; i != e; ++i)
-					Msg	("%s	condition [%d][%s] = %s",offset,(*i).condition(),property2string((*i).condition()),(*i).value() ? "true" : "false");
+					Msg	("%s	condition [%d][%s] = %s",offset,i->condition(),property2string(i->condition()),i->value() ? "true" : "false");
 			}
 			{
 				auto i = (*I).m_operator->effects().conditions().begin();
 				auto e = (*I).m_operator->effects().conditions().end();
 				for ( ; i != e; ++i)
-					Msg	("%s	effect    [%d][%s] = %s",offset,(*i).condition(),property2string((*i).condition()),(*i).value() ? "true" : "false");
+					Msg	("%s	effect    [%d][%s] = %s",offset,i->condition(),property2string(i->condition()),i->value() ? "true" : "false");
 			}
 
 			(*I).m_operator->show(temp);

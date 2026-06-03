@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "monster_cover_manager.h"
 #include "basemonster/base_monster.h"
 #include "../../cover_evaluators.h"

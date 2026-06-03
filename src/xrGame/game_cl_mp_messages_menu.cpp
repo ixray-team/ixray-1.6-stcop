@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "game_cl_mp.h"
 #include "ui/UISpeechMenu.h"
 #include "xrMessages.h"
@@ -74,7 +74,7 @@ void				game_cl_mp::LoadMessagesMenu		(const char* menus_section)
 	if (!menus_section) return;
 	if (!pSettings->section_exist(menus_section)) return;
 	shared_str Sounds_Path = pSettings->r_string(menus_section, "sounds_path");	
-	shared_str Team_Prefix = pSettings->read_if_exists<LPCSTR>(menus_section, "team_prefix", "");	
+	shared_str Team_Prefix = pSettings->read_if_exists<str_c>(menus_section, "team_prefix", "");	
 	m_aMessageMenus.clear();
 	//-----------------------------------------------------------------------------
 	for (int i=0; i<10; i++)

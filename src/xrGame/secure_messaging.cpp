@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "secure_messaging.h"
 
 namespace secure_messaging

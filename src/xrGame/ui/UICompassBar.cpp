@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UICompassBar.h"
 #include "../Actor.h"
 #include "../Level.h"

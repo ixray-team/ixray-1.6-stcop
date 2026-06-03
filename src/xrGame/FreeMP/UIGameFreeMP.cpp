@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIGameFreeMP.h"
 #include "game_cl_freemp.h"
 

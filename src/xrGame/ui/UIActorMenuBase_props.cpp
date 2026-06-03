@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIActorMenuBase.h"
 #include "../../xrUI/Widgets/UIPropertiesBox.h"
 #include "../../xrEngine/xr_input.h"
@@ -102,7 +102,7 @@ void CUIActorMenuBase::PropertiesBoxForUsing(PIItem item, bool& b_show)
 	shared_str	section_name = GO->cNameSect();
 
 	//ability to set eat string from settings
-	act_str = pSettings->read_if_exists<LPCSTR>(section_name, "default_use_text", 0);
+	act_str = pSettings->read_if_exists<str_c>(section_name, "default_use_text", 0);
 	if (act_str)
 	{
 		m_UIPropertiesBox->AddItem(act_str, nullptr, INVENTORY_EAT_ACTION);
@@ -167,7 +167,7 @@ void CUIActorMenuBase::PropertiesBoxForUsing(PIItem item, bool& b_show)
 	}
 
 	//1st Custom Use action
-	act_str = pSettings->read_if_exists<LPCSTR>(section_name, "use1_text", 0);
+	act_str = pSettings->read_if_exists<str_c>(section_name, "use1_text", 0);
 	if (act_str)
 	{
 		m_UIPropertiesBox->AddItem(act_str, nullptr, INVENTORY_EAT2_ACTION);
@@ -175,7 +175,7 @@ void CUIActorMenuBase::PropertiesBoxForUsing(PIItem item, bool& b_show)
 	}
 
 	//2nd Custom Use action
-	act_str = pSettings->read_if_exists<LPCSTR>(section_name, "use2_text", 0);
+	act_str = pSettings->read_if_exists<str_c>(section_name, "use2_text", 0);
 	if (act_str)
 	{
 		m_UIPropertiesBox->AddItem(act_str, nullptr, INVENTORY_EAT3_ACTION);
@@ -183,7 +183,7 @@ void CUIActorMenuBase::PropertiesBoxForUsing(PIItem item, bool& b_show)
 	}
 
 	//3rd Custom Use action
-	act_str = pSettings->read_if_exists<LPCSTR>(section_name, "use3_text", 0);
+	act_str = pSettings->read_if_exists<str_c>(section_name, "use3_text", 0);
 	if (act_str)
 	{
 		m_UIPropertiesBox->AddItem(act_str, nullptr, INVENTORY_EAT4_ACTION);
@@ -191,7 +191,7 @@ void CUIActorMenuBase::PropertiesBoxForUsing(PIItem item, bool& b_show)
 	}
 
 	//4th Custom Use action
-	act_str = pSettings->read_if_exists<LPCSTR>(section_name, "use4_text", 0);
+	act_str = pSettings->read_if_exists<str_c>(section_name, "use4_text", 0);
 	if (act_str)
 	{
 		m_UIPropertiesBox->AddItem(act_str, nullptr, INVENTORY_EAT5_ACTION);
@@ -772,7 +772,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 	case INVENTORY_EAT2_ACTION:
 	{
 		CGameObject* GO = item->cast_game_object();
-		const char* functor_name = pSettings->read_if_exists<LPCSTR>(GO->cNameSect(), "use1_functor", 0);
+		const char* functor_name = pSettings->read_if_exists<str_c>(GO->cNameSect(), "use1_functor", 0);
 		if (functor_name)
 		{
 			luabind::functor<bool>	funct1;
@@ -787,7 +787,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 	case INVENTORY_EAT3_ACTION:
 	{
 		CGameObject* GO = item->cast_game_object();
-		const char* functor_name = pSettings->read_if_exists<LPCSTR>(GO->cNameSect(), "use2_functor", 0);
+		const char* functor_name = pSettings->read_if_exists<str_c>(GO->cNameSect(), "use2_functor", 0);
 		if (functor_name)
 		{
 			luabind::functor<bool>	funct2;
@@ -802,7 +802,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 	case INVENTORY_EAT4_ACTION:
 	{
 		CGameObject* GO = item->cast_game_object();
-		const char* functor_name = pSettings->read_if_exists<LPCSTR>(GO->cNameSect(), "use3_functor", 0);
+		const char* functor_name = pSettings->read_if_exists<str_c>(GO->cNameSect(), "use3_functor", 0);
 		if (functor_name)
 		{
 			luabind::functor<bool>	funct3;
@@ -817,7 +817,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 	case INVENTORY_EAT5_ACTION:
 	{
 		CGameObject* GO = item->cast_game_object();
-		const char* functor_name = pSettings->read_if_exists<LPCSTR>(GO->cNameSect(), "use4_functor", 0);
+		const char* functor_name = pSettings->read_if_exists<str_c>(GO->cNameSect(), "use4_functor", 0);
 		if (functor_name)
 		{
 			luabind::functor<bool>	funct4;

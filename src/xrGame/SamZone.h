@@ -1,6 +1,6 @@
 #pragma once
-#include "hudsound.h"
-#include "rocketlauncher.h"
+#include "HudSound.h"
+#include "RocketLauncher.h"
 #include "smart_zone.h"
 #include "space_restrictor.h"
 
@@ -19,7 +19,7 @@ public:
 
 	HUD_SOUND_COLLECTION_LAYERED	m_layered_sounds;
 
-	void Load(LPCSTR		section) override;
+	void Load(str_c		section) override;
 	void LaunchMissile(CGameObject* target);
 
 	virtual void OnEvent(NET_Packet& P, u16 type) override;

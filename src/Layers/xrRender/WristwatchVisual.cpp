@@ -235,7 +235,7 @@ void SuppressGlassChildDraw(
 	child->shader.create(settings.shaderHidden.c_str(), textureName);
 }
 
-void CaptureShaderBackup(const ref_shader& shader, SWatchesChildShaderBackup& backup, LPCSTR fallbackShader)
+void CaptureShaderBackup(const ref_shader& shader, SWatchesChildShaderBackup& backup, str_c fallbackShader)
 {
 	backup.valid = false;
 	backup.shader = fallbackShader != nullptr && fallbackShader[0] != '\0' ? fallbackShader : "";
@@ -325,8 +325,8 @@ void ApplyDigitalShaders(CKinematics& kinematics)
 
 	const SWristwatchRuntimeSettings& settings = GetWristwatchRuntimeSettings();
 	const u16 watchUiBone = kinematics.LL_BoneID(settings.boneUi.c_str());
-	const LPCSTR digitalShader = settings.shaderDigital.c_str();
-	const LPCSTR glassShader = settings.shaderGlass.c_str();
+	const str_c digitalShader = settings.shaderDigital.c_str();
+	const str_c glassShader = settings.shaderGlass.c_str();
 
 	string_path digitalTextures;
 	BuildDigitalTextureList(digitalTextures);

@@ -234,8 +234,8 @@ void CTextConsole::DrawLog(HDC hDC, RECT* pRect)
 	int y_top_max = (int)(0.32f * Height);
 
 	//---------------------------------------------------------------------------------
-	LPCSTR s_edt = ec().str_edit();
-	LPCSTR s_cur = ec().str_before_cursor();
+	str_c s_edt = ec().str_edit();
+	str_c s_cur = ec().str_before_cursor();
 
 	u32 cur_len = xr_strlen(s_cur) + xr_strlen(ch_cursor) + 1;
 	char* buf = (char*)_alloca(cur_len * sizeof(char));
@@ -290,13 +290,13 @@ void CTextConsole::DrawLog(HDC hDC, RECT* pRect)
 				break;
 			}
 
-			LPCSTR ls = logLine.c_str();
+			str_c ls = logLine.c_str();
 
 			Console_mark cm = (Console_mark)ls[0];
 			COLORREF     c2 = (COLORREF)bgr2rgb(get_mark_color(cm));
 			SetTextColor(hDC, c2);
 			u8 b = (is_mark(cm)) ? 2 : 0;
-			LPCSTR pOut = ls + b;
+			str_c pOut = ls + b;
 
 			BOOL res = TextOutA(hDC, 10, ypos, pOut, xr_strlen(pOut));
 			if (!res)

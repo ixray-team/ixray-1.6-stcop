@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "chimera.h"
 #include "chimera_state_manager.h"
 //#include "../../../../Include/xrRender/KinematicsAnimated.h"
@@ -50,7 +50,7 @@ void   CChimera::Load (const char* section)
 	bool rotateVelocityExist = m_velocity_rotate.Load(section, "Velocity_Rotate");
 	bool jumpVelocityExist = m_velocity_jump_start.Load				(section, "Velocity_JumpStart");
 	
-#define ANIM_NAME(Var, Def) pSettings->read_if_exists<LPCSTR>(section, Var, Def)
+#define ANIM_NAME(Var, Def) pSettings->read_if_exists<str_c>(section, Var, Def)
 	
 	anim().AddAnim(eAnimStandIdle,		ANIM_NAME("AnimStandIdle_prefix", "stand_idle_"),			-1, &velocity_none,		PS_STAND);
 	anim().AddAnim(eAnimStandTurnLeft,	ANIM_NAME("AnimStandTurnLeft_prefix", "stand_turn_ls_"),		-1, &velocity_turn,		PS_STAND);
@@ -138,8 +138,8 @@ void   CChimera::reinit ()
 	static string16 def_s3 = "jump_attack_1";
 	static string16 def_s4 = "jump_attack_2";
 
-	const char* s3_anim = pSettings->read_if_exists<LPCSTR>(get_section(),"jump_data_s3",def_s3);
-	const char* s4_anim = pSettings->read_if_exists<LPCSTR>(get_section(),"jump_data_s4",def_s4);
+	const char* s3_anim = pSettings->read_if_exists<str_c>(get_section(),"jump_data_s3",def_s3);
+	const char* s4_anim = pSettings->read_if_exists<str_c>(get_section(),"jump_data_s4",def_s4);
 
 	com_man().load_jump_data				(nullptr,//"jump_attack_0",
 											 nullptr,//"jump_attack_0",
@@ -164,7 +164,7 @@ void   CChimera::CheckSpecParams (u32 spec_params)
 
 void   CChimera::HitEntityInJump (const CEntity *pEntity)
 {
-	auto AttackParamAnim = pSettings->read_if_exists<LPCSTR>(get_section(),"AttackParamAnim","jump_attack_1");
+	auto AttackParamAnim = pSettings->read_if_exists<str_c>(get_section(),"AttackParamAnim","jump_attack_1");
 	SAAParam &params = anim().AA_GetParams(AttackParamAnim);
 	
 	HitEntity(pEntity, params.hit_power, params.impulse, params.impulse_dir);

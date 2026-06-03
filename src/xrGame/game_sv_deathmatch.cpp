@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "game_sv_deathmatch.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "Level.h"
@@ -100,7 +100,7 @@ void	game_sv_Deathmatch::Create					(shared_str& options)
 	R_ASSERT2(rpoints[0].size(), "rpoints for players not found");
 	
 	LoadTeams();
-	m_not_free_ammo_str		= pSettings->read_if_exists<LPCSTR>("deathmatch_gamedata", "not_free_ammo", "");
+	m_not_free_ammo_str		= pSettings->read_if_exists<str_c>("deathmatch_gamedata", "not_free_ammo", "");
 	
 	switch_Phase(GAME_PHASE_PENDING);
 

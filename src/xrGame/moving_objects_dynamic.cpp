@@ -6,7 +6,7 @@
 //	Description : moving objects with dynamic objects, i.e. objects with predictable behaviour
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "moving_objects.h"
 #include "ai_space.h"
 #include "level_graph.h"
@@ -108,15 +108,15 @@ struct already_wait_predicate {
 		if (I == m_collisions->end())
 			return					(false);
 
-		if ((*I).second.second.first == object) {
-			if ((*I).second.first == moving_objects::possible_action_1_can_wait_2)
+		if (I->second.second.first == object) {
+			if (I->second.first == moving_objects::possible_action_1_can_wait_2)
 				return				(true);
 
 			return					(false);
 		}
 
-		if ((*I).second.second.second == object) {
-			if ((*I).second.first == moving_objects::possible_action_2_can_wait_1)
+		if (I->second.second.second == object) {
+			if (I->second.first == moving_objects::possible_action_2_can_wait_1)
 				return				(true);
 
 			return					(false);
@@ -233,25 +233,25 @@ bool moving_objects::exchange_all				(moving_object *previous, moving_object *ne
 	COLLISIONS::iterator		I = m_collisions.begin();
 	COLLISIONS::iterator		E = I + collision_count;
 	for ( ; I != E; ++I) {
-		if ((*I).second.second.first == previous) {
-			if ((*I).second.first != possible_action_2_can_wait_1) {
+		if (I->second.second.first == previous) {
+			if (I->second.first != possible_action_2_can_wait_1) {
 				result			= false;
 				continue;
 			}
 
-			(*I).second.second.first= next;
+			I->second.second.first= next;
 			continue;
 		}
 
-		if ((*I).second.second.second != previous)
+		if (I->second.second.second != previous)
 			continue;
 
-		if ((*I).second.first != possible_action_1_can_wait_2) {
+		if (I->second.first != possible_action_1_can_wait_2) {
 			result				= false;
 			continue;
 		}
 
-		(*I).second.second.second	= next;
+		I->second.second.second	= next;
 		continue;
 	}
 
@@ -313,11 +313,11 @@ bool moving_objects::fill_collisions			(moving_object *object, const Fvector &ob
 		COLLISION_TIME				*E_ = collisions + collision_count;
 		for ( ; I_ != E_; ++I_) {
 			moving_object			*test;
-			if ((*I_).second.first == possible_action_1_can_wait_2)
-				test				= (*I_).second.second.first;
+			if (I_->second.first == possible_action_1_can_wait_2)
+				test				= I_->second.second.first;
 			else {
-				VERIFY				((*I_).second.first == possible_action_2_can_wait_1);
-				test				= (*I_).second.second.second;
+				VERIFY				(I_->second.first == possible_action_2_can_wait_1);
+				test				= I_->second.second.second;
 			}
 
 			bool					priority = ::priority::predicate(object,test);
@@ -348,17 +348,17 @@ bool moving_objects::fill_collisions			(moving_object *object, const Fvector &ob
 		COLLISIONS::iterator	b = m_collisions.begin() + collision_count, i_ = b;
 		COLLISIONS::iterator	e = m_collisions.end();
 		for ( ; i_ != e; ++i_) {
-			if ((*i_).second.second.first == object) {
-				if (exchange_all((*i_).second.second.second, object, (u32)collision_count))
+			if (i_->second.second.first == object) {
+				if (exchange_all(i_->second.second.second, object, (u32)collision_count))
 					continue;
 
-				(*i_).second.second.first	= 0;
+				i_->second.second.first	= 0;
 				continue;
 			}
 
-			VERIFY				((*i_).second.second.second == object);
-			if (!exchange_all((*i_).second.second.first, object, (u32)collision_count))
-				(*i_).second.second.first	= 0;
+			VERIFY				(i_->second.second.second == object);
+			if (!exchange_all(i_->second.second.first, object, (u32)collision_count))
+				i_->second.second.first	= 0;
 		}
 
 		struct remove {
@@ -387,15 +387,15 @@ bool moving_objects::already_wait				(moving_object *object) const
 	if (I == m_collisions.end())
 		return					(false);
 
-	if ((*I).second.second.first == object) {
-		if ((*I).second.first == moving_objects::possible_action_1_can_wait_2)
+	if (I->second.second.first == object) {
+		if (I->second.first == moving_objects::possible_action_1_can_wait_2)
 			return				(true);
 
 		return					(false);
 	}
 
-	if ((*I).second.second.second == object) {
-		if ((*I).second.first == moving_objects::possible_action_2_can_wait_1)
+	if (I->second.second.second == object) {
+		if (I->second.first == moving_objects::possible_action_2_can_wait_1)
 			return				(true);
 
 		return					(false);
@@ -466,9 +466,9 @@ void moving_objects::resolve_collisions			()
 			COLLISIONS::const_iterator	I = m_collisions.begin();
 			COLLISIONS::const_iterator	E = m_collisions.end();
 			for ( ; I != E; ++I) {
-				*J				= (*I).second.second.first;
+				*J				= I->second.second.first;
 				++J;
-				*J				= (*I).second.second.second;
+				*J				= I->second.second.second;
 				++J;
 			}
 		}
@@ -498,21 +498,21 @@ void moving_objects::resolve_collisions			()
 		COLLISIONS::const_iterator	I = m_collisions.begin();
 		COLLISIONS::const_iterator	E = m_collisions.end();
 		for ( ; I != E; ++I) {
-			switch ((*I).second.first) {
+			switch (I->second.first) {
 				case possible_action_1_can_wait_2 : {
-					decision	*object = std::find_if(decisions,decisions + decision_count,decision_predicate((*I).second.second.first));
+					decision	*object = std::find_if(decisions,decisions + decision_count,decision_predicate(I->second.second.first));
 					VERIFY		(object != (decisions + decision_count));
 					*object		= std::make_pair(object->first,moving_object::action_wait);
 //					(*I).second.second.second->dynamic_query().merge((*I).second.second.first->dynamic_query());
-					(*I).second.second.second->dynamic_query().add(&object->first->object());
+					I->second.second.second->dynamic_query().add(&object->first->object());
 					continue;
 				}
 				case possible_action_2_can_wait_1 : {
-					decision	*object = std::find_if(decisions,decisions + decision_count,decision_predicate((*I).second.second.second));
+					decision	*object = std::find_if(decisions,decisions + decision_count,decision_predicate(I->second.second.second));
 					VERIFY		(object != (decisions + decision_count));
 					*object		= std::make_pair(object->first,moving_object::action_wait);
 //					(*I).second.second.first->dynamic_query().merge((*I).second.second.second->dynamic_query());
-					(*I).second.second.first->dynamic_query().add(&object->first->object());
+					I->second.second.first->dynamic_query().add(&object->first->object());
 					continue;
 				}
 				default : NODEFAULT;
@@ -524,7 +524,7 @@ void moving_objects::resolve_collisions			()
 		decision				*I = decisions;
 		decision				*E = decisions + decision_count;
 		for ( ; I != E; ++I)
-			(*I).first->action	((*I).second);
+			I->first->action	(I->second);
 	}
 }
 

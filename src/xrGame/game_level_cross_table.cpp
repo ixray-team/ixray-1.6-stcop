@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "game_level_cross_table.h"
 
 CGameLevelCrossTable::CGameLevelCrossTable(const char* fName)

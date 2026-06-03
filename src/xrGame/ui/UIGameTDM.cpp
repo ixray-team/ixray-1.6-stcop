@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIGameTDM.h"
 
 #include "game_cl_base.h"

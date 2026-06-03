@@ -6,7 +6,7 @@
 //	Description : Stalker ALife functions
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ai/stalker/ai_stalker.h"
 #include "ai_space.h"
 #include "alife_simulator.h"

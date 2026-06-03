@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HudSound.h"
 
 float HUD_SOUND_ITEM::g_fHudSndFrequency = 1.0f;

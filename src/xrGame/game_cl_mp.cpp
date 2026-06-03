@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "game_cl_mp.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "xrMessages.h"
@@ -1026,7 +1026,7 @@ void	game_cl_mp::OnRankChanged	(u8 OldRank)
 	string256 tmp;
 	string1024 RankStr;
 	xr_sprintf(tmp, "rank_%d",local_player->rank);
-	xr_sprintf(RankStr, "%s : %s", *g_pStringTable->translate("mp_your_rank"), *g_pStringTable->translate(pSettings->read_if_exists<LPCSTR>(tmp,"rank_name","")));
+	xr_sprintf(RankStr, "%s : %s", *g_pStringTable->translate("mp_your_rank"), *g_pStringTable->translate(pSettings->read_if_exists<str_c>(tmp,"rank_name","")));
 	if(CurrentGameUI()) CurrentGameUI()->CommonMessageOut(RankStr);	
 #ifdef DEBUG
 	Msg("- %s", RankStr);
@@ -1270,7 +1270,7 @@ void game_cl_mp::LoadBonuses				()
 	for (u32 i=0; i<BonusCount; i++)
 	{
 		const char* line, *name;
-		pSettings->r_line("mp_bonus_money", i, &name, &line);
+		pSettings->r_line("mp_bonus_money", i, name, line);
 		//-------------------------------------
 		string1024 tmp0, tmp1, IconStr;
 		_GetItem(line, 0, tmp0);

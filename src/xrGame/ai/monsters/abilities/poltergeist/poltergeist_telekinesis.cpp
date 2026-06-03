@@ -1,6 +1,10 @@
 #include "stdafx.h"
 <<<<<<< HEAD
 #include "HUDManager.h"
+<<<<<<< HEAD:src/xrGame/ai/monsters/abilities/poltergeist/poltergeist_telekinesis.cpp
+=======
+#include "stdafx.h"
+>>>>>>> 3421f29470 (Fix -> "Clean-ups"):src/xrGame/ai/monsters/poltergeist/poltergeist_telekinesis.cpp
 #include "poltergeist.h"
 #include "WeaponMagazined.h"
 #include "../../../PhysicsShellHolder.h"
@@ -16,13 +20,13 @@
 #include "PolterInterface.h"
 #include "PolterTele.h"
 #include "PhysicsShellHolder.h"
-#include "level.h"
-#include "actor.h"
+#include "Level.h"
+#include "Actor.h"
 #include "ActorCondition.h"
 #include "Inventory.h"
-#include "../xrPhysics/icolisiondamageinfo.h"
+#include "../xrPhysics/IColisiondamageInfo.h"
 #include "ai/monsters/telekinesis.h"
-#include "ai/monsters/BaseMonster/base_monster.h"
+#include "ai/monsters/basemonster/base_monster.h"
 
 CPolterTele::CPolterTele(IPolterInterface* polter) : inherited (polter),m_pmt_object_collision_damage(0.5f)
 {

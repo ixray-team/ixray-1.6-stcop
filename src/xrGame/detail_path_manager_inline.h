@@ -260,7 +260,7 @@ IC	const CDetailPathManager::STravelParams &CDetailPathManager::velocity	(const 
 {
 	VELOCITIES::const_iterator	I = m_movement_params.find(velocity_id);
 	VERIFY						(m_movement_params.end() != I);
-	return						((*I).second);
+	return						(I->second);
 }
 
 IC	void CDetailPathManager::add_velocity				(const u32 &velocity_id, const STravelParams &params)

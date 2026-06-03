@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "../xrCore/Collision/cl_intersect.h"
 #include "../xrEngine/CameraBase.h"

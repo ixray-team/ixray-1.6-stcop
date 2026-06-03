@@ -6,7 +6,7 @@ class CScriptGameObject;
 
 struct SCutsceneObjectElement
 {
-    SCutsceneObjectElement(LPCSTR ObjectName);
+    SCutsceneObjectElement(str_c ObjectName);
     ~SCutsceneObjectElement();
     void SetAllBonesVisibility(bool Visibility);
     void SetBoneVisibility(u16 BoneID, bool Visibility);
@@ -14,9 +14,9 @@ struct SCutsceneObjectElement
     void SetParent(SCutsceneObjectElement* Parent, u16 BoneID);
     void SetOffset(Fvector Offset);
     void SetRotationDegrees(Fvector Rotation); // set rotation in format {Pitch, Yaw, Roll}
-    void SetAnimToPlay(LPCSTR AnimName);
-    void SetOnFinishFunc(LPCSTR Name);
-    u16 GetBoneID(LPCSTR BoneName);
+    void SetAnimToPlay(str_c AnimName);
+    void SetOnFinishFunc(str_c Name);
+    u16 GetBoneID(str_c BoneName);
     void SetBonesWeapon(u16 BoneIDR, u16 BoneIDL);
 
     void Activate();
@@ -61,11 +61,11 @@ class CCutsceneItem
 public:
     ~CCutsceneItem();
     
-    void Construct(LPCSTR Section);
+    void Construct(str_c Section);
     void Activate();
     void Update(Fmatrix matrix);
-    LPCSTR GetName();
-    SCutsceneObjectElement* CreateObjectElement(LPCSTR ObjectName);
+    str_c GetName();
+    SCutsceneObjectElement* CreateObjectElement(str_c ObjectName);
     void SetPivotObject(CScriptGameObject* PivotObject);
     CObject* GetPivotObject() const {return PivotObject;}
     

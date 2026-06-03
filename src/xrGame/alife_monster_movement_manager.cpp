@@ -6,7 +6,7 @@
 //	Description : ALife monster movement manager class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_monster_movement_manager.h"
 #include "alife_monster_detail_path_manager.h"
 #include "alife_monster_patrol_path_manager.h"
@@ -40,6 +40,7 @@ bool CALifeMonsterMovementManager::actual					() const
 
 void CALifeMonsterMovementManager::update					()
 {
+	PROF_EVENT(__FUNCTION__);
 	switch (path_type()) {
 		case MovementManager::ePathTypeGamePath : {
 			detail().update	();

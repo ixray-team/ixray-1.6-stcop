@@ -142,16 +142,16 @@ void IGame_Level::Load_GameSpecific_CFORM(CDB::TRI* tris, size_t count)
 		CDB::TRI* I = tris;
 		CDB::TRI* E = tris + count;
 		for (; I != E; ++I) {
-			ID_INDEX_PAIRS::iterator	i = std::find(translator.begin(), translator.end(), (u16)(*I).material);
+			ID_INDEX_PAIRS::iterator	i = std::find(translator.begin(), translator.end(), (u16)I->material);
 			if (i != translator.end()) {
-				(*I).material = (*i).m_index;
-				SGameMtl* mtl = GMLib.GetMaterialByIdx((*i).m_index);
-				(*I).suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
-				(*I).suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
+				I->material = i->m_index;
+				SGameMtl* mtl = GMLib.GetMaterialByIdx(i->m_index);
+				I->suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
+				I->suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
 				continue;
 			}
 			if (Device.IsEditorMode() == false)
-				Debug.fatal(DEBUG_INFO, "Game material '%d' not found", (*I).material);
+				Debug.fatal(DEBUG_INFO, "Game material '%d' not found", I->material);
 		}
 		return;
 	}
@@ -161,16 +161,16 @@ void IGame_Level::Load_GameSpecific_CFORM(CDB::TRI* tris, size_t count)
 		CDB::TRI* I = tris;
 		CDB::TRI* E = tris + count;
 		for (; I != E; ++I) {
-			ID_INDEX_PAIRS::iterator	i = std::lower_bound(translator.begin(), translator.end(), (u16)(*I).material);
-			if ((i != translator.end()) && ((*i).m_id == (*I).material)) {
-				(*I).material = (*i).m_index;
-				SGameMtl* mtl = GMLib.GetMaterialByIdx((*i).m_index);
-				(*I).suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
-				(*I).suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
+			ID_INDEX_PAIRS::iterator	i = std::lower_bound(translator.begin(), translator.end(), (u16)I->material);
+			if ((i != translator.end()) && (i->m_id == I->material)) {
+				I->material = i->m_index;
+				SGameMtl* mtl = GMLib.GetMaterialByIdx(i->m_index);
+				I->suppress_shadows = mtl->Flags.is(SGameMtl::flSuppressShadows);
+				I->suppress_wm = mtl->Flags.is(SGameMtl::flSuppressWallmarks);
 				continue;
 			}
 			if (Device.IsEditorMode() == false)
-				Debug.fatal(DEBUG_INFO, "Game material '%d' not found", (*I).material);
+				Debug.fatal(DEBUG_INFO, "Game material '%d' not found", I->material);
 		}
 	}
 }

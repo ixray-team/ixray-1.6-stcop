@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "NoGravityZone.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "entity_alive.h"

@@ -14,7 +14,7 @@ void CDS0_FLOD::Render(float LOD)
 {
 }
 
-void CDS0_FLOD::Load(LPCSTR N, IReader* data, u32 dwFlags)
+void CDS0_FLOD::Load(str_c N, IReader* data, u32 dwFlags)
 {
 	CDS0_FHierrarhyVisual::Load(N, data, dwFlags);
 

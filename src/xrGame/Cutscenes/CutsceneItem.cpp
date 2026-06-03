@@ -6,7 +6,7 @@
 //#include "KinematicsAnimated.h"
 #include "script_game_object.h"
 
-SCutsceneObjectElement::SCutsceneObjectElement(LPCSTR ObjectName)
+SCutsceneObjectElement::SCutsceneObjectElement(str_c ObjectName)
 {
 #ifndef MASTER_GOLD
     ObjName = ObjectName;
@@ -196,17 +196,17 @@ SCutsceneObjectElement* SCutsceneObjectElement::DrawChildren(xr_set<SCutsceneObj
 }
 #endif
 
-void SCutsceneObjectElement::SetAnimToPlay(LPCSTR AnimName)
+void SCutsceneObjectElement::SetAnimToPlay(str_c AnimName)
 {
     this->AnimName = AnimName;
 }
 
-void SCutsceneObjectElement::SetOnFinishFunc(LPCSTR Name)
+void SCutsceneObjectElement::SetOnFinishFunc(str_c Name)
 {
     OnFinishFuncName = Name;
 }
 
-u16 SCutsceneObjectElement::GetBoneID(LPCSTR BoneName)
+u16 SCutsceneObjectElement::GetBoneID(str_c BoneName)
 {
     R_ASSERT2(HudModelKinematics, "You need to create object first before get bone id!");
     return HudModelKinematics->LL_BoneID(BoneName);
@@ -227,7 +227,7 @@ CCutsceneItem::~CCutsceneItem()
     CutsceneElements.clear();
 }
 
-void CCutsceneItem::Construct(LPCSTR Section)
+void CCutsceneItem::Construct(str_c Section)
 {
     NameSect = Section;
     luabind::functor<void> funct;
@@ -260,12 +260,12 @@ void CCutsceneItem::Update(Fmatrix matrix)
     }
 }
 
-LPCSTR CCutsceneItem::GetName()
+str_c CCutsceneItem::GetName()
 {
     return NameSect.c_str();
 }
 
-SCutsceneObjectElement* CCutsceneItem::CreateObjectElement(LPCSTR ObjectName)
+SCutsceneObjectElement* CCutsceneItem::CreateObjectElement(str_c ObjectName)
 {
     auto RetValue = new SCutsceneObjectElement(ObjectName);
     CutsceneElements.push_back(RetValue);

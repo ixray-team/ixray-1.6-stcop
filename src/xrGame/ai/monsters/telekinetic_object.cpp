@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "../../PhysicsShellHolder.h"
 #include "telekinetic_object.h"
 #include "../../../xrPhysics/PhysicsShell.h"

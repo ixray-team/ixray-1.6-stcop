@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIServerInfo.h"
 
 #include "../../xrUI/Widgets/UIStatic.h"

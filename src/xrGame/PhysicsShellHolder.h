@@ -1,5 +1,4 @@
-#ifndef PHYSICSSHELL_HOLDER_H
-#define PHYSICSSHELL_HOLDER_H
+#pragma once
 
 #include "GameObject.h"
 #include "ParticlesPlayer.h"
@@ -147,5 +146,3 @@ private://IPhysicsShellHolder
 #endif
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-
-#endif

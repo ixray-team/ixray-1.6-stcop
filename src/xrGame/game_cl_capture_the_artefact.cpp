@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "map_manager.h"
 #include "map_location.h"

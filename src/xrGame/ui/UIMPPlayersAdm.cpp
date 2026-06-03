@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIMPPlayersAdm.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIListBox.h"

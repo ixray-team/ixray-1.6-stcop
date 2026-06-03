@@ -16,8 +16,8 @@ void statistics_collector::load_settings()
 	u32 file_count = m_wpn_collection->settings->line_count(CSV_SETTINGS);
 	for (u32 i = 0; i != file_count; ++i)
 	{
-		LPCSTR key = NULL;
-		LPCSTR value = NULL;
+		str_c key = nullptr;
+		str_c value = nullptr;
 		if (m_wpn_collection->settings->r_line(CSV_SETTINGS, i, &key, &value) && key)
 		{
 			csv_files::iterator new_file_iter = m_all_params.insert(
@@ -96,7 +96,7 @@ void statistics_collector::save_file(csv_files::value_type const & val)
 		for (params_collection::const_iterator param_i = val.second->begin(),
 			param_ie = val.second->end(); param_i != param_ie; ++param_i)
 		{
-			LPCSTR val_ = m_wpn_collection->priquel_config->r_string(i->c_str(), param_i->c_str());
+			str_c val_ = m_wpn_collection->priquel_config->r_string(i->c_str(), param_i->c_str());
 			if (!val_)
 				val_ = "";
 			sprintf_s(temp_string, "\"%s\",", val_);

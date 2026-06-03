@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "LevelGameDef.h"
 #include "ai_space.h"
 #include "../xrScripts/script_process.h"

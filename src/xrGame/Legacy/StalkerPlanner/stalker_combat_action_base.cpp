@@ -6,7 +6,7 @@
 //	Description : Stalker base combat action
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "stalker_combat_action_base.h"
 #include "ai/stalker/ai_stalker.h"
 #include "sound_player.h"

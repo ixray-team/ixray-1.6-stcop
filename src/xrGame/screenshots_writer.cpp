@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #ifdef XR_MP_BUILD
 #include "screenshots_writer.h"
 #include "screenshots_common.h"

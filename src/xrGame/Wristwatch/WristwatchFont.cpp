@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "WristwatchFont.h"
 
 #include "../../xrCore/EngineExternal.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "BoneProtections.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/bone.h"

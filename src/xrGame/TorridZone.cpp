@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "TorridZone.h"
 #include "../xrEngine/ObjectAnimator.h"
 #include "xrServer_Objects_ALife_Monsters.h"

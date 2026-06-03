@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "anti_aim_ability.h"
 #include "basemonster/base_monster.h"
 #include "../../Actor.h"
@@ -43,7 +43,7 @@ void   anti_aim_ability::load_from_ini (CInifile const* ini, const char* const s
 	m_max_angle						=	ini->read_if_exists<float>(section, s_anti_aim_max_angle_string, 0.5f);
 	m_detection_gain_speed			=	ini->read_if_exists<float>(section, s_anti_aim_detection_gain_speed_string, 1.f);
 	m_detection_loose_speed			=	ini->read_if_exists<float>(section, s_anti_aim_detection_loose_speed_string, 0.1f);
-	const char* effectors			=	ini->read_if_exists<LPCSTR>(section,s_anti_aim_effectors_string,nullptr);
+	const char* effectors			=	ini->read_if_exists<str_c>(section,s_anti_aim_effectors_string,nullptr);
 
 	if ( effectors )
 	{

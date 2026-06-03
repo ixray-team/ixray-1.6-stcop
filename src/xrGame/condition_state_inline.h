@@ -18,8 +18,8 @@ IC void CWorldState::add_condition_back(const CWorldProperty& condition)
 IC void CWorldState::add_condition(const CWorldProperty& condition)
 {
 	xr_vector<CWorldProperty>::iterator	I = std::lower_bound(m_conditions.begin(), m_conditions.end(), condition);
-	THROW((I == m_conditions.end()) || ((*I).condition() != condition.condition()));
-	if ((I == m_conditions.end()) || ((*I).condition() != condition.condition()))
+	THROW((I == m_conditions.end()) || (I->condition() != condition.condition()));
+	if ((I == m_conditions.end()) || (I->condition() != condition.condition()))
 	{
 		m_conditions.insert(I, condition);
 		m_hash ^= condition.hash_value();
@@ -29,11 +29,11 @@ IC void CWorldState::add_condition(const CWorldProperty& condition)
 IC void CWorldState::remove_condition(const u32& condition)
 {
 	xr_vector<CWorldProperty>::iterator I = std::lower_bound(m_conditions.begin(), m_conditions.end(), CWorldProperty(condition, false));
-	THROW((I != m_conditions.end()) && ((*I).condition() == condition));
+	THROW((I != m_conditions.end()) && (I->condition() == condition));
 
-	if ((I != m_conditions.end()) && ((*I).condition() == condition)) 
+	if ((I != m_conditions.end()) && (I->condition() == condition)) 
 	{
-		m_hash ^= (*I).hash_value();
+		m_hash ^= I->hash_value();
 		m_conditions.erase(I);
 	}
 }
@@ -60,17 +60,17 @@ IC u8 CWorldState::weight(const CWorldState& condition) const
 
 	for (; (I != E) && (i != e); )
 	{
-		if ((*I).condition() < (*i).condition())
+		if (I->condition() < i->condition())
 		{
 			++I;
 		}
-		else if ((*I).condition() > (*i).condition())
+		else if (I->condition() > i->condition())
 		{
 			++i;
 		}
 		else
 		{
-			if ((*I).value() != (*i).value())
+			if (I->value() != i->value())
 			{
 				++result;
 			}
@@ -151,20 +151,20 @@ IC CWorldState& CWorldState::operator-=(const CWorldState& condition)
 
 	for (; (I != E) && (i != e); )
 	{
-		if ((*I).condition() < (*i).condition())
+		if (I->condition() < i->condition())
 		{
 			++I;
 		}
-		else if ((*I).condition() > (*i).condition())
+		else if (I->condition() > i->condition())
 		{
 			++i;
 		}
 		else
 		{
-			if ((*I).value() != (*i).value())
+			if (I->value() != i->value())
 			{
 				temp.push_back(*I);
-				m_hash ^= (*I).hash_value();
+				m_hash ^= I->hash_value();
 			}
 			++I;
 			++i;
@@ -183,15 +183,15 @@ IC bool CWorldState::includes(const CWorldState& condition) const
 	xr_vector<CWorldProperty>::const_iterator e = condition.conditions().end();
 	for (; (I != E) && (i != e); )
 	{
-		if ((*I).condition() < (*i).condition())
+		if (I->condition() < i->condition())
 		{
 			++I;
 		}
-		else if ((*I).condition() > (*i).condition())
+		else if (I->condition() > i->condition())
 		{
 			return false;
 		}
-		else if ((*I).value() != (*i).value())
+		else if (I->value() != i->value())
 		{
 			return false;
 		}

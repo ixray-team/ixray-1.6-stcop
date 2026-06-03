@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #ifdef DEBUG
 
 #include "PHDebug.h"

@@ -6,7 +6,7 @@
 //	Description : Space restriction composition
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "space_restriction_composition.h"
 #include "space_restriction_holder.h"
 #include "space_restriction_bridge.h"

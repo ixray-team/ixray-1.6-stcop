@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "PDA.h"
 #include "../xrPhysics/PhysicsShell.h"
@@ -41,7 +41,7 @@ void CPda::Load(const char* section)
 	inherited::Load(section);
 
 	m_fRadius = pSettings->r_float(section, "radius");
-	m_functor_str = pSettings->read_if_exists<LPCSTR>(section,"play_function","");
+	m_functor_str = pSettings->read_if_exists<str_c>(section,"play_function","");
 
 	IPowerManager::SetSelfObject(cast_inventory_item(), H_Parent());
 	IPowerManager::Load(section, cast_inventory_item());

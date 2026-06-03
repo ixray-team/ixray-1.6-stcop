@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "EffectorNightVision.h"
 #include "../xrSound/ai_sounds.h"
 

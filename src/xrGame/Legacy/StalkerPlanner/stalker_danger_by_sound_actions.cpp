@@ -6,7 +6,7 @@
 //	Description : Stalker danger by sound actions classes
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "stalker_danger_by_sound_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "script_game_object.h"

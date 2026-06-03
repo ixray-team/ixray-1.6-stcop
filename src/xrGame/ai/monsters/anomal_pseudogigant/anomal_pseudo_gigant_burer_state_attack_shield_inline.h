@@ -30,6 +30,7 @@ void   CStateAnomalGigBurerShield<Object>::execute()
 		object->ActivateShield			();
 	}
 
+	// TODO: ECS refactor required
 	if ( m_started && 
 		 object->m_shield_keep_particle != 0 && 
 		 current_time() > m_next_particle_allowed )

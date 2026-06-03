@@ -5,7 +5,7 @@
 //	Description : UI ActorMenu script implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "UIActorMenu.h"
 #include "UIGameCustom.h"
@@ -412,7 +412,7 @@ void CUIActorMenu::HighlightSectionInSlot(const char* section, u8 type, u16 slot
 		if (!item)
 			continue;
 
-		if (!strcmp(section, item->m_section_id.c_str()) == 0)
+		if (strcmp(section, item->m_section_id.c_str()))
 			continue;
 
 		ci->m_select_armament = true;

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "DemoPlay_Control.h"
 #include "Level.h"
 #include "game_cl_base.h"

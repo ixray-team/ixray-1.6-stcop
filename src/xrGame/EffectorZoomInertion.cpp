@@ -2,7 +2,7 @@
 //							 приближения
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "EffectorZoomInertion.h"
 
 

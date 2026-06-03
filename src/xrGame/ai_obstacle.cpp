@@ -6,7 +6,7 @@
 //	Description : ai obstacle class inline functions
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ai_obstacle.h"
 #include "ai_space.h"
 #include "level_graph.h"
@@ -245,13 +245,13 @@ void ai_obstacle::compute_impl		()
 			{
 				return vertex.position().xz() < xz_value;
 			});
-			if ((I == E) || ((*I).position().xz() != xz))
+			if ((I == E) || (I->position().xz() != xz))
 				continue;
 
 			predicate			(*I);
 
 			for (++I; I != E; ++I) {
-				if ((*I).position().xz() != xz)
+				if (I->position().xz() != xz)
 					break;
 				
 				predicate		(*I);

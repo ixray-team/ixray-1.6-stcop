@@ -291,7 +291,7 @@ void CSaveChunk::w_string(shared_str S)
 	}
 }
 
-void CSaveChunk::w_string_long(LPCSTR S)
+void CSaveChunk::w_string_long(str_c S)
 {
 #ifndef MASTER_GOLD
 	static bool ignore_always = false;

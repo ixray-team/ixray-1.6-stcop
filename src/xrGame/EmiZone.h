@@ -9,7 +9,7 @@ private:
 	using inherited = CAnomalyZone;
 
 public:
-	void	Load(LPCSTR section) override;
+	void	Load(str_c section) override;
 
 	void	enter_Zone(SZoneObjectInfo& io) override;
 	void	exit_Zone(SZoneObjectInfo& io) override;

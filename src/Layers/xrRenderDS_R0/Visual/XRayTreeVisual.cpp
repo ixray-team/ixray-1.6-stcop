@@ -10,7 +10,7 @@
 constexpr int FTreeVisual_tile = 16;
 constexpr int FTreeVisual_quant = 32768 / FTreeVisual_tile;
 
-void CDS0_TreeVisual::Load(LPCSTR N, IReader* data, u32 dwFlags)
+void CDS0_TreeVisual::Load(str_c N, IReader* data, u32 dwFlags)
 {
 	CDS0_RenderVisual::Load(N, data, dwFlags);
 	R_ASSERT(data->find_chunk(OGF_GCONTAINER));
@@ -68,7 +68,7 @@ CDS0_TreeVisual_ST::CDS0_TreeVisual_ST(void)
 CDS0_TreeVisual_ST::~CDS0_TreeVisual_ST(void)
 {
 }
-void CDS0_TreeVisual_ST::Load(LPCSTR N, IReader* data, u32 dwFlags)
+void CDS0_TreeVisual_ST::Load(str_c N, IReader* data, u32 dwFlags)
 {
 	inherited::Load(N, data, dwFlags);
 
@@ -87,7 +87,7 @@ CDS0_TreeVisual_PM::~CDS0_TreeVisual_PM(void)
 {
 }
 
-void CDS0_TreeVisual_PM::Load(LPCSTR N, IReader* data, u32 dwFlags)
+void CDS0_TreeVisual_PM::Load(str_c N, IReader* data, u32 dwFlags)
 {
 	inherited::Load(N, data, dwFlags);
 	R_ASSERT(data->find_chunk(OGF_SWICONTAINER));

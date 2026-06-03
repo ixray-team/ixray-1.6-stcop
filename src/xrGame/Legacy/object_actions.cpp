@@ -5,7 +5,7 @@
 //	Author		: Dmitriy Iassenev
 //	Description : Object actions
 ////////////////////////////////////////////////////////////////////////////
-#include "StdAfx.h"
+#include "stdafx.h"
 #if USE_OLD_OBJECT_PLANNER
 #include "object_actions.h"
 #include "Inventory.h"

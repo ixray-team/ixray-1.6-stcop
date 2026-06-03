@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "../xrEngine/string_table.h"
 #include "Level.h"
 #include "ui/UIMessagesWindow.h"

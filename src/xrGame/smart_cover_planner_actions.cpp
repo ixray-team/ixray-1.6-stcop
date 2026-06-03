@@ -5,7 +5,7 @@
 //	Description : Smart cover planner action classes
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "smart_cover_planner_actions.h"
 #include "script_game_object.h"

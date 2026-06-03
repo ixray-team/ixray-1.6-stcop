@@ -6,7 +6,7 @@
 //	Description : UI Fraction War state class implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "FractionState.h"
 

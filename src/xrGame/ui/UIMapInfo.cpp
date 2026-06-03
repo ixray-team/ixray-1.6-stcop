@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIMapInfo.h"
 #include "../../xrUI/Widgets/UIScrollView.h"
 #include "../../xrUI/UIXmlInit.h"

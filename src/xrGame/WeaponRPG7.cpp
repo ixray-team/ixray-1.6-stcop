@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "WeaponRPG7.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "ExplosiveRocket.h"
@@ -23,8 +23,8 @@ void CWeaponRPG7::Load	(const char* section)
 
 	m_zoom_params.m_fScopeZoomFactor	= pSettings->r_float	(section,"max_zoom_factor");
 
-	m_sGrenadeBoneName = pSettings->read_if_exists<LPCSTR>(section,"grenade_bone","grenade");
-	m_sHudGrenadeBoneName = pSettings->read_if_exists<LPCSTR>(hud_sect,"grenade_bone","grenade");
+	m_sGrenadeBoneName = pSettings->read_if_exists<str_c>(section,"grenade_bone","grenade");
+	m_sHudGrenadeBoneName = pSettings->read_if_exists<str_c>(hud_sect,"grenade_bone","grenade");
 
 	m_sRocketSection = pSettings->r_string(section,"rocket_class");
 
@@ -44,7 +44,7 @@ void CWeaponRPG7::Load	(const char* section)
 	m_reactive_hit_params.reverse_power = pSettings->read_if_exists<float>(section,"reactive_hit_reverse_power",m_reactive_hit_params.power);
 	m_reactive_hit_params.type = (ALife::EHitType)pSettings->read_if_exists<u32>(section,"reactive_hit_type",ALife::eHitTypeExplosion);
 	m_reactive_hit_params.reverse_k = pSettings->read_if_exists<float>(section,"reactive_hit_reverse_k",1.0f);
-	m_reactive_hit_params.bullet_material = pSettings->read_if_exists<LPCSTR>(section,"reactive_hit_bullet_material","default");
+	m_reactive_hit_params.bullet_material = pSettings->read_if_exists<str_c>(section,"reactive_hit_bullet_material","default");
 }
 
 bool CWeaponRPG7::AllowBore()

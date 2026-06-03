@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "DosimeterUI.h"
 
 #include "../../../xrUI/ui_base.h"

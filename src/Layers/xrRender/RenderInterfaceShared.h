@@ -21,7 +21,7 @@ ref_shader CRender::getShaderShared(shared_str id)
 		xr_stack_string128 ShaderName = id.c_str();
 		auto SplitPos = ShaderName.find("/");
 		ShaderName[SplitPos] = '\0';
-		LPCSTR Textures = ShaderName.c_str()+SplitPos+1;
+		str_c Textures = ShaderName.c_str()+SplitPos+1;
 		auto Shader = dxRenderDeviceRender::Instance().Resources->Create(
 			ShaderName.c_str(),
 			Textures

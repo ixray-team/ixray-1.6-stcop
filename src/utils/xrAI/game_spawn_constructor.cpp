@@ -107,10 +107,10 @@ void CGameSpawnConstructor::load_spawns	(const char* name, bool no_separator_che
 	LEVEL_INFO_STORAGE::const_iterator	I = m_levels.begin();
 	LEVEL_INFO_STORAGE::const_iterator	E = m_levels.end();
 	for ( ; I != E; ++I) {
-		level.m_offset					= (*I).m_offset;
-		level.m_name					= (*I).m_name;
-		level.m_id						= (*I).m_id;
-		Msg								("%9s %2d %s","level",level.id(),*(*I).m_name);
+		level.m_offset					= I->m_offset;
+		level.m_name					= I->m_name;
+		level.m_id						= I->m_id;
+		Msg								("%9s %2d %s","level",level.id(),*I->m_name);
 		m_level_spawns.push_back		(new CLevelSpawnConstructor(level,this,no_separator_check));
 	}
 
@@ -144,7 +144,7 @@ void CGameSpawnConstructor::verify_spawns			(ALife::_SPAWN_ID spawn_id)
 	SPAWN_GRAPH::const_iterator				I = vertex->edges().begin();
 	SPAWN_GRAPH::const_iterator				E = vertex->edges().end();
 	for ( ; I != E; ++I)
-		verify_spawns						((*I).vertex_id());
+		verify_spawns						(I->vertex_id());
 }
 
 void CGameSpawnConstructor::verify_spawns			()
@@ -153,7 +153,7 @@ void CGameSpawnConstructor::verify_spawns			()
 	SPAWN_GRAPH::const_vertex_iterator		E = m_spawn_graph->vertices().end();
 	for ( ; I != E; ++I) {
 		m_temp0.clear						();
-		verify_spawns						((*I).second->vertex_id());
+		verify_spawns						(I->second->vertex_id());
 	}
 }
 
@@ -242,7 +242,7 @@ void CGameSpawnConstructor::add_story_object	(ALife::_STORY_ID id, CSE_ALifeDyna
 	ALife::STORY_P_PAIR_IT		I = m_story_objects.find(id);
 	if (I != m_story_objects.end()) {
 		Msg						("Object %s, story id %d",object->name_replace(),object->m_story_id);
-		Msg						("Object %s, story id %d",(*I).second->name_replace(),(*I).second->m_story_id);
+		Msg						("Object %s, story id %d",I->second->name_replace(),I->second->m_story_id);
 		VERIFY3					(I == m_story_objects.end(),"There are several objects which has the same unique story ID, level ",level_name);
 	}
 	

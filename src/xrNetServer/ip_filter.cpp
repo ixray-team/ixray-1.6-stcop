@@ -57,9 +57,9 @@ u32 ip_filter::load()
 	for (u32 i = 0, line_count = ini.line_count(SUBNET_LIST_SECT_NAME);
 		i != line_count; ++i)
 	{
-		const char* address;
-		const char* line;
-		ini.r_line(SUBNET_LIST_SECT_NAME, i, &address, &line);
+		str_c address;
+		str_c line;
+		ini.r_line(SUBNET_LIST_SECT_NAME, i, address, line);
 		if (!xr_strlen(address))
 			continue;
 		

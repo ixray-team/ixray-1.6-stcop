@@ -347,6 +347,8 @@ bool CAviPlayerCustom::GetFrame( BYTE **pDest )
 		DecompressFrame( m_dwFrameCurrent );
 		return	true;
 	}
+#else
+	return false;
 #endif
 }
 

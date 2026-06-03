@@ -6,7 +6,7 @@
 //	Description : Item manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "item_manager.h"
 #include "inventory_item.h"
 #include "Creature.h"
@@ -40,7 +40,7 @@ bool CItemManager::useful			(const CGameObject *object) const
 	if (!object->getEnabled())
 		return false;
 
-	// FX: ÷çíõ
+	// FX: ï¿½ï¿½ï¿½ï¿½
 	//if (!&object->ai_location())
 	//	return false;
 

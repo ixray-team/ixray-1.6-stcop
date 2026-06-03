@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include "StdAfx.h"
+#include "stdafx.h"
+#include "stdafx.h"
 #include "ai_stalker.h"
 
 #include "ai_object_location.h"

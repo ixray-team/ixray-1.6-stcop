@@ -168,12 +168,12 @@ void   CStateAbstract::add_debug_info (debug::text_tree& root_s)
 		for (typename SubStates::const_iterator i = substates.begin(), e = substates.end();
 			i != e; ++i)
 		{
-			TextTree& current_state_s = root_s.add_line(EMonsterState((*i).first));
-			if (current_substate == (*i).first)
+			TextTree& current_state_s = root_s.add_line(EMonsterState(i->first));
+			if (current_substate == i->first)
 			{
-				if ((*i).second)
+				if (i->second)
 				{
-					(*i).second->add_debug_info(current_state_s);
+					i->second->add_debug_info(current_state_s);
 				}
 			}
 		}
@@ -207,7 +207,7 @@ void CStateAbstract::remove_links	(CObject* object_)
 	typename SubStates::iterator	i = substates.begin();
 	typename SubStates::iterator	e = substates.end();
 	for ( ; i != e; ++i)
-		(*i).second->remove_links	(object_);
+		i->second->remove_links	(object_);
 }
 
 TEMPLATE_SPECIALIZATION

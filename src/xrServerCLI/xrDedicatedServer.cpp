@@ -89,7 +89,7 @@ const char* SkipConsoleMark(const char* line)
 	return line;
 }
 
-void StdoutLogCallback(LPCSTR line)
+void StdoutLogCallback(str_c line)
 {
 	const char* text = SkipConsoleMark(line);
 	if (text == nullptr || *text == '\0')

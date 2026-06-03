@@ -8,7 +8,7 @@ void CDS0_ThunderboltDescRender::Copy(IThunderboltDescRender & _in)
 {
 }
 
-void CDS0_ThunderboltDescRender::CreateModel(LPCSTR m_name)
+void CDS0_ThunderboltDescRender::CreateModel(str_c m_name)
 {
 }
 

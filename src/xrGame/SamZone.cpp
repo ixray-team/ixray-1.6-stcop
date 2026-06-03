@@ -23,7 +23,7 @@ bool CSamZone::net_Spawn(CSE_Abstract* DC)
 	return result;
 }
 
-void CSamZone::Load(LPCSTR section)
+void CSamZone::Load(str_c section)
 {
 	m_missile_section = pSettings->r_string(section, "missile_section");
 	//CRocketLauncher::SpawnRocket(m_missile_section, this);

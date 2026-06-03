@@ -6,7 +6,7 @@
 //	Description : Space restriction manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "space_restriction.h"
 #include "restriction_space.h"
 #include "space_restriction_manager.h"
@@ -83,21 +83,21 @@ shared_str	CSpaceRestrictionManager::base_in_restrictions		(ALife::_OBJECT_ID id
 {
 	CLIENT_RESTRICTIONS::iterator	I = m_clients->find(id);
 	VERIFY							(m_clients->end() != I);
-	return							((*I).second.m_base_in_restrictions);
+	return							(I->second.m_base_in_restrictions);
 }
 
 shared_str	CSpaceRestrictionManager::base_out_restrictions		(ALife::_OBJECT_ID id)
 {
 	CLIENT_RESTRICTIONS::iterator	I = m_clients->find(id);
 	VERIFY							(m_clients->end() != I);
-	return							((*I).second.m_base_out_restrictions);
+	return							(I->second.m_base_out_restrictions);
 }
 
 CSpaceRestrictionManager::CRestrictionPtr CSpaceRestrictionManager::restriction	(ALife::_OBJECT_ID id)
 {
 	CLIENT_RESTRICTIONS::iterator	I = m_clients->find(id);
 	VERIFY							(m_clients->end() != I);
-	return							((*I).second.m_restriction);
+	return							(I->second.m_restriction);
 }
 
 IC	void CSpaceRestrictionManager::collect_garbage				()
@@ -105,10 +105,10 @@ IC	void CSpaceRestrictionManager::collect_garbage				()
 	SPACE_RESTRICTIONS::iterator	I = m_space_restrictions.begin(), J;
 	SPACE_RESTRICTIONS::iterator	E = m_space_restrictions.end();
 	for ( ; I != E; ) {
-		if (!(*I).second->m_ref_count && (Device.dwTimeGlobal >= (*I).second->m_last_time_dec + collector_time_to_delete)) {
+		if (!I->second->m_ref_count && (Device.dwTimeGlobal >= I->second->m_last_time_dec + collector_time_to_delete)) {
 			J						= I;
 			++I;
-			xr_delete				((*J).second);
+			xr_delete				(J->second);
 			m_space_restrictions.erase	(J);
 		}
 		else
@@ -130,7 +130,7 @@ void CSpaceRestrictionManager::restrict							(ALife::_OBJECT_ID id, shared_str 
 	join_restrictions							(merged_in_restrictions,_default_in_restrictions);
 
 	CLIENT_RESTRICTIONS::iterator				I = m_clients->find(id);
-	VERIFY2										((m_clients->end() == I) || !(*I).second.m_restriction || !(*I).second.m_restriction->applied(),"Restriction cannot be changed since its border is still applied!");
+	VERIFY2										((m_clients->end() == I) || !I->second.m_restriction || !I->second.m_restriction->applied(),"Restriction cannot be changed since its border is still applied!");
 	(*m_clients)[id].m_restriction				= restriction(merged_out_restrictions,merged_in_restrictions);
 	(*m_clients)[id].m_base_out_restrictions	= out_restrictors;
 	(*m_clients)[id].m_base_in_restrictions		= in_restrictors;
@@ -177,7 +177,7 @@ CSpaceRestrictionManager::CRestrictionPtr	CSpaceRestrictionManager::restriction(
 
 	SPACE_RESTRICTIONS::const_iterator	I = m_space_restrictions.find(space_restrictions);
 	if (I != m_space_restrictions.end())
-		return ((*I).second);
+		return (I->second);
 
 	CSpaceRestriction* client_restriction = new CSpaceRestriction(this, out_restrictors, in_restrictors);
 	m_space_restrictions[space_restrictions] = client_restriction;
@@ -372,5 +372,5 @@ void CSpaceRestrictionManager::on_default_restrictions_changed	()
 	CLIENT_RESTRICTIONS::const_iterator	I = m_clients->begin();
 	CLIENT_RESTRICTIONS::const_iterator	E = m_clients->end();
 	for ( ; I != E; ++I)
-		restrict				((*I).first,(*I).second.m_base_out_restrictions,(*I).second.m_base_in_restrictions);
+		restrict				(I->first,I->second.m_base_out_restrictions,I->second.m_base_in_restrictions);
 }

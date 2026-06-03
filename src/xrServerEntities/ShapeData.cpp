@@ -1,5 +1,5 @@
 #pragma once
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ShapeData.h"
 #include "../xrCore/Save/SaveObject.h"
 

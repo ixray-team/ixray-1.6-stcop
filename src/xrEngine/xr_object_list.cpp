@@ -288,13 +288,13 @@ void CObjectList::Update		(bool bForce)
 		RELCASE_CALLBACK_VEC::iterator Ite	= m_relcase_callbacks.end();
 		for(;It!=Ite; ++It)
 		{
-			VERIFY(*(*It).m_ID==(It-m_relcase_callbacks.begin()));
+			VERIFY(*It->m_ID==(It-m_relcase_callbacks.begin()));
 			Objects::iterator dIt	= destroy_queue.begin();
 			Objects::iterator dIte	= destroy_queue.end();
 			for (;dIt!=dIte; ++dIt)
 			{
 				CObject* obj = *dIt;
-				(*It).m_Callback(obj);
+				It->m_Callback(obj);
 				g_hud->net_Relcase(obj);
 				g_pGameLevel->SoundEvent_net_Relcase(obj);
 			}

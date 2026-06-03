@@ -6,7 +6,7 @@
 //	Description : XRay Script game object script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
@@ -170,8 +170,8 @@ void CScriptGameObject::script_register(lua_State *L)
 		.def("kill",						&CScriptGameObject::Kill)
 		.def("kill",						&CScriptGameObject::KillNotBypassActorCheck)
 		.def("hit",							&CScriptGameObject::Hit)
-		.def("play_cycle",					(void (CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::play_cycle))
-		.def("play_cycle",					(void (CScriptGameObject::*)(LPCSTR,bool))(&CScriptGameObject::play_cycle))
+		.def("play_cycle",					(void (CScriptGameObject::*)(str_c))(&CScriptGameObject::play_cycle))
+		.def("play_cycle",					(void (CScriptGameObject::*)(str_c,bool))(&CScriptGameObject::play_cycle))
 		.def("fov",							&CScriptGameObject::GetFOV)
 		.def("range",						&CScriptGameObject::GetRange)
 		.def("relation",					&CScriptGameObject::GetRelationType)
@@ -189,7 +189,7 @@ void CScriptGameObject::script_register(lua_State *L)
 		.def("command",						&CScriptGameObject::AddAction)
 		.def("action",						&CScriptGameObject::GetCurrentAction, adopt<0>())
 		.def("object_count",				&CScriptGameObject::GetInventoryObjectCount)
-		.def("object",						(CScriptGameObject *(CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::GetObjectByName))
+		.def("object",						(CScriptGameObject *(CScriptGameObject::*)(str_c))(&CScriptGameObject::GetObjectByName))
 		.def("object",						(CScriptGameObject *(CScriptGameObject::*)(int))(&CScriptGameObject::GetObjectByIndex))
 		.def("active_item",					&CScriptGameObject::GetActiveItem)
 		
@@ -247,10 +247,6 @@ void CScriptGameObject::script_register(lua_State *L)
 		.def("action_count",				&CScriptGameObject::GetActionCount)
 		.def("action_by_index",				&CScriptGameObject::GetActionByIndex)
 		
-		//.def("set_hear_callback",			(void (CScriptGameObject::*)(const luabind::object &, LPCSTR))(&CScriptGameObject::SetSoundCallback))
-		//.def("set_hear_callback",			(void (CScriptGameObject::*)(const luabind::functor<void> &))(&CScriptGameObject::SetSoundCallback))
-		//.def("clear_hear_callback",		&CScriptGameObject::ClearSoundCallback)
-		
 		.def("memory_time",					&CScriptGameObject::memory_time)
 		.def("memory_position",				&CScriptGameObject::memory_position)
 		.def("best_weapon",					&CScriptGameObject::best_weapon)
@@ -297,7 +293,7 @@ void CScriptGameObject::script_register(lua_State *L)
 
 		// base monster
 		.def("skip_transfer_enemy",			&CScriptGameObject::skip_transfer_enemy)
-		.def("set_home",					(void (CScriptGameObject::*)(LPCSTR,float,float,bool,float))(&CScriptGameObject::set_home))
+		.def("set_home",					(void (CScriptGameObject::*)(str_c,float,float,bool,float))(&CScriptGameObject::set_home))
 		.def("set_home",					(void (CScriptGameObject::*)(u32,float,float,bool,float))(&CScriptGameObject::set_home))
 		.def("set_home", +[](CScriptGameObject* self, const char* name, float r_min, float r_max, bool aggressive)
 			{
@@ -356,8 +352,8 @@ void CScriptGameObject::script_register(lua_State *L)
 		.def("set_movement_selection_type",	&CScriptGameObject::set_movement_selection_type)
 		.def("level_vertex_id",				&CScriptGameObject::level_vertex_id)
 		.def("game_vertex_id",				&CScriptGameObject::game_vertex_id)
-		.def("add_animation",				(void (CScriptGameObject::*)(LPCSTR, bool, bool))(&CScriptGameObject::add_animation))
-		.def("add_animation",				(void (CScriptGameObject::*)(LPCSTR, bool, Fvector, Fvector, bool))(&CScriptGameObject::add_animation))
+		.def("add_animation",				(void (CScriptGameObject::*)(str_c, bool, bool))(&CScriptGameObject::add_animation))
+		.def("add_animation",				(void (CScriptGameObject::*)(str_c, bool, Fvector, Fvector, bool))(&CScriptGameObject::add_animation))
 		.def("clear_animations",			&CScriptGameObject::clear_animations)
 		.def("animation_count",				&CScriptGameObject::animation_count)
 		.def("animation_slot",				&CScriptGameObject::animation_slot)
@@ -423,12 +419,12 @@ void CScriptGameObject::script_register(lua_State *L)
 
 		.def("in_smart_cover",				&CScriptGameObject::in_smart_cover)
 
-		.def("set_dest_smart_cover",		(void (CScriptGameObject::*)	(LPCSTR))&CScriptGameObject::set_dest_smart_cover)
+		.def("set_dest_smart_cover",		(void (CScriptGameObject::*)	(str_c))&CScriptGameObject::set_dest_smart_cover)
 		.def("set_dest_smart_cover",		(void (CScriptGameObject::*)	())&CScriptGameObject::set_dest_smart_cover)
 		.def("get_dest_smart_cover",		(CCoverPoint const* (CScriptGameObject::*) ())&CScriptGameObject::get_dest_smart_cover)
 		.def("get_dest_smart_cover_name",	&CScriptGameObject::get_dest_smart_cover_name)
 
-		.def("set_dest_loophole",			(void (CScriptGameObject::*)	(LPCSTR))&CScriptGameObject::set_dest_loophole)
+		.def("set_dest_loophole",			(void (CScriptGameObject::*)	(str_c))&CScriptGameObject::set_dest_loophole)
 		.def("set_dest_loophole",			(void (CScriptGameObject::*)	())&CScriptGameObject::set_dest_loophole)
 
 		.def("set_smart_cover_target",		(void (CScriptGameObject::*)	(Fvector))&CScriptGameObject::set_smart_cover_target)
@@ -501,9 +497,9 @@ void CScriptGameObject::script_register(lua_State *L)
 		.def("SetCharacterMaxWeight",			&CScriptGameObject::SetCharacterMaxWeight)
 
 		.property("mechanic",					&CScriptGameObject::getMechanic, &CScriptGameObject::setMechanic)
-		.def("add_sound",					(u32 (CScriptGameObject::*)(LPCSTR,u32,ESoundTypes,u32,u32,u32))(&CScriptGameObject::add_sound))
-		.def("add_sound",					(u32 (CScriptGameObject::*)(LPCSTR,u32,ESoundTypes,u32,u32,u32,LPCSTR))(&CScriptGameObject::add_sound))
-		.def("add_combat_sound",			(u32 (CScriptGameObject::*)(LPCSTR,u32,ESoundTypes,u32,u32,u32,LPCSTR))(&CScriptGameObject::add_combat_sound))
+		.def("add_sound",					(u32 (CScriptGameObject::*)(str_c,u32,ESoundTypes,u32,u32,u32))(&CScriptGameObject::add_sound))
+		.def("add_sound",					(u32 (CScriptGameObject::*)(str_c,u32,ESoundTypes,u32,u32,u32,str_c))(&CScriptGameObject::add_sound))
+		.def("add_combat_sound",			(u32 (CScriptGameObject::*)(str_c,u32,ESoundTypes,u32,u32,u32,str_c))(&CScriptGameObject::add_combat_sound))
 		.def("remove_sound",				&CScriptGameObject::remove_sound)
 		.def("set_sound_mask",				&CScriptGameObject::set_sound_mask)
 		.def("play_sound",					(void (CScriptGameObject::*)(u32))(&CScriptGameObject::play_sound))
@@ -606,13 +602,13 @@ void CScriptGameObject::script_register(lua_State *L)
 
 		.def("give_info_portion",			&CScriptGameObject::GiveInfoPortion)
 		.def("disable_info_portion",		&CScriptGameObject::DisableInfoPortion)
-		.def("give_game_news",				(void (CScriptGameObject::*)(LPCSTR,LPCSTR,LPCSTR,int,int))(&CScriptGameObject::GiveGameNews))
-		.def("give_game_news",				(void (CScriptGameObject::*)(LPCSTR,LPCSTR,LPCSTR,int,int,int))(&CScriptGameObject::GiveGameNews))
-		.def("give_game_news",				(bool (CScriptGameObject::*)(LPCSTR,LPCSTR,Frect,int,int))(&CScriptGameObject::GiveGameNews))
+		.def("give_game_news",				(void (CScriptGameObject::*)(str_c,str_c,str_c,int,int))(&CScriptGameObject::GiveGameNews))
+		.def("give_game_news",				(void (CScriptGameObject::*)(str_c,str_c,str_c,int,int,int))(&CScriptGameObject::GiveGameNews))
+		.def("give_game_news",				(bool (CScriptGameObject::*)(str_c,str_c,Frect,int,int))(&CScriptGameObject::GiveGameNews))
 
-        .def("give_talk_message",			(void (CScriptGameObject::*)(LPCSTR,LPCSTR,Frect,LPCSTR))(&CScriptGameObject::AddIconedTalkMessage))
-		.def("give_talk_message",			(void (CScriptGameObject::*)(LPCSTR,LPCSTR,LPCSTR))(&CScriptGameObject::AddIconedTalkMessage_old))//old version, must remove!
-		.def("give_talk_message2",			(void (CScriptGameObject::*)(LPCSTR,LPCSTR,LPCSTR,LPCSTR))(&CScriptGameObject::AddIconedTalkMessage))
+        .def("give_talk_message",			(void (CScriptGameObject::*)(str_c,str_c,Frect,str_c))(&CScriptGameObject::AddIconedTalkMessage))
+		.def("give_talk_message",			(void (CScriptGameObject::*)(str_c,str_c,str_c))(&CScriptGameObject::AddIconedTalkMessage_old))//old version, must remove!
+		.def("give_talk_message2",			(void (CScriptGameObject::*)(str_c,str_c,str_c,str_c))(&CScriptGameObject::AddIconedTalkMessage))
 
 		.def("has_info",					&CScriptGameObject::HasInfo)
 		.def("dont_has_info",				&CScriptGameObject::DontHasInfo)
@@ -819,16 +815,16 @@ void CScriptGameObject::script_register(lua_State *L)
 
 		.def("make_object_visible_somewhen",&CScriptGameObject::make_object_visible_somewhen)
 
-		.def("buy_condition",				(void (CScriptGameObject::*)(CScriptIniFile*,LPCSTR))(&CScriptGameObject::buy_condition))
+		.def("buy_condition",				(void (CScriptGameObject::*)(CScriptIniFile*,str_c))(&CScriptGameObject::buy_condition))
 		.def("buy_condition",				(void (CScriptGameObject::*)(float,float))(&CScriptGameObject::buy_condition))
 		.def("show_condition",				&CScriptGameObject::show_condition)
-		.def("sell_condition",				(void (CScriptGameObject::*)(CScriptIniFile*,LPCSTR))(&CScriptGameObject::sell_condition))
+		.def("sell_condition",				(void (CScriptGameObject::*)(CScriptIniFile*,str_c))(&CScriptGameObject::sell_condition))
 		.def("sell_condition",				(void (CScriptGameObject::*)(float,float))(&CScriptGameObject::sell_condition))
 		.def("buy_supplies",				&CScriptGameObject::buy_supplies)
 		.def("buy_item_condition_factor",	&CScriptGameObject::buy_item_condition_factor)
 
-		.def("sound_prefix",				(LPCSTR (CScriptGameObject::*)() const)(&CScriptGameObject::sound_prefix))
-		.def("sound_prefix",				(void (CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::sound_prefix))
+		.def("sound_prefix",				(str_c (CScriptGameObject::*)() const)(&CScriptGameObject::sound_prefix))
+		.def("sound_prefix",				(void (CScriptGameObject::*)(str_c))(&CScriptGameObject::sound_prefix))
 
 		.def("location_on_path",			&CScriptGameObject::location_on_path)
 		.def("is_there_items_to_pickup",	&CScriptGameObject::is_there_items_to_pickup)
@@ -864,8 +860,8 @@ void CScriptGameObject::script_register(lua_State *L)
 		.def("sniper_fire_mode",			(void (CScriptGameObject::*) (bool))&CScriptGameObject::sniper_fire_mode)
 		.def("sniper_fire_mode",			(bool (CScriptGameObject::*) () const)&CScriptGameObject::sniper_fire_mode)
 
-		.def("aim_bone_id",					(void (CScriptGameObject::*) (LPCSTR))&CScriptGameObject::aim_bone_id)
-		.def("aim_bone_id",					(LPCSTR (CScriptGameObject::*) () const)&CScriptGameObject::aim_bone_id)
+		.def("aim_bone_id",					(void (CScriptGameObject::*) (str_c))&CScriptGameObject::aim_bone_id)
+		.def("aim_bone_id",					(str_c (CScriptGameObject::*) () const)&CScriptGameObject::aim_bone_id)
 
 		.def("actor_look_at_point",			&CScriptGameObject::ActorLookAtPoint)
 		.def("enable_level_changer",		&CScriptGameObject::enable_level_changer)

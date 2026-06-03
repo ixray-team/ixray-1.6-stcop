@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "script_game_object.h"
 #include "WeaponShotgun.h"
 #include "Entity.h"

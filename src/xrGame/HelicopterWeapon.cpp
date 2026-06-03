@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "helicopter.h"
 #include "ExplosiveRocket.h"
 #include "xrMessages.h"
@@ -11,7 +11,7 @@ CHeliFlareManager& CHeliFlareManager::GetInstance()
 	return HeliFlareManager;
 }
 
-void CHeliFlareManager::Load(LPCSTR section)
+void CHeliFlareManager::Load(str_c section)
 {
 	if (pSettings->section_exist(section))
 	{

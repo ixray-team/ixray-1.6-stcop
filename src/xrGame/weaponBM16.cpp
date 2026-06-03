@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "weaponBM16.h"
 
 void CWeaponBM16::Load(const char* section)

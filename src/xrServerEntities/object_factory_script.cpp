@@ -6,7 +6,7 @@
 //	Description : Object factory script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 
 #include "object_factory.h"

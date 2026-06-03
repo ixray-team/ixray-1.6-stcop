@@ -6,7 +6,7 @@
 //	Description : 32-bit peudo random number generator
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "random32.h"
 
 CRandom32 Random32;

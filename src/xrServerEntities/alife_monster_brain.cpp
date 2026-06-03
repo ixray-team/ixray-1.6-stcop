@@ -6,7 +6,7 @@
 //	Description : ALife monster brain class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_monster_brain.h"
 #include "object_broker.h"
 #include "xrServer_Objects_ALife_Monsters.h"
@@ -107,6 +107,7 @@ IC	CSE_ALifeSmartZone &CALifeMonsterBrain::smart_terrain	()
 
 void CALifeMonsterBrain::process_task			()
 {
+	PROF_EVENT(__FUNCTION__);
 	CALifeSmartTerrainTask			*task = smart_terrain().task(&object());
 	THROW3							(task,"smart terrain returned nil task, while npc is registered in it",smart_terrain().name_replace());
 	movement().path_type			(MovementManager::ePathTypeGamePath);
@@ -115,6 +116,7 @@ void CALifeMonsterBrain::process_task			()
 
 void CALifeMonsterBrain::select_task			()
 {
+	PROF_EVENT(__FUNCTION__);
 	if (object().m_smart_terrain_id != ALife::INVALID_OBJECT_ID)
 		return;
 
@@ -132,13 +134,13 @@ void CALifeMonsterBrain::select_task			()
 	CALifeSmartTerrainRegistry::OBJECTS::const_iterator	I = ai().alife().smart_terrains().objects().begin();
 	CALifeSmartTerrainRegistry::OBJECTS::const_iterator	E = ai().alife().smart_terrains().objects().end();
 	for ( ; I != E; ++I) {
-		if (!(*I).second->enabled(&object()))
+		if (!I->second->enabled(&object()))
 			continue;
 
-		float						value = (*I).second->suitable(&object());
+		float						value = I->second->suitable(&object());
 		if (value > best_value) {
 			best_value				= value;
-			object().m_smart_terrain_id	= (*I).second->ID;
+			object().m_smart_terrain_id	= I->second->ID;
 		}
 	}
 
@@ -150,6 +152,7 @@ void CALifeMonsterBrain::select_task			()
 
 void CALifeMonsterBrain::update				()
 {
+	PROF_EVENT(__FUNCTION__);
 #if 0//def DEBUG
 	if (!Level().MapManager().HasMapLocation("debug_stalker",object().ID)) {
 		CMapLocation				*map_location = 
@@ -174,6 +177,7 @@ void CALifeMonsterBrain::update				()
 
 void CALifeMonsterBrain::default_behaviour	()
 {
+	PROF_EVENT(__FUNCTION__);
 	movement().path_type			(MovementManager::ePathTypeNoPath);
 }
 

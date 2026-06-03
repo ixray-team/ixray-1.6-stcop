@@ -6,7 +6,7 @@
 //	Description : ALife Simulator script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "alife_simulator.h"
 #include "ai_space.h"
@@ -111,7 +111,7 @@ void generate_story_ids
 	const char* section = section_name;
 	R_ASSERT(Ini->section_exist(section));
 
-	for (k = 0; Ini->r_line(section, k, &N, &V); ++k)
+	for (k = 0; Ini->r_line(section, k, N, V); ++k)
 	{
 		temp = Ini->r_string_wb(section, N);
 
@@ -121,7 +121,7 @@ void generate_story_ids
 		STORY_PAIRS::const_iterator	I = result.begin();
 		STORY_PAIRS::const_iterator	E = result.end();
 		for (; I != E; ++I)
-			R_ASSERT3((*I).first != temp, duplicated_id_description, *temp);
+			R_ASSERT3(I->first != temp, duplicated_id_description, *temp);
 
 		result.push_back(std::make_pair(*temp, atoi(N)));
 	}

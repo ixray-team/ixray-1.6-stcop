@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIInventoryInvalidation.h"
 
 #include "UICellItem.h"

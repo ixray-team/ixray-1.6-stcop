@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "game_base_space.h"
 #include "../Spectator.h"
 #include "GameSpy_Browser.h"

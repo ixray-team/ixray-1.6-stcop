@@ -5,10 +5,10 @@ class CDS0_UIShader :
 {
 public:
 	CDS0_UIShader();
-	virtual void Copy(IUIShader& _in);
-	virtual void create(LPCSTR sh, LPCSTR tex = 0);
-	virtual bool inited();
-	virtual void destroy();
+	virtual void Copy(IUIShader& _in) override;
+	virtual void create(str_c sh, str_c tex = nullptr) override;
+	virtual bool inited() override;
+	virtual void destroy() override;
 };
 
 class CDS0_UIRender:
@@ -17,27 +17,27 @@ class CDS0_UIRender:
 public:
 	CDS0_UIRender();
 	~CDS0_UIRender();
-	virtual void CreateUIGeom();
-	virtual void DestroyUIGeom();
+	virtual void CreateUIGeom() override;
+	virtual void DestroyUIGeom() override;
 
-	virtual void SetShader(IUIShader &shader);
-	virtual void SetAlphaRef(int aref);
-	virtual void SetScissor(Irect* rect = NULL);
-	virtual void GetActiveTextureResolution(Fvector2 &res);
+	virtual void SetShader(IUIShader &shader) override;
+	virtual void SetAlphaRef(int aref) override;
+	virtual void SetScissor(Irect* rect = nullptr) override;
+	virtual void GetActiveTextureResolution(Fvector2 &res) override;
 
-	virtual void PushPoint(float x, float y, float z, u32 C, float u, float v);
+	virtual void PushPoint(float x, float y, float z, u32 C, float u, float v) override;
 
-	virtual void** StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType);
-	virtual void FlushPrimitive();
+	virtual void** StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointType pointType) override;
+	virtual void FlushPrimitive() override;
 	virtual void Flush();
-	virtual LPCSTR	UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name);
+	virtual str_c UpdateShaderName(str_c tex_name, str_c sh_name) override;
 
-	virtual void	CacheSetXformWorld(const Fmatrix& M);
-	virtual void	CacheSetCullMode(ERHI_CULLMODE);
+	virtual void CacheSetXformWorld(const Fmatrix& M) override;
+	virtual void CacheSetCullMode(ERHI_CULLMODE) override;
 
-	virtual void zb_enable(u32 val) {};
+	virtual void zb_enable(u32 val) override {};
 
-	virtual Irect GetScissor() const { return Irect(); };
+	virtual Irect GetScissor() const override { return Irect(); };
 private:
 };
 

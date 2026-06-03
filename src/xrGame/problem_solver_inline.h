@@ -79,11 +79,11 @@ IC bool CProblemSolverAbstract::actual() const
 	typename EVALUATORS::const_iterator e = evaluators().end();
 	for (; I != E; ++I)
 	{
-		if ((*i).first < (*I).condition())
-			i = std::lower_bound(i, e, (*I).condition(), evaluators().value_comp());
+		if (i->first < I->condition())
+			i = std::lower_bound(i, e, I->condition(), evaluators().value_comp());
 		VERIFY(i != e);
-		VERIFY((*i).first == (*I).condition());
-		if ((*i).second->evaluate() != (*I).value())
+		VERIFY(i->first == I->condition());
+		if (i->second->evaluate() != I->value())
 			return (false);
 	}
 	return (true);
@@ -110,11 +110,11 @@ IC void CProblemSolverAbstract::validate_properties(const CState& conditions) co
 	auto E = conditions.conditions().end();
 	for (; I != E; ++I)
 	{
-		if (evaluators().find((*I).condition()) == evaluators().end())
+		if (evaluators().find(I->condition()) == evaluators().end())
 		{
 			g_pScriptEngine->print_stack();
-			Msg("! cannot find corresponding evaluator to the property with id %d", (*I).condition());
-			THROW(evaluators().find((*I).condition()) != evaluators().end());
+			Msg("! cannot find corresponding evaluator to the property with id %d", I->condition());
+			THROW(evaluators().find(I->condition()) != evaluators().end());
 		}
 	}
 }
@@ -214,8 +214,8 @@ TEMPLATE_SPECIALIZATION
 IC u16 CProblemSolverAbstract::get_edge_weight(const _index_type& vertex_index0, const _index_type& vertex_index1, const const_iterator& i) const
 {
 	u16 current, min;
-	current = (*i).m_operator->weight(vertex_index1, vertex_index0);
-	min = (*i).m_operator->min_weight();
+	current = i->m_operator->weight(vertex_index1, vertex_index0);
+	min = i->m_operator->min_weight();
 	THROW(current >= min);
 	return (current);
 }
@@ -231,18 +231,18 @@ IC const typename CProblemSolverAbstract::_index_type&CProblemSolverAbstract::va
 {
 	if (reverse_search)
 	{
-		if ((*i).m_operator->applicable_reverse((*i).m_operator->effects(), (*i).m_operator->conditions(),
+		if (i->m_operator->applicable_reverse(i->m_operator->effects(), i->m_operator->conditions(),
 												vertex_index))
-			m_applied = (*i).m_operator->apply_reverse(vertex_index, (*i).m_operator->effects(), m_temp,
-													   (*i).m_operator->conditions());
+			m_applied = i->m_operator->apply_reverse(vertex_index, i->m_operator->effects(), m_temp,
+													   i->m_operator->conditions());
 		else
 			m_applied = false;
 	}
 	else
 	{
-		if ((*i).m_operator->applicable(vertex_index, current_state(), (*i).m_operator->conditions(), *this))
+		if (i->m_operator->applicable(vertex_index, current_state(), i->m_operator->conditions(), *this))
 		{
-			(*i).m_operator->apply(vertex_index, (*i).m_operator->effects(), m_temp, m_current_state, *this);
+			i->m_operator->apply(vertex_index, i->m_operator->effects(), m_temp, m_current_state, *this);
 			m_applied = true;
 		}
 		else
@@ -276,24 +276,24 @@ IC bool CProblemSolverAbstract::is_goal_reached_impl(const _index_type& vertex_i
 	auto EE = current_state().conditions().end();
 	for (; (i != e) && (I != E);)
 	{
-		if ((*I).condition() < (*i).condition())
+		if (I->condition() < i->condition())
 		{
 			++I;
 		}
-		else if ((*I).condition() > (*i).condition())
+		else if (I->condition() > i->condition())
 		{
-			for (; (II != EE) && ((*II).condition() < (*i).condition());)
+			for (; (II != EE) && (II->condition() < i->condition());)
 				++II;
-			if ((II == EE) || ((*II).condition() > (*i).condition()))
-				evaluate_condition(II, EE, (*i).condition());
-			if ((*II).value() != (*i).value())
+			if ((II == EE) || (II->condition() > i->condition()))
+				evaluate_condition(II, EE, i->condition());
+			if (II->value() != i->value())
 				return (false);
 			++II;
 			++i;
 		}
 		else
 		{
-			if ((*I).value() != (*i).value())
+			if (I->value() != i->value())
 				return (false);
 			++I;
 			++i;
@@ -310,15 +310,15 @@ IC bool CProblemSolverAbstract::is_goal_reached_impl(const _index_type& vertex_i
 
 	for (; i != e;)
 	{
-		if ((I == E) || ((*I).condition() > (*i).condition()))
-			evaluate_condition(I, E, (*i).condition());
+		if ((I == E) || (I->condition() > i->condition()))
+			evaluate_condition(I, E, i->condition());
 
-		if ((*I).condition() < (*i).condition())
+		if (I->condition() < i->condition())
 			++I;
 		else
 		{
-			VERIFY((*I).condition() == (*i).condition());
-			if ((*I).value() != (*i).value())
+			VERIFY(I->condition() == i->condition());
+			if (I->value() != i->value())
 				return (false);
 			++I;
 			++i;
@@ -337,14 +337,14 @@ IC bool CProblemSolverAbstract::is_goal_reached_impl(const _index_type& vertex_i
 	auto e = vertex_index.conditions().end();
 	for (; i != e;)
 	{
-		if ((I == E) || ((*I).condition() > (*i).condition()))
-			evaluate_condition(I, E, (*i).condition());
+		if ((I == E) || (I->condition() > i->condition()))
+			evaluate_condition(I, E, i->condition());
 
-		if ((*I).condition() < (*i).condition())
+		if (I->condition() < i->condition())
 			++I;
 		else
 		{
-			if ((*I).value() != (*i).value())
+			if (I->value() != i->value())
 				return (false);
 			++I;
 			++i;
@@ -529,16 +529,16 @@ IC u16 CProblemSolverAbstract::estimate_edge_weight_impl(const _index_type& cond
 	auto i = condition.conditions().begin();
 	auto e = condition.conditions().end();
 	for (; (I != E) && (i != e);)
-		if ((*I).condition() < (*i).condition())
+		if (I->condition() < i->condition())
 		{
 			++result_;
 			++I;
 		}
-		else if ((*I).condition() > (*i).condition())
+		else if (I->condition() > i->condition())
 			++i;
 		else
 		{
-			if ((*I).value() != (*i).value())
+			if (I->value() != i->value())
 				++result_;
 			++I;
 			++i;
@@ -557,15 +557,15 @@ IC u16 CProblemSolverAbstract::estimate_edge_weight_impl(const _index_type& cond
 	auto e = condition.conditions().end();
 	for (; (i != e);)
 	{
-		if ((I == E) || ((*I).condition() > (*i).condition()))
-			evaluate_condition(I, E, (*i).condition());
+		if ((I == E) || (I->condition() > i->condition()))
+			evaluate_condition(I, E, i->condition());
 
-		if ((*I).condition() < (*i).condition())
+		if (I->condition() < i->condition())
 			++I;
 		else
 		{
-			VERIFY((*I).condition() == (*i).condition());
-			if ((*I).value() != (*i).value())
+			VERIFY(I->condition() == i->condition());
+			if (I->value() != i->value())
 				++result;
 			++I;
 			++i;

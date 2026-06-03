@@ -6,7 +6,7 @@
 //	Description : Script sound action class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "script_sound_action.h"
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"

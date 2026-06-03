@@ -38,13 +38,13 @@ public:
 	virtual 				~CDS0_ModelPool();
 	CDS0_RenderVisual*		Instance_Create(u32 Type);
 	CDS0_RenderVisual*		Instance_Duplicate(CDS0_RenderVisual* V);
-	CDS0_RenderVisual*		Instance_Load(LPCSTR N, bool allow_register);
-	CDS0_RenderVisual*		Instance_Load(LPCSTR N, IReader* data, bool allow_register);
-	void					Instance_Register(LPCSTR N, CDS0_RenderVisual* V);
-	CDS0_RenderVisual*		Instance_Find(LPCSTR N);
+	CDS0_RenderVisual*		Instance_Load(str_c N, bool allow_register);
+	CDS0_RenderVisual*		Instance_Load(str_c N, IReader* data, bool allow_register);
+	void					Instance_Register(str_c N, CDS0_RenderVisual* V);
+	CDS0_RenderVisual*		Instance_Find(str_c N);
 
-	CDS0_RenderVisual*		Create(LPCSTR name, IReader* data = 0);
-	CDS0_RenderVisual*		CreateChild(LPCSTR name, IReader* data);
+	CDS0_RenderVisual*		Create(str_c name, IReader* data = nullptr);
+	CDS0_RenderVisual*		CreateChild(str_c name, IReader* data);
 	void					Delete(CDS0_RenderVisual*& V, bool bDiscard = false);
 	void					Discard(CDS0_RenderVisual*& V, bool b_complete);
 	void					DeleteInternal(CDS0_RenderVisual*& V, bool bDiscard = false);

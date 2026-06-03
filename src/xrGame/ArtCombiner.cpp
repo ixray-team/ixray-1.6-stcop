@@ -8,7 +8,7 @@ CArtCombiner::CArtCombiner()
 	Container = xr_make_unique<CArtContainerComponent>();
 }
 
-void CArtCombiner::Load(LPCSTR section)
+void CArtCombiner::Load(str_c section)
 {
 	CArtefact::Load(section);
 	Container->Load(section);

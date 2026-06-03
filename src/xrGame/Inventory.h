@@ -102,7 +102,7 @@ public:
 	PIItem GetAny(const char* name) const;//search both (ruck and belt)
 	PIItem item(CLASS_ID cls_id) const;
 	
-	void GetAll(LPCSTR name, xr_vector<PIItem>& Output);
+	void GetAll(str_c name, xr_vector<PIItem>& Output);
 
 	// get all the items with the same section name
 	virtual u32 dwfGetSameItemCount(const char* caSection, bool SearchAll = false);

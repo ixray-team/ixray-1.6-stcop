@@ -4,7 +4,7 @@
 //						балоны с газом и т.д.)
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ExplosiveItem.h"
 
 void CExplosiveItem::Load(const char* section)

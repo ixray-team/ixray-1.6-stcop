@@ -3,7 +3,7 @@
 //								отношений между ними		
 //////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "character_reputation.h"
 
 
@@ -29,7 +29,7 @@ int   CHARACTER_REPUTATION::ValueToIndex    (s32 val)
 	T_VECTOR::iterator it_e = m_pItemDataVector->end();
 	for(;it!=it_e;++it)
 	{
-		if(val < (*it).threshold)
+		if(val < it->threshold)
 			return (int)std::distance(m_pItemDataVector->begin(), it);
 	}
 	return inherited::GetMaxIndex();

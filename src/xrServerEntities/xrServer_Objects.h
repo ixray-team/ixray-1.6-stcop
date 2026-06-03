@@ -202,7 +202,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_Conditional,CSE_Abstract)
 		LuaFunc
 	};
 
-	CSE_Conditional	(LPCSTR caSection);
+	CSE_Conditional	(str_c caSection);
 	virtual	~CSE_Conditional	();
 	shared_str m_section_meet_cond;
 	shared_str m_section_not_meet_cond;

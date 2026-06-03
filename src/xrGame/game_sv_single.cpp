@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "game_sv_single.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "alife_simulator.h"

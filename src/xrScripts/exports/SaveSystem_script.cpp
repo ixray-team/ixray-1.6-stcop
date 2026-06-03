@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "SaveSystem_script.h"
 #include "../xrCore/Save/SaveChunk.h"
@@ -74,23 +74,17 @@ namespace CSaveChunk_script {
 		return Value;
 	}
 
-	/*LPCSTR r_string(CSaveChunk* Chunk) {
-		shared_str Value;
-		Chunk->r_stringZ(Value);
-		return Value.c_str();
-	}*/
-
 	u64 ReadArray(CSaveChunk* Chunk) {
 		u64 Size;
 		Chunk->ReadArray(Size);
 		return Size;
 	}
 
-	CSaveChunk* BeginChunk(CSaveChunk* Chunk, LPCSTR ChunkName) {
+	CSaveChunk* BeginChunk(CSaveChunk* Chunk, str_c ChunkName) {
 		return Chunk->BeginChunk(ChunkName);
 	}
 
-	CSaveChunk* FindChunk(CSaveChunk* Chunk, LPCSTR ChunkName) {
+	CSaveChunk* FindChunk(CSaveChunk* Chunk, str_c ChunkName) {
 		return Chunk->FindChunk(ChunkName);
 	}
 
@@ -98,33 +92,11 @@ namespace CSaveChunk_script {
 
 namespace CSaveObject_script
 {
-	// Raw BeginChunk/EndChunk and BeginArray/EndArray is removed
-	// Use safe ForChunk and ForArray functions
-	/*ISaveObjectStackHandler BeginChunk(ISaveObject* Obj, LPCSTR Name){
-		VERIFY(Obj);
-		return Obj->BeginChunk(Name);
-	}*/
 	
-	bool HasChunk(ISaveObject* Obj, LPCSTR Name){
+	bool HasChunk(ISaveObject* Obj, str_c Name){
 		VERIFY(Obj);
 		return Obj->HasChunk(Name);
 	}
-	
-	/*void EndChunk(ISaveObject* Obj, ISaveObjectStackHandler handler){
-		VERIFY(handler.GetDepth() != u64(-1));
-		VERIFY(Obj);
-		Obj->EndChunk(handler);
-	}
-	
-	void BeginArray(ISaveObject* Obj){
-		VERIFY(Obj);
-		Obj->BeginArray();
-	}
-	
-	void EndArray(ISaveObject* Obj){
-		VERIFY(Obj);
-		Obj->EndArray();
-	}*/
 
 #ifndef MASTER_GOLD
 #define SaveLog(ToCall) \
@@ -135,7 +107,7 @@ namespace CSaveObject_script
 #define SaveLog(ToCall)
 #endif
 
-	void ForChunk(ISaveObject* Obj, LPCSTR Name, const luabind::object& func)
+	void ForChunk(ISaveObject* Obj, str_c Name, const luabind::object& func)
 	{
 		SaveLog([&](){Msg("Enter ForChunk [%s]", Name);})
 		I_ASSERT(Obj);
@@ -308,7 +280,7 @@ namespace CSaveObject_script
 
 #undef VALUE_VALIDATION
 	
-	LPCSTR s_stringZ(ISaveObject* Obj, LPCSTR Value) {
+	str_c s_stringZ(ISaveObject* Obj, str_c Value) {
 		SaveLog([&](){Msg("Serialize string");})
 		if (g_pScriptEngine)
 		{
@@ -325,7 +297,7 @@ namespace CSaveObject_script
 					{
 						lua_pushlstring(L, StrData.c_str(), size);
 						size_t lua_len;
-						LPCSTR lua_str = lua_tolstring(L, -1, &lua_len);
+						str_c lua_str = lua_tolstring(L, -1, &lua_len);
 						//lua_pushvalue(L, -1);
 						//int ref = luaL_ref(L, LUA_REGISTRYINDEX);
 						//lua_pop(L, 1);

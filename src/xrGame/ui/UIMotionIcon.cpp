@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIMainIngameWnd.h"
 #include "UIMotionIcon.h"
 #include "UINavigationOwnership.h"

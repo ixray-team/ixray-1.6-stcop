@@ -6,7 +6,7 @@
 //	Description : sound collection storage
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "sound_collection_storage.h"
 #include "object_broker.h"
 

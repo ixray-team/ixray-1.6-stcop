@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "InteractiveObject.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -74,7 +74,7 @@ void CInteractiveObject::Load(const char* section)
 	useSpawnAtBoneIndexSections = pSettings->read_if_exists<bool>(section, "use_spawn_at_bone_index_sections", false);
 
 	ParseRandomSounds(section, "use_sounds", m_use_sounds);
-	m_tip_text_default = pSettings->read_if_exists<LPCSTR>(section, "use_tip_text", "");
+	m_tip_text_default = pSettings->read_if_exists<str_c>(section, "use_tip_text", "");
 	m_tip_text = m_tip_text_default;
 
 	SetText();

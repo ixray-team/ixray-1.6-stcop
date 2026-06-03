@@ -1,5 +1,5 @@
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #if !USE_OLD_OBJECT_PLANNER
 #include "ObjectHandler.h"
 #include "ObjectHandlerSpace.h"

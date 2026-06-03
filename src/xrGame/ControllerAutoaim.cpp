@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ControllerAutoaim.h"
 #include "../xrEngine/CameraBase.h"
 #include "../Include/xrRender/RenderVisual.h"

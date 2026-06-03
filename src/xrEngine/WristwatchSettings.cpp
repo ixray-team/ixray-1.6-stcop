@@ -3,7 +3,7 @@
 
 namespace
 {
-constexpr LPCSTR kSection = "wristwatch_settings";
+constexpr str_c kSection = "wristwatch_settings";
 
 SWristwatchRuntimeSettings g_wristwatchSettings;
 SWristwatchSurgeState g_surgeState;
@@ -20,7 +20,7 @@ EWristwatchSurgeMode ClampSurgeMode(u8 mode)
 	return static_cast<EWristwatchSurgeMode>(mode);
 }
 
-EWristwatchDisplayType ToDisplayType(LPCSTR value)
+EWristwatchDisplayType ToDisplayType(str_c value)
 {
 	if (value == nullptr || value[0] == '\0')
 	{
@@ -45,9 +45,9 @@ EWristwatchDisplayType ToDisplayType(LPCSTR value)
 	return EWristwatchDisplayType::Analog;
 }
 
-void ReadSharedString(shared_str& dest, LPCSTR key, LPCSTR defaultValue)
+void ReadSharedString(shared_str& dest, str_c key, str_c defaultValue)
 {
-	dest = pSettings->read_if_exists<LPCSTR>(kSection, key, defaultValue);
+	dest = pSettings->read_if_exists<str_c>(kSection, key, defaultValue);
 }
 
 void ResolveFontTextureFromConfig(SWristwatchRuntimeSettings& settings)
@@ -57,7 +57,7 @@ void ResolveFontTextureFromConfig(SWristwatchRuntimeSettings& settings)
 		return;
 	}
 
-	LPCSTR faceName = nullptr;
+	str_c faceName = nullptr;
 	if (settings.fontFace.size() > 0)
 	{
 		faceName = settings.fontFace.c_str();
@@ -91,7 +91,7 @@ void UpdateContentReady(SWristwatchRuntimeSettings& settings)
 
 void LoadFromIni(SWristwatchRuntimeSettings& settings)
 {
-	settings.game.displayType = ToDisplayType(pSettings->read_if_exists<LPCSTR>(kSection, "display_type", ""));
+	settings.game.displayType = ToDisplayType(pSettings->read_if_exists<str_c>(kSection, "display_type", ""));
 	settings.game.preSurgeWindow = pSettings->read_if_exists<u32>(kSection, "pre_surge_window", 0);
 	settings.game.radiationGlowMaxMsv = pSettings->read_if_exists<float>(kSection, "radiation_glow_max_msv", 0.0f);
 	settings.game.anomalyGlitchRadius = pSettings->read_if_exists<float>(kSection, "anomaly_glitch_radius", 0.0f);

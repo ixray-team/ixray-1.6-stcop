@@ -423,13 +423,13 @@ u32	ILevelGraph::vertex_id(const Fvector& position) const
 		}
 	);
 
-	if ((I == E) || ((*I).position().xz() != _vertex_position.xz()))
+	if ((I == E) || (I->position().xz() != _vertex_position.xz()))
 		return			(u32(-1));
 
 	u32					best_vertex_id = u32(I - B);
 	float				y = vertex_plane_y(best_vertex_id, position.x, position.z);
 	for (++I; I != E; ++I) {
-		if ((*I).position().xz() != _vertex_position.xz())
+		if (I->position().xz() != _vertex_position.xz())
 			break;
 
 		u32				new_vertex_id = u32(I - B);
@@ -505,14 +505,14 @@ u32 ILevelGraph::guess_vertex_id(u32 const& current_vertex_id, Fvector const& po
 			if (I == E)
 				continue;
 
-			if ((*I).position().xz() != test_xz)
+			if (I->position().xz() != test_xz)
 				continue;
 
 			u32				best_vertex_id = u32(I - B);
 			contour(vertex_contour, best_vertex_id);
 			float			best_distance = nearest(best_point, position, vertex_contour);
 			for (++I; I != E; ++I) {
-				if ((*I).position().xz() != test_xz)
+				if (I->position().xz() != test_xz)
 					break;
 
 				u32				vertex_id = u32(I - B);

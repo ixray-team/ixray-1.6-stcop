@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "GameSpy_Available.h"
 #include "GameSpy_Base_Defs.h"
 

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "player_account.h"
 #include "MainMenu.h"
 

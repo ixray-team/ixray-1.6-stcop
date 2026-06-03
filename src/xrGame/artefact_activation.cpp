@@ -5,7 +5,7 @@
 //	Autor		:	Alexander Maniluk
 //	Description	:	artefact activation class
 ////////////////////////////////////////////////////////////////////////////////
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "artefact_activation.h"
 
 #include "../xrPhysics/PhysicsShell.h"

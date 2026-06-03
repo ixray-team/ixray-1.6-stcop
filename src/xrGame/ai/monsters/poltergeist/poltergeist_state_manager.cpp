@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "poltergeist.h"
 #include "poltergeist_state_manager.h"
 

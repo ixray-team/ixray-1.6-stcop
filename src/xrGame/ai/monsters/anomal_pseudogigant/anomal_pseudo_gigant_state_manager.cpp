@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include "anomal_pseudo_gigant.h"
+#include "../control_path_builder_base.h"
+#include "../control_direction_base.h"
+#include "../control_animation_base.h"
 #include "anomal_pseudo_gigant_state_manager.h"
 
-#include "../control_animation_base.h"
-#include "../control_direction_base.h"
-#include "../control_movement_base.h"
-#include "../control_path_builder_base.h"
 
 #include "../states/monster_state_rest.h"
 #include "../states/monster_state_panic.h"
@@ -13,7 +12,6 @@
 #include "../states/monster_state_hear_int_sound.h"
 #include "../states/monster_state_hear_danger_sound.h"
 #include "../states/monster_state_hitted.h"
-#include "../states/state_custom_action.h"
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
 
@@ -79,7 +77,7 @@ void CStateManagerAnomalPseudoGigant::execute()
 
 	select_state(state_id);
 
-	// выполнить текущее состояние
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HUDManager.h"
 #include "HUDTarget.h"
 #include "Actor.h"

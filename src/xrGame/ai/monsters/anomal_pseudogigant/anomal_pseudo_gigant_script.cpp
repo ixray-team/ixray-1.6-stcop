@@ -1,7 +1,5 @@
 #include "stdafx.h"
-#include "pch_script.h"
 #include "anomal_pseudo_gigant.h"
-#include "base_client_classes.h"
 //#include "anomal_pseudo_gigant_wrapper.h"
 
 using namespace luabind;

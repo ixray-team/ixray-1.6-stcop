@@ -203,7 +203,7 @@ int main()
 
     if(textures->section_exist("textures")) {
         for(size_t i = 0, lines = textures->line_count("textures"); i < lines; ++i) {
-            if(textures->r_line("textures", i, &line, &value)) {
+            if(textures->r_line("textures", i, line, value)) {
                 CopyTexture(line);
             }
         }

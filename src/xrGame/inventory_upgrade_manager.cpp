@@ -5,7 +5,7 @@
 //	Description : inventory upgrade manager class implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 
 #include "inventory_upgrade_manager.h"
@@ -42,7 +42,7 @@ Root* Manager::get_root(shared_str const& root_id)
 	Roots_type::const_iterator i = m_roots.find(root_id);
 	if (i != m_roots.end())
 	{
-		return ((*i).second);
+		return (i->second);
 	}
 
 	return (nullptr);
@@ -53,7 +53,7 @@ Upgrade* Manager::get_upgrade(shared_str const& upgrade_id)
 	Upgrades_type::const_iterator i = m_upgrades.find(upgrade_id);
 	if (i != m_upgrades.end())
 	{
-		return ((*i).second);
+		return (i->second);
 	}
 
 	return (nullptr);
@@ -64,7 +64,7 @@ Group* Manager::get_group(shared_str const& group_id)
 	Groups_type::const_iterator i = m_groups.find(group_id);
 	if (i != m_groups.end())
 	{
-		return ((*i).second);
+		return (i->second);
 	}
 
 	return (nullptr);
@@ -75,7 +75,7 @@ Property* Manager::get_property(shared_str const& property_id)
 	Properties_type::const_iterator i = m_properties.find(property_id);
 	if (i != m_properties.end())
 	{
-		return ((*i).second);
+		return (i->second);
 	}
 
 	return (nullptr);

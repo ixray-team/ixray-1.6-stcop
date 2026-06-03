@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "AnimNotifyDisableInfo.h"
 
 #include "alife_registry_container.h" // without this not compiles

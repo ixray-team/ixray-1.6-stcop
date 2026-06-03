@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIMpTradeWnd.h"
 #include "UIDragDropListEx.h"
 #include "UICellItem.h"

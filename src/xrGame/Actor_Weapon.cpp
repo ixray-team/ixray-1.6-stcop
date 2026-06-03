@@ -1,7 +1,7 @@
 // Actor_Weapon.cpp:	 для работы с оружием
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "Actor.h"
 #include "ActorEffector.h"

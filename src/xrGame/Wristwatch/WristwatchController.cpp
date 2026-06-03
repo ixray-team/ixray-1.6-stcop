@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "WristwatchController.h"
 #include "WristwatchFont.h"
 

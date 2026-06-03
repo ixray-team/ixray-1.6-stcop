@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "tushkano.h"
 #include "tushkano_state_manager.h"
 
