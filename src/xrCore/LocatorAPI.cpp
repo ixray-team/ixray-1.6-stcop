@@ -1014,7 +1014,10 @@ int CLocatorAPI::file_list(FS_FileSet& dest, const char* path, u32 flags, const 
 	if (I == m_files.end())	return 0;
 
 	string128 mask;
-	xr_strcpy(mask, Platform::ValidPath(InputMask));
+	if (InputMask != nullptr)
+	{
+		xr_strcpy(mask, Platform::ValidPath(InputMask));
+	}
 
 	SStringVec 		masks;
 	_SequenceToList(masks, mask);

@@ -60,7 +60,7 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 	ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
 	ImGuiIO& io = ImGui::GetIO();
 	xr_strcpy(m_name_ini, ini_path);
-	io.IniFilename = m_name_ini;
+	io.IniFilename = xr_strdup(Platform::ANSI_TO_UTF8(m_name_ini).c_str());
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
 	const HDC screen = GetDC(nullptr);
