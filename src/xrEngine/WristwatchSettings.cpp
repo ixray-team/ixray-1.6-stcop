@@ -55,6 +55,7 @@ ENGINE_API void ReloadWristwatchRuntimeSettings()
 	g_wristwatchSettings = {};
 	g_wristwatchSettings.digitalTexture = "secret_hand_textures\\watches\\watches";
 	g_wristwatchSettings.glassTexture = "secret_hand_textures\\watches\\watches_glass";
+	g_wristwatchSettings.glassBumpTexture = "secret_hand_textures\\watches\\watches_glass_bump#";
 	g_wristwatchSettings.fontSection = "font_wristwatch_digital";
 	g_wristwatchSettings.fontTexture = BuildDefaultFontTexture(g_wristwatchSettings.fontSection.c_str());
 
@@ -89,6 +90,11 @@ ENGINE_API void ReloadWristwatchRuntimeSettings()
 	if (pSettings->line_exist("wristwatch_settings", "watches_glass_texture"))
 	{
 		g_wristwatchSettings.glassTexture = pSettings->r_string("wristwatch_settings", "watches_glass_texture");
+	}
+
+	if (pSettings->line_exist("wristwatch_settings", "watches_glass_bump_texture"))
+	{
+		g_wristwatchSettings.glassBumpTexture = pSettings->r_string("wristwatch_settings", "watches_glass_bump_texture");
 	}
 
 	if (pSettings->line_exist("wristwatch_settings", "watches_font_section"))

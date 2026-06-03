@@ -40,10 +40,19 @@ void BuildDigitalTextureList(string_path& outTextures)
 	const SWristwatchRuntimeSettings& settings = GetWristwatchRuntimeSettings();
 	xr_sprintf(
 		outTextures,
-		"%s,%s,%s",
+		"%s,%s",
 		settings.digitalTexture.c_str(),
-		settings.glassTexture.c_str(),
 		settings.fontTexture.c_str());
+}
+
+void BuildGlassTextureList(string_path& outTextures)
+{
+	const SWristwatchRuntimeSettings& settings = GetWristwatchRuntimeSettings();
+	xr_sprintf(
+		outTextures,
+		"%s,%s",
+		settings.glassTexture.c_str(),
+		settings.glassBumpTexture.c_str());
 }
 
 bool IsGlassTexture(const shared_str& textureName)
@@ -57,7 +66,36 @@ bool IsGlassTexture(const shared_str& textureName)
 	xr_strcpy(lowerName, textureName.c_str());
 	_strlwr(lowerName);
 
-	return strstr(lowerName, "glass") != nullptr;
+	return strstr(lowerName, "glass") != nullptr || strstr(lowerName, "lens") != nullptr;
+}
+
+bool IsGlassVisualName(const shared_str& visualName)
+{
+	if (visualName.size() == 0)
+	{
+		return false;
+	}
+
+	string_path lowerName;
+	xr_strcpy(lowerName, visualName.c_str());
+	_strlwr(lowerName);
+
+	return strstr(lowerName, "glass") != nullptr || strstr(lowerName, "lens") != nullptr;
+}
+
+const char* WristwatchVisualDebugName(dxRender_Visual* visual)
+{
+	return visual != nullptr ? visual->dbg_name.c_str() : "<null>";
+}
+
+bool IsGlassChild(dxRender_Visual* child, const SWatchesChildShaderBackup& backup)
+{
+	if (IsGlassTexture(backup.texture))
+	{
+		return true;
+	}
+
+	return child != nullptr && IsGlassVisualName(child->dbg_name);
 }
 
 bool IsWatchUiChild(CKinematics& kinematics, u32 childIdx, u16 watchUiBone)
@@ -157,10 +195,11 @@ void ApplyDigitalShaders(CKinematics& kinematics)
 	const u16 watchUiBone = kinematics.LL_BoneID("watch_ui");
 	const LPCSTR digitalShader = GetDigitalShaderName();
 	const LPCSTR glassShader = GetGlassShaderName();
-	const LPCSTR hiddenShader = GetHiddenShaderName();
 
 	string_path digitalTextures;
 	BuildDigitalTextureList(digitalTextures);
+
+	string_path glassTextures;
 
 	bool hasWatchUiMesh = false;
 	for (u32 childIdx = 0; childIdx < kinematics.children.size(); ++childIdx)
@@ -172,6 +211,14 @@ void ApplyDigitalShaders(CKinematics& kinematics)
 		}
 	}
 
+	Msg("* [wristwatch] ApplyDigitalShaders model='%s' children=%u watch_ui_bone=%u has_watch_ui_mesh=%d",
+		kinematics.dbg_name.c_str(),
+		static_cast<u32>(kinematics.children.size()),
+		static_cast<u32>(watchUiBone),
+		hasWatchUiMesh ? 1 : 0);
+
+	u32 glassChildCount = 0;
+
 	for (u32 childIdx = 0; childIdx < kinematics.children.size(); ++childIdx)
 	{
 		dxRender_Visual* child = kinematics.children[childIdx];
@@ -181,24 +228,38 @@ void ApplyDigitalShaders(CKinematics& kinematics)
 		}
 
 		const SWatchesChildShaderBackup& backup = g_watchesShaderBackup[childIdx];
-		const bool isGlassTexture = IsGlassTexture(backup.texture);
+		const bool isGlassChildMesh = IsGlassChild(child, backup);
 		const bool isWatchUi = IsWatchUiChild(kinematics, childIdx, watchUiBone);
+
+		const char* textureName = backup.valid ? backup.texture.c_str() : "<none>";
+		Msg("* [wristwatch] child[%u] visual='%s' texture='%s' orig_shader='%s' watch_ui=%d glass=%d",
+			childIdx,
+			WristwatchVisualDebugName(child),
+			textureName,
+			backup.shader.c_str(),
+			isWatchUi ? 1 : 0,
+			isGlassChildMesh ? 1 : 0);
 
 		if (isWatchUi)
 		{
 			child->shader.create(digitalShader, digitalTextures);
+			Msg("* [wristwatch] child[%u] -> shader %s (watch_ui)", childIdx, digitalShader);
 			continue;
 		}
 
-		if (isGlassTexture)
+		if (isGlassChildMesh)
 		{
+			++glassChildCount;
 			if (hasWatchUiMesh)
 			{
-				child->shader.create(glassShader, backup.texture.c_str());
+				BuildGlassTextureList(glassTextures);
+				child->shader.create(glassShader, glassTextures);
+				Msg("* [wristwatch] child[%u] -> shader %s (glass mesh) tex=%s", childIdx, glassShader, glassTextures);
 			}
 			else
 			{
 				child->shader.create(digitalShader, digitalTextures);
+				Msg("* [wristwatch] child[%u] -> shader %s (glass fallback, no watch_ui)", childIdx, digitalShader);
 			}
 
 			continue;
@@ -207,7 +268,13 @@ void ApplyDigitalShaders(CKinematics& kinematics)
 		if (backup.valid)
 		{
 			child->shader.create(backup.shader.c_str(), backup.texture.c_str());
+			Msg("* [wristwatch] child[%u] -> shader %s (restore)", childIdx, backup.shader.c_str());
 		}
+	}
+
+	if (glassChildCount == 0)
+	{
+		Msg("! [wristwatch] no glass child detected (texture/visual name must contain 'glass' or 'lens')");
 	}
 }
 }

@@ -41,6 +41,7 @@ struct SWristwatchRuntimeSettings
 	float lcdHalfH = 0.078f;
 	shared_str digitalTexture;
 	shared_str glassTexture;
+	shared_str glassBumpTexture;
 	shared_str fontSection;
 	shared_str fontTexture;
 };
