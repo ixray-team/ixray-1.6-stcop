@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UISleepWnd.h"
 
 #include "pch_script.h"

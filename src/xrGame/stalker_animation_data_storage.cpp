@@ -6,7 +6,7 @@
 //	Description : Stalker animation data storage
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_animation_data.h"
 #include "object_broker.h"
@@ -55,7 +55,7 @@ const CStalkerAnimationData *CStalkerAnimationDataStorage::object	(IKinematicsAn
 {
 	OBJECTS::const_iterator	I = std::find_if(m_objects.begin(),m_objects.end(),data_predicate(skeleton_animated));
 	if (I != m_objects.end())
-		return				((*I).second);
+		return				(I->second);
 
 	m_objects.push_back		(std::make_pair(skeleton_animated,new CStalkerAnimationData(skeleton_animated)));
 	return					(m_objects.back().second);

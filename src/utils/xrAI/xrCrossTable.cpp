@@ -41,11 +41,11 @@ void					vfRecurseUpdate(u32 dwStartNodeID, u32 percent, u32 iVertexCount)
 		for ( ; I != E; ++I) {
 			(*g_tDistances)[*I]				= curr_dist;
 			CLevelGraph::const_iterator		i, e;
-			CLevelGraph::CVertex			*node = (*g_tMap).vertex(*I);
-			(*g_tMap).begin					(*I,i,e);
+			CLevelGraph::CVertex			*node = g_tMap->vertex(*I);
+			g_tMap->begin					(*I,i,e);
 			for ( ; i != e; ++i) {
 				u32							dwNexNodeID = node->link(i);
-				if (!(*g_tMap).valid_vertex_id(dwNexNodeID) || (*g_tMarks)[dwNexNodeID])
+				if (!g_tMap->valid_vertex_id(dwNexNodeID) || (*g_tMarks)[dwNexNodeID])
 					continue;
 				if ((*g_tDistances)[dwNexNodeID] > curr_dist) {
 					next_fringe.push_back(dwNexNodeID);
@@ -116,9 +116,9 @@ void xrBuildCrossTable(const char* caProjectName)
 		FLOAT_VECTOR_IT		I = tDistances.begin();
 		FLOAT_VECTOR_IT		E = tDistances.end();
 		for (; I != E; I++) {
-			(*I).resize(iNodeCount);
-			FLOAT_IT		i = (*I).begin();
-			FLOAT_IT		e = (*I).end();
+			I->resize(iNodeCount);
+			FLOAT_IT		i = I->begin();
+			FLOAT_IT		e = I->end();
 			for (; i != e; i++)
 				*i = u32(-1);
 		}

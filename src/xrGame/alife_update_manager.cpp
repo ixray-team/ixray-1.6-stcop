@@ -6,7 +6,7 @@
 //	Description : ALife Simulator update manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_update_manager.h"
 #include "alife_simulator_header.h"
 #include "alife_time_manager.h"
@@ -40,16 +40,16 @@ public:
 
 	IC	bool	operator()		(CALifeLevelRegistry::_iterator &i, u64 cycle_count, bool) const
 	{
-		if ((*i).second->m_switch_counter	== cycle_count)
+		if (i->second->m_switch_counter	== cycle_count)
 			return					(false);
 
-		(*i).second->m_switch_counter	= cycle_count;
+		i->second->m_switch_counter	= cycle_count;
 		return						(true);
 	}
 
 	IC	void	operator()		(CALifeLevelRegistry::_iterator &i, u64 cycle_count) const
 	{
-		m_switch_manager->switch_object((*i).second);
+		m_switch_manager->switch_object(i->second);
 	}
 };
 
@@ -130,7 +130,7 @@ void CALifeUpdateManager::new_game_for_editor()
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	I = objects().objects().begin();
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	E = objects().objects().end();
 	for (; I != E; ++I)
-		(*I).second->on_register();
+		I->second->on_register();
 
 	Msg("* New game is successfully created!");
 }
@@ -282,7 +282,7 @@ void CALifeUpdateManager::new_game			(const char* save_name)
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	I = objects().objects().begin();
 	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	E = objects().objects().end();
 	for ( ; I != E; ++I)
-		(*I).second->on_register		();
+		I->second->on_register		();
 
 	static bool saveOnNewGame = EngineExternal()[EEngineExternalGame::EnableSaveOnNewGame];
 	if (saveOnNewGame)

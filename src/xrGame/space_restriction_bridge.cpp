@@ -6,7 +6,7 @@
 //	Description : Space restriction bridge
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "space_restriction_bridge.h"
 #include "space_restriction_base.h"
 #include "ai_space.h"

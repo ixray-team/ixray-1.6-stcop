@@ -44,19 +44,19 @@ void  CDS0_DUInterface::DrawLineSphere(const Fvector& p, float radius, u32 clr, 
 {
 }
 
-void  CDS0_DUInterface::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, LPCSTR caption, u32 clr_font)
+void  CDS0_DUInterface::dbgDrawPlacement(const Fvector& p, int sz, u32 clr, str_c caption, u32 clr_font)
 {
 }
 
-void  CDS0_DUInterface::dbgDrawVert(const Fvector& p0, u32 clr, LPCSTR caption)
+void  CDS0_DUInterface::dbgDrawVert(const Fvector& p0, u32 clr, str_c caption)
 {
 }
 
-void  CDS0_DUInterface::dbgDrawEdge(const Fvector& p0, const Fvector& p1, u32 clr, LPCSTR caption)
+void  CDS0_DUInterface::dbgDrawEdge(const Fvector& p0, const Fvector& p1, u32 clr, str_c caption)
 {
 }
 
-void  CDS0_DUInterface::dbgDrawFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr, LPCSTR caption)
+void  CDS0_DUInterface::dbgDrawFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 clr, str_c caption)
 {
 }
 
@@ -182,7 +182,7 @@ void CDS0_DUInterface::DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY prim_type, u
 
 
 
-void  CDS0_DUInterface::OutText(const Fvector& pos, LPCSTR text, u32 color, u32 shadow_color)
+void  CDS0_DUInterface::OutText(const Fvector& pos, str_c text, u32 color, u32 shadow_color)
 {
 }
 

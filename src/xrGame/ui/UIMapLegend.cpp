@@ -5,7 +5,7 @@
 //	Description : UI Map Legend Wnd (PDA : Task) class impl
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIMapLegend.h"
 #include "PdaUiSound.h"
 

@@ -3,7 +3,7 @@
 
 #include "entity_alive.h"
 
-void CEmiZone::Load(LPCSTR section)
+void CEmiZone::Load(str_c section)
 {
 	inherited::Load(section);
 }

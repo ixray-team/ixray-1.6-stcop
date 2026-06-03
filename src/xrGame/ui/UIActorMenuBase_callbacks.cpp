@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIActorMenuBase.h"
 #include "UIDragDropListEx.h"
 #include "UICellItem.h"

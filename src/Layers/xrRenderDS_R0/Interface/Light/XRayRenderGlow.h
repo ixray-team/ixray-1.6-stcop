@@ -33,7 +33,7 @@ public:
     }
 
 
-    void set_texture(LPCSTR name) override
+    void set_texture(str_c name) override
     {
     }
 

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIPdaContactsWnd.h"
 #include "../PDA.h"
 #include "../../xrUI/UIXmlInit.h"

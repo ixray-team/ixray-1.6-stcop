@@ -37,6 +37,6 @@ public:
 	CDS0_FLOD();
 	virtual ~CDS0_FLOD();
 	virtual void Render(float LOD);									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
-	virtual void Load(LPCSTR N, IReader* data, u32 dwFlags);
+	virtual void Load(str_c N, IReader* data, u32 dwFlags);
 	virtual void Copy(CDS0_RenderVisual* pFrom);
 };

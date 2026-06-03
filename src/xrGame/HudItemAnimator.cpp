@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HudItemAnimator.h"
 #include "player_hud.h"
 #include "UIGameCustom.h"
@@ -111,7 +111,7 @@ void CHudItemAnimator::StartAnimator(const shared_str& section)
 
 	m_section = section;
 
-	m_sLuaModifySect = pSettings->read_if_exists<LPCSTR>(m_section,"modify_sect_lua_callback","null");
+	m_sLuaModifySect = pSettings->read_if_exists<str_c>(m_section,"modify_sect_lua_callback","null");
 
 	if (m_sLuaModifySect != "null")
 	{
@@ -127,7 +127,7 @@ void CHudItemAnimator::StartAnimator(const shared_str& section)
 		}
 	}
 
-	m_sLuaPrecondFunc = pSettings->read_if_exists<LPCSTR>(m_section,"precondition_functor","null");
+	m_sLuaPrecondFunc = pSettings->read_if_exists<str_c>(m_section,"precondition_functor","null");
 
 	if (m_sLuaPrecondFunc != "null")
 	{
@@ -360,7 +360,7 @@ void CBackpackAnimator::SwitchAnimator()
 	}
 	else if (!m_bNeedActivated && GetState() == eHidden && g_player_hud->GetAnimator() == nullptr)
 	{
-		m_sLuaModifySect = pSettings->read_if_exists<LPCSTR>(m_section,"modify_sect_lua_callback","null");
+		m_sLuaModifySect = pSettings->read_if_exists<str_c>(m_section,"modify_sect_lua_callback","null");
 
 		if (m_sLuaModifySect != "null")
 		{
@@ -614,7 +614,7 @@ void CBurnAnimator::StartAnimator()
 		return;
 	}
 
-	m_sLuaModifySect = pSettings->read_if_exists<LPCSTR>(m_section,"modify_sect_lua_callback","null");
+	m_sLuaModifySect = pSettings->read_if_exists<str_c>(m_section,"modify_sect_lua_callback","null");
 
 	if (m_sLuaModifySect != "null")
 	{
@@ -630,7 +630,7 @@ void CBurnAnimator::StartAnimator()
 		}
 	}
 
-	m_sLuaPrecondFunc = pSettings->read_if_exists<LPCSTR>(m_section,"precondition_functor","null");
+	m_sLuaPrecondFunc = pSettings->read_if_exists<str_c>(m_section,"precondition_functor","null");
 
 	if (m_sLuaPrecondFunc != "null")
 	{

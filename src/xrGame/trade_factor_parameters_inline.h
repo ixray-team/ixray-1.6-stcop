@@ -7,7 +7,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-#include <Windows.Media.Streaming.Adaptive.h>
 
 IC CTradeFactorParameters::CTradeFactorParameters()
 {

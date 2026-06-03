@@ -6,7 +6,7 @@
 //	Description : Level graph
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "level_graph.h"
 #include "../xrEngine/Editor/XrEditorSceneInterface.h"
 

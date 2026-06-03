@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "zombie.h"
 #include "zombie_state_manager.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
@@ -74,7 +74,7 @@ constexpr u32 default_time_fake_death = 5000;
 constexpr u32 default_time_resurrect_restore = 2000;
 constexpr u32 default_time_out_frustum_timeout = 1000;
 
-void CZombie::Load(LPCSTR section)
+void CZombie::Load(str_c section)
 {
 	inherited::Load	(section);
 

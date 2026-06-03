@@ -6,7 +6,7 @@
 //	Description : steering behaviour classes
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "steering_behaviour.h"
 
 //----------------------------------------------------------

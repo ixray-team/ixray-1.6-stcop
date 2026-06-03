@@ -6,7 +6,7 @@
 //	Description : ALife group registry
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_group_registry.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
@@ -40,7 +40,7 @@ CALifeGroupRegistry::OBJECT &CALifeGroupRegistry::object	(const ALife::_OBJECT_I
 {
 	OBJECTS::const_iterator				I = objects().find(id);
 	VERIFY								(I != objects().end());
-	return								(*(*I).second);
+	return								(*I->second);
 }
 
 void CALifeGroupRegistry::on_after_game_load				()
@@ -48,5 +48,5 @@ void CALifeGroupRegistry::on_after_game_load				()
 	OBJECTS::iterator					I = m_objects.begin();
 	OBJECTS::iterator					E = m_objects.end();
 	for ( ; I != E; ++I)
-		(*I).second->on_after_game_load	();
+		I->second->on_after_game_load	();
 }

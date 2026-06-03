@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HUDTarget.h"
 #include "../xrEngine/GameMtlLib.h"
 

@@ -6,7 +6,7 @@
 //	Description : Agent explosive manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "agent_explosive_manager.h"
 
 #include <algorithm>
@@ -82,14 +82,14 @@ bool CAgentExplosiveManager::process_explosive			(CMemberOrder &member)
 	xr_vector<CDangerExplosive>::iterator	I = m_explosives.begin();
 	xr_vector<CDangerExplosive>::iterator	E = m_explosives.end();
 	for ( ; I != E; ++I) {
-		if (!member.object().memory().visual().visible_now((*I).m_game_object))
+		if (!member.object().memory().visual().visible_now(I->m_game_object))
 			continue;
 
-		float		dist_sqr = (*I).m_game_object->Position().distance_to_sqr(member.object().Position());
+		float		dist_sqr = I->m_game_object->Position().distance_to_sqr(member.object().Position());
 		if (dist_sqr < min_dist_sqr) {
 			if	(
-				(*I).m_reactor && 
-				((*I).m_reactor->Position().distance_to_sqr((*I).m_game_object->Position()) <= min_dist_sqr)
+				I->m_reactor && 
+				(I->m_reactor->Position().distance_to_sqr(I->m_game_object->Position()) <= min_dist_sqr)
 				)
 				continue;
 			min_dist_sqr	= dist_sqr;
@@ -122,13 +122,13 @@ void CAgentExplosiveManager::react_on_explosives	()
 		EXPLOSIVES::iterator	I = m_explosives.begin();
 		EXPLOSIVES::iterator	E = m_explosives.end();
 		for ( ; I != E; ++I) {
-			if (!(*I).m_reactor)
+			if (!I->m_reactor)
 				continue;
 
-			CMemberOrder::CGrenadeReaction	&reaction = object().member().member((*I).m_reactor).grenade_reaction();
-			reaction.m_grenade		= (*I).m_grenade;
-			reaction.m_game_object	= (*I).m_game_object;
-			reaction.m_time			= (*I).m_time;
+			CMemberOrder::CGrenadeReaction	&reaction = object().member().member(I->m_reactor).grenade_reaction();
+			reaction.m_grenade		= I->m_grenade;
+			reaction.m_game_object	= I->m_game_object;
+			reaction.m_time			= I->m_time;
 			reaction.m_processing	= true;
 		}
 

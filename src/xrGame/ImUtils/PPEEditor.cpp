@@ -1,5 +1,5 @@
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "../Level.h"
 #include "../Actor.h"
 #include "../alife_simulator.h"

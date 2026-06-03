@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "ActorCondition.h"
 #include "Actor.h"
@@ -92,7 +92,7 @@ void CActorCondition::LoadCondition(const char* entity_section)
 {
 	inherited::LoadCondition(entity_section);
 
-	const char*						section = pSettings->read_if_exists<LPCSTR>(entity_section,"condition_sect",entity_section);
+	const char*						section = pSettings->read_if_exists<str_c>(entity_section,"condition_sect",entity_section);
 
 	m_fJumpPower				= pSettings->r_float(section,"jump_power");
 	m_fStandPower				= pSettings->r_float(section,"stand_power");

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "specific_character.h"
 
 #ifdef  XRGAME_EXPORTS

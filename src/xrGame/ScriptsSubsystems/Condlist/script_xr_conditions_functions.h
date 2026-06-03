@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "script_game_object.h"
 #include "xrServer_Objects_ALife.h"
 #include "script_utility.h"

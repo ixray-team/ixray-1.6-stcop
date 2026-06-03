@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Artefact.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "PhysicsShellHolder.h"
@@ -704,7 +704,7 @@ void SArtefactDetectorsSupport::UpdateOnFrame()
 			if (b != e)
 			{
 				std::advance(b, ::Random.randI(s32(e-b)));
-				m_currPatrolVertex	= m_currPatrolPath->vertex((*b).vertex_id());
+				m_currPatrolVertex	= m_currPatrolPath->vertex(b->vertex_id());
 				m_destPoint			= m_currPatrolVertex->data().position();
 			}	
 		}

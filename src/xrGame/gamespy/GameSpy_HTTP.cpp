@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "GameSpy_HTTP.h"
 #include "GameSpy_Base_Defs.h"
 #include "../MainMenu.h"

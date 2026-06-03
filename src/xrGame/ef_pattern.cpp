@@ -6,7 +6,7 @@
 //	Description : Pattern based evaluation functions trained by supervised learning
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ef_pattern.h"
 #include "ef_primary.h"
 #include "ai_space.h"

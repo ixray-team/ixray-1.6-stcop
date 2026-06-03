@@ -6,7 +6,7 @@
 //	Description : Fire and enemy parameters for monster "Stalker"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "ai_stalker.h"
 #include "ai_stalker_impl.h"

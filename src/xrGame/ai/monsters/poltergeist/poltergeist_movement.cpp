@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "poltergeist_movement.h"
 #include "poltergeist.h"
 #include "../../../detail_path_manager.h"

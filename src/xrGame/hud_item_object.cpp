@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "hud_item_object.h"
 
 DLL_Pure *CHudItemObject::_construct	()

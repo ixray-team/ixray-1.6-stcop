@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "GameTask.h"
 #include "../../xrUI/xrUIXmlParser.h"

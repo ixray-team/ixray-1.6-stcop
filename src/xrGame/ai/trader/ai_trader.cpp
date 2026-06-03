@@ -6,7 +6,7 @@
 //	Description : AI Behaviour for monster "Trader"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "ai_trader.h"
 #include "../../trade.h"

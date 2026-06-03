@@ -6,7 +6,7 @@
 //	Description : ALife Simulator header
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_simulator_header.h"
 
 CALifeSimulatorHeader::~CALifeSimulatorHeader	()

@@ -486,18 +486,23 @@ void CDS0_Kinematics::EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id)
 }
 
 
-LPCSTR CDS0_Kinematics::LL_BoneName_dbg(u16 ID)
+str_c CDS0_Kinematics::LL_BoneName_dbg(u16 ID)
 {
-	accel::iterator _I, _E = bone_map_N->end();
-	for (_I = bone_map_N->begin(); _I != _E; ++_I)	if (_I->second == ID) return *_I->first;
-	return 0;
+	for (auto& [fst, snd] : *bone_map_N)
+	{
+		if (snd == ID)
+		{
+			return *fst;
+		}
+	}
+	return nullptr;
 }
 
-inline bool	pred_N(const std::pair<shared_str, u32>& N, LPCSTR B)
+inline bool	pred_N(const std::pair<shared_str, u32>& N, str_c B)
 {
 	return xr_strcmp(*N.first, B) < 0;
 }
-u16		CDS0_Kinematics::LL_BoneID(LPCSTR B) 
+u16		CDS0_Kinematics::LL_BoneID(str_c B) 
 {
 	accel::iterator I = std::lower_bound(bone_map_N->begin(), bone_map_N->end(), B, pred_N);
 	if (I == bone_map_N->end())			return BI_NONE;

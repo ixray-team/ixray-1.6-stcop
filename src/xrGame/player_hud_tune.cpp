@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "player_hud.h"
 #include "Level.h"
 #include "debug_renderer.h"

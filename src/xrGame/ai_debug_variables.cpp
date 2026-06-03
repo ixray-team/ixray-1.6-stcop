@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 
 namespace ai_dbg
 {
@@ -38,7 +38,7 @@ bool   get_var (const char* name, float& value)
 		return	false;
 	}
 
-	var& v	=	(*it).second;
+	var& v	=	it->second;
 	if ( v.type != var::real )
 	{
 		return	false;
@@ -78,15 +78,15 @@ void   show_var (const char* name)
 		return;
 	}
 
-	var& v	=	(*it).second;
+	var& v	=	it->second;
 
 	if ( v.type == var::real )
 	{
-		Msg("%s = %f", (*it).first.c_str(), v.fval);
+		Msg("%s = %f", it->first.c_str(), v.fval);
 	}
 	else if ( v.type == var::string )
 	{
-		Msg("%s = \"%s\"", (*it).first.c_str(), v.str);
+		Msg("%s = \"%s\"", it->first.c_str(), v.str);
 	}
 }
 

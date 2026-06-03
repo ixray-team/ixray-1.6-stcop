@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ai_monster_effector.h"
 
 #define MONSTER_EFFECTOR_TYPE_ID 5

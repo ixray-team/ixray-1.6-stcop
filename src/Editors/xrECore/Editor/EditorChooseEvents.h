@@ -25,11 +25,11 @@ namespace ChoseEvents
     //---------------------------------------------------------------------------
     void FillObject(ChooseItemVec& items, void* param);
     void SelectObject(SChooseItem* item, PropItemVec& info_items);
-    void UpdateObjectTHM(LPCSTR name, IRHISurface*&ID);
+    void UpdateObjectTHM(str_c name, IRHISurface*&ID);
     //---------------------------------------------------------------------------
     void FillGroup(ChooseItemVec& items, void* param);
     void SelectGroup(SChooseItem* item, PropItemVec& info_items);
-    void UpdateGroupTHM(LPCSTR name, IRHISurface*& ID);
+    void UpdateGroupTHM(str_c name, IRHISurface*& ID);
     //---------------------------------------------------------------------------
     void FillVisual(ChooseItemVec& items, void* param);
     void SelectVisual(SChooseItem* item, PropItemVec& info_items);
@@ -40,7 +40,7 @@ namespace ChoseEvents
     void FillGameAnim(ChooseItemVec& items, void* param);
     //---------------------------------------------------------------------------
     void FillLAnim(ChooseItemVec& items, void* param);
-    void UpdateLAnim(LPCSTR Name, IRHISurface*& Texture);
+    void UpdateLAnim(str_c Name, IRHISurface*& Texture);
     //---------------------------------------------------------------------------
     void FillEShader(ChooseItemVec& items, void* param);
     //---------------------------------------------------------------------------

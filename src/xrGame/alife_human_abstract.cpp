@@ -6,7 +6,7 @@
 //	Description : ALife human abstract class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "alife_human_brain.h"
 #include "alife_human_object_handler.h"
@@ -16,6 +16,7 @@
 
 void CSE_ALifeHumanAbstract::update									()
 {
+	PROF_EVENT(__FUNCTION__);
 	if (!bfActive())
 		return;
 

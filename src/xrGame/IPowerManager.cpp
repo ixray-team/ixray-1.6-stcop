@@ -1,5 +1,5 @@
 #pragma once
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "IPowerManager.h"
 #include "Actor.h"
 #include "Inventory.h"

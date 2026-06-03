@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Wound.h"
 #include "../xrEngine/bone.h"
 #include "../xrCore/Save/SaveObject.h"

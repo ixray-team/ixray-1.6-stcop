@@ -3,7 +3,7 @@
 //									другим персонажам
 //////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "relation_registry.h"
 
 

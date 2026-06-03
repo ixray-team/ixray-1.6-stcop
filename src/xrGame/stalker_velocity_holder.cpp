@@ -6,7 +6,7 @@
 //	Description : Stalker velocity holder inline functions
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "stalker_velocity_holder.h"
 #include "object_broker.h"
 #include "stalker_velocity_collection.h"
@@ -22,7 +22,7 @@ const CStalkerVelocityHolder::COLLECTION &CStalkerVelocityHolder::collection	(co
 {
 	COLLECTIONS::const_iterator	I = m_collections.find(section);
 	if (I != m_collections.end())
-		return					(*(*I).second);
+		return					(*I->second);
 
 	COLLECTION					*collection = new COLLECTION(section);
 	m_collections.insert		(std::make_pair(section,collection));

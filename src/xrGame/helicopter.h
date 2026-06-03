@@ -191,7 +191,7 @@ public:
 
 	static CHeliFlareManager& GetInstance();
 
-	void Load(LPCSTR section);
+	void Load(str_c section);
 
 	void Update(float delta);
 	void Serialize(ISaveObject& Object);

@@ -6,7 +6,7 @@
 //	Description : Stalker death planner
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "stalker_death_planner.h"
 #include "stalker_death_actions.h"
 #include "stalker_decision_space.h"

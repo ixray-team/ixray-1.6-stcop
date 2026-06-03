@@ -6,7 +6,7 @@
 //	Description : Hit memory manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "hit_memory_manager.h"
 #include "memory_space_impl.h"
@@ -144,8 +144,8 @@ void CHitMemoryManager::add					(float amount, const Fvector &vLocalDir, const C
 			m_hits->push_back	(hit_object);
 	}
 	else {
-		(*J).fill				(entity_alive,m_object,(!m_stalker ? (*J).m_squad_mask.get() : ((*J).m_squad_mask.get() | m_stalker->agent_manager().member().mask(m_stalker))));
-		(*J).m_amount			= std::max(amount,(*J).m_amount);
+		J->fill				(entity_alive,m_object,(!m_stalker ? J->m_squad_mask.get() : (J->m_squad_mask.get() | m_stalker->agent_manager().member().mask(m_stalker))));
+		J->m_amount			= std::max(amount,J->m_amount);
 	}
 }
 
@@ -178,7 +178,7 @@ void CHitMemoryManager::add(const CHitObject& _hit_object)
 	}
 	else 
 	{
-		hit_object.m_squad_mask.assign(hit_object.m_squad_mask.get() | (*J).m_squad_mask.get());
+		hit_object.m_squad_mask.assign(hit_object.m_squad_mask.get() | J->m_squad_mask.get());
 		*J = hit_object;
 	}
 }
@@ -213,10 +213,10 @@ void CHitMemoryManager::update()
 	HITS::const_iterator		I = m_hits->begin();
 	HITS::const_iterator		E = m_hits->end();
 	for ( ; I != E; ++I) {
-		if ((*I).m_level_time > level_time) {
+		if (I->m_level_time > level_time) {
 			xr_delete			(m_selected_hit);
 			m_selected_hit		= new CHitObject(*I);
-			level_time			= (*I).m_level_time;
+			level_time			= I->m_level_time;
 		}
 	}
 #endif
@@ -228,7 +228,7 @@ void CHitMemoryManager::enable			(const CObject *object, bool enable)
 	if (J == m_hits->end())
 		return;
 
-	(*J).m_enabled				= enable;
+	J->m_enabled				= enable;
 }
 
 void CHitMemoryManager::remove_links	(CObject *object)
@@ -349,8 +349,12 @@ void CHitMemoryManager::load	(IReader &packet)
 
 		const CClientSpawnManager::CSpawnCallback	*spawn_callback = Level().client_spawn_manager().callback(delayed_object.m_object_id,m_object->ID());
 		if (!spawn_callback || !spawn_callback->m_object_callback)
+		{
 			if(!g_dedicated_server)
+			{
 				Level().client_spawn_manager().add	(delayed_object.m_object_id,m_object->ID(),callback);
+			}
+		}
 #ifdef DEBUG
 		else {
 			if (spawn_callback && spawn_callback->m_object_callback) {
@@ -387,8 +391,8 @@ void CHitMemoryManager::SerializeSingle(ISaveObject& Object, CHitObject& Value)
 		Value.Serialize(Object);
 		if (Object.IsSave()) {
 			VERIFY(m_object);
-			u16 Value = m_object->ID();
-			Object << Value;
+			auto ID = m_object->ID();
+			Object << ID;
 		}
 		else {
 

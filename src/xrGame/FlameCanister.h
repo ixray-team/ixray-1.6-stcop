@@ -15,7 +15,7 @@ public:
 	virtual CFlameCanister* cast_flame_canister() override { return this; }
 	virtual IRepackerInterface* cast_repacker_interface() override {return this;}
 
-	void					Load(LPCSTR section) override;
+	void					Load(str_c section) override;
 	bool					net_Spawn(CSE_Abstract* DC) override;
 	void					net_Destroy() override;
 	void					net_Export(NET_Packet& P) override;

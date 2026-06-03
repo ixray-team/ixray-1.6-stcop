@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ik_object_shift.h"
 #include "pose_extrapolation.h"
 #include "../xrPhysics/MathUtils.h"

@@ -6,7 +6,7 @@
 //	Description : Debug functions for monster "Stalker"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #if USE_OLD_OBJECT_PLANNER
 #include "Legacy/object_handler_planner.h"
@@ -810,7 +810,7 @@ void CAI_Stalker::debug_text			()
 		CSoundPlayer::SOUND_COLLECTIONS::const_iterator	I = sound().objects().begin();
 		CSoundPlayer::SOUND_COLLECTIONS::const_iterator	E = sound().objects().end();
 		for ( ; I != E; ++I)
-			object_count	+= (u32)(*I).second.second->m_sounds.size();
+			object_count	+= (u32)I->second.second->m_sounds.size();
 		DBG_OutText("%s%sobjects     : %d",indent,indent,object_count);
 	}
 	{
@@ -822,12 +822,12 @@ void CAI_Stalker::debug_text			()
 				indent,
 				indent,
 				indent,
-				(Device.dwTimeGlobal < (*I).m_start_time)
+				(Device.dwTimeGlobal < I->m_start_time)
 				?
 				"not yet started"
 				:
 				(
-					(*I).m_sound->is_playing()
+					I->m_sound->is_playing()
 					?
 					"playing"
 					:
@@ -1054,7 +1054,7 @@ void draw_visiblity_rays	(CCreature *self, const CObject *object, collide::rq_re
 		VISIBLE_ITEMS::iterator	I = self->feel_visible.begin();
 		VISIBLE_ITEMS::iterator	E = self->feel_visible.end();
 		for ( ; I!=E; ++I) {
-			if ((*I).O == object) {
+			if (I->O == object) {
 				item		= &*I;
 				break;
 			}

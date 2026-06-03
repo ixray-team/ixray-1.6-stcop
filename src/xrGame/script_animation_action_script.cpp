@@ -6,7 +6,7 @@
 //	Description : Script animation action class script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_animation_action.h"
 

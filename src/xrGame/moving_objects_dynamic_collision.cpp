@@ -6,7 +6,7 @@
 //	Description : moving objects with dynamic objects collision, i.e. objects with predictable behaviour
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "moving_objects.h"
 #include "ai_space.h"
 #include "level_graph.h"

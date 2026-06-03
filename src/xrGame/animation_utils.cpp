@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "animation_utils.h"
 #include "../Include/xrRender/Kinematics.h"

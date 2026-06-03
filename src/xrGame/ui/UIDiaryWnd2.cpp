@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIDiaryWnd.h"
 #include "PdaUiSound.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"

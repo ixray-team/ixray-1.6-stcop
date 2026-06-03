@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "bloodsucker.h"
 #include "bloodsucker_state_manager.h"
 #include "../../../Actor.h"
@@ -801,8 +801,8 @@ void CAI_Bloodsucker::predator_start()
 		mid.idx = u_last_motion_idx;
 		mid.slot = u_last_motion_slot;
 		if (mid.valid() && u_last_motion_idx != u16(-1) && u_last_motion_slot != u16(-1)) {
-			u_last_motion_idx = NULL;
-			u_last_motion_slot = NULL;
+			u_last_motion_idx = 0;
+			u_last_motion_slot = 0;
 			u8 loop = u_last_motion_no_loop;
 
 			// 			ApplyAnimation(mid.idx, mid.slot, u_last_motion_no_loop); <---------- OMP
@@ -870,8 +870,8 @@ void CAI_Bloodsucker::predator_stop()
 		mid.idx = u_last_motion_idx;
 		mid.slot = u_last_motion_slot;
 		if (mid.valid() && u_last_motion_idx != u16(-1) && u_last_motion_slot != u16(-1)) {
-			u_last_motion_idx = NULL;
-			u_last_motion_slot = NULL;
+			u_last_motion_idx = 0;
+			u_last_motion_slot = 0;
 			u8 loop = u_last_motion_no_loop;
 
 			// 			ApplyAnimation(mid.idx, mid.slot, u_last_motion_no_loop); <---------- OMP

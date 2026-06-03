@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Compass.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "player_hud.h"

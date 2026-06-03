@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIHudStatesWnd.h"
 #include "UIHudGroupCatalog.h"
 

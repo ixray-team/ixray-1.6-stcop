@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ai_stalker_state_net.h"
 #include "stalker_movement_manager_smart_cover.h"
 #include "Inventory.h"

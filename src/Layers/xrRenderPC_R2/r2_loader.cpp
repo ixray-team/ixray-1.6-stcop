@@ -43,7 +43,7 @@ void CRender::level_Load(IReader* fs)
 		for(u32 i=0; i<count; i++)	// skip first shader as "reserved" one
 		{
 			string512				n_sh,n_tlist;
-			LPCSTR			n		= LPCSTR(chunk->pointer());
+			str_c			n		= str_c(chunk->pointer());
 			chunk->skip_stringZ		();
 			if (0==n[0])			continue;
 			xr_strcpy					(n_sh,n);

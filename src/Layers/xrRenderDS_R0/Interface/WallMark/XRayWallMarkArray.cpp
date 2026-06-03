@@ -8,11 +8,11 @@ void CDS0_WallMarkArray::Copy(IWallMarkArray & _in)
 {
 }
 
-void CDS0_WallMarkArray::AppendMark(LPCSTR s_textures)
+void CDS0_WallMarkArray::AppendMark(str_c s_textures)
 {
 }
 
-void CDS0_WallMarkArray::AppendMark(LPCSTR s_shader, LPCSTR s_textures)
+void CDS0_WallMarkArray::AppendMark(str_c s_shader, str_c s_textures)
 {
 }
 

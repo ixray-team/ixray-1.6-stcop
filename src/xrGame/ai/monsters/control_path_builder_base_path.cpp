@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "control_path_builder_base.h"
 #include "../../cover_point.h"
 #include "../../cover_manager.h"

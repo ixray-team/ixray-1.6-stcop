@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #ifdef XR_MP_BUILD
 #include "gsc_dsigned_ltx.h"
 #include "../xrCore/xr_ini.h"

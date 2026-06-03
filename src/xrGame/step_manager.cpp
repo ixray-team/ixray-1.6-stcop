@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "step_manager.h"
 #include "entity_alive.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -59,7 +59,7 @@ CStepManager::CStepManager()
 	if (exoVisuals.empty())
 	{
 		const char* exoVisualName = {}, *vall = {};
-		for (int k = 0; pSettings->r_line("exo_visuals", k, &exoVisualName, &vall); ++k)
+		for (int k = 0; pSettings->r_line("exo_visuals", k, exoVisualName, vall); ++k)
 		{
 			exoVisuals.insert(exoVisualName);
 		}
@@ -118,7 +118,7 @@ void CStepManager::reload(const char* section)
 			Msg( "loading step_params for object :%s, visual: %s, section: %s, step_params section: %s  ", m_object->cName().c_str(), m_object->cNameVisual().c_str(), section, anim_section );
 #endif
 
-	for (u32 i=0; pSettings->r_line(anim_section,i,&anim_name,&val); ++i) {
+	for (u32 i=0; pSettings->r_line(anim_section,i,anim_name,val); ++i) {
 		_GetItem (val,0,cur_elem);
 
 		param.cycles = u8(atoi(cur_elem));

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "actor_mp_server.h"
 #include "Level.h"
 

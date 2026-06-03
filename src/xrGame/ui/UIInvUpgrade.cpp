@@ -6,7 +6,7 @@
 //	Description : inventory upgrade UI class implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "object_broker.h"
 #include "../../xrEngine/string_table.h"

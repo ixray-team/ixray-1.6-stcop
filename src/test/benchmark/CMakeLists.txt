@@ -13,6 +13,7 @@ list(APPEND XR_TEST_BENCHSRC_FILES ${XR_TEST_BENCHSOURCE_ALL_FILES})
 add_executable(TestBenchmark ${XR_TEST_BENCHSOURCE_ALL_FILES})
 target_include_directories(TestBenchmark PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(TestBenchmark PRIVATE "${IXRAY_SDK_INC}")
+target_include_directories(TestBenchmark PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 set_target_properties(TestBenchmark PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 
 # Project defines

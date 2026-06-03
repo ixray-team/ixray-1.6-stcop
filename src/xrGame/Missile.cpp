@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Missile.h"
 //.#include "WeaponHUD.h"
 #include "../xrPhysics/PhysicsShell.h"

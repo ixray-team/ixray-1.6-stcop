@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "base_monster.h"
 #include "../../../../xrPhysics/PhysicsShell.h"
 #include "../../../Hit.h"

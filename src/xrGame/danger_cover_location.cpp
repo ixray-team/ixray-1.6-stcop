@@ -6,7 +6,7 @@
 //	Description : Danger cover location
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "danger_cover_location.h"
 #include "cover_point.h"
 

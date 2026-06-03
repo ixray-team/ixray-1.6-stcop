@@ -1,5 +1,4 @@
-//#include "StdAfx.h"
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "UIActorMenu.h"
 #include "UIInventoryUpgradeWnd.h"

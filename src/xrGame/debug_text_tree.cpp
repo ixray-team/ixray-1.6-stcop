@@ -6,7 +6,7 @@
 //	Description : Text tree for onscreen debugging 
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "debug_text_tree.h"
 
 #include "Level.h"
@@ -189,7 +189,7 @@ void   text_tree::prepare (int current_indent, int indent, Columns& columns)
 	{
 		for ( ; j!=strings.end(); ++j, ++c )
 		{
-			int string_size = (int)(*j).size();
+			int string_size = (int)j->size();
 			string_size += (j==strings.begin()) ? current_indent : 0;				
 
 			*c = std::max(string_size, *c);

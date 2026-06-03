@@ -65,17 +65,19 @@ IC	u64 CAgentMemberManager::mask(const CAI_Stalker *object) const
 	return					(u64(1) << (I - members().begin()));
 }
 
-IC	CAgentMemberManager::iterator CAgentMemberManager::member		(u64 mask)
+IC	CAgentMemberManager::iterator CAgentMemberManager::member(u64 mask)
 {
-	iterator				I = m_members.begin();
-	iterator				E = m_members.end();
+	iterator I = m_members.begin();
+	iterator E = m_members.end();
 	for ( ; I != E; ++I, mask >>= 1)
+	{
 		if (mask == 1)
-			return			(I);
+		{
+			return I;
+		}
+	}
 	NODEFAULT;
-#ifdef DEBUG
-	return					(E);
-#endif
+	return m_members.end();
 }
 
 IC	bool CAgentMemberManager::group_behaviour() const

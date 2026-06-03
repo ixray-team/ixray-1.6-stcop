@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "CarConfig.h"
 
 static xr_vector<shared_str> s_AvailableCars;

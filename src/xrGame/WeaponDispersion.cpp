@@ -2,7 +2,7 @@
 // 
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "Weapon.h"
 #include "InventoryOwner.h"

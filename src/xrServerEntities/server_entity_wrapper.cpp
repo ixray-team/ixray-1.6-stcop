@@ -6,7 +6,7 @@
 //	Description : Server entity wrapper
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "server_entity_wrapper.h"
 #include "xrServer_Objects.h"
 #include "xrMessages.h"

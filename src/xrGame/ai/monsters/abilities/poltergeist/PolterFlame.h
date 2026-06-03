@@ -8,9 +8,9 @@ class CPolterFlame final : public CPolterSpecialAbility {
 	typedef CPolterSpecialAbility inherited;
 
 	ref_sound				m_sound;
-	LPCSTR					m_particles_prepare;
-	LPCSTR					m_particles_fire;
-	LPCSTR					m_particles_stop;
+	str_c					m_particles_prepare;
+	str_c					m_particles_fire;
+	str_c					m_particles_stop;
 	u32						m_time_fire_delay;
 	u32						m_time_fire_play;
 
@@ -74,7 +74,7 @@ public:
 	CPolterFlame(IPolterInterface* polter);
 	~CPolterFlame() override;
 
-	void	load(LPCSTR section) override;
+	void	load(str_c section) override;
 	void	update_schedule() override;
 	void	on_destroy() override;
 	void	on_die() override;

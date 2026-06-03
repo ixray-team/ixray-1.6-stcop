@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "AnimationNames.h"
 
 #include <nlohmann/json.hpp>

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "PHNetState.h"
 #include "../xrCore/Save/SaveObject.h"
 
@@ -281,7 +281,7 @@ void SPHBonesData::net_Save(NET_Packet &P)
 
 	PHNETSTATE_I i = bones.begin(), e = bones.end();
 	for(; e != i; i++) {
-		(*i).net_Save(P, get_min(), get_max());
+		i->net_Save(P, get_min(), get_max());
 	}
 }
 

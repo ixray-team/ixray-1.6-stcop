@@ -6,7 +6,7 @@
 //	Description : stalker movement manager class with smart covers fov and range stuff
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "stalker_movement_manager_smart_cover.h"
 #include "ai/stalker/ai_stalker.h"

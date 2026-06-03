@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIPdaKillMessage.h"
 #include "UIInventoryUtilities.h"
 #include "../Include/xrRender/UIShader.h"

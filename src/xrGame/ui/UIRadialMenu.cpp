@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIRadialMenu.h"
 
 #include "../../xrUI/Widgets/UIGamepadLegend.h"

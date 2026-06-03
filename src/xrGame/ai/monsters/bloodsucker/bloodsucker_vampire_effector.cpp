@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "bloodsucker_vampire_effector.h"
 
 CVampirePPEffector::CVampirePPEffector(const SPPInfo &ppi, float life_time) :

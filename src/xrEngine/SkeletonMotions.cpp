@@ -322,7 +322,7 @@ MotionVec* motions_value::bone_motions(shared_str bone_name)
 	if (I == m_motions.end())
 		return (0);
 
-	return (&(*I).second);
+	return (&I->second);
 }
 
 //-----------------------------------
@@ -492,26 +492,26 @@ bool motion_marks::is_mark_between(float const& t0, float const& t1) const
 	C_ITERATOR e = intervals.end();
 	for (; i != e; ++i)
 	{
-		VERIFY((*i).first <= (*i).second);
+		VERIFY(i->first <= i->second);
 
-		if ((*i).first == t0)
+		if (i->first == t0)
 			return (true);
 
-		if ((*i).first > t0)
+		if (i->first > t0)
 		{
-			if ((*i).second <= t1)
+			if (i->second <= t1)
 				return (true);
 
-			if ((*i).first <= t1)
+			if (i->first <= t1)
 				return (true);
 
 			return (false);
 		}
 
-		if ((*i).second < t0)
+		if (i->second < t0)
 			continue;
 
-		if ((*i).second == t0)
+		if (i->second == t0)
 			return (true);
 
 		return (true);
@@ -527,7 +527,7 @@ float motion_marks::time_to_next_mark(float time) const
 	float result_dist = FLT_MAX;
 	for (; i != e; ++i)
 	{
-		float dist = (*i).first - time;
+		float dist = i->first - time;
 		if (dist > 0.f && dist < result_dist)
 			result_dist = dist;
 	}

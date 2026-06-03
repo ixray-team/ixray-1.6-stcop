@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "Inventory.h"
 #include "InventoryWeaponSlotLayout.h"
@@ -913,7 +913,7 @@ PIItem CInventory::ItemFromSlot(u16 slot) const
 		return nullptr;
 	}
 
-	return (*Slot).second.m_pIItem;
+	return Slot->second.m_pIItem;
 }
 
 void CInventory::SendActionEvent(u16 cmd, u32 flags)
@@ -1367,7 +1367,7 @@ PIItem CInventory::item(CLASS_ID cls_id) const
 	return nullptr;
 }
 
-void CInventory::GetAll(LPCSTR name, xr_vector<PIItem>& Output) {
+void CInventory::GetAll(str_c name, xr_vector<PIItem>& Output) {
 	Output.clear();
 	for (TIItemContainer::const_iterator it = m_belt.begin(); m_belt.end() != it; ++it)
 	{
@@ -1901,7 +1901,7 @@ void CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_tr
 			if (item != nullptr && (!for_trade || item->CanTrade()))
 			{
 				const auto& Slot = m_slots.find(I);
-				if (!(*Slot).second.m_bPersistent || item->BaseSlot() == GRENADE_SLOT)
+				if (!Slot->second.m_bPersistent || item->BaseSlot() == GRENADE_SLOT)
 				{
 					if (pOwner)
 					{

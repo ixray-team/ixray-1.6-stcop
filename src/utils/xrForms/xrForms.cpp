@@ -37,7 +37,7 @@ void Startup(LPSTR lpCmdLine)
 	GetIterationData().push_back({ "xrAI" });
 	GetIterationData().push_back({ "xrDO" });
 	 
-	auto InitilizeIteration = [](LCBuildingType Type, bool active, LPCSTR phase)
+	auto InitilizeIteration = [](LCBuildingType Type, bool active, str_c phase)
 	{
 		SetActiveIteration(&(GetIterationData()[(int)Type]));
 		gCompilerMode.builder_type = Type;
@@ -73,7 +73,7 @@ void Startup(LPSTR lpCmdLine)
 	extern xr_string make_time(u32 sec);
 	for (auto& I : GetIterationData())
 	{
-		// Много лога вырубил !
+		// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ !
 		// for (auto& PH : I.phases)
 		// 	clMsg("* %40s  : Time elapsed %s", PH.PhaseName.c_str(), make_time(PH.elapsed_time));
 

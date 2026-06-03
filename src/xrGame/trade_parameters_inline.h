@@ -168,7 +168,7 @@ IC	void CTradeParameters::process							(_action_type type, CInifile &ini_file, 
 			{
 				if(Item.first.c_str()[0] == '$')
 				{
-					LPCSTR section_name = Item.first.c_str()+1;
+					str_c section_name = Item.first.c_str()+1;
 					self(section_name,  param_num, param1, param2);
 					continue;
 				}
@@ -188,7 +188,7 @@ IC	void CTradeParameters::process							(_action_type type, CInifile &ini_file, 
 		{
 			if(Sect.first.c_str()[0] == '$')
 			{
-				LPCSTR section_name = Sect.first.c_str()+1;
+				str_c section_name = Sect.first.c_str()+1;
 				ParseTradeParametersFunc(Sect.second, param_num,param1,param2);
 				ProcessMultipleTradeItemsSettingsFunc(section_name,  param_num, param1, param2);
 				continue;

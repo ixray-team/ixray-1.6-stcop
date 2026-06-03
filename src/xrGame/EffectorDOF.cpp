@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "EffectorDOF.h"
 #include "CameraEffector.h"
 #include "GamePersistent.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Actor.h"
 #include "PickupManager.h"
 #include "Torch.h"

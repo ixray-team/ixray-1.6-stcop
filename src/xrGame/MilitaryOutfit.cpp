@@ -5,5 +5,5 @@
 
 #pragma once
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "MilitaryOutfit.h"

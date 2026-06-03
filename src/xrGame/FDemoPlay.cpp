@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "../xrEngine/IGame_Level.h"
 #include "FDemoPlay.h"
 #include "../xrEngine/XR_IOConsole.h"

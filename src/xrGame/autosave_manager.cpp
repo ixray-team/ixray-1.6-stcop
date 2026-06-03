@@ -6,7 +6,7 @@
 //	Description : Autosave manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "autosave_manager.h"
 #include "../xrEngine/date_time.h"
 #include "ai_space.h"

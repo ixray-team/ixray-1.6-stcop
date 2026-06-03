@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "WeaponStatMgun.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrPhysics/PhysicsShell.h"
@@ -78,11 +78,11 @@ void CWeaponStatMgun::Load(const char* section)
 	camRelaxSpeed = pSettings->r_float(section, "cam_relax_speed");
 	camRelaxSpeed = std::abs(deg2rad(camRelaxSpeed));
 
-	m_overheat_enabled = pSettings->read_if_exists<float>(section,"overheat_enabled",false);
+	m_overheat_enabled = pSettings->read_if_exists<bool>(section,"overheat_enabled",false);
 	m_overheat_time_quant = pSettings->read_if_exists<float>(section,"overheat_time_quant",0.025f);
 	m_overheat_decr_quant = pSettings->read_if_exists<float>(section,"overheat_decr_quant",0.002f);
 	m_overheat_threshold = pSettings->read_if_exists<float>(section,"overheat_threshold",110.f);
-	m_overheat_particles = pSettings->read_if_exists<LPCSTR>(section,"overheat_particles","damage_fx\\burn_creatures00");
+	m_overheat_particles = pSettings->read_if_exists<str_c>(section,"overheat_particles","damage_fx\\burn_creatures00");
 
 	m_bEnterLocked = pSettings->read_if_exists<bool>(section,"lock_enter",false);
 	m_bExitLocked = pSettings->read_if_exists<bool>(section,"lock_exit",false);

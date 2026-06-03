@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Level.h"
 #include "level_sounds.h"
 #include "../xrSound/ai_sounds.h"

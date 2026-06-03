@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ArmorBase.h"
 #include "object_broker.h"
 #include "Actor.h"
@@ -116,7 +116,7 @@ void CArmorBase::Load(const char* section)
 	m_fPowerLoss = pSettings->read_if_exists<float>(section, "power_loss", 1.0f);
 	clamp(m_fPowerLoss, 0.0f, 1.0f);
 
-	m_BonesProtectionSect = pSettings->read_if_exists<LPCSTR>(section,"bones_koeff_protection","");
+	m_BonesProtectionSect = pSettings->read_if_exists<str_c>(section,"bones_koeff_protection","");
 
 	bIsHudGasMaskAvailable = pSettings->read_if_exists<bool>(section,"hud_gas_mask_avaliable",true);		// FFx0001 ++
 	bIsHudRainDropsAvailable = pSettings->read_if_exists<bool>(section,"hud_rain_drops_avaliable",true);  // FFx0001 ++

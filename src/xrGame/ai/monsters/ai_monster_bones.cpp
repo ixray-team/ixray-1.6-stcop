@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ai_monster_bones.h"
 #include "../../../Include/xrRender/Kinematics.h"
 #include "../../../xrEngine/bone.h"

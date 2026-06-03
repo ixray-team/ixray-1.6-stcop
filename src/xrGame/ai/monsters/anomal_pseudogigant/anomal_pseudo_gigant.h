@@ -1,6 +1,6 @@
 #pragma once
 #include "../abilities/poltergeist/PolterInterface.h"
-#include "../BaseMonster/base_monster.h"
+#include "../basemonster/base_monster.h"
 #include "../xrGame/ai/monsters/pseudogigant/pseudo_gigant.h"
 #include "../telekinesis.h"
 #include "../../../../xrGame/Hit.h"
@@ -31,7 +31,7 @@ class CAnomalPseudoGigant final : public CPseudoGigant,
 	CAnomalPseudoGigant();
 							~CAnomalPseudoGigant() override;
 
-							void	Load(LPCSTR section) override;
+							void	Load(str_c section) override;
 							void	reinit() override;
 
 							void	UpdateCL() override;
@@ -99,12 +99,12 @@ public:
 	TTime	m_shield_cooldown;
 	TTime	m_shield_time;
 	bool	m_shield_active;
-	LPCSTR	m_shield_keep_particle;
+	str_c	m_shield_keep_particle;
 	TTime	m_shield_keep_particle_period;
 	float	m_shield_penetration_border = 4.0f;
 	float	m_shield_penetration_damage_coeff = 0.25f;
 
-	LPCSTR	particle_fire_shield;
+	str_c	particle_fire_shield;
 	u32		last_hit_frame;
 
 	ref_sound m_strange_sound;

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIActorMenu.h"
 #include "../Inventory.h"
 #include "../InventoryOwner.h"

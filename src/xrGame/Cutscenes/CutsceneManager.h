@@ -25,7 +25,7 @@ public:
 	CCutsceneManager& operator=(CCutsceneManager&& other) = delete;
 
 	static CCutsceneManager& GetInstance();
-	static void PlayCutscene(LPCSTR section);
+	static void PlayCutscene(str_c section);
 	static void FinishCurrentCutscene();
 	
 

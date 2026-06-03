@@ -6,7 +6,7 @@
 //	Description : Level script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "Level.h"
 #include "Actor.h"
@@ -362,7 +362,7 @@ void change_game_time(u32 days, u32 hours, u32 mins)
 	}
 }
 
-void set_game_date_time(LPCSTR date, LPCSTR time)
+void set_game_date_time(str_c date, str_c time)
 {
 	game_sv_Single* tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
 	if (tpGame && ai().get_alife())

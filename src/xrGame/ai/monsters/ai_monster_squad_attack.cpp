@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ai_monster_squad.h"
 #include "../../Entity.h"
 #include "../../entity_alive.h"
@@ -31,7 +31,7 @@ void CMonsterSquad::ProcessAttack()
 	// Пройти по всем группам и назначить углы всем елементам в группе
 	for ( ENEMY_MAP_IT it_enemy=m_enemy_map.begin(); it_enemy!=m_enemy_map.end(); ++it_enemy ) 
 	{
-		ENTITY_VEC* monsters = &(*it_enemy).second;
+		ENTITY_VEC* monsters = &it_enemy->second;
 		if ( !monsters->size() )
 		{
 			continue;

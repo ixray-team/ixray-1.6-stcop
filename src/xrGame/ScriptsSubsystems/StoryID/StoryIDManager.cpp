@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ScriptsSubsystems/StoryID/StoryIDManager.h"
 
 #include "alife_object_registry.h"
@@ -23,9 +23,9 @@ void CScriptStoryIDManager::VerifiedRegisterObject(CSE_Abstract* se_obj)
     auto& ini = se_obj->spawn_ini();
     if (ini.section_exist("story_object"))
     {
-        const char* key;
-        const char* value;
-        if (!ini.r_line("story_object", 0, &key, &value) || !key)
+        str_c key;
+        str_c value;
+        if (!ini.r_line("story_object", 0, key, value) || !key)
         {
             R_ASSERT3(false, "There is no 'story_id' field in [story_object] section :object", se_obj->name());
         }
@@ -35,7 +35,7 @@ void CScriptStoryIDManager::VerifiedRegisterObject(CSE_Abstract* se_obj)
         }
         return;
     }
-    auto story_id = pSettings->read_if_exists<LPCSTR>(se_obj->name(),"story_id",nullptr);
+    auto story_id = pSettings->read_if_exists<str_c>(se_obj->name(),"story_id",nullptr);
     if (story_id)
     {
         self.Register(se_obj->ID, story_id);

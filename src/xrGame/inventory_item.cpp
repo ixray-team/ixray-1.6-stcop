@@ -6,7 +6,7 @@
 //	Description : Inventory item
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "inventory_item.h"
 #include "inventory_item_impl.h"
@@ -148,7 +148,7 @@ void CInventoryItem::Load(const char* section)
 	u32 sl = pSettings->read_if_exists<u32>(section, "slot", -1);
 	m_ItemCurrPlace.base_slot_id = (sl == -1) ? 0 : (sl + 1);
 
-	m_Description = g_pStringTable->translate(pSettings->read_if_exists<LPCSTR>(section, "description", ""));
+	m_Description = g_pStringTable->translate(pSettings->read_if_exists<str_c>(section, "description", ""));
 
 	m_flags.set(Fbelt, pSettings->read_if_exists<bool>(section, "belt", false));
 	m_can_trade = pSettings->read_if_exists<bool>(section, "can_trade", true);
@@ -169,14 +169,14 @@ void CInventoryItem::Load(const char* section)
 		m_flags.set(FAllowSprint, pSettings->read_if_exists<bool>(section, "sprint_allowed", true));
 		m_fControlInertionFactor = pSettings->read_if_exists<float>(section, "control_inertion_factor", 1.0f);
 	}
-	m_icon_name = pSettings->read_if_exists<LPCSTR>(section,"icon_name",nullptr);
+	m_icon_name = pSettings->read_if_exists<str_c>(section,"icon_name",nullptr);
 
 	u32 inv_grid_x = pSettings->r_u32(m_object->cNameSect(), "inv_grid_x");
 	u32 inv_grid_y = pSettings->r_u32(m_object->cNameSect(), "inv_grid_y");
 	u32 inv_grid_width = pSettings->read_if_exists<u32>(m_object->cNameSect(), "inv_grid_width", 1);
 	u32 inv_grid_height = pSettings->read_if_exists<u32>(m_object->cNameSect(), "inv_grid_height", 1);
 	ScaleIcon = pSettings->read_if_exists<float>(m_object->cNameSect(), "inv_scale", 1.0f);
-	IconsTexture = pSettings->read_if_exists<LPCSTR>(section,"icons_texture",nullptr);
+	IconsTexture = pSettings->read_if_exists<str_c>(section,"icons_texture",nullptr);
 
 	m_inv_rect.set(inv_grid_x, inv_grid_y, inv_grid_width, inv_grid_height);
 	const static bool isLegacyUpgrade = EngineExternal()[EEngineExternalGame::EnableLegacyUpgradeSystem];

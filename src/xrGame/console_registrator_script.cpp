@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "console_registrator.h"
 #include "../xrEngine/xr_ioc_cmd.h"

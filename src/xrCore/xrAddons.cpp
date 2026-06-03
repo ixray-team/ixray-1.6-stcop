@@ -153,7 +153,7 @@ void CAddonManager::ResolveDependencies()
                 bool Found = false;
                 for (auto& Loaded : Sorted)
                 {
-                    if (!Loaded.AddonName.size() == 0 &&
+                    if (Loaded.AddonName.size() != 0 &&
                         stricmp(*Loaded.AddonName, Dep.c_str()) == 0)
                     {
                         Found = true;
@@ -184,7 +184,7 @@ void CAddonManager::ResolveDependencies()
         {
             for (auto& Addon : Work)
             {
-                if (!Addon.AddonName.size() == 0)
+                if (Addon.AddonName.size() != 0)
                 {
                     Msg("! Addon '%s' skipped: missing dependencies", *Addon.AddonName);
                 }

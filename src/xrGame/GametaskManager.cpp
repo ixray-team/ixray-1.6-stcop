@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "GametaskManager.h"
 #include "alife_registry_wrappers.h"
@@ -82,7 +82,7 @@ CGameTask* CGameTaskManager::HasGameTask(const shared_str& id, bool only_inproce
 	FindTaskByID key(id, only_inprocess);
 	vGameTasks_it it = std::find_if(GetGameTasks().begin(),GetGameTasks().end(),key);
 	if( it!=GetGameTasks().end() )
-		return (*it).getGameTask();
+		return it->getGameTask();
 	
 	return 0;
 }
@@ -532,7 +532,7 @@ CGameTask* CGameTaskManager::HasGameTask(const CMapLocation* ml, bool only_inpro
 
 	for(; it!=it_e; ++it)
 	{
-		CGameTask* gt = (*it).getGameTask();
+		CGameTask* gt = it->getGameTask();
 		if(gt->LinkedMapLocation()==ml)
 		{
 			if(only_inprocess && gt->GetTaskState()!=eTaskStateInProgress)

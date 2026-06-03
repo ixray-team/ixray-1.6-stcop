@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "UIInventoryUtilities.h"
 
@@ -498,7 +498,7 @@ bool CUICharacterInfo::get_actor_community( shared_str* our, shared_str* enemy )
 	enemy->_set( nullptr );
 	shared_str const& actor_team = Actor()->CharacterInfo().Community().id();
 
-    const char* vs_teams = pSettings->read_if_exists<LPCSTR>("actor_communities",actor_team.c_str(),nullptr);
+    const char* vs_teams = pSettings->read_if_exists<str_c>("actor_communities",actor_team.c_str(),nullptr);
     if (!vs_teams || _GetItemCount(vs_teams) != 2)
 	{
 		return false;
@@ -529,7 +529,7 @@ bool CUICharacterInfo::ignore_community( shared_str const& check_community )
 	CInifile::SectIt_	ie = faction_section.Data.end();
 	for ( ; ib != ie ; ++ib )
 	{
-		if ( check_community == (*ib).first )
+		if ( check_community == ib->first )
 		{
 			return true;
 		}

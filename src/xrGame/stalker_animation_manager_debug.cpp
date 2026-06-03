@@ -6,7 +6,7 @@
 //	Description : Stalker animation manager debug functions
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #ifdef DEBUG
 #	include "stalker_animation_manager.h"
@@ -98,7 +98,7 @@ void show_animations		()
 	ANIMATION_STATS::const_iterator	I = g_animation_stats.begin();
 	ANIMATION_STATS::const_iterator	E = g_animation_stats.end();
 	for ( ; I != E; ++I, ++i)
-		*i							= (const ANIMATION_STATS_PAIR *)&(*I).first;
+		*i							= (const ANIMATION_STATS_PAIR *)&I->first;
 
 	struct predicate {
 		static IC	bool frame_count	(const ANIMATION_STATS_PAIR * const &pair1, const ANIMATION_STATS_PAIR * const &pair2)
@@ -129,7 +129,7 @@ void show_blends			()
 	BLEND_STATS::const_iterator		I = g_blend_stats.begin();
 	BLEND_STATS::const_iterator		E = g_blend_stats.end();
 	for ( ; I != E; ++I, ++i)
-		*i							= (const BLEND_STATS_PAIR *)&(*I).first;
+		*i							= (const BLEND_STATS_PAIR *)&I->first;
 
 	struct predicate {
 		static IC	bool blend_count	(const BLEND_STATS_PAIR * const &pair1, const BLEND_STATS_PAIR * const &pair2)
@@ -170,9 +170,9 @@ void add_animation			(const shared_str &animation_id, const shared_str &animatio
 	ANIMATION_ID				query(animation_id,animation_set_id);
 	ANIMATION_STATS::iterator	I = g_animation_stats.find(query);
 	if (I != g_animation_stats.end()) {
-		++((*I).second.m_frame_count);
+		++(I->second.m_frame_count);
 		if (just_started)
-			++((*I).second.m_start_count);
+			++(I->second.m_start_count);
 	
 		return;
 	}
@@ -208,7 +208,7 @@ void add_blend				(const shared_str &animation_id, const shared_str &animation_s
 
 	BLEND_STATS::iterator		I = g_blend_stats.find(query);
 	if (I != g_blend_stats.end()) {
-		++((*I).second);
+		++(I->second);
 		return;
 	}
 

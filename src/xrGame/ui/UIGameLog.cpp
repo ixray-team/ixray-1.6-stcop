@@ -5,7 +5,7 @@
 //	---------------------------------------------------------------------------
 //  Multiplayer game log window
 //=============================================================================
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIGameLog.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "UIPdaMsgListItem.h"

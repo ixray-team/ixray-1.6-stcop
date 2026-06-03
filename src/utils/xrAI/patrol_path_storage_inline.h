@@ -24,5 +24,5 @@ IC	const CPatrolPath *CPatrolPathStorage::path	(shared_str patrol_name, bool no_
 		THROW3		(no_assert,"There is no patrol path",*patrol_name);
 		return		(0);
 	}
-	return			((*I).second);
+	return			(I->second);
 }

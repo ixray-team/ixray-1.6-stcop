@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "UIFrags2.h"
 #include "UIStats.h"

@@ -6,7 +6,7 @@
 //	Description : Sound memory manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "sound_memory_manager.h"
 #include "memory_manager.h"
@@ -77,7 +77,7 @@ void CSoundMemoryManager::reload				(const char* section)
 	m_sound_decrease_quant	= pSettings->read_if_exists<u32>(section,"self_decrease_quant",250);
 	m_decrease_factor		= pSettings->read_if_exists<float>(section,"self_decrease_factor",.95f);
 
-	const char*					sound_perceive_section = pSettings->read_if_exists<LPCSTR>(section,"sound_perceive_section",section);
+	const char*					sound_perceive_section = pSettings->read_if_exists<str_c>(section,"sound_perceive_section",section);
 	m_weapon_factor			= pSettings->read_if_exists<float>(sound_perceive_section,"weapon",10.f);
 	m_item_factor			= pSettings->read_if_exists<float>(sound_perceive_section,"item",1.f);
 	m_npc_factor			= pSettings->read_if_exists<float>(sound_perceive_section,"npc",1.f);
@@ -112,8 +112,8 @@ IC	u32	 CSoundMemoryManager::priority	(const MemorySpace::CSoundObject &sound) c
 	xr_map<ESoundTypes,u32>::const_iterator	I = m_priorities.begin();
 	xr_map<ESoundTypes,u32>::const_iterator	E = m_priorities.end();
 	for ( ; I != E; ++I)
-		if (((*I).second < priority) && ((*I).first & sound.m_sound_type) == (*I).first)
-			priority	= (*I).second;
+		if ((I->second < priority) && (I->first & sound.m_sound_type) == I->first)
+			priority	= I->second;
 	return				(priority);
 }
 
@@ -122,7 +122,7 @@ void CSoundMemoryManager::enable		(const CObject *object, bool enable)
 	xr_vector<CSoundObject>::iterator	J = std::find(m_sounds->begin(),m_sounds->end(), CMemoryObject::object_id(object));
 	if (J == m_sounds->end())
 		return;
-	(*J).m_enabled		= enable;
+	J->m_enabled		= enable;
 }
 
 IC	bool is_sound_type(int s, const ESoundTypes &t)
@@ -294,9 +294,9 @@ void CSoundMemoryManager::add(const CObject* O, int sound_type, const Fvector& p
 		add(sound_object);
 	}
 	else {
-		(*J).fill(game_object, self, ESoundTypes(sound_type), sound_power, (!m_stalker ? (*J).m_squad_mask.get() : ((*J).m_squad_mask.get() | m_stalker->agent_manager().member().mask(m_stalker))));
+		J->fill(game_object, self, ESoundTypes(sound_type), sound_power, (!m_stalker ? J->m_squad_mask.get() : (J->m_squad_mask.get() | m_stalker->agent_manager().member().mask(m_stalker))));
 		if (!game_object)
-			(*J).m_object_params.m_position = position;
+			J->m_object_params.m_position = position;
 	}
 }
 

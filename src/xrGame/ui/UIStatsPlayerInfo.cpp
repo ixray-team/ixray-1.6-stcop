@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "UIStatsPlayerInfo.h"
 #include "../../xrUI/Widgets/UIStatic.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Torch.h"
 #include "Actor.h"
 #include "../xrEngine/LightAnimLibrary.h"

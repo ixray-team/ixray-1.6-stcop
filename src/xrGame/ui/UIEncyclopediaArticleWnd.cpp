@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIEncyclopediaArticleWnd.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../encyclopedia_article.h"

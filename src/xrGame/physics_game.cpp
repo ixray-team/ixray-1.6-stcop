@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "../xrEngine/GameMtlLib.h"
 #include "Level.h"
 #include "GamePersistent.h"

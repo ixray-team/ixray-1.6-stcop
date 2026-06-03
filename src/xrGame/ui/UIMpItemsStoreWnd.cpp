@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIMpItemsStoreWnd.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UITabButtonMP.h"

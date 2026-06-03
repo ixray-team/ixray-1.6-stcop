@@ -1,11 +1,9 @@
 #pragma once
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "../xrCore/_stl_extensions.h"
-#include "../xrEngine/feel_touch.h"
-#include "../xrCore/_types.h"
-//#include "../../xrParticles/particle_param_handle.h"
+#include "../xrEngine/Feel_Touch.h"
 #include "../xrCore/Save/SaveObject.h"
 
 class CBulletManager;
@@ -295,7 +293,7 @@ namespace FlamethrowerTrace
 		void	feel_touch_delete(CObject* O) override;
 		bool	feel_touch_contact(CObject* O) override;
 	
-		void Load(LPCSTR section);
+		void Load(str_c section);
 
 		void save(NET_Packet& output_packet);
 		void load(IReader& input_packet);

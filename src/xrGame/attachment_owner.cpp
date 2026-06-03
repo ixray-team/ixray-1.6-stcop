@@ -6,7 +6,7 @@
 //	Description : Attachment owner
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "attachment_owner.h"
 #include "attachable_item.h"
 #include "../Include/xrRender/Kinematics.h"

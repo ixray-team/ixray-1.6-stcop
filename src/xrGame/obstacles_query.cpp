@@ -6,7 +6,7 @@
 //	Description : obstacles query
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "obstacles_query.h"
 #include "GameObject.h"
 #include "ai_obstacle.h"
@@ -69,10 +69,10 @@ void obstacles_query::compute_area		()
 	OBSTACLES::iterator			I = m_obstacles.begin();
 	OBSTACLES::iterator			E = m_obstacles.end();
 	for ( ; I != E; ++I) {
-		ai_obstacle				&obstacle = (*I).first->obstacle();
+		ai_obstacle				&obstacle = I->first->obstacle();
 		merge					(obstacle.area());
-		(*I).second				= obstacle.crc();
-		m_crc					^= (*I).second;
+		I->second				= obstacle.crc();
+		m_crc					^= I->second;
 	}
 }
 
@@ -81,7 +81,7 @@ void obstacles_query::merge				(const obstacles_query &query)
 	OBSTACLES::const_iterator	I = query.obstacles().begin();
 	OBSTACLES::const_iterator	E = query.obstacles().end();
 	for ( ; I != E; ++I)
-		add						((*I).first);
+		add						(I->first);
 }
 
 bool obstacles_query::merge				(const Fvector &position, const float &radius, const obstacles_query &query)
@@ -106,10 +106,10 @@ bool obstacles_query::objects_changed	(const Fvector &position, const float &rad
 	OBSTACLES::const_iterator	I = obstacles().begin();
 	OBSTACLES::const_iterator	E = obstacles().end();
 	for ( ; I != E; ++I) {
-		if ((*I).first->obstacle().crc() == (*I).second)
+		if (I->first->obstacle().crc() == I->second)
 			continue;
 
-		if ((*I).first->obstacle().distance_to(position) >= radius)
+		if (I->first->obstacle().distance_to(position) >= radius)
 			continue;
 
 		return					(true);

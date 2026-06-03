@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "EntityCondition.h"
 #include "InventoryOwner.h"
 #include "CustomOutfit.h"
@@ -134,7 +134,7 @@ void CEntityCondition::ClearWounds()
 
 void CEntityCondition::LoadCondition(const char* entity_section)
 {
-	const char*				section = pSettings->read_if_exists<LPCSTR>(entity_section,"condition_sect",entity_section);
+	const char*				section = pSettings->read_if_exists<str_c>(entity_section,"condition_sect",entity_section);
 
 	m_change_v.load		(section,"");
 
@@ -797,7 +797,7 @@ void CEntityCondition::Serialize(ISaveObject& Object)
 	}
 }
 
-void CEntityCondition::SConditionChangeV::load(LPCSTR sect, LPCSTR prefix)
+void CEntityCondition::SConditionChangeV::load(str_c sect, str_c prefix)
 {
 	string256				str;
 	m_fV_Circumspection		= 0.01f;

@@ -6,7 +6,7 @@
 //	Description : actor memory
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "actor_memory.h"
 #include "Actor.h"
 #include "../xrEngine/CameraBase.h"

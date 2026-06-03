@@ -6,7 +6,7 @@
 //	Description : Level change object
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "level_changer.h"
 #include "Hit.h"
 #include "Actor.h"

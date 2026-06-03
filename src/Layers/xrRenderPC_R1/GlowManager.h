@@ -41,7 +41,7 @@ public:
 	virtual void set_position		(const Fvector& P);
 	virtual void set_direction		(const Fvector& P);
 	virtual void set_radius			(float			R);
-	virtual void set_texture		(LPCSTR			name);
+	virtual void set_texture		(str_c			name);
 	virtual void set_color			(const Fcolor&	C);
 	virtual void set_color			(float r, float g, float b);
 	virtual void spatial_move		() override;

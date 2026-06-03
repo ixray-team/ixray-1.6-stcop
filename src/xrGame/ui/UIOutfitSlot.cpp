@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIOutfitSlot.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "UICellItem.h"

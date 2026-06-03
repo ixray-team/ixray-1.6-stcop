@@ -12,7 +12,7 @@ IC	float CPurchaseList::deficit							(const shared_str &section) const
 {
 	DEFICITS::const_iterator	I = m_deficits.find(section);
     if (I != m_deficits.end())
-		return					((*I).second);
+		return					(I->second);
 
 	return						(1.f);
 }
@@ -26,7 +26,7 @@ IC	void CPurchaseList::deficit								(const shared_str &section, const float &d
 {
 	DEFICITS::iterator			I = m_deficits.find(section);
 	if (I != m_deficits.end()) {
-		(*I).second				= deficit;
+		I->second				= deficit;
 		return;
 	}
 

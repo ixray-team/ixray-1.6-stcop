@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "holder_custom.h"
 #include "HolderEntityObject.h"

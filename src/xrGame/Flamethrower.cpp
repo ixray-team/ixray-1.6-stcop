@@ -2,36 +2,24 @@
 #include "pch_script.h"
 
 #include "Flamethrower.h"
-#include "actor.h"
-//#include "../Layers/xrRender/particle_core/ParticlesObject.h"
-#include "scope.h"
-#include "silencer.h"
-#include "GrenadeLauncher.h"
-//#include "LaserDesignator.h"
-//#include "TacticalTorch.h"
-#include "inventory.h"
+#include "Actor.h"
+#include "Scope.h"
+#include "Inventory.h"
 #include "InventoryOwner.h"
-#include "xrserver_objects_alife_items.h"
-#include "ActorEffector.h"
+#include "xrServer_Objects_ALife_Items.h"
 #include "EffectorZoomInertion.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "UIGameCustom.h"
 #include "object_broker.h"
 #include "../xrEngine/string_table.h"
 #include "MPPlayersBag.h"
-#include "../xrUI/UIXmlInit.h"
 #include "../xrUI/Widgets/UIStatic.h"
 #include "game_object_space.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "script_game_object.h"
-//#include "AdvancedXrayGameConstants.h"
 #include "FlameCanister.h"
 #include "FlamethrowerTraceCollision.h"
 #include "ai_object_location.h"
-
-ENGINE_API bool	g_dedicated_server;
-ENGINE_API  extern float psHUD_FOV;
-ENGINE_API  extern float psHUD_FOV_def;
 
 //CUIXml*				pWpnScopeXml = NULL;
 
@@ -68,15 +56,19 @@ void CFlamethrower::net_Destroy()
 	inherited::net_Destroy();
 }
 
-void CFlamethrower::SetAnimFlag(u32 flag, LPCSTR anim_name)
+void CFlamethrower::SetAnimFlag(u32 flag, str_c anim_name)
 {
 	if (pSettings->line_exist(hud_sect, anim_name))
-		psWpnAnimsFlag.set(flag, TRUE);
+	{
+		psWpnAnimsFlag.set(flag, true);
+	}
 	else
-		psWpnAnimsFlag.set(flag, FALSE);
+	{
+		psWpnAnimsFlag.set(flag, false);
+	}
 }
 
-void CFlamethrower::Load(LPCSTR section)
+void CFlamethrower::Load(str_c section)
 {
 	inherited::Load(section);
 
@@ -134,7 +126,7 @@ void CFlamethrower::Load(LPCSTR section)
 
 	// load ammo classes
 	m_ammoTypes.clear();
-	LPCSTR				S = pSettings->r_string(section, "ammo_class");
+	str_c				S = pSettings->r_string(section, "ammo_class");
 	if (S && S[0])
 	{
 		string128		_ammoItem;
@@ -366,7 +358,7 @@ int CFlamethrower::CheckAmmoBeforeReload(u8& v_ammoType)
 		return 0;
 	}
 
-	LPCSTR tmp_sect_name = m_ammoTypes[v_ammoType].c_str();
+	str_c tmp_sect_name = m_ammoTypes[v_ammoType].c_str();
 
 	if (!tmp_sect_name)
 	{
@@ -374,14 +366,14 @@ int CFlamethrower::CheckAmmoBeforeReload(u8& v_ammoType)
 		return 0;
 	}
 
-	CFlameCanister* ammo = smart_cast<CFlameCanister*>(m_pInventory->GetAny(tmp_sect_name));
+	CFlameCanister* ammo = m_pInventory->GetAny(tmp_sect_name)->cast_flame_canister();
 
 	if (!ammo && !m_bLockType)
 	{
 		for (u8 i = 0; i < static_cast<u8>(m_ammoTypes.size()); ++i)
 		{
 			//��������� ������� ���� ���������� �����
-			ammo = smart_cast<CFlameCanister*>(m_pInventory->GetAny(m_ammoTypes[i].c_str()));
+			ammo = m_pInventory->GetAny(m_ammoTypes[i].c_str())->cast_flame_canister();
 			if (ammo)
 			{
 				v_ammoType = i;
@@ -421,7 +413,7 @@ void CFlamethrower::ReloadMagazine()
 		if (m_ammoTypes.size() <= m_ammoType)
 			return;
 
-		LPCSTR tmp_sect_name = m_ammoTypes[m_ammoType].c_str();
+		str_c tmp_sect_name = m_ammoTypes[m_ammoType].c_str();
 
 		if (!tmp_sect_name)
 			return;
@@ -1516,7 +1508,7 @@ void CFlamethrower::Serialize(ISaveObject& Object)
 	}
 }
 
-void CFlamethrower::SpawnFuelCanister(float Condition, LPCSTR ammoSect, ALife::_OBJECT_ID ParentID)
+void CFlamethrower::SpawnFuelCanister(float Condition, str_c ammoSect, ALife::_OBJECT_ID ParentID)
 {
 	if (OnClient())	return;
 	m_bAmmoWasSpawned = true;
@@ -1596,13 +1588,13 @@ bool CFlamethrower::GetBriefInfo(II_BriefInfo& info)
 
 	if (ae != 0 && m_magazine.size() != 0)
 	{
-		LPCSTR ammo_type = m_ammoTypes[m_magazine.back().m_LocalAmmoType].c_str();
+		str_c ammo_type = m_ammoTypes[m_magazine.back().m_LocalAmmoType].c_str();
 		info.name = CStringTable().translate(pSettings->r_string(ammo_type, "inv_name_short"));
 		info.icon = ammo_type;
 	}
 	else
 	{
-		LPCSTR ammo_type = m_ammoTypes[m_ammoType].c_str();
+		str_c ammo_type = m_ammoTypes[m_ammoType].c_str();
 		info.name = CStringTable().translate(pSettings->r_string(ammo_type, "inv_name_short"));
 		info.icon = ammo_type;
 	}
@@ -1614,11 +1606,11 @@ bool CFlamethrower::IsMisfire() const
 	return m_is_overheated;
 }
 
-bool CFlamethrower::install_upgrade_impl(LPCSTR section, bool test)
+bool CFlamethrower::install_upgrade_impl(str_c section, bool test)
 {
 	bool result = inherited::install_upgrade_impl(section, test);
 
-	LPCSTR str;
+	str_c str;
 
 	// sounds (name of the sound, volume (0.0 - 1.0), delay (sec))
 	bool result2 = process_if_exists_set(section, "snd_draw", str, test);
@@ -1682,7 +1674,7 @@ void CFlamethrower::FireBullet(const Fvector& pos,
 }
 
 // AVO: for custom added sounds check if sound exists
-bool CFlamethrower::WeaponSoundExist(LPCSTR section, LPCSTR sound_name, bool log) const
+bool CFlamethrower::WeaponSoundExist(str_c section, str_c sound_name, bool log) const
 {
 	const char* str;
 	bool sec_exist = process_if_exists_set(section, sound_name, str, true);

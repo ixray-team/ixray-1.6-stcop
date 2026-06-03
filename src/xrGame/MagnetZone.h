@@ -17,7 +17,7 @@ protected:
 	float			m_fThrowInAtten;
 
 public:
-	void	Load(LPCSTR section) override;
+	void	Load(str_c section) override;
 
 	//����������� ����� �� ������
 	void	Affect(SZoneObjectInfo* O) override;

@@ -6,7 +6,7 @@
 //	Description : Script entity class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_entity.h"
 #include "Creature.h"
@@ -155,8 +155,8 @@ bool CScriptEntity::CheckTypeVisibility(const char* section_name)
 	CVisualMemoryManager::VISIBLES::const_iterator	I = m_monster->memory().visual().objects().begin();
 	CVisualMemoryManager::VISIBLES::const_iterator	E = m_monster->memory().visual().objects().end();
 	for ( ; I != E; ++I) {
-		VERIFY			((*I).m_object);
-		if (!xr_strcmp(section_name, *(*I).m_object->cNameSect()))
+		VERIFY			(I->m_object);
+		if (!xr_strcmp(section_name, *I->m_object->cNameSect()))
 			return		(true);
 	}
 	return				(false);

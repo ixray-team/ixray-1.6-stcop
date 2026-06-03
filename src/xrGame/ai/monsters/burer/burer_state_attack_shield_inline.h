@@ -36,7 +36,7 @@ void CStateBurerShield<Object>::execute()
 	{
 		if (IsGameTypeSingle())
 		{
-			TParticlesPlayer* PPlayer = this->object->GetOrCreateComponent<TParticlesPlayer>();
+			TParticlesPlayer* PPlayer = this->object->template GetOrCreateComponent<TParticlesPlayer>();
 			PPlayer->StartParticles(this->object->shield_keep_particle, Fvector().set(0, 1, 0), this->object->ID(), -1, true);
 		}
 		else
