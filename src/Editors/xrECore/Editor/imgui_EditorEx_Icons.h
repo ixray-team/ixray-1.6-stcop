@@ -20,7 +20,7 @@ namespace chezze_svg_temporary
 		if (!doc)
 			throw std::runtime_error("SVG parse failed");
 
-		auto bitmap = doc->renderToBitmap(width, height);
+		auto bitmap = doc->renderToBitmap(width * GUIManager->GetScaleDpi(), height * GUIManager->GetScaleDpi());
 
 		CTexture* TempTexture = new CTexture();
 
