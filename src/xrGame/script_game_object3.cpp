@@ -285,11 +285,11 @@ u16 CScriptGameObject::AmmoGetCount()
 	return 0;
 }
 
-void CScriptGameObject::SwitchState(u8 state)
+void CScriptGameObject::SwitchState(u8 state, bool pending)
 {
 	if (CHudItem* itm = object().cast_hud_item())
 	{
-		itm->SwitchState(state);
+		itm->SwitchState(state, pending);
 	}
 	else
 	{

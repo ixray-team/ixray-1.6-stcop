@@ -21,9 +21,9 @@ bool CHudItemObject::Action				(u16 cmd, u32 flags)
 	return						(CHudItem::Action(cmd,flags));
 }
 
-void CHudItemObject::SwitchState		(u8 S)
+void CHudItemObject::SwitchState		(u8 S, bool pending)
 {
-	CHudItem::SwitchState		(S);
+	CHudItem::SwitchState		(S, pending);
 }
 
 void CHudItemObject::OnStateSwitch		(u8 S)
