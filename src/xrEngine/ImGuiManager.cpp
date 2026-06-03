@@ -66,6 +66,7 @@ void CImGuiManager::InitPlatform()
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
 	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
+	io.BackendFlags |= ImGuiBackendFlags_RendererHasTextures;
 	ImGuiStyle& Style = ImGui::GetStyle();
 	XRay::ImGui::MakeEditorTheme();
 

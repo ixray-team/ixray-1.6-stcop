@@ -42,12 +42,15 @@ void TRender::Initialize()
     
     UIPass = new TRenderUIPass;
     GeometryPass = new TRenderDeferredPass;
+
+    nri::ImguiDesc imguiDesc = {};
+    NRI_CHECK(GRenderDevice.ImGuiInterface.CreateImgui(*GRenderDevice.Device, imguiDesc, ImGuiInstance));
 }
 
 void TRender::Destroy()
 {
     WaitGPU();
- 
+
     {
         if (GlobalConstantDescriptor)
         {
@@ -78,7 +81,13 @@ void TRender::Destroy()
         delete DepthRenderTarget;
         DepthRenderTarget = nullptr;
     }
-    
+
+    if (ImGuiInstance)
+    {
+        GRenderDevice.ImGuiInterface.DestroyImgui(ImGuiInstance);
+        ImGuiInstance = nullptr;
+    }
+
     if (UIPass)
     {
         delete UIPass;
@@ -244,11 +253,10 @@ void TRender::Submit(TRenderViewport* ToViewport)
         
         GRenderDevice.CoreInterface.CmdDrawIndexed(CommandBuffer, {6, 1, 0, 0, OutputRenderTarget->ResourceProxy->GetOrCreateHeapID()});
     }
+
     ToViewport->EndRender(SignalSemaphore, nullptr);
     IsWaitSubmit = false;
 }
-
-
 
 void TRender::Render()
 {
@@ -292,6 +300,24 @@ void TRender::Render()
             BarrierDescription.textures  = TextureBarrierDescription;
             GRenderDevice.CoreInterface.CmdBarrier(CurrentCommandBuffer,BarrierDescription);
         }
+
+#if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
+        {
+            CImGuiManager& MyImGui = CImGuiManager::Instance();
+            MyImGui.Render();
+
+            const ImDrawData& DrawData = *ImGui::GetDrawData();
+
+            nri::CopyImguiDataDesc CopyImguiDataDesc = {};
+            CopyImguiDataDesc.drawLists = DrawData.CmdLists.Data;
+            CopyImguiDataDesc.drawListNum = DrawData.CmdLists.Size;
+            CopyImguiDataDesc.textures = DrawData.Textures->Data;
+            CopyImguiDataDesc.textureNum = DrawData.Textures->Size;
+
+            GRenderDevice.ImGuiInterface.CmdCopyImguiData(CurrentCommandBuffer, *GRenderDevice.Streamer, *ImGuiInstance, CopyImguiDataDesc);
+        }
+#endif
+
         {
             nri::AttachmentDesc ColorAttachmentDescription = {};
             ColorAttachmentDescription.descriptor =  OutputRenderTarget->RenderTargetResourceProxy->DescriptorAttachment;
@@ -328,9 +354,39 @@ void TRender::Render()
             GeometryPass->Render(CurrentCommandBuffer);
             UIPass->Render(CurrentCommandBuffer);
         }
-        
-       
+
         GRenderDevice.CoreInterface.CmdEndRendering(CurrentCommandBuffer);
+
+#if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
+        {
+            nri::AttachmentDesc ColorAttachmentDescription = {};
+            ColorAttachmentDescription.descriptor = OutputRenderTarget->RenderTargetResourceProxy->DescriptorAttachment;
+            ColorAttachmentDescription.clearValue.color.f = { 0.0f, 0.0f, 0.0f, 1.0f };
+            ColorAttachmentDescription.loadOp = nri::LoadOp::LOAD;
+
+            nri::RenderingDesc RenderingDescription = {};
+            RenderingDescription.colorNum = 1;
+            RenderingDescription.colors = &ColorAttachmentDescription;
+
+            GRenderDevice.CoreInterface.CmdBeginRendering(CurrentCommandBuffer, RenderingDescription);
+
+            CImGuiManager& MyImGui = CImGuiManager::Instance();
+            MyImGui.BeginRender();
+
+            const ImDrawData& drawData = *ImGui::GetDrawData();
+
+            nri::DrawImguiDesc drawImguiDesc = {};
+            drawImguiDesc.drawLists = drawData.CmdLists.Data;
+            drawImguiDesc.drawListNum = drawData.CmdLists.Size;
+            drawImguiDesc.displaySize = { (nri::Dim_t)drawData.DisplaySize.x, (nri::Dim_t)drawData.DisplaySize.y };
+            drawImguiDesc.attachmentFormat = nri::Format::RGBA8_UNORM;
+            GRenderDevice.ImGuiInterface.CmdDrawImgui(CurrentCommandBuffer, *ImGuiInstance, drawImguiDesc);
+
+            MyImGui.AfterRender();
+            GRenderDevice.CoreInterface.CmdEndRendering(CurrentCommandBuffer);
+        }
+#endif
+
         {
             nri::TextureBarrierDesc TextureBarrierDescription = {};
             TextureBarrierDescription.texture = OutputRenderTarget->ResourceProxy->Texture;
@@ -363,6 +419,7 @@ void TRender::Render()
         QueueSubmitDescription.signalFenceNum = 2;
 
         GRenderDevice.CoreInterface.QueueSubmit(*GRenderDevice.GraphicsQueue, QueueSubmitDescription);
+        GRenderDevice.StreamerInterface.EndStreamerFrame(*GRenderDevice.Streamer);
     }
     GRenderResourcesManager->DescriptorHeapAllocator->UpdateDescriptorRanges();
     
