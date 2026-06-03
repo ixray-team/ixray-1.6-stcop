@@ -40,6 +40,7 @@ public:
 	void 		Msg   	(TMsgDlgType mt, const char* _Format, ...);
 	int 		DlgMsg 	(TMsgDlgType mt, const char* _Format, ...);
 	int 		DlgMsg 	(TMsgDlgType mt, int btn, const char* _Format, ...);
+	bool IsVisible() const;
 	void Close();
 };
 
