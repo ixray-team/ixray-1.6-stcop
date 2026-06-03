@@ -1,13 +1,13 @@
 ﻿#pragma once
+#include "TRenderTargetResourceProxy.h"
 
 class TRenderTarget2D:public TRenderTexture
 {
 public:
-            TRenderTarget2D         (uint32_t InWidth, uint32_t InHeight,nri::Format InRenderTargetFormat, nri::ClearValue InClearValue = {}, const shared_str& InName = "None");
-            ~TRenderTarget2D        ();
+                    TRenderTarget2D         (uint32_t InWidth, uint32_t InHeight,nri::Format InRenderTargetFormat, nri::ClearValue InClearValue = {}, const shared_str& InName = "None");
+    virtual         ~TRenderTarget2D        () override;
     
-    void    SetNewAccessLayoutStage (nri::TextureBarrierDesc& TextureBarrierDescription, nri::AccessLayoutStage AfterAccessLayoutStage);
+
     
-    nri::AccessLayoutStage LastAccessLayoutStage;
-    nri::Descriptor*    DescriptorAttachment = nullptr;
+    TRenderTargetResourceProxy*	    RenderTargetResourceProxy = nullptr;
 };

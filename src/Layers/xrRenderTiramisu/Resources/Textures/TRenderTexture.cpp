@@ -6,32 +6,17 @@ TRenderTexture::TRenderTexture(const shared_str& InName): Name(InName)
 
 TRenderTexture::~TRenderTexture()
 {
-    if (Descriptor)
+    if (Owner)
     {
-        GRenderDevice.CoreInterface.DestroyDescriptor(Descriptor);
-        Descriptor = nullptr;
+        VERIFY(Counter == 0);
     }
-    
-    if (Texture)
+    if (ResourceProxy)
     {
-        GRenderDevice.CoreInterface.DestroyTexture(Texture);
-        Texture = nullptr;
+        ENQUEUE_RENDER_COMMAND(RemoveTexture)([InResourceProxy = ResourceProxy]()
+       {
+           delete InResourceProxy;
+       }); 
     }
-    
-    if (HeapIndex != INDEX_NONE)
-    {
-        GRenderResourcesManager->DescriptorHeapAllocator->Free(HeapIndex);
-    }
-}
-
-uint32_t TRenderTexture::GetOrCreateHeapIndex()
-{
-    if (HeapIndex == INDEX_NONE && Descriptor)
-    {
-        HeapIndex = GRenderResourcesManager->DescriptorHeapAllocator->Alloc(Descriptor);
-    }
-
-    return HeapIndex;
 }
 
 void TRenderTexture::Update()

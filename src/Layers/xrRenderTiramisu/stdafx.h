@@ -1,5 +1,6 @@
 #pragma once
 #include "../../xrEngine/stdafx.h"
+#include "RenderCommandQueue.h"
 
 #include "../../xrEngine/Render.h"
 #include "../../xrEngine/SkeletonMotions.h"

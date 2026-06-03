@@ -1,6 +1,6 @@
-#include "stdafx.h"
-#include "../../xrEngine/GameFont.h"
+#include <RedImage/RedImage.hpp>
 #include "Resources/Textures/TRenderTexture2D.h"
+
 ENGINE_API extern  Fvector2 g_current_font_scale;
 
 CDS0_FontRender::CDS0_FontRender() : 
@@ -157,36 +157,10 @@ void CDS0_FontRender::OnRender(CGameFont& Owner)
 
 void CDS0_FontRender::CreateFontAtlas(u32 Width, u32 Height, const char* Name, void* Bitmap)
 {
-	nri::TextureDesc TextureDesc = {};
-	TextureDesc.type = nri::TextureType::TEXTURE_2D;
-	TextureDesc.usage = nri::TextureUsageBits::SHADER_RESOURCE;
-	TextureDesc.format = nri::Format::BGRA8_UNORM;
-	TextureDesc.width = Width;
-	TextureDesc.height = Height;
-	TextureDesc.depth = 1;
-	TextureDesc.layerNum = 1;
-	TextureDesc.mipNum = 1;
-
+	RedImageTool::RedImage Image(Width, Height,1,1);
+	memcpy(*Image, Bitmap, Image.GetSizeInMemory());
+	
 	xr_delete(Atlas);
 	Atlas = new TRenderTexture2D(Name);
-	Atlas->TextureDescription = TextureDesc;
-	Atlas->Owner = nullptr;
-
-	NRI_CHECK(GRenderDevice.CoreInterface.CreatePlacedTexture(*GRenderDevice.Device, NriDeviceHeap, TextureDesc, Atlas->Texture));
-
-	nri::TextureViewDesc textureViewDesc = { Atlas->Texture, nri::TextureView::TEXTURE, TextureDesc.format };
-	NRI_CHECK(GRenderDevice.CoreInterface.CreateTextureView(textureViewDesc, Atlas->Descriptor));
-
-	nri::TextureSubresourceUploadDesc UploadDesc = {};
-	UploadDesc.slices = static_cast<uint8_t*>(Bitmap);
-	UploadDesc.rowPitch = Width * 4;
-	UploadDesc.slicePitch = Width * Height * 4;
-	UploadDesc.sliceNum = 1;
-
-	nri::TextureUploadDesc TextureUploadDesc = {};
-	TextureUploadDesc.subresources = &UploadDesc;
-	TextureUploadDesc.texture = Atlas->Texture;
-	TextureUploadDesc.after = {nri::AccessBits::SHADER_RESOURCE, nri::Layout::SHADER_RESOURCE};
-
-	NRI_CHECK(GRenderDevice.HelperInterface.UploadData(*GRenderDevice.GraphicsQueue, &TextureUploadDesc, 1, nullptr, 0));
+	Atlas->LoadFromImage(Image);
 }

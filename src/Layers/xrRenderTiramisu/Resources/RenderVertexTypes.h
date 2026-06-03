@@ -14,7 +14,7 @@ struct FUIVertex
     float   uv[2];
 };
 
-enum class ELegacyLevelVertexType:uint8_t
+enum class EVertexType:uint8_t
 {
     BaseWithLightMap = 0,
     BaseWithLightColor = 1,

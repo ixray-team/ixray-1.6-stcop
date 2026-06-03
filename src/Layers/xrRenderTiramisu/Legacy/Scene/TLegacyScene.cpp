@@ -1,8 +1,11 @@
 ﻿#include "TLegacyScene.h"
 
+#include "TLegacySceneRenderProxy.h"
 #include "TLegacySceneSector.h"
 #include "Legacy/Visual/XRayModelPool.h"
-#include "Resources/TRenderResourcesFlusher.h"
+#include "Resources/Materials/TRenderMaterialsManager.h"
+#include "Scene/TRenderScene.h"
+#include "Scene/SceneProxy/TStaticMeshSceneProxy.h"
 #include "src/xrCore/stream_reader.h"
 #include "src/xrEngine/IGame_Level.h"
 #include "src/xrEngine/IGame_Persistent.h"
@@ -32,8 +35,7 @@ void TLegacyScene::LoadLevel(IReader* FileReader)
         	
             if (!ShaderNameAndTexture[0])
             {
-            	FLegacySceneShader& Shader = Shaders.emplace_back();
-            	Shader.Textures.push_back(GRenderResourcesManager->WhiteTexture);
+            	Shaders.push_back(GRenderResourcesManager->MaterialsManager->Copy(GRenderResourcesManager->DefaultMaterial));
 	            continue;
             }
         	
@@ -92,12 +94,14 @@ void TLegacyScene::LoadLevel(IReader* FileReader)
             	}
             }
 
-            FLegacySceneShader& Shader = Shaders.emplace_back();
-        	Shader.LegacyShaderName = ShaderName;
-        	for (shared_str& TextureName : TextureNames)
-        	{        		
-        		Shader.Textures.push_back(GRenderResourcesManager->TexturesManager->GetTexture(TextureName));;
+        	shared_str MaterialName;
+        	MaterialName.printf("level\\%d", i);
+            TRenderMaterialInstanceDynamic* Material = GRenderResourcesManager->MaterialsManager->CreateInstanceDynamic(MaterialName,GRenderResourcesManager->DefaultMaterial);
+        	if (!TextureNames.empty())
+        	{
+        		Material->SetTexture(GRenderResourcesManager->TexturesManager->GetTexture(TextureNames[0]));
         	}
+        	Shaders.push_back(Material);
             Msg("Level shader:%s", ShaderName);
         }
         ShadersChunk->close();
@@ -122,6 +126,10 @@ void TLegacyScene::LoadLevel(IReader* FileReader)
 
     // HOM.Load();
     // GRenderTarget->LoadLevel();
+	
+	SceneRenderProxy = new TLegacySceneRenderProxy;
+	SceneRenderProxy->RenderData = StaticMeshRenderData; 
+	GRenderResourcesManager->RenderScene->AddRenderSceneProxy(SceneRenderProxy);
 }
 
 void TLegacyScene::Clear()
@@ -131,27 +139,27 @@ void TLegacyScene::Clear()
 		Visuals[i]->Release();
 		xr_delete(Visuals[i]);
 	}
+	
 	Visuals.clear();
 	
 	Portals.clear();
 	Sectors.clear();
-	for (FLegacySceneShader& Shader:Shaders)
+	for (TRenderMaterialInterface* Shader:Shaders)
 	{
-		for (TRenderTexture* Texture : Shader.Textures)
-		{
-			GRenderResourcesManager->TexturesManager->Free(Texture);
-		}
-		Shader.Textures.clear();
+		GRenderResourcesManager->MaterialsManager->Free(Shader);
 	}
 	Shaders.clear();
-	if (PortalsCollisionModel)
-	{
-		delete PortalsCollisionModel;
-		PortalsCollisionModel = nullptr;
-	}
-	GRenderResourcesManager->ResourcesFlusher->Push(GeometryBuffer);
-	GeometryBuffer = nullptr;
 	
+	xr_delete(PortalsCollisionModel);
+		
+	RemoveRenderSceneProxy(SceneRenderProxy);
+	
+	ENQUEUE_RENDER_COMMAND(TLegacyScene::Clear)([InStaticMeshRenderData = StaticMeshRenderData]
+	{
+		delete InStaticMeshRenderData;
+	});
+	
+	StaticMeshRenderData = nullptr;
 	LastSector = nullptr;
 }
 
@@ -322,6 +330,34 @@ void TLegacyScene::Calculate()
 			}
 		}
 	}
+	
+	xr_vector<FRenderMeshBath> MeshBathes;
+	for (const auto &RenderItem:RenderGraph.RenderList)
+	{
+		FRenderMeshBath& OutMeshBath = MeshBathes.emplace_back();
+		OutMeshBath.VertexBuffer.Count = RenderItem.SceneVertexBuffer.Count;
+		OutMeshBath.VertexBuffer.Offset = RenderItem.SceneVertexBuffer.Offset;
+		OutMeshBath.VertexBuffer.Size = RenderItem.SceneVertexBuffer.Size;
+		OutMeshBath.VertexBuffer.Stride = RenderItem.SceneVertexBuffer.Stride;
+		OutMeshBath.VertexType = RenderItem.SceneVertexBuffer.VertexType;
+		
+		OutMeshBath.IndexBuffer.Count = RenderItem.SceneIndexBuffer.Count;
+		OutMeshBath.IndexBuffer.Offset = RenderItem.SceneIndexBuffer.Offset;
+		OutMeshBath.IndexBuffer.Size = RenderItem.SceneIndexBuffer.Size;
+		OutMeshBath.IndexBuffer.IndexType = nri::IndexType::UINT16;
+		OutMeshBath.Material = RenderItem.Material->MaterialRenderProxy;
+		
+		FRenderMeshBathElement& Element = OutMeshBath.Elements.emplace_back();
+		Element.CountIndex = RenderItem.CountIndex;
+		Element.CountVertex = RenderItem.CountVertex;
+		Element.OffsetIndex = RenderItem.OffsetIndex;
+		Element.OffsetVertex = RenderItem.OffsetVertex;
+		
+	}
+	ENQUEUE_RENDER_COMMAND(TLegacyScene::Calculate)([InSceneRenderProxy = SceneRenderProxy, InMeshBathes = std::move(MeshBathes)]
+	{
+		InSceneRenderProxy->MeshBathes = InMeshBathes;
+	});
 }
 
 void TLegacyScene::LoadBuffers(CStreamReader* Reader)
@@ -376,22 +412,26 @@ void TLegacyScene::LoadBuffers(CStreamReader* Reader)
     	}
     	BufferStreamReader->close();
     }
-    {
-	    { // Geometry buffer
-	    	nri::BufferDesc BufferDescription = {};
-	    	BufferDescription.size = MegaBuffer.size();
-	    	BufferDescription.usage = nri::BufferUsageBits::VERTEX_BUFFER | nri::BufferUsageBits::INDEX_BUFFER;
-	    	NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(*GRenderDevice.Device,nri::MemoryLocation::DEVICE, 0.f, BufferDescription, GeometryBuffer));
-	    }
-	  
-    	nri::BufferUploadDesc BufferUploadData;
-    	BufferUploadData.buffer = GeometryBuffer;
-    	BufferUploadData.data = MegaBuffer.data();
-    	BufferUploadData.after = { nri::AccessBits::INDEX_BUFFER | nri::AccessBits::VERTEX_BUFFER };
+	
+	StaticMeshRenderData = new TStaticMeshRenderData;
+	
+	ENQUEUE_RENDER_COMMAND(TLegacyScene::LoadBuffers)([InStaticMeshRenderData = StaticMeshRenderData, InMegaBuffer = std::move(MegaBuffer)]
+	{
+		{
+			nri::BufferDesc BufferDescription = {};
+			BufferDescription.size = InMegaBuffer.size();
+			BufferDescription.usage = nri::BufferUsageBits::VERTEX_BUFFER | nri::BufferUsageBits::INDEX_BUFFER;
+			NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(*GRenderDevice.Device,nri::MemoryLocation::DEVICE, 0.f, BufferDescription, InStaticMeshRenderData->GeometryBuffer));
 
-    	NRI_CHECK(GRenderDevice.HelperInterface.UploadData(*GRenderDevice.GraphicsQueue, nullptr, 0, &BufferUploadData, 1));
+			nri::BufferUploadDesc BufferUploadData;
+			BufferUploadData.buffer = InStaticMeshRenderData->GeometryBuffer;
+			BufferUploadData.data = InMegaBuffer.data();
+			BufferUploadData.after = {nri::AccessBits::INDEX_BUFFER | nri::AccessBits::VERTEX_BUFFER};
 
-    }
+			NRI_CHECK(GRenderDevice.HelperInterface.UploadData(*GRenderDevice.GraphicsQueue, nullptr, 0, &BufferUploadData, 1));
+		}
+	});
+   
 }
 
 void TLegacyScene::LoadVisuals(IReader* Reader)
@@ -403,6 +443,7 @@ void TLegacyScene::LoadVisuals(IReader* Reader)
 		ogf_header Header;
 		ReaderChunk->r_chunk_safe(OGF_HEADER, &Header, sizeof(Header));
 		CDS0_RenderVisual* V = GModelPool->Instance_Create(Header.type);
+		V->LegacyOwner = this;
 		V->Load(0, ReaderChunk, 0);
 		Visuals.push_back(V);
 		ReaderChunk->close();
@@ -443,6 +484,7 @@ void TLegacyScene::LoadSectors(IReader* Reader)
 		}
 		
 		xr_unique_ptr<TLegacySceneSector>&NewSector = Sectors.emplace_back(xr_make_unique<TLegacySceneSector>());
+		NewSector->LegacyOwner = this;
 		NewSector->load(*P);
 		P->close();
 	}

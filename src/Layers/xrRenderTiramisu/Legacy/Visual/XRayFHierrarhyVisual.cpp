@@ -23,7 +23,7 @@ void CDS0_FHierrarhyVisual::Load(const char* N, IReader* data, u32 dwFlags)
 		for (u32 i = 0; i < count; i++) {
 
 			u32 ID = data->r_u32();
-			children[i] = GRenderResourcesManager->LegacyScene->GetVisual(ID);
+			children[i] = LegacyOwner->GetVisual(ID);
 		}
 		m_DontDelete = true;
 	}

@@ -7,6 +7,7 @@
 #include "Resources/Shaders/Defines/TShaderDefinesContainer.h"
 #include "Resources/Shaders/Global/TGlobalShadersManager.h"
 #include "Resources/Textures/RenderTargets/TRenderTarget2D.h"
+#include "Scene/TRenderScene.h"
 TRender* GRender = nullptr;
 
 TRender::TRender() 
@@ -37,8 +38,6 @@ void TRender::Initialize()
     CreateGlobalConstantBuffer();
     
     OutputRenderTarget = new TRenderTarget2D(1024, 768, nri::Format::RGBA8_UNORM,{} ,"Output");
-    OutputRenderTarget->GetOrCreateHeapIndex();
-    
     DepthRenderTarget = new TRenderTarget2D(1024, 768, nri::Format::D24_UNORM_S8_UINT,{} ,"Depth");
     
     UIPass = new TRenderUIPass;
@@ -243,7 +242,7 @@ void TRender::Submit(TRenderViewport* ToViewport)
         GRenderDevice.CoreInterface.CmdSetVertexBuffers(CommandBuffer, 0, &vertexBufferDesc, 1);
 
         
-        GRenderDevice.CoreInterface.CmdDrawIndexed(CommandBuffer, {6, 1, 0, 0, OutputRenderTarget->GetOrCreateHeapIndex()});
+        GRenderDevice.CoreInterface.CmdDrawIndexed(CommandBuffer, {6, 1, 0, 0, OutputRenderTarget->ResourceProxy->GetOrCreateHeapID()});
     }
     ToViewport->EndRender(SignalSemaphore, nullptr);
     IsWaitSubmit = false;
@@ -257,7 +256,8 @@ void TRender::Render()
     IsWaitSubmit = true;
     
     GRenderDevice.CoreInterface.Wait(*FrameFence, FrameIndex >= QueuedFrames.size() ? 1 + FrameIndex - QueuedFrames.size() : 0);
-    
+    Tiramisu::RenderCommands::ExecuteRenderCommands();
+    GRenderResourcesManager->RenderScene->Update();
     UpdateGlobalConstantBuffer();
     GRenderResourcesManager->FlushNextFrame();
     
@@ -276,15 +276,15 @@ void TRender::Render()
         }
         {
             nri::TextureBarrierDesc TextureBarrierDescription[2] = {};
-            TextureBarrierDescription[0].texture = OutputRenderTarget->Texture;
+            TextureBarrierDescription[0].texture = OutputRenderTarget->ResourceProxy->Texture;
             TextureBarrierDescription[0].layerNum = 1;
             TextureBarrierDescription[0].mipNum = 1;
-            OutputRenderTarget->SetNewAccessLayoutStage(TextureBarrierDescription[0],{nri::AccessBits::COLOR_ATTACHMENT, nri::Layout::COLOR_ATTACHMENT});
+            OutputRenderTarget->RenderTargetResourceProxy->SetNewAccessLayoutStage(TextureBarrierDescription[0],{nri::AccessBits::COLOR_ATTACHMENT, nri::Layout::COLOR_ATTACHMENT});
         
-            TextureBarrierDescription[1].texture = DepthRenderTarget->Texture;
+            TextureBarrierDescription[1].texture = DepthRenderTarget->ResourceProxy->Texture;
             TextureBarrierDescription[1].layerNum = 1;
             TextureBarrierDescription[1].mipNum = 1;
-            DepthRenderTarget->SetNewAccessLayoutStage(TextureBarrierDescription[1],{nri::AccessBits::DEPTH_STENCIL_ATTACHMENT_WRITE, nri::Layout::DEPTH_STENCIL_ATTACHMENT});
+            DepthRenderTarget->RenderTargetResourceProxy->SetNewAccessLayoutStage(TextureBarrierDescription[1],{nri::AccessBits::DEPTH_STENCIL_ATTACHMENT_WRITE, nri::Layout::DEPTH_STENCIL_ATTACHMENT});
         
             
             nri::BarrierDesc BarrierDescription = {};
@@ -294,7 +294,7 @@ void TRender::Render()
         }
         {
             nri::AttachmentDesc ColorAttachmentDescription = {};
-            ColorAttachmentDescription.descriptor =  OutputRenderTarget->DescriptorAttachment;
+            ColorAttachmentDescription.descriptor =  OutputRenderTarget->RenderTargetResourceProxy->DescriptorAttachment;
             ColorAttachmentDescription.clearValue.color.f = {0.0f, 0.0f, 0.0f, 1.0f};
             ColorAttachmentDescription.loadOp = nri::LoadOp::CLEAR;
 
@@ -303,7 +303,7 @@ void TRender::Render()
             RenderingDescription.colors = &ColorAttachmentDescription;
             RenderingDescription.depth.clearValue = {1,0x0};
             RenderingDescription.depth.loadOp = nri::LoadOp::CLEAR;
-            RenderingDescription.depth.descriptor = DepthRenderTarget->DescriptorAttachment;
+            RenderingDescription.depth.descriptor = DepthRenderTarget->RenderTargetResourceProxy->DescriptorAttachment;
             
             GRenderDevice.CoreInterface.CmdBeginRendering(CurrentCommandBuffer, RenderingDescription);
         }
@@ -333,10 +333,10 @@ void TRender::Render()
         GRenderDevice.CoreInterface.CmdEndRendering(CurrentCommandBuffer);
         {
             nri::TextureBarrierDesc TextureBarrierDescription = {};
-            TextureBarrierDescription.texture = OutputRenderTarget->Texture;
+            TextureBarrierDescription.texture = OutputRenderTarget->ResourceProxy->Texture;
             TextureBarrierDescription.layerNum = 1;
             TextureBarrierDescription.mipNum = 1;
-            OutputRenderTarget->SetNewAccessLayoutStage(TextureBarrierDescription, {nri::AccessBits::SHADER_RESOURCE, nri::Layout::SHADER_RESOURCE});
+            OutputRenderTarget->RenderTargetResourceProxy->SetNewAccessLayoutStage(TextureBarrierDescription, {nri::AccessBits::SHADER_RESOURCE, nri::Layout::SHADER_RESOURCE});
 
             nri::BarrierDesc BarrierDescription = {};
             BarrierDescription.textureNum = 1;
@@ -387,7 +387,6 @@ void TRender::ResizeRenderTarget(uint32_t InWidth, uint32_t InHeight)
         delete OutputRenderTarget;
     }
     OutputRenderTarget = new TRenderTarget2D(InWidth, InHeight, nri::Format::RGBA8_UNORM,{} ,"Output");
-    OutputRenderTarget->GetOrCreateHeapIndex();
     
     if (DepthRenderTarget)
     {
@@ -438,6 +437,4 @@ void TRender::UpdateGlobalConstantBuffer()
         ConstantBuffer->ViewProjection = DevicePtr->mFullTransform;
         GRenderDevice.CoreInterface.UnmapBuffer(*GlobalConstantBuffer);
     }
-    
-    
 }

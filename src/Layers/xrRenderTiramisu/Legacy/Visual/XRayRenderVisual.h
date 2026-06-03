@@ -1,10 +1,13 @@
 #pragma once
+#include "Legacy/Scene/TLegacyScene.h"
+class TRenderMaterialInterface;
+class TLegacyScene;
 struct FLegacySceneShader;
 class TRenderTexture;
 
 struct FLegacyVisualSceneVertexBuffer
 {
-	ELegacyLevelVertexType  VertexType = ELegacyLevelVertexType::BaseWithLightColor;
+	EVertexType		VertexType = EVertexType::BaseWithLightColor;
 	uint32_t                    Offset = 0;
 	uint32_t                    Size = 0;
 	uint32_t                    Stride = 0;
@@ -35,8 +38,7 @@ struct FLegacyVisualRenderItem
 	uint32_t		CountIndex = 0;
 	uint32_t		OffsetIndex = 0;
 	
-	shared_str		LegacyShaderName;
-	TRenderTexture*	Texture = nullptr;
+	TRenderMaterialInterface*	Material = nullptr;
 	
 	nri::Buffer*	VertexBuffer = nullptr;
 	nri::Buffer*	IndexBuffer = nullptr;
@@ -64,5 +66,7 @@ public:
 	vis_data Vis;
 	u32 Type;
 	shared_str DebugName;
-	const FLegacySceneShader* SceneShader = nullptr;
+	TLegacyScene* LegacyOwner = nullptr;
+	TRenderMaterialInterface* Material = nullptr;
+	
 };

@@ -69,6 +69,7 @@ bool TRenderTexture2D::LoadFromImage(const RedImageTool::RedImage& FromImage, bo
         return false;
     }
     
+    
     TextureDescription.type = nri::TextureType::TEXTURE_2D;
     TextureDescription.usage = nri::TextureUsageBits::SHADER_RESOURCE;
     TextureDescription.format = ConvertFormatToNRI(FromImage.GetFormat(), bSrgb);
@@ -76,35 +77,41 @@ bool TRenderTexture2D::LoadFromImage(const RedImageTool::RedImage& FromImage, bo
     TextureDescription.height = FromImage.GetHeight();
     TextureDescription.mipNum = FromImage.GetMips();
     TextureDescription.layerNum = FromImage.GetDepth();
-
-    NRI_CHECK(GRenderDevice.CoreInterface.CreatePlacedTexture(*GRenderDevice.Device, NriDeviceHeap, TextureDescription, Texture));
-
-    nri::TextureViewDesc TextureViewDescription = {Texture, nri::TextureView::TEXTURE, TextureDescription.format};
-    NRI_CHECK(GRenderDevice.CoreInterface.CreateTextureView(TextureViewDescription, Descriptor));
-
-    xr_vector<nri::TextureSubresourceUploadDesc> SubresourceUploadDescriptions;
-    const uint8_t* Pointer = static_cast<const uint8_t*>(*FromImage);
-    for (int32_t i = 0; i < FromImage.GetDepth() ; i++)
+    
+    ResourceProxy = new TRenderTextureResourceProxy;
+    ResourceProxy->TextureDescription = TextureDescription;
+    
+    ENQUEUE_RENDER_COMMAND(TRenderTexture2D::LoadFromImage)([ResourceProxy = ResourceProxy,FromImage = std::move(FromImage)]()
     {
-        for (int32_t a = 0; a < FromImage.GetMips() ; a++)
+        NRI_CHECK(GRenderDevice.CoreInterface.CreatePlacedTexture(*GRenderDevice.Device, NriDeviceHeap, ResourceProxy->TextureDescription, ResourceProxy->Texture));
+        nri::TextureViewDesc TextureViewDescription = {ResourceProxy->Texture, nri::TextureView::TEXTURE, ResourceProxy->TextureDescription.format};
+        NRI_CHECK(GRenderDevice.CoreInterface.CreateTextureView(TextureViewDescription, ResourceProxy->Descriptor));
+
+        xr_vector<nri::TextureSubresourceUploadDesc> SubresourceUploadDescriptions;
+        const uint8_t* Pointer = static_cast<const uint8_t*>(*FromImage);
+        for (int32_t i = 0; i < FromImage.GetDepth() ; i++)
         {
-            size_t Width = RedImageTool::RedTextureUtils::GetMip(FromImage.GetWidth() , a);
-            size_t Height = RedImageTool::RedTextureUtils::GetMip(FromImage.GetHeight() , a);
-            nri::TextureSubresourceUploadDesc& SubresourceUploadDescription = SubresourceUploadDescriptions.emplace_back();
-            SubresourceUploadDescription.slices = Pointer; 
-            SubresourceUploadDescription.rowPitch = RedImageTool::RedTextureUtils::GetSizeWidth(Width,FromImage.GetFormat());
-            SubresourceUploadDescription.slicePitch = RedImageTool::RedTextureUtils::GetSizeDepth(Width,Height,FromImage.GetFormat());
-            SubresourceUploadDescription.sliceNum = 1;
-            Pointer += SubresourceUploadDescription.slicePitch;
+           for (int32_t a = 0; a < FromImage.GetMips() ; a++)
+           {
+               size_t Width = RedImageTool::RedTextureUtils::GetMip(FromImage.GetWidth() , a);
+               size_t Height = RedImageTool::RedTextureUtils::GetMip(FromImage.GetHeight() , a);
+               nri::TextureSubresourceUploadDesc& SubresourceUploadDescription = SubresourceUploadDescriptions.emplace_back();
+               SubresourceUploadDescription.slices = Pointer; 
+               SubresourceUploadDescription.rowPitch = RedImageTool::RedTextureUtils::GetSizeWidth(Width,FromImage.GetFormat());
+               SubresourceUploadDescription.slicePitch = RedImageTool::RedTextureUtils::GetSizeDepth(Width,Height,FromImage.GetFormat());
+               SubresourceUploadDescription.sliceNum = 1;
+               Pointer += SubresourceUploadDescription.slicePitch;
+           }
         }
-    }
-  
 
-    nri::TextureUploadDesc textureUploadDesc = {};
-    textureUploadDesc.subresources = SubresourceUploadDescriptions.data();
-    textureUploadDesc.texture = Texture;
-    textureUploadDesc.after = {nri::AccessBits::SHADER_RESOURCE, nri::Layout::SHADER_RESOURCE};
 
-    NRI_CHECK(GRenderDevice.HelperInterface.UploadData(*GRenderDevice.GraphicsQueue, &textureUploadDesc, 1, nullptr, 0));
-    return true;
+        nri::TextureUploadDesc textureUploadDesc = {};
+        textureUploadDesc.subresources = SubresourceUploadDescriptions.data();
+        textureUploadDesc.texture = ResourceProxy->Texture;
+        textureUploadDesc.after = {nri::AccessBits::SHADER_RESOURCE, nri::Layout::SHADER_RESOURCE};
+
+        NRI_CHECK(GRenderDevice.HelperInterface.UploadData(*GRenderDevice.GraphicsQueue, &textureUploadDesc, 1, nullptr, 0));
+    }); 
+    
+   return true;
 }
