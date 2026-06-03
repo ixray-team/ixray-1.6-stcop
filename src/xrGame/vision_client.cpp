@@ -6,7 +6,7 @@
 //	Description : vision client
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "vision_client.h"
 #include "Entity.h"
 #include "visual_memory_manager.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIDMStatisticWnd.h"
 #include "../Level.h"
 #include "../game_cl_base_weapon_usage_statistic.h"

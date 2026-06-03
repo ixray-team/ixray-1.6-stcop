@@ -130,7 +130,7 @@ SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemFuel, CSE_ALifeItem)
 
-CSE_ALifeItemFuel(LPCSTR caSection);
+CSE_ALifeItemFuel(str_c caSection);
 virtual							~CSE_ALifeItemFuel();
 virtual CSE_ALifeItemFuel* cast_item_fuel() override { return this; }
 virtual bool					can_switch_online() const;
@@ -211,7 +211,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemFlamethrower, CSE_ALifeItemWeapon)
-CSE_ALifeItemFlamethrower(LPCSTR caSection);
+CSE_ALifeItemFlamethrower(str_c caSection);
 virtual							~CSE_ALifeItemFlamethrower();
 
 virtual CSE_ALifeItemFlamethrower* cast_item_flamethrower() override { return this; }
@@ -264,7 +264,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemArtefact,CSE_ALifeItem)
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemArtefactCombiner,CSE_ALifeItem)
-	CSE_ALifeItemArtefactCombiner(LPCSTR caSection);
+	CSE_ALifeItemArtefactCombiner(str_c caSection);
 	virtual ~CSE_ALifeItemArtefactCombiner();
 #ifdef XRGAME_EXPORTS
 	virtual void add_offline (const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries) override;

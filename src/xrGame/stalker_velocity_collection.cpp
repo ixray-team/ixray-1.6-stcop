@@ -6,7 +6,7 @@
 //	Description : Stalker velocity collection
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "stalker_velocity_collection.h"
 
 using namespace MonsterSpace;

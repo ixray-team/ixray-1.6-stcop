@@ -6,7 +6,7 @@
 //	Description : Seniority hierarchy holder
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "client_spawn_manager.h" 
 #include "ai_space.h" 
@@ -57,13 +57,13 @@ void CClientSpawnManager::add				(ALife::_OBJECT_ID requesting_id, ALife::_OBJEC
 		return;
 	}
 	
-	REQUESTED_REGISTRY::iterator	J = (*I).second.find(requested_id);
-	if (J == (*I).second.end()) {
-		(*I).second.insert			(std::make_pair(requested_id,spawn_callback));
+	REQUESTED_REGISTRY::iterator	J = I->second.find(requested_id);
+	if (J == I->second.end()) {
+		I->second.insert			(std::make_pair(requested_id,spawn_callback));
 		return;
 	}
 
-	merge_spawn_callbacks			(spawn_callback,(*J).second);
+	merge_spawn_callbacks			(spawn_callback,J->second);
 }
 
 void CClientSpawnManager::remove			(REQUESTED_REGISTRY &registry, ALife::_OBJECT_ID requesting_id, ALife::_OBJECT_ID requested_id, bool no_warning)
@@ -85,8 +85,8 @@ void CClientSpawnManager::remove			(ALife::_OBJECT_ID requesting_id, ALife::_OBJ
 		return;
 	}
 
-	remove							((*I).second,requesting_id,requested_id);
-	if (!(*I).second.empty())
+	remove							(I->second,requesting_id,requested_id);
+	if (!I->second.empty())
 		return;
 
 	m_registry.erase				(I);
@@ -97,8 +97,8 @@ void CClientSpawnManager::clear				(ALife::_OBJECT_ID requested_id)
 	REQUEST_REGISTRY::iterator		I = m_registry.begin();
 	REQUEST_REGISTRY::iterator		E = m_registry.end();
 	for ( ; I != E; ) {
-		remove						((*I).second,(*I).first,requested_id,true);
-		if (!(*I).second.empty()) {
+		remove						(I->second,I->first,requested_id,true);
+		if (!I->second.empty()) {
 			++I;
 			continue;
 		}
@@ -126,12 +126,12 @@ void CClientSpawnManager::callback			(CObject *object)
 	if (I == m_registry.end())
 		return;
 
-	REQUESTED_REGISTRY::iterator	i = (*I).second.begin();
-	REQUESTED_REGISTRY::iterator	e = (*I).second.end();
+	REQUESTED_REGISTRY::iterator	i = I->second.begin();
+	REQUESTED_REGISTRY::iterator	e = I->second.end();
 	for ( ; i != e; ++i)
-		callback					((*i).second,object);
+		callback					(i->second,object);
 
-	(*I).second.clear				();
+	I->second.clear				();
 	m_registry.erase				(I);
 }
 
@@ -147,11 +147,11 @@ const CClientSpawnManager::CSpawnCallback *CClientSpawnManager::callback(ALife::
 	if (I == m_registry.end())
 		return						(0);
 
-	REQUESTED_REGISTRY::const_iterator	i = (*I).second.find(requesting_id);
-	if (i == (*I).second.end())
+	REQUESTED_REGISTRY::const_iterator	i = I->second.find(requesting_id);
+	if (i == I->second.end())
 		return						(0);
 
-	return							(&(*i).second);
+	return							(&i->second);
 }
 
 #ifdef DEBUG
@@ -164,11 +164,11 @@ void CClientSpawnManager::dump	() const
 	REQUEST_REGISTRY::const_iterator	I = m_registry.begin();
 	REQUEST_REGISTRY::const_iterator	E = m_registry.end();
 	for ( ; I != E; ++I) {
-		Msg							("[%d], i.e. object with id %d left with hanging callbacks on it",(*I).first,(*I).first);
-		REQUESTED_REGISTRY::const_iterator	i = (*I).second.begin();
-		REQUESTED_REGISTRY::const_iterator	e = (*I).second.end();
+		Msg							("[%d], i.e. object with id %d left with hanging callbacks on it",I->first,I->first);
+		REQUESTED_REGISTRY::const_iterator	i = I->second.begin();
+		REQUESTED_REGISTRY::const_iterator	e = I->second.end();
 		for ( ; i != e; ++i)
-			Msg						("[%d][%d], i.e. object with id %d waits for object with id %d",(*I).first,(*i).first,(*i).first,(*I).first);
+			Msg						("[%d][%d], i.e. object with id %d waits for object with id %d",I->first,i->first,i->first,I->first);
 	}
 }
 
@@ -177,13 +177,13 @@ void CClientSpawnManager::dump		(ALife::_OBJECT_ID	requesting_id) const
 	REQUEST_REGISTRY::const_iterator		I = m_registry.begin();
 	REQUEST_REGISTRY::const_iterator		E = m_registry.end();
 	for ( ; I != E; ++I) {
-		if ((*I).first == requesting_id)
+		if (I->first == requesting_id)
 			Msg								("! CClientSpawnManager::dump[hanging id %d]",requesting_id);
 
-		REQUESTED_REGISTRY::const_iterator	i = (*I).second.begin();
-		REQUESTED_REGISTRY::const_iterator	e = (*I).second.end();
+		REQUESTED_REGISTRY::const_iterator	i = I->second.begin();
+		REQUESTED_REGISTRY::const_iterator	e = I->second.end();
 		for ( ; i != e; ++i)
-			Msg								("! CClientSpawnManager::dump[id %d waits for %d]",requesting_id,(*i).first);
+			Msg								("! CClientSpawnManager::dump[id %d waits for %d]",requesting_id,i->first);
 	}
 }
 #endif // DEBUG

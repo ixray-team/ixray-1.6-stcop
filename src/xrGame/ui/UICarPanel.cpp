@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIMainIngameWnd.h"
 #include "UICarPanel.h"
 #include "../../xrUI/UIXmlInit.h"

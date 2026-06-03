@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #ifdef XR_MP_BUILD
 #include "xr_dsa_verifyer.h"
 

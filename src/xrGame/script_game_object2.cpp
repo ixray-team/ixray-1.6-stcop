@@ -6,7 +6,7 @@
 //	Description : Script game object class script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_game_object.h"
 #include "ai_space.h"
@@ -162,7 +162,9 @@ void CScriptGameObject::Hit(CScriptHit* tpLuaHit)
 	SHit HS;
 
 	HS.GenHeader(GE_HIT, object().ID());										//	object().u_EventGen(P,GE_HIT,object().ID());
-	THROW2(tLuaHit.m_tpDraftsman, "Where is hit initiator??!");	//	THROW2			(tLuaHit.m_tpDraftsman,"Where is hit initiator??!");
+	// Кто-то вообще знал про такую вещь как "триграфы"?
+	// Не удивительно - они вырезаны ещё в С++17, но кланг матерится даже в С++23
+	THROW2(tLuaHit.m_tpDraftsman, "Where is hit initiator?""?!");	//	THROW2			(tLuaHit.m_tpDraftsman,"Where is hit initiator??!");
 	HS.whoID = u16(tLuaHit.m_tpDraftsman->ID());							//	P.w_u16			(u16(tLuaHit.m_tpDraftsman->ID()));
 	HS.weaponID = 0;														//	P.w_u16			(0);
 	HS.dir = tLuaHit.m_tDirection;											//	P.w_dir			(tLuaHit.m_tDirection);

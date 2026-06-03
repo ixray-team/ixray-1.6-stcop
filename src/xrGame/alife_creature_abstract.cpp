@@ -6,7 +6,7 @@
 //	Description : ALife creature abstract class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "monster_community.h"
 #include "Level.h"

@@ -62,7 +62,7 @@ bool r_line(CScriptIniFile* self_, const char* S, int L, luabind::internal_strin
 	V = "";
 
 	const char* n, * v;
-	bool			result_ = !!self_->r_line(S, L, &n, &v);
+	bool			result_ = !!self_->r_line(S, L, n, v);
 	if (!result_)
 		return		(false);
 

@@ -99,7 +99,8 @@ bool ShaderElement::equal	(ShaderElement& S)
 }
 
 bool ShaderElement::equal	(ShaderElement* S)
-{	
+{
+	// TODO: Эти сравнения this с nullptr вообще работают? Выглядит как UB
 	if (nullptr==S && nullptr==this)	return true;
 	if (nullptr==S || nullptr==this)	return false;
 	return	equal	(*S);	

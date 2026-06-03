@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UITaskDescrWnd.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"

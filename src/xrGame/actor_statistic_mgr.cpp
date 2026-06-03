@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "actor_statistic_mgr.h"
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
@@ -101,7 +101,7 @@ SStatDetailBData&	SStatSectionData::GetData	(const shared_str& key_)
 	vStatDetailData::iterator it_e		= data.end();
 
 	for(;it!=it_e;++it){
-		if((*it).key == key_)
+		if(it->key == key_)
 			return *it;
 	}
 	data.resize				(data.size()+1);
@@ -118,10 +118,10 @@ s32 SStatSectionData::GetTotalPoints() const
 	vStatDetailData::const_iterator it_e	= data.end();
 	for(;it!=it_e;++it)
 	{
-		if((*it).str_value.size()!=0)
+		if(it->str_value.size()!=0)
 			return -1;
 		
-		res		+= (*it).int_count*(*it).int_points;
+		res		+= it->int_count*it->int_points;
 	}
 	return res;
 
@@ -154,7 +154,7 @@ SStatSectionData&	CActorStatisticMgr::GetSection		(const shared_str& key)
 	vStatSectionData::iterator it		= d.begin();
 	vStatSectionData::iterator it_e		= d.end();
 	for(;it!=it_e;++it){
-		if((*it).key==key)
+		if(it->key==key)
 			return *it;
 	}
 	d.resize						(d.size()+1);
@@ -188,7 +188,7 @@ s32 CActorStatisticMgr::GetSectionPoints(const shared_str& key)
 		vStatSectionData::iterator it_e		= d.end();
 		for(;it!=it_e;++it)
 		{
-			s32 _p = (*it).GetTotalPoints();
+			s32 _p = it->GetTotalPoints();
 
 			if(_p !=-1)
 			{

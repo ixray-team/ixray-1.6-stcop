@@ -6,7 +6,7 @@
 //	Description : Sight action
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "sight_action.h"
 #include "ai/stalker/ai_stalker.h"
 #include "sight_manager.h"

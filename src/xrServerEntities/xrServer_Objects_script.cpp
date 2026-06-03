@@ -6,7 +6,7 @@
 //	Description : Server objects script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "xrServer_Objects.h"
 #include "PHNetState.h"

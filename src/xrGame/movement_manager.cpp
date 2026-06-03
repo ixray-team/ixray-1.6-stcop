@@ -6,7 +6,7 @@
 //	Description : Movement manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "movement_manager.h"
 #include "movement_manager_space.h"

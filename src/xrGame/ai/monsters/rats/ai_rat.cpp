@@ -6,7 +6,7 @@
 //	Description : AI Behaviour for monster "Rat"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ai_rat.h"
 #include "../../ai_monsters_misc.h"
 #include "../../../../xrPhysics/PhysicsShell.h"

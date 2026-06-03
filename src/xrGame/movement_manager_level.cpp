@@ -6,7 +6,7 @@
 //	Description : Movement manager for level paths
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "movement_manager.h"
 #include "level_location_selector.h"
 #include "level_path_manager.h"

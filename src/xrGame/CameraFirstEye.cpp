@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "CameraFirstEye.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/xr_object.h"

@@ -5,7 +5,7 @@
 //	Description : UI Ranking window class implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "UIRankingWnd.h"
 #include "PdaUiSound.h"
@@ -976,7 +976,7 @@ void CUIRankingWnd::get_favorite_weapon()
 	{
 		if(pSettings->section_exist(str) && pSettings->line_exist(str, "upgr_icon_x"))
 		{
-			const char* upgrIconsTexture = pSettings->read_if_exists<LPCSTR>(str,"upgr_icons_texture",nullptr);
+			const char* upgrIconsTexture = pSettings->read_if_exists<str_c>(str,"upgr_icons_texture",nullptr);
 			m_favorite_weapon_icon->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader(upgrIconsTexture));
 			if(!xr_strcmp(str, "wpn_rpg7"))
 				m_favorite_weapon_icon->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader(upgrIconsTexture));

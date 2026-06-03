@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../xrSound/ai_sounds.h"
-#include "weapon.h"
+#include "Weapon.h"
 #include "FlameCanister.h"
 #include "FlamethrowerTraceCollision.h"
 
@@ -71,7 +71,7 @@ public:
 	CFlamethrower(ESoundTypes eSoundType = SOUND_TYPE_WEAPON_SUBMACHINEGUN);
 	~CFlamethrower() override;
 
-	void	Load(LPCSTR section) override;
+	void	Load(str_c section) override;
 	virtual CFlamethrower* cast_flamethrower() override { return this; }
 
 	bool    UseScopeTexture() override;
@@ -154,10 +154,10 @@ public:
 
 	virtual void Serialize(ISaveObject& Object) override;
 
-	void	SpawnFuelCanister(float Condition, LPCSTR ammoSect = nullptr, ALife::_OBJECT_ID ParentID = ALife::INVALID_OBJECT_ID);
+	void	SpawnFuelCanister(float Condition, str_c ammoSect = nullptr, ALife::_OBJECT_ID ParentID = ALife::INVALID_OBJECT_ID);
 
 protected:
-	bool	install_upgrade_impl(LPCSTR section, bool test) override;
+	bool	install_upgrade_impl(str_c section, bool test) override;
 
 protected:
 	virtual bool	AllowFireWhileWorking() { return false; }
@@ -178,7 +178,7 @@ protected:
 
 protected:
 
-	virtual void    SetAnimFlag(u32 flag, LPCSTR anim_name);
+	virtual void    SetAnimFlag(u32 flag, str_c anim_name);
 
 	// ����� ������� ��������, ����� �� ������ �������, ��� ����� ������� ����� �����
 	enum {
@@ -200,7 +200,7 @@ protected:
 
 	Flags32 psWpnAnimsFlag;
 
-	bool WeaponSoundExist(LPCSTR section, LPCSTR sound_name, bool log = false) const;
+	bool WeaponSoundExist(str_c section, str_c sound_name, bool log = false) const;
 
 	float	GetWeaponDeterioration() override;
 

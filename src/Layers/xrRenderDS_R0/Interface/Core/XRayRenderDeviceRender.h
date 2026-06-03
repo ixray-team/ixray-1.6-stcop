@@ -19,7 +19,7 @@ public:
 	virtual void	DestroyHW() ;
 	//	Init
 	virtual void	SetupStates() ;
-	virtual void	OnDeviceCreate(LPCSTR shName) ;
+	virtual void	OnDeviceCreate(str_c shName) ;
 	virtual void	SetupGPU(bool bForceGPU_SW, bool bForceGPU_NonPure, bool bForceGPU_REF) ;
 	//	Overdraw
 	virtual void	overdrawBegin() ;

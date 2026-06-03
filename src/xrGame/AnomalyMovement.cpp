@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "AnomalyMovement.h"
 #include "object_broker.h"
 #include "..\xrServerEntities\xrServer_Object_Base.h"

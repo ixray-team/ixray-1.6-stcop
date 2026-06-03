@@ -4,7 +4,7 @@
 #include "Flamethrower.h"
 #include "../xrEngine/xr_collide_form.h"
 #include "Level_Bullet_Manager.h"
-#include "../xrEngine/gamemtllib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "../xrCore/_vector3d_ext.h"
 
 void FlamethrowerTrace::CPoint::UpdateAir(float delta_time)
@@ -578,7 +578,7 @@ bool FlamethrowerTrace::CManager::feel_touch_contact(CObject* O)
 	return false;
 }
 
-void FlamethrowerTrace::CManager::Load(LPCSTR section)
+void FlamethrowerTrace::CManager::Load(str_c section)
 {
 	for (auto& elem : ActiveTraces) {
 		xr_delete(elem);

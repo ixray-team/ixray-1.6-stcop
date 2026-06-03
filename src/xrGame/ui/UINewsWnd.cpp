@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "UINewsWnd.h"
 #include "../../xrUI/xrUIXmlParser.h"

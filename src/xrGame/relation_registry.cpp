@@ -3,7 +3,7 @@
 //							другим персонажам
 //////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "relation_registry.h"
 #include "alife_registry_wrappers.h"
 
@@ -147,7 +147,7 @@ s32	 RELATION_REGISTRY::GetGoodwill			(ALife::_OBJECT_ID from, ALife::_OBJECT_ID
 		PERSONAL_RELATION_MAP::const_iterator it = relation_data->personal.find(to);
 		if(relation_data->personal.end() != it)
 		{
-			const SRelation& relation = (*it).second;
+			const SRelation& relation = it->second;
 			return relation.Goodwill();
 		}
 	}

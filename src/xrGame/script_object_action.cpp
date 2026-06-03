@@ -6,7 +6,7 @@
 //	Description : Script object action class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "script_object_action.h"
 #include "script_game_object.h"
 

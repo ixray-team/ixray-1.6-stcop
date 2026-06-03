@@ -6,7 +6,7 @@
 //	Description : ALife graph registry
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_graph_registry.h"
 #include "../xrEngine/x_ray.h"
 #include <Actor.h>
@@ -42,7 +42,7 @@ void CALifeGraphRegistry::on_load			()
 		GRAPH_REGISTRY::iterator	I = m_objects.begin();
 		GRAPH_REGISTRY::iterator	E = m_objects.end();
 		for ( ; I != E; ++I)
-			(*I).objects().clear	();
+			I->objects().clear	();
 	}
 }
 
@@ -80,7 +80,7 @@ void CALifeGraphRegistry::setup_current_level	()
 			D_OBJECT_P_MAP::const_iterator	I = m_objects[i].objects().objects().begin();
 			D_OBJECT_P_MAP::const_iterator	E = m_objects[i].objects().objects().end();
 			for ( ; I != E; ++I)
-				level().add		((*I).second);
+				level().add		(I->second);
 		}
 
 	{
@@ -94,9 +94,9 @@ void CALifeGraphRegistry::setup_current_level	()
 	GameGraph::LEVEL_MAP::const_iterator I = ai().game_graph().header().levels().find(ai().game_graph().vertex(actor()->m_tGraphID)->level_id());
 	R_ASSERT2					(ai().game_graph().header().levels().end() != I,"Graph point level ID not found!");
 
-	int							id = pApp->Level_ID(*(*I).second.name(),"1.0", true);
-	VERIFY3						(id >= 0,"Level is corrupted or doesn't exist",*(*I).second.name());
-	ai().load					(*(*I).second.name());
+	int							id = pApp->Level_ID(*I->second.name(),"1.0", true);
+	VERIFY3						(id >= 0,"Level is corrupted or doesn't exist",*I->second.name());
+	ai().load					(*I->second.name());
 
     g_start_game_vertex_id = 0;
 }

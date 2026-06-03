@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_space.h"
 #include "Hit.h"
 #include "../xrEngine/bone.h"

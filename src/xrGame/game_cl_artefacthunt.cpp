@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "game_cl_artefacthunt.h"
 #include "xrMessages.h"
 #include "Level.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "PdaConstants.h"
 #include "../../xrUI/xrUIXmlParser.h"
 

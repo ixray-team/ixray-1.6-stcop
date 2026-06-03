@@ -6,7 +6,7 @@
 //	Description : ALife smart terrain task
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "alife_smart_terrain_task.h"
 

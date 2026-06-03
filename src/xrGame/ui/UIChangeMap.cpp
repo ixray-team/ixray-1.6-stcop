@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIChangeMap.h"
 #include "UIVotingCategory.h"
 #include "../../xrUI/UIXmlInit.h"

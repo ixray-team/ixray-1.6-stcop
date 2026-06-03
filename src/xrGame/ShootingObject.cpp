@@ -3,7 +3,7 @@
 //						(оружие и осколочные гранаты) 	
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "ShootingObject.h"
 #include "WeaponAmmo.h"

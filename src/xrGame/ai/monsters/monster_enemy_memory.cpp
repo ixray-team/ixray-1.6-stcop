@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "monster_enemy_memory.h"
 #include "basemonster/base_monster.h"
@@ -257,7 +257,7 @@ void CMonsterEnemyMemory::remove_links(CObject *O)
 	}
 
 	for (ENEMIES_MAP_IT	I = m_objects.begin();I!=m_objects.end();++I) {
-		if ((*I).first == O) {
+		if (I->first == O) {
 			m_objects.erase(I);
 			break;
 		}

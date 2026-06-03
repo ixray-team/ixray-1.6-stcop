@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "InventoryBox.h"
 #include "Level.h"
@@ -160,7 +160,7 @@ void CInventoryBox::SE_update_status()
 	CGameObject::u_EventSend(P);
 }
 
-void CTradeStorageBox::Load(LPCSTR section)
+void CTradeStorageBox::Load(str_c section)
 {
 	CInventoryBox::Load(section);
 	auto FilterSection = pSettings->r_string_nullable(section, "filter_section");
@@ -188,7 +188,7 @@ void CTradeStorageBox::Load(LPCSTR section)
 			{
 				if(Item.first.c_str()[0] == '$')
 				{
-					LPCSTR section_name = Item.first.c_str()+1;
+					str_c section_name = Item.first.c_str()+1;
 					self(section_name);
 					continue;
 				}

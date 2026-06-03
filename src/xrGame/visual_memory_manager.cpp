@@ -6,7 +6,7 @@
 //	Description : Visual memory manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "visual_memory_manager.h"
 #include "ai/stalker/ai_stalker.h"
@@ -158,8 +158,8 @@ void CVisualMemoryManager::reload				(const char* section)
 		m_danger.Load	(pSettings->r_string(section,"vision_danger_section"),true);
 	}
 	else if (m_object) {
-        m_free.Load(pSettings->read_if_exists<LPCSTR>(section, "vision_free_section", section), !!m_client);
-        m_danger.Load(pSettings->read_if_exists<LPCSTR>(section, "vision_danger_section", section), !!m_client);
+        m_free.Load(pSettings->read_if_exists<str_c>(section, "vision_free_section", section), !!m_client);
+        m_danger.Load(pSettings->read_if_exists<str_c>(section, "vision_danger_section", section), !!m_client);
 	}
 	else {
 		m_free.Load		(section,!!m_client);
@@ -205,10 +205,10 @@ bool CVisualMemoryManager::visible_right_now	(const CGameObject *game_object) co
 	if ((objects().end() == I))
 		return						(false);
 
-	if (!(*I).visible(mask()))
+	if (!I->visible(mask()))
 		return						(false);
 
-	if ((*I).m_level_time < m_last_update_time)
+	if (I->m_level_time < m_last_update_time)
 		return						(false);
 
 	return							(true);
@@ -228,7 +228,7 @@ bool CVisualMemoryManager::visible_now	(const CGameObject *game_object) const
 	}
 
 	VISIBLES::const_iterator		I = std::find(objects().begin(),objects().end(), CMemoryObject::object_id(game_object));
-	return							((objects().end() != I) && (*I).visible(mask()));
+	return							((objects().end() != I) && I->visible(mask()));
 }
 
 void CVisualMemoryManager::enable		(const CObject *object, bool enable)
@@ -236,7 +236,7 @@ void CVisualMemoryManager::enable		(const CObject *object, bool enable)
 	VISIBLES::iterator	J = std::find(m_objects->begin(),m_objects->end(), CMemoryObject::object_id(object));
 	if (J == m_objects->end())
 		return;
-	(*J).m_enabled					= enable;
+	J->m_enabled					= enable;
 }
 
 float CVisualMemoryManager::object_visible_distance(const CGameObject *game_object, float &object_distance) const
@@ -513,11 +513,11 @@ void CVisualMemoryManager::add_visible_object(const CObject* object, float time_
 	}
 	else {
 		if (!fictitious)
-			(*J).fill(game_object, self, (*J).m_squad_mask.get() | mask(), (*J).m_visible.get() | mask());
+			J->fill(game_object, self, J->m_squad_mask.get() | mask(), J->m_visible.get() | mask());
 		else {
-			(*J).m_visible.assign((*J).m_visible.get() | mask());
-			(*J).m_squad_mask.assign((*J).m_squad_mask.get() | mask());
-			(*J).m_enabled = true;
+			J->m_visible.assign(J->m_visible.get() | mask());
+			J->m_squad_mask.assign(J->m_squad_mask.get() | mask());
+			J->m_enabled = true;
 		}
 	}
 }
@@ -693,8 +693,8 @@ void CVisualMemoryManager::update				(float time_delta)
 		xr_vector<CVisibleObject>::iterator	I = m_objects->begin();
 		xr_vector<CVisibleObject>::iterator	E = m_objects->end();
 		for (; I != E; ++I)
-			if ((*I).m_level_time + current_state().m_still_visible_time < Device.dwTimeGlobal)
-				(*I).visible(mask, false);
+			if (I->m_level_time + current_state().m_still_visible_time < Device.dwTimeGlobal)
+				I->visible(mask, false);
 	}
 
 	{
@@ -710,8 +710,8 @@ void CVisualMemoryManager::update				(float time_delta)
 		xr_vector<CNotYetVisibleObject>::iterator	I = m_not_yet_visible_objects.begin();
 		xr_vector<CNotYetVisibleObject>::iterator	E = m_not_yet_visible_objects.end();
 		for ( ; I != E; ++I)
-			if ((*I).m_update_time < Device.dwTimeGlobal)
-				(*I).m_value			= 0.f;
+			if (I->m_update_time < Device.dwTimeGlobal)
+				I->m_value			= 0.f;
 	}
 
 	// verifying if object is online
@@ -750,7 +750,7 @@ void CVisualMemoryManager::update				(float time_delta)
 			SetActorVisibility				(
 				m_object->ID(),
 				clampr(
-					(*I).m_value/visibility_threshold(),
+					I->m_value/visibility_threshold(),
 					0.f,
 					1.f
 				)

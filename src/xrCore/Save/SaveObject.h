@@ -1,11 +1,10 @@
 #pragma once
 #include "SaveInterface.h"
-#include "../xrScripts/script_export_space.h"
 #include "SaveChunk.h"
-#include "../xrCore/fastdelegate.h"
+#include "src/xrCore/fastdelegate.h"
 #include "type_traits"
-#include "../xrCore/shared_string.h"
-#include "../xrCore/associative_vector.h"
+#include "src/xrCore/shared_string.h"
+#include "src/xrCore/associative_vector.h"
 
 class CSaveObjectSave;
 class CSaveObjectLoad;
@@ -251,7 +250,7 @@ public:
 		return *this;
 	}
 
-	template<IsSaveObjectSerializable T, size_t Size>
+	template<IsSaveObjectSerializable T, const int Size>
 	ISaveObject& Serialize(svector<T, Size>& Value) {
 		if (IsSave()) {
 			GetCurrentChunk()->WriteArray();
@@ -757,7 +756,7 @@ ISaveObject& operator<<(ISaveObject& Object, xr_map<Key, Mapped>& Value) {
 	return ((CSaveObject*)&Object)->Serialize(Value);
 }
 
-template<IsSaveObjectSerializable T, size_t Size>
+template<IsSaveObjectSerializable T, const int Size>
 ISaveObject& operator<<(ISaveObject& Object, svector<T, Size>& Value) {
 	return ((CSaveObject*)&Object)->Serialize(Value);
 }
@@ -791,7 +790,7 @@ ISaveObject& operator<<(ISaveObject& Object, xr_pair<T1, T2>& Value)
 }
 
 XRCORE_API ISaveObject& operator<<(ISaveObject& Object, char& Value);
-XRCORE_API ISaveObject& operator<<(ISaveObject& Object, LPSTR& Value);
+XRCORE_API ISaveObject& operator<<(ISaveObject& Object, char*& Value);
 
 class XRCORE_API CSaveObjectSave: public CSaveObject {
 public:
@@ -818,7 +817,7 @@ public:
 	virtual ISaveObject& operator<<(bool& Value) override;
 	virtual ISaveObject& operator<<(shared_str& S) override;
 
-	virtual xr_string* SerializeEnourmousString(LPCSTR long_str) override;
+	virtual xr_string* SerializeEnourmousString(str_c long_str) override;
 
 	void Write(CMemoryBuffer* buffer, SSaveTask* Task);
 };
@@ -849,7 +848,7 @@ public:
 	virtual ISaveObject& operator<<(bool& Value) override;
 	virtual ISaveObject& operator<<(shared_str& S) override;
 	
-	virtual xr_string* SerializeEnourmousString(LPCSTR long_str) override;
+	virtual xr_string* SerializeEnourmousString(str_c long_str) override;
 
 	void Parse(IReader* stream);
 

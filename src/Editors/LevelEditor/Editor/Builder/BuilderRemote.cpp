@@ -175,7 +175,7 @@ void SceneBuilder::SaveBuildAsObject()
 	total_tcs				+= idx*3;
 
 	//faces
-	LPCSTR last_texture = nullptr;
+	str_c last_texture = nullptr;
 	for(idx=0; idx<l_face_it; ++idx)
 	{
 		const b_face& it = l_faces[idx];

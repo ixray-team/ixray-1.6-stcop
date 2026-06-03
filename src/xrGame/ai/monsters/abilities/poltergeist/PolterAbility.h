@@ -9,10 +9,10 @@ class CPolterSpecialAbility {
 	CParticlesObject* m_particles_object;
 	CParticlesObject* m_particles_object_electro;
 
-	LPCSTR				m_particles_hidden;
-	LPCSTR				m_particles_damage;
-	LPCSTR				m_particles_death;
-	LPCSTR				m_particles_idle;
+	str_c				m_particles_hidden;
+	str_c				m_particles_damage;
+	str_c				m_particles_death;
+	str_c				m_particles_idle;
 
 	ref_sound			m_sound_base;
 	u32					m_last_hit_frame;
@@ -24,7 +24,7 @@ public:
 	CPolterSpecialAbility(IPolterInterface* polter);
 	virtual			~CPolterSpecialAbility();
 
-	virtual void	load(LPCSTR section);
+	virtual void	load(str_c section);
 	virtual void	update_schedule();
 	virtual void	update_frame();
 	virtual void	on_hide();

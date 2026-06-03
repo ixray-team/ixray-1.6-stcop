@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "monster_aura.h"
 #include "basemonster/base_monster.h"
 #include "../../Actor.h"
@@ -105,15 +105,15 @@ void   monster_aura::load_from_ini (CInifile const* ini, const char* const secti
 	string256 enable_for_dead_string = {};
 	xr_strconcat(enable_for_dead_string, m_name, s_enable_for_dead_string);
 
-	m_pp_effector_name				=	ini->read_if_exists<LPCSTR>(section,pp_effector_name_string,nullptr);
+	m_pp_effector_name				=	ini->read_if_exists<str_c>(section,pp_effector_name_string,nullptr);
 	m_pp_highest_at					=	ini->read_if_exists<float>(section, pp_highest_at_string, 1.f);
 	m_linear_factor					=	ini->read_if_exists<float>(section, linear_factor_string, 0.f);
 	m_quadratic_factor				=	ini->read_if_exists<float>(section, quadratic_factor_string, 0.f);
 	m_max_power						=	ini->read_if_exists<float>(section, max_power_string, 0.f);
 	m_max_distance					=	ini->read_if_exists<float>(section, max_distance_string, 0.f);
 	m_enable_for_dead				=	ini->read_if_exists<bool>(section, enable_for_dead_string, enable_for_dead_default);
-	const char* const sound_name			=	ini->read_if_exists<LPCSTR>(section,sound_string,nullptr);
-	const char* const detect_sound_name	=	ini->read_if_exists<LPCSTR>(section,detect_sound_string,nullptr);
+	const char* const sound_name			=	ini->read_if_exists<str_c>(section,sound_string,nullptr);
+	const char* const detect_sound_name	=	ini->read_if_exists<str_c>(section,detect_sound_string,nullptr);
 
 	if(sound_name)
 		m_sound.create					(sound_name, st_Effect, sg_SourceType);

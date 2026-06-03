@@ -31,8 +31,8 @@ IC	void CALifeGraphRegistry::assign	(CSE_ALifeMonsterAbstract *monster)
 	IGameGraph::const_iterator	i,e;
 	ai().game_graph().begin		(monster->m_tNextGraphID,i,e);
 	for ( ; i != e; ++i)
-		if ((*i).distance() > monster->m_fDistance) {
-			monster->m_fDistanceFromPoint	= (*i).distance() - monster->m_fDistance;
+		if (i->distance() > monster->m_fDistance) {
+			monster->m_fDistanceFromPoint	= i->distance() - monster->m_fDistance;
 			break;
 		}
 }

@@ -133,7 +133,7 @@ public:
 	virtual CEntityAlive*				cast_entity_alive			() override {return nullptr;}
 	virtual CActor*						cast_actor					() override {return nullptr;}
 	virtual CAI_Trader*					cast_trader					() {return nullptr;}
-	virtual CAnomalyZone*				cast_anomaly_zone			() override {return nullptr;}
+	virtual CAnomalyZone*				cast_anomaly_zone			() {return nullptr;}
 	virtual CPhysicsShellHolder*		cast_physics_shell_holder	() override {return nullptr;}
 	virtual IInputReceiver*				cast_input_receiver			() {return nullptr;}
 	virtual CArtefact*					cast_artefact				() override {return nullptr;}
@@ -189,19 +189,17 @@ public:
 	virtual CRocketLauncher* cast_rocket_launcher() override { return nullptr; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() override { return nullptr; }
 	virtual CWeaponAutomaticShotgun* cast_weapon_auto_shotgun() { return nullptr; }
-	virtual CVisualZone* cast_visual_zone() override { return nullptr; }
-	virtual CNoGravityZone* cast_no_gravity_zone() override { return nullptr; }
-	virtual CMosquitoBald* cast_mosquito_bald_zone() override { return nullptr; }
-	virtual CBaseGraviZone* cast_base_gravi_zone() override { return nullptr; }
-	virtual CGraviZone* cast_gravi_zone() override { return nullptr; }
-	virtual CHairsZone* cast_hairs_zone() override { return nullptr; }
-	virtual CAmebaZone* cast_ameba_zone() override { return nullptr; }
-	virtual CTorridZone* cast_torrid_zone() override { return nullptr; }
-	virtual CZoneCampfire* cast_zone_campfire() override { return nullptr; }
-	virtual CMincer* cast_mincer_zone() override { return nullptr; }
-	virtual CRadioactiveZone* cast_radioactive_zone() override { return nullptr; }
-	virtual CWeaponShotgun* cast_weapon_shotgun() override { return nullptr; }
-	virtual CAnomalyZone* cast_anomaly_zone() override { return nullptr; }
+	virtual CVisualZone* cast_visual_zone() { return nullptr; }
+	virtual CNoGravityZone* cast_no_gravity_zone() { return nullptr; }
+	virtual CMosquitoBald* cast_mosquito_bald_zone() { return nullptr; }
+	virtual CBaseGraviZone* cast_base_gravi_zone() { return nullptr; }
+	virtual CGraviZone* cast_gravi_zone() { return nullptr; }
+	virtual CHairsZone* cast_hairs_zone() { return nullptr; }
+	virtual CAmebaZone* cast_ameba_zone() { return nullptr; }
+	virtual CTorridZone* cast_torrid_zone() { return nullptr; }
+	virtual CZoneCampfire* cast_zone_campfire() { return nullptr; }
+	virtual CMincer* cast_mincer_zone() { return nullptr; }
+	virtual CRadioactiveZone* cast_radioactive_zone() { return nullptr; }
 
 
 public:

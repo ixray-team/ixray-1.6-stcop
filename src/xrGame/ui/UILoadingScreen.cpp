@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UILoadingScreen.h"
 
 #include "../../xrEngine/GameFont.h"

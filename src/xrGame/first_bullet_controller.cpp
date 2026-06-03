@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "first_bullet_controller.h"
 #include "Level.h"
 

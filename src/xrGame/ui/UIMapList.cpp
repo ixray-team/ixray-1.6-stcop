@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIMapList.h"
 #include "../../xrUI/Widgets/UIListBox.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
@@ -294,7 +294,7 @@ void CUIMapList::LoadMapList()
 	u32 cnt=0;
 	for( ;it!=it_e; ++it, ++cnt)
 	{
-		AddWeather			( (*it).m_weather_name, (*it).m_start_time, cnt);
+		AddWeather			( it->m_weather_name, it->m_start_time, cnt);
 	}
 	if( game_weathers.size() )
 		m_pWeatherSelector->SetItemIDX(0);
@@ -412,7 +412,7 @@ void CUIMapList::UpdateMapList(EGameIDs GameType)
 		CUIListBoxItem* itm1 = GetMapItem_fromList1( *itb );
 		if ( itm1 )
 		{
-			CUIListBoxItem* itm2 = m_pList2->AddTextItem( (*itb).c_str() );
+			CUIListBoxItem* itm2 = m_pList2->AddTextItem( itb->c_str() );
 			itm2->SetData( itm1->GetData() );
 			itm2->Enable( true );
 		}

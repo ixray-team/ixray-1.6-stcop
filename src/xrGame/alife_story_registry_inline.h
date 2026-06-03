@@ -42,5 +42,5 @@ IC	CSE_ALifeDynamicObject *CALifeStoryRegistry::object	(ALife::_STORY_ID id, boo
 		}
 		return				(0);
 	}
-	return					((*I).second);
+	return					(I->second);
 }

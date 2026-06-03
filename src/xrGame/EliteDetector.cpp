@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "EliteDetector.h"
 #include "player_hud.h"
 #include "../Include/xrRender/UIRender.h"
@@ -16,7 +16,7 @@ CEliteDetector::CEliteDetector()
 void CEliteDetector::Load(const char* section)
 {
 	inherited::Load(section);
-	m_ui_xml_tag = pSettings->read_if_exists<LPCSTR>(section,"ui_xml_tag",m_ui_xml_tag);
+	m_ui_xml_tag = pSettings->read_if_exists<str_c>(section,"ui_xml_tag",m_ui_xml_tag);
 }
 
 void CEliteDetector::CreateUI()

@@ -8,8 +8,6 @@
 #include "script_game_object.h"
 #include "../monster_velocity_space.h"
 #include "../control_animation_base.h"
-#include "Inventory.h"
-#include "Actor.h"
 #include "../control_movement_base.h"
 #include "anomal_pseudo_gigant_state_manager.h"
 #include "ParticlesObject.h"
@@ -32,7 +30,7 @@ CAnomalPseudoGigant::~CAnomalPseudoGigant()
 	xr_delete(m_chem);
 }
 
-void CAnomalPseudoGigant::Load(LPCSTR section)
+void CAnomalPseudoGigant::Load(str_c section)
 {
 	inherited::Load(section);
 	if (pSettings->read_if_exists<bool>(section,"use_flame",false)) {
@@ -54,7 +52,7 @@ void CAnomalPseudoGigant::Load(LPCSTR section)
 
 	m_shield_cooldown = pSettings->read_if_exists<u32>(section,"shield_cooldown",4000);
 	m_shield_time = pSettings->read_if_exists<u32>(section,"shield_time",3000);
-	m_shield_keep_particle = pSettings->read_if_exists<LPCSTR>(section,"shield_keep_particle",nullptr);
+	m_shield_keep_particle = pSettings->read_if_exists<str_c>(section,"shield_keep_particle",nullptr);
 	m_shield_keep_particle_period = pSettings->read_if_exists<u32>(section,"shield_keep_particle_period",1000);
 	
 	m_shield_penetration_border = pSettings->read_if_exists<float>(section,"shield_penetration_border",m_shield_penetration_border);

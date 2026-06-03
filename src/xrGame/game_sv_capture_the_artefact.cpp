@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "game_sv_capture_the_artefact.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "Level.h"
@@ -569,7 +569,7 @@ void game_sv_CaptureTheArtefact::Create(shared_str &options)
 		teams[etGreenTeam].score, teams[etBlueTeam].score);
 #endif // #ifndef MASTER_GOLD
 	m_iMoney_for_BuySpawn	= pSettings->read_if_exists<s32>("capturetheartefact_gamedata", "spawn_cost", -10000);
-	m_not_free_ammo_str		= pSettings->read_if_exists<LPCSTR>("capturetheartefact_gamedata", "not_free_ammo", "");
+	m_not_free_ammo_str		= pSettings->read_if_exists<str_c>("capturetheartefact_gamedata", "not_free_ammo", "");
 }
 
 void game_sv_CaptureTheArtefact::OnRoundStart()

@@ -5,7 +5,7 @@
 //	Autor		:	Alexander Maniluk
 //	Description	:	Artefact object for Capture The Artefact game mode
 ////////////////////////////////////////////////////////////////////////////////
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "cta_game_artefact_activation.h"
 
 #include "../xrPhysics/PhysicsShell.h"

@@ -226,7 +226,7 @@ bool   is_valid_point_to_move (Fvector const & point, u32 * out_vertex)
 		return vertex.position().xz() < xz_value;
 	});
 
-	for ( ;(I != E) && ((*I).position().xz() == vertex_pos.xz()); ++I )
+	for ( ;(I != E) && (I->position().xz() == vertex_pos.xz()); ++I )
 	{
 		if ( abs(ai().level_graph().vertex_plane_y(*I) - point.y) < 4.f )
 		{
@@ -533,7 +533,7 @@ void   ATTACK_ON_RUN_STATE::update_attack ()
 												 motion, 
 												 attack_animation_length);
 					 
-			got_animation_info; VERIFY			(got_animation_info);
+			VERIFY			(got_animation_info);
 
 			m_attack_end_time				=	current_time() + TTime(1000*attack_animation_length);
 			this->object->anim().set_override_animation (anim, m_animation_index[m_attack_side]);

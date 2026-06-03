@@ -6,7 +6,7 @@
 //	Description : Level graph debug functions
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #ifdef DEBUG
 #ifndef AI_COMPILER
@@ -234,7 +234,7 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 		const_iterator			I = objects.objects().begin();
 		const_iterator			E = objects.objects().end();
 		for (; I != E; ++I) {
-			CSE_ALifeDynamicObject	*object = (*I).second;
+			CSE_ALifeDynamicObject	*object = I->second;
 			CSE_ALifeHumanStalker	*stalker = smart_cast<CSE_ALifeHumanStalker*>(object);
 			if (!stalker)
 				continue;
@@ -264,7 +264,7 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 	const_iterator				I = objects.objects().begin();
 	const_iterator				E = objects.objects().end();
 	for (; I != E; ++I) {
-		CSE_ALifeDynamicObject	*object = (*I).second;
+		CSE_ALifeDynamicObject	*object = I->second;
 		CSE_ALifeHumanStalker	*stalker = smart_cast<CSE_ALifeHumanStalker*>(object);
 		if (!stalker)
 			continue;
@@ -400,7 +400,7 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 		const_iterator			I = objects.objects().begin();
 		const_iterator			E = objects.objects().end();
 		for (; I != E; ++I) {
-			CSE_ALifeDynamicObject	*object = (*I).second;
+			CSE_ALifeDynamicObject	*object = I->second;
 			CSE_ALifeMonsterAbstract*monster = smart_cast<CSE_ALifeMonsterAbstract*>(object);
 			if (!monster)
 				continue;
@@ -430,7 +430,7 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 	const_iterator				I = objects.objects().begin();
 	const_iterator				E = objects.objects().end();
 	for (; I != E; ++I) {
-		CSE_ALifeDynamicObject	*object = (*I).second;
+		CSE_ALifeDynamicObject	*object = I->second;
 		CSE_ALifeMonsterAbstract*monster = smart_cast<CSE_ALifeMonsterAbstract*>(object);
 		if (!monster)
 			continue;

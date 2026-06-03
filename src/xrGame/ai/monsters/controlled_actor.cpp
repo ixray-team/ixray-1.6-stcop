@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "controlled_actor.h"
 #include "../../Actor.h"
 #include "../../../xrEngine/CameraBase.h"

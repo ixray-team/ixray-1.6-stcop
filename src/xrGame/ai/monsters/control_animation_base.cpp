@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "control_animation_base.h"
 #include "control_direction_base.h"
 #include "control_movement_base.h"
@@ -782,7 +782,7 @@ void CControlAnimationBase::AA_reload(const char* section)
 
 	IKinematicsAnimated* skel_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 
-	for (u32 i = 0; pSettings->r_line(section, i, &anim_name, &val); ++i)
+	for (u32 i = 0; pSettings->r_line(section, i, anim_name, val); ++i)
 	{
 		anim.motion = skel_animated->LL_MotionID(anim_name);
 		if (!anim.motion.valid())	continue;
@@ -790,10 +790,10 @@ void CControlAnimationBase::AA_reload(const char* section)
 		// check if it is compound (if there is one item, mean it as a section)
 		if (_GetItemCount(val) == 1) 
 		{
-			const char* compound_section = val;
-			const char* unused_line_name;
+			str_c compound_section = val;
+			str_c unused_line_name;
 
-			for (u32 k = 0; pSettings->r_line(compound_section, k, &unused_line_name, &val); ++k)
+			for (u32 k = 0; pSettings->r_line(compound_section, k, unused_line_name, val); ++k)
 			{
 				parse_anim_params(val, anim);
 

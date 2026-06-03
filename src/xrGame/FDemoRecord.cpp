@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "FDemoRecord.h"
 
 #include "Actor.h"

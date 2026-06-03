@@ -6,7 +6,7 @@
 //	Description : Danger manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "danger_manager.h"
 #include "Creature.h"
@@ -159,17 +159,17 @@ void CDangerManager::remove_links(const CObject* object)
 		OBJECTS::iterator E = m_objects.end();
 		for (; I != E; ++I)
 		{
-			if (!(*I).dependent_object())
+			if (!I->dependent_object())
 			{
 				continue;
 			}
 
-			if ((*I).dependent_object() != object)
+			if (I->dependent_object() != object)
 			{
 				continue;
 			}
 
-			(*I).clear_dependent_object();
+			I->clear_dependent_object();
 		}
 	}
 

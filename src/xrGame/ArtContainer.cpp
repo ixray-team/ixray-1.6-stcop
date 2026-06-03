@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ArtContainer.h"
 #include "Artefact.h"
-#include "level.h"
+#include "Level.h"
 #include "Actor.h"
 
 CArtContainerComponent::CArtContainerComponent()
@@ -14,7 +14,7 @@ CArtContainerComponent::~CArtContainerComponent()
 {
 }
 
-void CArtContainerComponent::Load(LPCSTR section)
+void CArtContainerComponent::Load(str_c section)
 {
     m_iContainerSize = pSettings->r_s32(section, "container_size");
 }

@@ -1,9 +1,6 @@
-#pragma once
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HudVertexAssignedPatricles.h"
 #include "Actor.h"
-
-#include "..\xrEngine\xr_ioc_cmd.h"
 
 void THudVertexAssignedPatricles::BeginComponent(IECSOwner* O)
 {

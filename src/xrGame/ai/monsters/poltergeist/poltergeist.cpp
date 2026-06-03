@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "poltergeist.h"
 
 #include <algorithm>
@@ -127,14 +127,14 @@ void CPoltergeist::Load(const char* section)
 		m_poltergeist->load(section);
 	}
 
-	m_detection_pp_effector_name = READ_IF_EXISTS(pSettings, r_string, section, "detection_pp_effector_name", "");
-	m_detection_near_range_factor = READ_IF_EXISTS(pSettings, r_float, section, "detection_near_range_factor", 2.f);
-	m_detection_far_range_factor = READ_IF_EXISTS(pSettings, r_float, section, "detection_far_range_factor", 1.f);
-	m_detection_speed_factor = READ_IF_EXISTS(pSettings, r_float, section, "detection_speed_factor", 1.f);
-	m_detection_loose_speed = READ_IF_EXISTS(pSettings, r_float, section, "detection_loose_speed", 5.f);
-	m_detection_far_range = READ_IF_EXISTS(pSettings, r_float, section, "detection_far_range", 20.f);
-	m_detection_success_level = READ_IF_EXISTS(pSettings, r_float, section, "detection_success_level", 4.f);
-	m_detection_max_level = READ_IF_EXISTS(pSettings, r_float, section, "detection_max_level", 100.f);
+	m_detection_pp_effector_name = pSettings->read_if_exists<str_c>(section, "detection_pp_effector_name", "");
+	m_detection_near_range_factor = pSettings->read_if_exists<float>(section, "detection_near_range_factor", 2.f);
+	m_detection_far_range_factor = pSettings->read_if_exists<float>(section, "detection_far_range_factor", 1.f);
+	m_detection_speed_factor = pSettings->read_if_exists<float>(section, "detection_speed_factor", 1.f);
+	m_detection_loose_speed = pSettings->read_if_exists<float>(section, "detection_loose_speed", 5.f);
+	m_detection_far_range = pSettings->read_if_exists<float>(section, "detection_far_range", 20.f);
+	m_detection_success_level = pSettings->read_if_exists<float>(section, "detection_success_level", 4.f);
+	m_detection_max_level = pSettings->read_if_exists<float>(section, "detection_max_level", 100.f);
 
 	m_current_detection_level = 0;
 	m_last_detection_time = 0;

@@ -6,7 +6,7 @@
 //	Description : Patrol point
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "patrol_point.h"
 #include "level_graph.h"
 #include "level_graph.h"

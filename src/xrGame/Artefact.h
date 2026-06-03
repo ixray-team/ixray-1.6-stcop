@@ -21,17 +21,17 @@ struct SArtefactDetectorsSupport
 	const CPatrolPath::CVertex*		m_currPatrolVertex;
 	Fvector							m_destPoint;
 
-	LPCSTR							det_show_particles;
-	LPCSTR							det_hide_particles;
-	LPCSTR							det_show_snd;
-	LPCSTR							det_hide_snd;
-	LPCSTR							particles_bone;
+	str_c							det_show_particles;
+	str_c							det_hide_particles;
+	str_c							det_show_snd;
+	str_c							det_hide_snd;
+	str_c							particles_bone;
 
 	SArtefactDetectorsSupport		(CArtefact* A);
 	~SArtefactDetectorsSupport		();
 	void	SetVisible						(bool);
-	void	Load							(LPCSTR section);
-	void	FollowByPath					(LPCSTR path_name, int start_idx, Fvector force);
+	void	Load							(str_c section);
+	void	FollowByPath					(str_c path_name, int start_idx, Fvector force);
 	void	UpdateOnFrame					();
 	void	Blink							();
 };

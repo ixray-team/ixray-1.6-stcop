@@ -85,25 +85,25 @@ IC	void CGameLocationSelector::select_random_location(const _vertex_id_type star
 	this->m_graph->begin				(start_vertex_id,i,e);
 	for ( ; i != e; ++i) {
 		// * не соответствует предыдещей вершине
-		if ((*i).vertex_id() == this->m_previous_vertex_id)
+		if (i->vertex_id() == this->m_previous_vertex_id)
 			continue;
 
-		if (!this->m_graph->valid_vertex_id((*i).vertex_id()))
+		if (!this->m_graph->valid_vertex_id(i->vertex_id()))
 			continue;
 
 		// * вершина на текущем уровне?
-		if ((this->m_graph->vertex((*i).vertex_id())->level_id() != ai().level_graph().level_id()))
+		if ((this->m_graph->vertex(i->vertex_id())->level_id() != ai().level_graph().level_id()))
 			continue;
 
 		// * accessible
-		if (!accessible((*i).vertex_id()))
+		if (!accessible(i->vertex_id()))
 			continue;
 
-		const u8				*curr_types = this->m_graph->vertex((*i).vertex_id())->vertex_type();
+		const u8				*curr_types = this->m_graph->vertex(i->vertex_id())->vertex_type();
 
 		// * подходит по маске
 		for (I = B; I != E; ++I)
-			if (this->m_graph->mask((*I).tMask,curr_types))
+			if (this->m_graph->mask(I->tMask,curr_types))
 				++branch_factor;
 	}
 
@@ -120,28 +120,28 @@ IC	void CGameLocationSelector::select_random_location(const _vertex_id_type star
 		this->m_graph->begin			(start_vertex_id,i,e);
 		for ( ; i != e; ++i) {
 			// * не соответствует предыдещей вершине
-			if ((*i).vertex_id() == m_previous_vertex_id)
+			if (i->vertex_id() == m_previous_vertex_id)
 				continue;
 
 			// * вершина на текущем уровне?
-			if ((this->m_graph->vertex((*i).vertex_id())->level_id() != ai().level_graph().level_id()))
+			if ((this->m_graph->vertex(i->vertex_id())->level_id() != ai().level_graph().level_id()))
 				continue;
 
 			// * accessible 
-			if (!accessible((*i).vertex_id()))
+			if (!accessible(i->vertex_id()))
 				continue;
 
-			const u8			*curr_types = this->m_graph->vertex((*i).vertex_id())->vertex_type();
+			const u8			*curr_types = this->m_graph->vertex(i->vertex_id())->vertex_type();
 
 			// * подходит по маске
 			for (I = B; I != E; ++I)
-				if (this->m_graph->mask((*I).tMask,curr_types)) {
+				if (this->m_graph->mask(I->tMask,curr_types)) {
 					if (choice != branch_factor) {
 						++branch_factor;
 						continue;
 					}
 
-					dest_vertex_id_	= (*i).vertex_id();
+					dest_vertex_id_	= i->vertex_id();
 					found		= true;
 					break;
 				}

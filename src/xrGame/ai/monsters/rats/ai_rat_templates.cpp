@@ -6,7 +6,7 @@
 //	Description : Templates for monster "Rat"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ai_rat.h"
 #include "../../ai_monsters_misc.h"
 #include "../../../game_graph.h"
@@ -386,15 +386,15 @@ void CAI_Rat::select_next_home_position	()
 	int					iBranches		= 0;
 	for ( ; i != e; ++i)
 		for (int j=0; j<iPointCount; ++j)
-			if (ai().game_graph().mask(movement().locations().vertex_types()[j].tMask,ai().game_graph().vertex((*i).vertex_id())->vertex_type()) && ((*i).vertex_id() != m_current_graph_point))
+			if (ai().game_graph().mask(movement().locations().vertex_types()[j].tMask,ai().game_graph().vertex(i->vertex_id())->vertex_type()) && (i->vertex_id() != m_current_graph_point))
 				++iBranches;
 	ai().game_graph().begin		(tGraphID,i,e);
 	if (!iBranches) {
 		for ( ; i != e; ++i) {
 			for (int j=0; j<iPointCount; ++j)
-				if (ai().game_graph().mask(movement().locations().vertex_types()[j].tMask,ai().game_graph().vertex((*i).vertex_id())->vertex_type())) {
+				if (ai().game_graph().mask(movement().locations().vertex_types()[j].tMask,ai().game_graph().vertex(i->vertex_id())->vertex_type())) {
 					m_current_graph_point	= m_next_graph_point;
-					m_next_graph_point	= (*i).vertex_id();
+					m_next_graph_point	= i->vertex_id();
 					m_time_to_change_graph_point	= Device.dwTimeGlobal + ::Random32.random(60000) + 60000;
 					return;
 				}
@@ -405,10 +405,10 @@ void CAI_Rat::select_next_home_position	()
 		iBranches = 0;
 		for ( ; i != e; ++i) {
 			for (int j=0; j<iPointCount; ++j)
-				if (ai().game_graph().mask(movement().locations().vertex_types()[j].tMask,ai().game_graph().vertex((*i).vertex_id())->vertex_type()) && ((*i).vertex_id() != m_current_graph_point)) {
+				if (ai().game_graph().mask(movement().locations().vertex_types()[j].tMask,ai().game_graph().vertex(i->vertex_id())->vertex_type()) && (i->vertex_id() != m_current_graph_point)) {
 					if (iBranches == iChosenBranch) {
 						m_current_graph_point	= m_next_graph_point;
-						m_next_graph_point	= (*i).vertex_id();
+						m_next_graph_point	= i->vertex_id();
 						m_time_to_change_graph_point	= Device.dwTimeGlobal + ::Random32.random(60000) + 60000;
 						return;
 					}

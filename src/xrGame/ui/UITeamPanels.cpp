@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UITeamPanels.h"
 #include "ui/UIStatsIcon.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"

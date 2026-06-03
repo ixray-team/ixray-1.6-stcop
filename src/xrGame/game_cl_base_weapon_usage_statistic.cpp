@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "game_cl_base.h"
 #include "Level.h"
 #include "Weapon.h"
@@ -624,7 +624,7 @@ void WeaponUsageStatistic::OnBullet_Check_Request(SHit* pHDS)
 		pSenderI = m_Requests.end()-1;
 	};
 	
-	(*pSenderI).Requests.push_back(Bullet_Check_Request(BulletID, BoneID));
+	pSenderI->Requests.push_back(Bullet_Check_Request(BulletID, BoneID));
 	m_dwLastRequestSenderID = SenderID;
 
 //	HitChecksReceived++;
@@ -638,10 +638,10 @@ void WeaponUsageStatistic::OnBullet_Check_Result(bool Result)
 		BChA_it pSenderI	= std::find(m_Requests.begin(), m_Requests.end(), m_dwLastRequestSenderID);
 		if (pSenderI != m_Requests.end() && (*pSenderI) == m_dwLastRequestSenderID)
 		{
-			(*pSenderI).Requests.back().Result = Result;
-			(*pSenderI).Requests.back().Processed = true;
-			if (Result) (*pSenderI).NumTrue++;
-			else (*pSenderI).NumFalse++;			
+			pSenderI->Requests.back().Result = Result;
+			pSenderI->Requests.back().Processed = true;
+			if (Result) pSenderI->NumTrue++;
+			else pSenderI->NumFalse++;			
 		}
 		else
 		{
@@ -739,8 +739,8 @@ void WeaponUsageStatistic::On_Check_Respond(NET_Packet* P)
 		//---------------------------------------------------------------
 		PLAYERS_STATS_it PlayerIt		= FindPlayer(*(BulletIt->FirerName));
 		WEAPON_STATS_it WeaponIt		= PlayerIt->FindPlayersWeapon(*(BulletIt->WeaponName));
-		(*WeaponIt).m_dwKillsScored++;
-		(*WeaponIt).m_dwKillsScored_d++;
+		WeaponIt->m_dwKillsScored++;
+		WeaponIt->m_dwKillsScored_d++;
 
 		HITS_VEC_it						HitIt;
 		if (WeaponIt->FindHit(BulletID, HitIt))

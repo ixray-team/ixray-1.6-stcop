@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "game_sv_mp_script.h"
 #include "xrServer_script_macroses.h"
@@ -53,7 +53,7 @@ float game_sv_mp_script::GetHitParamsImpulse (NET_Packet* P)
 void game_sv_mp_script::Create	(shared_str &options)
 {
 	inherited::Create(options);
-	const char* lpcstr_options = options.c_str();
+	str_c lpcstr_options = options.c_str();
 	Create(lpcstr_options);
 
 }

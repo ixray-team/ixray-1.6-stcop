@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_abstract_registry.h"
 
 #include "game_news.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "helicopter.h"
 #include "script_game_object.h"
@@ -340,7 +340,7 @@ void SHeliEnemy::Serialize(ISaveObject& Object)
 	}
 }
 
-void SHeliEnemy::Load(LPCSTR section)
+void SHeliEnemy::Load(str_c section)
 {
 	fire_trail_length_des	= pSettings->r_float(section, "fire_trail_length");
 	bUseFireTrail			= !!pSettings->r_bool(section, "use_fire_trail");

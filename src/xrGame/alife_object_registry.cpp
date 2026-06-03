@@ -6,7 +6,7 @@
 //	Description : ALife object registry
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_object_registry.h"
 #include "ai_debug.h"
 
@@ -20,10 +20,10 @@ CALifeObjectRegistry::~CALifeObjectRegistry	()
 	OBJECT_REGISTRY::iterator I			= B;
 	OBJECT_REGISTRY::iterator const E	= m_objects.end();
 	for ( ; I != E; ++I)
-		(*I).second->on_unregister	();
+		I->second->on_unregister	();
 
 	for (I = B; I != E; ++I)
-		xr_delete					((*I).second);
+		xr_delete					(I->second);
 
 	m_objects_as_vec.clear();
 }
@@ -213,7 +213,7 @@ CSE_ALifeDynamicObject* CALifeObjectRegistry::get_object(ISaveObject& Object)
 		Object << s_name;
 #ifdef DEBUG
 		if (psAI_Flags.test(aiALife)) {
-			Msg("Loading object %s", s_name);
+			Msg("Loading object %s", s_name.c_str());
 		}
 #endif
 		// create entity

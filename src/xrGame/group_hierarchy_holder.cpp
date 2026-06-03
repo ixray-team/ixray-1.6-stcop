@@ -6,7 +6,7 @@
 //	Description : Group hierarchy holder
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "group_hierarchy_holder.h"
 #include "squad_hierarchy_holder.h"
 #include "Entity.h"
@@ -120,10 +120,13 @@ void CGroupHierarchyHolder::unregister_in_squad			(CEntity *member)
 	if (leader() && (leader()->ID() == member->ID())) {
 		update_leader					();
 		if (squad().leader()->ID() == member->ID())
-			if (leader())
+			if (leader()){
 				squad().leader			(leader());
+			}
 			else
+			{
 				squad().update_leader	();
+			}
 	}
 #endif // SQUAD_HIERARCHY_HOLDER_USE_LEADER
 }

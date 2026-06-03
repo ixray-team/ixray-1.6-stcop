@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "psy_dog_aura.h"
 #include "psy_dog.h"
 #include "../../../Actor.h"
@@ -68,7 +68,7 @@ void CPsyDogAura::update_schedule()
 	CVisualMemoryManager::VISIBLES::const_iterator	I = m_actor->memory().visual().objects().begin();
 	CVisualMemoryManager::VISIBLES::const_iterator	E = m_actor->memory().visual().objects().end();
 	for ( ; I != E; ++I) {
-		const CGameObject *obj = (*I).m_object;
+		const CGameObject *obj = I->m_object;
 		if (smart_cast<const CPsyDogPhantom *>(obj)) {
 			if (m_actor->memory().visual().visible_now(obj))
 				m_time_actor_saw_phantom = time();

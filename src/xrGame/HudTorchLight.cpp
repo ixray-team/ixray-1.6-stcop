@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HudTorchLight.h"
 #include "player_hud.h"
 #include "CustomDevice.h"

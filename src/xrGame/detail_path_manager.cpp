@@ -6,7 +6,7 @@
 //	Description : Detail path manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "detail_path_manager.h"
 #include "ai_space.h"
 #include "ai_object_location.h"
@@ -122,7 +122,7 @@ void CDetailPathManager::build_path(const xr_vector<u32> &level_path, u32 interm
 			xr_vector<STravelParamsIndex>::const_iterator	I = m_start_params.begin();
 			xr_vector<STravelParamsIndex>::const_iterator	E = m_start_params.end();
 			for ( ; I != E; ++I)
-				Msg					("[%d] : [%f][%f]",(*I).index,(*I).linear_velocity,(*I).angular_velocity);
+				Msg					("[%d] : [%f][%f]",I->index,I->linear_velocity,I->angular_velocity);
 
 //			for (;;)
 //				build_smooth_path(level_path,intermediate_index);
@@ -154,7 +154,7 @@ void CDetailPathManager::update_distance_to_target	()
 	xr_vector<STravelPathPoint>::const_iterator	I = path().begin() + curr_travel_point_index() + 1;
 	xr_vector<STravelPathPoint>::const_iterator	E = path().end();
 	for ( ; I != E; ++I)
-		m_distance_to_target	+= (*(I - 1)).position.distance_to((*I).position);
+		m_distance_to_target	+= ((I - 1))->position.distance_to(I->position);
 }
 
 void CDetailPathManager::on_travel_point_change	(const u32 &previous_travel_point_index)
@@ -181,10 +181,10 @@ u32 CDetailPathManager::location_on_path		(const CGameObject *object, float dist
 	xr_vector<STravelPathPoint>::const_iterator	I = path().begin() + curr_travel_point_index() + 1;
 	xr_vector<STravelPathPoint>::const_iterator	E = path().end();
 	for ( ; I != E; ++I) {
-		float					next = (*(I - 1)).position.distance_to((*I).position);
+		float					next = ((I - 1))->position.distance_to(I->position);
 		if (current_distance + next > distance) {
-			result				= (*I).position;
-			return				((*I).vertex_id);
+			result				= I->position;
+			return				(I->vertex_id);
 		}
 	}
 

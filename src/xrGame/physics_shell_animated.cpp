@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "physics_shell_animated.h"
 
 #include "../xrPhysics/PhysicsShell.h"

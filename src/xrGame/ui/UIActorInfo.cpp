@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIActorInfo.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../Level.h"
@@ -250,19 +250,19 @@ void CUIActorInfoWnd::FillPointsDetail(const shared_str& id)
 		xr_sprintf							(buff,"%d.",_cntr);
 		itm->m_text0->SetText				(buff);
 
-		itm->m_text1->SetTextST				(*g_pStringTable->translate((*it).key));
+		itm->m_text1->SetTextST				(*g_pStringTable->translate(it->key));
 		itm->m_text1->AdjustHeightToText	();
 
-		if( 0==(*it).str_value.size() )
+		if( 0==it->str_value.size() )
 		{
-			xr_sprintf							(buff,"x%d", (*it).int_count);
+			xr_sprintf							(buff,"x%d", it->int_count);
 			itm->m_text2->SetTextST				(buff);
 
-			xr_sprintf							(buff,"%d", (*it).int_points);
+			xr_sprintf							(buff,"%d", it->int_points);
 			itm->m_text3->SetTextST				(buff);
 		}else
 		{
-			itm->m_text2->SetTextST				((*it).str_value.c_str());
+			itm->m_text2->SetTextST				(it->str_value.c_str());
 			itm->m_text3->SetTextST				("");
 		}
 

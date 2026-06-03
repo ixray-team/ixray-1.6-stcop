@@ -1,5 +1,5 @@
 #pragma once
-#include "../xrCore/Save/SaveObject.h"
+#include "src/xrCore/Save/SaveObject.h"
 
 struct XRCORE_API SaveObjectNetPacketHelper
 {

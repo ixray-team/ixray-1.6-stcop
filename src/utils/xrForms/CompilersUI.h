@@ -33,10 +33,10 @@ struct CompilersMode
 	bool Embree = true;
 	bool CUDA = true;
 
- 	bool EmbreeBVHCompact	= false; // Дольше Traversing
-	bool EmbreeBVHRobust	= false; // Дольше Traversing
+ 	bool EmbreeBVHCompact	= false; // пїЅпїЅпїЅпїЅпїЅпїЅ Traversing
+	bool EmbreeBVHRobust	= false; // пїЅпїЅпїЅпїЅпїЅпїЅ Traversing
 	bool EmbreeRays8		= true;  // x2 Speed
-	bool EmbreeInstaces     = false; // Дольше Traversing
+	bool EmbreeInstaces     = false; // пїЅпїЅпїЅпїЅпїЅпїЅ Traversing
 
 	bool ClearTemp = false;
 	bool SkipTHM = false;
@@ -93,14 +93,14 @@ struct CompilersMode
 	xr_vector<LevelFileData> Files;
 	ImFont* CompilerIconsFont;
 
-	// Текущий уровень
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	xr_string compilation_level;
-	LPCSTR get_lname()
+	str_c get_lname()
 	{
 		return compilation_level.c_str();
 	}
 
-	// Потоки !
+	// пїЅпїЅпїЅпїЅпїЅпїЅ !
 	int ThreadsPerWork = 14;
 };
 

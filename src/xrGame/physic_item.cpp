@@ -6,7 +6,7 @@
 //	Description : Physic item
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "physic_item.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "xrServer_Objects.h"

@@ -6,7 +6,7 @@
 //	Description : ALife spawn registry
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "alife_spawn_registry.h"
 #include "object_broker.h"
 #include "game_base.h"
@@ -130,7 +130,7 @@ void CALifeSpawnRegistry::Serialize(ISaveObject& Object)
 	}
 }
 
-void CALifeSpawnRegistry::load				(LPCSTR spawn_name)
+void CALifeSpawnRegistry::load				(str_c spawn_name)
 {
 	Msg							("* Loading spawn registry...");
 	m_spawn_name				= spawn_name;
@@ -272,7 +272,7 @@ void CALifeSpawnRegistry::load_spawn_position_from_smart()
     SPAWN_GRAPH::vertex_iterator E = m_spawns.vertices().end();
     for (; I != E; ++I)
     {
-        CSE_ALifeSmartZone* smart = (*I).second->data()->object().cast_smart_zone();
+        CSE_ALifeSmartZone* smart = I->second->data()->object().cast_smart_zone();
         if (smart && g_start_position_smart != nullptr && g_start_position_smart.c_str() != nullptr && xr_strcmp(g_start_position_smart.c_str(), smart->name_replace()) == 0)
         {
             g_start_game_vertex_id = smart->m_tGraphID;
@@ -286,8 +286,8 @@ void CALifeSpawnRegistry::save_updates		(IWriter &stream)
 	SPAWN_GRAPH::vertex_iterator			I = m_spawns.vertices().begin();
 	SPAWN_GRAPH::vertex_iterator			E = m_spawns.vertices().end();
 	for ( ; I != E; ++I) {
-		stream.open_chunk					((*I).second->vertex_id());
-		(*I).second->data()->save_update	(stream);
+		stream.open_chunk					(I->second->vertex_id());
+		I->second->data()->save_update	(stream);
 		stream.close_chunk					();
 	}
 }
@@ -356,17 +356,17 @@ void CALifeSpawnRegistry::build_root_spawns	()
 		SPAWN_GRAPH::const_vertex_iterator	I = m_spawns.vertices().begin();
 		SPAWN_GRAPH::const_vertex_iterator	E = m_spawns.vertices().end();
 		for ( ; I != E; ++I)
-			m_temp0.push_back				((*I).second->vertex_id());
+			m_temp0.push_back				(I->second->vertex_id());
 	}
 
 	{
 		SPAWN_GRAPH::const_vertex_iterator	I = m_spawns.vertices().begin();
 		SPAWN_GRAPH::const_vertex_iterator	E = m_spawns.vertices().end();
 		for ( ; I != E; ++I) {
-			SPAWN_GRAPH::const_iterator	i = (*I).second->edges().begin();
-			SPAWN_GRAPH::const_iterator	e = (*I).second->edges().end();
+			SPAWN_GRAPH::const_iterator	i = I->second->edges().begin();
+			SPAWN_GRAPH::const_iterator	e = I->second->edges().end();
 			for ( ; i != e; ++i)
-				m_temp1.push_back			((*i).vertex_id());
+				m_temp1.push_back			(i->vertex_id());
 		}
 	}
 
@@ -390,11 +390,11 @@ void CALifeSpawnRegistry::build_story_spawns()
 	SPAWN_GRAPH::const_vertex_iterator	I = m_spawns.vertices().begin();
 	SPAWN_GRAPH::const_vertex_iterator	E = m_spawns.vertices().end();
 	for ( ; I != E; ++I) {
-		CSE_ALifeObject					*object = smart_cast<CSE_ALifeObject*>(&(*I).second->data()->object());
+		CSE_ALifeObject					*object = smart_cast<CSE_ALifeObject*>(&I->second->data()->object());
 		VERIFY							(object);
 		if (object->m_spawn_story_id == INVALID_SPAWN_STORY_ID)
 			continue;
 
-		m_spawn_story_ids.insert		(std::make_pair(object->m_spawn_story_id,(*I).first));
+		m_spawn_story_ids.insert		(std::make_pair(object->m_spawn_story_id,I->first));
 	}
 }

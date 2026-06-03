@@ -6,7 +6,7 @@
 //	Description : Agent memory manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "agent_memory_manager.h"
 #include "agent_manager.h"
 #include "agent_member_manager.h"
@@ -62,9 +62,9 @@ void CAgentMemoryManager::update_memory_masks		(const u64 &mask)
 	VISIBLES::iterator		I = visibles().begin();
 	VISIBLES::iterator		E = visibles().end();
 	for ( ; I != E; ++I) {
-		u64		m = (*I).m_visible.get();
+		u64		m = I->m_visible.get();
 		update_memory_mask	(mask,m);
-		(*I).m_visible.assign(m);
+		I->m_visible.assign(m);
 	}
 }
 
@@ -73,24 +73,24 @@ void CAgentMemoryManager::object_information		(const CObject *object, u32 &level
 	{
 		VISIBLES::const_iterator	I = std::find(visibles().begin(),visibles().end(), CMemoryObject::object_id(object));
 		if (visibles().end() != I) {
-			level_time		= (*I).m_last_level_time;
-			position		= (*I).m_object_params.m_position;
+			level_time		= I->m_last_level_time;
+			position		= I->m_object_params.m_position;
 		}
 	}
 
 	{
 		SOUNDS::const_iterator		I = std::find(sounds().begin(),sounds().end(), CMemoryObject::object_id(object));
-		if ((sounds().end() != I) && (level_time < (*I).m_last_level_time)) {
-			level_time		= (*I).m_last_level_time;
-			position		= (*I).m_object_params.m_position;
+		if ((sounds().end() != I) && (level_time < I->m_last_level_time)) {
+			level_time		= I->m_last_level_time;
+			position		= I->m_object_params.m_position;
 		}
 	}
 	
 	{
 		HITS::const_iterator		I = std::find(hits().begin(),hits().end(), CMemoryObject::object_id(object));
-		if ((hits().end() != I) && (level_time < (*I).m_last_level_time)) {
-			level_time		= (*I).m_last_level_time;
-			position		= (*I).m_object_params.m_position;
+		if ((hits().end() != I) && (level_time < I->m_last_level_time)) {
+			level_time		= I->m_last_level_time;
+			position		= I->m_object_params.m_position;
 		}
 	}
 }

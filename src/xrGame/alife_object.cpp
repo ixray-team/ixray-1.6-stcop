@@ -6,7 +6,7 @@
 //	Description : ALife object class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "../xrServerEntities/xrServer_Objects_ALife.h"
 #include "alife_simulator.h"
 #include "../xrServerEntities/xrServer_Objects_ALife_Items.h"

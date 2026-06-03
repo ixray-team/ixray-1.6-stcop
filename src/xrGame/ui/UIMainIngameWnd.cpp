@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "UIMainIngameWnd.h"
 #include "UIMessagesWindow.h"
@@ -1293,8 +1293,8 @@ void CUIMainIngameWnd::RenderQuickInfos()
 	const bool HasQuickReload = EngineExternal()[EEngineExternalGame::EnableQuickReload];
 
 	static CGameObject *pObject = nullptr;
-	LPCSTR actor_action	= pActor->GetDefaultActionForObject();
-	LPCSTR secondary_actor_action = pActor->GetSecondaryDefaultActionForObject();
+	str_c actor_action	= pActor->GetDefaultActionForObject();
+	str_c secondary_actor_action = pActor->GetSecondaryDefaultActionForObject();
 	UIStaticQuickHelp->Show(nullptr!=actor_action);
 	if (HasQuickReload)
 	{

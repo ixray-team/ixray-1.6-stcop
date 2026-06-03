@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "game_graph.h"
 #include "ai_space.h"
 #include "alife_simulator.h"
@@ -77,7 +77,7 @@ void CGameGraph::set_current_level(u32  level_id)
 		auto	I = header().levels().begin();
 		auto	E = header().levels().end();
 		for (; I != E; ++I) {
-			if (level_id != (*I).first) {
+			if (level_id != I->first) {
 				current_cross_table = (u32*)((u8*)current_cross_table + *current_cross_table);
 				continue;
 			}

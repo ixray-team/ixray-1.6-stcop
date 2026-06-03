@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIMpTradeWnd.h"
 #include "../inventory_item.h"
 #include "../PhysicsShellHolder.h"

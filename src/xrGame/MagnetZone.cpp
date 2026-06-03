@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "MagnetZone.h"
 
-#include "../xrphysics/PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "entity_alive.h"
 #include "PhysicsShellHolder.h"
 #include "CharacterPhysicsSupport.h"
-#include "phmovementcontrol.h"
+#include "PHMovementControl.h"
 
-void CMagnetZone::Load(LPCSTR section)
+void CMagnetZone::Load(str_c section)
 {
 	inherited::Load(section);
 

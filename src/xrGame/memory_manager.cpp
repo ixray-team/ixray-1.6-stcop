@@ -6,7 +6,7 @@
 //	Description : Memory manager
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "memory_manager.h"
 #include "visual_memory_manager.h"
@@ -209,26 +209,26 @@ CMemoryInfo CMemoryManager::memory(const CObject* object) const
 		xr_vector<CVisibleObject>::const_iterator	I = std::find(visual().objects().begin(), visual().objects().end(), CMemoryObject::object_id(object));
 		if (visual().objects().end() != I) {
 			(CMemoryObject&)result = (CMemoryObject&)(*I);
-			result.visible((*I).visible(mask));
+			result.visible(I->visible(mask));
 			result.m_visual_info				= true;
-			level_time							= (*I).m_level_time;
+			level_time							= I->m_level_time;
 			VERIFY(result.m_object);
 		}
 	}
 
 	{
 		xr_vector<CSoundObject>::const_iterator	I = std::find(sound().objects().begin(), sound().objects().end(), CMemoryObject::object_id(object));
-		if ((sound().objects().end() != I) && (level_time < (*I).m_level_time)) {
+		if ((sound().objects().end() != I) && (level_time < I->m_level_time)) {
 			(CMemoryObject&)result = (CMemoryObject&)(*I);
 			result.m_sound_info						= true;
-			level_time								= (*I).m_level_time;
+			level_time								= I->m_level_time;
 			VERIFY(result.m_object);
 		}
 	}
 	
 	{
 		xr_vector<CHitObject>::const_iterator	I = std::find(hit().objects().begin(), hit().objects().end(), CMemoryObject::object_id(object));
-		if ((hit().objects().end() != I) && (level_time < (*I).m_level_time)) {
+		if ((hit().objects().end() != I) && (level_time < I->m_level_time)) {
 			(CMemoryObject&)result = (CMemoryObject&)(*I);
 			result.m_object							= game_object;
 			result.m_hit_info						= true;
@@ -251,19 +251,19 @@ u32 CMemoryManager::memory_time(const CObject *object) const
 	{
 		xr_vector<CVisibleObject>::const_iterator	I = std::find(visual().objects().begin(),visual().objects().end(), CMemoryObject::object_id(object));
 		if (visual().objects().end() != I)
-			result		= (*I).m_level_time;
+			result		= I->m_level_time;
 	}
 
 	{
 		xr_vector<CSoundObject>::const_iterator	I = std::find(sound().objects().begin(),sound().objects().end(), CMemoryObject::object_id(object));
-		if ((sound().objects().end() != I) && (result < (*I).m_level_time))
-			result		= (*I).m_level_time;
+		if ((sound().objects().end() != I) && (result < I->m_level_time))
+			result		= I->m_level_time;
 	}
 	
 	{
 		xr_vector<CHitObject>::const_iterator	I = std::find(hit().objects().begin(),hit().objects().end(), CMemoryObject::object_id(object));
-		if ((hit().objects().end() != I) && (result < (*I).m_level_time))
-			result		= (*I).m_level_time;
+		if ((hit().objects().end() != I) && (result < I->m_level_time))
+			result		= I->m_level_time;
 	}
 
 	return				(result);
@@ -282,24 +282,24 @@ Fvector CMemoryManager::memory_position	(const CObject *object) const
 	{
 		xr_vector<CVisibleObject>::const_iterator	I = std::find(visual().objects().begin(),visual().objects().end(), CMemoryObject::object_id(object));
 		if (visual().objects().end() != I) {
-			time		= (*I).m_level_time;
-			result		= (*I).m_object_params.m_position;
+			time		= I->m_level_time;
+			result		= I->m_object_params.m_position;
 		}
 	}
 
 	{
 		xr_vector<CSoundObject>::const_iterator	I = std::find(sound().objects().begin(),sound().objects().end(), CMemoryObject::object_id(object));
-		if ((sound().objects().end() != I) && (time < (*I).m_level_time)) {
-			time		= (*I).m_level_time;
-			result		= (*I).m_object_params.m_position;
+		if ((sound().objects().end() != I) && (time < I->m_level_time)) {
+			time		= I->m_level_time;
+			result		= I->m_object_params.m_position;
 		}
 	}
 	
 	{
 		xr_vector<CHitObject>::const_iterator	I = std::find(hit().objects().begin(),hit().objects().end(), CMemoryObject::object_id(object));
-		if ((hit().objects().end() != I) && (time < (*I).m_level_time)) {
-			time		= (*I).m_level_time;
-			result		= (*I).m_object_params.m_position;
+		if ((hit().objects().end() != I) && (time < I->m_level_time)) {
+			time		= I->m_level_time;
+			result		= I->m_object_params.m_position;
 		}
 	}
 

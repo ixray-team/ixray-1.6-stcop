@@ -1,5 +1,3 @@
-#ifndef PhysicsShellH
-#define PhysicsShellH
 #pragma once
 
 #include "PHDefs.h"
@@ -446,4 +444,3 @@ XRPHYSICS_API		void				phys_shell_verify_object_model	( IPhysicsShellHolder& O )
 
 
 					void				phys_shell_verify_model			( IKinematics& K );
-#endif // PhysicsShellH

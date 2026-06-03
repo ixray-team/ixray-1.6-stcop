@@ -3,7 +3,7 @@
 // структура, хранящая и загружающая статьи в энциклопедию
 ///////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "encyclopedia_article.h"
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../../xrUI/UIXmlInit.h"
@@ -143,7 +143,7 @@ void CEncyclopediaArticle::load_shared	(const char*)
 	{
 		bool bUseModelLtx				= pXML->ReadAttribBool(pNode, "model", 0, "use_ltx_model", true);
 		const char* base_visual				= bUseModelLtx ? pSettings->r_string(model, "visual") : "";
-		IRenderVisual* iVis				= bUseModelLtx ? Render->model_Create(pSettings->read_if_exists<LPCSTR>(model,"3d_static_visual_name",base_visual)) : Render->model_Create(model);
+		IRenderVisual* iVis				= bUseModelLtx ? Render->model_Create(pSettings->read_if_exists<str_c>(model,"3d_static_visual_name",base_visual)) : Render->model_Create(model);
 		float rot_x						= deg2rad(pXML->ReadAttribFlt(pNode, "model", 0, "x", 0.f));
 		float rot_y						= deg2rad(pXML->ReadAttribFlt(pNode, "model", 0, "y", 0.f));
 		float rot_z						= deg2rad(pXML->ReadAttribFlt(pNode, "model", 0, "z", 0.f));

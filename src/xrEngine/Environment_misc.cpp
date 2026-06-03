@@ -934,7 +934,7 @@ void CEnvironment::load_weathers		()
     for (int weatherIdx = 0; weatherIdx < weatherCount; ++weatherIdx)
     {
         const char* weatherName, *weatherSection;
-        if (pSettings->r_line("weathers", weatherIdx, &weatherName, &weatherSection))
+        if (pSettings->r_line("weathers", weatherIdx, weatherName, weatherSection))
         {
             const int envCount = pSettings->line_count(weatherSection);
 
@@ -944,7 +944,7 @@ void CEnvironment::load_weathers		()
             const char* executionTime, *envSection;
             for (int envIdx = 0; envIdx < envCount; ++envIdx)
             {
-                if (pSettings->r_line(weatherSection, envIdx, &executionTime, &envSection))
+                if (pSettings->r_line(weatherSection, envIdx, executionTime, envSection))
                     env.emplace_back(create_descriptor(executionTime, pSettings, envSection));
             }
         }
@@ -959,7 +959,7 @@ void CEnvironment::load_weathers		()
         std::sort(cycle.second.begin(), cycle.second.end(), sort_env_etl_pred);
     }
 
-    SetWeather((*WeatherCycles.begin()).first.c_str());
+    SetWeather(WeatherCycles.begin()->first.c_str());
 }
 
 void CEnvironment::load_weather_effects()
@@ -1007,7 +1007,7 @@ void CEnvironment::load_weather_effects()
     for (u32 weatherIdx = 0; weatherIdx < weatherEffectsCount; ++weatherIdx)
     {
         const char* weatherName, *weatherSection, *envSection;
-        if (pSettings->r_line("weather_effects", weatherIdx, &weatherName, &weatherSection))
+        if (pSettings->r_line("weather_effects", weatherIdx, weatherName, weatherSection))
         {
             EnvVec& env = WeatherFXs[weatherName];
             env.emplace_back(create_descriptor("00:00:00", nullptr));
@@ -1016,7 +1016,7 @@ void CEnvironment::load_weather_effects()
             const char* executionTime;
             for (u32 envIdx = 0; envIdx < envCount; ++envIdx)
             {
-                if (pSettings->r_line(weatherSection, envIdx, &executionTime, &envSection))
+                if (pSettings->r_line(weatherSection, envIdx, executionTime, envSection))
                 {
                     env.emplace_back(create_descriptor(executionTime, pSettings, envSection));
                     env.back()->old_style = true;

@@ -31,7 +31,7 @@ private:
 	ref_texture m_RealTexture;
     
     UIPropertiesForm* PreviewProps = nullptr;
-	LPCSTR m_Current;
+	str_c m_Current;
 
 	virtual void Draw() override;
     

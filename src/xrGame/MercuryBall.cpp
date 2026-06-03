@@ -4,7 +4,7 @@
 // перекатывается с места на место
 ///////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "MercuryBall.h"
 #include "../xrPhysics/PhysicsShell.h"
 

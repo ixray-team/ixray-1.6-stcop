@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "xrServer_info.h"
 #include "Level.h"
 #include "xrServer.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "game_cl_deathmatch.h"
 #include "Level.h"
 #include "Actor.h"
@@ -300,7 +300,7 @@ void game_cl_Deathmatch::CheckItem			(PIItem pItem, PRESET_ITEMS* pPresetItems, 
 	s16 DesiredAddons = 0;	
 	if (PresetItemIt != pPresetItems->end())
 	{
-		DesiredAddons = (*PresetItemIt).ItemID >> 5;
+		DesiredAddons = PresetItemIt->ItemID >> 5;
 		pPresetItems->erase(PresetItemIt);
 	}
 	//-----------------------------------------------------

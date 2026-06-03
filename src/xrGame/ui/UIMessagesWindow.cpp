@@ -6,7 +6,7 @@
 //
 // Copyright 2005 GSC Game World
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "../../xrEngine/string_table.h"
 #include "../Level.h"
 #include "UIMessagesWindow.h"

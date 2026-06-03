@@ -173,7 +173,7 @@ TEMPLATE_SPECIALIZATION
 IC	const _edge_weight_type CAbstractGraph::get_edge_weight(const _vertex_id_type vertex_index0, const _vertex_id_type vertex_index1, const_iterator i) const
 {
 	VERIFY						(edge(vertex_index0,vertex_index1));
-	return						((*i).weight());
+	return						(i->weight());
 }
 
 TEMPLATE_SPECIALIZATION
@@ -185,7 +185,7 @@ IC	bool CAbstractGraph::is_accessible	(const _vertex_id_type vertex_index) const
 TEMPLATE_SPECIALIZATION
 IC const typename CAbstractGraph::_vertex_id_type& CAbstractGraph::value	(const _vertex_id_type& vertex_index, const_iterator i) const
 {
-	return						((*i).vertex_id());
+	return						(i->vertex_id());
 }
 
 TEMPLATE_SPECIALIZATION
@@ -378,19 +378,19 @@ IC	void CAbstractGraph::save			(IWriter &stream)
 		auto I_ = this->vertices().begin();
 		auto E_ = this->vertices().end();
 		for ( ; I_ != E_; ++I_) {
-			if ((*I_).second->edges().empty())
+			if (I_->second->edges().empty())
 			{
 				continue;
 			}
 
-			save_data((*I_).second->vertex_id(),stream);
+			save_data(I_->second->vertex_id(),stream);
 
-			stream.w_u32((u32)(*I_).second->edges().size());
-			auto i = (*I_).second->edges().begin();
-			auto e = (*I_).second->edges().end();
+			stream.w_u32((u32)I_->second->edges().size());
+			auto i = I_->second->edges().begin();
+			auto e = I_->second->edges().end();
 			for ( ; i != e; ++i) {
-				save_data((*i).vertex_id(),stream);
-				save_data((*i).weight(),stream);
+				save_data(i->vertex_id(),stream);
+				save_data(i->weight(),stream);
 			}
 		}
 	}

@@ -49,7 +49,7 @@ public:
 
 	virtual void SetShader(IUIShader &shader) = 0;
 	virtual void SetAlphaRef(int aref) = 0;
-	virtual void SetScissor(Irect* rect=NULL) = 0;
+	virtual void SetScissor(Irect* rect = nullptr) = 0;
 	virtual Irect GetScissor() const = 0;
 	virtual void GetActiveTextureResolution(Fvector2 &res) = 0;
 

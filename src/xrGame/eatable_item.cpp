@@ -6,7 +6,7 @@
 //	Description : Eatable item
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "eatable_item.h"
 #include "xrMessages.h"
 #include "physic_item.h"
@@ -53,7 +53,7 @@ void CEatableItem::Load(const char* section)
 	m_iMaxUses /= m_eat_condition;
 	m_iRemainingUses = m_iMaxUses;
 
-	UseText = pSettings->read_if_exists<LPCSTR>(section,"use_text","st_use");
+	UseText = pSettings->read_if_exists<str_c>(section,"use_text","st_use");
 
 	m_bRemoveAfterUse = pSettings->read_if_exists<bool>(section,"remove_after_use",true);
 	m_bConsumeChargeOnUse = pSettings->read_if_exists<bool>(section,"consume_charge_on_use",true);

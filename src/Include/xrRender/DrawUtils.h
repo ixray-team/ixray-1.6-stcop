@@ -24,10 +24,10 @@ public:
     virtual void  DrawSound		   	(const Fvector& p, float radius, u32 clr)=0;
     virtual void  DrawLineSphere	   	(const Fvector& p, float radius, u32 clr, bool bCross)=0;
 
-	virtual void  dbgDrawPlacement		(const Fvector& p, int sz, u32 clr, const char* caption=0, u32 clr_font=0xffffffff)=0;
-    virtual void  dbgDrawVert			(const Fvector& p0, u32 clr, const char* caption=0)=0;
-    virtual void  dbgDrawEdge			(const Fvector& p0,	const Fvector& p1, u32 clr, const char* caption=0)=0;
-    virtual void  dbgDrawFace			(const Fvector& p0,	const Fvector& p1, const Fvector& p2, u32 clr, const char* caption=0)=0;
+	virtual void  dbgDrawPlacement		(const Fvector& p, int sz, u32 clr, const char* caption=nullptr, u32 clr_font=0xffffffff)=0;
+    virtual void  dbgDrawVert			(const Fvector& p0, u32 clr, const char* caption=nullptr)=0;
+    virtual void  dbgDrawEdge			(const Fvector& p0,	const Fvector& p1, u32 clr, const char* caption=nullptr)=0;
+    virtual void  dbgDrawFace			(const Fvector& p0,	const Fvector& p1, const Fvector& p2, u32 clr, const char* caption=nullptr)=0;
 
     virtual void  DrawFace				(const Fvector& p0,	const Fvector& p1, const Fvector& p2, u32 clr_s, u32 clr_w, bool bSolid, bool bWire)=0;
     virtual void  DrawLine				(const Fvector& p0,	const Fvector& p1, u32 clr)=0;
@@ -35,8 +35,8 @@ public:
     virtual void  DrawFaceNormal	   	(const Fvector& p0, const Fvector& p1, const Fvector& p2, float size, u32 clr)=0;
     virtual void  DrawFaceNormal	   	(const Fvector* p, float size, u32 clr)=0;
     virtual void  DrawFaceNormal	   	(const Fvector& C, const Fvector& N, float size, u32 clr)=0;
-    virtual void  DrawSelectionBox		(const Fvector& center, const Fvector& size, u32* c=0)=0;
-    virtual void  DrawSelectionBoxB	(const Fbox& box, u32* c=0)=0;
+    virtual void  DrawSelectionBox		(const Fvector& center, const Fvector& size, u32* c=nullptr)=0;
+    virtual void  DrawSelectionBoxB	(const Fbox& box, u32* c=nullptr)=0;
     virtual void  DrawIdentSphere		(bool bSolid, bool bWire, u32 clr_s, u32 clr_w)=0;
     virtual void  DrawIdentSpherePart	(bool bSolid, bool bWire, u32 clr_s, u32 clr_w)=0;
     virtual void  DrawIdentCone	   	(bool bSolid, bool bWire, u32 clr_s, u32 clr_w)=0;

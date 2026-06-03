@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "LevelInspector.h"
 #include "GamePersistent.h"
 #include "Level.h"

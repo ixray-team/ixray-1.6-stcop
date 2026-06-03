@@ -1,7 +1,7 @@
 // FX: Экспорты lua функций для поддежки EE
 // для работы требуется xr_sound и sound_theme переместить из оригинальной триологии в папку скриптов EE
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "ai_space.h"
 #include "Actor.h"

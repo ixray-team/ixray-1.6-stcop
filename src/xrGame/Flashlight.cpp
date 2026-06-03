@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Flashlight.h"
 #include "../xrEngine/SkeletonMotions.h"
 #include "player_hud.h"

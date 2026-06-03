@@ -66,21 +66,21 @@ IC	bool COperatorAbstract::applicable(const CSConditionState& current, const CSC
 	typename xr_vector<COperatorCondition>::const_iterator	II = start.conditions().begin();
 	typename xr_vector<COperatorCondition>::const_iterator	EE = start.conditions().end();
 	for (; (I != E) && (i != e); ) {
-		if ((*I).condition() < (*i).condition())
+		if (I->condition() < i->condition())
 			++I;
 		else
-			if ((*I).condition() > (*i).condition()) {
-				for (; (II != EE) && ((*II).condition() < (*i).condition()); )
+			if (I->condition() > i->condition()) {
+				for (; (II != EE) && (II->condition() < i->condition()); )
 					++II;
-				if ((II == EE) || ((*II).condition() > (*i).condition()))
-					problem_solver.evaluate_condition(II, EE, (*i).condition());
-				if ((*II).value() != (*i).value())
+				if ((II == EE) || (II->condition() > i->condition()))
+					problem_solver.evaluate_condition(II, EE, i->condition());
+				if (II->value() != i->value())
 					return	(false);
 				++II;
 				++i;
 			}
 			else {
-				if ((*I).value() != (*i).value())
+				if (I->value() != i->value())
 					return	(false);
 				++I;
 				++i;
@@ -95,14 +95,14 @@ IC	bool COperatorAbstract::applicable(const CSConditionState& current, const CSC
 		return	(true);
 
 	for (; i != e; ) {
-		if ((I == E) || ((*I).condition() > (*i).condition()))
-			problem_solver.evaluate_condition(I, E, (*i).condition());
+		if ((I == E) || (I->condition() > i->condition()))
+			problem_solver.evaluate_condition(I, E, i->condition());
 
-		if ((*I).condition() < (*i).condition())
+		if (I->condition() < i->condition())
 			++I;
 		else {
-			VERIFY((*I).condition() == (*i).condition());
-			if ((*I).value() != (*i).value())
+			VERIFY(I->condition() == i->condition());
+			if (I->value() != i->value())
 				return	(false);
 			++I;
 			++i;
@@ -123,23 +123,23 @@ IC	const typename COperatorAbstract::CSConditionState& COperatorAbstract::apply(
 	auto II = start.conditions().begin();
 	auto EE = start.conditions().end();
 	for (; (I != E) && (i != e); ) {
-		if ((*I).condition() < (*i).condition()) {
+		if (I->condition() < i->condition()) {
 			result.add_condition_back(*I);
 			++I;
 		}
 		else
-			if ((*I).condition() > (*i).condition()) {
-				for (; (II != EE) && ((*II).condition() < (*i).condition()); )
+			if (I->condition() > i->condition()) {
+				for (; (II != EE) && (II->condition() < i->condition()); )
 					++II;
-				if ((II == EE) || ((*II).condition() > (*i).condition()))
-					problem_solver.evaluate_condition(II, EE, (*i).condition());
-				if ((*II).value() != (*i).value())
+				if ((II == EE) || (II->condition() > i->condition()))
+					problem_solver.evaluate_condition(II, EE, i->condition());
+				if (II->value() != i->value())
 					result.add_condition_back(*i);
 				++II;
 				++i;
 			}
 			else {
-				if ((*I).value() == (*i).value())
+				if (I->value() == i->value())
 					result.add_condition_back(*i);
 				++I;
 				++i;
@@ -156,14 +156,14 @@ IC	const typename COperatorAbstract::CSConditionState& COperatorAbstract::apply(
 	}
 
 	for (; i != e; ) {
-		if ((I == E) || ((*I).condition() > (*i).condition()))
-			problem_solver.evaluate_condition(I, E, (*i).condition());
+		if ((I == E) || (I->condition() > i->condition()))
+			problem_solver.evaluate_condition(I, E, i->condition());
 
-		if ((*I).condition() < (*i).condition())
+		if (I->condition() < i->condition())
 			++I;
 		else {
-			VERIFY((*I).condition() == (*i).condition());
-			if ((*I).value() != (*i).value())
+			VERIFY(I->condition() == i->condition());
+			if (I->value() != i->value())
 				result.add_condition_back(*i);
 			++I;
 			++i;

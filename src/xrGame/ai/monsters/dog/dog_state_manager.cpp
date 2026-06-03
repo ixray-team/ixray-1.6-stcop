@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "dog.h"
 #include "dog_state_manager.h"
 #include "../control_animation_base.h"

@@ -5,7 +5,7 @@
 //	Description : UI Faction War window class implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "pch_script.h"
 #include "UIFactionWarWnd.h"
 #include "../../xrEngine/xr_input.h"

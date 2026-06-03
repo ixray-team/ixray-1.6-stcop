@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "xrMessages.h"
 #include "file_transfer.h"
 #include "Level.h"

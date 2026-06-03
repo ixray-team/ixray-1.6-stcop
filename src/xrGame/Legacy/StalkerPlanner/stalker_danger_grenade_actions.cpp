@@ -6,7 +6,7 @@
 //	Description : Stalker danger grenade actions classes
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "stalker_danger_grenade_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "script_game_object.h"

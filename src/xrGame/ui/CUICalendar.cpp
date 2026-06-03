@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "CUICalendar.h"
 
 #include "../../xrUI/UIXmlInit.h"

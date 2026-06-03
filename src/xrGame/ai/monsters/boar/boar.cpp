@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "boar.h"
 #include "boar_state_manager.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"

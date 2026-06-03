@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "AnimNotifyGiveInfo.h"
 
 #include "ai_space.h"

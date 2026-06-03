@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIDebugFonts.h"
 #include "../../xrUI/Widgets/UIDialogHolder.h"
 

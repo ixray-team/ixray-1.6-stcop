@@ -257,6 +257,7 @@ bool CXml::Load(const char* path, const char* xml_filename)
 	}
 
 	m_root = m_Doc.FirstChildElement();
+	I_ASSERT(m_root, "No root element in [%s]", path);
 	m_loaded = true;
 
 	return true;
