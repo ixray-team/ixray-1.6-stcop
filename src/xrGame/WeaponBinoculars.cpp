@@ -121,7 +121,7 @@ void CWeaponBinoculars::UpdateCL()
 		{
 			if (hud_adj_mode == 0 && GetState() == eIdle && (Device.dwTimeGlobal - m_dw_curr_substate_time > 20000))
 			{
-				SwitchState(eBore);
+				SwitchState(eBore, false);
 				ResetSubStateTime();
 			}
 		}

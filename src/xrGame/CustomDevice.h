@@ -55,7 +55,7 @@ public:
 	void OnStateSwitch(u8 S) override;
 	void OnAnimationEnd(u8 state) override;
 	void UpdateXForm() override;
-	void SwitchState(u8 S) final override;
+	void SwitchState(u8 S, bool pending) final override;
 	void UpdateHudAdditonal(Fmatrix& trans) override;
 	void ToggleDetector(bool bFastMode, bool switching = false);
 	void HideDetector(bool bFastMode, bool force = false);

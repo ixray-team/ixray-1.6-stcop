@@ -113,7 +113,7 @@ void CCustomDevice::HideAndSetCallback(detector_fn_t fn)
 {
 	m_bNeedActivation = false;
 	m_bFastAnimMode = true;
-	SwitchState(eHiding);
+	SwitchState(eHiding, true);
 
 	hide_callback = fn;
 }
@@ -123,7 +123,7 @@ void CCustomDevice::HideDetector(bool bFastMode, bool force)
 	if (force)
 	{
 		m_bFastAnimMode = bFastMode;
-		SwitchState(eHiding);
+		SwitchState(eHiding, true);
 		return;
 	}
 
@@ -194,12 +194,12 @@ void CCustomDevice::ToggleDetector(bool bFastMode, bool switching)
 				{
 					if (itm->GetState() == CHUDState::eIdle)
 					{
-						itm->SwitchState(CHUDState::ePrepareDetector);
+						itm->SwitchState(CHUDState::ePrepareDetector, false);
 					}
 				}
 				else
 				{
-					SwitchState(eShowing);
+					SwitchState(eShowing, true);
 					TurnDetectorInternal(true);
 
 					if (itm != nullptr && itm->bDisablePrepareAnimation)
@@ -212,15 +212,15 @@ void CCustomDevice::ToggleDetector(bool bFastMode, bool switching)
 	}
 	else if (GetState() != eHiding && GetState() != eShowing && !m_bIsZoomed)
 	{
-		SwitchState(eHiding);
+		SwitchState(eHiding, true);
 	}
 }
 
-void CCustomDevice::SwitchState(u8 S)
+void CCustomDevice::SwitchState(u8 S, bool pending)
 {
 	if (IsGameTypeSingle() || OnServer())
 	{
-		inherited::SwitchState(S);
+		inherited::SwitchState(S, pending);
 		return;
 	}
 
@@ -301,13 +301,11 @@ void CCustomDevice::OnStateSwitch(u8 S)
 		g_player_hud->attach_item(this);
 		m_sounds.PlaySound("sndShow", Fvector().set(0, 0, 0), this, true, false);
 		PlayHUDMotion(m_bFastAnimMode ? "anm_show_fast" : "anm_show", EHudMixType::eNoMix, S);
-		SetPending(true);
 	}break;
 	case eHiding:
 	{
 		m_sounds.PlaySound("sndHide", Fvector().set(0, 0, 0), this, true, false);
 		PlayHUDMotion(m_bFastAnimMode ? "anm_hide_fast" : "anm_hide", EHudMixType::eMixAll, S);
-		SetPending(true);
 		PlayWpnFinishDetector();
 	}break;
 	case eIdle:
@@ -437,7 +435,7 @@ void CCustomDevice::PlayWpnFinishDetector()
 	CHudItem* itm = (iitem) ? iitem->cast_hud_item() : nullptr;
 	if (itm != nullptr && itm->GetState() == CHUDState::eIdle && itm->m_eAnimationsFlags.test(af_finish_detector))
 	{
-		itm->SwitchState(CHUDState::eFinishDetector);
+		itm->SwitchState(CHUDState::eFinishDetector, true);
 	}
 }
 
@@ -511,11 +509,11 @@ void CCustomDevice::OnAnimationEnd(u8 state)
 	case eHandLightMisfire:
 	case eHandFiremode:
 	{
-		SwitchState(eIdle);
+		SwitchState(eIdle, false);
 	} break;
 	case eHiding:
 	{
-		SwitchState(eHidden);
+		SwitchState(eHidden, false);
 		TurnDetectorInternal(false);
 		g_player_hud->detach_item(this);
 		m_bIsZoomed = false;
@@ -523,7 +521,7 @@ void CCustomDevice::OnAnimationEnd(u8 state)
 	case eHandThrowStart:
 	case eHandThrowIdle:
 	{
-		SwitchState(eHandThrowIdle);
+		SwitchState(eHandThrowIdle, false);
 		break;
 	}
 	}
@@ -649,7 +647,7 @@ void CCustomDevice::UpdateVisibility()
 
 	if ((g_player_hud->attached_item(0) == nullptr || g_player_hud->attached_item(0)->m_parent_hud_item->cast_missile() == nullptr) && GetState() >= EDeviceStates::eHandThrowStart && GetState() <= EDeviceStates::eHandThrowEnd)
 	{
-		SwitchState(eIdle);
+		SwitchState(eIdle, false);
 	}
 
 	attachable_hud_item* i0 = g_player_hud->attached_item(0);
@@ -742,7 +740,7 @@ bool CCustomDevice::can_be_attached() const
 void CCustomDevice::OnH_B_Independent(bool just_before_destroy)
 {
 	inherited::OnH_B_Independent(just_before_destroy);
-	SwitchState(eHidden);
+	SwitchState(eHidden, false);
 	m_bIsZoomed = false;
 }
 
@@ -752,7 +750,7 @@ void CCustomDevice::OnMoveToRuck(const SInvItemPlace& prev)
 
 	if (prev.type == eItemPlaceSlot)
 	{
-		SwitchState(eHidden);
+		SwitchState(eHidden, false);
 		g_player_hud->detach_item(this);
 		m_bNeedActivation = false;
 		m_bIsZoomed = false;
@@ -779,12 +777,12 @@ void CCustomDevice::SwitchZoom()
 	if (m_bIsZoomed)
 	{
 		m_bIsZoomed = false;
-		SwitchState(eHandAimEnd);
+		SwitchState(eHandAimEnd, false);
 	}
 	else
 	{
 		m_bIsZoomed = true;
-		SwitchState(eHandAimStart);
+		SwitchState(eHandAimStart, false);
 	}
 }
 
