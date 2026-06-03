@@ -410,12 +410,12 @@ bool CArtefact::CanTake() const
 
 void CArtefact::Hide()
 {
-	SwitchState(eHiding);
+	SwitchState(eHiding, true);
 }
 
 void CArtefact::Show()
 {
-	SwitchState(eShowing);
+	SwitchState(eShowing, true);
 }
 
 void CArtefact::MoveTo(Fvector const &  position)
@@ -491,12 +491,12 @@ bool CArtefact::Action(u16 cmd, u32 flags)
 		{
 			if (flags&CMD_START && m_bCanSpawnZone)
 			{
-				SwitchState(eActivating);
+				SwitchState(eActivating, true);
 				return true;
 			}
 			if (flags&CMD_STOP && m_bCanSpawnZone && GetState() == eActivating)
 			{
-				SwitchState(eIdle);
+				SwitchState(eIdle, false);
 				return true;
 			}
 		}break;
@@ -541,17 +541,17 @@ void CArtefact::OnAnimationEnd(u8 state)
 	{
 	case eHiding:
 		{
-			SwitchState(eHidden);
+			SwitchState(eHidden, false);
 		}break;
 	case eShowing:
 		{
-			SwitchState(eIdle);
+			SwitchState(eIdle, false);
 		}break;
 	case eActivating:
 		{
 			if (Local())
 			{
-				SwitchState		(eHiding);
+				SwitchState		(eHiding, true);
 				NET_Packet		P;
 				u_EventGen		(P, GEG_PLAYER_ACTIVATEARTEFACT, H_Parent()->ID());
 				P.w_u16			(ID());
@@ -746,7 +746,7 @@ void SArtefactDetectorsSupport::FollowByPath(const char* path_name, int start_id
 
 void CArtefact::OnActiveItem ()
 {
-	SwitchState					(eShowing);
+	SwitchState					(eShowing, true);
 	inherited::OnActiveItem		();
 	SetState					(eIdle);
 	SetNextState				(eIdle);
@@ -755,9 +755,9 @@ void CArtefact::OnActiveItem ()
 void CArtefact::OnHiddenItem ()
 {
 	if (IsGameTypeSingle())
-		SwitchState(eHiding);
+		SwitchState(eHiding, true);
 	else
-		SwitchState(eHidden);
+		SwitchState(eHidden, false);
 
 	inherited::OnHiddenItem		();
 	SetState					(eHidden);

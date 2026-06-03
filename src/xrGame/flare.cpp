@@ -12,7 +12,7 @@ void CFlare::Load(const char* section)
 bool CFlare::net_Spawn(CSE_Abstract* DC)
 {
 	inherited::net_Spawn	(DC);
-	SwitchState				(eFlareHidden);
+	SwitchState				(eFlareHidden, false);
 	m_pFlareParticles		= nullptr;
 	return					true;
 }
@@ -28,7 +28,7 @@ void CFlare::UpdateXForm()
 void CFlare::ActivateFlare()
 {
 	VERIFY						( !IsFlareActive() );
-	SwitchState					(eFlareShowing);
+	SwitchState					(eFlareShowing, true);
 	SwitchOn					();
 }
 
@@ -51,12 +51,10 @@ void CFlare::OnStateSwitch(u8 S)
 		{
 			g_player_hud->attach_item	(this);
 			PlayHUDMotion				("anm_show", EHudMixType::eMixAll, GetState());
-			SetPending					(true);
 		}break;
 	case eFlareHiding:
 		{
 			PlayHUDMotion				("anm_hide", EHudMixType::eMixAll, GetState());
-			SetPending					(true);
 		}break;
 	case eFlareIdle:
 		{
@@ -70,7 +68,6 @@ void CFlare::OnStateSwitch(u8 S)
 	case eFlareDropping:
 		{
 			PlayHUDMotion				("anm_drop", EHudMixType::eMixAll, GetState());
-			SetPending					(true);
 		}break;
 	};
 }
@@ -81,13 +78,13 @@ void CFlare::OnAnimationEnd(u8 state)
 	{
 	case eFlareShowing:
 		{
-			SwitchState					(eFlareIdle);
+			SwitchState					(eFlareIdle, false);
 			PlayAnimIdle				();
 		}break;
 	case eFlareDropping:
 		{
 			SetDropManual				(true);
-			SwitchState					(eFlareHidden);
+			SwitchState					(eFlareHidden, false);
 			processing_activate			();
 		}break;
 	};
@@ -119,8 +116,10 @@ void CFlare::SwitchOff()
 
 void CFlare::DropFlare()
 {
-	if(GetState()!=eFlareHidden)
-		SwitchState					(eFlareDropping);
+	if (GetNextState() != eFlareHidden)
+	{
+		SwitchState(eFlareDropping, true);
+	}
 }
 
 void CFlare::UpdateCL()

@@ -97,7 +97,7 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u8 state)
 			{
 				m_sub_state = eSubstateReloadInProcess;
 			}
-			SwitchState(eReload);
+			SwitchState(eReload, true);
 		}break;
 		case eSubstateReloadInProcess:
 		{
@@ -106,7 +106,7 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u8 state)
 				m_bIsReloaded = true;
 				m_sub_state = eSubstateReloadEnd;
 			}
-			SwitchState(eReload);
+			SwitchState(eReload, true);
 		}break;
 		case eSubstateReloadEnd:
 		{
@@ -115,7 +115,7 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u8 state)
 				m_bNeedPumpState = true;
 			}
 			bStopReloadSignal = false;
-			SwitchState(eIdle);
+			SwitchState(eIdle, false);
 		}break;
 		
 	};
@@ -154,7 +154,7 @@ void CWeaponAutomaticShotgun::TriStateReload()
 	CWeapon::Reload();
 	m_sub_state = eSubstateReloadBegin;
 	m_bIsReloaded = false;
-	SwitchState	(eReload);
+	SwitchState	(eReload, true);
 }
 
 void CWeaponAutomaticShotgun::OnStateSwitch	(u8 S)
@@ -217,7 +217,6 @@ void CWeaponAutomaticShotgun::switch2_StartReload()
 	}
 
 	PlayAnimOpenWeapon();
-	SetPending(true);
 
 	if (ParentIsActor() && m_sounds.FindSoundItem("sndOpenEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
 	{
@@ -255,7 +254,6 @@ void CWeaponAutomaticShotgun::switch2_AddCartgidge()
 		PlaySound("sndAddCartridge", get_LastFP());
 	}
 
-	SetPending(true);
 	PlayAnimAddOneCartridgeWeapon();
 }
 
@@ -270,7 +268,6 @@ void CWeaponAutomaticShotgun::switch2_EndReload()
 	{
 		MagAmmoBones->UpdateMagAmmoBones(this, GetTargetAmmoType());
 	}
-	SetPending(true);
 
 	PlayAnimCloseWeapon();
 
