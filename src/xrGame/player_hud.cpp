@@ -9,6 +9,7 @@
 #include "Inventory.h"
 #include "WeaponBinoculars.h"
 #include "../xrEngine/GameMtlLib.h"
+#include "../xrEngine/WristwatchSettings.h"
 
 player_hud* g_player_hud = nullptr;
 player_hud* g_player_hud2 = nullptr;
@@ -1380,16 +1381,18 @@ void player_hud::SWatchesBones::Cache(IKinematics* model)
 		return;
 	}
 
-	watchHud = model->LL_BoneID("watch_hud");
-	watchUi = model->LL_BoneID("watch_ui");
-	watchHandsH = model->LL_BoneID("watch_hands_h");
-	watchHandsM = model->LL_BoneID("watch_hands_m");
-	watchHandsS = model->LL_BoneID("watch_hands_s");
-	watchLcdHh = model->LL_BoneID("watch_lcd_hh");
-	watchLcdHl = model->LL_BoneID("watch_lcd_hl");
-	watchLcdMh = model->LL_BoneID("watch_lcd_mh");
-	watchLcdMl = model->LL_BoneID("watch_lcd_ml");
-	watchTritium = model->LL_BoneID("watch_tritium");
+	const SWristwatchRuntimeSettings& wristwatchSettings = GetWristwatchRuntimeSettings();
+
+	watchHud = model->LL_BoneID(wristwatchSettings.boneHud.c_str());
+	watchUi = model->LL_BoneID(wristwatchSettings.boneUi.c_str());
+	watchHandsH = model->LL_BoneID(wristwatchSettings.boneHandsH.c_str());
+	watchHandsM = model->LL_BoneID(wristwatchSettings.boneHandsM.c_str());
+	watchHandsS = model->LL_BoneID(wristwatchSettings.boneHandsS.c_str());
+	watchLcdHh = model->LL_BoneID(wristwatchSettings.boneLcdHh.c_str());
+	watchLcdHl = model->LL_BoneID(wristwatchSettings.boneLcdHl.c_str());
+	watchLcdMh = model->LL_BoneID(wristwatchSettings.boneLcdMh.c_str());
+	watchLcdMl = model->LL_BoneID(wristwatchSettings.boneLcdMl.c_str());
+	watchTritium = model->LL_BoneID(wristwatchSettings.boneTritium.c_str());
 	hasLcdSlots = watchLcdHh != BI_NONE;
 }
 
@@ -1536,8 +1539,17 @@ void player_hud::load(const shared_str& player_hud_sect)
 		pSettings->read_if_exists<Fvector>(m_watches_rot, player_hud_sect, "watches_rot");
 		pSettings->read_if_exists<float>(m_watches_scale, player_hud_sect, "watches_scale");
 
-		SetWatchesBoneVisible("watch_hud", true, true);
-		SetWatchesBoneVisible("watch_ui", true, true);
+		const SWristwatchRuntimeSettings& wristwatchSettings = GetWristwatchRuntimeSettings();
+		if (wristwatchSettings.boneHud.size() > 0)
+		{
+			SetWatchesBoneVisible(wristwatchSettings.boneHud, true, true);
+		}
+
+		if (wristwatchSettings.boneUi.size() > 0)
+		{
+			SetWatchesBoneVisible(wristwatchSettings.boneUi, true, true);
+		}
+
 		CacheWatchesBones();
 
 		if (m_model_watches != nullptr)

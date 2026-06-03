@@ -20,21 +20,6 @@ xr_vector<SWatchesChildShaderBackup> g_watchesShaderBackup;
 bool g_watchesShadersApplied = false;
 EWristwatchDisplayType g_watchesAppliedMode = EWristwatchDisplayType::Hybrid;
 
-LPCSTR GetDigitalShaderName()
-{
-	return "models\\wristwatch_digital";
-}
-
-LPCSTR GetGlassShaderName()
-{
-	return "models\\wristwatch_glass";
-}
-
-LPCSTR GetHiddenShaderName()
-{
-	return "models\\wristwatch_hidden";
-}
-
 void BuildDigitalTextureList(string_path& outTextures)
 {
 	const SWristwatchRuntimeSettings& settings = GetWristwatchRuntimeSettings();
@@ -55,32 +40,45 @@ void BuildGlassTextureList(string_path& outTextures)
 		settings.glassBumpTexture.c_str());
 }
 
-bool IsGlassTexture(const shared_str& textureName)
+void NormalizeTexturePath(string_path& path)
 {
-	if (textureName.size() == 0)
+	if (path[0] == '\0')
 	{
-		return false;
+		return;
 	}
 
-	string_path lowerName;
-	xr_strcpy(lowerName, textureName.c_str());
-	_strlwr(lowerName);
+	_strlwr(path);
 
-	return strstr(lowerName, "glass") != nullptr || strstr(lowerName, "lens") != nullptr;
+	for (char* p = path; *p != '\0'; ++p)
+	{
+		if (*p == '/')
+		{
+			*p = '\\';
+		}
+	}
+
+	char* hashSuffix = strchr(path, '#');
+	if (hashSuffix != nullptr)
+	{
+		*hashSuffix = '\0';
+	}
 }
 
-bool IsGlassVisualName(const shared_str& visualName)
+bool TexturePathMatches(const shared_str& textureName, const shared_str& configuredPath)
 {
-	if (visualName.size() == 0)
+	if (textureName.size() == 0 || configuredPath.size() == 0)
 	{
 		return false;
 	}
 
-	string_path lowerName;
-	xr_strcpy(lowerName, visualName.c_str());
-	_strlwr(lowerName);
+	string_path texturePath;
+	string_path configPath;
+	xr_strcpy(texturePath, textureName.c_str());
+	xr_strcpy(configPath, configuredPath.c_str());
+	NormalizeTexturePath(texturePath);
+	NormalizeTexturePath(configPath);
 
-	return strstr(lowerName, "glass") != nullptr || strstr(lowerName, "lens") != nullptr;
+	return xr_strcmp(texturePath, configPath) == 0;
 }
 
 const char* WristwatchVisualDebugName(dxRender_Visual* visual)
@@ -88,14 +86,9 @@ const char* WristwatchVisualDebugName(dxRender_Visual* visual)
 	return visual != nullptr ? visual->dbg_name.c_str() : "<null>";
 }
 
-bool IsGlassChild(dxRender_Visual* child, const SWatchesChildShaderBackup& backup)
+bool IsGlassChild(const SWatchesChildShaderBackup& backup, const shared_str& configuredGlassTexture)
 {
-	if (IsGlassTexture(backup.texture))
-	{
-		return true;
-	}
-
-	return child != nullptr && IsGlassVisualName(child->dbg_name);
+	return backup.valid && TexturePathMatches(backup.texture, configuredGlassTexture);
 }
 
 bool IsWatchUiChild(CKinematics& kinematics, u32 childIdx, u16 watchUiBone)
@@ -106,13 +99,14 @@ bool IsWatchUiChild(CKinematics& kinematics, u32 childIdx, u16 watchUiBone)
 	}
 
 	const CBoneData& boneData = kinematics.LL_GetData(watchUiBone);
-	return childIdx < boneData.child_faces.size() && !boneData.child_faces[childIdx].empty();
+	return static_cast<size_t>(childIdx) < boneData.child_faces.size() &&
+		!boneData.child_faces[childIdx].empty();
 }
 
-void CaptureShaderBackup(const ref_shader& shader, SWatchesChildShaderBackup& backup)
+void CaptureShaderBackup(const ref_shader& shader, SWatchesChildShaderBackup& backup, LPCSTR fallbackShader)
 {
 	backup.valid = false;
-	backup.shader = "models\\model";
+	backup.shader = fallbackShader != nullptr && fallbackShader[0] != '\0' ? fallbackShader : "";
 
 	if (!shader)
 	{
@@ -161,7 +155,7 @@ void BackupShaders(CKinematics& kinematics)
 		SWatchesChildShaderBackup backup;
 		if (child != nullptr)
 		{
-			CaptureShaderBackup(child->shader, backup);
+			CaptureShaderBackup(child->shader, backup, GetWristwatchRuntimeSettings().shaderFallback.c_str());
 		}
 
 		g_watchesShaderBackup.push_back(backup);
@@ -181,7 +175,7 @@ void RestoreOriginalShaders(CKinematics& kinematics)
 		}
 
 		const SWatchesChildShaderBackup& backup = g_watchesShaderBackup[childIdx];
-		if (backup.valid)
+		if (backup.valid && backup.shader.size() > 0)
 		{
 			child->shader.create(backup.shader.c_str(), backup.texture.c_str());
 		}
@@ -190,11 +184,17 @@ void RestoreOriginalShaders(CKinematics& kinematics)
 
 void ApplyDigitalShaders(CKinematics& kinematics)
 {
+	if (!IsWristwatchContentConfigured())
+	{
+		return;
+	}
+
 	BackupShaders(kinematics);
 
-	const u16 watchUiBone = kinematics.LL_BoneID("watch_ui");
-	const LPCSTR digitalShader = GetDigitalShaderName();
-	const LPCSTR glassShader = GetGlassShaderName();
+	const SWristwatchRuntimeSettings& settings = GetWristwatchRuntimeSettings();
+	const u16 watchUiBone = kinematics.LL_BoneID(settings.boneUi.c_str());
+	const LPCSTR digitalShader = settings.shaderDigital.c_str();
+	const LPCSTR glassShader = settings.shaderGlass.c_str();
 
 	string_path digitalTextures;
 	BuildDigitalTextureList(digitalTextures);
@@ -228,7 +228,7 @@ void ApplyDigitalShaders(CKinematics& kinematics)
 		}
 
 		const SWatchesChildShaderBackup& backup = g_watchesShaderBackup[childIdx];
-		const bool isGlassChildMesh = IsGlassChild(child, backup);
+		const bool isGlassChildMesh = IsGlassChild(backup, settings.glassTexture);
 		const bool isWatchUi = IsWatchUiChild(kinematics, childIdx, watchUiBone);
 
 		const char* textureName = backup.valid ? backup.texture.c_str() : "<none>";
@@ -265,16 +265,16 @@ void ApplyDigitalShaders(CKinematics& kinematics)
 			continue;
 		}
 
-		if (backup.valid)
+		if (backup.valid && backup.shader.size() > 0)
 		{
 			child->shader.create(backup.shader.c_str(), backup.texture.c_str());
 			Msg("* [wristwatch] child[%u] -> shader %s (restore)", childIdx, backup.shader.c_str());
 		}
 	}
 
-	if (glassChildCount == 0)
+	if (glassChildCount == 0 && settings.glassTexture.size() > 0)
 	{
-		Msg("! [wristwatch] no glass child detected (texture/visual name must contain 'glass' or 'lens')");
+		Msg("! [wristwatch] no glass child matched watches_glass_texture='%s'", settings.glassTexture.c_str());
 	}
 }
 }
@@ -312,7 +312,14 @@ void WristwatchVisual::ApplyDisplayShaders(EWristwatchDisplayType displayType, I
 
 	if (displayType == EWristwatchDisplayType::Digital || displayType == EWristwatchDisplayType::Hybrid)
 	{
-		ApplyDigitalShaders(*kinematics);
+		if (IsWristwatchContentConfigured())
+		{
+			ApplyDigitalShaders(*kinematics);
+		}
+		else
+		{
+			RestoreOriginalShaders(*kinematics);
+		}
 	}
 	else
 	{

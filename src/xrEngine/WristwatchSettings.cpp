@@ -3,6 +3,8 @@
 
 namespace
 {
+constexpr LPCSTR kSection = "wristwatch_settings";
+
 SWristwatchRuntimeSettings g_wristwatchSettings;
 SWristwatchSurgeState g_surgeState;
 bool g_wristwatchSettingsLoaded = false;
@@ -20,97 +22,134 @@ EWristwatchSurgeMode ClampSurgeMode(u8 mode)
 
 EWristwatchDisplayType ToDisplayType(LPCSTR value)
 {
-	if (value != nullptr)
+	if (value == nullptr || value[0] == '\0')
 	{
-		if (xr_strcmp(value, "analog") == 0)
-		{
-			return EWristwatchDisplayType::Analog;
-		}
-
-		if (xr_strcmp(value, "digital") == 0)
-		{
-			return EWristwatchDisplayType::Digital;
-		}
+		return EWristwatchDisplayType::Analog;
 	}
 
-	return EWristwatchDisplayType::Hybrid;
+	if (xr_strcmp(value, "analog") == 0)
+	{
+		return EWristwatchDisplayType::Analog;
+	}
+
+	if (xr_strcmp(value, "digital") == 0)
+	{
+		return EWristwatchDisplayType::Digital;
+	}
+
+	if (xr_strcmp(value, "hybrid") == 0)
+	{
+		return EWristwatchDisplayType::Hybrid;
+	}
+
+	return EWristwatchDisplayType::Analog;
 }
 
-shared_str BuildDefaultFontTexture(LPCSTR fontSection)
+void ReadSharedString(shared_str& dest, LPCSTR key, LPCSTR defaultValue)
 {
-	LPCSTR faceName = "digital-7";
-	if (pSettings->section_exist(fontSection) && pSettings->line_exist(fontSection, "name"))
+	dest = READ_IF_EXISTS(pSettings, r_string, kSection, key, defaultValue);
+}
+
+void ResolveFontTextureFromConfig(SWristwatchRuntimeSettings& settings)
+{
+	if (settings.fontTexture.size() > 0)
 	{
-		faceName = pSettings->r_string(fontSection, "name");
+		return;
+	}
+
+	LPCSTR faceName = nullptr;
+	if (settings.fontFace.size() > 0)
+	{
+		faceName = settings.fontFace.c_str();
+	}
+	else if (settings.fontSection.size() > 0 &&
+		pSettings->section_exist(settings.fontSection) &&
+		pSettings->line_exist(settings.fontSection, "name"))
+	{
+		faceName = pSettings->r_string(settings.fontSection, "name");
+	}
+
+	if (faceName == nullptr || faceName[0] == '\0')
+	{
+		return;
 	}
 
 	string_path textureName;
 	xr_sprintf(textureName, "$user$%s", faceName);
-	return textureName;
+	settings.fontTexture = textureName;
+}
+
+void UpdateContentReady(SWristwatchRuntimeSettings& settings)
+{
+	settings.contentReady =
+		settings.digitalTexture.size() > 0 &&
+		settings.shaderDigital.size() > 0 &&
+		settings.shaderFallback.size() > 0 &&
+		settings.boneUi.size() > 0 &&
+		settings.fontTexture.size() > 0;
+}
+
+void LoadFromIni(SWristwatchRuntimeSettings& settings)
+{
+	settings.game.displayType = ToDisplayType(
+		READ_IF_EXISTS(pSettings, r_string, kSection, "display_type", ""));
+	settings.game.preSurgeWindow = READ_IF_EXISTS(
+		pSettings, r_u32, kSection, "pre_surge_window", 0);
+	settings.game.radiationGlowMaxMsv = READ_IF_EXISTS(
+		pSettings, r_float, kSection, "radiation_glow_max_msv", 0.0f);
+	settings.game.anomalyGlitchRadius = READ_IF_EXISTS(
+		pSettings, r_float, kSection, "anomaly_glitch_radius", 0.0f);
+	settings.game.replaceSurgeNotifications = READ_IF_EXISTS(
+		pSettings, r_bool, kSection, "replace_surge_notifications", false);
+
+	settings.lcdCenterX = READ_IF_EXISTS(pSettings, r_float, kSection, "watches_lcd_center_x", 0.0f);
+	settings.lcdCenterY = READ_IF_EXISTS(pSettings, r_float, kSection, "watches_lcd_center_y", 0.0f);
+	settings.lcdHalfW = READ_IF_EXISTS(pSettings, r_float, kSection, "watches_lcd_half_w", 0.0f);
+	settings.lcdHalfH = READ_IF_EXISTS(pSettings, r_float, kSection, "watches_lcd_half_h", 0.0f);
+
+	ReadSharedString(settings.digitalTexture, "watches_digital_texture", "");
+	ReadSharedString(settings.glassTexture, "watches_glass_texture", "");
+	ReadSharedString(settings.glassBumpTexture, "watches_glass_bump_texture", "");
+	ReadSharedString(settings.fontSection, "watches_font_section", "");
+	ReadSharedString(settings.fontTexture, "watches_font_texture", "");
+	ReadSharedString(settings.fontFace, "watches_font_face", "");
+
+	ReadSharedString(settings.shaderDigital, "watches_shader_digital", "");
+	ReadSharedString(settings.shaderGlass, "watches_shader_glass", "");
+	ReadSharedString(settings.shaderHidden, "watches_shader_hidden", "");
+	ReadSharedString(settings.shaderFallback, "watches_shader_fallback", "");
+
+	ReadSharedString(settings.boneHud, "watches_bone_hud", "");
+	ReadSharedString(settings.boneUi, "watches_bone_ui", "");
+	ReadSharedString(settings.boneHandsH, "watches_bone_hands_h", "");
+	ReadSharedString(settings.boneHandsM, "watches_bone_hands_m", "");
+	ReadSharedString(settings.boneHandsS, "watches_bone_hands_s", "");
+	ReadSharedString(settings.boneLcdHh, "watches_bone_lcd_hh", "");
+	ReadSharedString(settings.boneLcdHl, "watches_bone_lcd_hl", "");
+	ReadSharedString(settings.boneLcdMh, "watches_bone_lcd_mh", "");
+	ReadSharedString(settings.boneLcdMl, "watches_bone_lcd_ml", "");
+	ReadSharedString(settings.boneTritium, "watches_bone_tritium", "");
+
+	ReadSharedString(settings.surgeScript, "watches_surge_script", "");
+	ReadSharedString(settings.surgeHooksFn, "watches_surge_hooks_fn", "");
+
+	ResolveFontTextureFromConfig(settings);
 }
 }
 
 ENGINE_API void ReloadWristwatchRuntimeSettings()
 {
 	g_wristwatchSettings = {};
-	g_wristwatchSettings.digitalTexture = "secret_hand_textures\\watches\\watches";
-	g_wristwatchSettings.glassTexture = "secret_hand_textures\\watches\\watches_glass";
-	g_wristwatchSettings.glassBumpTexture = "secret_hand_textures\\watches\\watches_glass_bump#";
-	g_wristwatchSettings.fontSection = "font_wristwatch_digital";
-	g_wristwatchSettings.fontTexture = BuildDefaultFontTexture(g_wristwatchSettings.fontSection.c_str());
 
-	if (!pSettings->section_exist("wristwatch_settings"))
+	if (!pSettings->section_exist(kSection))
 	{
+		UpdateContentReady(g_wristwatchSettings);
 		g_wristwatchSettingsLoaded = true;
 		return;
 	}
 
-	const LPCSTR displayType = READ_IF_EXISTS(pSettings, r_string, "wristwatch_settings", "display_type", "hybrid");
-	g_wristwatchSettings.game.displayType = ToDisplayType(displayType);
-	g_wristwatchSettings.game.preSurgeWindow = READ_IF_EXISTS(pSettings, r_u32, "wristwatch_settings", "pre_surge_window", 600);
-	g_wristwatchSettings.game.radiationGlowMaxMsv = READ_IF_EXISTS(pSettings, r_float, "wristwatch_settings", "radiation_glow_max_msv", 0.15f);
-	g_wristwatchSettings.game.anomalyGlitchRadius = READ_IF_EXISTS(pSettings, r_float, "wristwatch_settings", "anomaly_glitch_radius", 8.0f);
-	g_wristwatchSettings.game.replaceSurgeNotifications = READ_IF_EXISTS(
-		pSettings,
-		r_bool,
-		"wristwatch_settings",
-		"replace_surge_notifications",
-		false);
-
-	g_wristwatchSettings.lcdCenterX = READ_IF_EXISTS(pSettings, r_float, "wristwatch_settings", "watches_lcd_center_x", g_wristwatchSettings.lcdCenterX);
-	g_wristwatchSettings.lcdCenterY = READ_IF_EXISTS(pSettings, r_float, "wristwatch_settings", "watches_lcd_center_y", g_wristwatchSettings.lcdCenterY);
-	g_wristwatchSettings.lcdHalfW = READ_IF_EXISTS(pSettings, r_float, "wristwatch_settings", "watches_lcd_half_w", g_wristwatchSettings.lcdHalfW);
-	g_wristwatchSettings.lcdHalfH = READ_IF_EXISTS(pSettings, r_float, "wristwatch_settings", "watches_lcd_half_h", g_wristwatchSettings.lcdHalfH);
-
-	if (pSettings->line_exist("wristwatch_settings", "watches_digital_texture"))
-	{
-		g_wristwatchSettings.digitalTexture = pSettings->r_string("wristwatch_settings", "watches_digital_texture");
-	}
-
-	if (pSettings->line_exist("wristwatch_settings", "watches_glass_texture"))
-	{
-		g_wristwatchSettings.glassTexture = pSettings->r_string("wristwatch_settings", "watches_glass_texture");
-	}
-
-	if (pSettings->line_exist("wristwatch_settings", "watches_glass_bump_texture"))
-	{
-		g_wristwatchSettings.glassBumpTexture = pSettings->r_string("wristwatch_settings", "watches_glass_bump_texture");
-	}
-
-	if (pSettings->line_exist("wristwatch_settings", "watches_font_section"))
-	{
-		g_wristwatchSettings.fontSection = pSettings->r_string("wristwatch_settings", "watches_font_section");
-	}
-
-	if (pSettings->line_exist("wristwatch_settings", "watches_font_texture"))
-	{
-		g_wristwatchSettings.fontTexture = pSettings->r_string("wristwatch_settings", "watches_font_texture");
-	}
-	else
-	{
-		g_wristwatchSettings.fontTexture = BuildDefaultFontTexture(g_wristwatchSettings.fontSection.c_str());
-	}
-
+	LoadFromIni(g_wristwatchSettings);
+	UpdateContentReady(g_wristwatchSettings);
 	g_wristwatchSettingsLoaded = true;
 }
 
@@ -122,6 +161,11 @@ ENGINE_API const SWristwatchRuntimeSettings& GetWristwatchRuntimeSettings()
 	}
 
 	return g_wristwatchSettings;
+}
+
+ENGINE_API bool IsWristwatchContentConfigured()
+{
+	return GetWristwatchRuntimeSettings().contentReady;
 }
 
 ENGINE_API void SetWristwatchSurgeState(u8 mode, u32 countdownSeconds, u32 untilSurgeSeconds)

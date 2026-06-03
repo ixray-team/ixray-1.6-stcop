@@ -438,8 +438,17 @@ void TryInstallNotificationHooks()
 		return;
 	}
 
+	const SWristwatchRuntimeSettings& settings = GetWristwatchRuntimeSettings();
+	if (settings.surgeScript.size() == 0 || settings.surgeHooksFn.size() == 0)
+	{
+		return;
+	}
+
+	string_path functorName;
+	xr_sprintf(functorName, "%s.%s", settings.surgeScript.c_str(), settings.surgeHooksFn.c_str());
+
 	luabind::functor<void> functor;
-	if (ai().script_engine().functor("wristwatch_surge.install_notification_hooks", functor))
+	if (ai().script_engine().functor(functorName, functor))
 	{
 		functor();
 	}

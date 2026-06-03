@@ -18,10 +18,10 @@ enum class EWristwatchSurgeMode : u8
 
 struct SWristwatchSettings
 {
-	EWristwatchDisplayType displayType = EWristwatchDisplayType::Hybrid;
-	u32 preSurgeWindow = 600;
-	float radiationGlowMaxMsv = 0.15f;
-	float anomalyGlitchRadius = 8.0f;
+	EWristwatchDisplayType displayType = EWristwatchDisplayType::Analog;
+	u32 preSurgeWindow = 0;
+	float radiationGlowMaxMsv = 0.0f;
+	float anomalyGlitchRadius = 0.0f;
 	bool replaceSurgeNotifications = false;
 };
 
@@ -35,13 +35,36 @@ struct SWristwatchSurgeState
 struct SWristwatchRuntimeSettings
 {
 	SWristwatchSettings game;
-	float lcdCenterX = 0.5f;
-	float lcdCenterY = 0.5f;
-	float lcdHalfW = 0.128f;
-	float lcdHalfH = 0.078f;
+	float lcdCenterX = 0.0f;
+	float lcdCenterY = 0.0f;
+	float lcdHalfW = 0.0f;
+	float lcdHalfH = 0.0f;
+
 	shared_str digitalTexture;
 	shared_str glassTexture;
 	shared_str glassBumpTexture;
 	shared_str fontSection;
 	shared_str fontTexture;
+	shared_str fontFace;
+
+	shared_str shaderDigital;
+	shared_str shaderGlass;
+	shared_str shaderHidden;
+	shared_str shaderFallback;
+
+	shared_str boneHud;
+	shared_str boneUi;
+	shared_str boneHandsH;
+	shared_str boneHandsM;
+	shared_str boneHandsS;
+	shared_str boneLcdHh;
+	shared_str boneLcdHl;
+	shared_str boneLcdMh;
+	shared_str boneLcdMl;
+	shared_str boneTritium;
+
+	shared_str surgeScript;
+	shared_str surgeHooksFn;
+
+	bool contentReady = false;
 };
