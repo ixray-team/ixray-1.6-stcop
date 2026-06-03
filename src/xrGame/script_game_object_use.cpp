@@ -250,14 +250,19 @@ void CScriptGameObject::set_fastcall(const luabind::functor<bool> &functor, cons
 
 void CScriptGameObject::set_const_force(const Fvector &dir,float value,u32 time_interval)
 {
-	CPhysicsShell* shell = object().cast_physics_shell_holder()->PPhysicsShell();
-
 	if (physics_world() == nullptr)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"set_const_force : ph_world do not exist!");
 		return;
 	}
 
+	CPhysicsShellHolder* shellHolder = object().cast_physics_shell_holder();
+	if (shellHolder == nullptr)
+	{
+		return;
+	}
+
+	CPhysicsShell* shell = shellHolder->PPhysicsShell();
 	if (shell == nullptr)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"set_const_force : object %s has no physics shell!",*object().cName());
