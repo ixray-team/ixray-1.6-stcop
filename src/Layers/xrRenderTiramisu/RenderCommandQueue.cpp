@@ -10,7 +10,7 @@ TRenderCommandQueue GRenderCommandQueue;
 
 void TRenderCommandQueue::Enqueue(const char* debugName, CommandFunction&& function)
 {
-    xrCriticalSectionGuard guard(Lock);
+    xrSRWLockGuard guard(Lock);
     Pending.push_back({ debugName, std::move(function) });
 }
 
@@ -19,7 +19,7 @@ xr_vector<TRenderCommandQueue::Command> TRenderCommandQueue::Drain()
     xr_vector<Command> commands;
 
     {
-        xrCriticalSectionGuard guard(Lock);
+        xrSRWLockGuard guard(Lock);
         commands.swap(Pending);
     }
 
@@ -38,13 +38,13 @@ void TRenderCommandQueue::Execute()
 
 void TRenderCommandQueue::Clear()
 {
-    xrCriticalSectionGuard guard(Lock);
+    xrSRWLockGuard guard(Lock);
     Pending.clear();
 }
 
 bool TRenderCommandQueue::Empty() const
 {
-    xrCriticalSectionGuard guard(Lock);
+    xrSRWLockGuard guard(Lock, true);
     return Pending.empty();
 }
 
