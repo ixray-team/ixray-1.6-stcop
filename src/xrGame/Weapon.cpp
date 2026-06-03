@@ -1926,123 +1926,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 		}
 		case kWPN_ZOOM:
 		{
-			if (IsZoomEnabled())
-			{
-				if (b_toggle_weapon_aim)
-				{
-					if (flags & CMD_START)
-					{
-						if (ParentIsActor())
-						{
-							if (CActor* pActor = H_Parent()->cast_actor())
-							{
-								if (pActor->IsSafemode())
-								{
-									OnSafemodeOut();
-									pActor->SetSafemodeStatus(false);
-								}
-							}
-						}
-
-						if (!IsZoomed())
-						{
-							if ((m_bAimActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out && GetState() != eHiding) || !m_bAimActions && GetState() == eIdle) || !IsPending())
-							{
-								if (!CanAimNow())
-								{
-									CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
-
-									if (pActor && !b_toggle_weapon_aim && pActor->GetMovementState(eReal) & mcSprint)
-									{
-										pActor->SetMovementState(eWishful, mcSprint, false);
-									}
-
-									return false;
-								}
-
-								if (!m_sAimBlendParams[0].has_motion && GetState() != eIdle)
-								{
-									SwitchState(eIdle);
-									StopShooting();
-								}
-
-								OnZoomIn();
-							}
-						}
-						else
-						{
-							if (!CanLeaveAimNow())
-							{
-								if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
-								{
-									pActor->SetActorKeyRepeatFlag(kfUNZOOM, true);
-								}
-								return false;
-							}
-
-							OnZoomOut();
-						}
-					}
-				}
-				else
-				{
-					if (flags & CMD_START)
-					{
-						if (ParentIsActor())
-						{
-							if (CActor* pActor = H_Parent()->cast_actor())
-							{
-								if (pActor->IsSafemode())
-								{
-									OnSafemodeOut();
-									pActor->SetSafemodeStatus(false);
-								}
-							}
-						}
-
-						if (!CanAimNow())
-						{
-							CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
-
-							if (pActor && !b_toggle_weapon_aim && pActor->GetMovementState(eReal) & mcSprint)
-							{
-								pActor->SetMovementState(eWishful, mcSprint, false);
-							}
-
-							return false;
-						}
-
-						if (!IsZoomed() && ((m_bAimActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out && GetState() != eHiding) || !m_bAimActions && GetState() == eIdle) || !IsPending()))
-						{
-							if (!m_sAimBlendParams[0].has_motion && GetState() != eIdle)
-							{
-								SwitchState(eIdle);
-								StopShooting();
-							}
-
-							OnZoomIn();
-						}
-					}
-					else if (IsZoomed())
-					{
-						if (!CanLeaveAimNow())
-						{
-							if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
-							{
-								pActor->SetActorKeyRepeatFlag(kfUNZOOM, true);
-							}
-							return false;
-						}
-
-						OnZoomOut();
-					}
-				}
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return SwitchZoom(flags);
 		}break;
 		case kBRIGHTNESS_PLUS:
 		case kBRIGHTNESS_MINUS:
@@ -2073,6 +1957,95 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 	}
 
 	return false;
+}
+
+bool CWeapon::SwitchZoom(u32 flags)
+{
+	if (!IsZoomEnabled())
+	{
+		return false;
+	}
+
+	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+
+	if (!pActor)
+	{
+		return false;
+	}
+
+	bool result = false;
+
+	if (flags & CMD_START)
+	{
+		if (b_toggle_weapon_aim)
+		{
+			if (IsZoomed())
+			{
+				if (CanLeaveAimNow())
+				{
+					OnZoomOut();
+					result = true;
+				}
+				else
+				{
+					pActor->SetActorKeyRepeatFlag(kfUNZOOM, true);
+				}
+			}
+			else if (CanAimNow())
+			{
+				if (GetState() != eHiding && (m_bAimActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out) || !IsPending()))
+				{
+					OnZoomIn();
+					result = true;
+				}
+			}
+			else if (pActor->GetMovementState(eReal) & mcSprint)
+			{
+				pActor->SetMovementState(eWishful, mcSprint, false);
+			}
+		}
+		else if (CanAimNow())
+		{
+			if (GetState() != eHiding && (m_bAimActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out) || !IsPending()))
+			{
+				OnZoomIn();
+				result = true;
+			}
+		}
+		else if (pActor->GetMovementState(eReal) & mcSprint)
+		{
+			pActor->SetMovementState(eWishful, mcSprint, false);
+		}
+	}
+	else if (!b_toggle_weapon_aim)
+	{
+		if (CanLeaveAimNow())
+		{
+			OnZoomOut();
+			result = true;
+		}
+		else
+		{
+			pActor->SetActorKeyRepeatFlag(kfUNZOOM, true);
+		}
+	}
+
+	if (result)
+	{
+		if (pActor->IsSafemode())
+		{
+			OnSafemodeOut();
+			pActor->SetSafemodeStatus(false);
+		}
+
+		if (!m_sAimBlendParams[0].has_motion && GetState() != eIdle)
+		{
+			SwitchState(eIdle);
+			StopShooting();
+		}
+	}
+
+	return result;
 }
 
 bool CWeapon::SwitchAmmoType(u32 flags)
@@ -2822,7 +2795,7 @@ bool CWeapon::CanAimNow()
 
 	if (!isDelayedWeaponActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
 	{
-		return true;
+		return !IsZoomed();
 	}
 
 	bool result = true;
@@ -2874,7 +2847,7 @@ bool CWeapon::CanLeaveAimNow()
 
 	if (!isDelayedWeaponActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
 	{
-		return true;
+		return IsZoomed();
 	}
 
 	//if (pActor->IsActorSuicideNow() || pActor->IsActorPlanningSuicide() || pActor->IsControllerPreparing())
