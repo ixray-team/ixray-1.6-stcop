@@ -195,6 +195,12 @@ int CLog::DlgMsg (TMsgDlgType mt, const char* _Format, ...)
     return res;
 }
 
+bool CLog::IsVisible() const
+{
+	extern bool bAllowLogCommands;
+	return bAllowLogCommands;
+}
+
 void CLog::Msg(TMsgDlgType mt, const char* _Format, ...)
 {
 	char buf[4096];
