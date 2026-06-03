@@ -529,6 +529,8 @@ public:
 	virtual bool IsGrenadeMode() const { return false; }
 	virtual void ForceUpdateHUD();
 
+	bool SwitchZoom(u32 flags);
+
 	IC bool					IsZoomEnabled		()	const		{return m_zoom_params.m_bZoomEnabled;}
 	virtual	void			ZoomInc				();
 	virtual	void			ZoomDec				();
