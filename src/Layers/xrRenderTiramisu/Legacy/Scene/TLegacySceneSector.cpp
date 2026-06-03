@@ -140,11 +140,11 @@ void TLegacySceneSector::traverse			(CFrustum &F, _scissor& R_scissor)
 			float ssa			=	R*R/distSQ;
 			dir2portal.div		(sqrt(distSQ));
 			ssa					*=	abs(PORTAL->P.n.dotproduct(dir2portal));
-			if (ssa < GRenderResourcesManager->LegacyScene->SsaDiscardThreshold)	continue;
+			if (ssa < LegacyOwner->SsaDiscardThreshold)	continue;
 
 			if (GPortalTraverser.i_options&CPortalTraverser::VQ_FADE)	{
-				if (ssa < GRenderResourcesManager->LegacyScene->PortalFadeSsaStartThreshold)	GPortalTraverser.fade_portal			(PORTAL,ssa);
-				if (ssa < GRenderResourcesManager->LegacyScene->PortalFadeSsaEndThreshold)	continue							;
+				if (ssa < LegacyOwner->PortalFadeSsaStartThreshold)	GPortalTraverser.fade_portal			(PORTAL,ssa);
+				if (ssa < LegacyOwner->PortalFadeSsaEndThreshold)	continue							;
 			}
 		}
 
@@ -234,15 +234,13 @@ void TLegacySceneSector::load(IReader& fs)
 	while (count) 
 	{
 		u16 ID = fs.r_u16();
-		TLegacyScenePortal* P = (TLegacyScenePortal*)GRenderResourcesManager->LegacyScene->GetPortal(ID);
+		TLegacyScenePortal* P = (TLegacyScenePortal*)LegacyOwner->GetPortal(ID);
 		m_portals.push_back(P);
 		count--;
 	}
-
-
 	// Assign visual
 	size = fs.find_chunk(fsP_Root);	R_ASSERT(size == 4);
-	m_root = GRenderResourcesManager->LegacyScene->GetVisual(fs.r_u32());
+	m_root = LegacyOwner->GetVisual(fs.r_u32());
 
 }
 

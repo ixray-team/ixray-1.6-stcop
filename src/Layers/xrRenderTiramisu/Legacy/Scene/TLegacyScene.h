@@ -2,7 +2,12 @@
 #include "Legacy/Visual/XRayRenderVisual.h"
 #include "TLegacySceneSector.h"
 #include "TLegacyRenderGraph.h"
+#include "Resources/Materials/TRenderMaterialInstanceDynamic.h"
+#include "Scene/SceneProxy/TStaticMeshSceneProxy.h"
 
+
+class TLegacySceneRenderProxy;
+class TStaticMeshSceneProxy;
 
 class TLegacyScene
 {
@@ -19,14 +24,16 @@ public:
     
     const FLegacyVisualSceneVertexBuffer&               GetVertexBuffer     (uint32_t id) const { return VertexBuffers[id]; }
     const FLegacyVisualSceneIndexBuffer&                GetIndexBuffer      (uint32_t id) const { return IndexBuffers[id]; }
-    const FLegacySceneShader&                           GetShaders          (uint32_t id)const { return Shaders[id]; }
+    TRenderMaterialInterface*                           GetShaders          (uint32_t id)const { return Shaders[id]; }
 
     float                                               SsaDiscardThreshold = 0.f;
     float                                               GlodSsaStartThreshold = 0.f;
     float                                               GlodSsaEndThreshold = 0.f;
     float                                               PortalFadeSsaStartThreshold = 0.f;
     float                                               PortalFadeSsaEndThreshold = 0.f;
-    nri::Buffer*                                        GeometryBuffer = nullptr;
+    
+    TLegacySceneRenderProxy*                            SceneRenderProxy = nullptr;
+    TStaticMeshRenderData*                              StaticMeshRenderData = nullptr;
   
 private:
     
@@ -35,13 +42,13 @@ private:
     void								                LoadSectors			(IReader* Reader);
     void								                LoadSWIs			(CStreamReader* Reader);
     TLegacySceneSector*                                 GetSectorByRay      (const Fvector& Position, const Fvector& Direction);
-    static ELegacyLevelVertexType	                GetAndConvertFVF	(CStreamReader* Reader, uint32_t& OutSize);
+    static EVertexType	                                GetAndConvertFVF	(CStreamReader* Reader, uint32_t& OutSize);
     
     xr_vector<FLegacyVisualSceneVertexBuffer>           VertexBuffers;
     xr_vector<FLegacyVisualSceneIndexBuffer>            IndexBuffers;
     
     xr_vector<CDS0_RenderVisual*>                       Visuals;
-    xr_vector<FLegacySceneShader>                       Shaders;
+    xr_vector<TRenderMaterialInterface*>                Shaders;
     xr_vector<xr_unique_ptr<TLegacyScenePortal>>        Portals;
     xr_vector<xr_unique_ptr<TLegacySceneSector>>        Sectors;
     TLegacyRenderGraph                                  RenderGraph;

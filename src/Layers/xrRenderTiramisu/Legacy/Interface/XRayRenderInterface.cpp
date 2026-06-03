@@ -61,12 +61,12 @@ void CDS0_RenderInterface::reset_end()
 
 void CDS0_RenderInterface::level_Load(IReader* fs)
 {
-	GRenderResourcesManager->LegacyScene->LoadLevel(fs);
+	LegacyScene.LoadLevel(fs);
 }
 
 void CDS0_RenderInterface::level_Unload()
 {
-	GRenderResourcesManager->LegacyScene->Clear();
+	LegacyScene.Clear();
 }
 
 HRESULT CDS0_RenderInterface::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags, void*& result)
@@ -320,10 +320,7 @@ void CDS0_RenderInterface::OnFrame()
 
 void CDS0_RenderInterface::Calculate()
 {
-	if (GRenderResourcesManager->LegacyScene)
-	{
-		GRenderResourcesManager->LegacyScene->Calculate();
-	}
+	LegacyScene.Calculate();
 }
 
 void CDS0_RenderInterface::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer)

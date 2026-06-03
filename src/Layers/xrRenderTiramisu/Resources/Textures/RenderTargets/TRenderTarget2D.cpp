@@ -1,5 +1,7 @@
 ﻿#include "TRenderTarget2D.h"
 
+#include "TRenderTargetResourceProxy.h"
+
 TRenderTarget2D::TRenderTarget2D(uint32_t InWidth, uint32_t InHeight, nri::Format InRenderTargetFormat, nri::ClearValue InClearValue, const shared_str& InName):TRenderTexture(InName)
 {
     TextureDescription.type = nri::TextureType::TEXTURE_2D;
@@ -22,41 +24,32 @@ TRenderTarget2D::TRenderTarget2D(uint32_t InWidth, uint32_t InHeight, nri::Forma
         break;
     }
 
-    NRI_CHECK(GRenderDevice.CoreInterface.CreatePlacedTexture(*GRenderDevice.Device, NriDeviceHeap, TextureDescription, Texture));
-
-    nri::TextureViewDesc TextureViewDescription = {Texture, nri::TextureView::TEXTURE, TextureDescription.format};
-    NRI_CHECK(GRenderDevice.CoreInterface.CreateTextureView(TextureViewDescription, Descriptor));
+    RenderTargetResourceProxy = new TRenderTargetResourceProxy;
+    RenderTargetResourceProxy->TextureDescription = TextureDescription;
+    ResourceProxy = RenderTargetResourceProxy;
     
-    
-    nri::TextureViewDesc TextureViewAttachmentDescription = {Texture, nri::TextureView::COLOR_ATTACHMENT, TextureDescription.format};
-    
-    switch (InRenderTargetFormat)
+    ENQUEUE_RENDER_COMMAND(TRenderTexture2D::LoadFromImage)([RenderTargetResourceProxy = RenderTargetResourceProxy]()
     {
-    case nri::Format::D16_UNORM:
-    case nri::Format::D32_SFLOAT:
-    case nri::Format::D24_UNORM_S8_UINT:
-    case nri::Format::D32_SFLOAT_S8_UINT:
-        TextureViewAttachmentDescription.type = nri::TextureView::DEPTH_STENCIL_ATTACHMENT;
-        break;
-    };
+        NRI_CHECK(GRenderDevice.CoreInterface.CreatePlacedTexture(*GRenderDevice.Device, NriDeviceHeap, RenderTargetResourceProxy->TextureDescription, RenderTargetResourceProxy->Texture));
+
+        nri::TextureViewDesc TextureViewDescription = {RenderTargetResourceProxy->Texture, nri::TextureView::TEXTURE, RenderTargetResourceProxy->TextureDescription.format};
+        NRI_CHECK(GRenderDevice.CoreInterface.CreateTextureView(TextureViewDescription, RenderTargetResourceProxy->Descriptor));
+
+
+        nri::TextureViewDesc TextureViewAttachmentDescription = {RenderTargetResourceProxy->Texture, nri::TextureView::COLOR_ATTACHMENT, RenderTargetResourceProxy->TextureDescription.format};
+
+        if (!!(RenderTargetResourceProxy->TextureDescription.usage &  nri::TextureUsageBits::DEPTH_STENCIL_ATTACHMENT))
+        {
+            TextureViewAttachmentDescription.type = nri::TextureView::DEPTH_STENCIL_ATTACHMENT;
+        }
+      
+        NRI_CHECK(GRenderDevice.CoreInterface.CreateTextureView(TextureViewAttachmentDescription, RenderTargetResourceProxy->DescriptorAttachment));
+    }); 
     
-    NRI_CHECK(GRenderDevice.CoreInterface.CreateTextureView(TextureViewAttachmentDescription, DescriptorAttachment));
-    
-    LastAccessLayoutStage = {nri::AccessBits::NONE, nri::Layout::UNDEFINED};
+
 
 }
 
 TRenderTarget2D::~TRenderTarget2D()
 {
-    if (DescriptorAttachment)
-    {
-        GRenderDevice.CoreInterface.DestroyDescriptor(DescriptorAttachment);
-    }
-}
-
-void TRenderTarget2D::SetNewAccessLayoutStage(nri::TextureBarrierDesc& TextureBarrierDescription, nri::AccessLayoutStage AfterAccessLayoutStage)
-{
-    TextureBarrierDescription.before = LastAccessLayoutStage;
-    TextureBarrierDescription.after = AfterAccessLayoutStage;
-    LastAccessLayoutStage = AfterAccessLayoutStage;
 }

@@ -5,9 +5,8 @@
 class TRenderTextureSeq final : public TRenderTexture
 {
 public:
-								TRenderTextureSeq			(const shared_str& InName = "None") : TRenderTexture(InName) {};
-	virtual 					~TRenderTextureSeq			() override;
-	virtual u32					GetOrCreateHeapIndex	() override;
+								TRenderTextureSeq		(const shared_str& InName = "None") : TRenderTexture(InName) {};
+	virtual 					~TRenderTextureSeq		() override;
 			bool				LoadFromSeqFile			(const char* FilePath);
 	virtual void				Update					() override;
 	virtual bool				IsDynamic				() override {return true;};

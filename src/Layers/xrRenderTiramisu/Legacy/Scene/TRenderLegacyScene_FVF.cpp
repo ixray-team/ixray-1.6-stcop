@@ -107,7 +107,7 @@ static D3DVERTEXELEMEN_D3D9	LDeclMUModel[] = // 12+4+4+4+8=32
     D3D9DECLEND()
 };
 
-ELegacyLevelVertexType TLegacyScene::GetAndConvertFVF(CStreamReader* base_fs, uint32_t& OutSize)
+EVertexType TLegacyScene::GetAndConvertFVF(CStreamReader* base_fs, uint32_t& OutSize)
 {
 	D3DVERTEXELEMEN_D3D9 TempArray[65];
 	base_fs->r(TempArray, sizeof(TempArray));
@@ -117,29 +117,29 @@ ELegacyLevelVertexType TLegacyScene::GetAndConvertFVF(CStreamReader* base_fs, ui
 		constexpr int32_t Offset = sizeof(LDeclR1LMap) - sizeof(TempArray);
 		base_fs->advance(Offset);
 		OutSize = sizeof(FLegacyLevelVertex_BaseWithLightMap);
-		return ELegacyLevelVertexType::BaseWithLightMap;
+		return EVertexType::BaseWithLightMap;
 	}
 	if (memcmp(TempArray,LDeclR1Vert,sizeof(LDeclR1Vert)) == 0)
 	{
 		constexpr int32_t Offset = sizeof(LDeclR1Vert) - sizeof(TempArray);
 		base_fs->advance(Offset);
 		OutSize = sizeof(FLegacyLevelVertex_BaseWithLightColor);
-		return ELegacyLevelVertexType::BaseWithLightColor;
+		return EVertexType::BaseWithLightColor;
 	}
 	if (memcmp(TempArray,LDeclMUModel,sizeof(LDeclMUModel)) == 0)
 	{
 		constexpr int32_t Offset = sizeof(LDeclMUModel) - sizeof(TempArray);
 		base_fs->advance(Offset);
 		OutSize = sizeof(FLegacyLevelVertex_MultipleUsageModel);
-		return ELegacyLevelVertexType::MultipleUsageModel;
+		return EVertexType::MultipleUsageModel;
 	}
 	if (memcmp(TempArray,LDeclXVert,sizeof(LDeclXVert)) == 0)
 	{
 		constexpr int32_t Offset = sizeof(LDeclXVert) - sizeof(TempArray);
 		base_fs->advance(Offset);
 		OutSize = sizeof(FLegacyLevelVertex_OnlyVertex);
-		return ELegacyLevelVertexType::VertexOnly;
+		return EVertexType::VertexOnly;
 	}
 	NODEFAULT;
-    return ELegacyLevelVertexType::VertexOnly;
+    return EVertexType::VertexOnly;
 }

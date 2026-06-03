@@ -1,6 +1,9 @@
 ﻿#pragma once
 #include "TRenderDescriptorHeapAllocator.h"
+#include "Materials/TRenderMaterialInterface.h"
 
+class TRenderMaterialsManager;
+class TRenderScene;
 class TRenderResourcesFlusher;
 class TLegacyScene;
 class TGlobalShadersManager;
@@ -21,17 +24,19 @@ public:
     nri::DescriptorSet*                     SamplerDescriptorSet    = nullptr;
     nri::DescriptorSet*                     ResourcesDescriptorSet  = nullptr;
     
-    TShaderDefinesManager*               ShaderDefinesManager = nullptr;
-    TGlobalShadersManager*               GlobalShadersManager = nullptr;
-    TRenderDescriptorHeapAllocator*      DescriptorHeapAllocator = nullptr;
-    TRenderTexturesManager*                    TexturesManager = nullptr;
-    TLegacyScene*                     LegacyScene = nullptr;
-    TRenderResourcesFlusher*                ResourcesFlusher = nullptr;
+    TShaderDefinesManager*                  ShaderDefinesManager = nullptr;
+    TGlobalShadersManager*                  GlobalShadersManager = nullptr;
+    TRenderDescriptorHeapAllocator*         DescriptorHeapAllocator = nullptr;
+    TRenderTexturesManager*                 TexturesManager = nullptr;
+    TRenderMaterialsManager*                MaterialsManager = nullptr;
+    TRenderScene*                           RenderScene = nullptr;
     
     nri::Buffer*                            QuadGeometryBuffer = nullptr;
     uint64_t                                QuadGeometryOffset = 0; 
-    TRenderTexture2D*                          BlackTexture = nullptr;
-    TRenderTexture2D*                          WhiteTexture = nullptr;
+    TRenderMaterialInterface*               DefaultMaterial = nullptr;
+    
+    TRenderTexture2D*                       BlackTexture = nullptr;
+    TRenderTexture2D*                       WhiteTexture = nullptr;
     
 private:
         void                                CreateSamplers          ();

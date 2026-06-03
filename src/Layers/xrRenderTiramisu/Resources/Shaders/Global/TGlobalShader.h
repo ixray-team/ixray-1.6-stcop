@@ -7,18 +7,18 @@ class TShaderDefinesContainer;
 class TGlobalShader
 {
 public:
-							TGlobalShader		(IReader* Reader);
+								TGlobalShader		(IReader* Reader);
 #if IXR_ENABLE_SHADER_COMPILER
-							TGlobalShader		(const xr_vector<char>&InData, EShaderType InType, TShaderDefinesContainer* InDefinesContainer);
-							TGlobalShader		(unsigned char* InData, size_t Len, EShaderType InType, TShaderDefinesContainer* InDefinesContainer);
+								TGlobalShader		(const xr_vector<char>&InData, EShaderType InType, TShaderDefinesContainer* InDefinesContainer);
+								TGlobalShader		(unsigned char* InData, size_t Len, EShaderType InType, TShaderDefinesContainer* InDefinesContainer);
 #endif
-							~TGlobalShader		() = default;
-	const xr_vector<char>&	Get					() const;
-	bool					IsEqual				(EShaderType InType, TShaderDefinesContainer* InDefinesContainer) const;
-	bool					IsLess				(EShaderType InType, TShaderDefinesContainer* InDefinesContainer) const;
-	bool					operator<			(const TGlobalShader&Right) const;
+								~TGlobalShader		() = default;
+	const xr_vector<char>&		Get					() const;
+	bool						IsEqual				(EShaderType InType, TShaderDefinesContainer* InDefinesContainer) const;
+	bool						IsLess				(EShaderType InType, TShaderDefinesContainer* InDefinesContainer) const;
+	bool						operator<			(const TGlobalShader&Right) const;
 	
-	EShaderType				Type;
+	EShaderType					Type;
 	xr_vector<char>				Data;
 	TShaderDefinesContainer*	DefinesContainer;
 };

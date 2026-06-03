@@ -53,6 +53,7 @@ public:
 	xr_vector<_scissor>				r_scissors;
 	_scissor						r_scissor_merged;
 	u32								r_marker;
+	TLegacyScene*					LegacyOwner = nullptr;
 public:
 	// Main interface
 	CDS0_RenderVisual*					root			()				{ return m_root; }
