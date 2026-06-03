@@ -1946,7 +1946,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 
 						if (!IsZoomed())
 						{
-							if ((m_bAimActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out) || !m_bAimActions) && GetState() != eHiding || !IsPending())
+							if ((m_bAimActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out && GetState() != eHiding) || !m_bAimActions && GetState() == eIdle) || !IsPending())
 							{
 								if (!CanAimNow())
 								{
@@ -2012,7 +2012,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 							return false;
 						}
 
-						if (!IsZoomed() && ((m_bAimActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out) || !m_bAimActions) && GetState() != eHiding || !IsPending()))
+						if (!IsZoomed() && ((m_bAimActions && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out && GetState() != eHiding) || !m_bAimActions && GetState() == eIdle) || !IsPending()))
 						{
 							if (!m_sAimBlendParams[0].has_motion && GetState() != eIdle)
 							{
