@@ -466,7 +466,10 @@ ICF void setkey(u32& zbufKey, u8 idx, const char* label_name = "ZBuff")
 	}
 	else
 	{
-		if (ImGui::Button(*shared_str().printf("%s disable Key: %s", label_name, SDL_GetScancodeName(SDL_Scancode(zbufKey)))))
+		if (ImGui::Button(*shared_str().printf("%s %s: %s",
+		                                       label_name,
+		                                       HUD().world_prims.key_toggle_mode ? "switch key" : "disable key",
+		                                       SDL_GetScancodeName(SDL_Scancode(zbufKey)))))
 			waitingKey[idx] = true;
 	}
 }
@@ -730,6 +733,7 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 					ImGui::SliderFloat("ZBuffer Shift", &zbuff_shift, 0.0f, 0.1f);
 					setkey(visible_currents_key, 1, "ZBuffText");
 					setkey(zbuffer_key, 0);
+					ImGui::Checkbox("Toggle mode (switch ZBuff state by pressing key)", &key_toggle_mode);
 					hud_prims->zbuffer_key = zbuffer_key;
 
 					ImGui::EndTabItem();
@@ -812,8 +816,9 @@ void LevelInspector::OnRender()
 		Pold = Device.mProject;
 		FTold = Device.mFullTransform;
 		Vold = Device.mView;
-
-		visible_currents = pInput->iGetAsyncKeyState(visible_currents_key);
+		
+		if (!key_toggle_mode) 
+			visible_currents = pInput->iGetAsyncKeyState(visible_currents_key);
 
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HUD))
 			hud_prims->OnRender();
@@ -841,8 +846,10 @@ void LevelInspector::OnRender()
 
 	if (m_flags.flags == 0u && tris_empty && lines_empty)
 		return;
-
-	zbuffer_enable = !pInput->iGetAsyncKeyState(zbuffer_key);
+	
+	if (!key_toggle_mode)
+		zbuffer_enable = !pInput->iGetAsyncKeyState(zbuffer_key);
+	
 	if (!tris_empty || !lines_empty)
 	{
 		if (hud_mode)
