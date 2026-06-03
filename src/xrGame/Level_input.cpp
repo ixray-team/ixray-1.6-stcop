@@ -113,6 +113,7 @@ extern float g_separate_radius;
 #include "../xrScripts/script_engine.h"
 #include "ai_space.h"
 #include "../xrEngine/string_table.h"
+#include "HUDManager.h"
 
 void CLevel::IR_OnKeyboardPress	(int key)
 {
@@ -543,6 +544,12 @@ void CLevel::IR_OnKeyboardPress	(int key)
 			}
 		}
 	#endif
+	
+	if (key == HUD().world_prims.zbuffer_key && HUD().world_prims.key_toggle_mode)
+		HUD().world_prims.zbuffer_enable = !HUD().world_prims.zbuffer_enable;
+	
+	if (key == HUD().world_prims.visible_currents_key && HUD().world_prims.key_toggle_mode)
+		HUD().world_prims.visible_currents = !HUD().world_prims.visible_currents;
 }
 
 void CLevel::IR_OnKeyboardRelease(int key)
