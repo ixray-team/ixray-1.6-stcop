@@ -1,5 +1,7 @@
 ﻿#include "TRenderDevice.h"
 #include "Extensions/NRIDeviceCreation.h"
+#include "Extensions/NRIStreamer.h"
+
 TRenderDevice GRenderDevice;
 
 TRenderDevice::TRenderDevice() : CoreInterface({}), SwapChainInterface({}), HelperInterface({})
@@ -43,9 +45,21 @@ void TRenderDevice::Initialize()
     NRI_CHECK(nri::nriGetInterface(*Device, NRI_INTERFACE(nri::CoreInterface), &CoreInterface));
     NRI_CHECK(nri::nriGetInterface(*Device, NRI_INTERFACE(nri::SwapChainInterface), &SwapChainInterface));
     NRI_CHECK(nri::nriGetInterface(*Device, NRI_INTERFACE(nri::HelperInterface), &HelperInterface));
+	// ExtensionInterface
+	NRI_CHECK(nri::nriGetInterface(*Device, NRI_INTERFACE(nri::ImguiInterface), &ImGuiInterface));
     // Command queue
     NRI_CHECK(CoreInterface.GetQueue(*Device, nri::QueueType::GRAPHICS, 0, GraphicsQueue));
 	
+	NRI_CHECK(nri::nriGetInterface(*Device, NRI_INTERFACE(nri::StreamerInterface), &StreamerInterface));
+
+	// Create streamer
+	nri::StreamerDesc streamerDesc = {};
+	streamerDesc.dynamicBufferMemoryLocation = nri::MemoryLocation::HOST_UPLOAD;
+	streamerDesc.dynamicBufferDesc = { 0, 0, nri::BufferUsageBits::VERTEX_BUFFER | nri::BufferUsageBits::INDEX_BUFFER };
+	streamerDesc.constantBufferMemoryLocation = nri::MemoryLocation::HOST_UPLOAD;
+	streamerDesc.queuedFrameNum = 3;
+	NRI_CHECK(StreamerInterface.CreateStreamer(*Device, streamerDesc, Streamer));
+
 	DeviceDescription = CoreInterface.GetDeviceDesc(*Device);
 	
 }

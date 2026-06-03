@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "TRenderViewport.h"
+#include "Extensions/NRIImgui.h"
 
 class TRenderDeferredPass;
 class TRenderTexture;
@@ -55,6 +56,8 @@ public:
     TRenderTarget2D*         DepthRenderTarget = nullptr;
 
     TRenderDeferredPass*        GeometryPass = nullptr;
+
+    nri::Imgui*                 ImGuiInstance = nullptr;
 private:
     bool                        IsWaitSubmit = false;
 };
