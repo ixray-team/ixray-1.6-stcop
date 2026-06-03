@@ -593,7 +593,7 @@ void UIMainMenuForm::Draw()
 
 				if (ImGui::MenuItem("Log", *GetCommandShortcat(COMMAND_LOG_COMMANDS), &selected))
 				{
-					ExecCommand(COMMAND_LOG_COMMANDS);
+					ExecCommand(COMMAND_LOG_COMMANDS, ELog.IsVisible());
 				}
 
 				CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
@@ -732,6 +732,12 @@ void UIMainMenuForm::ExportLevelAsArchive()
 		std::filesystem::create_directory("export");
 	}
 
+	if (LTools->m_LastFileName.empty())
+	{
+		Msg("! Scene is empty!");
+		return;
+	}
+
 	xr_path File = LTools->m_LastFileName;
 	const xr_string LevelName = File.xfilename();
 
@@ -761,7 +767,6 @@ void UIMainMenuForm::ExportLevelAsArchive()
 	std::filesystem::create_directory(GamePath);
 	std::filesystem::create_directory(TexturesObjectPath);
 	std::filesystem::create_directory(TextureLodsObjectPath);
-
 
 	string_path GameTextures = {};
 	FS.update_path(GameTextures, "$game_textures$", "");
