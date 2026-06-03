@@ -70,8 +70,15 @@ void CDS0_UIRender::SetAlphaRef(int aref)
 {
 }
 
-void CDS0_UIRender::SetScissor(Irect* rect)
+void CDS0_UIRender::SetScissor(Irect* Rect)
 {
+	if (Rect == nullptr)
+	{
+		CurrentScissor = {};
+		return;
+	}
+
+	CurrentScissor = *Rect;
 }
 
 void CDS0_UIRender::GetActiveTextureResolution(Fvector2& res)
@@ -105,11 +112,14 @@ void** CDS0_UIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePo
 	{
 		VERIFY(Primitivs.back().VertexOffset != INDEX_NONE);
 	}
+
 	FXRayUIPrimitive& Primitive = Primitivs.emplace_back();
 	Primitive.PrimitiveType = primType;
 	Primitive.PointType = pointType;
 	Primitive.VertexesCache.reserve(iMaxVerts);
 	Primitive.VertexOffset = INDEX_NONE;
+	Primitive.ScissorRect = CurrentScissor;
+
 	return nullptr;
 }
 
@@ -119,28 +129,30 @@ void CDS0_UIRender::FlushPrimitive()
 	
 	FXRayUIPrimitive& Primitive = Primitivs.back();
 	Primitive.VertexOffset = Vertexes.size();
+
 	if (CurrentShader)
 	{
-		
 		Primitive.Texture = static_cast<CDS0_UIShader*>(CurrentShader)->Texture;
 		if (Primitive.Texture)
 		{
 			GRenderResourcesManager->TexturesManager->Copy(Primitive.Texture);
 		}
 	}
+
 	switch (Primitive.PointType)
 	{
-	case ePointType::pttL:
-			for (FUIVertex& Vertex: Primitive.VertexesCache)
+		case ePointType::pttL:
+		{
+			for (FUIVertex& Vertex : Primitive.VertexesCache)
 			{
 				Vertex.uv[0] = 0;
 				Vertex.uv[1] = 0;
 			}
 			return;
-	case ePointType::pttLIT:
-	case ePointType::pttTL:
-	
-		default: ;
+		}
+		case ePointType::pttLIT:
+		case ePointType::pttTL:
+			default: ;
 	}
 	
 	switch (Primitive.PrimitiveType)
@@ -148,32 +160,7 @@ void CDS0_UIRender::FlushPrimitive()
 	case ptTriList:
 	{
 		const size_t VertexCount = Primitive.VertexesCache.size();
-
-		if ((VertexCount % 4) == 0)
-		{
-			for (size_t i = 0; i < VertexCount; i += 4)
-			{
-				const FUIVertex& BL = Primitive.VertexesCache[i + 0];
-				const FUIVertex& TL = Primitive.VertexesCache[i + 1];
-				const FUIVertex& BR = Primitive.VertexesCache[i + 2];
-				const FUIVertex& TR = Primitive.VertexesCache[i + 3];
-
-				Vertexes.push_back(BL);
-				Vertexes.push_back(TL);
-				Vertexes.push_back(BR);
-
-				Vertexes.push_back(BR);
-				Vertexes.push_back(TL);
-				Vertexes.push_back(TR);
-			}
-		}
-		else
-		{
-			Vertexes.insert(
-				Vertexes.end(),
-				Primitive.VertexesCache.begin(),
-				Primitive.VertexesCache.end());
-		}
+		Vertexes.insert(Vertexes.end(), Primitive.VertexesCache.begin(), Primitive.VertexesCache.end());
 		break;
 	}
 	case ptTriStrip:
