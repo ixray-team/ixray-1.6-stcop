@@ -253,7 +253,7 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 
 void CWeapon::StopShooting()
 {
-	if (!ParentIsActor())
+	if (!ParentIsActor() && GetState() == eFire)
 	{
 		SwitchState(eIdle, false);
 	}
