@@ -265,9 +265,9 @@ void CActor::reload	(const char* section)
 	m_location_manager->reload	(section);
 }
 
-extern bool m_disable_collision_shift;
 void set_box(const char* section, CPHMovementControl &mc, u32 box_num )
 {
+	static bool m_disable_collision_shift = EngineExternal().ShadowOfChernobylMode();
 	Fbox	bb;Fvector	vBOX_center,vBOX_size;
 	// m_PhysicMovementControl: BOX
 	string64 buff, buff1;
