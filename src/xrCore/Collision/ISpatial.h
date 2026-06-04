@@ -297,9 +297,18 @@ struct ISpatial_NODE
 	{
 		S->spatial.node_ptr = nullptr;
 
-		size_t idx = S->spatial.items_idx;
-		ISpatialShared& moved = fast_erase(items, idx);
-		moved->spatial.items_idx = idx;
+		const size_t idx = S->spatial.items_idx;
+		const size_t ItemsCount = items.size();
+
+		if (ItemsCount > 1 && idx != ItemsCount - 1)
+		{
+			ISpatialShared& moved = fast_erase(items, idx);
+			moved->spatial.items_idx = idx;
+		}
+		else if (ItemsCount > 0)
+		{
+			items.pop_back();
+		}
 	}
 
 	ICF bool _empty() const
