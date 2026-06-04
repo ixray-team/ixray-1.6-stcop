@@ -14,16 +14,13 @@
 class CBlend;
 class CAI_Stalker;
 
-#define USE_HEAD_BONE_PART_FAKE
-
 class CStalkerAnimationPair
 {
-#ifdef USE_HEAD_BONE_PART_FAKE
 public:
-	enum {
+	enum
+	{
 		all_bone_parts = u16(0xf),
 	};
-#endif // USE_HEAD_BONE_PART_FAKE
 
 public:
 	using ANIMATION_WEIGHTS = xr_vector<float>;
@@ -54,11 +51,7 @@ public:
 
 private:
 			void			select_animation		(const ANIM_VECTOR &array, const ANIMATION_WEIGHTS *weights);
-#ifndef USE_HEAD_BONE_PART_FAKE
-			void			play_global_animation	(IKinematicsAnimated *skeleton_animated, PlayCallback callback, const bool &use_animation_movement_control, const bool &local_animation, bool mix_animations);
-#else // USE_HEAD_BONE_PART_FAKE
 			void			play_global_animation	(IKinematicsAnimated *skeleton_animated, PlayCallback callback, const u32 &bone_part, const bool &use_animation_movement_control, const bool &local_animation, bool mix_animations);
-#endif // USE_HEAD_BONE_PART_FAKE
 
 public:
 	IC						CStalkerAnimationPair	(CAI_Stalker* object);
@@ -76,11 +69,7 @@ public:
 	IC		void			make_inactual			();
 
 public:
-#ifndef USE_HEAD_BONE_PART_FAKE
-			void			play					(IKinematicsAnimated *skeleton_animated, PlayCallback callback, const bool &use_animation_movement_control, const bool &local_animation, bool continue_interrupted_animation = true, bool mix_animations = true);
-#else // USE_HEAD_BONE_PART_FAKE
 			void			play					(IKinematicsAnimated *skeleton_animated, PlayCallback callback, const bool &use_animation_movement_control, const bool &local_animation, bool continue_interrupted_animation = true, const u32 &bone_part = all_bone_parts, bool mix_animations = true);
-#endif // USE_HEAD_BONE_PART_FAKE
 
 #ifdef DEBUG
 public:

@@ -185,4 +185,9 @@ namespace Platform
 
         return bytesRead;
     }
+
+    IC void GetAbsolutePath(char* in_path, char* out_buffer, size_t buffer_size)
+    {
+        _fullpath(in_path, out_buffer, buffer_size);
+    }
 }

@@ -66,10 +66,8 @@ private:
 	bool							m_start_new_script_animation;
 	bool							m_no_move_actual;
 
-#ifdef USE_HEAD_BONE_PART_FAKE
 private:
 	u32								m_script_bone_part_mask;
-#endif // USE_HEAD_BONE_PART_FAKE
 
 private:
 	float							m_previous_speed;
