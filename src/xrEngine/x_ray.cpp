@@ -260,6 +260,7 @@ ENGINE_API void EngineLoopAndDestroy()
 	xr_delete(g_SpatialSpace);
 	DEL_INSTANCE(g_pGamePersistent);
 
+	xr_delete(g_FontManager);
 	xr_delete(pApp);
 	g_pEventManager->Event.Dump();
 
