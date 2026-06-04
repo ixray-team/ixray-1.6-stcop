@@ -721,11 +721,6 @@ protected:
 	//для отдачи оружия
 	Fvector					m_vRecoilDeltaAngle;
 
-	//для сталкеров, чтоб они знали эффективные границы использования 
-	//оружия
-	float					m_fMinRadius;
-	float					m_fMaxRadius;
-
 public:
 	int						GetAmmoCount_forType(shared_str const& ammo_type) const;
 
