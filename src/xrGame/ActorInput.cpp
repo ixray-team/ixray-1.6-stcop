@@ -13,6 +13,7 @@
 #include "Car.h"
 #include "UIGameSP.h"
 #include "Inventory.h"
+#include "InventoryWeaponSlotLayout.h"
 #include "Level.h"
 #include "game_cl_base.h"
 #include "../xrEngine/xr_level_controller.h"
@@ -1417,98 +1418,103 @@ bool CActor::HUDview()const
 	return IsFocused() && (cam_active == eacFirstEye) && ((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView()));
 }
 
-static	u16 SlotsToCheck [] = {
-		KNIFE_SLOT		,		// 0
-		INV_SLOT_2		,		// 1
-		INV_SLOT_3		,		// 2
-		GRENADE_SLOT	,		// 3
-		ARTEFACT_SLOT	,		// 10
-		PISTOL_SLOT_NEW ,		// 13
-};
+namespace
+{
+void ActorActivateWeaponCycleSlot(CActor& actor, u16 slotId)
+{
+	const u16 gameAction = InventoryWeaponSlotToGameAction(slotId);
+	if (gameAction != kWeaponCycleNoGameAction)
+	{
+		actor.IR_OnKeyboardPress(get_action_dik(static_cast<EGameActions>(gameAction)));
+	}
+	else
+	{
+		actor.inventory().ActiveWeapon(slotId);
+	}
+}
+} // namespace
 
 void	CActor::OnNextWeaponSlot()
 {
-	u32 ActiveSlot = inventory().GetActiveSlot();
-	if (ActiveSlot == NO_ACTIVE_SLOT) 
-		ActiveSlot = inventory().GetPrevActiveSlot();
-
-	if (ActiveSlot == NO_ACTIVE_SLOT) 
-		ActiveSlot = KNIFE_SLOT;
-	
-	u32 NumSlotsToCheck = sizeof(SlotsToCheck)/sizeof(SlotsToCheck[0]);	
-	
-	u32 CurSlot			= 0;
-	for (; CurSlot<NumSlotsToCheck; CurSlot++)
+	u32 activeSlot = inventory().GetActiveSlot();
+	if (activeSlot == NO_ACTIVE_SLOT)
 	{
-		if (SlotsToCheck[CurSlot] == ActiveSlot) break;
-	};
+		activeSlot = inventory().GetPrevActiveSlot();
+	}
 
-	if (CurSlot >= NumSlotsToCheck) 
+	if (activeSlot == NO_ACTIVE_SLOT)
+	{
+		activeSlot = KNIFE_SLOT;
+	}
+
+	xr_span<const u16> const cycle = InventoryWeaponCycleSlots();
+	const u32 cycleCount = static_cast<u32>(cycle.size());
+	if (cycleCount == 0)
+	{
 		return;
+	}
 
-	for (u32 i=CurSlot+1; i<NumSlotsToCheck; i++)
+	s32 curIndex = -1;
+	for (u32 i = 0; i < cycleCount; ++i)
 	{
-		if (inventory().ItemFromSlot(SlotsToCheck[i]))
+		if (cycle[i] == activeSlot)
 		{
-			if (SlotsToCheck[i] == ARTEFACT_SLOT) 
-			{
-				IR_OnKeyboardPress(get_action_dik(kARTEFACT));
-			}
-			else if (SlotsToCheck[i] == PISTOL_SLOT_NEW)
-			{
-				IR_OnKeyboardPress(get_action_dik(kWPN_7));
-			}
-			else
-			{
-				u32 action = kWPN_1 + i;
-				IR_OnKeyboardPress(get_action_dik((EGameActions)action));
-			}
+			curIndex = static_cast<s32>(i);
+			break;
+		}
+	}
+
+	const u32 startIndex = curIndex < 0 ? 0u : static_cast<u32>(curIndex + 1);
+	for (u32 i = startIndex; i < cycleCount; ++i)
+	{
+		if (inventory().ItemFromSlot(cycle[i]))
+		{
+			ActorActivateWeaponCycleSlot(*this, cycle[i]);
 			return;
 		}
 	}
-};
+}
 
 void	CActor::OnPrevWeaponSlot()
 {
-	u32 ActiveSlot = inventory().GetActiveSlot();
-	if (ActiveSlot == NO_ACTIVE_SLOT) 
-		ActiveSlot = inventory().GetPrevActiveSlot();
-
-	if (ActiveSlot == NO_ACTIVE_SLOT) 
-		ActiveSlot = KNIFE_SLOT;
-
-	u32 NumSlotsToCheck = sizeof(SlotsToCheck)/sizeof(SlotsToCheck[0]);	
-	u32 CurSlot		= 0;
-
-	for (; CurSlot<NumSlotsToCheck; CurSlot++)
+	u32 activeSlot = inventory().GetActiveSlot();
+	if (activeSlot == NO_ACTIVE_SLOT)
 	{
-		if (SlotsToCheck[CurSlot] == ActiveSlot) break;
-	};
+		activeSlot = inventory().GetPrevActiveSlot();
+	}
 
-	if (CurSlot >= NumSlotsToCheck) 
-		CurSlot	= NumSlotsToCheck-1; //last in row
-
-	for (s32 i=s32(CurSlot-1); i>=0; i--)
+	if (activeSlot == NO_ACTIVE_SLOT)
 	{
-		if (inventory().ItemFromSlot(SlotsToCheck[i]))
+		activeSlot = KNIFE_SLOT;
+	}
+
+	xr_span<const u16> const cycle = InventoryWeaponCycleSlots();
+	const u32 cycleCount = static_cast<u32>(cycle.size());
+	if (cycleCount == 0)
+	{
+		return;
+	}
+
+	s32 curIndex = -1;
+	for (u32 i = 0; i < cycleCount; ++i)
+	{
+		if (cycle[i] == activeSlot)
 		{
-			if (SlotsToCheck[i] == ARTEFACT_SLOT) 
-			{
-				IR_OnKeyboardPress(get_action_dik(kARTEFACT));
-			}
-			else if (SlotsToCheck[i] == PISTOL_SLOT_NEW)
-			{
-				IR_OnKeyboardPress(get_action_dik(kWPN_7));
-			}
-			else
-			{
-				u32 action = kWPN_1 + i;
-				IR_OnKeyboardPress(get_action_dik((EGameActions)action));
-			}
+			curIndex = static_cast<s32>(i);
+			break;
+		}
+	}
+
+	const s32 startIndex = curIndex < 0 ? static_cast<s32>(cycleCount) - 1 : curIndex - 1;
+	for (s32 i = startIndex; i >= 0; --i)
+	{
+		if (inventory().ItemFromSlot(cycle[i]))
+		{
+			ActorActivateWeaponCycleSlot(*this, cycle[i]);
 			return;
 		}
 	}
-};
+}
 
 float	CActor::GetLookFactor()
 {
