@@ -102,3 +102,82 @@ bool InventoryAnySidearmCellOccupied(const CInventory& inv)
 	return inv.ItemFromSlot(INV_SLOT_2) != nullptr || inv.ItemFromSlot(PISTOL_SLOT_NEW) != nullptr;
 }
 
+namespace
+{
+xr_vector<u16> g_weaponCycleSlots;
+bool g_weaponCycleLoaded = false;
+
+void BuildDefaultWeaponCycleSlots()
+{
+	g_weaponCycleSlots.clear();
+	g_weaponCycleSlots.push_back(KNIFE_SLOT);
+	if (InventoryHolsterPistolSlotActiveInSettings())
+	{
+		g_weaponCycleSlots.push_back(PISTOL_SLOT_NEW);
+	}
+	g_weaponCycleSlots.push_back(INV_SLOT_2);
+	g_weaponCycleSlots.push_back(INV_SLOT_3);
+	g_weaponCycleSlots.push_back(GRENADE_SLOT);
+	g_weaponCycleSlots.push_back(ARTEFACT_SLOT);
+}
+
+void LoadWeaponCycleSlots()
+{
+	g_weaponCycleSlots.clear();
+
+	if (pSettings != nullptr && pSettings->line_exist("inventory", "weapon_cycle_slots"))
+	{
+		const char* slotList = pSettings->r_string("inventory", "weapon_cycle_slots");
+		for (int i = 0, itemCount = _GetItemCount(slotList); i < itemCount; ++i)
+		{
+			string512 slotToken = {};
+			_GetItem(slotList, i, slotToken);
+			const int slotId = atoi(slotToken);
+			if (slotId >= KNIFE_SLOT && slotId <= LAST_SLOT)
+			{
+				g_weaponCycleSlots.push_back(static_cast<u16>(slotId));
+			}
+		}
+	}
+
+	if (g_weaponCycleSlots.empty())
+	{
+		BuildDefaultWeaponCycleSlots();
+	}
+
+	g_weaponCycleLoaded = true;
+}
+} // namespace
+
+void InventoryWeaponCycleInvalidate()
+{
+	g_weaponCycleLoaded = false;
+	g_weaponCycleSlots.clear();
+}
+
+xr_span<const u16> InventoryWeaponCycleSlots()
+{
+	if (!g_weaponCycleLoaded)
+	{
+		LoadWeaponCycleSlots();
+	}
+	return xr_span<const u16>(g_weaponCycleSlots.data(), g_weaponCycleSlots.size());
+}
+
+u16 InventoryWeaponSlotToGameAction(u16 slotId)
+{
+	if (slotId == PISTOL_SLOT_NEW)
+	{
+		return kWPN_7;
+	}
+	if (slotId == ARTEFACT_SLOT)
+	{
+		return kARTEFACT;
+	}
+	if (slotId >= KNIFE_SLOT && slotId <= BOLT_SLOT)
+	{
+		return static_cast<u16>(kWPN_1 + (slotId - KNIFE_SLOT));
+	}
+	return kWeaponCycleNoGameAction;
+}
+
