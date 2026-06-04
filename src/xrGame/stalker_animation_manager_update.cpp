@@ -55,28 +55,32 @@ IC	void CStalkerAnimationManager::update_tracks			()
 	m_skeleton_animated->UpdateTracks	();
 }
 
-#ifdef USE_HEAD_BONE_PART_FAKE
-IC	void CStalkerAnimationManager::play_script_impl			()
+IC	void CStalkerAnimationManager::play_script_impl()
 {
-	clear_unsafe_callbacks	();
-	global().reset			();
-	torso().reset			();
-	legs().reset			();
+	clear_unsafe_callbacks();
+	global().reset();
+	torso().reset();
+	legs().reset();
 
 	const CStalkerAnimationScript& selected = assign_script_animation();
 	MotionID motion = selected.animation();
 
-	script().animation		(selected.animation());
-	if (selected.use_movement_controller()) {
-		script().target_matrix	(selected.transform(object()));
-		if ( m_start_new_script_animation ) {
-			m_start_new_script_animation	= false;
-			if ( selected.has_transform() && object().animation_movement( ) )
-				object().destroy_anim_mov_ctrl	( );
+	script().animation(selected.animation());
+	if (selected.use_movement_controller())
+	{
+		script().target_matrix(selected.transform(object()));
+		if (m_start_new_script_animation)
+		{
+			m_start_new_script_animation = false;
+			if (selected.has_transform() && object().animation_movement())
+			{
+				object().destroy_anim_mov_ctrl();
+			}
 		}
 	}
 
-	script().play			(
+	script().play
+	(
 		m_skeleton_animated,
 		script_play_callback,
 		selected.use_movement_controller(),
@@ -91,34 +95,15 @@ IC	void CStalkerAnimationManager::play_script_impl			()
 		object().OnAnimationChangeScript(m_script_bone_part_mask, motion, false, selected.use_movement_controller(), selected.local_animation(), &matrix);
 	}
 
-	head().animation		(assign_head_animation());
-	head().play				(m_skeleton_animated,head_play_callback,false,false);
+	head().animation(assign_head_animation());
+	head().play(m_skeleton_animated, head_play_callback, false, false);
 
 
 	if (head().m_just_started)
+	{
 		object().OnAnimationChangeHead(motion, true, true, false, false);
+	}
 }
-#else // USE_HEAD_BONE_PART_FAKE
-IC	void CStalkerAnimationManager::play_script_impl			()
-{
-	clear_unsafe_callbacks	();
-	global().reset			();
-	head().reset			();
-	torso().reset			();
-	legs().reset			();
-
-	const CStalkerAnimationScript	&selected = assign_script_animation();
-	script().animation		(selected.animation());
-	script().play			(
-		m_skeleton_animated,
-		script_play_callback,
-		selected.use_movement_controller(),
-		selected.local_animation(),
-		false,
-		m_script_bone_part_mask
-	);
-}
-#endif // USE_HEAD_BONE_PART_FAKE
 
 bool CStalkerAnimationManager::play_script					()
 {
@@ -133,14 +118,14 @@ bool CStalkerAnimationManager::play_script					()
 	return					(true);
 }
 
-#ifdef USE_HEAD_BONE_PART_FAKE
-IC	void CStalkerAnimationManager::play_global_impl			(const MotionID &animation, bool const &animation_movement_controller)
+IC	void CStalkerAnimationManager::play_global_impl(const MotionID& animation, bool const& animation_movement_controller)
 {
-	torso().reset			();
-	legs().reset			();
+	torso().reset();
+	legs().reset();
 
-	global().animation		(animation);
-	global().play			(
+	global().animation(animation);
+	global().play
+	(
 		m_skeleton_animated,
 		global_play_callback,
 		animation_movement_controller,
@@ -151,42 +136,38 @@ IC	void CStalkerAnimationManager::play_global_impl			(const MotionID &animation,
 	);
 
 	if (global().m_just_started)
+	{
 		object().OnAnimationChangeGlobal(m_script_bone_part_mask, (MotionID)animation, false, animation_movement_controller, true, 0);
-
-	if (m_global_modifier)
-		m_global_modifier	(global().blend());
-
-	head().animation		(assign_head_animation());
-	head().play				(m_skeleton_animated,head_play_callback,false,false);
-
-	if (head().m_just_started)
-		object().OnAnimationChangeHead(animation, true, true, false, false);
-}
-#else // USE_HEAD_BONE_PART_FAKE
-IC	void CStalkerAnimationManager::play_global_impl			(const MotionID &animation, bool const &animation_movement_controller)
-{
-	head().reset			();
-	torso().reset			();
-	legs().reset			();
-
-	global().animation		(animation);
-	global().play			(m_skeleton_animated,global_play_callback,false,false,false);
-}
-#endif // USE_HEAD_BONE_PART_FAKE
-
-bool CStalkerAnimationManager::play_global					()
-{
-	bool					animation_movement_controller = false;
-	const MotionID			&global_animation = assign_global_animation(animation_movement_controller);
-	if (!global_animation) {
-		clear_unsafe_callbacks	();
-		global().reset		();
-		return				(false);
 	}
 
-	play_global_impl		(global_animation, animation_movement_controller);
+	if (m_global_modifier)
+	{
+		m_global_modifier(global().blend());
+	}
 
-	return					(true);
+	head().animation(assign_head_animation());
+	head().play(m_skeleton_animated, head_play_callback, false, false);
+
+	if (head().m_just_started)
+	{
+		object().OnAnimationChangeHead(animation, true, true, false, false);
+	}
+}
+
+bool CStalkerAnimationManager::play_global()
+{
+	bool animation_movement_controller = false;
+	const MotionID &global_animation = assign_global_animation(animation_movement_controller);
+	if (!global_animation)
+	{
+		clear_unsafe_callbacks();
+		global().reset();
+		return (false);
+	}
+
+	play_global_impl(global_animation, animation_movement_controller);
+
+	return (true);
 }
 
 IC	void CStalkerAnimationManager::play_head()
@@ -213,8 +194,9 @@ void CStalkerAnimationManager::play_legs()
 	bool first_time = !legs().animation();
 	bool result = legs().animation(assign_legs_animation());
 
-	if (!first_time && !result && legs().blend()) {
-		float				amount = legs().blend()->blendAmount;
+	if (!first_time && !result && legs().blend())
+	{
+		float amount = legs().blend()->blendAmount;
 		m_previous_speed = (m_target_speed - m_previous_speed) * amount + m_previous_speed;
 	}
 
@@ -223,8 +205,9 @@ void CStalkerAnimationManager::play_legs()
 	if (legs().m_just_started)
 		object().OnAnimationChangeLegs(assign_legs_animation(), true, !fis_zero(m_target_speed), true, false);
 
-	if (result && legs().blend()) {
-		float				amount = legs().blend()->blendAmount;
+	if (result && legs().blend()) 
+	{
+		float amount = legs().blend()->blendAmount;
 		speed = (m_target_speed - m_previous_speed) * amount + m_previous_speed;
 	}
 

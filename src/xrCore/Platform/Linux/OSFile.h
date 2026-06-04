@@ -310,6 +310,13 @@ namespace Platform
 
         return (size_t)bytesRead;
     }
+
+    IC void GetAbsolutePath(char* in_path, char* out_buffer, [[maybe_unused]] size_t BufferSize)
+    {
+        char* tmp_path = realpath(out_buffer, 0);
+        strcpy(in_path, tmp_path);
+        free(tmp_path);
+    }
 }
 
 inline int _rmdir(const char *path)

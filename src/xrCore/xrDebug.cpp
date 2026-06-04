@@ -16,9 +16,6 @@
 extern bool shared_str_initialized;
 XRCORE_API xrDebug Debug;
 
-#define DEBUG_INVOKE	__debugbreak();
-#define USE_OWN_ERROR_MESSAGE_WINDOW
-
 #ifndef DEBUG
 #	define USE_OWN_MINI_DUMP
 #endif // DEBUG
@@ -86,9 +83,7 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 		if (shared_str_initialized)
 			Msg			("stack trace:\n");
 
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		buffer			+= xr_sprintf(buffer,assertion_size - u32(buffer - buffer_base),"stack trace:%s%s",endline,endline);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
 #if USE_CXX_STACKTRACE
 		int frame_i = 0;
@@ -109,9 +104,7 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 				|| description.contains("xrDebug::fail+"))
 				continue;
 
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 			buffer += xr_sprintf(buffer, assertion_size - u32(buffer - buffer_base), "Frame %d: %s - %s:%d%s", ++frame_i, description.c_str(), source_file.c_str(), entry.source_line(), endline);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
 			Msg("Frame %d: %s - %s:%d\n", frame_i, description.c_str(), source_file.c_str(), entry.source_line());
 		}
@@ -124,23 +117,23 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 	}
 }
 
-void xrDebug::do_exit	(const std::string &message)
+void xrDebug::do_exit(const std::string& message)
 {
 	extern XRCORE_API bool ignore_error_window;
-	xrLogger::FlushLog			();
+	xrLogger::FlushLog();
+
 	if (!SilentErrorMode)
 	{
-		
-		if(!ignore_error_window)
+		if (!ignore_error_window)
+		{
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", message.c_str(), nullptr);
+		}
 	}
 
-#ifdef IXR_WINDOWS
 	if (!ignore_error_window)
-	TerminateProcess	(GetCurrentProcess(),1);
-#else
-	kill(getpid(), SIGKILL);
-#endif
+	{
+		exit(1);
+	}
 }
 
 void xrDebug::backend	(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, bool &ignore_always)
@@ -156,13 +149,11 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 	gather_info			(expression, description, argument0, argument1, file, line, function, assertion_info, sizeof(assertion_info) );
 
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	const char*				endline = "\r\n";
 	LPSTR				buffer = assertion_info + xr_strlen(assertion_info);
 	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"%sPress CANCEL to abort execution%s",endline,endline);
 	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"Press TRY AGAIN to continue execution%s",endline);
 	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"Press CONTINUE to continue execution and ignore all the errors of this type%s%s",endline,endline);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
 	if ( g_pEventManager == nullptr || g_pEventManager->IsEventThread())
 	{
@@ -244,7 +235,7 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 		error_after_dialog = false;
 		if (IsDebuggerPresent())
 		{
-			DEBUG_INVOKE;
+			__debugbreak();
 		}
 	}
 	else if (buttonid == 4)
@@ -253,7 +244,7 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 		ignore_always = true;
 		if (IsDebuggerPresent())
 		{
-			DEBUG_INVOKE;
+			__debugbreak();
 		}
 	}
 #endif
@@ -263,7 +254,7 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 		{
 			if (IsDebuggerPresent())
 			{
-				DEBUG_INVOKE;
+				__debugbreak();
 			}
 			// TODO: Maybe not correct
 			exit(-1);
@@ -547,12 +538,13 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 	save_mini_dump		(pExceptionInfo);
 #endif // USE_OWN_MINI_DUMP
 
-	if (!error_after_dialog) {
+	if (!error_after_dialog)
+	{
 		if (Debug.get_on_dialog())
+		{
 			Debug.get_on_dialog()	(true);
+		}
 
-		//SDL_ShowWindow(g_AppInfo.Window);
-		//SDL_MinimizeWindow(g_AppInfo.Window);
 		extern XRCORE_API bool ignore_error_window;
 		if(!ignore_error_window)
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal error", "Fatal error occured\n\nPress OK to abort program execution", nullptr);
@@ -560,10 +552,10 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 	ReportFault(pExceptionInfo, 0);
 
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	if (Debug.get_on_dialog())
-		Debug.get_on_dialog()		(false);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
+	{
+		Debug.get_on_dialog()(false);
+	}
 
 	return EXCEPTION_EXECUTE_HANDLER;
 }

@@ -48,7 +48,6 @@ void EnumerateDisplayModes()
 	}
 }
 
-
 void MigrateToGameWindow()
 {
 	PROF_EVENT("MigrateToGameWindow");
@@ -74,17 +73,7 @@ static void LoadCustomSettings()
 	}
 }
 
-#ifdef IXR_WINDOWS
-int APIENTRY WinMain
-(
-	HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	char* lpCmdLine,
-	int nCmdShow
-)
-#else
-int main(int argc, char* argv[])
-#endif
+int ENTRY_FUNCTION(ENTRY_ARGS)
 {
 #ifndef IXR_WINDOWS
 	std::string cmd_line;
@@ -101,8 +90,6 @@ int main(int argc, char* argv[])
 	{
 		return -1;
 	}
-
-	//std::jthread s(splash::Show); //
 
 	splash::SetProgressStatus(5, "Initializing debugger");
 	Debug._initialize(false);
@@ -153,29 +140,32 @@ int main(int argc, char* argv[])
 	splash::SetProgressStatus(40, "Calculating renderer list");
 	Engine.External.CreateRendererList();
 
-		{
-			PROF_EVENT("Console::Create");
-	Console = new CConsole();
-		}
+	{
+		PROF_EVENT("Console::Create");
+		Console = new CConsole();
+	}
+
 	splash::SetProgressStatus(50, "Reading user settings");
 	EngineLoadStage3();
 
+	{
+		if (Core.ParamsData.test(ECoreParams::r4))
 		{
-			PROF_EVENT("Select Render");
-	if (Core.ParamsData.test(ECoreParams::r4)) {
-		Console->Execute("renderer renderer_r4");
-	}
-	else if (Core.ParamsData.test(ECoreParams::r2)) {
-		Console->Execute("renderer renderer_r2");
-			}
-			else {
-		CCC_LoadCFG_custom* pTmp = new CCC_LoadCFG_custom("renderer ");
-		pTmp->Execute(Console->ConfigFile);
-		xr_delete(pTmp);
-		// В любом случае надо вызывать команду CCC_R2
-		Console->Execute((std::string("renderer ") + Console->GetToken("renderer")).c_str());
-	}
+			Console->Execute("renderer renderer_r4");
 		}
+		else if (Core.ParamsData.test(ECoreParams::r2))
+		{
+			Console->Execute("renderer renderer_r2");
+		}
+		else
+		{
+			CCC_LoadCFG_custom* pTmp = new CCC_LoadCFG_custom("renderer ");
+			pTmp->Execute(Console->ConfigFile);
+			xr_delete(pTmp);
+			// В любом случае надо вызывать команду CCC_R2
+			Console->Execute((std::string("renderer ") + Console->GetToken("renderer")).c_str());
+		}
+	}
 
 	splash::SetProgressStatus(60, "Initializing engine external");
 	Engine.External.Initialize();
