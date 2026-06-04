@@ -871,7 +871,7 @@ ICF void Snd_PrecacheRenderCallback()
 		mixer.stats.cache_miss_count = 0;
 	}
 
-	for (size_t i = 0; i < mixer.slots.size(); i++) {
+	for (size_t i = 0; i < mixer.slots.size() - 1; i++) {
 		if (Snd_SlotOcclusion(i + 1, dt, nullptr)) {
 			Snd_AcquireHRTFSlot(i + 1);
 			Snd_UpdateCache(i + 1);
