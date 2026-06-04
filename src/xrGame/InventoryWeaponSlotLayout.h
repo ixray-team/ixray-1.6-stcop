@@ -1,6 +1,9 @@
 #pragma once
 
+#include "../xrCore/_stl_extensions_nonalloc.h"
 #include "../xrServerEntities/inventory_space.h"
+
+inline constexpr u16 kWeaponCycleNoGameAction = u16(-1);
 
 bool InventorySecondarySlotPairingStrict();
 
@@ -30,4 +33,8 @@ bool InventoryHolsterPistolSlotActiveInSettings();
 bool InventoryHolsterExclusivePistolFootprint(CInventoryItem* item);
 
 u16 InventoryResolveSidearmEquipSlot(CInventoryItem* item);
+
+xr_span<const u16> InventoryWeaponCycleSlots();
+u16 InventoryWeaponSlotToGameAction(u16 slotId);
+void InventoryWeaponCycleInvalidate();
 
