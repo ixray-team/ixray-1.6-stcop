@@ -165,6 +165,12 @@ function evaluator_corpse:__init(name, storage, npc) super (nil, name)
 	self.a = storage
 end
 function evaluator_corpse:evaluate()
+
+	-- Fix from unofficial 1.6.03  - stalkers ignore surge and die while trying to grab items from corpse
+	if surge_manager.is_started() then
+		return false
+	end
+
 	if not self.object:alive() then
 		return false
 	end
@@ -281,12 +287,13 @@ function action_search_corpse:finalize ()
 end
 
 local transfer_to_npc = nil
-
+local last_transferred_items_count = 0
 function get_item(dead_npc, item)
 	SendScriptCallback("npc_on_get_all_from_corpse", transfer_to_npc, dead_npc, item, (lootable_table[item:section()] or false))
-	
+
 	if lootable_table[item:section()] == true then
 		dead_npc:transfer_item(item, transfer_to_npc)
+		last_transferred_items_count = last_transferred_items_count+1
 	end
 end
 
@@ -304,14 +311,19 @@ function get_all_from_corpse(npc)
 		return
 	end
 	
+	last_transferred_items_count = 0
 	transfer_to_npc = npc
 	corpse_npc:iterate_inventory(get_item, corpse_npc)
 	
-	if math.random(100) > 20 then
-		xr_sound.set_sound_play(npc:id(), "corpse_loot_begin")
-	else
+	-- Add reactions depending on actual loot count
+	if (last_transferred_items_count > 0) and (last_transferred_items_count < 3) then
 		xr_sound.set_sound_play(npc:id(), "corpse_loot_bad")
+	elseif (last_transferred_items_count > 5) then
+		xr_sound.set_sound_play(npc:id(), "corpse_loot_good")
 	end
+		
+	-- Fix for stalkers which 'hanging' while looting (from unofficial 1.6.03)
+	state_mgr.set_state(npc, "patrol") 
 end
 
 ----------------------------------------------------------------------------------------------------------------------
