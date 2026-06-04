@@ -89,12 +89,10 @@ void CStalkerAnimationManager::reload				()
 	if (!object().g_Alive())
 		return;
 
-#ifdef USE_HEAD_BONE_PART_FAKE
 	VERIFY						(!m_data_storage->m_head_animations.A.empty());
 	u16							bone_part = m_skeleton_animated->LL_GetMotionDef(m_data_storage->m_head_animations.A.front())->bone_or_part;
 	VERIFY						(bone_part != BI_NONE);
 	m_script_bone_part_mask		= CStalkerAnimationPair::all_bone_parts ^ (1 << bone_part);
-#endif
 
 	assign_bone_callbacks		();
 
@@ -120,15 +118,16 @@ void CStalkerAnimationManager::play_fx(float power_factor, int fx_index)
 	m_skeleton_animated->PlayFX	(m_data_storage->m_part_animations.A[object().movement().body_state()].m_global.A[0].A[fx_index],power_factor);
 }
 
-bool CStalkerAnimationManager::standing() const {
+bool CStalkerAnimationManager::standing() const
+{
 	CAI_Stalker& obj = object();
 	stalker_movement_manager_smart_cover& movement = obj.movement();
 
 	if (movement.speed(obj.character_physics_support()->movement()) < EPS_L)
-		return				(true);
+		return (true);
 
 	if (eMovementTypeStand == movement.movement_type())
-		return				(true);
+		return (true);
 
-	return					(false);
+	return (false);
 }
