@@ -21,10 +21,6 @@ union SDL_Event;
 
 #pragma pack(push,4)
 
-#ifdef IXR_WINDOWS
-enum D3D_FEATURE_LEVEL;
-#endif
-
 class IRenderDevice
 {
 public:
