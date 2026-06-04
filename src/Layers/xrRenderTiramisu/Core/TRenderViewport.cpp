@@ -9,67 +9,80 @@ TRenderViewport::~TRenderViewport()
 
 void TRenderViewport::CreateOrReset(SDL_Window* InWindows, uint32_t InWidth, uint32_t InHeight, bool InVSync)
 {
-	VERIFY(bRenderer == false);
-    if (SwapChain)
-    {
-    	Destroy();
-    }
-    {
-    	bVSync = InVSync;
-    	Width = InWidth;
-		Height = InHeight;
-		
-		nri::SwapChainDesc SwapChainDescription = {};
-		SwapChainDescription.window.windows.hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(InWindows), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
-		SwapChainDescription.queue = GRenderDevice.GraphicsQueue;
-		SwapChainDescription.format = nri::SwapChainFormat::BT709_G22_8BIT;
-		SwapChainDescription.flags =  (bVSync ? nri::SwapChainBits::VSYNC : nri::SwapChainBits::NONE) | nri::SwapChainBits::ALLOW_TEARING;
-		SwapChainDescription.width = static_cast<nri::Dim_t>(Width);
-		SwapChainDescription.height = static_cast<nri::Dim_t>(Height);
-		SwapChainDescription.textureNum = GetOptimalTextureNum();
-		SwapChainDescription.queuedFrameNum = GetQueuedFrameNum();
-		NRI_CHECK(GRenderDevice.SwapChainInterface.CreateSwapChain(*GRenderDevice.Device, SwapChainDescription, SwapChain));
-
-		uint32_t SwapChainTextureNum;
-		nri::Texture*const* InSwapChainTextures = GRenderDevice.SwapChainInterface.GetSwapChainTextures(*SwapChain, SwapChainTextureNum);
-	 
-		SwapChainFormat = GRenderDevice.CoreInterface.GetTextureDesc(*InSwapChainTextures[0]).format;
-	 
-		for (uint32_t i = 0; i < SwapChainTextureNum; i++) 
-		{
-			nri::TextureViewDesc TextureViewDescription = {InSwapChainTextures[i], nri::TextureView::COLOR_ATTACHMENT, SwapChainFormat};
-	 
-			nri::Descriptor* ColorAttachment = nullptr;
-			NRI_CHECK(GRenderDevice.CoreInterface.CreateTextureView(TextureViewDescription, ColorAttachment));
-	 
-			nri::Fence* AcquireSemaphore = nullptr;
-			NRI_CHECK(GRenderDevice.CoreInterface.CreateFence(*GRenderDevice.Device, nri::SWAPCHAIN_SEMAPHORE, AcquireSemaphore));
-	 
-			nri::Fence* ReleaseSemaphore = nullptr;
-			NRI_CHECK(GRenderDevice.CoreInterface.CreateFence(*GRenderDevice.Device, nri::SWAPCHAIN_SEMAPHORE, ReleaseSemaphore));
-	 
-			FSwapChainTexture& NewSwapChainTexture = SwapChainTextures.emplace_back();
-			NewSwapChainTexture.AcquireSemaphore = AcquireSemaphore;
-			NewSwapChainTexture.ReleaseSemaphore = ReleaseSemaphore;
-			NewSwapChainTexture.Texture = InSwapChainTextures[i];
-			NewSwapChainTexture.ColorAttachment = ColorAttachment;
-			NewSwapChainTexture.AttachmentFormat = SwapChainFormat;
-		}
-	}
-	NRI_CHECK(GRenderDevice.CoreInterface.CreateFence(*GRenderDevice.Device, 0, FrameFence));
-    	
-	QueuedFrames.resize(GetQueuedFrameNum());
-	for (FQueuedFrame& QueuedFrame : QueuedFrames) 
+	auto LambdaCreateOrReset = [&]()
 	{
-		NRI_CHECK(GRenderDevice.CoreInterface.CreateCommandAllocator(*GRenderDevice.GraphicsQueue, QueuedFrame.CommandAllocator));
-		NRI_CHECK(GRenderDevice.CoreInterface.CreateCommandBuffer(*QueuedFrame.CommandAllocator, QueuedFrame.CommandBuffer));
+		VERIFY(bRenderer == false);
+		if (SwapChain)
+		{
+			Destroy();
+		}
+		{
+			bVSync = InVSync;
+			Width = InWidth;
+			Height = InHeight;
+		
+			nri::SwapChainDesc SwapChainDescription = {};
+			SwapChainDescription.window.windows.hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(InWindows), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+			SwapChainDescription.queue = GRenderDevice.GraphicsQueue;
+			SwapChainDescription.format = nri::SwapChainFormat::BT709_G22_8BIT;
+			SwapChainDescription.flags =  (bVSync ? nri::SwapChainBits::VSYNC : nri::SwapChainBits::NONE) | nri::SwapChainBits::ALLOW_TEARING;
+			SwapChainDescription.width = static_cast<nri::Dim_t>(Width);
+			SwapChainDescription.height = static_cast<nri::Dim_t>(Height);
+			SwapChainDescription.textureNum = GetOptimalTextureNum();
+			SwapChainDescription.queuedFrameNum = GetQueuedFrameNum();
+			NRI_CHECK(GRenderDevice.SwapChainInterface.CreateSwapChain(*GRenderDevice.Device, SwapChainDescription, SwapChain));
+
+			uint32_t SwapChainTextureNum;
+			nri::Texture*const* InSwapChainTextures = GRenderDevice.SwapChainInterface.GetSwapChainTextures(*SwapChain, SwapChainTextureNum);
+	 
+			SwapChainFormat = GRenderDevice.CoreInterface.GetTextureDesc(*InSwapChainTextures[0]).format;
+	 
+			for (uint32_t i = 0; i < SwapChainTextureNum; i++) 
+			{
+				nri::TextureViewDesc TextureViewDescription = {InSwapChainTextures[i], nri::TextureView::COLOR_ATTACHMENT, SwapChainFormat};
+	 
+				nri::Descriptor* ColorAttachment = nullptr;
+				NRI_CHECK(GRenderDevice.CoreInterface.CreateTextureView(TextureViewDescription, ColorAttachment));
+	 
+				nri::Fence* AcquireSemaphore = nullptr;
+				NRI_CHECK(GRenderDevice.CoreInterface.CreateFence(*GRenderDevice.Device, nri::SWAPCHAIN_SEMAPHORE, AcquireSemaphore));
+	 
+				nri::Fence* ReleaseSemaphore = nullptr;
+				NRI_CHECK(GRenderDevice.CoreInterface.CreateFence(*GRenderDevice.Device, nri::SWAPCHAIN_SEMAPHORE, ReleaseSemaphore));
+	 
+				FSwapChainTexture& NewSwapChainTexture = SwapChainTextures.emplace_back();
+				NewSwapChainTexture.AcquireSemaphore = AcquireSemaphore;
+				NewSwapChainTexture.ReleaseSemaphore = ReleaseSemaphore;
+				NewSwapChainTexture.Texture = InSwapChainTextures[i];
+				NewSwapChainTexture.ColorAttachment = ColorAttachment;
+				NewSwapChainTexture.AttachmentFormat = SwapChainFormat;
+			}
+		}
+		NRI_CHECK(GRenderDevice.CoreInterface.CreateFence(*GRenderDevice.Device, 0, FrameFence));
+    	
+		QueuedFrames.resize(GetQueuedFrameNum());
+		for (FQueuedFrame& QueuedFrame : QueuedFrames) 
+		{
+			NRI_CHECK(GRenderDevice.CoreInterface.CreateCommandAllocator(*GRenderDevice.GraphicsQueue, QueuedFrame.CommandAllocator));
+			NRI_CHECK(GRenderDevice.CoreInterface.CreateCommandBuffer(*QueuedFrame.CommandAllocator, QueuedFrame.CommandBuffer));
+		}
+	};
+	
+	if (Platform::GetCurrentThreadId() == GRenderThreadId)
+	{
+		LambdaCreateOrReset();
+	}
+	else
+	{
+		ENQUEUE_RENDER_COMMAND(TRenderViewport::CreateOrReset)(LambdaCreateOrReset);
 	}
 }
 
 void TRenderViewport::Destroy()
 {
-	VERIFY(bRenderer == false);
-    WaitGPU();
+	CheckIsRenderThread();
+	
+	GRenderDevice.CoreInterface.QueueWaitIdle(GRenderDevice.GraphicsQueue);
     
 	Width = 0;
 	Height = 0;
@@ -104,18 +117,10 @@ void TRenderViewport::Destroy()
 	FrameIndex = 0;
 }
 
-void TRenderViewport::WaitGPU()
-{
-    if(FrameFence)
-    {
-		GRenderDevice.CoreInterface.Wait(*FrameFence, FrameIndex);
-    }
-	//TODO: я не уверен что это вообще нужно
-	GRenderDevice.CoreInterface.QueueWaitIdle(GRenderDevice.GraphicsQueue);
-}
 
 nri::CommandBuffer& TRenderViewport::GetCurrentCommandBuffer()
 {
+	CheckIsRenderThread();
 	VERIFY(bRenderer == true);
 	VERIFY(QueuedFrames.size() > 0);
 	return *QueuedFrames[FrameIndex % QueuedFrames.size()].CommandBuffer;
@@ -124,6 +129,8 @@ nri::CommandBuffer& TRenderViewport::GetCurrentCommandBuffer()
 
 void TRenderViewport::BeginRender(nri::DescriptorPool* DescriptionPool)
 {
+	CheckIsRenderThread();
+	
 	VERIFY(bRenderer == false);
     VERIFY(SwapChain);
 	
@@ -170,6 +177,8 @@ void TRenderViewport::BeginRender(nri::DescriptorPool* DescriptionPool)
 
 void TRenderViewport::EndRender(nri::Fence* WaitSemaphore, nri::Fence* SignalSemaphore)
 {
+	CheckIsRenderThread();
+	
 	VERIFY(bRenderer == true);
 	
 	uint32_t QueuedFrameIndex = FrameIndex % QueuedFrames.size();
@@ -233,6 +242,12 @@ void TRenderViewport::EndRender(nri::Fence* WaitSemaphore, nri::Fence* SignalSem
 		GRenderDevice.CoreInterface.QueueSubmit(*GRenderDevice.GraphicsQueue, QueueSubmitDescription);
 	}
 	bRenderer = false;
+}
+
+bool TRenderViewport::IsValid() const
+{
+	CheckIsRenderThread();
+	return SwapChain != nullptr;
 }
 
 uint8_t TRenderViewport::GetOptimalTextureNum() const

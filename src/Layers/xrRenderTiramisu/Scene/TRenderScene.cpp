@@ -8,21 +8,32 @@ TRenderScene::TRenderScene()
 
 TRenderScene::~TRenderScene()
 {
+    R_ASSERT(!IsRenderThreadRunning());
 }
 
 void TRenderScene::AddRenderSceneProxy(TPrimitiveSceneProxy* NewProxy)
 {
-    RenderSceneProxies.push_back(NewProxy);
+    ENQUEUE_RENDER_COMMAND(TRenderScene::RemoveRenderSceneProxy)([this,NewProxy]
+    {
+        RenderSceneProxies.push_back(NewProxy);
+    });
+    
 }
 
 void TRenderScene::RemoveRenderSceneProxy(TPrimitiveSceneProxy* InOutProxy)
 {
-    InOutProxy->bNeedRemove = true;
+    CheckIsGameThread();
+    ENQUEUE_RENDER_COMMAND(TRenderScene::RemoveRenderSceneProxy)([InOutProxy]
+    {
+        InOutProxy->bNeedRemove = true;
+    });
 }
 
 
 void TRenderScene::Update()
 {
+    CheckIsRenderThread();
+    
     u32 RemoveCounter = 0;
     u32 Counter = RenderSceneProxies.size();
     for (u32 i = 0 ;i < Counter;)

@@ -135,15 +135,18 @@ TRenderResourcesManager::TRenderResourcesManager()
 	CreateSamplers();
 	CreateQuadBuffer();
 }
-
+extern u32 UIShaderCounter;
 TRenderResourcesManager::~TRenderResourcesManager()
 {
+	R_ASSERT(!IsRenderThreadRunning());
 	delete RenderScene;
 	MaterialsManager->Free(DefaultMaterial);
 	delete MaterialsManager;
+	VERIFY(UIShaderCounter == 0);
 	delete TexturesManager;
 	delete WhiteTexture;
 	delete BlackTexture;
+	Tiramisu::RenderCommands::FlushRenderCommands();
 	delete DescriptorHeapAllocator;
 	delete GlobalShadersManager;
 	delete ShaderDefinesManager;
@@ -173,6 +176,7 @@ TRenderResourcesManager::~TRenderResourcesManager()
 
 void TRenderResourcesManager::Initialize()
 {
+	R_ASSERT(!IsRenderThreadRunning());
 	VERIFY(ShaderDefinesManager == nullptr && GlobalShadersManager == nullptr);
 	
 	{
@@ -196,6 +200,7 @@ void TRenderResourcesManager::Initialize()
 	MaterialsManager = new TRenderMaterialsManager;
 	DefaultMaterial = MaterialsManager->Get("default");
 	RenderScene = new TRenderScene;
+	VERIFY(!IsRenderThreadRunning());
 }
 
 bool TRenderResourcesManager::IsCookedMode()
@@ -206,7 +211,11 @@ bool TRenderResourcesManager::IsCookedMode()
 void TRenderResourcesManager::FlushNextFrame()
 {
 	TexturesManager->FlushNextFrame();
-	DescriptorHeapAllocator->FlushNextFrame();
+}
+
+void TRenderResourcesManager::FlushNextFrame_RenderThread()
+{
+	DescriptorHeapAllocator->FlushNextFrame_RenderThread();
 }
 
 TRenderResourcesManager* GRenderResourcesManager = nullptr;

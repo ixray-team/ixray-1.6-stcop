@@ -45,6 +45,7 @@ public:
     template <class TCallable>
     void operator()(TCallable&& callable) const
     {
+        CheckIsGameThread();
         GetRenderCommandQueue().Enqueue(DebugName, CommandFunction(std::forward<TCallable>(callable)));
     }
 

@@ -1,6 +1,9 @@
 // xrRender_R2.cpp : Defines the entry point for the DLL application.
 //
 #include "stdafx.h" 
+size_t GRenderThreadId = Platform::GetCurrentThreadId();
+size_t GGameThreadId = Platform::GetCurrentThreadId();
+
 CDS0_RenderFactory GRenderFactory;
 CDS0_DUInterface  GDUInterface;
 #ifdef DEBUG_DRAW

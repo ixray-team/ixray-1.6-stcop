@@ -25,6 +25,11 @@ namespace Platform
 		return ::GetCurrentProcessId();
 	}
 	
+	inline size_t GetCurrentThreadId()
+	{
+		return ::GetCurrentThreadId();
+	}
+	
     inline void WaitForSingleObject(ThreadID ID)
     {
     	::WaitForSingleObject(ID, INFINITE);

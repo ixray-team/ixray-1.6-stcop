@@ -13,6 +13,13 @@ TRenderTexturesManager::~TRenderTexturesManager()
 
 TRenderTexture* TRenderTexturesManager::GetTexture(const shared_str& InName, bool bSrgb)
 {
+
+    if (InName == "ui\\ui_actor_MP_screen")
+    {
+        __nop();
+    }
+
+    CheckIsGameThread();
     if (ErrorTextures.contains(InName))
     {
         return GRenderResourcesManager->BlackTexture;
@@ -103,11 +110,15 @@ TRenderTexture* TRenderTexturesManager::GetTexture(const shared_str& InName, boo
 
 void TRenderTexturesManager::Free(TRenderTexture* InTexture)
 {
+    CheckIsGameThread();
     if (!InTexture || InTexture->Owner != this)
     {
         return;
     }
-
+    if (InTexture->Name == "ui\\ui_actor_MP_screen")
+    {
+        __nop();
+    }
     if (--InTexture->Counter == 0)
     {
         Textures.erase(InTexture->Name);
@@ -123,6 +134,7 @@ void TRenderTexturesManager::Free(TRenderTexture* InTexture)
 
 void TRenderTexturesManager::FlushNextFrame()
 {
+    CheckIsGameThread();
     for (auto & [Name,Texture] : FreeTexturesNextFrame)
     {
         xr_delete(Texture);
@@ -137,9 +149,14 @@ void TRenderTexturesManager::FlushNextFrame()
 
 void TRenderTexturesManager::Copy(TRenderTexture* InTexture)
 {
+    CheckIsGameThread();
     if (InTexture->Owner != this)
     {
         return;
+    }
+    if (InTexture->Name == "ui\\ui_actor_MP_screen")
+    {
+        __nop();
     }
     InTexture->Counter++;
 }

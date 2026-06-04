@@ -1,6 +1,5 @@
 #pragma once
 #include "../../xrEngine/stdafx.h"
-#include "RenderCommandQueue.h"
 
 #include "../../xrEngine/Render.h"
 #include "../../xrEngine/SkeletonMotions.h"
@@ -59,6 +58,14 @@ inline T Align(T x, size_t alignment) {
 
 #define NRI_CHECK(x) R_ASSERT((x) ==  nri::Result::SUCCESS)
 
+
+extern size_t GRenderThreadId;
+extern size_t GGameThreadId;
+inline bool IsRenderThreadRunning() { return GRenderThreadId != GGameThreadId; }
+#define CheckIsGameThread() VERIFY( !IsRenderThreadRunning() || GRenderThreadId != Platform::GetCurrentThreadId())
+#define CheckIsRenderThread() VERIFY( !IsRenderThreadRunning() || GRenderThreadId == Platform::GetCurrentThreadId())
+
+#include "RenderCommandQueue.h"
 #include "Core/TRenderDevice.h"
 #include "Resources/Textures/TRenderTexture.h"
 #include "Resources/Textures/TRenderTexture2D.h"
@@ -69,5 +76,3 @@ inline T Align(T x, size_t alignment) {
 #include "Resources/Shaders/ShaderType.h"
 #include "Resources/Shaders/Defines/TShaderDefinesContainer.h"
 #include "Resources/Shaders/Global/TGlobalShadersManager.h"
-
-
