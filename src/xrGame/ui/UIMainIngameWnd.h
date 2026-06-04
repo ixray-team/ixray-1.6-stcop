@@ -21,6 +21,12 @@ class	CUIArtefactPanel;
 class	CUIStackPanel;
 class	CUI3dStatic;
 
+enum class ENavigationHudMode : u8
+{
+	Minimap,
+	CompassBar,
+};
+
 class CUIMainIngameWnd final :
 	public CUIWindow
 {
@@ -80,6 +86,10 @@ public:
 	void			DrawZoneMap();
 	void			UpdateZoneMap();
 
+	void			SetNavigationMode(ENavigationHudMode mode);
+	void			SetNavigationModeBool(bool compassBar);
+	bool			IsCompassBarMode() const;
+
 	void			DrawMainIndicatorsForInventory();
 
 	// Quick slots panel visibility / fade control
@@ -132,6 +142,11 @@ protected:
 	CUIWindow* m_pMPChatWnd;
 	CUIWindow* m_pMPLogWnd;
 	bool				useLegacyIndicators;
+	ENavigationHudMode	m_navigationMode = ENavigationHudMode::Minimap;
+
+protected:
+	Frect				GetNavigationHostRect() const;
+	void				RebindNavigationChildren();
 
 	// Car
 	CUICarPanel UICarPanel;
