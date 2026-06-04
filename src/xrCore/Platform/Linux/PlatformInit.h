@@ -64,6 +64,7 @@ using UINT = unsigned int;
 #define _utime utime
 
 #define TEXT(a) a
+#define VK_SPACE 0x20
 
 using xr_special_char = char;
 using LPSTR = char*;
