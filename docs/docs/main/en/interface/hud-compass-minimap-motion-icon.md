@@ -6,13 +6,30 @@
 
 ## Overview
 
-This feature configures the HUD navigation block: either the minimap or the horizontal compass. The motion icon works next to this block and shows the actor’s movement state and visibility.
+This feature configures the HUD navigation block: the minimap or the horizontal compass. The motion icon works next to this block and shows the actor's movement state and visibility.
 
-## Enable logic
+Both widgets are initialized when the HUD loads. Switching between them happens at runtime without reloading the level.
 
-1. `UseCompassBar = true` in `configs/engine_external.ltx` enables the horizontal compass.
-2. `UseCompassBar = false` restores the minimap.
-3. `hud_minimap` controls the block visibility on screen.
+## Default mode and runtime switching
+
+1. `UseCompassBar` in `configs/engine_external.ltx` sets the **default mode** for a new profile when no user choice is stored yet.
+2. `UseCompassBar = true` enables the horizontal compass by default.
+3. `UseCompassBar = false` enables the minimap by default.
+4. `hud_minimap` controls **visibility** of the active navigation block.
+5. Runtime navigation type switching is done via Lua API `ActorMenu.get_maingame():SetNavigationMode(bool)`, where `true` means compass bar and `false` means minimap.
+
+## Lua API
+
+```lua
+local maingame = ActorMenu.get_maingame()
+if maingame then
+    maingame:SetNavigationMode(true)   -- compass bar
+    maingame:SetNavigationMode(false)  -- minimap
+    local isCompass = maingame:IsCompassBarMode()
+end
+```
+
+Readonly fields `UIZoneMap` and `UICompassBar` are available on `CUIMainIngameWnd`.
 
 ## Atlas and compass_bar.xml components
 
@@ -53,9 +70,9 @@ Purpose: selected target marker, distance, and vertical offset.
 1. `state_normal`, `state_crouch`, `state_creep`, `state_climb`, `state_run`, `state_sprint` show the current movement type.
 2. `power_progress` shows stamina.
 3. `luminosity_overlay` and `noise_overlay` apply visual noise and dimming.
-4. Overlays work in minimap mode. When `UseCompassBar = true` they are not created.
+4. Luminosity/noise overlays are created for minimap mode and hidden in compass bar mode. When switching back to the minimap, overlays are restored without recreating the HUD.
 
-## Example enable
+## Example default compass bar enable
 
 ```ini
 [ui]

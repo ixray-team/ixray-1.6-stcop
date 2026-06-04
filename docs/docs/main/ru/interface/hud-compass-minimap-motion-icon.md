@@ -6,13 +6,30 @@
 
 ## Обзор
 
-Фича задает навигационный блок HUD: либо миникарта, либо горизонтальный компас. Motion icon работает рядом с этим блоком и показывает состояние движения и заметности актора.
+Фича задает навигационный блок HUD: миникарта или горизонтальный компас. Motion icon работает рядом с этим блоком и показывает состояние движения и заметности актора.
 
-## Логика включения
+Оба виджета инициализируются при загрузке HUD. Переключение между ними выполняется в runtime без перезагрузки уровня.
 
-1. `UseCompassBar = true` в `configs/engine_external.ltx` включает горизонтальный компас.
-2. `UseCompassBar = false` возвращает миникарту.
-3. `hud_minimap` управляет видимостью блока на экране.
+## Режим по умолчанию и runtime-переключение
+
+1. `UseCompassBar` в `configs/engine_external.ltx` задает **стартовый режим** для нового профиля, если пользовательский выбор еще не сохранен.
+2. `UseCompassBar = true` включает горизонтальный компас по умолчанию.
+3. `UseCompassBar = false` включает миникарту по умолчанию.
+4. `hud_minimap` управляет **видимостью** активного навигационного блока.
+5. Runtime-переключение типа навигации выполняется через Lua API `ActorMenu.get_maingame():SetNavigationMode(bool)`, где `true` означает compass bar, `false` миникарту.
+
+## Lua API
+
+```lua
+local maingame = ActorMenu.get_maingame()
+if maingame then
+    maingame:SetNavigationMode(true)   -- compass bar
+    maingame:SetNavigationMode(false)  -- minimap
+    local isCompass = maingame:IsCompassBarMode()
+end
+```
+
+Доступны readonly-поля `UIZoneMap` и `UICompassBar` на `CUIMainIngameWnd`.
 
 ## Атлас и компоненты compass_bar.xml
 
@@ -53,9 +70,9 @@
 1. `state_normal`, `state_crouch`, `state_creep`, `state_climb`, `state_run`, `state_sprint` показывают текущий тип движения.
 2. `power_progress` показывает выносливость.
 3. `luminosity_overlay` и `noise_overlay` накладывают визуальный шум и затемнение.
-4. Оверлеи работают в режиме миникарты. При `UseCompassBar = true` они не создаются.
+4. Оверлеи luminosity/noise создаются для режима миникарты и скрываются в режиме compass bar. При возврате на миникарту оверлеи восстанавливаются без пересоздания HUD.
 
-## Пример включения
+## Пример включения compass bar по умолчанию
 
 ```ini
 [ui]
