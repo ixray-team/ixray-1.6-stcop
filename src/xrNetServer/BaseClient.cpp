@@ -195,7 +195,7 @@ void BaseClient::net_Syncronize()
 
 bool BaseClient::Sync_Thread()
 {
-	MSYS_PING			clPing;
+	MSYS_PING clPing;
 
 	//***** Ping server
 	net_DeltaArray.clear();
@@ -204,13 +204,19 @@ bool BaseClient::Sync_Thread()
 	for (; IsConnectionInit() && !net_Disconnected; )
 	{
 		// Waiting for queue empty state
-		if (net_Syncronised)	break; // Sleep(2000);
+		if (net_Syncronised)
+		{
+			break;
+		}
+
 		else {
-			DWORD			dwPending = 0;
-			do {
+			DWORD dwPending = 0;
+			do 
+			{
 				GetPendingMessagesCount(dwPending);
-				Sleep(1);
-			} while (dwPending);
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			}
+			while (dwPending);
 		}
 
 		// Construct message
@@ -219,8 +225,7 @@ bool BaseClient::Sync_Thread()
 		clPing.dwTime_ClientSend = TimerAsync(device_timer);
 
 		// Send it
-#ifdef IXR_WINDOWS
-		__try
+		try
 		{
 			if (!IsConnectionInit() || net_Disconnected)
 				break;
@@ -231,36 +236,24 @@ bool BaseClient::Sync_Thread()
 				break;
 			}
 		}
-		__except (EXCEPTION_EXECUTE_HANDLER)
+		catch (...)
 		{
 			Msg("* CLIENT: SyncThread: EXIT. (failed to send - disconnected?)");
 			break;
 		}
-#else
-	try
-	 {
-        if (!IsConnectionInit() || net_Disconnected)
-			break;
 
-        if (!SendPingMessage(clPing))
-		{
-            Msg("* DirectPlayClient: SyncThread: EXIT. (failed to send - disconnected?)");
-            break;
-        }
-    }
-    catch (...)
-	{
-        Msg("* CLIENT: SyncThread: EXIT. (failed to send - disconnected?)");
-        break;
-    }
-#endif
 		// Waiting for reply-packet to arrive
-		if (!net_Syncronised) {
+		if (!net_Syncronised)
+		{
 			u32	old_size = net_DeltaArray.size();
 			u32	timeBegin = TimerAsync(device_timer);
-			while ((net_DeltaArray.size() == old_size) && (TimerAsync(device_timer) - timeBegin < 5000))		Sleep(1);
+			while ((net_DeltaArray.size() == old_size) && (TimerAsync(device_timer) - timeBegin < 5000))
+			{
+				Sleep(1);
+			}
 
-			if (net_DeltaArray.size() >= syncSamples) {
+			if (net_DeltaArray.size() >= syncSamples) 
+			{
 				net_Syncronised = true;
 				net_TimeDelta = net_TimeDelta_Calculated;
 				return true;
@@ -271,7 +264,7 @@ bool BaseClient::Sync_Thread()
 	return false;
 }
 
-void	BaseClient::Sync_Average()
+void BaseClient::Sync_Average()
 {
 	//***** Analyze results
 	s64	 summary_delta = 0;

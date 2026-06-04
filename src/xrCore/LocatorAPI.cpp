@@ -471,18 +471,7 @@ IC bool pred_str_ff(const system_file& x, const system_file& y)
 
 bool ignore_path(const char* _path)
 {
-#ifdef IXR_WINDOWS
-	HANDLE h = CreateFile(Platform::ANSI_TO_TCHAR_U8(_path), 0, 0, nullptr, OPEN_EXISTING,
-		FILE_ATTRIBUTE_READONLY | FILE_FLAG_NO_BUFFERING, nullptr);
-
-	if (h!=INVALID_HANDLE_VALUE)
-	{
-		CloseHandle(h);
-		return false;
-	}
-#endif
-
-	return true;
+	return !std::filesystem::exists(_path);
 }
 
 namespace Platform
@@ -639,15 +628,9 @@ void CLocatorAPI::setup_fs_path		(const char* fs_name)
 	string_path			fs_path;
 	setup_fs_path		(fs_name, fs_path);
 
-
 	string_path full_current_directory;
-#ifdef IXR_WINDOWS
-	_fullpath(full_current_directory, fs_path, sizeof(full_current_directory));
-#else
-	char *tmp_path = realpath(fs_path, 0);
-	xr_strcpy(full_current_directory, tmp_path);
-	free(tmp_path);
-#endif
+
+	Platform::GetAbsolutePath(full_current_directory, fs_path, sizeof(full_current_directory));
 
 	xr_string TestPath = full_current_directory;
 	if (fs_name != nullptr && !std::filesystem::exists(TestPath + "/" + fs_name))
@@ -674,16 +657,7 @@ void CLocatorAPI::setup_fs_path		(const char* fs_name)
 	}
 
 	FS_Path *path = new FS_Path(TestPath.c_str(), "", "", "", 0);
-#ifdef DEBUG
-	Msg("$fs_root$ = %s", TestPath.c_str());
-#endif // #ifdef DEBUG
-
-	pathes.insert		(
-		std::make_pair(
-			xr_strdup("$fs_root$"),
-			path
-		)
-	);
+	pathes.insert(std::make_pair(xr_strdup("$fs_root$"), path));
 }
 
 IReader *CLocatorAPI::setup_fs_ltx	(const char* fs_name)

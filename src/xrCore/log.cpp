@@ -142,32 +142,24 @@ void xrLogger::RemoveLogCallback(LogCallback logCb)
 
 void xrLogger::InternalCloseLog()
 {
-	while(!logData->empty() && hLogThread != 0) {
-		Sleep(1u);
+	while (!logData->empty())
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 
 	FlushLog();
-
-	if (hLogThread != 0)
-	{
-		bIsAlive = false;
-#ifdef IXR_WINDOWS
-		WaitForSingleObject(hLogThread, INFINITE);
-#endif
-		hLogThread = 0;
-	}
 
 	IWriter* tempCopy = (IWriter*)logFile;
 	logFile = nullptr;
 
 	if (tempCopy != nullptr)
+	{
 		FS.w_close(tempCopy);
+	}
 }
 
 xrLogger::xrLogger()
-	: logFile(nullptr), bFastDebugLog(false), 
-	bIsAlive(true), hLogThread(0),
-	bFlushRequested(false)
+	: logFile(nullptr), bFastDebugLog(false), bFlushRequested(false)
 {}
 
 xrLogger::~xrLogger()
