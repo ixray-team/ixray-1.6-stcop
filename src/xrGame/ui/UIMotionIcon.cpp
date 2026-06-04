@@ -185,6 +185,104 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar)
     return m_independent;
 }
 
+void CUIMotionIcon::EnsureMinimapOverlays(CUIXml& uiXml, Fvector2 const& sz, Fvector2 const& pos)
+{
+	const bool useLuminosityOverlay = uiXml.NavigateToNode("luminosity_overlay", 0);
+    const bool useNoiseOverlay = uiXml.NavigateToNode("noise_overlay", 0);
+
+    if (!useLuminosityOverlay && !m_luminosity_progress_bar && !m_luminosity_progress_shape)
+    {
+        m_luminosity_progress_shape = UIHelper::CreateProgressShape(uiXml, "luminosity_progress", this);
+        if (m_luminosity_progress_shape)
+        {
+            m_luminosity_progress_shape->SetWndSize(sz);
+            m_luminosity_progress_shape->SetWndPos(pos);
+        }
+    }
+
+    if (!useNoiseOverlay && !m_noise_progress_bar && !m_noise_progress_shape)
+    {
+        m_noise_progress_shape = UIHelper::CreateProgressShape(uiXml, "noise_progress", this);
+        if (m_noise_progress_shape)
+        {
+            m_noise_progress_shape->SetWndSize(sz);
+            m_noise_progress_shape->SetWndPos(pos);
+        }
+    }
+
+    if (useLuminosityOverlay && !_luminosityOverlay)
+    {
+        _luminosityOverlay = UIHelper::CreateStatic(uiXml, "luminosity_overlay", this, false);
+        if (_luminosityOverlay)
+        {
+            _luminosityOverlayBaseColor = _luminosityOverlay->GetTextureColor();
+            _luminosityOverlay->SetTextureColor(subst_alpha(_luminosityOverlayBaseColor, 0));
+        }
+    }
+
+    if (useNoiseOverlay && !_noiseOverlay)
+    {
+        _noiseOverlay = UIHelper::CreateStatic(uiXml, "noise_overlay", this, false);
+        if (_noiseOverlay)
+        {
+            _noiseOverlayBaseColor = _noiseOverlay->GetTextureColor();
+            _noiseOverlay->SetTextureColor(subst_alpha(_noiseOverlayBaseColor, 0));
+        }
+    }
+}
+
+void CUIMotionIcon::SetMinimapOverlayVisibility(bool visible)
+{
+    auto toggle = [visible](auto* widget)
+    {
+        if (widget)
+        {
+            widget->Show(visible);
+            widget->Enable(visible);
+        }
+    };
+
+    toggle(m_luminosity_progress_shape);
+    toggle(m_noise_progress_shape);
+    toggle(_luminosityOverlay);
+    toggle(_noiseOverlay);
+}
+
+void CUIMotionIcon::ApplyNavigationHost(CUIWindow* attachParent, Frect const& hostRect, bool useCompassBar)
+{
+    if (!attachParent)
+        return;
+
+    SetAutoDelete(false);
+
+    if (CUIWindow* parent = GetParent())
+        parent->DetachChild(this);
+
+    Fvector2 sz;
+    Fvector2 pos;
+
+    if (!m_independent)
+    {
+        CUIXml uiXml;
+        uiXml.Load(CONFIG_PATH, UI_PATH, MOTION_ICON_XML);
+        const float rel_sz = uiXml.ReadAttribFlt("window", 0, "rel_size", 1.0f);
+
+        hostRect.getsize(sz);
+        pos.set(sz.x / 2.0f, sz.y / 2.0f);
+        SetWndSize(sz);
+        SetWndPos(pos);
+
+        const float k = UI().get_current_kx();
+        sz.mul(rel_sz * k);
+
+        if (!useCompassBar)
+            EnsureMinimapOverlays(uiXml, sz, pos);
+    }
+
+    attachParent->AttachChild(this);
+    SetMinimapOverlayVisibility(!useCompassBar);
+}
+
 void CUIMotionIcon::ShowState(EState state)
 {
 	if (m_current_state == state)

@@ -49,7 +49,9 @@ CUIPdaWnd* GetPDAMenu()
 
 CUIMainIngameWnd* GetMainGameMenu()
 {
-	return CurrentGameUI()->UIMainIngameWnd;
+	if (CUIGameCustom* ui = CurrentGameUI())
+		return ui->UIMainIngameWnd;
+	return nullptr;
 }
 
 u8 GrabMenuMode()
@@ -515,6 +517,9 @@ void CUIActorMenu::script_register(lua_State *L)
 				.def_readonly("UIStaticQuickHelp", &CUIMainIngameWnd::UIStaticQuickHelp)
 				.def_readonly("UIMotionIcon", &CUIMainIngameWnd::UIMotionIcon)
 				.def_readonly("UIZoneMap", &CUIMainIngameWnd::UIZoneMap)
+				.def_readonly("UICompassBar", &CUIMainIngameWnd::UICompassBar)
+				.def("SetNavigationMode", &CUIMainIngameWnd::SetNavigationModeBool)
+				.def("IsCompassBarMode", &CUIMainIngameWnd::IsCompassBarMode)
 				.def_readonly("m_ui_hud_states", &CUIMainIngameWnd::m_ui_hud_states)
 				.def_readonly("m_ind_bleeding", &CUIMainIngameWnd::m_ind_bleeding)
 				.def_readonly("m_ind_radiation", &CUIMainIngameWnd::m_ind_radiation)

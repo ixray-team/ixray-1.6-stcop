@@ -52,12 +52,17 @@ private:
 		float						m_luminosity;
 		float						m_cur_pos;
 
+		void			EnsureMinimapOverlays(CUIXml& uiXml, Fvector2 const& sz, Fvector2 const& pos);
+		void			SetMinimapOverlayVisibility(bool visible);
+
 public:
 	virtual					~CUIMotionIcon		();
 							CUIMotionIcon		();
 	virtual	void			Update				();
 	virtual void			Draw				();
 			bool			Init				(Frect const& rect, bool useCompassBar);
+			void			ApplyNavigationHost(CUIWindow* attachParent, Frect const& hostRect, bool useCompassBar);
+			bool			IsIndependent		() const { return m_independent; }
 			void			ShowState			(EState state);
 			void			SetPower			(float Pos);
 			void			SetNoise			(float Pos);
