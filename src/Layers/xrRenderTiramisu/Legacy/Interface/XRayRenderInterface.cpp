@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Core/Passes/UI/TRenderUIPass.h"
 #include "Extensions/NRIDeviceCreation.h"
 #include "Legacy/Scene/TLegacyScene.h"
 #include "Legacy/Visual/XRayModelPool.h"
@@ -30,7 +31,6 @@ DWORD CDS0_RenderInterface::get_dx_level()
 
 void CDS0_RenderInterface::create()
 {
-	
 	DevicePtr->seqFrame.Add(this);
 	GModelPool = new CDS0_ModelPool;
 	GRenderDevice.Initialize();
@@ -42,6 +42,7 @@ void CDS0_RenderInterface::create()
 
 void CDS0_RenderInterface::destroy()
 {
+	GRender->DisableRenderThreadWithWaitStoping();
 	GRender->Destroy();
 	delete GRender;
 	GRender = nullptr;
@@ -294,12 +295,18 @@ u32 CDS0_RenderInterface::active_phase()
 void CDS0_RenderInterface::Render()
 {
 	GModelPool->Render();
+	
+	g_pGamePersistent->OnRenderPPUI_main();	// PP-UI
+	
+	ENQUEUE_RENDER_COMMAND(CDS0_RenderInterface::Render)([Primitivs = GUIRender.Primitivs,Vertexes = std::move(GUIRender.Vertexes)]
 	{
-		GRender->Render();
-		// RenderViewport.BeginRender();
-		
-		// RenderViewport.EndRender();
-	}
+		GRender->UIPass->Primitivs = Primitivs;
+		GRender->UIPass->Vertexes = Vertexes;
+	});
+	
+	GUIRender.Flush();
+	
+	GRender->SubmitFrame();
 }
 
 void CDS0_RenderInterface::RenderUI(bool)

@@ -17,6 +17,7 @@ public:
         void                                Initialize                  ();
         bool                                IsCookedMode                ();
         void                                FlushNextFrame              (); 
+        void                                FlushNextFrame_RenderThread (); 
         
     
     nri::DescriptorPool*                    GlobalDescriptorPool    = nullptr;

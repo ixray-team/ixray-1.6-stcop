@@ -55,11 +55,31 @@ TRenderCommandQueue& GetRenderCommandQueue()
 
 void ExecuteRenderCommands()
 {
+    CheckIsRenderThread();
     GRenderCommandQueue.Execute();
 }
 
 void FlushRenderCommands()
 {
-    ExecuteRenderCommands();
+    if (IsRenderThreadRunning())
+    {
+        std::promise<void> done;
+        auto future = done.get_future();
+
+        ENQUEUE_RENDER_COMMAND(FlushRenderCommands)([&done]
+        {
+            done.set_value();
+        });
+        GRender->SubmitFrame();
+        future.wait();
+    }
+    else
+    {
+        if (GRender)
+        {
+            GRender->WaitGPU_RenderThread();
+        }
+        ExecuteRenderCommands();
+    }
 }
 } // namespace XRay::RenderCommands

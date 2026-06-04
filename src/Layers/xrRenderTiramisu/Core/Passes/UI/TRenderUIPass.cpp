@@ -95,16 +95,15 @@ TRenderUIPass::~TRenderUIPass()
 
 void TRenderUIPass::Upload(nri::CommandBuffer& CurrentCommandBuffer)
 {
-	g_pGamePersistent->OnRenderPPUI_main();	// PP-UI
 	
-	if (GUIRender.Vertexes.size() >= 16 * 1024* 6)
+	if (Vertexes.size() >= 16 * 1024* 6)
 	{
 		return;
 	}
 	{
 		if (FUIVertex* UploadVertexes = static_cast<FUIVertex*>(GRenderDevice.CoreInterface.MapBuffer(*UploadBuffer, 0, nri::WHOLE_SIZE)))
 		{
-			memcpy(UploadVertexes, GUIRender.Vertexes.data(), GUIRender.Vertexes.size() * sizeof(FUIVertex));
+			memcpy(UploadVertexes, Vertexes.data(), Vertexes.size() * sizeof(FUIVertex));
 			GRenderDevice.CoreInterface.UnmapBuffer(*UploadBuffer);
 		}
 	}
@@ -127,12 +126,11 @@ void TRenderUIPass::Upload(nri::CommandBuffer& CurrentCommandBuffer)
 	}
 }
 
-void TRenderUIPass::Render(nri::CommandBuffer& CurrentCommandBuffer)
+void TRenderUIPass::Render(nri::CommandBuffer& CurrentCommandBuffer,const nri::Viewport& Viewport)
 {
 	GRenderDevice.CoreInterface.CmdBeginAnnotation(CurrentCommandBuffer,"UI",nri::BGRA_UNUSED);
-	if (GUIRender.Vertexes.size() >= 16 * 1024* 6)
+	if (Vertexes.size() >= 16 * 1024* 6)
 	{
-		GUIRender.Flush();
 		GRenderDevice.CoreInterface.CmdEndAnnotation(CurrentCommandBuffer);
 		return;
 	}
@@ -145,25 +143,34 @@ void TRenderUIPass::Render(nri::CommandBuffer& CurrentCommandBuffer)
 	VertexBufferDescription.stride = sizeof(FUIVertex);
 	GRenderDevice.CoreInterface.CmdSetVertexBuffers(CurrentCommandBuffer, 0, &VertexBufferDescription, 1);
 	
-	for (const FXRayUIPrimitive& Primitve :GUIRender.Primitivs)
+
+	nri::Rect LastScissorRect = { 0, 0, (nri::Dim_t)Viewport.width, (nri::Dim_t)Viewport.height };
+	for (const FXRayUIPrimitive& Primitve :Primitivs)
 	{
 		if (Primitve.VertexCount == 0)
 		{
 			continue;
 		}
 
-		nri::Rect ScissorRect = { 0, 0, (u16)psCurrentVidMode[0], (u16)psCurrentVidMode[1] };
+		nri::Rect ScissorRect = { 0, 0, (nri::Dim_t)Viewport.width, (nri::Dim_t)Viewport.height };
 
 		if (Primitve.ScissorRect.x1 != Primitve.ScissorRect.x2)
 		{
 			ScissorRect = { (s16)Primitve.ScissorRect.x1, (s16)Primitve.ScissorRect.y1, (u16)(Primitve.ScissorRect.x2 - Primitve.ScissorRect.x1), (u16)(Primitve.ScissorRect.y2 - Primitve.ScissorRect.y1) };
 		}
-
-		GRenderDevice.CoreInterface.CmdSetScissors(CurrentCommandBuffer, &ScissorRect, 1);
-		GRenderDevice.CoreInterface.CmdDraw(CurrentCommandBuffer, {Primitve.VertexCount , 1, Primitve.VertexOffset,  Primitve.Texture->ResourceProxy->GetOrCreateHeapID()});
+		if (ScissorRect.x != LastScissorRect.x || 
+			ScissorRect.y != LastScissorRect.y || 
+			ScissorRect.width != LastScissorRect.width ||
+			ScissorRect.height != LastScissorRect.height)
+		{
+			LastScissorRect = ScissorRect;
+			GRenderDevice.CoreInterface.CmdSetScissors(CurrentCommandBuffer, &ScissorRect, 1);
+		}
+		if (Primitve.TextureResourceProxy)
+		{
+			GRenderDevice.CoreInterface.CmdDraw(CurrentCommandBuffer, { Primitve.VertexCount , 1, Primitve.VertexOffset,  Primitve.TextureResourceProxy->GetOrCreateHeapID() });
+		}
 	}
-	
-	GUIRender.Flush();
 	
 	GRenderDevice.CoreInterface.CmdEndAnnotation(CurrentCommandBuffer);
 }

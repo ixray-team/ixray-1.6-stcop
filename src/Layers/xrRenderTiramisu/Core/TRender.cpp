@@ -8,10 +8,35 @@
 #include "Resources/Shaders/Global/TGlobalShadersManager.h"
 #include "Resources/Textures/RenderTargets/TRenderTarget2D.h"
 #include "Scene/TRenderScene.h"
+
+void TRender::OnThread(void* p)
+{
+    TRender* This = static_cast<TRender*>(p);
+    Platform::SetThreadName("Render Thread");
+    PROF_THREAD("Render Thread");
+    GRenderThreadId = Platform::GetCurrentThreadId();
+    
+    This->SyncPoint.arrive_and_wait();
+    do 
+    {
+        This->Render_RenderThread();
+    } while(This->bRenderThreadEnable);
+    
+    GRenderThreadId = GGameThreadId;
+}
+
+void TRender::SpawnRenderThread()
+{
+    RenderThread = thread_spawn(&TRender::OnThread, "Render Thread", 0, this);
+    SyncPoint.arrive_and_wait();
+    VERIFY(GRenderThreadId != Platform::GetCurrentThreadId());
+}
+
 TRender* GRender = nullptr;
 
 TRender::TRender() 
 {
+    bRenderThreadEnable = !strstr(Core.Params,"-disable_render_thread");
 }
 
 TRender::~TRender()
@@ -34,7 +59,6 @@ void TRender::Initialize()
         NRI_CHECK(GRenderDevice.CoreInterface.CreateCommandAllocator(*GRenderDevice.GraphicsQueue, QueuedFrame.CommandAllocator));
         NRI_CHECK(GRenderDevice.CoreInterface.CreateCommandBuffer(*QueuedFrame.CommandAllocator, QueuedFrame.CommandBuffer));
     }
-    
     CreateGlobalConstantBuffer();
     
     OutputRenderTarget = new TRenderTarget2D(1024, 768, nri::Format::RGBA8_UNORM,{} ,"Output");
@@ -45,11 +69,14 @@ void TRender::Initialize()
 
     nri::ImguiDesc imguiDesc = {};
     NRI_CHECK(GRenderDevice.ImGuiInterface.CreateImgui(*GRenderDevice.Device, imguiDesc, ImGuiInstance));
+    
+    R_ASSERT(!IsRenderThreadRunning());
 }
 
 void TRender::Destroy()
 {
-    WaitGPU();
+    R_ASSERT(!IsRenderThreadRunning());
+    WaitGPU_RenderThread();
 
     {
         if (GlobalConstantDescriptor)
@@ -106,12 +133,6 @@ void TRender::Destroy()
         Pipeline = nullptr;
     }
     
-    if (TestPipeline)
-    {
-        GRenderDevice.CoreInterface.DestroyPipeline(TestPipeline);
-        TestPipeline = nullptr;
-    }
-   
     if (WaitSemaphore)
     {   
         GRenderDevice.CoreInterface.DestroyFence(WaitSemaphore);
@@ -146,14 +167,17 @@ void TRender::Destroy()
     FrameIndex = 0;
 }
 
+void TRender::SetViewport(TRenderViewport* ToViewport)
+{
+    ENQUEUE_RENDER_COMMAND(TRender::SetViewport)([this,ToViewport]
+    {
+        CurrentViewport = ToViewport;
+    });
+}
 
 
 void TRender::Submit(TRenderViewport* ToViewport)
 {
-    if(!IsWaitSubmit)
-    {
-        return;
-    }
     // Pipeline
     if (!Pipeline)
     {
@@ -255,19 +279,57 @@ void TRender::Submit(TRenderViewport* ToViewport)
     }
 
     ToViewport->EndRender(SignalSemaphore, nullptr);
-    IsWaitSubmit = false;
 }
 
-void TRender::Render()
+void TRender::SubmitFrame()
 {
-    VERIFY(IsWaitSubmit == false);
-    IsWaitSubmit = true;
-    
-    GRenderDevice.CoreInterface.Wait(*FrameFence, FrameIndex >= QueuedFrames.size() ? 1 + FrameIndex - QueuedFrames.size() : 0);
-    Tiramisu::RenderCommands::ExecuteRenderCommands();
-    GRenderResourcesManager->RenderScene->Update();
-    UpdateGlobalConstantBuffer();
+    CheckIsGameThread();
     GRenderResourcesManager->FlushNextFrame();
+    
+    if (!IsRenderThreadRunning())
+    {
+        if (bRenderThreadEnable)
+        {
+            SpawnRenderThread();
+        }
+        else
+        {
+            Render_RenderThread();
+            return;
+        }
+    }
+    
+    SyncPoint.arrive_and_wait();
+}
+
+void TRender::Render_RenderThread()
+{
+    CheckIsRenderThread();
+    GRenderDevice.CoreInterface.Wait(*FrameFence, FrameIndex >= QueuedFrames.size() ? 1 + FrameIndex - QueuedFrames.size() : 0);
+    
+    {
+        if (IsRenderThreadRunning())
+        {
+            {
+                
+                PROF_EVENT("Wait Game Thread")
+                SyncPoint.arrive_and_wait();
+            }
+        }
+        
+        {
+            PROF_EVENT("Render Flush")
+            Tiramisu::RenderCommands::ExecuteRenderCommands();
+        }
+        
+        
+        GRenderResourcesManager->RenderScene->Update();
+        UpdateGlobalConstantBuffer();
+        GRenderResourcesManager->FlushNextFrame_RenderThread();
+    }
+   
+    
+    PROF_EVENT("Main Render")
     
     uint32_t QueuedFrameIndex = FrameIndex % QueuedFrames.size();
     const FQueuedFrame& QueuedFrame = QueuedFrames[QueuedFrameIndex];
@@ -301,7 +363,7 @@ void TRender::Render()
             GRenderDevice.CoreInterface.CmdBarrier(CurrentCommandBuffer,BarrierDescription);
         }
 
-#if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
+#if 0
         {
             CImGuiManager& MyImGui = CImGuiManager::Instance();
             MyImGui.Render();
@@ -342,8 +404,8 @@ void TRender::Render()
             GRenderDevice.CoreInterface.CmdSetDescriptorSet(CurrentCommandBuffer,descriptorSet1);
             GRenderDevice.CoreInterface.CmdSetDescriptorSet(CurrentCommandBuffer,descriptorSet2);
         }
+        const nri::Viewport viewport = {0.0f, 0.0f, (float)OutputRenderTarget->TextureDescription.width, (float)OutputRenderTarget->TextureDescription.height, 0.0f, 1.0f};
         {
-            const nri::Viewport viewport = {0.0f, 0.0f, (float)OutputRenderTarget->TextureDescription.width, (float)OutputRenderTarget->TextureDescription.height, 0.0f, 1.0f};
             GRenderDevice.CoreInterface.CmdSetViewports(CurrentCommandBuffer, &viewport, 1);
                 
             const nri::Rect ScissorRect = {0,0,OutputRenderTarget->TextureDescription.width,OutputRenderTarget->TextureDescription.height};
@@ -352,12 +414,12 @@ void TRender::Render()
         
         {
             GeometryPass->Render(CurrentCommandBuffer);
-            UIPass->Render(CurrentCommandBuffer);
+            UIPass->Render(CurrentCommandBuffer,viewport);
         }
 
         GRenderDevice.CoreInterface.CmdEndRendering(CurrentCommandBuffer);
 
-#if defined(DEBUG_DRAW) && defined(IXR_WINDOWS)
+#if 0
         {
             nri::AttachmentDesc ColorAttachmentDescription = {};
             ColorAttachmentDescription.descriptor = OutputRenderTarget->RenderTargetResourceProxy->DescriptorAttachment;
@@ -406,9 +468,9 @@ void TRender::Render()
     
     {
         nri::FenceSubmitDesc SignalFencesSubmitDescription[2] = {};
-        SignalFencesSubmitDescription[0].fence = SignalSemaphore;
-        SignalFencesSubmitDescription[1].fence = FrameFence;
-        SignalFencesSubmitDescription[1].value = ++FrameIndex;
+        SignalFencesSubmitDescription[1].fence = SignalSemaphore;
+        SignalFencesSubmitDescription[0].fence = FrameFence;
+        SignalFencesSubmitDescription[0].value = ++FrameIndex;
         
         nri::QueueSubmitDesc QueueSubmitDescription = {};
 		
@@ -416,44 +478,98 @@ void TRender::Render()
         QueueSubmitDescription.commandBufferNum = 1;
 		
         QueueSubmitDescription.signalFences = SignalFencesSubmitDescription;
-        QueueSubmitDescription.signalFenceNum = 2;
+        QueueSubmitDescription.signalFenceNum = CurrentViewport && CurrentViewport->IsValid() ? 2 : 1;
 
         GRenderDevice.CoreInterface.QueueSubmit(*GRenderDevice.GraphicsQueue, QueueSubmitDescription);
         GRenderDevice.StreamerInterface.EndStreamerFrame(*GRenderDevice.Streamer);
     }
     GRenderResourcesManager->DescriptorHeapAllocator->UpdateDescriptorRanges();
     
+    if (CurrentViewport && CurrentViewport->IsValid())
+    {
+        Submit(CurrentViewport);
+    }
 }
 
-void TRender::WaitGPU()
+
+void TRender::WaitGPU_RenderThread()
 {
+    CheckIsRenderThread();
     GRenderDevice.CoreInterface.QueueWaitIdle(GRenderDevice.GraphicsQueue);
 
     if (GRenderResourcesManager)
     {
-        GRenderResourcesManager->FlushNextFrame();
-        GRenderResourcesManager->DescriptorHeapAllocator->UpdateDescriptorRanges();
+        GRenderResourcesManager->RenderScene->Update();
+        GRenderResourcesManager->FlushNextFrame_RenderThread();
     }
 }
 
 void TRender::ResizeRenderTarget(uint32_t InWidth, uint32_t InHeight)
 {
-    WaitGPU();
-    if (OutputRenderTarget)
-    {
-        delete OutputRenderTarget;
-    }
-    OutputRenderTarget = new TRenderTarget2D(InWidth, InHeight, nri::Format::RGBA8_UNORM,{} ,"Output");
+    CheckIsGameThread();
     
-    if (DepthRenderTarget)
-    {
-        delete DepthRenderTarget;
-    }
+    ENQUEUE_RENDER_COMMAND(TRender::ResizeRenderTarget)([this,
+            InOutputRenderTarget = OutputRenderTarget->RenderTargetResourceProxy,
+            InDepthRenderTarget = DepthRenderTarget->RenderTargetResourceProxy
+        ]()
+        {
+            OutputRenderTarget_RenderThread = nullptr;
+            DepthRenderTarget_RenderThread = nullptr;
+        });
+    
+    
+    xr_delete(OutputRenderTarget);
+    xr_delete(DepthRenderTarget);
+    
+    OutputRenderTarget = new TRenderTarget2D(InWidth, InHeight, nri::Format::RGBA8_UNORM,{} ,"Output");
     DepthRenderTarget = new TRenderTarget2D(InWidth, InHeight, nri::Format::D24_UNORM_S8_UINT,{} ,"Depth");
+
+    ENQUEUE_RENDER_COMMAND(TRender::ResizeRenderTarget)([this,
+            InOutputRenderTarget = OutputRenderTarget->RenderTargetResourceProxy,
+            InDepthRenderTarget = DepthRenderTarget->RenderTargetResourceProxy
+        ]()
+        {
+            OutputRenderTarget_RenderThread = InOutputRenderTarget;
+            DepthRenderTarget_RenderThread = InDepthRenderTarget;
+        });
 }
+
+void TRender::EnableRenderThread()
+{
+    CheckIsGameThread();
+    bRenderThreadEnable = true;
+}
+
+void TRender::DisableRenderThread()
+{
+    CheckIsGameThread();
+    if (IsRenderThreadRunning())
+    {
+        ENQUEUE_RENDER_COMMAND(TRender::DisableRenderThread)([this]()
+       {
+           bRenderThreadEnable = false; 
+       }); 
+    }
+    else
+    {
+        bRenderThreadEnable = false; 
+    }
+}
+
+void TRender::DisableRenderThreadWithWaitStoping()
+{
+    if (IsRenderThreadRunning())
+    {
+        DisableRenderThread();
+        Tiramisu::RenderCommands::FlushRenderCommands();
+        Platform::WaitForSingleObject(RenderThread);
+    }
+}
+
 
 void TRender::CreateGlobalConstantBuffer()
 {
+    CheckIsRenderThread();
     { // Constant buffer
         nri::BufferDesc BufferDescription = {};
         BufferDescription.size = Align( sizeof(FXRayRenderConstantBuffer), GRenderDevice.DeviceDescription.memoryAlignment.constantBufferOffset );
@@ -487,6 +603,7 @@ void TRender::CreateGlobalConstantBuffer()
 
 void TRender::UpdateGlobalConstantBuffer()
 {
+    CheckIsRenderThread();
     // Update constants
     if (FXRayRenderConstantBuffer* ConstantBuffer = (FXRayRenderConstantBuffer*)GRenderDevice.CoreInterface.MapBuffer(*GlobalConstantBuffer, 0, sizeof(FXRayRenderConstantBuffer))) 
     {

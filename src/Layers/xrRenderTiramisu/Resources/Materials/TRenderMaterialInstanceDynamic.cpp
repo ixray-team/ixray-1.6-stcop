@@ -8,7 +8,9 @@ TRenderMaterialInstanceDynamic::TRenderMaterialInstanceDynamic(TRenderMaterialIn
     
     MaterialInstanceRenderProxy = new TMaterialInstanceDynamicRenderProxy;
     MaterialInstanceRenderProxy->ParentMaterialRenderProxy = Parent->MaterialRenderProxy;
+#ifdef DEBUG
     MaterialInstanceRenderProxy->DebugOwner = this;
+#endif
     
     MaterialRenderProxy = MaterialInstanceRenderProxy;
 }
@@ -21,6 +23,7 @@ TRenderMaterialInstanceDynamic::~TRenderMaterialInstanceDynamic()
 
 void TRenderMaterialInstanceDynamic::SetTexture(TRenderTexture* NewTexture)
 {
+    CheckIsGameThread();
     ENQUEUE_RENDER_COMMAND(TRenderMaterialInstanceDynamic::SetTexture)([MaterialInstanceRenderProxy = MaterialInstanceRenderProxy,NewTexture = NewTexture->ResourceProxy]()
     {
         MaterialInstanceRenderProxy->TextureResourceProxy = NewTexture;

@@ -4,6 +4,7 @@
 
 TRenderTarget2D::TRenderTarget2D(uint32_t InWidth, uint32_t InHeight, nri::Format InRenderTargetFormat, nri::ClearValue InClearValue, const shared_str& InName):TRenderTexture(InName)
 {
+    CheckIsGameThread();
     TextureDescription.type = nri::TextureType::TEXTURE_2D;
     TextureDescription.format = InRenderTargetFormat;
     TextureDescription.width = InWidth;
@@ -45,9 +46,6 @@ TRenderTarget2D::TRenderTarget2D(uint32_t InWidth, uint32_t InHeight, nri::Forma
       
         NRI_CHECK(GRenderDevice.CoreInterface.CreateTextureView(TextureViewAttachmentDescription, RenderTargetResourceProxy->DescriptorAttachment));
     }); 
-    
-
-
 }
 
 TRenderTarget2D::~TRenderTarget2D()

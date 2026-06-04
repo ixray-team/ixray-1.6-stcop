@@ -53,12 +53,12 @@ void TRenderDevice::Initialize()
 	NRI_CHECK(nri::nriGetInterface(*Device, NRI_INTERFACE(nri::StreamerInterface), &StreamerInterface));
 
 	// Create streamer
-	nri::StreamerDesc streamerDesc = {};
-	streamerDesc.dynamicBufferMemoryLocation = nri::MemoryLocation::HOST_UPLOAD;
-	streamerDesc.dynamicBufferDesc = { 0, 0, nri::BufferUsageBits::VERTEX_BUFFER | nri::BufferUsageBits::INDEX_BUFFER };
-	streamerDesc.constantBufferMemoryLocation = nri::MemoryLocation::HOST_UPLOAD;
-	streamerDesc.queuedFrameNum = 3;
-	NRI_CHECK(StreamerInterface.CreateStreamer(*Device, streamerDesc, Streamer));
+	nri::StreamerDesc StreamerDescription = {};
+	StreamerDescription.dynamicBufferMemoryLocation = nri::MemoryLocation::HOST_UPLOAD;
+	StreamerDescription.dynamicBufferDesc = { 0, 0, nri::BufferUsageBits::VERTEX_BUFFER | nri::BufferUsageBits::INDEX_BUFFER };
+	StreamerDescription.constantBufferMemoryLocation = nri::MemoryLocation::HOST_UPLOAD;
+	StreamerDescription.queuedFrameNum = 3;
+	NRI_CHECK(StreamerInterface.CreateStreamer(*Device, StreamerDescription, Streamer));
 
 	DeviceDescription = CoreInterface.GetDeviceDesc(*Device);
 	
@@ -66,10 +66,13 @@ void TRenderDevice::Initialize()
 
 void TRenderDevice::Destroy()
 {
+	
+	StreamerInterface.DestroyStreamer(Streamer);
 	GraphicsQueue = nullptr;
 	CoreInterface = {};
 	SwapChainInterface = {};
 	HelperInterface = {};
+	StreamerInterface = {};
 	nri::nriDestroyDevice(Device);
 }
 

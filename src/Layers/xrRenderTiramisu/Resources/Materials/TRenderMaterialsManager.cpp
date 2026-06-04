@@ -11,6 +11,7 @@ TRenderMaterialsManager::~TRenderMaterialsManager()
 
 TRenderMaterialInterface* TRenderMaterialsManager::Get(const shared_str& InName)
 {
+    CheckIsGameThread();
     auto Iterator = Materials.find(InName);
     if (Iterator != Materials.end())
     {
@@ -26,6 +27,7 @@ TRenderMaterialInterface* TRenderMaterialsManager::Get(const shared_str& InName)
 
 TRenderMaterialInstanceDynamic* TRenderMaterialsManager::CreateInstanceDynamic(const shared_str& InName, TRenderMaterialInterface* Parent)
 {
+    CheckIsGameThread();
     VERIFY (!Materials.contains(InName));
     VERIFY(Parent);
     
@@ -36,6 +38,7 @@ TRenderMaterialInstanceDynamic* TRenderMaterialsManager::CreateInstanceDynamic(c
 
 void TRenderMaterialsManager::Free(TRenderMaterialInterface* Material)
 {
+    CheckIsGameThread();
     if (!Material)
     {
         return;
@@ -50,6 +53,7 @@ void TRenderMaterialsManager::Free(TRenderMaterialInterface* Material)
 
 TRenderMaterialInterface* TRenderMaterialsManager::Copy(TRenderMaterialInterface* Material)
 {
+    CheckIsGameThread();
     Material->Counter++;
     return Material;
 }

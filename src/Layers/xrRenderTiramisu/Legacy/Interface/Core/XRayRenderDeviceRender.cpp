@@ -32,9 +32,9 @@ void CDS0_RenderDeviceRender::updateGamma()
 
 void CDS0_RenderDeviceRender::OnDeviceDestroy(bool bKeepTextures)
 {
+	R_ASSERT(!IsRenderThreadRunning());
 	if (Viewport)
 	{
-		Viewport->Destroy();
 		delete Viewport;
 		Viewport = nullptr;
 	}
@@ -117,7 +117,6 @@ void CDS0_RenderDeviceRender::Clear()
 
 void CDS0_RenderDeviceRender::End()
 {
-	GRender->Submit(Viewport);
 }
 
 void CDS0_RenderDeviceRender::ClearTarget()
@@ -145,7 +144,9 @@ void CDS0_RenderDeviceRender::Reset(SDL_Window* window, u32& dwWidth, u32& dwHei
 	if (!Viewport)
 	{
 		Viewport = new TRenderViewport;
+		GRender->SetViewport(Viewport);
 	}
+	
 	SDL_SetWindowFullscreen(g_AppInfo.Window, 0);
 	SDL_SetWindowSize(window, psCurrentVidMode[0], psCurrentVidMode[1]);
 	dwWidth = psCurrentVidMode[0];
@@ -158,6 +159,8 @@ void CDS0_RenderDeviceRender::Reset(SDL_Window* window, u32& dwWidth, u32& dwHei
 	}
 	Viewport->CreateOrReset(window,dwWidth,dwHeight,false);
 	GRender->ResizeRenderTarget(dwWidth, dwHeight);
+	
+	Tiramisu::RenderCommands::FlushRenderCommands();
 }
 
 void CDS0_RenderDeviceRender::Create(SDL_Window* window, u32& dwWidth, u32& dwHeight, bool)
