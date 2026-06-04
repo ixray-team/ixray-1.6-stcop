@@ -8,7 +8,7 @@ public:
     
     
     void Upload(nri::CommandBuffer& CurrentCommandBuffer);
-    void Render(nri::CommandBuffer& CurrentCommandBuffer);
+    void Render(nri::CommandBuffer& CurrentCommandBuffer,const nri::Viewport& Viewport);
     
     nri::Buffer*    GeometryBuffer = nullptr;
     
@@ -19,4 +19,8 @@ public:
     nri::Pipeline*  Pipeline = nullptr;
     
     nri::BufferBarrierDesc BufferBarrierDescription = {};
+    
+    
+    xr_vector<FUIVertex>			Vertexes;
+    xr_vector<FXRayUIPrimitive>		Primitivs;
 };

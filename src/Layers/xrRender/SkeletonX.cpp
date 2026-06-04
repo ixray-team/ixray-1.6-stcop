@@ -702,7 +702,7 @@ static RHIInputElementDesc dwDecl_4W[] =
 	{ "TEXCOORD", 1, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 36, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
 };
 
-constexpr u8 q_N(float v)
+u8 q_N(float v)
 {
 	int _v = clampr(iFloor((v + 1.f) * 127.5f), 0, 255);
 	return	u8(_v);

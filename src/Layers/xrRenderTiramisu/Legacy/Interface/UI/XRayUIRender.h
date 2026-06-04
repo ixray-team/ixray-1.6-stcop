@@ -1,6 +1,7 @@
 #pragma once
 #include "Resources/RenderVertexTypes.h"
 
+class TRenderTextureResourceProxy;
 class TRenderTexture;
 
 class CDS0_UIShader :
@@ -24,7 +25,8 @@ struct FXRayUIPrimitive
 	IUIRender::ePrimitiveType		PrimitiveType;
 	IUIRender::ePointType			PointType;
 	xr_vector<FUIVertex>			VertexesCache;
-	TRenderTexture* Texture			= nullptr;
+	TRenderTexture*					Texture			= nullptr;
+	TRenderTextureResourceProxy*	TextureResourceProxy = nullptr;
 	Irect							ScissorRect;
 };
 
@@ -56,7 +58,7 @@ public:
 
 	virtual Irect GetScissor() const { return CurrentScissor; };
 	
-	xr_vector<FUIVertex>		Vertexes;
+	xr_vector<FUIVertex>			Vertexes;
 	xr_vector<FXRayUIPrimitive>		Primitivs;
 	IUIShader* CurrentShader		= nullptr;
 	Irect CurrentScissor;

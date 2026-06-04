@@ -17,6 +17,7 @@ TRenderResourceProxy::~TRenderResourceProxy()
 
 u32 TRenderResourceProxy::GetOrCreateHeapID()
 {
+    CheckIsRenderThread();
     if (HeapID == INDEX_NONE)
     {
         HeapID = GRenderResourcesManager->DescriptorHeapAllocator->Alloc(Descriptor);

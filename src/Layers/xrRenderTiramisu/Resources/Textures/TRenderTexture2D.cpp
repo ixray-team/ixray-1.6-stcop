@@ -64,6 +64,7 @@ bool TRenderTexture2D::LoadFromFile(const char* FilePath, bool bSrgb)
 
 bool TRenderTexture2D::LoadFromImage(const RedImageTool::RedImage& FromImage, bool bSrgb)
 {
+    CheckIsGameThread();
     if (FromImage.GetFormat() == RedImageTool::RedTexturePixelFormat::R8G8B8)
     {
         return false;
@@ -81,11 +82,13 @@ bool TRenderTexture2D::LoadFromImage(const RedImageTool::RedImage& FromImage, bo
     ResourceProxy = new TRenderTextureResourceProxy;
     ResourceProxy->TextureDescription = TextureDescription;
     
-    ENQUEUE_RENDER_COMMAND(TRenderTexture2D::LoadFromImage)([ResourceProxy = ResourceProxy,FromImage = std::move(FromImage)]()
+    ENQUEUE_RENDER_COMMAND(TRenderTexture2D::LoadFromImage)([ResourceProxy = ResourceProxy,FromImage = std::move(FromImage), InName = Name]()
     {
         NRI_CHECK(GRenderDevice.CoreInterface.CreatePlacedTexture(*GRenderDevice.Device, NriDeviceHeap, ResourceProxy->TextureDescription, ResourceProxy->Texture));
         nri::TextureViewDesc TextureViewDescription = {ResourceProxy->Texture, nri::TextureView::TEXTURE, ResourceProxy->TextureDescription.format};
-        NRI_CHECK(GRenderDevice.CoreInterface.CreateTextureView(TextureViewDescription, ResourceProxy->Descriptor));
+        
+    	NRI_CHECK(GRenderDevice.CoreInterface.CreateTextureView(TextureViewDescription, ResourceProxy->Descriptor));
+        GRenderDevice.CoreInterface.SetDebugName(ResourceProxy->Descriptor, InName.c_str());
 
         xr_vector<nri::TextureSubresourceUploadDesc> SubresourceUploadDescriptions;
         const uint8_t* Pointer = static_cast<const uint8_t*>(*FromImage);

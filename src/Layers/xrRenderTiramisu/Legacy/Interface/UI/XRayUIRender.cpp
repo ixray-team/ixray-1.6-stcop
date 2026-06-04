@@ -2,17 +2,25 @@
 
 CDS0_UIRender GUIRender;
 
+u32 UIShaderCounter = 0;
+xr_set<CDS0_UIShader*> dbg_uishaders;
 CDS0_UIShader::CDS0_UIShader()
 {
+	UIShaderCounter++;
+	dbg_uishaders.insert(this);
 }
 
 CDS0_UIShader::~CDS0_UIShader()
 {
 	destroy();
+	UIShaderCounter--;
+
+	dbg_uishaders.erase(this);
 }
 
 void CDS0_UIShader::Copy(IUIShader& _in)
 {
+	destroy();
 	Texture = static_cast<CDS0_UIShader&>(_in).Texture;
 	if (Texture)
 	{
@@ -137,6 +145,7 @@ void CDS0_UIRender::FlushPrimitive()
 		{
 			GRenderResourcesManager->TexturesManager->Copy(Primitive.Texture);
 		}
+		Primitive.TextureResourceProxy = Primitive.Texture->ResourceProxy;
 	}
 
 	switch (Primitive.PointType)

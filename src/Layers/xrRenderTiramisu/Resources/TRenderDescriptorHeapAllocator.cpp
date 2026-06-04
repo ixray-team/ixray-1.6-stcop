@@ -4,11 +4,12 @@
 TRenderDescriptorHeapAllocator::TRenderDescriptorHeapAllocator()
 {
     DescriptorCaches.emplace_back(new FXRayDescriptorCache);
+    DebugState.resize(2048);
 }
 
 TRenderDescriptorHeapAllocator::~TRenderDescriptorHeapAllocator()
 {
-    FlushNextFrame();
+    FlushNextFrame_RenderThread();
     while (!DescriptorCaches.empty())
     {
         delete DescriptorCaches.back();
@@ -19,6 +20,7 @@ TRenderDescriptorHeapAllocator::~TRenderDescriptorHeapAllocator()
 
 uint32_t TRenderDescriptorHeapAllocator::Alloc(nri::Descriptor* InDescriptor)
 {
+    CheckIsRenderThread();
     uint32_t Index = 0;
     if (!FreeIndexes.empty())
     {
@@ -38,6 +40,7 @@ uint32_t TRenderDescriptorHeapAllocator::Alloc(nri::Descriptor* InDescriptor)
     UpdateDescriptorRangeDescription.rangeIndex = 0;
     UpdateDescriptorRangeDescription.baseDescriptor = Index;
     InDescriptorPool->Descriptors[InDescriptorPool->Index] = InDescriptor;
+    DebugState[InDescriptorPool->Index] = InDescriptor;
     UpdateDescriptorRangeDescription.descriptors = &InDescriptorPool->Descriptors[InDescriptorPool->Index++];
     UpdateDescriptorRangeDescription.descriptorNum = 1;
     
@@ -50,17 +53,21 @@ uint32_t TRenderDescriptorHeapAllocator::Alloc(nri::Descriptor* InDescriptor)
 
 void TRenderDescriptorHeapAllocator::Free(uint32_t Index)
 {
+    CheckIsRenderThread();
+    DebugState[Index] = nullptr;
     FreeIndexesForNextFrame.push_back(Index);
 }
 
-void TRenderDescriptorHeapAllocator::FlushNextFrame()
+void TRenderDescriptorHeapAllocator::FlushNextFrame_RenderThread()
 {
+    CheckIsRenderThread();
     FreeIndexes.append_range(FreeIndexesForNextFrame);
     FreeIndexesForNextFrame.clear();
 }
 
 void TRenderDescriptorHeapAllocator::UpdateDescriptorRanges()
 {
+    CheckIsRenderThread();
     GRenderDevice.CoreInterface.UpdateDescriptorRanges(UpdateDescriptorRangesDescriptions.data(), UpdateDescriptorRangesDescriptions.size());
     UpdateDescriptorRangesDescriptions.clear();
     

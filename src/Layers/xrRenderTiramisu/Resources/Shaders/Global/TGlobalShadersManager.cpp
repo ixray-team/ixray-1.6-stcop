@@ -31,6 +31,7 @@ TGlobalShadersManager::TGlobalShadersManager(nri::GraphicsAPI Platform, bool Nee
 
 const xr_vector<char>& TGlobalShadersManager::GetShader(shared_str name, EShaderType ShaderType, const TShaderDefinesContainer& DefinesContainer)
 {
+	CheckIsRenderThread();
 	TShaderDefinesContainer* Defines = GRenderResourcesManager->ShaderDefinesManager->RegistryContainer(DefinesContainer);
 	auto Shader = Shaders.find(name);
 	R_ASSERT(Shader != Shaders.end());
@@ -143,6 +144,7 @@ bool TGlobalShadersManager::Cooked()
 
 void TGlobalShadersManager::Rebuild()
 {
+	CheckIsRenderThread();
 	R_ASSERT(!GRenderResourcesManager->IsCookedMode());
 
 	for (auto& [name, shaderVec] : Shaders)

@@ -14,7 +14,7 @@ public:
         uint32_t                                    Alloc                           (nri::Descriptor* InDescriptor);
         void                                        Free                            (uint32_t Index);
     
-        void                                        FlushNextFrame                  (); 
+        void                                        FlushNextFrame_RenderThread                  (); 
         void                                        UpdateDescriptorRanges          (); 
     
 private:
@@ -24,4 +24,7 @@ private:
     xr_vector<uint32_t>                             FreeIndexes;
     xr_vector<uint32_t>                             FreeIndexesForNextFrame;
     uint32_t                                        NextIndex = 0;
+#ifdef DEBUG
+    xr_vector<nri::Descriptor*>                     DebugState;
+#endif
 };

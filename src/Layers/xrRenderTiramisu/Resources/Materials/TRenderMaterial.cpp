@@ -8,8 +8,9 @@ TRenderMaterial::TRenderMaterial()
     
     DefaultMaterialRenderProxy = new TDefaultMaterialRenderProxy;
     DefaultMaterialRenderProxy->TextureResourceProxy = Texture->ResourceProxy;
+#ifdef DEBUG
     DefaultMaterialRenderProxy->DebugOwner = this;
-    
+#endif
     MaterialRenderProxy = DefaultMaterialRenderProxy;
 }
 

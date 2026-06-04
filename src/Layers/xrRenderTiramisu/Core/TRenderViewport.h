@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "TRender.h"
 
 struct FSwapChainTexture 
 {
@@ -23,24 +24,25 @@ public:
 
             void                        CreateOrReset           (SDL_Window* InWindows, uint32_t InWidth, uint32_t InHeight,bool InVSync = false);
             void                        Destroy                 ();
-            void                        WaitGPU                 ();
     
             void                        BeginRender             (nri::DescriptorPool* DescriptionPool = nullptr);
             nri::CommandBuffer&         GetCurrentCommandBuffer ();
             void                        EndRender               (nri::Fence* WaitSemaphore = nullptr, nri::Fence* SignalSemaphore = nullptr);
+            bool                        IsValid                 () const;
     
             uint32_t                    GetWidth                () const { return Width; }
             uint32_t                    GetHeight               () const { return Height; }
             nri::Format                 GetSwapChainFormat      () const { return SwapChainFormat; }
-protected:
+
+                                    protected:
             uint8_t                     GetOptimalTextureNum    () const;
             uint8_t                     GetQueuedFrameNum       () const;
     
     nri::SwapChain*						SwapChain = nullptr;
     
     nri::Format                         SwapChainFormat = nri::Format::UNKNOWN;
-    xr_vector<FSwapChainTexture>    SwapChainTextures;
-    xr_vector<FQueuedFrame>			QueuedFrames;
+    xr_vector<FSwapChainTexture>        SwapChainTextures;
+    xr_vector<FQueuedFrame>			    QueuedFrames;
     
     uint32_t							FrameIndex = 0;
     nri::Fence*							FrameFence = nullptr;
