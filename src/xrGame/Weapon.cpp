@@ -410,11 +410,11 @@ void CWeapon::Load		(const char* section)
 	// hands
 	eHandDependence		= EHandDependence(pSettings->r_s32(section,"hand_dependence"));
 	m_bIsSingleHanded	= true;
+
 	if (pSettings->line_exist(section, "single_handed"))
-		m_bIsSingleHanded	= !!pSettings->r_bool(section, "single_handed");
-	// 
-	m_fMinRadius		= pSettings->r_float		(section,"min_radius");
-	m_fMaxRadius		= pSettings->r_float		(section,"max_radius");
+	{
+		m_bIsSingleHanded = !!pSettings->r_bool(section, "single_handed");
+	}
 
 
 	// информация о возможных апгрейдах и их визуализации в инвентаре
