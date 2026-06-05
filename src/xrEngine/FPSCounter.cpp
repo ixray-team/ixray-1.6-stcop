@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "FPSCounter.h"
 
-int fps_update_per_second = 2;
-float fps_smoothing_alpha = 1.f / 3.f;
+float fps_smoothing_alpha = .125f; // 1/8 dostato4no plavno
 ENGINE_API XRay::Hardware::FPSCounter* pFPSCounter = nullptr;
 
 XRay::Hardware::FPSCounter::FPSCounter()
@@ -22,32 +21,16 @@ xr_token fps_text_pos_tokens[5] = {
 
 void XRay::Hardware::FPSCounter::OnRender()
 {
-	static float smoothed_fps  = 60.0f;
-	static float visible_fps   = 60.0f;
-	float		 current_delta = Device.fTimeDelta;
-	
-	if (current_delta < EPS_S)
+	float dt = Device.fTimeDelta;
+
+	if (dt < EPS_S)
 		return;
-	
-	if (!is_initialized_)
-	{
-		last_time_ = clock::now();
-		is_initialized_ = true;
-	}
-		
-	int raw_fps  = static_cast<int>(1.f / current_delta);
-	smoothed_fps = static_cast<float>(raw_fps) * fps_smoothing_alpha + 
-				   smoothed_fps * (1.f - fps_smoothing_alpha);
 
-	if (time_point now = clock::now(); now - last_time_ >= std::chrono::milliseconds(1000 / fps_update_per_second))
-	{
-		visible_fps = smoothed_fps;
-		last_time_ = now;
-	}
+	fps = ema_smoothe(1.f / dt, fps, fps_smoothing_alpha);
+	ft = ema_smoothe(dt * 1000.f, ft, fps_smoothing_alpha);
 
-	shared_str text = shared_str().printf("FPS: %d", static_cast<int>(visible_fps));
-	font_->OutNext(*text);
-		
+	font_->OutNext(*shared_str().printf("FPS: %.0f (%.2fms)", fps, ft));
+
 	if (strcmp(fps_text_pos_tokens[fps_text_current_pos].name, "top-left") == 0)
 	{
 #ifndef MASTER_GOLD
@@ -78,7 +61,7 @@ void XRay::Hardware::FPSCounter::OnRender()
 		font_->OutRight(text_screen_padding);
 		font_->OutBottom(text_screen_padding);
 	}
-		
+
 	font_->SetColor(text_color);
 	font_->OnRender();
 }
