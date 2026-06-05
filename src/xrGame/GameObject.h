@@ -24,7 +24,6 @@ class CEntityAlive;
 class CInventoryOwner;
 class CActor;
 class CPhysicsShellHolder;
-class CAnomalyZone;
 class IInputReceiver;
 class CArtefact;
 class CCreature;
@@ -81,7 +80,6 @@ class CBackpack;
 class CClimableObject;
 class CPhysicObject;
 class CTeamBaseZone;
-class CRadioactiveZone;
 class CWeaponShotgun;
 
 class IKinematics;
@@ -123,7 +121,6 @@ public:
 	virtual CEntityAlive*				cast_entity_alive			()						{return nullptr;}
 	virtual CActor*						cast_actor					()						{return nullptr;}
 	virtual CAI_Trader*					cast_trader					()						{return nullptr;}
-	virtual CAnomalyZone*				cast_anomaly_zone			()						{return nullptr;}
 	virtual CPhysicsShellHolder*		cast_physics_shell_holder	()						{return nullptr;}
 	virtual IInputReceiver*				cast_input_receiver			()						{return nullptr;}
 	virtual CArtefact*					cast_artefact				()						{return nullptr;}
@@ -177,7 +174,6 @@ public:
 	virtual CTeamBaseZone* cast_team_base_zone() { return nullptr; }
 	virtual CCustomRocket* cast_custom_rocket() { return nullptr; }
 	virtual CRocketLauncher* cast_rocket_launcher() { return nullptr; }
-	virtual CRadioactiveZone* cast_radioactive_zone() { return nullptr; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
 
 public:
