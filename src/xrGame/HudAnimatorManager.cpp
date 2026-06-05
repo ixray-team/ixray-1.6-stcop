@@ -21,7 +21,7 @@ CHudAnimatorBase::~CHudAnimatorBase()
 
 void CHudAnimatorBase::Load()
 {
-	m_sounds.~HUD_SOUND_COLLECTION();
+	m_sounds.Clear();
 
 	m_bCanSprint = READ_IF_EXISTS(pSettings, r_bool, m_section, "can_sprint", false);
 	m_bHideUI = READ_IF_EXISTS(pSettings, r_bool, m_section, "hide_ui", true);
