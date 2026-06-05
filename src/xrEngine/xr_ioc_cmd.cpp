@@ -730,7 +730,6 @@ extern bool			dsEnableGamepad;
 extern int fps_limit;
 extern int main_menu_fps_limit;
 extern bool IsFpsShow;
-extern int fps_update_per_second;
 extern float fps_smoothing_alpha;
 
 extern bool use_smoothed_delta;
@@ -821,7 +820,6 @@ void CCC_Register()
 	CMD2(CCC_Boolean, "rs_fps_show", &IsFpsShow)
 	CMD4(CCC_Integer, "rs_fps_limit", &fps_limit, 0, 1000)
 	CMD4(CCC_Float, "rs_fps_smoothing_factor", &fps_smoothing_alpha, EPS_S, 1.f - EPS_S)
-	CMD4(CCC_Integer, "rs_fps_update_per_second", &fps_update_per_second, 1, 1000)
 	CMD4(CCC_Integer, "rs_main_menu_fps_limit", &main_menu_fps_limit, 0, 1000)
 	CMD3(CCC_Token, "rs_fps_pos", &fps_text_current_pos, fps_text_pos_tokens)
 	
