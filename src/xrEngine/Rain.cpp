@@ -12,7 +12,7 @@
 #include "xr_object.h"
 
 ENGINE_API extern BOOL bIsRaindropCollision = false;
-ENGINE_API extern BOOL bIsSndOnRoof = false;
+ENGINE_API extern BOOL bAllowOtherSounds = false;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -237,38 +237,39 @@ void CEffect_Rain::OnFrame()
 			}
 			if (snd_Rain_On_Outfit._feedback())
 				snd_Rain_On_Outfit.stop();
+			if (snd_RoofDroplets._feedback())
+				snd_RoofDroplets.stop();
+			if (snd_RoofDropletsHard._feedback())
+				snd_RoofDropletsHard.stop();
 			return;
 		}
-
 		state = stWorking;
 		if (snd_Ambient._handle() != nullptr)
 		{
 			snd_Ambient.play(nullptr, sm_Looped);
-			if (!Device.IsEditorMode() || (Device.IsEditorMode() && bIsSndOnRoof))
+			if (!Device.IsEditorMode() || (Device.IsEditorMode() && bAllowOtherSounds))
+			{
 				CurDropSnd.play(nullptr, sm_Looped);
+				snd_Rain_On_Outfit.play(nullptr, sm_Looped);
+				snd_Rain_On_Outfit.set_position(Fvector().set(0, 0, 0));
+				snd_Rain_On_Outfit.set_range(g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset * 2.f);
+			}
 			else
-				CurDropSnd.stop();
+			{
+				snd_RoofDroplets.stop();
+				snd_RoofDropletsHard.stop();
+				snd_Rain_On_Outfit.stop();
+			}
 			snd_Ambient.set_position(Fvector().set(0, 0, 0));
 			snd_Ambient.set_range(g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset * 2.f);
 		}
-		if (snd_Rain_On_Outfit._handle() != nullptr)
-		{
-			snd_Rain_On_Outfit.play(nullptr, sm_Looped);
-			if (!Device.IsEditorMode() || (Device.IsEditorMode() && bIsSndOnRoof))
-				CurDropSnd.play(nullptr, sm_Looped);
-			else
-				CurDropSnd.stop();
-			snd_Rain_On_Outfit.set_position(Fvector().set(0, 0, 0));
-			snd_Rain_On_Outfit.set_range(g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset * 2.f);
-		}
-
 		break;
 	}
 	case stWorking:
 		if (factor<EPS_L)
 		{
-			state				= stIdle;
-			snd_Ambient.stop	();
+			state = stIdle;
+			snd_Ambient.stop();
 			snd_Rain_On_Outfit.stop();
 			m_rainVolume = 0.0f;
 			snd_RoofDroplets.stop();
