@@ -351,7 +351,7 @@ local change_objects_tbl =
 
 local distance_draw_sleep_zones = 150
 local primary_locations_cache = {}
-local sleep_zones_tbl =
+sleep_zones_tbl =
 {
 	zat_a2_sr_sleep_id = { hint = "st_ui_pda_sleep_place", sobj = nil, id = nil },
 	jup_a6_sr_sleep_id = { hint = "st_ui_pda_sleep_place", sobj = nil, id = nil },
