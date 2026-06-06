@@ -174,8 +174,8 @@ void EmbreeRayTraceModel::BuildRayTraceModel_Instaced()
 
  	for (auto& MU : lc_global_data()->mu_models())
 	{
-		instanced.emplace_back();
-		instanced.back().InitializeModel(MU->EmbreeInstanceCopy());
+		EmbreeInstancedModel& InstanceModel = instanced.emplace_back();
+		InstanceModel.InitializeModel(MU->EmbreeInstanceCopy());
 	}
 
 	for (auto& MU_REF : lc_global_data()->mu_refs())
@@ -184,6 +184,7 @@ void EmbreeRayTraceModel::BuildRayTraceModel_Instaced()
 	}
 }
 
+xr_concurrent_vector<UserGeomData*> UserGeomTemp;
 
 // Geometry Embree Loading 
 
@@ -202,8 +203,9 @@ void LoadGeomBuffer(RTCGeometry& geom, TriangleContainer& geom_buffer, bool isTr
 	data->dummys = geom_buffer.dummy;
 	data->DummyType = ud_geom_type;
 	rtcSetGeometryUserData(geom, data);
-
 	rtcCommitGeometry(geom);
+
+	UserGeomTemp.push_back(data);
 };
 
 
