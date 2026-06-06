@@ -293,7 +293,7 @@ void CEffect_Rain::OnFrame()
 
 	if (CurDropSnd._feedback())
 	{
-		float Distance = 35.f;
+		float Distance = 10.f;
 		const Fvector Direction(0, 1, 0);
 		Fvector Position = Device.vCameraPosition;
 
@@ -302,7 +302,7 @@ void CEffect_Rain::OnFrame()
 			Fvector	sndP;
 			sndP.mad(Position, Direction, Distance);
 			CurDropSnd.set_position(sndP);
-			CurDropSnd.set_volume(1);
+			CurDropSnd.set_volume(factor);
 		}
 		else
 		{
