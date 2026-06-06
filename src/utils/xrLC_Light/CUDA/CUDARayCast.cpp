@@ -500,6 +500,8 @@ void XRay::RayTrace::CUDA::UnloadingModel()
 		for (auto& T : cpu_tex_gpu)
 			cudaFree(T.pSurface);
 
+		cpu_tex_gpu.clear();
+
 		// Вычищяем большие буферы данных 
 		cudaFree(gpu_lights);
 		cudaFree(gpu_faces);

@@ -45,8 +45,20 @@ private:
 
     OptixDeviceContext optixContext = nullptr;
     OptixPipeline m_pipeline = nullptr;
+
+    //ProgramGroups для последующей выгрузки
+	OptixProgramGroup raygen_prog_group = nullptr;
+	OptixProgramGroup missGroup = nullptr;
+	OptixProgramGroup hit_group = nullptr;
+    //
+
+    //для последущей выгрузки
+    OptixModule module = nullptr;
+
     OptixShaderBindingTable m_sbt = {};
     int cudaDeviceId = 0;
+
+    void* OptixLibHandle = nullptr;
 
 public:
     bool Initialize();
