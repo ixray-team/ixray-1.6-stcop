@@ -83,12 +83,15 @@ CUICompassBar::~CUICompassBar()
 void CUICompassBar::Init()
 {
     CUIXml uiXml;
-    shared_str compassXmlName = UI().get_xml_name("compass_bar.xml");
-    uiXml.Load(CONFIG_PATH, UI_PATH, compassXmlName.c_str());
+    if (!uiXml.Load(CONFIG_PATH, UI_PATH, "compass_bar.xml"))
+    {
+        Msg("! Unable to load \"compass_bar.xml\"");
+        return;
+    }
     CUIXmlInit xmlInit;
     if (!uiXml.NavigateToNode("compass_bar", 0))
     {
-        Msg("! CUICompassBar::Init: node 'compass_bar' not found in %s", compassXmlName.c_str());
+        Msg("! CUICompassBar::Init: node 'compass_bar' not found in %s", uiXml.m_xml_file_name);
         return;
     }
     InitWindowAndBackground(uiXml, xmlInit);
