@@ -105,23 +105,28 @@ void CStalkerActionGetOutOfAnomaly::execute()
 	using ids_type = xr_vector<ALife::_OBJECT_ID>;
 	ids_type const& restrictions = alife_object->m_dynamic_in_restrictions;
 
-	for (const auto& feel_object : object().feel_touch)
+	for (CObject* feel_object : object().feel_touch)
 	{
-		CAnomalyZone* zone = feel_object != nullptr ? feel_object->cast_anomaly_zone() : nullptr;
-		if (zone != nullptr && (zone->restrictor_type() != RestrictionSpace::eRestrictorTypeNone))
-		{
-			if (zone->cast_radioactive_zone())
-			{
-				continue;
-			}
+		CGameObject* game_object = feel_object->cast_game_object();
 
-			if (std::find(restrictions.begin(), restrictions.end(), zone->ID()) != restrictions.end())
-			{
-				continue;
-			}
+		if (game_object == nullptr)
+			continue;
 
-			m_temp0.push_back(zone->ID());
-		}
+		CAnomalyZone* zone = game_object->cast_radioactive_zone();
+
+		if (zone == nullptr)
+			continue;
+
+		if (zone->restrictor_type() == RestrictionSpace::eRestrictorTypeNone)
+			continue;
+
+		if (zone->cast_radioactive_zone())
+			continue;
+
+		if (std::find(restrictions.begin(), restrictions.end(), zone->ID()) != restrictions.end())
+			continue;
+
+		m_temp0.push_back(zone->ID());
 	}
 
 	object().movement().restrictions().add_restrictions(m_temp1, m_temp0);

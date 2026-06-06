@@ -743,8 +743,15 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 	u16	WeaponID = P.r_u16();
 	SPECIAL_KILL_TYPE SpecialKill = SPECIAL_KILL_TYPE(P.r_u8());
 	//-----------------------------------------------------------
-	CObject* pOKiller = Level().Objects.net_Find(KillerID);
-	CObject* pWeapon = Level().Objects.net_Find(WeaponID);
+	
+	CGameObject* p_go_killer = nullptr;
+	CGameObject* p_go_weapon = nullptr;
+
+	CObject* p_obj_killer = Level().Objects.net_Find(KillerID);
+	CObject* p_obj_weapon = Level().Objects.net_Find(WeaponID);
+	
+	p_go_killer = p_obj_killer->cast_game_object();
+	p_go_weapon = p_obj_weapon->cast_game_object();
 
 	game_PlayerState* pPlayer = GetPlayerByGameID(KilledID);
 	if (!pPlayer)
@@ -768,14 +775,12 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 
 	switch (KillType)
 	{
-		//-----------------------------------------------------------
-	case KT_HIT:			//from hit
+	case KT_HIT:
 		{
-			string1024	sWeapon = "", sSpecial = "";
-			if (pWeapon)
+			string1024 sWeapon = "", sSpecial = "";
+			if (p_obj_weapon)
 			{
-				CInventoryItem* pIItem = pWeapon->cast_inventory_item();
-				if (pIItem)
+				if (CInventoryItem* pIItem = p_obj_weapon->cast_inventory_item())
 				{
 					KMS.m_initiator.m_shader = GetEquipmentIconsShader();
 					if (smart_cast<CExplosiveItem*>(pIItem))
@@ -786,16 +791,17 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 						KMS.m_initiator.m_rect.x2 = KMS.m_initiator.m_rect.x1 + 31;
 						KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + 30;
 						xr_sprintf(sWeapon, *g_pStringTable->translate("mp_by_explosion"));
-					} else
+					}
+					else
 					{
-						KMS.m_initiator.m_rect	 = pIItem->GetKillMsgRect();
+						KMS.m_initiator.m_rect = pIItem->GetKillMsgRect();
 						KMS.m_initiator.m_rect.rb.add(KMS.m_initiator.m_rect.lt);
 						xr_sprintf(sWeapon, "%s %s", g_pStringTable->translate("mp_from").c_str(), pIItem->NameShort());
 					}
-				} else
+				}
+				else
 				{
-					CAnomalyZone* pAnomaly = pWeapon->cast_anomaly_zone();
-					if (pAnomaly)
+					if (p_go_weapon->cast_anomaly_zone())
 					{
 						KMS.m_initiator.m_shader = GetKillEventIconsShader();
 						KMS.m_initiator.m_rect.x1 = 1;
@@ -807,12 +813,11 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 				}
 			}
 
-			if (pKiller || pOKiller)
+			if (pKiller || p_obj_killer)
 			{
 				if (!pKiller)
 				{
-					CAnomalyZone* pAnomaly = pOKiller->cast_anomaly_zone();
-					if (pAnomaly)
+					if (p_go_killer->cast_anomaly_zone())
 					{
 						KMS.m_initiator.m_shader = GetKillEventIconsShader();
 						KMS.m_initiator.m_rect.x1 = 1;
@@ -822,31 +827,31 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 						Msg("%s killed by anomaly", *KMS.m_victim.m_name);
 						break;
 					}
-				};
+				}
 
 				if (pKiller)
 				{
-					KMS.m_killer.m_name = pKiller ? pKiller->getName() : *(pOKiller->cNameSect());
+					KMS.m_killer.m_name = pKiller ? pKiller->getName() : *(p_go_killer->cNameSect());
 					KMS.m_killer.m_color = pKiller ? Color_Teams_u32[ModifyTeam(pKiller->team) + 1] : Color_Neutral_u32;
-				};
-			};
-			//-------------------------------------------
+				}
+			}
+
 			switch (SpecialKill)
 			{
-			case SKT_NONE:		// not special
+			case SKT_NONE: // not special
 				{
-					if (pOKiller && pOKiller==Level().CurrentViewEntity())
+					if (p_go_killer && p_go_killer == Level().CurrentViewEntity())
 					{
-						if (pWeapon && pWeapon->cast_weapon_knife())
-						{
+						if (p_go_weapon && p_go_weapon->cast_weapon_knife())
 							PlaySndMessage(ID_BUTCHER);
-						}
-					};
-				}break;
-			case SKT_HEADSHOT:		// Head Shot
+					}
+				}
+				break;
+
+			case SKT_HEADSHOT:
 				{
 					BONUSES_it it = std::find(m_pBonusList.begin(), m_pBonusList.end(), "headshot");
-					if (it != m_pBonusList.end() && (*it == "headshot")) 
+					if (it != m_pBonusList.end() && (*it == "headshot"))
 					{
 						Bonus_Struct* pBS = &(*it);
 						KMS.m_ext_info.m_shader = pBS->IconShader;
@@ -854,17 +859,19 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 						KMS.m_ext_info.m_rect.y1 = pBS->IconRects[0].y1;
 						KMS.m_ext_info.m_rect.x2 = pBS->IconRects[0].x1 + pBS->IconRects[0].x2;
 						KMS.m_ext_info.m_rect.y2 = pBS->IconRects[0].y1 + pBS->IconRects[0].y2;
-					};
+					}
 
 					xr_sprintf(sSpecial, *g_pStringTable->translate("mp_with_headshot"));
 
-					if (pOKiller && pOKiller==Level().CurrentViewEntity())
+					if (p_go_killer && p_go_killer == Level().CurrentViewEntity())
 						PlaySndMessage(ID_HEADSHOT);
-				}break;
+				}
+				break;
+
 			case SKT_EYESHOT:
 				{
 					BONUSES_it it = std::find(m_pBonusList.begin(), m_pBonusList.end(), "eyeshot");
-					if (it != m_pBonusList.end() && (*it == "eyeshot")) 
+					if (it != m_pBonusList.end() && (*it == "eyeshot"))
 					{
 						Bonus_Struct* pBS = &(*it);
 						KMS.m_ext_info.m_shader = pBS->IconShader;
@@ -872,18 +879,19 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 						KMS.m_ext_info.m_rect.y1 = pBS->IconRects[0].y1;
 						KMS.m_ext_info.m_rect.x2 = pBS->IconRects[0].x1 + pBS->IconRects[0].x2;
 						KMS.m_ext_info.m_rect.y2 = pBS->IconRects[0].y1 + pBS->IconRects[0].y2;
-					};
-					
+					}
+
 					xr_sprintf(sSpecial, *g_pStringTable->translate("mp_with_eyeshot"));
 
-					if (pOKiller && pOKiller==Level().CurrentViewEntity())
+					if (p_go_killer && p_go_killer == Level().CurrentViewEntity())
 						PlaySndMessage(ID_ASSASSIN);
+				}
+				break;
 
-				}break;
-			case SKT_BACKSTAB:		// BackStab
+			case SKT_BACKSTAB:
 				{
 					BONUSES_it it = std::find(m_pBonusList.begin(), m_pBonusList.end(), "backstab");
-					if (it != m_pBonusList.end() && (*it == "backstab")) 
+					if (it != m_pBonusList.end() && (*it == "backstab"))
 					{
 						Bonus_Struct* pBS = &(*it);
 						KMS.m_ext_info.m_shader = pBS->IconShader;
@@ -891,13 +899,16 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 						KMS.m_ext_info.m_rect.y1 = pBS->IconRects[0].y1;
 						KMS.m_ext_info.m_rect.x2 = pBS->IconRects[0].x1 + pBS->IconRects[0].x2;
 						KMS.m_ext_info.m_rect.y2 = pBS->IconRects[0].y1 + pBS->IconRects[0].y2;
-					};
+					}
 
 					xr_sprintf(sSpecial, *g_pStringTable->translate("mp_with_backstab"));
-					if (pOKiller && pOKiller==Level().CurrentViewEntity())
-						PlaySndMessage(ID_ASSASSIN);					
-				}break;
+
+					if (p_go_killer && p_go_killer == Level().CurrentViewEntity())
+						PlaySndMessage(ID_ASSASSIN);
+				}
+				break;
 			}
+
 			//suicide
 			if (KilledID == KillerID)
 			{
@@ -908,17 +919,17 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 				KMS.m_ext_info.m_rect.y1 = 202;
 				KMS.m_ext_info.m_rect.x2 = KMS.m_ext_info.m_rect.x1 + 30;
 				KMS.m_ext_info.m_rect.y2 = KMS.m_ext_info.m_rect.y1 + 30;
-				//-------------------------------------
-				Msg(sWeapon[0] ? "%s killed himself by %s" : "%s killed himself" , *KMS.m_killer.m_name, sWeapon[0] ? sWeapon+5 : "");
+
+				Msg(sWeapon[0] ? "%s killed himself by %s" : "%s killed himself", *KMS.m_killer.m_name,
+				    sWeapon[0] ? sWeapon + 5 : "");
 			}
 			else
-			{
-				//-------------------------------------
-				Msg("%s killed %s %s%s", *KMS.m_killer.m_name, *KMS.m_victim.m_name, sWeapon, sSpecial[0] ? sSpecial : "");
-			}
-		}break;
-		//-----------------------------------------------------------
-	case KT_BLEEDING:			//from bleeding
+				Msg("%s killed %s %s%s", *KMS.m_killer.m_name, *KMS.m_victim.m_name, sWeapon,
+				    sSpecial[0] ? sSpecial : "");
+		}
+		break;
+
+	case KT_BLEEDING:
 		{
 			KMS.m_initiator.m_shader = GetBloodLossIconsShader();
 			KMS.m_initiator.m_rect.x1 = 238;
@@ -928,36 +939,32 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 
 			if (!pKiller)
 			{
-				CAnomalyZone* pAnomaly = pOKiller->cast_anomaly_zone();
-				if (pAnomaly)
+				if (p_go_killer->cast_anomaly_zone())
 				{
 					KMS.m_ext_info.m_shader = GetKillEventIconsShader();
-						KMS.m_ext_info.m_rect.x1 = 1;
-						KMS.m_ext_info.m_rect.y1 = 202;
-						KMS.m_ext_info.m_rect.x2 = KMS.m_ext_info.m_rect.x1 + 31;
-						KMS.m_ext_info.m_rect.y2 = KMS.m_ext_info.m_rect.y1 + 30;
+					KMS.m_ext_info.m_rect.x1 = 1;
+					KMS.m_ext_info.m_rect.y1 = 202;
+					KMS.m_ext_info.m_rect.x2 = KMS.m_ext_info.m_rect.x1 + 31;
+					KMS.m_ext_info.m_rect.y2 = KMS.m_ext_info.m_rect.y1 + 30;
 
 					Msg("%s died from bleeding, thanks to anomaly", *KMS.m_victim.m_name);
 					break;
 				}
-			};
+			}
 
 			if (pKiller)
 			{
-				KMS.m_killer.m_name = pKiller ? pKiller->getName() : *(pOKiller->cNameSect());
+				KMS.m_killer.m_name = pKiller ? pKiller->getName() : *(p_go_killer->cNameSect());
 				KMS.m_killer.m_color = pKiller ? Color_Teams_u32[ModifyTeam(pKiller->team) + 1] : Color_Neutral_u32;
-				//-----------------------------------------------------------------------				
 				Msg("%s died from bleeding, thanks to %s ", *KMS.m_victim.m_name, *KMS.m_killer.m_name);
 			}
 			else
-			{
-				//-----------------------------------------------------------------
 				Msg("%s died from bleeding", *KMS.m_victim.m_name);
-			};			
-		}break;
-		//-----------------------------------------------------------
-	case KT_RADIATION:			//from radiation
-		{			
+		}
+		break;
+
+	case KT_RADIATION: //from radiation
+		{
 			KMS.m_initiator.m_shader = GetRadiationIconsShader();
 			KMS.m_initiator.m_rect.x1 = 215;
 			KMS.m_initiator.m_rect.y1 = 195;
@@ -965,10 +972,13 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 			KMS.m_initiator.m_rect.y2 = KMS.m_initiator.m_rect.y1 + 24;
 			//---------------------------------------------------------
 			Msg("%s killed by radiation", *KMS.m_victim.m_name);
-		}break;
+		}
+		break;
+
 	default:
 		break;
 	}
+	
 	if (CurrentGameUI() && CurrentGameUI()->m_pMessagesWnd)
 		CurrentGameUI()->m_pMessagesWnd->AddLogMessage(KMS);
 };
