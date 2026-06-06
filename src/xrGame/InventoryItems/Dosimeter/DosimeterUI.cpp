@@ -68,13 +68,26 @@ void CUIDosimeter::update()
 		for (ISpatialShared& SS : pActor->q_nearest)
 		{
 			ISpatial* S = SS.get();
-			if (!S) continue;
+
+			if (!S)
+				continue;
+
 			CObject* pFeelObject = S->dcast_CObject();
-			if (!pFeelObject || pFeelObject->getDestroy()) continue;
-			if (CRadioactiveZone* pRadZone = pFeelObject != nullptr ? pFeelObject->cast_radioactive_zone() : nullptr)
-			{
-				rad += pRadZone->fHitPower;
-			}
+
+			if (!pFeelObject || pFeelObject->getDestroy())
+				continue;
+
+			CGameObject* game_object = pFeelObject->cast_game_object();
+
+			if (game_object == nullptr)
+				continue;
+
+			CRadioactiveZone* pRadZone = game_object->cast_radioactive_zone();
+
+			if (pRadZone == nullptr)
+				continue;
+
+			rad += pRadZone->fHitPower;
 		}
 	}
 

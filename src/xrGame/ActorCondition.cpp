@@ -465,19 +465,29 @@ void CActorCondition::UpdateRadiation()
 		for (ISpatialShared& SS : m_object->q_nearest)
 		{
 			ISpatial* S = SS.get();
-			if (!S) continue;
-			CObject* pFeelObject = S->dcast_CObject();
-			if (!pFeelObject || pFeelObject->getDestroy()) continue;
 
-			if (pFeelObject == nullptr || pFeelObject->getDestroy() || pFeelObject->CLS_ID == 0) 
-			{
+			if (!S)
 				continue;
-			}
 
-			if (CRadioactiveZone* pRadZone = pFeelObject->cast_radioactive_zone())
-			{
-				m_fRadiationZonePower = std::max(m_fRadiationZonePower, pRadZone->fHitPower * 10);
-			}
+			CObject* pFeelObject = S->dcast_CObject();
+
+			if (!pFeelObject || pFeelObject->getDestroy())
+				continue;
+
+			if (pFeelObject == nullptr || pFeelObject->getDestroy() || pFeelObject->CLS_ID == 0)
+				continue;
+
+			CGameObject* p_go = pFeelObject->cast_game_object();
+
+			if (p_go == nullptr)
+				continue;
+
+			CRadioactiveZone* p_rz = p_go->cast_radioactive_zone();
+
+			if (p_rz == nullptr)
+				continue;
+
+			m_fRadiationZonePower = std::max(m_fRadiationZonePower, p_rz->fHitPower * 10.f);
 		}
 	}
 
