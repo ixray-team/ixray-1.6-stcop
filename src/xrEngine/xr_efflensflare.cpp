@@ -244,7 +244,11 @@ void CLensFlare::OnFrame(shared_str id)
 	// color
 	float tf		= g_pGamePersistent->Environment().fTimeFactor;
 	Fvector& c		= g_pGamePersistent->Environment().CurrentEnv->sun_color;
-	LightColor.set	(c.x,c.y,c.z,1.f); 
+	bool bRenSunFlare = g_pGamePersistent->Environment().CurrentEnv->sun_light;
+	if (bRenSunFlare)
+		LightColor.set(c.x, c.y, c.z, 1.f);
+	else
+		LightColor.set(c.x, c.y, c.z, 0.f);
 
 	CLensFlareDescriptor* desc = id.size() ? g_pGamePersistent->Environment().add_flare(m_Palette, id) : 0;
 

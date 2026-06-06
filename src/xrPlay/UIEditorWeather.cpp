@@ -98,7 +98,8 @@ void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
 		f.w_fvector3(el->m_identifier.c_str(), "sky_color", el->sky_color);
 		f.w_float(el->m_identifier.c_str(), "sky_rotation", rad2deg(el->sky_rotation));
 		f.w_string(el->m_identifier.c_str(), "sky_texture", el->sky_texture_name.c_str());
-		f.w_fvector3(el->m_identifier.c_str(), "sun_color", el->sun_color);
+		f.w_fvector3(el->m_identifier.c_str(), "sun_color", el->sun_color_a);
+		f.w_bool(el->m_identifier.c_str(), "sun_light", el->sun_light);
 		f.w_float(el->m_identifier.c_str(), "sun_shafts_intensity", el->m_fSunShaftsIntensity);
 		f.w_string(el->m_identifier.c_str(), "sun", el->lens_flare_id.c_str());
 		f.w_string(el->m_identifier.c_str(), "thunderbolt_collection", el->tb_id.c_str());
@@ -579,9 +580,10 @@ void RenderUIWeather() {
 		changed = true;
 	}
 
-	if (ImGui::ColorEdit4("sun_color", (float*)&cur->sun_color, ImGuiColorEditFlags_AlphaBar)) {
-		changed = true;
-	}
+	if (ImGui::Checkbox("sun_light", (bool*)&cur->sun_light)) { changed = true; }
+
+	if (ImGui::ColorEdit4("sun_color", (float*)&cur->sun_color_a, ImGuiColorEditFlags_AlphaBar)) { changed = true; }
+
 	static float editor_altitude = 0.f;
 	static float editor_longitude = 0.f;
 

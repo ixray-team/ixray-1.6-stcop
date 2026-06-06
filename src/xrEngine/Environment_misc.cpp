@@ -287,6 +287,8 @@ CEnvDescriptor::CEnvDescriptor	(shared_str const& identifier) :
 	ambient.set			(0,0,0);
 	hemi_color.set		(1,1,1,1);
 	sun_color.set		(1,1,1);
+	sun_color_a.set		(1,1,1);
+	sun_light			= true;
 	sun_dir.set			(0,-1,0);
 
 	m_fSunShaftsIntensity = 0;
@@ -354,8 +356,10 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config)
 	wind_direction			= deg2rad(config.r_float(m_identifier.c_str(),"wind_direction"));
 	ambient					= config.r_fvector3	(m_identifier.c_str(),"ambient_color");
 	hemi_color				= config.r_fvector4	(m_identifier.c_str(),"hemisphere_color");
-	sun_color				= config.r_fvector3	(m_identifier.c_str(),"sun_color");
+	sun_color_a				= config.r_fvector3	(m_identifier.c_str(),"sun_color");
 	
+	if (config.line_exist(m_identifier.c_str(), "sun_light"))
+		sun_light = config.r_bool(m_identifier.c_str(), "sun_light");
 	if (config.line_exist(m_identifier.c_str(), "tree_amplitude_intensity"))
 		trees_amplitude = config.r_float(m_identifier.c_str(), "tree_amplitude_intensity");
 //	if (config.line_exist(m_identifier.c_str(),"sun_altitude"))
@@ -615,7 +619,9 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 		hemi_color.z			*= modif_power;
 	}
 
-	sun_color.lerp			(A.sun_color,B.sun_color,f);
+	sun_color_a.lerp(A.sun_color_a, B.sun_color_a, f);
+	sun_color.lerp(A.sun_light ? A.sun_color_a : A.sun_color.set(0,0,0), B.sun_light ? B.sun_color_a : B.sun_color.set(0, 0, 0), f);
+	sun_light = A.sun_light;
 
 	if (rain_density > 0.f) {
 		Env->wetness_factor += (rain_density * 4.0) / 10000.f;

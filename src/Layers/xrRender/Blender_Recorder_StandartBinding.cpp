@@ -314,6 +314,24 @@ class cl_sun0_color : public R_constant_setup {
 	}
 };	static cl_sun0_color binder_sun0_color;
 
+class cl_sun0_color_amb : public R_constant_setup {
+	u32 marker;
+	Fvector4 result;
+	virtual void setup(R_constant* C) {
+#ifdef _EDITOR
+		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
+			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
+			return;
+		}
+#endif
+		if (marker != Device.dwFrame) {
+			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
+			result.set(desc.sun_color_a.x * ps_r2_sun_lumscale, desc.sun_color_a.y * ps_r2_sun_lumscale, desc.sun_color_a.z * ps_r2_sun_lumscale, 0);
+		}
+		RCache.set_c(C, result);
+	}
+};	static cl_sun0_color_amb binder_sun0_color_amb;
+
 class cl_sun0_dir_w : public R_constant_setup {
 	u32			marker;
 	Fvector4	result;
@@ -658,6 +676,7 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("eye_normal", &binder_eye_N);
 
 	r_Constant("L_sun_color", &binder_sun0_color);
+	r_Constant("L_sun_color_amb", &binder_sun0_color_amb);
 	r_Constant("L_sun_dir_w", &binder_sun0_dir_w);
 	r_Constant("L_sun_dir_e", &binder_sun0_dir_e);
 
