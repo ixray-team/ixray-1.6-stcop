@@ -176,6 +176,7 @@ void RenderMainUI()
 			if (!levelsEmpty)
 			{
 				ShowMainUI = false;
+				ClearLogVector();
 				StartCompile();
 			}
  			else

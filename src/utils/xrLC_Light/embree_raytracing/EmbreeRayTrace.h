@@ -52,7 +52,7 @@ struct RayQueryContext : RTCRayQueryContext
 struct alignas(32) UserGeomData
 {
 	u32 DummyType = 0;
- 	xr_vector<void*> dummys;
+ 	xr_vector<void*> dummys; // точно ли оно удаляется??
 };
 
 
@@ -62,6 +62,7 @@ class EmbreeInstancedModel
 	RTCGeometry GeometryTransp;
 	RTCGeometry GeometryOpacue;
 public:
+	~EmbreeInstancedModel();
 	void InitializeModel(xr_vector<FaceDataEmbree>& faces);
 	void SetInstance(RTCScene scene, Fmatrix& xform);
 };

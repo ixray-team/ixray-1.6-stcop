@@ -20,6 +20,11 @@ xr_vector<xr_string>& GetLogVector()
 	return myLogVector;
 }
 
+void ClearLogVector()
+{
+	myLogVector.clear();
+}
+
 static char					status[1024] = "";
 static char					additional_data[1024] = "";
 
