@@ -193,7 +193,8 @@ jobs:
             -DCMAKE_C_COMPILER=clang-18 \
             -DCMAKE_CXX_COMPILER=clang++-18 \
             -DIXRAY_UTILS=ON \
-            -DIXRAY_CI=ON
+            -DIXRAY_CI=ON \
+            -DIXRAY_PROFILER=OFF
 
       - name: Build targets
         run: |
