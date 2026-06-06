@@ -32,21 +32,23 @@ bool OptixContext::Initialize()
 {
 	clMsg("[Cuda] Memory Used: %u mb", GetCudaMemoryUsed() / 1024 / 1024);
 	
-	// --- 1. Primary context через CUDA Runtime ---
-	CUDA_CHECK(cudaSetDevice(cudaDeviceId));
+    // без двойной инициализации
+	CUDA_CHECK_2(cuDeviceGet(&cuDev, cudaDeviceId));
+	CUDA_CHECK_2(cuDevicePrimaryCtxRetain(&cuCtx, cuDev));
+	CUDA_CHECK_2(cuCtxSetCurrent(cuCtx));
 
-	cudaDeviceProp deviceProps;
-	CUDA_CHECK(cudaGetDeviceProperties(&deviceProps, cudaDeviceId));
-  	clMsg("[OptiX] Using CUDA device: %s (SM %d.%d)", deviceProps.name, deviceProps.major, deviceProps.minor);
+	string256 deviceName;
+	CUDA_CHECK_2(cuDeviceGetName(deviceName, sizeof(deviceName), cuDev));
 
-	// --- 2. Получаем primary CUcontext через Driver API ---
+	int major = 0, minor = 0;
+	CUDA_CHECK_2(cuDeviceGetAttribute(&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, cuDev));
+	CUDA_CHECK_2(cuDeviceGetAttribute(&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, cuDev));
 
- 	CUDA_CHECK_2 ( cuDeviceGet(&cuDev, cudaDeviceId) );
-	CUDA_CHECK_2 ( cuDevicePrimaryCtxRetain(&cuCtx, cuDev) );
-	CUDA_CHECK_2 ( cuCtxSetCurrent(cuCtx) );
+	clMsg("[OptiX] Using CUDA device: %s (SM %d.%d)", deviceName, major, minor);
 
 	// --- 3. OptiX ---
-	OPTIX_CHECK(optixInit());
+	//OPTIX_CHECK(optixInit());
+	OPTIX_CHECK(optixInitWithHandle(&OptixLibHandle)); // Сохраняем Handle для последующей очистки, optixInit делает невозможным выгрузку библиотеки 
 
 	OptixDeviceContextOptions options = {};
 	options.logCallbackFunction = &OptixLogCallback;
@@ -72,15 +74,57 @@ bool OptixContext::Initialize()
 
 void OptixContext::Destroy()
 {
+	CUDA_CHECK(cudaDeviceSynchronize());
+
+	// Рекорды конечно выглядят невинно, находясь в структуре в стеке, но они выделяются через cuMemAlloc!
+	cuMemFree(m_sbt.raygenRecord);
+	m_sbt.raygenRecord = 0;
+	cuMemFree(m_sbt.missRecordBase);
+	m_sbt.missRecordBase = 0;
+	cuMemFree(m_sbt.hitgroupRecordBase);
+	m_sbt.hitgroupRecordBase = 0;
+
+	if (m_pipeline)
+	{
+		optixPipelineDestroy(m_pipeline);
+		m_pipeline = nullptr;
+	}
+
+	if (missGroup)
+	{
+		optixProgramGroupDestroy(missGroup);
+		missGroup = nullptr;
+	}
+	if (raygen_prog_group)
+	{
+		optixProgramGroupDestroy(raygen_prog_group);
+		raygen_prog_group = nullptr;
+	}
+	if (hit_group)
+	{
+		optixProgramGroupDestroy(hit_group);
+		hit_group = nullptr;
+	}
+
+	if (module)
+	{
+		optixModuleDestroy(module);
+		module  = nullptr;
+	}
+
 	if (optixContext)
 	{
 		OPTIX_CHECK(optixDeviceContextDestroy(optixContext));
 		optixContext = nullptr;
 	}
+	if (OptixLibHandle)
+	{
+		OPTIX_CHECK(optixUninitWithHandle(OptixLibHandle));
+		OptixLibHandle = nullptr;
+	}
 
 	CUDA_CHECK_2(cuDevicePrimaryCtxRelease_v2(cuDev));
 	CUDA_CHECK(cudaDeviceReset());
-	CUDA_CHECK(cudaDeviceSynchronize());
 }
 
 // Структура для записи SBT
@@ -113,7 +157,6 @@ void OptixContext::CreatePipeline(const char* ptxCode)
 	};
 
 	// Создание модуля
-	OptixModule module = nullptr;
 	OptixModuleCompileOptions moduleCompileOptions = {};
 	moduleCompileOptions.maxRegisterCount = OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT;
 	moduleCompileOptions.optLevel = OPTIX_COMPILE_OPTIMIZATION_DEFAULT;
@@ -148,7 +191,6 @@ void OptixContext::CreatePipeline(const char* ptxCode)
 	clMsg("*** PTX SIZE: %u", PtxData.size());
 
 	// Создание программных групп
-	OptixProgramGroup raygen_prog_group = nullptr;
 	OptixProgramGroupOptions programGroupOptions = {};
 
 	OptixProgramGroupDesc raygen_prog_group_desc = {};
@@ -173,7 +215,6 @@ void OptixContext::CreatePipeline(const char* ptxCode)
 	missDesc.miss.entryFunctionName = "__miss__ms";
 
 	// 2. Создаем Miss-программную группу
-	OptixProgramGroup missGroup = nullptr;
 	optixProgramGroupCreate(
 		optixContext,
 		&missDesc,
@@ -192,7 +233,6 @@ void OptixContext::CreatePipeline(const char* ptxCode)
 	hit_group_desc.hitgroup.moduleAH = module;  // any-hit (опционально)
 	hit_group_desc.hitgroup.entryFunctionNameAH = "__anyhit__ah";
 
-	OptixProgramGroup hit_group = nullptr;
 	optixProgramGroupCreate(
 		optixContext,
 		&hit_group_desc,
