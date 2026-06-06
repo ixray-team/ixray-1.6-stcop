@@ -12,9 +12,9 @@
 #include "global_calculation_data.h"
 #include <../xrForms/CompilersUI.h>
 extern CompilersMode gCompilerMode;
-extern global_claculation_data	gl_data;
+extern global_claculation_data gl_data;
 
-// Сильно ускоряет Но не нужно сильно завышать вообще 0.01f желаетельно 
+// Сильно ускоряет Но не нужно сильно завышать вообще 0.01f желаетельно
 // Влияет на яркость на выходе (если близко к 0 будет занулятся)
 #define EmbreeEnergyMAX 0.16f
 thread_local RTCOccludedArguments args;
@@ -30,26 +30,36 @@ inline bool CalculateEnergy(const b_texture& T, const Fvector2* cuv, float& ener
 	float Barry0 = 1.0f - hit_u - hit_v;
 
 	// UV сразу float
- 	float u = cuv[0].x * Barry0 + cuv[1].x * hit_u + cuv[2].x * hit_v;
+	float u = cuv[0].x * Barry0 + cuv[1].x * hit_u + cuv[2].x * hit_v;
 	float v = cuv[0].y * Barry0 + cuv[1].y * hit_u + cuv[2].y * hit_v;
 
 	int U = (int)floor(u * float(T.dwWidth) + .5f);
 	int V = (int)floor(v * float(T.dwHeight) + .5f);
-	U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
-	V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
+	U %= T.dwWidth;
+	if (U < 0)
+	{
+		U += T.dwWidth;
+	}
+	V %= T.dwHeight;
+	if (V < 0)
+	{
+		V += T.dwHeight;
+	}
 
-	const u32* raw	= static_cast<const u32*>(*T.pSurface);
- 	u32 pixel	= raw[V * T.dwWidth + U];
-	u32 pixel_a	= (pixel >> 24) & 0xFF;
- 
+	const u32* raw = static_cast<const u32*>(*T.pSurface);
+	u32 pixel = raw[V * T.dwWidth + U];
+	u32 pixel_a = (pixel >> 24) & 0xFF;
+
 	// LUT вместо деления и sqr
 	float a = float(pixel_a) / 255.f;
 	float opacity = 1.f - (a * a);
 	energy *= opacity;
 
 	if (energy < EmbreeEnergyMAX)
+	{
 		energy = 0.f;
- 	 
+	}
+
 	return energy > EmbreeEnergyMAX;
 }
 
@@ -58,13 +68,19 @@ void FilterRayTraceOpacue(const struct RTCFilterFunctionNArguments* args)
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
 	UserGeomData* UD = (UserGeomData*)args->geometryUserPtr;
 
-  	for (auto i = 0; i < args->N; i++)
+	for (auto i = 0; i < args->N; i++)
 	{
-		if (!args->valid[i]) continue;								// Для пакетных обезательно иначе полосы !
+		if (!args->valid[i])
+		{
+			continue; // Для пакетных обезательно иначе полосы !
+		}
 
 		u32& primID = RTCHitN_primID(args->hit, args->N, i);
 		auto& F = UD->dummys[primID];
-		if (F == ctxt->skip[i]) continue;
+		if (F == ctxt->skip[i])
+		{
+			continue;
+		}
 
 		ctxt->energy[i] = 0;
 	}
@@ -73,36 +89,45 @@ void FilterRayTraceOpacue(const struct RTCFilterFunctionNArguments* args)
 #define MAX_HITS 4
 void FilterRayTraceTransp(const struct RTCFilterFunctionNArguments* args)
 {
- 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
-	UserGeomData* UD	  = (UserGeomData*)args->geometryUserPtr;
+	RayQueryContext* ctxt = (RayQueryContext*)args->context;
+	UserGeomData* UD = (UserGeomData*)args->geometryUserPtr;
 
-  	for (auto i = 0; i < args->N; i++)
+	for (auto i = 0; i < args->N; i++)
 	{
-		if (!args->valid[i]) continue;								// Для пакетных обезательно иначе полосы !
-	
- 		u32& primID = RTCHitN_primID(args->hit, args->N, i);
+		if (!args->valid[i])
+		{
+			continue; // Для пакетных обезательно иначе полосы !
+		}
+
+		u32& primID = RTCHitN_primID(args->hit, args->N, i);
 		auto F = UD->dummys[primID];
-		if (F == ctxt->skip[i]) continue;
+		if (F == ctxt->skip[i])
+		{
+			continue;
+		}
 
 		float& hit_u = RTCHitN_u(args->hit, args->N, i);
 		float& hit_v = RTCHitN_v(args->hit, args->N, i);
-	
+
 		// Собираем только N хитов остальные игнорим
-		if (ctxt->hits_result[i]++ >= MAX_HITS) continue;
+		if (ctxt->hits_result[i]++ >= MAX_HITS)
+		{
+			continue;
+		}
 
 		bool bSearching = false;
 		if (UD->DummyType == 1)
 		{
 			auto _F = (FaceDataEmbree*)F;
 			const b_material& M = gl_data.g_materials[_F->dwMaterial];
-			const b_texture& T  = gl_data.g_textures[M.surfidx];
+			const b_texture& T = gl_data.g_textures[M.surfidx];
 			bSearching = CalculateEnergy(T, _F->getTC0(), ctxt->energy[i], hit_u, hit_v);
 		}
 		else if (UD->DummyType == 0)
 		{
-			auto _F = (Face*) F;
+			auto _F = (Face*)F;
 			const b_material& M = inlc_global_data()->materials()[_F->dwMaterial];
-			const b_texture& T  = inlc_global_data()->textures()[M.surfidx];
+			const b_texture& T = inlc_global_data()->textures()[M.surfidx];
 			// fetch pixel
 			if (T.pSurface.Empty())
 			{
@@ -113,63 +138,73 @@ void FilterRayTraceTransp(const struct RTCFilterFunctionNArguments* args)
 
 			bSearching = CalculateEnergy(T, _F->getTC0(), ctxt->energy[i], hit_u, hit_v);
 		}
- 
-		args->valid[i] = bSearching ? 0 : -1;	
+
+		args->valid[i] = bSearching ? 0 : -1;
 	}
 }
- 
+
 float EmbreeRayTraceModel::RaytraceEmbreeProcess(Fvector& P, Fvector& N, float range, void* skip)
 {
- 	rtcInitRayQueryContext(&data_hits);
+	rtcInitRayQueryContext(&data_hits);
 	rtcInitOccludedArguments(&args);
 
- 	data_hits.energy[0] = 1.0f;
+	data_hits.energy[0] = 1.0f;
 	data_hits.hits_result[0] = 0;
 	data_hits.skip[0] = skip;
 
 	RTCRay Task;
 	SetRay1(Task, P, N, 0.1f, range);
-  
+
 	// SET CONTEXT
 	args.context = &data_hits;
 	args.flags = RTC_RAY_QUERY_FLAG_INCOHERENT;
-   	rtcOccluded1(IntelScene, &Task, &args);
-	return data_hits.energy[0]; 
+	rtcOccluded1(IntelScene, &Task, &args);
+	return data_hits.energy[0];
 }
 
 
-void EmbreeRayTraceModel::RaytrraceRayPack(xr_vector< RayTask >& rays)
-{ 
+void EmbreeRayTraceModel::RaytrraceRayPack(xr_vector<RayTask>& rays)
+{
 	auto ApplyColor = [](RayTask& Ray, float& Energy)
 	{
- 		 if (Ray.type  == eDefRgb)
-			 Ray.Cptr->rgb.add(Ray.attention * Energy);
-		 else if (Ray.type == eDefSun)
-			 Ray.Cptr->sun += Ray.attention * Energy;
-		 else if (Ray.type == eDefHemi)
-			 Ray.Cptr->hemi += Ray.attention * Energy;
+		if (Ray.type == eDefRgb)
+		{
+			Ray.Cptr->rgb.add(Ray.attention * Energy);
+		}
+		else if (Ray.type == eDefSun)
+		{
+			Ray.Cptr->sun += Ray.attention * Energy;
+		}
+		else if (Ray.type == eDefHemi)
+		{
+			Ray.Cptr->hemi += Ray.attention * Energy;
+		}
 	};
 
-	bool usePackedRays8x = CPU::ID().hasFeature(CPUFeature::AVX2) && gCompilerMode.EmbreeRays8; 
+	bool usePackedRays8x = CPU::ID().hasFeature(CPUFeature::AVX2) && gCompilerMode.EmbreeRays8;
 	if (usePackedRays8x)
 	{
-		thread_local RTCOccludedArguments   args;
+		thread_local RTCOccludedArguments args;
 		rtcInitOccludedArguments(&args);
 
-		thread_local RayQueryContext		ctxt;
+		thread_local RayQueryContext ctxt;
 		rtcInitRayQueryContext(&ctxt);
 
 		// Set Args
 		args.context = &ctxt;
-		args.flags	 = RTC_RAY_QUERY_FLAG_COHERENT;
+		args.flags = RTC_RAY_QUERY_FLAG_COHERENT;
 
 		thread_local alignas(32) RTCRay8 rays8;
-		thread_local alignas(32) int		valid[8];
-		for (u32 rayID = 0; rayID < rays.size(); rayID += 8)  
+		thread_local alignas(32) int valid[8];
+		for (u32 rayID = 0; rayID < rays.size(); rayID += 8)
 		{
 			for (auto i = 0; i < 8; i++)
 			{
-				if (rayID + i >= rays.size()) { valid[i] = 0; continue; }
+				if (rayID + i >= rays.size())
+				{
+					valid[i] = 0;
+					continue;
+				}
 				auto& ray = rays[rayID + i];
 				valid[i] = -1;
 				ctxt.energy[i] = 1;
@@ -180,8 +215,11 @@ void EmbreeRayTraceModel::RaytrraceRayPack(xr_vector< RayTask >& rays)
 			rtcOccluded8(valid, EmbreeMain.IntelScene, &rays8, &args); // args
 			for (auto i = 0; i < 8; i++)
 			{
-				if (rayID + i >= rays.size()) { continue; }
- 				ApplyColor(rays[rayID + i], ctxt.energy[i]);
+				if (rayID + i >= rays.size())
+				{
+					continue;
+				}
+				ApplyColor(rays[rayID + i], ctxt.energy[i]);
 			}
 		}
 	}
@@ -195,16 +233,20 @@ void EmbreeRayTraceModel::RaytrraceRayPack(xr_vector< RayTask >& rays)
 	}
 }
 
-// Filter Geometry Setup 
+// Filter Geometry Setup
 void SetFilter(RTCGeometry geom, bool isTransp)
 {
 	if (isTransp)
+	{
 		rtcSetGeometryOccludedFilterFunction(geom, &FilterRayTraceTransp);
+	}
 	else
+	{
 		rtcSetGeometryOccludedFilterFunction(geom, &FilterRayTraceOpacue);
+	}
 }
 
- 
+
 // LOADING GEOMETRY
 static xrCriticalSection csEmbree;
 
@@ -216,8 +258,8 @@ void EmbreeRayTraceModel::InitializeGeometry()
 	BuildRayTraceModel(); // Сборка Геометрии
 
 	// Конструктор модели
- 	csEmbree.Enter();
-  	AttachGeomToScene(true, 0);  // Embree-Loading
+	csEmbree.Enter();
+	AttachGeomToScene(true, 0); // Embree-Loading
 	csEmbree.Leave();
 }
 
@@ -234,16 +276,16 @@ void EmbreeRayTraceModel::InitializeGeometry_Model(xr_vector<FaceDataEmbree>& fa
 	}
 	opacue_geom.useMsg = false;
 	transp_geom.useMsg = false;
-	opacue_geom.RemoveDublicates();	 
-	transp_geom.RemoveDublicates();  
+	opacue_geom.RemoveDublicates();
+	transp_geom.RemoveDublicates();
 
 	csEmbree.Enter();
-	AttachGeomToScene(false, 0);  // Embree-Loading
- 	csEmbree.Leave();
+	AttachGeomToScene(false, 0); // Embree-Loading
+	csEmbree.Leave();
 }
 
 
-// Details Model 
+// Details Model
 void EmbreeRayTraceModel::InitializeDetails(xr_vector<FaceDataEmbree>& faces)
 {
 	// Initialize Embree !
@@ -256,27 +298,40 @@ void EmbreeRayTraceModel::InitializeDetails(xr_vector<FaceDataEmbree>& faces)
 
 	for (auto& F : faces)
 	{
- 		auto& buf = F.bOpaque ? opacue_geom : transp_geom;
+		auto& buf = F.bOpaque ? opacue_geom : transp_geom;
 		buf.AddFaceRaw(&F, F.v1, F.v2, F.v3);
 	}
 
-	opacue_geom.RemoveDublicates();			// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
+	opacue_geom.RemoveDublicates(); // Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
 	transp_geom.RemoveDublicates();
-   
+
 	// Конструктор модели
 	csEmbree.Enter();
 	AttachGeomToScene(true, 1); // User Diffined type == 1
 	csEmbree.Leave();
 }
 
+extern xr_concurrent_vector<UserGeomData*> UserGeomTemp;
+
 void EmbreeRayTraceModel::RemoveGeometry()
 {
 	csEmbree.Enter();
-	if (IntelScene)			 rtcReleaseScene(IntelScene);
-  	if (IntelGeometryNormal) rtcReleaseGeometry(IntelGeometryNormal);
-	if (IntelGeometryTransp) rtcReleaseGeometry(IntelGeometryTransp);
-
+	if (IntelScene)
+	{
+		rtcReleaseScene(IntelScene);
+	}
+	if (IntelGeometryNormal)
+	{
+		rtcReleaseGeometry(IntelGeometryNormal);
+	}
+	if (IntelGeometryTransp)
+	{
+		rtcReleaseGeometry(IntelGeometryTransp);
+	}
 	csEmbree.Leave();
+
+	//AF: не нашел, где очищается, очищаю тут
+	instanced.clear();
 
 	opacue_geom.ClearAll();
 	transp_geom.ClearAll();
@@ -286,23 +341,38 @@ void EmbreeRayTraceModel::RemoveGeometry()
 void EmbreeRayTraceModel::IntelEmbereUnloadAll()
 {
 	RemoveGeometry();
+
+	//AF: этот момент с UserGeomData довольно проблемный, UserGeomData создается в разных потоках и добавляется разную геометрию,
+	//некоторая в процессе удаляется и добавляется в разные массивы, после ReleaseGeometry объект UserGeomData остается не удаленным
+	// + UserGeomData хранит в себе массив указателей void*, которые также не факт, что очищаются
+	// мне немного лень изучать всю архитектуру, поэтому просто оставлю коментарий на будущее
+	for (UserGeomData* Data : UserGeomTemp)
+	{
+		delete Data;
+	}
+	UserGeomTemp.clear();
+	UserGeomTemp.shrink_to_fit();
+
 	rtcReleaseDevice(EmbreeDevice);
 	isDeviceInitialized = false;
 }
- 
+
 // Embree Device (Должен быть один)
-RTCDevice	EmbreeDevice;
+RTCDevice EmbreeDevice;
 
 void InitializeEmbreeDevice()
 {
-	if (isDeviceInitialized)		return;
+	if (isDeviceInitialized)
+	{
+		return;
+	}
 
 	auto fError = [](void* userPtr, enum RTCError code, const char* str)
 	{
 		R_ASSERT2(false, str);
 	};
 
-	EmbreeDevice = rtcNewDevice(GetDeviceConfig()); 
+	EmbreeDevice = rtcNewDevice(GetDeviceConfig());
 	rtcSetDeviceErrorFunction(EmbreeDevice, fError, nullptr);
 
 	isDeviceInitialized = true;
@@ -310,26 +380,55 @@ void InitializeEmbreeDevice()
 
 const char* GetDeviceConfig()
 {
-	bool avx_test	= CPU::ID().hasFeature(CPUFeature::AVX2);
-	bool sse		= CPU::ID().hasFeature(CPUFeature::SSE);
+	bool avx_test = CPU::ID().hasFeature(CPUFeature::AVX2);
+	bool sse = CPU::ID().hasFeature(CPUFeature::SSE);
 
 	string128 state;
-	sprintf(state, "- Intilized Intel Embree %s - %s", RTC_VERSION_STRING, avx_test ? "avx" : sse ? "sse" : "default");
+	sprintf(state, "- Intilized Intel Embree %s - %s", RTC_VERSION_STRING, avx_test ? "avx" : sse ? "sse"
+																								  : "default");
 	Status(state);
 
 	const char* config = "";
 	if (avx_test)
+	{
 		config = "isa=avx2";
+	}
 	else if (sse)
+	{
 		config = "isa=sse4.2";
+	}
 	else
+	{
 		config = "isa=sse2";
+	}
 
 	return config;
 }
 
 void EmbreeRayTraceModel::UpdateSceneFlags()
 {
-	if (gCompilerMode.EmbreeBVHCompact) scene_flags = scene_flags | RTC_SCENE_FLAG_COMPACT;
-	if (gCompilerMode.EmbreeBVHRobust)	scene_flags = scene_flags | RTC_SCENE_FLAG_ROBUST;
+	if (gCompilerMode.EmbreeBVHCompact)
+	{
+		scene_flags = scene_flags | RTC_SCENE_FLAG_COMPACT;
+	}
+	if (gCompilerMode.EmbreeBVHRobust)
+	{
+		scene_flags = scene_flags | RTC_SCENE_FLAG_ROBUST;
+	}
+}
+
+EmbreeInstancedModel::~EmbreeInstancedModel()
+{
+	if (InstaceScene)
+	{
+		rtcReleaseScene(InstaceScene);
+	}
+	if (GeometryTransp)
+	{
+		rtcReleaseGeometry(GeometryTransp);
+	}
+	if (GeometryOpacue)
+	{
+		rtcReleaseGeometry(GeometryOpacue);
+	}
 }
