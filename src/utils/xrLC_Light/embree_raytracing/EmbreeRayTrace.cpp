@@ -350,6 +350,7 @@ void EmbreeRayTraceModel::IntelEmbereUnloadAll()
 	{
 		delete Data;
 	}
+	UserGeomTemp.clear();
 	UserGeomTemp.shrink_to_fit();
 
 	rtcReleaseDevice(EmbreeDevice);
