@@ -13,6 +13,16 @@
 #include "Hit.h"
 #include "game_object_space.h"
 
+class CMincer;
+class CZoneCampfire;
+class CTorridZone;
+class CAmebaZone;
+class CHairsZone;
+class CGraviZone;
+class CBaseGraviZone;
+class CMosquitoBald;
+class CNoGravityZone;
+class CVisualZone;
 class CPhysicsShell;
 class CSE_Abstract;
 class CPHSynchronize;
@@ -175,6 +185,18 @@ public:
 	virtual CCustomRocket* cast_custom_rocket() { return nullptr; }
 	virtual CRocketLauncher* cast_rocket_launcher() { return nullptr; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
+	virtual CVisualZone* cast_visual_zone() { return nullptr; }
+	virtual CNoGravityZone* cast_no_gravity_zone() { return nullptr; }
+	virtual CMosquitoBald* cast_mosquito_bald_zone() { return nullptr; }
+	virtual CBaseGraviZone* cast_base_gravi_zone() { return nullptr; }
+	virtual CGraviZone* cast_gravi_zone() { return nullptr; }
+	virtual CHairsZone* cast_hairs_zone() { return nullptr; }
+	virtual CAmebaZone* cast_ameba_zone() { return nullptr; }
+	virtual CTorridZone* cast_torrid_zone() { return nullptr; }
+	virtual CZoneCampfire* cast_zone_campfire() { return nullptr; }
+	virtual CMincer* cast_mincer_zone() { return nullptr; }
+	virtual CRadioactiveZone* cast_radioactive_zone() { return nullptr; }
+	virtual CAnomalyZone* cast_anomaly_zone() { return nullptr; }
 
 public:
 	virtual bool						feel_touch_on_contact	(CObject *)					{return true;}
