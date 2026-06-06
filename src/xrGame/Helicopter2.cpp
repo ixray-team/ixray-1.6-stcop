@@ -207,45 +207,50 @@ float CHelicopter::GetRealAltitude()
 	return cR.range;
 }
 
-void	CHelicopter::Hit							(SHit* pHDS)
+void CHelicopter::Hit(SHit* pHDS)
 {
-//	inherited::Hit(pHDS);
+	//	inherited::Hit(pHDS);
 
 
-	if(GetfHealth()<0.005f)
+	if (GetfHealth() < 0.005f)
 		return;
 
-	if(state() == CHelicopter::eDead ) return;
+	if (state() == CHelicopter::eDead) return;
 
-	if(pHDS->who==this)
+	if (pHDS->who == this)
 		return;
 
 	bonesIt It = m_hitBones.find(pHDS->bone());
-	if(It != m_hitBones.end() && pHDS->hit_type==ALife::eHitTypeFireWound) {
+	if (It != m_hitBones.end() && pHDS->hit_type == ALife::eHitTypeFireWound)
+	{
 		float curHealth = GetfHealth();
-		curHealth -= pHDS->damage()*It->second*1000.0f;
+		curHealth -= pHDS->damage() * It->second * 1000.0f;
 		SetfHealth(curHealth);
 #ifdef DEBUG
-		if (bDebug)	Msg("----Helicopter::PilotHit(). health=%f",curHealth);
+		if (bDebug) Msg("----Helicopter::PilotHit(). health=%f", curHealth);
 #endif
-	}else {
-		float hit_power		= pHDS->damage();
-		hit_power			= AffectHit(hit_power, pHDS->hit_type);
+	}
+	else
+	{
+		float hit_power = pHDS->damage();
+		hit_power = AffectHit(hit_power, pHDS->hit_type);
 
-		SetfHealth(GetfHealth()-hit_power);
+		SetfHealth(GetfHealth() - hit_power);
 #ifdef DEBUG
 		if (bDebug)
-			Msg("----Helicopter::Hit(). health=%f",GetfHealth());
+			Msg("----Helicopter::Hit(). health=%f", GetfHealth());
 #endif
 	};
 
-	if (pHDS->who != nullptr && pHDS->who->cast_actor() != nullptr || pHDS->who->cast_stalker() != nullptr || pHDS->who->cast_anomaly_zone())
-	{
+	CGameObject* go = pHDS->who->cast_game_object();
+
+	bool have_actor = go != nullptr && go->cast_actor() != nullptr;
+	bool can_cast = go->cast_stalker() != nullptr || go->cast_game_object() != nullptr || go->cast_anomaly_zone();
+
+	if (have_actor && can_cast)
 		callback(GameObject::eHelicopterOnHit)(pHDS->damage(), pHDS->impulse, pHDS->hit_type, pHDS->who->ID());
-	}
 
 	CPHDestroyable::SetFatalHit(*pHDS);
-
 }
 
 void CHelicopter::PHHit(SHit &H)
