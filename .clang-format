@@ -10,6 +10,11 @@ BreakInheritanceList: AfterColon
 ConstructorInitializerIndentWidth: 4
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 
+BinPackParameters: false
+BinPackArguments: false
+PenaltyBreakBeforeFirstCallParameter: 0
+AlignAfterOpenBracket: BlockIndent
+
 InsertBraces: true
 
 AllowShortIfStatementsOnASingleLine: false
@@ -17,7 +22,7 @@ AllowShortLoopsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Inline
 AllowShortBlocksOnASingleLine: Never
 
-ColumnLimit: 200
+ColumnLimit: 0
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeComma
 PointerAlignment: Left
