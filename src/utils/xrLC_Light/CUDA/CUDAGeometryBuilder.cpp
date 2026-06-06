@@ -17,20 +17,14 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
     CUdeviceptr  d_tmp_indexBuffer;
    
     // 1. Загружаем вершины на GPU
-    CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_tmp_vertexBuffer),
-        sizeof(Fvector) * vertices.size()));
-    CUDA_CHECK(cudaMemcpy(reinterpret_cast<void*>(d_tmp_vertexBuffer),
-        vertices.data(),
-        sizeof(Fvector) * vertices.size(),
-        cudaMemcpyHostToDevice));
+    CUDA_CHECK_2(cuMemAlloc(&d_tmp_vertexBuffer, sizeof(Fvector) * vertices.size()));
+    CUDA_CHECK_2(cuMemcpyHtoD(d_tmp_vertexBuffer, vertices.data(), sizeof(Fvector) * vertices.size()));
+
 
     // 2. Загружаем индексы на GPU
-    CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_tmp_indexBuffer),
-        sizeof(CDB::TRI) * triangles.size()));
-    CUDA_CHECK(cudaMemcpy(reinterpret_cast<void*>(d_tmp_indexBuffer),
-        triangles.data(),
-        sizeof(CDB::TRI) * triangles.size(),
-        cudaMemcpyHostToDevice));
+	CUDA_CHECK_2(cuMemAlloc(&d_tmp_indexBuffer, sizeof(CDB::TRI) * triangles.size()));
+	CUDA_CHECK_2(cuMemcpyHtoD(d_tmp_indexBuffer, triangles.data(), sizeof(CDB::TRI) * triangles.size()));
+
 
     // 3. Настройка входных данных для BLAS
     OptixBuildInput buildInput = {};
@@ -61,19 +55,18 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
     OPTIX_CHECK(optixAccelComputeMemoryUsage(context, &accelOptions, &buildInput, 1, &bufferSizes));
      
     // 6. Выделение памяти
-    CUDA_CHECK(cudaMalloc((void**) &d_tempBuffer, bufferSizes.tempSizeInBytes));
-    CUDA_CHECK(cudaMalloc((void**) &outBuffers.blasBuffer, bufferSizes.outputSizeInBytes));
+	CUDA_CHECK_2(cuMemAlloc(&d_tempBuffer, bufferSizes.tempSizeInBytes));
+	CUDA_CHECK_2(cuMemAlloc(&outBuffers.blasBuffer, bufferSizes.outputSizeInBytes));
      
     // 7. Готовим дескриптор для запроса размера компактации
     OptixAccelEmitDesc emitDesc = {};
     CUdeviceptr d_compactedSize;
-    CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_compactedSize), sizeof(uint64_t)));
+	CUDA_CHECK_2(cuMemAlloc(&d_compactedSize, sizeof(uint64_t)));
     emitDesc.type = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
     emitDesc.result = d_compactedSize;
 
     CUstream stream;
-    CUDA_CHECK(cudaStreamCreate(&stream));
-
+	CUDA_CHECK_2(cuStreamCreate(&stream, CU_STREAM_DEFAULT));
     // 8. Сборка BLAS
     OPTIX_CHECK(  optixAccelBuild
     (
@@ -90,20 +83,19 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
         &emitDesc, 1
     ));
 
-    CUDA_CHECK(cudaStreamSynchronize(stream));
+    CUDA_CHECK_2(cuStreamSynchronize(stream));
 
     // 9. Узнаём размер скомпактированной структуры
     uint64_t compactedSize = 0;
-    CUDA_CHECK(cudaMemcpy(&compactedSize, reinterpret_cast<void*>(d_compactedSize), sizeof(uint64_t), cudaMemcpyDeviceToHost));
-    CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_compactedSize)));
+    CUDA_CHECK_2(cuMemcpyDtoH(&compactedSize, d_compactedSize, sizeof(uint64_t)));
+    CUDA_CHECK_2(cuMemFree(d_compactedSize));
     
     // 10. Компактация, если это выгодно
     size_t size_precompact = bufferSizes.outputSizeInBytes;
     if (compactedSize != 0 && compactedSize < bufferSizes.outputSizeInBytes)
     {
         CUdeviceptr d_compactedBuffer;
-        CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_compactedBuffer), compactedSize));
-    
+		CUDA_CHECK_2(cuMemAlloc(&d_compactedBuffer, compactedSize));
         OptixTraversableHandle compactedHandle;
         OPTIX_CHECK(optixAccelCompact(
             context,
@@ -114,22 +106,22 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
             &compactedHandle
         ));
 
-        CUDA_CHECK(cudaStreamSynchronize(stream));
-      
-        // Освобождаем старый буфер
-        CUDA_CHECK(cudaFree(reinterpret_cast<void*>(outBuffers.blasBuffer)));
- 
+        CUDA_CHECK_2(cuStreamSynchronize(stream));
+
+		// Освобождаем старый буфер
+        CUDA_CHECK_2(cuMemFree(outBuffers.blasBuffer));
+
         // Сохраняем компактный
         outBuffers.blasBuffer = d_compactedBuffer;
         outBuffers.blasHandle = compactedHandle;
     }
  
     // 11. Освобождаем временный буфер
-    CUDA_CHECK( cudaStreamDestroy(stream) );
-
-    CUDA_CHECK( cudaFree(reinterpret_cast<void*>(d_tempBuffer)));
-    CUDA_CHECK( cudaFree(reinterpret_cast<void*>(d_tmp_vertexBuffer) ));
-    CUDA_CHECK( cudaFree(reinterpret_cast<void*>(d_tmp_indexBuffer) ));
+    CUDA_CHECK_2(cuStreamDestroy(stream));
+    
+    CUDA_CHECK_2(cuMemFree(d_tempBuffer));
+	CUDA_CHECK_2(cuMemFree(d_tmp_vertexBuffer));
+	CUDA_CHECK_2(cuMemFree(d_tmp_indexBuffer));
       
     return true;
 }
@@ -158,9 +150,9 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
 
     // 2. Алокация под GPU
     CUdeviceptr d_instances;
-    CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_instances), sizeof(OptixInstance)));
-    CUDA_CHECK(cudaMemcpy(reinterpret_cast<void*>(d_instances), &instance, sizeof(OptixInstance), cudaMemcpyHostToDevice));
- 
+	CUDA_CHECK_2(cuMemAlloc(&d_instances, sizeof(OptixInstance)));
+	CUDA_CHECK_2(cuMemcpyHtoD(d_instances, &instance, sizeof(OptixInstance)));
+
     // 3. Входные данные для структуры 
     OptixBuildInput buildInput = {};
     buildInput.type = OPTIX_BUILD_INPUT_TYPE_INSTANCES;
@@ -179,11 +171,11 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
 
     // 6. Выделение памяти
     CUdeviceptr d_tempBuffer;
-    CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_tempBuffer), bufferSizes.tempSizeInBytes));
-    CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&outScene.tlasBuffer), bufferSizes.outputSizeInBytes));
+	CUDA_CHECK_2(cuMemAlloc(&d_tempBuffer, bufferSizes.tempSizeInBytes));
+	CUDA_CHECK_2(cuMemAlloc(&outScene.tlasBuffer, bufferSizes.outputSizeInBytes));
  
     CUstream stream;
-    CUDA_CHECK(cudaStreamCreate(&stream));
+	CUDA_CHECK_2(cuStreamCreate(&stream, CU_STREAM_DEFAULT));
 
     OPTIX_CHECK(optixAccelBuild(
         context,
@@ -199,12 +191,11 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
         nullptr, 0
      ));
 
-    CUDA_CHECK(cudaStreamSynchronize(stream));
-    CUDA_CHECK(cudaStreamDestroy(stream));
+    CUDA_CHECK_2(cuStreamSynchronize(stream));
+	CUDA_CHECK_2(cuStreamDestroy(stream));
 
-
-    CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_tempBuffer)));
-    CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_instances)));
+    CUDA_CHECK_2(cuMemFree(d_tempBuffer));
+	CUDA_CHECK_2(cuMemFree(d_instances));
 
     return true;
 }
