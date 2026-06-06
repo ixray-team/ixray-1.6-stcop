@@ -14,16 +14,6 @@ class	ENGINE_API	IRender_ObjectSpecific;
 class	ENGINE_API	CCustomHUD;
 class	NET_Packet	;
 
-class CMincer;
-class CZoneCampfire;
-class CTorridZone;
-class CAmebaZone;
-class CHairsZone;
-class CGraviZone;
-class CBaseGraviZone;
-class CMosquitoBald;
-class CNoGravityZone;
-class CVisualZone;
 class CSE_Abstract;
 class CGameObject;
 class CActor;
@@ -262,18 +252,6 @@ public:
 	virtual CRocketLauncher* cast_rocket_launcher() { return nullptr; }
 	virtual CExplosive* cast_explosive() { return nullptr; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
-	virtual CVisualZone* cast_visual_zone() { return nullptr; }
-	virtual CNoGravityZone* cast_no_gravity_zone() { return nullptr; }
-	virtual CMosquitoBald* cast_mosquito_bald_zone() { return nullptr; }
-	virtual CBaseGraviZone* cast_base_gravi_zone() { return nullptr; }
-	virtual CGraviZone* cast_gravi_zone() { return nullptr; }
-	virtual CHairsZone* cast_hairs_zone() { return nullptr; }
-	virtual CAmebaZone* cast_ameba_zone() { return nullptr; }
-	virtual CTorridZone* cast_torrid_zone() { return nullptr; }
-	virtual CZoneCampfire* cast_zone_campfire() { return nullptr; }
-	virtual CMincer* cast_mincer_zone() { return nullptr; }
-	virtual CRadioactiveZone* cast_radioactive_zone() { return nullptr; }
-	virtual CAnomalyZone* cast_anomaly_zone() { return nullptr; }
 
 	bool IsFocused() const;
 	bool IsMyCamera() const;
