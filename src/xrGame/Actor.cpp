@@ -2937,22 +2937,27 @@ void CActor::OnItemTakeFromGround(CInventoryItem* inventory_item)
 		for (ISpatialShared& spatial : R)
 		{
 			if (!spatial.get())
-			{
 				continue;
-			}
 
-			if (CObject* obj = spatial->dcast_CObject())
-			{
-				if (obj->getDestroy() || !obj->cast_game_object())
-				{
-					continue;
-				}
+			CObject* p_obj = spatial->dcast_CObject();
 
-				if (CAnomalyZone* gzone = obj->cast_anomaly_zone())
-				{
-					gzone->OnActorTakeArtefact(60.f, art, Actor()->Position());
-				}
-			}
+			if (p_obj == nullptr)
+				continue;
+
+			if (p_obj->getDestroy())
+				continue;
+
+			CGameObject* p_go = p_obj->cast_game_object();
+
+			if (p_go == nullptr)
+				continue;
+
+			CAnomalyZone* p_az = p_go->cast_anomaly_zone();
+
+			if (p_az == nullptr)
+				continue;
+
+			p_az->OnActorTakeArtefact(60.f, art, Actor()->Position());
 		}
 	}
 }
