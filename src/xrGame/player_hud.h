@@ -743,7 +743,7 @@ private:
 	Fmatrix								m_transform;
 	Fmatrix								m_transformL;
 
-	IKinematicsAnimated*				m_model = nullptr;
+	IKinematicsAnimated*				m_model;
 	xr_vector<u16>						m_ancors;
 	attachable_hud_item*				m_attached_items[2];
 	animator_item*						m_animator_item = nullptr;

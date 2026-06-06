@@ -477,11 +477,6 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 
 		if (TestState(mcSprint) || TestState(mcAnyMove) || TestState(mcAccel) || TestState(mcCrouch))
 		{
-			CHudItem* pHudItem = inventory().ActiveItem() ? inventory().ActiveItem()->cast_hud_item() : nullptr;
-			if (pHudItem && pHudItem->GetHUD())
-			{
-				pHudItem->OnMovementChanged(ACTOR_DEFS::EMoveCommand(mstate_rl));
-			}
 			g_player_hud->OnMovementChanged(ACTOR_DEFS::EMoveCommand(mstate_rl));
 			HudAnimator()->OnMovementChanged();
 		}

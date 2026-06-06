@@ -18,7 +18,6 @@ protected:
 
 	virtual void		OnAnimationEnd				(u8 state);
 	virtual void		OnMotionMark				(u8 state, const motion_marks&);
-			void		OnKnifeStrike				();
 	virtual void		OnStateSwitch				(u8 S);
 
 	virtual void		UpdateCL					();
@@ -31,10 +30,6 @@ protected:
 	u16					knife_material_idx;
 
 protected:
-    bool				attackStarted;
-    bool				attackMotionMarksAvailable;
-    bool				oldStrikeMethod;
-
 	ALife::EHitType		m_eHitType;
 
 	ALife::EHitType		m_eHitType_1;

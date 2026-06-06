@@ -29,7 +29,6 @@ void CWeaponMagazinedWGrenade::Load(const char* section)
 	{
 		CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(section, "grenade_vel");
 	}
-	grenade_bone_name = READ_IF_EXISTS(pSettings, r_string, hud_sect, "grenade_bone", "grenade");
 
 	// load ammo classes SECOND (grenade_class)
 	m_ammoTypes2.clear();
@@ -243,25 +242,6 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimation()
 	return anim;
 }
 
-
-shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimationLegacy()
-{
-	if (!IsGrenadeLauncherAttached())
-	{
-		return inherited::SetCurrentReloadAnimationLegacy();
-	}
-
-	shared_str anim = "anim_reload";
-
-	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
-	{
-		const char* end_suffix = m_bGrenadeMode ? "_g" : "_gl";
-		AddSuffixName(anim, end_suffix);
-	}
-
-	return anim;
-}
-
 void CWeaponMagazinedWGrenade::switch2_Reload()
 {
 	VERIFY(GetState() == eReload);
@@ -282,7 +262,7 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 		{
 			PlaySound("sndReloadG", get_LastFP2());
 		}
-		PlayHUDMotion(SetCurrentReloadAnimation(), SetCurrentReloadAnimationLegacy(), EHudMixType::eMixAll, eReload);
+		PlayHUDMotion(SetCurrentReloadAnimation(), EHudMixType::eMixAll, eReload);
 	}
 	else
 	{
@@ -344,23 +324,6 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentShootAnimation()
 		}
 
 		AddSuffixName(anim, m_bGrenadeMode ? "_g" : "_w_gl");
-	}
-
-	return anim;
-}
-
-shared_str CWeaponMagazinedWGrenade::SetCurrentShootAnimationLegacy()
-{
-	if (!IsGrenadeLauncherAttached())
-	{
-		return inherited::SetCurrentShootAnimationLegacy();
-	}
-
-	shared_str anim = "anim_shoot";
-
-	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
-	{
-		AddSuffixName(anim, m_bGrenadeMode ? "_g" : "_gl");
 	}
 
 	return anim;
@@ -508,18 +471,6 @@ void CWeaponMagazinedWGrenade::PerformSwitchGL()
 	iAmmoElapsed = (int)m_magazine.size();
 	iAmmoElapsed2 = (int)m_magazine2.size();
 
-	if (m_zoom_params.m_bZoomEnabled && m_pHUD)
-	{
-		if (m_bGrenadeMode)
-			LoadZoomOffset(*hud_sect, "grenade_");
-		else
-		{
-			if (GrenadeLauncherAttachable())
-				LoadZoomOffset(*hud_sect, "grenade_normal_");
-			else
-				LoadZoomOffset(*hud_sect, "");
-		}
-	}
 	m_BriefInfo_CalcFrame = 0;
 }
 
@@ -973,17 +924,7 @@ float	CWeaponMagazinedWGrenade::CurrentZoomFactor()
 //виртуальные функции для проигрывания анимации HUD
 void CWeaponMagazinedWGrenade::PlayAnimModeSwitch()
 {
-	if (m_pHUD)
-	{
-		if (m_bGrenadeMode)
-			PlayHUDMotion("anim_switch_grenade_on", EHudMixType::eNoMix, eSwitch);
-		else
-			PlayHUDMotion("anim_switch_grenade_off", EHudMixType::eNoMix, eSwitch);
-	}
-	else
-	{
-		PlayHUDMotion(SetCurrentStateAnimation("anm_switch"), EHudMixType::eMixAll, eSwitch);
-	}
+	PlayHUDMotion(SetCurrentStateAnimation("anm_switch"), EHudMixType::eMixAll, eSwitch);
 }
 
 shared_str CWeaponMagazinedWGrenade::SetCurrentStateAnimation(const shared_str& first_name)
@@ -1089,17 +1030,7 @@ void CWeaponMagazinedWGrenade::UpdateGrenadeVisibility(bool visibility)
 {
 	if (HudItemData() != nullptr)
 	{
-		HudItemData()->set_bone_visible(grenade_bone_name, visibility, TRUE);
-	}
-	else if (m_pHUD)
-	{
-		if (H_Parent() != Level().CurrentEntity())	
-			return;
-		IKinematics* pHudVisual = m_pHUD->Visual()->dcast_PKinematics();
-		VERIFY(pHudVisual);
-		pHudVisual->LL_SetBoneVisible(pHudVisual->LL_BoneID(grenade_bone_name), visibility, TRUE);
-		pHudVisual->CalculateBones_Invalidate();
-		pHudVisual->CalculateBones();
+		HudItemData()->set_bone_visible("grenade", visibility, true);
 	}
 }
 

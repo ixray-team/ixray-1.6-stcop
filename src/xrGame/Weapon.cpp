@@ -177,51 +177,17 @@ void CWeapon::UpdateFireDependencies_internal()
 
 	UpdateXForm			();
 
-	if (GetHUDmode() && H_Parent())
+	if (GetHUDmode() && HudItemData() != nullptr)
 	{
-		if (HudItemData() != nullptr)
-		{
-			HudItemData()->setup_firedeps(m_current_firedeps);
-			VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
-		}
-		else if (m_pHUD)
-		{
-			// 1st person view - skeletoned
-			IKinematics* V			= m_pHUD->Visual()->dcast_PKinematics();
-			VERIFY					(V);
-			V->CalculateBones		();
-
-			// fire point&direction
-			Fmatrix& fire_mat		= V->LL_GetTransform(u16(m_pHUD->FireBone()));
-			Fmatrix& parent			= m_pHUD->Transform	();
-
-			const Fvector& fp		= m_pHUD->FirePoint();
-			const Fvector& fp2		= m_pHUD->FirePoint2();
-			const Fvector& sp		= m_pHUD->ShellPoint();
-
-			fire_mat.transform_tiny	(m_current_firedeps.vLastFP,fp);
-			parent.transform_tiny	(m_current_firedeps.vLastFP);
-			fire_mat.transform_tiny	(m_current_firedeps.vLastFP2,fp2);
-			parent.transform_tiny	(m_current_firedeps.vLastFP2);
-		
-			fire_mat.transform_tiny	(m_current_firedeps.vLastSP,sp);
-			parent.transform_tiny	(m_current_firedeps.vLastSP);
-
-			m_current_firedeps.vLastFD.set(0.f,0.f,1.f);
-			parent.transform_dir	(m_current_firedeps.vLastFD);
-
-			m_current_firedeps.m_FireParticlesXForm.identity();
-			m_current_firedeps.m_FireParticlesXForm.k.set(m_current_firedeps.vLastFD);
-			Fvector::generate_orthonormal_basis_normalized(m_current_firedeps.m_FireParticlesXForm.k,
-									m_current_firedeps.m_FireParticlesXForm.j, m_current_firedeps.m_FireParticlesXForm.i);
-		}
+		HudItemData()->setup_firedeps(m_current_firedeps);
+		VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
 	}
 	else 
 	{
 		// 3rd person or no parent
 		Fmatrix& parent			= XFORM();
 
-		if(H_Parent() && H_Parent()->cast_actor() && render_item_ui_query() && !m_pHUD)
+		if(H_Parent() && H_Parent()->cast_actor() && render_item_ui_query())
 		{
 			Level().Cameras().camera_Matrix(parent);
 			parent.j.invert();
@@ -458,10 +424,6 @@ void CWeapon::Load		(const char* section)
 
 	m_zoom_params.m_bZoomEnabled		= !!pSettings->r_bool(section,"zoom_enabled");
 	m_zoom_params.m_fZoomRotateTime		= READ_IF_EXISTS(pSettings, r_float, section, "zoom_rotate_time", ROTATION_TIME);
-	if (m_zoom_params.m_bZoomEnabled && m_pHUD)
-	{
-		LoadZoomOffset(*hud_sect, "");
-	}
 
 	bUseAltScope = !!bLoadAltScopesParams(section);
 
@@ -877,14 +839,6 @@ void CWeapon::LoadFireParams		(const char* section)
 
 	CShootingObject::LoadFireParams(section);
 };
-
-void CWeapon::LoadZoomOffset (const char* section, const char* prefix)
-{
-	string256 full_name;
-	m_pHUD->SetZoomOffset(pSettings->r_fvector3	(hud_sect, xr_strconcat(full_name, prefix, "zoom_offset")));
-	m_pHUD->SetZoomRotateX(pSettings->r_float	(hud_sect, xr_strconcat(full_name, prefix, "zoom_rotate_x")));
-	m_pHUD->SetZoomRotateY(pSettings->r_float	(hud_sect, xr_strconcat(full_name, prefix, "zoom_rotate_y")));
-}
 
 void CWeapon::LoadRecoilPatterns(const char* section)
 {
@@ -1310,9 +1264,6 @@ void CWeapon::OnH_B_Independent(bool just_before_destroy)
 
 	inherited::OnH_B_Independent(just_before_destroy);
 
-	if (m_pHUD)
-		m_pHUD->Hide();
-
 	FireEnd();
 	SwitchState(eHidden, false);
 
@@ -1365,8 +1316,6 @@ void CWeapon::OnActiveItem()
 	bDisablePrepareAnimation = false;
 
 	inherited::OnActiveItem();
-	//если мы занружаемся и оружие было в руках
-	if (m_pHUD) m_pHUD->Show	();
 }
 
 void CWeapon::OnHiddenItem()
@@ -1383,8 +1332,6 @@ void CWeapon::OnHiddenItem()
 	}
 
 	OnZoomOut();
-	if (m_pHUD)	
-		m_pHUD->Hide();
 	inherited::OnHiddenItem();
 
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
@@ -1446,7 +1393,7 @@ void CWeapon::UpdateCL		()
 	u32 delta = Device.GetTimeDeltaSafe(_last_update_time);
 
 	bool need_update_hud = false;
-	bool isHudItemData = !!GetHUDmode() && (HudItemData() != nullptr || GetHUD());
+	bool isHudItemData = !!GetHUDmode() && HudItemData() != nullptr;
 	
 	if (isHudItemData && !bUpdateHUDBonesVisibility)
 	{
@@ -1595,7 +1542,7 @@ void CWeapon::UpdateCL		()
 
 void CWeapon::ForceUpdateHUD()
 {
-	if (HudItemData() == nullptr && GetHUD() == nullptr)
+	if (HudItemData() == nullptr)
 	{
 		return;
 	}
@@ -1603,29 +1550,26 @@ void CWeapon::ForceUpdateHUD()
 	UpdateScopePosition();
 	UpdateHUDAddonsVisibility();
 	ProcessScope();
-	if (HudItemData())
+	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
+
+	if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
 	{
-		u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
+		AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type_to_update);
+	}
 
-		if (TAmmoBones* AmmoBones = GetComponent<TAmmoBones>())
-		{
-			AmmoBones->UpdateAmmoBones(this, iAmmoElapsed, type_to_update);
-		}
+	if (TShellBones* ShellBones = GetComponent<TShellBones>())
+	{
+		ShellBones->UpdateShellBones(this, m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType());
+	}
 
-		if (TShellBones* ShellBones = GetComponent<TShellBones>())
-		{
-			ShellBones->UpdateShellBones(this, m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType());
-		}
+	if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
+	{
+		LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
+	}
 
-		if (TLiteAmmoBones* LiteAmmoBones = GetComponent<TLiteAmmoBones>())
-		{
-			LiteAmmoBones->UpdateLiteAmmoBones(this, GetCurrentElapsed() + iAmmoChamberElapsed);
-		}
-
-		if (GetState() == eShowing || GetState() == eIdle)
-		{
-			UpdateBonePartAnimations();
-		}
+	if (GetState() == eShowing || GetState() == eIdle)
+	{
+		UpdateBonePartAnimations();
 	}
 }
 
@@ -1703,36 +1647,17 @@ void CWeapon::ProcessScope()
 			ChangeBoneVisible(bone, true);
 		}
 
-		if (HudItemData())
-		{
-			for (auto& bone : m_bScopeHideBones)
-			{
-				HudItemData()->set_bone_visible(bone, false, TRUE);
-			}
+		if (HudItemData() == nullptr)
+			return;
 
-			for (auto& bone : m_bScopeShowBones)
-			{
-				HudItemData()->set_bone_visible(bone, true, TRUE);
-			}
+		for (auto& bone : m_bScopeHideBones)
+		{
+			HudItemData()->set_bone_visible(bone, false, true);
 		}
-		else if (m_pHUD)
+
+		for (auto& bone : m_bScopeShowBones)
 		{
-			IKinematics* pHudVisual = m_pHUD->Visual()->dcast_PKinematics();
-			for (auto& bone : m_bScopeHideBones)
-			{
-				u16 bone_id = pHudVisual->LL_BoneID(bone);
-
-				if (bone_id != BI_NONE)
-					pHudVisual->LL_SetBoneVisible(bone_id, false, TRUE);
-			}
-
-			for (auto& bone : m_bScopeShowBones)
-			{
-				u16 bone_id = pHudVisual->LL_BoneID(bone);
-
-				if (bone_id != BI_NONE)
-					pHudVisual->LL_SetBoneVisible(bone_id, true, TRUE);
-			}
+			HudItemData()->set_bone_visible(bone, true, true);
 		}
 	}
 }
@@ -1798,7 +1723,6 @@ void CWeapon::signal_HideComplete()
 	if(H_Parent()) 
 		setVisible			(false);
 	SetPending				(false);
-	if (m_pHUD) m_pHUD->Hide();
 }
 
 void CWeapon::SetDefaults()
@@ -2579,8 +2503,7 @@ void CWeapon::UpdateScopePosition()
 
 static const char* wpn_scope = "wpn_scope";
 static const char* wpn_silencer = "wpn_silencer";
-static const char* wpn_grenade_launcher = "wpn_grenade_launcher";
-static const char* wpn_launcher = "wpn_launcher";
+static const char* wpn_grenade_launcher = "wpn_launcher";
 
 void CWeapon::UpdateHUDAddonsVisibility()
 {
@@ -2591,87 +2514,6 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 	if (HudItemData() == nullptr)
 	{
-		if (m_pHUD)
-		{
-			IKinematics* pHudVisual = m_pHUD->Visual()->dcast_PKinematics();
-
-			if (!pHudVisual)
-				return;
-
-			u16  bone_id = pHudVisual->LL_BoneID(wpn_scope);
-			if (ScopeAttachable())
-			{
-				VERIFY2(bone_id != BI_NONE, "there are no scope bone.");
-				if (IsScopeAttached())
-				{
-					if (FALSE == pHudVisual->LL_GetBoneVisible(bone_id))
-						pHudVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
-				}
-				else 
-				{
-					if (pHudVisual->LL_GetBoneVisible(bone_id))
-						pHudVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
-				}
-			}
-			if (m_eScopeStatus == ALife::EWeaponAddonStatus::eAddonDisabled && bone_id != BI_NONE &&
-				pHudVisual->LL_GetBoneVisible(bone_id))
-				pHudVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
-			else
-				if (m_eScopeStatus == ALife::EWeaponAddonStatus::eAddonPermanent && bone_id != BI_NONE &&
-					!pHudVisual->LL_GetBoneVisible(bone_id))
-					pHudVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
-
-
-			bone_id = pHudVisual->LL_BoneID(wpn_silencer);
-			if (SilencerAttachable())
-			{
-				VERIFY2(bone_id != BI_NONE, "there are no silencer bone.");
-				if (IsSilencerAttached())
-				{
-					if (!pHudVisual->LL_GetBoneVisible(bone_id))
-						pHudVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
-				}
-				else 
-				{
-					if (pHudVisual->LL_GetBoneVisible(bone_id))
-						pHudVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
-				}
-			}
-			if (m_eSilencerStatus == ALife::EWeaponAddonStatus::eAddonDisabled && bone_id != BI_NONE &&
-				pHudVisual->LL_GetBoneVisible(bone_id))
-				pHudVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
-			else
-				if (m_eSilencerStatus == ALife::EWeaponAddonStatus::eAddonPermanent && bone_id != BI_NONE &&
-					!pHudVisual->LL_GetBoneVisible(bone_id))
-					pHudVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
-
-
-			bone_id = pHudVisual->LL_BoneID(wpn_grenade_launcher);
-			if (GrenadeLauncherAttachable())
-			{
-				if (bone_id == BI_NONE)
-					bone_id = pHudVisual->LL_BoneID(wpn_launcher);
-
-				VERIFY2(bone_id != BI_NONE, "there are no grenade launcher bone.");
-				if (IsGrenadeLauncherAttached())
-				{
-					if (FALSE == pHudVisual->LL_GetBoneVisible(bone_id))
-						pHudVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
-				}
-				else 
-				{
-					if (pHudVisual->LL_GetBoneVisible(bone_id))
-						pHudVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
-				}
-			}
-			if (m_eGrenadeLauncherStatus == ALife::EWeaponAddonStatus::eAddonDisabled && bone_id != BI_NONE &&
-				pHudVisual->LL_GetBoneVisible(bone_id))
-				pHudVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
-			else
-				if (m_eGrenadeLauncherStatus == ALife::EWeaponAddonStatus::eAddonPermanent && bone_id != BI_NONE &&
-					!pHudVisual->LL_GetBoneVisible(bone_id))
-					pHudVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
-		}
 		return;
 	}
 
@@ -2685,7 +2527,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 	test = !!(get_GrenadeLauncherStatus() == 2 && IsGrenadeLauncherAttached() || get_GrenadeLauncherStatus() == 1);
 
-	HudItemData()->set_bone_visible(wpn_launcher, test, true);
+	HudItemData()->set_bone_visible(wpn_grenade_launcher, test, true);
 
 	for (auto& bone : m_bDefHideBones)
 	{
@@ -2798,7 +2640,7 @@ void CWeapon::UpdateAddonsVisibility()
 	ChangeBoneVisible(wpn_silencer, test);
 
 	test = !!(get_GrenadeLauncherStatus() == 2 && IsGrenadeLauncherAttached() || get_GrenadeLauncherStatus() == 1);
-	ChangeBoneVisible(wpn_launcher, test);
+	ChangeBoneVisible(wpn_grenade_launcher, test);
 
 	for (auto& bone : m_bDefHideBones)
 	{
@@ -3266,7 +3108,6 @@ void CWeapon::OnZoomIn()
 	UpdateZoomCrosshairUI();
 
 	GamePersistent().SetPickableEffectorDOF(true);
-	StopHudInertion();
 }
 
 void CWeapon::OnZoomOut()
@@ -3314,7 +3155,6 @@ void CWeapon::OnZoomOut()
 	{
 		NightVision->SwitchNightVision(false);
 	}
-	StartHudInertion();
 }
 
 CUIStatic* CWeapon::ZoomTexture()
@@ -3584,48 +3424,9 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 		return;
 	}
 
-	float factor = Device.fTimeDelta / m_zoom_params.m_fZoomRotateTime;
 	attachable_hud_item* hi = HudItemData();
 	if (hi == nullptr)
 	{
-		if (m_pHUD)
-		{
-			Fmatrix hud_rotation;
-			hud_rotation.identity();
-			hud_rotation.rotateX(m_pHUD->ZoomRotateX() * m_zoom_params.m_fZoomRotationFactor);
-
-			Fmatrix hud_rotation_y;
-			hud_rotation_y.identity();
-			hud_rotation_y.rotateY(m_pHUD->ZoomRotateY() * m_zoom_params.m_fZoomRotationFactor);
-			hud_rotation.mulA_43(hud_rotation_y);
-
-			Fvector offset = m_pHUD->ZoomOffset();
-			offset.mul(m_zoom_params.m_fZoomRotationFactor);
-			hud_rotation.translate_over(offset);
-			trans.mulB_43(hud_rotation);
-
-			if (IsZoomed())
-			{
-				m_zoom_params.m_fZoomRotationFactor += factor;
-			}
-			else
-			{
-				m_zoom_params.m_fZoomRotationFactor -= factor;
-			}
-
-			clamp(m_zoom_params.m_fZoomRotationFactor, 0.0f, 1.0f);
-
-			if (IsAltZoomed() && IsZoomed() && !IsGrenadeMode())
-			{
-				m_zoom_params.m_fZoomRotationFactor2 += factor;
-			}
-			else
-			{
-				m_zoom_params.m_fZoomRotationFactor2 -= factor;
-			}
-
-			clamp(m_zoom_params.m_fZoomRotationFactor2, 0.0f, 1.0f);
-		}
 		return;
 	}
 
@@ -3641,6 +3442,8 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 		curr_offs.set(zero_vel);
 		curr_rot.set(zero_vel);
 	}
+
+	float factor = Device.fTimeDelta / m_zoom_params.m_fZoomRotateTime;
 
 	if (idx == EHudOffsetType::eSafemode || m_fSafeModeRotationFactor > 0.0f)
 	{
@@ -4058,7 +3861,7 @@ bool CWeapon::MovingAnimAllowedNow()
 
 bool CWeapon::IsHudModeNow()
 {
-	return !!GetHUDmode() && !m_pHUD;
+	return !!GetHUDmode();
 }
 
 void CWeapon::ZoomInc()

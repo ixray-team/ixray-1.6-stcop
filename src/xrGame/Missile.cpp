@@ -167,9 +167,6 @@ void CMissile::OnActiveItem		()
 	inherited::OnActiveItem	();
 	SetState				(eIdle);
 	SetNextState			(eIdle);	
-
-	if (m_pHUD) 
-		m_pHUD->Show();
 }
 
 void CMissile::OnHiddenItem()
@@ -183,10 +180,6 @@ void CMissile::OnHiddenItem()
 //-
 
 	inherited::OnHiddenItem	();
-
-	if (m_pHUD) 
-		m_pHUD->Hide();
-
 	SetState				(eHidden);
 	SetNextState			(eHidden);
 }
@@ -238,8 +231,6 @@ void CMissile::OnH_B_Independent(bool just_before_destroy)
 			Throw				();
 		}
 	}
-	if (m_pHUD)
-		m_pHUD->Hide();
 
 	if(!m_dwDestroyTime && Local()) 
 	{
@@ -353,7 +344,7 @@ void CMissile::State(u8 state)
 				}
 			}
 
-			PlayHUDMotion(m_bNeedQuick ? "anm_throw_quick" : "anm_show", "anim_show", EHudMixType::eNoMix, GetState(), m_pHUD != nullptr);
+			PlayHUDMotion(m_bNeedQuick ? "anm_throw_quick" : "anm_show", EHudMixType::eNoMix, GetState());
 
 			if (m_bNeedQuick)
 			{
@@ -373,7 +364,7 @@ void CMissile::State(u8 state)
 		{
 			if(H_Parent())
 			{
-				PlayHUDMotion		("anm_hide", "anim_hide", EHudMixType::eMixAll, GetState(), m_pHUD != nullptr);
+				PlayHUDMotion		("anm_hide", EHudMixType::eMixAll, GetState());
 				if (m_eSoundsFlags.test(ESoundsFlags::sf_holster))
 				{
 					PlaySound("SndHide", Position());
@@ -403,7 +394,7 @@ void CMissile::State(u8 state)
 			{
 				PlaySound("sndThrowBegin", Position());
 			}
-			PlayHUDMotion		("anm_throw_begin", "anim_throw_begin", EHudMixType::eMixAll, GetState(), m_pHUD != nullptr);
+			PlayHUDMotion		("anm_throw_begin", EHudMixType::eMixAll, GetState());
 
 			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 			{
@@ -418,7 +409,7 @@ void CMissile::State(u8 state)
 		} break;
 	case eReady:
 		{
-			PlayHUDMotion		("anm_throw_idle", "anim_throw_idle", EHudMixType::eMixAll, GetState(), m_pHUD != nullptr);
+			PlayHUDMotion		("anm_throw_idle", EHudMixType::eMixAll, GetState());
 			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 			{
 				if (CCustomDevice* dev = actor->GetDevice())
@@ -437,8 +428,7 @@ void CMissile::State(u8 state)
 			{
 				PlaySound("sndThrow", Position());
 			}
-			PlayHUDMotion		("anm_throw", "anim_throw_act", EHudMixType::eMixAll, GetState(), m_pHUD != nullptr);
-			m_motion_marks_available = m_current_motion_def ? !m_current_motion_def->marks.empty() : false;
+			PlayHUDMotion		("anm_throw", EHudMixType::eMixAll, GetState());
 
 			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 			{
@@ -454,7 +444,6 @@ void CMissile::State(u8 state)
 		} break;
 	case eThrowEnd:
 		{
-			PlayHUDMotion("anm_throw_end", "anim_throw_end", EHudMixType::eMixAll, GetState(), m_pHUD != nullptr);
 			SwitchState			(eShowing, true); 
 		} break;
 /*	case eBore:
@@ -538,11 +527,6 @@ void CMissile::OnAnimationEnd(u8 state)
 	case eThrow:
 		{
 			SwitchState	(eThrowEnd, true);
-			if (!m_motion_marks_available && !m_throw)
-			{
-				if (H_Parent())
-					Throw();
-			}
 		} break;
 	case eThrowEnd:
 		{

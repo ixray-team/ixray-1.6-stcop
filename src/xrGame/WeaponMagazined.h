@@ -195,12 +195,9 @@ protected:
 	virtual void	PlayAnimAim			();
 	virtual void    PlaySoundAim		(bool in = true);
 	virtual shared_str SetCurrentReloadAnimation();
-	virtual shared_str SetCurrentReloadAnimationLegacy();
 	virtual shared_str SetCurrentShootAnimation();
-	virtual shared_str SetCurrentShootAnimationLegacy();
 	virtual shared_str SetCurrentStateAnimation(const shared_str& first_name);
-	virtual shared_str SetCurrentAimAnimation(const shared_str& first_name);
-	virtual shared_str SetCurrentIdleAnimation(const shared_str& first_name);
+	virtual shared_str SetCurrentAimAnimation();
 	shared_str SetCurrentPumpAnimation();
 
 	virtual	int		ShotsFired			() { return m_iShotNum; }

@@ -186,7 +186,7 @@ void CWeaponBM16::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
 	
-	PlayHUDMotion(SetCurrentReloadAnimation(), SetCurrentReloadAnimationLegacy(), EHudMixType::eMixAll, GetState());
+	PlayHUDMotion(SetCurrentReloadAnimation(), EHudMixType::eMixAll, GetState());
 }
 
 shared_str CWeaponBM16::SetCurrentShootAnimation()
@@ -224,14 +224,6 @@ shared_str CWeaponBM16::SetCurrentShootAnimation()
 	}
 
 	return anim;
-}
-
-shared_str CWeaponBM16::SetCurrentReloadAnimationLegacy()
-{
-	if(m_magazine.size()==1 || !HaveCartridgeInInventory(2))
-		return "anim_reload_1";
-	
-	return inherited::SetCurrentReloadAnimationLegacy();
 }
 
 shared_str CWeaponBM16::SetCurrentStateAnimation(const shared_str& first_name)
@@ -274,56 +266,23 @@ shared_str CWeaponBM16::SetCurrentStateAnimation(const shared_str& first_name)
 	else
 	{
 		xr_sprintf(new_suffix, "%s_%d", *anim, iAmmoElapsed);
-		if (HudAnimationExist(new_suffix, false))
-			anim = new_suffix;
+		anim = new_suffix;
 	}
 
 	return anim;
 }
 
-bool CWeaponBM16::HudAnimationExist(const shared_str& anim_name, bool only_for_actor)
+bool CWeaponBM16::HudAnimationExist(const shared_str& anim_name)
 {
 	string128 new_name;
 	xr_sprintf(new_name, "%s_%d", *anim_name, iAmmoElapsed);	
 
-	bool has_anim = inherited::HudAnimationExist(new_name, only_for_actor);
+	bool has_anim = inherited::HudAnimationExist(new_name);
 
 	if (has_anim)
 	{
 		return has_anim;
 	}
 
-	return inherited::HudAnimationExist(anim_name, only_for_actor);
-}
-
-shared_str CWeaponBM16::SetCurrentAimAnimation(const shared_str& first_name)
-{
-	if (!m_pHUD)
-	{
-		return inherited::SetCurrentAimAnimation(first_name);
-	}
-
-	switch (m_magazine.size())
-	{
-	break;
-	case 1: 
-	{
-		return "anim_zoomed_idle_1";
-	}
-	break;
-	case 2: 
-	{
-		return "anim_zoomedidle_2";
-	}
-	break;
-	};
-	return first_name;
-}
-
-shared_str CWeaponBM16::SetCurrentShootAnimationLegacy()
-{
-	if (m_magazine.size() == 1)
-		return "anim_shoot_1";
-	
-	return inherited::SetCurrentShootAnimationLegacy();
+	return inherited::HudAnimationExist(anim_name);
 }

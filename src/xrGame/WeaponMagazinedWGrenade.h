@@ -66,11 +66,9 @@ public:
 	//виртуальные функции для проигрывания анимации HUD
 	virtual void	PlayAnimModeSwitch();
 	virtual shared_str SetCurrentReloadAnimation();
-	virtual shared_str SetCurrentReloadAnimationLegacy();
 	virtual shared_str SetCurrentStateAnimation(const shared_str& first_name);
 	virtual shared_str SetCurrentShootAnimation();
-	virtual shared_str SetCurrentShootAnimationLegacy();
-
+	
 	virtual CWeaponMagazinedWGrenade* cast_weapon_magazined_w_grenade() { return this; }
 	virtual CRocketLauncher* cast_rocket_launcher() override { return this; }
 
@@ -105,7 +103,4 @@ public:
 	virtual int	GetCurrentElapsed(bool for_grenade_mode = false) const override;
 
 	virtual void UpdateGrenadeVisibility(bool visibility);
-
-	//название косточки для гранаты подствольника в HUD
-	shared_str grenade_bone_name;
 };

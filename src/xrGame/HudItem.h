@@ -28,7 +28,6 @@ class CPhysicsShellHolder;
 #include "player_hud.h"
 
 #include "HudTorchLight.h"
-#include "weaponHUD.h"
 
 struct attachable_hud_item;
 class motion_marks;
@@ -78,7 +77,7 @@ class CHudItem : public CHUDState
 {
 public:
 	CHudItem();
-	virtual ~CHudItem(void);
+	virtual	~CHudItem() = default;
 	virtual DLL_Pure* _construct();
 protected:
 	
@@ -101,7 +100,6 @@ protected:
 
 	virtual void switch2_Bore();
 
-	CWeaponHUD*					m_pHUD = nullptr;
 public:
 	virtual void				Load				(const char* section);
 	virtual void				LoadSounds			(const char* section);
@@ -128,8 +126,8 @@ public:
 	virtual bool				ActivateItem		();
 	virtual void				DeactivateItem		();
 	virtual bool				SendDeactivateItem	(bool Force);
-	virtual void				OnActiveItem		();
-	virtual void				OnHiddenItem		();
+	virtual void				OnActiveItem		()				{};
+	virtual void				OnHiddenItem		()				{};
 	virtual void				SendHiddenItem		();			//same as OnHiddenItem but for client... (sends message to a server)...
 	virtual void				OnMoveToRuck		(const SInvItemPlace& prev);
 
@@ -158,31 +156,24 @@ public:
 	virtual void				UpdateCL			();
 	virtual void				renderable_Render	();
 
-	virtual void				UpdateHudPosition	();
 
-	//просчет инерции для HUD 
-	virtual void				UpdateHudInertion	(Fmatrix& hud_trans);
-	//просчет дополнительных вычислений (переопределяется в потомках)
 	virtual void				UpdateHudAdditonal	(Fmatrix&);
 
 
 	virtual	void				UpdateXForm			()						= 0;
-	void						animGet				(MotionSVec& lst, const char* prefix);
-	CWeaponHUD*					GetHUD				() {return m_pHUD;}
 
-	u32							PlayHUDMotion		(const shared_str& M, EHudMixType bMixIn, u8 state, bool disableRandom = false);
-	u32							PlayHUDMotion		(const shared_str& M, const shared_str& M2, EHudMixType bMixIn, u8 state, bool disableRandom = false);
-	u32							PlayHUDMotion_noCB	(const shared_str& M, EHudMixType bMixIn, bool disableRandom);
+	u32							PlayHUDMotion		(const shared_str& M, EHudMixType bMixIn, u8 state);
+	u32							PlayHUDMotion_noCB	(const shared_str& M, EHudMixType bMixIn);
 	void						StopCurrentAnimWithoutCallback();
 	bool						AddSuffixName		(shared_str& anim, const char* suffix, const char* test_suffix = "");
-	virtual shared_str			SetCurrentIdleAnimation(const shared_str& first_name);
+	shared_str					SetCurrentIdleAnimation();
 	virtual shared_str			SetCurrentStateAnimation(const shared_str& first_name) { return first_name; }
 
 	IC void						RenderHud				(bool B)	{ m_huditem_flags.set(fl_renderhud, B);}
 	IC bool						RenderHud				()			{ return m_huditem_flags.test(fl_renderhud);}
 	attachable_hud_item*		HudItemData				();
 	virtual void				on_a_hud_attach			();
-	virtual bool				HudAnimationExist		(const shared_str& anim_name, bool only_for_actor = true);
+	virtual bool				HudAnimationExist		(const shared_str& anim_name);
 	virtual void				on_b_hud_detach			();
 	virtual void				render_hud_mode			()					{};
 	virtual bool				need_renderable			()					{return true;};
@@ -389,11 +380,6 @@ protected:
 
 	virtual void				SetModelBoneStatus(const char* bone, bool show);
 	virtual void				SetMultipleBonesStatus(const char* section, const char* line, bool show);
-	//вкл/выкл инерции (временное, с плавным возвращением оружия в состояние без инерции)
-	void						StartHudInertion();
-	void						StopHudInertion();
-private:
-	bool						m_bInertionEnable = true;
 
 private:
 	CPhysicItem					*m_object;
