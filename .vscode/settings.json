@@ -137,6 +137,12 @@
         "nnls": "cpp"
     },
 
+    "clang-tidy.checks": [
+        "readability-identifier-naming"
+    ],
+    "clang-tidy.buildPath": "build/",
+    "clang-tidy.executable": "clang-tidy",
+    
     "dotnet.defaultSolution": "disable",
 
     "cmake.configureOnOpen": false,
