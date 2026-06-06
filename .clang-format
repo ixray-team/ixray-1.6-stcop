@@ -1,0 +1,29 @@
+BasedOnStyle: LLVM
+
+UseTab: Always
+IndentWidth: 4
+TabWidth: 4
+SortIncludes: Never
+BreakBeforeBraces: Allman
+
+BreakInheritanceList: AfterColon
+ConstructorInitializerIndentWidth: 4
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+
+InsertBraces: true
+
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortBlocksOnASingleLine: Never
+
+ColumnLimit: 200
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeComma
+PointerAlignment: Left
+Standard: c++20
+IndentCaseLabels: true
+MaxEmptyLinesToKeep: 2
+KeepEmptyLinesAtTheStartOfBlocks: false
+
+AccessModifierOffset: -4
