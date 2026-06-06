@@ -63,5 +63,6 @@ xr_vector<IterationData>& GetIterationData();
 IterationData* GetActiveIteration();
 void SetActiveIteration(IterationData* i);
 xr_vector<xr_string>& GetLogVector();
+void ClearLogVector();
 u32& GetPhaseStartTime();
 xr_string make_time(u32 sec);
