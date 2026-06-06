@@ -9,7 +9,7 @@
         <strip x="0.050" y="0" width="0.89" height="1.0" tex_loop="1" tex_width="1024" stretch="1">
             <texture x="0" y="10" width="1.0" height="0.20">no_texture</texture>
             <cardinal_points alignment="c" x="0" y="0.15" width="0.065" height="0.4" stretch="1">
-                <text align="c" font="font_blender_pro_b_14" vert_align="c" stretch="1"/>
+                <text align="c" font="ui_font_arial_14" vert_align="c" stretch="1"/>
                 <main_cardinals>
                     <text align="c" font="ui_font_arial_14" colour="ui_1" vert_align="c" stretch="1"/>
                     <n>N</n>
