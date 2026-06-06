@@ -1,0 +1,13 @@
+if (WIN32)
+    set(CMAKE_VS_GLOBALS "EnableClangTidyCodeAnalysis=true")
+    set(CMAKE_CXX_CLANG_TIDY_EXPORT_FIXES_DIR "${CMAKE_BINARY_DIR}/clang-tidy")
+else()
+    find_program(CLANG_TIDY_EXE clang-tidy)
+
+    if(CLANG_TIDY_EXE)
+        set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_EXE} -checks=readability-identifier-naming)
+        message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
+    else()
+        message(WARNING "clang-tidy not found - linting disabled")
+    endif()
+endif()
