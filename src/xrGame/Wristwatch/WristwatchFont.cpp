@@ -126,6 +126,7 @@ void WristwatchFont::UpdateGlyphs(SWristwatchHudData& hudData, u32 digit0, u32 d
 		hudData.fontGlyph2.set(0.0f, 0.0f, 0.0f, 0.0f);
 		hudData.fontGlyph3.set(0.0f, 0.0f, 0.0f, 0.0f);
 		hudData.fontGlyphColon.set(0.0f, 0.0f, 0.0f, 0.0f);
+		hudData.fontGlyphEight.set(0.0f, 0.0f, 0.0f, 0.0f);
 		return;
 	}
 
@@ -133,6 +134,7 @@ void WristwatchFont::UpdateGlyphs(SWristwatchHudData& hudData, u32 digit0, u32 d
 	SetDigitGlyph(*g_font, digit1, hudData.fontGlyph1);
 	SetDigitGlyph(*g_font, digit2, hudData.fontGlyph2);
 	SetDigitGlyph(*g_font, digit3, hudData.fontGlyph3);
+	SetDigitGlyph(*g_font, 8u, hudData.fontGlyphEight);
 
 	if (const CGameFont::Glyph* colonGlyph = g_font->GetGlyphInfo(':'))
 	{
