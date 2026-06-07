@@ -11,9 +11,9 @@
 #include "HUDManager.h"
 #include "ai_object_location.h"
 
-void TAnomalyMovement::BeginComponent(CAnomalyZone* O)
+void TAnomalyMovement::BeginComponent(IECSOwner* O)
 {
-	m_currentAnomalyObject = O;
+	m_currentAnomalyObject = smart_cast<CAnomalyZone*>(O);
 }
 
 void TAnomalyMovement::EndComponent() { }
