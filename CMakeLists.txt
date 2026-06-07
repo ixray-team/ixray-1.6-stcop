@@ -78,7 +78,9 @@ elseif (LINUX)
 endif()
 
 # Formatter
-include("cmake/clangtidy.cmake")
+if (NOT IXRAY_CI)
+    include("cmake/clangtidy.cmake")
+endif()
 
 # SDK folders
 set(IXRAY_SDK_LIB ${CMAKE_CURRENT_SOURCE_DIR}/sdk/libraries/${CMAKE_VS_PLATFORM_NAME}/)
