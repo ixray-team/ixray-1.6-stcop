@@ -47,7 +47,10 @@ add_link_options("$<$<CONFIG:RELEASE>:/INCREMENTAL:NO>" "$<$<CONFIG:RELWITHDEBIN
 
 ## Exceptions...
 if (NOT IXRAY_LDEBUG)
-    add_compile_options("$<$<CONFIG:DEBUG>:/EHsc>")
+	## Используется, вернуть только в случае, если найдётся гарантированный способ ловить EXPRESSION_ACCESS_VIOLATION из:
+	## - С++ функций, вызванных из Lua
+	## - из тасков внутри пула потоков
+    ## add_compile_options("$<$<CONFIG:DEBUG>:/EHsc>")
 endif()
 
 ## Edit and Continue mode
