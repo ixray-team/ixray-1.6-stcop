@@ -1,4 +1,6 @@
 #pragma once
+
+#include "AnomalyZone.h"
 #include "ElectricCurve.h"
 #include "RandomSoundEmmiter.h"
 

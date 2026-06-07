@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AnomalyZone.h"
+
 class CAnomalyZone;
 class CGameObject;
 class CArtefact;
