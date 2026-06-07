@@ -65,6 +65,10 @@ struct SWristwatchRuntimeSettings
 
 	shared_str surgeScript;
 	shared_str surgeHooksFn;
+	shared_str glassMeshSubstr;
+
+	u8 debugLcdPass = 0;
+	bool forceSkipGlassDraw = true;
 
 	bool contentReady = false;
 };

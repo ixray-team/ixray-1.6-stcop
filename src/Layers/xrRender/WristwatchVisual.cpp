@@ -15,6 +15,16 @@ struct SWatchesChildShaderBackup
 	bool valid = false;
 };
 
+enum class EGlassDetectReason : u8
+{
+	None = 0,
+	HiddenShader,
+	GlassShader,
+	MeshName,
+	GlassTexture,
+	GlassTextureMarker,
+};
+
 shared_str g_watchesModelPath;
 xr_vector<SWatchesChildShaderBackup> g_watchesShaderBackup;
 bool g_watchesShadersApplied = false;
@@ -40,7 +50,7 @@ void BuildGlassTextureList(string_path& outTextures)
 		settings.glassBumpTexture.c_str());
 }
 
-void NormalizeTexturePath(string_path& path)
+void NormalizeResourcePath(string_path& path)
 {
 	if (path[0] == '\0')
 	{
@@ -64,21 +74,21 @@ void NormalizeTexturePath(string_path& path)
 	}
 }
 
-bool TexturePathMatches(const shared_str& textureName, const shared_str& configuredPath)
+bool ResourcePathMatches(const shared_str& left, const shared_str& right)
 {
-	if (textureName.size() == 0 || configuredPath.size() == 0)
+	if (left.size() == 0 || right.size() == 0)
 	{
 		return false;
 	}
 
-	string_path texturePath;
-	string_path configPath;
-	xr_strcpy(texturePath, textureName.c_str());
-	xr_strcpy(configPath, configuredPath.c_str());
-	NormalizeTexturePath(texturePath);
-	NormalizeTexturePath(configPath);
+	string_path leftPath;
+	string_path rightPath;
+	xr_strcpy(leftPath, left.c_str());
+	xr_strcpy(rightPath, right.c_str());
+	NormalizeResourcePath(leftPath);
+	NormalizeResourcePath(rightPath);
 
-	return xr_strcmp(texturePath, configPath) == 0;
+	return xr_strcmp(leftPath, rightPath) == 0;
 }
 
 const char* WristwatchVisualDebugName(dxRender_Visual* visual)
@@ -86,9 +96,116 @@ const char* WristwatchVisualDebugName(dxRender_Visual* visual)
 	return visual != nullptr ? visual->dbg_name.c_str() : "<null>";
 }
 
-bool IsGlassChild(const SWatchesChildShaderBackup& backup, const shared_str& configuredGlassTexture)
+const char* GlassDetectReasonName(EGlassDetectReason reason)
 {
-	return backup.valid && TexturePathMatches(backup.texture, configuredGlassTexture);
+	switch (reason)
+	{
+	case EGlassDetectReason::HiddenShader:
+		return "hidden_shader";
+	case EGlassDetectReason::GlassShader:
+		return "glass_shader";
+	case EGlassDetectReason::MeshName:
+		return "mesh_name";
+	case EGlassDetectReason::GlassTexture:
+		return "glass_texture";
+	case EGlassDetectReason::GlassTextureMarker:
+		return "glass_texture_marker";
+	default:
+		return "none";
+	}
+}
+
+bool MeshNameContainsSubstr(dxRender_Visual* visual, const shared_str& substr)
+{
+	if (visual == nullptr || substr.size() == 0)
+	{
+		return false;
+	}
+
+	string_path meshName;
+	xr_strcpy(meshName, visual->dbg_name.c_str());
+	_strlwr(meshName);
+
+	string_path marker;
+	xr_strcpy(marker, substr.c_str());
+	_strlwr(marker);
+
+	return strstr(meshName, marker) != nullptr;
+}
+
+bool IsHiddenGlassChild(const SWatchesChildShaderBackup& backup, const shared_str& hiddenShader)
+{
+	return backup.valid && ResourcePathMatches(backup.shader, hiddenShader);
+}
+
+bool IsGlassShaderChild(const SWatchesChildShaderBackup& backup, const shared_str& glassShader)
+{
+	return backup.valid && ResourcePathMatches(backup.shader, glassShader);
+}
+
+bool TexturePathContainsGlassMarker(const shared_str& textureName)
+{
+	if (textureName.size() == 0)
+	{
+		return false;
+	}
+
+	string_path texturePath;
+	xr_strcpy(texturePath, textureName.c_str());
+	NormalizeResourcePath(texturePath);
+
+	return strstr(texturePath, "watches_glass") != nullptr;
+}
+
+bool IsGlassChildMesh(
+	const SWatchesChildShaderBackup& backup,
+	const SWristwatchRuntimeSettings& settings,
+	dxRender_Visual* visual,
+	EGlassDetectReason& outReason)
+{
+	outReason = EGlassDetectReason::None;
+
+	if (IsHiddenGlassChild(backup, settings.shaderHidden))
+	{
+		outReason = EGlassDetectReason::HiddenShader;
+		return true;
+	}
+
+	if (IsGlassShaderChild(backup, settings.shaderGlass))
+	{
+		outReason = EGlassDetectReason::GlassShader;
+		return true;
+	}
+
+	if (MeshNameContainsSubstr(visual, settings.glassMeshSubstr))
+	{
+		outReason = EGlassDetectReason::MeshName;
+		return true;
+	}
+
+	if (backup.valid && TexturePathContainsGlassMarker(backup.texture))
+	{
+		outReason = EGlassDetectReason::GlassTextureMarker;
+		return true;
+	}
+
+	if (settings.glassTexture.size() == 0 || settings.digitalTexture.size() == 0)
+	{
+		return false;
+	}
+
+	if (settings.glassTexture == settings.digitalTexture)
+	{
+		return false;
+	}
+
+	if (backup.valid && ResourcePathMatches(backup.texture, settings.glassTexture))
+	{
+		outReason = EGlassDetectReason::GlassTexture;
+		return true;
+	}
+
+	return false;
 }
 
 bool IsWatchUiChild(CKinematics& kinematics, u32 childIdx, u16 watchUiBone)
@@ -101,6 +218,21 @@ bool IsWatchUiChild(CKinematics& kinematics, u32 childIdx, u16 watchUiBone)
 	const CBoneData& boneData = kinematics.LL_GetData(watchUiBone);
 	return static_cast<size_t>(childIdx) < boneData.child_faces.size() &&
 		!boneData.child_faces[childIdx].empty();
+}
+
+void SuppressGlassChildDraw(
+	dxRender_Visual* child,
+	const SWatchesChildShaderBackup& backup,
+	const SWristwatchRuntimeSettings& settings)
+{
+	if (settings.forceSkipGlassDraw)
+	{
+		child->shader.destroy();
+		return;
+	}
+
+	const char* textureName = backup.valid ? backup.texture.c_str() : "";
+	child->shader.create(settings.shaderHidden.c_str(), textureName);
 }
 
 void CaptureShaderBackup(const ref_shader& shader, SWatchesChildShaderBackup& backup, LPCSTR fallbackShader)
@@ -211,13 +343,16 @@ void ApplyDigitalShaders(CKinematics& kinematics)
 		}
 	}
 
-	Msg("* [wristwatch] ApplyDigitalShaders model='%s' children=%u watch_ui_bone=%u has_watch_ui_mesh=%d",
+	Msg("* [wristwatch] ApplyDigitalShaders model='%s' children=%u watch_ui_bone=%u has_watch_ui_mesh=%d force_skip_glass=%d debug_lcd_pass=%u",
 		kinematics.dbg_name.c_str(),
 		static_cast<u32>(kinematics.children.size()),
 		static_cast<u32>(watchUiBone),
-		hasWatchUiMesh ? 1 : 0);
+		hasWatchUiMesh ? 1 : 0,
+		settings.forceSkipGlassDraw ? 1 : 0,
+		static_cast<u32>(settings.debugLcdPass));
 
 	u32 glassChildCount = 0;
+	u32 glassSuppressedCount = 0;
 
 	for (u32 childIdx = 0; childIdx < kinematics.children.size(); ++childIdx)
 	{
@@ -228,53 +363,85 @@ void ApplyDigitalShaders(CKinematics& kinematics)
 		}
 
 		const SWatchesChildShaderBackup& backup = g_watchesShaderBackup[childIdx];
-		const bool isGlassChildMesh = IsGlassChild(backup, settings.glassTexture);
+		EGlassDetectReason glassReason = EGlassDetectReason::None;
+		const bool isGlassChildMesh = IsGlassChildMesh(backup, settings, child, glassReason);
 		const bool isWatchUi = IsWatchUiChild(kinematics, childIdx, watchUiBone);
 
 		const char* textureName = backup.valid ? backup.texture.c_str() : "<none>";
-		Msg("* [wristwatch] child[%u] visual='%s' texture='%s' orig_shader='%s' watch_ui=%d glass=%d",
+		const char* shaderName = backup.shader.size() > 0 ? backup.shader.c_str() : "<none>";
+		Msg("* [wristwatch] child[%u] visual='%s' shader='%s' tex='%s' watch_ui=%d glass=%d glass_reason=%s",
 			childIdx,
 			WristwatchVisualDebugName(child),
+			shaderName,
 			textureName,
-			backup.shader.c_str(),
 			isWatchUi ? 1 : 0,
-			isGlassChildMesh ? 1 : 0);
+			isGlassChildMesh ? 1 : 0,
+			GlassDetectReasonName(glassReason));
 
 		if (isWatchUi)
 		{
 			child->shader.create(digitalShader, digitalTextures);
-			Msg("* [wristwatch] child[%u] -> shader %s (watch_ui)", childIdx, digitalShader);
+			Msg("* [wristwatch] child[%u] -> shader %s (watch_ui LCD pass)", childIdx, digitalShader);
 			continue;
 		}
 
 		if (isGlassChildMesh)
 		{
 			++glassChildCount;
-			if (hasWatchUiMesh)
+			if (hasWatchUiMesh && settings.forceSkipGlassDraw)
 			{
-				BuildGlassTextureList(glassTextures);
-				child->shader.create(glassShader, glassTextures);
-				Msg("* [wristwatch] child[%u] -> shader %s (glass mesh) tex=%s", childIdx, glassShader, glassTextures);
+				SuppressGlassChildDraw(child, backup, settings);
+				++glassSuppressedCount;
+				Msg("* [wristwatch] child[%u] -> glass suppressed (force_skip_glass)", childIdx);
 			}
 			else
 			{
-				child->shader.create(digitalShader, digitalTextures);
-				Msg("* [wristwatch] child[%u] -> shader %s (glass fallback, no watch_ui)", childIdx, digitalShader);
+				BuildGlassTextureList(glassTextures);
+				child->shader.create(glassShader, glassTextures);
+				if (hasWatchUiMesh)
+				{
+					Msg("* [wristwatch] child[%u] -> shader %s (glass overlay on LCD, sorting 12)",
+						childIdx,
+						glassShader);
+				}
+				else
+				{
+					Msg("* [wristwatch] child[%u] -> shader %s (glass fallback, no watch_ui)", childIdx, glassShader);
+				}
 			}
 
 			continue;
 		}
 
+		if (hasWatchUiMesh &&
+			backup.valid &&
+			ResourcePathMatches(backup.texture, settings.digitalTexture))
+		{
+			Msg("! [wristwatch] child[%u] shader='%s' tex='%s' shares watches texture but is not watch_ui or glass - possible pixel overlap",
+				childIdx,
+				shaderName,
+				textureName);
+		}
+
 		if (backup.valid && backup.shader.size() > 0)
 		{
 			child->shader.create(backup.shader.c_str(), backup.texture.c_str());
-			Msg("* [wristwatch] child[%u] -> shader %s (restore)", childIdx, backup.shader.c_str());
+			Msg("* [wristwatch] child[%u] -> shader %s (restore original)", childIdx, backup.shader.c_str());
 		}
 	}
 
 	if (glassChildCount == 0 && settings.glassTexture.size() > 0)
 	{
-		Msg("! [wristwatch] no glass child matched watches_glass_texture='%s'", settings.glassTexture.c_str());
+		Msg("! [wristwatch] no glass child detected (hidden=%s glass=%s mesh_substr='%s')",
+			settings.shaderHidden.c_str(),
+			settings.shaderGlass.c_str(),
+			settings.glassMeshSubstr.c_str());
+	}
+	else
+	{
+		Msg("* [wristwatch] summary glass_children=%u glass_suppressed=%u",
+			glassChildCount,
+			glassSuppressedCount);
 	}
 }
 }
