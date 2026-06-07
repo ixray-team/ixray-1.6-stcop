@@ -10,12 +10,12 @@
 #include "../xrCore/Save/SaveManager.h"
 
 
-#if !defined(MASTER_GOLD) && defined(IXR_WINDOWS) && (defined(_MSC_VER) || (defined(__clang__) && defined(_MSC_EXTENSIONS)))
+#if defined(DEBUG) && defined(IXR_WINDOWS) && (defined(_MSC_VER) || (defined(__clang__) && defined(_MSC_EXTENSIONS)))
 #define ALLOW_SEH_EXCEPTIONS
 #include <windows.h> // for EXCEPTION_ACCESS_VIOLATION
 #include <excpt.h>
 
-int ex_filter(unsigned int code, struct _EXCEPTION_POINTERS *ep)
+int ex_filter(unsigned int code, _EXCEPTION_POINTERS *ep)
 {
 	if (IsDebuggerPresent())
 	{
@@ -24,12 +24,37 @@ int ex_filter(unsigned int code, struct _EXCEPTION_POINTERS *ep)
 	ProcessStackTrace(ep);
 	return EXCEPTION_EXECUTE_HANDLER;
 }
+
+class SEHExceptionThreads
+{
+public:
+	EXCEPTION_POINTERS* info;
+	u32 code;
+
+	SEHExceptionThreads(u32 c, EXCEPTION_POINTERS* i) : info(i), code(c)
+	{
+		ex_filter(code, info);
+	}
+};
+
+void SEH_translator_Threads(u32 code, _EXCEPTION_POINTERS* info)
+{
+	throw SEHExceptionThreads(code, info);	
+}
+
+static std::atomic_bool g_bThreadsSEHInited = false;
+
 #endif
 
 void XRay::Engine::PreRenderThread()
 {
 #ifdef ALLOW_SEH_EXCEPTIONS
-	__try
+	if (!g_bThreadsSEHInited)
+	{
+		_set_se_translator(SEH_translator_Threads);
+		g_bThreadsSEHInited = true;
+	}
+	try
 #endif
 	{
 		{
@@ -53,7 +78,7 @@ void XRay::Engine::PreRenderThread()
 		PROF_STOP_THREAD();
 		Platform::SetThreadName("X-Ray Empty Task");
 #ifdef ALLOW_SEH_EXCEPTIONS
-	} __except(ex_filter(GetExceptionCode(), GetExceptionInformation()))
+	} catch(...)
 	{
 		FATAL("Unhandled exception in PreRenderThread!");
 #endif
@@ -63,7 +88,12 @@ void XRay::Engine::PreRenderThread()
 void XRay::Engine::GameThread()
 {
 #ifdef ALLOW_SEH_EXCEPTIONS
-	__try
+	if (!g_bThreadsSEHInited)
+	{
+		_set_se_translator(SEH_translator_Threads);
+		g_bThreadsSEHInited = true;
+	}
+	try
 #endif
 	{
 		// we has granted permission to execute
@@ -132,7 +162,7 @@ void XRay::Engine::GameThread()
 		Device.Statistic->Sound.End();
 	}
 #ifdef ALLOW_SEH_EXCEPTIONS
-	} __except(ex_filter(GetExceptionCode(), GetExceptionInformation()))
+	} catch(...)
 	{
 		FATAL("Unhandled exception in GameThread!");
 #endif
