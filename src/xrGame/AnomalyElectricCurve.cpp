@@ -10,9 +10,9 @@
 #include "GameObject.h"
 #include "HUDManager.h"
 
-void TAnomalyElectricCurve::BeginComponent(CAnomalyZone* O)
+void TAnomalyElectricCurve::BeginComponent(IECSOwner* O)
 {
-	m_currentAnomalyObject = O;
+	m_currentAnomalyObject = smart_cast<CAnomalyZone*>(O);
 }
 
 void TAnomalyElectricCurve::EndComponent()

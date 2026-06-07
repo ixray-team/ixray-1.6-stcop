@@ -65,11 +65,8 @@ CAnomalyZone::CAnomalyZone(void)
 	m_hit_sounds_variants.clear();
 	m_entrance_sounds_variants.clear();
 
-	TAnomalyElectricCurve& oAnomalyElectricCurve = CreateComponent<TAnomalyElectricCurve>();
-	oAnomalyElectricCurve.BeginComponent(this);
-
-	TAnomalyMovement& oAnomalyMovement = CreateComponent<TAnomalyMovement>();
-	oAnomalyMovement.BeginComponent(this);
+	CreateComponent<TAnomalyElectricCurve>();
+	CreateComponent<TAnomalyMovement>();
 }
 
 CAnomalyZone::~CAnomalyZone(void) 

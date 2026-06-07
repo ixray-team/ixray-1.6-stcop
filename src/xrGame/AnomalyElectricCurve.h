@@ -43,7 +43,7 @@ private:
 	void OnBlastElectricCurvesUpdate(CGameObject* obj);
 
 public:
-	void BeginComponent(CAnomalyZone* O);
+	void BeginComponent(IECSOwner* O);
 	void EndComponent();
 
 	void Load(LPCSTR section);
