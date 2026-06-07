@@ -7,6 +7,7 @@
 #include "../map_manager.h"
 #include "../../xrEngine/device.h"
 #include "../../xrEngine/GameFont.h"
+#include "../../xrEngine/string_table.h"
 #include "../../xrCore/FormatParsers/XML/xrXMLParser.h"
 #include "../../xrCore/_stl_extensions.h"
 #include "../../xrCore/_color.h"
@@ -18,6 +19,9 @@
 #include "../../xrUI/UITextureMaster.h"
 #include "../../xrUI/ui_defs.h"
 #include <algorithm>
+#include <cmath>
+
+// --- Init / XML ---
 
 const float CUICompassBar::_kCardinalAngles[_kMaxCardinalPoints] =
 {
@@ -53,7 +57,6 @@ CUICompassBar::CUICompassBar()
       _activeTargetLoc(nullptr),
       _lastActiveLoc(nullptr),
       _activeTargetCurX(0.0f),
-      _fov(deg2rad(_kDefaultFovDeg)),
       _stripWidth(0.0f),
       _stripTexWidth(_kDefaultStripTexWidth),
       _stripTexLoop(true),
@@ -62,16 +65,18 @@ CUICompassBar::CUICompassBar()
       _stripTextureOffsetX(0.0f),
       _stripTextureOffsetY(0.0f),
       _collectSpotsTimer(0.0f),
+      _isInitialized(false),
       _isGameTypeSingleCompatible(false),
+      _fadeStorageCardinalCount(0),
+      _fadeStorageSpotCount(0),
       _stripGeometryCached(false)
 {
-    _cfg.activePadding = _kDefaultActivePadding;
-    _cfg.smoothingSpeed = _kDefaultSmoothingSpeed;
-    _cfg.activeOffsetY = 0.0f;
-    _cfg.altitudeDeadzone = _kDefaultAltitudeDeadzone;
-    _cfg.fadeInSpeed = 12.0f;
-    _cfg.fadeOutSpeed = 8.0f;
-    _cfg.minVisibleAlpha = 0.01f;
+    _runtimeCfg.fovRad = deg2rad(_kDefaultFovDeg);
+    _runtimeCfg.activePadding = _kDefaultActivePadding;
+    _runtimeCfg.smoothingSpeed = _kDefaultSmoothingSpeed;
+    _runtimeCfg.altitudeDeadzone = _kDefaultAltitudeDeadzone;
+    _runtimeCfg.cardinalFakeDistance = _kDefaultFakeTargetDistance;
+    _runtimeCfg.distanceFormat = "%.0f m";
 }
 
 CUICompassBar::~CUICompassBar()
@@ -82,6 +87,8 @@ CUICompassBar::~CUICompassBar()
 
 void CUICompassBar::Init()
 {
+    _isInitialized = false;
+
     CUIXml uiXml;
     if (!uiXml.Load(CONFIG_PATH, UI_PATH, "compass_bar.xml"))
     {
@@ -94,6 +101,7 @@ void CUICompassBar::Init()
         Msg("! CUICompassBar::Init: node 'compass_bar' not found in %s", uiXml.m_xml_file_name);
         return;
     }
+
     InitWindowAndBackground(uiXml, xmlInit);
     InitLayoutFromXml(uiXml);
 
@@ -102,8 +110,7 @@ void CUICompassBar::Init()
     _layerBg->SetWndSize(GetWndSize());
     _layerBg->SetWndPos(Fvector2().set(0.0f, 0.0f));
 
-    InitCompassDial(uiXml, xmlInit);
-
+    InitCompassDial(uiXml, xmlInit, _layerBg);
     AttachChild(_layerBg);
 
     _layerFg = new CUIWindow();
@@ -119,6 +126,7 @@ void CUICompassBar::Init()
     }
     CacheGameTypeCompatibility();
     ApplyRelativeLayout();
+    _isInitialized = (_strip != nullptr && _stripContainer != nullptr);
 }
 
 void CUICompassBar::InitWindowAndBackground(CUIXml& uiXml, CUIXmlInit& xmlInit)
@@ -150,22 +158,26 @@ void CUICompassBar::InitLayoutFromXml(CUIXml& uiXml)
 {
     const char* barPath = "compass_bar";
     const float fovDeg = uiXml.ReadAttribFlt(barPath, 0, "fov_angle", _kDefaultFovDeg);
-    _fov = (fovDeg > 0.0f) ? deg2rad(fovDeg) : deg2rad(_kDefaultFovDeg);
-    
-    _cfg.fadeInSpeed = std::max(uiXml.ReadAttribFlt(barPath, 0, "fade_in_speed", _cfg.fadeInSpeed), 0.1f);
-    _cfg.fadeOutSpeed = std::max(uiXml.ReadAttribFlt(barPath, 0, "fade_out_speed", _cfg.fadeOutSpeed), 0.1f);
-    _cfg.minVisibleAlpha = clampr(uiXml.ReadAttribFlt(barPath, 0, "min_visible_alpha", _cfg.minVisibleAlpha), 0.0f, 1.0f);
-    
+    _runtimeCfg.fovRad = (fovDeg > 0.0f) ? deg2rad(fovDeg) : deg2rad(_kDefaultFovDeg);
+
+    _runtimeCfg.fadeInSpeed = std::max(uiXml.ReadAttribFlt(barPath, 0, "fade_in_speed", _runtimeCfg.fadeInSpeed), 0.1f);
+    _runtimeCfg.fadeOutSpeed = std::max(uiXml.ReadAttribFlt(barPath, 0, "fade_out_speed", _runtimeCfg.fadeOutSpeed), 0.1f);
+    _runtimeCfg.minVisibleAlpha = clampr(uiXml.ReadAttribFlt(barPath, 0, "min_visible_alpha", _runtimeCfg.minVisibleAlpha), 0.0f, 1.0f);
+    _runtimeCfg.fovFadeInner = uiXml.ReadAttribFlt(barPath, 0, "fov_fade_inner", _kDefaultFovFadeInner);
+    _runtimeCfg.fovFadeOuter = uiXml.ReadAttribFlt(barPath, 0, "fov_fade_outer", _kDefaultFovFadeOuter);
+    _runtimeCfg.fovFadeEdgeLo = uiXml.ReadAttribFlt(barPath, 0, "fov_fade_edge_lo", _kDefaultFovFadeEdgeLo);
+    _runtimeCfg.fovFadeEdgeHi = uiXml.ReadAttribFlt(barPath, 0, "fov_fade_edge_hi", _kDefaultFovFadeEdgeHi);
+
     ParseSpots(uiXml, "compass_bar:spots");
 
     if (uiXml.NavigateToNode("compass_bar:active_target", 0))
     {
         const char* targetPath = "compass_bar:active_target";
-        _cfg.activePadding = uiXml.ReadAttribFlt(targetPath, 0, "padding",
+        _runtimeCfg.activePadding = uiXml.ReadAttribFlt(targetPath, 0, "padding",
             uiXml.ReadAttribFlt(targetPath, 0, "active_target_padding", _kDefaultActivePadding));
-        _cfg.smoothingSpeed = uiXml.ReadAttribFlt(targetPath, 0, "smoothing_speed", _kDefaultSmoothingSpeed);
-        _cfg.activeOffsetY = uiXml.ReadAttribFlt(targetPath, 0, "y", 0.0f);
-        _cfg.altitudeDeadzone = uiXml.ReadAttribFlt(targetPath, 0, "altitude_deadzone", _kDefaultAltitudeDeadzone);
+        _runtimeCfg.smoothingSpeed = uiXml.ReadAttribFlt(targetPath, 0, "smoothing_speed", _kDefaultSmoothingSpeed);
+        _runtimeCfg.activeOffsetY = uiXml.ReadAttribFlt(targetPath, 0, "y", 0.0f);
+        _runtimeCfg.altitudeDeadzone = uiXml.ReadAttribFlt(targetPath, 0, "altitude_deadzone", _kDefaultAltitudeDeadzone);
     }
 }
 
@@ -175,13 +187,13 @@ void CUICompassBar::ParseSpots(CUIXml& uiXml, const char* path)
     {
         return;
     }
-    
+
     _spotCfg.show = uiXml.ReadAttribInt(path, 0, "show", 1) != 0;
     _spotCfg.offsetX = uiXml.ReadAttribFlt(path, 0, "x", 0.0f);
     _spotCfg.offsetY = uiXml.ReadAttribFlt(path, 0, "y", 0.0f);
     _spotCfg.align = ParseAlign(uiXml.ReadAttrib(path, 0, "align", "c"));
-    _spotCfg.collectInterval = 0.1f;
-    
+    _spotCfg.collectInterval = std::max(uiXml.ReadAttribFlt(path, 0, "collect_interval", _kDefaultCollectInterval), 0.01f);
+
     string_path tmplPath;
     xr_strconcat(tmplPath, path, ":spot_template");
     if (uiXml.NavigateToNode(tmplPath, 0))
@@ -189,35 +201,36 @@ void CUICompassBar::ParseSpots(CUIXml& uiXml, const char* path)
         _spotCfg.spotWidth = uiXml.ReadAttribFlt(tmplPath, 0, "width", 0.0f);
         _spotCfg.spotHeight = uiXml.ReadAttribFlt(tmplPath, 0, "height", 0.0f);
     }
-    
+
     const CUIXmlInit::ColorDefs* colorDefs = CUIXmlInit::GetColorDefs();
     const char* defaultColorName = uiXml.ReadAttrib(path, 0, "color", "ui_1");
     CUIXmlInit::ColorDefs::const_iterator colorIt = colorDefs->find(defaultColorName);
     _spotCfg.defaultSpotColor = (colorIt != colorDefs->end()) ? colorIt->second : _kDefaultColorWhite;
 }
 
-void CUICompassBar::InitCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit)
+void CUICompassBar::InitCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit, CUIWindow* stripParent)
 {
-    const char* stripPath = uiXml.NavigateToNode("compass_bar:compass_dial", 0) ? 
+    const char* stripPath = uiXml.NavigateToNode("compass_bar:compass_dial", 0) ?
         "compass_bar:compass_dial:strip" : "compass_bar:strip";
-    
+
     string_path cardinalsPathBuf;
     xr_strconcat(cardinalsPathBuf, stripPath, ":cardinal_points");
-    const char* cardinalsPath = uiXml.NavigateToNode(cardinalsPathBuf, 0) ? 
+    const char* cardinalsPath = uiXml.NavigateToNode(cardinalsPathBuf, 0) ?
         cardinalsPathBuf : "compass_bar:cardinal_points";
-    
-    if (!uiXml.NavigateToNode(stripPath, 0))
+
+    if (!stripParent || !uiXml.NavigateToNode(stripPath, 0))
     {
         return;
     }
-    
+
     _stripTexWidth = uiXml.ReadAttribFlt(stripPath, 0, "tex_width", _kDefaultStripTexWidth);
     _stripTexLoop = uiXml.ReadAttribInt(stripPath, 0, "tex_loop", 1) != 0;
+    _runtimeCfg.cardinalFakeDistance = uiXml.ReadAttribFlt(cardinalsPath, 0, "fake_target_distance", _kDefaultFakeTargetDistance);
 
     _stripContainer = new CUICompassClipWindow();
     _stripContainer->SetAutoDelete(true);
     xmlInit.InitWindow(uiXml, stripPath, 0, _stripContainer);
-    AttachChild(_stripContainer);
+    stripParent->AttachChild(_stripContainer);
 
     string_path texPath;
     xr_strconcat(texPath, stripPath, ":texture");
@@ -234,11 +247,11 @@ void CUICompassBar::InitCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit)
     _strip->SetStretchTexture(true);
     _strip->InitTexture(texName.c_str(), false) || _strip->InitTexture("ui_inGame2_compass_dial", false);
     _stripContainer->AttachChild(_strip);
-    
+
     const float defY = uiXml.ReadAttribFlt(cardinalsPath, 0, "y", 0.0f);
     const float defW = uiXml.ReadAttribFlt(cardinalsPath, 0, "width", 16.0f);
     const float defH = uiXml.ReadAttribFlt(cardinalsPath, 0, "height", 14.0f);
-    
+
     _cardinals.reserve(_kMaxCardinalPoints);
     _cardinalLayout.reserve(_kMaxCardinalPoints);
 
@@ -366,11 +379,11 @@ void CUICompassBar::InitActiveTargetWidgets(CUIXml& uiXml, CUIXmlInit& xmlInit)
     {
         _activeMarkerFallbackTexture = texAttr;
     }
-    else
+    else if (uiXml.NavigateToNode(markerPath, 0))
     {
-        _activeMarkerFallbackTexture = uiXml.Read("compass_bar:active_target:marker:texture", 0,
-            "ui_inGame2_hint_wnd_main_window");
+        _activeMarkerFallbackTexture = uiXml.Read(markerPath, 0, "ui_inGame2_hint_wnd_main_window");
     }
+
     _activeTargetContainer = new CUIWindow();
     _activeTargetContainer->SetAutoDelete(true);
     float defaultContainerW = uiXml.ReadAttribFlt("compass_bar:active_target", 0, "width", 100.0f);
@@ -397,10 +410,10 @@ void CUICompassBar::InitActiveTargetWidgets(CUIXml& uiXml, CUIXmlInit& xmlInit)
         const char* arrowPath = "compass_bar:active_target:altitude_arrow";
         _altitudeArrowTextureUp = uiXml.ReadAttrib(arrowPath, 0, "texture_up", "ui_inGame2_compass_altitude_up");
         _altitudeArrowTextureDown = uiXml.ReadAttrib(arrowPath, 0, "texture_down", "ui_inGame2_compass_altitude_down");
-        const float deadzone = uiXml.ReadAttribFlt(arrowPath, 0, "altitude_deadzone", _cfg.altitudeDeadzone);
+        const float deadzone = uiXml.ReadAttribFlt(arrowPath, 0, "altitude_deadzone", _runtimeCfg.altitudeDeadzone);
         if (deadzone > 0.0f)
         {
-            _cfg.altitudeDeadzone = deadzone;
+            _runtimeCfg.altitudeDeadzone = deadzone;
         }
         _activeAltitudeArrow = new CUIStatic();
         _activeAltitudeArrow->SetAutoDelete(false);
@@ -418,8 +431,23 @@ void CUICompassBar::InitActiveTargetWidgets(CUIXml& uiXml, CUIXmlInit& xmlInit)
     }
     if (uiXml.NavigateToNode("compass_bar:active_target:distance_text", 0))
     {
-        _activeDistText = UIHelper::CreateStatic(uiXml, "compass_bar:active_target:distance_text",
-            _activeTargetContainer, false);
+        const char* distPath = "compass_bar:active_target:distance_text";
+        const char* stFormat = uiXml.ReadAttrib(distPath, 0, "st_format", nullptr);
+        if (stFormat && xr_strlen(stFormat) > 0 && g_pStringTable)
+        {
+            _runtimeCfg.distanceFormat = g_pStringTable->translate(stFormat);
+        }
+        else
+        {
+            const char* textFormat = uiXml.ReadAttrib(distPath, 0, "text_format", nullptr);
+            if (!textFormat || !*textFormat)
+            {
+                textFormat = uiXml.ReadAttrib(distPath, 0, "format", "%.0f m");
+            }
+            _runtimeCfg.distanceFormat = textFormat;
+        }
+
+        _activeDistText = UIHelper::CreateStatic(uiXml, distPath, _activeTargetContainer, false);
         if (_activeDistText)
         {
             _activeDistText->SetAutoDelete(false);
@@ -427,8 +455,7 @@ void CUICompassBar::InitActiveTargetWidgets(CUIXml& uiXml, CUIXmlInit& xmlInit)
     }
     if (uiXml.NavigateToNode("compass_bar:active_target:marker", 0))
     {
-        _activeMarker = UIHelper::CreateStatic(uiXml, "compass_bar:active_target:marker",
-            _activeTargetContainer, false);
+        _activeMarker = UIHelper::CreateStatic(uiXml, markerPath, _activeTargetContainer, false);
         if (_activeMarker)
         {
             _activeMarker->SetAutoDelete(false);
@@ -485,6 +512,8 @@ void CUICompassBar::CreateDefaultActiveTargetWidgets(CUIXml& uiXml)
     }
 }
 
+// --- Layout ---
+
 void CUICompassBar::ApplyRelativeLayout()
 {
     ApplyMainWindowLayout();
@@ -531,7 +560,7 @@ void CUICompassBar::ApplyLayerLayouts()
 {
     const Fvector2 wndSize = GetWndSize();
     const Fvector2 zeroPos = Fvector2().set(0.0f, 0.0f);
-    
+
     if (_layerBg)
     {
         _layerBg->SetWndSize(wndSize);
@@ -558,16 +587,16 @@ void CUICompassBar::ApplyStripLayout()
     {
         return;
     }
-    
+
     if (_stripContainer->WndRectIsProbablyRelative())
     {
         const Fvector2 containerSize = _stripContainer->GetWndSize();
         _stripContainer->SetWndSize(Fvector2().set(containerSize.x * GetWidth(), containerSize.y * GetHeight()));
-        
+
         const Fvector2 containerPos = _stripContainer->GetWndPos();
         _stripContainer->SetWndPos(Fvector2().set(containerPos.x * GetWidth(), containerPos.y * GetHeight()));
     }
-    
+
     if (_strip)
     {
         const float cw = _stripContainer->GetWidth();
@@ -586,10 +615,10 @@ void CUICompassBar::ApplyCardinalsLayout()
     {
         return;
     }
-    
+
     const float cw = _stripContainer->GetWidth();
     const float ch = _stripContainer->GetHeight();
-    
+
     for (size_t i = 0; i < _cardinals.size(); ++i)
     {
         CUIStatic* st = _cardinals[i];
@@ -619,59 +648,70 @@ EUIItemAlign CUICompassBar::ParseAlign(const char* alignStr)
     return alCenter;
 }
 
-float CUICompassBar::UpdateFadeAlpha(float alpha, bool isVisible, float fadeInSpeed, float fadeOutSpeed) const
+// --- Frame context ---
+
+bool CUICompassBar::BuildFrameContext(SCompassFrameContext& out) const
 {
-    const float speed = std::max(isVisible ? fadeInSpeed : fadeOutSpeed, 1.0f);
-    const float target = isVisible ? 1.0f : 0.0f;
-    const float delta = target - alpha;
-    const float t = clampr(Device.fTimeDelta * speed, 0.0f, 1.0f);
-    const float smoothT = 1.0f - (1.0f - t) * (1.0f - t);
-    return clampr(alpha + delta * smoothT, 0.0f, 1.0f);
+    CObject* viewEntity = Level().CurrentViewEntity();
+    if (!viewEntity)
+    {
+        out.isValid = false;
+        return false;
+    }
+    out.actorPos = viewEntity->Position();
+    out.heading = Device.vCameraDirection.getH();
+    out.levelName = Level().name();
+    out.isValid = true;
+    return true;
 }
 
-float CUICompassBar::CalculateFovEdgeFade(float relX, float stripWidth) const
+SCompassStripGeometry CUICompassBar::GetStripGeometry() const
 {
-    if (stripWidth <= 0.0f)
+    if (_stripGeometryCached && _stripContainer)
     {
-        return 1.0f;
+        return _cachedStripGeometry;
     }
-    const float normalizedX = (relX + stripWidth * 0.5f) / stripWidth;
-    if (normalizedX <= 0.05f)
+    SCompassStripGeometry geom;
+    if (_stripContainer)
     {
-        return 0.0f;
+        Frect rect;
+        _stripContainer->GetWndRect(rect);
+        geom.left = rect.lt.x;
+        geom.top = rect.lt.y;
+        geom.width = rect.width();
+        geom.height = rect.height();
     }
-    if (normalizedX >= 0.95f)
-    {
-        return 0.0f;
-    }
-    if (normalizedX < 0.30f)
-    {
-        const float t = (normalizedX - 0.05f) / 0.25f;
-        return t * t;
-    }
-    if (normalizedX > 0.70f)
-    {
-        const float t = (0.95f - normalizedX) / 0.25f;
-        return t * t;
-    }
-    return 1.0f;
+    _cachedStripGeometry = geom;
+    _stripGeometryCached = true;
+    return geom;
 }
 
-void CUICompassBar::EnsureFadeStorage()
+void CUICompassBar::InvalidateStripGeometry()
 {
-    const size_t cardinalCount = _cardinals.size();
-    const size_t spotCount = _poolSpots.size();
-    
-    _cardinalAlpha.resize(cardinalCount, 1.0f);
-    _cardinalBaseTextColor.resize(cardinalCount, _kDefaultColorWhite);
-    _poolSpotAlpha.resize(spotCount, 0.0f);
-    _poolSpotBaseColor.resize(spotCount, _kDefaultColorWhite);
+    _stripGeometryCached = false;
 }
+
+void CUICompassBar::MarkSpotsDirty()
+{
+    _updateState.spotsDirty = true;
+}
+
+u32 CUICompassBar::ComputeCandidateHash() const
+{
+    u32 hash = (u32)_spotCandidates.size();
+    for (const SSpotCandidate& cand : _spotCandidates)
+    {
+        hash ^= (u32)(size_t)cand.sourceLoc;
+    }
+    return hash;
+}
+
+// --- Strip ---
 
 bool CUICompassBar::ProjectToStrip(const Fvector& targetPos, const Fvector& actorPos, float camHeading,
     float& outX, bool clampToEdges) const
 {
-    if (_fov <= 0.0f || _stripWidth <= 0.0f)
+    if (_runtimeCfg.fovRad <= 0.0f || _stripWidth <= 0.0f)
     {
         return false;
     }
@@ -684,7 +724,7 @@ bool CUICompassBar::ProjectToStrip(const Fvector& targetPos, const Fvector& acto
     }
     float targetYaw = dir.getH();
     float delta = angle_normalize_signed(targetYaw - camHeading);
-    float halfFov = _fov * 0.5f;
+    float halfFov = _runtimeCfg.fovRad * 0.5f;
     if (clampToEdges)
     {
         delta = clampr(delta, -halfFov, halfFov);
@@ -733,19 +773,74 @@ void CUICompassBar::UpdateStrip(float heading)
     _strip->SetTextureRect(rect);
 }
 
-void CUICompassBar::UpdateCardinals(float heading)
+// --- Cardinals ---
+
+float CUICompassBar::UpdateFadeAlpha(float alpha, bool isVisible, float fadeInSpeed, float fadeOutSpeed) const
+{
+    const float speed = std::max(isVisible ? fadeInSpeed : fadeOutSpeed, 1.0f);
+    const float target = isVisible ? 1.0f : 0.0f;
+    const float delta = target - alpha;
+    const float t = clampr(Device.fTimeDelta * speed, 0.0f, 1.0f);
+    const float smoothT = 1.0f - (1.0f - t) * (1.0f - t);
+    return clampr(alpha + delta * smoothT, 0.0f, 1.0f);
+}
+
+float CUICompassBar::CalculateFovEdgeFade(float relX, float stripWidth) const
+{
+    if (stripWidth <= 0.0f)
+    {
+        return 1.0f;
+    }
+    const float normalizedX = (relX + stripWidth * 0.5f) / stripWidth;
+    if (normalizedX <= _runtimeCfg.fovFadeEdgeLo)
+    {
+        return 0.0f;
+    }
+    if (normalizedX >= _runtimeCfg.fovFadeEdgeHi)
+    {
+        return 0.0f;
+    }
+    if (normalizedX < _runtimeCfg.fovFadeInner)
+    {
+        const float range = _runtimeCfg.fovFadeInner - _runtimeCfg.fovFadeEdgeLo;
+        const float t = (range > 0.0f) ? (normalizedX - _runtimeCfg.fovFadeEdgeLo) / range : 1.0f;
+        return t * t;
+    }
+    if (normalizedX > _runtimeCfg.fovFadeOuter)
+    {
+        const float range = _runtimeCfg.fovFadeEdgeHi - _runtimeCfg.fovFadeOuter;
+        const float t = (range > 0.0f) ? (_runtimeCfg.fovFadeEdgeHi - normalizedX) / range : 1.0f;
+        return t * t;
+    }
+    return 1.0f;
+}
+
+void CUICompassBar::EnsureFadeStorage()
+{
+    const size_t cardinalCount = _cardinals.size();
+    const size_t spotCount = _poolSpots.size();
+
+    if (cardinalCount > _fadeStorageCardinalCount)
+    {
+        _cardinalAlpha.resize(cardinalCount, 1.0f);
+        _cardinalBaseTextColor.resize(cardinalCount, _kDefaultColorWhite);
+        _fadeStorageCardinalCount = cardinalCount;
+    }
+    if (spotCount > _fadeStorageSpotCount)
+    {
+        _poolSpotAlpha.resize(spotCount, 0.0f);
+        _poolSpotBaseColor.resize(spotCount, _kDefaultColorWhite);
+        _fadeStorageSpotCount = spotCount;
+    }
+}
+
+void CUICompassBar::UpdateCardinals(const SCompassFrameContext& ctx)
 {
     if (!_stripContainer || _cardinals.empty())
     {
         return;
     }
     SCompassStripGeometry geom = GetStripGeometry();
-    CObject* viewEntity = Level().CurrentViewEntity();
-    if (!viewEntity)
-    {
-        return;
-    }
-    Fvector actorPos = viewEntity->Position();
     EnsureFadeStorage();
     for (u32 i = 0; i < _cardinals.size() && i < _kMaxCardinalPoints; ++i)
     {
@@ -755,14 +850,14 @@ void CUICompassBar::UpdateCardinals(float heading)
             continue;
         }
         Fvector fakeTarget;
-        fakeTarget.set(actorPos.x + cosf(_kCardinalAngles[i]) * _kFakeTargetDistance,
-            actorPos.y, actorPos.z + sinf(_kCardinalAngles[i]) * _kFakeTargetDistance);
+        fakeTarget.set(ctx.actorPos.x + cosf(_kCardinalAngles[i]) * _runtimeCfg.cardinalFakeDistance,
+            ctx.actorPos.y, ctx.actorPos.z + sinf(_kCardinalAngles[i]) * _runtimeCfg.cardinalFakeDistance);
         float relX;
-        bool isVisible = ProjectToStrip(fakeTarget, actorPos, heading, relX, false);
-        _cardinalAlpha[i] = UpdateFadeAlpha(_cardinalAlpha[i], isVisible, _cfg.fadeInSpeed, _cfg.fadeOutSpeed);
+        bool isVisible = ProjectToStrip(fakeTarget, ctx.actorPos, ctx.heading, relX, false);
+        _cardinalAlpha[i] = UpdateFadeAlpha(_cardinalAlpha[i], isVisible, _runtimeCfg.fadeInSpeed, _runtimeCfg.fadeOutSpeed);
         const float edgeFade = isVisible ? CalculateFovEdgeFade(relX, geom.width) : 0.0f;
         const float finalAlpha = _cardinalAlpha[i] * edgeFade;
-        if (finalAlpha > _cfg.minVisibleAlpha)
+        if (finalAlpha > _runtimeCfg.minVisibleAlpha)
         {
             if (isVisible)
             {
@@ -782,6 +877,8 @@ void CUICompassBar::UpdateCardinals(float heading)
     }
 }
 
+// --- Spots (collect / queue / pool) ---
+
 bool CUICompassBar::ShouldShowSpot(CMapLocation* loc, const Fvector& actorPos, const shared_str& levelName,
     CMapLocation* activeTaskLoc) const
 {
@@ -796,17 +893,17 @@ SSpotCandidate CUICompassBar::CreateSpotCandidate(CMapLocation* loc) const
     cand.sourceLoc = loc;
     cand.pos = loc->GetLastPosition();
     cand.textureName = loc->GetCompassTexture();
-    
+
     const u32 locColor = loc->GetCompassColor();
     cand.color = (locColor != 0) ? locColor : (_spotCfg.defaultSpotColor != 0) ? _spotCfg.defaultSpotColor : _kDefaultColorWhite;
-    
+
     cand.offsetY = loc->GetCompassOffsetY();
     cand.offsetX = loc->GetCompassOffsetX();
     cand.valign = loc->GetCompassVertAlign();
-    
+
     const Fvector2 locSize = loc->GetCompassSize();
     cand.iconSize = (locSize.x > 0.0f && locSize.y > 0.0f) ? locSize : Fvector2().set(_spotCfg.spotWidth, _spotCfg.spotHeight);
-    
+
     return cand;
 }
 
@@ -837,13 +934,12 @@ void CUICompassBar::CollectSpotCandidates(const Fvector& actorPos, const shared_
         }
         Fvector pos = loc->GetLastPosition();
         const float maxDist = loc->GetCompassMaxDist();
-        // max_dist: not specified or 0.0f = infinite distance (always visible)
-        // max_dist > 0.0f = distance limit in game meters
         if (maxDist > 0.0f && actorPos.distance_to(pos) > maxDist)
         {
             continue;
         }
         SSpotCandidate cand = CreateSpotCandidate(loc);
+        cand.distance = actorPos.distance_to(pos);
         _spotCandidates.push_back(cand);
     }
 }
@@ -862,7 +958,6 @@ void CUICompassBar::BuildRenderQueueFromCandidates(float camHeading, const Fvect
         {
             continue;
         }
-        float dist = actorPos.distance_to(cand.pos);
         SSpotRenderItem item;
         item.relX = relX + _spotCfg.offsetX + cand.offsetX;
         item.sourceLoc = cand.sourceLoc;
@@ -874,7 +969,7 @@ void CUICompassBar::BuildRenderQueueFromCandidates(float camHeading, const Fvect
         {
             item.relX -= cand.iconSize.x * 0.5f;
         }
-        item.sortDist = dist;
+        item.sortDist = cand.distance;
         item.offsetY = cand.offsetY;
         item.valign = cand.valign;
         item.textureName = &cand.textureName;
@@ -890,28 +985,52 @@ CUIStatic* CUICompassBar::GetSpotFromPool(xr_vector<CUIStatic*>& pool, CUIWindow
     {
         return nullptr;
     }
-    
+
     if (index < pool.size())
     {
         return pool[index];
     }
-    
+
     CUIStatic* item = new CUIStatic();
     item->SetAutoDelete(true);
     item->SetStretchTexture(true);
     parent->AttachChild(item);
-    
+
     pool.push_back(item);
     _poolSpotOwners.push_back(nullptr);
     _poolSpotAlpha.push_back(0.0f);
     _poolSpotBaseColor.push_back(_kDefaultColorWhite);
-    
+    _fadeStorageSpotCount = pool.size();
+
     return item;
+}
+
+u32 CUICompassBar::AllocateSpotPoolSlot(CMapLocation* sourceLoc, xr_vector<u8>& poolSlotUsed)
+{
+    for (u32 i = 0; i < _poolSpotOwners.size(); ++i)
+    {
+        if (_poolSpotOwners[i] == sourceLoc)
+        {
+            return i;
+        }
+    }
+
+    for (u32 i = 0; i < _poolSpots.size(); ++i)
+    {
+        const bool slotFree = (_poolSpotOwners[i] == nullptr) ||
+                              (_poolSpotAlpha[i] <= _runtimeCfg.minVisibleAlpha && !poolSlotUsed[i]);
+        if (slotFree)
+        {
+            return i;
+        }
+    }
+
+    return _poolSpots.size();
 }
 
 void CUICompassBar::CommitLayout()
 {
-    if (!_stripContainer)
+    if (!_stripContainer || !_layerFg)
     {
         return;
     }
@@ -927,33 +1046,10 @@ void CUICompassBar::CommitLayout()
     xr_vector<u8> poolSlotUsed;
     poolSlotUsed.assign(_poolSpots.size(), 0);
 
-    auto allocatePoolSlotLambda = [this, &poolSlotUsed](CMapLocation* sourceLoc) -> u32
-    {
-        for (u32 i = 0; i < _poolSpotOwners.size(); ++i)
-        {
-            if (_poolSpotOwners[i] == sourceLoc)
-            {
-                return i;
-            }
-        }
-
-        for (u32 i = 0; i < _poolSpots.size(); ++i)
-        {
-            const bool slotFree = (_poolSpotOwners[i] == nullptr) ||
-                                  (_poolSpotAlpha[i] <= _cfg.minVisibleAlpha && !poolSlotUsed[i]);
-            if (slotFree)
-            {
-                return i;
-            }
-        }
-
-        return _poolSpots.size();
-    };
-
     for (const SSpotRenderItem& item : _renderQueue)
     {
-        const u32 poolIdx = allocatePoolSlotLambda(item.sourceLoc);
-        CUIStatic* wnd = GetSpotFromPool(_poolSpots, this, poolIdx);
+        const u32 poolIdx = AllocateSpotPoolSlot(item.sourceLoc, poolSlotUsed);
+        CUIStatic* wnd = GetSpotFromPool(_poolSpots, _layerFg, poolIdx);
         if (!wnd)
         {
             continue;
@@ -1013,10 +1109,10 @@ void CUICompassBar::CommitLayout()
             }
         }
         wnd->SetWndPos(Fvector2().set(posX, posY));
-        _poolSpotAlpha[poolIdx] = UpdateFadeAlpha(_poolSpotAlpha[poolIdx], true, _cfg.fadeInSpeed, _cfg.fadeOutSpeed);
+        _poolSpotAlpha[poolIdx] = UpdateFadeAlpha(_poolSpotAlpha[poolIdx], true, _runtimeCfg.fadeInSpeed, _runtimeCfg.fadeOutSpeed);
         const float edgeFade = CalculateFovEdgeFade(item.relX, geom.width);
         const float finalAlpha = _poolSpotAlpha[poolIdx] * edgeFade;
-        if (finalAlpha > _cfg.minVisibleAlpha)
+        if (finalAlpha > _runtimeCfg.minVisibleAlpha)
         {
             u32 baseColor = _poolSpotBaseColor[poolIdx];
             u32 alpha = (u32)clampr(iFloor(float(color_get_A(baseColor)) * finalAlpha), 0, 255);
@@ -1040,10 +1136,10 @@ void CUICompassBar::CommitLayout()
         {
             continue;
         }
-        _poolSpotAlpha[i] = UpdateFadeAlpha(_poolSpotAlpha[i], false, _cfg.fadeInSpeed, _cfg.fadeOutSpeed);
+        _poolSpotAlpha[i] = UpdateFadeAlpha(_poolSpotAlpha[i], false, _runtimeCfg.fadeInSpeed, _runtimeCfg.fadeOutSpeed);
         const float lastPosX = wnd->GetWndPos().x;
         const bool isWithinStrip = (lastPosX >= geom.left) && (lastPosX <= geom.left + geom.width);
-        if (_poolSpotAlpha[i] > _cfg.minVisibleAlpha && isWithinStrip)
+        if (_poolSpotAlpha[i] > _runtimeCfg.minVisibleAlpha && isWithinStrip)
         {
             u32 baseColor = (i < _poolSpotBaseColor.size()) ? _poolSpotBaseColor[i] : _kDefaultColorWhite;
             u32 alpha = (u32)clampr(iFloor(float(color_get_A(baseColor)) * _poolSpotAlpha[i]), 0, 255);
@@ -1058,6 +1154,24 @@ void CUICompassBar::CommitLayout()
     }
 }
 
+void CUICompassBar::UpdateSpotsLayout(float heading, const SCompassFrameContext& ctx)
+{
+    const bool headingChanged = std::abs(heading - _updateState.lastHeading) > _kHeadingDirtyEpsilon;
+    const u32 candidateHash = ComputeCandidateHash();
+    const bool candidatesChanged = candidateHash != _updateState.lastCandidateHash;
+
+    if (_updateState.spotsDirty || headingChanged || candidatesChanged)
+    {
+        BuildRenderQueueFromCandidates(heading, ctx.actorPos);
+        CommitLayout();
+        _updateState.lastHeading = heading;
+        _updateState.lastCandidateHash = candidateHash;
+        _updateState.spotsDirty = false;
+    }
+}
+
+// --- Active target ---
+
 void CUICompassBar::CalculateActiveTargetPosition(const Fvector& actorPos, float camHeading, const Fvector& tgtPos,
     float& outX) const
 {
@@ -1069,7 +1183,7 @@ void CUICompassBar::CalculateActiveTargetPosition(const Fvector& actorPos, float
     }
     float stripCenter = _stripWidth * 0.5f;
     spotX = stripCenter + spotX;
-    spotX = clampr(spotX, _cfg.activePadding, _stripWidth - _cfg.activePadding);
+    spotX = clampr(spotX, _runtimeCfg.activePadding, _stripWidth - _runtimeCfg.activePadding);
     outX = spotX;
 }
 
@@ -1079,10 +1193,10 @@ void CUICompassBar::UpdateActiveTargetMarker(CMapLocation* activeLoc)
     {
         return;
     }
-    
+
     const shared_str& locTex = activeLoc->GetCompassTexture();
     const shared_str texName = (locTex.size() > 0) ? locTex : _activeMarkerFallbackTexture;
-    
+
     if (_activeMarkerLastTexture != texName)
     {
         CUITextureMaster::InitTexture(texName, &_activeMarker->GetUIStaticItem());
@@ -1099,7 +1213,7 @@ void CUICompassBar::UpdateActiveTargetText(const Fvector& actorPos, const Fvecto
     }
     const float dist = actorPos.distance_to(tgtPos);
     string64 buf;
-    xr_sprintf(buf, sizeof(buf), "%.0f m", dist);
+    xr_sprintf(buf, sizeof(buf), _runtimeCfg.distanceFormat.c_str(), dist);
     _activeDistText->SetText(buf);
     _activeDistText->Show(true);
 }
@@ -1136,7 +1250,6 @@ void CUICompassBar::UpdateActiveTarget(const Fvector& actorPos, float camHeading
         _lastActiveLoc = nullptr;
         return;
     }
-    // Update() before GetLevelName() check: m_cached.m_LevelName is empty after load until CalcLevelName() runs
     if (!activeLoc->Update())
     {
         return;
@@ -1160,7 +1273,7 @@ void CUICompassBar::UpdateActiveTarget(const Fvector& actorPos, float camHeading
     }
     else
     {
-        _activeTargetCurX += (spotX - _activeTargetCurX) * (Device.fTimeDelta * _cfg.smoothingSpeed);
+        _activeTargetCurX += (spotX - _activeTargetCurX) * (Device.fTimeDelta * _runtimeCfg.smoothingSpeed);
     }
     spotX = _activeTargetCurX;
     SCompassStripGeometry geom = GetStripGeometry();
@@ -1169,7 +1282,7 @@ void CUICompassBar::UpdateActiveTarget(const Fvector& actorPos, float camHeading
         const float cw = _activeTargetContainer->GetWidth();
         const float ch = _activeTargetContainer->GetHeight();
         const float containerLeft = geom.left + spotX - cw * 0.5f;
-        const float containerTop = geom.top + geom.CenterY() + _cfg.activeOffsetY - ch * 0.5f;
+        const float containerTop = geom.top + geom.CenterY() + _runtimeCfg.activeOffsetY - ch * 0.5f;
         _activeTargetContainer->SetWndPos(Fvector2().set(containerLeft, containerTop));
         _activeTargetContainer->Show(true);
     }
@@ -1194,7 +1307,7 @@ void CUICompassBar::UpdateActiveAltitudeArrow(const Fvector& actorPos, const Fve
         return;
     }
     const float deltaY = tgtPos.y - actorPos.y;
-    const float dz = _cfg.altitudeDeadzone;
+    const float dz = _runtimeCfg.altitudeDeadzone;
     if (deltaY < -dz)
     {
         if (_altitudeArrowLastTexture != _altitudeArrowTextureUp)
@@ -1219,6 +1332,8 @@ void CUICompassBar::UpdateActiveAltitudeArrow(const Fvector& actorPos, const Fve
     }
 }
 
+// --- Draw / Update ---
+
 void CUICompassBar::Draw()
 {
     if (visible)
@@ -1233,69 +1348,28 @@ void CUICompassBar::Update()
     {
         return;
     }
-    
+
     SCompassFrameContext ctx;
     if (!BuildFrameContext(ctx))
     {
         CUIWindow::Update();
         return;
     }
-    
+
     UpdateStrip(ctx.heading);
-    UpdateCardinals(ctx.heading);
+    UpdateCardinals(ctx);
 
     _collectSpotsTimer -= Device.fTimeDelta;
     if (_collectSpotsTimer <= 0.0f)
     {
         _collectSpotsTimer = _spotCfg.collectInterval;
         CollectSpotCandidates(ctx.actorPos, ctx.levelName);
+        MarkSpotsDirty();
     }
-    
-    BuildRenderQueueFromCandidates(ctx.heading, ctx.actorPos);
+
+    UpdateSpotsLayout(ctx.heading, ctx);
     UpdateActiveTarget(ctx.actorPos, ctx.heading, ctx.levelName);
-    CommitLayout();
     CUIWindow::Update();
-}
-
-bool CUICompassBar::BuildFrameContext(SCompassFrameContext& out) const
-{
-    CObject* viewEntity = Level().CurrentViewEntity();
-    if (!viewEntity)
-    {
-        out.isValid = false;
-        return false;
-    }
-    out.actorPos = viewEntity->Position();
-    out.heading = Device.vCameraDirection.getH();
-    out.levelName = Level().name();
-    out.isValid = true;
-    return true;
-}
-
-SCompassStripGeometry CUICompassBar::GetStripGeometry() const
-{
-    if (_stripGeometryCached && _stripContainer)
-    {
-        return _cachedStripGeometry;
-    }
-    SCompassStripGeometry geom;
-    if (_stripContainer)
-    {
-        Frect rect;
-        _stripContainer->GetWndRect(rect);
-        geom.left = rect.lt.x;
-        geom.top = rect.lt.y;
-        geom.width = rect.width();
-        geom.height = rect.height();
-    }
-    _cachedStripGeometry = geom;
-    _stripGeometryCached = true;
-    return geom;
-}
-
-void CUICompassBar::InvalidateStripGeometry()
-{
-    _stripGeometryCached = false;
 }
 
 CUIStatic& CUICompassBar::Background()
@@ -1311,6 +1385,10 @@ CUIWindow* CUICompassBar::GetFrame()
 
 void CUICompassBar::SetActiveTarget(CMapLocation* loc)
 {
+    if (_activeTargetLoc != loc)
+    {
+        MarkSpotsDirty();
+    }
     _activeTargetLoc = loc;
 }
 
@@ -1323,6 +1401,7 @@ void CUICompassBar::Reset()
     {
         _poolSpotOwners[i] = nullptr;
     }
+    MarkSpotsDirty();
 }
 
 void CUICompassBar::CacheGameTypeCompatibility()
