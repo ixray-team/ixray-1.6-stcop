@@ -6,6 +6,7 @@
 #include "ElectricCurve.h"
 #include "RandomSoundEmmiter.h"
 
+
 class CActor;
 class CLAItem;
 class CParticlesObject;
@@ -129,9 +130,10 @@ protected:
 	//размер радиуса в процентах от оригинального, 
 	//где действует зона
 	float				m_fEffectiveRadius;
-
+public:
 	//тип наносимого хита
 	ALife::EHitType		m_eHitTypeBlowout;
+protected:
 	EZoneState			m_eZoneState;
 
 	//текущее время пребывания зоны в определенном состоянии 
@@ -273,6 +275,7 @@ protected:
 	//список партиклов для объетов внутри зоны
 	xr_vector<SZoneObjectInfo> m_ObjectInfoMap;
 
+public:
 	void					CreateHit					(	u16 id_to, 
 															u16 id_from, 
 															const Fvector& hit_dir, 
@@ -281,7 +284,7 @@ protected:
 															const Fvector& pos_in_bone, 
 															float hit_impulse, 
 															ALife::EHitType hit_type);
-		
+protected:
 
 	virtual	void	Hit					(SHit* pHDS);
 
@@ -307,45 +310,11 @@ protected:
 	virtual		void		OnMove						();
 	Fvector					m_vPrevPos;
 	u32						m_dwLastTimeMoved;
-
+public:
 	//FFx0001++
-	bool m_use_electric_curve = false;
-	bool m_cascade_curves = false;
-	bool m_cascade_curves_by_anomalies = false;
-	shared_str m_electric_curve_particle_path;
-	xr_vector<SElectricCurve> m_electric_curves;
-	u8 m_max_count_electric_curves = 1;
-	float max_trace_curve_distance = 15.f;
-	float m_max_curve_damage = 0.005f;
-	float m_max_curve_impulse = 0.012f;
-
-	xr_vector<CRandomSoundEmmiter*> m_snd_emmiter_electric_core_target_damage;
-	xr_vector<CRandomSoundEmmiter*> m_snd_emmiter_electric_core_loop;
-
-	xr_vector<CRandomSoundEmmiter*> m_snd_emmiter_electric_curve_start;
-	xr_vector<CRandomSoundEmmiter*> m_snd_emmiter_electric_curve_loop;
-	xr_vector<CRandomSoundEmmiter*> m_snd_emmiter_electric_curve_end;
-
-	bool m_use_movement = false;
-	float max_processing_distance = 200.f;
-	bool draw_dbg = false;
-	bool m_use_movement_always_mode = false;
-	bool m_use_movement_magnetic_on_inside_alive_mode = false;
-	float movement_magnetic_on_inside_alive_mode_speed = 0.f;
-	bool m_use_movement_magnetic_on_take_artefacts_mode = false;
-	float m_timer_magnetic_on_take_artefacts = 0.f;
-	float m_max_timer_magnetic_on_take_artefacts = 0.f;
-	float movement_magnetic_on_take_artefacts_mode_speed = 0.f;
-	float m_movement_speed = 0.f;
-	float m_movement_radius = 0.f;
-	Fvector m_initial_spawn_position;
-	Fvector m_target_position;
-	float animTime = 0.0f;
-	float blastTimeProcessing = 0.0f;
-	float max_blastTimeProcessing = 0.0f;
-	CGameObject* lastDamagedObject = nullptr;
 	xr_vector<CGameObject*> lastScannedObjects;
-
+	Fvector m_initial_spawn_position;
+protected:
 	//расстояние от зоны до текущего актера
 	float					m_fDistanceToCurEntity;
 protected:
@@ -358,14 +327,9 @@ public:
 	virtual	bool			register_schedule			() const {return true;}
 	u8						PlayEntranceSmallParticles	(const Fvector& pos, const Fvector& dir, const Fvector& vel, bool play_effect = true);
 
-	void					MoveToFromDelta	(Fvector newPos, float speed);
-	Fvector					GetLVPos(Fvector newPos);
 	CGameObject*			ScanObjects(float distance, Fvector scanCenter, Fvector barierCenter, float barierRadius);
 	void					OnActorTakeArtefact(float scan_radius, CArtefact* art, Fvector actorPos);
-	void					UpdateElectricCurves(CGameObject* firstObject);
-	void					UpdateMovement(bool isUpdateCL);
-	void					OnBlastElectricCurvesProcessing(CGameObject* obj);
-	void					OnBlastElectricCurvesUpdate(CGameObject* obj);
+	void					UpdateComponents(bool isUpdateCL);
 	xr_vector<CGameObject*> GetSortedByDistanceSpatialObjects(float distance, Fvector centerPos, u64 mask);
 	void					AffectCurveDamade(CGameObject* obj);
 	// optimization FAST/SLOW mode
