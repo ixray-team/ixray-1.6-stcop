@@ -8,6 +8,15 @@
 local squad_behaviour_ini 	= ini_file("misc\\squad_behaviours.ltx")
 local locations_ini			= ini_file("misc\\smart_terrain_masks.ltx")
 
+spots_show_disabled = {
+	"ui_pda2_trader_location",
+	"ui_pda2_mechanic_location",
+	"ui_pda2_scout_location",
+	"ui_pda2_quest_npc_location",
+	"ui_pda2_medic_location"
+}
+
+
 --function printf()
 --end
 
@@ -890,11 +899,16 @@ function sim_squad_scripted:show()
 		return
 	end
 
-    if(level.map_has_object_spot(self:commander_id(), "ui_pda2_trader_location")~=0) or
-	(level.map_has_object_spot(self:commander_id(), "ui_pda2_mechanic_location")~=0) or
-	(level.map_has_object_spot(self:commander_id(), "ui_pda2_scout_location")~=0) or
-	(level.map_has_object_spot(self:commander_id(), "ui_pda2_quest_npc_location")~=0) or
-	(level.map_has_object_spot(self:commander_id(), "ui_pda2_medic_location")~=0) then
+	local spot_exists = false
+	local cmd_id = self:commander_id()
+	for k, v in pairs(spots_show_disabled) do
+		if level.map_has_object_spot(cmd_id, v) ~= 0 then
+			spot_exists = true
+			break
+		end
+	end
+
+    if spot_exists then
 		self.show_disabled = true
 		return
 	end
