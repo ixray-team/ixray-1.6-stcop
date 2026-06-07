@@ -1,3 +1,27 @@
+
+map_spots = {
+	["trader"] = {
+		map_location = "ui_pda2_trader_location",
+		hint = "st_ui_pda_legend_trader",
+	},
+	["mechanic"] = {
+		map_location = "ui_pda2_mechanic_location",
+		hint = "st_ui_pda_legend_mechanic",
+	},
+	["guider"] = {
+		map_location = "ui_pda2_scout_location",
+		hint = "st_ui_pda_legend_scout",
+	},
+	["quest_npc"] = {
+		map_location = "ui_pda2_quest_npc_location",
+		hint = "st_ui_pda_legend_vip",
+	},
+	["medic"] = {
+		map_location = "ui_pda2_medic_location",
+		hint = "st_ui_pda_legend_medic",
+	},
+}
+
 ----------------------------------------------------------------------------------------------------------------------
 -- STALKER NPC INFO
 ----------------------------------------------------------------------------------------------------------------------
@@ -106,54 +130,29 @@ function reset_show_spot(npc, scheme, st, section)
 			-- ставим
 			obj:visible_for_map(true)
 		end
+		
 		if map_spot ~= nil then
-						local map_location = ""
-						local hint = ""
-						if map_spot == "trader" then
-								map_location = "ui_pda2_trader_location"
-								hint = "st_ui_pda_legend_trader"
-						elseif map_spot == "mechanic" then
-								map_location = "ui_pda2_mechanic_location"
-								hint = "st_ui_pda_legend_mechanic"
-						elseif map_spot == "guider" then
-								map_location = "ui_pda2_scout_location"
-								hint = "st_ui_pda_legend_scout"
---[[
-								local smarts_tbl = sim_board.get_sim_board().smarts
-								local npc_smrt_id = obj.m_smart_terrain_id
-								if npc_smrt_id ~= 65535 and npc_smrt_id ~= nil then
-										local npc_smart = smarts_tbl[npc_smrt_id].smrt
-										if npc_smart then
-												local smart_name = smart_names.get_smart_terrain_name(npc_smart)
-												hint = game.translate_string(hint).."\\n"..game.translate_string("st_location").." "..smart_name
-										end
-								end
-]]
-						elseif map_spot == "quest_npc" then
-								map_location = "ui_pda2_quest_npc_location"
-								hint = "st_ui_pda_legend_vip"
-						elseif map_spot == "medic" then
-								map_location = "ui_pda2_medic_location"
-								hint = "st_ui_pda_legend_medic"
-						end
-			if level.map_has_object_spot(npc_id, map_location) ~= 0 then
-								level.map_remove_object_spot(npc_id, map_location)
+			local map_location = ""
+			local hint = ""
+			
+			if map_spots[map_spot] ~= nil then
+				map_location = map_spots[map_spot].map_location
+				hint = map_spots[map_spot].hint
 			end
-						if db.actor and npc and npc:general_goodwill(db.actor) > -1000 then
+	
+			if level.map_has_object_spot(npc_id, map_location) ~= 0 then
+				level.map_remove_object_spot(npc_id, map_location)
+			end
+			
+			if db.actor and npc and npc:general_goodwill(db.actor) > -1000 then
 				level.map_add_object_spot(npc_id, map_location, hint)
 			end
 		else
-						if level.map_has_object_spot(npc_id, "ui_pda2_trader_location") ~= 0 then
-								level.map_remove_object_spot(npc_id, "ui_pda2_trader_location")
-						elseif level.map_has_object_spot(npc_id, "ui_pda2_mechanic_location") ~= 0 then
-								level.map_remove_object_spot(npc_id, "ui_pda2_mechanic_location")
-						elseif level.map_has_object_spot(npc_id, "ui_pda2_scout_location") ~= 0 then
-								level.map_remove_object_spot(npc_id, "ui_pda2_scout_location")
-						elseif level.map_has_object_spot(npc_id, "ui_pda2_quest_npc_location") ~= 0 then
-								level.map_remove_object_spot(npc_id, "ui_pda2_quest_npc_location")
-						elseif level.map_has_object_spot(npc_id, "ui_pda2_medic_location") ~= 0 then
-								level.map_remove_object_spot(npc_id, "ui_pda2_medic_location")
-						end
+			for k, v in pairs(map_spots) do
+				if level.map_has_object_spot(npc_id, v.map_location) ~= 0 then
+					level.map_remove_object_spot(npc_id, v.map_location)
+				end
+			end
 		end
 	end
 end
@@ -175,21 +174,9 @@ function remove_level_spot(npc, st)
 	local obj  = sim:object(npc:id())
 	if obj then
 		local npc_id = npc:id()
-		if map_spot ~= "" and map_spot ~= nil then
-					local map_location = ""
-					if map_spot == "trader" then
-							map_location = "ui_pda2_trader_location"
-					elseif map_spot == "mechanic" then
-							map_location = "ui_pda2_mechanic_location"
-					elseif map_spot == "guider" then
-							map_location = "ui_pda2_scout_location"
-					elseif map_spot == "quest_npc" then
-							map_location = "ui_pda2_quest_npc_location"
-					elseif map_spot == "medic" then
-							map_location = "ui_pda2_medic_location"
-					end
-			if level.map_has_object_spot(npc_id, map_location) ~= 0 then
-						level.map_remove_object_spot(npc_id, map_location)
+		if map_spot ~= "" and map_spot ~= nil and map_spots[map_spot] ~= nil then
+			if level.map_has_object_spot(npc_id, map_spots[map_spot].map_location) ~= 0 then
+				level.map_remove_object_spot(npc_id, map_spots[map_spot].map_location)
 			end
 		end
 	end
