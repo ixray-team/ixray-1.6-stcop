@@ -33,7 +33,7 @@ if(WIN32)
     include("${CMAKE_MODULE_PATHEX}/FSR2.cmake")
     include("${CMAKE_MODULE_PATHEX}/NGX.cmake")
     include("${CMAKE_MODULE_PATHEX}/WindowsSDK.cmake")
-else()
+elseif(LINUX)
     include("${CMAKE_MODULE_PATHEX}/DXVK.cmake")
 endif()
 

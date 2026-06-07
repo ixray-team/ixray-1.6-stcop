@@ -7,7 +7,7 @@ find_package(Vulkan)
 FetchContent_Declare(
     dxvk
     GIT_REPOSITORY https://github.com/doitsujin/dxvk.git
-    GIT_TAG        v2.7.1
+    GIT_TAG        master
     GIT_SHALLOW    TRUE
 )
 
@@ -23,8 +23,13 @@ if(NOT dxvk_POPULATED)
     
     if(WIN32)
         set(SDL3_LIBRARY_DIR "${SDL3_BINARY_DIR}/SDL3-shared${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        set(MESON_EXTRA_ARGS "")
+    elseif(APPLE)
+        set(SDL3_LIBRARY_DIR "${SDL3_BINARY_DIR}/libSDL3-shared.dylib")
+        set(MESON_EXTRA_ARGS "-Dcpp_args=-D__unix__")
     else()
         set(SDL3_LIBRARY_DIR "${SDL3_BINARY_DIR}/libSDL3-shared.so")
+        set(MESON_EXTRA_ARGS "")
     endif()
     
     # Создаём файл sdl3.pc
@@ -71,6 +76,7 @@ Cflags: -I\${includedir}
                 -Dnative_sdl3=enabled   
                 -Dnative_sdl2=disabled
                 -Dnative_glfw=disabled
+                ${MESON_EXTRA_ARGS}
         RESULT_VARIABLE MESON_CONFIG_RESULT
         ERROR_VARIABLE  MESON_CONFIG_ERROR
     )
