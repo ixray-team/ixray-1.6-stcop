@@ -10,7 +10,7 @@ enum class EEngineExternalUI
 	PdaRearrangeTabButtons,
 	UseSavedGameStatic,
 	DisableHudRenderingOnMaster,
-	UseCompassBar,
+	UseCompassBar, // Deprecated boot-time hint; prefer CUIMainIngameWnd::SetNavigationMode / Lua API
 	None
 };
 
