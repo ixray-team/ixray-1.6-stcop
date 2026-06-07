@@ -148,6 +148,13 @@ protected:
 	Frect				GetNavigationHostRect() const;
 	void				RebindNavigationChildren();
 
+	bool				EnsureCompassBar();
+	bool				IsCompassBarInitialized() const;
+	bool				IsCompassBarActive() const;
+	void				SyncNavigationVisibility();
+	void				UpdateNavigationHud();
+	void				DrawNavigationHud();
+
 	// Car
 	CUICarPanel UICarPanel;
 
