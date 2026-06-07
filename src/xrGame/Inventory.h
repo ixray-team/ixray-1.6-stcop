@@ -64,6 +64,7 @@ public:
 	bool CanTakeItem(CInventoryItem* inventory_item) const;
 
 	// Fixes slot/ruck/belt desync (e.g. knife listed in bag while still bound to KNIFE_SLOT).
+	// Does not auto-restore persistent slots; that happens only on Take().
 	void RepairItemPlacements();
 
 	void Activate(u16 slot, bool bForce = false, bool ForceHide = false);

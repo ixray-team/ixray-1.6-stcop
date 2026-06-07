@@ -795,7 +795,7 @@ bool CUIActorMenuBase::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 		{
 			// Occupant in inventory but no matching UI cell (out of sync or list fallback). Same outcome as ToBag, without a cell pointer.
 			bool const occupant_is_own = (_iitem->parent_id() == GetInventoryOwner()->object_id());
-			bool const cleared = (!occupant_is_own) || GetInventoryOwner()->inventory().Ruck(_iitem);
+			bool const cleared = (!occupant_is_own) || GetInventoryOwner()->inventory().Ruck(_iitem, false);
 			if (!cleared)
 			{
 				return false;
@@ -853,7 +853,18 @@ bool CUIActorMenuBase::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 		// при перекладывании из iActorTrade
 		if (GetListType(old_owner) != iActorTrade)
 		{
-			bool result = b_already || (!b_own_item || GetInventoryOwner()->inventory().Ruck(iitem));
+			bool result = true;
+			if (b_own_item)
+			{
+				if (GetInventoryOwner()->inventory().InSlot(iitem))
+				{
+					result = GetInventoryOwner()->inventory().Ruck(iitem, false);
+				}
+				else if (!b_already)
+				{
+					result = GetInventoryOwner()->inventory().Ruck(iitem, false);
+				}
+			}
 			R_ASSERT(result);
 		}
 
@@ -1106,7 +1117,7 @@ bool CUIActorMenuBase::ToActorTrade(CUICellItem* itm, bool b_use_cursor_pos)
 
 		if (IsGameTypeSingle())
 		{
-			bool result = (old_owner_type != iActorBag) ? GetInventoryOwner()->inventory().Ruck(iitem) : true;
+			bool result = (old_owner_type != iActorBag) ? GetInventoryOwner()->inventory().Ruck(iitem, false) : true;
             VERIFY(result);
 		}
 
