@@ -258,7 +258,6 @@ void CInventory::RepairItemPlacements()
 		}
 
 		ReconcileItemPlacement(item);
-		TryRestorePersistentSlotItem(item);
 	}
 
 	CalcTotalWeight();
@@ -763,7 +762,6 @@ bool CInventory::Ruck(PIItem pIItem, bool strict_placement)
 	}
 
 	ReconcileItemPlacement(pIItem);
-	TryRestorePersistentSlotItem(pIItem);
 
 	return true;
 }
