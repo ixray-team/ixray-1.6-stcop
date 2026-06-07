@@ -168,6 +168,7 @@ public:
 	Fvector3			sun_color	;
 	Fvector3			sun_color_a;
 	bool				sun_light;
+	bool				sun_dir_cfg;
 	Fvector3			sun_dir		;
 	float				m_fSunShaftsIntensity;
 	float				m_fWaterIntensity;
@@ -187,7 +188,7 @@ public:
 
 						CEnvDescriptor	(shared_str const& identifier);
 
-	void				load			(CEnvironment& environment, CInifile& config);
+	void				load			(CEnvironment& environment, CInifile& config, CInifile& m_sun_pos_config);
 	void				copy			(const CEnvDescriptor& src)
 	{
 		float tm0		= exec_time;
@@ -366,6 +367,7 @@ public:
 	CInifile*				m_sound_channels_config;
 	CInifile*				m_effects_config;
 	CInifile*				m_suns_config;
+	CInifile*				m_sun_pos_config;
 	CInifile*				m_thunderbolt_collections_config;
 	CInifile*				m_thunderbolts_config;
 

@@ -85,6 +85,7 @@ CEnvironment::CEnvironment	() :
     m_sound_channels_config          = new CInifile(FS.update_path(file_name, "$game_config$", "environment\\sound_channels.ltx"), TRUE, TRUE, FALSE);
     m_effects_config                 = new CInifile(FS.update_path(file_name, "$game_config$", "environment\\effects.ltx"), TRUE, TRUE, FALSE);
     m_suns_config                    = new CInifile(FS.update_path(file_name, "$game_config$", "environment\\suns.ltx"), TRUE, TRUE, FALSE);
+	m_sun_pos_config                 = new CInifile(FS.update_path(file_name, "$game_config$", "environment\\sun_positions.ltx"), TRUE, TRUE, FALSE);
     m_thunderbolt_collections_config = new CInifile(FS.update_path(file_name, "$game_config$", "environment\\thunderbolt_collections.ltx"), TRUE, TRUE, FALSE);
     m_thunderbolts_config            = new CInifile(FS.update_path(file_name, "$game_config$", "environment\\thunderbolts.ltx"), TRUE, TRUE, FALSE);
 

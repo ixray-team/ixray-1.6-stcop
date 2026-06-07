@@ -109,8 +109,12 @@ void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
 		f.w_float(el->m_identifier.c_str(), "wind_direction", rad2deg(el->wind_direction));
 		f.w_float(el->m_identifier.c_str(), "wind_velocity", el->wind_velocity);
 		f.w_fvector4(el->m_identifier.c_str(), "hemisphere_color", el->hemi_color);
-		f.w_float(el->m_identifier.c_str(), "sun_altitude", rad2deg(el->sun_dir.getH()));
-		f.w_float(el->m_identifier.c_str(), "sun_longitude", rad2deg(el->sun_dir.getP()));
+		if (el->sun_dir_cfg)
+		{
+			f.w_float(el->m_identifier.c_str(), "sun_altitude", rad2deg(el->sun_dir.getH()));
+			f.w_float(el->m_identifier.c_str(), "sun_longitude", rad2deg(el->sun_dir.getP()));
+		}
+
 		f.w_float(el->m_identifier.c_str(), "tree_amplitude_intensity", el->trees_amplitude);
 	}
 	string_path fileName;
@@ -587,7 +591,7 @@ void RenderUIWeather() {
 	static float editor_altitude = 0.f;
 	static float editor_longitude = 0.f;
 
-	ImGui::BeginDisabled(!isReadSunConfig);
+	ImGui::BeginDisabled(!isReadSunConfig || !cur->sun_dir_cfg);
 
 	if (update_itudes)
 	{

@@ -306,7 +306,7 @@ CEnvDescriptor::CEnvDescriptor	(shared_str const& identifier) :
 }
 
 #define	C_CHECK(C)	if (C.x<0 || C.x>2 || C.y<0 || C.y>2 || C.z<0 || C.z>2)	{ Msg("! Invalid '%s' in env-section '%s'",#C,m_identifier.c_str());}
-void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config)
+void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config, CInifile& m_sun_pos_config)
 {
 	Ivector3 tm				={0,0,0};
 	sscanf					(m_identifier.c_str(),"%d:%d:%d",&tm.x,&tm.y,&tm.z);
@@ -362,13 +362,21 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config)
 		sun_light = config.r_bool(m_identifier.c_str(), "sun_light");
 	if (config.line_exist(m_identifier.c_str(), "tree_amplitude_intensity"))
 		trees_amplitude = config.r_float(m_identifier.c_str(), "tree_amplitude_intensity");
-//	if (config.line_exist(m_identifier.c_str(),"sun_altitude"))
+	if (config.line_exist(m_identifier.c_str(), "sun_altitude"))
+	{
 		float sun_altitude = config.r_float(m_identifier.c_str(), "sun_altitude");
 		float sun_longitude = config.r_float(m_identifier.c_str(), "sun_longitude");
-		sun_dir.setHP			(
-			deg2rad(sun_altitude),
-			deg2rad(sun_longitude)
-		);
+		sun_dir.setHP(deg2rad(sun_altitude), deg2rad(sun_longitude));
+		sun_dir_cfg = true;
+	}
+	else
+	{
+		float sun_altitude = m_sun_pos_config.r_float(m_identifier.c_str(), "sun_altitude");
+		float sun_longitude = m_sun_pos_config.r_float(m_identifier.c_str(), "sun_longitude");
+		sun_dir.setHP(deg2rad(sun_altitude), deg2rad(sun_longitude));
+		sun_dir_cfg = false;
+	}
+
 	R_ASSERT				( _valid(sun_dir) );
 //	else
 //		sun_dir.setHP			(
@@ -623,6 +631,8 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 	sun_color.lerp(A.sun_light ? A.sun_color_a : A.sun_color.set(0,0,0), B.sun_light ? B.sun_color_a : B.sun_color.set(0, 0, 0), f);
 	sun_light = A.sun_light;
 
+	sun_dir_cfg = A.sun_dir_cfg;
+
 	if (rain_density > 0.f) {
 		Env->wetness_factor += (rain_density * 4.0) / 10000.f;
 	} else {
@@ -747,7 +757,7 @@ CEnvDescriptor* CEnvironment::create_descriptor	(shared_str const& identifier, C
 {
 	CEnvDescriptor*	result = new CEnvDescriptor(identifier);
 	if (config)
-		result->load(*this, *config);
+		result->load(*this, *config, *m_sun_pos_config);
 	return			(result);
 }
 
