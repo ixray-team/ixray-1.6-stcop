@@ -97,6 +97,9 @@ target_include_directories(xrEngineCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../
 
 if(WIN32)
     target_include_directories(xrEngineCore PUBLIC ${CORE_DXMATH}/include/)
+    target_compile_options(xrEngineCore PRIVATE $<$<CONFIG:Debug>:/EHa>)
+    target_compile_options(xrEngineCore PRIVATE $<$<CONFIG:RelWithDebInfo>:/EHsc>)
+    target_compile_options(xrEngineCore PRIVATE $<$<CONFIG:Release>:/EHsc>)
 endif()
 
 # Move precompiled header
