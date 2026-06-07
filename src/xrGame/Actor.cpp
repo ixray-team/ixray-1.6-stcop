@@ -2932,7 +2932,7 @@ void CActor::OnItemTakeFromGround(CInventoryItem* inventory_item)
 		R.clear();
 		R.reserve(64);
 
-		g_SpatialSpace->q_sphere(R, 0, ESPATIAL_TYPE::ANOMALY_ZONE, Actor()->Position(), 60);
+		g_SpatialSpace->q_sphere(R, 0, ESPATIAL_TYPE::ANOMALY_ZONE, Actor()->Position(), 160);
 
 		for (ISpatialShared& spatial : R)
 		{
@@ -2940,24 +2940,17 @@ void CActor::OnItemTakeFromGround(CInventoryItem* inventory_item)
 				continue;
 
 			CObject* p_obj = spatial->dcast_CObject();
-
-			if (p_obj == nullptr)
-				continue;
-
-			if (p_obj->getDestroy())
+			if (p_obj == nullptr || p_obj->getDestroy())
 				continue;
 
 			CGameObject* p_go = p_obj->cast_game_object();
-
 			if (p_go == nullptr)
 				continue;
 
-			CAnomalyZone* p_az = p_go->cast_anomaly_zone();
-
-			if (p_az == nullptr)
-				continue;
-
-			p_az->OnActorTakeArtefact(60.f, art, Actor()->Position());
+			if (CAnomalyZone* p_az = p_go->cast_anomaly_zone())
+            {
+			    p_az->OnActorTakeArtefact(160.f, art, Actor()->Position());
+			}
 		}
 	}
 }
