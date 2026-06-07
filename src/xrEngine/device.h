@@ -66,6 +66,7 @@ struct SWristwatchHudData
 	Fvector4 fontGlyph2 = { 0.0f, 0.0f, 0.0f, 0.0f };
 	Fvector4 fontGlyph3 = { 0.0f, 0.0f, 0.0f, 0.0f };
 	Fvector4 fontGlyphColon = { 0.0f, 0.0f, 0.0f, 0.0f };
+	Fvector4 fontGlyphEight = { 0.0f, 0.0f, 0.0f, 0.0f };
 };
 
 class ENGINE_API CRenderDeviceData

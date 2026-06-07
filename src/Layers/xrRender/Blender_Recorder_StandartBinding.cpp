@@ -13,6 +13,7 @@
 #include "../../xrEngine/date_time.h"
 #include "../../xrEngine/device.h"
 #include "../../xrEngine/WristwatchTypes.h"
+#include "../../xrEngine/WristwatchSettings.h"
 // matrices
 #define	BIND_DECLARE(xf)	\
 class cl_xform_##xf	: public RHIShaderConstant::Setup {	virtual void setup (RHIShaderConstant* C) { RCache.xforms.set_c_##xf (C); } }; \
@@ -694,6 +695,20 @@ static class cl_m_wristwatch_time2 : public RHIShaderConstant::Setup
 	}
 } binder_m_wristwatch_time2;
 
+static class cl_m_wristwatch_debug : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		const auto& settings = GetWristwatchRuntimeSettings();
+		RCache.set_c(
+			C,
+			static_cast<float>(settings.debugLcdPass),
+			0.0f,
+			0.0f,
+			0.0f);
+	}
+} binder_m_wristwatch_debug;
+
 static class cl_m_wristwatch_lcd : public RHIShaderConstant::Setup
 {
 	virtual void setup(RHIShaderConstant* C)
@@ -773,6 +788,15 @@ static class cl_m_wristwatch_font_colon : public RHIShaderConstant::Setup
 		SetWristwatchFontGlyph(C, wristwatch.fontGlyphColon, wristwatch.fontReady);
 	}
 } binder_m_wristwatch_font_colon;
+
+static class cl_m_wristwatch_font_eight : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		const auto& wristwatch = RDEVICE.hudViewportData.wristwatch;
+		SetWristwatchFontGlyph(C, wristwatch.fontGlyphEight, wristwatch.fontReady);
+	}
+} binder_m_wristwatch_font_eight;
 
 // Standart constant-binding
 void	CBlender_Compile::SetMapping()
@@ -869,6 +893,7 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("m_digiclock", &binder_digiclock);
 	r_Constant("m_wristwatch_time", &binder_m_wristwatch_time);
 	r_Constant("m_wristwatch_time2", &binder_m_wristwatch_time2);
+	r_Constant("m_wristwatch_debug", &binder_m_wristwatch_debug);
 	r_Constant("m_wristwatch_lcd", &binder_m_wristwatch_lcd);
 	r_Constant("m_wristwatch_fx", &binder_m_wristwatch_fx);
 	r_Constant("m_wristwatch_font_d0", &binder_m_wristwatch_font_d0);
@@ -876,6 +901,7 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("m_wristwatch_font_d2", &binder_m_wristwatch_font_d2);
 	r_Constant("m_wristwatch_font_d3", &binder_m_wristwatch_font_d3);
 	r_Constant("m_wristwatch_font_colon", &binder_m_wristwatch_font_colon);
+	r_Constant("m_wristwatch_font_eight", &binder_m_wristwatch_font_eight);
 
 	// detail
 	//if (bDetail	&& detail_scaler)

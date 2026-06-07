@@ -132,6 +132,10 @@ void LoadFromIni(SWristwatchRuntimeSettings& settings)
 
 	ReadSharedString(settings.surgeScript, "watches_surge_script", "");
 	ReadSharedString(settings.surgeHooksFn, "watches_surge_hooks_fn", "");
+	ReadSharedString(settings.glassMeshSubstr, "watches_glass_mesh_substr", "");
+
+	settings.debugLcdPass = READ_IF_EXISTS(pSettings, r_u8, kSection, "watches_debug_lcd_pass", 0);
+	settings.forceSkipGlassDraw = READ_IF_EXISTS(pSettings, r_bool, kSection, "watches_force_skip_glass", true);
 
 	ResolveFontTextureFromConfig(settings);
 }
