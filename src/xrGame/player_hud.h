@@ -122,6 +122,9 @@ struct weapon_inertion final
 	base_params move_rlookout_offset;
 	base_params move_llookout_offset;
 
+	base_params aim_move_rlookout_offset;
+	base_params aim_move_llookout_offset;
+
 	base_params move_left_offset;
 	base_params move_right_offset;
 	base_params move_forward_offset;
