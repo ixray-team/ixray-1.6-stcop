@@ -68,22 +68,21 @@ bool CGrenade::CheckGrenadeExplosionByHit(SHit* SHit)
 {
 	if (m_bExplosionOnHit)
 	{
-		if (m_grenade_detonation_threshold_hit < SHit->power)
+		if (!Useful() || m_bExplosionWhileNotActivated)
 		{
-			if (!Useful() || m_bExplosionWhileNotActivated)
+			if (SHit->hit_type == ALife::eHitTypeExplosion)
 			{
-				if (!m_eExplosionHitTypes.empty())
+				return true;
+			}
+
+			if (!m_eExplosionHitTypes.empty())
+			{
+				for (u32 hit_type : m_eExplosionHitTypes)
 				{
-					for (u32 i = 0; i < m_eExplosionHitTypes.size(); i++)
+					if (SHit->hit_type == hit_type)
 					{
-						if (SHit->hit_type == static_cast<ALife::EHitType>(m_eExplosionHitTypes[i]))
-							return true;
-					}
-				}
-				else
-				{
-					if (SHit->hit_type == ALife::eHitTypeExplosion)
 						return true;
+					}
 				}
 			}
 		}
@@ -92,9 +91,9 @@ bool CGrenade::CheckGrenadeExplosionByHit(SHit* SHit)
 	return false;
 }
 
-void CGrenade::Hit					(SHit* pHDS)
+void CGrenade::Hit(SHit* pHDS)
 {
-	if (ALife::eHitTypeExplosion == pHDS->hit_type && m_grenade_detonation_threshold_hit < pHDS->damage() && CExplosive::Initiator() == u16(-1) || CheckGrenadeExplosionByHit(pHDS))
+	if (CExplosive::Initiator() == u16(-1) || CheckGrenadeExplosionByHit(pHDS))
 	{
 		CExplosive::SetCurrentParentID(pHDS->who->ID());
 		Destroy();
