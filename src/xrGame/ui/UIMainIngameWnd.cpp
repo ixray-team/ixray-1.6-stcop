@@ -531,6 +531,10 @@ void CUIMainIngameWnd::Init()
 	{
 		SetNavigationMode(ENavigationHudMode::CompassBar);
 	}
+	else
+	{
+		RebindNavigationChildren();
+	}
 }
 
 float UIStaticDiskIO_start_time = 0.0f;

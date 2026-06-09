@@ -190,9 +190,10 @@ void CUIMotionIcon::EnsureMinimapOverlays(CUIXml& uiXml, Fvector2 const& sz, Fve
 	const bool useLuminosityOverlay = uiXml.NavigateToNode("luminosity_overlay", 0);
     const bool useNoiseOverlay = uiXml.NavigateToNode("noise_overlay", 0);
 
-    if (!useLuminosityOverlay && !m_luminosity_progress_bar && !m_luminosity_progress_shape)
+    if (!useLuminosityOverlay && !m_luminosity_progress_bar)
     {
-        m_luminosity_progress_shape = UIHelper::CreateProgressShape(uiXml, "luminosity_progress", this);
+        if (!m_luminosity_progress_shape)
+            m_luminosity_progress_shape = UIHelper::CreateProgressShape(uiXml, "luminosity_progress", this);
         if (m_luminosity_progress_shape)
         {
             m_luminosity_progress_shape->SetWndSize(sz);
@@ -200,9 +201,10 @@ void CUIMotionIcon::EnsureMinimapOverlays(CUIXml& uiXml, Fvector2 const& sz, Fve
         }
     }
 
-    if (!useNoiseOverlay && !m_noise_progress_bar && !m_noise_progress_shape)
+    if (!useNoiseOverlay && !m_noise_progress_bar)
     {
-        m_noise_progress_shape = UIHelper::CreateProgressShape(uiXml, "noise_progress", this);
+        if (!m_noise_progress_shape)
+            m_noise_progress_shape = UIHelper::CreateProgressShape(uiXml, "noise_progress", this);
         if (m_noise_progress_shape)
         {
             m_noise_progress_shape->SetWndSize(sz);
