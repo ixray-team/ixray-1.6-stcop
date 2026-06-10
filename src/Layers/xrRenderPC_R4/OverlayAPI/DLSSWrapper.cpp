@@ -93,7 +93,7 @@ bool DLSSWrapper::GetRenderScale(float& RenderScale)
 {
 	if (!m_created || !NgxParameters)
 	{
-		Msg("! DLSSWrapper not valid. Fallback!");
+		Msg("! GetRenderScale DLSSWrapper not valid. Fallback!");
 		return false;
 	}
 
