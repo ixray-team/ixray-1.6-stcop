@@ -434,6 +434,8 @@ void CRender::Render()
 		return;
 	}
 
+	RImplementation.o.distortion = false;
+
 	if (o.offscreen_reflecitons && o.deffered_reflecitons)
 	{
 		ps_r_taa_jitter.set(0, 0, -1);
@@ -478,7 +480,6 @@ void CRender::Render()
 
 	g_pGamePersistent->Environment().RenderSky();
 
-	RImplementation.o.distortion = false;
 	Fcolor sun_color = ((light*)Lights.sun_adapted._get())->color;
 	bool bSUN = !o.sunstatic && u_diffuse2s(sun_color) > EPS;
 
@@ -712,7 +713,8 @@ void CRender::Render()
 	if (bSUN)	
 	{
 		GPU_EVENT(DEFER_SUN);
-		RImplementation.stats.l_visible		++;
+
+		RImplementation.stats.l_visible++;
 		render_sun_cascades();
 		Target->increment_light_marker();
 	}
@@ -721,18 +723,21 @@ void CRender::Render()
 
 	{
 		GPU_EVENT(DEFER_SELF_ILLUM);
-		Target->phase_accumulator			();
+		Target->phase_accumulator();
+
 		// Render emissive geometry, stencil - write 0x0 at pixel pos
-		RCache.set_xform_project			(Device.mProject); 
-		RCache.set_xform_view				(Device.mView);
+		RCache.set_xform_project(Device.mProject);
+		RCache.set_xform_view(Device.mView);
+
 		// Stencil - write 0x1 at pixel pos - 
 		RCache.set_Stencil(true, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-		RCache.set_ColorWriteEnable			();
+		RCache.set_ColorWriteEnable();
 		RImplementation.r_dsgraph_render_emissive();
 	}
 
-	if(g_hud && g_hud->RenderActiveItemUIQuery()) {
+	if(g_hud && g_hud->RenderActiveItemUIQuery())
+	{
 		Target->phase_accumulator();
 		r_dsgraph_render_hud_ui();
 	}
@@ -740,14 +745,14 @@ void CRender::Render()
 	// Lighting, non dependant on OCCQ
 	{
 		GPU_EVENT(DEFER_LIGHT_NO_OCCQ);
-		Target->phase_accumulator				();
-		render_lights							(LP_normal);
+		Target->phase_accumulator();
+		render_lights(LP_normal);
 	}
 
 	// Lighting, dependant on OCCQ
 	{
 		GPU_EVENT(DEFER_LIGHT_OCCQ);
-		render_lights							(LP_pending);
+		render_lights(LP_pending);
 	}
 
 	phase = PHASE_NORMAL;
@@ -755,12 +760,10 @@ void CRender::Render()
 	// Postprocess
 	{
 		GPU_EVENT(DEFER_LIGHT_COMBINE);
-		Target->phase_combine					();
+		Target->phase_combine();
 	}
 
-	VERIFY	(0==mapDistort.size() + mapHUDDistort.size());
-
-	//HWOCC.occq_stats();
+	VERIFY(0 == mapDistort.size() + mapHUDDistort.size());
 }
 
 void CRender::render_forward()
@@ -787,7 +790,6 @@ void CRender::render_forward()
 	if (bDistort)
 	{
 		GPU_EVENT(render_distort_objects);
-
 		Target->u_setrt(Target->rt_Generic_1, 0, 0, RDepth);
 
 		RImplementation.rmNormal();
