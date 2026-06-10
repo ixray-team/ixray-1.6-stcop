@@ -171,32 +171,40 @@ float Hash(float3 n)
 
 float2 Hash22(float2 value)
 {
-    return float2(
+    return float2
+	(
         Hash(dot(value, float2(12.989, 78.233))),
-        Hash(dot(value, float2(39.346, 11.135))));
+        Hash(dot(value, float2(39.346, 11.135)))
+	);
 }
 
 float3 Hash23(float2 value)
 {
-    return float3(
+    return float3
+	(
         Hash(dot(value, float2(12.989, 78.233))),
         Hash(dot(value, float2(39.346, 11.135))),
-        Hash(dot(value, float2(73.156, 52.235))));
+        Hash(dot(value, float2(73.156, 52.235)))
+	);
 }
 
 float2 Hash32(float3 value)
 {
-    return float2(
+    return float2
+	(
         Hash(dot(value, float3(12.989, 78.233, 123.134f))),
-        Hash(dot(value, float3(39.346, 11.135, 543.142f))));
+        Hash(dot(value, float3(39.346, 11.135, 543.142f)))
+	);
 }
 
 float3 Hash33(float3 value)
 {
-    return float3(
+    return float3
+	(
         Hash(dot(value, float3(12.989, 78.233, 123.134f))),
         Hash(dot(value, float3(39.346, 11.135, 543.142f))),
-        Hash(dot(value, float3(73.156, 52.235, 143.425f))));
+        Hash(dot(value, float3(73.156, 52.235, 143.425f)))
+	);
 }
 
 // END
