@@ -81,12 +81,14 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	float4 FinalColor = 0.0f;
 	float FinalWeight = 0.0;
+	
+	float SampleRadius = 32.0f - 24.0f * GetBorderAtten(I.texcoord, 0.025f);
 
 	[loop]
 	for(uint i = 0; i < NUM_SAMPLES; ++i)
 	{
 		float2 offset = Disk32_Normalized[i] * scaled_screen_res.zw * DISK32_RADIUS;
-		offset = mirror(I.texcoord.xy + offset * 16.0f);
+		offset = mirror(I.texcoord.xy + offset * SampleRadius);
 		
 		float4 SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
 		
