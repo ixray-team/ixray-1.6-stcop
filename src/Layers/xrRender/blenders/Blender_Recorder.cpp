@@ -204,6 +204,9 @@ void	CBlender_Compile::PassSET_VS		(const char* name)
 
 void	CBlender_Compile::PassSET_ZB		(bool bZTest, bool bZWrite, bool bInvertZTest)
 {
+#ifndef USE_DX11
+	if (Pass())	bZWrite = false;
+#endif
 	RS.SetRS	(D3DRS_ZFUNC,			bZTest?(bInvertZTest?D3DCMP_GREATER:D3DCMP_LESSEQUAL):D3DCMP_ALWAYS);
 	RS.SetRS	(D3DRS_ZWRITEENABLE,	BC(bZWrite));
 	/*
