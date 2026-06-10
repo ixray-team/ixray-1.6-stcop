@@ -188,10 +188,7 @@ bool SceneBuilder::MakePuddles()
         F->w_string(buff);
         RtlZeroMemory(buff, sizeof(buff));
 
-        float newRotation = Object->FRotation.y;
-        newRotation *= -1;
-
-        sprintf(buff, "rotation = %0.3f", newRotation);
+        sprintf(buff, "rotation = %0.3f, %0.3f, %0.3f", Object->FRotation.x, Object->FRotation.y, Object->FRotation.z);
         F->w_string(buff);
         RtlZeroMemory(buff, sizeof(buff));
 
