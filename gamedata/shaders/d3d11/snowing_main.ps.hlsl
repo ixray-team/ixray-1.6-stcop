@@ -12,18 +12,13 @@ RWTexture2D<float4> u_normal : register(u1);
 RWTexture2D<float4> u_surface : register(u2);
 
 void main(PSInput _I)
-{
+{	
 	IXRayGbufferPack O = (IXRayGbufferPack)NULL;
 	IXRayMaterial M = (IXRayMaterial)NULL;
 	
 	uint2 DTid = uint2(_I.hpos.xy);
+	
 	M.Depth = s_position[DTid];
-	
-	if(M.Depth >= 1.0f)
-	{
-		return;
-	}
-	
 	M.Point = GbufferGetPointRealJitter(_I.texcoord, M.Depth);
 	
 	O.Color = u_color[DTid];
@@ -40,7 +35,7 @@ void main(PSInput _I)
     float3 N = normalize(mul((float3x3)m_invV, M.Normal.xyz));
 
 	float snow_mask = smoothstep(0.2f, 0.3f, M.Hemi);
-	snow_mask *= smoothstep(0.2f, 0.6f, N.y);
+	snow_mask *= smoothstep(0.7f, 0.8f, N.y);
 	
 	bool object_mask = M.MaterialID == OBJECT_ID || M.MaterialID == FOLIAGE_ID;
 	
@@ -53,10 +48,14 @@ void main(PSInput _I)
 		snow_mask = 0.0f;
 	}
 
-    float3 T, B;
+   // float3 T, B;
     I.tcdh.xy = P.xz * 0.2f;
 
-    build_contangent_frame(P, N, I.tcdh.xy, T, B);
+ //   build_contangent_frame(P, N, I.tcdh.xy, T, B);
+	
+	float3 UpVector = abs(N.z) < 0.999f ? float3(0.0f, 0.0f, 1.0f) : float3(1.0f, 0.0f, 0.0f);
+	float3 T = normalize(cross(UpVector, N));
+	float3 B = cross(N, T);
 
     float3x3 xform = mul((float3x3)m_V, float3x3(
         T.x, B.x, N.x,
