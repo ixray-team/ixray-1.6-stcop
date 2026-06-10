@@ -39,7 +39,7 @@
 
 
 #define MU_LODS_TRUE
-//#define MU_LODS_TRUE2
+//#define MU_LODS_OFF_BILLBOARD
 
 #define PropertyGP(a,b)	__declspec( property( get=a, put=b ) )
 #define THROW			FATAL("THROW");

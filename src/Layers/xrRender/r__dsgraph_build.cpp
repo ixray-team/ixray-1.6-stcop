@@ -142,16 +142,16 @@ ICF	float CalcSSA(float& distSQ, Fvector& C, float R)
 	return	R / distSQ;
 }
 
-//Seakad: я пока отключил это говно, потом переделаю/доделаю. 
-// (определяет, есть ли меш после LODx - к примеру, если после LOD2 нет, то LOD2 будет последним) 
-// (не всегда модель позволяет опустить ее полигонаж до LOD4 и даже LOD3, не убив ее качество в нули)
-/*bool HasNextLOD(FLOD* V, u32 next_type)
+//Seakad: вылетает исключение тут, на чуть более старой версии не было. Forser глянь пж потом, что тут. 
+IC bool HasNextLOD(dxRender_Visual *pVisual, u32 next_type)
 {
-    if (V->next_lod_checked)
-        return V->has_next_lod;
+	FLOD* pV = (FLOD*)pVisual;
 
-    V->next_lod_checked = true;
-    float R = std::max(V->vis.sphere.R,0.5f);
+    if (pV->next_lod_checked)
+        return pV->has_next_lod;
+
+    pV->next_lod_checked = true;
+    float R = std::max(pV->vis.sphere.R,0.5f);
     for (auto* visual : RImplementation.Visuals)
     {
         if (!visual)
@@ -160,17 +160,16 @@ ICF	float CalcSSA(float& distSQ, Fvector& C, float R)
         if (visual->Type != next_type)
             continue;
 
-        float D = visual->vis.sphere.P.distance_to(V->vis.sphere.P);
+        float D = visual->vis.sphere.P.distance_to(pV->vis.sphere.P);
         if (D < R)
         {
-            V->has_next_lod = true;
+            pV->has_next_lod = true;
             return true;
         }
     }
-
-    V->has_next_lod = false;
+    pV->has_next_lod = false;
     return false;
-}*/
+}
 
 void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fvector& Center)
 {
@@ -612,9 +611,9 @@ IC float distance_to_aabb(const Fvector& point,const Fbox& box)
     return _sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-IC int SelectLOD(float D) //,bool has_lod1,bool has_lod2,bool has_lod3,bool has_lod4
+IC int SelectLOD(float D,bool has_lod1,bool has_lod2,bool has_lod3,bool has_lod4)
 {
-    /*if (!has_lod1)
+	if (!has_lod1)
         return 0;
 
 	if (!has_lod2)
@@ -624,9 +623,9 @@ IC int SelectLOD(float D) //,bool has_lod1,bool has_lod2,bool has_lod3,bool has_
         return 2;
 
 	if (!has_lod4)
-        return 3;*/
+        return 3;
 
-	if (D < r_ssaLOD_MU0/ps_r__LOD_MU0_discard)
+	if (D < r_ssaLOD_MU0)
         return 0;
 
     if (D >= r_ssaLOD_MU0 && D <  r_ssaLOD_MU1)
@@ -638,7 +637,7 @@ IC int SelectLOD(float D) //,bool has_lod1,bool has_lod2,bool has_lod3,bool has_
     if (D >= r_ssaLOD_MU2 && D <  r_ssaLOD_MU3)
         return 3;
 
-    if (D >= r_ssaLOD_MU3 && D <  (r_ssaLOD_MU4/ps_r__LOD_MU4_discard))
+    if (D >= r_ssaLOD_MU3 && D <  (r_ssaLOD_MU4/(ps_r__LOD_MU4_discard * 0.001f)))
         return 4;
 
     return -1;
@@ -668,12 +667,12 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 		float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);
 		FLOD* pLOD = (FLOD*)pVisual;
 
-		//bool has_lod1 = HasNextLOD(pLOD, MT_LOD1);
-		//bool has_lod2 = HasNextLOD(pLOD, MT_LOD2);
-		//bool has_lod3 = HasNextLOD(pLOD, MT_LOD3);
-		//bool has_lod4 = HasNextLOD(pLOD, MT_LOD4);
+		bool has_lod1 = HasNextLOD(pLOD, MT_LOD1);
+		bool has_lod2 = HasNextLOD(pLOD, MT_LOD2);
+		bool has_lod3 = HasNextLOD(pLOD, MT_LOD3);
+		bool has_lod4 = HasNextLOD(pLOD, MT_LOD4);
 	
-		int selectedLOD = SelectLOD(D); //,has_lod1,has_lod2,has_lod3,has_lod4
+		int selectedLOD = SelectLOD(D,has_lod1,has_lod2,has_lod3,has_lod4);
 
 		// Visual is 100% visible - simply add it
 		switch (pVisual->Type)
@@ -692,9 +691,13 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 		case MT_LOD:
 		{
 			FLOD		* pV	=		(FLOD*) pVisual;
-			if (selectedLOD == 0)
+			if ((selectedLOD == 0) && has_lod1)
 			{
 				add_leafs_Static(pV->children);
+			}
+			else if ((selectedLOD == 0) && !has_lod1)
+			{
+				r_dsgraph_insert_static_lod(pVisual);
 			}
 		}continue;
 		case MT_LOD1:
@@ -779,12 +782,12 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 	float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);
 	FLOD* pLOD = (FLOD*)pVisual;
 
-	//bool has_lod1 = HasNextLOD(pLOD, MT_LOD1);
-	//bool has_lod2 = HasNextLOD(pLOD, MT_LOD2);
-	//bool has_lod3 = HasNextLOD(pLOD, MT_LOD3);
-	//bool has_lod4 = HasNextLOD(pLOD, MT_LOD4);
+	bool has_lod1 = HasNextLOD(pLOD, MT_LOD1);
+	bool has_lod2 = HasNextLOD(pLOD, MT_LOD2);
+	bool has_lod3 = HasNextLOD(pLOD, MT_LOD3);
+	bool has_lod4 = HasNextLOD(pLOD, MT_LOD4);
 	
-	int selectedLOD = SelectLOD(D); //,has_lod1,has_lod2,has_lod3,has_lod4
+	int selectedLOD = SelectLOD(D,has_lod1,has_lod2,has_lod3,has_lod4);
 
 	// If we get here visual is visible or partially visible
 	switch (pVisual->Type)
@@ -812,9 +815,13 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		case MT_LOD:
 		{
 			FLOD		* pV	=		(FLOD*) pVisual;
-			if (selectedLOD == 0)
+			if ((selectedLOD == 0) && has_lod1)
 			{
 				add_leafs_Static(pV->children);
+			}
+			else if ((selectedLOD == 0) && !has_lod1)
+			{
+				r_dsgraph_insert_static_lod(pVisual);
 			}
 		}return;
 		case MT_LOD1:

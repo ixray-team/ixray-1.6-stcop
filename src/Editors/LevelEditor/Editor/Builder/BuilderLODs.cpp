@@ -38,7 +38,7 @@ bool GetPointColor(SPickQuery::SResult* R, u32& alpha)
 
 int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int sector_num)
 {
-#ifndef MU_LODS_TRUE_1 //Seakad: ÿ ïîêà íå ðåøèë, âûðåçàòü ïîëíîñòüþ áèëáîðäû, èëè îñòàâèòü ñ ïóñòûøêîé-òåêñòóðîé, è ñ óìåíüøåííûì ðàçðåøåíèåì
+#ifndef MU_LODS_OFF_BILLBOARD //Seakad: Ñ Ð¿Ð¾ÐºÐ° Ð½Ðµ Ñ€ÐµÑˆÐ¸Ð», Ð²Ñ‹Ñ€ÐµÐ·Ð°Ñ‚ÑŒ Ð¿Ð¾Ð»Ð½Ð¾ÑÑ‚ÑŒÑŽ Ð±Ð¸Ð»Ð±Ð¾Ñ€Ð´Ñ‹, Ð¸Ð»Ð¸ Ð¾ÑÑ‚Ð°Ð²Ð¸Ñ‚ÑŒ Ñ Ð¿ÑƒÑÑ‚Ñ‹ÑˆÐºÐ¾Ð¹-Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð¾Ð¹, Ð¸ Ñ ÑƒÐ¼ÐµÐ½ÑŒÑˆÐµÐ½Ð½Ñ‹Ð¼ Ñ€Ð°Ð·Ñ€ÐµÑˆÐµÐ½Ð¸ÐµÐ¼ (Ð¸Ð¼ÐµÐ½Ð½Ð¾ ÑÑ‚Ð¾ Ñ‚ÑƒÑ‚ Ð¸ Ð¿Ñ€Ð¾Ð¸ÑÑ…Ð¾Ð´Ð¸Ñ‚)
     if (!E->m_objectFlags.is(CEditableObject::eoUsingLOD)) 
         return -1;
 
@@ -63,7 +63,7 @@ int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int 
 #endif
     l_lods.push_back(e_b_lod());
     e_b_lod& b = l_lods.back();
-#ifndef MU_LODS_TRUE_1
+#ifndef MU_LODS_OFF_BILLBOARD
     Fvector p[4];
     Fvector2 t[4];
 

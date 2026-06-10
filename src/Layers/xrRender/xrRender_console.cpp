@@ -110,7 +110,6 @@ float		ps_r__GLOD_ssa_start		= 256.f	;
 float		ps_r__GLOD_ssa_end			=  64.f	;
 float		ps_r__LOD					=  0.75f	;
 float		ps_r__LOD_MU_X				= 1.0f;
-float		ps_r__LOD_MU0_discard		= 0.001f;
 float		ps_r__LOD_MU4_discard		= 0.001f;
 float		ps_r__ssaDISCARD			=  3.5f	;					//RO
 float		ps_r__ssaDONTSORT			=  32.f	;					//RO
@@ -679,9 +678,8 @@ void		xrRender_initconsole	()
 	CMD2(CCC_Vector3, "r4_ssfx_volumetric", &ps_ssfx_volumetric);
 #endif
 
-	CMD4(CCC_Float,		"r__mu0_discard_lod",	&ps_r__LOD_MU0_discard,		0.001f, 10.0f);
-	CMD4(CCC_Float,		"r__mu4_discard_lod",	&ps_r__LOD_MU4_discard,		0.001f, 10.0f);
 #ifdef DEBUG
+	CMD4(CCC_Float,		"r__mu4_discard_lod",	&ps_r__LOD_MU4_discard,		0.001f, 10.0f);
 	CMD4(CCC_Float,		"r__detail_l_ambient",	&ps_r__Detail_l_ambient,	.5f,	.95f	);
 	CMD4(CCC_Float,		"r__detail_l_aniso",	&ps_r__Detail_l_aniso,		.1f,	.5f		);
 #endif // DEBUG
