@@ -200,9 +200,20 @@ void CRender::LoadPuddles()
 		float max_height = ini.r_float(sect_name, "max_height");
 
 		Fvector2 size_xz = ini.r_fvector2(sect_name, "size_xz");
-		float rotation = ini.r_float(sect_name, "rotation");
 
-		m_puddle.m_world.rotateY(rotation);
+		float rotX, rotY, rotZ = 0.0f;
+		int rotArg = sscanf(ini.r_string(sect_name, "rotation"), "%0.3f, %0.3f, %0.3f", &rotX, &rotY, &rotZ);
+		if (rotArg == 3)
+		{
+			m_puddle.m_world.rotateX(-rotX);
+			m_puddle.m_world.rotateY(-rotY);
+			m_puddle.m_world.rotateZ(-rotZ);
+		}
+		else
+		{
+			m_puddle.m_world.rotateY(rotX); // actually Y, just named X because it's the first one
+		}
+
 		m_puddle.m_world.mulB_43(Fmatrix().scale(size_xz.x, 1.0f, size_xz.y));
 
 		m_puddle.m_world.translate_over(position);
