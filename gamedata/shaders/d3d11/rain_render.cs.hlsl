@@ -181,6 +181,12 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 #else
 	bool object_mask = M.MaterialID == OBJECT_ID || M.MaterialID == FOLIAGE_ID;
 	
+	float F90 = saturate(dot(M.Color, 0.333f) * 50.0f);
+
+	M.Color *= lerp(1.0f, 0.66f, s);
+	M.Roughness = lerp(M.Roughness, min(0.3f, M.Roughness), s); 
+	M.Specular = lerp(M.Specular, max(0.2f * F90, M.Specular), s);
+	
 	[branch]
 	if(!object_mask)
 	{
@@ -198,12 +204,6 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		float3 RainNormal = GetFlatNormal(TexCoord);
 		fIsUp = -dot(Ldynamic_dir.xyz, RainNormal.xyz);
 		mask *= smoothstep(0.6f, 0.8f, fIsUp);
-		
-		float F90 = saturate(dot(M.Color, 0.333f) * 50.0f);
-
-		M.Color *= lerp(1.0f, 0.66f, s); 
-		M.Roughness = lerp(M.Roughness, min(0.3f, M.Roughness), s); 
-		M.Specular = lerp(M.Specular, max(0.2f * F90, M.Specular), s);
 		
 		M.Roughness = lerp(M.Roughness, 0.07f, mask);
 		M.Specular = lerp(M.Specular, 0.4f, mask);

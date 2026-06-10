@@ -64,7 +64,7 @@ void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 	#ifdef USE_OFFSCREEN_REFLECTIONS
 		float4 vslr = FastViewReflections(ReflectPoint, Reflect);
 		
-		float Fog = saturate(length(vslr.xyz) * 2.5f * fog_params.w + fog_params.x);
+		float Fog = saturate(length(vslr.xyz) * fog_params.w + fog_params.x);
 		vslr.w *= 1.f - Fog * Fog;
 		
 		vslr.xyz = s_env.SampleLevel(smp_rtlinear, vslr.xyz, 0.0f);
