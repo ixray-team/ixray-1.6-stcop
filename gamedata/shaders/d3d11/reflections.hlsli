@@ -173,8 +173,8 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 	
 	float L = 0.001f;
 	
-	Step *= is_hud ? 0.1f : 0.02f;
-	float StepScale = is_hud ? 1.21f : 1.342264f;
+	Step *= 0.1f;
+	float StepScale = 1.21f;
 	
 	float Delta = 0.0f;
 	float OldDelta = 0.0f;
