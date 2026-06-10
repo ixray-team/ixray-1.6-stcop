@@ -213,6 +213,16 @@ inline void GbufferPack(inout IXRayGbufferPack O, inout IXRayMaterial M)
 	
 	O.Normal.w = float(M.MaterialID) / MAX_ID;
 	O.Normal.z = M.Hemi;
+	
+	float2 Jitter = Hash32(cos(M.Point * 124.0f) * 1245.0f);
+	
+	Jitter = frac(Jitter + timers.x) - 0.5f;
+	Jitter *= rcp(256.0f);
+	
+	O.Material += Jitter.yxyx;
+	O.Color += Jitter.yxyx;
+	
+	O.Normal.xyz += Jitter.yxyx * 0.25f;
 }
 
 inline void GbufferUnpackMaterial(inout IXRayGbufferPack O, inout IXRayMaterial M)
