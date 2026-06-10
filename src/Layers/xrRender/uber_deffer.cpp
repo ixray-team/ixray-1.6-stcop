@@ -222,12 +222,12 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 			C.r_dx10Sampler("smp_linear");
 		
 			C.r_End(false);
+			C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_LESS_EQUAL);
 		}
 #endif // USE_DX11
 	}
 
 #ifdef USE_DX11
-	C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_LESS_EQUAL);
 	if (bump && hq && RImplementation.o.dx11_enable_tessellation && C.TessMethod != CBlender_Compile::NO_TESS)
 	{
 		string256 hs = "tess", ds = "tess";
