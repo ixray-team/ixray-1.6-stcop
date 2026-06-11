@@ -146,7 +146,7 @@ void UILeftBarForm::Draw()
                 ImGui::TableSetupColumn("##Values", ImGuiTableColumnFlags_WidthStretch);
 
                 XRay::ImGui::TableNextRow();
-                XRay::ImGui::TableNextColumn();     XRay::ImGui::TextFramed("Anim fromat:");
+                XRay::ImGui::TableNextColumn();     XRay::ImGui::TextFramed("Anim Format:");
                 XRay::ImGui::TableNextColumn();
 
                 ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
