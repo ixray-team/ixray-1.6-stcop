@@ -665,14 +665,20 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 			continue;
 
 		float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);
-		FLOD* pLOD = (FLOD*)pVisual;
 
-		bool has_lod1 = HasNextLOD(pLOD, MT_LOD1);
-		bool has_lod2 = HasNextLOD(pLOD, MT_LOD2);
-		bool has_lod3 = HasNextLOD(pLOD, MT_LOD3);
-		bool has_lod4 = HasNextLOD(pLOD, MT_LOD4);
-	
-		int selectedLOD = SelectLOD(D,has_lod1,has_lod2,has_lod3,has_lod4);
+
+		int SelectedLOD = 0;
+		bool has_lod1 = false;
+
+		if (pVisual->Type == MT_LOD || (pVisual->Type >= MT_LOD1 && pVisual->Type <= MT_LOD4))
+		{
+			has_lod1 = HasNextLOD(pVisual, MT_LOD1);
+			bool has_lod2 = HasNextLOD(pVisual, MT_LOD2);
+			bool has_lod3 = HasNextLOD(pVisual, MT_LOD3);
+			bool has_lod4 = HasNextLOD(pVisual, MT_LOD4);
+
+			SelectedLOD = SelectLOD(D, has_lod1, has_lod2, has_lod3, has_lod4);
+		}
 
 		// Visual is 100% visible - simply add it
 		switch (pVisual->Type)
@@ -691,11 +697,11 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 		case MT_LOD:
 		{
 			FLOD		* pV	=		(FLOD*) pVisual;
-			if ((selectedLOD == 0) && has_lod1)
+			if ((SelectedLOD == 0) && has_lod1)
 			{
 				add_leafs_Static(pV->children);
 			}
-			else if ((selectedLOD == 0) && !has_lod1)
+			else if ((SelectedLOD == 0) && !has_lod1)
 			{
 				r_dsgraph_insert_static_lod(pVisual);
 			}
@@ -703,7 +709,7 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 		case MT_LOD1:
 		{
 			FLOD		* pV	=		(FLOD*) pVisual;
-			if (selectedLOD == 1)
+			if (SelectedLOD == 1)
 			{
 				add_leafs_Static(pV->children);
 			}
@@ -711,7 +717,7 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 		case MT_LOD2:
 		{
 			FLOD		* pV	=		(FLOD*) pVisual;
-			if (selectedLOD == 2)
+			if (SelectedLOD == 2)
 			{
 				add_leafs_Static(pV->children);
 			}
@@ -719,7 +725,7 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 		case MT_LOD3:
 		{
 			FLOD		* pV	=		(FLOD*) pVisual;
-			if (selectedLOD == 3)
+			if (SelectedLOD == 3)
 			{
 				add_leafs_Static(pV->children);
 			}
@@ -727,7 +733,7 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 	case MT_LOD4:
 		{
 			FLOD		* pV	=		(FLOD*) pVisual;
-			if (selectedLOD == 4)
+			if (SelectedLOD == 4)
 			{
 				add_leafs_Static(pV->children);
 			}
@@ -780,14 +786,19 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		return;
 
 	float D = distance_to_aabb(Device.vCameraPosition,pVisual->vis.box);
-	FLOD* pLOD = (FLOD*)pVisual;
 
-	bool has_lod1 = HasNextLOD(pLOD, MT_LOD1);
-	bool has_lod2 = HasNextLOD(pLOD, MT_LOD2);
-	bool has_lod3 = HasNextLOD(pLOD, MT_LOD3);
-	bool has_lod4 = HasNextLOD(pLOD, MT_LOD4);
-	
-	int selectedLOD = SelectLOD(D,has_lod1,has_lod2,has_lod3,has_lod4);
+	int SelectedLOD = 0;
+	bool has_lod1 = false;
+
+	if (pVisual->Type == MT_LOD || (pVisual->Type >= MT_LOD1 && pVisual->Type <= MT_LOD4))
+	{
+		has_lod1 = HasNextLOD(pVisual, MT_LOD1);
+		bool has_lod2 = HasNextLOD(pVisual, MT_LOD2);
+		bool has_lod3 = HasNextLOD(pVisual, MT_LOD3);
+		bool has_lod4 = HasNextLOD(pVisual, MT_LOD4);
+
+		SelectedLOD = SelectLOD(D, has_lod1, has_lod2, has_lod3, has_lod4);
+	}
 
 	// If we get here visual is visible or partially visible
 	switch (pVisual->Type)
@@ -815,11 +826,11 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		case MT_LOD:
 		{
 			FLOD		* pV	=		(FLOD*) pVisual;
-			if ((selectedLOD == 0) && has_lod1)
+			if ((SelectedLOD == 0) && has_lod1)
 			{
 				add_leafs_Static(pV->children);
 			}
-			else if ((selectedLOD == 0) && !has_lod1)
+			else if ((SelectedLOD == 0) && !has_lod1)
 			{
 				r_dsgraph_insert_static_lod(pVisual);
 			}
@@ -827,7 +838,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		case MT_LOD1:
 		{
 			FLOD		* pV	=		(FLOD*) pVisual;
-			if (selectedLOD == 1)
+			if (SelectedLOD == 1)
 			{
 				add_leafs_Static(pV->children);
 			}
@@ -835,7 +846,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		case MT_LOD2:
 		{
 			FLOD		* pV	=		(FLOD*) pVisual;
-			if (selectedLOD == 2)
+			if (SelectedLOD == 2)
 			{
 				add_leafs_Static(pV->children);
 			}
@@ -843,7 +854,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		case MT_LOD3:
 		{
 			FLOD		* pV	=		(FLOD*) pVisual;
-			if (selectedLOD == 3)
+			if (SelectedLOD == 3)
 			{
 				add_leafs_Static(pV->children);
 			}
@@ -851,7 +862,7 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 	case MT_LOD4:
 		{
 			FLOD		* pV	=		(FLOD*) pVisual;
-			if (selectedLOD == 4)
+			if (SelectedLOD == 4)
 			{
 				add_leafs_Static(pV->children);
 			}
