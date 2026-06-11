@@ -312,8 +312,7 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 		return false;
 	}
 
-	const char* WineLoader = std::getenv("WINELOADER");
-	if (WineLoader != nullptr) {
+	if (g_AppInfo.IsLaunchedViaWineOrProton) {
 		return false;
 	}
 #endif
