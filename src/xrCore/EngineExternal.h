@@ -54,6 +54,7 @@ enum class EEngineExternalGame
 	EnableWeaponAlternateRPMSystem,
 	EnableInventoryVolume,
 	EnableRealBulletPos,
+	EnableWeaponAffectsOnMouseSensitivity,
 	None
 };
 
