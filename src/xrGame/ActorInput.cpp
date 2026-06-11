@@ -1516,18 +1516,24 @@ void	CActor::OnPrevWeaponSlot()
 	}
 }
 
-float	CActor::GetLookFactor()
+float CActor::GetLookFactor()
 {
-	if (m_input_external_handler) 
+	if (m_input_external_handler)
+	{
 		return m_input_external_handler->mouse_scale_factor();
+	}
 
+
+	float factor = 1.f;
+
+	PIItem pItem = inventory().ActiveItem();
 	
-	float factor	= 1.f;
+	static bool use_weapon_factor = EngineExternal()[EEngineExternalGame::EnableWeaponAffectsOnMouseSensitivity];
 
-	PIItem pItem	= inventory().ActiveItem();
-
-	if (pItem)
+	if (pItem && use_weapon_factor)
+	{
 		factor *= pItem->GetControlInertionFactor();
+	}
 
 	VERIFY(!fis_zero(factor));
 
