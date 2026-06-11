@@ -312,7 +312,8 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 		return false;
 	}
 
-	if (std::getenv("WINELOADER") != nullptr) {
+	const char* WineLoader = std::getenv("WINELOADER");
+	if (WineLoader != nullptr) {
 		return false;
 	}
 #endif
