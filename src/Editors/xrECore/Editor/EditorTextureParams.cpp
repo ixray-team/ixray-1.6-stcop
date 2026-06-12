@@ -26,7 +26,19 @@ void EditorFillPropTextureParams(STextureParams* ThisCall, const char* base_name
 			{
 				xr_string path;
 				path = base_name;
-				PHelper().CreateChoose(items, "Bump\\Texture", &ThisCall->bump_name, smTexture, path.c_str());
+				P = PHelper().CreateBool(items, "Bump\\Guess Texture From This", &ThisCall->guess_bump_texture_from_name);
+				P->OnChangeEvent.bind(ThisCall, &STextureParams::OnBumpGuessChange);
+				if (ThisCall->guess_bump_texture_from_name)
+				{
+					xr_stack_string_path ToFind = ChangeFileExt(path, "_bump").c_str();
+					str_c StartPos = ToFind.c_str();
+					auto Pos = ToFind.find("_");
+					StartPos += Pos+1;
+					ToFind.copy(const_cast<char*>(StartPos), 0, ToFind.size());
+					ToFind[Pos] = '\\';
+					ThisCall->bump_name = ToFind.c_str();
+				}
+				PHelper().CreateChoose(items, "Bump\\Texture", &ThisCall->bump_name, ThisCall->guess_bump_texture_from_name ? smDisabled : smTexture, path.c_str());
 			}
 
 			PHelper().CreateFlag32(items, "Details\\Use As Diffuse", &ThisCall->flags, STextureParams::flDiffuseDetail);
