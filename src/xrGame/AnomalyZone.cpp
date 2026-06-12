@@ -694,6 +694,7 @@ xr_vector<CGameObject*> CAnomalyZone::GetSortedByDistanceSpatialObjects(float di
 {
 	static xr_vector<ISpatialShared> spatial;
 	spatial.clear();
+	lastScannedObjects.clear();
 	spatial.reserve(64);
 	g_SpatialSpace->q_sphere(spatial, 0, ESPATIAL_TYPE(mask), centerPos, distance);
 
@@ -715,9 +716,9 @@ xr_vector<CGameObject*> CAnomalyZone::GetSortedByDistanceSpatialObjects(float di
 
 	if (objects.size() <= 1)
 	{
+		lastScannedObjects = objects;
 		return objects;
 	}
-
 
 	std::sort(objects.begin(), objects.end(),
 		[centerPos](CGameObject* a, CGameObject* b) {
