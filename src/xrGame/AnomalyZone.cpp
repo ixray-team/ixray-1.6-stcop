@@ -21,6 +21,7 @@
 #include "HUDManager.h"
 #include "AnomalyElectricCurve.h"
 #include "AnomalyMovement.h"
+#include "AnomalyRainCollide.h"
 
 #define WIND_RADIUS (4*Radius())	//расстояние до актера, когда появляется ветер 
 #define FASTMODE_DISTANCE (50.f)	//distance to camera from sphere, when zone switches to fast update sequence
@@ -67,6 +68,7 @@ CAnomalyZone::CAnomalyZone(void)
 
 	CreateComponent<TAnomalyElectricCurve>();
 	CreateComponent<TAnomalyMovement>();
+	CreateComponent<TAnomalyRainCollide>();
 }
 
 CAnomalyZone::~CAnomalyZone(void) 
@@ -79,6 +81,14 @@ CAnomalyZone::~CAnomalyZone(void)
 	DestroySoundsArray(m_blowout_sounds_variants);
 	DestroySoundsArray(m_hit_sounds_variants);
 	DestroySoundsArray(m_entrance_sounds_variants);
+}
+
+void CAnomalyZone::OnRainCollide(Fvector rainCollisionPosition)
+{
+	if (TAnomalyRainCollide* AnomalyRainCollide = GetComponent<TAnomalyRainCollide>())
+	{
+		AnomalyRainCollide->OnRainCollide(rainCollisionPosition);
+	}
 }
 
 void CAnomalyZone::DestroySoundsArray(xr_vector<ref_sound>& soundsArray)
@@ -348,6 +358,11 @@ void CAnomalyZone::Load(const char* section)
 	{
 		AnomalyElectricCurve->Load(section);
 	}
+
+	if (TAnomalyRainCollide* AnomalyRainCollide = GetComponent<TAnomalyRainCollide>())
+	{
+		AnomalyRainCollide->Load(section);
+	}
 }
 
 bool CAnomalyZone::net_Spawn(CSE_Abstract* DC) 
@@ -601,6 +616,12 @@ void CAnomalyZone::UpdateComponents(bool isUpdateCL)
 
 	TAnomalyElectricCurve* AnomalyElectricCurve = GetComponent<TAnomalyElectricCurve>();
 	TAnomalyMovement* AnomalyMovement = GetComponent<TAnomalyMovement>();
+	TAnomalyRainCollide* AnomalyRainCollide = GetComponent<TAnomalyRainCollide>();
+
+	if (AnomalyRainCollide != nullptr && isUpdateCL)
+	{
+		AnomalyRainCollide->Update();
+	}
 
 	if (AnomalyMovement != nullptr)
 	{
