@@ -136,6 +136,8 @@ public:
 	u32									dwFrame_UpdateCL;
 	u32									dwFrame_AsCrow;
 
+	virtual void OnRainCollide(Fvector rainCollisionPosition);
+
 	// Crow-MODE
 	// if (object_is_visible)
 	// if (object_is_near)
