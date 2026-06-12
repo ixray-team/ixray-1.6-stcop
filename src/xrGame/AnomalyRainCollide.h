@@ -25,7 +25,7 @@ private:
 public:
 	void BeginComponent(IECSOwner* O) { m_currentAnomalyObject = smart_cast<CAnomalyZone*>(O); }
 	void EndComponent() {}
-	void Load(LPCSTR section);
+	void Load(const char* section);
 	void OnRainCollide(Fvector rainCollisionPosition);
 	void Update();
 
