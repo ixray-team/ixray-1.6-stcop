@@ -3,7 +3,7 @@
 #include "object_broker.h"
 #include "AnomalyRainCollide.h"
 
-void TAnomalyRainCollide::Load(LPCSTR section)
+void TAnomalyRainCollide::Load(const char* section)
 {
 	shared_str rain_collide_particles_section = READ_IF_EXISTS(pSettings, r_string, section, "rain_collide_particles_section", nullptr);
 	if (rain_collide_particles_section)
