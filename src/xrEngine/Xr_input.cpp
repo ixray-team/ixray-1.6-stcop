@@ -311,6 +311,10 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 	if (lang_locale != LANG_RUSSIAN) {
 		return false;
 	}
+
+	if (g_AppInfo.IsLaunchedViaWineOrProton) {
+		return false;
+	}
 #endif
 
 	if (!russian_lookup_key_table.contains(dik)) {
