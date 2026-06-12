@@ -230,10 +230,19 @@ bool CUIActorMenuBase::OnItemDropped(PIItem itm, CUIDragDropListEx* new_owner, C
 	CUICellItem*	_citem	= (new_owner->ItemsCount()==1) ? new_owner->GetItemIdx(0) : nullptr;
 	PIItem _iitem	= _citem ? (PIItem)_citem->m_pData : nullptr;
 
-	if(!_iitem)						return	false;
-	if(!_iitem->CanAttach(itm))		return	false;
+	if (!_iitem)
+	{
+		return false;
+	}
+	if (!_iitem->CanAttach(itm))
+	{
+		return false;
+	}
 
-	if(old_owner != GetActorList())	return	false;
+	if (old_owner != GetActorList() && old_owner != GetTradeActorBagList())
+	{
+		return false;
+	}
 
 	AttachAddon						(_iitem);
 
