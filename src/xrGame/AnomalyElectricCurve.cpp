@@ -68,7 +68,7 @@ bool TAnomalyElectricCurve::IsNeedScanObjects()
 	return m_use_electric_curve && IsEnabled();
 }
 
-void TAnomalyElectricCurve::Load(LPCSTR section)
+void TAnomalyElectricCurve::Load(const char* section)
 {
 	m_snd_emmiter_electric_core_target_damage.clear();
 	m_snd_emmiter_electric_core_loop.clear();

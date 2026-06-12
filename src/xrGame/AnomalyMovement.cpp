@@ -47,7 +47,7 @@ bool TAnomalyMovement::IsNeedScanObjects()
 	return m_use_movement_magnetic_on_inside_alive_mode && IsEnabled();
 }
 
-void TAnomalyMovement::Load(LPCSTR section)
+void TAnomalyMovement::Load(const char* section)
 {
 	xr_string options_section = READ_IF_EXISTS(pSettings, r_string, section, "movement_options_section", "");
 	if (!options_section.empty())
