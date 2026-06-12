@@ -80,6 +80,10 @@ void xrCore::_initialize	(const char* _ApplicationName, xrLogger::LogCallback cb
 		g_uiExpressionMgr = new CExpressionManager();
 
 		g_Discord.Init();
+		
+#ifdef IXR_WINDOWS
+		g_AppInfo.IsLaunchedViaWineOrProton = std::getenv("WINELOADER") != nullptr;
+#endif
 	}
 
 	if (init_fs)
