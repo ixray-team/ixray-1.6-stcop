@@ -342,31 +342,24 @@ void UIImageEditorForm::InitItemList()
 {
 	R_ASSERT(m_THM_Used.empty());
 	if (!bImportMode)
-		ImageLib.GetTexturesRaw(texture_map);
-	/*
-		FS_FileSet				flist;
-		FS.file_list			(flist,"$game_textures$",FS_ListFiles|FS_ClampExt,"*.thm");
-		Msg						("TfrmImageLib::InitItemsList count of .thm files=%d", flist.size());
-		FS_FileSetIt It			= flist.begin();
-		FS_FileSetIt It_e		= flist.end();
-		string256 				tex_name;
-		for(;It!=It_e;++It)
-		{
-			shared_str sn 		=(*It).name.c_str();
-			FindUsedTHM			(sn);
-		}
-	*/
-
-	ListItemsVec 			items;
-	// fill
-	FS_FileSetIt it = texture_map.begin();
-	FS_FileSetIt _E = texture_map.end();
-	for (; it != _E; it++)
 	{
-		ListItem* I = LHelper().CreateItem(items, it->name.c_str(), 0);
-		I->m_Object = (void*)(FindUsedTHM(it->name.c_str()));
-		R_ASSERT2(I->m_Object, it->name.c_str());
+		ImageLib.GetTexturesRaw(texture_map);
 	}
+
+	ListItemsVec items;
+	xr_vector<xr_pair<ListItem*, str_c>> list_elems;
+	list_elems.reserve(items.size());
+	for (auto& elem : texture_map)
+	{
+		list_elems.emplace_back(LHelper().CreateItem(items, elem.name.c_str(), 0), elem.name.c_str());
+	}
+	xr_parallel_for(size_t(0), list_elems.size(), [&](size_t i)
+	{
+		auto& elem = list_elems[i];
+		elem.first->m_Object = FindUsedTHM(elem.second);
+		R_ASSERT2(elem.first->m_Object, elem.second);
+		Msg("Load THM for %s", elem.second);
+	});
 	m_ItemList->AssignItems(items);
 }
 
