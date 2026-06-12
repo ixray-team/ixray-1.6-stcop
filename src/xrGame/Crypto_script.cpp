@@ -8,7 +8,7 @@
 CFFxCrypto::CFFxCrypto() {}
 CFFxCrypto::~CFFxCrypto() {}
 
-LPCSTR CFFxCrypto::CRC64(LPCSTR input)
+const char* CFFxCrypto::CRC64(const char* input)
 {
     if (!input)
     {
@@ -36,7 +36,7 @@ LPCSTR CFFxCrypto::CRC64(LPCSTR input)
     return result;
 }
 
-LPCSTR CFFxCrypto::SHA256(LPCSTR input)
+const char* CFFxCrypto::SHA256(const char* input)
 {
     if (!input)
     {
@@ -201,7 +201,7 @@ LPCSTR CFFxCrypto::SHA256(LPCSTR input)
     return result;
 }
 
-LPCSTR CFFxCrypto::SHA1(LPCSTR input)
+const char* CFFxCrypto::SHA1(const char* input)
 {
     if (!input)
     {
@@ -418,7 +418,7 @@ LPCSTR CFFxCrypto::SHA1(LPCSTR input)
     return result;
 }
 
-LPCSTR CFFxCrypto::Base64Encode(LPCSTR input)
+const char* CFFxCrypto::Base64Encode(const char* input)
 {
     if (!input)
     {
@@ -459,7 +459,7 @@ LPCSTR CFFxCrypto::Base64Encode(LPCSTR input)
     return result.c_str();
 }
 
-LPCSTR CFFxCrypto::Base64Decode(LPCSTR input)
+const char* CFFxCrypto::Base64Decode(const char* input)
 {
     if (!input)
     {
@@ -513,7 +513,7 @@ LPCSTR CFFxCrypto::Base64Decode(LPCSTR input)
     return result.c_str();
 }
 
-LPCSTR CFFxCrypto::XorEncode(LPCSTR input, LPCSTR key)
+const char* CFFxCrypto::XorEncode(const char* input, const char* key)
 {
     if (!input || !key) return "";
 
