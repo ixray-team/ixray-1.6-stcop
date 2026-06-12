@@ -226,13 +226,21 @@ void UIImageEditorForm::ImportTextures()
 
 ETextureThumbnail* UIImageEditorForm::FindUsedTHM(const shared_str& name)
 {
-	THMMapIt it = m_THM_Used.find(name);
-	if (it != m_THM_Used.end())
-		return it->second;
+	static xrCriticalSection THMUsedCS;
+	ETextureThumbnail* thm = nullptr;
 
-	ETextureThumbnail* thm = new ETextureThumbnail(name.c_str(), false);
-	m_THM_Used[name] = thm;
+	{
+		xrCriticalSectionGuard guard(THMUsedCS);
+		THMMapIt it = m_THM_Used.find(name);
+		if (it != m_THM_Used.end())
+		{
+			return it->second;
+		}
 
+		thm = new ETextureThumbnail(name.c_str(), false);
+		m_THM_Used[name] = thm;
+	}
+		
 	if (bImportMode)
 	{
 		xr_string fn = name.c_str();
