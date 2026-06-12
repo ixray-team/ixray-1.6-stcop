@@ -45,8 +45,7 @@ void TAnomalyRainCollide::SpawnAirParticle(Fvector position)
 
 CParticlesObject* TAnomalyRainCollide::PlayNewPG(shared_str path, Fvector position)
 {
-	CParticlesObject* pParticle;
-	pParticle = Particles::Details::Create(path.c_str(), true).get();
+	CParticlesObject* pParticle = Particles::Details::Create(path.c_str(), true).get();
 
 	Fvector dir;
 	dir.set(0, 1, 0);
