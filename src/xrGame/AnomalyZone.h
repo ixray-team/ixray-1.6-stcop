@@ -23,6 +23,9 @@ private:
 
 public:
 	CZoneEffector*		m_actor_effector;
+	bool m_use_rain_collide = false;
+
+	virtual void OnRainCollide(Fvector rainCollisionPosition) override;
 
 protected:
 	bool m_bVolumetricBlowout    = true;
