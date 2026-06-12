@@ -11,6 +11,7 @@
 #	include <tbb/parallel_for_each.h>
 #	include <tbb/concurrent_unordered_map.h>
 #	include <tbb/concurrent_vector.h>
+#	include <tbb/parallel_sort.h>
 #endif
 #include <atomic>
 
@@ -110,6 +111,16 @@ inline void xr_parallel_foreach(Index Begin, Index End, Body Functor)
 	concurrency::parallel_for_each(Begin, End, Functor);
 #else
 	tbb::parallel_for_each(Begin, End, Functor);
+#endif
+}
+
+template<typename It, typename Body>
+inline void xr_parallel_sort(It Begin, It End, Body Functor, size_t GrainSize = 2048)
+{
+#ifdef IXR_WINDOWS
+	concurrency::parallel_sort(Begin, End, Functor, GrainSize);
+#else
+	tbb::parallel_sort(Begin, End, Functor, GrainSize);
 #endif
 }
 
