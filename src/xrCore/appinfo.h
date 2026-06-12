@@ -4,6 +4,9 @@ class XRCORE_API CAppInfo
 {
 public:
 	SDL_Window* Window = nullptr;
+#ifdef IXR_WINDOWS
+	bool IsLaunchedViaWineOrProton = false;
+#endif
 
 	ThreadID MainThread = NULL;
 	ThreadID SecondaryThread = NULL;
