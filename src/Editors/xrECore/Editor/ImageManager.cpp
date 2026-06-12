@@ -287,11 +287,43 @@ bool CImageManager::LoadTextureData(const char* src_name, U32Vec& data, u32& w, 
 void CImageManager::SafeCopyLocalToServer(FS_FileSet& files)
 {
 	string_path p_import, p_textures;
-	string_path src_name, dest_name;
 	FS.update_path(p_import,_import_,"");
 	FS.update_path(p_textures,_textures_,"");
 
-	FS_FileSetIt it	= files.begin();
+	xr_vector<const FS_File*> files_vec;
+	files_vec.reserve(files.size());
+	for (auto& entry : files)
+	{
+		files_vec.push_back(&entry);
+	}
+	xr_parallel_for(size_t(0), files_vec.size(), [&](size_t i)
+	{
+		string_path src_name, dest_name;
+		xr_string fn;
+
+		// copy sources
+		fn = files_vec[i]->name;
+		xr_strconcat(src_name, p_import, fn.c_str());
+		UpdateFileName(fn);
+
+		xr_strconcat(dest_name, p_textures, EFS.ChangeFileExt(fn, ".tga").c_str());
+
+		if (0 == strcmp(strext(src_name), ".tga"))
+		{
+			FS.file_copy(src_name, dest_name);
+		}
+		else
+		{
+			// convert to TGA
+			DXTUtils::Converter::MakeTGA(src_name, dest_name);
+		}
+		FS.set_file_age(dest_name, xr_chrono_to_time_t(std::chrono::system_clock::now()));
+		EFS.MarkFile(src_name, true);
+
+		Msg("File %s copied to rawdata", files_vec[i]->name.c_str());
+	});
+
+	/*FS_FileSetIt it	= files.begin();
 	FS_FileSetIt _E = files.end();
 
 	for (; it != _E; it++)
@@ -316,7 +348,7 @@ void CImageManager::SafeCopyLocalToServer(FS_FileSet& files)
 		}
 		FS.set_file_age(dest_name, xr_chrono_to_time_t(std::chrono::system_clock::now()));
 		EFS.MarkFile(src_name, true);
-	}
+	}*/
 }    
 //------------------------------------------------------------------------------
 // возвращает список не синхронизированных (модифицированных) текстур
