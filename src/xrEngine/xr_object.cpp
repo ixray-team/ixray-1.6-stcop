@@ -23,6 +23,11 @@ inline void CObjectList::o_crow		(CObject*	O)
 	O->dwFrame_AsCrow			= Device.dwFrame;
 }
 
+void CObject::OnRainCollide(Fvector rainCollisionPosition)
+{
+	return;
+}
+
 void CObject::MakeMeCrow			()
 {
 	if ( Props.crow )

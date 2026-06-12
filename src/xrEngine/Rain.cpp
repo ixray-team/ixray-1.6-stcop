@@ -68,10 +68,19 @@ ICF bool RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_t
 			return false;
 	}
 
+	 u32 mask = (u32)tgt;
+	mask |= (u32)collide::rq_target::rqtShape;
+
 	bool bRes;
-	collide::rq_result	RQ;
-	bRes = !!g_pGameLevel->ObjectSpace.RayPick( s,d,range,tgt,RQ, g_pGameLevel->CurrentViewEntity());
-	if (bRes) range 	= RQ.range;
+	collide::rq_result RQ;
+	bRes = !!g_pGameLevel->ObjectSpace.RayPick(s, d, range, collide::rq_target(mask), RQ, g_pGameLevel->CurrentViewEntity());
+	if (bRes) range = RQ.range;
+
+	if (range > 0 && RQ.O != nullptr)
+	{
+		RQ.O->OnRainCollide(Fvector().mad(s, d, range));
+	}
+
 	return bRes;
 }
 
