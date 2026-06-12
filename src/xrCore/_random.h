@@ -12,8 +12,8 @@ public:
 	ICF 	s32		maxI	()							{ return 32767;	}
 
     ICF	    s32		randI	()							{ return(((holdrand = holdrand * 214013L + 2531011L) >> 16) & 0x7fff); }
-	ICF 	s32		randI	(size_t max)				{ VERIFY(max);  return randI()% s32(max); }
-	ICF 	s32		randI	(s32 min, s32 max)			{ return min+randI(max-min); }
+	ICF 	s32		randI	(size_t max)				{ if (max == 0) { return 0; } VERIFY(max);  return randI()% s32(max); }
+	ICF     s32     randI   (s32 min, s32 max)          { if (min == 0 && max == 0) { return 0; } return min + randI(max - min); }
 	ICF 	s32		randIs	(s32 range)					{ return randI(-range,range); }
 	ICF 	s32		randIs	(s32 range, s32 offs)		{ return offs+randIs(range); }
 
