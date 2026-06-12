@@ -120,6 +120,7 @@ struct ENGINE_API STextureParams
 	ETBumpMode			bump_mode;
 	shared_str			bump_name;
 	shared_str			ext_normal_map_name;
+	bool				guess_bump_texture_from_name = false;
 
 	STextureParams();
 	
@@ -172,6 +173,7 @@ struct ENGINE_API STextureParams
 	static TFillPropImpl FillPropImpl;
 
 	void OnTypeChange	(PropValue* v);
+	void OnBumpGuessChange	(PropValue* v);
 	void FillProp		(const char* base_name, xr_vector<PropItem*>& items, TOnChange OnChangeEvent);
 	const char* FormatString	();
 	u32 MemoryUsage		(const char* base_name);
