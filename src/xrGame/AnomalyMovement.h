@@ -36,7 +36,7 @@ public:
 	void BeginComponent(IECSOwner* O);
 	void EndComponent();
 
-	void Load(LPCSTR section);
+	void Load(const char* section);
 	void SetInitialSpawnPosition(Fvector vector) { m_initial_spawn_position = Fvector(vector.x, vector.y, vector.z); } // clone
 	bool AlwaysTheCrow();
 	bool IsEnabled();

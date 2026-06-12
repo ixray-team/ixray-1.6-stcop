@@ -107,12 +107,12 @@ public:
 	CFFxCrypto();
 	virtual	~CFFxCrypto();
 	
-	LPCSTR CRC64(LPCSTR input);
-    LPCSTR SHA1(LPCSTR input);
-    LPCSTR SHA256(LPCSTR input);
-    LPCSTR Base64Encode(LPCSTR input);
-    LPCSTR Base64Decode(LPCSTR input);
-    LPCSTR XorEncode(LPCSTR input, LPCSTR key);
+	const char* CRC64(const char* input);
+    const char* SHA1(const char* input);
+    const char* SHA256(const char* input);
+    const char* Base64Encode(const char* input);
+    const char* Base64Decode(const char* input);
+    const char* XorEncode(const char* input, const char* key);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION;
 };
