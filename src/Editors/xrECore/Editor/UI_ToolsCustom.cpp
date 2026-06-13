@@ -221,6 +221,7 @@ void CToolCustom::Clear()
 
 void CToolCustom::Render()
 {
+	xrCriticalSectionGuard g(m_DebugDraw.CS);
 	// render errors
 	EDevice->SetShader(EDevice->m_SelectionShader);
 	RCache.set_xform_world(Fidentity);
