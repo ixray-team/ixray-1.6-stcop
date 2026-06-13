@@ -139,7 +139,7 @@ void CActor::g_fireParams(const CHudItem* pHudItem, Fvector& fire_pos, Fvector& 
 		else if (bRealPosEnabled && (pWeap != nullptr && pWeap->cast_weapon_knife() == nullptr))
 		{
 			fire_pos = pWeap->get_LastFP();
-			fire_dir = pWeap->get_LastFD();
+			fire_dir = Cameras().Direction();
 
 			fire_pos.lerp(fire_pos, Cameras().Position(), pWeap->GetAimFactor());
 
@@ -170,7 +170,6 @@ void CActor::g_fireParams(const CHudItem* pHudItem, Fvector& fire_pos, Fvector& 
 			fire_pos = pMissile->Position();
 			fire_dir = Cameras().Direction();
 		}
-
 		if (pWeap)
 		{
 			fire_pos = pWeap->get_LastFP();
