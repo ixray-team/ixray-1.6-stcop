@@ -1240,78 +1240,8 @@ void EScene::CutSelection( ObjClassID classfilter )
 void EScene::LoadCompilerError(const char* fn)
 {
 	Tools->ClearDebugDraw();
-/*
-	CInifile		ini(fn);
-	string256		buff;
-	const char*			sect;
-	u32				sz, i;
 
-	sect			= "t-junction";
-	sz 				= ini.r_u32(sect,"count");
-	Tools->m_DebugDraw.m_Points.resize(sz);
-	for(i=0; i<sz; ++i)
-	{
-		CLevelTool::SDebugDraw::Point& pt = Tools->m_DebugDraw.m_Points[i];
-		sprintf		(buff,"%d_p",i);
-		pt.p[0]		= ini.r_fvector3(sect,buff);
-
-		sprintf		(buff,"%d_c",i);
-		pt.c		= ini.r_u32	(sect,buff);
-
-		sprintf		(buff,"%d_i",i);
-		pt.i		= ini.r_bool(sect,buff);
-
-		sprintf		(buff,"%d_m",i);
-		pt.m		= ini.r_bool(sect,buff);
-	}
-
-	sect			= "m-edje";
-	sz 			= ini.r_u32(sect,"count");
-	Tools->m_DebugDraw.m_Lines.resize(sz);
-	for(i=0; i<sz; ++i)
-	{
-		CLevelTool::SDebugDraw::Line& pt = Tools->m_DebugDraw.m_Lines[i];
-		sprintf		(buff,"%d_p0",i);
-		pt.p[0]		= ini.r_fvector3(sect,buff);
-
-		sprintf		(buff,"%d_p1",i);
-		pt.p[1]		= ini.r_fvector3(sect,buff);
-
-		sprintf		(buff,"%d_c",i);
-		pt.c		= ini.r_u32	(sect,buff);
-
-		sprintf		(buff,"%d_i",i);
-		pt.i		= ini.r_bool(sect,buff);
-
-		sprintf		(buff,"%d_m",i);
-		pt.m		= ini.r_bool(sect,buff);
-	}
-	sect			= "invalid_face";
-	sz 			= ini.r_u32(sect,"count");
-	Tools->m_DebugDraw.m_WireFaces.resize(sz);
-	for(i=0; i<sz; ++i)
-	{
-		CLevelTool::SDebugDraw::Face& pt = Tools->m_DebugDraw.m_WireFaces[i];
-		sprintf		(buff,"%d_p0",i);
-		pt.p[0]		= ini.r_fvector3(sect,buff);
-
-		sprintf		(buff,"%d_p1",i);
-		pt.p[1]		= ini.r_fvector3(sect,buff);
-
-		sprintf		(buff,"%d_p2",i);
-		pt.p[2]		= ini.r_fvector3(sect,buff);
-
-		sprintf		(buff,"%d_c",i);
-		pt.c		= ini.r_u32	(sect,buff);
-
-		sprintf		(buff,"%d_i",i);
-		pt.i		= ini.r_bool(sect,buff);
-
-		sprintf		(buff,"%d_m",i);
-		pt.m		= ini.r_bool(sect,buff);
-	}
-*/
-
+	xrCriticalSectionGuard g(Tools->m_DebugDraw.CS);
 	IReader* F	= FS.r_open(fn);
 	Tools->ClearDebugDraw();
 	Fvector 		pt[3];
@@ -1322,15 +1252,6 @@ void EScene::LoadCompilerError(const char* fn)
 		u32 cnt			= F->r_u32();
 		for (u32 k=0;k<cnt; k++){ F->r(pt,sizeof(Fvector)); Tools->m_DebugDraw.AppendPoint(pt[0],0xff00ff00,true,true,"TJ"); }
 	}
-/*    
-	if (F->find_chunk(11)){ // lc error (multiple edges)
-		Tools->m_DebugDraw.m_Lines.resize(F->r_u32());
-		F->r(Tools->m_DebugDraw.m_Lines.begin(),sizeof(CLevelTool::SDebugDraw::Line)*Tools->m_DebugDraw.m_Lines.size());
-	}else if (F->find_chunk(1)){ // lc error (multiple edges)
-		u32 cnt			= F->r_u32();
-		for (u32 k=0;k<cnt; k++){ F->r(pt,sizeof(Fvector)*2); Tools->m_DebugDraw.AppendLine(pt[0],pt[1],0xff0000ff,false,false); }
-	}
-*/
 	if (F->find_chunk(12)){ // lc error (invalid faces)
 		Tools->m_DebugDraw.m_WireFaces.resize(F->r_u32());
 		F->r(Tools->m_DebugDraw.m_WireFaces.data(),sizeof(CLevelTool::SDebugDraw::Face)*Tools->m_DebugDraw.m_WireFaces.size());
