@@ -449,6 +449,11 @@ void OGF_LOD::Save		(IWriter &fs)
 	{
 		F.w(lod_faces,sizeof(lod_faces));
 	});
+
+	fs.make_chunk(OGF_DEBUG_DATA, [this](IWriter& F)
+	{
+		F.w_stringZ(debug_name.c_str());
+	});
 }
 
 void OGF_MESH_LODS::Save(IWriter& fs)

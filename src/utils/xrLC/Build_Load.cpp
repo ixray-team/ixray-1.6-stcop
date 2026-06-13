@@ -217,12 +217,23 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	F = fs.open_chunk		(EB_MU_refs);
 	if (F)
 	{
+		auto& vec = mu_refs();
 		while (!F->eof())
 		{
-			mu_refs().push_back				(new xrMU_Reference());
-			mu_refs().back()->Load			( *F, mu_models() );
+			vec.push_back				(new xrMU_Reference());
+			vec.back()->Load			( *F, mu_models() );
 		}		
 		F->close				();
+	}
+
+	F = fs.open_chunk(EB_MU_refs_debug);
+	if (F)
+	{
+		auto& vec = mu_refs();
+		for (auto ref : vec)
+		{
+			F->r_stringZ(ref->debug_name);
+		}
 	}
 
 
