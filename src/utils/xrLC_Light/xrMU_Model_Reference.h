@@ -21,6 +21,9 @@ public:
 
 	base_color_c			c_scale;
 	base_color_c			c_bias;
+
+	xr_stack_string256		debug_name;
+	
 public:
  	xr_concurrent_unordered_map<size_t, base_color_c> colors_cuda;
 

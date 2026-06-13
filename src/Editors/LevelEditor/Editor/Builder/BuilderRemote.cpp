@@ -474,6 +474,13 @@ void SceneBuilder::SaveBuild()
 		F->w			(l_mu_refs.data(),sizeof(b_mu_reference)*l_mu_refs.size());
 		F->close_chunk	();
 
+		F->open_chunk(EB_MU_refs_debug);
+		for (auto& elem : l_mu_refs_debug)
+		{
+			F->w_stringZ(elem);
+		}
+		F->close_chunk();
+
 		FS.w_close		(F);
 	}
 }
@@ -503,6 +510,7 @@ void SceneBuilder::Clear ()
 
 	l_mu_models.clear		();
 	l_mu_refs.clear			();
+	l_mu_refs_debug.clear();
 	l_lods.clear			();
 	l_light_static.clear	();
 	l_light_dynamic.clear	();
@@ -1120,6 +1128,15 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 	R.transform			= obj->_Transform();
 	R.flags.zero		();
 	R.sector			= (u16)sect_num;
+
+	xr_stack_string256 debug_name;
+	if (obj->m_pOwnerObject)
+	{
+		debug_name = obj->m_pOwnerObject->GetName();
+		debug_name += ":";
+	}
+	debug_name += obj->GetName();
+	l_mu_refs_debug.push_back(debug_name.c_str());
 
 	// scene statssm
 	b_mu_model& MStat = l_mu_models[model_idx];
