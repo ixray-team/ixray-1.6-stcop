@@ -122,8 +122,11 @@ public:
 	    LineVec			m_Lines;
 	    PointVec		m_Points;
 		OBBVec 			m_OBB;
+		xrCriticalSection CS;
+    	
         void			Clear()
         {
+        	xrCriticalSectionGuard g(CS);
         	m_WireFaces.clear	();
         	m_SolidFaces.clear	();
 	    	m_Lines.clear	();
@@ -132,6 +135,7 @@ public:
         }
         void AppendPoint(const Fvector& p0, u32 c=0xff0000ff, bool i=true, bool m=true, const char* descr = nullptr)
         {
+        	xrCriticalSectionGuard g(CS);
         	m_Points.push_back(Point());
             m_Points.back().p[0].set(p0);
             m_Points.back().c	= c;
@@ -142,6 +146,7 @@ public:
         }
         void AppendLine	(const Fvector& p0, const Fvector& p1, u32 c=0xff00ff00, bool i=true, bool m=true)
         {
+        	xrCriticalSectionGuard g(CS);
         	m_Lines.push_back(Line());
         	m_Lines.back().p[0].set(p0);
         	m_Lines.back().p[1].set(p1);
@@ -151,6 +156,7 @@ public:
         }
         void AppendWireFace	(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 c=0xffff0000, bool i=true, bool m=true)
         {
+        	xrCriticalSectionGuard g(CS);
         	m_WireFaces.push_back(Face());
         	m_WireFaces.back().p[0].set(p0);
         	m_WireFaces.back().p[1].set(p1);
@@ -161,6 +167,7 @@ public:
         }
         void AppendSolidFace(const Fvector& p0, const Fvector& p1, const Fvector& p2, u32 c=0xffff0000, bool i=true, bool m=true)
         {
+        	xrCriticalSectionGuard g(CS);
         	m_SolidFaces.push_back(Face());
         	m_SolidFaces.back().p[0].set(p0);
         	m_SolidFaces.back().p[1].set(p1);
@@ -171,6 +178,7 @@ public:
         }
         void AppendOBB	(const Fobb& obb)
         {
+        	xrCriticalSectionGuard g(CS);
         	m_OBB.push_back(obb);
         }
     };
