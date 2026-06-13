@@ -376,38 +376,38 @@ void CBuild::RunAfterLight(IWriter* fs)
  	//****************************************** Export MU-models
 	Phase("Converting MU-models to OGFs...");
 	{
-		Status("MU : Models...");
+		Status("MU : Models... (calc)");
 		xr_atomic_u32 MUModelTaskID = 0;
 		xr_std_parallel_for([&MUModelTaskID, this]()
 		{
 			while(true)
 			{
 				u32 m = MUModelTaskID.fetch_add(1);
+				Progress((m-1) / (float)mu_models().size());
+
 				if (m >= mu_models().size()) break;
 
 				calc_ogf(*mu_models()[m]);
- 			}
+ 				AditionalData("MU : Models calc: %u / %u", m, mu_models().size() );
+			}
 		}, gCompilerMode.ThreadsPerWork);
 
+		Status("MU : Models... (export)");
 		for (u32 m = 0; m < mu_models().size(); m++)
 		{
+			Progress(m / (float)mu_models().size());
 			export_geometry(*mu_models()[m]);
+			AditionalData("MU : Models export: %u / %u", m+1, mu_models().size() );
 		}
-		
-		Status("MU : References...");
- 		for (u32 m = 0; m < mu_models().size(); m++)
-		{
-			export_ogf(*mu_refs()[m]);
-		}
-	}
  
-	Status("MU : References...");
-	for (auto mRID = 0; mRID < (mu_refs().size()); mRID++)
-	{
-		Progress(mRID / mu_refs().size());
-		export_ogf(*mu_refs()[mRID]);
+		Status("MU : References...");
+		for (auto mRID = 0; mRID < (mu_refs().size()); mRID++)
+		{
+			Progress(mRID / mu_refs().size());
+			export_ogf(*mu_refs()[mRID]);
 
-		AditionalData("MU : Refference: %u / %u", mRID, mu_refs().size() );
+			AditionalData("MU : Reference: %u / %u", mRID+1, mu_refs().size() );
+		}
 	}
  
 
