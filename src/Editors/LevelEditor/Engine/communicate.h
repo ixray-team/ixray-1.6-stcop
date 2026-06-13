@@ -267,6 +267,7 @@ enum EBUILD_CHUNKS
     EB_SmoothGroups,
     EB_MU_Mesh_LODs,
 	EB_MaterialsShared,
+	EB_MU_refs_debug,
 
 	EB_FORCE_DWORD = u32(-1)
 };

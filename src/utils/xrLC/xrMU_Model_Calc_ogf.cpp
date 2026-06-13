@@ -43,6 +43,10 @@ void calc_ogf( xrMU_Model &	mu_model )
 			pOGF->Sector = 0;
 			pOGF->material = it->material;
 			pOGF->bSharedMaterial = it->bSharedMaterial;
+			
+			pOGF->debug_name = mu_model.m_name.c_str();
+			pOGF->debug_name += ":subdiv ";
+			pOGF->debug_name += std::to_string(it-mu_model.m_subdivs.begin()).c_str();
 
 			// Collect textures
 			auto& Tex = pBuild->GetTexture(it->material, it->bSharedMaterial);
