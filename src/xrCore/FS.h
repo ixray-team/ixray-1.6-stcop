@@ -353,6 +353,12 @@ public:
 	void			r_stringZ	(shared_str& dest);
 	void			r_stringZ	(xr_string& dest);
 
+	template<unsigned int _kStringLength>
+	void r_stringZ(stack_string<char, _kStringLength>& dest)
+	{
+		r_stringZ(dest.data(), _kStringLength);
+	}
+
 private:
 
 	size_t lastStringLen = 0;

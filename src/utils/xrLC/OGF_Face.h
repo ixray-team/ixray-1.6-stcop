@@ -137,6 +137,8 @@ struct OGF : public OGF_Base
 	ogf_container	<vecOGF_V>	data;
 	ogf_container	<vec_XV>	fast_path_data;
 
+	xr_stack_string256 debug_name;
+
 	OGF() : OGF_Base(0) 
 	{
 		data.m_SWI.count			= 0;
@@ -223,6 +225,8 @@ struct OGF_Reference : public OGF_Base
 	base_color_c		c_scale;
 	base_color_c		c_bias;
 
+	xr_stack_string256 debug_name;
+
 	bool bSharedMaterial;
 
 	OGF_Reference() : OGF_Base(0) 
@@ -297,6 +301,8 @@ struct	OGF_LOD		: public OGF_Node
 
 	_face				lod_faces	[8];
 	u32					lod_Material;
+
+	xr_stack_string256 debug_name;
 
 	virtual void		Save		(IWriter &fs);
 };

@@ -111,6 +111,10 @@ void export_ogf( xrMU_Reference& mu_reference )
 			pOGF->material = it->material;
 			pOGF->bSharedMaterial = it->bSharedMaterial;
 
+			pOGF->debug_name = mu_reference.debug_name;
+			pOGF->debug_name += ":subdiv ";
+			pOGF->debug_name += std::to_string(it-model->m_subdivs.begin()).c_str();
+
 			// Collect textures
 			auto& Tex = pBuild->GetTexture(it->material, it->bSharedMaterial);
 			OGF_Texture T;
