@@ -42,7 +42,7 @@
 	  </picture>
 
     <file_info	x="47" y="55" width="501" height="180">
-      <auto_static width="501" height="180">
+      <auto_static width="501" height="171">
 		<texture x="0" y="768" width="497" height="171">ui\ui_static_mm_back_04</texture>
       </auto_static>
     </file_info>
