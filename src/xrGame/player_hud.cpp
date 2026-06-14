@@ -2731,6 +2731,10 @@ bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 //	UpdateCallbackType тип каллбека 0 - сработает по окончанию анимации 1 - будет срабатывать пока анимация не закончится
 bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 part_id, bool bMixIn, float speed, u8 anm_idx, bool impact_on_item, bool similar_check, PlayCallback Callback, LPVOID CallbackParam, bool UpdateCallbackType)
 {
+	if (!m_model)
+	{
+		return false;
+	}
 	MotionID motion;
 	if(m_attached_items[place_idx] && place_idx>=0&&place_idx!=u16(-1))///ищем анимацию в библиотеке айтема на пример anm_show
 	{
@@ -2793,7 +2797,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 	}
 	m_blocked_part_idx = part_id;//блокируем чтобы стандартные анимации не могли перебить запущенную
 
-	CBlend* B = NULL;
+	CBlend* B = nullptr;
 	switch (part_id)
 	{
 		case 0:
