@@ -2,7 +2,7 @@
 #include "../xrRender/du_cone.h"
 #include "../xrRender/CHudInitializer.h"
 
-static Fvector4 ps_ssfx_volumetric = { .0f, 1.0f, 3.0f, 1.0f }; // Force Volumetric, Vol Intensity, Vol Quality
+Fvector3 ps_ssfx_volumetric = { .0f, 1.0f, 3.0f }; // Force Volumetric, Vol Intensity, Vol Quality
 
 void CRenderTarget::accum_spot(light* L)
 {
