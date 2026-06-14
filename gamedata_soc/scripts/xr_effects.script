@@ -206,7 +206,7 @@ function monster_berserk(actor, npc)
 end
 
 function activate_bolt(actor, npc)
-	db.actor:activate_slot(5)
+	db.actor:activate_slot(6)
 end
 
 --[[
@@ -1063,9 +1063,9 @@ end
 
 function bar_arena_weapon_slot ()
 	if	has_alife_info("bar_arena_fight_1") then  
-		db.actor:activate_slot(1)
-	else 
 		db.actor:activate_slot(2)
+	else 
+		db.actor:activate_slot(3)
 	end
 end
 
@@ -1424,7 +1424,7 @@ end
 
 function agr_weapon(actor, npc)
 	local actor = db.actor	
-	if 	actor ~= nil then actor:activate_slot(2)
+	if 	actor ~= nil then actor:activate_slot(3)
 	end
 end
 function agr_hold_enemy(actor, npc)
