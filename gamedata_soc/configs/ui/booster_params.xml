@@ -1,6 +1,5 @@
 <booster_params x="0" y="0" width="260" height="20">
     <prop_line x="0" y="0" width="260" height="9" stretch="1">
-        <texture>ui_inGame2_hint_wnd_Properties</texture>
     </prop_line>
 
 	<boost_health_restore x="0" y="0" width="257" height="20">
