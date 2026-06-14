@@ -857,68 +857,80 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 #ifdef MU_LODS_TRUE
 	//Seakad: Parser lod0 - lod4 (export lod1-lod4)
     xr_string ref_name1 = obj->m_ReferenceName.c_str();
-    if (ref_name1.find("lod0") != xr_string::npos)
+	bool LOD0HasSuffix = ref_name1.find("lod0") != xr_string::npos;
+    if (EPrefs->LODsForAllMU || LOD0HasSuffix)
     {
-        size_t f1 = ref_name1.find_last_of('\\');
-        int RF_MU1_FS_I = static_cast<int>(f1);
+	    size_t f1 = ref_name1.find_last_of('\\');
+    	int RF_MU1_FS_I = static_cast<int>(f1);
 
-        xr_string RF_MUX_add = ref_name1;
-        xr_string RF_MUX_added = "\\lod";
-        RF_MUX_add.insert(RF_MU1_FS_I, RF_MUX_added);
+    	xr_string RF_MUX_add = ref_name1;
+    	xr_string RF_MUX_added = "\\lod";
+    	RF_MUX_add.insert(RF_MU1_FS_I, RF_MUX_added);
 
-        xr_string ref_new_MU1 = RF_MUX_add;
-        ref_new_MU1.erase(ref_new_MU1.length() - 4);
-        ref_new_MU1 += "lod1";
+    	xr_string ref_new_MU1 = RF_MUX_add;
+    	if (LOD0HasSuffix){
+    		ref_new_MU1.erase(ref_new_MU1.length() - 5);
+		}
+
+    	ref_new_MU1 += "_lod1";
 
 		xr_string ref_new_MU2 = RF_MUX_add;
-        ref_new_MU2.erase(ref_new_MU2.length() - 4);
-        ref_new_MU2 += "lod2";
+    	if (LOD0HasSuffix){
+			ref_new_MU2.erase(ref_new_MU2.length() - 5);
+		}
+		ref_new_MU2 += "_lod2";
 
 		xr_string ref_new_MU3 = RF_MUX_add;
-        ref_new_MU3.erase(ref_new_MU3.length() - 4);
-        ref_new_MU3 += "lod3";
+    	if (LOD0HasSuffix){
+			ref_new_MU3.erase(ref_new_MU3.length() - 5);
+		}
+		ref_new_MU3 += "_lod3";
 
 		xr_string ref_new_MU4 = RF_MUX_add;
-        ref_new_MU4.erase(ref_new_MU4.length() - 4);
-        ref_new_MU4 += "lod4";
+    	if (LOD0HasSuffix){
+			ref_new_MU4.erase(ref_new_MU4.length() - 5);
+		}
+		ref_new_MU4 += "_lod4";
 
-        xr_string ref_new_MU1_check = ref_new_MU1;
+		xr_string ref_new_MU1_check = ref_new_MU1;
 		xr_string ref_new_MU2_check = ref_new_MU2;
 		xr_string ref_new_MU3_check = ref_new_MU3;
 		xr_string ref_new_MU4_check = ref_new_MU4;
 
-        xr_string ref_new_MUX_added = "..\\..\\rawdata\\objects\\";
-        ref_new_MU1_check.insert(0, ref_new_MUX_added);
-        ref_new_MU1_check += ".object";
-        ref_new_MU2_check.insert(0, ref_new_MUX_added);
-        ref_new_MU2_check += ".object";
-        ref_new_MU3_check.insert(0, ref_new_MUX_added);
-        ref_new_MU3_check += ".object";
-        ref_new_MU4_check.insert(0, ref_new_MUX_added);
-        ref_new_MU4_check += ".object";
+		{
+			xr_stack_string_path stack_path;
+			ref_new_MU1_check = FS.update_path(stack_path, _objects_, ref_new_MU1_check.c_str());
+			ref_new_MU1_check += ".object";
+			ref_new_MU2_check = FS.update_path(stack_path, _objects_, ref_new_MU2_check.c_str());
+			ref_new_MU2_check += ".object";
+			ref_new_MU3_check = FS.update_path(stack_path, _objects_, ref_new_MU3_check.c_str());
+			ref_new_MU3_check += ".object";
+			ref_new_MU4_check = FS.update_path(stack_path, _objects_, ref_new_MU4_check.c_str());
+			ref_new_MU4_check += ".object";
+		}
 
-		if (std::filesystem::exists(ref_new_MU1_check.c_str()))
+		if (FS.TryLoad(ref_new_MU1_check))
 		{
 			LPCSTR ref_new_MU1_1 = ref_new_MU1.c_str();
 			O = obj->SetReference(ref_new_MU1_1);
 			UI->SetStatus(ref_new_MU1_check.c_str());
 			BuildMUObjectModel(obj);
 		}
-		if (std::filesystem::exists(ref_new_MU2_check.c_str()))
+		if (FS.TryLoad(ref_new_MU2_check))
 		{
 			LPCSTR ref_new_MU2_2 = ref_new_MU2.c_str();
 			O = obj->SetReference(ref_new_MU2_2);
 			UI->SetStatus(ref_new_MU2_check.c_str());
 			BuildMUObjectModel(obj);
 		}
-		if (std::filesystem::exists(ref_new_MU3_check.c_str()))
+		if (FS.TryLoad(ref_new_MU3_check))
 		{
 			LPCSTR ref_new_MU3_3 = ref_new_MU3.c_str();
 			O = obj->SetReference(ref_new_MU3_3);
 			UI->SetStatus(ref_new_MU3_check.c_str());
 			BuildMUObjectModel(obj);
 		}
-		if (std::filesystem::exists(ref_new_MU4_check.c_str()))
+		if (FS.TryLoad(ref_new_MU4_check))
 		{
 			LPCSTR ref_new_MU4_4 = ref_new_MU4.c_str();
 			O = obj->SetReference(ref_new_MU4_4);
@@ -926,21 +938,8 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 			BuildMUObjectModel(obj);
 		}
 
-		xr_string ref_name5 = obj->m_ReferenceName.c_str();
-		if (ref_name5.find("lod4") != xr_string::npos)
-		{
-			xr_string RF_MU5_delete = ref_name5;
-			xr_string RF_MU5_remove = "lod\\";
-			size_t index = RF_MU5_delete.find(RF_MU5_remove);
-			RF_MU5_delete.erase(index, RF_MU5_remove.length());
-
-			xr_string ref_new_MU5 = RF_MU5_delete;
-			ref_new_MU5.erase(ref_new_MU5.length() - 4);
-			ref_new_MU5 += "lod0";
-
-			LPCSTR ref_new_MU5_5 = ref_new_MU5.c_str();
-			O = obj->SetReference(ref_new_MU5_5);
-		}
+		O = obj->SetReference(ref_name1.c_str());
+		R_ASSERT(O);
 	}
 #endif
 	return true;
