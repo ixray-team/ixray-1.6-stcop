@@ -654,7 +654,9 @@ public:
 	}
 };
 
-
+#if RENDER == R_R4
+extern Fvector3 ps_ssfx_volumetric;
+#endif
 //-----------------------------------------------------------------------
 void		xrRender_initconsole	()
 {
@@ -668,6 +670,10 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r__wallmark_ttl", &ps_r__WallmarkTTL, 1.0f, 10.f * 60.f);
 
 	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	1.2f		);
+
+#if RENDER == R_R4
+	CMD2(CCC_Vector3, "r4_ssfx_volumetric", &ps_ssfx_volumetric);
+#endif
 
 #ifdef DEBUG
 	CMD4(CCC_Float,		"r__detail_l_ambient",	&ps_r__Detail_l_ambient,	.5f,	.95f	);
