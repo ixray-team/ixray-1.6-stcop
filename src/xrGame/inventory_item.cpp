@@ -143,7 +143,7 @@ void CInventoryItem::Load(const char* section)
 	R_ASSERT(m_weight >= 0.f);
 
 	m_cost = pSettings->r_u32(section, "cost");
-	u32 sl = READ_IF_EXISTS(pSettings, r_u32, section, "slot", NO_ACTIVE_SLOT);
+	u32 sl = READ_IF_EXISTS(pSettings, r_u32, section, "slot", -1);
 	m_ItemCurrPlace.base_slot_id = (sl == -1) ? 0 : (sl + 1);
 
 	m_Description = g_pStringTable->translate(READ_IF_EXISTS(pSettings, r_string, section, "description", ""));
