@@ -37,7 +37,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - windows-latest
+          - windows-2022
         preset:
           - Plugins
         platform:
@@ -68,7 +68,7 @@ jobs:
           cmake `
             -S . `
             -B build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }} `
-            -G "Visual Studio 18 2026" `
+            -G "Visual Studio 17 2022" `
             -DIXRAY_PLUGINS=ON
 
       - name: Build plugins

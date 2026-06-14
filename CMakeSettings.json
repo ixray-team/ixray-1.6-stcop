@@ -2,7 +2,7 @@
     "configurations": [
         {
             "name": "Engine-x64-Windows-Debug",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Engine-Windows",
@@ -62,7 +62,7 @@
         },
         {
             "name": "Engine-x64-Windows-RelWithDebInfo",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "RelWithDebInfo",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Engine-Windows",
@@ -122,7 +122,7 @@
         },
         {
             "name": "Engine-x64-Windows-Release",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Release",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Engine-Windows",
@@ -182,7 +182,7 @@
         },
         {
             "name": "Engine-x64-NonUnity-Debug",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Engine-NonUnity",
@@ -242,7 +242,7 @@
         },
         {
             "name": "Engine-x64-NonUnity-RelWithDebInfo",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "RelWithDebInfo",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Engine-NonUnity",
@@ -302,7 +302,7 @@
         },
         {
             "name": "Engine-x64-NonUnity-Release",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Release",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Engine-NonUnity",
@@ -362,7 +362,7 @@
         },
         {
             "name": "Server-x64-Windows-Debug",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Server-Windows",
@@ -422,7 +422,7 @@
         },
         {
             "name": "Server-x64-Windows-RelWithDebInfo",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "RelWithDebInfo",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Server-Windows",
@@ -482,7 +482,7 @@
         },
         {
             "name": "Server-x64-Windows-Release",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Release",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Server-Windows",
@@ -542,7 +542,7 @@
         },
         {
             "name": "Editors-x64-Windows-Debug",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Editors-Windows",
@@ -602,7 +602,7 @@
         },
         {
             "name": "Editors-x64-Windows-RelWithDebInfo",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "RelWithDebInfo",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Editors-Windows",
@@ -662,7 +662,7 @@
         },
         {
             "name": "Utilities-x64-Windows-Debug",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Utilities-Windows",
@@ -722,7 +722,7 @@
         },
         {
             "name": "Utilities-x64-Windows-RelWithDebInfo",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "RelWithDebInfo",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Utilities-Windows",
@@ -782,7 +782,7 @@
         },
         {
             "name": "Utilities-x64-Windows-Release",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Release",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Utilities-Windows",
@@ -842,7 +842,7 @@
         },
         {
             "name": "Plugins-x64-Windows-Debug",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Plugins-Windows",
@@ -902,7 +902,7 @@
         },
         {
             "name": "Plugins-x64-Windows-RelWithDebInfo",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "RelWithDebInfo",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Plugins-Windows",
@@ -962,7 +962,7 @@
         },
         {
             "name": "Plugins-x64-Windows-Release",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Release",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Plugins-Windows",
@@ -1022,7 +1022,7 @@
         },
         {
             "name": "Compressor-x64-Windows-Debug",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Debug",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Compressor-Windows",
@@ -1082,7 +1082,7 @@
         },
         {
             "name": "Compressor-x64-Windows-RelWithDebInfo",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "RelWithDebInfo",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Compressor-Windows",
@@ -1142,7 +1142,7 @@
         },
         {
             "name": "Compressor-x64-Windows-Release",
-            "generator": "Visual Studio 18 2026 Win64",
+            "generator": "Visual Studio 17 2022 Win64",
             "configurationType": "Release",
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\build\\x64\\Compressor-Windows",

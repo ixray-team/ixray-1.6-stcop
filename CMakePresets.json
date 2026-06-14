@@ -10,7 +10,7 @@
             "name": "Engine-Base-Windows",
             "displayName": "Engine-Base-Windows",
             "hidden": true,
-            "generator": "Visual Studio 18 2026",
+            "generator": "Visual Studio 17 2022",
             "cacheVariables": {
                 "IXRAY_UTILS": "OFF",
                 "IXRAY_EDITORS": "OFF",
@@ -43,7 +43,7 @@
             "name": "Engine-Base-NonUnity",
             "displayName": "Engine-Base-NonUnity",
             "hidden": true,
-            "generator": "Visual Studio 18 2026",
+            "generator": "Visual Studio 17 2022",
             "cacheVariables": {
                 "IXRAY_UTILS": "OFF",
                 "IXRAY_EDITORS": "OFF",
@@ -102,7 +102,7 @@
             "name": "Server-Base-Windows",
             "displayName": "Server-Base-Windows",
             "hidden": true,
-            "generator": "Visual Studio 18 2026",
+            "generator": "Visual Studio 17 2022",
             "cacheVariables": {
                 "IXRAY_UTILS": "OFF",
                 "IXRAY_EDITORS": "OFF",
@@ -135,7 +135,7 @@
             "name": "Editors-Base-Windows",
             "displayName": "Editors-Base-Windows",
             "hidden": true,
-            "generator": "Visual Studio 18 2026",
+            "generator": "Visual Studio 17 2022",
             "cacheVariables": {
                 "IXRAY_UTILS": "OFF",
                 "IXRAY_EDITORS": "ON",
@@ -168,7 +168,7 @@
             "name": "Utilities-Base-Windows",
             "displayName": "Utilities-Base-Windows",
             "hidden": true,
-            "generator": "Visual Studio 18 2026",
+            "generator": "Visual Studio 17 2022",
             "cacheVariables": {
                 "IXRAY_UTILS": "ON",
                 "IXRAY_EDITORS": "OFF",
@@ -201,7 +201,7 @@
             "name": "Plugins-Base-Windows",
             "displayName": "Plugins-Base-Windows",
             "hidden": true,
-            "generator": "Visual Studio 18 2026",
+            "generator": "Visual Studio 17 2022",
             "cacheVariables": {
                 "IXRAY_UTILS": "OFF",
                 "IXRAY_EDITORS": "OFF",
@@ -234,7 +234,7 @@
             "name": "Compressor-Base-Windows",
             "displayName": "Compressor-Base-Windows",
             "hidden": true,
-            "generator": "Visual Studio 18 2026",
+            "generator": "Visual Studio 17 2022",
             "cacheVariables": {
                 "IXRAY_UTILS": "OFF",
                 "IXRAY_EDITORS": "OFF",
