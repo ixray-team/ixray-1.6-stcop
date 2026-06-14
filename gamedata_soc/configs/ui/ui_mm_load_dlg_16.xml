@@ -56,7 +56,7 @@
     </picture>
 
     <file_info	x="39" y="55" width="418" height="180">
-      <auto_static width="418" height="180" stretch="1">
+      <auto_static width="418" height="171" stretch="1">
 		<texture x="0" y="768" width="497" height="171">ui\ui_static_mm_back_04</texture>
       </auto_static>
     </file_info>
