@@ -212,7 +212,7 @@ void xrLight_Details()
 		Status("Embree Initialize Models ...");
 		EmbreeMain.InitializeDetails(gl_data.building_embree_faces);
 
-		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [](size_t threadID)
+		xr_std_parallel_for([]()
 			{
 				while (true)
 				{
@@ -229,7 +229,7 @@ void xrLight_Details()
 
 				rayTasks.clear();
 				rayTasks.shrink_to_fit();
-			}
+			}, gCompilerMode.ThreadsPerWork
 		);
 	}
 #ifdef LCCUDA_BUILD
@@ -246,22 +246,21 @@ void xrLight_Details()
 
 		GPUTaskinSystem.ColorsMapType = eDetails;
 
-		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [](size_t threadID)
+		xr_std_parallel_for([]()
+		{
+			while (true)
 			{
-				while (true)
-				{
-					u32 Z = IndexTask.fetch_add(1);
-					AditionalData("Processing TaskID[%u/%u]", Z, gl_data.slots_data.size_z());
+				u32 Z = IndexTask.fetch_add(1);
+				AditionalData("Processing TaskID[%u/%u]", Z, gl_data.slots_data.size_z());
 
-					if (Z >= gl_data.slots_data.size_z()) break;
+				if (Z >= gl_data.slots_data.size_z()) break;
 
-					for (u32 X = 0; X < gl_data.slots_data.size_x(); X++)
-						detail_slot_calculate(X, Z);
-				}
-				
-				GPUTaskinSystem.LightPointPacked_run_tasks();
+				for (u32 X = 0; X < gl_data.slots_data.size_x(); X++)
+					detail_slot_calculate(X, Z);
 			}
-		);
+			
+			GPUTaskinSystem.LightPointPacked_run_tasks(); 
+		}, gCompilerMode.ThreadsPerWork );
 
 		ApplyColorsGPU();
 	}

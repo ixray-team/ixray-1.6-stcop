@@ -73,7 +73,7 @@ void CBuild::xrPhase_AdaptiveHT_calculate()
 		Status("AdaptiveHT : base hemisphere ...");
 		
 		ThreadWorkID_Adaptive = 0;
-		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [](size_t threadID)
+ 		xr_std_parallel_for([]()
 		{
   			while (true)
 			{
@@ -89,7 +89,7 @@ void CBuild::xrPhase_AdaptiveHT_calculate()
 				vC.mul(0.5f);
 				V->C._set(vC);
 			}
-		});
+		}, gCompilerMode.ThreadsPerWork);
 
 
 		//////////////////////////////////////////////////////////////////////////
@@ -345,14 +345,21 @@ void CBuild::u_SmoothVertColors(int count)
 		xr_vector<base_color>	colors;
 		colors.resize(lc_global_data()->g_vertices().size());
 
-			xr_parallel_for(size_t(0), size_t(lc_global_data()->g_vertices().size()), [&](size_t IDX)
+		xr_atomic_u32 ThreadTaskID = 0;
+		xr_std_parallel_for([&]()
 			{
+				while (true)
 				{
 					// Circle
-					xr_vector<Vertex*>	circle_vec;
-					Vertex* V = lc_global_data()->g_vertices()[IDX];
+					xr_vector<Vertex*> circle_vec;
+					u32 IDX = ThreadTaskID.fetch_add(1);
+					if (IDX >= lc_global_data()->g_vertices().size())
+					{
+						break;
+					}
 
-					for (u32 fit = 0; fit < V->m_adjacents.size(); ++fit)
+					Vertex* V = lc_global_data()->g_vertices()[IDX];
+ 					for (u32 fit = 0; fit < V->m_adjacents.size(); ++fit)
 					{
 						Face* F = V->m_adjacents[fit];
 						circle_vec.push_back(F->v[0]);
@@ -363,7 +370,7 @@ void CBuild::u_SmoothVertColors(int count)
 					circle_vec.erase(std::unique(circle_vec.begin(), circle_vec.end()), circle_vec.end());
 
 					// Average
-					base_color_c		avg, tmp;
+					base_color_c avg, tmp;
 					for (u32 cit = 0; cit < circle_vec.size(); ++cit)
 					{
 						circle_vec[cit]->C._get(tmp);
@@ -373,8 +380,7 @@ void CBuild::u_SmoothVertColors(int count)
 
 					colors[IDX]._set(avg);
 				}
-
-			});
+  			}, gCompilerMode.ThreadsPerWork);
 
 		// Transfer
 		for (u32 it = 0; it < lc_global_data()->g_vertices().size(); ++it)

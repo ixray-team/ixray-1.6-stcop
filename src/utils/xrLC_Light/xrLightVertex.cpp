@@ -91,7 +91,7 @@ void LightVertex()
  	if (!gCompilerMode.CUDA)
 	{
  		TasksIds = 0;
-		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [flags](size_t temp)
+		xr_std_parallel_for([flags]()
 		{
 			while (true)
 			{
@@ -115,7 +115,7 @@ void LightVertex()
 					g_trans_register(V);
 				}
 			}
-		});
+		}, gCompilerMode.ThreadsPerWork);
 	}
 	else
  	{
