@@ -44,7 +44,7 @@ public:
 
 	//	HWSupport
 	virtual bool	HWSupportsShaderYUV2RGB() ;
-
+	virtual void GetRenderScale(float&) {};
 	// HW stats
 
 	//	Device state

@@ -36,6 +36,8 @@ public:
 	void Visibility_Update();
 	virtual void IBoneInstances_Create();
 	virtual void IBoneInstances_Destroy();
+	virtual void BonesHistory_Invalidate() {};
+
 public:
 	virtual shared_str getDebugName();
 	virtual ~CDS0_Kinematics();
