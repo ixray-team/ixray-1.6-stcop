@@ -31,7 +31,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
  
 	// Start threads
 	ThreadTaskID_Implication = 0;
-	xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [](size_t thread)
+	xr_std_parallel_for([]()
 	{
 		ImplicitDeflector& defl = cl_globs.DATA();
 	
@@ -95,8 +95,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 				}
 			}
 		}
-	}
-	);
+	}, gCompilerMode.ThreadsPerWork );
    
 	// Apply Colors !
 	for (auto V = 0; V<defl.Height(); V++)

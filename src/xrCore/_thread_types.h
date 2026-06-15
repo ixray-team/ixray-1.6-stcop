@@ -99,3 +99,20 @@ inline void xr_parallel_foreach(Index Begin, Index End, Body Functor)
 	tbb::parallel_for_each(Begin, End, Functor);
 #endif
 }
+
+// Run Threads
+inline void xr_std_parallel_for(std::function<void()>&& function_to_call, u32 ThreadsMax)
+{
+	xr_vector<std::thread*> threads;
+	for (auto i = 0; i < ThreadsMax; i++)
+	{
+		threads.push_back(new std::thread(function_to_call));
+	}
+	for (auto i = 0; i < ThreadsMax; i++)
+	{
+		threads[i]->join();
+		xr_delete(threads[i]);
+	}
+
+	threads.clear();
+}

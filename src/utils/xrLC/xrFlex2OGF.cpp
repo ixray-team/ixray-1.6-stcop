@@ -64,7 +64,7 @@ void BuildOGFGeom( OGF &ogf, const vecFace& faces, bool _tc_ )
 		OGF_AddFace( ogf, *FF, _tc_ );
 	}
 }
-
+#include "../xrForms/CompilersUI.h"
 
 void CBuild::Flex2OGF()
 {
@@ -81,14 +81,13 @@ void CBuild::Flex2OGF()
 	// for (auto SV  = 0 ; SV< g_XSplit.size(); SV++)
 	xrCriticalSection cs;
 
-	int ProgressID = 0;
+ 	xr_atomic_u32 ProgressID = 0;
 
-	xr_parallel_for(size_t(0), size_t(g_XSplit.size()), [&] ( size_t SV )
+	xr_std_parallel_for([&]()
 	{
-		auto& faces = g_XSplit[SV];
-
-		Progress( float (SV) / float(g_XSplit.size()) );
-
+		u32 sID		= ProgressID.fetch_add(1);
+		auto& faces = g_XSplit[sID];
+		 
 		OGF*		pOGF	= new OGF ();
 		Face*		F		= (* faces->begin() );			// first face
 		b_material*	M		= &(materials()[F->dwMaterial]);	// and it's material
@@ -136,7 +135,7 @@ void CBuild::Flex2OGF()
 			} 
 			catch (...)
 			{ 
-				Msg("* ERROR: Flex2OGF, model# %d, *textures*", SV);
+				Msg("* ERROR: Flex2OGF, model# %d, *textures*", sID);
 			}
 			
 		
@@ -150,12 +149,12 @@ void CBuild::Flex2OGF()
 			} 
 			catch (...)
 			{  
-				Msg("* ERROR: Flex2OGF, model# %d, *faces*",SV);
+				Msg("* ERROR: Flex2OGF, model# %d, *faces*", sID);
 			}
 		} 
 		catch (...)
 		{
-			Msg("* ERROR: Flex2OGF, 1st part, model# %d",SV);
+			Msg("* ERROR: Flex2OGF, 1st part, model# %d", sID);
 		}
  	
 		try
@@ -167,7 +166,7 @@ void CBuild::Flex2OGF()
  		}
 		catch (...)
 		{
-			Msg("* ERROR: Flex2OGF, 2nd part, model# %d", SV);
+			Msg("* ERROR: Flex2OGF, 2nd part, model# %d", sID);
 		}
  
 		R_ASSERT(!std::isinf(pOGF->bbox.min.x));
@@ -189,11 +188,12 @@ void CBuild::Flex2OGF()
 			g_tree.push_back(pOGF);
 		}
 
-		ProgressID++;
-		Progress(float(ProgressID) / float(g_XSplit.size()));
-  		AditionalData("Progress: %u/%u", ProgressID, g_XSplit.size());
+		
+		Progress(float(sID) / float(g_XSplit.size()));
+		AditionalData("Progress: %u/%u", sID, g_XSplit.size());
+
 		cs.Leave();
-	}
+	}, gCompilerMode.ThreadsPerWork
 	);
 }
  
