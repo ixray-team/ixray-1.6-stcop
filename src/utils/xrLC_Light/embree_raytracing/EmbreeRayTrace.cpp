@@ -249,15 +249,13 @@ void SetFilter(RTCGeometry geom, bool isTransp)
 
 // LOADING GEOMETRY
 static xrCriticalSection csEmbree;
-
-
 void EmbreeRayTraceModel::InitializeGeometry()
 {
 	Phase("Embree: Initialize Geometry");
 	// Собираем треугольники (чистим от дублей)
 	BuildRayTraceModel(); // Сборка Геометрии
 
-	// Конструктор модели
+ 	// Конструктор модели
 	csEmbree.Enter();
 	AttachGeomToScene(true, 0); // Embree-Loading
 	csEmbree.Leave();
@@ -283,8 +281,7 @@ void EmbreeRayTraceModel::InitializeGeometry_Model(xr_vector<FaceDataEmbree>& fa
 	AttachGeomToScene(false, 0); // Embree-Loading
 	csEmbree.Leave();
 }
-
-
+ 
 // Details Model
 void EmbreeRayTraceModel::InitializeDetails(xr_vector<FaceDataEmbree>& faces)
 {
@@ -310,12 +307,14 @@ void EmbreeRayTraceModel::InitializeDetails(xr_vector<FaceDataEmbree>& faces)
 	AttachGeomToScene(true, 1); // User Diffined type == 1
 	csEmbree.Leave();
 }
-
+ 
 void EmbreeRayTraceModel::RemoveGeometry()
 {
 	csEmbree.Enter();
 	auto CleanUserData = [&](RTCGeometry geom)
 	{
+		if (geom == nullptr) return;
+
 		UserGeomData* UD = (UserGeomData*)rtcGetGeometryUserData(geom);
 		if (UD != nullptr)
 		{
@@ -325,38 +324,34 @@ void EmbreeRayTraceModel::RemoveGeometry()
 	};
 
 	if (IntelScene)
-	{
-		rtcReleaseScene(IntelScene);
+	{ 
+		for (auto ID = 0; ID <= LastGeomID; ID++)
+		{
+			CleanUserData(rtcGetGeometry(IntelScene, ID));
+		}
+ 		rtcReleaseScene(IntelScene);
 	}
-	if (IntelGeometryNormal)
-	{
-		CleanUserData(IntelGeometryNormal);
- 		rtcReleaseGeometry(IntelGeometryNormal);
-	}
-	if (IntelGeometryTransp)
-	{
-		CleanUserData(IntelGeometryTransp);
-		rtcReleaseGeometry(IntelGeometryTransp);
-	}
-	csEmbree.Leave();
+ 	csEmbree.Leave();
 
 	opacue_geom.ClearAll();
 	transp_geom.ClearAll();
-	IntelScene = 0;
+	IntelScene = nullptr;
+	LastGeomID = 0;
 }
 
 void EmbreeRayTraceModel::IntelEmbereUnloadAll()
 {
 	RemoveGeometry();
+ 
+ 	// se7kills: Инстансы только в мейн моделе
+	for (auto& INST : instances)
+		xr_delete(INST);
+ 	instances.clear();
 
 	rtcReleaseDevice(EmbreeDevice);
 	isDeviceInitialized = false;
-
-	// AF: не нашел, где очищается, очищаю тут
-	// se7kills: Инстансы только в мейн моделе 
-	instanced.clear();
 }
-
+ 
 // Embree Device (Должен быть один)
 RTCDevice EmbreeDevice;
 
@@ -416,19 +411,4 @@ void EmbreeRayTraceModel::UpdateSceneFlags()
 		scene_flags = scene_flags | RTC_SCENE_FLAG_ROBUST;
 	}
 }
-
-EmbreeInstancedModel::~EmbreeInstancedModel()
-{
-	if (InstaceScene)
-	{
-		rtcReleaseScene(InstaceScene);
-	}
-	if (GeometryTransp)
-	{
-		rtcReleaseGeometry(GeometryTransp);
-	}
-	if (GeometryOpacue)
-	{
-		rtcReleaseGeometry(GeometryOpacue);
-	}
-}
+ 

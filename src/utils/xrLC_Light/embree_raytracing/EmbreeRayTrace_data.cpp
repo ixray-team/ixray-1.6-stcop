@@ -109,7 +109,7 @@ void EmbreeInstancedModel::InitializeModel(xr_vector<FaceDataEmbree>& faces)
 	rtcCommitScene(InstaceScene);
 }
 
-void EmbreeInstancedModel::SetInstance(RTCScene scene, Fmatrix& xform)
+void EmbreeInstancedModel::SetInstance(RTCScene scene, Fmatrix& xform, int& LastID)
 {
 	// ----------------------------------------------------
 	// Instace Geometry Loading
@@ -126,10 +126,9 @@ void EmbreeInstancedModel::SetInstance(RTCScene scene, Fmatrix& xform)
 	// Commit instance
 	// ----------------------------------------------------
 	rtcCommitGeometry(inst);
-	rtcAttachGeometry(scene, inst);
+	LastID = rtcAttachGeometry(scene, inst);
 	rtcReleaseGeometry(inst);
-}
-
+} 
 
 // World Model 
 void EmbreeRayTraceModel::BuildRayTraceModel()
@@ -174,13 +173,14 @@ void EmbreeRayTraceModel::BuildRayTraceModel_Instaced()
 
  	for (auto& MU : lc_global_data()->mu_models())
 	{
-		EmbreeInstancedModel& InstanceModel = instanced.emplace_back();
-		InstanceModel.InitializeModel(MU->EmbreeInstanceCopy());
+ 		EmbreeInstancedModel* InstanceModel = new EmbreeInstancedModel();
+		InstanceModel->InitializeModel(MU->EmbreeInstanceCopy());
+		instances.push_back(InstanceModel);
 	}
 
 	for (auto& MU_REF : lc_global_data()->mu_refs())
 	{
-		instanced[MU_REF->model->m_lod_ID].SetInstance(IntelScene, MU_REF->xform);
+		instances[MU_REF->model->m_lod_ID]->SetInstance(IntelScene, MU_REF->xform, LastGeomID);
 	}
 }
 
@@ -202,8 +202,7 @@ void LoadGeomBuffer(RTCGeometry& geom, TriangleContainer& geom_buffer, bool isTr
 	rtcSetGeometryUserData(geom, data);
 	rtcCommitGeometry(geom);
 };
-
-
+ 
 void EmbreeRayTraceModel::AttachGeomToScene(bool isMain, u8 uDataType)
 {
 	// Scene Flags !
@@ -214,17 +213,19 @@ void EmbreeRayTraceModel::AttachGeomToScene(bool isMain, u8 uDataType)
 	rtcSetSceneFlags(IntelScene, scene_flags);
 	rtcSetSceneBuildQuality(IntelScene, scene_quality);
 
+	LastGeomID = 0;
+
 	if (opacue_geom.faces_cnt() > 0)
 	{
 		LoadGeomBuffer(IntelGeometryNormal, opacue_geom, false, uDataType);
-		rtcAttachGeometry(IntelScene, IntelGeometryNormal);
+		LastGeomID = rtcAttachGeometry(IntelScene, IntelGeometryNormal);
 		rtcReleaseGeometry(IntelGeometryNormal);
 	}
 
 	if (transp_geom.faces_cnt() > 0)
 	{
 		LoadGeomBuffer(IntelGeometryTransp, transp_geom, true, uDataType);
-		rtcAttachGeometry(IntelScene, IntelGeometryTransp);
+		LastGeomID = rtcAttachGeometry(IntelScene, IntelGeometryTransp);
 		rtcReleaseGeometry(IntelGeometryTransp);
 	}
 
