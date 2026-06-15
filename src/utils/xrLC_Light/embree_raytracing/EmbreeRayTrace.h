@@ -122,8 +122,7 @@ public:
 	
 	// Instances
 	xr_vector<EmbreeInstancedModel*> instances;
-
-	void UpdateSceneFlags();
+ 	void UpdateSceneFlags();
 };
 
 extern EmbreeRayTraceModel EmbreeMain;

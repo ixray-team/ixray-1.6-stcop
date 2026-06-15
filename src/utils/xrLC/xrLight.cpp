@@ -36,21 +36,25 @@ void	CBuild::LMaps					()
 		auto& deflectors = lc_global_data()->g_deflectors();
 
 		xr_atomic_u32 IndexTaskID = 0, IndexTaskApply = 0;
-		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TID)
+  		xr_std_parallel_for([&]()
 			{
 				while (true)
 				{
 					u32 Index = IndexTaskID.fetch_add(1);
-					if (Index >= deflectors.size()) break;
+					if (Index >= deflectors.size())
+					{
+						break;
+					}
 					CDeflector* D = deflectors[Index];
 					D->LightGPU();
 					AditionalData("*** [LMAPS] ID [%u/%u]", Index, deflectors.size());
 				}
 				GPUTaskinSystem.LightPointPacked_run_tasks(); // Завершаем задачи !
-			});
+			},
+			gCompilerMode.ThreadsPerWork );
 		GPUTaskinSystem.RestartALL();
 
-		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TID)
+		xr_std_parallel_for([&]()
 			{
 				while (true)
 				{
@@ -62,7 +66,8 @@ void	CBuild::LMaps					()
 					D->ApplyExpandBordersGPU();
 					AditionalData("*** [LMAPS] ApplyID [%u/%u]", Index, deflectors.size());
 				}
-			});
+			},
+			gCompilerMode.ThreadsPerWork );
 
 		clMsg("%f seconds", start_time.GetElapsed_sec());
    	}
@@ -76,7 +81,7 @@ void	CBuild::LMaps					()
 		start_time.Start();
 		
 		xr_atomic_u32 LmapsTaskID = 0;
-		xr_parallel_for(0, gCompilerMode.ThreadsPerWork, [&](int THREAD)
+		xr_std_parallel_for([&]()
 		{
  			base_lighting	LightsSelected;
 			while (true)
@@ -88,8 +93,7 @@ void	CBuild::LMaps					()
 				D->Light(&LightsSelected);
 				AditionalData("Deflectors: %u / %u", IndexTask, lc_global_data()->g_deflectors().size());
 			}
-		}
-		);
+		}, gCompilerMode.ThreadsPerWork );
 		clMsg("%f seconds", start_time.GetElapsed_sec());
 	}
 
