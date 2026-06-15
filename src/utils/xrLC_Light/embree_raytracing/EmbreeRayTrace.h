@@ -58,25 +58,39 @@ struct alignas(32) UserGeomData
 
 class EmbreeInstancedModel
 {
-	RTCScene InstaceScene;
-	RTCGeometry GeometryTransp;
-	RTCGeometry GeometryOpacue;
+	RTCScene    InstaceScene	= nullptr;
+	RTCGeometry GeometryTransp  = nullptr;
+	RTCGeometry GeometryOpacue  = nullptr;
 public:
-	~EmbreeInstancedModel();
+	EmbreeInstancedModel() 
+	{
+		InstaceScene = nullptr;
+		GeometryTransp = nullptr;
+		GeometryOpacue = nullptr;
+	};
+	~EmbreeInstancedModel()
+	{
+		if (InstaceScene)
+		{
+			rtcReleaseScene(InstaceScene);
+			InstaceScene = nullptr;
+		}
+	}
 	void InitializeModel(xr_vector<FaceDataEmbree>& faces);
-	void SetInstance(RTCScene scene, Fmatrix& xform);
+	void SetInstance(RTCScene scene, Fmatrix& xform, int& LastID);
 };
 
 
 class EmbreeRayTraceModel
 {
 public:
-	RTCScene					IntelScene;	
+	RTCScene					IntelScene			= nullptr;	
  
 protected:
 	RTCSceneFlags				scene_flags			= RTC_SCENE_FLAG_NONE;
 	RTCBuildQuality				scene_quality		= RTC_BUILD_QUALITY_HIGH;
 
+	int							LastGeomID			= 0;
 	RTCGeometry					IntelGeometryNormal = nullptr;
 	RTCGeometry					IntelGeometryTransp = nullptr;
 
@@ -96,7 +110,7 @@ public:
   
 	void  AttachGeomToScene(bool isMain, u8 uDataType);
 	void  InitializeGeometry();		// Rcast-model
-	void  InitializeGeometry_Model(xr_vector<FaceDataEmbree> & faces); // Single-Models (xrMU-Model)
+	void  InitializeGeometry_Model(xr_vector<FaceDataEmbree>& faces); // Single-Models (xrMU-Model)
 	
 	void  InitializeDetails(xr_vector<FaceDataEmbree>& faces);
 
@@ -107,7 +121,7 @@ public:
  	// void InitEmbreeDetails();
 	
 	// Instances
-	xr_vector<EmbreeInstancedModel> instanced;
+	xr_vector<EmbreeInstancedModel*> instances;
 
 	void UpdateSceneFlags();
 };
