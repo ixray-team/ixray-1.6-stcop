@@ -49,6 +49,7 @@ private:
 
 public:
 	// Calculation
+
 private:
 
 	void						LL_BuldBoneMatrixDequatize(const CBoneData* bd, u8 channel_mask, SKeyTable& keys);
