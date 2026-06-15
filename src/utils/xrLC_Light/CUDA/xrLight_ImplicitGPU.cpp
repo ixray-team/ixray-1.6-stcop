@@ -80,7 +80,7 @@ public:
 
 		// Однопоточный режим пока что 
 		xr_atomic_u32 task_height = 0;
-		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TaskID)
+ 		xr_std_parallel_for( [&]()
 		{
 			while (true)
 			{
@@ -114,7 +114,7 @@ public:
 
 			// Остаток доработать 
 			GPUTaskinSystem.LightPointPacked_run_tasks();
-		});
+		}, gCompilerMode.ThreadsPerWork);
 
 		ApplyColors();
 
