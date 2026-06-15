@@ -24,8 +24,8 @@ void RunMURefsGPU()
 	CTimer tStats; tStats.Start();
 
 	xr_atomic_u32 REF_INDEX = 0;
-	xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t ThreadID)
-		{
+	xr_std_parallel_for([&]()
+	{
 			while (true)
 			{
 				u32 IndexTask = REF_INDEX.fetch_add(1);
@@ -38,26 +38,26 @@ void RunMURefsGPU()
 
 			// Завершаем накопленые данные
 			GPUTaskinSystem.LightPointPacked_run_tasks();
-		});
+	}, gCompilerMode.ThreadsPerWork);
 	Msg("[MURefs] Elapsed For Compute: %u ms", tStats.GetElapsed_ms());
 
 	// APPLY
 
 	tStats.Start();
 	REF_INDEX = 0;
-	xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t ThreadID)
+	xr_std_parallel_for([&]()
+	{
+		while (true)
 		{
-			while (true)
-			{
-				u32 Index = REF_INDEX.fetch_add(1);
-				if (Index >= inlc_global_data()->mu_refs().size()) break;
+			u32 Index = REF_INDEX.fetch_add(1);
+			if (Index >= inlc_global_data()->mu_refs().size()) break;
 
-				inlc_global_data()->mu_refs()[Index]->calc_lighting_cuda_2();
-				inlc_global_data()->mu_refs()[Index]->calc_lighting_cuda_3();
+			inlc_global_data()->mu_refs()[Index]->calc_lighting_cuda_2();
+			inlc_global_data()->mu_refs()[Index]->calc_lighting_cuda_3();
 
-				AditionalData("REF LIGHT APPLY: %u/%u", Index, inlc_global_data()->mu_refs().size());
-			}
-		});
+			AditionalData("REF LIGHT APPLY: %u/%u", Index, inlc_global_data()->mu_refs().size());
+		}
+	}, gCompilerMode.ThreadsPerWork);
 
 	Msg("[MURefs] Elapsed For Apply Colors: %u ms", tStats.GetElapsed_ms());
 
