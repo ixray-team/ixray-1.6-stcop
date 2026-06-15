@@ -1777,10 +1777,11 @@ void player_hud::render_hud()
 {
 	bool b_r0 = (m_attached_items[0] && m_attached_items[0]->need_renderable());
 	bool b_r1 = (m_attached_items[1] && m_attached_items[1]->need_renderable());
+	bool animatorPlaying = m_animator_item && m_animator_item->IsPlaying;
 
-	if (m_model)
+	if (b_r0 || b_r1 || animatorPlaying || m_bhands_visible)
 	{
-		if (b_r0 || b_r1 || m_animator_item && m_animator_item->IsPlaying || m_bhands_visible)
+		if (m_model || animatorPlaying)
 		{
 			::Render->set_Transform(&m_transform);
 			::Render->add_Visual(m_model->dcast_RenderVisual(), true);
@@ -2060,7 +2061,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 		}
 	}
 
-	if (m_model && (m_attached_items[0] && !m_attached_items[0]->m_model_combined || m_attached_items[1]))
+	if ((m_model && (m_attached_items[0] && !m_attached_items[0]->m_model_combined || m_attached_items[1])) || (m_animator_item && m_animator_item->IsPlaying))
 	{
 		m_model->UpdateTracks();
 		m_model->dcast_PKinematics()->CalculateBones_Invalidate();
@@ -2731,10 +2732,6 @@ bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 //	UpdateCallbackType тип каллбека 0 - сработает по окончанию анимации 1 - будет срабатывать пока анимация не закончится
 bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 part_id, bool bMixIn, float speed, u8 anm_idx, bool impact_on_item, bool similar_check, PlayCallback Callback, LPVOID CallbackParam, bool UpdateCallbackType)
 {
-	if (!m_model)
-	{
-		return false;
-	}
 	MotionID motion;
 	if(m_attached_items[place_idx] && place_idx>=0&&place_idx!=u16(-1))///ищем анимацию в библиотеке айтема на пример anm_show
 	{
@@ -2767,30 +2764,39 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 	}
 	else//иначе будем искать по прямому названию на пример abakan_draw или fn_2000_reload и тп
 	{
-		motion = m_model->ID_Cycle_Safe(anim_name);
-
-		if(!motion || !motion.valid())
+		if (m_model)
 		{
-			Msg("! Animation [%s] not found in %s motion container!", anim_name.c_str(), section_name().c_str());
+			motion = m_model->ID_Cycle_Safe(anim_name);
+
+			if (!motion || !motion.valid())
+			{
+				Msg("! Animation [%s] not found in %s motion container!", anim_name.c_str(), section_name().c_str());
+			}
 		}
 	}
 
-	//если играется анимация stop_at_end то не будем запускать
-	u16 pc = m_model->partitions().count();
-	for(u16 pid=0; pid<pc; ++pid)
+	if (m_model)
 	{
-		u32 blends_count = m_model->LL_PartBlendsCount(pid);
-		for(u32 blend_id=0; blend_id<blends_count; ++blend_id)
+		// если играется анимация stop_at_end то не будем запускать
+		u16 pc = m_model->partitions().count();
+		for (u16 pid = 0; pid < pc; ++pid)
 		{
-			CBlend* blend = m_model->LL_PartBlend(pid, blend_id);
-			if(!blend) continue;
-			MotionID M = blend->motionID;
-			if(M != motion)	
+			u32 blends_count = m_model->LL_PartBlendsCount(pid);
+			for (u32 blend_id = 0; blend_id < blends_count; ++blend_id)
 			{
-				if(blend->stop_at_end)
+				CBlend* blend = m_model->LL_PartBlend(pid, blend_id);
+				if (!blend)
 				{
-					ResetBlockedPartID();
-					return false;
+					continue;
+				}
+				MotionID M = blend->motionID;
+				if (M != motion)
+				{
+					if (blend->stop_at_end)
+					{
+						ResetBlockedPartID();
+						return false;
+					}
 				}
 			}
 		}
@@ -2798,77 +2804,92 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 	m_blocked_part_idx = part_id;//блокируем чтобы стандартные анимации не могли перебить запущенную
 
 	CBlend* B = nullptr;
-	switch (part_id)
+	if (m_model)
 	{
-		case 0:
-		case 1:
-		case 2:
+		switch (part_id)
 		{
-			if(similar_check)//проверим на выбранном бон парте
+			case 0:
+			case 1:
+			case 2:
 			{
-				u32 blends_count = m_model->LL_PartBlendsCount(part_id);
-				for(u32 blend_id=0; blend_id<blends_count; ++blend_id)
+				if (similar_check) // проверим на выбранном бон парте
 				{
-					CBlend* blend = m_model->LL_PartBlend(part_id, blend_id);
-					if(!blend) continue;
-					MotionID M = blend->motionID;
-					if(M==motion)
+					u32 blends_count = m_model->LL_PartBlendsCount(part_id);
+					for (u32 blend_id = 0; blend_id < blends_count; ++blend_id)
 					{
-						ResetBlockedPartID();
-						return false;
-					}
-				}
-			}
-			//запустим на выбранном бон парте
-			B = m_model->PlayCycle(part_id, motion, bMixIn, Callback, CallbackParam);
-		}break;
-		case u16(-1):
-		{
-			if(similar_check)//проверим на бон парте который указанв настройках анимации
-			{
-				CMotionDef* m_def = m_model->LL_GetMotionDef(motion);
-				u32 blends_count = m_model->LL_PartBlendsCount(m_def->bone_or_part);
-				for(u32 blend_id=0; blend_id<blends_count; ++blend_id)
-				{
-					CBlend* blend = m_model->LL_PartBlend(m_def->bone_or_part, blend_id);
-					if(!blend) continue;
-					MotionID M = blend->motionID;
-					if(M==motion)
-					{
-						ResetBlockedPartID();
-						return false;
-					}
-				}
-			}
-			//запустим для того бон парта который указан в настройках анимации
-			B = m_model->PlayCycle(motion, bMixIn, Callback, CallbackParam);
-		}break;
-		default:
-		{
-			if(similar_check)//проверим на всех бон партах
-			{
-				u16 pc = m_model->partitions().count();
-				for(u16 pid=0; pid<pc; ++pid)
-				{
-					u32 blends_count = m_model->LL_PartBlendsCount(pid);
-					for(u32 blend_id=0; blend_id<blends_count; ++blend_id)
-					{
-						CBlend* blend = m_model->LL_PartBlend(pid, blend_id);
-						if(!blend) continue;
+						CBlend* blend = m_model->LL_PartBlend(part_id, blend_id);
+						if (!blend)
+						{
+							continue;
+						}
 						MotionID M = blend->motionID;
-						if(M==motion)
+						if (M == motion)
 						{
 							ResetBlockedPartID();
 							return false;
 						}
 					}
 				}
+				// запустим на выбранном бон парте
+				B = m_model->PlayCycle(part_id, motion, bMixIn, Callback, CallbackParam);
 			}
-			//запустим на всех бон партах
-			B = m_model->PlayCycle(0, motion, bMixIn, Callback, CallbackParam);
-			B = m_model->PlayCycle(1, motion, bMixIn, Callback, CallbackParam);
-			B = m_model->PlayCycle(2, motion, bMixIn, Callback, CallbackParam);
-		}break;
+			break;
+			case u16(-1):
+			{
+				if (similar_check) // проверим на бон парте который указанв настройках анимации
+				{
+					CMotionDef* m_def = m_model->LL_GetMotionDef(motion);
+					u32 blends_count = m_model->LL_PartBlendsCount(m_def->bone_or_part);
+					for (u32 blend_id = 0; blend_id < blends_count; ++blend_id)
+					{
+						CBlend* blend = m_model->LL_PartBlend(m_def->bone_or_part, blend_id);
+						if (!blend)
+						{
+							continue;
+						}
+						MotionID M = blend->motionID;
+						if (M == motion)
+						{
+							ResetBlockedPartID();
+							return false;
+						}
+					}
+				}
+				// запустим для того бон парта который указан в настройках анимации
+				B = m_model->PlayCycle(motion, bMixIn, Callback, CallbackParam);
+			}
+			break;
+			default:
+			{
+				if (similar_check) // проверим на всех бон партах
+				{
+					u16 pc = m_model->partitions().count();
+					for (u16 pid = 0; pid < pc; ++pid)
+					{
+						u32 blends_count = m_model->LL_PartBlendsCount(pid);
+						for (u32 blend_id = 0; blend_id < blends_count; ++blend_id)
+						{
+							CBlend* blend = m_model->LL_PartBlend(pid, blend_id);
+							if (!blend)
+							{
+								continue;
+							}
+							MotionID M = blend->motionID;
+							if (M == motion)
+							{
+								ResetBlockedPartID();
+								return false;
+							}
+						}
+					}
+				}
+				// запустим на всех бон партах
+				B = m_model->PlayCycle(0, motion, bMixIn, Callback, CallbackParam);
+				B = m_model->PlayCycle(1, motion, bMixIn, Callback, CallbackParam);
+				B = m_model->PlayCycle(2, motion, bMixIn, Callback, CallbackParam);
+			}
+			break;
+		}
 	}
 	if(B)
 	{
