@@ -172,16 +172,21 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 	}
 }
 
-static	CTimer	phase_timer;
-extern	ENGINE_API BOOL			g_appLoaded = FALSE;
+static CTimer phase_timer;
+extern ENGINE_API BOOL g_appLoaded = FALSE;
+//AVO: used by SPAWN_ANTIFREEZE (by alpet)
+extern ENGINE_API bool g_bootComplete = false;
+//-AVO
 
 void CApplication::LoadBegin()
 {
 	ll_dwReference++;
-	if (1 == ll_dwReference) {
-
+	if (1 == ll_dwReference)
+	{
 		g_appLoaded = FALSE;
-
+		//AVO:
+		g_bootComplete = false;
+		//-AVO
 		phase_timer.Start();
 		load_stage = 0;
 	}
@@ -208,7 +213,12 @@ void CApplication::SetLoadingScreen(ILoadingScreen* newScreen) {
 	loadingScreen = newScreen;
 }
 
-void CApplication::DestroyLoadingScreen() { xr_delete(loadingScreen); }
+void CApplication::DestroyLoadingScreen()
+{
+	//AVO:
+	g_bootComplete = true;
+	xr_delete(loadingScreen);
+}
 
 void CApplication::LoadDraw()
 {
