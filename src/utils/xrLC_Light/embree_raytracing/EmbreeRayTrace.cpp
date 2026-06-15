@@ -311,27 +311,34 @@ void EmbreeRayTraceModel::InitializeDetails(xr_vector<FaceDataEmbree>& faces)
 	csEmbree.Leave();
 }
 
-extern xr_concurrent_vector<UserGeomData*> UserGeomTemp;
-
 void EmbreeRayTraceModel::RemoveGeometry()
 {
 	csEmbree.Enter();
+	auto CleanUserData = [&](RTCGeometry geom)
+	{
+		UserGeomData* UD = (UserGeomData*)rtcGetGeometryUserData(geom);
+		if (UD != nullptr)
+		{
+			UD->dummys.clear();
+			UD->dummys.shrink_to_fit();
+		}
+	};
+
 	if (IntelScene)
 	{
 		rtcReleaseScene(IntelScene);
 	}
 	if (IntelGeometryNormal)
 	{
-		rtcReleaseGeometry(IntelGeometryNormal);
+		CleanUserData(IntelGeometryNormal);
+ 		rtcReleaseGeometry(IntelGeometryNormal);
 	}
 	if (IntelGeometryTransp)
 	{
+		CleanUserData(IntelGeometryTransp);
 		rtcReleaseGeometry(IntelGeometryTransp);
 	}
 	csEmbree.Leave();
-
-	//AF: не нашел, где очищается, очищаю тут
-	instanced.clear();
 
 	opacue_geom.ClearAll();
 	transp_geom.ClearAll();
@@ -342,19 +349,12 @@ void EmbreeRayTraceModel::IntelEmbereUnloadAll()
 {
 	RemoveGeometry();
 
-	//AF: этот момент с UserGeomData довольно проблемный, UserGeomData создается в разных потоках и добавляется разную геометрию,
-	//некоторая в процессе удаляется и добавляется в разные массивы, после ReleaseGeometry объект UserGeomData остается не удаленным
-	// + UserGeomData хранит в себе массив указателей void*, которые также не факт, что очищаются
-	// мне немного лень изучать всю архитектуру, поэтому просто оставлю коментарий на будущее
-	for (UserGeomData* Data : UserGeomTemp)
-	{
-		delete Data;
-	}
-	UserGeomTemp.clear();
-	UserGeomTemp.shrink_to_fit();
-
 	rtcReleaseDevice(EmbreeDevice);
 	isDeviceInitialized = false;
+
+	// AF: не нашел, где очищается, очищаю тут
+	// se7kills: Инстансы только в мейн моделе 
+	instanced.clear();
 }
 
 // Embree Device (Должен быть один)
