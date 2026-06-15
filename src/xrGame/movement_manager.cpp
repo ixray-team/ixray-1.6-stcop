@@ -366,7 +366,8 @@ void CMovementManager::on_restrictions_change	()
 
 bool CMovementManager::can_use_distributed_computations(u32 option) const
 {
-	return							(!m_build_at_once && g_mt_config.test(option) && !object().getDestroy());
+	//return (!m_build_at_once && g_mt_config.test(option) && !object().getDestroy());
+	return false; // Fix for bug which makes mutants running in one place. Something happens with the thread, and the mutants will wait for a thread which will never finish running.
 }
 
 void CMovementManager::on_frame					(CPHMovementControl *movement_control, Fvector &dest_position)
