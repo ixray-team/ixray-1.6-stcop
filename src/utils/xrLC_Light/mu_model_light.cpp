@@ -17,24 +17,28 @@ void run_mu_light()
 	static xr_atomic_u32 ThreadTaskID = 0;
 	ThreadTaskID = 0;
 
- 	xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [](size_t threadID) {
+ 	xr_std_parallel_for([]()
+	{
 		while (true)
 		{
 			u32 tID = ThreadTaskID.fetch_add(1);
-			if (tID >= inlc_global_data()->mu_models().size())  break;
+			if (tID >= inlc_global_data()->mu_models().size())
+			{
+				break;
+			}
 
 			// Light references
 			inlc_global_data()->mu_models()[tID]->calc_materials();
 			inlc_global_data()->mu_models()[tID]->calc_lighting();
 			AditionalData("MuModels %d/%d", tID, inlc_global_data()->mu_models().size());
-		}
-	});
+		} 
+	}, gCompilerMode.ThreadsPerWork);
 
  	if (!gCompilerMode.CUDA)
 	{
  		ThreadTaskID = 0;
-		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [](size_t threadID) {
-
+		xr_std_parallel_for([]()
+		{
 			while (true)
 			{
 				int tID = ThreadTaskID.fetch_add(1);
@@ -44,7 +48,7 @@ void run_mu_light()
 				inlc_global_data()->mu_refs()[tID]->calc_lighting();
 				AditionalData("MuRefs %d/%d", tID, inlc_global_data()->mu_refs().size());
 			}
-		});
+		}, gCompilerMode.ThreadsPerWork);
  	}
 	else 
  	{
