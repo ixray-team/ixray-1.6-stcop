@@ -112,7 +112,13 @@ CSE_ALifeDynamicObject *CALifeObjectRegistry::get_object		(IReader &file_stream)
 #endif
 	// create entity
 	CSE_Abstract			*tpSE_Abstract = F_entity_Create	(s_name);
-	R_ASSERT2				(tpSE_Abstract,"Can't create entity.");
+	if (!tpSE_Abstract)
+	{
+		Msg("! Can't create entity '%s'", s_name);
+		tNetPacket.B.count = file_stream.r_u16();
+		file_stream.advance(tNetPacket.B.count);
+		return nullptr;
+	}
 	CSE_ALifeDynamicObject	*tpALifeDynamicObject = smart_cast<CSE_ALifeDynamicObject*>(tpSE_Abstract);
 	R_ASSERT2				(tpALifeDynamicObject,"Non-ALife object in the saved game!");
 	tpALifeDynamicObject->Spawn_Read(tNetPacket);
@@ -134,15 +140,16 @@ void CALifeObjectRegistry::load(IReader& file_stream)
 
 	m_objects.clear();
 
-	u32							count = file_stream.r_u32();
-	CSE_ALifeDynamicObject** objects = (CSE_ALifeDynamicObject**)_alloca(count * sizeof(CSE_ALifeDynamicObject*));
+	u32 count = file_stream.r_u32();
 
-	CSE_ALifeDynamicObject** I = objects;
-	CSE_ALifeDynamicObject** E = objects + count;
-	for (; I != E; ++I) {
-		*I = get_object(file_stream);
-		add(*I);
+	for (u32 I = 0; I < count; ++I)
+	{
+		CSE_ALifeDynamicObject* tpSE_Abstract = get_object(file_stream);
+		if (!tpSE_Abstract)
+			continue;
+
+		add(tpSE_Abstract);
 	}
 
-	Msg("* %d objects are successfully loaded", count);
+	Msg("* %d objects are successfully loaded", m_objects.size());
 }
