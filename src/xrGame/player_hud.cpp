@@ -2694,27 +2694,29 @@ void script_layer::CallEndCallback()
 
 bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 {
-	if(!m_attached_items[place_idx]) return false;
-
-	string256				anim_name_r;
-	bool is_16x9			= UI().is_widescreen() && !m_attached_items[place_idx]->m_model_combined;
-	xr_sprintf				(anim_name_r,"%s%s",anim_name.c_str(),((place_idx==1)&&is_16x9)?"_16x9":"");
-
-	return !!m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name_r);
-
-	MotionID motion;
-	if(m_attached_items[place_idx] && place_idx>=0&&place_idx!=u16(-1))///ищем анимацию в библиотеке айтема на пример anm_show
+	if (!m_attached_items[place_idx])
 	{
-		if(m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name_r))
-			return true;
+		return false;
 	}
-	else//иначе будем искать по прямому названию на пример abakan_draw или fn_2000_reload и тп
-	{
-		motion = m_model->ID_Cycle_Safe(anim_name);
 
-		if(motion && motion.valid())
+	MotionID Motion;
+	if (m_attached_items[place_idx] && place_idx >= 0 && place_idx != u16(-1)) /// ищем анимацию в библиотеке айтема на пример anm_show
+	{
+		if (m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name))
+		{
 			return true;
+		}
 	}
+	else // иначе будем искать по прямому названию на пример abakan_draw или fn_2000_reload и тп
+	{
+		Motion = m_model->ID_Cycle_Safe(anim_name);
+
+		if (Motion && Motion.valid())
+		{
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -2735,11 +2737,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 	MotionID motion;
 	if(m_attached_items[place_idx] && place_idx>=0&&place_idx!=u16(-1))///ищем анимацию в библиотеке айтема на пример anm_show
 	{
-		string256				anim_name_r;
-		bool is_16x9			= UI().is_widescreen();
-		xr_sprintf				(anim_name_r,"%s%s",anim_name.c_str(),((place_idx==1)&&is_16x9)?"_16x9":"");
-
-		player_hud_motion* anm	= m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name_r);
+		player_hud_motion* anm = m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name);
 
 		if(anm)
 		{
@@ -2759,7 +2757,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 		}
 		else
 		{
-			Msg("! Animation [%s] not found in %s motion container!", anim_name_r, m_attached_items[place_idx]->m_sect_name.c_str());
+			Msg("! Animation [%s] not found in %s motion container!", *anim_name, m_attached_items[place_idx]->m_sect_name.c_str());
 		}
 	}
 	else//иначе будем искать по прямому названию на пример abakan_draw или fn_2000_reload и тп
@@ -2914,13 +2912,9 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u16 part_id, u8 anm_idx, float blendAccrue, float blendFalloff, float Speed, float Power)
 {
 	MotionID motion;
-	if(m_attached_items[place_idx] && place_idx>=0)///ищем анимацию относительно айтема на пример anm_show
+	if(m_attached_items[place_idx] && place_idx>=0 && place_idx != u16(-1))///ищем анимацию относительно айтема на пример anm_show
 	{
-		string256				anim_name_r;
-		bool is_16x9			= UI().is_widescreen();
-		xr_sprintf				(anim_name_r,"%s%s",anim_name.c_str(),((place_idx==1)&&is_16x9)?"_16x9":"");
-
-		player_hud_motion* anm	= m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name_r);
+		player_hud_motion* anm = m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name);
 
 		if(anm)
 		{
@@ -2930,7 +2924,7 @@ void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u1
 		}
 		else
 		{
-			Msg("! Animation [%s] not found in %s motion container!", anim_name_r, m_attached_items[place_idx]->m_sect_name.c_str());
+			Msg("! Animation [%s] not found in %s motion container!", *anim_name, m_attached_items[place_idx]->m_sect_name.c_str());
 		}
 	}
 	else//иначе будем искать по прямому названию на пример abakan_draw или fn_2000_reload и тп
