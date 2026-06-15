@@ -184,10 +184,7 @@ void EmbreeRayTraceModel::BuildRayTraceModel_Instaced()
 	}
 }
 
-xr_concurrent_vector<UserGeomData*> UserGeomTemp;
-
 // Geometry Embree Loading 
-
 void LoadGeomBuffer(RTCGeometry& geom, TriangleContainer& geom_buffer, bool isTransp, u8 ud_geom_type)
 {
 	extern void SetFilter(RTCGeometry geom, bool isTransp);
@@ -204,8 +201,6 @@ void LoadGeomBuffer(RTCGeometry& geom, TriangleContainer& geom_buffer, bool isTr
 	data->DummyType = ud_geom_type;
 	rtcSetGeometryUserData(geom, data);
 	rtcCommitGeometry(geom);
-
-	UserGeomTemp.push_back(data);
 };
 
 
