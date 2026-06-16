@@ -1115,3 +1115,10 @@ void CGamePersistent::SetDiscordStatus() const {
 		g_Discord.SetPhase(levelName);
 	}
 }
+
+void CGamePersistent::GetTextureParams(shared_str tex, Frect& out_rect, shared_str& file_name) 
+{
+	ui_shader sh;
+	CUITextureMaster::InitTexture(tex, "hud\\default", sh, out_rect);
+	file_name = CUITextureMaster::GetTextureFileName(tex.c_str());
+}
