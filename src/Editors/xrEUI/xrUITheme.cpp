@@ -33,15 +33,21 @@ void CUIThemeManager::Draw()
 		ImVec4* colors = ImGui::GetStyle().Colors;
 		ImVec2 button_size = ImVec2(100.0f, 20.0f);
 
-		if (ImGui::Button("Theme 1"))
+		if (ImGui::Button("Dark Blue"))
 		{
 			InitDefault(0);
 		}
 		ImGui::SameLine();
 
-		if (ImGui::Button("Theme 2"))
+		if (ImGui::Button("Visual Studio"))
 		{
 			InitDefault(1);
+		}
+		ImGui::SameLine();
+
+		if (ImGui::Button("Dark Orange"))
+		{
+			InitDefault(2);
 		}
 
 		ImGui::BeginChild("Theme", ImVec2(0, -ImGui::GetFrameHeightWithSpacing() - 10), true);
