@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FontManager.h"
-
+#include "../xrCore/FormatParsers/XML/xrXMLParser.h"
 #include <freetype/freetype.h>
 #include <freetype/ftmodapi.h>
 
@@ -12,6 +12,16 @@ CFontManager::CFontManager()
 {
 	PROF_EVENT("CFontManager::CFontManager");
 	g_FontManager = this;
+
+	CXml xml;
+	if (xml.Load(CONFIG_PATH, UI_PATH, "ascii_mappings\\controller_mapping.xml"))
+	{
+		for (int i = 0; i < xml.GetNodesNum("", 0, "mapping"); i++)
+		{
+			u16 id = xml.ReadAttribInt("mapping", i, "ascii");
+			GamepadButtonMappings[id] = xml.ReadAttrib("mapping", i, "texture_id");
+		}
+	}
 	Device.seqDeviceReset.Add(this, REG_PRIORITY_HIGH);
 	pFontDI = nullptr;
 	pFontMedium = nullptr;
@@ -31,6 +41,7 @@ CFontManager::~CFontManager()
 		xr_delete(fontPair.second);
 	}
 	Fonts.clear();
+	GamepadButtonMappings.clear();
 }
 
 void CFontManager::InitializeFonts()
@@ -74,7 +85,7 @@ CGameFont* CFontManager::CloneFont(const shared_str& name)
 		return font;
 	}
 
-	FATAL("Failed to clone font which was'nt initialized");
+	FATAL("Failed to clone font which wasn't initialized");
 	return nullptr;
 }
 

@@ -106,6 +106,7 @@ public:
 	virtual void		OnSectorChanged			(int sector);
 	virtual void		OnAssetsChanged			();
 	void				SetDiscordStatus() const;
+	virtual void		GetTextureParams		(shared_str tex, Frect& out_rect, shared_str& file_name);
 };
 
 IC CGamePersistent&		GamePersistent()		{ return *((CGamePersistent*) g_pGamePersistent);			}
