@@ -79,14 +79,6 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 	pTexture->surface_set(rhiSurface);
 }
 
-static Fvector2 sizeOfImage(Frect rect, float font_height)
-{
-	float sc = font_height / rect.height();
-	return {rect.width() * sc, rect.height() * sc};
-}
-
-#define GAMEPAD_GLYPH_START 57344
-#define GAMEPAD_GLYPH_END 57535
 void dxFontRender::RenderBase(CGameFont& owner)
 {
 	if(pShader != nullptr) {
@@ -180,7 +172,7 @@ void dxFontRender::RenderBase(CGameFont& owner)
 							icon.file_name = fileName;
 							icon.rect = rect;
 							icon.pos = {X, Y};
-							icon.sz = sizeOfImage(rect, owner.CurrentHeight_());
+							icon.sz = owner.sizeOfImage(rect);
 							icon.alpha = color_get_A(owner.dwCurrentColor);
 
 							IconsToRender.push_back(icon);
@@ -198,25 +190,27 @@ void dxFontRender::RenderBase(CGameFont& owner)
 				if (glyphInfo == nullptr) 
 				{
 					glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo(UniStr[i]));
-#pragma todo("St4lker0k765: Fix icons for UTF-8!!!!!!!!!!!")
-/*					if (shared_str texName = g_FontManager->GamepadButtonMappings[UniStr[i]])
+					if (UniStr[i] >= GAMEPAD_GLYPH_START && UniStr[i] <= GAMEPAD_GLYPH_END)
 					{
-						Frect rect;
-						shared_str fileName;
-						g_pGamePersistent->GetTextureParams(texName, rect, fileName);
-						GamepadIcon icon;
-						icon.texture_name = texName;
-						icon.file_name = fileName;
-						icon.rect = rect;
-						icon.pos = {X, Y};
-						icon.sz = sizeOfImage(rect, owner.CurrentHeight_());
-						icon.alpha = color_get_A(owner.dwCurrentColor);
+						if (shared_str texName = g_FontManager->GamepadButtonMappings[UniStr[i]])
+						{
+							Frect rect;
+							shared_str fileName;
+							g_pGamePersistent->GetTextureParams(texName, rect, fileName);
+							GamepadIcon icon;
+							icon.texture_name = texName;
+							icon.file_name = fileName;
+							icon.rect = rect;
+							icon.pos = {X, Y};
+							icon.sz = owner.sizeOfImage(rect);
+							icon.alpha = color_get_A(owner.dwCurrentColor);
 
-						IconsToRender.push_back(icon);
+							IconsToRender.push_back(icon);
 
-						X += (icon.sz.x * 2.f) + owner.GetLetterSpacing();
-						continue;
-					}*/
+							X += icon.sz.x + owner.GetLetterSpacing();
+							continue;
+						}
+					}
 					if (glyphInfo == nullptr)
 					{
 						continue;
