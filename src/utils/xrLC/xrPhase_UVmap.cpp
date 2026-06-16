@@ -51,31 +51,17 @@ bool sort_faces(Face* face, Face* face2)
  
 void CBuild::xrPhase_UVmap()
 {
-	size_t used, rel, free;
-	vminfo(&free, &rel, &used);
-
-	clMsg("xrPhase_UVmap: Start %u used", size_t(used / 1024 / 1024));
+	CTimer PhaseTime;
+	PhaseTime.Start();
 
  	// Main loop
 	Status("Processing...");
 	lc_global_data()->g_deflectors().reserve(64 * 1024);
-	float		p_cost = 1.f / float(g_XSplit.size());
-	float		p_total = 0.f;
-	vecFace		faces_affected;
 
-	int StartPoint = g_XSplit.size();
- 	int DeflectorsAllocated = 0;
-	size_t CreatedFaces = 0;
-
-	size_t OriginalFaces = 0;
-	for (auto SP : g_XSplit)
-		OriginalFaces += SP->size();
-	 
-	for (int SP = 0; SP < int(StartPoint); SP++)
+ 	xr_vector<Face*> faces_affected;
+  	for (int SP = 0; SP < int(g_XSplit.size()); SP++)
 	{
- 		Progress(p_total += p_cost);
-
-		// Detect vertex-lighting and avoid this subdivision
+ 		// Detect vertex-lighting and avoid this subdivision
 		if (g_XSplit[SP]->empty())				continue;
 		Face* Fvl = g_XSplit[SP]->front();
 		if (Fvl->Shader().flags.bLIGHT_Vertex) 	continue;	// do-not touch (skip)
@@ -86,8 +72,7 @@ void CBuild::xrPhase_UVmap()
 		{
 			// Сортировка списка в перед с больщими зонами.
 			std::sort(g_XSplit[SP]->begin(), g_XSplit[SP]->end(), sort_faces);
-			if (g_XSplit[SP] == nullptr)
-				break;
+			if (g_XSplit[SP] == nullptr) break;
 			// Select maximal sized poly
 			Face* msF = NULL;
 
@@ -99,6 +84,7 @@ void CBuild::xrPhase_UVmap()
 
 					CDeflector* D = new CDeflector();
  					lc_global_data()->g_deflectors().push_back(D);
+
 					// Start recursion from this face
 					start_unwarp_recursion();
 					D->OA_SetNormal(FACE->N);
@@ -111,25 +97,17 @@ void CBuild::xrPhase_UVmap()
 					// detaching itself
 					Detach(&faces_affected);
 					g_XSplit.push_back(new vecFace(faces_affected));
- 					DeflectorsAllocated++;
-					CreatedFaces += faces_affected.size();
-				}
+ 				}
 			}
 
 			if (!g_XSplit[SP]->empty())
 			{
-				// u32 CapacityOrig = g_XSplit[SP]->capacity();
-  				auto rIT = std::remove_if(
-					g_XSplit[SP]->begin(),
-					g_XSplit[SP]->end(),
+   				auto rIT = std::remove_if( g_XSplit[SP]->begin(), g_XSplit[SP]->end(),
 					[&](Face* F)
 					{
 						if (F->pDeflector != nullptr)
-						{
-							//xr_delete(F);   // Освобождаем память
-							return true;    // Убираем из контейнера
-						}
- 						return false;
+ 							return true;    // Убираем из контейнера
+  						return false;
 					}
 				);
 
@@ -138,11 +116,6 @@ void CBuild::xrPhase_UVmap()
 					g_XSplit[SP]->erase(rIT, g_XSplit[SP]->end());
 					g_XSplit[SP]->shrink_to_fit();
 				}
-				
-				// u32 CapacityNew = g_XSplit[SP]->capacity();
-				// 
-				// if (CapacityNew != CapacityOrig)
-				// 	Msg("Capacity: %u, new : %u", CapacityOrig, CapacityNew);
 			}
 
 			// Cancel infine loop (while)
@@ -151,27 +124,8 @@ void CBuild::xrPhase_UVmap()
  				break;
 			}
 		}		
-
-		size_t VSize = lc_global_data()->g_vertices().size() * sizeof(Vertex);
-		size_t FSize = lc_global_data()->g_faces().size() * sizeof(Face);
-
-		AditionalData("SP[%u], xsp: %u", SP, g_XSplit.size());
 	}
-  
-	size_t AllocatedDeflectors = 0;
-	size_t AllocatedLMAPS = 0;
-	size_t AllocatedTRIS  = 0;
-	for (auto D : lc_global_data()->g_deflectors())
-	{
-		AllocatedDeflectors += D->size_deflector();
-		AllocatedLMAPS += D->size_of_lm();
-		AllocatedTRIS += D->size_of_tris();
-	}
-
-	AllocatedDeflectors /= (1024 * 1024); // MB
-	AllocatedLMAPS /= (1024 * 1024); // MB
-	AllocatedTRIS /= (1024 * 1024); // MB
-	AditionalData("Deflectors: %u MB | LMaps: %u MB | QA_TRI: %u MB", AllocatedDeflectors, AllocatedLMAPS, AllocatedTRIS);
+ 
   	clMsg("%d subdivisions...", g_XSplit.size());
  
  	// VALIDATION
@@ -186,4 +140,6 @@ void CBuild::xrPhase_UVmap()
 	}
 
 	err_save();
+
+	clMsg("* UVMap Time: %u ms", PhaseTime.GetElapsed_ms());
 }

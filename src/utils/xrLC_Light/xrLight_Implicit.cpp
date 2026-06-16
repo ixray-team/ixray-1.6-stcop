@@ -10,7 +10,6 @@
 #include "../xrForms/CompilersUI.h"
 
 // 2 : Mainthread + UI thread
-ImplicitCalcGlobs cl_globs;
 xr_atomic_u32 ThreadTaskID_Implication = 0;
 
 struct LummelData
@@ -23,19 +22,21 @@ struct LummelData
 	Fvector2 JS;
 };
 
+
 void RunImplicitMultithread(ImplicitDeflector& defl)
 {
-
-	// Thread Local Update
+ 	// Thread Local Update
 	thread_local xr_vector<JiterPixel> EmbreePacket;
  
 	// Start threads
 	ThreadTaskID_Implication = 0;
-	xr_std_parallel_for([]()
+
+	ImplicitCalcGlobs* cl_globs_cpu = new ImplicitCalcGlobs(); // 4096 превышает !
+	cl_globs_cpu->Initialize(defl);
+ 
+	xr_std_parallel_for([&cl_globs_cpu, &defl]()
 	{
-		ImplicitDeflector& defl = cl_globs.DATA();
-	
-		Fvector2* Jitter2D; u32 Jcount;
+ 		Fvector2* Jitter2D; u32 Jcount;
 		Jitter_Select(Jitter2D, Jcount);
 
 		LummelData Pixel;
@@ -71,7 +72,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 						P.y = float(tY) / Pixel.dim.y + Pixel.half.y + Pixel.JD[J].y * Pixel.JS.y;
 
 						// World space
-						for (auto F : cl_globs.query(P.x, P.y))
+						for (auto F : cl_globs_cpu->query(P.x, P.y))
 						{
 							_TCF& tc = F->tc[0];
 							if (tc.isInside(P, B))
@@ -113,9 +114,11 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 			defl.Marker(U, V) = 255;
 		}
 	}
+
+	xr_delete(cl_globs_cpu);
 }
 
-extern void RunImplicitGPU(); 
+extern void RunImplicitGPU(ImplicitDeflector& defl); 
 
 void ImplicitLightingExec()
 {
@@ -156,10 +159,9 @@ void ImplicitLightingExec()
 		Status("Lighting implicit map '%s'...", defl.texture->name);
 
 		// Setup cache
- 		cl_globs.Initialize(defl);
 #ifdef LCCUDA_BUILD
 		if (gCompilerMode.CUDA)
-			RunImplicitGPU();
+			RunImplicitGPU(defl);
 		else
 #endif
 			RunImplicitMultithread(defl);

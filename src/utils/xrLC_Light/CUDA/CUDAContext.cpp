@@ -27,11 +27,15 @@ xr_path GetExecutableDir()
 	return xr_path(xr_string(result, count)).parent_path();
 #endif
 }
+
 // Чтобы CUDA Выделела память CPU - > Heap не рос там где не нужно !
 bool OptixContext::Initialize()
 {
-	clMsg("[Cuda] Memory Used: %u mb", GetCudaMemoryUsed() / 1024 / 1024);
-	
+	// clMsg("[Cuda] Memory Used: %u mb", GetCudaMemoryUsed() / 1024 / 1024);
+	// cudaFree(0); // Затычка инициализации Девайса !
+
+	CUDA_CHECK_2( cuInit(0) ); // Инициализация !
+
     // без двойной инициализации
 	CUDA_CHECK_2(cuDeviceGet(&cuDev, cudaDeviceId));
 	CUDA_CHECK_2(cuDevicePrimaryCtxRetain(&cuCtx, cuDev));
@@ -47,9 +51,10 @@ bool OptixContext::Initialize()
 	clMsg("[OptiX] Using CUDA device: %s (SM %d.%d)", deviceName, major, minor);
 
 	// --- 3. OptiX ---
-	//OPTIX_CHECK(optixInit());
-	OPTIX_CHECK(optixInitWithHandle(&OptixLibHandle)); // Сохраняем Handle для последующей очистки, optixInit делает невозможным выгрузку библиотеки 
-
+	// OPTIX_CHECK(optixInit());
+	// se7kills: Это место постоянно выделяет 37мб памяти ! Всегда растет !
+    OPTIX_CHECK(optixInitWithHandle(&OptixLibHandle)); // Сохраняем Handle для последующей очистки, optixInit делает невозможным выгрузку библиотеки
+ 
 	OptixDeviceContextOptions options = {};
 	options.logCallbackFunction = &OptixLogCallback;
 	options.logCallbackLevel	= 0;
@@ -61,8 +66,8 @@ bool OptixContext::Initialize()
 #endif
 
 	// В этом режиме OptiX требует НЕ nullptr
-	OPTIX_CHECK(optixDeviceContextCreate(cuCtx, &options, &optixContext));
-
+ 	OPTIX_CHECK(optixDeviceContextCreate(cuCtx, &options, &optixContext));
+ 
 	// --- 4. Pipeline ---
 	xr_path fullPtxPath = GetExecutableDir() / "CuTrace.ptx";
 	CreatePipeline(fullPtxPath.xstring().c_str());
@@ -117,6 +122,7 @@ void OptixContext::Destroy()
 		OPTIX_CHECK(optixDeviceContextDestroy(optixContext));
 		optixContext = nullptr;
 	}
+
 	if (OptixLibHandle)
 	{
 		OPTIX_CHECK(optixUninitWithHandle(OptixLibHandle));
@@ -124,7 +130,7 @@ void OptixContext::Destroy()
 	}
 
 	CUDA_CHECK_2(cuDevicePrimaryCtxRelease_v2(cuDev));
-	CUDA_CHECK(cudaDeviceReset());
+	CUDA_CHECK  (cudaDeviceReset()); 
 }
 
 // Структура для записи SBT

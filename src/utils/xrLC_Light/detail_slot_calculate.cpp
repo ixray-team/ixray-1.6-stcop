@@ -204,7 +204,7 @@ void xrLight_Details()
 	CTimer start_time;
 	start_time.Start();
 
-	static xr_atomic_u32 IndexTask = 0;
+	xr_atomic_u32 IndexTask = 0;
 	IndexTask = 0;
 	 
 	if (gCompilerMode.Embree)
@@ -212,7 +212,7 @@ void xrLight_Details()
 		Status("Embree Initialize Models ...");
 		EmbreeMain.InitializeDetails(gl_data.building_embree_faces);
 
-		xr_std_parallel_for([]()
+		xr_std_parallel_for([&IndexTask]()
 			{
 				while (true)
 				{
@@ -246,7 +246,7 @@ void xrLight_Details()
 
 		GPUTaskinSystem.ColorsMapType = eDetails;
 
-		xr_std_parallel_for([]()
+		xr_std_parallel_for([&IndexTask]()
 		{
 			while (true)
 			{
