@@ -3,6 +3,7 @@
 #include "GameFont.h"
 #include "Environment.h"
 #include "IGame_ObjectPool.h"
+#include "Render.h"
 
 class IRenderVisual;
 class IMainMenu;
@@ -103,6 +104,7 @@ public:
 	virtual	void					LoadTitle			(bool change_tip=false, shared_str map_name=""){}
 	virtual void					SetLoadStageTitle	(const char* /*ls_title*/) {}
 	virtual bool					CanBePaused			()		{ return true;}
+	virtual void					GetTextureParams	(shared_str tex, Frect& out_rect, shared_str& file_name) {}
 };
 
 extern ENGINE_API IGame_Persistent* g_pGamePersistent;
