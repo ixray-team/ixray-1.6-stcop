@@ -3035,7 +3035,7 @@ void CWeapon::OnBlendEnd(u8 state)
 				IsGrenadeMode() ? m_sGLAimBlendParams[1].speed_power.x : m_sAimBlendParams[1].speed_power.x,
 				IsGrenadeMode() ? m_sGLAimBlendParams[1].speed_power.y : m_sAimBlendParams[1].speed_power.y,
 				IsGrenadeMode() ? m_sGLAimBlendParams[1].blend_params : m_sAimBlendParams[1].blend_params, true, false, true,
-				2, 0, script_layer::EBlendLayers::eNone);
+				g_player_hud->attached_item(1) ? 0 : 2, 0, script_layer::EBlendLayers::eNone);
 		}
 		break;
 	}
@@ -3044,7 +3044,7 @@ void CWeapon::OnBlendEnd(u8 state)
 		if (GetHUDmode() && m_sSafemodeBlendParams[1].has_motion)
 		{
 			PlayBlendAnm(m_sSafemodeBlendParams[1].camera_name, m_sSafemodeBlendParams[1].speed_power.x, m_sSafemodeBlendParams[1].speed_power.y,
-				m_sSafemodeBlendParams[1].blend_params, true, false, true, 2, 0, script_layer::EBlendLayers::eNone);
+				m_sSafemodeBlendParams[1].blend_params, true, false, true, g_player_hud->attached_item(1) ? 0 : 2, 0, script_layer::EBlendLayers::eNone);
 		}
 		break;
 	}
@@ -3069,7 +3069,7 @@ void CWeapon::OnZoomIn()
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].speed_power.x : m_sAimBlendParams[0].speed_power.x,
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].speed_power.y : m_sAimBlendParams[0].speed_power.y,
 			IsGrenadeMode() ? m_sGLAimBlendParams[0].blend_params : m_sAimBlendParams[0].blend_params, false, false, true,
-			2, 0, script_layer::EBlendLayers::eAimStart);
+			g_player_hud->attached_item(1) ? 0 : 2, 0, script_layer::EBlendLayers::eAimStart);
 
 		if (pActor != nullptr && m_aim_cams[0].size() > 0 && m_aim_cams[1].size() > 0)
 		{
@@ -3132,7 +3132,7 @@ void CWeapon::OnZoomOut()
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].speed_power.x : m_sAimBlendParams[2].speed_power.x,
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].speed_power.y : m_sAimBlendParams[2].speed_power.y,
 			IsGrenadeMode() ? m_sGLAimBlendParams[2].blend_params : m_sAimBlendParams[2].blend_params, false, Mix, true,
-			2, 0, script_layer::EBlendLayers::eAimEnd);
+			g_player_hud->attached_item(1) ? 0 : 2, 0, script_layer::EBlendLayers::eAimEnd);
 
 		if (pActor != nullptr && m_aim_cams[0].size() > 0 && m_aim_cams[1].size() > 0)
 		{
@@ -5083,7 +5083,7 @@ void CWeapon::OnSafemodeOut()
 		{
 			bool Mix = !IsBlendAnmActive(m_sSafemodeBlendParams[2].camera_name);
 			PlayBlendAnm(m_sSafemodeBlendParams[2].camera_name, m_sSafemodeBlendParams[2].speed_power.x, m_sSafemodeBlendParams[2].speed_power.y,
-				m_sSafemodeBlendParams[2].blend_params, false, Mix, true, 2, 0, script_layer::EBlendLayers::eSafemodeOut);
+				m_sSafemodeBlendParams[2].blend_params, false, Mix, true, g_player_hud->attached_item(1) ? 0 : 2, 0, script_layer::EBlendLayers::eSafemodeOut);
 		}
 
 		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_safemode_in_out))
