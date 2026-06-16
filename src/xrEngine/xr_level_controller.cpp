@@ -768,7 +768,175 @@ ENGINE_API EGameActions get_binded_action(int _dik, _action_group _ai)
 
 const char* GetGamepadSymbol(int dik)
 {
-	//if (!xr_strcmp(pInput->GamepadPrefix(), "xbox1"))
+	if (!xr_strcmp(pInput->GamepadPrefix(), "ps4"))
+	{
+		switch (dik)
+		{
+			case SDL_GAMEPAD_BUTTON_SOUTH:
+				return PS4_CROSS;
+			case SDL_GAMEPAD_BUTTON_EAST:
+				return PS4_CIRCLE;
+			case SDL_GAMEPAD_BUTTON_WEST:
+				return PS4_SQUARE;
+			case SDL_GAMEPAD_BUTTON_NORTH:
+				return PS4_TRIANGLE;
+			case SDL_GAMEPAD_BUTTON_BACK:
+				return PS4_TOUCHPAD;
+			case SDL_GAMEPAD_BUTTON_GUIDE:
+				return PS4_HOME;
+			case SDL_GAMEPAD_BUTTON_START:
+				return PS4_OPTIONS;
+			case SDL_GAMEPAD_BUTTON_LEFT_STICK:
+				return PS4_L3;
+			case SDL_GAMEPAD_BUTTON_RIGHT_STICK:
+				return PS4_R3;
+			case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER:
+				return PS4_L1;
+			case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:
+				return PS4_R1;
+			case SDL_GAMEPAD_BUTTON_DPAD_UP:
+				return PS4_DPAD_UP;
+			case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
+				return PS4_DPAD_DOWN;
+			case SDL_GAMEPAD_BUTTON_DPAD_LEFT:
+				return PS4_DPAD_LEFT;
+			case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
+				return PS4_DPAD_RIGHT;
+			case DIK_LTRIGGER:
+				return PS4_L2;
+			case DIK_RTRIGGER:
+				return PS4_R2;
+			case DIK_LSTICK_UP:
+				return PS4_LSTICK_UP;
+			case DIK_LSTICK_DOWN:
+				return PS4_LSTICK_DOWN;
+			case DIK_LSTICK_LEFT:
+				return PS4_LSTICK_LEFT;
+			case DIK_LSTICK_RIGHT:
+				return PS4_LSTICK_RIGHT;
+			case DIK_RSTICK_UP:
+				return PS4_RSTICK_UP;
+			case DIK_RSTICK_DOWN:
+				return PS4_RSTICK_DOWN;
+			case DIK_RSTICK_LEFT:
+				return PS4_RSTICK_LEFT;
+			case DIK_RSTICK_RIGHT:
+				return PS4_RSTICK_RIGHT;
+		}
+	}
+	else if (!xr_strcmp(pInput->GamepadPrefix(), "ps5"))
+	{
+		switch (dik)
+		{
+			case SDL_GAMEPAD_BUTTON_SOUTH:
+				return PS5_CROSS;
+			case SDL_GAMEPAD_BUTTON_EAST:
+				return PS5_CIRCLE;
+			case SDL_GAMEPAD_BUTTON_WEST:
+				return PS5_SQUARE;
+			case SDL_GAMEPAD_BUTTON_NORTH:
+				return PS5_TRIANGLE;
+			case SDL_GAMEPAD_BUTTON_BACK:
+				return PS5_TOUCHPAD;
+			case SDL_GAMEPAD_BUTTON_GUIDE:
+				return PS5_HOME;
+			case SDL_GAMEPAD_BUTTON_START:
+				return PS5_OPTIONS;
+			case SDL_GAMEPAD_BUTTON_LEFT_STICK:
+				return PS5_L3;
+			case SDL_GAMEPAD_BUTTON_RIGHT_STICK:
+				return PS5_R3;
+			case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER:
+				return PS5_L1;
+			case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:
+				return PS5_R1;
+			case SDL_GAMEPAD_BUTTON_DPAD_UP:
+				return PS5_DPAD_UP;
+			case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
+				return PS5_DPAD_DOWN;
+			case SDL_GAMEPAD_BUTTON_DPAD_LEFT:
+				return PS5_DPAD_LEFT;
+			case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
+				return PS5_DPAD_RIGHT;
+			case DIK_LTRIGGER:
+				return PS5_L2;
+			case DIK_RTRIGGER:
+				return PS5_R2;
+			case DIK_LSTICK_UP:
+				return PS5_LSTICK_UP;
+			case DIK_LSTICK_DOWN:
+				return PS5_LSTICK_DOWN;
+			case DIK_LSTICK_LEFT:
+				return PS5_LSTICK_LEFT;
+			case DIK_LSTICK_RIGHT:
+				return PS5_LSTICK_RIGHT;
+			case DIK_RSTICK_UP:
+				return PS5_RSTICK_UP;
+			case DIK_RSTICK_DOWN:
+				return PS5_RSTICK_DOWN;
+			case DIK_RSTICK_LEFT:
+				return PS5_RSTICK_LEFT;
+			case DIK_RSTICK_RIGHT:
+				return PS5_RSTICK_RIGHT;
+		}
+	}
+	else if (!xr_strcmp(pInput->GamepadPrefix(), "switch"))
+	{
+		switch (dik)
+		{
+		case SDL_GAMEPAD_BUTTON_SOUTH:
+			return SWITCH_A;
+		case SDL_GAMEPAD_BUTTON_EAST:
+			return SWITCH_B;
+		case SDL_GAMEPAD_BUTTON_WEST:
+			return SWITCH_X;
+		case SDL_GAMEPAD_BUTTON_NORTH:
+			return SWITCH_Y;
+		case SDL_GAMEPAD_BUTTON_BACK:
+			return SWITCH_Back;
+		case SDL_GAMEPAD_BUTTON_GUIDE:
+			return SWITCH_Guide;
+		case SDL_GAMEPAD_BUTTON_START:
+			return SWITCH_Start;
+		case SDL_GAMEPAD_BUTTON_LEFT_STICK:
+			return SWITCH_LS;
+		case SDL_GAMEPAD_BUTTON_RIGHT_STICK:
+			return SWITCH_RS;
+		case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER:
+			return SWITCH_LB;
+		case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:
+			return SWITCH_RB;
+		case SDL_GAMEPAD_BUTTON_DPAD_UP:
+			return SWITCH_DPAD_UP;
+		case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
+			return SWITCH_DPAD_DOWN;
+		case SDL_GAMEPAD_BUTTON_DPAD_LEFT:
+			return SWITCH_DPAD_LEFT;
+		case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
+			return SWITCH_DPAD_RIGHT;
+		case DIK_LTRIGGER:
+			return SWITCH_LTRIGGER;
+		case DIK_RTRIGGER:
+			return SWITCH_RTRIGGER;
+		case DIK_LSTICK_UP:
+			return SWITCH_LSTICK_UP;
+		case DIK_LSTICK_DOWN:
+			return SWITCH_LSTICK_DOWN;
+		case DIK_LSTICK_LEFT:
+			return SWITCH_LSTICK_LEFT;
+		case DIK_LSTICK_RIGHT:
+			return SWITCH_LSTICK_RIGHT;
+		case DIK_RSTICK_UP:
+			return SWITCH_RSTICK_UP;
+		case DIK_RSTICK_DOWN:
+			return SWITCH_RSTICK_DOWN;
+		case DIK_RSTICK_LEFT:
+			return SWITCH_RSTICK_LEFT;
+		case DIK_RSTICK_RIGHT:
+			return SWITCH_RSTICK_RIGHT;
+		}
+	}
+	else
 	{
 		switch (dik)
 		{
@@ -853,8 +1021,7 @@ ENGINE_API void GetActionAllBinding(const char* _action, char* dst_buff, int dst
 	if (pbinding->m_gamepad[0])
 	{
 		const char* gpSymbol = GetGamepadSymbol(pbinding->m_gamepad[0]->dik);
-		if (gpSymbol)
-			xr_strcpy(gp_prim, gpSymbol);
+		xr_strcpy(gp_prim, gpSymbol);
 	}
 
 	if (!pbinding->m_keyboard[0] && !pbinding->m_keyboard[1] &&

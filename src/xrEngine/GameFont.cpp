@@ -611,7 +611,8 @@ float CGameFont::WidthOf(const char* str)
 		length = DynamicFontLen(wideStr);
 		for (int i = 0; i < length; i++)
 		{
-			if (wideStr[i] >= GAMEPAD_GLYPH_START && wideStr[i] <= GAMEPAD_GLYPH_END)
+			if (g_FontManager->GamepadButtonMappings[wideStr[i]] && 
+				wideStr[i] >= GAMEPAD_GLYPH_START && wideStr[i] <= GAMEPAD_GLYPH_END)
 			{
 				Frect rect;
 				shared_str fn;
