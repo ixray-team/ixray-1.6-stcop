@@ -140,8 +140,6 @@ bool GetDisplayMetricsSDL3(float& width_mm, float& height_mm, float& width_px, f
 	return true;
 }
 
-#define GAMEPAD_GLYPH_START 57344
-#define GAMEPAD_GLYPH_END 57535
 void CGameFont::Initialize2(const char* name, const char* shader, const char* style, u32 size)
 {
 	FontBitmap.resize(TextureDimension * TextureDimension);

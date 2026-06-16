@@ -13,6 +13,7 @@ public:
 	CGameFont* pFontStat;
 
 	xr_map<shared_str, CGameFont*> Fonts;
+	xr_map<u16, shared_str> GamepadButtonMappings;
 
 	CFontManager();
 	virtual ~CFontManager();
