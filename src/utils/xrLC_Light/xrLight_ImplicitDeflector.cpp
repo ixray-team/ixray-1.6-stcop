@@ -156,11 +156,6 @@ void ImplicitDeflector::SaveTextures()
 
 
 // Client Global
-
-#include "hash2D.h"
-
-hash2D <Face*, 768, 768> hash2dImpl;
-
 vecFace& ImplicitCalcGlobs::query(float px, float py)
 {
 	return hash2dImpl.query(px, py);

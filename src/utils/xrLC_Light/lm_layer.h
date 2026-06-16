@@ -9,8 +9,7 @@ struct XRLC_LIGHT_API  lm_layer
 	xr_vector<base_color>	surface;
 	xr_vector<u8>			marker;
 	xr_vector<u8>			samples;
-//	xr_vector<base_color>	apply_borders_tmp;
-
+ 
 public:
 	void					create			(u32 w, u32 h)
 	{
@@ -21,8 +20,7 @@ public:
 		surface.clear();	surface.resize	(size);
 		marker.clear();		marker.assign	(size, 0);
  		samples.clear();	samples.assign  (size, 0);
-		// apply_borders_tmp.clear();  
-	}
+ 	}
 
 	void					destroy			()
 	{
@@ -34,10 +32,9 @@ public:
  		surface.shrink_to_fit();
 		marker.shrink_to_fit();
 		samples.shrink_to_fit();
-		// apply_borders_tmp.clear(); apply_borders_tmp.shrink_to_fit();
-	}
+ 	}
 
-	void					clear_memory()
+	void clear_memory()
 	{
 		width = height = 0;
 		surface.clear();
@@ -47,9 +44,7 @@ public:
 		surface.shrink_to_fit();
 		marker.shrink_to_fit();
 		samples.shrink_to_fit();
-
-		//apply_borders_tmp.clear(); apply_borders_tmp.shrink_to_fit();
-	}
+  	}
 
 	u32						Area();
 	void					Pixel			(u32 ID, u8& r, u8& g, u8& b, u8& s, u8& h);
