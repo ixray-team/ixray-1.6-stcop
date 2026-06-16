@@ -61,7 +61,6 @@ void CBuild::xrPhase_AdaptiveHT_tessalte()
 	}
 }
 
-xr_atomic_u32 ThreadWorkID_Adaptive = 0;
 void CBuild::xrPhase_AdaptiveHT_calculate()
 {
 	UpdateCurrentPhase("AdaptiveHT");
@@ -72,6 +71,8 @@ void CBuild::xrPhase_AdaptiveHT_calculate()
 		// Prepare
 		Status("AdaptiveHT : base hemisphere ...");
 		
+		static xr_atomic_u32 ThreadWorkID_Adaptive = 0;
+
 		ThreadWorkID_Adaptive = 0;
  		xr_std_parallel_for([]()
 		{
@@ -337,53 +338,58 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 void CBuild::u_SmoothVertColors(int count)
 {
  	// Concurency CODE
+	static xr_vector<base_color> colors;
+	colors.resize(lc_global_data()->g_vertices().size());
+
 	for (int iteration = 0; iteration < count; ++iteration)
 	{
 		Progress(float(iteration / count));
 
 		// Gather
-		xr_vector<base_color>	colors;
+ 		static xr_atomic_u32 ThreadTaskID = 0;
+		ThreadTaskID = 0;
 		colors.resize(lc_global_data()->g_vertices().size());
 
-		xr_atomic_u32 ThreadTaskID = 0;
-		xr_std_parallel_for([&]()
+		xr_std_parallel_for([]()
+		{
+			while (true)
 			{
-				while (true)
+				// Circle
+				xr_vector<Vertex*> circle_vec;
+				u32 IDX = ThreadTaskID.fetch_add(1);
+				if (IDX >= lc_global_data()->g_vertices().size()) break;
+ 
+				Vertex* V = lc_global_data()->g_vertices()[IDX];
+ 				for (u32 fit = 0; fit < V->m_adjacents.size(); ++fit)
 				{
-					// Circle
-					xr_vector<Vertex*> circle_vec;
-					u32 IDX = ThreadTaskID.fetch_add(1);
-					if (IDX >= lc_global_data()->g_vertices().size())
-					{
-						break;
-					}
-
-					Vertex* V = lc_global_data()->g_vertices()[IDX];
- 					for (u32 fit = 0; fit < V->m_adjacents.size(); ++fit)
-					{
-						Face* F = V->m_adjacents[fit];
-						circle_vec.push_back(F->v[0]);
-						circle_vec.push_back(F->v[1]);
-						circle_vec.push_back(F->v[2]);
-					}
-					std::sort(circle_vec.begin(), circle_vec.end());
-					circle_vec.erase(std::unique(circle_vec.begin(), circle_vec.end()), circle_vec.end());
-
-					// Average
-					base_color_c avg, tmp;
-					for (u32 cit = 0; cit < circle_vec.size(); ++cit)
-					{
-						circle_vec[cit]->C._get(tmp);
-						avg.add(tmp);
-					}
-					avg.scale(circle_vec.size());
-
-					colors[IDX]._set(avg);
+					Face* F = V->m_adjacents[fit];
+					circle_vec.push_back(F->v[0]);
+					circle_vec.push_back(F->v[1]);
+					circle_vec.push_back(F->v[2]);
 				}
-  			}, gCompilerMode.ThreadsPerWork);
+				std::sort(circle_vec.begin(), circle_vec.end());
+				circle_vec.erase(std::unique(circle_vec.begin(), circle_vec.end()), circle_vec.end());
+
+				// Average
+				base_color_c avg, tmp;
+				for (u32 cit = 0; cit < circle_vec.size(); ++cit)
+				{
+					circle_vec[cit]->C._get(tmp);
+					avg.add(tmp);
+				}
+				avg.scale(circle_vec.size());
+
+				colors[IDX]._set(avg);
+			}
+  		}, gCompilerMode.ThreadsPerWork);
 
 		// Transfer
 		for (u32 it = 0; it < lc_global_data()->g_vertices().size(); ++it)
 			lc_global_data()->g_vertices()[it]->C = colors[it];
+
+		colors.clear();
 	}
+
+	xr_vector<base_color>().swap(colors);
+	  
 }
