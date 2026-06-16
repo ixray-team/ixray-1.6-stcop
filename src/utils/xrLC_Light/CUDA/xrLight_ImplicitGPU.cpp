@@ -8,7 +8,6 @@
 #include "../../xrCore/Collision/xrCDB.h"
 
 #ifdef LCCUDA_BUILD
-extern ImplicitCalcGlobs cl_globs;;
 
 class CImplicitDeflector
 {
@@ -53,35 +52,32 @@ public:
 		}
 	}
 
-	void RunTaskGPU()
+	void RunTaskGPU(ImplicitDeflector& deflector)
 	{
-		clMsg("$ Run Tasks GPU");
-		defl = &cl_globs.DATA();
-
-		CTimer tStats;
-		tStats.Start();
-
-		// Setup variables
-		Fvector2 dim, half;
-		dim.set(float(defl->Width()), float(defl->Height()));
-		half.set(.5f / dim.x, .5f / dim.y);
-
-		// Jitter data
-		Fvector2 JS;
-		JS.set(.499f / dim.x, .499f / dim.y);
-		u32 Jcount;
-		Fvector2* Jitter;
-		Jitter_Select(Jitter, Jcount);
+		defl = &deflector;
+		ImplicitCalcGlobs* cl_globs_gpu = new ImplicitCalcGlobs(); // 4096 превышает !
+  		cl_globs_gpu->Initialize(deflector);
 
 		GPUTaskinSystem.RestartALL();
-
-		GPUTaskinSystem.current_flags = LGetCurrentFlags();
+ 		GPUTaskinSystem.current_flags = LGetCurrentFlags();
 		GPUTaskinSystem.ColorsMapType = eImplicit;
 
 		// Однопоточный режим пока что 
 		xr_atomic_u32 task_height = 0;
- 		xr_std_parallel_for( [&]()
+		xr_std_parallel_for([&cl_globs_gpu, &task_height, this]()
 		{
+			// Setup variables
+			Fvector2 dim, half;
+			dim.set(float(defl->Width()), float(defl->Height()));
+			half.set(.5f / dim.x, .5f / dim.y);
+
+			// Jitter data
+			Fvector2 JS;
+			JS.set(.499f / dim.x, .499f / dim.y);
+			u32 Jcount;
+			Fvector2* Jitter;
+			Jitter_Select(Jitter, Jcount);
+
 			while (true)
 			{
 				auto V = task_height.fetch_add(1);
@@ -98,7 +94,7 @@ public:
 
 						// World space
 						Fvector wP, wN, B;
-						for (auto F : cl_globs.query(P.x, P.y))
+						for (auto F : cl_globs_gpu->query(P.x, P.y))
 						{
 							_TCF& tc = F->tc[0];
 							if (tc.isInside(P, B))
@@ -114,11 +110,13 @@ public:
 
 			// Остаток доработать 
 			GPUTaskinSystem.LightPointPacked_run_tasks();
+
 		}, gCompilerMode.ThreadsPerWork);
 
 		ApplyColors();
 
 		GPUTaskinSystem.RestartALL();
+		xr_delete(cl_globs_gpu);
 	}
 };
 
@@ -129,8 +127,8 @@ void ApplyColorGPU(size_t IndexTask, base_color_c& C)
 	GPU_DeflectorIMPL.ApplyColor(IndexTask, C);
 }
 
-void RunImplicitGPU()
+void RunImplicitGPU(ImplicitDeflector& defl)
 {
-	GPU_DeflectorIMPL.RunTaskGPU();
+	GPU_DeflectorIMPL.RunTaskGPU(defl);
 }
 #endif

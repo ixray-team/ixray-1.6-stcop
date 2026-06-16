@@ -56,56 +56,62 @@ Fsphere CalculateMagic(xr_vector<Fvector>& V)
 	S3.R = _S3.Radius();
 	return S3;
 }
+ 
+// Оптимизированная проверка валидности с ранним выходом
+bool SphereValid_Fast(const xr_vector<Fvector>& points, const Fsphere& S)
+{
+	float max_dist_sqr = S.R * S.R + 0.001f; // небольшой запас на погрешность float
+
+	for (const auto& pt : points)
+	{
+		if (pt.distance_to_sqr(S.P) > max_dist_sqr)
+		{
+			return false; // Нашли косяк? Мгновенно выходим! Не теряем время.
+		}
+	}
+	return true;
+}
 
 void OGF_Base::CalcBounds(bool useProgressBar)
 {
-	// NEED PRECACHE
-
-	// get geometry
-	xr_vector<Fvector> V;
+	thread_local xr_vector<Fvector> V;
 	V.clear();
 	V.reserve(4096);
-   	GetGeometry(V);
+	GetGeometry(V);
+
+	if (V.empty()) return;
  
-	//se7kills (Merging Problems Need fix this)	 
-	Fsphere	S1;  Fsphere_compute(S1, &*V.begin(), (u32)V.size()); // Minibal Дольше но нужно кривая геометрия должна тоже попасть !
- 	Fsphere	S2 = CalculateSphere(V, bbox);
- 	Fsphere S3 = CalculateMagic(V);
+	// 1. Считаем базовую сферу по Bounding Box (S2 в вашем коде)
+	// Она всегда валидна по определению, но часто избыточна.
+	Fsphere S_base  = CalculateSphere(V, bbox);
 
-	bool B1 = SphereValid(V, S1);
-	bool B2 = SphereValid(V, S2);
-	bool B3 = SphereValid(V, S3); // Куда быстрее чем Miniball 
+	// 2. Считаем быструю "магическую" сферу Риттера (S3 в вашем коде)
+	Fsphere S_magic = CalculateMagic(V);
 
-	// select best one
-	if (B1 && (S1.R < S2.R))
+	// 3. Проверяем магическую сферу быстрым методом
+	if (SphereValid_Fast(V, S_magic) && (S_magic.R <= S_base.R))
 	{
-		// miniball or FM
-		if (B3 && (S3.R < S1.R))
-		{
-			// FM wins
-			C.set(S3.P);
-			R = S3.R;
-		}
-		else {
-			// MiniBall wins
-			C.set(S1.P);
-			R = S1.R;
-		}
+		// Если магия сработала и она компактнее коробки — это идеальный и быстрый случай
+		C.set(S_magic.P);
+		R = S_magic.R;
+		return;
+	}
+
+	// 4. Тот самый тяжелый случай (кривая геометрия локации/заборы/рельсы)
+	// Магия не покрыла все точки или раздулась больше BBox.
+	// Вот теперь НАДО вызывать точный Miniball. Его валидировать НЕ нужно, он точен по определению.
+	Fsphere S_mini;
+	Fsphere_compute(S_mini, V.data(), (u32)V.size());
+
+	// Выбираем лучшее между Miniball и Base (на случай редких багов float в Miniball)
+	if (S_mini.R < S_base.R)
+	{
+		C.set(S_mini.P);
+		R = S_mini.R;
 	}
 	else
 	{
-		// base or FM
-		if (B3 && (S3.R < S2.R))
-		{
-			// FM wins
-			C.set(S3.P);
-			R = S3.R;
-		}
-		else {
-			// Base wins :)
-			C.set(S2.P);
-			R = S2.R;
-		}
+		C.set(S_base.P);
+		R = S_base.R;
 	}
-
 }

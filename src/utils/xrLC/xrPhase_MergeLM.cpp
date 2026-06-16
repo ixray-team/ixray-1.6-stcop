@@ -135,8 +135,8 @@ u32 MergeLmap_Compact(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 		std::remove_if(Layer.begin(), Layer.end(),
 			[](CDeflector* D)
 			{
-				if (D == nullptr)return true;
-				if (D->bMerged) return true;
+				if (D == nullptr || D->bMerged) { xr_delete(D); return true; } // Чистим память !
+
 				return false;
 			}), Layer.end()
 	);
@@ -200,9 +200,8 @@ u32 MergeLmapFast(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 		std::remove_if(Layer.begin(), Layer.end(),
 			[](CDeflector* D)
 			{
-				if (D == nullptr)return true;
-				if (D->bMerged) return true;
-				return false;
+				if (D == nullptr || D->bMerged) { xr_delete(D); return true; }
+ 				return false;
 			}), Layer.end()
 	);
 
@@ -212,7 +211,7 @@ u32 MergeLmapFast(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 
 void CBuild::xrPhase_MergeLM()
 {
-	auto& Layer = lc_global_data()->g_deflectors();
+	xr_vector<CDeflector*>& Layer = lc_global_data()->g_deflectors(); // Делаем копию ибо потом нужно будет еще CDeflector -> Destroy вызвать !
 
 	Phase("Building Lmaps...");
 	// **** Select all deflectors, which contain this light-layer
@@ -256,4 +255,7 @@ void CBuild::xrPhase_MergeLM()
 			tStats.GetElapsed_ms()
  		);
 	}
+
+	// Уменьшаем память !
+	lc_global_data()->g_deflectors().shrink_to_fit();
 }

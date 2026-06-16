@@ -36,7 +36,7 @@ void	CBuild::LMaps					()
 		auto& deflectors = lc_global_data()->g_deflectors();
 
 		xr_atomic_u32 IndexTaskID = 0, IndexTaskApply = 0;
-  		xr_std_parallel_for([&]()
+		xr_std_parallel_for([&IndexTaskID, &deflectors]()
 			{
 				while (true)
 				{
@@ -54,7 +54,7 @@ void	CBuild::LMaps					()
 			gCompilerMode.ThreadsPerWork );
 		GPUTaskinSystem.RestartALL();
 
-		xr_std_parallel_for([&]()
+		xr_std_parallel_for([&IndexTaskApply, &deflectors]()
 			{
 				while (true)
 				{
@@ -81,7 +81,7 @@ void	CBuild::LMaps					()
 		start_time.Start();
 		
 		xr_atomic_u32 LmapsTaskID = 0;
-		xr_std_parallel_for([&]()
+		xr_std_parallel_for([&LmapsTaskID]()
 		{
  			base_lighting	LightsSelected;
 			while (true)
