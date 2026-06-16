@@ -1704,7 +1704,7 @@ void CWeaponMagazined::OnEmptyClick()
 		PlayBlendAnm(m_sFakeShootBlendParams.camera_name,
 			m_sFakeShootBlendParams.speed_power.x, m_sFakeShootBlendParams.speed_power.y,
 			m_sFakeShootBlendParams.blend_params, false, false, true,
-			0, 0, script_layer::EBlendLayers::eNone);
+			g_player_hud->attached_item(1) ? 0 : 2, 0, script_layer::EBlendLayers::eNone);
 	}
 }
 
