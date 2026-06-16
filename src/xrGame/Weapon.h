@@ -417,6 +417,7 @@ protected:
 	bool m_AlterZoomAllowed = false;
 	bool m_bAllowSafemode = false;
 	bool m_bAimActions = false;
+	bool NeedMisfireAmmo = false;
 
 	bool m_bHaveShell = false;
 	bool m_bNeedPumpState = false;
