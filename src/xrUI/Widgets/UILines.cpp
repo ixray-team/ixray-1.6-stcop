@@ -7,7 +7,7 @@
 // Copyright 2005 GSC Game World
 
 #include "stdafx.h"
-
+#include "UITextureMaster.h"
 #include "UILines.h"
 #include "UIXmlInit.h"
 #include "uilinestd.h"
@@ -110,6 +110,13 @@ float get_str_width(CGameFont*pFont, int ch)
 	if (ch < 0)
 	{
 		ch = (u8)ch;
+	}
+	if (ch >= GAMEPAD_GLYPH_START && ch <= GAMEPAD_GLYPH_END)
+	{
+		Frect rect = CUITextureMaster::GetTextureRect(g_FontManager->GamepadButtonMappings[ch]);
+		float w = pFont->sizeOfImage(rect).x + pFont->GetLetterSpacing();
+		UI().ClientToScreenScaledWidth(w);
+		return w;
 	}
 
 	float ll = pFont->SizeOf_(ch) + pFont->GetLetterSpacing();

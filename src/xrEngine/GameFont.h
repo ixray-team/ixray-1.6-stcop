@@ -12,6 +12,8 @@ struct ABC
     int abcC;
 };
 #endif
+#define GAMEPAD_GLYPH_START 57344
+#define GAMEPAD_GLYPH_END 57535
 
 class ENGINE_API CGameFont final
 {
@@ -261,6 +263,12 @@ public:
 	// returns symbol width in pixels
 	float WidthOf(int ch);
 	float WidthOf(const char* str);
+
+	inline Fvector2 sizeOfImage(Frect rect)
+	{
+		float sc = fCurrentHeight / rect.height();
+		return {rect.width() * sc, rect.height() * sc};
+	}
 
 private:
 	float LetterSpacing = 0; //that must be in CUIText from new font system
