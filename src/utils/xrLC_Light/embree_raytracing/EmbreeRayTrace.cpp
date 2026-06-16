@@ -320,7 +320,10 @@ void EmbreeRayTraceModel::RemoveGeometry()
 		{
 			UD->dummys.clear();
 			UD->dummys.shrink_to_fit();
-		}
+
+			delete UD;
+  		}
+		
 	};
 
 	if (IntelScene)
