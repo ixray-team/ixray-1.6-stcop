@@ -6,7 +6,7 @@ static xr_hash_map<XRay::ImGui::EEditorSizes, float> EditorSizes;
 
 std::array<ImColor, 26>* CurrentTheme = nullptr;
 
-std::array<ImColor, 26> PurpleTheme =
+std::array<ImColor, 26> DarkBlueTheme =
 {
 	ImColor(63, 71, 101, 255),	  // Base Color
 	ImColor(29, 129, 136, 255),	  // Accent Color
@@ -24,7 +24,7 @@ std::array<ImColor, 26> PurpleTheme =
 	ImColor(1.f, 1.f, 1.f, 0.05f) // ActiveTint
 };
 
-std::array<ImColor, PurpleTheme.size()> DarkTheme =
+std::array<ImColor, DarkBlueTheme.size()> VSTheme =
 {
 	ImColor(51, 51, 51, 255),	  // Base Color
 	ImColor(121, 113, 189, 255),  // Accent Color
@@ -40,6 +40,24 @@ std::array<ImColor, PurpleTheme.size()> DarkTheme =
 	ImColor(0.f, 0.f, 0.f, 0.8f), // PanelBackgroundTint
 	ImColor(1.f, 1.f, 1.f, 0.1f), // HoverTint
 	ImColor(1.f, 1.f, 1.f, 0.05f) // ActiveTint
+};
+
+std::array<ImColor, DarkBlueTheme.size()> DarkOrangeTheme =
+{
+	ImColor(77, 77, 77, 255),	   // Base Color
+	ImColor(199, 112, 26, 255),    // Accent Color
+	ImColor(0.f, 0.f, 0.f, 0.0f),  // ToolbarButtonTint
+	ImColor(0.f, 0.f, 0.f, 0.6f),  // BackgroundTint
+	ImColor(0.f, 0.f, 0.f, 0.5f),  // TableTint
+	ImColor(0.f, 0.f, 0.f, 0.45f), // TabBarTint
+	ImColor(0.f, 0.f, 0.f, 0.2f),  // PanelTint
+	ImColor(0.f, 0.f, 0.f, 0.1f),  // PanelBorderTint
+	ImColor(1.f, 1.f, 1.f, 0.f),   // ButtonTint
+	ImColor(1.f, 1.f, 1.f, 0.1f),  // ButtonBorderTint
+	ImColor(1.f, 1.f, 1.f, 0.6f),  // ContentIconTint
+	ImColor(0.f, 0.f, 0.f, 0.6f),  // PanelBackgroundTint
+	ImColor(1.f, 1.f, 1.f, 0.16f), // HoverTint
+	ImColor(1.f, 1.f, 1.f, 0.08f)  // ActiveTint
 };
 
 ImColor AlphaBlend(const ImColor& Base, const ImColor& Tint)
@@ -59,8 +77,9 @@ XREUI_API void XRay::ImGui::SetupColorsList(int ID)
 {
 	switch (ID)
 	{
-		case 0: CurrentTheme = &PurpleTheme; break;
-		case 1: CurrentTheme = &DarkTheme; break;
+		case 0: CurrentTheme = &DarkBlueTheme; break;
+		case 1: CurrentTheme = &VSTheme; break;
+		case 2: CurrentTheme = &DarkOrangeTheme; break;
 	}
 
 	EditorColors.clear();
@@ -75,9 +94,9 @@ XREUI_API ImColor XRay::ImGui::GetEditorColor(EEditorColors Color)
 
 	if (CurrentTheme == nullptr)
 	{
-		CurrentTheme = &PurpleTheme;
+		CurrentTheme = &DarkBlueTheme;
 	}
-	std::array<ImColor, PurpleTheme.size()>& DefaultTheme = *CurrentTheme;
+	std::array<ImColor, DarkBlueTheme.size()>& DefaultTheme = *CurrentTheme;
 
 	ImColor Clr = DefaultTheme[(size_t)EEditorColors::Main];
 
