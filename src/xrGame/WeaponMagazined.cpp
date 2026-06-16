@@ -640,7 +640,7 @@ bool CWeaponMagazined::TryReload()
 
 		m_pCurrentAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
 
-		if (IsMisfire() && iAmmoElapsed)
+		if (IsMisfire())
 		{
 			SwitchState(eReload, true);
 			return true;
@@ -1719,6 +1719,19 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 				bMisfire = false;
 				bMisfireReload = false;
 				m_bJustAfterReload = true;
+
+				if (NeedMisfireAmmo && iAmmoElapsed + iAmmoChamberElapsed > 0)
+				{
+					if (m_bAmmoInChamber)
+					{
+						DeleteAmmoInChamber();
+						GiveAmmoFromMagToChamber();
+					}
+					else
+					{
+						SetAmmoElapsed(iAmmoElapsed - 1);
+					}
+				}
 			}
 			else
 			{
@@ -3778,6 +3791,19 @@ void CWeaponMagazined::OnMotionMark(u8 state, const motion_marks& mark)
 		{
 			bMisfire = false;
 			bMisfireReload = false;
+
+			if (NeedMisfireAmmo && iAmmoElapsed + iAmmoChamberElapsed > 0)
+			{
+				if (m_bAmmoInChamber)
+				{
+					DeleteAmmoInChamber();
+					GiveAmmoFromMagToChamber();
+				}
+				else
+				{
+					SetAmmoElapsed(iAmmoElapsed - 1);
+				}
+			}
 		}
 		else
 		{
