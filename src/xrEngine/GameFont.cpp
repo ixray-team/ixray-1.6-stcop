@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "GameFont.h"
 #include "string_table.h"
-
+#include "IGame_Persistent.h"
 #include "../xrCore/API/xrAPI.h"
 #include "../Include/xrRender/RenderFactory.h"
 #include "../Include/xrRender/FontRender.h"
@@ -605,12 +605,23 @@ float CGameFont::WidthOf(const char* str)
 	int length = 0;
 	const float spacing = GetLetterSpacing();
 
-	if (IsUTF8(str)) {
+	if (IsUTF8(str)) 
+	{
 		auto wideStr = Platform::ANSI_TO_TCHAR(str);
 		length = DynamicFontLen(wideStr);
 		for (int i = 0; i < length; i++)
 		{
-			size += WidthOf(wideStr[i]);
+			if (wideStr[i] >= GAMEPAD_GLYPH_START && wideStr[i] <= GAMEPAD_GLYPH_END)
+			{
+				Frect rect;
+				shared_str fn;
+				g_pGamePersistent->GetTextureParams(g_FontManager->GamepadButtonMappings[wideStr[i]], rect, fn);
+				size += sizeOfImage(rect).x;
+			}
+			else
+			{
+				size += WidthOf(wideStr[i]);
+			}
 			size += spacing;
 		}
 
