@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "dxFontRender.h"
 #include "dxRenderDeviceRender.h"
-
+#include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/GameFont.h"
 
 extern ENGINE_API xr_atomic_bool g_bRendering;
@@ -27,6 +27,68 @@ void dxFontRender::OnRender(CGameFont& owner)
 {
 	VERIFY(g_bRendering);
 
+	RenderBase(owner);
+
+	for (GamepadIcon s : IconsToRender)
+	{
+		RenderIcon(s);
+	}
+	IconsToRender.clear();
+}
+
+bool dxFontRender::GetAtlasTexSize(u32& outW, u32& outH) const
+{
+	if (!pTexture)
+	{
+		return false;
+	}
+
+	outW = pTexture->get_Width();
+	outH = pTexture->get_Height();
+	return outW > 0 && outH > 0;
+}
+
+void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap)
+{
+	PROF_EVENT("dxFontRender::CreateFontAtlas");
+
+	// Заполняем описание текстуры
+	RHITextureDesc rhiDesc = {};
+	rhiDesc.Width = width;
+	rhiDesc.Height = height;
+	rhiDesc.Depth = 1;
+	rhiDesc.MipLevels = 1;
+	rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
+	rhiDesc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+	rhiDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+	rhiDesc.CPUAccessFlags = 0;
+	rhiDesc.MiscFlags = 0;
+
+	RHISubResource FontData;
+	FontData.Data = bitmap;
+	FontData.DataSize = width * 4;
+
+	IRHISurface* rhiSurface = GRHI->CreateTexture2D(rhiDesc, FontData);
+	if (!rhiSurface)
+	{
+		Msg("! Failed to create font atlas texture");
+		return;
+	}
+
+	pTexture.create(name);
+	pTexture->surface_set(rhiSurface);
+}
+
+static Fvector2 sizeOfImage(Frect rect, float font_height)
+{
+	float sc = font_height / rect.height();
+	return {rect.width() * sc, rect.height() * sc};
+}
+
+#define GAMEPAD_GLYPH_START 57344
+#define GAMEPAD_GLYPH_END 57535
+void dxFontRender::RenderBase(CGameFont& owner)
+{
 	if(pShader != nullptr) {
 		RCache.set_Shader(pShader);
 	}
@@ -108,6 +170,24 @@ void dxFontRender::OnRender(CGameFont& owner)
 						glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo(cp));
 
 						i += 2;
+						if (shared_str texName = g_FontManager->GamepadButtonMappings[cp])
+						{
+							Frect rect;
+							shared_str fileName;
+							g_pGamePersistent->GetTextureParams(texName, rect, fileName);
+							GamepadIcon icon;
+							icon.texture_name = texName;
+							icon.file_name = fileName;
+							icon.rect = rect;
+							icon.pos = {X, Y};
+							icon.sz = sizeOfImage(rect, owner.CurrentHeight_());
+							icon.alpha = color_get_A(owner.dwCurrentColor);
+
+							IconsToRender.push_back(icon);
+
+							X += icon.sz.x + owner.GetLetterSpacing();
+							continue;
+						}
 					}
 					else
 					{
@@ -118,6 +198,25 @@ void dxFontRender::OnRender(CGameFont& owner)
 				if (glyphInfo == nullptr) 
 				{
 					glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo(UniStr[i]));
+#pragma todo("St4lker0k765: Fix icons for UTF-8!!!!!!!!!!!")
+/*					if (shared_str texName = g_FontManager->GamepadButtonMappings[UniStr[i]])
+					{
+						Frect rect;
+						shared_str fileName;
+						g_pGamePersistent->GetTextureParams(texName, rect, fileName);
+						GamepadIcon icon;
+						icon.texture_name = texName;
+						icon.file_name = fileName;
+						icon.rect = rect;
+						icon.pos = {X, Y};
+						icon.sz = sizeOfImage(rect, owner.CurrentHeight_());
+						icon.alpha = color_get_A(owner.dwCurrentColor);
+
+						IconsToRender.push_back(icon);
+
+						X += (icon.sz.x * 2.f) + owner.GetLetterSpacing();
+						continue;
+					}*/
 					if (glyphInfo == nullptr)
 					{
 						continue;
@@ -193,45 +292,54 @@ void dxFontRender::OnRender(CGameFont& owner)
 	}
 }
 
-bool dxFontRender::GetAtlasTexSize(u32& outW, u32& outH) const
+void dxFontRender::RenderIcon(GamepadIcon icon)
 {
-	if (!pTexture)
+	if (!icon.shader)
 	{
-		return false;
+		icon.shader.create("hud\\default", icon.file_name.c_str());
 	}
+	RCache.set_Shader(icon.shader);
 
-	outW = pTexture->get_Width();
-	outH = pTexture->get_Height();
-	return outW > 0 && outH > 0;
-}
+	float fWidth = RCache.get_ActiveTexture(0)->get_Width();
+	float fHeight = RCache.get_ActiveTexture(0)->get_Height();
 
-void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap)
-{
-	PROF_EVENT("dxFontRender::CreateFontAtlas");
-
-	// Заполняем описание текстуры
-	RHITextureDesc rhiDesc = {};
-	rhiDesc.Width = width;
-	rhiDesc.Height = height;
-	rhiDesc.Depth = 1;
-	rhiDesc.MipLevels = 1;
-	rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
-	rhiDesc.Usage = ERHI_USAGE::USAGE_DEFAULT;
-	rhiDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
-	rhiDesc.CPUAccessFlags = 0;
-	rhiDesc.MiscFlags = 0;
-
-	RHISubResource FontData;
-	FontData.Data = bitmap;
-	FontData.DataSize = width * 4;
-
-	IRHISurface* rhiSurface = GRHI->CreateTexture2D(rhiDesc, FontData);
-	if (!rhiSurface)
+	// lock AGP memory
+	u32	vOffset;
+	struct TLF
 	{
-		Msg("! Failed to create font atlas texture");
-		return;
-	}
+		struct
+		{
+			Fvector4 p; u32 color; Fvector2	uv;
+		} buff[4];
+	};
+	TLF* vertexes = (TLF*)RCache.Vertex.Lock(4, pGeom.stride(), vOffset);
+	TLF* start = vertexes;
 
-	pTexture.create(name);
-	pTexture->surface_set(rhiSurface);
+	float Y2 = icon.pos.y + icon.sz.y;
+
+	u32	clr = color_argb(icon.alpha, 255, 255, 255);
+
+	float X2 = icon.pos.x + icon.sz.x;
+
+	float u1 = float(icon.rect.left) / fWidth;
+	float u2 = float(icon.rect.right) / fWidth;
+
+	float v1 = float(icon.rect.top) / fHeight;
+	float v2 = float(icon.rect.bottom) / fHeight;
+
+	*vertexes =
+	{
+		Fvector4{icon.pos.x, Y2,.0001f,.9999f}, clr, Fvector2{u1, v2},
+		Fvector4{icon.pos.x, icon.pos.y,.0001f,.9999f}, clr, Fvector2{u1, v1},
+		Fvector4{X2, Y2,.0001f,.9999f}, clr, Fvector2{u2, v2},
+		Fvector4{X2, icon.pos.y,.0001f,.9999f}, clr, Fvector2{u2, v1}
+	};
+	++vertexes;
+
+	// Unlock and draw
+	u32 vertexesCount = (u32)(vertexes - start) * 4;
+	RCache.Vertex.Unlock(vertexesCount, pGeom.stride());
+
+	RCache.set_Geometry(pGeom);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
 }
