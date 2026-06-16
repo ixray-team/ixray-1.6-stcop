@@ -10,7 +10,7 @@ class ImplicitDeflector
 public:
 	b_BuildTexture*			texture;
 	lm_layer				lmap;
-	vecFace					faces;
+	xr_vector<Face*>		faces;
 	
 	ImplicitDeflector() : texture(0)
 	{
@@ -22,14 +22,15 @@ public:
 	
 	void			Allocate	()
 	{
-		lmap.create	(Width(),Height());
+		lmap.create	(Width(), Height());
 	}
 	
 	void			Deallocate	()
 	{
 		lmap.clear_memory();
 		
-		faces.clear(); faces.shrink_to_fit();
+		faces.clear(); 
+		faces.shrink_to_fit();
 	}
 	
 	u32			Width	()						;
@@ -46,9 +47,11 @@ public:
 	void		SaveTextures();
 };
 
-
+#include "hash2D.h"
 class ImplicitCalcGlobs
 {
+	hash2D<Face*, 256, 256> hash2dImpl;
+
 	ImplicitDeflector* defl;
 
 public:
@@ -62,6 +65,5 @@ public:
 		R_ASSERT(defl);
 		return *defl;
 	}
-
-	void Initialize(ImplicitDeflector& d);
+ 	void Initialize(ImplicitDeflector& d);
 };

@@ -196,10 +196,17 @@ void CBuild::RunAfterLight(IWriter* fs)
 	Phase("Converting MU-models to OGFs...");
 	{
 		Status("MU : Models...");
-		xr_parallel_for(size_t(0), size_t(mu_models().size()), [&] (size_t m)
+		xr_atomic_u32 MUModelTaskID = 0;
+		xr_std_parallel_for([&MUModelTaskID, this]()
 		{
-			calc_ogf(*mu_models()[m]);
-		});
+			while(true)
+			{
+				u32 m = MUModelTaskID.fetch_add(1);
+				if (m >= mu_models().size()) break;
+
+				calc_ogf(*mu_models()[m]);
+ 			}
+		}, gCompilerMode.ThreadsPerWork);
 
 		for (u32 m = 0; m < mu_models().size(); m++)
 		{

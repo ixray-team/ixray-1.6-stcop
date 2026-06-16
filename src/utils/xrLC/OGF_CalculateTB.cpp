@@ -1,15 +1,21 @@
 #include "StdAfx.h"
 
 #include	"MeshMenderLayerOGF.h"
+#include "../xrForms/CompilersUI.h"
 
 
-static thread_local xr_vector< MeshMender::Vertex > mender_in_out_verts;
-static thread_local xr_vector< unsigned int >		mender_in_out_indices;
-static thread_local xr_vector< unsigned int >		mender_mapping_out_to_in_vert;
 void		remove_isolated_verts( vecOGF_V &vertices, vecOGF_F &faces );
+
 // Calculate T&B
 void OGF::CalculateTB()
 {
+	if (!gCompilerMode.LC_OGF_TANGENT)  return;
+ 
+	// Лучше так чем мусор в потоке !
+	xr_vector<MeshMender::Vertex>	mender_in_out_verts;
+	xr_vector<unsigned int>			mender_in_out_indices;
+	xr_vector<unsigned int>			mender_mapping_out_to_in_vert;
+
 	remove_isolated_verts( data.vertices, data.faces );
 		// ************************************* Declare inputs
 	// Status						( "Declarator..." );

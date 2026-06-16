@@ -181,24 +181,17 @@ bool CDeflector::ApplyColors()
 
 void CDeflector::ApplyColor(size_t IKey, base_color_c& C)
 {	
-	auto& lm = layer;
-
-	u32 U				= GPUTaskinSystem.GetU(IKey);
+ 	u32 U				= GPUTaskinSystem.GetU(IKey);
 	u32 V				= GPUTaskinSystem.GetV(IKey);
 
+	auto& lm = layer;
 	u32 Key				= V * lm.width + U;
-
-	if (Key < lm.surface.size())
+ 	if (Key < lm.surface.size())
 	{
-		auto& CResult = lm.surface[Key];
-		auto& Keys = lm.samples[Key];
-		Keys += 1;
-
-		base_color_c cNew;
-		CResult._get(cNew);
-		cNew.add(C);
-		CResult._set(cNew);
-	}
+		lm.surface[Key]._add(C);
+		auto& Samples    = lm.samples[Key];
+		Samples += 1;
+  	}
 	else
 	{
 		clMsg("! Apply Colors key[%u] max[%u] is invalid", Key, lm.surface.size() );

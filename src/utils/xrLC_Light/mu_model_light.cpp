@@ -14,10 +14,8 @@ void run_mu_light()
 {
 	UpdateCurrentPhase("MU-Models");
 
-	static xr_atomic_u32 ThreadTaskID = 0;
-	ThreadTaskID = 0;
-
- 	xr_std_parallel_for([]()
+	xr_atomic_u32 ThreadTaskID = 0;
+	xr_std_parallel_for([&ThreadTaskID]()
 	{
 		while (true)
 		{
@@ -37,7 +35,7 @@ void run_mu_light()
  	if (!gCompilerMode.CUDA)
 	{
  		ThreadTaskID = 0;
-		xr_std_parallel_for([]()
+		xr_std_parallel_for([&ThreadTaskID]()
 		{
 			while (true)
 			{
