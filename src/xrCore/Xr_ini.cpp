@@ -1142,13 +1142,7 @@ void CInifile::LTXLoad(IReader* F, const char* path, xr_string_map<xr_string, Se
 		FS_FileSet ModFiles;
 		xr_string NormalizedFileName = FileName;
 		xr_strlwr(NormalizedFileName.data());
-
-		FS.file_list(
-			ModFiles,
-			FilePath.c_str(),
-			FS_ListFiles,
-			("mod_" + NormalizedFileName + "_*.ltx").c_str()
-		);
+		FS.file_list(ModFiles, FilePath.c_str(), FS_ListFiles, ("mod_" + NormalizedFileName + "_*.ltx").c_str());
 
 		auto GetRegexMatch = [](const xr_string& InputString, const xr_string& PatternString)->xr_string
 		{
