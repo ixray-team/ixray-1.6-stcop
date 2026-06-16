@@ -26,11 +26,11 @@ public:
 		u32		apx		= faces/size;
 
 		for (u32 y=0; y<s_Y; y++)
-			for (u32 x=0; x<s_X; x++)
-			{
-				table[y][x].clear();
-				table[y][x].reserve			(apx);
-			}
+		for (u32 x=0; x<s_X; x++)
+		{
+			table[y][x].clear();
+			table[y][x].reserve			(apx);
+		}
 	};
 	void		add			(Fbox2& R, T& value)
 	{

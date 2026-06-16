@@ -24,7 +24,7 @@ void RunMURefsGPU()
 	CTimer tStats; tStats.Start();
 
 	xr_atomic_u32 REF_INDEX = 0;
-	xr_std_parallel_for([&]()
+	xr_std_parallel_for([&REF_INDEX]()
 	{
 			while (true)
 			{
@@ -45,7 +45,7 @@ void RunMURefsGPU()
 
 	tStats.Start();
 	REF_INDEX = 0;
-	xr_std_parallel_for([&]()
+	xr_std_parallel_for([&REF_INDEX]()
 	{
 		while (true)
 		{
