@@ -11,8 +11,6 @@ Unreal Engine Documentation, "Auto Exposure / Eye Adaptation"
 */
 
 #include "common.hlsli"
-
-uniform Texture2D b_image;
 float4 adapt_params;
 
 static const float2 offsets2[16] =
@@ -26,13 +24,11 @@ static const float2 offsets2[16] =
 float main(PSInputFullscreen I) : SV_Target 
 {
     float res = 0.f;
-    float2 center = I.texcoord.xy ;
-    float x = adapt_params.z;
-    float y = adapt_params.w;
+    float2 center = I.texcoord.xy;
 
     for (int i = 0; i < 16; i++)
     {
-        res += b_image.Sample(smp_rtlinear, center + offsets2[i] * float2(x,y)).r;
+        res += s_image.Sample(smp_rtlinear, center + offsets2[i] * adapt_params.zw).r;
     }
     res *= 0.0625;
 

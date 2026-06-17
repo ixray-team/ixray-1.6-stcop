@@ -25,7 +25,6 @@ void main(in HS_CONSTANT_DATA_OUTPUT input,
 
     output.tcdh = bp[0].tcdh * w + bp[1].tcdh * v + bp[2].tcdh * u;
     output.position = bp[0].position * w + bp[1].position * v + bp[2].position * u;
-    output.snow_mask = bp[0].snow_mask * w + bp[1].snow_mask * v + bp[2].snow_mask * u;
 
     float3 M1 = bp[0].M1 * w + bp[1].M1 * v + bp[2].M1 * u;
     output.M1 = M1;
@@ -66,12 +65,9 @@ void main(in HS_CONSTANT_DATA_OUTPUT input,
 
     output.hpos = mul(m_P, float4(output.position.xyz, 1));
 
+#ifndef DISABLE_MOTION_VECTORS
     output.hpos_curr = bp[0].hpos_curr * w + bp[1].hpos_curr * v + bp[2].hpos_curr * u; 
     output.hpos_old = bp[0].hpos_old * w + bp[1].hpos_old * v + bp[2].hpos_old * u;
-
-#if 0
-	output.hpos_curr = mul(m_P, float4(output.position.xyz, 1.0));
-	output.hpos_old = mul(m_VP_old, float4(mul(m_invV, float4(output.position.xyz, 1.0)).xyz, 1.0));
 #endif
 
     output.hpos.xy += m_taa_jitter.xy * output.hpos.w;

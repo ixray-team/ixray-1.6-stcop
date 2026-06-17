@@ -20,7 +20,7 @@ float4 main(v2p I) : SV_Target
 #ifdef USE_LEGACY_SKY_TONEMAP
 	return float4(detonemap(mix.xyz), mix.w);
 #else
-	return float4(PushGamma(mix.xyz), mix.w);
+	return float4(GammaToLinear(mix.xyz), mix.w);
 #endif
 }
 

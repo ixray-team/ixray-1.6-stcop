@@ -21,5 +21,6 @@ function l_special(shader, t_base, t_second, t_detail)
 	: zb(false, true) : scope(true) : fog(false)
 	
 	shader : dx10texture("s_position", "$user$position")
+	shader	:dx10texture ("s_base",	t_base)
     shader : dx10sampler("smp_base")
 end
