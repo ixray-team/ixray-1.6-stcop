@@ -693,4 +693,10 @@
 	<string id="ui_am_info_soc">
 		<text>$$ACTION_UI_TAB_SEC_LEFT$$/$$ACTION_UI_TAB_SEC_RIGHT$$ Scroll info</text>
 	</string>
+	<string id="st_upgrade">
+		<text>upgrade</text>
+	</string>
+	<string id="ui_create_new_save">
+		<text>New save</text>
+	</string>
 </string_table>
