@@ -125,16 +125,21 @@ void	SFillPropData::load			()
 #endif // XRGAME_EXPORTS
 
 	// location type
-	const char*					N,*V;
-	u32 					k;
-	for (int i=0; i<GameGraph::LOCATION_TYPE_COUNT; ++i){
-		VERIFY				(locations[i].empty());
-		string256			caSection, T;
-		xr_strconcat(caSection,SECTION_HEADER,_itoa(i,T,10));
-		R_ASSERT			(Ini->section_exist(caSection));
-		for (k = 0; Ini->r_line(caSection,k,&N,&V); ++k)
-			locations[i].push_back	(xr_rtoken(V,atoi(N)));
+	const char* N,*V;
+	u32 k;
+	for (int i = 0; i < GameGraph::LOCATION_TYPE_COUNT; ++i)
+	{
+		VERIFY(locations[i].empty());
+		string256 caSection, T;
+		xr_strconcat(caSection, SECTION_HEADER, _itoa(i, T, 10));
+		R_ASSERT(Ini->section_exist(caSection));
+
+		for (k = 0; Ini->r_line(caSection, k, &N, &V); ++k)
+		{
+			locations[i].push_back(xr_rtoken(Platform::ANSI_TO_UTF8(V).c_str(), atoi(N)));
+		}
 	}
+
 	for (k = 0; Ini->r_line("graph_points_draw_color_palette",k,&N,&V); ++k)
 	{
 		u32 color;
@@ -146,9 +151,11 @@ void	SFillPropData::load			()
 	}
 	
 	// level names/ids
-	VERIFY					(level_ids.empty());
-	for (k = 0; Ini->r_line("levels",k,&N,&V); ++k)
-		level_ids.push_back	(Ini->r_string_wb(N,"caption"));
+	VERIFY(level_ids.empty());
+	for (k = 0; Ini->r_line("levels", k, &N, &V); ++k)
+	{
+		level_ids.push_back(Ini->r_string_wb(N, "caption"));
+	}
 
 	std::sort(level_ids.begin(), level_ids.end(), [](shared_str ItemA, shared_str ItemB)
 	{
@@ -320,7 +327,7 @@ void CSE_ALifeGraphPoint::UPDATE_Write		(NET_Packet	&tNetPacket)
 #if !defined(XRGAME_EXPORTS)
 void CSE_ALifeGraphPoint::FillProps			(const char* pref, PropItemVec& items)
 {
-#	ifdef XRSE_FACTORY_EXPORTS
+#ifdef XRSE_FACTORY_EXPORTS
 	PHelper().CreateRToken8(items, PrepareKey(pref,*s_name,"Location\\1"), &m_tLocations[0], &*fp_data.locations[0].begin(), (u32)fp_data.locations[0].size())->OnChangeEvent = xr_make_delegate(this, &CSE_ALifeGraphPoint::ChangeColorEvent);
 	PHelper().CreateRToken8(items, PrepareKey(pref,*s_name,"Location\\2"), &m_tLocations[1], &*fp_data.locations[1].begin(), (u32)fp_data.locations[1].size())->OnChangeEvent = xr_make_delegate(this, &CSE_ALifeGraphPoint::ChangeColorEvent);
 	PHelper().CreateRToken8(items, PrepareKey(pref,*s_name,"Location\\3"), &m_tLocations[2], &*fp_data.locations[2].begin(), (u32)fp_data.locations[2].size())->OnChangeEvent = xr_make_delegate(this, &CSE_ALifeGraphPoint::ChangeColorEvent);
@@ -328,9 +335,8 @@ void CSE_ALifeGraphPoint::FillProps			(const char* pref, PropItemVec& items)
 
 	PHelper().CreateRList	 	(items,	PrepareKey(pref,*s_name,"Connection\\Level Name"),	&m_caConnectionLevelName,	&*fp_data.level_ids.begin(),	(u32)fp_data.level_ids.size());
 	PHelper().CreateRText	 	(items,	PrepareKey(pref,*s_name,"Connection\\Point Name"),	&m_caConnectionPointName);
-#	endif // #ifdef XRSE_FACTORY_EXPORTS
+#endif
 }
-
 
 void CSE_ALifeGraphPoint::ChangeColorEvent(PropValue*)
 {
