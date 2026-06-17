@@ -18,7 +18,8 @@ function normal(shader, t_base, t_second, t_detail)
     shader:dx10texture("s_env0", tex_env0)
     shader:dx10texture("s_env1", tex_env1)
 	
-    shader:dx10texture("s_env", "$user$sky")
+    shader:dx10texture("s_env", "$user$env")
+    shader:dx10texture("s_env_dist", "$user$env_temp")
 
     shader:dx10texture("env_s0", "$user$env_s0")
     shader:dx10texture("env_s1", "$user$env_s1")

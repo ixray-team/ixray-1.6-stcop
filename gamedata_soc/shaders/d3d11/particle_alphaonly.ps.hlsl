@@ -9,6 +9,6 @@ struct v2p
 // Pixel
 float4 main(v2p I) : SV_Target
 {
-    return PushGamma(I.c.a * s_base.Sample(smp_base, I.tc0).a);
+    return GammaToLinear(I.c.a * s_base.Sample(smp_base, I.tc0).a);
 }
 

@@ -2,14 +2,16 @@
 #include "reflections.hlsli"
 #include "metalic_roughness_light.hlsli"
 
+uniform float4 scaled_screen_res;
+
 #define mirror(x) saturate(1.0 - abs(abs(x) - 1.0))
 
 #define DISK32_RADIUS8 2.443279f
 #define DISK32_RADIUS16 1.48565f
 #define DISK32_RADIUS32 1.0f
 
-#define NUM_SAMPLES 32
-#define DISK32_RADIUS DISK32_RADIUS32
+#define NUM_SAMPLES 16
+#define DISK32_RADIUS DISK32_RADIUS16
 
 static const float2 Disk32_Normalized[32] = {
 	float2(0.408569f, 0.024217f),
@@ -60,14 +62,17 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	I.hpos.zw = float2(0.0, 1.0);
 	I.texcoord = I.hpos.xy * pos_decompression_params2.zw;
 
-    IXrayGbuffer O;
-    GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
+    IXRayGbuffer O = (IXRayGbuffer)NULL;
+    GbufferUnpack((uint2)I.hpos.xy, O);
 
 	float isHUDRender = O.Depth < 0.02f ? 1.0f : 0.0f;
 	
 	if(O.Depth >= 1.0f)
 	{
-		u_sslr_temp[DTid.xy] = (0.0).xxxx;
+		float4 FinalColor = s_image.SampleLevel(smp_nofilter, I.texcoord, 0.0f);
+		FinalColor.w = O.ViewDist;
+		
+		u_sslr_temp[DTid.xy] = FinalColor;
 		return;
 	}
 
@@ -76,12 +81,14 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	
 	float4 FinalColor = 0.0f;
 	float FinalWeight = 0.0;
+	
+	float SampleRadius = 32.0f - 24.0f * GetBorderAtten(I.texcoord, 0.025f);
 
-	[unroll(NUM_SAMPLES)]
+	[loop]
 	for(uint i = 0; i < NUM_SAMPLES; ++i)
 	{
 		float2 offset = Disk32_Normalized[i] * scaled_screen_res.zw * DISK32_RADIUS;
-		offset = mirror(I.texcoord.xy + offset * 16.0f);
+		offset = mirror(I.texcoord.xy + offset * SampleRadius);
 		
 		float4 SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
 		
@@ -95,10 +102,13 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 
 		float NdotH = max(0.0f, dot(O.Normal, -Half));
 		
-		float D = DistributionGGX(NdotH, O.Roughness);
-
+#ifndef USE_LEGACY_LIGHT
 		//LVutner: it just works.
+		float D = DistributionGGX(NdotH, O.Roughness);
 		float SampleWeight = max(D * NdotH * SSLR.w, 1e-5);
+#else
+		float SampleWeight = rcp(NdotH + EPS);
+#endif
 		
 		//HUD weight
 		SampleWeight *= 1.0f - abs(Color.w - isHUDRender);
