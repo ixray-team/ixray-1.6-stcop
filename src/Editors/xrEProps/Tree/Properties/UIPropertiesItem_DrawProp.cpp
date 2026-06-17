@@ -135,7 +135,15 @@ bool RTokenOnEdit(PropItem* prop, bool& change)
 			index = cnt;
 		}
 	}
-	if (ImGui::Combo("##value", &index, [](void* data, int idx, const char** out_text)->bool {*out_text = reinterpret_cast<xr_rtoken*>(data)[idx].name.c_str(); return true; }, reinterpret_cast<void*>(token_list), V->token_count))
+
+	auto ComboCastLambda = [](void* data, int idx, const char** out_text) -> bool
+	{
+		xr_rtoken& Tok = reinterpret_cast<xr_rtoken*>(data)[idx];
+		*out_text = Tok.name.c_str();
+		return true;
+	};
+
+	if (ImGui::Combo("##value", &index, ComboCastLambda, reinterpret_cast<void*>(token_list), V->token_count))
 	{
 		T new_val = token_list[index].id;
 		if (prop->AfterEdit<RTokenValue<T>, T>(new_val))
