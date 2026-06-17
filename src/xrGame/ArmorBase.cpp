@@ -377,7 +377,7 @@ float CArmorBase::GetDefHitTypeProtection(ALife::EHitType hit_type)
 float CArmorBase::GetHitTypeProtection(ALife::EHitType hit_type, u16 element)
 {
 	float base = m_HitTypeProtection[hit_type] * GetCondition();
-	float bone = m_boneProtection->getBoneProtection(element);
+	float bone = element == u16(-1) ? 1.0f : m_boneProtection->getBoneProtection(element);
 
 	if (m_boneProtection->m_hitFracType == SBoneProtections::HitFraction)
 		return 1.0f - base * bone; // SOC

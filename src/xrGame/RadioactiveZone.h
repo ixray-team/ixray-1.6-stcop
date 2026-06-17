@@ -22,6 +22,7 @@ public:
 	float fHitPower = 0;
 
 protected:
+	bool legacyHit = false;
 	virtual bool BlowoutState();
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
