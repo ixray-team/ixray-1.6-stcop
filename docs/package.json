@@ -17,5 +17,9 @@
   },
   "dependencies": {
     "medium-zoom": "^1.1.0"
+  },
+  "overrides": {
+    "vite": "^7.3.5",
+    "esbuild": "^0.28.1"
   }
 }
