@@ -707,6 +707,18 @@ function options_dialog:DeselectAllTabElements(tabObject)
 		local focusRecord = tabObject.focusList[i]
 		local caption = focusRecord[1]:TextControl()
 		caption:SetTextColor(self.default_text_color)
+		
+		local element = focusRecord[2]
+		local elementInfo = class_info(element)
+		local elementClass = elementInfo.name
+	
+		if elementClass == "CUI3tButton" 
+		or elementClass == "CUIComboBox" 
+		or elementClass == "CUICheckButton" 
+		or elementClass == "CUITrackBar" 
+		then
+			element:SetHighlighted(false)
+		end
 	end
 end
 
