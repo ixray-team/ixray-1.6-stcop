@@ -154,7 +154,9 @@ void CRender::LoadPuddles()
 {
 	if (g_pGameLevel->pLevel->section_exist("level_map"))
 	{
-		Fvector4 res2d = g_pGameLevel->pLevel->r_fvector4("level_map", "bound_rect");
+		Fvector4 res2d = g_pGameLevel->pLevel->line_exist("level_map", "bound_rect") 
+			? g_pGameLevel->pLevel->r_fvector4("level_map", "bound_rect") 
+			: pGameIni->r_fvector4(g_pGameLevel->name(), "bound_rect");
 
 		m_puddles_level_bound.lt.x = res2d.x;
 		m_puddles_level_bound.lt.y = res2d.y;
