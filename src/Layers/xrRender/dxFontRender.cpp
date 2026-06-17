@@ -153,11 +153,11 @@ void dxFontRender::RenderBase(CGameFont& owner)
 				{
 					const unsigned char* s = (const unsigned char*)&str.string[i];
 
-					// проверка на UTF-8 PUA (EE 80 80–BF)
-					if (s[0] == 0xEE && s[1] == 0x80 &&
-						(s[2] >= 0x80 && s[2] <= 0xBF))
+					// проверка на UTF-8 PUA (EE 80 80–FF)
+					if (s[0] == 0xEE && (s[1] >= 0x80 && s[1] <= 0x82) &&
+						(s[2] >= 0x80 && s[2] <= 0xFF))
 					{
-						u32 cp = 0xE000 + (s[2] - 0x80);
+						u32 cp = 0xE000 + (s[1] - 0x80 == 0 ? 0 : s[1] - 0x41) + (s[2] - 0x80);
 
 						glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo(cp));
 
