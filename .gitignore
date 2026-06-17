@@ -26,11 +26,6 @@ build*/
 # Common logs
 *.log
 
-# Migrating report files
-_UpgradeReport_Files/
-UpgradeLog*.XML
-UpgradeLog*.htm
-
 # C++ Builder backups
 *.~*
 
@@ -57,11 +52,6 @@ lib/
 bin/
 build/
 publish/
-
-# Dependencies
-sdk/3d_sdk/
-dep/
-packages/
 
 # Temporary files
 temp/
