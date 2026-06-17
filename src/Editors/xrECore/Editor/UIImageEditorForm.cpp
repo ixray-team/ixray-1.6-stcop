@@ -3,6 +3,8 @@
 #include "UIImageEditorForm.h"
 #include "EThumbnail.h"
 
+#include <RedImage/RedImage.hpp>
+
 UIImageEditorForm* UIImageEditorForm::Form = nullptr;
 
 UIImageEditorForm::UIImageEditorForm()
@@ -245,6 +247,42 @@ ETextureThumbnail* UIImageEditorForm::FindUsedTHM(const shared_str& name)
 	else
 	{
 		thm->Load();
+
+		if (!thm->Valid())
+		{
+			string_path RawFileName = {};
+			FS.update_path(RawFileName, _textures_, name.c_str());
+			RedImageTool::RedImage Image;
+
+			xr_string FullFileName = RawFileName;
+			FullFileName += ".tga";
+
+			if (Image.LoadFromFile(FullFileName.c_str()))
+			{
+				Image.SwapRB();
+
+				u8* SizedPixels = new u8[THUMB_SIZE * 4];
+				RedImageTool::RedTextureUtils::Scale(SizedPixels, THUMB_WIDTH, THUMB_HEIGHT, (u8*)*Image, Image.GetWidth(), Image.GetHeight(), Image.GetFormat(), RedImageTool::RedResizeFilter::Box);
+
+				thm->m_Pixels.resize(THUMB_SIZE * 4);
+
+				const int RowSize = THUMB_WIDTH * 4;
+				u8* InvertedPixels = new u8[THUMB_SIZE * 4];
+
+				for (int y = 0; y < THUMB_HEIGHT; y++)
+				{
+					int SrcY = THUMB_HEIGHT - 1 - y;
+					memcpy(InvertedPixels + y * RowSize, SizedPixels + SrcY * RowSize, RowSize);
+				}
+
+				memcpy(thm->m_Pixels.data(), InvertedPixels, THUMB_SIZE * 4);
+
+				xr_delete(SizedPixels);
+				xr_delete(InvertedPixels);
+
+				thm->HasPreview = true;
+			}
+		}
 	}
 	return thm;
 }
