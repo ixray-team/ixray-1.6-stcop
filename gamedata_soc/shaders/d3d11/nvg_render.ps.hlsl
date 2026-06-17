@@ -15,8 +15,6 @@ struct PSInput
 	float2 texcoord : TEXCOORD0;
 };
 
-Texture3D s_blue_noise;
-
 float4 main(PSInput I) : SV_Target
 {
 	//consts
