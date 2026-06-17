@@ -474,14 +474,6 @@
 	<string id="kb_show_quick_slots">
 		<text>Quick Access Panel</text>
 	</string>
-	<!--
-	<string id="kb_inventory_sort_prev">
-		<text>Inventory sort: previous tab</text>
-	</string>
-	<string id="kb_inventory_sort_next">
-		<text>Inventory sort: next tab</text>
-	</string>
-	-->
 	<string id="ui_mm_show_minimap">
 		<text>Show minimap</text>
 	</string>
@@ -700,5 +692,11 @@
 	</string>
 	<string id="ui_am_info_soc">
 		<text>$$ACTION_UI_TAB_SEC_LEFT$$/$$ACTION_UI_TAB_SEC_RIGHT$$ Scroll info</text>
+	</string>
+	<string id="st_upgrade">
+		<text>upgrade</text>
+	</string>
+	<string id="ui_create_new_save">
+		<text>New save</text>
 	</string>
 </string_table>
