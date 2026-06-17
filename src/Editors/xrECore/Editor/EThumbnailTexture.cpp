@@ -226,7 +226,7 @@ void ETextureThumbnail::Update(IRHISurface*& Texture)
         }
     }
 
-    if (Valid())
+    if (Valid() || HasPreview)
     {
        
         inherited::Update(Texture);

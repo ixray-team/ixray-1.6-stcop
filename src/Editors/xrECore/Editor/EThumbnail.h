@@ -45,8 +45,9 @@ class ECORE_API EImageThumbnail:
 	public ECustomThumbnail
 {
 	friend class CImageManager;
-protected:
+public:
     U32Vec 			m_Pixels;
+
 protected:
 	void 			CreatePixels	(u32* p, u32 w, u32 h);
     void			VFlip			();
@@ -54,9 +55,10 @@ public:
 					EImageThumbnail	(const char* src_name, THMType type):ECustomThumbnail(src_name, type){};
 	virtual			~EImageThumbnail();
 	virtual void 	Update			(IRHISurface*& Texture);
-//	virtual void 	Draw			(TMxPanel* panel){Irect r; r.set(1,1,1+panel->Width,1+panel->Height); Draw(panel->Canvas->Handle,r);}
-    u32*			Pixels			(){return &*m_Pixels.begin();}
+    u32*			Pixels			(){return &m_Pixels.front();}
     virtual	int		MemoryUsage		(){return 0;};
+
+	bool HasPreview = false;
 };
 
 class ECORE_API ETextureThumbnail: 
