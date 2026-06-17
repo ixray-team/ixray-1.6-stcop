@@ -26,16 +26,14 @@ float4 scaled_screen_res; //Render resolution
 #define TAA_HISTORY_SHARPNESS 0.5 //Sharpness factor for history filtering
 
 //don't touch it unless you KNOW what you're doing. 
-//edit: restored Hozar's tnmp. there are NaNs being feed into TAA, fix them plz.
 float3 Lottes_Tonemap(float3 c)
-{
-	return saturate(c * rcp(1.0f + c));
+{ 
+	return saturate(c * rcp(max(c.x, max(c.y, c.z)) + 1.0));
 }
 
 float3 Lottes_Tonemap_Inverse(float3 c)
 {
-	c = saturate(c);
-	return c * rcp(1.00001f - c);
+	return c * rcp(1.0 - max(c.x, max(c.y, c.z)));
 }
 
 static const int2 offset_3x3[9] =
@@ -131,7 +129,7 @@ float3 kdop_clipping(float3 mean, float3 prev_color, float3 colors[9], float gam
 
 		float2 moments = (0.0).xx;
 
-		[unroll (9)]
+		[unroll]
 		for(int n = 0; n < 9; ++n)
 		{
 			float t = dot(colors[n], axis);
@@ -220,6 +218,5 @@ float4 main(PSInputFullscreen I) : SV_Target
 	float3 reprojected_color = lerp(c_3x3[4], p_4, TAA_BLEND_WEIGHT);
 
 	reprojected_color = Lottes_Tonemap_Inverse(reprojected_color);
-    reprojected_color = max(reprojected_color, 1e-7); //to prevent NaNs, although you should debug the pipeline and see where NaNs occurs
 	return float4(reprojected_color, 1.0);
 }

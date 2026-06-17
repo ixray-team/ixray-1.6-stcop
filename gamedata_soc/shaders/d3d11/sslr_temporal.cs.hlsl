@@ -78,8 +78,8 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	I.hpos.zw = float2(0.0, 1.0);
 	I.texcoord = I.hpos.xy * pos_decompression_params2.zw;
 
-    IXrayGbuffer O;
-    GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
+    IXRayGbuffer O = (IXRayGbuffer)NULL;
+    GbufferUnpack((uint2)I.hpos.xy, O);
 	
 	float4 SSLR4 = s_image.SampleLevel(smp_nofilter, I.texcoord, 0);
 	
@@ -111,29 +111,24 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	float4 SSLRMain = SSLR4; //rcp(9) * (SSLR0 + SSLR1 + SSLR2 + SSLR3 + SSLR4 + SSLR5 + SSLR6 + SSLR7 + SSLR8);
 	// SSLRMain = median9(SSLR0, SSLR1, SSLR2, SSLR3, SSLR4, SSLR5, SSLR6, SSLR7, SSLR8);
 	
-	float3 Point = gbuf_unpack_position(I.texcoord.xy, O.PointReal.z);
+	float3 Point = GbufferGetPointRealUnjitter(I.texcoord, O.Depth);
 	float3 View = normalize(Point);
 	
 	float Fog = saturate(SSLRMain.w * fog_params.w + fog_params.x);
 	float3 ReflectPoint = View.xyz * SSLRMain.w;
 	
 	float2 PrevDiffuseUV = I.texcoord.xy + s_velocity.SampleLevel(smp_nofilter, I.texcoord.xy, 0).xy * float2(-0.5f, 0.5f);
-	float4 PrevSpecularUV = mul(m_VP_old, float4(mul(m_invV, float4(ReflectPoint, 1.0f)).xyz, 1.0f));
-	
-	PrevSpecularUV.xy = PrevSpecularUV.xy / PrevSpecularUV.w * float2(0.5f, -0.5f) + 0.5f;	
-	PrevSpecularUV.xy = O.Depth > 0.02f ? PrevSpecularUV.xy : PrevDiffuseUV.xy;
 	SSLRMain.w = O.Depth;
 	
     float4 SSLR_OldDiffyse = s_refl.SampleLevel(smp_rtlinear, PrevDiffuseUV.xy, 0.0f);
 	SSLR_OldDiffyse = lerp(SSLRMain, SSLR_OldDiffyse, GetBorderAtten(PrevDiffuseUV));
 	
 	float Fade = 0.98f;
-	float DepthClamp = 1.0f - saturate(50.0f * abs(SSLR_OldDiffyse.w - O.Depth));
 
 	//LVutner: Jesus.
 	if(O.Depth < 0.02f) 
 	{
-		DepthClamp = 1.0f - HistoryClamp(SSLR_OldDiffyse.xyz, SSLRMain.xyz, SSLRBoxMin.xyz, SSLRBoxMax.xyz);
+		float DepthClamp = 1.0f - HistoryClamp(SSLR_OldDiffyse.xyz, SSLRMain.xyz, SSLRBoxMin.xyz, SSLRBoxMax.xyz);
 		SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR4.xyz, GetBorderAtten(PrevDiffuseUV));
 		SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR_OldDiffyse.xyz, DepthClamp * Fade);
 
@@ -141,18 +136,28 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		return;
 	}
 	
+	float DepthClamp = SSLR_OldDiffyse.w > 0.02f ? 1.0f - saturate(50.0f * abs(SSLR_OldDiffyse.w - O.Depth)) : 0.0f;
 	float4 SSLR_Diffuse = lerp(SSLRMain, SSLR_OldDiffyse, Fade);
+	
+#ifndef USE_LEGACY_LIGHT
+	float4 PrevSpecularUV = mul(m_VP_old, float4(mul(m_invV, float4(ReflectPoint, 1.0f)).xyz, 1.0f));
+	
+	PrevSpecularUV.xy = PrevSpecularUV.xy / PrevSpecularUV.w * float2(0.5f, -0.5f) + 0.5f;	
+	PrevSpecularUV.xy = O.Roughness > 0.1f ? PrevDiffuseUV.xy : PrevSpecularUV.xy;
+	
     float4 SSLR_OldSpecular = s_refl.SampleLevel(smp_rtlinear, PrevSpecularUV.xy, 0.0f);
 	
 	SSLR_OldSpecular = lerp(SSLR_Diffuse, SSLR_OldSpecular, GetBorderAtten(PrevSpecularUV));
 	
 	float SpecularFactor = 1.0f - HistoryClamp(SSLR_OldSpecular.xyz, SSLRMain.xyz, SSLRBoxMin.xyz, SSLRBoxMax.xyz);	
-	SSLR_OldSpecular = lerp(SSLRMain, SSLR_OldSpecular, 0.98 * SpecularFactor * Fade);
+	SSLR_OldSpecular = lerp(SSLRMain, SSLR_OldSpecular, SpecularFactor * Fade);
 	
-	SpecularFactor = 1.0f - saturate(length(PrevDiffuseUV.xy - PrevSpecularUV.xy) * 300.0f);
-	float4 SSLR_Specular = lerp(SSLR_OldSpecular, SSLR_Diffuse, 0.95f * SpecularFactor);
+	//SpecularFactor = 1.0f - saturate(length(PrevDiffuseUV.xy - PrevSpecularUV.xy) * 300.0f);
+	float4 SSLR_Specular = SSLR_OldSpecular; //lerp(SSLR_OldSpecular, SSLR_Diffuse, 0.95f * SpecularFactor);
 	
-	SSLR_Diffuse.xyz = lerp(SSLR_Specular.xyz, SSLR_Diffuse.xyz, O.Roughness);
+	SSLR_Diffuse.xyz = lerp(SSLR_Specular.xyz, SSLR_Diffuse.xyz, 0);
+#endif
+
 	SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR_Diffuse.xyz, DepthClamp);
 	
 	u_sslr[DTid.xy] = SSLRMain;

@@ -19,14 +19,14 @@ inline void get_3x3_depth(float2 texcoord, inout float d_3x3[9])
 	d_3x3[6] = s_position.SampleLevel(smp_nofilter, texcoord, 0, int2(-1, 1)).x;
 }
 
-inline void remap_hud_depth(inout float depth)
-{
-	if(depth < 0.02f)
-	{
-		depth = depth_unpack.z * rcp(depth * 50.0f - depth_unpack.w);
-		depth = depth_unpack.x * rcp(depth) + depth_unpack.y;
-	}
-}
+// inline void remap_hud_depth(inout float depth)
+// {
+	// if(depth < 0.02f)
+	// {
+		// depth = depth_unpack.z * rcp(depth * 50.0f - depth_unpack.w);
+		// depth = depth_unpack.x * rcp(depth) + depth_unpack.y;
+	// }
+// }
 
 void main(in PSInputFullscreen I, out float Depth : SV_Target)
 {	
@@ -51,9 +51,9 @@ void main(in PSInputFullscreen I, out float Depth : SV_Target)
 	
  	depth_old = old_project.z / old_project.w;
 	
-	remap_hud_depth(min_depth);
-	remap_hud_depth(max_depth);
-	remap_hud_depth(mid_depth);
+	// remap_hud_depth(min_depth);
+	// remap_hud_depth(max_depth);
+	// remap_hud_depth(mid_depth);
 	
 	depth_old = min_depth > depth_old || depth_old > max_depth ? mid_depth : depth_old;
 	

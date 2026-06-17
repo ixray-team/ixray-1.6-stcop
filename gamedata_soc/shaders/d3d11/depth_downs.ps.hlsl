@@ -22,7 +22,7 @@ float4 main(_input I) : SV_Target0
     Depth = s_position.GatherRed(smp_nofilter, I.tc0.xy + 0.5f * scaled_screen_res.zw);
 #endif // SM_5
 
-    Depth = depth_unpack.x * rcp(Depth - depth_unpack.y);
+    // Depth = depth_unpack.x * rcp(Depth - depth_unpack.y);
 	return min(min(Depth.x, Depth.y), min(Depth.z, Depth.w));
 }
 

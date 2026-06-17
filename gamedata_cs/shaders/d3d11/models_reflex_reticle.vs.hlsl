@@ -1,31 +1,39 @@
 #include "common.hlsli"
 #include "skin.hlsli"
 
+// Vertex to Pixel struct
 struct vf
 {
-	float4 hpos : SV_Position;
     float2 tc0 : TEXCOORD0;
-    float3 P : TEXCOORD1;
-	float3 T : TEXCOORD2;
-	float3 B : TEXCOORD3;
-	float3 N : TEXCOORD4;
+	
+    float3 v_pos : TEXCOORD1;
+    float3 v_nrm : TEXCOORD2;
+	
+    float4 hpos_curr : TEXCOORD3;
+    float4 hpos_old  : TEXCOORD4;
+	
+    float4 hpos : SV_Position;
 };
 
-vf     _main (v_model v)
+vf _main(v_model v)
 {
     vf o;
 
-	o.hpos = mul(m_WVP, v.P);
-    o.tc0 = v.tc.xy;
-    o.P = mul(m_WV, v.P).xyz;
-	o.T = mul(m_WV, v.T).xyz;
-	o.B = mul(m_WV, v.B).xyz;
-	o.N = mul(m_WV, v.N).xyz;
+    o.hpos = mul(m_WVP, v.P); // Homogenous position
+    o.tc0 = v.tc.xy; //Texture coordinates
+
+    o.v_pos = mul(m_WV, v.P).xyz; // Position in view space
+    o.v_nrm = mul(m_WV, v.N).xyz; // Normal in view space
+
+	o.hpos_curr = o.hpos;
+    o.hpos_old = mul(m_WVP_old, v.P_old);
+	
+    o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
 
     return o;
 }
 
-// Skinning
+//Skinning
 #ifdef SKIN_NONE
 vf main(v_model v) { return _main(v); }
 #endif
