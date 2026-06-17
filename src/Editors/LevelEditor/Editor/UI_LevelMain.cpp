@@ -169,6 +169,12 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 		else
 		{
 			xr_string temp_fn = p1;
+
+			if (IsUTF8(temp_fn.c_str()))
+			{
+				temp_fn = Platform::UTF8_to_CP1251(temp_fn);
+			}
+
 			xr_strlwr(temp_fn);
 
 			if (!Scene->IfModified())
