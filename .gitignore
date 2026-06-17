@@ -80,3 +80,4 @@ cmake-build*/
 # Optick
 *.opt
 linux/sal.h
+*.TMP
