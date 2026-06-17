@@ -696,4 +696,10 @@
 	<string id="ui_am_info_soc">
 		<text>$$ACTION_UI_TAB_SEC_LEFT$$/$$ACTION_UI_TAB_SEC_RIGHT$$ Листать информацию</text>
 	</string>
+	<string id="st_upgrade">
+		<text>улучшить</text>
+	</string>
+	<string id="ui_create_new_save">
+		<text>Новое сохранение</text>
+	</string>
 </string_table>
