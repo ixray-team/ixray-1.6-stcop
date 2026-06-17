@@ -13,6 +13,7 @@
 #include "../../xrEngine/string_table.h"
 #include "../ai_object_location.h"
 #include "../game_sv_single.h"
+#include "../InventoryWeaponSlotLayout.h"
 
 bool RemoveItemFromList(CUIDragDropListEx* lst, PIItem pItem);
 void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
@@ -269,7 +270,22 @@ void CUIActorMenuBase::PropertiesBoxForSlots(CUICellItem* cell_item, PIItem item
 
 	if (!pOutfit && !pHelmet && !pBackpack && cur_slot != NO_ACTIVE_SLOT && !pInv->SlotIsPersistent(cur_slot) && pInv->CanPutInSlot(item, cur_slot, true))
 	{
-		m_UIPropertiesBox->AddItem("st_move_to_slot", nullptr, INVENTORY_TO_SLOT_ACTION);
+		// need to precache this thing first, sorry
+		InventorySecondarySlotPairingStrict();
+		if (item && item->cast_weapon() && !InventorySecondarySlotPairingStrict() && (item->BaseSlot() == INV_SLOT_2 || item->BaseSlot() == INV_SLOT_3))
+		{
+			shared_str str = g_pStringTable->translate("st_move_to_slot");
+			str.printf("%s 1", str.c_str());
+			m_UIPropertiesBox->AddItem(str.c_str(), (void*)INV_SLOT_2, INVENTORY_TO_SLOT_ACTION);
+
+			str = g_pStringTable->translate("st_move_to_slot");
+			str.printf("%s 2", str.c_str());
+			m_UIPropertiesBox->AddItem(str.c_str(), (void*)INV_SLOT_3, INVENTORY_TO_SLOT_ACTION);
+		}
+		else
+		{
+			m_UIPropertiesBox->AddItem("st_move_to_slot", (void*)item->BaseSlot(), INVENTORY_TO_SLOT_ACTION);
+		}
 		b_show = true;
 	}
 	if (item->Belt() && pInv->CanPutInBelt(item))
@@ -309,20 +325,20 @@ void CUIActorMenuBase::PropertiesBoxForSlots(CUICellItem* cell_item, PIItem item
 
 	if (pOutfit && !bAlreadyDressed)
 	{
-		m_UIPropertiesBox->AddItem("st_dress_outfit", nullptr, INVENTORY_TO_SLOT_ACTION);
+		m_UIPropertiesBox->AddItem("st_dress_outfit", (void*)item->BaseSlot(), INVENTORY_TO_SLOT_ACTION);
 		b_show = true;
 	}
 
 	CCustomOutfit* outfit_in_slot = GetInventoryOwner()->GetOutfit();
 	if (pHelmet && !bAlreadyDressed && (!outfit_in_slot || outfit_in_slot->bIsHelmetAvaliable))
 	{
-		m_UIPropertiesBox->AddItem("st_dress_helmet", nullptr, INVENTORY_TO_SLOT_ACTION);
+		m_UIPropertiesBox->AddItem("st_dress_helmet", (void*)item->BaseSlot(), INVENTORY_TO_SLOT_ACTION);
 		b_show = true;
 	}
 
 	if (pBackpack && !bAlreadyDressed)
 	{
-		m_UIPropertiesBox->AddItem("st_dress_backpack", nullptr, INVENTORY_TO_SLOT_ACTION);
+		m_UIPropertiesBox->AddItem("st_dress_backpack", (void*)item->BaseSlot(), INVENTORY_TO_SLOT_ACTION);
 		b_show = true;
 	}
 }
@@ -403,7 +419,7 @@ void CUIActorMenuBase::PropertiesBoxForAddon(PIItem item, bool& b_show)
 	PIItem	item_in_slot_3 = inv->ItemFromSlot(INV_SLOT_3);
 	PIItem	item_in_slot_pistol_new = inv->ItemFromSlot(PISTOL_SLOT_NEW);
 
-	if (!item_in_slot_2 && !item_in_slot_3)
+	if (!item_in_slot_2 && !item_in_slot_3 && !item_in_slot_pistol_new)
 		return;
 
 	if (pScope)
@@ -718,7 +734,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 
 	switch ( m_UIPropertiesBox->GetClickedItem()->GetTAG() )
 	{
-	case INVENTORY_TO_SLOT_ACTION:	ToSlot( cell_item, true, item->BaseSlot() );		break;
+	case INVENTORY_TO_SLOT_ACTION:	ToSlot( cell_item, true, (u16)m_UIPropertiesBox->GetClickedItem()->GetData() );		break;
 	case INVENTORY_TO_BELT_ACTION:	
 		ToBelt( cell_item, false );		break;
 	case INVENTORY_TO_BAG_ACTION:
