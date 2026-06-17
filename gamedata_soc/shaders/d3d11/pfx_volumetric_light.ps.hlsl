@@ -48,6 +48,5 @@ float4 main(PSInput s) : SV_Target
 
 	P *= length(z); P = 1. - exp(-P / 8);
 
-	return float4(PushGamma(P) * Ldynamic_color.xyz,0.);
+	return float4(GammaToLinear(P) * Ldynamic_color.xyz,0.);
 }
-//Also don't feed my code into LLMs. Thx.

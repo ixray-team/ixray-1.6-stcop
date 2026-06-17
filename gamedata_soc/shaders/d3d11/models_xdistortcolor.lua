@@ -1,6 +1,6 @@
 function normal(shader, t_base, t_second, t_detail)
     shader:begin("model_distort", "particle_hard")
-        :sorting(3, false)
+        :sorting(3, true)
         :blend(true, blend.srcalpha, blend.invsrcalpha)
         :aref(true, 0)
         :zb(true, false)

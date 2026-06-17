@@ -7,26 +7,55 @@ struct PSInput
 	float2 texcoord : TEXCOORD0;
 };
 
-void main(PSInput _I, out IXrayGbufferPack O)
-{
-    IXrayGbuffer G;
-    p_bumped_new I;
+RWTexture2D<float4> u_color : register(u0);
+RWTexture2D<float4> u_normal : register(u1);
+RWTexture2D<float4> u_surface : register(u2);
 
-    GbufferUnpack(_I.texcoord.xy, _I.hpos.xy, G);
+void main(PSInput _I)
+{	
+	IXRayGbufferPack O = (IXRayGbufferPack)NULL;
+	IXRayMaterial M = (IXRayMaterial)NULL;
 	
-	clip(G.SnowMask - 0.00001f);
-	clip(0.9999f - G.Depth);
+	uint2 DTid = uint2(_I.hpos.xy);
 	
-    I.position = float4(G.Point.xyz, 1.0f);
-	I.snow_mask = G.SnowMask * smoothstep(0.2f, 0.3f, G.Hemi);
+	M.Depth = s_position[DTid];
+	M.Point = GbufferGetPointRealJitter(_I.texcoord, M.Depth);
+	
+	O.Color = u_color[DTid];
+	O.Normal = u_normal[DTid];
+	O.Material = u_surface[DTid];
+	
+	GbufferUnpackMaterial(O, M);
+	
+    p_bumped_new I; IXRayMaterial _M = M;
+	
+    I.position = float4(M.Point.xyz, 1.0f);
 
     float3 P = mul(m_invV, I.position);
-    float3 N = normalize(mul((float3x3)m_invV, G.Normal.xyz));
+    float3 N = normalize(mul((float3x3)m_invV, M.Normal.xyz));
 
-    float3 T, B;
+	float snow_mask = smoothstep(0.2f, 0.3f, M.Hemi);
+	snow_mask *= smoothstep(0.7f, 0.8f, N.y);
+	
+	bool object_mask = M.MaterialID == OBJECT_ID || M.MaterialID == FOLIAGE_ID;
+	
+#ifdef IGNORE_SNOW_MASK_ON_TERRAIN
+	object_mask = object_mask || M.MaterialID == TERRAIN_ID;
+#endif
+	
+	if(object_mask)
+	{
+		snow_mask = 0.0f;
+	}
+
+   // float3 T, B;
     I.tcdh.xy = P.xz * 0.2f;
 
-    build_contangent_frame(P, N, I.tcdh.xy, T, B);
+ //   build_contangent_frame(P, N, I.tcdh.xy, T, B);
+	
+	float3 UpVector = abs(N.z) < 0.999f ? float3(0.0f, 0.0f, 1.0f) : float3(1.0f, 0.0f, 0.0f);
+	float3 T = normalize(cross(UpVector, N));
+	float3 B = cross(N, T);
 
     float3x3 xform = mul((float3x3)m_V, float3x3(
         T.x, B.x, N.x,
@@ -39,31 +68,21 @@ void main(PSInput _I, out IXrayGbufferPack O)
     I.M1 = xform[0];
     I.M2 = xform[1];
     I.M3 = xform[2];
-
-    I.hpos_curr = I.hpos_old = I.hpos = _I.hpos;
-    IXrayMaterial M;
-
-    M.Sun = G.SSS;
-    M.Hemi = G.Hemi;
-
-    M.Depth = G.Point.z;
-    M.Point = G.Point.xyz;
-
+	
+	I.hpos = _I.hpos;
+    I.hpos_curr = I.hpos_old = I.hpos;
+	
     SloadNew(I, M);
 
 	M.Normal = mul(xform, M.Normal);
-
-    M.Normal = lerp(G.Normal, M.Normal, I.snow_mask);
-    M.Roughness = lerp(G.Roughness, M.Roughness, I.snow_mask);
-
 	M.Normal = normalize(M.Normal);
+	
+	M = _M.Lerp(M, snow_mask);
 
-    O.Velocity = 0.0f;
     GbufferPack(O, M);
 	
-	O.Color.w = I.snow_mask;
-	O.Material.w = I.snow_mask;
-
-	O.Normal.w = 1.0f;
+	u_color[DTid] = O.Color;
+	u_normal[DTid] = O.Normal;
+	u_surface[DTid] = O.Material;
 }
 

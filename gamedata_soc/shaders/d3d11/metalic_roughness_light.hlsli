@@ -14,65 +14,64 @@ float DistributionGGX(float NdotH, float Roughness)
     return AlphaTwo * rcp(Divider * Divider);
 }
 
-// Simple GSC - like attention
-float ComputeLightAttention(float3 PointToLight, float MinAttention)
+float GetLightAttention(float3 PointToLight, float LightInvRadius2, float Falloff)
 {
-    return saturate(1.0f - dot(PointToLight, PointToLight) * MinAttention);
+    float DistanceSqr = dot(PointToLight, PointToLight);
+    float Factor = dot(PointToLight, PointToLight) * LightInvRadius2;
+    float Attention = max(1.0f - Factor, 0.0f);
+	
+    return (Attention * Attention) / (1.0f + Falloff * Factor);
 }
-// doenitz - improved attenuation function (with correct spelling  :))
-float ComputeLightAttenuation(float3 posToLight, float lightInvRadius2, float falloff)
+
+float ComputeLightAttention(float3 PointToLight, float LightInvRadius2)
 {
-    float distanceSqr = dot(posToLight, posToLight);
-    float s2 = distanceSqr * lightInvRadius2;
-    float smooth = max(1.0f - s2, 0.0f);
-    return (smooth * smooth) / (1.0f + falloff * s2);
-}
-float ComputeLightAttenuation(float3 posToLight, float lightInvRadius2)
-{
-    return ComputeLightAttenuation(posToLight, lightInvRadius2, 3.0f);
+    return saturate(1.0f - dot(PointToLight, PointToLight) * LightInvRadius2);
 }
 
 float GeometrySmithD(float NdotL, float NdotV, float Roughness)
 {
     float R = Roughness + 1.0f;
     float K = R * R * 0.125f;
-    float InvK = 1.0f - K;
 
-    float DivGGXL = 1.0f * rcp(K + NdotL * InvK);
-    float DivGGXV = 1.0f * rcp(K + NdotV * InvK);
+    float DivGGXL = rcp(lerp(NdotL, 1.0f, K));
+    float DivGGXV = rcp(lerp(NdotV, 1.0f, K));
 
-    return 0.25f * DivGGXL * DivGGXV;
+    return DivGGXL * DivGGXV;
 }
 
 float3 FresnelSchlick(float3 F, float NdotV)
 {
-    return F + (1.0f - F) * pow(1.0f - NdotV, 5.0f);
+	float F90 = min(1.0, dot(F, 16.66667));
+    return lerp(F, F90, pow(1.0f - NdotV, 5.0f));
 }
 
-float3 DirectLight(float4 Radiance, float3 Light, float3 Normal, float3 View, float3 Color, float Metalness, float Roughness, float3 F0 = 0.04f)
+float3 DirectLight(float4 Radiance, float3 Light, float3 Normal, float3 View, float3 Diffuse, float3 Specular, float Roughness)
+{
+    float3 Half = normalize(Light + View);
+
+    float NdotL = max(0.0f, dot(Normal, -Light));
+    float NdotH = max(0.0f, dot(Normal, -Half));
+
+    float NdotV = max(0.0f, dot(Normal, -View));
+    float HdotV = max(0.0f, dot(Half, View));
+
+    float3 D = DistributionGGX(NdotH, Roughness);
+    float3 G = GeometrySmithD(NdotL, NdotV, Roughness);
+    float3 F = FresnelSchlick(Specular, HdotV);
+
+    float3 BRDF = lerp(Diffuse, 0.25f * D * G, F);
+    return GammaToLinear(Radiance.xyz) * NdotL * BRDF;
+}
+
+float3 DirectLightLegacy(float4 Radiance, float3 Light, float3 Normal, float3 View, float3 Color, float Material, float Gloss)
 {
     float3 Half = normalize(Light + View);
 
     float NdotL = max(0.0f, -dot(Normal, Light));
     float NdotH = max(0.0f, -dot(Normal, Half));
 
-#ifndef USE_LEGACY_LIGHT
-    float NdotV = max(0.0f, -dot(Normal, View));
-    float HdotV = max(0.0f, dot(Half, View));
-
-    float3 D = DistributionGGX(NdotH, Roughness);
-    float3 G = GeometrySmithD(NdotL, NdotV, Roughness);
-    float3 F = FresnelSchlick(lerp(F0, Color, Metalness), HdotV);
-
-    float3 Specular = D * G;
-    float3 Diffuse = Color * (1.0f - Metalness);
-
-    float3 BRDF = lerp(Diffuse, Specular, F);
-    return Radiance.xyz * NdotL * BRDF;
-#else
-    float2 Material = s_material.SampleLevel(smp_material, float3(NdotL, NdotH, Metalness), 0).xy;
-    return Radiance.xyz * (Material.x * Color.xyz + Material.y * Roughness.x * Radiance.w);
-#endif
+    float2 Surface = s_material.SampleLevel(smp_material, float3(NdotL, NdotH, Material), 0).xy;
+    return Radiance * float3(Surface.x * Color.xyz + Surface.y * Gloss * Radiance.w);
 }
 
 float3 SimpleTranslucency(float3 Radiance, float3 Light, float3 Normal)
@@ -84,7 +83,7 @@ float3 SimpleTranslucency(float3 Radiance, float3 Light, float3 Normal)
 	float Factor = 1.0f - saturate(abs(Scale) * 13.0f - 1.0f);
 
 	float SSS = lerp(saturate(NdotL), Attention, Factor * Factor);
-	return (Radiance) * saturate(3.5f * SSS + 0.1f);
+	return GammaToLinear(Radiance.xyz * saturate(3.5f * SSS + 0.1f));
 }
 
 float3 sample_vndf_isotropic(float3 n, float3 wi, float2 u, float alpha)

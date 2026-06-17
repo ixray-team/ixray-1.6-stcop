@@ -13,15 +13,15 @@ float Contrast(float Input, float ContrastPower)
 }
 
 #ifndef SRGB_GAMMA
-#define SRGB_GAMMA 2.2
+	#define SRGB_GAMMA 2.2
 #endif
 
 #ifndef USE_LEGACY_LIGHT
-	#define PushGamma(x) pow(abs(x), SRGB_GAMMA)
-	#define PopGamma(x) pow(abs(x), rcp(SRGB_GAMMA))
+	#define GammaToLinear(x) pow(abs(x), SRGB_GAMMA)
+	#define LinearToGamma(x) pow(abs(x), rcp(SRGB_GAMMA))
 #else
-	#define PushGamma(x) abs(x)
-	#define PopGamma(x) abs(x)
+	#define GammaToLinear(x) abs(x)
+	#define LinearToGamma(x) abs(x)
 #endif
 
 #ifndef USE_CGIM_WHITE_TWEAK
@@ -39,12 +39,12 @@ float3 tonemap(float3 rgb, float scale)
 	rgb = rgb * scale;
 	rgb = rgb * (1.0f + rgb * RCP_WHITE_SQR) * rcp(rgb + 1.0f);
 	
-	return PopGamma(rgb);
+	return LinearToGamma(rgb);
 }
 
 float3 detonemap(float3 rgb)
 {
-	rgb = PushGamma(rgb);
+	rgb = GammaToLinear(rgb);
 	
 	float3 scale = rgb * rgb - INV_TONEMAP_COEF_ONE * rgb + 1.0f;
 	rgb = rgb + sqrt(scale) - 1.0f;
@@ -171,32 +171,40 @@ float Hash(float3 n)
 
 float2 Hash22(float2 value)
 {
-    return float2(
+    return float2
+	(
         Hash(dot(value, float2(12.989, 78.233))),
-        Hash(dot(value, float2(39.346, 11.135))));
+        Hash(dot(value, float2(39.346, 11.135)))
+	);
 }
 
 float3 Hash23(float2 value)
 {
-    return float3(
+    return float3
+	(
         Hash(dot(value, float2(12.989, 78.233))),
         Hash(dot(value, float2(39.346, 11.135))),
-        Hash(dot(value, float2(73.156, 52.235))));
+        Hash(dot(value, float2(73.156, 52.235)))
+	);
 }
 
 float2 Hash32(float3 value)
 {
-    return float2(
+    return float2
+	(
         Hash(dot(value, float3(12.989, 78.233, 123.134f))),
-        Hash(dot(value, float3(39.346, 11.135, 543.142f))));
+        Hash(dot(value, float3(39.346, 11.135, 543.142f)))
+	);
 }
 
 float3 Hash33(float3 value)
 {
-    return float3(
+    return float3
+	(
         Hash(dot(value, float3(12.989, 78.233, 123.134f))),
         Hash(dot(value, float3(39.346, 11.135, 543.142f))),
-        Hash(dot(value, float3(73.156, 52.235, 143.425f))));
+        Hash(dot(value, float3(73.156, 52.235, 143.425f)))
+	);
 }
 
 // END
@@ -273,12 +281,12 @@ float hashed_alpha_test(float3 position)
 	#define IMAGE_BITRATE 255
 #endif
 
-float3 deband_color(float3 image, float2 uv)
+float3 deband_color(float3 image, float2 uv, float bitrate = IMAGE_BITRATE)
 {
     float3 dither = dot(float2(171.0, 231.0), uv.xy + m_taa_jitter.w).xxx;
     dither = 2.0f * frac(dither / float3(103.0, 71.0, 97.0)) - 1.0f;
 
-    return image + dither * rcp(IMAGE_BITRATE);
+    return image + dither * rcp(bitrate);
 }
 
 //Builds a cotangent frame. Source: http://www.thetenthplanet.de/archives/1180
@@ -328,7 +336,7 @@ float2 unpack_tc_base(float2 tc, float du, float dv)
 
 float3 unpack_normal(float3 v)
 {
-    return 2 * v - 1;
+    return 2 * v.zyx - 1;
 }
 
 float3 unpack_bx2(float3 v)
@@ -339,17 +347,12 @@ float3 unpack_bx2(float3 v)
 float3 unpack_bx4(float3 v)
 {
     return 4 * v - 2;
-} //! reduce the amount of stretching from 4*v-2 and increase precision
+}
 
 float2 unpack_tc_lmap(float2 tc)
 {
     return tc * (1.f / 32768.f);
 } // [-1  .. +1 ]
-
-float4 unpack_color(float4 c)
-{
-    return c.bgra;
-}
 
 float4 unpack_D3DCOLOR(float4 c)
 {
@@ -361,35 +364,22 @@ float3 unpack_D3DCOLOR(float3 c)
     return c.bgr;
 }
 
-float3 p_hemi(float2 tc)
-{
-    float4 t_lmh = s_hemi.Sample(smp_rtlinear, tc);
-
-#ifdef USE_SOC_LIGHTING
-	float r_lmh = (1.0/3.0);
-	return dot(t_lmh.xyz, float3(r_lmh, r_lmh, r_lmh));
-#else // USE_SOC_LIGHTING
-	return t_lmh.w;
-#endif // USE_SOC_LIGHTING
-}
-
 float get_hemi(float4 lmh)
 {
 #ifdef USE_SOC_LIGHTING
-	float r_lmh = (1.0/3.0);
-	return dot(lmh.xyz, float3(r_lmh, r_lmh, r_lmh));
-#else // USE_SOC_LIGHTING
+	return lmh.y;
+#else
 	return lmh.w;
-#endif // USE_SOC_LIGHTING
+#endif
 }
 
 float get_sun(float4 lmh)
 {
 #ifdef USE_SOC_LIGHTING
 	return lmh.w;
-#else // USE_SOC_LIGHTING
+#else
 	return lmh.y;
-#endif // USE_SOC_LIGHTING
+#endif
 }
 
 float3 v_sun(float3 N)
@@ -397,9 +387,5 @@ float3 v_sun(float3 N)
     return L_sun_color.xyz * dot(N, -L_sun_dir_w.xyz);
 }
 
-float3 calc_reflection(float3 pos_w, float3 norm_w)
-{
-    return reflect(normalize(pos_w - eye_position), norm_w);
-}
-
 #endif //	common_functions_h_included
+

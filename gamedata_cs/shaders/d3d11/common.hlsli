@@ -2,6 +2,7 @@
 #define COMMON_H
 
 #pragma warning(disable : 4000)
+#define NULL (0)
 
 #define EPS_S 0.0000001f
 #define EPS   0.0000100f

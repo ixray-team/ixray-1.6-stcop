@@ -36,12 +36,17 @@ Texture2D s_dn_bX;
 Texture2D s_dn_aX;
 
 Texture2D s_refl;
+
 TextureCube s_env;
+TextureCube s_env_dist;
 
 TextureCube env_s0;
 TextureCube env_s1;
+
 TextureCube sky_s0;
 TextureCube sky_s1;
+
+Texture3D s_blue_noise;
 
 // Lighting/shadowing phase                     //
 

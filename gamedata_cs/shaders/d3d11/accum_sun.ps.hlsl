@@ -11,8 +11,8 @@ struct PSInput
 
 float4 main(PSInput I) : SV_Target
 {
-	IXrayGbuffer O;
-	GbufferUnpack(I.texcoord, I.hpos.xy, O);
+    IXRayGbuffer O = (IXRayGbuffer)NULL;
+    GbufferUnpack((uint2)I.hpos.xy, O);
 	
 	float3 Shift = O.Normal;
 	
@@ -22,7 +22,7 @@ float4 main(PSInput I) : SV_Target
 	}
 	
 	float4 Point = float4(O.Point.xyz, 1.f);
-	Point.xyz += Shift * 0.025f;
+	Point.xyz = Shift * 0.025f + Point.xyz * 0.999f;
 	
 	int cascade_index;
 	float3 smap_texcoord;
@@ -50,14 +50,21 @@ float4 main(PSInput I) : SV_Target
 	Shadow *= sunmask(Point);
 #endif
 	
-    float3 Light = DirectLight(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.View.xyz, O.Color, O.Metalness, O.Roughness, O.F0);
+#ifdef USE_LEGACY_LIGHT
+    float3 Light = DirectLightLegacy(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.View.xyz, O.Color, O.Material, O.Gloss);
+#else
+    float3 Light = DirectLight(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.View.xyz, O.Color, O.Specular, O.Roughness);
+#endif
+
     Light += SimpleTranslucency(Ldynamic_color.xyz, Ldynamic_dir.xyz, O.Normal) * O.SSS * O.Color;
 	
+#ifdef USE_HUD_SHADOWS
 	if (O.Depth < 0.02f && dot(Shadow.xxx, Light.xyz) > EPS)
 	{
-		RayTraceContactShadow(I.texcoord, O.PointHud, Ldynamic_dir.xyz, Light);
+		Light *= RayTraceContactShadow(I.texcoord, O.PointHud, Ldynamic_dir.xyz);
 	}
+#endif
 	
-	Light *= PushGamma(Shadow);
+	Light *= GammaToLinear(Shadow);
 	return float4(Light, 0);
 }

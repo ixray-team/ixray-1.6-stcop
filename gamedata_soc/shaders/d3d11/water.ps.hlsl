@@ -28,12 +28,11 @@ Texture2D s_caustic;
 
 float3 SpecularPhong(float3 Point, float3 Normal, float3 Light)
 {
-	float3 LightColor = max(0.0f, L_sun_color.xyz * 4.0f - 1.0f);
-	return LightColor * pow(dot(normalize(Point + Light), -Normal), 256.0);
+	return L_sun_color.xyz * pow(abs(dot(normalize(Point + Light), -Normal)), 256.0);
 }
 
 // Pixel
-float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
+void main(vf I, float4 pos2d : SV_POSITION, out IXRayForward O)
 {
 	float4 base = s_base.Sample(smp_base, I.tbase);
 	
@@ -54,37 +53,21 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 	float3 v2point = normalize(I.v2point);
 	float3 vreflect = reflect(v2point, Nw);
 
-    float3 WaterPoint = I.tctexgen.z * float3(pos2d.xy * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
 	float fresnel = saturate(dot(vreflect, v2point));
 
 #ifdef USE_SSLR_ON_WATER
 	float3 Reflect = mul((float3x3)m_V, vreflect);
-	float3 ReflectPoint = WaterPoint * 0.99f + Reflect * 0.025f;
+	float3 ReflectPoint = I.tctexgen.xyz * 0.99f + Reflect * 0.025f;
 	
     float4 sslr = ScreenSpaceLocalReflections(ReflectPoint, Reflect);
 	
 	#ifdef USE_OFFSCREEN_REFLECTIONS
-		ReflectPoint = mul(m_env_view, float4(ReflectPoint, 1.0f)).xyz;
-		Reflect = mul((float3x3)m_env_view, Reflect);
-	
 		float4 vslr = FastViewReflections(ReflectPoint, Reflect);
 		
 		float Fog = saturate(length(vslr.xyz) * fog_params.w + fog_params.x);
 		vslr.w *= 1.f - Fog * Fog;
 		
 		vslr.xyz = s_env.SampleLevel(smp_rtlinear, vslr.xyz, 0.0f);
-		vslr.xyz *= rcp(1.00001f - vslr.xyz);
-	#endif
-#else
-	#ifdef USE_OFFSCREEN_REFLECTIONS
-		float3 Reflect = mul((float3x3)m_V, vreflect);
-		Reflect = mul((float3x3)m_env_view, Reflect);
-		
-		float4 vslr = s_env.SampleLevel(smp_rtlinear, Reflect.xyz, 0.0f);
-		vslr.xyz *= rcp(1.00001f - vslr.xyz);
-		
-		float Fog = saturate(vslr.w * fog_params.w + fog_params.x);
-		vslr.w = 1.f - Fog * Fog;
 	#endif
 #endif
 
@@ -106,29 +89,27 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 #else
     env *= L_sky_color.xyz;
 #endif
-
-#ifdef USE_OFFSCREEN_REFLECTIONS
-	env.xyz = lerp(env, PopGamma(vslr.xyz), vslr.w);
-#endif
 	
 #ifdef USE_SSLR_ON_WATER
-	env = lerp(env, PopGamma(sslr.xyz), sslr.w);
+	#ifdef USE_OFFSCREEN_REFLECTIONS
+		env.xyz = lerp(env, LinearToGamma(vslr.xyz), vslr.w);
+	#endif
+	
+	env = lerp(env, LinearToGamma(sslr.xyz), sslr.w);
 #endif
 
     float power = pow(fresnel, 5.0f);
 	float amount = 0.25f + 0.25f * power;
 
 	float3 final = lerp(env * amount * 0.8f, base.xyz, base.w);
-	float alpha = 0.25f + 0.65f * power;
+	float alpha = 0.45f + 0.45f * power;
 	
 	alpha = lerp(alpha, 1.0f, base.w);
 	
 	// Igor: additional depth test
 #ifdef USE_SOFT_WATER
     float4 Point = GbufferGetPoint(pos2d.xy);
-	
-	float3 waterPos = Point.xyz * rcp(Point.z) * I.tctexgen.z;
-	float waterDepth = length(waterPos - Point.xyz) * 0.75f;
+	float waterDepth = length(I.tctexgen.xyz - Point.xyz) * 0.75f;
 
 	//	water fog
 	float3 Fc = 0.1f * water_intensity.xxx * color;
@@ -153,7 +134,7 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 	int cascade_index;
 	float3 smap_texcoord;
 	
-	bool is_in_bounds = calc_cascades(mul(m_invV, float4(WaterPoint, 1.0f)).xyz, m_shadow_sun, cascade_index, smap_texcoord);
+	bool is_in_bounds = calc_cascades(mul(m_invV, float4(I.tctexgen.xyz, 1.0f)).xyz, m_shadow_sun, cascade_index, smap_texcoord);
 	
 	if(is_in_bounds) 
 	{
@@ -170,6 +151,7 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 #endif
 
 	float3 Light = s_accumulator.Load(int3(pos2d.xy, 0), 0).xyz;
+	Light = LinearToGamma(Light);
 	Light *= 1.0f - base.w;
 	
 	float2 CausticTexcoord = mul(m_invV, float4(Point.xyz, 1.0f)).xz * 0.45f;
@@ -187,6 +169,15 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 	alpha = max(alpha, leaves.w * fLeavesFactor);
 #endif
 	
-	return PushGamma(lerp(float4(final, PopGamma(alpha)), fog_color, calc_fogging(I.pos.xyz)));
+	float fog_fade = calc_fogging(I.pos.xyz);
+	
+	O.Color = lerp(float4(final, alpha), fog_color, fog_fade * fog_fade);
+	O.Color.xyz = GammaToLinear(O.Color.xyz);
+	
+	O.Velocity = 0.0f;
+	
+#ifdef ALLOW_WBOIT_TRANSPARENCY
+	WboitBufferPack(O, I.tctexgen);
+#endif
 }
 
