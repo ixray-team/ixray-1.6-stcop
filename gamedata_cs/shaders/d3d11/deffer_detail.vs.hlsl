@@ -18,6 +18,12 @@ struct InstanceData
 
 StructuredBuffer<InstanceData> detail_buffer : register(t0);
 
+#ifndef DETAIL_SHADOW_PASS
+	#define OutStructure p_bumped_new
+#else
+	#define OutStructure p_shadow
+#endif
+
 float3x3 QuaternionToMatrix(float4 q)
 {
     float xx = q.x * q.x;
@@ -37,13 +43,12 @@ float3x3 QuaternionToMatrix(float4 q)
     return m;
 }
 
-void main(in v_detail I, out p_bumped_new O, uint instance_id : SV_InstanceID)
+void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O)
 {
     InstanceData det = detail_buffer[instance_id];
 
-    float3 qv = det.quat;
-    float w = sqrt(max(0.0, 1.0 - dot(qv, qv)));
-    float3x3 m_rotate = QuaternionToMatrix(float4(qv, w));
+    float w = sqrt(max(0.0, 1.0 - dot(det.quat, det.quat)));
+    float3x3 m_rotate = QuaternionToMatrix(float4(det.quat, w));
 
     float3 pos_world = mul(m_rotate, I.pos.xyz * det.scale) + det.pos;
     float3 N = mul(m_rotate, unpack_normal(I.N.zyx));
@@ -52,22 +57,28 @@ void main(in v_detail I, out p_bumped_new O, uint instance_id : SV_InstanceID)
     float sun = sign(det.hemi) * 0.25f + 0.25f;
     
     float4 pos = float4(pos_world, 1.0f);
+	
+#ifndef DISABLE_MOTION_VECTORS
     float4 pos_old = pos;
+#endif
     
 #ifdef USE_TREEWAVE
-    float H = I.pos.y * length(m_rotate[1]) * det.scale;
     float dp = calc_cyclic(dot(pos_world, wave));
+    float H = I.pos.y * det.scale;
     float inten = H * dp;
     
     pos.xz += calc_xz_wave(dir2D.xz * inten, I.pos.w);
     
-#ifndef DETAIL_SHADOW_PASS
-    float dp_old = calc_cyclic(dot(pos_world, wave_old));
-    float inten_old = H * dp_old;
-    pos_old.xz += calc_xz_wave(dir2D_old.xz * inten_old, I.pos.w);
-#endif
+	#ifndef DISABLE_MOTION_VECTORS
+		float dp_old = calc_cyclic(dot(pos_world, wave_old));
+		float inten_old = H * dp_old;
+		pos_old.xz += calc_xz_wave(dir2D_old.xz * inten_old, I.pos.w);
+	#endif
 #endif
     
+    O.hpos = mul(m_VP, pos);
+	
+#ifndef DETAIL_SHADOW_PASS
     float3 Pe = mul(m_WV, pos);
     
     O.tcdh = float4(I.tc.xy, hemi, sun);
@@ -77,16 +88,15 @@ void main(in v_detail I, out p_bumped_new O, uint instance_id : SV_InstanceID)
     O.M1 = N_world.xxx;
     O.M2 = N_world.yyy;
     O.M3 = N_world.zzz;
-    
-    O.hpos = mul(m_WVP, pos);
-    
-#ifndef DETAIL_SHADOW_PASS
-    O.hpos_curr = O.hpos;
-    O.hpos_old = mul(m_VP_old, pos_old);
-    O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
+
+	#ifndef DISABLE_MOTION_VECTORS
+		O.hpos_curr = O.hpos;
+		O.hpos_old = mul(m_VP_old, pos_old);
+	#endif
+
+	O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 #else
-    O.hpos_curr = O.hpos_old = O.hpos;
+    O.tc0 = I.tc.xy;
 #endif
-    
-    O.snow_mask = 0.0;
 }
+

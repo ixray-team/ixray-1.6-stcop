@@ -87,23 +87,18 @@ void ComputePatchVertex(float3 P[3], float3 N[3], float3 uvw, in PNPatch patch, 
            patch.f3N101 * w * v;
 }
 
-sampler smp_bump_ds;
-Texture2D s_tbump;
-Texture2D s_tbumpX;
-Texture2D s_tdetailBumpX;
-
 void ComputeDisplacedVertex(inout float3 P, float3 N, float2 tc, float2 tcd)
 {
-#ifdef USE_TDETAIL
-    float4 Nu = s_tbump.SampleLevel(smp_bump_ds, tc, 0.0f);
-    float4 NuE = s_tbumpX.SampleLevel(smp_bump_ds, tc, 0.0f);
+    float4 Nu = s_bump.SampleLevel(smp_base, tc, 0.0f);
+    float4 NuE = s_bumpX.SampleLevel(smp_base, tc, 0.0f);
 
     float3 Ne = Nu.wzy + NuE.xyz - 1.0f;
     float height = NuE.w;
 
+#ifdef USE_TDETAIL
     #ifdef USE_TDETAIL_BUMP
-    float4 NDetailX = s_tdetailBumpX.SampleLevel(smp_bump_ds, tcd, 0.0f);
-    height += 0.2f * (NDetailX.w - 0.5f);
+		float4 NDetailX = s_detailBumpX.SampleLevel(smp_base, tcd, 0.0f);
+		height += 0.2f * (NDetailX.w - 0.5f);
     #endif
 
     P += N * height * 0.07f;
@@ -111,3 +106,4 @@ void ComputeDisplacedVertex(inout float3 P, float3 N, float2 tc, float2 tcd)
 }
 
 #endif
+

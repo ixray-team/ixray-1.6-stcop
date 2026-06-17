@@ -3,8 +3,6 @@
 #include "metalic_roughness_ambient.hlsli"
 #include "metalic_roughness_light.hlsli"
 
-Texture3D s_blue_noise;
-
 //LVutner: UAVs. See CPP code
 RWTexture2D<float4> u_sslr : register(u0);
 RWTexture2D<float4> u_sslr_data : register(u1);
@@ -12,94 +10,105 @@ RWTexture2D<float4> u_sslr_data : register(u1);
 [numthreads(8, 8, 1)]
 void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV_GroupIndex)
 {
-	//LVutner: Making my life easier.
-	PSInputFullscreen I;
-	I.hpos.xy = float2(DTid.xy) + 0.5; //half-pix
-	I.hpos.zw = float2(0.0, 1.0);
-	I.texcoord = I.hpos.xy * pos_decompression_params2.zw;
-
-	IXrayGbuffer O;
-    GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
-
-	if(O.Depth >= 1.0f)
-	{
-		u_sslr[DTid.xy] = (0.0).xxxx;
-		u_sslr_data[DTid.xy] = (0.0).xxxx;
-		return;
-	}
+    IXRayGbuffer O = (IXRayGbuffer)NULL;
+    GbufferUnpack(DTid, O);
 
 	//LVutner: Init
 	float4 Final = (0.0).xxxx;
-	float4 Point = (0.0).xxxx;	
+	float4 Point = (0.0).xxxx;
 	
-	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth);
+	float2 TexCoord = float2(DTid.xy + 0.5) * pos_decompression_params2.zw;
+	
+	float3 ReflectPoint = GbufferGetPointRealUnjitter(TexCoord, O.Depth);
 	float3 ViewVec = normalize(ReflectPoint);
 	
-	float2 Jitter = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)].xy;
+	if(O.Depth >= 1.0f)
+	{
+		Point.xyz = ViewVec * fog_params.z;
+		Point.w = EPS_S;
+		
+		Final.xyz = CompureSpecularIrradance(ViewVec.xyz, 1.0f, 0.2f).xyz;
+		
+		Final.xyz *= rcp(1.0f + Final.xyz);
+		Final.xyz = saturate(Final.xyz);
+		Final.w = 0.0f;
+	
+		u_sslr[DTid.xy] = Final;
+		u_sslr_data[DTid.xy] = Point;
+		
+		return;
+	}
+	
+	float2 Jitter = s_blue_noise[uint3(DTid % 128, uint(m_taa_jitter.w) % 32)].xy;
 
 	//LVutner: VNDF is biased, cause I don't want random fireflies
 	float4 H;
+	
+#ifndef USE_LEGACY_LIGHT
 	H.xyz = sample_vndf_isotropic(O.Normal, -ViewVec, Jitter * float2(1.0, 0.7), O.Roughness * O.Roughness);
 	H.w = pdf_vndf_isotropic(O.Normal, -ViewVec, reflect(ViewVec, H.xyz), O.Roughness * O.Roughness);
+#else
+	H.xyz = O.Normal;
+	H.w = EPS;
+#endif
 	
 	float3 Reflection = reflect(ViewVec, H.xyz);
 	
 	if (dot(Reflection, O.Normal) < 0.0f)
     {
-        Reflection = normalize(Reflection + O.Normal);
+       Reflection = normalize(Reflection + O.Normal);
     }
 	
 	float3 StartPoint = ReflectPoint * 0.996f;
 	Point.xyz = StartPoint + Reflection * fog_params.z;	
 	
 	bool isHUDRender = O.Depth < 0.02f;
-	
-#ifdef USE_OFFSCREEN_REFLECTIONS
-	float4 VSLR = 0;
-#endif
 
-	if(!isHUDRender)
-	{
-		StartPoint += O.Normal * 0.025f;
-		
-#ifdef USE_OFFSCREEN_REFLECTIONS
-		VSLR = FastViewReflections(mul(m_env_view, float4(StartPoint.xyz, 1.0f)).xyz, mul((float3x3)m_env_view, Reflection).xyz);
-		Point.xyz = lerp(Point.xyz, mul(m_env_view_inv, float4(VSLR.xyz, 1.0f)).xyz, VSLR.w);
-	} 
-	else
-	{
-		VSLR.xyz = mul(m_env_view, float4(Point.xyz, 1.0f));
-		Point.xyz = Reflection.xyz * s_env.SampleLevel(smp_linear, Point.xyz, 0.0f).w;
-#endif
-	}
-	
+	StartPoint += !isHUDRender ? O.Normal * 0.025f : 0.0f;
 	float4 SSLR = FastViewReflectionsSSR(StartPoint, Reflection, isHUDRender);
 	
 	float4 EndProj = mul(O.Depth < 0.02f ? m_P_hud : m_P, float4(SSLR.xyz, 1.0f));
 	EndProj.xy = EndProj.xy * rcp(EndProj.w) * float2(0.5f, -0.5f) + 0.5f;
 	
-	float2 Velocity = s_velocity.SampleLevel(smp_nofilter, EndProj.xy, 0.0).xy * float2(0.5f, -0.5f);
-	float2 PrevSpecularUV = saturate(EndProj.xy - Velocity.xy);
+	EndProj.xy += s_velocity.SampleLevel(smp_rtlinear, EndProj.xy, 0).xy * float2(-0.5f, 0.5f);
+	SSLR *= GetBorderAtten(EndProj.xy);
 	
-	Final = s_image.SampleLevel(smp_rtlinear, PrevSpecularUV.xy, 0.0);
+	Final = s_image.SampleLevel(smp_rtlinear, EndProj.xy, 0.0);
+	
+	if(!isHUDRender)
+	{
+#ifdef USE_OFFSCREEN_REFLECTIONS
+		if(SSLR.w < 1.0f)
+		{
+			float4 VSLR = FastViewReflections(StartPoint.xyz, Reflection.xyz);
+			Point.xyz = lerp(Point.xyz, VSLR.xyz, VSLR.w);
+		}
+	} 
+	else
+	{
+		Point.xyz = Reflection.xyz * s_env_dist.SampleLevel(smp_linear, Point.xyz, 0.0f).x;
+#endif
+	}
 	
 #ifdef USE_OFFSCREEN_REFLECTIONS
-	O.Hemi = isHUDRender ? 1.0f : saturate(O.Hemi * 3.0f);
+	O.Hemi = 1.0f; // isHUDRender ? 1.0f : saturate(O.Hemi * 3.0f);
 #endif
 	
 	float4 Hemi = CompureSpecularIrradance(Reflection.xyz, O.Hemi, 0.0f).xyzz;
-	SSLR.w *= GetBorderAtten(PrevSpecularUV);
 	
+	if(SSLR.w < 1.0f)
+	{
 #ifdef USE_OFFSCREEN_REFLECTIONS
-	float3 Color = s_env.SampleLevel(smp_linear, VSLR.xyz, 0.0f);
-	Color.xyz *= rcp(1.00001f - Color.xyz);
+		float3 Color = s_env.SampleLevel(smp_linear, Point.xyz, 0.0f);
 #else
-	float3 Color = Hemi.xyz;
+		float3 Color = Hemi.xyz;
 #endif
+
+		Final.xyz = lerp(Color.xyz, Final.xyz, SSLR.w);
+	}
 	
-	Final.xyz = lerp(Color.xyz, Final.xyz, SSLR.w);
 	Point.xyz = lerp(Point.xyz, SSLR.xyz, SSLR.w);
-	Final.xyz = PopGamma(Final.xyz);
+	Final.xyz = LinearToGamma(Final.xyz);
 	
 	Hemi.w = max(length(Point.xyz), length(StartPoint.xyz) + length(Point.xyz - StartPoint.xyz));
 	Hemi.w = saturate(Hemi.w * fog_params.w + fog_params.x);
@@ -108,6 +117,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	Point.xyz = length(Point.xyz - StartPoint.xyz) * Reflection.xyz + ReflectPoint;
 	
 	Point.w = rcp(max(EPS_S, H.w));
+	
 	Final.xyz *= rcp(1.0f + Final.xyz);
 	Final.xyz = saturate(Final.xyz);
 	

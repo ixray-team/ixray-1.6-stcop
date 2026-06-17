@@ -34,8 +34,10 @@ void main(in v_bolbord I, out p_bilbord O)
     O.tc0 = I.tc0;
     O.tc1 = I.tc1;
 
+#ifndef DISABLE_MOTION_VECTORS
     O.hpos_curr = O.hpos;
     O.hpos_old = mul(m_VP_old, pos);
+#endif
 
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 }
