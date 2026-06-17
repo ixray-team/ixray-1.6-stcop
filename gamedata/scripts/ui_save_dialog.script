@@ -22,7 +22,7 @@ function save_dialog:__init() super()
 	self:InitControls	()
 	self:InitCallBacks	()
 	self:FillList		()
-	
+
 	action_repeaters():Register(self, key_bindings.kUI_DOWN,0,0)
 	action_repeaters():Register(self, key_bindings.kUI_UP,0,0)
 end
@@ -38,12 +38,18 @@ function save_dialog:FillList()
 
 	flist:Sort(FS.FS_sort_by_modif_down)
 
+	self:AddItemToList("[" .. game.translate_string("ui_create_new_save") .. "]", "")
+
 	for	it=0, f_cnt-1 	do
 		local file		=	flist:GetAt(it)
 		local file_name = string.sub(file:NameFull(), 0, (string.len(file:NameFull()) - string.len(saved_game_extension)))
 		local date_time = "[" .. file:ModifDigitOnly() .. "]"
 		--menu_item =  ..
 		self:AddItemToList(file_name, date_time)
+	end
+
+	if self.list_box:GetSize() > 0 then
+		self.list_box:SetSelectedIndex(0)
 	end
 end
 
@@ -78,9 +84,7 @@ function save_dialog:InitControls()
 
 	self.editbox					= xml:InitEditBox("form:edit", self.form)
 	self:Register					(self.editbox, "edit_filename")
-	if main_menu.in_controller_mode() then
-		self.editbox:SetText(self:GetNewSavegameName())
-	end
+	self.editbox:SetText			(self:GetNewSavegameName())
 
 	xml:InitFrame					("form:list_frame", self.form)
 
@@ -127,8 +131,12 @@ function save_dialog:OnListItemClicked()
 
 	if item==nil then return end
 
-	local item_text			= item.fn:GetText()
-	self.editbox:SetText	(item_text)
+	if self.list_box:GetSelectedIndex() == 0 then
+		self.editbox:SetText	(self:GetNewSavegameName())
+	else
+		local item_text			= item.fn:GetText()
+		self.editbox:SetText	(item_text)
+	end
 end
 
 function save_dialog:OnMsgYes()
@@ -150,6 +158,9 @@ function save_dialog:OnButton_del_clicked()
 	local item	= self.list_box:GetSelectedItem()
 	if item == nil then return end
 
+	if self.list_box:GetSelectedIndex() == 0 then
+		return
+	end
 	self.mbox_mode = 2
 	self.message_box:InitMessageBox("message_box_delete_file_name")
 	self.message_box:ShowDialog(true)
