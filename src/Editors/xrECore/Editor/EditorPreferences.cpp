@@ -447,7 +447,7 @@ void CCustomPreferences::Load()
 			auto it = std::find(scene_recent_list.begin(), scene_recent_list.end(), fn);
 			if (it == scene_recent_list.end())
 			{
-				scene_recent_list.push_back(fn.c_str());
+				scene_recent_list.push_back(Platform::ANSI_TO_UTF8(fn));
 			}
 		}
 	}
@@ -659,7 +659,7 @@ void CCustomPreferences::AppendRecentFile(const char* name)
 		}
 	}
 
-	scene_recent_list.insert(scene_recent_list.begin(), name);
+	scene_recent_list.insert(scene_recent_list.begin(), Platform::ANSI_TO_UTF8(name));
 	while (scene_recent_list.size() > 10)
 	{
 		scene_recent_list.pop_back();
