@@ -1340,7 +1340,6 @@ bool CLevelMain::PickGround(Fvector& hitpoint, const Fvector& start, const Fvect
 
 }
 
-
 bool CLevelMain::SelectionFrustum(CFrustum& frustum)
 {
 	VERIFY(m_bReady);
@@ -1397,34 +1396,16 @@ void CLevelMain::RealUpdateScene()
 	}
 }
 
-
-
 void CLevelMain::ShowContextMenu(int cls)
 {
 	VERIFY(m_bReady);
-   /* POINT pt;
-	GetCursorPos(&pt);
-	fraLeftBar->miProperties->Enabled = false;
-	if (Scene->SelectionCount( true, cls )) fraLeftBar->miProperties->Enabled = true;
-	RedrawScene(true);
-	fraLeftBar->pmObjectContext->TrackButton = tbRightButton;
-	fraLeftBar->pmObjectContext->Popup(pt.x,pt.y);*/
 }
-
-
-
-
-
-
-// Common
 
 void CLevelMain::ResetStatus()
 {
-	VERIFY(m_bReady);
-  /*  if (fraBottomBar->paStatus->Caption!=""){
-		fraBottomBar->paStatus->Caption=""; fraBottomBar->paStatus->Repaint();
-	}*/
+	UI->ProgressStatusName.clear();
 }
+
 void CLevelMain::SetStatus(const char* s, bool bOutLog)
 {
 	VERIFY(m_bReady);
@@ -1434,17 +1415,16 @@ void CLevelMain::SetStatus(const char* s, bool bOutLog)
 
 	UI->ProgressStatusName = s;
 }
-void CLevelMain::ProgressDraw()
-{
-	inherited::ProgressDraw();
-	//fraBottomBar->RedrawBar();
-}
 
 void CLevelMain::RealQuit()
 {
 	//frmMain->Close();
 }
 
+void CLevelMain::ProgressDraw()
+{
+	inherited::ProgressDraw();
+}
 
 void CLevelMain::SaveSettings(nlohmann::json& js)
 {

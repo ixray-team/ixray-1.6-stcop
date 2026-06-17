@@ -555,7 +555,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Windows")) {
+		if (ImGui::BeginMenu("Windows"))
+		{
 			DrawMenuItemI("Light Anim Editor", ICON_FA_LIGHTBULB, COMMAND_LIGHTANIM_EDITOR);
 
 			if (ImGui::MenuItemI("Macro Editor", ICON_FA_SQUARE_SHARE_NODES, ""))
@@ -706,6 +707,25 @@ void UIMainMenuForm::Draw()
 			}
 		}
 		
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 405);
+		ImGui::SetCursorPosY(4);
+
+		if (UI->IsLoading)
+		{
+			ImGui::SetNextWindowBgAlpha(0);
+			if (ImGui::BeginChild("##renderloader", {255, 22}, true))
+			{
+				ImGui::ProgressBar(UI->ProgressStatus / 100.f, {250, 22});
+				ImGui::SameLine();
+
+				const float TextSize = ImGui::CalcTextSize(UI->ProgressStatusName.c_str()).x;
+				ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 255 + (125 - (TextSize / 2)));
+				ImGui::Text(UI->ProgressStatusName.c_str());
+			}
+			ImGui::EndChild();
+		}
+
 		IXEndMainMenuBar();
 	}
 
