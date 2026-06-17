@@ -162,34 +162,22 @@ void UITopBarForm::Draw()
 			{
 				IMGUI_HINT_BUTTON("I_OGF", Icons["open_gamedata_folder"],"Open 'gamedata' folder", ImDrawFlags_RoundCornersAll, ClickOpenGameData);
 			}
-/*
-			if (ImGui::TableNextColumn())
-			{
-				//ApplyBackground("Hint");
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
-				ImGui::Checkbox("Hint ", &MainForm->GetRenderForm()->UseHint);
-				//CalcTableEndPos("Hint");
-			}
-*/
 
 			if (ImGui::TableNextColumn())
 			{
-				//ApplyBackground("Sound Preferences");
 				ImGui::BeginDisabled(psDeviceFlags.is(rsMuteSounds));
-				//ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
 				ImGui::SetNextItemWidth(GUIManager->ScaleByDpi(150));
-				ImGui::SliderFloat(!psDeviceFlags.is(rsMuteSounds) ? ICON_FA_VOLUME_HIGH : ICON_FA_VOLUME_XMARK, &EPrefs->sound_volume, 0, 1, "%.2f");
+				bool IsDisableSound = EPrefs->sound_volume < 0.01f || psDeviceFlags.is(rsMuteSounds);
+
+				ImGui::SliderFloat(!IsDisableSound ? ICON_FA_VOLUME_HIGH : ICON_FA_VOLUME_XMARK, &EPrefs->sound_volume, 0, 1, "%.2f");
 				ImGui::EndDisabled();
-				//CalcTableEndPos("Sound Preferences");
 			}
 
 			if (ImGui::TableNextColumn())
 			{
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent).Value);
-				//ApplyBackground("Physics");
 				
 				if (XRay::ImGui::ToolbarButton("PhysSimulation228","Phys Simulation", &m_Simulate, { 0.f, ButtonSize }, ImDrawFlags_RoundCornersLeft))
-				//if (ImGui::Checkbox("Phys Simulation", &m_Simulate))
 				{
 					ExecCommand(COMMAND_SIMULATE, true);
 				}
@@ -200,10 +188,7 @@ void UITopBarForm::Draw()
 				}
 				ImGui::SameLine(0, 0);
 
-				//ImGui::SetCursorPosY(3);
-
 				if (XRay::ImGui::ToolbarButton("UsePos228", "Use Pos", nullptr, { 0.f, ButtonSize }, ImDrawFlags_RoundCornersRight))
-				//if (ImGui::Button("Use Pos"))
 				{
 					ExecCommand(COMMAND_USE_SIMULATE_POSITIONS, true);
 				}
@@ -214,7 +199,6 @@ void UITopBarForm::Draw()
 					ImGui::SetTooltip("Use the position of the selected object when physics simulation is active\r\nThe position of the object will be applied when simulating physics");
 				}
 				ImGui::PopStyleColor();
-				//CalcTableEndPos("Physics");
 			}
 
 			if (ImGui::TableNextColumn())
