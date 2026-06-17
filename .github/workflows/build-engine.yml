@@ -37,7 +37,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - windows-latest
+          - windows-2022
         preset:
           - Engine
         platform:
@@ -112,7 +112,7 @@ jobs:
     needs: [build-engine]
     strategy:
       matrix:
-        system: [windows-latest]
+        system: [windows-2022]
     runs-on: ${{ matrix.system }}
   
     steps:
@@ -177,7 +177,7 @@ jobs:
     needs: [pack-assets]
     strategy:
       matrix:
-        system: [windows-latest]
+        system: [windows-2022]
         platform: [x64]
         preset: [Engine]
         config: [RelWithDebInfo]

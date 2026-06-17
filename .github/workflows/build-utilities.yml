@@ -37,7 +37,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - windows-latest
+          - windows-2022
         preset:
           - Utilities
         platform:
@@ -237,7 +237,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - windows-latest
+          - windows-2022
 
     runs-on: ${{ matrix.system }}
 
@@ -284,7 +284,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - windows-latest
+          - windows-2022
         platform:
           - x64
         preset:
