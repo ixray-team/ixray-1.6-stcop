@@ -35,25 +35,29 @@ extern u32 		bone_to_delete_frame;
 
 void CEditableObject::OnFrame()
 {
-	if (IsSkeleton()){
+	if (IsSkeleton())
+	{
 		BoneVec& lst = m_Bones;
-		if (IsSMotionActive()){
-			Fvector R,T;
-			int i=0;
-			for(BoneIt b_it=lst.begin(); b_it!=lst.end(); b_it++, i++){
-				m_ActiveSMotion->_Evaluate(i,m_SMParam.Frame(),T,R);
-				(*b_it)->_Update(T,R);
+		if (IsSMotionActive())
+		{
+			Fvector R, T;
+			int i = 0;
+			for (BoneIt b_it = lst.begin(); b_it != lst.end(); b_it++, i++)
+			{
+				m_ActiveSMotion->_Evaluate(i, m_SMParam.Frame(), T, R);
+				(*b_it)->_Update(T, R);
 			}
-			m_SMParam.Update(EDevice->fTimeDelta,m_ActiveSMotion->fSpeed,!m_ActiveSMotion->m_Flags.is(esmStopAtEnd));
-		}else{
-			//for (BoneIt b_it=lst.begin(); b_it!=lst.end(); b_it++) (*b_it)->Reset();
+			m_SMParam.Update(EDevice->fTimeDelta, m_ActiveSMotion->fSpeed, !m_ActiveSMotion->m_Flags.is(esmStopAtEnd));
 		}
+
 		CalculateAnimation(m_ActiveSMotion);
 	}
-	if(bone_to_delete)
+	if (bone_to_delete)
 	{
-		if(EDevice->dwFrame > bone_to_delete_frame+3)
+		if (EDevice->dwFrame > bone_to_delete_frame + 3)
+		{
 			xr_delete(bone_to_delete);
+		}
 	}
 }
 #endif
@@ -267,13 +271,19 @@ void CEditableObject::SetActiveSMotion(CSMotion* mot)
 bool CEditableObject::RemoveSMotion(const char* name)
 {
 	SMotionVec& lst = m_SMotions;
-	for(SMotionIt m=lst.begin(); m!=lst.end(); m++)
-		if ((stricmp((*m)->Name(),name)==0)){
-			if (m_ActiveSMotion==*m) SetActiveSMotion(nullptr);
+	for (SMotionIt m = lst.begin(); m != lst.end(); m++)
+	{
+		if ((stricmp((*m)->Name(), name) == 0))
+		{
+			if (m_ActiveSMotion == *m)
+			{
+				SetActiveSMotion(nullptr);
+			}
 			xr_delete(*m);
 			lst.erase(m);
 			return true;
 		}
+	}
 	return false;
 }
 

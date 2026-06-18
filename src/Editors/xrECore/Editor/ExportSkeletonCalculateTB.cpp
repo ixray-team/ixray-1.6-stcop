@@ -81,43 +81,25 @@ IC const u16 &face_vertex( const SSkelFace &F, u32 vertex_index )
 }
 
 
-void 	CExportSkeleton::SSplit::CalculateTB	()
+void CExportSkeleton::SSplit::CalculateTB()
 {
-	xr_vector<MeshMender::Vertex>	mender_in_out_verts;
-	xr_vector< unsigned int >		mender_in_out_indices;
-	xr_vector< unsigned int >		mender_mapping_out_to_in_vert;
+	xr_vector<MeshMender::Vertex> MenderInOutVerts;
+	xr_vector<unsigned int> MenderInOutIndices;
+	xr_vector<unsigned int> MenderMappingOut2InVert;
 
-	fill_mender_input( m_Verts, m_Faces, mender_in_out_verts, mender_in_out_indices );
+	fill_mender_input(m_Verts, m_Faces, MenderInOutVerts, MenderInOutIndices);
 
-	MeshMender	mender	;
-	if
-	(
-		!mender.Mend
-		(
-		  mender_in_out_verts,
-		  mender_in_out_indices,
-		  mender_mapping_out_to_in_vert,
-		  1,
-		  0.5,
-		  0.5,
-		  0.0f,
-		  MeshMender::DONT_CALCULATE_NORMALS,
-		  MeshMender::RESPECT_SPLITS,
-		  MeshMender::DONT_FIX_CYLINDRICAL
-		)
-	)
+	MeshMender mender;
+	if (!mender.Mend(MenderInOutVerts, MenderInOutIndices, MenderMappingOut2InVert, 1, 0.5, 0.5, 0.0f, MeshMender::DONT_CALCULATE_NORMALS, MeshMender::RESPECT_SPLITS, MeshMender::DONT_FIX_CYLINDRICAL))
 	{
-		Debug.fatal	( DEBUG_INFO, "NVMeshMender failed " );
-		//Debug.fatal	(DEBUG_INFO,"NVMeshMender failed (%s)",mender.GetLastError().c_str());
+		Debug.fatal(DEBUG_INFO, "NVMeshMender failed ");
 	}
 
-	retrive_data_from_mender_otput( m_Verts, m_Faces, mender_in_out_verts, mender_in_out_indices, mender_mapping_out_to_in_vert  );
+	retrive_data_from_mender_otput(m_Verts, m_Faces, MenderInOutVerts, MenderInOutIndices, MenderMappingOut2InVert);
 
-	//t_remove_isolated_verts( m_Verts, m_Faces );
-
-	mender_in_out_verts				.clear( );
-	mender_in_out_indices			.clear( );
-	mender_mapping_out_to_in_vert	.clear( );
+	MenderInOutVerts.clear();
+	MenderInOutIndices.clear();
+	MenderMappingOut2InVert.clear();
 
 	OptimizeTextureCoordinates();
 }
