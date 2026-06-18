@@ -1,374 +1,371 @@
 #include "stdafx.h"
 #include "particle_actions_collection.h"
 #include "particle_holder.h"
+#include "src/xrGame/alife_object_registry.h"
 
 using namespace PAPI;
+static constexpr u32 Block = 64;
 
 void PAPI::PAAvoid::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 {
 	float magdt = magnitude * dt;
+		
+	auto PosArr = pHolder->particles.pos_arr;
+	auto VelArr = pHolder->particles.vel_arr;
 	
 	switch(position.type)
 	{
 	case PDPlane:
+	{
+		if(look_ahead < P_MAXFLOAT)
 		{
-			if(look_ahead < P_MAXFLOAT)
+			for(u32 i = 0; i < pHolder->p_count; i++)
 			{
-				for(u32 i = 0; i < pHolder->p_count; i++)
+				auto& vel = VelArr[i];
+				// p2 stores the plane normal (the a,b,c of the plane eqn).
+				// Old and new distances: dist(p,plane) = n * p + d
+				// radius1 stores -n*p, which is d.
+				float dist = PosArr[i] * position.p2 + position.radius1;
+				
+				if(dist < look_ahead)
 				{
-					Particle &m = pHolder->particles[i];
-					
-					// p2 stores the plane normal (the a,b,c of the plane eqn).
-					// Old and new distances: dist(p,plane) = n * p + d
-					// radius1 stores -n*p, which is d.
-					float dist = m.pos * position.p2 + position.radius1;
-					
-					if(dist < look_ahead)
-					{
-						float vm = m.vel.magnitude();
-						Fvector Vn = m.vel / vm;
-						// float dot = Vn * position.p2;
-						
-						Fvector tmp = (position.p2 * (magdt / (dist*dist+epsilon))) + Vn;
-						m.vel = tmp * (vm / tmp.magnitude());
-						if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-						{
-							m.rot_vel = m.vel;
-							m.rot_vel.normalize_safe();
-						}
-					}
-				}
-			}
-			else
-			{
-				for(u32 i = 0; i < pHolder->p_count; i++)
-				{
-					Particle &m = pHolder->particles[i];
-					
-					// p2 stores the plane normal (the a,b,c of the plane eqn).
-					// Old and new distances: dist(p,plane) = n * p + d
-					// radius1 stores -n*p, which is d.
-					float dist = m.pos * position.p2 + position.radius1;
-					
-					float vm = m.vel.magnitude();
-					Fvector Vn = m.vel / vm;
+					float vm = vel.magnitude();
+					Fvector Vn = vel / vm;
 					// float dot = Vn * position.p2;
 					
 					Fvector tmp = (position.p2 * (magdt / (dist*dist+epsilon))) + Vn;
-					m.vel = tmp * (vm / tmp.magnitude());
-					if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-					{
-						m.rot_vel = m.vel;
-						m.rot_vel.normalize_safe();
-					}
+					vel = tmp * (vm / tmp.magnitude());
 				}
 			}
 		}
+		else
+		{
+			for(u32 i = 0; i < pHolder->p_count; i++)
+			{
+				float dist = PosArr[i] * position.p2 + position.radius1;
+				auto& vel = VelArr[i];
+				
+				float vm = vel.magnitude();
+				Fvector Vn = vel / vm;
+				// float dot = Vn * position.p2;
+				
+				Fvector tmp = (position.p2 * (magdt / (dist*dist+epsilon))) + Vn;
+				vel = tmp * (vm / tmp.magnitude());
+			}
+		}
 		break;
+	}
 	case PDRectangle:
+	{
+		// Compute the inverse matrix of the plane basis.
+		Fvector &u = position.u;
+		Fvector &v = position.v;
+		
+		// The normalized bases are needed inside the loop.
+		Fvector un = u / position.radius1Sqr;
+		Fvector vn = v / position.radius2Sqr;
+		
+		// w = u cross v
+		float wx = u.y*v.z-u.z*v.y;
+		float wy = u.z*v.x-u.x*v.z;
+		float wz = u.x*v.y-u.y*v.x;
+		
+		float det = 1/(wz*u.x*v.y-wz*u.y*v.x-u.z*wx*v.y-u.x*v.z*wy+v.z*wx*u.y+u.z*v.x*wy);
+		
+		Fvector s1((v.y*wz-v.z*wy), (v.z*wx-v.x*wz), (v.x*wy-v.y*wx));
+		s1 *= det;
+		Fvector s2((u.y*wz-u.z*wy), (u.z*wx-u.x*wz), (u.x*wy-u.y*wx));
+		s2 *= -det;
+
+		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			// Compute the inverse matrix of the plane basis.
-			Fvector &u = position.u;
-			Fvector &v = position.v;
+			auto& Pos = PosArr[i];
+			auto& Vel = VelArr[i];
 			
-			// The normalized bases are needed inside the loop.
-			Fvector un = u / position.radius1Sqr;
-			Fvector vn = v / position.radius2Sqr;
+			// See if particle's current and next positions cross plane.
+			// If not, couldn't bounce, so keep going.
+			Fvector pnext(Pos + Vel * dt * look_ahead);
 			
-			// w = u cross v
-			float wx = u.y*v.z-u.z*v.y;
-			float wy = u.z*v.x-u.x*v.z;
-			float wz = u.x*v.y-u.y*v.x;
+			// p2 stores the plane normal (the a,b,c of the plane eqn).
+			// Old and new distances: dist(p,plane) = n * p + d
+			// radius1 stores -n*p, which is d.
+			float distold = Pos * position.p2 + position.radius1;
+			float distnew = pnext * position.p2 + position.radius1;
 			
-			float det = 1/(wz*u.x*v.y-wz*u.y*v.x-u.z*wx*v.y-u.x*v.z*wy+v.z*wx*u.y+u.z*v.x*wy);
+			// Opposite signs if product < 0
+			// There is no faster way to do this.
+			if(distold * distnew >= 0)
+				continue;
 			
-			Fvector s1((v.y*wz-v.z*wy), (v.z*wx-v.x*wz), (v.x*wy-v.y*wx));
-			s1 *= det;
-			Fvector s2((u.y*wz-u.z*wy), (u.z*wx-u.x*wz), (u.x*wy-u.y*wx));
-			s2 *= -det;
+			float nv = position.p2 * Vel;
+			float t = -distold / nv;
 			
-			// See which particles bounce.
-			for(u32 i = 0; i < pHolder->p_count; i++)
-			{
-				Particle &m = pHolder->particles[i];
-				
-				// See if particle's current and next positions cross plane.
-				// If not, couldn't bounce, so keep going.
-				Fvector pnext(m.pos + m.vel * dt * look_ahead);
-				
-				// p2 stores the plane normal (the a,b,c of the plane eqn).
-				// Old and new distances: dist(p,plane) = n * p + d
-				// radius1 stores -n*p, which is d.
-				float distold = m.pos * position.p2 + position.radius1;
-				float distnew = pnext * position.p2 + position.radius1;
-				
-				// Opposite signs if product < 0
-				// There is no faster way to do this.
-				if(distold * distnew >= 0)
-					continue;
-				
-				float nv = position.p2 * m.vel;
-				float t = -distold / nv;
-				
-				// Actual intersection point p(t) = pos + vel t
-				Fvector phit(m.pos + m.vel * t);
-				
-				// Offset from origin in plane, p - origin
-				Fvector offset(phit - position.p1);
-				
-				// Dot product with basis vectors of old frame
-				// in terms of new frame gives position in uv frame.
-				float upos = offset * s1;
-				float vpos = offset * s2;
-				
-				// Did it cross plane outside triangle?
-				if(upos < 0 || vpos < 0 || upos > 1 || vpos > 1)
-					continue;
-				
-				// A hit! A most palpable hit!
-				// Compute distance to the three edges.
-				Fvector uofs = (un * (un * offset)) - offset;
-				float udistSqr = uofs.square_magnitude();
-				Fvector vofs = (vn * (vn * offset)) - offset;
-				float vdistSqr = vofs.square_magnitude();
-				
-				Fvector foffset((u + v) - offset);
-				Fvector fofs = (un * (un * foffset)) - foffset;
-				float fdistSqr = fofs.square_magnitude();
-				Fvector gofs = (un * (un * foffset)) - foffset;
-				float gdistSqr = gofs.square_magnitude();
-				
-				Fvector S;
-				if(udistSqr <= vdistSqr && udistSqr <= fdistSqr
-					&& udistSqr <= gdistSqr) S = uofs;
-				else if(vdistSqr <= fdistSqr && vdistSqr <= gdistSqr) S = vofs;
-				else if(fdistSqr <= gdistSqr) S = fofs;
-				else S = gofs;
-				
-				S.normalize_safe();
-				
-				// We now have a vector3 to safety.
-				float vm = m.vel.magnitude();
-				Fvector Vn = m.vel / vm;
-				
-				// Blend S into V.
-				Fvector tmp = (S * (magdt / (t*t+epsilon))) + Vn;
-				m.vel = tmp * (vm / tmp.magnitude());
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-				}
-			}
+			// Actual intersection point p(t) = pos + vel t
+			Fvector phit(Pos + Vel * t);
+			
+			// Offset from origin in plane, p - origin
+			Fvector offset(phit - position.p1);
+			
+			// Dot product with basis vectors of old frame
+			// in terms of new frame gives position in uv frame.
+			float upos = offset * s1;
+			float vpos = offset * s2;
+			
+			// Did it cross plane outside triangle?
+			if(upos < 0 || vpos < 0 || upos > 1 || vpos > 1)
+				continue;
+			
+			// A hit! A most palpable hit!
+			// Compute distance to the three edges.
+			Fvector uofs = (un * (un * offset)) - offset;
+			float udistSqr = uofs.square_magnitude();
+			Fvector vofs = (vn * (vn * offset)) - offset;
+			float vdistSqr = vofs.square_magnitude();
+			
+			Fvector foffset((u + v) - offset);
+			Fvector fofs = (un * (un * foffset)) - foffset;
+			float fdistSqr = fofs.square_magnitude();
+			Fvector gofs = (un * (un * foffset)) - foffset;
+			float gdistSqr = gofs.square_magnitude();
+			
+			Fvector S;
+			if(udistSqr <= vdistSqr && udistSqr <= fdistSqr
+				&& udistSqr <= gdistSqr) S = uofs;
+			else if(vdistSqr <= fdistSqr && vdistSqr <= gdistSqr) S = vofs;
+			else if(fdistSqr <= gdistSqr) S = fofs;
+			else S = gofs;
+			
+			S.normalize_safe();
+			
+			// We now have a vector3 to safety.
+			float vm = Vel.magnitude();
+			Fvector Vn = Vel / vm;
+			
+			// Blend S into V.
+			Fvector tmp = (S * (magdt / (t*t+epsilon))) + Vn;
+			Vel = tmp * (vm / tmp.magnitude());
 		}
 		break;
+	}
 	case PDTriangle:
+	{
+		// Compute the inverse matrix of the plane basis.
+		Fvector &u = position.u;
+		Fvector &v = position.v;
+		
+		// The normalized bases are needed inside the loop.
+		Fvector un = u / position.radius1Sqr;
+		Fvector vn = v / position.radius2Sqr;
+		
+		// f is the third (non-basis) triangle edge.
+		Fvector f = v - u;
+		Fvector fn(f);
+		fn.normalize_safe();
+		
+		// w = u cross v
+		float wx = u.y*v.z-u.z*v.y;
+		float wy = u.z*v.x-u.x*v.z;
+		float wz = u.x*v.y-u.y*v.x;
+		
+		float det = 1/(wz*u.x*v.y-wz*u.y*v.x-u.z*wx*v.y-u.x*v.z*wy+v.z*wx*u.y+u.z*v.x*wy);
+		
+		Fvector s1((v.y*wz-v.z*wy), (v.z*wx-v.x*wz), (v.x*wy-v.y*wx));
+		s1 *= det;
+		Fvector s2((u.y*wz-u.z*wy), (u.z*wx-u.x*wz), (u.x*wy-u.y*wx));
+		s2 *= -det;
+		
+		// See which particles bounce.
+		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			// Compute the inverse matrix of the plane basis.
-			Fvector &u = position.u;
-			Fvector &v = position.v;
+			auto& Pos = PosArr[i];
+			auto& Vel = VelArr[i];
 			
-			// The normalized bases are needed inside the loop.
-			Fvector un = u / position.radius1Sqr;
-			Fvector vn = v / position.radius2Sqr;
+			// See if particle's current and next positions cross plane.
+			// If not, couldn't bounce, so keep going.
+			Fvector pnext(Pos + Vel * dt * look_ahead);
 			
-			// f is the third (non-basis) triangle edge.
-			Fvector f = v - u;
-			Fvector fn(f);
-			fn.normalize_safe();
+			// p2 stores the plane normal (the a,b,c of the plane eqn).
+			// Old and new distances: dist(p,plane) = n * p + d
+			// radius1 stores -n*p, which is d.
+			float distold = Pos * position.p2 + position.radius1;
+			float distnew = pnext * position.p2 + position.radius1;
 			
-			// w = u cross v
-			float wx = u.y*v.z-u.z*v.y;
-			float wy = u.z*v.x-u.x*v.z;
-			float wz = u.x*v.y-u.y*v.x;
-			
-			float det = 1/(wz*u.x*v.y-wz*u.y*v.x-u.z*wx*v.y-u.x*v.z*wy+v.z*wx*u.y+u.z*v.x*wy);
-			
-			Fvector s1((v.y*wz-v.z*wy), (v.z*wx-v.x*wz), (v.x*wy-v.y*wx));
-			s1 *= det;
-			Fvector s2((u.y*wz-u.z*wy), (u.z*wx-u.x*wz), (u.x*wy-u.y*wx));
-			s2 *= -det;
-			
-			// See which particles bounce.
-			for(u32 i = 0; i < pHolder->p_count; i++)
+			// Opposite signs if product < 0
+			// Is there a faster way to do this?
+			if(distold * distnew >= 0)
 			{
-				Particle &m = pHolder->particles[i];
-				
-				// See if particle's current and next positions cross plane.
-				// If not, couldn't bounce, so keep going.
-				Fvector pnext(m.pos + m.vel * dt * look_ahead);
-				
-				// p2 stores the plane normal (the a,b,c of the plane eqn).
-				// Old and new distances: dist(p,plane) = n * p + d
-				// radius1 stores -n*p, which is d.
-				float distold = m.pos * position.p2 + position.radius1;
-				float distnew = pnext * position.p2 + position.radius1;
-				
-				// Opposite signs if product < 0
-				// Is there a faster way to do this?
-				if(distold * distnew >= 0)
-					continue;
-				
-				float nv = position.p2 * m.vel;
-				float t = -distold / nv;
-				
-				// Actual intersection point p(t) = pos + vel t
-				Fvector phit(m.pos + m.vel * t);
-				
-				// Offset from origin in plane, p - origin
-				Fvector offset(phit - position.p1);
-				
-				// Dot product with basis vectors of old frame
-				// in terms of new frame gives position in uv frame.
-				float upos = offset * s1;
-				float vpos = offset * s2;
-				
-				// Did it cross plane outside triangle?
-				if(upos < 0 || vpos < 0 || (upos + vpos) > 1)
-					continue;
-				
-				// A hit! A most palpable hit!
-				// Compute distance to the three edges.
-				Fvector uofs = (un * (un * offset)) - offset;
-				float udistSqr = uofs.square_magnitude();
-				Fvector vofs = (vn * (vn * offset)) - offset;
-				float vdistSqr = vofs.square_magnitude();
-				Fvector foffset(offset - u);
-				Fvector fofs = (fn * (fn * foffset)) - foffset;
-				float fdistSqr = fofs.square_magnitude();
-				Fvector S;
-				if(udistSqr <= vdistSqr && udistSqr <= fdistSqr) S = uofs;
-				else if(vdistSqr <= fdistSqr) S = vofs;
-				else S = fofs;
-				
-				S.normalize_safe();
-				
-				// We now have a vector3 to safety.
-				float vm = m.vel.magnitude();
-				Fvector Vn = m.vel / vm;
-				
-				// Blend S into V.
-				Fvector tmp = (S * (magdt / (t*t+epsilon))) + Vn;
-				m.vel = tmp * (vm / tmp.magnitude());
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-				}
+				continue;
 			}
+			
+			float nv = position.p2 * Vel;
+			float t = -distold / nv;
+			
+			// Actual intersection point p(t) = pos + vel t
+			Fvector phit(Pos + Vel * t);
+			
+			// Offset from origin in plane, p - origin
+			Fvector offset(phit - position.p1);
+			
+			// Dot product with basis vectors of old frame
+			// in terms of new frame gives position in uv frame.
+			float upos = offset * s1;
+			float vpos = offset * s2;
+			
+			// Did it cross plane outside triangle?
+			if(upos < 0 || vpos < 0 || (upos + vpos) > 1)
+				continue;
+			
+			// A hit! A most palpable hit!
+			// Compute distance to the three edges.
+			Fvector uofs = (un * (un * offset)) - offset;
+			float udistSqr = uofs.square_magnitude();
+			Fvector vofs = (vn * (vn * offset)) - offset;
+			float vdistSqr = vofs.square_magnitude();
+			Fvector foffset(offset - u);
+			Fvector fofs = (fn * (fn * foffset)) - foffset;
+			float fdistSqr = fofs.square_magnitude();
+			Fvector S;
+			if(udistSqr <= vdistSqr && udistSqr <= fdistSqr) S = uofs;
+			else if(vdistSqr <= fdistSqr) S = vofs;
+			else S = fofs;
+			
+			S.normalize_safe();
+			
+			// We now have a vector3 to safety.
+			float vm = Vel.magnitude();
+			Fvector Vn = Vel / vm;
+			
+			// Blend S into V.
+			Fvector tmp = (S * (magdt / (t*t+epsilon))) + Vn;
+			Vel = tmp * (vm / tmp.magnitude());
 		}
 		break;
+	}
 	case PDDisc:
+	{
+		float r1Sqr = _sqr(position.radius1);
+		float r2Sqr = _sqr(position.radius2);
+		
+		// See which particles bounce.
+		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			float r1Sqr = _sqr(position.radius1);
-			float r2Sqr = _sqr(position.radius2);
+			auto& Pos = PosArr[i];
+			auto& Vel = VelArr[i];
 			
-			// See which particles bounce.
-			for(u32 i = 0; i < pHolder->p_count; i++)
+			// See if particle's current and next positions cross plane.
+			// If not, couldn't bounce, so keep going.
+			Fvector pnext(Pos + Vel * dt * look_ahead);
+			
+			// p2 stores the plane normal (the a,b,c of the plane eqn).
+			// Old and new distances: dist(p,plane) = n * p + d
+			// radius1 stores -n*p, which is d. radius1Sqr stores d.
+			float distold = Pos * position.p2 + position.radius1Sqr;
+			float distnew = pnext * position.p2 + position.radius1Sqr;
+			
+			// Opposite signs if product < 0
+			// Is there a faster way to do this?
+			if(distold * distnew >= 0)
 			{
-				Particle &m = pHolder->particles[i];
-				
-				// See if particle's current and next positions cross plane.
-				// If not, couldn't bounce, so keep going.
-				Fvector pnext(m.pos + m.vel * dt * look_ahead);
-				
-				// p2 stores the plane normal (the a,b,c of the plane eqn).
-				// Old and new distances: dist(p,plane) = n * p + d
-				// radius1 stores -n*p, which is d. radius1Sqr stores d.
-				float distold = m.pos * position.p2 + position.radius1Sqr;
-				float distnew = pnext * position.p2 + position.radius1Sqr;
-				
-				// Opposite signs if product < 0
-				// Is there a faster way to do this?
-				if(distold * distnew >= 0)
-					continue;
-				
-				// Find position at the crossing point by parameterizing
-				// p(t) = pos + vel * t
-				// Solve dist(p(t),plane) = 0 e.g.
-				// n * p(t) + D = 0 ->
-				// n * p + t (n * v) + D = 0 ->
-				// t = -(n * p + D) / (n * v)
-				// Could factor n*v into distnew = distold + n*v and save a bit.
-				// Safe since n*v != 0 assured by quick rejection test.
-				// This calc is indep. of dt because we have established that it
-				// will hit before dt. We just want to know when.
-				float nv = position.p2 * m.vel;
-				float t = -distold / nv;
-				
-				// Actual intersection point p(t) = pos + vel t
-				Fvector phit(m.pos + m.vel * t);
-				
-				// Offset from origin in plane, phit - origin
-				Fvector offset(phit - position.p1);
-				
-				float rad = offset.square_magnitude();
-				
-				if(rad > r1Sqr || rad < r2Sqr)
-					continue;
-				
-				// A hit! A most palpable hit!
-				Fvector S = offset;
-				S.normalize_safe();
-				
-				// We now have a vector3 to safety.
-				float vm = m.vel.magnitude();
-				Fvector Vn = m.vel / vm;
-				
-				// Blend S into V.
-				Fvector tmp = (S * (magdt / (t*t+epsilon))) + Vn;
-				m.vel = tmp * (vm / tmp.magnitude());
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-				}
+				continue;
 			}
+			
+			// Find position at the crossing point by parameterizing
+			// p(t) = pos + vel * t
+			// Solve dist(p(t),plane) = 0 e.g.
+			// n * p(t) + D = 0 ->
+			// n * p + t (n * v) + D = 0 ->
+			// t = -(n * p + D) / (n * v)
+			// Could factor n*v into distnew = distold + n*v and save a bit.
+			// Safe since n*v != 0 assured by quick rejection test.
+			// This calc is indep. of dt because we have established that it
+			// will hit before dt. We just want to know when.
+			float nv = position.p2 * Vel;
+			float t = -distold / nv;
+			
+			// Actual intersection point p(t) = pos + vel t
+			Fvector phit(Pos + Vel * t);
+			
+			// Offset from origin in plane, phit - origin
+			Fvector offset(phit - position.p1);
+			
+			float rad = offset.square_magnitude();
+			
+			if(rad > r1Sqr || rad < r2Sqr)
+			{
+				continue;
+			}
+			
+			// A hit! A most palpable hit!
+			Fvector S = offset;
+			S.normalize_safe();
+			
+			// We now have a vector3 to safety.
+			float vm = Vel.magnitude();
+			Fvector Vn = Vel / vm;
+			
+			// Blend S into V.
+			Fvector tmp = (S * (magdt / (t*t+epsilon))) + Vn;
+			Vel = tmp * (vm / tmp.magnitude());
 		}
 		break;
+	}
 	case PDSphere:
+	{
+		float rSqr = position.radius1 * position.radius1;
+		
+		// See which particles are aimed toward the sphere.
+		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			float rSqr = position.radius1 * position.radius1;
+			auto& Pos = PosArr[i];
+			auto& Vel = VelArr[i];
 			
-			// See which particles are aimed toward the sphere.
-			for(u32 i = 0; i < pHolder->p_count; i++)
+			// First do a ray-sphere intersection test and
+			// see if it's soon enough.
+			// Can I do this faster without t?
+			float vm = Vel.magnitude();
+			Fvector Vn = Vel / vm;
+			
+			Fvector L = position.p1 - Pos;
+			float v = L * Vn;
+			
+			float disc = rSqr - (L * L) + v * v;
+			if(disc < 0)
 			{
-				Particle &m = pHolder->particles[i];
-				
-				// First do a ray-sphere intersection test and
-				// see if it's soon enough.
-				// Can I do this faster without t?
-				float vm = m.vel.magnitude();
-				Fvector Vn = m.vel / vm;
-				
-				Fvector L = position.p1 - m.pos;
-				float v = L * Vn;
-				
-				float disc = rSqr - (L * L) + v * v;
-				if(disc < 0)
-					continue; // I'm not heading toward it.
-				
-				// Compute length for second rejection test.
-				float t = v - _sqrt(disc);
-				if(t < 0 || t > (vm * look_ahead))
-					continue;
-				
-				// Get a vector3 to safety.
-				Fvector C = Vn ^ L;
-				C.normalize_safe();
-				Fvector S = Vn ^ C;
-				
-				// Blend S into V.
-				Fvector tmp = (S * (magdt / (t*t+epsilon))) + Vn;
-				m.vel = tmp * (vm / tmp.magnitude());
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-				}
+				continue; // I'm not heading toward it.
 			}
+			
+			// Compute length for second rejection test.
+			float t = v - _sqrt(disc);
+			if(t < 0 || t > (vm * look_ahead))
+			{
+				continue;
+			}
+			
+			// Get a vector3 to safety.
+			Fvector C = Vn ^ L;
+			C.normalize_safe();
+			Fvector S = Vn ^ C;
+			
+			// Blend S into V.
+			Fvector tmp = (S * (magdt / (t*t+epsilon))) + Vn;
+			Vel = tmp * (vm / tmp.magnitude());
 		}
 		break;
+	}
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
+		for(u32 i = 0; i < pHolder->p_count; i++)
+		{
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
+			{
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
+			}
+		}
 	}
 }
 void PAPI::PAAvoid::Transform(const Fmatrix& m)
@@ -409,361 +406,367 @@ void* PAAvoid::GetVariableImpl(u8 VarID)
 
 void PABounce::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 {
+	auto PosArr = pHolder->particles.pos_arr;
+	auto VelArr = pHolder->particles.vel_arr;
+	
 	switch(position.type)
 	{
 	case PDTriangle:
+	{
+		// Compute the inverse matrix of the plane basis.
+		Fvector &u = position.u;
+		Fvector &v = position.v;
+		
+		// w = u cross v
+		float wx = u.y*v.z-u.z*v.y;
+		float wy = u.z*v.x-u.x*v.z;
+		float wz = u.x*v.y-u.y*v.x;
+		
+		float det = 1/(wz*u.x*v.y-wz*u.y*v.x-u.z*wx*v.y-u.x*v.z*wy+v.z*wx*u.y+u.z*v.x*wy);
+		
+		Fvector s1((v.y*wz-v.z*wy), (v.z*wx-v.x*wz), (v.x*wy-v.y*wx));
+		s1 *= det;
+		Fvector s2((u.y*wz-u.z*wy), (u.z*wx-u.x*wz), (u.x*wy-u.y*wx));
+		s2 *= -det;
+		
+		// See which particles bounce.
+		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			// Compute the inverse matrix of the plane basis.
-			Fvector &u = position.u;
-			Fvector &v = position.v;
+			auto& Pos = PosArr[i];
+			auto& Vel = VelArr[i];
 			
-			// w = u cross v
-			float wx = u.y*v.z-u.z*v.y;
-			float wy = u.z*v.x-u.x*v.z;
-			float wz = u.x*v.y-u.y*v.x;
+			// See if particle's current and next positions cross plane.
+			// If not, couldn't bounce, so keep going.
+			Fvector pnext(Pos + Vel * dt);
 			
-			float det = 1/(wz*u.x*v.y-wz*u.y*v.x-u.z*wx*v.y-u.x*v.z*wy+v.z*wx*u.y+u.z*v.x*wy);
+			// p2 stores the plane normal (the a,b,c of the plane eqn).
+			// Old and new distances: dist(p,plane) = n * p + d
+			// radius1 stores -n*p, which is d.
+			float distold = Pos * position.p2 + position.radius1;
+			float distnew = pnext * position.p2 + position.radius1;
 			
-			Fvector s1((v.y*wz-v.z*wy), (v.z*wx-v.x*wz), (v.x*wy-v.y*wx));
-			s1 *= det;
-			Fvector s2((u.y*wz-u.z*wy), (u.z*wx-u.x*wz), (u.x*wy-u.y*wx));
-			s2 *= -det;
-			
-			// See which particles bounce.
-			for(u32 i = 0; i < pHolder->p_count; i++)
+			// Opposite signs if product < 0
+			// Is there a faster way to do this?
+			if(distold * distnew >= 0)
 			{
-				Particle &m = pHolder->particles[i];
-				
-				// See if particle's current and next positions cross plane.
-				// If not, couldn't bounce, so keep going.
-				Fvector pnext(m.pos + m.vel * dt);
-				
-				// p2 stores the plane normal (the a,b,c of the plane eqn).
-				// Old and new distances: dist(p,plane) = n * p + d
-				// radius1 stores -n*p, which is d.
-				float distold = m.pos * position.p2 + position.radius1;
-				float distnew = pnext * position.p2 + position.radius1;
-				
-				// Opposite signs if product < 0
-				// Is there a faster way to do this?
-				if(distold * distnew >= 0)
-					continue;
-				
-				// Find position at the crossing point by parameterizing
-				// p(t) = pos + vel * t
-				// Solve dist(p(t),plane) = 0 e.g.
-				// n * p(t) + D = 0 ->
-				// n * p + t (n * v) + D = 0 ->
-				// t = -(n * p + D) / (n * v)
-				// Could factor n*v into distnew = distold + n*v and save a bit.
-				// Safe since n*v != 0 assured by quick rejection test.
-				// This calc is indep. of dt because we have established that it
-				// will hit before dt. We just want to know when.
-				float nv = position.p2 * m.vel;
-				float t = -distold / nv;
-				
-				// Actual intersection point p(t) = pos + vel t
-				Fvector phit(m.pos + m.vel * t);
-				
-				// Offset from origin in plane, p - origin
-				Fvector offset(phit - position.p1);
-				
-				// Dot product with basis vectors of old frame
-				// in terms of new frame gives position in uv frame.
-				float upos = offset * s1;
-				float vpos = offset * s2;
-				
-				// Did it cross plane outside triangle?
-				if(upos < 0 || vpos < 0 || (upos + vpos) > 1)
-					continue;
-				
-				// A hit! A most palpable hit!
-				
-				// Compute tangential and normal components of velocity
-				Fvector vn(position.p2 * nv); // Normal Vn = (V.N)N
-				Fvector vt(m.vel - vn); // Tangent Vt = V - Vn
-				
-				// Compute new velocity heading out:
-				// Don't apply friction if tangential velocity < cutoff
-				if(vt.square_magnitude() <= cutoffSqr)
-				{
-					m.vel = vt - vn * resilience;
-				}
-				else
-				{
-					m.vel = vt * oneMinusFriction - vn * resilience;
-				}
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-				}
+				continue;
+			}
+			
+			// Find position at the crossing point by parameterizing
+			// p(t) = pos + vel * t
+			// Solve dist(p(t),plane) = 0 e.g.
+			// n * p(t) + D = 0 ->
+			// n * p + t (n * v) + D = 0 ->
+			// t = -(n * p + D) / (n * v)
+			// Could factor n*v into distnew = distold + n*v and save a bit.
+			// Safe since n*v != 0 assured by quick rejection test.
+			// This calc is indep. of dt because we have established that it
+			// will hit before dt. We just want to know when.
+			float nv = position.p2 * Vel;
+			float t = -distold / nv;
+			
+			// Actual intersection point p(t) = pos + vel t
+			Fvector phit(Pos + Vel * t);
+			
+			// Offset from origin in plane, p - origin
+			Fvector offset(phit - position.p1);
+			
+			// Dot product with basis vectors of old frame
+			// in terms of new frame gives position in uv frame.
+			float upos = offset * s1;
+			float vpos = offset * s2;
+			
+			// Did it cross plane outside triangle?
+			if(upos < 0 || vpos < 0 || (upos + vpos) > 1)
+				continue;
+			
+			// A hit! A most palpable hit!
+			
+			// Compute tangential and normal components of velocity
+			Fvector vn(position.p2 * nv); // Normal Vn = (V.N)N
+			Fvector vt(Vel - vn); // Tangent Vt = V - Vn
+			
+			// Compute new velocity heading out:
+			// Don't apply friction if tangential velocity < cutoff
+			if(vt.square_magnitude() <= cutoffSqr)
+			{
+				Vel = vt - vn * resilience;
+			}
+			else
+			{
+				Vel = vt * oneMinusFriction - vn * resilience;
 			}
 		}
 		break;
+	}
 	case PDDisc:
+	{
+		float r1Sqr = _sqr(position.radius1);
+		float r2Sqr = _sqr(position.radius2);
+		
+		// See which particles bounce.
+		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			float r1Sqr = _sqr(position.radius1);
-			float r2Sqr = _sqr(position.radius2);
+			auto& Pos = PosArr[i];
+			auto& Vel = VelArr[i];
 			
-			// See which particles bounce.
-			for(u32 i = 0; i < pHolder->p_count; i++)
+			// See if particle's current and next positions cross plane.
+			// If not, couldn't bounce, so keep going.
+			Fvector pnext(Pos + Vel * dt);
+			
+			// p2 stores the plane normal (the a,b,c of the plane eqn).
+			// Old and new distances: dist(p,plane) = n * p + d
+			// radius1 stores -n*p, which is d. radius1Sqr stores d.
+			float distold = Pos * position.p2 + position.radius1Sqr;
+			float distnew = pnext * position.p2 + position.radius1Sqr;
+			
+			// Opposite signs if product < 0
+			// Is there a faster way to do this?
+			if(distold * distnew >= 0)
+				continue;
+			
+			// Find position at the crossing point by parameterizing
+			// p(t) = pos + vel * t
+			// Solve dist(p(t),plane) = 0 e.g.
+			// n * p(t) + D = 0 ->
+			// n * p + t (n * v) + D = 0 ->
+			// t = -(n * p + D) / (n * v)
+			// Could factor n*v into distnew = distold + n*v and save a bit.
+			// Safe since n*v != 0 assured by quick rejection test.
+			// This calc is indep. of dt because we have established that it
+			// will hit before dt. We just want to know when.
+			float nv = position.p2 * Vel;
+			float t = -distold / nv;
+			
+			// Actual intersection point p(t) = pos + vel t
+			Fvector phit(Pos + Vel * t);
+			
+			// Offset from origin in plane, phit - origin
+			Fvector offset(phit - position.p1);
+			
+			float rad = offset.square_magnitude();
+			
+			if(rad > r1Sqr || rad < r2Sqr)
+				continue;
+			
+			// A hit! A most palpable hit!
+			
+			// Compute tangential and normal components of velocity
+			Fvector vn(position.p2 * nv); // Normal Vn = (V.N)N
+			Fvector vt(Vel - vn); // Tangent Vt = V - Vn
+			
+			// Compute new velocity heading out:
+			// Don't apply friction if tangential velocity < cutoff
+			if(vt.square_magnitude() <= cutoffSqr)
 			{
-				Particle &m = pHolder->particles[i];
-				
-				// See if particle's current and next positions cross plane.
-				// If not, couldn't bounce, so keep going.
-				Fvector pnext(m.pos + m.vel * dt);
-				
-				// p2 stores the plane normal (the a,b,c of the plane eqn).
-				// Old and new distances: dist(p,plane) = n * p + d
-				// radius1 stores -n*p, which is d. radius1Sqr stores d.
-				float distold = m.pos * position.p2 + position.radius1Sqr;
-				float distnew = pnext * position.p2 + position.radius1Sqr;
-				
-				// Opposite signs if product < 0
-				// Is there a faster way to do this?
-				if(distold * distnew >= 0)
-					continue;
-				
-				// Find position at the crossing point by parameterizing
-				// p(t) = pos + vel * t
-				// Solve dist(p(t),plane) = 0 e.g.
-				// n * p(t) + D = 0 ->
-				// n * p + t (n * v) + D = 0 ->
-				// t = -(n * p + D) / (n * v)
-				// Could factor n*v into distnew = distold + n*v and save a bit.
-				// Safe since n*v != 0 assured by quick rejection test.
-				// This calc is indep. of dt because we have established that it
-				// will hit before dt. We just want to know when.
-				float nv = position.p2 * m.vel;
-				float t = -distold / nv;
-				
-				// Actual intersection point p(t) = pos + vel t
-				Fvector phit(m.pos + m.vel * t);
-				
-				// Offset from origin in plane, phit - origin
-				Fvector offset(phit - position.p1);
-				
-				float rad = offset.square_magnitude();
-				
-				if(rad > r1Sqr || rad < r2Sqr)
-					continue;
-				
-				// A hit! A most palpable hit!
-				
-				// Compute tangential and normal components of velocity
-				Fvector vn(position.p2 * nv); // Normal Vn = (V.N)N
-				Fvector vt(m.vel - vn); // Tangent Vt = V - Vn
-				
-				// Compute new velocity heading out:
-				// Don't apply friction if tangential velocity < cutoff
-				if(vt.square_magnitude() <= cutoffSqr)
-				{
-					m.vel = vt - vn * resilience;
-				}
-				else
-				{
-					m.vel = vt * oneMinusFriction - vn * resilience;
-				}
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-				}
+				Vel = vt - vn * resilience;
+			}
+			else
+			{
+				Vel = vt * oneMinusFriction - vn * resilience;
 			}
 		}
 		break;
+	}
 	case PDPlane:
+	{
+		// See which particles bounce.
+		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			// See which particles bounce.
-			for(u32 i = 0; i < pHolder->p_count; i++)
+			auto& Pos = PosArr[i];
+			auto& Vel = VelArr[i];
+			
+			// See if particle's current and next positions cross plane.
+			// If not, couldn't bounce, so keep going.
+			Fvector pnext(Pos + Vel * dt);
+			
+			// p2 stores the plane normal (the a,b,c of the plane eqn).
+			// Old and new distances: dist(p,plane) = n * p + d
+			// radius1 stores -n*p, which is d.
+			float distold = Pos * position.p2 + position.radius1;
+			float distnew = pnext * position.p2 + position.radius1;
+			
+			// Opposite signs if product < 0
+			if(distold * distnew >= 0)
 			{
-				Particle &m = pHolder->particles[i];
-				
-				// See if particle's current and next positions cross plane.
-				// If not, couldn't bounce, so keep going.
-				Fvector pnext(m.pos + m.vel * dt);
-				
-				// p2 stores the plane normal (the a,b,c of the plane eqn).
-				// Old and new distances: dist(p,plane) = n * p + d
-				// radius1 stores -n*p, which is d.
-				float distold = m.pos * position.p2 + position.radius1;
-				float distnew = pnext * position.p2 + position.radius1;
-				
-				// Opposite signs if product < 0
-				if(distold * distnew >= 0)
-					continue;
-				
-				// Compute tangential and normal components of velocity
-				float nmag = m.vel * position.p2;
-				Fvector vn(position.p2 * nmag); // Normal Vn = (V.N)N
-				Fvector vt(m.vel - vn); // Tangent Vt = V - Vn
-				
-				// Compute new velocity heading out:
-				// Don't apply friction if tangential velocity < cutoff
-				if(vt.square_magnitude() <= cutoffSqr)
-				{
-					m.vel = vt - vn * resilience;
-				}
-				else
-				{
-					m.vel = vt * oneMinusFriction - vn * resilience;
-				}
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-				}
+				continue;
+			}
+			
+			// Compute tangential and normal components of velocity
+			float nmag = Vel * position.p2;
+			Fvector vn(position.p2 * nmag); // Normal Vn = (V.N)N
+			Fvector vt(Vel - vn); // Tangent Vt = V - Vn
+			
+			// Compute new velocity heading out:
+			// Don't apply friction if tangential velocity < cutoff
+			if(vt.square_magnitude() <= cutoffSqr)
+			{
+				Vel = vt - vn * resilience;
+			}
+			else
+			{
+				Vel = vt * oneMinusFriction - vn * resilience;
 			}
 		}
 		break;
+	}
 	case PDRectangle:
+	{
+		// Compute the inverse matrix of the plane basis.
+		Fvector &u = position.u;
+		Fvector &v = position.v;
+		
+		// w = u cross v
+		float wx = u.y*v.z-u.z*v.y;
+		float wy = u.z*v.x-u.x*v.z;
+		float wz = u.x*v.y-u.y*v.x;
+		
+		float det = 1/(wz*u.x*v.y-wz*u.y*v.x-u.z*wx*v.y-u.x*v.z*wy+v.z*wx*u.y+u.z*v.x*wy);
+		
+		Fvector s1((v.y*wz-v.z*wy), (v.z*wx-v.x*wz), (v.x*wy-v.y*wx));
+		s1 *= det;
+		Fvector s2((u.y*wz-u.z*wy), (u.z*wx-u.x*wz), (u.x*wy-u.y*wx));
+		s2 *= -det;
+		
+		// See which particles bounce.
+		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			// Compute the inverse matrix of the plane basis.
-			Fvector &u = position.u;
-			Fvector &v = position.v;
+			auto& Pos = PosArr[i];
+			auto& Vel = VelArr[i];
 			
-			// w = u cross v
-			float wx = u.y*v.z-u.z*v.y;
-			float wy = u.z*v.x-u.x*v.z;
-			float wz = u.x*v.y-u.y*v.x;
+			// See if particle's current and next positions cross plane.
+			// If not, couldn't bounce, so keep going.
+			Fvector pnext(Pos + Vel * dt);
 			
-			float det = 1/(wz*u.x*v.y-wz*u.y*v.x-u.z*wx*v.y-u.x*v.z*wy+v.z*wx*u.y+u.z*v.x*wy);
+			// p2 stores the plane normal (the a,b,c of the plane eqn).
+			// Old and new distances: dist(p,plane) = n * p + d
+			// radius1 stores -n*p, which is d.
+			float distold = Pos * position.p2 + position.radius1;
+			float distnew = pnext * position.p2 + position.radius1;
 			
-			Fvector s1((v.y*wz-v.z*wy), (v.z*wx-v.x*wz), (v.x*wy-v.y*wx));
-			s1 *= det;
-			Fvector s2((u.y*wz-u.z*wy), (u.z*wx-u.x*wz), (u.x*wy-u.y*wx));
-			s2 *= -det;
+			// Opposite signs if product < 0
+			if(distold * distnew >= 0)
+				continue;
 			
-			// See which particles bounce.
-			for(u32 i = 0; i < pHolder->p_count; i++)
+			// Find position at the crossing point by parameterizing
+			// p(t) = pos + vel * t
+			// Solve dist(p(t),plane) = 0 e.g.
+			// n * p(t) + D = 0 ->
+			// n * p + t (n * v) + D = 0 ->
+			// t = -(n * p + D) / (n * v)
+			float t = -distold / (position.p2 * Vel);
+			
+			// Actual intersection point p(t) = pos + vel t
+			Fvector phit(Pos + Vel * t);
+			
+			// Offset from origin in plane, p - origin
+			Fvector offset(phit - position.p1);
+			
+			// Dot product with basis vectors of old frame
+			// in terms of new frame gives position in uv frame.
+			float upos = offset * s1;
+			float vpos = offset * s2;
+			
+			// Crossed plane outside bounce region if !(0<=[uv]pos<=1)
+			if(upos < 0 || upos > 1 || vpos < 0 || vpos > 1)
 			{
-				Particle &m = pHolder->particles[i];
-				
-				// See if particle's current and next positions cross plane.
-				// If not, couldn't bounce, so keep going.
-				Fvector pnext(m.pos + m.vel * dt);
-				
-				// p2 stores the plane normal (the a,b,c of the plane eqn).
-				// Old and new distances: dist(p,plane) = n * p + d
-				// radius1 stores -n*p, which is d.
-				float distold = m.pos * position.p2 + position.radius1;
-				float distnew = pnext * position.p2 + position.radius1;
-				
-				// Opposite signs if product < 0
-				if(distold * distnew >= 0)
-					continue;
-				
-				// Find position at the crossing point by parameterizing
-				// p(t) = pos + vel * t
-				// Solve dist(p(t),plane) = 0 e.g.
-				// n * p(t) + D = 0 ->
-				// n * p + t (n * v) + D = 0 ->
-				// t = -(n * p + D) / (n * v)
-				float t = -distold / (position.p2 * m.vel);
-				
-				// Actual intersection point p(t) = pos + vel t
-				Fvector phit(m.pos + m.vel * t);
-				
-				// Offset from origin in plane, p - origin
-				Fvector offset(phit - position.p1);
-				
-				// Dot product with basis vectors of old frame
-				// in terms of new frame gives position in uv frame.
-				float upos = offset * s1;
-				float vpos = offset * s2;
-				
-				// Crossed plane outside bounce region if !(0<=[uv]pos<=1)
-				if(upos < 0 || upos > 1 || vpos < 0 || vpos > 1)
-					continue;
-				
-				// A hit! A most palpable hit!
-				
-				// Compute tangential and normal components of velocity
-				float nmag = m.vel * position.p2;
-				Fvector vn(position.p2 * nmag); // Normal Vn = (V.N)N
-				Fvector vt(m.vel - vn); // Tangent Vt = V - Vn
-				
-				// Compute new velocity heading out:
-				// Don't apply friction if tangential velocity < cutoff
-				if(vt.square_magnitude() <= cutoffSqr)
-				{
-					m.vel = vt - vn * resilience;
-				}
-				else
-				{
-					m.vel = vt * oneMinusFriction - vn * resilience;
-				}
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-				}
+				continue;
+			}
+			
+			// A hit! A most palpable hit!
+			
+			// Compute tangential and normal components of velocity
+			float nmag = Vel * position.p2;
+			Fvector vn(position.p2 * nmag); // Normal Vn = (V.N)N
+			Fvector vt(Vel - vn); // Tangent Vt = V - Vn
+			
+			// Compute new velocity heading out:
+			// Don't apply friction if tangential velocity < cutoff
+			if(vt.square_magnitude() <= cutoffSqr)
+			{
+				Vel = vt - vn * resilience;
+			}
+			else
+			{
+				Vel = vt * oneMinusFriction - vn * resilience;
 			}
 		}
 		break;
+	}
 	case PDSphere:
+	{
+		// Sphere that particles bounce off
+		// The particles are always forced out of the sphere.
+		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			// Sphere that particles bounce off
-			// The particles are always forced out of the sphere.
-			for(u32 i = 0; i < pHolder->p_count; i++)
+			auto& Pos = PosArr[i];
+			auto& Vel = VelArr[i];
+			
+			// See if particle's next position is inside domain.
+			// If so, bounce it.
+			Fvector pnext(Pos + Vel * dt);
+			
+			if(position.Within(pnext))
 			{
-				Particle &m = pHolder->particles[i];
+				// See if we were inside on previous timestep.
+				bool pinside = position.Within(Pos);
 				
-				// See if particle's next position is inside domain.
-				// If so, bounce it.
-				Fvector pnext(m.pos + m.vel * dt);
+				// Normal to surface. This works for a sphere. Isn't
+				// computed quite right, should extrapolate particle
+				// position to surface.
+				Fvector n(Pos - position.p1);
+				n.normalize_safe();
 				
-				if(position.Within(pnext))
+				// Compute tangential and normal components of velocity
+				float nmag = Vel * n;
+				
+				Fvector vn(n * nmag); // Normal Vn = (V.N)N
+				Fvector vt = Vel - vn; // Tangent Vt = V - Vn
+				
+				if(pinside)
 				{
-					// See if we were inside on previous timestep.
-					bool pinside = position.Within(m.pos);
-					
-					// Normal to surface. This works for a sphere. Isn't
-					// computed quite right, should extrapolate particle
-					// position to surface.
-					Fvector n(m.pos - position.p1);
-					n.normalize_safe();
-					
-					// Compute tangential and normal components of velocity
-					float nmag = m.vel * n;
-					
-					Fvector vn(n * nmag); // Normal Vn = (V.N)N
-					Fvector vt = m.vel - vn; // Tangent Vt = V - Vn
-					
-					if(pinside)
+					// Previous position was inside. If normal component of
+					// velocity points in, reverse it. This effectively
+					// repels particles which would otherwise be trapped
+					// in the sphere.
+					if(nmag < 0)
 					{
-						// Previous position was inside. If normal component of
-						// velocity points in, reverse it. This effectively
-						// repels particles which would otherwise be trapped
-						// in the sphere.
-						if(nmag < 0)
-							m.vel = vt - vn;
+						Vel = vt - vn;
+					}
+				}
+				else
+				{
+					// Previous position was outside -> particle will cross
+					// surface boundary. Reverse normal component of velocity,
+					// and apply friction (if Vt >= cutoff) and resilience.
+					
+					// Compute new velocity heading out:
+					// Don't apply friction if tangential velocity < cutoff
+					if(vt.square_magnitude() <= cutoffSqr)
+					{
+						Vel = vt - vn * resilience;
 					}
 					else
 					{
-						// Previous position was outside -> particle will cross
-						// surface boundary. Reverse normal component of velocity,
-						// and apply friction (if Vt >= cutoff) and resilience.
-						
-						// Compute new velocity heading out:
-						// Don't apply friction if tangential velocity < cutoff
-						if(vt.square_magnitude() <= cutoffSqr)
-						{
-							m.vel = vt - vn * resilience;
-						}
-						else
-						{
-							m.vel = vt * oneMinusFriction - vn * resilience;
-						}
-						if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-						{
-							m.rot_vel = m.vel;
-							m.rot_vel.normalize_safe();
-						}
+						Vel = vt * oneMinusFriction - vn * resilience;
 					}
 				}
+			}
+		}
+		break;
+	}
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
+		for(u32 i = 0; i < pHolder->p_count; i++)
+		{
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
+			{
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
 			}
 		}
 	}
@@ -806,26 +809,12 @@ void* PABounce::GetVariableImpl(u8 VarID)
 // Set the secondary position of each particle to be its position.
 void PACopyVertexB::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 {
-	u32 i;
-	
 	if(copy_pos)
 	{
-		for(i = 0; i < pHolder->p_count; i++)
-		{
-			Particle &m = pHolder->particles[i];
-			m.posB = m.pos;
-		}
+		auto PosArr = pHolder->particles.pos_arr;
+		auto PosBArr = pHolder->particles.posB_arr;
+		std::memcpy(PosBArr, PosArr, sizeof(Fvector)*pHolder->p_count);
 	}
-/*	
-	if(copy_vel)
-	{
-		for(i = 0; i < pHolder->p_count; i++)
-		{
-			Particle &m = pHolder->particles[i];
-			m.velB = m.vel;
-		}
-	}
-*/
 }
 void PACopyVertexB::Transform(const Fmatrix&){;}
 
@@ -848,21 +837,31 @@ void PADamping::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 	Fvector one(1,1,1);
 	Fvector scale(one - ((one - damping) * dt));
 	
+	auto VelArr = pHolder->particles.vel_arr;
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
-		Particle &m = pHolder->particles[i];
-		float vSqr = m.vel.square_magnitude();
+		auto& Vel = VelArr[i];
+		float vSqr = Vel.square_magnitude();
 		
 		if(vSqr >= vlowSqr && vSqr <= vhighSqr)
 		{
-			m.vel.x *= scale.x;
-			m.vel.y *= scale.y;
-			m.vel.z *= scale.z;
+			Vel.x *= scale.x;
+			Vel.y *= scale.y;
+			Vel.z *= scale.z;
 		}
-		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
+		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			m.rot_vel = m.vel;
-			m.rot_vel.normalize_safe();
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
+			{
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
+			}
 		}
 	}
 }
@@ -903,23 +902,35 @@ void PAExplosion::Execute(ParticleHolder *pHolder, const float dt, float& tm_max
 	float inexp 		= -0.5f*_sqr(oneOverSigma);
 	float outexp 		= ONEOVERSQRT2PI * oneOverSigma;
 	
+	auto PosArr = pHolder->particles.pos_arr;
+	auto VelArr = pHolder->particles.vel_arr;
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
-		Particle &m = pHolder->particles[i];
+		auto& Pos = PosArr[i];
+		auto& Vel = VelArr[i];
 		
 		// Figure direction to particle.
-		Fvector dir		(m.pos - center);
-		float distSqr 	= dir.square_magnitude();
-		float dist 		= _sqrt(distSqr);
+		Fvector dir(Pos - center);
+		float distSqr = dir.square_magnitude();
+		float dist = _sqrt(distSqr);
 		float DistFromWaveSqr = _sqr(radius - dist);
 		
-		float Gd 		= expf(DistFromWaveSqr * inexp) * outexp;
+		float Gd = expf(DistFromWaveSqr * inexp) * outexp;
 		
-		m.vel 			+= dir * (Gd * magdt / ((dist+EPS) * (distSqr + epsilon)));
-		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
+		Vel += dir * (Gd * magdt / ((dist+EPS) * (distSqr + epsilon)));
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
+		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			m.rot_vel = m.vel;
-			m.rot_vel.normalize_safe();
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
+			{
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
+			}
 		}
 	}
 	
@@ -974,25 +985,24 @@ void PAFollow::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 	
+	auto PosArr = pHolder->particles.pos_arr;
+	auto VelArr = pHolder->particles.vel_arr;
 	if(max_radiusSqr < P_MAXFLOAT)
 	{
 		for(u32 i = 0; i < pHolder->p_count - 1; i++)
 		{
-			Particle &m = pHolder->particles[i];
+			auto& Pos = PosArr[i];
+			auto& PosNext = PosArr[i+1];
+			auto& Vel = VelArr[i];
 			
 			// Accelerate toward the particle after me in the list.
-			Fvector tohim(pHolder->particles[i+1].pos - m.pos); // tohim = p1 - p0
+			Fvector tohim(PosNext - Pos); // tohim = p1 - p0
 			float tohimlenSqr = tohim.square_magnitude();
 			
 			if(tohimlenSqr < max_radiusSqr)
 			{
 				// Compute force exerted between the two bodies
-				m.vel += tohim * (magdt / (_sqrt(tohimlenSqr) * (tohimlenSqr + epsilon)));
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-				}
+				Vel += tohim * (magdt / (_sqrt(tohimlenSqr) * (tohimlenSqr + epsilon)));
 			}
 		}
 	}
@@ -1000,23 +1010,34 @@ void PAFollow::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 	{
 		for(u32 i = 0; i < pHolder->p_count - 1; i++)
 		{
-			Particle &m = pHolder->particles[i];
+			auto& Pos = PosArr[i];
+			auto& PosNext = PosArr[i+1];
+			auto& Vel = VelArr[i];
 			
 			// Accelerate toward the particle after me in the list.
-			Fvector tohim(pHolder->particles[i+1].pos - m.pos); // tohim = p1 - p0
+			Fvector tohim(PosNext - Pos); // tohim = p1 - p0
 			float tohimlenSqr = tohim.square_magnitude();
 			
 			// Compute force exerted between the two bodies
-			m.vel += tohim * (magdt / (_sqrt(tohimlenSqr) * (tohimlenSqr + epsilon)));
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
+			Vel += tohim * (magdt / (_sqrt(tohimlenSqr) * (tohimlenSqr + epsilon)));
+		}
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
+		for(u32 i = 0; i < pHolder->p_count; i++)
+		{
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
 			{
-				m.rot_vel = m.vel;
-				m.rot_vel.normalize_safe();
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
 			}
 		}
 	}
 }
-void PAFollow::Transform(const Fmatrix&){;}
+void PAFollow::Transform(const Fmatrix&){}
 
 void* PAFollow::GetVariableImpl(u8 VarID)
 {
@@ -1050,33 +1071,36 @@ void PAGravitate::Execute(ParticleHolder *pHolder, const float dt, float& tm_max
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 	
+	auto PosArr = pHolder->particles.pos_arr;
+	auto VelArr = pHolder->particles.vel_arr;
+	auto Num = pHolder->p_count;
+	// Применить обход блоками по диагонали, чтоб минимизировать промахи кеша
 	if(max_radiusSqr < P_MAXFLOAT)
 	{
-		for(u32 i = 0; i < pHolder->p_count; i++)
+		for (u32 diag = 0; diag < Num/Block; ++diag)
 		{
-			Particle &m = pHolder->particles[i];
-			
-			// Add interactions with other particles
-			for(u32 j = i + 1; j < pHolder->p_count; j++)
+			for (u32 ii = 0; ii < Num - Block*diag; ii += Block)
 			{
-				Particle &mj = pHolder->particles[j];
-				
-				Fvector tohim(mj.pos - m.pos); // tohim = p1 - p0
-				float tohimlenSqr = tohim.square_magnitude()+EPS_S;
-				
-				if(tohimlenSqr < max_radiusSqr)
+				u32 jj = ii + diag*Block;
+				u32 i_start = ii;
+				u32 j_start = jj + 1;
+				u32 i_end = std::min(ii+Block, Num);
+				u32 j_end = std::min(jj+Block, Num);
+				for (auto i = i_start; i < i_end; ++i)
 				{
-					// Compute force exerted between the two bodies
-					Fvector acc(tohim * (magdt / (_sqrt(tohimlenSqr) * (tohimlenSqr + epsilon))));
-					
-					m.vel += acc;
-					mj.vel -= acc;
-					if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
+					for (auto j = j_start; j < j_end; ++j)
 					{
-						m.rot_vel = m.vel;
-						m.rot_vel.normalize_safe();
-						mj.rot_vel = mj.vel;
-						mj.rot_vel.normalize_safe();
+						Fvector tohim(PosArr[j] - PosArr[i]); // tohim = p1 - p0
+						float tohimlenSqr = tohim.square_magnitude()+EPS_S;
+				
+						if(tohimlenSqr < max_radiusSqr)
+						{
+							// Compute force exerted between the two bodies
+							Fvector acc(tohim * (magdt / (_sqrt(tohimlenSqr) * (tohimlenSqr + epsilon))));
+					
+							VelArr[i] += acc;
+							VelArr[j] -= acc;
+						}
 					}
 				}
 			}
@@ -1084,30 +1108,42 @@ void PAGravitate::Execute(ParticleHolder *pHolder, const float dt, float& tm_max
 	}
 	else
 	{
+		for (u32 diag = 0; diag < Num/Block; ++diag)
+		{
+			for (u32 ii = 0; ii < Num - Block*diag; ii += Block)
+			{
+				u32 jj = ii + diag*Block;
+				u32 i_start = ii;
+				u32 j_start = jj + 1;
+				u32 i_end = std::min(ii+Block, Num);
+				u32 j_end = std::min(jj+Block, Num);
+				for (auto i = i_start; i < i_end; ++i)
+				{
+					for (auto j = j_start; j < j_end; ++j)
+					{
+						Fvector tohim(PosArr[j] - PosArr[i]); // tohim = p1 - p0
+						float tohimlenSqr = tohim.square_magnitude()+EPS_S;
+				
+						Fvector acc(tohim * (magdt / (_sqrt(tohimlenSqr) * (tohimlenSqr + epsilon))));
+					
+						VelArr[i] += acc;
+						VelArr[j] -= acc;
+					}
+				}
+			}
+		}
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
 		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			Particle &m = pHolder->particles[i];
-			
-			// Add interactions with other particles
-			for(u32 j = i + 1; j < pHolder->p_count; j++)
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
 			{
-				Particle &mj = pHolder->particles[j];
-				
-				Fvector tohim(mj.pos - m.pos); // tohim = p1 - p0
-				float tohimlenSqr = tohim.square_magnitude()+EPS_S;
-				
-				// Compute force exerted between the two bodies
-				Fvector acc(tohim * (magdt / (_sqrt(tohimlenSqr) * (tohimlenSqr + epsilon))));
-				
-				m.vel += acc;
-				mj.vel -= acc;
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-					mj.rot_vel = mj.vel;
-					mj.rot_vel.normalize_safe();
-				}
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
 			}
 		}
 	}
@@ -1145,13 +1181,14 @@ void PAGravity::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 {
 	Fvector ddir(direction * dt);
 	
+	auto VelArr = pHolder->particles.vel_arr;
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
 		// Step velocity with acceleration
-		pHolder->particles[i].vel += ddir;
+		VelArr[i] += ddir;
 	}
 }
-void PAGravity::Transform(const Fmatrix&){;}
+void PAGravity::Transform(const Fmatrix&){}
 
 void* PAGravity::GetVariableImpl(u8 VarID)
 {
@@ -1171,14 +1208,17 @@ void PAJet::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 	
+	auto PosArr = pHolder->particles.pos_arr;
+	auto VelArr = pHolder->particles.vel_arr;
 	if(max_radiusSqr < P_MAXFLOAT)
 	{
 		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			Particle &m = pHolder->particles[i];
+			auto& Pos = PosArr[i];
+			auto& Vel = VelArr[i];
 			
 			// Figure direction to particle.
-			Fvector dir(m.pos - center);
+			Fvector dir(Pos - center);
 			
 			// Distance to jet (force drops as 1/r^2)
 			// Soften by epsilon to avoid tight encounters to infinity
@@ -1190,12 +1230,7 @@ void PAJet::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 				acc.Generate(accel);
 				
 				// Step velocity with acceleration
-				m.vel += accel * (magdt / (rSqr + epsilon));
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-				}
+				Vel += accel * (magdt / (rSqr + epsilon));
 			}
 		}
 	}
@@ -1203,10 +1238,11 @@ void PAJet::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 	{
 		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			Particle &m = pHolder->particles[i];
+			auto& Pos = PosArr[i];
+			auto& Vel = VelArr[i];
 			
 			// Figure direction to particle.
-			Fvector dir(m.pos - center);
+			Fvector dir(Pos - center);
 			
 			// Distance to jet (force drops as 1/r^2)
 			// Soften by epsilon to avoid tight encounters to infinity
@@ -1216,11 +1252,20 @@ void PAJet::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			acc.Generate(accel);
 			
 			// Step velocity with acceleration
-			m.vel += accel * (magdt / (rSqr + epsilon));
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
+			Vel += accel * (magdt / (rSqr + epsilon));
+		}
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
+		for(u32 i = 0; i < pHolder->p_count; i++)
+		{
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
 			{
-				m.rot_vel = m.vel;
-				m.rot_vel.normalize_safe();
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
 			}
 		}
 	}
@@ -1271,14 +1316,17 @@ void PAScatter::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 	float magdt 		= magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 	
+	auto PosArr = pHolder->particles.pos_arr;
+	auto VelArr = pHolder->particles.vel_arr;
 	if(max_radiusSqr < P_MAXFLOAT)
 	{
 		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			Particle &m = pHolder->particles[i];
+			auto& Pos = PosArr[i];
+			auto& Vel = VelArr[i];
 			
 			// Figure direction to particle.
-			Fvector dir(m.pos - center);
+			Fvector dir(Pos - center);
 			
 			// Distance to jet (force drops as 1/r^2)
 			// Soften by epsilon to avoid tight encounters to infinity
@@ -1292,12 +1340,7 @@ void PAScatter::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 //				acc.Generate(accel);
 				
 				// Step velocity with acceleration
-				m.vel += accel * (magdt / (rSqr + epsilon));
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-				}
+				Vel += accel * (magdt / (rSqr + epsilon));
 			}
 		}
 	}
@@ -1305,10 +1348,11 @@ void PAScatter::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 	{
 		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			Particle &m = pHolder->particles[i];
+			auto& Pos = PosArr[i];
+			auto& Vel = VelArr[i];
 			
 			// Figure direction to particle.
-			Fvector dir(m.pos - center);
+			Fvector dir(Pos - center);
 			
 			// Distance to jet (force drops as 1/r^2)
 			// Soften by epsilon to avoid tight encounters to infinity
@@ -1318,18 +1362,27 @@ void PAScatter::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
             accel = dir/_sqrt(rSqr);
 			
 			// Step velocity with acceleration
-			m.vel += accel * (magdt / (rSqr + epsilon));
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
+			Vel += accel * (magdt / (rSqr + epsilon));
+		}
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
+		for(u32 i = 0; i < pHolder->p_count; i++)
+		{
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
 			{
-				m.rot_vel = m.vel;
-				m.rot_vel.normalize_safe();
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
 			}
 		}
 	}
 }
 void PAScatter::Transform(const Fmatrix& m)
 {
-	m.transform_tiny	(center,centerL);
+	m.transform_tiny(center,centerL);
 }
 
 void* PAScatter::GetVariableImpl(u8 VarID)
@@ -1367,12 +1420,13 @@ void PAKillOld::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 {
 	// Must traverse list in reverse order so Remove will work
     tm_max = age_limit;
+	auto AgeArr = pHolder->particles.age_arr;
 	for(int i = pHolder->p_count-1; i >= 0; i--)
 	{
-		Particle &m = pHolder->particles[i];
-		
-		if(!((m.age < age_limit) ^ kill_less_than))   
+		if(!((AgeArr[i] < age_limit) ^ kill_less_than))
+		{
 			pHolder->RemoveParticle(i);
+		}
 	}
 }
 void PAKillOld::Transform(const Fmatrix&){;}
@@ -1396,34 +1450,37 @@ void PAMatchVelocity::Execute(ParticleHolder *pHolder, const float dt, float& tm
 {
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
-	
+
+	auto PosArr = pHolder->particles.pos_arr;
+	auto VelArr = pHolder->particles.vel_arr;
+	auto Num = pHolder->p_count;
+	// Снова проход по диагоналям
 	if(max_radiusSqr < P_MAXFLOAT)
 	{
-		for(u32 i = 0; i < pHolder->p_count; i++)
+		for (u32 diag = 0; diag < Num/Block; ++diag)
 		{
-			Particle &m = pHolder->particles[i];
-			
-			// Add interactions with other particles
-			for(u32 j = i + 1; j < pHolder->p_count; j++)
+			for (u32 ii = 0; ii < Num - Block*diag; ii += Block)
 			{
-				Particle &mj = pHolder->particles[j];
-				
-				Fvector tohim(mj.pos - m.pos); // tohim = p1 - p0
-				float tohimlenSqr = tohim.square_magnitude();
-				
-				if(tohimlenSqr < max_radiusSqr)
+				u32 jj = ii + diag*Block;
+				u32 i_start = ii;
+				u32 j_start = jj + 1;
+				u32 i_end = std::min(ii+Block, Num);
+				u32 j_end = std::min(jj+Block, Num);
+				for (auto i = i_start; i < i_end; ++i)
 				{
-					// Compute force exerted between the two bodies
-					Fvector acc(mj.vel * (magdt / (tohimlenSqr + epsilon)));
-					
-					m.vel += acc;
-					mj.vel -= acc;
-					if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
+					for (auto j = j_start; j < j_end; ++j)
 					{
-						m.rot_vel = m.vel;
-						m.rot_vel.normalize_safe();
-						mj.rot_vel = mj.vel;
-						mj.rot_vel.normalize_safe();
+						Fvector tohim(PosArr[j] - PosArr[i]); // tohim = p1 - p0
+						float tohimlenSqr = tohim.square_magnitude();
+				
+						if(tohimlenSqr < max_radiusSqr)
+						{
+							// Compute force exerted between the two bodies
+							Fvector acc(VelArr[j] * (magdt / (tohimlenSqr + epsilon)));
+					
+							VelArr[i] += acc;
+							VelArr[j] -= acc;
+						}
 					}
 				}
 			}
@@ -1431,30 +1488,43 @@ void PAMatchVelocity::Execute(ParticleHolder *pHolder, const float dt, float& tm
 	}
 	else
 	{
+		for (u32 diag = 0; diag < Num/Block; ++diag)
+		{
+			for (u32 ii = 0; ii < Num - Block*diag; ii += Block)
+			{
+				u32 jj = ii + diag*Block;
+				u32 i_start = ii;
+				u32 j_start = jj + 1;
+				u32 i_end = std::min(ii+Block, Num);
+				u32 j_end = std::min(jj+Block, Num);
+				for (auto i = i_start; i < i_end; ++i)
+				{
+					for (auto j = j_start; j < j_end; ++j)
+					{
+						Fvector tohim(PosArr[j] - PosArr[i]); // tohim = p1 - p0
+						float tohimlenSqr = tohim.square_magnitude();
+				
+						// Compute force exerted between the two bodies
+						Fvector acc(VelArr[j] * (magdt / (tohimlenSqr + epsilon)));
+					
+						VelArr[i] += acc;
+						VelArr[j] -= acc;
+					}
+				}
+			}
+		}
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
 		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			Particle &m = pHolder->particles[i];
-			
-			// Add interactions with other particles
-			for(u32 j = i + 1; j < pHolder->p_count; j++)
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
 			{
-				Particle &mj = pHolder->particles[j];
-				
-				Fvector tohim(mj.pos - m.pos); // tohim = p1 - p0
-				float tohimlenSqr = tohim.square_magnitude();
-				
-				// Compute force exerted between the two bodies
-				Fvector acc(mj.vel * (magdt / (tohimlenSqr + epsilon)));
-				
-				m.vel += acc;
-				mj.vel -= acc;
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-					mj.rot_vel = mj.vel;
-					mj.rot_vel.normalize_safe();
-				}
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
 			}
 		}
 	}
@@ -1489,15 +1559,18 @@ void* PAMatchVelocity::GetVariableImpl(u8 VarID)
 
 void PAMove::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 {
-	// Step particle positions forward by dt, and age the particles.
+	auto PosArr = pHolder->particles.pos_arr;
+	auto PosBArr = pHolder->particles.posB_arr;
+	std::memcpy(PosBArr, PosArr, sizeof(Fvector)*pHolder->p_count);
+	auto AgeArr = pHolder->particles.age_arr;
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
-		Particle &m = pHolder->particles[i];
-		// move
-		m.age	+= dt;               
-        m.posB 	= m.pos;
-//        m.velB 	= m.vel;
-		m.pos	+= m.vel * dt;
+		AgeArr[i]+=dt;
+	}
+	auto VelArr = pHolder->particles.vel_arr;
+	for(u32 i = 0; i < pHolder->p_count; i++)
+	{
+		PosArr[i]+=VelArr[i]*dt;
 	}
 }
 void PAMove::Transform(const Fmatrix&){;}
@@ -1515,14 +1588,14 @@ void PAOrbitLine::Execute(ParticleHolder *pHolder, const float dt, float& tm_max
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 	
+	auto PosArr = pHolder->particles.pos_arr;
+	auto VelArr = pHolder->particles.vel_arr;
 	if(max_radiusSqr < P_MAXFLOAT)
 	{
 		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			Particle &m = pHolder->particles[i];
-			
 			// Figure direction to particle from base of line.
-			Fvector f(m.pos - p);
+			Fvector f(PosArr[i] - p);
 			
 			Fvector w(axis * (f * axis));
 			
@@ -1536,12 +1609,7 @@ void PAOrbitLine::Execute(ParticleHolder *pHolder, const float dt, float& tm_max
 			if(rSqr < max_radiusSqr)
 			{
 				// Step velocity with acceleration
-				m.vel += into * (magdt / (_sqrt(rSqr) + (rSqr + epsilon)));
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-				}
+				VelArr[i] += into * (magdt / (_sqrt(rSqr) + (rSqr + epsilon)));
 			}
 		}
 	}
@@ -1550,10 +1618,8 @@ void PAOrbitLine::Execute(ParticleHolder *pHolder, const float dt, float& tm_max
 		// Removed because it causes pipeline stalls.
 		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			Particle &m = pHolder->particles[i];
-			
 			// Figure direction to particle from base of line.
-			Fvector f(m.pos - p);
+			Fvector f(PosArr[i] - p);
 			
 			Fvector w(axis * (f * axis));
 			
@@ -1565,11 +1631,20 @@ void PAOrbitLine::Execute(ParticleHolder *pHolder, const float dt, float& tm_max
 			float rSqr = into.square_magnitude();
 			
 			// Step velocity with acceleration
-			m.vel += into * (magdt / (_sqrt(rSqr) + (rSqr + epsilon)));
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
+			VelArr[i] += into * (magdt / (_sqrt(rSqr) + (rSqr + epsilon)));
+		}
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
+		for(u32 i = 0; i < pHolder->p_count; i++)
+		{
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
 			{
-				m.rot_vel = m.vel;
-				m.rot_vel.normalize_safe();
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
 			}
 		}
 	}
@@ -1620,14 +1695,14 @@ void PAOrbitPoint::Execute(ParticleHolder *pHolder, const float dt, float& tm_ma
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 
+	auto PosArr = pHolder->particles.pos_arr;
+	auto VelArr = pHolder->particles.vel_arr;
 	if(max_radiusSqr < P_MAXFLOAT)
 	{
 		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			Particle &m = pHolder->particles[i];
-			
 			// Figure direction to particle.
-			Fvector dir(center - m.pos);
+			Fvector dir(center - PosArr[i]);
 			
 			// Distance to gravity well (force drops as 1/r^2, normalize by 1/r)
 			// Soften by epsilon to avoid tight encounters to infinity
@@ -1636,12 +1711,7 @@ void PAOrbitPoint::Execute(ParticleHolder *pHolder, const float dt, float& tm_ma
 			// Step velocity with acceleration
 			if(rSqr < max_radiusSqr)
 			{
-				m.vel += dir * (magdt / (_sqrt(rSqr) + (rSqr + epsilon)));
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-				{
-					m.rot_vel = m.vel;
-					m.rot_vel.normalize_safe();
-				}
+				VelArr[i] += dir * (magdt / (_sqrt(rSqr) + (rSqr + epsilon)));
 			}
 		}
 	}
@@ -1650,21 +1720,28 @@ void PAOrbitPoint::Execute(ParticleHolder *pHolder, const float dt, float& tm_ma
 		// Avoids pipeline stalls.
 		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			Particle &m = pHolder->particles[i];
-			
 			// Figure direction to particle.
-			Fvector dir(center - m.pos);
+			Fvector dir(center - PosArr[i]);
 			
 			// Distance to gravity well (force drops as 1/r^2, normalize by 1/r)
 			// Soften by epsilon to avoid tight encounters to infinity
 			float rSqr = dir.square_magnitude();
 			
 			// Step velocity with acceleration
-			m.vel += dir * (magdt / (_sqrt(rSqr) + (rSqr + epsilon)));
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
+			VelArr[i] += dir * (magdt / (_sqrt(rSqr) + (rSqr + epsilon)));
+		}
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
+		for(u32 i = 0; i < pHolder->p_count; i++)
+		{
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
 			{
-				m.rot_vel = m.vel;
-				m.rot_vel.normalize_safe();
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
 			}
 		}
 	}
@@ -1707,21 +1784,29 @@ void* PAOrbitPoint::GetVariableImpl(u8 VarID)
 // Accelerate in random direction each time step
 void PARandomAccel::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 {
+	auto VelArr = pHolder->particles.vel_arr;
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
-		Particle &m = pHolder->particles[i];
-		
 		Fvector acceleration;
 		gen_acc.Generate(acceleration);
 		
 		// dt will affect this by making a higher probability of
 		// being near the original velocity after unit time. Smaller
 		// dt approach a normal distribution instead of a square wave.
-		m.vel += acceleration * dt;
-		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
+		VelArr[i] += acceleration * dt;
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
+		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			m.rot_vel = m.vel;
-			m.rot_vel.normalize_safe();
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
+			{
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
+			}
 		}
 	}
 }
@@ -1751,17 +1836,16 @@ void* PARandomAccel::GetVariableImpl(u8 VarID)
 // Immediately displace position randomly
 void PARandomDisplace::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 {
+	auto PosArr = pHolder->particles.pos_arr;
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
-		Particle &m = pHolder->particles[i];
-		
 		Fvector displacement;
 		gen_disp.Generate(displacement);
 		
 		// dt will affect this by making a higher probability of
 		// being near the original position after unit time. Smaller
 		// dt approach a normal distribution instead of a square wave.
-		m.pos += displacement * dt;
+		PosArr[i] += displacement * dt;
 	}
 }
 void PARandomDisplace::Transform(const Fmatrix& m)
@@ -1784,20 +1868,28 @@ void* PARandomDisplace::GetVariableImpl(u8 VarID)
 // Immediately assign a random velocity
 void PARandomVelocity::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 {
+	auto VelArr = pHolder->particles.vel_arr;
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
-		Particle &m = pHolder->particles[i];
-		
 		Fvector velocity;
 		gen_vel.Generate(velocity);
 		
 		// Shouldn't multiply by dt because velocities are
 		// invariant of dt. How should dt affect this?
-		m.vel = velocity;
-		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
+		VelArr[i] = velocity;
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
+		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			m.rot_vel = m.vel;
-			m.rot_vel.normalize_safe();
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
+			{
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
+			}
 		}
 	}
 }
@@ -1824,34 +1916,18 @@ void* PARandomVelocity::GetVariableImpl(u8 VarID)
 }
 //-------------------------------------------------------------------------------------------------
 
-#if 0
-// Produce coefficients of a velocity function v(t)=at^2 + bt + c
-// satisfying initial x(0)=x0,v(0)=v0 and desired x(t)=xf,v(t)=vf,
-// where x = x(0) + integrate(v(T),0,t)
-static inline void _pconstrain(float x0, float v0, float xf, float vf,
-							   float t, float *a, float *b, float *c)
-{
-	*c = v0;
-	*b = 2 * (-t*vf - 2*t*v0 + 3*xf - 3*x0) / (t * t);
-	*a = 3 * (t*vf + t*v0 - 2*xf + 2*x0) / (t * t * t);
-}
-#endif
-
 // Over time, restore particles to initial positions
 // Put all particles on the surface of a statue, explode the statue,
 // and then suck the particles back to the original position. Cool!
 void PARestore::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 {
+	auto PosArr = pHolder->particles.pos_arr;
+	auto PosBArr = pHolder->particles.posB_arr;
+	auto VelArr = pHolder->particles.vel_arr;
 	if(time_left <= 0)
 	{
-		for(u32 i = 0; i < pHolder->p_count; i++)
-		{
-			Particle &m = pHolder->particles[i];
-			
-			// Already constrained, keep it there.
-			m.pos = m.posB;
-			m.vel = Fvector(0,0,0);
-		}
+		std::memcpy(PosArr, PosBArr, sizeof(Fvector)*pHolder->p_count);
+		std::memset(VelArr, 0, sizeof(Fvector)*pHolder->p_count);
 	}
 	else
 	{
@@ -1862,8 +1938,9 @@ void PARestore::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 		
 		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-#if 1
-			Particle &m = pHolder->particles[i];
+			auto& Vel = VelArr[i];
+			auto& Pos = PosArr[i];
+			auto& PosB = PosBArr[i];
 			
 			// Solve for a desired-behavior velocity function in each axis
 			// _pconstrain(m.pos.x, m.vel.x, m.posB.x, 0., timeLeft, &a, &b, &c);
@@ -1871,54 +1948,37 @@ void PARestore::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			// Figure new velocity at next timestep
 			// m.vel.x = a * dtSqr + b * dt + c;
 			
-			float b = (-2*t*m.vel.x + 3*m.posB.x - 3*m.pos.x) * tSqrInv2dt;
-			float a = (t*m.vel.x - m.posB.x - m.posB.x + m.pos.x + m.pos.x) * tCubInv3dtSqr;
+			float b = (-2*t*Vel.x + 3*PosB.x - 3*Pos.x) * tSqrInv2dt;
+			float a = (t*Vel.x - PosB.x - PosB.x + Pos.x + Pos.x) * tCubInv3dtSqr;
 			
 			// Figure new velocity at next timestep
-			m.vel.x += a + b;
+			Vel.x += a + b;
 			
-			b = (-2*t*m.vel.y + 3*m.posB.y - 3*m.pos.y) * tSqrInv2dt;
-			a = (t*m.vel.y - m.posB.y - m.posB.y + m.pos.y + m.pos.y) * tCubInv3dtSqr;
-			
-			// Figure new velocity at next timestep
-			m.vel.y += a + b;
-			
-			b = (-2*t*m.vel.z + 3*m.posB.z - 3*m.pos.z) * tSqrInv2dt;
-			a = (t*m.vel.z - m.posB.z - m.posB.z + m.pos.z + m.pos.z) * tCubInv3dtSqr;
+			b = (-2*t*Vel.y + 3*PosB.y - 3*Pos.y) * tSqrInv2dt;
+			a = (t*Vel.y - PosB.y - PosB.y + Pos.y + Pos.y) * tCubInv3dtSqr;
 			
 			// Figure new velocity at next timestep
-			m.vel.z += a + b;
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
+			Vel.y += a + b;
+			
+			b = (-2*t*Vel.z + 3*PosB.z - 3*Pos.z) * tSqrInv2dt;
+			a = (t*Vel.z - PosB.z - PosB.z + Pos.z + Pos.z) * tCubInv3dtSqr;
+			
+			// Figure new velocity at next timestep
+			Vel.z += a + b;
+		}
+	
+		if (AlighRotVelocityToVelocity)
+		{
+			auto RotVelArr = pHolder->particles.rot_vel_arr;
+			for(u32 i = 0; i < pHolder->p_count; i++)
 			{
-				m.rot_vel = m.vel;
-				m.rot_vel.normalize_safe();
+				auto& vel = VelArr[i];
+				if (!fis_zero(vel.magnitude()))
+				{
+					RotVelArr[i] = vel;
+					RotVelArr[i].normalize_safe();
+				}
 			}
-#else
-			Particle &m = pHolder->particles[i];
-			
-			// XXX Optimize this.
-			// Solve for a desired-behavior velocity function in each axis
-			float a, b, c; // Coefficients of velocity function needed
-			
-			_pconstrain(m.pos.x, m.vel.x, m.posB.x, 0.,
-				timeLeft, &a, &b, &c);
-			
-			// Figure new velocity at next timestep
-			m.vel.x = a * dtSqr + b * dt + c;
-			
-			_pconstrain(m.pos.y, m.vel.y, m.posB.y, 0.,
-				timeLeft, &a, &b, &c);
-			
-			// Figure new velocity at next timestep
-			m.vel.y = a * dtSqr + b * dt + c;
-			
-			_pconstrain(m.pos.z, m.vel.z, m.posB.z, 0.,
-				timeLeft, &a, &b, &c);
-			
-			// Figure new velocity at next timestep
-			m.vel.z = a * dtSqr + b * dt + c;
-			
-#endif
 		}
 	}
 	
@@ -1947,14 +2007,15 @@ void* PARestore::GetVariableImpl(u8 VarID)
 // Kill particles with positions on wrong side of the specified domain
 void PASink::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 {
+	auto PosArr = pHolder->particles.pos_arr;
 	// Must traverse list in reverse order so Remove will work
 	for(int i = pHolder->p_count-1; i >= 0; i--)
 	{
-		Particle &m = pHolder->particles[i];
-		
 		// Remove if inside/outside flag matches object's flag
-		if(!(position.Within(m.pos) ^ kill_inside))
+		if(!(position.Within(PosArr[i]) ^ kill_inside))
+		{
 			pHolder->RemoveParticle(i);
+		}
 	}
 }
 void PASink::Transform(const Fmatrix& m)
@@ -1979,14 +2040,15 @@ void* PASink::GetVariableImpl(u8 VarID)
 // Kill particles with velocities on wrong side of the specified domain
 void PASinkVelocity::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 {
+	auto VelArr = pHolder->particles.vel_arr;
 	// Must traverse list in reverse order so Remove will work
 	for(int i = pHolder->p_count-1; i >= 0; i--)
 	{
-		Particle &m = pHolder->particles[i];
-		
 		// Remove if inside/outside flag matches object's flag
-		if(!(velocity.Within(m.vel) ^ kill_inside))
+		if(!(velocity.Within(VelArr[i]) ^ kill_inside))
+		{
 			pHolder->RemoveParticle(i);
+		}
 	}
 }
 void PASinkVelocity::Transform(const Fmatrix& m)
@@ -2194,28 +2256,33 @@ void PASpeedLimit::Execute(ParticleHolder *pHolder, const float dt, float& tm_ma
 	float min_sqr = min_speed*min_speed;
 	float max_sqr = max_speed*max_speed;
 	
+	auto VelArr = pHolder->particles.vel_arr;
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
-		Particle &m = pHolder->particles[i];
-		float sSqr = m.vel.square_magnitude();
+		auto& Vel = VelArr[i];
+		float sSqr = Vel.square_magnitude();
 		if(sSqr<min_sqr && sSqr)
 		{
 			float s = _sqrt(sSqr);
-			m.vel *= (min_speed/s);
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
-			{
-				m.rot_vel = m.vel;
-				m.rot_vel.normalize_safe();
-			}
+			Vel *= (min_speed/s);
 		}
 		else if(sSqr>max_sqr)
 		{
 			float s = _sqrt(sSqr);
-			m.vel *= (max_speed/s);
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
+			Vel *= (max_speed/s);
+		}
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
+		for(u32 i = 0; i < pHolder->p_count; i++)
+		{
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
 			{
-				m.rot_vel = m.vel;
-				m.rot_vel.normalize_safe();
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
 			}
 		}
 	}
@@ -2249,16 +2316,22 @@ void PATargetColor::Execute(ParticleHolder *pHolder, const float dt, float& tm_m
 {
 	float scaleFac = scale * dt;
 	
+	auto ColorArr = pHolder->particles.color_arr;
+	auto AgeArr = pHolder->particles.age_arr;
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
-		Particle &m = pHolder->particles[i];
-		if(m.age<timeFrom*tm_max || m.age>timeTo*tm_max ) continue;
+		auto& color_elem = ColorArr[i];
+		auto& age = AgeArr[i];
+		if(age<timeFrom*tm_max || age>timeTo*tm_max )
+		{
+			continue;
+		}
 
-        m.color.set(
-        	m.color.r+(color.x-m.color.r)*scaleFac,
-        	m.color.g+(color.y-m.color.g)*scaleFac,
-        	m.color.b+(color.z-m.color.b)*scaleFac,
-        	m.color.a+(alpha-m.color.a)*scaleFac
+        color_elem.set(
+        	color_elem.r+(color.x-color_elem.r)*scaleFac,
+        	color_elem.g+(color.y-color_elem.g)*scaleFac,
+        	color_elem.b+(color.z-color_elem.b)*scaleFac,
+        	color_elem.a+(alpha-color_elem.a)*scaleFac
         	);
 	}
 }
@@ -2291,14 +2364,14 @@ void PATargetSize::Execute(ParticleHolder *pHolder, const float dt, float& tm_ma
 	float scaleFac_y = scale.y * dt;
 	float scaleFac_z = scale.z * dt;
 	
+	auto SizeArr = pHolder->particles.size_arr;
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
-		Particle &m = pHolder->particles[i];
-		Fvector dif(size - m.size);
+		Fvector dif(size - SizeArr[i]);
 		dif.x *= scaleFac_x;
 		dif.y *= scaleFac_y;
 		dif.z *= scaleFac_z;
-		m.size += dif;
+		SizeArr[i] += dif;
 	}
 }
 void PATargetSize::Transform(const Fmatrix&){;}
@@ -2324,12 +2397,13 @@ void PATargetRotate::Execute(ParticleHolder *pHolder, const float dt, float& tm_
 
 	float r = std::abs(rot.x);
 
+	auto RotArr = pHolder->particles.rot_arr;
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
-		Particle &m = pHolder->particles[i];
-		float sign = m.rot.x >= 0.f ? scaleFac : -scaleFac;
-		float dif = ( r - std::abs( m.rot.x ) ) * sign;
-		m.rot.x	+= dif;
+		auto& Rot = RotArr[i];
+		float sign = Rot.x >= 0.f ? scaleFac : -scaleFac;
+		float dif = ( r - std::abs( Rot.x ) ) * sign;
+		Rot.x	+= dif;
 	}
 }
 void PATargetRotate::Transform(const Fmatrix&){;}
@@ -2353,14 +2427,23 @@ void PATargetVelocity::Execute(ParticleHolder *pHolder, const float dt, float& t
 {
 	float scaleFac = scale * dt;
 	
+	auto VelArr = pHolder->particles.vel_arr;
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
-		Particle &m = pHolder->particles[i];
-		m.vel += (velocity - m.vel) * scaleFac;
-		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
+		VelArr[i] += (velocity - VelArr[i]) * scaleFac;
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = pHolder->particles.rot_vel_arr;
+		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			m.rot_vel = m.vel;
-			m.rot_vel.normalize_safe();
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
+			{
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
+			}
 		}
 	}
 }
@@ -2399,21 +2482,22 @@ void PAVortex::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 	float magdt = magnitude * dt;
 	float max_radiusSqr = max_radius * max_radius;
 	
+	auto PosArr = pHolder->particles.pos_arr;
 	if(max_radiusSqr < P_MAXFLOAT)
 	{
 		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			Particle &m = pHolder->particles[i];
-			
 			// Vector from tip of vortex
-			Fvector offset(m.pos - center);
+			Fvector offset(PosArr[i] - center);
 			
 			// Compute distance from particle to tip of vortex.
 			float rSqr = offset.square_magnitude();
 			
 			// Don't do anything to particle if too close or too far.
 			if(rSqr > max_radiusSqr)
+			{
 				continue;
+			}
 			
 			float r = _sqrt(rSqr);
 			
@@ -2440,17 +2524,15 @@ void PAVortex::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			offset = (u * c + v * s + w) * r;
 			
 			// Translate back to object space
-			m.pos = offset + center;
+			PosArr[i] = offset + center;
 		}
 	}
 	else
 	{
 		for(u32 i = 0; i < pHolder->p_count; i++)
 		{
-			Particle &m = pHolder->particles[i];
-			
 			// Vector from tip of vortex
-			Fvector offset(m.pos - center);
+			Fvector offset(PosArr[i] - center);
 			
 			// Compute distance from particle to tip of vortex.
 			float rSqr = offset.square_magnitude();
@@ -2480,7 +2562,7 @@ void PAVortex::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			offset = (u * c + v * s + w) * r;
 			
 			// Translate back to object space
-			m.pos = offset + center;
+			PosArr[i] = offset + center;
 		}
 	}
 }
@@ -2528,11 +2610,12 @@ void PATurbulence::Execute(ParticleHolder* effect, const float dt, float& tm_max
 	Fvector vY;
 	Fvector vZ;
 	age += dt;
+	auto PosArr = effect->particles.pos_arr;
+	auto VelArr = effect->particles.vel_arr;
 	for (u32 i = 0; i < effect->p_count; i++)
 	{
-		Particle& m = effect->particles[i];
-
-		pV.mad(m.pos, offset, age);
+		auto& Vel = VelArr[i];
+		pV.mad(PosArr[i], offset, age);
 		vX.set(pV.x + epsilon, pV.y, pV.z);
 		vY.set(pV.x, pV.y + epsilon, pV.z);
 		vZ.set(pV.x, pV.y, pV.z + epsilon);
@@ -2543,11 +2626,25 @@ void PATurbulence::Execute(ParticleHolder* effect, const float dt, float& tm_max
 		D.y = (fractalsum3(vY, frequency, octaves) - d) * (float)magnitude;
 		D.z = (fractalsum3(vZ, frequency, octaves) - d) * (float)magnitude;
 
-		float velMagOrig = m.vel.magnitude();
-		m.vel.add(D);
-		float	velMagNow = m.vel.magnitude();
-		float	valMagScale = velMagOrig / velMagNow;
-		m.vel.mul(valMagScale);
+		float velMagOrig = Vel.magnitude();
+		Vel.add(D);
+		float velMagNow = Vel.magnitude();
+		float valMagScale = velMagOrig / velMagNow;
+		Vel.mul(valMagScale);
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = effect->particles.rot_vel_arr;
+		for(u32 i = 0; i < effect->p_count; i++)
+		{
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
+			{
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
+			}
+		}
 	}
 }
 
@@ -2592,15 +2689,25 @@ void* PATurbulence::GetVariableImpl(u8 VarID)
 
 // Binders
 void PABindVelocityValue::Transform(const Fmatrix& m) {}
-void PABindVelocityValue::Execute(ParticleHolder* effect, const float dt, float& tm_max) {
+void PABindVelocityValue::Execute(ParticleHolder* effect, const float dt, float& tm_max)
+{
+	auto VelArr = effect->particles.vel_arr;
 	for (u32 i = 0; i < effect->p_count; i++)
 	{
-		Particle& m = effect->particles[i];
-		m.vel = BindValue;
-		if (AlighRotVelocityToVelocity)
+		VelArr[i] = BindValue;
+	}
+	
+	if (AlighRotVelocityToVelocity)
+	{
+		auto RotVelArr = effect->particles.rot_vel_arr;
+		for(u32 i = 0; i < effect->p_count; i++)
 		{
-			m.rot_vel = m.vel;
-			m.rot_vel.normalize_safe();
+			auto& vel = VelArr[i];
+			if (!fis_zero(vel.magnitude()))
+			{
+				RotVelArr[i] = vel;
+				RotVelArr[i].normalize_safe();
+			}
 		}
 	}
 }
@@ -2621,11 +2728,12 @@ void* PABindVelocityValue::GetVariableImpl(u8 VarID)
 	return nullptr;
 }
 void PABindRotationValue::Transform(const Fmatrix& m) {}
-void PABindRotationValue::Execute(ParticleHolder* effect, const float dt, float& tm_max) {
+void PABindRotationValue::Execute(ParticleHolder* effect, const float dt, float& tm_max)
+{
+	auto RotArr = effect->particles.rot_arr;
 	for (u32 i = 0; i < effect->p_count; i++)
 	{
-		Particle& m = effect->particles[i];
-		m.rot.x = BindValue.x;
+		RotArr[i].x = BindValue.x;
 	}
 }
 void* PABindRotationValue::GetVariableImpl(u8 VarID)
@@ -2641,11 +2749,10 @@ void* PABindRotationValue::GetVariableImpl(u8 VarID)
 void PABindSizeValue::Transform(const Fmatrix& m) {}
 void PABindSizeValue::Execute(ParticleHolder* effect, const float dt, float& tm_max)
 {
+	auto SizeArr = effect->particles.size_arr;
 	for (u32 i = 0; i < effect->p_count; i++)
 	{
-		Particle& m = effect->particles[i];
-
-		m.size = BindValue;
+		SizeArr[i] = BindValue;
 	}
 }
 void* PABindSizeValue::GetVariableImpl(u8 VarID)
@@ -2661,16 +2768,12 @@ void* PABindSizeValue::GetVariableImpl(u8 VarID)
 	return nullptr;
 }
 void PABindColorValue::Transform(const Fmatrix& m) {}
-void PABindColorValue::Execute(ParticleHolder* effect, const float dt, float& tm_max) {
-	//Fcolor c_p, c_t;
-
+void PABindColorValue::Execute(ParticleHolder* effect, const float dt, float& tm_max)
+{
+	auto ColorArr = effect->particles.color_arr;
 	for (u32 i = 0; i < effect->p_count; i++)
 	{
-		Particle& m = effect->particles[i];
-		m.color.set(BindValue.x, BindValue.y, BindValue.z, m.color.a);
-		//c_p.set(m.color);
-		//c_t.set(BindValue.x, BindValue.y, BindValue.z, c_p.a);
-		//m.color = c_t.get();
+		ColorArr[i].set(BindValue.x, BindValue.y, BindValue.z, ColorArr[i].a);
 	}
 }
 void* PABindColorValue::GetVariableImpl(u8 VarID)
@@ -2684,16 +2787,12 @@ void* PABindColorValue::GetVariableImpl(u8 VarID)
 	return nullptr;
 }
 void PABindColorAlpha::Transform(const Fmatrix& m) {}
-void PABindColorAlpha::Execute(ParticleHolder* effect, const float dt, float& tm_max) {
-	//Fcolor c_p, c_t;
-
+void PABindColorAlpha::Execute(ParticleHolder* effect, const float dt, float& tm_max)
+{
+	auto ColorArr = effect->particles.color_arr;
 	for (u32 i = 0; i < effect->p_count; i++)
 	{
-		Particle& m = effect->particles[i];
-		m.color.set(m.color.r, m.color.g, m.color.b, BindValue);
-		//c_p.set(m.color);
-		//c_t.set(c_p.r, c_p.g, c_p.b, BindValue);
-		//m.color = c_t.get();
+		ColorArr[i].a = BindValue;
 	}
 }
 void* PABindColorAlpha::GetVariableImpl(u8 VarID)
@@ -2714,65 +2813,92 @@ void PAColorAnimator::Transform(const Fmatrix& m)
 
 void PAColorAnimator::Animate(ParticleHolder* pe)
 {
-	//ParticleAction::Animate(pe);
+	auto ColorModArr = pe->particles.colorMod_arr;
 	for (u32 i = 0; i < pe->p_count; i++)
 	{
-		Particle &m = pe->particles[i];
-		m.colorMod.x = 1.0f;
-		m.colorMod.y = 1.0f;
-		m.colorMod.z = 1.0f;
-		m.colorMod.w = 1.0f;
+		ColorModArr[i].mod.set(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 }
 
 void PAColorAnimator::Execute(ParticleHolder* effect, const float dt, float& tm_max) {
-	for(u32 i = 0; i < effect->p_count; i++)
+	auto AgeArr = effect->particles.age_arr;
+	switch (AnimatorType)
 	{
-		Particle &m = effect->particles[i];
-		float CurveTime;
-		if (Wrap)
-		{
-			CurveTime = (m.age/tm_max)*AnimPtr->GetMaxTime();
-			CurveTime = Reverse ? AnimPtr->GetMaxTime()-CurveTime : CurveTime;
-		} else
-		{
-			CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
-		}
-		if (Looped)
-		{
-			while (CurveTime < 0)
-			{
-				CurveTime += AnimPtr->GetMaxTime();
-			}
-			while (CurveTime > AnimPtr->GetMaxTime())
-			{
-				CurveTime -= AnimPtr->GetMaxTime();
-			}
-		} else
-		{
-			clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
-		}
-		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
-		switch (AnimatorType)
-		{
 		case PAAnimatorType::Replace:
+		{
+			auto ColorArr = effect->particles.color_arr;
+			for(u32 i = 0; i < effect->p_count; i++)
 			{
-				m.color.set(
+				float CurveTime;
+				if (Wrap)
+				{
+					CurveTime = (AgeArr[i]/tm_max)*AnimPtr->GetMaxTime();
+					CurveTime = Reverse ? AnimPtr->GetMaxTime()-CurveTime : CurveTime;
+				} else
+				{
+					CurveTime = Reverse ? AnimPtr->GetMaxTime()- AgeArr[i]*1000 : AgeArr[i]*1000;
+				}
+				if (Looped)
+				{
+					while (CurveTime < 0)
+					{
+						CurveTime += AnimPtr->GetMaxTime();
+					}
+					while (CurveTime > AnimPtr->GetMaxTime())
+					{
+						CurveTime -= AnimPtr->GetMaxTime();
+					}
+				} else
+				{
+					clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
+				}
+				Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
+			
+				ColorArr[i].set(
 					CurrentValue.x,
 					CurrentValue.y,
 					CurrentValue.z,
 					CurrentValue.w
 				);
-				break;
 			}
+			break;
+		}
 		case PAAnimatorType::Multiply:
+		{
+			auto ColorModArr = effect->particles.colorMod_arr;
+			for(u32 i = 0; i < effect->p_count; i++)
 			{
-				m.colorMod.x *= CurrentValue.x;
-				m.colorMod.y *= CurrentValue.y;
-				m.colorMod.z *= CurrentValue.z;
-				m.colorMod.w *= CurrentValue.w;
-				break;
+				float CurveTime;
+				if (Wrap)
+				{
+					CurveTime = (AgeArr[i]/tm_max)*AnimPtr->GetMaxTime();
+					CurveTime = Reverse ? AnimPtr->GetMaxTime()-CurveTime : CurveTime;
+				} else
+				{
+					CurveTime = Reverse ? AnimPtr->GetMaxTime()- AgeArr[i]*1000 : AgeArr[i]*1000;
+				}
+				if (Looped)
+				{
+					while (CurveTime < 0)
+					{
+						CurveTime += AnimPtr->GetMaxTime();
+					}
+					while (CurveTime > AnimPtr->GetMaxTime())
+					{
+						CurveTime -= AnimPtr->GetMaxTime();
+					}
+				} else
+				{
+					clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
+				}
+				Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
+			
+				ColorModArr[i].mod.x *= CurrentValue.x;
+				ColorModArr[i].mod.y *= CurrentValue.y;
+				ColorModArr[i].mod.z *= CurrentValue.z;
+				ColorModArr[i].mod.w *= CurrentValue.w;
 			}
+			break;
 		}
 	}
 }
@@ -2797,64 +2923,89 @@ void PASizeAnimator::Transform(const Fmatrix& m)
 
 void PASizeAnimator::Animate(ParticleHolder* pe)
 {
-	//ParticleAction::Animate(pe);
+	auto SizeModArr = pe->particles.sizeMod_arr;
 	for (u32 i = 0; i < pe->p_count; i++)
 	{
-		Particle &m = pe->particles[i];
-		m.sizeMod.x = 1.0f;
-		m.sizeMod.y = 1.0f;
-		m.sizeMod.z = 1.0f;
+		SizeModArr[i].mod.set(1.0f, 1.0f, 1.0f);
 	}
 }
 
 void PASizeAnimator::Execute(ParticleHolder* effect, const float dt, float& tm_max) {
-	//Fvector4 CurrentValue = AnimPtr->FastUpdateValue(CurrentIndex, CurrentTime, dt, Looped, Reverse);
-	for(u32 i = 0; i < effect->p_count; i++)
+	auto AgeArr = effect->particles.age_arr;
+	switch (AnimatorType)
 	{
-		Particle &m = effect->particles[i];
-		float CurveTime;
-		if (Wrap)
-		{
-			CurveTime = (m.age/tm_max)*AnimPtr->GetMaxTime();
-			CurveTime = Reverse ? AnimPtr->GetMaxTime()-CurveTime : CurveTime;
-		} else
-		{
-			CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
-		}
-		if (Looped)
-		{
-			while (CurveTime < 0)
-			{
-				CurveTime += AnimPtr->GetMaxTime();
-			}
-			while (CurveTime > AnimPtr->GetMaxTime())
-			{
-				CurveTime -= AnimPtr->GetMaxTime();
-			}
-		} else
-		{
-			clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
-		}
-		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
-		switch (AnimatorType)
-		{
 		case PAAnimatorType::Replace:
+		{
+			auto SizeArr = effect->particles.size_arr;
+			for(u32 i = 0; i < effect->p_count; i++)
 			{
-				m.size.x = CurrentValue.x;
-				m.size.y = CurrentValue.y;
-				m.size.z = CurrentValue.z;
-				break;
+				float CurveTime;
+				if (Wrap)
+				{
+					CurveTime = (AgeArr[i]/tm_max)*AnimPtr->GetMaxTime();
+					CurveTime = Reverse ? AnimPtr->GetMaxTime()-CurveTime : CurveTime;
+				} else
+				{
+					CurveTime = Reverse ? AnimPtr->GetMaxTime()- AgeArr[i]*1000 : AgeArr[i]*1000;
+				}
+				if (Looped)
+				{
+					while (CurveTime < 0)
+					{
+						CurveTime += AnimPtr->GetMaxTime();
+					}
+					while (CurveTime > AnimPtr->GetMaxTime())
+					{
+						CurveTime -= AnimPtr->GetMaxTime();
+					}
+				} else
+				{
+					clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
+				}
+				Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
+
+				SizeArr[i].set(CurrentValue.x, CurrentValue.y, CurrentValue.z);
 			}
+			break;
+		}
 		case PAAnimatorType::Multiply:
+		{
+			auto SizeModArr = effect->particles.sizeMod_arr;
+			for(u32 i = 0; i < effect->p_count; i++)
 			{
-				m.sizeMod.x *= CurrentValue.x;
-				m.sizeMod.y *= CurrentValue.y;
-				m.sizeMod.z *= CurrentValue.z;
-				VERIFY(m.sizeMod.x >= 0.f && m.sizeMod.x <= 100.f);
-				VERIFY(m.sizeMod.y >= 0.f && m.sizeMod.y <= 100.f);
-				VERIFY(m.sizeMod.z >= 0.f && m.sizeMod.z <= 100.f);
-				break;
+				float CurveTime;
+				if (Wrap)
+				{
+					CurveTime = (AgeArr[i]/tm_max)*AnimPtr->GetMaxTime();
+					CurveTime = Reverse ? AnimPtr->GetMaxTime()-CurveTime : CurveTime;
+				} else
+				{
+					CurveTime = Reverse ? AnimPtr->GetMaxTime()- AgeArr[i]*1000 : AgeArr[i]*1000;
+				}
+				if (Looped)
+				{
+					while (CurveTime < 0)
+					{
+						CurveTime += AnimPtr->GetMaxTime();
+					}
+					while (CurveTime > AnimPtr->GetMaxTime())
+					{
+						CurveTime -= AnimPtr->GetMaxTime();
+					}
+				} else
+				{
+					clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
+				}
+				Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
+
+				SizeModArr[i].mod.x *= CurrentValue.x;
+				SizeModArr[i].mod.y *= CurrentValue.y;
+				SizeModArr[i].mod.z *= CurrentValue.z;
+				VERIFY(SizeModArr[i].mod.x >= 0.f && SizeModArr[i].mod.x <= 100.f);
+				VERIFY(SizeModArr[i].mod.y >= 0.f && SizeModArr[i].mod.y <= 100.f);
+				VERIFY(SizeModArr[i].mod.z >= 0.f && SizeModArr[i].mod.z <= 100.f);
 			}
+			break;
 		}
 	}
 }
@@ -2875,15 +3026,16 @@ void* PASizeAnimator::GetVariableImpl(u8 VarID)
 void PAVelocityAnimator::Transform(const Fmatrix& m)
 {
 }
-void PAVelocityAnimator::Execute(ParticleHolder* effect, const float dt, float& tm_max) {
-
+void PAVelocityAnimator::Execute(ParticleHolder* effect, const float dt, float& tm_max)
+{
+	auto RotVelArr = effect->particles.rot_vel_arr;
+	auto AgeArr = effect->particles.age_arr;
+	auto VelArr = effect->particles.vel_arr;
 	for(u32 i = 0; i < effect->p_count; i++)
 	{
-		
-		Particle &m = effect->particles[i];
 		Fmatrix MDir;
 		{
-			Fvector Dir = m.rot_vel;
+			Fvector Dir = RotVelArr[i];
 			if(fis_zero(Dir.magnitude())) continue;
 			Dir.normalize_safe();
 			Fvector ChooseAxis = {0, 0, 1};
@@ -2899,11 +3051,11 @@ void PAVelocityAnimator::Execute(ParticleHolder* effect, const float dt, float& 
 		float CurveTime;
 		if (Wrap)
 		{
-			CurveTime = (m.age/tm_max)*AnimPtr->GetMaxTime();
+			CurveTime = (AgeArr[i]/tm_max)*AnimPtr->GetMaxTime();
 			CurveTime = Reverse ? AnimPtr->GetMaxTime()-CurveTime : CurveTime;
 		} else
 		{
-			CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+			CurveTime = Reverse ? AnimPtr->GetMaxTime()- AgeArr[i]*1000 : AgeArr[i]*1000;
 		}
 		if (Looped)
 		{
@@ -2921,7 +3073,7 @@ void PAVelocityAnimator::Execute(ParticleHolder* effect, const float dt, float& 
 		}
 		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
 		Fvector LocalVelocity = {CurrentValue.x,CurrentValue.y,CurrentValue.z};
-		MDir.transform(m.vel, LocalVelocity);
+		MDir.transform(VelArr[i], LocalVelocity);
 	}
 }
 void* PAVelocityAnimator::GetVariableImpl(u8 VarID)
@@ -2943,13 +3095,14 @@ void PAVelocityRotationAnimator::Transform(const Fmatrix& m)
 }
 void PAVelocityRotationAnimator::Execute(ParticleHolder* effect, const float dt, float& tm_max) {
 
+	auto RotVelArr = effect->particles.rot_vel_arr;
+	auto RotVelSArr = effect->particles.rot_velS_arr;
+	auto AgeArr = effect->particles.age_arr;
 	for(u32 i = 0; i < effect->p_count; i++)
 	{
-		
-		Particle &m = effect->particles[i];
 		Fmatrix MDir;
 		{
-			Fvector Dir = m.rot_velS;
+			Fvector Dir = RotVelSArr[i];
 			if(fis_zero(Dir.magnitude())) continue;
 			Dir.normalize_safe();
 			Fvector ChooseAxis = {0, 0, 1};
@@ -2965,11 +3118,11 @@ void PAVelocityRotationAnimator::Execute(ParticleHolder* effect, const float dt,
 		float CurveTime;
 		if (Wrap)
 		{
-			CurveTime = (m.age/tm_max)*AnimPtr->GetMaxTime();
+			CurveTime = (AgeArr[i]/tm_max)*AnimPtr->GetMaxTime();
 			CurveTime = Reverse ? AnimPtr->GetMaxTime()-CurveTime : CurveTime;
 		} else
 		{
-			CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+			CurveTime = Reverse ? AnimPtr->GetMaxTime()- AgeArr[i]*1000 : AgeArr[i]*1000;
 		}
 		if (Looped)
 		{
@@ -2987,7 +3140,7 @@ void PAVelocityRotationAnimator::Execute(ParticleHolder* effect, const float dt,
 		}
 		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
 		Fvector LocalVelocity = {CurrentValue.x,CurrentValue.y,CurrentValue.z};
-		MDir.transform(m.rot_vel, LocalVelocity);
+		MDir.transform(RotVelArr[i], LocalVelocity);
 	}
 }
 void* PAVelocityRotationAnimator::GetVariableImpl(u8 VarID)
