@@ -28,17 +28,17 @@ static void MergeParticleBounds(PS::CParticleEffect* Effect, Fbox& Box)
 		return;
 	}
 
-	PAPI::Particle* Particles = nullptr;
 	u32 Count = 0;
-	Effect->Pholder.GetParticles(Particles, Count);
+	auto& Particles = Effect->Pholder.GetParticles(Count);
 
+	auto SizeArr = Particles.size_arr;
+	auto PosArr = Particles.pos_arr;
 	for (u32 Idx = 0; Idx < Count; ++Idx)
 	{
-		const PAPI::Particle& Particle = Particles[Idx];
-		const float Extent = std::max(Particle.size.x, Particle.size.y) * 0.5f;
+		const float Extent = std::max(SizeArr[Idx].x, SizeArr[Idx].y) * 0.5f;
 
 		Fvector Pos;
-		Effect->m_XFORM.transform_tiny(Pos, Particle.pos);
+		Effect->m_XFORM.transform_tiny(Pos, PosArr[Idx]);
 		Box.modify(Fvector().sub(Pos, Fvector().set(Extent, Extent, Extent)));
 		Box.modify(Fvector().add(Pos, Fvector().set(Extent, Extent, Extent)));
 	}

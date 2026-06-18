@@ -14,7 +14,7 @@ class ButtonValue;
 
 namespace PAPI
 {
-	struct Particle;
+	struct Particles;
 	struct ParticleEffect;
 	struct PAHeader;
 	struct ParticleAction;
@@ -28,8 +28,8 @@ namespace PS
 {
 	class CParticleEffect;
 
-	typedef bool ( * CollisionCallback)(CParticleEffect* E, PAPI::Particle& P, const Fvector& pt, const Fvector& norm); // true-continue collision exec
-	typedef void ( * DestroyCallback)	(CParticleEffect* E, PAPI::Particle& P);
+	typedef bool ( * CollisionCallback)(CParticleEffect* E, PAPI::Particles& P, size_t i, const Fvector& pt, const Fvector& norm); // true-continue collision exec
+	typedef void ( * DestroyCallback)	(CParticleEffect* E, PAPI::Particles& P, size_t i);
 
 	class PFunction;
 	struct SFrame
@@ -107,8 +107,8 @@ namespace PS
 		RENDER_API bool 	SaveActionList		(IWriter& F);
 		RENDER_API bool 	LoadActionList		(IReader& F);
 	// execute
-		RENDER_API void		ExecuteAnimate		(PAPI::Particle *particles, u32 p_cnt, float dt);
-        RENDER_API void		ExecuteCollision	(PAPI::Particle *particles, u32 p_cnt, float dt, CParticleEffect* owner, CollisionCallback cb);
+		RENDER_API void		ExecuteAnimate		(PAPI::Particles& particles, u32 p_cnt, float dt);
+        RENDER_API void		ExecuteCollision	(PAPI::Particles& particles, u32 p_cnt, float dt, CParticleEffect* owner, CollisionCallback cb);
 	public:
         RENDER_API          CPEDef				();
         RENDER_API          ~CPEDef				();
