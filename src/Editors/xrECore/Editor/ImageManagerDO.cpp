@@ -101,7 +101,7 @@ IC bool _rect_place(U8Vec& mask, int dest_width, int dest_height, Irect& r, bool
 };
 
 bool item_area_sort_pred(const SSimpleImage& item0, const SSimpleImage& item1){return ((item0.Area()>item1.Area())||(item0.LongestEdge()>item1.LongestEdge()));}
-extern bool Stbi_Load(const char* full_name, U32Vec& data, u32& w, u32& h, u32& a);
+extern bool LoadRawImage(const char* full_name, U32Vec& data, u32& w, u32& h, u32& a);
 
 int CImageManager::CreateMergedTexture(u32 layer_cnt, SSimpleImageVec& src_images, SSimpleImage& dst_image, int dest_width, int dest_height, Fvector2Vec& dest_offset, Fvector2Vec& dest_scale, boolVec& dest_rotate, U32Vec& dest_remap)
 {
@@ -202,7 +202,7 @@ int CImageManager::CreateMergedTexture(const RStringVec& _names, const char* des
     	string_path		t_name;
 //.        FS.update_path	(t_name,_textures_,**n_it);
         FS.update_path	(t_name,_game_textures_,**n_it);
-        if (!Stbi_Load(EFS.ChangeFileExt(t_name,".dds"/*".tga"*/).c_str(),s_it->layers.back(),s_it->w,s_it->h,s_it->a)){
+        if (!LoadRawImage(EFS.ChangeFileExt(t_name,".dds"/*".tga"*/).c_str(),s_it->layers.back(),s_it->w,s_it->h,s_it->a)){
             ELog.DlgMsg	(mtError,"Can't load texture '%s'. Check file existence.",**n_it);
             return -1;
         }
