@@ -22,7 +22,7 @@ bool IsValidSize(u32 w, u32 h)
 	return true;
 }
 
-ECORE_API bool Stbi_Load(const char* full_name, U32Vec& data, u32& w, u32& h, u32& a)
+ECORE_API bool LoadRawImage(const char* full_name, U32Vec& data, u32& w, u32& h, u32& a)
 {
 	FS.TryLoad(full_name);
 	if (!FS.exist(full_name))
@@ -49,11 +49,11 @@ ECORE_API bool Stbi_Load(const char* full_name, U32Vec& data, u32& w, u32& h, u3
 }
 //------------------------------------------------------------------------------
 
-u32* Stbi_Load(const char* full_name, u32& w, u32& h)
+u32* LoadRawImage(const char* full_name, u32& w, u32& h)
 {
 	u32 a;
 	U32Vec data;
-	if (Stbi_Load(full_name, data, w, h, a))
+	if (LoadRawImage(full_name, data, w, h, a))
 	{
 		u32* raw_data = xr_alloc<u32>(w * h);
 		memcpy(raw_data, data.data(), w * h * 4);
@@ -100,9 +100,9 @@ void CImageManager::CreateTextureThumbnail(ETextureThumbnail* THM, const xr_stri
 	U32Vec data;
 	u32 w, h, a;
 	xr_string fn 	= EFS.ChangeFileExt(base_name,".tga");
-	if (!Stbi_Load(fn.c_str(),data,w,h,a))
+	if (!LoadRawImage(fn.c_str(),data,w,h,a))
 	{
-		if (!Stbi_Load(base_name, data, w, h, a))
+		if (!LoadRawImage(base_name, data, w, h, a))
 		{
 			ELog.Msg(mtError, "Can't load texture '%s'.\nCheck file existence", fn.c_str());
 			return;
@@ -140,7 +140,7 @@ void CImageManager::CreateGameTexture(const char* src_name, ETextureThumbnail* t
 
 	U32Vec data;
 	u32 w, h, a;
-	if (!Stbi_Load(base_name,data,w,h,a)) return;
+	if (!LoadRawImage(base_name,data,w,h,a)) return;
 	MakeGameTexture(THM,game_name,data.data());
 
 	FS.set_file_age(game_name, base_age);
@@ -255,7 +255,7 @@ bool CImageManager::LoadTextureData(const char* src_name, U32Vec& data, u32& w, 
 //.	FS.update_path			(fn,_textures_,ChangeFileExt(src_name,".tga").c_str());
 	FS.update_path			(fn,_game_textures_,ChangeFileExt(src_name,".dds").c_str());
 	u32 a;
-	if (!Stbi_Load(fn,data,w,h,a)) return false;
+	if (!LoadRawImage(fn,data,w,h,a)) return false;
 	if (age) *age			= FS.get_file_age(fn);
 	return true;
 }
@@ -346,7 +346,7 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 		// check thumbnail
 		if (sync_thm&&bThm){
 			THM = new ETextureThumbnail(it->name.c_str());
-		bool bRes = Stbi_Load(fn,data,w,h,a); R_ASSERT(bRes);
+		bool bRes = LoadRawImage(fn,data,w,h,a); R_ASSERT(bRes);
 //.             MakeThumbnailImage(THM,data.begin(),w,h,a);
 			THM->Save	(it->time_write);
 			bUpdated = true;
@@ -355,7 +355,7 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 		if (bForceGame||(sync_game&&bGame)){
 			if (!THM) THM = new ETextureThumbnail(it->name.c_str());
 			R_ASSERT(THM);
-			if (data.empty()){ bool bRes = Stbi_Load(fn,data,w,h,a); R_ASSERT(bRes);}
+			if (data.empty()){ bool bRes = LoadRawImage(fn,data,w,h,a); R_ASSERT(bRes);}
 			if (true)
 			{
 				string_path 			game_name;
@@ -477,7 +477,7 @@ bool CImageManager::CheckCompliance(const char* fname, int& compl_)
 	compl_ = 0;
 	U32Vec data;
 	u32 w, h, a;
-	if (!Stbi_Load(fname,data,w,h,a)) return false;
+	if (!LoadRawImage(fname,data,w,h,a)) return false;
 	if ((1==w) || (1==h))				 return true;
 
 	u32 w_2 	= (1==w)?w:w/2;
@@ -781,7 +781,7 @@ bool CImageManager::CreateSmallerCubeMap(const char* src_name, const char* dst_n
 	FS.update_path	(full_name,_textures_,src_name);
 	strcat			(full_name,".tga");
 
-	if (Stbi_Load(full_name,data,wf,h,a)){
+	if (LoadRawImage(full_name,data,wf,h,a)){
 		w				= wf/6;
 		u32 sm_w=32, sm_wf=6*sm_w, sm_h=32;
 		if (!btwIsPow2(h)||(h*6!=wf)||(wf<sm_wf)||(h<sm_h)){	
