@@ -56,19 +56,26 @@ void CPEDef::SetName(const char* name)
     m_Name				= name;
 }
 
-void CPEDef::ExecuteAnimate(Particle *particles, u32 p_cnt, float dt)
+void CPEDef::ExecuteAnimate(Particles& particles, u32 p_cnt, float dt)
 {
 	float speedFac = m_Frame.m_fSpeed * dt;
 	for(u32 i = 0; i < p_cnt; i++){
-		Particle &m = particles[i];
-		float f						= (float(m.frame)/255.f+((m.flags.is(Particle::ANIMATE_CCW))?-1.f:1.f)*speedFac);
-		if (f>m_Frame.m_iFrameCount)f-=m_Frame.m_iFrameCount;
-		if (f<0.f)					f+=m_Frame.m_iFrameCount;
-		m.frame						= (u16)iFloor(f*255.f);
+		auto& frame = particles.frame_arr[i];
+		auto flags = particles.flags_arr[i];
+		float f = (float(frame)/255.f+((flags.is(Particles::ANIMATE_CCW))?-1.f:1.f)*speedFac);
+		if (f>m_Frame.m_iFrameCount)
+		{
+			f-=m_Frame.m_iFrameCount;
+		}
+		if (f<0.f)
+		{
+			f+=m_Frame.m_iFrameCount;
+		}
+		frame = (u16)iFloor(f*255.f);
 	}
 }
 
-void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CParticleEffect* owner, CollisionCallback cb)
+void CPEDef::ExecuteCollision(Particles& particles, u32 p_cnt, float dt, CParticleEffect* owner, CollisionCallback cb)
 {
 	Fvector pt,n;
 #ifndef _EDITOR
@@ -77,27 +84,29 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 #endif
 	// Must traverse list in reverse order so Remove will work
 	for(int i = p_cnt-1; i >= 0; i--){
-		Particle &m = particles[i];
+		auto& pos = particles.pos_arr[i];
+		auto& vel = particles.vel_arr[i];
+		auto posB = particles.posB_arr[i];
 
 		bool pick_needed;
 		int pick_cnt=0;
-		do{
+		do
+		{
 			pick_needed = false;
-			Fvector 	dir;
-			dir.sub		(m.pos,m.posB);
-			float dist 	= dir.magnitude();
+			Fvector dir;
+			dir.sub(pos,posB);
+			float dist = dir.magnitude();
 			if (dist>=EPS){
 				dir.div	(dist);
 #ifdef _EDITOR                
-				if (Tools->RayPick(m.posB,dir,dist,&pt,&n))
-				//if (false)
+				if (Tools->RayPick(posB,dir,dist,&pt,&n))
 				{
 #else
 				collide::rq_result RQ;
                 collide::rq_target RT = m_Flags.is(dfCollisionDyn)?collide::rqtBoth:collide::rqtStatic;
-				if (g_pGameLevel->ObjectSpace.RayPick(m.posB,dir,dist,RT,RQ,nullptr))
+				if (g_pGameLevel->ObjectSpace.RayPick(posB,dir,dist,RT,RQ,nullptr))
 				{	
-					pt.mad(m.posB,dir,RQ.range);
+					pt.mad(posB,dir,RQ.range);
 					if (RQ.O)
 						n.set(0.f,1.f,0.f);
 					else
@@ -107,28 +116,42 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 					}
 #endif
 					pick_cnt++;
-					if (cb&&(pick_cnt==1)) if (!cb(owner,m,pt,n)) break;
-					if (m_Flags.is(dfCollisionDel)){ 
+					if (cb&&(pick_cnt==1))
+					{
+						if (!cb(owner,particles,i,pt,n))
+						{
+							break;
+						}
+					}
+					if (m_Flags.is(dfCollisionDel))
+					{ 
 						owner->Pholder.RemoveParticle(i);
-					}else{
+					}
+					else
+					{
 						// Compute tangential and normal components of velocity
-						float nmag = m.vel * n;
+						float nmag = vel * n;
 						Fvector vn(n * nmag); 	// Normal Vn = (V.N)N
-						Fvector vt(m.vel - vn);	// Tangent Vt = V - Vn
+						Fvector vt(vel - vn);	// Tangent Vt = V - Vn
 
 						// Compute _new velocity heading out:
 						// Don't apply friction if tangential velocity < cutoff
-						if(vt.square_magnitude() <= m_fCollideSqrCutoff){
-							m.vel = vt - vn * m_fCollideResilience;
-						}else{
-							m.vel = vt * m_fCollideOneMinusFriction - vn * m_fCollideResilience;
+						if(vt.square_magnitude() <= m_fCollideSqrCutoff)
+						{
+							vel = vt - vn * m_fCollideResilience;
 						}
-						m.pos	= m.posB + m.vel * dt; 
+						else
+						{
+							vel = vt * m_fCollideOneMinusFriction - vn * m_fCollideResilience;
+						}
+						pos	= posB + vel * dt; 
 						pick_needed = true;
 					}
 				}
-			}else{
-				m.pos	= m.posB;
+			}
+			else
+			{
+				pos	= posB;
 			}
 		}while(pick_needed&&(pick_cnt<2));
 	}
