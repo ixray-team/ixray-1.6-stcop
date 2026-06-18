@@ -1250,7 +1250,7 @@ void UIMinimapEditorForm::Show()
 	Form->bOpen = true;
 }
 
-extern bool Stbi_Load(const char* full_name, U32Vec& data, u32& w, u32& h, u32& a);
+extern bool LoadRawImage(const char* full_name, U32Vec& data, u32& w, u32& h, u32& a);
 
 int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 {
@@ -1269,7 +1269,7 @@ int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 	u32 W, H, A;
 	const xr_string prefix = "map_";
 
-	if (!Stbi_Load(fn.c_str(), m_ImageData, W, H, A))
+	if (!LoadRawImage(fn.c_str(), m_ImageData, W, H, A))
 	{
 		return 2;
 	}
@@ -1327,7 +1327,7 @@ void UIMinimapEditorForm::LoadBGClick(const xr_string texture)
 
 	u32 m_ImageW, m_ImageH, m_ImageA;
 
-	if (Stbi_Load(fn.c_str(), m_ImageData, m_ImageW, m_ImageH, m_ImageA))
+	if (LoadRawImage(fn.c_str(), m_ImageData, m_ImageW, m_ImageH, m_ImageA))
 	{
 		isEdited = true;
 

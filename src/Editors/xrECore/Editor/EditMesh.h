@@ -363,17 +363,6 @@ public:
 	void			SaveMesh				(IWriter&);
 	bool 			LoadMesh				(IReader&);
 
-	// debug
-	void			DumpAdjacency			();
-
-	// convert
-#ifdef _MAX_EXPORT
-	void			FlipFaces				();
-	TriObject*		ExtractTriObject		(INode *node, int &deleteIt);
-	bool			Convert					(INode *node);
-	bool			Convert					(CExporter* exporter);
-#endif
-
 	int				FindSimilarUV			(st_VMap* vmap, Fvector2& _uv);
 	int				FindSimilarWeight		(st_VMap* vmap, float _w);
 	int				FindVMapByName			(VMapVec& vmaps, const char* name, u8 t, bool polymap);
