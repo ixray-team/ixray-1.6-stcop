@@ -4,8 +4,6 @@
 
 #include "stdafx.h"
 
-
-//#include "EditMeshVLight.h"
 #include "EditMesh.h"
 #include "EditObject.h"
 #include "ui_main.h"
@@ -359,13 +357,17 @@ struct svertRender
 void CEditableMesh::RenderSkeleton(const Fmatrix&, CSurface* S)
 {
 	if (!IsGeneratedSVertices(RENDER_SKELETON_LINKS))
+	{
 		GenerateSVertices(RENDER_SKELETON_LINKS);
+	}
 
 	R_ASSERT2(m_SVertices, "SVertices empty!");
-	SurfFacesPairIt sp_it = m_SurfFaces.find(S); 
+	SurfFacesPairIt sp_it = m_SurfFaces.find(S);
 
 	if (sp_it == m_SurfFaces.end())
+	{
 		return;
+	}
 
 	// set model shader from surface (active shader in editor device)
 	ref_shader shader = EDevice->GetShader();
@@ -394,10 +396,6 @@ void CEditableMesh::RenderSkeleton(const Fmatrix&, CSurface* S)
 	u32 vBase;
 
 	size_t FaceCount = face_lst.size();
-	//if (S->m_Flags.is(CSurface::sf2Sided))
-	//{
-	//	FaceCount *= 2;
-	//}
 
 	svertRender* pv = (svertRender*)Stream->Lock(FaceCount * 3, m_Parent->vs_SkeletonGeom->vb_stride, vBase);
 
@@ -409,13 +407,12 @@ void CEditableMesh::RenderSkeleton(const Fmatrix&, CSurface* S)
 			pv->uv = SV.uv;
 			pv->P = SV.offs;
 			pv->N = SV.norm;
-		
+
 			u8 bone_count = (u8)SV.bones.size();
 			float total = SV.bones[0].w;
 			float max_weight = SV.bones[0].w + SV.bones[1 % bone_count].w + SV.bones[2 % bone_count].w;
-			u16 max_bone_id = std::max(SV.bones[0].id, std::max(SV.bones[1 % bone_count].id,
-				std::max(SV.bones[2 % bone_count].id, SV.bones[3 % bone_count].id)));
-		
+			u16 max_bone_id = std::max(SV.bones[0].id, std::max(SV.bones[1 % bone_count].id, std::max(SV.bones[2 % bone_count].id, SV.bones[3 % bone_count].id)));
+
 			if (max_bone_id >= 75)
 			{
 				const Fmatrix& M = m_Parent->m_Bones[SV.bones[0].id]->_RenderTransform();
@@ -443,11 +440,13 @@ void CEditableMesh::RenderSkeleton(const Fmatrix&, CSurface* S)
 				pv->weight0 = SV.bones[0].w / max_weight;
 				pv->weight1 = SV.bones[1 % bone_count].w / max_weight;
 				pv->weight2 = SV.bones[2 % bone_count].w / max_weight;
-				pv->ind = color_rgba(
-					SV.bones[0].id * 3, 
+				pv->ind = color_rgba
+				(
+					SV.bones[0].id * 3,
 					SV.bones[1 % bone_count].id * 3,
 					SV.bones[2 % bone_count].id * 3,
-					SV.bones[3 % bone_count].id * 3);
+					SV.bones[3 % bone_count].id * 3
+				);
 			}
 		}
 	}
