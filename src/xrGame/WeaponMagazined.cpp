@@ -2961,7 +2961,7 @@ void CWeaponMagazined::PlayAnimHide()
 {
 	VERIFY(GetState()==eHiding);
 	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
-	PlayHUDMotion(SetCurrentStateAnimation("anm_hide"), empty && HudAnimationExist("anm_close", false) && !HudAnimationExist("anm_close_weapon", false) ? "anm_close" : SetCurrentStateAnimation("anm_holster"), EHudMixType::eMixAll, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_hide"), empty && HudAnimationExist("anm_close", false) && !HudAnimationExist("anm_add_cartridge", false) ? "anm_close" : SetCurrentStateAnimation("anm_holster"), EHudMixType::eMixAll, GetState());
 }
 
 shared_str CWeaponMagazined::SetCurrentReloadAnimation()
