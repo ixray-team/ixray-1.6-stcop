@@ -221,21 +221,21 @@ void CParticleGroup::SItem::Clear()
 	children_free.clear();
 }
 
-void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, const char* eff_name, PAPI::Particle& m)
+void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, const char* eff_name, PAPI::Particles& P, size_t pID)
 {
 	CParticleEffect* C = static_cast<CParticleEffect*>(RImplementation.model_CreatePE(eff_name));
 	
 	C->SetHudMode(emitter->GetHudMode());
 
 	Fmatrix M; M.identity();
-	Fvector vel; vel.sub(m.pos,m.posB); vel.div(C->m_RT_Flags.is(CParticleEffect::flRT_LiveUpdate)?Device.fTimeDelta:fDT_STEP);
+	Fvector vel; vel.sub(P.pos_arr[pID],P.posB_arr[pID]); vel.div(C->m_RT_Flags.is(CParticleEffect::flRT_LiveUpdate)?Device.fTimeDelta:fDT_STEP);
 	if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM))
 	{
 		M.set(emitter->m_XFORM);
 		M.transform_dir(vel);
 	}
 	Fvector p;
-	M.transform_tiny(p,m.pos);
+	M.transform_tiny(p,P.pos_arr[pID]);
 	M.c.set(p);
 	C->Play();
 	C->UpdateParent(M,vel,false);
@@ -256,21 +256,21 @@ void CParticleGroup::SItem::StopRelatedChild(u32 idx)
 	
 	fast_erase(children_related, idx);
 }
-void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, const char* nm, PAPI::Particle& m)
+void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, const char* nm, PAPI::Particles& P, size_t pID)
 {
 	CParticleEffect* C = static_cast<CParticleEffect*>(RImplementation.model_CreatePE(nm));
 	C->SetHudMode(emitter->GetHudMode());
 	if(!C->IsLooped())
 	{
 		Fmatrix M; M.identity();
-		Fvector vel; vel.sub(m.pos,m.posB); vel.div(C->m_RT_Flags.is(CParticleEffect::flRT_LiveUpdate)?Device.fTimeDelta:fDT_STEP);
+		Fvector vel; vel.sub(P.pos_arr[pID],P.posB_arr[pID]); vel.div(C->m_RT_Flags.is(CParticleEffect::flRT_LiveUpdate)?Device.fTimeDelta:fDT_STEP);
 		if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM))
 		{
 			M.set(emitter->m_XFORM);
 			M.transform_dir(vel);
 		}
 		Fvector p;
-		M.transform_tiny(p,m.pos);
+		M.transform_tiny(p,P.pos_arr[pID]);
 		M.c.set(p);
 		C->Play();
 		C->UpdateParent(M,vel,false);
@@ -338,27 +338,27 @@ void CParticleGroup::SItem::UpdateParent(const Fmatrix& m, const Fvector& veloci
 }
 
 //------------------------------------------------------------------------------
-void OnGroupParticleBirth(void* owner, u32 param, PAPI::Particle& m, u32 idx)
+void OnGroupParticleBirth(void* owner, u32 param, PAPI::Particles& P, size_t pID, u32 idx)
 {
 	CParticleGroup* PG = static_cast<CParticleGroup*>(owner); VERIFY(PG);
 	CParticleEffect* PE	= PG->items[param].root_effect;
-	PS::OnEffectParticleBirth(PE, param, m, idx);
+	PS::OnEffectParticleBirth(PE, param, P, pID, idx);
 	// if have child
 	const CPGDef* PGD = PG->GetDefinition(); VERIFY(PGD);
 	const CPGDef::SEffect* eff = PGD->m_Effects[param];
 
 	if (eff->m_Flags.is(CPGDef::SEffect::flOnBirthChild))
-		PG->items[param].StartFreeChild(PE,*eff->m_OnBirthChildName,m);
+		PG->items[param].StartFreeChild(PE,*eff->m_OnBirthChildName, P, pID);
 
 	if (eff->m_Flags.is(CPGDef::SEffect::flOnPlayChild))
-		PG->items[param].StartRelatedChild(PE,*eff->m_OnPlayChildName,m);
+		PG->items[param].StartRelatedChild(PE,*eff->m_OnPlayChildName, P, pID);
 }
 
-void OnGroupParticleDead(void* owner, u32 param, PAPI::Particle& m, u32 idx)
+void OnGroupParticleDead(void* owner, u32 param, PAPI::Particles& P, size_t pID, u32 idx)
 {
 	CParticleGroup* PG = static_cast<CParticleGroup*>(owner); VERIFY(PG);
 	CParticleEffect* PE = PG->items[param].root_effect;
-	PS::OnEffectParticleDead(PE, param, m, idx);
+	PS::OnEffectParticleDead(PE, param, P, pID, idx);
 	// if have child
 	const CPGDef* PGD = PG->GetDefinition(); VERIFY(PGD);
 	const CPGDef::SEffect* eff = PGD->m_Effects[param];
@@ -367,7 +367,7 @@ void OnGroupParticleDead(void* owner, u32 param, PAPI::Particle& m, u32 idx)
 		PG->items[param].StopRelatedChild(idx);
 
 	if (eff->m_Flags.is(CPGDef::SEffect::flOnDeadChild))
-		PG->items[param].StartFreeChild(PE,*eff->m_OnDeadChildName,m);
+		PG->items[param].StartFreeChild(PE,*eff->m_OnDeadChildName, P, pID);
 }
 
 void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying)
@@ -384,19 +384,23 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
 
 			if (def.m_Flags.is(CPGDef::SEffect::flOnPlayChild) && def.m_OnPlayChildName.size())
 			{
-				PAPI::Particle* particles; u32 p_cnt;
-				E->Pholder.GetParticles(particles, p_cnt);
+				u32 p_cnt;
+				auto& particles = E->Pholder.GetParticles(p_cnt);
 				xrCriticalSectionGuard guard(childs_cs);
 				VERIFY(p_cnt == children_related.size());
 
 				if (p_cnt)
 				{
+					auto PosArr = particles.pos_arr;
+					auto PosBArr = particles.posB_arr;
 					for (u32 i = 0; i < p_cnt; i++)
 					{
-						PAPI::Particle& m = particles[i];
 						CParticleEffect* C = children_related[i];
-						Fmatrix M; M.translate(m.pos);
-						Fvector vel; vel.sub(m.pos, m.posB); vel.div(C->m_RT_Flags.is(CParticleEffect::flRT_LiveUpdate) ? Device.fTimeDelta : fDT_STEP);
+						Fmatrix M;
+						M.translate(PosArr[i]);
+						Fvector vel;
+						vel.sub(PosArr[i], PosBArr[i]);
+						vel.div(C->m_RT_Flags.is(CParticleEffect::flRT_LiveUpdate) ? Device.fTimeDelta : fDT_STEP);
 						C->UpdateParent(M, vel, false);
 					}
 				}

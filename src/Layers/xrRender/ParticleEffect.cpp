@@ -34,19 +34,23 @@ static void ApplyTexgen(const Fmatrix& mVP)
 	RCache.set_c("mVPTexgen", mTexgen);
 }
 
-void PS::OnEffectParticleBirth(void* owner, u32 , PAPI::Particle& m, u32 )
+void PS::OnEffectParticleBirth(void* owner, u32 , PAPI::Particles& P, size_t pID, u32 )
 {
 	CParticleEffect* PE = static_cast<CParticleEffect*>(owner); VERIFY(PE);
     if (CPEDef* PED = PE->GetDefinition())
 	{
         if (PED->m_Flags.is(CPEDef::dfRandomFrame))
-            m.frame	= (u16)iFloor(Random.randI(PED->m_Frame.m_iFrameCount)*255.f);
+        {
+	        P.frame_arr[pID] = (u16)iFloor(Random.randI(PED->m_Frame.m_iFrameCount)*255.f);
+        }
 
         if (PED->m_Flags.is(CPEDef::dfAnimated)&&PED->m_Flags.is(CPEDef::dfRandomPlayback)&&Random.randI(2))
-            m.flags.set(Particle::ANIMATE_CCW,true);
+        {
+	        P.flags_arr[pID].set(Particles::ANIMATE_CCW,true);
+        }
     }
 }
-void PS::OnEffectParticleDead(void* , u32 , PAPI::Particle& , u32 )
+void PS::OnEffectParticleDead(void* , u32 , PAPI::Particles& , size_t , u32 )
 {
 //	CPEDef* PE = static_cast<CPEDef*>(owner);
 }
@@ -132,8 +136,8 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 			}
 			Pholder.Update(fDT_STEP);
 
-			PAPI::Particle* particles = nullptr; u32 p_cnt = 0u;
-			Pholder.GetParticles(particles, p_cnt);
+			u32 p_cnt = 0u;
+			auto& particles = Pholder.GetParticles(p_cnt);
 
 			// our actions
 			if (m_Def->m_Flags.is(CPEDef::dfFramed | CPEDef::dfAnimated))
@@ -147,24 +151,49 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 				m_Def->ExecuteCollision(particles, p_cnt, fDT_STEP, this, m_CollisionCallback);
 
 			//-move action
-			if (p_cnt && particles)
+			if (p_cnt)
 			{
 				vis.box.invalidate();
 				float p_size = 0.f;
+				if(!RImplementation.ViewBase.testSphere_dirty(vis.sphere.P, vis.sphere.R))
+				{
+					auto PosArr = particles.pos_arr;
+					auto PosIArr = particles.posI_arr;
+					for (u32 i = 0; i < p_cnt; i++)
+					{
+						PosIArr[i].set(PosArr[i]);
+					}
+					auto RotArr = particles.rot_arr;
+					auto RotIArr = particles.rotI_arr;
+					for (u32 i = 0; i < p_cnt; i++)
+					{
+						RotIArr[i].set(RotArr[i]);
+					}
+					auto velArr = particles.vel_arr;
+					auto velIArr = particles.velI_arr;
+					for (u32 i = 0; i < p_cnt; i++)
+					{
+						velIArr[i].set(velArr[i]);
+					}
+					auto SizeArr = particles.size_arr;
+					auto SizeIArr = particles.sizeI_arr;
+					for (u32 i = 0; i < p_cnt; i++)
+					{
+						SizeIArr[i].set(SizeArr[i]);
+					}
+				}
 				for (u32 i = 0; i < p_cnt; i++)
 				{
-					Particle& m = particles[i];
-					if(!RImplementation.ViewBase.testSphere_dirty(vis.sphere.P, vis.sphere.R))
-					{
-						m.posI.set(m.pos);
-						m.rotI = m.rot;
-						m.velI.set(m.vel);
-						m.sizeI.set(m.size);
-					}
-					vis.box.modify(m.pos);
-					if (m.size.x > p_size) p_size = m.size.x;
-					if (m.size.y > p_size) p_size = m.size.y;
-					if (m.size.z > p_size) p_size = m.size.z;
+					auto elem = particles.pos_arr[i];
+					vis.box.modify(elem);
+				}
+				for (u32 i = 0; i < p_cnt; i++)
+				{
+					auto elem = particles.size_arr[i];
+					if (elem.x > p_size) p_size = elem.x;
+					if (elem.y > p_size) p_size = elem.y;
+					if (elem.z > p_size) p_size = elem.z;
+					
 				}
 				vis.box.grow(p_size);
 				vis.box.getsphere(vis.sphere.P, vis.sphere.R);
@@ -179,29 +208,39 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 	else
 	{
 		Pholder.Update(Device.fTimeDelta);
-		PAPI::Particle* particles = nullptr; u32 p_cnt = 0u;
-		Pholder.GetParticles(particles, p_cnt);
+		u32 p_cnt = 0u;
+		auto& particles = Pholder.GetParticles(p_cnt);
 		// our actions
 		if (m_Def->m_Flags.is(CPEDef::dfFramed | CPEDef::dfAnimated))
+		{
 			m_Def->ExecuteAnimate(particles, p_cnt, Device.fTimeDelta);
+		}
 
 		if (m_Def->m_Flags.is(CPEDef::dfCollision))
+		{
 			m_Def->ExecuteCollision(particles, p_cnt, Device.fTimeDelta, this, m_CollisionCallback);
+		}
 
 		//-move action
-		if (particles && p_cnt!=0u)
+		if (p_cnt!=0u)
 		{
 			vis.box.invalidate();
 			float p_size = 0.f;
 			for (u32 i = 0; i < p_cnt; i++)
 			{
-				Particle& m = particles[i];
-
-				if (!_valid(m.pos))continue;
-				vis.box.modify(m.pos);
-				if (m.size.x > p_size) p_size = m.size.x;
-				if (m.size.y > p_size) p_size = m.size.y;
-				if (m.size.z > p_size) p_size = m.size.z;
+				auto elem = particles.pos_arr[i];
+				if (!_valid(elem))
+				{
+					continue;
+				}
+				vis.box.modify(elem);
+			}
+			for (u32 i = 0; i < p_cnt; i++)
+			{
+				auto elem = particles.size_arr[i];
+				if (elem.x > p_size) p_size = elem.x;
+				if (elem.y > p_size) p_size = elem.y;
+				if (elem.z > p_size) p_size = elem.z;
 			}
 			vis.box.grow(p_size);
 			vis.box.getsphere(vis.sphere.P, vis.sphere.R);
@@ -295,9 +334,8 @@ PAPI::ParticleAction* CParticleEffect::FindPA(shared_str PEName, PAPI::PActionEn
 //------------------------------------------------------------------------------
 #ifndef _EDITOR
 //----------------------------------------------------
-ICF void FillSprite	(PAPI::Particle& m, xrCriticalSection& cache_lock, const Fvector& pos, const Fvector& T, const Fvector& R, const Fvector4& uv, const Fvector2& vs, u32 clr)
+ICF void FillSprite	(PAPI::Particles::LITBUFF*& pv, xrCriticalSection& cache_lock, const Fvector& pos, const Fvector& T, const Fvector& R, const Fvector4& uv, const Fvector2& vs, u32 clr, float angle)
 {
-	float angle = m.rotI.x;
 	float sa = std::sin(angle);  
 	float ca = std::cos(angle);  
 
@@ -306,13 +344,14 @@ ICF void FillSprite	(PAPI::Particle& m, xrCriticalSection& cache_lock, const Fve
 	Fvector a = Vt-Vr, b = Vt+Vr;
 
 	xrCriticalSectionGuard guard(&cache_lock);
-	m.buff =
+	*pv =
 	{
 		-b+pos, clr, uv.x,uv.w,
 		a+pos, clr, uv.x,uv.y,
 		-a+pos, clr, uv.z,uv.w,
 		b+pos, clr, uv.z,uv.y
 	};
+	++pv;
 }
 
 void CParticleEffect::UpdateCache()
@@ -327,133 +366,256 @@ void CParticleEffect::UpdateCache()
 
 
 	// Get a pointer to the particles in gp memory
-	PAPI::Particle* particles = nullptr; u32 p_cnt = 0u;
-	Pholder.GetParticles(particles, p_cnt);
+	u32 p_cnt = 0u;
+	auto& particles = Pholder.GetParticles(p_cnt);
 
-	if (p_cnt == 0u || particles == nullptr)
+	if (p_cnt == 0u)
+	{
 		return;
+	}
 
 	Fvector& cam_dir = RDEVICE.vCameraDirection_saved;
     Fvector& cam_top = RDEVICE.vCameraTop_saved;
     Fvector& cam_right = RDEVICE.vCameraRight_saved;
-	
-	constexpr float tau = .1f;
-	float dt = exp(-Device.fTimeDelta / tau);
 
-	Fmatrix	M;
-	Fvector p, d, dir;
-	Fvector2 lt = { 0.f, 0.f }, rb = { 1.f, 1.f }, vs;
-	float speed;
-
-	for (u32 i = 0u; i < p_cnt; ++i)
+	if (m_RT_Flags.is(flRT_LiveUpdate))
 	{
-		PAPI::Particle& m = particles[i];
-
-		if (m_RT_Flags.is(flRT_LiveUpdate))
+		auto PosArr = particles.pos_arr;
+		auto PosIArr = particles.posI_arr;
+		for (u32 i = 0; i < p_cnt; i++)
 		{
-			m.posI.set(m.pos);
-			m.rotI = m.rot;
-			m.velI.set(m.vel);
-			m.sizeI.set(m.size);
+			PosIArr[i].set(PosArr[i]);
 		}
-		else
+		auto RotArr = particles.rot_arr;
+		auto RotIArr = particles.rotI_arr;
+		for (u32 i = 0; i < p_cnt; i++)
 		{
-			m.posI.inertion(m.pos, dt);
-			m.rotI.x = std::lerp(m.rot.x, m.rotI.x, dt);
-			m.velI.inertion(m.vel, dt);
-			m.sizeI.inertion(m.size, dt);
+			RotIArr[i].set(RotArr[i]);
 		}
+		auto velArr = particles.vel_arr;
+		auto velIArr = particles.velI_arr;
+		for (u32 i = 0; i < p_cnt; i++)
+		{
+			velIArr[i].set(velArr[i]);
+		}
+		auto SizeArr = particles.size_arr;
+		auto SizeIArr = particles.sizeI_arr;
+		for (u32 i = 0; i < p_cnt; i++)
+		{
+			SizeIArr[i].set(SizeArr[i]);
+		}
+	} else
+	{
+		constexpr float tau = .1f;
+		float dt = exp(-Device.fTimeDelta / tau);
 				
-		Fvector FinalSize(
-			m.sizeI.x*m.sizeMod.x,
-			m.sizeI.y*m.sizeMod.y,
-			m.sizeI.z*m.sizeMod.z
-			);
-		VERIFY(FinalSize.x >= 0.f && FinalSize.x <= 1000.f);
-		VERIFY(FinalSize.y >= 0.f && FinalSize.y <= 1000.f);
-		VERIFY(FinalSize.z >= 0.f && FinalSize.z <= 1000.f);
+		auto PosArr = particles.pos_arr;
+		auto PosIArr = particles.posI_arr;
+		for (u32 i = 0; i < p_cnt; i++)
+		{
+			PosIArr[i].inertion(PosArr[i], dt);
+		}
+		auto RotArr = particles.rot_arr;
+		auto RotIArr = particles.rotI_arr;
+		for (u32 i = 0; i < p_cnt; i++)
+		{
+			RotIArr[i] = RotArr[i];
+		}
+		auto velArr = particles.vel_arr;
+		auto velIArr = particles.velI_arr;
+		for (u32 i = 0; i < p_cnt; i++)
+		{
+			velIArr[i].inertion(velArr[i], dt);
+		}
+		auto SizeArr = particles.size_arr;
+		auto SizeIArr = particles.sizeI_arr;
+		for (u32 i = 0; i < p_cnt; i++)
+		{
+			SizeIArr[i].inertion(SizeArr[i], dt);
+		}
+	}
 
-		if (m_Def->m_Flags.is(CPEDef::dfFramed))
-			m_Def->m_Frame.CalculateTC(iFloor(float(m.frame) / 255.f), lt, rb);
-
-		vs = { FinalSize.x * 0.5f, FinalSize.y * 0.5f};
+	// float r_x - +1 = 1
+	// float r_y - +1 = 2
+	// Fvector2 lt - +2 = 4
+	// Fvector2 rb - +2 = 6
+	// Fcolor FinalColor - +4 = 10
+	size_t required_buff_size = p_cnt*10;
+	thread_local xr_vector<float> buff(required_buff_size, {});
+	if (buff.size() < required_buff_size)
+	{
+		buff.resize(required_buff_size);
+	}
+	float* r_x_arr = buff.data();
+	float* r_y_arr = buff.data()+p_cnt;
+	Fvector2* lt_arr = (Fvector2*)(buff.data()+(p_cnt*2));
+	Fvector2* rb_arr = (Fvector2*)(buff.data()+(p_cnt*4));
+	Fcolor* FinalColor = (Fcolor*)(buff.data()+(p_cnt*6));
+	
+	{
+		auto SizeIArr = particles.sizeI_arr;
+		auto sizeModArr = particles.sizeMod_arr;
+		for (u32 i = 0; i < p_cnt; i++)
+		{
+			r_x_arr[i] = SizeIArr[i].x*sizeModArr[i].mod.x;
+			VERIFY(r_x_arr[i] >= 0.f && r_x_arr[i] <= 1000.f);
+			r_x_arr[i] *= 0.5f;
+			r_y_arr[i] = SizeIArr[i].y*sizeModArr[i].mod.y;
+			VERIFY(r_y_arr[i] >= 0.f && r_y_arr[i] <= 1000.f);
+			r_y_arr[i] *= 0.5f;
+		}
 		if (m_Def->m_Flags.is(CPEDef::dfVelocityScale))
 		{
-			speed = m.velI.magnitude();
-			vs.x += speed * m_Def->m_VelocityScale.x;
-			vs.y += speed * m_Def->m_VelocityScale.y;
+			auto VelIArr = particles.velI_arr;
+			for (u32 i = 0; i < p_cnt; i++)
+			{
+				auto Speed = VelIArr[i].magnitude();
+				r_x_arr[i] += Speed*m_Def->m_VelocityScale.x;
+				r_y_arr[i] += Speed*m_Def->m_VelocityScale.y;
+			}
 		}
-		Fcolor FinalColor;
-		FinalColor.set(
-			clampr(m.color.r * m.colorMod.x, 0.0f, 1.0f),
-			clampr(m.color.g * m.colorMod.y, 0.0f, 1.0f),
-			clampr(m.color.b * m.colorMod.z, 0.0f, 1.0f),
-			clampr(m.color.a * m.colorMod.w, 0.0f, 1.0f)
-			);
-		if (m_Def->m_Flags.is(CPEDef::dfAlignToPath))
+	}
+
+	{
+		for (u32 i = 0; i < p_cnt; i++)
 		{
-			speed = m.velI.magnitude();
+			lt_arr[i].set(0.f, 0.f);
+			rb_arr[i].set(1.f, 1.f);
+		}
+				
+		if (m_Def->m_Flags.is(CPEDef::dfFramed))
+		{
+			auto FrameArr = particles.frame_arr;
+			for (u32 i = 0; i < p_cnt; i++)
+			{
+				m_Def->m_Frame.CalculateTC(iFloor(float(FrameArr[i]) / 255.f), lt_arr[i], rb_arr[i]);
+			}
+		}
+	}
+
+	{
+		auto ColorArr = particles.color_arr;
+		auto ColorModArr = particles.colorMod_arr;
+		for (u32 i = 0; i < p_cnt; i++)
+		{
+			auto Color = ColorArr[i];
+			auto ColorMod = ColorModArr[i].mod;
+			FinalColor[i].set(
+				clampr(Color.r * ColorMod.x, 0.0f, 1.0f),
+				clampr(Color.g * ColorMod.y, 0.0f, 1.0f),
+				clampr(Color.b * ColorMod.z, 0.0f, 1.0f),
+				clampr(Color.a * ColorMod.w, 0.0f, 1.0f)
+				);
+		}
+	}
+
+	auto BuffPtr = particles.buff_arr;
+	auto RotIArr = particles.rotI_arr;
+	if (m_Def->m_Flags.is(CPEDef::dfAlignToPath))
+	{
+		auto PosIArr = particles.posI_arr;
+		for (u32 i = 0; i < p_cnt; i++)
+		{
+			float speed = particles.velI_arr[i].magnitude();
 			if ((speed < EPS_S) && m_Def->m_Flags.is(CPEDef::dfWorldAlign))
 			{
+				Fmatrix	M;  	
 				M.setXYZ(m_Def->m_APDefaultRotation);
 				if (m_RT_Flags.is(flRT_XFORM))
 				{
-					m_XFORM.transform_tiny(p, m.posI);
+					Fvector p;
+					m_XFORM.transform_tiny(p,PosIArr[i]);
 					M.mulA_43(m_XFORM);
-
-					FillSprite(m, cache_lock, p, M.k, M.i, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
+					FillSprite(BuffPtr, cache_lock,p,M.k,M.i,
+						{lt_arr[i].x, lt_arr[i].y,rb_arr[i].x, rb_arr[i].y},
+						{r_x_arr[i],r_y_arr[i]},FinalColor[i].get(),RotIArr[i].x);
 				}
 				else
-					FillSprite(m, cache_lock, m.posI, M.k, M.i, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
+				{
+					FillSprite(BuffPtr, cache_lock, PosIArr[i], M.k, M.i,
+						{lt_arr[i].x, lt_arr[i].y,rb_arr[i].x, rb_arr[i].y},
+						{r_x_arr[i],r_y_arr[i]},FinalColor[i].get(),RotIArr[i].x);
+				}
 			}
 			else if ((speed >= EPS_S) && m_Def->m_Flags.is(CPEDef::dfFaceAlign))
 			{
-				M.k.div(m.velI, speed);
+				Fmatrix	M; M.identity();
+				M.k.div(particles.velI_arr[i], speed);
 				M.j.set(0.f, 1.f, 0.f);
 
 				if (std::abs(M.j.dotproduct(M.k)) > .99f)
 					M.j.set(0.f, 0.f, 1.f);
 
-				M.i.set(M.j^M.k);
-				M.j.set(M.k^M.i);
+				M.i.crossproduct(M.j, M.k); M.i.normalize();
+				M.j.crossproduct(M.k, M.i); M.j.normalize();
 				if (m_RT_Flags.is(flRT_XFORM))
 				{
-					m_XFORM.transform_tiny(p, m.posI);
+					Fvector p;
+					m_XFORM.transform_tiny(p,PosIArr[i]);
 					M.mulA_43(m_XFORM);
-
-					FillSprite(m, cache_lock, p, M.j, M.i, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
+					FillSprite(BuffPtr, cache_lock,p,M.k,M.i,
+						{lt_arr[i].x, lt_arr[i].y,rb_arr[i].x, rb_arr[i].y},
+						{r_x_arr[i],r_y_arr[i]},FinalColor[i].get(),RotIArr[i].x);
 				}
 				else
-					FillSprite(m, cache_lock, m.posI, M.j, M.i, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
+				{
+					FillSprite(BuffPtr, cache_lock, PosIArr[i], M.k, M.i,
+						{lt_arr[i].x, lt_arr[i].y,rb_arr[i].x, rb_arr[i].y},
+						{r_x_arr[i],r_y_arr[i]},FinalColor[i].get(),RotIArr[i].x);
+				}
 			}
 			else
 			{
+				Fvector dir;
+
 				if (speed >= EPS_S)
-					dir.div(m.velI, speed);
+				{
+					dir.div(particles.velI_arr[i], speed);
+				}
 				else
+				{
 					dir.setHP(-m_Def->m_APDefaultRotation.y, -m_Def->m_APDefaultRotation.x);
+				}
 
 				if (m_RT_Flags.is(flRT_XFORM))
 				{
-					m_XFORM.transform_tiny(p, m.posI);
-					m_XFORM.transform_dir(d, dir);
-
-					FillSprite(m, cache_lock, p, d, Fvector(d^cam_dir).normalize_safe(), {lt.x, lt.y, rb.x, rb.y}, vs, FinalColor.get());
+					Fvector p,d;
+					m_XFORM.transform_tiny(p,PosIArr[i]);
+					m_XFORM.transform_dir(d,dir);
+					FillSprite(BuffPtr, cache_lock, p, d, Fvector(d^cam_dir).normalize_safe(),
+						{lt_arr[i].x, lt_arr[i].y, rb_arr[i].x, rb_arr[i].y},
+						{r_x_arr[i],r_y_arr[i]},FinalColor[i].get(),RotIArr[i].x);
 				}
 				else
-					FillSprite(m, cache_lock, m.posI, dir, Fvector(dir^cam_dir).normalize_safe(), { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
+				{
+					FillSprite(BuffPtr, cache_lock, PosIArr[i], dir, Fvector(dir^cam_dir).normalize_safe(),
+						{lt_arr[i].x, lt_arr[i].y, rb_arr[i].x, rb_arr[i].y},
+						{r_x_arr[i],r_y_arr[i]},FinalColor[i].get(),RotIArr[i].x);
+				}
+			}
+		}
+	}
+	else
+	{
+		if (m_RT_Flags.is(flRT_XFORM))
+		{
+			for (u32 i = 0; i < p_cnt; i++)
+			{
+				Fvector p;
+				m_XFORM.transform_tiny(p,particles.posI_arr[i]);
+				FillSprite(BuffPtr, cache_lock, p, cam_top, cam_right,
+					{lt_arr[i].x, lt_arr[i].y,rb_arr[i].x, rb_arr[i].y},
+					{r_x_arr[i],r_y_arr[i]}, FinalColor[i].get(),RotIArr[i].x);
 			}
 		}
 		else
 		{
-			if (m_RT_Flags.is(flRT_XFORM))
+			for (u32 i = 0; i < p_cnt; i++)
 			{
-				m_XFORM.transform_tiny(p, m.posI);
-
-				FillSprite(m, cache_lock, p, cam_top, cam_right, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
+				FillSprite(BuffPtr, cache_lock, particles.posI_arr[i], cam_top, cam_right,
+					{lt_arr[i].x, lt_arr[i].y,rb_arr[i].x, rb_arr[i].y},
+					{r_x_arr[i],r_y_arr[i]}, FinalColor[i].get(),RotIArr[i].x);
 			}
-			else
-				FillSprite(m, cache_lock, m.posI, cam_top, cam_right, { lt.x, lt.y, rb.x, rb.y }, vs, FinalColor.get());
 		}
 	}
 }
@@ -476,10 +638,10 @@ void CParticleEffect::Render(float)
 	UpdateCache();
 
 	xrCriticalSectionGuard guard(&cache_lock);
-	PAPI::Particle* particles = nullptr; u32 total_sprites = 0u;
-	Pholder.GetParticles(particles, total_sprites);
+	u32 total_sprites = 0u;
+	auto& particles = Pholder.GetParticles(total_sprites);
 
-	if (total_sprites == 0u || particles == nullptr)
+	if (total_sprites == 0u)
 	{
 		return;
 	}
@@ -489,16 +651,18 @@ void CParticleEffect::Render(float)
 
 	GRHI->StateManager->SetCullMode(m_Def->m_Flags.test(CPEDef::dfCulling) ? (m_Def->m_Flags.test(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
 
-	u32 MAX_SPRITES = RCache.Vertex.GetSize() / u32(sizeof(PAPI::Particle::LITBUFF));
+	u32 MAX_SPRITES = RCache.Vertex.GetSize() / u32(sizeof(PAPI::Particles::LITBUFF));
 	for (u32 start_idx = 0u; start_idx < total_sprites; start_idx += MAX_SPRITES)
 	{
 		u32 batch_size = std::min(MAX_SPRITES, total_sprites - start_idx);
 		u32 vertices_in_batch = batch_size * 4u;
 		u32 vOffset;
 
-		PAPI::Particle::LITBUFF* buff = (PAPI::Particle::LITBUFF*)RCache.Vertex.Lock(vertices_in_batch, geom->vb_stride, vOffset);
+		PAPI::Particles::LITBUFF* buff = (PAPI::Particles::LITBUFF*)RCache.Vertex.Lock(vertices_in_batch, geom->vb_stride, vOffset);
 		for (u32 i = 0u; i < batch_size; ++i)
-			buff[i] = particles[start_idx + i].buff;
+		{
+			buff[i] = particles.buff_arr[start_idx + i];
+		}
 		RCache.Vertex.Unlock(vertices_in_batch, geom->vb_stride);
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0u, vertices_in_batch, 0u, vertices_in_batch / 2u);
 	}
@@ -506,7 +670,7 @@ void CParticleEffect::Render(float)
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 }
 #else
-ICF void FillSprite(PAPI::Particle::LITBUFF*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
+ICF void FillSprite(PAPI::Particles::LITBUFF*& pv, const Fvector& T, const Fvector& R, const Fvector& pos, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
 {
 	float sa = std::sin(angle);
 	float ca = std::cos(angle);
@@ -533,7 +697,7 @@ ICF void FillSprite(PAPI::Particle::LITBUFF*& pv, const Fvector& T, const Fvecto
 	pv++;
 }
 
-ICF void FillSprite(PAPI::Particle::LITBUFF*& pv, const Fvector& pos, const Fvector& dir, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
+ICF void FillSprite(PAPI::Particles::LITBUFF*& pv, const Fvector& pos, const Fvector& dir, const Fvector2& lt, const Fvector2& rb, float r1, float r2, u32 clr, float angle)
 {
 	float sa = std::sin(angle);
 	float ca = std::cos(angle);
@@ -569,92 +733,177 @@ void CParticleEffect::Render(float)
 
 	u32 dwOffset, dwCount;
 	// Get a pointer to the particles in gp memory
-	PAPI::Particle* particles;
 	u32 p_cnt;
-	Pholder.GetParticles(particles, p_cnt);
+	auto& particles = Pholder.GetParticles(p_cnt);
 
 	if (p_cnt > 0)
 	{
 		if (m_Def && m_Def->m_Flags.is(CPEDef::dfSprite))
 		{
-			PAPI::Particle::LITBUFF* pv_start = (PAPI::Particle::LITBUFF*)RCache.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
-			PAPI::Particle::LITBUFF* pv = pv_start;
+			PAPI::Particles::LITBUFF* pv_start = (PAPI::Particles::LITBUFF*)RCache.Vertex.Lock(p_cnt * 4 * 4, geom->vb_stride, dwOffset);
+			PAPI::Particles::LITBUFF* pv = pv_start;
 
-			for (u32 i = 0; i < p_cnt; i++)
+			if (m_RT_Flags.is(flRT_LiveUpdate))
 			{
-				PAPI::Particle& m = particles[i];
-				
-				if (m_RT_Flags.is(flRT_LiveUpdate))
+				auto PosArr = particles.pos_arr;
+				auto PosIArr = particles.posI_arr;
+				for (u32 i = 0; i < p_cnt; i++)
 				{
-					m.posI.set(m.pos);
-					m.rotI = m.rot;
-					m.velI.set(m.vel);
-					m.sizeI.set(m.size);
+					PosIArr[i].set(PosArr[i]);
 				}
-				else
+				auto RotArr = particles.rot_arr;
+				auto RotIArr = particles.rotI_arr;
+				for (u32 i = 0; i < p_cnt; i++)
 				{
-					constexpr float tau = .1f;
-					float dt = exp(-Device.fTimeDelta / tau);
-					m.posI.inertion(m.pos, dt);
-					m.rotI.x = std::lerp(m.rot.x, m.rotI.x, dt);
-					m.velI.inertion(m.vel, dt);
-					m.sizeI.inertion(m.size, dt);
+					RotIArr[i].set(RotArr[i]);
 				}
+				auto velArr = particles.vel_arr;
+				auto velIArr = particles.velI_arr;
+				for (u32 i = 0; i < p_cnt; i++)
+				{
+					velIArr[i].set(velArr[i]);
+				}
+				auto SizeArr = particles.size_arr;
+				auto SizeIArr = particles.sizeI_arr;
+				for (u32 i = 0; i < p_cnt; i++)
+				{
+					SizeIArr[i].set(SizeArr[i]);
+				}
+			} else
+			{
+				constexpr float tau = .1f;
+				float dt = exp(-Device.fTimeDelta / tau);
 				
-				Fvector FinalSize(
-					m.sizeI.x*m.sizeMod.x,
-					m.sizeI.y*m.sizeMod.y,
-					m.sizeI.z*m.sizeMod.z
-					);
-				VERIFY(FinalSize.x >= 0.f && FinalSize.x <= 1000.f);
-				VERIFY(FinalSize.y >= 0.f && FinalSize.y <= 1000.f);
-				VERIFY(FinalSize.z >= 0.f && FinalSize.z <= 1000.f);
+				auto PosArr = particles.pos_arr;
+				auto PosIArr = particles.posI_arr;
+				for (u32 i = 0; i < p_cnt; i++)
+				{
+					PosIArr[i].inertion(PosArr[i], dt);
+				}
+				auto RotArr = particles.rot_arr;
+				auto RotIArr = particles.rotI_arr;
+				for (u32 i = 0; i < p_cnt; i++)
+				{
+					RotIArr[i] = RotArr[i];
+				}
+				auto velArr = particles.vel_arr;
+				auto velIArr = particles.velI_arr;
+				for (u32 i = 0; i < p_cnt; i++)
+				{
+					velIArr[i].inertion(velArr[i], dt);
+				}
+				auto SizeArr = particles.size_arr;
+				auto SizeIArr = particles.sizeI_arr;
+				for (u32 i = 0; i < p_cnt; i++)
+				{
+					SizeIArr[i].inertion(SizeArr[i], dt);
+				}
+			}
 
-				Fvector2 lt, rb;
-				lt.set(0.f, 0.f);
-				rb.set(1.f, 1.f);
-
-				if (m_Def->m_Flags.is(CPEDef::dfFramed))
-					m_Def->m_Frame.CalculateTC(iFloor(float(m.frame) / 255.f), lt, rb);
-
-				float r_x = FinalSize.x*0.5f;
-				float r_y = FinalSize.y*0.5f;
+			// float r_x - +1 = 1
+			// float r_y - +1 = 2
+			// Fvector2 lt - +2 = 4
+			// Fvector2 rb - +2 = 6
+			// Fcolor FinalColor - +4 = 10
+			size_t required_buff_size = p_cnt*10;
+			thread_local xr_vector<float> buff(required_buff_size, {});
+			if (buff.size() < required_buff_size)
+			{
+				buff.resize(required_buff_size);
+			}
+			float* r_x_arr = buff.data();
+			float* r_y_arr = buff.data()+p_cnt;
+			Fvector2* lt_arr = (Fvector2*)(buff.data()+(p_cnt*2));
+			Fvector2* rb_arr = (Fvector2*)(buff.data()+(p_cnt*4));
+			Fcolor* FinalColor = (Fcolor*)(buff.data()+(p_cnt*6));
+			
+			{
+				auto SizeIArr = particles.sizeI_arr;
+				auto sizeModArr = particles.sizeMod_arr;
+				for (u32 i = 0; i < p_cnt; i++)
+				{
+					r_x_arr[i] = SizeIArr[i].x*sizeModArr[i].mod.x;
+					VERIFY(r_x_arr[i] >= 0.f && r_x_arr[i] <= 1000.f);
+					r_x_arr[i] *= 0.5f;
+					r_y_arr[i] = SizeIArr[i].y*sizeModArr[i].mod.y;
+					VERIFY(r_y_arr[i] >= 0.f && r_y_arr[i] <= 1000.f);
+					r_y_arr[i] *= 0.5f;
+				}
 				if (m_Def->m_Flags.is(CPEDef::dfVelocityScale))
 				{
-					float speed = m.velI.magnitude();
-					r_x += speed * m_Def->m_VelocityScale.x;
-					r_y += speed * m_Def->m_VelocityScale.y;
+					auto VelIArr = particles.velI_arr;
+					for (u32 i = 0; i < p_cnt; i++)
+					{
+						auto Speed = VelIArr[i].magnitude();
+						r_x_arr[i] += Speed*m_Def->m_VelocityScale.x;
+						r_y_arr[i] += Speed*m_Def->m_VelocityScale.y;
+					}
 				}
-				Fcolor FinalColor;
-				FinalColor.set(
-					clampr(m.color.r * m.colorMod.x, 0.0f, 1.0f),
-					clampr(m.color.g * m.colorMod.y, 0.0f, 1.0f),
-					clampr(m.color.b * m.colorMod.z, 0.0f, 1.0f),
-					clampr(m.color.a * m.colorMod.w, 0.0f, 1.0f)
-					);
-				if (m_Def->m_Flags.is(CPEDef::dfAlignToPath))
+			}
+
+			{
+				for (u32 i = 0; i < p_cnt; i++)
 				{
-					float speed = m.velI.magnitude();
+					lt_arr[i].set(0.f, 0.f);
+					rb_arr[i].set(1.f, 1.f);
+				}
+				
+				if (m_Def->m_Flags.is(CPEDef::dfFramed))
+				{
+					auto FrameArr = particles.frame_arr;
+					for (u32 i = 0; i < p_cnt; i++)
+					{
+						m_Def->m_Frame.CalculateTC(iFloor(float(FrameArr[i]) / 255.f), lt_arr[i], rb_arr[i]);
+					}
+				}
+			}
+
+			{
+				auto ColorArr = particles.color_arr;
+				auto ColorModArr = particles.colorMod_arr;
+				for (u32 i = 0; i < p_cnt; i++)
+				{
+					auto Color = ColorArr[i];
+					auto ColorMod = ColorModArr[i].mod;
+					FinalColor[i].set(
+						clampr(Color.r * ColorMod.x, 0.0f, 1.0f),
+						clampr(Color.g * ColorMod.y, 0.0f, 1.0f),
+						clampr(Color.b * ColorMod.z, 0.0f, 1.0f),
+						clampr(Color.a * ColorMod.w, 0.0f, 1.0f)
+						);
+				}
+			}
+
+			
+			if (m_Def->m_Flags.is(CPEDef::dfAlignToPath))
+			{
+				auto RotIArr = particles.rotI_arr;
+				auto PosIArr = particles.posI_arr;
+				for (u32 i = 0; i < p_cnt; i++)
+				{
+					float speed = particles.velI_arr[i].magnitude();
 					if ((speed < EPS_S) && m_Def->m_Flags.is(CPEDef::dfWorldAlign))
 					{
-                    	Fmatrix	M;  	
-                    	M.setXYZ(m_Def->m_APDefaultRotation);
-                        if (m_RT_Flags.is(flRT_XFORM))
+						Fmatrix	M;  	
+						M.setXYZ(m_Def->m_APDefaultRotation);
+						if (m_RT_Flags.is(flRT_XFORM))
 						{
-                            Fvector p;
-                            m_XFORM.transform_tiny(p,m.posI);
-	                        M.mulA_43(m_XFORM);
-                            FillSprite(pv,M.k,M.i,p,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
-                        }
+							Fvector p;
+							m_XFORM.transform_tiny(p,PosIArr[i]);
+							M.mulA_43(m_XFORM);
+							FillSprite(pv,M.k,M.i,
+								p,lt_arr[i],rb_arr[i],r_x_arr[i],r_y_arr[i],FinalColor[i].get(),RotIArr[i].x);
+						}
 						else
 						{
-							FillSprite(pv,M.k,M.i,m.posI,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+							FillSprite(pv,M.k,M.i,
+								PosIArr[i],lt_arr[i],rb_arr[i],r_x_arr[i],r_y_arr[i],FinalColor[i].get(),RotIArr[i].x);
 						}
 					}
 					else if ((speed >= EPS_S) && m_Def->m_Flags.is(CPEDef::dfFaceAlign))
 					{
 						Fmatrix	M; M.identity();
-						M.k.div(m.velI, speed);
+						M.k.div(particles.velI_arr[i], speed);
 						M.j.set(0.f, 1.f, 0.f);
 
 						if (std::abs(M.j.dotproduct(M.k)) > .99f)
@@ -664,48 +913,69 @@ void CParticleEffect::Render(float)
 						M.j.crossproduct(M.k, M.i); M.j.normalize();
 						if (m_RT_Flags.is(flRT_XFORM))
 						{
-                            Fvector p;
-                            m_XFORM.transform_tiny(p,m.posI);
-	                        M.mulA_43(m_XFORM);
-                            FillSprite(pv,M.j,M.i,p,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
-                        }
+							Fvector p;
+							m_XFORM.transform_tiny(p,PosIArr[i]);
+							M.mulA_43(m_XFORM);
+							FillSprite(pv,M.j,M.i,
+								p,lt_arr[i],rb_arr[i],r_x_arr[i],r_y_arr[i],FinalColor[i].get(),RotIArr[i].x);
+						}
 						else
-                            FillSprite(pv,M.j,M.i,m.posI,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
-                    }
+						{
+							FillSprite(pv,M.j,M.i,
+								PosIArr[i],lt_arr[i],rb_arr[i],r_x_arr[i],r_y_arr[i],FinalColor[i].get(),RotIArr[i].x);
+						}
+					}
 					else
 					{
 						Fvector dir;
 
 						if (speed >= EPS_S)
-							dir.div(m.velI, speed);
+						{
+							dir.div(particles.velI_arr[i], speed);
+						}
 						else
+						{
 							dir.setHP(-m_Def->m_APDefaultRotation.y, -m_Def->m_APDefaultRotation.x);
+						}
 
 						if (m_RT_Flags.is(flRT_XFORM))
 						{
-                            Fvector p,d;
-                            m_XFORM.transform_tiny(p,m.posI);
-                            m_XFORM.transform_dir(d,dir);
-                            FillSprite(pv,p,d,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
-                        }
+							Fvector p,d;
+							m_XFORM.transform_tiny(p,PosIArr[i]);
+							m_XFORM.transform_dir(d,dir);
+							FillSprite(pv,p,d,lt_arr[i],rb_arr[i],r_x_arr[i],r_y_arr[i],FinalColor[i].get(),RotIArr[i].x);
+						}
 						else
-                            FillSprite(pv,m.posI,dir,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
-                    }
-				}
-				else
-				{
-					if (m_RT_Flags.is(flRT_XFORM))
-					{
-						Fvector p;
-						m_XFORM.transform_tiny(p,m.posI);
-						FillSprite(pv,RDEVICE.vCameraTop,RDEVICE.vCameraRight,p,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
-					}
-					else
-					{
-						FillSprite(pv,RDEVICE.vCameraTop,RDEVICE.vCameraRight,m.posI,lt,rb,r_x,r_y,FinalColor.get(),m.rotI.x);
+						{
+							FillSprite(pv,
+								PosIArr[i],dir,lt_arr[i],rb_arr[i],r_x_arr[i],r_y_arr[i],FinalColor[i].get(),RotIArr[i].x);
+						}
 					}
 				}
 			}
+			else
+			{
+				if (m_RT_Flags.is(flRT_XFORM))
+				{
+					for (u32 i = 0; i < p_cnt; i++)
+					{
+						Fvector p;
+						m_XFORM.transform_tiny(p,particles.posI_arr[i]);
+						FillSprite(pv,RDEVICE.vCameraTop,RDEVICE.vCameraRight,
+							p,lt_arr[i],rb_arr[i],r_x_arr[i],r_y_arr[i],FinalColor[i].get(),particles.rotI_arr[i].x);
+					}
+				}
+				else
+				{
+					for (u32 i = 0; i < p_cnt; i++)
+					{
+						FillSprite(pv,RDEVICE.vCameraTop,RDEVICE.vCameraRight,
+							particles.posI_arr[i],lt_arr[i],rb_arr[i],r_x_arr[i],r_y_arr[i],FinalColor[i].get(),
+							particles.rotI_arr[i].x);
+					}
+				}
+			}
+			
 			dwCount = u32(pv - pv_start) * 4;
 			RCache.Vertex.Unlock(dwCount, geom->vb_stride);
 

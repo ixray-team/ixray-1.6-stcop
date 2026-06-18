@@ -504,6 +504,7 @@ void CSceneObject::FillProp(const char* pref, PropItemVec& items)
 			}
 			if(s->m_pDataOld)
 			{
+				// TODO: After set shared material on reimport and level load - crash. IDK why...
 				xr_delete(s->m_pDataOld);
 			}
 		}

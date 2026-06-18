@@ -1,7 +1,6 @@
-
-#ifndef pholderH
-#define pholderH
+#pragma once
 #include "particle_actions_collection.h"
+
 namespace PAPI
 {
 	// A effect of particles - Info and an array of Particles and Actions
@@ -10,7 +9,7 @@ namespace PAPI
 		xr_vector<ParticleAction*> m_actions;
 		xr_vector<ParticleAction*> m_animators;
 
-		Particle* particles = nullptr;		// Actually, num_particles in size
+		Particles particles;		// Actually, num_particles in size
 		OnBirthParticleCB b_cb = nullptr;
 		OnDeadParticleCB d_cb = nullptr;
 		void* owner = nullptr;
@@ -22,14 +21,15 @@ namespace PAPI
 
 		IC ParticleHolder()
 		{
-			particles = xr_alloc<Particle>(max_particles);
+			particles.Realloc(max_particles);
 		}
 
 		virtual ~ParticleHolder()
 		{
-			xr_free(particles);
 			for (ParticleAction* pPAction : m_actions)
+			{
 				xr_delete(pPAction);
+			}
 		}
 
 		ICF void SetMaxParticles(u32 max_count)
@@ -41,21 +41,21 @@ namespace PAPI
 
 				// May have to kill particles.
 				if (p_count > max_particles)
+				{
 					p_count = max_particles;
+				}
 
 				return;
 			}
 
 			// Allocate particles.
-			Particle* new_particles = xr_alloc<Particle>(max_count);
-			//std::memcpy(new_particles, particles, p_count * sizeof(Particle));
-
-			for (u32 i = 0; i < p_count; i++)
-				new_particles[i] = particles[i];
-			
-			xr_free(particles);
-
-			particles = new_particles;
+			{
+				Particles new_particles;
+				new_particles.Realloc(max_count);
+				new_particles.CopyData(particles, p_count);
+				particles.Free();
+				particles = std::move(new_particles);
+			}
 
 			max_particles = max_count;
 			particles_allocated = max_count;
@@ -64,12 +64,16 @@ namespace PAPI
 		ICF void RemoveParticle(u32 i)
 		{
 			if (0 == p_count)
+			{
 				return;
+			}
 
 			if (d_cb)
-				d_cb(owner, param, particles[i], i);
+			{
+				d_cb(owner, param, particles, i, i);
+			}
 
-			particles[i] = std::move(particles[--p_count]);
+			particles.SwapWithLast(i, p_count--);
 		}
 
 		ICF bool AddParticle(const Fvector& pos, const Fvector& posB,
@@ -77,30 +81,17 @@ namespace PAPI
 			u32 color, const float age = 0.0f, u16 frame = 0, u16 flags = 0)
 		{
 			if (p_count >= max_particles)
+			{
 				return false;
+			}
 
 			VERIFY(age >=0.0f);
-			Particle& P = particles[p_count];
-			P.pos = pos;
-			P.posI = pos;
-			P.posB = posB;
-			P.size = size;
-			P.sizeI = size;
-			P.sizeMod = { 1.0f, 1.0f, 1.0f };
-			P.rot.x = rot.x;
-			P.rotI.x = rot.x;
-			P.vel = vel;
-			P.velI = vel;
-			P.rot_vel = rot_vel;
-			P.rot_velS = rot_vel;
-			P.color = color;
-			P.colorMod = { 1.0f, 1.0f, 1.0f, 1.0f };
-			P.age = age;
-			P.frame = frame;
-			P.flags.assign(flags);
+			particles.Add(p_count, pos, posB, size, rot, vel, rot_vel, color, age, frame, flags);
 
 			if (b_cb)
-				b_cb(owner, param, P, p_count);
+			{
+				b_cb(owner, param, particles, p_count, p_count);
+			}
 
 			p_count++;
 
@@ -188,10 +179,10 @@ namespace PAPI
 			param = par;
 		}
 
-		ICF void GetParticles(Particle*& pvec, u32& cnt)
+		ICF Particles& GetParticles(u32& cnt)
 		{
-			pvec = particles;
 			cnt = p_count;
+			return particles;
 		}
 
 		ICF u32 GetParticlesCount() { return p_count; }
@@ -267,4 +258,3 @@ namespace PAPI
 		}
 	};
 }
-#endif

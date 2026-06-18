@@ -101,9 +101,9 @@ namespace PS
 
 			void Clear();
 
-			void StartRelatedChild(CParticleEffect* emitter, const char* eff_name, PAPI::Particle& m);
+			void StartRelatedChild(CParticleEffect* emitter, const char* eff_name, PAPI::Particles& P, size_t pID);
 			void StopRelatedChild(u32 idx);
-			void StartFreeChild(CParticleEffect* emitter, const char* eff_name, PAPI::Particle& m);
+			void StartFreeChild(CParticleEffect* emitter, const char* eff_name, PAPI::Particles& P, size_t pID);
 
 			void UpdateParent(const Fmatrix& m, const Fvector& velocity, bool bXFORM);
 			void OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying);
