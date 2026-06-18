@@ -368,61 +368,18 @@ void CEditableObject::EvictObject()
 	DefferedUnloadRP			();
 }
 
-//bool CEditableObject::PrepareOGF(IWriter& F, u8 infl, bool gen_tb, CEditableMesh* mesh)
-//{
-//	return IsSkeleton()?PrepareSkeletonOGF(F,infl):PrepareRigidOGF(F,gen_tb,mesh);
-//}
-//
-//bool CEditableObject::PrepareRigidOGF(IWriter& F, bool gen_tb, CEditableMesh* mesh)
-//{
-//    CExportObjectOGF E(this);
-//    return E.Export(F,gen_tb,mesh);
-//}
-//
-//bool CEditableObject::PrepareSVGeometry(IWriter& F, u8 infl)
-//{
-//    CExportSkeleton E(this);
-//    return E.ExportGeometry(F, infl);
-//}
-//
-//bool CEditableObject::PrepareSVKeys(IWriter& F)
-//{
-//    CExportSkeleton E(this);
-//    return E.ExportMotionKeys(F);
-//}
-//
-//bool CEditableObject::PrepareSVDefs(IWriter& F)
-//{
-//    CExportSkeleton E(this);
-//    return E.ExportMotionDefs(F);
-//}
-//
-//bool CEditableObject::PrepareSkeletonOGF(IWriter& F, u8 infl)
-//{
-//    CExportSkeleton E(this);
-//    return E.Export(F,infl);
-//}
-//
-//bool CEditableObject::PrepareOMF(IWriter& F)
-//{
-//    CExportSkeleton E(this);
-//    return E.ExportMotions(F);
-//}
-//---------------------------------------------------------------------------
-
 void  CEditableObject::OnChangeTransform(PropValue*)
 {
 	UI->RedrawScene();
 }
-//---------------------------------------------------------------------------
 
-//. #include "../../xrEngine/blenders/Blender.h"
-IC bool BE      (bool A, bool B)
+IC bool BE(bool A, bool B)
 {
 	bool a = !!A;
 	bool b = !!B;
-	return a==b;
+	return a == b;
 }
+
 bool CEditableObject::CheckShaderCompatible()
 {
 	bool bRes 			= true;
@@ -560,8 +517,6 @@ void CEditableObject::DeleteBone(CBone* bone)
 	}
 }
 
-//---------------------------------------------------------------------------
-
 BPIt CEditableObject::BonePart(CBone* B)
 {
 	BPIt it 		= FirstBonePart();
@@ -581,39 +536,39 @@ BPIt CEditableObject::BonePart(CBone* B)
 
 void CEditableObject::RenameBone(CBone* bone, const char* new_name)
 {
-	BPIt bpit 			= BonePart(bone);
-	RStringVec::iterator iit 	= (*bpit).bones.begin();
-	RStringVec::iterator iit_e 	= (*bpit).bones.end();
+	BPIt bpit = BonePart(bone);
+	RStringVec::iterator iit = (*bpit).bones.begin();
+	RStringVec::iterator iit_e = (*bpit).bones.end();
 
-	for( ;iit!=iit_e; ++iit)
+	for (; iit != iit_e; ++iit)
 	{
-		if(*iit==bone->Name())
+		if (*iit == bone->Name())
 		{
 			*iit = new_name;
 			break;
 		}
 	}
 
-	for (BoneIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); ++b_it)
+	for (BoneIt b_it = m_Bones.begin(); b_it != m_Bones.end(); ++b_it)
 	{
 		CBone* B = *b_it;
-		if(B->ParentName()==bone->Name())
+		if (B->ParentName() == bone->Name())
+		{
 			B->SetParentName(new_name);
+		}
 	}
 
-	for (SMotionIt s_it=m_SMotions.begin(); s_it!=m_SMotions.end(); ++s_it) 
+	for (SMotionIt s_it = m_SMotions.begin(); s_it != m_SMotions.end(); ++s_it)
 	{
 		CSMotion* M = *s_it;
-		for(BoneMotionIt bm_it=M->BoneMotions().begin(); bm_it!=M->BoneMotions().end(); ++bm_it)
+		for (BoneMotionIt bm_it = M->BoneMotions().begin(); bm_it != M->BoneMotions().end(); ++bm_it)
 		{
-			if(bm_it->name == bone->Name())
+			if (bm_it->name == bone->Name())
+			{
 				bm_it->name = new_name;
+			}
 		}
-		
 	}
 
-	//bone->SetName(new_name);
-	
 	Modified();
 }
-
