@@ -25,13 +25,15 @@ bool IsValidSize(u32 w, u32 h)
 ECORE_API bool LoadRawImage(const char* full_name, U32Vec& data, u32& w, u32& h, u32& a)
 {
 	FS.TryLoad(full_name);
-	if (!FS.exist(full_name))
+	auto file = FS.exist(full_name);
+	if (!file)
 	{ 
 		ELog.Msg(mtError,"Can't find file: '%s'",full_name);
 		return false;
 	}
 
-	DXTUtils::ImageInfo Img = DXTUtils::GitPixels(full_name);
+	//file->wrap
+	DXTUtils::ImageInfo Img = DXTUtils::GitPixels(file->wrap ? file->wrap : full_name);
 	w = Img.W;
 	h = Img.H;
 
