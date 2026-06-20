@@ -103,16 +103,14 @@ inline void xr_parallel_foreach(Index Begin, Index End, Body Functor)
 // Run Threads
 inline void xr_std_parallel_for(std::function<void()>&& function_to_call, u32 ThreadsMax)
 {
-	xr_vector<std::thread*> threads;
+ 	xr_vector<std::thread> threads;
 	for (auto i = 0; i < ThreadsMax; i++)
 	{
-		threads.push_back(new std::thread(function_to_call));
+		threads.emplace_back(std::thread(function_to_call));
 	}
 	for (auto i = 0; i < ThreadsMax; i++)
 	{
-		threads[i]->join();
-		xr_delete(threads[i]);
-	}
-
-	threads.clear();
+		threads[i].join();
+ 	}
+ 	threads.clear();
 }
