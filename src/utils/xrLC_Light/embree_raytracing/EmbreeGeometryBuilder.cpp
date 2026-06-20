@@ -120,7 +120,7 @@ void TriangleContainer::RemoveDublicatesFaces( )
 
     for (size_t i = 1; i < temp.size(); ++i)
     {
-        if (!temp[i].similar(temp[i - 1]))
+		if (!temp[i].similar(temp[i - 1]) && !temp[i].isDegenerated())
         {
             new_faces.push_back(faces_v[temp[i].originalIndex]);
             new_dummy.push_back(dummy[temp[i].originalIndex]);
