@@ -6,7 +6,7 @@ ENGINE_API XRay::Hardware::FPSCounter* pFPSCounter = nullptr;
 
 XRay::Hardware::FPSCounter::FPSCounter()
 {
-	font_ = g_FontManager->CloneFont("ui_font_console");
+	font_ = g_FontManager->CloneFont("stat_font");
 	VERIFY(font_);
 }
 
