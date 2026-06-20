@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FPSCounter.h"
 
-float fps_smoothing_alpha = .125f; // 1/8 dostato4no plavno
+float fps_smoothing_alpha = .33f;
 ENGINE_API XRay::Hardware::FPSCounter* pFPSCounter = nullptr;
 
 XRay::Hardware::FPSCounter::FPSCounter()
