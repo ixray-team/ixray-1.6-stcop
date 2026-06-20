@@ -14,33 +14,34 @@ xr_vector<bool> g_cover_nodes;
 void compute_cover_nodes()
 {
 	Fbox					aabb;
-	CalculateHeight(aabb);
-	VERIFY(!g_covers);
-	g_covers = new CPointQuadTree(aabb, g_params.fPatchSize * .5f, 8 * 65536, 4 * 65536);
+	CalculateHeight		   (aabb);
 
-	g_cover_nodes.assign(g_nodes.size(), false);
+ 	g_covers = new CPointQuadTree(aabb, g_params.fPatchSize * .5f, 8 * 65536, 4 * 65536);
+ 	g_cover_nodes.assign(g_nodes.size(), false);
 
 	Nodes::const_iterator	B = g_nodes.begin(), I = B;
 	Nodes::const_iterator	E = g_nodes.end();
 	auto	J = g_cover_nodes.begin();
-	for (; I != E; ++I, ++J) {
-		if (!CoverBuilder::is_cover(*I)) continue;
+
+	u32 IndexTotal = 0;
+	for (; I != E; ++I, ++J)
+	{
+		if (!CoverBuilder::is_cover(*I))  continue;
 
 		*J = true;
-		g_covers->insert(new CCoverPoint((*I).Pos, u32(I - B)));
+ 		g_covers->insert(new CCoverPoint((*I).Pos, u32(I - B)));
+		IndexTotal++;
 	}
 }
 
 void compute_non_covers()
 {
-	VERIFY(g_covers);
-
-	xr_vector<CCoverPoint*> nearest;
+ 	xr_vector<CCoverPoint*> nearest;
 
 	{
 		g_covers->all(nearest);
 		delete_data(nearest);
-		xr_delete(g_covers);
+		xr_delete(g_covers);			// Удаляем !
 
 		Fbox					aabb;
 		CalculateHeight(aabb);
@@ -148,4 +149,8 @@ void compute_non_covers()
 	g_covers->all(nearest);
 	delete_data(nearest);
 	xr_delete(g_covers);
+
+
+	g_cover_nodes.clear();
+	g_cover_nodes.shrink_to_fit();
 }
