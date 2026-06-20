@@ -7,11 +7,12 @@
 #include "../../Editors/LevelEditor/Engine/communicate.h"
 #include "../../xrEngine/ETextureParams.h"
 
-// base patch used all the time up to merging
-constexpr u32 InvalidNode = 0xffffffff;
-constexpr u32 InvalidNode_v1 = 0x00ffffff;
 
-constexpr u32 UnkonnectedNode	= 0xfffffff0;
+// base patch used all the time up to merging
+constexpr u32   InvalidNode     = 0xffffffff;
+constexpr u32   InvalidNode_v1  = 0x00ffffff;
+
+constexpr u32   UnkonnectedNode	= 0xfffffff0;
 constexpr WORD	InvalidSector	= 0xff;
 
 struct vertex					// definition of "patch" or "node"
@@ -96,17 +97,11 @@ using Lights_it = Lights::iterator;
 
 // data
 extern	Nodes				g_nodes;
-extern	xr_vector<SCover>	g_covers_palette;
-extern	Lights				g_lights;
 extern	SAIParams			g_params;
-extern	xr_unique_ptr<CDB::MODEL> LevelPtr;
-extern	CDB::COLLIDER		IXRC;
-extern	Fbox				LevelBB;
 
-struct b_BuildTexture :
-	public b_texture
+struct b_BuildTexture : public b_texture
 {
-	STextureParams	THM;
+	STextureParams THM;
 
 	u32& Texel(u32 x, u32 y)
 	{
@@ -121,7 +116,7 @@ struct b_BuildTexture :
 			u32 y2 = dwHeight - y - 1;
 			for (u32 x = 0; x < dwWidth; x++)
 			{
-				u32		t = Texel(x, y);
+				u32 t = Texel(x, y);
 				Texel(x, y) = Texel(x, y2);
 				Texel(x, y2) = t;
 			}
@@ -129,12 +124,8 @@ struct b_BuildTexture :
 	}
 };
 
-extern Shader_xrLC_LIB*				g_shaders_xrlc	;
-extern xr_vector<b_material>		g_materials		;
-extern xr_vector<b_shader>			g_shader_render	;
-extern xr_vector<b_shader>			g_shader_compile;
-extern xr_vector<b_BuildTexture>	g_textures		;
-extern xr_vector<b_rc_face>			g_rc_faces		;
+#include "compiler_data.h"
+extern IComputeData comp_data;
 
 // phases
 void	xrLoad			(const char* name, bool draft_mode, bool skipThm);
@@ -142,7 +133,6 @@ void	xrCover			(bool pure_covers);
 void	xrMerge			();
 void	xrConvertAndLink();
 void	xrDisplay		();
-//void	xrPalettizeCovers();
 void	xrSaveNodes		(const char* name, const char* out_name);
 
 // constants
