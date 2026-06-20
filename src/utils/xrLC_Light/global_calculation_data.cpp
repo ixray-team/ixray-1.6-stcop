@@ -331,15 +331,15 @@ void global_claculation_data::xrLoadGeometry(IReader* fs)
 				const Shader_xrLC& SH = GetShader(F.dwMaterial);
 				if (!SH.flags.bLIGHT_CastShadow) continue;
  				
-				auto& F = building_embree_faces.emplace_back();
-
- 				Fvector					P[3];
+  				Fvector					P[3];
 				xform.transform_tiny(P[0], F.v1);
 				xform.transform_tiny(P[1], F.v2);
 				xform.transform_tiny(P[2], F.v3);
 				
-				F.SetFace(P[0], P[1], P[2], &F);
-				F.SetMaterial(F.dwMaterial, F.dwMaterialGame, F.getTC0());			
+				// Косяк по видимости MU! 
+				auto& Fnew = building_embree_faces.emplace_back();
+ 				Fnew.SetFace(P[0], P[1], P[2], &F);
+				Fnew.SetMaterial(F.dwMaterial, F.dwMaterialGame, F.getTC0());			
 			}
    		}
 		MUChunkRef->close();
