@@ -1,16 +1,9 @@
 #include "StdAfx.h"
 #include "compiler.h"
 
-xr_unique_ptr<CDB::MODEL> LevelPtr;
-
-CDB::COLLIDER IXRC;
-
+IComputeData comp_data;
 Nodes g_nodes;
-xr_vector<SCover> g_covers_palette;
-
-Lights g_lights;
 SAIParams g_params;
-Fbox LevelBB;
 
 void vertex::PointLF(Fvector& D)
 {
@@ -61,8 +54,6 @@ void mem_Optimize()
 void xrCompiler(const char* name, bool draft_mode, bool pure_covers, bool skipThm, const char* out_name)
 {
 	Phase("Loading level...");
-	LevelPtr = xr_make_unique<CDB::MODEL>();
-
 	xrLoad(name, draft_mode, skipThm);
 	mem_Optimize();
 
@@ -76,4 +67,9 @@ void xrCompiler(const char* name, bool draft_mode, bool pure_covers, bool skipTh
 	Phase("Saving nodes...");
 	xrSaveNodes(name, out_name);
 	mem_Optimize();
-}
+
+	g_nodes.clear();
+	g_nodes.shrink_to_fit();
+
+	comp_data.xrUnload();
+ }

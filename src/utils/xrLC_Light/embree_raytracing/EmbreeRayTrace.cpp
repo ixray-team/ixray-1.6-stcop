@@ -24,43 +24,27 @@ thread_local RayQueryContext data_hits;
 EmbreeRayTraceModel EmbreeMain;
 
 // Сделать потом переключалку
-inline bool CalculateEnergy(const b_texture& T, const Fvector2* cuv, float& energy, float& hit_u, float& hit_v)
+inline bool CalculateEnergy(const b_texture& T, const Fvector2* TC, float& energy, float& hit_u, float& hit_v)
 {
 	// barycentrics (без Fvector, сразу в скаляры)
 	float Barry0 = 1.0f - hit_u - hit_v;
 
 	// UV сразу float
-	float u = cuv[0].x * Barry0 + cuv[1].x * hit_u + cuv[2].x * hit_v;
-	float v = cuv[0].y * Barry0 + cuv[1].y * hit_u + cuv[2].y * hit_v;
+	float u = TC[0].x * Barry0 + TC[1].x * hit_u + TC[2].x * hit_v;
+	float v = TC[0].y * Barry0 + TC[1].y * hit_u + TC[2].y * hit_v;
 
-	int U = (int)floor(u * float(T.dwWidth) + .5f);
-	int V = (int)floor(v * float(T.dwHeight) + .5f);
-	U %= T.dwWidth;
-	if (U < 0)
-	{
-		U += T.dwWidth;
-	}
-	V %= T.dwHeight;
-	if (V < 0)
-	{
-		V += T.dwHeight;
-	}
-
-	const u32* raw = static_cast<const u32*>(*T.pSurface);
-	u32 pixel = raw[V * T.dwWidth + U];
-	u32 pixel_a = (pixel >> 24) & 0xFF;
-
-	// LUT вместо деления и sqr
-	float a = float(pixel_a) / 255.f;
-	float opacity = 1.f - (a * a);
-	energy *= opacity;
+	int U = (int)floor(u * T.dwWidth + 0.5f);
+	int V = (int)floor(v * T.dwHeight + 0.5f);
+ 	U = (U % T.dwWidth + T.dwWidth)   % T.dwWidth;
+	V = (V % T.dwHeight + T.dwHeight) % T.dwHeight;
+  	
+	// Energy 
+	u32 ALPHA = color_get_A(((u32*)*T.pSurface)[V * T.dwWidth + U]);
+ 	energy *= 1.f - (float(ALPHA) / 255.f);
 
 	if (energy < EmbreeEnergyMAX)
-	{
-		energy = 0.f;
-	}
-
-	return energy > EmbreeEnergyMAX;
+ 		energy = 0.f;
+ 	return energy > EmbreeEnergyMAX;
 }
 
 void FilterRayTraceOpacue(const struct RTCFilterFunctionNArguments* args)
@@ -70,11 +54,8 @@ void FilterRayTraceOpacue(const struct RTCFilterFunctionNArguments* args)
 
 	for (auto i = 0; i < args->N; i++)
 	{
-		if (!args->valid[i])
-		{
-			continue; // Для пакетных обезательно иначе полосы !
-		}
-
+		if (!args->valid[i]) continue; // Для пакетных обезательно иначе полосы !
+ 
 		u32& primID = RTCHitN_primID(args->hit, args->N, i);
 		auto& F = UD->dummys[primID];
 		if (F == ctxt->skip[i])
@@ -360,11 +341,8 @@ RTCDevice EmbreeDevice;
 
 void InitializeEmbreeDevice()
 {
-	if (isDeviceInitialized)
-	{
-		return;
-	}
-
+	if (isDeviceInitialized) return;
+ 
 	auto fError = [](void* userPtr, enum RTCError code, const char* str)
 	{
 		R_ASSERT2(false, str);
