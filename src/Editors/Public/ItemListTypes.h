@@ -2,6 +2,7 @@
 #pragma once
 
 //---------------------------------------------------------------------------
+class UIItemListForm;
 
 class ListItem
 {
