@@ -106,6 +106,7 @@ public:
 	u32										dwFrame;
 
 	float									fTimeDeltaSmoothing;
+	float									fRealTimeDelta;
 	float									fTimeDelta;
 	float									fTimeGlobal;
 	u32										dwTimeDelta;
