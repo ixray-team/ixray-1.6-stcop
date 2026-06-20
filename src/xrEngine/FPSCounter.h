@@ -5,7 +5,7 @@ namespace XRay::Hardware
 	class ENGINE_API FPSCounter final
 	{
 		CGameFont* font_;
-		u32 text_color = color_rgba(255, 128, 128, 255);
+		u32 text_color = color_rgba(255, 255, 255, 255);
 		float text_screen_padding = 10.f;
 		float fps = 0.f;
 		float ft = 0.f;
