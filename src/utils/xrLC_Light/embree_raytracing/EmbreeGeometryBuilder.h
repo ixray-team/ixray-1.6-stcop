@@ -1,7 +1,8 @@
 #pragma once
 
 #include "../../../xrCore/Collision/xrCDB.h"
- 
+#include "../../Editors/LevelEditor/Engine/communicate.h"
+
 struct FaceDataEmbree
 {
 	void*				ptr;
@@ -29,6 +30,20 @@ struct FaceDataEmbree
 		TC[1] = TCn[1];
 		TC[2] = TCn[2];
 	}
+
+	void SetFaceBuild(b_face& F, Fvector& e1, Fvector& e2, Fvector& e3)
+	{
+		bOpaque = false;
+		dwMaterial	   = F.dwMaterial;
+		dwMaterialGame = F.dwMaterialGame;
+		TC[0].set(F.t[0].x, F.t[0].y);
+		TC[1].set(F.t[1].x, F.t[1].y);
+		TC[2].set(F.t[2].x, F.t[2].y);
+
+		v1 = e1;
+		v2 = e2;
+		v3 = e3;
+	};
 };
 
 struct Triangle
