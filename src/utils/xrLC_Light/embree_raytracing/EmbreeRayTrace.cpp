@@ -227,6 +227,33 @@ void SetFilter(RTCGeometry geom, bool isTransp)
 	}
 }
 
+void SaveAsOBJ(TriangleContainer& Container, LPCSTR prefix)
+{
+	string_path nm;
+	xr_strconcat(nm, prefix, ".obj");
+
+	string_path SaveDirectory;
+	FS.exist(SaveDirectory, "$level$", nm);
+
+	Msg("Saving [%s] to : %s", prefix, SaveDirectory);
+
+	IWriter* W = FS.w_open(SaveDirectory);
+
+	string256 tmp;
+	// vertices
+	for (auto& V : Container.vertex())
+	{
+		xr_sprintf(tmp, "v %f %f %f", V.x, V.y, -V.z);
+		W->w_string(tmp);
+	}
+	// transfer faces
+	for (auto& TRI : Container.faces())
+	{
+		xr_sprintf(tmp, "f %d %d %d", TRI.point1 + 1, TRI.point2 + 1, TRI.point3 + 1);
+		W->w_string(tmp);
+	}
+	FS.w_close(W);
+}
 
 // LOADING GEOMETRY
 static xrCriticalSection csEmbree;
@@ -235,6 +262,9 @@ void EmbreeRayTraceModel::InitializeGeometry()
 	Phase("Embree: Initialize Geometry");
 	// Собираем треугольники (чистим от дублей)
 	BuildRayTraceModel(); // Сборка Геометрии
+
+	// SaveAsOBJ(opacue_geom, "rcast_opacue");
+	// SaveAsOBJ(transp_geom, "rcast_transp");
 
  	// Конструктор модели
 	csEmbree.Enter();

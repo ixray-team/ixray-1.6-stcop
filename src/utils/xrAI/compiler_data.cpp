@@ -18,7 +18,6 @@ void transfer(const char* name, xr_vector<T>& dest, IReader& F, u32 chunk)
 	{
 		O->close();
 	}
-
 }
 
 inline bool Surface_Detect(string_path& F, LPSTR N)
@@ -33,7 +32,7 @@ inline bool Surface_Detect(string_path& F, LPSTR N)
 
 	return false;
 }
-
+ 
 void IComputeData::xrLoadData(const char* name, bool draft_mode, bool skipThm)
 {
 	string256 N;
@@ -260,21 +259,17 @@ void IComputeData::xrLoadGeometry(IReader* fs)
 		u32 shader_id = g_materials[dwMaterial].reserved;
 		return *g_shaders_xrlc->Get(shader_id);
 	};
+ 
 
 	Status("Loading Vertices...");
 	xr_vector<Fvector> vertexs;
 	{
 		IReader* CHVertex = fs->open_chunk(EB_Vertices);
-
-		u32 v_count = CHVertex->length() / sizeof(b_vertex);
-
-		vertexs.resize(v_count);
+ 		u32 v_count = CHVertex->length() / sizeof(b_vertex);
+ 		vertexs.resize(v_count);
 		for (u32 i = 0; i < v_count; i++)
-		{
-			CHVertex->r_fvector3(vertexs[i]);
-		}
-
-		CHVertex->close();
+ 			CHVertex->r_fvector3(vertexs[i]);
+ 		CHVertex->close();
 	}
 
 	//*******
@@ -283,37 +278,20 @@ void IComputeData::xrLoadGeometry(IReader* fs)
 		IReader* ChunkFaces = fs->open_chunk(EB_Faces);
 		R_ASSERT(ChunkFaces);
 		u32 f_count = ChunkFaces->length() / sizeof(b_face);
-
-		for (u32 i = 0; i < f_count; i++)
+ 		for (u32 i = 0; i < f_count; i++)
 		{
 			b_face B;
 			ChunkFaces->r(&B, sizeof(B));
 			R_ASSERT(B.dwMaterialGame < 65536);
 
 			const Shader_xrLC& SH = GetShader(B.dwMaterial);
-			if (!SH.flags.bLIGHT_CastShadow)
-			{
-				continue;
-			}
-
+			if (!SH.flags.bLIGHT_CastShadow) continue;
+ 			 
 			FaceDataEmbree& bFace = build_faces.emplace_back();
-			bFace.dwMaterial = u16(B.dwMaterial);
-			bFace.dwMaterialGame = B.dwMaterialGame;
-			bFace.ptr = &bFace;
-
-			// Vertices and adjacement info
-			bFace.v1 = vertexs[B.v[0]];
-			bFace.v2 = vertexs[B.v[1]];
-			bFace.v3 = vertexs[B.v[2]];
-
-			// transfer TC
-			bFace.TC[0].set(B.t[0].x, B.t[0].y);
-			bFace.TC[1].set(B.t[1].x, B.t[1].y);
-			bFace.TC[2].set(B.t[2].x, B.t[2].y);
+			bFace.SetFaceBuild(B, vertexs[B.v[0]], vertexs[B.v[1]], vertexs[B.v[2]]);
 		}
 		ChunkFaces->close();
 	}
-
 
 	//*******
 	Status("Models and References");
@@ -341,32 +319,19 @@ void IComputeData::xrLoadGeometry(IReader* fs)
 			b_faces.resize(F.r_u32());
 			F.r(&*b_faces.begin(), (u32)b_faces.size() * sizeof(b_face));
 
-
-			// READ: lod-ID
+ 			// READ: lod-ID
 			F.r(&lodID, 2);
 
 			xr_vector<u32> sm_groups;
 			sm_groups.resize(b_faces.size());
 			F.r(&*sm_groups.begin(), (u32)sm_groups.size() * sizeof(u32));
 
-
-			for (auto& F : b_faces)
+			for (auto& bFace : b_faces)
 			{
-				FaceDataEmbree faceNew;
-				faceNew.dwMaterial = F.dwMaterial;
-				faceNew.dwMaterialGame = F.dwMaterialGame;
-				faceNew.bOpaque = false;
-				faceNew.v1 = b_vertices[F.v[0]];
-				faceNew.v2 = b_vertices[F.v[1]];
-				faceNew.v3 = b_vertices[F.v[2]];
-
-				// tc
-				faceNew.TC[0] = F.t[0];
-				faceNew.TC[1] = F.t[1];
-				faceNew.TC[2] = F.t[2];
-
-				faces.push_back(faceNew);
-			}
+				FaceDataEmbree Fnew;
+				Fnew.SetFaceBuild(bFace, b_vertices[bFace.v[0]], b_vertices[bFace.v[1]], b_vertices[bFace.v[2]]);
+				faces.push_back(Fnew);
+ 			}
 
 			clMsg("* Loading model: '%s' - v(%d), f(%d)", *name, b_vertices.size(), b_faces.size());
 		};
@@ -386,78 +351,72 @@ void IComputeData::xrLoadGeometry(IReader* fs)
 		{
 			b_mu_reference R;
 			MUChunkRef->r(&R, sizeof(R));
-
+			
 			Fmatrix xform = R.transform;		   // Transformation !
 			auto& faces = mu_faces[R.model_index]; // Model Buffer by Index !
 			for (auto& F : faces)
 			{
 				const Shader_xrLC& SH = GetShader(F.dwMaterial);
-				if (!SH.flags.bLIGHT_CastShadow)
-				{
-					continue;
-				}
-
-				auto& F = build_faces.emplace_back();
-
+				if (!SH.flags.bLIGHT_CastShadow) continue;
+ 
+				// косяки по MU-Models !
 				Fvector P[3];
 				xform.transform_tiny(P[0], F.v1);
 				xform.transform_tiny(P[1], F.v2);
 				xform.transform_tiny(P[2], F.v3);
 
-				F.SetFace(P[0], P[1], P[2], &F);
-				F.SetMaterial(F.dwMaterial, F.dwMaterialGame, F.getTC0());
+				// Поченил !
+				auto& Fnew = build_faces.emplace_back();
+				Fnew.SetFace(P[0], P[1], P[2], nullptr);
+				Fnew.SetMaterial(F.dwMaterial, F.dwMaterialGame, F.getTC0());
 			}
 		}
 		MUChunkRef->close();
 	}
-
 	xrCalculateOpacity();
 
 	// Изза сраного BOX-QUERY Для расщета t_n !
-	if (true) // Rcast - Model
+	if (gCompilerMode.Embree)
 	{
-		if (gCompilerMode.Embree)
+		auto& CDATA = CAIRayTrace.static_geom;
+ 		CDATA.ClearAll();
+
+		for (u32 ID = 0; ID < build_faces.size(); ID++)
 		{
-			auto& CDATA = CAIRayTrace.static_geom;
- 			CDATA.ClearAll();
-
-			for (u32 ID = 0; ID < build_faces.size(); ID++)
-			{
-				FaceDataEmbree& F = build_faces[ID];
-				CDATA.AddFaceRaw(&F, F.v1, F.v2, F.v3);
-			}
-
-			CDATA.useMsg = true;
-			CDATA.RemoveDublicates();
-
- 			CAIRayTrace.Initialize();
+			FaceDataEmbree& F = build_faces[ID];
+			CDATA.AddFaceRaw(&F, F.v1, F.v2, F.v3);
 		}
-		else
+
+		CDATA.useMsg = true;
+		CDATA.RemoveDublicates();
+ 
+ 		CAIRayTrace.Initialize();
+	}
+	else
+	{
+		TriangleContainer container;
+ 		for (u32 ID = 0; ID < build_faces.size(); ID++)
 		{
-			TriangleContainer container;
- 			for (u32 ID = 0; ID < build_faces.size(); ID++)
-			{
-				FaceDataEmbree& F = build_faces[ID];
-				container.AddFaceRaw(&F, F.v1, F.v2, F.v3);
-			}
-
-			container.useMsg = true;
-			container.RemoveDublicates();
-
-			LevelPtr = xr_make_unique<CDB::MODEL>();
-
-			xr_vector<Fvector>& verts = LevelPtr->get_verts();
-			verts = container.vertex();
-
-			xr_vector<CDB::TRI>& triangles = LevelPtr->get_tris();
-			for (auto& F : container.faces())
-			{
-				triangles.push_back(F.Get());
-			}
-
-			Msg("RayQuery Box Model: Faces : %u | Vertex: %u", triangles.size(), verts.size());
-			LevelPtr->build(verts.data(), verts.size(), triangles.data(), triangles.size(), nullptr, nullptr, nullptr, false, false);
+			FaceDataEmbree& F = build_faces[ID];
+			container.AddFaceRaw(&F, F.v1, F.v2, F.v3);
 		}
+
+		container.useMsg = true;
+		container.RemoveDublicates();
+
+		LevelPtr = xr_make_unique<CDB::MODEL>();
+
+		xr_vector<Fvector>& verts = LevelPtr->get_verts();
+		verts = container.vertex();
+
+		xr_vector<CDB::TRI>& triangles = LevelPtr->get_tris();
+		for (auto& F : container.faces())
+		{
+			triangles.push_back(F.Get());
+		}
+
+		Msg("RayQuery Box Model: Faces : %u | Vertex: %u", triangles.size(), verts.size());
+		LevelPtr->build(verts.data(), verts.size(), triangles.data(), triangles.size(), nullptr, nullptr, nullptr, false, false);
 	}
 }
 
