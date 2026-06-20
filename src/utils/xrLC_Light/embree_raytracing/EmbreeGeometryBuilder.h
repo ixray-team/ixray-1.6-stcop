@@ -81,6 +81,11 @@ struct IndexedTri
 	{
 		return i1 == other.i1 && i2 == other.i2 && i3 == other.i3;
 	}
+
+ 	bool isDegenerated() const
+	{
+		return i1 == i2 || i2 == i3 || i3 == i1;
+	}
 };
 
 struct TriangleContainer
