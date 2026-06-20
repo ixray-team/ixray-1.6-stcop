@@ -227,13 +227,18 @@ void CRenderDevice::on_idle		()
 			if (Begin())
 			{
 				seqRender.Process<&pureRender::OnRender>();
-				
-				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
+
+				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || !Statistic->errors.empty())
+				{
 					Statistic->Show();
+				}
 
+				bool show_fps_counter = IsFpsShow && g_pGameLevel && !main_menu_active && !load_screen_renderer.IsActive() && !Device.Paused();
 
-				if (IsFpsShow && g_pGameLevel && !main_menu_active && !load_screen_renderer.IsActive())
+				if (show_fps_counter)
+				{
 					pFPSCounter->OnRender();
+				}
 
 				End();
 			}
@@ -464,43 +469,51 @@ struct EfficientFilteredDelta
 bool use_smoothed_delta = false;
 void CRenderDevice::FrameMove()
 {
-	PROF_EVENT("Render: Frame Move");
-	dwFrame++;
-	dwTimeContinual	= TimerMM.GetElapsed_ms() - app_inactive_time;
-	
-	float smoothing_alpha = .1f; 
-	float current_delta	= Timer.GetElapsed_sec(); Timer.Start();
-	float previous_delta = fTimeDelta;
+	PROF_EVENT("Render: Frame Move")
 
-	fRealTimeDelta = current_delta;
-	fTimeDelta = smoothing_alpha * current_delta + (1.f - smoothing_alpha) * previous_delta; 
+	dwFrame++;
+	dwTimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
 	
-	clamp(fTimeDelta, EPS_S, .1f);
-	
-	fTimeDeltaSmoothing = fTimeDelta;
+	float dt;
 	
 	if (!Paused())
-		delta_filter.CalculateSmoothedDelta(fTimeDeltaSmoothing);
-	
-	clamp(fTimeDeltaSmoothing, EPS_S, .1f);
-
-	if (use_smoothed_delta)
-		fTimeDelta = fTimeDeltaSmoothing;
-
-	if (Paused())
+	{
+		dt = Timer.GetElapsed_sec();
+		Timer.Start();
+	}
+	else
 	{
 		fTimeDelta = 0.0f;
 		fTimeDeltaSmoothing = 0.0f;
+		dt = fTimeDelta;
 	}
+	
+	float prev_dt = fTimeDelta;
+	fRealTimeDelta = dt;
+	constexpr float a = .1f;
+	fTimeDelta = a * dt + (1.f - a) * prev_dt;
+	fTimeDeltaSmoothing = fTimeDelta;
+
+	if (use_smoothed_delta)
+	{
+		delta_filter.CalculateSmoothedDelta(fTimeDeltaSmoothing);
+		fTimeDelta = fTimeDeltaSmoothing;
+	}
+	
+	// don't touch! some hud & graphics artefacts can be without clamp.
+	clamp(fTimeDelta, EPS_S, .1f);
+	clamp(fTimeDeltaSmoothing, EPS_S, .1f);
 
 	fTimeGlobal = TimerGlobal.GetElapsed_sec();
 	u32 _old_global = dwTimeGlobal;
 	dwTimeGlobal = TimerGlobal.GetElapsed_ms();
 	dwTimeDelta = dwTimeGlobal - _old_global;
-	
+
 	Statistic->EngineTOTAL.Begin();
-	Device.seqFrame.Process<&pureFrame::OnFrame>();
-	g_bLoaded = true;
+	{
+		Device.seqFrame.Process<&pureFrame::OnFrame>();
+		g_bLoaded = true;
+	}
 	Statistic->EngineTOTAL.End();
 }
 
