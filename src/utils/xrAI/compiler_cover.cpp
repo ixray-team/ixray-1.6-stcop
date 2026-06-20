@@ -1,93 +1,102 @@
 #include "StdAfx.h"
 #include "compiler.h"
-
+#include "../xrForms/CompilersUI.h"
 #include "../../xrCore/Collision/cl_intersect.h"
 #include "../../xrGame/quadtree.h"
+ 
 #include "compiler_cover_helper.h"
-#include "../xrForms/CompilersUI.h"
-
+#include "compiler_data.h"
 #include "../xrLC_Light/embree_raytracing/EmbreeGeometryBuilder.h"
-
-Shader_xrLC_LIB*				g_shaders_xrlc	;
-xr_vector<b_material>			g_materials		;
-xr_vector<b_shader>				g_shader_render	;
-xr_vector<b_shader>				g_shader_compile;
-xr_vector<b_BuildTexture>		g_textures		;
-xr_vector<b_rc_face>			g_rc_faces		;
+#include "compiler_embree.h"
 
 extern xr_vector<bool>			g_cover_nodes;
-
-// -------------------------------- Ray pick
-IC float getLastRP_Scale(CDB::COLLIDER* DB)
+ 
+// --- ENERGY --- 
+inline float getEnergy(const b_texture& T, Fvector2* TC, float hit_u, float hit_v)
 {
-	u32	tris_count = DB->r_count();
-	float	scale = 1.f;
-	Fvector B;
+	float Barry0 = 1.0f - hit_u - hit_v;
 
-	for (u32 I = 0; I < tris_count; I++)
-	{
-		CDB::RESULT& rpinf = DB->r_begin()[I];
-		b_rc_face& F = g_rc_faces[rpinf.id];
+	// calc UV
+	float u = TC[0].x * Barry0 + TC[1].x * hit_u + TC[2].x * hit_v;
+	float v = TC[0].y * Barry0 + TC[1].y * hit_u + TC[2].y * hit_v;
 
-		if (F.dwMaterial >= g_materials.size())
-			Msg("[%d] -> [%d]", F.dwMaterial, g_materials.size());
+	int U = (int)floor(u * T.dwWidth + 0.5f);
+	int V = (int)floor(v * T.dwHeight + 0.5f);
 
-		b_material& M = g_materials[F.dwMaterial];
-		b_texture& T = g_textures[M.surfidx];
-		Shader_xrLCVec& LIB = g_shaders_xrlc->Library();
+	U = (U % T.dwWidth + T.dwWidth) % T.dwWidth;
+	V = (V % T.dwHeight + T.dwHeight) % T.dwHeight;
 
-		if (M.shader_xrlc >= LIB.size())
-			return 0;		//. hack
-
-		Shader_xrLC& SH = LIB[M.shader_xrlc];
-
-		if (!SH.flags.bLIGHT_CastShadow)
-			continue;
-
-		if (T.pSurface.Empty())
-			T.bHasAlpha = false;
-
-		// barycentric coords
-		// note: W,U,V order
-		B.set(1.0f - rpinf.u - rpinf.v, rpinf.u, rpinf.v);
-
-		// calc UV
-		Fvector2* cuv = F.t;
-		Fvector2	uv;
-		uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
-		uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
-
-		int U = iFloor(uv.x * float(T.dwWidth) + .5f);
-		int V = iFloor(uv.y * float(T.dwHeight) + .5f);
-		U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
-		V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
-
-		u32 pixel = ((u32*)*T.pSurface)[V * T.dwWidth + U];
-		u32 pixel_a = color_get_A(pixel);
-		float opac = 1.f - float(pixel_a) / 255.f;
-		scale *= opac;
-	}
-
-	return scale;
+ 	u32 pixel_a = color_get_A( ((u32*)*T.pSurface)[V * T.dwWidth + U] );
+	return 1.f - (float(pixel_a) / 255.f);
 }
+ 
 
-IC float rayTrace	(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R)
+// --- OPCODE ---s
+IC float rayTrace(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R)
 {
-	R_ASSERT	(DB);
+	auto Energy = [DB]() -> float
+	{
+		float scale = 1.f;
+		for (u32 I = 0; I < DB->r_count(); I++)
+		{
+			CDB::RESULT& RP = DB->r_begin()[I];
+			FaceDataEmbree& F = (*(FaceDataEmbree*)(CAIRayTrace.static_geom.dummy[RP.id]));
+
+			b_material& M = comp_data.g_materials[F.dwMaterial];
+			Shader_xrLCVec& LIB = comp_data.g_shaders_xrlc->Library();
+			if (M.shader_xrlc >= LIB.size())
+			{
+				return 0;
+			}
+
+			b_texture& T = comp_data.g_textures[M.surfidx];
+			if (T.pSurface.Empty())
+			{
+				T.bHasAlpha = false;
+				return 0;
+			}
+			scale *= getEnergy(T, F.getTC0(), RP.u, RP.v);
+		}
+
+		return scale;
+	};
 
 	// 1. Polygon doesn't pick - real database query
-	DB->ray_query	(LevelPtr.get(),P,D,R);
+	DB->ray_query(comp_data.LevelPtr.get(), P, D, R);
 
-	// 2. Analyze polygons 
-	if (0==DB->r_count()) {
-		return 1;
-	} else {
-		return getLastRP_Scale(DB);
+	// 2. Analyze polygons
+	return DB->r_count() == 0 ? 1 : Energy();
+}
+
+// --- EMBREE ---
+void FilterRayTraceAI(const struct RTCFilterFunctionNArguments* args)
+{
+	if (!args->valid[0]) return;
+	args->valid[0] = 0;
+
+ 	u32& primID = RTCHitN_primID(args->hit, args->N, 0);
+	FaceDataEmbree* F = (FaceDataEmbree*)CAIRayTrace.static_geom.dummy[primID];
+ 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
+	if (F == ctxt->skip) return;
+ 
+	float& hit_u = RTCHitN_u(args->hit, args->N, 0);
+	float& hit_v = RTCHitN_v(args->hit, args->N, 0);
+
+	const b_material& M = comp_data.g_materials[F->dwMaterial];
+	const b_texture& T = comp_data.g_textures[M.surfidx];
+
+	// fetch pixel
+	if (T.pSurface.Empty() || F->bOpaque)
+	{
+		ctxt->energy = 0;
+		args->valid[0] = -1;
+		return;
 	}
+ 
+	ctxt->energy *= getEnergy(T, F->getTC0(), hit_u, hit_v);
 }
 
 // volumetric query
-xr_atomic_u32 tAtomicIndex = 0;
   
 extern void compute_cover_nodes();
 extern void compute_non_covers();
@@ -121,13 +130,22 @@ static void compute_cover_value(CDB::COLLIDER& DB, CoverBuilder::Query& Q, u32 c
 		// raytrace
 		int			sector = CoverBuilder::calcSphereSector(Dir);
 		c_total[sector] += 1.f;
-		c_passed[sector] += rayTrace(&DB, TestPos, Dir, range); //
-	}
+
+		if (gCompilerMode.Embree)
+		{
+			c_passed[sector] += CAIRayTrace.Raytrace(TestPos, Dir, range, FilterRayTraceAI); //
+		}
+		else
+		{
+			c_passed[sector] += rayTrace(&DB, TestPos, Dir, range);							 //
+		} 
+ 	}
 	Q.Clear();
 
 	// analyze probabilities
 	float	value[8];
-	for (int dirs = 0; dirs < 8; dirs++) {
+	for (int dirs = 0; dirs < 8; dirs++) 
+	{
 		R_ASSERT(c_passed[dirs] <= c_total[dirs]);
 		if (c_total[dirs] == 0)	value[dirs] = 0;
 		else					value[dirs] = float(c_passed[dirs]) / float(c_total[dirs]);
@@ -156,9 +174,13 @@ void	xrCover	(bool pure_covers)
 
 	// Start threads, wait, continue --- perform all the work 
 	// se7kills : Переработал 
+	static xr_atomic_u32 tAtomicIndex = 0;
 	tAtomicIndex = 0;
 	thread_local CDB::COLLIDER		DB;
 	thread_local CoverBuilder::Query				Q;
+
+	static xr_atomic_u32 tAtomicProcessed = 0;
+	tAtomicProcessed = 0;
 
  	xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [](size_t threadID) 
 	{
@@ -168,7 +190,7 @@ void	xrCover	(bool pure_covers)
 		while (true)
 		{
 			u32 NodeID = tAtomicIndex.fetch_add(1);
-			if (g_nodes.size() >= NodeID) break;
+			if (NodeID >= g_nodes.size()) break;
 
  			// initialize process
 			vertex& BaseNode = g_nodes[NodeID];
@@ -185,6 +207,8 @@ void	xrCover	(bool pure_covers)
 				BaseNode.low_cover[3] = flt_max;
 				continue;
 			}
+
+			AditionalData("Processing Node: %u/%u | CoverID: %u", NodeID, g_nodes.size(), tAtomicProcessed.fetch_add(1));
 
 			compute_cover_value(DB, Q, NodeID, BaseNode, high_cover_height, BaseNode.high_cover);
 			compute_cover_value(DB, Q, NodeID, BaseNode, low_cover_height, BaseNode.low_cover);
