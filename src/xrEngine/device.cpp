@@ -472,7 +472,7 @@ void CRenderDevice::FrameMove()
 	float current_delta	= Timer.GetElapsed_sec(); Timer.Start();
 	float previous_delta = fTimeDelta;
 
-	// EMA smoothing
+	fRealTimeDelta = current_delta;
 	fTimeDelta = smoothing_alpha * current_delta + (1.f - smoothing_alpha) * previous_delta; 
 	
 	clamp(fTimeDelta, EPS_S, .1f);
