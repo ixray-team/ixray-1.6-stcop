@@ -49,6 +49,11 @@ bool is_widescreen()
 	return UI().is_widescreen();
 }
 
+const char* gamepad_prefix()
+{
+	return pInput->GamepadPrefix();
+}
+
 #pragma optimize("s",on)
 void UIRegistrator::script_register(lua_State *L)
 {
@@ -116,7 +121,8 @@ void UIRegistrator::script_register(lua_State *L)
 	module(L,"ui")
 	[
 		def("get_current_kx",				&get_current_kx),
-		def("is_widescreen",				&is_widescreen)
+		def("is_widescreen",				&is_widescreen),
+		def("gamepad_prefix",				&gamepad_prefix)
 	];
 
 	CMapManager::script_register(L);
