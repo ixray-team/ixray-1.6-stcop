@@ -18,9 +18,7 @@ function opt_controls:InitControls(x, y, xml, handler)
 	if xml:NodeExist("frame", 0) then
 		self.bk = xml:InitFrame("frame", self)
 	end
-	self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
-
-    local _st
+	self.scroll_v = xml:InitScrollView("tab_controls:scroll_v", self)
 
 	handler:addTrack(self, true, "ui_mm_mouse_sense", "mouse_sens", 0.01, false, "float", true, system_depends.sdNothing)
 	handler:addTrack(self, true, "ui_mm_mouse_sense_ui", "mouse_sens_ui", 0.01, false, "float", true, system_depends.sdNothing)
