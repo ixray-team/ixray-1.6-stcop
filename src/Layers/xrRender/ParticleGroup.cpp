@@ -369,7 +369,7 @@ void OnGroupParticleDead(void* owner, u32 param, PAPI::Particle& m, u32 idx)
 
 void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying)
 {
-	PROF_EVENT(__FUNCTION__);
+	// PROF_EVENT(__FUNCTION__);
 	if (CParticleEffect* E = root_effect)
 	{
 		E->OnFrame(u_dt);
@@ -472,7 +472,7 @@ CParticleGroup::~CParticleGroup()
 
 void CParticleGroup::OnFrame(u32 u_dt)
 {
-	PROF_EVENT(__FUNCTION__);
+	// PROF_EVENT(__FUNCTION__);
 	xrCriticalSectionGuard guard(&onframe_lock);
 	if (!m_Def || !m_RT_Flags.is(flRT_Playing))
 	{
@@ -544,7 +544,7 @@ void CParticleGroup::OnFrame(u32 u_dt)
 #ifndef _EDITOR
 void CParticleGroup::UpdateCache()
 {
-	PROF_EVENT(__FUNCTION__);
+	// PROF_EVENT(__FUNCTION__);
 	for (SItem& item : items)
 	{
 		if(item.root_effect)
