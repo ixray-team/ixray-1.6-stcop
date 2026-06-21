@@ -92,7 +92,7 @@ void CParticleEffect::UpdateParent(const Fmatrix& m, const Fvector& velocity, bo
 
 void CParticleEffect::OnFrame(u32 frame_dt)
 {
-	PROF_EVENT(__FUNCTION__);
+	// PROF_EVENT(__FUNCTION__);
 	xrCriticalSectionGuard guard(&onframe_lock);
 	if (!m_Def || !m_RT_Flags.is(flRT_Playing))
 	{
@@ -315,7 +315,7 @@ ICF void FillSprite	(PAPI::Particle& m, xrCriticalSection& cache_lock, const Fve
 
 void CParticleEffect::UpdateCache()
 {
-	PROF_EVENT(__FUNCTION__);
+	// PROF_EVENT(__FUNCTION__);
 
 	if (!m_Def || !m_Def->m_Flags.test(CPEDef::dfSprite) || !m_RT_Flags.is(flRT_Playing))
 		return;
@@ -562,7 +562,7 @@ ICF void FillSprite(PAPI::Particle::LITBUFF*& pv, const Fvector& pos, const Fvec
 
 void CParticleEffect::Render(float)
 {
-	PROF_EVENT(__FUNCTION__);
+	// PROF_EVENT(__FUNCTION__);
 	xrCriticalSectionGuard guard(&onframe_lock);
 
 	u32 dwOffset, dwCount;
