@@ -9,7 +9,7 @@
 #include "Environment.h"
 #include "xr_input.h"
 #include "CustomHUD.h"
-
+#include "string_table.h"
 #include "../Include/xrRender/RenderDeviceRender.h"
 
 #include "xr_object.h"
@@ -23,6 +23,7 @@ ENGINE_API float devfloat4 = 1.0f;
 float SheduleScaleDedicated = 0;
 ENGINE_API float ps_render_scale = 1.0f;
 ENGINE_API u32 ps_render_scale_preset = 0;
+u32 ps_gamepad_prefix_override = 0;
 
 xr_token vid_bpp_token[] =
 {
@@ -40,6 +41,18 @@ xr_token vid_scale_preset_token[] =
 	{ "st_scale_ultraperformance", 4 },
 
 	{ "st_scale_custom", 5 },
+	{ 0, 0 }
+};
+
+xr_token gamepad_prefix_override_token[] = 
+{
+	{ "gp_none", 0 },
+	{ "xbox1", 1 },
+	{ "ps4", 2 },
+	{ "ps5", 3 },
+//	todo: fix some icon bugs for switch
+//	{ "switch", 4 },
+
 	{ 0, 0 }
 };
 
@@ -613,6 +626,34 @@ public:
 
 };
 
+class CCC_GamepadPrefixOverride : public CCC_Token
+{
+	typedef CCC_Token inherited;
+public:
+	CCC_GamepadPrefixOverride(const char* N) : inherited(N, &ps_gamepad_prefix_override, gamepad_prefix_override_token) { ps_gamepad_prefix_override = 0; };
+	virtual ~CCC_GamepadPrefixOverride() {}
+	virtual void	Execute	(const char* args)
+	{
+		tokens = gamepad_prefix_override_token;
+
+		inherited::Execute		(args);
+		pInput->SelectGamepadPrefix();
+	}
+
+	virtual void	Save	(IWriter *F)	
+	{
+		tokens = gamepad_prefix_override_token;
+		inherited::Save(F);
+	}
+
+	virtual xr_token* GetToken()
+	{
+		tokens = gamepad_prefix_override_token;
+		return inherited::GetToken();
+	}
+
+};
+
 class CCC_soundDevice : public CCC_Token
 {
 	typedef CCC_Token inherited;
@@ -886,6 +927,7 @@ void CCC_Register()
 
 	CMD4(CCC_Float,		"gamepad_sens",			&psGamepadSens,		0.1f, 0.8f);
 	CMD2(CCC_Boolean,	"gamepad_invert",		&psGamepadInvert);
+	CMD1(CCC_GamepadPrefixOverride, "gamepad_prefix_override");
 
 #ifndef MASTER_GOLD
 	// Other

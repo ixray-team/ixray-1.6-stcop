@@ -702,4 +702,184 @@
 	<string id="ui_create_new_save">
 		<text>Новое сохранение</text>
 	</string>
+	<string id="ui_keyboard_mouse">
+		<text>Клавиатура и мышь</text>
+	</string>
+	<string id="ui_gamepad">
+		<text>Геймпад</text>
+	</string>
+	<string id="ui_opt_controls_type">
+		<text>$$ACTION_UI_TAB_SEC_LEFT$$/$$ACTION_UI_TAB_SEC_RIGHT$$ Тип управления</text>
+	</string>
+	<string id="ui_opt_gamepad_layout">
+		<text>$$ACTION_UI_ACTION_2$$ Раскладка геймпада</text>
+	</string>
+	<string id="st_gamepad_sensibility">
+		<text>Чувствительность геймпада</text>
+	</string>
+	<string id="st_gamepad_invert">
+		<text>Инверсия геймпада</text>
+	</string>
+	<string id="ui_pad_layout_PDA">
+		<text>Открыть КПК</text>
+	</string>
+	<string id="ui_pad_layout_wheel">
+		<text>Колесо выбора оружия</text>
+	</string>
+	<string id="ui_pad_layout_aim">
+		<text>Прицеливание</text>
+	</string>
+	<string id="ui_pad_layout_bandage">
+		<text>Использовать бинт</text>
+	</string>
+	<string id="ui_pad_layout_medkit">
+		<text>Использовать аптечку</text>
+	</string>
+	<string id="ui_pad_layout_strafe">
+		<text>Движение влево/вправо</text>
+	</string>
+	<string id="ui_pad_layout_move">
+		<text>Перемещение</text>
+	</string>
+	<string id="ui_pad_layout_sprint">
+		<text>Бег</text>
+	</string>
+	<string id="ui_pad_layout_menu">
+		<text>Меню</text>
+	</string>
+	<string id="ui_pad_layout_jump">
+		<text>Прыжок</text>
+	</string>
+	<string id="ui_pad_layout_shoot">
+		<text>Огонь</text>
+	</string>
+	<string id="ui_pad_layout_inventory">
+		<text>Инвентарь</text>
+	</string>
+	<string id="ui_pad_layout_crouch">
+		<text>Приседание</text>
+	</string>
+	<string id="ui_pad_layout_reload">
+		<text>Перезарядка</text>
+	</string>
+	<string id="ui_pad_layout_action">
+		<text>Действие</text>
+	</string>
+	<string id="ui_pad_layout_lookx">
+		<text>Обзор по оси X</text>
+	</string>
+	<string id="ui_pad_layout_Looky">
+		<text>Обзор по оси Y</text>
+	</string>
+	<string id="ui_pad_layout_torch">
+		<text>Фонарик</text>
+	</string>
+	<string id="c_type_general">
+		<text>Движение</text>
+	</string>
+	<string id="c_type_zomming">
+		<text>При приближении</text>
+	</string>
+	<string id="c_type_wheel">
+		<text>Круговое меню</text>
+	</string>
+	<string id="c_type_talk">
+		<text>Меню разговора</text>
+	</string>
+	<string id="c_type_trade">
+		<text>Меню торговли</text>
+	</string>
+	<string id="c_type_inventory">
+		<text>Меню инвентаря</text>
+	</string>
+	<string id="ui_mm_controlls_type">
+		<text>Действия</text>
+	</string>
+	<string id="ui_pad_layout_lean_right">
+		<text>Наклониться вправо</text>
+	</string>
+	<string id="ui_pad_layout_lean_left">
+		<text>Наклониться влево</text>
+	</string>
+	<string id="ui_pad_layout_weapon_zoom_in">
+		<text>Приблизить</text>
+	</string>
+	<string id="ui_pad_layout_weapon_zoom_out">
+		<text>Отдалить</text>
+	</string>
+	<string id="ui_pad_layout_wheelmenu_select">
+		<text>Выбрать сектор</text>
+	</string>
+	<string id="ui_pad_layout_fire_rate">
+		<text>Скорострельность</text>
+	</string>
+	<string id="ui_pad_layout_drop">
+		<text>Бросить оружие</text>
+	</string>
+	<string id="ui_pad_layout_grande_luncher">
+		<text>Дополнительное оружие</text>
+	</string>
+	<string id="ui_pad_layout_ammo_type">
+		<text>Тип боеприпасов</text>
+	</string>
+	<string id="ui_pad_layout_night_vision">
+		<text>Ночное видение</text>
+	</string>
+	<string id="ui_pad_layout_select">
+		<text>Выбрать</text>
+	</string>
+	<string id="ui_pad_layout_back">
+		<text>Назад</text>
+	</string>
+	<string id="ui_pad_layout_trade">
+		<text>Торговать</text>
+	</string>
+	<string id="ui_pad_layout_talk">
+		<text>Поговорить</text>
+	</string>
+	<string id="ui_pad_layout_scroll_info">
+		<text>Листать информацию</text>
+	</string>
+	<string id="ui_pad_layout_trade_upgrade">
+		<text>Торговать / Улучшить</text>
+	</string>
+	<string id="ui_pad_layout_inventory_info">
+		<text>Информация</text>
+	</string>
+	<string id="ui_pad_layout_switch_area">
+		<text>Сменить область</text>
+	</string>
+	<string id="ui_pad_layout_actions">
+		<text>Действия</text>
+	</string>
+	<string id="ui_mm_gamepad_prefix">
+		<text>Тип геймпада</text>
+	</string>
+	<string id="gp_none">
+		<text>автоопределение</text>
+	</string>
+	<string id="xbox1">
+		<text>Xbox</text>
+	</string>
+	<string id="ps4">
+		<text>PlayStation 4</text>
+	</string>
+	<string id="ps5">
+		<text>PlayStation 5</text>
+	</string>
+	<string id="switch">
+		<text>Nintendo Switch</text>
+	</string>
+	<string id="ui_pad_layout_quick_slot_1">
+		<text>Быстрый слот 1</text>
+	</string>
+	<string id="ui_pad_layout_quick_slot_2">
+		<text>Быстрый слот 2</text>
+	</string>
+	<string id="ui_pad_layout_quick_slot_3">
+		<text>Быстрый слот 3</text>
+	</string>
+	<string id="ui_pad_layout_quick_slot_4">
+		<text>Быстрый слот 4</text>
+	</string>
 </string_table>
