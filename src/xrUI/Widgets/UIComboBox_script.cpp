@@ -52,6 +52,8 @@ void CUIComboBox::script_register(lua_State *L)
 		.def("ShowList",			&CUIComboBox::ShowList)
 		.def("IsListShown",			&CUIComboBox::IsListShown)
 		.def("SetHighlighted",		&CUIComboBox::SetHighlighted)
+		.def("GetSize",				&CUIComboBox::GetSize)
+		.def("SetItemIDX",			&CUIComboBox::SetItemIDX)
 
 	];
 }

@@ -20,18 +20,6 @@
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">st_options_toggle</text>
 		</auto_static>
-		<!--gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_lsh</texture>
-		</gp_bind>
-		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">/</text>
-		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_dpadh</texture>
-		</gp_bind>
-		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">st_options_tune_item</text>
-		</auto_static-->
 		<auto_static x="0" y="0" width="22" height="30">
 			<window_name>gp_additional_text</window_name>
 			<text font="graffiti19" vert_align="c">st_options_advanced</text>
@@ -101,6 +89,25 @@
                 </text_color>
             </button>
         </tab>
+
+        <tab_input_type x="11" y="67" width="368" height="38">
+
+            <button x="99" y="2" width="96" height="24" id="keyboard_mouse" stretch="1">
+				<texture>ui_inGame2_button</texture>
+                <text font="letterica16" align="c">ui_keyboard_mouse</text>
+                <text_color>
+                    <e r="200" g="200" b="200"/>
+                </text_color>
+            </button>
+
+            <button x="196" y="2" width="86" height="24" id="gamepad" stretch="1">
+				<texture>ui_inGame2_button</texture>
+                <text font="letterica16" align="c">ui_gamepad</text>
+                <text_color>
+                    <e r="200" g="200" b="200"/>
+                </text_color>
+            </button>
+        </tab_input_type>
 		
         <templ_item width="360" height="30"/>
 
@@ -145,6 +152,10 @@
 
 	<tab_size x="22" y="63" width="354" height="344"/>
     <tab_controls>
+		<scroll_v x="0" y="30" width="360" height="290"
+            right_ident="0" left_ident="0" top_indent="0" bottom_indent="0"
+            vert_interval="0" always_show_scroll="0" />
+
         <key_binding x="0" y="0" width="344" height="230">
             <header_1 x="0" y="0" width="176" height="15">
                 <texture a="150">ui_inGame2_servers_list_button</texture>
