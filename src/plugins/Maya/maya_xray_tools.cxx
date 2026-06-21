@@ -160,7 +160,7 @@ MStatus maya_dm_reader::reader(const MFileObject& file, const MString& options, 
 			dm->to_object();
 			advance_progress();
 			end_progress();
-			maya_import_tools(dm, &status);
+			maya_import_tools(dm, &status, "trust_sgroups=false");
 		} else {
 			msg("xray_re: can't open %s", path.asUTF8());
 			MGlobal::displayError(MString("xray_re: can't open ") + path);
@@ -301,7 +301,7 @@ MStatus maya_ogf_reader::reader(const MFileObject& file, const MString& options,
 			ogf->to_object();
 			advance_progress();
 			end_progress();
-			maya_import_tools(ogf, &status);
+			maya_import_tools(ogf, &status, "trust_sgroups=false");
 			delete ogf;
 		} else {
 			msg("xray_re: can't open %s", path.asUTF8());

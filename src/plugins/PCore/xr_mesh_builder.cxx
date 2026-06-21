@@ -639,6 +639,28 @@ void xr_mesh_builder::commit(xr_object& object)
 	xr_raw_surface_vec().swap(m_raw_surfaces);
 
 	create_smoothing_groups();
+
+	// preserve the original per-corner normals (as authored/baked in the
+	// source OGF) into xr_mesh::cnorm() before they get discarded below.
+	// this is exact, not an approximation: OGF stores genuine per-corner
+	// normals (the same vertex position can carry different normals on
+	// different faces at a smoothing-group seam), and collapsing them to a
+	// single normal per vertex position (as vnorm() does) would be wrong
+	// for any vertex shared by faces from different smoothing groups.
+	// indexed as face_idx*3 + corner_idx, matching the face order about to
+	// be written into xr_mesh::m_faces below (corner_idx 0/1/2 <-> v0/v1/v2).
+	if (!m_normals.empty()) {
+		fvector3_vec& corner_normals = cnorm();
+		corner_normals.resize(m_faces.size() * 3);
+		uint32_t face_idx = 0;
+		for (b_face_vec_cit it = m_faces.begin(), end = m_faces.end();
+				it != end; ++it, ++face_idx) {
+			corner_normals[face_idx*3 + 0] = m_normals[it->n0];
+			corner_normals[face_idx*3 + 1] = m_normals[it->n1];
+			corner_normals[face_idx*3 + 2] = m_normals[it->n2];
+		}
+	}
+
 	std::vector<fvector3>().swap(m_normals);
 	b_edge_vec().swap(m_edges);
 	std::vector<uint32_t>().swap(m_vertex_edges);

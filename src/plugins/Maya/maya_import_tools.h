@@ -61,6 +61,8 @@ private:
 	maya_object_map	m_joints;
 
 	xray_re::sdk_version m_target_sdk;
+	bool		m_trust_sgroups;	// false for compiled formats (.ogf/.dm), where
+						// reconstructed smoothing groups are unreliable
 };
 
 #endif
