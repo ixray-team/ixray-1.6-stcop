@@ -28,18 +28,10 @@
 		<auto_static x="0" y="0" width="22" height="30">
 			<text font="graffiti19" vert_align="c">st_options_toggle</text>
 		</auto_static>
-		<!--gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_lsh</texture>
-		</gp_bind>
 		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">/</text>
+			<window_name>gp_controls_type</window_name>
+			<text font="graffiti19" vert_align="c">ui_opt_controls_type</text>
 		</auto_static>
-		<gp_bind x="0" y="0" width="22" height="30" stretch="1">
-			<texture>controller_dpadh</texture>
-		</gp_bind>
-		<auto_static x="0" y="0" width="22" height="30">
-			<text font="graffiti19" vert_align="c">st_options_tune_item</text>
-		</auto_static-->
 		<auto_static x="0" y="0" width="22" height="30">
 			<window_name>gp_additional_text</window_name>
 			<text font="graffiti19" vert_align="c">st_options_advanced</text>
@@ -113,6 +105,18 @@
 			</button>
     </tab>
 
+		<tab_input_type x="46" y="57" width="384" height="52">
+			<button x="87" y="20" width="111" height="29" id="keyboard_mouse" stretch="1">
+				<texture>ui_button_ordinary</texture>			
+				<text align="c" font="letterica16" r="227" g="199" b="178">ui_keyboard_mouse</text>
+			</button>
+      
+			<button x="204" y="20" width="111" height="29" id="gamepad" stretch="1">
+				<texture>ui_button_ordinary</texture>			
+				<text align="c" font="letterica16" r="227" g="199" b="178">ui_gamepad</text>
+			</button>
+		</tab_input_type>
+
 		<templ_item width="375" height="25"/>
 
 		<cap_template x="17" y="0" width="119" height="21">
@@ -153,26 +157,30 @@
 	</main_dialog>
   <tab_size x="46" y="74" width="615" height="416"/>
 	<tab_controls>
-		<key_binding x="8" y="0" width="376" height="199">
+	      <scroll_v	x="0" y="30" width="385" height="290"
+					right_ident="0" left_ident="0" top_indent="0" bottom_indent="0"
+					vert_interval="0" always_show_scroll="0"/>
+
+		<key_binding x="0" y="0" width="376" height="199">
 			<!-- headers -->
 			<header_1 x="0" y="0" width="191" height="17">
 				<texture>ui_table_button_e</texture>
-        <auto_static x="2" y="0" width="191" height="17">
-          <text font="arial_14" color="ui_6" x="2" y="1" align="l" vert_align="c" complex_mode="0">ui_mm_action</text>
-        </auto_static>
-      </header_1>
+				<auto_static x="2" y="0" width="191" height="17">
+					<text font="arial_14" color="ui_6" x="2" y="1" align="l" vert_align="c" complex_mode="0">ui_mm_action</text>
+				</auto_static>
+			</header_1>
 			<header_2 x="191" y="0" width="85" height="17">
 				<texture>ui_table_button_e</texture>
-        <auto_static x="2" y="0" width="85" height="17">
-          <text font="arial_14" color="ui_6" x="2" y="1" align="l" vert_align="c" complex_mode="0">ui_mm_key</text>
-        </auto_static>
-      </header_2>
+				<auto_static x="2" y="0" width="85" height="17">
+					<text font="arial_14" color="ui_6" x="2" y="1" align="l" vert_align="c" complex_mode="0">ui_mm_key</text>
+				</auto_static>
+			</header_2>
 			<header_3 x="275" y="0" width="85" height="17">
 				<texture>ui_table_button_e</texture>
-        <auto_static x="2" y="0" width="85" height="17">
-          <text font="arial_14" color="ui_6" x="2" y="1" align="l" vert_align="c" complex_mode="0">ui_mm_alternative</text>
-        </auto_static>
-      </header_3>
+				<auto_static x="2" y="0" width="85" height="17">
+					<text font="arial_14" color="ui_6" x="2" y="1" align="l" vert_align="c" complex_mode="0">ui_mm_alternative</text>
+				</auto_static>
+			</header_3>
 			<!--frame-->
 			<frame x="0" y="20" width="359" height="181">
 				<texture>ui_cb_listbox</texture>
