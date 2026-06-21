@@ -186,6 +186,16 @@ public:
 	fvector3_vec&					vnorm();
 	const fvector3_vec&				vnorm() const;
 
+	// per-corner (per-face-vertex) normals, exactly as stored in compiled
+	// formats (.ogf/.dm). Indexed as face_idx*3 + corner_idx (corner_idx
+	// 0/1/2 corresponds to v0/v1/v2 of that face in faces()). Unlike
+	// vnorm(), which holds a single normal per vertex position, this
+	// preserves the case where the same vertex position has different
+	// normals on different faces (smoothing-group seams) - needed to
+	// reproduce the original shading exactly rather than averaging it away.
+	fvector3_vec&					cnorm();
+	const fvector3_vec&				cnorm() const;
+
 	//fvector3_vec&					fnorm();
 	//const fvector3_vec&				fnorm() const;
 
@@ -205,7 +215,8 @@ protected:
 	xr_surfmap_vec				m_surfmaps;	// EMESH_CHUNK_SFACE
 	xr_vmap_vec					m_vmaps;	// EMESH_CHUNK_VMAPS
 
-	fvector3_vec				m_vertex_normals;	
+	fvector3_vec				m_vertex_normals;
+	fvector3_vec				m_corner_normals;	// optional; empty unless populated by the builder
 	//fvector3_vec				m_face_normals;
 };
 
@@ -261,6 +272,8 @@ inline const xr_vmap_vec& xr_mesh::vmaps() const { return m_vmaps; }
 
 inline fvector3_vec&			xr_mesh::vnorm() { return m_vertex_normals; }
 inline const fvector3_vec&		xr_mesh::vnorm() const { return m_vertex_normals; }
+inline fvector3_vec&			xr_mesh::cnorm() { return m_corner_normals; }
+inline const fvector3_vec&		xr_mesh::cnorm() const { return m_corner_normals; }
 //inline fvector3_vec&			xr_mesh::fnorm() { return m_face_normals; }
 //inline const fvector3_vec&	xr_mesh::fnorm() const { return m_face_normals; }
 } // end of namespace xray_re
