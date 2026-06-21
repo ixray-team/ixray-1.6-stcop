@@ -142,7 +142,9 @@ public:
 	void							render_sun_cascade			(u32 cascade_ind);
 	void							init_cacades				();
 	void							render_sun_cascades			();
-	void							render_reflections();
+	void							render_reflections			();
+
+	bool is_render_cubemap = false;
 
 public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);

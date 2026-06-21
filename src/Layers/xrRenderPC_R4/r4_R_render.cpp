@@ -407,21 +407,22 @@ void CRender::RenderUI(bool is_debug)
 void CRender::Render()
 {
 	GPU_EVENT(CRender_Render);
-	
-	VERIFY					(0==mapDistort.size() + mapHUDDistort.size());
+	VERIFY(0 == mapDistort.size() + mapHUDDistort.size());
 
-//	rmNormal();
+	bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
 
-	bool	_menu_pp		= g_pGamePersistent?g_pGamePersistent->OnRenderPPUI_query():false;
-	if (_menu_pp)			{
-		render_menu			()	;
-		return					;
+	if (_menu_pp)
+	{
+		render_menu();
+		return;
 	};
 
-	IMainMenu*	pMainMenu = g_pGamePersistent?g_pGamePersistent->m_pMainMenu:0;
-	bool	bMenu = pMainMenu?pMainMenu->CanSkipSceneRendering():false;
+	IMainMenu* pMainMenu = g_pGamePersistent ? g_pGamePersistent->m_pMainMenu : 0;
+	bool bMenu = pMainMenu ? pMainMenu->CanSkipSceneRendering() : false;
+	bMenu |= !(g_pGameLevel && g_hud);
 
-	if (!(g_pGameLevel && g_hud) || bMenu) {
+	if (bMenu)
+	{
 		Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 		return;
 	}
@@ -435,7 +436,7 @@ void CRender::Render()
 
 	RImplementation.o.distortion = false;
 
-	if (o.offscreen_reflecitons && o.deffered_reflecitons)
+	if (o.offscreen_reflecitons)
 	{
 		ps_r_taa_jitter.set(0, 0, -1);
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
@@ -445,7 +446,7 @@ void CRender::Render()
 
 	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3)
 	{
-		int32_t jitterPhaseCount = 4 * ffxFsr2GetJitterPhaseCount((int32_t)RCache.get_width(), (int32_t)RCache.get_target_width());
+		int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount((int32_t)RCache.get_width(), (int32_t)RCache.get_target_width());
 		ffxFsr2GetJitterOffset(&ps_r_taa_jitter_full.x, &ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
 
 		ps_r_taa_jitter_full = ps_r_taa_jitter_full.mul(ps_r_taa_jitter_scale);
@@ -478,9 +479,6 @@ void CRender::Render()
 	RCache.set_Stencil(false);
 
 	g_pGamePersistent->Environment().RenderSky();
-
-	Fcolor sun_color = ((light*)Lights.sun_adapted._get())->color;
-	bool bSUN = !o.sunstatic && u_diffuse2s(sun_color) > EPS;
 
 	RCache.set_xform_world(Fidentity);
 
@@ -708,7 +706,9 @@ void CRender::Render()
 
 	rmNormal();
 
-	// Directional light - fucking sun
+	Fcolor sun_color = ((light*)Lights.sun_adapted._get())->color;
+	bool bSUN = !o.sunstatic && u_diffuse2s(sun_color) > EPS;
+
 	if (bSUN)	
 	{
 		GPU_EVENT(DEFER_SUN);
@@ -767,8 +767,8 @@ void CRender::Render()
 
 void CRender::render_forward()
 {
-	VERIFY	(0==mapDistort.size() + mapHUDDistort.size());
-	RImplementation.o.distortion = RImplementation.o.distortion_enabled;	// enable distorion
+	VERIFY(0 == mapDistort.size() + mapHUDDistort.size());
+	RImplementation.o.distortion = RImplementation.o.distortion_enabled;
 
 	// level enable priority "1"
 	r_pmask(false, true);
