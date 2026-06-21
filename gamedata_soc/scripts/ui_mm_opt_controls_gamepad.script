@@ -1,0 +1,27 @@
+class "opt_controls_gamepad" (CUIWindow)
+
+function opt_controls_gamepad:__init() super()
+end
+
+function opt_controls_gamepad:__finalize()
+
+end
+
+function opt_controls_gamepad:InitControls(x, y, xml, handler)
+
+	self:SetWndPos(vector2():set(x,y))
+	self:SetWndSize(vector2():set(738,416))
+	self:SetAutoDelete(true)
+	
+	self.focusList = {}
+
+	if xml:NodeExist("frame", 0) then
+		self.bk = xml:InitFrame("frame", self)
+	end
+	self.scroll_v = xml:InitScrollView("tab_controls:scroll_v", self)
+
+	handler:addComboBox(self, true, "ui_mm_gamepad_prefix", "gamepad_prefix_override", 4, false, system_depends.sdSystemRestart)
+	handler:addTrack(self, true, "st_gamepad_sensibility", "gamepad_sens", 0.01, false, "float", true, system_depends.sdNothing)
+	handler:addCheck(self, true, "st_gamepad_invert", "gamepad_invert", system_depends.sdNothing)
+
+end
