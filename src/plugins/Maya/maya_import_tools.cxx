@@ -2,6 +2,7 @@
 
 #define NOMINMAX
 #include <maya/MTypes.h>
+#include <cmath>
 
 #if MAYA_API_VERSION >= 20180000 && MAYA_API_VERSION <= 20190200
 #	include <MCppCompat.h>
@@ -35,6 +36,9 @@
 #include <maya/MPointArray.h>
 #include <maya/MProgressWindow.h>
 #include <maya/MSelectionList.h>
+#include <maya/MVector.h>
+#include <maya/MVectorArray.h>
+#include <maya/MFloatVectorArray.h>
 #include "maya_import_tools.h"
 #include "maya_progress.h"
 #include "xr_object.h"
@@ -73,6 +77,49 @@ static MString make_maya_name(const std::string& base, const char* old_suffix, c
 		return MString(base.c_str()) + suffix;
 	else
 		return MString(base.c_str(), int(pos & INT_MAX)) + suffix;
+}
+
+// X-Ray's compiled .ogf format does not preserve usable smoothing-group data.
+// The in-game renderer never reads sgroups at all - it uses the baked
+// per-corner vertex normals directly - so xrLC has no obligation to keep
+// sgroups meaningful, and the SDK's reconstruction of sgroups from those
+// normals is unreliable (can be empty, or non-empty but structured
+// differently than the original smoothing groups). That mismatch is
+// invisible in-game but produces partially/incorrectly faceted meshes in
+// Maya. We therefore ignore sgroups for OGF-derived meshes entirely and
+// recompute edge smoothing directly from the imported Maya geometry by
+// comparing adjacent face normals against an angle threshold (standard
+// "smooth by angle").
+static void smooth_by_angle(MObject& mesh_obj, double angle_degrees = 60.0)
+{
+	MFnMesh mesh_fn(mesh_obj);
+	int num_polygons = mesh_fn.numPolygons();
+	if (num_polygons == 0)
+		return;
+
+	MFloatVectorArray poly_normals(num_polygons);
+	for (MItMeshPolygon pit(mesh_obj); !pit.isDone(); pit.next()) {
+		MVector n;
+		pit.getNormal(n, MSpace::kObject);
+		poly_normals.set(MFloatVector(float(n.x), float(n.y), float(n.z)), pit.index());
+	}
+
+	double cos_threshold = cos(angle_degrees * 3.14159265358979323846 / 180.0);
+
+	MIntArray connected_faces;
+	for (MItMeshEdge eit(mesh_obj); !eit.isDone(); eit.next()) {
+		MStatus status;
+		eit.getConnectedFaces(connected_faces, &status);
+		if (!status || connected_faces.length() != 2) {
+			// border edges or non-manifold edges: leave hard
+			eit.setSmoothing(false);
+			continue;
+		}
+		const MFloatVector& n0 = poly_normals[connected_faces[0]];
+		const MFloatVector& n1 = poly_normals[connected_faces[1]];
+		double dot = double(n0.x)*n1.x + double(n0.y)*n1.y + double(n0.z)*n1.z;
+		eit.setSmoothing(dot >= cos_threshold);
+	}
 }
 
 MStatus maya_import_tools::import_object(const xr_object* object)
@@ -424,11 +471,42 @@ MStatus maya_import_tools::import_mesh(const xr_mesh* mesh, const xr_bone_vec& b
 	status = mesh_fn.assignUVs(poly_counts, uv_ids, 0);
 	CHECK_MSTATUS(status);
 
-	if (mesh->sgroups().empty()) {
-		for (MItMeshEdge it(mesh_obj); !it.isDone(); it.next())
-			it.setSmoothing(false);
+	if (!mesh->cnorm().empty()) {
+		// exact path: cnorm() holds the genuine per-corner normals as baked
+		// in the source file (.ogf/.dm) by the engine/compiler - the same
+		// vertex position can have different normals on different faces at
+		// a smoothing-group seam, so this must be set per face-vertex
+		// (setFaceVertexNormals), not per vertex (setVertexNormals), or
+		// faces sharing a seam vertex end up with a borrowed/wrong normal
+		// and render black.
+		const fvector3_vec& cn = mesh->cnorm();
+		unsigned num_corners = unsigned(cn.size() & UINT_MAX);
+		MVectorArray normals(num_corners);
+		MIntArray face_list(num_corners);
+		MIntArray vertex_list(num_corners);
+		unsigned corner = 0;
+		for (lw_face_vec_cit it = faces.begin(), end = faces.end(); it != end; ++it) {
+			int face_idx = int(it - faces.begin());
+			for (uint_fast32_t i = 0; i != 3; ++i, ++corner) {
+				const fvector3& n = cn[corner];
+				normals.set(MVector(n.x, n.y, -n.z), corner);
+				face_list.set(face_idx, corner);
+				vertex_list.set(int(it->v[i]), corner);
+			}
+		}
+		status = mesh_fn.setFaceVertexNormals(normals, face_list, vertex_list);
+		CHECK_MSTATUS(status);
+	} else if (!m_trust_sgroups || mesh->sgroups().empty()) {
+		// .ogf/.dm are compiled formats: the in-game renderer uses baked
+		// per-corner normals directly and never reads sgroups, so the SDK's
+		// reconstruction of sgroups for these formats is not guaranteed to
+		// match the original smoothing groups (and can be empty outright).
+		// Reconstruct smoothing from the actual imported geometry instead.
+		smooth_by_angle(mesh_obj);
 	} else {
-		
+		// .object source files store smoothing groups explicitly as authored
+		// in the editor/3ds Max/Maya export - this data is trustworthy, so
+		// use it as-is.
 		MIntArray connected;
 		const std::vector<uint32_t>& sgroups = mesh->sgroups();
 		if (m_target_sdk <= xray_re::SDK_VER_0_4) {
@@ -793,6 +871,7 @@ MStatus maya_import_tools::import_motions(const xr_skl_motion_vec& motions, MObj
 void maya_import_tools::set_default_options(void)
 {
 	m_target_sdk = xray_re::SDK_VER_DEFAULT;
+	m_trust_sgroups = true;
 }
 
 MStatus maya_import_tools::parse_options(const MString& options)
@@ -816,6 +895,10 @@ MStatus maya_import_tools::parse_options(const MString& options)
 		{
 			xray_re::sdk_version ver = xray_re::sdk_version_from_string(key_value[1].asChar());
 			m_target_sdk = (ver == xray_re::SDK_VER_UNKNOWN ? xray_re::SDK_VER_0_6 : ver);
+		}
+		else if (key_value[0] == "trust_sgroups")
+		{
+			m_trust_sgroups = (key_value[1] == "true");
 		}
 	}
 
