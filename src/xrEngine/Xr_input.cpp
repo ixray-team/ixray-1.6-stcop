@@ -225,7 +225,7 @@ void CInput::KeyboardUpdate()
 	}
 }
 
-bool dsEnableGamepad = false;
+bool dsEnableGamepad = true;
 void CInput::GamepadUpdate()
 {
 	if (pGamePad == nullptr || !dsEnableGamepad)
@@ -772,10 +772,19 @@ void CInput::SetControllerMode(bool val)
 	CStringTable::ReparseKeyBindings();
 }
 
+extern u32 ps_gamepad_prefix_override;
+extern xr_token gamepad_prefix_override_token[];
+
 void CInput::SelectGamepadPrefix()
 {
 	if (!pGamePad)
 		return;
+
+	if (ps_gamepad_prefix_override != 0)
+	{
+		gamepadPrefix = gamepad_prefix_override_token[ps_gamepad_prefix_override].name;
+		return;
+	}
 	
 	switch (SDL_GetGamepadType(pGamePad))
 	{

@@ -699,4 +699,184 @@
 	<string id="ui_create_new_save">
 		<text>New save</text>
 	</string>
+	<string id="ui_keyboard_mouse">
+		<text>Keyboard and mouse</text>
+	</string>
+	<string id="ui_gamepad">
+		<text>Gamepad</text>
+	</string>
+	<string id="ui_opt_controls_type">
+		<text>$$ACTION_UI_TAB_SEC_LEFT$$/$$ACTION_UI_TAB_SEC_RIGHT$$ Control type</text>
+	</string>
+	<string id="ui_opt_gamepad_layout">
+		<text>$$ACTION_UI_ACTION_2$$ Gamepad layout</text>
+	</string>
+	<string id="st_gamepad_sensibility">
+		<text>Gamepad sensibility</text>
+	</string>
+	<string id="st_gamepad_invert">
+		<text>Invert gamepad</text>
+	</string>
+	<string id="ui_pad_layout_PDA">
+		<text>Open PDA</text>
+	</string>
+	<string id="ui_pad_layout_wheel">
+		<text>Weapon wheel</text>
+	</string>
+	<string id="ui_pad_layout_aim">
+		<text>Aim</text>
+	</string>
+	<string id="ui_pad_layout_bandage">
+		<text>Use bandage</text>
+	</string>
+	<string id="ui_pad_layout_medkit">
+		<text>Use medkit</text>
+	</string>
+	<string id="ui_pad_layout_strafe">
+		<text>Strafe</text>
+	</string>
+	<string id="ui_pad_layout_move">
+		<text>Move</text>
+	</string>
+	<string id="ui_pad_layout_sprint">
+		<text>Sprint</text>
+	</string>
+	<string id="ui_pad_layout_menu">
+		<text>Menu</text>
+	</string>
+	<string id="ui_pad_layout_jump">
+		<text>Jump</text>
+	</string>
+	<string id="ui_pad_layout_shoot">
+		<text>Shoot</text>
+	</string>
+	<string id="ui_pad_layout_inventory">
+		<text>Inventory</text>
+	</string>
+	<string id="ui_pad_layout_crouch">
+		<text>Crouch</text>
+	</string>
+	<string id="ui_pad_layout_reload">
+		<text>Reload</text>
+	</string>
+	<string id="ui_pad_layout_action">
+		<text>Action</text>
+	</string>
+	<string id="ui_pad_layout_lookx">
+		<text>Look X</text>
+	</string>
+	<string id="ui_pad_layout_Looky">
+		<text>Look Y</text>
+	</string>
+	<string id="ui_pad_layout_torch">
+		<text>Flashlight</text>
+	</string>
+	<string id="c_type_general">
+		<text>General movement</text>
+	</string>
+	<string id="c_type_zomming">
+		<text>While zooming</text>
+	</string>
+	<string id="c_type_wheel">
+		<text>Wheel Menu</text>
+	</string>
+	<string id="c_type_talk">
+		<text>Talk Menu</text>
+	</string>
+	<string id="c_type_trade">
+		<text>Trade Menu</text>
+	</string>
+	<string id="c_type_inventory">
+		<text>Inventory Menu</text>
+	</string>
+	<string id="ui_mm_controlls_type">
+		<text>Actions</text>
+	</string>
+	<string id="ui_pad_layout_lean_right">
+		<text>Lean right</text>
+	</string>
+	<string id="ui_pad_layout_lean_left">
+		<text>Lean left</text>
+	</string>
+	<string id="ui_pad_layout_weapon_zoom_in">
+		<text>Zoom in</text>
+	</string>
+	<string id="ui_pad_layout_weapon_zoom_out">
+		<text>Zoom out</text>
+	</string>
+	<string id="ui_pad_layout_wheelmenu_select">
+		<text>Select sector</text>
+	</string>
+	<string id="ui_pad_layout_fire_rate">
+		<text>Rate of fire</text>
+	</string>
+	<string id="ui_pad_layout_drop">
+		<text>Drop weapon</text>
+	</string>
+	<string id="ui_pad_layout_grande_luncher">
+		<text>Additional weapon</text>
+	</string>
+	<string id="ui_pad_layout_ammo_type">
+		<text>Ammo type</text>
+	</string>
+	<string id="ui_pad_layout_night_vision">
+		<text>Night vision</text>
+	</string>
+	<string id="ui_pad_layout_select">
+		<text>Select</text>
+	</string>
+	<string id="ui_pad_layout_back">
+		<text>Back</text>
+	</string>
+	<string id="ui_pad_layout_trade">
+		<text>Trade</text>
+	</string>
+	<string id="ui_pad_layout_talk">
+		<text>Talk</text>
+	</string>
+	<string id="ui_pad_layout_scroll_info">
+		<text>Scroll info</text>
+	</string>
+	<string id="ui_pad_layout_trade_upgrade">
+		<text>Trade / Upgrade</text>
+	</string>
+	<string id="ui_pad_layout_inventory_info">
+		<text>Info</text>
+	</string>
+	<string id="ui_pad_layout_switch_area">
+		<text>Switch area</text>
+	</string>
+	<string id="ui_pad_layout_actions">
+		<text>Actions</text>
+	</string>
+	<string id="ui_mm_gamepad_prefix">
+		<text>Gamepad type</text>
+	</string>
+	<string id="gp_none">
+		<text>system default</text>
+	</string>
+	<string id="xbox1">
+		<text>Xbox</text>
+	</string>
+	<string id="ps4">
+		<text>PlayStation 4</text>
+	</string>
+	<string id="ps5">
+		<text>PlayStation 5</text>
+	</string>
+	<string id="switch">
+		<text>Nintendo Switch</text>
+	</string>
+	<string id="ui_pad_layout_quick_slot_1">
+		<text>Quick slot 1</text>
+	</string>
+	<string id="ui_pad_layout_quick_slot_2">
+		<text>Quick slot 2</text>
+	</string>
+	<string id="ui_pad_layout_quick_slot_3">
+		<text>Quick slot 3</text>
+	</string>
+	<string id="ui_pad_layout_quick_slot_4">
+		<text>Quick slot 4</text>
+	</string>
 </string_table>
