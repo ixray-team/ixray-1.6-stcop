@@ -554,7 +554,7 @@ bool CUIWindow::OnGamepadKeyHold(int dik)
 
 	if (nullptr != m_pKeyboardCapturer)
 	{
-		result = m_pKeyboardCapturer->OnKeyboardHold(dik);
+		result = m_pKeyboardCapturer->OnGamepadKeyHold(dik);
 
 		if (result) return true;
 	}
