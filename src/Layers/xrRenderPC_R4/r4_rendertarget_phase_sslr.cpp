@@ -99,10 +99,7 @@ void CRenderTarget::phase_sslr()
 		//LVutner: Meh.
 		GRHI->CopySurface(rt_sslr_old->pSurface, rt_sslr->pSurface);
 	}
-
 }
-
-bool is_render_cubemap = false;
 
 void CRender::render_reflections()
 {
