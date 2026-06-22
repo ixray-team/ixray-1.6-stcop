@@ -402,22 +402,29 @@ ICF void Snd_DestroySourceCache(sound_source& source)
 ICF u32 Snd_NewCacheLine()
 {
 	u32 cache_idx = 0;
-	if (mixer.free_cachelines.empty()) {
+	if (mixer.free_cachelines.empty())
+	{
 		u64 least_timestamp = (u64)-1;
-		for (size_t i = 0; i < mixer.cache_lines.size(); i++) {
-			if (mixer.cache_lines[i].timestamp == 0) {
+		for (size_t i = 0; i < mixer.cache_lines.size(); i++)
+		{
+			sound_cache_line& Line = mixer.cache_lines[i];
+
+			if (Line.timestamp == 0)
+			{
 				// TODO: this might be a problem in the future
 				continue;
 			}
 
-			if (mixer.cache_lines[i].timestamp < least_timestamp) {
-				least_timestamp = mixer.cache_lines[i].timestamp;
+			if (Line.timestamp < least_timestamp)
+			{
+				least_timestamp = Line.timestamp;
 				cache_idx = i + 1;
 				continue;
 			}
 		}
 
-		if (cache_idx == 0 || (Snd_GetTimestamp()-least_timestamp) < CACHE_LINE_MAX_TIME_NS) {
+		if (cache_idx == 0 || (Snd_GetTimestamp() - least_timestamp) < CACHE_LINE_MAX_TIME_NS)
+		{
 			Snd_GrowCacheLines(false);
 		}
 
