@@ -334,9 +334,9 @@ void CParticleEffect::UpdateCache()
 	Fvector& cam_dir = RDEVICE.vCameraDirection_saved;
     Fvector& cam_top = RDEVICE.vCameraTop_saved;
     Fvector& cam_right = RDEVICE.vCameraRight_saved;
-
-	float dt = 1.f - 10.f * Device.fTimeDelta;
-	clamp(dt, 0.f, 0.99f);
+	
+	constexpr float tau = .1f;
+	float dt = exp(-Device.fTimeDelta / tau);
 
 	Fmatrix	M;
 	Fvector p, d, dir;
@@ -591,8 +591,8 @@ void CParticleEffect::Render(float)
 				}
 				else
 				{
-					float dt = 1.f - 10.f * Device.fTimeDelta;
-					clamp(dt, 0.f, 0.99f);
+					constexpr float tau = .1f;
+					float dt = exp(-Device.fTimeDelta / tau);
 					m.posI.inertion(m.pos, dt);
 					m.rotI.x = std::lerp(m.rot.x, m.rotI.x, dt);
 					m.velI.inertion(m.vel, dt);
