@@ -244,6 +244,11 @@ void CDetailManager::Render()
 							for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
 							{
 								SlotPart& sp = S->G[sp_id];
+
+								if (sp.id >= objects.size())
+								{
+									continue;
+								}
 #ifndef _EDITOR 
 								CDetail& D = objects[sp.id];
 #else
