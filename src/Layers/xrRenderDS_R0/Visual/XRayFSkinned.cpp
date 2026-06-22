@@ -18,7 +18,7 @@ s16 q_P(float v)
 	return s16(_v);
 }
 
-u8 q_N(float v)
+constexpr u8 q_N(float v)
 {
 	int _v =  clampr(iFloor((v + 1.f) * 127.5f), 0, 255);
 	return u8(_v);
