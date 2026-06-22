@@ -19,7 +19,9 @@
 #include <maya/MFnCharacter.h>
 #include <maya/MFnClip.h>
 #include <maya/MFnEnumAttribute.h>
+#include <maya/MFnDagNode.h>
 #include <maya/MFnIkJoint.h>
+#include <maya/MFnMatrixData.h>
 #include <maya/MFnMesh.h>
 #include <maya/MFnSet.h>
 #include <maya/MFnSingleIndexedComponent.h>
@@ -27,11 +29,14 @@
 #include <maya/MFnTransform.h>
 #include <maya/MGlobal.h>
 #include <maya/MIntArray.h>
+#include <maya/MObjectArray.h>
 #include <maya/MItDag.h>
 #include <maya/MItDependencyGraph.h>
 #include <maya/MItDependencyNodes.h>
 #include <maya/MItMeshEdge.h>
 #include <maya/MItMeshPolygon.h>
+#include <maya/MMatrix.h>
+#include <maya/MTransformationMatrix.h>
 #include <maya/MPlugArray.h>
 #include <maya/MPointArray.h>
 #include <maya/MProgressWindow.h>
@@ -67,6 +72,7 @@ maya_import_tools::maya_import_tools(const xray_re::xr_object* object, MStatus* 
 
 maya_import_tools::~maya_import_tools()
 {
+	delete m_replace_parent;
 	MGlobal::clearSelectionList();
 }
 
@@ -78,18 +84,6 @@ static MString make_maya_name(const std::string& base, const char* old_suffix, c
 	else
 		return MString(base.c_str(), int(pos & INT_MAX)) + suffix;
 }
-
-// X-Ray's compiled .ogf format does not preserve usable smoothing-group data.
-// The in-game renderer never reads sgroups at all - it uses the baked
-// per-corner vertex normals directly - so xrLC has no obligation to keep
-// sgroups meaningful, and the SDK's reconstruction of sgroups from those
-// normals is unreliable (can be empty, or non-empty but structured
-// differently than the original smoothing groups). That mismatch is
-// invisible in-game but produces partially/incorrectly faceted meshes in
-// Maya. We therefore ignore sgroups for OGF-derived meshes entirely and
-// recompute edge smoothing directly from the imported Maya geometry by
-// comparing adjacent face normals against an angle threshold (standard
-// "smooth by angle").
 static void smooth_by_angle(MObject& mesh_obj, double angle_degrees = 60.0)
 {
 	MFnMesh mesh_fn(mesh_obj);
@@ -127,16 +121,21 @@ MStatus maya_import_tools::import_object(const xr_object* object)
 	MStatus status = MS::kSuccess;
 	const xr_bone_vec& bones = object->bones();
 
-	start_progress(bones.size(), "Importing bones");
-	for (xr_bone_vec_cit it = bones.begin(), end = bones.end(); it != end; ++it) {
-		if ((*it)->is_root()) {
-			status = import_bone(*it, MObject::kNullObj);
-			break;
+	if (m_attach_to_selection) {
+		if (!(status = attach_to_selected_skeleton(bones)))
+			return status;
+	} else {
+		start_progress(bones.size(), "Importing bones");
+		for (xr_bone_vec_cit it = bones.begin(), end = bones.end(); it != end; ++it) {
+			if ((*it)->is_root()) {
+				status = import_bone(*it, MObject::kNullObj);
+				break;
+			}
 		}
+		end_progress();
+		if (!status)
+			return status;
 	}
-	end_progress();
-	if (!status)
-		return status;
 
 	maya_object_map shared_textures;
 	start_progress(object->surfaces().size(), "Importing surfaces");
@@ -158,18 +157,47 @@ MStatus maya_import_tools::import_object(const xr_object* object)
 		return status;
 	shared_textures.clear();
 
+	MObjectArray created_transforms;
+	bool single_mesh = object->meshes().size() == 1;
+
 	start_progress(object->meshes().size(), "Importing meshes");
 	for (xr_mesh_vec_cit it = object->meshes().begin(),
 			end = object->meshes().end(); it != end; ++it) {
-		if (!(status = import_mesh(*it, bones)))
+		MObject out_transform;
+		if (!(status = import_mesh(*it, bones, &out_transform)))
 			break;
+		if (!out_transform.isNull())
+			created_transforms.append(out_transform);
 		advance_progress();
 	}
 	end_progress();
 	if (!status)
 		return status;
 
-	if (!bones.empty()) {
+	if (m_attach_to_selection && single_mesh && created_transforms.length() == 1) {
+		MFnDagNode new_dag_fn(created_transforms[0]);
+		if (m_replace_parent) {
+			MFnDagNode(*m_replace_parent).addChild(created_transforms[0]);
+		}
+		if (!m_replace_name.empty())
+			new_dag_fn.setName(MString(m_replace_name.c_str()));
+	} else if (!m_attach_to_selection && created_transforms.length() == 1 && !m_group_name.empty()) {
+		MFnDagNode dag_fn(created_transforms[0]);
+		dag_fn.setName(MString(m_group_name.c_str()));
+	} else if (!m_attach_to_selection && created_transforms.length() > 1 && !m_group_name.empty()) {
+		MFnTransform group_fn;
+		MObject group_obj = group_fn.create(MObject::kNullObj, &status);
+		if (status) {
+			std::string safe_name = m_group_name;
+			if (!safe_name.empty() && std::isdigit((unsigned char)safe_name[0]))
+				safe_name = "_" + safe_name;
+			group_fn.setName(MString(safe_name.c_str()));
+			for (unsigned i = 0, n = created_transforms.length(); i != n; ++i)
+				group_fn.addChild(created_transforms[i]);
+		}
+	}
+
+	if (!bones.empty() && !m_attach_to_selection) {
 		MObject character_obj = create_character(&status);
 		if (status && !object->motions().empty()) {
 			reset_animation_state();
@@ -344,6 +372,27 @@ MStatus maya_import_tools::import_surface(const xr_surface* surface, MObject& te
 	return status;
 }
 
+static MMatrix compute_bind_world_matrix(const xr_bone* bone)
+{
+	const fvector3& t = bone->bind_offset();
+	double x = MDistance(t.x, MDistance::kMeters).asCentimeters();
+	double y = MDistance(t.y, MDistance::kMeters).asCentimeters();
+	double z = MDistance(t.z, MDistance::kMeters).asCentimeters();
+
+	const fvector3& r = bone->bind_rotate();
+	MEulerRotation euler(-r.x, -r.y, r.z, MEulerRotation::kZXY);
+
+	MTransformationMatrix local;
+	local.setTranslation(MVector(x, y, -z), MSpace::kTransform);
+	local.rotateTo(euler);
+
+	MMatrix local_matrix = local.asMatrix();
+	const xr_bone* parent = bone->parent();
+	if (parent == 0)
+		return local_matrix;
+	return local_matrix * compute_bind_world_matrix(parent);
+}
+
 MStatus maya_import_tools::import_bone(const xr_bone* bone, MObject& parent_obj)
 {
 	MStatus status;
@@ -389,7 +438,7 @@ static inline void append_uvs(const std::vector<fvector2>& uvs, MFloatArray& u_v
 	}
 }
 
-MStatus maya_import_tools::import_mesh(const xr_mesh* mesh, const xr_bone_vec& bones)
+MStatus maya_import_tools::import_mesh(const xr_mesh* mesh, const xr_bone_vec& bones, MObject* out_transform)
 {
 	MStatus status;
 
@@ -402,6 +451,8 @@ MStatus maya_import_tools::import_mesh(const xr_mesh* mesh, const xr_bone_vec& b
 		return status;
 	}
 	transform_fn.setName(make_maya_name(mesh->name(), "Shape"));
+	if (out_transform)
+		*out_transform = transform_obj;
 
 	const std::vector<fvector3>& points = mesh->points();
 	MPointArray vertices;
@@ -471,14 +522,9 @@ MStatus maya_import_tools::import_mesh(const xr_mesh* mesh, const xr_bone_vec& b
 	status = mesh_fn.assignUVs(poly_counts, uv_ids, 0);
 	CHECK_MSTATUS(status);
 
-	if (!mesh->cnorm().empty()) {
-		// exact path: cnorm() holds the genuine per-corner normals as baked
-		// in the source file (.ogf/.dm) by the engine/compiler - the same
-		// vertex position can have different normals on different faces at
-		// a smoothing-group seam, so this must be set per face-vertex
-		// (setFaceVertexNormals), not per vertex (setVertexNormals), or
-		// faces sharing a seam vertex end up with a borrowed/wrong normal
-		// and render black.
+	bool want_normals = (m_smoothing_mode == "soc" || m_smoothing_mode == "cscop") ? false : true;
+
+	if (want_normals && !mesh->cnorm().empty()) {
 		const fvector3_vec& cn = mesh->cnorm();
 		unsigned num_corners = unsigned(cn.size() & UINT_MAX);
 		MVectorArray normals(num_corners);
@@ -496,20 +542,12 @@ MStatus maya_import_tools::import_mesh(const xr_mesh* mesh, const xr_bone_vec& b
 		}
 		status = mesh_fn.setFaceVertexNormals(normals, face_list, vertex_list);
 		CHECK_MSTATUS(status);
-	} else if (!m_trust_sgroups || mesh->sgroups().empty()) {
-		// .ogf/.dm are compiled formats: the in-game renderer uses baked
-		// per-corner normals directly and never reads sgroups, so the SDK's
-		// reconstruction of sgroups for these formats is not guaranteed to
-		// match the original smoothing groups (and can be empty outright).
-		// Reconstruct smoothing from the actual imported geometry instead.
-		smooth_by_angle(mesh_obj);
-	} else {
-		// .object source files store smoothing groups explicitly as authored
-		// in the editor/3ds Max/Maya export - this data is trustworthy, so
-		// use it as-is.
+	} else if (!want_normals && !mesh->sgroups().empty()) {
+		// SoC vs CS/CoP sgroups encoding, picked explicitly rather than
+		// inferred from m_target_sdk.
 		MIntArray connected;
 		const std::vector<uint32_t>& sgroups = mesh->sgroups();
-		if (m_target_sdk <= xray_re::SDK_VER_0_4) {
+		if (m_smoothing_mode == "soc") {
 			if (mesh->flags() & EMF_3DSMAX) {
 				for (MItMeshEdge it(mesh_obj); !it.isDone(); it.next()) {
 					it.getConnectedFaces(connected, &status);
@@ -535,6 +573,8 @@ MStatus maya_import_tools::import_mesh(const xr_mesh* mesh, const xr_bone_vec& b
 				mesh_fn.setEdgeSmoothing(connected[2], !(sgroups[it.index()] & 0x4));
 			}
 		}
+	} else {
+		smooth_by_angle(mesh_obj);
 	}
 
 	MDagPath mesh_path;
@@ -579,7 +619,7 @@ MStatus maya_import_tools::import_mesh(const xr_mesh* mesh, const xr_bone_vec& b
 	}
 
 	if (!bones.empty()) {
-		MString command("skinCluster -mi 2 -tsb ");
+		MString command(m_attach_to_selection ? "skinCluster -mi 2 " : "skinCluster -mi 2 -tsb ");
 		for (maya_object_map_it it = m_joints.begin(), end = m_joints.end(); it != end; ++it) {
 			MFnIkJoint joint_fn(it->second, &status);
 			CHECK_MSTATUS(status);
@@ -604,6 +644,32 @@ MStatus maya_import_tools::import_mesh(const xr_mesh* mesh, const xr_bone_vec& b
 		MFnSkinCluster skin_fn(skin_obj, &status);
 		if (!status)
 			return status;
+
+		if (m_attach_to_selection) {
+			for (xr_bone_vec_cit it = bones.begin(), end = bones.end(); it != end; ++it) {
+				const xr_bone* bone = *it;
+				maya_object_map_it joint_it = m_joints.find(bone->name());
+				if (joint_it == m_joints.end())
+					continue;
+				MFnIkJoint joint_fn(joint_it->second, &status);
+				CHECK_MSTATUS(status);
+				MDagPath joint_path;
+				status = joint_fn.getPath(joint_path);
+				CHECK_MSTATUS(status);
+				unsigned influence_idx = skin_fn.indexForInfluenceObject(joint_path, &status);
+				CHECK_MSTATUS(status);
+
+				MMatrix bind_world = compute_bind_world_matrix(bone);
+				MPlug bpm_array_plug = skin_fn.findPlug("bindPreMatrix", true, &status);
+				CHECK_MSTATUS(status);
+				MPlug bpm_plug = bpm_array_plug.elementByLogicalIndex(influence_idx, &status);
+				CHECK_MSTATUS(status);
+				MFnMatrixData matrix_data;
+				MObject matrix_obj = matrix_data.create(bind_world.inverse());
+				status = bpm_plug.setValue(matrix_obj);
+				CHECK_MSTATUS(status);
+			}
+		}
 
 		MFnSingleIndexedComponent component_fn;
 		MObject component_obj = component_fn.create(MFn::kMeshVertComponent, &status);
@@ -658,6 +724,84 @@ MStatus maya_import_tools::import_mesh(const xr_mesh* mesh, const xr_bone_vec& b
 				influence_indices, vertex_weights, false);
 		CHECK_MSTATUS(status);
 	}
+	return MS::kSuccess;
+}
+
+MStatus maya_import_tools::attach_to_selected_skeleton(const xr_bone_vec& bones)
+{
+	MSelectionList selection_list;
+	MStatus status = MGlobal::getActiveSelectionList(selection_list);
+	if (selection_list.isEmpty()) {
+		MGlobal::displayError("xray_re: nothing is selected - select the rigged mesh "
+			"you want to replace");
+		return MS::kInvalidParameter;
+	}
+
+	MDagPath mesh_path;
+	status = selection_list.getDagPath(0, mesh_path);
+	if (!status || !mesh_path.hasFn(MFn::kTransform)) {
+		MGlobal::displayError("xray_re: selected object is not a mesh - select the "
+			"rigged mesh you want to replace");
+		return MS::kInvalidParameter;
+	}
+	MFnDagNode old_dag_fn(mesh_path);
+	MObject shape_obj = old_dag_fn.child(0, &status);
+	if (!status || !shape_obj.hasFn(MFn::kMesh)) {
+		MGlobal::displayError("xray_re: selected object is not a mesh - select the "
+			"rigged mesh you want to replace");
+		return MS::kInvalidParameter;
+	}
+
+	MItDependencyGraph skin_it(shape_obj, MFn::kSkinClusterFilter,
+		MItDependencyGraph::kUpstream, MItDependencyGraph::kBreadthFirst,
+		MItDependencyGraph::kNodeLevel, &status);
+	if (!status || skin_it.isDone()) {
+		MGlobal::displayError("xray_re: selected mesh has no skinCluster to take "
+			"the existing skeleton from");
+		return MS::kInvalidParameter;
+	}
+	MObject skin_obj = skin_it.currentItem();
+	MFnSkinCluster skin_fn(skin_obj, &status);
+	CHECK_MSTATUS(status);
+
+	MDagPathArray joints;
+	skin_fn.influenceObjects(joints, &status);
+	CHECK_MSTATUS(status);
+	for (unsigned i = 0, n = joints.length(); i != n; ++i) {
+		MFnIkJoint joint_fn(joints[i]);
+		MObject& stored = m_joints[joint_fn.name().asChar()];
+		if (stored.isNull())
+			stored = joints[i].node();
+	}
+
+	bool all_found = true;
+	for (xr_bone_vec_cit it = bones.begin(), end = bones.end(); it != end; ++it) {
+		const std::string& name = (*it)->name();
+		if (m_joints.find(name) == m_joints.end()) {
+			msg("xray_re: existing skeleton is missing bone %s", name.c_str());
+			MGlobal::displayError(MString("xray_re: existing skeleton is missing bone ") + name.c_str());
+			all_found = false;
+		}
+	}
+	if (!all_found) {
+		MGlobal::displayError("xray_re: selected mesh's skeleton does not match the "
+			"bones referenced by the new model - aborting replace");
+		return MS::kInvalidParameter;
+	}
+
+	m_replace_name = old_dag_fn.name().asChar();
+	MObject parent_obj = old_dag_fn.parent(0, &status);
+	delete m_replace_parent;
+	m_replace_parent = (status && !parent_obj.hasFn(MFn::kWorld)) ? new MObject(parent_obj) : 0;
+
+	MString old_mesh_path_name = mesh_path.fullPathName();
+	status = MGlobal::executeCommand(MString("delete \"") + old_mesh_path_name + "\"");
+	if (!status) {
+		msg("xray_re: failed to delete old mesh %s", old_mesh_path_name.asChar());
+		MGlobal::displayError(MString("xray_re: failed to delete old mesh ") + old_mesh_path_name);
+		return status;
+	}
+
 	return MS::kSuccess;
 }
 
@@ -871,7 +1015,11 @@ MStatus maya_import_tools::import_motions(const xr_skl_motion_vec& motions, MObj
 void maya_import_tools::set_default_options(void)
 {
 	m_target_sdk = xray_re::SDK_VER_DEFAULT;
-	m_trust_sgroups = true;
+	m_smoothing_mode = "normals";
+	m_attach_to_selection = false;
+	m_replace_name.clear();
+	m_replace_parent = 0;
+	m_group_name.clear();
 }
 
 MStatus maya_import_tools::parse_options(const MString& options)
@@ -896,9 +1044,17 @@ MStatus maya_import_tools::parse_options(const MString& options)
 			xray_re::sdk_version ver = xray_re::sdk_version_from_string(key_value[1].asChar());
 			m_target_sdk = (ver == xray_re::SDK_VER_UNKNOWN ? xray_re::SDK_VER_0_6 : ver);
 		}
-		else if (key_value[0] == "trust_sgroups")
+		else if (key_value[0] == "smoothing_mode")
 		{
-			m_trust_sgroups = (key_value[1] == "true");
+			m_smoothing_mode = key_value[1].asChar();
+		}
+		else if (key_value[0] == "attach_to_selection")
+		{
+			m_attach_to_selection = (key_value[1] == "true");
+		}
+		else if (key_value[0] == "group_name")
+		{
+			m_group_name = key_value[1].asChar();
 		}
 	}
 
