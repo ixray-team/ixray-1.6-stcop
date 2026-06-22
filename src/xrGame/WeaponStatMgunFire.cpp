@@ -8,6 +8,7 @@
 #include "EffectorShot.h"
 #include "ParticlesObject.h"
 #include "Weapon.h"
+#include "../xrEngine/xr_input.h"
 
 const Fvector&	CWeaponStatMgun::get_CurrentFirePoint()
 {
@@ -128,6 +129,11 @@ void CWeaponStatMgun::OnShot()
 	bool b_hud_mode = (Level().CurrentEntity() == Owner()->dcast_CObject());
 	m_sounds_layered.PlaySound("sndShot", m_fire_pos, Owner(), b_hud_mode);
 
+	if (Owner() && Owner() == Level().CurrentControlEntity())
+	{
+		pInput->feedback(65535, 65535, 0.1f);
+	}
+
 	AddShotEffector();
 	m_dAngle.set(::Random.randF(-fireDispersionBase, fireDispersionBase),
 		::Random.randF(-fireDispersionBase, fireDispersionBase));
@@ -140,7 +146,7 @@ void CWeaponStatMgun::AddShotEffector()
 		CCameraShotEffector* S = smart_cast<CCameraShotEffector*>(OwnerActor()->Cameras().GetCamEffector(eCEShot));
 
 		CameraRecoil camera_recoil;
-		// ��������� ���������� ������ ��� ������������� ��������
+		// Настройка параметров отдачи для стационарного пулемета
 		camera_recoil.MaxAngleVert = camMaxAngle;
 		camera_recoil.RelaxSpeed = camRelaxSpeed;
 		camera_recoil.MaxAngleHorz = 0.25f;
