@@ -369,7 +369,12 @@ static MStatus extract_weights(MFnMesh& mesh_fn, MFnSkinCluster& skin_fn,
 				int vert_idx = component_fn.element(j, &status);
 				CHECK_MSTATUS(status);
 				uint32_t weight_idx = weight_vmap->add_weight(float(weights[--k]), uint32_t(vert_idx & INT_MAX));
-				xr_assert(!weight_vmrefs[vert_idx].full());
+				if (weight_vmrefs[vert_idx].full()) {
+					msg("xray_re: vertex %d has too many bone influences (max 6). Reduce influences before exporting.", vert_idx);
+					MGlobal::displayError(MString("xray_re: vertex ") + vert_idx +
+						" has too many bone influences (max 6). Reduce influences before exporting.");
+					return MS::kFailure;
+				}
 				weight_vmrefs[vert_idx].push_back(lw_vmref_entry(vmap_idx, weight_idx));
 			}
 		}
