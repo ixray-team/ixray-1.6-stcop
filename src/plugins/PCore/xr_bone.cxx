@@ -53,40 +53,37 @@ void xr_bone::load_0(xr_reader& r)
 	r.r_fvector3(m_bind_rotate);
 	m_bind_length = r.r_float();
 	std::swap(m_bind_offset.x, m_bind_offset.y);
-
-	// FIXME: reset other fields
-	xr_not_implemented();
 }
 
 void xr_bone::load_data(xr_reader& r)
 {
-	if (!r.find_chunk(BONE_CHUNK_DEF, 0, false))
-		xr_not_expected();
-	r.r_sz(m_name);
-	r.debug_find_chunk();
+	if (r.find_chunk(BONE_CHUNK_DEF, 0, false)) {
+		r.r_sz(m_name);
+		r.debug_find_chunk();
+	}
 
-	if (!r.find_chunk(BONE_CHUNK_MATERIAL))
-		xr_not_expected();
-	r.r_sz(m_gamemtl);
-	r.debug_find_chunk();
+	if (r.find_chunk(BONE_CHUNK_MATERIAL)) {
+		r.r_sz(m_gamemtl);
+		r.debug_find_chunk();
+	}
 
-	if (!r.find_chunk(BONE_CHUNK_SHAPE))
-		xr_not_expected();
-	r.r<s_bone_shape>(m_shape);
-	r.debug_find_chunk();
+	if (r.find_chunk(BONE_CHUNK_SHAPE)) {
+		r.r<s_bone_shape>(m_shape);
+		r.debug_find_chunk();
+	}
 
 	if (r.find_chunk(BONE_CHUNK_IK_FLAGS)) {
 		m_joint_ik_data.ik_flags = r.r_u32();
 		r.debug_find_chunk();
 	}
 
-	if (!r.find_chunk(BONE_CHUNK_IK_JOINT))
-		xr_not_expected();
-	m_joint_ik_data.type = r.r_u32();
-	r.r_cseq<s_joint_limit>(3, m_joint_ik_data.limits);
-	m_joint_ik_data.spring_factor = r.r_float();
-	m_joint_ik_data.damping_factor = r.r_float();
-	r.debug_find_chunk();
+	if (r.find_chunk(BONE_CHUNK_IK_JOINT)) {
+		m_joint_ik_data.type = r.r_u32();
+		r.r_cseq<s_joint_limit>(3, m_joint_ik_data.limits);
+		m_joint_ik_data.spring_factor = r.r_float();
+		m_joint_ik_data.damping_factor = r.r_float();
+		r.debug_find_chunk();
+	}
 
 	if (r.find_chunk(BONE_CHUNK_BREAK_PARAMS)) {
 		m_joint_ik_data.break_force = r.r_float();
