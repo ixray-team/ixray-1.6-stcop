@@ -263,6 +263,7 @@ void CActor::AddGameNews_deffered	 (GAME_NEWS_DATA& news_data, u32 delay)
 
 void CActor::UpdateDefferedMessages()
 {
+	PROF_EVENT("CActor::UpdateDefferedMessages");
 	while( m_defferedMessages.size() )
 	{
 		SDefNewsMsg& M = m_defferedMessages.back();
