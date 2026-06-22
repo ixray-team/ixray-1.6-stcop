@@ -247,8 +247,8 @@ bool CEditableMesh::LoadMesh(IReader& F){
 	    UnloadVNormals		();
     }
     
-    if (!EPrefs->object_flags.is(epoDeffLoadCF)) 
-    	GenerateCFModel();       
+    GenerateCFModel();     
+
 #endif
 	OptimizeMesh	(false);
     RebuildVMaps	();
