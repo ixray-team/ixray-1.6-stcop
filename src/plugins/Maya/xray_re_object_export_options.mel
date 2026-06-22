@@ -1,4 +1,4 @@
-global proc int xray_re_object_translator_options(string $parent, string $action, string $options, string $callback)
+global proc int xray_re_object_export_options(string $parent, string $action, string $options, string $callback)
 {
 	string $sdk_ver_params[] = { "1850", "0.4", "0.6"};
 	string $sdk_ver_names[] =  { "ver_1850", "ver_0_4", "ver_0_6" };
