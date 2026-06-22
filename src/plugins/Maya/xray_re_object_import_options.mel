@@ -1,0 +1,74 @@
+global proc int xray_re_object_import_options(string $parent, string $action, string $options, string $callback)
+{
+	int $i;
+	string $smoothing_params[] = { "normals", "soc", "cscop" };
+	string $smoothing_names[]  = { "smoothing_normals", "smoothing_soc", "smoothing_cscop" };
+	string $smoothing_labels[] = { "Normals", "SoC", "CS/CoP" };
+	int $j;
+
+	if($action == "post")
+	{
+		setParent $parent;
+		columnLayout -adj true;
+
+		checkBox -label "Replace selected mesh" "attach_to_selection";
+		checkBox -label "Split mesh into parts" -value true "split_parts";
+
+		text -label "Smoothing:" -align "left";
+		radioCollection "smoothing_mode";
+		for($i = 0; $i < size($smoothing_params); $i++)
+			radioButton -label $smoothing_labels[$i] $smoothing_names[$i];
+		radioCollection -edit -select "smoothing_normals" "smoothing_mode";
+
+		string $params[];
+		tokenize($options, ";", $params);
+		for($i = 0; $i < size($params); $i++)
+		{
+			string $kv[];
+			tokenize($params[$i], "=", $kv);
+
+			if(size($kv) < 3)
+				continue;
+
+			if($kv[0] == "attach_to_selection")
+				if($kv[1] == "true")
+					checkBox -edit -value true "attach_to_selection";
+				else
+					checkBox -edit -value false "attach_to_selection";
+
+			if($kv[0] == "split_parts")
+				if($kv[1] == "true")
+					checkBox -edit -value true "split_parts";
+				else
+					checkBox -edit -value false "split_parts";
+
+			if($kv[0] == "smoothing_mode")
+				for($j = 0; $j < size($smoothing_params); $j++)
+					if($smoothing_params[$j] == $kv[1])
+						radioCollection -edit -select $smoothing_names[$j] "smoothing_mode";
+		}
+	}
+	else if($action == "query")
+	{
+		$options = "";
+
+		if(`checkBox -q -value "attach_to_selection"`)
+			$options += "attach_to_selection=true;";
+		else
+			$options += "attach_to_selection=false;";
+
+		if(`checkBox -q -value "split_parts"`)
+			$options += "split_parts=true;";
+		else
+			$options += "split_parts=false;";
+
+		string $selected = `radioCollection -q -sl "smoothing_mode"`;
+		for($i = 0; $i < size($smoothing_names); $i++)
+			if($smoothing_names[$i] == $selected)
+				$options += "smoothing_mode=" + $smoothing_params[$i] + ";";
+
+		eval($callback + " \"" + $options + "\"");
+	}
+
+	return 1;
+}

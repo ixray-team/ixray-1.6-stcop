@@ -281,7 +281,7 @@ void xr_mesh::load(xr_reader& r, xr_object& object)
 
 	if ((size = r.find_chunk(EMESH_CHUNK_VNORMALS))) {
 		xr_assert(size == m_faces.size() * 3 * sizeof(fvector3));
-		r.r_seq(m_faces.size() * 3, m_vertex_normals);
+		r.r_seq(m_faces.size() * 3, m_corner_normals);
 		r.debug_find_chunk();
 	}
 
@@ -361,7 +361,13 @@ void xr_mesh::save(xr_writer& w) const
 		w.close_chunk();
 	}
 
-	if (!m_vertex_normals.empty()) 
+	if (!m_corner_normals.empty()) 
+	{
+		w.open_chunk(EMESH_CHUNK_VNORMALS);
+		w.w_seq(m_corner_normals);
+		w.close_chunk();
+	}
+	else if (!m_vertex_normals.empty()) 
 	{
 		w.open_chunk(EMESH_CHUNK_VNORMALS);
 		w.w_seq(m_vertex_normals);

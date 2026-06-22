@@ -51,7 +51,9 @@ private:
 	MObject		create_character(MStatus* return_status = 0);
 	MStatus		import_surface(const xray_re::xr_surface* surface, MObject& texture_obj);
 	MStatus		import_bone(const xray_re::xr_bone* bone, MObject& parent_obj);
-	MStatus		import_mesh(const xray_re::xr_mesh* mesh, const std::vector<xray_re::xr_bone*>& bones);
+	MStatus		import_mesh(const xray_re::xr_mesh* mesh, const std::vector<xray_re::xr_bone*>& bones,
+					MObject* out_transform = 0);
+	MStatus		attach_to_selected_skeleton(const std::vector<xray_re::xr_bone*>& bones);
 
 	void		set_default_options(void);
 	MStatus		parse_options(const MString& options);
@@ -61,8 +63,15 @@ private:
 	maya_object_map	m_joints;
 
 	xray_re::sdk_version m_target_sdk;
-	bool		m_trust_sgroups;	// false for compiled formats (.ogf/.dm), where
-						// reconstructed smoothing groups are unreliable
+	std::string	m_smoothing_mode;	// "normals" (cnorm, exact - default), "soc",
+						// or "cscop" (explicit sgroups encoding choice)
+	bool		m_attach_to_selection;	// if true, skip creating new joints and instead
+						// skin onto an already-selected existing skeleton
+						// of matching bone names (mesh-swap workflow)
+	std::string	m_replace_name;		// name of the mesh being replaced (mesh-swap workflow)
+	MObject*	m_replace_parent;	// parent transform of the mesh being replaced, or null
+	std::string	m_group_name;		// source file base name; used to group multiple
+						// resulting meshes (e.g. after material/part splitting)
 };
 
 #endif

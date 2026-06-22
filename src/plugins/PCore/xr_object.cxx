@@ -168,7 +168,7 @@ void xr_object::load_object(xr_reader& r)
 		s->r_chunks(m_bones, xr_reader::f_r_new<xr_bone>(&xr_bone::load_1));
 		r.close_chunk(s);
 	} else if (r.find_chunk(EOBJ_CHUNK_BONES_0)) {
-		s->r_seq(r.r_u32(), m_bones, xr_reader::f_r_new<xr_bone>(&xr_bone::load_0));
+		r.r_seq(r.r_u32(), m_bones, xr_reader::f_r_new<xr_bone>(&xr_bone::load_0));
 		r.debug_find_chunk();
 	}
 	setup_bones();
