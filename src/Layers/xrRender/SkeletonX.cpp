@@ -475,7 +475,7 @@ void CSkeletonX::_Load(const char* N, IReader *data, u32& dwVertCount)
 #endif
 
 	buffer_vector<u16> bids(_alloca(hw_bones_cnt * sizeof(u16)), hw_bones_cnt);
-	//åñëè ïîéìàåòå èñêëþ÷åíèå çàìåíèòå íà xr_vector
+	//ÐµÑÐ»Ð¸ Ð¿Ð¾Ð¹Ð¼Ð°ÐµÑ‚Ðµ Ð¸ÑÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ Ð·Ð°Ð¼ÐµÐ½Ð¸Ñ‚Ðµ Ð½Ð° xr_vector
 
 	u32 dwVertType,size,it,crc;
 	dwVertType = data->r_u32(); 
@@ -708,7 +708,7 @@ static RHIInputElementDesc dwDecl_4W[] =
 	{ "TEXCOORD", 1, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 36, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
 };
 
-ICF u8 q_N(float v)
+constexpr u8 q_N(float v)
 {
 	int _v = clampr(iFloor((v + 1.f) * 127.5f), 0, 255);
 	return	u8(_v);

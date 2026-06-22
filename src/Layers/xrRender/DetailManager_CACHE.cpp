@@ -10,7 +10,7 @@ static int magic4x4[4][4] =
 	{ 7,  9,  4, 10}
 };
 
-ICF void bwdithermap	(int levels, int magic[16][16])
+void bwdithermap	(int levels, int magic[16][16])
 {
 	/* Get size of each step */
     float N = 255.0f / (levels - 1);
