@@ -8,7 +8,7 @@ struct vertHW
 	u32 normal = 0;
 };
 
-extern inline u8 q_N(float v);
+extern constexpr u8 q_N(float v);
 
 static RHIInputElementDesc dwDecl[] =
 {
