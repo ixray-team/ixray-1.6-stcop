@@ -1951,8 +1951,14 @@ void CActor::UpdateCL()
 
 	m_snd_noise -= 0.3f*Device.fTimeDelta;
 
-	inherited::UpdateCL();
-	m_pPhysics_support->in_UpdateCL();
+	{
+		PROF_EVENT("CActor UpdateCL - inherited");
+		inherited::UpdateCL();
+	}
+	{
+		PROF_EVENT("CActor UpdateCL - physics");
+		m_pPhysics_support->in_UpdateCL();
+	}
 
 	SetZoomAimingMode		(false);
 	CWeapon* pWeapon = item != nullptr ? item->cast_weapon() : nullptr;
@@ -1996,11 +2002,13 @@ void CActor::UpdateCL()
 
 	if (HudAnimator())
 	{
+		PROF_EVENT("CActor UpdateCL - HudAnimator");
 		HudAnimator()->Update();
 	}
 	
 	if (IsActorBurning() && HudAnimator() && HudAnimator()->BurnAnimator())
 	{
+		PROF_EVENT("CActor UpdateCL - BurnAnimator");
 		if (HudAnimator()->BurnAnimator()->IsActive())
 		{
 			conditions().ChangeBleedingCustom(HudAnimator()->BurnAnimator()->m_burn_restore * dt, (1 << ALife::eHitTypeBurn));
@@ -2047,100 +2055,110 @@ void CActor::UpdateCL()
 		}
 	}
 
-	if (pWeapon)
 	{
-
-		if(pWeapon->IsZoomed())
+		PROF_EVENT("CActor UpdateCL - pWeapon");
+		if (pWeapon)
 		{
-			float full_fire_disp = pWeapon->GetFireDispersion(true);
 
-			if (CEffectorZoomInertion* S = smart_cast<CEffectorZoomInertion*>(Cameras().GetCamEffector(eCEZoom)))
+			if(pWeapon->IsZoomed())
 			{
-				S->SetParams(full_fire_disp);
+				float full_fire_disp = pWeapon->GetFireDispersion(true);
+
+				if (CEffectorZoomInertion* S = smart_cast<CEffectorZoomInertion*>(Cameras().GetCamEffector(eCEZoom)))
+				{
+					S->SetParams(full_fire_disp);
+				}
+
+				SetZoomAimingMode		(true);
+				// Force switch to first-person for zooming
+				if (m_look_cam_fp_zoom == 1 && !bLook_cam_fp_zoom && cam_active == eacLookAt) {
+					cam_Set(eacFirstEye);
+					bLook_cam_fp_zoom = true;
+				}
+			}
+			else {
+				// Switch back to third-person if was forced
+				if (bLook_cam_fp_zoom && cam_active == eacFirstEye) {
+					cam_Set(eacLookAt);
+					bLook_cam_fp_zoom = false;
+				}
 			}
 
-			SetZoomAimingMode		(true);
-			// Force switch to first-person for zooming
-			if (m_look_cam_fp_zoom == 1 && !bLook_cam_fp_zoom && cam_active == eacLookAt) {
-				cam_Set(eacFirstEye);
-				bLook_cam_fp_zoom = true;
-			}
-		}
-		else {
-			// Switch back to third-person if was forced
-			if (bLook_cam_fp_zoom && cam_active == eacFirstEye) {
-				cam_Set(eacLookAt);
-				bLook_cam_fp_zoom = false;
-			}
-		}
-
-		if(Level().CurrentEntity() && this->ID()==Level().CurrentEntity()->ID() )
-		{
-			float fire_disp_full = pWeapon->GetFireDispersion(true, true);
-			m_fdisp_controller.SetDispertion(fire_disp_full);
+			if(Level().CurrentEntity() && this->ID()==Level().CurrentEntity()->ID() )
+			{
+				float fire_disp_full = pWeapon->GetFireDispersion(true, true);
+				m_fdisp_controller.SetDispertion(fire_disp_full);
 			
-			fire_disp_full = m_fdisp_controller.GetCurrentDispertion();
+				fire_disp_full = m_fdisp_controller.GetCurrentDispertion();
 
-			HUD().SetCrosshairDisp(fire_disp_full, 0.02f);
-			HUD().ShowCrosshair(pWeapon->use_crosshair() && !psHUD_Flags.test(HUD_CROSSHAIR_POINT));
+				HUD().SetCrosshairDisp(fire_disp_full, 0.02f);
+				HUD().ShowCrosshair(pWeapon->use_crosshair() && !psHUD_Flags.test(HUD_CROSSHAIR_POINT));
 #ifdef DEBUG
-			HUD().SetFirstBulletCrosshairDisp(pWeapon->GetFirstBulletDisp());
+				HUD().SetFirstBulletCrosshairDisp(pWeapon->GetFirstBulletDisp());
 #endif
 			
-			bool B = ! ((mstate_real & mcLookout) && !IsGameTypeSingleCompatible());
+				bool B = ! ((mstate_real & mcLookout) && !IsGameTypeSingleCompatible());
 
-			psHUD_Flags.set( HUD_WEAPON_RT, B );
-			B = B && pWeapon->show_crosshair();
+				psHUD_Flags.set( HUD_WEAPON_RT, B );
+				B = B && pWeapon->show_crosshair();
 
-			psHUD_Flags.set( HUD_CROSSHAIR_RT2, B );
-			psHUD_Flags.set( HUD_DRAW_RT,		pWeapon->show_indicators() );
-			Device.hudViewportData.renderZoomFactor = pWeapon->GetZoomFactor();
-			Device.hudViewportData.renderZoomRotateFactor = pWeapon->GetAimFactor();
-			Device.hudViewportData.isRenderActive = !pWeapon->IsGrenadeMode() && pWeapon->IsScopeAttached() && (pWeapon->GetAimFactor() > 0.0f) && (pWeapon->GetZoomFactor() > 0.0f);
-			Device.hudViewportData.ActorWeaponCondition = pWeapon->GetCondition();
-			Device.hudViewportData.renderScopeBrightnessValue = pWeapon->m_lens_night_brightness.cur_value;
-			Device.hudViewportData.renderScopeBrightnessJitterValue = pWeapon->m_lens_night_brightness.jitter;
+				psHUD_Flags.set( HUD_CROSSHAIR_RT2, B );
+				psHUD_Flags.set( HUD_DRAW_RT,		pWeapon->show_indicators() );
+				Device.hudViewportData.renderZoomFactor = pWeapon->GetZoomFactor();
+				Device.hudViewportData.renderZoomRotateFactor = pWeapon->GetAimFactor();
+				Device.hudViewportData.isRenderActive = !pWeapon->IsGrenadeMode() && pWeapon->IsScopeAttached() && (pWeapon->GetAimFactor() > 0.0f) && (pWeapon->GetZoomFactor() > 0.0f);
+				Device.hudViewportData.ActorWeaponCondition = pWeapon->GetCondition();
+				Device.hudViewportData.renderScopeBrightnessValue = pWeapon->m_lens_night_brightness.cur_value;
+				Device.hudViewportData.renderScopeBrightnessJitterValue = pWeapon->m_lens_night_brightness.jitter;
+			}
 		}
-	}
-	else
-	{
-		if(Level().CurrentEntity() && this->ID()==Level().CurrentEntity()->ID() )
+		else
 		{
-			HUD().SetCrosshairDisp(0.f);
-			HUD().ShowCrosshair(false);
+			if(Level().CurrentEntity() && this->ID()==Level().CurrentEntity()->ID() )
+			{
+				HUD().SetCrosshairDisp(0.f);
+				HUD().ShowCrosshair(false);
 
-			Device.hudViewportData.renderZoomFactor = 1.0f;
-			Device.hudViewportData.renderZoomRotateFactor = 0.0f;
-			Device.hudViewportData.isRenderActive = false;
-			Device.hudViewportData.ActorWeaponCondition = -1.0f;
-			Device.hudViewportData.renderScopeBrightnessValue = 0.0f;
-			Device.hudViewportData.renderScopeBrightnessJitterValue = 0.0f;
+				Device.hudViewportData.renderZoomFactor = 1.0f;
+				Device.hudViewportData.renderZoomRotateFactor = 0.0f;
+				Device.hudViewportData.isRenderActive = false;
+				Device.hudViewportData.ActorWeaponCondition = -1.0f;
+				Device.hudViewportData.renderScopeBrightnessValue = 0.0f;
+				Device.hudViewportData.renderScopeBrightnessJitterValue = 0.0f;
 
-			// Switch back to third-person if was forced
-			if (bLook_cam_fp_zoom && cam_active == eacFirstEye) {
-				cam_Set(eacLookAt);
-				bLook_cam_fp_zoom = false;
+				// Switch back to third-person if was forced
+				if (bLook_cam_fp_zoom && cam_active == eacFirstEye) {
+					cam_Set(eacLookAt);
+					bLook_cam_fp_zoom = false;
+				}
 			}
 		}
 	}
-	CHelmet* pHelmet = GetHelmet();
-	CCustomOutfit* pOutfit = GetOutfit();
-	bool shouldPlayHelmetSound = pHelmet != nullptr || (pOutfit != nullptr && !pOutfit->bIsHelmetAvaliable);
 
-	if (shouldPlayHelmetSound)
 	{
-		PlayRainOnHelmetSound();
-	}
-	else
-	{
-		m_rainOnHelmetSnd.stop();
+		PROF_EVENT("CActor UpdateCL - HelmetRain");
+		CHelmet* pHelmet = GetHelmet();
+		CCustomOutfit* pOutfit = GetOutfit();
+		bool shouldPlayHelmetSound = pHelmet != nullptr || (pOutfit != nullptr && !pOutfit->bIsHelmetAvaliable);
+
+		if (shouldPlayHelmetSound)
+		{
+			PlayRainOnHelmetSound();
+		}
+		else
+		{
+			m_rainOnHelmetSnd.stop();
+		}
 	}
 
 	UpdateDefferedMessages();
 	UpdateConditionArtefacts();
 
-	if (g_Alive()) 
+	if (g_Alive())
+	{
+		PROF_EVENT("CActor::CStepManager::update");
 		CStepManager::update(this==Level().CurrentViewEntity());
+	}
 
 	if (TSndShockEffector* SndShockEffector = GetComponent<TSndShockEffector>())
 	{
@@ -2162,7 +2180,10 @@ void CActor::UpdateCL()
 	Cameras().hud_camera_Matrix(trans);
 
 	if(IsFocused())
-		g_player_hud->update			(trans);
+	{
+		PROF_EVENT("CActor UpdateCL::g_player_hud");
+		g_player_hud->update(trans);
+	}
 
 	pPickup->SetPickupMode(false);
 
@@ -2307,6 +2328,7 @@ void CActor::CheckFlyhack()
 
 void CActor::UpdatePlayerView()
 {
+	PROF_EVENT("CActor::UpdatePlayerView");
 	//если в режиме HUD, то сама модель актера не рисуется
 	bool has_visible = 1;
 	bool has_shadow_only = 0;
@@ -2410,6 +2432,7 @@ void CActor::UpdatePlayerView()
 }
 void CActor::UpdateConditionArtefacts()
 {
+	PROF_EVENT("CActor::UpdateConditionArtefacts");
 	static u32 _tmr = 0;
 
 	if (_tmr && Device.dwTimeGlobal < _tmr)
