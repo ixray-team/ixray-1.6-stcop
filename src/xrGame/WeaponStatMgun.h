@@ -30,7 +30,9 @@ private:
 
 //casts
 public:
-	virtual CHolderCustom	*cast_holder_custom	()				{return this;}
+	virtual CHolderCustom*	cast_holder_custom	() override		{return this;}
+	virtual CGameObject*	cast_game_object	() override		{return this;}
+	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
 
 //general
 public:
