@@ -381,6 +381,7 @@ static const float	ik_cam_shift_speed = 0.01f;
 
 void CActor::cam_Update(float dt, float fFOV)
 {
+	PROF_EVENT("CActor cam_Update");
 	if(m_holder)
 	{
 		return;
@@ -533,6 +534,7 @@ void CActor::cam_Update(float dt, float fFOV)
 	{
 		if(!psActorFlags.test(AF_NO_CLIP))
 		{
+			PROF_EVENT("CActor cam_Update::collide_camera");
 			collide_camera(*cam_Active(), Device.fViewportNear, this);
 		}
 	}
