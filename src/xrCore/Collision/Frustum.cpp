@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Frustum.h"
 
-ICF EFC_Visible CFrustum::AABB_OverlapPlane(const fplane& P, const float* mM) const
+EFC_Visible CFrustum::AABB_OverlapPlane(const fplane& P, const float* mM) const
 {
 	// calc extreme pts (neg,pos) along normal axis (pos in dir of norm, etc.)
 	u32* id = frustum_aabb_remap[P.aabb_overlap_id];
@@ -23,12 +23,12 @@ ICF EFC_Visible CFrustum::AABB_OverlapPlane(const fplane& P, const float* mM) co
 	return fcvPartial;
 }
 
-ICF void CFrustum::_clear()
+void CFrustum::_clear()
 {
 	p_count = 0;
 }
 
-ICF void CFrustum::_add(Fplane& P)
+void CFrustum::_add(Fplane& P)
 {
 	VERIFY(p_count < FRUSTUM_MAXPLANES);
 	planes[p_count].set(P);
@@ -36,7 +36,7 @@ ICF void CFrustum::_add(Fplane& P)
 	p_count++;
 }
 
-ICF void CFrustum::_add(Fvector& P1, Fvector& P2, Fvector& P3)
+void CFrustum::_add(Fvector& P1, Fvector& P2, Fvector& P3)
 {
 	VERIFY(p_count < FRUSTUM_MAXPLANES);
 	planes[p_count].build_precise(P1, P2, P3);
@@ -44,7 +44,7 @@ ICF void CFrustum::_add(Fvector& P1, Fvector& P2, Fvector& P3)
 	p_count++;
 }
 
-ICF CFrustum& CFrustum::CreateFromPoints(Fvector* p, int count, Fvector& COP)
+CFrustum& CFrustum::CreateFromPoints(Fvector* p, int count, Fvector& COP)
 {
 	VERIFY(count < FRUSTUM_MAXPLANES);
 	VERIFY(count >= 3);
@@ -59,7 +59,7 @@ ICF CFrustum& CFrustum::CreateFromPoints(Fvector* p, int count, Fvector& COP)
 	return *this;
 }
 
-ICF CFrustum& CFrustum::CreateFromPlanes(Fplane* p, int count)
+CFrustum& CFrustum::CreateFromPlanes(Fplane* p, int count)
 {
 	for (int k = 0; k < count; k++)
 	{
@@ -81,7 +81,7 @@ ICF CFrustum& CFrustum::CreateFromPlanes(Fplane* p, int count)
 	return *this;
 }
 
-ICF CFrustum& CFrustum::CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBase, Fmatrix& mFullXFORM)
+CFrustum& CFrustum::CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBase, Fmatrix& mFullXFORM)
 {
 	Fplane P;
 	P.build_precise((*poly)[0], (*poly)[1], (*poly)[2]);
@@ -122,7 +122,7 @@ ICF CFrustum& CFrustum::CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBa
 	return *this;
 }
 
-ICF void CFrustum::SimplifyPoly_AABB(sPoly* poly, Fplane& plane)
+void CFrustum::SimplifyPoly_AABB(sPoly* poly, Fplane& plane)
 {
 	Fmatrix mView, mInv;
 	Fvector from, up, right, y;
@@ -165,7 +165,7 @@ ICF void CFrustum::SimplifyPoly_AABB(sPoly* poly, Fplane& plane)
 	poly->inc();
 }
 
-ICF CFrustum& CFrustum::CreateOccluder(Fvector* p, int count, Fvector& vBase, CFrustum& clip)
+CFrustum& CFrustum::CreateOccluder(Fvector* p, int count, Fvector& vBase, CFrustum& clip)
 {
 	VERIFY(count < FRUSTUM_SAFE);
 	VERIFY(count >= 3);
@@ -220,7 +220,7 @@ ICF CFrustum& CFrustum::CreateOccluder(Fvector* p, int count, Fvector& vBase, CF
 	return *this;
 }
 
-ICF bool CFrustum::CreateFromClipPoly(Fvector* p, int count, Fvector& vBase, CFrustum& clip)
+bool CFrustum::CreateFromClipPoly(Fvector* p, int count, Fvector& vBase, CFrustum& clip)
 {
 	VERIFY(count < FRUSTUM_MAXPLANES);
 	VERIFY(count >= 3);
@@ -239,7 +239,7 @@ ICF bool CFrustum::CreateFromClipPoly(Fvector* p, int count, Fvector& vBase, CFr
 	return true;
 }
 
-ICF CFrustum& CFrustum::CreateFromMatrix(Fmatrix& M, u32 mask)
+CFrustum& CFrustum::CreateFromMatrix(Fmatrix& M, u32 mask)
 {
 	VERIFY(_valid(M));
 	p_count = 0;
@@ -317,7 +317,7 @@ ICF CFrustum& CFrustum::CreateFromMatrix(Fmatrix& M, u32 mask)
 	return *this;
 }
 
-ICF sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
+sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 {
 	sPoly* src = &D;
 	sPoly* dest = &S;
@@ -391,12 +391,12 @@ ICF sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 	return dest;
 }
 
-ICF u32 CFrustum::getMask() const
+u32 CFrustum::getMask() const
 {
 	return (1 << p_count) - 1;
 }
 
-ICF EFC_Visible CFrustum::testSphere(Fvector& c, float r, u32& test_mask) const
+EFC_Visible CFrustum::testSphere(Fvector& c, float r, u32& test_mask) const
 {
 	u32 bit = 1;
 	for (int i = 0; i < p_count; i++, bit <<= 1)
@@ -418,7 +418,7 @@ ICF EFC_Visible CFrustum::testSphere(Fvector& c, float r, u32& test_mask) const
 	return test_mask ? fcvPartial : fcvFully;
 }
 
-ICF bool CFrustum::testSphere_dirty(const Fvector& c, float r) const
+bool CFrustum::testSphere_dirty(const Fvector& c, float r) const
 {
 	switch (p_count)
 	{
@@ -490,7 +490,7 @@ ICF bool CFrustum::testSphere_dirty(const Fvector& c, float r) const
 	return true;
 }
 
-ICF EFC_Visible CFrustum::testAABB(const float* mM, u32& test_mask) const
+EFC_Visible CFrustum::testAABB(const float* mM, u32& test_mask) const
 {
 	// go for trivial rejection or acceptance using "faster overlap test"
 	u32 bit = 1;
@@ -514,7 +514,7 @@ ICF EFC_Visible CFrustum::testAABB(const float* mM, u32& test_mask) const
 	return test_mask ? fcvPartial : fcvFully;
 }
 
-ICF EFC_Visible CFrustum::testSAABB(Fvector& c, float r, const float* mM, u32& test_mask) const
+EFC_Visible CFrustum::testSAABB(Fvector& c, float r, const float* mM, u32& test_mask) const
 {
 	u32 bit = 1;
 	for (int i = 0; i < p_count; i++, bit <<= 1)
@@ -549,7 +549,7 @@ ICF EFC_Visible CFrustum::testSAABB(Fvector& c, float r, const float* mM, u32& t
 	return test_mask ? fcvPartial : fcvFully;
 }
 
-ICF bool CFrustum::testPoint(const Fvector& pt) const
+bool CFrustum::testPoint(const Fvector& pt) const
 {
 	for (int i = 0; i < p_count; i++)
 	{
@@ -561,7 +561,7 @@ ICF bool CFrustum::testPoint(const Fvector& pt) const
 	return true;
 }
 
-ICF bool CFrustum::testPolyInside_dirty(Fvector* p, int count) const
+bool CFrustum::testPolyInside_dirty(Fvector* p, int count) const
 {
 	Fvector* e = p + count;
 	for (int i = 0; i < p_count; i++)
@@ -578,13 +578,13 @@ ICF bool CFrustum::testPolyInside_dirty(Fvector* p, int count) const
 	return true;
 }
 
-ICF bool CFrustum::testPolyInside(sPoly& src) const
+bool CFrustum::testPolyInside(sPoly& src) const
 {
 	sPoly d;
 	return !!ClipPoly(src, d);
 }
 
-ICF bool CFrustum::testPolyInside(Fvector* p, int count) const
+bool CFrustum::testPolyInside(Fvector* p, int count) const
 {
 	sPoly src(p, count);
 	return testPolyInside(src);
