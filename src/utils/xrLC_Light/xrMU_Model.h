@@ -4,7 +4,8 @@
 #include "mu_model_face.h"
 
 #include "embree_raytracing/EmbreeRayTrace.h"
- 
+#include "src/utils/xrForms/CompilersUI.h"
+
 namespace	CDB
 {
 	class	MODEL;
@@ -24,14 +25,61 @@ public:
 
 		OGF*	ogf;
 
-		u32		vb_id;
-		u32		vb_start;
-
-		u32		ib_id;
-		u32		ib_start;
-
-		u32		sw_id;
+		shared_str external_path = nullptr;
+		u32 vb_id;
+		u32 vb_start;
+		u32 ib_id;
+		u32 ib_start;
+		u32 sw_id;
+		
 		bool bSharedMaterial;
+		
+		_subdiv() = default;
+		~_subdiv()
+		{
+			if (gCompilerMode.LC_UseExternalRefs)
+			{
+				external_path._set(nullptr);
+			}
+		}
+		
+		_subdiv(const _subdiv& other)
+		{
+			if (this != &other)
+			{
+				if (gCompilerMode.LC_UseExternalRefs)
+				{
+					external_path = other.external_path;
+				}
+				std::memcpy(this, &other, sizeof(*this));
+			}
+		}
+		_subdiv& operator=(const _subdiv& other)
+		{
+			if (this != &other)
+			{
+				if (gCompilerMode.LC_UseExternalRefs)
+				{
+					external_path = other.external_path;
+				}
+				std::memcpy(this, &other, sizeof(*this));
+			}
+		}
+		_subdiv(_subdiv&& other) noexcept
+		{
+			if (this != &other)
+			{
+				std::memmove(this, &other, sizeof(*this));
+			}
+		}
+		_subdiv& operator=(_subdiv&& other) noexcept
+		{
+			if (this != &other)
+			{
+				std::memmove(this, &other, sizeof(*this));
+			}
+			return *this;
+		}
 	};
 
 	//** 
@@ -57,8 +105,9 @@ public:
 	v_faces					m_faces;
 	v_subdivs				m_subdivs;
 
-	CDB::CollectorPacked	CL;
+	CDB::MODEL CollisionModel;
 	xr_vector<base_color>	color;
+	Fvector CollisionBias;
 private:
 	_face*					create_face			( _vertex* v0, _vertex* v1, _vertex* v2, b_face& F );
 	_vertex*				create_vertex		( Fvector& P );

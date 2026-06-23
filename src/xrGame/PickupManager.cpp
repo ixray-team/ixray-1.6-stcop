@@ -121,19 +121,22 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 			VERIFY(!fis_zero(RD.dir.square_magnitude()));
 
 			RQR.r_clear();
-			Level().ObjectSpace.RayQuery(RQR, RD, [](collide::rq_result& result, LPVOID params) -> bool
+			Level().ObjectSpace.RayQuery(RQR, RD, [](const collide::rq_result& result, LPVOID params) -> bool
 			{
 				bool& bOverlaped = *(bool*)params;
-				if (result.O)
+				if (!result.IsStatic())
 				{
-					if (Level().CurrentEntity() == result.O)
+					auto Obj = result.GetDynamic();
+					if (Level().CurrentEntity() == Obj)
 					{ //ignore self-actor
 						return true;
 					}
 					else
 					{ //check obstacle flag
-						if ((result.O->SpatialComponent->type & ESPATIAL_TYPE::OBSTACLE) != ESPATIAL_TYPE::NONE)
+						if ((Obj->SpatialComponent->type & ESPATIAL_TYPE::OBSTACLE) != ESPATIAL_TYPE::NONE)
+						{
 							bOverlaped = true;
+						}
 
 						return true;
 					}
@@ -141,9 +144,11 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 				else
 				{
 					//получить треугольник и узнать его материал
-					CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
+					auto& T = result.GetStatic()->tris[result.element];
 					if (GMLib.GetMaterialByIdx(T.material)->Flags.is(SGameMtl::flPassable))
+					{
 						return true;
+					}
 				}
 
 				bOverlaped = true;
@@ -152,7 +157,7 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 
 			for (collide::rq_result& result : RQR.r_results())
 			{
-				CGameObject* GO = result.O != nullptr ? result.O->cast_game_object() : nullptr;
+				CGameObject* GO = !result.IsStatic() ? const_cast<CObject*>(result.GetDynamic())->cast_game_object() : nullptr;
 				if (GO == nullptr)
 				{
 					continue;

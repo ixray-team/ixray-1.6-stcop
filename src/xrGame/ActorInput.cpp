@@ -1588,7 +1588,7 @@ void CActor::ActorUse()
 		}
 
 		collide::rq_result& RQ = HUD().GetCurrentRayQuery();
-		CPhysicsShellHolder* object = RQ.O != nullptr ? RQ.O->cast_physics_shell_holder() : nullptr;
+		CPhysicsShellHolder* object = RQ.valid() && !RQ.IsStatic() ? const_cast<CObject*>(RQ.GetDynamic())->cast_physics_shell_holder() : nullptr;
 		u16 element = BI_NONE;
 		if (object) 
 		{

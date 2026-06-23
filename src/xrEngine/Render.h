@@ -1,5 +1,4 @@
-#ifndef _RENDER_H_
-#define _RENDER_H_
+#pragma once
 
 #include "../xrCore/Collision/Frustum.h"
 #include "../xrCore/Collision/ISpatial.h"
@@ -9,12 +8,16 @@
 #include "WallmarkHandle.h"
 #include "../xrCore/API/xrAPI.h"
 #include "../Include/xrRender/FactoryPtr.h"
+#include "../xrRHI/RHI.h"
+#include "FmeshRender.h"
+
 class IUIShader;
 typedef FactoryPtr<IUIShader> wm_shader;
 
 // refs
 class ENGINE_API	IRenderable;
-struct ENGINE_API	FSlideWindowItem;
+//struct ENGINE_API	FSlideWindowItem;
+//struct ENGINE_API GeomData;
 
 //	Igor
 class IRenderVisual;
@@ -202,6 +205,11 @@ public:
 		PHASE_REFLECT = 2,
 	};
 public:
+	virtual GeomData& GetMUSlot(shared_str Name) = 0;
+	
+	virtual void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs) = 0;
+	virtual void ReadIBChunk(xr_vector<IRHIBuffer*>& OutBuffer, IReaderBase& fs) = 0;
+	virtual void ReadSWIsChunk(xr_vector<FSlideWindowItem>& SWIs, IReaderBase& fs) = 0;
 
 	// data
 	CFrustum						ViewBase;
@@ -267,13 +275,13 @@ public:
 	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	)					{}	// mask screen region as oclluded (-1..1, -1..1)
 	virtual void					add_Visual				(IRenderVisual*	V, bool IgnoreOptimize = false, bool Force = false)	{}	// add visual leaf	(no culling performed at all)
 	virtual void					add_Geometry			(IRenderVisual*	V	)					{}	// add visual(s)	(all culling performed)
-	virtual void					add_StaticWallmark		(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {}
+	virtual void					add_StaticWallmark		(const wm_shader& S, const Fvector& P, float s, const CDB::TRI& T, Fvector* V) {}
 
 	//	Prefer this function when possible
-	virtual void					add_StaticWallmark		(IWallMarkArray *pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false) {}
+	virtual void					add_StaticWallmark		(IWallMarkArray *pArray, const Fvector& P, float s, const CDB::TRI& T, Fvector* V, bool UseCameraDirection = false) {}
 	virtual void					clear_static_wallmarks	() {}
 
-	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark		(const wm_shader& S, const Fvector& P, float w, float h, float r, CDB::TRI* T, Fvector* V) = 0;
+	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark		(const wm_shader& S, const Fvector& P, float w, float h, float r, const CDB::TRI& T, Fvector* V) = 0;
 
 	//	Prefer this function when possible
 	virtual void					add_SkeletonWallmark	(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size) {}
@@ -291,6 +299,8 @@ public:
 	virtual IRenderVisual*			model_CreateParticles	(const char* name)								{return nullptr;}
 	virtual IRenderVisual*			model_Create			(const char* name, IReader*	data=nullptr)				{return nullptr;}
 	virtual IRenderVisual*			model_CreateChild		(const char* name, IReader*	data)				{return nullptr;}
+	virtual IRenderVisual*			model_GetPrototype		(const char* name)				{return nullptr;}
+	virtual CDB::MODEL*				model_GetPrototypeCollision(const char* name)				{return nullptr;}
 	virtual IRenderVisual*			model_Duplicate			(IRenderVisual*	V)							{return nullptr;}
 	virtual void					model_Delete			(IRenderVisual* &	V, bool bDiscard=false)	{}
 	virtual void					model_Delete_Deffered	(IRenderVisual* &	V)						{}
@@ -348,5 +358,3 @@ protected:
 };
 
 //extern ENGINE_API	IRender_interface*	Render;
-
-#endif

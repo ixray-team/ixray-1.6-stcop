@@ -4,7 +4,7 @@
 #include "ExportObjectOGF.h"
 #include "EditObject.h"
 #include "EditMesh.h"
-#include "../xrEngine/fmesh.h"
+#include "../xrEngine/FmeshRender.h"
 #include "../xrEngine/bone.h"
 #include "../xrEngine/motion.h"
 

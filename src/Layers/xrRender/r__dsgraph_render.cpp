@@ -375,10 +375,11 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 		Fvector box_radius;		box_radius.set	(EPS_L*20,EPS_L*20,EPS_L*20);
 		RImplementation.Sectors_xrc.box_options	(CDB::OPT_FULL_TEST);
 		RImplementation.Sectors_xrc.box_query	(RImplementation.rmPortals,_cop,box_radius);
-		for (int K=0; K<RImplementation.Sectors_xrc.r_count(); K++)
+		for (auto& elem : RImplementation.Sectors_xrc.r_vec())
 		{
-			CPortal*	pPortal		= (CPortal*) RImplementation.Portals[RImplementation.rmPortals->get_tris()[RImplementation.Sectors_xrc.r_begin()[K].id].dummy];
-			pPortal->bDualRender	= true;
+			CPortal* pPortal = (CPortal*) RImplementation.Portals[elem.model->tris[elem.tris_id].dummy];
+			pPortal->bDualRender = true;
+			
 		}
 	}
 
@@ -465,7 +466,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 
 #include "FHierrarhyVisual.h"
 #include "SkeletonCustom.h"
-#include "../../xrEngine/Fmesh.h"
+#include "../../xrEngine/FmeshRender.h"
 #include "FLOD.h"
 
 void	R_dsgraph_structure::r_dsgraph_render_R1_box	(IRender_Sector* _S, Fbox& BB, int sh)

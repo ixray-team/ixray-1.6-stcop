@@ -5173,14 +5173,14 @@ bool CWeapon::IsAutoAimHaveTarget()
 
 	bool is_aim_exist = Level().ObjectSpace.RayPick(pos, dir, 1000.0f, collide::rq_target::rqtObject, rqr, H_Parent());
 
-	if (m_bAutoAimOnlyAlive && !is_visible_by_thermovisor(rqr.O))
+	if (m_bAutoAimOnlyAlive && !is_visible_by_thermovisor(rqr.IsStatic() ? nullptr : const_cast<CObject*>(rqr.GetDynamic())))
 	{
 		is_aim_exist = false;
 	}
 
-	CEntityAlive* entity_alive = rqr.O != nullptr ? rqr.O->cast_entity_alive() : nullptr;
+	CEntityAlive* entity_alive = rqr.valid() && !rqr.IsStatic() ? const_cast<CObject*>(rqr.GetDynamic())->cast_entity_alive() : nullptr;
 
-	if (is_aim_exist && m_bAutoAimIgnoreDead && (entity_alive != nullptr && !entity_alive->g_Alive() || entity_alive == nullptr))
+	if (is_aim_exist && m_bAutoAimIgnoreDead && (entity_alive && !entity_alive->g_Alive() || !entity_alive))
 	{
 		is_aim_exist = false;
 	}

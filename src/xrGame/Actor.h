@@ -927,7 +927,7 @@ public:
 	IC float					HitProbability					() const {return m_hit_probability;}
 	CVisualMemoryManager*visual_memory					() const override;
 
-	bool				BonePassBullet					(u16 boneID) final override;
+	bool				BonePassBullet					(u16 boneID) const final override;
 	void				On_B_NotCurrentEntity			() override;
 
 private:

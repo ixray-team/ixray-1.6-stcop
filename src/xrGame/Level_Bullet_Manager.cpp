@@ -876,7 +876,7 @@ IC float SqrDistancePointToSegment(const Fvector& pt, const Fvector& orig, const
 }
 }
 
-bool CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID params)
+bool CBulletManager::firetrace_callback(const collide::rq_result& result, LPVOID params)
 {
 	bullet_test_callback_data& data = *(bullet_test_callback_data*)params;
 	SBullet& bullet = *data.pBullet;
@@ -886,66 +886,66 @@ bool CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
 
 	float const air_resistance = IsGameTypeSingle() ? Level().BulletManager().m_fAirResistanceK : bullet.air_resistance;
 
-	if (result.O && (result.O->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
+	if (!result.IsStatic() && (result.GetDynamic()->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 	{
 		auto Obj = const_cast<CObject*>(result.GetDynamic());
-		if ((Obj->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
+		if ((Obj->SpatialComponent->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 		{
 			CGameObject* go = Obj->cast_game_object();
 
-			if (go != nullptr)
-			{
-				if (CAnomalyZone* CZ = go->cast_anomaly_zone())
+				if (go != nullptr)
 				{
-					u8 flag = CZ->PlayEntranceSmallParticles(collide_position, bullet.dir, bullet.start_velocity, true);
-					if (flag == u8(1))
+					if (CAnomalyZone* CZ = go->cast_anomaly_zone())
 					{
-						data.collide_time = 1.f;
-						bullet.speed = 0.f;
+						u8 flag = CZ->PlayEntranceSmallParticles(collide_position, bullet.dir, bullet.start_velocity, true);
+						if (flag == u8(1))
+						{
+							data.collide_time = 1.f;
+							bullet.speed = 0.f;
 
-						return true;
-					}
+							return true;
+						}
 
-					if (flag == u8(2))
-					{
-						bullet.start_position = collide_position;
-						bullet.bullet_pos = collide_position;
-						bullet.tracer_pos[bp_update_idx] = collide_position;
+						if (flag == u8(2))
+						{
+							bullet.start_position = collide_position;
+							bullet.bullet_pos = collide_position;
+							bullet.tracer_pos[bp_update_idx] = collide_position;
 
-						Fvector C;
-						CZ->Center(C);
-						float radius = CZ->Radius();
+							Fvector C;
+							CZ->Center(C);
+							float radius = CZ->Radius();
 
-						Fvector normal;
-						normal.sub(collide_position, C);
-						normal.normalize();
+							Fvector normal;
+							normal.sub(collide_position, C);
+							normal.normalize();
 
-						Fvector incoming_dir = bullet.dir;
-						incoming_dir.normalize();
+							Fvector incoming_dir = bullet.dir;
+							incoming_dir.normalize();
 
-						float dot = incoming_dir.dotproduct(normal);
-						Fvector reflected_dir;
-						reflected_dir.mad(incoming_dir, normal, -2.0f * dot);
-						reflected_dir.normalize();
+							float dot = incoming_dir.dotproduct(normal);
+							Fvector reflected_dir;
+							reflected_dir.mad(incoming_dir, normal, -2.0f * dot);
+							reflected_dir.normalize();
 
-						reflected_dir.random_dir(reflected_dir, deg2rad(5.0f));
+							reflected_dir.random_dir(reflected_dir, deg2rad(5.0f));
 
-						bullet.dir = reflected_dir;
+							bullet.dir = reflected_dir;
 
-						float energy_loss = 0.8f; //-80%
-						bullet.speed *= 1.0f - energy_loss;
+							float energy_loss = 0.8f; //-80%
+							bullet.speed *= 1.0f - energy_loss;
 
-						bullet.start_velocity.set(bullet.dir);
-						bullet.start_velocity.mul(bullet.speed);
-					}
+							bullet.start_velocity.set(bullet.dir);
+							bullet.start_velocity.mul(bullet.speed);
+						}
 
-					if (flag == u8(3))
-					{
-						bullet.start_position = collide_position;
-						bullet.bullet_pos = collide_position;
-						bullet.tracer_pos[bp_update_idx] = collide_position;
-						bullet.dir.random_dir();
-						bullet.start_velocity = Fvector(bullet.dir).mul(bullet.speed * 0.2f);
+						if (flag == u8(3))
+						{
+							bullet.start_position = collide_position;
+							bullet.bullet_pos = collide_position;
+							bullet.tracer_pos[bp_update_idx] = collide_position;
+							bullet.dir.random_dir();
+							bullet.start_velocity = Fvector(bullet.dir).mul(bullet.speed * 0.2f);
 					}
 				}
 			}
@@ -965,17 +965,16 @@ bool CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID param
 		return true;
 	}
 
-	// статический объект
-	if (!result.O)
-	{
-		CDB::TRI& triangle = Level().ObjectSpace.GetStaticTris()[result.element];
+	//статический объект
+	if (result.IsStatic()) {
+		auto& triangle	= result.GetStatic()->tris[result.element];
 		bullet_manager.RegisterEvent(EVENT_HIT, false, &bullet, collide_position, result, triangle.material);
 		return false;
 	}
 
-	// динамический объект
-	VERIFY(!(result.O->ID() == bullet.parent_id && bullet.fly_dist < parent_ignore_distance));
-	IKinematics* const kinematics = PKinematics(result.O->Visual());
+	//динамический объект
+	VERIFY(!(result.GetDynamic()->ID() == bullet.parent_id &&  bullet.fly_dist < parent_ignore_distance) );
+	IKinematics* const kinematics = PKinematics(result.GetDynamic()->Visual());
 	if (!kinematics)
 	{
 		return false;
@@ -1616,7 +1615,7 @@ void CBulletManager::CommitEvents() // @ the start of frame
 	std::swap(bp_update_idx, bp_render_idx);
 }
 
-void CBulletManager::RegisterEvent(EventType Type, bool _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 tgt_material)
+void CBulletManager::RegisterEvent(EventType Type, bool _dynamic, SBullet* bullet, const Fvector& end_point, const collide::rq_result& R, u16 tgt_material)
 {
 	m_Events.emplace_back();
 	_event& E = m_Events.back();
@@ -1636,20 +1635,22 @@ void CBulletManager::RegisterEvent(EventType Type, bool _dynamic, SBullet* bulle
 
 			if (_dynamic)
 			{
-				E.Repeated = R.O->ID() == E.bullet.targetID;
-				
+				//	E.Repeated = (R.O->ID() == E.bullet.targetID);
+				//	bullet->targetID = R.O->ID();
+
+				E.Repeated = (R.GetDynamic()->ID() == E.bullet.targetID);
 				if (IsGameTypeSingle())
 				{
-					bullet->targetID = R.O->ID();
+					bullet->targetID = R.GetDynamic()->ID();
 				}
 				else
 				{
-					if (bullet->targetID != R.O->ID())
+					if (bullet->targetID != R.GetDynamic()->ID())
 					{
-						CGameObject* pGO = R.O->cast_game_object();
+						const CGameObject* pGO = const_cast<CObject*>(R.GetDynamic())->cast_game_object();
 						if (pGO == nullptr || !pGO->BonePassBullet((u16)R.element))
 						{
-							bullet->targetID = R.O->ID();
+							bullet->targetID = R.GetDynamic()->ID();
 						}
 					}
 				}

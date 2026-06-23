@@ -26,7 +26,7 @@ bool	cmp_face_material		(_face* f1, _face* f2)
 //static xrMU_Model::v_faces temp_vector;
 void xrMU_Model::calc_materials	()
 {
- 	xrMU_Model::v_faces &temp_vector			= m_faces;
+ 	auto& temp_vector			= m_faces;
 
 	std::sort			(temp_vector.begin(),temp_vector.end(),cmp_face_material);
 
@@ -37,7 +37,7 @@ void xrMU_Model::calc_materials	()
 	if (temp_vector.empty())
         return;
 
-	_subdiv				current;
+	_subdiv current;
 	current.material	= temp_vector[0]->dwMaterial;
 	current.bSharedMaterial = temp_vector[0]->flags.bSharedMaterial;
 	current.start		= 0;

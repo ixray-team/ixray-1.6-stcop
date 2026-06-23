@@ -161,7 +161,7 @@ bool CMemoryWriter::save_to(const char* fn)
 
 void CBufferMemoryWriter::w(const void* ptr, u32 count)
 {
-	R_ASSERT(position+count <= GetBuffer().size());
+	R_ASSERT(position+(size_t)count <= GetBuffer().size());
 	CopyMemory(GetBuffer().data()+position, ptr, count);
 	position += count;
 }

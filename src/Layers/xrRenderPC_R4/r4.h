@@ -19,7 +19,7 @@
 #include "../xrRender/r_sun_cascades.h"
 
 #include "../../xrEngine/IRenderable.h"
-#include "../../xrEngine/Fmesh.h"
+#include "../../xrEngine/FmeshRender.h"
 
 class dxRender_Visual;
 
@@ -85,13 +85,10 @@ public:
 	R_occlusion													HWOCC;
 
 	// Global vertex-buffer container
-	xr_vector<FSlideWindowItem>									SWIs;
 	xr_vector<ref_shader>										ShadersLevel;
 	xr_hash_map<shared_str, ref_shader> ShadersShared;
-	using VertexDeclarator = FixedVector<RHIInputElementDesc, 65>;
-	xr_vector<VertexDeclarator>									nDC,xDC;
-	xr_vector<IRHIBuffer*>							nVB,xVB;
-	xr_vector<IRHIBuffer*>							nIB,xIB;
+	GeomData nGlobalData, xGlobalData;
+	xr_hash_map<shared_str, GeomData> MUData;
 	xr_vector<dxRender_Visual*>									Visuals;
 	CPSLibrary													PSLibrary;
 
@@ -133,6 +130,8 @@ private:
 	void							Load3DFluid					();
 
 public:
+	virtual GeomData& GetMUSlot(shared_str Name) override {return MUData[Name];}
+	
 	void							render_main					(bool deffered, bool zfill = false);
 	void							render_forward				();
 	void							render_lights				(light_Package& LP	);
@@ -302,11 +301,11 @@ public:
 	virtual void					add_Geometry				(IRenderVisual*	V	);			// add visual(s)	(all culling performed)
 
 	// wallmarks
-	virtual void					add_StaticWallmark			(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false);
-	virtual void					add_StaticWallmark			(IWallMarkArray *pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false) override;
-	virtual void					add_StaticWallmark			(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
+	virtual void					add_StaticWallmark			(ref_shader& S, const Fvector& P, float s, const CDB::TRI& T, Fvector* V, bool UseCameraDirection = false);
+	virtual void					add_StaticWallmark			(IWallMarkArray *pArray, const Fvector& P, float s, const CDB::TRI& T, Fvector* V, bool UseCameraDirection = false) override;
+	virtual void					add_StaticWallmark			(const wm_shader& S, const Fvector& P, float s, const CDB::TRI& T, Fvector* V) override;
 	virtual void					clear_static_wallmarks		();
-	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark(const wm_shader& S, const Fvector& P, float w, float h, float r, CDB::TRI* T, Fvector* V) override;
+	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark(const wm_shader& S, const Fvector& P, float w, float h, float r, const CDB::TRI& T, Fvector* V) override;
 	virtual void					add_SkeletonWallmark		(intrusive_ptr<CSkeletonWallmark> wm);
 	virtual void					add_SkeletonWallmark		(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size);
 	virtual void					add_SkeletonWallmark		(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size);
@@ -325,8 +324,10 @@ public:
 	// Models
 	virtual IRenderVisual*			model_CreateParticles		(const char* name);
 	virtual IRender_DetailModel*	model_CreateDM				(IReader* F);
-	virtual IRenderVisual*			model_Create				(const char* name, IReader* data=0);
+	virtual IRenderVisual*			model_Create				(const char* name, IReader* data=nullptr);
 	virtual IRenderVisual*			model_CreateChild			(const char* name, IReader* data);
+	virtual IRenderVisual*			model_GetPrototype			(str_c name) override;
+	virtual CDB::MODEL*				model_GetPrototypeCollision(str_c name) override;
 	virtual IRenderVisual*			model_Duplicate				(IRenderVisual*	V);
 	virtual void					model_Delete				(IRenderVisual* &	V, bool bDiscard);
 	virtual void					model_Delete_Deffered		(IRenderVisual* &	V);
@@ -370,6 +371,9 @@ public:
 	virtual bool					InIndoor					() { return pLastSector!=pOutdoorSector; };
 	virtual size_t					SectorsCount				() { return Sectors.size(); }
 
+	virtual void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs) override;
+	virtual void ReadIBChunk(xr_vector<IRHIBuffer*>& OutBuffer, IReaderBase& fs) override;
+	virtual void ReadSWIsChunk(xr_vector<FSlideWindowItem>& SWIs, IReaderBase& fs) override;
 private:
 	ShaderExternalMap				m_ShaderOptions;
 
@@ -378,7 +382,6 @@ protected:
 
 private:
 	FS_FileSet						m_file_set;
-	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs);
 };
 
 extern CRender						RImplementation;

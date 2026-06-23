@@ -56,7 +56,7 @@ bool CEditableObject::RayPick(float& dist, const Fvector& S, const Fvector& D, c
 		{
 			if (pinf && pinf->e_mesh)
 			{
-				CSurface* surf = pinf->e_mesh->GetSurfaceByFaceID(pinf->inf.id);
+				CSurface* surf = pinf->e_mesh->GetSurfaceByFaceID(pinf->inf.tris_id);
 				if (surf && !surf->m_bEditorVisible)
 				{
 					dist = prev_dist;

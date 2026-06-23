@@ -11,7 +11,7 @@
 #include "../xrRender/FBasicVisual.h"
 #include "../../xrEngine/CustomHUD.h"
 #include "../../xrEngine/xr_object.h"
-#include "../../xrEngine/Fmesh.h"
+#include "../../xrEngine/FmeshRender.h"
 #include "../xrRender/SkeletonCustom.h"
 #include "../xrRender/LightTrack.h"
 #include "../xrRender/dxRenderDeviceRender.h"
@@ -20,6 +20,7 @@
 #include "../../xrCore/git_version.h"
 #include "../../xrEngine/IGame_Actor.h"
 #include "../xrRender/RenderInterfaceShared.h"
+#include "src/Layers/xrRender/FTreeVisual_Prototype.h"
 using namespace R_dsgraph;
 
 CRender RImplementation;
@@ -153,6 +154,17 @@ void CRender::OnFrame()
 IRender_ObjectSpecific*	CRender::ros_create				(IRenderable* parent)					{ return new CROS_impl();			}
 void					CRender::ros_destroy			(IRender_ObjectSpecific* &p)			{ xr_delete(p);							}
 IRenderVisual*			CRender::model_Create			(str_c name, IReader* data)			{ return Models->Create(name,data);		}
+
+IRenderVisual* CRender::model_GetPrototype(str_c name)
+{
+	return Models->GetPrototype(name);
+}
+
+CDB::MODEL* CRender::model_GetPrototypeCollision(str_c name)
+{
+	return ((FTreeVisual_Prototype*)model_GetPrototype(name))->GetCollisionModel();
+}
+
 IRenderVisual*			CRender::model_CreateChild		(str_c name, IReader* data)			{ return Models->CreateChild(name,data);}
 IRenderVisual*			CRender::model_Duplicate		(IRenderVisual* V)						{ return Models->Instance_Duplicate((dxRender_Visual*)V);	}
 void					CRender::model_Delete			(IRenderVisual* &V, bool bDiscard)		
@@ -202,10 +214,11 @@ IRenderVisual*			CRender::model_CreateParticles	(str_c name)
 	}
 }
 
-RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count) { *Count = DCL[id].size(); return DCL[id].begin(); }
-IRHIBuffer*	CRender::getVB					(int id)			{ VERIFY(id<int(VB.size()));		return VB[id];		}
-IRHIBuffer*	CRender::getIB					(int id)			{ VERIFY(id<int(IB.size()));		return IB[id];		}
-FSlideWindowItem*		CRender::getSWI					(int id)			{ VERIFY(id<int(SWIs.size()));		return &SWIs[id];	}
+RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count) { *Count = GlobalData.DCL[id].size(); return GlobalData.DCL[id].begin(); }
+IRHIBuffer*	CRender::getVB					(int id)			{ VERIFY(id<int(GlobalData.VB.size()));		return GlobalData.VB[id];		}
+IRHIBuffer*	CRender::getIB					(int id)			{ VERIFY(id<int(GlobalData.IB.size()));		return GlobalData.IB[id];		}
+
+FSlideWindowItem*		CRender::getSWI					(int id)			{ VERIFY(id<int(GlobalData.SWIs.size()));		return &GlobalData.SWIs[id];	}
 
 CRender::SurfaceParams CRender::getSurface(const char* nameTexture)
 {
@@ -283,12 +296,12 @@ CRender::CRender	()
 
 CRender::~CRender()
 {
-	for (auto& it : SWIs) {
+	for (auto& it : GlobalData.SWIs) {
 		xr_free(it.sw);
 		it.sw = nullptr;
 		it.count = 0;
 	}
-	SWIs.clear();
+	GlobalData.SWIs.clear();
 }
 
 extern float		r_ssaDISCARD;
@@ -341,10 +354,10 @@ void CRender::Calculate				()
 		Fvector box_radius;		box_radius.set(EPS_L*2,EPS_L*2,EPS_L*2);
 		Sectors_xrc.box_options	(CDB::OPT_FULL_TEST);
 		Sectors_xrc.box_query	(rmPortals,Device.vCameraPosition,box_radius);
-		for (int K=0; K<Sectors_xrc.r_count(); K++)
-		{
-			CPortal*	pPortal		= (CPortal*) Portals[rmPortals->get_tris()[Sectors_xrc.r_begin()[K].id].dummy];
-			pPortal->bDualRender	= true;
+		for (auto& elem : Sectors_xrc.r_vec())
+			{
+			CPortal* pPortal = (CPortal*) Portals[elem.model->tris[elem.tris_id].dummy];
+			pPortal->bDualRender = true;
 		}
 	}
 	//

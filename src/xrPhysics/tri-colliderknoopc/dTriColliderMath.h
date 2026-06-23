@@ -1,5 +1,4 @@
-#ifndef D_TRI_COLLIDER_MATH_H
-#define D_TRI_COLLIDER_MATH_H
+#pragma once
 #include "__aabb_tri.h"
 //#include "../ode_include.h"
 #include "../../3rd-party/ode/include/ode/common.h"
@@ -85,7 +84,7 @@ inline bool  TriPlaneContainPoint(const dReal* v0,const dReal* v1,const dReal* v
  }
 
 
- ICF	void InitTriangle(CDB::TRI* XTri,Triangle& triangle,const Point* VRT)
+ ICF	void InitTriangle(const TriabgleCDBData& XTri,Triangle& triangle,const Point* VRT)
  {
 	 dVectorSub(triangle.side0,VRT[1],VRT[0])				;
 	 dVectorSub(triangle.side1,VRT[2],VRT[1])				;
@@ -94,21 +93,22 @@ inline bool  TriPlaneContainPoint(const dReal* v0,const dReal* v1,const dReal* v
 	 cast_fv(triangle.norm).normalize()						;
 	 triangle.pos=dDOT(VRT[0],triangle.norm)					;
  }
- ICF	void InitTriangle(CDB::TRI* XTri,Triangle& triangle,const Fvector*	 V_array)
+ ICF	void InitTriangle(const TriabgleCDBData& XTri,Triangle& triangle)
  {
-	 const Point vertices[3]={Point((dReal*)&V_array[XTri->verts[0]]),Point((dReal*)&V_array[XTri->verts[1]]),Point((dReal*)&V_array[XTri->verts[2]])};
-	 InitTriangle(XTri,triangle,vertices);
+	static_assert(sizeof(Point)==sizeof(Fvector));
+	Fvector vertices[3];
+	XTri.GetVerts(vertices);
+	InitTriangle(XTri,triangle,(Point*)(&vertices));
  }
 
- ICF	void CalculateTri(CDB::TRI* XTri,const float* pos,Triangle& triangle,const Fvector* V_array)
- {
-	 InitTriangle(XTri,triangle,V_array);
-	 triangle.dist=dDOT(pos,triangle.norm)-triangle.pos;
- }
+ICF void CalculateTri(const TriabgleCDBData& XTri,const float* pos,Triangle& triangle)
+{
+	InitTriangle(XTri,triangle);
+	triangle.dist=dDOT(pos,triangle.norm)-triangle.pos;
+}
 
- ICF	void CalculateTri(CDB::TRI* XTri,const float* pos,Triangle& triangle,const Point* VRT)
- {
-	 InitTriangle(XTri,triangle,VRT);
-	 triangle.dist=dDOT(pos,triangle.norm)-triangle.pos;
- }
- #endif
+ICF void CalculateTri(const TriabgleCDBData& XTri,const float* pos,Triangle& triangle,const Point* VRT)
+{
+	InitTriangle(XTri,triangle,VRT);
+	triangle.dist=dDOT(pos,triangle.norm)-triangle.pos;
+}

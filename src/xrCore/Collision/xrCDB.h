@@ -1,4 +1,5 @@
 #pragma once
+#include "embree4/rtcore.h"
 
 //#pragma once
 // The following ifdef block is the standard way of creating macros which make exporting
@@ -25,6 +26,13 @@ class CDB_Model;
 #pragma pack(push,8)
 namespace CDB
 {
+	struct BuilderConfig;
+	class BVHModel;
+	class BVHNode;
+
+// Triangle
+
+	RTCDevice GetEmbreeDevice();
 	// Triangle
 	struct XRCORE_API TRI final						//*** 16 bytes total (was 32 :)
 	{
@@ -53,57 +61,52 @@ namespace CDB
 	// Model definition
 	XRCORE_API IReader* GetModelCache(string_path Name, u32 crc);
 	XRCORE_API IReader* GetModelCache(const xr_stack_string_path& Name, u32 crc);
+
+	struct InstanceData
+	{
+		Fmatrix Transform;
+		Fmatrix InvTransform;
+		Fbox GlobalAABB;
+		size_t ModelIndex;
+		u16 Sector;
+	};
 	
 	class XRCORE_API MODEL final
 	{
-		friend class COLLIDER;
-		enum
-		{
-			S_READY				= 0,
-			S_INIT				= 1,
-			S_BUILD				= 2,
-			S_forcedword		= u32(-1)
-		};
-	private:
-		CDB_Model* tree = nullptr;
+	public:
+		RTCScene InstaceScene;
 		xr_vector<TRI> tris;
 		xr_vector<Fvector> verts;
-		mutable xr_atomic_u32 status = S_INIT;		// 0=ready, 1=init, 2=building
-		mutable xr_task_group load_task;
-	public:
+		xr_vector<MODEL*> models;
+		xr_vector<InstanceData> instances;
+		RTCBVH tree = nullptr;
+		BVHNode* root = nullptr;
+		u16 Sector = u16(-1);
+		bool IsBuilt = false;
+		
 		~MODEL();
 
 		ICF xr_vector<Fvector>& get_verts() { return verts; }
 		ICF xr_vector<TRI>& get_tris() { return tris; }
+		ICF xr_vector<MODEL*>& get_models() { return models; }
+		ICF xr_vector<InstanceData>& get_instances() { return instances; }
+		
+		ICF const xr_vector<Fvector>& get_verts() const { return verts; }
+		ICF const xr_vector<TRI>& get_tris() const { return tris; }
+		ICF const xr_vector<MODEL*>& get_models() const { return models; }
+		ICF const xr_vector<InstanceData>& get_instances() const { return instances; }
 
-		ICF void wait_loading() const
-		{
-			if (S_READY==status.load())
-				return;
-
-			load_task.wait();
-		}
-		void build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc=nullptr, void* bcp=nullptr, void* pRW = nullptr, bool RWMode = false, bool UseDelay = true);
-		u32 memory();
+		void build_simple();
 	};
 
 	// Collider result
 	struct XRCORE_API RESULT final
 	{
-		Fvector			verts	[3];
-		union	{
-			u32			dummy;				// 4b
-			struct {
-				u32 material:14;		// 
-				u32 suppress_shadows:1;	// 
-				u32 suppress_wm:1;		// 
-				u32 sector:15;			//
-				u32 shared_material:1;
-			};
-		};
-		int				id;
-		float			range;
-		float			u,v;
+		Fmatrix ModelWorldTransform{Fmatrix::EIdentity::Identity};
+		const MODEL* model;
+		size_t tris_id;
+		float range, u, v;
+		u16 Sector = u16(-1);
 	};
 
 	// Collider Options
@@ -113,6 +116,20 @@ namespace CDB
 		OPT_ONLYNEAREST	= (1<<2),
 		OPT_FULL_TEST   = (1<<3)		// for box & frustum queries - enable class III test(s)
 	};
+
+	union ElementID
+	{
+		BVHNode* p;
+		struct
+		{
+			size_t Index:62;
+			size_t IsInstance:1;
+			size_t IsNotPointer:1;
+		};
+	};
+	static_assert(sizeof(ElementID) == sizeof(size_t));
+
+	using ColliderCallback = void(*)(const BVHNode& Node, const Fmatrix& ToWorldTransform);
 
 	// Collider itself
 	class XRCORE_API COLLIDER final
@@ -127,33 +144,36 @@ namespace CDB
 		// Result management
 		xr_vector<RESULT> rd;
 	public:
+		using CheckFunc = bool(*)(const MODEL& CurrentModel, const Fmatrix& ToWorldTransform, const BVHNode& CurrentNode, void* Ptr);
+		using TrisFunc = void(*)(const MODEL& CurrentModel, const Fmatrix& ToWorldTransform, ElementID CurrentElement, void* Ptr);
+		
  		// Older
-		ICF void		ray_options		(u32 f)	{	ray_mode = f;		}
-		void			ray_query		(const MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f);
+		ICF void ray_options(u32 f)	{ ray_mode = f; }
+		void ray_query(const MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f);
 
-		ICF void		box_options		(u32 f)	{	box_mode = f;		}
-		ICF void		box_query		(const MODEL* m_def, const Fvector& b_center, const Fvector& b_dim) { box_query(m_def, Fbox().set(b_center - b_dim, b_center + b_dim)); }
-		void			box_query		(const MODEL *m_def, const Fbox& _box);
+		ICF void box_options(u32 f)	{ box_mode = f; }
+		ICF void box_query(const MODEL* m_def, const Fvector& b_center, const Fvector& b_dim, ColliderCallback OnCheckNode = nullptr) { box_query(m_def, Fbox().set(b_center - b_dim, b_center + b_dim), OnCheckNode); }
+		void box_query(const MODEL *m_def, const Fbox& _box, ColliderCallback OnCheckNode = nullptr);
 
-		ICF void		frustum_options	(u32 f)	{	frustum_mode = f;	}
-		void			frustum_query	(const MODEL *m_def, const CFrustum& F);
+		ICF void frustum_options(u32 f)	{ frustum_mode = f; }
+		void frustum_query(const MODEL *m_def, const CFrustum& F, ColliderCallback OnCheckNode = nullptr);
 
-		ICF void		obb_options(u32 f) { obb_mode = f; }
-		void			obb_query(const MODEL* m_def, const Fobb& _obb);
+		ICF void obb_options(u32 f) { obb_mode = f; }
+		void obb_query(const MODEL* m_def, const Fobb& _obb, ColliderCallback OnCheckNode = nullptr);
 
-		ICF void		sphere_options(u32 f) { sphere_mode = f; }
-		void		 	sphere_query(const MODEL* m_def, const Fsphere& _sphere);
-		ICF void		sphere_query(const MODEL* m_def, const Fvector& P, float R) { sphere_query(m_def, Fsphere{P,R}); }
+		ICF void sphere_options(u32 f) { sphere_mode = f; }
+		void sphere_query(const MODEL* m_def, const Fsphere& _sphere, ColliderCallback OnCheckNode = nullptr);
+		ICF void sphere_query(const MODEL* m_def, const Fvector& P, float R, ColliderCallback OnCheckNode = nullptr) { sphere_query(m_def, Fsphere{P,R}, OnCheckNode); }
 
-		ICF void		custom_options(u32 f) { obb_mode = f; }
-		void			custom_query(const MODEL* m_def, bool(AABBCheckF)(const Fvector&, const Fvector&, bool, void*), void* paabbc, void(GetTrisF)(size_t, void*), void* ptric);
+		ICF void custom_options(u32 f) { obb_mode = f; }
+		void custom_query(const MODEL* m_def, CheckFunc AABBCheckF, void* paabbc, TrisFunc GetTrisF, void* ptric);
 
-		ICF RESULT*		r_begin			(){return &*rd.begin();};
-		ICF RESULT*		r_end			(){return &*rd.end();};
-		ICF RESULT&		r_add			(){return rd.emplace_back();}
-		ICF int			r_count			(){return (u32)rd.size();};
-		ICF void		r_clear			(){rd.clear();};
-		ICF auto&		r_vec			(){return rd;};
+		ICF RESULT& r_add() { return rd.emplace_back(); }
+		ICF const RESULT& r_any() const { VERIFY(r_count()); return rd[0]; }
+		ICF int r_count() const { return (u32)rd.size(); }
+		ICF void r_clear() { rd.clear(); }
+		ICF auto& r_vec() { return rd; }
+		ICF auto& r_vec() const { return rd; }
 	};
 
 	//
@@ -256,10 +276,11 @@ namespace CDB
 		void add_face_D( const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy , u32 flags );
 
 		ICF xr_vector<Fvector>& getV_Vec()			{ return verts;				}
-		ICF Fvector*			getV()				{ return &*verts.begin();	}
+		ICF xr_vector<TRI>& getT_Vec()				{ return faces;				}
+		ICF Fvector*			getV()				{ return verts.data();	}
 		ICF size_t				getVS()				{ return verts.size();		}
 		ICF xr_span<Fvector> getVSpan(){return verts;}
-		ICF TRI*				getT()				{ return &*faces.begin();	}
+		ICF TRI*				getT()				{ return faces.data();	}
 		ICF u32					getfFlags(u32 index){ return flags[index];		}	
 		ICF TRI&				getT(u32 index)		{ return faces[index];		}
 		ICF size_t				getTS()				{ return faces.size();		}

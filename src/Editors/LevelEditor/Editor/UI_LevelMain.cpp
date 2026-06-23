@@ -1234,7 +1234,7 @@ void RetrieveSceneObjPointAndNormal(Fvector& hitpoint, Fvector* hitnormal, const
 		float v = pinf.inf.v;
 		float w = 1 - (u + v);
 		Fvector verts[3];
-		pinf.e_obj->GetFaceWorld(pinf.s_obj->_Transform(), pinf.e_mesh, pinf.inf.id, verts);
+		pinf.e_obj->GetFaceWorld(pinf.s_obj->_Transform(), pinf.e_mesh, pinf.inf.tris_id, verts);
 
 		if ((w > u) && (w > v))
 		{
@@ -1266,7 +1266,7 @@ void RetrieveSceneObjPointAndNormal(Fvector& hitpoint, Fvector* hitnormal, const
 	if (hitnormal)
 	{
 		Fvector verts[3];
-		pinf.e_obj->GetFaceWorld(pinf.s_obj->_Transform(), pinf.e_mesh, pinf.inf.id, verts);
+		pinf.e_obj->GetFaceWorld(pinf.s_obj->_Transform(), pinf.e_mesh, pinf.inf.tris_id, verts);
 		hitnormal->mknormal(verts[0], verts[1], verts[2]);
 	}
 }

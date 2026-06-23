@@ -492,7 +492,7 @@ bool  CActorTools::MouseStart(TShiftState Shift)
 				iTransform.invert(m_AVTransform);
 				if (m_pEditObject->RayPick(dis, UI->m_CurrentRStart, UI->m_CurrentRDir, iTransform, &pinf))
 				{
-					CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
+					CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.tris_id);
 					xr_string s_name = xr_string("Surfaces\\") + xr_string(surf->_Name());
 					m_ObjectItems->SelectItem(s_name.c_str());
 				}
@@ -698,7 +698,7 @@ bool CActorTools::RayPick(const Fvector& start, const Fvector& dir, float& dist,
 			if (n)
 			{
 				const Fvector* PT[3];
-				pinf.e_mesh->GetFacePT(pinf.inf.id, PT);
+				pinf.e_mesh->GetFacePT(pinf.inf.tris_id, PT);
 				n->mknormal(*PT[0], *PT[1], *PT[2]);
 			}
 			return true;

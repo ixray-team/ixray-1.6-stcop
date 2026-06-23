@@ -2194,7 +2194,7 @@ bool CActor::InventoryAllowSprint()
 	return true;
 };
 
-bool CActor::BonePassBullet(u16 boneID)
+bool CActor::BonePassBullet(u16 boneID) const
 {
 	if (IsGameTypeSingle())
 	{

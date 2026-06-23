@@ -46,10 +46,10 @@ public:
 		};
     	struct
 		{
-    		Tvector i;	T	_14_;
-    		Tvector j;	T	_24_;
-    		Tvector k;	T	_34_;
-    		Tvector c;	T	_44_;
+    		Tvector i;	T	_14_; // right
+    		Tvector j;	T	_24_; // up
+    		Tvector k;	T	_34_; // forward
+    		Tvector c;	T	_44_; // location
         };
 		T m[4][4];					// Array
 		T mm[16];
@@ -59,7 +59,7 @@ public:
 		_vector4<T> row[4];
 	};
 
-	enum EIdentity
+	enum class EIdentity
 	{
 		Identity
 	};
@@ -968,6 +968,9 @@ public:
 
 typedef		_matrix<float>	Fmatrix;
 typedef		_matrix<double>	Dmatrix;
+
+static_assert(sizeof(Fmatrix) == 64);
+static_assert(sizeof(Dmatrix) == 128);
 
 template <class T>
 ICF bool	_valid			(const _matrix<T>& m)

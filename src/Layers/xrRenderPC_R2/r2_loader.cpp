@@ -2,7 +2,7 @@
 #include "r2.h"
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/FBasicVisual.h"
-#include "../../xrEngine/Fmesh.h"
+#include "../../xrEngine/FmeshRender.h"
 #include "../../xrEngine/xrLevel.h"
 #include "../../xrEngine/x_ray.h"
 #include "../../xrEngine/IGame_Persistent.h"
@@ -18,6 +18,7 @@
 
 #include "../../xrCore/FormatParsers/LevelGeom/GeomIO.h"
 #include "src/xrCore/SharedMaterialLibrary.h"
+#include "src/xrCore/Collision/override/Model.h"
 using namespace FVF;
 
 #pragma warning(pop)
@@ -173,41 +174,44 @@ void CRender::level_Unload()
 	Lights.Unload			();
 
 	//*** Visuals
-	for (I=0; I<Visuals.size(); I++)
+	for (auto& elem : Visuals)
 	{
-		Visuals[I]->Release();
-		xr_delete(Visuals[I]);
+		elem->Release();
+		xr_delete(elem);
 	}
 	Visuals.clear			();
 
 	//*** SWI
-	for (I=0; I<SWIs.size();I++)xr_free	(SWIs[I].sw);
-	SWIs.clear				();
+	for (auto& elem : nGlobalData.SWIs)
+	{
+		xr_free(elem.sw);
+	}
+	nGlobalData.SWIs.clear();
 
 	//*** VB/IB
-	for (I=0; I<nVB.size(); I++)	
+	for (auto& elem : nGlobalData.VB)
 	{
-		_RELEASE(nVB[I]);
+		_RELEASE(elem);
 	}
 
-	for (I=0; I<xVB.size(); I++)	
+	for (auto& elem : xGlobalData.VB)	
 	{
-		_RELEASE(xVB[I]);
+		_RELEASE(elem);
 	}
-	nVB.clear(); xVB.clear();
+	nGlobalData.VB.clear(); xGlobalData.VB.clear();
 
-	for (I=0; I<nIB.size(); I++)	
+	for (auto& elem : nGlobalData.IB)	
 	{
-		_RELEASE(nIB[I]);
-	}
-
-	for (I=0; I<xIB.size(); I++)	
-	{
-		_RELEASE(xIB[I]);
+		_RELEASE(elem);
 	}
 
-	nIB.clear(); xIB.clear();
-	nDC.clear(); xDC.clear();
+	for (auto& elem : xGlobalData.IB)	
+	{
+		_RELEASE(elem);
+	}
+
+	nGlobalData.IB.clear(); xGlobalData.IB.clear();
+	nGlobalData.DCL.clear(); xGlobalData.DCL.clear();
 
 	//*** Components
 	xr_delete					(Details);
@@ -229,8 +233,8 @@ void CRender::level_Unload()
 void CRender::LoadVertexBuffers(IReaderBase& fs, bool _alternative)
 {
 
-	xr_vector<VertexDeclarator>& _DC = _alternative ? xDC : nDC;
-	xr_vector<IRHIBuffer*>& _VB = _alternative ? xVB : nVB;
+	xr_vector<VertexDeclarator>& _DC = _alternative ? xGlobalData.DCL : nGlobalData.DCL;
+	xr_vector<IRHIBuffer*>& _VB = _alternative ? xGlobalData.VB : nGlobalData.VB;
 
 	// Vertex buffers
 	{
@@ -244,30 +248,8 @@ void CRender::LoadVertexBuffers(IReaderBase& fs, bool _alternative)
 
 void CRender::LoadIndexBuffers(IReaderBase& fs, bool _alternative)
 {
-	xr_vector<IRHIBuffer*>& _IB = _alternative ? xIB : nIB;
-
-	// Index buffers
-	u32 count = fs.r_u32();
-	_IB.resize(count);
-	for (u32 i = 0; i < count; i++)
-	{
-		u32 iCount = fs.r_u32();
-
-		xr_vector<u16> temp(iCount);
-		fs.r(temp.data(), iCount * sizeof(u16));
-
-		RHIBufferDesc ibDesc;
-		ibDesc.Size = iCount * sizeof(u16);
-		ibDesc.Type = ERHI_BUFFER_TYPE::INDEX;
-		ibDesc.Usage = ERHI_USAGE::USAGE_DEFAULT;
-		ibDesc.CPUAccessFlags = 0;
-
-		RHIBufferSubresource ibInit;
-		ibInit.pSysMem = temp.data();
-
-		_IB[i] = GRHI->CreateBuffer(ibDesc, &ibInit);
-
-	}
+	xr_vector<IRHIBuffer*>& _IB = _alternative ? xGlobalData.IB : nGlobalData.IB;
+	ReadIBChunk(_IB, fs);
 }
 
 void CRender::LoadVisuals(IReader *fs)
@@ -281,7 +263,13 @@ void CRender::LoadVisuals(IReader *fs)
 	{
 		chunk->r_chunk_safe			(OGF_HEADER,&H,sizeof(H));
 		V = Models->Instance_Create	(H.type);
-		V->Load(0,chunk,0);
+		xr_stack_string256 debug_name;
+		if (auto data = chunk->open_chunk(OGF_DEBUG_DATA); data)
+		{
+			data->r_stringZ(debug_name);
+			data->close();
+		}
+		V->Load(debug_name.empty() ? nullptr : debug_name.c_str(),chunk,0);
 		Visuals.push_back(V);
 
 		chunk->close();
@@ -364,32 +352,18 @@ void CRender::LoadSectors(IReader* fs) {
 			CL.add_face_packed_D(v1, v2, v3, 0);
 		}
 
-		// Make cache
-		string_path LevelName;
-		xr_strconcat(LevelName, "level_cache\\", FS.get_path("$level$")->m_Add, "Portals.cache");
-		IReader* pReaderCache = CDB::GetModelCache(LevelName, crc);
-
 		// build portal model
 		rmPortals = new CDB::MODEL();
-
-		if (pReaderCache != nullptr)
-		{
-			rmPortals->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pReaderCache, true);
-		}
-		else
-		{
-			IWriter* pWriterCache = FS.w_open("$app_data_root$", LevelName);
-			pWriterCache->w_u32(CDB::CDB_MODEL_CACHE_VERSION);
-			pWriterCache->w_u32(crc);
-			rmPortals->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pWriterCache, false);
-		}
+		rmPortals->verts = CL.verts;
+		rmPortals->tris = CL.faces;
+		rmPortals->build_simple();
 	}
 	else
 	{
-		rmPortals = 0;
+		rmPortals = nullptr;
 	}
 
-	pLastSector = 0;
+	pLastSector = nullptr;
 
 	// Search for default sector - assume "default" or "outdoor" sector is the largest one
 	//. hack: need to know real outdoor sector
@@ -411,27 +385,5 @@ void CRender::LoadSectors(IReader* fs) {
 
 void CRender::LoadSWIs(IReaderBase& fs)
 {
-	// allocate memory for portals
-	u32 item_count		= fs.r_u32();
-
-	xr_vector<FSlideWindowItem>::iterator it	= SWIs.begin();
-	xr_vector<FSlideWindowItem>::iterator it_e	= SWIs.end();
-
-	for(;it!=it_e;++it)
-		xr_free( (*it).sw );
-
-	SWIs.clear();
-	SWIs.resize(item_count);
-
-	for (u32 c=0; c<item_count; c++){
-		FSlideWindowItem& swi = SWIs[c];
-		swi.reserved[0]	= fs.r_u32();	
-		swi.reserved[1]	= fs.r_u32();	
-		swi.reserved[2]	= fs.r_u32();	
-		swi.reserved[3]	= fs.r_u32();	
-		swi.count		= fs.r_u32();
-		VERIFY			(nullptr==swi.sw);
-		swi.sw			= xr_alloc<FSlideWindow> (swi.count);
-		fs.r			(swi.sw,sizeof(FSlideWindow)*swi.count);
-	}
+	ReadSWIsChunk(nGlobalData.SWIs, fs);
 }

@@ -57,7 +57,7 @@ CHUDTarget::CHUDTarget	()
 	accumulatedTime		= 0.f;
 	PP.RQ.range			= 0.f;
 
-	PP.RQ.set				(nullptr, 0.f, -1);
+	PP.RQ.reset();
 
 	Load				();
 	m_bShowCrosshair	= false;
@@ -99,23 +99,23 @@ void CHUDTarget::ShowCrosshair(bool b)
 }
 //. fVisTransparencyFactor
 float fCurrentPickPower;
-ICF static bool pick_trace_callback(collide::rq_result& result, LPVOID params)
+ICF static bool pick_trace_callback(const collide::rq_result& result, LPVOID params)
 {
 	SPickParam*	pp			= (SPickParam*)params;
 //	collide::rq_result* RQ	= pp->RQ;
 	++pp->pass;
 
-	if(result.O)
+	if(!result.IsStatic())
 	{	
-		pp->RQ				= result;
+		pp->RQ = result;
 		return false;
 	}else
 	{
 		//получить треугольник и узнать его материал
-		CDB::TRI& T		= Level().ObjectSpace.GetStaticTris()[result.element];
+		auto& T		= result.GetStatic()->tris[result.element];
 		
 		SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
-		pp->power		*= mtl->fVisTransparencyFactor;
+		pp->power *= mtl->fVisTransparencyFactor;
 		if(pp->power>0.34f)
 		{
 			return true;
@@ -133,9 +133,8 @@ void CHUDTarget::CursorOnFrame ()
 	// Render cursor
 	if(Level().CurrentEntity())
 	{
-		PP.RQ.O			= 0; 
+		PP.RQ.reset();
 		PP.RQ.range		= g_pGamePersistent->Environment().CurrentEnv->far_plane*0.99f;
-		PP.RQ.element		= -1;
 		
 		collide::ray_defs	RD(Device.vCameraPosition, Device.vCameraDirection, PP.RQ.range, CDB::OPT_CULL, collide::rqtBoth);
 		RQR.r_clear			();
@@ -145,7 +144,9 @@ void CHUDTarget::CursorOnFrame ()
 		PP.pass				= 0;
 
 		if(Level().ObjectSpace.RayQuery(RQR,RD, pick_trace_callback, &PP, nullptr, Level().CurrentEntity()))
-			clamp			(PP.RQ.range, NEAR_LIM, PP.RQ.range);
+		{
+			clamp(PP.RQ.range, NEAR_LIM, PP.RQ.range);
+		}
 	}
 }
 
@@ -213,56 +214,60 @@ void CHUDTarget::Render()
 
 	if (psHUD_Flags.test(HUD_INFO))
 	{ 
-		bool const is_poltergeist	= PP.RQ.O && !!smart_cast<CPoltergeist*> (PP.RQ.O);
 
-		if ((PP.RQ.O && PP.RQ.O->getVisible()) || is_poltergeist)
+		if (PP.RQ.valid() && !PP.RQ.IsStatic())
 		{
-			CEntityAlive* E_ = PP.RQ.O->cast_entity_alive();
-			CEntityAlive* pCurEnt = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_entity_alive() : nullptr;
-			PIItem l_pI = PP.RQ.O->cast_inventory_item();
-			CActor* pActor = PP.RQ.O->cast_actor();
-			CInventoryOwner* our_inv_owner = pCurEnt != nullptr ? pCurEnt->cast_inventory_owner() : nullptr;
-
-			if (E_ && E_->g_Alive())
+			auto Obj = const_cast<CObject*>(PP.RQ.GetDynamic());
+			bool const is_poltergeist = !!smart_cast<CPoltergeist*>(Obj);
+			if (Obj->getVisible() || is_poltergeist)
 			{
-				if (auto BaseMonster = E_->cast_base_monster(); BaseMonster)
-				{
-					if (BaseMonster->ShouldMarkAsEnemy())
-					{
-						C = colorEnemy;
-					}
-				}
-				else if (!pActor || (pActor && IsGameTypeSingleCompatible()))
-				{
-					CInventoryOwner* others_inv_owner = E_->cast_inventory_owner();
+				CEntityAlive* E_ = Obj->cast_entity_alive();
+				CEntityAlive* pCurEnt = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_entity_alive() : nullptr;
+				PIItem l_pI = Obj->cast_inventory_item();
+				CActor* pActor = Obj->cast_actor();
+				CInventoryOwner* our_inv_owner = pCurEnt != nullptr ? pCurEnt->cast_inventory_owner() : nullptr;
 
-					if (our_inv_owner && others_inv_owner)
+				if (E_ && E_->g_Alive())
+				{
+					if (auto BaseMonster = E_->cast_base_monster(); BaseMonster)
 					{
-						switch (RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
+						if (BaseMonster->ShouldMarkAsEnemy())
 						{
-						case ALife::eRelationTypeEnemy:
-							C = colorEnemy; break;
-						case ALife::eRelationTypeNeutral:
-							C = colorNeutral; break;
-						case ALife::eRelationTypeFriend:
-							C = colorFriend; break;
+							C = colorEnemy;
 						}
-
-						targetFont->SetColor(subst_alpha(C, static_cast<u32>(lerp(0.f, 255.f, accumulatedTime))));
-						targetFont->OutNext("%s", *g_pStringTable->translate(others_inv_owner->Name()));
-						targetFont->OutNext("%s", *g_pStringTable->translate(others_inv_owner->CharacterInfo().Community().id()));
 					}
+					else if (!pActor || (pActor && IsGameTypeSingleCompatible()))
+					{
+						CInventoryOwner* others_inv_owner = E_->cast_inventory_owner();
+
+						if (our_inv_owner && others_inv_owner)
+						{
+							switch (RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
+							{
+								case ALife::eRelationTypeEnemy:
+									C = colorEnemy; break;
+								case ALife::eRelationTypeNeutral:
+									C = colorNeutral; break;
+								case ALife::eRelationTypeFriend:
+									C = colorFriend; break;
+							}
+
+							targetFont->SetColor(subst_alpha(C, static_cast<u32>(lerp(0.f, 255.f, accumulatedTime))));
+							targetFont->OutNext("%s", *g_pStringTable->translate(others_inv_owner->Name()));
+							targetFont->OutNext("%s", *g_pStringTable->translate(others_inv_owner->CharacterInfo().Community().id()));
+						}
+					}
+					accumulatedTime += SHOW_INFO_SPEED * Device.fTimeDelta;
 				}
-				accumulatedTime += SHOW_INFO_SPEED * Device.fTimeDelta;
-			}
-			else if (l_pI && our_inv_owner && PP.RQ.range < 2.0f * 2.0f)
-			{
-				if (l_pI->NameItem() && l_pI->CanTake())
+				else if (l_pI && our_inv_owner && PP.RQ.range < 2.0f * 2.0f)
 				{
-					targetFont->SetColor(subst_alpha(C, static_cast<u32>(lerp(0.f, 255.f, accumulatedTime))));
-					targetFont->OutNext("%s", l_pI->NameItem());
+					if (l_pI->NameItem() && l_pI->CanTake())
+					{
+						targetFont->SetColor(subst_alpha(C, static_cast<u32>(lerp(0.f, 255.f, accumulatedTime))));
+						targetFont->OutNext("%s", l_pI->NameItem());
+					}
+					accumulatedTime += SHOW_INFO_SPEED * Device.fTimeDelta;
 				}
-				accumulatedTime += SHOW_INFO_SPEED * Device.fTimeDelta;
 			}
 		}
 		else
@@ -326,8 +331,10 @@ void CHUDTarget::Render()
 
 void CHUDTarget::net_Relcase(CObject* O)
 {
-	if(PP.RQ.O == O)
-		PP.RQ.O = nullptr;
+	if(!PP.RQ.IsStatic() && (PP.RQ.GetDynamic() == O))
+	{
+		PP.RQ.reset();
+	}
 
 	RQR.r_clear	();
 }

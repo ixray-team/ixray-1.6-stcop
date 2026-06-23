@@ -1013,12 +1013,12 @@ bool CWeaponKnife::SelectBestHitVictim(Fvector const & f_pos,
 	return !m_spartial_query_res.empty();
 }
 
-bool CWeaponKnife::RayQueryCallback(collide::rq_result& result, LPVOID this_ptr)
+bool CWeaponKnife::RayQueryCallback(const collide::rq_result& result, LPVOID this_ptr)
 {
 	CWeaponKnife*	me = static_cast<CWeaponKnife*>(this_ptr);
-	if (result.O && (result.O->ID() != me->m_except_id))
+	if (!result.IsStatic() && (result.GetDynamic()->ID() != me->m_except_id))
 	{
-		me->m_last_picked_obj = result.O;
+		me->m_last_picked_obj = const_cast<CObject*>(result.GetDynamic());
 		return false;	//first hit
 	}
 	return true;

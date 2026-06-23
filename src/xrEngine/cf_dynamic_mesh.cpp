@@ -33,7 +33,7 @@ bool CCF_DynamicMesh::_RayQuery(const collide::ray_defs& Q, collide::rq_results&
 			CollideResults.end(),
 			[&Q, &K, this](collide::rq_result& r)
 			{
-				VERIFY(r.O == owner);
+				VERIFY(r.IsStatic() || r.GetDynamic() == owner);
 
 				IKinematics::pick_result br;
 				if (!K->PickBone(

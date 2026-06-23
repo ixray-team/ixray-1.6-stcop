@@ -121,11 +121,11 @@ void CDS0_RenderInterface::add_Geometry(IRenderVisual* V)
 {
 }
 
-void CDS0_RenderInterface::add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
+void CDS0_RenderInterface::add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, const CDB::TRI& T, Fvector* V)
 {
 }
 
-void CDS0_RenderInterface::add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
+void CDS0_RenderInterface::add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, const CDB::TRI& T, Fvector* V, bool UseCameraDirection)
 {
 }
 
@@ -134,7 +134,7 @@ void CDS0_RenderInterface::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* 
 }
 
 StaticWallmarkHandle::WallmarkHandlePtr CDS0_RenderInterface::add_DynamicWallmark(const wm_shader& S, const Fvector& P,
-	float w, float h, float r, CDB::TRI* T, Fvector* V)
+	float w, float h, float r, const CDB::TRI& T, Fvector* V)
 {
 	return nullptr;
 }
@@ -297,5 +297,23 @@ void CDS0_RenderInterface::Calculate()
 }
 
 void CDS0_RenderInterface::ScreenshotImpl(ScreenshotMode mode, str_c name, CMemoryWriter* memory_writer)
+{
+}
+
+GeomData& CDS0_RenderInterface::GetMUSlot(shared_str Name)
+{
+	static GeomData dummy;
+	return dummy;
+}
+
+void CDS0_RenderInterface::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs)
+{
+}
+
+void CDS0_RenderInterface::ReadIBChunk(xr_vector<IRHIBuffer*>& OutBuffer, IReaderBase& fs)
+{
+}
+
+void CDS0_RenderInterface::ReadSWIsChunk(xr_vector<FSlideWindowItem>& SWIs, IReaderBase& fs)
 {
 }

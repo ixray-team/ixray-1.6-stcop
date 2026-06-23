@@ -5,18 +5,11 @@
 #include "ExportObjectOGF.h"
 #include "EditObject.h"
 #include "EditMesh.h"
-#include "../xrEngine/fmesh.h"
-
-#include "../xrEngine/std_classes.h"
 #include "../xrEngine/bone.h"
 #include "../xrEngine/SkeletonMotions.h"
 #include "../xrEngine/motion.h"
 
-#include "../../3rd-party/MagicSoftware/FreeMagic/Include/MgcCont3DBox.h"
-#include "../../3rd-party/MagicSoftware/FreeMagic/Include/MgcCont3DMinBox.h"
-
 #include "ui_main.h"
-#include "UI_ToolsCustom.h"
 #include "../Engine/XrGameMaterialLibraryEditors.h"
 
 #include <DirectXMesh.h>
@@ -628,11 +621,11 @@ void ComputeOBB_WML		(Fobb &B, FvectorVec& V)
 		float hv			= BOX.Extents()[0]*BOX.Extents()[1]*BOX.Extents()[2];
 		if (hv<HV){
 			HV 				= hv;
-			B.m_rotate.i.set(BOX.Axis(0));
-			B.m_rotate.j.set(BOX.Axis(1));
-			B.m_rotate.k.set(BOX.Axis(2));
+			B.m_rotate.i.set((float*)BOX.Axis(0));
+			B.m_rotate.j.set((float*)BOX.Axis(1));
+			B.m_rotate.k.set((float*)BOX.Axis(2));
 
-			B.m_translate.set(BOX.Center());
+			B.m_translate.set((float*)BOX.Center());
 			B.m_halfsize.set(BOX.Extents()[0],BOX.Extents()[1],BOX.Extents()[2]);
 		}
 	}

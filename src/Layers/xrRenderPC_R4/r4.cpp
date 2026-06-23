@@ -17,6 +17,7 @@
 
 #include "../xrRender/RenderInterfaceShared.h"
 #include "OverlayAPI/DLSSWrapper.h"
+#include "src/Layers/xrRender/FTreeVisual_Prototype.h"
 
 CRender RImplementation;
 
@@ -410,6 +411,16 @@ IRenderVisual* CRender::model_Create(const char* name, IReader* data) {
 	return Models->Create(name, data);
 }
 
+IRenderVisual* CRender::model_GetPrototype(str_c name)
+{
+	return Models->GetPrototype(name);
+}
+
+CDB::MODEL* CRender::model_GetPrototypeCollision(str_c name)
+{
+	return ((FTreeVisual_Prototype*)model_GetPrototype(name))->GetCollisionModel();
+}
+
 IRenderVisual* CRender::model_CreateChild(const char* name, IReader* data) {
 	return Models->CreateChild(name, data);
 }
@@ -470,38 +481,38 @@ RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count, bool	_alt)
 {
 	if(_alt)
 	{
-		*Count = xDC[id].size();
-		return xDC[id].begin();
+		*Count = xGlobalData.DCL[id].size();
+		return xGlobalData.DCL[id].begin();
 	}
 	else
 	{
-		*Count = nDC[id].size();
-		return nDC[id].begin();
+		*Count = nGlobalData.DCL[id].size();
+		return nGlobalData.DCL[id].begin();
 	}
 }
 
 IRHIBuffer* CRender::getVB(int id, bool	_alt) {
 	if(_alt) {
-		VERIFY(id<int(xVB.size()));	return xVB[id];
+		VERIFY(id<int(xGlobalData.VB.size()));	return xGlobalData.VB[id];
 	}
 	else {
-		VERIFY(id<int(nVB.size()));	return nVB[id];
+		VERIFY(id<int(nGlobalData.VB.size()));	return nGlobalData.VB[id];
 	}
 }
 
 IRHIBuffer* CRender::getIB(int id, bool	_alt) {
 	if(_alt) {
-		VERIFY(id<int(xIB.size()));	return xIB[id];
+		VERIFY(id<int(xGlobalData.IB.size()));	return xGlobalData.IB[id];
 	}
 	else {
-		VERIFY(id<int(nIB.size()));	return nIB[id];
+		VERIFY(id<int(nGlobalData.IB.size()));	return nGlobalData.IB[id];
 	}
 }
 
 FSlideWindowItem* CRender::getSWI(int id)
 {
-	VERIFY(id<int(SWIs.size()));
-	return &SWIs[id];
+	VERIFY(id<int(nGlobalData.SWIs.size()));
+	return &nGlobalData.SWIs[id];
 }
 
 IRender_Light* CRender::light_create()
@@ -541,12 +552,12 @@ CRender::CRender() : m_bFirstFrameAfterReset(false)
 
 CRender::~CRender()
 {
-	for(auto& it : SWIs) {
+	for(auto& it : nGlobalData.SWIs) {
 		xr_free(it.sw);
 		it.sw = nullptr;
 		it.count = 0;
 	}
-	SWIs.clear();
+	nGlobalData.SWIs.clear();
 }
 
 #include "../../xrEngine/GameFont.h"

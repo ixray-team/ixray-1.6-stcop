@@ -2,7 +2,7 @@
 #include "r4.h"
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/FBasicVisual.h"
-#include "../../xrEngine/Fmesh.h"
+#include "../../xrEngine/FmeshRender.h"
 #include "../../xrEngine/xrLevel.h"
 #include "../../xrEngine/x_ray.h"
 #include "../../xrEngine/IGame_Persistent.h"
@@ -23,6 +23,7 @@
 
 #include "../../xrCore/FormatParsers/LevelGeom/GeomIO.h"
 #include "src/xrCore/SharedMaterialLibrary.h"
+#include "src/xrCore/Collision/override/Model.h"
 using namespace FVF;
 
 #pragma warning(pop)
@@ -257,25 +258,43 @@ void CRender::level_Unload()
 	Lights.Unload			();
 
 	//*** Visuals
-	for (I=0; I<Visuals.size(); I++)
+	for (auto& elem : Visuals)
 	{
-		Visuals[I]->Release();
-		xr_delete(Visuals[I]);
+		elem->Release();
+		xr_delete(elem);
 	}
 	Visuals.clear			();
 
 	//*** SWI
-	for (I=0; I<SWIs.size();I++)xr_free	(SWIs[I].sw);
-	SWIs.clear				();
+	for (auto& elem : nGlobalData.SWIs)
+	{
+		xr_free(elem.sw);
+	}
+	nGlobalData.SWIs.clear				();
 
 	//*** VB/IB
-	for (I=0; I<nVB.size(); I++)	_RELEASE(nVB[I]);
-	for (I=0; I<xVB.size(); I++)	_RELEASE(xVB[I]);
-	nVB.clear(); xVB.clear();
-	for (I=0; I<nIB.size(); I++)	_RELEASE(nIB[I]);
-	for (I=0; I<xIB.size(); I++)	_RELEASE(xIB[I]);
-	nIB.clear(); xIB.clear();
-	nDC.clear(); xDC.clear();
+	for (auto& elem : nGlobalData.VB)
+	{
+		_RELEASE(elem);
+	}
+	for (auto& elem : xGlobalData.VB)
+	{
+		_RELEASE(elem);
+	}
+	nGlobalData.VB.clear();
+	xGlobalData.VB.clear();
+	for (auto& elem : nGlobalData.IB)
+	{
+		_RELEASE(elem);
+	}
+	for (auto& elem : xGlobalData.IB)
+	{
+		_RELEASE(elem);
+	}
+	nGlobalData.IB.clear();
+	xGlobalData.IB.clear();
+	nGlobalData.DCL.clear();
+	xGlobalData.DCL.clear();
 
 	//*** Components
 	xr_delete					(Details);
@@ -291,8 +310,8 @@ void CRender::level_Unload()
 
 void CRender::LoadVertexBuffers(IReaderBase& fs, bool _alternative)
 {
-	xr_vector<VertexDeclarator> &_DC	= _alternative?xDC:nDC;
-	xr_vector<IRHIBuffer*>		&_VB	= _alternative?xVB:nVB;
+	xr_vector<VertexDeclarator> &_DC	= _alternative?xGlobalData.DCL:nGlobalData.DCL;
+	xr_vector<IRHIBuffer*>		&_VB	= _alternative?xGlobalData.VB:nGlobalData.VB;
 	
 	// Vertex buffers
 	u32 count = fs.r_u32();
@@ -304,29 +323,15 @@ void CRender::LoadVertexBuffers(IReaderBase& fs, bool _alternative)
 
 void CRender::LoadIndexBuffers(IReaderBase& fs, bool _alternative)
 {
-	xr_vector<IRHIBuffer*>& _IB	= _alternative?xIB:nIB;
-
-	// Index buffers
-	u32 count = fs.r_u32();
-	_IB.resize(count);
-	for (u32 i=0; i<count; i++)
-	{
-		u32 iCount = fs.r_u32();
-
-		//	TODO: DX10: Check fragmentation.
-		//	Check if buffer is less then 2048 kb
-		BYTE* pData = xr_alloc<BYTE>(iCount*2);
-		fs.r(pData,iCount*2);
-		RHIUtils::CreateIndexBuffer(&_IB[i], pData, iCount*2);
-		xr_free(pData);
-	}
+	xr_vector<IRHIBuffer*>& _IB	= _alternative?xGlobalData.IB:nGlobalData.IB;
+	ReadIBChunk(_IB, fs);
 }
 
 void CRender::LoadVisuals(IReader *fs)
 {
-	IReader*		chunk	= 0;
+	IReader*		chunk	= nullptr;
 	u32			index	= 0;
-	dxRender_Visual*		V		= 0;
+	dxRender_Visual*		V		= nullptr;
 	ogf_header		H;
 
 	while ((chunk=fs->open_chunk(index))!=nullptr)
@@ -338,10 +343,6 @@ void CRender::LoadVisuals(IReader *fs)
 		{
 			data->r_stringZ(debug_name);
 			data->close();
-		}
-		if (debug_name == "test_s2_bunker:stalker2_mu\\bunker_science\\sm_bui_uni_bunker_science_01_interior_wall_01_e:subdiv 4")
-		{
-			__nop();
 		}
 		V->Load(debug_name.empty() ? nullptr : debug_name.c_str(),chunk,0);
 		Visuals.push_back(V);
@@ -428,25 +429,11 @@ void CRender::LoadSectors(IReader* fs)
 			CL.add_face_packed_D(v1, v2, v3, 0);
 		}
 
-		// Make cache
-		string_path LevelName;
-		xr_strconcat(LevelName, "level_cache\\", FS.get_path("$level$")->m_Add, "Portals.cache");
-		IReader* pReaderCache = CDB::GetModelCache(LevelName, crc);
-
 		// build portal model
 		rmPortals = new CDB::MODEL();
-
-		if (pReaderCache != nullptr)
-		{
-			rmPortals->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pReaderCache, true);
-		}
-		else
-		{
-			IWriter* pWriterCache = FS.w_open("$app_data_root$", LevelName);
-			pWriterCache->w_u32(CDB::CDB_MODEL_CACHE_VERSION);
-			pWriterCache->w_u32(crc);
-			rmPortals->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pWriterCache, false);
-		}
+		rmPortals->verts = CL.verts;
+		rmPortals->tris = CL.faces;
+		rmPortals->build_simple();
 	}
 	else
 	{
@@ -475,24 +462,7 @@ void CRender::LoadSectors(IReader* fs)
 
 void CRender::LoadSWIs(IReaderBase& fs)
 {
-	// allocate memory for portals
-	u32 item_count = fs.r_u32();
-	for (auto& elem : SWIs)
-	{
-		xr_free(elem.sw);
-	}
-	SWIs.clear();
-	SWIs.resize(item_count);
-	for (auto& swi : SWIs){
-		swi.reserved[0]	= fs.r_u32();	
-		swi.reserved[1]	= fs.r_u32();	
-		swi.reserved[2]	= fs.r_u32();	
-		swi.reserved[3]	= fs.r_u32();	
-		swi.count = fs.r_u32();
-		VERIFY(nullptr==swi.sw);
-		swi.sw = xr_alloc<FSlideWindow> (swi.count);
-		fs.r(swi.sw,sizeof(FSlideWindow)*swi.count);
-	}
+	ReadSWIsChunk(nGlobalData.SWIs, fs);
 }
 
 void CRender::Load3DFluid()

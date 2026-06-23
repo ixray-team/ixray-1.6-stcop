@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../Tools/Terrain/ESceneTerrainTools.h"
+#include "Collision/override/Model.h"
 // !!! использовать prefix если нужно имя !!! (Связано с группами)
 
 
@@ -473,13 +474,26 @@ void SceneBuilder::SaveBuild()
 		F->open_chunk	(EB_MU_refs);
 		F->w			(l_mu_refs.data(),sizeof(b_mu_reference)*l_mu_refs.size());
 		F->close_chunk	();
-
-		F->open_chunk(EB_MU_refs_debug);
-		for (auto& elem : l_mu_refs_debug)
+		
+		F->make_chunk(EB_MU_collisions, [this](IWriter& F)
 		{
-			F->w_stringZ(elem);
-		}
-		F->close_chunk();
+			F.w_u32(l_mu_collsions.size());
+			for (auto& data : l_mu_collsions)
+			{
+				F.w_u32(data.verts.size());
+				F.w(data.verts.data(),sizeof(Fvector)*data.verts.size());
+				F.w_u32(data.faces.size());
+				F.w(data.faces.data(),sizeof(CDB::TRI)*data.faces.size());
+			}
+		});
+
+		F->make_chunk(EB_MU_refs_debug, [this](IWriter& F)
+		{
+			for (auto& elem : l_mu_refs_debug)
+			{
+				F.w_stringZ(elem);
+			}
+		});
 
 		FS.w_close		(F);
 	}
@@ -511,6 +525,7 @@ void SceneBuilder::Clear ()
 	l_mu_models.clear		();
 	l_mu_refs.clear			();
 	l_mu_refs_debug.clear();
+	l_mu_collsions.clear();
 	l_lods.clear			();
 	l_light_static.clear	();
 	l_light_dynamic.clear	();
@@ -1115,19 +1130,48 @@ bool SceneBuilder::BuildMUObject(CSceneObject* obj)
 			{
 				continue;
 			}
-			if (!BuildMesh(T, O, *MESH, sect_num, M.vertices, /*M.m_iVertexCount, */vert_it, M.faces, /*M.m_iFaceCount, */face_it, M.smgroups, obj->_Transform(), obj))
+			if (!BuildMesh(T, O, *MESH, sect_num, M.vertices, vert_it, M.faces, face_it, M.smgroups, obj->_Transform(), obj))
 			{
 				return false;
 			}
 		}
+
+		CDB::MODEL Collision;
+		b_mu_collision& Slot = l_mu_collsions.emplace_back();
+		auto& CollisionVerts = Slot.verts;
+		auto& CollisionTris = Slot.faces;
+		{
+			CDB::CollectorPacked CL(O->GetBox(), M.vertices.size(), M.faces.size());
+			for (auto& face : M.faces)
+			{
+				str_c cshader_name = nullptr;
+				bool IsShared = (bool)(face.flags&b_face_flags::UseSharedMaterial);
+				if (IsShared)
+				{
+					auto MatName = l_materials_shared[face.dwMaterial].Name;
+					cshader_name = CSharedMaterialLibrary::Instance().GetData(MatName)->m_ShaderXRLCName.c_str();
+				} else
+				{
+					cshader_name = l_shaders_xrlc[l_materials[face.dwMaterial].shader_xrlc].name;
+				}
+				Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(cshader_name);
+				if (!c_sh->flags.bCollision)
+				{
+					continue;
+				}
+				CL.add_face(M.vertices[face.v[0]], M.vertices[face.v[1]], M.vertices[face.v[2]], face.dwMaterial, -1, IsShared, 0);
+			}
+			CollisionVerts = CL.getV_Vec();
+			CollisionTris = CL.getT_Vec();
+		}
 	}
 
 	l_mu_refs.push_back	(b_mu_reference());
-	b_mu_reference&	R	= l_mu_refs.back();
-	R.model_index		= model_idx;
-	R.transform			= obj->_Transform();
-	R.flags.zero		();
-	R.sector			= (u16)sect_num;
+	b_mu_reference&	R = l_mu_refs.back();
+	R.model_index = model_idx;
+	R.transform = obj->_Transform();
+	R.flags.zero();
+	R.sector = (u16)sect_num;
 
 	xr_stack_string256 debug_name;
 	if (obj->m_pOwnerObject)

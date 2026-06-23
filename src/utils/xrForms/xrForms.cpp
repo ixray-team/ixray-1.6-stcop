@@ -229,6 +229,7 @@ void SaveCompilerCfg()
 
 	Serializer->Write("LC_fast_way", gCompilerMode.LC_fast_way);
 	Serializer->Write("LC_legacyLM", gCompilerMode.LC_legacyLM);
+	Serializer->Write("LC_UseExternalRefs", gCompilerMode.LC_UseExternalRefs);
 	Serializer->Write("LC_CformType", gCompilerMode.LC_CformType);
 	Serializer->Write("LC_CFormChunkSize", gCompilerMode.LC_CFormChunkSize);
 	Serializer->Write("LC_GeomType", gCompilerMode.LC_GeomType);
@@ -306,6 +307,7 @@ int APIENTRY WinMain
  	
 	Serializer->Read("LC_fast_way", gCompilerMode.LC_fast_way);
 	Serializer->Read("LC_legacyLM", gCompilerMode.LC_legacyLM);
+	Serializer->Read("LC_UseExternalRefs", gCompilerMode.LC_UseExternalRefs);
 	Serializer->Read("LC_CformType", gCompilerMode.LC_CformType);
 	Serializer->Read("LC_CFormChunkSize", gCompilerMode.LC_CFormChunkSize);
 	Serializer->Read("LC_GeomType", gCompilerMode.LC_GeomType);

@@ -234,20 +234,18 @@ struct SPHDBGDrawTri :public SPHDBGDrawAbsract
 	Fvector v[3];
 	u32		c;
 	bool solid;
-	SPHDBGDrawTri(CDB::RESULT* T,u32 ac)
+	SPHDBGDrawTri(const CDB::RESULT& T,u32 ac)
 	{
-		v[0].set(T->verts[0]);
-		v[1].set(T->verts[1]);
-		v[2].set(T->verts[2]);
+		auto& Tri = T.model->tris[T.tris_id];
+		T.ModelWorldTransform.transform_tiny(v[0], T.model->verts[Tri.verts[0]]);
+		T.ModelWorldTransform.transform_tiny(v[1], T.model->verts[Tri.verts[1]]);
+		T.ModelWorldTransform.transform_tiny(v[2], T.model->verts[Tri.verts[2]]);
 		c=ac;
 		solid = false;
 	}
-	SPHDBGDrawTri(CDB::TRI* T,const Fvector*	V_array,u32 ac)
+	SPHDBGDrawTri(const TriabgleCDBData& T, u32 ac)
 	{
-		
-		v[0].set(V_array[T->verts[0]]);
-		v[1].set(V_array[T->verts[1]]);
-		v[2].set(V_array[T->verts[2]]);
+		T.GetVerts(v);
 		c=ac;
 		solid = false;
 	}
@@ -281,13 +279,13 @@ static void clear_vector(PHABS_DBG_V& v)
 	v.clear();
 }
 
-void DBG_DrawTri(CDB::RESULT* T,u32 c)
+void DBG_DrawTri(const CDB::RESULT& T,u32 c)
 {
 	DBG_DrawPHAbstruct(new SPHDBGDrawTri(T,c));
 }
-void DBG_DrawTri(CDB::TRI* T,const Fvector* V_verts,u32 c)
+void DBG_DrawTri(const TriabgleCDBData& T, u32 c)
 {
-	DBG_DrawPHAbstruct(new SPHDBGDrawTri(T,V_verts,c));
+	DBG_DrawPHAbstruct(new SPHDBGDrawTri(T,c));
 }
 
 void DBG_DrawTri( const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 ac, bool solid )
@@ -413,7 +411,7 @@ struct SPHDBGDrawOBB: public SPHDBGDrawAbsract
 	}
 };
 
-void DBG_DrawOBB(const Fmatrix& m,const Fvector h,u32 c)
+void DBG_DrawOBB(const Fmatrix& m,const Fvector& h,u32 c)
 {
 	DBG_DrawPHAbstruct(new SPHDBGDrawOBB(m,h,c));
 };
@@ -1063,14 +1061,14 @@ class CPHDebugOutput :
 		::DBG_DrawContact(c);
 	}
 
-	virtual	void DBG_DrawTri(CDB::RESULT* T, u32 c)
+	virtual	void DBG_DrawTri(const CDB::RESULT& T, u32 c)
 	{
 		::DBG_DrawTri(T, c);
 	}
 
-	virtual	void DBG_DrawTri(CDB::TRI* T, const Fvector* V_verts, u32 c)
+	virtual	void DBG_DrawTri(const TriabgleCDBData& T, u32 c)
 	{
-		::DBG_DrawTri(T, V_verts, c);
+		::DBG_DrawTri(T, c);
 	}
 
 	virtual	void DBG_DrawLine(const Fvector& p0, const Fvector& p1, u32 c)
@@ -1081,6 +1079,13 @@ class CPHDebugOutput :
 	virtual	void DBG_DrawAABB(const Fvector& center, const Fvector& AABB, u32 c)
 	{
 		::DBG_DrawAABB(center, AABB, c);
+	}
+
+	virtual	void DBG_DrawAABB(const Fbox& AABB, u32 c)
+	{
+		Fvector center, e;
+		AABB.get_CD(center, e);
+		::DBG_DrawAABB(center, e, c);
 	}
 
 	virtual	void DBG_DrawOBB(const Fmatrix& m, const Fvector h, u32 c)

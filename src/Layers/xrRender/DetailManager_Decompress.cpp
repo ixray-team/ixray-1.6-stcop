@@ -67,7 +67,6 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 	xrc.box_options(CDB::OPT_FULL_TEST);
 	xrc.box_query(g_pGameLevel->ObjectSpace.GetStaticModel(), D.vis.box);
 	u32	triCount = xrc.r_count();
-	xr_vector<CDB::TRI>& tris = g_pGameLevel->ObjectSpace.GetStaticTris();
 	xr_vector<CDB::RESULT>& results = xrc.r_vec();
 #endif
 
@@ -153,7 +152,7 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 				for (int k=0; k<(int)I.inf.size(); k++)
 				{
 					VERIFY(I.s_obj);
-					I.e_obj->GetFaceWorld(I.s_obj->_Transform(),I.e_mesh,I.inf[k].id,verts);
+					I.e_obj->GetFaceWorld(I.s_obj->_Transform(),I.e_mesh,I.inf[k].tris_id,verts);
 					if (CDB::TestRayTri(Item_P,dir,verts,r_u,r_v,r_range,true))
 					{
 						if (r_range>=0)
@@ -167,7 +166,7 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 				}
 #else
 				CDB::RESULT& R = results[tid];
-				CDB::TRI& T = tris[R.id];
+				auto& T = R.model->tris[R.tris_id];
 				SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
 
 				if(mtl->Flags.test(SGameMtl::flPassable))	
@@ -183,7 +182,11 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 						break;
 					}
 				}
-				if (CDB::TestRayTri(Item_P,dir, R.verts,r_u,r_v,r_range,true))
+				Fvector verts[3];
+				R.ModelWorldTransform.transform_tiny(verts[0], R.model->verts[T.verts[0]]);
+				R.ModelWorldTransform.transform_tiny(verts[1], R.model->verts[T.verts[1]]);
+				R.ModelWorldTransform.transform_tiny(verts[2], R.model->verts[T.verts[2]]);
+				if (CDB::TestRayTri(Item_P,dir,verts,r_u,r_v,r_range,true))
 				{
 					if (r_range>=0)
 					{
@@ -191,7 +194,7 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 						if (y_test>y)
 							y = y_test;
 					}
-					normal.mknormal(R.verts[0], R.verts[1], R.verts[2]);
+					normal.mknormal(verts[0], verts[1], verts[2]);
 					break;
 				}
 #endif

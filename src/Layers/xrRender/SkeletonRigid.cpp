@@ -19,14 +19,18 @@ void CKinematics::CalculateBones(bool bForceExact)
 	if (RDEVICE.dwTimeGlobal == UCalc_Time)
 		return;	// early out for "fast" update
 
-	xrCriticalSectionGuard guard(&UCalc_Mutex);
-	OnCalculateBones();
+	{
+		xrCriticalSectionGuard guard(&UCalc_Mutex);
+		OnCalculateBones();
+	}
 
 	if (!bForceExact && (RDEVICE.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))	
 		return;	// early out for "slow" update
 
 	if (Update_Visibility)
+	{
 		Visibility_Update();
+	}
 
 
 	// here we have either:
@@ -39,7 +43,6 @@ void CKinematics::CalculateBones(bool bForceExact)
 #ifdef DEBUG
 	RDEVICE.Statistic->Animation.Begin();
 #endif
-
 	Bone_Calculate(bones->at(iRoot),&Fidentity);
 #ifdef DEBUG
 	check_kinematics				(this, dbg_name.c_str() );
@@ -74,7 +77,9 @@ void CKinematics::CalculateBones(bool bForceExact)
 
 	//
 	if (Update_Callback)
+	{
 		Update_Callback(this);
+	}
 }
 
 #ifdef DEBUG

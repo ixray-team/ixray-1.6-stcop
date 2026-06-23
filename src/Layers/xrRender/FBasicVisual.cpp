@@ -4,13 +4,15 @@
 
 #include "stdafx.h"
 
+#include "IRender_Mesh.h"
+
 
 #ifndef _EDITOR
 #	include "../../xrEngine/Render.h"
 #endif // #ifndef _EDITOR
 
 #include "FBasicVisual.h"
-#include "../../xrEngine/Fmesh.h"
+#include "../../xrEngine/FmeshRender.h"
 #include "src/xrCore/SharedMaterialLibrary.h"
 
 //////////////////////////////////////////////////////////////////////

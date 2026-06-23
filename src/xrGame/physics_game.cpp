@@ -126,21 +126,24 @@ class CPHWallMarksCall :
 {
 	wm_shader pWallmarkShader;
 	Fvector pos;
-	CDB::TRI* T;
-
+	const CDB::TRI* T;
+	Fvector* verts;
 public:
-	CPHWallMarksCall(const Fvector& p, CDB::TRI* Tri, const wm_shader& s)
+	//CPHWallMarksCall(const Fvector &p,CDB::TRI* Tri,ref_shader s)
+	CPHWallMarksCall(const Fvector &p, const CDB::TRI& Tri, Fvector* Verts,const wm_shader &s)
 	{
 		pWallmarkShader = s;
 		pos.set(p);
-		T = Tri;
+		T=&Tri;
+		verts=Verts;
 	}
 	virtual void run()
 	{
-		// добавить отметку на материале
-		::Render->add_StaticWallmark(pWallmarkShader, pos, 0.09f, T, Level().ObjectSpace.GetStaticVerts().data());
+		//добавить отметку на материале
+		::Render->add_StaticWallmark(pWallmarkShader,pos, 
+			0.09f, *T, verts);
 	};
-	virtual bool obsolete() const { return false; }
+	virtual bool 			obsolete						()const{return false;}
 };
 
 static void play_object(dxGeomUserData* data, SGameMtlPair* mtl_pair, const dContactGeom* c)
@@ -200,12 +203,12 @@ void play_particles(float vel_cret, dxGeomUserData* data,  const dContactGeom* c
 }
 
 template<class Pars>
-void TContactShotMark(CDB::TRI* T, dContactGeom* c)
+void  TContactShotMark(const CDB::TRI& T, Fvector* verts, dContactGeom* c)
 {
-	dxGeomUserData* data = 0;
-	float vel_cret = 0;
-	bool b_invert_normal = false;
-	if (!ContactShotMarkGetEffectPars(c, data, vel_cret, b_invert_normal))
+	dxGeomUserData* data	=nullptr;
+	float vel_cret			=0;
+	bool b_invert_normal	=false;
+	if(!ContactShotMarkGetEffectPars( c, data, vel_cret, b_invert_normal ))
 	{
 		return;
 	}
@@ -215,20 +218,22 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
 	float square_cam_dist = to_camera.square_magnitude();
 	if (data)
 	{
-		SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(T->material, data->material);
-		if (mtl_pair)
+		SGameMtlPair* mtl_pair		= GMLib.GetMaterialPair(T.material,data->material);
+		if(mtl_pair)
 		{
 			if (vel_cret > Pars::vel_cret_wallmark && !mtl_pair->m_pCollideMarks->empty())
 			{
 				wm_shader WallmarkShader = mtl_pair->m_pCollideMarks->GenerateWallmark();
-				Level().ph_commander().add_call(new CPHOnesCondition(), new CPHWallMarksCall(*((Fvector*)c->pos), T, WallmarkShader));
+				//ref_shader pWallmarkShader = mtl_pair->CollideMarks[::Random.randI(0,mtl_pair->CollideMarks.size())];
+				Level().ph_commander().add_call(new CPHOnesCondition(),new CPHWallMarksCall( *((Fvector*)c->pos), T, verts, WallmarkShader));
 			}
 
 			if (square_cam_dist < SQUARE_SOUND_EFFECT_DIST)
 			{
-				SGameMtl* static_mtl = GMLib.GetMaterialByIdx(T->material);
-				VERIFY(static_mtl);
-				if (!static_mtl->Flags.test(SGameMtl::flPassable))
+			
+				SGameMtl* static_mtl =  GMLib.GetMaterialByIdx(T.material);
+				VERIFY( static_mtl );
+				if(!static_mtl->Flags.test(SGameMtl::flPassable))
 				{
 					if (vel_cret > Pars::vel_cret_sound)
 					{
@@ -250,10 +255,10 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
 
 			if (square_cam_dist < SQUARE_PARTICLE_EFFECT_DIST && !mtl_pair->CollideParticles.empty())
 			{
-				SGameMtl* static_mtl = GMLib.GetMaterialByIdx(T->material);
-				VERIFY(static_mtl);
-				const char* ps_name = *mtl_pair->CollideParticles[::Random.randI(0, (int)mtl_pair->CollideParticles.size())];
-				play_particles<Pars>(vel_cret, data, c, b_invert_normal, static_mtl, ps_name);
+				SGameMtl* static_mtl =  GMLib.GetMaterialByIdx(T.material);
+				VERIFY( static_mtl );
+				const char* ps_name = *mtl_pair->CollideParticles[::Random.randI(0,(int)mtl_pair->CollideParticles.size())];
+				play_particles<Pars>( vel_cret, data, c, b_invert_normal, static_mtl, ps_name );
 			}
 		}
 	}

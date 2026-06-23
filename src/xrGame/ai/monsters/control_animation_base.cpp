@@ -654,13 +654,14 @@ public:
 	}
 };
 
-ICF static bool check_hit_trace_callback(collide::rq_result& result, LPVOID params)
+ICF static bool check_hit_trace_callback(const collide::rq_result& result, LPVOID params)
 {
 	ray_query_param* param = (ray_query_param*)params;
-	if (result.O != nullptr)
+	if (!result.IsStatic())
 	{
-		const CBaseMonster* monster = result.O->cast_base_monster();
-		const CEntityAlive* entity_alive = result.O->cast_entity_alive();
+		auto Obj = const_cast<CObject*>(result.GetDynamic());
+		const CBaseMonster* monster = Obj->cast_base_monster();
+		const CEntityAlive* entity_alive = Obj->cast_entity_alive();
 		if (monster == param->m_holder)
 		{
 			return true;
@@ -672,7 +673,7 @@ ICF static bool check_hit_trace_callback(collide::rq_result& result, LPVOID para
 	}
 	else
 	{
-		CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
+		auto& T = result.GetStatic()->tris[result.element];
 		if (GMLib.GetMaterialByIdx(T.material)->Flags.is(SGameMtl::flPassable))
 		{
 			return true;

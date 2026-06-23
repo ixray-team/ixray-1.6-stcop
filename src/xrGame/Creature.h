@@ -218,9 +218,9 @@ public:
 			bool				is_special_killer		(CObject *obj);
 
 	IC		CMemoryManager		&memory					() const;
-	virtual float				feel_vision_mtl_transp	(CObject* O, u32 element);
+	virtual float feel_vision_mtl_transp(const collide::rq_result& result) override;
 	virtual	void				feel_vision_apply_extra	(Fvector const& eye, Fvector const& target, float& vis);
-	virtual	void				feel_sound_new			(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector &Position, float power);
+	virtual	void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector &Position, float power) override;
 
 	virtual bool				useful					(const CItemManager *manager, const CGameObject *object) const;
 	virtual float				evaluate				(const CItemManager *manager, const CGameObject *object) const;

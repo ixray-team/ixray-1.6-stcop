@@ -28,7 +28,7 @@
 #include "../../xrSound/Sound.h"
 #include "../../Layers/xrRender/particle_core/psystem.h"
 
-#include "../../xrEngine/Fmesh.h"
+#include "../../xrEngine/FmeshRender.h"
 #include "../../xrEngine/_d3d_extensions.h"
 #include <fast_dynamic_cast/fast_dynamic_cast.hpp>
 #define smart_cast fast_dynamic_cast
