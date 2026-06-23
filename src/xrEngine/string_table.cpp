@@ -3,6 +3,7 @@
 #include "xr_level_controller.h"
 #include "../xrCore/FormatParsers/XML/xrXMLParser.h"
 #include "XR_IOConsole.h"
+#include "IGame_UICustom.h"
 
 ENGINE_API CStringTable* g_pStringTable = nullptr;
 
@@ -256,6 +257,8 @@ void CStringTable::ReparseKeyBindings()
 	{
 		pData->m_StringTable[key.first] = ParseLine(*key.second, *key.first, false);
 	}
+	if (g_pGameCustom)
+		g_pGameCustom->ReloadGamepadLegends();
 }
 
 void CStringTable::ReloadLanguage(const char* lang)
