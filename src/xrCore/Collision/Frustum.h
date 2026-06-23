@@ -114,34 +114,34 @@ public:
 	fplane planes[FRUSTUM_MAXPLANES] = {};
 	int p_count = 0;
 
-	ICF EFC_Visible AABB_OverlapPlane(const fplane& P, const float* mM) const;
-	ICF void _clear();
-	ICF void _add(Fplane& P);
-	ICF void _add(Fvector& P1, Fvector& P2, Fvector& P3);
-	ICF CFrustum& CreateFromPoints(Fvector* p, int count, Fvector& COP);
-	ICF CFrustum& CreateFromPlanes(Fplane* p, int count);
-	ICF CFrustum& CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBase, Fmatrix& mFullXFORM);
-	ICF void SimplifyPoly_AABB(sPoly* poly, Fplane& plane);
-	ICF CFrustum& CreateOccluder(Fvector* p, int count, Fvector& vBase, CFrustum& clip);
-	ICF bool CreateFromClipPoly(Fvector* p, int count, Fvector& vBase, CFrustum& clip);
-	ICF CFrustum& CreateFromMatrix(Fmatrix& M, u32 mask);
+	EFC_Visible AABB_OverlapPlane(const fplane& P, const float* mM) const;
+	void _clear();
+	void _add(Fplane& P);
+	void _add(Fvector& P1, Fvector& P2, Fvector& P3);
+	CFrustum& CreateFromPoints(Fvector* p, int count, Fvector& COP);
+	CFrustum& CreateFromPlanes(Fplane* p, int count);
+	CFrustum& CreateFromPortal(sPoly* poly, Fvector& vPN, Fvector& vBase, Fmatrix& mFullXFORM);
+	void SimplifyPoly_AABB(sPoly* poly, Fplane& plane);
+	CFrustum& CreateOccluder(Fvector* p, int count, Fvector& vBase, CFrustum& clip);
+	bool CreateFromClipPoly(Fvector* p, int count, Fvector& vBase, CFrustum& clip);
+	CFrustum& CreateFromMatrix(Fmatrix& M, u32 mask);
 
-	ICF sPoly* ClipPoly(sPoly& S, sPoly& D) const;
+	sPoly* ClipPoly(sPoly& S, sPoly& D) const;
 
-	ICF u32 getMask() const;
+	u32 getMask() const;
 
-	ICF EFC_Visible testSphere(Fvector& c, float r, u32& test_mask) const;
+	EFC_Visible testSphere(Fvector& c, float r, u32& test_mask) const;
 
-	ICF bool testSphere_dirty(const Fvector& c, float r) const;
-	ICF EFC_Visible testAABB(const float* mM, u32& test_mask) const;
+	bool testSphere_dirty(const Fvector& c, float r) const;
+	EFC_Visible testAABB(const float* mM, u32& test_mask) const;
 
-	ICF EFC_Visible testSAABB(Fvector& c, float r, const float* mM, u32& test_mask) const;
+	EFC_Visible testSAABB(Fvector& c, float r, const float* mM, u32& test_mask) const;
 
-	ICF bool testPoint(const Fvector& pt) const;
+	bool testPoint(const Fvector& pt) const;
 
-	ICF bool testPolyInside_dirty(Fvector* p, int count) const;
+	bool testPolyInside_dirty(Fvector* p, int count) const;
 
-	ICF bool testPolyInside(sPoly& src) const;
-	ICF bool testPolyInside(Fvector* p, int count) const;
+	bool testPolyInside(sPoly& src) const;
+	bool testPolyInside(Fvector* p, int count) const;
 };
 #pragma pack(pop)
