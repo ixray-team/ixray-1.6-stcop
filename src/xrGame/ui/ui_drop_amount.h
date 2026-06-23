@@ -49,6 +49,7 @@ public:
     bool OnGamepadKeyAction(int id, EUIMessages gamepadAction) override;
     bool OnGamepadKeyHold(int id) override;
     void Update() override;
+    CUIGamepadLegend* _gamepadLegend = nullptr;
 
 private:
     CUIStatic* _background = nullptr;
@@ -66,7 +67,6 @@ private:
     CUI3tButton* _btnAll = nullptr;
     CUI3tButton* _btnCancel = nullptr;
     CUI3tButton* _btnAccept = nullptr;
-    CUIGamepadLegend* _gamepadLegend = nullptr;
 
     EDropMode _dropMode = eModeDrop;
     bool _simpleDropMode = false;
