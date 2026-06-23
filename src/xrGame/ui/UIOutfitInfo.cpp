@@ -11,15 +11,14 @@
 #include "../ActorCondition.h"
 #include "../player_hud.h"
 #include "../../xrEngine/string_table.h"
-
+#include "../BoneProtections.h"
 
 constexpr std::tuple<ALife::EHitType, const char*, const char*, float, const char*> outfit_immunity[] =
 {
-
 	{ ALife::eHitTypeBurn,			"burn_immunity",            "ui_inv_outfit_burn_protection",            100.0f,      "%" },
 	{ ALife::eHitTypeShock,			"shock_immunity",           "ui_inv_outfit_shock_protection",           100.0f,      "%" },
 	{ ALife::eHitTypeChemicalBurn,	"chemical_burn_immunity",   "ui_inv_outfit_chemical_burn_protection",   100.0f,      "%" },
-	{ ALife::eHitTypeRadiation,		"radiation_immunity",       "ui_inv_outfit_radiation_protection",       100.0f,	   "%" },
+	{ ALife::eHitTypeRadiation,		"radiation_immunity",       "ui_inv_outfit_radiation_protection",       100.0f,		 "%" },
 	{ ALife::eHitTypeTelepatic,		"telepatic_immunity",       "ui_inv_outfit_telepatic_protection",       100.0f,      "%" },
 	{ ALife::eHitTypeWound,			"wound_immunity",           "ui_inv_outfit_wound_protection",           100.0f,      "%" },
 	{ ALife::eHitTypeFireWound,		"fire_wound_immunity",      "ui_inv_outfit_fire_wound_protection",      100.0f,      "%" },
@@ -206,12 +205,12 @@ void CUIOutfitInfo::InitFromXml( CUIXml& xml_doc )
 CUIOutfitImmunity* CUIOutfitInfo::CreateItem(CUIXml& uiXml, const char* section,
     float magnitude, const shared_str& unit,
     shared_str translationId)
-		{
+{
 	CUIOutfitImmunity* item = new CUIOutfitImmunity();
 
 	const CUIOutfitImmunity::InitResult result = item->Init(uiXml, section);
 	switch (result)
-			{
+	{
 	case CUIOutfitImmunity::InitResult::Failed:
 		xr_delete(item);
 		return nullptr;
@@ -219,7 +218,7 @@ CUIOutfitImmunity* CUIOutfitInfo::CreateItem(CUIXml& uiXml, const char* section,
 	case CUIOutfitImmunity::InitResult::Plain:
 		item->SetDefaultValuesPlain(magnitude, unit);
 		break;
-			}
+	}
 
 	item->SetCaption(g_pStringTable->translate(translationId).c_str());
 
@@ -264,7 +263,7 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 
 		float cur = cur_outfit->GetDefHitTypeProtection( hit_type );
 		cur /= max_power; // = 0..1
-		if (m_items[i]->GetLegacyMode())
+		if (cur_outfit->m_boneProtection->m_hitFracType == SBoneProtections::HitFraction)
 			cur = 1 - cur;
 		float slot = cur;
 		
@@ -272,8 +271,10 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 		{
 			slot = slot_outfit->GetDefHitTypeProtection( hit_type );
 			slot /= max_power; //  = 0..1
-			if (m_items[i]->GetLegacyMode())
+			if (slot_outfit->m_boneProtection->m_hitFracType == SBoneProtections::HitFraction)
+			{
 				slot = 1 - slot;
+			}
 		}
 
 		float _val_af = Actor()->HitArtefactsOnBeltLegacy(1.0f, hit_type);
