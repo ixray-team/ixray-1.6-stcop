@@ -37,6 +37,7 @@
 #include "player_hud.h"
 #include "ImUtils/ImUtils.h"
 #include "script_game_object.h"
+#include "src/xrCore/Collision/override/Model.h"
 
 Fvector aabb_selection_vertices[32]
 {
@@ -928,12 +929,16 @@ void LevelInspector::OnRender()
 	{
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS))
 		{
+		{
 			DrawCFORM();
+		}
 		}
 
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_L_GRID))
 		{
+		{
 			DrawLevelGraph();
+		}
 		}
 	}
 
@@ -1188,7 +1193,7 @@ void LevelInspector::DrawWayPoints()
 		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && m_selection_flags.test(ESELECTION_FLAGS::ESLF_WP))
 		{
 			float range = RD.range;
-			if (visible_currents || (!RQ.O && wp->obb.intersect(cam_pos, cam_dir, range)))
+			if (visible_currents || (!ObjProcessed && wp->obb.intersect(cam_pos, cam_dir, range)))
 			{
 				bool text3d = append_text3d(wppos, wp->path_name, wp->color, CGameFont::alLeft);
 				if(text3d)
@@ -1236,7 +1241,8 @@ void LevelInspector::DrawWayPoints()
 				selected = true;
 				if(!visible_currents)
 				{
-					RQ.O = (CGameObject*)0xFF;
+					//RQ.O = (CGameObject*)0xFF; - больше так нельзя
+					ObjProcessed = true;
 					RD.range = range;
 				}
 			}
@@ -1267,6 +1273,7 @@ void LevelInspector::DrawWayPoints()
 			append_line({link, pp[1], clr});
 		}
 	}
+	ObjProcessed = false;
 }
 
 void PostProcessPath(
@@ -1861,7 +1868,7 @@ void LevelInspector::DrawGameGraph()
 		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && m_selection_flags.test(ESELECTION_FLAGS::ESLF_GP))
 		{
 			float range = RD.range;
-			if (visible_currents || (!RQ.O && graph_main.obb.intersect(cam_pos, cam_dir, range)))
+			if (visible_currents || (!ObjProcessed && graph_main.obb.intersect(cam_pos, cam_dir, range)))
 			{
 				selected_graph_id = graph_main.gvid;
 				Fvector post = pos;
@@ -1927,7 +1934,8 @@ void LevelInspector::DrawGameGraph()
 				tcolor = selection_tcolor;
 				if(!visible_currents)
 				{
-					RQ.O = (CGameObject*)0xFF;
+					//RQ.O = (CGameObject*)0xFF;
+					ObjProcessed = true;
 					RD.range = range;
 				}
 			}
@@ -1935,6 +1943,7 @@ void LevelInspector::DrawGameGraph()
 
 		append_graph_point(pos, graph_main.is_blue ? graph_blue_lcolor : default_lcolor, tcolor);
 	}
+	ObjProcessed = false;
 
 	for (auto& link : m_links)
 	{
@@ -2272,7 +2281,7 @@ void LevelInspector::DrawLevelGraph()
 		return;
 
 	CachedNode* selected_nodes[6] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
-	if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && m_selection_flags.test(ESELECTION_FLAGS::ESLF_LG) && RQR.r_count() && !RQ.O && g_actor)
+	if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && m_selection_flags.test(ESELECTION_FLAGS::ESLF_LG) && RQR.r_count() && RQ.IsStatic() && g_actor)
 	{
 		Fvector search_pos;
 		search_pos.mad(RD.start, RD.dir, RD.range+0.1f);
@@ -2415,7 +2424,7 @@ void LevelInspector::DrawLevelGraph()
 	}
 }
 #include "../xrEngine/EnnumerateVertices.h"
-void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGameObject* GO)
+void LevelInspector::DrawSkeleton(IKinematics* pKinematics, const Fmatrix& xform, CGameObject* GO)
 {
 	if (m_skeleton_flags.test(ESKELETON_INFO::ESI_NONE))
 		return;
@@ -2459,7 +2468,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 					bone_xform.transform_dir(obb.m_rotate.j);
 					bone_xform.transform_tiny(obb.m_translate);
 					append_obb(obb, lines_color, triangles_color);
-					if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && (shape.flags.test(SBoneShape::sfNoPickable) || !GO->getEnabled()) && GO->dcast_CObject() != RQ.O && obb.intersect(RD.start, RD.dir, RD.range))
+					if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && (shape.flags.test(SBoneShape::sfNoPickable) || !GO->getEnabled()) && GO->dcast_CObject() != RQ.GetDynamic() && obb.intersect(RD.start, RD.dir, RD.range))
 					{
 						Fvector C = obb.m_translate;
 						C.y += obb.m_rotate.j.magnitude() * 0.5f;
@@ -2476,7 +2485,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 					B.mulA_43(bone_xform);
 					append_ellipse(B, lines_color, triangles_color);
 					B.transform_tiny(sphere.P);
-					if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && (shape.flags.test(SBoneShape::sfNoPickable) || !GO->getEnabled()) && GO->dcast_CObject() != RQ.O && sphere.intersect2(RD.start, RD.dir, RD.range))
+					if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && (shape.flags.test(SBoneShape::sfNoPickable) || !GO->getEnabled()) && GO->dcast_CObject() != RQ.GetDynamic() && sphere.intersect2(RD.start, RD.dir, RD.range))
 					{
 						sphere.P.y += sphere.R;
 						DrawObjectInfo(GO, sphere.P, { 0.f, 0.f });
@@ -2489,7 +2498,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 					bone_xform.transform_tiny(Cyl.m_center);
 					bone_xform.transform_dir(Cyl.m_direction);
 					append_cylinder(Cyl, lines_color, triangles_color);
-					if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && (shape.flags.test(SBoneShape::sfNoPickable) || !GO->getEnabled()) && GO->dcast_CObject() != RQ.O && Cyl.intersect(RD.start, RD.dir, RD.range))
+					if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && (shape.flags.test(SBoneShape::sfNoPickable) || !GO->getEnabled()) && GO->dcast_CObject() != RQ.GetDynamic() && Cyl.intersect(RD.start, RD.dir, RD.range))
 					{
 						Fvector C = Cyl.m_center;
 						C.y += Cyl.m_radius * 2.f;
@@ -2511,7 +2520,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 				obb_xform.mulA_43(xform);
 				obb.xform_set(obb_xform);
 				append_obb(obb, lines_color, triangles_color);
-				if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && (shape.flags.test(SBoneShape::sfNoPickable) || !GO->getEnabled()) && GO->dcast_CObject() != RQ.O && obb.intersect(RD.start, RD.dir, RD.range))
+				if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && (shape.flags.test(SBoneShape::sfNoPickable) || !GO->getEnabled()) && GO->dcast_CObject() != RQ.GetDynamic() && obb.intersect(RD.start, RD.dir, RD.range))
 					DrawObjectInfo(GO, obb.m_translate, { 0.f, 0.f });
 			}
 
@@ -2586,7 +2595,7 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 		obb_xform.mulA_43(xform);
 		obb.xform_set(obb_xform);
 		append_obb(obb, lines_color, triangles_color);
-		if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && GO->dcast_CObject() != RQ.O && obb.intersect(RD.start, RD.dir, RD.range))
+		if (m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) && GO && GO->dcast_CObject() != RQ.GetDynamic() && obb.intersect(RD.start, RD.dir, RD.range))
 		{
 			Fvector C = obb.m_translate;
 			C.y += obb.m_rotate.j.magnitude() * 0.5f;
@@ -3218,7 +3227,8 @@ void LevelInspector::DrawObjectsInfo()
 {
 	Fvector& cam_pos = Device.vCameraPosition;
 	Fvector& cam_dir = Device.vCameraDirection;
-	RQ.set(nullptr, g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance, -1);
+	RQ.reset();
+	RQ.range = g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
 	collide::rq_target test_static = psDeviceFlags.test(rsDrawStatic) ? collide::rqtStatic : collide::rqtNone;
 	collide::rq_target test_dynamic = m_selection_flags.test(ESELECTION_FLAGS::ESLF_O) &&psDeviceFlags.test(rsDrawDynamic) ? collide::rqtObject : collide::rqtNone;
 	collide::rq_target test_zones = m_selection_flags.test(ESELECTION_FLAGS::ESLF_Z) ? collide::rqtShape : collide::rqtNone;
@@ -3229,13 +3239,13 @@ void LevelInspector::DrawObjectsInfo()
 	Level().ObjectSpace.RayQuery(
 	RQR, 
 	RD,
-	[](collide::rq_result & result, LPVOID params) -> bool
+	[](const collide::rq_result & result, LPVOID params) -> bool
 	{
 		collide::rq_result* RQ = (collide::rq_result*)params;
 
-		if (!result.O && result.element >=0)
+		if (result.IsStatic() && result.element >=0)
 		{
-			CDB::TRI& T = Level().ObjectSpace.GetStaticTris()[result.element];
+			auto& T = result.GetStatic()->tris[result.element];
 			SGameMtl* pMtl = GMLib.GetMaterialByIdx(T.material);
 			if (pMtl != nullptr && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
 				return true;
@@ -3280,11 +3290,12 @@ void LevelInspector::DrawObjectsInfo()
 
 	if (!visible_currents)
 	{
-		if (RQ.O)
+		if (!RQ.IsStatic())
 		{
-			if ((RQ.O->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
+			auto Obj = const_cast<CObject*>(RQ.GetDynamic());
+			if ((Obj->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 			{
-				CCF_Shape* ccfshape = (CCF_Shape*)(RQ.O->CFORM());
+				CCF_Shape* ccfshape = (CCF_Shape*)(Obj->CFORM());
 
 				CCF_Shape::shape_def& shape = ccfshape->shapes[RQ.element];
 				switch (shape.type)
@@ -3292,53 +3303,53 @@ void LevelInspector::DrawObjectsInfo()
 				case 0:
 				{
 					Fsphere sphere = shape.data.sphere;
-					RQ.O->XFORM().transform_tiny(sphere.P);
+					Obj->XFORM().transform_tiny(sphere.P);
 					Fvector C = sphere.P;
 					C.y += sphere.R;
-					DrawObjectInfo(RQ.O->cast_game_object(), C, { 0.f, 0.f });
+					DrawObjectInfo(Obj->cast_game_object(), C, { 0.f, 0.f });
 				}break;
 				case 1:
 				{
 					Fmatrix matrix = shape.data.box;
-					matrix.mulA_43(RQ.O->XFORM());
+					matrix.mulA_43(Obj->XFORM());
 					Fobb obb; obb.xform_set(matrix);
 					obb.m_halfsize.set(0.5f, 0.5f, 0.5f);
 					Fvector C = obb.m_translate;
 					C.y += obb.m_rotate.j.magnitude() * 0.5f;
-					DrawObjectInfo(RQ.O->cast_game_object(), C, { 0.f, 0.f });
+					DrawObjectInfo(Obj->cast_game_object(), C, { 0.f, 0.f });
 				}break;
 				default: NODEFAULT;
 				}
 			}
 			else
 			{
-				if (RQ.O->Visual())
+				if (Obj->Visual())
 				{
 					Fvector box_c, box_hs;
-					RQ.O->Visual()->getVisData().box.get_CD(box_c, box_hs);
+					Obj->Visual()->getVisData().box.get_CD(box_c, box_hs);
 					Fobb obb;
 					obb.m_rotate.identity();
 					obb.m_halfsize = box_hs;
 					obb.m_translate = box_c;
 					Fmatrix obb_xform;
 					obb.xform_get(obb_xform);
-					obb_xform.mulA_43(RQ.O->XFORM());
+					obb_xform.mulA_43(Obj->XFORM());
 					obb.xform_set(obb_xform);
-					float dist = RD.range + RQ.O->Radius();
+					float dist = RD.range + Obj->Radius();
 					if (obb.intersect(RD.start, RD.dir, dist))
 					{
 						Fvector C;
-						RQ.O->Center(C);
+						Obj->Center(C);
 						C.y += box_hs.y;
-						DrawObjectInfo(RQ.O->cast_game_object(), C, { 0.f, 0.f });
+						DrawObjectInfo(Obj->cast_game_object(), C, { 0.f, 0.f });
 					}
 				}
 				else
 				{
 					Fvector C;
-					RQ.O->Center(C);
-					C.y += RQ.O->Radius();
-					DrawObjectInfo(RQ.O->cast_game_object(), C, { 0.f, 0.f });
+					Obj->Center(C);
+					C.y += Obj->Radius();
+					DrawObjectInfo(Obj->cast_game_object(), C, { 0.f, 0.f });
 				}
 			}
 		}
@@ -3543,7 +3554,7 @@ void LevelInspector::DrawObjects()
 					for (int i = 0; i < shapes.size(); ++i)
 					{
 						u32 tritmp_color = tri_color;
-						if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && RQ.O == GO)
+						if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION) && !RQ.IsStatic() && RQ.GetDynamic() == GO)
 						{
 							if (RQ.element == i)
 							{
@@ -3777,21 +3788,32 @@ void LevelInspector::DrawSpatials()
 
 void LevelInspector::DrawHOM()
 {
+	if (!Render->GetHOMModel())
+	{
+		return;
+	}
 	static CDB::COLLIDER xrc;
 	xrc.frustum_options(0);
 	xrc.frustum_query(Render->GetHOMModel(), Render->ViewBase);
 	constexpr u32 hom_lclr = color_rgba(20, 20, 20, 255);
 	for (CDB::RESULT& res : xrc.r_vec())
 	{
-		auto& verts = res.verts;
+		VERIFY(res.model);
+		auto& Model = *res.model;
+		auto& Tris = Model.tris[res.tris_id];
+		Fvector verts[] = {
+			Model.verts[Tris.verts[0]],
+			Model.verts[Tris.verts[1]],
+			Model.verts[Tris.verts[2]],
+		};
 		append_tri({ verts[0], verts[1], verts[2], color_rgba(150, 150, 150, 100) });
 		append_line({ verts[0], verts[1], hom_lclr });
 		append_line({ verts[0], verts[2], hom_lclr });
 		append_line({ verts[2], verts[1], hom_lclr });
 	}
 
-	xr_vector<CDB::TRI>& hom_tris = Render->GetHOMModel()->get_tris();
-	xr_vector<Fvector>& hom_verts = Render->GetHOMModel()->get_verts();
+	xr_vector<CDB::TRI>& hom_tris = Render->GetHOMModel()->tris;
+	xr_vector<Fvector>& hom_verts = Render->GetHOMModel()->verts;
 	xr_vector<u32>& inv_v = *Render->GetHOMInvaltids();
 	for (u32 i : inv_v)
 	{
@@ -3809,6 +3831,9 @@ void LevelInspector::DrawCFORM()
 	{
 		xr_vector<lvertex> temp_lines;
 		xr_vector<tvertex> temp_tris;
+		
+		Fbox LocAABBForTests;
+		bool LocTestAABB;
 
 		ICF void clear()
 		{
@@ -3823,7 +3848,7 @@ void LevelInspector::DrawCFORM()
 		static u32 prims_calc = 0, prims_render = 1;
 		
 		static xr_atomic_bool task_finished = true;
-		static CDB::RESULT selected_prim{{zero_vel,zero_vel,zero_vel},0u,-1,0.f,0.f,0.f};
+		static CDB::RESULT selected_prim{Fmatrix{Fmatrix::EIdentity::Identity}, nullptr,0u,-1,0.f,0.f};
 
 		if ((m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS)) && task_finished.load())
 		{
@@ -3840,60 +3865,162 @@ void LevelInspector::DrawCFORM()
 					xrc.ray_options(CDB::OPT_ONLYNEAREST);
 					xrc.ray_query(g_pGameLevel->ObjectSpace.GetStaticModel(), Device.vCameraPosition, Device.vCameraDirection);
 					if (!xrc.r_vec().empty())
+					{
 						selected_prim = xrc.r_vec()[0];
+					}
 					else
-						selected_prim.id = -1;
+					{
+						selected_prim.model = nullptr;
+						selected_prim.tris_id = -1;
+					}
 				}
 				else
-					selected_prim.id = -1;
+				{
+					selected_prim.model = nullptr;
+					selected_prim.tris_id = -1;
+				}
 
 				static u32 mask; mask = Render->ViewBase.getMask();
 				static float max_dist; max_dist = g_pGamePersistent->Environment().CurrentEnv->fog_distance;
+				static CFrustum ViewBaseCopy; ViewBaseCopy = Render->ViewBase;
 
 				xrc.custom_query(g_pGameLevel->ObjectSpace.GetStaticModel(),
-				[](const Fvector& center, const Fvector& extents, bool leaf, void* ptr)
+				[](const CDB::MODEL& Model, const Fmatrix& ToWorldTransform, const CDB::BVHNode& Node, void* ptr)
 				{
+					LevelInspector* LE = (LevelInspector*)ptr;
+
+					Fbox WorldAABB;
+					WorldAABB.invalidate();
+					if (Node.GetParent())
+					{
+						auto Parent = Node.GetParent();
+						for (size_t i = 0; i < Parent->GetSize(); ++i)
+						{
+							if (Parent->GetElement(i).p == &Node)
+							{
+								for (int j = 0; j < 8; ++j)
+								{
+									Fvector p;
+									Parent->GetAABB(i).getpoint(j, p);
+									ToWorldTransform.transform_tiny(p);
+									WorldAABB.modify(p);
+								}
+								break;
+							}
+						}
+					} else
+					{
+						for (size_t i = 0; i < Node.GetSize(); ++i)
+						{
+							for (int j = 0; j < 8; ++j)
+							{
+								Fvector p;
+								Node.GetAABB(i).getpoint(j, p);
+								ToWorldTransform.transform_tiny(p);
+								WorldAABB.modify(p);
+							}
+						}
+					}
+					Fvector center, extents;
+					WorldAABB.get_CD(center, extents);
 					const Fvector& cam_pos = Device.vCameraPosition;
 					float distsqr = cam_pos.distance_to_sqr(center) + EPS;
 					float radius = extents.magnitude();
-					LevelInspector* LE = (LevelInspector*)ptr;
 					if (radius / distsqr <= LE->cform_ssa || distsqr > _sqr(max_dist + radius))
-						return false;
-
-					Fbox BB{ center - extents, center + extents };
-					if (fcvNone == Render->ViewBase.testAABB(BB.data(), mask))
-						return false;
-
-					if ((leaf || LE->m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_ALL)) && LE->m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) && !BB.contains(cam_pos))
 					{
-						Fvector vertices[8];
-						for (int i = 0; i < 8; i++)
-							BB.getpoint(i, vertices[i]);
+						return false;
+					}
 
-						const size_t line_count = std::size(aabb_lindices);
-						const size_t tri_count = std::size(aabb_tindices);
-						for (size_t i = 0; i < std::max(line_count, tri_count); ++i)
+					auto Copy = mask;
+					if (fcvNone == Render->ViewBase.testAABB(WorldAABB.data(), Copy))
+					{
+						return false;
+					}
+					
+					for (int i = 0; i < Node.GetSize(); ++i)
+					{
+						// TODO: Инстансы потом
+						bool IsLeaf = !Node.HasNode(i);
+						if (LE->m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) 
+							&& (IsLeaf || LE->m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_ALL)) 
+							&& !Node.GetAABB(i).contains(cam_pos))
 						{
-							if (i < tri_count)
-								temp_prims[prims_calc].temp_tris.push_back({ vertices[aabb_tindices[i].i1], 
-																					vertices[aabb_tindices[i].i2], 
-																					vertices[aabb_tindices[i].i3], positionToColorWithAlpha(center) });
-							if (i < line_count)
-								temp_prims[prims_calc].temp_lines.push_back({ vertices[aabb_lindices[i].i1], 
-																					vertices[aabb_lindices[i].i2], color_rgba(10, 10, 10, 122) });
+							Fvector vertices[8];
+							if (IsLeaf)
+							{
+								if (Node.GetElement(i).IsInstance)
+								{
+									auto& Inst = Model.get_instances()[Node.GetElement(i).Index];
+									for (int j = 0; j < 8; ++j)
+									{
+										Inst.GlobalAABB.getpoint(j, vertices[j]);
+										ToWorldTransform.transform_tiny(vertices[j]);
+									}
+								} else
+								{
+									Fbox ChildAABB = Node.GetAABB(i);
+									auto& Tris = Model.get_tris()[Node.GetElement(i).Index];
+									ToWorldTransform.transform_tiny(vertices[0], Model.get_verts()[Tris.verts[0]]);
+									ToWorldTransform.transform_tiny(vertices[1], Model.get_verts()[Tris.verts[1]]);
+									ToWorldTransform.transform_tiny(vertices[2], Model.get_verts()[Tris.verts[2]]);
+									ChildAABB.modify(vertices[0]);
+									ChildAABB.modify(vertices[1]);
+									ChildAABB.modify(vertices[2]);
+									for (int j = 0; j < 8; j++)
+									{
+										ChildAABB.getpoint(j, vertices[j]);
+									}
+								}
+							}
+							else
+							{
+								for (int j = 0; j < 8; j++)
+								{
+									Node.GetAABB(i).getpoint(j, vertices[j]);
+									ToWorldTransform.transform_tiny(vertices[j]);
+								}
+							}
+
+							constexpr size_t line_count = std::size(aabb_lindices);
+							constexpr size_t tri_count = std::size(aabb_tindices);
+							for (size_t j = 0; j < std::max(line_count, tri_count); ++j)
+							{
+								if (j < tri_count)
+								{
+									temp_prims[prims_calc].temp_tris.push_back({
+										vertices[aabb_tindices[j].i1], 
+										vertices[aabb_tindices[j].i2], 
+										vertices[aabb_tindices[j].i3],
+										positionToColorWithAlpha(center) });
+								}
+								if (j < line_count)
+								{
+									temp_prims[prims_calc].temp_lines.push_back({
+										vertices[aabb_lindices[j].i1], 
+										vertices[aabb_lindices[j].i2],
+										color_rgba(10, 10, 10, 122) });
+								}
+							}
 						}
 					}
 					return true;
 				}, this,
 				m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS) ?
-				[](size_t InPrim, void* ptr)
+				[](const CDB::MODEL& Model, const Fmatrix& ToWorldTransform, CDB::ElementID InPrim, void* ptr)
 				{
-					if (selected_prim.id == InPrim) return;
+					VERIFY(InPrim.IsNotPointer);
+					if ((selected_prim.model == &Model && selected_prim.tris_id == InPrim.Index) || InPrim.IsInstance)
+					{
+						return;
+					}
 
-					auto& StaticTris = g_pGameLevel->ObjectSpace.GetStaticModel()->get_tris();
-					auto& verts = g_pGameLevel->ObjectSpace.GetStaticModel()->get_verts();
-					auto& TriVerts = StaticTris[InPrim].verts;
-					Fvector tri_verts[3] = { verts[TriVerts[0]], verts[TriVerts[1]], verts[TriVerts[2]] };
+					auto& StaticTris = Model.tris;
+					auto& verts = Model.verts;
+					auto& TriVerts = StaticTris[InPrim.Index].verts;
+					Fvector tri_verts[3];
+					ToWorldTransform.transform_tiny(tri_verts[0], verts[TriVerts[0]]);
+					ToWorldTransform.transform_tiny(tri_verts[1], verts[TriVerts[1]]);
+					ToWorldTransform.transform_tiny(tri_verts[2], verts[TriVerts[2]]);
 
 					temp_prims[prims_calc].temp_tris.push_back({ tri_verts[0], tri_verts[1], tri_verts[2], color_rgba(100, 100, 100, 45) });
 					temp_prims[prims_calc].temp_lines.push_back({ tri_verts[0], tri_verts[1], color_rgba(20, 20, 20, 255) });
@@ -3901,16 +4028,19 @@ void LevelInspector::DrawCFORM()
 					temp_prims[prims_calc].temp_lines.push_back({ tri_verts[2], tri_verts[1], color_rgba(20, 20, 20, 255) });
 
 				} : nullptr, nullptr);
-
 				task_finished.store(true);
 			});
 		}
 		bool delete_last = false;
-		if (selected_prim.id != -1)
+		if (selected_prim.model && selected_prim.tris_id != -1)
 		{
 			delete_last = true;
-			auto& TriVerts = selected_prim.verts;
-			Fvector tri_verts[3] = { TriVerts[0], TriVerts[1], TriVerts[2] };
+			auto& tris = selected_prim.model->tris[selected_prim.tris_id];
+			auto& TriVerts = tris.verts;
+			Fvector tri_verts[3];
+			selected_prim.ModelWorldTransform.transform_tiny(tri_verts[0], selected_prim.model->verts[TriVerts[0]]);
+			selected_prim.ModelWorldTransform.transform_tiny(tri_verts[1], selected_prim.model->verts[TriVerts[1]]);
+			selected_prim.ModelWorldTransform.transform_tiny(tri_verts[2], selected_prim.model->verts[TriVerts[2]]);
 			temp_prims[prims_render].temp_tris.push_back({ tri_verts[0], tri_verts[1], tri_verts[2], color_rgba(20, 20, 255, 45) });
 			temp_prims[prims_render].temp_lines.push_back({ tri_verts[0], tri_verts[1], color_rgba(10, 10, 10, 255) });
 			temp_prims[prims_render].temp_lines.push_back({ tri_verts[0], tri_verts[2], color_rgba(10, 10, 10, 255) });
@@ -3928,9 +4058,13 @@ void LevelInspector::DrawCFORM()
 			
 			Fvector perp1, perp2;
 			if (abs(normal.x) < 0.9f)
+			{
 				perp1.set(1.0f, 0.0f, 0.0f);
+			}
 			else
+			{
 				perp1.set(0.0f, 1.0f, 0.0f);
+			}
 
 			perp2.crossproduct(perp1, normal).normalize();
 			perp1.crossproduct(normal, perp2).normalize();
@@ -3946,11 +4080,14 @@ void LevelInspector::DrawCFORM()
 
 			temp_prims[prims_render].temp_lines.push_back({ arrow_pos[0], arrow_pos[1], color_rgba(10, 220, 255, 255) });
 
-			if (SGameMtl* mtl = GMLib.GetMaterialByIdx(selected_prim.material))
-				append_text3d(arrow_pos[1], shared_str().printf("%s id[%d] idx[%d] s[%d]", *mtl->m_Name, mtl->ID, selected_prim.material, selected_prim.sector));
+			if (SGameMtl* mtl = GMLib.GetMaterialByIdx(tris.material))
+			{
+				append_text3d(arrow_pos[1], shared_str().printf("%s id[%d] idx[%d] s[%d]", *mtl->m_Name, mtl->ID, tris.material, selected_prim.Sector));
+			}
 		}
 
-		if (tris.empty() && lines.empty() && (!temp_prims[prims_render].temp_tris.empty() || !temp_prims[prims_render].temp_lines.empty()))
+		if (tris.empty() && lines.empty() && 
+			(!temp_prims[prims_render].temp_tris.empty() || !temp_prims[prims_render].temp_lines.empty()))
 		{
 			UIRender->CacheSetXformWorld(Fidentity);
 			if (Device.m_pRender)

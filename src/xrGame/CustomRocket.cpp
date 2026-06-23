@@ -234,7 +234,7 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, dContact& c
 					{	//. desync?
 						velocity.normalize();
 						Triangle neg_tri;
-						CalculateTriangle(l_pUD->neg_tri, g, neg_tri, Level().ObjectSpace.GetStaticVerts().data());
+						CalculateTriangle(l_pUD->neg_tri, g, neg_tri);
 						float cosinus = velocity.dotproduct(*((Fvector*)neg_tri.norm));
 						VERIFY(_valid(neg_tri.dist));
 						float dist = neg_tri.dist / cosinus;

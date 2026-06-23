@@ -1,87 +1,140 @@
 #include "stdafx.h"
 #include "Model.h"
-#include <OPC_TreeBuilders.h>
-#include <Opcode.h>
 
-CDB_Model::CDB_Model()
+namespace CDB::Internal
 {
-	pTree = new CDB_OptimizeTree();
-}
+	constexpr size_t PrimitiveFinalInvalidID = (size_t(-1) >> 2);
 
-CDB_Model::~CDB_Model()
-{
-	Release();
-}
-
-void CDB_Model::Store(IWriter* writer)
-{
-	writer->w_u64(mModelCode);
-	pTree->Store(writer);
-}
-
-bool CDB_Model::Restore(IReader* reader)
-{
-	if (reader->elapsed() < sizeof(u64))
+	/* Callback to create a node */
+	void* EmbreeCreateNodeFunction(RTCThreadLocalAllocator allocator, unsigned int childCount, void* userPtr)
 	{
-		Msg("* Level Collision DB cache file missing model code!");
-		return false;
-	}
-	mModelCode = (udword)reader->r_u64();
-
-	return pTree->Restore(reader);
-}
-
-bool CDB_Model::Build(const Opcode::OPCODECREATE& create)
-{
-	if (!create.mIMesh || !create.mIMesh->IsValid())	return false;
-
-	if (create.mSettings.mLimit != 1)
-	{
-		Msg("OPCODE WARNING: supports complete trees only! Use mLimit = 1. Current mLimit = %d", create.mSettings.mLimit);
-		return false;
+		auto Node = (BVHNode*)rtcThreadLocalAlloc(allocator, sizeof(BVHNode) + sizeof(BVHNode::Child)*childCount, 16);
+		Node->SetSize(childCount);
+		Node->SetChildrenPtr((BVHNode::Child*)(((u8*)Node)+sizeof(BVHNode)));
+		Node->SetParent(nullptr);
+		for (size_t i = 0; i < childCount; i++)
+		{
+			Node->GetAABB(i).invalidate();
+			Node->GetElement(i).p = nullptr;
+		}
+		return Node;
 	}
 
-	u64 NbDegenerate = create.mIMesh->CheckTopology();
-
-	if (NbDegenerate)
-		Msg("OPCODE WARNING: found %d degenerate faces in model! Collision might report wrong results!\n", NbDegenerate);
-
-	ReleaseBase();
-	SetMeshInterface(create.mIMesh);
-
-	u64 NbTris = create.mIMesh->GetNbTriangles();
-	bool Status = false;
-
-	if (NbTris == 1)
+	/* Callback to set the pointer to all children */
+	void EmbreeSetNodeChildrenFunction(void* nodePtr, void** children, unsigned int childCount, void* userPtr)
 	{
-		mModelCode |= ModelFlag::OPC_SINGLE_NODE;
-		Status = true;
-		goto FreeAndExit;
+		auto Node = (BVHNode*)nodePtr;
+		for (size_t i = 0; i < childCount; i++)
+		{
+			auto ChildNode = (BVHNode*)children[i];
+			Node->GetElement(i).p = ChildNode;
+			ChildNode->SetParent(Node);
+		}
+		*((BuilderConfig::Data*)userPtr)->Ptr = Node;
 	}
 
-	mSource = new Opcode::AABBTree();
+	/* Callback to set the bounds of all children */
+	void EmbreeSetNodeBoundsFunction(void* nodePtr, const struct RTCBounds** bounds, unsigned int childCount, void* userPtr)
 	{
-		Opcode::AABBTreeOfTrianglesBuilder TB;
-		TB.mIMesh = create.mIMesh;
-		TB.mSettings = create.mSettings;
-		TB.mNbPrimitives = (udword)NbTris;
-		if (!mSource->Build(&TB))	goto FreeAndExit;
+		auto Node = (BVHNode*)nodePtr;
+		for (size_t i = 0; i < childCount; i++)
+		{
+			Fbox& AABB = Node->GetAABB(i);
+			AABB.min.x = bounds[i]->lower_x;
+			AABB.min.y = bounds[i]->lower_y;
+			AABB.min.z = bounds[i]->lower_z;
+			AABB.max.x = bounds[i]->upper_x;
+			AABB.max.y = bounds[i]->upper_y;
+			AABB.max.z = bounds[i]->upper_z;
+		}
 	}
 
-	if (!CreateTree(create.mNoLeaf, create.mQuantized))	goto FreeAndExit;
-	if (!pTree->Build(mSource))	goto FreeAndExit;
+	/* Callback to create a leaf node */
+	void* EmbreeCreateLeafFunction(RTCThreadLocalAllocator allocator, const struct RTCBuildPrimitive* primitives, size_t primitiveCount, void* userPtr)
+	{
+		auto Node = (BVHNode*)EmbreeCreateNodeFunction(allocator, primitiveCount, userPtr);
+		for (size_t i = 0; i < primitiveCount; i++)
+		{
+			Node->GetElement(i).IsNotPointer = true;
+			Node->GetElement(i).IsInstance = primitives[i].geomID != u32(-1);
+			Node->GetElement(i).Index = primitives[i].primID;
+			if (Node->GetElement(i).IsInstance)
+			{
+				Node->GetElement(i).Index -= ((BuilderConfig::Data*)userPtr)->FacesCount;
+			}
+		}
+		return Node;
+	}
 
-	// Finally ok...
-	Status = true;
-
-FreeAndExit:
-	if (!create.mKeepOriginal)
-		xr_delete(mSource);
-
-	return Status;
 }
 
-void CDB_Model::Release()
+RTCBVH CDB::BuildModel(const BuilderConfig& config)
 {
-	xr_delete(pTree);
+	using namespace CDB::Internal;
+	auto model = rtcNewBVH(GetEmbreeDevice());
+	
+	size_t TotalPrimitives = 0;
+	if (config.Faces)
+	{
+		TotalPrimitives += config.Faces->size();
+	}
+	if (config.Instances)
+	{
+		TotalPrimitives += config.Instances->size();
+	}
+	if (!TotalPrimitives)
+	{
+		return model;
+	}
+	xr_vector<RTCBuildPrimitive> Primitives;
+	
+	size_t i = 0;
+	if (config.Faces)
+	{
+		for (auto& Face : *config.Faces)
+		{
+			Fbox AABB;
+			AABB.invalidate();
+			AABB.modify(config.Vertices->at(Face.verts[0]));
+			AABB.modify(config.Vertices->at(Face.verts[1]));
+			AABB.modify(config.Vertices->at(Face.verts[2]));
+			Primitives.emplace_back(
+				AABB.min.x, AABB.min.y, AABB.min.z,
+				u32(-1),
+				AABB.max.x, AABB.max.y, AABB.max.z,
+				i++
+			);
+		}
+	}
+	if (config.Instances)
+	{
+		for (int j = 0; j < config.Instances->size(); j++)
+		{
+			auto& Inst = config.Instances->at(j);
+			Primitives.emplace_back(
+				Inst.GlobalAABB.min.x, Inst.GlobalAABB.min.y, Inst.GlobalAABB.min.z,
+				j,
+				Inst.GlobalAABB.max.x, Inst.GlobalAABB.max.y, Inst.GlobalAABB.max.z,
+				i++
+			);
+		}
+	}
+	
+	auto args = rtcDefaultBuildArguments();
+	args.byteSize = 8;
+	args.buildQuality = RTC_BUILD_QUALITY_HIGH;
+	args.maxBranchingFactor = 4;
+	args.maxLeafSize = 4;
+	args.maxDepth = 64;
+	args.bvh = model;
+	args.primitives = Primitives.data();
+	args.primitiveCount = Primitives.size();
+	args.primitiveArrayCapacity = Primitives.capacity();
+	args.createNode = &EmbreeCreateNodeFunction;
+	args.setNodeChildren = &EmbreeSetNodeChildrenFunction;
+	args.setNodeBounds = &EmbreeSetNodeBoundsFunction;
+	args.createLeaf = &EmbreeCreateLeafFunction;
+	args.userPtr = config.UserData;
+	rtcBuildBVH(&args);
+	return model;
 }

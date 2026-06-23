@@ -8,7 +8,7 @@ struct SGameMtl;
 namespace	CDB{	class TRI;	}
 class		CBoneInstance;
 
-typedef void 	ContactCallbackFun(CDB::TRI* T,dContactGeom* c);
+typedef void 	ContactCallbackFun(const CDB::TRI& T, Fvector* verts,dContactGeom* c);
 typedef	void	ObjectContactCallbackFun(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2);
 
 

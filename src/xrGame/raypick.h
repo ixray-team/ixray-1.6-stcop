@@ -12,11 +12,14 @@ struct script_rq_result
 	script_rq_result() {O = 0; range = 0; element = 0;};
 	void set(collide::rq_result& R) 
 	{
-		if (R.O)
+		if (!R.IsStatic())
 		{
-			CGameObject *go = smart_cast<CGameObject *>(R.O);
+			auto obj = const_cast<CObject*>(R.GetDynamic());
+			auto go = smart_cast<CGameObject*>(obj);
 			if (go)
+			{
 				O = go->lua_game_object();
+			}
 		}
 		range = R.range; 
 		element = R.element;

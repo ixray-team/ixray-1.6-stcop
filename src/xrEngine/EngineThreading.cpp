@@ -48,6 +48,7 @@ static std::atomic_bool g_bThreadsSEHInited = false;
 
 void XRay::Engine::PreRenderThread()
 {
+	PROF_START_THREAD("PreRenderThread");
 #ifdef ALLOW_SEH_EXCEPTIONS
 	if (!g_bThreadsSEHInited)
 	{
@@ -83,10 +84,12 @@ void XRay::Engine::PreRenderThread()
 		FATAL("Unhandled exception in PreRenderThread!");
 #endif
 	}
+	PROF_STOP_THREAD()
 }
 
 void XRay::Engine::GameThread()
 {
+	PROF_START_THREAD("GameThread");
 #ifdef ALLOW_SEH_EXCEPTIONS
 	if (!g_bThreadsSEHInited)
 	{
@@ -172,4 +175,5 @@ void XRay::Engine::GameThread()
 		FATAL("Unhandled exception in GameThread!");
 #endif
 	}
+	PROF_STOP_THREAD()
 }

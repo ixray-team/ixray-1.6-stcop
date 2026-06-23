@@ -38,3 +38,30 @@ IC void	 MulSprDmp(float& cfm, float& erp, float mul_spring, float mul_damping)
 	cfm *= factor;
 	erp *= (factor * mul_spring);
 }
+
+struct TriabgleCDBData
+{
+	Fmatrix InvXFORM{Fmatrix::EIdentity::Identity};
+	const CDB::MODEL* model = nullptr;
+	size_t tris_id = -1;
+	
+	ICF bool Valid() const
+	{
+		return model && (tris_id < model->tris.size());
+	}
+	
+	ICF const CDB::TRI& GetTri() const
+	{
+		VERIFY(Valid());
+		return model->tris[tris_id];
+	}
+	
+	using VertsArr = Fvector[3];
+	ICF void GetVerts(VertsArr& Out) const
+	{
+		auto& Tri = GetTri();
+		InvXFORM.transform_tiny(Out[0], model->verts[Tri.verts[0]]);
+		InvXFORM.transform_tiny(Out[1], model->verts[Tri.verts[1]]);
+		InvXFORM.transform_tiny(Out[2], model->verts[Tri.verts[2]]);
+	}
+};

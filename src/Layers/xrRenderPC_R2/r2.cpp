@@ -16,6 +16,7 @@
 #include "../xrRender/dxUIShader.h"
 #include "../../xrCore/git_version.h"
 #include "../xrRender/RenderInterfaceShared.h"
+#include "src/Layers/xrRender/FTreeVisual_Prototype.h"
 
 CRender RImplementation;
 
@@ -291,6 +292,16 @@ void CRender::OnFrame()
 IRender_ObjectSpecific*	CRender::ros_create				(IRenderable* parent)				{ return new CROS_impl();			}
 void					CRender::ros_destroy			(IRender_ObjectSpecific* &p)		{ xr_delete(p);							}
 IRenderVisual*			CRender::model_Create			(str_c name, IReader* data)		{ return Models->Create(name,data);		}
+
+IRenderVisual* CRender::model_GetPrototype(str_c name)
+{
+	return Models->GetPrototype(name);
+}
+
+CDB::MODEL* CRender::model_GetPrototypeCollision(str_c name)
+{
+	return ((FTreeVisual_Prototype*)model_GetPrototype(name))->GetCollisionModel();
+}
 IRenderVisual*			CRender::model_CreateChild		(str_c name, IReader* data)		{ return Models->CreateChild(name,data);}
 IRenderVisual*			CRender::model_Duplicate		(IRenderVisual* V)					{ return Models->Instance_Duplicate((dxRender_Visual*)V);	}
 void					CRender::model_Delete			(IRenderVisual* &V, bool bDiscard)
@@ -343,25 +354,25 @@ RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count, bool	_alt)
 {
 	if (_alt)
 	{
-		*Count = xDC[id].size();
-		return xDC[id].begin();
+		*Count = xGlobalData.DCL[id].size();
+		return xGlobalData.DCL[id].begin();
 	}
 	else
 	{
-		*Count = nDC[id].size();
-		return nDC[id].begin();
+		*Count = nGlobalData.DCL[id].size();
+		return nGlobalData.DCL[id].begin();
 	}
 }
 
 IRHIBuffer*	CRender::getVB					(int id, bool	_alt)	{
-	if (_alt)	{ VERIFY(id<int(xVB.size()));	return xVB[id];		}
-	else		{ VERIFY(id<int(nVB.size()));	return nVB[id];		}
+	if (_alt)	{ VERIFY(id<int(xGlobalData.VB.size()));	return xGlobalData.VB[id];		}
+	else		{ VERIFY(id<int(nGlobalData.VB.size()));	return nGlobalData.VB[id];		}
 }
 IRHIBuffer*	CRender::getIB					(int id, bool	_alt)	{
-	if (_alt)	{ VERIFY(id<int(xIB.size()));	return xIB[id];		}
-	else		{ VERIFY(id<int(nIB.size()));	return nIB[id];		}
+	if (_alt)	{ VERIFY(id<int(xGlobalData.IB.size()));	return xGlobalData.IB[id];		}
+	else		{ VERIFY(id<int(nGlobalData.IB.size()));	return nGlobalData.IB[id];		}
 }
-FSlideWindowItem*		CRender::getSWI					(int id)			{ VERIFY(id<int(SWIs.size()));		return &SWIs[id];	}
+FSlideWindowItem*		CRender::getSWI					(int id)			{ VERIFY(id<int(nGlobalData.SWIs.size()));		return &nGlobalData.SWIs[id];	}
 
 IRender_Light*			CRender::light_create			()					{ return Lights.Create();								}
 IRender_Glow*			CRender::glow_create			()					{ return new CGlow();								}
@@ -393,12 +404,12 @@ CRender::CRender()
 
 CRender::~CRender()
 {
-	for (auto& it : SWIs) {
+	for (auto& it : nGlobalData.SWIs) {
 		xr_free(it.sw);
 		it.sw = nullptr;
 		it.count = 0;
 	}
-	SWIs.clear();
+	nGlobalData.SWIs.clear();
 }
 
 #include "../../xrEngine/GameFont.h"

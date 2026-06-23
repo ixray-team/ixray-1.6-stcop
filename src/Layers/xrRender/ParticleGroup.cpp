@@ -372,7 +372,7 @@ void OnGroupParticleDead(void* owner, u32 param, PAPI::Particles& P, size_t pID,
 
 void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying)
 {
-	// PROF_EVENT(__FUNCTION__);
+	//PROF_EVENT(__FUNCTION__);
 	if (CParticleEffect* E = root_effect)
 	{
 		E->OnFrame(u_dt);

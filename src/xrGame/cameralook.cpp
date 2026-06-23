@@ -27,12 +27,131 @@ Fvector CCameraLook2::m_cam_offset_l;
 bool CCameraLook2::m_use_inertion;
 Fvector m_cam_offset_curr = {0.f, 0.f, 0.f};
 
+void CCameraLook::Update(Fvector& point, Fvector& noise_dangle, bool force_update_pos)
+{
+	Fvector placeholder = zero_vel;
+	inherited::Update(point, placeholder, false);
+	
+	if (m_Flags.is(flRelativeLink))
+	{
+		parent->XFORM().transform_dir(vDirection);
+		parent->XFORM().transform_dir(vNormal);
+	}
+	UpdateDistance		(point);
+}
+
+ICF static bool GetPickDist_Callback(const collide::rq_result& result, LPVOID params)
+{
+	collide::rq_result* RQ = (collide::rq_result*)params;
+
+	if (!result.IsStatic())
+	{
+		auto Obj = const_cast<CObject*>(result.GetDynamic());
+		if (CCustomRocket* pRocket = Obj != nullptr ? Obj->cast_custom_rocket() : nullptr)
+		{
+			if (!pRocket->Useful())
+				return true;
+		}
+
+		if (CMissile* pMissile = Obj != nullptr ? Obj->cast_missile() : nullptr)
+		{
+			if (!pMissile->Useful())
+				return true;
+		}
+		CObject* current_entity = Level().CurrentEntity();
+		if (CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr)
+		{
+			if (Obj == pActor)
+			{
+				return true;
+			}
+
+			if (CHolderCustom* get_holder = pActor->Holder())
+			{
+				CCar* car = get_holder != nullptr ? get_holder->cast_car() : nullptr;
+				if (car && Obj == car)
+				{
+					return true;
+				}
+			}
+		}
+	}
+	else
+	{
+		auto& T = result.GetStatic()->tris[result.element];
+		SGameMtl* pMtl = GMLib.GetMaterialByIdx(T.material);
+		if (pMtl != nullptr && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
+		{
+			return true;
+		}
+	}
+
+	*RQ = result;
+	return false;
+}
+
+collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore)
+{
+	collide::rq_result RQ;
+	RQ.reset();
+	RQ.range = range;
+	static collide::rq_results RQR;
+	collide::ray_defs RD(pos, dir, RQ.range, CDB::OPT_FULL_TEST, collide::rqtBoth);
+	Level().ObjectSpace.RayQuery(RQR, RD, GetPickDist_Callback, &RQ, nullptr, ignore);
+	return RQ;
+}
+
+// CAM_3
+CCameraLook::CCameraLook(CObject* p, u32 flags ) 
+:CCameraBase(p, flags)
+{
+}
+
+void CCameraLook::Load(const char* section)
+{
+	inherited::Load		(section);
+	style				= csLookAt;
+	lim_zoom			= pSettings->r_fvector2	(section,"lim_zoom");
+	dist				= (lim_zoom[0]+lim_zoom[1])*0.5f;
+	prev_d				= 0.0f;
+}
+
+CCameraLook::~CCameraLook()
+{
+}
+
+void CCameraLook::save(NET_Packet& packet) 
+{
+	save_data(pitch, packet);
+}
+
+void CCameraLook::load(IReader& packet) 
+{
+	load_data(pitch, packet);
+}
+
 void CCameraLook::Serialize(ISaveObject& Object)
 {
 	BEGIN_CHUNK(Object,"CCameraLook")
 	{
 		Object << pitch;
 	}
+}
+
+void CCameraLook::Update(Fvector& point, Fvector& /**noise_dangle/**/)
+{
+	vPosition.set		(point);
+	Fmatrix mR;
+	mR.setHPB			(-yaw,-pitch,-roll);
+
+	vDirection.set		(mR.k);
+	vNormal.set			(mR.j);
+
+	if (m_Flags.is(flRelativeLink)){
+		parent->XFORM().transform_dir(vDirection);
+		parent->XFORM().transform_dir(vNormal);
+	}
+	UpdateDistance		(point);
 }
 
 ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
@@ -92,49 +211,6 @@ collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject*
 	collide::ray_defs RD(pos, dir, RQ.range, CDB::OPT_FULL_TEST, collide::rqtBoth);
 	Level().ObjectSpace.RayQuery(RQR, RD, GetPickDist_Callback, &RQ, nullptr, ignore);
 	return RQ;
-}
-
-// CAM_3
-CCameraLook::CCameraLook(CObject* p, u32 flags ) 
-:CCameraBase(p, flags)
-{
-}
-
-void CCameraLook::Load(const char* section)
-{
-	inherited::Load		(section);
-	style				= csLookAt;
-	lim_zoom			= pSettings->r_fvector2	(section,"lim_zoom");
-	dist				= (lim_zoom[0]+lim_zoom[1])*0.5f;
-	prev_d				= 0.0f;
-}
-
-CCameraLook::~CCameraLook()
-{
-}
-
-void CCameraLook::save(NET_Packet& packet) 
-{
-	save_data(pitch, packet);
-}
-
-void CCameraLook::load(IReader& packet) 
-{
-	load_data(pitch, packet);
-}
-
-void CCameraLook::Update(Fvector& point, Fvector& noise_dangle, bool force_update_pos)
-{
-	Fvector placeholder = zero_vel;
-	inherited::Update(point, placeholder, false);
-	
-	if (m_Flags.is(flRelativeLink))
-	{
-		parent->XFORM().transform_dir(vDirection);
-		parent->XFORM().transform_dir(vNormal);
-	}
-
-	UpdateDistance(point);
 }
 
 void CCameraLook::UpdateDistance(Fvector& point) 

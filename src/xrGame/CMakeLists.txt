@@ -215,6 +215,7 @@ endif()
 
 # Include directories
 target_include_directories(xrGame PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrGame PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_include_directories(xrGame PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../xrServerEntities/")
 target_include_directories(xrGame PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ui/")
 target_include_directories(xrGame PUBLIC "${IXRAY_SDK_INC}")

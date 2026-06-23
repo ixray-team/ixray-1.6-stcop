@@ -97,6 +97,7 @@ public:
 	void	xrPhase_TangentBasis	();
 
 	void	BuildCForm				();
+	void BuildCTree();
  	void	BuildPortals			(IWriter &fs);
 	 
 		

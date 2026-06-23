@@ -1258,20 +1258,20 @@ struct STraceBorderQParams
 	STraceBorderQParams& operator = (STraceBorderQParams& p) { VERIFY(false); return p; }
 };
 
-bool CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID params)
+bool CPHMovementControl::BorderTraceCallback(const collide::rq_result& result, LPVOID params)
 {
 	STraceBorderQParams& p = *(STraceBorderQParams*)params;
 	u16 mtl_idx = GAMEMTL_NONE_IDX;
-	CDB::TRI* T = nullptr;
+	const CDB::TRI* T = nullptr;
 
-	if (result.O)
+	if (!result.IsStatic())
 	{
 		return true;
 	}
 	else
 	{
 		//получить треугольник и узнать его материал
-		T = &Level().ObjectSpace.GetStaticTris()[result.element];
+		T = &result.GetStatic()->tris[result.element];
 		mtl_idx = T->material;
 	}
 
@@ -1281,7 +1281,15 @@ bool CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID 
 	if (mtl->Flags.test(SGameMtl::flInjurious))
 	{
 		Fvector tri_norm;
-		GetNormal(T, tri_norm, Level().ObjectSpace.GetStaticVerts().data());
+		{
+			Fvector Verts[3];
+			result.xform.transform_tiny(Verts[0], result.GetStatic()->verts[T->verts[0]]);
+			result.xform.transform_tiny(Verts[1], result.GetStatic()->verts[T->verts[1]]);
+			result.xform.transform_tiny(Verts[2], result.GetStatic()->verts[T->verts[2]]);
+			Verts[2].sub(Verts[1]);
+			Verts[1].sub(Verts[0]);
+			tri_norm.crossproduct(Verts[1],Verts[2]);
+		}
 
 		if (p.m_dir.dotproduct(tri_norm) < 0.f)
 			p.m_movement->in_dead_area_count++;

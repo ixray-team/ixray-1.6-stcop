@@ -207,8 +207,8 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 		}
 
 		if(usr_data_2){
-			usr_data_2->pushing_b_neg	=	usr_data_2->pushing_b_neg	&& !GMLibrary().GetMaterialByIdx(usr_data_2->b_neg_tri->material)->Flags.test(SGameMtl::flPassable);
-			usr_data_2->pushing_neg		=	usr_data_2->pushing_neg		&& !GMLibrary().GetMaterialByIdx(usr_data_2->neg_tri->material)->Flags.test(SGameMtl::flPassable);
+			usr_data_2->pushing_b_neg	=	usr_data_2->pushing_b_neg	&& !GMLibrary().GetMaterialByIdx(usr_data_2->b_neg_tri.GetTri().material)->Flags.test(SGameMtl::flPassable);
+			usr_data_2->pushing_neg		=	usr_data_2->pushing_neg		&& !GMLibrary().GetMaterialByIdx(usr_data_2->neg_tri.GetTri().material)->Flags.test(SGameMtl::flPassable);
 			pushing_neg=usr_data_2->pushing_b_neg||usr_data_2->pushing_neg;
 			if(usr_data_2->ph_object){
 				usr_data_2->ph_object->InitContact(&c,do_collide,material_idx_1,material_idx_2);
@@ -217,8 +217,8 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 		}
 		///////////////////////////////////////////////////////////////////////////////////////
 		if(usr_data_1){ 
-			usr_data_1->pushing_b_neg	=	usr_data_1->pushing_b_neg	&& !GMLibrary().GetMaterialByIdx(usr_data_1->b_neg_tri->material)->Flags.test(SGameMtl::flPassable);
-			usr_data_1->pushing_neg		=	usr_data_1->pushing_neg		&& !GMLibrary().GetMaterialByIdx(usr_data_1->neg_tri->material)->Flags.test(SGameMtl::flPassable);
+			usr_data_1->pushing_b_neg	=	usr_data_1->pushing_b_neg	&& !GMLibrary().GetMaterialByIdx(usr_data_1->b_neg_tri.GetTri().material)->Flags.test(SGameMtl::flPassable);
+			usr_data_1->pushing_neg		=	usr_data_1->pushing_neg		&& !GMLibrary().GetMaterialByIdx(usr_data_1->neg_tri.GetTri().material)->Flags.test(SGameMtl::flPassable);
 			pushing_neg=usr_data_1->pushing_b_neg||usr_data_1->pushing_neg;
 			if(usr_data_1->ph_object){
 				usr_data_1->ph_object->InitContact(&c,do_collide,material_idx_1,material_idx_2);

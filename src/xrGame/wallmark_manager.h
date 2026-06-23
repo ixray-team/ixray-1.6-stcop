@@ -17,7 +17,7 @@ public:
 				~CWalmarkManager	()																																					;
 		void	Load				(const char* section)																																	;
 		void	Clear				()																																					;
-		void	AddWallmark			(const Fvector& dir, const Fvector& start_pos, float range, float wallmark_size,IWallMarkArray &wallmarks_vector,int t);
+		//void	AddWallmark			(const Fvector& dir, const Fvector& start_pos, float range, float wallmark_size,IWallMarkArray &wallmarks_vector,int t);
 		void	PlaceWallmarks		( const Fvector& start_pos);
 		void	PlaceWallmarks		( const Fvector& start_pos, shared_str Sect);
 		

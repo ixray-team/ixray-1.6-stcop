@@ -128,7 +128,7 @@ void CHelicopter::reload(const char* section)
 void CollisionCallbackAlife(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)
 {	do_colide=false; }
 
-void ContactCallbackAlife(CDB::TRI* T,dContactGeom* c)
+void ContactCallbackAlife(const CDB::TRI& T, Fvector* verts, dContactGeom* c)
 {
 }
 

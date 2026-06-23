@@ -169,7 +169,7 @@ void CFlamePoltergeist::update_schedule()
 					// test hit
 					collide::rq_result rq;
 					if (Level().ObjectSpace.RayPick(elem->position, elem->target_dir, m_length, collide::rqtBoth, rq, nullptr)) {
-						if ((rq.O == elem->target_object) && (rq.range < m_length)) {
+						if (rq.IsStatic() && (rq.GetDynamic() == elem->target_object) && (rq.range < m_length)) {
 							float		hit_value;
 							hit_value	= m_hit_value - m_hit_value * rq.range / m_length;
 

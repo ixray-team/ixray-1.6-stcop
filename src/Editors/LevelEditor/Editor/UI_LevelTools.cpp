@@ -550,7 +550,7 @@ bool CLevelTool::RayPick(const Fvector& start, const Fvector& dir, float& dist, 
 			if (pt) 	pt->set(pinf.pt); 
 			if (n){	
 				const Fvector* PT[3];
-				pinf.e_mesh->GetFacePT(pinf.inf.id, PT);
+				pinf.e_mesh->GetFacePT(pinf.inf.tris_id, PT);
 				n->mknormal(*PT[0],*PT[1],*PT[2]);
 			}
 			return true;

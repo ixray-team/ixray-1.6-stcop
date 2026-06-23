@@ -60,6 +60,7 @@ target_precompile_headers(xrRender_R2 PRIVATE "stdafx.h")
 
 # Include directories
 target_include_directories(xrRender_R2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrRender_R2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 target_include_directories(xrRender_R2 PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines

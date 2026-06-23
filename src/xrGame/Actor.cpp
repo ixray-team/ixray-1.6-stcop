@@ -127,11 +127,12 @@ void CActor::UpdateLookAt()
 
 	LookAtData.PickPos.mad(Device.vCameraPosition, Device.vCameraDirection, RQ.range);
 	LookAtData.LookAtObject = nullptr;
-	if (RQ.O)
+	if (RQ.valid() && !RQ.IsStatic())
 	{
 		//PickPos = RQ.O->Position();
-		RQ.O->Center(LookAtData.PickPos);
-		LookAtData.LookAtObject = RQ.O->getVisible() ? RQ.O : nullptr;
+		auto Obj = const_cast<CObject*>(RQ.GetDynamic());
+		Obj->Center(LookAtData.PickPos);
+		LookAtData.LookAtObject = Obj->getVisible() ? Obj : nullptr;
 	}
 
 	LookAtData.IsNearEnough = ActorPos.distance_to_sqr(LookAtData.PickPos) < 6.0f;

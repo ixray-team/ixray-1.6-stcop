@@ -1,0 +1,14 @@
+## Copyright 2009-2021 Intel Corporation
+## SPDX-License-Identifier: Apache-2.0
+
+SET(EMBREE_ISPC_SUPPORT OFF)
+
+IF (TASKING_TBB)
+  SET(ADDITIONAL_LIBRARIES ${TBB_LIBRARIES})
+ENDIF()
+
+INCLUDE(tutorial)
+ADD_TUTORIAL(bvh_builder)
+
+ADD_EMBREE_TEST_ECS(bvh_builder embree_bvh_builder NO_REFERENCE NO_ISPC NO_SYCL)
+SET_EMBREE_TEST_PROPERTIES(bvh_builder PROPERTIES TIMEOUT 2400)

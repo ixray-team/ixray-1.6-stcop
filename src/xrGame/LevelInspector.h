@@ -102,6 +102,7 @@ struct LevelInspector final
 	collide::rq_result RQ;
 	xr_string selected_info_str, script_info;
 	int selected_info_height = 0;
+	bool ObjProcessed = false;
 
 	CGameFont* dbg_font = nullptr;
 	float font_spacing = 0.9f;
@@ -510,5 +511,5 @@ struct LevelInspector final
 
 	void DrawHud();
 
-	void DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGameObject* GO = nullptr);
+	void DrawSkeleton(IKinematics* pKinematics, const Fmatrix& xform, CGameObject* GO = nullptr);
 };

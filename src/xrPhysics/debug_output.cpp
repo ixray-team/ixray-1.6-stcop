@@ -45,11 +45,11 @@ static class DebugOutputEmptyImpl :
 	{
 
 	}
-	virtual	void DBG_DrawTri(CDB::RESULT* T, u32 c)
+	virtual	void DBG_DrawTri(const CDB::RESULT& T, u32 c)
 	{
 
 	}
-	virtual	void DBG_DrawTri(CDB::TRI* T, const Fvector* V_verts, u32 c)
+	virtual	void DBG_DrawTri(const TriabgleCDBData& T, u32 c)
 	{
 
 	}
@@ -58,6 +58,10 @@ static class DebugOutputEmptyImpl :
 
 	}
 	virtual	void DBG_DrawAABB(const Fvector& center, const Fvector& AABB, u32 c)
+	{
+
+	}
+	virtual	void DBG_DrawAABB(const Fbox& AABB, u32 c)
 	{
 
 	}

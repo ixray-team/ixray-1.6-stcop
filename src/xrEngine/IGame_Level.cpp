@@ -204,6 +204,7 @@ bool IGame_Level::Load			(u32 dwNum)
 
 	// CForms
 	g_pGamePersistent->SetLoadStageTitle("st_loading_cform");
+	PROF_EVENT("IGame_Level::Load_cform");
 	g_pGamePersistent->LoadTitle();
 
 	ObjectSpace.Load
@@ -232,7 +233,10 @@ bool IGame_Level::Load			(u32 dwNum)
 	catch (...) {
 		Msg("Level data empty: %s", temp);
 	}
-	Render->level_Load			(LL_Stream);
+	{
+		PROF_EVENT("IGame_Level::Load_level_Load");
+		Render->level_Load			(LL_Stream);
+	}
 
 	// Objects
 	g_pGamePersistent->Environment().mods_load	();

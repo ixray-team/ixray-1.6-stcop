@@ -18,7 +18,7 @@ public:\
 	IC	int		CollidePlain(\
 						const dReal* triSideAx0,const dReal* triSideAx1,\
 						const dReal* triAx,\
-						CDB::TRI* T,\
+						const TriabgleCDBData&  T,\
 						dReal dist,\
 						dxGeom *o1, dxGeom *o2,\
 						int flags, dContactGeom *contact, int skip\
@@ -40,7 +40,7 @@ public:\
 	IC	int dcTriListCollider::primitive##Tri::CollidePlain(\
 	const dReal* triSideAx0,const dReal* triSideAx1,\
 	const dReal* triAx,\
-	CDB::TRI* T,\
+	const TriabgleCDBData&  T,\
 	dReal dist,\
 	dxGeom *o1, dxGeom *o2,\
 	int flags, dContactGeom *contact, int skip\

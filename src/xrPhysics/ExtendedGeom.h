@@ -23,7 +23,7 @@ public:
 	CObjectContactCallback(ObjectContactCallbackFun* c)
 		:callback(c)
 	{
-		next = NULL; VERIFY(c);
+		next = nullptr; VERIFY(c);
 	}
 
 	~CObjectContactCallback()
@@ -68,7 +68,7 @@ public:
 		{
 			CObjectContactCallback* del = callbacks;
 			callbacks = callbacks->next;
-			del->next = NULL;
+			del->next = nullptr;
 			xr_delete(del);
 			VERIFY(!callbacks || !callbacks->HasCallback(c));
 		}
@@ -84,7 +84,7 @@ public:
 				if (c == i->callback)
 				{
 					CObjectContactCallback* del = i;
-					p->next = i->next; del->next = NULL; xr_delete(del);
+					p->next = i->next; del->next = nullptr; xr_delete(del);
 					VERIFY(!callbacks->HasCallback(c));
 					break;
 				}
@@ -109,7 +109,8 @@ class CGameObject;
 struct dxGeomUserData
 {
 	dVector3					last_pos										;
-	CDB::TRI					*neg_tri,*b_neg_tri								;
+	TriabgleCDBData neg_tri, b_neg_tri;
+	//CDB::TRI					*neg_tri,*b_neg_tri								;
 	CPHObject					*ph_object										;
 	IPhysicsShellHolder			*ph_ref_object									;
 	u16							material										;
@@ -119,7 +120,7 @@ struct dxGeomUserData
 	ContactCallbackFun			*callback										;
 	void						*callback_data									;
 	CObjectContactCallback		*object_callbacks								;
-	xr_vector<int>				cashed_tries									;
+	xr_vector<TriabgleCDBData> cashed_tries;
 	Fvector						last_aabb_size									;
 	Fvector						last_aabb_pos									;
 	bool						pushing_neg, pushing_b_neg, b_static_colide;
@@ -151,7 +152,7 @@ IC IPhysicsShellHolder* retrieveRefObject(dGeomID geom)
 {
 	dxGeomUserData* ud=dGeomGetUserData(retrieveGeom(geom));
 	if(ud)return ud->ph_ref_object;
-	else return NULL;
+	else return nullptr;
 }
 
 IC void dGeomCreateUserData(dxGeom* geom)
@@ -167,15 +168,15 @@ IC void dGeomCreateUserData(dxGeom* geom)
 	(dGeomGetUserData(geom))->last_pos[2] = -dInfinity;
 
 
-	(dGeomGetUserData(geom))->ph_object = NULL;
+	(dGeomGetUserData(geom))->ph_object = nullptr;
 	(dGeomGetUserData(geom))->material = 0;
 	(dGeomGetUserData(geom))->tri_material = 0;
-	(dGeomGetUserData(geom))->callback = NULL;
-	(dGeomGetUserData(geom))->object_callbacks = NULL;
-	(dGeomGetUserData(geom))->ph_ref_object = NULL;
+	(dGeomGetUserData(geom))->callback = nullptr;
+	(dGeomGetUserData(geom))->object_callbacks = nullptr;
+	(dGeomGetUserData(geom))->ph_ref_object = nullptr;
 	(dGeomGetUserData(geom))->element_position = u16(-1);
 	(dGeomGetUserData(geom))->bone_id = u16(-1);
-	(dGeomGetUserData(geom))->callback_data = NULL;
+	(dGeomGetUserData(geom))->callback_data = nullptr;
 
 	(dGeomGetUserData(geom))->last_aabb_size.set(0, 0, 0);
 }
@@ -193,7 +194,7 @@ IC void dGeomDestroyUserData(dxGeom* geom)
 		xr_delete			(P->object_callbacks)			;
 	}
 	xr_delete			(P)								;
-	dGeomSetData		(geom,0)						;
+	dGeomSetData		(geom,nullptr)						;
 }
 
 IC void dGeomUserDataSetCallbackData(dxGeom* geom,void *cd)

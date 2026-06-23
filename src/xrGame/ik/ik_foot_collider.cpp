@@ -44,7 +44,7 @@ struct ik_pick_result
 	float	range;
 };
 
-bool ignore_tri( CDB::TRI &tri )
+bool ignore_tri(const CDB::TRI& tri )
 {
 	SGameMtl* material=GMLib.GetMaterialByIdx( tri.material );
 
@@ -55,10 +55,10 @@ bool ignore_tri( CDB::TRI &tri )
 			//material->Flags.test( SGameMtl::flActorObstacle );
 }
 
-bool ignore_static_tri( int tri )
+bool ignore_static_tri(const collide::rq_result& tri )
 {
-	VERIFY(Level( ).ObjectSpace.GetStaticModel()->get_tris().size() > tri );
-	CDB::TRI& triangle	= Level( ).ObjectSpace.GetStaticTris( )[tri];
+	VERIFY(tri.GetStatic()->tris.size() > tri.element );
+	auto& triangle	= tri.GetStatic()->tris[tri.element];
 	return ignore_tri( triangle );
 }
 
@@ -72,12 +72,13 @@ IC bool ignore_object( CObject	*O )
 
 
 
-IC bool ignore_result( collide::rq_result	&R )
+IC bool ignore_result(const collide::rq_result& R)
 {
-	if(R.O)
-		return ignore_object( R.O );
-	else
-		return ignore_static_tri( R.element );
+	if(!R.IsStatic())
+	{
+		return ignore_object( const_cast<CObject*>(R.GetDynamic()));
+	}
+	return ignore_static_tri( R );
 }
 
 IC void tri_plane(const Fvector &v0, const Fvector &v1, const Fvector &v2, Fplane &p )
@@ -88,23 +89,21 @@ IC void tri_plane(const Fvector &v0, const Fvector &v1, const Fvector &v2, Fplan
 	p.d = -p.n.dotproduct( v0 );
 }
 
-IC void tri_plane(const CDB::TRI &tri, Fplane &p )
+/*IC void tri_plane(const CDB::TRI &tri, Fplane &p )
 {
 	xr_vector<Fvector>& pVerts	= Level().ObjectSpace.GetStaticVerts();
 	tri_plane( pVerts[tri.verts[0]], pVerts[tri.verts[1]], pVerts[tri.verts[2]] , p );
-}
+}*/
 
 IC bool	get_plane_static(  ik_pick_result &r, Fvector &next_pos, float &next_range, const collide::rq_result	&R, float pick_dist, const Fvector &pos, const Fvector &pick_v )
 {
+	auto Obj = R.GetStatic();
+	VERIFY( Obj->tris.size() > R.element );
+	auto& tri = Obj->tris[R.element];
 	
-	
-	VERIFY( Level( ).ObjectSpace.GetStaticModel()->get_tris().size() > R.element );
-	CDB::TRI& tri	= Level( ).ObjectSpace.GetStaticTris( )[R.element];
-	xr_vector<Fvector>& pVerts	= Level().ObjectSpace.GetStaticVerts();
-
-	r.triangle[0] = pVerts[tri.verts[0]];
-	r.triangle[1] = pVerts[tri.verts[1]];
-	r.triangle[2] = pVerts[tri.verts[2]];
+	R.xform.transform_tiny(r.triangle[0], Obj->verts[tri.verts[0]]);
+	R.xform.transform_tiny(r.triangle[1], Obj->verts[tri.verts[1]]);
+	R.xform.transform_tiny(r.triangle[2], Obj->verts[tri.verts[2]]);
 
 	tri_plane( r.triangle[0], r.triangle[1], r.triangle[2], r.p );
 
@@ -137,10 +136,13 @@ IC bool	get_plane_dynamic(  ik_pick_result &r, Fvector &next_pos, float &next_ra
 	next_pos.add( pos, Fvector( ).mul( pick_v, R.range + EPS_L ) );
 	next_range = pick_dist - R.range - EPS_L;
 
-	if(ignore_object(R.O))
+	auto Obj = const_cast<CObject*>(R.GetDynamic());
+	if(ignore_object(Obj))
+	{
 		return false;
+	}
 
-	IRenderVisual* V =R.O->Visual();
+	IRenderVisual* V = Obj->Visual();
 	if( V )
 	{
 		IKinematics *K = V->dcast_PKinematics();
@@ -149,7 +151,7 @@ IC bool	get_plane_dynamic(  ik_pick_result &r, Fvector &next_pos, float &next_ra
 			float dist = pick_dist;
 			IKinematics::pick_result res;
 		
-			if( K->PickBone(R.O->XFORM(), res , dist,  pos, pick_v, (u16) R.element ) )
+			if( K->PickBone(Obj->XFORM(), res , dist,  pos, pick_v, (u16) R.element ) )
 			{
 				//cld.collided = true;
 				r.position.add( pos, Fvector( ).mul( pick_v, res.dist ) );
@@ -171,14 +173,16 @@ IC bool	get_plane_dynamic(  ik_pick_result &r, Fvector &next_pos, float &next_ra
 static const float		reach_dist		=1.5f	;
 IC bool get_plane( ik_pick_result &r,  Fvector &next_pos, float &next_range, const collide::rq_result	R, float pick_dist,const Fvector &pos, const Fvector &pick_v )
 {
-	if( !R.O )
+	if(R.IsStatic())
+	{
 		return get_plane_static(  r, next_pos, next_range, R, pick_dist, pos,  pick_v  );
-	else 
-		return get_plane_dynamic( r, next_pos, next_range, R, pick_dist, pos, pick_v );
+	}
+	return get_plane_dynamic( r, next_pos, next_range, R, pick_dist, pos, pick_v );
 }
 
 bool Pick( ik_pick_result &r, const ik_pick_query &q , CObject* ignore_object)
 {
+	PROF_EVENT("Pick");
 	VERIFY( q.is_valid() );
 
 	float range = q.range();
@@ -189,6 +193,7 @@ bool Pick( ik_pick_result &r, const ik_pick_query &q , CObject* ignore_object)
 
 	while( g_pGameLevel->ObjectSpace.RayPick( pos, q.dir(), range, collide::rqtBoth, R, ignore_object ) )
 	{
+		PROF_EVENT("Pick::while_loop");
 		
 		Fvector next_pos	= pos;
 		float	next_range	= range;
@@ -204,12 +209,11 @@ bool Pick( ik_pick_result &r, const ik_pick_query &q , CObject* ignore_object)
 	}
 
 #ifdef DEBUG
-	if( ph_dbg_draw_mask1.test( phDbgDrawIKCollision ) && collided && !R.O )
+	if( ph_dbg_draw_mask1.test( phDbgDrawIKCollision ) && collided && R.IsStatic() )
 	{
-		CDB::TRI& tri = Level( ).ObjectSpace.GetStaticTris()[R.element];
 		Fvector p = q.pos();p.add( Fvector( ).mul( q.dir(), range ) );
 		DBG_DrawLine(pos, p, color_xrgb(255, 0, 0));
-		DBG_DrawTri(&tri, Level().ObjectSpace.GetStaticVerts().data(), color_xrgb(255, 0, 0));
+		DBG_DrawTri(TriabgleCDBData{R.xform, R.GetStatic(), (size_t)(R.element)}, color_xrgb(255, 0, 0));
 	}
 #endif
 	return collided;
@@ -363,50 +367,7 @@ void ik_foot_collider::collide( SIKCollideData &cld, const ik_foot_geom &foot_ge
 		previous_data = cld;
 		return;
 	}
-
-
-	//chose_best_plane( cld.m_plane, pick_v, plane, r_hill.p, r_toe.p   );
-
-
 	previous_data = cld;
-
-/*
-	float u,v,d;
-	if( ( !cld.collided ||
-		  !( CDB::TestRayTri(pos_hill, pick_v, r_toe.triangle, u, v, d, true ) && d > 0.f ) ) &&
-		    Pick( r_hill, pos_hill, pick_v, pick_dist, O ) )
-	{
-
-		if( !cld.collided || r_hill.position.y > r_toe.position.y )
-		{
-			cld.m_plane = r_hill.p;
-			cld.m_collide_point = SIKCollideData::heel;
-		} 
-		
-		//else
-		//{
-		//		ik_pick_result r_foot;
-		//		Fvector pos_foot = Fvector().sub( foot.c, Fvector( ).mul( pick_v, collide_dist ) );
-		//		if( cld.collided && Pick( r_foot, pos_foot, pick_v, pick_dist, O ) )
-		//		{
-		//			Fplane plane;
-		//			tri_plane( r_toe.position, r_hill.position , r_foot.position, plane );
-
-		//			DBG_DrawTri(r_toe.position, r_hill.position, r_foot.position , color_xrgb( 255, 255, 255 ), false  );
-		//		
-		//			if( plane.n.dotproduct( r_hill.p.n ) < 0.f )
-		//			{
-		//				plane.n.invert();
-		//				plane.d = -cld.m_plane.d;
-		//			
-		//			}
-		//			chose_best_plane( cld.m_plane, pick_v, plane, r_hill.p, r_toe.p   );
-		//		}
-		//}
-		
-		cld.collided = true;
-	}
-*/
 }
 
 			

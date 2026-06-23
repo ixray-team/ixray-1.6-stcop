@@ -8,27 +8,33 @@
 
 float CMeleeChecker::distance_to_enemy(const CEntityAlive *enemy)
 {
-	float dist = enemy->Position().distance_to	(m_object->Position());
-	if (dist > MAX_TRACE_ENEMY_RANGE)			return dist;
-
-	Fvector					enemy_center;
-	enemy->Center			(enemy_center);
-
-	Fvector					my_head_pos = get_head_position(m_object);
-	
-	Fvector					dir; 
-	dir.sub					(enemy_center, my_head_pos);
-	dir.normalize_safe		();
-
-	collide::ray_defs		r_query	(my_head_pos, dir, MAX_TRACE_ENEMY_RANGE, CDB::OPT_CULL | CDB::OPT_ONLYNEAREST, collide::rqtObject);
-	r_res.r_clear			();
-
-	if (m_object->CFORM()->_RayQuery(r_query, r_res)) {
-		if (r_res.r_begin()->O == enemy)
-			dist			= r_res.r_begin()->range;
+	float dist = enemy->Position().distance_to(m_object->Position());
+	if (dist > MAX_TRACE_ENEMY_RANGE)
+	{
+		return dist;
 	}
 
-	return					(dist);
+	Fvector enemy_center;
+	enemy->Center(enemy_center);
+
+	Fvector my_head_pos = get_head_position(m_object);
+	
+	Fvector dir; 
+	dir.sub(enemy_center, my_head_pos);
+	dir.normalize_safe();
+
+	collide::ray_defs r_query(my_head_pos, dir, MAX_TRACE_ENEMY_RANGE, CDB::OPT_CULL | CDB::OPT_ONLYNEAREST, collide::rqtObject);
+	r_res.r_clear();
+
+	if (m_object->CFORM()->_RayQuery(r_query, r_res)) {
+		auto& res = r_res.r_any();
+		if (!res.IsStatic() && res.GetDynamic() == enemy)
+		{
+			dist = res.range;
+		}
+	}
+
+	return dist;
 }
 
 void CMeleeChecker::on_hit_attempt(bool hit_success) 

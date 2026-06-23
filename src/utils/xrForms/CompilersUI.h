@@ -55,6 +55,7 @@ struct CompilersMode
 	bool LC_NoSMG = true;
  	bool LC_Tess = true;
  	bool LC_skipWeld = false;
+	bool LC_UseExternalRefs = false;
 	 
 	// Geometry Export
 	GeomVanillaType LC_GeomType = GeomVanillaType::Vanilla;

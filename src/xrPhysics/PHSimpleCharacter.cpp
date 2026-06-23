@@ -2,22 +2,20 @@
 
 #include "PHDynamicData.h"
 #include "ExtendedGeom.h"
-#include "../xrCore/Collision/cl_intersect.h"
 #include "../xrEngine/xr_object_list.h"
 #include "tri-colliderknoopc/__aabb_tri.h"
 #include "PHSimpleCharacter.h"
 #include "PHContactBodyEffector.h"
 #include "SpaceUtils.h"
-#include "params.h"
 #include "MathUtils.h"
 #include "../xrEngine/GameMtlLib.h"
 #include "IPhysicsShellHolder.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "PHSimpleCharacterInline.h"
 #include "DamageSource.h"
 #include "PHCollideValidator.h"
 #include "CalculateTriangle.h"
 #include "Geometry.h"
+#include "params.h"
 
 #include "../xrEngine/bone.h"
 #include "../xrEngine/xr_object.h"
@@ -29,19 +27,19 @@ IC bool PhOutOfBoundaries(const Fvector& v)
 }
 
 //fly distance to lose control
-const float LOSE_CONTROL_DISTANCE = 0.5f;
-const float CLAMB_DISTANCE = 0.5f;
+constexpr float LOSE_CONTROL_DISTANCE = 0.5f;
+constexpr float CLAMB_DISTANCE = 0.5f;
 
 float IC sgn(float v)
 {
 	return v < 0.f ? -1.f : 1.f;
 }
 
-bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& fv_dir, const Fvector& box, int tri_id)
+bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& fv_dir, const Fvector& box, const CDB::RESULT& res)
 {
 	Triangle tri;
-	CalculateInitTriangle(&inl_ph_world().ObjectSpace().GetStaticTris()[tri_id], tri, inl_ph_world().ObjectSpace().GetStaticVerts().data());
-	xr_vector<Fvector>& verts = inl_ph_world().ObjectSpace().GetStaticVerts();
+	CalculateInitTriangle({res.ModelWorldTransform, res.model, res.tris_id}, tri);
+	//xr_vector<Fvector>& verts = inl_ph_world().ObjectSpace().GetStaticVerts();
 	{
 		float dist = cast_fv(tri.norm).dotproduct(center) - tri.dist;
 
@@ -57,25 +55,29 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
 	float abs_sd1 = sg_sd1 * sd1;
 
 	float abs_sd, sg_sd;
-	u32 v;
+	Fvector Verts[3];
+	res.ModelWorldTransform.transform_tiny(Verts[0], res.model->verts[res.model->tris[res.tris_id].verts[0]]);
+	res.ModelWorldTransform.transform_tiny(Verts[1], res.model->verts[res.model->tris[res.tris_id].verts[1]]);
+	res.ModelWorldTransform.transform_tiny(Verts[2], res.model->verts[res.model->tris[res.tris_id].verts[2]]);
+	Fvector* v = nullptr;
 	if (sg_sd0 == sg_sd1)
 	{
 		abs_sd = abs_sd0 + abs_sd1;
 		sg_sd = -sg_sd0;
-		v = tri.T->verts[2];
+		v = Verts + 2;
 	}
 	else if (abs_sd0 > abs_sd1)
 	{
 		abs_sd = abs_sd0; sg_sd = sg_sd0;
-		v = tri.T->verts[0];
+		v = Verts;
 	}
 	else
 	{
 		abs_sd = abs_sd1; sg_sd = sg_sd1;
-		v = tri.T->verts[1];
+		v = Verts + 1;
 	}
 
-	float vp = side_dir.dotproduct(verts[v]);
+	float vp = side_dir.dotproduct(*v);
 	float dist = vp - sdc;
 	float sg_dist = sgn(dist);
 	float abs_dist = sg_dist * dist;
@@ -93,8 +95,8 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
 	Fvector crses[3];
 	crses[0].set(-tri.side0[2], 0, tri.side0[0]);
 	crses[1].set(-tri.side1[2], 0, tri.side1[0]);
-	const Fvector& v2 = verts[tri.T->verts[2]];
-	const Fvector& v0 = verts[tri.T->verts[0]];
+	const Fvector& v2 = Verts[2];
+	const Fvector& v0 = Verts[0];
 	crses[2].x = -(v0.z - v2.z);
 	crses[2].y = 0.f;
 	crses[2].z = v0.x - v2.x;
@@ -102,12 +104,12 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
 	for (u8 i = 0; 3 > i; ++i)
 	{
 		const Fvector& crs = crses[i];
-		u32 sv = tri.T->verts[i % 3];
-		u32 ov = tri.T->verts[(i + 2) % 3];
+		Fvector* sv = Verts + (i % 3);
+		Fvector* ov = Verts + ((i + 2) % 3);
 
 		float c_prg = crs.dotproduct(center);
-		float sv_prg = crs.dotproduct(verts[sv]);
-		float ov_prg = crs.dotproduct(verts[ov]);
+		float sv_prg = crs.dotproduct(*sv);
+		float ov_prg = crs.dotproduct(*ov);
 		float dist = c_prg - sv_prg;
 		float sg_dist = sgn(dist);
 		if (sgn(ov_prg - c_prg) != sg_dist)
@@ -866,22 +868,24 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 	}
 #endif
 
-	CDB::RESULT*    R_begin        = XRC.r_begin();
-	CDB::RESULT*    R_end          = XRC.r_end();
-	for (CDB::RESULT* Res = R_begin; Res != R_end; ++Res)
+	for (auto& elem : XRC.r_vec())
 	{
-		SGameMtl* m = GMLibrary().GetMaterialByIdx(Res->material);
+		auto& Tris = elem.model->tris[elem.tris_id];
+		SGameMtl* m = GMLibrary().GetMaterialByIdx(Tris.material);
 		if (m->Flags.test(SGameMtl::flPassable))continue;
 		//CDB::TRI* T = T_array + Res->id;
-		Point vertices[3] = { Point((dReal*)&Res->verts[0]),Point((dReal*)&Res->verts[1]),Point((dReal*)&Res->verts[2]) };
+		Point vertices[3];
+		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[0], elem.model->verts[Tris.verts[0]]);
+		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[1], elem.model->verts[Tris.verts[1]]);
+		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[2], elem.model->verts[Tris.verts[2]]);
 		if (__aabb_tri(Point((float*)&center_forbid), Point((float*)&AABB_forbid), vertices))
 		{
-			if (test_sides(center_forbid, sd_dir, accel, obb_fb, Res->id))
+			if (test_sides(center_forbid, sd_dir, accel, obb_fb, elem))
 			{
 #ifdef DEBUG
 				if (debug_output().ph_dbg_draw_mask().test(phDbgCharacterControl))
 				{
-					debug_output().DBG_DrawTri(Res, color_xrgb(255, 0, 0));
+					debug_output().DBG_DrawTri(elem, color_xrgb(255, 0, 0));
 				}
 #endif
 				b_side_contact = true;
@@ -891,19 +895,26 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 		}
 	}
 
-	for (CDB::RESULT* Res = R_begin; Res != R_end; ++Res)
+	for (auto& elem : XRC.r_vec())
 	{
-		SGameMtl* m = GMLibrary().GetMaterialByIdx(Res->material);
-		if (m->Flags.test(SGameMtl::flPassable))continue;
-		Point vertices[3] = { Point((dReal*)&Res->verts[0]),Point((dReal*)&Res->verts[1]),Point((dReal*)&Res->verts[2]) };
+		auto& Tris = elem.model->tris[elem.tris_id];
+		SGameMtl* m = GMLibrary().GetMaterialByIdx(Tris.material);
+		if (m->Flags.test(SGameMtl::flPassable))
+		{
+			continue;
+		}
+		Point vertices[3];
+		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[0], elem.model->verts[Tris.verts[0]]);
+		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[1], elem.model->verts[Tris.verts[1]]);
+		elem.ModelWorldTransform.transform_tiny(*(Fvector*)&vertices[2], elem.model->verts[Tris.verts[2]]);
 		if (__aabb_tri(Point((float*)&center), Point((float*)&AABB_), vertices)) 
 		{
-			if (test_sides(center, sd_dir, accel, obb, Res->id))
+			if (test_sides(center, sd_dir, accel, obb, elem))
 			{
 #ifdef DEBUG
 				if (debug_output().ph_dbg_draw_mask().test(phDbgCharacterControl))
 				{
-					debug_output().DBG_DrawTri(Res, color_xrgb(0, 255, 0));
+					debug_output().DBG_DrawTri(elem, color_xrgb(0, 255, 0));
 				}
 #endif
 				return true;
@@ -1332,16 +1343,16 @@ u16 CPHSimpleCharacter::RetriveContactBone()
 	Fvector dir;
 	m_collision_damage_info.HitDir(dir);
 
-	collide::ray_defs	Q(m_collision_damage_info.HitPos(), dir, m_radius, CDB::OPT_ONLYNEAREST | CDB::OPT_CULL, collide::rqtBoth);
-	RQR.r_clear			();
+	collide::ray_defs Q(m_collision_damage_info.HitPos(), dir, m_radius, CDB::OPT_ONLYNEAREST | CDB::OPT_CULL, collide::rqtBoth);
+	RQR.r_clear();
 
-	u16 contact_bone	=	0;
+	u16 contact_bone = 0;
 
 	VERIFY(!fis_zero(Q.dir.square_magnitude()));
 	if (inl_ph_world().ObjectSpace().RayQuery(RQR, m_phys_ref_object->ObjectCollisionModel(), Q))
 	{
-		collide::rq_result* R = RQR.r_begin();
-		contact_bone = (u16)R->element;
+		auto& R = RQR.r_any();
+		contact_bone = (u16)R.element;
 	}
 	else 
 	{
@@ -1714,8 +1725,8 @@ ICollisionHitCallback* CPHSimpleCharacter::HitCallback()const
 	return m_collision_damage_info.m_hit_callback;
 }
 
-const	float	resolve_depth=0.05f;
-static	float	restrictor_depth=0.f;
+constexpr float	resolve_depth=0.05f;
+static float restrictor_depth=0.f;
 
 void CPHSimpleCharacter::TestRestrictorContactCallbackFun(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
@@ -1817,16 +1828,18 @@ bool CPHSimpleCharacter::TouchRestrictor(ERestrictionType rttype)
 
 IC bool valide_res( u16& res_material_idx, const collide::rq_result	&R )
 {
-	if(!R.O)
+	if(R.IsStatic())
 	{
-		CDB::TRI& tri = inl_ph_world().ObjectSpace().GetStaticTris()[R.element];
-		res_material_idx	= tri.material;
+		auto& tri = R.GetStatic()->tris[R.element];
+		res_material_idx = tri.material;
 		return !ignore_material( res_material_idx );
 	}
 
-	IRenderVisual* V =R.O->Visual();
+	IRenderVisual* V =R.GetDynamic()->Visual();
 	if (!V)
+	{
 		return false;
+	}
 
 	IKinematics *K = V->dcast_PKinematics();
 	CBoneData &bd = K->LL_GetData( (u16)R.element );
@@ -1856,9 +1869,9 @@ bool PickMaterial( u16& res_material_idx, const Fvector &pos_, const Fvector &di
 	return false;
 }
 
-const float material_pick_dist = 0.5f;
-const float material_pick_upset = 0.5f;
-const float material_update_tolerance = 0.1f;
+constexpr float material_pick_dist = 0.5f;
+constexpr float material_pick_upset = 0.5f;
+constexpr float material_update_tolerance = 0.1f;
 
 void CPHSimpleCharacter::update_last_material()
 {
@@ -1902,4 +1915,132 @@ void CPHSimpleCharacter::NetRelcase(IPhysicsShellHolder* O)
 {
 	inherited::NetRelcase(O);
 	m_elevator_state.NetRelcase(O);
+}
+
+void CPHSimpleCharacter::UpdateStaticDamage(dContact* c,SGameMtl* tri_material,bool bo1)
+{
+	const	dReal	*v			=	dBodyGetLinearVel(m_body);
+			dReal	norm_prg	=	dFabs(dDOT(v,c->geom.normal));
+			dReal	smag		=	dDOT(v,v);
+			dReal	plane_pgr	=	_sqrt(smag-norm_prg*norm_prg);
+			dReal	mag			=	0.f;
+				if(tri_material->Flags.test(SGameMtl::flPassable))
+				{
+					mag					=	_sqrt(smag)*tri_material->fBounceDamageFactor;
+				}
+				else
+				{
+					float vel_prg;
+					vel_prg= std::max(plane_pgr*tri_material->fPHFriction,norm_prg);
+
+					mag = (vel_prg)*tri_material->fBounceDamageFactor;
+				}
+				if(mag>m_collision_damage_info.m_contact_velocity)
+				{
+  					m_collision_damage_info.m_contact_velocity	=	mag;
+					m_collision_damage_info.m_dmc_signum		=	bo1 ? 1.f : -1.f;
+					m_collision_damage_info.m_dmc_type			=	SCollisionDamageInfo::ctStatic;
+					m_collision_damage_info.m_damege_contact	=	*c;
+					//m_collision_damage_info.m_object			=	0;
+					m_collision_damage_info.m_obj_id				=	ALife::INVALID_OBJECT_ID;
+				}
+}
+
+void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c,u16 obj_material_idx,dBodyID b,bool bo1)
+{
+	const dReal* vel=dBodyGetLinearVel(m_body);
+	dReal c_vel;
+	dMass m;
+	dBodyGetMass(b,&m);
+
+	const dReal* obj_vel=dBodyGetLinearVel(b);
+	const dReal* norm=c->geom.normal;
+	dReal norm_vel=dDOT(vel,norm);
+	dReal norm_obj_vel=dDOT(obj_vel,norm);
+
+	if((bo1&&norm_vel>norm_obj_vel)||
+		(!bo1&&norm_obj_vel>norm_vel)
+		) return ; 
+
+
+	dVector3 Pc={vel[0]*m_mass+obj_vel[0]*m.mass,vel[1]*m_mass+obj_vel[1]*m.mass,vel[2]*m_mass+obj_vel[2]*m.mass};
+
+	dReal Kself=norm_vel*norm_vel*m_mass/2.f;
+	dReal Kobj=norm_obj_vel*norm_obj_vel*m.mass/2.f;
+
+	dReal Pcnorm=dDOT(Pc,norm);
+	dReal KK=Pcnorm*Pcnorm/(m_mass+m.mass)/2.f;
+	dReal accepted_energy=Kself*m_collision_damage_factor+Kobj*object_damage_factor-KK;
+	//DeltaK=m1*m2*(v1-v2)^2/(2*(m1+m2))
+	if(accepted_energy>0.f)
+	{
+		SGameMtl	*obj_material=GMLibrary().GetMaterialByIdx(obj_material_idx);
+		c_vel=dSqrt(accepted_energy/m_mass*2.f)*obj_material->fBounceDamageFactor;
+	}
+	else c_vel=0.f;
+#ifdef DEBUG
+	if(debug_output().ph_dbg_draw_mask().test(phDbgDispObjCollisionDammage)&&c_vel>debug_output().dbg_vel_collid_damage_to_display())
+	{
+		float dbg_my_norm_vell=norm_vel;
+		float dbg_obj_norm_vell=norm_obj_vel;
+		float dbg_my_kinetic_e=Kself;
+		float dbg_obj_kinetic_e=Kobj;
+		float dbg_my_effective_e=Kself*m_collision_damage_factor;
+		float dbg_obj_effective_e=Kobj*object_damage_factor;
+		float dbg_free_energy=KK;
+		const char* name= PhysicsRefObject()->ObjectName();
+		
+		Msg("-----------------------------------------------------------------------------------------");
+		Msg("cd %s -effective vell %f",		name,				c_vel);
+		Msg("cd %s -my_norm_vell %f",		name,				dbg_my_norm_vell);
+		Msg("cd %s -obj_norm_vell %f",		name,				dbg_obj_norm_vell);
+		Msg("cd %s -my_kinetic_e %f",		name,				dbg_my_kinetic_e);
+		Msg("cd %s -obj_kinetic_e %f",		name,				dbg_obj_kinetic_e);
+		Msg("cd %s -my_effective_e %f",		name,				dbg_my_effective_e);
+		Msg("cd %s -obj_effective_e %f",	name,				dbg_obj_effective_e);
+		Msg("cd %s -effective_acceted_e %f",name,				accepted_energy);
+		Msg("cd %s -real_acceted_e %f",		name,				Kself+Kobj-KK);
+		Msg("cd %s -free_energy %f",		name,				dbg_free_energy);
+		Msg("-----------------------------------------------------------------------------------------");
+	}
+#endif
+	if(c_vel>m_collision_damage_info.m_contact_velocity) 
+	{
+		IPhysicsShellHolder* obj=bo1 ? retrieveRefObject(c->geom.g2) : retrieveRefObject(c->geom.g1);
+		VERIFY(obj);
+		if(obj != nullptr && !obj->ObjectGetDestroy())
+		{
+			m_collision_damage_info.m_contact_velocity=c_vel;
+			m_collision_damage_info.m_dmc_signum=bo1 ? 1.f : -1.f;
+			m_collision_damage_info.m_dmc_type=SCollisionDamageInfo::ctObject;
+			m_collision_damage_info.m_damege_contact=*c;
+			m_collision_damage_info.m_hit_callback=obj->ObjectGetCollisionHitCallback();
+			m_collision_damage_info.m_obj_id=obj->ObjectID();
+		}
+	}
+}
+
+IC void CPHSimpleCharacter::foot_material_update(u16 contact_material_idx, u16 foot_material_idx)
+{
+	if (m_elevator_state.UpdateMaterial(*p_lastMaterialIDX))
+		return;
+
+	if (*p_lastMaterialIDX != u16(-1) && GMLibrary().GetMaterialByIdx(*p_lastMaterialIDX)->Flags.test(SGameMtl::flPassable) && !b_foot_mtl_check)
+		return;
+
+	b_foot_mtl_check = false;
+
+	const SGameMtl* contact_material = GMLibrary().GetMaterialByIdx(contact_material_idx);
+
+	if (contact_material->Flags.test(SGameMtl::flPassable))
+	{
+		if (contact_material->Flags.test(SGameMtl::flInjurious))
+			injuriousMaterialIDX = contact_material_idx;
+		else
+			*p_lastMaterialIDX = contact_material_idx;
+
+		return;
+	}
+
+	*p_lastMaterialIDX = foot_material_idx;
 }

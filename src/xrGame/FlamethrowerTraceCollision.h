@@ -78,7 +78,7 @@ namespace FlamethrowerTrace
 		//float RadiusCollidedInterpTime = 0.0f;
 		bool Collided = false;
 
-		static bool	hit_callback(collide::rq_result& result, LPVOID params);
+		static bool	hit_callback(const collide::rq_result& result, LPVOID params);
 		static bool test_callback(const collide::ray_defs& rd, CObject* object, LPVOID params);
 	
 	public:

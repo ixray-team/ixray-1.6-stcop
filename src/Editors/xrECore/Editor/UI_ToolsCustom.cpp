@@ -4,13 +4,7 @@
 
 
 #include "UI_ToolsCustom.h"
-#include "EditObject.h"
-#include "EditMesh.h"
-#include "ui_main.h"           
-#include "../xrEngine/motion.h"
-#include "../xrEngine/bone.h"
-#include "../xrEngine/fmesh.h"
-#include "Library.h"
+#include "ui_main.h"
 #include "D3DUtils.h"
 
 //------------------------------------------------------------------------------

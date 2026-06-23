@@ -9,8 +9,6 @@
 #include "../../xrEngine/motion.h"
 #include "../../xrEngine/bone.h"
 #include "../../Layers/xrRender/SkeletonAnimated.h"
-#include "../../xrEngine/Fmesh.h"
-#include "../xrEProps/FolderLib.h"
 #include "../../xrPhysics/PhysicsShell.h"
 //---------------------------------------------------------------------------
 MotionID EngineModel::FindMotionID(const char* name, u16 slot)

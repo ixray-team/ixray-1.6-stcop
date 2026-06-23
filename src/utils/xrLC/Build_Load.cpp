@@ -8,6 +8,7 @@
 #include "../xrLC_Light/xrFace.h"
 #include "../xrLC_Light/xrMU_Model.h"
 #include "../xrLC_Light/xrMU_Model_Reference.h"
+#include "Collision/override/Model.h"
 
 extern u32	version;
 template <class T>
@@ -224,6 +225,30 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			vec.back()->Load			( *F, mu_models() );
 		}		
 		F->close				();
+	}
+	
+	F = fs.open_chunk(EB_MU_collisions);
+	if (F)
+	{
+		auto& vec = mu_models();
+		u32 CollisionsNum = F->r_u32();
+		for (i = 0; i < CollisionsNum; ++i)
+		{
+			auto& Model = vec[i]->CollisionModel;
+			auto& VertsArr = Model.verts;
+			auto& TrisArr = Model.tris;
+			{
+				u32 Size = F->r_u32();
+				VertsArr.resize(Size);
+				F->r(VertsArr.data(), Size*sizeof(Fvector));
+			}
+			{
+				u32 Size = F->r_u32();
+				TrisArr.resize(Size);
+				F->r(TrisArr.data(), Size*sizeof(CDB::TRI));
+			}
+			Model.build_simple();
+		}
 	}
 
 	F = fs.open_chunk(EB_MU_refs_debug);

@@ -1,11 +1,10 @@
 // FVisual.h: interface for the FVisual class.
 //
 //////////////////////////////////////////////////////////////////////
-#ifndef FVisualH
-#define FVisualH
 #pragma once
 
 #include "FBasicVisual.h"
+#include "IRender_Mesh.h"
 
 class	Fvisual					: public		dxRender_Visual, public IRender_Mesh
 {
@@ -20,5 +19,3 @@ public:
 	Fvisual();
 	virtual ~Fvisual();
 };
-
-#endif 

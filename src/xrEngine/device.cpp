@@ -263,10 +263,16 @@ void CRenderDevice::on_idle		()
 		}
 	}
 
-	PreRenderThread.Wait();
-	GameThread.Wait();
-
-	Device.EndRender();
+	{
+		PROF_EVENT("on_idle::WaitThreads");
+		PreRenderThread.Wait();
+		GameThread.Wait();
+	}
+		
+	{
+		PROF_EVENT("on_idle::EndRender");
+		Device.EndRender();
+	}
 	
 #ifdef IXRAY_PROFILER_TRACY
 	PROF_FRAME("idle");

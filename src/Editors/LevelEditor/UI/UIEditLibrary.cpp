@@ -613,7 +613,7 @@ void UIEditLibrary::PickCallback()
 		if (pinf.e_mesh == nullptr)
 			continue;
 
-		CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
+		CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.tris_id);
 		PrevClick = AnsiString("Surfaces\\") + AnsiString(surf->_Name());
 
 		UIPropertiesItem* Itm = InternalProps->FindPropItem(PrevClick.c_str());
