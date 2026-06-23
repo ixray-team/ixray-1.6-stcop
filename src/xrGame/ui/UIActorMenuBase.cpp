@@ -77,7 +77,8 @@ CUIActorMenuBase::CUIActorMenuBase()
 
 	EGameActions repeatActions[] = {
 		kUI_LEFT, kUI_RIGHT, kUI_UP, kUI_DOWN,
-		kUI_SECONDARY_LEFT, kUI_SECONDARY_RIGHT, kUI_SECONDARY_UP, kUI_SECONDARY_DOWN
+		kUI_SECONDARY_LEFT, kUI_SECONDARY_RIGHT, kUI_SECONDARY_UP, kUI_SECONDARY_DOWN,
+		kUI_TAB_SECONDARY_LEFT, kUI_TAB_SECONDARY_RIGHT
 	};
 
 	for (int i = 0; i < sizeof(repeatActions) / sizeof(repeatActions[0]); ++i)
@@ -1557,12 +1558,20 @@ bool CUIActorMenuBase::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 		}
 		else if (is_binded(kUI_TAB_SECONDARY_LEFT, id))
 		{
-			m_ItemInfo->ScrollUp();
+			ActionRepeaters()->SetActionStarted(this, kUI_TAB_SECONDARY_LEFT);
+			if (!any_binded_key_for_action_pressed_c(kUI_TAB_SECONDARY_RIGHT))
+			{
+				m_ItemInfo->ScrollUp();
+			}
 			return true;
 		}
 		else if (is_binded(kUI_TAB_SECONDARY_RIGHT, id))
 		{
-			m_ItemInfo->ScrollDown();
+			ActionRepeaters()->SetActionStarted(this, kUI_TAB_SECONDARY_RIGHT);
+			if (!any_binded_key_for_action_pressed_c(kUI_TAB_SECONDARY_LEFT))
+			{
+				m_ItemInfo->ScrollDown();
+			}
 			return true;
 		}
 	}
@@ -1632,6 +1641,22 @@ bool CUIActorMenuBase::OnGamepadKeyHold(int id)
 			{
 				if (ActionRepeaters()->CanRepeatActionNow(this, kUI_DOWN) && !any_binded_key_for_action_pressed_c(kUI_UP))
 					MoveSelector(eUIDirection4_Down, false);
+				return true;
+			}
+			case kUI_TAB_SECONDARY_LEFT:
+			{
+				if (ActionRepeaters()->CanRepeatActionNow(this, kUI_TAB_SECONDARY_LEFT) && !any_binded_key_for_action_pressed_c(kUI_TAB_SECONDARY_RIGHT))
+				{
+					m_ItemInfo->ScrollUp();
+				}
+				return true;
+			}
+			case kUI_TAB_SECONDARY_RIGHT:
+			{
+				if (ActionRepeaters()->CanRepeatActionNow(this, kUI_TAB_SECONDARY_RIGHT) && !any_binded_key_for_action_pressed_c(kUI_TAB_SECONDARY_LEFT))
+				{
+					m_ItemInfo->ScrollDown();
+				}
 				return true;
 			}
 		}
