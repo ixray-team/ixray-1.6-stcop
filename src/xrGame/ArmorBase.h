@@ -46,10 +46,10 @@ public:
 
 	bool					GlassPresent = false;
 	float					m_fPowerLoss = 0.0f;
+	SBoneProtections*		m_boneProtection;
 
 protected:
 	HitImmunity::HitTypeSVec m_HitTypeProtection;
-	SBoneProtections*		m_boneProtection;
 
 	bool					bIsHudGasMaskAvailable = false;		// FFx0001 ++
 	bool					bIsHudRainDropsAvailable = false;	// FFx0001 ++
