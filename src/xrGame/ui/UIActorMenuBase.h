@@ -345,5 +345,6 @@ public:
 	virtual bool				OnGamepadKeyHold			(int id);
 	virtual bool				StopAnyMove					();
 	virtual void				UpdatePrices				() {}
+	void						ReloadGamepadLegend			();
 	CUIGamepadLegend*			m_gamepad_legend = nullptr;
 };
