@@ -27,37 +27,37 @@ public:
 
 	u32							dwLightMarkerID;
 	// 
-	IBlender*					b_occq;
-	IBlender*					b_accum_mask;
-	IBlender*					b_accum_direct;
-	IBlender*					b_accum_point;
-	IBlender*					b_accum_spot;
-	IBlender*					b_accum_reflected;
-	IBlender*					b_bloom;
-	IBlender*					b_luminance;
-	IBlender*					b_combine;
-	IBlender*					b_ssao;
+	IBlender* b_occq = nullptr;
+	IBlender* b_accum_mask = nullptr;
+	IBlender* b_accum_direct = nullptr;
+	IBlender* b_accum_point = nullptr;
+	IBlender* b_accum_spot = nullptr;
+	IBlender* b_accum_reflected = nullptr;
+	IBlender* b_bloom = nullptr;
+	IBlender* b_luminance = nullptr;
+	IBlender* b_combine = nullptr;
+	IBlender* b_ssao = nullptr;
 
-	IBlender*					b_fxaa;
-	IBlender*					b_spp;
-	IBlender*					b_gasmask;
-	IBlender*					b_smaa;
-	IBlender*					b_scale;
-	IBlender*					b_cas;
-	IBlender*					b_gtao;
-	IBlender*					b_taa;
-	IBlender*					b_gamma;
-	IBlender*					b_nvg;
-	IBlender*					b_sslr;
+	IBlender* b_fxaa = nullptr;
+	IBlender* b_spp = nullptr;
+	IBlender* b_gasmask = nullptr;
+	IBlender* b_smaa = nullptr;
+	IBlender* b_scale = nullptr;
+	IBlender* b_cas = nullptr;
+	IBlender* b_gtao = nullptr;
+	IBlender* b_taa = nullptr;
+	IBlender* b_gamma = nullptr;
+	IBlender* b_nvg = nullptr;
+	IBlender* b_sslr = nullptr;
 
 	//============== new bloom and lum ============
-	IBlender*					b_bloom_downsample;
-	IBlender*					b_bloom_upsample;
-	IBlender*					b_new_adaptation;
+	IBlender* b_bloom_downsample = nullptr;
+	IBlender* b_bloom_upsample = nullptr;
+	IBlender* b_new_adaptation = nullptr;
 	//=============================================
 
 	//============== new Depth of Field ==============
-	IBlender*					b_new_dof;
+	IBlender* b_new_dof = nullptr;
 
 #ifdef DEBUG
 	struct		dbg_line_t		{

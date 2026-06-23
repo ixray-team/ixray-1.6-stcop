@@ -27,3 +27,7 @@
 #	define IXR_X64
 #	include "MacOS/PlatformInit.h"
 #endif
+
+#ifdef __clang__
+#	define IXR_CLANG_BUILD
+#endif

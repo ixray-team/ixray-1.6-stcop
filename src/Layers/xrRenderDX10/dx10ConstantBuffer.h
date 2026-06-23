@@ -38,7 +38,7 @@ private:
 
 	IRHIBuffer*							m_pBuffer;
 	u32									m_uiBufferSize;	//	Cache buffer size for debug validation
-	void*								m_pBufferData;
+	void*								m_pBufferData = nullptr;
 	bool								m_bChanged;
 
 	static const u32					lineSize = sizeof(Fvector4);

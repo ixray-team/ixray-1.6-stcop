@@ -414,8 +414,6 @@ namespace splash
         float timer = 0.0f;
 
         Uint64 prevTicks = SDL_GetTicks();
-        
-        SDL_Event e;
 
 #ifndef _EDITOR
         if (splash_render_prikol == NOVA_GODA)
