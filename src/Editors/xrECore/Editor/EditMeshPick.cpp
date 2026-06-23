@@ -4,6 +4,7 @@
 #include "EditObject.h"
 #include "ui_main.h"
 #include "pick_defs.h"
+#include "src/xrCore/Collision/override/Model.h"
 
 static IntVec		sml_processed;
 static Fvector		sml_normal;
@@ -42,7 +43,9 @@ void CEditableMesh::GenerateCFModel()
 	if (I_ASSERT(CL.getVS() >= 4 && CL.getTS() >= 2))
 	{
 		m_CFModel = new CDB::MODEL();
-		m_CFModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, nullptr, false, false);
+		m_CFModel->verts = CL.verts;
+		m_CFModel->tris = CL.faces;
+		m_CFModel->build_simple();
 	}
 }
 
@@ -55,9 +58,9 @@ void CEditableMesh::RayQuery(SPickQuery& pinf)
 	}
 
 	XRC.ray_query(m_CFModel, pinf.m_Start, pinf.m_Direction, pinf.m_Dist);
-	for (int r = 0; r < XRC.r_count(); r++)
+	for (auto& elem : XRC.r_vec())
 	{
-		pinf.append(XRC.r_begin() + r, m_Parent, this);
+		pinf.append(elem, m_Parent, this);
 	}
 }
 
@@ -74,9 +77,9 @@ void CEditableMesh::RayQuery(const Fmatrix& parent, const Fmatrix& inv_parent, S
 	inv_parent.transform_dir(D, pinf.m_Direction);
 
 	XRC.ray_query(m_CFModel, S, D, pinf.m_Dist);
-	for (int r = 0; r < XRC.r_count(); r++)
+	for (auto& elem : XRC.r_vec())
 	{
-		pinf.append_mtx(parent, XRC.r_begin() + r, m_Parent, this);
+		pinf.append_mtx(parent, elem, m_Parent, this);
 	}
 }
 
@@ -95,9 +98,9 @@ void CEditableMesh::BoxQuery(const Fmatrix& parent, const Fmatrix& inv_parent, S
 	dest.getradius(d);
 
 	XRC.box_query(m_CFModel, c, d);
-	for (int r = 0; r < XRC.r_count(); r++)
+	for (auto& elem : XRC.r_vec())
 	{
-		pinf.append_mtx(parent, XRC.r_begin() + r, m_Parent, this);
+		pinf.append_mtx(parent, elem, m_Parent, this);
 	}
 }
 
@@ -134,8 +137,8 @@ bool CEditableMesh::RayPick(float& distance, const Fvector& start, const Fvector
 
 	if (XRC.r_count())
 	{
-		CDB::RESULT* I = XRC.r_begin();
-		if (I->range < distance)
+		auto& I = XRC.r_any();
+		if (I.range < distance)
 		{
 			if (pinf)
 			{
@@ -146,7 +149,7 @@ bool CEditableMesh::RayPick(float& distance, const Fvector& start, const Fvector
 				pinf->pt.add(start);
 			}
 
-			distance = I->range;
+			distance = I.range;
 			return true;
 		}
 	}
@@ -253,12 +256,12 @@ bool CEditableMesh::BoxPick(const Fbox& box, const Fmatrix& inv_parent, SBoxPick
 	XRC.box_query(m_CFModel, c, d);
 	if (XRC.r_count())
 	{
-		pinf.push_back(SBoxPickInfo());
+		pinf.emplace_back();
 		pinf.back().e_obj = m_Parent;
 		pinf.back().e_mesh = this;
-		for (CDB::RESULT* I = XRC.r_begin(); I != XRC.r_end(); I++)
+		for (auto& elem : XRC.r_vec())
 		{
-			pinf.back().AddRESULT(m_CFModel, I);
+			pinf.back().AddRESULT(m_CFModel, elem);
 		}
 
 		return true;

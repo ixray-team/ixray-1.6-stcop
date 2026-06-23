@@ -59,7 +59,7 @@ void SCutsceneObjectElement::SetOffset(Fvector Offset)
 
 void SCutsceneObjectElement::SetRotationDegrees(Fvector Rotation)
 {
-    Fmatrix TempMRot(Fmatrix::Identity);
+    Fmatrix TempMRot(Fmatrix::EIdentity::Identity);
     TempMRot.setHPB(
         deg2rad(Rotation.y),
         deg2rad(Rotation.x),

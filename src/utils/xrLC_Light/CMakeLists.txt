@@ -132,6 +132,7 @@ add_library(xrLC_Light ${LCL_SRC_FILES})
 target_precompile_headers(xrLC_Light PRIVATE "stdafx.h")
 
 target_include_directories(xrLC_Light PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrLC_Light PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 target_include_directories(xrLC_Light PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
 target_include_directories(xrLC_Light PUBLIC "${IXRAY_SDK_INC}")
 
@@ -187,10 +188,6 @@ target_link_libraries(xrLC_Light PUBLIC xrCore)
 target_link_libraries(xrLC_Light PUBLIC imgui)
 target_link_libraries(xrLC_Light PUBLIC xrDXT)
 
-add_custom_command(TARGET xrLC_Light POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3/runtimes/win-x64/native/Release/embree4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)
-
 # DirectX SDK
 target_include_directories(xrLC_Light PUBLIC
 	"${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/"
@@ -202,5 +199,16 @@ target_include_directories(xrLC_Light PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSe
 target_link_libraries(xrLC_Light PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Zlib.1.2.13.1/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/zlib.lib")
 
 # Intel Embree
-target_include_directories(xrLC_Light PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3/build/native/include/")
-target_link_libraries(xrLC_Light PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3/runtimes/win-x64/native/Release/embree4.lib")
+target_include_directories(xrLC_Light PUBLIC "${CMAKE_SOURCE_DIR}/src/3rd-party/embree/include/")
+target_link_libraries(xrLC_Light PUBLIC embree)
+
+
+if(WIN32)
+    add_custom_command(TARGET xrLC_Light POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/3rd-party/embree/$<CONFIG>/embree4.dll ${IXRAY_OUTPUT}
+    )
+else ()
+    add_custom_command(TARGET xrLC_Light POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/3rd-party/embree/$<CONFIG>/libembree4.so ${IXRAY_OUTPUT}
+    )
+endif()

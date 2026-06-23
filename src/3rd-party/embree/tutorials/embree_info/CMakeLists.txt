@@ -1,0 +1,36 @@
+## Copyright 2009-2021 Intel Corporation
+## SPDX-License-Identifier: Apache-2.0
+
+PROJECT(embree_info)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
+
+IF (NOT EMBREE_PROJECT_COMPILATION)
+  FIND_PACKAGE(embree REQUIRED)
+ENDIF()
+
+IF (EMBREE_SYCL_SUPPORT)
+  SET(CMAKE_CXX_STANDARD 17)
+ENDIF()
+
+ADD_EXECUTABLE(embree_info embree_info.cpp)
+IF (EMBREE_SYCL_SUPPORT)
+  TARGET_LINK_LIBRARIES(embree_info embree ze_wrapper ${CMAKE_DL_LIBS})
+ELSE()
+  TARGET_LINK_LIBRARIES(embree_info embree)
+ENDIF()
+
+SET_PROPERTY(TARGET embree_info PROPERTY FOLDER tutorials/single)
+INSTALL(TARGETS embree_info DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT examples)
+#INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" DESTINATION "src" COMPONENT examples)
+
+IF (EMBREE_SYCL_SUPPORT)
+  SET_PROPERTY(TARGET embree_info APPEND PROPERTY COMPILE_FLAGS "-fsycl -Xclang -fsycl-allow-func-ptr -fsycl-targets=spir64")
+  SET_PROPERTY(TARGET embree_info APPEND PROPERTY LINK_FLAGS    "-fsycl -fsycl-targets=spir64")
+  TARGET_COMPILE_DEFINITIONS(embree_info PUBLIC EMBREE_SYCL_SUPPORT)
+ENDIF()
+
+IF (COMMAND SIGN_TARGET)
+  SIGN_TARGET(embree_info)
+ENDIF()
+
+ADD_EMBREE_GENERIC_TEST(embree_info embree_info)

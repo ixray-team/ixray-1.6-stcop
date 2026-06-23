@@ -933,7 +933,7 @@ void CSHEngineTools::OnShowHint(AStringVec& ss)
 		SRayPickInfo pinf;
 		if (m_PreviewObject->RayPick(dist,UI->m_CurrentRStart,UI->m_CurrentRDir,Fidentity,&pinf)){
 			R_ASSERT(pinf.e_mesh);
-			CSurface* surf=pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
+			CSurface* surf=pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.tris_id);
 			ss.push_back(xr_string("Surface: ")+xr_string(surf->_Name()));
 			ss.push_back(xr_string("Texture: ")+xr_string(surf->_Texture()));
 			ss.push_back(xr_string("Shader: ")+xr_string(surf->_ShaderName()));

@@ -185,18 +185,19 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 					// cache outdated. real query.
 					VERIFY(!fis_zero(RD.dir.magnitude()));
 
-					if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, [](collide::rq_result & result, LPVOID params) -> bool
+					if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, [](const collide::rq_result& result, LPVOID params) -> bool
 					{
 						SFeelParam* fp = (SFeelParam*)params;
-						float vis = fp->parent->feel_vision_mtl_transp(result.O, result.element);
+						float vis = fp->parent->feel_vision_mtl_transp(result);
 						fp->vis *= vis;
-						if (nullptr == result.O && fis_zero(vis))
+						if (result.IsStatic() && fis_zero(vis))
 						{
-							auto& Tidxs = g_pGameLevel->ObjectSpace.GetStaticTris()[result.element].verts;
-							xr_vector<Fvector>& V = g_pGameLevel->ObjectSpace.GetStaticVerts();
-							fp->item->Cache.verts[0] = V[Tidxs[0]];
-							fp->item->Cache.verts[1] = V[Tidxs[1]];
-							fp->item->Cache.verts[2] = V[Tidxs[2]];
+							auto SO = result.GetStatic();
+							auto& Tidxs = SO->tris[result.element].verts;
+							auto& V = SO->verts;
+							result.xform.transform_tiny(fp->item->Cache.verts[0], V[Tidxs[0]]);
+							result.xform.transform_tiny(fp->item->Cache.verts[1], V[Tidxs[1]]);
+							result.xform.transform_tiny(fp->item->Cache.verts[2], V[Tidxs[2]]);
 						}
 						return bool(fp->vis > fp->vis_threshold);
 					}, &feel_params, nullptr, m_owner))

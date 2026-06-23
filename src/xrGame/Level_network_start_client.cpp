@@ -200,6 +200,7 @@ bool CLevel::net_start_client5()
 
 bool CLevel::net_start_client6()
 {
+	//PROF_STOP_CAPTURE()
 	PROF_EVENT("CLevel::net_start_client6");
 	if (connected_to_server)
 	{
@@ -240,5 +241,6 @@ bool CLevel::net_start_client6()
 	net_start_result_total = connected_to_server;
 
 	pApp->LoadEnd();
+	//PROF_SAVE_CAPTURE("LevelLoad.opt")
 	return true;
 }

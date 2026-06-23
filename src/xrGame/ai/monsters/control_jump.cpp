@@ -492,7 +492,7 @@ void CControlJump::hit_test()
 	collide::rq_result	l_rq;
 
 	if (Level().ObjectSpace.RayPick(trace_from, m_object->Direction(), m_hit_trace_range, collide::rqtObject, l_rq, m_object)) {
-		if ((l_rq.O == m_data.target_object) && (l_rq.range < m_hit_trace_range)) {
+		if (!l_rq.IsStatic() && (l_rq.GetDynamic() == m_data.target_object) && (l_rq.range < m_hit_trace_range)) {
 			m_object_hitted = true;
 		}
 	}

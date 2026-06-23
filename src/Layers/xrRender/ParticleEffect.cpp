@@ -98,7 +98,7 @@ void CParticleEffect::UpdateParent(const Fmatrix& m, const Fvector& velocity, bo
 
 void CParticleEffect::OnFrame(u32 frame_dt)
 {
-	// PROF_EVENT(__FUNCTION__);
+	//PROF_EVENT(__FUNCTION__);
 	xrCriticalSectionGuard guard(&onframe_lock);
 	if (!m_Def || !m_RT_Flags.is(flRT_Playing))
 	{

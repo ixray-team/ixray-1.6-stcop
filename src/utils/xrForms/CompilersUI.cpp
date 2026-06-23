@@ -205,13 +205,18 @@ const char* cform_types[] = {
 	magic_enum::enum_name<CFormVersions>(CFormVersions::Vanilla).data(),
 	magic_enum::enum_name<CFormVersions>(CFormVersions::VanillaChunked).data()
 };
-constexpr int cform_types_num = sizeof(cform_types) / sizeof(cform_types[0]);
+const char* cform_types_external[] = {
+	magic_enum::enum_name<CFormVersions>(CFormVersions::Instanced).data(),
+	magic_enum::enum_name<CFormVersions>(CFormVersions::InstancedChunked).data()
+};
+constexpr int cform_types_num = std::size(cform_types);
+constexpr int cform_types_external_num = std::size(cform_types);
 
 const char* geom_types[] = {
 	magic_enum::enum_name<GeomVanillaType>(GeomVanillaType::Vanilla).data(),
 	magic_enum::enum_name<GeomVanillaType>(GeomVanillaType::Chunked).data()
 };
-constexpr int geom_types_num = sizeof(geom_types) / sizeof(geom_types[0]);
+constexpr int geom_types_num = std::size(geom_types);
 
 // Jitters
 const char* itemsJitter[] = { "1", "4", "9" };
@@ -240,6 +245,7 @@ void DrawLCConfig()
 
 		ImGui::PushID("geom");
 		ImGui::Text("Geom format:");
+		ImGui::Checkbox("Store MU externally", &gCompilerMode.LC_UseExternalRefs);
 		ImGui::SetNextItemWidth(180);
 		if (ImGui::Combo("##geom", &item_current_geom, geom_types, geom_types_num))
 		{
@@ -260,14 +266,33 @@ void DrawLCConfig()
 		ImGui::PushID("CForm");
 		ImGui::Text("CForm format:");
 		ImGui::SetNextItemWidth(180);
-		if (ImGui::Combo("##cform", &item_current_cform, cform_types, cform_types_num))
+		if (gCompilerMode.LC_UseExternalRefs)
 		{
-			auto type = magic_enum::enum_cast<CFormVersions>(cform_types[item_current_cform]);
-			VERIFY(type.has_value());
-			gCompilerMode.LC_CformType = type.value();
+			if (gCompilerMode.LC_CformType < CFormVersions::Instanced)
+			{
+				gCompilerMode.LC_CformType = CFormVersions::Instanced;
+			}
+			if (ImGui::Combo("##cform", &item_current_cform, cform_types_external, cform_types_external_num))
+			{
+				auto type = magic_enum::enum_cast<CFormVersions>(cform_types_external[item_current_cform]);
+				VERIFY(type.has_value());
+				gCompilerMode.LC_CformType = type.value();
+			}
+		} else
+		{
+			if (gCompilerMode.LC_CformType >= CFormVersions::Instanced)
+			{
+				gCompilerMode.LC_CformType = CFormVersions::Vanilla;
+			}
+			if (ImGui::Combo("##cform", &item_current_cform, cform_types, cform_types_num))
+			{
+				auto type = magic_enum::enum_cast<CFormVersions>(cform_types[item_current_cform]);
+				VERIFY(type.has_value());
+				gCompilerMode.LC_CformType = type.value();
+			}
 		}
 		
-		ImGui::BeginDisabled(gCompilerMode.LC_CformType != CFormVersions::VanillaChunked);
+		ImGui::BeginDisabled(gCompilerMode.LC_CformType != CFormVersions::VanillaChunked || gCompilerMode.LC_CformType == CFormVersions::InstancedChunked);
 		ImGui::SetNextItemWidth(100);
 		ImGui::InputInt("Chunk size (MB)", &gCompilerMode.LC_CFormChunkSize);
 		gCompilerMode.LC_CFormChunkSize = std::max(gCompilerMode.LC_CFormChunkSize, 1);

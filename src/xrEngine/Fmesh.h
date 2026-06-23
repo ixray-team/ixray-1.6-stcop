@@ -27,6 +27,8 @@ enum MT {
 	MT_LOD4					=17,
 	MT_LOD0					=19,
 	MT_MESH_LODS			=20
+	
+	MT_TREE_PROTOTYPE		=18,
 };
 
 enum OGF_Chuncks {
@@ -60,6 +62,10 @@ enum OGF_Chuncks {
 	// New
 	OGF_SHARED_MATERIAL_SETTINGS,
 	OGF_DEBUG_DATA,
+	OGF_GCONTAINER_MU_EXTERNAL,
+	OGF_STATIC_COLLISION_VERTS,
+	OGF_STATIC_COLLISION_TRIS,
+	OGF_STATIC_COLLISION_BAKED,
 	
     OGF_forcedword			= 0xFFFFFFFF         
 };							
@@ -101,7 +107,7 @@ struct ogf_bsphere	{
 };
 
 // OGF_HEADER
-const u8	xrOGF_FormatVersion		= 4;
+constexpr u8 xrOGF_FormatVersion = 4;
 struct ogf_header {
 	u8			format_version;			// = xrOGF_FormatVersion
 	u8			type;					// MT

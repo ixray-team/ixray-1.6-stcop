@@ -568,7 +568,7 @@ void CSceneObject::OnShowHint(AStringVec& dest)
 	if (m_pReference->RayPick(dist,UI->m_CurrentRStart,UI->m_CurrentRDir,_ITransform(),&pinf)){
 		dest.push_back(xr_string("Object Type: ")+get_token_name(eo_type_token,pinf.e_obj->m_objectFlags.flags));
 		R_ASSERT(pinf.e_mesh);
-		CSurface* surf=pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
+		CSurface* surf=pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.tris_id);
 		dest.push_back(xr_string("Surface: ")+xr_string(surf->_Name()));
 		dest.push_back(xr_string("2 Sided: ")+xr_string(surf->_flags().is(SSurfaceData::sf2Sided)?"on":"off"));
 		if (pinf.e_obj->m_objectFlags.is(CEditableObject::eoSoundOccluder)){

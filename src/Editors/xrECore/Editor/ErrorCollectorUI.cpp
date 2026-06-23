@@ -78,7 +78,7 @@ public:
 
 	ErrorCollector()
 	{
-		Debug.SilentErrorMode = true;
+		Debug.SilentErrorMode = true; 
 		Debug.SendErrorCallback = AddErrorToCollector;
 	}
 

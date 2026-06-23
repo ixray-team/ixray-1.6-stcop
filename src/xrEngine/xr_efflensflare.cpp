@@ -209,33 +209,35 @@ struct STranspParam
 	STranspParam		(collide::ray_cache	*p, const Fvector& _P, const Fvector& _D, float _f, float _vis_threshold):P(_P),D(_D),f(_f),pray_cache(p),vis(1.f),vis_threshold(_vis_threshold){}
 };
 
-IC bool material_callback(collide::rq_result& result, LPVOID params)
+IC bool material_callback(const collide::rq_result& result, LPVOID params)
 {
 	STranspParam* fp= (STranspParam*)params;
 	float vis		= 1.f;
-	if (result.O){
+	if (!result.IsStatic()){
 		vis			= 0.f;
-		//CKinematics*K=PKinematics(result.O->renderable.visual);
-		IKinematics*K=PKinematics(result.O->renderable.visual);
+		IKinematics* K = PKinematics(result.GetDynamic()->renderable.visual);
 		if (K&&(result.element>0))
-			vis		= g_pGamePersistent->MtlTransparent(K->LL_GetData(u16(result.element)).game_mtl_idx);
+		{
+			vis = g_pGamePersistent->MtlTransparent(K->LL_GetData(u16(result.element)).game_mtl_idx);
+		}
 	}
 	else
 	{
-		CDB::TRI& T	= g_pGameLevel->ObjectSpace.GetStaticTris()[result.element];
+		auto SO = result.GetStatic();
+		auto& T	= SO->tris[result.element];
 		vis = g_pGamePersistent->MtlTransparent(T.material);
 		if (fis_zero(vis))
 		{
-			xr_vector<Fvector>& V = g_pGameLevel->ObjectSpace.GetStaticVerts();
+			auto& V = SO->verts;
 			auto& Tidxs = T.verts;
 			fp->pray_cache->set(fp->P,fp->D,fp->f,true);
-			fp->pray_cache->verts[0] = V[Tidxs[0]];
-			fp->pray_cache->verts[1] = V[Tidxs[1]];
-			fp->pray_cache->verts[2] = V[Tidxs[2]];
+			result.xform.transform_tiny(fp->pray_cache->verts[0], V[Tidxs[0]]);
+			result.xform.transform_tiny(fp->pray_cache->verts[1], V[Tidxs[1]]);
+			result.xform.transform_tiny(fp->pray_cache->verts[2], V[Tidxs[2]]);
 		}
 	}
-	fp->vis			*=vis;
-	return (fp->vis>fp->vis_threshold); 
+	fp->vis *= vis;
+	return fp->vis > fp->vis_threshold; 
 }
 
 IC void	blend_lerp	(float& cur, float tgt, float speed, float dt)
@@ -395,15 +397,22 @@ void CLensFlare::OnFrame(shared_str id)
 		if (m_ray_cache[i].result&&m_ray_cache[i].similar(TP.P,TP.D,TP.f)){
 			// similar with previous query == 0
 			TP.vis				= 0.f;
-		}else{
+		}
+		else
+		{
 			float _u,_v,_range;
-			if (CDB::TestRayTri(TP.P,TP.D,m_ray_cache[i].verts,_u,_v,_range,false)&&(_range>0 && _range<TP.f)){
+			if (CDB::TestRayTri(TP.P,TP.D,m_ray_cache[i].verts,_u,_v,_range,false)&&(_range>0 && _range<TP.f))
+			{
 				TP.vis			= 0.f;
-			}else{
+			}
+			else
+			{
 				// cache outdated. real query.
 				r_dest.r_clear	();
-				if (g_pGameLevel->ObjectSpace.RayQuery	(r_dest,RD,material_callback,&TP,nullptr,o_main))
-					m_ray_cache[i].result = false			;
+				if (g_pGameLevel->ObjectSpace.RayQuery(r_dest,RD,material_callback,&TP,nullptr,o_main))
+				{
+					m_ray_cache[i].result = false;
+				}
 			}
 		}
 

@@ -4,6 +4,7 @@
 //#include "std_classes.h"
 #include "../../xrCore/FS.h"
 #include "../../xrEngine/Fmesh.h"
+#include "src/utils/xrForms/CompilersUI.h"
 
 using namespace std;
 
@@ -245,15 +246,29 @@ void OGF_Reference::Save	(IWriter &fs)
 	H.bs.r = R;
 
 	// Vertices
-	fs.make_chunk(OGF_GCONTAINER, [this](IWriter& F)
+	if (!gCompilerMode.LC_UseExternalRefs)
 	{
-		F.w_u32(vb_id);
-		F.w_u32(vb_start);
-		F.w_u32(model->data.vertices.size());
-		F.w_u32(ib_id);
-		F.w_u32(ib_start);
-		F.w_u32(model->data.faces.size()*3);
-	});
+		fs.make_chunk(OGF_GCONTAINER, [this](IWriter& F)
+		{
+			F.w_u32(vb_id);
+			F.w_u32(vb_start);
+			F.w_u32(model->data.vertices.size());
+			F.w_u32(ib_id);
+			F.w_u32(ib_start);
+			F.w_u32(model->data.faces.size()*3);
+		});
+	} else
+	{
+		fs.make_chunk(OGF_GCONTAINER_MU_EXTERNAL, [this](IWriter& F)
+		{
+			F.w_stringZ(external_path);
+			F.w_u32(SplitID);
+			F.w_u32(vb_id);
+			F.w_u32(vb_start);
+			F.w_u32(ib_id);
+			F.w_u32(ib_start);
+		});
+	}
 
 	// Special
 	fs.make_chunk(OGF_TREEDEF2, [this](IWriter& F)
@@ -419,7 +434,7 @@ enum OGF_FILE_SAVE
 // se7kills Saving OGF Files pre sectors build
 
 // OGF BASE Save
-void OGF_Base::SaveForCompile(IWriter* W)
+/*void OGF_Base::SaveForCompile(IWriter* W)
 {
 	W->open_chunk(eSaveHeaderBase);
 
@@ -444,11 +459,11 @@ void OGF_Base::LoadForCompile(IReader* Reader)
 		Reader->r_fvector3(C);
 		R = Reader->r_float();
 	}
-}
+}*/
 
 
 // OGF MAIN
-void OGF::SaveForCompile(IWriter* W)
+/*void OGF::SaveForCompile(IWriter* W)
 {
 	OGF_Base::SaveForCompile(W);
 
@@ -674,13 +689,13 @@ void OGF::LoadForCompile(IReader* R)
 			
 		}
 	}
-}
+}*/
 
 
 // Save Reference
 
 
-void OGF_Reference::SaveForCompile(IWriter* W)
+/*void OGF_Reference::SaveForCompile(IWriter* W)
 {
 	model->SaveForCompile(W);
 	
@@ -738,5 +753,5 @@ void OGF_Reference::LoadForCompile(IReader* R)
 			textures[T].pBuildSurface = tex;
 		}
 	}
-}
+}*/
 

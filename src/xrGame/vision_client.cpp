@@ -111,9 +111,9 @@ bool vision_client::shedule_Needed				()
 	return						(true);
 }
 
-float vision_client::feel_vision_mtl_transp		(CObject* O, u32 element)
+float vision_client::feel_vision_mtl_transp(const collide::rq_result& result)
 {
-	return						(visual().feel_vision_mtl_transp(O,element));
+	return visual().feel_vision_mtl_transp(result);
 }
 
 void vision_client::reinit						()

@@ -49,10 +49,10 @@ public:
 	virtual bool					shedule_Needed			();
 
 public:
-	virtual	float					feel_vision_mtl_transp	(CObject *object, u32 element);
+	virtual	float feel_vision_mtl_transp(const collide::rq_result& result) override;
 
 public:
-	virtual	bool					feel_vision_isRelevant	(CObject *object) = 0;
+	virtual	bool feel_vision_isRelevant(CObject *object) = 0;
 	virtual	void					camera					(
 										Fvector &position,
 										Fvector &direction,

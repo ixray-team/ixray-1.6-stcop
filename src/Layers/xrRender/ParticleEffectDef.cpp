@@ -78,10 +78,6 @@ void CPEDef::ExecuteAnimate(Particles& particles, u32 p_cnt, float dt)
 void CPEDef::ExecuteCollision(Particles& particles, u32 p_cnt, float dt, CParticleEffect* owner, CollisionCallback cb)
 {
 	Fvector pt,n;
-#ifndef _EDITOR
-	xr_vector<CDB::TRI>& tris = g_pGameLevel->ObjectSpace.GetStaticTris();
-	xr_vector<Fvector>& verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
-#endif
 	// Must traverse list in reverse order so Remove will work
 	for(int i = p_cnt-1; i >= 0; i--){
 		auto& pos = particles.pos_arr[i];
@@ -107,12 +103,18 @@ void CPEDef::ExecuteCollision(Particles& particles, u32 p_cnt, float dt, CPartic
 				if (g_pGameLevel->ObjectSpace.RayPick(posB,dir,dist,RT,RQ,nullptr))
 				{	
 					pt.mad(posB,dir,RQ.range);
-					if (RQ.O)
+					if (!RQ.IsStatic())
+					{
 						n.set(0.f,1.f,0.f);
+					}
 					else
 					{
-						auto& Tidxs = tris[RQ.element].verts;
-						n.mknormal(verts[Tidxs[0]],verts[Tidxs[1]],verts[Tidxs[2]]);
+						auto& Tidxs = RQ.GetStatic()->tris[RQ.element].verts;
+						Fvector verts[3];
+						RQ.xform.transform_tiny(verts[0], RQ.GetStatic()->verts[Tidxs[0]]);
+						RQ.xform.transform_tiny(verts[1], RQ.GetStatic()->verts[Tidxs[1]]);
+						RQ.xform.transform_tiny(verts[2], RQ.GetStatic()->verts[Tidxs[2]]);
+						n.mknormal(verts[0],verts[1],verts[2]);
 					}
 #endif
 					pick_cnt++;

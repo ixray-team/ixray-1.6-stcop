@@ -10,7 +10,7 @@
 #include "XRayKinematicsAnimated.h"
 #include "XRayTreeVisual.h"
 #include "../../xrEngine/IGame_Persistent.h"
-#include "../../xrEngine/fmesh.h"
+#include "../../xrEngine/FmeshRender.h"
 
 CDS0_ModelPool* GModelPool;
 CDS0_RenderVisual* CDS0_ModelPool::Instance_Create(u32 type)

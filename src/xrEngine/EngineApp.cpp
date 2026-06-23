@@ -67,6 +67,7 @@ void CEngineApp::OnEvent(EVENT E, u64 P1, u64 P2)
 	}
 	else if (E == g_pEventManager->eStart)
 	{
+		//PROF_START_CAPTURE();
 		PROF_EVENT("eStart");
 		LPSTR		op_server = LPSTR(P1);
 		LPSTR		op_client = LPSTR(P2);

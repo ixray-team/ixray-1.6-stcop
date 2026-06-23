@@ -350,10 +350,10 @@ bool check_actor_visibility(const Fvector trace_from, const Fvector trace_to, CO
 
 
 	collide::rq_result l_rq;
-	l_rq.O = nullptr;
+	l_rq.reset();
 	Level().ObjectSpace.RayPick(trace_from, trace_dir, dist, collide::rqtBoth, l_rq, object);
 
-	return l_rq.O == pActor || (l_rq.range >= dist - 0.1f);
+	return !l_rq.IsStatic() && (l_rq.GetDynamic() == pActor || l_rq.range >= dist - 0.1f);
 }
 
 } // namespace detail

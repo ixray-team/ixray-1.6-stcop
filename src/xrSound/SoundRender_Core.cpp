@@ -9,6 +9,7 @@
 #include "../xrEngine/IRenderable.h"
 #include "Recorder/SoundVoiceChat.h"
 #include "ai_sounds.h"
+#include "Collision/override/Model.h"
 
 using namespace XRay::Sound;
 
@@ -98,12 +99,16 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 	range = dir.magnitude();
 	dir.div(range);
 
-	if (0 != geom_MODEL) {
+	if (geom_MODEL) {
 		bool bNeedFullTest = true;
 		// 1. Check cached polygon
 		float _u, _v, _range;
-		if (CDB::TestRayTri(base, dir, occ, _u, _v, _range, true))
-			if (_range > 0 && _range < range) { occ_value = psSoundOcclusionScale; bNeedFullTest = false; }
+		if (CDB::TestRayTri(base, dir, occ, _u, _v, _range, true) 
+			&& _range > 0 && _range < range)
+		{
+			occ_value = psSoundOcclusionScale; 
+			bNeedFullTest = false;
+		}
 		// 2. Polygon doesn't picked up - real database query
 		if (bNeedFullTest)
 		{
@@ -112,28 +117,23 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 			if (0 != geom_DB.r_count())
 			{
 				// cache polygon
-				const CDB::RESULT* R_ = geom_DB.r_begin();
-				const CDB::TRI& T = geom_MODEL->get_tris()[R_->id];
-				const xr_vector<Fvector>& V = geom_MODEL->get_verts();
-				occ[0].set(V[T.verts[0]]);
-				occ[1].set(V[T.verts[1]]);
-				occ[2].set(V[T.verts[2]]);
-				occ_value = OcclusionMaterialCallback(R_->material);
+				const CDB::RESULT& R_ = geom_DB.r_any();
+				const CDB::TRI& T = R_.model->tris[R_.tris_id];
+				const xr_vector<Fvector>& V = R_.model->verts;
+				R_.ModelWorldTransform.transform_tiny(occ[0], V[T.verts[0]]);
+				R_.ModelWorldTransform.transform_tiny(occ[1], V[T.verts[1]]);
+				R_.ModelWorldTransform.transform_tiny(occ[2], V[T.verts[2]]);
+				occ_value = OcclusionMaterialCallback(T.material);
 			}
 		}
 	}
-	if (0 != geom_SOM)
+	if (geom_SOM)
 	{
 		geom_DB.ray_options(CDB::OPT_CULL);
 		geom_DB.ray_query(geom_SOM, base, dir, range);
-		u32 r_cnt = geom_DB.r_count();
-		CDB::RESULT* _B = geom_DB.r_begin();
-
-		if (0 != r_cnt) {
-			for (u32 k = 0; k < r_cnt; k++) {
-				CDB::RESULT* R_ = _B + k;
-				occ_value *= *(float*)&R_->dummy;
-			}
+		for (auto& elem : geom_DB.r_vec())
+		{
+			occ_value *= std::bit_cast<float>(elem.model->tris[elem.tris_id].dummy);
 		}
 	}
 	return occ_value;
@@ -155,14 +155,9 @@ float CSoundRender_Core::get_occlusion_to(const Fvector& hear_pt, const Fvector&
 
 		geom_DB.ray_options(CDB::OPT_CULL);
 		geom_DB.ray_query(geom_SOM, hear_pt, dir, range);
-		u32 r_cnt = geom_DB.r_count();
-		CDB::RESULT* _B = geom_DB.r_begin();
-
-		if (0 != r_cnt) {
-			for (u32 k = 0; k < r_cnt; k++) {
-				CDB::RESULT* R = _B + k;
-				occ_value *= *(float*)&R->dummy;
-			}
+		for (auto& elem : geom_DB.r_vec())
+		{
+			occ_value *= std::bit_cast<float>(elem.model->tris[elem.tris_id].dummy);
 		}
 	}
 	return occ_value;
@@ -329,8 +324,9 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 	}
 
 	geom_SOM = new CDB::MODEL();
-	geom_SOM->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS());
-	geom_SOM->wait_loading();
+	geom_SOM->verts = CL.verts;
+	geom_SOM->tris = CL.faces;
+	geom_SOM->build_simple();
 
 	geom->close();
 }
@@ -361,14 +357,14 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 
 	// Load geometry
 	IReader* GeomChunk = I->open_chunk(1);
-	u8* _data = (u8*)xr_malloc(GeomChunk->length());
+	//u8* _data = (u8*)xr_malloc(GeomChunk->length());
 
-	Memory.mem_copy(_data, GeomChunk->pointer(), GeomChunk->length());
-	IReader* Geom = new IReader(_data, GeomChunk->length(), 0);
+	//Memory.mem_copy(_data, GeomChunk->pointer(), GeomChunk->length());
+	//IReader* Geom = new IReader(_data, GeomChunk->length(), 0);
 
 	hdrCFORM H;
-	Geom->r(&H, sizeof(hdrCFORM));
-	Fvector* verts = (Fvector*)Geom->pointer();
+	Geom_ch->r(&H, sizeof(hdrCFORM));
+	Fvector* verts = (Fvector*)Geom_ch->pointer();
 	CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
 
 	Mixer::ResetZones();
@@ -432,13 +428,16 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 	}
 
 	geom_ENV = new CDB::MODEL();
-	geom_ENV->build(verts, H.vertcount, tris, H.facecount);
-	geom_ENV->wait_loading();
+	geom_SOM->verts.resize(H.vertcount);
+	std::memcpy(geom_SOM->verts.data(), verts, H.vertcount);
+	geom_SOM->tris.resize(H.facecount);
+	std::memcpy(geom_SOM->tris.data(), tris, H.facecount);
+	geom_SOM->build_simple();
 
-	GeomChunk->close();
-	Geom->close();
-	xr_free(_data);
-}
+	geom_ch->close();
+	//geom->close();
+	//xr_free(_data);
+}	
 
 void CSoundRender_Core::set_master_volume(float f)
 {

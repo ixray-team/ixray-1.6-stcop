@@ -486,7 +486,7 @@ void CBurer::UpdateGraviObject()
 	{
 		CEntityAlive* casted_enemy = const_cast<CEntityAlive*>(gravi_object.enemy);
 		const CObject* enemy = casted_enemy->dcast_CObject();
-		if ((l_rq.O == enemy) && (l_rq.range < trace_dist))
+		if (!l_rq.IsStatic() && (l_rq.GetDynamic() == enemy) && (l_rq.range < trace_dist))
 		{
 			// check for visibility
 			bool b_enemy_visible = false;

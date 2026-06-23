@@ -238,7 +238,7 @@ void CWallmarksEngine::BuildMatrix	(Fmatrix &mView, float invsz, const Fvector& 
 	mView.mulA_43		(mScale);
 }
 
-CWallmarksEngine::static_wallmark* CWallmarksEngine::AddWallmark_internal	(CDB::TRI* pTri, const Fvector* pVerts, ref_shader hShader, IMatrixBuilder& matrix_builder, Flags8 WMFlags)
+CWallmarksEngine::static_wallmark* CWallmarksEngine::AddWallmark_internal(const Fvector& Normal, ref_shader hShader, IMatrixBuilder& matrix_builder, Flags8 WMFlags)
 {
 	// query for polygons in bounding box
 	// calculate adjacency
@@ -248,27 +248,34 @@ CWallmarksEngine::static_wallmark* CWallmarksEngine::AddWallmark_internal	(CDB::
 	xrc.box_options(CDB::OPT_FULL_TEST);
 	xrc.box_query(g_pGameLevel->ObjectSpace.GetStaticModel(),bbc,bbd);
 	u32	triCount = xrc.r_count();
-	if (0==triCount)	
+	if (!triCount)
+	{
 		return nullptr;
+	}
 	u32 real_tcnt = triCount + 1u;
-	xr_vector<CDB::TRI>& tris = g_pGameLevel->ObjectSpace.GetStaticTris();
+	//xr_vector<CDB::TRI>& tris = g_pGameLevel->ObjectSpace.GetStaticTris();
 	sml_collector.clear();
 	sml_collector.reserve(real_tcnt);
-	sml_collector.add_face_packed_D(pVerts[pTri->verts[0]],pVerts[pTri->verts[1]],pVerts[pTri->verts[2]],0);
+	//sml_collector.add_face_packed_D(pVerts[pTri->verts[0]],pVerts[pTri->verts[1]],pVerts[pTri->verts[2]],0);
 	for (CDB::RESULT& result : xrc.r_vec())
 	{
-		CDB::TRI& Tri = tris[result.id];
-		if (&Tri==pTri) continue;
-		auto& tridxs = Tri.verts;
-		sml_collector.add_face_packed_D(pVerts[tridxs[0]],pVerts[tridxs[1]],pVerts[tridxs[2]],0);
+		auto& Tri = result.model->tris[result.tris_id];
+		Fvector Verts[3];
+		result.ModelWorldTransform.transform_tiny(Verts[0], result.model->verts[Tri.verts[0]]);
+		result.ModelWorldTransform.transform_tiny(Verts[1], result.model->verts[Tri.verts[1]]);
+		result.ModelWorldTransform.transform_tiny(Verts[2], result.model->verts[Tri.verts[2]]);
+		Verts[0] += Normal*0.01f;
+		Verts[1] += Normal*0.01f;
+		Verts[2] += Normal*0.01f;
+		sml_collector.add_face_packed_D(Verts[0],Verts[1],Verts[2],0);
 	}
 	sml_collector.calc_adjacency(sml_adjacency);
 
 
 	// calc face normal
-	Fvector	N;
-	N.mknormal(pVerts[pTri->verts[0]],pVerts[pTri->verts[1]],pVerts[pTri->verts[2]]);
-	sml_normal.set(N);
+	//Fvector	N;
+	//N.mknormal(pVerts[pTri->verts[0]],pVerts[pTri->verts[1]],pVerts[pTri->verts[2]]);
+	sml_normal.set(Normal);
 
 	// build 3D ortho-frustum
 	Fmatrix mView;
@@ -322,7 +329,7 @@ CWallmarksEngine::static_wallmark* CWallmarksEngine::AddWallmark_internal	(CDB::
 	return W;
 }
 
-CWallmarksEngine::static_wallmark* CWallmarksEngine::AddStaticWallmark(CDB::TRI* pTri, const Fvector* pVerts, const Fvector &contact_point, ref_shader hTexture, float sz, Flags8 flags, bool UseCameraDirection)
+CWallmarksEngine::static_wallmark* CWallmarksEngine::AddStaticWallmark(const Fvector& Normal, const Fvector &contact_point, ref_shader hTexture, float sz, Flags8 flags, bool UseCameraDirection)
 {
 	// optimization cheat: don't allow wallmarks more than 100 m from viewer/actor
 	if (!flags.test(StaticWallmarkHandle::flForceSpawn) && contact_point.distance_to_sqr(Device.vCameraPosition) > _sqr(100.f))
@@ -333,13 +340,13 @@ CWallmarksEngine::static_wallmark* CWallmarksEngine::AddStaticWallmark(CDB::TRI*
 	CMatrixBuilder_SizeCam builder(contact_point, sz, UseCameraDirection);
 
 	// Physics may add wallmarks in parallel with rendering
-	lock.Enter				();
-	auto result = AddWallmark_internal(pTri,pVerts,hTexture,builder, flags);
-	lock.Leave				();
+	lock.Enter();
+	auto result = AddWallmark_internal(Normal, hTexture, builder, flags);
+	lock.Leave();
 	return result;
 }
 
-CWallmarksEngine::static_wallmark* CWallmarksEngine::AddStaticWallmark(CDB::TRI* pTri, const Fvector* pVerts,
+CWallmarksEngine::static_wallmark* CWallmarksEngine::AddStaticWallmark(const Fvector& Normal,
 	const Fvector& contact_point, ref_shader hTexture, float w, float h, float r, Flags8 flags)
 {
 	// optimization cheat: don't allow wallmarks more than 100 m from viewer/actor
@@ -351,9 +358,9 @@ CWallmarksEngine::static_wallmark* CWallmarksEngine::AddStaticWallmark(CDB::TRI*
 	CMatrixBuilder_WHR builder(contact_point, w, h, r);
 
 	// Physics may add wallmarks in parallel with rendering
-	lock.Enter				();
-	auto result = AddWallmark_internal(pTri,pVerts,hTexture,builder, flags);
-	lock.Leave				();
+	lock.Enter();
+	auto result = AddWallmark_internal(Normal, hTexture, builder, flags);
+	lock.Leave();
 	return result;
 }
 extern bool ps_r__WallmarkDyn;

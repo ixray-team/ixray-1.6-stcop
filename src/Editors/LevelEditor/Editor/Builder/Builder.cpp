@@ -31,6 +31,34 @@ SceneBuilder::~SceneBuilder()
 {
 }
 
+#if defined(DEBUG) && defined(IXR_WINDOWS) && (defined(_MSC_VER) || (defined(__clang__) && defined(_MSC_EXTENSIONS)))
+#define ALLOW_SEH_EXCEPTIONS
+#include <windows.h> // for EXCEPTION_ACCESS_VIOLATION
+#include <excpt.h>
+
+class SEHExceptionCompile
+{
+public:
+	EXCEPTION_POINTERS* info;
+	u32 code;
+
+	SEHExceptionCompile(u32 c, EXCEPTION_POINTERS* i) : info(i), code(c)
+	{
+		if (IsDebuggerPresent())
+		{
+			DebugBreak();
+		}
+		ProcessStackTrace(info);
+	}
+};
+
+void SEH_translator_Compile(u32 code, _EXCEPTION_POINTERS* info)
+{
+	throw SEHExceptionCompile(code, info);	
+}
+
+static std::atomic_bool g_bCompileSEHInited = false;
+#endif
 
 #define CHECK_BREAK     	if (UI->NeedAbort()) break;
 #define VERIFY_COMPILE(x,c1,c2) CHECK_BREAK \
@@ -53,6 +81,13 @@ bool SceneBuilder::Compile(bool b_selected_only, bool show_message )
 	ELog.Msg( mtInformation, "Building started..." );
 
     UI->BeginEState(esBuildLevel);
+#ifdef ALLOW_SEH_EXCEPTIONS
+	if (!g_bCompileSEHInited)
+	{
+		_set_se_translator(SEH_translator_Compile);
+		g_bCompileSEHInited = true;
+	}
+#endif
     try{
         do{
 	        // check debug

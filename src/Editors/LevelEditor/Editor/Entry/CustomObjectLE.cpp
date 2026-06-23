@@ -16,7 +16,7 @@ void CCustomObject::SnapMove(Fvector& pos, Fvector& rot, const Fmatrix& rotRP, c
             pos.set(pinf.pt);
             if (Tools->GetSettings(etfNormalAlign)){
                 Fvector verts[3];
-                pinf.e_obj->GetFaceWorld(pinf.s_obj->_Transform(),pinf.e_mesh,pinf.inf.id,verts);
+                pinf.e_obj->GetFaceWorld(pinf.s_obj->_Transform(),pinf.e_mesh,pinf.inf.tris_id,verts);
                 Fvector vR,vD,vN;
                 vN.mknormal(verts[0],verts[1],verts[2]);
 

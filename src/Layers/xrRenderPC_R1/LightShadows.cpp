@@ -413,37 +413,35 @@ void  PLC_calc3_SSE(int& c0, int& c1, int& c2, CRenderDevice& Device_, Fvector* 
 void CLightShadows::render	()
 {
 	// Gain access to collision-DB
-	CDB::MODEL*		DB		= g_pGameLevel->ObjectSpace.GetStaticModel();
-	xr_vector<CDB::TRI>& TRIS	= DB->get_tris();
-	xr_vector<Fvector>& VERTS	= DB->get_verts();
+	CDB::MODEL* DB = g_pGameLevel->ObjectSpace.GetStaticModel();
 
-	int			slot_line	= S_rt_size/S_size;
+	int slot_line = S_rt_size/S_size;
 	
 	// Projection and xform
-	float _43					=	Device.mProject._43;
+	float _43 = Device.mProject._43;
 
 	//	Handle biasing problem when near changes
-	const float fMinNear = 0.1f;
-	const float fMaxNear = 0.2f;
-	const float fMinNearBias = 0.0002f;
-	const float fMaxNearBias = 0.002f;
-	float	fLerpCoeff	= (_43 - fMinNear) / (fMaxNear - fMinNear);
+	constexpr float fMinNear = 0.1f;
+	constexpr float fMaxNear = 0.2f;
+	constexpr float fMinNearBias = 0.0002f;
+	constexpr float fMaxNearBias = 0.002f;
+	float fLerpCoeff	= (_43 - fMinNear) / (fMaxNear - fMinNear);
 	clamp( fLerpCoeff, 0.0f, 1.0f );
 	//	lerp
-	Device.mProject._43			-=	fMinNearBias + (fMaxNearBias-fMinNearBias) * fLerpCoeff;
+	Device.mProject._43 -= fMinNearBias + (fMaxNearBias-fMinNearBias) * fLerpCoeff;
 	//Device.mProject._43			-=	0.0002f; 
-	Device.mProject._43			-=	0.002f; 
+	Device.mProject._43 -= 0.002f; 
 	//Device.mProject._43			-=	0.0008f; 
-	RCache.set_xform_world		(Fidentity);
-	RCache.set_xform_project	(Device.mProject);
-	Fvector	View				= Device.vCameraPosition;
+	RCache.set_xform_world(Fidentity);
+	RCache.set_xform_project(Device.mProject);
+	Fvector	View = Device.vCameraPosition;
 	
 	// Render shadows
-	RCache.set_Shader			(sh_World);
-	RCache.set_Geometry			(geom_World);
-	int batch					= 0;
-	u32 Offset					= 0;
-	FVF::LIT* pv				= (FVF::LIT*) RCache.Vertex.Lock	(batch_size*3,geom_World->vb_stride,Offset);
+	RCache.set_Shader(sh_World);
+	RCache.set_Geometry(geom_World);
+	int batch = 0;
+	u32 Offset = 0;
+	FVF::LIT* pv = (FVF::LIT*) RCache.Vertex.Lock(batch_size*3,geom_World->vb_stride,Offset);
 	for (u32 s_it=0; s_it<shadows.size(); s_it++)
 	{
 		Device.Statistic->RenderDUMP_Srender.Begin	();
@@ -495,16 +493,22 @@ void CLightShadows::render	()
 
 			// Clip polys by frustum
 			tess.clear				();
-			for (CDB::RESULT* p = xrc.r_begin(); p!=xrc.r_end(); p++)
+			for (auto& elem : xrc.r_vec())
 			{
-				VERIFY((p->id>=0)&&(p->id<DB->get_tris().size()));
+				VERIFY(elem.tris_id<elem.model->tris.size());
 				// 
-				CDB::TRI&	t		= TRIS[p->id];
-				if (t.suppress_shadows) continue;
-				sPoly		A,B;
-				A.push_back			(VERTS[t.verts[0]]);
-				A.push_back			(VERTS[t.verts[1]]);
-				A.push_back			(VERTS[t.verts[2]]);
+				auto& t = elem.model->tris[elem.tris_id];
+				if (t.suppress_shadows)
+				{
+					continue;
+				}
+				sPoly A,B;
+				A.push_back(elem.model->verts[t.verts[0]]);
+				A.push_back(elem.model->verts[t.verts[1]]);
+				A.push_back(elem.model->verts[t.verts[2]]);
+				elem.ModelWorldTransform.transform_tiny(A[0]);
+				elem.ModelWorldTransform.transform_tiny(A[1]);
+				elem.ModelWorldTransform.transform_tiny(A[2]);
 
 				// Calc plane, throw away degenerate tris and invisible to light polygons
 				Fplane				P;	float mag = 0;

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "../Terrain/ESceneTerrainTools.h"
 #include"../xrCore/Collision/cl_intersect.h"
+#include "Collision/override/Model.h"
 static SPickQuery	PQ;
 
 IC void SnapXZ	(Fvector&	V, float ps)
@@ -590,15 +591,15 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 			Fbox snap_bb;
 			{
 				snap_bb.invalidate();
-				for (ObjectIt o_it = m_SnapObjects.begin(); o_it != m_SnapObjects.end(); o_it++)
+				for (auto obj : m_SnapObjects)
 				{
-					if (CSceneObject* S = smart_cast<CSceneObject*>(*o_it))
+					if (CSceneObject* S = smart_cast<CSceneObject*>(obj))
 					{
 						avg_face_cnt += S->GetFaceCount();
 						avg_vert_cnt += S->GetVertexCount();
 						mesh_cnt += S->Meshes()->size();
 					}
-					else  if (CTerrain* S = smart_cast<CTerrain*>(*o_it))
+					else  if (CTerrain* S = smart_cast<CTerrain*>(obj))
 					{
 						avg_face_cnt += S->GetReference()->GetFaceCount();
 						avg_vert_cnt += S->GetReference()->GetVertexCount();
@@ -606,7 +607,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 					}
 
 					Fbox bb;
-					(*o_it)->GetBox(bb);
+					obj->GetBox(bb);
 					snap_bb.merge(bb);
 				}
 			}
@@ -615,30 +616,28 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 
 			static CDB::Collector CL; CL.clear();
 			Fvector verts[3];
-			for (ObjectIt o_it = m_SnapObjects.begin(); o_it != m_SnapObjects.end(); o_it++)
+			for (auto obj : m_SnapObjects)
 			{
 				CEditableObject* E = nullptr;
-				if (CSceneObject* S = smart_cast<CSceneObject*>(*o_it))
+				if (CSceneObject* S = smart_cast<CSceneObject*>(obj))
 				{
 					E = S->GetReference();
 				}
-				else if (CTerrain* S = smart_cast<CTerrain*>(*o_it))
+				else if (CTerrain* S = smart_cast<CTerrain*>(obj))
 				{
 					E = S->GetReference();
 				}
 				VERIFY(E);
 
 				EditMeshVec& _meshes = E->Meshes();
-				for (EditMeshIt m_it = _meshes.begin(); m_it != _meshes.end(); m_it++)
+				for (auto mesh : _meshes)
 				{
 					string512 Data = {};
-					sprintf(Data, "%s [%s]", (*o_it)->GetName(), (*m_it)->Name().c_str());
+					sprintf(Data, "%s [%s]", obj->GetName(), mesh->Name().c_str());
 					pb->Inc(Data);
 
-					const SurfFaces& _sfaces = (*m_it)->GetSurfFaces();
-					for (SurfFaces::const_iterator sp_it = _sfaces.begin(); sp_it != _sfaces.end(); sp_it++)
+					for (auto& [surf, face_lst]: mesh->GetSurfFaces())
 					{
-						CSurface* surf = sp_it->first;
 						// test passable
 
 						u16 mtl_id = surf->_GameMtl();// ->material;
@@ -651,20 +650,20 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 						Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
 						if (c_sh == nullptr || !c_sh->flags.bCollision)
 						{
+						{
 							continue;
 						}
 
 						// collect tris
-						const IntVec& face_lst = sp_it->second;
 						CL.reserve(face_lst.size());
-						for (IntVec::const_iterator it = face_lst.begin(); it != face_lst.end(); it++)
+						for (auto face : face_lst)
 						{
-							E->GetFaceWorld((*o_it)->_Transform(), *m_it, *it, verts);
+							E->GetFaceWorld(obj->_Transform(), mesh, face, verts);
 
-							CL.add_face_D(verts[0], verts[1], verts[2], surf->_GameMtl() /* *it */);
+							CL.add_face_D(verts[0], verts[1], verts[2], surf->_GameMtl());
 							if (surf->_flags().is(SSurfaceData::sf2Sided))
 							{
-								CL.add_face_D(verts[2], verts[1], verts[0], surf->_GameMtl() /* *it */);
+								CL.add_face_D(verts[2], verts[1], verts[0], surf->_GameMtl());
 							}
 						}
 					}
@@ -675,8 +674,11 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 
 			UI->SetStatus("Building collision model...");
 
+			// TODO: Add Instanced?
 			m_CFModel = new CDB::MODEL();
-			m_CFModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS());
+			m_CFModel->verts = CL.verts;
+			m_CFModel->tris = CL.faces;
+			m_CFModel->build_simple();
 		}
 
 		// building

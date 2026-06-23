@@ -3,23 +3,17 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include <discord_gamesdk/cpp/types.h>
-
 #include "stdafx.h"
 #include "pch_script.h"
 #include "InventoryOwner.h"
 #include "GameObject.h"
 #include "xrMessages.h"
-#include "ai_space.h"
 #include "ai_debug.h"
-#include "alife_simulator.h"
 #include "alife_registry_container.h"
 #include "script_game_object.h"
 #include "Level.h"
 #include "InfoPortion.h"
 #include "alife_registry_wrappers.h"
-#include "../xrScripts/script_callback_ex.h"
-#include "game_object_space.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
 void  CInventoryOwner::OnEvent(NET_Packet& P, u16 type)

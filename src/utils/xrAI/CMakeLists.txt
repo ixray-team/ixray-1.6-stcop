@@ -78,6 +78,7 @@ list(APPEND XAI_SRC_FILES ${XAI_SPAWN_WRAPPER})
 add_library(xrAI ${XAI_SRC_FILES})
 
 target_include_directories(xrAI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrAI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 target_include_directories(xrAI PRIVATE "../../xrServerEntities/")
 
 target_link_directories(xrAI PRIVATE "${IXRAY_SDK_LIB}")
@@ -103,5 +104,16 @@ target_include_directories(xrAI PRIVATE "${CMAKE_BINARY_DIR}/packages/Microsoft.
 target_include_directories(xrAI PRIVATE "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
 
 # Intel Embree
-target_include_directories(xrAI PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3/build/native/include/")
-target_link_libraries(xrAI PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3/runtimes/win-x64/native/Release/embree4.lib")
+target_include_directories(xrAI PUBLIC "${CMAKE_SOURCE_DIR}/src/3rd-party/embree/include/")
+target_link_libraries(xrAI PUBLIC embree)
+
+
+if(WIN32)
+    add_custom_command(TARGET xrAI POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/3rd-party/embree/$<CONFIG>/embree4.dll ${IXRAY_OUTPUT}
+    )
+else ()
+    add_custom_command(TARGET xrAI POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/3rd-party/embree/$<CONFIG>/libembree4.so ${IXRAY_OUTPUT}
+    )
+endif()

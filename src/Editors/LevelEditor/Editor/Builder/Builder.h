@@ -51,6 +51,7 @@ public:
     xr_vector<b_mu_model>		l_mu_models;
     xr_vector<b_mu_reference>	l_mu_refs;
 	xr_vector<b_mu_mesh_lods>	l_mu_mesh_lods;
+	xr_vector<b_mu_collision>	l_mu_collsions;
     xr_vector<shared_str>	l_mu_refs_debug;
     xr_vector<e_b_lod>			l_lods;
     xr_vector<sb_light_control>	l_light_control;

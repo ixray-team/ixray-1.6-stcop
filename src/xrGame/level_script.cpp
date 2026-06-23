@@ -1023,13 +1023,15 @@ void spawn_section(const char* sSection, Fvector3 vPosition, u32 LevelVertexID, 
 CScriptGameObject* g_get_target_obj()
 {
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
-	if (RQ.O)
+	if (!RQ.IsStatic())
 	{
-		CGameObject* game_object = static_cast<CGameObject*>(RQ.O);
+		auto game_object = static_cast<const CGameObject*>(RQ.GetDynamic());
 		if (game_object)
+		{
 			return game_object->lua_game_object();
+		}
 	}
-	return (0);
+	return nullptr;
 }
 
 float g_get_target_dist()

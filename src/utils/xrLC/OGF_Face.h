@@ -6,6 +6,7 @@
 #include "../xrLC_Light/xrUVpoint.h"
 #include "../xrLC_Light/base_basis.h"
 #include "../xrLC_Light/base_color.h"
+#include "src/utils/xrForms/CompilersUI.h"
 
 struct OGF_Texture
 {
@@ -102,8 +103,8 @@ struct OGF_Base
 	virtual void		GetGeometry	(xr_vector<Fvector> &RES)	= 0;
 	void				CalcBounds	(bool useProgressBar=false); 
 
-	void				SaveForCompile(IWriter* W);
-	void				LoadForCompile(IReader* R);
+	/*void				SaveForCompile(IWriter* W);
+	void				LoadForCompile(IReader* R);*/
 
 	virtual size_t				SizeOF() { return sizeof(OGF_Base); };
 };
@@ -187,8 +188,8 @@ struct OGF : public OGF_Base
 			R.push_back(I->P);
 	}
 
-	void				SaveForCompile(IWriter* W);
-	void				LoadForCompile(IReader* R);
+	/*void				SaveForCompile(IWriter* W);
+	void				LoadForCompile(IReader* R);*/
 
 	virtual size_t SizeOF() override
 	{
@@ -215,11 +216,14 @@ struct OGF_Reference : public OGF_Base
 	u32					material;
 	vecOGF_T			textures;
 
-	u32					vb_id	;
-	u32					vb_start;
-	u32					ib_id	;
-	u32					ib_start;
-	u32					sw_id	;
+	shared_str external_path;
+	u32 SplitID;
+	
+	u32 vb_id;
+	u32 vb_start;
+	u32 ib_id;
+	u32 ib_start;
+	u32 sw_id;
 
 	Fmatrix				xform;
 	base_color_c		c_scale;
@@ -230,9 +234,21 @@ struct OGF_Reference : public OGF_Base
 	bool bSharedMaterial;
 
 	OGF_Reference() : OGF_Base(0) 
-					{
-						model	= 0;
-					}
+	{
+		model = nullptr;
+		vb_id = 0;
+		vb_start = 0;
+		ib_id = 0;
+		ib_start = 0;
+		sw_id = 0;
+	}
+	~OGF_Reference() override
+	{
+		if (gCompilerMode.LC_UseExternalRefs)
+		{
+			external_path = nullptr;
+		}
+	}
 
 	virtual void		Save		(IWriter &fs);
 	virtual void		GetGeometry	(xr_vector<Fvector> &R)
@@ -254,9 +270,7 @@ struct OGF_Reference : public OGF_Base
 			tex += sizeof(T.pBuildSurface);
 		}
 		return sizeof(*this) + tex + model->SizeOF();
-	};
-	void SaveForCompile(IWriter* W);
-	void LoadForCompile(IReader* R);
+	}
 };
 
 struct OGF_Node :  public OGF_Base

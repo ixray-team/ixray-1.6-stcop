@@ -1863,25 +1863,26 @@ void Mixer::Update(void* event_handler, float time_factor, float volume, float e
 						Fvector Dir = {0, -1, 0};
 						Collider->ray_options(CDB::OPT_ONLYNEAREST);
 						Collider->ray_query(EnvModel, Pos, Dir, 1000.f);
-						xr_vector<Fvector>& Verts = EnvModel->get_verts();
-						xr_vector<CDB::TRI>& Tris = EnvModel->get_tris();
 						if (Collider->r_count())
 						{
-							CDB::RESULT* R = Collider->r_begin();
-							CDB::TRI& T = Tris[R->id];
-							auto& TriVerts = T.verts;
+							auto& r = Collider->r_any();
+							auto& Verts = r.model->verts;
+							auto& Tris = r.model->tris;
+							auto& T = Tris[r.tris_id];
+							auto& verts = T.verts;
 
-							Fvector TriNorm;
-							TriNorm.mknormal(Verts[TriVerts[0]], Verts[TriVerts[1]], Verts[TriVerts[2]]);
+							Fvector tri_norm;
+							tri_norm.mknormal(Verts[verts[0]], Verts[verts[1]], Verts[verts[2]]);
+							r.ModelWorldTransform.transform_tiny(tri_norm);
 
 							R_ASSERT(T.dummy < GMixer.zones.size());
 							Slot.zone_idx = T.dummy + 1;
-						}
+						} 
 						else
 						{
 							Slot.zone_idx = 0;
 						}
-					}
+					} 
 					else
 					{
 						Slot.zone_idx = 0;

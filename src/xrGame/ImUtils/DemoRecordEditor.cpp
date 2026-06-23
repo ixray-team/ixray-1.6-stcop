@@ -319,13 +319,13 @@ void RenderDemoRecordEditorWindow()
 				{
 					demo_record->view_from_bone_mode = false;
 
-					if (demo_record->rq_result.O != nullptr)
+					if (!demo_record->rq_result.IsStatic())
 					{
-						if (IRenderVisual* v = demo_record->rq_result.O->Visual())
+						if (IRenderVisual* v = demo_record->rq_result.GetDynamic()->Visual())
 						{
 							if (IKinematics* k = v->dcast_PKinematics())
 							{
-								demo_record->bone_holder = demo_record->rq_result.O;
+								demo_record->bone_holder = const_cast<CObject*>(demo_record->rq_result.GetDynamic());
 								demo_record->bone_holder_kinematics = k;
 								demo_record->bone_id = (u16)demo_record->rq_result.element;
 							}
@@ -471,13 +471,13 @@ void RenderDemoRecordEditorWindow()
 			target_obj = demo_record->bone_holder;
 			kin = demo_record->bone_holder_kinematics;
 		}
-		else if (demo_record->rq_result.O != nullptr)
+		else if (!demo_record->rq_result.IsStatic())
 		{
-			if (IRenderVisual* v = demo_record->rq_result.O->Visual())
+			if (IRenderVisual* v = demo_record->rq_result.GetDynamic()->Visual())
 			{
 				kin = v->dcast_PKinematics();
 			}
-			target_obj = demo_record->rq_result.O;
+			target_obj = const_cast<CObject*>(demo_record->rq_result.GetDynamic());
 		}
 
 		if (demo_record->view_from_bone_mode && demo_record->bone_holder_kinematics != nullptr && demo_record->bone_id != BI_NONE)
