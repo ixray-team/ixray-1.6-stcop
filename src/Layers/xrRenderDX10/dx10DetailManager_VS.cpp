@@ -149,9 +149,19 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 					R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
 
 				if constexpr (std::is_same_v<T, __m256>)
-					_mm256_stream_ps(&static_cast<T*>(pSubRes.pData)[instanceCount++].m256_f32[0], reinterpret_cast<T&>(Instance));//experimental
+				{
+#ifdef IXR_CLANG_BUILD
+					float* dest = static_cast<float*>(pSubRes.pData) + instanceCount * 8;
+					_mm256_stream_ps(dest, reinterpret_cast<const __m256&>(Instance));
+					instanceCount++;
+#else
+					_mm256_stream_ps(&static_cast<T*>(pSubRes.pData)[instanceCount++].m256_f32[0], reinterpret_cast<T&>(Instance)); // experimental
+#endif
+				}
 				else
+				{
 					static_cast<T*>(pSubRes.pData)[instanceCount++] = reinterpret_cast<T&>(Instance);
+				}
 
 				if (instanceCount == currentSize)
 				{
