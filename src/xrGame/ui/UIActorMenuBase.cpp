@@ -1797,7 +1797,10 @@ bool CUIActorMenuBase::StopAnyMove()  // true = актёр не идёт при 
 
 void CUIActorMenuBase::ReloadGamepadLegend() 
 {
-	m_gamepad_legend->ReloadLegend();
+	if (m_gamepad_legend)
+	{
+		m_gamepad_legend->ReloadLegend();
+	}
 	if (m_pItemDropAmountWnd)
 	{
 		if (CUIGamepadLegend* l = m_pItemDropAmountWnd->_gamepadLegend)
