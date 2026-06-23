@@ -533,11 +533,21 @@ void CUIItemInfo::Draw()
 void CUIItemInfo::ScrollDown()
 {
 	if (UIDesc && !m_b_FitToHeight)
-		UIDesc->ScrollToEnd();
+	{
+		if (CUIScrollBar* s = UIDesc->ScrollBar())
+		{
+			s->TryScrollInc();
+		}
+	}
 }
 
 void CUIItemInfo::ScrollUp()
 {
 	if (UIDesc && !m_b_FitToHeight)
-		UIDesc->ScrollToBegin();
+	{
+		if (CUIScrollBar* s = UIDesc->ScrollBar())
+		{
+			s->TryScrollDec();
+		}
+	}
 }
