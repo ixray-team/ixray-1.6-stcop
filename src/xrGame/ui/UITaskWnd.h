@@ -43,7 +43,6 @@ private:
 
 	CUI3tButton*			m_btn_focus;
 	CUI3tButton*			m_btn_focus2;
-	CUIGamepadLegend*		m_gamepad_legend = nullptr;
 
 	enum MAP_MARKS_FILTER
 	{
@@ -68,6 +67,7 @@ private:
 
 public:
 	UIHint*					hint_wnd;
+	CUIGamepadLegend*		m_gamepad_legend = nullptr;
 
 public:
 								CUITaskWnd				();

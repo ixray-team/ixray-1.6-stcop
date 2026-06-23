@@ -11,7 +11,9 @@ public:
 	{
 		Spacing = Val;
 	}
+	void ReloadLegend();
 
+	virtual CUIGamepadLegend* ui_cast_gamepad_legend() { return this; }
 protected:
 	float Spacing = 0.0f;
 };

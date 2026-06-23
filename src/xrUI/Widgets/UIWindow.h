@@ -26,6 +26,7 @@ class CUIFixedScrollBar;
 class CUISelectable;
 class CUIListItemServer;
 class CUIProgressShape;
+class CUIGamepadLegend;
 
 class UI_API CUIWindow  : 
 	public CUISimpleWindow,
@@ -50,6 +51,7 @@ public:
 	virtual CUISelectable* ui_cast_selectable() { return nullptr; }
 	virtual CUIListItemServer* ui_cast_list_item_server() { return nullptr; }
 	virtual CUIProgressShape* ui_cast_progress_shape() { return nullptr; }
+	virtual CUIGamepadLegend* ui_cast_gamepad_legend() { return nullptr; }
 
 	////////////////////////////////////
 	//работа с дочерними и родительскими окнами

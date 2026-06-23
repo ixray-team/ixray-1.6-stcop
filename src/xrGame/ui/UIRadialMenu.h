@@ -42,6 +42,8 @@ public:
 	virtual bool OnMouseAction(float x, float y, EUIMessages mouse_action);
 
 	bool isInitialized = false;
+	CUIGamepadLegend* m_pGamepadLegend;
+
 protected:
 	void RecheckSizes();
 	virtual void OnActivateSectorClicked();
@@ -90,5 +92,4 @@ protected:
 	u32 sector_inner_side_color;
 	u32 sector_outer_side_color;
 
-	CUIGamepadLegend* m_pGamepadLegend;
 };

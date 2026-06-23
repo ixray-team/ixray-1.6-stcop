@@ -71,6 +71,7 @@ public:
 		TextItemControl()->SetTextAlignment((CGameFont::EAligment)align);
 		TextItemControl()->GetFont()->SetAligment((CGameFont::EAligment)align);
 	}
+	void ReloadText() { TextItemControl()->ReloadText(); }
 
 	virtual void			CreateShader			(const char* tex, const char* sh = "hud\\default");
 	ui_shader&				GetShader				()							{return m_UIStaticItem.GetShader();};

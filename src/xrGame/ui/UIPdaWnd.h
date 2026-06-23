@@ -119,6 +119,7 @@ public:
 
 			void			UpdatePda			();
 			void			UpdateRankingWnd	();
+			void			ReloadGamepadLegends();
 public:
 
 DECLARE_SCRIPT_REGISTER_FUNCTION

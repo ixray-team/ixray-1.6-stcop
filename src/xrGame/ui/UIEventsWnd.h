@@ -36,7 +36,6 @@ class CUIEventsWnd	:public CUIWindow, public CUIWndCallback{
 	CUITaskDescrWnd*			m_UITaskInfoWnd;
 	CUIScrollView*				m_ListWnd;
 	CUITabControl*				m_TaskFilter;
-	CUIGamepadLegend*			m_GamepadLegend = nullptr;
 
 	xr_vector<CUITaskItemLegacy*>		m_SubtaskItemList; // For controller navigation
 
@@ -71,6 +70,7 @@ public:
 	virtual bool				OnGamepadKeyHold		(int id);
 
 	CUIXml						m_ui_task_item_xml;
+	CUIGamepadLegend*			m_gamepad_legend = nullptr;
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 };

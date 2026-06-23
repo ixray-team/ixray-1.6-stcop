@@ -86,7 +86,6 @@ private:
 	const char*				m_last_monster_icon_back;
 	const char*				m_last_monster_icon;
 	const char*				m_last_weapon_icon;
-	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 	bool m_isGetRankingsArraySize = false;
 	const char* m_onGetRankingsArraySize = {};
@@ -107,6 +106,7 @@ public:
 			bool		OnGamepadKeyHold		(int key) override;
 
 	virtual CUIWindow* ui_cast_window() { return this; }
+	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 protected:
 			void		add_faction				(CUIXml& xml, shared_str const& faction_id);

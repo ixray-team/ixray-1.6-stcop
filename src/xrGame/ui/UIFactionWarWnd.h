@@ -77,7 +77,6 @@ private:
 	enum				{ max_bonuce = 6 };
 	CUIStatic*			m_our_bonuces[max_bonuce];
 	CUIStatic*			m_enemy_bonuces[max_bonuce];
-	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 	// ----------------------------------------
 	//shared_str			m_our_faction_id;
@@ -113,6 +112,7 @@ public:
 			void		set_amount_enemy_bonus	( int value );
 
 			UIHint*		hint_wnd;
+	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
