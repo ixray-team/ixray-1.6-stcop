@@ -761,7 +761,7 @@ LevelInspector::~LevelInspector()
 }
 ICF u32 positionToColorWithAlpha(const Fvector& C)
 {
-#ifdef IXR_WINDOWS
+#if defined(IXR_WINDOWS) && !defined(IXR_CLANG_BUILD)
 	__m128 result = _mm_add_ps
 	(
 		__m128{ 100.f, 100.f, 100.f, 1.f },

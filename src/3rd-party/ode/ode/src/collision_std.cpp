@@ -701,17 +701,12 @@ void cullPoints (int n, dReal p[], int m, int i0, int iret[])
 // collision functions. this function only fills in the position and depth
 // fields.
 
-inline bool pointInBox(const dReal* point,const dReal* p,const dReal* R,const dReal* side){
-	dVector3 dif={point[0]-p[0],point[1]-p[1],point[2]-p[2]};
-	dReal dx,dy,dz;
-	dx=dFabs(dDOT14(dif,R+0));
-	dy=dFabs(dDOT14(dif,R+1));
-	dz=dFabs(dDOT14(dif,R+2));
-	return
-		(!(dFabs(dDOT14(dif,R+0))>side[0]/2.f))&&
-		(!(dFabs(dDOT14(dif,R+1))>side[1]/2.f))&&
-		(!(dFabs(dDOT14(dif,R+2))>side[2]/2.f));
-
+inline bool pointInBox(const dReal* point, const dReal* p, const dReal* R, const dReal* side)
+{
+	dVector3 dif = {point[0] - p[0], point[1] - p[1], point[2] - p[2]};
+	return (!(dFabs(dDOT14(dif, R + 0)) > side[0] / 2.f)) &&
+		   (!(dFabs(dDOT14(dif, R + 1)) > side[1] / 2.f)) &&
+		   (!(dFabs(dDOT14(dif, R + 2)) > side[2] / 2.f));
 }
 
 inline bool CrossBoxSide(const dReal* point,const dReal* dir,
