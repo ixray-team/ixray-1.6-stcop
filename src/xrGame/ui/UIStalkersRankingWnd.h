@@ -38,7 +38,6 @@ protected:
 	void					AddStalkerItem		(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
 	void					AddActorItem		(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
 	s32						m_items_count;
-	CUIGamepadLegend*		m_gamepad_legend = nullptr;
 
 public:
 	CUIScrollView&			GetTopList			()			{return *UIList;}
@@ -49,6 +48,7 @@ public:
 	virtual bool			OnGamepadKeyHold	(int id);
 	virtual CUIWindow* ui_cast_window() { return this; }
 	UIHint*						m_hint_wnd = nullptr;
+	CUIGamepadLegend*		m_gamepad_legend = nullptr;
 };
 
 class CUIStalkerRankingInfoItem :public CUIWindow, public CUISelectable

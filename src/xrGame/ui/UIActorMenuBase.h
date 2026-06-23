@@ -271,8 +271,6 @@ protected:
 
 	float						m_selectorPadding = 4.0f;
 
-	CUIGamepadLegend*			m_gamepad_legend = nullptr;
-
 	const char* m_onCanMoveToPartner = {};
 	bool m_isCanMoveToPartner = false;
 
@@ -347,4 +345,5 @@ public:
 	virtual bool				OnGamepadKeyHold			(int id);
 	virtual bool				StopAnyMove					();
 	virtual void				UpdatePrices				() {}
+	CUIGamepadLegend*			m_gamepad_legend = nullptr;
 };
