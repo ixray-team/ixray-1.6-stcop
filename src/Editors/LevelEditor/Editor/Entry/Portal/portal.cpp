@@ -125,9 +125,9 @@ void CPortal::Move( Fvector& amount ){
 	m_Center.add(amount);
 }
 
-bool CPortal::FrustumPick(const CFrustum& frustum){
-	if (frustum.testPolyInside(m_Vertices.data(),m_Vertices.size())) return true;
-	return false;
+bool CPortal::FrustumPick(const CFrustum& frustum)
+{
+	return frustum.testPolyInside(m_Vertices.data(), m_Vertices.size());
 }
 
 bool CPortal::RayPick(float& distance, const Fvector& start, const Fvector& direction, SRayPickInfo* pinf)
