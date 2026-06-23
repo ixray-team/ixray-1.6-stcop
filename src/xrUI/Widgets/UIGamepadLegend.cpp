@@ -40,3 +40,16 @@ void CUIGamepadLegend::Draw()
 		W->Draw();
 	}
 }
+
+void CUIGamepadLegend::ReloadLegend() 
+{
+	for (CUIWindow* W : m_ChildWndList)
+	{
+		if (!W || !W->ui_cast_static())
+		{
+			continue;
+		}
+
+		W->ui_cast_static()->ReloadText();
+	}
+}

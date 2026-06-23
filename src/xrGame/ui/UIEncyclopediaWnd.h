@@ -28,6 +28,7 @@ private:
 	enum {eNeedReload=(1<<0),};
 	Flags16				m_flags;
 public:
+	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 						CUIEncyclopediaWnd			();
 	virtual				~CUIEncyclopediaWnd			();
 
@@ -55,7 +56,6 @@ protected:
 	CUIFrameLineWnd*	UIEncyclopediaInfoHeader;
 	CUIAnimatedStatic*	UIAnimation;
 	CUIStatic*			UIArticleHeader;
-	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 	// Хранилище статей
 	typedef xr_vector<CEncyclopediaArticle*>			ArticlesDB;
