@@ -68,7 +68,6 @@ private:
 	CUIWindow*			ItemFromCache		();
 //	void				ItemToCache			(CUIWindow* w);
 	CUIXml				m_uiXml;
-	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 public:
 						CUILogsWnd			();
@@ -89,6 +88,7 @@ public:
 	void		PerformWork			();
 
 	virtual CUIWindow* ui_cast_window() { return this; }
+	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 protected:
 			void		ReLoadNews			();

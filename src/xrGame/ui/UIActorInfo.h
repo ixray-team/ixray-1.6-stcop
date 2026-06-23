@@ -17,6 +17,7 @@ class CUIActorInfoWnd: public CUIWindow
 	typedef CUIWindow inherited;
 
 public:
+	CUIGamepadLegend*		m_gamepad_legend = nullptr;
 							CUIActorInfoWnd		();
 	virtual					~CUIActorInfoWnd	();
 	virtual void			Init				();
@@ -41,7 +42,6 @@ protected:
 
 	CUIScrollView*			UIMasterList;
 	CUIScrollView*			UIDetailList;
-	CUIGamepadLegend*		m_gamepad_legend = nullptr;
 
 	xr_vector<CUIActorStaticticHeader*> UIMasterSelectableItems;
 
