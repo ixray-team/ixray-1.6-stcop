@@ -3,6 +3,10 @@
 #include "RenderFactory.h"
 #include "../../xrCore/API/xrAPI.h"
 
+#define FACTORY_PTR_DECL(Class)                             \
+	template <> void FactoryPtr<I##Class>::CreateObject();  \
+	template <> void FactoryPtr<I##Class>::DestroyObject(); 
+
 template<class T> 
 class FactoryPtr
 {
@@ -33,7 +37,23 @@ public:
 private:
 	void CreateObject();
 	void DestroyObject();
+
 	T const* get() const { return m_pObject; }
 private:
 	T*					m_pObject;
 };
+
+FACTORY_PTR_DECL(StatsRender)
+
+FACTORY_PTR_DECL(ThunderboltRender)
+FACTORY_PTR_DECL(ThunderboltDescRender)
+FACTORY_PTR_DECL(EnvDescriptorRender)
+FACTORY_PTR_DECL(EnvDescriptorMixerRender)
+
+FACTORY_PTR_DECL(FlareRender)
+FACTORY_PTR_DECL(LensFlareRender)
+FACTORY_PTR_DECL(RainRender)
+FACTORY_PTR_DECL(EnvironmentRender)
+FACTORY_PTR_DECL(WallMarkArray)
+FACTORY_PTR_DECL(UIShader)
+FACTORY_PTR_DECL(StatGraphRender)

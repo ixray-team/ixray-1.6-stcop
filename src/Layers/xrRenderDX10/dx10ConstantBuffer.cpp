@@ -84,7 +84,7 @@ void dx10ConstantBuffer::Flush()
 {
 	if (m_bChanged)
 	{
-		RHIMappedSubresource pSubRes;
+		RHIMappedSubresource pSubRes = {};
 		R_ASSERT(m_pBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
 
 		void* dst = pSubRes.pData;
@@ -94,6 +94,7 @@ void dx10ConstantBuffer::Flush()
 		VERIFY(src);
 
 		u32 buff_size = m_uiBufferSize >> 4u; // m_uiBufferSize / sizeof(Fvector4)
+#ifndef IXR_CLANG_BUILD
 		if (CPU::ID().hasFeature(CPUFeature::AVX))
 		{
 			for (u32 i = 0u; i < (buff_size>>1u); ++i) // buff_size / 2
@@ -107,6 +108,7 @@ void dx10ConstantBuffer::Flush()
 				((__m128*)dst)[i] = ((__m128*)src)[i];
 		}
 		else
+#endif
 		{
 			for (u32 i = 0u; i < buff_size; ++i)
 				((Fvector4*)dst)[i] = ((Fvector4*)src)[i];
