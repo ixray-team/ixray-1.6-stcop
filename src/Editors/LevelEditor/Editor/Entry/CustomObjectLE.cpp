@@ -219,7 +219,7 @@ void CCustomObject::FillProp(const char* pref, PropItemVec& items)
     V = PHelper().CreateAngle3	(items, PrepareKey(pref,"Transform\\Rotation"),	&ERotation,	-10000,	10000,0.1,1);
     V->OnChangeEvent.bind		(this,&CCustomObject::OnNumChangeRotation);
     EScale = GetScale();
-    V = PHelper().CreateVector	(items, PrepareKey(pref,"Transform\\Scale"),	&EScale, 	0.01,	10000,0.01,2);
+    V = PHelper().CreateVector	(items, PrepareKey(pref,"Transform\\Scale"),	&EScale, 	-10000,	10000,0.01,2);
     V->OnChangeEvent.bind		(this,&CCustomObject::OnNumChangeScale);
 
     if(m_CO_Flags.test(flObjectInGroup))
