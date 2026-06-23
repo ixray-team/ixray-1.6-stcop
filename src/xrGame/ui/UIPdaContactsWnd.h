@@ -45,6 +45,7 @@ public:
 	CUIScrollView*				UIListWnd;
 	CUIScrollView*				UIDetailsWnd;
 	UIHint*						m_hint_wnd;
+	CUIGamepadLegend*			m_gamepad_legend = nullptr;
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
@@ -55,7 +56,6 @@ protected:
 	CUIFrameWindow*				UIRightFrame;
 	CUIFrameLineWnd*			UIRightFrameHeader;
 	CUIAnimatedStatic*			UIAnimation;
-	CUIGamepadLegend*			m_gamepad_legend = nullptr;
 };
 
 #include "UIPdaListItem.h"
