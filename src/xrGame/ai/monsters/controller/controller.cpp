@@ -73,6 +73,7 @@ CController::~CController()
 {
 	xr_delete(StateMan);
 	xr_delete(m_psy_hit);
+	xr_delete(m_aura);
 }
 
 void CController::Load(const char* section)
@@ -233,6 +234,12 @@ void CController::Load(const char* section)
 	
 	m_tube_damage		= pSettings->r_float(section,"tube_damage");
 	m_tube_at_once		= !!pSettings->r_bool(section,"tube_at_once");
+
+	if (pSettings->line_exist(section, "aura_effector"))
+	{
+		m_aura = new CControllerAura(this);
+		m_aura->load(section);
+	}
 
 	const char* tube_see_duration_line           = "tube_condition_see_duration";
 	const char* tube_condition_min_delay_line    = "tube_condition_min_delay";
@@ -457,6 +464,10 @@ void CController::UpdateCL()
 			CurrentGameUI()->RemoveCustomStatic("controller_fx2");
 		}
 	}
+	if (m_aura)
+	{
+		m_aura->update_frame();
+	}
 }
 
 void CController::shedule_Update(u32 dt)
@@ -470,6 +481,11 @@ void CController::shedule_Update(u32 dt)
 
 	// DEBUG
 	test_covers();
+
+	if (m_aura)
+	{
+		m_aura->update_schedule();
+	}
 }
 
 void CController::Die(CObject* who)
@@ -477,6 +493,10 @@ void CController::Die(CObject* who)
 	inherited::Die(who);
 	FreeFromControl();
 	
+	if (m_aura)
+	{
+		m_aura->on_death();
+	}
 	m_psy_hit->on_death	();
 }
 
@@ -484,6 +504,10 @@ void CController::net_Destroy()
 {
 	inherited::net_Destroy();
 
+	if (m_aura)
+	{
+		m_aura->on_death();
+	}
 	FreeFromControl		();
 }
 
