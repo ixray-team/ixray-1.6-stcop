@@ -609,31 +609,19 @@ void CUIGameCustom::ReloadGamepadLegends()
 	// Inventory
 	if (m_ActorMenu)
 	{
-		if (m_ActorMenu->m_gamepad_legend)
-		{
-			m_ActorMenu->m_gamepad_legend->ReloadLegend();
-		}
+		m_ActorMenu->ReloadGamepadLegend();
 	}
 	if (m_CarBodyMenu)
 	{
-		if (m_CarBodyMenu->m_gamepad_legend)
-		{
-			m_CarBodyMenu->m_gamepad_legend->ReloadLegend();
-		}
+		m_CarBodyMenu->ReloadGamepadLegend();
 	}
 	if (m_InventoryMenu)
 	{
-		if (m_InventoryMenu->m_gamepad_legend)
-		{
-			m_InventoryMenu->m_gamepad_legend->ReloadLegend();
-		}
+		m_InventoryMenu->ReloadGamepadLegend();
 	}
 	if (m_TradeMenu)
 	{
-		if (m_TradeMenu->m_gamepad_legend)
-		{
-			m_TradeMenu->m_gamepad_legend->ReloadLegend();
-		}
+		m_TradeMenu->ReloadGamepadLegend();
 	}
 	// Talk menu
 	if (TalkMenu)
