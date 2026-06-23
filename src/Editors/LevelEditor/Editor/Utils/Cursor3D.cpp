@@ -44,7 +44,7 @@ void C3DCursor::GetPickPoint (Fvector& src, Fvector& dst, Fvector* N)
         dst.set(pinf.pt);
         if (N){
 			Fvector verts[3];
-			pinf.e_obj->GetFaceWorld(pinf.s_obj->_Transform(),pinf.e_mesh,pinf.inf.id,verts);
+			pinf.e_obj->GetFaceWorld(pinf.s_obj->_Transform(),pinf.e_mesh,pinf.inf.tris_id,verts);
         	N->mknormal(verts[0], verts[1], verts[2]);
         }
     }else{

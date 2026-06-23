@@ -76,8 +76,8 @@ namespace Feel
 			VERIFY2		(0, "There is no such object in the potentially visible list" );
 			return		Fvector().set(flt_max,flt_max,flt_max);
 		}
-		virtual		bool			feel_vision_isRelevant	(CObject* O)					= 0;
-		virtual		float			feel_vision_mtl_transp	(CObject* O, u32 element)		= 0;
+		virtual bool feel_vision_isRelevant(CObject* O) = 0;
+		virtual float feel_vision_mtl_transp(const collide::rq_result& result) = 0;
 		virtual		void			feel_vision_apply_extra	(Fvector const& eye, Fvector const& target, float& vis) {}
 	};
 };

@@ -185,18 +185,19 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 //	Device.Statistic.TEST0.End();
 //return true-продолжить трассировку / false-закончить трассировку
 
-void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const Fvector &vEnd, collide::rq_result& R, u16 target_material, const Fvector& vNormal, bool ShowMark)
+void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const Fvector &vEnd, const collide::rq_result& R, u16 target_material, const Fvector& vNormal, bool ShowMark)
 {
 	SGameMtlPair* mtl_pair	= GMLib.GetMaterialPair(bullet->bullet_material_idx, target_material);
 	Fvector particle_dir	= vNormal;
 
-	if (R.O)
+	if (!R.IsStatic())
 	{
-		particle_dir		 = vDir;
+		auto DO = R.GetDynamic();
+		particle_dir = vDir;
 		particle_dir.invert	();
 
 		//на текущем актере отметок не ставим
-		if(Level().CurrentEntity() && Level().CurrentEntity()->ID() == R.O->ID()) return;
+		if(Level().CurrentEntity() && Level().CurrentEntity()->ID() == DO->ID()) return;
 
 		if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
 		{
@@ -204,25 +205,33 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 			Fvector p;
 			p.mad(bullet->bullet_pos,bullet->dir,R.range-0.01f);
 			if(!g_dedicated_server)
-				::Render->add_SkeletonWallmark	(	&R.O->renderable.xform, 
-													PKinematics(R.O->Visual()), 
+			{
+				::Render->add_SkeletonWallmark	(	&DO->renderable.xform, 
+													PKinematics(DO->Visual()), 
 													&*mtl_pair->m_pCollideMarks,
 													p, 
 													bullet->dir, 
 													bullet->wallmark_size);
+			}
 		}
 
 	} 
 	else 
 	{
-		//вычислить нормаль к пораженной поверхности
-		xr_vector<Fvector>& pVerts	= Level().ObjectSpace.GetStaticVerts();
-		CDB::TRI&	pTri	= Level().ObjectSpace.GetStaticTris()[R.element];
 
 		if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
 		{
+			//вычислить нормаль к пораженной поверхности
+			auto& pVerts = R.GetStatic()->verts;
+			auto& pTri = R.GetStatic()->tris[R.element];
+			
+			Fvector Verts[3];
+			R.xform.transform_tiny(Verts[0], pVerts[pTri.verts[0]]);
+			R.xform.transform_tiny(Verts[1], pVerts[pTri.verts[1]]);
+			R.xform.transform_tiny(Verts[2], pVerts[pTri.verts[2]]);
+			
 			//добавить отметку на материале
-			::Render->add_StaticWallmark	(&*mtl_pair->m_pCollideMarks, vEnd, bullet->wallmark_size, &pTri, pVerts.data());
+			::Render->add_StaticWallmark(&*mtl_pair->m_pCollideMarks, vEnd, bullet->wallmark_size, pTri, Verts);
 		}
 	}
 
@@ -280,7 +289,8 @@ static bool g_clear = false;
 void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 {
 	//только для динамических объектов
-	CObject* ERO = E.R.O;
+	VERIFY(!E.R.IsStatic());
+	CObject* ERO = const_cast<CObject*>(E.R.GetDynamic());
 	VERIFY(ERO);
 
 	if (CEntity* entity = ERO->cast_entity())
@@ -377,13 +387,13 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 extern void random_dir	(Fvector& tgt_dir, const Fvector& src_dir, float dispersion);
 
 bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fvector& end_point, 
-							    collide::rq_result& R, u16 target_material, Fvector& hit_normal )
+							    const collide::rq_result& R, u16 target_material, Fvector& hit_normal )
 {
 	//----------- normal - start
-	if ( R.O )
+	if ( !R.IsStatic() )
 	{
 		//вернуть нормаль по которой играть партиклы
-		CCF_Skeleton* skeleton = smart_cast<CCF_Skeleton*>(R.O->CFORM());
+		CCF_Skeleton* skeleton = smart_cast<CCF_Skeleton*>(R.GetDynamic()->CFORM());
 		if ( skeleton )
 		{
 			Fvector			e_center;
@@ -398,9 +408,12 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 	else
 	{
 		//вычислить нормаль к поверхности
-		xr_vector<Fvector>& pVerts	=  Level().ObjectSpace.GetStaticVerts();
-		CDB::TRI&	pTri	= Level().ObjectSpace.GetStaticTris()[R.element];
-		hit_normal.mknormal	(pVerts[pTri.verts[0]],pVerts[pTri.verts[1]],pVerts[pTri.verts[2]]);
+		auto& pTri = R.GetStatic()->tris[R.element];
+		Fvector Verts[3];
+		R.xform.transform_tiny(Verts[0], R.GetStatic()->verts[pTri.verts[0]]);
+		R.xform.transform_tiny(Verts[1], R.GetStatic()->verts[pTri.verts[1]]);
+		R.xform.transform_tiny(Verts[2], R.GetStatic()->verts[pTri.verts[2]]);
+		hit_normal.mknormal	(Verts[0],Verts[1],Verts[2]);
 		if ( bullet->density_mode )
 		{
 			Fvector new_pos;

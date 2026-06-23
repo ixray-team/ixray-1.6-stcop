@@ -50,6 +50,7 @@ list(FILTER ELE_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
 # LevelEditor project
 add_executable(LevelEditor WIN32 ${ELE_SRC_FILES})
 target_include_directories(LevelEditor PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(LevelEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 target_include_directories(LevelEditor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
 target_precompile_headers(LevelEditor PRIVATE "stdafx.h")
 

@@ -23,11 +23,13 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 
 	// Pre Calculation
 	process_pallete(DS);
-	if (gl_data.slots_data.skip_slot(_x, _z))		
+	if (gl_data.slots_data.skip_slot(_x, _z))
+	{
 		return false;
+	}
 
 	// Slot Calc
-	thread_local xr_vector<u32> box_result;
+	//thread_local xr_vector<u32> box_result;
  	thread_local base_lighting Selected;
 	thread_local CDB::COLLIDER DB;
 	
@@ -41,10 +43,6 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 
 	Fsphere		S;
 	BB.getsphere( S.P, S.R );
-
-
-	CDB::TRI*	tris	= gl_data.RCAST_Model->get_tris().data();
-	Fvector*	verts	= gl_data.RCAST_Model->get_verts().data();
 
 	// select lights
 	Selected.select		( gl_data.g_lights, S.P, S.R );
@@ -62,11 +60,10 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 
 	DB.box_query(gl_data.RCAST_Model, bbC, bbD);
 
-	box_result.clear();
-	for (auto& R : DB.r_vec())
-		box_result.push_back(R.id);
-	
-	if (box_result.empty()) return false;
+	if (!DB.r_count())
+	{
+		return false;
+	}
 
 	for (int x=-LIGHT_Count; x<=LIGHT_Count; x++) 
 	{
@@ -82,11 +79,14 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 			Fvector	dir;	dir.set		(0,-1,0);
 			Fvector start;	start.set	(P.x, BB.max.y+EPS, P.z);
 			
-			float		r_u,r_v,r_range;
-			for (xr_vector<u32>::iterator tit = box_result.begin(); tit != box_result.end(); tit++)
+			float r_u,r_v,r_range;
+			for (auto& elem : DB.r_vec())
 			{
-				CDB::TRI&	T		= tris	[*tit];
-				Fvector		V[3]	= { verts[T.verts[0]], verts[T.verts[1]], verts[T.verts[2]] };
+				auto& T = elem.model->tris[elem.tris_id];
+				Fvector V[3];
+				elem.ModelWorldTransform.transform_tiny(V[0], elem.model->verts[T.verts[0]]);
+				elem.ModelWorldTransform.transform_tiny(V[1], elem.model->verts[T.verts[1]]);
+				elem.ModelWorldTransform.transform_tiny(V[2], elem.model->verts[T.verts[2]]);
 				if (CDB::TestRayTri(start,dir,V,r_u,r_v,r_range,true))
 				{
 					if (r_range>=0.f)	
@@ -99,7 +99,10 @@ bool detail_slot_calculate(u32 _x, u32 _z)
 					}
 				}
 			}
-			if (P.y<BB.min.y) continue;
+			if (P.y<BB.min.y)
+			{
+				continue;
+			}
 			
  			if (gCompilerMode.Embree)
 			{

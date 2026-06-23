@@ -731,14 +731,10 @@ bool CCar::TryTrunk()
 
 	if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
 	{
-
-		collide::rq_results& R = RQR;
-		int y = R.r_count();
-
-		for (int k = 0; k < y; ++k)
+		for (auto& elem : RQR.r_results())
 		{
-			collide::rq_result* I = R.r_begin() + k;
-			if (IsGameTypeSingle() && m_bone_trunk == (u16)I->element)
+			// TODO: Maube not safe check - element can be not for this object
+			if (IsGameTypeSingle() && m_bone_trunk == elem.element)
 			{
 				return true;
 			}
@@ -751,7 +747,9 @@ bool CCar::TryTrunk()
 bool CCar::TryUsableBones()
 {
 	if (UsableBones.empty())
+	{
 		return false;
+	}
 
 	UsableBonesActive = BI_NONE;
 
@@ -760,15 +758,11 @@ bool CCar::TryUsableBones()
 
 	if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
 	{
-		collide::rq_results& R = RQR;
-		int y = R.r_count();
-
-		for (int k = 0; k < y; ++k)
+		for (auto& elem : RQR.r_results())
 		{
-			collide::rq_result* I = R.r_begin() + k;
-			if (IsGameTypeSingle() && UsableBones.contains(I->element))
+			if (IsGameTypeSingle() && UsableBones.contains(elem.element))
 			{
-				UsableBonesActive = I->element;
+				UsableBonesActive = elem.element;
 				return true;
 			}
 		}
@@ -1777,21 +1771,20 @@ bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 	VERIFY(!fis_zero(Q.dir.square_magnitude()));
 	if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
 	{
-		collide::rq_results& R = RQR;
-		for (int k = 0; k < R.r_count(); ++k)
+		for (auto& elem : RQR.results)
 		{
-			collide::rq_result* I = R.r_begin() + k;
-
-			if (IsGameTypeSingleCompatible() && m_bone_trunk == (u16)I->element)
+			if (IsGameTypeSingleCompatible() && m_bone_trunk == elem.element)
 			{
-				bool IsDoorBone = is_Door((u16)I->element, i);
-				if (I->range < 1.f)
+				bool IsDoorBone = is_Door(elem.element, i);
+				if (elem.range < 1.f)
 				{
 					if (IsDoorBone)
 					{
 						CCarDoor& TrunkDoor = m_doors.at(m_bone_trunk);
 						if (TrunkDoor.state != CCarDoor::eState::opened)
+						{
 							continue;
+						}
 					}
 
 					CurrentGameUI()->StartCarBody(Actor(), this);
@@ -1804,11 +1797,17 @@ bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 				return false;
 			}
 
-			if (is_Door((u16)I->element, i))
+			if (is_Door(elem.element, i))
 			{
 				bool front = i->second.IsFront(pos, dir);
-				if ((Owner()) || (!Owner() && front))i->second.Use();
-				if (i->second.state == CCarDoor::broken) break;
+				if ((Owner()) || (!Owner() && front))
+				{
+					i->second.Use();
+				}
+				if (i->second.state == CCarDoor::broken)
+				{
+					break;
+				}
 				return false;
 			}
 		}

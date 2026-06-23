@@ -60,7 +60,7 @@ CObjectSpace* mesh_create_object_space(const XRay::CForm::IFormat& CForm, CDB::b
 	CObjectSpace* os = new CObjectSpace();
 	g_SpatialSpace				= new ISpatial_DB	();
 	g_SpatialSpacePhysic		= new ISpatial_DB	();
-	os->Create( CForm, build_callback, nullptr, false);
+	os->Create( CForm, build_callback);
 	return os;
 }
 

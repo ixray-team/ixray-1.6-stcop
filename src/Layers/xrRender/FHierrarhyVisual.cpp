@@ -6,7 +6,6 @@
 
 
 #include "FHierrarhyVisual.h"
-#include "../../xrEngine/Fmesh.h"
 #ifndef _EDITOR
 #include "../../xrEngine/Render.h"
 #else

@@ -181,6 +181,7 @@ list(FILTER ECORE_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
 # xrECore project
 add_library(xrECore SHARED ${ECORE_SRC_FILES})
 target_include_directories(xrECore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrECore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 target_include_directories(xrECore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../")
 target_include_directories(xrECore PUBLIC "${IXRAY_SDK_INC}/lua/")
 target_precompile_headers(xrECore PRIVATE "stdafx.h")

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "GamePersistent.h"
-#include "../xrEngine/Fmesh.h"
+#include "../xrEngine/FmeshRender.h"
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/GameMtlLib.h"
 #include "../Include/xrRender/Kinematics.h"

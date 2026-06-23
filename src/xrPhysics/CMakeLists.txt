@@ -39,8 +39,8 @@ source_group("dTri" FILES ${XPH_SOURCE_DTRI_FILES})
 list(APPEND XPH_SRC_FILES ${XPH_SOURCE_ALL_FILES})
 list(APPEND XPH_SRC_FILES ${XPH_SOURCE_NET_FILES})
 
-# Remove unused files
-list(FILTER XPH_SRC_FILES EXCLUDE REGEX "tri-colliderknoopc/dcTriListCollider.*")
+# Remove unused files (well... Actually used)
+#list(FILTER XPH_SRC_FILES EXCLUDE REGEX "tri-colliderknoopc/dcTriListCollider.*")
 
 # xrPhysics project
 add_library(xrPhysics SHARED ${XPH_SRC_FILES})

@@ -851,6 +851,7 @@ void CGameObject::SetKinematicsCallback		(bool set)
 
 void VisualCallback	(IKinematics *tpKinematics)
 {
+	PROF_EVENT("VisualCallback");
 	CGameObject						*game_object = static_cast<CGameObject*>(static_cast<CObject*>(tpKinematics->GetUpdateCallbackParam()));
 	VERIFY							(game_object);
 	

@@ -76,9 +76,9 @@ ICF bool RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_t
 	bRes = !!g_pGameLevel->ObjectSpace.RayPick(s, d, range, collide::rq_target(mask), RQ, g_pGameLevel->CurrentViewEntity());
 	if (bRes) range = RQ.range;
 
-	if (range > 0 && RQ.O != nullptr)
+	if (range > 0 && RQ.valid() && !RQ.IsStatic())
 	{
-		RQ.O->OnRainCollide(Fvector().mad(s, d, range));
+		const_cast<CObject*>(RQ.GetDynamic())->OnRainCollide(Fvector().mad(s, d, range));
 	}
 
 	return bRes;

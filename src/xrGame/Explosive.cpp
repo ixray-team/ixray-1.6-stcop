@@ -172,20 +172,19 @@ struct SExpQParams
 	float		shoot_factor		;
 };
 //проверка на попадание "осколком" по объекту
-ICF static bool grenade_hit_callback(collide::rq_result& result, LPVOID params)
+ICF static bool grenade_hit_callback(const collide::rq_result& result, LPVOID params)
 {
 	SExpQParams& ep	= *(SExpQParams*)params;
 	u16 mtl_idx			= GAMEMTL_NONE_IDX;
-	if(result.O){
-		IKinematics* V  = 0;
-		if (0!=(V=PKinematics(result.O->Visual()))){
+	if(!result.IsStatic()){
+		if (IKinematics* V = PKinematics(result.GetDynamic()->Visual())){
 			CBoneData& B= V->LL_GetData((u16)result.element);
 			mtl_idx		= B.game_mtl_idx;
 		}
 	}else{
 		//получить треугольник и узнать его материал
-		CDB::TRI& T		= Level().ObjectSpace.GetStaticTris()[result.element];
-		mtl_idx			= T.material;
+		auto& T = result.GetStatic()->tris[result.element];
+		mtl_idx = T.material;
 	}	
 	SGameMtl* mtl		= GMLib.GetMaterialByIdx(mtl_idx);
 	float shoot_factor = 1.f - mtl->fShootFactor;
@@ -656,16 +655,24 @@ void CExplosive::FindNormal(Fvector& normal)
 
 	bool result = Level().ObjectSpace.RayPick(pos, dir, cast_game_object()->Radius(), 
 											 collide::rqtBoth, RQ, nullptr);
-	if(!result || RQ.O){
+	if(!result)
+	{
 		normal.set(0,1,0);
-	//если лежим на статике
-	//найти треугольник и вычислить нормаль по нему
+	} 
+	else if (!RQ.IsStatic()){
+		// TODO: need normal calculations?
+		normal.set(0,1,0);
 	}
 	else
 	{
-		xr_vector<Fvector>& pVerts	= Level().ObjectSpace.GetStaticVerts();
-		CDB::TRI& pTri = Level().ObjectSpace.GetStaticTris()[RQ.element];
-		normal.mknormal	(pVerts[pTri.verts[0]],pVerts[pTri.verts[1]],pVerts[pTri.verts[2]]);
+		//если лежим на статике
+		//найти треугольник и вычислить нормаль по нему
+		auto& pTri = RQ.GetStatic()->tris[RQ.element];
+		Fvector Verts[3];
+		RQ.xform.transform_tiny(Verts[0], RQ.GetStatic()->verts[pTri.verts[0]]);
+		RQ.xform.transform_tiny(Verts[1], RQ.GetStatic()->verts[pTri.verts[1]]);
+		RQ.xform.transform_tiny(Verts[2], RQ.GetStatic()->verts[pTri.verts[2]]);
+		normal.mknormal	(Verts[0],Verts[1],Verts[2]);
 	}
 }
 

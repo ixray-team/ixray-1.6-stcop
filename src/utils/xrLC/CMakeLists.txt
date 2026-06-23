@@ -81,6 +81,7 @@ list(FILTER XLC_SRC_FILES EXCLUDE REGEX "cl_intersect.*")
 # xrLC project
 add_library(xrLC ${XLC_SRC_FILES})
 target_include_directories(xrLC PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrLC PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 target_include_directories(xrLC PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../../xrEngine/")
 target_include_directories(xrLC PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
 target_precompile_headers(xrLC PRIVATE "stdafx.h")

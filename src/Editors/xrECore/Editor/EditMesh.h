@@ -282,10 +282,8 @@ protected:
 	st_SVert*		m_SVertices;// | *3
 	SurfFaces	    m_SurfFaces;
 
-#if 1
 	CDB::MODEL*		m_CFModel;
 	RBMap*			m_RenderBuffers;
-#endif
 
 	EditColorMesh m_color_map;
 

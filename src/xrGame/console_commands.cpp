@@ -2104,9 +2104,10 @@ public:
 		sscanf(args, "%s %d", &string, &target);
 		if (target)
 		{
-			if (HUD().GetCurrentRayQuery().element >= 0 && HUD().GetCurrentRayQuery().O)
+			if (HUD().GetCurrentRayQuery().element >= 0 && !HUD().GetCurrentRayQuery().IsStatic())
 			{
-				if (CInventoryOwner* pIO = HUD().GetCurrentRayQuery().O != nullptr ? HUD().GetCurrentRayQuery().O->cast_inventory_owner() : nullptr)
+				auto Obj = const_cast<CObject*>(HUD().GetCurrentRayQuery().GetDynamic());
+				if (CInventoryOwner* pIO = Obj != nullptr ? Obj->cast_inventory_owner() : nullptr)
 				{
 					CHARACTER_COMMUNITY	community_human;
 					for (s32 i = 0; i < community_human.GetMaxIndex() + 1; ++i)
@@ -2159,9 +2160,10 @@ public:
 		sscanf(args, "%s %d", &string, &target);
 		if (target)
 		{
-			if (HUD().GetCurrentRayQuery().element >= 0 && HUD().GetCurrentRayQuery().O)
+			if (HUD().GetCurrentRayQuery().element >= 0 && !HUD().GetCurrentRayQuery().IsStatic())
 			{
-				if (CEntityAlive* pEA = HUD().GetCurrentRayQuery().O != nullptr ? HUD().GetCurrentRayQuery().O->cast_entity_alive() : nullptr)
+				auto Obj = const_cast<CObject*>(HUD().GetCurrentRayQuery().GetDynamic());
+				if (CEntityAlive* pEA = Obj != nullptr ? Obj->cast_entity_alive() : nullptr)
 				{
 					pEA->monster_community->set(string);
 				}

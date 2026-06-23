@@ -264,6 +264,17 @@ public:
 	}
 };
 
+struct MUGeomData
+{
+	shared_str SavePath;
+	VBContainer VB;
+	IBContainer IB;
+	SWIContainer SWI;
+};
+
+class xrMU_Model;
+
 extern SWIContainer g_SWI, x_SWI;
 extern VBContainer g_VB, x_VB;
 extern IBContainer g_IB, x_IB;
+extern xr_hash_map<xrMU_Model*, MUGeomData> g_MUGeomData;

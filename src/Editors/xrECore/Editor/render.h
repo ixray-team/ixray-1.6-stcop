@@ -193,6 +193,8 @@ public:
 	virtual IRenderVisual* model_CreateChild(const char* name, IReader* data);
 	virtual IRenderVisual* model_CreatePE(const char* name);
 	virtual IRenderVisual* model_CreateParticles(const char* name);
+	virtual IRenderVisual* model_GetPrototype(str_c name) override;
+	virtual CDB::MODEL* model_GetPrototypeCollision(str_c name) override;
 
 	virtual IRender_DetailModel* model_CreateDM(IReader* R);
 	virtual IRenderVisual* model_Duplicate(IRenderVisual* V);
@@ -215,7 +217,7 @@ public:
 	virtual void			add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) {};
 	virtual void			add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size) {};
 
-	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark(const wm_shader& S, const Fvector& P, float w, float h, float r, CDB::TRI* T, Fvector* V) override { return nullptr;}
+	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark(const wm_shader& S, const Fvector& P, float w, float h, float r, const CDB::TRI& T, Fvector* V) override { return nullptr;}
 
 	virtual void			add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size) {}
 	// Render mode
@@ -275,10 +277,10 @@ public:
 	virtual void					set_Object(IRenderable* O);
 	virtual	void					add_Occluder(Fbox2& bb_screenspace);	// mask screen region as oclluded (-1..1, -1..1)
 	virtual void					add_Geometry(IRenderVisual* V);	// add visual(s)	(all culling performed)
-	virtual void					add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {}
+	virtual void					add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, const CDB::TRI& T, Fvector* V) override {}
 
 	//	Prefer this function when possible
-	virtual void					add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {}
+	virtual void					add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, const CDB::TRI& T, Fvector* V, bool UseCameraDirection = false) override {}
 	virtual void					clear_static_wallmarks() {}
 	virtual IRender_ObjectSpecific* ros_create(IRenderable* parent);
 	virtual void					ros_destroy(IRender_ObjectSpecific*&);
@@ -338,7 +340,28 @@ protected:
 		DWORD                           Flags,
 		void*& result
 	) override;
-	private:
+
+public:
+	GeomData& GetMUSlot(shared_str Name) override
+	{
+		VERIFY(false);
+		static GeomData G;
+		return G;
+	}
+	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs) override
+	{
+		VERIFY(false);
+	}
+	void ReadIBChunk(xr_vector<IRHIBuffer*>& OutBuffer, IReaderBase& fs) override
+	{
+		VERIFY(false);
+	}
+	void ReadSWIsChunk(xr_vector<FSlideWindowItem>& SWIs, IReaderBase& fs) override
+	{
+		VERIFY(false);
+	}
+
+private:
 		xr_vector<ISpatialShared> lstRenderables;
 };
 

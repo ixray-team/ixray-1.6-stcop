@@ -2,7 +2,7 @@
 
 #include "FHierrarhyVisual.h"
 #include "SkeletonCustom.h"
-#include "../../xrEngine/Fmesh.h"
+#include "../../xrEngine/FmeshRender.h"
 #include "../../xrEngine/IRenderable.h"
 
 #include "FLOD.h"

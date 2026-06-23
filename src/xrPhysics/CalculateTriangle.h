@@ -9,41 +9,42 @@
 //#include "phworld.h"
 #pragma warning(disable:4995)
 #pragma warning(disable:4267)
-ICF void GetNormal(CDB::TRI*XTri,Fvector &n, const Fvector* V_array )
+/*ICF void GetNormal(CDB::TRI*XTri,Fvector &n, const Fvector* V_array )
 {
 	//VERIFY(g_pGameLevel);
 	//const Fvector* V_array=inl_ph_world().ObjectSpace().GetStaticVerts();
 	Fvector sd1;sd1.sub(V_array[XTri->verts[1]],V_array[XTri->verts[0]]);
 	Fvector sd2;sd2.sub(V_array[XTri->verts[2]],V_array[XTri->verts[1]]);
 	n.crossproduct(sd1,sd2);
-}
-ICF	void CalculateInitTriangle(CDB::TRI* XTri,Triangle& triangle, const Fvector* V_array )
+}*/
+ICF	void CalculateInitTriangle(const TriabgleCDBData& XTri,Triangle& triangle)
 {
 	//VERIFY(g_pGameLevel);
 	//const Fvector* V_array=inl_ph_world().ObjectSpace().GetStaticVerts();
-	const float* VRT[3]={(dReal*)&V_array[XTri->verts[0]],(dReal*)&V_array[XTri->verts[1]],(dReal*)&V_array[XTri->verts[2]]};
-	dVectorSub(triangle.side0,VRT[1],VRT[0])						;
-	dVectorSub(triangle.side1,VRT[2],VRT[1])						;
+	Fvector VRT[3];
+	XTri.GetVerts(VRT);
+	dVectorSub(triangle.side0,(dReal*)&VRT[1],(dReal*)&VRT[0])						;
+	dVectorSub(triangle.side1,(dReal*)&VRT[2],(dReal*)&VRT[1])						;
 	triangle.T=XTri													;
 	dCROSS(triangle.norm,=,triangle.side0,triangle.side1)			;
 	cast_fv(triangle.norm).normalize()								;
-	triangle.pos=dDOT(VRT[0],triangle.norm)							;
+	triangle.pos=dDOT((dReal*)&VRT[0],triangle.norm)							;
 }
-ICF void CalculateTriangle(CDB::TRI* XTri,const float* pos,Triangle& triangle, const Fvector* V_array)
+ICF void CalculateTriangle(const TriabgleCDBData& XTri,const float* pos,Triangle& triangle)
 {
-	CalculateInitTriangle(XTri,triangle, V_array);
+	CalculateInitTriangle(XTri,triangle);
 	triangle.dist=dDOT(pos,triangle.norm)-triangle.pos;
 }
-ICF void CalculateTriangle( CDB::TRI* XTri, dGeomID g, Triangle& triangle, const Fvector* V_array )
+ICF void CalculateTriangle(const TriabgleCDBData& XTri, dGeomID g, Triangle& triangle)
 {
 	dVector3	v												;
 	dMatrix3	m												;
-	const float *p						=NULL					;
-	const float *r						=NULL					;
+	const float *p						= nullptr;
+	const float *r						= nullptr;
 	VERIFY								( g )					;
 	CODEGeom::get_final_tx				( g, p, r, v, m )		;
 	VERIFY								( p )					;
-	CalculateTriangle					( XTri, p, triangle, V_array )	;
+	CalculateTriangle					( XTri, p, triangle)	;
 	
 }
 
@@ -84,9 +85,9 @@ ICF bool TriContainPoint(Triangle* T,const float *pos,u16 &c, const Fvector* V_a
 	//TriContainPoint(const dReal* v0,const dReal* v1,const dReal* v2,const dReal* triAx,const dReal* triSideAx0,const dReal* triSideAx1, const dReal* pos)
 	//VERIFY( g_pGameLevel );
 	//const Fvector* V_array=inl_ph_world().ObjectSpace().GetStaticVerts();
-	CDB::TRI	*XTri=T->T;
-	const float* VRT[3]={(dReal*)&V_array[XTri->verts[0]],(dReal*)&V_array[XTri->verts[1]],(dReal*)&V_array[XTri->verts[2]]};
-	return TriContainPoint(VRT[0],VRT[1],VRT[2],T->norm,T->side0,T->side1,pos,c);
+	Fvector VRT[3];
+	T->T.GetVerts(VRT);
+	return TriContainPoint((dReal*)&VRT[0],(dReal*)&VRT[1],(dReal*)&VRT[2],T->norm,T->side0,T->side1,pos,c);
 }
 
 enum ETriDist
@@ -141,16 +142,16 @@ ICF float DistToTri(Triangle* T,const float *pos,float *dir,float* p,ETriDist &c
 		cast_fv(dir).invert(cast_fv(T->norm));
 		return T->dist;
 	}
-	CDB::TRI	*XTri=T->T;
-	const float* VRT[3]={(dReal*)&V_array[XTri->verts[0]],(dReal*)&V_array[XTri->verts[1]],(dReal*)&V_array[XTri->verts[2]]};
+	Fvector VRT[3];
+	T->T.GetVerts(VRT);
 	u16 cd=u16(-1);
 	float tdist=0.f;
 	
 	switch (code)
 	{
-		case 1:	tdist=DistToFragmenton(pos,VRT[0],VRT[1],p,dir,cd);break;
-		case 2:	tdist=DistToFragmenton(pos,VRT[1],VRT[2],p,dir,cd);break;
-		case 3:	tdist=DistToFragmenton(pos,VRT[2],VRT[0],p,dir,cd);break;
+		case 1:	tdist=DistToFragmenton(pos,(dReal*)&VRT[0],(dReal*)&VRT[1],p,dir,cd);break;
+		case 2:	tdist=DistToFragmenton(pos,(dReal*)&VRT[1],(dReal*)&VRT[2],p,dir,cd);break;
+		case 3:	tdist=DistToFragmenton(pos,(dReal*)&VRT[2],(dReal*)&VRT[0],p,dir,cd);break;
 		default: NODEFAULT;
 	}
 	switch (cd)
@@ -160,10 +161,10 @@ ICF float DistToTri(Triangle* T,const float *pos,float *dir,float* p,ETriDist &c
 			c=tdSide;
 			return tdist;
 		case 1:
-			dVectorSet(p,VRT[code-1]);
+			dVectorSet(p,(dReal*)&VRT[code-1]);
 			break;
 		case 2:
-			dVectorSet(p,VRT[code%3]);
+			dVectorSet(p,(dReal*)&VRT[code%3]);
 			break;
 		default: NODEFAULT;
 	}

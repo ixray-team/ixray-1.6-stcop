@@ -2,15 +2,13 @@
 // file: SceneClassList.h
 //----------------------------------------------------
 
-#ifndef pick_defsH
-#define pick_defsH
+#pragma once
 //----------------------------------------------------
 
 class CEditableObject;
 class CEditableMesh;
 class CCustomObject;
 
-#if 1
 	class SPickQuery{
     	Flags32				m_Flags;
     public:
@@ -37,8 +35,8 @@ class CCustomObject;
                 };
             };
 
-            bool operator <	(const SResult& F)const{return range<F.range;}
-            SResult			(const SResult& F)
+            bool operator<(const SResult& F)const{return range<F.range;}
+            SResult(const SResult& F)
             {
                 verts[0]	= F.verts[0];
                 verts[1]	= F.verts[1];
@@ -50,29 +48,31 @@ class CCustomObject;
                 e_obj		= F.e_obj;
                 e_mesh		= F.e_mesh;
             }
-            SResult			(const Fmatrix& parent, CDB::RESULT* r, CEditableObject* obj, CEditableMesh* mesh)
+            SResult(const Fmatrix& parent, const CDB::RESULT& r, CEditableObject* obj, CEditableMesh* mesh)
             {
-                parent.transform_tiny(verts[0],r->verts[0]);
-                parent.transform_tiny(verts[1],r->verts[1]);
-                parent.transform_tiny(verts[2],r->verts[2]);
-                u			= r->u;
-                v			= r->v;
-                range		= r->range;
-                tag			= r->dummy;
-                e_obj		= obj;
-                e_mesh		= mesh;
+            	auto& Tris = r.model->tris[r.tris_id];
+                parent.transform_tiny(verts[0],r.model->verts[Tris.verts[0]]);
+                parent.transform_tiny(verts[1],r.model->verts[Tris.verts[1]]);
+                parent.transform_tiny(verts[2],r.model->verts[Tris.verts[2]]);
+                u = r.u;
+                v = r.v;
+                range = r.range;
+                tag = Tris.dummy;
+                e_obj = obj;
+                e_mesh = mesh;
             }
-            SResult			(CDB::RESULT* r, CEditableObject* obj, CEditableMesh* mesh)
+            SResult(const CDB::RESULT& r, CEditableObject* obj, CEditableMesh* mesh)
             { 
-            	verts[0]	= r->verts[0];
-            	verts[1]	= r->verts[1];
-            	verts[2]	= r->verts[2];
-                u			= r->u;
-                v			= r->v;
-                range		= r->range;
-                tag			= r->dummy;
-                e_obj		= obj;
-                e_mesh		= mesh;
+            	auto& Tris = r.model->tris[r.tris_id];
+            	verts[0] = r.model->verts[Tris.verts[0]];
+            	verts[1] = r.model->verts[Tris.verts[1]];
+            	verts[2] = r.model->verts[Tris.verts[2]];
+                u = r.u;
+                v = r.v;
+                range = r.range;
+                tag = Tris.dummy;
+                e_obj = obj;
+                e_mesh = mesh;
             }
         };
         using ResultVec = xr_vector<SResult>;
@@ -95,7 +95,7 @@ class CCustomObject;
             m_Flags.assign	(flags);
         	results.clear	();
         }
-		IC void append_mtx	(const Fmatrix& parent, CDB::RESULT* R, CEditableObject* obj, CEditableMesh* mesh)
+		IC void append_mtx	(const Fmatrix& parent, const CDB::RESULT& R, CEditableObject* obj, CEditableMesh* mesh)
         {
             SResult	D		(parent, R, obj, mesh);
             if (m_Flags.is(CDB::OPT_ONLYNEAREST)&&!results.empty()){
@@ -103,15 +103,23 @@ class CCustomObject;
                 if (D.range<S.range) S = D;
             }else			results.push_back	(D);
         }
-		IC void append		(CDB::RESULT* R, CEditableObject* obj, CEditableMesh* mesh)
+		IC void append		(const CDB::RESULT& R, CEditableObject* obj, CEditableMesh* mesh)
         {
-            SResult	D		(R,obj,mesh);
-            if (m_Flags.is(CDB::OPT_ONLYNEAREST)&&!results.empty()){
+            SResult	D(R,obj,mesh);
+            if (m_Flags.is(CDB::OPT_ONLYNEAREST)&&!results.empty())
+            {
 	            SResult& S	= results.back();
-                if (D.range<S.range) S = D;
-            }else			results.push_back	(D);
+                if (D.range<S.range)
+                {
+	                S = D;
+                }
+            }
+        	else
+        	{
+        		results.push_back	(D);
+        	}
         }
-        IC int r_count		()
+        IC int r_count() const
         {
         	return results.size();
         }
@@ -123,13 +131,13 @@ class CCustomObject;
         {
         	return results.data() +results.size();
         }
-        IC void r_clear		()
+        IC void r_clear()
         {
-        	results.clear	();
+        	results.clear();
         }
-        IC void r_sort		()
+        IC void r_sort()
         {
-        	std::sort		(results.begin(),results.end());
+        	std::sort(results.begin(),results.end());
         }
     };
     struct SRayPickObjVisualInfo
@@ -149,26 +157,45 @@ class CCustomObject;
 		Fvector     			pt;
         bool IsForcePickup = false;
 
-		SRayPickInfo			(){ Reset(); visual_inf.bone_id = u16(-1); }
-		IC void Reset			(){ ZeroMemory(this,sizeof(SRayPickInfo));inf.range = 5000;}
-		IC void SetRESULT		(CDB::MODEL* M, CDB::RESULT* R){inf=*R;inf.id=(&M->get_tris()[inf.id])->dummy;}
+		SRayPickInfo()
+		{
+			Reset(); 
+			visual_inf.bone_id = u16(-1);
+		}
+		IC void Reset()
+		{
+			ZeroMemory(this,sizeof(SRayPickInfo));
+			inf.range = 5000;
+		}
+		IC void SetRESULT(CDB::MODEL* M, const CDB::RESULT& R)
+		{
+			inf = R;
+			//inf.tris_id = M->get_tris()[inf.tris_id].dummy;
+		}
 	};
     using BPInfVec = xr_vector<CDB::RESULT>;
     using BPInfIt = BPInfVec::iterator;
 
 	struct SBoxPickInfo{
-    	BPInfVec			inf;
-		CCustomObject*		s_obj;
-		CEditableObject*	e_obj;
-		CEditableMesh*		e_mesh;
-		SBoxPickInfo		(){Reset();}
-		IC void Reset		(){ZeroMemory(this,sizeof(SBoxPickInfo));}
-		IC void AddRESULT	(CDB::MODEL* M, CDB::RESULT* R){inf.push_back(*R); inf.back().id=(&M->get_tris()[inf.back().id])->dummy;}
+    	BPInfVec inf;
+		CCustomObject* s_obj;
+		CEditableObject* e_obj;
+		CEditableMesh* e_mesh;
+		SBoxPickInfo()
+		{
+			Reset();
+		}
+		IC void Reset()
+		{
+			ZeroMemory(this,sizeof(SBoxPickInfo));
+		}
+		IC void AddRESULT(CDB::MODEL* M, const CDB::RESULT& R)
+		{
+			inf.push_back(R); 
+			//inf.back().tris_id = M->get_tris()[inf.back().tris_id].dummy;
+		}
 	};
     using SBoxPickInfoVec = xr_vector<SBoxPickInfo>;
     using SBoxPickInfoIt = SBoxPickInfoVec::iterator;
-#endif
-//----------------------------------------------------
-#endif // pick_definitionH
 
 

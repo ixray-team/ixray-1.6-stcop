@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "stdafx.h"
 <<<<<<< HEAD
 #include "HUDManager.h"
@@ -5,6 +6,10 @@
 =======
 #include "stdafx.h"
 >>>>>>> 3421f29470 (Fix -> "Clean-ups"):src/xrGame/ai/monsters/poltergeist/poltergeist_telekinesis.cpp
+=======
+#include "HUDManager.h"
+#include "StdAfx.h"
+>>>>>>> 87502bd42b (Add Instanced collision and replace OPCODE with EMBREE)
 #include "poltergeist.h"
 #include "WeaponMagazined.h"
 #include "../../../PhysicsShellHolder.h"
@@ -14,6 +19,7 @@
 #include "../../../ActorCondition.h"
 #include "../../../Inventory.h"
 #include "../../../Weapon.h"
+<<<<<<< HEAD
 =======
 
 #include "../xrSound/ai_sounds.h"
@@ -142,6 +148,8 @@ void CPolterTele::update_schedule()
 	}
 }
 >>>>>>> 05290cbd48 (Replace READ_IF_EXISTS with optimized read)
+=======
+>>>>>>> 87502bd42b (Add Instanced collision and replace OPCODE with EMBREE)
 
 //////////////////////////////////////////////////////////////////////////
 // Выбор подходящих объектов для телекинеза

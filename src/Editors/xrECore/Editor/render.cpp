@@ -18,6 +18,7 @@
 #include "../../../Layers/xrRender/du_sphere_part.h"
 #include "../../../Layers/xrRender/du_cone.h"
 #include "../../../Layers/xrRender/du_sphere.h"
+#include "src/Layers/xrRender/FTreeVisual_Prototype.h"
 
 //---------------------------------------------------------------------------
 float ssaDISCARD = 4.f;
@@ -497,6 +498,17 @@ void CRender::add_Visual(IRenderVisual* visual, bool IgnoreOptimize, bool Force)
 }
 
 IRenderVisual* CRender::model_Create(LPCSTR name, IReader* data) { return Models->Create(name, data); }
+
+IRenderVisual* CRender::model_GetPrototype(str_c name)
+{
+	return Models->GetPrototype(name);
+}
+
+CDB::MODEL* CRender::model_GetPrototypeCollision(str_c name)
+{
+	return ((FTreeVisual_Prototype*)model_GetPrototype(name))->GetCollisionModel();
+}
+
 IRenderVisual* CRender::model_CreateChild(LPCSTR name, IReader* data) { return Models->CreateChild(name, data); }
 void 			CRender::model_Delete(IRenderVisual*& V, bool bDiscard) { auto v = dynamic_cast<dxRender_Visual*>(V); Models->Delete(v, bDiscard); if (v == nullptr)V = nullptr; }
 IRenderVisual* CRender::model_Duplicate(IRenderVisual* V) { return Models->Instance_Duplicate(dynamic_cast<dxRender_Visual*>(V)); }

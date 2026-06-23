@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "CFormIO.h"
 
+#include "API/xrAPI.h"
+#include "src/xrEngine/Render.h"
+
 using namespace XRay;
 
 CForm::ChunkHeader& CForm::IFormat::GetHeader()
@@ -23,6 +26,14 @@ CForm::CFormatVanilla::CFormatVanilla()
     Header.version = CFormVersions::Vanilla;
 }
 
+CForm::CFormatVanilla::~CFormatVanilla()
+{
+	if (FileReader)
+	{
+		xr_delete(FileReader);
+	}
+}
+
 bool CForm::CFormatVanilla::Write(xr_string_view FileName)
 {
     xr_stack_string_path Path = FileName.data();
@@ -35,8 +46,8 @@ bool CForm::CFormatVanilla::Write(xr_string_view FileName)
     }
 
     Writer->w(&Header, sizeof(Header));
-    Writer->w(Data.Verts.data(), Data.Verts.size()*sizeof(Fvector));
-    Writer->w(Data.Tris.data(), Data.Tris.size()*sizeof(CDB::TRI));
+    Writer->w(VertsPtr, Header.vertcount*sizeof(Fvector));
+    Writer->w(TrisPtr, Header.facecount*sizeof(CDB::TRI));
     
     return true;
 }
@@ -46,23 +57,22 @@ bool CForm::CFormatVanilla::Read(xr_string_view FileName)
     xr_stack_string_path Path = FileName.data();
     Path.append(".cform");
 
-    auto Reader = FS.rg_open(Path.c_str());
-    if (!I_ASSERT_M(Reader, "Unable to open file [%s]", Path.c_str()))
+    FileReader = FS.r_open(Path.c_str());
+    if (!I_ASSERT_M(FileReader, "Unable to open file [%s]", Path.c_str()))
     {
         return false;
     }
 
-    FileHash = crc32(Reader->pointer(), Reader->length());
+    FileHash = crc32(FileReader->pointer(), FileReader->length());
     
-    Reader->r(&Header, sizeof(Header));
+    FileReader->r(&Header, sizeof(Header));
     if (!I_ASSERT(Header.version == CFormVersions::Vanilla || Header.version == CFormVersions::VanillaChunkedData))
     {
         return false;
     }
-    Data.Verts.resize(Header.vertcount);
-    Data.Tris.resize(Header.facecount);
-    Reader->r(Data.Verts.data(), Data.Verts.size()*sizeof(Fvector));
-    Reader->r(Data.Tris.data(), Data.Tris.size()*sizeof(CDB::TRI));
+	VertsPtr = (Fvector*)FileReader->pointer();
+	FileReader->advance(Header.vertcount*sizeof(Fvector));
+	TrisPtr = (CDB::TRI*)FileReader->pointer();
 
     return true;
 }
@@ -76,10 +86,8 @@ void CForm::CFormatVanilla::AddStaticGeom(xr_span<Fvector> Verts, xr_span<CDB::T
     {
         Header.aabb.modify(elem);
     }
-    Data.Tris.resize(Tris.size());
-    std::memcpy(Data.Tris.data(), Tris.data(), sizeof(CDB::TRI) * Tris.size());
-    Data.Verts.resize(Verts.size());
-    std::memcpy(Data.Verts.data(), Verts.data(), sizeof(Fvector) * Verts.size());
+	VertsPtr = Verts.data();
+	TrisPtr = Tris.data();
 }
 
 void CForm::CFormatVanilla::GetStaticGeom(xr_vector<Fvector>& OutVertices, xr_vector<CDB::TRI>& OutTris) const
@@ -88,8 +96,23 @@ void CForm::CFormatVanilla::GetStaticGeom(xr_vector<Fvector>& OutVertices, xr_ve
     OutTris.clear();
     OutVertices.resize(Header.vertcount);
     OutTris.resize(Header.facecount);
-    std::memcpy(OutVertices.data(), Data.Verts.data(), sizeof(Fvector) * OutVertices.size());
-    std::memcpy(OutTris.data(), Data.Tris.data(), sizeof(CDB::TRI) * OutTris.size());
+    std::memcpy(OutVertices.data(), VertsPtr, sizeof(Fvector) * OutVertices.size());
+    std::memcpy(OutTris.data(), TrisPtr, sizeof(CDB::TRI) * OutTris.size());
+}
+
+void CForm::CFormatVanilla::ReadData(CDB::MODEL& Model, CDB::build_callback* bc, void* bcp) const
+{
+	Model.verts.resize(Header.vertcount);
+	std::memcpy(Model.verts.data(), VertsPtr, sizeof(Fvector) * Header.vertcount);
+	Model.tris.resize(Header.facecount);
+	std::memcpy(Model.tris.data(), TrisPtr, sizeof(CDB::TRI) * Header.facecount);
+	
+	if (bc)
+	{
+		bc(Model.verts.data(), Header.vertcount, Model.tris.data(), Header.facecount, bcp);
+	}
+
+	Model.build_simple();
 }
 
 CForm::CFormatVanillaChunked::CFormatVanillaChunked(u32 ChunkNumber)
@@ -209,27 +232,178 @@ void CForm::CFormatVanillaChunked::GetStaticGeom(xr_vector<Fvector>& OutVertices
     OutVertices.reserve(Header.vertcount);
     OutTris.reserve(Header.facecount);
     
-#ifdef IXR_WINDOWS
     for (auto& elem : Data)
     {
-        OutVertices.append_range(elem.Data.Verts);
-        OutTris.append_range(elem.Data.Tris);
+        OutVertices.append_range(xr_span<Fvector>{elem.VertsPtr, elem.GetHeader().vertcount});
+        OutTris.append_range(xr_span<CDB::TRI>{elem.TrisPtr, elem.GetHeader().facecount});
     }
-#else
-#pragma todo("FX: Wait C++23...")
-    for (auto& elem : Data)
-    {
-        for (const auto& vert : elem.Data.Verts)
-        {
-            OutVertices.push_back(vert);
-        }
-        
-        for (const auto& tri : elem.Data.Tris)
-        {
-            OutTris.push_back(tri);
-        }
-    }
-#endif
+}
+
+void CForm::CFormatVanillaChunked::ReadData(CDB::MODEL& Model, CDB::build_callback* bc, void* bcp) const
+{
+	GetStaticGeom(Model.verts, Model.tris);
+	
+	if (bc)
+	{
+		bc(Model.verts.data(), Header.vertcount, Model.tris.data(), Header.facecount, bcp);
+	}
+	
+	Model.build_simple();
+}
+
+CDB::MODEL* CForm::CFormatInstanced::ReadInstance(shared_str Path, CDB::build_callback* bc, void* bcp) const
+{
+	xr_stack_string_path FixedPath = "static\\";
+	FixedPath.append(Path.c_str());
+	return ::Render->model_GetPrototypeCollision(FixedPath.c_str());
+}
+
+CForm::CFormatInstanced::CFormatInstanced()
+{
+	Header.version = CFormVersions::Instanced;
+}
+
+CForm::CFormatInstanced::~CFormatInstanced()
+{
+	if (FileReader)
+	{
+		xr_delete(FileReader);
+	}
+}
+
+bool CForm::CFormatInstanced::Write(xr_string_view FileName)
+{
+	xr_stack_string_path Path = FileName.data();
+	Path.append(".cform");
+    
+	auto Writer = FS.wg_open(Path.c_str());
+	if (!I_ASSERT(Writer))
+	{
+		return false;
+	}
+
+	Writer->w(&Header, sizeof(Header));
+	Writer->w(VertsPtr, Header.vertcount*sizeof(Fvector));
+	Writer->w(TrisPtr, Header.facecount*sizeof(CDB::TRI));
+	
+	Writer->w_u64(instances.size());
+	for (auto& elem : instances)
+	{
+		Writer->w_stringZ(elem.first);
+		Writer->w_u64(elem.second.size());
+		Writer->w(elem.second.data(), elem.second.size()*sizeof(decltype(elem.second)::value_type));
+	}
+	
+	CDB::MODEL PreBuild;
+	PreBuild.verts.resize(Header.vertcount);
+	std::memcpy(PreBuild.verts.data(), VertsPtr, Header.vertcount*sizeof(Fvector));
+	PreBuild.tris.resize(Header.facecount);
+	std::memcpy(PreBuild.tris.data(), TrisPtr, Header.facecount*sizeof(CDB::TRI));
+	
+	for (auto& [Name, Vec] : instances)
+	{
+		auto Index = PreBuild.models.size();
+		auto Model = Models[Name];
+		PreBuild.models.push_back(Model);
+		for (auto& Inst : Vec)
+		{
+			auto Inv = Inst.xform;
+			Inv.invert();
+			PreBuild.instances.emplace_back(Inst.xform, Inv, Inst.AABB, Index, Inst.Sector);
+		}
+	}
+    
+	return true;
+}
+
+bool CForm::CFormatInstanced::Read(xr_string_view FileName)
+{
+	xr_stack_string_path Path = FileName.data();
+	Path.append(".cform");
+
+	FileReader = FS.r_open(Path.c_str());
+	if (!I_ASSERT_M(FileReader, "Unable to open file [%s]", Path.c_str()))
+	{
+		return false;
+	}
+
+	FileHash = crc32(FileReader->pointer(), FileReader->length());
+    
+	FileReader->r(&Header, sizeof(Header));
+	if (!I_ASSERT(Header.version == CFormVersions::Instanced || Header.version == CFormVersions::InstancedChunkedData))
+	{
+		return false;
+	}
+	VertsPtr = (Fvector*)FileReader->pointer();
+	FileReader->advance(Header.vertcount*sizeof(Fvector));
+	TrisPtr = (CDB::TRI*)FileReader->pointer();
+	FileReader->advance(Header.facecount*sizeof(CDB::TRI));
+	
+	size_t InstancesCount = FileReader->r_u64();
+	for (size_t i = 0; i < InstancesCount; ++i)
+	{
+		shared_str ObjectName;
+		FileReader->r_stringZ(ObjectName);
+		auto& Slot = instances[ObjectName];
+		
+		size_t xformCount = FileReader->r_u64();
+		Slot.resize(xformCount);
+		std::memcpy(Slot.data(), FileReader->pointer(), xformCount * sizeof(decltype(instances)::mapped_type::value_type));
+		FileReader->advance(xformCount * sizeof(decltype(instances)::mapped_type::value_type));
+	}
+
+	return true;
+}
+
+void CForm::CFormatInstanced::AddStaticGeom(xr_span<Fvector> Verts, xr_span<CDB::TRI> Tris)
+{
+	Header.vertcount = Verts.size();
+	Header.facecount = Tris.size();
+	Header.aabb.invalidate();
+	for (auto& elem : Verts)
+	{
+		Header.aabb.modify(elem);
+	}
+	VertsPtr = Verts.data();
+	TrisPtr = Tris.data();
+}
+
+void CForm::CFormatInstanced::AddInstanceRef(shared_str Path, const Fmatrix& xform, const Fbox& AABB, CDB::MODEL& Collsion, u16 Sector)
+{
+	instances.try_emplace(Path).first->second.emplace_back(xform, AABB, Sector);
+	Models.try_emplace(Path).first->second = &Collsion;
+}
+
+void CForm::CFormatInstanced::GetStaticGeom(xr_vector<Fvector>& OutVertices, xr_vector<CDB::TRI>& OutTris) const
+{
+	VERIFY(false);
+}
+
+void CForm::CFormatInstanced::ReadData(CDB::MODEL& Model, CDB::build_callback* bc, void* bcp) const
+{
+	for (auto& elem : instances)
+	{
+		auto InstanceMesh = ReadInstance(elem.first, bc, bcp);
+		Model.models.emplace_back(InstanceMesh);
+		for(auto& trans : elem.second)
+		{
+			Fmatrix Inv = trans.xform;
+			Inv.invert();
+			Model.instances.emplace_back(trans.xform, Inv, trans.AABB, Model.models.size()-1, trans.Sector);
+		}
+	}
+	
+	Model.verts.resize(Header.vertcount);
+	std::memcpy(Model.verts.data(), VertsPtr, sizeof(Fvector) * Header.vertcount);
+	Model.tris.resize(Header.facecount);
+	std::memcpy(Model.tris.data(), TrisPtr, sizeof(CDB::TRI) * Header.facecount);
+	
+	if (bc)
+	{
+		bc(Model.verts.data(), Header.vertcount, Model.tris.data(), Header.facecount, bcp);
+	}
+
+	Model.build_simple();
 }
 
 XRCORE_API xr_unique_ptr<CForm::IFormat> CForm::Read(const char* Initial, xr_string_view Filename)
@@ -273,6 +447,16 @@ XRCORE_API xr_unique_ptr<CForm::IFormat> CForm::Read(const char* Initial, xr_str
             }
             return xr_unique_ptr<CForm::IFormat>(Parsed);
         }
+    case CFormVersions::Instanced:
+    	{
+    		auto Parsed = new CFormatInstanced();
+    		if (!I_ASSERT_M(Parsed->Read(Path.c_str()), "Unable to read [%s]", Path.c_str()))
+    		{
+    			xr_delete(Parsed);
+    			return nullptr;
+    		}
+    		return xr_unique_ptr<CForm::IFormat>(Parsed);
+    	}
     default:
         {
             I_ASSERT_M(false, "Invalid .cform type in [%s]", Path.c_str());

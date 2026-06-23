@@ -1,0 +1,48 @@
+// Copyright 2009-2021 Intel Corporation
+// SPDX-License-Identifier: Apache-2.0
+
+#include "../common/tutorial/tutorial_device.isph"
+#include "../common/math/random_sampler.isph"
+#include "../common/core/differential_geometry.isph"
+#include "../common/tutorial/scene_device.h"
+
+struct TutorialData
+{
+  /* scene data */
+  RTCScene g_scene;
+  RTCScene g_scene1;
+  RTCTraversable g_traversable;
+  
+  uniform AffineSpace3f* uniform instance_xfm;
+  uniform LinearSpace3f* uniform normal_xfm;
+  
+  uniform Vec3f* uniform colors;
+};
+
+#if __SYCL_COMPILER_VERSION >= 20210801
+}
+namespace sycl {
+  template<> struct is_device_copyable<embree::TutorialData> : std::true_type {};
+  template<> struct is_device_copyable<const embree::TutorialData> : std::true_type {};
+}
+namespace embree {
+#endif
+
+void TutorialData_Constructor(uniform TutorialData* uniform This)
+{
+  This->g_scene  = NULL;
+  This->g_scene1 = NULL;
+  This->g_traversable = NULL;
+  This->instance_xfm = uniform new uniform AffineSpace3f[4];
+  This->normal_xfm = uniform new uniform LinearSpace3f[4];
+  This->colors = uniform new uniform Vec3f[4*4];
+}
+
+void TutorialData_Destructor(uniform TutorialData* uniform This)
+{
+  rtcReleaseScene (This->g_scene); This->g_scene = NULL;
+  rtcReleaseScene (This->g_scene1); This->g_scene1 = NULL;
+  delete[] This->instance_xfm; This->instance_xfm = NULL;
+  delete[] This->normal_xfm; This->normal_xfm = NULL;
+  delete[] This->colors; This->colors = NULL;
+}

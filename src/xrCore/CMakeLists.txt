@@ -97,7 +97,6 @@ source_group("memory" FILES ${CORE_SOURCE_MEMORY_FILES})
 source_group("memory/p3malloc" FILES ${CORE_SOURCE_MEMORY_P3_FILES})
 source_group("debug" FILES ${CORE_SOURCE_DEBUG_FILES})
 source_group("collision/engine" FILES ${CORE_SOURCE_COLLSION_FILES})
-source_group("collision/opcode" FILES ${CORE_SOURCE_COLLSION_OPCODE_FILES})
 source_group("compressors/rtc" FILES ${CORE_SOURCE_RT_FILES})
 source_group("compressors/lzss" FILES ${CORE_SOURCE_LZSS_FILES})
 source_group("compressors/lzo" FILES ${CORE_SOURCE_LZO_FILES})
@@ -161,6 +160,7 @@ endif()
 
 # Includes 
 target_include_directories(xrCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_include_directories(xrCore PUBLIC ${EXTERNAL_INCLUDE_DIR})
 target_include_directories(xrCore PUBLIC ${CMAKE_BINARY_DIR}/dep)
 
@@ -194,7 +194,6 @@ target_link_libraries(xrCore PUBLIC SDL3-shared)
 target_link_libraries(xrCore PUBLIC TBB::tbb)
 target_link_libraries(xrCore PUBLIC LZO::lzo2)
 target_link_libraries(xrCore PRIVATE yaml-cpp)
-target_link_libraries(xrCore PRIVATE opcode-prosectors)
 
 if(WIN32)
 	if(NOT IXR_ARM_ENABLE AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -219,4 +218,17 @@ if(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	set_target_properties(${PROJECT_NAME} PROPERTIES
 		BUILD_RPATH "$ORIGIN"
 	)
+endif()
+
+target_include_directories(xrCore PUBLIC "${CMAKE_SOURCE_DIR}/src/3rd-party/embree/include/")
+target_link_libraries(xrCore PUBLIC embree)
+
+if(WIN32)
+    add_custom_command(TARGET xrCore POST_BUILD
+    	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/3rd-party/embree/$<CONFIG>/embree4.dll ${IXRAY_OUTPUT}
+    )
+else ()
+    add_custom_command(TARGET xrCore POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/3rd-party/embree/$<CONFIG>/libembree4.so ${IXRAY_OUTPUT}
+    )
 endif()

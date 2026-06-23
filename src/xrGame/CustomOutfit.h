@@ -23,7 +23,7 @@ public:
 	virtual CCustomOutfit* cast_outfit			() override final { return this; }
 
 	virtual u32	ef_equipment_type				() const override final;
-	virtual	bool BonePassBullet					(u16 boneID) override final;
+	virtual	bool BonePassBullet					(u16 boneID) const override final;
 	const shared_str& GetFullIconName			() const { return m_full_icon_name; }
 	u32	get_artefact_count						() const { return m_artefact_count; }
 	void ApplySkinModel							(CActor* pActor, bool bDress, bool bHUDOnly);

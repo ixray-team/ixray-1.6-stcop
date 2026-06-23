@@ -2,7 +2,14 @@
 
 class ISaveObject;
 
-template <class T>
+enum class Vector3Axes : u8
+{
+	X,
+	Y,
+	Z
+};
+
+template <XRay::Concepts::Arithmetic T>
 struct _vector3 
 {
 public:
@@ -15,9 +22,19 @@ public:
 	T y = T(0);
 	T z = T(0);
 
-	constexpr _vector3(T _x = T(0), T _y = T(0), T _z = T(0)): x(_x), y(_y), z(_z) {}
-	constexpr _vector3(T _x) = delete;
-	constexpr _vector3(T _x, T _y) = delete;
+	constexpr _vector3() = default;
+	constexpr _vector3(T _x, T _y, T _z): x(_x), y(_y), z(_z) {}
+	constexpr _vector3(T _v): x(_v), y(_v), z(_v) {}
+	constexpr _vector3(T _x, T _y): x(_x), y(_y), z(0) {}
+	
+	template<XRay::Concepts::Arithmetic T1>
+	constexpr _vector3(T1 _x, T1 _y, T1 _z): x(_x), y(_y), z(_z) {}
+	template<XRay::Concepts::Arithmetic T1>
+	constexpr _vector3(T1 _v): x(_v), y(_v), z(_v) {}
+	template<XRay::Concepts::Arithmetic T1>
+	constexpr _vector3(T1 _x, T1 _y): x(_x), y(_y), z(0) {}
+	template<XRay::Concepts::Arithmetic T1>
+	constexpr _vector3(const _vector3<T1>& other): x(other.x), y(other.y), z(other.z) {}
 
     constexpr ~_vector3() = default;
 
@@ -25,8 +42,8 @@ public:
 	ICF	T&			operator[] (int i)					{ return *((T*)this + i); }
 	ICF	T&			operator[] (int i)	const			{ return *((T*)this + i); }
 
-	template<class T1>
-	ICF bool operator==(T1 ls) const
+	template<XRay::Concepts::Arithmetic T1>
+	ICF bool operator==(_vector3<T1> ls) const
 	{
 		return x == ls.x && y == ls.y && z == ls.z;
 	}
@@ -533,6 +550,51 @@ public:
 	{	// non normalized
 		return mad(dir,norm,-dir.dotproduct(norm));
 	}
+	ICF Vector3Axes LargestAxis() const
+	{
+		if (x > y)
+		{
+			if (x > z)
+			{
+				return Vector3Axes::X;
+			} else
+			{
+				return Vector3Axes::Z;
+			}
+		}
+		if (y > z)
+		{
+			return Vector3Axes::Y;
+		}
+		return Vector3Axes::Z;
+	}
+	
+	ICF T& GetAxisValue(Vector3Axes axis)
+	{
+		switch (axis)
+		{
+			case Vector3Axes::X: return x;
+			case Vector3Axes::Y: return y;
+			case Vector3Axes::Z: return z;
+		}
+		VERIFY(false);
+		static T dummy;
+		return dummy;
+	}
+	
+	ICF void SetAxisValue(Vector3Axes axis, T value)
+	{
+		switch (axis)
+		{
+			case Vector3Axes::X:{ x = value; return; }
+			case Vector3Axes::Y:{ y = value; return; }
+			case Vector3Axes::Z:{ z = value; return; }
+		}
+	}
+	
+	ICF	T& operator[](Vector3Axes axis) { return GetAxisValue(axis); }
+	ICF	T& operator[](Vector3Axes axis)	const { return GetAxisValue(axis); }
+	
 	static ICF void generate_orthonormal_basis(const _vector3<T>& dir, _vector3<T>& up, _vector3<T>& right)
     {
         T fInvLength;
@@ -583,7 +645,6 @@ public:
 			up.z		= -dir.y * right.x ;
 		}
 	}
-
 
 	ICF T 	operator* (const Self&a) const		{ return x*a.x+y*a.y+z*a.z; }//dot
 	ICF Self operator* (const T s) const		{ return Self{x*s, y*s, z*s}; }//mul

@@ -3,7 +3,7 @@
 
 #include "ModelPool.h"
 
-#include "../../xrEngine/Fmesh.h"
+#include "../../xrEngine/FmeshRender.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #ifndef _EDITOR
 #	include "FLOD.h"
@@ -16,6 +16,7 @@
 #include "ParticleGroup.h"
 #include "SkeletonX.h"
 #include "FHierrarhyVisual.h"
+#include "FTreeVisual_Prototype.h"
 #include "SkeletonAnimated.h"
 
 dxRender_Visual* CModelPool::Instance_Create(u32 type)
@@ -53,17 +54,9 @@ dxRender_Visual* CModelPool::Instance_Create(u32 type)
 		break;
 #ifndef _EDITOR
 	case MT_LOD:
-		V	= new FLOD					();
-		break;
 	case MT_LOD1:
- 		V	= new FLOD 					();
- 		break;
  	case MT_LOD2:
- 		V	= new FLOD					();
- 		break;
  	case MT_LOD3:
- 		V	= new FLOD					();
- 		break;
  	case MT_LOD4:
  		V	= new FLOD					();
  		break;
@@ -72,6 +65,9 @@ dxRender_Visual* CModelPool::Instance_Create(u32 type)
 		break;
 	case MT_TREE_PM:
 		V	= new FTreeVisual_PM		();
+		break;
+	case MT_TREE_PROTOTYPE:
+		V	= new FTreeVisual_Prototype		();
 		break;
 #endif
 	default:
@@ -298,6 +294,28 @@ dxRender_Visual* CModelPool::CreateChild(const char* name, IReader* data)
 
     dxRender_Visual* Model	= bAllowChildrenDuplicate?Instance_Duplicate(Base):Base;
     return					Model;
+}
+
+dxRender_Visual* CModelPool::GetPrototype(const char* name)
+{
+	string_path low_name;	
+	VERIFY(xr_strlen(name)<sizeof(low_name));
+	xr_strcpy(low_name,name);	
+	_strlwr	(low_name);
+	if (strext(low_name))
+	{
+		*strext(low_name)=0;
+	}
+	
+	dxRender_Visual* Base = Instance_Find(low_name);
+
+	if (!Base)
+	{
+		bAllowChildrenDuplicate	= false;
+		Base = Instance_Load(low_name,true);
+		bAllowChildrenDuplicate	= true;
+	}
+	return Base;
 }
 
 extern  xr_atomic_bool ENGINE_API g_bRendering; 
@@ -567,7 +585,7 @@ void 	CModelPool::RenderSingle(dxRender_Visual* m_pVisual, const Fmatrix& mTrans
 	for (int p=0; p<4; p++){
     	Render(m_pVisual,mTransform,p,false,m_fLOD);
     	Render(m_pVisual,mTransform,p,true,m_fLOD);
-    }
+	}
 }
 void CModelPool::OnDeviceDestroy()
 {

@@ -45,4 +45,4 @@
 #include "Interface/XRayDUInterface.h"
 #include "Interface/XRayRenderFactory.h"
 #include "Interface/XRayRenderInterface.h"
-#include "../../xrEngine/Fmesh.h"
+#include "../../xrEngine/FmeshRender.h"

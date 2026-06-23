@@ -272,7 +272,7 @@ public:
 	void				EnableCharacter			()																		;
 	void				SetOjectContactCallback (ObjectContactCallbackFun* callback)									;
 	void				SetFootCallBack			(ObjectContactCallbackFun* callback)									;
-	static bool			BorderTraceCallback(collide::rq_result& result, LPVOID params);
+	static bool			BorderTraceCallback(const collide::rq_result& result, LPVOID params);
 	ObjectContactCallbackFun* ObjectContactCallback()			;
 	u16					ContactBone				()				;
 	const ICollisionDamageInfo	*CollisionDamageInfo ()const	;

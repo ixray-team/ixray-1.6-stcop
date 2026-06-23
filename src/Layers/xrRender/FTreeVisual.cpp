@@ -4,9 +4,11 @@
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/IGame_Level.h"
 #include "../../xrEngine/Environment.h"
-#include "../../xrEngine/Fmesh.h"
+#include "../../xrEngine/FmeshRender.h"
 
+#include "IRender_Mesh.h"
 #include "FTreeVisual.h"
+#include "FTreeVisual_Prototype.h"
 
 shared_str					m_xform		;
 shared_str					m_xform_v	;
@@ -38,10 +40,34 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
 	size_t FormatSize = 0;
 
 	// read vertices
-	bool FoundedChunk = !!data->find_chunk(OGF_GCONTAINER);
-	R_ASSERT2(FoundedChunk, "Not found chunk OGF_GCONTAINER");
-
+	bool FoundedChunk = data->find_chunk(OGF_GCONTAINER_MU_EXTERNAL);
+	if (FoundedChunk)
 	{
+		shared_str external_path;
+		data->r_stringZ(external_path);
+		
+		auto Prototype = (FTreeVisual_Prototype*)::Render->model_GetPrototype(external_path.c_str());
+		u32 SplitID = data->r_u32();
+		
+		auto BID = data->r_u32();
+		vBase = data->r_u32();
+		p_rm_Vertices = Prototype->GetVB(BID);
+		p_rm_Vertices->AddRef();
+		vCount = Prototype->GetVBCount(SplitID);
+		vFormat = Prototype->GetDecl(BID, FormatSize);
+		
+		BID = data->r_u32();
+		iBase = data->r_u32();
+		p_rm_Indices = Prototype->GetIB(BID);
+		p_rm_Indices->AddRef();
+		iCount = Prototype->GetIBCount(SplitID);
+		dwPrimitives = iCount/3;
+	}
+	else
+	{
+		FoundedChunk = !!data->find_chunk(OGF_GCONTAINER);
+		R_ASSERT2(FoundedChunk, "Not found chunk OGF_GCONTAINER");
+		
 		// verts
 		u32 ID				= data->r_u32				();
 		vBase				= data->r_u32				();
@@ -228,6 +254,102 @@ void FTreeVisual_PM::Release	()
 {
 	inherited::Release			();
 }
+
+void FTreeVisual_Prototype::Load(const char* N, IReader* data, u32 dwFlags)
+{
+	dxRender_Visual::Load(N, data, dwFlags);
+	
+	auto& Slot = ::Render->GetMUSlot(N);
+	{
+		CReaderGuarded VBChunk = data->open_chunk(OGF_VERTICES);
+		if (I_ASSERT(VBChunk))
+		{
+			Slot.VB.resize(VBChunk->r_u32());
+			Slot.DCL.resize(Slot.VB.size());
+			::Render->ReadVBChunk(Slot.VB, Slot.DCL, Slot.VB.size(), *VBChunk);
+			VertsCount.resize(VBChunk->r_u32());
+			VBChunk->r(VertsCount.data(), VertsCount.size()*sizeof(u32));
+		}
+	}
+	{
+		CReaderGuarded IBChunk = data->open_chunk(OGF_INDICES);
+		if (I_ASSERT(IBChunk))
+		{
+			::Render->ReadIBChunk(Slot.IB, *IBChunk);
+			IndicesCount.resize(IBChunk->r_u32());
+			IBChunk->r(IndicesCount.data(), IndicesCount.size()*sizeof(u32));
+		}
+	}
+	{
+		CReaderGuarded SWIChunk = data->open_chunk(OGF_SWIDATA);
+		if (SWIChunk)
+		{
+			::Render->ReadSWIsChunk(Slot.SWIs, *SWIChunk);
+		}
+	}
+	bool HasCollision = false;
+	{
+		CReaderGuarded CFormVChunk = data->open_chunk(OGF_STATIC_COLLISION_VERTS);
+		if (CFormVChunk)
+		{
+			HasCollision = true;
+			auto Num = CFormVChunk->r_u64();
+			Collision.verts.resize(Num);
+			CFormVChunk->r(Collision.verts.data(), Collision.verts.size()*sizeof(Fvector));
+		}
+	}
+	{
+		CReaderGuarded CFormTChunk = data->open_chunk(OGF_STATIC_COLLISION_TRIS);
+		if (HasCollision && I_ASSERT(CFormTChunk))
+		{
+			auto Num = CFormTChunk->r_u64();
+			Collision.tris.resize(Num);
+			CFormTChunk->r(Collision.tris.data(), Collision.tris.size()*sizeof(CDB::TRI));
+		}
+	}
+	if (HasCollision)
+	{
+		Collision.build_simple();
+	}
+	this->Slot = &Slot;
+}
+
+void FTreeVisual_Prototype::Release()
+{
+	dxRender_Visual::Release();
+}
+
+IRHIBuffer* FTreeVisual_Prototype::GetVB(int ID)
+{
+	VERIFY(ID < Slot->VB.size());
+	return Slot->VB[ID];
+}
+
+IRHIBuffer* FTreeVisual_Prototype::GetIB(int ID)
+{
+	VERIFY(ID < Slot->IB.size());
+	return Slot->IB[ID];
+}
+
+u32 FTreeVisual_Prototype::GetVBCount(int ID)
+{
+	VERIFY(ID < VertsCount.size());
+	return VertsCount[ID];
+}
+
+u32 FTreeVisual_Prototype::GetIBCount(int ID)
+{
+	VERIFY(ID < IndicesCount.size());
+	return IndicesCount[ID];
+}
+
+RHIInputElementDesc* FTreeVisual_Prototype::GetDecl(int ID, size_t& Size)
+{
+	VERIFY(ID < Slot->DCL.size());
+	Size = Slot->DCL[ID].size();
+	return Slot->DCL[ID].begin();
+}
+
 void FTreeVisual_PM::Load		(const char* N, IReader *data, u32 dwFlags)
 {
 	inherited::Load				(N,data,dwFlags);

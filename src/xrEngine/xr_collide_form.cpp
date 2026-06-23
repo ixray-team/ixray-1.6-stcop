@@ -5,8 +5,6 @@
 #include "../xrCore/Collision/xr_area.h"
 #include "x_ray.h"
 #include "xrLevel.h"
-#include "Fmesh.h"
-#include "../xrCore/Collision/Frustum.h"
 
 //#include "skeletoncustom.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -243,37 +241,57 @@ bool CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 		return false;
 	}
 
-	if (dwFrame != Device.dwFrame)		BuildState	();
-	else{
-		IKinematics* K	= PKinematics	(owner->Visual());
-		if (K->LL_GetBonesVisible()!=vis_mask)	{
+	if (dwFrame != Device.dwFrame)
+	{
+		BuildState();
+	}
+	else
+	{
+		IKinematics* K	= PKinematics(owner->Visual());
+		if (K->LL_GetBonesVisible()!=vis_mask)	
+		{
 			// Model changed between ray-picks
 			dwFrame		= Device.dwFrame-1	;
 			BuildState	();
 		}
 	}
 	xrSRWLockGuard guard(&build_lock, true);
-	bool bHIT			= false;
-	for (ElementVecIt I=elements.begin(); I!=elements.end(); I++){
-		if (!I->valid())continue;
-		bool res_		= false;
-		float range		= Q.range;
-		switch (I->type){
-		case SBoneShape::stBox:
-			res_			= RAYvsOBB		(I->b_IM,I->b_hsize,Q.start,Q.dir,range,Q.flags&CDB::OPT_CULL);
-		break;
-		case SBoneShape::stSphere: 
-			res_			= RAYvsSPHERE	(I->s_sphere,Q.start,Q.dir,range,Q.flags&CDB::OPT_CULL);
-
-		break;
-		case SBoneShape::stCylinder: 
-			res_			= RAYvsCYLINDER	(I->c_cylinder,Q.start,Q.dir,range,Q.flags&CDB::OPT_CULL);
-		break;
+	bool bHIT = false;
+	for (auto& elem : elements)
+	{
+		if (!elem.valid())
+		{
+			continue;
 		}
-		if (res_){
-			bHIT		= true;
-			R.append_result				(owner,range,I->elem_id,Q.flags&CDB::OPT_ONLYNEAREST);
-			if (Q.flags&CDB::OPT_ONLYFIRST) break;
+		bool Res = false;
+		float Range = Q.range;
+		switch (elem.type)
+		{
+			case SBoneShape::stBox:
+			{
+				Res = RAYvsOBB(elem.b_IM,elem.b_hsize,Q.start,Q.dir,Range,Q.flags&CDB::OPT_CULL);
+				break;
+			}
+			case SBoneShape::stSphere:
+			{
+				Res = RAYvsSPHERE(elem.s_sphere,Q.start,Q.dir,Range,Q.flags&CDB::OPT_CULL);
+				break;
+			}
+			case SBoneShape::stCylinder:
+			{
+				Res = RAYvsCYLINDER(elem.c_cylinder,Q.start,Q.dir,Range,Q.flags&CDB::OPT_CULL);
+				break;
+			}
+		}
+		if (Res)
+		{
+			bHIT = true;
+			static Fmatrix identity{Fmatrix::EIdentity::Identity};
+			R.append_result(identity,*owner,Range,elem.elem_id,Q.flags&CDB::OPT_ONLYNEAREST);
+			if (Q.flags&CDB::OPT_ONLYFIRST)
+			{
+				break;
+			}
 		}
 	}
 	return bHIT;
@@ -303,7 +321,7 @@ bool CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 	for (u32 el=0; el<shapes.size(); el++)
 	{
 		shape_def& shape= shapes[el];
-
+		static Fmatrix identity{Fmatrix::EIdentity::Identity};
 		switch (shape.type)
 		{
 			case 0: // sphere
@@ -314,7 +332,7 @@ bool CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 				{
 					bHIT = true;
 					range = current_range;
-					R.append_result(owner, range, el, Q.flags&CDB::OPT_ONLYNEAREST);
+					R.append_result(identity, *owner, range, el, Q.flags&CDB::OPT_ONLYNEAREST);
 					if (Q.flags&CDB::OPT_ONLYFIRST) return true;
 				}
 			}
@@ -344,7 +362,7 @@ bool CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 					{
 						range = dot;
 						bHIT = true;
-						R.append_result(owner, range, el, Q.flags&CDB::OPT_ONLYNEAREST);
+						R.append_result(identity, *owner, range, el, Q.flags&CDB::OPT_ONLYNEAREST);
 						if (Q.flags&CDB::OPT_ONLYFIRST) return true;
 					}
 				}

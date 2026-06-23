@@ -3,10 +3,12 @@
 #include "OGF_Face.h"
 #include "../../xrCore/FormatParsers/LevelGeom/GeomIO.h"
 #include "../xrForms/CompilersUI.h"
+#include "src/utils/xrLC_Light/xrMU_Model.h"
 
 SWIContainer g_SWI,x_SWI;
 VBContainer g_VB,x_VB;
 IBContainer g_IB,x_IB;
+xr_hash_map<xrMU_Model*, MUGeomData> g_MUGeomData;
 
 bool CBuild::IsOGFContainersEmpty()
 {
@@ -103,11 +105,13 @@ void CBuild::SaveTREE(IWriter& fs)
 		{
 		case GeomVanillaType::Vanilla:
 			{
+				//VERIFY(!gCompilerMode.LC_UseExternalRefs);
 				FormatPtr.reset(new XRay::Geom::CGeomVanillaFormat);
 				break;
 			}
 		case GeomVanillaType::Chunked:
 			{
+				//VERIFY(!gCompilerMode.LC_UseExternalRefs);
 				size_t mem_bytes = g_VB.size() + g_IB.size() + g_SWI.size();
 				u32 Number = (mem_bytes/(1024ull*1024ull))/gCompilerMode.LC_GeomChunkSize;
 				if (!Number)
@@ -143,11 +147,13 @@ void CBuild::SaveTREE(IWriter& fs)
 		{
 		case GeomVanillaType::Vanilla:
 			{
+				//VERIFY(!gCompilerMode.LC_UseExternalRefs);
 				FormatPtr.reset(new XRay::Geom::CGeomVanillaFormat);
 				break;
 			}
 		case GeomVanillaType::Chunked:
 			{
+				//VERIFY(!gCompilerMode.LC_UseExternalRefs);
 				size_t mem_bytes = x_VB.size() + x_IB.size() + x_SWI.size();
 				u32 Number = (mem_bytes/(1024ull*1024ull))/gCompilerMode.LC_GeomChunkSize;
 				if (!Number)
@@ -176,6 +182,77 @@ void CBuild::SaveTREE(IWriter& fs)
 		x_VB.Clear();
 		x_IB.Clear();
 		x_SWI.Clear();
+	}
+
+	clMsg("External MU OGFs...");
+	for (auto& elem : g_MUGeomData)
+	{
+		xr_stack_string_path FixedPath;
+		FS.update_path(FixedPath, _game_meshes_, elem.second.SavePath.c_str());
+		auto file = FS.wg_open(FixedPath.c_str());
+		if (!I_ASSERT_M(file, "Unable to write OGF files for static, compilation data may be invalid!"))
+		{
+			break;
+		}
+		
+		file->make_chunk(OGF_HEADER, [this](IWriter& file)
+		{
+			ogf_header hdr = {};
+			hdr.format_version = xrOGF_FormatVersion;
+			hdr.type = MT_TREE_PROTOTYPE;
+			file.w(&hdr, sizeof(hdr));
+		});
+		
+		if (IVERIFY(!elem.second.VB.is_empty()))
+		{
+			file->make_chunk(OGF_VERTICES, [this, &elem](IWriter& file)
+			{
+				elem.second.VB.Save(file);
+				file.w_u32(elem.first->m_subdivs.size());
+				for (auto& sub : elem.first->m_subdivs)
+				{
+					file.w_u32(sub.ogf->data.vertices.size());
+				}
+			});
+		}
+		
+		if (IVERIFY(!elem.second.IB.is_empty()))
+		{
+			file->make_chunk(OGF_INDICES, [this, &elem](IWriter& file)
+			{
+				elem.second.IB.Save(file);
+				file.w_u32(elem.first->m_subdivs.size());
+				for (auto& sub : elem.first->m_subdivs)
+				{
+					file.w_u32(sub.ogf->data.faces.size()*3);
+				}
+			});
+		}
+		
+		if (!elem.second.SWI.is_empty())
+		{
+			file->make_chunk(OGF_SWIDATA, [this, &elem](IWriter& file)
+			{
+				elem.second.SWI.Save(file);
+			});
+		}
+		
+		auto& Collision = elem.first->CollisionModel;
+		if (!Collision.tris.empty())
+		{
+			file->make_chunk(OGF_STATIC_COLLISION_VERTS, [this, &Collision](IWriter& file)
+			{
+				file.w_u64(Collision.verts.size());
+				file.w(Collision.verts.data(), Collision.verts.size()*sizeof(Fvector));
+			});
+			file->make_chunk(OGF_STATIC_COLLISION_TRIS, [this, &Collision](IWriter& file)
+			{
+				file.w_u64(Collision.tris.size());
+				file.w(Collision.tris.data(), Collision.tris.size()*sizeof(CDB::TRI));
+			});
+		}
+		
+		// TODO: Textures and materials?
 	}
 
 	clMsg("Shader table...");

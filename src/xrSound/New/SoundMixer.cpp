@@ -1526,20 +1526,27 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 						Fvector	dir = { 0,-1,0 };
 						collider->ray_options(CDB::OPT_ONLYNEAREST);
 						collider->ray_query(env_model, pos, dir, 1000.f);
-						xr_vector<Fvector>& Verts = env_model->get_verts();
-						xr_vector<CDB::TRI>& Tris = env_model->get_tris();
 						if (collider->r_count()) {
-							CDB::RESULT* r = collider->r_begin();
-							CDB::TRI& T = Tris[r->id];
+							auto& r = collider->r_any();
+							auto& Verts = r.model->verts;
+							auto& Tris = r.model->tris;
+							auto& T = Tris[r.tris_id];
 							auto& verts = T.verts;
 
 							Fvector tri_norm;
 							tri_norm.mknormal(Verts[verts[0]], Verts[verts[1]], Verts[verts[2]]);
+							r.ModelWorldTransform.transform_tiny(tri_norm);
 
 							R_ASSERT(T.dummy < mixer.zones.size());
 							slot.zone_idx = T.dummy + 1;
-						} else slot.zone_idx = 0;
-					} else slot.zone_idx = 0;
+						} else
+						{
+							slot.zone_idx = 0;
+						}
+					} else
+					{
+						slot.zone_idx = 0;
+					}
 				}
 			}
 		}

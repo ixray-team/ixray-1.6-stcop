@@ -9,6 +9,7 @@
 #include "../../xrCore/Collision/xrCDB.h"
 #include "../../xrCore/FormatParsers/LevelCForm/CFormIO.h"
 #include "../xrLC_Light/embree_raytracing/EmbreeGeometryBuilder.h"
+#include "Collision/override/Model.h"
 
 int GetVertexIndex(Vertex* Vert)
 {
@@ -93,8 +94,10 @@ void CBuild::BuildCForm	()
 	float	p_cost = 1.f / (cfVertices->size());
 
 	Fbox BB; BB.invalidate();
-	for (vecVertexIt it = cfVertices->begin(); it != cfVertices->end(); it++)
-		BB.modify((*it)->P);
+	for (auto& elem : *cfVertices)
+	{
+		BB.modify(elem->P);
+	}
 
 	// CForm
 	Status("Items to process: %d", cfFaces->size());
@@ -183,30 +186,177 @@ void CBuild::BuildCForm	()
 	xr_stack_string_path level_path = pBuild->path;
 	level_path.append("level");
 	XRay::CForm::Write(level_path.c_str(), *FormatPtr);
-	
-	/*
-	string_path		fn;
-	IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "level.cform"));
-
-	// Header
-	hdrCFORM hdr;
-	hdr.version = CFORM_CURRENT_VERSION;
-	hdr.vertcount = (u32)CL.getVS();
-	hdr.facecount = (u32)CL.getTS();
-	hdr.aabb = BB;
-	MFS->w(&hdr, sizeof(hdr));
- 	// Data
-	MFS->w(CL.getV(), (u32)CL.getVS() * sizeof(Fvector));
- 	MFS->w(CL.getT(), (u32)CL.getTS() * sizeof(CDB::TRI));
-	*/
  
 	// Clear pDeflector (it is stored in the same memory space with dwMaterialGame)
 	for (vecFaceIt I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); I++)
 	{
 		Face* F = *I;
-		F->pDeflector = NULL;
+		F->pDeflector = nullptr;
 	}
-	//FS.w_close(MFS);
+}
+
+void CBuild::BuildCTree()
+{
+	Status("CTree: creating...");
+	
+	vecFace cfFaces;
+	vecVertex cfVertices;
+	{
+		xr_vector<bool>			cfVertexMarks;
+		cfVertexMarks.assign(lc_global_data()->g_vertices().size(), false);
+
+		Status("Sorting...");
+		std::sort(lc_global_data()->g_vertices().begin(), lc_global_data()->g_vertices().end());
+
+		Status("Collecting faces...");
+		cfFaces.reserve(lc_global_data()->g_faces().size());
+		for (vecFaceIt I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); ++I)
+		{
+			Face* F = *I;
+			if (F->Shader().flags.bCollision)
+			{
+				cfFaces.push_back(F);
+				int index = GetVertexIndex(F->v[0]);
+				cfVertexMarks[index] = true;
+
+				index = GetVertexIndex(F->v[1]);
+				cfVertexMarks[index] = true;
+
+				index = GetVertexIndex(F->v[2]);
+				cfVertexMarks[index] = true;
+			}
+		}
+
+		Status("Collecting vertices...");
+		cfVertices.reserve(lc_global_data()->g_vertices().size());
+		std::sort(cfFaces.begin(), cfFaces.end());
+
+		for (u32 V = 0; V < lc_global_data()->g_vertices().size(); V++)
+		{
+			if (cfVertexMarks[V])
+			{
+				cfVertices.push_back(lc_global_data()->g_vertices()[V]);
+			}
+		}
+	}
+
+	float	p_total = 0;
+	float	p_cost = 1.f / (cfVertices.size());
+
+	Fbox BB; BB.invalidate();
+	for (auto& elem : cfVertices)
+	{
+		BB.modify(elem->P);
+	}
+
+	// CForm
+	Status("Items to process: %d", cfFaces.size());
+
+	p_total = 0;
+	p_cost = 1.f / (cfFaces.size());
+
+	// Collect faces
+	CDB::CollectorPacked CL(BB, (int)cfVertices.size(), (int)cfFaces.size());
+	for (vecFaceIt F = cfFaces.begin(); F != cfFaces.end(); F++)
+	{
+		Face* T = *F;
+
+		TestEdge(T->v[0], T->v[1], T);
+		TestEdge(T->v[1], T->v[2], T);
+		TestEdge(T->v[2], T->v[0], T);
+
+		CL.add_face(
+			T->v[0]->P, T->v[1]->P, T->v[2]->P,
+			T->dwMaterialGame, 
+			GetMaterialSector(*T), 
+			T->flags.bSharedMaterial,
+			T->sm_group
+		);
+		Progress(p_total += p_cost);		// progress
+	}
+
+	if (bCriticalErrCnt) {
+		err_save();
+		clMsg("MultipleEdges: %d faces", bCriticalErrCnt);
+	}
+	cfFaces.clear(); cfFaces.shrink_to_fit();
+	cfVertices.clear(); cfVertices.shrink_to_fit();
+
+	// Models
+	Status("Models...");
+	auto& mu_refs_arr = mu_refs();
+	for (u32 ref = 0; ref < mu_refs_arr.size(); ref++)
+	{
+		Progress(float(ref) / float(mu_refs_arr.size()));
+		auto MUModel = mu_refs_arr[ref]->model;
+		
+		for (auto& elem : MUModel->CollisionModel.verts)
+		{
+			Fvector TransformedVert;
+			mu_refs_arr[ref]->xform.transform_tiny(TransformedVert,elem);
+			BB.modify(TransformedVert);
+		}
+	}
+
+	// Saving
+	Status("Saving...");
+
+	xr_unique_ptr<XRay::CForm::IFormat> FormatPtr = nullptr;
+
+	switch (gCompilerMode.LC_CformType)
+	{
+		case CFormVersions::Instanced:
+		{
+			FormatPtr.reset(new XRay::CForm::CFormatInstanced());
+			break;
+		}
+		/*case CFormVersions::VanillaChunked:
+		{
+			size_t mem_bytes = CL.getTS()*sizeof(*CL.getT()) + CL.getVS()*sizeof(*CL.getV());
+			u32 Number = (mem_bytes / (1024ull*1024ull)) / gCompilerMode.LC_CFormChunkSize;
+			if (!Number)
+			{
+				FormatPtr.reset(new XRay::CForm::CFormatVanilla());
+			} else
+			{
+				FormatPtr.reset(new XRay::CForm::CFormatVanillaChunked(Number+1));
+			}
+			break;
+		}*/
+		default:
+		{
+			FATAL("Invalid CForm type!");
+		}
+	}
+
+	IVERIFY(FormatPtr.get());
+	FormatPtr->AddStaticGeom(CL.getVSpan(), CL.getTSpan());
+	for (auto elem : mu_refs())
+	{
+		VERIFY(elem->model->CollisionModel.instances.empty(), "Instances inside instances are not currently supported!");
+		if (!elem->model->CollisionModel.tris.empty())
+		{
+			Fbox GlobalAABB; 
+			GlobalAABB.invalidate();
+			for (auto& v : elem->model->CollisionModel.verts)
+			{
+				Fvector gv;
+				elem->xform.transform_tiny(gv, v);
+				GlobalAABB.modify(gv);
+			}
+			FormatPtr->AddInstanceRef(elem->model->m_name, elem->xform, GlobalAABB, elem->model->CollisionModel, elem->sector);
+		}
+	}
+	xr_stack_string_path level_path = pBuild->path;
+	level_path.append("level");
+	XRay::CForm::Write(level_path.c_str(), *FormatPtr);
+ 
+	// Clear pDeflector (it is stored in the same memory space with dwMaterialGame)
+	for (vecFaceIt I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); I++)
+	{
+		Face* F = *I;
+		F->pDeflector = nullptr;
+	}
 }
 
 void CBuild::BuildPortals(IWriter& fs)

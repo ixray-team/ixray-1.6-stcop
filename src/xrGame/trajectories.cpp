@@ -82,7 +82,7 @@ static float trajectory_select_pick_time			(
 	return					(low);
 }
 
-IC bool trajectory_query_callback				(collide::rq_result& result, LPVOID params)
+IC bool trajectory_query_callback(const collide::rq_result& result, LPVOID params)
 {
 	*(float*)params					= result.range;
 	return							(false);
@@ -188,9 +188,10 @@ bool trajectory_check_collision (float 							low,
 		{
 			for (CDB::RESULT& R : obb_collider.r_vec())
 			{
-				out_collide_tris->push_back(R.verts[0]);
-				out_collide_tris->push_back(R.verts[1]);
-				out_collide_tris->push_back(R.verts[2]);
+				auto& Tris = R.model->tris[R.tris_id];
+				R.ModelWorldTransform.transform_tiny(out_collide_tris->emplace_back(), R.model->verts[Tris.verts[0]]);
+				R.ModelWorldTransform.transform_tiny(out_collide_tris->emplace_back(), R.model->verts[Tris.verts[1]]);
+				R.ModelWorldTransform.transform_tiny(out_collide_tris->emplace_back(), R.model->verts[Tris.verts[2]]);
 			}
 		}
 	}

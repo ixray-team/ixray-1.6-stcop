@@ -176,7 +176,7 @@ void EDetailManager::UpdateSlotBBox(int sx, int sz, DetailSlot& slot)
         	for (int k=0; k<(int)it->inf.size(); k++){
                 float range;
                 Fvector verts[3];
-                it->e_obj->GetFaceWorld(it->s_obj->_Transform(),it->e_mesh,it->inf[k].id,verts);
+                it->e_obj->GetFaceWorld(it->s_obj->_Transform(),it->e_mesh,it->inf[k].tris_id,verts);
                 sPoly sSrc	(verts,3);
                 sPoly sDest;
                 sPoly* sRes = frustum.ClipPoly(sSrc, sDest);

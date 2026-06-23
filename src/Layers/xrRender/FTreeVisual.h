@@ -3,6 +3,7 @@
 // refs
 struct	FSlideWindowItem;
 
+#include "IRender_Mesh.h"
 #include "FBasicVisual.h"
 
 class	FTreeVisual				:	public dxRender_Visual, public IRender_Mesh
@@ -63,5 +64,5 @@ private:
 	void	operator=			( const FTreeVisual_PM& other);
 };
 
-const int		FTreeVisual_tile	= 16;
-const int		FTreeVisual_quant	= 32768/FTreeVisual_tile;
+constexpr int FTreeVisual_tile	= 16;
+constexpr int FTreeVisual_quant	= 32768/FTreeVisual_tile;

@@ -6,6 +6,7 @@
 
 #include "Build.h"
 #include "OGF_Face.h"
+#include "src/utils/xrForms/CompilersUI.h"
 
 #define	TRY(a) try { a; } catch (...) { clMsg("* E: %s", #a); }
 xrCriticalSection csThreadLock;
@@ -123,17 +124,22 @@ void export_ogf( xrMU_Reference& mu_reference )
 			pOGF->textures.push_back(T);
 
 			// Special
-			pOGF->model				= it->ogf;
-			pOGF->vb_id				= it->vb_id;
-			pOGF->vb_start			= it->vb_start;
-			pOGF->ib_id				= it->ib_id;
-			pOGF->ib_start			= it->ib_start;
-			pOGF->xform.set			(mu_reference.xform);
-			pOGF->c_scale			= mu_reference.c_scale;
-			pOGF->c_bias			= mu_reference.c_bias;
-			pOGF->sw_id				= it->sw_id;
+			pOGF->model = it->ogf;
+			pOGF->vb_id	= it->vb_id;
+			pOGF->vb_start = it->vb_start;
+			pOGF->ib_id = it->ib_id;
+			pOGF->ib_start = it->ib_start;
+			pOGF->sw_id = it->sw_id;
+			if (gCompilerMode.LC_UseExternalRefs)
+			{
+				pOGF->external_path = it->external_path;
+				pOGF->SplitID = it-model->m_subdivs.begin();
+			}
+			pOGF->xform.set(mu_reference.xform);
+			pOGF->c_scale = mu_reference.c_scale;
+			pOGF->c_bias = mu_reference.c_bias;
 
-			pOGF->CalcBounds		();
+			pOGF->CalcBounds();
 			generated_ids.push_back((u32)g_tree.size());
 
 			csThreadLock.Enter();

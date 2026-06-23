@@ -5,7 +5,7 @@
 #include "stdafx.h"
 
 
-#include "../../xrEngine/Fmesh.h"
+#include "../../xrEngine/FmeshRender.h"
 #include "FProgressive.h"
 
 //////////////////////////////////////////////////////////////////////

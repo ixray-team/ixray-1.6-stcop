@@ -106,7 +106,7 @@ bool CCustomOutfit::install_upgrade_impl(const char* section, bool test)
 	return result;
 }
 
-bool CCustomOutfit::BonePassBullet(u16 boneID)
+bool CCustomOutfit::BonePassBullet(u16 boneID) const
 {
 	return m_boneProtection->getBonePassBullet(boneID);
 }

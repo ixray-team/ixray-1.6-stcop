@@ -79,19 +79,24 @@ bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 
 			// 2. Polygon doesn't pick - real database query
 			CObjectSpaceThreadData::xrc.ray_query(&Static, start, dir, range);
-			if (0 == CObjectSpaceThreadData::xrc.r_count()) {
+			auto Num = CObjectSpaceThreadData::xrc.r_count();
+			if (!Num) {
 				cache->set(start, dir, range, false);
 				return false;
 			}
 			else {
+				VERIFY(Num);
 				// cache polygon
 				cache->set(start, dir, range, true);
-				CDB::RESULT* R = CObjectSpaceThreadData::xrc.r_begin();
-				CDB::TRI& T = Static.get_tris()[R->id];
-				xr_vector<Fvector>& V = Static.get_verts();
+				auto& R = CObjectSpaceThreadData::xrc.r_any();
+				auto& T = R.model->get_tris()[R.tris_id];
+				auto& V = R.model->get_verts();
 				cache->verts[0].set(V[T.verts[0]]);
 				cache->verts[1].set(V[T.verts[1]]);
 				cache->verts[2].set(V[T.verts[2]]);
+				R.ModelWorldTransform.transform_tiny(cache->verts[0]);
+				R.ModelWorldTransform.transform_tiny(cache->verts[1]);
+				R.ModelWorldTransform.transform_tiny(cache->verts[2]);
 				return true;
 			}
 		}
@@ -108,9 +113,13 @@ bool CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 //--------------------------------------------------------------------------------
 bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range, rq_target tgt, rq_result& R, CObject* ignore_object)
 {
+	PROF_EVENT("CObjectSpace::RayPick");
 	CObjectSpaceThreadData::r_temp.r_clear();
 
-	R.O = nullptr; R.range = range; R.element = -1;
+	R.reset();
+	R.range = range; 
+	R.element = -1;
+	
 	// static test
 	if (tgt & rqtStatic)
 	{
@@ -118,7 +127,9 @@ bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 		CObjectSpaceThreadData::xrc.ray_query(&Static, start, dir, range);
 
 		if (CObjectSpaceThreadData::xrc.r_count())
-			R.set_if_less(CObjectSpaceThreadData::xrc.r_begin());
+		{
+			R.set_if_less(CObjectSpaceThreadData::xrc.r_any());
+		}
 	}
 
 	// dynamic test
@@ -132,6 +143,7 @@ bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 
 		for (u32 o_it = 0; o_it < CObjectSpaceThreadData::r_spatial.size(); o_it++)
 		{
+			PROF_EVENT("CObjectSpace::RayPick::for_loop");
 			ISpatial* Spatial = CObjectSpaceThreadData::r_spatial[o_it].get();
 			CObject* Collidable = Spatial->dcast_CObject();
 			if (nullptr == Collidable)
@@ -152,7 +164,7 @@ bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 				if (Collidable->collidable.model->_RayQuery(Q, CObjectSpaceThreadData::r_temp))
 				{
 					C = color_xrgb(128, 128, 196);
-					R.set_if_less(CObjectSpaceThreadData::r_temp.r_begin());
+					R.set_if_less(CObjectSpaceThreadData::r_temp.r_any());
 				}
 #ifdef DEBUG
 				if (bDebug())
@@ -192,12 +204,9 @@ bool CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& 
 	{
 		CObjectSpaceThreadData::xrc.ray_options(R.flags);
 		CObjectSpaceThreadData::xrc.ray_query(&Static, R.start, R.dir, R.range);
-		if (CObjectSpaceThreadData::xrc.r_count())
+		for (auto& elem : CObjectSpaceThreadData::xrc.r_vec())
 		{
-			CDB::RESULT* _I = CObjectSpaceThreadData::xrc.r_begin();
-			CDB::RESULT* _E = CObjectSpaceThreadData::xrc.r_end();
-			for (; _I != _E; _I++)
-				CObjectSpaceThreadData::r_temp.append_result(rq_result().set(nullptr, _I->range, _I->id));
+			CObjectSpaceThreadData::r_temp.append_result(rq_result().set(elem.ModelWorldTransform, *elem.model, elem.range, elem.tris_id));
 		}
 	}
 	// Test dynamic
@@ -229,13 +238,17 @@ bool CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& 
 	if (CObjectSpaceThreadData::r_temp.r_count())
 	{
 		CObjectSpaceThreadData::r_temp.r_sort();
-		collide::rq_result* _I = CObjectSpaceThreadData::r_temp.r_begin();
-		collide::rq_result* _E = CObjectSpaceThreadData::r_temp.r_end();
-		for (; _I != _E; _I++)
+		for (auto& elem : CObjectSpaceThreadData::r_temp.r_results())
 		{
-			dest.append_result(*_I);
-			if (!(CB ? CB(*_I, user_data) : true))						return dest.r_count();
-			if (R.flags & (CDB::OPT_ONLYNEAREST | CDB::OPT_ONLYFIRST))	return dest.r_count();
+			dest.append_result(elem);
+			if (!(CB ? CB(elem, user_data) : true))
+			{
+				return dest.r_count();
+			}
+			if (R.flags & (CDB::OPT_ONLYNEAREST | CDB::OPT_ONLYFIRST))
+			{
+				return dest.r_count();
+			}
 		}
 	}
 	CObjectSpaceThreadData::r_spatial.clear();

@@ -83,6 +83,7 @@ void TIKLimbsController::LimbCalculate( SCalculateData &cd )
 
 void TIKLimbsController::LimbUpdate( CIKLimb &L )
 {
+	PROF_EVENT("TIKLimbsController::LimbUpdate");
 	IKinematicsAnimated *skeleton_animated = m_object->Visual( )->dcast_PKinematicsAnimated( );
 	VERIFY( skeleton_animated );
 	L.Update( m_object, m_legs_blend, _pose_extrapolation );
@@ -340,6 +341,7 @@ void TIKLimbsController::Calculate()
 
 void TIKLimbsController::IKVisualCallback(IKinematics* K)
 {
+	PROF_EVENT("TIKLimbsController::IKVisualCallback");
 #ifdef DEBUG
 	if (ph_dbg_draw_mask1.test(phDbgIKOff))
 		return;

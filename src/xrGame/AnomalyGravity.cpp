@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "AnomalyZone.h"
 #include "object_broker.h"
 #include "AnomalyGravity.h"
