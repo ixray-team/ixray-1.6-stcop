@@ -33,6 +33,7 @@
 #include "UIActorInfo.h"
 #include "UIDiaryWnd.h"
 #include "../../xrUI/UICursor.h"
+#include "../../xrUI/Widgets/UIGamepadLegend.h"
 
 #define PDA_XML		"pda.xml"
 
@@ -999,4 +1000,28 @@ void CUIPdaWnd::ResetCursor()
 	{
 		GetUICursor().SetUICursorPosition(last_cursor_pos);
 	}
+}
+
+#define PDA_UPDATE_GAMEPAD_LEGEND(window) \
+if (window)\
+{\
+	if (window->m_gamepad_legend)\
+	{\
+		window->m_gamepad_legend->ReloadLegend();\
+	}\
+}\
+
+void CUIPdaWnd::ReloadGamepadLegends() 
+{
+	PDA_UPDATE_GAMEPAD_LEGEND(pUITaskWnd)
+	PDA_UPDATE_GAMEPAD_LEGEND(pUIFactionWarWnd)
+	PDA_UPDATE_GAMEPAD_LEGEND(pUIRankingWnd)
+	PDA_UPDATE_GAMEPAD_LEGEND(pUILogsWnd)
+	PDA_UPDATE_GAMEPAD_LEGEND(UIPdaContactsWnd)
+	PDA_UPDATE_GAMEPAD_LEGEND(pUIEventsWnd)
+	PDA_UPDATE_GAMEPAD_LEGEND(pUIStalkersRankingWnd)
+	PDA_UPDATE_GAMEPAD_LEGEND(pUIEncyclopediaWnd)
+	PDA_UPDATE_GAMEPAD_LEGEND(pUIActorInfoWnd)
+	PDA_UPDATE_GAMEPAD_LEGEND(pUIDiaryWnd)
+	PDA_UPDATE_GAMEPAD_LEGEND(pUIMapWnd)
 }

@@ -93,7 +93,7 @@ void CUIEventsWnd::Init				()
 	m_ui_task_item_xml.Load(CONFIG_PATH, UI_PATH, "job_item.xml");
 	m_TaskFilter->SetActiveTabByIndex(0);
 
-	m_GamepadLegend					= UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
+	m_gamepad_legend				= UIHelper::CreateGamepadLegend(uiXml, "gamepad_legend", this, false);
 }
 
 void CUIEventsWnd::Update			()
@@ -109,18 +109,18 @@ void CUIEventsWnd::Update			()
 
 void CUIEventsWnd::UpdateGamepadLegend()
 {
-	if (!m_GamepadLegend)
+	if (!m_gamepad_legend)
 	{
 		return;
 	}
 
-	CUIWindow* actionAccept = m_GamepadLegend->FindChild("action_accept");
+	CUIWindow* actionAccept = m_gamepad_legend->FindChild("action_accept");
 	if (actionAccept)
 	{
 		actionAccept->Show(GetDescriptionMode());
 	}
 
-	CUIWindow* showDescription = m_GamepadLegend->FindChild("show_description");
+	CUIWindow* showDescription = m_gamepad_legend->FindChild("show_description");
 	if (showDescription)
 	{
 		if (CUIStatic* showDescriptionS = showDescription->ui_cast_static())
@@ -129,19 +129,19 @@ void CUIEventsWnd::UpdateGamepadLegend()
 		}
 	}
 
-	CUIWindow* showOnMap = m_GamepadLegend->FindChild("show_on_map");
+	CUIWindow* showOnMap = m_gamepad_legend->FindChild("show_on_map");
 	if (showOnMap)
 	{
 		showOnMap->Show(GetDescriptionMode());
 	}
 
-	CUIWindow* showMe = m_GamepadLegend->FindChild("show_me");
+	CUIWindow* showMe = m_gamepad_legend->FindChild("show_me");
 	if (showMe)
 	{
 		showMe->Show(GetDescriptionMode());
 	}
 
-	CUIWindow* mapZoom = m_GamepadLegend->FindChild("map_zoom");
+	CUIWindow* mapZoom = m_gamepad_legend->FindChild("map_zoom");
 	if (mapZoom)
 	{
 		mapZoom->Show(GetDescriptionMode());

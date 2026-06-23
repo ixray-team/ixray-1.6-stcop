@@ -23,7 +23,8 @@ CUILines::CUILines()
 	m_dwTextColor					= 0xffffffff;
 	m_dwTextGradientColor			= 0xff888888;
 	m_TextOffset.set				(0.0f,0.0f);
-	m_text							="";
+	m_text							= "";
+	m_text_src						= "";
 	uFlags.zero();
 	uFlags.set(flNeedReparse,		false);
 	uFlags.set(flComplexMode,		false);
@@ -33,53 +34,68 @@ CUILines::CUILines()
 	uFlags.set(flRecognizeNewLine,	true);
 	m_eTextGradientMode				= CGameFont::gm_vert;
 
-	m_wndSize = {0, 0};
-	m_wndPos  = {0, 0};
+	m_wndSize						= {0, 0};
+	m_wndPos						= {0, 0};
 }
 
-CUILines::~CUILines(){
+CUILines::~CUILines()
+{
 
 }
 
-void CUILines::SetTextComplexMode(bool mode){
+void CUILines::SetTextComplexMode(bool mode)
+{
 	uFlags.set(flComplexMode, mode);
 	if (mode)
+	{
 		uFlags.set(flPasswordMode, false);
+	}
 }
 
-void CUILines::SetPasswordMode(bool mode){
+void CUILines::SetPasswordMode(bool mode)
+{
 	uFlags.set(flPasswordMode, mode);
 	if (mode)
+	{
 		uFlags.set(flComplexMode, false);
+	}
 }
 
 
-void CUILines::SetColoringMode(bool mode){
+void CUILines::SetColoringMode(bool mode)
+{
 	uFlags.set(flColoringMode, mode);
 }
 
-void CUILines::SetCutWordsMode(bool mode){
+void CUILines::SetCutWordsMode(bool mode)
+{
 	uFlags.set(flCutWordsMode, mode);
 }
 
-void CUILines::SetEllipsis(bool mode){
+void CUILines::SetEllipsis(bool mode)
+{
 	uFlags.set(flEllipsis, mode);	
 }
 
-void CUILines::SetUseNewLineMode(bool mode){
+void CUILines::SetUseNewLineMode(bool mode)
+{
 	uFlags.set(flRecognizeNewLine, mode);	
 }
 
-
-void CUILines::SetText(const char* text){
-	
+void CUILines::SetText(const char* text)
+{
 	if (!m_pFont)
+	{
 		m_pFont = UI().Font().GetFont(LETTERICA16_FONT_NAME);
+	}
 
 	if (text && text[0] != 0)
 	{
-		if(m_text==text) 
+		if (m_text == text)
+		{
 			return;
+		}
+
         m_text = text;
 		uFlags.set(flNeedReparse, true);
 	}
@@ -94,7 +110,6 @@ void CUILines::SetTextST(const char* str_id)
 	SetText	(*g_pStringTable->ParseStringFromScript(str_id));
 }
 
-
 const char* CUILines::GetText()
 {
 	return m_text.c_str();
@@ -103,6 +118,11 @@ const char* CUILines::GetText()
 void CUILines::Reset()
 {
 	m_lines.clear();
+}
+
+void CUILines::ReloadText()
+{
+	SetTextST(m_text_src.c_str());
 }
 
 float get_str_width(CGameFont*pFont, int ch)

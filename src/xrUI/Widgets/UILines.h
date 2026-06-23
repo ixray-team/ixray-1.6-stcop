@@ -50,10 +50,12 @@ CGameFont::EGradientMode	GetTextGradientMode()						{return m_eTextGradientMode;
 			void			Reset										();
 			void			ParseText									(bool force=false);
 			float			GetVisibleHeight							();
+			void			ReloadText									();
 
 		Fvector2			m_TextOffset;
 		Fvector2			m_wndSize;
 		Fvector2			m_wndPos;
+		shared_str			m_text_src;
 protected:
 				// %c[255,255,255,255]
 		u32					GetColorFromText							(const xr_string& str)							const;

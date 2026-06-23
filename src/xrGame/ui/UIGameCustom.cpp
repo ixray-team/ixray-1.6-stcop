@@ -5,7 +5,7 @@
 #include "UIHelperGame.h"
 #include "../xrUI/Widgets/UIStatic.h"
 #include "../xrUI/Widgets/UIDialogWnd.h"
-
+#include "../xrUI/Widgets/UIGamepadLegend.h"
 #include "object_broker.h"
 #include "../xrEngine/string_table.h"
 #include "UIRadialMenuWeapon.h"
@@ -24,6 +24,7 @@
 #include "UITradeWnd.h"
 #include "../xrEngine/x_ray.h"
 #include "ui/UICellItem.h"
+#include "ui/UITalkDialogWnd.h"
 
 EGameIDs ParseStringToGameType(const char* str);
 
@@ -539,13 +540,13 @@ void CUIGameCustom::Load()
 		CUIXml inventoryXml;
 		if (inventoryXml.Load(CONFIG_PATH, UI_PATH, "actor_menu.xml"))
 		{
-		m_ActorMenu				= new CUIActorMenu		();
+			m_ActorMenu				= new CUIActorMenu		();
 		}
 		else
 		{
-			m_CarBodyMenu			= new CUICarBodyWnd	();
+			m_CarBodyMenu			= new CUICarBodyWnd		();
 			m_InventoryMenu			= new CUIInventoryWnd	();
-			m_TradeMenu				= new CUITradeWnd();
+			m_TradeMenu				= new CUITradeWnd		();
 		}
 		
 		R_ASSERT				(nullptr==TalkMenu);
@@ -601,6 +602,60 @@ void CUIGameCustom::update_fake_indicators(u8 type, float power)
 void CUIGameCustom::enable_fake_indicators(bool enable)
 {
 	UIMainIngameWnd->get_hud_states()->EnableFakeIndicators(enable);
+}
+
+void CUIGameCustom::ReloadGamepadLegends() 
+{
+	// Inventory
+	if (m_ActorMenu)
+	{
+		if (m_ActorMenu->m_gamepad_legend)
+		{
+			m_ActorMenu->m_gamepad_legend->ReloadLegend();
+		}
+	}
+	if (m_CarBodyMenu)
+	{
+		if (m_CarBodyMenu->m_gamepad_legend)
+		{
+			m_CarBodyMenu->m_gamepad_legend->ReloadLegend();
+		}
+	}
+	if (m_InventoryMenu)
+	{
+		if (m_InventoryMenu->m_gamepad_legend)
+		{
+			m_InventoryMenu->m_gamepad_legend->ReloadLegend();
+		}
+	}
+	if (m_TradeMenu)
+	{
+		if (m_TradeMenu->m_gamepad_legend)
+		{
+			m_TradeMenu->m_gamepad_legend->ReloadLegend();
+		}
+	}
+	// Talk menu
+	if (TalkMenu)
+	{
+		if (TalkMenu->UITalkDialogWnd->m_gamepad_legend)
+		{
+			TalkMenu->UITalkDialogWnd->m_gamepad_legend->ReloadLegend();
+		}
+	}
+	// PDA
+	if (m_PdaMenu)
+	{
+		m_PdaMenu->ReloadGamepadLegends();
+	}
+	// Radial menu
+	if (m_RadialMenuWeapon)
+	{
+		if (m_RadialMenuWeapon->m_pGamepadLegend)
+		{
+			m_RadialMenuWeapon->m_pGamepadLegend->ReloadLegend();
+		}
+	}
 }
 
 SDrawStaticStruct::SDrawStaticStruct	()
