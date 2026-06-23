@@ -30,11 +30,15 @@ void DX11ShaderResourceStateCache::ResetDeviceState()
 	m_uiMinDSView = 0xFFFFFFFF;
 	m_uiMaxDSView = 0xFFFFFFFF;
 
+	m_uiMinCSView = 0xFFFFFFFF;
+	m_uiMinCSView = 0xFFFFFFFF;
+
 	m_bUpdatePSViews = false;
 	m_bUpdateGSViews = false;
 	m_bUpdateVSViews = false;
 	m_bUpdateDSViews = false;
 	m_bUpdateHSViews = false;
+	m_bUpdateCSViews = false;
 }
 
 void DX11ShaderResourceStateCache::Apply()
