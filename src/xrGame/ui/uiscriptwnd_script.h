@@ -24,7 +24,7 @@ struct CWrapperBase : public T, public luabind::wrap_base {
 
 	virtual bool OnKeyboardHold(int dik)
 	{
-		return call_member<bool>(this, "OnKeyboard", dik);
+		return call_member<bool>(this, "OnKeyboardHold", dik);
 	}
 	static bool OnKeyboardHold_static(inherited* ptr, int dik)
 	{
