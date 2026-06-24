@@ -183,6 +183,7 @@ public:
 	const char*			GetCDKeyFromRegistry			();
 	
 	demo_info const *	GetDemoInfo					(const char* file_name);
+	virtual void ReloadLegend();
 };
 
 extern CMainMenu*	MainMenu();
