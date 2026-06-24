@@ -10,17 +10,17 @@ local mul_by_level = {}
 local count_by_level = {}
 
 --' Предметы, которые нельзя удалять (квестовые например)
-local always_keep_item = {}
+always_keep_item = {}
 
 --' Предметы, относящиеся к патронам. Их надо спаунить другим методом.
-local ammo_sections = {}
+ammo_sections = {}
 
 local death_ini = ini_file("misc\\death_generic.ltx")
 
+-- группировки
+community_list = { "stalker", "dolg", "freedom", "bandit", "military", "zombied", "ecolog", "killer", "monolith", "arena_enemy", "actor_dolg" } 
 
 function init_drop_settings()
-  local community_list = { "stalker", "dolg", "freedom", "bandit", "military", "zombied", "ecolog", "killer", "monolith", "arena_enemy", "actor_dolg" } 
-
     for k,v in pairs(community_list) do
         --' Необходимо заполнить таблицу
         item_by_community[v] = {}
@@ -118,8 +118,16 @@ function drop_manager:create_release_item()
   end
   se_obj.death_droped = true
 
-    --' Запускаем итератор на удаление предметов
-    self.npc:iterate_inventory(keep_item, self.npc)
+	local flags_table = {overriden_iterator_functor = false}
+	SendScriptCallback("death_manager_override_iterator_on_create_release_item", self, self.npc, flags_table)
+	
+	if not flags_table.overriden_iterator_functor then
+		--' Запускаем итератор на удаление предметов
+		self.npc:iterate_inventory(keep_item, self.npc)
+	else
+		--' Запускаем кастомный переопределенный из вне итератор или логику
+		flags_table.overriden_iterator_functor(self, self.npc, keep_item)
+	end
 
     --' Проверка на отсутствие спауна лута
     local ini = self.npc:spawn_ini()
@@ -127,6 +135,11 @@ function drop_manager:create_release_item()
     if ini and ini:section_exist("dont_spawn_loot") then
         return
     end
+	local st		= db.storage[self.npc:id()]
+	local st_ini 	= st and st.ini
+	if st_ini and st_ini:line_exist(st.section_logic , "dont_spawn_loot") then
+		return
+	end
 
     --' Доспавниваем необходимое количество итемов:
     --' Необходимо составить список объектов которые могут быть заспавнены для персонажа
@@ -135,49 +148,81 @@ function drop_manager:create_release_item()
     if spawn_items == nil then
     	return
     end
-    for k,v in pairs(spawn_items) do
-        --' По каждому объекту необходимо получить зависимости    
-        if check_item_dependence(self.npc, k) == true then
-            --' По каждому объекту необходимо получить количество
-            local number = math.ceil(math.random(count_by_level[k].min, count_by_level[k].max))
-            --' Необходимо заспавнить нужное количество.
-            create_items(self.npc, k, number, v)
-        end
-    end
+	
+	local flags_table_b = {override_spawn_items_functor = false}
+	SendScriptCallback("death_manager_override_spawn_items_on_create_release_item", self, self.npc, flags_table_b)
+	
+	if not flags_table_b.override_spawn_items_functor then
+		--' оригинальный спавн предметов
+		for k,v in pairs(spawn_items) do
+			--' По каждому объекту необходимо получить зависимости
+			if check_item_dependence(self.npc, k) == true then
+				--' По каждому объекту необходимо получить количество
+				if count_by_level[k] == nil then
+					abort("Incorrect count settings in death_manager for object[%s]", k)
+				end
+				local number = math.ceil(math.random(count_by_level[k].min, count_by_level[k].max))
+				--' Необходимо заспавнить нужное количество.
+				create_items(self.npc, k, number, v)
+			end
+		end
+	else
+		--' переопределенная из вне логика спавна предметов
+		flags_table_b.override_spawn_items_functor(self, self.npc, spawn_items, count_by_level, create_items, check_item_dependence)
+	end
 end
 
 --' Функция вызывается для каждого предмета, если вернет false то предмет удалится.
 function keep_item(npc, item)
     local section = item:section()
 
-    if section == "bolt" then
-        return
-    end
+	local ini = npc:spawn_ini()
 
-    if always_keep_item[section] == true then
-        return
-    end
-
-    local item_id = item:id()
-    local item_in_slot = npc:item_in_slot(2)
-    if item_in_slot ~= nil and item_in_slot:id() == item_id
-    then
-        item:unload_magazine()
-    --' Тут надо уменьшить кондишн оружия
-		item:set_condition((math.random(15)+65)/100)
-        return
-    end
-    item_in_slot = npc:item_in_slot(3)
-    if item_in_slot ~= nil and item_in_slot:id() == item_id
-    then
-        item:unload_magazine()
-    --' Тут надо уменьшить кондишн оружия
-		item:set_condition((math.random(15)+65)/100)
-        return
-    end
-	if not npc:marked_dropped(item) then
-	    alife():release(alife():object(item:id()), true)
+	if ini and ini:section_exist("keep_items")
+			and	section ~= "guitar_a"
+			and	section ~= "harmonica_a"
+			and section ~= "wpn_binoc"
+			and section ~= "device_torch"
+			and section ~= "device_pda" then
+		return
 	end
+
+	if isArtefact(item) then
+		return
+	end
+	
+	if section == "bolt" then
+		return
+	end
+
+	if always_keep_item[section] == true then
+		return
+	end
+	--printf("item name [%s]", item:name())
+	if isWeapon(item) and not(get_clsid(item)==clsid.wpn_grenade_rgd5 or get_clsid(item)==clsid.wpn_grenade_f1) then
+		set_weapon_drop_condition(item)
+		return
+	end
+
+	local EatableItem = item:cast_EatableItem()
+
+	if EatableItem ~= nil and EatableItem:GetMaxUses() > 1 then
+		EatableItem:SetRemainingUses(math.random(1, EatableItem:GetMaxUses()))
+		return
+	end
+
+	alife():release(alife():object(item:id()), true)
+end
+
+function set_weapon_drop_condition(item)
+	-- [GUNSLINGER mod]
+	--[bug] фиксим баг, при котором можно "чинить" оружие, давая его НПСу, а затем убивая его
+	local cur_cond = item:condition()
+	if cur_cond > 0.3 then
+		local new_cond = (0.2 + (math.random(80) / 100))  * cur_cond
+		item:set_condition(new_cond)
+	end
+	-- [/GUNSLINGER mod]
 end
 
 --' Функция спавнит необходимое число предметов
