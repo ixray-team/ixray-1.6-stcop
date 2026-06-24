@@ -6,8 +6,7 @@ class IComputeData
 {
 public:
 	Lights g_lights;
-	xr_unique_ptr<CDB::MODEL> LevelPtr;
-
+ 
 	Shader_xrLC_LIB* g_shaders_xrlc;
 	xr_vector<b_material> g_materials;
 	xr_vector<b_shader> g_shader_render;

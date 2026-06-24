@@ -29,44 +29,6 @@ inline float getEnergy(const b_texture& T, Fvector2* TC, float hit_u, float hit_
  	u32 pixel_a = color_get_A( ((u32*)*T.pSurface)[V * T.dwWidth + U] );
 	return 1.f - (float(pixel_a) / 255.f);
 }
- 
-
-// --- OPCODE ---s
-IC float rayTrace(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R)
-{
-	auto Energy = [DB]() -> float
-	{
-		float scale = 1.f;
-		for (u32 I = 0; I < DB->r_count(); I++)
-		{
-			CDB::RESULT& RP = DB->r_begin()[I];
-			FaceDataEmbree& F = (*(FaceDataEmbree*)(CAIRayTrace.static_geom.dummy[RP.id]));
-
-			b_material& M = comp_data.g_materials[F.dwMaterial];
-			Shader_xrLCVec& LIB = comp_data.g_shaders_xrlc->Library();
-			if (M.shader_xrlc >= LIB.size())
-			{
-				return 0;
-			}
-
-			b_texture& T = comp_data.g_textures[M.surfidx];
-			if (T.pSurface.Empty())
-			{
-				T.bHasAlpha = false;
-				return 0;
-			}
-			scale *= getEnergy(T, F.getTC0(), RP.u, RP.v);
-		}
-
-		return scale;
-	};
-
-	// 1. Polygon doesn't pick - real database query
-	DB->ray_query(comp_data.LevelPtr.get(), P, D, R);
-
-	// 2. Analyze polygons
-	return DB->r_count() == 0 ? 1 : Energy();
-}
 
 // --- EMBREE ---
 void FilterRayTraceAI(const struct RTCFilterFunctionNArguments* args)
@@ -130,15 +92,7 @@ static void compute_cover_value(CDB::COLLIDER& DB, CoverBuilder::Query& Q, u32 c
 		// raytrace
 		int			sector = CoverBuilder::calcSphereSector(Dir);
 		c_total[sector] += 1.f;
-
-		if (gCompilerMode.Embree)
-		{
-			c_passed[sector] += CAIRayTrace.Raytrace(TestPos, Dir, range, FilterRayTraceAI); //
-		}
-		else
-		{
-			c_passed[sector] += rayTrace(&DB, TestPos, Dir, range);							 //
-		} 
+		c_passed[sector] += CAIRayTrace.Raytrace(TestPos, Dir, range, FilterRayTraceAI); //
  	}
 	Q.Clear();
 
