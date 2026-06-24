@@ -389,3 +389,12 @@ function numpad:OnGamepadKeyHold(key)  --virtual function
 
 	return CUIScriptWnd.OnGamepadKeyHold(self, key)
 end
+
+function numpad:Update()
+	CUIScriptWnd.Update(self)
+	if self.controller_mode ~= main_menu.in_controller_mode() then
+		self.curBtn:SetHighlighted(main_menu.in_controller_mode())
+	end
+	
+	self.controller_mode = main_menu.in_controller_mode()
+end
