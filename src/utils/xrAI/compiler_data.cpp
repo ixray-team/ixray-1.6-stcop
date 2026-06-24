@@ -376,49 +376,20 @@ void IComputeData::xrLoadGeometry(IReader* fs)
 	xrCalculateOpacity();
 
 	// Изза сраного BOX-QUERY Для расщета t_n !
-	// Пока так константно !
-	if (true)
+	auto& CDATA = CAIRayTrace.static_geom;
+ 	CDATA.ClearAll();
+
+	for (u32 ID = 0; ID < build_faces.size(); ID++)
 	{
-		auto& CDATA = CAIRayTrace.static_geom;
- 		CDATA.ClearAll();
+		FaceDataEmbree& F = build_faces[ID];
+		CDATA.AddFaceRaw(&F, F.v1, F.v2, F.v3);
+	}
 
-		for (u32 ID = 0; ID < build_faces.size(); ID++)
-		{
-			FaceDataEmbree& F = build_faces[ID];
-			CDATA.AddFaceRaw(&F, F.v1, F.v2, F.v3);
-		}
-
-		CDATA.useMsg = true;
-		CDATA.RemoveDublicates();
+	CDATA.useMsg = true;
+	CDATA.RemoveDublicates();
  
- 		CAIRayTrace.Initialize();
-	}
-	else
-	{
-		TriangleContainer container;
- 		for (u32 ID = 0; ID < build_faces.size(); ID++)
-		{
-			FaceDataEmbree& F = build_faces[ID];
-			container.AddFaceRaw(&F, F.v1, F.v2, F.v3);
-		}
-
-		container.useMsg = true;
-		container.RemoveDublicates();
-
-		LevelPtr = xr_make_unique<CDB::MODEL>();
-
-		xr_vector<Fvector>& verts = LevelPtr->get_verts();
-		verts = container.vertex();
-
-		xr_vector<CDB::TRI>& triangles = LevelPtr->get_tris();
-		for (auto& F : container.faces())
-		{
-			triangles.push_back(F.Get());
-		}
-
-		Msg("RayQuery Box Model: Faces : %u | Vertex: %u", triangles.size(), verts.size());
-		LevelPtr->build(verts.data(), verts.size(), triangles.data(), triangles.size(), nullptr, nullptr, nullptr, false, false);
-	}
+ 	CAIRayTrace.Initialize();
+ 
 }
 
 
@@ -440,6 +411,5 @@ void IComputeData::xrUnload()
 	build_faces.clear();
 	build_faces.shrink_to_fit();
 
-	LevelPtr.reset();		    // Выгрузка !
-	CAIRayTrace.Deinitialize(); // Выгрузка !
+ 	CAIRayTrace.Deinitialize(); // Выгрузка !
 }
