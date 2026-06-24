@@ -8,7 +8,7 @@
 
 void Detach(vecFace* S)
 {
-  	map_v2v			verts;
+	map_v2v verts;
 	verts.clear();
 
 	// Collect vertices
@@ -18,11 +18,11 @@ void Detach(vecFace* S)
 		{
 			Vertex* V = (*F)->v[i];
 			Vertex* VNewCreate;
- 			map_v2v_it	W = verts.find(V);	// iterator
- 
+			map_v2v_it W = verts.find(V); // iterator
+
 			if (W == verts.end())
-			{	// where is no such-vertex
-				VNewCreate = V->CreateCopy_NOADJ(lc_global_data()->g_vertices());	// make copy
+			{																	  // where is no such-vertex
+				VNewCreate = V->CreateCopy_NOADJ(lc_global_data()->g_vertices()); // make copy
 				verts.insert(std::make_pair(V, VNewCreate));
 			}
 			else
@@ -30,61 +30,84 @@ void Detach(vecFace* S)
 				// such vertex(key) already exists - update its adjacency
 				VNewCreate = W->second;
 			}
-			
+
 			VNewCreate->prep_add(*F);
 			V->prep_remove(*F);
- 			(*F)->v[i] = VNewCreate;
+			(*F)->v[i] = VNewCreate;
 		}
 	}
 
 	// vertices are already registered in container
 	// so we doesn't need "vers" for this time
-	verts.clear(); 	
+	verts.clear();
 }
 
 bool sort_faces(Face* face, Face* face2)
 {
 	if (face->CalcArea() > face2->CalcArea())
+	{
 		return true;
+	}
 	return false;
 }
- 
+
 void CBuild::xrPhase_UVmap()
 {
-	CTimer PhaseTime;
-	PhaseTime.Start();
+	CTimer tState;
+	tState.Start();
 
- 	// Main loop
+	// Main loop
 	Status("Processing...");
 	lc_global_data()->g_deflectors().reserve(64 * 1024);
+	float p_cost = 1.f / float(g_XSplit.size());
+	float p_total = 0.f;
+	vecFace faces_affected;
 
- 	xr_vector<Face*> faces_affected;
-  	for (int SP = 0; SP < int(g_XSplit.size()); SP++)
+	//se7kills : НЕ ТРОГАТЬ !!! (Ломает сектора !)
+	int StartPoint = g_XSplit.size();
+ 	for (int SP = 0; SP < int(StartPoint); SP++)
 	{
- 		// Detect vertex-lighting and avoid this subdivision
-		if (g_XSplit[SP]->empty())				continue;
+		Progress(p_total += p_cost);
+
+		// Detect vertex-lighting and avoid this subdivision
+		if (g_XSplit[SP]->empty())
+		{
+			continue;
+		}
+
 		Face* Fvl = g_XSplit[SP]->front();
-		if (Fvl->Shader().flags.bLIGHT_Vertex) 	continue;	// do-not touch (skip)
-		if (!Fvl->Shader().flags.bRendering) 	continue;	// do-not touch (skip)
-		if (Fvl->hasImplicitLighting())			continue;	// do-not touch (skip)
+		if (Fvl->Shader().flags.bLIGHT_Vertex)
+		{
+			continue; // do-not touch (skip)
+		}
+		if (!Fvl->Shader().flags.bRendering)
+		{
+			continue; // do-not touch (skip)
+		}
+		if (Fvl->hasImplicitLighting())
+		{
+			continue; // do-not touch (skip)
+		}
 
 		while (true)
 		{
 			// Сортировка списка в перед с больщими зонами.
 			std::sort(g_XSplit[SP]->begin(), g_XSplit[SP]->end(), sort_faces);
-			if (g_XSplit[SP] == nullptr) break;
+			if (g_XSplit[SP] == nullptr)
+			{
+				break;
+			}
 			// Select maximal sized poly
 			Face* msF = NULL;
 
 			for (auto FACE : *g_XSplit[SP])
 			{
- 				if (FACE && FACE->pDeflector == nullptr)
+				if (FACE && FACE->pDeflector == nullptr)
 				{
 					msF = FACE;
 
 					CDeflector* D = new CDeflector();
- 					lc_global_data()->g_deflectors().push_back(D);
-
+					lc_global_data()->g_deflectors().push_back(D);
 					// Start recursion from this face
 					start_unwarp_recursion();
 					D->OA_SetNormal(FACE->N);
@@ -102,12 +125,18 @@ void CBuild::xrPhase_UVmap()
 
 			if (!g_XSplit[SP]->empty())
 			{
-   				auto rIT = std::remove_if( g_XSplit[SP]->begin(), g_XSplit[SP]->end(),
+				// u32 CapacityOrig = g_XSplit[SP]->capacity();
+				auto rIT = std::remove_if(
+					g_XSplit[SP]->begin(),
+					g_XSplit[SP]->end(),
 					[&](Face* F)
 					{
 						if (F->pDeflector != nullptr)
- 							return true;    // Убираем из контейнера
-  						return false;
+						{
+							// xr_delete(F);   // Освобождаем память
+							return true; // Убираем из контейнера
+						}
+						return false;
 					}
 				);
 
@@ -121,14 +150,16 @@ void CBuild::xrPhase_UVmap()
 			// Cancel infine loop (while)
 			if (msF == nullptr)
 			{
- 				break;
+				break;
 			}
-		}		
+		}
+
+		AditionalData("SP[%u], xsp: %u", SP, g_XSplit.size());
 	}
- 
-  	clMsg("%d subdivisions...", g_XSplit.size());
- 
- 	// VALIDATION
+
+	clMsg("%d subdivisions...", g_XSplit.size());
+
+	// VALIDATION
 	for (auto SP = 0; SP < g_XSplit.size(); SP++)
 	{
 		if (g_XSplit[SP]->empty())
@@ -141,5 +172,5 @@ void CBuild::xrPhase_UVmap()
 
 	err_save();
 
-	clMsg("* UVMap Time: %u ms", PhaseTime.GetElapsed_ms());
+	clMsg("* UVMap Time: %u ms", tState.GetElapsed_ms());
 }
