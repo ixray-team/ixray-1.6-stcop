@@ -11,10 +11,10 @@
 		<mapping ascii="57352" texture_id="xbox1_controller_rsclick"/>
 		<mapping ascii="57353" texture_id="xbox1_controller_lb"/>
 		<mapping ascii="57354" texture_id="xbox1_controller_rb"/>
-		<mapping ascii="57355" texture_id="xbox1_controller_dpadl"/>
-		<mapping ascii="57356" texture_id="xbox1_controller_dpadr"/>
-		<mapping ascii="57357" texture_id="xbox1_controller_dpadu"/>
-		<mapping ascii="57358" texture_id="xbox1_controller_dpadd"/>
+		<mapping ascii="57355" texture_id="xbox1_controller_dpadu"/>
+		<mapping ascii="57356" texture_id="xbox1_controller_dpadd"/>
+		<mapping ascii="57357" texture_id="xbox1_controller_dpadl"/>
+		<mapping ascii="57358" texture_id="xbox1_controller_dpadr"/>
 		<mapping ascii="57359" texture_id="xbox1_controller_dpadh"/>
 		<mapping ascii="57360" texture_id="xbox1_controller_dpadv"/>
 		<mapping ascii="57361" texture_id="xbox1_controller_lsh"/>
@@ -47,10 +47,10 @@
 		<mapping ascii="57388" texture_id="ps4_controller_rsclick"/>
 		<mapping ascii="57389" texture_id="ps4_controller_lb"/>
 		<mapping ascii="57390" texture_id="ps4_controller_rb"/>
-		<mapping ascii="57391" texture_id="ps4_controller_dpadl"/>
-		<mapping ascii="57392" texture_id="ps4_controller_dpadr"/>
-		<mapping ascii="57393" texture_id="ps4_controller_dpadu"/>
-		<mapping ascii="57394" texture_id="ps4_controller_dpadd"/>
+		<mapping ascii="57391" texture_id="ps4_controller_dpadu"/>
+		<mapping ascii="57392" texture_id="ps4_controller_dpadd"/>
+		<mapping ascii="57393" texture_id="ps4_controller_dpadl"/>
+		<mapping ascii="57394" texture_id="ps4_controller_dpadr"/>
 		<mapping ascii="57395" texture_id="ps4_controller_dpadh"/>
 		<mapping ascii="57396" texture_id="ps4_controller_dpadv"/>
 		<mapping ascii="57397" texture_id="ps4_controller_lsh"/>
@@ -83,10 +83,10 @@
 		<mapping ascii="57424" texture_id="ps5_controller_rsclick"/>
 		<mapping ascii="57425" texture_id="ps5_controller_lb"/>
 		<mapping ascii="57426" texture_id="ps5_controller_rb"/>
-		<mapping ascii="57427" texture_id="ps5_controller_dpadl"/>
-		<mapping ascii="57428" texture_id="ps5_controller_dpadr"/>
-		<mapping ascii="57429" texture_id="ps5_controller_dpadu"/>
-		<mapping ascii="57430" texture_id="ps5_controller_dpadd"/>
+		<mapping ascii="57427" texture_id="ps5_controller_dpadu"/>
+		<mapping ascii="57428" texture_id="ps5_controller_dpadd"/>
+		<mapping ascii="57429" texture_id="ps5_controller_dpadl"/>
+		<mapping ascii="57430" texture_id="ps5_controller_dpadr"/>
 		<mapping ascii="57431" texture_id="ps5_controller_dpadh"/>
 		<mapping ascii="57432" texture_id="ps5_controller_dpadv"/>
 		<mapping ascii="57433" texture_id="ps5_controller_lsh"/>
@@ -119,10 +119,10 @@
 		<mapping ascii="57460" texture_id="switch_controller_rsclick"/>
 		<mapping ascii="57461" texture_id="switch_controller_lb"/>
 		<mapping ascii="57462" texture_id="switch_controller_rb"/>
-		<mapping ascii="57463" texture_id="switch_controller_dpadl"/>
-		<mapping ascii="57464" texture_id="switch_controller_dpadr"/>
-		<mapping ascii="57465" texture_id="switch_controller_dpadu"/>
-		<mapping ascii="57466" texture_id="switch_controller_dpadd"/>
+		<mapping ascii="57463" texture_id="switch_controller_dpadu"/>
+		<mapping ascii="57464" texture_id="switch_controller_dpadd"/>
+		<mapping ascii="57465" texture_id="switch_controller_dpadl"/>
+		<mapping ascii="57466" texture_id="switch_controller_dpadr"/>
 		<mapping ascii="57467" texture_id="switch_controller_dpadh"/>
 		<mapping ascii="57468" texture_id="switch_controller_dpadv"/>
 		<mapping ascii="57469" texture_id="switch_controller_lsh"/>
