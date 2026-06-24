@@ -46,6 +46,7 @@ struct LevelInspector final
 		EOI_INI				= bit_lshift(6U),
 		EOI_SCRIPT			= bit_lshift(7U),
 		EOI_ACTOR			= bit_lshift(8U),
+		EOI_INVENTORY		= bit_lshift(9U),
 	};
 
 	enum ESKELETON_INFO
