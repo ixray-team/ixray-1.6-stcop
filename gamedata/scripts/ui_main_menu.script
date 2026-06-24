@@ -322,7 +322,9 @@ function main_menu:OnButton_multiplayer_clicked()
 end
 
 function main_menu:Dispatch(cmd, param)  --virtual function
-	if cmd == 2 then
+	if cmd == 1 then -- new
+		self:ReloadGamepadLegend()
+	elseif cmd == 2 then
 		self:OnButton_multiplayer_clicked()
 	end
 	return true
@@ -383,4 +385,22 @@ end
 function main_menu:OnMenuReloaded()
 	self:OnButton_options_clicked()
 	self.opt_dlg:OnMenuReloaded()
+end
+
+function main_menu:ReloadGamepadLegend()
+	if self.gamepad_legend then
+		self.gamepad_legend:ReloadLegend()
+	end
+	if self.save_dlg then
+		self.save_dlg.gamepad_legend:ReloadLegend()
+	end
+	if self.load_dlg then
+		self.load_dlg.gamepad_legend:ReloadLegend()
+	end
+	if self.opt_dlg then
+		self.opt_dlg.gamepad_legend:ReloadLegend()
+		if self.opt_dlg.dlg_controller_layout then
+			self.opt_dlg.dlg_controller_layout:ReloadGamepadTextures()
+		end
+	end
 end

@@ -878,3 +878,8 @@ demo_info const * CMainMenu::GetDemoInfo(const char* file_name)
 	}
 	return m_demo_info_loader->get_demofile_info(file_name);
 }
+
+void CMainMenu::ReloadLegend()
+{
+	m_startDialog->Dispatch(1, 1);
+};
