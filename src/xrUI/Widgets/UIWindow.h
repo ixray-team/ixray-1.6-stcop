@@ -165,6 +165,18 @@ public:
 	void					SetWindowName		(const char* wn)					{ m_windowName = wn; }
 	const char*					WindowName_script	()							{return m_windowName.c_str();}
 	CUIWindow*				FindChild			(const shared_str name);
+	template <typename T>
+	T* FindChild_script(const char* name)
+	{
+		shared_str n = name;
+		CUIWindow* pWnd = FindChild(n);
+		if (pWnd == nullptr)
+		{
+			return nullptr;
+		}
+
+		return smart_cast<T*>(pWnd);
+	}
 	// Name of the window by node from XML
 	const shared_str		WindowNodeName		() const					{ return m_windowNodeName; }
 	void					SetWindowNodeName	(const char* wn)					{ m_windowNodeName = wn; }
