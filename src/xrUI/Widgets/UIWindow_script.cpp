@@ -192,7 +192,9 @@ void CUIWindow::script_register(lua_State *L)
 		.def("SetPPMode",				&CUIWindow::SetPPMode)
 		.def("ResetPPMode",				&CUIWindow::ResetPPMode)
 		.def("GetParent",				&CUIWindow::GetParent)
-	];
+		.def("FindWindow",				&CUIWindow::FindChild_script<CUIWindow>)
+		.def("FindStatic",				&CUIWindow::FindChild_script<CUIStatic>)
+];
 
 	module(L)
 	[
@@ -228,7 +230,8 @@ void CUIWindow::script_register(lua_State *L)
 		.def("IsAlignRight",			&CUIStackPanel::IsAlignRight),
 
 		class_<CUIGamepadLegend, CUIWindow>("CUIGamepadLegend")
-		.def(							constructor<>()),
+		.def(							constructor<>())
+		.def("ReloadLegend",			&CUIGamepadLegend::ReloadLegend),
 
 		class_<UIHint, CUIWindow>("UIHint")
 		.def(							constructor<>())

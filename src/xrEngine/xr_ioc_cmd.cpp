@@ -638,6 +638,7 @@ public:
 
 		inherited::Execute		(args);
 		pInput->SelectGamepadPrefix();
+		g_pStringTable->ReparseKeyBindings();
 	}
 
 	virtual void	Save	(IWriter *F)	

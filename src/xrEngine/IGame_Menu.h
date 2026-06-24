@@ -14,4 +14,6 @@ public:
 	virtual void UnregisterPPDraw(CUIWindow*) = 0;
 
 	virtual class CDialogHolder* GetDialogHolder() = 0;
+	
+	virtual void ReloadLegend() = 0;
 };
