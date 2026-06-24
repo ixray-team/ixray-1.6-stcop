@@ -376,7 +376,8 @@ void IComputeData::xrLoadGeometry(IReader* fs)
 	xrCalculateOpacity();
 
 	// Изза сраного BOX-QUERY Для расщета t_n !
-	if (gCompilerMode.Embree)
+	// Пока так константно !
+	if (true)
 	{
 		auto& CDATA = CAIRayTrace.static_geom;
  		CDATA.ClearAll();
