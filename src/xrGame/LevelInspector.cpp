@@ -704,6 +704,7 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 						ImGui::CheckboxFlags("Actor", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_ACTOR);
 						ImGui::CheckboxFlags("GVertexID & LVertexID", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_GVERTEX_LVERTEX);
 						ImGui::CheckboxFlags("Custom Data", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_INI);
+						ImGui::CheckboxFlags("Inventory", &m_selection_text_flags.flags, EOBJECT_INFO::EOI_INVENTORY);
 					}
 					ImGui::EndChild();
 
@@ -3123,6 +3124,47 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 				if (!visible_currents)
 				{
 					selected_info_str += str;
+					selected_info_str += '\n';
+					selected_info_height++;
+				}
+			}
+		}
+	}
+	
+	if (m_selection_text_flags.test(EOBJECT_INFO::EOI_INVENTORY))
+	{
+		if (CInventoryOwner* owner = GO->cast_inventory_owner())
+		{
+			dbg_font->SetColor(color_green);
+			shared_str str = "Inventory:";
+			if (text3d)
+			{
+				append_text_next(str.c_str());
+			}
+			else
+			{
+				text3d = append_text3d(pos, str.c_str(), color_green, CGameFont::alLeft);
+			}
+			if (!visible_currents)
+			{
+				selected_info_str += *str;
+				selected_info_str += '\n';
+				selected_info_height++;
+			}
+			for(PIItem itm : owner->inventory().m_all)
+			{
+				str.printf("%s : ID %d", itm->NameItem(), itm->object_id());
+				if (text3d)
+				{
+					append_text_next(str.c_str());
+				}
+				else
+				{
+					text3d = append_text3d(pos, str.c_str(), color_green, CGameFont::alLeft);
+				}
+				if (!visible_currents)
+				{
+					selected_info_str += *str;
 					selected_info_str += '\n';
 					selected_info_height++;
 				}
