@@ -4,6 +4,8 @@
 #include "../xrCore/FormatParsers/XML/xrXMLParser.h"
 #include "XR_IOConsole.h"
 #include "IGame_UICustom.h"
+#include "IGame_Menu.h"
+#include "IGame_Persistent.h"
 
 ENGINE_API CStringTable* g_pStringTable = nullptr;
 
@@ -258,7 +260,13 @@ void CStringTable::ReparseKeyBindings()
 		pData->m_StringTable[key.first] = ParseLine(*key.second, *key.first, false);
 	}
 	if (g_pGameCustom)
+	{
 		g_pGameCustom->ReloadGamepadLegends();
+	}
+	if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
+	{
+		g_pGamePersistent->m_pMainMenu->ReloadLegend();
+	}
 }
 
 void CStringTable::ReloadLanguage(const char* lang)

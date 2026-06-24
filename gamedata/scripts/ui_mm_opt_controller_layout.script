@@ -97,6 +97,40 @@ function opt_controller_layout:InitControls()
 	self.xml = xml
 end
 
+function opt_controller_layout:ReloadGamepadTextures()
+	self.gamepad_legend:ReloadLegend()
+	
+	local prefix = ui.gamepad_prefix()
+
+	platform = "xbox_layout"
+	if prefix == "ps4" then
+        platform = "ps_layout"
+	elseif prefix == "ps5" then
+        platform = "ps5_layout"
+	elseif prefix == "switch" then
+        platform = "nx64_layout"
+	end
+	
+	local texName = self.xml:ReadValue(platform..":background_controller:texture", 0)
+	self.bg:InitTexture(texName)
+	
+	for k,v in pairs(ui_mm_opt_controller_layout_captions.captions[1][1][1]) do
+		texName = self.xml:ReadValue(platform..":left_cap:"..k..":auto_static:texture", 0)
+		local static = self.capElements[k]:FindStatic("auto_static_0")
+		if static then
+			static:InitTexture(texName)
+		end
+	end
+	
+	for k,v in pairs(ui_mm_opt_controller_layout_captions.captions[1][1][2]) do
+		texName = self.xml:ReadValue(platform..":right_cap:"..k..":auto_static:texture", 0)
+		local static = self.capElements[k]:FindStatic("auto_static_0")
+		if static then
+			static:InitTexture(texName)
+		end
+	end
+	
+end
 
 function opt_controller_layout:Reset()
 	local element = self.focusList[1][2]
@@ -288,15 +322,7 @@ function opt_controller_layout:OnElementGpadPress(element, right)
 end
 
 function opt_controller_layout:OnAccept()
-	local opt = COptionsManager()
-	local console = get_console()
-	
-	opt:SaveValues("mm_opt_controls")  
 --	self.sndAccept:play(nil, 0.0, sound_object.s2d)
-	
-	opt:OptionsPostAccept()
-	console:execute("cfg_save")	
-
 	self.owner:OnBtnExitGamepadLayout()
 end
 
