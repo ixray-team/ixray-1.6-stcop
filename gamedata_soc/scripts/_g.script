@@ -773,74 +773,36 @@ function parse_nums( s )
 	return t
 end
 
--- Їа®ўҐапҐв, Ґбвм «Ё ®ЎкҐЄв ў ®­« ©­Ґ
+-- Находится ли обьект в онлайне.
 function is_object_online(obj_id)
 	return level.object_by_id(obj_id) ~= nil
 end
 
 function get_clsid(npc)
     if npc == nil then return nil end
-
 	return npc:clsid()
-
---    if is_object_online(npc:id()) then
---      return npc:clsid()
---    else
---        return nil
---    end
 end
 
--- Їа®ўҐапҐв ®аг¦ЁҐ «Ё нв® (ЇҐаҐ¤ ў вм game_object)
-function isWeapon(object)
-    local id = get_clsid(object)
-    if id == nil then return false end
-
-    if id == clsid.wpn_vintorez_s then return true
-    elseif id == clsid.wpn_ak74_s then return true
-    elseif id == clsid.wpn_lr300_s then return true
-    elseif id == clsid.wpn_hpsa_s then return true
-    elseif id == clsid.wpn_pm_s then return true
-    elseif id == clsid.wpn_shotgun_s then return true
-    elseif id == clsid.wpn_bm16_s then return true
-    elseif id == clsid.wpn_svd_s then return true
-    elseif id == clsid.wpn_svu_s then return true
-    elseif id == clsid.wpn_rpg7_s then return true
-    elseif id == clsid.wpn_val_s then return true
-    elseif id == clsid.wpn_walther_s then return true
-    elseif id == clsid.wpn_usp45_s then return true
-    elseif id == clsid.wpn_groza_s then return true
-    elseif id == clsid.wpn_knife_s then return true
-    elseif id == clsid.wpn_grenade_launcher then return true
-    elseif id == clsid.wpn_grenade_f1 then return true
-    elseif id == clsid.wpn_grenade_rpg7 then return true
-    elseif id == clsid.wpn_grenade_rgd5 then return true
-    elseif id == clsid.wpn_grenade_fake then return true
-    else return false end
-end
-
---Tvчисляет yaw в радианах
+--Вычисляет yaw в радианах
 function yaw( v1, v2 )
-    return  math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) )
+	return  math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) )
 end
-
 function yaw_degree( v1, v2 )
-    return  (math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) ) * 57.2957)
+	return  (math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) ) * 57.2957)
 end
 function yaw_degree3d( v1, v2 )
-    return  (math.acos((v1.x*v2.x + v1.y*v2.y + v1.z*v2.z)/(math.sqrt(v1.x*v1.x + v1.y*v1.y + v1.z*v1.z )*math.sqrt(v2.x*v2.x + v2.y*v2.y + v2.z*v2.z)))*57.2957)
+	return  (math.acos((v1.x*v2.x + v1.y*v2.y + v1.z*v2.z)/(math.sqrt(v1.x*v1.x + v1.y*v1.y + v1.z*v1.z )*math.sqrt(v2.x*v2.x + v2.y*v2.y + v2.z*v2.z)))*57.2957)
+end
+function vector_cross(v1, v2)
+	return vector():set(v1.y  * v2.z  - v1.z  * v2.y, v1.z  * v2.x  - v1.x  * v2.z, v1.x  * v2.y  - v1.y  * v2.x)
 end
 
-function vector_cross (v1, v2)
-    return vector ():set (v1.y  * v2.z  - v1.z  * v2.y, v1.z  * v2.x  - v1.x  * v2.z, v1.x  * v2.y  - v1.y  * v2.x)
-end
-
---Вращает вектор вокруг оси y против часовой стрелки
-
-function vector_rotate_y (v, angle)
-    angle = angle * 0.017453292519943295769236907684886
-    local c = math.cos (angle)
-    local s = math.sin (angle)
-    return vector ():set (v.x * c - v.z * s, v.y, v.x * s + v.z * c)
+--Поворачивает вектор вокруг оси y против часовой стрелки.
+function vector_rotate_y(v, angle)
+	angle = angle * 0.017453292519943295769236907684886
+	local c = math.cos (angle)
+	local s = math.sin (angle)
+	return vector ():set (v.x * c - v.z * s, v.y, v.x * s + v.z * c)
 end
 
 -- очистка таблицы
@@ -1112,37 +1074,31 @@ function get_actor_id()
 	return level.actor():id()
 end
 -------------------------------------------------------------------------------------------
+local monster_classes = {}
+local stalker_classes = {}
+local weapon_classes = {}
+local artefact_classes = {}
+
 function IsMonster (object, class_id)
-    local id = class_id or get_clsid (object)
-    if id == clsid.boar_s or
-       id == clsid.bloodsucker_s or
-       id == clsid.dog_s or
-       id == clsid.flesh_s or
-       id == clsid.pseudodog_s or
-       id == clsid.psy_dog_s or
-       id == clsid.burer_s or
-       id == clsid.cat_s or
-       id == clsid.chimera_s or
-       id == clsid.controller_s or
-       id == clsid.fracture_s or
-       id == clsid.poltergeist_s or
-       id == clsid.gigant_s or
-       id == clsid.zombie_s or
-       id == clsid.tushkano_s or
-       id == clsid.snork_s
-    then
-	    return true
-	end
-    return false
+		local id = class_id or get_clsid(object)
+		return monster_classes[id] == true
 end
--------------------------------------------------------------------------------------------
 function IsStalker (object, class_id)
-    local id = class_id or get_clsid (object)
-    if id == clsid.actor or id == clsid.script_stalker then
-       return true
-    end
-    return false
+		local id = class_id or get_clsid(object)
+		return stalker_classes[id] == true
 end
+
+function isWeapon(object, class_id)
+	local id = class_id or get_clsid(object)
+	return weapon_classes[id] == true
+end
+
+function isArtefact(object, class_id)
+		local id = class_id or get_clsid(object)
+	return artefact_classes[id] == true
+end
+
+
 -------------------------------------------------------------------------------------------
 function level_object_by_sid( sid )
 	local sim = alife()
@@ -1287,6 +1243,73 @@ function get_texture_info(id_name, id_default)
 end
 
 function start_game_callback()
+
+
+
+
+	monster_classes = {
+		[clsid.bloodsucker_s] 			= true,
+		[clsid.boar_s] 					= true,
+		[clsid.dog_s] 					= true,
+		[clsid.flesh_s] 				= true,
+		[clsid.pseudodog_s] 			= true,
+		[clsid.burer_s] 				= true,
+--		[clsid.cat_s] 					= true,
+		[clsid.chimera_s] 				= true,
+		[clsid.controller_s] 			= true,
+--		[clsid.fracture_s] 				= true,
+		[clsid.poltergeist_s] 			= true,
+		[clsid.gigant_s] 				= true,
+--		[clsid.zombie_s] 				= true,
+		[clsid.snork_s] 				= true,
+		[clsid.tushkano_s] 				= true,
+		[clsid.psy_dog_s] 				= true,
+		[clsid.psy_dog_phantom_s] 		= true}
+
+	stalker_classes = {
+		[clsid.script_actor] 			= true,
+		[clsid.script_stalker] 			= true}
+
+	weapon_classes = {
+		[clsid.wpn_vintorez_s] 			= true,
+		[clsid.wpn_ak74_s] 				= true,
+		[clsid.wpn_lr300_s] 			= true,
+		[clsid.wpn_hpsa_s] 				= true,
+		[clsid.wpn_pm_s] 				= true,
+		[clsid.wpn_shotgun_s] 			= true,
+--		[clsid.wpn_auto_shotgun_s]		= true,
+		[clsid.wpn_bm16_s] 				= true,
+		[clsid.wpn_svd_s] 				= true,
+		[clsid.wpn_svu_s] 				= true,
+		[clsid.wpn_rg6_s] 				= true,
+		[clsid.wpn_rpg7_s] 				= true,
+		[clsid.wpn_val_s] 				= true,
+		[clsid.wpn_walther_s] 			= true,
+		[clsid.wpn_usp45_s] 			= true,
+		[clsid.wpn_groza_s] 			= true,
+		[clsid.wpn_knife_s] 			= true,
+		[clsid.wpn_grenade_f1] 			= true,
+		[clsid.wpn_grenade_rgd5] 		= true,
+		[clsid.wpn_grenade_launcher] 	= true,
+		[clsid.wpn_grenade_fake] 		= true}
+
+	artefact_classes = {
+		[clsid.art_bast_artefact] 		= true,
+		[clsid.art_black_drops] 		= true,
+		[clsid.art_dummy] 				= true,
+		[clsid.art_electric_ball] 		= true,
+		[clsid.art_faded_ball] 			= true,
+		[clsid.art_galantine] 			= true,
+		[clsid.art_gravi] 				= true,
+		[clsid.art_gravi_black] 		= true,
+		[clsid.art_mercury_ball] 		= true,
+		[clsid.art_needles] 			= true,
+		[clsid.art_rusty_hair] 			= true,
+		[clsid.art_thorn] 				= true,
+		[clsid.art_zuda] 				= true,
+		[clsid.artefact] 				= true,
+		[clsid.artefact_s] 				= true}
+
 	printf	("start_game_callback called")
 	task_manager.clear_task_manager()
 	treasure_manager.clear_treasure_manager()
