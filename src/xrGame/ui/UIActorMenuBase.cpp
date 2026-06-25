@@ -377,9 +377,14 @@ CUIDragDropListEx* CUIActorMenuBase::GetListByType(EDDListType t)
 
 void CUIActorMenuBase::ColorizeItem(CUICellItem* itm, bool colorize)
 {
+	PIItem iitm = (PIItem)itm->m_pData;
 	if( colorize )
 	{
 		itm->SetTextureColor( color_rgba(255,100,100,255) );
+	}
+	else if (iitm && !m_pInvList[iitm->CurrSlot()] && iitm->m_pInventory && iitm->m_pInventory->ItemFromSlot(iitm->BaseSlot()) == iitm)
+	{
+		itm->SetTextureColor( color_rgba(180,255,180,255) );
 	}
 	else
 	{
@@ -531,7 +536,7 @@ void CUIActorMenuBase::UpdateConditionProgressBars()
 			if (!item)
 				continue;
 
-			if ((item->m_highlight_equipped || ForceHighlightForSlots()) && item->m_pInventory && item->m_pInventory->ItemFromSlot(item->BaseSlot()) == item)
+			if (item->m_highlight_equipped && item->m_pInventory && item->m_pInventory->ItemFromSlot(item->BaseSlot()) == item)
 				ci->m_select_equipped = true;
 			else
 				ci->m_select_equipped = false;
@@ -711,8 +716,10 @@ void CUIActorMenuBase::InitInventoryContents(CUIDragDropListEx* pBagList)
 		{
 			CUICellItem* itm = create_cell_item(*itb);
 			curr_list->SetItem(itm);
-			if (m_currMenuMode == mmTrade && GetPartner())
-				ColorizeItem(itm, !CanMoveToPartner(*itb));
+			if (GetPartner() || GetInvBox())
+			{
+				ColorizeItem(itm, m_currMenuMode == mmTrade ? !CanMoveToPartner(*itb) : false);
+			}
 		}
 	}
 
@@ -737,8 +744,10 @@ void CUIActorMenuBase::InitInventoryContents(CUIDragDropListEx* pBagList)
 
 		CUICellItem* itm = create_cell_item( *itb );
 		curr_list->SetItem(itm);
-		if ( m_currMenuMode == mmTrade && GetInventoryOwner() )
-			ColorizeItem( itm, !CanMoveToPartner( *itb ) );
+		if (GetPartner() || GetInvBox())
+		{
+			ColorizeItem(itm, m_currMenuMode == mmTrade ? !CanMoveToPartner(*itb) : false);
+		}
 	}
 
 	if (m_pQuickSlot)
@@ -762,8 +771,10 @@ void CUIActorMenuBase::InitCellForSlot( u16 slot_idx )
 	CUIDragDropListEx* curr_list	= GetSlotList( slot_idx );
 	CUICellItem* cell_item			= create_cell_item( item );
 	curr_list->SetItem( cell_item );
-	if ( m_currMenuMode == mmTrade && GetPartner() )
-		ColorizeItem( cell_item, !CanMoveToPartner( item ) );
+	if (GetPartner() || GetInvBox())
+	{
+		ColorizeItem(cell_item, m_currMenuMode == mmTrade ? !CanMoveToPartner(item) : false);
+	}
 }
 
 EInventorySortCategory CUIActorMenuBase::GetPlayerSortCategory() const
