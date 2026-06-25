@@ -199,7 +199,6 @@ protected:
 
 	EInventorySortCategory		GetPlayerSortCategory		() const;
 	virtual bool				ShouldPutArtefactsToBag		() { return false; }
-	virtual bool				ForceHighlightForSlots		() { return false; }
 
 	void						OnPressUserKey				();
 
