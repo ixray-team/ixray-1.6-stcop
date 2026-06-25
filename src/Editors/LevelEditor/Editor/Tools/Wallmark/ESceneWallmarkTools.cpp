@@ -142,26 +142,43 @@ void ESceneWallmarkTool::Clear(bool bOnlyNodes)
 	}
 }
 
-bool ESceneWallmarkTool::Valid		(){return !marks.empty();}
-bool ESceneWallmarkTool::IsNeedSave(){return marks.size();}
-void ESceneWallmarkTool::OnFrame	()
+bool ESceneWallmarkTool::Valid()
 {
-	bool HasRemoved = false;
-	for (auto elem : marks)
+	return !marks.empty();
+}
+
+bool ESceneWallmarkTool::IsNeedSave()
+{
+	return marks.size();
+}
+
+void ESceneWallmarkTool::OnFrame()
+{
+	if (!IsLoaded)
 	{
-		for (WMVecIt m_it=elem->items.begin(); m_it!=elem->items.end(); )
+		return;
+	}
+
+	bool HasRemoved = false;
+	for (wm_slot* Elem : marks)
+	{
+		for (WMVecIt m_it = Elem->items.begin(); m_it != Elem->items.end();)
 		{
-			if ((*m_it)->flags.is(wallmark::flRemoved)){
-				(*m_it)->flags.set(wallmark::flRemoved,false);
-				wm_destroy	(*m_it);
-				*m_it		= elem->items.back();
-				elem->items.pop_back();
+			if ((*m_it)->flags.is(wallmark::flRemoved))
+			{
+				(*m_it)->flags.set(wallmark::flRemoved, false);
+				wm_destroy(*m_it);
+				*m_it = Elem->items.back();
+				Elem->items.pop_back();
 				HasRemoved = true;
-			}else{
+			}
+			else
+			{
 				m_it++;
 			}
 		}
 	}
+
 	if (HasRemoved)
 	{
 		UI->RedrawScene();

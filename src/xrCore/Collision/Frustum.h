@@ -27,7 +27,8 @@ enum : u32
 	FRUSTUM_P_DUMMY = u32(-1)
 };
 
-using sPoly = svector<Fvector, FRUSTUM_SAFE>;
+constexpr size_t PolyArraySize = FRUSTUM_SAFE* 4;
+using sPoly = svector<Fvector, PolyArraySize>;
 
 enum : u8
 {
