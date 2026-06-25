@@ -329,7 +329,7 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 		dest->clear();
 
 		// classify all points relative to plane #i
-		float cls[FRUSTUM_SAFE];
+		float cls[PolyArraySize] = {};
 		for (u32 j = 0; j < src->size(); j++)
 		{
 			cls[j] = P.classify((*src)[j]);
