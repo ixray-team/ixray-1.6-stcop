@@ -297,7 +297,8 @@ bool CDialogHolder::IR_UIOnKeyboardPress(int dik)
 			if (IR)
 			{
 				EGameActions action = get_binded_action(dik);
-				if (action != kQUICK_USE_1 && action != kQUICK_USE_2 && action != kQUICK_USE_3 && action != kQUICK_USE_4)
+				if (action != kQUICK_USE_1 && action != kQUICK_USE_2 && action != kQUICK_USE_3 && action != kQUICK_USE_4
+					&& action != kUP && action != kDOWN && action != kLEFT && action != kRIGHT && action != kUSE_MEDKIT && action != kUSE_BANDAGE)
 					IR->IR_OnKeyboardPress(dik);
 			}
 			return false;
