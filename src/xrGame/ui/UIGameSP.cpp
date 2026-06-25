@@ -177,8 +177,15 @@ void CUIGameSP::OnAction(CActor* actor, EGameActions action)
 	{
 		if (!actor->pda_disabled())
 		{
-			PdaMenu()->SetActiveSubdialog("eptMap");
-			ShowPdaMenu();
+			if (!PdaMenu()->IsShown())
+			{
+				PdaMenu()->SetActiveSubdialog("eptMap");
+				ShowPdaMenu();
+			}
+			else
+			{
+				HidePdaMenu();
+			}
 		}
 		break;
 	}
@@ -187,8 +194,15 @@ void CUIGameSP::OnAction(CActor* actor, EGameActions action)
 	{
 		if (!actor->pda_disabled())
 		{
-			PdaMenu()->SetActiveSubdialog("eptContacts");
-			ShowPdaMenu();
+			if (!PdaMenu()->IsShown())
+			{
+				PdaMenu()->SetActiveSubdialog("eptContacts");
+				ShowPdaMenu();
+			}
+			else
+			{
+				HidePdaMenu();
+			}
 		}
 		break;
 	}
