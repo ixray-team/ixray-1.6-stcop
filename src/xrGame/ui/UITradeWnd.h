@@ -80,8 +80,6 @@ protected:
 	enum EListType{eNone,e1st,e2nd,eBoth};
 	void				UpdateLists					(EListType);
 
-	void				FillList					(TIItemContainer& cont, CUIDragDropListEx& list, bool do_colorize);
-
 	bool				m_bDealControlsVisible;
 
 	//указатели игрока и того с кем торгуем
@@ -98,7 +96,6 @@ protected:
 	TIItemContainer		ruck_list;
 
 	virtual void		SetCurrentItem				(CUICellItem* itm);
-	virtual bool		ForceHighlightForSlots		() { return true; }
 	virtual void		TradeShowMessage			(int money_actor, int money_patner);
 
 public:
