@@ -498,10 +498,12 @@ void CExportSkeleton::SSplit::MakeStripify()
 
 	if (!NeedSkip)
 	{
+		xr_vector<u16> indicesCopy = indices;
 		xr_vector<u32> faceRemap(m_Faces.size());
+
 		HRESULT rhr = DirectX::OptimizeFaces
 		(
-			indices.data(),
+			indicesCopy.data(),
 			m_Faces.size(),
 			adjacency.data(),
 			faceRemap.data()
@@ -514,6 +516,8 @@ void CExportSkeleton::SSplit::MakeStripify()
 			{
 				m_Faces[it] = _source[faceRemap[it]];
 			}
+
+			indices = indicesCopy;
 		}
 		else
 		{
@@ -534,19 +538,39 @@ void CExportSkeleton::SSplit::MakeStripify()
 
 		if (SUCCEEDED(rhr))
 		{
-			SkelVertVec _source = m_Verts;
+			SkelVertVec newVerts;
+			newVerts.reserve(m_Verts.size());
 
-			for (size_t vit = 0; vit < _source.size(); ++vit)
+			xr_vector<u32> newIndex(m_Verts.size(), UINT_MAX);
+
+			for (size_t vit = 0; vit < m_Verts.size(); ++vit)
 			{
-				m_Verts[vertexRemap[vit]] = _source[vit];
+				if (vertexRemap[vit] != UINT_MAX)
+				{
+					newIndex[vit] = (u32)newVerts.size();
+					newVerts.push_back(m_Verts[vit]);
+				}
 			}
 
 			for (size_t i = 0; i < m_Faces.size(); ++i)
 			{
-				m_Faces[i].v[0] = (WORD)(vertexRemap[indices[i * 3 + 0]]);
-				m_Faces[i].v[1] = (WORD)(vertexRemap[indices[i * 3 + 1]]);
-				m_Faces[i].v[2] = (WORD)(vertexRemap[indices[i * 3 + 2]]);
+				for (int j = 0; j < 3; ++j)
+				{
+					u32 oldIdx = indices[i * 3 + j];
+					u32 newIdx = newIndex[oldIdx];
+
+					if (newIdx != UINT_MAX)
+					{
+						m_Faces[i].v[j] = (WORD)newIdx;
+					}
+					else
+					{
+						m_Faces[i].v[j] = 0;
+					}
+				}
 			}
+
+			m_Verts.swap(newVerts);
 		}
 	}
 }
