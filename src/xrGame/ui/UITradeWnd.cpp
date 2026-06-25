@@ -370,20 +370,6 @@ void CUITradeWnd::UpdateLists(EListType mode)
 	UpdateConditionProgressBars			();
 }
 
-void CUITradeWnd::FillList	(TIItemContainer& cont, CUIDragDropListEx& dragDropList, bool do_colorize)
-{
-	TIItemContainer::iterator it	= cont.begin();
-	TIItemContainer::iterator it_e	= cont.end();
-
-	for(; it != it_e; ++it) 
-	{
-		CUICellItem* itm			= create_cell_item	(*it);
-		if(do_colorize)				ColorizeItem		(itm, CanMoveToPartner(*it));
-		dragDropList.SetItem		(itm);
-	}
-
-}
-
 void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 {
 	if(m_pCurrentCellItem == itm) return;
