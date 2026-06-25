@@ -226,6 +226,11 @@ void CUIActorMenuBase::OnInventoryAction(PIItem pItem, u16 action_type)
 					{
 						CUICellItem* itm	= create_cell_item(pItem);
 						lst_to_add->SetItem	(itm);
+						if (GetPartner() || GetInvBox())
+						{
+							ColorizeItem(itm, m_currMenuMode == mmTrade ? !CanMoveToPartner(pItem) : false);
+						}
+
 					}
 				}
 				if(GetInventoryOwner() && m_pQuickSlot)
@@ -747,6 +752,11 @@ bool CUIActorMenuBase::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 
 		SendEvent_Item2Slot					(iitem, GetInventoryOwner()->object_id(), slot_id);
 
+		if (GetPartner() || GetInvBox())
+		{
+			ColorizeItem(i, m_currMenuMode == mmTrade ? !CanMoveToPartner(iitem) : false);
+		}
+
 		SendEvent_ActivateSlot				(slot_id, GetInventoryOwner()->object_id());
 
 		if ( slot_id == OUTFIT_SLOT && ShouldPutArtefactsToBag() )
@@ -880,9 +890,9 @@ bool CUIActorMenuBase::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 		if(!b_already || !b_own_item)
 			SendEvent_Item2Ruck					(iitem, GetInventoryOwner()->object_id());
 
-		if ( m_currMenuMode == mmTrade && GetPartner() )
+		if (GetPartner() || GetInvBox())
 		{
-			ColorizeItem( itm, !CanMoveToPartner( iitem ) );
+			ColorizeItem(i, m_currMenuMode == mmTrade ? !CanMoveToPartner(iitem) : false);
 		}
 		return true;
 	}
@@ -1036,6 +1046,11 @@ void CUIActorMenuBase::TakeAllCurrentItem(u32 item_amount)
 		PIItem child_iitm = (PIItem)child_itm->m_pData;
 		move_item_from_to(child_iitm->parent_id(), GetInventoryOwner()->object_id(), child_iitm->object_id());
 		GetActorList()->SetItem(child_itm);
+		if (GetPartner() || GetInvBox())
+		{
+			ColorizeItem(child_itm, m_currMenuMode == mmTrade ? !CanMoveToPartner(child_iitm) : false);
+		}
+
 	}
 
 	if (toTake > childCount)
@@ -1045,7 +1060,13 @@ void CUIActorMenuBase::TakeAllCurrentItem(u32 item_amount)
 		move_item_from_to(parent_iitm->parent_id(), GetInventoryOwner()->object_id(), parent_iitm->object_id());
 		parent_itm = deadBodyList->RemoveItem(parent_itm, true);
 		if (parent_itm)
+		{
 			GetActorList()->SetItem(parent_itm);
+			if (GetPartner() || GetInvBox())
+			{
+				ColorizeItem(parent_itm, m_currMenuMode == mmTrade ? !CanMoveToPartner(parent_iitm) : false);
+			}
+		}
 	}
 
 	UpdateDeadBodyBag();
@@ -1133,6 +1154,10 @@ bool CUIActorMenuBase::ToActorTrade(CUICellItem* itm, bool b_use_cursor_pos)
 		if ( old_owner_type != iActorBag )
 		{
 			SendEvent_Item2Ruck				(iitem, GetInventoryOwner()->object_id());
+		}
+		if (GetPartner() || GetInvBox())
+		{
+			ColorizeItem(itm, m_currMenuMode == mmTrade ? !CanMoveToPartner(iitem) : false);
 		}
 		UpdatePrices();
 		return true;
