@@ -127,7 +127,7 @@ function action_remark_activity:update()
   
     if self.snd_scheduled == true then
       self.snd_started = true
-      xr_sound.set_sound_play(self.object, self.st.snd, 50)
+      xr_sound.set_sound_play(self.object, self.st.snd)
     end
     --' Нужно выдать связанный типс.
     if self.st.tips_id ~= nil then
