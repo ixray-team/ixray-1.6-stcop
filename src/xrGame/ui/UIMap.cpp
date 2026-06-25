@@ -47,7 +47,7 @@ void CUICustomMap::Initialize(shared_str name, const char* sh_name)
 	else
 	{
 		Msg("! Not found minimap texture in %s level", *name);
-		m_UIStaticItem.CreateShader("");
+//		m_UIStaticItem.CreateShader("");
 	}
 
 	if (levelIni != g_pGameLevel->pLevel)
