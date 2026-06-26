@@ -24,7 +24,9 @@ target_include_directories(xrCompress PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrCompress PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../xrCore/")
 
 # Move precompiled header
-target_validate_pch(xrCompress ${CMAKE_CURRENT_SOURCE_DIR})
+if (NOT IXRAY_CROSS_COMPILATION)
+    target_validate_pch(xrCompress ${CMAKE_CURRENT_SOURCE_DIR})
+endif ()
 
 set_source_files_properties(
     ${COMPR_IMGUI_FILES}

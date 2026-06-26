@@ -63,7 +63,9 @@ add_dependencies(LevelEditor xrGame)
 add_dependencies(LevelEditor xrSE_Factory)
 
 # Move precompiled header
-target_validate_pch(LevelEditor ${CMAKE_CURRENT_SOURCE_DIR})
+if (NOT IXRAY_CROSS_COMPILATION)
+    target_validate_pch(LevelEditor ${CMAKE_CURRENT_SOURCE_DIR})
+endif ()
 
 ## LibOGG
 target_link_libraries(LevelEditor PRIVATE ${SND_OGG}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)

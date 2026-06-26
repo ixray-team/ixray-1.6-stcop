@@ -49,7 +49,9 @@ if (WIN32)
 endif()
 
 # Move precompiled header
-target_validate_pch(xrNetServer ${CMAKE_CURRENT_SOURCE_DIR})
+if (NOT IXRAY_CROSS_COMPILATION)
+    target_validate_pch(xrNetServer ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
 
 # Steam Sockets
 if(IXRAY_MP)

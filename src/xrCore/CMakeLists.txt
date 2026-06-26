@@ -169,7 +169,9 @@ if (NOT WIN32)
 endif()
 
 # Move precompiled header
-target_validate_pch(xrCore ${CMAKE_CURRENT_SOURCE_DIR})
+if (NOT IXRAY_CROSS_COMPILATION)
+	target_validate_pch(xrCore ${CMAKE_CURRENT_SOURCE_DIR})
+endif ()
 
 # Project defines
 target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)

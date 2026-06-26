@@ -14,15 +14,39 @@ else()
 endif()
 
 # Download packages
-execute_process(
-    COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/cmake/packages/nuget/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
-)
+if (WIN32 AND IXRAY_CROSS_COMPILATION)
+    execute_process(
+            COMMAND winepath -w
+            "${CMAKE_CURRENT_SOURCE_DIR}/cmake/packages/nuget/Packages.config"
+            OUTPUT_VARIABLE NUGET_CONFIG_WIN
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    execute_process(
+            COMMAND winepath -w
+            "${CMAKE_BINARY_DIR}"
+            OUTPUT_VARIABLE CMAKE_BINARY_DIR_WIN
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    execute_process(
+            COMMAND wine
+            "${NUGET_COMMAND}"
+            restore
+            "${NUGET_CONFIG_WIN}"
+            -SolutionDirectory
+            "${CMAKE_BINARY_DIR_WIN}"
+    )
+else ()
+    execute_process(
+            COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/cmake/packages/nuget/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+    )
+endif ()
 
 # Helper
-if (WIN32 AND NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-    set(NUGET_PACKAGE_PLATFORM x86)
-else()
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(NUGET_PACKAGE_PLATFORM x64)
+else()
+    set(NUGET_PACKAGE_PLATFORM x86)
 endif()
 
 # Optick
