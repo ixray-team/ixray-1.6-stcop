@@ -202,6 +202,12 @@ if (IXRAY_UNITYBUILD)
 	set_source_files_properties(../xrServerEntities/script_engine_export.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 endif()
 
+if (WIN32 AND IXRAY_UNITYBUILD AND IXRAY_CROSS_COMPILATION)
+	target_precompile_headers(xrGame PUBLIC "stdafx.h")
+	target_include_directories(xrGame PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/xrGame")
+	target_compile_options(xrGame PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:/FI${CMAKE_CURRENT_SOURCE_DIR}/stdafx.h>")
+endif()
+
 # Include directories
 target_include_directories(xrGame PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrGame PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../xrServerEntities/")
