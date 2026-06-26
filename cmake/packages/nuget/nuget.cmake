@@ -43,7 +43,7 @@ else ()
 endif ()
 
 # Helper
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(NUGET_PACKAGE_PLATFORM x64)
 else()
     set(NUGET_PACKAGE_PLATFORM x86)
