@@ -442,6 +442,9 @@ void dxRenderDeviceRender::End()
 #endif
 
 	PROF_EVENT("Present");
+
+#if defined(IXRAY_PROFILER_TRACY) && defined(USE_DX11)
+	PROF_GPU_CTX_COLLECT();
 	GRHI->Present();
 #endif
 }

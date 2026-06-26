@@ -1012,10 +1012,12 @@ void CAI_Stalker::shedule_Update(u32 DT)
 
 	UpdateInventoryOwner(DT);
 
-	PROF_EVENT("physics");
-	VERIFY(_valid(Position()));
-	m_pPhysics_support->in_shedule_Update(DT);
-	VERIFY(_valid(Position()));
+	{
+		PROF_EVENT("physics");
+		VERIFY(_valid(Position()));
+		m_pPhysics_support->in_shedule_Update(DT);
+		VERIFY(_valid(Position()));
+	}
 }
 
 float CAI_Stalker::Radius() const

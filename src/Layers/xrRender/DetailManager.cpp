@@ -165,7 +165,6 @@ void CDetailManager::Render()
 				if (!dtFS) return;
 				if (!psDeviceFlags.is(rsDetails)) return;
 #endif
-				PROF_START_THREAD("Calculate Details");
 				cache_Update(cam_pos);
 
 				{
@@ -320,7 +319,6 @@ void CDetailManager::Render()
 				}
 #endif
 				task_finished.store(true);
-				PROF_STOP_THREAD();
 			}
 		);
 	}
