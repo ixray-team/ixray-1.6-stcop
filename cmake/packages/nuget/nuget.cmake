@@ -43,10 +43,10 @@ else ()
 endif ()
 
 # Helper
-if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(NUGET_PACKAGE_PLATFORM x64)
-else()
+if (WIN32 AND NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
     set(NUGET_PACKAGE_PLATFORM x86)
+else()
+    set(NUGET_PACKAGE_PLATFORM x64)
 endif()
 
 # Optick

@@ -101,6 +101,4 @@ target_link_libraries(xrUI PUBLIC xrEngineCore)
 target_link_libraries(xrUI PUBLIC xrScripts)
 
 # Move precompiled header
-if (NOT IXRAY_CROSS_COMPILATION)
-    target_validate_pch(xrUI ${CMAKE_CURRENT_SOURCE_DIR})
-endif ()
+target_validate_pch(xrUI ${CMAKE_CURRENT_SOURCE_DIR})

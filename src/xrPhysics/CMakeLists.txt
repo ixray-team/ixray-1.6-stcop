@@ -61,6 +61,4 @@ target_link_libraries(xrPhysics PUBLIC ODE)
 target_link_libraries(xrPhysics PUBLIC xrEngineCore)
 
 # Move precompiled header
-if (NOT IXRAY_CROSS_COMPILATION)
-    target_validate_pch(xrPhysics ${CMAKE_CURRENT_SOURCE_DIR})
-endif ()
+target_validate_pch(xrPhysics ${CMAKE_CURRENT_SOURCE_DIR})

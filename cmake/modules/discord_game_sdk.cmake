@@ -1,8 +1,8 @@
 # Discord SDK
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(DISCORD_PLATFORM_EX x86_64)
-else()
+if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
     set(DISCORD_PLATFORM_EX x86)
+else()
+    set(DISCORD_PLATFORM_EX x86_64)
 endif()
 
 set(DISCORD_SDK_DIR ${CMAKE_BINARY_DIR}/dep/discord_gamesdk)

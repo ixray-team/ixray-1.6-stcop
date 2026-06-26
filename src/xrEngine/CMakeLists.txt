@@ -100,9 +100,7 @@ if(WIN32)
 endif()
 
 # Move precompiled header
-if (NOT IXRAY_CROSS_COMPILATION)
-    target_validate_pch(xrEngineCore ${CMAKE_CURRENT_SOURCE_DIR})
-endif ()
+target_validate_pch(xrEngineCore ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Project defines
 target_compile_definitions(xrEngineCore PRIVATE ENGINE_BUILD)

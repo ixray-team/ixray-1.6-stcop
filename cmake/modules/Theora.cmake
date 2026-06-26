@@ -1,21 +1,11 @@
 if(WIN32)
-    if(NOT CMAKE_VS_PLATFORM_NAME)
-        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-            set(ARCH_DIR "x64")
-        else()
-            set(ARCH_DIR "Win32")
-        endif()
-    else()
-        set(ARCH_DIR ${CMAKE_VS_PLATFORM_NAME})
-    endif()
-    
     set(ENGINE_THRA ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3/)
     
     add_imported_lib(
         Theora::theora
         "${ENGINE_THRA}/native/include"
-        "${ENGINE_THRA}/native/lib/${ARCH_DIR}/Release/libtheora.lib"
-        "${ENGINE_THRA}/native/bin/${ARCH_DIR}/Release/libtheora.dll"
+        "${ENGINE_THRA}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.lib"
+        "${ENGINE_THRA}/native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.dll"
     )
 else()
     message(STATUS "Setting up Theora build...")

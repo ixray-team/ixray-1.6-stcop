@@ -1,28 +1,18 @@
 include(FetchContent)
 
 if(WIN32)
-    if(NOT CMAKE_VS_PLATFORM_NAME)
-        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-            set(ARCH_DIR "x64")
-        else()
-            set(ARCH_DIR "Win32")
-        endif()
-    else()
-        set(ARCH_DIR ${CMAKE_VS_PLATFORM_NAME})
-    endif()
-
     set(SND_VOB ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibVorbis.1.3.7.4/)
     add_imported_lib(
         Vorbis::vorbis
         "${SND_VOB}/native/include"
-        "${SND_VOB}/native/lib/${ARCH_DIR}/Release/libvorbis.lib"
-        "${SND_VOB}/native/bin/${ARCH_DIR}/Release/libvorbis.dll"
+        "${SND_VOB}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbis.lib"
+        "${SND_VOB}/native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbis.dll"
     )
     add_imported_lib(
         Vorbis::vorbisfile
         "${SND_VOB}/native/include"
-        "${SND_VOB}/native/lib/${ARCH_DIR}/Release/libvorbisfile.lib"
-        "${SND_VOB}/native/bin/${ARCH_DIR}/Release/libvorbisfile.dll"
+        "${SND_VOB}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbisfile.lib"
+        "${SND_VOB}/native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbisfile.dll"
     )
 else()
     if(PkgConfig_FOUND)

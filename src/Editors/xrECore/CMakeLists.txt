@@ -206,9 +206,7 @@ if (WIN32)
 	target_link_libraries(xrECore PUBLIC DirectX::Tex)
 endif()
 
-if (NOT IXRAY_CROSS_COMPILATION)
-	target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})
-endif ()
+target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})
 
 ## DirectX SDK
 if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")

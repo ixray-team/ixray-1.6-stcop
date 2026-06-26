@@ -1,22 +1,12 @@
 include(FetchContent)
 
 if(WIN32)
-    if(NOT CMAKE_VS_PLATFORM_NAME)
-        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-            set(ARCH_DIR "x64")
-        else()
-            set(ARCH_DIR "Win32")
-        endif()
-    else()
-        set(ARCH_DIR ${CMAKE_VS_PLATFORM_NAME})
-    endif()
-
     set(SND_OGG ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/)
     add_imported_lib(
         Ogg::ogg
         "${SND_OGG}/native/include"
-        "${SND_OGG}/native/lib/${ARCH_DIR}/Release/libogg.lib"
-        "${SND_OGG}/native/bin/${ARCH_DIR}/Release/libogg.dll"
+        "${SND_OGG}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib"
+        "${SND_OGG}/native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.dll"
     )
 else()
    pkg_check_modules(OGG QUIET ogg)
