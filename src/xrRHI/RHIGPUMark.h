@@ -32,19 +32,34 @@ struct RHI_GPU_EVENT
 };
 
 #ifdef IXR_WINDOWS
-#ifdef DEBUG_DRAW
-#	ifdef IXRAY_PROFILER
-#		define GPU_EVENT(Name)	CRHIGPUMark	pixEvent##Name(#Name, L#Name); PROF_EVENT(#Name)
+#	ifdef DEBUG_DRAW
+#		ifdef IXRAY_PROFILER
+#			define PROF_GPU_CTX_CREATE(Device, DeviceContext)
+#			define PROF_GPU_CTX_COLLECT()
+#			define PROF_GPU_CTX_DESTROY()
+#			define GPU_EVENT(Name)	CRHIGPUMark	pixEvent##Name(#Name, L#Name); PROF_EVENT(#Name)
+#		elifdef IXRAY_PROFILER_TRACY
+#			include <tracy/TracyD3D11.hpp>
+			extern RHI_API TracyD3D11Ctx g_tracyD3D11GPUContext;
+#			define PROF_GPU_CTX_CREATE(Device, DeviceContext) TracyD3D11Context(Device, DeviceContext);
+#			define PROF_GPU_CTX_COLLECT() TracyD3D11Collect(g_tracyD3D11GPUContext);
+#			define PROF_GPU_CTX_DESTROY() TracyD3D11Destroy(g_tracyD3D11GPUContext);
+#			define GPU_EVENT(Name) TracyD3D11Zone(g_tracyD3D11GPUContext, #Name); CRHIGPUMark pixEvent##Name(#Name, L#Name);
+#		else
+#			define PROF_GPU_CTX_CREATE(Device, DeviceContext)
+#			define PROF_GPU_CTX_COLLECT()
+#			define PROF_GPU_CTX_DESTROY()
+#			define GPU_EVENT(Name)	CRHIGPUMark pixEvent##Name(#Name, L#Name);
+#		endif
 #	else
-#		define GPU_EVENT(Name)	CRHIGPUMark	pixEvent##Name(#Name, L#Name)
+#		define PROF_GPU_CTX_CREATE(Device, DeviceContext)
+#		define PROF_GPU_CTX_COLLECT()
+#		define PROF_GPU_CTX_DESTROY()
+#		define GPU_EVENT(Name)	CRHIGPUMark pixEvent##Name(#Name, L#Name);
 #	endif
 #else
-#	ifdef IXRAY_PROFILER
-#		define GPU_EVENT(Name) PROF_EVENT(#Name)
-#	else
-#		define GPU_EVENT(Name)	{;}
-#	endif
-#endif
-#else
-#define GPU_EVENT(name)
+#	define PROF_GPU_CTX_CREATE(Device, DeviceContext)
+#	define PROF_GPU_CTX_COLLECT()
+#	define PROF_GPU_CTX_DESTROY()
+#	define GPU_EVENT(name)
 #endif

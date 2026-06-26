@@ -524,8 +524,10 @@ void CCreature::UpdateCL	()
 
 void CCreature::UpdatePositionAnimation()
 {
-	PROF_EVENT("CustomMonster/movement");
-	movement().on_frame			(character_physics_support()->movement(),NET_Last.p_pos);
+	{
+		PROF_EVENT("CustomMonster/movement");
+		movement().on_frame(character_physics_support()->movement(), NET_Last.p_pos);
+	}
 	
 	PROF_EVENT("animation");
 	if (!bfScriptAnimation())

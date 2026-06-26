@@ -446,6 +446,10 @@ void InternalDevice11::GenerateMips(IRHIShaderResourceView* SRV)
 
 void InternalDevice11::DestroyD3D11()
 {
+#ifdef IXRAY_PROFILER_TRACY
+	PROF_GPU_CTX_DESTROY();
+#endif
+
 	// Clean up texture factory
 	if (TextureFactory)
 	{

@@ -149,8 +149,9 @@ void CRenderDevice::on_idle		()
 	bool main_menu_active = g_pGamePersistent						   &&
 							g_pGamePersistent->m_pMainMenu			   &&
 							g_pGamePersistent->m_pMainMenu->IsActive();
-
-	PROF_FRAME("Main Thread");
+#ifdef IXRAY_PROFILER // optick
+	PROF_FRAME("CPU FRAME BEGIN");
+#endif
 	Platform::SetThreadName("X-Ray Primary Thread");
 
 	Device.BeginRender();
@@ -226,7 +227,10 @@ void CRenderDevice::on_idle		()
 		{
 			if (Begin())
 			{
-				seqRender.Process<&pureRender::OnRender>();
+				{
+					PROF_EVENT("------ [OnRender phase] ------")
+					seqRender.Process<&pureRender::OnRender>();
+				}
 
 				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || !Statistic->errors.empty())
 				{
@@ -250,6 +254,11 @@ void CRenderDevice::on_idle		()
 	secondary_tasks.wait();
 
 	Device.EndRender();
+	
+#ifdef IXRAY_PROFILER_TRACY
+	PROF_FRAME();
+#endif
+	
 	if (!b_is_Active)
 	{
 		Sleep(1);
@@ -469,8 +478,6 @@ struct EfficientFilteredDelta
 bool use_smoothed_delta = false;
 void CRenderDevice::FrameMove()
 {
-	PROF_EVENT("Render: Frame Move")
-
 	dwFrame++;
 	dwTimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
 	
@@ -511,7 +518,10 @@ void CRenderDevice::FrameMove()
 
 	Statistic->EngineTOTAL.Begin();
 	{
-		Device.seqFrame.Process<&pureFrame::OnFrame>();
+		{
+			PROF_EVENT("------ [OnFrame phase] ------")
+		   Device.seqFrame.Process<&pureFrame::OnFrame>();
+		}
 		g_bLoaded = true;
 	}
 	Statistic->EngineTOTAL.End();

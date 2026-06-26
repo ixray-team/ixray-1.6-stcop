@@ -27,6 +27,11 @@ RHI_API Ivector2 HalfTarget = { 0, 0 };
 RHI_API void* g_pAnnotation = nullptr;
 RHI_API CRHI* GRHI = nullptr;
 
+#ifdef IXRAY_PROFILER_TRACY
+	#include <tracy/TracyD3D11.hpp>
+	RHI_API TracyD3D11Ctx g_tracyD3D11GPUContext = nullptr;
+#endif
+
 CRHI::CRHI()
 {
 }
@@ -86,6 +91,9 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 			ShaderResourceCache = new DX11ShaderResourceStateCache((ID3D11DeviceContext*)GetContext());
 			StateManager = new RHIStateManagerDX11(static_cast<ID3D11DeviceContext*>(GetContext()));
 			DriverAntiLag = new CAMDAntiLag();
+#ifdef IXRAY_PROFILER_TRACY
+			g_tracyD3D11GPUContext = PROF_GPU_CTX_CREATE((ID3D11Device*)DevicePtr->RawDevice, (ID3D11DeviceContext*)GetContext());
+#endif
 			break;
 		}
 	}
