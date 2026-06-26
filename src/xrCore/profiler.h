@@ -12,6 +12,7 @@
 #	define PROF_EVENT(Name) OPTICK_EVENT(Name)
 #elif defined(IXRAY_PROFILER_TRACY)
 #   define TRACY_ENABLE
+#   define TRACY_NO_FRAME_IMAGE
 #   include "tracy/Tracy.hpp"
 #   define PROF_THREAD(Name)
 #   define PROF_START_THREAD(Name) // Не нужно в Tracy - потоки определяются автоматически
@@ -20,7 +21,7 @@
 #   define PROF_STOP_CAPTURE()
 #   define PROF_SAVE_CAPTURE(Name)
 #   define PROF_FRAME(Name) FrameMarkNamed(Name)
-#   define PROF_EVENT(Name) ZoneTransientNC(TracyConcat(__tracy_zone, __LINE__), Name, 0, true);
+#	define PROF_EVENT(Name) ZoneScopedN(Name);
 #else
 #	define PROF_THREAD(Name)
 #	define PROF_START_THREAD(Name)
