@@ -225,10 +225,9 @@ void CInput::KeyboardUpdate()
 	}
 }
 
-bool dsEnableGamepad = true;
 void CInput::GamepadUpdate()
 {
-	if (pGamePad == nullptr || !dsEnableGamepad)
+	if (!pGamePad)
 		return;
 
 	if (cbStack.empty())

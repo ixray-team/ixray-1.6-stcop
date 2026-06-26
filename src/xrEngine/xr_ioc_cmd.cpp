@@ -691,42 +691,6 @@ public:
 	}
 };
 
-//-----------------------------------------------------------------------
-class CCC_ExclusiveMode : public IConsole_Command {
-private:
-	typedef IConsole_Command inherited;
-
-public:
-					CCC_ExclusiveMode	(const char* N) :
-		inherited	(N)
-	{
-	}
-
-	virtual void	Execute				(const char* args)
-	{
-		bool		value = false;
-		if (!xr_strcmp(args,"on"))
-			value	= true;
-		else if (!xr_strcmp(args,"off"))
-			value	= false;
-		else if (!xr_strcmp(args,"true"))
-			value	= true;
-		else if (!xr_strcmp(args,"false"))
-			value	= false;
-		else if (!xr_strcmp(args,"1"))
-			value	= true;
-		else if (!xr_strcmp(args,"0"))
-			value	= false;
-		else InvalidSyntax();
-		
-		//pInput->exclusive_mode	(value);
-	}
-
-	virtual void	Save	(IWriter *F)	
-	{
-	}
-};
-
 class ENGINE_API CCC_HideConsole : public IConsole_Command
 {
 public		:
@@ -768,7 +732,6 @@ extern char			psNET_Name[32];
 extern Flags32		psEnvFlags;
 extern int			g_ErrorLineCount;
 
-extern bool			dsEnableGamepad;
 extern int fps_limit;
 extern int main_menu_fps_limit;
 extern bool IsFpsShow;
@@ -961,9 +924,6 @@ void CCC_Register()
 	extern	int	g_Dump_Import_Obj;
 	CMD4(CCC_Integer,	"net_dbg_dump_export_obj",	&g_Dump_Export_Obj, 0, 1);
 	CMD4(CCC_Integer,	"net_dbg_dump_import_obj",	&g_Dump_Import_Obj, 0, 1);
-
-	CMD1(CCC_ExclusiveMode,		"input_exclusive_mode");
-	CMD2(CCC_Boolean,		"input_enable_gamepad", &dsEnableGamepad);
 
 	extern int g_svDedicateServerUpdateReate;
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
