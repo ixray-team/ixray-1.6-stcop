@@ -17,6 +17,10 @@
 #include "script_callback_ex.h"
 #include <luabind/class_info.hpp>
 
+#ifdef IXRAY_PROFILER_TRACY
+#include <tracy/TracyLua.hpp>
+#endif // IXRAY_PROFILER_TRACY
+
 SCRIPTS_API CScriptEngine* g_pScriptEngine = nullptr;
 
 void jit_command(lua_State*, const char*);
@@ -186,6 +190,11 @@ void CScriptEngine::init()
 	CScriptStorage::reinit();
 
 	luabind::open(lua());
+#ifdef IXRAY_PROFILER_TRACY
+	tracy::LuaRegister(lua());
+#endif // IXRAY_PROFILER_TRACY
+
+
 	luabind::bind_class_info(lua());
 	setup_callbacks();
 	g_object_factory->export_classes(lua());

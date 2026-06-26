@@ -35,157 +35,160 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 	// Sorting by SSA and changes minimizations
 	{
 		RCache.set_xform_world			(Fidentity);
-
-		// Render several passes
-		PROF_EVENT("NORMAL_SHADER_PASSES");
-		for ( u32 iPass = 0; iPass<SHADER_PASSES_MAX; ++iPass)
 		{
-			//mapNormalVS&	vs				= mapNormal	[_priority];
-			mapNormalVS&	vs				= mapNormalPasses[_priority][iPass];
-			for (mapNormalVS::TNode& Nvs : vs)
+			// Render several passes
+			PROF_EVENT("NORMAL_SHADER_PASSES");
+			for ( u32 iPass = 0; iPass<SHADER_PASSES_MAX; ++iPass)
 			{
-#ifdef USE_DX11
-				RCache.set_VS					(Nvs.key);
-
-				//	GS setup
-				mapNormalGS&		gs			= Nvs.val;
-				for (mapNormalGS::TNode& Ngs : gs)
+				//mapNormalVS&	vs				= mapNormal	[_priority];
+				mapNormalVS&	vs				= mapNormalPasses[_priority][iPass];
+				for (mapNormalVS::TNode& Nvs : vs)
 				{
-					GRHI->SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
-					mapNormalPS&		ps			= Ngs.val;
-#else //USE_DX11
-					GRHI->SetShader(Nvs.key, ERHI_SHADER_TYPE::VS);
-					mapNormalPS&		ps			= Nvs.val;
-#endif
-					for (mapNormalPS::TNode& Nps : ps)
+	#ifdef USE_DX11
+					RCache.set_VS					(Nvs.key);
+	
+					//	GS setup
+					mapNormalGS&		gs			= Nvs.val;
+					for (mapNormalGS::TNode& Ngs : gs)
 					{
-						GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);	
-#ifdef USE_DX11
-						mapNormalCS&		cs			= Nps.val.mapCS;
-						GRHI->SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
-						GRHI->SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
-#else //USE_DX11
-						mapNormalCS&		cs			= Nps.val;
-#endif
-						for (mapNormalCS::TNode& Ncs : cs)
+						GRHI->SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
+						mapNormalPS&		ps			= Ngs.val;
+	#else //USE_DX11
+						GRHI->SetShader(Nvs.key, ERHI_SHADER_TYPE::VS);
+						mapNormalPS&		ps			= Nvs.val;
+	#endif
+						for (mapNormalPS::TNode& Nps : ps)
 						{
-							RCache.set_Constants			(Ncs.key);
-
-							mapNormalStates&	states		= Ncs.val;
-							for (mapNormalStates::TNode& Nstate : states)
+							GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);	
+	#ifdef USE_DX11
+							mapNormalCS&		cs			= Nps.val.mapCS;
+							GRHI->SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
+							GRHI->SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
+	#else //USE_DX11
+							mapNormalCS&		cs			= Nps.val;
+	#endif
+							for (mapNormalCS::TNode& Ncs : cs)
 							{
-								RCache.set_States					(Nstate.key);
-
-								mapNormalTextures&		tex			= Nstate.val;
-								for (mapNormalTextures::TNode& Ntex : tex)
+								RCache.set_Constants			(Ncs.key);
+	
+								mapNormalStates&	states		= Ncs.val;
+								for (mapNormalStates::TNode& Nstate : states)
 								{
-									RCache.set_Textures					(Ntex.key);
-									RImplementation.apply_lmaterial		();
-
-									mapNormalItems&				items	= Ntex.val;
-									for (_NormalItem& Ni : items)
+									RCache.set_States					(Nstate.key);
+	
+									mapNormalTextures&		tex			= Nstate.val;
+									for (mapNormalTextures::TNode& Ntex : tex)
 									{
-										float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
-#ifdef USE_DX11
-										RCache.LOD.set_LOD(LOD);
-#endif
-										Ni.pVisual->Render(LOD);
-									}if(_clear)items.clear();
-								}if(_clear) tex.clear();
-							}if(_clear) states.clear();
-						}if(_clear) cs.clear();
-
-					}if(_clear) ps.clear();
-#ifdef USE_DX11
-				}if(_clear) gs.clear();
-#endif //USE_DX11
-			}if(_clear) vs.clear();
+										RCache.set_Textures					(Ntex.key);
+										RImplementation.apply_lmaterial		();
+	
+										mapNormalItems&				items	= Ntex.val;
+										for (_NormalItem& Ni : items)
+										{
+											float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
+	#ifdef USE_DX11
+											RCache.LOD.set_LOD(LOD);
+	#endif
+											Ni.pVisual->Render(LOD);
+										}if(_clear)items.clear();
+									}if(_clear) tex.clear();
+								}if(_clear) states.clear();
+							}if(_clear) cs.clear();
+	
+						}if(_clear) ps.clear();
+	#ifdef USE_DX11
+					}if(_clear) gs.clear();
+	#endif //USE_DX11
+				}if(_clear) vs.clear();
+			}
 		}
 	}
 
-	// **************************************************** MATRIX
-	// Perform sorting based on ScreenSpaceArea
-	// Sorting by SSA and changes minimizations
-	// Render several passes
-	PROF_EVENT("MATRIX_SHADER_PASSES");
-	for ( u32 iPass = 0; iPass<SHADER_PASSES_MAX; ++iPass)
 	{
-		//mapMatrixVS&	vs				= mapMatrix	[_priority];
-		mapMatrixVS&	vs				= mapMatrixPasses[_priority][iPass];
-		for (mapMatrixVS::TNode& Nvs : vs)
+		// **************************************************** MATRIX
+		// Perform sorting based on ScreenSpaceArea
+		// Sorting by SSA and changes minimizations
+		// Render several passes
+		PROF_EVENT("MATRIX_SHADER_PASSES");
+		for ( u32 iPass = 0; iPass<SHADER_PASSES_MAX; ++iPass)
 		{
-#ifdef USE_DX11
-			RCache.set_VS					(Nvs.key);	
-			mapMatrixGS&		gs			= Nvs.val;
-			for (mapMatrixGS::TNode& Ngs : gs)
+			//mapMatrixVS&	vs				= mapMatrix	[_priority];
+			mapMatrixVS&	vs				= mapMatrixPasses[_priority][iPass];
+			for (mapMatrixVS::TNode& Nvs : vs)
 			{
-				GRHI->SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
-
-				mapMatrixPS&		ps			= Ngs.val;
-#else //USE_DX11
-				GRHI->SetShader(Nvs.key, ERHI_SHADER_TYPE::VS);
-				mapMatrixPS&		ps			= Nvs.val;
-#endif
-				for (mapMatrixPS::TNode& Nps : ps)
+	#ifdef USE_DX11
+				RCache.set_VS					(Nvs.key);	
+				mapMatrixGS&		gs			= Nvs.val;
+				for (mapMatrixGS::TNode& Ngs : gs)
 				{
-					GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);
-#ifdef USE_DX11
-					mapMatrixCS&		cs			= Nps.val.mapCS;
-					GRHI->SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
-					GRHI->SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
-#else
-					mapMatrixCS&		cs			= Nps.val;
-#endif
-					for (mapMatrixCS::TNode& Ncs : cs)
+					GRHI->SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
+	
+					mapMatrixPS&		ps			= Ngs.val;
+	#else //USE_DX11
+					GRHI->SetShader(Nvs.key, ERHI_SHADER_TYPE::VS);
+					mapMatrixPS&		ps			= Nvs.val;
+	#endif
+					for (mapMatrixPS::TNode& Nps : ps)
 					{
-						RCache.set_Constants			(Ncs.key);
-
-						mapMatrixStates&	states		= Ncs.val;
-						for (mapMatrixStates::TNode& Nstate : states)
+						GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);
+	#ifdef USE_DX11
+						mapMatrixCS&		cs			= Nps.val.mapCS;
+						GRHI->SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
+						GRHI->SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
+	#else
+						mapMatrixCS&		cs			= Nps.val;
+	#endif
+						for (mapMatrixCS::TNode& Ncs : cs)
 						{
-							RCache.set_States					(Nstate.key);
-
-							mapMatrixTextures&		tex			= Nstate.val;
-							for (mapMatrixTextures::TNode& Ntex : tex)
+							RCache.set_Constants			(Ncs.key);
+	
+							mapMatrixStates&	states		= Ncs.val;
+							for (mapMatrixStates::TNode& Nstate : states)
 							{
-								RCache.set_Textures					(Ntex.key);
-
-								mapMatrixItems& items = Ntex.val;
-								auto& visuals = items.visuals;
-								if(!visuals.empty())
+								RCache.set_States					(Nstate.key);
+	
+								mapMatrixTextures&		tex			= Nstate.val;
+								for (mapMatrixTextures::TNode& Ntex : tex)
 								{
-									for (_MatrixItem& Ni : visuals)
+									RCache.set_Textures					(Ntex.key);
+	
+									mapMatrixItems& items = Ntex.val;
+									auto& visuals = items.visuals;
+									if(!visuals.empty())
 									{
-										if (Ni.pVisual->shader == nullptr)
+										for (_MatrixItem& Ni : visuals)
 										{
-											continue;
-										}
-										RCache.set_xform_world(Ni.Matrix);
-										RImplementation.apply_object(Ni.pObject);
-										RImplementation.apply_lmaterial();
-
-										float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
-#ifdef USE_DX11
-										RCache.LOD.set_LOD(LOD);
-#endif
-										Ni.pVisual->Render(LOD);
-									}if (_clear)items.visuals.clear();
-									continue;
-								}
-
-								auto& particles = items.particles;
-								for (dxRender_Visual* pVisual : particles)
-									pVisual->Render(0);
-								if (_clear)items.particles.clear();
-
-							}if(_clear) tex.clear();
-						}if(_clear) states.clear();
-					}if(_clear) cs.clear();
-				}if(_clear) ps.clear();
-#ifdef USE_DX11
-			}if(_clear) gs.clear();
-#endif //USE_DX11
-		}if(_clear) vs.clear();
+											if (Ni.pVisual->shader == nullptr)
+											{
+												continue;
+											}
+											RCache.set_xform_world(Ni.Matrix);
+											RImplementation.apply_object(Ni.pObject);
+											RImplementation.apply_lmaterial();
+	
+											float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
+	#ifdef USE_DX11
+											RCache.LOD.set_LOD(LOD);
+	#endif
+											Ni.pVisual->Render(LOD);
+										}if (_clear)items.visuals.clear();
+										continue;
+									}
+	
+									auto& particles = items.particles;
+									for (dxRender_Visual* pVisual : particles)
+										pVisual->Render(0);
+									if (_clear)items.particles.clear();
+	
+								}if(_clear) tex.clear();
+							}if(_clear) states.clear();
+						}if(_clear) cs.clear();
+					}if(_clear) ps.clear();
+	#ifdef USE_DX11
+				}if(_clear) gs.clear();
+	#endif //USE_DX11
+			}if(_clear) vs.clear();
+		}
 	}
 }
 

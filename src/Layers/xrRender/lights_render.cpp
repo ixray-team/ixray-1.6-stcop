@@ -170,10 +170,15 @@ void	CRender::render_lights	(light_Package& LP)
 						L->X.S.transluent = true;
 						Target->phase_smap_spot_tsh(L);
 
-						PROF_EVENT("SHADOWED_LIGHTS_RENDER_GRAPH");
-						r_dsgraph_render_graph(1);			// normal level, secondary priority
-						PROF_EVENT("SHADOWED_LIGHTS_RENDER_SORTED");
-						r_dsgraph_render_sorted();			// strict-sorted geoms
+						{
+							PROF_EVENT("SHADOWED_LIGHTS_RENDER_GRAPH");
+							r_dsgraph_render_graph(1); // normal level, secondary priority
+						}
+
+						{
+							PROF_EVENT("SHADOWED_LIGHTS_RENDER_SORTED");
+							r_dsgraph_render_sorted(); // strict-sorted geoms
+						}
 					}
 				}
 				else
@@ -188,42 +193,48 @@ void	CRender::render_lights	(light_Package& LP)
 			{
 				PROF_EVENT("UNSHADOWED_LIGHTS");
 				Target->phase_accumulator();
-				PROF_EVENT("POINT_LIGHTS");
-
-				if (!LP.v_point.empty())
 				{
-					light* L_ = LP.v_point.back();
-					LP.v_point.pop_back();
+					PROF_EVENT("POINT_LIGHTS");
 
-					if (L_->flags.bOccq && !L_->flags.bHudMode)
+					if (!LP.v_point.empty())
 					{
-						L_->vis_update();
-						if (L_->vis.visible)
+						light* L_ = LP.v_point.back();
+						LP.v_point.pop_back();
+
+						if (L_->flags.bOccq && !L_->flags.bHudMode)
+						{
+							L_->vis_update();
+							if (L_->vis.visible)
+							{
+								Target->accum_point(L_);
+							}
+						}
+						else
+						{
 							Target->accum_point(L_);
-					}
-					else
-					{
-						Target->accum_point(L_);
+						}
 					}
 				}
 
-				PROF_EVENT("SPOT_LIGHTS");
-
-				if (!LP.v_spot.empty())
 				{
-					light* L_ = LP.v_spot.back();
-					LP.v_spot.pop_back();
-					if (L_->flags.bOccq && !L_->flags.bHudMode)
+					PROF_EVENT("SPOT_LIGHTS");
+
+					if (!LP.v_spot.empty())
 					{
-						L_->vis_update();
-						if (L_->vis.visible)
+						light* L_ = LP.v_spot.back();
+						LP.v_spot.pop_back();
+						if (L_->flags.bOccq && !L_->flags.bHudMode)
+						{
+							L_->vis_update();
+							if (L_->vis.visible)
+							{
+								Target->accum_spot(L_);
+							}
+						}
+						else
 						{
 							Target->accum_spot(L_);
 						}
-					}
-					else
-					{
-						Target->accum_spot(L_);
 					}
 				}
 			}
