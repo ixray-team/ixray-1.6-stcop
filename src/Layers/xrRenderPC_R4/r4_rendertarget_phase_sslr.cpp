@@ -106,6 +106,8 @@ bool is_render_cubemap = false;
 
 void CRender::render_reflections()
 {
+	GPU_EVENT(RENDER_REFLECTIONS);
+
 	if (RImplementation.pLastSector)
 	{
 		Device.Statistic->TEST2.Begin();
@@ -195,8 +197,6 @@ void CRender::render_reflections()
 
 		for (u32 i = 0; i < 6; ++i)
 		{
-			GPU_EVENT(FORWARD_REFLECTION_SIDE);
-
 			EnvView.build_camera_dir(Device.vCameraPosition, cmDir[i], cmNorm[i]);
 			EnvFullTransform.mul(EnvProject, EnvView);
 
@@ -239,8 +239,6 @@ void CRender::render_reflections()
 		r_ssaGLOD_start = saved_r_ssaGLOD_start;
 		r_ssaGLOD_end = saved_r_ssaGLOD_end;
 		r_ssaHZBvsTEX = saved_r_ssaHZBvsTEX;
-
-		GPU_EVENT(FORWARD_REFLECTION_FORWARD);
 
 		Target->u_setrt(Target->rt_Reflection_forward, nullptr, nullptr);
 		RImplementation.rmNormal();
