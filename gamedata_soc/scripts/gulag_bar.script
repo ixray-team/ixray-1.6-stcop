@@ -215,22 +215,19 @@ function load_job(sj, gname, type, squad, groups)
 		t = { section = "logic1@bar_dolg_general_guard_left",
 			idle = 0,
 			prior = 8, state = {0,1,2}, squad = squad, group = groups[0],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)		    
 		t = { section = "logic2@bar_dolg_general_guard_right",
 			idle = 0,
 			prior = 8, state = {0,1,2}, squad = squad, group = groups[0],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)		    
 		t = { section = "logic3@bar_dolg_general_guard_center",
 			idle = 0,
 			prior = 9, state = {0,1,2}, squad = squad, group = groups[0],
 			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}",
 			predicate = function(obj_info)
 			           	return obj_info.profile_name == "bar_dolg_guard_commander"
 			        end
@@ -273,15 +270,13 @@ function load_job(sj, gname, type, squad, groups)
 		t = { section = "logic5@bar_dolg_general_patrol1", 
 			idle = 5*60*60*1000,
 			prior = 6, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
 		t = { section = "logic6@bar_dolg_general_patrol2", 
 			idle = 5*60*60*1000,
 			prior = 6, state = {0}, squad = squad, group = groups[2],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
 
@@ -289,36 +284,31 @@ function load_job(sj, gname, type, squad, groups)
 		t = { section = "logic6@bar_dolg_general_camper",
 			idle = 0,
 			prior = 5, state = {2}, squad = squad, group = groups[1],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
 		t = { section = "logic7@bar_dolg_general_camper",
 			idle = 0,
 			prior = 5, state = {2}, squad = squad, group = groups[1],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
 		t = { section = "logic8@bar_dolg_general_camper",
 			idle = 0,
 			prior = 5, state = {2}, squad = squad, group = groups[1],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
 		t = { section = "logic9@bar_dolg_general_camper",
 			idle = 0,
 			prior = 5, state = {2}, squad = squad, group = groups[1],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
 		t = { section = "logic10@bar_dolg_general_camper",
 			idle = 0,
 			prior = 5, state = {2}, squad = squad, group = groups[1],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
 
@@ -330,43 +320,37 @@ function load_job(sj, gname, type, squad, groups)
 		t = { section = "logic3@bar_dolg_veterans_gates1", 
 			idle = 0,
 			prior = 7, state = {0,1}, squad = squad, group = groups[0],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
 		t = { section = "logic4@bar_dolg_veterans_gates2", 
 			idle = 0,
 			prior = 7, state = {0,1}, squad = squad, group = groups[0],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
 		t = { section = "logic1@bar_dolg_veterans_guard_bunker1", 
 			idle = 0,
 			prior = 9, state = {0,1,2}, squad = squad, group = groups[0],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
 		t = { section = "logic2@bar_dolg_veterans_guard_bunker2", 
 			idle = 0,
 			prior = 9, state = {0,1,2}, squad = squad, group = groups[0],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
 		t = { section = "logic5@bar_dolg_veterans_gates_alarm1", 
 			idle = 0,
 			prior = 5, state = {2}, squad = squad, group = groups[0],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)	
 		t = { section = "logic6@bar_dolg_veterans_gates_alarm2", 
 			idle = 0,
 			prior = 5, state = {2}, squad = squad, group = groups[0],
-			in_rest = "", out_rest = "",
-					online = "{=actor_in_zone(bar_dolg_online_restrictor)}"
+			in_rest = "", out_rest = ""
 		}
 		table.insert(sj, t)
 	end
