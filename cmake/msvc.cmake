@@ -9,6 +9,18 @@ if (CMAKE_SIZEOF_VOID_P EQUAL 4)
     ADD_DEFINITIONS(/arch:SSE2)
 endif()
 
+if(NOT DEFINED CMAKE_VS_PLATFORM_NAME)
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64)$")
+        set(CMAKE_VS_PLATFORM_NAME x64)
+    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3-6]86|x86)$")
+        set(CMAKE_VS_PLATFORM_NAME Win32)
+    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm64)$")
+        set(CMAKE_VS_PLATFORM_NAME ARM64)
+    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
+        set(CMAKE_VS_PLATFORM_NAME ARM)
+    endif()
+endif()
+
 # Apply definitions
 add_compile_definitions(_WINDOWS)
 
@@ -62,16 +74,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_EX ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/)
 
 # Other 
 function(target_validate_pch target target_path)
-	set_target_properties(${target} PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
-	set_target_properties(${target} PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
-	set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
-	target_precompile_headers(${target} PRIVATE "stdafx.h")
+    if (NOT IXRAY_CROSS_COMPILATION)
+        set_target_properties(${target} PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+        set_target_properties(${target} PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
+        set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
+        target_precompile_headers(${target} PRIVATE "stdafx.h")
 
-	file(GLOB_RECURSE CORE_SOURCE_PCH_FILES "${target_path}/stdafx.*")
-	file(GLOB_RECURSE CORE_SOURCE_ALL_C_FILES "${target_path}/*.c")
+        file(GLOB_RECURSE CORE_SOURCE_PCH_FILES "${target_path}/stdafx.*")
+        file(GLOB_RECURSE CORE_SOURCE_ALL_C_FILES "${target_path}/*.c")
 
-	set_source_files_properties(${CORE_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
-	source_group("pch" FILES ${CORE_SOURCE_PCH_FILES})
+        set_source_files_properties(${CORE_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+        source_group("pch" FILES ${CORE_SOURCE_PCH_FILES})
+    endif()
 endfunction()
 
 # Discord
