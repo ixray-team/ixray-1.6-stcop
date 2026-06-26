@@ -38,7 +38,6 @@
                 }
             }
         },
-
         {
             "name": "Engine-Base-NonUnity",
             "displayName": "Engine-Base-NonUnity",
@@ -97,7 +96,30 @@
             "inherits": "Engine-Base-Linux-NonUnity",
             "binaryDir": "build/x64/Engine-Linux-NonUnity"
         },
-
+        {
+            "name": "Engine-x64-Wine",
+            "displayName": "Engine-x64-Wine",
+            "generator": "Ninja Multi-Config",
+            "binaryDir": "build/x64/Engine-x64-Wine",
+            "cacheVariables": {
+                "CMAKE_SYSTEM_NAME": "Windows",
+                "CMAKE_SYSTEM_PROCESSOR": "AMD64",
+                "CMAKE_C_COMPILER": "$env{WINE_MSVC_DIR}/bin/x64/cl",
+                "CMAKE_CXX_COMPILER": "$env{WINE_MSVC_DIR}/bin/x64/cl",
+                "CMAKE_LINKER": "$env{WINE_MSVC_DIR}/bin/x64/link",
+                "CMAKE_RC_COMPILER": "$env{WINE_MSVC_DIR}/bin/x64/rc",
+                "IXRAY_UTILS": "OFF",
+                "IXRAY_EDITORS": "OFF",
+                "IXRAY_MP": "OFF",
+                "IXRAY_COMPRESSOR_ONLY": "OFF",
+                "IXRAY_PLUGINS": "OFF",
+                "IXRAY_ASAN": "OFF",
+                "IXRAY_USE_R1": "ON",
+                "IXRAY_USE_R2": "ON",
+                "IXRAY_UNITYBUILD": "ON",
+                "IXRAY_CROSS_COMPILATION": "ON"
+            }
+        },
         {
             "name": "Server-Base-Windows",
             "displayName": "Server-Base-Windows",
@@ -330,6 +352,24 @@
             "name": "Engine-x64-NonUnity-Release",
             "displayName": "Engine-x64-NonUnity-Release",
             "configurePreset": "Engine-x64-NonUnity",
+            "configuration": "Release"
+        },
+        {
+            "name": "Engine-x64-Wine-Debug",
+            "displayName": "Engine-x64-Wine-Debug",
+            "configurePreset": "Engine-x64-Wine",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Engine-x64-Wine-RelWithDebInfo",
+            "displayName": "Engine-x64-Wine-RelWithDebInfo",
+            "configurePreset": "Engine-x64-Wine",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Engine-x64-Wine-Release",
+            "displayName": "Engine-x64-Wine-Release",
+            "configurePreset": "Engine-x64-Wine",
             "configuration": "Release"
         },
         {
