@@ -188,6 +188,10 @@ void _initialize_cpu_thread()
 void thread_name(const char* name)
 {
     Platform::SetThreadName(name);
+
+#ifdef IXRAY_PROFILER_TRACY
+	tracy::SetThreadName(name);
+#endif
 }
 
 struct	THREAD_STARTUP
