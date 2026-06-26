@@ -18,6 +18,8 @@ option(IXRAY_UNITYBUILD "Enable UnityBuild for xrGame" ON)
 option(IXRAY_PROFILER "Enable Optick for perf debug" ON)
 option(IXRAY_PROFILER_TRACY "Enable Tracy for perf debug" OFF)
 option(IXRAY_ENABLE_RESONANCEAUDIO "Enable Reverb from ResonanceAudio library" ON)
+option(IXRAY_CROSS_COMPILATION "Enable cross-compilation" OFF)
+
 set(IXRAY_BUILD_BATCH_SIZE "32" CACHE STRING "UNITY_BUILD_BATCH_SIZE")
 
 # CI trash
