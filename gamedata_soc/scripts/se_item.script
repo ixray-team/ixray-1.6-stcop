@@ -14,8 +14,11 @@ function se_outfit:on_register()
 	else
 		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
 	end
+	
+	SendScriptCallback("server_entity_on_register", self, "se_outfit")
 end
 function se_outfit:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_outfit")
 	--' Отрегистрация в таскменеджере
 	task_manager.get_random_task():unregister_target(self)
 end
@@ -34,8 +37,11 @@ function se_weapon:on_register()
 	else
 		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
 	end
+
+	SendScriptCallback("server_entity_on_register", self, "se_weapon")
 end
 function se_weapon:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_weapon")
 	--' Отрегистрация в таскменеджере
 	task_manager.get_random_task():unregister_target(self)
 end
@@ -54,8 +60,11 @@ function se_weapon_shotgun:on_register()
 	else
 		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
 	end
+
+	SendScriptCallback("server_entity_on_register", self, "se_weapon_shotgun")
 end
 function se_weapon_shotgun:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_weapon_shotgun")
 	--' Отрегистрация в таскменеджере
 	task_manager.get_random_task():unregister_target(self)
 end
@@ -75,8 +84,11 @@ function se_weapon_magazined:on_register()
 	else
 		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
 	end
+
+	SendScriptCallback("server_entity_on_register", self, "se_weapon_magazined")
 end
 function se_weapon_magazined:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_weapon_magazined")
 	--' Отрегистрация в таскменеджере
 	task_manager.get_random_task():unregister_target(self)
 end
@@ -95,8 +107,11 @@ function se_weapon_magazined_w_gl:on_register()
 	else
 		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
 	end
+
+	SendScriptCallback("server_entity_on_register", self, "se_weapon_magazined_w_gl")
 end
 function se_weapon_magazined_w_gl:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_weapon_magazined_w_gl")
 	--' Отрегистрация в таскменеджере
 	task_manager.get_random_task():unregister_target(self)
 end
@@ -115,8 +130,11 @@ function se_item:on_register()
 	else
 		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
 	end	
+
+	SendScriptCallback("server_entity_on_register", self, "se_item")
 end
 function se_item:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_item")
 	--' Отрегистрация в таскменеджере
 	task_manager.get_random_task():unregister_target(self)
 end
@@ -135,8 +153,11 @@ function se_item_torch:on_register()
 	else
 		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
 	end	
+
+	SendScriptCallback("server_entity_on_register", self, "se_item_torch")
 end
 function se_item_torch:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_item_torch")
 	--' Отрегистрация в таскменеджере
 	task_manager.get_random_task():unregister_target(self)
 end
@@ -146,6 +167,16 @@ end
 class "se_physic" (cse_alife_object_physic)
 function se_physic:__init (section) super (section)
 end
+
+function se_physic:on_register()
+	cse_alife_object_physic.on_register(self)
+	SendScriptCallback("server_entity_on_register", self, "se_physic")
+end
+function se_physic:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_physic")
+	cse_alife_object_physic.on_unregister(self)
+end
+
 function se_physic:keep_saved_data_anyway()
 	return true
 end
