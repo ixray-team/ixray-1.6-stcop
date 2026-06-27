@@ -581,10 +581,13 @@ void CInput::acquire()
 	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, true);
 }
 
+bool gamepad_feedback_enabled = true;
 void  CInput::feedback(u16 s1, u16 s2, float time)
 {
-	if (GetControllerMode())
-		SDL_RumbleGamepad(pGamePad, s1, s2, time*1000);
+	if (GetControllerMode() && gamepad_feedback_enabled)
+	{
+		SDL_RumbleGamepad(pGamePad, s1, s2, time * 1000);
+	}
 }
 
 bool CInput::FillVendorInfo(const CInputDevice& device, CInputDeviceVendorInfo& info) noexcept
