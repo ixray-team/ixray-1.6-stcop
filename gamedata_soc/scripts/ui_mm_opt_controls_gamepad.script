@@ -23,5 +23,6 @@ function opt_controls_gamepad:InitControls(x, y, xml, handler)
 	handler:addComboBox(self, true, "ui_mm_gamepad_prefix", "gamepad_prefix_override", 4, false, system_depends.sdApplyOnChange)
 	handler:addTrack(self, true, "st_gamepad_sensibility", "gamepad_sens", 0.01, false, "float", true, system_depends.sdNothing)
 	handler:addCheck(self, true, "st_gamepad_invert", "gamepad_invert", system_depends.sdNothing)
+	handler:addCheck(self, true, "ui_mm_gamepad_vibration", "gamepad_vibration", system_depends.sdNothing)
 
 end
