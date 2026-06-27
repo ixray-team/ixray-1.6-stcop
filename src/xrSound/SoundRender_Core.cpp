@@ -424,6 +424,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 
 	geom_ENV = new CDB::MODEL();
 	geom_ENV->build(verts, H.vertcount, tris, H.facecount);
+	geom_ENV->wait_loading();
 
 	geom_ch->close();
 	geom->close();
