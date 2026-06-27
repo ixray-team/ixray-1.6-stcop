@@ -119,7 +119,10 @@ void	CObjectList::SingleUpdate	(CObject* O)
 
 //	Msg							("[%d][0x%08x]IAmNotACrowAnyMore (CObjectList::SingleUpdate)", Device.dwFrame, dynamic_cast<void*>(O));
 
-	O->UpdateCL					();
+	{
+		PROF_MESSAGE(*shared_str().printf("CObjectList::SingleUpdate | Object: %s", *O->cNameSect()));
+		O->UpdateCL();
+	}
 
 	VERIFY3						(O->dbg_update_cl == Device.dwFrame, "Broken sequence of calls to 'UpdateCL'",*O->cName());
 #if 0//ndef DEBUG
