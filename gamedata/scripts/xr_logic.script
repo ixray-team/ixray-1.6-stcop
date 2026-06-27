@@ -758,11 +758,13 @@ function cond_name(cond, etalon)
 end
 
 function try_switch_to_another_section(npc, st, actor)
+    tracy.ZoneBeginN("try_switch_to_another_section")
 	local l = st.logic
 	local npc_id = npc:id()
 
 	if not actor then
 		abort("try_switch_to_another_section(): error in implementation of scheme '%s': actor is nil", st.scheme)
+        tracy.ZoneEnd()
 		return
 	end
 
@@ -852,7 +854,7 @@ function try_switch_to_another_section(npc, st, actor)
 			break
 		end
 	end
-
+    tracy.ZoneEnd()
 	return switched
 end
 

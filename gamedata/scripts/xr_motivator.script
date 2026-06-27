@@ -412,6 +412,7 @@ function motivator_binder:use_callback(obj, who)
 end
 
 function motivator_binder:update(delta)
+    tracy.ZoneBeginN("motivator_binder:update")
 	object_binder.update(self, delta)
 
 	if xr_combat_ignore.fighting_with_actor_npcs[self.object:id()] and self.object:best_enemy() == nil then
@@ -517,6 +518,8 @@ function motivator_binder:update(delta)
 	if object then
 		SendScriptCallback("npc_on_update", object, db.storage[self.object:id()])
 	end
+
+     tracy.ZoneEnd()
 end
 
 function motivator_binder:reload(section)
