@@ -247,12 +247,13 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 		T->dummy		= u32(ids[id_back]<<16) | u32(ids[id_front]);
 	}
 
-	geom_ENV			= new CDB::MODEL();
-	geom_ENV->build		(verts, H.vertcount, tris, H.facecount);
+	geom_ENV = new CDB::MODEL();
+	geom_ENV->build(verts, H.vertcount, tris, H.facecount);
+	geom_ENV->wait_loading();
 
-	geom_ch->close			();
-	geom->close				();
-	xr_free					(_data);
+	geom_ch->close();
+	geom->close();
+	xr_free(_data);
 }
 
 void	CSoundRender_Core::create				( ref_sound& S, const char* fName, esound_type sound_type, int game_type )
