@@ -619,33 +619,54 @@ ICF u32 Snd_ReadFromSource(sound_source& source, float** buffer, u32 frames)
 	return frames - last_frames;
 }
 
-ICF bool Snd_SlotOcclusion(u32 slot_idx, float dt, float* occ_volume)
+enum class ESlotOcclusionResult
+{
+	False,
+	True,
+	SOM
+};
+
+ICF ESlotOcclusionResult Snd_SlotOcclusion(u32 slot_idx, float dt, float* occ_volume)
 {
 	auto& slot = mixer.slots[slot_idx - 1];
-	if (slot.state != Mixer::State::Playing) {
-		return false;
+	if (slot.state != Mixer::State::Playing)
+	{
+		return ESlotOcclusionResult::False;
 	}
+
+	ESlotOcclusionResult Result = ESlotOcclusionResult::True;
 
 	xrSRWLockGuard guard2(mixer.source_lock, true);
 	auto& source = mixer.snd_sources.at(slot.sound_name.c_str());
-	if (source.pub.channels_count == 1 && slot.flags & (u32)Mixer::Flags::Spatial) {
+	if (source.pub.channels_count == 1 && slot.flags & (u32)Mixer::Flags::Spatial)
+	{
 		// Check range
 		Fvector& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
 		Fvector& distances = slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
 		float dist = mixer.P.distance_to(pos);
-		if (dist > distances.y) {
-			if (occ_volume) *occ_volume = 0.0f;
-			return false;
+		if (dist > distances.y)
+		{
+			if (occ_volume)
+			{
+				*occ_volume = 0.0f;
+			}
+			return ESlotOcclusionResult::False;
 		}
 
-		if (occ_volume != nullptr) {
+		if (occ_volume != nullptr)
+		{
 			float occ = Sound->get_occlusion_to(mixer.P, pos);
 			clamp(occ, 0.f, 1.f);
 			*occ_volume = occ;
+
+			if (occ < 0.01f)
+			{
+				Result = ESlotOcclusionResult::SOM;
+			}
 		}
 	}
 
-	return true;
+	return Result;
 }
 
 ICF u32 Snd_FindAvailableCacheLine(sound_source& source, u32 position)
@@ -879,7 +900,8 @@ ICF void Snd_PrecacheRenderCallback()
 	}
 
 	for (size_t i = 0; i < mixer.slots.size() - 1; i++) {
-		if (Snd_SlotOcclusion(i + 1, dt, nullptr)) {
+		if (Snd_SlotOcclusion(i + 1, dt, nullptr) != ESlotOcclusionResult::False)
+		{
 			Snd_AcquireHRTFSlot(i + 1);
 			Snd_UpdateCache(i + 1);
 		} else {
@@ -1027,14 +1049,16 @@ ICF void Snd_MixerRenderCallback(float* buffer)
 			continue;
 		}
 
-		auto& slot = mixer.slots[i];
-		auto& source = mixer.snd_sources.at(mixer.slots[i].sound_name);
+		auto& Slot = mixer.slots[i];
+		auto& Source = mixer.snd_sources.at(mixer.slots[i].sound_name);
 
 		float occ_volume = 1.0f;
-		if (!Snd_SlotOcclusion(i + 1, dt, &occ_volume)) {
+		ESlotOcclusionResult OCCResult = Snd_SlotOcclusion(i + 1, dt, &occ_volume); 
+		if (OCCResult == ESlotOcclusionResult::False)
+		{
 			// TODO: hack for simulated sounds
-			slot.position = std::min(slot.position + SND_BLOCKSIZE, source.pub.frames_total);
-			if (slot.position == source.pub.frames_total && (slot.flags & (u16)Mixer::Flags::Looped) == 0) {
+			Slot.position = std::min(Slot.position + SND_BLOCKSIZE, Source.pub.frames_total);
+			if (Slot.position == Source.pub.frames_total && (Slot.flags & (u16)Mixer::Flags::Looped) == 0) {
 				MixerNewState(i + 1, Mixer::State::Stopped);
 				continue;
 			}
@@ -1057,14 +1081,14 @@ ICF void Snd_MixerRenderCallback(float* buffer)
 			continue;
 		}
 
-		Fvector& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
-		Fvector& volumes = slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel];
+		Fvector& pos = Slot.parameters[(u32)Mixer::ParameterId::Position];
+		Fvector& volumes = Slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel];
 		float begin_factor = 1.0f, end_factor = 1.0f;
 
 		// Deferred stopping
-		bool is_music = (slot.flags & (u16)Mixer::Flags::Intro);
+		bool IsMusic = (Slot.flags & (u16)Mixer::Flags::Intro);
 
-		if (slot.flags & (u16)Mixer::Flags::NoOCC)
+		if (Slot.flags & (u16)Mixer::Flags::NoOCC && OCCResult != ESlotOcclusionResult::SOM)
 		{
 			occ_volume = 1.f;
 		}
@@ -1076,15 +1100,15 @@ ICF void Snd_MixerRenderCallback(float* buffer)
 		//}
 		//else
 		{
-			slot.fade_volume = 1.f;
+			Slot.fade_volume = 1.f;
 		}
 		
-		if (slot.stopping_position != (u32)-1) {
-			u32 stopping_total = source.pub.frames_total - slot.stopping_position;
+		if (Slot.stopping_position != (u32)-1) {
+			u32 stopping_total = Source.pub.frames_total - Slot.stopping_position;
 			if (stopping_total != 0) {
-				u32 begin_offset = slot.position - slot.stopping_position;
-				u32 write_count = is_music ? SND_BLOCKSIZE : (u32)((float)SND_BLOCKSIZE * mixer.time_factor);
-				u32 end_offset = std::min(begin_offset + write_count, source.pub.frames_total - 1);
+				u32 begin_offset = Slot.position - Slot.stopping_position;
+				u32 write_count = IsMusic ? SND_BLOCKSIZE : (u32)((float)SND_BLOCKSIZE * mixer.time_factor);
+				u32 end_offset = std::min(begin_offset + write_count, Source.pub.frames_total - 1);
 				begin_factor = 1.0f - ((float)begin_offset / (float)(stopping_total - 1));
 				end_factor = 1.0f - ((float)end_offset / (float)(stopping_total - 1));
 			}
@@ -1094,24 +1118,24 @@ ICF void Snd_MixerRenderCallback(float* buffer)
 		float slot_volume = volumes.x * volumes.y * volumes.z;
 
 		float vol_mixer = mixer.effect_volume;
-		if (slot.flags & (u16)Mixer::Flags::Music) {
+		if (Slot.flags & (u16)Mixer::Flags::Music) {
 			vol_mixer = mixer.music_volume;
-		} else if (slot.flags & (u16)Mixer::Flags::Shooting) {
+		} else if (Slot.flags & (u16)Mixer::Flags::Shooting) {
 			vol_mixer = mixer.shooting_volume;
 		}
 
-		float volume_final = occ_volume * slot_volume * vol_mixer * slot.fade_volume;
+		float volume_final = occ_volume * slot_volume * vol_mixer * Slot.fade_volume;
 		begin_factor *= volume_final;
 		end_factor *= volume_final;
 
-		float left_panning = slot.parameters[(u32)Mixer::ParameterId::Panning].x;
-		float right_panning = slot.parameters[(u32)Mixer::ParameterId::Panning].y;
+		float left_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].x;
+		float right_panning = Slot.parameters[(u32)Mixer::ParameterId::Panning].y;
 
 		// Spatial processing
-		if (!(slot.flags & (u32)Mixer::Flags::Intro) && source.pub.channels_count == 1) {
+		if (!(Slot.flags & (u32)Mixer::Flags::Intro) && Source.pub.channels_count == 1) {
 			PROF_EVENT("Slot Spatial");
 
-			if (slot.flags & (u32)Mixer::Flags::Spatial) {
+			if (Slot.flags & (u32)Mixer::Flags::Spatial) {
 #if !defined(DISABLE_STEAM_AUDIO) || 0//!defined(DISABLE_RESONANCE_AUDIO)
 				if (psSoundFlags.is(ss_HRTF) && mixer.hrtf_enabled)
 				{
@@ -1122,22 +1146,22 @@ ICF void Snd_MixerRenderCallback(float* buffer)
 				{
 					dsp_stuff stuff = {
 						.dt = mixer.dt,
-						.panning = slot.panning,
+						.panning = Slot.panning,
 						.camera_position = &mixer.P,
 						.camera_direction = &mixer.D,
 						.camera_normal = &mixer.N,
 						.obj_position = &pos
 					};
 
-					DSP_SpatialProcess(process_buffer, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], stuff, false /* slot.flags& (u32)Mixer::Flags::NoOCC */);
+					DSP_SpatialProcess(process_buffer, Slot.parameters[(u32)Mixer::ParameterId::DistanceRange], stuff, false /* slot.flags& (u32)Mixer::Flags::NoOCC */);
 				}
 			}
 
 			if (mixer.editor_zone) {
-				slot.zone_idx = 1;
+				Slot.zone_idx = 1;
 			}
 
-			u32 slot_idx = slot.zone_idx;
+			u32 slot_idx = Slot.zone_idx;
 			if (slot_idx && !mixer.zones.empty()) {
 				sound_zone_params& zone = mixer.zones.at(slot_idx - 1);
 				zone.use_count++;
@@ -1154,7 +1178,7 @@ ICF void Snd_MixerRenderCallback(float* buffer)
 		}
 
 		// TODO(vertver): push data to buses instead of main
-		int bus_idx = is_music ? SND_BUS_MUSIC : SND_BUS_EFFECTS;
+		int bus_idx = IsMusic ? SND_BUS_MUSIC : SND_BUS_EFFECTS;
 		float* bus_buffer[SND_CHANNEL_COUNT] = {};
 		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
 			bus_buffer[ch] = mixer.buses[bus_idx].data[ch];
@@ -1832,14 +1856,12 @@ Mixer::GetSlots()
 	return mixer.slots;
 }
 
-xrSRWLock&
-Mixer::GetUpdateMutex()
+xrSRWLock& Mixer::GetUpdateMutex()
 {
 	return mixer.update_lock;
 }
 
-xrSRWLock&
-Mixer::GetManageMutex()
+xrSRWLock& Mixer::GetManageMutex()
 {
 	return mixer.manage_lock;
 }
@@ -1849,8 +1871,7 @@ sound_stats* Mixer::GetStats()
 	return &mixer.stats;
 }
 
-float 
-Mixer::GetPlaytime(u32 slot)
+float Mixer::GetPlaytime(u32 slot)
 {
 	if (slot == 0) {
 		return 0.0f;
@@ -1859,8 +1880,7 @@ Mixer::GetPlaytime(u32 slot)
 	return (((float)mixer.slots[slot - 1].position) / (float)SND_SAMPLERATE);
 }
 
-float
-Mixer::GetDuration(u32 slot)
+float Mixer::GetDuration(u32 slot)
 {
 	xrSRWLockGuard guard(mixer.source_lock, true);
 
@@ -1876,14 +1896,12 @@ Mixer::GetDuration(u32 slot)
 	return (float)source.pub.frames_total / (float)SND_SAMPLERATE;
 }
 
-bool 
-Mixer::SlotIsRelated(u32 slot)
+bool Mixer::SlotIsRelated(u32 slot)
 {
-	return Snd_SlotOcclusion(slot, 0.0f, nullptr);
+	return Snd_SlotOcclusion(slot, 0.0f, nullptr) != ESlotOcclusionResult::False;
 }
 
-u32
-Mixer::GetGameType(u32 slot)
+u32 Mixer::GetGameType(u32 slot)
 {
 	xrSRWLockGuard guard(mixer.source_lock, true);
 
