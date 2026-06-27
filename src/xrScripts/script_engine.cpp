@@ -18,10 +18,8 @@
 #include <luabind/class_info.hpp>
 
 #ifdef IXRAY_PROFILER_TRACY
-#undef TRACY_ON_DEMAND
-#include <tracy/TracyLua.hpp>
-#define TRACY_ON_DEMAND
-#endif // IXRAY_PROFILER_TRACY
+	#include <tracy/TracyLua.hpp>
+#endif
 
 SCRIPTS_API CScriptEngine* g_pScriptEngine = nullptr;
 
@@ -194,7 +192,7 @@ void CScriptEngine::init()
 	luabind::open(lua());
 #ifdef IXRAY_PROFILER_TRACY
 	tracy::LuaRegister(lua());
-#endif // IXRAY_PROFILER_TRACY
+#endif
 
 
 	luabind::bind_class_info(lua());

@@ -150,7 +150,6 @@ void CRenderDevice::on_idle		()
 							g_pGamePersistent->m_pMainMenu			   &&
 							g_pGamePersistent->m_pMainMenu->IsActive();
 
-	PROF_FRAME("Main Thread");
 	Platform::SetThreadName("X-Ray Primary Thread");
 
 	Device.BeginRender();
