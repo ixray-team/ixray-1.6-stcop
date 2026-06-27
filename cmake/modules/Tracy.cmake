@@ -7,5 +7,7 @@ FetchContent_Declare(
 )
 
 set(TRACY_STATIC OFF CACHE BOOL "" FORCE)
+set(TRACY_NO_VSYNC_CAPTURE ON CACHE BOOL "" FORCE)
+set(TRACY_ON_DEMAND ON CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(Tracy)
