@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(IXRAY_PROFILER)
+#ifdef IXRAY_PROFILER
 #	include <optick.h>
 #	define PROF_THREAD(Name) OPTICK_THREAD(Name)
 #	define PROF_START_THREAD(Name) OPTICK_START_THREAD(Name)
@@ -10,20 +10,19 @@
 #	define PROF_SAVE_CAPTURE(Name) OPTICK_SAVE_CAPTURE(Name)
 #	define PROF_FRAME(Name) OPTICK_FRAME(Name)
 #	define PROF_EVENT(Name) OPTICK_EVENT(Name)
-#elif defined(IXRAY_PROFILER_TRACY)
-#   define TRACY_ENABLE
-#   define TRACY_NO_FRAME_IMAGE
-#   define TRACY_ON_DEMAND
-#   include <tracy/Tracy.hpp>
+#	define PROF_MESSAGE(Name)
+#elifdef IXRAY_PROFILER_TRACY
+#	include <tracy/Tracy.hpp>
 #   define PROF_THREAD(Name)
-#   define PROF_START_THREAD(Name) // Не нужно в Tracy - потоки определяются автоматически
-#   define PROF_STOP_THREAD() // Не нужно в Tracy
+#   define PROF_START_THREAD()
+#   define PROF_STOP_THREAD()
 #   define PROF_START_CAPTURE()
 #   define PROF_STOP_CAPTURE()
 #   define PROF_SAVE_CAPTURE(Name)
-#   define PROF_FRAME(Name) FrameMarkNamed(Name)
+#   define PROF_FRAME(Name) FrameMark;
 #	define PROF_EVENT(Name) ZoneScopedN(Name);
-#else
+#	define PROF_MESSAGE(Name) TracyMessageL(Name)
+#else // no profiler
 #	define PROF_THREAD(Name)
 #	define PROF_START_THREAD(Name)
 #	define PROF_STOP_THREAD()
@@ -32,5 +31,6 @@
 #	define PROF_SAVE_CAPTURE(Name)
 #	define PROF_FRAME(Name)
 #	define PROF_EVENT(Name)
+#	define PROF_MESSAGE(Name)
 #	define PROF_EVENT_DYNAMIC(...) {};
 #endif
