@@ -180,7 +180,14 @@ void CUIGameSP::OnAction(CActor* actor, EGameActions action)
 			if (!PdaMenu()->IsShown())
 			{
 				PdaMenu()->SetActiveSubdialog("eptMap");
-				ShowPdaMenu();
+				if (actor->HudAnimator()->PdaAnimator() != nullptr)
+				{
+					actor->HudAnimator()->PdaAnimator()->SwitchAnimator();
+				}
+				else
+				{
+					ShowPdaMenu();
+				}
 			}
 			else
 			{
@@ -197,7 +204,14 @@ void CUIGameSP::OnAction(CActor* actor, EGameActions action)
 			if (!PdaMenu()->IsShown())
 			{
 				PdaMenu()->SetActiveSubdialog("eptContacts");
-				ShowPdaMenu();
+				if (actor->HudAnimator()->PdaAnimator() != nullptr)
+				{
+					actor->HudAnimator()->PdaAnimator()->SwitchAnimator();
+				}
+				else
+				{
+					ShowPdaMenu();
+				}
 			}
 			else
 			{
