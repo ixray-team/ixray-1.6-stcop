@@ -882,4 +882,7 @@
 	<string id="ui_pad_layout_quick_slot_4">
 		<text>Quick slot 4</text>
 	</string>
+	<string id="ui_mm_gamepad_vibration">
+		<text>Vibration</text>
+	</string>
 </string_table>
