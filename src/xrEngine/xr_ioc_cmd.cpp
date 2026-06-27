@@ -24,6 +24,7 @@ float SheduleScaleDedicated = 0;
 ENGINE_API float ps_render_scale = 1.0f;
 ENGINE_API u32 ps_render_scale_preset = 0;
 u32 ps_gamepad_prefix_override = 0;
+extern bool gamepad_feedback_enabled;
 
 xr_token vid_bpp_token[] =
 {
@@ -892,6 +893,7 @@ void CCC_Register()
 	CMD4(CCC_Float,		"gamepad_sens",			&psGamepadSens,		0.1f, 0.8f);
 	CMD2(CCC_Boolean,	"gamepad_invert",		&psGamepadInvert);
 	CMD1(CCC_GamepadPrefixOverride, "gamepad_prefix_override");
+	CMD2(CCC_Boolean,	"gamepad_vibration",	&gamepad_feedback_enabled);
 
 #ifndef MASTER_GOLD
 	// Other
