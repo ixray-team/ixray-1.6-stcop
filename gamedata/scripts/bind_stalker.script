@@ -414,7 +414,6 @@ end
 
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:update(delta)
-    tracy.ZoneBeginN("actor_binder:update")
 	object_binder.update(self, delta)
 
 	if string.find(command_line(), "-designer") then
@@ -553,7 +552,6 @@ function actor_binder:update(delta)
 	
 	SendScriptCallback("update", delta) -- IX-Ray
 	SendScriptCallback("actor_on_update", self, delta) -- IX-Ray
-    tracy.ZoneEnd()
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)
