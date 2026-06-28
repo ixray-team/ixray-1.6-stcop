@@ -18,7 +18,9 @@
 #include <luabind/class_info.hpp>
 
 #ifdef IXRAY_PROFILER_TRACY
-	#include <tracy/TracyLua.hpp>
+	#define TRACY_CALLSTACK 16
+		#include <tracy/TracyLua.hpp>
+	#undef TRACY_CALLSTACK
 #endif
 
 SCRIPTS_API CScriptEngine* g_pScriptEngine = nullptr;
