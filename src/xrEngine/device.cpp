@@ -149,7 +149,9 @@ void CRenderDevice::on_idle		()
 	bool main_menu_active = g_pGamePersistent						   &&
 							g_pGamePersistent->m_pMainMenu			   &&
 							g_pGamePersistent->m_pMainMenu->IsActive();
-
+#ifdef IXRAY_PROFILER // optick
+	PROF_FRAME("CPU FRAME BEGIN");
+#endif
 	Platform::SetThreadName("X-Ray Primary Thread");
 
 	Device.BeginRender();
