@@ -13,6 +13,7 @@
 #	define PROF_MESSAGE(Name)
 #elifdef IXRAY_PROFILER_TRACY
 #	include <tracy/Tracy.hpp>
+#	define TRACY_CALLSTACK 32 // Lua callstack & ZoneScoped & etc.
 #   define PROF_THREAD(Name)
 #   define PROF_START_THREAD()
 #   define PROF_STOP_THREAD()
