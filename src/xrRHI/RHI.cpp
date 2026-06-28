@@ -236,7 +236,9 @@ void CRHI::CopySurface(IRHISurface* Dest, IRHISurface* Source)
 void CRHI::Present()
 {
 	DevicePtr->Present();
-	PROF_FRAME("CPU FRAME BEGIN");
+#ifdef IXRAY_PROFILER_TRACY
+	PROF_FRAME();
+#endif
 }
 
 xr_vector<shared_str> CRHI::DisplaySizeArray()
