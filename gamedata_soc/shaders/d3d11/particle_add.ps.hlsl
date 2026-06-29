@@ -2,11 +2,10 @@
 
 struct v2p
 {
-    float2 tc0 : TEXCOORD0;
+    float2 tc : TEXCOORD0;
     float4 c : COLOR0;
 
-    float4 tctexgen : TEXCOORD1;
-
+    float3 tctexgen : TEXCOORD1;
     float4 hpos : SV_POSITION;
     float fog : FOG;
 };
@@ -16,7 +15,7 @@ struct v2p
 
 void main(v2p I, out IXRayForward O)
 {
-    float4 result = I.c * s_base.Sample(smp_base, I.tc0);
+    float4 result = I.c * s_base.Sample(smp_base, I.tc);
 
 #if defined(USE_SOFT_PARTICLES) && !defined(DISABLE_SOFT_PARTICLES)
     float3 Point = GbufferGetPoint(I.hpos.xy);
