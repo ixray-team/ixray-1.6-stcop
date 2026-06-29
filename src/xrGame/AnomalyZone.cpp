@@ -22,6 +22,7 @@
 #include "AnomalyElectricCurve.h"
 #include "AnomalyMovement.h"
 #include "AnomalyRainCollide.h"
+#include "AnomalyGravity.h"
 
 #define WIND_RADIUS (4*Radius())	//расстояние до актера, когда появляется ветер 
 #define FASTMODE_DISTANCE (50.f)	//distance to camera from sphere, when zone switches to fast update sequence
@@ -69,6 +70,7 @@ CAnomalyZone::CAnomalyZone(void)
 	CreateComponent<TAnomalyElectricCurve>();
 	CreateComponent<TAnomalyMovement>();
 	CreateComponent<TAnomalyRainCollide>();
+	CreateComponent<TAnomalyGravity>();
 }
 
 CAnomalyZone::~CAnomalyZone(void) 
@@ -362,6 +364,11 @@ void CAnomalyZone::Load(const char* section)
 	{
 		AnomalyRainCollide->Load(section);
 	}
+
+	if (TAnomalyGravity* AnomalyGravity = GetComponent<TAnomalyGravity>())
+	{
+		AnomalyGravity->Load(section);
+	}
 }
 
 bool CAnomalyZone::net_Spawn(CSE_Abstract* DC) 
@@ -445,6 +452,8 @@ bool CAnomalyZone::net_Spawn(CSE_Abstract* DC)
 		setEnabled(true);
 	}
 
+	m_initial_spawn_position = Z->o_Position;
+
 	if (TAnomalyElectricCurve* AnomalyElectricCurve = GetComponent<TAnomalyElectricCurve>())
 	{
 		AnomalyElectricCurve->SetInitialSpawnPosition(Z->o_Position);
@@ -456,7 +465,10 @@ bool CAnomalyZone::net_Spawn(CSE_Abstract* DC)
 		AnomalyMovement->SetInitialSpawnPosition(Z->o_Position);
 	}
 
-	m_initial_spawn_position = Z->o_Position;
+	if (TAnomalyGravity* AnomalyGravity = GetComponent<TAnomalyGravity>())
+	{
+		AnomalyGravity->net_Spawn(DC);
+	}
 
 	return true;
 }
@@ -616,6 +628,7 @@ void CAnomalyZone::UpdateComponents(bool isUpdateCL)
 	TAnomalyElectricCurve* AnomalyElectricCurve = GetComponent<TAnomalyElectricCurve>();
 	TAnomalyMovement* AnomalyMovement = GetComponent<TAnomalyMovement>();
 	TAnomalyRainCollide* AnomalyRainCollide = GetComponent<TAnomalyRainCollide>();
+	TAnomalyGravity* AnomalyGravity = GetComponent<TAnomalyGravity>();
 
 	if (AnomalyRainCollide != nullptr && isUpdateCL)
 	{
@@ -627,21 +640,21 @@ void CAnomalyZone::UpdateComponents(bool isUpdateCL)
 		if (AnomalyMovement->IsEnabled())
 		{
 			IsNeedUpdate = true;
-		}
 
-		if (AnomalyMovement->IsNeedScanObjects())
-		{
-			IsNeedScanObjects = true;
-		}
+			if (AnomalyMovement->IsNeedScanObjects())
+			{
+				IsNeedScanObjects = true;
+			}
 
-		if (AnomalyMovement->GetScanRadius() > scan_radius)
-		{
-			scan_radius = AnomalyMovement->GetScanRadius();
-		}
+			if (AnomalyMovement->GetScanRadius() > scan_radius)
+			{
+				scan_radius = AnomalyMovement->GetScanRadius();
+			}
 
-		if (AnomalyMovement->GetBarierRadius() > barier_radius)
-		{
-			barier_radius = AnomalyMovement->GetBarierRadius();
+			if (AnomalyMovement->GetBarierRadius() > barier_radius)
+			{
+				barier_radius = AnomalyMovement->GetBarierRadius();
+			}
 		}
 	}
 
@@ -650,21 +663,44 @@ void CAnomalyZone::UpdateComponents(bool isUpdateCL)
 		if (AnomalyElectricCurve->IsEnabled())
 		{
 			IsNeedUpdate = true;
-		}
 
-		if (AnomalyElectricCurve->IsNeedScanObjects())
-		{
-			IsNeedScanObjects = true;
-		}
+			if (AnomalyElectricCurve->IsNeedScanObjects())
+			{
+				IsNeedScanObjects = true;
+			}
 
-		if (AnomalyElectricCurve->GetScanRadius() > scan_radius)
-		{
-			scan_radius = AnomalyElectricCurve->GetScanRadius();
-		}
+			if (AnomalyElectricCurve->GetScanRadius() > scan_radius)
+			{
+				scan_radius = AnomalyElectricCurve->GetScanRadius();
+			}
 
-		if (AnomalyElectricCurve->GetBarierRadius() > barier_radius)
+			if (AnomalyElectricCurve->GetBarierRadius() > barier_radius)
+			{
+				barier_radius = AnomalyElectricCurve->GetBarierRadius();
+			}
+		}
+	}
+
+	if (AnomalyGravity != nullptr)
+	{
+		if (AnomalyGravity->IsEnabled())
 		{
-			barier_radius = AnomalyElectricCurve->GetBarierRadius();
+			IsNeedUpdate = true;
+
+			if (AnomalyGravity->IsNeedScanObjects())
+			{
+				IsNeedScanObjects = true;
+			}
+
+			if (AnomalyGravity->GetScanRadius() > scan_radius)
+			{
+				scan_radius = AnomalyGravity->GetScanRadius();
+			}
+
+			if (AnomalyGravity->GetBarierRadius() > barier_radius)
+			{
+				barier_radius = AnomalyGravity->GetBarierRadius();
+			}
 		}
 	}
 
@@ -688,11 +724,12 @@ void CAnomalyZone::UpdateComponents(bool isUpdateCL)
 	{
 		AnomalyElectricCurve->Update(isUpdateCL);
 	}
-	
-	if (AnomalyMovement != nullptr && AnomalyMovement->IsEnabled())
+
+	if (AnomalyGravity != nullptr && isUpdateCL)
 	{
-		OnMove();
+		AnomalyGravity->Update();
 	}
+	
 
 	bool IsNeedActivate = false;
 	if (AnomalyMovement != nullptr && AnomalyMovement->AlwaysTheCrow())
@@ -703,6 +740,16 @@ void CAnomalyZone::UpdateComponents(bool isUpdateCL)
 	if (AnomalyElectricCurve != nullptr && AnomalyElectricCurve->AlwaysTheCrow())
 	{
 		IsNeedActivate = true;
+	}
+
+	if (AnomalyGravity != nullptr && AnomalyGravity->AlwaysTheCrow())
+	{
+		IsNeedActivate = true;
+	}
+
+	if (AnomalyMovement != nullptr && AnomalyMovement->IsEnabled())
+	{
+		OnMove();
 	}
 
 	if (!processing_enabled() && IsNeedActivate)
@@ -1841,8 +1888,10 @@ bool CAnomalyZone::feel_touch_on_contact	(CObject *O)
 
 bool CAnomalyZone::AlwaysTheCrow()
 {
-	TAnomalyMovement* AnomalyMovement = GetComponent<TAnomalyMovement>();
 	TAnomalyElectricCurve* AnomalyElectricCurve = GetComponent<TAnomalyElectricCurve>();
+	TAnomalyMovement* AnomalyMovement = GetComponent<TAnomalyMovement>();
+	TAnomalyRainCollide* AnomalyRainCollide = GetComponent<TAnomalyRainCollide>();
+	TAnomalyGravity* AnomalyGravity = GetComponent<TAnomalyGravity>();
 
 	if (AnomalyMovement != nullptr && AnomalyMovement->AlwaysTheCrow())
 	{
@@ -1853,6 +1902,17 @@ bool CAnomalyZone::AlwaysTheCrow()
 	{
 		return true;
 	}
+
+	if (AnomalyGravity != nullptr && AnomalyGravity->AlwaysTheCrow())
+	{
+		return true;
+	}
+
+	if (AnomalyRainCollide != nullptr && AnomalyRainCollide->AlwaysTheCrow())
+	{
+		return true;
+	}
+
 
 	bool b_idle = ZoneState()==eZoneStateIdle || ZoneState()==eZoneStateDisabled;
  	if(!b_idle || (m_zone_flags.test(eAlwaysFastmode) && IsEnabled()) )
@@ -1960,6 +2020,11 @@ void CAnomalyZone::save							(NET_Packet &output_packet)
 {
 	inherited::save			(output_packet);
 	output_packet.w_u8		(static_cast<u8>(m_eZoneState));
+
+	if (TAnomalyGravity* AnomalyGravity = GetComponent<TAnomalyGravity>())
+	{
+		AnomalyGravity->save(output_packet);
+	}
 }
 
 void CAnomalyZone::load							(IReader &input_packet)
@@ -1972,4 +2037,9 @@ void CAnomalyZone::load							(IReader &input_packet)
 		m_eZoneState = eZoneStateDisabled;
 	else
 		m_eZoneState = eZoneStateIdle;
+
+	if (TAnomalyGravity* AnomalyGravity = GetComponent<TAnomalyGravity>())
+	{
+		AnomalyGravity->load(input_packet);
+	}
 }
