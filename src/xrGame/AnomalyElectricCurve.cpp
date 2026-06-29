@@ -100,7 +100,7 @@ void TAnomalyElectricCurve::Load(const char* section)
 			m_cascade_curves = READ_IF_EXISTS(pSettings, r_bool, sect, "use_cascade_electric_curves", m_cascade_curves); // цепные молнии
 			if (m_cascade_curves)
 			{
-				m_cascade_curves_by_anomalies = READ_IF_EXISTS(pSettings, r_bool, sect, "cascade_curves_between_anomalies", m_cascade_curves_by_anomalies); // бить между аномалиями
+				m_touch_objects_by_curves = READ_IF_EXISTS(pSettings, r_bool, sect, "use_touch_objects_by_curves", m_touch_objects_by_curves); // щупать неживые обьекты по близости
 			}
 
 			m_snd_emmiter_electric_core_loop.push_back(new CRandomSoundEmmiter(sect, "sounds_electric_core_loop"));
@@ -231,16 +231,22 @@ void TAnomalyElectricCurve::Update(bool isUpdateCL)
 				spline.m_upd_timer = 0.f;
 
 				bool needTrace = true;
-				if (cnt > 0)
+				if (m_touch_objects_by_curves && cnt > 0)
 				{
 					CGameObject* obj = m_currentAnomalyObject->lastScannedObjects[Random.randI(0, cnt - 1)];
 					if (obj != nullptr)
 					{
-						float distance = obj->Position().distance_to(XFORM().c);
-						if (distance <= max_trace_curve_distance && Random.randF(0.0f, 100.0f) <= 100 - ((distance * 100) / max_trace_curve_distance))
+						if (CEntityAlive* entity = obj->cast_entity_alive())
 						{
-							spline.destinationPos = obj->Position();
-							needTrace = false;
+							if (!entity->g_Alive())
+							{
+								float distance = obj->Position().distance_to(XFORM().c);
+								if (distance <= max_trace_curve_distance && Random.randF(0.0f, 100.0f) <= 100 - ((distance * 100) / max_trace_curve_distance))
+								{
+									spline.destinationPos = obj->Position();
+									needTrace = false;
+								}
+							}
 						}
 					}
 				}

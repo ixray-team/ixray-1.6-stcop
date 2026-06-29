@@ -89,7 +89,7 @@ Fvector TAnomalyMovement::GetLVPos(Fvector newPos)
 
 bool TAnomalyMovement::IsEnabled()
 {
-	return m_use_movement && m_currentAnomalyObject && m_currentAnomalyObject->IsEnabled();
+	return m_use_movement && m_currentAnomalyObject != nullptr && m_currentAnomalyObject->IsEnabled();
 }
 
 bool TAnomalyMovement::AlwaysTheCrow()

@@ -28,6 +28,7 @@ public:
 	void Load(const char* section);
 	void OnRainCollide(Fvector rainCollisionPosition);
 	void Update();
+	bool AlwaysTheCrow() { return false; }
 
 private:
 	ECS_COMPONENT(TAnomalyRainCollide)
