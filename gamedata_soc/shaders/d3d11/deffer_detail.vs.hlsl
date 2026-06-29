@@ -51,7 +51,7 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
     float3x3 m_rotate = QuaternionToMatrix(float4(det.quat, w));
 
     float3 pos_world = mul(m_rotate, I.pos.xyz * det.scale) + det.pos;
-    float3 N = mul(m_rotate, unpack_normal(I.N.zyx));
+    float3 N = mul(m_rotate, unpack_normal(I.N.xyz));
     
     float hemi = abs(det.hemi);
     float sun = sign(det.hemi) * 0.25f + 0.25f;
@@ -63,15 +63,16 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
 #endif
     
 #ifdef USE_TREEWAVE
-    float dp = calc_cyclic(dot(pos_world, wave));
+    float dp = calc_cyclic(dot(pos_world, wave.xyz) + wave.w);
     float H = I.pos.y * det.scale;
     float inten = H * dp;
     
     pos.xz += calc_xz_wave(dir2D.xz * inten, I.pos.w);
     
 	#ifndef DISABLE_MOTION_VECTORS
-		float dp_old = calc_cyclic(dot(pos_world, wave_old));
+		float dp_old = calc_cyclic(dot(pos_world, wave_old.xyz) + wave_old.w);
 		float inten_old = H * dp_old;
+		
 		pos_old.xz += calc_xz_wave(dir2D_old.xz * inten_old, I.pos.w);
 	#endif
 #endif
