@@ -33,6 +33,8 @@ struct _flags
 
 	ICF bool	is_any	(const T mask)						const	{ return bool(!!(flags&mask));			}
 	ICF bool	test	(const T mask)						const	{ return bool(!!(flags&mask));			}
+	template<XRay::Concepts::Enum E>
+	ICF bool	test	(const E mask)						const	{ return bool(!!(flags&(std::underlying_type_t<E>(mask))));			}
 	ICF SelfRef	bor		(const T mask)								{ flags|=mask;			return *this;	}
 	ICF SelfRef	bor		(const Self& f, const T mask) 				{ flags=f.flags|mask;	return *this;	}
 	ICF SelfRef	band		(const T mask)								{ flags&=mask;			return *this;	}
