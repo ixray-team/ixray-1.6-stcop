@@ -1,6 +1,6 @@
 #pragma once
 
-enum ECoreParams
+enum class ECoreParams : u64
 {
 	// Core
 	auto_load_arch = 1 << 0,
@@ -43,6 +43,9 @@ enum ECoreParams
 	// Lua
 	keep_lua = 1 << 28, // Не выгружать Lua при смене уровней
 	no_debug_panel = 1 << 29, // Отключить ImGui панель отладки
+	
+	// SDK
+	no_silent_errors = 1 << 30, // Включить назад работу брейкпоинтов в SDK
 };
 
 void LoadParams();
