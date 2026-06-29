@@ -12,7 +12,7 @@ struct v2p
 void main(in v2p I, out IXRayForward O)
 {
 	O.Color = s_base.Sample(smp_base, I.Tex0) * I.Color;
-	O.Color.xyz = detonemap(O.Color.xyz * 0.8f);
+	O.Color.xyz = GammaToLinear(O.Color.xyz * 0.8f);
 
 #ifndef DISABLE_MOTION_VECTORS
 	O.Velocity = 0.0f;
