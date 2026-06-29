@@ -91,6 +91,9 @@ void CTexture::surface_set(IRHISurface* surf)
 			case ERHI_FORMAT::R32_TYPELESS:
 				ViewDesc.Format = ERHI_FORMAT::R32_FLOAT;
 				break;
+			case ERHI_FORMAT::R16_TYPELESS:
+				ViewDesc.Format = ERHI_FORMAT::R16_UNORM;
+				break;
 			}
 
 			ViewDesc.ArraySize = pSurface->GetArraySize();

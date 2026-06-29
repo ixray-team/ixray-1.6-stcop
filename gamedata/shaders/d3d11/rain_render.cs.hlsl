@@ -32,9 +32,9 @@ float3 GetWaterNMap(Texture2D s_texture, float2 tc)
     return water.xyz;
 }
 
-RWTexture2D<float4> u_color : register(u0);
-RWTexture2D<float4> u_normal : register(u1);
-RWTexture2D<float4> u_surface : register(u2);
+RWTexture2D<unorm float4> u_color : register(u0);
+RWTexture2D<unorm float4> u_normal : register(u1);
+RWTexture2D<unorm float4> u_surface : register(u2);
 
 #define mirror(x) saturate(1.0 - abs(abs(x) - 1.0))
 
@@ -206,10 +206,12 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		mask *= smoothstep(0.6f, 0.8f, fIsUp);
 		
 		M.Roughness = lerp(M.Roughness, 0.07f, mask);
-		M.Specular = lerp(M.Specular, 0.4f, mask);
+		M.Specular = lerp(M.Specular, 0.2f, mask);
 		
-		M.Color.xyz *= lerp(1.0f, 0.2f, mask);
+		M.Color.xyz *= lerp(1.0f, 0.4f * M.AO, mask);
 		M.Color.xyz += Jitter * 4.0f;
+		
+		M.AO = lerp(M.AO, 1.0f, mask);
 		
 		N -= Ldynamic_dir.xyz * mask * 60.0f;
 	}
