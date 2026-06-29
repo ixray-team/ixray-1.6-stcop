@@ -515,7 +515,7 @@ CRenderTarget::CRenderTarget()
 
 		if (RImplementation.o.dx11_use_legacy_light)
 		{
-			SurfaceFormat = ERHI_FORMAT::R8_SNORM;
+			SurfaceFormat = ERHI_FORMAT::R8_UNORM;
 		}
 
 		rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, ColorFormat, 1, isUAV);
