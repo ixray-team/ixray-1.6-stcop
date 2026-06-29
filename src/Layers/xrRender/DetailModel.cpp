@@ -191,6 +191,7 @@ void CDetail::Load(IReader* S)
 			vNormals[idx_2].add(normal);
 		}
 		
+#if 0
 		xr_vector<Fvector> vNormals2 = vNormals;
 
 		for (u32 idx = 0; idx < number_vertices; ++idx)
@@ -214,6 +215,7 @@ void CDetail::Load(IReader* S)
 		}
 
 		vNormals = vNormals2;
+#endif
 
 		xr_vector<vertHW> pV;
 		vertHW V;

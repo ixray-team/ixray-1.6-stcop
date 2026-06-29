@@ -51,7 +51,7 @@ void main(in v_detail I, in uint instance_id : SV_InstanceID, out OutStructure O
     float3x3 m_rotate = QuaternionToMatrix(float4(det.quat, w));
 
     float3 pos_world = mul(m_rotate, I.pos.xyz * det.scale) + det.pos;
-    float3 N = mul(m_rotate, unpack_normal(I.N.zyx));
+    float3 N = mul(m_rotate, unpack_normal(I.N));
     
     float hemi = abs(det.hemi);
     float sun = sign(det.hemi) * 0.25f + 0.25f;
