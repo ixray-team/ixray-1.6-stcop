@@ -7,9 +7,9 @@ struct PSInput
 	float2 texcoord : TEXCOORD0;
 };
 
-RWTexture2D<float4> u_color : register(u0);
-RWTexture2D<float4> u_normal : register(u1);
-RWTexture2D<float4> u_surface : register(u2);
+RWTexture2D<unorm float4> u_color : register(u0);
+RWTexture2D<unorm float4> u_normal : register(u1);
+RWTexture2D<unorm float4> u_surface : register(u2);
 
 void main(PSInput _I)
 {	
