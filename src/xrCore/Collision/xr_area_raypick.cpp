@@ -166,8 +166,10 @@ bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 			}
 		}
 	}
-	return (R.element >= 0);
+
 	CObjectSpaceThreadData::r_spatial.clear();
+
+	return (R.element >= 0);
 }
 
 //--------------------------------------------------------------------------------

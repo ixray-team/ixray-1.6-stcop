@@ -27,7 +27,7 @@ private:
 
 	bool m_use_electric_curve = false;
 	bool m_cascade_curves = false;
-	bool m_cascade_curves_by_anomalies = false;
+	bool m_touch_objects_by_curves = false;
 
 	u8 m_max_count_electric_curves = 1;
 	float max_trace_curve_distance = 15.f;

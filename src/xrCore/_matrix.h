@@ -859,7 +859,99 @@ public:
 		rotation.x = asinf(-rotMatrix.j.z);                // pitch
 		rotation.z = atan2f(rotMatrix.j.x, rotMatrix.j.y); // roll
 	}
+
+	ICF SelfRef SetDirection(const Fvector& target_dir)
+	{
+		// Сохраняем позицию
+		Fvector pos = c;
+
+		// Извлекаем масштабы
+		float s_i = i.magnitude();
+		float s_j = j.magnitude();
+		float s_k = k.magnitude();
+
+		// Защита от нулевого масштаба
+		if (s_i < EPS || s_j < EPS || s_k < EPS)
+		{
+			return *this;
+		}
+
+		// Нормализуем текущие оси
+		Fvector i_n = i / s_i;
+		Fvector j_n = j / s_j;
+		Fvector k_n = k / s_k;
+
+		// Нормализуем целевой вектор
+		Fvector target = target_dir;
+		target.normalize_safe();
+		if (target.square_magnitude() < EPS)
+		{
+			return *this;
+		}
+
+		// Новая ось K
+		Fvector new_k = target;
+
+		// Определяем новую ось J (сохраняем текущий верх, но корректируем, если коллинеарен)
+		Fvector new_j = j_n;
+		if (fabsf(new_k.dotproduct(new_j)) > 0.99f)
+		{
+			new_j = i_n;
+		}
+
+		// Строим новую ось I = cross(J, K)
+		Fvector new_i;
+		new_i.crossproduct(new_j, new_k);
+		new_i.normalize_safe();
+
+		// Пересчитываем J для гарантии ортогональности
+		new_j.crossproduct(new_k, new_i);
+		new_j.normalize_safe();
+
+		// Устанавливаем новые оси с сохранением масштаба
+		i.set(new_i * s_i);
+		j.set(new_j * s_j);
+		k.set(new_k * s_k);
+		c.set(pos);
+		_14_ = 0;
+		_24_ = 0;
+		_34_ = 0;
+		_44_ = 1;
+
+		return *this;
+	}
+
+	ICF T GetRotation() const
+	{
+		Self tmp = *this;
+		tmp.i.normalize_safe();
+		tmp.j.normalize_safe();
+		tmp.k.normalize_safe();
+
+		T h, p, b;
+		tmp.getHPB(h, p, b);
+
+		return b;
+	}
+
+	ICF SelfRef SetRotation(T angle)
+	{
+		Fvector axis = k;
+		axis.normalize_safe();
+		if (axis.square_magnitude() < EPS)
+		{
+			return *this;
+		}
+
+		Self rot;
+		rot.rotation(axis, angle);
+
+		this->mulB_43(rot);
+
+		return *this;
+	}
 };
+
 
 typedef		_matrix<float>	Fmatrix;
 typedef		_matrix<double>	Dmatrix;
