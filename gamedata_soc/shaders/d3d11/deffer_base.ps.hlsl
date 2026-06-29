@@ -19,7 +19,8 @@ void cotangent_frame(inout p_bumped_new O)
     float3 T = normalize(dp2perp * duv1.x + dp1perp * duv2.x);
     float3 B = normalize(dp2perp * duv1.y + dp1perp * duv2.y);
 	
-    float3x3 xform = float3x3(
+    float3x3 xform = float3x3
+	(
         T.x, B.x, N.x,
         T.y, B.y, N.y,
         T.z, B.z, N.z
