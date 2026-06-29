@@ -166,7 +166,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 		g_pEventManager->Event.Defer("KERNEL:assert", (size_t)&LastError, (size_t)&ignore_always);
 
-		if (IsDebuggerPresent() && !SilentErrorMode)
+		if (IsDebuggerPresent() && (!SilentErrorMode || Core.ParamsData.test(ECoreParams::no_silent_errors)))
 		{
 			DebugBreak();
 		}

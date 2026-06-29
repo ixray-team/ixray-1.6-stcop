@@ -1,6 +1,6 @@
 #pragma once
 
-enum ECoreParams
+enum class ECoreParams : u64
 {
 	// Core
 	auto_load_arch = 1 << 0,
@@ -46,6 +46,9 @@ enum ECoreParams
 
 	// Test
 	autotest = 1 << 30, // Прогнать N кадров без окна и записать отчёт
+	
+	// SDK
+	no_silent_errors = u64(1) << 31, // Включить назад работу брейкпоинтов в SDK
 };
 
 void LoadParams();
