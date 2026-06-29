@@ -58,8 +58,10 @@ function normal(shader, t_base, t_second, t_detail)
 
     shader:dx10sampler("smp_smap")
     shader:dx10sampler("smp_base")
-    shader:dx10sampler("smp_nofilter")
+	
     shader:dx10sampler("smp_rtlinear")
+    shader:dx10sampler("smp_nofilter")
+    shader:dx10sampler("smp_linear")
 end
 
 function l_special(shader, t_base, t_second, t_detail)
