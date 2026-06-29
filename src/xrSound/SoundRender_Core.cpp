@@ -334,19 +334,20 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 
 void CSoundRender_Core::set_geometry_env(IReader* I)
 {
-#ifdef _EDITOR
-	ETOOLS::destroy_model(geom_ENV);
-#else
 	xr_delete(geom_ENV);
-#endif
-	if (0 == I)				return;
-	if (0 == s_environment)	return;
+
+	if (I == nullptr || s_environment == nullptr)
+	{
+		return;
+	}
 
 	// Associate names
 	xr_vector<u16> ids;
 	IReader* names = I->open_chunk(0);
-	while (!names->eof()) {
-		string256 n; names->r_stringZ(n, sizeof(n));
+	while (!names->eof())
+	{
+		string256 n;
+		names->r_stringZ(n, sizeof(n));
 
 		int id = s_environment->GetID(n);
 		R_ASSERT(id >= 0);
@@ -356,20 +357,21 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 	names->close();
 
 	// Load geometry
-	IReader* geom_ch = I->open_chunk(1);
-	u8* _data = (u8*)xr_malloc(geom_ch->length());
+	IReader* GeomChunk = I->open_chunk(1);
+	u8* _data = (u8*)xr_malloc(GeomChunk->length());
 
-	Memory.mem_copy(_data, geom_ch->pointer(), geom_ch->length());
-	IReader* geom = new IReader(_data, geom_ch->length(), 0);
+	Memory.mem_copy(_data, GeomChunk->pointer(), GeomChunk->length());
+	IReader* Geom = new IReader(_data, GeomChunk->length(), 0);
 
 	hdrCFORM H;
-	geom->r(&H, sizeof(hdrCFORM));
-	Fvector* verts = (Fvector*)geom->pointer();
+	Geom->r(&H, sizeof(hdrCFORM));
+	Fvector* verts = (Fvector*)Geom->pointer();
 	CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
 
 	Mixer::ResetZones();
 
-	for (u32 idx_offset = 0; idx_offset < H.facecount; idx_offset += 12) {
+	for (u32 idx_offset = 0; idx_offset < H.facecount; idx_offset += 12)
+	{
 		sound_zone_params params = {};
 		params.min = Fvector(1000000, 1000000, 1000000);
 		params.max = Fvector(-1000000, -1000000, -1000000);
@@ -378,39 +380,43 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 		u16 base_id_back = (u16)(((tris + idx_offset)->dummy & 0xffff0000) >> 16);
 		u32 id = base_id_back;
 
-		for (size_t i = 0; i < 12; i++) {
+		for (size_t i = 0; i < 12; i++)
+		{
 			CDB::TRI* T = tris + idx_offset + i;
 
-			u16 id_front = (u16)((T->dummy & 0x0000ffff) >> 0);		//	front face
-			u16 id_back = (u16)((T->dummy & 0xffff0000) >> 16);		//	back face
+			u16 id_front = (u16)((T->dummy & 0x0000ffff) >> 0); //	front face
+			u16 id_back = (u16)((T->dummy & 0xffff0000) >> 16); //	back face
 			R_ASSERT(id_front == base_id_front);
 			R_ASSERT(id_back == base_id_back);
 
-			//T->dummy = u32(ids[id_back] << 16) | u32(ids[id_front]); // old gsc kal
+			// T->dummy = u32(ids[id_back] << 16) | u32(ids[id_front]); // old gsc kal
 			T->dummy = Mixer::GetZones().size();
 
-			params.min.min(verts[T->verts[0]]); params.max.max(verts[T->verts[0]]);
-			params.min.min(verts[T->verts[1]]); params.max.max(verts[T->verts[1]]);
-			params.min.min(verts[T->verts[2]]); params.max.max(verts[T->verts[2]]);
+			params.min.min(verts[T->verts[0]]);
+			params.max.max(verts[T->verts[0]]);
+			params.min.min(verts[T->verts[1]]);
+			params.max.max(verts[T->verts[1]]);
+			params.min.min(verts[T->verts[2]]);
+			params.max.max(verts[T->verts[2]]);
 		}
 
-		auto env = s_environment->Get(ids[id]);
-		R_ASSERT(env);
+		const CSoundRender_Environment* LocalEnv = s_environment->Get(ids[id]);
+		R_ASSERT(LocalEnv);
 
-		params.version = env->version;
-		params.name = env->name;
-		params.environment = env->Environment;
-		params.settings.room = env->Room;
-		params.settings.room_rolloff_factor = env->RoomRolloffFactor;
-		params.settings.decay_time = env->DecayTime;
-		params.settings.decay_hf_ratio = env->DecayHFRatio;
-		params.settings.reflections = env->Reflections;
-		params.settings.reflections_delay = env->ReflectionsDelay;
-		params.settings.reverb = env->Reverb;
-		params.settings.reverb_delay = env->ReverbDelay;
-		params.settings.environment_size = env->EnvironmentSize;
-		params.settings.environment_diffusion = env->EnvironmentDiffusion;
-		params.settings.air_absorption_hf = env->AirAbsorptionHF;
+		params.version = LocalEnv->version;
+		params.name = LocalEnv->name;
+		params.environment = LocalEnv->Environment;
+		params.settings.room = LocalEnv->Room;
+		params.settings.room_rolloff_factor = LocalEnv->RoomRolloffFactor;
+		params.settings.decay_time = LocalEnv->DecayTime;
+		params.settings.decay_hf_ratio = LocalEnv->DecayHFRatio;
+		params.settings.reflections = LocalEnv->Reflections;
+		params.settings.reflections_delay = LocalEnv->ReflectionsDelay;
+		params.settings.reverb = LocalEnv->Reverb;
+		params.settings.reverb_delay = LocalEnv->ReverbDelay;
+		params.settings.environment_size = LocalEnv->EnvironmentSize;
+		params.settings.environment_diffusion = LocalEnv->EnvironmentDiffusion;
+		params.settings.air_absorption_hf = LocalEnv->AirAbsorptionHF;
 
 		params.center = params.max;
 		params.center.add(params.min);
@@ -426,10 +432,10 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 	geom_ENV->build(verts, H.vertcount, tris, H.facecount);
 	geom_ENV->wait_loading();
 
-	geom_ch->close();
-	geom->close();
+	GeomChunk->close();
+	Geom->close();
 	xr_free(_data);
-}	
+}
 
 void CSoundRender_Core::set_master_volume(float f)
 {
@@ -439,7 +445,9 @@ void CSoundRender_Core::set_master_volume(float f)
 void CSoundRender_Core::create(ref_sound& S, const char* fName, esound_type sound_type, int game_type)
 {
 	if (!bPresent)
+	{
 		return;
+	}
 
 	S._p = new ref_sound_data(fName, sound_type, game_type);
 }
@@ -447,12 +455,16 @@ void CSoundRender_Core::create(ref_sound& S, const char* fName, esound_type soun
 void CSoundRender_Core::attach_tail(ref_sound& S, const char* fName)
 {
 	if (!bPresent)
+	{
 		return;
+	}
 	string_path fn;
 	xr_strcpy(fn, fName);
 
 	if (strext(fn))
+	{
 		*strext(fn) = 0;
+	}
 
 	if (S._p->fn_attached[0].size() && S._p->fn_attached[1].size())
 	{
