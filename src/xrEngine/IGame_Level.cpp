@@ -93,6 +93,8 @@ static void 	build_callback	(Fvector* V, size_t Vcnt, CDB::TRI* T, size_t Tcnt, 
 {
 	g_pGameLevel->Load_GameSpecific_CFORM( T, Tcnt );
 }
+#include "../xrCore/Collision/xrCDB.h"
+
 xrCriticalSection lloadcs;
 BOOL IGame_Level::Load			(u32 dwNum) 
 {
@@ -122,7 +124,7 @@ BOOL IGame_Level::Load			(u32 dwNum)
 	// CForms
 	g_pGamePersistent->SetLoadStageTitle("st_loading_cform");
 	g_pGamePersistent->LoadTitle	();
-	ObjectSpace.Load			( [](Fvector* V, int Vcnt, CDB::TRI* T, int Tcnt, void* params){g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt);});
+	ObjectSpace.Load([](Fvector* V, size_t Vcnt, CDB::TRI* T, size_t Tcnt, void* params){g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt);});
 	//Sound->set_geometry_occ		( &Static );
 	Sound->set_geometry_occ		(ObjectSpace.GetStaticModel	());
 	Sound->set_handler			( _sound_event );
