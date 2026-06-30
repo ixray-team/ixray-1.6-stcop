@@ -588,6 +588,8 @@ struct CImGuiRequestManager
 // todo: implement viewer
 /// @brief \~english if enabled then you will have in-game viewer but right now it is not implemented feature
 #define IXRAY_OMF_EDITOR_ENABLE_VIEWER 0
+#define IXRAY_OMF_EDITOR_TAB_GAME 1
+#define IXRAY_OMF_EDITOR_TAB_EDITOR 1
 
 /// @brief \~english if enabled 'bone renaming' section won't exist and you can directly rename from bone list  otherwise you have to rename only through 'bone renaming' section
 #define IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING 1
