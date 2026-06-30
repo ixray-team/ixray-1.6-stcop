@@ -27,6 +27,7 @@ class CUIEncyclopediaWnd;
 class CUIActorInfoWnd;
 class CUIDiaryWnd;
 class CUIMapWnd;
+class CUIPdaSpot;
 
 class CUIPdaWnd final : public CUIDialogWnd
 {
@@ -120,6 +121,7 @@ public:
 			void			UpdatePda			();
 			void			UpdateRankingWnd	();
 			void			ReloadGamepadLegends();
+			CUIPdaSpot*		GetActiveUserSpotWnd();
 public:
 
 DECLARE_SCRIPT_REGISTER_FUNCTION

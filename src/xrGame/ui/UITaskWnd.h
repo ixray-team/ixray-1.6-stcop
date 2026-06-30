@@ -32,7 +32,6 @@ private:
 	CUIStatic*				m_right_bottom_background;
 	CUIFrameLineWnd*		m_task_split;
 
-	CUIMapWnd*				m_pMapWnd;
 	CUITaskItem*			m_pStoryLineTaskItem;
 	CUITaskItem*			m_pSecondaryTaskItem;
 
@@ -67,6 +66,7 @@ private:
 
 public:
 	UIHint*					hint_wnd;
+	CUIMapWnd*				m_pMapWnd;
 	CUIGamepadLegend*		m_gamepad_legend = nullptr;
 
 public:

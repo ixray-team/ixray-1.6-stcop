@@ -32,7 +32,6 @@ class CUIEventsWnd	:public CUIWindow, public CUIWndCallback{
 	CUIWindow*					m_UIRightWnd;
 	CUIFrameLineWnd*			m_UILeftHeader;
 	CUIAnimatedStatic*			m_UIAnimation;
-	CUIMapWnd*					m_UIMapWnd;
 	CUITaskDescrWnd*			m_UITaskInfoWnd;
 	CUIScrollView*				m_ListWnd;
 	CUITabControl*				m_TaskFilter;
@@ -71,6 +70,7 @@ public:
 
 	CUIXml						m_ui_task_item_xml;
 	CUIGamepadLegend*			m_gamepad_legend = nullptr;
+	CUIMapWnd*					m_UIMapWnd;
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 };
