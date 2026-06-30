@@ -46,6 +46,7 @@
 #include "Wound.h"
 #include "inventory_space.h"
 #include "nvg.h"
+#include "ui/UIPdaSpot.h"
 
 u16 old_slot = 0;
 bool need_restore_detector = false;
@@ -2624,19 +2625,26 @@ void CActor::RenderItemUI()
 	{
 		CUIPdaWnd* PdaMenu = CurrentGameUI()->PdaMenu();
 		CUIDialogWnd* TopInputReceiver = CurrentGameUI()->TopInputReceiver();
-
+		CUIPdaSpot* PdaSpot = PdaMenu->GetActiveUserSpotWnd();
 		CUICursor* cursor = &UI().GetUICursor();
 
 		if (cursor)
 		{
 			static bool need_reset;
 
-			if (pdaAnimator->IsActive() && PdaMenu == TopInputReceiver)
+			if (pdaAnimator->IsActive() && (PdaMenu == TopInputReceiver || PdaSpot && PdaSpot == TopInputReceiver))
 			{
 				if (need_reset)
 				{
 					need_reset = false;
-					PdaMenu->ResetCursor();
+					if (PdaSpot && PdaSpot == TopInputReceiver)
+					{
+						PdaSpot->ResetCursor();
+					}
+					else
+					{
+						PdaMenu->ResetCursor();
+					}
 				}
 
 				Fvector2 cursor_pos = cursor->GetCursorPosition();
@@ -2644,7 +2652,14 @@ void CActor::RenderItemUI()
 				Fvector2 cursor_pos_dif;
 				cursor_pos_dif.set(cursor_pos);
 				cursor_pos_dif.sub(PdaMenu->last_cursor_pos);
-				PdaMenu->last_cursor_pos.set(cursor_pos);
+				if (PdaSpot && PdaSpot == TopInputReceiver)
+				{
+					PdaSpot->last_cursor_pos.set(cursor_pos);
+				}
+				else
+				{
+					PdaMenu->last_cursor_pos.set(cursor_pos);
+				}
 				pdaAnimator->MouseMovement(cursor_pos_dif.x, cursor_pos_dif.y);
 			}
 			else
@@ -2655,8 +2670,12 @@ void CActor::RenderItemUI()
 		{
 			PdaMenu->Draw();
 		}
+		if (PdaSpot && PdaSpot->IsShown())
+		{
+			PdaSpot->Draw();
+		}
 
-		if (PdaMenu == TopInputReceiver)
+		if (PdaMenu == TopInputReceiver || (PdaSpot && PdaSpot == TopInputReceiver))
 		{
 			GetUICursor().OnRender();
 		}
