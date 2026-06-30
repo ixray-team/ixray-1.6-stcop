@@ -57,7 +57,6 @@ private:
 	CUIFrameLineWnd*			UIMainMapHeader;
 
 	CUIMapLocationHint*			m_map_location_hint;
-	CUIPdaSpot*					m_UserSpotWnd;
 	CUIStatic*					m_text_hint;
 
 	enum EBtnPos
@@ -132,6 +131,7 @@ public:
 	Fvector2					m_tgtCenter;
 	UIHint*						hint_wnd;
 	CUIGamepadLegend*			m_gamepad_legend = nullptr;
+	CUIPdaSpot*					m_UserSpotWnd;
 
 protected:
 	void						init_xml_nav			(CUIXml& xml, const char* start_from);

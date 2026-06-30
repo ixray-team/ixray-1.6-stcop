@@ -9,6 +9,8 @@
 #include "../../xrUI/UIHelper.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "../xrEngine/string_table.h"
+#include "../../xrUI/UICursor.h"
+#include "../HudPdaAnimator.h"
 
 CUIPdaSpot::CUIPdaSpot()
 {
@@ -29,6 +31,7 @@ CUIPdaSpot::CUIPdaSpot()
 		}
 	}
 
+	last_cursor_pos.set(UI_BASE_WIDTH / 2.f, UI_BASE_HEIGHT / 2.f);
 	InitControls();
 }
 
@@ -144,4 +147,37 @@ bool CUIPdaSpot::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 void CUIPdaSpot::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	CUIWndCallback::OnEvent(pWnd, msg, pData);
+}
+
+static u32 pda_spot_render_frame = 0;
+
+void CUIPdaSpot::Draw()
+{
+	if (pda_spot_render_frame == Device.dwFrame)
+	{
+		return;
+	}
+
+	pda_spot_render_frame = Device.dwFrame;
+
+	base_class::Draw();
+}
+
+void CUIPdaSpot::ResetCursor()
+{
+	if (!last_cursor_pos.similar({0.f, 0.f}))
+	{
+		GetUICursor().SetUICursorPosition(last_cursor_pos);
+	}
+}
+
+bool CUIPdaSpot::OnMouseAction(float x, float y, EUIMessages mouse_action)
+{
+	CObject* current_entity = Level().CurrentControlEntity();
+	CHudPdaAnimator* pda_animator = current_entity != nullptr ? current_entity->cast_actor()->HudAnimator()->PdaAnimator() : nullptr;
+	if (pda_animator != nullptr)
+	{
+		pda_animator->OnMouseAction(x, y, mouse_action);
+	}
+	return base_class::OnMouseAction(x, y, mouse_action);
 }
