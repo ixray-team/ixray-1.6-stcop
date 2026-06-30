@@ -1025,3 +1025,20 @@ void CUIPdaWnd::ReloadGamepadLegends()
 	PDA_UPDATE_GAMEPAD_LEGEND(pUIDiaryWnd)
 	PDA_UPDATE_GAMEPAD_LEGEND(pUIMapWnd)
 }
+
+CUIPdaSpot* CUIPdaWnd::GetActiveUserSpotWnd()
+{
+	if (m_sActiveSection == "eptTasks")
+	{
+		return pUITaskWnd->m_pMapWnd->m_UserSpotWnd;
+	}
+	else if (m_sActiveSection == "eptQuests")
+	{
+		return pUIEventsWnd->m_UIMapWnd->m_UserSpotWnd;
+	}
+	else if (m_sActiveSection == "eptMap")
+	{
+		return pUIMapWnd->m_UserSpotWnd;
+	}
+	return nullptr;
+}

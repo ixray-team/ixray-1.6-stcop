@@ -38,7 +38,11 @@ public:
 	void OnExit(CUIWindow* w, void* d);
 	void Exit();
 
+	void ResetCursor();
+	virtual void Draw();
+	virtual bool OnMouseAction(float x, float y, EUIMessages mouse_action) override;
 	virtual bool OnKeyboardAction(int dik, EUIMessages keyboard_action);
 	virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 	virtual CUIWindow* ui_cast_window() { return this; }
+	Fvector2 last_cursor_pos;
 };
