@@ -26,6 +26,7 @@ protected:
 	bool m_bNeedActivated = false;
 	bool m_bIsPlaying = false;
 	bool m_bHideUI = true;
+	bool m_bBlendMovement = false;
 
 	float m_fHudFov = 0.0f;
 	float m_fHudFovFactor = 1.0f;
@@ -84,6 +85,8 @@ public:
 	virtual bool InputKeyHold(int cmd) { return false; }
 
 	virtual void UpdateHudAdditonal(Fmatrix&) {};
+
+	bool NeedMovementBlend() { return m_bBlendMovement; }
 
 	virtual CHudItemAnimator* cast_item_animator() { return nullptr; }
 	virtual CHudStateAnimator* cast_hud_state_animator() { return nullptr; }
