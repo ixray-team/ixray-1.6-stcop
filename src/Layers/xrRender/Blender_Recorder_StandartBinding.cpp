@@ -810,6 +810,17 @@ static class cl_m_wristwatch_font_eight : public RHIShaderConstant::Setup
 	}
 } binder_m_wristwatch_font_eight;
 
+extern ENGINE_API Fcolor nvg_color;
+// night-vision color
+class cl_NVG_Color : public RHIShaderConstant::Setup
+{
+	virtual void setup(RHIShaderConstant* C)
+	{
+		RCache.set_c(C, nvg_color.r, nvg_color.g, nvg_color.b, nvg_color.a);
+	}
+};
+static cl_NVG_Color binder_NVG_Color;
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping()
 {
@@ -915,6 +926,7 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("m_wristwatch_font_d3", &binder_m_wristwatch_font_d3);
 	r_Constant("m_wristwatch_font_colon", &binder_m_wristwatch_font_colon);
 	r_Constant("m_wristwatch_font_eight", &binder_m_wristwatch_font_eight);
+	r_Constant("nvg_color", &binder_NVG_Color);
 
 	if (detail_scaler)
 	{

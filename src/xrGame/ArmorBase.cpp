@@ -94,6 +94,18 @@ void CArmorBase::Load(const char* section)
 		m_NightVisionSect = pSettings->r_string(section, "nightvision_sect");
 	}
 
+	if (pSettings->line_exist(section, "nightvision_color"))
+	{
+		m_NightVisionColor = pSettings->r_fcolor(section, "nightvision_color");
+	}
+	else
+	{
+		m_NightVisionColor.r = 0.3f;
+		m_NightVisionColor.g = 1.0f;
+		m_NightVisionColor.b = 0.2f;
+		m_NightVisionColor.a = 0.0f;
+	}
+
 	pSettings->read_if_exists(m_bTorchAvailable, section, "torch_available");
 
 	IRestoresOwner::Load(section);
