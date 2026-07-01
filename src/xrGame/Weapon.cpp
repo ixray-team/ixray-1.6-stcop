@@ -2445,8 +2445,6 @@ bool CWeapon::IsMisfire() const
 
 void CWeapon::Reload()
 {
-	StopShooting();
-
 	if (!m_bAimActions)
 	{
 		OnZoomOut();
@@ -3874,7 +3872,7 @@ bool CWeapon::MovingAnimAllowedNow()
 
 bool CWeapon::IsHudModeNow()
 {
-	return !!GetHUDmode() && !HudItemData()->m_model_combined;
+	return !!GetHUDmode() && HudItemData() && !HudItemData()->m_model_combined;
 }
 
 void CWeapon::ZoomInc()
