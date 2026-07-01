@@ -7,11 +7,12 @@
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrEngine/string_table.h"
 
-#include <SDL3/SDL.h>
 #include "Splash.h"
 
 #include "../xrCore/git_version.h"
 #include "UIEditorMain.h"
+
+#include "SteamOverlay.h"
 
 void EnumerateDisplayModes()
 {
@@ -130,6 +131,9 @@ int ENTRY_FUNCTION(ENTRY_ARGS)
 #else
 	EngineLoadStage1(cmd_line.data());
 #endif
+
+	CSteamOverlay SteamWorks;
+
 	//plat
 	std::jthread s(splash::Show);
 #ifdef DEBUG_DRAW
