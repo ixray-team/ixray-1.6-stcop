@@ -202,6 +202,8 @@ void CHudItemAnimator::PlayMotion()
 	{
 		m_bStopAtEndAnimIsRunning = false;
 	}
+
+		g_player_hud->UpdateMovementLayers();
 }
 
 void CHudItemAnimator::UpdateAnimation()
@@ -548,6 +550,8 @@ void CBurnAnimator::PlayAnimBurn()
 	{
 		m_bStopAtEndAnimIsRunning = false;
 	}
+
+		g_player_hud->UpdateMovementLayers();
 }
 
 void CBurnAnimator::UpdateAnimation()

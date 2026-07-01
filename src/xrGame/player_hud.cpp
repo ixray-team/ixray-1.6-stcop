@@ -2025,8 +2025,8 @@ void player_hud::update(const Fmatrix& cam_trans)
 		}
 	}
 
-	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend();
-	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend();
+	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend() || m_animator_item != nullptr && m_animator_item->NeedMovementBlend();
+	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend() || m_animator_item != nullptr && m_animator_item->NeedMovementBlend();
 
 	for (movement_layer* anm : m_movement_layers)
 	{
@@ -2416,7 +2416,7 @@ void player_hud::UpdateMovementLayers(bool reload_anims)
 		return;
 	}
 
-	bool stop_force = m_attached_items[0] == nullptr && m_attached_items[1] == nullptr;
+	bool stop_force = m_attached_items[0] == nullptr && m_attached_items[1] == nullptr && m_animator_item == nullptr;
 
 	if (reload_anims && m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item != nullptr)
 	{
@@ -2449,8 +2449,8 @@ void player_hud::UpdateMovementLayers(bool reload_anims)
 		anm->Stop(stop_force);
 	}
 
-	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend();
-	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend();
+	bool need_blend_0 = m_attached_items[0] != nullptr && m_attached_items[0]->m_parent_hud_item != nullptr && m_attached_items[0]->m_parent_hud_item->NeedMovementBlend() || m_animator_item != nullptr && m_animator_item->NeedMovementBlend();
+	bool need_blend_1 = m_attached_items[1] != nullptr && m_attached_items[1]->m_parent_hud_item != nullptr && m_attached_items[1]->m_parent_hud_item->NeedMovementBlend() || m_animator_item != nullptr && m_animator_item->NeedMovementBlend();
 
 	if (!need_blend_0 && !need_blend_1)
 	{
@@ -3197,6 +3197,11 @@ void animator_item::setup_firedeps(firedeps& fd)
 															fd.m_FireParticlesXForm.i);
 		VERIFY(_valid(fd.m_FireParticlesXForm));
 	}
+}
+
+bool animator_item::NeedMovementBlend()
+{
+	return m_animator->NeedMovementBlend() && IsPlaying;
 }
 
 void player_hud::FingerCallback(CBoneInstance* B)
