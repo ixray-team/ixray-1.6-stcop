@@ -3,7 +3,7 @@
 #ifdef IXRAY_PROFILER
 #	include <optick.h>
 #	define PROF_THREAD(Name) OPTICK_THREAD(Name)
-#	define PROF_START_THREAD(Name) OPTICK_START_THREAD(Name)
+#	define PROF_START_THREAD(Name) OPTICK_START_THREAD(Name) OPTICK_EVENT(Name)
 #	define PROF_STOP_THREAD() OPTICK_STOP_THREAD()
 #	define PROF_START_CAPTURE() OPTICK_START_CAPTURE()
 #	define PROF_STOP_CAPTURE() OPTICK_STOP_CAPTURE()
@@ -15,9 +15,10 @@
 #	define PROF_MEM_FREE_CAPTURE(Ptr)
 #elifdef IXRAY_PROFILER_TRACY
 #	include <tracy/Tracy.hpp>
+#	include <tracy/TracyC.h>
 #   define PROF_THREAD(Name)
-#   define PROF_START_THREAD()
-#   define PROF_STOP_THREAD()
+#   define PROF_START_THREAD(Name) TracyCZoneCtx zone; TracyFiberEnter(Name); TracyCZone(ctx, 1); zone = ctx;
+#   define PROF_STOP_THREAD() TracyCZoneEnd(zone); TracyFiberLeave;
 #   define PROF_START_CAPTURE()
 #   define PROF_STOP_CAPTURE()
 #   define PROF_SAVE_CAPTURE(Name)
