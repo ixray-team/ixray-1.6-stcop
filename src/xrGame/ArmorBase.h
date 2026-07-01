@@ -36,6 +36,7 @@ public:
 	virtual void			net_Import				(NET_Packet& P);
 	virtual void			OnH_A_Chield			();
 	virtual shared_str		GetNV_Sect				() const { return m_NightVisionSect; }
+	virtual Fcolor			GetNV_Color				() const { return m_NightVisionColor; }
 	virtual bool			IsHudGasMaskAvailable	() { return bIsHudGasMaskAvailable; }
 	virtual bool			IsHudRainDropsAvailable	() { return bIsHudRainDropsAvailable; }
 	void OverrideHitTypeProtection(ALife::EHitType hit_type, float value);
@@ -56,6 +57,7 @@ protected:
 
 	shared_str				m_BonesProtectionSect;
 	shared_str				m_NightVisionSect;
+	Fcolor					m_NightVisionColor;
 
 	bool					m_bTorchAvailable = false;
 };
