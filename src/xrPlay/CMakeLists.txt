@@ -39,6 +39,8 @@ target_compile_definitions(xrEngine PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 # Linker list
 target_link_libraries(xrEngine PUBLIC xrEngineCore)
 target_link_libraries(xrEngine PUBLIC xrScripts)
+target_link_libraries(xrEngine PUBLIC Steamworks::Steamworks)
+
 if(IXRAY_USE_R1)
     add_dependencies(xrEngine xrRender_R1)
    endif()
