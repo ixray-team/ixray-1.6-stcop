@@ -44,7 +44,7 @@ struct RHI_GPU_EVENT
 #		define PROF_GPU_CTX_CREATE(Device, DeviceContext) TracyD3D11Context(Device, DeviceContext);
 #		define PROF_GPU_CTX_COLLECT() TracyD3D11Collect(g_tracyD3D11GPUContext);
 #		define PROF_GPU_CTX_DESTROY() TracyD3D11Destroy(g_tracyD3D11GPUContext);
-#		define GPU_EVENT(Name) TracyD3D11Zone(g_tracyD3D11GPUContext, #Name);
+#		define GPU_EVENT(Name) TracyD3D11Zone(g_tracyD3D11GPUContext, #Name); CRHIGPUMark pixEvent##Name(#Name, L#Name);
 #	endif
 #else
 #	ifdef IXRAY_PROFILER
