@@ -15,11 +15,12 @@ struct PSInput
 	float2 texcoord : TEXCOORD0;
 };
 
+uniform float4 nvg_color;
+
 float4 main(PSInput I) : SV_Target
 {
 	//consts
 	const float neg_sqr_rad = -1.0 / (65. * 65.);
-	const float3 nvg_col = float3(0.3,1.0,0.2);
 	const float2 min_max_bright = float2(2, 4);
 
 	//Sample blue noise texture
@@ -32,7 +33,7 @@ float4 main(PSInput I) : SV_Target
 	//Fetch fulres scene
 	float3 image = s_image[I.hpos.xy].xyz;
 	float falloff = saturate(dot(Point, Point) * neg_sqr_rad + 1.0);
-    image = nvg_col * dot(image, (0.33));
+    image = nvg_color.xyz * dot(image, (0.33));
 	float bmod = lerp(min_max_bright.x, min_max_bright.y, falloff);
 	
     image *= bmod;
