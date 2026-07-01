@@ -21,7 +21,7 @@ public:
 
 			CNightVisionEffector(CActor* actor);
 			~CNightVisionEffector();
-	void	Start(const shared_str& sect, bool play_sound = true);
+	void	Start(const shared_str& sect, bool play_sound, const Fcolor& color);
 	void	Stop(const float factor, bool play_sound = true);
 	bool	IsActive();
 	void	PlaySounds(EPlaySounds which);
