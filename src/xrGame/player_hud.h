@@ -332,6 +332,8 @@ struct animator_item
 	Fvector& hands_attach_pos();
 	Fvector& hands_attach_rot();
 	
+	bool NeedMovementBlend();
+
 	void update_hud_additional(Fmatrix& trans);
 
 	void anim_play(const shared_str& item_anm_name, bool bMixIn, float speed);
