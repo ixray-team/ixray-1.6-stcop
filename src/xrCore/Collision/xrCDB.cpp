@@ -65,7 +65,6 @@ void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* 
 	auto LoaderLamda = [=]()
 	{
 		PROF_START_THREAD("build cform");
-		PROF_EVENT("build cform");
 
 		// verts
 		if (verts.empty())
