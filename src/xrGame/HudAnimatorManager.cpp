@@ -35,6 +35,8 @@ void CHudAnimatorBase::Load()
 	m_sLuaRight2Callback = READ_IF_EXISTS(pSettings, r_string, m_section, "right2_lua_callback", "null");
 	m_sLuaStartCallback = READ_IF_EXISTS(pSettings, r_string, m_section, "start_lua_callback", "null");
 	m_sLuaEndCallback = READ_IF_EXISTS(pSettings, r_string, m_section, "end_lua_callback", "null");
+
+	pSettings->read_if_exists<bool>(m_bBlendMovement, m_section, "use_blending_movement");
 }
 
 void CHudAnimatorBase::StopAnimator()
@@ -627,6 +629,8 @@ void CHudStateAnimator::OnStateSwitch(u8 state)
 	{
 		m_bSwitchSprint = false;
 	}
+
+	g_player_hud->UpdateMovementLayers();
 }
 
 void CHudStateAnimator::OnMovementChanged()
