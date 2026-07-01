@@ -251,6 +251,11 @@ void CRenderDevice::on_idle		()
 	secondary_tasks.wait();
 
 	Device.EndRender();
+	
+#ifdef IXRAY_PROFILER_TRACY
+	PROF_FRAME();
+#endif
+	
 	if (!b_is_Active)
 	{
 		Sleep(1);
