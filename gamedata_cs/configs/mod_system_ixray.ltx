@@ -694,4 +694,30 @@ movement_layer_0             = blend\walk.anm, 1, 1.5        	 ; Walk
 movement_layer_1             = blend\walk.anm, 0.7, 1.5        ; Walk slow
 movement_layer_2             = blend\walk.anm, 0.5, 1.5        ; Crouch
 movement_layer_3             = blend\walk.anm, 0.3, 1.5        ; Crouch slow
-movement_layer_4             = blend\sprint.anm, 1.55, 2      ; Sprint
+movement_layer_4             = blend\sprint.anm, 1.55, 2       ; Sprint
+
+[auto_aiming]
+
+; fraction of the full height of the target. 0.0 aim at legs, 1.0f aim at head
+height_fraction = 0.72
+
+; how easy it is to autoaim, 0-1, lerps between easy and norm
+easiness = 0.0
+
+; near, midnear, far distances a-b-c
+distance_a = 1.0
+distance_b = 4.0
+distance_c = 80.0
+
+; threshold angle differences for targets near and far
+dotp_a_norm = 0.7
+dotp_b_norm = 0.99
+dotp_c_norm = 0.999999
+
+dotp_a_easy = 0.7
+dotp_b_easy = 0.8
+dotp_c_easy = 0.9
+
+; no weapon, aiming at chars to talk to them
+; a-b works as easy
+; b-c targets are ignored
