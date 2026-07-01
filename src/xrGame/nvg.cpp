@@ -122,7 +122,7 @@ void CNVG::OnNvgStart()
    // Msg("NVG OnNvgStart");
     if (!m_nvg_effector->IsActive())
     {
-        m_nvg_effector->Start(m_night_vision_effector_section, true);
+		m_nvg_effector->Start(m_night_vision_effector_section, true, Fcolor(0.3f, 1.0f, 0.2f));
     }
 }
 

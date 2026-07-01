@@ -12,6 +12,7 @@
 #include "nvg.h"
 
 ENGINE_API extern bool turn_nvg;
+ENGINE_API extern Fcolor nvg_color;
 
 void CNightVisionEffector::SwitchNightVision()
 {
@@ -74,12 +75,12 @@ void CNightVisionEffector::SwitchNightVision(bool vision_on, bool use_sounds)
 
 	if (helmet && helmet->GetNV_Sect().size())
 	{
-		Start(helmet->GetNV_Sect(), use_sounds);
+		Start(helmet->GetNV_Sect(), use_sounds, helmet->GetNV_Color());
 		m_bNightVisionOn = true;
 	}
 	else if (outfit && outfit->GetNV_Sect().size())
 	{
-		Start(outfit->GetNV_Sect(), use_sounds);
+		Start(outfit->GetNV_Sect(), use_sounds, outfit->GetNV_Color());
 		m_bNightVisionOn = true;
 	}
 	else if (oCNVG)
@@ -132,8 +133,9 @@ CNightVisionEffector::~CNightVisionEffector()
 	turn_nvg = false;
 }
 
-void CNightVisionEffector::Start(const shared_str& sect, bool play_sound)
+void CNightVisionEffector::Start(const shared_str& sect, bool play_sound, const Fcolor& color)
 {
+	nvg_color = color;
 	static const bool used_shader_nvg = !!psDeviceFlags.test(rsR4);
 
 	if (used_shader_nvg)
