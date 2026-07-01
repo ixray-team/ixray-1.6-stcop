@@ -35,6 +35,7 @@ void CEditableMesh::GenerateCFModel()
 			}
 		}
 	}
+
 	m_CFModel = new CDB::MODEL();
 	m_CFModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, nullptr, false, false);
 }
@@ -44,6 +45,7 @@ void CEditableMesh::RayQuery(SPickQuery& pinf)
 	if (!m_CFModel)
 	{
 		GenerateCFModel();
+		m_CFModel->wait_loading();
 	}
 
 	XRC.ray_query(m_CFModel, pinf.m_Start, pinf.m_Direction, pinf.m_Dist);
@@ -58,6 +60,7 @@ void CEditableMesh::RayQuery(const Fmatrix& parent, const Fmatrix& inv_parent, S
 	if (!m_CFModel)
 	{
 		GenerateCFModel();
+		m_CFModel->wait_loading();
 	}
 
 	Fvector S, D;
@@ -76,6 +79,7 @@ void CEditableMesh::BoxQuery(const Fmatrix& parent, const Fmatrix& inv_parent, S
 	if (!m_CFModel)
 	{
 		GenerateCFModel();
+		m_CFModel->wait_loading();
 	}
 
 	Fbox dest;
@@ -103,6 +107,7 @@ bool CEditableMesh::RayPick(float& distance, const Fvector& start, const Fvector
 	if (!m_CFModel)
 	{
 		GenerateCFModel();
+		m_CFModel->wait_loading();
 	}
 
 	XRC.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
@@ -222,6 +227,7 @@ bool CEditableMesh::BoxPick(const Fbox& box, const Fmatrix& inv_parent, SBoxPick
 	if (!m_CFModel)
 	{
 		GenerateCFModel();
+		m_CFModel->wait_loading();
 	}
 
 	Fbox dest;
