@@ -338,14 +338,18 @@ void CWeaponKnife::OnMotionMark(u8 state, const motion_marks& M)
 		m_splash_radius	=	m_Hit1SplashRadius;
 		m_hits_count	=	m_Splash1HitsCount;
 		m_perv_hits_count = m_Splash1PerVictimsHCount;
-	} else if (state == eFire2)
+		fireDistance = m_hit_dist + m_splash_radius;
+	}
+	else if (state == eFire2)
 	{
 		m_hit_dist		=	m_Hit2Distance;
 		m_splash_dir	=	m_Hit2SpashDir;
 		m_splash_radius	=	m_Hit2SplashRadius;
 		m_hits_count	=	m_Splash2HitsCount;
+		fireDistance = m_hit_dist + m_splash_radius;
 		m_perv_hits_count = 0;
-	} else
+	} 
+	else
 	{
 		return;
 	}
