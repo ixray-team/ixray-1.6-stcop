@@ -33,8 +33,11 @@ public:
 	CUITreeViewItem * GetOwner() const					{ return pOwner; }
 	void			SetOwner(CUITreeViewItem *owner)	{ pOwner = owner; }
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIStatic* ui_cast_static() { return this; }
 	virtual CUIListItem* ui_cast_list_item() { return this; }
 	virtual CUITreeViewItem* ui_cast_tree_view_item() { return this; }
+	virtual CUISelectable* ui_cast_selectable() { return this; }
 
 protected:
 	// Функция вызываемая при изменении свойства рута
