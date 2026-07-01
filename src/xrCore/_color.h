@@ -59,11 +59,11 @@ public:
     float r = 0;
     float g = 0;
     float b = 0;
-    float a = 255.0f;
+    float a = 1.0f;
 
     constexpr _color() = default;
 
-    constexpr _color(float red, float green, float blue, float alpha = 255.0f)
+    constexpr _color(float red, float green, float blue, float alpha = 1.0f)
         : r(red), g(green), b(blue), a(alpha)
         {}
 
