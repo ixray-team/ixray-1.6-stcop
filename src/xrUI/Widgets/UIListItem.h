@@ -38,8 +38,9 @@ public:
     virtual void SetHighlightText(bool Highlight) { m_bHighlightText = Highlight; }
     
 	virtual void SetSelected(bool b) override;
-    virtual CUIWindow* ui_cast_window() { return this; }
-    virtual CUIListItem* ui_cast_list_item() { return this; }
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIStatic* ui_cast_static() { return this; }
+	virtual CUIListItem* ui_cast_list_item() { return this; }
     virtual CUISelectable* ui_cast_selectable() { return this; }
 
 protected:
