@@ -115,6 +115,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 		if(psDeviceFlags.test(rsDrawStatic))
 		{
 			PROF_EVENT("add_static")
+			GPU_EVENT(render_main_static_geometry);
 
 			if (dont_test_sectors)
 			{
@@ -148,6 +149,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 			}
 		}
 		PROF_EVENT("add_dynamic")
+		GPU_EVENT(render_main_dynamic_geometry);
 		// Traverse frustums
 		for (u32 o_it=0; o_it<lstRenderablesMain.size(); o_it++)
 		{
@@ -220,7 +222,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 						}
 					}
 				}
-
+				GPU_EVENT(render_main_particles);
 				if ((spatial->spatial.type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE && !deffered)
 				{
 					// renderable
@@ -447,6 +449,7 @@ void CRender::Render()
 
 	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3)
 	{
+		GPU_EVENT(render_prepare_jitter);
 		int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount((int32_t)RCache.get_width(), (int32_t)RCache.get_target_width());
 		ffxFsr2GetJitterOffset(&ps_r_taa_jitter_full.x, &ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
 
@@ -464,6 +467,7 @@ void CRender::Render()
 
 	if (GActorInterface)
 	{
+		GPU_EVENT(render_ui_pda);
 		Target->u_setrt(Target->rt_ui_pda, 0, 0);
 		rmNormal();
 
@@ -479,7 +483,10 @@ void CRender::Render()
 	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(false);
 
-	g_pGamePersistent->Environment().RenderSky();
+	{
+		GPU_EVENT(render_sky);
+		g_pGamePersistent->Environment().RenderSky();
+	}
 
 	RCache.set_xform_world(Fidentity);
 
@@ -488,6 +495,7 @@ void CRender::Render()
 
 	if(!ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))
 	{
+		GPU_EVENT(render_hom);
 		HOM.Enable();
 		HOM.Render(ViewBase);
 	}
@@ -768,68 +776,109 @@ void CRender::Render()
 
 void CRender::render_forward()
 {
+	GPU_EVENT(render_forward);
+
 	VERIFY(0 == mapDistort.size() + mapHUDDistort.size());
 	RImplementation.o.distortion = RImplementation.o.distortion_enabled;
 
-	// level enable priority "1"
-	r_pmask(false, true);
-	phase = PHASE_NORMAL;
-
-	render_main(false);
-	mapLOD.clear();
-
-	bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size();
-	bSpecial |= mapNormalPasses[1][1].size() || mapMatrixPasses[1][1].size();
-
-	// May be WBOIT
-	r_dsgraph_render_graph(1);
-
-	bool bDistort = RImplementation.mapDistort.size() || RImplementation.mapHUDDistort.size();
-	GRHI->ClearTarget(Target->rt_Generic_1->pRT, ERTColor::Gray);
-
-	if (bDistort)
 	{
-		GPU_EVENT(render_distort_objects);
-		Target->u_setrt(Target->rt_Generic_1, 0, 0, RDepth);
-
-		RImplementation.rmNormal();
-		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
-		RCache.set_Stencil(FALSE);
-		RCache.set_ColorWriteEnable();
-		RImplementation.r_dsgraph_render_distort();
+		// level enable priority "1"
+		GPU_EVENT(render_forward_setup_priority);
+		r_pmask(false, true);
+		phase = PHASE_NORMAL;
 	}
 
-	if(bDistort || bSpecial)
 	{
-		Target->u_setrt(Target->rt_Accumulator, 0, 0, 0);
+		GPU_EVENT(render_forward_main);
+		render_main(false);
+		mapLOD.clear();
+	}
 
-		RCache.set_Element(Target->s_combine->E[1]);
-		RCache.set_Geometry(Target->FSTriangleGeom);
+	bool bSpecial = false;
+	{
+		GPU_EVENT(render_forward_check_special);
+		bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size();
+		bSpecial |= mapNormalPasses[1][1].size() || mapMatrixPasses[1][1].size();
+	}
 
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
-		GRHI->CopySurface(Target->rt_Generic_0->pSurface, Target->rt_Accumulator->pSurface);
+	// May be WBOIT
+	{
+		GPU_EVENT(render_forward_graph);
+		r_dsgraph_render_graph(1);
+	}
+
+	{
+		GPU_EVENT(render_forward_distort_check);
+		bool bDistort = RImplementation.mapDistort.size() || RImplementation.mapHUDDistort.size();
+		GRHI->ClearTarget(Target->rt_Generic_1->pRT, ERTColor::Gray);
+
+		if (bDistort)
+		{
+			GPU_EVENT(render_distort_objects);
+			Target->u_setrt(Target->rt_Generic_1, 0, 0, RDepth);
+
+			RImplementation.rmNormal();
+			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+			RCache.set_Stencil(FALSE);
+			RCache.set_ColorWriteEnable();
+			RImplementation.r_dsgraph_render_distort();
+		}
+
+		{
+			GPU_EVENT(render_forward_combine);
+			if (bDistort || bSpecial)
+			{
+				Target->u_setrt(Target->rt_Accumulator, 0, 0, 0);
+
+				RCache.set_Element(Target->s_combine->E[1]);
+				RCache.set_Geometry(Target->FSTriangleGeom);
+
+				RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
+				GRHI->CopySurface(Target->rt_Generic_0->pSurface, Target->rt_Accumulator->pSurface);
+			}
+		}
 	}
 
 	RImplementation.o.distortion = false;
 
-	if(RImplementation.o.dx11_disable_motion_vectors)
 	{
-		Target->u_setrt(Target->rt_Generic_0, nullptr, RDepth);
+		GPU_EVENT(render_forward_setup_rt);
+		if (RImplementation.o.dx11_disable_motion_vectors)
+		{
+			Target->u_setrt(Target->rt_Generic_0, nullptr, RDepth);
+		}
+		else
+		{
+			Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, RDepth);
+		}
 	}
-	else
+
 	{
-		Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, RDepth);
+		GPU_EVENT(render_forward_fade);
+		PortalTraverser.fade_render();
 	}
 
-	PortalTraverser.fade_render();
-	r_dsgraph_render_sorted(false);
-
-	g_pGamePersistent->Environment().RenderLast();
-	Target->phase_combine_volumetric();
-
-	if(mapHUDSorted.size() > 0)
 	{
-	 	GRHI->CopySurface(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
-		r_dsgraph_render_sorted_hud();
+		GPU_EVENT(render_forward_sorted);
+		r_dsgraph_render_sorted(false);
+	}
+
+	{
+		GPU_EVENT(render_forward_environment);
+		g_pGamePersistent->Environment().RenderLast();
+	}
+
+	{
+		GPU_EVENT(render_forward_volumetric);
+		Target->phase_combine_volumetric();
+	}
+
+	{
+		GPU_EVENT(render_forward_sorted_hud);
+		if (mapHUDSorted.size() > 0)
+		{
+			GRHI->CopySurface(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
+			r_dsgraph_render_sorted_hud();
+		}
 	}
 }
