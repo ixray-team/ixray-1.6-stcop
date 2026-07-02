@@ -18,7 +18,7 @@
 #include <luabind/class_info.hpp>
 
 #ifdef IXRAY_PROFILER_TRACY
-	#define TRACY_CALLSTACK 16
+	#define TRACY_CALLSTACK 8
 		#include <tracy/TracyLua.hpp>
 	#undef TRACY_CALLSTACK
 #endif
