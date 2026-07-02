@@ -816,3 +816,23 @@ void CInput::SelectGamepadPrefix()
 		}
 	}
 }
+
+void CInput::PostGamepadConnection()
+{
+	pInput->SelectGamepadPrefix();
+
+	// Init gamepad speaker (if any)
+	const char* gamepadName = SDL_GetGamepadName(pGamePad);
+	Msg(gamepadName);
+	s32 devicesCount = 0;
+	SDL_AudioDeviceID* deviceArray = SDL_GetAudioPlaybackDevices(&devicesCount);
+	for (s32 i = 0; i < devicesCount; i++)
+	{
+		xr_string audioName = SDL_GetAudioDeviceName(deviceArray[i]);
+		Msg(make_string<const char*>("! Audio device: %s", audioName.c_str()));
+		if (audioName.contains(gamepadName))
+		{
+			Msg(make_string<const char*>("! Found gamepad speaker [%s] for [%s]", audioName.c_str(), gamepadName));
+		}
+	}
+}

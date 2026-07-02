@@ -88,6 +88,8 @@ int ENTRY_FUNCTION(ENTRY_ARGS)
 
 	{
 	PROF_EVENT("START_ENGINE");
+	CSteamOverlay SteamWorks;
+
 	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS))
 	{
 		return -1;
@@ -131,8 +133,6 @@ int ENTRY_FUNCTION(ENTRY_ARGS)
 #else
 	EngineLoadStage1(cmd_line.data());
 #endif
-
-	CSteamOverlay SteamWorks;
 
 	//plat
 	std::jthread s(splash::Show);
