@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "xr_input.h"
 #include "imgui_impl_sdl3.h"
+#include "XR_IOConsole.h"
 
 #define DEADZONE_SIZE 0.2f
 bool CRenderDevice::on_event	(SDL_Event& Event)
@@ -26,7 +27,11 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 			if (SDL_IsGamepad(Event.jdevice.which))
 			{
 				pInput->pGamePad = SDL_OpenGamepad(Event.jdevice.which);
-				pInput->PostGamepadConnection();
+
+				const char* tempPrefix = pInput->GamepadPrefix();
+				pInput->SelectGamepadPrefix();
+				if (!xr_strcmp(tempPrefix, pInput->GamepadPrefix()))
+					Console->Execute("ui_reload");
 
 				if (pInput->receive_gamepad_addedorremoved)
 				{
