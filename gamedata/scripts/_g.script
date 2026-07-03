@@ -2,7 +2,6 @@ if (jit == nil) then
 	profiler.setup_hook	()
 end
 
-
 function empty	(container)
 	if (type(container) == "function") then
 		for i in container do
