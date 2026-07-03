@@ -530,7 +530,7 @@ void CGamePersistent::UpdateParticles()
 
 		for (u32 i = 0; i < last_count; ++i)
 		{
-			Device.secondary_tasks.run([i, dwTime]()
+			Device.SecondaryTasks.run([i, dwTime]()
 			{
 				std::sort(workers[i].second.begin(), workers[i].second.end(), [](xr_shared_ptr<CParticlesObject>& a, xr_shared_ptr<CParticlesObject>& b)
 				{

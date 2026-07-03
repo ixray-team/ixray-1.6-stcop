@@ -80,13 +80,15 @@
 extern CUISequencer * g_tutorial;
 extern CUISequencer * g_tutorial2;
 
+int psLUA_GCSTEP = 10;
+
 float g_cl_lvInterp	= 0.1f;
 u32 lvInterpSteps	= 0;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CLevel::CLevel():
+CLevel::CLevel() :
 	IPureClient(Device.GetTimerGlobal())
 {
 	PROF_EVENT("CLevel::CLevel");
@@ -212,6 +214,17 @@ CLevel::CLevel():
 	m_pScriptXREffects = new CScriptXREffectsStorage();
 	m_pScriptXRParser = new CScriptXRParser();
 #endif
+
+	Device.LuaGC = xr_make_delegate(+[]()->void
+	{
+		try
+		{
+			lua_gc(ai().script_engine().lua(), LUA_GCSTEP, psLUA_GCSTEP);
+		}
+		catch (...)
+		{
+		}
+	});
 }
 
 extern CAI_Space *g_ai_space;
@@ -219,6 +232,8 @@ extern CAI_Space *g_ai_space;
 CLevel::~CLevel()
 {
 	PROF_EVENT("CLevel::~CLevel");
+	
+	Device.LuaGC.clear();
 
 	xr_delete					(g_player_hud);
 	delete_data					(hud_zones_list);
@@ -589,11 +604,6 @@ void CLevel::OnFrame()
 	DBG_RenderUpdate();
 #endif // #ifdef DEBUG
 
-	if (GCondlistGC != nullptr)
-	{
-		GCondlistGC->Update();
-	}
-
 	Fvector	temp_vector;
 	m_feel_deny.feel_touch_update(temp_vector, 0.f);
 
@@ -626,7 +636,6 @@ void CLevel::OnFrame()
 	}
 
 	ProcessGameEvents();
-
 
 	if (m_bNeed_CrPr)
 	{
@@ -750,21 +759,19 @@ void CLevel::OnFrame()
 	}
 }
 
-int		psLUA_GCSTEP					= 10			;
-void	CLevel::script_gc				()
+void CLevel::script_gc()
 {
+	PROF_EVENT("m_ph_commander");
+	try
 	{
-		PROF_EVENT("m_ph_commander");
-		try
-		{
-			ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->update();
+		ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->update();
 
-			m_ph_commander->update();
-			m_ph_commander_scripts->update();
-		}catch (...) {}
+		m_ph_commander->update();
+		m_ph_commander_scripts->update();
 	}
-	PROF_EVENT("CLevel::script_gc");
-	try{lua_gc	(ai().script_engine().lua(), LUA_GCSTEP, psLUA_GCSTEP);}catch (...) {}
+	catch (...)
+	{
+	}
 }
 
 #ifdef DEBUG_PRECISE_PATH

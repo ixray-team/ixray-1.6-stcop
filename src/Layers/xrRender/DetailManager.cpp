@@ -117,7 +117,7 @@ void CDetailManager::Load()
 #endif
 void CDetailManager::Unload		()
 {
-	Device.details_task.wait();
+	Device.DetailsTask.wait();
 	hw_Unload();
 
 #ifndef _EDITOR
@@ -157,7 +157,7 @@ void CDetailManager::Render()
 		mFullTransform.mul(mProject, Device.mView);
 		CFrustum View; View.CreateFromMatrix(mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
-		Device.details_task.run
+		Device.DetailsTask.run
 		(
 			[=]()
 			{

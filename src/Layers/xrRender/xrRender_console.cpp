@@ -602,7 +602,7 @@ public:
 
 		if (RImplementation.b_loaded && (dm_current_size != dm_size))
 		{
-			Device.details_task.wait();
+			Device.DetailsTask.wait();
 			RImplementation.Details->cache_ReInitialize();
 		}
 	}
@@ -624,7 +624,7 @@ public:
 
 		if (RImplementation.b_loaded)
 		{
-			Device.details_task.wait();
+			Device.DetailsTask.wait();
 			RImplementation.Details->cache_ReInitialize();
 		}
 	}
@@ -646,7 +646,7 @@ public:
 
 		if (RImplementation.b_loaded)
 		{
-			Device.details_task.wait();
+			Device.DetailsTask.wait();
 			RImplementation.Details->cache_ReInitialize();
 		}
 	}
