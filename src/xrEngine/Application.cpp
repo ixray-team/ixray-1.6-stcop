@@ -10,17 +10,6 @@
 
 ENGINE_API bool g_appLoaded = false;
 
-struct _SoundProcessor :
-	public pureFrame
-{
-	virtual void  OnFrame()
-	{
-		Device.Statistic->Sound.Begin();
-		::Sound->update(Device.mView, Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
-		Device.Statistic->Sound.End();
-	}
-} SoundProcessor;
-
 CApplication::CApplication()
 {
 	ll_dwReference = 0;
@@ -41,9 +30,6 @@ CApplication::CApplication()
 	// Register us
 	Device.seqFrame.Add(this, REG_PRIORITY_HIGH + 1000);
 
-	if (psDeviceFlags.test(mtSound))	Device.seqFrameMT.Add(&SoundProcessor);
-	else								Device.seqFrame.Add(&SoundProcessor);
-
 	Console->Show();
 
 	// App Title
@@ -57,8 +43,6 @@ CApplication::~CApplication()
 
 	if (DevicePtr != nullptr && !Device.IsEditorMode())
 	{
-		Device.seqFrameMT.Remove(&SoundProcessor);
-		Device.seqFrame.Remove(&SoundProcessor);
 		Device.seqFrame.Remove(this);
 	}
 
@@ -66,7 +50,7 @@ CApplication::~CApplication()
 	g_pEventManager->Detach(this);
 }
 
-extern bool quiting;
+extern volatile bool quiting;
 
 void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 {
