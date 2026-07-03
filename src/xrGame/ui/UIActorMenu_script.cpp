@@ -311,7 +311,7 @@ void CUIActorMenu::RepairEffect_CurItem()
 		wpn->SetMisfireStatus(false);
 		if (wpn->GetState() == CWeapon::eIdle)
 		{
-			wpn->SwitchState(CWeapon::eIdle, false);
+			wpn->SwitchState(CWeapon::eIdle);
 		}
 	}
 }
