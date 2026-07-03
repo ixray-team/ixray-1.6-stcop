@@ -160,7 +160,7 @@ void RHIStateManagerDX11::SetRasterizerState(void* NewState)
 {
 	bRSChanged = false;
 
-	if (NewState != RasterizerState || bOverrideScissoring)
+	if (NewState != RasterizerState)
 	{
 		RasterizerState = (ID3D11RasterizerState*)NewState;
 		bRSNeedApply = true;
@@ -696,7 +696,7 @@ void RHIStateManagerDX11::ValidateRDesc()
 		return;
 	}
 
-	bRSForced = false;
+//	bRSForced = false;
 
 	if (RasterizerState == nullptr)
 	{
