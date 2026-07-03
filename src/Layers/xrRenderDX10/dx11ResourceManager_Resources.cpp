@@ -215,7 +215,7 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 #endif
 
 		// Оптимизация макросов в шейдрах
-
+#ifndef _EDITOR
 		for (const auto& [_, vs] : m_vs)
 		{
 			if(vs->dwFlags & xr_resource_flagged::RF_REGISTERED)
@@ -227,7 +227,7 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 				}
 			}
 		}
-
+#endif
 		return _vs;
 	}
 }
