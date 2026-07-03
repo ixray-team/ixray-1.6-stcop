@@ -79,23 +79,25 @@ public:
 	CHudItem();
 	virtual	~CHudItem() = default;
 	virtual DLL_Pure* _construct();
+
+	struct
+	{
+		const CMotionDef* m_current_motion_def = nullptr;
+		shared_str m_current_motion;
+		u32 m_dwMotionCurrTm;
+		u32 m_dwMotionStartTm;
+		u32 m_dwMotionEndTm;
+		u8 m_startedMotionState;
+		u8 m_started_rnd_anim_idx = u8(-1);
+		bool m_bStopAtEndAnimIsRunning = false;
+	};
+
 protected:
 	
 	Flags16					m_huditem_flags;
 	enum{
 		fl_pending			= (1<<0),
 		fl_renderhud		= (1<<1),
-	};
-
-	struct{
-		const CMotionDef*		m_current_motion_def = nullptr;
-		shared_str				m_current_motion;
-		u32						m_dwMotionCurrTm;
-		u32						m_dwMotionStartTm;
-		u32						m_dwMotionEndTm;
-		u8						m_startedMotionState;
-		u8						m_started_rnd_anim_idx = u8(-1);
-		bool					m_bStopAtEndAnimIsRunning = false;
 	};
 
 	virtual void switch2_Bore();

@@ -2845,7 +2845,24 @@ void RenderOMFEditor_Draw_Game_Header(
 
 			if (pHI)
 			{
+				if (pHI->HudItemData())
+				{
+					attachable_hud_item* pAHI = pHI->HudItemData();
 
+					if (pAHI->m_hand_motions.m_anims.empty() == false)
+					{	
+						ImGui::Text("Current anim: [%s]", pHI->m_current_motion.c_str());
+					}
+					else
+					{
+						ImGui::Text("No anims!");
+					}
+
+				}
+			}
+			else
+			{
+				ImGui::Text("Withdraw weapon/item! Can't preview data of hud item!");
 			}
 		}
 	}
