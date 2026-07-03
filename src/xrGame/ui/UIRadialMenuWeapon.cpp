@@ -8,6 +8,7 @@
 #include "../CustomDevice.h"
 #include "../player_hud.h"
 #include "../../xrEngine/xr_input.h"
+#include "../../xrUI/Widgets/UI3dStatic.h"
 #include "UIInventoryUtilities.h"
 
 #define RADIAL_MENU_XML "radial_menu.xml"
@@ -185,24 +186,59 @@ void	CUIRadialMenuWeapon::Draw()
 				{
 					// Draw item icon
 					TexturedRectDrawData trdd;
-					trdd.side = radius / 4;
+					trdd.width = trdd.height = radius / 4;
+					UI().ClientToScreenScaledWidth(trdd.width);
+					trdd.width *= UI().get_current_kx();
 
-					UIRender->SetShader(*InventoryUtilities::GetEquipmentIconsShader(item->IconsTexture.c_str()));
-					UIRender->StartPrimitive(6, IUIRender::ptTriList, IUIRender::ePointType::pttTL);//6*8
+					UI().ClientToScreenScaledHeight(trdd.height);
+					
+					slotIcons[i]->InitTexture(item->IconsTexture.c_str());
 
+					Irect item_grid_rect = item->GetInvGridRect();
+					float scaleIcon = item->ScaleIcon;
+					Frect texture_rect = {};
+					texture_rect.lt.set(item_grid_rect.x1 * INV_GRID_WIDTH(scaleIcon), item_grid_rect.y1 * INV_GRID_HEIGHT(scaleIcon));
+					texture_rect.rb.set(item_grid_rect.x2 * INV_GRID_WIDTH(scaleIcon), item_grid_rect.y2 * INV_GRID_HEIGHT(scaleIcon));
+					texture_rect.rb.add(texture_rect.lt);
+					slotIcons[i]->SetTextureRect(texture_rect);
+
+					if (item_grid_rect.x2 == 1)
+					{
+						trdd.width *= 0.6f;
+						trdd.height *= 0.6f;
+					}
 					const float angle = starting_angle + sector/2 + 2 * M_PI * i / float(sectors_count);
 
 					const float r = inner_radius + screen_height / 12.f;
-					
+
 					trdd.x = center_x + cos(angle) * r;
 					trdd.y = center_y + sin(angle) * r;
 
-					if (!inventory.IsSlotBlocked(item) || slotId == DEVICE_SLOT)
-						DrawItem(trdd, item, clrSlotIcon);
-					else
-						DrawItem(trdd, item, clrSlotIconBlocked);
+					UI().ClientToScreenScaledWidth(trdd.x);
+					UI().ClientToScreenScaledHeight(trdd.y);
 
-					UIRender->FlushPrimitive();
+					shared_str sect_name = item->object().cNameSect();
+					InventoryUtilities::InventoryIconParams icons_struct = InventoryUtilities::GetInventoryIconParams(sect_name.c_str());
+					if (psActorFlags.test(AF_3D_ICONS_INV))
+					{
+						slotIcons[i]->SetVisual(icons_struct._3d_static_visual);
+						slotIcons[i]->SetXYZ(icons_struct._3d_static_rotate);
+						slotIcons[i]->SetScaleFactor(icons_struct._3d_static_scale);
+						slotIcons[i]->SetBonesVisible(item->object().Visual()->dcast_PKinematics());
+					}
+					else
+					{
+						slotIcons[i]->SetVisual(nullptr);
+					}
+
+					if (!inventory.IsSlotBlocked(item) || slotId == DEVICE_SLOT)
+					{
+						DrawItem(slotIcons[i], trdd, clrSlotIcon);
+					}
+					else
+					{
+						DrawItem(slotIcons[i], trdd, clrSlotIconBlocked);
+					}
 				}
 			}
 		}

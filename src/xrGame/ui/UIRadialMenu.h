@@ -10,6 +10,8 @@ class CInventoryItem;
 class CInventory;
 class CUIXml;
 class CUIGamepadLegend;
+class CUIStatic;
+class CUI3dStatic;
 
 class CUIRadialMenu : public CUIDialogWnd, public pureScreenResolutionChanged
 {
@@ -17,9 +19,10 @@ class CUIRadialMenu : public CUIDialogWnd, public pureScreenResolutionChanged
 
 public:
 	struct TexturedRectDrawData {
-		u32 x = 0;
-		u32 y = 0;
-		u32 side = 0;
+		float x = 0.f;
+		float y = 0.f;
+		float width = 0.f;
+		float height = 0.f;
 	};
 
 public:
@@ -48,10 +51,11 @@ protected:
 	void RecheckSizes();
 	virtual void OnActivateSectorClicked();
 	
-	void DrawItem(TexturedRectDrawData& trdd, CInventoryItem* iitem, u32 color_mask);
+	void DrawItem(CUIStatic* st, TexturedRectDrawData& trdd, u32 color_mask);
 
 protected:
-	enum eRadialMenuSndAction {
+	enum eRadialMenuSndAction 
+	{
 		eSndOpen = 0,
 		eSndClose,
 		eSndSwitch,
@@ -68,7 +72,8 @@ protected:
 	bool bWaitForZeroRStick = false;
 
 	//read from xml
-	u32 slotsInSectors[LAST_SLOT + 1];
+	xr_vector<u32> slotsInSectors;
+	xr_vector<CUI3dStatic*> slotIcons;
 	int sectors_count;
 	float starting_angle;
 	float inner_radius_ratio;//radius / inner radius
