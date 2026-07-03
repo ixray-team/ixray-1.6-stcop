@@ -378,6 +378,7 @@ void CWeaponMagazinedWGrenade::switch2_Hiding()
 	}
 
 	PlayAnimHide();
+	SetPending(true);
 }
 
 void CWeaponMagazinedWGrenade::switch2_Showing()
@@ -424,6 +425,7 @@ void CWeaponMagazinedWGrenade::switch2_Showing()
 		}
 	}
 
+	SetPending(true);
 	PlayAnimShow();
 }
 
@@ -446,7 +448,7 @@ bool CWeaponMagazinedWGrenade::SwitchMode()
 		return false;
 	}
 
-	SwitchState(eSwitch, true);
+	SwitchState(eSwitch);
 
 	m_BriefInfo_CalcFrame = 0;
 
@@ -509,7 +511,7 @@ void CWeaponMagazinedWGrenade::FireStart()
 			{
 				if (m_eAnimationsFlags.test(EAnimationsFlags::af_empty_click))
 				{
-					SwitchState(eEmptyClick, true);
+					SwitchState(eEmptyClick);
 				}
 				else
 				{
@@ -535,7 +537,7 @@ void CWeaponMagazinedWGrenade::FireStart()
 	}
 
 	CWeapon::FireStart();
-	SwitchState(eFire, false);
+	SwitchState(eFire);
 }
 
 void CWeaponMagazinedWGrenade::FireEnd()
@@ -757,6 +759,7 @@ void CWeaponMagazinedWGrenade::OnStateSwitch(u8 S)
 
 void CWeaponMagazinedWGrenade::switch2_SwitchMode()
 {
+	SetPending(true);
 	PerformSwitchGL();
 
 	if (m_bGrenadeMode && m_eSoundsFlags.test(ESoundsFlags::sf_switch_g))
@@ -776,7 +779,7 @@ void CWeaponMagazinedWGrenade::OnAnimationEnd(u8 state)
 	switch (state)
 	{
 	case eSwitch:
-		SwitchState(eIdle, false);
+		SwitchState(eIdle);
 		break;
 	}
 	inherited::OnAnimationEnd(state);
