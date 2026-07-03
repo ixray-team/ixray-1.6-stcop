@@ -72,8 +72,3 @@ luabind::functor<bool>& CCondlistGarbageCollector::GetFunctorCond(shared_str Nam
 	
 	return FunctorCondList[Name];
 }
-
-void CCondlistGarbageCollector::Update()
-{
-	//CondlistIter = 0;
-}
