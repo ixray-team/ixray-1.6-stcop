@@ -163,7 +163,7 @@ void CMissile::PH_A_CrPr		()
 
 void CMissile::OnActiveItem		()
 {
-	SwitchState				(eShowing, true);
+	SwitchState				(eShowing);
 	inherited::OnActiveItem	();
 	SetState				(eIdle);
 	SetNextState			(eIdle);	
@@ -174,9 +174,9 @@ void CMissile::OnHiddenItem()
 
 //. -Hide
 	if(IsGameTypeSingle())
-		SwitchState			(eHiding, true);
+		SwitchState			(eHiding);
 	else
-		SwitchState			(eHidden, false);
+		SwitchState			(eHidden);
 //-
 
 	inherited::OnHiddenItem	();
@@ -256,7 +256,7 @@ void CMissile::UpdateCL()
 		{
 			if (hud_adj_mode == 0 && GetState() == eIdle && (Device.dwTimeGlobal - m_dw_curr_substate_time > 20000))
 			{
-				SwitchState(eBore, false);
+				SwitchState(eBore);
 				ResetSubStateTime();
 			}
 		}
@@ -267,7 +267,7 @@ void CMissile::UpdateCL()
 	{
 		if(m_throw)
 		{ 
-			SwitchState(eThrow, true);
+			SwitchState(eThrow);
 		}else 
 		{
 			CActor	*actor = H_Parent() ? H_Parent()->cast_actor() : NULL;
@@ -333,6 +333,8 @@ void CMissile::State(u8 state)
 	{
 		case eShowing:
 		{
+			SetPending(true);
+
 			if (m_bNeedQuick)
 			{
 				m_constpower = true;
@@ -365,6 +367,7 @@ void CMissile::State(u8 state)
 			if(H_Parent())
 			{
 				PlayHUDMotion		("anm_hide", EHudMixType::eMixAll, GetState(), m_disable_random_animations);
+				SetPending			(true);
 				if (m_eSoundsFlags.test(ESoundsFlags::sf_holster))
 				{
 					PlaySound("SndHide", Position());
@@ -389,6 +392,7 @@ void CMissile::State(u8 state)
 		} break;
 	case eThrowStart:
 		{
+			SetPending			(true);
 			m_fThrowForce		= m_fMinForce;
 			if (m_eSoundsFlags.test(ESoundsFlags::sf_throw_begin))
 			{
@@ -402,7 +406,7 @@ void CMissile::State(u8 state)
 				{
 					if (dev->CanThrowHand())
 					{
-						dev->SwitchState(CCustomDevice::EDeviceStates::eHandThrowStart, false);
+						dev->SwitchState(CCustomDevice::EDeviceStates::eHandThrowStart);
 					}
 				}
 			}
@@ -416,13 +420,14 @@ void CMissile::State(u8 state)
 				{
 					if (dev->CanThrowHand())
 					{
-						dev->SwitchState(CCustomDevice::EDeviceStates::eHandThrowIdle, false);
+						dev->SwitchState(CCustomDevice::EDeviceStates::eHandThrowIdle);
 					}
 				}
 			}
 		} break;
 	case eThrow:
 		{
+			SetPending			(true);
 			m_throw				= false;
 			if (m_eSoundsFlags.test(ESoundsFlags::sf_throw))
 			{
@@ -437,7 +442,7 @@ void CMissile::State(u8 state)
 				{
 					if (dev->CanThrowHand())
 					{
-						dev->SwitchState(CCustomDevice::EDeviceStates::eHandThrowEnd, false);
+						dev->SwitchState(CCustomDevice::EDeviceStates::eHandThrowEnd);
 					}
 				}
 			}
@@ -449,7 +454,7 @@ void CMissile::State(u8 state)
 			{
 				PlayHUDMotion("anm_throw_end", EHudMixType::eMixAll, GetState(), m_disable_random_animations);
 			}
-			SwitchState			(eShowing, true); 
+			SwitchState			(eShowing); 
 		} break;
 /*	case eBore:
 		{
@@ -475,13 +480,13 @@ void CMissile::OnAnimationEnd(u8 state)
 	case eHiding:
 		{
 			setVisible(false);
-			SwitchState(eHidden, false);
+			SwitchState(eHidden);
 		} break;
 	case eShowing:
 		{
 			if (m_bNeedQuick)
 			{
-				SwitchState(eHidden, false);
+				SwitchState(eHidden);
 				m_bNeedQuick = false;
 
 				u16 saved_old_slot = NO_ACTIVE_SLOT;
@@ -516,7 +521,7 @@ void CMissile::OnAnimationEnd(u8 state)
 			else
 			{
 				setVisible(true);
-				SwitchState(eIdle, false);
+				SwitchState(eIdle);
 			}
 		} break;
 	case eThrowStart:
@@ -525,13 +530,13 @@ void CMissile::OnAnimationEnd(u8 state)
 				spawn_fake_missile	();
 
 			if(m_throw) 
-				SwitchState(eThrow, true);
+				SwitchState(eThrow); 
 			else 
-				SwitchState(eReady, true);
+				SwitchState(eReady);
 		} break;
 	case eThrow:
 		{
-			SwitchState	(eThrowEnd, true);
+			SwitchState	(eThrowEnd);
 			if (!m_motion_marks_available && !m_throw)
 			{
 				if (H_Parent())
@@ -540,7 +545,7 @@ void CMissile::OnAnimationEnd(u8 state)
 		} break;
 	case eThrowEnd:
 		{
-			SwitchState	(eShowing, true);
+			SwitchState	(eShowing);
 		} break;
 	default:
 		inherited::OnAnimationEnd(state);
@@ -734,7 +739,7 @@ bool CMissile::Action(u16 cmd, u32 flags)
 				if (!m_bNeedQuick && (GetState() == eIdle || GetState() == eBore))
 				{
 					m_throw = true;
-					SwitchState(eThrowStart, true);
+					SwitchState(eThrowStart);
 				}
 			} 
 			return true;
@@ -752,7 +757,7 @@ bool CMissile::Action(u16 cmd, u32 flags)
 			{
 				m_throw = false;
 				if (GetState() == eIdle || GetState() == eBore)
-					SwitchState(eThrowStart, true);
+					SwitchState(eThrowStart);
 				else 
 				if(GetState()==eReady)
 				{
@@ -765,7 +770,7 @@ bool CMissile::Action(u16 cmd, u32 flags)
 			{
 				m_throw = true; 
 				if(GetState()==eReady) 
-					SwitchState(eThrow, true);
+					SwitchState(eThrow);
 			}
 			return true;
 		}break;

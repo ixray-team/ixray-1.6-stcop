@@ -330,7 +330,7 @@ void CHudStateAnimator::Update()
 				if (m_AnimatorForceHideItems)
 				{
 					m_manager->Parent()->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
-					active_item->SwitchState(CHUDState::EHudStates::eHidden, false);
+					active_item->SwitchState(CHUDState::EHudStates::eHidden);
 					active_item->SetState(CHUDState::EHudStates::eHidden);
 					g_player_hud->detach_item_idx(0);
 				}
@@ -346,7 +346,7 @@ void CHudStateAnimator::Update()
 
 				if (m_AnimatorForceHideItems)
 				{
-					dev->SwitchState(CHUDState::EHudStates::eHidden, false);
+					dev->SwitchState(CHUDState::EHudStates::eHidden);
 					dev->SetState(CHUDState::EHudStates::eHidden);
 					g_player_hud->detach_item_idx(1);
 				}

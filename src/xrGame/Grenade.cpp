@@ -331,7 +331,7 @@ void CGrenade::OnAnimationEnd(u8 state)
 	{
 	case eThrowEnd:
 	{
-		SwitchState(eHidden, false);
+		SwitchState(eHidden);
 		break;
 	}
 	case eShowing:
@@ -389,14 +389,14 @@ void CGrenade::OnAnimationEnd(u8 state)
 				m_bNeedRestoreDevice = false;
 			}
 
-			SwitchState(eHidden, false);
+			SwitchState(eHidden);
 			SetState(eHidden);
 			m_bNeedQuick = false;
 		}
 		else
 		{
 			setVisible(true);
-			SwitchState(eIdle, false);
+			SwitchState(eIdle);
 		}
 		break;
 	}

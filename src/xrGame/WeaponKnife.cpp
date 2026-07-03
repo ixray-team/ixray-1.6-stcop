@@ -374,7 +374,7 @@ void CWeaponKnife::OnAnimationEnd(u8 state)
 {
 	switch (state)
 	{
-	case eHiding:	SwitchState(eHidden, false);	break;
+	case eHiding:	SwitchState(eHidden);	break;
 
 	case eFire:
     case eFire2:
@@ -394,13 +394,13 @@ void CWeaponKnife::OnAnimationEnd(u8 state)
         }
         if (time == 0)
         {
-        	SwitchState(eIdle, false);		break;
+        	SwitchState(eIdle);		break;
         }
         break;
     }
 
 	case eShowing:
-	case eIdle:		SwitchState(eIdle, false);		break;
+	case eIdle:		SwitchState(eIdle);		break;
 
 	default:		inherited::OnAnimationEnd(state);
 	}
@@ -422,7 +422,7 @@ void CWeaponKnife::switch2_Attacking(u8 state)
 			{
 				if (pDev->CanKick())
 				{
-					pDev->SwitchState(CCustomDevice::EDeviceStates::eHandKick1, false);
+					pDev->SwitchState(CCustomDevice::EDeviceStates::eHandKick1);
 				}
 			}
 		}
@@ -442,7 +442,7 @@ void CWeaponKnife::switch2_Attacking(u8 state)
 			{
 				if (pDev->CanKick())
 				{
-					pDev->SwitchState(CCustomDevice::EDeviceStates::eHandKick2, false);
+					pDev->SwitchState(CCustomDevice::EDeviceStates::eHandKick2);
 				}
 			}
 		}
@@ -457,6 +457,7 @@ void CWeaponKnife::switch2_Attacking(u8 state)
 
 	attackMotionMarksAvailable = m_current_motion_def ? !m_current_motion_def->marks.empty() : false;
 	attackStarted = true;
+	SetPending(true);
 }
 
 void CWeaponKnife::switch2_Idle	()
@@ -522,7 +523,7 @@ void CWeaponKnife::FireStart()
 	}
 
 	inherited::FireStart();
-	SwitchState(eFire, true);
+	SwitchState(eFire);
 }
 
 void CWeaponKnife::Fire2Start()
@@ -533,7 +534,7 @@ void CWeaponKnife::Fire2Start()
 	}
 
 	inherited::FireStart();
-	SwitchState(eFire2, true);
+	SwitchState(eFire2);
 }
 
 bool CWeaponKnife::Action(u16 cmd, u32 flags)
