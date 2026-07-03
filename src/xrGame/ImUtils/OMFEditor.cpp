@@ -2827,6 +2827,54 @@ void RenderOMFEditor_Draw_TableMain()
 	}
 }
 
+
+inline const char* convert_EHudStates_to_string(CHUDState::EHudStates state) noexcept
+{
+	switch (state)
+	{
+		case CHUDState::EHudStates::eIdle:
+		{
+			return "eIdle";
+		}
+		case CHUDState::EHudStates::eShowing:
+		{
+			return "eShowing";
+		}
+		case CHUDState::EHudStates::eHiding:
+		{
+			return "eHiding";
+		}
+		case CHUDState::EHudStates::eBore:
+		{
+			return "eBore";
+		}
+		case CHUDState::EHudStates::eSprintStart:
+		{
+			return "eSprintStart";
+		}
+		case CHUDState::EHudStates::eSprintEnd:
+		{
+			return "eSprintEnd";
+		}
+		case CHUDState::EHudStates::eDeviceSwitch:
+		{
+			return "eDeviceSwitch";
+		}
+		case CHUDState::EHudStates::ePrepareDetector:
+		{
+			return "ePrepareDetector";
+		}
+		case CHUDState::EHudStates::eFinishDetector:
+		{
+			return "eFinishDetector";
+		}
+		default:
+		{
+			return "UNDEFINED_ENUM";
+		}
+	}
+}
+
 void RenderOMFEditor_Draw_Game_Header(
 	CActor* pPlayer
 )
@@ -2850,14 +2898,18 @@ void RenderOMFEditor_Draw_Game_Header(
 					attachable_hud_item* pAHI = pHI->HudItemData();
 
 					if (pAHI->m_hand_motions.m_anims.empty() == false)
-					{	
-						ImGui::Text("Current anim: [%s]", pHI->m_current_motion.c_str());
+					{
+						ImGui::Text("Current anim: [%s]\n\tt=[%d]/[%d]\n\tstartedMotionState=[%s]", 
+							pHI->m_current_motion.c_str(), 
+							pHI->m_dwMotionCurrTm, 
+							pHI->m_dwMotionEndTm,
+							convert_EHudStates_to_string(static_cast<CHUDState::EHudStates>(pHI->m_startedMotionState))
+						);
 					}
 					else
 					{
 						ImGui::Text("No anims!");
 					}
-
 				}
 			}
 			else
