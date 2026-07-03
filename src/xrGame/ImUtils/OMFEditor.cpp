@@ -2827,7 +2827,22 @@ void RenderOMFEditor_Draw_TableMain()
 	}
 }
 
-void RenderOMFEditor_Draw_Game_Header(
+
+#if IXRAY_OMF_EDITOR_TAB_GAME == 1
+inline const std::string_view& convert_EHudStates_to_string(u8 state) noexcept
+{
+	if (state <= CHUDState::EHudStates::eLastBaseState)
+	{
+		return magic_enum::enum_name(static_cast<CHUDState::EHudStates>(state));
+	}
+	else
+	{
+		return magic_enum::enum_name(static_cast<CWeapon::EWeaponStates>(state));
+	}
+}
+#endif
+
+void RenderOMFEditor_Draw_Game_Editing(
 	CActor* pPlayer
 )
 {
@@ -2838,16 +2853,153 @@ void RenderOMFEditor_Draw_Game_Header(
 
 		if (pItem && pItem->cast_hud_item())
 		{
-			ImGui::Text("active item: %s (%s)", pItem->m_section_id.c_str(), pItem->cast_hud_item()->HudSection().c_str());
-			ImGui::Text("ogf: %s", pItem->m_3d_static_visual_name);
+			CHudItem* pHI = pItem->cast_hud_item();
+
+			if (pHI)
+			{
+				if (pHI->HudItemData())
+				{
+					attachable_hud_item* pAHI = pHI->HudItemData();
+
+					if (pAHI->m_hand_motions.m_anims.empty() == false)
+					{
+
+					}
+					else
+					{
+						ImGui::Text("No anims!");
+					}
+				}
+				else
+				{
+					ImGui::Text("No HudItemData!");
+				}
+			}
+			else
+			{
+				ImGui::Text("Withdraw weapon/item! Can't preview data of hud item!");
+			}
+		}
+	}
+#endif
+}
+
+void RenderOMFEditor_Draw_Game_Info(
+	CActor* pPlayer
+)
+{
+#if IXRAY_OMF_EDITOR_TAB_GAME == 1
+	if (pPlayer && g_player_hud)
+	{
+		PIItem pItem = pPlayer->inventory().ActiveItem();
+
+		if (pItem && pItem->cast_hud_item())
+		{
+			ImGui::Text("active item:\n\t%s (%s)", pItem->m_section_id.c_str(), pItem->cast_hud_item()->HudSection().c_str());
+			ImGui::Text("ogf:\n\t[%s]", pItem->m_3d_static_visual_name);
 
 			CHudItem* pHI = pItem->cast_hud_item();
 
 			if (pHI)
 			{
+				if (pHI->HudItemData())
+				{
+					attachable_hud_item* pAHI = pHI->HudItemData();
 
+					if (pAHI->m_hand_motions.m_anims.empty() == false)
+					{
+						ImGui::Text("Current anim:\n\t[%s]\n\tt=[%d]/[%d]\n\tstartedMotionState=[%s (%d)]", pHI->m_current_motion.c_str(), pHI->m_dwMotionCurrTm, pHI->m_dwMotionEndTm, convert_EHudStates_to_string((pHI->m_startedMotionState)).data(), pHI->m_startedMotionState);
+
+						if (pAHI->m_hand_motions.m_banned_bone_parts.empty() == false)
+						{
+							if (ImGui::CollapsingHeader("banned bone parts:"))
+							{
+								for (const shared_str& str : pAHI->m_hand_motions.m_banned_bone_parts)
+								{
+									ImGui::Text("\t[%s]", str.c_str());
+								}
+							}
+						}
+
+						char ch_name[32];
+						std::sprintf(ch_name, "Anims=%zu", pAHI->m_hand_motions.m_anims.size());
+						if (ImGui::CollapsingHeader(ch_name))
+						{
+							u16 i = 0;
+							for (const player_hud_motion& phm : pAHI->m_hand_motions.m_anims)
+							{
+								ImGui::PushID(i);
+								if (ImGui::CollapsingHeader(phm.m_alias_name.c_str()))
+								{
+									ImGui::Text("additional name: [%s]", phm.m_additional_name.c_str());
+									ImGui::Text("base name: [%s]", phm.m_base_name.c_str());
+									ImGui::Text("speed: %.2f", phm.m_anim_speed);
+
+									if (phm.m_bone_parts.empty() == false)
+									{
+										ImGui::Text("bone parts:");
+
+										for (const shared_str& bone_part_name : phm.m_bone_parts)
+										{
+											ImGui::Text("\t[%s]", bone_part_name.c_str());
+										}
+									}
+								}
+								ImGui::PopID();		
+								++i;
+							}
+						}
+					}
+					else
+					{
+						ImGui::Text("No anims!");
+					}
+				}
+				else
+				{
+					ImGui::Text("No HudItemData!");
+				}
+			}
+			else
+			{
+				ImGui::Text("Withdraw weapon/item! Can't preview data of hud item!");
 			}
 		}
+	}
+#endif
+}
+
+void RenderOMFEditor_Draw_Game(
+	CActor* pPlayer
+)
+{
+#if IXRAY_OMF_EDITOR_TAB_GAME == 1
+	constexpr const char* _kTableColumnNames[] = {
+		"Info",
+		"Editing"
+	};
+	constexpr u8 _kTableColumnNamesCount = sizeof(_kTableColumnNames) / sizeof(_kTableColumnNames[0]);
+
+	if (ImGui::BeginTable("##ToolsInGame_OMFEditor_GameTable", 2))
+	{
+		for (u8 i = 0; i < _kTableColumnNamesCount; ++i)
+		{
+			ImGui::TableSetupColumn(_kTableColumnNames[i]);
+		}
+
+		ImGui::TableHeadersRow();
+
+		ImGui::TableNextRow();
+
+		ImGui::TableSetColumnIndex(0);
+
+		RenderOMFEditor_Draw_Game_Info(pPlayer);
+
+		ImGui::TableSetColumnIndex(1);
+
+		RenderOMFEditor_Draw_Game_Editing(pPlayer);
+
+		ImGui::EndTable();
 	}
 #endif
 }
@@ -2905,7 +3057,7 @@ void RenderToolsOMFEditorWindow()
 				{
 					if (is_in_game)
 					{
-						RenderOMFEditor_Draw_Game_Header(pPlayer);
+						RenderOMFEditor_Draw_Game(pPlayer);
 					}
 
 					ImGui::EndTabItem();
@@ -2916,8 +3068,7 @@ void RenderToolsOMFEditorWindow()
 
 				ImGui::EndTabBar();
 			}
-
-			ImGui::End();
 		}
+		ImGui::End();
 	}
 }
