@@ -2828,7 +2828,7 @@ void RenderOMFEditor_Draw_TableMain()
 }
 
 
-inline const char* convert_EHudStates_to_string(CHUDState::EHudStates state) noexcept
+inline const char* convert_EHudStates_to_string(u8 state) noexcept
 {
 	switch (state)
 	{
@@ -3054,7 +3054,7 @@ void RenderToolsOMFEditorWindow()
 				ImGui::EndTabBar();
 			}
 
-			ImGui::End();
 		}
+		ImGui::End();
 	}
 }
