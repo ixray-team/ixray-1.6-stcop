@@ -315,14 +315,6 @@ void DumpLuaExports()
 	});
 }
 
-bool IsTracyConnected()
-{
-#ifdef IXRAY_PROFILER_TRACY
-	return tracy::GetProfiler().IsConnected();
-#endif
-	return false;
-}
-
 #pragma optimize("s",on)
 void CScriptEngine::script_register(lua_State *L)
 {
@@ -352,8 +344,7 @@ void CScriptEngine::script_register(lua_State *L)
 		def("IsSupportMP",						&CheckMP),
 		def("IsEditor",							&IsEditorMode),
 		def("help",								&DumpLuaExports),
-		def("try_load_file",					&TryLoadFile),
-		def("IsTracyConnected",					&IsTracyConnected)
+		def("try_load_file",					&TryLoadFile)
 #ifdef XRGAME_EXPORTS
 		,def("device",							&get_device),
 		def("load_script_to_global",			&LoadScriptToGlobal_script),
