@@ -267,6 +267,7 @@ public:
 
 	typedef xr_hash_map<u8, xr_pair<u32, Fcolor>> EditColor;
 	typedef xr_hash_map<CCustomObject*, EditColor> EditColorMesh;
+	u32 			m_SVertInfl;
 protected:
 	Fbox			m_Box;
 
@@ -275,7 +276,6 @@ protected:
 	int				m_AdjsRefs;
 	int				m_SVertRefs;
 
-	u32 			m_SVertInfl;
 	
 	u32				m_VertCount;
 	u32				m_FaceCount;
