@@ -10,7 +10,7 @@ CheckOptions:
     value: CamelCase
     
   - key: readability-identifier-naming.ConstantCase
-    value: UPPER_CASE
+    value: CamelCase
     
   - key: readability-identifier-naming.FunctionCase
     value: CamelCase
@@ -26,3 +26,6 @@ CheckOptions:
     
   - key: readability-identifier-naming.IgnoredRegexp
     value: '^(xr_|C[A-Z]|F[A-Z]|I[A-Z]|E[A-Z]|g_)'
+    
+  - key: readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
