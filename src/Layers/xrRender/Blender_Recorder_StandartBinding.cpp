@@ -878,9 +878,10 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("c_sun", &tree_binder_c_sun);
 
 	//hemi cube
+#ifdef _EDITOR
 	r_Constant("tfactor", &binder_tfactor);
 	r_Constant("editor_selection", &binder_selection);
-
+#endif
 	r_Constant("L_material", &binder_material);
 
 	r_Constant("hemi_cube_pos_faces", &binder_hemi_cube_pos_faces);
