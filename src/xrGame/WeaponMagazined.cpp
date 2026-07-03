@@ -508,7 +508,7 @@ void CWeaponMagazined::FireStart()
 		{
 			if (SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfFIRE))
 			{
-				SwitchState(ePump, false);
+				SwitchState(ePump);
 			}
 		}
 		else if (iAmmoElapsed + iAmmoChamberElapsed > 0)
@@ -564,14 +564,14 @@ void CWeaponMagazined::FireStart()
 
 				inherited::FireStart();
 				R_ASSERT(parent);
-				SwitchState(eFire, false);
+				SwitchState(eFire);
 			}
 		}
 		else if (!IsPending() && GetState() != eFire || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
 		{
 			if (IsActor && m_eAnimationsFlags.test(EAnimationsFlags::af_empty_click))
 			{
-				SwitchState(eEmptyClick, true);
+				SwitchState(eEmptyClick);
 			}
 			else
 			{
@@ -596,7 +596,7 @@ void CWeaponMagazined::FireStart()
 
 		if (m_eAnimationsFlags.test(EAnimationsFlags::af_empty_click))
 		{
-			SwitchState(eEmptyClick, true);
+			SwitchState(eEmptyClick);
 		}
 		else
 		{
@@ -642,13 +642,15 @@ bool CWeaponMagazined::TryReload()
 
 		if (IsMisfire())
 		{
-			SwitchState(eReload, true);
+			SetPending(true);
+			SwitchState(eReload);
 			return true;
 		}
 
 		if (m_pCurrentAmmo || unlimited_ammo())
 		{
-			SwitchState(eReload, true);
+			SetPending(true);
+			SwitchState(eReload);
 			return true;
 		}
 		else if (m_set_next_ammoType_on_reload == undefined_ammo_type && iAmmoElapsed + (IsGrenadeMode() ? 0 : iAmmoChamberElapsed) == 0 || m_set_next_ammoType_on_reload != undefined_ammo_type)
@@ -660,7 +662,8 @@ bool CWeaponMagazined::TryReload()
 				if (m_pCurrentAmmo)
 				{
 					m_set_next_ammoType_on_reload = i;
-					SwitchState(eReload, true);
+					SetPending(true);
+					SwitchState(eReload);
 					return true;
 				}
 			}
@@ -674,7 +677,7 @@ bool CWeaponMagazined::TryReload()
 
 	if (GetState() != eIdle)
 	{
-		SwitchState(eIdle, false);
+		SwitchState(eIdle);
 	}
 
 	return false;
@@ -696,7 +699,8 @@ bool CWeaponMagazined::TryReloadChamber()
 
 		if (m_pCurrentAmmo != nullptr || unlimited_ammo())
 		{
-			SwitchState(eLoadChamber, true);
+			SetPending(true);
+			SwitchState(eLoadChamber);
 			return true;
 		}
 		else if (m_set_next_ammoType_on_reload == undefined_ammo_type && iAmmoChamberElapsed == 0 || m_set_next_ammoType_on_reload != undefined_ammo_type)
@@ -708,7 +712,8 @@ bool CWeaponMagazined::TryReloadChamber()
 				if (m_pCurrentAmmo != nullptr)
 				{
 					m_set_next_ammoType_on_reload = i;
-					SwitchState(eLoadChamber, true);
+					SetPending(true);
+					SwitchState(eLoadChamber);
 					return true;
 				}
 			}
@@ -819,9 +824,7 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	}
 
 	if (GetState() == eIdle)
-	{
-		SwitchState(eIdle, false);
-	}
+		SwitchState(eIdle);
 
 	if (!IsGrenadeMode())
 	{
@@ -1071,7 +1074,7 @@ void CWeaponMagazined::OnStateSwitch	(u8 S)
 		else
 		{
 			OnEmptyClick();
-			SwitchState(eIdle, false);
+			SwitchState(eIdle);
 		}
 
 		break;
@@ -1391,7 +1394,7 @@ void CWeaponMagazined::state_Fire(float dt)
 		{
 			is_shooting_end_callback = false;
 			bWorking = false;
-			SwitchState(eIdle, false);
+			SwitchState(eIdle);
 		}
 	}
 	else
@@ -1538,7 +1541,7 @@ void CWeaponMagazined::state_FireChamber(float dt)
 		{
 			is_shooting_end_callback = false;
 			bWorking = false;
-			SwitchState(eIdle, false);
+			SwitchState(eIdle);
 		}
 	}
 	else
@@ -1767,10 +1770,10 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 				}
 				GiveAmmoFromMagToChamber();
 			}
-			SwitchState(eIdle, false);
+			SwitchState(eIdle);
 		} break;
 		case eHiding:
-			SwitchState(eHidden, false);
+			SwitchState(eHidden);  
 		break;
 		case eIdle:
 			switch2_Idle();
@@ -1778,7 +1781,7 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 		case eEmptyClick:
 		{
 			m_bBlockEmptyClick = false;
-			SwitchState(eIdle, false);
+			SwitchState(eIdle);
 			break;
 		}
 		case eFire:
@@ -1788,7 +1791,7 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 				if (IsGrenadeMode())
 				{
 					bWorking = false;
-					SwitchState(eIdle, false);
+					SwitchState(eIdle);
 				}
 				else
 				{
@@ -1802,14 +1805,14 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 			LoadChamber();
 			m_bNeedPumpState = false;
 			m_bHaveShell = false;
-			SwitchState(eIdle, false);
+			SwitchState(eIdle);
 			break;
 		}
 		case eUnloadChamber:
 		{
 			UnloadChamber();
 			GiveAmmoFromMagToChamber();
-			SwitchState(eIdle, false);
+			SwitchState(eIdle);
 			break;
 		}
 		case ePump:
@@ -1817,7 +1820,7 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 			m_bNeedPumpState = false;
 			m_bHaveShell = false;
 			GiveAmmoFromMagToChamber();
-			SwitchState(eIdle, false);
+			SwitchState(eIdle);
 			break;
 		}
 		case eChamberCheck:
@@ -1841,7 +1844,7 @@ void CWeaponMagazined::OnAnimationEnd(u8 state)
 				UpdateIdleAnimations();
 			}
 
-			SwitchState(eIdle, false);
+			SwitchState(eIdle);
 			break;
 		}
 	}
@@ -1914,6 +1917,7 @@ void CWeaponMagazined::switch2_Empty()
 {
 	auto play_motion_if_exists = [&](const shared_str& motion_name)
 	{
+		SetPending(true);
 		m_bBlockEmptyClick = true;
 		PlayHUDMotion(SetCurrentStateAnimation(motion_name), EHudMixType::eMixAll, eEmptyClick);
 		if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
@@ -1922,7 +1926,7 @@ void CWeaponMagazined::switch2_Empty()
 			{
 				if (IsMisfire() && pDevice->CanJammed() || pDevice->CanShooting(true))
 				{
-					pDevice->SwitchState(IsMisfire() ? CCustomDevice::EDeviceStates::eHandJammed : CCustomDevice::EDeviceStates::eHandDry, false);
+					pDevice->SwitchState(IsMisfire() ? CCustomDevice::EDeviceStates::eHandJammed : CCustomDevice::EDeviceStates::eHandDry);
 				}
 			}
 		}
@@ -1967,6 +1971,8 @@ void CWeaponMagazined::switch2_Empty()
 
 void CWeaponMagazined::switch2_Device()
 {
+	SetPending(true);
+
 	if (m_eDevicesFlags.test(EDevicesFlags::df_tacticaltorch))
 	{
 		PlaySound(m_bTacticalTorchStatus ? "sndTorchOff" : "sndTorchOn", get_LastFP());
@@ -1985,7 +1991,7 @@ void CWeaponMagazined::switch2_Device()
 	{
 		if (dev->CanLam())
 		{
-			dev->SwitchState(CCustomDevice::EDeviceStates::eHandLam, false);
+			dev->SwitchState(CCustomDevice::EDeviceStates::eHandLam);
 		}
 	}
 }
@@ -2052,6 +2058,7 @@ void CWeaponMagazined::switch2_Reload()
 	m_bIsReloaded = false;
 	PlayAnimReload		();
 	PlayReloadSound		();
+	SetPending			(true);
 }
 
 void CWeaponMagazined::switch2_Hiding()
@@ -2076,6 +2083,7 @@ void CWeaponMagazined::switch2_Hiding()
 	}
 
 	PlayAnimHide();
+	SetPending(true);
 }
 
 void CWeaponMagazined::switch2_Bore()
@@ -2100,6 +2108,8 @@ void CWeaponMagazined::switch2_Bore()
 
 void CWeaponMagazined::switch2_Safemode()
 {
+	SetPending(true);
+
 	CObject* parent = H_Parent();
 
 	if (CActor* pActor = parent != nullptr ? parent->cast_actor() : nullptr)
@@ -2144,11 +2154,14 @@ void CWeaponMagazined::switch2_Showing()
 		}
 	}
 
+	SetPending(true);
 	PlayAnimShow();
 }
 
 void CWeaponMagazined::switch2_FireMode()
 {
+	SetPending(true);
+
 	if (m_bGaussScheme)
 	{
 		if (!m_bGaussScreen)
@@ -2203,7 +2216,7 @@ void CWeaponMagazined::switch2_FireMode()
 		{
 			if (dev->CanFiremode())
 			{
-				dev->SwitchState(CCustomDevice::EDeviceStates::eHandFiremode, false);
+				dev->SwitchState(CCustomDevice::EDeviceStates::eHandFiremode);
 			}
 		}
 	}
@@ -2212,6 +2225,7 @@ void CWeaponMagazined::switch2_FireMode()
 void CWeaponMagazined::switch2_LightMis()
 {
 	//SendMessage("gunsl_light_misfire", gd_novice);
+	SetPending(true);
 	PlaySound("sndLightMisfire", get_LastFP());
 	PlayHUDMotion(SetCurrentStateAnimation("anm_shoot_lightmisfire"), EHudMixType::eMixAll, GetState());
 
@@ -2221,7 +2235,7 @@ void CWeaponMagazined::switch2_LightMis()
 		{
 			if (pDevice->CanLightMisfire())
 			{
-				pDevice->SwitchState(CCustomDevice::EDeviceStates::eHandLightMisfire, false);
+				pDevice->SwitchState(CCustomDevice::EDeviceStates::eHandLightMisfire);
 			}
 		}
 	}
@@ -2229,12 +2243,14 @@ void CWeaponMagazined::switch2_LightMis()
 
 void CWeaponMagazined::switch2_Kick()
 {
+	SetPending(true);
 	PlaySound("sndKick", get_LastFP());
 	PlayHUDMotion(SetCurrentStateAnimation("anm_kick"), EHudMixType::eMixAll, eKick);
 }
 
 void CWeaponMagazined::switch2_MagCheck()
 {
+	SetPending(true);
 	PlaySound("sndMagCheck", get_LastFP());
 	const shared_str anim = IsGrenadeMode() ? (iAmmoElapsed == 0 ? "anm_grenade_empty_inspect" : "anm_grenade_inspect") : "anm_magazine_inspect";
 	PlayHUDMotion(SetCurrentStateAnimation(anim), EHudMixType::eMixAll, eMagCheck);
@@ -2242,12 +2258,14 @@ void CWeaponMagazined::switch2_MagCheck()
 
 void CWeaponMagazined::switch2_FiremodeCheck()
 {
+	SetPending(true);
 	PlaySound("sndFiremodeCheck", get_LastFP());
 	PlayHUDMotion(SetCurrentStateAnimation("anm_firemode_inspect"), EHudMixType::eMixAll, eFiremodeCheck);
 }
 
 void CWeaponMagazined::switch2_ChamberLoad()
 {
+	SetPending(true);
 	PlaySound("sndChamberLoad", get_LastFP());
 
 	if (IsGrenadeLauncherAttached() && HudAnimationExist("anm_chamber_load_w_gl"))
@@ -2268,6 +2286,7 @@ void CWeaponMagazined::switch2_ChamberLoad()
 void CWeaponMagazined::switch2_ChamberUnload()
 {
 	SetPending(true);
+
 	PlaySound("sndChamberUnload", get_LastFP());
 
 	if (IsGrenadeLauncherAttached() && HudAnimationExist("anm_chamber_unload_w_gl"))
@@ -2287,6 +2306,8 @@ void CWeaponMagazined::switch2_ChamberUnload()
 
 void CWeaponMagazined::switch2_ChamberCheck()
 {
+	SetPending(true);
+
 	bool is_empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
 
 	if (m_eSoundsFlags2.test(ESoundsFlags2::sf_chamber_check_empty) && is_empty)
@@ -2355,6 +2376,8 @@ shared_str CWeaponMagazined::SetCurrentPumpAnimation()
 
 void CWeaponMagazined::switch2_Pump()
 {
+	SetPending(true);
+
 	bool is_shell = m_bHaveShell && iAmmoChamberElapsed + iAmmoElapsed == 0;
 	bool is_chamber_empty = !m_bHaveShell && (m_bAmmoInChamber && iAmmoChamberElapsed == 0 && iAmmoElapsed != 0 || iAmmoElapsed == 0);
 
@@ -2474,7 +2497,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 		if (flags & CMD_START && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfTACTICALTORCH) && GetComponent<THudLightTorch>() != nullptr && !IsZoomed() && GetState() == eIdle)
 		{
 			m_eDevicesFlags.set(EDevicesFlags::df_tacticaltorch, true);
-			SwitchState(eDevice, true);
+			SwitchState(eDevice);
 			return true;
 		}
 		break;
@@ -2484,7 +2507,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 		if (flags & CMD_START && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfLASER) && GetComponent<THudLightLaser>() != nullptr && !IsZoomed() && GetState() == eIdle)
 		{
 			m_eDevicesFlags.set(EDevicesFlags::df_laser, true);
-			SwitchState(eDevice, true);
+			SwitchState(eDevice);
 			return true;
 		}
 		break;
@@ -2493,7 +2516,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	{
 		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_mag_check) && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfMAGCHECK) && !IsZoomed() && GetState() == eIdle)
 		{
-			SwitchState(eMagCheck, true);
+			SwitchState(eMagCheck);
 			return true;
 		}
 		break;
@@ -2502,7 +2525,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	{
 		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_firemode_check) && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfFIREMODECHECK) && !IsGrenadeMode() && !IsZoomed() && GetState() == eIdle)
 		{
-			SwitchState(eFiremodeCheck, true);
+			SwitchState(eFiremodeCheck);
 			return true;
 		}
 		break;
@@ -2523,7 +2546,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 			SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfCHAMBERUNLOAD) && !IsGrenadeMode() &&
 			!IsZoomed() && GetState() == eIdle && !IsMisfire() && m_bAmmoInChamber && iAmmoChamberElapsed != 0 && !m_bHaveShell)
 		{
-			SwitchState(eUnloadChamber, true);
+			SwitchState(eUnloadChamber);
 			return true;
 		}
 		break;
@@ -2534,7 +2557,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 			SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfCHAMBERCHECK) && !IsGrenadeMode() &&
 			!IsZoomed() && GetState() == eIdle && !IsMisfire())
 		{
-			SwitchState(eChamberCheck, true);
+			SwitchState(eChamberCheck);
 			return true;
 		}
 		break;
@@ -3317,7 +3340,7 @@ void CWeaponMagazined::PlayAnimShoot()
 		{
 			if (pDevice->CanShooting())
 			{
-				pDevice->SwitchState(CCustomDevice::EDeviceStates::eHandShoot, false);
+				pDevice->SwitchState(CCustomDevice::EDeviceStates::eHandShoot);
 			}
 		}
 	}
@@ -3427,7 +3450,8 @@ void CWeaponMagazined::ChangeFireMode(u16 cmd)
 
 	if (m_eAnimationsFlags.test(EAnimationsFlags::af_firemode))
 	{
-		SwitchState(eSwitchMode, true);
+		SetPending(true);
+		SwitchState(eSwitchMode);
 	}
 	else
 	{
@@ -3454,7 +3478,8 @@ void CWeaponMagazined::SwitchGaussScreen()
 
 	m_bGaussScreen = !m_bGaussScreen;
 
-	SwitchState(eSwitchMode, true);
+	SetPending(true);
+	SwitchState(eSwitchMode);
 }
 
 void CWeaponMagazined::OnH_A_Chield()

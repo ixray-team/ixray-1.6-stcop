@@ -1260,20 +1260,21 @@ void CWeapon::shedule_Update	(u32 dT)
 	inherited::shedule_Update	(dT);
 }
 
-void CWeapon::OnH_B_Independent(bool just_before_destroy)
+void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 {
-	RemoveShotEffector();
+	RemoveShotEffector			();
 
 	inherited::OnH_B_Independent(just_before_destroy);
 
-	FireEnd();
-	SwitchState(eHidden, false);
+	FireEnd						();
+	SetPending					(false);
+	SwitchState					(eHidden);
 
-	m_strapped_mode = false;
+	m_strapped_mode				= false;
 	m_strapped_mode_rifle = false;
-	m_zoom_params.m_bIsZoomModeNow = false;
+	m_zoom_params.m_bIsZoomModeNow	= false;
 	bDisablePrepareAnimation = false;
-	UpdateXForm();
+	UpdateXForm					();
 
 	if (THudLightLaser* LaserLight = GetComponent<THudLightLaser>())
 	{
@@ -1306,35 +1307,37 @@ void CWeapon::OnH_A_Chield		()
 	ProcessScope();
 };
 
-void CWeapon::OnActiveItem()
+void CWeapon::OnActiveItem ()
 {
+	//. from Activate
 	UpdateAddonsVisibility();
 	ProcessScope();
 	m_BriefInfo_CalcFrame = 0;
 
-	SwitchState(eShowing, true);
+//. Show
+	SwitchState					(eShowing);
+//-
 
 	bStopReloadSignal = false;
 	bDisablePrepareAnimation = false;
 
-	inherited::OnActiveItem();
+	inherited::OnActiveItem		();
+	//если мы занружаемся и оружие было в руках
+//.	SetState					(eIdle);
+//.	SetNextState				(eIdle);
 }
 
-void CWeapon::OnHiddenItem()
+void CWeapon::OnHiddenItem ()
 {
 	m_BriefInfo_CalcFrame = 0;
 
-	if (IsGameTypeSingle())
-	{
-		SwitchState(eHiding, true);
-	}
+	if(IsGameTypeSingle())
+		SwitchState(eHiding);
 	else
-	{
-		SwitchState(eHidden, false);
-	}
+		SwitchState(eHidden);
 
 	OnZoomOut();
-	inherited::OnHiddenItem();
+	inherited::OnHiddenItem		();
 
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
 	m_bBlockEmptyClick = false;
@@ -1351,16 +1354,16 @@ void CWeapon::SendHiddenItem()
 {
 	if (!CHudItem::object().getDestroy() && m_pInventory)
 	{
-		SetPending(true);
-		SetNextState(eHiding);
-		NET_Packet P;
-		CHudItem::object().u_EventGen(P, GE_WPN_STATE_CHANGE, CHudItem::object().ID());
-		P.w_u8(eHiding);
-		P.w_u8(m_sub_state);
-		P.w_u8(m_ammoType);
-		P.w_u8(u8(iAmmoElapsed & 0xff));
-		P.w_u8(m_set_next_ammoType_on_reload);
-		CHudItem::object().u_EventSend(P, net_flags(true, true, false, true));
+		// !!! Just single entry for given state !!!
+		NET_Packet		P;
+		CHudItem::object().u_EventGen		(P,GE_WPN_STATE_CHANGE,CHudItem::object().ID());
+		P.w_u8			(eHiding);
+		P.w_u8			(m_sub_state);
+		P.w_u8			(m_ammoType);
+		P.w_u8			(u8(iAmmoElapsed & 0xff));
+		P.w_u8			(m_set_next_ammoType_on_reload);
+		CHudItem::object().u_EventSend		(P, net_flags(true, true, false, true));
+		SetPending		(true);
 	}
 }
 
@@ -1481,7 +1484,7 @@ void CWeapon::UpdateCL		()
 			{
 				if (hud_adj_mode == 0 && GetState() == eIdle && (Device.dwTimeGlobal - m_dw_curr_substate_time > 20000) && !IsZoomed() && g_player_hud->attached_item(1) == nullptr)
 				{
-					SwitchState(eBore, false);
+					SwitchState(eBore);
 					ResetSubStateTime();
 				}
 			}
@@ -1866,7 +1869,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 
 			if ((!IsPending() || GetState() == eIdle) && !IsZoomed())
 			{
-				SwitchState(eKick, true);
+				SwitchState(eKick);
 			}
 
 			return true;
@@ -1881,7 +1884,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 
 					if (m_eAnimationsFlags.test(EAnimationsFlags::af_safemode_in_out))
 					{
-						SwitchState(eSafemodeSwitch, true);
+						SwitchState(eSafemodeSwitch);
 					}
 					else
 					{
@@ -2039,7 +2042,7 @@ bool CWeapon::SwitchZoom(u32 flags)
 
 		if (!m_sAimBlendParams[0].has_motion && GetState() != eIdle)
 		{
-			SwitchState(eIdle, false);
+			SwitchState(eIdle);
 			StopShooting();
 		}
 	}
@@ -2345,14 +2348,14 @@ bool CWeapon::OnWeaponJam()
 			//ApplyLensRecoil(GetMisfireRecoil());
 			SetState(eLightMis);
 			SetNextState(eLightMis);
-			SwitchState(eLightMis, false);
+			SwitchState(eLightMis);
 			return true;
 		}
 	}
 
 	if (m_bJamNotShot)
 	{
-		SwitchState(eMisfire, false);
+		SwitchState(eMisfire);
 		return true;
 	}
 
@@ -2373,7 +2376,7 @@ bool CWeapon::CheckForMisfire_validate_NoMisfire()
 
 		if (!m_bActorCanShoot)
 		{
-			SwitchState(eMisfire, false);
+			SwitchState(eMisfire);
 			return true;
 		}
 	}
@@ -2405,7 +2408,7 @@ bool CWeapon::CheckForMisfire()
 		if (!isImproveMis)
 		{
 			SetMisfireStatus(true);
-			SwitchState(eMisfire, false);
+			SwitchState(eMisfire);
 			return true;
 		}
 
@@ -3173,33 +3176,30 @@ bool CWeapon::UseScopeTexture()
 	return !g_3d_scopes && !IsAltZoomed();
 }
 
-void CWeapon::SwitchState(u8 S, bool pending)
+void CWeapon::SwitchState(u8 S)
 {
-	if (OnClient())
-	{
-		return;
-	}
+	if (OnClient()) return;
 
 #ifndef MASTER_GOLD
-	if (bDebug)
+	if ( bDebug )
 	{
 		Msg("---Server is going to send GE_WPN_STATE_CHANGE to [%d], weapon_section[%s], parent[%s]",
 			S, cNameSect().c_str(), H_Parent() ? H_Parent()->cName().c_str() : "nullptr Parent");
 	}
-#endif
+#endif // #ifndef MASTER_GOLD
 
-	SetPending(pending);
-	SetNextState(S);
-	if (CHudItem::object().Local() && !CHudItem::object().getDestroy() && m_pInventory && OnServer())
+	SetNextState		( S );
+	if (CHudItem::object().Local() && !CHudItem::object().getDestroy() && m_pInventory && OnServer())	
 	{
-		NET_Packet P;
-		CHudItem::object().u_EventGen(P, GE_WPN_STATE_CHANGE, CHudItem::object().ID());
-		P.w_u8(S);
-		P.w_u8(m_sub_state);
-		P.w_u8(m_ammoType);
-		P.w_u8(u8(iAmmoElapsed & 0xff));
-		P.w_u8(m_set_next_ammoType_on_reload);
-		CHudItem::object().u_EventSend(P, net_flags(true, true, false, true));
+		// !!! Just single entry for given state !!!
+		NET_Packet		P;
+		CHudItem::object().u_EventGen		(P,GE_WPN_STATE_CHANGE,CHudItem::object().ID());
+		P.w_u8			(S);
+		P.w_u8			(m_sub_state);
+		P.w_u8			(m_ammoType);
+		P.w_u8			(u8(iAmmoElapsed & 0xff));
+		P.w_u8			(m_set_next_ammoType_on_reload);
+		CHudItem::object().u_EventSend		(P, net_flags(true, true, false, true));
 	}
 }
 
@@ -4392,7 +4392,7 @@ void CWeapon::UnloadChamber(bool spawn_ammo)
 
 	if (GetState() == eIdle)
 	{
-		SwitchState(eIdle, false);
+		SwitchState(eIdle);
 	}
 
 	if (!IsGrenadeMode() && m_bUseChamberInUpdateBones && m_bAmmoInChamber)

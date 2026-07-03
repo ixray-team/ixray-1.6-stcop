@@ -100,7 +100,7 @@ public:
 	virtual void			activate_physic_shell();
 	virtual void			setup_physic_shell	();
 
-	virtual void			SwitchState			(u8 S, bool pending) override final;
+	virtual void			SwitchState			(u8 S);
 
 	virtual void			OnActiveItem		();
 	virtual void			OnHiddenItem		();
