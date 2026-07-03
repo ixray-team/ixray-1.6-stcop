@@ -335,6 +335,7 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 
 		// Оптимизация макросов в шейдрах
 
+#ifndef _EDITOR
 		for (const auto& [_, ps] : m_ps)
 		{
 			if (ps->dwFlags & xr_resource_flagged::RF_REGISTERED)
@@ -347,6 +348,7 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 			}
 		
 		}
+#endif
 
 		return _ps;
 	}
