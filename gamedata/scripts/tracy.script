@@ -1,0 +1,7 @@
+function on_game_start()
+	RegisterScriptCallback("actor_on_update", this.actor_on_update)
+end
+
+function actor_on_update()
+	IS_TRACY_PROFILER_CONNECTED = IsTracyConnected()
+end

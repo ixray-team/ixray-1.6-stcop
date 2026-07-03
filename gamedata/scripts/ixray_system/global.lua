@@ -33,6 +33,32 @@ function debugger_attach()
 	end
 end
 
+--  ####################################################################################################################
+--                                         TRACY LOGIC
+--  ####################################################################################################################
+IS_TRACY_PROFILER_CONNECTED = false
+TRACY_PREFIX = "[LUA] "
+TRACY_DELIMETER = "::"
+
+function UpdateTracyState()
+    if (not IsTracyConnected) then
+        return
+    end
+    
+    IS_TRACY_PROFILER_CONNECTED = IsTracyConnected()
+end
+
+function PROF_EVENT(name, callable)
+    if (not tracy) or (not IS_TRACY_PROFILER_CONNECTED) then
+        return
+    end
+    
+    tracy.ZoneBeginN(TRACY_PREFIX .. ffx_callable_utils.find_caller_source(3) .. TRACY_DELIMETER .. tostring(name))
+        if callable then
+            callable()
+        end
+    tracy.ZoneEnd()
+end
 
 --  ####################################################################################################################
 -- 										OVERRIDE ORIGINAL ENTRY POINT
