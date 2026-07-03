@@ -1,21 +1,6 @@
-IS_TRACY_PROFILER_CONNECTED = false
-
-function sendTracy(name, callable)
-	if not IS_TRACY_PROFILER_CONNECTED then
-		return
-	end
-	
-    tracy.ZoneBeginN("[LUA] " .. ffx_callable_utils.find_caller_source(3) .. "::" .. tostring(name))
-        if callable then
-			callable()
-		end
-    tracy.ZoneEnd()
-end
-
 if (jit == nil) then
 	profiler.setup_hook	()
 end
-
 
 function empty	(container)
 	if (type(container) == "function") then
