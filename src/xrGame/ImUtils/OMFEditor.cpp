@@ -2868,6 +2868,74 @@ inline const char* convert_EHudStates_to_string(CHUDState::EHudStates state) noe
 		{
 			return "eFinishDetector";
 		}
+		case CWeapon::EWeaponStates::eFire:
+		{
+			return "eFire";
+		}
+		case CWeapon::EWeaponStates::eFire2:
+		{
+			return "eFire2";
+		}
+		case CWeapon::EWeaponStates::eReload:
+		{
+			return "eReload";
+		}
+		case CWeapon::EWeaponStates::eMisfire:
+		{
+			return "eMisfire";
+		}
+		case CWeapon::EWeaponStates::eSwitch:
+		{
+			return "eSwitch";
+		}
+		case CWeapon::EWeaponStates::eSwitchMode:
+		{
+			return "eSwitchMode";
+		}
+		case CWeapon::EWeaponStates::eEmptyClick:
+		{
+			return "eEmptyClick";
+		}
+		case CWeapon::EWeaponStates::eDevice:
+		{
+			return "eDevice";
+		}
+		case CWeapon::EWeaponStates::eLightMis:
+		{
+			return "eLightMis";
+		}
+		case CWeapon::EWeaponStates::eKick:
+		{
+			return "eKick";
+		}
+		case CWeapon::EWeaponStates::eMagCheck:
+		{
+			return "eMagCheck";
+		}
+		case CWeapon::EWeaponStates::eFiremodeCheck:
+		{
+			return "eFiremodeCheck";
+		}
+		case CWeapon::EWeaponStates::eLoadChamber:
+		{
+			return "eLoadChamber";
+		}
+		case CWeapon::EWeaponStates::eUnloadChamber:
+		{
+			return "eUnloadChamber";
+		}
+		case CWeapon::EWeaponStates::eChamberCheck:
+		{
+			return "eChamberCheck";
+		}
+		case CWeapon::EWeaponStates::ePump:
+		{
+			return "ePump";
+		}
+		case CWeapon::EWeaponStates::eSafemodeSwitch:
+		{
+			return "eSafemodeSwitch";
+		}
 		default:
 		{
 			return "UNDEFINED_ENUM";
