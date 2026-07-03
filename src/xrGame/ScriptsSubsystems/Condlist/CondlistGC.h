@@ -14,8 +14,6 @@ public:
 	luabind::functor<bool>& GetFunctorCond(shared_str Name);
 	luabind::functor<void>& GetFunctorEffect(shared_str Name);
 
-	void Update();
-
 private:
 	xr_set<shared_str> Storage;
 	u32 LastFrameCall = 0;

@@ -142,22 +142,25 @@ void CRenderDevice::time_factor(const float &time_factor)
 
 void CRenderDevice::on_idle		()
 {
-	if (!b_is_Ready) {
-		Sleep(100);
-		return;
-	}
-	
-	bool main_menu_active = g_pGamePersistent						   &&
-							g_pGamePersistent->m_pMainMenu			   &&
-							g_pGamePersistent->m_pMainMenu->IsActive();
 #ifdef IXRAY_PROFILER // optick
 	PROF_FRAME("CPU FRAME BEGIN");
 #endif
+
+	PROF_EVENT("on_idle");
+
+	if (!b_is_Ready)
+	{
+		Sleep(100);
+		return;
+	}
+
+	const bool IsMainMenuActive = g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive();
+
 	Platform::SetThreadName("X-Ray Primary Thread");
 
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
-	const bool Focus = psDeviceFlags.test(rsFullscreen) || (!Minimized && !main_menu_active && !CImGuiManager::Instance().IsCapturingInputs());
+	const bool Focus = psDeviceFlags.test(rsFullscreen) || (!Minimized && !IsMainMenuActive && !CImGuiManager::Instance().IsCapturingInputs());
 
 	SDL_SetWindowMouseGrab(g_AppInfo.Window, !g_dedicated_server && Focus);
 	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, !g_dedicated_server && Focus);
@@ -169,42 +172,52 @@ void CRenderDevice::on_idle		()
 
 	if (!g_loading_events.empty())
 	{
+		PROF_EVENT("LoadDraw");
+
+		if (g_loading_events.front()())
 		{
 			PROF_EVENT("Loading...");
-			if (g_loading_events.front()())
-				g_loading_events.pop_front();
+			g_loading_events.pop_front();
 		}
-		PROF_EVENT("LoadDraw");
+
 		pApp->LoadDraw();
 
 		return;
 	}
 	else 
 	{
-		if (g_pGamePersistent)
+		if (g_pGamePersistent != nullptr)
+		{
+			PROF_EVENT("UpdatePlayDestroyParticles");
 			g_pGamePersistent->UpdatePlayDestroyParticles();
+		}
 
-		if (Device.ModelDefferClear)
+		if (Device.ModelDefferClear != nullptr)
+		{
+			PROF_EVENT("ModelDefferClear");
 			Device.ModelDefferClear();
+		}
 
 		u32 tglob = Device.dwTimeGlobal;
 		for (auto it = m_time_callbacks.begin(); it != m_time_callbacks.end();)
 		{
-		    if (tglob >= it->first)
+			if (tglob >= it->first)
 			{
 				it->second();
 				fast_erase(m_time_callbacks, it);
-		    }
-			else
-		       ++it;
+				continue;
+			}
+
+			++it;
 		}
 
 		if (GActorInterface != nullptr)
 		{
+			PROF_EVENT("UpdatePlayerHud");
 			GActorInterface->UpdatePlayerHud();
 		}
 
-		secondary_tasks.run(&XRay::Engine::PreRenderThread);
+		PreRenderThread.Run();
 		FrameMove();
 	}
 
@@ -221,7 +234,7 @@ void CRenderDevice::on_idle		()
 		CalculateTransforms();
 	}
 
-	secondary_tasks.run(&XRay::Engine::GameThread);
+	GameThread.Run();
 
 	if (!g_dedicated_server)
 	{
@@ -236,11 +249,9 @@ void CRenderDevice::on_idle		()
 					seqRender.Process<&pureRender::OnRender>();
 				}
 
-				if (IsFpsShow &&
-					g_pGameLevel &&
-					!main_menu_active &&
-					!load_screen_renderer.IsActive() &&
-					!Device.Paused())
+				bool show_fps_counter = IsFpsShow && g_pGameLevel && !IsMainMenuActive && !load_screen_renderer.IsActive() && !Device.Paused();
+
+				if (show_fps_counter)
 				{
 					pFPSCounter->OnRender();
 				}
@@ -249,7 +260,9 @@ void CRenderDevice::on_idle		()
 			}
 		}
 	}
-	secondary_tasks.wait();
+
+	PreRenderThread.Wait();
+	GameThread.Wait();
 
 	Device.EndRender();
 	
@@ -308,7 +321,7 @@ void CRenderDevice::CalculateTransforms()
 	vCameraTop_saved = vCameraTop;
 }
 
-bool quiting = false;
+volatile bool quiting = false;
 
 void CRenderDevice::message_loop()
 {
@@ -366,8 +379,15 @@ void CRenderDevice::Run()
 	seqAppEnd.Process<&pureAppEnd::OnAppEnd>();
 
 	// Stop Balance-Threads
-	secondary_tasks.wait();
-	details_task.wait();
+	PreRenderThread.Wait();
+	GameThread.Wait();
+	//GCThread.Wait();
+
+	PreRenderThread.Stop();
+	GameThread.Stop();
+	//GCThread.Stop();
+
+	DetailsTask.wait();
 }
 
 u32 app_inactive_time		= 0;
@@ -479,7 +499,7 @@ void CRenderDevice::FrameMove()
 	dwFrame++;
 	dwTimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
 	
-	float dt;
+	float dt = 0;
 	
 	if (!Paused())
 	{
@@ -525,7 +545,11 @@ void CRenderDevice::FrameMove()
 	Statistic->EngineTOTAL.End();
 }
 
-CRenderDevice::CRenderDevice() : dwPrecacheTotal(0), m_pRender(nullptr), Statistic(nullptr)
+CRenderDevice::CRenderDevice() : 
+	dwPrecacheTotal(0), m_pRender(nullptr), Statistic(nullptr), 
+	//GCThread(XRay::Engine::GCThread, "X-Ray GC Thread"),
+	PreRenderThread(XRay::Engine::PreRenderThread, "X-Ray PreRender Thread"),
+	GameThread(XRay::Engine::GameThread, "X-Ray Game Thread")
 {
 	b_is_Active = true;
 	b_is_Ready = false;

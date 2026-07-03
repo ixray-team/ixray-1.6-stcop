@@ -645,7 +645,7 @@ bool TUI::Idle()
 		GActorInterface->UpdatePlayerHud();
 	}
 
-	Device.secondary_tasks.run([]()
+	Device.SecondaryTasks.run([]()
 	{
 		PROF_THREAD("Secondary async")
 		{
@@ -673,7 +673,7 @@ bool TUI::Idle()
 	if (m_Flags.is(flNeedQuit))	
 		RealQuit();
 
-	Device.secondary_tasks.wait();
+	Device.SecondaryTasks.wait();
 
 	return !m_AppClosed;
 }
