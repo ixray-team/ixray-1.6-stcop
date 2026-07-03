@@ -2886,8 +2886,8 @@ void RenderOMFEditor_Draw_Game_Header(
 
 		if (pItem && pItem->cast_hud_item())
 		{
-			ImGui::Text("active item: %s (%s)", pItem->m_section_id.c_str(), pItem->cast_hud_item()->HudSection().c_str());
-			ImGui::Text("ogf: %s", pItem->m_3d_static_visual_name);
+			ImGui::Text("active item:\n\t%s (%s)", pItem->m_section_id.c_str(), pItem->cast_hud_item()->HudSection().c_str());
+			ImGui::Text("ogf:\n\t[%s]", pItem->m_3d_static_visual_name);
 
 			CHudItem* pHI = pItem->cast_hud_item();
 
@@ -2899,11 +2899,11 @@ void RenderOMFEditor_Draw_Game_Header(
 
 					if (pAHI->m_hand_motions.m_anims.empty() == false)
 					{
-						ImGui::Text("Current anim: [%s]\n\tt=[%d]/[%d]\n\tstartedMotionState=[%s]", 
+						ImGui::Text("Current anim:\n\t[%s]\n\tt=[%d]/[%d]\n\tstartedMotionState=[%s (%d)]", 
 							pHI->m_current_motion.c_str(), 
 							pHI->m_dwMotionCurrTm, 
-							pHI->m_dwMotionEndTm,
-							convert_EHudStates_to_string(static_cast<CHUDState::EHudStates>(pHI->m_startedMotionState))
+							pHI->m_dwMotionEndTm, convert_EHudStates_to_string(static_cast<CHUDState::EHudStates>(pHI->m_startedMotionState)), 
+							pHI->m_startedMotionState
 						);
 					}
 					else
