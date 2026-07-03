@@ -87,3 +87,23 @@ void R_hemi::set_selection(u32 tfactor)
 	static Fcolor temp; temp.set(tfactor);
 	set_selection(temp.r, temp.g, temp.b, temp.a);
 }
+
+void R_hemi::set_c_tfactor(RHIShaderConstant* C)
+{
+	c_tfactor = C;
+
+	if (C)
+	{
+		RCache.set_c(C, m_tfactor);
+	}
+}
+
+void R_hemi::set_c_selection(RHIShaderConstant* C)
+{
+	c_selection = C;
+
+	if (C)
+	{
+		RCache.set_c(C, m_selection);
+	}
+}

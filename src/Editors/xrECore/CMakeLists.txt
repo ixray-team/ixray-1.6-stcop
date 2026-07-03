@@ -101,6 +101,7 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
 	"../../Layers/xrRender/R_Backend.*"
 	"../../Layers/xrRender/Utils/*.*"
 	"../../Layers/xrRenderPC_R4/R_Backend_LOD.*"
+	"../../Layers/xrRenderPC_R4/OverlayAPI/DLSSWrapper.*"
 	"../../Layers/xrRender/R_Backend_DBG.*"
 	"../../Layers/xrRender/R_Backend_hemi.*"
 	"../../Layers/xrRender/R_Backend_Runtime.*"
@@ -214,6 +215,7 @@ if (WIN32)
 	target_link_libraries(xrECore PRIVATE WindowsSDK::DXGI)
 	target_link_libraries(xrECore PRIVATE WindowsSDK::DXGUID)
 	target_link_libraries(xrECore PRIVATE WindowsSDK::D3DCompiler)
+	target_link_libraries(xrECore PUBLIC NVIDIA::DLSS)
 endif()
 
 target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})

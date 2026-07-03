@@ -193,6 +193,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 			C.RS.SetRS(D3DRS_ZFUNC, D3D11_COMPARISON_EQUAL);
 			C.SetPassPriority(3);
 
+#ifndef _EDITOR
 			if(RImplementation.o.dx11_allow_wboit_transparency)
 			{
 				C.PassSET_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE, false, 0);
@@ -200,6 +201,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 				C.PassSET_Blend(1, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, false, 0);
 			}
 			else
+#endif
 			{
 				C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, false, 0);
 			}
@@ -215,7 +217,10 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 				C.r_dx10Texture("s_hemi", C.L_textures[2]);
 			}
 
+#ifndef _EDITOR
 			C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);
+#endif
+
 			C.r_dx10Sampler("smp_smap");
 		
 			C.r_dx10Sampler("smp_base");
@@ -228,6 +233,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 	}
 
 #ifdef USE_DX11
+#ifndef _EDITOR
 	if (bump && hq && RImplementation.o.dx11_enable_tessellation && C.TessMethod != CBlender_Compile::NO_TESS)
 	{
 		string256 hs = "tess", ds = "tess";
@@ -366,7 +372,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, const char* vs, const char* ps, b
 
 void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, bool aref, bool blend, const char* detail_replace, bool DO_NOT_FINISH, bool DO_NOT_START)
 {
-#ifdef USE_DX11
+#if defined(USE_DX11) && !defined(_EDITOR)
 	bool use_wboit = blend && !C.bHudElement && RImplementation.o.dx11_allow_wboit_transparency;
 
 	if (use_wboit)
@@ -381,7 +387,7 @@ void uber_forward(CBlender_Compile& C, bool hq, const char* vs, const char* ps, 
 	{
 		C.PassSET_ZB(TRUE, FALSE);
 
-#ifdef USE_DX11
+#if defined(USE_DX11) && !defined(_EDITOR)
 		if(use_wboit)
 		{
 			C.PassSET_Blend(TRUE, D3DBLEND_ONE, D3DBLEND_ONE, false, 0);
