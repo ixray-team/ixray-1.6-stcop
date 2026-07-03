@@ -7,6 +7,7 @@
 #include "UIInventoryUtilities.h"
 #include "../../xrUI/UITextureMaster.h"
 #include "../../xrUI/UICursor.h"
+#include "../../xrUI/Widgets/UI3dStatic.h"
 
 void draw_arc(ui_shader& shader, float x, float y, float radius, float radius_inside, float angle1, float angle2, u32 color1, u32 color2, u32 quality) {
 	const float angInc = (angle2 - angle1) / static_cast<float>(quality);
@@ -33,46 +34,24 @@ void draw_arc(ui_shader& shader, float x, float y, float radius, float radius_in
 
 // max side length an item occupies in the atlas grid is 6 (long sniper rifles)
 // dont scaleup small items too much
-void  CUIRadialMenu::DrawItem(TexturedRectDrawData& trdd, CInventoryItem* iitem, u32 color_mask)
+void CUIRadialMenu::DrawItem(CUIStatic* st, TexturedRectDrawData& trdd, u32 color_mask)
 {
-	Fvector2 texRes;
-	UIRender->GetActiveTextureResolution(texRes);
-	float x_scale = INV_GRID_WIDTH(iitem->ScaleIcon) / texRes.x;
-	float y_scale = INV_GRID_HEIGHT(iitem->ScaleIcon) / texRes.y;
+	st->SetStretchTexture(true);
 
-	Irect item_rect = iitem->GetInvGridRect();
-	float texture_x = item_rect.x1 * x_scale;
-	float texture_y = item_rect.y1 * y_scale;
-	float texture_width = item_rect.x2 * x_scale;
-	float texture_height = item_rect.y2 * y_scale;
+	float scale = float(st->GetTextureRect().height()) / st->GetTextureRect().width();
 
-	R_ASSERT(item_rect.x2 >= item_rect.y2);
-	float scale = float(item_rect.y2) / item_rect.x2;
-
-	float widthScale = (item_rect.x2 == 1) ? 0.6f : 1.0f;
-	float width = trdd.side * widthScale;
-	float height = width * scale;
+	float width = trdd.width/UI().get_current_kx();
+	float height = trdd.height * scale;
 
 	float x1 = trdd.x - width/2;
-	float x2 = x1 + width;
 	float y1 = trdd.y - height / 2;
-	float y2 = y1 + height;
 
-	R_ASSERT(x1 < x2);
-	R_ASSERT(y1 < y2);
-	float u1 = texture_x;
-	float u2 = texture_x + texture_width;
-	float v1 = texture_y;
-	float v2 = texture_y + texture_height;
-	R_ASSERT(u1 < u2);
-	R_ASSERT(v1 < v2);
-
-	UIRender->PushPoint(x1, y2, 0.0f, color_mask, u1, v2);
-	UIRender->PushPoint(x1, y1, 0.0f, color_mask, u1, v1);
-	UIRender->PushPoint(x2, y2, 0.0f, color_mask, u2, v2);
-	UIRender->PushPoint(x2, y2, 0.0f, color_mask, u2, v2);
-	UIRender->PushPoint(x1, y1, 0.0f, color_mask, u1, v1);
-	UIRender->PushPoint(x2, y1, 0.0f, color_mask, u2, v1);
+	Fvector2 pos{x1, y1};
+	st->SetWndPos(pos);
+	st->SetWidth(width);
+	st->SetHeight(height);
+	st->SetTextureColor(color_mask);
+	st->Draw();
 }
 
 
@@ -119,7 +98,10 @@ void CUIRadialMenu::Init(CUIXml* pXml)
 	for (int i = 0; i < sectors_count; ++i)
 	{
 		int slotId = pXml->ReadAttribInt("slot", i, "id", 0);
-		slotsInSectors[i] = (u32)slotId;
+		slotsInSectors.push_back((u32)slotId);
+
+		CUI3dStatic* st = new CUI3dStatic();
+		slotIcons.push_back(st);
 	}
 
 	sector_inner_side_color			= CUIXmlInit::GetColor(*pXml, "sector_inner_side_color", 0, 0x0);
@@ -196,18 +178,19 @@ bool CUIRadialMenu::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	{
 		if (!fis_zero(pos.x) || !fis_zero(pos.y))
 		{
-			if (!bWaitForZeroRStick && std::abs(pos.magnitude()) > 15.f)
+			if (!bWaitForZeroRStick && std::abs(pos.magnitude()) > 25.f)
 			{
 				float angle = atan2(pos.y, pos.x) + 2 * M_PI;
-				int focus_index = int(floor(((angle - starting_angle) * sectors_count) / (2 * M_PI))) % sectors_count;
+				int focus_index = iFloor(((angle - starting_angle) * sectors_count) / (2 * M_PI)) % sectors_count;
 				if (focus_index != selected_index)
+				{
 					PlaySnd(eSndSwitch);
+				}
 				selected_index = focus_index;
 			}
 		}
 		else
 		{
-			//selected_index = -1;
 			bWaitForZeroRStick = false;
 		}
 	}
@@ -223,15 +206,16 @@ bool CUIRadialMenu::OnGamepadStickAction(int key, Fvector2 value, EUIMessages ga
 			if (!bWaitForZeroRStick && std::abs(value.magnitude()) > 0.6f)
 			{
 				float angle = atan2(value.y, value.x) + 2 * M_PI;
-				int focus_index = int(floor(((angle - starting_angle) * sectors_count) / (2 * M_PI))) % sectors_count;
+				int focus_index = iFloor(((angle - starting_angle) * sectors_count) / (2 * M_PI)) % sectors_count;
 				if (focus_index != selected_index)
+				{
 					PlaySnd(eSndSwitch);
+				}
 				selected_index = focus_index;
 			}
 		}
 		else 
 		{
-			//selected_index = -1;
 			bWaitForZeroRStick = false;
 		}
 	}
