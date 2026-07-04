@@ -71,6 +71,7 @@ function reset_hear_callback(st, section)
 		end
 	end
 end
+
 function hear_callback(obj, who_id, sound_type, sound_position, sound_power)
 	local st = db.storage[obj:id()]
 	local s_type = get_sound_type(sound_type)

@@ -164,90 +164,92 @@ class "evaluator_corpse" (property_evaluator)
 function evaluator_corpse:__init(name, storage, npc) super (nil, name)
 	self.a = storage
 end
+
 function evaluator_corpse:evaluate()
-
-	-- Fix from unofficial 1.6.03  - stalkers ignore surge and die while trying to grab items from corpse
-	if surge_manager.is_started() then
-		return false
-	end
-
-	if not self.object:alive() then
-		return false
-	end
-
-	if self.object:best_enemy() ~= nil then
-		return false
-	end
-
-	if self.object:character_community() == "zombied" then
-		return false
-	end
-
-	if self.a.corpse_detection_enabled == false then
-		return false
-	end
-
-	if xr_wounded.is_wounded(self.object) then
-		return false
-	end
-
-	if self.object:section() == "actor_visual_stalker" then
-		return false
-	end
-
-	local corpses = release_body_manager.get_release_body_manager().release_objects_table
-
-	local nearest_corpse_dist = 400 -- Будет выбирать только трупы, ближе чем эта дистанция (проверяется по квадрату расстояния)
-	local nearest_corpse_vertex = nil
-	local nearest_corpse_position = nil
-	local corpse_id	= nil
-
-	for k,v in pairs(corpses) do
-		local id = v.id
-		local corpse_npc = db.storage[id] and db.storage[id].object
-
-		if corpse_npc ~= nil and self.object:see(corpse_npc) and (db.storage[id].corpse_already_selected == nil or db.storage[id].corpse_already_selected == self.object:id()) then
-			if self.object:position():distance_to_sqr(corpse_npc:position()) < nearest_corpse_dist then
-
-				corpse_contain_any_valuable = nil
-				corpse_npc:iterate_inventory(check_item, corpse_npc)
-
-				if corpse_contain_any_valuable == true then
-
-					--printf("FOUND NEW PRIOR CORPSE %s", corpse_npc:name())
-					corpse_vertex = level.vertex_id(corpse_npc:position())
-					if self.object:accessible(corpse_vertex) then
-						nearest_corpse_dist = self.object:position():distance_to_sqr(corpse_npc:position())
-						nearest_corpse_vertex = corpse_vertex
-						nearest_corpse_position = corpse_npc:position()
-						corpse_id = id
-					end
-
-				end
---			else
---				printf("FOUND CORPSE %s FAR %s", corpse_npc:name(), self.object:position():distance_to_sqr(corpse_npc:position()))
-			end
-
-		end
-	end
-
-	if nearest_corpse_vertex ~= nil then
-		self.a.vertex_id = nearest_corpse_vertex
-		self.a.vertex_position = nearest_corpse_position
-		
-		if self.a.selected_corpse_id ~= nil and self.a.selected_corpse_id ~= corpse_id then
-			if db.storage[self.a.selected_corpse_id] ~= nil then
-				db.storage[self.a.selected_corpse_id].corpse_already_selected = nil
-			end			
-		end
-
-		self.a.selected_corpse_id = corpse_id
-		db.storage[self.a.selected_corpse_id].corpse_already_selected = self.object:id()		
-		
-		return true
-	end
-
-	return false
+	return PROF_EVENT_CLOSURE("evaluate", function()
+        -- Fix from unofficial 1.6.03  - stalkers ignore surge and die while trying to grab items from corpse
+        	if surge_manager.is_started() then
+        		return false
+        	end
+        
+        	if not self.object:alive() then
+        		return false
+        	end
+        
+        	if self.object:best_enemy() ~= nil then
+        		return false
+        	end
+        
+        	if self.object:character_community() == "zombied" then
+        		return false
+        	end
+        
+        	if self.a.corpse_detection_enabled == false then
+        		return false
+        	end
+        
+        	if xr_wounded.is_wounded(self.object) then
+        		return false
+        	end
+        
+        	if self.object:section() == "actor_visual_stalker" then
+        		return false
+        	end
+        
+        	local corpses = release_body_manager.get_release_body_manager().release_objects_table
+        
+        	local nearest_corpse_dist = 400 -- Будет выбирать только трупы, ближе чем эта дистанция (проверяется по квадрату расстояния)
+        	local nearest_corpse_vertex = nil
+        	local nearest_corpse_position = nil
+        	local corpse_id	= nil
+        
+        	for k,v in pairs(corpses) do
+        		local id = v.id
+        		local corpse_npc = db.storage[id] and db.storage[id].object
+        
+        		if corpse_npc ~= nil and self.object:see(corpse_npc) and (db.storage[id].corpse_already_selected == nil or db.storage[id].corpse_already_selected == self.object:id()) then
+        			if self.object:position():distance_to_sqr(corpse_npc:position()) < nearest_corpse_dist then
+        
+        				corpse_contain_any_valuable = nil
+        				corpse_npc:iterate_inventory(check_item, corpse_npc)
+        
+        				if corpse_contain_any_valuable == true then
+        
+        					--printf("FOUND NEW PRIOR CORPSE %s", corpse_npc:name())
+        					corpse_vertex = level.vertex_id(corpse_npc:position())
+        					if self.object:accessible(corpse_vertex) then
+        						nearest_corpse_dist = self.object:position():distance_to_sqr(corpse_npc:position())
+        						nearest_corpse_vertex = corpse_vertex
+        						nearest_corpse_position = corpse_npc:position()
+        						corpse_id = id
+        					end
+        
+        				end
+        --			else
+        --				printf("FOUND CORPSE %s FAR %s", corpse_npc:name(), self.object:position():distance_to_sqr(corpse_npc:position()))
+        			end
+        
+        		end
+        	end
+        
+        	if nearest_corpse_vertex ~= nil then
+        		self.a.vertex_id = nearest_corpse_vertex
+        		self.a.vertex_position = nearest_corpse_position
+        		
+        		if self.a.selected_corpse_id ~= nil and self.a.selected_corpse_id ~= corpse_id then
+        			if db.storage[self.a.selected_corpse_id] ~= nil then
+        				db.storage[self.a.selected_corpse_id].corpse_already_selected = nil
+        			end			
+        		end
+        
+        		self.a.selected_corpse_id = corpse_id
+        		db.storage[self.a.selected_corpse_id].corpse_already_selected = self.object:id()		
+        		
+        		return true
+        	end
+        
+        	return false
+    end)
 end
 
 
@@ -269,15 +271,18 @@ function action_search_corpse:initialize()
 	state_mgr.set_state(self.object, "patrol")
 end
 function action_search_corpse:execute ()
-	action_base.execute(self)
-
-	if self.object:position():distance_to_sqr(self.a.vertex_position) > 2 then
-		return
-	end
-
-	state_mgr.set_state(self.object, "search_corpse", nil, nil, {look_position = self.a.vertex_position})
-	xr_sound.set_sound_play(self.object:id(), "corpse_loot_begin")
+	return PROF_EVENT_CLOSURE("execute", function()
+        action_base.execute(self)
+    
+        if self.object:position():distance_to_sqr(self.a.vertex_position) > 2 then
+            return
+        end
+    
+        state_mgr.set_state(self.object, "search_corpse", nil, nil, {look_position = self.a.vertex_position})
+        xr_sound.set_sound_play(self.object:id(), "corpse_loot_begin")
+    end)
 end
+
 function action_search_corpse:finalize ()
 	if self.a.selected_corpse_id ~= nil and db.storage[self.a.selected_corpse_id] ~= nil then 
 		db.storage[self.a.selected_corpse_id].corpse_already_selected = nil
@@ -289,99 +294,111 @@ end
 local transfer_to_npc = nil
 local last_transferred_items_count = 0
 function get_item(dead_npc, item)
-	SendScriptCallback("npc_on_get_all_from_corpse", transfer_to_npc, dead_npc, item, (lootable_table[item:section()] or false))
-
-	if lootable_table[item:section()] == true then
-		dead_npc:transfer_item(item, transfer_to_npc)
-		last_transferred_items_count = last_transferred_items_count+1
-	end
+	return PROF_EVENT_CLOSURE("get_item", function()
+        SendScriptCallback("npc_on_get_all_from_corpse", transfer_to_npc, dead_npc, item, (lootable_table[item:section()] or false))
+    
+        if lootable_table[item:section()] == true then
+            dead_npc:transfer_item(item, transfer_to_npc)
+            last_transferred_items_count = last_transferred_items_count+1
+        end
+    end)
 end
 
 function get_all_from_corpse(npc)
-	if not (db.actor) then 
-		return 
-	end
-	
-	printf("GET ALL FROM CORPSE")
-
-	local corpse_npc_id = db.storage[npc:id()].corpse_detection.selected_corpse_id
-	local corpse_npc = db.storage[corpse_npc_id] and db.storage[corpse_npc_id].object
-
-	if corpse_npc == nil or corpse_npc:alive() == true then
-		return
-	end
-	
-	last_transferred_items_count = 0
-	transfer_to_npc = npc
-	corpse_npc:iterate_inventory(get_item, corpse_npc)
-	
-	-- Add reactions depending on actual loot count
-	if (last_transferred_items_count > 0) and (last_transferred_items_count < 3) then
-		xr_sound.set_sound_play(npc:id(), "corpse_loot_bad")
-	elseif (last_transferred_items_count > 5) then
-		xr_sound.set_sound_play(npc:id(), "corpse_loot_good")
-	end
-		
-	-- Fix for stalkers which 'hanging' while looting (from unofficial 1.6.03)
-	state_mgr.set_state(npc, "patrol") 
+	return PROF_EVENT_CLOSURE("get_all_from_corpse", function()
+        if not (db.actor) then 
+            return 
+        end
+        
+        printf("GET ALL FROM CORPSE")
+    
+        local corpse_npc_id = db.storage[npc:id()].corpse_detection.selected_corpse_id
+        local corpse_npc = db.storage[corpse_npc_id] and db.storage[corpse_npc_id].object
+    
+        if corpse_npc == nil or corpse_npc:alive() == true then
+            return
+        end
+        
+        last_transferred_items_count = 0
+        transfer_to_npc = npc
+        corpse_npc:iterate_inventory(get_item, corpse_npc)
+        
+        -- Add reactions depending on actual loot count
+        if (last_transferred_items_count > 0) and (last_transferred_items_count < 3) then
+            xr_sound.set_sound_play(npc:id(), "corpse_loot_bad")
+        elseif (last_transferred_items_count > 5) then
+            xr_sound.set_sound_play(npc:id(), "corpse_loot_good")
+        end
+            
+        -- Fix for stalkers which 'hanging' while looting (from unofficial 1.6.03)
+        state_mgr.set_state(npc, "patrol") 
+    end)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
 -- BINDER
 ----------------------------------------------------------------------------------------------------------------------
 function add_to_binder(npc, char_ini, scheme, section, st)
-	local operators	= {}
-	local properties  = {}
-
-
-	properties["corpse_exist"]				= xr_evaluators_id.corpse_exist
-	properties["wounded"]					= xr_evaluators_id.sidor_wounded_base
-
-	operators["search_corpse"]				= xr_actions_id.corpse_exist
-	operators["state_mgr_to_idle_alife"]	= xr_actions_id.state_mgr + 2
-
-	local manager = npc:motivation_action_manager()
-
-
-	-- Evaluators
-	manager:add_evaluator (properties["corpse_exist"], 		evaluator_corpse("corpse_exist", st))
-
-	-- Actions
-	local action = action_search_corpse (npc:name(),"action_search_corpse", st)
-	action:add_precondition		(world_property(stalker_ids.property_alive, true))
-	action:add_precondition		(world_property(stalker_ids.property_enemy,	false))
-	action:add_precondition		(world_property(stalker_ids.property_danger,false))
-	action:add_precondition		(world_property(stalker_ids.property_anomaly,false))
-	action:add_precondition		(world_property(stalker_ids.property_items,false))
-	action:add_precondition		(world_property(properties["corpse_exist"],	true))
-	action:add_precondition		(world_property(properties["wounded"], 		false))
-	action:add_precondition 	(world_property(xr_evaluators_id.wounded_exist,		false))
-	action:add_effect (world_property(properties["corpse_exist"], 			false))
-	manager:add_action (operators["search_corpse"], action)
-
-	action = manager:action (xr_actions_id.alife)
-	action:add_precondition		(world_property(properties["corpse_exist"],		false))
-
-	action = manager:action (operators["state_mgr_to_idle_alife"])
-	action:add_precondition		(world_property(properties["corpse_exist"],		false))
+	return PROF_EVENT_CLOSURE("add_to_binder", function()
+        local operators	= {}
+        local properties  = {}
+    
+    
+        properties["corpse_exist"]				= xr_evaluators_id.corpse_exist
+        properties["wounded"]					= xr_evaluators_id.sidor_wounded_base
+    
+        operators["search_corpse"]				= xr_actions_id.corpse_exist
+        operators["state_mgr_to_idle_alife"]	= xr_actions_id.state_mgr + 2
+    
+        local manager = npc:motivation_action_manager()
+    
+    
+        -- Evaluators
+        manager:add_evaluator (properties["corpse_exist"], 		evaluator_corpse("corpse_exist", st))
+    
+        -- Actions
+        local action = action_search_corpse (npc:name(),"action_search_corpse", st)
+        action:add_precondition		(world_property(stalker_ids.property_alive, true))
+        action:add_precondition		(world_property(stalker_ids.property_enemy,	false))
+        action:add_precondition		(world_property(stalker_ids.property_danger,false))
+        action:add_precondition		(world_property(stalker_ids.property_anomaly,false))
+        action:add_precondition		(world_property(stalker_ids.property_items,false))
+        action:add_precondition		(world_property(properties["corpse_exist"],	true))
+        action:add_precondition		(world_property(properties["wounded"], 		false))
+        action:add_precondition 	(world_property(xr_evaluators_id.wounded_exist,		false))
+        action:add_effect (world_property(properties["corpse_exist"], 			false))
+        manager:add_action (operators["search_corpse"], action)
+    
+        action = manager:action (xr_actions_id.alife)
+        action:add_precondition		(world_property(properties["corpse_exist"],		false))
+    
+        action = manager:action (operators["state_mgr_to_idle_alife"])
+        action:add_precondition		(world_property(properties["corpse_exist"],		false))
+    end)
 end
 
 function set_corpse_detection(npc, ini, scheme, section)
-	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	return PROF_EVENT_CLOSURE("set_corpse_detection", function()
+        local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+    end)
 end
 
 
 function reset_corpse_detection(npc, scheme, st, section)
-	st.corpse_detection.corpse_detection_enabled = utils.cfg_get_bool(st.ini, section, "corpse_detection_enabled", npc, false, true)
+    return PROF_EVENT_CLOSURE("reset_corpse_detection", function()
+	    st.corpse_detection.corpse_detection_enabled = utils.cfg_get_bool(st.ini, section, "corpse_detection_enabled", npc, false, true)
+    end)
 end
 
 function is_under_corpse_detection(npc)
-	local mgr = npc:motivation_action_manager()
-
-	if not mgr:initialized() then
-		return false
-	end
-
-	local current_action_id = mgr:current_action_id() 
-	return  current_action_id == xr_actions_id.corpse_exist
+	return PROF_EVENT_CLOSURE("is_under_corpse_detection", function()
+        local mgr = npc:motivation_action_manager()
+    
+        if not mgr:initialized() then
+            return false
+        end
+    
+        local current_action_id = mgr:current_action_id() 
+        return  current_action_id == xr_actions_id.corpse_exist
+    end)
 end
