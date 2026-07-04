@@ -256,7 +256,7 @@ void CRenderDevice::on_idle		()
 	Device.EndRender();
 	
 #ifdef IXRAY_PROFILER_TRACY
-	PROF_FRAME();
+	PROF_FRAME("idle");
 #endif
 	
 	if (!b_is_Active)

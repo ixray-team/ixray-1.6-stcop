@@ -28,7 +28,7 @@
 #include "../xrServerEntities/xrServer_Object_Base.h"
 #include "ui/UIGameTutorial.h"
 
-#include "../xrEngine/Application.h"
+#include "../xrEngine/EngineApp.h"
 #include "ui/UILoadingScreen.h"
 
 #ifndef MASTER_GOLD

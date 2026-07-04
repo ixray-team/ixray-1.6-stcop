@@ -90,7 +90,7 @@ void compute_build_id()
 
 //////////////////////////////////////////////////////////////////////////
 // global variables
-ENGINE_API	CApplication*	pApp			= nullptr;
+ENGINE_API	CEngineApp* pApp = nullptr;
 
 ENGINE_API	string512		g_sLaunchOnExit_params;
 ENGINE_API	string512		g_sLaunchOnExit_app;
@@ -237,7 +237,7 @@ ENGINE_API void EngineLoadStage5()
 {
 	PROF_EVENT("EngineLoadStage5");
 	LALib.OnCreate();
-	pApp = new CApplication();
+	pApp = new CEngineApp();
 	g_pGamePersistent = (IGame_Persistent*)NEW_INSTANCE(CLSID_GAME_PERSISTANT);
 	g_SpatialSpace = new ISpatial_DB();
 	g_SpatialSpacePhysic = new ISpatial_DB();
@@ -248,9 +248,9 @@ ENGINE_API void EngineLoadStage5()
 	}
 }
 
-ENGINE_API void EngineLoadStage6()
+ENGINE_API void EngineLoopAndDestroy()
 {
-	PROF_EVENT("EngineLoadStage6");
+	PROF_EVENT("EngineLoopAndDestroy");
 
 	Device.Run();
 

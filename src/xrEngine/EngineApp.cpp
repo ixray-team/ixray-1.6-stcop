@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "x_ray.h"
-#include "Application.h"
 #include "IGame_Level.h"
 #include "IGame_Persistent.h"
 #include "XR_IOConsole.h"
@@ -21,7 +20,7 @@ struct _SoundProcessor :
 	}
 }	SoundProcessor;
 
-CApplication::CApplication()
+CEngineApp::CEngineApp()
 {
 	ll_dwReference = 0;
 
@@ -50,7 +49,7 @@ CApplication::CApplication()
 	GLoadingScreen = nullptr;
 }
 
-CApplication::~CApplication()
+CEngineApp::~CEngineApp()
 {
 	if (Console != nullptr)
 		Console->Hide();
@@ -68,7 +67,7 @@ CApplication::~CApplication()
 
 extern bool quiting;
 
-void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
+void CEngineApp::OnEvent(EVENT E, u64 P1, u64 P2)
 {
 	g_pEventManager->OnEvent(E, P1, P2);
 
@@ -173,7 +172,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 
 static	CTimer	phase_timer;
 
-void CApplication::LoadBegin()
+void CEngineApp::LoadBegin()
 {
 	ll_dwReference++;
 	if (1 == ll_dwReference) {
@@ -185,7 +184,7 @@ void CApplication::LoadBegin()
 	}
 }
 
-void CApplication::LoadEnd()
+void CEngineApp::LoadEnd()
 {
 	ll_dwReference--;
 	if (0 == ll_dwReference) {
@@ -197,7 +196,7 @@ void CApplication::LoadEnd()
 	}
 }
 
-void CApplication::SetLoadingScreen(ILoadingScreen* newScreen) {
+void CEngineApp::SetLoadingScreen(ILoadingScreen* newScreen) {
 	if (GLoadingScreen) {
 		Log("! Trying to create new loading screen, but there is already one..");
 		DestroyLoadingScreen();
@@ -206,9 +205,9 @@ void CApplication::SetLoadingScreen(ILoadingScreen* newScreen) {
 	GLoadingScreen = newScreen;
 }
 
-void CApplication::DestroyLoadingScreen() { xr_delete(GLoadingScreen); }
+void CEngineApp::DestroyLoadingScreen() { xr_delete(GLoadingScreen); }
 
-void CApplication::LoadDraw()
+void CEngineApp::LoadDraw()
 {
 	if (g_appLoaded)				return;
 	Device.dwFrame += 1;
@@ -224,13 +223,13 @@ void CApplication::LoadDraw()
 	Device.End();
 }
 
-void CApplication::LoadForceFinish()
+void CEngineApp::LoadForceFinish()
 {
 	if (GLoadingScreen)
 		GLoadingScreen->ForceFinish();
 }
 
-void CApplication::SetLoadStageTitle(const char* _ls_title)
+void CEngineApp::SetLoadStageTitle(const char* _ls_title)
 {
 	const static bool isLoadingStagesEnabled = EngineExternal()[EEngineExternalUI::ShowLoadingStages];
 	if (GLoadingScreen && isLoadingStagesEnabled)
@@ -241,7 +240,7 @@ void CApplication::SetLoadStageTitle(const char* _ls_title)
 	Log(_ls_title);
 }
 
-void CApplication::LoadTitleInt(const char* str1, const char* str2, const char* str3)
+void CEngineApp::LoadTitleInt(const char* str1, const char* str2, const char* str3)
 {
 	if (GLoadingScreen)
 	{
@@ -249,7 +248,7 @@ void CApplication::LoadTitleInt(const char* str1, const char* str2, const char* 
 	}
 }
 
-void CApplication::LoadStage()
+void CEngineApp::LoadStage()
 {
 	VERIFY(ll_dwReference);
 
@@ -261,17 +260,17 @@ void CApplication::LoadStage()
 	++load_stage;
 }
 
-void CApplication::LoadSwitch()
+void CEngineApp::LoadSwitch()
 {
 }
 
 // Sequential
-void CApplication::OnFrame()
+void CEngineApp::OnFrame()
 {
 	g_pEventManager->Event.OnFrame();
 }
 
-void CApplication::Level_Append(const char* folder)
+void CEngineApp::Level_Append(const char* folder)
 {
 	string_path	N1, N2, N3, N4;
 	xr_strconcat(N1, folder, "level");
@@ -292,7 +291,7 @@ void CApplication::Level_Append(const char* folder)
 	}
 }
 
-void CApplication::Level_Scan()
+void CEngineApp::Level_Scan()
 {
 	for (u32 i = 0; i < Levels.size(); i++)
 	{
@@ -324,7 +323,7 @@ void gen_logo_name(string_path& dest, const char* level_name, int num)
 	xr_strcat(dest, sizeof(dest), _itoa(num + 1, buff, 10));
 }
 
-void CApplication::Level_Set(u32 L)
+void CEngineApp::Level_Set(u32 L)
 {
 	if (L >= Levels.size())	return;
 	FS.get_path("$level$")->_set(Levels[L].folder);
@@ -376,7 +375,7 @@ void CApplication::Level_Set(u32 L)
 		GLoadingScreen->SetLevelLogo(path);
 }
 
-int CApplication::Level_ID(const char* name, const char* ver, bool bSet)
+int CEngineApp::Level_ID(const char* name, const char* ver, bool bSet)
 {
 	int result = -1;
 
@@ -420,7 +419,7 @@ int CApplication::Level_ID(const char* name, const char* ver, bool bSet)
 	return result;
 }
 
-CInifile* CApplication::GetArchiveHeader(const char* name, const char* ver)
+CInifile* CEngineApp::GetArchiveHeader(const char* name, const char* ver)
 {
 	for (CLocatorAPI::archive& Arch : FS.m_archives)
 	{
@@ -438,7 +437,7 @@ CInifile* CApplication::GetArchiveHeader(const char* name, const char* ver)
 	return nullptr;
 }
 
-void CApplication::LoadAllArchives()
+void CEngineApp::LoadAllArchives()
 {
 	if (FS.load_all_unloaded_archives())
 	{
@@ -447,7 +446,7 @@ void CApplication::LoadAllArchives()
 	}
 }
 
-void CApplication::load_draw_internal()
+void CEngineApp::load_draw_internal()
 {
 	Device.m_pRender->SetupDefaultTarget();
 
