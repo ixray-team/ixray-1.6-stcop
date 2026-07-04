@@ -2842,7 +2842,7 @@ inline const std::string_view& convert_EHudStates_to_string(u8 state) noexcept
 }
 #endif
 
-void RenderOMFEditor_Draw_Game(
+void RenderOMFEditor_Draw_Game_Info(
 	CActor* pPlayer
 )
 {
@@ -2866,12 +2866,7 @@ void RenderOMFEditor_Draw_Game(
 
 					if (pAHI->m_hand_motions.m_anims.empty() == false)
 					{
-						ImGui::Text("Current anim:\n\t[%s]\n\tt=[%d]/[%d]\n\tstartedMotionState=[%s (%d)]", 
-							pHI->m_current_motion.c_str(), 
-							pHI->m_dwMotionCurrTm, 
-							pHI->m_dwMotionEndTm, convert_EHudStates_to_string((pHI->m_startedMotionState)).data(), 
-							pHI->m_startedMotionState
-						);
+						ImGui::Text("Current anim:\n\t[%s]\n\tt=[%d]/[%d]\n\tstartedMotionState=[%s (%d)]", pHI->m_current_motion.c_str(), pHI->m_dwMotionCurrTm, pHI->m_dwMotionEndTm, convert_EHudStates_to_string((pHI->m_startedMotionState)).data(), pHI->m_startedMotionState);
 					}
 					else
 					{
@@ -2888,6 +2883,39 @@ void RenderOMFEditor_Draw_Game(
 				ImGui::Text("Withdraw weapon/item! Can't preview data of hud item!");
 			}
 		}
+	}
+#endif
+}
+
+void RenderOMFEditor_Draw_Game(
+	CActor* pPlayer
+)
+{
+#if IXRAY_OMF_EDITOR_TAB_GAME == 1
+	constexpr const char* _kTableColumnNames[] = {
+		"Info",
+		"Editing"
+	};
+	constexpr u8 _kTableColumnNamesCount = sizeof(_kTableColumnNames) / sizeof(_kTableColumnNames[0]);
+
+	if (ImGui::BeginTable("##ToolsInGame_OMFEditor_GameTable", 2))
+	{
+		for (u8 i = 0; i < _kTableColumnNamesCount; ++i)
+		{
+			ImGui::TableSetupColumn(_kTableColumnNames[i]);
+		}
+
+		ImGui::TableHeadersRow();
+
+		ImGui::TableNextRow();
+
+		ImGui::TableSetColumnIndex(0);
+
+		RenderOMFEditor_Draw_Game_Info(pPlayer);
+
+		ImGui::TableSetColumnIndex(1);
+
+		ImGui::EndTable();
 	}
 #endif
 }
@@ -2956,7 +2984,6 @@ void RenderToolsOMFEditorWindow()
 
 				ImGui::EndTabBar();
 			}
-
 		}
 		ImGui::End();
 	}
