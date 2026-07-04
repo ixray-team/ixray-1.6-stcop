@@ -38,8 +38,8 @@ CParticlesObject::CParticlesObject(const char* p_name, bool bAutoRemove, bool de
 
 
 	// spatial
-	SpatialComponent->spatial.type = ESPATIAL_TYPE::NONE;
-	SpatialComponent->spatial.sector = nullptr;
+	SpatialComponent->type = ESPATIAL_TYPE::NONE;
+	SpatialComponent->sector = nullptr;
 	renderable.pROS_Allowed = false;
 }
 
@@ -126,9 +126,9 @@ void CParticlesObject::Update(u32 _dt, CFrustum& viewbase)
 		if(m_bAutoStop)
 			Stop(false);
 
-		if (ESPATIAL_TYPE::NONE != SpatialComponent->spatial.type)
+		if (ESPATIAL_TYPE::NONE != SpatialComponent->type)
 		{
-			SpatialComponent->spatial.type = ESPATIAL_TYPE::NONE;
+			SpatialComponent->type = ESPATIAL_TYPE::NONE;
 			ISpatialOwner::spatial_unregister();
 		}
 
@@ -149,18 +149,18 @@ void CParticlesObject::Update(u32 _dt, CFrustum& viewbase)
 		{
 			Fvector	P; float R = vis.sphere.R;
 			renderable.xform.transform_tiny(P, vis.sphere.P);
-			if (ESPATIAL_TYPE::NONE == SpatialComponent->spatial.type)
+			if (ESPATIAL_TYPE::NONE == SpatialComponent->type)
 			{
 				// First 'valid' update - register
-				SpatialComponent->spatial.type = ESPATIAL_TYPE::PARTICLE;
-				SpatialComponent->spatial.sphere.set(P, R);
+				SpatialComponent->type = ESPATIAL_TYPE::PARTICLE;
+				SpatialComponent->sphere.set(P, R);
 				ISpatialOwner::spatial_register();
 			}
 			else
 			{
-				if (!P.similar(SpatialComponent->spatial.sphere.P, EPS_L * 10.f) || !fsimilar(R, SpatialComponent->spatial.sphere.R, 0.15f))
+				if (!P.similar(SpatialComponent->sphere.P, EPS_L * 10.f) || !fsimilar(R, SpatialComponent->sphere.R, 0.15f))
 				{
-					SpatialComponent->spatial.sphere.set(P, R);
+					SpatialComponent->sphere.set(P, R);
 					ISpatialOwner::spatial_move();
 				}
 			}

@@ -186,7 +186,7 @@ public:
 	virtual float						Radius				()			const;
 	virtual const Fbox&					BoundingBox			()			const;
 	
-	IC IRender_Sector*					Sector				()					{ return H_Root()->SpatialComponent->spatial.sector;	}
+	IC IRender_Sector*					Sector				()					{ return H_Root()->SpatialComponent->sector;	}
 	IC IRender_ObjectSpecific*			ROS					()					{ return renderable_ROS();			}
 	virtual bool						renderable_ShadowGenerate	()			{ return true;						}
 	virtual bool						renderable_ShadowReceive	()			{ return true;						}

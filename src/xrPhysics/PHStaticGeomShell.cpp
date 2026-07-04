@@ -16,7 +16,7 @@
 void CPHStaticGeomShell::get_spatial_params()
 {
 	Fvector					AABB_;
-	spatialParsFromDGeom	(dSpacedGeometry(), SpatialComponent->spatial.sphere.P,AABB_, SpatialComponent->spatial.sphere.R);
+	spatialParsFromDGeom	(dSpacedGeometry(), SpatialComponent->sphere.P,AABB_, SpatialComponent->sphere.R);
 }
 
 void	CPHStaticGeomShell::PhDataUpdate		(dReal step)
@@ -43,7 +43,7 @@ void CPHStaticGeomShell::Deactivate()
 
 CPHStaticGeomShell::CPHStaticGeomShell()
 {
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::PHYSIC;
+	SpatialComponent->type |= ESPATIAL_TYPE::PHYSIC;
 }
 
 void _BCL	cb(CBoneInstance* B)
@@ -51,44 +51,39 @@ void _BCL	cb(CBoneInstance* B)
 
 }
 
-void P_BuildStaticGeomShell(CPHStaticGeomShell* pUnbrokenObject,IPhysicsShellHolder* obj,ObjectContactCallbackFun* object_contact_callback,const Fobb &b)
+void P_BuildStaticGeomShell(CPHStaticGeomShell* pUnbrokenObject, IPhysicsShellHolder* obj, ObjectContactCallbackFun* object_contact_callback, const Fobb& b)
 {
-	pUnbrokenObject->add_Box	(b);
-	pUnbrokenObject->Activate	(obj->ObjectXFORM());
+	pUnbrokenObject->add_Box(b);
+	pUnbrokenObject->Activate(obj->ObjectXFORM());
 
 	pUnbrokenObject->set_PhysicsRefObject(obj);
-	//m_pUnbrokenObject->SetPhObjectInGeomData(m_pUnbrokenObject);
 	pUnbrokenObject->set_ObjectContactCallback(object_contact_callback);
 	CPHCollideValidator::SetNonDynamicObject(*pUnbrokenObject);
 }
-CPHStaticGeomShell* P_BuildStaticGeomShell(IPhysicsShellHolder* obj,ObjectContactCallbackFun* object_contact_callback,const Fobb &b)
+
+CPHStaticGeomShell* P_BuildStaticGeomShell(IPhysicsShellHolder* obj, ObjectContactCallbackFun* object_contact_callback, const Fobb& b)
 {
-	CPHStaticGeomShell* pUnbrokenObject=new CPHStaticGeomShell();
-	P_BuildStaticGeomShell(pUnbrokenObject,obj,object_contact_callback,b);
+	CPHStaticGeomShell* pUnbrokenObject = new CPHStaticGeomShell();
+	P_BuildStaticGeomShell(pUnbrokenObject, obj, object_contact_callback, b);
 	return pUnbrokenObject;
 }
 
-IPHStaticGeomShell* P_BuildStaticGeomShell(IPhysicsShellHolder* obj,ObjectContactCallbackFun* object_contact_callback)
+IPHStaticGeomShell* P_BuildStaticGeomShell(IPhysicsShellHolder* obj, ObjectContactCallbackFun* object_contact_callback)
 {
-	Fobb			b;
-	//IRenderVisual* V=obj->ObjectVisual();
-	//R_ASSERT2(V,"need visual to build");
-	IKinematics* K		=obj->ObjectKinematics();
-	R_ASSERT2(K,"need visual to build");
-	K->CalculateBones	(true);		//. bForce - was true
+	Fobb b;
+	IKinematics* K = obj->ObjectKinematics();
+	R_ASSERT2(K, "need visual to build");
 
-	//V->getVisData().box.getradius	(b.m_halfsize);
-	K->GetBox().getradius	(b.m_halfsize);
+	K->CalculateBones(true); //. bForce - was true
+	K->GetBox().getradius(b.m_halfsize);
+	b.xform_set(Fidentity);
 
-	b.xform_set					(Fidentity);
-	CPHStaticGeomShell* pUnbrokenObject =P_BuildStaticGeomShell(obj,object_contact_callback,b);
+	CPHStaticGeomShell* pUnbrokenObject = P_BuildStaticGeomShell(obj, object_contact_callback, b);
 
-	
 	K->CalculateBones(true);
-	for (u16 k=0; k<K->LL_BoneCount(); k++){
-		K->LL_GetBoneInstance(k).set_callback( bctPhysics,cb,K->LL_GetBoneInstance(k).callback_param(), true);
-		//K->LL_GetBoneInstance(k).Callback_overwrite = true;
-		//K->LL_GetBoneInstance(k).Callback = cb;
+	for (u16 k = 0; k < K->LL_BoneCount(); k++)
+	{
+		K->LL_GetBoneInstance(k).set_callback(bctPhysics, cb, K->LL_GetBoneInstance(k).callback_param(), true);
 	}
 	return pUnbrokenObject;
 }

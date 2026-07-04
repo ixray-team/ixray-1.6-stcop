@@ -139,28 +139,26 @@ class XRCORE_API ISpatial:
 {
 	friend class ISpatialOwner;
 public:
-	struct SpatialData
-	{
-		ESPATIAL_TYPE type = ESPATIAL_TYPE::NONE;
-		Fsphere sphere = {zero_vel, 0.f};
+	ESPATIAL_TYPE type = ESPATIAL_TYPE::NONE;
+	Fsphere sphere = {zero_vel, 0.f};
 
-		// Cached node center for TBV optimization
-		Fvector node_center = zero_vel;
-		Fvector last_sector_point = zero_vel;
-		// Cached node bounds for TBV optimization
-		float node_radius = 0.f;
-		float ssa_dyn_factor = 0.002f;
-		float ssa_d_cam = 220.f;	
+	// Cached node center for TBV optimization
+	Fvector node_center = zero_vel;
+	Fvector last_sector_point = zero_vel;
 
-		// Cached parent node for "empty-members" optimization
-		ISpatial_NODE* node_ptr = nullptr;		
-		IRender_Sector* sector = nullptr;
+	// Cached node bounds for TBV optimization
+	float node_radius = 0.f;
+	float ssa_dyn_factor = 0.002f;
+	float ssa_d_cam = 220.f;	
 
-		// allow different spaces
-		ISpatial_DB* space = nullptr;
+	// Cached parent node for "empty-members" optimization
+	ISpatial_NODE* node_ptr = nullptr;		
+	IRender_Sector* sector = nullptr;
 
-		size_t items_idx = 0;
-	} spatial;
+	// allow different spaces
+	ISpatial_DB* space = nullptr;
+
+	size_t items_idx = 0;
 
 private:
 	ISpatialOwner* RawOwner = nullptr;
@@ -168,24 +166,24 @@ private:
 public:
 	ICF bool spatial_inside()
 	{
-		float dr = -(-spatial.node_radius + spatial.sphere.R);
-		if (spatial.sphere.P.x < spatial.node_center.x - dr) return false;
-		if (spatial.sphere.P.x > spatial.node_center.x + dr) return false;
-		if (spatial.sphere.P.y < spatial.node_center.y - dr) return false;
-		if (spatial.sphere.P.y > spatial.node_center.y + dr) return false;
-		if (spatial.sphere.P.z < spatial.node_center.z - dr) return false;
-		if (spatial.sphere.P.z > spatial.node_center.z + dr) return false;
+		float dr = -(-node_radius + sphere.R);
+		if (sphere.P.x < node_center.x - dr) return false;
+		if (sphere.P.x > node_center.x + dr) return false;
+		if (sphere.P.y < node_center.y - dr) return false;
+		if (sphere.P.y > node_center.y + dr) return false;
+		if (sphere.P.z < node_center.z - dr) return false;
+		if (sphere.P.z > node_center.z + dr) return false;
 		return true;
 	}
 	ICF bool verify_sp(Fvector& node_center, float node_radius)
 	{
-		float dr = -(-node_radius + spatial.sphere.R);
-		if (spatial.sphere.P.x < node_center.x - dr) return false;
-		if (spatial.sphere.P.x > node_center.x + dr) return false;
-		if (spatial.sphere.P.y < node_center.y - dr) return false;
-		if (spatial.sphere.P.y > node_center.y + dr) return false;
-		if (spatial.sphere.P.z < node_center.z - dr) return false;
-		if (spatial.sphere.P.z > node_center.z + dr) return false;
+		float dr = -(-node_radius + sphere.R);
+		if (sphere.P.x < node_center.x - dr) return false;
+		if (sphere.P.x > node_center.x + dr) return false;
+		if (sphere.P.y < node_center.y - dr) return false;
+		if (sphere.P.y > node_center.y + dr) return false;
+		if (sphere.P.z < node_center.z - dr) return false;
+		if (sphere.P.z > node_center.z + dr) return false;
 		return true;
 	}
 
@@ -203,7 +201,7 @@ public:
 
 	ICF void spatial_updatesector()	
 	{
-		if (ESPATIAL_TYPE::NONE == (spatial.type& ESPATIAL_TYPE::INVALIDSECTOR))
+		if (ESPATIAL_TYPE::NONE == (type& ESPATIAL_TYPE::INVALIDSECTOR))
 			return;
 
 		spatial_updatesector_internal();
@@ -216,9 +214,10 @@ public:
 	CPHObject*		dcast_CPHObject		();
 	CGlow*			dcast_CGlow			();
 
-	constexpr ISpatial(ISpatial_DB* space, ISpatialOwner* Owner) : RawOwner(Owner)
+	constexpr ISpatial(ISpatial_DB* NewSpace, ISpatialOwner* Owner) : 
+		RawOwner(Owner)
 	{
-		spatial.space = space;
+		space = NewSpace;
 	}
 	virtual ~ISpatial(void) { Unregister(); }
 };
@@ -230,12 +229,12 @@ class ISpatialOwner
 public:
 	ISpatialShared SpatialComponent;
 
-	virtual void spatial_create(ISpatial_DB* db, ISpatialOwner* owner, ESPATIAL_TYPE type) { SpatialComponent = xr_make_shared<ISpatial>(db, owner); SpatialComponent->spatial.type = type; }
+	virtual void spatial_create(ISpatial_DB* db, ISpatialOwner* owner, ESPATIAL_TYPE type) { SpatialComponent = xr_make_shared<ISpatial>(db, owner); SpatialComponent->type = type; }
 	virtual void spatial_register() { SpatialComponent->Register(); };
 	virtual void spatial_unregister() { SpatialComponent->Unregister(); };
 
 	virtual void	spatial_move() { SpatialComponent->Move(); };
-	virtual Fvector	spatial_sector_point() { return SpatialComponent->spatial.sphere.P; }
+	virtual Fvector	spatial_sector_point() { return SpatialComponent->sphere.P; }
 
 	
 	virtual CObject*		dcast_CObject		() { return nullptr; };
@@ -288,22 +287,22 @@ struct ISpatial_NODE
 
 	ICF void _insert(ISpatialShared S)
 	{
-		S->spatial.node_ptr = this;
-		S->spatial.items_idx = items.size();
+		S->node_ptr = this;
+		S->items_idx = items.size();
 		items.push_back(S);
 	}
 
 	ICF void _remove(ISpatialShared S)
 	{
-		S->spatial.node_ptr = nullptr;
+		S->node_ptr = nullptr;
 
-		const size_t idx = S->spatial.items_idx;
+		const size_t idx = S->items_idx;
 		const size_t ItemsCount = items.size();
 
 		if (ItemsCount > 1 && idx != ItemsCount - 1)
 		{
 			ISpatialShared& moved = fast_erase(items, idx);
-			moved->spatial.items_idx = idx;
+			moved->items_idx = idx;
 		}
 		else if (ItemsCount > 0)
 		{
