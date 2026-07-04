@@ -366,7 +366,7 @@ void CRenderDevice::EndRender()
 		
 		if (current_ticks < target_ticks)
 		{
-#if !false
+#if false
 			auto ms_sleep = std::chrono::duration_cast<std::chrono::milliseconds>(
 				std::chrono::nanoseconds(
 						target_ticks - current_ticks
@@ -379,13 +379,10 @@ void CRenderDevice::EndRender()
 			}
 #else // precise fps limiter
 			long long ticks_wait = curr_ticks + target_ticks - current_ticks;
-			
-			// Не даёт процессорное время другим задачам, но это точнейший лок.
-			// Со sleep'ом кал на постном масле, из-за системных прерываний в 1/60,
-			// но и timeBeginPeriod(1) - не вариант, повышает энергопотребление.
-
-			PROF_EVENT("FPS limiter - spin wait")
-			while (clock::now().time_since_epoch().count() < ticks_wait);
+			{
+				PROF_EVENT("FPS limiter - spin wait")
+				while (clock::now().time_since_epoch().count() < ticks_wait);
+			}
 #endif
 		}
 		prev_ticks = clock::now().time_since_epoch().count();
