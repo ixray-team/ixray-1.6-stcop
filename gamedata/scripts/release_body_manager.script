@@ -146,7 +146,7 @@ function Crelease_body:inspection_result(obj)
 end
 
 function  Crelease_body:check_for_known_info(obj)
-    returnn PROF_EVENT_CLOSURE("check_for_known_info", function()
+    return PROF_EVENT_CLOSURE("check_for_known_info", function()
         local char_ini = ""
         local spawn_ini = obj:spawn_ini()
         local filename = nil
