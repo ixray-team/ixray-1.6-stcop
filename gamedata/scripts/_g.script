@@ -190,10 +190,12 @@ end
 local aa = nil
 --' Проверка на инфопоршни, даже если игрока не существует
 function has_alife_info(info_id)
-	if aa == nil then
-		return false
-	end
-	return aa:has_info(0, info_id)
+	return PROF_EVENT_CLOSURE("has_alife_info", function() 
+		if aa == nil then
+			return false
+		end
+		return aa:has_info(0, info_id)
+	end)
 end
 
 
@@ -326,9 +328,11 @@ end
 
 -- очистка таблицы.
 function clear_table (t)
-	while #t > 0 do
-		table.remove (t, #t)
-	end
+	return PROF_EVENT_CLOSURE("clear_table", function() 
+        while #t > 0 do
+            table.remove (t, #t)
+        end
+    end)
 end
 
 function stop_play_sound(obj)
