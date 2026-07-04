@@ -213,7 +213,7 @@ CLevel::CLevel() :
 	m_pScriptXRParser = new CScriptXRParser();
 #endif
 
-	Device.LuaGC = +[]()->void
+	Device.LuaGC = static_cast<void(*)()>(+[]()->void
 	{
 		try
 		{
@@ -222,7 +222,7 @@ CLevel::CLevel() :
 		catch (...)
 		{
 		}
-	};
+	});
 }
 
 extern CAI_Space *g_ai_space;
