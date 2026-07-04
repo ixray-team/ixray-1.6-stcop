@@ -153,199 +153,201 @@ function CSurgeManager:get_nearest_cover()
 end
 
 function CSurgeManager:update()
-	if(device().precache_frame > 1) then
-		return
-	end
-	
-	local flags = {allow = true}
-	SendScriptCallback("on_before_surge", flags)
-	
-	if not flags.allow then
-		log("skip surge")
-		return
-	end
-	
-	self:ProcessDelayedKills()
-	
-	if not(self.started) then
-		local g_time = game.get_game_time()
-		local diff_sec = math.ceil(g_time:diffSec(self.last_surge_time)/level.get_time_factor())
-
-		if ( diff_sec < AFTERBLOW_TIME ) then
-			xr_sound.set_volume_sound_looped(db.actor:id(), "surge_earthquake_sound_looped", (AFTERBLOW_TIME-diff_sec)/AFTERBLOW_TIME )
-			xr_sound.set_volume_sound_looped(db.actor:id(), "blowout_rumble", (AFTERBLOW_TIME-diff_sec)/AFTERBLOW_TIME)
-
-			if (diff_sec < AFTERBLOW_TIME/3) then
-				level.electronics_reset()
-				level.electronics_break()
-				level.electronics_break()
-				level.electronics_break()
-			elseif (diff_sec < 2*AFTERBLOW_TIME/3) then
-				level.electronics_reset()
-				level.electronics_break()
-				level.electronics_break()
-			else
-				level.electronics_reset()
-				level.electronics_break()
-			end
-		else
-			level.electronics_reset()
-			xr_sound.stop_sound_looped(db.actor:id(), "blowout_rumble")
-			if xr_sound.is_played_sound_looped(db.actor:id(), "surge_earthquake_sound_looped") then
-				xr_sound.stop_sound_looped(db.actor:id(), "surge_earthquake_sound_looped")
-				if(level) then
-					if(level.name()=="zaton") then
-						xr_sound.set_sound_play(db.actor:id(), "zat_a2_stalker_barmen_after_surge")
-					elseif(level.name()=="jupiter") then
-						xr_sound.set_sound_play(db.actor:id(), "jup_a6_stalker_medik_after_surge")
-					elseif not has_alife_info("pri_b305_fifth_cam_end") then
-						xr_sound.set_sound_play(db.actor:id(), "pri_a17_kovalsky_after_surge")
-					end
-				end
-			end
-		end
-
-		if(self.time_forwarded) then
-			log("--->delta="..tostring(self._delta))
-			log("--->diffSec="..tostring(g_time:diffSec(self.last_surge_time)))
-			local diff = math.abs(self._delta - g_time:diffSec(self.last_surge_time))
-			log("--->diff="..tostring(diff))
-			if(diff<3600) then
-				self._delta = 3*3600+g_time:diffSec(self.last_surge_time)
-			end
-			self.time_forwarded = false
-		end
-		if(g_time:diffSec(self.last_surge_time) < self._delta) then
-			return
-		end
-		if(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.condlist) ~= "true") then
-			return
-		end
-		if not(self:get_nearest_cover()) then
-			return
-		end
-		self:start()
-		return
-	end
--------------------------------------------------------------------- update here
-	local diff_sec = math.ceil(game.get_game_time():diffSec(self.inited_time)/level.get_time_factor())
-	if(prev_sec~=diff_sec) then
-		prev_sec = diff_sec
-		log("------>diff_sec="..tostring(diff_sec))
-		local level_name = level.name()
-		if(level_name=="labx8" or level_name=="jupiter_underground") then
-			printf("Surge stopped because of level!")
-			self:end_surge()
-			return
-		end
-		local cover = self:get_nearest_cover()
-		if(cover==nil and self.count==0) then
-			self:init_surge_covers()
-			return
-		end
-		if(diff_sec>=self.surge_time) then
-			self:end_surge()
-		else
-			if(self.loaded) then
-				if (self.task_given) then
-					level.electronics_break()
-				end
-				if(self.blowout_sound)then
-					level.electronics_break()
-					xr_sound.play_sound_looped(db.actor:id(), "blowout_rumble")
-				end
-				if(self.effector_set) then
-					level.electronics_break()
-					level.add_pp_effector("surge_shock.ppe", surge_shock_pp_eff, true)
-				end
-				if(self.second_message_given) then
-					level.electronics_break()
-					xr_sound.play_sound_looped(db.actor:id(), "surge_earthquake_sound_looped")
-					level.add_cam_effector("camera_effects\\earthquake.anm", earthquake_cam_eff, true, "")
-				end
-				level.electronics_apply();
-				self.loaded = false
-			end
-			self:launch_rockets()
-			if(self.effector_set) then
-				--[bug]баг - исправлено наличие постпроцесса в укрытии - Sin!, 26.11.2016
-				local cover = self:get_nearest_cover()
-				if(db.actor and db.actor:alive()) then
-					if (cover and db.storage[cover] and db.storage[cover].object:inside(db.actor:position())) then
-						level.set_pp_effector_factor(surge_shock_pp_eff, 0.001, 1);
-					else
-						level.set_pp_effector_factor(surge_shock_pp_eff, diff_sec/90, 1)
-					end
-				end
-			end
-			if(self.blowout_sound) then
-				xr_sound.set_volume_sound_looped(db.actor:id(), "blowout_rumble", diff_sec/180)
-			end
-			if(diff_sec>=140 and not(self.ui_disabled) and (cover==nil or not(db.storage[cover].object:inside(db.actor:position())))) then
-				local att = 1-(185-diff_sec)/(185-140)
-				att = att*att*att*0.3
-	            local h = hit()
-	            h.type = hit.telepatic
-	            h.power = att
-	            h.impulse = 0.0
-	            h.direction = vector():set(0,0,1)
-	            h.draftsman = db.actor
-				if(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.survive)=="true") then
-					if(db.actor.health<=h.power) then
-			            h.power = db.actor.health - 0.05
-						if(h.power<0) then
-							h.power = 0
-						end
-					end
-				end
-                db.actor:hit(h)
-			end
-			if(diff_sec>=175) and not(self.ui_disabled) then
-				self:kill_all_unhided()
-				self.ui_disabled = true
-				level.electronics_break()
-			elseif(diff_sec>=140) and not(self.second_message_given) then
-				if(level) then
-					if(level.name()=="zaton") then
-						xr_sound.set_sound_play(db.actor:id(), "zat_a2_stalker_barmen_surge_phase_2")
-					elseif(level.name()=="jupiter") then
-						xr_sound.set_sound_play(db.actor:id(), "jup_a6_stalker_medik_phase_2")
-					elseif not has_alife_info("pri_b305_fifth_cam_end") then
-						xr_sound.set_sound_play(db.actor:id(), "pri_a17_kovalsky_surge_phase_2")
-					end
-				end
-				xr_sound.play_sound_looped(db.actor:id(), "surge_earthquake_sound_looped")
-				level.add_cam_effector("camera_effects\\earthquake.anm", earthquake_cam_eff, true, "")
-				level.electronics_break()
-				self.second_message_given = true
-			elseif(diff_sec>=100) and not(self.effector_set) then
-				level.add_pp_effector("surge_shock.ppe", surge_shock_pp_eff, true)
---				level.set_pp_effector_factor(surge_shock_pp_eff, 0, 10)
-				level.electronics_break()
-				self.effector_set = true
-			elseif(diff_sec>=35) and not(self.blowout_sound)then
-				xr_sound.set_sound_play(db.actor:id(), "blowout_begin")
-				xr_sound.play_sound_looped(db.actor:id(), "blowout_rumble")
-				xr_sound.set_volume_sound_looped(db.actor:id(), "blowout_rumble", 0.25)
-				level.electronics_break()
-				self.blowout_sound = true
-			elseif(diff_sec>=0) and not(self.task_given)then
-				if(level) then
-					if(level.name()=="zaton") then
-						xr_sound.set_sound_play(db.actor:id(), "zat_a2_stalker_barmen_surge_phase_1")
-					elseif(level.name()=="jupiter") then
-						xr_sound.set_sound_play(db.actor:id(), "jup_a6_stalker_medik_phase_1")
-					elseif not has_alife_info("pri_b305_fifth_cam_end") then
-						xr_sound.set_sound_play(db.actor:id(), "pri_a17_kovalsky_surge_phase_1")
-					end
-				end
-				level.set_weather_fx("fx_surge_day_3")
-				self:give_surge_hide_task()
-				level.electronics_break()
-				self.task_given = true
-			end
-		end
-	end
+    PROF_EVENT_CLOSURE("update", function()
+        if(device().precache_frame > 1) then
+            return
+        end
+        
+        local flags = {allow = true}
+        SendScriptCallback("on_before_surge", flags)
+        
+        if not flags.allow then
+            log("skip surge")
+            return
+        end
+        
+        self:ProcessDelayedKills()
+        
+        if not(self.started) then
+            local g_time = game.get_game_time()
+            local diff_sec = math.ceil(g_time:diffSec(self.last_surge_time)/level.get_time_factor())
+    
+            if ( diff_sec < AFTERBLOW_TIME ) then
+                xr_sound.set_volume_sound_looped(db.actor:id(), "surge_earthquake_sound_looped", (AFTERBLOW_TIME-diff_sec)/AFTERBLOW_TIME )
+                xr_sound.set_volume_sound_looped(db.actor:id(), "blowout_rumble", (AFTERBLOW_TIME-diff_sec)/AFTERBLOW_TIME)
+    
+                if (diff_sec < AFTERBLOW_TIME/3) then
+                    level.electronics_reset()
+                    level.electronics_break()
+                    level.electronics_break()
+                    level.electronics_break()
+                elseif (diff_sec < 2*AFTERBLOW_TIME/3) then
+                    level.electronics_reset()
+                    level.electronics_break()
+                    level.electronics_break()
+                else
+                    level.electronics_reset()
+                    level.electronics_break()
+                end
+            else
+                level.electronics_reset()
+                xr_sound.stop_sound_looped(db.actor:id(), "blowout_rumble")
+                if xr_sound.is_played_sound_looped(db.actor:id(), "surge_earthquake_sound_looped") then
+                    xr_sound.stop_sound_looped(db.actor:id(), "surge_earthquake_sound_looped")
+                    if(level) then
+                        if(level.name()=="zaton") then
+                            xr_sound.set_sound_play(db.actor:id(), "zat_a2_stalker_barmen_after_surge")
+                        elseif(level.name()=="jupiter") then
+                            xr_sound.set_sound_play(db.actor:id(), "jup_a6_stalker_medik_after_surge")
+                        elseif not has_alife_info("pri_b305_fifth_cam_end") then
+                            xr_sound.set_sound_play(db.actor:id(), "pri_a17_kovalsky_after_surge")
+                        end
+                    end
+                end
+            end
+    
+            if(self.time_forwarded) then
+                log("--->delta="..tostring(self._delta))
+                log("--->diffSec="..tostring(g_time:diffSec(self.last_surge_time)))
+                local diff = math.abs(self._delta - g_time:diffSec(self.last_surge_time))
+                log("--->diff="..tostring(diff))
+                if(diff<3600) then
+                    self._delta = 3*3600+g_time:diffSec(self.last_surge_time)
+                end
+                self.time_forwarded = false
+            end
+            if(g_time:diffSec(self.last_surge_time) < self._delta) then
+                return
+            end
+            if(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.condlist) ~= "true") then
+                return
+            end
+            if not(self:get_nearest_cover()) then
+                return
+            end
+            self:start()
+            return
+        end
+        -- update here
+        local diff_sec = math.ceil(game.get_game_time():diffSec(self.inited_time)/level.get_time_factor())
+        if(prev_sec~=diff_sec) then
+            prev_sec = diff_sec
+            log("------>diff_sec="..tostring(diff_sec))
+            local level_name = level.name()
+            if(level_name=="labx8" or level_name=="jupiter_underground") then
+                printf("Surge stopped because of level!")
+                self:end_surge()
+                return
+            end
+            local cover = self:get_nearest_cover()
+            if(cover==nil and self.count==0) then
+                self:init_surge_covers()
+                return
+            end
+            if(diff_sec>=self.surge_time) then
+                self:end_surge()
+            else
+                if(self.loaded) then
+                    if (self.task_given) then
+                        level.electronics_break()
+                    end
+                    if(self.blowout_sound)then
+                        level.electronics_break()
+                        xr_sound.play_sound_looped(db.actor:id(), "blowout_rumble")
+                    end
+                    if(self.effector_set) then
+                        level.electronics_break()
+                        level.add_pp_effector("surge_shock.ppe", surge_shock_pp_eff, true)
+                    end
+                    if(self.second_message_given) then
+                        level.electronics_break()
+                        xr_sound.play_sound_looped(db.actor:id(), "surge_earthquake_sound_looped")
+                        level.add_cam_effector("camera_effects\\earthquake.anm", earthquake_cam_eff, true, "")
+                    end
+                    level.electronics_apply();
+                    self.loaded = false
+                end
+                self:launch_rockets()
+                if(self.effector_set) then
+                    --[bug]баг - исправлено наличие постпроцесса в укрытии - Sin!, 26.11.2016
+                    local cover = self:get_nearest_cover()
+                    if(db.actor and db.actor:alive()) then
+                        if (cover and db.storage[cover] and db.storage[cover].object:inside(db.actor:position())) then
+                            level.set_pp_effector_factor(surge_shock_pp_eff, 0.001, 1);
+                        else
+                            level.set_pp_effector_factor(surge_shock_pp_eff, diff_sec/90, 1)
+                        end
+                    end
+                end
+                if(self.blowout_sound) then
+                    xr_sound.set_volume_sound_looped(db.actor:id(), "blowout_rumble", diff_sec/180)
+                end
+                if(diff_sec>=140 and not(self.ui_disabled) and (cover==nil or not(db.storage[cover].object:inside(db.actor:position())))) then
+                    local att = 1-(185-diff_sec)/(185-140)
+                    att = att*att*att*0.3
+                    local h = hit()
+                    h.type = hit.telepatic
+                    h.power = att
+                    h.impulse = 0.0
+                    h.direction = vector():set(0,0,1)
+                    h.draftsman = db.actor
+                    if(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.survive)=="true") then
+                        if(db.actor.health<=h.power) then
+                            h.power = db.actor.health - 0.05
+                            if(h.power<0) then
+                                h.power = 0
+                            end
+                        end
+                    end
+                    db.actor:hit(h)
+                end
+                if(diff_sec>=175) and not(self.ui_disabled) then
+                    self:kill_all_unhided()
+                    self.ui_disabled = true
+                    level.electronics_break()
+                elseif(diff_sec>=140) and not(self.second_message_given) then
+                    if(level) then
+                        if(level.name()=="zaton") then
+                            xr_sound.set_sound_play(db.actor:id(), "zat_a2_stalker_barmen_surge_phase_2")
+                        elseif(level.name()=="jupiter") then
+                            xr_sound.set_sound_play(db.actor:id(), "jup_a6_stalker_medik_phase_2")
+                        elseif not has_alife_info("pri_b305_fifth_cam_end") then
+                            xr_sound.set_sound_play(db.actor:id(), "pri_a17_kovalsky_surge_phase_2")
+                        end
+                    end
+                    xr_sound.play_sound_looped(db.actor:id(), "surge_earthquake_sound_looped")
+                    level.add_cam_effector("camera_effects\\earthquake.anm", earthquake_cam_eff, true, "")
+                    level.electronics_break()
+                    self.second_message_given = true
+                elseif(diff_sec>=100) and not(self.effector_set) then
+                    level.add_pp_effector("surge_shock.ppe", surge_shock_pp_eff, true)
+                    --level.set_pp_effector_factor(surge_shock_pp_eff, 0, 10)
+                    level.electronics_break()
+                    self.effector_set = true
+                elseif(diff_sec>=35) and not(self.blowout_sound)then
+                    xr_sound.set_sound_play(db.actor:id(), "blowout_begin")
+                    xr_sound.play_sound_looped(db.actor:id(), "blowout_rumble")
+                    xr_sound.set_volume_sound_looped(db.actor:id(), "blowout_rumble", 0.25)
+                    level.electronics_break()
+                    self.blowout_sound = true
+                elseif(diff_sec>=0) and not(self.task_given)then
+                    if(level) then
+                        if(level.name()=="zaton") then
+                            xr_sound.set_sound_play(db.actor:id(), "zat_a2_stalker_barmen_surge_phase_1")
+                        elseif(level.name()=="jupiter") then
+                            xr_sound.set_sound_play(db.actor:id(), "jup_a6_stalker_medik_phase_1")
+                        elseif not has_alife_info("pri_b305_fifth_cam_end") then
+                            xr_sound.set_sound_play(db.actor:id(), "pri_a17_kovalsky_surge_phase_1")
+                        end
+                    end
+                    level.set_weather_fx("fx_surge_day_3")
+                    self:give_surge_hide_task()
+                    level.electronics_break()
+                    self.task_given = true
+                end
+            end
+        end
+    end)
 end
 
 function CSurgeManager:start(manual)

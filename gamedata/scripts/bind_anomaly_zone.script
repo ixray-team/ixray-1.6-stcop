@@ -142,51 +142,53 @@ function anomaly_zone_binder:__init(obj) super(obj)
 end
 
 function anomaly_zone_binder:disable_anomaly_fields()
-	if not(self.custom_placement) then
-		self.disabled = true
-		return
-	end
-	local layer = self.cur_layer
-	local anom_fields = bind_anomaly_field.fields_by_names
-	local counter = 0
-	for k,v in pairs(self.fields_table) do
-		if(k~=layer) then
-			for kk, vv in pairs(self.fields_table[k]) do
-				if(anom_fields[vv]~=nil) then
-					anom_fields[vv]:set_enable(false)
-				else
-					counter = counter + 1
-				end
-			end
-		end
-	end
-	for k,v in pairs(self.mines_table) do
-		if(k~=layer) then
-			for kk,vv in pairs(self.mines_table[k]) do
-				if(anom_fields[vv]~=nil) then
-					anom_fields[vv]:set_enable(false)
-				else
-					counter = counter + 1
-				end
-			end
-		end
-	end
-	if(counter==0) then
-		self.disabled = true
-	end
-
-	if not self.turned_off then
-		for kk, vv in pairs(self.fields_table[layer]) do
-			if(anom_fields[vv]~=nil) then
-				anom_fields[vv]:set_enable(true)
-			end
-		end
-		for kk,vv in pairs(self.mines_table[layer]) do
-			if(anom_fields[vv]~=nil) then
-				anom_fields[vv]:set_enable(true)
-			end
-		end
-	end
+    PROF_EVENT_CLOSURE("disable_anomaly_fields", function()
+        if not(self.custom_placement) then
+            self.disabled = true
+            return
+        end
+        local layer = self.cur_layer
+        local anom_fields = bind_anomaly_field.fields_by_names
+        local counter = 0
+        for k,v in pairs(self.fields_table) do
+            if(k~=layer) then
+                for kk, vv in pairs(self.fields_table[k]) do
+                    if(anom_fields[vv]~=nil) then
+                        anom_fields[vv]:set_enable(false)
+                    else
+                        counter = counter + 1
+                    end
+                end
+            end
+        end
+        for k,v in pairs(self.mines_table) do
+            if(k~=layer) then
+                for kk,vv in pairs(self.mines_table[k]) do
+                    if(anom_fields[vv]~=nil) then
+                        anom_fields[vv]:set_enable(false)
+                    else
+                        counter = counter + 1
+                    end
+                end
+            end
+        end
+        if(counter==0) then
+            self.disabled = true
+        end
+    
+        if not self.turned_off then
+            for kk, vv in pairs(self.fields_table[layer]) do
+                if(anom_fields[vv]~=nil) then
+                    anom_fields[vv]:set_enable(true)
+                end
+            end
+            for kk,vv in pairs(self.mines_table[layer]) do
+                if(anom_fields[vv]~=nil) then
+                    anom_fields[vv]:set_enable(true)
+                end
+            end
+        end    
+    end)
 end
 
 function anomaly_zone_binder:respawn_artefacts_and_replace_anomaly_zone()
@@ -340,79 +342,87 @@ function anomaly_zone_binder:net_destroy()
 end
 
 function anomaly_zone_binder:update(delta)
-	object_binder.update(self, delta)
-	
-	SendScriptCallback("anomaly_zone_on_update", self, self.object)
-
-	-- Fix actual count of artefacts - like 1.6.03 Unofficial
-	if (time_global()>=self.last_update_time+1000) then
-		self.last_update_time = time_global()
-		local real_af_count = 0
-		for k, v in pairs(self.artefact_ways_by_id) do
-			if alife():object(tonumber(k)) then
-				real_af_count = real_af_count + 1
-			end
-		end
-		if self.spawned_count~=real_af_count then
-			self.spawned_count = real_af_count
-		end
-	end
-	
- 	if (not self.turned_off) and (self.spawned_count < self.max_artefacts) and self.respawn_artefacts then
- 		local cnt = self.respawn_tries
- 		if cnt > self.max_artefacts - self.spawned_count then
- 			cnt = self.max_artefacts - self.spawned_count
- 		end
-		if cnt ~= 0 then
-			for i=1, cnt do
-				self:spawn_artefact_randomly()
-			end
-		end
-		self.respawn_artefacts = false
-	elseif (not self.turned_off) and (self.spawned_count >= self.max_artefacts) and self.respawn_artefacts then
-		self.respawn_artefacts = false
-	end
-
-	if not(self.disabled) then
-		self:disable_anomaly_fields()
-	end
+    PROF_EVENT_CLOSURE("update", function()
+        object_binder.update(self, delta)
+        
+        SendScriptCallback("anomaly_zone_on_update", self, self.object)
+    
+        -- Fix actual count of artefacts - like 1.6.03 Unofficial
+        if (time_global()>=self.last_update_time+1000) then
+            self.last_update_time = time_global()
+            local real_af_count = 0
+            for k, v in pairs(self.artefact_ways_by_id) do
+                if alife():object(tonumber(k)) then
+                    real_af_count = real_af_count + 1
+                end
+            end
+            if self.spawned_count~=real_af_count then
+                self.spawned_count = real_af_count
+            end
+        end
+        
+        if (not self.turned_off) and (self.spawned_count < self.max_artefacts) and self.respawn_artefacts then
+            local cnt = self.respawn_tries
+            if cnt > self.max_artefacts - self.spawned_count then
+                cnt = self.max_artefacts - self.spawned_count
+            end
+            if cnt ~= 0 then
+                for i=1, cnt do
+                    self:spawn_artefact_randomly()
+                end
+            end
+            self.respawn_artefacts = false
+        elseif (not self.turned_off) and (self.spawned_count >= self.max_artefacts) and self.respawn_artefacts then
+            self.respawn_artefacts = false
+        end
+    
+        if not(self.disabled) then
+            self:disable_anomaly_fields()
+        end
+    end)
 end
 
 
 function anomaly_zone_binder:cleanup()
--- function from 1.6.03 Unofficial
-	self:turn_off()
-	self:turn_on()
-
-	for k,v in pairs(parent_zones_by_artefact_id) do
-		if (v and v.object:id() == self.object:id()) then
-			parent_zones_by_artefact_id[k] = nil
-		end
-	end
+    PROF_EVENT_CLOSURE("cleanup", function()
+    -- function from 1.6.03 Unofficial
+        self:turn_off()
+        self:turn_on()
+    
+        for k,v in pairs(parent_zones_by_artefact_id) do
+            if (v and v.object:id() == self.object:id()) then
+                parent_zones_by_artefact_id[k] = nil
+            end
+        end
+    end)
 end
 
 function anomaly_zone_binder:turn_off()
-	self.turned_off = true
-	self:disable_anomaly_fields()
-	for k,v in pairs(self.artefact_ways_by_id) do
-		alife():release(alife():object(tonumber(k)), true)
-		artefact_ways_by_id[k] = nil
-		artefact_points_by_id[k] = nil
-		parent_zones_by_artefact_id[k] = nil
-	end
-	self.spawned_count = 0
-	self.artefact_ways_by_id = {}
-	self.artefact_points_by_id = {}
+    PROF_EVENT_CLOSURE("turn_off", function()
+        self.turned_off = true
+        self:disable_anomaly_fields()
+        for k,v in pairs(self.artefact_ways_by_id) do
+            alife():release(alife():object(tonumber(k)), true)
+            artefact_ways_by_id[k] = nil
+            artefact_points_by_id[k] = nil
+            parent_zones_by_artefact_id[k] = nil
+        end
+        self.spawned_count = 0
+        self.artefact_ways_by_id = {}
+        self.artefact_points_by_id = {}
+    end)
 end
 
 function anomaly_zone_binder:turn_on(f_af)
-	self.turned_off = false
-	self:disable_anomaly_fields()
-	if f_af then
-		self.respawn_artefacts = true
-	else
-		self.respawn_artefacts = false
-	end
+    PROF_EVENT_CLOSURE("turn_off", function()
+        self.turned_off = false
+        self:disable_anomaly_fields()
+        if f_af then
+            self.respawn_artefacts = true
+        else
+            self.respawn_artefacts = false
+        end
+    end)
 end
 
 function anomaly_zone_binder:on_artefact_take(obj)

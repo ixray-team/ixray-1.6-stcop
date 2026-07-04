@@ -92,45 +92,47 @@ function CTreasureManager:register_restrictor(se_obj)
 end
 
 function CTreasureManager:update()
-	if not(self.items_spawned) then
-			for k,v in pairs(self.secrets) do
-					self:spawn_treasure(k)
-			end
-		self.items_spawned = true
-	end
-	local global_time = time_global()
-	if(self.check_time and global_time-self.check_time<=500) then
-		return
-	end
-	self.check_time = global_time
-
-		for k,v in pairs(self.secrets) do
-				if(v.given) then
-		 	if(v.empty) then
-							local sect = xr_logic.pick_section_from_condlist(db.actor, nil, v.empty)
-							if(sect=="true") and not v.checked then
-								-- [GUNSLINGER mod]
-									local spot_type = v.spot
-									if spot_type == nil then
-										spot_type = "treasure"
-									end	
-									level.map_remove_object_spot(self.secret_restrs[k], spot_type)
-								-- [/GUNSLINGER mod]
-									xr_statistic.inc_founded_secrets_counter()
-									v.empty = nil
-					v.checked = true
-									printf("Empty secret [%s] remove map spot!", k)
-							end
-			elseif(v.refreshing and v.checked) then
-							local sect = xr_logic.pick_section_from_condlist(db.actor, nil, v.refreshing)
-							if(sect=="true") then
-									v.given = false
-									v.checked = false
-									printf("Given secret [%s] now is avaliable!", k)
-							end
-			end
-				end
-		end
+    PROF_EVENT_CLOSURE("update", function()
+        if not(self.items_spawned) then
+                for k,v in pairs(self.secrets) do
+                        self:spawn_treasure(k)
+                end
+            self.items_spawned = true
+        end
+        local global_time = time_global()
+        if(self.check_time and global_time-self.check_time<=500) then
+            return
+        end
+        self.check_time = global_time
+    
+            for k,v in pairs(self.secrets) do
+                    if(v.given) then
+                if(v.empty) then
+                                local sect = xr_logic.pick_section_from_condlist(db.actor, nil, v.empty)
+                                if(sect=="true") and not v.checked then
+                                    -- [GUNSLINGER mod]
+                                        local spot_type = v.spot
+                                        if spot_type == nil then
+                                            spot_type = "treasure"
+                                        end	
+                                        level.map_remove_object_spot(self.secret_restrs[k], spot_type)
+                                    -- [/GUNSLINGER mod]
+                                        xr_statistic.inc_founded_secrets_counter()
+                                        v.empty = nil
+                        v.checked = true
+                                        printf("Empty secret [%s] remove map spot!", k)
+                                end
+                elseif(v.refreshing and v.checked) then
+                                local sect = xr_logic.pick_section_from_condlist(db.actor, nil, v.refreshing)
+                                if(sect=="true") then
+                                        v.given = false
+                                        v.checked = false
+                                        printf("Given secret [%s] now is avaliable!", k)
+                                end
+                end
+                    end
+            end
+    end)
 end
 
 function CTreasureManager:spawn_treasure(treasure_id)

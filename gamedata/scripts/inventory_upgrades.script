@@ -28,33 +28,35 @@ function override_param_ini(new_ini)
 end
 
 function precondition_functor_a( param1, section )
-	if(param_ini:line_exist(mechanic_name.."_upgr", section)) then
-		local param = param_ini:r_string(mechanic_name.."_upgr", section)
-		if(param) then
-			if(param=="false") then
-				return 1
-			elseif(param~="true") then
-				local possibility_table = xr_logic.parse_condlist(victim, mechanic_name.."_upgr", section, param)
-				local possibility = xr_logic.pick_section_from_condlist(db.actor, victim, possibility_table)
-				if not(possibility) or (possibility=="false") then
-					return 2
-				end
-			end
-		end
-	end
-	if(db.actor) then
-		local price = math.floor(char_ini:r_u32(section, "cost")*cur_price_percent)
-		
-		local flags_table = {new_price = price}
-		SendScriptCallback("inv_upgrades_precondition_functor_a_override_price", param_ini, char_ini, cur_price_percent, param1, section, flags_table)
-		price = flags_table.new_price
-		
-		local cash = db.actor:money()
-		if(cash<price) then
-			return 2
-		end
-	end
-	return 0
+    return PROF_EVENT_CLOSURE("precondition_functor_a", function()
+        if(param_ini:line_exist(mechanic_name.."_upgr", section)) then
+            local param = param_ini:r_string(mechanic_name.."_upgr", section)
+            if(param) then
+                if(param=="false") then
+                    return 1
+                elseif(param~="true") then
+                    local possibility_table = xr_logic.parse_condlist(victim, mechanic_name.."_upgr", section, param)
+                    local possibility = xr_logic.pick_section_from_condlist(db.actor, victim, possibility_table)
+                    if not(possibility) or (possibility=="false") then
+                        return 2
+                    end
+                end
+            end
+        end
+        if(db.actor) then
+            local price = math.floor(char_ini:r_u32(section, "cost")*cur_price_percent)
+            
+            local flags_table = {new_price = price}
+            SendScriptCallback("inv_upgrades_precondition_functor_a_override_price", param_ini, char_ini, cur_price_percent, param1, section, flags_table)
+            price = flags_table.new_price
+            
+            local cash = db.actor:money()
+            if(cash<price) then
+                return 2
+            end
+        end
+        return 0
+    end)
 end
 
 function effect_functor_a( param2, section, loading ) --( string, string, int )
@@ -98,87 +100,91 @@ function get_possibility_string(mechanic_name, possibility_table)
 end
 
 function prereq_functor_a( param3, section )
-	local str = ""
-	if(param_ini:line_exist(mechanic_name.."_upgr", section)) then
-		local param = param_ini:r_string(mechanic_name.."_upgr", section)
-		if(param) then
-			if(param=="false") then
-				return str
-			else
-				cur_hint = nil
-				local possibility_table = xr_logic.parse_condlist(victim, mechanic_name.."_upgr", section, param)
-				local possibility = xr_logic.pick_section_from_condlist(db.actor, victim, possibility_table)
-				if not(possibility) or (possibility=="false") then
-					str = str..get_possibility_string(mechanic_name, possibility_table)
-				end
-			end
-		end
-	end
-	if(db.actor) then
-		local price = math.floor(char_ini:r_u32(section, "cost")*cur_price_percent)
-
-		local flags_table = {new_price = price}
-		SendScriptCallback("inv_upgrades_prereq_functor_a_override_price", param_ini, char_ini, cur_price_percent, param3, section, flags_table)
-		price = flags_table.new_price
-		
-		local cash = db.actor:money()
-		if(cash<price) then
-			return str.."\\n - "..game.translate_string("st_upgr_enough_money")--.." "..price-cash.." RU"
-		end
-	end
-	return str
+    return PROF_EVENT_CLOSURE("prereq_functor_a", function()
+        local str = ""
+        if(param_ini:line_exist(mechanic_name.."_upgr", section)) then
+            local param = param_ini:r_string(mechanic_name.."_upgr", section)
+            if(param) then
+                if(param=="false") then
+                    return str
+                else
+                    cur_hint = nil
+                    local possibility_table = xr_logic.parse_condlist(victim, mechanic_name.."_upgr", section, param)
+                    local possibility = xr_logic.pick_section_from_condlist(db.actor, victim, possibility_table)
+                    if not(possibility) or (possibility=="false") then
+                        str = str..get_possibility_string(mechanic_name, possibility_table)
+                    end
+                end
+            end
+        end
+        if(db.actor) then
+            local price = math.floor(char_ini:r_u32(section, "cost")*cur_price_percent)
+    
+            local flags_table = {new_price = price}
+            SendScriptCallback("inv_upgrades_prereq_functor_a_override_price", param_ini, char_ini, cur_price_percent, param3, section, flags_table)
+            price = flags_table.new_price
+            
+            local cash = db.actor:money()
+            if(cash<price) then
+                return str.."\\n - "..game.translate_string("st_upgr_enough_money")--.." "..price-cash.." RU"
+            end
+        end
+        return str
+    end)
 end
 
 function property_functor_a( param1, name )
-	local prorerty_name = char_ini:r_string(name, "name")
-	local t_prorerty_name = game.translate_string(prorerty_name)
-	local section_table = utils.parse_names(param1)
-	local section_table_n = #section_table
-	local section = section_table[1]
-	if(section_table_n==0) then
-		return ""
-	end
-	local value = 0
-	local sum = 0
-	for i = 1,section_table_n do
-		if not(char_ini:line_exist(section_table[i], "value")) or not(char_ini:r_string(section_table[i], "value")) then
-			return t_prorerty_name
-		end
-		value = char_ini:r_string(section_table[i], "value")
-		if(name~="prop_night_vision") then
-			sum = sum + tonumber(value)
-		else
-			sum = tonumber(value)
-		end
-	end
-	if(sum<0) then
-		value = sum
-	else
-		value = "+"..sum
-	end
-
-	if(name=="prop_ammo_size" or name=="prop_artefact") then
-		return t_prorerty_name.." "..value
-	elseif(name=="prop_restore_bleeding" or name=="prop_restore_health" or name=="prop_power") then
-		if(name=="prop_power") then
-			value = "+"..tonumber(value)*2
-		end
---		local str = string.format("%s %4.1f", t_prorerty_name, value)
---		return str
-		return t_prorerty_name.." "..value
-	elseif(name=="prop_tonnage" or name=="prop_weightoutfit" or name=="prop_weight") then
-			local str = string.format("%s %5.2f %s", t_prorerty_name, value, game.translate_string("st_kg"))
-			return str
-	elseif(name=="prop_night_vision") then
-		if(tonumber(value)==1) then
-			return t_prorerty_name
-		else
-			return game.translate_string(prorerty_name.."_"..tonumber(value))
-		end
-	elseif(name=="prop_no_buck" or name=="prop_autofire") then
-		return t_prorerty_name
-	end
-	return t_prorerty_name.." "..value.."%"
+    return PROF_EVENT_CLOSURE("prereq_functor_a", function()
+        local prorerty_name = char_ini:r_string(name, "name")
+        local t_prorerty_name = game.translate_string(prorerty_name)
+        local section_table = utils.parse_names(param1)
+        local section_table_n = #section_table
+        local section = section_table[1]
+        if(section_table_n==0) then
+            return ""
+        end
+        local value = 0
+        local sum = 0
+        for i = 1,section_table_n do
+            if not(char_ini:line_exist(section_table[i], "value")) or not(char_ini:r_string(section_table[i], "value")) then
+                return t_prorerty_name
+            end
+            value = char_ini:r_string(section_table[i], "value")
+            if(name~="prop_night_vision") then
+                sum = sum + tonumber(value)
+            else
+                sum = tonumber(value)
+            end
+        end
+        if(sum<0) then
+            value = sum
+        else
+            value = "+"..sum
+        end
+    
+        if(name=="prop_ammo_size" or name=="prop_artefact") then
+            return t_prorerty_name.." "..value
+        elseif(name=="prop_restore_bleeding" or name=="prop_restore_health" or name=="prop_power") then
+            if(name=="prop_power") then
+                value = "+"..tonumber(value)*2
+            end
+    --		local str = string.format("%s %4.1f", t_prorerty_name, value)
+    --		return str
+            return t_prorerty_name.." "..value
+        elseif(name=="prop_tonnage" or name=="prop_weightoutfit" or name=="prop_weight") then
+                local str = string.format("%s %5.2f %s", t_prorerty_name, value, game.translate_string("st_kg"))
+                return str
+        elseif(name=="prop_night_vision") then
+            if(tonumber(value)==1) then
+                return t_prorerty_name
+            else
+                return game.translate_string(prorerty_name.."_"..tonumber(value))
+            end
+        elseif(name=="prop_no_buck" or name=="prop_autofire") then
+            return t_prorerty_name
+        end
+        return t_prorerty_name.." "..value.."%"
+    end)
 end
 
 function property_functor_b( param1, name )
@@ -194,19 +200,21 @@ function need_victim(obj)
 end
 
 function issue_property( param1, name )
-	local prorerty_name = char_ini:r_string(name, "name")
-	local t_prorerty_name = game.translate_string(prorerty_name)
-	local value_table = utils.parse_names(param1)
-	local section = value_table[1]
-	if section then
-		if not char_ini:line_exist(section, "value") or not char_ini:r_string(section, "value") then
-			return t_prorerty_name
-		end
-		local value = char_ini:r_string(section, "value")
-		return t_prorerty_name.." "..string.sub(value, 2, -2)
-	else
-		return t_prorerty_name
-	end
+    return PROF_EVENT_CLOSURE("prereq_functor_a", function()
+        local prorerty_name = char_ini:r_string(name, "name")
+        local t_prorerty_name = game.translate_string(prorerty_name)
+        local value_table = utils.parse_names(param1)
+        local section = value_table[1]
+        if section then
+            if not char_ini:line_exist(section, "value") or not char_ini:r_string(section, "value") then
+                return t_prorerty_name
+            end
+            local value = char_ini:r_string(section, "value")
+            return t_prorerty_name.." "..string.sub(value, 2, -2)
+        else
+            return t_prorerty_name
+        end
+    end)
 end
 
 local function how_much_repair( item_name, item_condition )

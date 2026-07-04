@@ -164,90 +164,92 @@ class "evaluator_corpse" (property_evaluator)
 function evaluator_corpse:__init(name, storage, npc) super (nil, name)
 	self.a = storage
 end
+
 function evaluator_corpse:evaluate()
-
-	-- Fix from unofficial 1.6.03  - stalkers ignore surge and die while trying to grab items from corpse
-	if surge_manager.is_started() then
-		return false
-	end
-
-	if not self.object:alive() then
-		return false
-	end
-
-	if self.object:best_enemy() ~= nil then
-		return false
-	end
-
-	if self.object:character_community() == "zombied" then
-		return false
-	end
-
-	if self.a.corpse_detection_enabled == false then
-		return false
-	end
-
-	if xr_wounded.is_wounded(self.object) then
-		return false
-	end
-
-	if self.object:section() == "actor_visual_stalker" then
-		return false
-	end
-
-	local corpses = release_body_manager.get_release_body_manager().release_objects_table
-
-	local nearest_corpse_dist = 400 -- Будет выбирать только трупы, ближе чем эта дистанция (проверяется по квадрату расстояния)
-	local nearest_corpse_vertex = nil
-	local nearest_corpse_position = nil
-	local corpse_id	= nil
-
-	for k,v in pairs(corpses) do
-		local id = v.id
-		local corpse_npc = db.storage[id] and db.storage[id].object
-
-		if corpse_npc ~= nil and self.object:see(corpse_npc) and (db.storage[id].corpse_already_selected == nil or db.storage[id].corpse_already_selected == self.object:id()) then
-			if self.object:position():distance_to_sqr(corpse_npc:position()) < nearest_corpse_dist then
-
-				corpse_contain_any_valuable = nil
-				corpse_npc:iterate_inventory(check_item, corpse_npc)
-
-				if corpse_contain_any_valuable == true then
-
-					--printf("FOUND NEW PRIOR CORPSE %s", corpse_npc:name())
-					corpse_vertex = level.vertex_id(corpse_npc:position())
-					if self.object:accessible(corpse_vertex) then
-						nearest_corpse_dist = self.object:position():distance_to_sqr(corpse_npc:position())
-						nearest_corpse_vertex = corpse_vertex
-						nearest_corpse_position = corpse_npc:position()
-						corpse_id = id
-					end
-
-				end
---			else
---				printf("FOUND CORPSE %s FAR %s", corpse_npc:name(), self.object:position():distance_to_sqr(corpse_npc:position()))
-			end
-
-		end
-	end
-
-	if nearest_corpse_vertex ~= nil then
-		self.a.vertex_id = nearest_corpse_vertex
-		self.a.vertex_position = nearest_corpse_position
-		
-		if self.a.selected_corpse_id ~= nil and self.a.selected_corpse_id ~= corpse_id then
-			if db.storage[self.a.selected_corpse_id] ~= nil then
-				db.storage[self.a.selected_corpse_id].corpse_already_selected = nil
-			end			
-		end
-
-		self.a.selected_corpse_id = corpse_id
-		db.storage[self.a.selected_corpse_id].corpse_already_selected = self.object:id()		
-		
-		return true
-	end
-
-	return false
+    return PROF_EVENT_CLOSURE("evaluate", function()
+        -- Fix from unofficial 1.6.03  - stalkers ignore surge and die while trying to grab items from corpse
+        	if surge_manager.is_started() then
+        		return false
+        	end
+        
+        	if not self.object:alive() then
+        		return false
+        	end
+        
+        	if self.object:best_enemy() ~= nil then
+        		return false
+        	end
+        
+        	if self.object:character_community() == "zombied" then
+        		return false
+        	end
+        
+        	if self.a.corpse_detection_enabled == false then
+        		return false
+        	end
+        
+        	if xr_wounded.is_wounded(self.object) then
+        		return false
+        	end
+        
+        	if self.object:section() == "actor_visual_stalker" then
+        		return false
+        	end
+        
+        	local corpses = release_body_manager.get_release_body_manager().release_objects_table
+        
+        	local nearest_corpse_dist = 400 -- Будет выбирать только трупы, ближе чем эта дистанция (проверяется по квадрату расстояния)
+        	local nearest_corpse_vertex = nil
+        	local nearest_corpse_position = nil
+        	local corpse_id	= nil
+        
+        	for k,v in pairs(corpses) do
+        		local id = v.id
+        		local corpse_npc = db.storage[id] and db.storage[id].object
+        
+        		if corpse_npc ~= nil and self.object:see(corpse_npc) and (db.storage[id].corpse_already_selected == nil or db.storage[id].corpse_already_selected == self.object:id()) then
+        			if self.object:position():distance_to_sqr(corpse_npc:position()) < nearest_corpse_dist then
+        
+        				corpse_contain_any_valuable = nil
+        				corpse_npc:iterate_inventory(check_item, corpse_npc)
+        
+        				if corpse_contain_any_valuable == true then
+        
+        					--printf("FOUND NEW PRIOR CORPSE %s", corpse_npc:name())
+        					corpse_vertex = level.vertex_id(corpse_npc:position())
+        					if self.object:accessible(corpse_vertex) then
+        						nearest_corpse_dist = self.object:position():distance_to_sqr(corpse_npc:position())
+        						nearest_corpse_vertex = corpse_vertex
+        						nearest_corpse_position = corpse_npc:position()
+        						corpse_id = id
+        					end
+        
+        				end
+        --			else
+        --				printf("FOUND CORPSE %s FAR %s", corpse_npc:name(), self.object:position():distance_to_sqr(corpse_npc:position()))
+        			end
+        
+        		end
+        	end
+        
+        	if nearest_corpse_vertex ~= nil then
+        		self.a.vertex_id = nearest_corpse_vertex
+        		self.a.vertex_position = nearest_corpse_position
+        		
+        		if self.a.selected_corpse_id ~= nil and self.a.selected_corpse_id ~= corpse_id then
+        			if db.storage[self.a.selected_corpse_id] ~= nil then
+        				db.storage[self.a.selected_corpse_id].corpse_already_selected = nil
+        			end			
+        		end
+        
+        		self.a.selected_corpse_id = corpse_id
+        		db.storage[self.a.selected_corpse_id].corpse_already_selected = self.object:id()		
+        		
+        		return true
+        	end
+        
+        	return false
+    end)
 end
 
 

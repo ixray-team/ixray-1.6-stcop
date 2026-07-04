@@ -13,40 +13,42 @@ function evaluator_contact:__init(name, storage) super (nil, name)
 	self.a = storage
 end
 function evaluator_contact:evaluate()
-	if self.a.meet_set ~= true then return false end
-
---	if self.a.meet_only_at_path == true and not db.storage[self.object:id()].move_mgr:arrived_to_first_waypoint() then
---		return false
---	end
-
-	if db.actor then
-		if not db.actor:alive() then
-			return false
-		end
-
-		self.a.meet_manager:update()
-
-		if xr_wounded.is_wounded(self.object) then
-			return false
-		end
-
-		if self.object:best_enemy() ~= nil then
-			return false
-		end
-
-		if self.mgr == nil then
-			self.mgr = self.object:motivation_action_manager()
-		end
-		if self.mgr:evaluator(stalker_ids.property_enemy):evaluate() then
-			self.a.meet_manager.use = "false"
-			self.object:disable_talk()
-			return false
-		end
-
-		return self.a.meet_manager.current_distance ~= nil
-	else
-		return false
-	end
+    return PROF_EVENT_CLOSURE("evaluate", function()
+        if self.a.meet_set ~= true then return false end
+    
+    --	if self.a.meet_only_at_path == true and not db.storage[self.object:id()].move_mgr:arrived_to_first_waypoint() then
+    --		return false
+    --	end
+    
+        if db.actor then
+            if not db.actor:alive() then
+                return false
+            end
+    
+            self.a.meet_manager:update()
+    
+            if xr_wounded.is_wounded(self.object) then
+                return false
+            end
+    
+            if self.object:best_enemy() ~= nil then
+                return false
+            end
+    
+            if self.mgr == nil then
+                self.mgr = self.object:motivation_action_manager()
+            end
+            if self.mgr:evaluator(stalker_ids.property_enemy):evaluate() then
+                self.a.meet_manager.use = "false"
+                self.object:disable_talk()
+                return false
+            end
+    
+            return self.a.meet_manager.current_distance ~= nil
+        else
+            return false
+        end
+    end)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -98,246 +100,253 @@ function Cmeet_manager:__init(npc, storage)
 	self.hello_passed = false 	-- Говорили ли мы привет
 	self.bye_passed = false	 	-- Говорили ли мы пока
 end
+
 function Cmeet_manager:update_state()
-	local state = nil
-	local victim = nil
-
-	if self.current_distance == "close" then
-		-- анимация, пока в близком радиусе
-		state = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_anim)
-
-		-- направление, пока в близком радиусе
-		victim = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_victim)
-
-	elseif self.current_distance == "far" then
-		-- анимация, пока в дальнем радиусе
-		state = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_anim)
-
-		-- направление, пока в близком радиусе
-		victim = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_victim)
-
-	end
-
-	if tostring(victim) ~= "nil" then
-		local sim = alife()
-		if sim then
-			victim = get_story_object(victim)
-		end
-	else
-		victim = nil
-	end
-	if tostring(state) ~= "nil" then
-		if victim == nil then
-			state_mgr.set_state(self.npc, state, nil, nil, nil)
-		else
-			state_mgr.set_state(self.npc, state, nil, nil, {look_object = victim})
-		end
-	end
-
-	local snd = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_snd)
-
-	-- звук, пока в дальнем радиусе  (отыгрывается, даже если мы в ближнем)
-	if tostring(snd) ~= "nil" then
-		xr_sound.set_sound_play(self.npc:id(), snd)
-	end
-
+    PROF_EVENT_CLOSURE("update_state", function()
+        local state = nil
+        local victim = nil
+    
+        if self.current_distance == "close" then
+            -- анимация, пока в близком радиусе
+            state = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_anim)
+    
+            -- направление, пока в близком радиусе
+            victim = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_victim)
+    
+        elseif self.current_distance == "far" then
+            -- анимация, пока в дальнем радиусе
+            state = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_anim)
+    
+            -- направление, пока в близком радиусе
+            victim = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_victim)
+    
+        end
+    
+        if tostring(victim) ~= "nil" then
+            local sim = alife()
+            if sim then
+                victim = get_story_object(victim)
+            end
+        else
+            victim = nil
+        end
+        if tostring(state) ~= "nil" then
+            if victim == nil then
+                state_mgr.set_state(self.npc, state, nil, nil, nil)
+            else
+                state_mgr.set_state(self.npc, state, nil, nil, {look_object = victim})
+            end
+        end
+    
+        local snd = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_snd)
+    
+        -- звук, пока в дальнем радиусе  (отыгрывается, даже если мы в ближнем)
+        if tostring(snd) ~= "nil" then
+            xr_sound.set_sound_play(self.npc:id(), snd)
+        end
+    end)
 end
+
 function Cmeet_manager:set_start_distance()
-	if db.actor == nil then
-		self.hello_passed = false
-		self.bye_passed = false
-		self.current_distance = nil
-		return
-	end
-
-	if not self.npc:alive() then
-		self.hello_passed = false
-		self.bye_passed = false
-		self.current_distance = nil
-		return
-	end
-
-	-- Определение, в каком радиусе находимся
-	local distance = self.npc:position():distance_to(db.actor:position())
-
-	local actor_visible = self.npc:see(db.actor)
-
-	local is_object_far = actor_visible and distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_distance))
-	local is_object_close = (actor_visible and distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_distance))) or self.npc:is_talking()
-
-	if is_object_close == true then
-		self.hello_passed = true
-		self.current_distance = "close"
-	elseif is_object_far == true then
-		self.bye_passed = true
-		self.current_distance = "far"
-	elseif distance > self.a.reset_distance then
-		self.hello_passed = false
-		self.bye_passed = false
-		self.current_distance = nil
-	else
-		self.current_distance = nil
-	end
-
+    PROF_EVENT_CLOSURE("set_start_distance", function()
+        if db.actor == nil then
+            self.hello_passed = false
+            self.bye_passed = false
+            self.current_distance = nil
+            return
+        end
+    
+        if not self.npc:alive() then
+            self.hello_passed = false
+            self.bye_passed = false
+            self.current_distance = nil
+            return
+        end
+    
+        -- Определение, в каком радиусе находимся
+        local distance = self.npc:position():distance_to(db.actor:position())
+    
+        local actor_visible = self.npc:see(db.actor)
+    
+        local is_object_far = actor_visible and distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_distance))
+        local is_object_close = (actor_visible and distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_distance))) or self.npc:is_talking()
+    
+        if is_object_close == true then
+            self.hello_passed = true
+            self.current_distance = "close"
+        elseif is_object_far == true then
+            self.bye_passed = true
+            self.current_distance = "far"
+        elseif distance > self.a.reset_distance then
+            self.hello_passed = false
+            self.bye_passed = false
+            self.current_distance = nil
+        else
+            self.current_distance = nil
+        end
+    end)
 end
+
 function Cmeet_manager:update()
-	-- Определение, в каком радиусе находимся
-	local distance = self.npc:position():distance_to(db.actor:position())
-
-	local actor_visible = self.npc:see(db.actor)
-
-	if actor_visible then
-		--printf("%s check distance %s <= %s <= %s", self.npc:name(), distance, tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_distance)), tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_snd_distance)) )
-		if distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_distance)) then
-			-- Коллбек на приближение
-			-- звук при приближении
-			if self.hello_passed == false then
-				local snd = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_hello)
-				if tostring(snd) ~= "nil" and not state_mgr.is_npc_in_combat(self.npc) then
-					xr_sound.set_sound_play(self.npc:id(), snd)
-				end
-	
-				self.hello_passed = true
-			end
-	
-		elseif distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_snd_distance)) then
-			if self.hello_passed == true then
-				-- Коллбек на отдаление
-				-- звук при отдалении
-				if self.bye_passed == false then
-					local snd = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_bye)
-					if tostring(snd) ~= "nil" and not state_mgr.is_npc_in_combat(self.npc) then
-						xr_sound.set_sound_play(self.npc:id(), snd)
-					end
-	
-					self.bye_passed = true
-				end
-			end
-		end
-	end
-	
-	local is_object_far = actor_visible and distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_distance))
-	local is_object_close = (actor_visible and distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_distance))) or (self.npc:is_talking() and self.a.meet_on_talking)
-
-	--printf("!!! %s %s %s", self.npc:name(), tostring(is_object_far), tostring(is_object_close))
-	--printf("%s",  xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_distance))
-
-	if is_object_close == true then
-		if self.current_distance ~= "close" then
-			self.current_distance = "close"
-		end
-	elseif is_object_far == true then
-		self.current_distance = "far"
-	elseif distance > self.a.reset_distance then
-		-- ресет флажков при выходе в дальний радиус CB
-		self.hello_passed = false
-		self.bye_passed = false
-		self.current_distance = nil
-	else
-		self.current_distance = nil
-	end
-
-
-	-- Можно или нет оборвать диалог
-	local allow_break = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.allow_break)
-	if self.allow_break ~= (allow_break == "true") then
-		self.allow_break = (allow_break == "true")
-	end
-
-	-- стартовый диалог
-	if self.a.meet_dialog ~= nil then
-		local start_dialog = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.meet_dialog)
-		if self.startdialog ~= start_dialog then
-			self.startdialog = start_dialog
-			--printf("*DIALOGS %s* SET [%s]", self.npc:name(), tostring(start_dialog))
-			if start_dialog == nil or start_dialog == "nil" then
-				-- восстановление начального
-				--printf("RESTORE")
-				self.npc:restore_default_start_dialog()
-			else
-				--printf("SET %s allow_break %s", start_dialog, tostring(self.allow_break))
-				-- установка нового
-				self.npc:set_start_dialog(start_dialog)
-				if self.npc:is_talking() then
-					db.actor:run_talk_dialog(self.npc, not(self.allow_break))
-				end
-			end
-		end
-	end
-
-
-	local is_talking = self.npc:is_talking()
-
-
-	local use = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.use)
-
-	-- Проверяем, играем ли мы что то в кампе
-	if self.npc_is_camp_director == true then
-		use = "false"
-	end
-
-
-	--printf("%s self.use[%s] use [%s]", self.npc:name(), tostring(self.use), tostring(use))
-	--print_table(self.a.use)
-	-- доступность юзания
-	if self.use ~= use then
-		if use == "self" then
-			if not is_talking and device().precache_frame < 1 then
-				self.npc:enable_talk()
-				--printf("SET allow_break %s", tostring(self.allow_break))
-				self.npc:allow_break_talk_dialog(self.allow_break)
-				db.actor:run_talk_dialog(self.npc, not(self.allow_break))
-			end
-		end
-		if device().precache_frame < 1 then
-			self.use = use
-		end
-	end
-
-
-	local use_text = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.use_text)
-	if use_text ~= "nil" then
-		self.npc:set_tip_text(use_text)
-	else
-		if self.npc:is_talk_enabled() then
-			self.npc:set_tip_text("character_use")
-		else
-			self.npc:set_tip_text("")
-		end
-	end
-
-		self.npc:allow_break_talk_dialog(self.allow_break)
---[[
-	if is_talking then
-		db.actor:allow_break_talk_dialog(self.allow_break)
-	end
-]]
-	-- Проверяем включать ли обижание на заюзывание
-	local abuse = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.abuse)
-	if self.abuse_mode ~= abuse then
-		if abuse == "true" then
-			xr_abuse.enable_abuse(self.npc)
-		else
-			xr_abuse.disable_abuse(self.npc)
-		end
-		self.abuse_mode = abuse
-	end
-
-	-- доступность торговли
-	if xr_wounded.is_wounded(self.npc) then
-		self.trade_enable = false
-	else
-		local trade_enable = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.trade_enable)
-		--printf("npc [%s] self %s *** %s", self.npc:name(), tostring(self.trade_enable), tostring(trade_enable))
-		if self.trade_enable ~= trade_enable then
-			if trade_enable == "true" then
-				self.npc:enable_trade()
-			else
-				self.npc:disable_trade()
-			end
-			self.trade_enable = trade_enable
-		end
-	end
+	PROF_EVENT_CLOSURE("update", function() 
+	    -- Определение, в каком радиусе находимся
+        	local distance = self.npc:position():distance_to(db.actor:position())
+        
+        	local actor_visible = self.npc:see(db.actor)
+        
+        	if actor_visible then
+        		--printf("%s check distance %s <= %s <= %s", self.npc:name(), distance, tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_distance)), tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_snd_distance)) )
+        		if distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_distance)) then
+        			-- Коллбек на приближение
+        			-- звук при приближении
+        			if self.hello_passed == false then
+        				local snd = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_hello)
+        				if tostring(snd) ~= "nil" and not state_mgr.is_npc_in_combat(self.npc) then
+        					xr_sound.set_sound_play(self.npc:id(), snd)
+        				end
+        	
+        				self.hello_passed = true
+        			end
+        	
+        		elseif distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_snd_distance)) then
+        			if self.hello_passed == true then
+        				-- Коллбек на отдаление
+        				-- звук при отдалении
+        				if self.bye_passed == false then
+        					local snd = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_bye)
+        					if tostring(snd) ~= "nil" and not state_mgr.is_npc_in_combat(self.npc) then
+        						xr_sound.set_sound_play(self.npc:id(), snd)
+        					end
+        	
+        					self.bye_passed = true
+        				end
+        			end
+        		end
+        	end
+        	
+        	local is_object_far = actor_visible and distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_distance))
+        	local is_object_close = (actor_visible and distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_distance))) or (self.npc:is_talking() and self.a.meet_on_talking)
+        
+        	--printf("!!! %s %s %s", self.npc:name(), tostring(is_object_far), tostring(is_object_close))
+        	--printf("%s",  xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_distance))
+        
+        	if is_object_close == true then
+        		if self.current_distance ~= "close" then
+        			self.current_distance = "close"
+        		end
+        	elseif is_object_far == true then
+        		self.current_distance = "far"
+        	elseif distance > self.a.reset_distance then
+        		-- ресет флажков при выходе в дальний радиус CB
+        		self.hello_passed = false
+        		self.bye_passed = false
+        		self.current_distance = nil
+        	else
+        		self.current_distance = nil
+        	end
+        
+        
+        	-- Можно или нет оборвать диалог
+        	local allow_break = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.allow_break)
+        	if self.allow_break ~= (allow_break == "true") then
+        		self.allow_break = (allow_break == "true")
+        	end
+        
+        	-- стартовый диалог
+        	if self.a.meet_dialog ~= nil then
+        		local start_dialog = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.meet_dialog)
+        		if self.startdialog ~= start_dialog then
+        			self.startdialog = start_dialog
+        			--printf("*DIALOGS %s* SET [%s]", self.npc:name(), tostring(start_dialog))
+        			if start_dialog == nil or start_dialog == "nil" then
+        				-- восстановление начального
+        				--printf("RESTORE")
+        				self.npc:restore_default_start_dialog()
+        			else
+        				--printf("SET %s allow_break %s", start_dialog, tostring(self.allow_break))
+        				-- установка нового
+        				self.npc:set_start_dialog(start_dialog)
+        				if self.npc:is_talking() then
+        					db.actor:run_talk_dialog(self.npc, not(self.allow_break))
+        				end
+        			end
+        		end
+        	end
+        
+        
+        	local is_talking = self.npc:is_talking()
+        
+        
+        	local use = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.use)
+        
+        	-- Проверяем, играем ли мы что то в кампе
+        	if self.npc_is_camp_director == true then
+        		use = "false"
+        	end
+        
+        
+        	--printf("%s self.use[%s] use [%s]", self.npc:name(), tostring(self.use), tostring(use))
+        	--print_table(self.a.use)
+        	-- доступность юзания
+        	if self.use ~= use then
+        		if use == "self" then
+        			if not is_talking and device().precache_frame < 1 then
+        				self.npc:enable_talk()
+        				--printf("SET allow_break %s", tostring(self.allow_break))
+        				self.npc:allow_break_talk_dialog(self.allow_break)
+        				db.actor:run_talk_dialog(self.npc, not(self.allow_break))
+        			end
+        		end
+        		if device().precache_frame < 1 then
+        			self.use = use
+        		end
+        	end
+        
+        
+        	local use_text = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.use_text)
+        	if use_text ~= "nil" then
+        		self.npc:set_tip_text(use_text)
+        	else
+        		if self.npc:is_talk_enabled() then
+        			self.npc:set_tip_text("character_use")
+        		else
+        			self.npc:set_tip_text("")
+        		end
+        	end
+        
+        		self.npc:allow_break_talk_dialog(self.allow_break)
+        --[[
+        	if is_talking then
+        		db.actor:allow_break_talk_dialog(self.allow_break)
+        	end
+        ]]
+        	-- Проверяем включать ли обижание на заюзывание
+        	local abuse = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.abuse)
+        	if self.abuse_mode ~= abuse then
+        		if abuse == "true" then
+        			xr_abuse.enable_abuse(self.npc)
+        		else
+        			xr_abuse.disable_abuse(self.npc)
+        		end
+        		self.abuse_mode = abuse
+        	end
+        
+        	-- доступность торговли
+        	if xr_wounded.is_wounded(self.npc) then
+        		self.trade_enable = false
+        	else
+        		local trade_enable = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.trade_enable)
+        		--printf("npc [%s] self %s *** %s", self.npc:name(), tostring(self.trade_enable), tostring(trade_enable))
+        		if self.trade_enable ~= trade_enable then
+        			if trade_enable == "true" then
+        				self.npc:enable_trade()
+        			else
+        				self.npc:disable_trade()
+        			end
+        			self.trade_enable = trade_enable
+        		end
+        end
+	end)
 end
 
 function notify_on_use(victim, who)
@@ -600,14 +609,16 @@ end
 
 --- Находится ли чувак в данный момент в состоянии мита
 function is_meet(npc)
-	local manager = npc:motivation_action_manager()
-	if manager and manager:initialized() then
-		local id = manager:current_action_id()
-		if id == xr_actions_id.stohe_meet_base + 1 then
-			return true
-		end
-	end
-	return false
+	return PROF_EVENT_CLOSURE("is_meet", function() 
+        local manager = npc:motivation_action_manager()
+            if manager and manager:initialized() then
+                local id = manager:current_action_id()
+                if id == xr_actions_id.stohe_meet_base + 1 then
+                    return true
+                end
+            end
+            return false
+	end)
 end
 
 function process_npc_usability(npc)

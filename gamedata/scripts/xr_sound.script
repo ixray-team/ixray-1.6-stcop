@@ -46,19 +46,21 @@ function set_sound_play(npc_id, sound, faction, point)
 end
 
 function update(npc_id)
-		if sound_table[npc_id] then
---		local t = type(sound_table[npc_id])
-		if not(sound_table[npc_id]:is_playing(npc_id)) then
---		if(t=="string") or not(sound_table[npc_id]:is_playing(npc_id)) then
---	        if(t=="string") then
---				sound_table[npc_id] = sound_theme.theme[sound_table[npc_id]]
---			end
-
-					--printf("SOUND_CALLBACK from [%s] sound_path [%s]",npc_id,sound_table[npc_id].path)
-					sound_table[npc_id]:callback(npc_id)
-					sound_table[npc_id] = nil
-		end
-	end
+		PROF_EVENT_CLOSURE("update", function() 
+            if sound_table[npc_id] then
+            --		local t = type(sound_table[npc_id])
+                    if not(sound_table[npc_id]:is_playing(npc_id)) then
+            --		if(t=="string") or not(sound_table[npc_id]:is_playing(npc_id)) then
+            --	        if(t=="string") then
+            --				sound_table[npc_id] = sound_theme.theme[sound_table[npc_id]]
+            --			end
+            
+                                --printf("SOUND_CALLBACK from [%s] sound_path [%s]",npc_id,sound_table[npc_id].path)
+                                sound_table[npc_id]:callback(npc_id)
+                                sound_table[npc_id] = nil
+                    end
+                end
+		end)
 end
 
 looped_sound = {}

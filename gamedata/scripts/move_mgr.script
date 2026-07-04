@@ -111,114 +111,116 @@ end
 --' нужно вызвать метод set_movement_state, который включит перемещение по вейпоинтам с нужной
 --' скоростью.
 function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, team, suggested_state, move_cb_info, no_validation, continue, use_default_sound)
-	printf("move_mgr:reset() [%s]", self.object:name())
-
-	--' сколько ждать в точке, где играем анимацию
-	self.pt_wait_time = default_wait_time
-
-	--' Запоминаем массив целиком на случай, если придется себя сбросить, повторно
-	--' вызвав reset():
-	self.suggested_state = suggested_state
-	--' После этого распарсиваем массив:
-	if not suggested_state then
-		self.default_state_standing = default_state_standing
-		self.default_state_moving1 = default_state_moving1
-		self.default_state_moving2 = default_state_moving2
-		self.default_state_moving3 = default_state_moving3
-	else
-		self.default_state_standing = if_then_else(suggested_state.standing, suggested_state.standing, default_state_standing)
-		self.default_state_moving1 = if_then_else(suggested_state.moving, suggested_state.moving, default_state_moving1)
-		self.default_state_moving2 = if_then_else(suggested_state.moving, suggested_state.moving, default_state_moving2)
-		self.default_state_moving3 = if_then_else(suggested_state.moving, suggested_state.moving, default_state_moving3)
-	end
-
-	self.default_state_standing = xr_logic.parse_condlist(self.object, "move_mgr", "def_state", self.default_state_standing)
-	self.default_state_moving1  = xr_logic.parse_condlist(self.object, "move_mgr", "def_state", self.default_state_moving1)
-	self.default_state_moving2  = xr_logic.parse_condlist(self.object, "move_mgr", "def_state", self.default_state_moving2)
-	self.default_state_moving3  = xr_logic.parse_condlist(self.object, "move_mgr", "def_state", self.default_state_moving3)
-
-	--' С момента включения схемы должна пройти как минимум секунда, прежде чем
-	--' проверять состояние синхронизации с другими сталкерами (иначе после лоада
-	--' они могут не успеть заспавниться).
-	self.syn_signal_set_tm = time_global() + 1000
-	self.syn_signal = nil
-
-	self.move_cb_info = move_cb_info
-
-	--' Возможные изменения
-	--' Изменилась команда
-	if team ~= self.team then
-		self.team = team
-		if self.team then
-			local s = sync[self.team]
-			if not s then
-				sync[self.team] = {}
-				s = sync[self.team]
-			end
-			s[self.object:id()] = false -- not synchronized
-		end
-	end
-
-	--' Изменились пути
-	if self.path_walk ~= path_walk or self.path_look ~= path_look then
-
-		self.no_validation = no_validation
-
-		self.path_walk = path_walk
-		self.patrol_walk = patrol(path_walk)
-		if not self.patrol_walk then
-			abort("object '%s': unable to find path_walk '%s' on the map",
-				self.object:name(), path_walk)
-		end
-		if not path_walk_info then
-			abort("object '%s': path_walk ('%s') field was supplied, but path_walk_info field is nil",
-				self.object:name(), path_walk)
-		end
-		self.path_walk_info = path_walk_info
-
-		if path_look then
-			if not path_look_info then
-				abort("object '%s': path_look ('%s') field was supplied, but path_look_info field is nil",
-					self.object:name(), path_look)
-			end
-			self.patrol_look = patrol(path_look)
-			if not self.patrol_look then
-				abort("object '%s': unable to find path_look '%s' on the map",
-					self.object:name(), path_look)
-			end
-		else
-			self.patrol_look = nil
-		end
-		self.path_look = path_look
-		self.path_look_info = path_look_info
-
-	 --'self:validate_paths()
-
-		self.at_terminal_waypoint_flag = false
-
-		self.cur_state_standing = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_standing)
-		self.cur_state_moving = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_moving1)
-
-		self.retval_after_rotation = nil
-		self.sound_after_anim_start = nil
-
-		--' Пока этот флаг не станет true (он будет установлен в extrapolate_callback), нельзя использовать
-		--' значение, которое возвращает get_current_point_index().
-		self.can_use_get_current_point_index = false
-		self.current_point_index = nil
-		self.walk_until = time_global() + walk_min_time
-		self.run_until = time_global() + walk_min_time + run_min_time
-		self.keep_state_until = time_global()
-
-
-		self.last_index = nil
-		self.last_look_index = nil
-
-		self.use_default_sound = use_default_sound
-
-		self.object:patrol_path_make_inactual()
-	end
-	self:setup_movement_by_patrol_path()
+	PROF_EVENT_CLOSURE("reset", function()
+        printf("move_mgr:reset() [%s]", self.object:name())
+    
+        --' сколько ждать в точке, где играем анимацию
+        self.pt_wait_time = default_wait_time
+    
+        --' Запоминаем массив целиком на случай, если придется себя сбросить, повторно
+        --' вызвав reset():
+        self.suggested_state = suggested_state
+        --' После этого распарсиваем массив:
+        if not suggested_state then
+            self.default_state_standing = default_state_standing
+            self.default_state_moving1 = default_state_moving1
+            self.default_state_moving2 = default_state_moving2
+            self.default_state_moving3 = default_state_moving3
+        else
+            self.default_state_standing = if_then_else(suggested_state.standing, suggested_state.standing, default_state_standing)
+            self.default_state_moving1 = if_then_else(suggested_state.moving, suggested_state.moving, default_state_moving1)
+            self.default_state_moving2 = if_then_else(suggested_state.moving, suggested_state.moving, default_state_moving2)
+            self.default_state_moving3 = if_then_else(suggested_state.moving, suggested_state.moving, default_state_moving3)
+        end
+    
+        self.default_state_standing = xr_logic.parse_condlist(self.object, "move_mgr", "def_state", self.default_state_standing)
+        self.default_state_moving1  = xr_logic.parse_condlist(self.object, "move_mgr", "def_state", self.default_state_moving1)
+        self.default_state_moving2  = xr_logic.parse_condlist(self.object, "move_mgr", "def_state", self.default_state_moving2)
+        self.default_state_moving3  = xr_logic.parse_condlist(self.object, "move_mgr", "def_state", self.default_state_moving3)
+    
+        --' С момента включения схемы должна пройти как минимум секунда, прежде чем
+        --' проверять состояние синхронизации с другими сталкерами (иначе после лоада
+        --' они могут не успеть заспавниться).
+        self.syn_signal_set_tm = time_global() + 1000
+        self.syn_signal = nil
+    
+        self.move_cb_info = move_cb_info
+    
+        --' Возможные изменения
+        --' Изменилась команда
+        if team ~= self.team then
+            self.team = team
+            if self.team then
+                local s = sync[self.team]
+                if not s then
+                    sync[self.team] = {}
+                    s = sync[self.team]
+                end
+                s[self.object:id()] = false -- not synchronized
+            end
+        end
+    
+        --' Изменились пути
+        if self.path_walk ~= path_walk or self.path_look ~= path_look then
+    
+            self.no_validation = no_validation
+    
+            self.path_walk = path_walk
+            self.patrol_walk = patrol(path_walk)
+            if not self.patrol_walk then
+                abort("object '%s': unable to find path_walk '%s' on the map",
+                    self.object:name(), path_walk)
+            end
+            if not path_walk_info then
+                abort("object '%s': path_walk ('%s') field was supplied, but path_walk_info field is nil",
+                    self.object:name(), path_walk)
+            end
+            self.path_walk_info = path_walk_info
+    
+            if path_look then
+                if not path_look_info then
+                    abort("object '%s': path_look ('%s') field was supplied, but path_look_info field is nil",
+                        self.object:name(), path_look)
+                end
+                self.patrol_look = patrol(path_look)
+                if not self.patrol_look then
+                    abort("object '%s': unable to find path_look '%s' on the map",
+                        self.object:name(), path_look)
+                end
+            else
+                self.patrol_look = nil
+            end
+            self.path_look = path_look
+            self.path_look_info = path_look_info
+    
+            --'self:validate_paths()
+    
+            self.at_terminal_waypoint_flag = false
+    
+            self.cur_state_standing = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_standing)
+            self.cur_state_moving = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_moving1)
+    
+            self.retval_after_rotation = nil
+            self.sound_after_anim_start = nil
+    
+            --' Пока этот флаг не станет true (он будет установлен в extrapolate_callback), нельзя использовать
+            --' значение, которое возвращает get_current_point_index().
+            self.can_use_get_current_point_index = false
+            self.current_point_index = nil
+            self.walk_until = time_global() + walk_min_time
+            self.run_until = time_global() + walk_min_time + run_min_time
+            self.keep_state_until = time_global()
+    
+    
+            self.last_index = nil
+            self.last_look_index = nil
+    
+            self.use_default_sound = use_default_sound
+    
+            self.object:patrol_path_make_inactual()
+        end
+        self:setup_movement_by_patrol_path()
+    end)
 end
 
 --' продолжить движение со следующей точки, а не с ближайшей.
@@ -281,37 +283,39 @@ function move_mgr:sync_ok()
 end
 
 function move_mgr:update()
-	--printf("move_mgr:update(self.state == %s)", utils.to_str(self.state))
-	--printf("move_mgr:update(self.object:anims == %d)", self.object:animation_count())
-
-	if self.syn_signal and time_global() >= self.syn_signal_set_tm then
-		if self:sync_ok() then
-			self:scheme_set_signal(self.syn_signal)
-			self.syn_signal = nil
-		end
-	end
-
-	if self.can_use_get_current_point_index and not self:arrived_to_first_waypoint() then
-		local t = time_global()
-		if t >= self.keep_state_until then
-			self.keep_state_until = t + keep_state_min_time
-
-			local cur_pt = self.current_point_index
-			-- self.patrol_walk здесь по идее то же самое, что вернет patrol(self.object:patrol()),
-			-- поэтому использую его для оптимизации.
-			local dist = self.object:position():distance_to(self.patrol_walk:point(cur_pt))
-			--printf("_bp: move_mgr: distance to destination waypoint: %d", dist)
-			if dist <= dist_walk or t < self.walk_until then
-				self.cur_state_moving = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_moving1)
-			elseif dist <= dist_run or t < self.run_until then
-				self.cur_state_moving = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_moving2)
-			else
-				self.cur_state_moving = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_moving3)
-			end
-			self:update_movement_state()
-		end
-		return
-	end
+    PROF_EVENT_CLOSURE("reset", function()
+        --printf("move_mgr:update(self.state == %s)", utils.to_str(self.state))
+        --printf("move_mgr:update(self.object:anims == %d)", self.object:animation_count())
+    
+        if self.syn_signal and time_global() >= self.syn_signal_set_tm then
+            if self:sync_ok() then
+                self:scheme_set_signal(self.syn_signal)
+                self.syn_signal = nil
+            end
+        end
+    
+        if self.can_use_get_current_point_index and not self:arrived_to_first_waypoint() then
+            local t = time_global()
+            if t >= self.keep_state_until then
+                self.keep_state_until = t + keep_state_min_time
+    
+                local cur_pt = self.current_point_index
+                -- self.patrol_walk здесь по идее то же самое, что вернет patrol(self.object:patrol()),
+                -- поэтому использую его для оптимизации.
+                local dist = self.object:position():distance_to(self.patrol_walk:point(cur_pt))
+                --printf("_bp: move_mgr: distance to destination waypoint: %d", dist)
+                if dist <= dist_walk or t < self.walk_until then
+                    self.cur_state_moving = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_moving1)
+                elseif dist <= dist_run or t < self.run_until then
+                    self.cur_state_moving = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_moving2)
+                else
+                    self.cur_state_moving = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_moving3)
+                end
+                self:update_movement_state()
+            end
+            return
+        end
+	end)
 end
 
 function move_mgr:set_current_state_moving(state)

@@ -414,144 +414,146 @@ end
 
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:update(delta)
-	object_binder.update(self, delta)
+	PROF_EVENT_CLOSURE("update", function() 
+		object_binder.update(self, delta)
 
-	if string.find(command_line(), "-designer") then
-		return
-	end
-
-	if self.already_jumped==false and jump_level.need_jump==true and (device().frame > self.spawn_frame+2000) then
-		jump_level.try_to_jump()
-		self.already_jumped = true
-		return
-	end
-	-- Вызов апдейта переноса игрока проводником
-	if travel_func ~= nil then
-		travel_func()
-	end
-
-	-- DEBUG slowdown
-	--slowdown.update()
-	local time = time_global()
-	game_stats.update (delta, self.object)
-	-- апдейт погоды
-	self.weather_manager:update()
-
-	self:check_detective_achievement()
-	self:check_mutant_hunter_achievement()
-
-	--' Апдейт саундменеджера
-	xr_sound.update(self.object:id())
-
-	-- Обновление отключения ввода с клавиатуры.
-	if self.st.disable_input_time ~= nil and
-		game.get_game_time():diffSec(self.st.disable_input_time) >= self.st.disable_input_idle
-		then
-		level.enable_input()
-		self.st.disable_input_time = nil
-	end
-
-	-- Апдейт прятание оружия игрока во время диалога
-	if self.object:is_talking() then
-		if self.weapon_hide_in_dialog == false then
-			self.object:hide_weapon()
-			printf("hiding weapon!!!")
-			self.weapon_hide_in_dialog = true
+		if string.find(command_line(), "-designer") then
+			return
 		end
-	else
-		if self.weapon_hide_in_dialog == true then
-			printf("restoring weapon!!!")
-			self.object:restore_weapon()
-			self.weapon_hide_in_dialog = false
-		end
-	end
-	-- Апдейт прятание оружия игрока в зоне sr_no_weapon
-	if check_for_weapon_hide_by_zones() == true then
-		if self.weapon_hide == false then
-			printf("hiding weapon!!!")
-			self.object:hide_weapon()
-			self.weapon_hide = true
-		end
-	else
-		if self.weapon_hide == true then
-			printf("restoring weapon!!!")
-			self.object:restore_weapon()
-			self.weapon_hide = false
-		end
-	end
 
-	-- обновление пси-антенны
-	if sr_psy_antenna.psy_antenna then
-		sr_psy_antenna.psy_antenna:update(delta)
-	end
---[[
-	--' Вывод сообщения о большой радиации
-	if self.object.radiation >= 0.7 then
-		local hud = get_hud()
-		local custom_static = hud:GetCustomStatic("cs_radiation_danger")
-		if custom_static == nil then
-			hud:AddCustomStatic("cs_radiation_danger", true)
-			hud:GetCustomStatic("cs_radiation_danger"):wnd():TextControl():SetTextST("st_radiation_danger")
+		if self.already_jumped==false and jump_level.need_jump==true and (device().frame > self.spawn_frame+2000) then
+			jump_level.try_to_jump()
+			self.already_jumped = true
+			return
 		end
-	else
-		local hud = get_hud()
-		local custom_static = hud:GetCustomStatic("cs_radiation_danger")
-		if custom_static ~= nil then
-			hud:RemoveCustomStatic("cs_radiation_danger")
+		-- Вызов апдейта переноса игрока проводником
+		if travel_func ~= nil then
+			travel_func()
 		end
-	end
-]]--
 
-	if self.bCheckStart then
-		printf("SET DEFAULT INFOS")
-		if not has_alife_info("global_dialogs") then
-			self.object:give_info_portion("global_dialogs")
-		end
-		if not has_alife_info("level_changer_icons") then
-			self.object:give_info_portion("level_changer_icons")
-		end
-		self.bCheckStart = false
+		-- DEBUG slowdown
+		--slowdown.update()
+		local time = time_global()
+		game_stats.update (delta, self.object)
+		-- апдейт погоды
+		self.weather_manager:update()
 
---		if self.actor_weapon_on_start == true then
---			db.actor:activate_slot(3)
---			self.actor_weapon_on_start = false
---		end
-	end
---	device().precache_frame  == 0 and
-	if not self.loaded_slot_applied then
-		self.object:activate_slot(self.loaded_active_slot)
-		self.loaded_slot_applied = true
-	end
-	
-	xr_s.on_actor_update(delta)
+		self:check_detective_achievement()
+		self:check_mutant_hunter_achievement()
 
-	if(self.surge_manager) then
-		if(self.f_surge_manager_loaded ~= true) then
-			self.surge_manager:initialize()
-			self.f_surge_manager_loaded = true
-		end
-		if(self.surge_manager.levels_respawn[level.name()]) then
-			self.surge_manager:respawn_artefacts_and_replace_anomaly_zone()
-		end
-		self.surge_manager:update()
-	end
-	-- Апдейт доступности для симуляции.
-	simulation_objects.get_sim_obj_registry():update_avaliability(alife():actor())
+		--' Апдейт саундменеджера
+		xr_sound.update(self.object:id())
 
-    -- Not used
-	--if not self.loaded then 
-	--	get_console():execute("dump_infos")
-	--	self.loaded = true
-	--end
-	treasure_manager.get_treasure_manager():update()
-	
-	if self.first_update then
-		self.first_update = false
-		SendScriptCallback("actor_on_first_update", self, delta) -- IX-Ray
-	end
-	
-	SendScriptCallback("update", delta) -- IX-Ray
-	SendScriptCallback("actor_on_update", self, delta) -- IX-Ray
+		-- Обновление отключения ввода с клавиатуры.
+		if self.st.disable_input_time ~= nil and
+			game.get_game_time():diffSec(self.st.disable_input_time) >= self.st.disable_input_idle
+			then
+			level.enable_input()
+			self.st.disable_input_time = nil
+		end
+
+		-- Апдейт прятание оружия игрока во время диалога
+		if self.object:is_talking() then
+			if self.weapon_hide_in_dialog == false then
+				self.object:hide_weapon()
+				printf("hiding weapon!!!")
+				self.weapon_hide_in_dialog = true
+			end
+		else
+			if self.weapon_hide_in_dialog == true then
+				printf("restoring weapon!!!")
+				self.object:restore_weapon()
+				self.weapon_hide_in_dialog = false
+			end
+		end
+		-- Апдейт прятание оружия игрока в зоне sr_no_weapon
+		if check_for_weapon_hide_by_zones() == true then
+			if self.weapon_hide == false then
+				printf("hiding weapon!!!")
+				self.object:hide_weapon()
+				self.weapon_hide = true
+			end
+		else
+			if self.weapon_hide == true then
+				printf("restoring weapon!!!")
+				self.object:restore_weapon()
+				self.weapon_hide = false
+			end
+		end
+
+		-- обновление пси-антенны
+		if sr_psy_antenna.psy_antenna then
+			sr_psy_antenna.psy_antenna:update(delta)
+		end
+	--[[
+		--' Вывод сообщения о большой радиации
+		if self.object.radiation >= 0.7 then
+			local hud = get_hud()
+			local custom_static = hud:GetCustomStatic("cs_radiation_danger")
+			if custom_static == nil then
+				hud:AddCustomStatic("cs_radiation_danger", true)
+				hud:GetCustomStatic("cs_radiation_danger"):wnd():TextControl():SetTextST("st_radiation_danger")
+			end
+		else
+			local hud = get_hud()
+			local custom_static = hud:GetCustomStatic("cs_radiation_danger")
+			if custom_static ~= nil then
+				hud:RemoveCustomStatic("cs_radiation_danger")
+			end
+		end
+	]]--
+
+		if self.bCheckStart then
+			printf("SET DEFAULT INFOS")
+			if not has_alife_info("global_dialogs") then
+				self.object:give_info_portion("global_dialogs")
+			end
+			if not has_alife_info("level_changer_icons") then
+				self.object:give_info_portion("level_changer_icons")
+			end
+			self.bCheckStart = false
+
+	--		if self.actor_weapon_on_start == true then
+	--			db.actor:activate_slot(3)
+	--			self.actor_weapon_on_start = false
+	--		end
+		end
+	--	device().precache_frame  == 0 and
+		if not self.loaded_slot_applied then
+			self.object:activate_slot(self.loaded_active_slot)
+			self.loaded_slot_applied = true
+		end
+		
+		xr_s.on_actor_update(delta)
+
+		if(self.surge_manager) then
+			if(self.f_surge_manager_loaded ~= true) then
+				self.surge_manager:initialize()
+				self.f_surge_manager_loaded = true
+			end
+			if(self.surge_manager.levels_respawn[level.name()]) then
+				self.surge_manager:respawn_artefacts_and_replace_anomaly_zone()
+			end
+			self.surge_manager:update()
+		end
+		-- Апдейт доступности для симуляции.
+		simulation_objects.get_sim_obj_registry():update_avaliability(alife():actor())
+
+		-- Not used
+		--if not self.loaded then 
+		--	get_console():execute("dump_infos")
+		--	self.loaded = true
+		--end
+		treasure_manager.get_treasure_manager():update()
+		
+		if self.first_update then
+			self.first_update = false
+			SendScriptCallback("actor_on_first_update", self, delta) -- IX-Ray
+		end
+		
+		SendScriptCallback("update", delta) -- IX-Ray
+		SendScriptCallback("actor_on_update", self, delta) -- IX-Ray
+	end)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)

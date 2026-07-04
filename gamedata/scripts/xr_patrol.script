@@ -118,24 +118,26 @@ function PatrolManager:remove_npc(npc)
 end
 --' Пересчет занимаемых позиций
 function PatrolManager:reset_positions()
-		local form_ = formations[self.formation]
-		local index = 1
-		for key, data in pairs(self.npc_list) do
-				--установим командора, если это еще не сделано
-				if self.commander_id == -1 and index == 1 then
-					 self.commander_id = data.soldier:id ()
-				end
-				-- пересчитаем позиции
-				if self.commander_id ~= self.npc_list[key].soldier:id () then
-			 --printf("key[%s] index[%s]", tostring(key), tostring(index))
-					 self.npc_list[key].dir = form_[index].dir
-					 self.npc_list[key].dist = form_[index].dist
-				 self.npc_list[key].vertex_id = -1
-					 self.npc_list[key].accepted = true
-
-					 index = index + 1
-				end
-		end
+        PROF_EVENT_CLOSURE("reset_positions", function()
+            local form_ = formations[self.formation]
+            local index = 1
+            for key, data in pairs(self.npc_list) do
+                    --установим командора, если это еще не сделано
+                    if self.commander_id == -1 and index == 1 then
+                         self.commander_id = data.soldier:id ()
+                    end
+                    -- пересчитаем позиции
+                    if self.commander_id ~= self.npc_list[key].soldier:id () then
+                 --printf("key[%s] index[%s]", tostring(key), tostring(index))
+                         self.npc_list[key].dir = form_[index].dir
+                         self.npc_list[key].dist = form_[index].dist
+                     self.npc_list[key].vertex_id = -1
+                         self.npc_list[key].accepted = true
+    
+                         index = index + 1
+                    end
+            end
+        end)
 end
 --' Установление формации
 function PatrolManager:set_formation(formation)

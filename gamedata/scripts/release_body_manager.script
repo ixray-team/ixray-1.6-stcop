@@ -19,25 +19,27 @@ local function add_to_release_table(release_tbl, object_id)
 end
 
 local function find_nearest_obj_to_release(release_tbl)
-	local max_distanse = 4900
-	local pos_in_table = nil
-	local actor = db.actor
-	local actor_pos = actor:position()
-	for k,v in pairs(release_tbl) do
-		printf("release_objects_table["..k.."] = "..v.id)
-		local object = alife():object(v.id)
-		if object then
-			printf("object_id = "..object.id)
-			printf("object_position x = "..vec_to_str(object.position))
-			local distance_to_body = actor_pos:distance_to_sqr(object.position)
-			printf("distanse = "..distance_to_body)
-			if distance_to_body > max_distanse and ((v.death_time == nil) or (time_global() > v.death_time + IDLE_AFTER_DEATH)) then
-				max_distanse = distance_to_body
-				pos_in_table = k
-			end
-		end
-	end
-	return pos_in_table
+    return PROF_EVENT_CLOSURE("find_nearest_obj_to_release", function()
+        local max_distanse = 4900
+        local pos_in_table = nil
+        local actor = db.actor
+        local actor_pos = actor:position()
+        for k,v in pairs(release_tbl) do
+            printf("release_objects_table["..k.."] = "..v.id)
+            local object = alife():object(v.id)
+            if object then
+                printf("object_id = "..object.id)
+                printf("object_position x = "..vec_to_str(object.position))
+                local distance_to_body = actor_pos:distance_to_sqr(object.position)
+                printf("distanse = "..distance_to_body)
+                if distance_to_body > max_distanse and ((v.death_time == nil) or (time_global() > v.death_time + IDLE_AFTER_DEATH)) then
+                    max_distanse = distance_to_body
+                    pos_in_table = k
+                end
+            end
+        end
+        return pos_in_table
+    end)
 end
 
 local RB_manager = nil
@@ -88,79 +90,85 @@ function Crelease_body:moving_dead_body(obj)
 end
 
 function Crelease_body:try_to_release()
-	printf("dead body -> ["..self.body_max_count.."]")
-	local pos_in_table = nil
-	local overflow_count = #self.release_objects_table - self.body_max_count
-	for i = 1, overflow_count do
-		pos_in_table = find_nearest_obj_to_release(self.release_objects_table)
-
-		if pos_in_table == nil then
-			return
-		end
-
-		local release_object = alife():object(self.release_objects_table[pos_in_table].id)
-
-		if release_object then
-			printf("releasing object ["..release_object:name().."]")
-			if (IsStalker(release_object) or IsMonster(release_object)) and not release_object:alive() then
-				alife():release(release_object, true)
-			end
-		end
-
-		table.remove(self.release_objects_table, pos_in_table)
-	end
+    PROF_EVENT_CLOSURE("try_to_release", function()
+        printf("dead body -> ["..self.body_max_count.."]")
+        local pos_in_table = nil
+        local overflow_count = #self.release_objects_table - self.body_max_count
+        for i = 1, overflow_count do
+            pos_in_table = find_nearest_obj_to_release(self.release_objects_table)
+    
+            if pos_in_table == nil then
+                return
+            end
+    
+            local release_object = alife():object(self.release_objects_table[pos_in_table].id)
+    
+            if release_object then
+                printf("releasing object ["..release_object:name().."]")
+                if (IsStalker(release_object) or IsMonster(release_object)) and not release_object:alive() then
+                    alife():release(release_object, true)
+                end
+            end
+    
+            table.remove(self.release_objects_table, pos_in_table)
+        end
+    end)
 end
 
 
 
 function Crelease_body:inspection_result(obj)
-	for k,v in pairs(self.keep_items_table) do
-		if obj:object(self.keep_items_table[k]) ~= nil then
-			printf("Object << "..obj:name().." >> presence_in_keep_items_table") -- в инвентаре есть квестовый предмет
-			return false
-		end
-	end
-	
-	local flags_table = {need_skip = false}
-	
-	SendScriptCallback("release_body_manager_skip_inspection_result", self, obj, flags_table)
-	if flags_table.need_skip then
-		return false
-	end
-	
-	if get_object_story_id(obj:id()) ~= nil then
-		printf("Object << "..obj:name().." >> presence_in_story") -- помечен как сюжетный
-		return false
-	end
-	if self:check_for_known_info(obj) then
-		printf("Object << "..obj:name().." >> presence_in_known_info")
-		return false
-	end
-	return true
+    return PROF_EVENT_CLOSURE("inspection_result", function()
+        for k,v in pairs(self.keep_items_table) do
+            if obj:object(self.keep_items_table[k]) ~= nil then
+                printf("Object << "..obj:name().." >> presence_in_keep_items_table") -- в инвентаре есть квестовый предмет
+                return false
+            end
+        end
+        
+        local flags_table = {need_skip = false}
+        
+        SendScriptCallback("release_body_manager_skip_inspection_result", self, obj, flags_table)
+        if flags_table.need_skip then
+            return false
+        end
+        
+        if get_object_story_id(obj:id()) ~= nil then
+            printf("Object << "..obj:name().." >> presence_in_story") -- помечен как сюжетный
+            return false
+        end
+        if self:check_for_known_info(obj) then
+            printf("Object << "..obj:name().." >> presence_in_known_info")
+            return false
+        end
+        return true
+    end)
 end
 
 function  Crelease_body:check_for_known_info(obj)
-	local char_ini = ""
-	local spawn_ini = obj:spawn_ini()
-	local filename = nil
-	if spawn_ini then
-		filename = utils.cfg_get_string(spawn_ini, "logic", "cfg", obj, false, "")
-		printf("filename is [%s]", tostring(filename))
-	end
-	if filename ~= nil then
-		if not getFS():exist("$game_config$", filename) then
-			abort("There is no configuration file [%s] in [%s]", filename, obj:name())
-		end
-		char_ini = ini_file(filename)
-	else
-		char_ini = obj:spawn_ini() or ini_file("scripts\\dummy.ltx")
-	end
-	local st = db.storage[obj:id()]
-	local known_info = utils.cfg_get_string(char_ini, st.section_logic, "known_info", obj, false, "", nil) or "known_info"
-	if char_ini:section_exist(known_info) then
-		return true
-	end
-	return false
+    returnn PROF_EVENT_CLOSURE("check_for_known_info", function()
+        local char_ini = ""
+        local spawn_ini = obj:spawn_ini()
+        local filename = nil
+        if spawn_ini then
+            filename = utils.cfg_get_string(spawn_ini, "logic", "cfg", obj, false, "")
+            printf("filename is [%s]", tostring(filename))
+        end
+        if filename ~= nil then
+            if not getFS():exist("$game_config$", filename) then
+                abort("There is no configuration file [%s] in [%s]", filename, obj:name())
+            end
+            char_ini = ini_file(filename)
+        else
+            char_ini = obj:spawn_ini() or ini_file("scripts\\dummy.ltx")
+        end
+        local st = db.storage[obj:id()]
+        local known_info = utils.cfg_get_string(char_ini, st.section_logic, "known_info", obj, false, "", nil) or "known_info"
+        if char_ini:section_exist(known_info) then
+            return true
+        end
+        return false
+    end)
 end
 
 function Crelease_body:save(packet)

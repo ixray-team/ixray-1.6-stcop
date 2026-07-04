@@ -12,34 +12,42 @@ function object_collection:__init()
 	self.m_count					= 0
 	self.m_last_id					= 0
 end
+
 function object_collection:get_id()	
-	printf("get_id called [%s]", self.m_count)
-
-	self.m_count					= self.m_count + 1
-
-	if (empty(self.m_free) == true) then
-		self.m_last_id				= self.m_last_id + 1
-		self.m_given[self.m_last_id] = true
-		return self.m_last_id
-	end
-
-	for i,j in pairs(self.m_free) do
-		self.m_free[i]				= nil
-		self.m_given[i] 			= true
-		return i
-	end
+    return PROF_EVENT_CLOSURE("get_id", function()
+        printf("get_id called [%s]", self.m_count)
+    
+        self.m_count					= self.m_count + 1
+    
+        if (empty(self.m_free) == true) then
+            self.m_last_id				= self.m_last_id + 1
+            self.m_given[self.m_last_id] = true
+            return self.m_last_id
+        end
+    
+        for i,j in pairs(self.m_free) do
+            self.m_free[i]				= nil
+            self.m_given[i] 			= true
+            return i
+        end
+    end)
 end
+
 function object_collection:remove(id)
-	printf("remove called [%s]", tostring(id))
-	if self.m_given[id] == true then
-		self.m_given[id] = nil
-		self.m_free[id] = 1
-		self.m_count = self.m_count - 1
-	end
+    PROF_EVENT_CLOSURE("remove", function()
+        printf("remove called [%s]", tostring(id))
+        if self.m_given[id] == true then
+            self.m_given[id] = nil
+            self.m_free[id] = 1
+            self.m_count = self.m_count - 1
+        end
+    end)
 end
+
 function object_collection:size()
 	return self.m_count
 end
+
 function object_collection:save(packet)
 	set_save_marker(packet, "save", false, "object_collection")
 

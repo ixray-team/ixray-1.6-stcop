@@ -27,48 +27,50 @@ function CCover_manager:unregister_squad(squad)
 	self.is_valid = false
 end
 function CCover_manager:calculate_covers(position)
-	--printf("CCover_manager:calculate_covers() valid[%s]", tostring(self.is_valid))
-	--callstack()
-	if self.is_valid == true then
-		return
-	end
-	self.is_valid = true
-
-	local npc_table = {}
-	for k,v in pairs(self.squads) do
-		local squad = alife():object(k)
-		local npcCount = squad:npc_count() - 1
-		for i = 0, npcCount, 1 do
-			local id = squad:getSquadMemberId(i)
-			if db.storage[id] ~= nil then
-				local npc_object = db.storage[id].object
-				table.insert(npc_table, npc_object)
-			end
-		end
-	end
-
-	for k,v in pairs(npc_table) do
-		v:register_in_combat()
-	end
-
-	self.cover_table = {}
-	for k,v in pairs(npc_table) do
-		v:find_best_cover(position)
-	end
-	for k,v in pairs(npc_table) do
-		local cover = v:find_best_cover(position)
-		if cover ~= nil then
-			--printf("!!! %s: %s [%s]", v:name(), cover:level_vertex_id(), tostring(cover:is_smart_cover()))
-			self.cover_table[v:id()] = {cover_vertex_id = cover:level_vertex_id(), cover_position = cover:position(),
-										 look_pos = position, is_smart_cover = cover:is_smart_cover()}
-		--else
-			--printf("!!! nil")
-		end
-	end
-
-	for k,v in pairs(npc_table) do
-		v:unregister_in_combat()
-	end
+    PROF_EVENT_CLOSURE("calculate_covers", function()
+        --printf("CCover_manager:calculate_covers() valid[%s]", tostring(self.is_valid))
+        --callstack()
+        if self.is_valid == true then
+            return
+        end
+        self.is_valid = true
+    
+        local npc_table = {}
+        for k,v in pairs(self.squads) do
+            local squad = alife():object(k)
+            local npcCount = squad:npc_count() - 1
+            for i = 0, npcCount, 1 do
+                local id = squad:getSquadMemberId(i)
+                if db.storage[id] ~= nil then
+                    local npc_object = db.storage[id].object
+                    table.insert(npc_table, npc_object)
+                end
+            end
+        end
+    
+        for k,v in pairs(npc_table) do
+            v:register_in_combat()
+        end
+    
+        self.cover_table = {}
+        for k,v in pairs(npc_table) do
+            v:find_best_cover(position)
+        end
+        for k,v in pairs(npc_table) do
+            local cover = v:find_best_cover(position)
+            if cover ~= nil then
+                --printf("!!! %s: %s [%s]", v:name(), cover:level_vertex_id(), tostring(cover:is_smart_cover()))
+                self.cover_table[v:id()] = {cover_vertex_id = cover:level_vertex_id(), cover_position = cover:position(),
+                                             look_pos = position, is_smart_cover = cover:is_smart_cover()}
+            --else
+                --printf("!!! nil")
+            end
+        end
+    
+        for k,v in pairs(npc_table) do
+            v:unregister_in_combat()
+        end
+    end)
 end
 
 function CCover_manager:save(packet)

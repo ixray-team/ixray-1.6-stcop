@@ -529,30 +529,33 @@ end
 -- Апдейт работ смарттеррейна.
 -- Если передается object, то значит нужно найти только для него
 function se_smart_terrain:update_jobs()
-	self:check_alarm()
-	--printf("UPDATE JOBS %s", self:name())
-
-	-- Проверяем, дошел ли кто-то до смарта
-	for k,v in pairs(self.arriving_npc) do
-		if arrived_to_smart(v, self) then
-			self.npc_info[v.id] = self:fill_npc_info(v)
-
-			-- Затычка на случай если мы регистримся в смарт, из которого только что сами вынесли всех врагов.
-			self.dead_time = {}
-
-			-- тут надо найти чуваку работу
-			self:select_npc_job(self.npc_info[v.id])
-
-			self.arriving_npc[k] = nil
-		end
-	end
-
-	-- Сортируем НПС по увеличению приоритета занимаемой работы
-	table.sort(self.npc_info, function(a,b) return a.job_prior < b.job_prior end )
-	for k,v in pairs(self.npc_info) do
-		self:select_npc_job(v)
-	end
+    PROF_EVENT_CLOSURE("update_jobs", function()
+        self:check_alarm()
+        --printf("UPDATE JOBS %s", self:name())
+    
+        -- Проверяем, дошел ли кто-то до смарта
+        for k,v in pairs(self.arriving_npc) do
+            if arrived_to_smart(v, self) then
+                self.npc_info[v.id] = self:fill_npc_info(v)
+    
+                -- Затычка на случай если мы регистримся в смарт, из которого только что сами вынесли всех врагов.
+                self.dead_time = {}
+    
+                -- тут надо найти чуваку работу
+                self:select_npc_job(self.npc_info[v.id])
+    
+                self.arriving_npc[k] = nil
+            end
+        end
+    
+        -- Сортируем НПС по увеличению приоритета занимаемой работы
+        table.sort(self.npc_info, function(a,b) return a.job_prior < b.job_prior end )
+        for k,v in pairs(self.npc_info) do
+            self:select_npc_job(v)
+        end
+    end)
 end
+
 -- Выбор работы для персонажа
 function se_smart_terrain:select_npc_job(npc_info)
 	-- Выбираем работу

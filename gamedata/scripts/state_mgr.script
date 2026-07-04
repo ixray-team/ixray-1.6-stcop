@@ -542,46 +542,48 @@ function state_manager:get_state()
 	return self.target_state
 end
 function state_manager:update()
-	--printf("Update called for stalker [%s]", self.npc:name())
-	-- Обрабатываем коллбек
-	if self.animation.states.current_state == state_lib.states[self.target_state].animation then
-		if self.callback ~= nil and
-			 self.callback.func ~= nil
-		then
-			 if self.callback.begin == nil then
-					 -- Инициализируем коллбек
-				self.callback.begin = time_global()
-				--printf("		Callback initialized %s", time_global())
-			else
-				-- Проверяем, не пришло ли время вызвать коллбек
-				if time_global() - self.callback.begin >= self.callback.timeout then
-					--printf("		Callback called %s", time_global())
+	PROF_EVENT_CLOSURE("update", function() 
+		--printf("Update called for stalker [%s]", self.npc:name())
+		-- Обрабатываем коллбек
+		if self.animation.states.current_state == state_lib.states[self.target_state].animation then
+			if self.callback ~= nil and
+				 self.callback.func ~= nil
+			then
+				 if self.callback.begin == nil then
+						 -- Инициализируем коллбек
+					self.callback.begin = time_global()
+					--printf("		Callback initialized %s", time_global())
+				else
+					-- Проверяем, не пришло ли время вызвать коллбек
+					if time_global() - self.callback.begin >= self.callback.timeout then
+						--printf("		Callback called %s", time_global())
 
-					local a = self.callback.func
-					local b = self.callback.obj
-					self.callback.begin = nil
-					self.callback.func = nil
-					a(b)
+						local a = self.callback.func
+						local b = self.callback.obj
+						self.callback.begin = nil
+						self.callback.func = nil
+						a(b)
+					end
 				end
 			end
 		end
-	end
 
 
-	local last_pl_id = nil
-	self.planner:update()
-	if not self.planner:initialized() then return end
-	local pl_id = self.planner:current_action_id()
-	while pl_id ~= last_pl_id and
-		 pl_id ~= self.operators["end"] and
-		 pl_id ~= self.operators["locked"]
-	do
-		last_pl_id = pl_id
+		local last_pl_id = nil
 		self.planner:update()
-		pl_id = self.planner:current_action_id()
-	end
+		if not self.planner:initialized() then return end
+		local pl_id = self.planner:current_action_id()
+		while pl_id ~= last_pl_id and
+			 pl_id ~= self.operators["end"] and
+			 pl_id ~= self.operators["locked"]
+		do
+			last_pl_id = pl_id
+			self.planner:update()
+			pl_id = self.planner:current_action_id()
+		end
 
-	--self.planner:show("")
+		--self.planner:show("")
+	end)
 end
 
 

@@ -80,65 +80,68 @@ local dialog_closed = false
 local trade_closed = false
 local upgrade_closed = false
 local npc_dlg_id = nil
+
 function actor_menu_mode(mode)
-	SendScriptCallback("on_actor_wnd_mode_switch", mode)
-	
-	if(mode==0) then
-		SendScriptCallback("on_actor_wnd_closed", mode)
-	else
-		SendScriptCallback("on_actor_wnd_opened", mode)
-	end
-	
-	if(mode==0) then
-		if(last_mode==1) then
-			inventory_wnd_closed()
-			SendScriptCallback("on_actor_inventory_wnd_closed", mode)
-		elseif(last_mode==2) then
-			trade_wnd_closed()
-			SendScriptCallback("on_actor_trade_wnd_closed", mode)
-		elseif(last_mode==3) then
-			upgrade_wnd_closed()
-			SendScriptCallback("on_actor_upgrade_wnd_closed", mode)
-		elseif(last_mode==4) then
-			dead_body_search_wnd_closed()
-			SendScriptCallback("on_actor_dead_body_search_wnd_closed", mode)
-		end
-		last_mode = 0
-	elseif(mode==1) then
-		last_mode = 1
-		inventory_wnd_opened()
-		SendScriptCallback("on_actor_inventory_wnd_opened", mode)
-	elseif(mode==2) then
-		last_mode = 2
-		trade_wnd_opened()
-		SendScriptCallback("on_actor_trade_wnd_opened", mode)
-	elseif(mode==3) then
-		last_mode = 3
-		upgrade_wnd_opened()
-		SendScriptCallback("on_actor_upgrade_wnd_opened", mode)
-	elseif(mode==4) then
-		last_mode = 4
-		dead_body_search_wnd_opened()
-		SendScriptCallback("on_actor_dead_body_search_wnd_opened", mode)
-	elseif(mode==10) then
-		-- coc export begin
-		for k,st in pairs(db.storage) do
-			if (st.object and st.object:is_talking() and st.object:id() ~= AC_ID) then
-				npc_dlg_id = st.object:id()
-				SetRegistryValue("used_npc_id", st.object:id())
-				break
-			end
-		end
-		-- coc export end
-		dialog_wnd_showed()
-		SendScriptCallback("on_actor_dialog_wnd_showed", mode, npc_dlg_id)
-	elseif(mode==11) then
-		SendScriptCallback("actor_on_leave_dialog", GetRegistryValue("used_npc_id"))
-		SetRegistryValue("used_npc_id", nil)
-		dialog_wnd_closed()
-		SendScriptCallback("on_actor_dialog_wnd_closed", mode, npc_dlg_id)
-		npc_dlg_id = nil
-	end
+    PROF_EVENT_CLOSURE("actor_menu_mode", function()
+        SendScriptCallback("on_actor_wnd_mode_switch", mode)
+        
+        if(mode==0) then
+            SendScriptCallback("on_actor_wnd_closed", mode)
+        else
+            SendScriptCallback("on_actor_wnd_opened", mode)
+        end
+        
+        if(mode==0) then
+            if(last_mode==1) then
+                inventory_wnd_closed()
+                SendScriptCallback("on_actor_inventory_wnd_closed", mode)
+            elseif(last_mode==2) then
+                trade_wnd_closed()
+                SendScriptCallback("on_actor_trade_wnd_closed", mode)
+            elseif(last_mode==3) then
+                upgrade_wnd_closed()
+                SendScriptCallback("on_actor_upgrade_wnd_closed", mode)
+            elseif(last_mode==4) then
+                dead_body_search_wnd_closed()
+                SendScriptCallback("on_actor_dead_body_search_wnd_closed", mode)
+            end
+            last_mode = 0
+        elseif(mode==1) then
+            last_mode = 1
+            inventory_wnd_opened()
+            SendScriptCallback("on_actor_inventory_wnd_opened", mode)
+        elseif(mode==2) then
+            last_mode = 2
+            trade_wnd_opened()
+            SendScriptCallback("on_actor_trade_wnd_opened", mode)
+        elseif(mode==3) then
+            last_mode = 3
+            upgrade_wnd_opened()
+            SendScriptCallback("on_actor_upgrade_wnd_opened", mode)
+        elseif(mode==4) then
+            last_mode = 4
+            dead_body_search_wnd_opened()
+            SendScriptCallback("on_actor_dead_body_search_wnd_opened", mode)
+        elseif(mode==10) then
+            -- coc export begin
+            for k,st in pairs(db.storage) do
+                if (st.object and st.object:is_talking() and st.object:id() ~= AC_ID) then
+                    npc_dlg_id = st.object:id()
+                    SetRegistryValue("used_npc_id", st.object:id())
+                    break
+                end
+            end
+            -- coc export end
+            dialog_wnd_showed()
+            SendScriptCallback("on_actor_dialog_wnd_showed", mode, npc_dlg_id)
+        elseif(mode==11) then
+            SendScriptCallback("actor_on_leave_dialog", GetRegistryValue("used_npc_id"))
+            SetRegistryValue("used_npc_id", nil)
+            dialog_wnd_closed()
+            SendScriptCallback("on_actor_dialog_wnd_closed", mode, npc_dlg_id)
+            npc_dlg_id = nil
+        end
+    end)
 end
 
 function inventory_wnd_opened()
@@ -393,37 +396,39 @@ function fill_primary_objects()
 end
 
 function fill_sleep_zones()
-	local sim = alife()
-	local actor_pos = db.actor:position()
-	
-	for zone_story_name, opt in pairs(sleep_zones_tbl) do
-		if opt.sobj == nil then
-			local obj_id = get_story_object_id(zone_story_name)
-			if obj_id then
-				local sobj = sim:object(obj_id)
-				if sobj and sobj.id then
-					opt.sobj = sobj
-					opt.id = obj_id
-				end
-			end
-		end
-		
-		if opt.sobj and opt.id then
-			local actor_sleep_location_name = "ui_pda2_actor_sleep_location"
-			local has_actor_sleep_location = level.map_has_object_spot(opt.id, actor_sleep_location_name)
-			local distance = opt.sobj.position:distance_to(actor_pos)
-
-			if distance <= distance_draw_sleep_zones then
-				if has_actor_sleep_location == 0 then
-					level.map_add_object_spot(opt.id, actor_sleep_location_name, opt.hint)
-				end
-			else
-				if has_actor_sleep_location == 1 then
-					level.map_remove_object_spot(opt.id, actor_sleep_location_name)
-				end
-			end
-		end
-	end
+    PROF_EVENT_CLOSURE("fill_sleep_zones", function()
+        local sim = alife()
+        local actor_pos = db.actor:position()
+        
+        for zone_story_name, opt in pairs(sleep_zones_tbl) do
+            if opt.sobj == nil then
+                local obj_id = get_story_object_id(zone_story_name)
+                if obj_id then
+                    local sobj = sim:object(obj_id)
+                    if sobj and sobj.id then
+                        opt.sobj = sobj
+                        opt.id = obj_id
+                    end
+                end
+            end
+            
+            if opt.sobj and opt.id then
+                local actor_sleep_location_name = "ui_pda2_actor_sleep_location"
+                local has_actor_sleep_location = level.map_has_object_spot(opt.id, actor_sleep_location_name)
+                local distance = opt.sobj.position:distance_to(actor_pos)
+    
+                if distance <= distance_draw_sleep_zones then
+                    if has_actor_sleep_location == 0 then
+                        level.map_add_object_spot(opt.id, actor_sleep_location_name, opt.hint)
+                    end
+                else
+                    if has_actor_sleep_location == 1 then
+                        level.map_remove_object_spot(opt.id, actor_sleep_location_name)
+                    end
+                end
+            end
+        end
+    end)
 end
 
 function add_quick_slot_items_on_game_start()
