@@ -146,30 +146,32 @@ simulation_activities = {
 
 class "sim_board"
 function sim_board:__init()
-	--' Таблица содержащая смарты и данные о них в формате:
-	--' smart = {smrt, targets = {}, dangers = {}, squads = {}, stayed_squad_quan = 0}
-	self.smarts = {}
-	self.simulation_started = true
-
-	--' Таблица смартов по именам.
-	self.smarts_by_names = {}
-
-	--' Таблица существующих отрядов.
-	self.squads = {}
-
-	--' отрисовывается ли сейчас поле на карте.
-	--self.show_flag = false
-
-	--' Таблица спаунсмартов. Смарт = уровень.
-	self.spawn_smarts = {}
-	-- Таблица для логовов мутантов на уровнях
-	self.mutant_lair = {}
-
-	-- Временная таблица
-	self.tmp_assigned_squad = {}
-	self.tmp_entered_squad = {}
-
-	printf("CREATE NEW SIM BOARD [%s]", tostring(self.sid))
+	return PROF_EVENT_CLOSURE("__init", function()
+        --' Таблица содержащая смарты и данные о них в формате:
+        --' smart = {smrt, targets = {}, dangers = {}, squads = {}, stayed_squad_quan = 0}
+        self.smarts = {}
+        self.simulation_started = true
+    
+        --' Таблица смартов по именам.
+        self.smarts_by_names = {}
+    
+        --' Таблица существующих отрядов.
+        self.squads = {}
+    
+        --' отрисовывается ли сейчас поле на карте.
+        --self.show_flag = false
+    
+        --' Таблица спаунсмартов. Смарт = уровень.
+        self.spawn_smarts = {}
+        -- Таблица для логовов мутантов на уровнях
+        self.mutant_lair = {}
+    
+        -- Временная таблица
+        self.tmp_assigned_squad = {}
+        self.tmp_entered_squad = {}
+    
+        printf("CREATE NEW SIM BOARD [%s]", tostring(self.sid))
+    end)
 end
 function sim_board:start_sim()
 	self.simulation_started = true
@@ -182,21 +184,23 @@ function sim_board:set_actor_community(community)
 	---- Устанавливаем группировку игрока
 	db.actor:set_character_community(actor_communitites[community], 0, 0)
 end
+
 --' Регистрация нового смарта.
 function sim_board:register_smart(obj)
-	printf("register_smart %s", obj:name())
-	if self.smarts[obj.id] ~= nil then
-		abort("Smart already exist in list [%s]", obj:name())
-	end
-
-	self.smarts[obj.id] = {smrt = obj, squads = {}, stayed_squad_quan = 0}
-
-	self.smarts_by_names[obj:name()] = obj
-
+	return PROF_EVENT_CLOSURE("register_smart", function()
+        printf("register_smart %s", obj:name())
+        if self.smarts[obj.id] ~= nil then
+            abort("Smart already exist in list [%s]", obj:name())
+        end
+    
+        self.smarts[obj.id] = {smrt = obj, squads = {}, stayed_squad_quan = 0}
+    
+        self.smarts_by_names[obj:name()] = obj
+    end)
 end
 -- Инициализация смарта
 function sim_board:init_smart(obj)
-    PROF_EVENT_CLOSURE("init_smart", function()
+	return PROF_EVENT_CLOSURE("init_smart", function()
         if self.tmp_assigned_squad[obj.id] ~= nil then
             for k,v in pairs(self.tmp_assigned_squad[obj.id]) do
                 self:assign_squad_to_smart(v, obj.id)
@@ -214,7 +218,7 @@ end
 
 --' АнРегистрация смарта.
 function sim_board:unregister_smart(obj)
-    PROF_EVENT_CLOSURE("unregister_smart", function()
+	return PROF_EVENT_CLOSURE("unregister_smart", function()
         if self.smarts[obj.id] == nil then
             abort("Trying to unregister nil smart [%s]", obj:name())
         end
@@ -225,7 +229,7 @@ end
 
 --' Создание нового отряда
 function sim_board:create_squad(spawn_smart, sq_id)
-    return PROF_EVENT_CLOSURE("create_squad", function()
+	return PROF_EVENT_CLOSURE("create_squad", function()
         printf("create squad called")
         local squad_id = tostring(sq_id)
     
@@ -259,7 +263,7 @@ end
 
 --' Удалить отряд
 function sim_board:remove_squad(squad)
-    PROF_EVENT_CLOSURE("create_squad", function()
+	return PROF_EVENT_CLOSURE("create_squad", function()
         printf("Remove squad %s", tostring(squad.id))
         if squad.current_action == nil or
             squad.current_action.dest_smrt == nil
@@ -275,7 +279,7 @@ function sim_board:remove_squad(squad)
 end
 --' Назначение отряда в смарт.
 function sim_board:assign_squad_to_smart(squad, smart_id)
-    PROF_EVENT_CLOSURE("assign_squad_to_smart", function()
+	return PROF_EVENT_CLOSURE("assign_squad_to_smart", function()
         -- Если смарта нету (например на загрузке он еще не загружен), то мы загоняем данные
         -- во временную таблицу. И на загрузке смарта автодобавляем их.
         --printf("assigned squad %s to smart [%s].", tostring(squad.id), tostring(smart_id))
@@ -319,7 +323,7 @@ end
 
 --' Отряд покидает смарт (уменьшаются ресурсы)
 function sim_board:exit_smart(squad, smart_id)
-    PROF_EVENT_CLOSURE("exit_smart", function()
+	return PROF_EVENT_CLOSURE("exit_smart", function()
         if smart_id == nil then
             return
         end
@@ -346,7 +350,7 @@ end
 
 --' Отряд занимает смарт (увеличиваются ресурсы)
 function sim_board:enter_smart(squad, smart_id, after_load)
-    PROF_EVENT_CLOSURE("enter_smart", function()
+	return PROF_EVENT_CLOSURE("enter_smart", function()
         callstack()
         if self.smarts[smart_id] == nil then
             printf("   to tmp")
@@ -374,7 +378,7 @@ end
 
 -- установить squad и group в соответствии с работой
 function sim_board:setup_squad_and_group(obj)
-    PROF_EVENT_CLOSURE("setup_squad_and_group", function()
+	return PROF_EVENT_CLOSURE("setup_squad_and_group", function()
         --printf("tsg["..obj:name().."]")
         local level_name = level.name()
         --' Группу берем из уровня.
@@ -415,7 +419,7 @@ end
 
 --' Заполнение стартового расположения
 function sim_board:fill_start_position()
-    PROF_EVENT_CLOSURE("fill_start_position", function()
+	return PROF_EVENT_CLOSURE("fill_start_position", function()
         SendScriptCallback("fill_start_position")
     
         if self.start_position_filled == true then
@@ -465,7 +469,7 @@ function get_sim_board()
 end
 
 function sim_board:get_squad_target(squad)
-    return PROF_EVENT_CLOSURE("get_squad_target", function()
+	return PROF_EVENT_CLOSURE("get_squad_target", function()
         --printf("List of available target for %s", squad.id)
     
         local available_targets = {}

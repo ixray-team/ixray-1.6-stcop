@@ -13,7 +13,7 @@ function simulation_objects_registry:register(obj)
 end
 
 function simulation_objects_registry:update_avaliability(obj)
-    PROF_EVENT_CLOSURE("update_avaliability", function()
+	return PROF_EVENT_CLOSURE("update_avaliability", function()
         if xr_logic.pick_section_from_condlist(db.actor or alife():actor(), obj, obj.sim_avail) == "true" and obj:sim_available() then
             self.objects[obj.id] = obj
         else
@@ -23,7 +23,7 @@ function simulation_objects_registry:update_avaliability(obj)
 end
 
 function simulation_objects_registry:get_props(obj)
-    PROF_EVENT_CLOSURE("get_props", function()
+	return PROF_EVENT_CLOSURE("get_props", function()
         obj.props		= {}
         local props_section = obj:name()
         if obj:clsid() == clsid.online_offline_group_s then
@@ -55,14 +55,18 @@ function simulation_objects_registry:get_props(obj)
 end
 
 function simulation_objects_registry:unregister(obj)
-	self.objects[obj.id] = nil
+	return PROF_EVENT_CLOSURE("unregister", function()
+	    self.objects[obj.id] = nil
+    end)
 end
 
 function get_sim_obj_registry()
-	if sim_objects_registry == nil then
-		sim_objects_registry = simulation_objects_registry()
-	end
-	return sim_objects_registry
+	return PROF_EVENT_CLOSURE("get_sim_obj_registry", function()
+        if sim_objects_registry == nil then
+            sim_objects_registry = simulation_objects_registry()
+        end
+        return sim_objects_registry
+    end)
 end
 
 --***********************************************************************************************
@@ -83,11 +87,13 @@ local function evaluate_prior_by_dist(target, squad)
 end
 
 function is_on_the_same_level(obj1, obj2)
-	return gg_vertex_level_id(obj1.m_game_vertex_id) == gg_vertex_level_id(obj2.m_game_vertex_id)
+	return PROF_EVENT_CLOSURE("is_on_the_same_level", function()
+        return gg_vertex_level_id(obj1.m_game_vertex_id) == gg_vertex_level_id(obj2.m_game_vertex_id)
+    end)
 end
 
 function evaluate_prior(target, squad)
-    PROF_EVENT_CLOSURE("evaluate_prior", function()
+	return PROF_EVENT_CLOSURE("evaluate_prior", function()
         local prior = 0
         if not target:target_precondition(squad) or not is_on_the_same_level(target, squad) then
             return prior

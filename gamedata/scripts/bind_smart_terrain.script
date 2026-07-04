@@ -5,7 +5,7 @@ Smart terrain binder
 --------------------------------------------------------------------------------------------------------------------]]
 
 function bind( obj )
-    PROF_EVENT_CLOSURE("bind", function()
+    return PROF_EVENT_CLOSURE("bind", function()
         local ini = obj:spawn_ini()
     
         if not ini then
@@ -34,7 +34,7 @@ function smart_terrain_binder:__init( obj ) super( obj )
 end
 
 function smart_terrain_binder:net_spawn( server_object )
-	PROF_EVENT_CLOSURE("net_spawn", function()
+	return PROF_EVENT_CLOSURE("net_spawn", function()
     	
         if not object_binder.net_spawn( self, server_object ) then
             return false
@@ -51,7 +51,7 @@ function smart_terrain_binder:net_spawn( server_object )
 end
 
 function smart_terrain_binder:net_destroy()
-    PROF_EVENT_CLOSURE("net_destroy", function()
+    return PROF_EVENT_CLOSURE("net_destroy", function()
         xr_sound.stop_sounds_by_id(self.object:id())
         
         db.del_zone( self.object )
@@ -62,7 +62,7 @@ function smart_terrain_binder:net_destroy()
 end
 
 function smart_terrain_binder:net_Relcase( obj )
-    PROF_EVENT_CLOSURE("net_Relcase", function()
+    return PROF_EVENT_CLOSURE("net_Relcase", function()
     --	printf( "smart_terrain_binder.net_Relcase: self.object=%s obj=%s", self.object:name(), obj:name() )
     
         if self.se_smart_terrain.npc_info[obj:id()] then
@@ -73,7 +73,7 @@ function smart_terrain_binder:net_Relcase( obj )
 end
 
 function smart_terrain_binder:update( delta )
-    PROF_EVENT_CLOSURE("update", function()
+    return PROF_EVENT_CLOSURE("update", function()
         object_binder.update( self, delta )
         SendScriptCallback("binder_smart_terrain_on_update", self, self.object, delta)
         self.se_smart_terrain:update()

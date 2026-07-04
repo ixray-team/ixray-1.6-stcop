@@ -118,7 +118,7 @@ function generic_scheme_overrides(npc)
 --	gulag_name - имя гулага, если скрипт включается гулагом, а не биндером
 --]]--
 function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_name)
-    return PROF_EVENT_CLOSURE("configure_schemes", function()
+	return PROF_EVENT_CLOSURE("configure_schemes", function()
         --printf("DEBUG: enable_scripts: npc:name()=%s", npc:name())
     
         local npc_id = npc:id()
@@ -206,7 +206,7 @@ end
 
 -- Вызывается биндером с целью определить первую активную схему
 function determine_section_to_activate(npc, ini, section_logic, actor)
-    return PROF_EVENT_CLOSURE("determine_section_to_activate", function()
+	return PROF_EVENT_CLOSURE("determine_section_to_activate", function()
         if not ini:section_exist(section_logic) then
             return "nil"
         end
@@ -239,7 +239,7 @@ end
 -- ВНОСЯ ИЗМЕНЕНИЯ В ЭТУ ФУНКЦИЮ, НЕ ЗАБЫВАЙТЕ ДОБАВЛЯТЬ СООТВЕТСТВУЮЩИЕ СТРОКИ И В enable_generic_schemes
 ------------------------------------------------------------------------------------------------------------
 function disable_generic_schemes(npc, stype)
-    PROF_EVENT_CLOSURE("disable_generic_schemes", function()
+	return PROF_EVENT_CLOSURE("disable_generic_schemes", function()
         if stype == modules.stype_stalker then
             xr_combat.disable_scheme(npc, "combat")
             xr_hit.disable_scheme(npc, "hit")
@@ -263,7 +263,7 @@ end
 -- ВНОСЯ ИЗМЕНЕНИЯ В ЭТУ ФУНКЦИЮ, НЕ ЗАБЫВАЙТЕ ДОБАВЛЯТЬ СООТВЕТСТВУЮЩИЕ СТРОКИ И В disable_generic_schemes
 ------------------------------------------------------------------------------------------------------------
 function enable_generic_schemes(ini, npc, stype, section)
-    PROF_EVENT_CLOSURE("enable_generic_schemes", function()
+	return PROF_EVENT_CLOSURE("enable_generic_schemes", function()
         if stype == modules.stype_stalker then
             --xr_reactions.set_reactions(npc, ini, "reactions", section)
             xr_danger.set_danger(npc, ini, "danger", "danger")
@@ -353,7 +353,7 @@ end
 -- В обоих случаях передавать gulag_name ОБЯЗАТЕЛЬНО
 -- Если section не передана, то она берется из работы переданного гулага.
 function activate_by_section(npc, ini, section, gulag_name, loading)
-    PROF_EVENT_CLOSURE("activate_by_section", function()
+	return PROF_EVENT_CLOSURE("activate_by_section", function()
         --printf("LOGIC[%s]: Object '%s': activate_by_section: looking for section '%s'", tostring(time_global()), npc:name(), section)
     
         if loading == nil then
@@ -435,7 +435,7 @@ end
 	]] --
 
 function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
-    PROF_EVENT_CLOSURE("reset_generic_schemes_on_scheme_switch", function()
+	return PROF_EVENT_CLOSURE("reset_generic_schemes_on_scheme_switch", function()
         --printf("_bp: reset_generic_schemes_on_scheme_switch: npc:name()='%s'", npc:name())
         local st = db.storage[npc:id()]
     
@@ -497,7 +497,7 @@ function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
 end
 
 function assign_storage_and_bind(npc, ini, scheme, section)
-   return PROF_EVENT_CLOSURE("assign_storage_and_bind", function()
+    return PROF_EVENT_CLOSURE("assign_storage_and_bind", function()
         local npc_id = npc:id()
         local st
     
@@ -523,7 +523,7 @@ function assign_storage_and_bind(npc, ini, scheme, section)
 end
 
 function subscribe_action_for_events(npc, storage, new_action)
-    PROF_EVENT_CLOSURE("subscribe_action_for_events", function()
+	return PROF_EVENT_CLOSURE("subscribe_action_for_events", function()
         --printf("DEBUG: registering new action for reset event (npc:name() = '%s')", npc:name())
     
         if not storage.actions then
@@ -535,7 +535,7 @@ function subscribe_action_for_events(npc, storage, new_action)
 end
 
 function unsubscribe_action_from_events(npc, storage, new_action)
-    PROF_EVENT_CLOSURE("unsubscribe_action_from_events", function()
+	return PROF_EVENT_CLOSURE("unsubscribe_action_from_events", function()
         if not storage.actions then
             storage.actions = {}
         end
@@ -548,7 +548,7 @@ end
 function issue_event(npc, st, event_fn, ...)
 	local args = { ... }
 
-	PROF_EVENT_CLOSURE("issue_event", function()
+	return PROF_EVENT_CLOSURE("issue_event", function()
 		if not st or not st.actions then
 			return
 		end
@@ -589,7 +589,7 @@ end
 
 
 function pick_section_from_condlist(actor, npc, condlist)
-    return PROF_EVENT_CLOSURE("pick_section_from_condlist", function() 
+	return PROF_EVENT_CLOSURE("pick_section_from_condlist", function() 
         local rval = nil -- math.random(100)
         	--printf("_bp: pick_section_from_condlist: rval = %d", rval)
         
@@ -890,7 +890,7 @@ function try_switch_to_another_section(npc, st, actor)
 end
 
 function is_active(npc, st)
-    return PROF_EVENT_CLOSURE("is_active", function()
+	return PROF_EVENT_CLOSURE("is_active", function()
         if st.section == nil then
             abort("npc '%s': st.section is nil, active section is '%s'",
                 npc:name(), utils.to_str(db.storage[npc:id()].active_section))
@@ -912,7 +912,7 @@ end
 -- Заполнить массив:
 -- { "infop_name" = true/false }.
 function parse_infop1(rslt, str)
-    PROF_EVENT_CLOSURE("parse_infop1", function()
+	return PROF_EVENT_CLOSURE("parse_infop1", function()
         --printf("_bp: parse_infop: %s", utils.to_str(str))
         if str then
             local infop_name, sign
@@ -941,7 +941,7 @@ function parse_infop1(rslt, str)
 end
 
 function parse_func_params(str)
-    return PROF_EVENT_CLOSURE("parse_infop", function()
+	return PROF_EVENT_CLOSURE("parse_infop", function()
         local lst = {}
         local n
         for par in string.gfind(str, "%s*([^:]+)%s*") do
@@ -954,7 +954,7 @@ function parse_func_params(str)
 end
 
 function parse_infop(rslt, str)
-    PROF_EVENT_CLOSURE("parse_infop", function()
+	return PROF_EVENT_CLOSURE("parse_infop", function()
         --printf("_bp: parse_infop1: %s", utils.to_str(str))
         if str then
             local infop_name, sign
@@ -1095,7 +1095,7 @@ function cfg_get_number_and_condlist(ini, section, field, npc)
 end
 
 function cfg_get_string_and_condlist(ini, section, field, npc)
-    return PROF_EVENT_CLOSURE("cfg_get_string_and_condlist", function()
+	return PROF_EVENT_CLOSURE("cfg_get_string_and_condlist", function()
         local str = utils.cfg_get_string(ini, section, field, npc, false, "")
         if not str then
             return nil
@@ -1117,7 +1117,7 @@ function cfg_get_string_and_condlist(ini, section, field, npc)
 end
 
 function cfg_get_two_strings_and_condlist(ini, section, field, npc)
-    return PROF_EVENT_CLOSURE("cfg_get_two_strings_and_condlist", function()
+	return PROF_EVENT_CLOSURE("cfg_get_two_strings_and_condlist", function()
         local str = utils.cfg_get_string(ini, section, field, npc, false, "")
         if not str then
             return nil
@@ -1140,7 +1140,7 @@ function cfg_get_two_strings_and_condlist(ini, section, field, npc)
 end
 
 function cfg_get_condlist(ini, section, field, npc)
-    return PROF_EVENT_CLOSURE("cfg_get_condlist", function()
+	return PROF_EVENT_CLOSURE("cfg_get_condlist", function()
         local str = utils.cfg_get_string(ini, section, field, npc, false, "")
         if not str then
             return nil
@@ -1161,7 +1161,7 @@ function cfg_get_condlist(ini, section, field, npc)
 end
 
 function add_condition(lst, at, cond)
-    return PROF_EVENT_CLOSURE("mob_release", function()
+	return PROF_EVENT_CLOSURE("mob_release", function()
         if cond then
             lst[at] = cond
             return at + 1
@@ -1172,7 +1172,7 @@ end
 
 
 function cfg_get_switch_conditions(ini, section, npc)
-    return PROF_EVENT_CLOSURE("cfg_get_switch_conditions", function()
+	return PROF_EVENT_CLOSURE("cfg_get_switch_conditions", function()
         local l = {}
         local t
         local n = 1
@@ -1219,7 +1219,7 @@ function cfg_get_switch_conditions(ini, section, npc)
 end
 
 function cfg_get_overrides(ini, section, npc)
-    return PROF_EVENT_CLOSURE("cfg_get_overrides", function()
+	return PROF_EVENT_CLOSURE("cfg_get_overrides", function()
         local l = {}
     
     --	l.meet_enabled      = utils.cfg_get_bool(ini, section, "meet_enabled", npc, false)
@@ -1261,7 +1261,7 @@ function cfg_get_overrides(ini, section, npc)
 end
 
 function cfg_get_npc_and_zone(ini, section, field, npc)
-    return PROF_EVENT_CLOSURE("cfg_get_npc_and_zone", function()
+	return PROF_EVENT_CLOSURE("cfg_get_npc_and_zone", function()
         local t = cfg_get_two_strings_and_condlist(ini, section, field, npc)
     
         if t then
@@ -1292,7 +1292,7 @@ function generic_scheme_overrides(npc)
 end
 
 function mob_release(mob)
-    PROF_EVENT_CLOSURE("mob_release", function()
+	return PROF_EVENT_CLOSURE("mob_release", function()
         if mob:get_script() then
             mob:script(false, script_name())
         end
@@ -1300,7 +1300,7 @@ function mob_release(mob)
 end
 
 function mob_capture(mob, reset_actions)
-    return PROF_EVENT_CLOSURE("mob_capture", function()
+	return PROF_EVENT_CLOSURE("mob_capture", function()
         if reset_actions == nil then
             abort("mob_capture: reset_actions parameter's value is not specified")
         end
@@ -1316,13 +1316,13 @@ function mob_capture(mob, reset_actions)
 end
 
 function mob_captured(mob)
-    return PROF_EVENT_CLOSURE("mob_captured", function()
+	return PROF_EVENT_CLOSURE("mob_captured", function()
         return mob:get_script()
     end)
 end
 
 function save_logic(obj, packet)
-    PROF_EVENT_CLOSURE("save_logic", function()
+	return PROF_EVENT_CLOSURE("save_logic", function()
         local npc_id = obj:id()
         local cur_tm = time_global()
     
@@ -1338,7 +1338,7 @@ function save_logic(obj, packet)
 end
 
 function load_logic(obj, reader)
-    PROF_EVENT_CLOSURE("load_logic", function()
+	return PROF_EVENT_CLOSURE("load_logic", function()
         local npc_id = obj:id()
         local cur_tm = time_global()
     
@@ -1354,7 +1354,7 @@ local pstor_string = 1
 local pstor_boolean = 2
 
 function pstor_is_registered_type(tv)
-    return PROF_EVENT_CLOSURE("pstor_is_registered_type", function()
+	return PROF_EVENT_CLOSURE("pstor_is_registered_type", function()
         if tv ~= "boolean" and tv ~= "string" and tv ~= "number" then
             return false
         end
@@ -1363,7 +1363,7 @@ function pstor_is_registered_type(tv)
 end
 
 function pstor_store(obj, varname, val)
-    PROF_EVENT_CLOSURE("pstor_store", function()
+	return PROF_EVENT_CLOSURE("pstor_store", function()
         local npc_id = obj:id()
     
         if db.storage[npc_id].pstor == nil then
@@ -1378,7 +1378,7 @@ function pstor_store(obj, varname, val)
 end
 
 function pstor_retrieve(obj, varname, defval)
-    return PROF_EVENT_CLOSURE("pstor_retrieve", function()
+	return PROF_EVENT_CLOSURE("pstor_retrieve", function()
         local npc_id = obj:id()
     
         if db.storage[npc_id].pstor ~= nil then
@@ -1396,7 +1396,7 @@ function pstor_retrieve(obj, varname, defval)
 end
 
 function pstor_save_all(obj, packet)
-    PROF_EVENT_CLOSURE("pstor_save_all", function()
+	return PROF_EVENT_CLOSURE("pstor_save_all", function()
         local npc_id = obj:id()
         local pstor = db.storage[npc_id].pstor
         if not pstor then
@@ -1431,7 +1431,7 @@ function pstor_save_all(obj, packet)
 end
 
 function pstor_load_all(obj, reader)
-    PROF_EVENT_CLOSURE("pstor_load_all", function()
+	return PROF_EVENT_CLOSURE("pstor_load_all", function()
         local npc_id = obj:id()
         local pstor = db.storage[npc_id].pstor
         if not pstor then
@@ -1458,7 +1458,7 @@ function pstor_load_all(obj, reader)
 end
 
 function save_obj(obj, packet)
-    PROF_EVENT_CLOSURE("save_obj", function()
+	return PROF_EVENT_CLOSURE("save_obj", function()
         --printf("save_obj: obj:name()='%s'", obj:name())
         set_save_marker(packet, "save", false, "object"..obj:name())
         local npc_id = obj:id()
@@ -1517,7 +1517,7 @@ function save_obj(obj, packet)
 end
 
 function load_obj(obj, reader)
-    PROF_EVENT_CLOSURE("load_obj", function()
+	return PROF_EVENT_CLOSURE("load_obj", function()
         --printf("load_obj: obj:name()='%s'", obj:name())
         set_save_marker(reader, "load", false, "object"..obj:name())
         local npc_id = obj:id()
@@ -1574,7 +1574,7 @@ function load_obj(obj, reader)
 end
 
 function get_customdata_or_ini_file(npc, filename)
-    PROF_EVENT_CLOSURE("get_customdata_or_ini_file", function()
+	return PROF_EVENT_CLOSURE("get_customdata_or_ini_file", function()
         --printf( "get_customdata_or_ini_file: filename=%s", filename )
         local st = db.storage[npc:id()]
         if filename == "<customdata>" then
@@ -1604,7 +1604,7 @@ function get_customdata_or_ini_file(npc, filename)
 end
 
 function initialize_obj(obj, st, loaded, actor, stype)
-    PROF_EVENT_CLOSURE("initialize_obj", function()
+	return PROF_EVENT_CLOSURE("initialize_obj", function()
         if not loaded then
             local ini_filename = "<customdata>"
             local ini = get_customdata_or_ini_file(obj, ini_filename)

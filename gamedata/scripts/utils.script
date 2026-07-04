@@ -37,7 +37,7 @@ function stalker_go_to_waypoint(stalker, patrol_path, path_point)
 
 -- Переводит переменную любого типа (включая nil) в строку. Используется для отладочного вывода информации.
 function to_str(what)
-    return PROF_EVENT_CLOSURE("copy_table", function() 
+	return PROF_EVENT_CLOSURE("copy_table", function() 
         if what == nil then
             return "<nil>"
         else
@@ -48,7 +48,7 @@ end
 
 --'Копирование таблицы по значению
 function copy_table(dest, src)
-	PROF_EVENT_CLOSURE("copy_table", function() 
+	return PROF_EVENT_CLOSURE("copy_table", function() 
 		for k,v in pairs(src) do
 			if type(v) == "table" then
 				--' рекурсивный вызов себя же для подтаблиц
@@ -125,7 +125,7 @@ end
 --
 -- Возвращает true или false
 function cfg_get_bool(char_ini, section, field, object, mandatory, default_val)
-    return PROF_EVENT_CLOSURE("copy_table", function() 
+	return PROF_EVENT_CLOSURE("copy_table", function() 
         if mandatory == nil then
             abort("section '%s': wrong arguments order in call to cfg_get_bool", section)
         end
@@ -151,7 +151,7 @@ function cfg_get_bool(char_ini, section, field, object, mandatory, default_val)
 end
 
 function cfg_get_string(char_ini, section, field, object, mandatory, gulag_name, default_val)
-    return PROF_EVENT_CLOSURE("cfg_get_string", function() 
+	return PROF_EVENT_CLOSURE("cfg_get_string", function() 
         if mandatory == nil or gulag_name == nil then
             abort("section '%s': wrong arguments order in call to cfg_get_string", section)
         end
@@ -175,7 +175,7 @@ function cfg_get_string(char_ini, section, field, object, mandatory, gulag_name,
 end
 
 function cfg_get_number(char_ini, section, field, object, mandatory, default_val)
-    return PROF_EVENT_CLOSURE("cfg_get_number", function() 
+	return PROF_EVENT_CLOSURE("cfg_get_number", function() 
         if mandatory == nil then
             abort("section '%s': wrong arguments order in call to cfg_get_number", section)
         end
@@ -328,7 +328,7 @@ end
 --При попытке поюзать незапертую дверь она просто силой открывается до максимально допустимого состояния.
 
 function parse_waypoint_data(pathname, wpflags, wpname)
-    return PROF_EVENT_CLOSURE("parse_waypoint_data", function() 
+	return PROF_EVENT_CLOSURE("parse_waypoint_data", function() 
         local rslt = {}
     
         rslt.flags = wpflags
@@ -654,15 +654,17 @@ end
 -- отослать в ближайшую разрешённую ноду по направлению к заданной.
 -- возвращает vertex_id, в которое отправил персонажа
 function send_to_nearest_accessible_vertex( npc, v_id )
-	if not npc:accessible( v_id ) then
-		local vtemp = vector()
-		--printf("vertex_position")
-		v_id, vtemp = npc:accessible_nearest( level.vertex_position( v_id ), vtemp )
-	end
-
-	npc:set_dest_level_vertex_id( v_id )
-
-	return v_id
+	return PROF_EVENT_CLOSURE("send_to_nearest_accessible_vertex", function()
+        if not npc:accessible( v_id ) then
+            local vtemp = vector()
+            --printf("vertex_position")
+            v_id, vtemp = npc:accessible_nearest( level.vertex_position( v_id ), vtemp )
+        end
+    
+        npc:set_dest_level_vertex_id( v_id )
+    
+        return v_id
+    end)
 end
 
 -- происходит ли в данный момент смена уровня?

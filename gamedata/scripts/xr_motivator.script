@@ -44,7 +44,7 @@ end
 class "motivator_binder" (object_binder)
 
 function motivator_binder:__init (obj) super(obj)
-    PROF_EVENT_CLOSURE("__init", function()
+	return PROF_EVENT_CLOSURE("__init", function()
 
         self.loaded = false
         self.last_update = 0
@@ -57,7 +57,7 @@ function motivator_binder:__init (obj) super(obj)
 end
 
 function motivator_binder:on_take_item_from_box(box, item)
-    PROF_EVENT_CLOSURE("on_take_item_from_box", function()
+	return PROF_EVENT_CLOSURE("on_take_item_from_box", function()
         if not (self.object) then return end
         
         SendScriptCallback("npc_on_item_take_from_box", self.object, box, item)
@@ -65,7 +65,7 @@ function motivator_binder:on_take_item_from_box(box, item)
 end
 
 function motivator_binder:on_item_take(item)
-    PROF_EVENT_CLOSURE("on_item_take", function()
+	return PROF_EVENT_CLOSURE("on_item_take", function()
         if not (self.object) then return end
     
         SendScriptCallback("npc_on_item_take", self.object, item)
@@ -73,7 +73,7 @@ function motivator_binder:on_item_take(item)
 end
 
 function motivator_binder:on_item_drop(item)
-    PROF_EVENT_CLOSURE("on_item_drop", function()
+	return PROF_EVENT_CLOSURE("on_item_drop", function()
         if not (self.object) then return end
     
         SendScriptCallback("npc_on_item_drop", self.object, item)
@@ -85,7 +85,7 @@ function motivator_binder:net_spawn(sobject)
 end
 
 function motivator_binder:extrapolate_callback(cur_pt)
-    return PROF_EVENT_CLOSURE("extrapolate_callback", function()
+	return PROF_EVENT_CLOSURE("extrapolate_callback", function()
         if self.st.active_section then
             xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "extrapolate_callback")
             self.st.move_mgr:extrapolate_callback(self.object)
@@ -99,7 +99,7 @@ function motivator_binder:extrapolate_callback(cur_pt)
 end
 
 function motivator_binder:reinit()
-    PROF_EVENT_CLOSURE("reinit", function() 
+	return PROF_EVENT_CLOSURE("reinit", function() 
             object_binder.reinit(self)
             --memusage.collect_info(self.object, "reinit_start")
             --printf("motivator_binder:reinit(): self.object:name()='%s'", self.object:name())
@@ -129,7 +129,7 @@ end
 
 ----------------------------------------------------------------------------------------------------------------------
 function motivator_binder:net_spawn(sobject)
-    return PROF_EVENT_CLOSURE("net_spawn", function() 
+	return PROF_EVENT_CLOSURE("net_spawn", function() 
         printf("motivator_binder:net_spawn(): self.object:name()='%s'", self.object:name())
         local visual = utils.cfg_get_string(system_ini(), self.object:section(), "set_visual", obj, false, "")
         if visual ~= nil and visual ~= "" then
@@ -253,7 +253,7 @@ function motivator_binder:net_spawn(sobject)
 end
 
 function motivator_binder:net_destroy()
-    PROF_EVENT_CLOSURE("net_destroy", function() 
+	return PROF_EVENT_CLOSURE("net_destroy", function() 
         if self.object then
             SendScriptCallback("npc_on_net_destroy", self.object)
         end
@@ -298,7 +298,7 @@ function motivator_binder:net_destroy()
 end
 
 function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_index)
-    PROF_EVENT_CLOSURE("hit_callback", function()
+	return PROF_EVENT_CLOSURE("hit_callback", function()
         -- FIXME: коллбеки неплохо было бы регистрировать в общем storage, а не посхемно...
         -- просто всегда ставить их при включении схемы и снимать при отключении.
         if(who:id()==db.actor:id()) then
@@ -355,7 +355,7 @@ function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_i
 end
 
 function motivator_binder:death_callback(victim, who)
-    PROF_EVENT_CLOSURE("death_callback", function()
+	return PROF_EVENT_CLOSURE("death_callback", function()
         self:hit_callback(victim, 1, vector():set(0,0,0), who, "from_death_callback")
     
         SendScriptCallback("npc_on_death_callback", victim, who)
@@ -414,7 +414,7 @@ function motivator_binder:death_callback(victim, who)
 end
 
 function motivator_binder:use_callback(obj, who)
-    PROF_EVENT_CLOSURE("use_callback", function() 
+	return PROF_EVENT_CLOSURE("use_callback", function() 
         printf("motivator_binder:use_callback(obj, who)")
         
         if self.object:alive() then
@@ -435,7 +435,7 @@ function motivator_binder:use_callback(obj, who)
 end
 
 function motivator_binder:update(delta)
-	PROF_EVENT_CLOSURE("update", function()
+	return PROF_EVENT_CLOSURE("update", function()
 		object_binder.update(self, delta)
 		
 		if xr_combat_ignore.fighting_with_actor_npcs[self.object:id()] and self.object:best_enemy() == nil then
@@ -545,7 +545,7 @@ function motivator_binder:update(delta)
 end
 
 function motivator_binder:reload(section)
-    PROF_EVENT_CLOSURE("reload", function() 
+	return PROF_EVENT_CLOSURE("reload", function() 
         --memusage.collect_info(self.object, "reload_start")
         object_binder.reload(self, section)
         --memusage.collect_info(self.object, "reload_end")
@@ -558,7 +558,7 @@ function motivator_binder:net_save_relevant()
 end
 
 function motivator_binder:save(packet)
-    PROF_EVENT_CLOSURE("save", function() 
+	return PROF_EVENT_CLOSURE("save", function() 
         set_save_marker(packet, "save", false, "motivator_binder")
         object_binder.save(self, packet)
         xr_logic.save_obj(self.object, packet)
@@ -581,7 +581,7 @@ function motivator_binder:save(packet)
 end
 
 function motivator_binder:load(reader)
-    PROF_EVENT_CLOSURE("load", function() 
+	return PROF_EVENT_CLOSURE("load", function() 
         self.loaded = true
         set_save_marker(reader, "load", false, "motivator_binder")
         object_binder.load(self, reader)
@@ -602,7 +602,7 @@ function motivator_binder:load(reader)
 end
 
 function motivator_binder:hear_callback(self, who_id, sound_type, sound_position, sound_power)
-    PROF_EVENT_CLOSURE("hear_callback", function() 
+	return PROF_EVENT_CLOSURE("hear_callback", function() 
         if who_id == self:id() then
             return
         end
@@ -611,7 +611,7 @@ function motivator_binder:hear_callback(self, who_id, sound_type, sound_position
 end
 
 function AddToMotivator(npc)
-    PROF_EVENT_CLOSURE("AddToMotivator", function() 
+	return PROF_EVENT_CLOSURE("AddToMotivator", function() 
         if alife() then
             npc:bind_object(this.motivator_binder(npc))
         end
@@ -620,7 +620,7 @@ end
 
 -- Эвалюаторы, которые имеют высший приоритет, и, соответственно, перебивают остальные скрипты собой
 function addCommonPrecondition(action)
-    PROF_EVENT_CLOSURE("addCommonPrecondition", function() 
+	return PROF_EVENT_CLOSURE("addCommonPrecondition", function() 
         action:add_precondition (world_property(xr_evaluators_id.stohe_meet_base + 1,false))
         action:add_precondition (world_property(xr_evaluators_id.sidor_wounded_base + 0,  false))
         action:add_precondition (world_property(xr_evaluators_id.abuse_base, false))
@@ -632,7 +632,7 @@ end
 
 
 function update_logic(object)
-	PROF_EVENT_CLOSURE("update_object", function() 
+	return PROF_EVENT_CLOSURE("update_object", function() 
 		local object_alive = object:alive()
 		local st = db.storage[object:id()]
 		local actor = db.actor

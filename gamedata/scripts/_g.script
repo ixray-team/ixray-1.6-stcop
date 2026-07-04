@@ -328,7 +328,7 @@ end
 
 -- очистка таблицы.
 function clear_table (t)
-    PROF_EVENT_CLOSURE("clear_table", function() 
+	return PROF_EVENT_CLOSURE("clear_table", function() 
         while #t > 0 do
             table.remove (t, #t)
         end
