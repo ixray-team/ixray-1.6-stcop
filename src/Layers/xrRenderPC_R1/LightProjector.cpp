@@ -69,15 +69,24 @@ void CLightProjector::set_object	(IRenderable* O)
 		if (D < clipD(R))	current	= O;
 		else				current = 0;
 		
-		if (current)				{
-			ISpatial*	spatial		= O->SpatialComponent.get();
-			if	(0==spatial) current= 0;
-			else					{
-				spatial->spatial_updatesector	();
-				if (0==spatial->spatial.sector)	{
-					CObject*		obj = dynamic_cast<CObject*>(O);
-					if (obj)		Msg	("! Invalid object '%s' position. Outside of sector structure.",obj->cName().c_str());
-					current			= 0;
+		if (current)
+		{
+			ISpatial* spatial = O->SpatialComponent.get();
+			if (0 == spatial)
+			{
+				current = 0;
+			}
+			else
+			{
+				spatial->spatial_updatesector();
+				if (0 == spatial->sector)
+				{
+					CObject* obj = dynamic_cast<CObject*>(O);
+					if (obj)
+					{
+						Msg("! Invalid object '%s' position. Outside of sector structure.", obj->cName().c_str());
+					}
+					current = 0;
 				}
 			}
 		}
@@ -290,7 +299,7 @@ void CLightProjector::calculate	()
 		ISpatial*	spatial		= O->SpatialComponent.get();
 		if (spatial)			{
 			spatial->spatial_updatesector			();
-			if (spatial->spatial.sector)			RImplementation.r_dsgraph_render_R1_box	(spatial->spatial.sector,BB,SE_R1_LMODELS);
+			if (spatial->sector)			RImplementation.r_dsgraph_render_R1_box	(spatial->sector,BB,SE_R1_LMODELS);
 		}
 		//if (spatial)		RImplementation.r_dsgraph_render_subspace	(spatial->spatial.sector,mCombine,v_C,false);
 	}

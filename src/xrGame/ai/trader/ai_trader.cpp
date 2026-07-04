@@ -146,8 +146,8 @@ bool CAI_Trader::net_Spawn(CSE_Abstract* DC)
 	shedule.t_min = 100;
 	shedule.t_max = 2500; // This equaltiy is broken by Dima :-( // 30 * NET_Latency / 4;
 
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::AI;
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::AI_ALIVE;
+	SpatialComponent->type |= ESPATIAL_TYPE::AI;
+	SpatialComponent->type |= ESPATIAL_TYPE::AI_ALIVE;
 
 	return true;
 }

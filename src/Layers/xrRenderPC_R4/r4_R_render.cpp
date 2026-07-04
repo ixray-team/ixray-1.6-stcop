@@ -153,10 +153,10 @@ void CRender::render_main	(bool deffered, bool zfill)
 		{
 			ISpatial*	spatial	= lstRenderablesMain[o_it].get();
 			if	(0==spatial) continue; spatial->spatial_updatesector();
-			CSector* sector = (CSector*)spatial->spatial.sector;
+			CSector* sector = (CSector*)spatial->sector;
 			if	(0==sector) continue;
 
-			if ((spatial->spatial.type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE && deffered)
+			if ((spatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE && deffered)
 			{
 				// hud lightsource
 				if(light* L = (light*)(spatial->dcast_Light()))
@@ -169,9 +169,9 @@ void CRender::render_main	(bool deffered, bool zfill)
 				}
 			}
 
-			if(!HOM.visible(spatial->spatial.sphere)) continue;
+			if(!HOM.visible(spatial->sphere)) continue;
 
-			if ((spatial->spatial.type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE && deffered)
+			if ((spatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE && deffered)
 			{
 				// lightsource
 				if(light* L = (light*)(spatial->dcast_Light()))
@@ -183,14 +183,14 @@ void CRender::render_main	(bool deffered, bool zfill)
 			}
 			if (dont_test_sectors)
 			{
-				if ((spatial->spatial.type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE && psDeviceFlags.test(rsDrawDynamic))
+				if ((spatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE && psDeviceFlags.test(rsDrawDynamic))
 				{
 					// renderable
 					if (IRenderable* renderable = spatial->dcast_Renderable())
 					{
-						if (Device.vCameraPosition.distance_to_sqr(spatial->spatial.sphere.P) < _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
+						if (Device.vCameraPosition.distance_to_sqr(spatial->sphere.P) < _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
 						{
-							if (CalcSSADynamic(spatial->spatial.sphere.P, spatial->spatial.sphere.R) > spatial->spatial.ssa_dyn_factor && GetDistFromCamera(spatial->spatial.sphere.P) < spatial->spatial.ssa_d_cam)
+							if (CalcSSADynamic(spatial->sphere.P, spatial->sphere.R) > spatial->ssa_dyn_factor && GetDistFromCamera(spatial->sphere.P) < spatial->ssa_d_cam)
 							{
 								if (deffered)
 								{
@@ -199,10 +199,10 @@ void CRender::render_main	(bool deffered, bool zfill)
 									{
 										pKin->CalculateBones(true);
 										pKin->CalculateWallmarks();
-										//dbg_text_renderer(spatial->spatial.sphere.P);
+										//dbg_text_renderer(spatial->sphere.P);
 									}
 								}
-								if (spatial->spatial.sphere.R > 1.f)
+								if (spatial->sphere.R > 1.f)
 								{
 									// Rendering
 									set_Object(renderable);
@@ -210,7 +210,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 									set_Object(0);
 								}
 							}
-							if (spatial->spatial.sphere.R <= 1.f)
+							if (spatial->sphere.R <= 1.f)
 							{
 								// Rendering
 								set_Object(renderable);
@@ -220,8 +220,8 @@ void CRender::render_main	(bool deffered, bool zfill)
 						}
 					}
 				}
-
-				if ((spatial->spatial.type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE && !deffered)
+				
+				if ((spatial->type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE && !deffered)
 				{
 					// renderable
 					if	(IRenderable* renderable = spatial->dcast_Renderable())
@@ -239,16 +239,16 @@ void CRender::render_main	(bool deffered, bool zfill)
 				for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)
 				{
 					CFrustum&	view	= sector->r_frustums[v_it];
-					if (!view.testSphere_dirty(spatial->spatial.sphere.P,spatial->spatial.sphere.R))	continue;
+					if (!view.testSphere_dirty(spatial->sphere.P,spatial->sphere.R))	continue;
 
-					if ((spatial->spatial.type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE && psDeviceFlags.test(rsDrawDynamic))
+					if ((spatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE && psDeviceFlags.test(rsDrawDynamic))
 					{
 						// renderable
 						if	(IRenderable* renderable = spatial->dcast_Renderable())
 						{
-							if(Device.vCameraPosition.distance_to_sqr(spatial->spatial.sphere.P)<_sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
+							if(Device.vCameraPosition.distance_to_sqr(spatial->sphere.P)<_sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
 							{
-								if(CalcSSADynamic(spatial->spatial.sphere.P,spatial->spatial.sphere.R)>spatial->spatial.ssa_dyn_factor&&GetDistFromCamera(spatial->spatial.sphere.P)<spatial->spatial.ssa_d_cam)
+								if(CalcSSADynamic(spatial->sphere.P,spatial->sphere.R)>spatial->ssa_dyn_factor&&GetDistFromCamera(spatial->sphere.P)<spatial->ssa_d_cam)
 								{
 									if(deffered)
 									{
@@ -257,10 +257,9 @@ void CRender::render_main	(bool deffered, bool zfill)
 										{
 											pKin->CalculateBones(true);
 											pKin->CalculateWallmarks();
-											//dbg_text_renderer(spatial->spatial.sphere.P);
 										}
 									}
-									if(spatial->spatial.sphere.R>1.f)
+									if(spatial->sphere.R>1.f)
 									{
 										// Rendering
 										set_Object						(renderable);
@@ -268,7 +267,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 										set_Object						(0);
 									}
 								}
-								if(spatial->spatial.sphere.R<=1.f)
+								if(spatial->sphere.R<=1.f)
 								{
 									// Rendering
 									set_Object						(renderable);
@@ -279,7 +278,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 						}
 					}
 
-					if ((spatial->spatial.type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE && !deffered)
+					if ((spatial->type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE && !deffered)
 					{
 						// renderable
 						if	(IRenderable* renderable = spatial->dcast_Renderable())

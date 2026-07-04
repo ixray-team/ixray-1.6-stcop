@@ -350,7 +350,7 @@ void CRender::Calculate()
 		}*/
 		for (ISpatialShared& pSpatial : lstRenderables)
 		{
-			if ((pSpatial->spatial.type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE)
+			if ((pSpatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE)
 			{
 				if(light* L = (light*)pSpatial->dcast_Light())
 				{
@@ -373,7 +373,7 @@ void CRender::Calculate()
 			if (!renderable)
 				continue;
 
-			if((pSpatial->spatial.type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE || (pSpatial->spatial.type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE)
+			if((pSpatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE || (pSpatial->type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE)
 			{
 				set_Object(renderable);
 				renderable->renderable_Render();

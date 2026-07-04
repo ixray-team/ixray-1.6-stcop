@@ -115,7 +115,7 @@ bool CPhysicsShellHolder::net_Spawn				(CSE_Abstract*	DC)
 
 		st_enable_state=(u8)stNotDefitnite;
 	}
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::PHYSIC_SHELL_HOLDER;
+	SpatialComponent->type |= ESPATIAL_TYPE::PHYSIC_SHELL_HOLDER;
 	return ret;
 }
 

@@ -36,57 +36,60 @@ void CSightManager::SetPointLookAngles(const Fvector &tPosition, float &yaw, flo
 
 #include "Actor.h"
 #include "../xrEngine/CameraBase.h"
-bool CSightManager::aim_target	(Fvector &my_position, Fvector &aim_target, const CGameObject *object) const
+bool CSightManager::aim_target(Fvector& my_position, Fvector& aim_target, const CGameObject* object) const
 {
 	if (!object)
-		return					(false);
+	{
+		return (false);
+	}
 
-	if (m_object->aim_bone_id().size()) {
-		m_object->aim_target	(aim_target, object);
-		return					(true);
+	if (m_object->aim_bone_id().size())
+	{
+		m_object->aim_target(aim_target, object);
+		return (true);
 	}
 	CGameObject* GO = const_cast<CGameObject*>(object);
 
 	if (GO && GO->cast_entity() && GO->cast_entity()->g_Alive() && (GO->cast_actor() || GO->cast_stalker()))
 	{
 		if (GO->cast_actor() && GO->cast_actor()->HUDview())
+		{
 			aim_target = GO->cast_actor()->cam_Active()->vPosition;
+		}
 		else
 		{
 			IKinematics* kinematics = PKinematics(object->Visual());
 			u16 bone_id = kinematics->LL_BoneID("bip01_head");
 			kinematics->LL_GetBoneWorldPosition(bone_id, object->XFORM(), aim_target);
 		}
-		return					(true);
+		return (true);
 	}
 
 	if (!object->use_center_to_aim())
-		return					(false);
+	{
+		return (false);
+	}
 
-	if(GO->cast_actor())
+	if (GO->cast_actor())
+	{
 		m_object->Visual()->dcast_PKinematics()->CalculateBBox(false);
+	}
 
-	m_object->Center			(my_position);
+	m_object->Center(my_position);
 
-#if 1
 	//. hack is here, just because our actor model is animated with 20cm shift
-	m_object->XFORM().transform_tiny	(
+	m_object->XFORM().transform_tiny
+	(
 		my_position,
-		Fvector().set(
+		Fvector().set
+		(
 			.2f,
 			my_position.y - m_object->Position().y,
 			0.f
 		)
 	);
-#else
-	const CEntityAlive			*entity_alive = smart_cast<const CEntityAlive*>(object);
-	if (!entity_alive || entity_alive->g_Alive()) {
-		aim_target.x			= m_object->Position().x;
-		aim_target.z			= m_object->Position().z;
-	}
-#endif
 
-	return						(true);
+	return (true);
 }
 
 void CSightManager::SetFirePointLookAngles(const Fvector &tPosition, float &yaw, float &pitch, Fvector const& look_position, const CGameObject *object)
@@ -111,16 +114,17 @@ void CSightManager::SetFirePointLookAngles(const Fvector &tPosition, float &yaw,
 
 void CSightManager::SetDirectionLook()
 {
-//	MonsterSpace::SBoneRotation				orientation = object().movement().m_head, body_orientation = object().movement().body_orientation();
-//	orientation.target						= orientation.current;
-//	body_orientation.target					= body_orientation.current;
-	if (GetDirectionAngles(object().movement().m_head.target.yaw,object().movement().m_head.target.pitch)) {
-		object().movement().m_head.target.yaw	*= -1;
-		object().movement().m_head.target.pitch	*= 0;//-1;
+	if (GetDirectionAngles(object().movement().m_head.target.yaw, object().movement().m_head.target.pitch))
+	{
+		object().movement().m_head.target.yaw *= -1;
+		object().movement().m_head.target.pitch *= 0; //-1;
 	}
 	else
-		object().movement().m_head.target	= object().movement().m_head.current;
-	object().movement().m_body.target		= object().movement().m_head.target;
+	{
+		object().movement().m_head.target = object().movement().m_head.current;
+	}
+
+	object().movement().m_body.target = object().movement().m_head.target;
 }
 
 void CSightManager::SetLessCoverLook(const ILevelGraph::CVertex *tpNode, bool bDifferenceLook)
@@ -197,36 +201,47 @@ void CSightManager::SetLessCoverLook(const ILevelGraph::CVertex *tpNode, float f
 }
 
 
-bool CSightManager::GetDirectionAngles				(float &yaw, float &pitch)
+bool CSightManager::GetDirectionAngles(float& yaw, float& pitch)
 {
-	if (!object().movement().path().empty() && (m_object->movement().detail().curr_travel_point_index() + 1 < m_object->movement().detail().path().size())) {
-		Fvector				t;
-		t.sub					(
+	if (!object().movement().path().empty() && (m_object->movement().detail().curr_travel_point_index() + 1 < m_object->movement().detail().path().size()))
+	{
+		Fvector Temp;
+		Temp.sub
+		(
 			object().movement().path()[m_object->movement().detail().curr_travel_point_index() + 1].position,
 			object().movement().path()[m_object->movement().detail().curr_travel_point_index()].position
 		);
-		t.getHP				(yaw,pitch);
-		return				(true);
+
+		Temp.getHP(yaw, pitch);
+		return (true);
 	}
-	return					(GetDirectionAnglesByPrevPositions(yaw,pitch));
-};
+	return (GetDirectionAnglesByPrevPositions(yaw, pitch));
+}
 
-bool CSightManager::GetDirectionAnglesByPrevPositions(float &yaw, float &pitch)
+bool CSightManager::GetDirectionAnglesByPrevPositions(float& yaw, float& pitch)
 {
-	Fvector					tDirection;
-	int						i = m_object->ps_Size	();
+	Fvector Direction;
+	int i = m_object->ps_Size();
 
-	if (i < 2) 
-		return				(false);
+	if (i < 2)
+	{
+		return (false);
+	}
 
-	CObject::SavedPosition	tPreviousPosition = m_object->ps_Element(i - 2), tCurrentPosition = m_object->ps_Element(i - 1);
-	VERIFY					(_valid(tPreviousPosition.vPosition));
-	VERIFY					(_valid(tCurrentPosition.vPosition));
-	tDirection.sub			(tCurrentPosition.vPosition,tPreviousPosition.vPosition);
-	if (tDirection.magnitude() < EPS_L)	return(false);
-	tDirection.getHP		(yaw,pitch);
-	VERIFY					(_valid(yaw));
-	VERIFY					(_valid(pitch));
+	CObject::SavedPosition PreviousPosition = m_object->ps_Element(i - 2);
+	CObject::SavedPosition CurrentPosition = m_object->ps_Element(i - 1);
+	VERIFY(_valid(PreviousPosition.vPosition));
+	VERIFY(_valid(CurrentPosition.vPosition));
+	Direction.sub(CurrentPosition.vPosition, PreviousPosition.vPosition);
 
-	return					(true);
+	if (Direction.magnitude() < EPS_L)
+	{
+		return (false);
+	}
+
+	Direction.getHP(yaw, pitch);
+	VERIFY(_valid(yaw));
+	VERIFY(_valid(pitch));
+
+	return (true);
 }

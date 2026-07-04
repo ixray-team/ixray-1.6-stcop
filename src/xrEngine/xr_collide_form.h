@@ -81,7 +81,6 @@ enum /*ENGINE_API*/	ECollisionFormType{
 	cftShape
 };
 class ENGINE_API CCF_Skeleton;
-class ENGINE_API CCF_EventBox;
 class ENGINE_API CCF_Shape;
 
 class ENGINE_API	ICollisionForm
@@ -109,7 +108,6 @@ public:
 	const ECollisionFormType Type	( ) const				{ return m_type;		}
 
 	virtual	CCF_Skeleton* cast_cff_skeleton() { return nullptr; };
-	virtual	CCF_EventBox* cast_event_box() { return nullptr; };
 	virtual	CCF_Shape* cast_shape() { return nullptr; };
 };
 
@@ -170,22 +168,8 @@ public:
 	virtual	CCF_Skeleton* cast_cff_skeleton() { return this; };
 };
 
-class ENGINE_API	CCF_EventBox : public ICollisionForm
-{
-private:
-	Fplane			Planes[6];
-public:
-					CCF_EventBox	( CObject* _owner );
-
-	virtual bool	_RayQuery		( const collide::ray_defs& Q, collide::rq_results& R);
-	//virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags);
-
-	bool			Contact			( CObject* O );
-
-	virtual	CCF_EventBox* cast_event_box() { return this; };
-};
-
-class ENGINE_API	CCF_Shape	: public ICollisionForm
+class ENGINE_API CCF_Shape :
+	public ICollisionForm
 {
 public:
 	union shape_data

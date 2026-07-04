@@ -77,7 +77,7 @@ void CGameObject::init			()
 void CGameObject::Load(const char* section)
 {
 	inherited::Load(section);
-	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::REACTTOSOUND;
+	SpatialComponent->type &= ~ESPATIAL_TYPE::REACTTOSOUND;
 }
 
 void CGameObject::reinit()
@@ -251,7 +251,7 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 		cNameVisual_set				(visual_name(E));
 		if (visual->flags.test(CSE_Visual::flObstacle))
 		{
-			SpatialComponent->spatial.type |= ESPATIAL_TYPE::OBSTACLE;
+			SpatialComponent->type |= ESPATIAL_TYPE::OBSTACLE;
 		}
 	}
 
@@ -316,9 +316,9 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	{
 		m_server_flags = O->m_flags;
 		if (O->m_flags.is(CSE_ALifeObject::flVisibleForAI))
-			SpatialComponent->spatial.type |= ESPATIAL_TYPE::VISIBLEFORAI;
+			SpatialComponent->type |= ESPATIAL_TYPE::VISIBLEFORAI;
 		else
-			SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::VISIBLEFORAI;
+			SpatialComponent->type &= ~ESPATIAL_TYPE::VISIBLEFORAI;
 	}
 
 	reload(*cNameSect());
