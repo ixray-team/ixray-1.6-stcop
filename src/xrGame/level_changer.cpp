@@ -95,7 +95,7 @@ bool CLevelChanger::net_Spawn	(CSE_Abstract* DC)
 	}
 	g_lchangers.push_back		(this);
 
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::LEVEL_CHANGER;
+	SpatialComponent->type |= ESPATIAL_TYPE::LEVEL_CHANGER;
 
 	return						(bOk);
 }

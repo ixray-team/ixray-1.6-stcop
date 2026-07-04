@@ -115,8 +115,8 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 
 	if (phase_shmap && L)
 	{
-		Fvector l_spatial_pos = L->SpatialComponent->spatial.sphere.P;
-		float l_range_sqr = _sqr(L->SpatialComponent->spatial.sphere.R);
+		Fvector l_spatial_pos = L->SpatialComponent->sphere.P;
+		float l_range_sqr = _sqr(L->SpatialComponent->sphere.R);
 
 #ifdef _EDITOR
 		for (CDetail* ObjectPtr : objects)

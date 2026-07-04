@@ -86,7 +86,7 @@ bool CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
 	PPlayer->LoadParticles(K);
 	RunStartupAnim(DC);
 
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::PHYSIC_OBJECT_DESTR;
+	SpatialComponent->type |= ESPATIAL_TYPE::PHYSIC_OBJECT_DESTR;
 	return res;
 }
 

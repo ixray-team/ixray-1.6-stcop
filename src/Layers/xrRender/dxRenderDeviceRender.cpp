@@ -442,7 +442,11 @@ void dxRenderDeviceRender::End()
 #endif
 
 	PROF_EVENT("Present");
+
+#ifdef USE_DX11
 	PROF_GPU_CTX_COLLECT();
+#endif
+
 	GRHI->Present();
 #endif
 }
