@@ -2832,11 +2832,11 @@ inline const std::string_view& convert_EHudStates_to_string(u8 state) noexcept
 {
 	if (state <= CHUDState::EHudStates::eLastBaseState)
 	{
-		return magic_enum::enum_name(static_cast<CHUDState::EHudStates>(state)).data();
+		return magic_enum::enum_name(static_cast<CHUDState::EHudStates>(state));
 	}
 	else
 	{
-		return magic_enum::enum_name(static_cast<CWeapon::EWeaponStates>(state)).data();
+		return magic_enum::enum_name(static_cast<CWeapon::EWeaponStates>(state));
 	}
 }
 
