@@ -2842,6 +2842,48 @@ inline const std::string_view& convert_EHudStates_to_string(u8 state) noexcept
 }
 #endif
 
+void RenderOMFEditor_Draw_Game_Editing(
+	CActor* pPlayer
+)
+{
+#if IXRAY_OMF_EDITOR_TAB_GAME == 1
+	if (pPlayer && g_player_hud)
+	{
+		PIItem pItem = pPlayer->inventory().ActiveItem();
+
+		if (pItem && pItem->cast_hud_item())
+		{
+			CHudItem* pHI = pItem->cast_hud_item();
+
+			if (pHI)
+			{
+				if (pHI->HudItemData())
+				{
+					attachable_hud_item* pAHI = pHI->HudItemData();
+
+					if (pAHI->m_hand_motions.m_anims.empty() == false)
+					{
+
+					}
+					else
+					{
+						ImGui::Text("No anims!");
+					}
+				}
+				else
+				{
+					ImGui::Text("No HudItemData!");
+				}
+			}
+			else
+			{
+				ImGui::Text("Withdraw weapon/item! Can't preview data of hud item!");
+			}
+		}
+	}
+#endif
+}
+
 void RenderOMFEditor_Draw_Game_Info(
 	CActor* pPlayer
 )
@@ -2867,6 +2909,46 @@ void RenderOMFEditor_Draw_Game_Info(
 					if (pAHI->m_hand_motions.m_anims.empty() == false)
 					{
 						ImGui::Text("Current anim:\n\t[%s]\n\tt=[%d]/[%d]\n\tstartedMotionState=[%s (%d)]", pHI->m_current_motion.c_str(), pHI->m_dwMotionCurrTm, pHI->m_dwMotionEndTm, convert_EHudStates_to_string((pHI->m_startedMotionState)).data(), pHI->m_startedMotionState);
+
+						if (pAHI->m_hand_motions.m_banned_bone_parts.empty() == false)
+						{
+							if (ImGui::CollapsingHeader("banned bone parts:"))
+							{
+								for (const shared_str& str : pAHI->m_hand_motions.m_banned_bone_parts)
+								{
+									ImGui::Text("\t[%s]", str.c_str());
+								}
+							}
+						}
+
+						char ch_name[32];
+						std::sprintf(ch_name, "Anims=%zu", pAHI->m_hand_motions.m_anims.size());
+						if (ImGui::CollapsingHeader(ch_name))
+						{
+							u16 i = 0;
+							for (const player_hud_motion& phm : pAHI->m_hand_motions.m_anims)
+							{
+								ImGui::PushID(i);
+								if (ImGui::CollapsingHeader(phm.m_alias_name.c_str()))
+								{
+									ImGui::Text("additional name: [%s]", phm.m_additional_name.c_str());
+									ImGui::Text("base name: [%s]", phm.m_base_name.c_str());
+									ImGui::Text("speed: %.2f", phm.m_anim_speed);
+
+									if (phm.m_bone_parts.empty() == false)
+									{
+										ImGui::Text("bone parts:");
+
+										for (const shared_str& bone_part_name : phm.m_bone_parts)
+										{
+											ImGui::Text("\t[%s]", bone_part_name.c_str());
+										}
+									}
+								}
+								ImGui::PopID();		
+								++i;
+							}
+						}
 					}
 					else
 					{
@@ -2914,6 +2996,8 @@ void RenderOMFEditor_Draw_Game(
 		RenderOMFEditor_Draw_Game_Info(pPlayer);
 
 		ImGui::TableSetColumnIndex(1);
+
+		RenderOMFEditor_Draw_Game_Editing(pPlayer);
 
 		ImGui::EndTable();
 	}
