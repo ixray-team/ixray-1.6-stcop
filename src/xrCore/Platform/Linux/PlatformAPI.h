@@ -10,4 +10,5 @@
 #include "ComPtr.h"
 
 #define ENTRY_ARGS int argc, char* argv[]
+#define ENTRY_ARGS_PUSH argc, argv
 #define ENTRY_FUNCTION main

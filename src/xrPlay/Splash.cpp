@@ -229,61 +229,61 @@ namespace splash
 #endif
 
     bool running = true;
-    SPLASH_API int Show()
-    {
-        srand((unsigned)time(nullptr));
+	SPLASH_API void Show()
+	{
+		srand((unsigned)time(nullptr));
 
-        SDL_SetAppMetadata("Chezze splash", "1.3.3.7-01a", "com.chezze.ix_splash");
+		SDL_SetAppMetadata("Chezze splash", "1.3.3.7-01a", "com.chezze.ix_splash");
 
-        if (!SDL_Init(SDL_INIT_VIDEO))
-            return 1;
+		if (!SDL_Init(SDL_INIT_VIDEO))
+		{
+			return;
+		}
 
 #if DISABLE_SPLASH_EVENTS
-        splash_render_prikol = NORMIS;
+		splash_render_prikol = NORMIS;
 #else
-        //idk where the splash shound to enable crt effect, so let's just disable it for now ! :-)
+		// idk where the splash shound to enable crt effect, so let's just disable it for now ! :-)
 
-        if (IsBetweenDec25AndJan5()) splash_render_prikol = NOVA_GODA;
-        else if (IsBetweenOct30AndNov5()) splash_render_prikol = SPOOKY;
-        //else if (crt) sphash_render_prikol = CRT;
-        else splash_render_prikol = NORMIS;
+		if (IsBetweenDec25AndJan5())
+		{
+			splash_render_prikol = NOVA_GODA;
+		}
+		else if (IsBetweenOct30AndNov5())
+		{
+			splash_render_prikol = SPOOKY;
+		}
+		// else if (crt) sphash_render_prikol = CRT;
+		else
+		{
+			splash_render_prikol = NORMIS;
+		}
 #endif
-        
-        unsigned char* imageData = nullptr;
 
-        SDL_Surface* surface = nullptr;
+		unsigned char* imageData = nullptr;
 
-        //check if exist splash.png in exe dir
-        {
-            bool extern_splash = false;
+		SDL_Surface* surface = nullptr;
 
-// \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
-//Mr Forserx, dobav' SDL3_image. Bez nego ne work load png from bin dir
-// /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\ .
+		// check if exist splash.png in exe dir
+		{
+			bool extern_splash = false;
+
+	// \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+	// Mr Forserx, dobav' SDL3_image. Bez nego ne work load png from bin dir
+	// /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\ .
 #if 0
 
-            //wchar_t exePath[MAX_PATH]{};
             std::wstring exePath;
             exePath.resize(MAX_PATH, 0);
-            //DWORD len = GetModuleFileNameW(nullptr, exePath, MAX_PATH);
             auto path_size(GetModuleFileNameW(nullptr, &exePath.front(), MAX_PATH));
             exePath.resize(path_size);
 
-            //if (len != 0 && len < MAX_PATH)
             if (path_size != 0 && path_size < MAX_PATH)
             {
-                //wchar_t* lastSlash = wcsrchr(exePath, L'\\');
-                //if (!lastSlash) return false;
-
-               // wcscpy_s(lastSlash + 1, MAX_PATH - (lastSlash - exePath), L"splash.png");
-
                 size_t lastSlash = exePath.find_last_of('\\');
 
                 if (lastSlash != -1)
                     exePath.replace(lastSlash + 1, exePath.size() - (lastSlash + 1), L"");
-
-                //if (exePath[exePath.size()] != '\\')
-                //	exePath += L'\\';
 
                 exePath += L"splash.png";
 
@@ -320,199 +320,193 @@ namespace splash
 
 #endif
 
-            if (!extern_splash)
-            {
+			if (!extern_splash)
+			{
 #ifndef _EDITOR
-                CEngineExternal engineExternal; // Hack
-                auto platform = engineExternal.GetCurrentPlatform();
+				CEngineExternal engineExternal; // Hack
+				auto platform = engineExternal.GetCurrentPlatform();
 
-                switch (splash_render_prikol)
-                {
-                case NOVA_GODA:
-                    background_resource_id = nova_goda::getBackgroundID(platform);
+				switch (splash_render_prikol)
+				{
+					case NOVA_GODA:
+						background_resource_id = nova_goda::getBackgroundID(platform);
 
-                    break;
-                case SPOOKY:
-                    background_resource_id = spooky::getBackgroundID(platform);
-                    break;
-                default:
-                    if (platform == EEngineExternalPlatform::ShadowOfChernobyl)
-                        background_resource_id = IDB_SOC_SPLASH_BG;
-                    else if (platform == EEngineExternalPlatform::ClearSky)
-                        background_resource_id = IDB_CS_SPLASH_BG;
-                    else
-                        background_resource_id = IDB_COP_SPLASH_BG;
-                    break;
-                }
+						break;
+					case SPOOKY:
+						background_resource_id = spooky::getBackgroundID(platform);
+						break;
+					default:
+						if (platform == EEngineExternalPlatform::ShadowOfChernobyl)
+						{
+							background_resource_id = IDB_SOC_SPLASH_BG;
+						}
+						else if (platform == EEngineExternalPlatform::ClearSky)
+						{
+							background_resource_id = IDB_CS_SPLASH_BG;
+						}
+						else
+						{
+							background_resource_id = IDB_COP_SPLASH_BG;
+						}
+						break;
+				}
 #endif
-                surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(background_resource_id), TEXT("PNG"));
+				surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(background_resource_id), TEXT("PNG"));
 
-                if (!surface) {
-                    SDL_Log("Couldn't load bitmap: %s", SDL_GetError());
-                    return SDL_APP_FAILURE;
-                }
-            }
-        }
-        WINDOW_WIDTH = surface->w;
-        WINDOW_HEIGHT = surface->h;
+				if (!surface)
+				{
+					SDL_Log("Couldn't load bitmap: %s", SDL_GetError());
+					return;
+				}
+			}
+		}
+		WINDOW_WIDTH = surface->w;
+		WINDOW_HEIGHT = surface->h;
 
-        if (!SDL_CreateWindowAndRenderer("chezze/renderer/ixray_splash", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_BORDERLESS | SDL_WINDOW_NOT_FOCUSABLE/* | SDL_WINDOW_TRANSPARENT*/, &window, &renderer)) {
-            SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
-            return SDL_APP_FAILURE;
-        }
-        SDL_SetRenderLogicalPresentation(renderer, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+		if (!SDL_CreateWindowAndRenderer("chezze/renderer/ixray_splash", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_BORDERLESS | SDL_WINDOW_NOT_FOCUSABLE /* | SDL_WINDOW_TRANSPARENT*/, &window, &renderer))
+		{
+			SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
+			return;
+		}
+		SDL_SetRenderLogicalPresentation(renderer, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
-        //////////////////////////////
-        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-        if (!texture) {
-            SDL_Log("Couldn't create static texture: %s", SDL_GetError());
-            return SDL_APP_FAILURE;
-        }
-        SDL_DestroySurface(surface);
+		//////////////////////////////
+		SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+		if (!texture)
+		{
+			SDL_Log("Couldn't create static texture: %s", SDL_GetError());
+			return;
+		}
+		SDL_DestroySurface(surface);
 
-        // overlay surface (noise + scanlines)
-        SDL_Surface* overlaySurf = SDL_CreateSurface(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_PIXELFORMAT_RGBA8888
-        );
-        //
-        SDL_Texture* overlayTex = SDL_CreateTexture(
-            renderer,
-            SDL_PIXELFORMAT_RGBA8888,
-            SDL_TEXTUREACCESS_STREAMING,
-            WINDOW_WIDTH, WINDOW_HEIGHT
-        );
-        //
-        SDL_SetTextureBlendMode(overlayTex, SDL_BLENDMODE_BLEND);
-        //////////////////////////////
-        surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(IDB_LOAD_ICON), TEXT("PNG"));
-        stbi_image_free(imageData);
+		// overlay surface (noise + scanlines)
+		SDL_Surface* overlaySurf = SDL_CreateSurface(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_PIXELFORMAT_RGBA8888);
+		//
+		SDL_Texture* overlayTex = SDL_CreateTexture(
+			renderer,
+			SDL_PIXELFORMAT_RGBA8888,
+			SDL_TEXTUREACCESS_STREAMING,
+			WINDOW_WIDTH,
+			WINDOW_HEIGHT
+		);
+		//
+		SDL_SetTextureBlendMode(overlayTex, SDL_BLENDMODE_BLEND);
+		//////////////////////////////
+		surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(IDB_LOAD_ICON), TEXT("PNG"));
+		stbi_image_free(imageData);
 
-        LD_atlas = SDL_CreateTextureFromSurface(renderer, surface);
-        if (!LD_atlas)
-            return 1;
-        SDL_DestroySurface(surface);
-        stbi_image_free(imageData);
+		LD_atlas = SDL_CreateTextureFromSurface(renderer, surface);
+		if (!LD_atlas)
+		{
+			return;
+		}
+		SDL_DestroySurface(surface);
+		stbi_image_free(imageData);
 
-        //font
-        //surface = IMG_Load("font.png");
-        surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(IDB_FONT), TEXT("PNG"));
-        stbi_image_free(imageData);
+		// font
+		surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(IDB_FONT), TEXT("PNG"));
+		stbi_image_free(imageData);
 
-        fontTexture = SDL_CreateTextureFromSurface(renderer, surface);
+		fontTexture = SDL_CreateTextureFromSurface(renderer, surface);
 
-        CHAR_WIDTH = surface->w / CHARS_PER_ROW;
-        CHAR_HEIGHT = surface->h / CHARS_PER_COL;
-        //
+		CHAR_WIDTH = surface->w / CHARS_PER_ROW;
+		CHAR_HEIGHT = surface->h / CHARS_PER_COL;
+		//
 
 
-        float texW, texH;
-        SDL_GetTextureSize(LD_atlas, &texW, &texH);
+		float texW, texH;
+		SDL_GetTextureSize(LD_atlas, &texW, &texH);
 
-        int frameW = texW / LD_COLS;
-        int frameH = texH / LD_ROWS;
+		int frameW = texW / LD_COLS;
+		int frameH = texH / LD_ROWS;
 
-        int currentFrame = 0;
-        float timer = 0.0f;
+		int currentFrame = 0;
+		float timer = 0.0f;
 
-        Uint64 prevTicks = SDL_GetTicks();
+		Uint64 prevTicks = SDL_GetTicks();
 
 #ifndef _EDITOR
-        if (splash_render_prikol == NOVA_GODA)
-            splash::nova_goda::init_snow(WINDOW_WIDTH, WINDOW_HEIGHT);
+		if (splash_render_prikol == NOVA_GODA)
+		{
+			splash::nova_goda::init_snow(WINDOW_WIDTH, WINDOW_HEIGHT);
+		}
 #endif
 
-        SDL_PropertiesID props = SDL_GetWindowProperties(window);
-        HWND hwnd = (HWND)SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+		SDL_PropertiesID props = SDL_GetWindowProperties(window);
+		HWND hwnd = (HWND)SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
 
-        if (!hwnd) {
-            SDL_Log("Failed to get HWND: %s", SDL_GetError());
-        }
-        else {
-            //HZ, MAYBE THIS HELP WITH FOCUSING WINDOW ON LAUNCH
-            SetForegroundWindow(hwnd);
-            //SDL_Log("HWND: %p", hwnd);
-        }
+		if (!hwnd)
+		{
+			SDL_Log("Failed to get HWND: %s", SDL_GetError());
+		}
+		else
+		{
+			SetForegroundWindow(hwnd);
+		}
 
+		while (running)
+		{
+			Uint64 now = SDL_GetTicks();
+			float delta = (now - prevTicks) / 1000.0f;
+			prevTicks = now;
 
+			timer += delta;
+			if (timer >= LD_FRAME_TIME)
+			{
+				timer -= LD_FRAME_TIME;
+				currentFrame = (currentFrame + 1) % LD_FRAME_COUNT;
+			}
 
-        while (running)
-        {
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+			SDL_RenderClear(renderer);
 
-            Uint64 now = SDL_GetTicks();
-            float delta = (now - prevTicks) / 1000.0f;
-            prevTicks = now;
+			SDL_RenderTexture(renderer, texture, nullptr, nullptr);
 
-            timer += delta;
-            if (timer >= LD_FRAME_TIME)
-            {
-                timer -= LD_FRAME_TIME;
-                currentFrame = (currentFrame + 1) % LD_FRAME_COUNT;
-            }
+			{
+				int col = currentFrame % LD_COLS;
+				int row = currentFrame / LD_COLS;
 
-            //while (SDL_PollEvent(&e))
-            //{
-            //    if (e.type == SDL_EVENT_QUIT)
-            //        running = false;
-            //}
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            SDL_RenderClear(renderer);
+				SDL_FRect src{
+					float(col * frameW),
+					float(row * frameH),
+					float(frameW),
+					float(frameH)
+				};
 
-            SDL_RenderTexture(renderer, texture, nullptr, nullptr);
-
-            {
-                int col = currentFrame % LD_COLS;
-                int row = currentFrame / LD_COLS;
-
-                SDL_FRect src{
-                    float(col * frameW),
-                    float(row * frameH),
-                    float(frameW),
-                    float(frameH)
-                };
-                //POSITIONING OF LOADING ANIMATION SCHNYAGA
-                SDL_FRect dst{
-                     1.f, WINDOW_HEIGHT - 10.f - frameH,
-                     //WINDOW_WIDTH - 5.f - frameW, WINDOW_HEIGHT - 5.f - frameH,
-                     //WINDOW_WIDTH - 5.f - frameW, 5.f,
-                     float(frameW),
-                     float(frameH)
-                };
-                SDL_RenderTexture(renderer, LD_atlas, &src, &dst);
-            }
-            UpdatepProgressBar(progress_percent, SPLASH_STATUS);
+				// POSITIONING OF LOADING ANIMATION SCHNYAGA
+				SDL_FRect dst{
+					1.f, WINDOW_HEIGHT - 10.f - frameH, float(frameW), float(frameH)
+				};
+				SDL_RenderTexture(renderer, LD_atlas, &src, &dst);
+			}
+			UpdatepProgressBar(progress_percent, SPLASH_STATUS);
 
 #ifndef _EDITOR
-            renderPrikolHub(overlaySurf, overlayTex);
+			renderPrikolHub(overlaySurf, overlayTex);
 
-    #ifdef DEBUG_DRAW
-        #ifdef NDEBUG
-                    RenderText("DEV BUILD", 0, 0);
-        #else
-                    RenderText("DEBUG BUILD", 0, 0);
-        #endif
-    #endif // !_NDEBUG
+#ifdef DEBUG_DRAW
+#ifdef NDEBUG
+			RenderText("DEV BUILD", 0, 0);
+#else
+			RenderText("DEBUG BUILD", 0, 0);
+#endif
+#endif // !_NDEBUG
 #endif // _EDITOR
 
-            SDL_RenderPresent(renderer);
+			SDL_RenderPresent(renderer);
 
-            SDL_Delay(16); // ~60 FPS
-        }
+			SDL_Delay(16); // ~60 FPS
+		}
 
-        SDL_DestroyTexture(texture);
-        SDL_DestroyTexture(overlayTex);
-        SDL_DestroySurface(overlaySurf);
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-
-        //IMG_Quit();
-        //SDL_Quit();
-        return 1;
-    }
+		SDL_DestroyTexture(texture);
+		SDL_DestroyTexture(overlayTex);
+		SDL_DestroySurface(overlaySurf);
+		SDL_DestroyRenderer(renderer);
+		SDL_DestroyWindow(window);
+	}
 
     SPLASH_API void Close()
     {
-        //SDL_Event e{};
-        //e.type = SDL_EVENT_QUIT;
-        //SDL_PushEvent(&e);
         running = false;
     }
 }
