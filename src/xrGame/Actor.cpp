@@ -460,48 +460,10 @@ void CActor::Load	(const char* section )
 	_wristwatchController.LoadSettings();
 	//////////////////////////////////////////////////////////////////////////
 	
-	SpatialComponent->spatial.type	|=	ESPATIAL_TYPE::VISIBLEFORAI;
-	SpatialComponent->spatial.type	&= ~ESPATIAL_TYPE::REACTTOSOUND;
+	SpatialComponent->type	|=	ESPATIAL_TYPE::VISIBLEFORAI;
+	SpatialComponent->type	&= ~ESPATIAL_TYPE::REACTTOSOUND;
 	
 	//////////////////////////////////////////////////////////////////////////
-
-	// m_PhysicMovementControl: General
-	//m_PhysicMovementControl->SetParent		(this);
-
-
-	/*
-	Fbox	bb;Fvector	vBOX_center,vBOX_size;
-	// m_PhysicMovementControl: BOX
-	vBOX_center= pSettings->r_fvector3	(section,"ph_box2_center"	);
-	vBOX_size	= pSettings->r_fvector3	(section,"ph_box2_size"		);
-	bb.set	(vBOX_center,vBOX_center); bb.grow(vBOX_size);
-	character_physics_support()->movement()->SetBox		(2,bb);
-
-	// m_PhysicMovementControl: BOX
-	vBOX_center= pSettings->r_fvector3	(section,"ph_box1_center"	);
-	vBOX_size	= pSettings->r_fvector3	(section,"ph_box1_size"		);
-	bb.set	(vBOX_center,vBOX_center); bb.grow(vBOX_size);
-	character_physics_support()->movement()->SetBox		(1,bb);
-
-	// m_PhysicMovementControl: BOX
-	vBOX_center= pSettings->r_fvector3	(section,"ph_box0_center"	);
-	vBOX_size	= pSettings->r_fvector3	(section,"ph_box0_size"		);
-	bb.set	(vBOX_center,vBOX_center); bb.grow(vBOX_size);
-	character_physics_support()->movement()->SetBox		(0,bb);
-	*/
-	
-
-
-	
-	
-	
-	
-	//// m_PhysicMovementControl: Foots
-	//Fvector	vFOOT_center= pSettings->r_fvector3	(section,"ph_foot_center"	);
-	//Fvector	vFOOT_size	= pSettings->r_fvector3	(section,"ph_foot_size"		);
-	//bb.set	(vFOOT_center,vFOOT_center); bb.grow(vFOOT_size);
-	////m_PhysicMovementControl->SetFoots	(vFOOT_center,vFOOT_size);
-
 	// m_PhysicMovementControl: Crash speed and mass
 	float	cs_min		= pSettings->r_float	(section,"ph_crash_speed_min"	);
 	float	cs_max		= pSettings->r_float	(section,"ph_crash_speed_max"	);
@@ -547,34 +509,36 @@ void CActor::Load	(const char* section )
 	character_physics_support()->in_Load		(section);
 	
 
-if(!g_dedicated_server)
-{
-	const char* hit_snd_sect = pSettings->r_string(section,"hit_sounds");
-	for(int hit_type=0; hit_type<(int)ALife::eHitTypeMax; ++hit_type)
+	if (!g_dedicated_server)
 	{
-		const char* hit_name = ALife::g_cafHitType2String((ALife::EHitType)hit_type);
-		const char* hit_snds = READ_IF_EXISTS(pSettings, r_string, hit_snd_sect, hit_name, "");
-		int cnt = _GetItemCount(hit_snds);
-		string128		tmp;
-		if (hit_type != (int)ALife::eHitTypeLightBurn && hit_type != (int)ALife::eHitTypePhysicStrike)
-			VERIFY			(cnt!=0);
-		for(int i=0; i<cnt;++i)
+		const char* hit_snd_sect = pSettings->r_string(section, "hit_sounds");
+		for (int hit_type = 0; hit_type < (int)ALife::eHitTypeMax; ++hit_type)
 		{
-			sndHit[hit_type].push_back		(ref_sound());
-			sndHit[hit_type].back().create	(_GetItem(hit_snds,i,tmp),st_Effect,sg_SourceType);
+			const char* hit_name = ALife::g_cafHitType2String((ALife::EHitType)hit_type);
+			const char* hit_snds = READ_IF_EXISTS(pSettings, r_string, hit_snd_sect, hit_name, "");
+			int cnt = _GetItemCount(hit_snds);
+			string128 tmp;
+			if (hit_type != (int)ALife::eHitTypeLightBurn && hit_type != (int)ALife::eHitTypePhysicStrike)
+			{
+				VERIFY(cnt != 0);
+			}
+			for (int i = 0; i < cnt; ++i)
+			{
+				sndHit[hit_type].push_back(ref_sound());
+				sndHit[hit_type].back().create(_GetItem(hit_snds, i, tmp), st_Effect, sg_SourceType);
+			}
+			char buf[256];
+
+			::Sound->create(sndDie[0], xr_strconcat(buf, *cName(), "\\die0"), st_Effect, SOUND_TYPE_MONSTER_DYING);
+			::Sound->create(sndDie[1], xr_strconcat(buf, *cName(), "\\die1"), st_Effect, SOUND_TYPE_MONSTER_DYING);
+			::Sound->create(sndDie[2], xr_strconcat(buf, *cName(), "\\die2"), st_Effect, SOUND_TYPE_MONSTER_DYING);
+			::Sound->create(sndDie[3], xr_strconcat(buf, *cName(), "\\die3"), st_Effect, SOUND_TYPE_MONSTER_DYING);
+
+			m_HeavyBreathSnd.create(pSettings->r_string(section, "heavy_breath_snd"), st_Effect, SOUND_TYPE_MONSTER_INJURING);
+			m_BloodSnd.create(pSettings->r_string(section, "heavy_blood_snd"), st_Effect, SOUND_TYPE_MONSTER_INJURING);
+			m_DangerSnd.create(READ_IF_EXISTS(pSettings, r_string, section, "heavy_danger_snd", pSettings->r_string(section, "heavy_blood_snd")), st_Effect, SOUND_TYPE_MONSTER_INJURING);
 		}
-		char buf[256];
-
-		::Sound->create		(sndDie[0],			xr_strconcat(buf,*cName(),"\\die0"), st_Effect,SOUND_TYPE_MONSTER_DYING);
-		::Sound->create		(sndDie[1],			xr_strconcat(buf,*cName(),"\\die1"), st_Effect,SOUND_TYPE_MONSTER_DYING);
-		::Sound->create		(sndDie[2],			xr_strconcat(buf,*cName(),"\\die2"), st_Effect,SOUND_TYPE_MONSTER_DYING);
-		::Sound->create		(sndDie[3],			xr_strconcat(buf,*cName(),"\\die3"), st_Effect,SOUND_TYPE_MONSTER_DYING);
-
-		m_HeavyBreathSnd.create	(pSettings->r_string(section,"heavy_breath_snd"), st_Effect,SOUND_TYPE_MONSTER_INJURING);
-		m_BloodSnd.create		(pSettings->r_string(section,"heavy_blood_snd"), st_Effect,SOUND_TYPE_MONSTER_INJURING);
-		m_DangerSnd.create		(READ_IF_EXISTS(pSettings, r_string, section,"heavy_danger_snd", pSettings->r_string(section, "heavy_blood_snd")), st_Effect,SOUND_TYPE_MONSTER_INJURING);
 	}
-}
 
 	cam_Set(eacFirstEye);
 
@@ -1203,11 +1167,9 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 void start_tutorial(const char* name);
 void CActor::Die	(CObject* who)
 {
-	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::ACTOR_ALIVE;
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ACTOR_DEAD;
-#ifdef DEBUG
-	Msg("--- Actor [%s] dies !", this->Name());
-#endif // #ifdef DEBUG
+	SpatialComponent->type &= ~ESPATIAL_TYPE::ACTOR_ALIVE;
+	SpatialComponent->type |= ESPATIAL_TYPE::ACTOR_DEAD;
+
 	inherited::Die		(who);
 
 	if (OnServer())

@@ -155,7 +155,7 @@ bool CArtefact::net_Spawn(CSE_Abstract* DC)
 		StartLights();
 	}
 
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ARTEFACT;
+	SpatialComponent->type |= ESPATIAL_TYPE::ARTEFACT;
 	return							result;
 }
 

@@ -125,7 +125,7 @@ void CPHObject::Collide()
 
 void CPHObject::CollideDynamics()
 {
-	g_SpatialSpacePhysic->q_box(ph_world->r_spatial, 0, ESPATIAL_TYPE::PHYSIC, SpatialComponent->spatial.sphere.P, AABB);
+	g_SpatialSpacePhysic->q_box(ph_world->r_spatial, 0, ESPATIAL_TYPE::PHYSIC, SpatialComponent->sphere.P, AABB);
 	qResultVec& result = ph_world->r_spatial;
 	qResultIt i = result.begin(), e = result.end();
 	for (; i != e; ++i) {

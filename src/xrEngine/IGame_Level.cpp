@@ -376,8 +376,8 @@ void	IGame_Level::SoundEvent_Register	( ref_sound_data_ptr S, float range )
 		if (CO->getDestroy()) continue;
 
 		// Energy and signal
-		VERIFY(_valid(spatial->spatial.sphere.P));
-		float dist = snd_position.distance_to(spatial->spatial.sphere.P);
+		VERIFY(_valid(spatial->sphere.P));
+		float dist = snd_position.distance_to(spatial->sphere.P);
 		if (dist>p.max_ai_distance) continue;
 		VERIFY				(_valid(dist));
 		VERIFY2				(!fis_zero(p.max_ai_distance), S->handle->file_name());
@@ -385,9 +385,9 @@ void	IGame_Level::SoundEvent_Register	( ref_sound_data_ptr S, float range )
 		VERIFY				(_valid(Power));
 		if (Power>EPS_S)
 		{
-			float occ = Sound->get_occlusion_to(spatial->spatial.sphere.P,snd_position);
-			VERIFY			(_valid(occ))	;
-			Power			*= occ;
+			float occ = Sound->get_occlusion_to(spatial->sphere.P,snd_position);
+			VERIFY(_valid(occ));
+			Power *= occ;
 			if (Power>EPS_S)
 				snd_Events.push_back({ L, S, Power });
 			}

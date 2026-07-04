@@ -80,7 +80,7 @@ bool CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 	const static bool isAiDieInAnomaly = EngineExternal()[EEngineExternalGame::EnableAiDieInAnomaly];
 	if (!isAiDieInAnomaly || zone == nullptr || zone->cast_radioactive_zone() != nullptr)
 	{
-		SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::VISIBLEFORAI;
+		SpatialComponent->type &= ~ESPATIAL_TYPE::VISIBLEFORAI;
 	}
 	
 	//:(
@@ -88,26 +88,26 @@ bool CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 		bool space_restrictor = true;
 		if (CLS_ID == CLSID_SMART_TERRAIN)
 		{
-			SpatialComponent->spatial.type |= ESPATIAL_TYPE::SMART_TERRAIN;
+			SpatialComponent->type |= ESPATIAL_TYPE::SMART_TERRAIN;
 			space_restrictor = false;
 		}
 		else if (CLS_ID == CLSID_SIM_FACTION)
 		{
-			SpatialComponent->spatial.type |= ESPATIAL_TYPE::SIM_FACTION;
+			SpatialComponent->type |= ESPATIAL_TYPE::SIM_FACTION;
 			space_restrictor = false;
 		}
 		else if (!strcmp(cNameSect_str(), "camp_zone"))
 		{
-			SpatialComponent->spatial.type |= ESPATIAL_TYPE::CAMP_ZONE;
+			SpatialComponent->type |= ESPATIAL_TYPE::CAMP_ZONE;
 			space_restrictor = false;
 		}
 		else if (!strcmp(cNameSect_str(), "anomal_zone"))
 		{
-			SpatialComponent->spatial.type |= ESPATIAL_TYPE::ANOMAL_ZONE_LOGIC;
+			SpatialComponent->type |= ESPATIAL_TYPE::ANOMAL_ZONE_LOGIC;
 			space_restrictor = false;
 		}
 		if(space_restrictor)
-			SpatialComponent->spatial.type |= ESPATIAL_TYPE::SPACE_RESTRICTOR;
+			SpatialComponent->type |= ESPATIAL_TYPE::SPACE_RESTRICTOR;
 	}
 	
 	setEnabled(false);

@@ -236,7 +236,7 @@ void CWristwatchController::UpdateAnomalyGlitch(const CActor& actor)
 				continue;
 			}
 
-			const float distance = actor.Position().distance_to(spatial->spatial.sphere.P);
+			const float distance = actor.Position().distance_to(spatial->sphere.P);
 			const float influence = 1.0f - clampr(distance / _settings.anomalyGlitchRadius, 0.0f, 1.0f);
 			glitchStrength = std::max(glitchStrength, influence * influence * (3.0f - 2.0f * influence));
 		}

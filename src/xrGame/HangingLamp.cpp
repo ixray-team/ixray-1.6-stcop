@@ -159,7 +159,7 @@ bool CHangingLamp::net_Spawn(CSE_Abstract* DC)
 	setVisible					((bool)!!Visual());
 	setEnabled					((bool)!!collidable.model);
 
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::LIGHT_LAMP;
+	SpatialComponent->type |= ESPATIAL_TYPE::LIGHT_LAMP;
 
 	return						(true);
 }
@@ -222,8 +222,10 @@ void CHangingLamp::UpdateCL	()
 
 	if (Alive() && light_render->get_active())
 	{
-		if(Visual()&&Render->ViewBase.testSphere_dirty(SpatialComponent->spatial.sphere.P, SpatialComponent->spatial.sphere.R+light_render->get_homdata().sphere.R))
-			PKinematics(Visual())->CalculateBones	();
+		if (Visual() && Render->ViewBase.testSphere_dirty(SpatialComponent->sphere.P, SpatialComponent->sphere.R + light_render->get_homdata().sphere.R))
+		{
+			PKinematics(Visual())->CalculateBones();
+		}
 
 		// update T&R from light (main) bone
 		Fmatrix xf;

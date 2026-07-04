@@ -78,7 +78,7 @@ void	CGlow::set_color		(float r, float g, float b)	{
 
 void CGlow::spatial_move()
 {
-	SpatialComponent->spatial.sphere.set(position, radius);
+	SpatialComponent->sphere.set(position, radius);
 	ISpatialOwner::spatial_move();
 }
 //////////////////////////////////////////////////////////////////////
@@ -108,7 +108,7 @@ void CGlowManager::Load		(IReader* fs)
 		CGlow* G			= new CGlow();
 		fs->r				(&G->position,	3*sizeof(float));
 		fs->r				(&G->radius,	1*sizeof(float));
-		G->SpatialComponent->spatial.sphere.set(G->position, G->radius);
+		G->SpatialComponent->sphere.set(G->position, G->radius);
 		G->direction.set	( 0,0,0 );
 
 		u16 S				= fs->r_u16();
@@ -118,7 +118,7 @@ void CGlowManager::Load		(IReader* fs)
 		G->dwFrame			= 0x0;
 		G->bTestResult		= true;
 
-		G->SpatialComponent->spatial.type		= ESPATIAL_TYPE::RENDERABLE;
+		G->SpatialComponent->type		= ESPATIAL_TYPE::RENDERABLE;
 
 		G->set_active		(true);
 

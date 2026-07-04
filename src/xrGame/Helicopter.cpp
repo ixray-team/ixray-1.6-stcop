@@ -21,8 +21,8 @@ CHelicopter::CHelicopter()
 	m_light_render	= nullptr;
 	m_lanim			= nullptr;
 
-	SpatialComponent->spatial.type  |= ESPATIAL_TYPE::VISIBLEFORAI;
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::HELI;
+	SpatialComponent->type  |= ESPATIAL_TYPE::VISIBLEFORAI;
+	SpatialComponent->type |= ESPATIAL_TYPE::HELI;
 
 	m_movement.parent	= this;
 	m_body.parent		= this;

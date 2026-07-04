@@ -46,13 +46,13 @@ void CLightR_Manager::render_point	(u32 _priority)
 	for (xr_vector<light*>::iterator it=selected_point.begin(); it!=selected_point.end(); it++)
 	{
 		light*	L					= *it;
-		if (L->SpatialComponent->spatial.sector == nullptr && _valid(L->range))
+		if (L->SpatialComponent->sector == nullptr && _valid(L->range))
 		{
 			continue;
 		}
 
 		//		0. Dimm & Clip
-		float	lc_dist				= lc_COP.distance_to	(L->SpatialComponent->spatial.sphere.P) - L->SpatialComponent->spatial.sphere.R;
+		float	lc_dist				= lc_COP.distance_to	(L->SpatialComponent->sphere.P) - L->SpatialComponent->sphere.R;
 		float	lc_scale			= 1 - lc_dist/lc_limit;
 		if		(lc_scale<EPS)		continue;
 		if		(L->range<0.01f)	continue;
@@ -90,12 +90,12 @@ void CLightR_Manager::render_point	(u32 _priority)
 		RImplementation.r1_dlight_tcgen		= L_texgen;
 
 		//		3. Calculate visibility for light + build soring tree
-		VERIFY										(L->SpatialComponent->spatial.sector);
+		VERIFY										(L->SpatialComponent->sector);
 		if( _priority == 1)
 			RImplementation.r_pmask						(false,true);
 
 		RImplementation.r_dsgraph_render_subspace	(
-			L->SpatialComponent->spatial.sector,
+			L->SpatialComponent->sector,
 			L_combine,
 			L_pos,
 			true,
@@ -130,12 +130,12 @@ void CLightR_Manager::render_spot	(u32 _priority)
 	for (xr_vector<light*>::iterator it = selected_spot.begin(); it != selected_spot.end(); it++)
 	{
 		light* L = *it;
-		if (L->SpatialComponent->spatial.sector == nullptr)
+		if (L->SpatialComponent->sector == nullptr)
 		{
 			continue;
 		}
 		//		0. Dimm & Clip
-		float	lc_dist = lc_COP.distance_to(L->SpatialComponent->spatial.sphere.P) - L->SpatialComponent->spatial.sphere.R;
+		float	lc_dist = lc_COP.distance_to(L->SpatialComponent->sphere.P) - L->SpatialComponent->sphere.R;
 		float	lc_scale = 1 - lc_dist / lc_limit;
 		if (lc_scale < EPS)		continue;
 
@@ -170,13 +170,13 @@ void CLightR_Manager::render_spot	(u32 _priority)
 		RImplementation.r1_dlight_tcgen = L_texgen;
 
 		//		3. Calculate visibility for light + build soring tree
-		VERIFY(L->SpatialComponent->spatial.sector);
+		VERIFY(L->SpatialComponent->sector);
 		// RImplementation.marker					++;
 		if (_priority == 1)
 			RImplementation.r_pmask(false, true);
 
 		RImplementation.r_dsgraph_render_subspace(
-			L->SpatialComponent->spatial.sector,
+			L->SpatialComponent->sector,
 			L_combine,
 			L_pos,
 			true,
@@ -228,7 +228,7 @@ void CLightR_Manager::add(light* L)
 	if (L->range < 0.1f)
 		return;
 
-	if (L->SpatialComponent->spatial.sector == nullptr)
+	if (L->SpatialComponent->sector == nullptr)
 		return;
 	if (IRender_Light::POINT == L->flags.type)
 	{

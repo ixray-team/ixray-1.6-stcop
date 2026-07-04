@@ -146,7 +146,7 @@ void CCar::cb_Steer(CBoneInstance* B)
 void	CCar::Load(const char* section)
 {
 	inherited::Load(section);
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::VISIBLEFORAI;
+	SpatialComponent->type |= ESPATIAL_TYPE::VISIBLEFORAI;
 
 	CInventoryOwner::Load(section);
 	inventory().m_pOwner = this;
@@ -197,7 +197,7 @@ bool CCar::net_Spawn(CSE_Abstract* DC)
 			m_memory->reload(pUserData->r_string("visual_memory_definition", "section"));
 		}
 	}
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::CAR;
+	SpatialComponent->type |= ESPATIAL_TYPE::CAR;
 	return (CScriptEntity::net_Spawn(DC) && R);
 }
 

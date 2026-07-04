@@ -29,10 +29,10 @@ struct spatial_ray_walker final
 			if (!S.get())
 				continue;
 
-			if (ESPATIAL_TYPE::NONE == (S->spatial.type & mask))
+			if (ESPATIAL_TYPE::NONE == (S->type & mask))
 				continue;
 
-			Fsphere& sS = S->spatial.sphere;
+			Fsphere& sS = S->sphere;
 			int quantity;
 			float afT[2];
 			Fsphere::ERP_Result	result = sS.intersect(pos, fwd_dir,range,quantity,afT);

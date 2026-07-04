@@ -10,6 +10,7 @@ void CRenderTarget::accum_spot(light* L)
 	{
 		return;
 	}
+
 	PROF_EVENT("CRenderTarget::accum_spot")
 	phase_accumulator();
 	RImplementation.stats.l_visible++;
@@ -17,13 +18,15 @@ void CRenderTarget::accum_spot(light* L)
 	// *** assume accumulator already setup ***
 	// *****************************	Mask by stencil		*************************************
 	ref_shader		shader;
-	if(IRender_Light::OMNIPART == L->flags.type) {
+	if(IRender_Light::OMNIPART == L->flags.type)
+	{
 		shader = L->s_point;
 		if(!shader) {
 			shader = s_accum_point;
 		}
 	}
-	else {
+	else 
+	{
 		shader = L->s_spot;
 		if(!shader) {
 			shader = s_accum_spot;
@@ -175,7 +178,8 @@ void CRenderTarget::accum_spot(light* L)
 	}
 }
 
-void CRenderTarget::accum_volumetric(light* L) {
+void CRenderTarget::accum_volumetric(light* L)
+{
 	if (L == nullptr)
 	{
 		return;
@@ -201,8 +205,6 @@ void CRenderTarget::accum_volumetric(light* L) {
 		RCache.set_xform_view(Device.mView);
 		RCache.set_xform_project(Device.mProject);
 		bIntersect = enable_scissor(L);
-
-		//enable_dbt_bounds				(L);
 	}
 
 	RCache.set_ColorWriteEnable();
@@ -259,19 +261,14 @@ void CRenderTarget::accum_volumetric(light* L) {
 		ClipFrustum.CreateFromMatrix(mFrustumSrc, FRUSTUM_P_ALL);
 		//	Adjust frustum far plane
 		//	4 - far, 5 - near
-		ClipFrustum.planes[4].d -=
-			(ClipFrustum.planes[4].d + ClipFrustum.planes[5].d) * (1 - L->m_volumetric_distance);
-
+		ClipFrustum.planes[4].d -= (ClipFrustum.planes[4].d + ClipFrustum.planes[5].d) * (1 - L->m_volumetric_distance);
 	}
 
 	//	Calculate camera space AABB
 	//	Adjust AABB according to the adjusted distance for the light volume
-	Fbox	aabb;
-
-	//float	scaledRadius = L->spatial.sphere.R * (1+L->m_volumetric_distance)*0.5f;
-	float	scaledRadius = L->SpatialComponent->spatial.sphere.R * L->m_volumetric_distance;
-	Fvector	rr = Fvector().set(scaledRadius, scaledRadius, scaledRadius);
-	Fvector pt = L->SpatialComponent->spatial.sphere.P;
+	float	ScaledRadius = L->SpatialComponent->sphere.R * L->m_volumetric_distance;
+	Fvector	rr = Fvector().set(ScaledRadius, ScaledRadius, ScaledRadius);
+	Fvector pt = L->SpatialComponent->sphere.P;
 	pt.sub(L->position);
 	pt.mul(L->m_volumetric_distance);
 	pt.add(L->position);
@@ -279,6 +276,7 @@ void CRenderTarget::accum_volumetric(light* L) {
 	//	Don't adjust AABB
 
 	Device.mView.transform(pt);
+	Fbox aabb;
 	aabb.setb(pt, rr);
 
 	// Common constants

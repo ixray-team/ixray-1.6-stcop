@@ -60,7 +60,7 @@ bool CCustomRocket::net_Spawn(CSE_Abstract* DC)
 	m_eState = eInactive;
 	bool result = inherited::net_Spawn(DC);
 	m_LaunchXForm.set(XFORM());
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ROCKET;
+	SpatialComponent->type |= ESPATIAL_TYPE::ROCKET;
 	return result;
 }
 

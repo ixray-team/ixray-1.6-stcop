@@ -21,11 +21,11 @@ struct spatial_box_walker final
 		for (ISpatialShared& S : N->items)
 		{
 			if (!S.get()) continue;
-			if (ESPATIAL_TYPE::NONE == (S->spatial.type & mask))	
+			if (ESPATIAL_TYPE::NONE == (S->type & mask))	
 				continue;
 
-			Fvector& sC = S->spatial.sphere.P;
-			float sR = S->spatial.sphere.R;
+			Fvector& sC = S->sphere.P;
+			float sR = S->sphere.R;
 			if (!box.intersect(Fbox{sC-sR,sC+sR})) continue;
 
 			R.push_back(S);
@@ -87,11 +87,11 @@ struct spatial_obb_walker final
 		for (ISpatialShared& S : N->items)
 		{
 			if (!S.get()) continue;
-			if (ESPATIAL_TYPE::NONE == (S->spatial.type & mask))
+			if (ESPATIAL_TYPE::NONE == (S->type & mask))
 				continue;
 
-			Fvector& sC = S->spatial.sphere.P;
-			float sR = S->spatial.sphere.R;
+			Fvector& sC = S->sphere.P;
+			float sR = S->sphere.R;
 			if (!obb.intersectAABB(Fbox{sC-sR,sC+sR})) continue;
 
 			R.push_back(S);
@@ -151,10 +151,10 @@ struct spatial_sphere_walker final
 		{
 			if (!S.get()) continue;
 
-			if (ESPATIAL_TYPE::NONE == (S->spatial.type & mask))
+			if (ESPATIAL_TYPE::NONE == (S->type & mask))
 				continue;
 
-			if (sphere.intersect(S->spatial.sphere))
+			if (sphere.intersect(S->sphere))
 			{
 				R.push_back(S);
 				if (bFirst) return;

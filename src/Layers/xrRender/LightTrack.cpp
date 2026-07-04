@@ -580,14 +580,8 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 
 			if (position.distance_to(source->position) < R)
 			{
-				if((spatial->spatial.type != ESPATIAL_TYPE::LIGHTSOURCE) || !source->flags.bStatic)
+				if((spatial->type != ESPATIAL_TYPE::LIGHTSOURCE) || !source->flags.bStatic)
 				{
-					// TODO: Add spot lights support
-					//if (source->flags.type == IRender_Light::LT::SPOT)
-					//{
-					//	continue;
-					//}
-
 					add(source);
 				}
 			}
