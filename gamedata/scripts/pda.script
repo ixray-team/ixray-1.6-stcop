@@ -80,65 +80,68 @@ local dialog_closed = false
 local trade_closed = false
 local upgrade_closed = false
 local npc_dlg_id = nil
+
 function actor_menu_mode(mode)
-	SendScriptCallback("on_actor_wnd_mode_switch", mode)
-	
-	if(mode==0) then
-		SendScriptCallback("on_actor_wnd_closed", mode)
-	else
-		SendScriptCallback("on_actor_wnd_opened", mode)
-	end
-	
-	if(mode==0) then
-		if(last_mode==1) then
-			inventory_wnd_closed()
-			SendScriptCallback("on_actor_inventory_wnd_closed", mode)
-		elseif(last_mode==2) then
-			trade_wnd_closed()
-			SendScriptCallback("on_actor_trade_wnd_closed", mode)
-		elseif(last_mode==3) then
-			upgrade_wnd_closed()
-			SendScriptCallback("on_actor_upgrade_wnd_closed", mode)
-		elseif(last_mode==4) then
-			dead_body_search_wnd_closed()
-			SendScriptCallback("on_actor_dead_body_search_wnd_closed", mode)
-		end
-		last_mode = 0
-	elseif(mode==1) then
-		last_mode = 1
-		inventory_wnd_opened()
-		SendScriptCallback("on_actor_inventory_wnd_opened", mode)
-	elseif(mode==2) then
-		last_mode = 2
-		trade_wnd_opened()
-		SendScriptCallback("on_actor_trade_wnd_opened", mode)
-	elseif(mode==3) then
-		last_mode = 3
-		upgrade_wnd_opened()
-		SendScriptCallback("on_actor_upgrade_wnd_opened", mode)
-	elseif(mode==4) then
-		last_mode = 4
-		dead_body_search_wnd_opened()
-		SendScriptCallback("on_actor_dead_body_search_wnd_opened", mode)
-	elseif(mode==10) then
-		-- coc export begin
-		for k,st in pairs(db.storage) do
-			if (st.object and st.object:is_talking() and st.object:id() ~= AC_ID) then
-				npc_dlg_id = st.object:id()
-				SetRegistryValue("used_npc_id", st.object:id())
-				break
-			end
-		end
-		-- coc export end
-		dialog_wnd_showed()
-		SendScriptCallback("on_actor_dialog_wnd_showed", mode, npc_dlg_id)
-	elseif(mode==11) then
-		SendScriptCallback("actor_on_leave_dialog", GetRegistryValue("used_npc_id"))
-		SetRegistryValue("used_npc_id", nil)
-		dialog_wnd_closed()
-		SendScriptCallback("on_actor_dialog_wnd_closed", mode, npc_dlg_id)
-		npc_dlg_id = nil
-	end
+	return PROF_EVENT_CLOSURE("actor_menu_mode", function()
+        SendScriptCallback("on_actor_wnd_mode_switch", mode)
+        
+        if(mode==0) then
+            SendScriptCallback("on_actor_wnd_closed", mode)
+        else
+            SendScriptCallback("on_actor_wnd_opened", mode)
+        end
+        
+        if(mode==0) then
+            if(last_mode==1) then
+                inventory_wnd_closed()
+                SendScriptCallback("on_actor_inventory_wnd_closed", mode)
+            elseif(last_mode==2) then
+                trade_wnd_closed()
+                SendScriptCallback("on_actor_trade_wnd_closed", mode)
+            elseif(last_mode==3) then
+                upgrade_wnd_closed()
+                SendScriptCallback("on_actor_upgrade_wnd_closed", mode)
+            elseif(last_mode==4) then
+                dead_body_search_wnd_closed()
+                SendScriptCallback("on_actor_dead_body_search_wnd_closed", mode)
+            end
+            last_mode = 0
+        elseif(mode==1) then
+            last_mode = 1
+            inventory_wnd_opened()
+            SendScriptCallback("on_actor_inventory_wnd_opened", mode)
+        elseif(mode==2) then
+            last_mode = 2
+            trade_wnd_opened()
+            SendScriptCallback("on_actor_trade_wnd_opened", mode)
+        elseif(mode==3) then
+            last_mode = 3
+            upgrade_wnd_opened()
+            SendScriptCallback("on_actor_upgrade_wnd_opened", mode)
+        elseif(mode==4) then
+            last_mode = 4
+            dead_body_search_wnd_opened()
+            SendScriptCallback("on_actor_dead_body_search_wnd_opened", mode)
+        elseif(mode==10) then
+            -- coc export begin
+            for k,st in pairs(db.storage) do
+                if (st.object and st.object:is_talking() and st.object:id() ~= AC_ID) then
+                    npc_dlg_id = st.object:id()
+                    SetRegistryValue("used_npc_id", st.object:id())
+                    break
+                end
+            end
+            -- coc export end
+            dialog_wnd_showed()
+            SendScriptCallback("on_actor_dialog_wnd_showed", mode, npc_dlg_id)
+        elseif(mode==11) then
+            SendScriptCallback("actor_on_leave_dialog", GetRegistryValue("used_npc_id"))
+            SetRegistryValue("used_npc_id", nil)
+            dialog_wnd_closed()
+            SendScriptCallback("on_actor_dialog_wnd_closed", mode, npc_dlg_id)
+            npc_dlg_id = nil
+        end
+    end)
 end
 
 function inventory_wnd_opened()
@@ -178,21 +181,23 @@ function dead_body_search_wnd_closed()
 end
 
 function dialog_wnd_showed()
-	dialog_closed = false
-	for k,v in pairs(db.storage) do
-		local npc = v.object
-		if npc ~= nil then
-			local npc_id = npc:id()
-			if npc:is_talking() and npc_id ~= db.actor:id() then
-				local sound_theme = xr_sound.sound_table[npc_id]
-				if sound_theme and sound_theme.reset then
-					sound_theme:reset(npc_id)
-				end
-				break
-			end
-		end
-	end
-	--printf("---:>Talk Dialog show")
+	return PROF_EVENT_CLOSURE("dialog_wnd_showed", function()
+        dialog_closed = false
+        for k,v in pairs(db.storage) do
+            local npc = v.object
+            if npc ~= nil then
+                local npc_id = npc:id()
+                if npc:is_talking() and npc_id ~= db.actor:id() then
+                    local sound_theme = xr_sound.sound_table[npc_id]
+                    if sound_theme and sound_theme.reset then
+                        sound_theme:reset(npc_id)
+                    end
+                    break
+                end
+            end
+        end
+        --printf("---:>Talk Dialog show")
+    end)
 end
 
 function dialog_wnd_closed()
@@ -202,38 +207,42 @@ end
 
 -- CoCray
 function get_time_elapsed()
-	local s_time = level.get_start_time()
-	local seconds = tonumber(game.get_game_time():diffSec(s_time))
-	
-	if (seconds < 60) then 
-		return string.format("%d %s",seconds,game.translate_string("ui_st_secs"))
-	elseif (seconds < 3600) then 
-		return string.format("%d %s",seconds/60,game.translate_string("ui_st_mins"))
-	elseif (seconds < 86400) then 
-		return string.format("%d %s",seconds/60/60,game.translate_string("ui_st_hours"))
-	end
-	
-	return string.format("%d %s",seconds/60/60/24,game.translate_string("ui_st_days"))
+	return PROF_EVENT_CLOSURE("get_time_elapsed", function()
+        local s_time = level.get_start_time()
+        local seconds = tonumber(game.get_game_time():diffSec(s_time))
+        
+        if (seconds < 60) then 
+            return string.format("%d %s",seconds,game.translate_string("ui_st_secs"))
+        elseif (seconds < 3600) then 
+            return string.format("%d %s",seconds/60,game.translate_string("ui_st_mins"))
+        elseif (seconds < 86400) then 
+            return string.format("%d %s",seconds/60/60,game.translate_string("ui_st_hours"))
+        end
+        
+        return string.format("%d %s",seconds/60/60/24,game.translate_string("ui_st_days"))
+    end)
 end 
 --//
 
 function get_stat(index) -- index= int        return string
-	if(index==0) then
-		return tostring(get_time_elapsed())
-	elseif(index==1) then
-		return tostring(xr_statistic.actor_statistic.surges)
-	elseif(index==2) then
-		return tostring(xr_statistic.actor_statistic.completed_quests)
-	elseif(index==3) then
-		return tostring(xr_statistic.actor_statistic.killed_monsters)
-	elseif(index==4) then
-		return tostring(xr_statistic.actor_statistic.killed_stalkers)
-	elseif(index==5) then
-		return tostring(xr_statistic.actor_statistic.artefacts_founded)
-	elseif(index==6) then
-		return tostring(xr_statistic.actor_statistic.founded_secrets)
-	end
-	return "Unknown"
+	return PROF_EVENT_CLOSURE("get_stat", function()
+        if(index==0) then
+            return tostring(get_time_elapsed())
+        elseif(index==1) then
+            return tostring(xr_statistic.actor_statistic.surges)
+        elseif(index==2) then
+            return tostring(xr_statistic.actor_statistic.completed_quests)
+        elseif(index==3) then
+            return tostring(xr_statistic.actor_statistic.killed_monsters)
+        elseif(index==4) then
+            return tostring(xr_statistic.actor_statistic.killed_stalkers)
+        elseif(index==5) then
+            return tostring(xr_statistic.actor_statistic.artefacts_founded)
+        elseif(index==6) then
+            return tostring(xr_statistic.actor_statistic.founded_secrets)
+        end
+        return "Unknown"
+    end)
 end
 
 killed_monsters_tbl =
@@ -370,60 +379,64 @@ function set_state_need_info_for_draw_spots(state)
 end
 
 function fill_primary_objects()
-	for k,v in pairs(primary_objects_tbl) do
-		if type(v) == "table" and v.target ~= nil then
-			if primary_locations_cache[v.target] == nil then
-				local obj_id = get_story_object_id(v.target)
-				if(obj_id) then
-					primary_locations_cache[v.target] = obj_id
-				end
-			end
-			
-			if primary_locations_cache[v.target] and level.map_has_object_spot(primary_locations_cache[v.target], "primary_object") == 0 then
-				if get_state_need_info_for_draw_spots() then
-					if has_alife_info(v.target) then
-						level.map_add_object_spot(primary_locations_cache[v.target], "primary_object", v.hint)
-					end
-				else
-					level.map_add_object_spot(primary_locations_cache[v.target], "primary_object", v.hint)
-				end
-			end
-		end
-	end
+	return PROF_EVENT_CLOSURE("fill_primary_objects", function()
+        for k,v in pairs(primary_objects_tbl) do
+            if type(v) == "table" and v.target ~= nil then
+                if primary_locations_cache[v.target] == nil then
+                    local obj_id = get_story_object_id(v.target)
+                    if(obj_id) then
+                        primary_locations_cache[v.target] = obj_id
+                    end
+                end
+                
+                if primary_locations_cache[v.target] and level.map_has_object_spot(primary_locations_cache[v.target], "primary_object") == 0 then
+                    if get_state_need_info_for_draw_spots() then
+                        if has_alife_info(v.target) then
+                            level.map_add_object_spot(primary_locations_cache[v.target], "primary_object", v.hint)
+                        end
+                    else
+                        level.map_add_object_spot(primary_locations_cache[v.target], "primary_object", v.hint)
+                    end
+                end
+            end
+        end
+    end)
 end
 
 function fill_sleep_zones()
-	local sim = alife()
-	local actor_pos = db.actor:position()
-	
-	for zone_story_name, opt in pairs(sleep_zones_tbl) do
-		if opt.sobj == nil then
-			local obj_id = get_story_object_id(zone_story_name)
-			if obj_id then
-				local sobj = sim:object(obj_id)
-				if sobj and sobj.id then
-					opt.sobj = sobj
-					opt.id = obj_id
-				end
-			end
-		end
-		
-		if opt.sobj and opt.id then
-			local actor_sleep_location_name = "ui_pda2_actor_sleep_location"
-			local has_actor_sleep_location = level.map_has_object_spot(opt.id, actor_sleep_location_name)
-			local distance = opt.sobj.position:distance_to(actor_pos)
-
-			if distance <= distance_draw_sleep_zones then
-				if has_actor_sleep_location == 0 then
-					level.map_add_object_spot(opt.id, actor_sleep_location_name, opt.hint)
-				end
-			else
-				if has_actor_sleep_location == 1 then
-					level.map_remove_object_spot(opt.id, actor_sleep_location_name)
-				end
-			end
-		end
-	end
+	return PROF_EVENT_CLOSURE("fill_sleep_zones", function()
+        local sim = alife()
+        local actor_pos = db.actor:position()
+        
+        for zone_story_name, opt in pairs(sleep_zones_tbl) do
+            if opt.sobj == nil then
+                local obj_id = get_story_object_id(zone_story_name)
+                if obj_id then
+                    local sobj = sim:object(obj_id)
+                    if sobj and sobj.id then
+                        opt.sobj = sobj
+                        opt.id = obj_id
+                    end
+                end
+            end
+            
+            if opt.sobj and opt.id then
+                local actor_sleep_location_name = "ui_pda2_actor_sleep_location"
+                local has_actor_sleep_location = level.map_has_object_spot(opt.id, actor_sleep_location_name)
+                local distance = opt.sobj.position:distance_to(actor_pos)
+    
+                if distance <= distance_draw_sleep_zones then
+                    if has_actor_sleep_location == 0 then
+                        level.map_add_object_spot(opt.id, actor_sleep_location_name, opt.hint)
+                    end
+                else
+                    if has_actor_sleep_location == 1 then
+                        level.map_remove_object_spot(opt.id, actor_sleep_location_name)
+                    end
+                end
+            end
+        end
+    end)
 end
 
 function add_quick_slot_items_on_game_start()
@@ -439,40 +452,42 @@ function add_quick_slot_items_on_game_start()
 end
 
 function change_anomalies_names()
-	if has_alife_info("jup_b32_scanner_reward") then
-		for k,v in pairs(change_objects_tbl) do
-			if has_alife_info(v.group) and not v.enabled then
-				v.enabled = true
-			end
-		end
-	end
-
-	if level.name() ~= "jupiter" then
-		return
-	end
-	for k,v in pairs(change_objects_tbl) do
-		if v.enabled then
-			local obj_id = get_story_object_id(v.target)
-			if (obj_id) and (level.map_has_object_spot(obj_id, "primary_object") ~= 0) then
-				level.map_remove_object_spot(obj_id, "primary_object")
-			end
-			local hint = game.translate_string(v.hint).."\\n".." \\n"
-			local has_af = false
-			local af_table = {}
-			has_af, af_table = xr_conditions.anomaly_has_artefact(db.actor, nil, {v.zone})
-			if has_af then
-				hint = hint..game.translate_string("st_jup_b32_has_af")
-				for k,v in pairs(af_table) do
-					hint = hint.."\\n"..game.translate_string("st_"..v.."_name")
-				end
-			else
-				hint = hint..game.translate_string("st_jup_b32_no_af")
-			end
-			if (obj_id) and level.map_has_object_spot(obj_id, "primary_object") == 0 then
-				level.map_add_object_spot(obj_id, "primary_object", hint)
-			end
-		end
-	end
+	return PROF_EVENT_CLOSURE("change_anomalies_names", function()
+        if has_alife_info("jup_b32_scanner_reward") then
+            for k,v in pairs(change_objects_tbl) do
+                if has_alife_info(v.group) and not v.enabled then
+                    v.enabled = true
+                end
+            end
+        end
+    
+        if level.name() ~= "jupiter" then
+            return
+        end
+        for k,v in pairs(change_objects_tbl) do
+            if v.enabled then
+                local obj_id = get_story_object_id(v.target)
+                if (obj_id) and (level.map_has_object_spot(obj_id, "primary_object") ~= 0) then
+                    level.map_remove_object_spot(obj_id, "primary_object")
+                end
+                local hint = game.translate_string(v.hint).."\\n".." \\n"
+                local has_af = false
+                local af_table = {}
+                has_af, af_table = xr_conditions.anomaly_has_artefact(db.actor, nil, {v.zone})
+                if has_af then
+                    hint = hint..game.translate_string("st_jup_b32_has_af")
+                    for k,v in pairs(af_table) do
+                        hint = hint.."\\n"..game.translate_string("st_"..v.."_name")
+                    end
+                else
+                    hint = hint..game.translate_string("st_jup_b32_no_af")
+                end
+                if (obj_id) and level.map_has_object_spot(obj_id, "primary_object") == 0 then
+                    level.map_add_object_spot(obj_id, "primary_object", hint)
+                end
+            end
+        end
+    end)
 end
 
 -- CoCray

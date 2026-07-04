@@ -37,24 +37,28 @@ function stalker_go_to_waypoint(stalker, patrol_path, path_point)
 
 -- Переводит переменную любого типа (включая nil) в строку. Используется для отладочного вывода информации.
 function to_str(what)
-	if what == nil then
-		return "<nil>"
-	else
-		return tostring(what)
-	end
+	return PROF_EVENT_CLOSURE("copy_table", function() 
+        if what == nil then
+            return "<nil>"
+        else
+            return tostring(what)
+        end
+    end)
 end
 
 --'Копирование таблицы по значению
 function copy_table(dest, src)
-	for k,v in pairs(src) do
-		if type(v) == "table" then
-			--' рекурсивный вызов себя же для подтаблиц
-			dest[k] = {}
-			copy_table(dest[k], v)
-		else
-			dest[k] = v
+	return PROF_EVENT_CLOSURE("copy_table", function() 
+		for k,v in pairs(src) do
+			if type(v) == "table" then
+				--' рекурсивный вызов себя же для подтаблиц
+				dest[k] = {}
+				copy_table(dest[k], v)
+			else
+				dest[k] = v
+			end
 		end
-	end
+	end)
 end
 
 function print_table()
@@ -121,66 +125,72 @@ end
 --
 -- Возвращает true или false
 function cfg_get_bool(char_ini, section, field, object, mandatory, default_val)
-	if mandatory == nil then
-		abort("section '%s': wrong arguments order in call to cfg_get_bool", section)
-	end
-
-	--printf("DEBUG: conf_get_bool: section='%s', field='%s'", section, field)
-	if section and char_ini:section_exist(section) and char_ini:line_exist(section, field) then
-		local ret = char_ini:r_bool(section, field)
-		return ret
-	end
-	if not mandatory then
-		if default_val then
-			if default_val ~= false and default_val ~= true then
-				abort("object '%s': section '%s': field '%s': default value is " ..
-					"not boolean", object:name(), section, field)
-			end
-			return default_val
-		end
-		return false
-	end
-	abort("object '%s': attempt to read a non-existant boolean field '%s' in " ..
-		"section '%s'", object:name(), field, section)
+	return PROF_EVENT_CLOSURE("copy_table", function() 
+        if mandatory == nil then
+            abort("section '%s': wrong arguments order in call to cfg_get_bool", section)
+        end
+    
+        --printf("DEBUG: conf_get_bool: section='%s', field='%s'", section, field)
+        if section and char_ini:section_exist(section) and char_ini:line_exist(section, field) then
+            local ret = char_ini:r_bool(section, field)
+            return ret
+        end
+        if not mandatory then
+            if default_val then
+                if default_val ~= false and default_val ~= true then
+                    abort("object '%s': section '%s': field '%s': default value is " ..
+                        "not boolean", object:name(), section, field)
+                end
+                return default_val
+            end
+            return false
+        end
+        abort("object '%s': attempt to read a non-existant boolean field '%s' in " ..
+            "section '%s'", object:name(), field, section)
+    end)
 end
 
 function cfg_get_string(char_ini, section, field, object, mandatory, gulag_name, default_val)
-	if mandatory == nil or gulag_name == nil then
-		abort("section '%s': wrong arguments order in call to cfg_get_string", section)
-	end
-
-
-	--printf("DEBUG: conf_get_string: section='%s', field='%s'", section, field)
-	if section and char_ini:section_exist(section) and char_ini:line_exist(section, field) then
-		if gulag_name and gulag_name ~= "" then
-			return gulag_name .. "_" .. char_ini:r_string(section, field)
-		else
-			return char_ini:r_string(section, field)
-		end
-	end
-	if not mandatory then
-		return default_val
-	end
-	local err = "'Attempt to read a non-existant string field '" ..
-		field .. "' in section '" .. section .. "'";
-	abort("%s", err)
+	return PROF_EVENT_CLOSURE("cfg_get_string", function() 
+        if mandatory == nil or gulag_name == nil then
+            abort("section '%s': wrong arguments order in call to cfg_get_string", section)
+        end
+    
+    
+        --printf("DEBUG: conf_get_string: section='%s', field='%s'", section, field)
+        if section and char_ini:section_exist(section) and char_ini:line_exist(section, field) then
+            if gulag_name and gulag_name ~= "" then
+                return gulag_name .. "_" .. char_ini:r_string(section, field)
+            else
+                return char_ini:r_string(section, field)
+            end
+        end
+        if not mandatory then
+            return default_val
+        end
+        local err = "'Attempt to read a non-existant string field '" ..
+            field .. "' in section '" .. section .. "'";
+        abort("%s", err)
+    end)
 end
 
 function cfg_get_number(char_ini, section, field, object, mandatory, default_val)
-	if mandatory == nil then
-		abort("section '%s': wrong arguments order in call to cfg_get_number", section)
-	end
-
-	--printf("DEBUG: conf_get_number: section='%s', field='%s'", section, field)
-	if section and char_ini:section_exist(section) and char_ini:line_exist(section, field) then
-		return char_ini:r_float(section, field)
-	end
-	if not mandatory then
-		return default_val
-	end
-	-- local err = "object name '" .. object:name() .. "': attempt to read a non-existant numeric field '" ..
-	--	field .. "' in section '" .. section .. "'";
-	-- abort("%s", err)
+	return PROF_EVENT_CLOSURE("cfg_get_number", function() 
+        if mandatory == nil then
+            abort("section '%s': wrong arguments order in call to cfg_get_number", section)
+        end
+    
+        --printf("DEBUG: conf_get_number: section='%s', field='%s'", section, field)
+        if section and char_ini:section_exist(section) and char_ini:line_exist(section, field) then
+            return char_ini:r_float(section, field)
+        end
+        if not mandatory then
+            return default_val
+        end
+        -- local err = "object name '" .. object:name() .. "': attempt to read a non-existant numeric field '" ..
+        --	field .. "' in section '" .. section .. "'";
+        -- abort("%s", err)
+    end)
 end
 
 function mob_get_string(char_ini, section, field, override, object, mandatory, default_val)
@@ -318,56 +328,58 @@ end
 --При попытке поюзать незапертую дверь она просто силой открывается до максимально допустимого состояния.
 
 function parse_waypoint_data(pathname, wpflags, wpname)
-	local rslt = {}
-
-	rslt.flags = wpflags
-
-	local at
-	if string.find(wpname, "|", at, true) == nil then
-		return rslt
-	end
-
-	local par_num
-	local fld
-	local val
-
-	par_num = 1
-	for param in string.gfind(wpname, "([%w%+~_\\%=%{%}%s%!%-%,%*]+)|*") do
-		if par_num == 1 then
-			-- continue
-		else
-			if param == "" then
-				abort("path '%s': waypoint '%s': syntax error in waypoint name", pathname, wpname)
-			end
-
-			local t_pos = string.find(param, "=", 1, true)
-
-			if t_pos == nil then
-				printf("Path_param: %s", param)
-				abort("path '%s': waypoint '%s': syntax error in waypoint name", pathname, wpname)
-			end
-
-			fld = string.sub(param, 1,t_pos - 1)
-			val = string.sub(param, t_pos + 1)
-
-			if not fld or fld == "" then
-				abort("path '%s': waypoint '%s': syntax error while parsing the param '%s': no field specified",
-					pathname, wpname, param)
-			end
-
-			if not val or val == "" then
-				val = "true"
-			end
-
-			if fld == "a" then
-				rslt[fld] = xr_logic.parse_condlist(db.actor, "waypoint_data", "anim_state", val)
-			else
-				rslt[fld] = val
-			end
-		end
-		par_num = par_num + 1
-	end
-	return rslt
+	return PROF_EVENT_CLOSURE("parse_waypoint_data", function() 
+        local rslt = {}
+    
+        rslt.flags = wpflags
+    
+        local at
+        if string.find(wpname, "|", at, true) == nil then
+            return rslt
+        end
+    
+        local par_num
+        local fld
+        local val
+    
+        par_num = 1
+        for param in string.gfind(wpname, "([%w%+~_\\%=%{%}%s%!%-%,%*]+)|*") do
+            if par_num == 1 then
+                -- continue
+            else
+                if param == "" then
+                    abort("path '%s': waypoint '%s': syntax error in waypoint name", pathname, wpname)
+                end
+    
+                local t_pos = string.find(param, "=", 1, true)
+    
+                if t_pos == nil then
+                    printf("Path_param: %s", param)
+                    abort("path '%s': waypoint '%s': syntax error in waypoint name", pathname, wpname)
+                end
+    
+                fld = string.sub(param, 1,t_pos - 1)
+                val = string.sub(param, t_pos + 1)
+    
+                if not fld or fld == "" then
+                    abort("path '%s': waypoint '%s': syntax error while parsing the param '%s': no field specified",
+                        pathname, wpname, param)
+                end
+    
+                if not val or val == "" then
+                    val = "true"
+                end
+    
+                if fld == "a" then
+                    rslt[fld] = xr_logic.parse_condlist(db.actor, "waypoint_data", "anim_state", val)
+                else
+                    rslt[fld] = val
+                end
+            end
+            par_num = par_num + 1
+        end
+        return rslt
+    end)
 end
 
 function path_parse_waypoints(pathname)
@@ -642,15 +654,17 @@ end
 -- отослать в ближайшую разрешённую ноду по направлению к заданной.
 -- возвращает vertex_id, в которое отправил персонажа
 function send_to_nearest_accessible_vertex( npc, v_id )
-	if not npc:accessible( v_id ) then
-		local vtemp = vector()
-		--printf("vertex_position")
-		v_id, vtemp = npc:accessible_nearest( level.vertex_position( v_id ), vtemp )
-	end
-
-	npc:set_dest_level_vertex_id( v_id )
-
-	return v_id
+	return PROF_EVENT_CLOSURE("send_to_nearest_accessible_vertex", function()
+        if not npc:accessible( v_id ) then
+            local vtemp = vector()
+            --printf("vertex_position")
+            v_id, vtemp = npc:accessible_nearest( level.vertex_position( v_id ), vtemp )
+        end
+    
+        npc:set_dest_level_vertex_id( v_id )
+    
+        return v_id
+    end)
 end
 
 -- происходит ли в данный момент смена уровня?
