@@ -303,7 +303,7 @@ function sim_squad_scripted:clear_assigned_target()
 end
 
 function sim_squad_scripted:assigned_target_avaliable()
-	PROF_EVENT_CLOSURE("net_destroy", function()
+	PROF_EVENT_CLOSURE("assigned_target_avaliable", function()
         local target_obj = self.assigned_target_id and alife():object(self.assigned_target_id)
         if target_obj == nil then
             return false
@@ -314,7 +314,7 @@ function sim_squad_scripted:assigned_target_avaliable()
 end
 
 local function can_help_actor(squad)
-	PROF_EVENT_CLOSURE("net_destroy", function()
+	PROF_EVENT_CLOSURE("can_help_actor", function()
         if empty(xr_combat_ignore.fighting_with_actor_npcs) then
             return false
         end
@@ -826,7 +826,7 @@ end
 --***********************************************************************************************
 
 function sim_squad_scripted:STATE_Write(packet)
-	PROF_EVENT_CLOSURE("net_destroy", function()
+	PROF_EVENT_CLOSURE("STATE_Write", function()
         cse_alife_online_offline_group.STATE_Write (self, packet)
         set_save_marker(packet, "save", false, "sim_squad_scripted")
         
@@ -841,7 +841,7 @@ function sim_squad_scripted:STATE_Write(packet)
 end
 
 function sim_squad_scripted:STATE_Read(packet, size)
-	PROF_EVENT_CLOSURE("net_destroy", function()
+	PROF_EVENT_CLOSURE("STATE_Read", function()
         cse_alife_online_offline_group.STATE_Read (self, packet, size)
         set_save_marker(packet, "load", false, "sim_squad_scripted")
     
@@ -914,13 +914,13 @@ function sim_squad_scripted:on_unregister()
 end
 
 function sim_squad_scripted:can_switch_offline()
-    return PROF_EVENT_CLOSURE("net_destroy", function()
+    return PROF_EVENT_CLOSURE("can_switch_offline", function()
         return cse_alife_online_offline_group.can_switch_offline(self)
     end)
 end
 
 function sim_squad_scripted:can_switch_online()
-    return PROF_EVENT_CLOSURE("net_destroy", function()
+    return PROF_EVENT_CLOSURE("can_switch_online", function()
 	    return cse_alife_online_offline_group.can_switch_online(self)
     end)
 end
@@ -1102,7 +1102,7 @@ end
 
 -- Вызывается 1 раз в момент выбора меня как цели.
 function sim_squad_scripted:on_reach_target(squad)
-	PROF_EVENT_CLOSURE("net_destroy", function()
+	PROF_EVENT_CLOSURE("on_reach_target", function()
         squad:set_location_types()
         local npcCountLast = squad:npc_count() - 1
         for i = 0, npcCountLast, 1 do
@@ -1233,7 +1233,7 @@ end
 
 -- Посчитать мой приоритет для отряда.
 function sim_squad_scripted:evaluate_prior(squad)
-    return PROF_EVENT_CLOSURE("net_destroy", function()
+    return PROF_EVENT_CLOSURE("evaluate_prior", function()
         return simulation_objects.evaluate_prior(self, squad)
     end)
 end
