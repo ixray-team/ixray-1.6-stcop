@@ -2828,6 +2828,7 @@ void RenderOMFEditor_Draw_TableMain()
 }
 
 
+#if IXRAY_OMF_EDITOR_TAB_GAME == 1
 inline const std::string_view& convert_EHudStates_to_string(u8 state) noexcept
 {
 	if (state <= CHUDState::EHudStates::eLastBaseState)
@@ -2839,8 +2840,9 @@ inline const std::string_view& convert_EHudStates_to_string(u8 state) noexcept
 		return magic_enum::enum_name(static_cast<CWeapon::EWeaponStates>(state));
 	}
 }
+#endif
 
-void RenderOMFEditor_Draw_Game_Header(
+void RenderOMFEditor_Draw_Game(
 	CActor* pPlayer
 )
 {
@@ -2875,6 +2877,10 @@ void RenderOMFEditor_Draw_Game_Header(
 					{
 						ImGui::Text("No anims!");
 					}
+				}
+				else
+				{
+					ImGui::Text("No HudItemData!");
 				}
 			}
 			else
@@ -2939,7 +2945,7 @@ void RenderToolsOMFEditorWindow()
 				{
 					if (is_in_game)
 					{
-						RenderOMFEditor_Draw_Game_Header(pPlayer);
+						RenderOMFEditor_Draw_Game(pPlayer);
 					}
 
 					ImGui::EndTabItem();
