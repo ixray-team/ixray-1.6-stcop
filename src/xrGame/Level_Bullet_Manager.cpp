@@ -746,7 +746,7 @@ bool CBulletManager::firetrace_callback	(collide::rq_result& result, LPVOID para
 	
 	float const	air_resistance		= (IsGameTypeSingle()) ? Level().BulletManager().m_fAirResistanceK : bullet.air_resistance;
 
-	if (result.O && (result.O->SpatialComponent->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
+	if (result.O && (result.O->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 	{
 		CGameObject* go = result.O->cast_game_object() ? result.O->cast_game_object() : nullptr;
 

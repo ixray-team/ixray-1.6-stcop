@@ -147,12 +147,12 @@ void CObject::setEnabled(bool _enabled)
 	{
 		Props.bEnabled = 1;	
 		if (collidable.model)
-			SpatialComponent->spatial.type |= ESPATIAL_TYPE::COLLIDEABLE;
+			SpatialComponent->type |= ESPATIAL_TYPE::COLLIDEABLE;
 	}
 	else
 	{
 		Props.bEnabled = 0;
-		SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::COLLIDEABLE;
+		SpatialComponent->type &= ~ESPATIAL_TYPE::COLLIDEABLE;
 	}
 }
 
@@ -163,17 +163,17 @@ void CObject::setVisible(bool _visible, bool _visibleshadow)
 	{ // Parent should control object visibility itself (??????)
 		Props.bVisible = 1;
 		if (renderable.visual)
-			SpatialComponent->spatial.type |= ESPATIAL_TYPE::RENDERABLE;
+			SpatialComponent->type |= ESPATIAL_TYPE::RENDERABLE;
 	}
 	else
 	{
 		Props.bVisible = 0;
-		SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::RENDERABLE;
+		SpatialComponent->type &= ~ESPATIAL_TYPE::RENDERABLE;
 	}
 	if (_visibleshadow)
-		SpatialComponent->spatial.type |= ESPATIAL_TYPE::RENDERABLESHADOW;
+		SpatialComponent->type |= ESPATIAL_TYPE::RENDERABLESHADOW;
 	else
-		SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::RENDERABLESHADOW;
+		SpatialComponent->type &= ~ESPATIAL_TYPE::RENDERABLESHADOW;
 }
 
 //void	CObject::Center					(Fvector& C)	const	{ VERIFY2(renderable.visual,*cName()); renderable.xform.transform_tiny(C,renderable.visual->vis.sphere.P);	}
@@ -231,8 +231,8 @@ void CObject::Load				(const char* section )
 	}
 	setVisible					(false);
 
-	SpatialComponent->spatial.ssa_dyn_factor = READ_IF_EXISTS(pSettings, r_float, section, "ssa_dyn_factor", 0.002f);// минимальный размер на экране при котором объект еще будет виден
-	SpatialComponent->spatial.ssa_d_cam = READ_IF_EXISTS(pSettings, r_float, section, "ssa_d_cam", 220.f);//дистанция в совокупности с fov на которой еще видно объект
+	SpatialComponent->ssa_dyn_factor = READ_IF_EXISTS(pSettings, r_float, section, "ssa_dyn_factor", 0.002f);// минимальный размер на экране при котором объект еще будет виден
+	SpatialComponent->ssa_d_cam = READ_IF_EXISTS(pSettings, r_float, section, "ssa_d_cam", 220.f);//дистанция в совокупности с fov на которой еще видно объект
 }
 
 bool CObject::net_Spawn			(CSE_Abstract* data)
@@ -251,7 +251,7 @@ bool CObject::net_Spawn			(CSE_Abstract* data)
 		}
 	}
 
-	VERIFY(SpatialComponent->spatial.space);
+	VERIFY(SpatialComponent->space);
 
 	spatial_register			();
 
@@ -323,15 +323,15 @@ void	CObject::spatial_update		(float eps_P, float eps_R)
 	} 
 	else
 	{
-		if (SpatialComponent->spatial.node_ptr)
+		if (SpatialComponent->node_ptr)
 		{	// Object registered!
-			if (!fsimilar(Radius(), SpatialComponent->spatial.sphere.R,eps_R))
+			if (!fsimilar(Radius(), SpatialComponent->sphere.R,eps_R))
 				spatial_move();
 			else
 			{
 				Fvector C;
 				Center(C);
-				if (!C.similar(SpatialComponent->spatial.sphere.P,eps_P))
+				if (!C.similar(SpatialComponent->sphere.P,eps_P))
 					spatial_move();
 			}
 			// else nothing to do :_)
@@ -351,10 +351,10 @@ void CObject::UpdateCL			()
 
 	dbg_update_cl	= Device.dwFrame;
 
-	if (Parent && SpatialComponent->spatial.node_ptr)
+	if (Parent && SpatialComponent->node_ptr)
 		Debug.fatal	(DEBUG_INFO,"Object %s has parent but is still registered inside spatial DB",*cName());
 
-	if ((0==collidable.model)&&(SpatialComponent->spatial.type&ESPATIAL_TYPE::COLLIDEABLE)!=ESPATIAL_TYPE::NONE)
+	if ((0==collidable.model)&&(SpatialComponent->type&ESPATIAL_TYPE::COLLIDEABLE)!=ESPATIAL_TYPE::NONE)
 		Debug.fatal	(DEBUG_INFO,"Object %s registered as 'collidable' but has no collidable model",*cName());
 #endif
 
@@ -397,8 +397,8 @@ void CObject::shedule_Update	( u32 T )
 
 void CObject::spatial_register()
 {
-	Center(SpatialComponent->spatial.sphere.P);
-	SpatialComponent->spatial.sphere.R = Radius();
+	Center(SpatialComponent->sphere.P);
+	SpatialComponent->sphere.R = Radius();
 	ISpatialOwner::spatial_register();
 }
 
@@ -410,8 +410,8 @@ void CObject::spatial_unregister()
 void CObject::spatial_move()
 {
 	if (Props.bDestroy) return;
-	Center(SpatialComponent->spatial.sphere.P);
-	SpatialComponent->spatial.sphere.R = Radius();
+	Center(SpatialComponent->sphere.P);
+	SpatialComponent->sphere.R = Radius();
 	ISpatialOwner::spatial_move();
 }
 

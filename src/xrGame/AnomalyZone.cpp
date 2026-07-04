@@ -439,8 +439,8 @@ bool CAnomalyZone::net_Spawn(CSE_Abstract* DC)
 	{
 		m_zone_flags.set(eAlwaysFastmode, spawn_ini()->r_bool("fast_mode","always_fast"));
 	}
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ANOMALY_ZONE;
-	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::SPACE_RESTRICTOR;
+	SpatialComponent->type |= ESPATIAL_TYPE::ANOMALY_ZONE;
+	SpatialComponent->type &= ~ESPATIAL_TYPE::SPACE_RESTRICTOR;
 	if (Visual()) 
 	{
 		setEnabled(true);
@@ -1834,7 +1834,7 @@ void CAnomalyZone::GoEnabledState()
 
 bool CAnomalyZone::feel_touch_on_contact	(CObject *O)
 {
-	if ((SpatialComponent->spatial.type & ESPATIAL_TYPE::VISIBLEFORAI) == ESPATIAL_TYPE::NONE)
+	if ((SpatialComponent->type & ESPATIAL_TYPE::VISIBLEFORAI) == ESPATIAL_TYPE::NONE)
 		return			(false);
 
 	return				(inherited::feel_touch_on_contact(O));

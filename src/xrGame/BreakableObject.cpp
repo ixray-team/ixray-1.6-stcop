@@ -56,7 +56,7 @@ bool CBreakableObject::net_Spawn(CSE_Abstract* DC)
 	bRemoved				=false;
 	//Break					();
 //	shedule_unregister		();
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::PHYSIC_OBJECT_DESTR;
+	SpatialComponent->type |= ESPATIAL_TYPE::PHYSIC_OBJECT_DESTR;
 	return					(true);
 }
 

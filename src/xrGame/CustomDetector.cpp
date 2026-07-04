@@ -19,7 +19,7 @@ void CCustomDetector::Load(const char* section)
 	m_fAfVisRadius = READ_IF_EXISTS(pSettings, r_float, section, "af_vis_radius", 2.0f);
 	m_artefacts.load(section, "af");
 
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::ANOMALY_DETECTOR;
+	SpatialComponent->type |= ESPATIAL_TYPE::ANOMALY_DETECTOR;
 
 	IPowerManager::SetSelfObject(cast_inventory_item(), H_Parent());
 	IPowerManager::Load(section, cast_inventory_item());

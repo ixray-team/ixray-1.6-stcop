@@ -57,30 +57,30 @@ CGlow* ISpatial::dcast_CGlow()
 //////////////////////////////////////////////////////////////////////////
 void ISpatial::Register()
 {
-	spatial.type |= ESPATIAL_TYPE::INVALIDSECTOR;
-	if (spatial.node_ptr)
+	type |= ESPATIAL_TYPE::INVALIDSECTOR;
+	if (node_ptr)
 	{
 		// already registered - nothing to do
 	}
 	else 
 	{
 		// register
-		R_ASSERT(spatial.space);
-		xrSRWLockGuard guard(&spatial.space->db_lock, false);
-		spatial.space->insert(shared_from_this());
-		spatial.sector = nullptr;
+		R_ASSERT(space);
+		xrSRWLockGuard guard(&space->db_lock, false);
+		space->insert(shared_from_this());
+		sector = nullptr;
 	}
 }
 
 void ISpatial::Unregister()
 {
-	if (spatial.node_ptr)
+	if (node_ptr)
 	{
 		// remove
-		xrSRWLockGuard guard(&spatial.space->db_lock, false);
-		spatial.space->remove(shared_from_this());
-		spatial.node_ptr = nullptr;
-		spatial.sector = nullptr;
+		xrSRWLockGuard guard(&space->db_lock, false);
+		space->remove(shared_from_this());
+		node_ptr = nullptr;
+		sector = nullptr;
 	}
 	else {
 		// already unregistered
@@ -89,24 +89,28 @@ void ISpatial::Unregister()
 
 void ISpatial::Move()
 {
-	if (spatial.node_ptr)
+	if (node_ptr)
 	{
 		//*** somehow it was determined that object has been moved
-		spatial.type |= ESPATIAL_TYPE::INVALIDSECTOR;
+		type |= ESPATIAL_TYPE::INVALIDSECTOR;
 
 		//*** check if we are supposed to correct it's spatial location
-		if (spatial_inside())	
-			return;		// ???
+		if (spatial_inside())
+		{
+			return; // ???
+		}
 
-		xrSRWLockGuard guard(&spatial.space->db_lock, false);
-		spatial.space->remove(shared_from_this());
-		spatial.space->insert(shared_from_this());
+		xrSRWLockGuard guard(&space->db_lock, false);
+		space->remove(shared_from_this());
+		space->insert(shared_from_this());
 	}
-	else {
+	else
+	{
 		//*** we are not registered yet, or already unregistered
 		//*** ignore request
 	}
 }
+
 void ISpatial::OwnerReset(ISpatialOwner* ptr)
 {
 	RawOwner = ptr;
@@ -114,22 +118,25 @@ void ISpatial::OwnerReset(ISpatialOwner* ptr)
 
 Fvector ISpatial::OwnerSectorPoint()
 {
-	return RawOwner ? RawOwner->spatial_sector_point() : spatial.sphere.P;
+	return RawOwner ? RawOwner->spatial_sector_point() : sphere.P;
 }
 
 void ISpatial::spatial_updatesector_internal()
 {
-	Fvector curr_sector_point = OwnerSectorPoint();
+	Fvector CurrSectorPoint = OwnerSectorPoint();
 
-	if ((false == curr_sector_point.similar(spatial.last_sector_point) || spatial.sector == nullptr))
+	if ((false == CurrSectorPoint.similar(last_sector_point) || sector == nullptr))
 	{
 		PROF_EVENT(__FUNCTION__);
-		spatial.type &= ~ESPATIAL_TYPE::INVALIDSECTOR;
-		if (IRender_Sector* S = ::Render->detectSector(curr_sector_point))
-			spatial.sector = S;
+		type &= ~ESPATIAL_TYPE::INVALIDSECTOR;
+
+		if (IRender_Sector* S = ::Render->detectSector(CurrSectorPoint))
+		{
+			sector = S;
+		}
 	}
 
-	spatial.last_sector_point = curr_sector_point;
+	last_sector_point = CurrSectorPoint;
 }
 
 ///////////////////////////////////ISpatial_DB///////////////////////////////////////
@@ -162,18 +169,18 @@ void ISpatial_DB::db_insert(ISpatialShared S, ISpatial_NODE* N, Fvector& n_C, fl
 	{
 		// this is leaf node
 		N->_insert(S);
-		S->spatial.node_center.set(n_C);
-		S->spatial.node_radius = n_vR;		// vR
+		S->node_center.set(n_C);
+		S->node_radius = n_vR;		// vR
 		return;
 	}
 
 	// we have to check if it can be putted further down
-	float s_R = S->spatial.sphere.R;	// spatial bounds
+	float s_R = S->sphere.R;	// spatial bounds
 	float c_R = n_R * 0.5f;				// children bounds
 	if (s_R < c_R)
 	{
 		// object can be pushed further down - select "octant", calc node position
-		Fvector& s_C = S->spatial.sphere.P;
+		Fvector& s_C = S->sphere.P;
 		u32 octant = _octant(n_C, s_C);
 		Fvector c_C{ n_C + c_spatial_offset[octant] * c_R };
 		VERIFY(octant == _octant(n_C, c_C));				// check table assosiations
@@ -193,8 +200,8 @@ void ISpatial_DB::db_insert(ISpatialShared S, ISpatial_NODE* N, Fvector& n_C, fl
 	{
 		// we have to "own" this object (potentially it can be putted down sometimes...)
 		N->_insert(S);
-		S->spatial.node_center.set(n_C);
-		S->spatial.node_radius = n_vR;
+		S->node_center.set(n_C);
+		S->node_radius = n_vR;
 	}
 }
 
@@ -214,8 +221,8 @@ void ISpatial_DB::insert(ISpatialShared S)
 		if (m_root != nullptr)
 		{
 			m_root->_insert(S);
-			S->spatial.node_center.set(m_center);
-			S->spatial.node_radius = m_bounds;
+			S->node_center.set(m_center);
+			S->node_radius = m_bounds;
 		}
 	}
 }
@@ -236,7 +243,7 @@ void ISpatial_DB::db_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
 
 void ISpatial_DB::remove(ISpatialShared S)
 {
-	ISpatial_NODE* N = S->spatial.node_ptr;
+	ISpatial_NODE* N = S->node_ptr;
 	VERIFY(N);
 	N->_remove(S);
 
