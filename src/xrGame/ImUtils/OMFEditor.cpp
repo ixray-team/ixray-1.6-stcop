@@ -2828,118 +2828,15 @@ void RenderOMFEditor_Draw_TableMain()
 }
 
 
-inline const char* convert_EHudStates_to_string(u8 state) noexcept
+inline const std::string_view& convert_EHudStates_to_string(u8 state) noexcept
 {
-	switch (state)
+	if (state <= CHUDState::EHudStates::eLastBaseState)
 	{
-		case CHUDState::EHudStates::eIdle:
-		{
-			return "eIdle";
-		}
-		case CHUDState::EHudStates::eShowing:
-		{
-			return "eShowing";
-		}
-		case CHUDState::EHudStates::eHiding:
-		{
-			return "eHiding";
-		}
-		case CHUDState::EHudStates::eBore:
-		{
-			return "eBore";
-		}
-		case CHUDState::EHudStates::eSprintStart:
-		{
-			return "eSprintStart";
-		}
-		case CHUDState::EHudStates::eSprintEnd:
-		{
-			return "eSprintEnd";
-		}
-		case CHUDState::EHudStates::eDeviceSwitch:
-		{
-			return "eDeviceSwitch";
-		}
-		case CHUDState::EHudStates::ePrepareDetector:
-		{
-			return "ePrepareDetector";
-		}
-		case CHUDState::EHudStates::eFinishDetector:
-		{
-			return "eFinishDetector";
-		}
-		case CWeapon::EWeaponStates::eFire:
-		{
-			return "eFire";
-		}
-		case CWeapon::EWeaponStates::eFire2:
-		{
-			return "eFire2";
-		}
-		case CWeapon::EWeaponStates::eReload:
-		{
-			return "eReload";
-		}
-		case CWeapon::EWeaponStates::eMisfire:
-		{
-			return "eMisfire";
-		}
-		case CWeapon::EWeaponStates::eSwitch:
-		{
-			return "eSwitch";
-		}
-		case CWeapon::EWeaponStates::eSwitchMode:
-		{
-			return "eSwitchMode";
-		}
-		case CWeapon::EWeaponStates::eEmptyClick:
-		{
-			return "eEmptyClick";
-		}
-		case CWeapon::EWeaponStates::eDevice:
-		{
-			return "eDevice";
-		}
-		case CWeapon::EWeaponStates::eLightMis:
-		{
-			return "eLightMis";
-		}
-		case CWeapon::EWeaponStates::eKick:
-		{
-			return "eKick";
-		}
-		case CWeapon::EWeaponStates::eMagCheck:
-		{
-			return "eMagCheck";
-		}
-		case CWeapon::EWeaponStates::eFiremodeCheck:
-		{
-			return "eFiremodeCheck";
-		}
-		case CWeapon::EWeaponStates::eLoadChamber:
-		{
-			return "eLoadChamber";
-		}
-		case CWeapon::EWeaponStates::eUnloadChamber:
-		{
-			return "eUnloadChamber";
-		}
-		case CWeapon::EWeaponStates::eChamberCheck:
-		{
-			return "eChamberCheck";
-		}
-		case CWeapon::EWeaponStates::ePump:
-		{
-			return "ePump";
-		}
-		case CWeapon::EWeaponStates::eSafemodeSwitch:
-		{
-			return "eSafemodeSwitch";
-		}
-		default:
-		{
-			return "UNDEFINED_ENUM";
-		}
+		return magic_enum::enum_name(static_cast<CHUDState::EHudStates>(state)).data();
+	}
+	else
+	{
+		return magic_enum::enum_name(static_cast<CWeapon::EWeaponStates>(state)).data();
 	}
 }
 
@@ -2970,7 +2867,7 @@ void RenderOMFEditor_Draw_Game_Header(
 						ImGui::Text("Current anim:\n\t[%s]\n\tt=[%d]/[%d]\n\tstartedMotionState=[%s (%d)]", 
 							pHI->m_current_motion.c_str(), 
 							pHI->m_dwMotionCurrTm, 
-							pHI->m_dwMotionEndTm, convert_EHudStates_to_string(static_cast<CHUDState::EHudStates>(pHI->m_startedMotionState)), 
+							pHI->m_dwMotionEndTm, convert_EHudStates_to_string((pHI->m_startedMotionState)).data(), 
 							pHI->m_startedMotionState
 						);
 					}
