@@ -27,7 +27,7 @@ ICF float calcLOD	(float ssa/*fDistSq*/, float R)
 void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 {
 	PROF_EVENT("r_dsgraph_render_graph");
-	//GPU_EVENT(r_dsgraph_render_graph);
+	GPU_EVENT(r_dsgraph_render_graph);
 	CScopeTimer Timer(Device.Statistic->RenderDUMP);
 
 	// **************************************************** NORMAL
@@ -38,6 +38,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 		{
 			// Render several passes
 			PROF_EVENT("NORMAL_SHADER_PASSES");
+			GPU_EVENT(r_dsgraph_render_graph_normal);
 			for ( u32 iPass = 0; iPass<SHADER_PASSES_MAX; ++iPass)
 			{
 				//mapNormalVS&	vs				= mapNormal	[_priority];
@@ -83,6 +84,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 										RImplementation.apply_lmaterial		();
 	
 										mapNormalItems&				items	= Ntex.val;
+										GPU_EVENT(r_dsgraph_render_graph_normal_items);
 										for (_NormalItem& Ni : items)
 										{
 											float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
@@ -110,6 +112,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 		// Sorting by SSA and changes minimizations
 		// Render several passes
 		PROF_EVENT("MATRIX_SHADER_PASSES");
+		GPU_EVENT(r_dsgraph_render_graph_matrix);
 		for ( u32 iPass = 0; iPass<SHADER_PASSES_MAX; ++iPass)
 		{
 			//mapMatrixVS&	vs				= mapMatrix	[_priority];
@@ -156,6 +159,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 									auto& visuals = items.visuals;
 									if(!visuals.empty())
 									{
+										GPU_EVENT(r_dsgraph_render_graph_matrix_visuals);
 										for (_MatrixItem& Ni : visuals)
 										{
 											if (Ni.pVisual->shader == nullptr)
@@ -176,6 +180,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 									}
 	
 									auto& particles = items.particles;
+									GPU_EVENT(r_dsgraph_render_graph_matrix_particles);
 									for (dxRender_Visual* pVisual : particles)
 										pVisual->Render(0);
 									if (_clear)items.particles.clear();
@@ -230,11 +235,13 @@ ICF void RenderMap(mapSorted_T& Map, const bool clear = true)
 
 void R_dsgraph_structure::r_dsgraph_render_ui()
 {
+	GPU_EVENT(r_dsgraph_render_ui);
 	RenderMap(mapUI);
 }
 
 void R_dsgraph_structure::r_dsgraph_render_sorted_ui()
 {
+	GPU_EVENT(r_dsgraph_render_sorted_ui);
 #if	RENDER!=R_R1
 	RenderMap(mapUIEmissive);
 #endif
@@ -245,6 +252,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_ui()
 
 void R_dsgraph_structure::r_dsgraph_render_hud()
 {
+	GPU_EVENT(r_dsgraph_render_hud);
 	PROF_EVENT("r_dsgraph_render_hud");
 	CHudInitializer initalizer(true, true);
 
@@ -260,6 +268,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud()
 
 void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 {
+	GPU_EVENT(r_dsgraph_render_hud_ui);
 	PROF_EVENT("r_dsgraph_render_hud_ui");
 	VERIFY(g_hud && g_hud->RenderActiveItemUIQuery());
 
@@ -274,6 +283,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 
 void R_dsgraph_structure::r_dsgraph_render_sorted(bool render_hud)
 {
+	GPU_EVENT(r_dsgraph_render_sorted);
 	PROF_EVENT("r_dsgraph_render_sorted");
 
 	mapSorted.traverseRL(sorted_L1);
@@ -287,6 +297,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted(bool render_hud)
 
 void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 {
+	GPU_EVENT(r_dsgraph_render_sorted_hud);
 	PROF_EVENT("r_dsgraph_render_sorted_hud");
 
 	CHudInitializer initalizer(true, true);
@@ -296,6 +307,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted_hud()
 
 void R_dsgraph_structure::r_dsgraph_render_emissive()
 {
+	GPU_EVENT(r_dsgraph_render_emissive);
 	PROF_EVENT("r_dsgraph_render_emissive");
 
 #if	RENDER!=R_R1
@@ -321,6 +333,7 @@ void R_dsgraph_structure::r_dsgraph_render_scope()
 
 void R_dsgraph_structure::r_dsgraph_render_wmarks()
 {
+	GPU_EVENT(r_dsgraph_render_wmarks);
 	PROF_EVENT("r_dsgraph_render_wmarks");
 
 #if	RENDER!=R_R1
@@ -330,6 +343,7 @@ void R_dsgraph_structure::r_dsgraph_render_wmarks()
 
 void R_dsgraph_structure::r_dsgraph_render_distort()
 {
+	GPU_EVENT(r_dsgraph_render_distort);
 	PROF_EVENT("r_dsgraph_render_distort");
 	RenderMap(mapDistort);
 
@@ -350,6 +364,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, Fm
 // sub-space rendering - main procedure
 void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, bool _dynamic, bool _precise_portals, CObject* O)
 {
+	GPU_EVENT(r_dsgraph_render_subspace);
 	PROF_EVENT("r_dsgraph_render_subspace")
 	VERIFY							(_sector);
 	RImplementation.marker			++;			// !!! critical here
@@ -361,6 +376,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 
 	if (_precise_portals && RImplementation.rmPortals)		{
 		PROF_EVENT("precise_portals")
+		GPU_EVENT(r_dsgraph_render_subspace_portals);
 		// Check if camera is too near to some portal - if so force DualRender
 		Fvector box_radius;		box_radius.set	(EPS_L*20,EPS_L*20,EPS_L*20);
 		RImplementation.Sectors_xrc.box_options	(CDB::OPT_FULL_TEST);
@@ -372,21 +388,25 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 		}
 	}
 
-	// Traverse sector/portal structure
-	PortalTraverser.traverse		( _sector, ViewBase, _cop, mCombined, 0 );
 	{
-		PROF_EVENT("add_static");
-	// Determine visibility for static geometry hierrarhy
-		if(psDeviceFlags.test(rsDrawStatic))
+		// Traverse sector/portal structure
+		GPU_EVENT(r_dsgraph_render_subspace_traverse);
+		PortalTraverser.traverse(_sector, ViewBase, _cop, mCombined, 0);
 		{
-			for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
+			PROF_EVENT("add_static");
+			GPU_EVENT(r_dsgraph_render_subspace_static);
+			// Determine visibility for static geometry hierrarhy
+			if (psDeviceFlags.test(rsDrawStatic))
 			{
-				CSector* sector = (CSector*)PortalTraverser.r_sectors[s_it];
-				dxRender_Visual* root = sector->root();
-				for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
+				for (u32 s_it = 0; s_it < PortalTraverser.r_sectors.size(); s_it++)
 				{
-					set_Frustum(&(sector->r_frustums[v_it]));
-					add_Geometry(root);
+					CSector* sector = (CSector*)PortalTraverser.r_sectors[s_it];
+					dxRender_Visual* root = sector->root();
+					for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
+					{
+						set_Frustum(&(sector->r_frustums[v_it]));
+						add_Geometry(root);
+					}
 				}
 			}
 		}
@@ -395,6 +415,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 	if (_dynamic && psDeviceFlags.test(rsDrawDynamic))
 	{
 		PROF_EVENT("add_dynamic")
+		GPU_EVENT(r_dsgraph_render_subspace_dynamic);
 		set_Object						(0);
 
 		// Traverse object database
@@ -575,6 +596,7 @@ void	R_dsgraph_structure::r_dsgraph_render_R1_box	(IRender_Sector* _S, Fbox& BB,
 
 void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 {
+	GPU_EVENT(renderImGuiDebugWindow_SVGStorage);
 	if (ImGui::Begin("Render Debug - SVG Storage"))
 	{
 		if (DEV)
