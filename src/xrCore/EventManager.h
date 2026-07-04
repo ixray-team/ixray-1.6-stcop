@@ -1,8 +1,9 @@
 #pragma once
 #include "EventAPI.h"
 
-class XRCORE_API CEventManager {
-	friend class CApplication;
+class XRCORE_API CEventManager
+{
+	friend class CEngineApp;
 
 public:
 	CEventAPI Event;
