@@ -405,37 +405,39 @@ end
 
 function fill_sleep_zones()
 	return PROF_EVENT_CLOSURE("fill_sleep_zones", function()
-        local sim = alife()
-        local actor_pos = db.actor:position()
-        
-        for zone_story_name, opt in pairs(sleep_zones_tbl) do
-            if opt.sobj == nil then
-                local obj_id = get_story_object_id(zone_story_name)
-                if obj_id then
-                    local sobj = sim:object(obj_id)
-                    if sobj and sobj.id then
-                        opt.sobj = sobj
-                        opt.id = obj_id
-                    end
-                end
-            end
+        return ffx_cache_utils.get_cached("fill_sleep_zones_cached", function()
+            local sim = alife()
+            local actor_pos = db.actor:position()
             
-            if opt.sobj and opt.id then
-                local actor_sleep_location_name = "ui_pda2_actor_sleep_location"
-                local has_actor_sleep_location = level.map_has_object_spot(opt.id, actor_sleep_location_name)
-                local distance = opt.sobj.position:distance_to(actor_pos)
-    
-                if distance <= distance_draw_sleep_zones then
-                    if has_actor_sleep_location == 0 then
-                        level.map_add_object_spot(opt.id, actor_sleep_location_name, opt.hint)
+            for zone_story_name, opt in pairs(sleep_zones_tbl) do
+                if opt.sobj == nil then
+                    local obj_id = get_story_object_id(zone_story_name)
+                    if obj_id then
+                        local sobj = sim:object(obj_id)
+                        if sobj and sobj.id then
+                            opt.sobj = sobj
+                            opt.id = obj_id
+                        end
                     end
-                else
-                    if has_actor_sleep_location == 1 then
-                        level.map_remove_object_spot(opt.id, actor_sleep_location_name)
+                end
+                
+                if opt.sobj and opt.id then
+                    local actor_sleep_location_name = "ui_pda2_actor_sleep_location"
+                    local has_actor_sleep_location = level.map_has_object_spot(opt.id, actor_sleep_location_name)
+                    local distance = opt.sobj.position:distance_to(actor_pos)
+        
+                    if distance <= distance_draw_sleep_zones then
+                        if has_actor_sleep_location == 0 then
+                            level.map_add_object_spot(opt.id, actor_sleep_location_name, opt.hint)
+                        end
+                    else
+                        if has_actor_sleep_location == 1 then
+                            level.map_remove_object_spot(opt.id, actor_sleep_location_name)
+                        end
                     end
                 end
             end
-        end
+        end, 2500, nil)
     end)
 end
 
