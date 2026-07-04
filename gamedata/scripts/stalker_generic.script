@@ -244,12 +244,12 @@ end
 --' Вызывается на переключении на новую секцию. Производит вычитывание настроек из текущей секции.
 function reset_group(npc, ini, section)
     PROF_EVENT_CLOSURE("reset_group", function()
-
         local group = utils.cfg_get_number(ini, section, "group", npc, false, -1)
     
         if group ~= -1 then
             npc:change_team(npc:team(), npc:squad(), group)
         end
+    end)
 end
 
 function take_items_enabled(npc, scheme, st, section)
