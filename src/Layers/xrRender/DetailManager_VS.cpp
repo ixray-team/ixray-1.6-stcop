@@ -259,8 +259,8 @@ void CDetailManager::hw_Render_dump(ref_constant x_array, u32 var_id, u32 lod_id
 	// Iterate
 #ifndef _EDITOR
 
-	Fvector l_spatial_pos = L ? L->SpatialComponent->spatial.sphere.P : zero_vel;
-	float l_range_sqr = L ? _sqr(L->SpatialComponent->spatial.sphere.R) : EPS;
+	Fvector l_spatial_pos = L ? L->SpatialComponent->sphere.P : zero_vel;
+	float l_range_sqr = L ? _sqr(L->SpatialComponent->sphere.R) : EPS;
 
 	for (CDetail& Object : objects)
 	{

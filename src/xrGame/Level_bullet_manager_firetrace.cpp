@@ -41,7 +41,7 @@ bool CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 	bullet_test_callback_data* pData = (bullet_test_callback_data*)params;
 	SBullet* bullet = pData->pBullet;
 
-	if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
+	if ((object->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 	{
 		CGameObject* go = object->cast_game_object() ? object->cast_game_object() : nullptr;
 

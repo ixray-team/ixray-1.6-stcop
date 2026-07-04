@@ -1030,7 +1030,7 @@ bool CWeapon::net_Spawn		(CSE_Abstract* DC)
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 	m_bAmmoWasSpawned		= false;
 
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::WEAPON;
+	SpatialComponent->type |= ESPATIAL_TYPE::WEAPON;
 	return bResult;
 }
 

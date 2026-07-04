@@ -2615,8 +2615,8 @@ void LevelInspector::DrawSkeleton(IKinematics* pKinematics, Fmatrix& xform, CGam
 		}
 
 		if (m_skeleton_flags.test(ESKELETON_INFO::ESI_PH_BBOX) &&
-			(GO->SpatialComponent->spatial.type & ESPATIAL_TYPE::PHYSIC_MOVEMENT) != ESPATIAL_TYPE::NONE &&
-			(GO->SpatialComponent->spatial.type & (ESPATIAL_TYPE::STALKER_ALIVE | ESPATIAL_TYPE::ACTOR_ALIVE | ESPATIAL_TYPE::MONSTER_ALIVE)) != ESPATIAL_TYPE::NONE)
+			(GO->SpatialComponent->type & ESPATIAL_TYPE::PHYSIC_MOVEMENT) != ESPATIAL_TYPE::NONE &&
+			(GO->SpatialComponent->type & (ESPATIAL_TYPE::STALKER_ALIVE | ESPATIAL_TYPE::ACTOR_ALIVE | ESPATIAL_TYPE::MONSTER_ALIVE)) != ESPATIAL_TYPE::NONE)
 		{
 			if (GO->cast_entity_alive() &&
 				GO->cast_entity_alive()->character_physics_support() &&
@@ -3206,30 +3206,30 @@ void LevelInspector::DrawObjectsInfo()
 	&RQ,
 	[](const collide::ray_defs& rd, CObject* object, LPVOID params) -> bool
 	{
-		if (object && (object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
+		if (object && (object->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 		{
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SMART_COVER) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SMART_COVER))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::SMART_COVER) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SMART_COVER))
 				return false;
 
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SPACE_RESTRICTOR) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_RESTR))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::SPACE_RESTRICTOR) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_RESTR))
 				return false;
 
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::ANOMALY_ZONE) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_ANOMALY_ZONE))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::ANOMALY_ZONE) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_ANOMALY_ZONE))
 				return false;
 
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::LEVEL_CHANGER) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_LEVEL_CHANGER))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::LEVEL_CHANGER) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_LEVEL_CHANGER))
 				return false;
 
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::CAMP_ZONE) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_CAMP_ZONE))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::CAMP_ZONE) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_CAMP_ZONE))
 				return false;
 
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::ANOMAL_ZONE_LOGIC) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_ANOMAL_ZONE_LOGIC))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::ANOMAL_ZONE_LOGIC) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_ANOMAL_ZONE_LOGIC))
 				return false;
 
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SMART_TERRAIN) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SMART_TERRAIN))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::SMART_TERRAIN) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SMART_TERRAIN))
 				return false;
 
-			if ((object->SpatialComponent->spatial.type & ESPATIAL_TYPE::SIM_FACTION) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SIM_FACTION))
+			if ((object->SpatialComponent->type & ESPATIAL_TYPE::SIM_FACTION) != ESPATIAL_TYPE::NONE && !LI->m_zone_flags.test(EZONE_INFO::EZI_SIM_FACTION))
 				return false;
 		}
 
@@ -3241,7 +3241,7 @@ void LevelInspector::DrawObjectsInfo()
 	{
 		if (RQ.O)
 		{
-			if ((RQ.O->SpatialComponent->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
+			if ((RQ.O->SpatialComponent->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE)
 			{
 				CCF_Shape* ccfshape = (CCF_Shape*)(RQ.O->CFORM());
 
@@ -3318,7 +3318,7 @@ void LevelInspector::DrawAIPaths()
 		CGameObject* GO = (_O && !_O->getDestroy()) ? _O->cast_game_object() : nullptr;
 		if (!GO) continue;
 
-		if ((spatial->spatial.type & ESPATIAL_TYPE::AI_ALIVE) != ESPATIAL_TYPE::NONE)
+		if ((spatial->type & ESPATIAL_TYPE::AI_ALIVE) != ESPATIAL_TYPE::NONE)
 		{
 			if (CCreature* monst = GO->cast_creature())
 			{
@@ -3419,11 +3419,14 @@ void LevelInspector::DrawObjects()
 
 		for (ISpatialShared& spatial : m_objects)
 		{
-			if (!spatial.get()) continue;
+			if (!spatial.get())
+			{
+				continue;
+			}
 
-			float opt_dist = cam_pos.distance_to_sqr(spatial->spatial.sphere.P);
+			float opt_dist = cam_pos.distance_to_sqr(spatial->sphere.P);
 			float fog_dist = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
-			if (opt_dist >= _sqr(fog_dist + spatial->spatial.sphere.R))
+			if (opt_dist >= _sqr(fog_dist + spatial->sphere.R))
 				continue;
 
 			CObject* _O = spatial->dcast_CObject();
@@ -3433,12 +3436,14 @@ void LevelInspector::DrawObjects()
 			if (GO->Visual() && m_flags.test(ESCENE_FLAGS::ESF_DRAW_OBJECTS))
 			{
 				if (!m_skeleton_flags.test(ESKELETON_INFO::ESI_ACTOR) && g_actor == GO->cast_actor())
+				{
 					continue;
+				}
 
 				DrawSkeleton(GO->Visual()->dcast_PKinematics(), GO->XFORM(), GO);
 
-				if (((spatial->spatial.type & ESPATIAL_TYPE::STALKER_ALIVE) != ESPATIAL_TYPE::NONE ||
-					(spatial->spatial.type & ESPATIAL_TYPE::ACTOR_ALIVE) != ESPATIAL_TYPE::NONE))
+				if (((spatial->type & ESPATIAL_TYPE::STALKER_ALIVE) != ESPATIAL_TYPE::NONE ||
+					(spatial->type & ESPATIAL_TYPE::ACTOR_ALIVE) != ESPATIAL_TYPE::NONE))
 				{
 					if (CInventoryOwner* IO = smart_cast<CInventoryOwner*>(GO))
 					{
@@ -3468,7 +3473,7 @@ void LevelInspector::DrawObjects()
 					}
 				}
 			}
-			//if ((spatial->spatial.type & ESPATIAL_TYPE::STALKER_ALIVE) != ESPATIAL_TYPE::NONE)
+			//if ((spatial->type & ESPATIAL_TYPE::STALKER_ALIVE) != ESPATIAL_TYPE::NONE)
 			//{
 			//	if (CAI_Stalker* stlk = GO->cast_stalker())
 			//	{
@@ -3486,7 +3491,7 @@ void LevelInspector::DrawObjects()
 			//	}
 			//}
 
-			if ((spatial->spatial.type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE && (spatial->spatial.type & zone_flags) != ESPATIAL_TYPE::NONE)
+			if ((spatial->type & ESPATIAL_TYPE::SHAPE) != ESPATIAL_TYPE::NONE && (spatial->type & zone_flags) != ESPATIAL_TYPE::NONE)
 			{
 				if (CCF_Shape* ccfshape = GO->CFORM() ? GO->CFORM()->cast_shape() : nullptr)
 				{
@@ -3551,7 +3556,7 @@ void LevelInspector::DrawObjects()
 			}
 			else
 			{
-				if ((!GO->Visual() || !GO->CFORM()) && (spatial->spatial.type & ESPATIAL_TYPE::LADDER) == ESPATIAL_TYPE::NONE)
+				if ((!GO->Visual() || !GO->CFORM()) && (spatial->type & ESPATIAL_TYPE::LADDER) == ESPATIAL_TYPE::NONE)
 				{
 					u32 line_color = pSettings->line_exist(GO->cNameSect_str(), "shape_edge_color") ? pSettings->r_color(GO->cNameSect_str(), "shape_edge_color") : color_rgba(32, 32, 32, 255);
 					u32 tri_color = pSettings->line_exist(GO->cNameSect_str(), "shape_transp_color") ? pSettings->r_color(GO->cNameSect_str(), "shape_transp_color") : color_rgba(128, 128, 128, 60);
@@ -3578,7 +3583,7 @@ void LevelInspector::DrawObjects()
 				}
 			}
 
-			if ((spatial->spatial.type & ESPATIAL_TYPE::LADDER) != ESPATIAL_TYPE::NONE)
+			if ((spatial->type & ESPATIAL_TYPE::LADDER) != ESPATIAL_TYPE::NONE)
 			{
 				CClimableObject* ladder = GO->cast_climable_object();
 				Fobb obb = ladder->BBox();
@@ -3627,91 +3632,105 @@ void LevelInspector::DrawSpatials()
 {
 	Fvector& cam_pos = Device.vCameraPosition;
 
+	if (m_spatials_mask != ESPATIAL_TYPE::NONE)
 	{
-		if(m_spatials_mask != ESPATIAL_TYPE::NONE)
+		g_SpatialSpace->q_frustum(m_objects, 0, m_spatials_mask, Render->ViewBase);
+
+		for (ISpatialShared& spatial : m_objects)
 		{
-			g_SpatialSpace->q_frustum(m_objects, 0, m_spatials_mask, Render->ViewBase);
+			if (!spatial.get())
+			{
+				continue;
+			}
+
+			float opt_dist = cam_pos.distance_to_sqr(spatial->sphere.P);
+			float fog_dist = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
+			if (opt_dist >= _sqr(fog_dist + spatial->sphere.R))
+			{
+				continue;
+			}
+
+			append_sphere(spatial->sphere, color_rgba(10, 10, 10, 255), color_rgba(255, 100, 0, 20));
+		}
+
+		if ((m_spatials_mask & ESPATIAL_TYPE::PHYSIC) != ESPATIAL_TYPE::NONE)
+		{
+			g_SpatialSpacePhysic->q_frustum(m_objects, 0, m_spatials_mask, Render->ViewBase);
 
 			for (ISpatialShared& spatial : m_objects)
 			{
-				if (!spatial.get()) continue;
-
-				float opt_dist = cam_pos.distance_to_sqr(spatial->spatial.sphere.P);
-				float fog_dist = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
-				if (opt_dist >= _sqr(fog_dist + spatial->spatial.sphere.R))
+				if (!spatial.get())
+				{
 					continue;
-
-				append_sphere(spatial->spatial.sphere, color_rgba(10, 10, 10, 255), color_rgba(255, 100, 0, 20));
-
-			}
-
-			if ((m_spatials_mask & ESPATIAL_TYPE::PHYSIC) != ESPATIAL_TYPE::NONE)
-			{
-				g_SpatialSpacePhysic->q_frustum(m_objects, 0, m_spatials_mask, Render->ViewBase);
-
-				for (ISpatialShared& spatial : m_objects)
-				{
-					if (!spatial.get()) continue;
-
-					float opt_dist = cam_pos.distance_to_sqr(spatial->spatial.sphere.P);
-					float fog_dist = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
-					if (opt_dist >= _sqr(fog_dist + spatial->spatial.sphere.R))
-						continue;
-
-					append_sphere(spatial->spatial.sphere, color_rgba(10, 10, 10, 255), color_rgba(255, 100, 0, 20));
 				}
+
+				float opt_dist = cam_pos.distance_to_sqr(spatial->sphere.P);
+				float fog_dist = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
+				if (opt_dist >= _sqr(fog_dist + spatial->sphere.R))
+				{
+					continue;
+				}
+
+				append_sphere(spatial->sphere, color_rgba(10, 10, 10, 255), color_rgba(255, 100, 0, 20));
 			}
 		}
+	}
 
-		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE))
+	if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE))
+	{
+		struct
 		{
-			struct
+			const CFrustum& F;
+			LevelInspector& LE;
+
+			Fvector c_spatial_offset[8]{
+				{-1.f, -1.f, -1.f},
+				{1.f, -1.f, -1.f},
+				{-1.f, 1.f, -1.f},
+				{1.f, 1.f, -1.f},
+				{-1.f, -1.f, 1.f},
+				{1.f, -1.f, 1.f},
+				{-1.f, 1.f, 1.f},
+				{1.f, 1.f, 1.f}
+			};
+			void walk(ISpatial_NODE* N, const Fvector& n_C, float n_R, u32 fmask)
 			{
-				const CFrustum& F;
-				LevelInspector& LE;
+				// box
+				float n_vR = n_R * 2.f;
+				Fbox BB{n_C - n_vR, n_C + n_vR};
 
-				Fvector	c_spatial_offset[8]
+				if (fcvNone == F.testAABB(BB.data(), fmask))
 				{
-					{-1.f, -1.f, -1.f},
-					{ 1.f, -1.f, -1.f},
-					{-1.f,  1.f, -1.f},
-					{ 1.f,  1.f, -1.f},
-					{-1.f, -1.f,  1.f},
-					{ 1.f, -1.f,  1.f},
-					{-1.f,  1.f,  1.f},
-					{ 1.f,  1.f,  1.f}
-				};
-				void walk(ISpatial_NODE* N, const Fvector& n_C, float n_R, u32 fmask)
+					return;
+				}
+				bool items_present = !N->items.empty();
+				if ((items_present || LE.m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE_ALL)) && N != g_actor->SpatialComponent->node_ptr)
 				{
-					// box
-					float n_vR = n_R * 2.f;
-					Fbox BB{n_C-n_vR,n_C+n_vR};
-
-					if (fcvNone == F.testAABB(BB.data(), fmask))
-						return;
-					bool items_present = !N->items.empty();
-					if ((items_present || LE.m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE_ALL)) && N != g_actor->SpatialComponent->spatial.node_ptr)
-						LE.append_aabb(BB, color_rgba(10, 10, 10, 255), !items_present ? positionToColorWithAlpha(n_C) : color_rgba(0, 255, 0, 15));
-					for (ISpatialShared& spatial : N->items)
+					LE.append_aabb(BB, color_rgba(10, 10, 10, 255), !items_present ? positionToColorWithAlpha(n_C) : color_rgba(0, 255, 0, 15));
+				}
+				for (ISpatialShared& spatial : N->items)
+				{
+					if (!spatial.get() ||
+						(spatial->type & ESPATIAL_TYPE::INVALIDSECTOR) != ESPATIAL_TYPE::NONE ||
+						spatial.get() == g_actor->SpatialComponent.get())
 					{
-						if (!spatial.get() ||
-							(spatial->spatial.type & ESPATIAL_TYPE::INVALIDSECTOR) != ESPATIAL_TYPE::NONE ||
-							spatial.get() == g_actor->SpatialComponent.get())
-							continue;
-						
-						LE.append_line({ n_C, spatial->spatial.sphere.P, color_rgba(0, 0, 255, 200) });
+						continue;
 					}
-					// recurse
-					float c_R = n_R * 0.5f;
-					for (u32 octant = 0; octant < 8; octant++)
+
+					LE.append_line({n_C, spatial->sphere.P, color_rgba(0, 0, 255, 200)});
+				}
+				// recurse
+				float c_R = n_R * 0.5f;
+				for (u32 octant = 0; octant < 8; octant++)
+				{
+					if (ISpatial_NODE* next_node = N->children[octant])
 					{
-						if (ISpatial_NODE* next_node = N->children[octant])
-							walk(next_node, Fvector().mad(n_C, c_spatial_offset[octant], c_R), c_R, fmask);
+						walk(next_node, Fvector().mad(n_C, c_spatial_offset[octant], c_R), c_R, fmask);
 					}
 				}
-			}W{ Render->ViewBase,*this };
-			W.walk(g_SpatialSpace->m_root, g_SpatialSpace->m_center, g_SpatialSpace->m_bounds, Render->ViewBase.getMask());
-		}
+			}
+		} W{Render->ViewBase, *this};
+		W.walk(g_SpatialSpace->m_root, g_SpatialSpace->m_center, g_SpatialSpace->m_bounds, Render->ViewBase.getMask());
 	}
 }
 

@@ -273,7 +273,7 @@ bool  CBaseMonster::feel_vision_isRelevant(CObject* O)
 	if (!g_Alive())					return false;
 	if (!O->cast_entity())			return false;
 	
-	if ((O->SpatialComponent->spatial.type & ESPATIAL_TYPE::VISIBLEFORAI) == ESPATIAL_TYPE::NONE)
+	if ((O->SpatialComponent->type & ESPATIAL_TYPE::VISIBLEFORAI) == ESPATIAL_TYPE::NONE)
 		return false;
 	
 	// если спит, то ничего не видит

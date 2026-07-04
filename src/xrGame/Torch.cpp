@@ -262,8 +262,8 @@ void CTorch::UpdateCL()
 			// near camera
 			PKinematics(H_Parent()->Visual())->CalculateBones
 			(
-				!!Render->ViewBase.testSphere_dirty(H_Parent()->SpatialComponent->spatial.sphere.P,
-					H_Parent()->SpatialComponent->spatial.sphere.R + SpatialComponent->spatial.sphere.R + light_render->get_homdata().sphere.R)
+				!!Render->ViewBase.testSphere_dirty(H_Parent()->SpatialComponent->sphere.P,
+					H_Parent()->SpatialComponent->sphere.R + SpatialComponent->sphere.R + light_render->get_homdata().sphere.R)
 			);
 
 			M.mul_43(XFORM(), BI.mTransform);

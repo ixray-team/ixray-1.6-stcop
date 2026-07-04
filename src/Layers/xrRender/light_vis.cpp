@@ -14,54 +14,61 @@ void light::vis_prepare()
 	//		. camera inside light volume	= visible,	shedule for 'small' interval
 	//		. perform testing				= ???,		pending
 
-	u32	frame	= Device.dwFrame;
-	if (frame	<	vis.frame2test)		return;
-
-	float	safe_area					= Device.fViewportNear;
+	u32 frame = Device.dwFrame;
+	if (frame < vis.frame2test)
 	{
-		float	a0	= deg2rad(Device.fFOV*Device.fASPECT/2.f);
-		float	a1	= deg2rad(Device.fFOV/2.f);
-		float	x0	= Device.fViewportNear /std::cos	(a0);
-		float	x1	= Device.fViewportNear /std::cos	(a1);
-		float	c	= _sqrt					(x0*x0 + x1*x1);
-		safe_area	= std::max(std::max(Device.fViewportNear, std::max(x0,x1)),c);
+		return;
 	}
 
-	//Msg	("sc[%f,%f,%f]/c[%f,%f,%f] - sr[%f]/r[%f]",VPUSH(spatial.center),VPUSH(position),spatial.radius,range);
-	//Msg	("dist:%f, sa:%f",Device.vCameraPosition.distance_to(spatial.center),safe_area);
-	bool	skiptest	= false;
-	if (ps_r2_ls_flags.test(R2FLAG_EXP_DONT_TEST_UNSHADOWED) && !flags.bShadow)	skiptest=true;
-	if (ps_r2_ls_flags.test(R2FLAG_EXP_DONT_TEST_SHADOWED) && flags.bShadow)	skiptest=true;
+	float safe_area = Device.fViewportNear;
+	{
+		float a0 = deg2rad(Device.fFOV * Device.fASPECT / 2.f);
+		float a1 = deg2rad(Device.fFOV / 2.f);
+		float x0 = Device.fViewportNear / std::cos(a0);
+		float x1 = Device.fViewportNear / std::cos(a1);
+		float c = _sqrt(x0 * x0 + x1 * x1);
+		safe_area = std::max(std::max(Device.fViewportNear, std::max(x0, x1)), c);
+	}
 
-	//	TODO: DX10: Remove this pessimization
-	//skiptest	= true;
+	bool skiptest = false;
+	if (ps_r2_ls_flags.test(R2FLAG_EXP_DONT_TEST_UNSHADOWED) && !flags.bShadow)
+	{
+		skiptest = true;
+	}
+	if (ps_r2_ls_flags.test(R2FLAG_EXP_DONT_TEST_SHADOWED) && flags.bShadow)
+	{
+		skiptest = true;
+	}
 
-	vis.distance = Device.vCameraPosition.distance_to(SpatialComponent->spatial.sphere.P);
+	vis.distance = Device.vCameraPosition.distance_to(SpatialComponent->sphere.P);
 
-	if (skiptest || vis.distance <= (SpatialComponent->spatial.sphere.R * 1.01f + safe_area + (SpatialComponent->spatial.sphere.R * 0.1f)))
-	{	
+	if (skiptest || vis.distance <= (SpatialComponent->sphere.R * 1.01f + safe_area + (SpatialComponent->sphere.R * 0.1f)))
+	{
 		// small error
-		vis.visible		=	true;
-		vis.pending		=	false;
-		vis.frame2test	=	frame	+ ::Random.randI(delay_small_min,delay_small_max);
-		//	TODO: DX10: Remove this pessimisation
-		//vis.frame2test	=	frame	+ 1;
+		vis.visible = true;
+		vis.pending = false;
+		vis.frame2test = frame + ::Random.randI(delay_small_min, delay_small_max);
 		return;
 	}
 
 	// testing
-	vis.pending										= true;
-	RCache.set_xform_world							(m_xform);
-	vis.query_order	= RImplementation.occq_begin	(vis.query_id);
+	vis.pending = true;
+	RCache.set_xform_world(m_xform);
+	vis.query_order = RImplementation.occq_begin(vis.query_id);
+
 	//	Hack: Igor. Light is visible if it's frutum is visible. (Only for volumetric)
 	//	Hope it won't slow down too much since there's not too much volumetric lights
 	//	TODO: sort for performance improvement if this technique hurts
-	if ( (flags.type==IRender_Light::SPOT) && flags.bShadow && flags.bVolumetric )
-		RCache.set_Stencil			(false);
+	if ((flags.type == IRender_Light::SPOT) && flags.bShadow && flags.bVolumetric)
+	{
+		RCache.set_Stencil(false);
+	}
 	else
-		RCache.set_Stencil			(true,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
-	RImplementation.Target->draw_volume				(this);
-	RImplementation.occq_end						(vis.query_id);
+	{
+		RCache.set_Stencil(true, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+	}
+	RImplementation.Target->draw_volume(this);
+	RImplementation.occq_end(vis.query_id);
 }
 
 void	light::vis_update			()

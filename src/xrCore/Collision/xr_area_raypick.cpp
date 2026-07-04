@@ -132,17 +132,24 @@ bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 
 		for (u32 o_it = 0; o_it < CObjectSpaceThreadData::r_spatial.size(); o_it++)
 		{
-			ISpatial* spatial = CObjectSpaceThreadData::r_spatial[o_it].get();
-			CObject* collidable = spatial->dcast_CObject();
-			if (nullptr == collidable)				continue;
-			if (collidable == ignore_object)	continue;
-			ECollisionFormType tp = collidable->collidable.model->Type();
+			ISpatial* Spatial = CObjectSpaceThreadData::r_spatial[o_it].get();
+			CObject* Collidable = Spatial->dcast_CObject();
+			if (nullptr == Collidable)
+			{
+				continue;
+			}
+			if (Collidable == ignore_object)
+			{
+				continue;
+			}
+
+			ECollisionFormType tp = Collidable->collidable.model->Type();
 			if (((tgt & (rqtObject | rqtObstacle)) && (tp == cftObject)) || ((tgt & rqtShape) && (tp == cftShape)))
 			{
 				u32 C = color_xrgb(64, 64, 64);
 				Q.range = R.range;
 
-				if (collidable->collidable.model->_RayQuery(Q, CObjectSpaceThreadData::r_temp))
+				if (Collidable->collidable.model->_RayQuery(Q, CObjectSpaceThreadData::r_temp))
 				{
 					C = color_xrgb(128, 128, 196);
 					R.set_if_less(CObjectSpaceThreadData::r_temp.r_begin());
@@ -150,7 +157,9 @@ bool CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 #ifdef DEBUG
 				if (bDebug())
 				{
-					Fsphere	S;		S.P = spatial->spatial.sphere.P; S.R = spatial->spatial.sphere.R;
+					Fsphere S;
+					S.P = Spatial->sphere.P;
+					S.R = Spatial->sphere.R;
 					(*m_pRender)->dbgAddSphere(S, C);
 				}
 #endif

@@ -72,8 +72,8 @@ bool CClimableObject::	net_Spawn			( CSE_Abstract* DC)
 	//m_box.m_halfsize.set(1.f,1.f,1.f);
 	bool ret	= inherited::net_Spawn(DC);
 
-	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::VISIBLEFORAI;
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::LADDER;
+	SpatialComponent->type &= ~ESPATIAL_TYPE::VISIBLEFORAI;
+	SpatialComponent->type |= ESPATIAL_TYPE::LADDER;
 
 	const float f_min_width=0.2f;
 	Fvector shift;shift.set(0.f,0.f,0.f);

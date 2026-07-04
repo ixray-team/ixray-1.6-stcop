@@ -1821,12 +1821,12 @@ void CScriptGameObject::RemoveDanger(const CDangerObject& dobject)
 
 void CScriptGameObject::SetSpatialType(u64 sptype)
 {
-	object().SpatialComponent->spatial.type = (ESPATIAL_TYPE)sptype;
+	object().SpatialComponent->type = (ESPATIAL_TYPE)sptype;
 }
 
 u64 CScriptGameObject::GetSpatialType()
 {
-	return (u64)object().SpatialComponent->spatial.type;
+	return (u64)object().SpatialComponent->type;
 }
 
 u8 CScriptGameObject::GetRestrictionType()

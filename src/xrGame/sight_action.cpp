@@ -14,8 +14,6 @@
 #include "stalker_movement_manager_smart_cover.h"
 #include "Inventory.h"
 
-//#define SIGHT_TEST
-
 void CSightAction::initialize					()
 {
 	VERIFY							(!m_initialized);
@@ -112,17 +110,11 @@ bool CSightAction::target_reached				()
 void CSightAction::execute_current_direction	()
 {
 	object().movement().m_head.target	= object().movement().m_head.current;
-#ifdef SIGHT_TEST
-	Msg					("%6d eSightTypeCurrentDirection",Device.dwTimeGlobal);
-#endif
 }
 
 void CSightAction::execute_path_direction		()
 {
 	object().sight().SetDirectionLook();
-#ifdef SIGHT_TEST
-	Msg					("%6d eSightTypePathDirection",Device.dwTimeGlobal);
-#endif
 }
 
 void CSightAction::execute_direction			()
@@ -130,22 +122,19 @@ void CSightAction::execute_direction			()
 	m_vector3d.getHP	(object().movement().m_head.target.yaw,object().movement().m_head.target.pitch);
 	object().movement().m_head.target.yaw		*= -1;
 	object().movement().m_head.target.pitch	*= -1;
-#ifdef SIGHT_TEST
-	Msg					("%6d eSightTypeDirection",Device.dwTimeGlobal);
-#endif
 }
 
-void CSightAction::execute_position				(Fvector const& look_position)
+void CSightAction::execute_position(Fvector const& look_position)
 {
 	if (m_torso_look)
-		object().sight().SetFirePointLookAngles	(m_vector3d, object().movement().m_head.target.yaw, object().movement().m_head.target.pitch, look_position);
-	else
-		object().sight().SetPointLookAngles		(m_vector3d, object().movement().m_head.target.yaw, object().movement().m_head.target.pitch, look_position);
+	{
+		object().sight().SetFirePointLookAngles(m_vector3d, object().movement().m_head.target.yaw, object().movement().m_head.target.pitch, look_position);
+		return;
+	}
 
-#ifdef SIGHT_TEST
-	Msg					("%6d %s",Device.dwTimeGlobal,m_torso_look ? "eSightTypeFirePosition" : "eSightTypePosition");
-#endif
+	object().sight().SetPointLookAngles(m_vector3d, object().movement().m_head.target.yaw, object().movement().m_head.target.pitch, look_position);
 }
+
 #include "../xrEngine/CameraBase.h"
 #include "Actor.h"
 void CSightAction::execute_object				()
@@ -196,38 +185,34 @@ void CSightAction::execute_object				()
 	else
 		object().sight().SetPointLookAngles		(look_pos, object().movement().m_head.target.yaw, object().movement().m_head.target.pitch, my_position);
 
-//	Msg						("execute_object(%f)(%s)my_position[%f][%f][%f],object_position[%f][%f][%f]",object().movement().m_head.target.yaw,*m_object_to_look->cName(),VPUSH(m_object->eye_matrix.c),VPUSH(m_object_to_look->Position()));
-
 	if (m_no_pitch)
 		object().movement().m_head.target.pitch	= 0.f;
-
-#ifdef SIGHT_TEST
-	Msg					("%6d %s",Device.dwTimeGlobal,m_torso_look ? "eSightTypeFireObject" : "eSightTypeObject");
-#endif
 }
 
-void CSightAction::execute_cover				()
+void CSightAction::execute_cover()
 {
 	if (m_torso_look)
-		object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(),PI,m_path);
-	else
-		object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(),m_path);
-#ifdef SIGHT_TEST
-	Msg					("%6d %s [%f] -> [%f]",Device.dwTimeGlobal,m_torso_look ? "eSightTypeFireCover" : "eSightTypeCover",object().movement().m_body.current.yaw,object().movement().m_body.target.yaw);
-#endif
+	{
+		object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(), PI, m_path);
+		return;
+	}
+
+	object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(), m_path);
 }
 
-void CSightAction::execute_search				()
+void CSightAction::execute_search()
 {
-	m_torso_look					= false;
+	m_torso_look = false;
 	if (m_torso_look)
-		object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(),PI,m_path);
+	{
+		object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(), PI, m_path);
+	}
 	else
-		object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(),m_path);
-	object().movement().m_head.target.pitch	= PI_DIV_4;
-#ifdef SIGHT_TEST
-	Msg					("%6d %s",Device.dwTimeGlobal,m_torso_look ? "eSightTypeFireSearch" : "eSightTypeSearch");
-#endif
+	{
+		object().sight().SetLessCoverLook(m_object->ai_location().level_vertex(), m_path);
+	}
+
+	object().movement().m_head.target.pitch = PI_DIV_4;
 }
 
 void CSightAction::initialize_cover_look_over	()
@@ -241,9 +226,11 @@ void CSightAction::initialize_cover_look_over	()
 
 void CSightAction::execute_cover_look_over		()
 {
-	switch (m_internal_state) {
+	switch (m_internal_state) 
+	{
 		case 0 :
-		case 2 : {
+		case 2 : 
+		{
 #ifndef DEBUG
 fall_back:
 #endif // #ifndef DEBUG
@@ -255,7 +242,8 @@ fall_back:
 			}
 			break;
 		}
-		case 1 : {
+		case 1 :
+		{
 			if ((m_start_state_time + m_stop_state_time < Device.dwTimeGlobal) && target_reached()) {
 				execute_cover		();
 				m_internal_state	= 0;
@@ -263,7 +251,8 @@ fall_back:
 			}
 			break;
 		}
-		default : {
+		default : 
+		{
 #ifdef DEBUG
 			FATAL					(make_string<const char*>("m_internal_state = %d, object[0x%08x]", m_internal_state, this));
 #else // #ifdef DEBUG
@@ -377,59 +366,69 @@ void CSightAction::predict_object_position		( bool use_exact_position )
 	execute_position		(m_object->eye_matrix.c);
 }
 
-void CSightAction::execute_fire_object			()
+void CSightAction::execute_fire_object()
 {
-	switch (m_state_fire_object) {
-		case 0 : {
-//			execute_object				();
-			predict_object_position		( false );
+	switch (m_state_fire_object)
+	{
+		case 0:
+		{
+			predict_object_position(false);
 
 			if (!target_reached())
+			{
 				break;
-			
+			}
+
 			if (!object().inventory().ActiveItem())
+			{
 				break;
+			}
 
 			if (m_object->can_kill_enemy() && !m_object->can_kill_member())
+			{
 				break;
+			}
 
 			if (m_object_to_look->Position().distance_to_sqr(m_object->Position()) < _sqr(5.f))
+			{
 				break;
+			}
 
-//			Msg							("%6d switch to mode 1", Device.dwTimeGlobal);
-			m_state_fire_object			= 1;
-			m_state_fire_switch_time	= Device.dwTimeGlobal;
-			m_object_start_position		= m_object_to_look->Position();
-			m_holder_start_position		= m_object->Position();
-//			m_vector3d					= m_object->sight().object_position();
+			m_state_fire_object = 1;
+			m_state_fire_switch_time = Device.dwTimeGlobal;
+			m_object_start_position = m_object_to_look->Position();
+			m_holder_start_position = m_object->Position();
 			break;
 		}
-		case 1 : {
+		case 1 : 
+		{
 
-			if ( Device.dwTimeGlobal >= m_state_fire_switch_time + 1500 ) {
-				if (m_object_to_look->Position().distance_to_sqr(m_object->Position()) > _sqr(5.f)) {
-					if (!m_holder_start_position.similar(m_object->Position(),.05f)) {
-						m_vector3d			= m_object->sight().object_position();
-						m_already_switched	= false;
-//						Msg					("%6d switch to mode 0 (reson: holder position changed)", Device.dwTimeGlobal);
-						m_state_fire_object	= 0;
+			if (Device.dwTimeGlobal >= m_state_fire_switch_time + 1500)
+			{
+				if (m_object_to_look->Position().distance_to_sqr(m_object->Position()) > _sqr(5.f))
+				{
+					if (!m_holder_start_position.similar(m_object->Position(), .05f))
+					{
+						m_vector3d = m_object->sight().object_position();
+						m_already_switched = false;
+						m_state_fire_object = 0;
 						break;
 					}
 
-					if (!m_object_start_position.similar(m_object_to_look->Position(),.05f)) {
-						m_vector3d			= m_object->sight().object_position();
-//						Msg					("%6d switch to mode 0 (reson: object position changed)", Device.dwTimeGlobal);
-						m_already_switched	= false;
-						m_state_fire_object	= 0;
+					if (!m_object_start_position.similar(m_object_to_look->Position(), .05f))
+					{
+						m_vector3d = m_object->sight().object_position();
+						m_already_switched = false;
+						m_state_fire_object = 0;
 						break;
 					}
 				}
 
-				if ( !m_already_switched) {
-					m_vector3d				= m_object->sight().object_position();
-//					Msg						("%6d switch to mode 0 (reson: time interval)", Device.dwTimeGlobal);
-					m_already_switched		= true;
-					m_state_fire_object		= 0;
+				if (!m_already_switched)
+				{
+					m_vector3d = m_object->sight().object_position();
+					m_already_switched = true;
+					m_state_fire_object = 0;
 					break;
 				}
 			}
@@ -442,21 +441,23 @@ void CSightAction::execute_fire_object			()
 	}
 }
 
-void CSightAction::execute_animation_direction	()
+void CSightAction::execute_animation_direction()
 {
-	if ( object().animation_movement_controlled() ) {
-		float										h,p,b;
-		object().XFORM().getHPB						( h, p, b );
-		object().movement().m_body.current.yaw		= -h;
-		object().movement().m_body.current.pitch	=  p;
-		object().movement().m_body.current.roll		=  b;
-		object().movement().m_body.target			= object().movement().m_body.current;
+	if (object().animation_movement_controlled())
+	{
+		float h, p, b;
+		object().XFORM().getHPB(h, p, b);
+		object().movement().m_body.current.yaw = -h;
+		object().movement().m_body.current.pitch = p;
+		object().movement().m_body.current.roll = b;
+		object().movement().m_body.target = object().movement().m_body.current;
 	}
 
-	object().movement().m_head.target				= object().movement().m_body.current;
+	object().movement().m_head.target = object().movement().m_body.current;
 }
 
-const ILevelGraph::CVertex* CAI_ObjectLocation::level_vertex() const {
+const ILevelGraph::CVertex* CAI_ObjectLocation::level_vertex() const
+{
 	VERIFY(ai().level_graph().valid_vertex_id(m_level_vertex_id));
 	return (ai().level_graph().vertex(m_level_vertex_id));
 }

@@ -408,19 +408,19 @@ void CRender::Calculate				()
 			for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)
 			{
 				ISpatial*	spatial		= lstRenderables[o_it].get();		spatial->spatial_updatesector	();
-				CSector*	sector		= (CSector*)spatial->spatial.sector	;
+				CSector*	sector		= (CSector*)spatial->sector	;
 				if	(0==sector)										
 					continue;	// disassociated from S/P structure
 
 				// Filter only not light spatial
-				if (PortalTraverser.i_marker != sector->r_marker && ((spatial->spatial.type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE || (spatial->spatial.type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE))	continue;	// inactive (untouched) sector
+				if (PortalTraverser.i_marker != sector->r_marker && ((spatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE || (spatial->type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE))	continue;	// inactive (untouched) sector
 
-				if ((spatial->spatial.type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE || (spatial->spatial.type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE)
+				if ((spatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE || (spatial->type & ESPATIAL_TYPE::PARTICLE) != ESPATIAL_TYPE::NONE)
 				{
 					for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)
 					{
 						set_Frustum			(&(sector->r_frustums[v_it]));
-						if (!View->testSphere_dirty(spatial->spatial.sphere.P,spatial->spatial.sphere.R)) continue;
+						if (!View->testSphere_dirty(spatial->sphere.P,spatial->sphere.R)) continue;
 						// renderable
 						IRenderable*	renderable		= spatial->dcast_Renderable	();
 						if (renderable)
@@ -455,14 +455,14 @@ void CRender::Calculate				()
 					}
 				}
 
-				if ((spatial->spatial.type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE)
+				if ((spatial->type & ESPATIAL_TYPE::LIGHTSOURCE) != ESPATIAL_TYPE::NONE)
 				{
-					if ( ViewBase.testSphere_dirty(spatial->spatial.sphere.P,spatial->spatial.sphere.R) )
+					if ( ViewBase.testSphere_dirty(spatial->sphere.P,spatial->sphere.R) )
 					{
 						// lightsource
 						if (light* L = (light*)spatial->dcast_Light())
 						{
-							if (L->SpatialComponent->spatial.sector)
+							if (L->SpatialComponent->sector)
 							{
 								vis_data& vis = L->get_homdata();
 								if (HOM.visible(vis))	L_DB->add_light(L);

@@ -276,7 +276,7 @@ bool CEntityAlive::net_Spawn	(CSE_Abstract* DC)
 	}
 
 	if (character_physics_support())
-		SpatialComponent->spatial.type |= ESPATIAL_TYPE::PHYSIC_MOVEMENT;
+		SpatialComponent->type |= ESPATIAL_TYPE::PHYSIC_MOVEMENT;
 
 	return						(true);
 }
@@ -354,8 +354,8 @@ void CEntityAlive::Die	(CObject* who)
 	}
 
 	// disable react to sound
-	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::REACTTOSOUND;
-	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::PHYSIC_MOVEMENT;
+	SpatialComponent->type &= ~ESPATIAL_TYPE::REACTTOSOUND;
+	SpatialComponent->type &= ~ESPATIAL_TYPE::PHYSIC_MOVEMENT;
 
 	if(character_physics_support())
 		character_physics_support()->in_Die();
