@@ -20,11 +20,11 @@ struct spatial_frustum_walker final
 		for (ISpatialShared& S : N->items)
 		{
 			if (!S.get()) continue;
-			if (ESPATIAL_TYPE::NONE == (S->spatial.type & mask))
+			if (ESPATIAL_TYPE::NONE == (S->type & mask))
 				continue;
 
-			Fvector& sC = S->spatial.sphere.P;
-			float sR = S->spatial.sphere.R;
+			Fvector& sC = S->sphere.P;
+			float sR = S->sphere.R;
 			u32 tmask = fmask;
 
 			if (fcvNone == F.testSphere(sC, sR, tmask))

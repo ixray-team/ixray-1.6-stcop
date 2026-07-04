@@ -184,7 +184,7 @@ struct SPHObjDBGDraw:public SPHDBGDrawAbsract
 	SPHObjDBGDraw(const CPHObject* obj)
 	{
 		AABB.set(obj->AABB);
-		AABB_center.set(obj->SpatialComponent->spatial.sphere.P);
+		AABB_center.set(obj->SpatialComponent->sphere.P);
 	}
 	void render		( )
 	{
@@ -197,39 +197,29 @@ void DBG_DrawPHObject(const CPHObject* obj)
 {
 	DBG_DrawPHAbstruct(new SPHObjDBGDraw( obj ));
 }
-struct SPHContactDBGDraw :public SPHDBGDrawAbsract
+struct SPHContactDBGDraw : public SPHDBGDrawAbsract
 {
-	//int geomClass;
+	// int geomClass;
 	bool is_cyl;
 	Fvector norm;
 	Fvector pos;
 	float depth;
+
 	SPHContactDBGDraw(const dContact& c)
 	{
-		
-		//if(dGeomGetBody(c.geom.g1))
-		//{
-		//	geomClass =dGeomGetClass(retrieveGeom(c.geom.g1));
-		//}
-		//else
-		//{
-		//	geomClass=dGeomGetClass(retrieveGeom(c.geom.g2));
-		//}
-
-		//is_cyl= (geomClass==dCylinderClassUser);
 		is_cyl = IsCyliderContact(c);
 		norm.set(cast_fv(c.geom.normal));
 		pos.set(cast_fv(c.geom.pos));
-		depth=c.geom.depth;
+		depth = c.geom.depth;
 	}
-	void render		( )
+
+	void render()
 	{
-			//bool is_cyl= (geomClass==dCylinderClassUser);
 		Level().debug_renderer().draw_aabb(pos, .01f, .01f, .01f, color_xrgb(255 * is_cyl, 0, 255 * !is_cyl));
-			Fvector dir;
-			dir.set(norm);
-			dir.mul(depth*100.f);
-			dir.add(pos);
+		Fvector dir;
+		dir.set(norm);
+		dir.mul(depth * 100.f);
+		dir.add(pos);
 		Level().debug_renderer().draw_line(Fidentity, pos, dir, color_xrgb(255 * is_cyl, 0, 255 * !is_cyl));
 	}
 };

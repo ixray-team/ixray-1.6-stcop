@@ -480,9 +480,9 @@ void CAI_Stalker::reload			(const char* section)
 
 void CAI_Stalker::Die				(CObject* who)
 {
-	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::STALKER_WOUNDED;
-	SpatialComponent->spatial.type &= ~ESPATIAL_TYPE::STALKER_ALIVE;
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::STALKER_DEAD;
+	SpatialComponent->type &= ~ESPATIAL_TYPE::STALKER_WOUNDED;
+	SpatialComponent->type &= ~ESPATIAL_TYPE::STALKER_ALIVE;
+	SpatialComponent->type |= ESPATIAL_TYPE::STALKER_DEAD;
 
 	movement().on_death				( );
 
@@ -739,16 +739,16 @@ bool CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 
 	m_pPhysics_support->in_NetSpawn	(e);
 
-	SpatialComponent->spatial.type |= ESPATIAL_TYPE::STALKER;
+	SpatialComponent->type |= ESPATIAL_TYPE::STALKER;
 
 	if (GetfHealth()>0.f)
 	{
-		SpatialComponent->spatial.type |= ESPATIAL_TYPE::STALKER_ALIVE;
+		SpatialComponent->type |= ESPATIAL_TYPE::STALKER_ALIVE;
 		if (wounded())
-			SpatialComponent->spatial.type |= ESPATIAL_TYPE::STALKER_WOUNDED;
+			SpatialComponent->type |= ESPATIAL_TYPE::STALKER_WOUNDED;
 	}
 	else
-		SpatialComponent->spatial.type |= ESPATIAL_TYPE::STALKER_DEAD;
+		SpatialComponent->type |= ESPATIAL_TYPE::STALKER_DEAD;
 
 	return							(true);
 }

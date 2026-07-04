@@ -1584,7 +1584,7 @@ void CPHSimpleCharacter::set_State(const SPHNetState& state)
 
 void CPHSimpleCharacter::get_spatial_params()
 {
-	spatialParsFromDGeom((dGeomID)m_space, SpatialComponent->spatial.sphere.P,AABB, SpatialComponent->spatial.sphere.R);
+	spatialParsFromDGeom((dGeomID)m_space, SpatialComponent->sphere.P,AABB, SpatialComponent->sphere.R);
 }
 
 float CPHSimpleCharacter::FootRadius()

@@ -410,13 +410,13 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 		for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)
 		{
 			ISpatial*	spatial		= lstRenderables[o_it].get();
-			CSector*	sector		= (CSector*)spatial->spatial.sector;
+			CSector*	sector		= (CSector*)spatial->sector;
 			if	(0==sector)										continue;	// disassociated from S/P structure
 			if	(PortalTraverser.i_marker != sector->r_marker)	continue;	// inactive (untouched) sector
 			for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)
 			{
 				set_Frustum			(&(sector->r_frustums[v_it]));
-				if (!View->testSphere_dirty(spatial->spatial.sphere.P,spatial->spatial.sphere.R))	continue;
+				if (!View->testSphere_dirty(spatial->sphere.P,spatial->sphere.R))	continue;
 
 				// renderable
 				IRenderable*	renderable		= spatial->dcast_Renderable	();
@@ -427,13 +427,13 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 					CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
 					if(pKin)
 					{
-						if ((spatial->spatial.type & ESPATIAL_TYPE::RENDERABLESHADOW) != ESPATIAL_TYPE::NONE)
+						if ((spatial->type & ESPATIAL_TYPE::RENDERABLESHADOW) != ESPATIAL_TYPE::NONE)
 						{
 							pKin->CalculateBones(true);
 						}
-						if ((spatial->spatial.type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE)
+						if ((spatial->type & ESPATIAL_TYPE::RENDERABLE) != ESPATIAL_TYPE::NONE)
 						{
-							if(0==ViewSave.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
+							if(0==ViewSave.testSphere_dirty(spatial->sphere.P, spatial->sphere.R))
 							{
 								pKin->CalculateBones(true);
 							}
