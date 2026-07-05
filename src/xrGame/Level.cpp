@@ -213,7 +213,7 @@ CLevel::CLevel() :
 	m_pScriptXRParser = new CScriptXRParser();
 #endif
 
-	Device.LuaGC = static_cast<void(*)()>(+[]()->void
+	Device.LuaGC = xr_make_delegate(+[]()->void
 	{
 		try
 		{
