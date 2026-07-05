@@ -8,6 +8,7 @@
 #include "Inventory.h"
 #include "script_game_object.h"
 #include "../xrEngine/xr_input.h"
+#include "../xrEngine/GamepadService.h"
 #include "../xrScripts/exports/script_ini_file.h"
 class CScriptIniFile;
 
@@ -36,7 +37,7 @@ void ExportEELayer(lua_State* L)
 		luabind::def("unlock_trophy",    +[]() {}),
 		luabind::def("get_platform_id",  +[]() { return 7; }),
 		luabind::def("detectKeyboard",   +[]() { return true; }),
-		luabind::def("detectController", +[]() { return pInput->pGamePad != nullptr; }),
+		luabind::def("detectController", +[]() { return GGamepadService->GamePadDevice != nullptr; }),
 
 		// консольная хуйня, скип
 		luabind::def("savedata_delete",  +[]() {}), 
