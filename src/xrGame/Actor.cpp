@@ -1147,7 +1147,6 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 {
 	if (g_Alive()) 
 	{
-
 		// check damage bone
 		Fvector D;
 		XFORM().transform_dir(D,vLocalDir);
@@ -1165,13 +1164,20 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 		tpKinematics->PlayFX(motion_ID,power_factor);
 	}
 }
+
 void start_tutorial(const char* name);
-void CActor::Die	(CObject* who)
+void CActor::Die(CObject* who)
 {
 	SpatialComponent->type &= ~ESPATIAL_TYPE::ACTOR_ALIVE;
 	SpatialComponent->type |= ESPATIAL_TYPE::ACTOR_DEAD;
 
-	inherited::Die		(who);
+	inherited::Die(who);
+
+	if (this == Level().CurrentControlEntity())
+	{
+		GGamepadService->ClearTriggerEffect(true);
+		GGamepadService->ClearTriggerEffect(false);
+	}
 
 	if (OnServer())
 	{	
@@ -1195,15 +1201,6 @@ void CActor::Die	(CObject* who)
 						{
 							item_in_slot->SetDropManual(true);
 						}
-					}
-					else
-					{
-						//This logic we do on a server site
-						/*
-						if ((*I).m_pIItem->object().CLS_ID != CLSID_OBJECT_W_KNIFE)
-						{
-							(*I).m_pIItem->SetDropManual(true);
-						}*/							
 					}
 				};
 			continue;

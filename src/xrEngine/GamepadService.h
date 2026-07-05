@@ -15,6 +15,8 @@ public:
 	~CGamepadService();
 
 	void UpdateLEDByHP(float Health);
+	void SetTriggerResistance(bool RightTrigger, u8 StartPosition, u8 Force);
+	void ClearTriggerEffect(bool RightTrigger);
 
 public:
 	EGamepadType Type = EGamepadType::Unknown;

@@ -66,6 +66,9 @@ void CGamepadService::InitHID()
 
 CGamepadService::~CGamepadService()
 {
+	GGamepadService->ClearTriggerEffect(true);
+	GGamepadService->ClearTriggerEffect(false);
+
 #ifdef IXR_WINDOWS
 	if (HidDevice != nullptr)
 	{
@@ -142,4 +145,53 @@ void CGamepadService::SetLED(u8 Red, u8 Green, u8 Blue)
 	{
 		SDL_SetGamepadLED(pInput->pGamePad, Red, Green, Blue);
 	}
+}
+
+void CGamepadService::SetTriggerResistance(bool RightTrigger, u8 StartPosition, u8 Force)
+{
+#ifdef IXR_WINDOWS
+	if (Type != EGamepadType::DualSense || HidDevice == nullptr)
+	{
+		return;
+	}
+
+	StartPosition = std::min(StartPosition, (u8)9);
+	Force = std::min(Force, (u8)8);
+
+	u8 Report[48] = {};
+
+	Report[0] = 0x02;
+
+	// Enable trigger effect
+	Report[1] = 0x04;
+
+	u8* Trigger = RightTrigger ? &Report[11] : &Report[22];
+
+	Trigger[0] = 0x01; // Resistance mode
+	Trigger[1] = StartPosition;
+	Trigger[2] = Force;
+
+	hid_write((hid_device*)HidDevice, Report, sizeof(Report));
+#endif
+}
+
+void CGamepadService::ClearTriggerEffect(bool RightTrigger)
+{
+#ifdef IXR_WINDOWS
+	if (Type != EGamepadType::DualSense || HidDevice == nullptr)
+	{
+		return;
+	}
+
+	u8 Report[48] = {};
+
+	Report[0] = 0x02;
+	Report[1] = 0x04;
+
+	u8* Trigger = RightTrigger ? &Report[11] : &Report[22];
+
+	Trigger[0] = 0x00;
+
+	hid_write((hid_device*)HidDevice, Report, sizeof(Report));
+#endif
 }
