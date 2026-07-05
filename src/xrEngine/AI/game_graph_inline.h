@@ -124,21 +124,18 @@ IC	const GameGraph::SLevel &GameGraph::CHeader::level				(const _LEVEL_ID &id) c
 	return						((*I).second);
 }
 
-IC	const GameGraph::SLevel &GameGraph::CHeader::level				(const char* level_name) const
+IC const GameGraph::SLevel& GameGraph::CHeader::level(const char* level_name) const
 {
-	LEVEL_MAP::const_iterator	I = levels().begin();
-	LEVEL_MAP::const_iterator	E = levels().end();
-	for ( ; I != E; ++I)
-		if (!xr_strcmp((*I).second.name(),level_name))
-			return				((*I).second);
-	
-#ifdef DEBUG
-	Msg							("! There is no specified level %s in the game graph!",level_name);
-	return						(levels().begin()->second);
-#else
-	R_ASSERT3					(false,"There is no specified level in the game graph!",level_name);
-	NODEFAULT;
-#endif
+	for (const auto& Level : levels())
+	{
+		if (!xr_strcmp(Level.second.name(), level_name))
+		{
+			return Level.second;
+		}
+	}
+
+	R_ASSERT3(false, "There is no specified level in the game graph!", level_name);
+	return (levels().begin()->second);
 }
 
 IC	const GameGraph::SLevel *GameGraph::CHeader::level				(const char* level_name, bool) const
