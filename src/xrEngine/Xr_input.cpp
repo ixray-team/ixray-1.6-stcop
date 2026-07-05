@@ -51,11 +51,6 @@ CInput::CInput(bool bExclusive, int deviceForInit)
 
 CInput::~CInput()
 {
-	if (pGamePad != nullptr)
-	{
-		SDL_CloseGamepad(pGamePad);
-	}
-
 	xr_delete(GGamepadService);
 
 	Device.seqFrame.Remove(this);
@@ -229,11 +224,15 @@ void CInput::KeyboardUpdate()
 
 void CInput::GamepadUpdate()
 {
-	if (!pGamePad)
+	if (GGamepadService->GamePadDevice == nullptr)
+	{
 		return;
+	}
 
 	if (cbStack.empty())
+	{
 		return;
+	}
 
 	auto KeyHolder = cbStack.back();
 
@@ -583,12 +582,11 @@ void CInput::acquire()
 	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, true);
 }
 
-bool gamepad_feedback_enabled = true;
 void  CInput::feedback(u16 s1, u16 s2, float time)
 {
-	if (GetControllerMode() && gamepad_feedback_enabled)
+	if (GetControllerMode())
 	{
-		SDL_RumbleGamepad(pGamePad, s1, s2, time * 1000);
+		GGamepadService->Rumble(s1, s2, time * 1000);
 	}
 }
 
@@ -781,46 +779,16 @@ extern xr_token gamepad_prefix_override_token[];
 
 void CInput::SelectGamepadPrefix()
 {
-	if (!pGamePad)
+	if (GGamepadService->GamePadDevice == nullptr)
+	{
 		return;
+	}
 
 	if (ps_gamepad_prefix_override != 0)
 	{
-		gamepadPrefix = gamepad_prefix_override_token[ps_gamepad_prefix_override].name;
+		GamepadTypeName = gamepad_prefix_override_token[ps_gamepad_prefix_override].name;
 		return;
 	}
 	
-	if (GGamepadService->Type == EGamepadType::DualShock4)
-	{
-		gamepadPrefix = "ps4";
-		return;
-	}
-
-	switch (SDL_GetGamepadType(pGamePad))
-	{
-		case SDL_GAMEPAD_TYPE_PS3:
-		case SDL_GAMEPAD_TYPE_PS4:
-		{
-			gamepadPrefix = "ps4";
-			break;
-		}
-		case SDL_GAMEPAD_TYPE_PS5:
-		{
-			gamepadPrefix = "ps5";
-			break;
-		}
-		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO:
-		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
-		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT:
-		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
-		{
-			gamepadPrefix = "switch";
-			break;
-		}
-		default:	// Use Xbox prefix as a fallback
-		{
-			gamepadPrefix = "xbox1";
-			break;
-		}
-	}
+	GamepadTypeName = GGamepadService->GetGamepadPrefix();
 }

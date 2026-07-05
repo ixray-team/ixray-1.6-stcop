@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "xr_input.h"
+#include "GamepadService.h"
 #include "imgui_impl_sdl3.h"
 #include "XR_IOConsole.h"
 
@@ -17,8 +18,8 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 	{
 		case SDL_EVENT_GAMEPAD_REMOVED:
 		{
-			SDL_CloseGamepad(pInput->pGamePad);
-			pInput->pGamePad = nullptr;
+			SDL_CloseGamepad(GGamepadService->GamePadDevice);
+			GGamepadService->GamePadDevice = nullptr;
 			
 			break;
 		}
@@ -26,7 +27,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		{
 			if (SDL_IsGamepad(Event.jdevice.which))
 			{
-				pInput->pGamePad = SDL_OpenGamepad(Event.jdevice.which);
+				GGamepadService->GamePadDevice = SDL_OpenGamepad(Event.jdevice.which);
 
 				const char* tempPrefix = pInput->GamepadPrefix();
 				pInput->SelectGamepadPrefix();

@@ -8,9 +8,24 @@
 
 ENGINE_API CGamepadService* GGamepadService = nullptr;
 
+bool CGamepadService::GamepadFeedbackMode = false;
+
 CGamepadService::CGamepadService()
 {
 	InitHID();
+}
+
+CGamepadService::~CGamepadService()
+{
+	ClearTriggerEffect(true);
+	ClearTriggerEffect(false);
+
+	DestoryHID();
+
+	if (GamePadDevice != nullptr)
+	{
+		SDL_CloseGamepad(GamePadDevice);
+	}
 }
 
 void CGamepadService::InitHID()
@@ -64,11 +79,8 @@ void CGamepadService::InitHID()
 #endif
 }
 
-CGamepadService::~CGamepadService()
+void CGamepadService::DestoryHID()
 {
-	GGamepadService->ClearTriggerEffect(true);
-	GGamepadService->ClearTriggerEffect(false);
-
 #ifdef IXR_WINDOWS
 	if (HidDevice != nullptr)
 	{
@@ -82,7 +94,7 @@ CGamepadService::~CGamepadService()
 
 void CGamepadService::UpdateLEDByHP(float Health)
 {
-	if (pInput->pGamePad == nullptr && HidDevice == nullptr)
+	if (GamePadDevice == nullptr && HidDevice == nullptr)
 	{
 		return;
 	}
@@ -143,7 +155,7 @@ void CGamepadService::SetLED(u8 Red, u8 Green, u8 Blue)
 	else
 #endif
 	{
-		SDL_SetGamepadLED(pInput->pGamePad, Red, Green, Blue);
+		SDL_SetGamepadLED(GamePadDevice, Red, Green, Blue);
 	}
 }
 
@@ -194,4 +206,65 @@ void CGamepadService::ClearTriggerEffect(bool RightTrigger)
 
 	hid_write((hid_device*)HidDevice, Report, sizeof(Report));
 #endif
+}
+
+bool CGamepadService::Rumble(u16 LFRumble, u16 HFRumble, u16 DurationMS)
+{
+	if (GamePadDevice != nullptr)
+	{
+		return false;
+	}
+
+	if (CGamepadService::GamepadFeedbackMode)
+	{
+		return SDL_RumbleGamepad(GamePadDevice, LFRumble, HFRumble, DurationMS);
+	}
+	return false;
+}
+
+shared_str CGamepadService::GetGamepadPrefix() const
+{
+	shared_str Prefix;
+
+	// FX: Support DS4Windows and DualSenceX wrappers
+	if (Type == EGamepadType::DualShock4)
+	{
+		Prefix = "ps4";
+		return Prefix;
+	}
+	else if (Type == EGamepadType::DualSense)
+	{
+		Prefix = "ps5";
+		return Prefix;
+	}
+
+	switch (SDL_GetGamepadType(GamePadDevice))
+	{
+		case SDL_GAMEPAD_TYPE_PS3:
+		case SDL_GAMEPAD_TYPE_PS4:
+		{
+			Prefix = "ps4";
+			break;
+		}
+		case SDL_GAMEPAD_TYPE_PS5:
+		{
+			Prefix = "ps5";
+			break;
+		}
+		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO:
+		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
+		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT:
+		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
+		{
+			Prefix = "switch";
+			break;
+		}
+		default: // Use Xbox prefix as a fallback
+		{
+			Prefix = "xbox1";
+			break;
+		}
+	}
+
+	return Prefix;
 }
