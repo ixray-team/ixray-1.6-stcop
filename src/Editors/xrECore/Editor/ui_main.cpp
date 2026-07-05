@@ -369,9 +369,12 @@ void TUI::Invalidate()
 }
 
 extern ENGINE_API xr_atomic_bool g_bRendering;
+ECORE_API xrCriticalSection temp_render_lock;
 
 void TUI::Redraw()
 {
+	xrCriticalSectionGuard guard_lock(temp_render_lock);
+
 	PrepareRedraw();
 
 	Viewport& View = CurrentView();
