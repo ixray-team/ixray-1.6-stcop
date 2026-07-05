@@ -1,10 +1,8 @@
 #include "stdafx.h"
 #include "IGame_Level.h"
 
-//#include "xr_effgamma.h"
 #include "x_ray.h"
 #include "xr_ioc_cmd.h"
-//#include "fbasicvisual.h"
 #include "CameraManager.h"
 #include "Environment.h"
 #include "xr_input.h"
@@ -12,6 +10,7 @@
 #include "string_table.h"
 #include "../Include/xrRender/RenderDeviceRender.h"
 
+#include "GamepadService.h"
 #include "xr_object.h"
 
 xr_token* vid_quality_token = nullptr;
@@ -24,7 +23,6 @@ float SheduleScaleDedicated = 0;
 ENGINE_API float ps_render_scale = 1.0f;
 ENGINE_API u32 ps_render_scale_preset = 0;
 u32 ps_gamepad_prefix_override = 0;
-extern bool gamepad_feedback_enabled;
 
 xr_token vid_bpp_token[] =
 {
@@ -894,7 +892,7 @@ void CCC_Register()
 	CMD4(CCC_Float,		"gamepad_sens",			&psGamepadSens,		0.1f, 0.8f);
 	CMD2(CCC_Boolean,	"gamepad_invert",		&psGamepadInvert);
 	CMD1(CCC_GamepadPrefixOverride, "gamepad_prefix_override");
-	CMD2(CCC_Boolean,	"gamepad_vibration",	&gamepad_feedback_enabled);
+	CMD2(CCC_Boolean, "gamepad_vibration", &CGamepadService::GamepadFeedbackMode);
 
 #ifndef MASTER_GOLD
 	// Other
