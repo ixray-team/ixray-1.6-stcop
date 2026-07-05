@@ -103,7 +103,7 @@ int CApplication::BeginPlay()
 
 	SDL_WindowFlags WndFlags = SDL_WINDOW_HIDDEN;
 #ifndef IXR_WINDOWS
-	window_flags = SDL_WINDOW_VULKAN;
+	WndFlags = SDL_WINDOW_VULKAN;
 #endif
 
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, WndFlags);
@@ -137,8 +137,8 @@ CApplication::CApplication(ENTRY_ARGS)
 #else
 	for (int i = 0; i < argc; ++i)
 	{
-		cmd_line += argv[i];
-		cmd_line += " ";
+		CommandLine += argv[i];
+		CommandLine += " ";
 	}
 #endif
 }
