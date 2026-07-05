@@ -157,12 +157,12 @@ struct p_TL
     //	float4 	HPos	: SV_POSITION;	// Clip-space position 	(for rasterization)
 };
 
-struct v_editor
-{
-    float3 P : POSITION;
-    float2 tc : TEXCOORD0;
-    float3 N : NORMAL;
-};
+// struct v_editor
+// {
+    // float3 P : POSITION;
+    // float2 tc : TEXCOORD0;
+    // float3 N : NORMAL;
+// };
 
 struct v_model
 {

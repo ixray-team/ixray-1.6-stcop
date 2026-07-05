@@ -122,6 +122,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 		for (CDetail* ObjectPtr : objects)
 		{
 			CDetail& Object = *ObjectPtr;
+			RCache.set_Element(Object.shader->E[lod_id], 0);
 #else
 		for (CDetail& Object : objects)
 		{
@@ -199,6 +200,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 			for (CDetail* DPtr : objects)
 			{
 				CDetail& D = *DPtr;
+				RCache.set_Element(D.shader->E[lod_id], 0);
 #else
 			for (CDetail& D : objects)
 			{
@@ -218,6 +220,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& wave, const Fvector4& wind, 
 			for (CDetail* ObjectPtr : objects)
 			{
 				CDetail& Object = *ObjectPtr;
+				RCache.set_Element(Object.shader->E[lod_id], 0);
 #else
 			for (CDetail& Object : objects)
 			{

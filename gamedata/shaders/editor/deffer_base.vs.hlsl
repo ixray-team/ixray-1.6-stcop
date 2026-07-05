@@ -4,7 +4,7 @@
 
 #include "common.hlsli"	
 
-void main(in v_editor I, out p_bumped_new O)
+void main(in v_model I, out p_bumped_new O)
 {
     float3 Pe = mul(m_WV, float4(I.P.xyz, 1.0f));
 

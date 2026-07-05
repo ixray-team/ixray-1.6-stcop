@@ -11,19 +11,39 @@
 #include "render.h"
 
 #include <FlexibleVertexFormat.h>
+//
+//struct VEditorVertex
+//{
+//	Fvector3 P;
+//	Fvector2 tc;
+//	Fvector  N;
+//};
+//
+//RHIInputElementDesc VEditorVertexDecl[] =
+//{
+//	{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 0,							ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+//	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+//	{ "NORMAL", 0,   ERHI_FORMAT::R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+//};
 
-struct VEditorVertex
+struct svertRender
 {
-	Fvector3 P;
-	Fvector2 tc;
-	Fvector  N;
+	Fvector3 P{}; float pad0 = 1.0f;
+	Fvector3 N{}; float weight0 = 0.0f;
+	Fvector3 T{}; float weight1 = 0.0f;
+	Fvector3 B{}; float weight2 = 0.0f;
+	Fvector2 uv { };
+	uint32_t ind = 0;
 };
 
-RHIInputElementDesc VEditorVertexDecl[] =
+static RHIInputElementDesc dwDecl_4W[] =
 {
-	{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 0,							ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
-	{ "NORMAL", 0,   ERHI_FORMAT::R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "NORMAL", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TANGENT", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 32, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "BINORMAL", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 48, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT, 0, 64, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TEXCOORD", 1, ERHI_FORMAT::B8G8R8A8_UNORM, 0, 72, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
 };
 
 //----------------------------------------------------
@@ -60,7 +80,7 @@ void CEditableMesh::GenerateRenderBuffers()
 		rb_vec.emplace_back(0, vertex_count);
 		st_RenderBuffer& rb = rb_vec.back();
 
-		const u32 vertex_size = sizeof(VEditorVertex);
+		const u32 vertex_size = sizeof(svertRender);
 		const u32 buffer_size = vertex_size * vertex_count;
 
 		VERIFY2(buffer_size, "Empty buffer size");
@@ -68,7 +88,7 @@ void CEditableMesh::GenerateRenderBuffers()
 		IRHIBuffer* pVB = nullptr;
 		R_ASSERT(RHIUtils::CreateVertexBuffer(&pVB, nullptr, buffer_size, false));
 
-		rb.pGeom.create(VEditorVertexDecl, std::size(VEditorVertexDecl), pVB, 0);
+		rb.pGeom.create(dwDecl_4W, std::size(dwDecl_4W), pVB, 0);
 
 		RHIMappedSubresource mapped{};
 		if (pVB->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &mapped))
@@ -108,7 +128,7 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 	const u32 dwFVF = surf->_FVF();
 	const u32 dwTexCnt = ((dwFVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT);
 
-	auto* vtx = reinterpret_cast<VEditorVertex*>(src_data);
+	auto* vtx = reinterpret_cast<svertRender*>(src_data);
 
 	auto ProcessVertex = [&](const st_FaceVert& fv, u32 norm_id, bool invert_normal)
 	{
@@ -143,7 +163,7 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 			vtx->N.set(0, 1, 0);
 		}
 
-		vtx->tc.set(0, 0);
+		vtx->uv.set(0, 0);
 		if (dwTexCnt > 0 && fv.vmref >= 0)
 		{
 			const auto& vmref = m_VMRefs[fv.vmref];
@@ -164,7 +184,7 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 					continue;
 				}
 
-				vtx->tc = vmap->getUV(vm_pt.index);
+				vtx->uv = vmap->getUV(vm_pt.index);
 			}
 		}
 
@@ -289,16 +309,6 @@ void CEditableMesh::Render(CCustomObject* pParent, const Fmatrix& parent, CSurfa
 	}
 }
 
-struct svertRender
-{
-	Fvector3 P; float pad0;
-	Fvector3 N; float weight0;
-	Fvector3 T; float weight1;
-	Fvector3 B; float weight2;
-	Fvector2 uv;
-	uint32_t ind;
-};
-
 void CEditableMesh::RenderSkeleton(CCustomObject* pParent, const Fmatrix&, CSurface* S)
 {
 	SelectionColorRaii pRenderColor(pParent, m_color_map);
@@ -319,7 +329,6 @@ void CEditableMesh::RenderSkeleton(CCustomObject* pParent, const Fmatrix&, CSurf
 	// set model shader from surface (active shader in editor device)
 	ref_shader shader = EDevice->GetShader();
 	EDevice->SetShader(shader);
-
 
 	IntVec& face_lst = sp_it->second;
 	size_t FaceCount = face_lst.size();

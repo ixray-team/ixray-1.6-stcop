@@ -366,10 +366,7 @@ void CEditableObject::DefferedLoadRP()
 	if (m_LoadState.is(LS_RBUFFERS)) return;
 
 	// skeleton
-	if (IsSkeleton())
-	{
-		vs_SkeletonGeom.create(dwDecl_4W, std::size(dwDecl_4W), RCache.Vertex.Buffer(), RCache.Index.Buffer());
-	}
+	vs_SkeletonGeom.create(dwDecl_4W, std::size(dwDecl_4W), RCache.Vertex.Buffer(), RCache.Index.Buffer());
 
 	// создать LOD shader
 	xr_string l_name = GetLODTextureName();
