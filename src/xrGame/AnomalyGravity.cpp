@@ -29,7 +29,7 @@ void TAnomalyGravity::Load(const char* section)
 		m_use_gravity_effect = READ_IF_EXISTS(pSettings, r_bool, gravity_options_section, "use_gravity_effect", m_use_gravity_effect);
 		m_max_count_spawn_trash = READ_IF_EXISTS(pSettings, r_u16, gravity_options_section, "max_count_spawn_trash", m_max_count_spawn_trash);
 
-
+		m_min_gravity_radius_factor = READ_IF_EXISTS(pSettings, r_float, gravity_options_section, "min_gravity_radius_factor", m_min_gravity_radius_factor);
 		m_gravity_radius = READ_IF_EXISTS(pSettings, r_float, gravity_options_section, "gravity_radius", m_gravity_radius);
 		m_max_processing_distance = READ_IF_EXISTS(pSettings, r_float, gravity_options_section, "max_processing_distance", m_max_processing_distance);
 		if (m_gravity_radius <= 0.f || m_max_processing_distance <= 0.f)
@@ -52,17 +52,21 @@ bool TAnomalyGravity::AlwaysTheCrow()
 	return IsEnabled() && Actor()->Position().distance_to_xz(XFORM().c) <= m_max_processing_distance;
 }
 
-static Fvector GenerateRandomPointInUpperHemisphere(const Fvector& center, float radius)
+static void buildBasis(const Fvector& axis, Fvector& u, Fvector& v)
 {
-    float theta = acosf(::Random.randF(0.f, 1.f));
-    float phi   = ::Random.randF(0.f, 2.f * PI);
-    Fvector result;
-
-	return result.set(
-		sinf(theta) * cosf(phi) * radius,
-		cosf(theta) * radius,
-		sinf(theta) * sinf(phi) * radius
-	).add(center);
+	Fvector ref;
+	if (fabsf(axis.y) < 0.9f)
+	{
+		ref.set(0, 1, 0);
+	}
+	else
+	{
+		ref.set(1, 0, 0);
+	}
+	u.crossproduct(axis, ref);
+	u.normalize();
+	v.crossproduct(axis, u);
+	v.normalize();
 }
 
 void TAnomalyGravity::Update()
@@ -72,41 +76,75 @@ void TAnomalyGravity::Update()
 		return;
 	}
 
-	float MovementSpeed = 0.25f * ::Random.randF(3.0f, 7.0f);
-	float RotationSpeed = ::Random.randF(0.4f, 0.7f);
-	float rollSpeed = ::Random.randF(1.f, 1.6f);
+	const float dt = Device.fTimeDelta;
+	const Fvector& center = XFORM().c;
+	const float radius = m_gravity_radius;
+	const float minRadius = radius * m_min_gravity_radius_factor;
 
-	Fvector anomaly_center;
-	anomaly_center.set(XFORM().c);
-	
-	// обработка тех обьектов что уже есть в поле
-	if (!m_current_anomaly->lastScannedObjects.empty())
+	for (CGameObject* obj : m_current_anomaly->lastScannedObjects)
 	{
-		for (CGameObject* obj : m_current_anomaly->lastScannedObjects)
+		if (!obj)
 		{
-			Fvector target_pos;
-			auto it = m_target_positions_map.find(obj->ID());
-			if (it != m_target_positions_map.end())
-			{
-				target_pos.set(it->second);
-				if (target_pos.distance_to(obj->Position()) < 0.5f)
-				{
-					target_pos.set(GenerateRandomPointInUpperHemisphere(anomaly_center, m_gravity_radius));
-					m_target_positions_map[obj->ID()] = target_pos;
-				}
-			}
-			else
-			{
-				target_pos.set(GenerateRandomPointInUpperHemisphere(anomaly_center, m_gravity_radius));
-				m_target_positions_map[obj->ID()] = target_pos;
-			}
-
-			Fvector force_dir;
-			force_dir.sub(target_pos, obj->Position());
-			force_dir.normalize_safe();
-
-			SetForce(obj, force_dir, MovementSpeed, RotationSpeed, rollSpeed);
+			continue;
 		}
+
+		u32 id = obj->ID();
+		auto& state = m_wanderStates[id];
+
+		if (!state.initialized)
+		{
+			Fvector axis;
+			axis.random_dir();
+			buildBasis(axis, state.u, state.v);
+
+			float r_min = minRadius;
+			float r_max = radius;
+			float r = pow(r_min * r_min * r_min + (r_max * r_max * r_max - r_min * r_min * r_min) * ::Random.randF(0.f, 1.f), 1.f / 3.f);
+
+			state.a = r * ::Random.randF(0.6f, 1.4f);
+			state.b = r * ::Random.randF(0.6f, 1.4f);
+			state.a = std::clamp(state.a, r_min, r_max);
+			state.b = std::clamp(state.b, r_min, r_max);
+
+			state.speed = ::Random.randF(0.3f, 1.2f);
+			state.angle = ::Random.randF(0.f, 2.f * PI);
+
+			state.moveSpeed = 0.25f * ::Random.randF(3.0f, 7.0f);
+			state.rotSpeed = ::Random.randF(0.4f, 0.7f);
+			state.rollSpeed = ::Random.randF(2.0f, 3.6f);
+
+			state.initialized = true;
+		}
+
+		state.angle += state.speed * dt;
+
+		float cosA = cosf(state.angle);
+		float sinA = sinf(state.angle);
+		Fvector offset;
+		offset.x = state.u.x * state.a * cosA + state.v.x * state.b * sinA;
+		offset.y = state.u.y * state.a * cosA + state.v.y * state.b * sinA;
+		offset.z = state.u.z * state.a * cosA + state.v.z * state.b * sinA;
+
+		Fvector targetPos;
+		targetPos.x = center.x + offset.x;
+		targetPos.y = center.y + centerOffsetY + offset.y;
+		targetPos.z = center.z + offset.z;
+
+		if (targetPos.y < center.y + 0.5f)
+		{
+			targetPos.y = center.y + 0.5f;
+		}
+
+		Fvector dir;
+		dir.sub(targetPos, obj->Position());
+		float dist = dir.magnitude();
+		if (dist < 0.001f)
+		{
+			continue;
+		}
+		dir.div(dist);
+
+		SetForce(obj, dir, state.moveSpeed, state.rotSpeed, state.rollSpeed);
 	}
 }
 
@@ -196,7 +234,7 @@ void TAnomalyGravity::net_Spawn(CSE_Abstract* DC)
 
 					CALifeSimulator__spawn_item2(
 						Sim,
-						m_trash_items_sections[Random.randI(m_trash_items_sections.size())].c_str(),
+						m_trash_items_sections[::Random.randI(m_trash_items_sections.size())].c_str(),
 						pos,
 						lvid,
 						gvid,
@@ -206,4 +244,18 @@ void TAnomalyGravity::net_Spawn(CSE_Abstract* DC)
 			}
 		}
 	}
+}
+
+bool TAnomalyGravity::IsObjectIgnored(CGameObject* obj)
+{
+	xr_string obj_section = obj->cNameSect().c_str();
+	for (xr_string& section : m_trash_items_sections)
+	{
+		if (strcmp(obj_section.c_str(), section.c_str()) == 0)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }

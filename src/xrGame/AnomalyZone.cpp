@@ -966,39 +966,27 @@ void CAnomalyZone::feel_touch_new(CObject* O)
 
 	SZoneObjectInfo& object_info = m_ObjectInfoMap.emplace_back();
 	object_info.object = pGameObject;
+	object_info.nonalive_object = !(pEntityAlive && pEntityAlive->g_Alive());
+	object_info.small_object = pGameObject->Radius() < SMALL_OBJECT_RADIUS;
+	object_info.zone_ignore = ((object_info.small_object && m_zone_flags.test(eIgnoreSmall)) || (object_info.nonalive_object && m_zone_flags.test(eIgnoreNonAlive)) || (pGameObject->cast_artefact() && m_zone_flags.test(eIgnoreArtefact)));
 
-	if (pEntityAlive && pEntityAlive->g_Alive())
-	{
-		object_info.nonalive_object = false;
-	}
-	else
-	{
-		object_info.nonalive_object = true;
-	}
-
-	if (pGameObject->Radius() < SMALL_OBJECT_RADIUS)
-	{
-		object_info.small_object = true;
-	}
-	else
-	{
-		object_info.small_object = false;
-	}
-
-	if ((object_info.small_object && m_zone_flags.test(eIgnoreSmall)) || (object_info.nonalive_object && m_zone_flags.test(eIgnoreNonAlive)) || (pGameObject->cast_artefact() && m_zone_flags.test(eIgnoreArtefact)))
+	bool allow_entrance_particles = true;
+	TAnomalyGravity* AnomalyGravity = GetComponent<TAnomalyGravity>();
+	if (!object_info.zone_ignore && AnomalyGravity != nullptr && AnomalyGravity->IsObjectIgnored(pGameObject))
 	{
 		object_info.zone_ignore = true;
-	}
-	else
-	{
-		object_info.zone_ignore = false;
+		allow_entrance_particles = AnomalyGravity->IsAllowPlayEntranceSmallParticles();
 	}
 
 	enter_Zone(object_info);
 
 	if (IsEnabled())
 	{
-		PlayEntranceParticles(pGameObject);
+		if (allow_entrance_particles)
+		{
+			PlayEntranceParticles(pGameObject);
+		}
+
 		PlayObjectIdleParticles(pGameObject);
 	}
 };
