@@ -35,6 +35,7 @@
 #	include <shellapi.h>
 #endif
 
+#include "../xrEngine/GamepadService.h"
 //#define DEMO_BUILD
 
 string128	ErrMsgBoxTemplate	[]	= {
@@ -182,6 +183,9 @@ void CMainMenu::Activate	(bool bActivate)
 
 	if(bActivate)
 	{
+		GGamepadService->ClearTriggerEffect(true);
+		GGamepadService->ClearTriggerEffect(false);
+
 		b_shniaganeed_pp			= true;
 		Device.Pause				(true, false, true, "mm_activate1");
 		m_Flags.set					(flActive|flNeedChangeCapture,true);
