@@ -1,5 +1,13 @@
 #pragma once
 
+enum class EGamepadType
+{
+	Unknown,
+	DualShock3,
+	DualShock4,
+	DualSense
+};
+
 class ENGINE_API CGamepadService
 {
 public:
@@ -7,6 +15,9 @@ public:
 	~CGamepadService();
 
 	void UpdateLEDByHP(float Health);
+
+public:
+	EGamepadType Type = EGamepadType::Unknown;
 
 private:
 	void* HidDevice = nullptr;

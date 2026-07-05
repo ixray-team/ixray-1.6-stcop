@@ -27,23 +27,36 @@ void CGamepadService::InitHID()
 			continue;
 		}
 
+		EGamepadType DetectedType = EGamepadType::Unknown;
+
 		switch (CurrentDevice->product_id)
 		{
 			case 0x05C4: // DualShock 4 v1
 			case 0x09CC: // DualShock 4 v2
-			{
-				HidDevice = hid_open_path(CurrentDevice->path);
-
-				if (HidDevice)
-				{
-					Msg("~Opened DualShock 4 (%04X:%04X)", CurrentDevice->vendor_id, CurrentDevice->product_id);
-
-					hid_free_enumeration(Devices);
-					return;
-				}
-
+				DetectedType = EGamepadType::DualShock4;
 				break;
-			}
+
+			case 0x0CE6: // DualSense
+				DetectedType = EGamepadType::DualSense;
+				break;
+
+			default:
+				continue;
+		}
+
+		HidDevice = hid_open_path(CurrentDevice->path);
+
+		if (HidDevice)
+		{
+			Type = DetectedType;
+
+			Msg("~Opened %s (%04X:%04X)",
+				Type == EGamepadType::DualShock4 ? "DualShock 4" : "DualSense",
+				CurrentDevice->vendor_id,
+				CurrentDevice->product_id);
+
+			hid_free_enumeration(Devices);
+			return;
 		}
 	}
 
@@ -66,7 +79,7 @@ CGamepadService::~CGamepadService()
 
 void CGamepadService::UpdateLEDByHP(float Health)
 {
-	if (pInput->pGamePad == nullptr || HidDevice == nullptr)
+	if (pInput->pGamePad == nullptr && HidDevice == nullptr)
 	{
 		return;
 	}
@@ -90,40 +103,43 @@ void CGamepadService::UpdateLEDByHP(float Health)
 		Green = (u8)(ratio * 255);
 	}
 
-#ifdef IXR_WINDOWS
 	SetLED(Red, Green, Blue);
-#else
-	SDL_SetGamepadLED(pInput->pGamePad, Red, Green, Blue)
-#endif
 }
 
 void CGamepadService::SetLED(u8 Red, u8 Green, u8 Blue)
 {
 #ifdef IXR_WINDOWS
-	if (HidDevice == nullptr)
+	if (Type == EGamepadType::DualShock4)
 	{
-		return;
+		if (HidDevice == nullptr)
+		{
+			return;
+		}
+
+		u8 Report[32] = {};
+
+		Report[0] = 0x05; // Output Report ID
+		Report[1] = 0xFF; // Enable rumble + lightbar
+
+		// Rumble
+		Report[4] = 0;
+		Report[5] = 0;
+
+		// Light Bar
+		Report[6] = Red;
+		Report[7] = Green;
+		Report[8] = Blue;
+
+		const int Result = hid_write((hid_device*)HidDevice, Report, sizeof(Report));
+
+		if (Result < 0)
+		{
+			Msg("hid_write failed: %ls", hid_error((hid_device*)HidDevice));
+		}
 	}
-
-	u8 Report[32] = {};
-
-	Report[0] = 0x05; // Output Report ID
-	Report[1] = 0xFF; // Enable rumble + lightbar
-
-	// Rumble
-	Report[4] = 0;
-	Report[5] = 0;
-
-	// Light Bar
-	Report[6] = Red;
-	Report[7] = Green;
-	Report[8] = Blue;
-
-	const int Result = hid_write((hid_device*)HidDevice, Report, sizeof(Report));
-
-	if (Result < 0)
-	{
-		Msg("hid_write failed: %ls", hid_error((hid_device*)HidDevice));
-	}
+	else
 #endif
+	{
+		SDL_SetGamepadLED(pInput->pGamePad, Red, Green, Blue);
+	}
 }

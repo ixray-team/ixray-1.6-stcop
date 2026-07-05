@@ -791,6 +791,12 @@ void CInput::SelectGamepadPrefix()
 		return;
 	}
 	
+	if (GGamepadService->Type == EGamepadType::DualShock4)
+	{
+		gamepadPrefix = "ps4";
+		return;
+	}
+
 	switch (SDL_GetGamepadType(pGamePad))
 	{
 		case SDL_GAMEPAD_TYPE_PS3:
