@@ -71,8 +71,6 @@ public:
 		COUNT_GP_BUTTONS			= GAMEPAD_BUTTON_COUNT_REAL
 	};
 
-	SDL_Gamepad* pGamePad = nullptr;
-
 	std::function<void(u32, bool)> receive_gamepad_addedorremoved;
 	std::function<void(u32, bool)> receive_keyboard_addedorremoved;
 	std::function<void(u32, bool)> receive_mouse_addedorremoved;
@@ -91,7 +89,7 @@ private:
 	char						old_KBState[COUNT_KB_BUTTONS] = {};
 	char						old_GPState[COUNT_GP_BUTTONS] = {};
 	bool						controllerMode = false;
-	const char* gamepadPrefix = "xbox1";
+	shared_str GamepadTypeName = "xbox1";
 
 	Fvector2 LeftAxis = { 0, 0 };
 	Fvector2 RightAxis = { 0, 0 };
@@ -161,7 +159,8 @@ public:
 	void						SetControllerMode(bool val);
 	bool						GetControllerMode() { return controllerMode; }
 	void SelectGamepadPrefix();
-	const char* GamepadPrefix() { return gamepadPrefix; }
+	const char* GamepadPrefix() const { return GamepadTypeName.c_str(); }
+
 private:
 	bool FillVendorInfo(const CInputDevice& device, CInputDeviceVendorInfo& info) noexcept;
 	bool GetConnectedInputKeyboards(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_keyboards = DEF_XR_INPUT_MAX_INPUT_CONNECTED_KEYBOARD_COUNT) noexcept;

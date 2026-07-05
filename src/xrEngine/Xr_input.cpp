@@ -3,6 +3,7 @@
 
 #include "xr_input.h"
 #include "IInputReceiver.h"
+#include "GamepadService.h"
 
 CInput *	pInput	= nullptr;
 IInputReceiver		dummyController;
@@ -29,36 +30,32 @@ static void on_error_dialog			(bool before)
 	pInput->acquire();
 }
 
-CInput::CInput						( bool bExclusive, int deviceForInit)
+CInput::CInput(bool bExclusive, int deviceForInit)
 {
-	g_exclusive							= !!bExclusive;
+	g_exclusive = !!bExclusive;
 
 	Log("Starting INPUT device...");
 
-	ZeroMemory							( mouseState,	sizeof(mouseState) );
-	ZeroMemory							( KBState,		sizeof(KBState) );
+	ZeroMemory(mouseState, sizeof(mouseState));
+	ZeroMemory(KBState, sizeof(KBState));
 
-	iCapture	(&dummyController);
-	Debug.set_on_dialog				(&on_error_dialog);
+	GGamepadService = new CGamepadService;
 
-#ifdef ENGINE_BUILD
-	Device.seqAppActivate.Add		(this);
-	Device.seqAppDeactivate.Add		(this, REG_PRIORITY_HIGH);
-	Device.seqFrame.Add				(this, REG_PRIORITY_HIGH);
-#endif
+	iCapture(&dummyController);
+	Debug.set_on_dialog(&on_error_dialog);
+
+	Device.seqAppActivate.Add(this);
+	Device.seqAppDeactivate.Add(this, REG_PRIORITY_HIGH);
+	Device.seqFrame.Add(this, REG_PRIORITY_HIGH);
 }
 
 CInput::~CInput()
 {
-	if (pGamePad != nullptr)
-		SDL_CloseGamepad(pGamePad);
+	xr_delete(GGamepadService);
 
-#ifdef ENGINE_BUILD
-	Device.seqFrame.Remove			(this);
-	Device.seqAppDeactivate.Remove	(this);
-	Device.seqAppActivate.Remove	(this);
-#endif
-
+	Device.seqFrame.Remove(this);
+	Device.seqAppDeactivate.Remove(this);
+	Device.seqAppActivate.Remove(this);
 }
 
 //-----------------------------------------------------------------------
@@ -227,11 +224,15 @@ void CInput::KeyboardUpdate()
 
 void CInput::GamepadUpdate()
 {
-	if (!pGamePad)
+	if (GGamepadService->GamePadDevice == nullptr)
+	{
 		return;
+	}
 
 	if (cbStack.empty())
+	{
 		return;
+	}
 
 	auto KeyHolder = cbStack.back();
 
@@ -581,12 +582,11 @@ void CInput::acquire()
 	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, true);
 }
 
-bool gamepad_feedback_enabled = true;
 void  CInput::feedback(u16 s1, u16 s2, float time)
 {
-	if (GetControllerMode() && gamepad_feedback_enabled)
+	if (GetControllerMode())
 	{
-		SDL_RumbleGamepad(pGamePad, s1, s2, time * 1000);
+		GGamepadService->Rumble(s1, s2, time * 1000);
 	}
 }
 
@@ -779,40 +779,16 @@ extern xr_token gamepad_prefix_override_token[];
 
 void CInput::SelectGamepadPrefix()
 {
-	if (!pGamePad)
+	if (GGamepadService->GamePadDevice == nullptr)
+	{
 		return;
+	}
 
 	if (ps_gamepad_prefix_override != 0)
 	{
-		gamepadPrefix = gamepad_prefix_override_token[ps_gamepad_prefix_override].name;
+		GamepadTypeName = gamepad_prefix_override_token[ps_gamepad_prefix_override].name;
 		return;
 	}
 	
-	switch (SDL_GetGamepadType(pGamePad))
-	{
-		case SDL_GAMEPAD_TYPE_PS3:
-		case SDL_GAMEPAD_TYPE_PS4:
-		{
-			gamepadPrefix = "ps4";
-			break;
-		}
-		case SDL_GAMEPAD_TYPE_PS5:
-		{
-			gamepadPrefix = "ps5";
-			break;
-		}
-		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO:
-		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
-		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT:
-		case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
-		{
-			gamepadPrefix = "switch";
-			break;
-		}
-		default:	// Use Xbox prefix as a fallback
-		{
-			gamepadPrefix = "xbox1";
-			break;
-		}
-	}
+	GamepadTypeName = GGamepadService->GetGamepadPrefix();
 }

@@ -1,0 +1,8 @@
+if(NOT TARGET HIDAPI::HIDAPI)
+	set(HIDAPI_LIBRARIES "${HIDAPI_ROOT}/x64/hidapi.lib")
+
+	set(HIDAPI_DLLS "${HIDAPI_ROOT}/x64/hidapi.dll")
+	add_imported_lib(HIDAPI::HIDAPI "${HIDAPI_ROOT}/include" "${HIDAPI_LIBRARIES}" "${HIDAPI_DLLS}")
+endif()
+
+mark_as_advanced(HIDAPI_INCLUDE_DIR HIDAPI_LIBRARY HIDAPI_DLL)

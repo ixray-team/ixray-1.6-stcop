@@ -22,6 +22,7 @@
 #include "std_classes.h"
 #include "IGame_Persistent.h"
 #include "FPSCounter.h"
+#include "GamepadService.h"
 
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= nullptr;
