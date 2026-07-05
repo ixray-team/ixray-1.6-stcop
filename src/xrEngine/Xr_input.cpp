@@ -3,6 +3,7 @@
 
 #include "xr_input.h"
 #include "IInputReceiver.h"
+#include "GamepadService.h"
 
 CInput *	pInput	= nullptr;
 IInputReceiver		dummyController;
@@ -29,23 +30,25 @@ static void on_error_dialog			(bool before)
 	pInput->acquire();
 }
 
-CInput::CInput						( bool bExclusive, int deviceForInit)
+CInput::CInput(bool bExclusive, int deviceForInit)
 {
-	g_exclusive							= !!bExclusive;
+	g_exclusive = !!bExclusive;
 
 	Log("Starting INPUT device...");
 
-	ZeroMemory							( mouseState,	sizeof(mouseState) );
-	ZeroMemory							( KBState,		sizeof(KBState) );
+	ZeroMemory(mouseState, sizeof(mouseState));
+	ZeroMemory(KBState, sizeof(KBState));
 
-	iCapture	(&dummyController);
-	Debug.set_on_dialog				(&on_error_dialog);
+	iCapture(&dummyController);
+	Debug.set_on_dialog(&on_error_dialog);
 
 #ifdef ENGINE_BUILD
-	Device.seqAppActivate.Add		(this);
-	Device.seqAppDeactivate.Add		(this, REG_PRIORITY_HIGH);
-	Device.seqFrame.Add				(this, REG_PRIORITY_HIGH);
+	Device.seqAppActivate.Add(this);
+	Device.seqAppDeactivate.Add(this, REG_PRIORITY_HIGH);
+	Device.seqFrame.Add(this, REG_PRIORITY_HIGH);
 #endif
+
+	GGamepadService = new CGamepadService;
 }
 
 CInput::~CInput()

@@ -47,6 +47,7 @@
 #include "inventory_space.h"
 #include "nvg.h"
 #include "ui/UIPdaSpot.h"
+#include "../xrEngine/GamepadService.h"
 
 u16 old_slot = 0;
 bool need_restore_detector = false;
@@ -2430,6 +2431,10 @@ void CActor::shedule_Update	(u32 DT)
 	if (!g_Alive())
 	{
 		UpdatePlayerView();
+	}
+	else
+	{
+		GGamepadService->UpdateLEDByHP(GetfHealth());
 	}
 
 	//что актер видит перед собой
