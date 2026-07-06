@@ -6,6 +6,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
     collapsed: false,
     items: [
       { text: 'Установка', link: '/main/getting-started' },
+      { text: 'Coding Guidelines', link: '/main/coding-guidelines' },
       { text: 'Интеграции', link: '/main/integrations' },
       { text: 'Ключи запуска', link: '/main/launch-keys' },
       { text: 'Консольные команды', link: '/main/console-commands' },
