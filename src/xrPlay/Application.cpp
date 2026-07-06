@@ -223,9 +223,9 @@ void CApplication::ConfigureRenderer()
 	}
 }
 
+#if defined(IXR_WINDOWS)
 Platform::CMutexHandle CApplication::CheckSingleInstance()
 {
-#if defined(IXR_WINDOWS)
 #define STALKER_PRESENCE_MUTEX TEXT("Local\\STALKER-COP")
 
 	HANDLE CheckPresenceMutex = OpenMutex(READ_CONTROL, false, STALKER_PRESENCE_MUTEX);
@@ -241,5 +241,5 @@ Platform::CMutexHandle CApplication::CheckSingleInstance()
 
 	CloseHandle(CheckPresenceMutex);
 	return Platform::CMutexHandle(nullptr);
-#endif
 }
+#endif
