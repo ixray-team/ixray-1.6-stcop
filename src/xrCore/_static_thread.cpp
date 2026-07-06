@@ -3,7 +3,7 @@
 XRayWorkerThread::XRayWorkerThread(Callback InCallback, const char* TN)
 	: Function(std::move(InCallback)), ThreadName(TN)
 {
-	Worker = std::thread(&XRayWorkerThread::ThreadProc, this);
+	thread_spawn(&XRayWorkerThread::ThreadProc, ThreadName.c_str(), 0, this);
 }
 
 XRayWorkerThread::~XRayWorkerThread()
@@ -13,7 +13,8 @@ XRayWorkerThread::~XRayWorkerThread()
 
 void XRayWorkerThread::Run()
 {
-	Counter.fetch_add(1);
+	Counter.fetch_add(1, std::memory_order_release);
+	Counter.notify_one();
 }
 
 void XRayWorkerThread::Wait()
@@ -26,38 +27,31 @@ void XRayWorkerThread::Wait()
 
 void XRayWorkerThread::Stop()
 {
-	if (!Worker.joinable())
-	{
-		return;
-	}
-
 	MustExit = true;
-
 	Counter.fetch_add(1, std::memory_order_release);
-	Worker.join();
+	Counter.notify_one();
 }
 
-void XRayWorkerThread::ThreadProc()
+void XRayWorkerThread::ThreadProc(void* InThis)
 {
-	Platform::SetThreadName(ThreadName.c_str());
-	PROF_START_THREAD(ThreadName.c_str());
+	XRayWorkerThread* This = (XRayWorkerThread*)InThis;
+	PROF_START_THREAD(This->ThreadName.c_str());
 
 	while (true)
 	{
-		if (Counter.load(std::memory_order_acquire) == 0)
+		while (This->Counter.load(std::memory_order_acquire) == 0)
 		{
-			std::this_thread::yield();
-			continue;
+			This->Counter.wait(0);
 		}
 
-		if (MustExit)
+		if (This->MustExit)
 		{
 			break;
 		}
 
-		Function();
+		This->Function();
 
-		Counter.fetch_sub(1, std::memory_order_release);
+		This->Counter.fetch_sub(1, std::memory_order_release);
 	}
 
 	PROF_STOP_THREAD();

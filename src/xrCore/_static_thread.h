@@ -22,13 +22,12 @@ public:
 	void Stop();
 
 private:
-	void ThreadProc();
+	static void ThreadProc(void*);
 
 private:
-	std::thread Worker;
 	Callback Function;
 
-	bool MustExit = false;
+	volatile bool MustExit = false;
 
 	xr_string ThreadName;
 	xr_atomic_u32 Counter = 0;
