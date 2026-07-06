@@ -41,6 +41,7 @@ CGameFont::EGradientMode	GetTextGradientMode()						{return m_eTextGradientMode;
 			void			SetEllipsis									(bool mode);
 
 			void			Draw										(float x, float y);
+			void			DrawWS										(float x, float y); // TODO Emmis: временое решение для рендера текста субтитров
 
 
     // CDeviceResetNotifier methods

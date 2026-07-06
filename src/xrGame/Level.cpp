@@ -77,6 +77,8 @@
 #include "inventory_upgrade_manager.h"
 #include "ElectronicsProblemsManager.h"
 
+#include "UIWorldSpace.h"
+
 extern CUISequencer * g_tutorial;
 extern CUISequencer * g_tutorial2;
 
@@ -205,6 +207,8 @@ CLevel::CLevel() :
 	spawn = 0;
 
 	GCondlistGC = new CCondlistGarbageCollector;
+
+	WorldSpaceUIManager = new CUIWorldSpaceManager();
 
 #if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || \
 	defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
@@ -365,6 +369,8 @@ CLevel::~CLevel()
 	xr_delete(m_game_graph);
 	m_chunk->close();
 	FS.r_close(spawn);
+
+	xr_delete(WorldSpaceUIManager);
 }
 
 
@@ -793,6 +799,12 @@ void CLevel::OnRender()
 	//Device.Statistic->TEST1.Begin();
 	//Device.Statistic->TEST1.End();
 	// c 
+
+	if (g_actor && g_actor->g_Alive() && WorldSpaceUIManager)
+	{
+		WorldSpaceUIManager->OnRender();
+	}
+
 	HUD().RenderUI();
 
 #ifdef DEBUG
