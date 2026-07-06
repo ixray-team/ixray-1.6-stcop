@@ -39,14 +39,14 @@ CInput::CInput(bool bExclusive, int deviceForInit)
 	ZeroMemory(mouseState, sizeof(mouseState));
 	ZeroMemory(KBState, sizeof(KBState));
 
+	GGamepadService = new CGamepadService;
+
 	iCapture(&dummyController);
 	Debug.set_on_dialog(&on_error_dialog);
 
 	Device.seqAppActivate.Add(this);
 	Device.seqAppDeactivate.Add(this, REG_PRIORITY_HIGH);
 	Device.seqFrame.Add(this, REG_PRIORITY_HIGH);
-
-	GGamepadService = new CGamepadService;
 }
 
 CInput::~CInput()
