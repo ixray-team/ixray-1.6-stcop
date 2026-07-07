@@ -192,7 +192,7 @@ void	CUIRadialMenuWeapon::Draw()
 
 					UI().ClientToScreenScaledHeight(trdd.height);
 					
-					slotIcons[i]->InitTexture(item->IconsTexture.c_str());
+					slotIcons[i]->SetShader(InventoryUtilities::GetEquipmentIconsShader(item->IconsTexture.c_str()));
 
 					Irect item_grid_rect = item->GetInvGridRect();
 					float scaleIcon = item->ScaleIcon;
