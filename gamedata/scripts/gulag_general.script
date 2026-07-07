@@ -953,6 +953,11 @@ function add_exclusive_job(sect, work_field, smart_ini, job_table)
 				abort("there is no configuration file [%s]", ini_path)
 		end
 		local job_ini_file = get_cached_ini(ini_path)
+        
+        if not job_ini_file:section_exist("logic@"..work_field) then
+            abort("Unable to find entry section \"logic@"..work_field.."\" for work "..work_field.."!")
+        end
+
 		local job_online =  utils.cfg_get_string(job_ini_file, "logic@"..work_field, "job_online", db.actor ,false , "", nil)
 
 		-- добавляем возможность указать приоритет уникальной работы в секции логики.(по дефолту её приоритет равен 45-ти)
@@ -962,7 +967,7 @@ function add_exclusive_job(sect, work_field, smart_ini, job_table)
 		local job_suitable = utils.cfg_get_string(job_ini_file, "logic@"..work_field, "suitable", smart, false, "")
 		local is_monster = utils.cfg_get_bool(job_ini_file, "logic@"..work_field, "monster_job", smart, false, false)
 
-		local active_section 	= utils.cfg_get_string(job_ini_file, "logic@"..work_field, "active", smart, false, "")
+		local active_section 	= utils. cfg_get_string(job_ini_file, "logic@"..work_field, "active", smart, false, "")
 		local scheme 			= utils.get_scheme_by_section(active_section)
 		local job_type 			= job_type_by_scheme[scheme]
 		if scheme == "mob_home" then
