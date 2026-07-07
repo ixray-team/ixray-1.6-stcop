@@ -677,19 +677,23 @@ function on_ixr_options_exit_btn_clicked()
 	ixr_options.dynamic_vars.menu_opened = false
 	hide_options()
 	get_menu_ref().ixr_options_btn:Show(true)
-	get_menu_ref().shniaga:Show(true)
-	get_menu_ref().shniaga:SetVisibleMagnifier(true)
-	get_menu_ref().eng_lang_btn:Show(true)
-	get_menu_ref().ru_lang_btn:Show(true)
+	if get_menu_ref().shniaga then
+		get_menu_ref().shniaga:Show(true)
+		get_menu_ref().shniaga:SetVisibleMagnifier(true)
+	end
+	if get_menu_ref().eng_lang_btn then get_menu_ref().eng_lang_btn:Show(true) end
+	if get_menu_ref().ru_lang_btn then get_menu_ref().ru_lang_btn:Show(true) end
 end
 
 function on_btn_options_ixr_clicked()
 	ixr_options.dynamic_vars.menu_opened = true
 	get_menu_ref().ixr_options_btn:Show(false)
-	get_menu_ref().eng_lang_btn:Show(false)
-	get_menu_ref().ru_lang_btn:Show(false)
-	get_menu_ref().shniaga:SetVisibleMagnifier(false)
-	get_menu_ref().shniaga:Show(false)
+	if get_menu_ref().eng_lang_btn then get_menu_ref().eng_lang_btn:Show(false) end
+	if get_menu_ref().ru_lang_btn then get_menu_ref().ru_lang_btn:Show(false) end
+	if get_menu_ref().shniaga then
+		get_menu_ref().shniaga:SetVisibleMagnifier(false)
+		get_menu_ref().shniaga:Show(false)
+	end
 	draw_options()
 end
 
@@ -963,7 +967,7 @@ function add_single_ungroupped_option(option_index, padding, alpha, option_data)
 		local CTRLText = get_options_xml():InitStatic("ixr_product_sans_12_l", option_bg)
 		CTRLText:SetWndPos(vector2():set(5, 8))
 		CTRLText:SetWndSize(vector2():set(250, 25))
-		CTRLText:TextControl():SetText(tostring(variable_name) .. " (" .. tostring(display_text) .. ")")
+		CTRLText:TextControl():SetText(tostring(variable_name) .. " (" .. tostring( game.translate_string(tostring(display_text) or display_text) ) .. ")")
 		CTRLText:TextControl():SetTextColor(GetARGB(255, 200, 200, 200))
 		CTRLText:Show(true)
 		get_menu_ref():Register(CTRLText, "ixr_controll_label_"  .. tostring(option_index))
@@ -993,7 +997,7 @@ function add_option_group(option_index, padding, alpha, count, group_display_tex
 	local group_name_controll = get_options_xml():InitStatic("ixr_product_sans_16_l", group_bg)
 	group_name_controll:SetWndPos(vector2():set(padding, before_y_offset + padding))
 	group_name_controll:SetWndSize(vector2():set(texture_width - padding, group_name_text_height))
-	group_name_controll:TextControl():SetText(group_display_text)
+	group_name_controll:TextControl():SetText(tostring(game.translate_string(tostring(group_display_text)) or group_display_text))
 	group_name_controll:TextControl():SetTextColor(GetARGB(255, 200, 200, 200))
 	group_name_controll:Show(true)
 	get_menu_ref():Register(group_name_controll, "ixr_group_controll_label_"  .. tostring(option_index))
@@ -1014,7 +1018,7 @@ function add_option_group(option_index, padding, alpha, count, group_display_tex
 		option_name_controll:SetWndPos(vector2():set(padding + padding, 5 + padding + y_offset))
 		option_name_controll:SetWndSize(vector2():set(texture_width - padding, group_name_text_height))
 		
-		option_name_controll:TextControl():SetText(tostring(variable_name) .. " (" .. game.translate_string(tostring(display_text)) .. ")")
+		option_name_controll:TextControl():SetText(tostring(variable_name) .. " (" .. tostring(game.translate_string(tostring(display_text)) or display_text) .. ")")
 		
 		option_name_controll:TextControl():SetTextColor(GetARGB(255, 200, 200, 200))
 		option_name_controll:Show(true)
