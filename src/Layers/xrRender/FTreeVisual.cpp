@@ -119,57 +119,44 @@ struct	FTreeVisual_setup
 	}
 };
 
-void FTreeVisual::Render(float LOD)
+void FTreeVisual::Render	(float LOD)
 {
-	GPU_EVENT(FTreeVisual_Render);
-
+	//PROF_EVENT("FTreeVisual::Render");
 	static FTreeVisual_setup tvs, tvs_old;
-	{
-		GPU_EVENT(FTreeVisual_PrepareData);
-		if (tvs.dwFrame != Device.dwFrame)
-		{
-			tvs_old = tvs;
-			tvs.calculate();
-		}
+	if (tvs.dwFrame != Device.dwFrame) {
+		tvs_old = tvs;
+		tvs.calculate();
 	}
 
 	// setup constants
-	{
-		GPU_EVENT(FTreeVisual_SetupMatrices);
-#if RENDER != R_R1
-		Fmatrix xform_v;
-		xform_v.mul_43(RCache.get_xform_view(), xform);
-		RCache.tree.set_m_xform_v(xform_v);
+#if RENDER!=R_R1
+	Fmatrix xform_v;
+	xform_v.mul_43(RCache.get_xform_view(), xform);
+	RCache.tree.set_m_xform_v (xform_v);
 #endif
-		float s = ps_r__Tree_SBC;
-		RCache.tree.set_m_xform(xform);
-	}
 
-	{
-		GPU_EVENT(FTreeVisual_SetWaveConstants);
-		RCache.tree.set_consts(tvs.scale, tvs.scale, 0, 0);
-		RCache.tree.set_wave(tvs.wave);
-		RCache.tree.set_wind(tvs.wind);
+	float s = ps_r__Tree_SBC;
+	RCache.tree.set_m_xform	(xform);
 
-		RCache.tree.set_consts_old(tvs_old.scale, tvs_old.scale, 0, 0);
-		RCache.tree.set_wave_old(tvs_old.wave);
-		RCache.tree.set_wind_old(tvs_old.wind);
-	}
+	RCache.tree.set_consts	(tvs.scale, tvs.scale, 0, 0);
+	RCache.tree.set_wave	(tvs.wave);
+	RCache.tree.set_wind	(tvs.wind);
 
-	{
-		GPU_EVENT(FTreeVisual_SetupLighting);
-#if RENDER != R_R1
-		float s = ps_r__Tree_SBC * 1.3333f;
-		RCache.tree.set_c_scale(s * c_scale.rgb.x, s * c_scale.rgb.y, s * c_scale.rgb.z, s * c_scale.hemi);
-		RCache.tree.set_c_bias(s * c_bias.rgb.x, s * c_bias.rgb.y, s * c_bias.rgb.z, s * c_bias.hemi);
+	RCache.tree.set_consts_old(tvs_old.scale, tvs_old.scale, 0, 0);
+	RCache.tree.set_wave_old(tvs_old.wave);
+	RCache.tree.set_wind_old(tvs_old.wind);
+
+#if RENDER!=R_R1
+	s *= 1.3333f;
+	RCache.tree.set_c_scale(s * c_scale.rgb.x, s * c_scale.rgb.y, s * c_scale.rgb.z, s * c_scale.hemi);
+	RCache.tree.set_c_bias(s * c_bias.rgb.x, s * c_bias.rgb.y, s * c_bias.rgb.z, s * c_bias.hemi);
 #else
-		CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-		float s = ps_r__Tree_SBC;
-		RCache.tree.set_c_scale(s * c_scale.rgb.x, s * c_scale.rgb.y, s * c_scale.rgb.z, s * c_scale.hemi);
-		RCache.tree.set_c_bias(s * c_bias.rgb.x + desc.ambient.x, s * c_bias.rgb.y + desc.ambient.y, s * c_bias.rgb.z + desc.ambient.z, s * c_bias.hemi);
+	CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
+	RCache.tree.set_c_scale	(s*c_scale.rgb.x,					s*c_scale.rgb.y,					s*c_scale.rgb.z,				s*c_scale.hemi);
+	RCache.tree.set_c_bias	(s*c_bias.rgb.x + desc.ambient.x,	s*c_bias.rgb.y + desc.ambient.y,	s*c_bias.rgb.z+desc.ambient.z,	s*c_bias.hemi);
 #endif
-		RCache.tree.set_c_sun(s * c_scale.sun, s * c_bias.sun, 0, 0);
-	}
+
+	RCache.tree.set_c_sun(s * c_scale.sun, s * c_bias.sun, 0, 0);
 }
 
 #define PCOPY(a)	a = pFrom->a
