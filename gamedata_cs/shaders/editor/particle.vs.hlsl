@@ -8,7 +8,7 @@ struct vv
 };
 struct vf
 {
-    float4 hpos : POSITION;
+    float4 hpos : SV_POSITION;
     float2 tc : TEXCOORD0;
     float4 c : COLOR0;
     float fog : FOG;
