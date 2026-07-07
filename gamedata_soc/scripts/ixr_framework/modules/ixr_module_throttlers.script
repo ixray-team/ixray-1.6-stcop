@@ -1,0 +1,137 @@
+
+--[[
+	IX-Ray Module Timers
+	Version: 1.0
+	Author: FFx0001
+	Script: ixr_module_timers.script
+	Description: Module for centralized break functions by time intervals
+	
+	Public exports:
+		get_module_info()
+		init()
+		is_initialized()
+		
+		is_action_throttled(name, interval_ms)
+		
+]]
+
+local SCRIPT_ENABLED = true
+local USE_CONSOLE_LOGS = false
+local USE_FILE_LOGS = true
+
+local ixr_throttlers = {
+	use_file_log = USE_FILE_LOGS,
+	use_console_log = USE_CONSOLE_LOGS,
+	dynamic_vars = {
+		initialized = false,
+		first_log_record = true,
+		t_global = 0,
+		storage = {},
+	}
+}
+
+-- ################################
+-- #		   PUBLIC METHODS	  #
+-- ################################
+
+--[[
+Description: Module management. Returns metadata about the module.
+Return: (table) - A table containing module information such as alias name, category, version, authors, and description.
+]]
+function get_module_info()
+	return {
+		-- (string) constant module name independent of the script name, which will be centralized via ixr_framework.get_module("alias_name") to maintain module versioning without the need to access the script name during integration.
+		alias_name = "ixr_throttlers",
+		
+		-- (string) use once value at range or custom latin snake case name default categories: ["ixr_system", "sub_system", "sub_gameplay", "sub_utils"] use for ordering init calls at 1 to last ASC
+		category = "ixr_system",
+		
+		-- (float) value for controll versions
+		version = 1.0,
+		
+		-- (string) public exposed function name, allowed in this script for auto init module
+		init_function_name = "init",
+		
+		-- (string|string[]) code author(s) nick name(s)
+		authors = "FFx0001",
+		
+		-- (string) short description about module
+		description = "Module for centralized break functions by time intervals",
+	}
+end
+
+--[[
+Description: Initializes the module and sets up necessary configurations.
+Return: (bool) - Returns true if the module was successfully initialized.
+]]
+function init()
+	return ixr_throttlers.init()
+end
+
+--[[
+Description: Checks whether the module has been initialized.
+Return: (bool) - Returns true if the module is initialized, otherwise false.
+]]
+function is_initialized()
+	return ixr_throttlers.dynamic_vars.initialized
+end
+
+function is_action_throttled(name, interval_ms)
+	return ixr_throttlers.is_action_throttled(name, interval_ms)
+end
+
+--#####################################################
+--#					SYSTEM LOGIC					  #
+--#####################################################
+
+function ixr_throttlers.init()
+	ixr_throttlers.toLog("INIT :: [BEGIN]")
+	ixr_throttlers.register_callbacks()
+	ixr_throttlers.toLog("INIT :: [COMPLETED]")
+	ixr_throttlers.dynamic_vars.initialized = true
+	
+	return ixr_throttlers.dynamic_vars.initialized
+end
+
+function ixr_throttlers.register_callbacks()
+	ixr_throttlers.toLog("REGISTER CALLBACKS :: [BEGIN]")
+
+	RegisterScriptCallback("actor_on_update", ixr_throttlers.actor_on_update)
+	
+	ixr_throttlers.toLog("REGISTER CALLBACKS :: [COMPLETED]")
+end
+
+function ixr_throttlers.actor_on_update()
+	ixr_throttlers.dynamic_vars.t_global = time_global()
+end
+
+function ixr_throttlers.is_action_throttled(name, interval_ms)
+	if not ixr_throttlers.dynamic_vars.storage[name] then
+		ixr_throttlers.toLog("REGISTER_THROTTLER: " .. tostring(name) .. " delay:" .. tostring(interval_ms))
+		ixr_throttlers.dynamic_vars.storage[name] = { delay = interval_ms, next_update = 0, counter = 0}
+	end
+	
+	if ixr_throttlers.dynamic_vars.storage[name].next_update < ixr_throttlers.dynamic_vars.t_global then
+		ixr_throttlers.dynamic_vars.storage[name].counter = ixr_throttlers.dynamic_vars.storage[name].counter  + 1
+		ixr_throttlers.dynamic_vars.storage[name].next_update = ixr_throttlers.dynamic_vars.t_global + ixr_throttlers.dynamic_vars.storage[name].delay
+	
+		return false
+	end
+	
+	return true
+end
+
+--#####################################################
+--#						UTILS						  #
+--#####################################################
+
+function ixr_throttlers.toLog(text)
+	if ixr_throttlers.use_file_log then
+		ffx_dump_utils.write_to_file_log(text, ixr_throttlers.dynamic_vars.first_log_record)
+		ixr_throttlers.dynamic_vars.first_log_record = false
+	end
+	
+	if ixr_throttlers.use_console_log then
+		ffx_dump_utils.write_to_console_log(text)
+	end
+end
