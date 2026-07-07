@@ -29,6 +29,7 @@ local ixr_timers = {
 		upd_last_time = 0,
 		initialized = false,
 		is_actor_presented = false,
+		is_actor_input_recieved = false,
 		first_log_record = true,
 		is_loaded = false,
 		timer = 0,
@@ -140,6 +141,7 @@ function ixr_timers.register_callbacks()
 	ixr_timers.toLog("REGISTER CALLBACKS :: [BEGIN]")
 	
 	RegisterScriptCallback("actor_on_spawn", function () ixr_timers.dynamic_vars.is_actor_presented = true end)
+	RegisterScriptCallback("on_load_screen_await_any_key_pressed", function () ixr_timers.dynamic_vars.is_actor_input_recieved = true end)
 	RegisterScriptCallback("actor_on_update", ixr_timers.actor_on_update)
 	RegisterScriptCallback("actor_on_save", ixr_timers.actor_on_save)
 	
@@ -183,7 +185,7 @@ end
 function ixr_timers.actor_on_update()
 	if not SCRIPT_ENABLED then return end
 	if not is_initialized() then return end
-	if not ixr_timers.dynamic_vars.is_actor_presented then return end
+	if not ixr_timers.dynamic_vars.is_actor_presented or not ixr_timers.dynamic_vars.is_actor_input_recieved then return end
 	
 	if not ixr_timers.dynamic_vars.is_loaded then
 		ixr_timers.dynamic_vars.is_loaded = true
@@ -195,6 +197,18 @@ function ixr_timers.actor_on_update()
 		ixr_timers.on_tick(time_global() - ixr_timers.dynamic_vars.upd_last_time)
 		ixr_timers.dynamic_vars.upd_last_time = time_global()
 	end
+end
+
+function get_free_timer_name(name)
+	return tostring(name) .. "_" .. (ixr_timers.get_count_timers() + 1)
+end
+
+function get_count_timers()
+	return ixr_timers.get_count_timers()
+end
+
+function ixr_timers.get_count_timers()
+	return ffx_table_utils.get_size(ixr_timers.dynamic_vars.storage)
 end
 
 function ixr_timers.on_tick(delta)
@@ -210,7 +224,7 @@ function ixr_timers.on_tick(delta)
 				ixr_timers.on_timer_left(index, ixr_timers.dynamic_vars.storage[index])
 				
 				if ixr_timers.dynamic_vars.storage[index].looped then
-					ixr_timers.dynamic_vars.storage[index].left_milliseconds = ixr_timers.dynamic_vars.storage[indexi].timer_milliseconds
+					ixr_timers.dynamic_vars.storage[index].left_milliseconds = ixr_timers.dynamic_vars.storage[index].timer_milliseconds
 				else
 					table.insert(to_remove, index)
 				end

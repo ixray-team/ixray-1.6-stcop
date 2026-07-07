@@ -159,6 +159,55 @@ end
 
 --[[
 Description:
+  Finds the source (namespace, file, or function) of the caller at a given stack level.
+Parameters:
+  level (number) - the stack level to inspect.
+Returns: string - source identifier or "unknown" if not found.
+]]
+function find_caller_source_tracy(level, use_line)
+    local _level = level
+    
+    if use_line == nil then
+        use_line = false
+    end
+    
+	local data = {line_begin = -1, line_end = -1, file_name = "<script called by engine>"}
+	
+    while true do
+        local info = debug.getinfo(_level, "Sn")
+        
+        if not info then
+            break 
+        end
+
+        local source = info.source
+        
+        local line = ""
+        if use_line and info.linedefined and info.lastlinedefined then
+			data.line_begin = info.linedefined
+			data.line_end = info.lastlinedefined
+        end
+		
+        if source and source ~= "" and source ~= "=[C]" then
+            if source:sub(1,1) == "@" then
+                source = source:sub(2)
+            end
+
+            source = source:gsub("%.lua$", "")
+            source = source:gsub("%.script$", "")
+            data.file_name = source .. ".script"
+            
+            return data
+        end
+        
+        _level = _level + 1
+    end
+    
+    return data
+end
+
+--[[
+Description:
   Trace stack calls to string
 Returns: string - separated by -> calls (script_name.function_name(...) -> script_name.function_name(...),...)
 ]]
