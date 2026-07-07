@@ -2,6 +2,7 @@ local DEATH_IDLE_TIME = 10*60 -- секунд
 SMART_TERRAIN_SECT = "smart_terrain"
 smart_terrains_by_name = {}
 local locations_ini			= ini_file("misc\\smart_terrain_masks.ltx")
+surge_stats_levels = {"zaton", "jupiter", "pripyat"}
 
 nearest_to_actor_smart = {id = nil , dist = math.huge}
 
@@ -1300,51 +1301,47 @@ local is_squad_monster =
 }
 function surge_stats()
 	return PROF_EVENT_CLOSURE("surge_stats", function()
-        local sim_obj_registry = simulation_objects.get_sim_obj_registry().objects
-        local sim_squads = {
-                            ["zaton"] = {},
-                            ["jupiter"] = {},
-                            ["pripyat"] = {}
-            }
-        local sim_smarts = {
-                            ["zaton"] = {},
-                            ["jupiter"] = {},
-                            ["pripyat"] = {}		
-            }
-        for k,v in pairs(sim_obj_registry) do
-            if v:clsid() == clsid.smart_terrain and tonumber(v.props["surge"]) > 0 then
-                local level_name = alife():level_name(gg_vertex_level_id(v.m_game_vertex_id))
-                if sim_smarts[level_name] ~= nil then
-                    table.insert(sim_smarts[level_name], v)
-                end
-            end
-            if v:clsid() == clsid.online_offline_group_s then
-                local squad_params = sim_board.simulation_activities[v.player_id]
-                if squad_params ~= nil then
-                    local smart_params = squad_params.smart.surge
-                    if smart_params ~= nil then
-                        local level_name = alife():level_name(gg_vertex_level_id(v.m_game_vertex_id))
-                        if sim_squads[level_name] ~= nil then
-                            table.insert(sim_squads[level_name], v)
-                        end
-                    end
-                end
-            end
+	    local sim_obj_registry = simulation_objects.get_sim_obj_registry().objects
+	    local sim_squads = {}
+	    local sim_smarts = {}
+        for k,v in pairs(surge_stats_levels) do
+            sim_squads[v] = {}
+            sim_smarts[v] = {}
         end
-        local function print_smarts_and_squads_by_level(level_name)
-            printf("LEVEL: [%s]", level_name)
-            local max_capacity_total = 0
-            for i = 1, #sim_smarts[level_name] do
-                local smart = sim_smarts[level_name][i]
-                max_capacity_total = max_capacity_total + smart.max_population
-                local squad_count = smart_terrain_squad_count(sim_board.get_sim_board().smarts[smart.id].squads)
-                printf("smart: [%s] max_population [%d] squad_count [%d]", smart:name(),smart.max_population, squad_count)
-            end
-            printf("TOTAL: capacity total : [%d] squads total [%d]" , max_capacity_total, #sim_squads[level_name])
+	    for k,v in pairs(sim_obj_registry) do
+	    	if v:clsid() == clsid.smart_terrain and tonumber(v.props["surge"]) > 0 then
+	    		local level_name = alife():level_name(gg_vertex_level_id(v.m_game_vertex_id))
+	    		if sim_smarts[level_name] ~= nil then
+	    			table.insert(sim_smarts[level_name], v)
+	    		end
+	    	end
+	    	if v:clsid() == clsid.online_offline_group_s then
+	    		local squad_params = sim_board.simulation_activities[v.player_id]
+	    		if squad_params ~= nil then
+	    			local smart_params = squad_params.smart.surge
+	    			if smart_params ~= nil then
+	    				local level_name = alife():level_name(gg_vertex_level_id(v.m_game_vertex_id))
+	    				if sim_squads[level_name] ~= nil then
+	    					table.insert(sim_squads[level_name], v)
+	    				end
+	    			end
+	    		end
+	    	end
+	    end
+	    local function print_smarts_and_squads_by_level(level_name)
+	    	printf("LEVEL: [%s]", level_name)
+	    	local max_capacity_total = 0
+	    	for i = 1, #sim_smarts[level_name] do
+	    		local smart = sim_smarts[level_name][i]
+	    		max_capacity_total = max_capacity_total + smart.max_population
+	    		local squad_count = smart_terrain_squad_count(sim_board.get_sim_board().smarts[smart.id].squads)
+	    		printf("smart: [%s] max_population [%d] squad_count [%d]", smart:name(),smart.max_population, squad_count)
+	    	end
+	    	printf("TOTAL: capacity total : [%d] squads total [%d]" , max_capacity_total, #sim_squads[level_name])
+	    end
+        for k,v in pairs(surge_stats_levels) do
+	        print_smarts_and_squads_by_level(v)
         end
-        print_smarts_and_squads_by_level("zaton")
-        print_smarts_and_squads_by_level("jupiter")
-        print_smarts_and_squads_by_level("pripyat")
     end)
 end
 
