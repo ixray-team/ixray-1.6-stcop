@@ -33,6 +33,59 @@ function debugger_attach()
 	end
 end
 
+--  ####################################################################################################################
+--                                         TRACY LOGIC
+--  ####################################################################################################################
+
+function UpdateTracyState()
+    if (not IsTracyConnected) then
+        return
+    end
+    
+    _G.IS_TRACY_PROFILER_CONNECTED = IsTracyConnected()
+end
+
+function PROF_EVENT_BEGIN(name)
+	if tracy and _G.IS_TRACY_PROFILER_CONNECTED then
+		local data = ffx_callable_utils.find_caller_source_tracy(3, true)
+        tracy.ZoneBeginN(string.format("[%s (%d,%d)] %s", tostring(data.file_name), tostring(data.line_begin), tostring(data.line_end), tostring(name)))
+	end
+end
+
+function PROF_EVENT_END()
+	if tracy and _G.IS_TRACY_PROFILER_CONNECTED then
+        tracy.ZoneEnd()
+	end
+end
+
+function PROF_EVENT_CLOSURE(name, callable)
+	if tracy and _G.IS_TRACY_PROFILER_CONNECTED then
+		local podrobnaya_infa = true
+	
+		if podrobnaya_infa then
+			local data = ffx_callable_utils.find_caller_source_tracy(3, true)
+			tracy.ZoneBeginN(string.format("[%s (%d,%d)] %s", tostring(data.file_name), tostring(data.line_begin), tostring(data.line_end), tostring(name)))
+		else
+			tracy.ZoneBeginN(string.format("[LUA] %s", tostring(name)))
+		end
+		
+		local result
+		
+		if callable then
+			result = callable()
+		end
+		
+		tracy.ZoneEnd()
+		
+		return result
+    else
+        if callable then
+			return callable()
+		end
+	end
+	
+	return nil
+end
 
 --  ####################################################################################################################
 -- 										OVERRIDE ORIGINAL ENTRY POINT

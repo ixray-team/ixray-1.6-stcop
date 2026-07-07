@@ -162,6 +162,8 @@ function ixr_framework.init(log_reinit)
 	ixr_framework.dynamic_vars.is_initialized = false
 	ixr_framework.on_init_begin()
 	
+	UpdateTracyState()
+
 	-- external configure wia addon system
 	if __ixr_override_framework_load_sub_modules then
 		ixr_framework.on_init_overrided_modules()
@@ -173,7 +175,7 @@ function ixr_framework.init(log_reinit)
 	
 	ixr_framework.dynamic_vars.is_initialized = true
 	ixr_framework.dynamic_vars.is_init_processing = false
-	ixr_framework.dump_g_exports()
+	--ixr_framework.dump_g_exports()
 	ixr_framework.on_init_end()
 end
 

@@ -71,7 +71,7 @@ function create_item_on_story_object(section, story_id, count, spawn_into)
 	end
 
     if count==nil then count=1 end
-	if spawn_into == nil then spawn_into = false then
+	if spawn_into == nil then spawn_into = false end
 	
 	if not ffx_ltx_utils.has_section(section) then
 		SemiLog(script_name() .. "::create_item_on_story_object(...) missing section: [" .. tostring(section).."]")
