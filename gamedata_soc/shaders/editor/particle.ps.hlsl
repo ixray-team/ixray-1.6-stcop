@@ -1,13 +1,15 @@
 #include "common.hlsli"
 
-struct v2p
+struct vf
 {
-    float2 tc0 : TEXCOORD0; // base
-    float4 c : COLOR0; // diffuse
+    float4 hpos : SV_POSITION;
+    float2 tc : TEXCOORD0;
+    float4 c : COLOR0;
+    float fog : FOG;
 };
 
 // Pixel
-float4 main(v2p I) : COLOR
+float4 main(vf I) : SV_Target
 {
-    return I.c * tex2D(s_base, I.tc0);
+    return I.c * s_base.Sample(smp_base, I.tc);
 }
