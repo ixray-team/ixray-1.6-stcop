@@ -1,0 +1,10 @@
+<w>
+    <element_0 ps="deffer_base" vs="deffer_base" fog="0" zread="1" zwrite="1">
+        <blend status="1" src="srccolor" dest="destcolor"/>
+        <aref status="1" count="0"/>
+
+        <sampler name="smp_rtlinear" />
+        <sampler name="smp_base" />
+        <sampler name="smp_material" />
+    </element_0>
+</w>
