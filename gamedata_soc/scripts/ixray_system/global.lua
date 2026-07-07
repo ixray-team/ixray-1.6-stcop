@@ -33,6 +33,59 @@ function debugger_attach()
 	end
 end
 
+--  ####################################################################################################################
+--                                         TRACY LOGIC
+--  ####################################################################################################################
+
+function UpdateTracyState()
+    if (not IsTracyConnected) then
+        return
+    end
+    
+    _G.IS_TRACY_PROFILER_CONNECTED = IsTracyConnected()
+end
+
+function PROF_EVENT_BEGIN(name)
+	if tracy and _G.IS_TRACY_PROFILER_CONNECTED then
+		local data = ffx_callable_utils.find_caller_source_tracy(3, true)
+        tracy.ZoneBeginN(string.format("[%s (%d,%d)] %s", tostring(data.file_name), tostring(data.line_begin), tostring(data.line_end), tostring(name)))
+	end
+end
+
+function PROF_EVENT_END()
+	if tracy and _G.IS_TRACY_PROFILER_CONNECTED then
+        tracy.ZoneEnd()
+	end
+end
+
+function PROF_EVENT_CLOSURE(name, callable)
+	if tracy and _G.IS_TRACY_PROFILER_CONNECTED then
+		local podrobnaya_infa = true
+	
+		if podrobnaya_infa then
+			local data = ffx_callable_utils.find_caller_source_tracy(3, true)
+			tracy.ZoneBeginN(string.format("[%s (%d,%d)] %s", tostring(data.file_name), tostring(data.line_begin), tostring(data.line_end), tostring(name)))
+		else
+			tracy.ZoneBeginN(string.format("[LUA] %s", tostring(name)))
+		end
+		
+		local result
+		
+		if callable then
+			result = callable()
+		end
+		
+		tracy.ZoneEnd()
+		
+		return result
+    else
+        if callable then
+			return callable()
+		end
+	end
+	
+	return nil
+end
 
 --  ####################################################################################################################
 -- 										OVERRIDE ORIGINAL ENTRY POINT
@@ -396,7 +449,6 @@ end
 -- 													IXR TIMERS
 --  ####################################################################################################################
 
-
 --[[
 Description: Create timer.
 Parameters:
@@ -416,6 +468,37 @@ Returns: (functions):
 function TimerCreate(name, loop, auto_paly, left_milliseconds, callable_fn, ...)
 	if IsModuleLoaded("ixr_timers") then
 		return GetModule("ixr_timers").timer_create(name, loop, auto_paly, left_milliseconds, callable_fn, ...)
+	end
+	
+	return false
+end
+
+--[[
+Description: Create timer with free name without overlappind.
+Parameters:
+  name (string)(required) - name of timer.
+  loop (bool)(required) - use auto repeat on left time.
+  auto_paly (bool)(required) - use auto start timer after create.
+  left_milliseconds (int)(required) - time left to run callable in milliseconds.
+  callable_fn (function|string)(required) - callable payload for timer.
+  ... (args) - callable args.
+Returns: (functions):
+	self:name(): string
+	self:exists(): bool
+	self:play(): bool
+	self:stop(): bool
+	self:delete(): bool
+--]]
+function TimerCreateWithNextFreeName(name, left_milliseconds, callable_fn, ...)
+	if IsModuleLoaded("ixr_timers") then
+		return GetModule("ixr_timers").timer_create(
+			GetModule("ixr_timers").get_free_timer_name(name),
+			false,
+			true,
+			left_milliseconds,
+			callable_fn,
+			...
+		)
 	end
 	
 	return false
@@ -559,6 +642,25 @@ function GetOptionsVar(var_name, default_value)
 	end
 	
 	return false
+end
+
+--  ####################################################################################################################
+-- 													IXR THROTTLERS 
+--  ####################################################################################################################
+
+--[[
+Description: Checks whether the action is allowed to be performed, whether a sufficient amount of time has passed relative to the previous call.
+Parameters:
+  name (string)(required) 	- key name throttler.
+  interval_ms (int)(required) - time interval calls in milliseconds
+Returns: (bool) - returns true if call allow, otherwise false.
+ --]]
+function IsActionThrottled(name, interval_ms)
+	if IsModuleLoaded("ixr_throttlers") then
+		return GetModule("ixr_throttlers").is_action_throttled(name, interval_ms)
+	end
+	
+	return true
 end
 
 -- ##############################################################
