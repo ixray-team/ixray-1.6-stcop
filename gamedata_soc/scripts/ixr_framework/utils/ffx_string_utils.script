@@ -20,59 +20,255 @@ Parameters:
   s (string) - the string to trim.
 Returns: string - trimmed string.
 ]]
-function trim(s)
-	return (string.gsub(s,"^%s*(.-)%s*$","%1"))
+function trim(str)
+	if not str or str == "" then 
+		return ""
+	end
+	local result = string.gsub(str,"^%s*(.-)%s*$","%1")
+	return result
+end
+
+--[[
+Description:
+  Is contains substring in string
+Parameters:
+  s (string) - the string to trim.
+Returns: string - trimmed string.
+]]
+function contains(str, substr)
+    if not str or not substr then 
+		return false
+	end
+	
+    return string.find(str, substr, 1, true) ~= nil
 end
 
 --[[
 Description:
   Splits a string by a pattern, trims parts, and includes remainder if pattern found.
 Parameters:
-  str (string) - the string to split.
-  pattern (string) - the pattern to split by.
+  text (string) - the string to split.
+  substr (string) - the pattern to split by.
 Returns: table - array of trimmed string segments.
 ]]
-function explode(str, pattern)
-	local tmp_table = {}
-	
-	if (type(str) ~= "string") then
-		return tmp_table
-	end
-	
-	for word, _pattern, start in split(str, pattern) do
-		tmp_table[#tmp_table + 1] = trim(word)
-		
-		if (start and _pattern == pattern) then
-		    tmp_table[#tmp_table + 1] = trim(str:sub(start))
-			break
-		end
-	end
-	
-	return tmp_table
+function split(text, substr)
+	return explode(text, substr)
 end
 
 --[[
 Description:
-  Iterator function to split a string by a pattern, returning segments and separators.
+  Check if string starts with a given substring
+Parameters:
+  text (string) - the string to check
+  prefix (string) - the substring to search for at the start
+Returns: bool - true if text starts with prefix
+]]
+function start_with(text, prefix)
+    if not text or text == "" or not prefix or prefix == "" then
+        return false
+    end
+    
+    return text:sub(1, #prefix) == prefix
+end
+
+--[[
+Description:
+  Check if string ends with a given substring
+Parameters:
+  text (string) - the string to check
+  suffix (string) - the substring to search for at the end
+Returns: bool - true if text ends with suffix
+]]
+function end_with(text, suffix)
+    if not text or text == "" or not suffix or suffix == "" then
+        return false
+    end
+    
+    return #text >= #suffix and text:sub(-#suffix) == suffix
+end
+
+--[[
+Description:
+  Collapse consecutive occurrences of substring into one
+Parameters:
+  text (string) - the string to process
+  substr (string) - the substring to collapse
+Returns: string - with consecutive substr replaced by single occurrence
+]]
+function collapse(text, substr)
+    if not text then 
+		return "" 
+	end
+	
+    if not substr or substr == "" then
+		return text 
+	end
+    
+    local len = #substr
+    local res = {}
+    local i = 1
+    local n = #text
+    
+    while i <= n do
+        if text:sub(i, i + len - 1) == substr then
+            res[#res + 1] = substr
+            i = i + len
+            while i <= n and text:sub(i, i + len - 1) == substr do
+                i = i + len
+            end
+        else
+            res[#res + 1] = text:sub(i, i)
+            i = i + 1
+        end
+    end
+    
+    return table.concat(res)
+end
+
+--[[
+Description:
+  Separate a string by a pattern, trims parts, and includes remainder if pattern found.
 Parameters:
   str (string) - the string to split.
-  pattern (string or nil) - the pattern to split by; defaults to whitespace.
-Returns: function - iterator returning (segment, separator, next_start).
+  pattern (string) - the pattern to split by.
+Returns: table - array of trimmed string segments.
 ]]
-function split(str, pattern)
-    local st, g = 1, str:gmatch("()(" .. (pattern or '%s+') .. ")")
-    
-    local function getter(segments, separators, separator, cap, ...)
-        st = separator and separators + #separator
-		
-        return str:sub(segments, (separators or 0) - 1), cap or separator, ...
+function explode(str, substr)
+    if str == nil or text == "" then
+        return {}
+    end
+	
+    if substr == nil or substr == "" then
+        local str = trim(str)
+        if str == "" then
+          return {}
+        end
+        
+        return {trim(str)} 
     end
     
-    local function splitter()
-        if st then
-			return getter(st, g())
-		end
+    local res = {}
+    local last_pos = 1
+    
+    for part in str:gmatch("(.-)" .. escape_regex_special_chars(substr)) do
+        table.insert(res, trim(part))
+        last_pos = last_pos + #part + #substr
     end
     
-    return splitter
+    local rest = trim(str:sub(last_pos))
+    if rest ~= "" then
+        table.insert(res, rest)
+    end
+    
+    return res
+end
+
+--[[
+Description:
+  Split string into chunks of specified size
+Parameters:
+  text (string) - the string to split
+  size (number) - the size of each chunk
+Returns: table - array of string chunks
+]]
+function chunk(text, size)
+	if text == nil or text == "" then
+		return {}
+	end
+	
+	if size <= 0 then
+		size = 1
+	end
+	
+    local res = {}
+    for i = 1, #text, size do
+        table.insert(res, text:sub(i, i + size - 1))
+    end
+    return res
+end
+
+--[[
+Description:
+  Convert first character of string to uppercase
+Parameters:
+  text (string) - the string to process
+Returns: string - with first character in uppercase
+]]
+function ucfirst(text)
+    if not text or text == "" then
+		return "" 
+	end
+	local result = text:gsub("^%l", string.upper)
+    return result
+end
+
+--[[
+Description:
+  Convert first character of string to lowercase
+Parameters:
+  text (string) - the string to process
+Returns: string - with first character in lowercase
+]]
+function lcfirst(text)
+    if not text or text == "" then
+		return "" 
+	end
+	
+    local result = text:gsub("^%u", string.lower)
+	return result
+end
+
+--[[
+Description:
+  Replace multiple spaces to one
+Parameters:
+  text (string) - the original string
+Returns: string
+]]
+function normalize_spaces(text)
+	if not text or text == "" then 
+		return "" 
+	end
+	
+    local result = text:gsub("%s+", " ")
+	return result
+end
+
+
+--[[
+Description:
+  Replace all occurrences of a substring with another substring
+Parameters:
+  text (string) - the original string
+  search (string) - the substring to search for
+  replace (string) - the substring to replace with
+Returns: string - with all occurrences replaced
+]]
+function replace(text, search, replace)
+    if not text or text == "" then
+		return "" 
+	end
+	
+    if not search or search == "" then
+		return text 
+	end
+    
+    replace = replace or ""
+    
+    local rez = text:gsub(search, replace)
+    return rez
+end
+
+-------------------------------------------------------
+function escape_regex_special_chars(str)
+	if str == nil then
+		return nil
+	end
+	
+	if str == "" then
+		return ""
+	end
+	
+	local result = str:gsub("([%%%^%$%(%)%.%[%]%*%+%-%?])", "%%%1")
+	return result
 end
