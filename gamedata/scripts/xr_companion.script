@@ -17,6 +17,14 @@ beh_wait_simple = 3
 beh_wait_near = 4
 beh_wait_ignore = 5
 
+init_state = "guard_na"
+walk_simple_close_state = "raid"
+walk_simple_far_state = "rush"
+walk_simple_very_far_state = "assault"
+walk_simple_stop_state = "threat"
+wait_simple_state = "threat"
+
+
 local mt_stand = 0
 local mt_walk = 1
 local mt_run = 2
@@ -47,7 +55,7 @@ function action_companion_activity:initialize()
 	self.object:set_desired_direction()
 	self.object:enable_talk()
 	self.assist_point = nil
-	self.last_state = "guard_na"
+	self.last_state = init_state
 	state_mgr.set_state(self.object, self.last_state, nil, nil, nil, { animation = true })
 	self.keep_state_until = time_global()
 end
@@ -94,7 +102,7 @@ function action_companion_activity:beh_walk_simple()
 		-- (случай, когда игрок подошел слишком близко к ассистенту)
 		--self.dir_approaching = true
 
-		new_state = "threat"
+		new_state = walk_simple_stop_state
 		target = {look_object = get_story_object("actor")}
 	else
 		local t = time_global()
@@ -103,12 +111,12 @@ function action_companion_activity:beh_walk_simple()
 
 			--printf("_bp: move_mgr: distance to destination waypoint: %d", dist_to_assist_pt)
 			if dist_to_assist_pt <= dist_walk then
-				new_state = "raid"
+				new_state = walk_simple_close_state
 				target = {look_object = get_story_object("actor")}
 			elseif dist_to_assist_pt <= dist_run then
-				new_state = "rush"
+				new_state = walk_simple_far_state
 			else
-				new_state = "assault"
+				new_state = walk_simple_very_far_state
 			end
 		end
 	end
@@ -125,7 +133,7 @@ end
 
 function action_companion_activity:beh_wait_simple()
 	local actor = db.actor
-	local new_state = "threat"
+	local new_state = wait_simple_state
 	if new_state ~= self.last_state then
 		state_mgr.set_state(self.object, new_state,
 			nil, nil, {look_object = get_story_object("actor")}, { animation = true })
