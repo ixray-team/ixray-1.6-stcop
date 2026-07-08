@@ -16,6 +16,7 @@
 #elifdef IXRAY_PROFILER_TRACY
 #	include <tracy/Tracy.hpp>
 #	include <tracy/TracyC.h>
+#	define TRACY_CALLSTACK 8
 #   define PROF_THREAD(Name)
 #   define PROF_START_THREAD(Name) TracyCZoneCtx zone; TracyFiberEnter(Name); TracyCZone(ctx, 1); zone = ctx;
 #   define PROF_STOP_THREAD() TracyCZoneEnd(zone); TracyFiberLeave;
