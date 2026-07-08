@@ -17,9 +17,9 @@ CPPEffectorControllerAura::CPPEffectorControllerAura(const SPPInfo &ppi, u32 tim
 	m_snd_right.clone		(snd_right,st_Effect,sg_SourceType);	
 
 	m_snd_left.play	(Actor(), sm_2D);
-	m_snd_left.set_panning(1.0, 0.0);
+	//m_snd_left.set_panning(1.0, 0.0);
 	m_snd_right.play	(Actor(), sm_2D);
-	m_snd_right.set_panning(0.0, 1.0);
+	//m_snd_right.set_panning(0.0, 1.0);
 }
 
 void CPPEffectorControllerAura::switch_off()
@@ -53,9 +53,9 @@ bool CPPEffectorControllerAura::update()
 	if (!m_snd_left.is_playing() && !m_snd_right.is_playing() && !g_pGamePersistent->m_pMainMenu->IsActive()) 
 	{
 		m_snd_left.play(Actor(), sm_2D);
-		m_snd_left.set_panning(1.0, 0.0);
+		//m_snd_left.set_panning(1.0, 0.0);
 		m_snd_right.play(Actor(), sm_2D);
-		m_snd_right.set_panning(0.0, 1.0);
+		//m_snd_right.set_panning(0.0, 1.0);
 	} 
 
 	if (m_snd_left.is_playing())	m_snd_left.set_volume	(m_factor);
