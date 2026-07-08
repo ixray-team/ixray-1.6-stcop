@@ -18,6 +18,8 @@
 #include "game_cl_base.h"
 #include "FreeMP/ScriptEvents.h"
 
+#include "UIWorldSpace.h"
+
 // always try to forward declare your script implementations
 class CRandomManager;
 
@@ -47,6 +49,8 @@ class	demoplay_control;
 class	demo_info;
 
 class CElectronicsProblemsManager;
+
+class CUIWorldSpaceManager;
 
 #ifdef DEBUG_DRAW
 	class	CDebugRenderer;
@@ -455,6 +459,8 @@ public:
 	bool is_block_action(int cmd);
 	void LockActorWithCameraRotation();
 	void UnLockActor();
+
+	CUIWorldSpaceManager* WorldSpaceUIManager = nullptr;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
