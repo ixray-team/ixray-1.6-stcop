@@ -3,6 +3,7 @@
 #include "xr_ioc_cmd.h"
 #include "xr_level_controller.h"
 #include "string_table.h"
+#include "UIGamepadButtons.h"
 
 ENGINE_API _binding	g_key_bindings[bindings_count]; 
 ENGINE_API _key_group g_current_keygroup = _sp;
@@ -475,17 +476,6 @@ _keyboard gamepads[] =
 	{ "cDPAD_DOWN",             SDL_GAMEPAD_BUTTON_DPAD_DOWN,     "D-Pad Down" },
 	{ "cDPAD_LEFT",             SDL_GAMEPAD_BUTTON_DPAD_LEFT,     "D-Pad Left" },
 	{ "cDPAD_RIGHT",            SDL_GAMEPAD_BUTTON_DPAD_RIGHT,    "D-Pad Right" },
-	{ "cMISC1",                 SDL_GAMEPAD_BUTTON_MISC1,         "Misc 1" },
-	{ "cRPADDLE1",              SDL_GAMEPAD_BUTTON_RIGHT_PADDLE1, "Upper Right Paddle" },
-	{ "cLPADDLE1",              SDL_GAMEPAD_BUTTON_LEFT_PADDLE1,  "Upper Left Paddle" },
-	{ "cRPADDLE2",              SDL_GAMEPAD_BUTTON_RIGHT_PADDLE2, "Lower Right Paddle" },
-	{ "cLPADDLE2",              SDL_GAMEPAD_BUTTON_LEFT_PADDLE2,  "Lower Left Paddle" },
-	{ "cTOUCHPAD",              SDL_GAMEPAD_BUTTON_TOUCHPAD,      "Touchpad" },
-	{ "cMISC2",                 SDL_GAMEPAD_BUTTON_MISC2,         "Misc 2" },
-	{ "cMISC3",                 SDL_GAMEPAD_BUTTON_MISC3,         "Misc 3" },
-	{ "cMISC4",                 SDL_GAMEPAD_BUTTON_MISC4,         "Misc 4" },
-	{ "cMISC5",                 SDL_GAMEPAD_BUTTON_MISC5,         "Misc 5" },
-	{ "cMISC6",                 SDL_GAMEPAD_BUTTON_MISC6,         "Misc 6" },
 
 	{ "cLTRIGGER",				DIK_LTRIGGER,					  "LT" },
 	{ "cRTRIGGER",				DIK_RTRIGGER,					  "RT" },
@@ -776,6 +766,68 @@ ENGINE_API EGameActions get_binded_action(int _dik, _action_group _ai)
 	return kNOTBINDED;
 }
 
+const char* GetGamepadSymbol(int dik)
+{
+	//if (!xr_strcmp(pInput->GamepadPrefix(), "xbox1"))
+	{
+		switch (dik)
+		{
+		case SDL_GAMEPAD_BUTTON_SOUTH:
+			return XBOX_A;
+		case SDL_GAMEPAD_BUTTON_EAST:
+			return XBOX_B;
+		case SDL_GAMEPAD_BUTTON_WEST:
+			return XBOX_X;
+		case SDL_GAMEPAD_BUTTON_NORTH:
+			return XBOX_Y;
+		case SDL_GAMEPAD_BUTTON_BACK:
+			return XBOX_Back;
+		case SDL_GAMEPAD_BUTTON_GUIDE:
+			return XBOX_Guide;
+		case SDL_GAMEPAD_BUTTON_START:
+			return XBOX_Start;
+		case SDL_GAMEPAD_BUTTON_LEFT_STICK:
+			return XBOX_LS;
+		case SDL_GAMEPAD_BUTTON_RIGHT_STICK:
+			return XBOX_RS;
+		case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER:
+			return XBOX_LB;
+		case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:
+			return XBOX_RB;
+		case SDL_GAMEPAD_BUTTON_DPAD_UP:
+			return XBOX_DPAD_UP;
+		case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
+			return XBOX_DPAD_DOWN;
+		case SDL_GAMEPAD_BUTTON_DPAD_LEFT:
+			return XBOX_DPAD_LEFT;
+		case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
+			return XBOX_DPAD_RIGHT;
+		case DIK_LTRIGGER:
+			return XBOX_LTRIGGER;
+		case DIK_RTRIGGER:
+			return XBOX_RTRIGGER;
+		case DIK_LSTICK_UP:
+			return XBOX_LSTICK_UP;
+		case DIK_LSTICK_DOWN:
+			return XBOX_LSTICK_DOWN;
+		case DIK_LSTICK_LEFT:
+			return XBOX_LSTICK_LEFT;
+		case DIK_LSTICK_RIGHT:
+			return XBOX_LSTICK_RIGHT;
+		case DIK_RSTICK_UP:
+			return XBOX_RSTICK_UP;
+		case DIK_RSTICK_DOWN:
+			return XBOX_RSTICK_DOWN;
+		case DIK_RSTICK_LEFT:
+			return XBOX_RSTICK_LEFT;
+		case DIK_RSTICK_RIGHT:
+			return XBOX_RSTICK_RIGHT;
+		}
+	}
+	
+	return "NONE";
+}
+
 ENGINE_API void GetActionAllBinding(const char* _action, char* dst_buff, int dst_buff_sz)
 {
 	int action_id = action_name_to_id(_action);
@@ -784,17 +836,13 @@ ENGINE_API void GetActionAllBinding(const char* _action, char* dst_buff, int dst
 	if (action_id == kNOTBINDED)
 	{
 		Msg("! [ERROR]: Action not found %s", _action);
+		dst_buff[0] = 0;
 		return;
 	}
 
-	string128 prim;
-	string128 sec;
-	string128 gp_prim;
-	string128 gp_sec;
-	prim[0] = 0;
-	sec[0] = 0;
-	gp_prim[0] = 0;
-	gp_sec[0] = 0;
+	string128 prim = {};
+	string128 sec = {};
+	string128 gp_prim = {};
 
 	if (pbinding->m_keyboard[0])
 		xr_strcpy(prim, pbinding->m_keyboard[0]->key_local_name.c_str());
@@ -803,23 +851,47 @@ ENGINE_API void GetActionAllBinding(const char* _action, char* dst_buff, int dst
 		xr_strcpy(sec, pbinding->m_keyboard[1]->key_local_name.c_str());
 
 	if (pbinding->m_gamepad[0])
-		xr_strcpy(gp_prim, pbinding->m_gamepad[0]->key_local_name.c_str());
-
-	if (pbinding->m_gamepad[1])
-		xr_strcpy(gp_sec, pbinding->m_gamepad[1]->key_local_name.c_str());
-
-	if (!pbinding->m_keyboard[0] && !pbinding->m_keyboard[1] 
-		&& !pbinding->m_gamepad[0] && !pbinding->m_gamepad[1])
-		xr_sprintf(dst_buff, dst_buff_sz, "%s", g_pStringTable->translate("st_key_notbinded").c_str());
-	else if (pInput->GetControllerMode())
 	{
-		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s", 
-			gp_prim[0] ? gp_prim : "", 
-			(gp_sec[0] && gp_prim[0]) ? "/" : "", 
-			gp_sec[0] ? gp_sec : "");
+		const char* gpSymbol = GetGamepadSymbol(pbinding->m_gamepad[0]->dik);
+		if (gpSymbol)
+			xr_strcpy(gp_prim, gpSymbol);
+	}
+
+	if (!pbinding->m_keyboard[0] && !pbinding->m_keyboard[1] &&
+		!pbinding->m_gamepad[0] && !pbinding->m_gamepad[1])
+	{
+		xr_strcpy(dst_buff, dst_buff_sz, g_pStringTable->translate("st_key_notbinded").c_str());
+		return;
+	}
+
+	if (pInput->GetControllerMode())
+	{
+		if (gp_prim[0])
+			xr_strcpy(dst_buff, dst_buff_sz, gp_prim);
+		else
+			dst_buff[0] = 0;
+
+		return;
+	}
+
+	if (prim[0] && sec[0])
+	{
+		xr_strcpy(dst_buff, dst_buff_sz, prim);
+		xr_strcat(dst_buff, dst_buff_sz, " , ");
+		xr_strcat(dst_buff, dst_buff_sz, sec);
+	}
+	else if (prim[0])
+	{
+		xr_strcpy(dst_buff, dst_buff_sz, prim);
+	}
+	else if (sec[0])
+	{
+		xr_strcpy(dst_buff, dst_buff_sz, sec);
 	}
 	else
-		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s", prim[0] ? prim : "", (sec[0] && prim[0]) ? " , " : "", sec[0] ? sec : "");
+	{
+		dst_buff[0] = 0;
+	}
 }
 
 ENGINE_API bool any_binded_key_for_action_pressed_c(int actionId)
