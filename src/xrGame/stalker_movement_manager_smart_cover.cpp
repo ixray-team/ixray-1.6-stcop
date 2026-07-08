@@ -196,8 +196,8 @@ void stalker_movement_manager_smart_cover::reach_enter_location			(u32 const& ti
 	smart_cover::loophole const&		target_loophole = *m_target.cover_loophole();
 	smart_cover::loophole const&		loophole = target_loophole.enterable() ? target_loophole : nearest_enterable_loophole();
 
-
-	if (!&current_transition() || !m_current_transition)
+	current_transition();
+	if (!m_current_transition)
 	{
 		return;
 	}
