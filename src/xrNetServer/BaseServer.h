@@ -182,7 +182,6 @@ public:
 	virtual u32				  OnMessage(NET_Packet& P, ClientID sender) { return 0; };	// Non-Zero means broadcasting with "flags" as returned
 
 	virtual IClient*		  client_Create() { return nullptr; } // create client info
-	virtual void			  client_Replicate() {} // replicate current state to client
 	virtual void			  client_Destroy(IClient* C) {} // destroy client info
 
 
