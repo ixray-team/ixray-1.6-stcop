@@ -1,5 +1,6 @@
 if (WIN32)
     set(CMAKE_VS_GLOBALS "EnableClangTidyCodeAnalysis=true")
+    set(CMAKE_CXX_CLANG_TIDY_EXPORT_FIXES_DIR "${CMAKE_BINARY_DIR}/clang-tidy")
 else()
     find_program(CLANG_TIDY_EXE clang-tidy)
 
