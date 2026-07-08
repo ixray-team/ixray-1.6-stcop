@@ -33,14 +33,14 @@ class CUICellItem;
 
 class CUIInventoryUpgradeWnd final : public CUIWindow
 {
-private:
+	friend class CUIActorMenu;
+
 	using inherited = CUIWindow;
 
 	using Upgrade_type = inventory::upgrade::Upgrade;
 	using Property_type = inventory::upgrade::Property;
 	using UI_Upgrades_type = xr_vector<UIUpgrade*>;
 
-private:
 	struct Scheme
 	{
 		shared_str name;
@@ -49,7 +49,7 @@ private:
 		Scheme() = default;
 		virtual ~Scheme();
 	};
-	typedef xr_vector<Scheme*> SCHEMES;
+	using SCHEMES = xr_vector<Scheme*>;
 
 public:
 	CUIInventoryUpgradeWnd() = default;

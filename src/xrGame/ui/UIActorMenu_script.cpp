@@ -25,7 +25,8 @@
 
 #include "UIPdaWnd.h"
 #include "../../xrUI/Widgets/UITabControl.h"
-#include "UIActorMenu.h"
+#include "UIInventoryUpgradeWnd.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 #include "UIMainIngameWnd.h"
 #include "UIZoneMap.h"
 #include "UICompassBar.h"
@@ -337,6 +338,22 @@ void CUIActorMenu::PerformDisassemble()
 		return;
 	}
 	funct(item->m_section_id.c_str(), item->GetCondition(), partner);
+
+	m_pUpgradeWnd->set_info_cur_upgrade(nullptr);
+
+	if (m_pUpgradeWnd->m_item != nullptr)
+	{
+		m_pUpgradeWnd->m_item->DetachAll();
+		m_pUpgradeWnd->m_item->Show(false);
+	}
+
+	m_pUpgradeWnd->m_scheme_wnd->DetachAll();
+	m_pUpgradeWnd->m_scheme_wnd->Show(false);
+
+	m_pUpgradeWnd->m_btn_repair->Enable(false);
+	m_pUpgradeWnd->m_btn_disassemble->Enable(false);
+
+	m_pUpgradeWnd->m_inv_item = nullptr;
 
 	SetCurrentItem(nullptr);
 	item->object().DestroyObject();
