@@ -2,9 +2,10 @@
 
 #include <memory>
 #include <DirectXTex.h>
-#include <src/xrEngine/xr_ioc_cmd.h>
 
 using namespace DirectX;
+
+#include "../../xrEngine/xr_ioc_cmd.h"
 
 void fix_texture_name(LPSTR fn)
 {
