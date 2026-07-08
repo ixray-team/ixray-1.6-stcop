@@ -182,14 +182,6 @@ CUIStatic* CScriptXmlInit::InitAnimStatic(const char* path, CUIWindow* parent)
 	return pWnd;
 }
 
-CUIStatic* CScriptXmlInit::InitSleepStatic(const char* path, CUIWindow* parent)
-{
-	CUISleepStatic* pWnd = new CUISleepStatic();
-	CUIXmlInit::InitSleepStatic(m_xml, path, 0, pWnd);
-	_attach_child(pWnd, parent);
-	return pWnd;
-}
-
 CUIScrollView* CScriptXmlInit::InitScrollView(const char* path, CUIWindow* parent)
 {
 	CUIScrollView* pWnd = new CUIScrollView();
@@ -390,7 +382,6 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitGamepadLegend",		&CScriptXmlInit::InitGamepadLegend)
 		.def("InitTextWnd",				&CScriptXmlInit::InitStatic)
 		.def("InitAnimStatic",			&CScriptXmlInit::InitAnimStatic)
-		.def("InitSleepStatic",			&CScriptXmlInit::InitSleepStatic)
 		.def("Init3tButton",			&CScriptXmlInit::Init3tButton)
 		.def("InitCheck",				&CScriptXmlInit::InitCheck)
 		.def("InitSpinNum",				&CScriptXmlInit::InitSpinNum)
