@@ -511,10 +511,10 @@ void CRender::Render()
 
 	Device.Statistic->RenderDUMP.Begin();
 
-	if (g_pIGameActor)
+	if (GActorInterface)
 	{
 		Target->set_ui_target();
-		g_pIGameActor->RenderItemUI();							// render ui in world
+		GActorInterface->RenderItemUI();							// render ui in world
 		Target->set_default_target();
 	}
 

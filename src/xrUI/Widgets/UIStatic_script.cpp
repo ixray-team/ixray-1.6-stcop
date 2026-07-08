@@ -78,9 +78,6 @@ void CUIStatic::script_register(lua_State *L)
 		.def("SetVTextAlignment",	&CUIStatic::SetVTextAlignment)
 		.def("SetTextComplexMode",	&CUIStatic::SetTextComplexMode)
 		.def("GetFont",				&CUIStatic::GetFont)
-		.def("SetTextOffset",		&CUIStatic::SetTextOffset),
-
-		class_<CUISleepStatic, CUIStatic>("CUISleepStatic")
-		.def(						constructor<>())
+		.def("SetTextOffset",		&CUIStatic::SetTextOffset)
 	];
 }

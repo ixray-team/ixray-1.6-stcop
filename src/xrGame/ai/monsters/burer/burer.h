@@ -142,7 +142,6 @@ public:
 	virtual void	UpdateCL			();
 	virtual	void	Hit					(SHit* pHDS);
 	virtual void	Die					(CObject* who);
-			void	ProcessTurn			();
 	virtual void	CheckSpecParams		(u32 spec_params);
 
 	virtual void	OnEvent(NET_Packet& P, u16 type);
