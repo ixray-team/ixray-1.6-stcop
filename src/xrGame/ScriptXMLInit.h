@@ -19,7 +19,6 @@ class CUIFrameLineWnd;
 class CUIEditBox;
 class CUIMultiTextStatic;
 class CUIAnimatedStatic;
-class CUISleepStatic;
 class CServerList;
 class CUIMapList;
 class CUITrackBar;
@@ -58,7 +57,6 @@ public:
 	CUIStackPanel*		InitStackPanel(const char* path, CUIWindow* parent);
 	CUIGamepadLegend*	InitGamepadLegend(const char* path, CUIWindow* parent);
 	CUIStatic*			InitAnimStatic(const char* path, CUIWindow* parent);
-	CUIStatic*			InitSleepStatic(const char* path, CUIWindow* parent);
 	CUICheckButton*		InitCheck(const char* path, CUIWindow* parent);
 	CUISpinNum*			InitSpinNum(const char* path, CUIWindow* parent);
 	CUISpinFlt*			InitSpinFlt(const char* path, CUIWindow* parent);

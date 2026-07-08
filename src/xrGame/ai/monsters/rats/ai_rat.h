@@ -328,18 +328,6 @@ public:
 			//////////////////////////
 			// FSM STATES
 			//////////////////////////
-			void				Death					();
-			void				FreeHuntingActive		();
-			void				FreeHuntingPassive		();
-			void				AttackFire				();
-			void				AttackRun				();
-			void				UnderFire				();
-			void				Retreat					();
-			void				Pursuit					();
-			void				FreeRecoil				();
-			void				ReturnHome				();
-			void				EatCorpse				();
-			void				test_movement			();
 			void				init					();
 public:
 								CAI_Rat					();

@@ -305,7 +305,7 @@ void RenderUIWeather() {
 		return;
 	}
 
-	if (g_pIGameActor == nullptr) {
+	if (GActorInterface == nullptr) {
 		return;
 	}
 
