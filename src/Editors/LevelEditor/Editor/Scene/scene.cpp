@@ -959,7 +959,7 @@ void EScene::OnFrame()
 			string128 Command = {};
 			xr_sprintf(Command, "set_actor_position %.3f, %.3f, %.3f", ActorNewPos.x, ActorNewPos.y, ActorNewPos.z);
 			Console->Execute(Command);
-			g_pIGameActor->cam_Active()->Set(-ActorNewDir.x, 0, 0);
+			GActorInterface->cam_Active()->Set(-ActorNewDir.x, 0, 0);
 
 			IsAppliedPos = true;
 		}

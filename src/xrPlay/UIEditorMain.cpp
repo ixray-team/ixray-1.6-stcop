@@ -17,7 +17,7 @@ void RenderActorInfos()
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::ActorInfos)])
 		return;
 
-	if (!g_pIGameActor || !(g_pGameLevel && g_pGameLevel->bReady))
+	if (!GActorInterface || !(g_pGameLevel && g_pGameLevel->bReady))
 	{
 		return;
 	}
@@ -27,7 +27,7 @@ void RenderActorInfos()
 		return;
 	}
 
-	const auto& Data = g_pIGameActor->GetKnownPortions();
+	const auto& Data = GActorInterface->GetKnownPortions();
 
 	static char buffer[128]{};
 	ImGui::Text("Filter:");
@@ -42,9 +42,9 @@ void RenderActorInfos()
 
 	if (ImGui::Button("add"))
 	{
-		if (g_pIGameActor)
+		if (GActorInterface)
 		{
-			g_pIGameActor->GiveInfoPortion(add_info);
+			GActorInterface->GiveInfoPortion(add_info);
 		}
 	}
 
@@ -64,13 +64,13 @@ void RenderActorInfos()
 		{
 			if (ImGui::Button(Str.c_str())) 
 			{
-				g_pIGameActor->DisableInfoPortion(Str.c_str());
+				GActorInterface->DisableInfoPortion(Str.c_str());
 			}
 			if (ImGui::IsItemHovered())
 			{
 				xr_string hint = "";
 
-				auto dialogsVec = g_pIGameActor->GetKnownPortionDialogs(Str.c_str());
+				auto dialogsVec = GActorInterface->GetKnownPortionDialogs(Str.c_str());
 				if (dialogsVec.size())
 					hint += "Dialogs:";
 
@@ -80,7 +80,7 @@ void RenderActorInfos()
 					hint += dialogStr;
 				}
 
-				auto disablePortionsVec = g_pIGameActor->GetKnownPortionDisable(Str.c_str());
+				auto disablePortionsVec = GActorInterface->GetKnownPortionDisable(Str.c_str());
 				if (disablePortionsVec.size())
 					hint += "Disables portions:";
 
@@ -90,7 +90,7 @@ void RenderActorInfos()
 					hint += disablePortion;
 				}
 
-				auto articlesVec = g_pIGameActor->GetKnownPortionArticles(Str.c_str());
+				auto articlesVec = GActorInterface->GetKnownPortionArticles(Str.c_str());
 				if (articlesVec.size())
 					hint += "Articles:";
 
@@ -100,7 +100,7 @@ void RenderActorInfos()
 					hint += articleStr;
 				}
 				
-				auto articlesDisableVec = g_pIGameActor->GetKnownPortionArticlesDisable(Str.c_str());
+				auto articlesDisableVec = GActorInterface->GetKnownPortionArticlesDisable(Str.c_str());
 				if (articlesDisableVec.size())
 					hint += "Disables articles:";
 
@@ -110,7 +110,7 @@ void RenderActorInfos()
 					hint += articleDisableStr;
 				}
 
-				auto tasksVec = g_pIGameActor->GetKnownPortionTasks(Str.c_str());
+				auto tasksVec = GActorInterface->GetKnownPortionTasks(Str.c_str());
 				if (tasksVec.size())
 					hint += "Tasks:";
 
@@ -143,7 +143,7 @@ static bool checkSpawnItems = true;
 void OnOpenSceneClicked(xr_map<xr_string, xr_vector<xr_string>> scenesTable, const char* key, const char* value) {
 	if (!scenesTable[key][0].empty()) {
 		if (scenesTable[key][0] != "nil") {
-			g_pIGameActor->GiveInfoPortion(scenesTable[key][0].c_str());
+			GActorInterface->GiveInfoPortion(scenesTable[key][0].c_str());
 		}
 	}
 
@@ -154,7 +154,7 @@ void OnOpenSceneClicked(xr_map<xr_string, xr_vector<xr_string>> scenesTable, con
 		if (scenesTable[key].size() > 1 && !scenesTable[key][1].empty()) {
 			patrol = g_pGameLevel->CreatePatrol(scenesTable[key][1].c_str());
 			point = patrol->point(0u);
-			g_pIGameActor->SetActorPosition(point);
+			GActorInterface->SetActorPosition(point);
 		}
 
 		if (patrol == nullptr) {
@@ -165,7 +165,7 @@ void OnOpenSceneClicked(xr_map<xr_string, xr_vector<xr_string>> scenesTable, con
 			auto look = g_pGameLevel->CreatePatrol(scenesTable[key][2].c_str());
 			point = look->point(0u);
 			float dir = point.sub(patrol->point(0u)).getH();
-			g_pIGameActor->SetActorDirection(-dir);
+			GActorInterface->SetActorDirection(-dir);
 
 			xr_delete(look);
 		}
@@ -191,7 +191,7 @@ void RenderScenesViewer() {
 		return;
 	}
 
-	if (g_pIGameActor == nullptr) {
+	if (GActorInterface == nullptr) {
 		return;
 	}
 

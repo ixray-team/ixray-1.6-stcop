@@ -1152,16 +1152,6 @@ bool CUIXmlInit::InitAnimatedStatic(CUIXml &xml_doc, const char *path, int index
 	return true;
 }
 
-bool CUIXmlInit::InitSleepStatic(CUIXml &xml_doc, const char *path, int index, CUISleepStatic *pWnd)
-{
-	bool ValidNode = xml_doc.NavigateToNode(path, index);
-	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
-
-	InitStatic(xml_doc, path, index, pWnd);
-	
-	return true;
-}
-
 // Raster vs vector: keep <svg> element (even when empty) on the vector path so :texture fallback and buf
 // (rect / tint attributes) stay aligned. Using only QueryFileNameFromXml for the raster/vector split misses
 // that case and can desync UI texture state.
