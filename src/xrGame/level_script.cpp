@@ -1759,6 +1759,22 @@ const xr_vector<CScriptGameObject*>& GetOnlineGameObjectsByObbBoxSpatial(const F
 	return m_objects;
 }
 
+void ws_element_set_text(u16 id, const char* section, const char* text)
+{
+	if (CGameObject* obj = smart_cast<CGameObject*>(Level().Objects.net_Find(id)))
+	{
+		Level().WorldSpaceUIManager->ElementSetText(obj, section, text);
+	}
+}
+
+void ws_element_show(u16 id, const char* section, bool show = true)
+{
+	if (CGameObject* obj = smart_cast<CGameObject*>(Level().Objects.net_Find(id)))
+	{
+		Level().WorldSpaceUIManager->ElementShow(obj, section, show);
+	}
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -2029,7 +2045,10 @@ void CLevel::script_register(lua_State *L)
 		// new for fmp
 		def("get_object_by_client", &get_object_by_client),
 		def("get_local_player_id", &get_local_player_id),
-		def("get_g_actor_id", &get_g_actor_id)
+		def("get_g_actor_id", &get_g_actor_id),
+
+		def("ws_element_set_text", &ws_element_set_text),
+		def("ws_element_show", &ws_element_show)
 	],
 	
 	module(L,"nearest")

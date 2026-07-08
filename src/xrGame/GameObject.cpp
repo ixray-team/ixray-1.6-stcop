@@ -32,6 +32,8 @@
 #include "../xrEngine/xr_collide_form.h"
 #include "../xrScripts/script_callback_ex.h"
 
+#include "UIWorldSpace.h"
+
 extern MagicBox3 MagicMinBox (int iQuantity, const Fvector* akPoint);
 
 #ifdef DEBUG_DRAW
@@ -133,6 +135,14 @@ void CGameObject::net_Destroy	()
 	}
 
 	Level().RemoveObject_From_4CrPr(this);
+
+	if (Level().WorldSpaceUIManager)
+	{
+		if (Level().WorldSpaceUIManager->ObjectHasWorldSpaceElements(this))
+		{
+			Level().WorldSpaceUIManager->DestroyWorldSpaceElements(this);
+		}
+	}
 
 //.	Parent									= 0;
 
@@ -275,6 +285,37 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	// XForm
 	XFORM().setXYZ					(E->o_Angle);
 	Position().set					(E->o_Position);
+
+	if (Level().WorldSpaceUIManager)
+	{
+		const auto try_create_ws_elements = [this](const char* line_name, auto method)
+		{
+			const char* ws_line_value = nullptr;
+
+			if (pSettings->line_exist(cName(), line_name))
+			{
+				ws_line_value = pSettings->r_string(cName(), line_name);
+			}
+			else if (pSettings->line_exist(cNameSect(), line_name))
+			{
+				ws_line_value = pSettings->r_string(cNameSect(), line_name);
+			}
+
+			if (ws_line_value && method)
+			{
+				u32 item_count = _GetItemCount(ws_line_value);
+				for (u32 i = 0; i < item_count; ++i)
+				{
+					string256 current_item_section;
+					_GetItem(ws_line_value, i, current_item_section);
+
+					(Level().WorldSpaceUIManager->*method)(this, current_item_section);
+				}
+			}
+		};
+		try_create_ws_elements("ws_elements", &CUIWorldSpaceManager::CreateWorldSpaceElement);
+	}
+
 #ifdef DEBUG
 	if(ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject)&&_stricmp(PH_DBG_ObjectTrackName(),*cName())==0)
 	{
