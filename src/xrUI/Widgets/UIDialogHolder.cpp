@@ -71,7 +71,7 @@ void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 
 	if(g_pGameLevel)
 	{
-		IGame_Actor* A	= g_pIGameActor == (void*)g_pGameLevel->CurrentViewEntity() ? g_pIGameActor : nullptr;
+		IGame_Actor* A	= GActorInterface == (void*)g_pGameLevel->CurrentViewEntity() ? GActorInterface : nullptr;
 		if ( A && pDialog->StopAnyMove() )
 		{
 			A->StopAnyMove				();

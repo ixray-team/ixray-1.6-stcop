@@ -53,21 +53,3 @@ public:
 	virtual CUIStatic* ui_cast_static() { return this; }
 
 };
-
-class UI_API CUISleepStatic:
-	public CUIStatic
-{
-private:
-	typedef			CUIStatic inherited;
-
-	int				m_cur_time;
-	CUIStaticItem	m_UIStaticItem2;
-public:
-					CUISleepStatic();
-	virtual	void	Draw				();
-	virtual	void	Update				();
-	virtual void	InitTextureEx		(const char* tex_name, const char* sh_name="hud\\default");
-
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUIStatic* ui_cast_static() { return this; }
-};

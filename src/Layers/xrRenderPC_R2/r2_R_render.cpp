@@ -360,10 +360,10 @@ void CRender::Render()
 		return;
 	}
 
-	if (g_pIGameActor)
+	if (GActorInterface)
 	{
 		Target->u_setrt(Target->rt_ui_pda, 0, 0, RDepth);
-		g_pIGameActor->RenderItemUI();
+		GActorInterface->RenderItemUI();
 	}
 
 //.	VERIFY					(g_pGameLevel && g_pGameLevel->pHUD);

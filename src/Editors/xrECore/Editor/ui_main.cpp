@@ -640,9 +640,9 @@ bool TUI::Idle()
 
 	OnFrame();
 
-	if (g_pIGameActor != nullptr)
+	if (GActorInterface != nullptr)
 	{
-		g_pIGameActor->UpdatePlayerHud();
+		GActorInterface->UpdatePlayerHud();
 	}
 
 	Device.secondary_tasks.run([]()

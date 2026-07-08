@@ -549,12 +549,12 @@ void CRender::Render()
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
 	}
 
-	if (g_pIGameActor)
+	if (GActorInterface)
 	{
 		Target->u_setrt(Target->rt_ui_pda, 0, 0);
 		rmNormal();
 
-		g_pIGameActor->RenderItemUI();
+		GActorInterface->RenderItemUI();
 	}
 
 	Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, 0, 0);
