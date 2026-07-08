@@ -98,3 +98,9 @@ void CUISubLine::Draw(CGameFont* pFont, float x, float y) const
 	pFont->SetColor		(m_color);
 	pFont->Out			(UI().ClientToScreenScaledX(x), UI().ClientToScreenScaledY(y), "%s", m_text.c_str() );
 }
+
+void CUISubLine::DrawWS(CGameFont* pFont, float x, float y) const
+{
+	pFont->SetColor(m_color);
+	pFont->Out(x, y, "%s", m_text.c_str());
+}

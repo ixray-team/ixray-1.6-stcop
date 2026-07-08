@@ -517,6 +517,76 @@ void CUILines::Draw(float x, float y)
 	m_pFont->OnRender();
 }
 
+void CUILines::DrawWS(float x, float y)
+{
+	x += m_TextOffset.x;
+	y += m_TextOffset.y;
+
+	static string256 passText;
+
+	if (m_text.size() == 0)
+	{
+		return;
+	}
+
+	R_ASSERT(m_pFont);
+	m_pFont->SetColor(m_dwTextColor);
+	m_pFont->SetGradientColor(m_dwTextGradientColor);
+
+	if (!uFlags.is(flComplexMode))
+	{
+		float pos_y = y + GetVIndentByAlign();
+
+		if (uFlags.test(flPasswordMode))
+		{
+			int sz = (int)m_text.size();
+			for (int i = 0; i < sz; i++)
+			{
+				passText[i] = '*';
+			}
+			passText[sz] = 0;
+			m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
+			m_pFont->SetGradientMode(m_eTextGradientMode);
+			m_pFont->Out(x, pos_y, "%s", passText);
+		}
+		else
+		{
+			m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
+			m_pFont->SetGradientMode(m_eTextGradientMode);
+			if (uFlags.test(flEllipsis))
+			{
+				u32 buff_len = sizeof(char) * xr_strlen(m_text.c_str()) + 1;
+
+				char* p = static_cast<char*>(_alloca(buff_len));
+				LPCSTR str = GetElipsisText(m_pFont, m_wndSize.x, m_text.c_str(), p, buff_len);
+
+				m_pFont->Out(x, pos_y, "%s", str);
+			}
+			else
+			{
+				m_pFont->Out(x, pos_y, "%s", m_text.c_str());
+			}
+		}
+	}
+	else
+	{
+		ParseText();
+
+		float pos_y = y + GetVIndentByAlign();
+		float height = m_pFont->CurrentHeight_() + m_pFont->GetLineSpacing();
+
+		u32 size = (u32)m_lines.size();
+
+		m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
+		m_pFont->SetGradientMode(m_eTextGradientMode);
+		for (int i = 0; i < (int)size; i++)
+		{
+			m_lines[i].DrawWS(m_pFont, x, pos_y);
+			pos_y += height;
+		}
+	}
+	m_pFont->OnRender();
+}
 
 void CUILines::OnDeviceReset()
 {
