@@ -365,7 +365,6 @@ void CRender::render_menu() {
 Fvector3 ps_r_taa_jitter_full = {0,0,0};
 
 #include "../../Include/xrRender/UIRender.h"
-#include <src/xrEngine/xr_ioc_cmd.h>
 
 void CRender::RenderUI(bool is_debug)
 {
