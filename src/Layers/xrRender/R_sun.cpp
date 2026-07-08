@@ -6,7 +6,6 @@
 #include "R_sun_support.h"
 
 #include <DirectXMath.h>
-#include <src/xrEngine/xr_ioc_cmd.h>
 
 using namespace DirectX;
 
