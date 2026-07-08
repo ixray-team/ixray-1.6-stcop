@@ -39,8 +39,8 @@ private:
 		Fmatrix					m_rotation;
 	}; // struct bone_parameters_base
 
-	struct bone_parameters : bone_parameters_base {
-		Fmatrix					m_rotation;
+	struct bone_parameters : bone_parameters_base
+	{
 		float					m_factor;
 	}; // struct bone_parameters
 
