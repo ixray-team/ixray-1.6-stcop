@@ -227,7 +227,10 @@ void CRenderDevice::on_idle		()
 		{
 			if (Begin())
 			{
-				seqRender.Process<&pureRender::OnRender>();
+				{
+					PROF_EVENT("------ [OnRender phase] ------")
+					seqRender.Process<&pureRender::OnRender>();
+				}
 
 				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || !Statistic->errors.empty())
 				{
@@ -475,8 +478,6 @@ struct EfficientFilteredDelta
 bool use_smoothed_delta = false;
 void CRenderDevice::FrameMove()
 {
-	PROF_EVENT("Render: Frame Move")
-
 	dwFrame++;
 	dwTimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
 	
@@ -517,7 +518,10 @@ void CRenderDevice::FrameMove()
 
 	Statistic->EngineTOTAL.Begin();
 	{
-		Device.seqFrame.Process<&pureFrame::OnFrame>();
+		{
+			PROF_EVENT("------ [OnFrame phase] ------")
+		   Device.seqFrame.Process<&pureFrame::OnFrame>();
+		}
 		g_bLoaded = true;
 	}
 	Statistic->EngineTOTAL.End();
