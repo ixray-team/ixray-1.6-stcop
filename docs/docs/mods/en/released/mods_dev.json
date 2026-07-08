@@ -1,7 +1,7 @@
 ﻿{
   "eyebrow": "Catalog",
   "title": "Mods List",
-  "subtitle": "The data below is an example. Replace with real mods or connect a data source.",
+  "subtitle": "",
   "labels": {
     "view": "View",
     "soon": "Coming soon"
@@ -54,6 +54,13 @@
       "author": "Isoteric Studio",
       "link": "https://vk.com/isotericstudio",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BD%D1%8C%D1%8E%D1%81%D0%BF%D0%B5%D0%B9%D1%81%D1%8B.png"
+    },
+    {
+      "id": "lasthope",
+      "title": "Last Hope",
+      "description": "",
+      "author": "Seakad",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/lh.png"
     },
     {
       "id": "strannik",

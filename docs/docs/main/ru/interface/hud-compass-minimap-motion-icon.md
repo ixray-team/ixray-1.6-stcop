@@ -1,20 +1,53 @@
 > [!IMPORTANT]
 > **Статус**: Поддерживается <br>
-> **Минимальная версия**: 1.4
+> **Минимальная версия**: 1.4 <br>
+> **Последнее обновление**: 2026-06-06
 
 # Горизонтальный компас, миникарта и новые возможности motion icon для мини-карты
 
 ## Обзор
 
-Фича задает навигационный блок HUD: либо миникарта, либо горизонтальный компас. Motion icon работает рядом с этим блоком и показывает состояние движения и заметности актора.
+Фича задает навигационный блок HUD: миникарта или горизонтальный компас. Motion icon работает рядом с этим блоком и показывает состояние движения и заметности актора.
 
-## Логика включения
+Compass bar является **опциональным** UI-элементом. Пока он не активирован через `SetNavigationMode(true)` или устаревший boot-hint `UseCompassBar`, он не создается, не грузит `compass_bar.xml` и не влияет на миникарту, motion icon и PDA online.
 
-1. `UseCompassBar = true` в `configs/engine_external.ltx` включает горизонтальный компас.
-2. `UseCompassBar = false` возвращает миникарту.
-3. `hud_minimap` управляет видимостью блока на экране.
+Переключение между миникартой и compass bar выполняется в runtime без перезагрузки уровня.
+
+## Режим по умолчанию и runtime-переключение
+
+1. Движковый дефолт: **миникарта**.
+2. `UseCompassBar` в `configs/engine_external.ltx` (**deprecated**) задает boot-time hint для модов без Lua. Рекомендуется использовать Lua API или IXR Options.
+3. `hud_minimap` управляет **видимостью** активного навигационного блока.
+4. Runtime-переключение: `ActorMenu.get_maingame():SetNavigationMode(bool)`, где `true` - compass bar, `false` - миникарта.
+5. Сохранение выбора режима в save/user.ltx **не реализовано**.
+
+## Lua API
+
+```lua
+local maingame = ActorMenu.get_maingame()
+if maingame then
+    maingame:SetNavigationMode(true)   -- compass bar (lazy init)
+    maingame:SetNavigationMode(false)  -- minimap
+    local isCompass = maingame:IsCompassBarMode()
+end
+```
+
+Доступны readonly-поля `UIZoneMap` и `UICompassBar` на `CUIMainIngameWnd`. `UICompassBar` может быть `nil`, пока compass bar не активирован.
 
 ## Атлас и компоненты compass_bar.xml
+
+### Корневой узел compass_bar
+
+| Атрибут | Назначение | Default |
+|---------|------------|---------|
+| `fov_angle` | Угол обзора полосы в градусах | `45` |
+| `fade_in_speed` | Скорость появления меток | `6` |
+| `fade_out_speed` | Скорость исчезновения меток | `5` |
+| `min_visible_alpha` | Порог видимости alpha | `0.01` |
+| `fov_fade_inner` | Внутренняя граница fade по краям FOV | `0.30` |
+| `fov_fade_outer` | Внешняя граница fade по краям FOV | `0.70` |
+| `fov_fade_edge_lo` | Нижний край нормализованной зоны fade | `0.05` |
+| `fov_fade_edge_hi` | Верхний край нормализованной зоны fade | `0.95` |
 
 ### background
 
@@ -44,18 +77,44 @@
 
 Цель: текстовые подписи направлений.
 
+| Атрибут | Назначение | Default |
+|---------|------------|---------|
+| `fake_target_distance` | Дистанция для проекции N/E/S/W | `1000` |
+
+### spots
+
+| Атрибут | Назначение | Default |
+|---------|------------|---------|
+| `collect_interval` | Интервал сбора map spots в секундах | `0.1` |
+| `show` | Показывать spots на полосе | `1` |
+
 ### active_target
 
 Цель: маркер выбранной цели, дистанция, вертикальное отклонение.
+
+#### distance_text
+
+| Атрибут | Назначение | Default |
+|---------|------------|---------|
+| `format` / `text_format` | Формат sprintf дистанции | `"%.0f m"` |
+| `st_format` | ID строки из string table вместо format | - |
 
 ## Motion icon
 
 1. `state_normal`, `state_crouch`, `state_creep`, `state_climb`, `state_run`, `state_sprint` показывают текущий тип движения.
 2. `power_progress` показывает выносливость.
 3. `luminosity_overlay` и `noise_overlay` накладывают визуальный шум и затемнение.
-4. Оверлеи работают в режиме миникарты. При `UseCompassBar = true` они не создаются.
+4. Оверлеи luminosity/noise создаются для режима миникарты и скрываются в режиме compass bar. При возврате на миникарту оверлеи восстанавливаются без пересоздания HUD.
 
-## Пример включения
+## Примеры
+
+Сценарий 1: Активация через Lua (рекомендуется)
+
+```lua
+ActorMenu.get_maingame():SetNavigationMode(true)
+```
+
+Сценарий 2: Legacy boot-hint через DLTX (deprecated)
 
 ```ini
 [ui]
