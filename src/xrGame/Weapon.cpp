@@ -3183,7 +3183,6 @@ void CWeapon::SwitchState(u8 S)
 	}
 #endif // #ifndef MASTER_GOLD
 
-	//SetPending(pending);
 	SetNextState(S);
 	if (CHudItem::object().Local() && !CHudItem::object().getDestroy() && m_pInventory && OnServer())
 	{
