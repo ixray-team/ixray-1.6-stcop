@@ -45,8 +45,6 @@ CWorldSpaceElement::~CWorldSpaceElement()
 	xr_delete(m_pBillboard);
 }
 
-CUIWorldSpaceManager::CUIWorldSpaceManager() {}
-
 CUIWorldSpaceManager::~CUIWorldSpaceManager()
 {
 	for (auto& elements : m_attachedElements)
@@ -83,7 +81,7 @@ CWorldSpaceElement* CUIWorldSpaceManager::CreateWorldSpaceElement(const CGameObj
 	return newElement;
 }
 
-CWorldSpaceElement* CUIWorldSpaceManager::GetWorldSpaceElement(const CGameObject* attached_object, const char* section)
+CWorldSpaceElement* CUIWorldSpaceManager::GetWorldSpaceElement(const CGameObject* attached_object, const char* section) const
 {
 	auto it = m_attachedElements.find(attached_object);
 	if (it != m_attachedElements.end())
@@ -174,12 +172,12 @@ void CUIWorldSpaceManager::DestroyWorldSpaceElements(const CGameObject* attached
 	}
 }
 
-bool CUIWorldSpaceManager::ObjectHasWorldSpaceElement(const CGameObject* attached_object, const char* section)
+bool CUIWorldSpaceManager::ObjectHasWorldSpaceElement(const CGameObject* attached_object, const char* section) const
 {
 	return GetWorldSpaceElement(attached_object, section) != nullptr;
 }
 
-bool CUIWorldSpaceManager::ObjectHasWorldSpaceElements(const CGameObject* attached_object)
+bool CUIWorldSpaceManager::ObjectHasWorldSpaceElements(const CGameObject* attached_object) const
 {
 	auto it = m_attachedElements.find(attached_object);
 	return (it != m_attachedElements.end() && !it->second.empty());

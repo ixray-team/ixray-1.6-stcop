@@ -31,13 +31,13 @@ private:
 class CUIWorldSpaceManager // а € мог бы насрать синглтоном
 {
 public:
-	CUIWorldSpaceManager();
+	CUIWorldSpaceManager() = default;
 	~CUIWorldSpaceManager();
 
 	void OnRender();
 
 	CWorldSpaceElement* CreateWorldSpaceElement(const CGameObject* attached_object, const char* section);
-	CWorldSpaceElement* GetWorldSpaceElement(const CGameObject* attached_object, const char* section);
+	CWorldSpaceElement* GetWorldSpaceElement(const CGameObject* attached_object, const char* section) const;
 
 	void ElementSetText(const CGameObject* attached_object, const char* section, const char* text);
 	void ElementShow(const CGameObject* attached_object, const char* section, bool show);
@@ -45,8 +45,8 @@ public:
 	void DestroyWorldSpaceElements(const CGameObject* attached_object);
 	void DestroyWorldSpaceElement(const CGameObject* attached_object, const char* section);
 
-	bool ObjectHasWorldSpaceElements(const CGameObject* attached_object);
-	bool ObjectHasWorldSpaceElement(const CGameObject* attached_object, const char* section);
+	bool ObjectHasWorldSpaceElements(const CGameObject* attached_object) const;
+	bool ObjectHasWorldSpaceElement(const CGameObject* attached_object, const char* section) const;
 
 private:
 	struct SAttachedElement
@@ -55,5 +55,5 @@ private:
 		shared_str section;
 	};
 
-	xr_map<const CGameObject*, xr_vector<SAttachedElement>> m_attachedElements;
+	xr_hash_map<const CGameObject*, xr_vector<SAttachedElement>> m_attachedElements;
 };
