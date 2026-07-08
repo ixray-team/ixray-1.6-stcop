@@ -97,7 +97,22 @@ void dxFontRender::OnRender(CGameFont& owner)
 
 				if (!IsUTF8Str)
 				{
-					glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo((u8)str.string[i]));
+					const unsigned char* s = (const unsigned char*)&str.string[i];
+
+					// проверка на UTF-8 PUA (EE 80 80–FF)
+					if (s[0] == 0xEE && (s[1] >= 0x80 && s[1] <= 0x82) &&
+						(s[2] >= 0x80 && s[2] <= 0xFF))
+					{
+						u32 cp = 0xE000 + (s[1] - 0x80 == 0 ? 0 : s[1] - 0x41) + (s[2] - 0x80);
+
+						glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo(cp));
+
+						i += 2;
+					}
+					else
+					{
+						glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo((u8)s[0]));
+					}
 				}
 
 				if (glyphInfo == nullptr) 
