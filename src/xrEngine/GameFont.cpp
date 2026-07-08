@@ -140,6 +140,8 @@ bool GetDisplayMetricsSDL3(float& width_mm, float& height_mm, float& width_px, f
 	return true;
 }
 
+#define GAMEPAD_GLYPH_START 57344
+#define GAMEPAD_GLYPH_END 57535
 void CGameFont::Initialize2(const char* name, const char* shader, const char* style, u32 size)
 {
 	FontBitmap.resize(TextureDimension * TextureDimension);
@@ -244,7 +246,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	req.horiResolution = 0;
 	req.vertResolution = 0;
 	FT_Request_Size(OurFont, &req);
-
 #define FT_CEIL(X)  (((X + 63) & -64) / 64)
 
 	float FontSizeInPixels = (float)(OurFont->size->metrics.ascender - OurFont->size->metrics.descender) / 64.0f;
@@ -324,7 +325,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 	//const char* Format = FT_Get_Font_Format(OurFont);
 	u32 index = 0;
-
 	auto LoadGlyph = [&](FT_UInt glyphID)
 	{
 		u32 TrueGlyph = glyphID;
@@ -396,6 +396,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	R_ASSERT2(TargetDemensionY <= TextureDimension, "Font too large, or dimension texture is too small");
 
 	pFontRender->CreateFontAtlas(TextureDimension, TargetDemensionY, textureName, FontBitmap.data());
+
 
 	FS.r_close(FontFile);
 	pFontRender->Initialize(shader, textureName);

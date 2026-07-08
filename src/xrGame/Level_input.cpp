@@ -357,7 +357,6 @@ void CLevel::IR_OnKeyboardPress	(int key)
 			}
 		}
 		break;
-
 #ifdef DEBUG_DRAW
 	case SDL_SCANCODE_RETURN:
 	{
