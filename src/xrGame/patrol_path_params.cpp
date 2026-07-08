@@ -16,6 +16,10 @@ CPatrolPathParams::CPatrolPathParams(LPCSTR caPatrolPathToGo, const PatrolPathMa
 {
 	m_path_name = caPatrolPathToGo;
 	m_path = ai().patrol_paths().path(m_path_name, true);
+	if (m_path == nullptr)
+	{
+		Msg("! There is no patrol path. m_path is nullptr: [%s]", caPatrolPathToGo);
+	}
 
 	R_ASSERT3(m_path, "There is no patrol path", caPatrolPathToGo);
 
