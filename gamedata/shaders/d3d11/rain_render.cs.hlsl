@@ -110,6 +110,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	float3 N = M.Normal;
 	
     float4 PS = mul(m_shadow, P);
+	PS.xyz /= PS.w;
 	
 	P.xyz = M.Point;
 
@@ -120,7 +121,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
     // factor to jitter to make rain strips more realistic.
 	
 	//LVutner: We gonna reuse 3x3 filter
-    float s = min(1.0f, 2.0f * shadow_rain(PS.xyz / PS.w)); 
+    float s = min(1.0f, 2.0f * shadow_rain(PS.xyz));
 
 #ifndef USE_LEGACY_LIGHT
 	s *= saturate(M.Hemi * 10.0f);
@@ -128,9 +129,12 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 	s *= saturate(M.Hemi * 100.0f);
 #endif
 
+	float Shadow = s = lerp(saturate(M.Hemi * 10.0f - 2.0f), s, GetBorderAtten(PS.xy));
+
     //	Apply distance falloff
     // Using fixed fallof factors according to float16 depth coordinate precision.
     float fAtten = 1 - smoothstep(min(RainFallof.y - 15.0f, RainFallof.x), RainFallof.y, P.z);
+	
     s *= fAtten * fAtten;
 	//s *= 1.0f - O.SSS;
 
@@ -181,11 +185,7 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 #else
 	bool object_mask = M.MaterialID == OBJECT_ID || M.MaterialID == FOLIAGE_ID;
 	
-	float F90 = saturate(dot(M.Color, 0.333f) * 50.0f);
-
-	M.Color *= lerp(1.0f, 0.66f, s);
-	M.Roughness = lerp(M.Roughness, min(0.3f, M.Roughness), s); 
-	M.Specular = lerp(M.Specular, max(0.2f * F90, M.Specular), s);
+	float F90 = saturate(dot(M.Color, 0.333f));
 	
 	[branch]
 	if(!object_mask)
@@ -203,19 +203,26 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		
 		float3 RainNormal = GetFlatNormal(TexCoord);
 		fIsUp = -dot(Ldynamic_dir.xyz, RainNormal.xyz);
-		mask *= smoothstep(0.6f, 0.8f, fIsUp);
+		mask *= smoothstep(0.6f, 0.8f, fIsUp) * Shadow;
 		
-		M.Roughness = lerp(M.Roughness, 0.07f, mask);
-		M.Specular = lerp(M.Specular, 0.2f, mask);
+		M.Roughness = lerp(M.Roughness, 0.03f, mask);
+		M.Specular = lerp(M.Specular, 0.5f, mask);
 		
-		M.Color.xyz *= lerp(1.0f, 0.4f * M.AO, mask);
+		M.Color.xyz *= lerp(1.0f, 0.3f * M.AO, mask);
 		M.Color.xyz += Jitter * 4.0f;
 		
 		M.AO = lerp(M.AO, 1.0f, mask);
 		
 		N -= Ldynamic_dir.xyz * mask * 60.0f;
+		
+		s *= 1.0f - mask;
 	}
 #endif
+
+	M.Color *= lerp(1.0f, lerp(0.66f, 1.0f, M.Metalness), s);
+	
+	M.Roughness = lerp(M.Roughness, min(0.2f, M.Roughness), s); 
+	M.Specular = lerp(M.Specular, 0.5f * max(0.5f * F90, M.Specular), s);
 	
 	M.Normal = normalize(N);
 	
