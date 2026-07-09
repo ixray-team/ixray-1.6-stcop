@@ -4205,13 +4205,15 @@ void CWeapon::UpdateCollimatorSight()
 
 u32 CWeapon::FakeReload()
 {
+	const u32 MagCapacity = GetMagCapacity();
+
 	if (unlimited_ammo())
 	{
-		return GetMagCapacity();
+		return MagCapacity;
 	}
 
-	u32 in_box = GetAmmoCount(GetTargetAmmoType(IsGrenadeMode())) + iAmmoElapsed;
-	return clampr(in_box, (u32)0, (u32)iMagazineSize);
+	const u32 InBox = GetAmmoCount(GetTargetAmmoType(IsGrenadeMode())) + iAmmoElapsed;
+	return clampr(InBox, 0u, MagCapacity);
 }
 
 void CWeapon::OnMotionMark(u32 state, const motion_marks& mark)
