@@ -2815,7 +2815,7 @@ bool CWeapon::CanAimNow()
 
 			if (IsScopeAttached())
 			{
-				sect = ScopeAttachable() ? GetScopeName() : cNameSect();
+				sect = ScopeAttachable() ? GetCurrentScopeSection() : cNameSect();
 			}
 
 			if (READ_IF_EXISTS(pSettings, r_bool, sect, "prohibit_aim_for_grenade_mode", false))
