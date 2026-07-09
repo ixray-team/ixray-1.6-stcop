@@ -211,7 +211,7 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
 
 		// Оптимизация макросов в шейдрах
-
+#if 0 //ndef _EDITOR
 		for (const auto& [_, vs] : m_vs)
 		{
 			if(vs->dwFlags & xr_resource_flagged::RF_REGISTERED)
@@ -223,7 +223,7 @@ SVS*	CResourceManager::_CreateVS		(const char* _name)
 				}
 			}
 		}
-
+#endif
 		return _vs;
 	}
 }
@@ -326,6 +326,7 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 
 		// Оптимизация макросов в шейдрах
 
+#if 0 //ndef _EDITOR
 		for (const auto& [_, ps] : m_ps)
 		{
 			if (ps->dwFlags & xr_resource_flagged::RF_REGISTERED)
@@ -338,6 +339,7 @@ SPS*	CResourceManager::_CreatePS			(const char* _name)
 			}
 		
 		}
+#endif
 
 		return _ps;
 	}
