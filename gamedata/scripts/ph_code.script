@@ -32,14 +32,16 @@ function codepad:OnNumberReceive(text)
         if tonumber(text) == self.st.code then
             if self.st.on_code then
                 printf("ph_code <OnNumberReceive>: on_code [%s]", text)
-                xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.on_code.condlist)
+                local section = xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.on_code.condlist)
+                xr_logic.switch_to_section( self.object, self.st.ini, section )
             end
         end
     else
         local condlist = self.st.on_check_code[text]
         if condlist then
             printf("ph_code <OnNumberReceive>: on_check_code [%s]", text)
-            xr_logic.pick_section_from_condlist(db.actor, self.object, condlist)
+            local section = xr_logic.pick_section_from_condlist(db.actor, self.object, section)
+            xr_logic.switch_to_section( self.object, self.st.ini, section )
         end
     end
 end
