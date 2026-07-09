@@ -223,7 +223,7 @@ void main(p_bumped_new I, out OutStructure O)
 
 	#ifndef USE_LEGACY_LIGHT
 		M.Color.xyz = GammaToLinear(M.Color.xyz);
-		M.Specular = GammaToLinear(M.Specular);
+		M.Specular = M.Specular * M.Specular * 0.16f;
 	
 		float3 Diffuse = M.Color.xyz * float(1.0f - M.Metalness);
 		float3 Specular = lerp(M.Specular, M.Color.xyz, M.Metalness);
