@@ -421,7 +421,7 @@ void CUIWeaponCellItem::Update()
 		}
 	}
 
-	if (reinit_3d_icon) 
+  //	if (reinit_3d_icon) 
 	{
 		if (auto pItem = (CInventoryItem*)m_pData)
 		{
@@ -429,6 +429,7 @@ void CUIWeaponCellItem::Update()
 			{
 				pWeapon->UpdateAddonsVisibility();
 				pWeapon->ForceUpdateHUD();
+				pWeapon->ProcessScope();
 			}
 
 			SetBonesVisible(pItem->object().Visual()->dcast_PKinematics());
@@ -476,6 +477,7 @@ void CUIWeaponCellItem::OnAfterChild(CUIDragDropListEx* parent_list)
 		{
 			pWeapon->UpdateAddonsVisibility();
 			pWeapon->ForceUpdateHUD();
+			pWeapon->ProcessScope();
 		}
 
 		SetBonesVisible(pItem->object().Visual()->dcast_PKinematics());
