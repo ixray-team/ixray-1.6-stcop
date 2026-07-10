@@ -18,6 +18,16 @@ void CAnomalyDetector::load(const char* section)
 {
 	m_radius				= READ_IF_EXISTS(pSettings,r_float,section,"Anomaly_Detect_Radius",15.f);
 	m_time_to_rememeber		= READ_IF_EXISTS(pSettings,r_u32,section,"Anomaly_Detect_Time_Remember",30000);
+	shared_str IgnoredCLSIDsSection = READ_IF_EXISTS(pSettings, r_string, section, "Anomaly_Detect_Ignore_List", "");
+	if (IgnoredCLSIDsSection.size()) {
+		R_ASSERT3(pSettings->section_exist(IgnoredCLSIDsSection), "Unable to find section [%s]", IgnoredCLSIDsSection.c_str());
+		for (u32 i = 0; i < pSettings->line_count(IgnoredCLSIDsSection); ++i) {
+			str_c Key = nullptr;
+			str_c Value = nullptr;
+			IVERIFY(pSettings->r_line(IgnoredCLSIDsSection, i, &Key, &Value));
+			IgnoredCLSIDS.emplace(TEXT2CLSID(Key));
+		}
+	}
 }
 
 void CAnomalyDetector::reinit()
@@ -75,21 +85,46 @@ void CAnomalyDetector::update_schedule()
 
 void CAnomalyDetector::on_contact(CObject *obj)
 {
-	if (!m_active) return;
-	if(!obj || obj->getDestroy()) return;
+	if (!m_active)
+	{
+		return;
+	}
+	if(!obj || obj->getDestroy())
+	{
+		return;
+	}
 	CGameObject* game_object = obj->cast_game_object();
-	if (!game_object) return;
-	CAnomalyZone	*custom_zone = game_object->cast_anomaly_zone();
-	if (!custom_zone) return;
+	if (!game_object)
+	{
+		return;
+	}
+	CAnomalyZone* custom_zone = game_object->cast_anomaly_zone();
+	if (!custom_zone)
+	{
+		return;
+	}
 	
 	// if its NOT A restrictor - skip
-	if (custom_zone->restrictor_type() == RestrictionSpace::eRestrictorTypeNone) return;
+	if (custom_zone->restrictor_type() == RestrictionSpace::eRestrictorTypeNone)
+	{
+		return;
+	}
+	
+	if (IgnoredCLSIDS.find(custom_zone->CLS_ID) != IgnoredCLSIDS.end()) { 
+		return; 
+	}
 
 	if (Level().space_restriction_manager().restriction_presented(
-		m_object->control().path_builder().restrictions().in_restrictions(),custom_zone->cName())) return;
+		m_object->control().path_builder().restrictions().in_restrictions(),custom_zone->cName()))
+	{
+		return;
+	}
 
 	ANOMALY_INFO_VEC_IT it = std::find(m_storage.begin(), m_storage.end(), custom_zone);	
-	if (it != m_storage.end()) return;
+	if (it != m_storage.end())
+	{
+		return;
+	}
 
 	SAnomalyInfo			info;
 	info.object				= obj;
