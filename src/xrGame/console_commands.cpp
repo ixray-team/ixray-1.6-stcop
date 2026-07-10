@@ -2671,7 +2671,7 @@ void CCC_RegisterCommands()
 #ifndef MASTER_GOLD
 	CMD1(CCC_JumpToLevel, "jump_to_level");
 	CMD3(CCC_Mask32, "g_god", &psActorFlags, AF_GOD_MODE);
-	CMD3(CCC_Mask32, "g_unlimitedammo", &psActorFlags, AF_UNLIMITED_AMMO);
+	CMD3(CCC_Mask32, "g_unlimited_ammo", &psActorFlags, AF_UNLIMITED_AMMO);
 	CMD1(CCC_Script, "run_script");
 	CMD1(CCC_ScriptCommand, "run_string");
 	CMD1(CCC_TimeFactor, "time_factor");
