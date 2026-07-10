@@ -19,5 +19,5 @@ enum
 	AF_3D_ICONS_INV				= (1 << 16),
 };
 
-extern Flags32	psActorFlags;
-extern bool		GodMode	();	
+extern Flags32 psActorFlags;
+extern ICF bool GodMode();	
