@@ -39,7 +39,7 @@ public:
 
 protected:
 
-
+	static void GetRealBoundBox(IKinematics* m_model, Fmatrix& xform, Fbox& bbox);
 	void FromScreenToItem(int x_screen, int y_screen, float& x_item, float& y_item);
 
 	IRenderVisual* pCurrentVisual = NULL;
