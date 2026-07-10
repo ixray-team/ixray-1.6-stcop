@@ -110,8 +110,12 @@ IC	const ILevelGraph::CPosition &ILevelGraph::vertex_position	(ILevelGraph::CPos
 
 IC  const Fvector ILevelGraph::vertex_position(u32 vertex_id) const
 {
-	Fvector				t = vertex_position(vertex(vertex_id));
-	return				(t);
+	if (vertex_id == u32(-1))
+	{
+		return {};
+	}
+	Fvector t = vertex_position(vertex(vertex_id));
+	return t;
 }
 
 IC  const Fvector ILevelGraph::vertex_position(const ILevelGraph::CVertex &vertex) const
