@@ -217,12 +217,12 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
 		
 		s *= 1.0f - mask;
 	}
-#endif
 
 	M.Color *= lerp(1.0f, lerp(0.66f, 1.0f, M.Metalness), s);
 	
 	M.Roughness = lerp(M.Roughness, min(0.2f, M.Roughness), s); 
 	M.Specular = lerp(M.Specular, 0.5f * max(0.5f * F90, M.Specular), s);
+#endif
 	
 	M.Normal = normalize(N);
 	
