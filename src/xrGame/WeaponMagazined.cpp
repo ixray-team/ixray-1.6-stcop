@@ -1281,7 +1281,7 @@ void CWeaponMagazined::state_Fire(float dt)
 		{
 			m_vStartPos = p1;
 			m_vStartDir = d;
-		};
+		}
 		
 		VERIFY(!m_magazine.empty());
 
@@ -1388,27 +1388,15 @@ void CWeaponMagazined::state_FireChamber(float dt)
 	{
 		VERIFY(fOneShotTime > 0.f);
 
-		Fvector					p1, d;
+		Fvector p1, d;
 		p1.set(get_LastFP());
 		d.set(get_LastFD());
 
-		if (!H_Parent())
-		{
-			StopShooting();
-			return;
-		}
-		CGameObject* GO = H_Parent()->cast_game_object();
-		if (!GO || GO->getDestroy())
-		{
-			StopShooting();
-			return;
-		}
-
 		if (!IsGameTypeSingle())
 		{
-			if (smart_cast<CMPPlayersBag*>(GO) != nullptr)
+			if (smart_cast<CMPPlayersBag*>(H_Parent()) != nullptr)
 			{
-				Msg("! WARNING: state_Fire of object [%d][%s] while parent is CMPPlayerBag...", ID(), cNameSect().c_str());
+				Msg("! WARNING: state_FireChamber of object [%d][%s] while parent is CMPPlayerBag...", ID(), cNameSect().c_str());
 				{
 					StopShooting();
 					return;
@@ -1416,29 +1404,21 @@ void CWeaponMagazined::state_FireChamber(float dt)
 			}
 		}
 
-		CEntity* entity = GO->cast_entity();
-		if (!entity)
+		if (CEntity* entity = H_Parent() ? H_Parent()->cast_entity() : nullptr)
 		{
-			StopShooting();
-			return;
-		}
-		CInventoryOwner* inventory_owner = entity->cast_inventory_owner();
-		if (!inventory_owner || !inventory_owner->m_inventory)
-		{
-			StopShooting();
-			return;
-		}
+			entity->g_fireParams(this, p1, d);
 
-		entity->g_fireParams(this, p1, d);
-
-		if (!entity->g_stateFire())
-			StopShooting();
+			if (!entity->g_stateFire())
+			{
+				StopShooting();
+			}
+		}
 
 		if (m_iShotNum == 0)
 		{
 			m_vStartPos = p1;
 			m_vStartDir = d;
-		};
+		}
 
 		VERIFY(!m_chamber.empty());
 
