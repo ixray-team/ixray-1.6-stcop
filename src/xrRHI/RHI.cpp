@@ -38,10 +38,6 @@ CRHI::CRHI()
 
 CRHI::~CRHI()
 {
-#ifdef IXRAY_PROFILER_TRACY
-	PROF_GPU_CTX_DESTROY();
-#endif
-
 	GRHIRenderViewManager.Clear();
 
 	xr_delete(DevicePtr);
