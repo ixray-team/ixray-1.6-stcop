@@ -76,6 +76,71 @@ void CUI3dStatic::FromScreenToItem(int x, int y, float& x_item, float& y_item)
 	y_item = u_pt * fViewportDist / fViewportNear;
 }
 
+void CUI3dStatic::GetRealBoundBox(IKinematics* m_model, Fmatrix& xform, Fbox& bbox)
+{
+	Fmatrix Mbox { }, X { };
+	Fvector P { }, A { }, S { };
+
+	for (u16 BoneID = 0, BoneCount = m_model->LL_BoneCount(); BoneID < BoneCount; ++BoneID)
+	{
+		if (!m_model->LL_GetBoneVisible(BoneID))
+		{
+			continue;
+		}
+
+		auto& BiData = m_model->LL_GetData(BoneID);
+		auto& Shape = BiData.shape;
+
+		if (SBoneShape::stNone == Shape.type)
+		{
+			continue;
+		}
+
+		if (!Shape.Valid())
+		{
+			continue;
+		}
+
+		if (Shape.type == Shape.stBox)
+		{
+			Shape.box.xform_get(Mbox);
+			S = Shape.box.m_halfsize;
+		}
+		else if (Shape.type == Shape.stCylinder)
+		{
+			auto& Cylinder = Shape.cylinder;
+
+			Mbox.c = Cylinder.m_center;
+			Mbox.k = Cylinder.m_direction;
+
+			Fvector::generate_orthonormal_basis(Mbox.k, Mbox.j, Mbox.i);
+
+			S.set(Cylinder.m_radius, Cylinder.m_radius, Cylinder.m_height * 0.5f);
+		}
+		else if (Shape.type == Shape.stSphere)
+		{
+			auto& Sphere = Shape.sphere;
+
+			Mbox.translate(Sphere.P);
+			S.set(Sphere.R, Sphere.R, Sphere.R);
+		}
+
+		auto& BiInstance = m_model->LL_GetBoneInstance(BoneID);
+
+		X.mul_43(xform, BiInstance.mTransform);
+		X.mulB_43(Mbox);
+
+		A.set(-S.x, -S.y, -S.z); X.transform_tiny(P, A); bbox.modify(P);
+		A.set(-S.x, -S.y, +S.z); X.transform_tiny(P, A); bbox.modify(P);
+		A.set(+S.x, -S.y, +S.z); X.transform_tiny(P, A); bbox.modify(P);
+		A.set(+S.x, -S.y, -S.z); X.transform_tiny(P, A); bbox.modify(P);
+		A.set(-S.x, +S.y, -S.z); X.transform_tiny(P, A); bbox.modify(P);
+		A.set(-S.x, +S.y, +S.z); X.transform_tiny(P, A); bbox.modify(P);
+		A.set(+S.x, +S.y, +S.z); X.transform_tiny(P, A); bbox.modify(P);
+		A.set(+S.x, +S.y, -S.z); X.transform_tiny(P, A); bbox.modify(P);
+	}
+}
+
 void CUI3dStatic::Draw()
 {
 	if (pCurrentVisual)
@@ -91,14 +156,6 @@ void CUI3dStatic::Draw()
 		pCurrentVisual->dcast_PKinematics()->CalculateBones_Invalidate();
 		pCurrentVisual->dcast_PKinematics()->CalculateBones(true);
 
-		Fmatrix matrix = Fidentity;
-		Fmatrix translate_matrix = Fidentity;
-
-		translate_matrix.c.sub(pCurrentVisual->getVisData().sphere.P);
-
-		matrix.mulA_44(translate_matrix);
-		matrix.mulA_44(mRotate);
-
 		float x1, y1, x2, y2;
 
 		FromScreenToItem(rect.left, rect.top, x1, y1);
@@ -106,8 +163,25 @@ void CUI3dStatic::Draw()
 
 		Fvector2 normal_size; normal_size.set(x2 - x1, y1 - y2);
 
-		Fbox mBox = pCurrentVisual->getVisData().box;
-		mBox.xform(matrix);
+		Fbox mBox; mBox.invalidate();
+
+		GetRealBoundBox(pCurrentVisual->dcast_PKinematics(), mRotate, mBox);
+
+		if (!mBox.is_valid())
+		{
+			mBox = pCurrentVisual->getVisData().box;
+			mBox.xform(mRotate);
+		}
+
+		Fmatrix translate_matrix = Fidentity;
+
+		mBox.getcenter(translate_matrix.c);
+		translate_matrix.c.mul(-1.0f);
+
+		Fmatrix matrix = Fidentity;
+
+		matrix.mulA_44(mRotate);
+		matrix.mulA_44(translate_matrix);
 
 		Fvector2 item_size; item_size.set(mBox.max.x - mBox.min.x, mBox.max.y - mBox.min.y);
 		normal_size.div(item_size);
@@ -201,13 +275,7 @@ void CUI3dStatic::SetVisual(const shared_str& cVisualName)
 		return;
 	}
 
-    string_path name;
-    if (0 == strext(cVisualName.c_str()))
-        xr_strconcat(name, cVisualName.c_str(), ".ogf");
-    else
-        xr_strcpy(name, sizeof(name), cVisualName.c_str());
-
-    pCurrentVisual = ::Render->model_Create(name);
+    pCurrentVisual = ::Render->model_Create(*cVisualName);
 
 	if (pCurrentVisual == nullptr)
 	{
