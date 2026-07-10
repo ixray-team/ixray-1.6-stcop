@@ -443,7 +443,7 @@ void dxRenderDeviceRender::End()
 
 	PROF_EVENT("Present");
 
-#ifdef USE_DX11
+#if defined(IXRAY_PROFILER_TRACY) && defined(USE_DX11)
 	PROF_GPU_CTX_COLLECT();
 #endif
 
