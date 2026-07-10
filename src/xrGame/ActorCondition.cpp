@@ -25,12 +25,9 @@
 #define MAX_SATIETY					1.0f
 #define START_SATIETY				0.5f
 
-bool	GodMode	()	
-{ 
-	if (IsGameTypeSingle()) 
-		return psActorFlags.test(AF_GOD_MODE|AF_DISABLE_CONDITION_TEST); 
-
-	return false;	
+ICF bool GodMode()
+{
+	return IsGameTypeSingle() && psActorFlags.test(AF_GOD_MODE | AF_DISABLE_CONDITION_TEST);
 }
 
 CActorCondition::CActorCondition(CActor *object) :
@@ -231,7 +228,10 @@ void CActorCondition::UpdateCondition()
 	}
 
 	if (GodMode())
+	{
+		SetPower(1.f);
 		return;
+	}
 
 	if (!object().g_Alive())	return;
 	if (!object().Local() && m_object != Level().CurrentViewEntity())		return;	
