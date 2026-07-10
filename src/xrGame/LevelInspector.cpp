@@ -2840,7 +2840,15 @@ void LevelInspector::DrawObjectInfo(CGameObject* GO, const Fvector& pos, Fvector
 				{
 					if (line.second)
 					{
-						shared_str str = shared_str().printf("    %s = %s", *line.first, *line.second);
+						xr_string buff = line.second.c_str();
+						{
+							size_t pos = 0;
+							while ((pos = buff.find("%", pos)) != std::string::npos) {
+								buff.replace(pos, 1, "%%");
+								pos += 2; // Пропускаем замененную часть
+							}
+						}
+						shared_str str = shared_str().printf("    %s = %s", *line.first, buff.c_str());
 						if (text3d)
 							append_text_next(str);
 						else
