@@ -210,7 +210,7 @@ void CGamepadService::ClearTriggerEffect(bool RightTrigger)
 
 bool CGamepadService::Rumble(u16 LFRumble, u16 HFRumble, u16 DurationMS)
 {
-	if (GamePadDevice != nullptr)
+	if (GamePadDevice == nullptr)
 	{
 		return false;
 	}
