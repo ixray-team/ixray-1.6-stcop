@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIWorldSpace.h"
 #include "../Include/xrRender/Kinematics.h"
 

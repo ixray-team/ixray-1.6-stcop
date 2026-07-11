@@ -206,7 +206,6 @@ public:
 	}
 
 	virtual CTelekineticPoltergeist* cast_to_polter_tele() { return nullptr; }
-	virtual CFlamePoltergeist* cast_to_polter_flame() { return nullptr; }
 };
 
 class CFlamePoltergeist final : public IPolter
@@ -288,8 +287,6 @@ public:
 	virtual void on_die() override;
 	virtual void UpdateCL() override;
 	
-	virtual CFlamePoltergeist* cast_to_polter_flame() override { return this; }
-
 private:
 	void select_state(SFlameElement* elem, EFlameState state);
 	bool get_valid_flame_position(const CObject* target_object, Fvector& res_pos);
