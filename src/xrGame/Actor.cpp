@@ -147,6 +147,8 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	m_pObjectWeLookingAt	= nullptr;
 	pPickup = new CPickUpManager(this);
 
+	pAutoaim = new CAutoAim();
+
 	pStatGraph				= nullptr;
 
 	m_pActorEffector = new CActorCameraManager();
@@ -454,6 +456,7 @@ void CActor::Load	(const char* section )
 	material().Load				(section);
 	CInventoryOwner::Load		(section);
 	m_location_manager->Load	(section);
+	pAutoaim->load				();
 
 	if (IsGameTypeSingle())
 		OnDifficultyChanged		();
