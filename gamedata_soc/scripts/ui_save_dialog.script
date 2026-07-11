@@ -291,14 +291,13 @@ function save_dialog:SaveFile(fileName)
 end
 
 function save_dialog:GetNewSavegameName()
-	local save_name_prefix = game.translate_string("st_manual_save")
 	local save_base = game.translate_string(level.name())
 	local dtime = game.get_game_time()
 
 	local dateAsString = dtime:dateToString(game.CTime.DateToDay)
 	local hourAsString = dtime:timeToString(game.CTime.TimeToSeconds)
 
-	local save_name = save_name_prefix .. save_base .. " " .. dateAsString .. " " .. hourAsString
+	local save_name = save_base .. " " .. dateAsString .. " " .. hourAsString
 	save_name = save_name:gsub(",", " ")
 	save_name = save_name:gsub(":", " ")
 	save_name = save_name:gsub("/", " ")
