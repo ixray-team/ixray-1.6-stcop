@@ -82,8 +82,12 @@ float4 main(PSInput I) : SV_Target
     env *= L_sky_color.xyz;
 #endif
 
-#ifdef USE_OFFSCREEN_REFLECTIONS
-	env.xyz = lerp(env, LinearToGamma(vslr.xyz), vslr.w);
+#ifdef USE_SSLR_ON_WATER
+	#ifdef USE_OFFSCREEN_REFLECTIONS
+		env.xyz = lerp(env, LinearToGamma(vslr.xyz), vslr.w);
+	#endif
+	
+	env = lerp(env, LinearToGamma(sslr.xyz), sslr.w);
 #endif
 	
 #ifdef USE_SSLR_ON_WATER
