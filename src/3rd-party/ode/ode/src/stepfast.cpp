@@ -41,7 +41,6 @@
 #include "step.h"
 #include <stdlib.h>
 #include "Lcp33.h"
-#include "StepJointInternal.h"
 // misc defines
 
 #define ALLOCA dALLOCA16
@@ -52,6 +51,7 @@
 #define NO_ISLANDS    //does not perform island creation code (3~4% of simulation time), body disabling doesn't work
 //#define TIMING
 
+void dInternalStepJointContact (dxWorld * world, dxBody * body[2], dReal * GI[2], dReal * GinvI[2], dxJoint * joint, dxJoint::Info1 info, dxJoint::Info2 Jinfo, dReal stepsize);
 
 static int autoEnableDepth = 2;
 

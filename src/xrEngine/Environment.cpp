@@ -612,19 +612,22 @@ SThunderboltCollection* CEnvironment::thunderbolt_collection	(CInifile* pIni, CI
 	return					(result);
 }
 
-SThunderboltCollection* CEnvironment::thunderbolt_collection	(xr_vector<SThunderboltCollection*>& collection,  shared_str const& id)
+SThunderboltCollection* CEnvironment::thunderbolt_collection(xr_vector<SThunderboltCollection*>& collection, shared_str const& id)
 {
-	typedef xr_vector<SThunderboltCollection*>	Container;
-	Container::iterator		i = collection.begin();
-	Container::iterator		e = collection.end();
-	for ( ; i != e; ++i)
+	typedef xr_vector<SThunderboltCollection*> Container;
+	Container::iterator i = collection.begin();
+	Container::iterator e = collection.end();
+	for (; i != e; ++i)
+	{
 		if ((*i)->section == id)
-			return			(*i);
+		{
+			return (*i);
+		}
+	}
 
 	NODEFAULT;
-#ifdef DEBUG
-	return					(0);
-#endif // #ifdef DEBUG
+
+	return (0);
 }
 
 CLensFlareDescriptor* CEnvironment::add_flare					(xr_vector<CLensFlareDescriptor*>& collection, shared_str const& id, CInifile * pIni)
