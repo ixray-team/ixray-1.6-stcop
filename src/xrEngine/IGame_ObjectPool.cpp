@@ -38,11 +38,18 @@ void IGame_ObjectPool::prefetch()
 	for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++) 
 	{
 		const CInifile::Item& item = *I;
-		CLASS_ID CLS = pSettings->r_clsid(item.first.c_str(), "class");
-		CObject* pObject = (CObject*)NEW_INSTANCE(CLS);
-		pObject->Load(item.first.c_str());
-		VERIFY2(pObject->cNameSect().c_str(), item.first.c_str());
-		m_PrefetchObjects.push_back(pObject);
+		if (pSettings->section_exist(item.first.c_str()))
+		{
+			CLASS_ID CLS = pSettings->r_clsid(item.first.c_str(), "class");
+			CObject* pObject = (CObject*)NEW_INSTANCE(CLS);
+			pObject->Load(item.first.c_str());
+			VERIFY2(pObject->cNameSect().c_str(), item.first.c_str());
+			m_PrefetchObjects.push_back(pObject);
+		}
+		else
+		{
+			Msg("~ Section [%s] not found in prefetch", item.first.c_str());
+		}
 	}
 }
 
