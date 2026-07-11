@@ -12,7 +12,6 @@ option(IXRAY_ASAN "Enable Address Sanitizer" OFF)
 option(IXRAY_LDEBUG "Enable LUA_DEBUG mode" OFF)
 option(IXRAY_USE_R1 "Enable DirectX 9 static render" ON)
 option(IXRAY_USE_R2 "Enable DirectX 9 dynamic render" ON)
-option(IXRAY_USE_GL "Enable OpenGL render" ON)
 option(IXRAY_USE_COMPRESSOR "Enable xrCompresor" ON)
 option(IXRAY_UNITYBUILD "Enable UnityBuild for xrGame" ON)
 option(IXRAY_PROFILER "Enable Optick for perf debug" ON)
@@ -64,9 +63,6 @@ if (DEVIXRAY_ENABLE_SHIPPING)
     add_compile_definitions("$<$<CONFIG:Shipping>:MASTER_GOLD>")
     add_compile_definitions("$<$<CONFIG:Shipping>:SHIPPING_BUILD>")
 endif()
-
-# Download API from GitHub Releases
-include("cmake/github.cmake")
 
 # Help functions
 include("cmake/functions.cmake")
