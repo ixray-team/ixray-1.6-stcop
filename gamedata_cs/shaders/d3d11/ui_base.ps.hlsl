@@ -56,7 +56,7 @@ void main(p_bumped_new I, out float4 Color : SV_Target)
 	M.Material = L_material.w;
 #else
     M.Color.xyz = GammaToLinear(M.Color.xyz);
-    M.Specular = GammaToLinear(M.Specular);
+	M.Specular = M.Specular * M.Specular * 0.16f;
 #endif
 
 	float4 LightColor = float2(1.0f, 0.0f).xxxy;
