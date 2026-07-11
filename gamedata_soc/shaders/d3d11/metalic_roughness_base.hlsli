@@ -405,7 +405,7 @@ inline void GbufferUnpackColor(in uint2 TexCoord, inout IXRayGbuffer O)
 	#endif
 
 	float4 Surface = s_surface.Load(uint3(TexCoord, 0));
-	Surface.z = GammaToLinear(Surface.z);
+	Surface.z = Surface.z * Surface.z * 0.16f;
 	
 	O.SSS = Surface.w;
 	O.Roughness = Surface.y;

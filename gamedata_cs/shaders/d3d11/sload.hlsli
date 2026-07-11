@@ -31,7 +31,7 @@ Texture2D s_snow;
 
 #ifndef F0_BASE
 	#ifdef USE_PBR
-		#define F0_BASE 0.23f //sRGB
+		#define F0_BASE 0.5f // 0.5 -> 0.04
 	#else
 		#define F0_BASE 0.0f
 	#endif
@@ -173,7 +173,6 @@ inline void SloadNew(inout p_bumped_new I, inout IXRayMaterial M)
 		
 			#ifdef USE_IOR_TEXTURE
 				M.Specular = s_specular.Sample(smp_base, I.tcdh.xy).x;
-				M.Specular = M.Specular * M.Specular * 0.16f;
 			#endif
 		#endif
 
