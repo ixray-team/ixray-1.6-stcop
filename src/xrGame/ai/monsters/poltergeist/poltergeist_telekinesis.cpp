@@ -215,8 +215,10 @@ void CTelekineticPoltergeist::tele_find_objects(xr_vector<CObject*>& objects, co
 		Fvector center;
 		enemy.get_enemy()->Center(center);
 
-		if (trace_object(obj, center) || 
-			trace_object(obj, get_head_position(fast_dynamic_cast<CObject*>((CEntityAlive*)enemy.get_enemy()))))
+		CEntityAlive* Enemy = const_cast<CEntityAlive*>(enemy.get_enemy());
+		CObject* Object = Enemy->dcast_CObject();
+
+		if (trace_object(obj, center) || trace_object(obj, get_head_position(Object)))
 		{
 			objects.push_back(obj);
 		}
@@ -448,12 +450,15 @@ void CTelekineticPoltergeist::throw_objects()
 	{
 		if (tele_object->get_state() == ETelekineticState::TS_KEEP)
 		{
-			Fvector enemy_head = get_head_position(fast_dynamic_cast<CObject*>(enemy));
+			CEntityAlive* Enemy = const_cast<CEntityAlive*>(enemy);
+			CObject* Object = Enemy->dcast_CObject();
+
+			Fvector enemy_head = get_head_position(Object);
 			CPhysicsShellHolder* hobj = tele_object->get_object();
 
 			VERIFY(hobj);
 			hobj->set_collision_hit_callback(new SCollisionHitCallback(hobj, m_pmt_object_collision_damage));
-			
+
 			if (tele_object->can_be_thrown() && trace_object(tele_object->get_object(), enemy_head))
 			{
 				m_poltergeist->throw_object_time(
