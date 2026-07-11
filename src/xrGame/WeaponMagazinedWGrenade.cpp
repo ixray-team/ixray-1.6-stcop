@@ -1236,9 +1236,6 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo(II_BriefInfo& info)
 		info.fire_mode._set(int_str);
 	}
 
-	if (m_pInventory->ModifyFrame() <= m_BriefInfo_CalcFrame)
-		return false;
-
 	const int at = GetSuitableAmmoTotal() - (GetAmmoElapsed() + (m_bGrenadeMode ? 0 : iAmmoChamberElapsed)); // update m_BriefInfo_CalcFrame
 	xr_sprintf(int_str, "%d", at);
 	info.total_ammo = int_str;

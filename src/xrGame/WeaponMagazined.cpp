@@ -3516,11 +3516,7 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 		xr_sprintf(int_str, "%d", m_iQueueSize);
 		info.fire_mode = int_str;
 	}
-	
-	if ( m_pInventory->ModifyFrame() <= m_BriefInfo_CalcFrame )
-	{
-		return false;
-	}
+
 	const int at = GetSuitableAmmoTotal() - (GetAmmoElapsed() + iAmmoChamberElapsed); // update m_BriefInfo_CalcFrame
 	xr_sprintf(int_str, "%d", at);
 	info.total_ammo = int_str;
