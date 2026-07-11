@@ -1,3 +1,15 @@
+function(setup_maya_sdk version)
+    set(IXR_MAYA_SDK_${version}_ZIP ${DEP_DIR}/Autodesk.Maya.Sdk.${version}.zip)
+    set(IXR_MAYA_SDK_${version}_URL https://github.com/ixray-team/ixray-packages/releases/download/d2024.5.3/Autodesk.Maya.Sdk.${version}.zip)
+    set(IXR_MAYA_SDK_${version}_DIR ${DEP_DIR}/maya_sdk_${version})
+    download_and_extract_sdk(${IXR_MAYA_SDK_${version}_URL} ${IXR_MAYA_SDK_${version}_ZIP} ${IXR_MAYA_SDK_${version}_DIR})
+    set(IXR_MAYA_SDK_${version} ${IXR_MAYA_SDK_${version}_DIR}/ PARENT_SCOPE)
+endfunction()
+
+foreach(version 2024 2025 2026)
+    setup_maya_sdk(${version})
+endforeach()
+
 project(MayaTools)
 
 file(GLOB_RECURSE MAYA_TOOLS_ALL_FILES CONFIGURE_DEPENDS "*.cpp" "*.cxx" "*.h")
