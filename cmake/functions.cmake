@@ -68,3 +68,25 @@ function(download_single_header url filename)
 endfunction()
 
 find_package(PkgConfig QUIET)
+
+# Общая функция для скачивания и распаковки SDK
+function(download_and_extract_sdk url zip_file out_dir)
+	if(NOT EXISTS "${zip_file}")
+		message(STATUS "Downloading ${url} ...")
+		file(DOWNLOAD
+			"${url}"
+			"${zip_file}"
+			SHOW_PROGRESS
+		)
+
+		file(MAKE_DIRECTORY "${out_dir}")
+
+		execute_process(
+			COMMAND ${CMAKE_COMMAND} -E tar -xzf "${zip_file}"
+			WORKING_DIRECTORY "${out_dir}"
+		)
+	endif()
+endfunction()
+
+# Папка с зависимостями
+set(DEP_DIR ${CMAKE_BINARY_DIR}/dep)
