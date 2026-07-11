@@ -1,56 +1,217 @@
 #include "stdafx.h"
 #include "xr_ioc_cmd.h"
 
-void CConsole::DrawUIConsoleVars()
+ICF void DrawFavoriteButton(IConsole_Command* cmd, xr_vector<IConsole_Command*>& fav_commands)
 {
-	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::CmdVars)]) {
+    ImGui::SameLine();
+    bool is_fav = std::find(fav_commands.begin(), fav_commands.end(), cmd) != fav_commands.end();
+	
+    ImGui::PushID(cmd);
+    if (ImGui::SmallButton(is_fav ? "Unfavorite" : "Favorite"))
+    {
+        if (is_fav)
+        {
+            auto it = std::find(fav_commands.begin(), fav_commands.end(), cmd);
+            fav_commands.erase(it);
+        }
+        else
+        {
+            fav_commands.push_back(cmd);
+        }
+    }
+    ImGui::PopID();
+}
+
+ICF void RenderCommandManipulator(IConsole_Command* Command, xr_vector<IConsole_Command*>& fav_commands)
+{
+	if (CCC_Mask16* ccc_mask16 = Command->dcast_mask16())
+	{
+		bool val = ccc_mask16->GetValue();
+		if (ImGui::Checkbox(ccc_mask16->Name(), &val))
+		{
+			ccc_mask16->Execute(val ? "1" : "0");
+		}
+		DrawFavoriteButton(ccc_mask16, fav_commands);
 		return;
 	}
 
-	if (!ImGui::Begin("DebugConsoleVars", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::CmdVars)])) {
+	if (CCC_Mask32* ccc_mask32 = Command->dcast_mask32())
+	{
+		bool val = ccc_mask32->GetValue();
+		if (ImGui::Checkbox(ccc_mask32->Name(), &val))
+		{
+			ccc_mask32->Execute(val ? "1" : "0");
+		}
+		DrawFavoriteButton(ccc_mask32, fav_commands);
+		return;
+	}
+
+	if (CCC_Mask64* ccc_mask64 = Command->dcast_mask64())
+	{
+		bool val = ccc_mask64->GetValue();
+		if (ImGui::Checkbox(ccc_mask64->Name(), &val))
+		{
+			ccc_mask64->Execute(val ? "1" : "0");
+		}
+		DrawFavoriteButton(ccc_mask64, fav_commands);
+		return;
+	}
+
+	if (CCC_Boolean* ccc_boolean = Command->dcast_bool())
+	{
+		if (ImGui::Checkbox(ccc_boolean->Name(), ccc_boolean->value))
+		{
+			ccc_boolean->Execute(*ccc_boolean->value ? "1" : "0");
+		}
+		DrawFavoriteButton(ccc_boolean, fav_commands);
+		return;
+	}
+
+	if (CCC_Float* ccc_float = Command->dcast_float())
+	{
+		float test = ccc_float->GetValue();
+		float min = std::clamp(ccc_float->min, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
+		float max = std::clamp(ccc_float->max, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
+		if (ImGui::SliderFloat(ccc_float->Name(), &test, min, max))
+		{
+			string32 String = {};
+			xr_sprintf(String, "%.3f", test);
+			ccc_float->Execute(String);
+		}
+		DrawFavoriteButton(ccc_float, fav_commands);
+		return;
+	}
+
+	if (CCC_Integer* ccc_integer = Command->dcast_int())
+	{
+		int test = ccc_integer->GetValue();
+		if (ImGui::SliderInt(ccc_integer->Name(), &test, ccc_integer->min, ccc_integer->max))
+		{
+			string32 String = {};
+			xr_sprintf(String, "%i", test);
+			ccc_integer->Execute(String);
+		}
+		DrawFavoriteButton(ccc_integer, fav_commands);
+		return;
+	}
+
+	if (CCC_Token* ccc_token = Command->dcast_token())
+	{
+		int Id = (int)*ccc_token->value;
+		xr_token* tok = ccc_token->GetToken();
+
+		const char* Value = "?";
+		while (tok->name)
+		{
+			if (tok->id == Id)
+			{
+				Value = tok->name;
+				break;
+			}
+			tok++;
+		}
+
+		if (ImGui::BeginCombo(ccc_token->Name(), Value))
+		{
+			int Id = (int)*ccc_token->value;
+			xr_token* tok = ccc_token->GetToken();
+			while (tok->name)
+			{
+				if (ImGui::Selectable(tok->name, tok->id == Id))
+				{
+					ccc_token->Execute(tok->name);
+				}
+				tok++;
+			}
+			ImGui::EndCombo();
+		}
+		DrawFavoriteButton(ccc_token, fav_commands);
+		return;
+	}
+
+	if (CCC_Vector3* ccc_vector3 = Command->dcast_vector())
+	{
+		auto& Val = *ccc_vector3->GetValuePtr();
+		float min = std::clamp(ccc_vector3->min.x, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
+		float max = std::clamp(ccc_vector3->max.x, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
+		if (ImGui::SliderFloat3(ccc_vector3->Name(), &Val.x, min, max))
+		{
+			string64 str = {};
+			xr_sprintf(str, sizeof(str), "(%.3f, %.3f, %.3f)", Val.x, Val.y, Val.z);
+			ccc_vector3->Execute(str);
+		}
+		DrawFavoriteButton(ccc_vector3, fav_commands);
+	}
+}
+
+ICF bool IsPrimitiveWrapperImplemented(IConsole_Command* cmd)
+{
+	// Нужно чтобы при вводе условного "help" мы не подсчитывали её в списке найденных команд, 
+	// поскольку CCC_Help не реализует манипуляцию над командой в виде GUI.
+	
+	// Если выше добавляется GUI манипулятор над CCC_ обёрткой примитива, просто надо докинуть её в конец,
+	// условия иначе команда она не будет подсчитываться и выводиться в поиске.
+	return cmd->dcast_bool() ||
+		   cmd->dcast_float() ||
+		   cmd->dcast_int() ||
+		   cmd->dcast_token() ||
+		   cmd->dcast_vector() ||
+		   cmd->dcast_mask16() ||
+		   cmd->dcast_mask32() ||
+		   cmd->dcast_mask64();
+}
+
+void CConsole::DrawUIConsoleVars()
+{
+	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::CmdVars)])
+	{
+		return;
+	}
+
+	if (!ImGui::Begin("DebugConsoleVars", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::CmdVars)]))
+	{
 		ImGui::End();
 		return;
 	}
 
+	static u32 results_count = 0;
 	static string64 search_query;
-	
+	static xr_vector<IConsole_Command*> fav_commands;
+	xr_vector<IConsole_Command*> filtered;
+
 	ImGui::Text("Search:");
 	ImGui::SameLine();
 	ImGui::InputText("", search_query, sizeof(search_query));
-	
-	std::vector<IConsole_Command*> filtered;
-	
+
 	for (const auto& [Name, Command] : Commands)
 	{
-		// Aphile: да это ужасно, надо потом переделать.
-		if (smart_cast<CCC_Boolean*>(Command) || 
-			smart_cast<CCC_Float*>(Command) || 
-			smart_cast<CCC_Integer*>(Command) ||
-			smart_cast<CCC_Token*>(Command) ||
-			smart_cast<CCC_Vector3*>(Command) ||
-			smart_cast<CCC_Mask16*>(Command) ||
-			smart_cast<CCC_Mask32*>(Command) ||
-			smart_cast<CCC_Mask64*>(Command)
-			)
+		if (!IsPrimitiveWrapperImplemented(Command))
 		{
-			if (search_query[0] != '\0')
-			{
-				xr_string name_lower(Name);
-				transform(name_lower.begin(), name_lower.end(), name_lower.begin(), tolower);
-				
-				xr_string filtered_lower(search_query);
-				transform(filtered_lower.begin(), filtered_lower.end(), filtered_lower.begin(), tolower);
-				
-				if (name_lower.find(filtered_lower) == std::string::npos)
-				{
-					continue;
-				}
-			}
-			filtered.push_back(Command);
+			continue;
 		}
+
+		if (std::find(fav_commands.begin(), fav_commands.end(), Command) != fav_commands.end())
+		{
+			continue;
+		}
+		
+		if (search_query[0] != '\0')
+		{
+			xr_string name_lower(Name);
+			transform(name_lower.begin(), name_lower.end(), name_lower.begin(), tolower);
+			
+			xr_string filtered_lower(search_query);
+			transform(filtered_lower.begin(), filtered_lower.end(), filtered_lower.begin(), tolower);
+			
+			if (name_lower.find(filtered_lower) == xr_string::npos)
+			{
+				continue;
+			}
+		}
+		filtered.push_back(Command);
 	}
 
-	std::sort(filtered.begin(), filtered.end(), [](IConsole_Command* a, IConsole_Command* b)
+	sort(filtered.begin(), filtered.end(), [](IConsole_Command* a, IConsole_Command* b)
 	{
 		xr_string name_a(a->Name());
 		xr_string name_b(b->Name());
@@ -61,130 +222,36 @@ void CConsole::DrawUIConsoleVars()
 		return name_a < name_b; 
 	});
 
-	static u32 results_count = 0;
-
 	string64 search_count_text;
 	results_count = filtered.size();
 	xr_sprintf(search_count_text, "| Results: %u", results_count);
-	
+
 	ImGui::SameLine();
 	ImGui::Text(search_count_text);
+
 	ImGui::Separator();
 
-	for (auto Command : filtered) 
+	if (!fav_commands.empty())
 	{
-		if (auto Mask16 = Command->dcast_mask16())
+		ImGui::Text("Favorites:");
+		for (auto Command : fav_commands)
 		{
-			bool val = Mask16->GetValue();
-			if (ImGui::Checkbox(Mask16->Name(), &val))
-			{
-				Mask16->Execute(val ? "1" : "0");
-			}
-			continue;
+			RenderCommandManipulator(Command, fav_commands);
 		}
-
-		if (auto Mask32 = Command->dcast_mask32())
+		ImGui::Separator();
+	}
+	
+	if (!filtered.empty())
+	{
+		ImGui::Text("Commands:");
+		for (auto Command : filtered)
 		{
-			bool val = Mask32->GetValue();
-			if (ImGui::Checkbox(Mask32->Name(), &val))
-			{
-				Mask32->Execute(val ? "1" : "0");
-			}
-			continue;
+			RenderCommandManipulator(Command, fav_commands);
 		}
-
-		if (auto Mask64 = Command->dcast_mask64())
-		{
-			bool val = Mask64->GetValue();
-			if (ImGui::Checkbox(Mask64->Name(), &val))
-			{
-				Mask64->Execute(val ? "1" : "0");
-			}
-			continue;
-		}
-
-		if (auto Boolean = dynamic_cast<CCC_Boolean*>(Command))
-		{
-			if (ImGui::Checkbox(Boolean->Name(), Boolean->value))
-			{
-				Boolean->Execute(*Boolean->value ? "1" : "0");
-			}
-			continue;
-		}
-
-		if (auto Float = dynamic_cast<CCC_Float*>(Command))
-		{
-			float test = Float->GetValue();
-			float min = std::clamp(Float->min, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
-			float max = std::clamp(Float->max, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
-			if (ImGui::SliderFloat(Float->Name(), &test, min, max))
-			{
-				string32 String = {};
-				xr_sprintf(String, "%.3f", test);
-				Float->Execute(String);
-			}
-			continue;
-		}
-
-		if (auto Integer = dynamic_cast<CCC_Integer*>(Command))
-		{
-			int test = Integer->GetValue();
-			
-			if (ImGui::SliderInt(Integer->Name(), &test, Integer->min, Integer->max))
-			{
-				string32 String = {};
-				xr_sprintf(String, "%i", test);
-				Integer->Execute(String);
-			}
-			continue;
-		}
-
-		if (auto Token = dynamic_cast<CCC_Token*>(Command))
-		{
-			int Id = (int)*Token->value;
-			xr_token* tok = Token->GetToken();
-
-			const char* Value = "?";
-			while (tok->name)
-			{
-				if (tok->id == Id)
-				{
-					Value = tok->name;
-					break;
-				}
-				tok++;
-			}
-
-			if (ImGui::BeginCombo(Token->Name(), Value))
-			{
-				int Id = (int)*Token->value;
-				xr_token* tok = Token->GetToken();
-				while (tok->name)
-				{
-					if (ImGui::Selectable(tok->name, tok->id == Id))
-					{
-						Token->Execute(tok->name);
-					}
-					tok++;
-				}
-				ImGui::EndCombo();
-			}
-			continue;
-		}
-
-		if (auto Vector = dynamic_cast<CCC_Vector3*>(Command))
-		{
-			auto& Val = *Vector->GetValuePtr();
-			float min = std::clamp(Vector->min.x, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
-			float max = std::clamp(Vector->max.x, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
-			
-			if (ImGui::SliderFloat3(Vector->Name(), &Val.x, min, max))
-			{
-				string64 str = {};
-				xr_sprintf(str, sizeof(str), "(%.3f, %.3f, %.3f)", Val.x, Val.y, Val.z);
-				Vector->Execute(str);
-			}
-		}
+	}
+	else
+	{
+		ImGui::Text("Nothing found.");
 	}
 	ImGui::End();
 }
