@@ -4,8 +4,30 @@
 #include "../Include/xrRender/RenderVisual.h"
 #include "../xrEngine/xr_collide_form.h"
 
+void CAutoAim::load()
+{
+	// distance thresholds a-b-c
+	distA = 0.0f;
+	distB = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "distance_b", 5.1f);
+	distC = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "distance_c", 200.1f);
 
-void Feel::look_at_pos_for_aiming(Fvector& dest, const CEntityAlive* pAim, float heightFraction)
+	// dotp thresholds easy,norm
+	dotpA_n = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_a_norm", 0.5f);
+	dotpB_n = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_b_norm", 0.97f);
+	dotpC_n = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_c_norm", 0.97f);
+
+	dotpA_e = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_a_easy", 0.5f);
+	dotpB_e = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_b_easy", 0.97f);
+	dotpC_e = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_c_easy", 0.97f);
+
+	// lerp easiness
+	easiness = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "easiness", 1.0f);
+
+	// What Y to aim at
+	heightFraction = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "height_fraction", 0.7f);
+}
+
+void CAutoAim::look_at_pos_for_aiming(Fvector& dest, const CEntityAlive* pAim)
 {
 	Fbox bbox = pAim->CFORM()->getBBox();
 	Fvector size;
@@ -16,64 +38,38 @@ void Feel::look_at_pos_for_aiming(Fvector& dest, const CEntityAlive* pAim, float
 	pAim->XFORM().transform_tiny(dest);
 }
 
-bool Feel::auto_aim_pick_target(CActor* pActor, CActorMemory* pMem, CEntityAlive*& pTarget, flags32 flags)
+bool CAutoAim::auto_aim_pick_target(CActor* pActor, CActorMemory* pMem, CEntityAlive*& pTarget)
 {
 	R_ASSERT(pMem);
 	if (pMem->feel_visible.size() == 0)
-		return false;
-
-	// distance thresholds a-b-c
-	float distA = 0.0f;
-	float distB = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "distance_b", 5.1f);
-	float distC = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "distance_c", 200.1f);
-	
-	// dotp thresholds easy,norm
-	double dotpA_n = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_a_norm", 0.5f);
-	double dotpB_n = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_b_norm", 0.97f);
-	double dotpC_n = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_c_norm", 0.97f);
-
-	double dotpA_e = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_a_easy", 0.5f);
-	double dotpB_e = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_b_easy", 0.97f);
-	double dotpC_e = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "dotp_c_easy", 0.97f);
-
-	// lerp easiness
-	double easiness;
-	if (flags.test(eFlagsPickAutoAim_NoWeapon))
-		easiness = 1.0;
-	else
 	{
-		easiness = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "easiness", 1.0f);
-		clamp(easiness, 0.0, 1.0);
+		return false;
 	}
 
 	double dotpA = dotpA_e + (dotpA_n - dotpA_e) * (1.0 - easiness);
 	double dotpB = dotpB_e + (dotpB_n - dotpB_e) * (1.0 - easiness);
 	double dotpC = dotpC_e + (dotpC_n - dotpC_e) * (1.0 - easiness);
 
-	// What Y to aim at
-	float heightFraction = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "height_fraction", 0.7f);
-
-	std::vector<Feel::AutoAimCandidate> targets;
+	std::vector<AutoAimCandidate> targets;
 
 	for (xr_vector<Feel::Vision::feel_visible_Item>::iterator it = pMem->feel_visible.begin(); it != pMem->feel_visible.end(); ++it)
 	{
 		if (it->fuzzy <= 0.0f)
+		{
 			continue;
+		}
 
-		CEntityAlive* pAlive = smart_cast<CEntityAlive*>(it->O);
-		if (!pAlive || !pAlive->g_Alive())
+		CEntityAlive* pAlive = it->O->cast_entity_alive();
+		if (!pAlive || !pAlive->g_Alive() || !pAlive->is_relation_enemy(pActor))
+		{
 			continue;
+		}
 
-		Feel::AutoAimCandidate e;
+		AutoAimCandidate e;
 		e.first = pAlive;
 
 		// Check distance
 		float distance = pAlive->Position().distance_to(pActor->Position());
-		if (flags.test(eFlagsPickAutoAim_NoWeapon))
-		{
-			if (distance > distB)
-				continue;
-		}
 		clamp(distance, distA, distC);
 
 		// Check angle (camera direction, and direction from camera pos to the target's head)
@@ -81,7 +77,7 @@ bool Feel::auto_aim_pick_target(CActor* pActor, CActorMemory* pMem, CEntityAlive
 		Fvector camDirF = pCam->Direction();
 		Fvector camPosF = pCam->Position();
 		Fvector posInAimF;
-		Feel::look_at_pos_for_aiming(posInAimF, pAlive, heightFraction);
+		look_at_pos_for_aiming(posInAimF, pAlive);
 
 		// Use doubles here to have more precision
 		Dvector camDir, camPos, posInAim;
@@ -115,15 +111,16 @@ bool Feel::auto_aim_pick_target(CActor* pActor, CActorMemory* pMem, CEntityAlive
 		}
 		
 		if (e.second < threshDotP)
+		{
 			continue;
-
+		}
 		targets.push_back(e);
 	}
 
-	std::sort(targets.begin(), targets.end(), Feel::PredicateSortTargetEstims);
+	std::sort(targets.begin(), targets.end(), CAutoAim::PredicateSortTargetEstims);
 	if (targets.size() > 0)
 	{
-		Feel::AutoAimCandidate& e = targets.front();
+		AutoAimCandidate& e = targets.front();
 		pTarget = e.first;
 		return true;
 	}
@@ -132,7 +129,7 @@ bool Feel::auto_aim_pick_target(CActor* pActor, CActorMemory* pMem, CEntityAlive
 }
 
 
-bool Feel::PredicateSortTargetEstims(const AutoAimCandidate& t1, const AutoAimCandidate& t2)
+bool CAutoAim::PredicateSortTargetEstims(const AutoAimCandidate& t1, const AutoAimCandidate& t2)
 {
 	return (t1.second > t2.second);
 }
