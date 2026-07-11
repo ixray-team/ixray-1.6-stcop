@@ -81,7 +81,8 @@ void Script::vfPrintError(CLuaVirtualMachine *tpLuaVirtualMachine, int iErrorCod
 
 const char* Script::cafEventToString(int iEventCode)
 {
-	switch (iEventCode) {
+	switch (iEventCode) 
+	{
 		case LUA_HOOKCALL		: return("hook call");
 		case LUA_HOOKRET		: return("hook return");
 		case LUA_HOOKLINE		: return("hook line");
@@ -89,9 +90,8 @@ const char* Script::cafEventToString(int iEventCode)
 		case LUA_HOOKTAILRET	: return("hook tail return");
 		default					: NODEFAULT;
 	}
-#ifdef DEBUG
+
 	return(nullptr);
-#endif
 }
 
 bool Script::bfListLevelVars(CLuaVirtualMachine *tpLuaVirtualMachine, int iStackLevel)
