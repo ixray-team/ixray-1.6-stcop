@@ -1,3 +1,9 @@
+set(STEAMWORKS_SDK_URL "https://github.com/ixray-team/ixray-packages/releases/download/d2024.5.3/steamworks_sdk_164.zip")
+set(STEAMWORKS_SDK_ZIP "${DEP_DIR}/steamworks_sdk_164.zip")
+set(STEAMWORKS_SDK_DIR "${DEP_DIR}/steamworks_sdk_164")
+download_and_extract_sdk(${STEAMWORKS_SDK_URL} ${STEAMWORKS_SDK_ZIP} ${STEAMWORKS_SDK_DIR})
+set(STEAMWORKS_ROOT ${STEAMWORKS_SDK_DIR})
+
 file(GLOB EXTRACTED_DIRS "${STEAMWORKS_SDK_DIR}/*")
 foreach(DIR ${EXTRACTED_DIRS})
 	if(IS_DIRECTORY ${DIR})
