@@ -216,7 +216,7 @@ float CActorCondition::GetZoneMaxPower( ALife::EHitType hit_type ) const
 void CActorCondition::UpdateCondition()
 {
 	// FX: Хак для кат-сцен (GODMODE_RT)
-	if (!GodMode())
+	if (!psActorFlags.test(AF_GOD_MODE))
 	{
 		Alcohol.Current += Alcohol.Variability * m_fDeltaTime;
 		clamp(Alcohol.Current, 0.0f, 1.0f);
