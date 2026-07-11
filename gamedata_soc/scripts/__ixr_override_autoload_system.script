@@ -15,6 +15,7 @@ function configure(_ref_ixr_autoloader)
 	_ref_ixr_autoloader.ignore_script("smart_*")
 	_ref_ixr_autoloader.ignore_script("heli_snd")
 	_ref_ixr_autoloader.ignore_script("level_psy_antenna")
+	_ref_ixr_autoloader.ignore_script("level_weathers")
 	_ref_ixr_autoloader.ignore_script("mob_alife_control")
 	_ref_ixr_autoloader.ignore_script("xr_surge_hide")
 
