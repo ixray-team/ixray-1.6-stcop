@@ -10,20 +10,34 @@ class CActor;
 class CActorMemory;
 class CEntityAlive;
 
-namespace Feel
+class CAutoAim
 {
 	typedef std::pair<CEntityAlive*, double> AutoAimCandidate;
-	typedef _vector3<double> Dvector;
 
-	bool PredicateSortTargetEstims(const AutoAimCandidate& t1, const AutoAimCandidate& t2);
+protected:
+	// distance thresholds a-b-c
+	float distA = 0.0f;
+	float distB = 5.1f;
+	float distC = 200.1f;
 
-	enum eFlagsPickAutoAim
-	{
-		eFlagsPickAutoAim_NoWeapon = 1<<1,
-		eFlagsPickAutoAim_Enemies = 1<<2,
-		eFlagsPickAutoAim_NonEnemies = 1<<3
-	};
+	// dotp thresholds easy,norm
+	double dotpA_n = 0.5;
+	double dotpB_n = 0.97;
+	double dotpC_n = 0.97;
 
-	bool auto_aim_pick_target(CActor* pActor, CActorMemory* pMem, CEntityAlive*& pTarget, flags32 flags);
-	void look_at_pos_for_aiming(Fvector& dest, const CEntityAlive* pTarget, float heightFraction);
-}
+	double dotpA_e = 0.5;
+	double dotpB_e = 0.97;
+	double dotpC_e = 0.97;
+
+	double easiness = 1.0;
+
+	float heightFraction = 0.7f;
+
+public:
+	void load();
+
+	static bool PredicateSortTargetEstims(const AutoAimCandidate& t1, const AutoAimCandidate& t2);
+
+	bool auto_aim_pick_target(CActor* pActor, CActorMemory* pMem, CEntityAlive*& pTarget);
+	void look_at_pos_for_aiming(Fvector& dest, const CEntityAlive* pTarget);
+};
