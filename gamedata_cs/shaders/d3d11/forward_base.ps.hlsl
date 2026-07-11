@@ -61,7 +61,7 @@ void main(p_bumped_new I, out OutStructure O)
 	M.Material = L_material.w;
 #else
     M.Color.xyz = GammaToLinear(M.Color.xyz);
-    M.Specular = GammaToLinear(M.Specular);
+	M.Specular = M.Specular * M.Specular * 0.16f;
 #endif
 	
 	float3 LightDir = mul((float3x3)m_V, L_sun_dir_w.xyz);
