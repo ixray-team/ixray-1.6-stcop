@@ -957,7 +957,7 @@ eUIDirection4 CUIActorMenuBase::GetNaviDirection(CUIWindow* pWndFrom, CUIWindow*
 
 void CUIActorMenuBase::SetAreaSelectionTo(CUIWindow* pSelection)
 {
-	if (pSelection == m_ui_navigation_selection || !pInput->GetControllerMode() || !m_ui_navigation_selector)
+	if (pSelection == m_ui_navigation_selection || !m_ui_navigation_selector)
 		return;
 
 	InfoCurItem(nullptr);
