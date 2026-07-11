@@ -753,40 +753,20 @@ void CActor::IR_GamepadKeyPress(int id)
 	{
 		if (bind == kWPN_ZOOM)
 		{
-			CInventoryItem* activeItem = inventory().ActiveItem();
-			CWeapon* wpn = nullptr;
-			if (activeItem)
-				wpn = activeItem->cast_weapon();
+			CWeapon* wpn = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : nullptr;
 
 			if (wpn)
 			{
 				CEntityAlive* pAim = nullptr;
-				flags32 flags;
-				flags.zero();
-				float minSpeed, maxSpeed;
-				if (inventory().GetActiveSlot() == NO_ACTIVE_SLOT)
-				{
-					flags.set(Feel::eFlagsPickAutoAim::eFlagsPickAutoAim_NoWeapon, true);
-					flags.set(Feel::eFlagsPickAutoAim::eFlagsPickAutoAim_NonEnemies, true);
-					minSpeed = maxSpeed = PI;
-				}
-				else
-				{
-					flags.set(Feel::eFlagsPickAutoAim::eFlagsPickAutoAim_Enemies, true);
-					minSpeed = PI_DIV_2;
-					maxSpeed = PI;
-				}
 
-				if (Feel::auto_aim_pick_target(this, m_memory, pAim, flags))
+				if (pAutoaim->auto_aim_pick_target(this, m_memory, pAim))
 				{
 					CCameraFirstEye* pCamera = smart_cast<CCameraFirstEye*>(cam_Active());
 					if (pCamera)
 					{
-						float heightFraction = READ_IF_EXISTS(pSettings, r_float, "auto_aiming", "height_fraction", 0.71f);
-
 						Fvector pos;
-						Feel::look_at_pos_for_aiming(pos, pAim, heightFraction);
-						pCamera->LookAtPoint(pos, minSpeed, maxSpeed);
+						pAutoaim->look_at_pos_for_aiming(pos, pAim);
+						pCamera->LookAtPoint(pos, PI_DIV_2, PI);
 
 						lastTimeAutoAimStarted = Device.dwTimeContinual;
 					}
