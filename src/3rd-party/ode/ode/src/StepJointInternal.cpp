@@ -3,8 +3,6 @@
 #include "ode/odemath.h"
 #include "Lcp33.h"
 #include "lcp.h"
-#include "StepJointInternal.h"
-
 
 #define	   DOT6(A,B)	(A[0]*B[0]+A[1]*B[1]+A[2]*B[2]+A[4]*B[4]+A[5]*B[5]+A[6]*B[6])
 
