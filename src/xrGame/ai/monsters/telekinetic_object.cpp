@@ -334,36 +334,6 @@ void STelekineticWeaponObject::setup_local_weapon_things()
 	
 	// WEAPON_ININITE_QUEUE (-1) = auto, 1 = single, 2 = burst
 	weapon->SetQueueSize(WEAPON_ININITE_QUEUE); // чтобы пистолетам задать режим стрельбы auto
-	
-	if (CActor* actor = smart_cast<CActor*>(enemy); actor != nullptr)
-	{
-		switch (g_SingleGameDifficulty)
-		{
-		case egdNovice:
-			weapon->setFireDispersionBase(0.15f);
-			break;
-		
-		case egdStalker:
-			weapon->setFireDispersionBase(0.13f);
-			break;
-		
-		case egdVeteran:
-			weapon->setFireDispersionBase(0.11f);
-			break;
-		
-		case egdMaster:
-			weapon->setFireDispersionBase(0.1f);
-			break;
-		}
-	}
-	else if (CAI_Stalker* cai_stalker = smart_cast<CAI_Stalker*>(enemy); cai_stalker != nullptr)
-	{
-		// Скипаем некотоыре пушки, ибо шотгану, с его разбросом, ещё поверх крутить точно ничего не нужно и т.д.
-		if (weapon->cast_weapon_shotgun() /*|| weapon->cast_weapon_rg6()*/)
-			return;
-		
-		weapon->setFireDispersionBase(0.2f);
-	}
 }
 
 void STelekineticWeaponObject::restore_global_weapon_things()
