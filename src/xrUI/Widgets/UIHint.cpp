@@ -7,7 +7,7 @@
 
 #include "stdafx.h"
 #include "UIHint.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "UIStatic.h"
 #include "UIFrameWindow.h"
 #include "UIXmlInit.h"
