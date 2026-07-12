@@ -9,6 +9,7 @@
 #include "WeaponMagazinedWGrenade.h"
 #include "../../Level.h"
 #include "poltergeist/poltergeist.h"
+
 extern ESingleGameDifficulty g_SingleGameDifficulty; 
 
 STelekineticObject::STelekineticObject(CPhysicsShellHolder* owner, float s, float h, u32 ttk, bool rot)
@@ -464,7 +465,19 @@ void STelekineticWeaponObject::update_auto_aim()
 		angle_difference_signed(target_eulers.z, curr_eulers.z)
 	};
 	
-	diff.mul(weapon->m_pPhysicsShell->getMass() * weapon_params.autoaim_torque_factor);
+	switch (g_SingleGameDifficulty)
+	{
+		case egdNovice:
+		case egdStalker:
+			diff.mul(1.5);
+		break;
+
+		case egdVeteran:
+		case egdMaster:
+			diff.mul(2.5);
+		break;
+	}
+	
 	weapon->m_pPhysicsShell->setTorque(diff);
     	
 	weapon->XFORM().transform_dir(diff);
@@ -489,10 +502,38 @@ bool STelekineticWeaponObject::can_shoot()
 	
 	if (first_shot_delay_ms > time())
 		return false;
-	
-	if (!is_enemy_tracing())
-		return false;
-	
+
+	switch (g_SingleGameDifficulty)
+	{
+		case egdNovice:
+		{
+			if (!is_enemy_tracing(40.f))
+			{
+				return false;
+			}
+		}
+		break;
+
+		case egdStalker:
+		{
+			if (!is_enemy_tracing(25.f))
+			{
+				return false;
+			}
+		}
+		break;
+
+		case egdVeteran:
+		case egdMaster:
+		{
+			if (!is_enemy_tracing(10.f))
+			{
+				return false;
+			}
+		}
+		break;
+	}
+
 	return true;
 }
 
@@ -539,45 +580,33 @@ void STelekineticWeaponObject::weapon_end_shooting(u32 pause_time)
 	weapon->FireEnd();
 }
 
-bool STelekineticWeaponObject::is_enemy_tracing()
+bool STelekineticWeaponObject::is_enemy_tracing(float threshold)
 {
 	CEntityAlive* enemy = telekinetic_enemy->get_enemy();
-	
-	if (enemy == nullptr) 
-		return false;
-	
-	const Fvector& fire_pos = weapon->get_LastFP();
-	const Fvector& fire_dir = weapon->get_LastFD();
-	
-	collide::rq_result rq_result;
-	
-	Level().ObjectSpace.RayPick(
-		fire_pos,
-		fire_dir,
-		fire_pos.distance_to(enemy->Center()),
-		collide::rqtBoth,
-		rq_result,
-		weapon
-	);
-	
-	return rq_result.O == enemy;
-}
-
-bool STelekineticWeaponObject::is_angle_aim_error_correct(float threshold)
-{
-	const CEntityAlive* enemy = telekinetic_enemy->get_enemy();
 
 	if (enemy == nullptr)
 	{
 		return false;
 	}
 
-	Fvector to_enemy;
-	to_enemy.sub(enemy->Position(), weapon->get_LastFP());
-	to_enemy.normalize();
+	const Fvector& fire_pos = weapon->get_LastFP();
+	
+	Fvector dir_to_enemy;
+	dir_to_enemy.sub(enemy->Center(), fire_pos);
+	float dist = fire_pos.distance_to(enemy->Center());
+	dir_to_enemy.normalize();
+	collide::rq_result rq_result;
+	Level().ObjectSpace.RayPick(
+		fire_pos,
+		dir_to_enemy,
+		dist,
+		collide::rqtBoth,
+		rq_result,
+		weapon
+	);
 
-	const float dot = weapon->get_LastFD().dotproduct(to_enemy);
-	return dot >= cosf(deg2rad(threshold));
+	float dot = weapon->get_LastFD().dotproduct(dir_to_enemy);
+	return rq_result.O == enemy && dot >= cosf(deg2rad(threshold));
 }
 
 void STelekineticWeaponObject::perform_keep_object()
