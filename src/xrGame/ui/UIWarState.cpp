@@ -6,17 +6,12 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "UIWarState.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
-
-UIWarState::UIWarState()
-{
-//	m_installed = false;
-//	m_def_texture._set( nullptr );
-}
+#include "../../xrUI/Widgets/UIFrameWindow.h"
 
 void UIWarState::InitXML( CUIXml& xml, const char* att_name, CUIWindow* parent )
 {
@@ -30,23 +25,26 @@ void UIWarState::InitXML( CUIXml& xml, const char* att_name, CUIWindow* parent )
 	xr_strconcat(buf, att_name, ":img" );
 	m_static = UIHelper::CreateStatic( xml, buf, this );
 	
-//	strconcat( sizeof(buf), buf, att_name, ":img:texture" );
-//	m_def_texture._set( xml.Read( buf, 0, nullptr ) );
-//	VERIFY( m_def_texture.size() );
-
 	set_hint_delay( (u32)xml.ReadAttribInt( att_name, 0, "delay", 0 ) );
 	
-//	ui_war_state_no_hint = xml.ReadAttrib( att_name, 0, "hint_disable" );
+	m_frame_selected = new CUIFrameWindow();
+	if (m_frame_selected->InitTexture("ui_inv_item_selector", false))
+	{
+		m_frame_selected->SetWidth(GetWidth());
+		m_frame_selected->SetHeight(GetHeight());
+		m_frame_selected->Show(false);
+		AttachChild(m_frame_selected);
+	}
+	else
+	{
+		xr_delete(m_frame_selected);
+	}
 }
 
 void UIWarState::ClearInfo()
 {
-	//m_installed = false;
-//	m_static->SetVisible( false );
 	SetVisible( false );
 	set_hint_text_ST( "" );
-	
-	//m_static->InitTexture( m_def_texture.c_str() );
 }
 
 bool UIWarState::UpdateInfo( const char* icon, const char* hint_text )
@@ -56,8 +54,6 @@ bool UIWarState::UpdateInfo( const char* icon, const char* hint_text )
 		return false;
 	}
 
-//	m_installed = true;
-//	m_static->SetVisible( true );
 	SetVisible( true );
 	m_static->InitTexture( icon );
 
@@ -72,17 +68,24 @@ bool UIWarState::UpdateInfo( const char* icon, const char* hint_text )
 	return true;
 }
 
-void  UIWarState::Draw()
+void UIWarState::OnFocusReceive()
 {
-	if( IsShown() )
+	if (!pInput->GetControllerMode())
 	{
-		inherited::Draw();
+		inherited::OnFocusReceive();
 	}
-
-//	if ( GetVisible() )
-//	{
-//		inherited::Draw();
-//		m_static->Draw();
-//	}
 }
 
+void UIWarState::ToggleHint()
+{
+	if (m_hint_wnd->is_visible())
+	{
+		m_hint_wnd->set_text(nullptr);
+		m_enable = false;
+	}
+	else
+	{
+		m_hint_wnd->set_text(m_hint_text.c_str());
+		m_enable = true;
+	}
+}
