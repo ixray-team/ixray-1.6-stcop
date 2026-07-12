@@ -8,12 +8,12 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "UIFactionWarWnd.h"
-
+#include "../../xrEngine/xr_input.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../../xrUI/UIHelper.h"
-
+#include "../../xrUI/UICursor.h"
 #include "FactionState.h"
 #include "UIPdaWnd.h"
 #include "UICharacterInfo.h"
@@ -27,6 +27,8 @@
 CUIFactionWarWnd::CUIFactionWarWnd()
 {
 	Reset();
+	ActionRepeaters()->Register(this, kUI_LEFT);
+	ActionRepeaters()->Register(this, kUI_RIGHT);
 }
 
 CUIFactionWarWnd::~CUIFactionWarWnd()
@@ -70,7 +72,6 @@ void CUIFactionWarWnd::Init()
 
 	m_target_static			= UIHelper::CreateStatic( xml, "target_static", this );
 	m_target_caption		= UIHelper::CreateStatic( xml, "target_caption", this );
-	//m_target_caption->SetElipsis( 1, 0 );
 	m_tc_pos				= m_target_caption->GetWndPos();
 
 	m_target_desc			= UIHelper::CreateStatic( xml, "target_decs", this );
@@ -118,9 +119,10 @@ void CUIFactionWarWnd::Init()
 
 	for ( u8 i = 0; i < max_war_state; ++i )
 	{
-		m_war_state[i] = new UIWarState();
-		m_war_state[i]->InitXML( xml, "static_vs_state", m_war_states_parent );
-		m_war_state[i]->set_hint_wnd( hint_wnd );
+		UIWarState* state = new UIWarState();
+		state->InitXML(xml, "static_vs_state", m_war_states_parent);
+		state->set_hint_wnd(hint_wnd);
+		m_war_state.push_back(state);
 	}
 	
 	float dx = xml.ReadAttribFlt( "static_vs_state", 0, "dx" );
@@ -165,12 +167,8 @@ void CUIFactionWarWnd::Init()
 
 void CUIFactionWarWnd::ShowInfo( bool status )
 {
-//	m_target_static->Show( status );
-//	m_target_caption->Show( status );
-//	m_target_desc->Show( status );
 	m_state_static->Show( status );
 
-//	m_static_line1->Show( status );
 	m_static_line2->Show( status );
 	m_static_line3->Show( status );
 	m_static_line4->Show( status );
@@ -229,6 +227,10 @@ void CUIFactionWarWnd::Show( bool status )
 void CUIFactionWarWnd::Update()
 {
 	inherited::Update();
+	if (CUIFrameWindow* frame = m_war_state[m_current_window]->m_frame_selected)
+	{
+		frame->Show(pInput->GetControllerMode());
+	}
 	if ( !IsShown() )
 	{
 		Reset();
@@ -248,25 +250,6 @@ bool CUIFactionWarWnd::InitFactions()
 		return false;
 	}
 	
-	
-	/*
-	shared_str const& actor_team = Actor()->CharacterInfo().Community().id();
-
-	const char* vs_teams  = pSettings->r_string( "actor_communities", actor_team.c_str() );
-	if ( _GetItemCount( vs_teams ) != 2 )
-	{
-		return false;
-	}
-	u32   size_temp   = (xr_strlen(vs_teams) + 1) * sizeof(char);
-	char*  our_fract   = (char*)_alloca( size_temp );
-	char*  enemy_fract = (char*)_alloca( size_temp );
-	_GetItem( vs_teams, 0, our_fract );
-	_GetItem( vs_teams, 1, enemy_fract );
-
-	if ( xr_strlen(our_fract) == 0 || xr_strlen(enemy_fract) == 0 )
-	{
-		return false;
-	}*/
 	m_our_faction.set_faction_id2( our );
 	m_enemy_faction.set_faction_id2( enemy );
 
@@ -285,7 +268,9 @@ void CUIFactionWarWnd::UpdateInfo()
 				return;
 			}
 			else
-			R_ASSERT2( 0, "Actor`s faction is unknown!" );
+			{
+				R_ASSERT2(0, "Actor`s faction is unknown!");
+			}
 		}
 	}
 	m_max_member_count = get_max_member_count();
@@ -349,17 +334,17 @@ void CUIFactionWarWnd::UpdateWarStates( FactionState const& faction )
 	pos = m_war_states_parent->GetWndPos();
 
 	float sx = 0.0f;
-	u8 cnt = 0;
+	m_factions_count = 0;
 	for ( u8 i = 0; i < max_war_state; ++i )
 	{
 		if ( !m_war_state[i]->UpdateInfo( faction.get_war_state(i), faction.get_war_state_hint(i) ) )
 		{
 			break; // for i
 		}
-		++cnt;
+		++m_factions_count;
 		sx += m_war_state[i]->GetWndSize().x + m_war_states_dx;
 	}
-	if ( cnt == 0 )
+	if ( m_factions_count == 0 )
 	{
 		m_war_states_parent->SetWndPos( pos );
 		return;
@@ -418,3 +403,144 @@ float CUIFactionWarWnd::get_max_power()
 	return funct();
 }
 
+bool CUIFactionWarWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
+{
+	if (WINDOW_KEY_PRESSED == gamepad_action)
+	{
+		bool currentWindowShown = m_war_state[m_current_window]->IsShown();
+		if (currentWindowShown)
+		{
+			switch (get_binded_action(id, agUIGeneral))
+			{
+				case kUI_LEFT:
+					if (!any_binded_key_for_action_pressed_c(kUI_RIGHT))
+					{
+						TurnLeft(true);
+					}
+					ActionRepeaters()->SetActionStarted(this, kUI_LEFT);
+					return true;
+				case kUI_RIGHT:
+					if (!any_binded_key_for_action_pressed_c(kUI_LEFT))
+					{
+						TurnRight(true);
+					}
+					ActionRepeaters()->SetActionStarted(this, kUI_RIGHT);
+					return true;
+				case kUI_HINT:
+					Fvector2 pos;
+					m_war_state[m_current_window]->GetAbsolutePos(pos);
+					pos.add(m_war_state[m_current_window]->GetWndSize());
+					UI().GetUICursor().SetUICursorPosition(pos);
+
+					m_war_state[m_current_window]->ToggleHint();
+					return true;
+			}
+		}
+	}
+
+	return inherited::OnGamepadKeyAction(id, gamepad_action);
+}
+
+bool CUIFactionWarWnd::OnGamepadKeyHold(int id)
+{
+	switch (get_binded_action(id, agUIGeneral))
+	{
+		case kUI_LEFT:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_LEFT) && !any_binded_key_for_action_pressed_c(kUI_RIGHT))
+			{
+				TurnLeft();
+			}
+			return true;
+		}
+		case kUI_RIGHT:
+		{
+			if (ActionRepeaters()->CanRepeatActionNow(this, kUI_RIGHT) && !any_binded_key_for_action_pressed_c(kUI_LEFT))
+			{
+				TurnRight();
+			}
+			return true;
+		}
+	}
+	return inherited::OnGamepadKeyHold(id);
+}
+
+void CUIFactionWarWnd::TurnLeft(bool loop)
+{
+	bool showHint = m_war_state[m_current_window]->get_hint_wnd()->is_visible();
+	u8 nextWindow = m_current_window - 1;
+	if (nextWindow == u8(-1))
+	{
+		if (loop)
+		{
+			nextWindow = m_factions_count - 1;
+		}
+		else
+		{
+			return;
+		}
+	}
+
+	if (showHint)
+	{
+		m_war_state[m_current_window]->ToggleHint();
+	}
+	if (CUIFrameWindow* frame = m_war_state[m_current_window]->m_frame_selected)
+	{
+		frame->Show(false);
+	}
+	m_current_window = nextWindow;
+	if (showHint)
+	{
+		Fvector2 pos;
+		m_war_state[m_current_window]->GetAbsolutePos(pos);
+		pos.add(m_war_state[m_current_window]->GetWndSize());
+		UI().GetUICursor().SetUICursorPosition(pos);
+
+		m_war_state[m_current_window]->ToggleHint();
+	}
+	if (CUIFrameWindow* frame = m_war_state[m_current_window]->m_frame_selected)
+	{
+		frame->Show(true);
+	}
+}
+
+void CUIFactionWarWnd::TurnRight(bool loop)
+{
+	bool showHint = m_war_state[m_current_window]->get_hint_wnd()->is_visible();
+	u8 nextWindow = m_current_window + 1;
+	if (nextWindow >= m_factions_count)
+	{
+		if (loop)
+		{
+			nextWindow = 0;
+		}
+		else
+		{
+			return;
+		}
+	}
+
+	if (showHint)
+	{
+		m_war_state[m_current_window]->ToggleHint();
+	}
+	if (CUIFrameWindow* frame = m_war_state[m_current_window]->m_frame_selected)
+	{
+		frame->Show(false);
+	}
+	m_current_window = nextWindow;
+	if (showHint)
+	{
+		Fvector2 pos;
+		m_war_state[m_current_window]->GetAbsolutePos(pos);
+		pos.add(m_war_state[m_current_window]->GetWndSize());
+		UI().GetUICursor().SetUICursorPosition(pos);
+
+		m_war_state[m_current_window]->ToggleHint();
+	}
+	if (CUIFrameWindow* frame = m_war_state[m_current_window]->m_frame_selected)
+	{
+		frame->Show(true);
+	}
+}
