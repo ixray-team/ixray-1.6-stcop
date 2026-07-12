@@ -366,12 +366,13 @@ bool CUIWindow::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	//происходит в обратном порядке, чем рисование окон
 	//(последние в списке имеют высший приоритет)
 	xrCriticalSectionGuard guard(csUi);
-	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
-	WINDOW_LIST::reverse_iterator first = m_ChildWndList.rend();
-
-	for (u32 i = 0; it != first; ++it, i++)
+	if (m_ChildWndList.empty())
 	{
-		CUIWindow* w = (*it);
+		return false;
+	}
+	for (int i = m_ChildWndList.size()-1; i >= 0; i--)
+	{
+		CUIWindow* w = m_ChildWndList[i];
 		if (!w)
 		{
 			Msg("! Founded incorrect child window in [%s] childlist(%d)", *m_windowName, i);
@@ -394,8 +395,6 @@ bool CUIWindow::OnMouseAction(float x, float y, EUIMessages mouse_action)
 			}
 		}
 	}
-
-
 	return false;
 }
 
