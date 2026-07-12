@@ -72,15 +72,16 @@ private:
 	float				m_war_states_dx;
 	float				m_war_states_xcenter;
 	enum				{ max_war_state = FactionState::war_state_count };
-	UIWarState*			m_war_state[max_war_state];
+	FixedVector<UIWarState*, max_war_state> m_war_state;
 
 	enum				{ max_bonuce = 6 };
 	CUIStatic*			m_our_bonuces[max_bonuce];
 	CUIStatic*			m_enemy_bonuces[max_bonuce];
+	
+	u8					m_current_window = 0;
+	u8					m_factions_count = 0;
 
 	// ----------------------------------------
-	//shared_str			m_our_faction_id;
-	//shared_str			m_enemy_faction_id;
 	u32					m_update_delay;
 	u32					m_previous_time;
 
@@ -107,9 +108,11 @@ public:
 			bool		InitFactions			();
 			void		UpdateInfo				();
 			void		UpdateWarStates			( FactionState const& faction );
-//			void		set_amount_state_vs		( int value );
 			void		set_amount_our_bonus	( int value );
 			void		set_amount_enemy_bonus	( int value );
+
+	virtual bool 		OnGamepadKeyAction		(int id, EUIMessages gamepad_action);
+	virtual bool		OnGamepadKeyHold		(int key);
 
 			UIHint*		hint_wnd;
 	CUIGamepadLegend*	m_gamepad_legend = nullptr;
@@ -121,5 +124,7 @@ protected:
 			float		get_max_resource		();
 			float		get_max_power			();
 
+			void		TurnLeft				(bool loop = false);
+			void		TurnRight				(bool loop = false);
 }; // class CUIFactionWarWnd
 
