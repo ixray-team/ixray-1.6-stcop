@@ -82,7 +82,7 @@ void XRay::Engine::GameThread()
 	if (::Sound != nullptr)
 	{
 		Device.Statistic->Sound.Begin();
-		::Sound->update(Device.mView, Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
+		::Sound->update(Device.mView_saved, Device.vCameraPosition_saved, Device.vCameraDirection_saved, Device.vCameraTop_saved);
 		Device.Statistic->Sound.End();
 	}
 }
