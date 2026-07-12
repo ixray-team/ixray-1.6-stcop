@@ -51,9 +51,9 @@ const char* GetTitleStringIdForMode(CUIItemDropAmountWnd::EDropMode mode)
     }
 }
 
-void UpdateItemNameText(CUIStatic* itemNameText, CInventoryItem* item, int amount)
+void UpdateItemNameText(CUIStatic* itemNameText, CUICellItem* cellItem, CInventoryItem* item, int amount)
 {
-    if (itemNameText == nullptr || item == nullptr)
+	if (itemNameText == nullptr || cellItem == nullptr || item == nullptr)
     {
         return;
     }
@@ -65,9 +65,17 @@ void UpdateItemNameText(CUIStatic* itemNameText, CInventoryItem* item, int amoun
     CWeaponAmmo* weaponAmmo = item->cast_weapon_ammo();
     if (weaponAmmo != nullptr)
     {
+		s32 count = weaponAmmo->m_boxCurr;
+        for (u32 i = 1; i < amount; i++)
+        {
+			CUICellItem* itm = cellItem->Child(i-1);
+			CInventoryItem* iitm = (PIItem)itm->m_pData;
+			count += iitm->cast_weapon_ammo()->m_boxCurr;
+        }
+
         string256 ammoNameText;
         xr_sprintf(ammoNameText, "%s (%d)", *g_pStringTable->translate(invName.c_str()),
-            amount * (int)weaponAmmo->m_boxCurr);
+            count);
         itemNameText->SetText(ammoNameText);
     }
     else
@@ -158,7 +166,7 @@ void CUIItemDropAmountWnd::RecalculateLayout(CInventoryItem* pItem)
     // WTF?
 }
 
-void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode, CInventoryItem* pItem)
+void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode, CInventoryItem* pItem, CUICellItem* pCellItem)
 {
     if (_trackBar == nullptr)
     {
@@ -168,7 +176,8 @@ void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode, CInventoryIte
     _simpleDropMode = true;
     _maxAmount = (int)max;
     _pItem = pItem;
-    _currentAmount = (_maxAmount + 2) / 2;
+	_pCellItem = pCellItem;
+	_currentAmount = (_maxAmount + 2) / 2;
 
     Enable(true);
     ShowDialog(false);
@@ -184,7 +193,7 @@ void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode, CInventoryIte
 
     if (_pItem)
     {
-        UpdateItemNameText(_itemNameText, _pItem, _currentAmount);
+		UpdateItemNameText(_itemNameText, _pCellItem, _pItem, _currentAmount);
     }
     else
     {
@@ -204,7 +213,7 @@ void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode, CInventoryIte
     UpdateWeightText();
 }
 
-void CUIItemDropAmountWnd::Show(CInventoryItem* pItem, int maxAmount, std::function<void(int)> callback)
+void CUIItemDropAmountWnd::Show(CInventoryItem* pItem, CUICellItem* pCellItem, int maxAmount, std::function<void(int)> callback)
 {
     if (!callback)
     {
@@ -218,7 +227,8 @@ void CUIItemDropAmountWnd::Show(CInventoryItem* pItem, int maxAmount, std::funct
 
     _simpleDropMode = false;
     _pItem = pItem;
-    _maxAmount = maxAmount;
+	_pCellItem = pCellItem;
+	_maxAmount = maxAmount;
     _callback = std::move(callback);
     _currentAmount = (_maxAmount + 2) / 2;
 
@@ -231,7 +241,7 @@ void CUIItemDropAmountWnd::Show(CInventoryItem* pItem, int maxAmount, std::funct
 
     if (pItem)
     {
-        UpdateItemNameText(_itemNameText, pItem, _currentAmount);
+		UpdateItemNameText(_itemNameText, pCellItem, pItem, _currentAmount);
         if (_itemNameText->IsColorAnimationPresent())
         {
             _itemNameText->ResetColorAnimation();
@@ -261,7 +271,7 @@ void CUIItemDropAmountWnd::SyncValueToEdit()
 
     if (_pItem)
     {
-        UpdateItemNameText(_itemNameText, _pItem, _currentAmount);
+		UpdateItemNameText(_itemNameText, _pCellItem, _pItem, _currentAmount);
     }
 
     UpdateWeightText();
@@ -288,10 +298,20 @@ void CUIItemDropAmountWnd::UpdateWeightText()
 {
     if (!_pItem)
         return;
+
     float itemWeight = _pItem->m_pInventory ? _pItem->m_pInventory->CalcItemWeight(_pItem) : _pItem->Weight();
-    float weight = itemWeight * _currentAmount;
+    float weight = itemWeight;
+
+    for (u32 i = 1; i < _currentAmount; i++)
+	{
+		CUICellItem* itm = _pCellItem->Child(i - 1);
+		CInventoryItem* iitm = (PIItem)itm->m_pData;
+		weight += iitm->m_pInventory ? iitm->m_pInventory->CalcItemWeight(iitm) : iitm->Weight();
+	}
+
     const char* weightLabel = g_pStringTable->translate("st_weight").c_str();
     const char* kgLabel = g_pStringTable->translate("st_kg").c_str();
+
     string128 buf;
     xr_sprintf(buf, "%s: %.2f %s", weightLabel, weight, kgLabel);
     _weightText->SetText(buf);
