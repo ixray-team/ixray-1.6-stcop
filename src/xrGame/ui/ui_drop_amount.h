@@ -17,6 +17,7 @@ class CUI3tButton;
 class CUIEditBox;
 class CInventoryItem;
 class CUIGamepadLegend;
+class CUICellItem;
 
 class CUIItemDropAmountWnd final :
     public CUIDialogWnd,
@@ -40,8 +41,8 @@ public:
     bool HasInitializedLayout() const { return _trackBar != nullptr; }
 
     void InitDropAmount(CUIXml& uiXml);
-    void ShowDropAmount(u32 max, EDropMode mode, CInventoryItem* pItem = nullptr);
-    void Show(CInventoryItem* pItem, int maxAmount, std::function<void(int)> callback);
+    void ShowDropAmount(u32 max, EDropMode mode, CInventoryItem* pItem, CUICellItem* pCellItem);
+	void Show(CInventoryItem* pItem, CUICellItem* pCellItem, int maxAmount, std::function<void(int)> callback);
 
     void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = nullptr) override;
     bool OnKeyboardAction(int dik, EUIMessages keyboardAction) override;
@@ -73,7 +74,8 @@ private:
     int _currentAmount = 1;
     int _maxAmount = 1;
     CInventoryItem* _pItem = nullptr;
-    std::function<void(int)> _callback;
+	CUICellItem* _pCellItem = nullptr;
+	std::function<void(int)> _callback;
 
     void PerformDrop();
     void RecalculateLayout(CInventoryItem* pItem);
