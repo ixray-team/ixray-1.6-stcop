@@ -13,6 +13,7 @@
 class CUIStatic;
 class CUIFrameWindow;
 class CUIXml;
+class UIHintWindow;
 
 class UI_API UIHint : 
 	public CUIWindow
@@ -77,7 +78,7 @@ public:
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
-private:
+protected:
 	UIHint*			m_hint_wnd;
 	u32				m_hint_delay;
 	shared_str		m_hint_text;
