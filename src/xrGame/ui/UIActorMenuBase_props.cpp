@@ -270,8 +270,6 @@ void CUIActorMenuBase::PropertiesBoxForSlots(CUICellItem* cell_item, PIItem item
 
 	if (!pOutfit && !pHelmet && !pBackpack && cur_slot != NO_ACTIVE_SLOT && !pInv->SlotIsPersistent(cur_slot) && pInv->CanPutInSlot(item, cur_slot, true))
 	{
-		// need to precache this thing first, sorry
-		InventorySecondarySlotPairingStrict();
 		if (item && item->cast_weapon() && !InventorySecondarySlotPairingStrict() && (item->BaseSlot() == INV_SLOT_2 || item->BaseSlot() == INV_SLOT_3))
 		{
 			shared_str str = g_pStringTable->translate("st_move_to_slot");
