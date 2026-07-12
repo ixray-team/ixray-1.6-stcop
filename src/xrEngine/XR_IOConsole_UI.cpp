@@ -74,6 +74,7 @@ ICF void RenderCommandManipulator(IConsole_Command* Command, xr_vector<IConsole_
 		float max = std::clamp(ccc_float->max, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
 		if (ImGui::SliderFloat(ccc_float->Name(), &test, min, max))
 		{
+			clamp(test, min, max);
 			string32 String = {};
 			xr_sprintf(String, "%.3f", test);
 			ccc_float->Execute(String);
@@ -87,6 +88,7 @@ ICF void RenderCommandManipulator(IConsole_Command* Command, xr_vector<IConsole_
 		int test = ccc_integer->GetValue();
 		if (ImGui::SliderInt(ccc_integer->Name(), &test, ccc_integer->min, ccc_integer->max))
 		{
+			clamp(test, ccc_integer->min, ccc_integer->max);
 			string32 String = {};
 			xr_sprintf(String, "%i", test);
 			ccc_integer->Execute(String);
