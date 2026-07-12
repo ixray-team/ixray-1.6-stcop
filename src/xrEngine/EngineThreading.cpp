@@ -87,7 +87,7 @@ void XRay::Engine::PreRenderThread()
 
 void XRay::Engine::GameThread()
 {
-#ifndef ALLOW_SEH_EXCEPTIONS
+#ifdef ALLOW_SEH_EXCEPTIONS
 	if (!g_bThreadsSEHInited)
 	{
 		_set_se_translator(SEH_translator_Threads);
