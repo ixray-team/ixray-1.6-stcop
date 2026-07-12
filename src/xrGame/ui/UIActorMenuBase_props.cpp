@@ -746,7 +746,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		{
 			if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
 			{
-				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeFromOffer, item);
+				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeFromOffer, item, cell_item);
 			}
 		}
 		else
@@ -836,7 +836,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 				}
 				else if (m_pItemDropAmountWnd != nullptr && m_pItemDropAmountWnd->HasInitializedLayout() && d_ == (void*)INVENTORY_AMOUNT_CODE)
 				{
-					m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeDrop, item);
+					m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeDrop, item, cell_item);
 				}
 				else
 				{
@@ -856,7 +856,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 					}
 					else if (m_pItemDropAmountWnd != nullptr && m_pItemDropAmountWnd->HasInitializedLayout() && d_ == (void*)INVENTORY_AMOUNT_CODE && isAllowPlace)
 					{
-						m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeMove, item);
+						m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeMove, item, cell_item);
 					}
 					else if (isAllowPlace) 
 					{
@@ -871,7 +871,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 					}
 					else if (m_pItemDropAmountWnd != nullptr && m_pItemDropAmountWnd->HasInitializedLayout() && d_ == (void*)INVENTORY_AMOUNT_CODE)
 					{
-						m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeTake, item);
+						m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeTake, item, cell_item);
 					}
 					else
 					{
@@ -1050,7 +1050,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		{
 			if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
 			{
-				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeToOffer, item);
+				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeToOffer, item, cell_item);
 			}
 		}
 		else
@@ -1070,7 +1070,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		{
 			if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
 			{
-				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeToCart, item);
+				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeToCart, item, cell_item);
 			}
 		}
 		else
@@ -1090,7 +1090,7 @@ void CUIActorMenuBase::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		{
 			if (m_pItemDropAmountWnd && m_pItemDropAmountWnd->HasInitializedLayout())
 			{
-				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeFromCart, item);
+				m_pItemDropAmountWnd->ShowDropAmount(cell_item->ChildsCount(), CUIItemDropAmountWnd::eModeFromCart, item, cell_item);
 			}
 		}
 		else
