@@ -390,10 +390,9 @@ void CUIActorMenu::Update()
 		}
 	case mmTrade:
 		{
-			if (m_pPartnerInvOwner->inventory().ModifyFrame() != m_trade_partner_inventory_state)
-				InitPartnerInventoryContents();
-			
-			CheckDistance();
+			if(m_pPartnerInvOwner->inventory().ModifyFrame() != m_trade_partner_inventory_state)
+				InitPartnerInventoryContents	();
+			CheckDistance					();
 			break;
 		}
 	case mmUpgrade:
@@ -404,9 +403,6 @@ void CUIActorMenu::Update()
 		}
 	case mmDeadBodySearch:
 		{
-			m_takeall_button->Show(!pInput->GetControllerMode());
-			if (m_putall_button)
-				m_putall_button->Show(!pInput->GetControllerMode());
 			break;
 		}
 	default: R_ASSERT(0); break;
@@ -417,6 +413,28 @@ void CUIActorMenu::Update()
 	m_ItemInfo->Update();
 	m_hint_wnd->Update();
 	m_exit_button->Show(!pInput->GetControllerMode());
+
+	bool showForDeadbody = m_currMenuMode == mmDeadBodySearch && !pInput->GetControllerMode();
+	m_takeall_button->Show(showForDeadbody);
+	if (m_putall_button)
+	{
+		m_putall_button->Show(showForDeadbody);
+	}
+
+	bool showForTrade = m_currMenuMode == mmTrade && !pInput->GetControllerMode();
+
+	if (m_trade_button)
+	{
+		m_trade_button->Show(showForTrade);
+	}
+	if (m_trade_buy_button)
+	{
+		m_trade_buy_button->Show(showForTrade);
+	}
+	if (m_trade_sell_button)
+	{
+		m_trade_sell_button->Show(showForTrade);
+	}
 }
 
 void CUIActorMenu::CheckDistance()
