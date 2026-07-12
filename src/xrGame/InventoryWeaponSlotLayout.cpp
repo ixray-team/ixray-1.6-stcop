@@ -10,17 +10,17 @@ bool InventorySecondarySlotPairingStrict()
 	static bool cachedValue = false;
 	if (!isInitialized)
 	{
-		if (pSettings != nullptr)
+		if (pSettings == nullptr)
 		{
-			cachedValue = !!READ_IF_EXISTS(
-				pSettings,
-				r_bool,
-				"inventory",
-				"inventory_secondary_slot_pairing_strict",
-				false);
-			isInitialized = true;
+			return false;
 		}
-		return false;
+		cachedValue = !!READ_IF_EXISTS(
+			pSettings,
+			r_bool,
+			"inventory",
+			"inventory_secondary_slot_pairing_strict",
+			false);
+		isInitialized = true;
 	}
 	return cachedValue;
 }
