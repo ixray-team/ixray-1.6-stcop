@@ -204,10 +204,61 @@ void CPHWorld::SetGravity(float g)
 	dWorldSetGravity(phWorld, 0, -m_gravity, 0);
 }
 
+#if defined(DEBUG) && defined(IXR_WINDOWS) && (defined(_MSC_VER) || (defined(__clang__) && defined(_MSC_EXTENSIONS)))
+#define ALLOW_SEH_EXCEPTIONS
+#include <windows.h> // for EXCEPTION_ACCESS_VIOLATION
+#include <excpt.h>
+
+int ex_filter(unsigned int code, _EXCEPTION_POINTERS *ep)
+{
+	if (IsDebuggerPresent())
+	{
+		DebugBreak();
+	}
+	ProcessStackTrace(ep);
+	return EXCEPTION_EXECUTE_HANDLER;
+}
+
+class SEHExceptionPhysics
+{
+public:
+	EXCEPTION_POINTERS* info;
+	u32 code;
+
+	SEHExceptionPhysics(u32 c, EXCEPTION_POINTERS* i) : info(i), code(c)
+	{
+		ex_filter(code, info);
+	}
+};
+
+void SEH_translator_Physics(u32 code, _EXCEPTION_POINTERS* info)
+{
+	throw SEHExceptionPhysics(code, info);	
+}
+
+static std::atomic_bool g_bPhysicsSEHInited = false;
+
+#endif
+
 void CPHWorld::OnFrame()
 {
-	PROF_EVENT("CPHWorld::OnFrame");
-	FrameStep(Device.fTimeDelta);
+#ifdef ALLOW_SEH_EXCEPTIONS
+	if (!g_bPhysicsSEHInited)
+	{
+		_set_se_translator(SEH_translator_Physics);
+		g_bPhysicsSEHInited = true;
+	}
+	try
+#endif
+	{
+		PROF_EVENT("CPHWorld::OnFrame");
+		FrameStep(Device.fTimeDelta);
+#ifdef ALLOW_SEH_EXCEPTIONS
+	} catch(...)
+	{
+		FATAL("Unhandled exception in Physics!");
+#endif
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////
