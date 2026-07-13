@@ -15,7 +15,6 @@
 #include "ActorEffector.h"
 #include "math.h"
 #include "script_entity_action.h"
-#include "Inventory.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "Level.h"
@@ -25,10 +24,8 @@
 #include "../xrEngine/GameMtlLib.h"
 
 #include "CharacterPhysicsSupport.h"
-#include "car_memory.h"
 #include "../xrPhysics/IPHWorld.h"
 #include "../xrPhysics/IActivationShape.h"
-#include "CharacterPhysicsSupport.h"
 #include "UIGameSP.h"
 
 CCar::CCar()
@@ -41,7 +38,6 @@ CCar::CCar()
 	m_rpm_offsets.set(0, 0, 0);
 	m_speed_offsets.set(0, 0, 0);
 
-	m_memory = nullptr;
 	m_driver_anim_type = 0;
 	active_camera = 0;
 	camera[ectFirst] = new CCameraFirstEye(this, CCameraBase::flRelativeLink | CCameraBase::flPositionRigid);
@@ -97,22 +93,17 @@ CCar::~CCar(void)
 	xr_delete(m_car_sound);
 	ClearExhausts();
 	xr_delete(m_car_weapon);
-	xr_delete(m_memory);
 }
 
 void CCar::reinit()
 {
 	CEntity::reinit();
 	CScriptEntity::reinit();
-	if (m_memory)
-		m_memory->reinit();
 }
 
 void CCar::reload(const char* section)
 {
 	CEntity::reload(section);
-	if (m_memory)
-		m_memory->reload(section);
 }
 
 bool CCar::IsMyCar() const
@@ -190,12 +181,6 @@ bool CCar::net_Spawn(CSE_Abstract* DC)
 
 		if (pUserData->line_exist("car_definition", "trunk_bone"))
 			m_bone_trunk = PKinematics(Visual())->LL_BoneID(pUserData->r_string("car_definition", "trunk_bone"));
-
-		if (pUserData->section_exist("visual_memory_definition"))
-		{
-			m_memory = new car_memory(this);
-			m_memory->reload(pUserData->r_string("visual_memory_definition", "section"));
-		}
 	}
 	SpatialComponent->type |= ESPATIAL_TYPE::CAR;
 	return (CScriptEntity::net_Spawn(DC) && R);
@@ -438,8 +423,6 @@ void CCar::UpdateCL()
 	if (m_car_weapon)
 	{
 		m_car_weapon->UpdateCL();
-		if (m_memory)
-			m_memory->set_camera(m_car_weapon->ViewCameraPos(), m_car_weapon->ViewCameraDir(), m_car_weapon->ViewCameraNorm());
 	}
 	ASCUpdate();
 
@@ -2262,9 +2245,6 @@ void CCar::net_Relcase(CObject* O)
 {
 	CExplosive::net_Relcase(O);
 	inherited::net_Relcase(O);
-
-	if (m_memory)
-		m_memory->remove_links(O);
 }
 
 void CCar::ASCUpdate()
