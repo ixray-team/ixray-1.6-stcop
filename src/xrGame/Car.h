@@ -11,7 +11,6 @@
 #include "PHCollisionDamageReceiver.h"
 #include "CarDamageParticles.h"
 #include "xrServer_Objects_ALife.h"
-#include "CarDamageParticles.h"
 #include "hit_immunity.h"
 #include "Explosive.h"
 #include "PHDestroyable.h"
@@ -34,7 +33,6 @@ struct						dSurfaceParameters;
 #endif
 
 class CScriptEntityAction;
-class car_memory;
 
 class CCar final : 
 	public CEntity, 
@@ -570,7 +568,6 @@ private:
 	virtual CInventoryOwner*	cast_inventory_owner		()	{return this;}
 
 private:
-	car_memory	*m_memory;
 	struct SCarNetUpdate
 	{
 		u32	TimeStamp;
