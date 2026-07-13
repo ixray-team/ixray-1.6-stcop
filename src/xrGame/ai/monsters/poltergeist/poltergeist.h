@@ -13,10 +13,7 @@ class CTelekineticPoltergeist;
 class CWeaponMagazined;
 class CGrenade;
 
-class CPoltergeist final : public CBaseMonster,
-                           public CTelekinesis,
-                           public CEnergyHolder,
-						   public ITelekineticEnemy
+class CPoltergeist final : public CBaseMonster, public CTelekinesis, public CEnergyHolder, public ITelekineticEnemy
 {
 	using inherited = CBaseMonster;
 	using Energy = CEnergyHolder;
@@ -24,17 +21,17 @@ class CPoltergeist final : public CBaseMonster,
 	friend class CPoltergeisMovementManager;
 	friend class CTelekineticPoltergeist;
 
-	static constexpr f32 IMPULSE				= 10.0f;
-	static constexpr f32 IMPULSE_RADIUS			= 5.0f;
-	static constexpr f32 TRACE_DISTANCE			= 10.0f;
-	static constexpr u32 TRACE_ATTEMPT_COUNT	= 3;
-	
+	static constexpr f32 IMPULSE = 10.0f;
+	static constexpr f32 IMPULSE_RADIUS = 5.0f;
+	static constexpr f32 TRACE_DISTANCE = 10.0f;
+	static constexpr u32 TRACE_ATTEMPT_COUNT = 3;
+
 	float m_height;
 	bool m_disable_hide;
 
 	SMotionVel invisible_vel;
 	IPolter* m_poltergeist;
-	
+
 	xr_vector<CObject*> tele_objects;
 	bool m_actor_ignore;
 
@@ -55,7 +52,7 @@ class CPoltergeist final : public CBaseMonster,
 
 public:
 	bool m_detect_without_sight;
-	
+
 	CPoltergeist();
 	~CPoltergeist() override;
 
@@ -112,21 +109,21 @@ public:
 
 	void UpdateHeight();
 
-	// Invisibility 
+	// Invisibility
 
 	void EnableHide() { m_disable_hide = false; }
 	void DisableHide() { m_disable_hide = true; }
-	
+
 	CEntityAlive* get_enemy() override
 	{
 		const CEntityAlive* entity_alive = EnemyMan.get_enemy();
 		return entity_alive ? const_cast<CEntityAlive*>(entity_alive) : nullptr;
 	}
-	
+
 	float get_tele_distance() override;
 	u32 get_tele_keep_time() override;
 	CBaseMonster* get_self() override;
-	
+
 	bool run_home_point_when_enemy_inaccessible() const override { return false; }
 
 private:
@@ -167,10 +164,10 @@ public:
 
 class IPolter
 {
-	ref_sound		  m_sound_base;
+	ref_sound m_sound_base;
 	CParticlesObject* m_particles_object;
 	CParticlesObject* m_particles_object_electro;
-	
+
 	LPCSTR m_particles_hidden;
 	LPCSTR m_particles_damage;
 	LPCSTR m_particles_death;
@@ -180,7 +177,7 @@ class IPolter
 
 public:
 	CPoltergeist* m_poltergeist;
-	
+
 	IPolter(CPoltergeist* polter);
 	virtual ~IPolter();
 
@@ -281,7 +278,7 @@ public:
 	void on_destroy() override;
 	void on_die() override;
 	void UpdateCL() override;
-	
+
 private:
 	void select_state(SFlameElement* elem, EFlameState state);
 	bool get_valid_flame_position(const CObject* target_object, Fvector& res_pos);
@@ -293,57 +290,67 @@ class CTelekineticPoltergeist final : public IPolter
 public:
 	using inherited = IPolter;
 
-	xr_vector<ISpatialShared> m_nearest;
+	xr_vector<ISpatialShared> nearest_objects;
 
-	ref_sound m_sound_tele_hold;
-	ref_sound m_sound_tele_throw;
+	ref_sound sound_tele_hold;
+	ref_sound sound_tele_throw;
 
 	// external params
-	float m_pmt_radius;
-	float m_pmt_object_min_mass;
-	float m_pmt_object_max_mass;
-	float m_pmt_distance;
-	float m_pmt_object_height;
-	float m_pmt_raise_speed;
-	float m_pmt_fly_velocity;
-	float m_pmt_object_collision_damage;
+	float radius;
+	float object_min_mass;
+	float object_max_mass;
+	float distance;
+	float object_height;
+	float raise_speed;
+	float fly_velocity;
+	float object_collision_damage;
 
 	// Максимальное количество объектов, которые полтергейст может одновременно держать в воздухе (телекинез)
-	u32 m_pmt_object_count;
+	u32 object_count;
 
-	// Сколько времени (мс) полтергейст удерживает все поднятые объекты в "подвешенном" состоянии 
+	// Сколько времени (мс) полтергейст удерживает все поднятые объекты в "подвешенном" состоянии
 	// перед тем, как начать их бросать (фаза MAIN_PHASE / удержание перед атакой)
-	u32 m_pmt_time_to_hold;
+	u32 time_to_hold;
 
-	// Время паузы / отдыха (мс) после того, как полтергейст выкидал почти все объекты 
+	// Время паузы / отдыха (мс) после того, как полтергейст выкидал почти все объекты
 	// (переход в состояние WAIT -> следующая атака начинается только после этой паузы)
-	u32 m_pmt_time_to_wait;
+	u32 time_to_wait;
 
 	// Минимальная / базовая задержка (мс) между поднятием двух последовательных объектов
 	// во время фазы RAISE_OBJECTS (чем больше — тем медленнее подъём)
-	u32 m_pmt_time_to_wait_in_objects;
+	u32 time_to_wait_in_objects;
 
 	// Задержка (мс) между поднятием объектов в фазе RAISE_OBJECTS.
 	// За счёт этого объекты поднимаются друг за другом в случайное время.
-	u32 m_pmt_raise_time_to_wait_in_objects;
-	u32 m_pmt_time_object_keep;
-	
+	u32 raise_time_to_wait_in_objects;
+	u32 time_object_keep;
+
 	enum class ETeleState : u8
 	{
 		RAISE_OBJECTS,
 		MAIN_PHASE,
 		WAIT
 	} m_state;
-	
+
 	u32 m_state_start_time;
 	u32 m_state_next_update;
-	
-	u32 m_pmt_max_pickuped_weapons;
-	float m_pmt_autoaim_torque_factor;
-	u32 m_pmt_delay_before_first_shot;
-	shared_str m_pmt_particle_tele_object;
-	bool m_pmt_shooting_from_weapon_enable;
-	bool m_pmt_activate_n_throw_grenade;
+
+	u32 max_pickuped_weapons;
+	float autoaim_torque_factor;
+	u32 delay_before_first_shot;
+	shared_str particle_tele_object;
+	bool shooting_from_weapon_enable;
+	bool activate_n_throw_grenade;
+
+	f32 novice_difficulty_angular_speed;
+	f32 stalker_difficulty_angular_speed;
+	f32 veteran_difficulty_angular_speed;
+	f32 master_difficulty_angular_speed;
+
+	f32 novice_difficulty_error_angle;
+	f32 stalker_difficulty_error_angle;
+	f32 veteran_difficulty_error_angle;
+	f32 master_difficulty_error_angle;
 
 	CTelekineticPoltergeist(CPoltergeist* polter);
 	~CTelekineticPoltergeist() override;
