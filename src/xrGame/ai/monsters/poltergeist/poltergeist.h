@@ -33,10 +33,8 @@ class CPoltergeist final : public CBaseMonster,
 	bool m_disable_hide;
 
 	SMotionVel invisible_vel;
-
 	IPolter* m_poltergeist;
 	
-
 	xr_vector<CObject*> tele_objects;
 	bool m_actor_ignore;
 
@@ -61,17 +59,17 @@ public:
 	CPoltergeist();
 	~CPoltergeist() override;
 
-	virtual void Load(const char* section) override;
-	virtual void reload(const char* section) override;
-	virtual void reinit() override;
+	void Load(const char* section) override;
+	void reload(const char* section) override;
+	void reinit() override;
 
-	virtual bool net_Spawn(CSE_Abstract* DC) override;
-	virtual void net_Destroy() override;
-	virtual void net_Relcase(CObject* O) override;
+	bool net_Spawn(CSE_Abstract* DC) override;
+	void net_Destroy() override;
+	void net_Relcase(CObject* O) override;
 
-	virtual void UpdateCL() override;
-	virtual void shedule_Update(u32 dt) override;
-	virtual bool AlwaysTheCrow() override;
+	void UpdateCL() override;
+	void shedule_Update(u32 dt) override;
+	bool AlwaysTheCrow() override;
 
 	void set_actor_ignore(const bool actor_ignore) { m_actor_ignore = actor_ignore; }
 	bool get_actor_ignore() const { return m_actor_ignore; }
@@ -93,10 +91,10 @@ public:
 
 	void renderable_Render() override;
 
-	IC IPolter* ability() { return m_poltergeist; }
+	ICF IPolter* ability() { return m_poltergeist; }
 
 
-	IC bool is_hidden() { return state_invisible; }
+	ICF bool is_hidden() { return state_invisible; }
 
 
 	// Poltergeist ability
@@ -128,8 +126,7 @@ public:
 	float get_tele_distance() override;
 	u32 get_tele_keep_time() override;
 	CBaseMonster* get_self() override;
-
-public:
+	
 	bool run_home_point_when_enemy_inaccessible() const override { return false; }
 
 private:
@@ -163,7 +160,6 @@ public:
 #ifdef DEBUG
 	virtual CBaseMonster::SDebugInfo show_debug_info();
 #endif
-
 
 	friend class CFlamePoltergeist;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
@@ -250,7 +246,6 @@ class CFlamePoltergeist final : public IPolter
 	bool m_state_scanning;
 	u32 m_scan_next_time;
 
-
 	enum EFlameState
 	{
 		ePrepare,
@@ -281,11 +276,11 @@ public:
 	CFlamePoltergeist(CPoltergeist* polter);
 	~CFlamePoltergeist() override;
 
-	virtual void load(const char* section) override;
-	virtual void update_schedule() override;
-	virtual void on_destroy() override;
-	virtual void on_die() override;
-	virtual void UpdateCL() override;
+	void load(const char* section) override;
+	void update_schedule() override;
+	void on_destroy() override;
+	void on_die() override;
+	void UpdateCL() override;
 	
 private:
 	void select_state(SFlameElement* elem, EFlameState state);
@@ -353,12 +348,12 @@ public:
 	CTelekineticPoltergeist(CPoltergeist* polter);
 	~CTelekineticPoltergeist() override;
 
-	virtual void load(const char* section) override;
-	virtual void update_schedule() override;
-	virtual void update_frame() override;
-	virtual void UpdateCL() override;
+	void load(const char* section) override;
+	void update_schedule() override;
+	void update_frame() override;
+	void UpdateCL() override;
 
-	virtual CTelekineticPoltergeist* cast_to_polter_tele() override { return this; }
+	CTelekineticPoltergeist* cast_to_polter_tele() override { return this; }
 
 private:
 	void tele_find_objects(xr_vector<CObject*>& objects, const Fvector& pos);
