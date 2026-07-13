@@ -733,21 +733,51 @@ Tele_Object_Max_Mass					= 10000
 
 Tele_Shooting_From_Weapon_Enable        = on;                   Разрешает возможность стрелять с оружия по врагу.
 Tele_Activate_N_Throw_Grenade           = on;                   Разрешает выдрать чеку и кинуть гранату во врага.
-Tele_Max_Pickuped_Weapons				= 2; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
-Tele_AutoAim_Torque_Factor				= 0.5; 			    Множитель угловой скорости оружия. Чем больше - тем быстрее поворачивается оружие при автонаведении. (типа инерция)
+Tele_Max_Pickuped_Weapons				= 3; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
 Tele_Delay_Before_First_Shoot			= 0; 				    Задержка перед первым выстрелом. (in ms)
-Particle_Tele_Object					= static\fire_distort
+Particle_Tele_Object					= static\fire_distort;	Проигрываемый партикл под предметом, чисто для красоты.
 
+; Угловая скорость наведения оружия на врага.
+; Указывается в градусах/с. 
+; Нужно чтобы оружие не наводилось турель-like. Хотя, вы можете это сделлать, проставив везде 360.
+Novice_Difficulty_Angular_Speed			= 180.0
+Stalker_Difficulty_Angular_Speed		= 200.0
+Veteran_Difficulty_Angular_Speed		= 240.0
+Master_Difficulty_Angular_Speed			= 280.0
+
+; Погрешность наведения на врага, после которой можно стрелять. Указывается в градусах/с (1..180)
+; Чем ниже сложность - тем больше погрешность для начала стрельбы - тем больше будет потрачено патрон.
+; Настраивается вместе с параметрами %difficulty%_Angular_Speed, чтобы при низких уровнях сложности - оружие в случае идеального наведения на модель врага.
+; 1deg отклонения автоаима - оружие начнёт стрелять только в случае идеального наведения в центр модели врага.
+; 180deg отклонения - оружие начинает стрелять, даже когда смотрит в противоположну сторону, относительно врага.
+Novice_Difficulty_Error_Angle			= 30.0
+Stalker_Difficulty_Error_Angle			= 20.0
+Veteran_Difficulty_Error_Angle			= 15.0
+Master_Difficulty_Error_Angle			= 8
 
 ![m_burer_e] ;m_burer.ltx
 Tele_Time_To_Hold		 				= 10000
 Tele_Object_Min_Mass					= 1
 Tele_Object_Max_Mass					= 10000
-
 Tele_Shooting_From_Weapon_Enable        = on;                   Разрешает возможность стрелять с оружия по врагу.
 Tele_Activate_N_Throw_Grenade           = on;                   Разрешает выдрать чеку и кинуть гранату во врага.
-Tele_Max_Pickuped_Weapons				= 2; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
-Tele_AutoAim_Torque_Factor				= 0.5; 			    Множитель угловой скорости оружия. Чем больше - тем быстрее поворачивается оружие при автонаведении. (типа инерция)
+Tele_Max_Pickuped_Weapons				= 1; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
 Tele_Delay_Before_First_Shoot			= 0; 				    Задержка перед первым выстрелом. (in ms)
-Particle_Tele_Object					= static\fire_distort
+Particle_Tele_Object					= static\fire_distort;	Проигрываемый партикл под предметом, чисто для красоты.
 
+; Угловая скорость наведения оружия на врага. Указывается в градусах/с. 
+; Нужно чтобы оружие не наводилось турель-like. Хотя, вы можете это сделлать, проставив везде 360.
+Novice_Difficulty_Angular_Speed			= 180.0
+Stalker_Difficulty_Angular_Speed		= 200.0
+Veteran_Difficulty_Angular_Speed		= 240.0
+Master_Difficulty_Angular_Speed			= 280.0
+
+; Погрешность наведения на врага, после которой можно стрелять. Указывается в градусах/с (1..180)
+; Чем ниже сложность - тем больше погрешность для начала стрельбы - тем больше будет потрачено патрон.
+; Настраивается вместе с параметрами %difficulty%_Angular_Speed, чтобы при низких уровнях сложности - оружие в случае идеального наведения на модель врага.
+; 1deg отклонения автоаима - оружие начнёт стрелять только в случае идеального наведения в центр модели врага.
+; 180deg отклонения - оружие начинает стрелять, даже когда смотрит в противоположну сторону, относительно врага.
+Novice_Difficulty_Error_Angle			= 30.0
+Stalker_Difficulty_Error_Angle			= 20.0
+Veteran_Difficulty_Error_Angle			= 15.0
+Master_Difficulty_Error_Angle			= 8

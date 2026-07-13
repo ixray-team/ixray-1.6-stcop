@@ -8,165 +8,163 @@
 class CCharacterPhysicsSupport;
 class CBurerFastGravi;
 
-class CBurer final :	public CBaseMonster,
-				public CTelekinesis, public ITelekineticEnemy
+class CBurer final : public CBaseMonster, public CTelekinesis, public ITelekineticEnemy
 {
-
-	typedef		CBaseMonster				inherited;
-
-private:
-	xr_vector<ISpatialShared> m_nearest;
-
 public:
-	static		bool	can_scan;
+	using inherited = CBaseMonster;
+	using TTelekinesis = CTelekinesis;
 
-				u32		last_hit_frame;
-				u32		time_last_scan;
-	
+	xr_vector<ISpatialShared> nearest_objects;
+	static bool can_scan;
+	u32 last_hit_frame;
+	u32 time_last_scan;
 
-	typedef		CTelekinesis				TTelekinesis;
+	struct GraviObject
+	{
+		bool active;
+		Fvector cur_pos;
+		Fvector target_pos;
+		Fvector from_pos;
 
-	struct	GraviObject {
-		bool		active;
-		Fvector		cur_pos;
-		Fvector		target_pos;
-		Fvector		from_pos;
+		u32 time_last_update;
+		const CEntityAlive* enemy;
 
-		u32			time_last_update;
-
-		const CEntityAlive *enemy;
-		
-		GraviObject() {
+		GraviObject()
+		{
 			active = false;
-			enemy = 0;
-		}
-		
-		
-		void		activate(const CEntityAlive *e, const Fvector &cp, const Fvector &tp) {
-			active				= true;
-			from_pos			= cp;
-			cur_pos				= cp;
-			target_pos			= tp;
-			time_last_update	= Device.dwTimeGlobal;
-			enemy				= e;
+			enemy = nullptr;
 		}
 
-		void		deactivate() {
+		void activate(const CEntityAlive* e, const Fvector& cp, const Fvector& tp)
+		{
+			active = true;
+			from_pos = cp;
+			cur_pos = cp;
+			target_pos = tp;
+			time_last_update = Device.dwTimeGlobal;
+			enemy = e;
+		}
+
+		void deactivate()
+		{
 			active = false;
 		}
+	} gravi_object;
 
-	} m_gravi_object;
-
-	const char*	particle_gravi_wave;
+	const char* particle_gravi_wave;
 	const char* particle_gravi_prepare;
-	shared_str	particle_tele_object;
+	shared_str particle_tele_object;
 
-	//////////////////////////////////////////////////////////////////////////
-	// Sounds
-	ref_sound	sound_gravi_wave;
-	ref_sound	sound_scan;
-	
-	ref_sound	sound_tele_hold;
-	ref_sound	sound_tele_throw;
+	ref_sound sound_gravi_wave;
+	ref_sound sound_scan;
 
-	enum EBurerSounds {
-		eAdditionalSounds			= MonsterSound::eMonsterSoundCustom,
+	ref_sound sound_tele_hold;
+	ref_sound sound_tele_throw;
 
-		eMonsterSoundGraviAttack	= eAdditionalSounds | 0,
-		eMonsterSoundTeleAttack		= eAdditionalSounds | 1,
-	};	
-	//////////////////////////////////////////////////////////////////////////
+	enum EBurerSounds
+	{
+		eAdditionalSounds = MonsterSound::eMonsterSoundCustom,
+		eMonsterSoundGraviAttack = eAdditionalSounds | 0,
+		eMonsterSoundTeleAttack = eAdditionalSounds | 1,
+	};
 
 	struct gravi_params
 	{
-		float	speed;
-		u32		cooldown;
-		float	min_dist;
-		float	max_dist;
-		float	step;
-		TTime	time_to_hold;
-		float	radius;
-		float	impulse_to_objects;
-		float	impulse_to_enemy;
-		float	hit_power;
+		float speed;
+		u32 cooldown;
+		float min_dist;
+		float max_dist;
+		float step;
+		TTime time_to_hold;
+		float radius;
+		float impulse_to_objects;
+		float impulse_to_enemy;
+		float hit_power;
+	} gravi;
 
-	}		m_gravi;
+	u32 tele_max_handled_objects;
+	u32 tele_time_to_hold;
+	u32 tele_max_time;
 
-	u32		m_tele_max_handled_objects;
-	u32		m_tele_time_to_hold;
-	u32		m_tele_max_time;
-	float	m_tele_object_min_mass;
-	float	m_tele_object_max_mass;
-	float	m_tele_find_radius;
-	float	m_tele_min_distance;
-	float	m_tele_max_distance;
-	float	m_tele_raise_speed;
-	float	m_tele_fly_velocity;
-	float	m_tele_object_height;
+	float tele_object_min_mass;
+	float tele_object_max_mass;
+	float tele_find_radius;
+	float tele_min_distance;
+	float tele_max_distance;
+	float tele_raise_speed;
+	float tele_fly_velocity;
+	float tele_object_height;
 
-	float	m_weight_to_stamina_hit;
-	float	m_weapon_drop_stamina_k;
-	float	m_runaway_distance;
-	float	m_normal_distance;
-	TTime	m_max_runaway_time;
-	
-	float	m_weapon_drop_velocity;
+	float weight_to_stamina_hit;
+	float weapon_drop_stamina_k;
 
-	TTime	m_shield_cooldown;
-	TTime	m_shield_time;
-	TTime	m_shield_expire_time;
-	bool	m_shield_active;
-	const char*	m_shield_keep_particle;
-	TTime	m_shield_keep_particle_period;
-	float	m_shield_penetration_border = 4.0f;
-	float	m_shield_penetration_damage_coeff = 0.25f;
-	const char*	particle_fire_shield;
+	float runaway_distance;
+	float normal_distance;
+	TTime max_runaway_time;
+	float weapon_drop_velocity;
+	TTime shield_cooldown;
+	TTime shield_time;
+	TTime m_shield_expire_time;
+	bool m_shield_active;
+	const char* shield_keep_particle;
+	TTime shield_keep_particle_period;
+	float shield_penetration_border = 4.0f;
+	float shield_penetration_damage_coeff = 0.25f;
+	const char* particle_fire_shield;
 
-	CBurerFastGravi	*m_fast_gravi;
-	bool m_use_three_gravi_anims{};
-	
-	bool m_shooting_from_weapon_enable;
-	bool m_activate_n_throw_grenade;
-	u32 m_max_pickuped_weapons;
-	float m_autoaim_torque_factor;
-	u32 m_delay_before_first_shot;
+	CBurerFastGravi* fast_gravi;
+	bool use_three_gravi_anims;
 
-public:
-					CBurer				();
-	virtual			~CBurer				();	
+	bool shooting_from_weapon_enable;
+	bool activate_n_throw_grenade;
+	u32 max_pickuped_weapons;
+	u32 delay_before_first_shot;
+
+	f32 novice_difficulty_angular_speed;
+	f32 stalker_difficulty_angular_speed;
+	f32 veteran_difficulty_angular_speed;
+	f32 master_difficulty_angular_speed;
+
+	f32 novice_difficulty_error_angle;
+	f32 stalker_difficulty_error_angle;
+	f32 veteran_difficulty_error_angle;
+	f32 master_difficulty_error_angle;
+
+	CBurer();
+	~CBurer() override;
 
 
-	virtual void	reinit				();
-	virtual void	reload				(const char* section);
+	void reinit() override;
+	void reload(const char* section) override;
 
-	virtual void	Load				(const char* section);
-	virtual void	PostLoad			(const char* section);
+	void Load(const char* section) override;
+	void PostLoad(const char* section) override;
 
-	virtual void	net_Destroy			();
-	virtual void	net_Relcase			(CObject *O);
-	virtual	void	shedule_Update		(u32 dt);
-	virtual void	UpdateCL			();
-	virtual	void	Hit					(SHit* pHDS);
-	virtual void	Die					(CObject* who);
-	virtual void	CheckSpecParams		(u32 spec_params);
+	void net_Destroy() override;
+	void net_Relcase(CObject* O) override;
+	void shedule_Update(u32 dt) override;
+	void UpdateCL() override;
+	void Hit(SHit* pHDS) override;
+	void Die(CObject* who) override;
+	void CheckSpecParams(u32 spec_params) override;
 
-	virtual void	OnEvent(NET_Packet& P, u16 type);
-	void			StartGraviMP();
-	void			shieldParticlesMP();
+	void OnEvent(NET_Packet& P, u16 type) override;
+	void StartGraviMP();
+	void shieldParticlesMP();
 
-			void	UpdateGraviObject	();
-			void	UpdateGraviObjectCL();
+	void UpdateGraviObject();
+	void UpdateGraviObjectCL();
 
-			void	StartGraviPrepare	();
-			void	StopGraviPrepare	();
+	void StartGraviPrepare();
+	void StopGraviPrepare();
 
-			void	ActivateShield		();
-			void	DeactivateShield	();
+	void ActivateShield();
+	void DeactivateShield();
 
-			bool	need_shotmark () const { return !m_shield_active; }
+	bool need_shotmark() const override { return !m_shield_active; }
 
-	virtual bool	ability_distant_feel() {return true;}
-	virtual	char*	get_monster_class_name () { return (char*) "burer"; }
+	bool ability_distant_feel() override { return true; }
+	char* get_monster_class_name() override { return (char*)"burer"; }
 
 	CEntityAlive* get_enemy() override;
 	float get_tele_distance() override;
@@ -177,18 +175,16 @@ public:
 	virtual CBaseMonster::SDebugInfo show_debug_info();
 #endif
 
-			void			set_force_gravi_attack (bool force_gravi) { m_force_gravi_attack = force_gravi; }
-			bool			get_force_gravi_attack () const { return m_force_gravi_attack; }
+	void set_force_gravi_attack(bool force_gravi) { m_force_gravi_attack = force_gravi; }
+	bool get_force_gravi_attack() const { return m_force_gravi_attack; }
 
+	bool m_force_gravi_attack;
 
-private:
-			bool			m_force_gravi_attack;
-
-	void 			StaminaHit			();
+	void StaminaHit();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 
-			void	face_enemy					();
+	void face_enemy();
 };
 
-bool   actor_is_reloading_weapon ();
+bool actor_is_reloading_weapon();
