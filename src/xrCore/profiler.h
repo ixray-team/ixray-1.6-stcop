@@ -16,11 +16,11 @@
 #		define PROF_MEM_FREE_CAPTURE(Ptr);
 #	elifdef IXRAY_PROFILER_TRACY
 #		include <tracy/Tracy.hpp>
-#		include <tracy/TracyC.h>
 #		define TRACY_CALLSTACK 8
 #   	define PROF_THREAD(Name);
-#   	define PROF_START_THREAD(Name) TracyCZoneCtx zone; TracyFiberEnter(Name); TracyCZone(ctx, 1); zone = ctx;
-#   	define PROF_STOP_THREAD() TracyCZoneEnd(zone); TracyFiberLeave;
+#   	define PROF_START_THREAD(Name) TracyFiberEnter(Name);
+#   	define PROF_START_THREAD_HINT(Name, Hint) TracyFiberEnterHint(Name, Hint);
+#   	define PROF_STOP_THREAD() TracyFiberLeave;
 #   	define PROF_START_CAPTURE();
 #   	define PROF_STOP_CAPTURE();
 #   	define PROF_SAVE_CAPTURE(Name)
