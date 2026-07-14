@@ -193,6 +193,8 @@ void SaveCompilerCfg()
 	Serializer->Write("CUDA", gCompilerMode.CUDA);
 	Serializer->Write("EmbreeBVHCompact", gCompilerMode.EmbreeBVHCompact);
 	Serializer->Write("EmbreeBVHRobust", gCompilerMode.EmbreeBVHRobust);
+	Serializer->Write("EmbreeRays8", gCompilerMode.EmbreeRays8);
+	Serializer->Write("EmbreeInstaces", gCompilerMode.EmbreeInstaces);
 	Serializer->Write("ClearTemp", gCompilerMode.ClearTemp);
 	Serializer->Write("SkipTHM", gCompilerMode.SkipTHM);
    	
@@ -273,6 +275,8 @@ int APIENTRY WinMain
 	Serializer->Read("CUDA", gCompilerMode.CUDA);
 	Serializer->Read("EmbreeBVHCompact", gCompilerMode.EmbreeBVHCompact);
 	Serializer->Read("EmbreeBVHRobust", gCompilerMode.EmbreeBVHRobust);
+	Serializer->Read("EmbreeRays8", gCompilerMode.EmbreeRays8);
+	Serializer->Read("EmbreeInstaces", gCompilerMode.EmbreeInstaces);
 	Serializer->Read("ClearTemp", gCompilerMode.ClearTemp);
 	Serializer->Read("SkipTHM", gCompilerMode.SkipTHM);
  	Serializer->Read("LC_SkipStaticMap", gCompilerMode.LC_SkipStaticMap);
