@@ -33,7 +33,6 @@ void CUIActorMenu::InitUpgradeMode()
 		m_pPartnerInvOwner->StartTrading();
 
 	SetAreaSelectionTo(m_pInventoryBagList);
-//-	UpdateUpgradeItem();
 }
 
 void CUIActorMenu::DeInitUpgradeMode()
@@ -78,10 +77,7 @@ void CUIActorMenu::SetupUpgradeItem()
 	}
 	else
 	{
-		if (pInput->GetControllerMode())
-		{
-			m_upgrade_selected = nullptr;
-		}
+		m_upgrade_selected = nullptr;
 	}
 
 	m_pUpgradeWnd->InitInventory(CurrentItem(), can_upgrade);
@@ -89,13 +85,6 @@ void CUIActorMenu::SetupUpgradeItem()
 	{
 		m_upgrade_info->Show( false );
 	}
-
-	UpdateUpgradeItem();
-}
-
-void CUIActorMenu::UpdateUpgradeItem()
-{
-//	m_pUpgradeWnd->InitInventory( CurrentIItem() );
 }
 
 void CUIActorMenu::TrySetCurUpgrade()
