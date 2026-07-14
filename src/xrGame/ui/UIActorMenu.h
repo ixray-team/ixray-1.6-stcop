@@ -186,7 +186,6 @@ protected:
 	void						CheckDistance						();
 
 	virtual void				SetupUpgradeItem					();
-	void						UpdateUpgradeItem					();
 	virtual void				TrySetCurUpgrade					();
 	void						UpdateButtonsLayout					();
 

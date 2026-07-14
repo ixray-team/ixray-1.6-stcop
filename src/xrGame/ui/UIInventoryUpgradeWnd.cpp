@@ -139,6 +139,8 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 
 	if (cellItem == nullptr)
 	{
+		m_scheme_wnd->DetachAll();
+		m_scheme_wnd->Show(false);
 		return;
 	}
 
