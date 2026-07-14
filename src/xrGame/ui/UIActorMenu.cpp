@@ -397,7 +397,6 @@ void CUIActorMenu::Update()
 		}
 	case mmUpgrade:
 		{
-			UpdateUpgradeItem();
 			CheckDistance();
 			break;
 		}
