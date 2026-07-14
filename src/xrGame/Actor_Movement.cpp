@@ -184,10 +184,19 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 		}
 	}
 	// update player accel
-	if (mstate_wf & mcFwd) vControlAccel.z += 1;
-	if (mstate_wf & mcBack) vControlAccel.z += -1;
-	if (mstate_wf & mcRStrafe) vControlAccel.x += 1;
-	if (mstate_wf & mcLStrafe) vControlAccel.x += -1;
+	if (mstate_wf & mcFwd)
+	{
+		vControlAccel.z += mstate_wf & mcSprint ? leftStickThreshold.y : 1.0f;
+	}
+	if (mstate_wf & mcBack) vControlAccel.z += leftStickThreshold.y;
+	if (mstate_wf & mcRStrafe) vControlAccel.x += leftStickThreshold.x;
+	if (mstate_wf & mcLStrafe) vControlAccel.x += leftStickThreshold.x;
+
+	if (mstate_wf & mcAccel)
+	{
+		vControlAccel.x *= 2.0f;
+		vControlAccel.z *= 2.0f;
+	}
 
 	vControlAccel.normalize_safe();
 

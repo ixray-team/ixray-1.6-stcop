@@ -919,9 +919,9 @@ private:
 	float m_actor_burn_restore_speed = 0.0f;
 	float GetMaterialBurnRestoreSpeed(const char* mtl);
 	bool m_need_fire_particle = false;
-	bool isGamepadShooting = false;
-	bool isGamepadZooming = false;
 	CWristwatchController _wristwatchController;
+	Fvector2 leftStickThreshold;
+
 public:
 	virtual void SetActorSleepiness(const float value);
 	virtual void SetActorSatiety(const float value);
