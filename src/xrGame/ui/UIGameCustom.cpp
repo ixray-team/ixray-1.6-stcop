@@ -957,7 +957,14 @@ bool CChangeLevelWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 		{
 			case kUI_ACCEPT:
 			{
-				OnOk();
+				if (m_b_allow_change_level)
+				{
+					OnOk();
+				}
+				else
+				{
+					OnCancel();
+				}
 				return true;
 			}
 			case kUI_BACK:
