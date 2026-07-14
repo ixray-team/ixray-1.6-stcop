@@ -505,10 +505,22 @@ void CActor::IR_OnKeyboardHold(int dik)
 		if (eacFreeLook!=cam_active) cam_Active()->Move(bind, 0, LookFactor);	break;
 
 	case kACCEL:	mstate_wishful |= mcAccel;									break;
-	case kL_STRAFE:	mstate_wishful |= mcLStrafe;								break;
-	case kR_STRAFE:	mstate_wishful |= mcRStrafe;								break;
-	case kFWD:		mstate_wishful |= mcFwd;									break;
-	case kBACK:		mstate_wishful |= mcBack;									break;
+	case kL_STRAFE:	
+		leftStickThreshold.x = -1.0f;
+		mstate_wishful |= mcLStrafe;
+		break;
+	case kR_STRAFE:	
+		leftStickThreshold.x = 1.0f;
+		mstate_wishful |= mcRStrafe;
+		break;
+	case kFWD:		
+		leftStickThreshold.y = 1.0f;
+		mstate_wishful |= mcFwd;
+		break;
+	case kBACK:		
+		leftStickThreshold.y = -1.0f;
+		mstate_wishful |= mcBack;
+		break;
 	case kCROUCH:
 		{
 			if( !psActorFlags.test(AF_CROUCH_TOGGLE) )
@@ -646,6 +658,9 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 	{
 	case 0:
 	{
+		leftStickThreshold.x = (value.x > 0.f ? value.x - 0.2f : value.x + 0.2f) / 0.8f;
+		leftStickThreshold.y = (value.y > 0.f ? value.y - 0.2f : value.y + 0.2f) / 0.8f;
+
 		if (!fis_zero(value.x))
 		{
 			mstate_wishful |= (value.x > 0.f) ? mcRStrafe : mcLStrafe;
