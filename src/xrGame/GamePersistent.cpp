@@ -528,7 +528,6 @@ void CGamePersistent::UpdateParticles()
 		{
 			Device.secondary_tasks.run([i, dwTime]()
 			{
-				PROF_START_THREAD("update_particles");
 				std::sort(workers[i].second.begin(), workers[i].second.end(), [](xr_shared_ptr<CParticlesObject>& a, xr_shared_ptr<CParticlesObject>& b)
 				{
 					return Device.vCameraPosition_saved.distance_to_sqr(a->SpatialComponent->spatial.sphere.P) < Device.vCameraPosition_saved.distance_to_sqr(b->SpatialComponent->spatial.sphere.P);
@@ -539,7 +538,6 @@ void CGamePersistent::UpdateParticles()
 					particle->Update(dwTime - particle->dwLastTime, frustum);
 					particle->dwLastTime = dwTime;
 				}
-				PROF_STOP_THREAD();
 			});
 		}
 	}
