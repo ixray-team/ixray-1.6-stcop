@@ -18,6 +18,10 @@
 
 #include "../Include/xrRender/UIRender.h"
 
+#ifdef DEBUG_DRAW
+#	include <imgui_internal.h>
+#endif
+
 constexpr float UI_BASE_HEIGHT	= 768.0f;
 constexpr u32 cmd_history_max  = 64;
 
@@ -106,6 +110,21 @@ CConsole::CConsole() :
 
 bool clear_command_on_show = true;
 
+#ifdef DEBUG_DRAW
+void CConsole::RegisterImGuiConsoleSettingsHandler()
+{
+	ImGuiSettingsHandler h = {};
+	h.TypeName = "DebugConsoleVars";
+	h.TypeHash = ImHashStr("DebugConsoleVars");
+	h.ReadOpenFn = ImGuiReadOpenUIConsoleVars;
+	h.ReadLineFn = ImGuiReadLineUIConsoleVars;
+	h.WriteAllFn = ImGuiWriteAllUIConsoleVars;
+	ImGui::AddSettingsHandler(&h);
+	
+	DebugConsoleVarsSettingsHandler = ImGui::FindSettingsHandler("DebugConsoleVars");
+}
+#endif
+
 void CConsole::Initialize()
 {
 	scroll_delta	= 0;
@@ -135,11 +154,13 @@ void CConsole::Initialize()
 
 	CMD2(CCC_Boolean, "clear_command_on_show", &clear_command_on_show);
 
+#ifdef DEBUG_DRAW
 	if (!Device.IsEditorMode())
 	{
-		CImGuiManager::Instance().Subscribe("DebugConsole", CImGuiManager::ERenderPriority::eMedium, std::bind(&CConsole::DrawUIConsole, this));
-		CImGuiManager::Instance().Subscribe("DebugConsoleVars", CImGuiManager::ERenderPriority::eMedium, std::bind(&CConsole::DrawUIConsoleVars, this));
+		CImGuiManager::Instance().Subscribe("DebugConsole", CImGuiManager::ERenderPriority::eMedium, std::bind(&CConsole::ImGuiDrawUIConsole, this));
+		CImGuiManager::Instance().Subscribe("DebugConsoleVars", CImGuiManager::ERenderPriority::eMedium, std::bind(&CConsole::ImGuiDrawUIConsoleVars, this));
 	}
+#endif
 
 	string_path path;
 	FS.update_path(path, "$app_data_root$", m_config_name.c_str());
