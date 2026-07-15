@@ -33,6 +33,7 @@ private:
 	bool		m_bMakeScreenshot;
 	int			m_iLMScreenshotFragment;
 	bool		m_bMakeLevelMap;
+	bool		m_bEnableAcceleration = false;
 
 	float		m_fSpeed0;
 	float		m_fSpeed1;
@@ -55,10 +56,13 @@ public:
 	virtual		~CDemoRecord();
 
 	virtual void IR_OnKeyboardPress		(int dik);
+	virtual void IR_OnKeyboardRelease	(int dik);
 	virtual void IR_OnKeyboardHold		(int dik);
 	virtual void IR_OnMouseMove			(int dx, int dy);
 	virtual void IR_OnMouseHold			(int btn);
-	
+	virtual void IR_GamepadUpdateStick	(int id, Fvector2 value);
+	virtual void IR_GamepadKeyPress		(int id);
+
 	virtual bool ProcessCam				(SCamEffectorInfo& info);
 	static	void SetGlobalPosition		( const Fvector &p ) { g_position.p.set(p), g_position.set_position= true; }
 	static	void GetGlobalPosition		( Fvector &p ) { p.set( g_position.p ); }
