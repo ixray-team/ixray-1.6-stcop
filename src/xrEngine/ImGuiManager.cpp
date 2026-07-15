@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ImGuiManager.h"
 #include "IGame_Persistent.h"
+#include "XR_IOConsole.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -55,6 +56,11 @@ void CImGuiManager::InitPlatform()
 #ifdef IXR_WINDOWS
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
+
+#ifdef DEBUG_DRAW
+	Console->RegisterImGuiConsoleSettingsHandler();
+#endif
+
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking

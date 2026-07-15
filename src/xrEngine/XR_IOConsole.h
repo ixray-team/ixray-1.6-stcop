@@ -1,8 +1,4 @@
-// XR_IOConsole.h: interface for the CConsole class.
-//
-//////////////////////////////////////////////////////////////////////
-#ifndef XR_IOCONSOLE_H_INCLUDED
-#define XR_IOCONSOLE_H_INCLUDED
+#pragma once
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/UIShader.h"
@@ -10,6 +6,12 @@
 //refs
 class ENGINE_API CGameFont;
 class ENGINE_API IConsole_Command;
+
+#ifdef DEBUG_DRAW
+struct ImGuiSettingsHandler;
+struct ImGuiContext;
+struct ImGuiTextBuffer;
+#endif
 
 namespace text_editor
 {
@@ -100,8 +102,11 @@ private:
 	float			m_line_height;
 	shared_str		m_config_name;
 
-	void			DrawUIConsole();
-	void			DrawUIConsoleVars();
+#ifdef DEBUG_DRAW
+	void			ImGuiDrawUIConsole();
+	void			ImGuiDrawUIConsoleVars();
+	ImGuiSettingsHandler* DebugConsoleVarsSettingsHandler;
+#endif
 
 public:
 
@@ -141,6 +146,15 @@ public:
 	Fvector			GetFVector			( const char* cmd ) const;
 	Fvector*		GetFVectorPtr		( const char* cmd ) const;
 	IConsole_Command* GetCommand		( const char* cmd ) const;
+
+#ifdef DEBUG_DRAW
+	static void* ImGuiReadOpenUIConsoleVars(ImGuiContext* Ctx, ImGuiSettingsHandler* Handler, const char* Name);
+	static void ImGuiReadLineUIConsoleVars(ImGuiContext* Ctx, ImGuiSettingsHandler* Handler, void* Entry, const char* Line);
+	static void ImGuiWriteAllUIConsoleVars(ImGuiContext* Ctx, ImGuiSettingsHandler* Handler, ImGuiTextBuffer* OutBuf);
+	
+	void RegisterImGuiConsoleSettingsHandler();
+#endif
+
 protected:
 	text_editor::line_editor*			m_editor;
 	text_editor::line_edit_control&		ec();
@@ -216,5 +230,3 @@ protected:
 }; // class CConsole
 
 ENGINE_API extern CConsole* Console;
-
-#endif // XR_IOCONSOLE_H_INCLUDED
