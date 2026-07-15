@@ -26,7 +26,9 @@ void CUIRadialMenuWeapon::Init()
 {
 	CUIXml					uiXml;
 	if (uiXml.Load(CONFIG_PATH, UI_PATH, RADIAL_MENU_XML))
+	{
 		inherited::Init(&uiXml);
+	}
 }
 
 bool CUIRadialMenuWeapon::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
@@ -52,11 +54,13 @@ bool CUIRadialMenuWeapon::OnGamepadKeyAction(int key, EUIMessages gamepad_action
 			case kWPN_FIREMODE_NEXT:
 			{
 				owner->inventory().Action(kWPN_FIREMODE_NEXT, CMD_START);
+				PlaySnd(eSndFireMode);
 				return true;
 			}
 			case kWPN_FUNC:
 			{
 				owner->inventory().Action(kWPN_FUNC, CMD_START);
+				PlaySnd(eSndGrenadeMode);
 				return true;
 			}
 			case kDROP:
@@ -191,7 +195,7 @@ void	CUIRadialMenuWeapon::Draw()
 					trdd.width *= UI().get_current_kx();
 
 					UI().ClientToScreenScaledHeight(trdd.height);
-					
+
 					slotIcons[i]->SetShader(InventoryUtilities::GetEquipmentIconsShader(item->IconsTexture.c_str()));
 
 					Irect item_grid_rect = item->GetInvGridRect();
@@ -207,7 +211,7 @@ void	CUIRadialMenuWeapon::Draw()
 						trdd.width *= 0.6f;
 						trdd.height *= 0.6f;
 					}
-					const float angle = starting_angle + sector/2 + 2 * M_PI * i / float(sectors_count);
+					const float angle = starting_angle + sector / 2 + 2 * M_PI * i / float(sectors_count);
 
 					const float r = inner_radius + screen_height / 12.f;
 
@@ -240,6 +244,31 @@ void	CUIRadialMenuWeapon::Draw()
 						DrawItem(slotIcons[i], trdd, clrSlotIconBlocked);
 					}
 				}
+			}
+			// separate icon for empty hands
+			else if (slotId == NO_ACTIVE_SLOT)
+			{
+				// Draw item icon
+				TexturedRectDrawData trdd;
+				trdd.width = trdd.height = radius / 4;
+				UI().ClientToScreenScaledWidth(trdd.width);
+				trdd.width *= UI().get_current_kx();
+
+				UI().ClientToScreenScaledHeight(trdd.height);
+
+				slotIcons[i]->InitTexture(emptyIconName.c_str());
+
+				const float angle = starting_angle + sector / 2 + 2 * M_PI * i / float(sectors_count);
+
+				const float r = inner_radius + screen_height / 12.f;
+
+				trdd.x = center_x + cos(angle) * r;
+				trdd.y = center_y + sin(angle) * r;
+
+				UI().ClientToScreenScaledWidth(trdd.x);
+				UI().ClientToScreenScaledHeight(trdd.y);
+
+				DrawItem(slotIcons[i], trdd, clrSlotIcon);
 			}
 		}
 
