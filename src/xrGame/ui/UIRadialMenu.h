@@ -60,6 +60,8 @@ protected:
 		eSndClose,
 		eSndSwitch,
 		eSndSelect,
+		eSndFireMode,
+		eSndGrenadeMode,
 		eSndMax
 	};
 
@@ -96,5 +98,5 @@ protected:
 	u32 selected_color;
 	u32 sector_inner_side_color;
 	u32 sector_outer_side_color;
-
+	shared_str emptyIconName = "";
 };
