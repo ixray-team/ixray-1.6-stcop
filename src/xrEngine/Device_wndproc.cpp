@@ -59,16 +59,21 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 			if ((Value > 0 && Value < DEADZONE_SIZE) || (Value < 0 && Value > -DEADZONE_SIZE))
 				Value = 0;
 
+			float ValueReal = 0.0f;
+			if (!fis_zero(Value))
+			{
+				ValueReal = (Value > 0.f ? Value - 0.2f : Value + 0.2f) / 0.8f;
+			}
 			bool zeroVal = Value == 0.0f;
 			if (Event.gaxis.axis < 2)
 			{
 				bool isX = Event.gaxis.axis == 0;
-				pInput->LeftAxisUpdate(isX, Value);
+				pInput->LeftAxisUpdate(isX, ValueReal);
 			}
 			else if (Event.gaxis.axis < 4)
 			{
 				bool isX = Event.gaxis.axis == 2;
-				pInput->RightAxisUpdate(isX, Value);
+				pInput->RightAxisUpdate(isX, ValueReal);
 			}
 			else
 			{
@@ -80,7 +85,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 				}
 				pInput->GamepadButtonUpdate(dik, !zeroVal);
 				// L2 & R2 Triggers
-				pInput->AdaptiveTriggerUpdate(isX, Value);
+				pInput->AdaptiveTriggerUpdate(isX, ValueReal);
 			}
 			if (!zeroVal)
 			{
