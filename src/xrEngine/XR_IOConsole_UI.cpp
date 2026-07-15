@@ -1,169 +1,214 @@
 #include "stdafx.h"
 #include "xr_ioc_cmd.h"
 
-ICF void DrawFavoriteButton(IConsole_Command* cmd, xr_vector<IConsole_Command*>& fav_commands)
+#ifdef DEBUG_DRAW
+#include <imgui.h>
+#include <imgui_internal.h>
+
+auto FindFavIterator(xr_vector<const char*>& FavCommands, const char* Name)
+{
+	return std::ranges::find_if(FavCommands, [Name](const char* Fav)
+	{
+		return xr_strcmp(Fav, Name) == 0;
+	});
+}
+
+ICF void DrawFavoriteButton(IConsole_Command* Cmd, xr_vector<const char*>& FavCommands)
 {
     ImGui::SameLine();
-    bool is_fav = std::find(fav_commands.begin(), fav_commands.end(), cmd) != fav_commands.end();
 	
-    ImGui::PushID(cmd);
-    if (ImGui::SmallButton(is_fav ? "Unfavorite" : "Favorite"))
+    auto It = FindFavIterator(FavCommands, Cmd->Name());
+    bool IsFav = It != FavCommands.end();
+	
+    ImGui::PushID(Cmd);
+    if (ImGui::SmallButton(IsFav ? "Unfavorite" : "Favorite"))
     {
-        if (is_fav)
+        if (IsFav)
         {
-            auto it = std::find(fav_commands.begin(), fav_commands.end(), cmd);
-            fav_commands.erase(it);
+            xr_free(*It);
+            FavCommands.erase(It);
         }
         else
         {
-            fav_commands.push_back(cmd);
+            FavCommands.push_back(xr_strdup(Cmd->Name()));
         }
+        ImGui::MarkIniSettingsDirty();
     }
     ImGui::PopID();
 }
 
-ICF void RenderCommandManipulator(IConsole_Command* Command, xr_vector<IConsole_Command*>& fav_commands)
+ICF void RenderCommandManipulator(IConsole_Command* Command, xr_vector<const char*>& FavCommands)
 {
-	if (CCC_Mask16* ccc_mask16 = Command->dcast_mask16())
+	if (CCC_Mask16* Mask16 = Command->dcast_mask16())
 	{
-		bool val = ccc_mask16->GetValue();
-		if (ImGui::Checkbox(ccc_mask16->Name(), &val))
+		bool Val = Mask16->GetValue();
+		if (ImGui::Checkbox(Mask16->Name(), &Val))
 		{
-			ccc_mask16->Execute(val ? "1" : "0");
+			Mask16->Execute(Val ? "1" : "0");
 		}
-		DrawFavoriteButton(ccc_mask16, fav_commands);
+		DrawFavoriteButton(Mask16, FavCommands);
 		return;
 	}
 
-	if (CCC_Mask32* ccc_mask32 = Command->dcast_mask32())
+	if (CCC_Mask32* Mask32 = Command->dcast_mask32())
 	{
-		bool val = ccc_mask32->GetValue();
-		if (ImGui::Checkbox(ccc_mask32->Name(), &val))
+		bool Val = Mask32->GetValue();
+		if (ImGui::Checkbox(Mask32->Name(), &Val))
 		{
-			ccc_mask32->Execute(val ? "1" : "0");
+			Mask32->Execute(Val ? "1" : "0");
 		}
-		DrawFavoriteButton(ccc_mask32, fav_commands);
+		DrawFavoriteButton(Mask32, FavCommands);
 		return;
 	}
 
-	if (CCC_Mask64* ccc_mask64 = Command->dcast_mask64())
+	if (CCC_Mask64* Mask64 = Command->dcast_mask64())
 	{
-		bool val = ccc_mask64->GetValue();
-		if (ImGui::Checkbox(ccc_mask64->Name(), &val))
+		bool Val = Mask64->GetValue();
+		if (ImGui::Checkbox(Mask64->Name(), &Val))
 		{
-			ccc_mask64->Execute(val ? "1" : "0");
+			Mask64->Execute(Val ? "1" : "0");
 		}
-		DrawFavoriteButton(ccc_mask64, fav_commands);
+		DrawFavoriteButton(Mask64, FavCommands);
 		return;
 	}
 
-	if (CCC_Boolean* ccc_boolean = Command->dcast_bool())
+	if (CCC_Boolean* Boolean = Command->dcast_bool())
 	{
-		if (ImGui::Checkbox(ccc_boolean->Name(), ccc_boolean->value))
+		if (ImGui::Checkbox(Boolean->Name(), Boolean->value))
 		{
-			ccc_boolean->Execute(*ccc_boolean->value ? "1" : "0");
+			Boolean->Execute(*Boolean->value ? "1" : "0");
 		}
-		DrawFavoriteButton(ccc_boolean, fav_commands);
+		DrawFavoriteButton(Boolean, FavCommands);
 		return;
 	}
 
-	if (CCC_Float* ccc_float = Command->dcast_float())
+	if (CCC_Float* Float = Command->dcast_float())
 	{
-		float test = ccc_float->GetValue();
-		float min = std::clamp(ccc_float->min, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
-		float max = std::clamp(ccc_float->max, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
-		if (ImGui::SliderFloat(ccc_float->Name(), &test, min, max))
+		float Test = Float->GetValue();
+		float Min = std::clamp(Float->min, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
+		float Max = std::clamp(Float->max, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
+		if (ImGui::SliderFloat(Float->Name(), &Test, Min, Max))
 		{
-			clamp(test, min, max);
+			clamp(Test, Min, Max);
 			string32 String = {};
-			xr_sprintf(String, "%.3f", test);
-			ccc_float->Execute(String);
+			xr_sprintf(String, "%.3f", Test);
+			Float->Execute(String);
 		}
-		DrawFavoriteButton(ccc_float, fav_commands);
+		DrawFavoriteButton(Float, FavCommands);
 		return;
 	}
 
-	if (CCC_Integer* ccc_integer = Command->dcast_int())
+	if (CCC_Integer* Integer = Command->dcast_int())
 	{
-		int test = ccc_integer->GetValue();
-		if (ImGui::SliderInt(ccc_integer->Name(), &test, ccc_integer->min, ccc_integer->max))
+		int Value = Integer->GetValue();
+		if (ImGui::SliderInt(Integer->Name(), &Value, Integer->min, Integer->max))
 		{
-			clamp(test, ccc_integer->min, ccc_integer->max);
+			clamp(Value, Integer->min, Integer->max);
 			string32 String = {};
-			xr_sprintf(String, "%i", test);
-			ccc_integer->Execute(String);
+			xr_sprintf(String, "%i", Value);
+			Integer->Execute(String);
 		}
-		DrawFavoriteButton(ccc_integer, fav_commands);
+		DrawFavoriteButton(Integer, FavCommands);
 		return;
 	}
 
-	if (CCC_Token* ccc_token = Command->dcast_token())
+	if (CCC_Token* Token = Command->dcast_token())
 	{
-		int Id = (int)*ccc_token->value;
-		xr_token* tok = ccc_token->GetToken();
+		int Id = (int)*Token->value;
+		xr_token* TokenEntry = Token->GetToken();
 
 		const char* Value = "?";
-		while (tok->name)
+		while (TokenEntry->name)
 		{
-			if (tok->id == Id)
+			if (TokenEntry->id == Id)
 			{
-				Value = tok->name;
+				Value = TokenEntry->name;
 				break;
 			}
-			tok++;
+			TokenEntry++;
 		}
 
-		if (ImGui::BeginCombo(ccc_token->Name(), Value))
+		if (ImGui::BeginCombo(Token->Name(), Value))
 		{
-			int Id = (int)*ccc_token->value;
-			xr_token* tok = ccc_token->GetToken();
-			while (tok->name)
+			int Id = (int)*Token->value;
+			xr_token* TokenEntry = Token->GetToken();
+			while (TokenEntry->name)
 			{
-				if (ImGui::Selectable(tok->name, tok->id == Id))
+				if (ImGui::Selectable(TokenEntry->name, TokenEntry->id == Id))
 				{
-					ccc_token->Execute(tok->name);
+					Token->Execute(TokenEntry->name);
 				}
-				tok++;
+				TokenEntry++;
 			}
 			ImGui::EndCombo();
 		}
-		DrawFavoriteButton(ccc_token, fav_commands);
+		DrawFavoriteButton(Token, FavCommands);
 		return;
 	}
 
-	if (CCC_Vector3* ccc_vector3 = Command->dcast_vector())
+	if (CCC_Vector3* Vector3D = Command->dcast_vector())
 	{
-		auto& Val = *ccc_vector3->GetValuePtr();
-		float min = std::clamp(ccc_vector3->min.x, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
-		float max = std::clamp(ccc_vector3->max.x, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
-		if (ImGui::SliderFloat3(ccc_vector3->Name(), &Val.x, min, max))
+		auto& Val = *Vector3D->GetValuePtr();
+		float Min = std::clamp(Vector3D->min.x, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
+		float Max = std::clamp(Vector3D->max.x, -FLT_MAX / 2.0f, +FLT_MAX / 2.0f);
+		if (ImGui::SliderFloat3(Vector3D->Name(), &Val.x, Min, Max))
 		{
-			string64 str = {};
-			xr_sprintf(str, sizeof(str), "(%.3f, %.3f, %.3f)", Val.x, Val.y, Val.z);
-			ccc_vector3->Execute(str);
+			string64 Str = {};
+			xr_sprintf(Str, sizeof(Str), "(%.3f, %.3f, %.3f)", Val.x, Val.y, Val.z);
+			Vector3D->Execute(Str);
 		}
-		DrawFavoriteButton(ccc_vector3, fav_commands);
+		DrawFavoriteButton(Vector3D, FavCommands);
 	}
 }
 
-ICF bool IsPrimitiveWrapperImplemented(IConsole_Command* cmd)
+ICF bool IsPrimitiveWrapperImplemented(IConsole_Command* Cmd)
 {
-	// Нужно чтобы при вводе условного "help" мы не подсчитывали её в списке найденных команд, 
-	// поскольку CCC_Help не реализует манипуляцию над командой в виде GUI.
-	
-	// Если выше добавляется GUI манипулятор над CCC_ обёрткой примитива, просто надо докинуть её в конец,
-	// условия иначе команда она не будет подсчитываться и выводиться в поиске.
-	return cmd->dcast_bool() ||
-		   cmd->dcast_float() ||
-		   cmd->dcast_int() ||
-		   cmd->dcast_token() ||
-		   cmd->dcast_vector() ||
-		   cmd->dcast_mask16() ||
-		   cmd->dcast_mask32() ||
-		   cmd->dcast_mask64();
+	return Cmd->dcast_bool() ||
+		   Cmd->dcast_float() ||
+		   Cmd->dcast_int() ||
+		   Cmd->dcast_token() ||
+		   Cmd->dcast_vector() ||
+		   Cmd->dcast_mask16() ||
+		   Cmd->dcast_mask32() ||
+		   Cmd->dcast_mask64();
 }
 
-void CConsole::DrawUIConsoleVars()
+xr_vector<const char*> ImGuiConsoleDebugVarsSavedFavs;
+
+void* CConsole::ImGuiReadOpenUIConsoleVars(ImGuiContext* Ctx, ImGuiSettingsHandler* Handler, const char* Name)
+{
+	if (strcmp(Name, "Favorites") == 0)
+	{
+		for (const char* Cmd : ImGuiConsoleDebugVarsSavedFavs)
+		{
+			xr_free(Cmd);
+		}
+
+		ImGuiConsoleDebugVarsSavedFavs.clear();
+		return &ImGuiConsoleDebugVarsSavedFavs;
+	}
+	return nullptr;
+}
+
+void CConsole::ImGuiReadLineUIConsoleVars(ImGuiContext* Ctx, ImGuiSettingsHandler* Handler, void* Entry, const char* Line)
+{
+	if (Line != nullptr)
+	{
+		ImGuiConsoleDebugVarsSavedFavs.push_back(xr_strdup(Line));
+	}
+}
+
+void CConsole::ImGuiWriteAllUIConsoleVars(ImGuiContext* Ctx, ImGuiSettingsHandler* Handler, ImGuiTextBuffer* OutBuf)
+{
+	OutBuf->appendf("[%s][Favorites]\n", Handler->TypeName);
+	for (const char* cmd : ImGuiConsoleDebugVarsSavedFavs)
+	{
+		OutBuf->appendf("%s\n", cmd);
+	}
+	OutBuf->appendf("\n");  
+}
+
+void CConsole::ImGuiDrawUIConsoleVars()
 {
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::CmdVars)])
 	{
@@ -176,14 +221,13 @@ void CConsole::DrawUIConsoleVars()
 		return;
 	}
 
-	static u32 results_count = 0;
-	static string64 search_query;
-	static xr_vector<IConsole_Command*> fav_commands;
-	xr_vector<IConsole_Command*> filtered;
+	static u32 ResultsCount = 0;
+	static string64 SearchQuery = "";
+	xr_vector<IConsole_Command*> FilteredCommands;
 
 	ImGui::Text("Search:");
 	ImGui::SameLine();
-	ImGui::InputText("", search_query, sizeof(search_query));
+	ImGui::InputText("", SearchQuery, sizeof(SearchQuery));
 
 	for (const auto& [Name, Command] : Commands)
 	{
@@ -191,18 +235,18 @@ void CConsole::DrawUIConsoleVars()
 		{
 			continue;
 		}
-
-		if (std::find(fav_commands.begin(), fav_commands.end(), Command) != fav_commands.end())
+		
+		if (FindFavIterator(ImGuiConsoleDebugVarsSavedFavs, Name) != ImGuiConsoleDebugVarsSavedFavs.end())
 		{
 			continue;
 		}
 		
-		if (search_query[0] != '\0')
+		if (SearchQuery[0] != '\0')
 		{
 			xr_string name_lower(Name);
 			transform(name_lower.begin(), name_lower.end(), name_lower.begin(), tolower);
 			
-			xr_string filtered_lower(search_query);
+			xr_string filtered_lower(SearchQuery);
 			transform(filtered_lower.begin(), filtered_lower.end(), filtered_lower.begin(), tolower);
 			
 			if (name_lower.find(filtered_lower) == xr_string::npos)
@@ -210,10 +254,10 @@ void CConsole::DrawUIConsoleVars()
 				continue;
 			}
 		}
-		filtered.push_back(Command);
+		FilteredCommands.push_back(Command);
 	}
 
-	sort(filtered.begin(), filtered.end(), [](IConsole_Command* a, IConsole_Command* b)
+	sort(FilteredCommands.begin(), FilteredCommands.end(), [](IConsole_Command* a, IConsole_Command* b)
 	{
 		xr_string name_a(a->Name());
 		xr_string name_b(b->Name());
@@ -224,31 +268,35 @@ void CConsole::DrawUIConsoleVars()
 		return name_a < name_b; 
 	});
 
-	string64 search_count_text;
-	results_count = filtered.size();
-	xr_sprintf(search_count_text, "| Results: %u", results_count);
+	string64 SearchResultsCount;
+	ResultsCount = FilteredCommands.size();
+	xr_sprintf(SearchResultsCount, "| Results: %u", ResultsCount);
 
 	ImGui::SameLine();
-	ImGui::Text(search_count_text);
+	ImGui::Text(SearchResultsCount);
 
 	ImGui::Separator();
-
-	if (!fav_commands.empty())
+	
+	if (!ImGuiConsoleDebugVarsSavedFavs.empty())
 	{
 		ImGui::Text("Favorites:");
-		for (auto Command : fav_commands)
+		
+		for (const char* FavName : ImGuiConsoleDebugVarsSavedFavs)
 		{
-			RenderCommandManipulator(Command, fav_commands);
+			if (auto It = Commands.find(FavName); It != Commands.end())
+			{
+				RenderCommandManipulator(It->second, ImGuiConsoleDebugVarsSavedFavs);
+			}
 		}
 		ImGui::Separator();
 	}
 	
-	if (!filtered.empty())
+	if (!FilteredCommands.empty())
 	{
 		ImGui::Text("Commands:");
-		for (auto Command : filtered)
+		for (auto Command : FilteredCommands)
 		{
-			RenderCommandManipulator(Command, fav_commands);
+			RenderCommandManipulator(Command, ImGuiConsoleDebugVarsSavedFavs);
 		}
 	}
 	else
@@ -258,7 +306,7 @@ void CConsole::DrawUIConsoleVars()
 	ImGui::End();
 }
 
-void CConsole::DrawUIConsole()
+void CConsole::ImGuiDrawUIConsole()
 {
 	ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
 	if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::CmdConsole)]) {
@@ -315,3 +363,5 @@ void CConsole::DrawUIConsole()
 	ImGui::EndChild();
 	ImGui::End();
 }
+
+#endif
