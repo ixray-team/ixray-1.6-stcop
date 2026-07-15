@@ -72,16 +72,14 @@ void CWeaponStatMgun::OnGamepadAxisMove(int id, Fvector2 value)
 
 		if (value.x)
 		{
-			float realVal = (value.x > 0.f ? value.x - 0.2f : value.x + 0.2f) / 0.8f;
-			float d = float(realVal) * scale * 8;
+			float d = value.x * scale * 8;
 			h -= d;
 			SetDesiredDir(h, p);
 		}
 
 		if (value.y)
 		{
-			float realVal = (value.y > 0.f ? value.y - 0.2f : value.y + 0.2f) / 0.8f;
-			float d = (psGamepadInvert ? -1 : 1) * realVal * scale * 3.f / 4.f;
+			float d = (psGamepadInvert ? -1 : 1) * value.y * scale * 3.f / 4.f;
 			d *= 8;
 			p -= d;
 			SetDesiredDir(h, p);

@@ -45,6 +45,12 @@ bool IInputReceiver::IR_GetKeyState(int dik)
 	return pInput->iGetAsyncKeyState(dik);
 }
 
+bool IInputReceiver::IR_GetGamepadKeyState(int id)
+{
+	VERIFY(pInput);
+	return pInput->iGetAsyncGamepadKeyState(id);
+}
+
 bool IInputReceiver::IR_GetBtnState(int btn)
 {
 	VERIFY(pInput);
