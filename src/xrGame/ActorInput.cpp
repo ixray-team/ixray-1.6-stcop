@@ -658,8 +658,7 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 	{
 	case 0:
 	{
-		leftStickThreshold.x = (value.x > 0.f ? value.x - 0.2f : value.x + 0.2f) / 0.8f;
-		leftStickThreshold.y = (value.y > 0.f ? value.y - 0.2f : value.y + 0.2f) / 0.8f;
+		leftStickThreshold = value;
 
 		if (!fis_zero(value.x))
 		{
@@ -671,8 +670,8 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 			mstate_wishful |= (value.y > 0.f) ? mcFwd : mcBack;
 		}
 
-		if (std::abs(value.y) < 0.5f
-			&& std::abs(value.x) < 0.5f
+		if (std::abs(value.y) < 0.375f
+			&& std::abs(value.x) < 0.375f
 			&& !(mstate_real & mcCrouch))
 		{
 			mstate_wishful |= mcAccel;
@@ -692,15 +691,13 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 
 		if (!fis_zero(value.x))
 		{
-			float realVal = (value.x > 0.f ? value.x - 0.2f : value.x + 0.2f) / 0.8f;
-			float d = realVal * scale * 8;
+			float d = value.x * scale * 8;
 			cam_Active()->Move((d < 0) ? kLEFT : kRIGHT, std::abs(d));
 		}
 
 		if (!fis_zero(value.y))
 		{
-			float realVal = (value.y > 0.f ? value.y - 0.2f : value.y + 0.2f) / 0.8f;
-			float d = (psGamepadInvert ? -1 : 1) * realVal * scale * 3.f / 4.f;
+			float d = (psGamepadInvert ? -1 : 1) * value.y * scale * 3.f / 4.f;
 			d *= 8;
 
 			cam_Active()->Move((d > 0) ? kUP : kDOWN, std::abs(d));

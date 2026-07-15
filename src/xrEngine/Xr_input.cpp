@@ -93,7 +93,7 @@ void CInput::GamepadButtonUpdate(int SDLCode, bool IsPressed)
 	GPState[SDLCode] = IsPressed;
 }
 
-#define DEADZONE_RADIUS_UI 0.5f
+#define DEADZONE_RADIUS_UI 0.375f
 void CInput::LeftAxisUpdate(bool IsX, float value)
 {
 	if (IsX)

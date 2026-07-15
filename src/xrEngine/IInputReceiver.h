@@ -11,6 +11,7 @@ public:
 	void			IR_GetMousePosIndependent		(Fvector2 &f);
 	void			IR_GetMousePosIndependentCrop	(Fvector2 &f);
 	bool			IR_GetKeyState					(int dik);
+	bool			IR_GetGamepadKeyState			(int id);
 	bool			IR_GetBtnState					(int btn);
 	void			IR_Capture						(void);
 	void			IR_Release						(void);
