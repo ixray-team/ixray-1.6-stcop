@@ -81,6 +81,8 @@ void CUIRadialMenu::Init(CUIXml* pXml)
 	::Sound->create(sounds[eSndClose], pXml->Read("snd_close", 0, nullptr), st_Effect, sg_SourceType);
 	::Sound->create(sounds[eSndSwitch], pXml->Read("snd_switch_slot", 0, nullptr), st_Effect, sg_SourceType);
 	::Sound->create(sounds[eSndSelect], pXml->Read("snd_select_slot", 0, nullptr), st_Effect, sg_SourceType);
+	::Sound->create(sounds[eSndFireMode], pXml->Read("snd_fire_mode", 0, nullptr), st_Effect, sg_SourceType);
+	::Sound->create(sounds[eSndGrenadeMode], pXml->Read("snd_grenade_mode", 0, nullptr), st_Effect, sg_SourceType);
 	pXml->SetLocalRoot(stored_root);
 
 	const char* pPath = "wheel_menu_params";
@@ -121,7 +123,8 @@ void CUIRadialMenu::Init(CUIXml* pXml)
 	m_pGamepadLegend->SetAutoDelete(true);
 	AttachChild(m_pGamepadLegend);
 
-	CUIXmlInit::InitGamepadLegend(*pXml, ":gamepad_legend", 0, m_pGamepadLegend);
+	CUIXmlInit::InitGamepadLegend(*pXml, "gamepad_legend", 0, m_pGamepadLegend);
+	emptyIconName = pXml->Read("texture_empty_hands", 0, "ui_rm_icon_empty");
 	isInitialized = true;
 }
 
@@ -178,7 +181,7 @@ bool CUIRadialMenu::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	{
 		if (!fis_zero(pos.x) || !fis_zero(pos.y))
 		{
-			if (!bWaitForZeroRStick && std::abs(pos.magnitude()) > 25.f)
+			if (!bWaitForZeroRStick && std::abs(pos.magnitude()) > 30.f)
 			{
 				float angle = atan2(pos.y, pos.x) + 2 * M_PI;
 				int focus_index = iFloor(((angle - starting_angle) * sectors_count) / (2 * M_PI)) % sectors_count;
@@ -203,7 +206,7 @@ bool CUIRadialMenu::OnGamepadStickAction(int key, Fvector2 value, EUIMessages ga
 	{
 		if (!fis_zero(value.x) || !fis_zero(value.y))
 		{
-			if (!bWaitForZeroRStick && std::abs(value.magnitude()) > 0.6f)
+			if (!bWaitForZeroRStick && std::abs(value.magnitude()) > 0.75f)
 			{
 				float angle = atan2(value.y, value.x) + 2 * M_PI;
 				int focus_index = iFloor(((angle - starting_angle) * sectors_count) / (2 * M_PI)) % sectors_count;
