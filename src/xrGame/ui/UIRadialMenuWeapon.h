@@ -2,7 +2,6 @@
 
 #include "UIRadialMenu.h"
 
-
 class CInventoryItem;
 class CInventory;
 

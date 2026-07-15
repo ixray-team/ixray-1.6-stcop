@@ -1,0 +1,5 @@
+<w>
+	<file name="ui\ui_icon_empty">
+		<texture id="ui_rm_icon_empty" x="0" y="0" width="200" height="200" />
+	</file>
+</w>
