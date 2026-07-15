@@ -351,12 +351,12 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 			speed=m_fSpeed2; 
 			ang_speed=m_fAngSpeed2;
 		}else 
-		if (IR_GetKeyState(SDL_SCANCODE_LCTRL))
+		if (m_bEnableAcceleration)
 		{ 
 			speed=m_fSpeed3; 
 			ang_speed=m_fAngSpeed3;
 		}
-		
+
 		m_vT.mul				(m_vVelocity, Device.fTimeDelta * speed);
 		m_vR.mul				(m_vAngularVelocity, Device.fTimeDelta * ang_speed);
 
@@ -406,6 +406,10 @@ bool CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 void CDemoRecord::IR_OnKeyboardPress	(int dik)
 {
 	if (dik == SDL_SCANCODE_KP_MULTIPLY)	m_b_redirect_input_to_level	= !m_b_redirect_input_to_level;
+	if (dik == SDL_SCANCODE_LCTRL)
+	{
+		m_bEnableAcceleration = true;
+	}
 
 	if(m_b_redirect_input_to_level)
 	{
@@ -550,4 +554,93 @@ void CDemoRecord::MakeLevelMapScreenshot(bool bHQ)
 void CDemoRecord::OnRender()
 {
 	//g_FontManager->OnRender();
+}
+
+void CDemoRecord::IR_GamepadUpdateStick(int id, Fvector2 value)
+{
+	Fvector vR_delta = Fvector().set(0, 0, 0);
+	Fvector vT_delta = Fvector().set(0, 0, 0);
+	// Left stick
+	switch (id)
+	{
+		case 0:
+		{
+			if (!fis_zero(value.x))
+			{
+				vT_delta.x += value.x;
+			}
+
+			if (!fis_zero(value.y))
+			{
+				vT_delta.y += value.y;
+			}
+		}
+		break;
+		// Right stick
+		case 1:
+		{
+			float scale = Device.fTimeDelta * psMouseSensScale;
+
+			if (!fis_zero(value.x))
+			{
+				float d = value.x * scale * 160;
+				vR_delta.y += d;
+			}
+
+			if (!fis_zero(value.y))
+			{
+				float d = (psGamepadInvert ? -1 : 1) * value.y * scale * 3.f / 4.f;
+				d *= 160;
+
+				vR_delta.x += d;
+			}
+		}
+		break;
+		// Triggers
+		case 2:
+		{
+			// Left
+			if (!fis_zero(value.x))
+			{
+				vT_delta.z -= value.x;
+			}
+			// Right
+			if (!fis_zero(value.y))
+			{
+				vT_delta.z += value.y;
+			}
+		}
+		break;
+	}
+	update_whith_timescale(m_vR, vR_delta);
+	update_whith_timescale(m_vT, vT_delta);
+}
+
+void CDemoRecord::IR_GamepadKeyPress(int id) 
+{
+	switch (id)
+	{
+		case SDL_GAMEPAD_BUTTON_EAST:
+		{
+			fLifeTime = -1;
+			break;
+		}
+		case SDL_GAMEPAD_BUTTON_LEFT_STICK:
+		{
+			m_bEnableAcceleration = !m_bEnableAcceleration;
+			break;
+		}
+	}
+}
+
+void CDemoRecord::IR_OnKeyboardRelease(int dik)
+{
+	switch (dik)
+	{
+		case SDL_SCANCODE_LCTRL:
+		{
+			m_bEnableAcceleration = false;
+			break;
+		}
+	}
 }
