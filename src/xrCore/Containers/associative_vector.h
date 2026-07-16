@@ -8,71 +8,77 @@
 
 #pragma once
 
-#include "associative_vector_compare_predicate.h"
-
-template <
-	typename _key_type,
-	typename _data_type,
-	typename _compare_predicate_type = std::less<_key_type>
->
-class associative_vector : 
-	protected
-		xr_vector<
-			std::pair<
-				_key_type,
-				_data_type
-			>
-		>,
-	protected
-		associative_vector_compare_predicate<
-			_key_type,
-			_data_type,
-			_compare_predicate_type
-		>
+template <typename in_key_type, typename in_data_type, typename in_compare_predicate_type>
+class associative_vector_compare_predicate :
+	public in_compare_predicate_type
 {
 private:
-	typedef 
-		associative_vector<
-			_key_type,
-			_data_type,
-			_compare_predicate_type
-		>													self_type;
-
-	typedef 
-		xr_vector<
-			std::pair<
-				_key_type,
-				_data_type
-			>
-		>													inherited;
+	using inherited = in_compare_predicate_type;
 
 public:
-	typedef 
-		associative_vector_compare_predicate<
-			_key_type,
-			_data_type,
-			_compare_predicate_type
-		>													value_compare;
+	using _key_type = in_key_type;
+	using _data_type = in_data_type;
+	using _compare_predicate_type = in_compare_predicate_type;
 
 public:
-	typedef typename inherited::allocator_type				allocator_type;
-	typedef typename inherited::const_pointer				const_pointer;
-	typedef typename inherited::const_reference				const_reference;
-	typedef typename inherited::const_iterator				const_iterator;
-	typedef typename inherited::const_reverse_iterator		const_reverse_iterator;
-	typedef typename inherited::pointer						pointer;
-	typedef typename inherited::reference					reference;
-	typedef typename inherited::iterator					iterator;
-	typedef typename inherited::reverse_iterator			reverse_iterator;
-	typedef typename allocator_type::difference_type		difference_type;
-	typedef _compare_predicate_type							key_compare;
-	typedef _key_type										key_type;
-	typedef _data_type										mapped_type;
-	typedef typename inherited::size_type					size_type;
-	typedef typename inherited::value_type					value_type;
-	typedef std::pair<iterator,bool>						insert_result;
-	typedef std::pair<iterator,iterator>					equal_range_result;
-	typedef std::pair<const_iterator,const_iterator>		const_equal_range_result;
+	using value_type = std::pair<_key_type, _data_type>;
+
+public:
+	associative_vector_compare_predicate() = default;
+	associative_vector_compare_predicate(const _compare_predicate_type& compare_predicate)
+		: inherited(compare_predicate) {};
+
+	bool operator()(const _key_type& lhs, const _key_type& rhs) const
+	{
+		return (inherited::operator()(lhs, rhs));
+	}
+
+	bool operator()(const value_type& lhs, const value_type& rhs) const
+	{
+		return (operator()(lhs.first, rhs.first));
+	}
+
+	bool operator()(const value_type& lhs, const _key_type& rhs) const
+	{
+		return (operator()(lhs.first, rhs));
+	}
+
+	bool operator()(const _key_type& lhs, const value_type& rhs) const
+	{
+		return (operator()(lhs, rhs.first));
+	}
+};
+
+template <typename _key_type, typename _data_type, typename _compare_predicate_type = std::less<_key_type>>
+class associative_vector : 
+	protected xr_vector<std::pair<_key_type, _data_type>>,
+	protected associative_vector_compare_predicate<_key_type, _data_type, _compare_predicate_type>
+{
+private:
+	using self_type = associative_vector<_key_type, _data_type, _compare_predicate_type>;
+	using inherited = xr_vector<std::pair<_key_type,_data_type>>;
+
+public:
+    using value_compare = associative_vector_compare_predicate<_key_type, _data_type, _compare_predicate_type>;
+
+    using allocator_type = typename inherited::allocator_type;
+    using const_pointer = typename inherited::const_pointer;
+    using const_reference = typename inherited::const_reference;
+    using const_iterator = typename inherited::const_iterator;
+    using const_reverse_iterator = typename inherited::const_reverse_iterator;
+    using pointer = typename inherited::pointer;
+    using reference = typename inherited::reference;
+    using iterator = typename inherited::iterator;
+    using reverse_iterator = typename inherited::reverse_iterator;
+    using difference_type = typename allocator_type::difference_type;
+    using key_compare = _compare_predicate_type;
+    using key_type = _key_type;
+    using mapped_type = _data_type;
+    using size_type = typename inherited::size_type;
+    using value_type = typename inherited::value_type;
+    using insert_result = std::pair<iterator, bool>;
+    using equal_range_result = std::pair<iterator, iterator>;
+    using const_equal_range_result = std::pair<const_iterator, const_iterator>;
 
 private:
 	IC		void						actualize			() const;
@@ -111,7 +117,6 @@ public:
 	IC		const_equal_range_result	equal_range			(const key_type &key) const;
 	IC		size_type					count				(const key_type &key) const;
 	IC		size_type					max_size			() const;
-//	IC		size_type					size				() const;
 	IC		u32							size				() const;
 	IC		bool						empty				() const;
 	IC		key_compare					key_comp			() const;
@@ -146,22 +151,10 @@ public:
 	IC		bool						operator!=			(const self_type &right) const;
 };
 
-template <
-	typename _key_type,
-	typename _data_type,
-	typename _compare_predicate_type
->
-IC			void					swap				(
-				associative_vector<
-					_key_type,
-					_data_type,
-					_compare_predicate_type
-				>	&left,
-				associative_vector<
-					_key_type,
-					_data_type,
-					_compare_predicate_type
-				>	&right
-			);
+template <typename _key_type, typename _data_type, typename _compare_predicate_type>
+IC void swap(associative_vector<_key_type, _data_type, _compare_predicate_type>	&left, associative_vector<_key_type, _data_type, _compare_predicate_type> &right)
+{
+	left.swap(right);
+}
 
 #include "associative_vector_inline.h"
