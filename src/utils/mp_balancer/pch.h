@@ -9,7 +9,7 @@
 #include "iostreams_proxy.h"
 #include "tools.hpp"
 #include "../../xrServerEntities/object_broker.h"
-#include "../../xrCore/associative_vector.h"
+#include "../../xrCore/Containers/associative_vector.h"
 
 #include <winnls.h>
 

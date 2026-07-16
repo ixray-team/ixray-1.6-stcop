@@ -17,7 +17,7 @@ private:
 	enum {max_team_count = 64};
 
 private:
-	typedef svector<CTeamHierarchyHolder*,max_team_count> TEAM_REGISTRY;
+	typedef FixedVector<CTeamHierarchyHolder*,max_team_count> TEAM_REGISTRY;
 
 private:
 	TEAM_REGISTRY					m_teams;
