@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../xrCore/associative_vector.h"
+#include "../xrCore/Containers/associative_vector.h"
 
 #define MIN_LEGS_COUNT	1
 #define MAX_LEGS_COUNT	4 

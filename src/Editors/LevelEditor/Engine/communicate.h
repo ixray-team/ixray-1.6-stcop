@@ -75,7 +75,7 @@ struct b_light_static	: public b_light	// For static lighting
 
 struct b_light_dynamic	: public b_light	// For dynamic models
 {
-	svector<u16,16>		sectors;
+	FixedVector<u16,16>		sectors;
 };
 
 struct b_glow
@@ -90,7 +90,7 @@ struct b_portal
 {
 	u16					sector_front;
 	u16					sector_back;
-	svector<Fvector,XR_MAX_PORTAL_VERTS>	vertices;
+	FixedVector<Fvector,XR_MAX_PORTAL_VERTS>	vertices;
 };
 
 struct b_lod_face
