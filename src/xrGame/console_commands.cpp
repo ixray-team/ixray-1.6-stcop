@@ -2864,7 +2864,7 @@ void CCC_RegisterCommands()
 
 	CMD2(CCC_Boolean, "g_fight_fast_respawn", &g_fight_fast_respawn);
 
-	CMD4(CCC_Float, "g_bobbing_factor", &g_bobbing_factor, 0.3f, 1.0f);
+	CMD4(CCC_Float, "g_bobbing_factor", &g_bobbing_factor, 0.f, 1.0f);
 
 #ifdef DEBUG
 	CMD4(CCC_Float, "ai_smart_cover_animation_speed_factor", &g_smart_cover_animation_speed_factor, .1f, 10.f);
