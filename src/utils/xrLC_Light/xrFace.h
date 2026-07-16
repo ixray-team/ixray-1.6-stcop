@@ -56,7 +56,7 @@ struct XRLC_LIGHT_API DataFace	: public base_Face
 public:
 
  	Fvector					N;				// face normal
- 	svector<_TCF,2>			tc;				// TC
+ 	FixedVector<_TCF,2>			tc;				// TC
 
 	void*					pDeflector;		// does the face has LM-UV map?
 	CLightmap*				lmap_layer;

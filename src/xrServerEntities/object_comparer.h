@@ -53,13 +53,13 @@ struct CComparer {
 	}
 
 	template <typename T, int size>
-	IC	static bool compare(const svector<T,size> &_1, const svector<T,size> &_2, const P &p)
+	IC	static bool compare(const FixedVector<T,size> &_1, const FixedVector<T,size> &_2, const P &p)
 	{
 		if (_1.size() != _2.size())
 			return					(p());
 		
-		typename svector<T,size>::const_iterator	I = _1.begin(), J = _2.begin();
-		typename svector<T,size>::const_iterator	E = _1.end();
+		typename FixedVector<T,size>::const_iterator	I = _1.begin(), J = _2.begin();
+		typename FixedVector<T,size>::const_iterator	E = _1.end();
 		for ( ; I != E; ++I, ++J)
 			if (!compare(*I,*J,p))
 				return				(false);

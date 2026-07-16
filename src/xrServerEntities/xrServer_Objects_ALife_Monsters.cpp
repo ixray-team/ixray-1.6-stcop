@@ -1212,8 +1212,8 @@ CSE_ALifeMonsterAbstract::CSE_ALifeMonsterAbstract(const char* caSection)	: CSE_
 	{
 		string64					S;
 		m_fpImmunityFactors.resize	(ALife::eHitTypeMax);
-		svector<float,ALife::eHitTypeMax>::iterator	B = m_fpImmunityFactors.begin(), I = B;
-		svector<float,ALife::eHitTypeMax>::iterator	E = m_fpImmunityFactors.end();
+		FixedVector<float,ALife::eHitTypeMax>::iterator	B = m_fpImmunityFactors.begin(), I = B;
+		FixedVector<float,ALife::eHitTypeMax>::iterator	E = m_fpImmunityFactors.end();
 
 		const char* imm_section = caSection;
 		if(pSettings->line_exist(caSection, "immunities_sect"))

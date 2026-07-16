@@ -32,11 +32,11 @@ struct UI_API S2DVert
 
 #define UI_FRUSTUM_MAXPLANES	12
 #define UI_FRUSTUM_SAFE			(UI_FRUSTUM_MAXPLANES*4)
-typedef svector<S2DVert,UI_FRUSTUM_SAFE>		sPoly2D;
+typedef FixedVector<S2DVert,UI_FRUSTUM_SAFE>		sPoly2D;
 
 class UI_API C2DFrustum
 {
-	svector<Fplane2, UI_FRUSTUM_MAXPLANES> planes;
+	FixedVector<Fplane2, UI_FRUSTUM_MAXPLANES> planes;
 	Frect						m_rect;
 public:
 	void		CreateFromRect	(const Frect& rect);

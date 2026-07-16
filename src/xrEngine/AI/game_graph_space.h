@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../../xrCore/associative_vector.h"
+#include "../../xrCore/Containers/associative_vector.h"
 #include "../xrLevel.h"
 
 namespace GameGraph 
@@ -152,7 +152,7 @@ namespace GameGraph
 
 	struct STerrainPlace
 	{
-		svector<_LOCATION_ID, LOCATION_TYPE_COUNT> tMask;
+		FixedVector<_LOCATION_ID, LOCATION_TYPE_COUNT> tMask;
 	};
 
 	using TERRAIN_VECTOR = xr_vector<STerrainPlace>;
