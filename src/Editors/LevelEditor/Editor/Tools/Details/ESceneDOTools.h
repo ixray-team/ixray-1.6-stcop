@@ -11,7 +11,7 @@ struct SIndexDist{
     float	cnt[4];
 	SIndexDist(){ZeroMemory(this,sizeof(SIndexDist));}
 };
-using SIndexDistVec = svector<SIndexDist,4>;
+using SIndexDistVec = FixedVector<SIndexDist,4>;
 using SIndexDistIt = SIndexDistVec::iterator;
 
 using ColorIndexMap = xr_map<u32,DOVec>;

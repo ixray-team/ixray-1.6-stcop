@@ -12,7 +12,7 @@ struct OGF_Texture
 	shared_str			name;
 	b_texture*			pBuildSurface;
 };
-typedef svector<OGF_Texture,3>		vecOGF_T;
+typedef FixedVector<OGF_Texture,3>		vecOGF_T;
 typedef vecOGF_T::iterator			itOGF_T;
 
 struct OGF;
@@ -23,7 +23,7 @@ struct OGF_Vertex
 	base_basis			T;			// tangent
 	base_basis			B;			// binormal
 	base_color			Color;
-	svector<Fvector2,2>	UV;
+	FixedVector<Fvector2,2>	UV;
 
 	bool				similar		(OGF* p, OGF_Vertex&	other);
 	void				dump		(u32 id);

@@ -3,7 +3,7 @@
 
 #include "../xrCore/fastdelegate.h"
 #include "../xrCore/net_utils.h"
-#include "../xrCore/associative_vector.h"
+#include "../xrCore/Containers/associative_vector.h"
 
 #define FILTERS_COUNT 32
 

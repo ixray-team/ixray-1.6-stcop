@@ -8,10 +8,11 @@
 
 #pragma once
 
-#include "../xrCore/associative_vector.h"
+#include "../xrCore/Containers/associative_vector.h"
 #include "trade_factors.h"
 
-class CTradeFactorParameters {
+class CTradeFactorParameters
+{
 public:
 	typedef associative_vector<shared_str,CTradeFactors>	FACTORS;
 

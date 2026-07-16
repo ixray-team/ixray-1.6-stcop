@@ -1,5 +1,5 @@
 #pragma once
-#include "../xrCore/RingBufferEx.h"
+#include "../xrCore/Containers/RingBufferEx.h"
 #include "IStreamPlayer.h"
 
 struct ALCcontext;

@@ -20,7 +20,7 @@ class CPortal :
 #endif
 {
 private:
-	svector<Fvector,8>				poly;
+	FixedVector<Fvector,8>				poly;
 	CSector							*pFace,*pBack;
 public:
 	Fplane							P;
@@ -30,7 +30,7 @@ public:
 
 	void							Setup								(Fvector* V, int vcnt, CSector* face, CSector* back);
 
-	svector<Fvector,8>&				getPoly()							{ return poly;		}
+	FixedVector<Fvector,8>&				getPoly()							{ return poly;		}
 	CSector*						Back()								{ return pBack;		}
 	CSector*						Front()								{ return pFace;		}
 	CSector*						getSector		(CSector* pFrom)	{ return pFrom==pFace?pBack:pFace; }

@@ -10,7 +10,7 @@
 #include "../xrEngine/Feel_Sound.h"
 #include "../xrEngine/Feel_Touch.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "../xrCore/associative_vector.h"
+#include "../xrCore/Containers/associative_vector.h"
 #include "trajectories.h"
 
 

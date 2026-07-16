@@ -88,7 +88,7 @@ public:
 	// Global vertex-buffer container
 	xr_vector<FSlideWindowItem>									SWIs;
 	xr_vector<ref_shader>										Shaders;
-	using VertexDeclarator = svector<RHIInputElementDesc, 65>;
+	using VertexDeclarator = FixedVector<RHIInputElementDesc, 65>;
 	xr_vector<VertexDeclarator>									nDC,xDC;
 	xr_vector<IRHIBuffer*>							nVB,xVB;
 	xr_vector<IRHIBuffer*>							nIB,xIB;

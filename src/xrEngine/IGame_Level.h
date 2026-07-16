@@ -21,7 +21,7 @@ private:
 		u32			color;
 	};
 	enum { max_item = 15 };
-	svector<SItem_ServerInfo,max_item>	data;
+	FixedVector<SItem_ServerInfo,max_item>	data;
 
 public:
 	u32		Size()			{ return data.size(); }

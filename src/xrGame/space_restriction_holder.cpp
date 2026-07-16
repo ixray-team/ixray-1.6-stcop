@@ -96,7 +96,7 @@ shared_str CSpaceRestrictionHolder::normalize_string		(shared_str space_restrict
 	*string_current			= j;
 	++string_current;
 
-	//2. sort the vector (svector???)
+	//2. sort the vector (FixedVector???)
 	std::sort				(strings,string_current,pred_str());
 
 	//3. copy back to another temp string, based on sorted vector

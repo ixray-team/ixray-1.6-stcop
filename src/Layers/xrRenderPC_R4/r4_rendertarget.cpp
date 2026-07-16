@@ -258,7 +258,7 @@ Ivector	vpack			(Fvector src)
 void	generate_jitter	(DWORD*	dest, u32 elem_count)
 {
 	const	int		cmax		= 8;
-	svector<Ivector2,cmax>		samples;
+	FixedVector<Ivector2,cmax>		samples;
 	while (samples.size()<elem_count*2)
 	{
 		Ivector2	test;

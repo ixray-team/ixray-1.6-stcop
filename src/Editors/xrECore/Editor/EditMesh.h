@@ -138,7 +138,7 @@ struct ECORE_API st_SVert{
 		bone		(){w=0.f;id=BI_NONE;}
 		bool		similar		(const bone& b){return (id==b.id) && fsimilar(w,b.w,EPS_L);}
 	};
-	svector<bone,4> bones;
+	FixedVector<bone,4> bones;
 	protected:
 		static bool compare_by_weight(const bone& a, const bone& b)
 		{

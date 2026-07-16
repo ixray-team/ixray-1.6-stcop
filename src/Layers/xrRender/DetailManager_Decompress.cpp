@@ -117,7 +117,7 @@ void CDetailManager::UnpackSlotItems(Slot* S)
 		for (u32 x=0; x<=d_size; x++)
 		{
 			// Iterpolate and dither palette
-			svector<int, dm_obj_in_slot>selected;
+			FixedVector<int, dm_obj_in_slot>selected;
 
 			if ((DS.id0!=DetailSlot::ID_Empty)) selected.push_back(0);
 			if ((DS.id1!=DetailSlot::ID_Empty)) selected.push_back(1);

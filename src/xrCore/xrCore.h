@@ -98,7 +98,7 @@
 
 #include "clsid.h"
 #include "xrSyncronize.h"
-#include "RingBuffer.h"
+#include "Containers/RingBuffer.h"
 #include "memory/xrMemory.h"
 
 #include "_stl_extensions.h"
@@ -106,14 +106,13 @@
 #include "_thread_types.h"
 #include "shared_string.h"
 #include "xrstring.h"
-#include "FixedVector.h"
+#include "Containers/FixedVector.h"
 #include "xr_resource.h"
 #include "compression/rtc/rt_compressor.h"
 #include "xr_shared.h"
 #include "string_concatenations.h"
 #include "xr_path.h"
 #include "stack_string.h"
-#include "Combinable.h"
 #include <magic_enum/magic_enum.hpp>
 // stl ext
 struct XRCORE_API xr_rtoken

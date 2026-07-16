@@ -39,7 +39,7 @@ void dxLensFlareRender::Render(CLensFlare &owner, bool bSun, bool bFlares, bool 
 	Fvector vecDx, vecDy;
 	float fDistance = FAR_DIST * 0.75f;
 	dwLight.set(owner.LightColor);
-	svector<ref_shader, MAX_Flares> _2render;
+	FixedVector<ref_shader, MAX_Flares> _2render;
 
 	u32 VS_Offset;
 	struct LITF

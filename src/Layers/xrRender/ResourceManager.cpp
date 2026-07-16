@@ -117,7 +117,7 @@ void	CResourceManager::_ParseList(sh_list& dest, const char* names)
 
 	ZeroMemory			(&dest, sizeof(dest));
 	char*	P			= (char*) names;
-	svector<char,128>	N;
+	FixedVector<char,128>	N;
 
 	while (*P)
 	{

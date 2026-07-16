@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../xrCore/associative_vector.h"
+#include "../xrCore/Containers/associative_vector.h"
 #include "inventory_item_object.h"
 
 #include "inventory_upgrade_base.h"

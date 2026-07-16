@@ -30,7 +30,7 @@
 #include "../../3rd-party/MagicSoftware/FreeMagic/Include/MgcConvexHull2D.h"
 
 #include "../xrCore/doug_lea_allocator.h"
-#include "../xrCore/FixedMap.h"
+#include "../xrCore/Containers/FixedMap.h"
 
 #include "../../xrEngine/LightAnimLibrary.h"
 #include "../../xrEngine/motion.h"
