@@ -346,4 +346,5 @@ public:
 	virtual void				UpdatePrices				() {}
 	void						ReloadGamepadLegend			();
 	CUIGamepadLegend*			m_gamepad_legend = nullptr;
+	bool m_should_show_gamepad_legend = true;
 };
