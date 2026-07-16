@@ -457,6 +457,15 @@ void pda_switch_zoom(CUIPdaWnd* pda)
 	}
 }
 
+void ActorMenu_ShowGamepadLegend(CUIActorMenu* menu, bool b)
+{
+	if (!menu)
+	{
+		return;
+	}
+	menu->m_should_show_gamepad_legend = b;
+}
+
 #pragma optimize("s",on)
 void CUIActorMenu::script_register(lua_State *L)
 {
@@ -497,8 +506,9 @@ void CUIActorMenu::script_register(lua_State *L)
 				.def("GetInvBox", &ActorMenuGetInvbox_script)
 				.def("SetPartner", &ActorMenuSetPartner_script)
 				.def("SetInvBox", &ActorMenuSetInvbox_script)
-				.def("SetActor", &ActorMenuSetActor_script),
-				
+				.def("SetActor", &ActorMenuSetActor_script)
+				.def("ShowGamepadLegend", &ActorMenu_ShowGamepadLegend),
+			
 			class_< CUIPdaWnd, CUIDialogWnd>("CUIPdaWnd")
 				.def(constructor<>())
 				.def("IsShown", &CUIPdaWnd::IsShown)
