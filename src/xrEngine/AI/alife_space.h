@@ -35,16 +35,19 @@ class CSE_ALifeItemWeapon;
 class CSE_ALifeSchedulable;
 class CGameGraph;
 
-namespace ALife {
-	typedef u64	_CLASS_ID;									// Class ID
-	typedef u16	_OBJECT_ID;									// Object ID
-	typedef u64	_TIME_ID;									// Time  ID
-	typedef u32	_EVENT_ID;									// Event ID
-	typedef u32	_TASK_ID;									// Event ID
-	typedef u16	_SPAWN_ID;									// Spawn ID
-	typedef u16	_TERRAIN_ID;								// Terrain ID
-	typedef u32 _STORY_ID;									// Story ID
-	typedef u32 _SPAWN_STORY_ID;							// Spawn Story ID
+namespace ALife
+{
+	using _CLASS_ID = u64;		 // Class ID
+	using _OBJECT_ID = u16;		 // Object ID
+	using _TIME_ID = u64;		 // Time  ID
+	using _EVENT_ID = u32;		 // Event ID
+	using _TASK_ID = u32;		 // Event ID
+	using _SPAWN_ID = u16;		 // Spawn ID
+	using _TERRAIN_ID = u16;	 // Terrain ID
+	using _STORY_ID = u32;		 // Story ID
+	using _SPAWN_STORY_ID = u32; // Spawn Story ID
+
+	constexpr _OBJECT_ID _ACTOR_ID = 0; // Actor net id is always 0.
 
 	struct SSumStackCell {
 		int						i1;

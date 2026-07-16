@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrPhysics/ExtendedGeom.h"
 
 class CGameObject;
 class CPhysicsShellHolder;
@@ -69,6 +70,7 @@ struct STelekineticObject
 	virtual void throw_object_time(const Fvector& target, float time);
 	virtual void throw_update();
 	virtual void update_state();
+	static  void collision_callback(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2);
 	ICF virtual bool is_released() const { return state == ETelekineticState::TS_NONE; }
 	virtual void switch_state(ETelekineticState new_state);
 	ICF virtual ETelekineticState get_state() const { return state; }
