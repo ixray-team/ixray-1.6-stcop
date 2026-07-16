@@ -160,7 +160,6 @@ function actor_binder:net_destroy()
 				end
 		xrs_dyn_music.stop_sound()
 				object_binder.net_destroy(self)
---		xr_sound.stop_all_sounds()
 				xr_s.on_actor_destroy()                                       --' Distemper 03.2008 --
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -307,7 +306,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 
 function actor_binder:task_callback(_task, _state)
-		if _state ~= task.fail then
+	if _state ~= task.fail then
 		if _state == task.completed then
 			news_manager.send_task(db.actor, "complete", _task)
 		else
@@ -615,7 +614,7 @@ function actor_binder:save(packet)
 --		minigames_manager.get_minigames_manager():save(packet)
 
 		SendScriptCallback("save", packet) -- IX-Ray
-		SendScriptCallback("actor_on_save", reader) -- IX-Ray
+		SendScriptCallback("actor_on_save", packet) -- IX-Ray
 		
 		set_save_marker(packet, "save", true, "actor_binder")
 end
