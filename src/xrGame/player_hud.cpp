@@ -385,7 +385,7 @@ void attachable_hud_item::update(bool bForce)
 	m_attach_offset.setHPB			(ypr.x,ypr.y,ypr.z);
 	m_attach_offset.translate_over	(m_measures.m_item_attach[0]);
 
-	m_parent->calc_transform		(m_attach_place_idx, m_attach_offset, m_item_transform);
+	m_parent->calc_transform		(m_attach_place_idx, m_attach_offset, m_item_transform, m_model_combined);
 	m_upd_firedeps_frame			= Device.dwFrame;
 
 	IKinematicsAnimated* ka			=	m_model->dcast_PKinematicsAnimated();
@@ -1779,7 +1779,7 @@ void player_hud::render_hud()
 	bool b_r1 = (m_attached_items[1] && m_attached_items[1]->need_renderable());
 	bool animatorPlaying = m_animator_item && m_animator_item->IsPlaying;
 
-	if (b_r0 || b_r1 || animatorPlaying || m_bhands_visible)
+	if ((b_r0 && !m_attached_items[0]->m_model_combined) || b_r1 || animatorPlaying || m_bhands_visible)
 	{
 		if (m_model || animatorPlaying)
 		{
@@ -2392,9 +2392,9 @@ void player_hud::detach_item(CHudItem* item)
 	}
 }
 
-void player_hud::calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result)
+void player_hud::calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result, bool forceLegacyTransform)
 {
-	if (m_model)
+	if (m_model && !forceLegacyTransform)
 	{
 		Fmatrix ancor_m = m_model->dcast_PKinematics()->LL_GetTransform(m_ancors[attach_slot_idx]);
 		result.mul(m_transform, ancor_m);
