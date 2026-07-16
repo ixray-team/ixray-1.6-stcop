@@ -4,18 +4,13 @@
 -- 06.06.08 --------------------------------------------------------------------
 --------------------------------------------------------------------------------
 temp_points_table = {}
-sorted_points_table = {}
 selected_point = ""
 teleported_to_another_level = false
 teleport_point = nil
 teleport_look = nil
 level_changed = false
-last_dialog = nil
-need_to_add = false
 local talked_npc_id = nil
 function init_guiders_dialog(dialog)
-	--SemiLog("--init_guiders_dialog")
-	last_dialog = dialog
 -- where can you teleport me?
     local phrase = dialog:AddPhrase("st_tm_guide_0", "0", "", -10000)
 --	action_fill_temp_teleport_points()
@@ -29,14 +24,32 @@ function init_guiders_dialog(dialog)
     phrase = dialog:AddPhrase("st_tm_guide_2", "2", "0", -10000)
     local script = phrase:GetPhraseScript()
 	script:AddPrecondition("guiders.precondition_teleport_points_available")
-	need_to_add = true
+-- point_name
+	for k,v in pairs(guiders_table.teleport_points) do
+        phrase = dialog:AddPhrase("NO TEXT", k, "2", -10000)
+        script = phrase:GetPhraseScript()
+        script:AddPrecondition("guiders.precondition_teleport_to_point_available")
+        script:SetScriptText("guiders.set_phrase_text")
+        script:AddAction("guiders.select_point")
+-- ready?
+        phrase = dialog:AddPhrase("st_tm_guide_21", "21", k, -10000)
+	end
+-- yes
+    phrase = dialog:AddPhrase("st_tm_guide_211", "211", "21", -10000)
+    script = phrase:GetPhraseScript()
+    script:AddAction("guiders.action_payment")
+    script:AddAction("guiders.action_teleport_to_point")
+    script:AddAction("dialogs.break_dialog")
+-- no
+    phrase = dialog:AddPhrase("st_tm_guide_212", "212", "21", -10000)
+    script = phrase:GetPhraseScript()
+    script:AddAction("dialogs.break_dialog")
 end
 
 function action_fill_temp_teleport_points(fs, npc, dn, pi)
 	local was_dialog = true
 	if not talked_npc_id or talked_npc_id ~= npc:id() then
 		temp_points_table = {}
-		sorted_points_table = {}
 		talked_npc_id = npc:id()
 		was_dialog = false
 	end
@@ -44,13 +57,6 @@ function action_fill_temp_teleport_points(fs, npc, dn, pi)
 	local smarts = board.smarts_by_names
 	local points_counter = 0
 	for k,v in pairs(guiders_table.teleport_points) do
-		-- only once for whole game session
-		if need_to_add then
-			if sorted_points_table[v.level] == nil then
-				sorted_points_table[v.level] = {}
-			end
-			table.insert(sorted_points_table[v.level], {phrase_id = k, teleport_point = v})
-		end
 	    local smart = smarts[k]
 		local condlist = xr_logic.parse_condlist(nil, "guiders", "condlist", v.condlist)
 		local cond = xr_logic.pick_section_from_condlist(db.actor, db.actor, condlist)
@@ -101,48 +107,6 @@ function action_fill_temp_teleport_points(fs, npc, dn, pi)
                                                             cost = 0,
                                                            }
 		end
-	end
-
-	-- deferred 
-	if need_to_add then
-		--SemiLog("--begin sort ("..#sorted_points_table..")")
-		--[[
-		for level_name,t in pairs(sorted_points_table) do
-			table.sort(t, 
-				function(a,b) 
-				--	SemiLog("--sort_other: "..a.cost.." < "..b.cost)
-					return a.cost < b.cost
-				end
-			)
-		end
-		--]]
-	--	SemiLog("--end sort")
-		-- point_name
-		for level_name,t in pairs(sorted_points_table) do
-			for index,v in pairs(t) do
-				--SemiLog("--phrase="..v.phrase_id)
-
-				phrase = last_dialog:AddPhrase("NO TEXT", v.phrase_id, "2", -10000)
-				script = phrase:GetPhraseScript()
-				-- we don't need it because we already insert valid data so no checking through map
-				script:AddPrecondition("guiders.precondition_teleport_to_point_available") 
-				script:SetScriptText("guiders.set_phrase_text")
-				script:AddAction("guiders.select_point")
-			-- ready?
-				phrase = last_dialog:AddPhrase("st_tm_guide_21", "21", v.phrase_id, -10000)
-			end
-		end
-	-- yes
-		phrase = last_dialog:AddPhrase("st_tm_guide_211", "211", "21", -10000)
-		script = phrase:GetPhraseScript()
-		script:AddAction("guiders.action_payment")
-		script:AddAction("guiders.action_teleport_to_point")
-		script:AddAction("dialogs.break_dialog")
-	-- no
-		phrase = last_dialog:AddPhrase("st_tm_guide_212", "212", "21", -10000)
-		script = phrase:GetPhraseScript()
-		script:AddAction("dialogs.break_dialog")
-		need_to_add = false
 	end
 end
 
