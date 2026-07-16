@@ -116,8 +116,11 @@ function send_tip(actor, news_id, timeout, sender, showtime, sender_id)
 end
 
 
-function send_sound(npc, faction, point, str, str2)
+function send_sound(npc, faction, point, str, str2, delay_sound)
 	--callstack()
+	if delay_sound == nil then
+		delay_sound = 0
+	end
 	if faction ~= nil then
 		--printf("---------------------")
 		--printf(tostring(faction))
@@ -183,7 +186,7 @@ function send_sound(npc, faction, point, str, str2)
 
 
 --		db.actor:give_game_news(news_caption, news_text, texture, 1000, 5000)
-		db.actor:give_game_news(news_caption, news_text, texture, 1000, 5000, 1)
+		db.actor:give_game_news(news_caption, news_text, texture, delay_sound+1000, 5000, 1)
 
 		return true
 
