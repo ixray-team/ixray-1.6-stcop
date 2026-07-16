@@ -660,6 +660,11 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 	{
 		leftStickThreshold = value;
 
+		if (!g_Alive())
+		{
+			return;
+		}
+
 		if (!fis_zero(value.x))
 		{
 			mstate_wishful |= (value.x > 0.f) ? mcRStrafe : mcLStrafe;
