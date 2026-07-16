@@ -329,7 +329,12 @@ void CPoltergeist::renderable_Render()
 void CPoltergeist::UpdateCL()
 {
 	inherited::UpdateCL();
-	m_poltergeist->UpdateCL();
+	
+	if (!check_work_condition())
+	{
+		remove_pp_effector();
+	}
+	
 	update_detection();
 	def_lerp(m_height, target_height, m_height_change_velocity, client_update_fdelta());
 	ability()->update_frame();
@@ -355,15 +360,11 @@ void CPoltergeist::ForceFinalAnimation()
 
 void CPoltergeist::shedule_Update(u32 dt)
 {
-	if (!check_work_condition())
-	{
-		remove_pp_effector();
-	}
-
 	inherited::shedule_Update(dt);
 
 	CTelekinesis::schedule_update();
 	Energy::schedule_update();
+	m_poltergeist->update_schedule();
 
 	UpdateHeight();
 	ability()->update_schedule();

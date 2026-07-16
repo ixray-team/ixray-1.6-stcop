@@ -9,10 +9,11 @@
 #include "WeaponMagazinedWGrenade.h"
 #include "../../Level.h"
 #include "poltergeist/poltergeist.h"
-#include "src/xrEngine/xr_ioc_cmd.h"
-#pragma optimize("", off)
+#include "../../xrEngine/xr_ioc_cmd.h"
+#include "../../Inventory.h"
+#include "../../ActorCondition.h"
 
-extern ESingleGameDifficulty g_SingleGameDifficulty;
+#pragma optimize("", off)
 
 STelekineticObject::STelekineticObject(CPhysicsShellHolder* owner, float s, float h, u32 ttk, bool rot)
 {
@@ -99,6 +100,131 @@ void STelekineticObject::update_state()
 
 		case ETelekineticState::TS_NONE:
 			break;
+	}
+}
+void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
+{
+	dxGeomUserData* self = bo1 ? PHRetrieveGeomUserData(c.geom.g1) : PHRetrieveGeomUserData(c.geom.g2);
+	dxGeomUserData* damage_receiver = bo1 ? PHRetrieveGeomUserData(c.geom.g2) : PHRetrieveGeomUserData(c.geom.g1); 
+
+	SGameMtl* material_self = bo1 ? material_1 : material_2;
+	SGameMtl* material_damager = bo1 ? material_2 : material_1;
+
+	CPhysicsShellHolder* ph_self_object = smart_cast<CPhysicsShellHolder*>(self->ph_ref_object);
+	ph_self_object->m_pPhysicsShell->remove_ObjectContactCallback(collision_callback);
+
+	CPhysicsShellHolder* ph_damage_receiver = damage_receiver ? smart_cast<CPhysicsShellHolder*>(damage_receiver->ph_ref_object) : nullptr;
+	if (ph_damage_receiver == nullptr)
+	{
+		return;
+	}
+
+	CEntityAlive* entity_alive = ph_damage_receiver->cast_entity_alive();
+	if (entity_alive == nullptr)
+	{
+		return;
+	}
+
+	CActor* actor = ph_damage_receiver->cast_actor();
+	CAI_Stalker* ai_stalker = ph_damage_receiver->cast_stalker();
+	if ((actor && !GodMode()) || ai_stalker)
+	{
+		Fvector linear_vel;
+		ph_self_object->PHGetLinearVell(linear_vel);
+
+		float vel = linear_vel.magnitude();
+		float pure_j = ph_self_object->GetMass() * pow(vel, 2.f) * .5f;
+		float kinetic_energy = fabsf(1.f - expf(-EPS_L * pure_j));
+		float difficulty_modifier = 1.f;
+
+		if (actor)
+		{
+			switch (g_SingleGameDifficulty)
+			{
+				case egdNovice:
+					difficulty_modifier = .70f;
+					break;
+
+				case egdStalker:
+					difficulty_modifier = .80f;
+					break;
+
+				case egdVeteran:
+					difficulty_modifier = .90f;
+					break;
+
+				case egdMaster:
+					difficulty_modifier = 1.f;
+					break;
+			}
+		}
+		else if (ai_stalker)
+		{
+			difficulty_modifier = .3f;
+		}
+
+		float health_loss = kinetic_energy * difficulty_modifier * .5f;
+
+		entity_alive->conditions().SetPower(entity_alive->conditions().GetPower() - health_loss);
+		entity_alive->conditions().SetHealth(entity_alive->conditions().GetHealth() - health_loss);
+
+		if (actor)
+		{
+			PIItem item = Actor()->inventory().ActiveItem();
+			CCustomDevice* device = Actor()->GetDevice();
+
+			constexpr float porog_stamini_4tobi_vironit_pushky_iz_arms = 33;   // 1..100%
+			constexpr float porog_stamini_4tobi_vironit_detektor_iz_arms = 33; // 1..100%
+
+			bool need_kick_animator = false;
+
+			if (item != nullptr && Actor()->conditions().GetPower() - health_loss < porog_stamini_4tobi_vironit_pushky_iz_arms / 100.f)
+			{
+				u16 slot = Actor()->inventory().ActiveItem()->BaseSlot();
+
+				if (!Actor()->inventory().SlotIsPersistent(slot) && !Actor()->inventory().Action(kDROP, CMD_STOP))
+				{
+					Actor()->g_PerformDrop();
+					need_kick_animator = true;
+				}
+			}
+
+			if (device != nullptr && Actor()->conditions().GetPower() - health_loss < porog_stamini_4tobi_vironit_detektor_iz_arms / 100.f)
+			{
+				device->SetDropManual(true);
+				need_kick_animator = true;
+			}
+
+			if (need_kick_animator && !Actor()->HudAnimator()->ItemAnimator()->IsActive())
+			{
+				Actor()->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+
+				const shared_str& front_kick_animator = Actor()->m_sFrontKickAnimator;
+				const shared_str& back_kick_animator = Actor()->m_sBackKickAnimator;
+
+				Fvector object_pos = Fvector().set(self->last_pos);
+				Fvector damage_receiver_pos = Fvector().set(damage_receiver->last_pos);
+
+				Fvector hit_dir;
+				hit_dir.sub(damage_receiver_pos, object_pos);
+				hit_dir.normalize();
+
+				if (hit_dir.dotproduct(Device.vCameraDirection) < 0.f)
+				{
+					if (front_kick_animator != nullptr)
+					{
+						Actor()->HudAnimator()->ItemAnimator()->StartAnimator(front_kick_animator);
+					}
+				}
+				else
+				{
+					if (back_kick_animator != nullptr)
+					{
+						Actor()->HudAnimator()->ItemAnimator()->StartAnimator(back_kick_animator);
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -224,6 +350,24 @@ void STelekineticObject::release()
 	switch_state(ETelekineticState::TS_NONE);
 }
 
+
+
+struct SCollisionHitCallback : ICollisionHitCallback
+{
+	CPhysicsShellHolder* object;
+
+	SCollisionHitCallback(CPhysicsShellHolder* object) : object(object)
+	{
+	}
+
+	void call(IPhysicsShellHolder* ph_shell, float min_collision_speed, float max_collision_speed, float& collision_speed, float& health_loss, ICollisionDamageInfo* di) override
+	{
+		health_loss = 0.f;
+		object->set_collision_hit_callback(nullptr);
+	}
+};
+
+
 void STelekineticObject::throw_object_time(const Fvector& target, float time)
 {
 	switch_state(ETelekineticState::TS_THROW);
@@ -239,18 +383,19 @@ void STelekineticObject::throw_object_time(const Fvector& target, float time)
 	Fvector transference;
 	transference.sub(target, object->Position());
 	TransferenceToThrowVel(transference, time, object->EffectiveGravity());
+
+	// Aphile: хак, задаём new SCollisionHitCallback, чтобы физика не считала урон от столкновения, 
+	// а все рассчёт проходили в кастомном collide_callback.
+	object->set_collision_hit_callback(new SCollisionHitCallback(object));
+	object->m_pPhysicsShell->add_ObjectContactCallback(collision_callback);
+
 	object->m_pPhysicsShell->applyImpulseTrace(object->Position(), transference, object->m_pPhysicsShell->getMass());
 
-	if (sound_throw.handle())
-	{
-		sound_throw.play_at_pos(object, object->Position());
-	}
-
-	if (sound_hold.is_playing())
+	if (sound_throw.handle() && sound_hold.is_playing())
 	{
 		sound_hold.stop();
+		sound_throw.play_at_pos(object, object->Position());
 	}
-
 	stop_object_particles();
 }
 
