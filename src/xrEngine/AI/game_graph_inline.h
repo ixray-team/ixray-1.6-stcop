@@ -14,7 +14,7 @@ IC const IGameGraph::CHeader &IGameGraph::header					() const
 	return						(m_header);
 }
 
-IC	bool IGameGraph::mask											(const svector<_LOCATION_ID,GameGraph::LOCATION_TYPE_COUNT> &M, const _LOCATION_ID E[GameGraph::LOCATION_TYPE_COUNT]) const
+IC	bool IGameGraph::mask											(const FixedVector<_LOCATION_ID,GameGraph::LOCATION_TYPE_COUNT> &M, const _LOCATION_ID E[GameGraph::LOCATION_TYPE_COUNT]) const
 {
 	for (int i=0; i<GameGraph::LOCATION_TYPE_COUNT; ++i)
 		if ((M[i] != E[i]) && (255 != M[i]))

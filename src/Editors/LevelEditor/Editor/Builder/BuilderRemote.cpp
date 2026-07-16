@@ -1028,7 +1028,7 @@ bool SceneBuilder::BuildSun(u8 quality, Fvector2 dir)
 	return true;
 }
 
-bool SceneBuilder::BuildPointLight(b_light* b, const Flags32& usage, svector<WORD,16>* sectors, FvectorVec* soft_points, const Fmatrix* soft_transform)
+bool SceneBuilder::BuildPointLight(b_light* b, const Flags32& usage, FixedVector<WORD,16>* sectors, FvectorVec* soft_points, const Fmatrix* soft_transform)
 {
 	if (usage.is(ELight::flAffectStatic)){
 		if (soft_points&&!soft_points->empty()){
@@ -1091,9 +1091,9 @@ bool SceneBuilder::BuildLight(CLight* e)
 	
 	L.controller_ID	= BuildLightControl(e->GetLControlName()); //BuildLightControl(LCONTROL_STATIC); 
 
-	svector<u16, 16>* lpSectors = nullptr;
+	FixedVector<u16, 16>* lpSectors = nullptr;
 	if (e->m_Flags.is(ELight::flAffectDynamic)){
-		svector<u16,16> sectors;
+		FixedVector<u16,16> sectors;
 		lpSectors		= &sectors;
 		Fvector pos 	= e->GetPosition();
 		float& range 	= e->m_Range;

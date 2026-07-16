@@ -6,7 +6,7 @@
 
 #include "game_cl_base.h"
 #include "Level.h"
-#include "../xrCore/associative_vector.h"
+#include "../xrCore/Containers/associative_vector.h"
 
 class UITeamState;
 class UITeamPanels;	//for switching teams

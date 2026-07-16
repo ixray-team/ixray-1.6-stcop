@@ -1,6 +1,5 @@
 #pragma once
 
-
 #define _new_buy_wnd
 
 #ifdef _new_buy_wnd
@@ -12,7 +11,7 @@
 #endif
 
 
-#include "../xrCore/associative_vector.h"
+#include "../xrCore/Containers/associative_vector.h"
 #include "Restrictions.h"
 
 struct string_lex_less

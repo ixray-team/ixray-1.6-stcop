@@ -1,6 +1,6 @@
 #pragma once
 #include "../../xrUI/Widgets/UIFrameWindow.h"
-#include "../../xrCore/associative_vector.h"
+#include "../../xrCore/Containers/associative_vector.h"
 
 class CUIStatic;
 class CUIXml;

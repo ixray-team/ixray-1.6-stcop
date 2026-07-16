@@ -52,7 +52,7 @@ struct ECORE_API STextureList :
 };
 typedef	resptr_core<STextureList,resptr_base<STextureList> >								ref_texture_list;
 //////////////////////////////////////////////////////////////////////////
-struct ECORE_API SMatrixList : public xr_resource_flagged, public svector<ref_matrix, 4>
+struct ECORE_API SMatrixList : public xr_resource_flagged, public FixedVector<ref_matrix, 4>
 {
 	SMatrixList();
 	SMatrixList& operator=(const SMatrixList& Other) = delete;
@@ -63,7 +63,7 @@ struct ECORE_API SMatrixList : public xr_resource_flagged, public svector<ref_ma
 
 typedef	resptr_core<SMatrixList,resptr_base<SMatrixList> >									ref_matrix_list;
 //////////////////////////////////////////////////////////////////////////
-struct  ECORE_API SConstantList : public xr_resource_flagged, public svector<ref_constant_obsolette, 4>
+struct  ECORE_API SConstantList : public xr_resource_flagged, public FixedVector<ref_constant_obsolette, 4>
 {
 	~SConstantList();
 	SConstantList();
@@ -140,7 +140,7 @@ public:
 	};
 public:
 	Sflags								flags;
-	svector<ref_pass,SHADER_PASSES_MAX>	passes;
+	FixedVector<ref_pass,SHADER_PASSES_MAX>	passes;
 
 						ShaderElement	();
 						~ShaderElement	();

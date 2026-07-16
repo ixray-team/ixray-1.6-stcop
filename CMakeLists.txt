@@ -3,6 +3,7 @@ project(IXRay)
 
 # CMake options
 option(IXRAY_UTILS "Apply utils to solution" OFF)
+option(IXRAY_TESTS "Apply tests to solution" OFF)
 option(IXRAY_UTILS_OPTIX "Enable NVIDIA OptiX support" OFF)
 option(IXRAY_EDITORS "Apply editors to solution" OFF)
 option(IXRAY_MP "Apply multiplayer xrGame and multiplayer utilities to solution" OFF)
@@ -107,6 +108,11 @@ add_subdirectory("src")
 # Plugins 
 if (IXRAY_PLUGINS)
     add_subdirectory("src/plugins")
+endif()
+
+# Test 
+if (IXRAY_TESTS)
+	add_subdirectory("src/test")
 endif()
 
 # Utils

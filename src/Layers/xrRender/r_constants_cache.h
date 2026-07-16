@@ -16,7 +16,7 @@ template <class T, u32 limit>
 class	R_constant_cache
 {
 private:
-	ALIGN(16)	svector<T,limit>		array;
+	ALIGN(16)	FixedVector<T,limit>		array;
 	u32									lo,hi;
 public:
 	R_constant_cache()

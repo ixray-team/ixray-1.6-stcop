@@ -50,12 +50,12 @@ struct CCloner
 	}
 
 	template <typename T, int size>
-	IC	static void clone(const svector<T,size> &_1, svector<T,size> &_2)
+	IC	static void clone(const FixedVector<T,size> &_1, FixedVector<T,size> &_2)
 	{
 		_2.resize						(_1.size());
-		typename svector<T,size>::iterator		J = _2.begin();
-		typename svector<T,size>::const_iterator	I = _1.begin(); 
-		typename svector<T,size>::const_iterator	E = _1.end();
+		typename FixedVector<T,size>::iterator		J = _2.begin();
+		typename FixedVector<T,size>::const_iterator	I = _1.begin(); 
+		typename FixedVector<T,size>::const_iterator	E = _1.end();
 		for ( ; I != E; ++I, ++J)
 			clone						(*I,*J);
 	}

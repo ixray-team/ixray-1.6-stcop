@@ -28,7 +28,7 @@ enum : u32
 };
 
 constexpr size_t PolyArraySize = FRUSTUM_SAFE* 4;
-using sPoly = svector<Fvector, PolyArraySize>;
+using sPoly = FixedVector<Fvector, PolyArraySize>;
 
 enum : u8
 {
