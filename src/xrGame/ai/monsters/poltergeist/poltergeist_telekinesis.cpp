@@ -111,15 +111,7 @@ void CTelekineticPoltergeist::load(LPCSTR section)
 void CTelekineticPoltergeist::update_schedule()
 {
 	inherited::update_schedule();
-}
-
-void CTelekineticPoltergeist::update_frame()
-{
-	inherited::update_frame();
-}
-
-void CTelekineticPoltergeist::UpdateCL()
-{
+	
 	const CEntityAlive* enemy = m_poltergeist->EnemyMan.get_enemy();
 
 	if (!enemy)
@@ -199,6 +191,16 @@ void CTelekineticPoltergeist::UpdateCL()
 			}
 			break;
 	}
+}
+
+void CTelekineticPoltergeist::update_frame()
+{
+	inherited::update_frame();
+}
+
+void CTelekineticPoltergeist::UpdateCL()
+{
+
 }
 
 void CTelekineticPoltergeist::tele_find_objects(xr_vector<CObject*>& objects, const Fvector& pos)
