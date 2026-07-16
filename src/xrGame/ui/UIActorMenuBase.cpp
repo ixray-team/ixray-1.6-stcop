@@ -1252,7 +1252,7 @@ void CUIActorMenuBase::UpdateGamepadLegend()
 	if (!m_gamepad_legend)
 		return;
 
-	m_gamepad_legend->Show(!(m_pItemDropAmountWnd && m_pItemDropAmountWnd->IsShown()));
+	m_gamepad_legend->Show(!(m_pItemDropAmountWnd && m_pItemDropAmountWnd->IsShown()) && m_should_show_gamepad_legend);
 	CUIWindow* amAction = m_gamepad_legend->FindChild("am_action");
 	if (amAction)
 	{
