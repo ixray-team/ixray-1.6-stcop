@@ -1,5 +1,15 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <window>
+
+	<gamepad_legend x="0" y="724" width="1024" height="30" spacing="5">
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_pda_tabs</text>
+		</auto_static>
+		<auto_static x="0" y="0" width="22" height="30">
+			<text font="graffiti19" vert_align="c">ui_mm_back_gp</text>
+		</auto_static>
+	</gamepad_legend>
+	
     <main_wnd x="0" y="0" width="1024" height="768" update_delay="2900"/>
 
     <background x="35" y="89" width="955" height="620" vertical="1">
