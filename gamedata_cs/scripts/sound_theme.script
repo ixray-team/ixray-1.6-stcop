@@ -24,10 +24,13 @@ function npc_sound:__init(snd_ini, section)
 	self.shuffle = utils.cfg_get_string(snd_ini, section, "shuffle", nil, false, "", "rnd")
 	self.group_snd = utils.cfg_get_bool(snd_ini, section, "group_snd", nil, false, false)
 	self.play_always = utils.cfg_get_bool(snd_ini, section, "play_always", nil, false, false)
+	self.is_combat_sound = utils.cfg_get_bool(snd_ini, section, "is_combat_sound", nil, false, false)
 	self.section = section
 	--' Хранит параметры звука для каждого NPC
 	self.npc = {}
 	self.played_id = nil
+	-- Время задержки начала отыгрывания звука
+	self.delay_sound = utils.cfg_get_number(snd_ini, section, "delay_sound", self.npc, false, 0)
 	--' Интервал проигрывания звука
 	local interval = parse_names(utils.cfg_get_string(snd_ini, section, "idle", nil, false, "", "3,5,100"))
 	self.min_idle = tonumber(interval[1])
@@ -41,13 +44,13 @@ function npc_sound:__init(snd_ini, section)
 	self.msg = utils.cfg_get_string(snd_ini, section, "message", nil, false, "", "")
 
 
-	local avail_communities = parse_names(utils.cfg_get_string(snd_ini, section, "avail_communities", nil, false, "", "csky, stalker, ecolog, bandit, dolg, freedom, army, zombied, monolith, killer"))
+	local avail_communities = parse_names(utils.cfg_get_string(snd_ini, section, "avail_communities", nil, false, "", "csky, stalker, ecolog, bandit, renegade, dolg, freedom, army, zombied, monolith, killer"))
 	self.avail_communities = {}
 	for k,v in pairs(avail_communities) do
  		self.avail_communities[v] = true
  	end
 
-
+	SendScriptCallback("on_npc_sound_init", self, snd_ini, section)
 end
 function npc_sound:reset(npc_id)
 	local npc = db.storage[npc_id] and db.storage[npc_id].object
@@ -70,7 +73,7 @@ function npc_sound:is_playing(npc_id)
 	if obj == nil then
 		return false
 	end
-	return obj:active_sound_count() ~= 0
+	return obj:active_sound_count() ~= 0 or (self.pda_snd_obj and self.pda_snd_obj:playing())
 end
 function npc_sound:init_npc(npc)
 	--printf("Init %s snd NPC %s", self.section, npc:name())
@@ -87,7 +90,11 @@ function npc_sound:init_npc(npc)
 
 
 	self.npc[npc_id].id = id()
-	self.npc[npc_id].max = npc:add_sound(self.path, nstl, snd_type.talk, 2, 1, self.npc[npc_id].id) - 1
+	if self.is_combat_sound then
+		self.npc[npc_id].max = npc:add_combat_sound(self.path, nstl, snd_type.talk, 2, 1, self.npc[npc_id].id,"bip01_head") - 1
+	else
+		self.npc[npc_id].max = npc:add_sound(self.path, nstl, snd_type.talk, 2, 1, self.npc[npc_id].id) - 1
+	end
 	local f = getFS()
 	if f:exist("$game_sounds$",npc:sound_prefix()..self.path..".ogg") ~= nil then
 		self.sound_path[npc_id][1] = npc:sound_prefix()..self.path
@@ -198,15 +205,22 @@ function npc_sound:play(npc_id, faction, point, msg)
 	end
 	--printf("playing sound "..self.played_id)
 	if npc ~= nil then
-		npc:play_sound(npc_data.id, 0.06, 0.05, 1, 0, self.played_id)
+		-- play_sound (u32 internal_type, u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
+		npc:play_sound(npc_data.id, self.delay_sound+0.06, self.delay_sound+0.05, 1, 0, self.played_id)
+
+		SendScriptCallback("on_npc_sound_play", self, npc_id, faction, point, msg)
 	end
 	local table_id = self.played_id + 1
 	local snd = self.sound_path[npc_id][table_id]
 	-- проверка на существование звука дублирующего основной по ПДА. Если он есть то играть его.
 	local f = getFS()
 	if snd and f:exist("$game_sounds$", snd.."_pda.ogg") ~= nil and npc:position():distance_to_sqr(db.actor:position()) >= 100 then
+		if self.pda_snd_obj ~= nil and self.pda_snd_obj:playing() then
+			self.pda_snd_obj:stop()
+		end
 		self.pda_snd_obj = sound_object(snd.."_pda")
-		self.pda_snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
+		--play_at_pos(CScriptGameObject *object, const Fvector &position, float delay, int flags)
+		self.pda_snd_obj:play_at_pos(db.actor, vector():set(0,0,0), self.delay_sound, sound_object.s2d)
 		self.pda_snd_obj.volume = 0.8
 	end
 	--printf("snd_path is "..tostring(self.sound_path[npc_id][table_id]))
@@ -215,14 +229,11 @@ function npc_sound:play(npc_id, faction, point, msg)
 	if self.group_snd then
 		self.can_play_group_sound = false
 	else
-		if db.storage[npc_id].object:name() == "yan_stalker_sakharov" then
-			--printf("can_play_sound theme[%s]",self.section)
-		end
 		self.can_play_sound[npc_id] = false
 	end
 	if game.translate_string(snd_st) ~= snd_st then
 		if not faction then
-			faction = npc:character_community()
+			faction = character_community(npc)
 		end
 		if not point then
             point = npc:profile_name().."_name"
@@ -230,9 +241,9 @@ function npc_sound:play(npc_id, faction, point, msg)
 	            point = nil
 			end
 		end
-		news_manager.send_sound(npc, faction, point, snd, snd_st)
+		news_manager.send_sound(npc, faction, point, snd, snd_st, self.delay_sound)
 	else
-		news_manager.send_sound(npc, faction, point, snd)
+		news_manager.send_sound(npc, faction, point, snd, nil , self.delay_sound)
 	end
 	return true
 end
@@ -276,7 +287,12 @@ function npc_sound:select_next_sound(npc_id)
 		return 0
 	end
 end
-function npc_sound:stop()
+function npc_sound:stop(obj_id)
+	local npc = db.storage[obj_id] and db.storage[obj_id].object
+	if npc ~= nil and npc:alive() then
+		npc:set_sound_mask(-1)
+		npc:set_sound_mask(0)
+	end
 	if self.pda_snd_obj ~= nil and self.pda_snd_obj:playing() then
 		self.pda_snd_obj:stop()
 		self.pda_snd_obj = nil
@@ -363,6 +379,8 @@ function actor_sound:__init(snd_ini, section)
 	if #self.sound == 0 then
 		abort("There are no sound collection with path: %s", self.path)
 	end
+
+	SendScriptCallback("on_actor_sound_init", self, snd_ini, section)
 end
 function actor_sound:callback(npc_id)
 	self.played_time = time_global()
@@ -399,7 +417,7 @@ function actor_sound:is_playing ()
 	end
 end
 function actor_sound:play(npc, faction, point, msg)
-	printf("PLAY ACTOR SOUND")
+	--printf("PLAY ACTOR SOUND")
 	if not self.can_play_sound then
 		printf("self.can_play_sound == false")
 		return false
@@ -407,7 +425,7 @@ function actor_sound:play(npc, faction, point, msg)
 
 	if self.played_time ~= nil and time_global() - self.played_time < self.idle_time
 	then
-	printf("self.idle_time not reached!!")
+	--printf("self.idle_time not reached!!")
 		return false
 	end
 
@@ -423,6 +441,9 @@ function actor_sound:play(npc, faction, point, msg)
 	self.snd_obj.volume = 0.8
 	self.snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
 	self.snd_obj.volume = 0.8
+
+	SendScriptCallback("on_actor_sound_play", self, npc, faction, point, msg)
+
 	local snd_st, num_copy = string.gsub(snd, "\\", "_")
 --[[
 	if game.translate_string(snd_st) ~= snd_st then
@@ -441,6 +462,10 @@ function actor_sound:play(npc, faction, point, msg)
 	news_manager.send_sound(nil, faction, point, snd)
 
 	return true
+end
+function actor_sound:reset(npc_id)
+	self.played_time = nil
+	self.played_id = nil
 end
 function actor_sound:select_next_sound()
 	local sound_table_size = #self.sound
@@ -542,6 +567,8 @@ function object_sound:__init(snd_ini, section)
 	if #self.sound == 0 then
 		abort("There are no sound collection with path: %s", self.path)
 	end
+
+	SendScriptCallback("on_object_sound_init", self, snd_ini, section)
 end
 function object_sound:callback(npc_id)
 	self.played_time = time_global()
@@ -596,7 +623,6 @@ function object_sound:play(obj_id, faction, point, msg)
 --	printf("object played_id = %s", self.played_id)
 	local snd = self.sound[self.played_id]
 	local f = getFS()
-	local f = getFS()
 	if snd and f:exist("$game_sounds$", snd.."_pda.ogg") ~= nil and obj:position():distance_to_sqr(db.actor:position()) >= 5 then
 		self.pda_snd_obj = sound_object(snd.."_pda")
 		self.pda_snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
@@ -604,6 +630,9 @@ function object_sound:play(obj_id, faction, point, msg)
 	end	
 	self.snd_obj = sound_object(snd)
 	self.snd_obj:play_at_pos(obj, obj:position(), 0, sound_object.s3d)
+
+	SendScriptCallback("on_object_sound_play", self, obj_id, faction, point, msg)
+
 	local snd_st, num_copy = string.gsub(snd, "\\", "_")
 --[[
 	if game.translate_string(snd_st) ~= snd_st then
@@ -784,8 +813,8 @@ end
 function init_npc_sound(npc)
 	for k,v in pairs(theme) do
 		if v.init_npc then
-			--printf("checking %s for %s (%s)", v.section, npc:name(), npc:character_community())
-			if v.avail_communities[npc:character_community()] ~= nil then
+			--printf("checking %s for %s (%s)", v.section, npc:name(), character_community(npc))
+			if v.avail_communities[character_community(npc)] ~= nil then
 				v:init_npc(npc)
 			end
 		end

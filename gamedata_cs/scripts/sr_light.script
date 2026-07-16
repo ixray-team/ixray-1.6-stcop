@@ -1,15 +1,7 @@
 local light_zones = {}
 
 local indoor_levels = {
-	l03u_agr_underground = true,
-	l03u_agr_underground_e3 = true,
-	l03u_agr_underground_hw = true,
-	l04u_labx18 = true,
-	l08u_brainlab = true,
-	l10u_bunker = true,
-	l12u_sarcofag = true,
-	l12u_control_monolith = true,
-	chugai_test = true
+	agroprom_underground = true
 }
 ---------------------------------------------------------------------------------------------------------------------
 class "action_light"
