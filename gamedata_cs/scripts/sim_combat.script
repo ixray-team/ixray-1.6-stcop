@@ -965,6 +965,9 @@ function actor_come_to_point(smart)
 end
 
 function actor_come(squad)
+	if not db.actor then
+		return false
+	end
 	local actor_position = db.actor:position()
 	--printf("ACTOR COME %s", squad.squad_id)
 	for k,v in pairs(squad.squad_npc) do

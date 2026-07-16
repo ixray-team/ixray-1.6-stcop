@@ -35,6 +35,10 @@ function lchanger_binder:net_spawn(sobject)
     if not(object_binder.net_spawn(self, sobject)) then
         return false
     end
+    if string.find(command_line(), "-designer") then
+		return true
+	end
+
 	local obj = self.object
     db.add_obj(obj)
 
