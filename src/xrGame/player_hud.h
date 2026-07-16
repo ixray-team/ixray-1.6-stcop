@@ -669,7 +669,7 @@ public:
 	void			detach_item			(CHudItem* item);
 	void			detach_all_items	(){m_attached_items[0]=NULL; m_attached_items[1]=NULL;};
 
-	void			calc_transform		(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result);
+	void			calc_transform		(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result, bool forceLegacyTransform = false);
 	void			tune				(Fvector values);
 	u32				motion_length		(const MotionID& M, const CMotionDef*& md, float speed, IKinematicsAnimated* model);
 	u32				motion_length		(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
