@@ -12,8 +12,8 @@
 // edges, points and triangles.
 
 //.#include "tomslib.h"
-#include "../DLink.h"
-#include "../ArbitraryList.h"
+#include "../Containers/DLink.h"
+#include "../Containers/ArbitraryList.h"
 
 // Before including this file, #define the following:
 //

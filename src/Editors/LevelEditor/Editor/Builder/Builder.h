@@ -82,7 +82,7 @@ public:
     void 	BuildHemiLights	(u8 quality, const char* lcontrol);
 	void	AppendLight		();
     bool 	BuildSun		(u8 quality, Fvector2 dir);
-    bool 	BuildPointLight	(b_light* b, const Flags32& usage, svector<WORD,16>* sectors, FvectorVec* soft_points, const Fmatrix* soft_transform=0);
+    bool 	BuildPointLight	(b_light* b, const Flags32& usage, FixedVector<WORD,16>* sectors, FvectorVec* soft_points, const Fmatrix* soft_transform=0);
     bool    BuildLight		(CLight* e);
 
     int     FindInLODs   	(b_lod* s);

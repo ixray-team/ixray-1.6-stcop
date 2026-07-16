@@ -151,7 +151,7 @@ protected:
 	//массив с временами, сколько каждое состояние должно 
 	//длиться (если 0, то мгновенно -1 - бесконечность, 
 	//-2 - вообще не должно вызываться)
-	typedef	svector<int, eZoneStateMax>					StateTimeSVec;
+	typedef	FixedVector<int, eZoneStateMax>					StateTimeSVec;
 	StateTimeSVec		m_StateTime;
 
 	virtual		void		SwitchZoneState				(EZoneState new_state);

@@ -1,5 +1,5 @@
 #pragma once
 namespace HitImmunity
 {
-	using HitTypeSVec = svector<float, ALife::eHitTypeMax>;
+	using HitTypeSVec = FixedVector<float, ALife::eHitTypeMax>;
 };

@@ -350,7 +350,7 @@ struct b_portal
 {
 	u16				sector_front;
 	u16				sector_back;
-	svector<Fvector,6>	vertices;
+	FixedVector<Fvector,6>	vertices;
 };
 
 void CRender::LoadSectors(IReader* fs)

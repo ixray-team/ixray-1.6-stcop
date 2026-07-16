@@ -11,7 +11,7 @@
 
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
-#include "../xrCore/associative_vector.h"
+#include "../xrCore/Containers/associative_vector.h"
 #include "alife_movement_manager_holder.h"
 #include "../xrPhysics/net_physics_state.h"
 #include "../xrGame/ai/stalker/ai_stalker_state_net.h"
@@ -242,7 +242,7 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeMonsterAbstract,CSE_ALifeCreatureAbstract,
 	ALife::EHitType						m_tHitType;
 	shared_str							m_out_space_restrictors;
 	shared_str							m_in_space_restrictors;
-	svector<float,ALife::eHitTypeMax>	m_fpImmunityFactors;
+	FixedVector<float,ALife::eHitTypeMax>	m_fpImmunityFactors;
 
 	ALife::_OBJECT_ID					m_smart_terrain_id;
 	

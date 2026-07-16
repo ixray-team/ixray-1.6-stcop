@@ -400,7 +400,7 @@ int	CLevel::get_RPID(const char* /**name/**/)
 	sscanf		(params,"%f,%f,%f,%d,%f",&pos.x,&pos.y,&pos.z,&team,&pos.w); pos.y += 0.1f;
 
 	// Search respawn point
-	svector<Fvector4,maxRP>	&rp = Level().get_team(team).RespawnPoints;
+	FixedVector<Fvector4,maxRP>	&rp = Level().get_team(team).RespawnPoints;
 	for (int i=0; i<(int)(rp.size()); ++i)
 		if (pos.similar(rp[i],EPS_L))	return i;
 	*/

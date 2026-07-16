@@ -24,7 +24,6 @@
 
 TEMPLATE_SPECIALIZATION
 IC	_associative_vector::associative_vector													(const key_compare &predicate, const allocator_type &allocator_) :
-//	inherited			(allocator_),
 	value_compare		(predicate)
 {
 }
@@ -38,7 +37,6 @@ IC	_associative_vector::associative_vector													(const key_compare &predi
 TEMPLATE_SPECIALIZATION
 template <typename _iterator_type>
 IC	_associative_vector::associative_vector													(_iterator_type first, _iterator_type last, const key_compare &predicate, const allocator_type &allocator) :
-//	inherited			(first,last,allocator),
 	inherited			(first,last),
 	value_compare		(predicate)
 {
@@ -114,7 +112,6 @@ IC	typename _associative_vector::size_type _associative_vector::max_size					() 
 }
 
 TEMPLATE_SPECIALIZATION
-//IC	typename _associative_vector::size_type _associative_vector::size						() const
 IC	u32 _associative_vector::size															() const
 {
 	return				((u32)inherited::size());
@@ -146,12 +143,6 @@ TEMPLATE_SPECIALIZATION
 IC	void _associative_vector::swap															(self_type &right)
 {
 	inherited::swap		(right);
-}
-
-TEMPLATE_SPECIALIZATION
-IC	void swap																				(_associative_vector &left, _associative_vector &right)
-{
-	left.swap			(right);
 }
 
 TEMPLATE_SPECIALIZATION

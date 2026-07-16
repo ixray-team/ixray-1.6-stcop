@@ -13,7 +13,7 @@
 class 		CBlendInstance	// Bone Instance Blend List (per-bone data)
 {
 public:
-	typedef svector<CBlend*,MAX_BLENDED>	BlendSVec;
+	typedef FixedVector<CBlend*,MAX_BLENDED>	BlendSVec;
 	typedef BlendSVec::iterator				BlendSVecIt;
 	typedef BlendSVec::const_iterator		BlendSVecCIt;
 	xrSRWLock								blend_lock;
@@ -87,7 +87,7 @@ public:
 	IBlendDestroyCallback						*m_blend_destroy_callback;
 	IUpdateTracksCallback						*m_update_tracks_callback;
 	// Blending
-	svector<CBlend, MAX_BLENDED_POOL>			blend_pool;
+	FixedVector<CBlend, MAX_BLENDED_POOL>			blend_pool;
 	BlendSVec									blend_cycles[MAX_PARTS];
 	BlendSVec									blend_fx;
 	animation::channels							channels;

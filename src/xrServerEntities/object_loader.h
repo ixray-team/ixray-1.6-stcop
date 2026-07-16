@@ -172,13 +172,13 @@ struct CLoader {
 	};
 
 	template <typename T, int size>
-	IC	static void load_data(svector<T,size> &data, M &stream, const P &p)
+	IC	static void load_data(FixedVector<T,size> &data, M &stream, const P &p)
 	{
 		if (p.can_clear())
 			data.clear();
 		u32								count = stream.r_u32();
 		for (u32 i=0; i<count; ++i) {
-			typename svector<T,size>::value_type	temp;
+			typename FixedVector<T,size>::value_type	temp;
 			CLoader<M,P>::load_data		(temp,stream,p);
 			if (p(data,temp))
 				data.push_back			(temp);

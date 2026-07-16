@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../xrCore/Mesh/object.h"
-#include "../../xrCore/ArbitraryList.h"
+#include "../../xrCore/Containers/ArbitraryList.h"
 
 #pragma pack(push,1)
 struct VIPM_SWR

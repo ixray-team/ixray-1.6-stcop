@@ -190,7 +190,7 @@ void CRender::rmNormal()
 
 void CRender::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase& fs)
 {
-	xr_vector<svector<XRay::Legacy::LEGACYVERTEXELEMENT9, XRay::Legacy::LEGACYMAXDECLLENGTH + 1>> LegacyDeclBuffer;
+	xr_vector<FixedVector<XRay::Legacy::LEGACYVERTEXELEMENT9, XRay::Legacy::LEGACYMAXDECLLENGTH + 1>> LegacyDeclBuffer;
 	LegacyDeclBuffer.resize(Count);
 
 	for (u32 i = 0; i < Count; i++)

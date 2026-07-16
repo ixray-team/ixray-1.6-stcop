@@ -32,7 +32,7 @@ class CAI_Crow final : public CEntity
 	// animations
 	struct SAnim
 	{
-		using MotionSVec = svector<MotionID,MAX_ANIM_COUNT>;
+		using MotionSVec = FixedVector<MotionID,MAX_ANIM_COUNT>;
 		MotionSVec		m_Animations;
 		const MotionID	&GetRandom	(){return m_Animations[Random.randI(0,m_Animations.size())];}
 		void			Load		(IKinematicsAnimated* visual, const char* prefix, const char* prefix2);
@@ -40,7 +40,7 @@ class CAI_Crow final : public CEntity
 
 	struct SSound
 	{
-		using SoundSVec = svector<ref_sound,MAX_SND_COUNT>;
+		using SoundSVec = FixedVector<ref_sound,MAX_SND_COUNT>;
 		SoundSVec		m_Sounds;
 		ref_sound&		GetRandom		()	{return m_Sounds[Random.randI(0,m_Sounds.size())];}
 		void			Load			(const char* prefix);

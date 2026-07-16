@@ -14,7 +14,7 @@ class IGameLevelCrossTable;
 class IGameGraph;
 
 #include "../xrServerEntities/object_interfaces.h"
-#include "../XrCore/associative_vector.h"
+#include "../XrCore/Containers/associative_vector.h"
 
 class CPatrolPathStorage : public IPureSerializeObject<IReader,IWriter>
 {
