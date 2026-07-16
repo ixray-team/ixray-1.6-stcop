@@ -412,9 +412,9 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 			float l = bullet->begin_density.distance_to(new_pos);
 			float shootFactor = l * bullet->density;
 			bullet->speed -= shootFactor;
-			if ( bullet->speed < 0 ) bullet->speed = 0;
+			bullet->speed = std::max<float>(bullet->speed, 0.f);
 		}
-		if ( DOT( hit_normal, bullet->dir ) < 0 )
+		if (hit_normal.dotproduct(bullet->dir) < 0.f)
 		{
 			if ( bullet->density_mode )
 			{
@@ -522,7 +522,18 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 		bullet->bullet_pos.mad(bullet->bullet_pos,bullet->dir,EPS);//fake
 		//ввести коэффициент случайности при простреливании
 		Fvector rand_normal;
-		rand_normal.random_dir(bullet->dir, deg2rad(2.0f), Random);
+		float cos = fabs(hit_normal.dotproduct(bullet->dir));
+		float normal2dir2angle = rad2deg(acos(cos));
+
+		if (normal2dir2angle >= 0.f && normal2dir2angle < 45.f)
+		{
+			rand_normal.random_dir(bullet->dir, deg2rad(8.f), Random);
+		}
+		else if (normal2dir2angle >= 45.0f && normal2dir2angle <= 90.0f)
+		{
+			float angle = Random.randF(8.f, 15.0f);
+			rand_normal.random_dir(bullet->dir, deg2rad(angle), Random);
+		}
 		bullet->dir.set(rand_normal);
 #ifdef DEBUG
 		bullet_state = 2;
