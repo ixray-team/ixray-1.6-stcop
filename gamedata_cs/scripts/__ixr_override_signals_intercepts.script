@@ -48,6 +48,7 @@ function configure(_ref_ixr_signals)
 	
 	_ref_ixr_signals.add_intercept("on_load_screen_await_any_key_pressed",	{})	-- уровень загружен гг получил управление
 	
+	_ref_ixr_signals.add_intercept("on_game_present",						{})	
 	_ref_ixr_signals.add_intercept("level_input_on_key_press",				{})	
 	_ref_ixr_signals.add_intercept("on_key_press",                         	{"dik_key_number"})	
 	_ref_ixr_signals.add_intercept("on_key_release",                     	{"dik_key_number"})	
@@ -166,16 +167,26 @@ function configure(_ref_ixr_signals)
 	_ref_ixr_signals.add_intercept("anomaly_zone_on_artefact_take",     	{"binder_class", "anomaly_zone_game_object", "artefact_id", "artefact_object", "parent_zones_by_artefact_id"})
 	_ref_ixr_signals.add_intercept("anomaly_zone_on_save",    				{"binder_class", "anomaly_zone_game_object", "thread", "parent_zones_by_artefact_id"}) 
 	_ref_ixr_signals.add_intercept("anomaly_zone_on_load",    				{"binder_class", "anomaly_zone_game_object", "thread", "parent_zones_by_artefact_id"}) 
+	_ref_ixr_signals.add_intercept("anomaly_zone_override_artefact_spawn_сhance", {"binder_class", "anomaly_zone_game_object", "flags_table"}) -- flags_table = {spawn_chance = 17}
 	
-	_ref_ixr_signals.add_intercept("physic_object_on_init",     			{"game_object"}) 
-	_ref_ixr_signals.add_intercept("physic_object_on_death",     			{"game_object", "game_object"}) 
+	_ref_ixr_signals.add_intercept("artefact_on_update",     				{"binder_class", "artefact_game_object"}) 
+	
+	_ref_ixr_signals.add_intercept("physic_object_on_init",     			{"physic_game_object"}) 
+	_ref_ixr_signals.add_intercept("physic_object_on_net_spawn",			{"class_binder", "physic_game_object", "data"})
+	_ref_ixr_signals.add_intercept("physic_object_on_death",     			{"physic_game_object", "who_game_object"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_use",     				{"physic_game_object", "who_game_object"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_use_callback",     	{"physic_game_object", "who_game_object"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_hit",     				{"physic_game_object", "power_number", "hit_direction_vector", "who_game_object", "bone_index_number"}) 
 	_ref_ixr_signals.add_intercept("physic_object_on_hit_callback",     	{"physic_game_object", "power_number", "hit_direction_vector", "who_game_object", "bone_index_number"}) 
+	_ref_ixr_signals.add_intercept("physic_object_on_update",				{"class_binder", "physic_game_object", "delta"})
 	
 	_ref_ixr_signals.add_intercept("heli_on_hit_callback",              	{"heli_game_object", "power_number", "nil", "who_game_object", "nil"}) 
 	
+	_ref_ixr_signals.add_intercept("release_body_manager_on_init",				{"class_binder"})
+	_ref_ixr_signals.add_intercept("release_body_manager_can_moving_dead_body",	{"class_binder", "game_object_to_remove", "flags_table"}) -- flags_table = {allow_release = true}
+	_ref_ixr_signals.add_intercept("release_body_manager_skip_inspection_result",	{"class_binder", "game_object_to_inspection_result", "flags_table"}) -- flags_table = {need_skip = true}
+	
+	_ref_ixr_signals.add_intercept("squad_on_create",             			{"class_binder", "squad", "squad_id", "squad__id", "spawn_smart", "spawn_smart__m_game_vertex_id"}) 
 	_ref_ixr_signals.add_intercept("squad_on_npc_creation",             	{"squad_server_object", "npc_server_object", "spawn_smart_server_object"}) 
 	_ref_ixr_signals.add_intercept("squad_on_enter_smart",              	{"squad_server_object", "smart_server_object"}) 
 	_ref_ixr_signals.add_intercept("squad_on_leave_smart",              	{"squad_server_object", "old_smart_server_object"}) 
@@ -189,7 +200,22 @@ function configure(_ref_ixr_signals)
 	_ref_ixr_signals.add_intercept("squad_on_after_level_change",        	{"squad_server_object", "level_name_string", "cur_lvl_string"}) 
 
 	_ref_ixr_signals.add_intercept("smart_terrain_on_update",            	{"smart_terrain_server_object"}) 
+	_ref_ixr_signals.add_intercept("binder_smart_terrain_on_update",        {"class_binder", "smart_terrain_game_object", "delta"}) 
 	_ref_ixr_signals.add_intercept("on_try_respawn",                      	{"smart_terrain_server_object", "table"}) -- {disabled = false} switch to true for break
+	
+	_ref_ixr_signals.add_intercept("motivator_override_net_spawn_set_npc_position_logic", {"class_binder", "npc_game_object", "flags_table"}) -- flags_table = {override_position_logic = false} -- вместо false вставить функтор если нужно переопределить поведение function (_binder, smart_terrain, npc_game_object) ... end
+
+	
+	_ref_ixr_signals.add_intercept("inv_upgrades_precondition_functor_a_override_price", {"param_ini", "char_ini", "cur_price_percent", "param1", "section", "flags_table"})  -- flags_table = {new_price = math.floor(char_ini:r_u32(section, "cost")*cur_price_percent)}
+	_ref_ixr_signals.add_intercept("inv_upgrades_prereq_functor_a_override_price", {"param_ini", "char_ini", "cur_price_percent", "param3", "section", "flags_table"})  -- flags_table = {new_price = math.floor(char_ini:r_u32(section, "cost")*cur_price_percent)}
+	_ref_ixr_signals.add_intercept("inv_upgrades_get_upgrade_cost_override_price", {"param_ini", "char_ini", "cur_price_percent", "section", "flags_table"})  -- flags_table = {new_price = math.floor(char_ini:r_u32(section, "cost")*cur_price_percent)}
+	_ref_ixr_signals.add_intercept("inv_upgrades_effect_functor_a_override_money", {"param_ini", "char_ini", "cur_price_percent", "section", "flags_table"}) -- flags_table = {new_money = char_ini:r_u32(section, "cost")}
+	_ref_ixr_signals.add_intercept("inv_upgrades_how_much_repair_override", {"param_ini", "char_ini", "item_name", "item_condition", "cost", "cof", "cur_price_percent", "flags_table"}) -- flags_table = {new_value = math.floor(cost*(1-item_condition)*cof * cur_price_percent)}
+	_ref_ixr_signals.add_intercept("inv_upgrades_effect_functor_a_after_give_money", {"param_ini", "char_ini", "param2", "section", "loading"})
+	_ref_ixr_signals.add_intercept("inv_upgrades_override_mech_discount", {"param_ini", "char_ini", "perc", "flags_table"}) -- flags_table = {new_perc = perc}
+	
+	_ref_ixr_signals.add_intercept("death_manager_override_iterator_on_create_release_item", {"class_binder", "npc_game_object", "flags_table"}) -- flags_table = {overriden_iterator_functor = false} -- вместо false вставить функтор если нужно переопределить поведение function (_binder, npc_game_object, keep_item_functor) ... end
+	_ref_ixr_signals.add_intercept("death_manager_override_spawn_items_on_create_release_item", {"class_binder", "npc_game_object", "flags_table"}) -- flags_table = {override_spawn_items_functor = false} -- вместо false вставить функтор если нужно переопределить поведение function (_binder, npc_game_object, spawn_items, count_by_level, create_items, check_item_dependence) ... end
 
 	_ref_ixr_signals.add_intercept("server_entity_on_register",          	{"server_object", "string"}) -- se_actor, se_artefact, se_car, se_heli, se_outfit, se_helmet, se_weapon, se_weapon_shotgun, se_weapon_automatic_shotgun, se_weapon_magazined, se_weapon_magazined_w_gl, se_item, se_item_torch, se_physic, se_lamp, se_ammo, se_grenade, se_eatable, se_invbox, se_explosive, se_pda, se_detector, se_mgun, se_level_changer, se_monster, se_smart_cover, se_stalker, se_trader, se_zone_anom, se_zone_torrid, se_zone_visual, se_restrictor, sim_squad_scripted, se_smart_terrain
 	_ref_ixr_signals.add_intercept("server_entity_on_unregister",           {"server_object", "string"}) -- se_actor", se_artefact, se_car, se_heli, se_outfit, se_helmet, se_weapon, se_weapon_shotgun, se_weapon_automatic_shotgun, se_weapon_magazined, se_weapon_magazined_w_gl, se_item, se_item_torch, se_physic, se_lamp, se_ammo, se_grenade, se_eatable, se_invbox, se_explosive, se_pda, se_detector, se_mgun, se_level_changer, se_monster, se_smart_cover, se_stalker, se_trader, se_zone_anom , se_zone_torrid, se_zone_visual, se_restrictor, sim_squad_scripted, se_smart_terrain                   
@@ -253,5 +279,14 @@ function configure(_ref_ixr_signals)
 	
 	_ref_ixr_signals.add_intercept("on_item_draw_description", 				{"item_game_object", "item_game_object_id", "item_game_object_section", "extend_description_table"}) -- IXR Extend description
 	
+	_ref_ixr_signals.add_intercept("on_npc_sound_init",  					{"ref_binder", "snd_ini", "section"})
+	_ref_ixr_signals.add_intercept("on_npc_sound_play",  					{"ref_binder", "npc_id", "faction", "point", "msg"})
+
+	_ref_ixr_signals.add_intercept("on_actor_sound_init",  					{"ref_binder", "snd_ini", "section"})
+	_ref_ixr_signals.add_intercept("on_actor_sound_play",  					{"ref_binder", "npc", "faction", "point", "msg"})
+
+	_ref_ixr_signals.add_intercept("on_object_sound_init",  				{"ref_binder", "snd_ini", "section"})
+	_ref_ixr_signals.add_intercept("on_object_sound_play",  				{"ref_binder", "obj_id", "faction", "point", "msg"})
+
 	if ffx_death_manager then _ref_ixr_signals.add_intercept("ffx_death_manager_on_corpse_removed",    {"object_id", "population_data"}) end
 end
