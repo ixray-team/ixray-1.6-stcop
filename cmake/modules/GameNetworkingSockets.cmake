@@ -32,6 +32,8 @@ else()
             GIT_REPOSITORY https://github.com/ValveSoftware/GameNetworkingSockets.git
             GIT_BRANCH master
         )
+        
+        add_compile_definitions(STEAMNETWORKINGSOCKETS_SNP_PARANOIA=0)
         FetchContent_MakeAvailable(GameNetworkingSockets)
 
         if(NOT TARGET Steam::Sockets)
