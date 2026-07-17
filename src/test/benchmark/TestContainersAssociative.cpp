@@ -4,11 +4,13 @@
 
 #include "../../xrCore/Containers/FixedMap.h"
 #include "../../xrCore/Containers/associative_vector.h"
+#include "../../xrCore/Containers/DenseHashMap.h"
 
 xr_hash_map<int, int> GHashMap;
 xr_map<int, int> GMap;
 FixedMAP<int, int> GFixedMap;
 associative_vector<int, int> GAssociativeVector;
+dense_hash_map<int, int> GDenseHashMap;
 
 constexpr int TestSize = 50'000;
 
@@ -18,14 +20,29 @@ void InitKeysAssociative()
 {
 	std::cout << "Map test size: " << TestSize << std::endl;
 
+	GDenseHashMap.set_empty_key(-1);
+	GDenseHashMap.set_deleted_key(-2);
+
 	std::mt19937 rng(12345);
 	std::iota(Keys.begin(), Keys.end(), 0);
 
 	std::shuffle(Keys.begin(), Keys.end(), rng);
 }
 
+BENCHMARK(DenseHashMap, Insert)
+{
+	GDenseHashMap.clear();
+
+	for (int i = 0; i < TestSize; ++i)
+	{
+		GDenseHashMap.insert({Keys[i], Keys[i]});
+	}
+}
+
 BENCHMARK(XrHashMap, Insert)
 {
+	GHashMap.clear();
+
 	for (int i = 0; i < TestSize; ++i)
 	{
 		GHashMap.insert({Keys[i], Keys[i]});
@@ -34,6 +51,8 @@ BENCHMARK(XrHashMap, Insert)
 
 BENCHMARK(XrMap, Insert)
 {
+	GMap.clear();
+
 	for (int i = 0; i < TestSize; ++i)
 	{
 		GMap.insert({Keys[i], Keys[i]});
@@ -42,6 +61,8 @@ BENCHMARK(XrMap, Insert)
 
 BENCHMARK(FixedMap, Insert)
 {
+	GFixedMap.clear();
+
 	for (int i = 0; i < TestSize; ++i)
 	{
 		GFixedMap.insert(Keys[i], Keys[i]);
@@ -95,6 +116,16 @@ BENCHMARK(FixedMap, Iterate)
 	for (auto Node = GFixedMap.begin(); Node != GFixedMap.end(); ++Node)
 	{
 		Sum += Node->val;
+	}
+}
+
+BENCHMARK(DenseHashMap, Iterate)
+{
+	volatile int Sum = 0;
+
+	for (const auto& Pair : GDenseHashMap)
+	{
+		Sum += Pair.second;
 	}
 }
 
@@ -158,6 +189,21 @@ BENCHMARK(AssociativeVector, Find)
 	}
 }
 
+BENCHMARK(DenseHashMap, Find)
+{
+	volatile int Sum = 0;
+
+	for (int i = 0; i < TestSize; ++i)
+	{
+		auto It = GDenseHashMap.find(i);
+
+		if (It != GDenseHashMap.end())
+		{
+			Sum += It->second;
+		}
+	}
+}
+
 BENCHMARK(XrHashMap, FindMiss)
 {
 	volatile int Sum = 0;
@@ -210,6 +256,19 @@ BENCHMARK(AssociativeVector, FindMiss)
 	}
 }
 
+BENCHMARK(DenseHashMap, FindMiss)
+{
+	volatile int Sum = 0;
+
+	for (int i = TestSize; i < TestSize * 2; ++i)
+	{
+		if (GDenseHashMap.find(i) != GDenseHashMap.end())
+		{
+			++Sum;
+		}
+	}
+}
+
 BENCHMARK(FixedMap, TraverseAny)
 {
 	static volatile int Sum = 0;
@@ -221,4 +280,44 @@ BENCHMARK(FixedMap, TraverseAny)
 			Sum += Node->val;
 		}
 	);
+}
+
+BENCHMARK(DenseHashMap, Erase)
+{
+	auto Copy = GDenseHashMap;
+
+	for (int i = 0; i < TestSize; ++i)
+	{
+		Copy.erase(Keys[i]);
+	}
+}
+
+BENCHMARK(XrHashMap, Erase)
+{
+	auto Copy = GHashMap;
+
+	for (int i = 0; i < TestSize; ++i)
+	{
+		Copy.erase(Keys[i]);
+	}
+}
+
+BENCHMARK(XrMap, Erase)
+{
+	auto Copy = GMap;
+
+	for (int i = 0; i < TestSize; ++i)
+	{
+		Copy.erase(Keys[i]);
+	}
+}
+
+BENCHMARK(AssociativeVector, Erase)
+{
+	auto Copy = GAssociativeVector;
+
+	for (int i = 0; i < TestSize; ++i)
+	{
+		Copy.erase(Keys[i]);
+	}
 }
