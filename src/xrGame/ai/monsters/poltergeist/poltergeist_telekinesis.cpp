@@ -368,105 +368,6 @@ bool CTelekineticPoltergeist::trace_object(CObject* obj, const Fvector& target)
 	}
 	return false;
 }
-#pragma optimize("", off)
-
-struct SCollisionHitCallback : ICollisionHitCallback
-{
-	CPhysicsShellHolder* object;
-	float damage_factor;
-
-	SCollisionHitCallback(CPhysicsShellHolder* object, float object_collision_damage) : object(object), damage_factor(object_collision_damage)
-	{
-		VERIFY(object);
-	}
-
-	void call(IPhysicsShellHolder* ph_shell, float min_collision_speed, float max_collision_speed, float& collision_speed, float& health_loss, ICollisionDamageInfo* di) override
-	{
-		if (ph_shell->ObjectID() == ALife::_ACTOR_ID)
-		{
-			float pure_j = object->GetMass() * pow(collision_speed, 2.f) * .5f;
-			float kinetic_energy = fabsf(1.f - expf(-EPS_L * pure_j));
-			float difficulty_modifier = 1.f;
-
-			switch (g_SingleGameDifficulty)
-			{
-				case egdNovice:
-					difficulty_modifier = .70f;
-					break;
-					
-				case egdStalker:
-					difficulty_modifier = .80f;
-					break;
-					
-				case egdVeteran:
-					difficulty_modifier = .90f;
-					break;
-					
-				case egdMaster:
-					difficulty_modifier = 1.f;
-					break;
-			}
-
-			health_loss = kinetic_energy * difficulty_modifier * damage_factor;
-			
-			di->SetInitiated();
-			
-			Actor()->conditions().SetPower(Actor()->conditions().GetPower() - health_loss);
-			
-			PIItem item = Actor()->inventory().ActiveItem();
-			CCustomDevice* device = Actor()->GetDevice();
-
-			constexpr float porog_stamini_4tobi_vironit_pushky_iz_arms = 33;   // 1..100%
-			constexpr float porog_stamini_4tobi_vironit_detektor_iz_arms = 33; // 1..100%
-			
-			bool need_kick_animator = false;
-			
-			if (item != nullptr && Actor()->conditions().GetPower() - health_loss < porog_stamini_4tobi_vironit_pushky_iz_arms / 100.f)
-			{
-				u16 slot = Actor()->inventory().ActiveItem()->BaseSlot();
-				
-				if (!Actor()->inventory().SlotIsPersistent(slot) && !Actor()->inventory().Action(kDROP, CMD_STOP))
-				{
-					Actor()->g_PerformDrop();
-					need_kick_animator = true;
-				}
-			}
-			
-			if (device != nullptr && Actor()->conditions().GetPower() - health_loss < porog_stamini_4tobi_vironit_detektor_iz_arms / 100.f)
-			{
-				device->SetDropManual(true);
-				need_kick_animator = true;
-			}
-			
-			if (need_kick_animator && !Actor()->HudAnimator()->ItemAnimator()->IsActive())
-			{
-				Actor()->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
-
-				const shared_str& front_kick_animator = Actor()->m_sFrontKickAnimator;
-				const shared_str& back_kick_animator = Actor()->m_sBackKickAnimator;
-
-				Fvector hit_dir;
-				di->HitDir(hit_dir);
-
-				if (hit_dir.dotproduct(Device.vCameraDirection) < 0.f)
-				{
-					if (front_kick_animator != nullptr)
-					{
-						Actor()->HudAnimator()->ItemAnimator()->StartAnimator(front_kick_animator);
-					}
-				}
-				else
-				{
-					if (back_kick_animator != nullptr)
-					{
-						Actor()->HudAnimator()->ItemAnimator()->StartAnimator(back_kick_animator);
-					}
-				}
-			}
-			object->set_collision_hit_callback(nullptr); // delete this!!
-		}
-	}
-};
 
 void CTelekineticPoltergeist::throw_objects()
 {
@@ -478,21 +379,7 @@ void CTelekineticPoltergeist::throw_objects()
 		{
 			CEntityAlive* Enemy = const_cast<CEntityAlive*>(enemy);
 			CObject* Object = Enemy->dcast_CObject();
-
 			Fvector enemy_head = get_head_position(Object);
-			CPhysicsShellHolder* shell_holder = tele_object->get_object();
-
-			VERIFY(hobj);
-			
-			if (Enemy->cast_actor() && !GodMode())
-			{
-				shell_holder->set_collision_hit_callback(new SCollisionHitCallback(shell_holder, object_collision_damage));
-			} 
-			
-			if (Enemy->cast_stalker())
-			{
-				shell_holder->set_collision_hit_callback(new SCollisionHitCallback(shell_holder, object_collision_damage));
-			}
 
 			if (tele_object->can_be_thrown() && trace_object(tele_object->get_object(), enemy_head))
 			{
