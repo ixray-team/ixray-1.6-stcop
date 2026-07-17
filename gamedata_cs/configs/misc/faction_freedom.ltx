@@ -2,15 +2,15 @@
 glory_0 = 0
 glory_1 = 1
 glory_2 = 2
-glory_3 = 2
-glory_4 = 3
-glory_5 = 3
+glory_3 = 3
+glory_4 = 4
+glory_5 = 5
 
 
 [spawn_by_resource]
 0 = sim_default_freedom_0, 80, sim_default_freedom_1, 20
 1 = sim_default_freedom_0, 50, sim_default_freedom_1, 30, sim_default_freedom_2, 20
-2 = sim_default_freedom_1, 30, sim_default_freedom_2, 30, sim_default_freedom_3, 20, sim_default_freedom_4, 20
+2 = sim_default_freedom_1, 50, sim_default_freedom_2, 30, sim_default_freedom_3, 20
 3 = sim_default_freedom_2, 50, sim_default_freedom_3, 30, sim_default_freedom_4, 20
 
 [spawn_by_level]
@@ -41,16 +41,18 @@ precondition_cond = {+val_freedom_2_1_dead} true, {+val_destroy_killer_base_done
 [expansion_2]
 base_squad_number = 20
 precondition_power = 0
+;Уничтожение базы на Холл Завода
 precondition_target_eliminate = val_smart_terrain_1_2
 precondition_cond = {+val_destroy_killer_base_done} true, false
 
 
 
-[expansion_3]  ;Контроль над долиной
+[expansion_3]  ;Контроль над долиной (Захват: Холл Завода,Бар "Глоток свободы",База Свободы,Остановка,Блокпост у фермы,Стоянка на ферме
 base_squad_number = 20
 precondition_power = 0
-precondition_target = val_smart_terrain_5_7, val_smart_terrain_5_8
-precondition_actor_in_faction = true
+respawn_idle_time = 30
+respawn_hours = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23
+precondition_target = val_smart_terrain_5_7,val_smart_terrain_5_8,val_smart_terrain_1_2,val_smart_terrain_7_5,val_smart_terrain_7_4,val_smart_terrain_8_7,val_smart_terrain_9_6,val_smart_terrain_4_0,val_smart_terrain_7_11
 
 war_target_title = st_faction_war_freedom_secure_level
 
@@ -64,6 +66,8 @@ level_up_snd = val_freedom_expansion_1_up
 [expansion_4]	;Захватить плацдарм на свалке
 base_squad_number = 30
 precondition_target = gar_smart_terrain_8_3, gar_smart_terrain_8_7
+;Уничтожение: Северный блокпост,Лагерь кладоискателей,Укрепточка,Лагерь на задворках,Стоянка диггеров,Лагерь в ложбине,Привал у свалки
+precondition_target_eliminate = gar_smart_terrain_5_2,gar_smart_terrain_5_5,gar_smart_terrain_6_4,gar_smart_terrain_6_1,gar_smart_terrain_3_3,gar_smart_terrain_4_2,gar_smart_terrain_3_6
 
 war_target_title = st_faction_war_freedom_capture_garbage
 
@@ -91,7 +95,7 @@ level_down_snd = val_freedom_expansion_3_down
 
 [expansion_6]	;Захватить плацдарм на агропроме
 base_squad_number = 50
-precondition_target = agr_smart_terrain_7_4, agr_smart_terrain_6_6 
+precondition_target = agr_smart_terrain_7_4,agr_smart_terrain_6_6
 
 war_target_title = st_faction_war_freedom_capture_agroprom
 
@@ -103,9 +107,9 @@ war_stage_icon_hint_complete 	= st_stage_icon_freedom_capture_agroprom_yes
 level_up_snd = val_freedom_expansion_4_up
 level_down_snd = val_freedom_expansion_4_down
 
-[expansion_7]   ; Уничтожить базу долга
+[expansion_7]   ;Уничтожение: База Долга,Восточный вход,Северный вход
 base_squad_number = 60
-precondition_target_eliminate = agr_smart_terrain_1_6
+precondition_target_eliminate = agr_smart_terrain_1_6,agr_smart_terrain_1_6_near_2,agr_smart_terrain_1_6_near_1,agr_smart_terrain_1_6
 
 war_target_title = st_faction_war_freedom_eliminate_base
 
@@ -117,9 +121,10 @@ war_stage_icon_hint_complete 	= st_stage_icon_freedom_eliminate_duty_yes
 level_up_snd = val_freedom_expansion_5_up
 level_down_snd = val_freedom_expansion_5_down
 
-[expansion_8]   ; Расслабить булки.
+[expansion_8]
 base_squad_number = 60
-
+;Захват: Восточный вход,Северный вход,База Долга
+precondition_target = agr_smart_terrain_1_6_near_2,agr_smart_terrain_1_6_near_1,agr_smart_terrain_1_6
 war_target_title = st_faction_war_freedom_relax
 
 level_down_snd = val_freedom_expansion_6_down
