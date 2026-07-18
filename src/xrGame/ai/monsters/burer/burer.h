@@ -120,15 +120,20 @@ public:
 	u32 max_pickuped_weapons;
 	u32 delay_before_first_shot;
 
-	f32 novice_difficulty_angular_speed;
-	f32 stalker_difficulty_angular_speed;
-	f32 veteran_difficulty_angular_speed;
-	f32 master_difficulty_angular_speed;
+	float novice_difficulty_angular_speed;
+	float stalker_difficulty_angular_speed;
+	float veteran_difficulty_angular_speed;
+	float master_difficulty_angular_speed;
 
-	f32 novice_difficulty_error_angle;
-	f32 stalker_difficulty_error_angle;
-	f32 veteran_difficulty_error_angle;
-	f32 master_difficulty_error_angle;
+	float novice_difficulty_error_angle;
+	float stalker_difficulty_error_angle;
+	float veteran_difficulty_error_angle;
+	float master_difficulty_error_angle;
+
+	float novice_difficulty_object_hit_factor;
+	float stalker_difficulty_object_hit_factor;
+	float veteran_difficulty_object_hit_factor;
+	float master_difficulty_object_hit_factor;
 
 	CBurer();
 	~CBurer() override;

@@ -17,14 +17,11 @@
 class CMincer final : public CBaseGraviZone, public CPHDestroyableNotificator
 {
 	typedef CBaseGraviZone inherited;
-	CTeleWhirlwind m_telekinetics;
 	shared_str m_torn_particles;
 	ref_sound m_tearing_sound;
 	float m_fActorBlowoutRadiusPercent;
 
 public:
-	virtual CTelekinesis& Telekinesis() { return m_telekinetics; }
-
 	CMincer();
 	virtual ~CMincer();
 
@@ -49,5 +46,6 @@ public:
 	virtual float BlowoutRadiusPercent(CPhysicsShellHolder* GO);
 	CMincer* cast_mincer_zone() override { return this; }
 
+	CTeleWhirlwind* telekinesis() override { return this; }
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

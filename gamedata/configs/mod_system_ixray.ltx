@@ -726,7 +726,7 @@ dotp_c_easy = 0.9
 ; a-b works as easy
 ; b-c targets are ignored
 
-![m_poltergeist_normal_tele] ;m_poltergeist.ltx
+![m_poltergeist_normal_tele];m_poltergeist.ltx
 Tele_Time_Object_Keep					= 10000
 Tele_Object_Min_Mass					= 0
 Tele_Object_Max_Mass					= 10000
@@ -736,6 +736,16 @@ Tele_Activate_N_Throw_Grenade           = on;                   Разрешае
 Tele_Max_Pickuped_Weapons				= 3; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
 Tele_Delay_Before_First_Shoot			= 0; 				    Задержка перед первым выстрелом. (in ms)
 Particle_Tele_Object					= static\fire_distort;	Проигрываемый партикл под предметом, чисто для красоты.
+
+; Зачем нужены множители ниже?
+; Без масштабирования реальная физическая энергия в рамках геймплея оказывается избыточной.
+; Множитель позволяет искусственно снизить (поделить в N раз) или повысить урон для игрового баланса.
+; Указывается в пределах: 0..1
+; 1 = 100% урон, 0 - урон от попаданий предметами отключается, 0.5 - 50% урона.
+Novice_Difficulty_Throwed_Object_Hit_Factor = 0.1
+Stalker_Difficulty_Throwed_Object_Hit_Factor = 0.2
+Veteran_Difficulty_Throwed_Object_Hit_Factor = 0.3
+Master_Difficulty_Throwed_Object_Hit_Factor = 0.4
 
 ; Угловая скорость наведения оружия на врага.
 ; Указывается в градусах/с. 
@@ -755,7 +765,7 @@ Stalker_Difficulty_Error_Angle			= 20.0
 Veteran_Difficulty_Error_Angle			= 15.0
 Master_Difficulty_Error_Angle			= 8
 
-![m_burer_e] ;m_burer.ltx
+![m_burer_e];m_burer.ltx
 Tele_Time_To_Hold		 				= 10000
 Tele_Object_Min_Mass					= 1
 Tele_Object_Max_Mass					= 10000
@@ -764,6 +774,16 @@ Tele_Activate_N_Throw_Grenade           = on;                   Разрешае
 Tele_Max_Pickuped_Weapons				= 1; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
 Tele_Delay_Before_First_Shoot			= 0; 				    Задержка перед первым выстрелом. (in ms)
 Particle_Tele_Object					= static\fire_distort;	Проигрываемый партикл под предметом, чисто для красоты.
+
+; Зачем нужены множители ниже?
+; Без масштабирования реальная физическая энергия в рамках геймплея оказывается избыточной.
+; Множитель позволяет искусственно снизить (поделить в N раз) или повысить урон для игрового баланса.
+; Указывается в пределах: 0..1
+; 1 = 100% урон, 0 - урон от попаданий предметами отключается, 0.5 - 50% урона.
+Novice_Difficulty_Throwed_Object_Hit_Factor = 0.1
+Stalker_Difficulty_Throwed_Object_Hit_Factor = 0.2
+Veteran_Difficulty_Throwed_Object_Hit_Factor = 0.3
+Master_Difficulty_Throwed_Object_Hit_Factor = 0.4
 
 ; Угловая скорость наведения оружия на врага. Указывается в градусах/с. 
 ; Нужно чтобы оружие не наводилось турель-like. Хотя, вы можете это сделлать, проставив везде 360.

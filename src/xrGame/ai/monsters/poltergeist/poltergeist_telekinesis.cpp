@@ -62,9 +62,7 @@ CTelekineticPoltergeist::CTelekineticPoltergeist(CPoltergeist* polter) : inherit
 {
 }
 
-CTelekineticPoltergeist::~CTelekineticPoltergeist()
-{
-}
+CTelekineticPoltergeist::~CTelekineticPoltergeist() = default;
 
 void CTelekineticPoltergeist::load(LPCSTR section)
 {
@@ -90,16 +88,36 @@ void CTelekineticPoltergeist::load(LPCSTR section)
 	delay_before_first_shot = READ_IF_EXISTS(pSettings, r_u32, section, "Tele_Delay_Before_First_Shoot", 0);
 	particle_tele_object = READ_IF_EXISTS(pSettings, r_string, section, "Particle_Tele_Object", "static\\fire_distort");
 
-	novice_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 100.f);
-	stalker_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 100.f);
-	veteran_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 100.f);
-	master_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 100.f);
+	novice_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 180.f);
+	stalker_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 200.f);
+	veteran_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 240.f);
+	master_difficulty_angular_speed = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Angular_Speed", 280.f);
 
-	novice_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Error_Angle", 100.f);
-	stalker_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Stalker_Difficulty_Error_Angle", 100.f);
-	veteran_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Veteran_Difficulty_Error_Angle", 100.f);
-	master_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Master_Difficulty_Error_Angle", 100.f);
+	clamp(novice_difficulty_angular_speed, EPS_S, 360.f);
+	clamp(stalker_difficulty_angular_speed, EPS_L, 360.f);
+	clamp(veteran_difficulty_angular_speed, EPS_L, 360.f);
+	clamp(master_difficulty_angular_speed, EPS_L, 360.f);
 
+	novice_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Error_Angle", 30.f);
+	stalker_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Stalker_Difficulty_Error_Angle", 20.f);
+	veteran_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Veteran_Difficulty_Error_Angle", 15.f);
+	master_difficulty_error_angle = READ_IF_EXISTS(pSettings, r_float, section, "Master_Difficulty_Error_Angle", 8.f);
+
+	clamp(novice_difficulty_error_angle, EPS_L, 180.f);
+	clamp(stalker_difficulty_error_angle, EPS_L, 180.f);
+	clamp(veteran_difficulty_error_angle, EPS_L, 180.f);
+	clamp(master_difficulty_error_angle, EPS_L, 180.f);
+
+	novice_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Throwed_Object_Hit_Factor", 0.1f);
+	stalker_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Stalker_Difficulty_Throwed_Object_Hit_Factor", 0.2f);
+	veteran_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Veteran_Difficulty_Throwed_Object_Hit_Factor", 0.3f);
+	master_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Master_Difficulty_Throwed_Object_Hit_Factor", 0.4f);
+
+	clamp(novice_difficulty_object_hit_factor, 0.f, 1.f);
+	clamp(stalker_difficulty_object_hit_factor, 0.f, 1.f);
+	clamp(veteran_difficulty_object_hit_factor, 0.f, 1.f);
+	clamp(master_difficulty_object_hit_factor, 0.f, 1.f);
+	
 	Sound->create(sound_tele_hold, pSettings->r_string(section, "sound_tele_hold"), st_Effect, SOUND_TYPE_WORLD);
 	Sound->create(sound_tele_throw, pSettings->r_string(section, "sound_tele_throw"), st_Effect, SOUND_TYPE_WORLD);
 
@@ -112,27 +130,27 @@ void CTelekineticPoltergeist::update_schedule()
 {
 	inherited::update_schedule();
 	
-	const CEntityAlive* enemy = m_poltergeist->EnemyMan.get_enemy();
+	const CEntityAlive* enemy = poltergeist->EnemyMan.get_enemy();
 
 	if (!enemy)
 	{
 		return;
 	}
 
-	if (m_poltergeist->get_actor_ignore() || enemy->Position().distance_to(m_poltergeist->Position()) > distance)
+	if (poltergeist->get_actor_ignore() || enemy->Position().distance_to(poltergeist->Position()) > distance)
 	{
 		return;
 	}
 
 	const Fvector enemy_pos = enemy->Position();
-	const float distance_to_enemy = enemy_pos.distance_to(m_poltergeist->Position());
+	const float distance_to_enemy = enemy_pos.distance_to(poltergeist->Position());
 
 	if (distance_to_enemy > distance)
 	{
 		return;
 	}
 
-	if (m_poltergeist->get_actor_ignore())
+	if (poltergeist->get_actor_ignore())
 	{
 		return;
 	}
@@ -154,7 +172,7 @@ void CTelekineticPoltergeist::update_schedule()
 
 			if (m_state == ETeleState::RAISE_OBJECTS)
 			{
-				if (m_poltergeist->get_controlled_objects_count() >= object_count)
+				if (poltergeist->get_controlled_objects_count() >= object_count)
 				{
 					m_state_start_time = time();
 					m_state = ETeleState::MAIN_PHASE;
@@ -175,7 +193,7 @@ void CTelekineticPoltergeist::update_schedule()
 			m_state_start_time = time();
 			m_state_next_update = time_to_wait_in_objects / 2 + Random.randI(time_to_wait_in_objects / 2);
 
-			if (m_poltergeist->get_controlled_objects_count() <= 0)
+			if (poltergeist->get_controlled_objects_count() <= 0)
 			{
 				m_state_start_time = time();
 				m_state = ETeleState::WAIT;
@@ -223,7 +241,7 @@ void CTelekineticPoltergeist::tele_find_objects(xr_vector<CObject*>& objects, co
 		}
 
 		CPhysicsShellHolder* obj = pObject->cast_physics_shell_holder();
-		CMonsterEnemyManager& enemy = this->m_poltergeist->EnemyMan;
+		CMonsterEnemyManager& enemy = this->poltergeist->EnemyMan;
 
 		if (!obj ||
 			!obj->PPhysicsShell() ||
@@ -232,8 +250,8 @@ void CTelekineticPoltergeist::tele_find_objects(xr_vector<CObject*>& objects, co
 			(obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) ||
 			obj->m_pPhysicsShell->getMass() < object_min_mass ||
 			obj->m_pPhysicsShell->getMass() > object_max_mass ||
-			obj == m_poltergeist ||
-			m_poltergeist->is_active_object(obj) ||
+			obj == poltergeist ||
+			poltergeist->is_active_object(obj) ||
 			!obj->m_pPhysicsShell->get_ApplyByGravity() || !enemy.get_enemy())
 		{
 			continue;
@@ -255,27 +273,27 @@ void CTelekineticPoltergeist::tele_find_objects(xr_vector<CObject*>& objects, co
 bool CTelekineticPoltergeist::tele_raise_objects()
 {
 	// find objects near enemy
-	xr_vector<CObject*>& tele_objects = m_poltergeist->tele_objects;
-	const CEntityAlive* enemy = this->m_poltergeist->EnemyMan.get_enemy();
+	xr_vector<CObject*>& tele_objects = poltergeist->tele_objects;
+	const CEntityAlive* enemy = this->poltergeist->EnemyMan.get_enemy();
 
 	// получить список объектов вокруг врага
 	tele_find_objects(tele_objects, enemy->Position());
 	// получить список объектов вокруг монстра
-	tele_find_objects(tele_objects, m_poltergeist->Position());
+	tele_find_objects(tele_objects, poltergeist->Position());
 
 	// получить список объектов между монстром и врагом
-	float dist = enemy->Position().distance_to(m_poltergeist->Position());
+	float dist = enemy->Position().distance_to(poltergeist->Position());
 
 	Fvector dir;
-	dir.sub(enemy->Position(), m_poltergeist->Position());
+	dir.sub(enemy->Position(), poltergeist->Position());
 	dir.normalize();
 
 	Fvector pos;
-	pos.mad(m_poltergeist->Position(), dir, dist / 2.f);
+	pos.mad(poltergeist->Position(), dir, dist / 2.f);
 	tele_find_objects(tele_objects, pos);
 
 	// сортировать и оставить только необходимое количество объектов
-	std::ranges::sort(tele_objects, best_object_predicate2(m_poltergeist->Position(), enemy->Position()));
+	std::ranges::sort(tele_objects, best_object_predicate2(poltergeist->Position(), enemy->Position()));
 	// оставить уникальные объекты
 	tele_objects.erase(std::ranges::unique(tele_objects).begin(), tele_objects.end());
 
@@ -284,14 +302,28 @@ bool CTelekineticPoltergeist::tele_raise_objects()
 		return false;
 	}
 
-	CPhysicsShellHolder* obj = tele_objects[0] != nullptr ? tele_objects[0]->cast_physics_shell_holder() : nullptr;
+	CPhysicsShellHolder* physics_object = tele_objects[0] != nullptr ? tele_objects[0]->cast_physics_shell_holder() : nullptr;
 	bool rotate = false;
 
 	STelekineticObject* tele_obj;
 
-	if (obj->cast_weapon_magazined() && shooting_from_weapon_enable)
+	STelekineticObjectParams tele_object_params
 	{
-		size_t weapons_count = std::count_if(m_poltergeist->get_tele_objects().begin(), m_poltergeist->get_tele_objects().end(), [](STelekineticObject* tele_object)
+		.telekinesis = this->poltergeist->telekinesis(),
+		.object = physics_object,
+		.strength = raise_speed,
+		.target_height = object_height,
+		.time_to_keep = time_object_keep,
+		.rotate_object = rotate,
+		.novice_difficulty_object_hit_factor = novice_difficulty_object_hit_factor,
+		.stalker_difficulty_object_hit_factor = stalker_difficulty_object_hit_factor,
+		.veteran_difficulty_object_hit_factor = veteran_difficulty_object_hit_factor,
+		.master_difficulty_object_hit_factor = master_difficulty_object_hit_factor,
+	};
+
+	if (physics_object->cast_weapon_magazined() && shooting_from_weapon_enable)
+	{
+		size_t weapons_count = std::ranges::count_if(poltergeist->get_tele_objects(), [](STelekineticObject* tele_object)
 											 { return tele_object->cast_telekinetic_weapon_object(); });
 
 		if (weapons_count >= max_pickuped_weapons)
@@ -299,7 +331,9 @@ bool CTelekineticPoltergeist::tele_raise_objects()
 			return false;
 		}
 
-		STelekineticWeaponParams weapon_params{
+		STelekineticWeaponParams weapon_params
+		{
+			.telekinetic_enemy = poltergeist,
 			.delay_before_first_shot = delay_before_first_shot,
 
 			.novice_difficulty_angular_speed = novice_difficulty_angular_speed,
@@ -312,24 +346,25 @@ bool CTelekineticPoltergeist::tele_raise_objects()
 			.veteran_difficulty_error_angle = veteran_difficulty_error_angle,
 			.master_difficulty_error_angle = master_difficulty_error_angle
 		};
-
-		tele_obj = new STelekineticWeaponObject(m_poltergeist, weapon_params, obj, raise_speed, object_height, time_object_keep, rotate);
+		
+		tele_obj = new STelekineticWeaponObject(weapon_params, tele_object_params);
 	}
-	else if (obj->cast_grenade() && activate_n_throw_grenade)
+	else if (physics_object->cast_grenade() && activate_n_throw_grenade)
 	{
-		tele_obj = new STelekineticGrenadeObject(m_poltergeist, obj, raise_speed, object_height, time_object_keep, rotate);
+		tele_obj = new STelekineticGrenadeObject(poltergeist, tele_object_params);
 	}
 	else
 	{
-		tele_obj = new STelekineticObject(obj, raise_speed, object_height, time_object_keep, rotate);
+		tele_obj = new STelekineticObject(tele_object_params);
 	}
 
 	if (!tele_obj->can_be_picked_up())
 	{
+		xr_delete(tele_obj);
 		return false;
 	}
 
-	m_poltergeist->CTelekinesis::append_tobject(tele_obj);
+	poltergeist->CTelekinesis::append_tobject(tele_obj);
 	tele_obj->set_sound(sound_tele_hold, sound_tele_throw);
 	tele_obj->set_particle(particle_tele_object);
 	tele_obj->start_object_particles();
@@ -359,7 +394,7 @@ bool CTelekineticPoltergeist::trace_object(CObject* obj, const Fvector& target)
 	if (Level().ObjectSpace.RayPick(trace_from, dir, range, collide::rqtBoth, rq_result, obj))
 	{
 		CObject* raypicked_object = rq_result.O;
-		const CEntityAlive* our_enemy = this->m_poltergeist->EnemyMan.get_enemy();
+		const CEntityAlive* our_enemy = this->poltergeist->EnemyMan.get_enemy();
 
 		if (raypicked_object == our_enemy)
 		{
@@ -371,9 +406,9 @@ bool CTelekineticPoltergeist::trace_object(CObject* obj, const Fvector& target)
 
 void CTelekineticPoltergeist::throw_objects()
 {
-	const CEntityAlive* enemy = this->m_poltergeist->EnemyMan.get_enemy();
+	const CEntityAlive* enemy = this->poltergeist->EnemyMan.get_enemy();
 
-	for (STelekineticObject* tele_object : m_poltergeist->telekinetic_objects)
+	for (STelekineticObject* tele_object : poltergeist->telekinetic_objects)
 	{
 		if (tele_object->get_state() == ETelekineticState::TS_KEEP)
 		{
@@ -383,7 +418,7 @@ void CTelekineticPoltergeist::throw_objects()
 
 			if (tele_object->can_be_thrown() && trace_object(tele_object->get_object(), enemy_head))
 			{
-				m_poltergeist->throw_object_time(
+				poltergeist->throw_object_time(
 					tele_object->get_object(),
 					enemy_head,
 					tele_object->get_object()->Position().distance_to(enemy_head) / fly_velocity
