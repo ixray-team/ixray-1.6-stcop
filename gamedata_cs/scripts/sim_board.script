@@ -633,7 +633,6 @@ function sim_board:exit_smart(squad, smart)
 end
 --' Отряд занимает смарт (увеличиваются ресурсы)
 function sim_board:enter_smart(squad, smart_id, after_load)
-		callstack()
         if self.smarts[smart_id] == nil then
                 printf("   to tmp")
                 if self.tmp_entered_squad[smart_id] == nil then
