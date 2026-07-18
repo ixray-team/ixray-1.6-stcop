@@ -389,7 +389,6 @@ end
 --' Выбор наиболее подходящего таска по условию
 function CRandomTask:select_task(type, obj, faction)
 --	printf("CRandomTask:select_task")
-    callstack()
 	local task_table = nil
 	--local key = self.id_generator:get_id()
 	if type == "storyline" then
