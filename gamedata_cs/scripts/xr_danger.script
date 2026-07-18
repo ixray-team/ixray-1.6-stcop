@@ -84,7 +84,7 @@ function evaluator_danger:evaluate()
 	end
 
 	--' Игнорим денжеры от своих.
-	if best_danger_object:character_community() == self.object:character_community()  then
+	if character_community(best_danger_object) == character_community(self.object)  then
 		if not (best_danger_object:id() == db.actor:id() and self.object:relation(db.actor) == game_object.enemy) then 
 			printf("DANGER [%s] [FALSE] my_community", self.object:name())
 			return false
@@ -93,7 +93,7 @@ function evaluator_danger:evaluate()
 
 	--' Проверка, не находится ли данжер в списке запрещенных.
 	if bd_type == danger_object.grenade then
-		if self.object:character_community() == "zombied" then
+		if character_community(self.object) == "zombied" then
 			printf("DANGER [%s] [FALSE] ignore grenade for community [zombied]", self.object:name())
 			return false
 		end
