@@ -9,7 +9,9 @@
 #include "WeaponMagazinedWGrenade.h"
 #include "../../Level.h"
 #include "poltergeist/poltergeist.h"
-#include "src/xrEngine/xr_ioc_cmd.h"
+#include "../../xrEngine/xr_ioc_cmd.h"
+#include "../../Inventory.h"
+#include "../../ActorCondition.h"
 
 #pragma optimize("", off)
 
