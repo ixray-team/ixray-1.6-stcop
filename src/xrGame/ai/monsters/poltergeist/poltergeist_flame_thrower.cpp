@@ -93,7 +93,7 @@ void CFlamePoltergeist::create_flame(const CObject *target_object)
 	element->target_object			= target_object;
 	element->time_started			= time();
 	element->sound.clone			(m_sound, st_Effect,SOUND_TYPE_WORLD);
-	element->sound.play_at_pos		(m_poltergeist,element->position);
+	element->sound.play_at_pos		(poltergeist,element->position);
 	element->particles_object		= 0;
 	element->time_last_hit			= 0;
 
@@ -115,18 +115,18 @@ void CFlamePoltergeist::select_state(SFlameElement *elem, EFlameState state)
 	switch(elem->state) {
 	case ePrepare:	
 		// start prepare particles
-		m_poltergeist->PlayParticles(m_particles_prepare,elem->position,elem->target_dir,true);
+		poltergeist->PlayParticles(m_particles_prepare,elem->position,elem->target_dir,true);
 		break;
 	case eFire:		
 		// start fire particles
-		elem->particles_object = m_poltergeist->PlayParticles(m_particles_fire,elem->position,elem->target_dir,false);
+		elem->particles_object = poltergeist->PlayParticles(m_particles_fire,elem->position,elem->target_dir,false);
 		break;
 	case eStop:		
 		// stop fire particles
 		if (elem->particles_object) Particles::Details::Destroy(elem->particles_object);
 		
 		// start finish particles
-		m_poltergeist->PlayParticles(m_particles_stop,elem->position,elem->target_dir,true);
+		poltergeist->PlayParticles(m_particles_stop,elem->position,elem->target_dir,true);
 
 		break;
 	}
@@ -169,8 +169,8 @@ void CFlamePoltergeist::update_schedule()
 							NET_Packet			P;
 							SHit				HS;
 							HS.GenHeader		(GE_HIT, elem->target_object->ID());	//					u_EventGen		(P,GE_HIT, element->target_object->ID());
-							HS.whoID			= (m_poltergeist->ID());						//					P.w_u16			(ID());
-							HS.weaponID			= (m_poltergeist->ID());						//					P.w_u16			(ID());
+							HS.whoID			= (poltergeist->ID());						//					P.w_u16			(ID());
+							HS.weaponID			= (poltergeist->ID());						//					P.w_u16			(ID());
 							HS.dir				= (elem->target_dir);					//					P.w_dir			(element->target_dir);
 							HS.power			= (hit_value);							//					P.w_float		(m_flame_hit_value);
 							HS.boneID			= (BI_NONE);							//					P.w_s16			(BI_NONE);
@@ -179,7 +179,7 @@ void CFlamePoltergeist::update_schedule()
 							HS.hit_type			= (ALife::eHitTypeBurn);				//					P.w_u16			(u16(ALife::eHitTypeBurn));
 
 							HS.Write_Packet			(P);
-							m_poltergeist->u_EventSend	(P);
+							poltergeist->u_EventSend	(P);
 
 							elem->time_last_hit	= time();
 						}
@@ -205,18 +205,18 @@ void CFlamePoltergeist::update_schedule()
 		m_flames.end()
 	);
 	
-	bool const detected	=	m_poltergeist->get_current_detection_level() >= m_poltergeist->get_detection_success_level();
+	bool const detected	=	poltergeist->get_current_detection_level() >= poltergeist->get_detection_success_level();
 
 	CEntityAlive const* enemy	=	Actor();
 	// check if we can create another flame
-	if ( m_poltergeist->g_Alive() && 
+	if ( poltergeist->g_Alive() && 
 		 enemy && 
 		 m_flames.size() < m_count &&
-		 !m_poltergeist->get_actor_ignore() && 
+		 !poltergeist->get_actor_ignore() && 
 		 detected ) {
 		// check aura radius and accessibility
-		float dist = enemy->Position().distance_to(m_poltergeist->Position());
-		if ((dist < m_pmt_aura_radius) && m_poltergeist->control().path_builder().accessible(enemy->Position())) {
+		float dist = enemy->Position().distance_to(poltergeist->Position());
+		if ((dist < m_pmt_aura_radius) && poltergeist->control().path_builder().accessible(enemy->Position())) {
 			// check timing
 			if (m_time_flame_started + m_delay < time()) {
 				create_flame(enemy);
