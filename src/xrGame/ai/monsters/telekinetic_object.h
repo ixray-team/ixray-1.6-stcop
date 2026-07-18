@@ -1,5 +1,6 @@
 #pragma once
 #include "../xrPhysics/ExtendedGeom.h"
+#include "PhysicsShellHolder.h"
 
 class CGameObject;
 class CPhysicsShellHolder;
@@ -29,29 +30,77 @@ enum ETelekineticTimings : u16
 	RAISE_MAX_TIME = 5000
 };
 
+struct STelekineticWeaponParams
+{
+	ITelekineticEnemy* telekinetic_enemy;
+	u32 delay_before_first_shot;
+
+	// Угловая скорость наведения оружия на врага. Указывается в градусах/с.
+	// Нужно чтобы оружие не наводилось турель-like. Хотя, вы можете это сделлать, проставив в конфигах 360 для всех сложностей.
+	f32 novice_difficulty_angular_speed;
+	f32 stalker_difficulty_angular_speed;
+	f32 veteran_difficulty_angular_speed;
+	f32 master_difficulty_angular_speed;
+
+	// Погрешность наведения на врага, после которой можно стрелять. Указывается в градусах/с (1..180)
+	// Чем ниже сложность - тем больше погрешность для начала стрельбы - тем больше будет потрачено патрон.
+	// Настраивается вместе с параметрами %difficulty%_Angular_Speed, чтобы при низких уровнях сложности - оружие в случае идеального наведения на модель врага.
+	// в конфиге 1 = оружие начнёт стрелять только в случае идеального наведения в центр модели врага.
+	// в конфиге 180 = оружие начинает стрелять, даже когда смотрит в противоположну сторону, относительно врага.
+	f32 novice_difficulty_error_angle;
+	f32 stalker_difficulty_error_angle;
+	f32 veteran_difficulty_error_angle;
+	f32 master_difficulty_error_angle;
+};
+
+struct STelekineticObjectParams
+{
+	CTelekinesis* telekinesis;
+	CPhysicsShellHolder* object;
+	float strength; // Сила, с которой объект будет подниматься.
+	float target_height; // Высота, на которую нужно поднять объект.
+	u32 time_to_keep; // Время удержания объекта.
+	bool rotate_object; // Крутить объект или нет. (преимущественно для CMincer)
+	
+	float novice_difficulty_object_hit_factor;
+	float stalker_difficulty_object_hit_factor;
+	float veteran_difficulty_object_hit_factor;
+	float master_difficulty_object_hit_factor;
+};
+
+struct SCollisionHitCallback : 
+	public ICollisionHitCallback
+{
+	CPhysicsShellHolder* object;
+
+	SCollisionHitCallback(CPhysicsShellHolder* object) : object(object)
+	{
+	}
+
+	void call(IPhysicsShellHolder* ph_shell, float min_collision_speed, float max_collision_speed, float& collision_speed, float& health_loss, ICollisionDamageInfo* di) override
+	{
+		health_loss = 0.f;
+		object->set_collision_hit_callback(nullptr);
+	}
+};
+
 struct STelekineticObject
 {
-	ETelekineticState state;
+	STelekineticObjectParams params;
 
-	CPhysicsShellHolder* object;
 	ref_sound sound_hold;
 	ref_sound sound_throw;
 	shared_str particle_sect;
-
-	float target_height;
-	float strength;
-
-	// Objects
+	
 	u32 time_raise_started;
 	u32 time_keep_started;
 	u32 time_keep_updated;
-	u32 time_to_keep;
 	u32 time_throw_started;
 
-	bool rotate_object;
-
-	STelekineticObject(CPhysicsShellHolder* owner, float s, float h, u32 ttk, bool rot);
-	virtual ~STelekineticObject() {}
+	ETelekineticState state;
+	
+	STelekineticObject(const STelekineticObjectParams& tele_params);
+	virtual ~STelekineticObject() = default;
 
 	virtual void set_sound(const ref_sound& snd_hold, const ref_sound& snd_throw);
 	virtual void set_particle(shared_str& particles_sect);
@@ -74,7 +123,7 @@ struct STelekineticObject
 	ICF virtual bool is_released() const { return state == ETelekineticState::TS_NONE; }
 	virtual void switch_state(ETelekineticState new_state);
 	ICF virtual ETelekineticState get_state() const { return state; }
-	ICF virtual CPhysicsShellHolder* get_object() const { return object; }
+	ICF virtual CPhysicsShellHolder* get_object() const { return params.object; }
 
 	virtual bool check_height() const;
 	virtual bool check_raise_time_out() const;
@@ -86,7 +135,7 @@ struct STelekineticObject
 
 	ICF bool operator==(const CPhysicsShellHolder* obj) const
 	{
-		return object == obj;
+		return params.object == obj;
 	}
 
 	void rotate() const;
@@ -101,45 +150,20 @@ struct STelekineticObject
 	virtual CTeleWhirlwindObject* cast_whirlwind_object() { return nullptr; }
 };
 
-struct STelekineticWeaponParams
-{
-	u32 delay_before_first_shot;
-
-	// Угловая скорость наведения оружия на врага. Указывается в градусах/с.
-	// Нужно чтобы оружие не наводилось турель-like. Хотя, вы можете это сделлать, проставив в конфигах 360 для всех сложностей.
-	f32 novice_difficulty_angular_speed;
-	f32 stalker_difficulty_angular_speed;
-	f32 veteran_difficulty_angular_speed;
-	f32 master_difficulty_angular_speed;
-
-	// Погрешность наведения на врага, после которой можно стрелять. Указывается в градусах/с (1..180)
-	// Чем ниже сложность - тем больше погрешность для начала стрельбы - тем больше будет потрачено патрон.
-	// Настраивается вместе с параметрами %difficulty%_Angular_Speed, чтобы при низких уровнях сложности - оружие в случае идеального наведения на модель врага.
-	// в конфиге 1 = оружие начнёт стрелять только в случае идеального наведения в центр модели врага.
-	// в конфиге 180 = оружие начинает стрелять, даже когда смотрит в противоположну сторону, относительно врага.
-	f32 novice_difficulty_error_angle;
-	f32 stalker_difficulty_error_angle;
-	f32 veteran_difficulty_error_angle;
-	f32 master_difficulty_error_angle;
-};
-
 struct STelekineticWeaponObject : STelekineticObject
 {
 	using inherited = STelekineticObject;
-
-	ITelekineticEnemy* telekinetic_enemy;
-	// Внешие параметры, приходит от CBurer || CTelePoltergeist
+	
 	STelekineticWeaponParams weapon_params;
 	CWeaponMagazined* weapon;
 
 	u32 weapon_phase_start_time; // Когда оружие начало/перестало стрелять.
 	u32 weapon_next_phase_time;	 // Когда оружию перестать/начать стрелять.
-
-	float backup_weapon_dispersion = 9999.f;
+	
 	u32 first_shot_delay_ms = 0;
 	s8 backup_weapon_fire_mode = s8(-1);
 
-	STelekineticWeaponObject(ITelekineticEnemy* tele_enemy, STelekineticWeaponParams& weapon_params, CPhysicsShellHolder* owner, float s, float h, u32 ttk, bool rot);
+	STelekineticWeaponObject(STelekineticWeaponParams weapon_params, const STelekineticObjectParams& tele_params);
 
 	void setup_local_weapon_things();
 	void restore_global_weapon_things();
@@ -177,7 +201,7 @@ struct STelekineticGrenadeObject : STelekineticObject
 	u32 throw_threshold = 700;
 	u32 time_to_explode = 2000;
 
-	STelekineticGrenadeObject(ITelekineticEnemy* tele_enemy, CPhysicsShellHolder* owner, float s, float h, u32 ttk, bool rot);
+	STelekineticGrenadeObject(ITelekineticEnemy* tele_enemy, const STelekineticObjectParams& tele_params);
 #ifdef DEBUG_DRAW
 	void debug_draw();
 #endif
