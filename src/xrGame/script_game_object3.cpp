@@ -1578,6 +1578,28 @@ float CScriptGameObject::GetArtefactHealthRestoreSpeed()
 	return artefact->GetHealthPower();
 }
 
+bool CScriptGameObject::SetEntityIgnoredByMonstersState(bool flag)
+{
+	if (CEntityAlive* entity = object().cast_entity_alive())
+	{
+		entity->m_bEntityIgnoredByMonsters = flag;
+
+		return true;
+	}
+	
+	return false;
+}
+
+bool CScriptGameObject::GetEntityIgnoredByMonstersState()
+{
+	if (CEntityAlive* entity = object().cast_entity_alive())
+	{
+		return entity->m_bEntityIgnoredByMonsters;
+	}
+
+	return false;
+}
+
 float CScriptGameObject::GetArtefactRadiationRestoreSpeed()
 {
 	CArtefact* artefact = object().cast_artefact();
