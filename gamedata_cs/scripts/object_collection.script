@@ -79,7 +79,6 @@ function object_collection:load(packet)
 	set_save_marker(packet, "load", false, "object_collection")
 
 	printf("LOAD OBJECT COLLECTION")
-	callstack()
 
 	self.m_count = packet:r_u16()	
 	self.m_last_id = packet:r_u16()
