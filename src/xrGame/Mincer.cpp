@@ -18,21 +18,33 @@ CMincer::CMincer(void)
 CMincer::~CMincer(void) 
 {
 }
+
 void CMincer::OnStateSwitch(EZoneState new_state)
 {
-	if(m_eZoneState!=eZoneStateBlowout && new_state==eZoneStateBlowout)
+	if (m_eZoneState != eZoneStateBlowout && new_state == eZoneStateBlowout)
 	{
 		for (SZoneObjectInfo& info : m_ObjectInfoMap)
 		{
 			if (info.object && !info.object->getDestroy())
 			{
-				if (CPhysicsShellHolder* GO = info.object->cast_physics_shell_holder())
-					Telekinesis().append_tobject(new CTeleWhirlwindObject(&m_telekinetics, GO, m_fThrowInImpulse, m_fTeleHeight, 100000, true));
+				if (CPhysicsShellHolder* physics_object = info.object->cast_physics_shell_holder())
+				{
+					STelekineticObjectParams tele_object_params
+					{
+						.object = physics_object,
+						.strength = m_fThrowInImpulse,
+						.target_height = m_fTeleHeight,
+						.time_to_keep = 100000,
+						.rotate_object = true
+					};
+
+					Telekinesis().append_tobject(new CTeleWhirlwindObject(&m_telekinetics, tele_object_params));
+				}
 			}
 		}
 	}
 
-	if(m_eZoneState==eZoneStateBlowout && new_state!=eZoneStateBlowout)
+	if (m_eZoneState == eZoneStateBlowout && new_state != eZoneStateBlowout)
 	{
 		Telekinesis().clear_deactivate();
 	}
@@ -67,16 +79,29 @@ void CMincer::net_Destroy()
 	inherited::net_Destroy();
 	m_telekinetics.clear_impacts();
 }
-void CMincer::feel_touch_new				(CObject* O)
+
+void CMincer::feel_touch_new(CObject* O)
 {
-	
 	inherited::feel_touch_new(O);
-	if( m_eZoneState==eZoneStateBlowout && (m_dwBlowoutExplosionTime>(u32)m_iStateTime) )
+	
+	if (m_eZoneState == eZoneStateBlowout && m_dwBlowoutExplosionTime > (u32)m_iStateTime)
 	{
-		if(CPhysicsShellHolder * GO = O&&!O->getDestroy() ? O->cast_physics_shell_holder() : nullptr)
-			Telekinesis().append_tobject(new CTeleWhirlwindObject(&m_telekinetics, GO, m_fThrowInImpulse, m_fTeleHeight, 100000, true));
+		if (CPhysicsShellHolder* physics_object = O && !O->getDestroy() ? O->cast_physics_shell_holder() : nullptr)
+		{
+			STelekineticObjectParams tele_object_params
+			{
+				.object = physics_object,
+				.strength = m_fThrowInImpulse,
+				.target_height = m_fTeleHeight,
+				.time_to_keep = 100000,
+				.rotate_object = true
+			};
+
+			Telekinesis().append_tobject(new CTeleWhirlwindObject(&m_telekinetics, tele_object_params));
+		}
 	}
 }
+
 bool CMincer::feel_touch_contact(CObject* O)
 {
 	return inherited::feel_touch_contact(O) && O->cast_physics_shell_holder() != nullptr;

@@ -176,7 +176,7 @@ class IPolter
 	u32 m_last_hit_frame;
 
 public:
-	CPoltergeist* m_poltergeist;
+	CPoltergeist* poltergeist;
 
 	IPolter(CPoltergeist* polter);
 	virtual ~IPolter();
@@ -353,7 +353,7 @@ public:
 	f32 master_difficulty_error_angle;
 
 	CTelekineticPoltergeist(CPoltergeist* polter);
-	~CTelekineticPoltergeist() override;
+	~CTelekineticPoltergeist();
 
 	void load(const char* section) override;
 	void update_schedule() override;

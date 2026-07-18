@@ -8,14 +8,13 @@
 #include "xrMessages.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
-//#include "PHWorld.h"
+
 CTeleWhirlwind ::CTeleWhirlwind () 
 {
-	m_owner_object=nullptr;
-	m_center.set(0.f,0.f,0.f);
-	m_keep_radius=1.f;
-	m_throw_power=100.f;
-
+	m_owner_object = nullptr;
+	m_center.set(0.f, 0.f, 0.f);
+	m_keep_radius = 1.f;
+	m_throw_power = 100.f;
 }
 
 void CTeleWhirlwind::clear_impacts()
@@ -25,7 +24,6 @@ void CTeleWhirlwind::clear_impacts()
 void CTeleWhirlwind::clear()
 {
 	inherited::clear();
-	
 }
 
 void CTeleWhirlwind::add_impact(const Fvector& dir,float val)
@@ -79,50 +77,45 @@ void CTeleWhirlwind::play_destroy(CTeleWhirlwindObject *obj)
 {
 	
 }
-CTeleWhirlwindObject::CTeleWhirlwindObject(CTelekinesis* tele, CPhysicsShellHolder* owner, float s, float h, u32 ttk, bool rot) :
-	STelekineticObject(owner, s, h, ttk, rot)
+
+CTeleWhirlwindObject::CTeleWhirlwindObject(CTelekinesis* telekinesis, const STelekineticObjectParams& tele_object_params) : STelekineticObject(tele_object_params)
 {
-	m_telekinesis = static_cast<CTeleWhirlwind*>(tele);
+	m_telekinesis = smart_cast<CTeleWhirlwind*>(telekinesis);
 
-	throw_power = strength;
+	throw_power = tele_object_params.strength;
 
-	if (owner->PPhysicsShell())
+	if (tele_object_params.object->PPhysicsShell())
 	{
-		owner->PPhysicsShell()->SetAirResistance(0.f, 0.f);
-		owner->m_pPhysicsShell->set_ApplyByGravity(TRUE);
+		tele_object_params.object->PPhysicsShell()->SetAirResistance(0.f, 0.f);
+		tele_object_params.object->m_pPhysicsShell->set_ApplyByGravity(TRUE);
 	}
 
-	if (object->ph_destroyable() && object->ph_destroyable()->CanDestroy())
+	if (tele_object_params.object->ph_destroyable() && tele_object_params.object->ph_destroyable()->CanDestroy())
+	{
 		b_destroyable = true;
+	}
 	else
+	{
 		b_destroyable = false;
-
+	}
 	set_throw_power(m_telekinesis->get_throw_power());
 }
 
-void		CTeleWhirlwindObject::		raise_update			()
+void CTeleWhirlwindObject::raise_update()
 {
-	
-	//u32 time=Device.dwTimeGlobal;
-//	if (time_raise_started + 100000 < time) release();
-	
+
 }
 
-void		CTeleWhirlwindObject::		release					()
+void CTeleWhirlwindObject::release()
 {
-	if (!object ||object->getDestroy() ||!object->m_pPhysicsShell || !object->m_pPhysicsShell->isActive()) return;
+	if (!params.object ||params.object->getDestroy() ||!params.object->m_pPhysicsShell || !params.object->m_pPhysicsShell->isActive()) 
+		return;
 	
-		
 	Fvector dir_inv;
-	dir_inv.sub(object->Position(),m_telekinesis->Center());
+	dir_inv.sub(params.object->Position(),m_telekinesis->Center());
 	float magnitude	= dir_inv.magnitude();
-	
+	params.object->m_pPhysicsShell->set_ApplyByGravity(true);
 
-	// включить гравитацию 
-	//Fvector zer;zer.set(0,0,0);
-	//object->m_pPhysicsShell->set_LinearVel(zer);
-	object->m_pPhysicsShell->set_ApplyByGravity(true);
-/////////////////////////////////////
 	float impulse=0.f;
 	if(magnitude>0.2f)
 	{
@@ -134,22 +127,20 @@ void		CTeleWhirlwindObject::		release					()
 		dir_inv.random_dir();
 		impulse=throw_power*100.f;
 	}
-/////////////////////////////////////////////////
+
 	bool b_destroyed=false;
-	if(magnitude<2.f*object->Radius())
+	if(magnitude<2.f*params.object->Radius())
 	{
 		b_destroyed=destroy_object(dir_inv,throw_power*100.f);
 	}
 
-
-
-	if(!b_destroyed)object->m_pPhysicsShell->applyImpulse(dir_inv,impulse);
+	if(!b_destroyed)params.object->m_pPhysicsShell->applyImpulse(dir_inv,impulse);
 	switch_state(ETelekineticState::TS_NONE);
 }
 
 bool CTeleWhirlwindObject::destroy_object(const Fvector dir, float val)
 {
-	CPHDestroyable* D = object->ph_destroyable();
+	CPHDestroyable* D = params.object->ph_destroyable();
 	if (D)
 	{
 		D->PhysicallyRemoveSelf();
@@ -163,8 +154,8 @@ bool CTeleWhirlwindObject::destroy_object(const Fvector dir, float val)
 				m_telekinesis->add_impact(dir, val * 10.f);
 		};
 
-		u16 root = (smart_cast<IKinematics*>(object->Visual()))->LL_GetBoneRoot();
-		TParticlesPlayer* PPlayer = object->GetOrCreateComponent<TParticlesPlayer>();
+		u16 root = (smart_cast<IKinematics*>(params.object->Visual()))->LL_GetBoneRoot();
+		TParticlesPlayer* PPlayer = params.object->GetOrCreateComponent<TParticlesPlayer>();
 		PPlayer->StartParticles(m_telekinesis->destroing_particles(), root, Fvector().set(0, 1, 0), m_telekinesis->OwnerObject()->ID());
 
 		return true;
@@ -172,7 +163,7 @@ bool CTeleWhirlwindObject::destroy_object(const Fvector dir, float val)
 	return false;
 }
 
-void		CTeleWhirlwindObject::		raise					(float step)
+void CTeleWhirlwindObject::raise(float step)
 {
 
 		CPhysicsShell*	p					=	get_object()	->PPhysicsShell();
@@ -189,7 +180,7 @@ void		CTeleWhirlwindObject::		raise					(float step)
 		CPhysicsElement* maxE=p->get_ElementByStoreOrder(0);
 		for(u16 element=0;element<element_number;++element)
 		{
-			float k=strength;//600.f;
+			float k=params.strength;//600.f;
 			float predict_v_eps=0.1f;
 			float mag_eps	   =.01f;
 
@@ -265,7 +256,7 @@ void		CTeleWhirlwindObject::		raise					(float step)
 }
 
 
-void		CTeleWhirlwindObject::		perform_keep_object					()
+void CTeleWhirlwindObject::perform_keep_object()
 {
 	CPhysicsShell*	p					=	get_object()	->PPhysicsShell();
 	if(!p||!p->isActive())	
@@ -310,20 +301,22 @@ void		CTeleWhirlwindObject::		perform_keep_object					()
 	}
 }
 
-void		CTeleWhirlwindObject::		fire					(const Fvector &target)
+void CTeleWhirlwindObject::fire(const Fvector& target)
 {
-	//inherited::fire(target);
-}
-void		CTeleWhirlwindObject::		throw_object					(const Fvector &target, float power)
-{
-	//inherited:: fire(target,power);
+
 }
 
-void		CTeleWhirlwindObject::set_throw_power(float throw_pow)
+void CTeleWhirlwindObject::throw_object(const Fvector& target, float power)
+{
+
+}
+
+void CTeleWhirlwindObject::set_throw_power(float throw_pow)
 {
 	throw_power=throw_pow;
 }
-void		CTeleWhirlwindObject::switch_state(ETelekineticState new_state)
+
+void CTeleWhirlwindObject::switch_state(ETelekineticState new_state)
 {
 	inherited::switch_state(new_state);
 }

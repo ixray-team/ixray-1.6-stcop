@@ -104,12 +104,21 @@ bool CBaseGraviZone ::IdleState()
 			{
 				if (info.object && !info.object->getDestroy())
 				{
-					CPhysicsShellHolder* GO = info.object->cast_physics_shell_holder();
+					CPhysicsShellHolder* physics_object = info.object->cast_physics_shell_holder();
 
-					if (GO && GO->PPhysicsShell() && !Telekinesis().is_active_object(GO))
+					if (physics_object && physics_object->PPhysicsShell() && !Telekinesis().is_active_object(physics_object))
 					{
-						Telekinesis().append_tobject(new STelekineticObject(GO, 0.1f, m_fTeleHeight, m_dwTimeToTele, true));
-						PlayTeleParticles(GO);
+						STelekineticObjectParams tele_object_params
+						{
+							.object = physics_object,
+							.strength = 0.1f,
+							.target_height = m_fTeleHeight,
+							.time_to_keep = m_dwTimeToTele,
+							.rotate_object = true
+						};
+
+						Telekinesis().append_tobject(new STelekineticObject(tele_object_params));
+						PlayTeleParticles(physics_object);
 					}
 				}
 			}
