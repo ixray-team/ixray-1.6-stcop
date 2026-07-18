@@ -95,27 +95,10 @@ template <typename Object>
 void CStateBurerAttackTele<Object>::deactivate()
 {
 	tele_objects.clear();
-	// clear particles on active objects
-	if (this->object->CTelekinesis::is_active())
-	{
-		for (STelekineticObject* tobject : this->object->CTelekinesis::get_tele_objects())
-		{
-			CPhysicsShellHolder* cur_object = tobject->get_object();
-			if (!cur_object || !cur_object->m_pPhysicsShell || !cur_object->m_pPhysicsShell->isActive())
-			{
-				continue;
-			}
-
-			if (CGrenade* grenade = cur_object->cast_grenade())
-			{
-				grenade->set_destroy_callback(nullptr);
-			}
-		}
-	}
 
 	for (STelekineticObject* tobject : this->object->CTelekinesis::get_tele_objects())
 	{
-		CPhysicsShellHolder* const cur_object = tobject->object;
+		CPhysicsShellHolder* const cur_object = tobject->params.object;
 		if (!cur_object || !cur_object->m_pPhysicsShell || !cur_object->m_pPhysicsShell->isActive())
 		{
 			continue;
@@ -464,7 +447,21 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 		}
 
 		STelekineticObject* tele_obj = nullptr;
-
+		
+		STelekineticObjectParams tele_object_params
+		{
+			.telekinesis = this->object->telekinesis(),
+			.object = object,
+			.strength = this->object->tele_raise_speed,
+			.target_height = height,
+			.time_to_keep = this->object->tele_time_to_hold,
+			.rotate_object = rotate,
+			.novice_difficulty_object_hit_factor = this->object->novice_difficulty_object_hit_factor,
+			.stalker_difficulty_object_hit_factor = this->object->stalker_difficulty_object_hit_factor,
+			.veteran_difficulty_object_hit_factor = this->object->veteran_difficulty_object_hit_factor,
+			.master_difficulty_object_hit_factor = this->object->master_difficulty_object_hit_factor,
+		};
+		
 		if (object->cast_weapon_magazined() && this->object->shooting_from_weapon_enable)
 		{
 			size_t weapons_count = std::count_if(this->object->CTelekinesis::get_tele_objects().begin(), this->object->CTelekinesis::get_tele_objects().end(), [](STelekineticObject* tele_object)
@@ -475,7 +472,9 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 				return;
 			}
 
-			STelekineticWeaponParams weapon_params{
+			STelekineticWeaponParams weapon_params
+			{
+				.telekinetic_enemy = this->object,
 				.delay_before_first_shot = this->object->delay_before_first_shot,
 
 				.novice_difficulty_angular_speed = this->object->novice_difficulty_angular_speed,
@@ -489,75 +488,26 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 				.master_difficulty_error_angle = this->object->master_difficulty_error_angle,
 			};
 
-			tele_obj = new STelekineticWeaponObject(this->object, weapon_params, object, this->object->tele_raise_speed, height, this->object->tele_time_to_hold, rotate);
+			tele_obj = new STelekineticWeaponObject(weapon_params, tele_object_params);
 		}
 		else if (object->cast_grenade() && this->object->shooting_from_weapon_enable)
 		{
-			tele_obj = new STelekineticGrenadeObject(this->object, object, this->object->tele_raise_speed, height, this->object->tele_time_to_hold, rotate);
+			tele_obj = new STelekineticGrenadeObject(this->object, tele_object_params);
 		}
 		else
 		{
-			tele_obj = new STelekineticObject(object, this->object->tele_raise_speed, height, this->object->tele_time_to_hold, rotate);
+			tele_obj = new STelekineticObject(tele_object_params);
+		}
+
+		if (!tele_obj->can_be_picked_up())
+		{
+			xr_delete(tele_obj);
+			return;
 		}
 
 		this->object->CTelekinesis::append_tobject(tele_obj);
 		tele_obj->set_sound(this->object->sound_tele_hold, this->object->sound_tele_throw);
 		tele_obj->set_particle(this->object->particle_tele_object);
 		tele_obj->start_object_particles();
-	}
-}
-
-template <typename Object>
-void CStateBurerAttackTele<Object>::OnGrenadeDestroyed(CGrenade* const grenade)
-{
-	this->object->CTelekinesis::remove_links(grenade);
-}
-
-template <typename Object>
-void CStateBurerAttackTele<Object>::HandleGrenades()
-{
-	if (time() < m_last_grenade_scan + 1000)
-	{
-		return;
-	}
-
-	g_SpatialSpace->q_sphere(m_nearest, 0, ESPATIAL_TYPE::COLLIDEABLE, this->object->Position(), this->object->tele_find_radius);
-	for (ISpatialShared& SS : m_nearest)
-	{
-		ISpatial* S = SS.get();
-		if (!S)
-		{
-			continue;
-		}
-		CObject* object = S->dcast_CObject();
-		if (!object || object->getDestroy())
-		{
-			continue;
-		}
-		CGrenade* grenade = object->cast_grenade();
-
-		if (!grenade ||
-			!grenade->PPhysicsShell() ||
-			!grenade->PPhysicsShell()->isActive() ||
-			this->object->CTelekinesis::is_active_object(grenade) ||
-			!grenade->m_pPhysicsShell->get_ApplyByGravity())
-		{
-			continue;
-		}
-
-		grenade->set_destroy_callback(CGrenade::destroy_callback(this, &CStateBurerAttackTele<Object>::OnGrenadeDestroyed));
-
-		float const height = 2.5f;
-		bool const rotate = false;
-
-		STelekineticObject* tele_obj = new STelekineticObject(grenade, 3.0f, height, 10000, rotate);
-		this->object->CTelekinesis::append_tobject(tele_obj);
-		tele_obj->set_sound(this->object->sound_tele_hold, this->object->sound_tele_throw);
-		this->object->StartTeleObjectParticle(grenade);
-
-		if (this->object->CTelekinesis::get_controlled_objects_count() >= this->object->tele_max_handled_objects + 1)
-		{
-			break;
-		}
 	}
 }

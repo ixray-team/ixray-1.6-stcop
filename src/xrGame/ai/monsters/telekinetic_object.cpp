@@ -13,22 +13,10 @@
 #include "../../Inventory.h"
 #include "../../ActorCondition.h"
 
-#pragma optimize("", off)
-
-STelekineticObject::STelekineticObject(CPhysicsShellHolder* owner, float s, float h, u32 ttk, bool rot)
+STelekineticObject::STelekineticObject(const STelekineticObjectParams& tele_params) : params(tele_params)
 {
 	STelekineticObject::switch_state(ETelekineticState::TS_RAISE);
-	object = owner;
-
-	target_height = owner->Position().y + h;
-
-	time_keep_started = 0;
-	time_keep_updated = 0;
-	time_to_keep = ttk;
-
-	strength = s;
-	time_throw_started = 0;
-	rotate_object = rot;
+	this->params.target_height = this->params.object->Position().y + this->params.target_height;
 }
 
 void STelekineticObject::set_sound(const ref_sound& snd_hold, const ref_sound& snd_throw)
@@ -44,13 +32,13 @@ void STelekineticObject::set_particle(shared_str& particles_sect)
 
 void STelekineticObject::start_object_particles()
 {
-	TParticlesPlayer* PPlayer = object->GetOrCreateComponent<TParticlesPlayer>();
-	PPlayer->StartParticles(particle_sect, Fvector().set(0.0f, 0.1f, 0.0f), object->ID());
+	TParticlesPlayer* PPlayer = params.object->GetOrCreateComponent<TParticlesPlayer>();
+	PPlayer->StartParticles(particle_sect, Fvector().set(0.0f, 0.1f, 0.0f), params.object->ID());
 }
 
 void STelekineticObject::stop_object_particles()
 {
-	TParticlesPlayer* PPlayer = object->GetOrCreateComponent<TParticlesPlayer>();
+	TParticlesPlayer* PPlayer = params.object->GetOrCreateComponent<TParticlesPlayer>();
 	PPlayer->StopParticles(particle_sect, BI_NONE, true);
 }
 
@@ -60,7 +48,7 @@ void STelekineticObject::raise_update()
 	{
 		prepare_keep();
 	}
-	else if (rotate_object)
+	else if (params.rotate_object)
 	{
 		rotate();
 	}
@@ -102,15 +90,23 @@ void STelekineticObject::update_state()
 			break;
 	}
 }
+
 void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
 	dxGeomUserData* self = bo1 ? PHRetrieveGeomUserData(c.geom.g1) : PHRetrieveGeomUserData(c.geom.g2);
-	dxGeomUserData* damage_receiver = bo1 ? PHRetrieveGeomUserData(c.geom.g2) : PHRetrieveGeomUserData(c.geom.g1); 
+	dxGeomUserData* damage_receiver = bo1 ? PHRetrieveGeomUserData(c.geom.g2) : PHRetrieveGeomUserData(c.geom.g1);
 
-	SGameMtl* material_self = bo1 ? material_1 : material_2;
-	SGameMtl* material_damager = bo1 ? material_2 : material_1;
+	if (self == nullptr || self->ph_ref_object == nullptr)
+	{
+		return;
+	}
 
 	CPhysicsShellHolder* ph_self_object = smart_cast<CPhysicsShellHolder*>(self->ph_ref_object);
+	if (ph_self_object == nullptr || ph_self_object->m_pPhysicsShell == nullptr)
+	{
+		return;
+	}
+
 	ph_self_object->m_pPhysicsShell->remove_ObjectContactCallback(collision_callback);
 
 	CPhysicsShellHolder* ph_damage_receiver = damage_receiver ? smart_cast<CPhysicsShellHolder*>(damage_receiver->ph_ref_object) : nullptr;
@@ -127,13 +123,24 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 
 	CActor* actor = ph_damage_receiver->cast_actor();
 	CAI_Stalker* ai_stalker = ph_damage_receiver->cast_stalker();
-	if ((actor && !GodMode()) || ai_stalker)
+
+	if (do_colide && (actor && !GodMode() || ai_stalker) && entity_alive->g_Alive())
 	{
 		Fvector linear_vel;
 		ph_self_object->PHGetLinearVell(linear_vel);
 
 		float vel = linear_vel.magnitude();
-		float pure_j = ph_self_object->GetMass() * pow(vel, 2.f) * .5f;
+		float pure_j = EPS_L;
+
+		if (PIItem item = ph_self_object->cast_inventory_item())
+		{
+			pure_j = item->Weight() * pow(vel, 2.f) * .5f;
+		}
+		else
+		{
+			pure_j = ph_self_object->GetMass() * pow(vel, 2.f) * .5f;
+		}
+
 		float kinetic_energy = fabsf(1.f - expf(-EPS_L * pure_j));
 		float difficulty_modifier = 1.f;
 
@@ -142,19 +149,19 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 			switch (g_SingleGameDifficulty)
 			{
 				case egdNovice:
-					difficulty_modifier = .70f;
+					difficulty_modifier = 0.50f;
 					break;
 
 				case egdStalker:
-					difficulty_modifier = .80f;
+					difficulty_modifier = 0.70f;
 					break;
 
 				case egdVeteran:
-					difficulty_modifier = .90f;
+					difficulty_modifier = 0.80f;
 					break;
 
 				case egdMaster:
-					difficulty_modifier = 1.f;
+					difficulty_modifier = 1.0f;
 					break;
 			}
 		}
@@ -162,45 +169,56 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 		{
 			difficulty_modifier = .3f;
 		}
+		
+		float health_loss = kinetic_energy * difficulty_modifier;
 
-		float health_loss = kinetic_energy * difficulty_modifier * .5f;
-
-		entity_alive->conditions().SetPower(entity_alive->conditions().GetPower() - health_loss);
+		if (actor)
+		{
+			entity_alive->conditions().SetPower(entity_alive->conditions().GetPower() - health_loss);
+		}
 		entity_alive->conditions().SetHealth(entity_alive->conditions().GetHealth() - health_loss);
 
 		if (actor)
 		{
-			PIItem item = Actor()->inventory().ActiveItem();
-			CCustomDevice* device = Actor()->GetDevice();
+			PIItem item = actor->inventory().ActiveItem();
+			CCustomDevice* device = actor->GetDevice();
 
-			constexpr float porog_stamini_4tobi_vironit_pushky_iz_arms = 33;   // 1..100%
-			constexpr float porog_stamini_4tobi_vironit_detektor_iz_arms = 33; // 1..100%
-
+			constexpr float porog_stamini_4tobi_vironit_pushky_iz_arms = 33;
+			constexpr float porog_health_4tobi_vironit_pushky_iz_arms = 50;
 			bool need_kick_animator = false;
-
-			if (item != nullptr && Actor()->conditions().GetPower() - health_loss < porog_stamini_4tobi_vironit_pushky_iz_arms / 100.f)
+			
+			bool need_drop_gun_by_power = actor->conditions().GetPower() < porog_stamini_4tobi_vironit_pushky_iz_arms / 100.f;
+			bool need_drop_gun_by_health = actor->conditions().GetHealth() < porog_health_4tobi_vironit_pushky_iz_arms / 100.f;
+			
+			if (item != nullptr && (need_drop_gun_by_power || need_drop_gun_by_health))
 			{
-				u16 slot = Actor()->inventory().ActiveItem()->BaseSlot();
+				u16 slot = actor->inventory().ActiveItem()->BaseSlot();
 
-				if (!Actor()->inventory().SlotIsPersistent(slot) && !Actor()->inventory().Action(kDROP, CMD_STOP))
+				if (!actor->inventory().SlotIsPersistent(slot) && !actor->inventory().Action(kDROP, CMD_STOP))
 				{
-					Actor()->g_PerformDrop();
+					actor->g_PerformDrop();
 					need_kick_animator = true;
 				}
 			}
 
-			if (device != nullptr && Actor()->conditions().GetPower() - health_loss < porog_stamini_4tobi_vironit_detektor_iz_arms / 100.f)
+			constexpr float porog_stamini_4tobi_vironit_detektor_iz_arms = 33;
+			constexpr float porog_health_4tobi_vironit_detektor_iz_arms = 50;
+			
+			bool need_drop_detector_by_power = actor->conditions().GetPower() < porog_stamini_4tobi_vironit_detektor_iz_arms / 100.f;
+			bool need_drop_detector_by_health = actor->conditions().GetHealth() < porog_health_4tobi_vironit_detektor_iz_arms / 100.f;
+			
+			if (device != nullptr && (need_drop_detector_by_power || need_drop_detector_by_health))
 			{
 				device->SetDropManual(true);
 				need_kick_animator = true;
 			}
 
-			if (need_kick_animator && !Actor()->HudAnimator()->ItemAnimator()->IsActive())
+			if (need_kick_animator && !actor->HudAnimator()->ItemAnimator()->IsActive())
 			{
-				Actor()->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+				actor->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
 
-				const shared_str& front_kick_animator = Actor()->m_sFrontKickAnimator;
-				const shared_str& back_kick_animator = Actor()->m_sBackKickAnimator;
+				const shared_str& front_kick_animator = actor->m_sFrontKickAnimator;
+				const shared_str& back_kick_animator = actor->m_sBackKickAnimator;
 
 				Fvector object_pos = Fvector().set(self->last_pos);
 				Fvector damage_receiver_pos = Fvector().set(damage_receiver->last_pos);
@@ -213,7 +231,7 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 				{
 					if (front_kick_animator != nullptr)
 					{
-						Actor()->HudAnimator()->ItemAnimator()->StartAnimator(front_kick_animator);
+						actor->HudAnimator()->ItemAnimator()->StartAnimator(front_kick_animator);
 					}
 				}
 				else
@@ -252,22 +270,22 @@ void STelekineticObject::switch_state(ETelekineticState new_state)
 
 void STelekineticObject::raise(float step)
 {
-	if (!object || !object->m_pPhysicsShell || !object->m_pPhysicsShell->isActive())
+	if (!params.object || !params.object->m_pPhysicsShell || !params.object->m_pPhysicsShell->isActive())
 	{
 		return;
 	}
 
-	step *= strength;
+	step *= params.strength;
 
 	Fvector dir;
 	dir.set(0.f, 1.0f, 0.f);
 
-	float elem_size = float(object->m_pPhysicsShell->Elements().size());
-	dir.mul(elem_size * elem_size * strength);
+	float elem_size = float(params.object->m_pPhysicsShell->Elements().size());
+	dir.mul(elem_size * elem_size * params.strength);
 
 	if (OnServer())
 	{
-		object->m_pPhysicsShell->get_ElementByStoreOrder(0)->applyGravityAccel(dir);
+		params.object->m_pPhysicsShell->get_ElementByStoreOrder(0)->applyGravityAccel(dir);
 	}
 
 	update_hold_sound();
@@ -281,7 +299,7 @@ void STelekineticObject::prepare_keep()
 
 bool STelekineticObject::keep_time_elapsed() const
 {
-	return time_keep_started + time_to_keep < Device.dwTimeGlobal;
+	return time_keep_started + params.time_to_keep < Device.dwTimeGlobal;
 }
 
 bool STelekineticObject::throw_time_elapsed() const
@@ -291,19 +309,19 @@ bool STelekineticObject::throw_time_elapsed() const
 
 void STelekineticObject::perform_keep_object()
 {
-	if (!object || !object->m_pPhysicsShell || !object->m_pPhysicsShell->isActive())
+	if (!params.object || !params.object->m_pPhysicsShell || !params.object->m_pPhysicsShell->isActive())
 	{
 		return;
 	}
 
 	Fvector dir;
-	float current_height = object->Position().y;
+	float current_height = params.object->Position().y;
 
-	if (current_height > target_height)
+	if (current_height > params.target_height)
 	{
 		dir.set(0.f, -1.0f, 0.f);
 	}
-	else if (current_height < target_height)
+	else if (current_height < params.target_height)
 	{
 		dir.set(0.f, 1.0f, 0.f);
 	}
@@ -321,7 +339,7 @@ void STelekineticObject::perform_keep_object()
 
 	if (OnServer())
 	{
-		object->m_pPhysicsShell->get_ElementByStoreOrder(0)->applyGravityAccel(dir);
+		params.object->m_pPhysicsShell->get_ElementByStoreOrder(0)->applyGravityAccel(dir);
 	}
 
 	time_keep_updated = Device.dwTimeGlobal;
@@ -330,7 +348,7 @@ void STelekineticObject::perform_keep_object()
 
 void STelekineticObject::release()
 {
-	if (!object || !object->m_pPhysicsShell)
+	if (!params.object || !params.object->m_pPhysicsShell)
 	{
 		return;
 	}
@@ -339,62 +357,44 @@ void STelekineticObject::release()
 	random_dir.random_dir();
 	random_dir.normalize();
 
-	object->m_pPhysicsShell->set_ApplyByGravity(true);
+	params.object->m_pPhysicsShell->set_ApplyByGravity(true);
 
 	if (OnServer())
 	{
-		object->m_pPhysicsShell->applyImpulseTrace(object->Position(), random_dir, object->m_pPhysicsShell->getMass() * 2.f);
+		params.object->m_pPhysicsShell->applyImpulseTrace(params.object->Position(), random_dir, params.object->m_pPhysicsShell->getMass() * 2.f);
 	}
 
 	stop_object_particles();
 	switch_state(ETelekineticState::TS_NONE);
 }
 
-
-
-struct SCollisionHitCallback : ICollisionHitCallback
-{
-	CPhysicsShellHolder* object;
-
-	SCollisionHitCallback(CPhysicsShellHolder* object) : object(object)
-	{
-	}
-
-	void call(IPhysicsShellHolder* ph_shell, float min_collision_speed, float max_collision_speed, float& collision_speed, float& health_loss, ICollisionDamageInfo* di) override
-	{
-		health_loss = 0.f;
-		object->set_collision_hit_callback(nullptr);
-	}
-};
-
-
 void STelekineticObject::throw_object_time(const Fvector& target, float time)
 {
 	switch_state(ETelekineticState::TS_THROW);
 
-	if (!object || !object->m_pPhysicsShell || !object->m_pPhysicsShell->isActive())
+	if (!params.object || !params.object->m_pPhysicsShell || !params.object->m_pPhysicsShell->isActive())
 	{
 		return;
 	}
 
 	// включить гравитацию
-	object->m_pPhysicsShell->set_ApplyByGravity(true);
+	params.object->m_pPhysicsShell->set_ApplyByGravity(true);
 
 	Fvector transference;
-	transference.sub(target, object->Position());
-	TransferenceToThrowVel(transference, time, object->EffectiveGravity());
+	transference.sub(target, params.object->Position());
+	TransferenceToThrowVel(transference, time, params.object->EffectiveGravity());
 
 	// Aphile: хак, задаём new SCollisionHitCallback, чтобы физика не считала урон от столкновения, 
 	// а все рассчёт проходили в кастомном collide_callback.
-	object->set_collision_hit_callback(new SCollisionHitCallback(object));
-	object->m_pPhysicsShell->add_ObjectContactCallback(collision_callback);
+	params.object->set_collision_hit_callback(new SCollisionHitCallback(params.object));
+	params.object->m_pPhysicsShell->add_ObjectContactCallback(collision_callback);
 
-	object->m_pPhysicsShell->applyImpulseTrace(object->Position(), transference, object->m_pPhysicsShell->getMass());
+	params.object->m_pPhysicsShell->applyImpulseTrace(params.object->Position(), transference, params.object->m_pPhysicsShell->getMass());
 
 	if (sound_throw.handle() && sound_hold.is_playing())
 	{
 		sound_hold.stop();
-		sound_throw.play_at_pos(object, object->Position());
+		sound_throw.play_at_pos(params.object, params.object->Position());
 	}
 	stop_object_particles();
 }
@@ -403,36 +403,31 @@ void STelekineticObject::throw_object(const Fvector& target, float power)
 {
 	switch_state(ETelekineticState::TS_THROW);
 
-	if (!object || !object->m_pPhysicsShell || !object->m_pPhysicsShell->isActive())
+	if (!params.object || !params.object->m_pPhysicsShell || !params.object->m_pPhysicsShell->isActive())
 	{
 		return;
 	}
 
 	// вычислить направление
 	Fvector dir;
-	dir.sub(target, object->Position());
+	dir.sub(target, params.object->Position());
 	dir.normalize();
 
 	// включить гравитацию
-	object->m_pPhysicsShell->set_ApplyByGravity(true);
+	params.object->m_pPhysicsShell->set_ApplyByGravity(true);
 
 	if (OnServer())
 	{
-		for (u32 i = 0; i < object->m_pPhysicsShell->get_ElementsNumber(); i++)
+		for (u32 i = 0; i < params.object->m_pPhysicsShell->get_ElementsNumber(); i++)
 		{
-			object->m_pPhysicsShell->get_ElementByStoreOrder(static_cast<u16>(i))->applyImpulse(dir, power * 20.f * object->m_pPhysicsShell->getMass() / object->m_pPhysicsShell->Elements().size());
+			params.object->m_pPhysicsShell->get_ElementByStoreOrder(static_cast<u16>(i))->applyImpulse(dir, power * 20.f * params.object->m_pPhysicsShell->getMass() / params.object->m_pPhysicsShell->Elements().size());
 		}
 	}
-};
+}
 
 bool STelekineticObject::check_height() const
 {
-	if (!object)
-	{
-		return true;
-	}
-
-	return object->Position().y > target_height;
+	return params.object ? params.object->Position().y > params.target_height : true;
 }
 
 bool STelekineticObject::check_raise_time_out() const
@@ -441,21 +436,20 @@ bool STelekineticObject::check_raise_time_out() const
 	{
 		return true;
 	}
-
 	return false;
 }
 
 void STelekineticObject::enable() const
 {
-	if (object->m_pPhysicsShell)
+	if (params.object->m_pPhysicsShell)
 	{
-		object->m_pPhysicsShell->Enable();
+		params.object->m_pPhysicsShell->Enable();
 	}
 }
 
 void STelekineticObject::rotate() const
 {
-	if (!object || !object->m_pPhysicsShell || !object->m_pPhysicsShell->isActive())
+	if (!params.object || !params.object->m_pPhysicsShell || !params.object->m_pPhysicsShell->isActive())
 	{
 		return;
 	}
@@ -466,7 +460,7 @@ void STelekineticObject::rotate() const
 
 	if (OnServer())
 	{
-		object->m_pPhysicsShell->applyImpulse(dir, 2.5f * object->m_pPhysicsShell->getMass());
+		params.object->m_pPhysicsShell->applyImpulse(dir, 2.5f * params.object->m_pPhysicsShell->getMass());
 	}
 }
 
@@ -479,24 +473,25 @@ void STelekineticObject::update_hold_sound()
 
 	if (sound_hold.is_playing())
 	{
-		sound_hold.set_position(object->Position());
+		sound_hold.set_position(params.object->Position());
 	}
 	else
 	{
-		sound_hold.play_at_pos(object, object->Position());
+		sound_hold.play_at_pos(params.object, params.object->Position());
 	}
 }
 
 // -------------------- WEAPON CONTROLLER --------------------
 
-STelekineticWeaponObject::STelekineticWeaponObject(ITelekineticEnemy* tele_enemy, STelekineticWeaponParams& weapon_params, CPhysicsShellHolder* owner, float s, float h, u32 ttk, bool rot) : STelekineticObject(owner, s, h, ttk, rot), telekinetic_enemy(tele_enemy), weapon(owner->cast_weapon_magazined()), weapon_next_phase_time(0), weapon_params(weapon_params)
+STelekineticWeaponObject::STelekineticWeaponObject(STelekineticWeaponParams weapon_params, const STelekineticObjectParams& tele_params) : 
+	STelekineticObject(tele_params), weapon_params(weapon_params), weapon(smart_cast<CWeaponMagazined*>(tele_params.object))
 {
 	STelekineticWeaponObject::switch_state(ETelekineticState::TS_RAISE);
 }
 
 void STelekineticWeaponObject::setup_local_weapon_things()
 {
-	const CEntityAlive* enemy = telekinetic_enemy->get_enemy();
+	const CEntityAlive* enemy = weapon_params.telekinetic_enemy->get_enemy();
 
 	if (enemy == nullptr)
 	{
@@ -512,14 +507,10 @@ void STelekineticWeaponObject::setup_local_weapon_things()
 	{
 		return;
 	}
-
-	backup_weapon_dispersion = weapon->getFireDispersionBase();
+	
 	backup_weapon_fire_mode = weapon->GetQueueSize();
-
-	weapon->SetInitiator(telekinetic_enemy->get_self()->ID());
-
+	weapon->SetInitiator(weapon_params.telekinetic_enemy->get_self()->ID());
 	first_shot_delay_ms = time() + weapon_params.delay_before_first_shot;
-
 	// WEAPON_ININITE_QUEUE (-1) = auto, 1 = single, 2 = burst
 	weapon->SetQueueSize(WEAPON_ININITE_QUEUE); // чтобы пистолетам задать режим стрельбы auto
 }
@@ -530,16 +521,14 @@ void STelekineticWeaponObject::restore_global_weapon_things()
 	{
 		return;
 	}
-
 	weapon->SetInitiator(-1);
 	weapon->SetQueueSize(backup_weapon_fire_mode);
-	weapon->setFireDispersionBase(backup_weapon_dispersion);
 }
 
 #ifdef DEBUG_DRAW
 void STelekineticWeaponObject::debug_draw()
 {
-	const CEntityAlive* enemy_ = telekinetic_enemy->get_enemy();
+	const CEntityAlive* enemy_ = weapon_params.telekinetic_enemy->get_enemy();
 	if (!enemy_)
 	{
 		return;
@@ -559,7 +548,7 @@ void STelekineticWeaponObject::debug_draw()
 			break;
 
 		case ETelekineticState::TS_KEEP:
-			state_text = shared_str().printf("Keeping %d ms", time_keep_started + time_to_keep - time());
+			state_text = shared_str().printf("Keeping %d ms", time_keep_started + params.time_to_keep - time());
 			break;
 
 		case ETelekineticState::TS_THROW:
@@ -619,7 +608,7 @@ void STelekineticWeaponObject::debug_draw()
 	);
 
 	HUD().world_prims.append_text3d(weapon->Position(), main_text);
-	HUD().world_prims.append_line(weapon->get_LastFP(), Fvector().mad(weapon->get_LastFP(), weapon->get_LastFD(), telekinetic_enemy->get_tele_distance()), color_rgba(0, 255, 0, 255));
+	HUD().world_prims.append_line(weapon->get_LastFP(), Fvector().mad(weapon->get_LastFP(), weapon->get_LastFD(), weapon_params.telekinetic_enemy->get_tele_distance()), color_rgba(0, 255, 0, 255));
 }
 #endif
 
@@ -635,16 +624,16 @@ void STelekineticWeaponObject::update_auto_aim()
 		return;
 	}
 
-	const CEntityAlive* enemy = telekinetic_enemy->get_enemy();
+	const CEntityAlive* enemy = weapon_params.telekinetic_enemy->get_enemy();
 
 	if (enemy == nullptr)
 	{
 		return;
 	}
 
-	Fvector pos = smart_cast<CGameObject*>(telekinetic_enemy)->Position();
+	Fvector pos = smart_cast<CGameObject*>(weapon_params.telekinetic_enemy)->Position();
 	float current_distance = enemy->Position().distance_to_sqr(pos);
-	float max_tele_work_distance = _sqr(telekinetic_enemy->get_tele_distance());
+	float max_tele_work_distance = _sqr(weapon_params.telekinetic_enemy->get_tele_distance());
 
 	if (current_distance > max_tele_work_distance)
 	{
@@ -703,7 +692,7 @@ void STelekineticWeaponObject::update_auto_aim()
 
 bool STelekineticWeaponObject::can_shoot()
 {
-	const CEntityAlive* enemy_ = telekinetic_enemy->get_enemy();
+	const CEntityAlive* enemy_ = weapon_params.telekinetic_enemy->get_enemy();
 
 	if (enemy_ == nullptr)
 	{
@@ -734,7 +723,7 @@ bool STelekineticWeaponObject::can_shoot()
 	{
 		case egdNovice:
 		{
-			if (!is_enemy_tracing(40.f))
+			if (!is_enemy_tracing(weapon_params.novice_difficulty_error_angle))
 			{
 				return false;
 			}
@@ -743,7 +732,7 @@ bool STelekineticWeaponObject::can_shoot()
 
 		case egdStalker:
 		{
-			if (!is_enemy_tracing(25.f))
+			if (!is_enemy_tracing(weapon_params.stalker_difficulty_error_angle))
 			{
 				return false;
 			}
@@ -751,16 +740,23 @@ bool STelekineticWeaponObject::can_shoot()
 		break;
 
 		case egdVeteran:
+		{
+			if (!is_enemy_tracing(weapon_params.veteran_difficulty_error_angle))
+			{
+				return false;
+			}
+		}
+		break;
+
 		case egdMaster:
 		{
-			if (!is_enemy_tracing(10.f))
+			if (!is_enemy_tracing(weapon_params.master_difficulty_error_angle))
 			{
 				return false;
 			}
 		}
 		break;
 	}
-
 	return true;
 }
 
@@ -809,7 +805,7 @@ void STelekineticWeaponObject::weapon_end_shooting(u32 pause_time)
 
 bool STelekineticWeaponObject::is_enemy_tracing(float threshold)
 {
-	CEntityAlive* enemy = telekinetic_enemy->get_enemy();
+	CEntityAlive* enemy = weapon_params.telekinetic_enemy->get_enemy();
 
 	if (enemy == nullptr)
 	{
@@ -884,7 +880,8 @@ void STelekineticWeaponObject::switch_state(ETelekineticState new_state)
 
 // -------------------- GRENADE CONTROLLER --------------------
 
-STelekineticGrenadeObject::STelekineticGrenadeObject(ITelekineticEnemy* tele_enemy, CPhysicsShellHolder* owner, float s, float h, u32 ttk, bool rot) : STelekineticObject(owner, s, h, ttk, rot), grenade(owner->cast_grenade()), telekinetic_enemy(tele_enemy)
+STelekineticGrenadeObject::STelekineticGrenadeObject(ITelekineticEnemy* tele_enemy, const STelekineticObjectParams& tele_params) : 
+	STelekineticObject(tele_params), telekinetic_enemy(tele_enemy), grenade(smart_cast<CGrenade*>(tele_params.object))
 {
 	STelekineticGrenadeObject::switch_state(ETelekineticState::TS_RAISE);
 }
@@ -901,7 +898,7 @@ void STelekineticGrenadeObject::debug_draw()
 			break;
 
 		case ETelekineticState::TS_KEEP:
-			state_text = shared_str().printf("Keeping %d ms", time_keep_started + time_to_keep - time());
+			state_text = shared_str().printf("Keeping %d ms", time_keep_started + params.time_to_keep - time());
 			break;
 
 		case ETelekineticState::TS_THROW:
