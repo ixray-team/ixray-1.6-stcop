@@ -33,7 +33,7 @@ public:
 	virtual CInventoryOwner* cast_inventory_owner() { return nullptr; }
 	virtual CGameObject* cast_game_object() { return this; }
 public:
-
+	bool					m_bEntityIgnoredByMonsters = false;
 	bool					m_bMobility;
 	float					m_fAccuracy;
 	float					m_fIntelligence;

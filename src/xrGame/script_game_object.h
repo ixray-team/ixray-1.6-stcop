@@ -964,6 +964,8 @@ public:
 
 			//Artifacts
 			float				GetArtefactHealthRestoreSpeed();
+			bool				SetEntityIgnoredByMonstersState(bool flag);
+			bool				GetEntityIgnoredByMonstersState();
 			float				GetArtefactRadiationRestoreSpeed();
 			float				GetArtefactSatietyRestoreSpeed();
 			float				GetArtefactThirstRestoreSpeed();
