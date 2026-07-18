@@ -134,6 +134,11 @@ void CMonsterEnemyMemory::update()
 
 void CMonsterEnemyMemory::add_enemy(const CEntityAlive *enemy)
 {
+	if (enemy->m_bEntityIgnoredByMonsters)
+	{
+		return;
+	}
+
 	SMonsterEnemy enemy_info;
 	enemy_info.position = enemy->Position();
 	enemy_info.vertex   = enemy->ai_location().level_vertex_id();
@@ -152,6 +157,11 @@ void CMonsterEnemyMemory::add_enemy(const CEntityAlive *enemy)
 
 void CMonsterEnemyMemory::add_enemy(const CEntityAlive *enemy, const Fvector &pos, u32 vertex, u32 time)
 {
+	if (enemy->m_bEntityIgnoredByMonsters)
+	{
+		return;
+	}
+
 	SMonsterEnemy enemy_info;
 	enemy_info.position = pos;
 	enemy_info.vertex   = vertex;
@@ -184,6 +194,7 @@ void CMonsterEnemyMemory::remove_non_actual()
 			 it->first->getDestroy()					||
 			 (it->second.time + time_memory < cur_time) ||
 			 (it->first->g_Team() == monster->g_Team()) ||
+			 (it->first->m_bEntityIgnoredByMonsters)	||
 			 !monster->memory().enemy().is_useful(it->first) ) 
 		{
 			m_objects.erase (it);
