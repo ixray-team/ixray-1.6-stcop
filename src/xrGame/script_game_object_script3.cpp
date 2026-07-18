@@ -479,6 +479,8 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		// FFx0001 ++
 		.def("is_ruck_to_default", &CScriptGameObject::IsDefaultToRuck)
 		.def("set_ruck_to_default", &CScriptGameObject::SetDefaultToRuck)
+		.def("get_entity_ignored_by_monsters_state", &CScriptGameObject::GetEntityIgnoredByMonstersState)
+		.def("set_entity_ignored_by_monsters_state", &CScriptGameObject::SetEntityIgnoredByMonstersState)
 		// FFx0001 --
 
 		.def("is_on_belt",					&CScriptGameObject::IsOnBelt)
