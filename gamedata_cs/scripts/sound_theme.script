@@ -44,7 +44,7 @@ function npc_sound:__init(snd_ini, section)
 	self.msg = utils.cfg_get_string(snd_ini, section, "message", nil, false, "", "")
 
 
-	local avail_communities = parse_names(utils.cfg_get_string(snd_ini, section, "avail_communities", nil, false, "", "csky, stalker, ecolog, bandit, dolg, freedom, army, zombied, monolith, killer"))
+	local avail_communities = parse_names(utils.cfg_get_string(snd_ini, section, "avail_communities", nil, false, "", "csky, stalker, ecolog, bandit, renegade, dolg, freedom, army, zombied, monolith, killer"))
 	self.avail_communities = {}
 	for k,v in pairs(avail_communities) do
  		self.avail_communities[v] = true
