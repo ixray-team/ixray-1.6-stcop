@@ -1489,20 +1489,35 @@ function se_smart_terrain:try_respawn()
             return
         end
         
-        --printf("TRY RESPAWN %s", self:name())
         local curr_time = game.get_game_time()
-        if self.last_respawn_update == nil or curr_time:diffSec(self.last_respawn_update) > self.respawn_time then
-            self.last_respawn_update = curr_time
-    
-            if self.sim_avail ~= nil and xr_logic.pick_section_from_condlist(db.actor or alife():actor(), self, self.sim_avail) ~= "true" then return end
-    
-            local squad_count = smart_terrain_squad_count(self.board.smarts[self.id].squads)
-            if self.max_population <= squad_count then printf("%s cannot respawn due to squad_count %s of %s", self:name(), self.max_population, squad_count) return end
-    
-            local dist_to_actor = alife():actor().position:distance_to_sqr(self.position)
-            if dist_to_actor < self.respawn_radius^2 then printf("%s cannot respawn due to distance", self:name()) return end
-    
-            self:call_respawn()
+        
+        if self.last_respawn_update ~= nil and curr_time:diffSec(self.last_respawn_update) <= self.respawn_time then
+            return
         end
+
+        if self.sim_avail ~= nil and xr_logic.pick_section_from_condlist(db.actor or alife():actor(), self, self.sim_avail) ~= "true" then 
+            return 
+        end
+
+        local real_squad_count = 0
+        if self.board.smarts[self.id] and self.board.smarts[self.id].squads then
+            for k, v in pairs(self.board.smarts[self.id].squads) do
+                real_squad_count = real_squad_count + 1
+            end
+        end
+        
+        if real_squad_count >= self.max_population then 
+            printf("%s cannot respawn due to REAL squad_count %s of max %s", self:name(), real_squad_count, self.max_population) 
+            return 
+        end
+
+        local dist_to_actor = alife():actor().position:distance_to_sqr(self.position)
+        if dist_to_actor < self.respawn_radius^2 then 
+            printf("%s cannot respawn due to distance", self:name()) 
+            return 
+        end
+
+        self.last_respawn_update = curr_time
+        self:call_respawn()
     end)
 end
