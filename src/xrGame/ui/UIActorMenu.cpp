@@ -402,6 +402,19 @@ void CUIActorMenu::Update()
 		}
 	case mmDeadBodySearch:
 		{
+			if (!m_pInvBox)
+			{
+				if (!m_pPartnerInvOwner || !m_pPartnerInvOwner->cast_game_object() || m_pPartnerInvOwner->cast_game_object()->getDestroy())
+				{
+					g_btnHint->Discard();
+					HideDialog();
+
+					if (m_pActorInvOwner->IsTalking())
+					{
+						CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
+					}
+				}
+			}
 			break;
 		}
 	default: R_ASSERT(0); break;
