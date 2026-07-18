@@ -3,6 +3,8 @@
 #include "telekinetic_object.h"
 #include "../../../xrPhysics/PHUpdateObject.h"
 
+class CTeleWhirlwind;
+
 class ITelekineticEnemy
 {
 public:
@@ -68,6 +70,14 @@ public:
 	void schedule_update();
 	// объект был удален - удалить все связи на объект
 	void remove_links(CObject* O);
+	
+	virtual CTelekinesis* telekinesis()
+	{
+		return this;
+	}
+
+	virtual CTelekinesis* cast_telekinesis() { return this; }
+	virtual CTeleWhirlwind* cast_telekinesis_telewhirlwind() { return nullptr; }
 
 private:
 	// обновление на шагах физики

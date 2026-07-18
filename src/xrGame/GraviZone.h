@@ -10,10 +10,11 @@
 
 #pragma once
 #include "AnomalyZone.h"
+#include "TeleWhirlwind.h"
 #include "ai/monsters/telekinesis.h"
 
 
-class CBaseGraviZone : public CAnomalyZone
+class CBaseGraviZone : public CAnomalyZone, public CTeleWhirlwind
 {
 	using inherited = CAnomalyZone;
 
@@ -44,8 +45,6 @@ public:
 	CBaseGraviZone* cast_base_gravi_zone() override { return this; }
 
 protected:
-	virtual CTelekinesis& Telekinesis() =0;
-
 	//сила импульса вт€гивани€ в зону (дл€ веса 100 кг)
 	float m_fThrowInImpulse;
 	//сила импульса вт€гивани€ в зону дл€ живых существ
@@ -71,20 +70,11 @@ protected:
 
 class CGraviZone final : public CBaseGraviZone
 {
-	typedef CBaseGraviZone inherited;
-	CTelekinesis m_telekinesis;
-
-protected:
-	virtual CTelekinesis& Telekinesis() { return m_telekinesis; }
+	using inherited = CBaseGraviZone;
 
 public:
-	CGraviZone()
-	{
-	}
-
-	virtual ~CGraviZone()
-	{
-	}
+	CGraviZone() = default;
+	virtual ~CGraviZone() = default;
 
 	CGraviZone* cast_gravi_zone() override { return this; }
 };
