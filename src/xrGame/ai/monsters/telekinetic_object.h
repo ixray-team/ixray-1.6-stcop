@@ -1,5 +1,5 @@
 #pragma once
-#include "src/xrPhysics/ExtendedGeom.h"
+#include "../xrPhysics/ExtendedGeom.h"
 
 class CGameObject;
 class CPhysicsShellHolder;
