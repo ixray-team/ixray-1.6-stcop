@@ -13,6 +13,7 @@
 #include "ImUtils.h"
 #include "../PostprocessAnimator.h"
 #include <fstream>
+#include "../ActorEffector.h"
 
 // ==============================================================
 // PPE editor.
