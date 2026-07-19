@@ -19,24 +19,9 @@ void fix_texture_name(LPSTR fn)
 	}
 }
 
-int get_texture_load_lod(const char* fn, size_t& w, size_t& h)
+int get_texture_load_lod(const char* fn, float lod)
 {
-#ifdef _EDITOR
-	return psTextureLOD;
-#else
-	static auto& target_size = CCC_Integer::FastCommand("render.experemental.target_res", 8192, 256, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION);
-	auto min_size = (int)std::min(w, h);
-
-	int target_lod = 0;
-
-	while (min_size > target_size)
-	{
-		min_size /= 2;
-		target_lod ++;
-	}
-
-	return std::max(target_lod, psTextureLOD);
-#endif
+	return std::min((int)std::floor(lod), 8);
 }
 
 u32 calc_texture_size(int lod, u32 mip_cnt, u32 orig_size)
@@ -148,8 +133,13 @@ bool CRender::get_texture_metadata(const char* absolute_path, RHITextureMetadata
 	return status;
 }
 
-IRHISurface* CRender::texture_load(const char* fRName, u32& ret_msize, bool bStaging)
+IRHISurface* CRender::texture_load(const char* fRName, u32& ret_msize, bool bStaging, float lod_offset)
 {
+	if (lod_offset < 0.0f)
+	{
+		lod_offset = psTextureLOD;
+	}
+
 	// Moved here just to avoid warning
 	TexMetadata imageInfo{};
 
@@ -178,6 +168,7 @@ IRHISurface* CRender::texture_load(const char* fRName, u32& ret_msize, bool bSta
 	xr_strcpy(fname, fRName);
 	fix_texture_name(fname);
 	IReader* reader = nullptr;
+
 	if (!FS.exist(fn, _game_textures_, fname, ".dds") && strstr(fname, "_bump"))
 	{
 		goto _BUMP_from_base;
@@ -334,7 +325,7 @@ _DDS_2D:
 		// Check for LMAP and compress if needed
 		_strlwr(fn);
 
-		img_loaded_lod = get_texture_load_lod(fn, imageInfo.width, imageInfo.height);
+		img_loaded_lod = get_texture_load_lod(fn, lod_offset);
 
 		HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, scratchImage);
 		if (FAILED(hr))
@@ -362,9 +353,14 @@ _DDS_2D:
 
 			return nullptr;
 		}
+
 		int mip_lod = 0;
+
 		if (img_loaded_lod)
 		{
+			auto lods = std::max((int)imageInfo.mipLevels - 10, 0) + 4;
+			img_loaded_lod = std::min(img_loaded_lod, lods);
+
 			const int oldMipmapCnt = imageInfo.mipLevels;
 			Reduce(imageInfo.width, imageInfo.height, imageInfo.mipLevels, img_loaded_lod);
 			mip_lod = oldMipmapCnt - imageInfo.mipLevels;

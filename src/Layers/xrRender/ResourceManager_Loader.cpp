@@ -146,25 +146,26 @@ void	CResourceManager::OnDeviceCreate	(const char* shName)
 void CResourceManager::StoreNecessaryTextures()
 {
 	if (!m_necessary.empty())
-		return;
-	
-	map_TextureIt it			= m_textures.begin();
-	map_TextureIt it_e			= m_textures.end();
-
-	for (;it!=it_e;++it)
 	{
-		const char* texture_name		= it->first;
-		if(strstr(texture_name,"\\levels\\"))	continue;
-		if(!strchr(texture_name,'\\'))			continue;
+		return;
+	}
 
-		ref_texture				T;
-		T.create				(texture_name);
-		m_necessary.push_back	(T);
-		
+	map_TextureIt it = m_textures.begin();
+	map_TextureIt it_e = m_textures.end();
+
+	for (; it != it_e; ++it)
+	{
+		const char* texture_name = it->first;
+		if (strstr(texture_name, "\\levels\\"))	continue;
+		if (!strchr(texture_name, '\\')) continue;
+
+		ref_texture T;
+		T.create(texture_name);
+		m_necessary.push_back(T);
 	}
 }
 
 void CResourceManager::DestroyNecessaryTextures()
 {
-	m_necessary.clear			();
+	m_necessary.clear();
 }

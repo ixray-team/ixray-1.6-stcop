@@ -69,7 +69,7 @@ void main(p_bumped_new I, out float4 Color : SV_Target)
 		float3 Diffuse = M.Color.xyz * float(1.0f - M.Metalness);
 		float3 Specular = lerp(M.Specular, M.Color.xyz, M.Metalness);
 		
-		float3 Light = DirectLight(LightColor, LightDirection, M.Normal, View, Diffuse, Specular, M.Roughness);
+	 	float3 Light = DirectLight(LightColor, LightDirection, M.Normal, View, Diffuse, Specular, M.Roughness);
 		float3 Ambient = GammaToLinear(M.AO) * AmbientLightingUI(View, M.Normal, Diffuse, Specular, M.Roughness);
 	#else
 		float3 Light = DirectLightLegacy(LightColor, LightDirection, M.Normal, View, M.Color.xyz, M.Material, M.Gloss);
@@ -78,5 +78,7 @@ void main(p_bumped_new I, out float4 Color : SV_Target)
 	
     Color.xyz = Ambient + Light.xyz;
     Color.w = saturate(M.Color.w + EPS_L);
+	
+	Color.xyz = tonemap(Color.xyz, 1.0f);
 }
 

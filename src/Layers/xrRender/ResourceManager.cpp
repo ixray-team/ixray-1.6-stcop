@@ -12,6 +12,10 @@
 #ifdef USE_DX11
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
 #endif
+
+#include "../../xrEngine/xr_ioc_cmd.h"
+#include "dxRenderDeviceRender.h"
+
 //	Already defined in Texture.cpp
 void fix_texture_name(LPSTR fn);
 static xrCriticalSection ResSafe;
@@ -94,16 +98,16 @@ IBlender* CResourceManager::_FindBlender		(const char* Name)
 	else						return I->second;
 }
 
-void	CResourceManager::ED_UpdateBlender	(const char* Name, IBlender* data)
+void	CResourceManager::ED_UpdateBlender	(const char* Name, IBlender* LastDefferObject)
 {
 	LPSTR N = LPSTR(Name);
 	map_Blender::iterator I = m_blenders.find	(N);
 	if (I!=m_blenders.end())	{
-		R_ASSERT	(data->getDescription().CLS == I->second->getDescription().CLS);
+		R_ASSERT	(LastDefferObject->getDescription().CLS == I->second->getDescription().CLS);
 		xr_delete	(I->second);
-		I->second	= data;
+		I->second	= LastDefferObject;
 	} else {
-		m_blenders.insert	(std::make_pair(xr_strdup(Name),data));
+		m_blenders.insert	(std::make_pair(xr_strdup(Name),LastDefferObject));
 	}
 }
 
@@ -376,9 +380,167 @@ void CResourceManager::Delete(const Shader* S)
 #endif
 
 	if (reclaim(v_shaders, S))
+	{
 		return;
+	}
 
 	Msg("! ERROR: Failed to find complete shader");
+}
+
+void CResourceManager::OnUpdate()
+{
+	static auto& MaxSize = CCC_Integer::FastCommand("render.experemental.stream_levels", 8, 0, 16);
+
+	for (auto& T : UnloadTextureList)
+	{
+		T.pOwner->surface_set(T.data);
+		_RELEASE(T.data);
+	}
+
+	UnloadTextureList.clear();
+
+	xrCriticalSectionGuard Lock(TextureReloadCS);
+
+	if (Texture2ReloadDeffer.empty())
+	{
+		u32 Counter = 0ull;
+
+		for (const auto& [_, T] : m_textures)
+		{
+			if (!T->pSurface)
+			{
+				continue;
+			}
+
+			if (T->flags.bUser || !T->IsStreamingSupport)
+			{
+				continue;
+			}
+
+			if (T->flags.bLoaded)
+			{
+				auto& LastDefferObject = Texture2Reload.emplace_back();
+
+				LastDefferObject.pOwner = T;
+				LastDefferObject.SSA = T->TextureRating;
+
+				if (T->IsStreamingSupport)
+				{
+					++Counter;
+				}
+				else
+				{
+					LastDefferObject.SSA = -1.0f;
+				}
+
+				T->TextureRating = 0.0f;
+			}
+		}
+
+		if (!Texture2Reload.empty())
+		{
+			LodShiftOffset = (MaxSize + 1.0f) / (Counter + 1.0f);
+
+			std::sort
+			(
+				Texture2Reload.begin(),
+				Texture2Reload.end(),
+
+				[](TextureData& T0, TextureData& T1)
+				{
+					return T0.SSA < T1.SSA;
+				}
+			);
+
+			std::swap(Texture2Reload, Texture2ReloadDeffer);
+
+			TextureStreamerThread.Run();
+			Texture2Reload.clear();
+		}
+	}
+}
+
+extern int get_texture_load_lod(const char* fn, float lod_offset);
+
+void CResourceManager::OnUpdateAsync()
+{
+	xr_vector<TextureData> Texture2ReloadListDeffer;
+	{
+		xrCriticalSectionGuard Lock(DEV->TextureReloadCS);
+		Texture2ReloadListDeffer = DEV->Texture2ReloadDeffer;
+	}
+
+	float TargetSize = 0.0f;
+
+	while (!Texture2ReloadListDeffer.empty())
+	{
+		if (!DEV->is_thread_alife)
+		{
+			break;
+		}
+
+		xr_vector<TextureData> TmpList;
+
+		while (TmpList.size() < 4ull && !Texture2ReloadListDeffer.empty())
+		{
+			TargetSize += DEV->LodShiftOffset;
+			auto& LastDefferObject = Texture2ReloadListDeffer.back();
+
+			auto StoredLod = get_texture_load_lod("", psTextureLOD + (LastDefferObject.SSA >= 0.0f ? TargetSize : 0.0f));
+
+			if (LastDefferObject.pOwner->StoredLod != StoredLod)
+			{
+				LastDefferObject.pOwner->StoredLod = StoredLod;
+				TmpList.push_back(LastDefferObject);
+			}
+
+			Texture2ReloadListDeffer.pop_back();
+		}
+
+		if (TmpList.empty())
+		{
+			continue;
+		}
+
+		{
+			PROF_EVENT("Texture Loading");
+
+			xr_parallel_foreach
+			(
+				TmpList.begin(),
+				TmpList.end(),
+
+				[](TextureData& LastDefferObject)
+				{
+					u32 Mem = 0;
+					LastDefferObject.data = RImplementation.texture_load
+					(
+						*LastDefferObject.pOwner->cName,
+						Mem,
+						false,
+						LastDefferObject.pOwner->StoredLod
+					);
+				}
+			);
+		}
+
+		PROF_EVENT("Wait unload");
+
+		while (!DEV->UnloadTextureList.empty())
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(3));
+		}
+
+		for (auto& LastDefferObject : TmpList)
+		{
+			DEV->UnloadTextureList.push_back(LastDefferObject);
+		}
+	}
+
+	PROF_EVENT("Clear Deffer List");
+
+	xrCriticalSectionGuard Lock(DEV->TextureReloadCS);
+	DEV->Texture2ReloadDeffer.clear();
 }
 
 void CResourceManager::DeferredUpload()
@@ -394,31 +556,53 @@ void CResourceManager::DeferredUpload()
 		return;
 	}
 #endif
+
+	xrCriticalSectionGuard guard_lock(TextureReloadCS);
+
 	PROF_EVENT("CResourceManager::DeferredUpload");
 	Log("Loading textures via DeferredUpload");
 
 	// Build list of textures that actually need loading to avoid extra work
 	xr_vector<CTexture*> to_load;
 	to_load.reserve(m_textures.size());
-	for (auto& pair : m_textures) {
-		CTexture* T = pair.second;
-		// Only enqueue textures that are not already marked as loaded
+
+	auto psTextureLOD_old = psTextureLOD;
+
+	for (const auto& [_, T] : m_textures)
+	{
 		if (T && !T->flags.bLoaded)
+		{
 			to_load.push_back(T);
+		}
 	}
 
+	psTextureLOD = 4;
+
 #if !defined(_EDITOR) && defined(IXR_WINDOWS)
-	if (ps_r__common_flags.test(RFLAG_MT_TEX_LOAD)) {
-		// Parallel: load filtered list
-		xr_parallel_foreach(to_load.begin(), to_load.end(), [](CTexture* texPtr) { texPtr->Load(); });
+	if (ps_r__common_flags.test(RFLAG_MT_TEX_LOAD)) 
+	{
+		xr_parallel_foreach
+		(
+			to_load.begin(), 
+			to_load.end(),
+
+			[](CTexture* texPtr) 
+			{
+				texPtr->Load(); 
+			}
+		);
 	}
 	else
 #endif // _EDITOR
 	{
 		// Single-threaded: load filtered list
 		for (CTexture* T : to_load)
+		{
 			T->Load();
+		}
 	}
+
+	psTextureLOD = psTextureLOD_old;
 
 #if defined(USE_DX11) && !defined(_EDITOR)
 	FluidManager.Initialize(70, 70, 70);
@@ -429,19 +613,27 @@ void CResourceManager::DeferredUpload()
 void CResourceManager::DeferredUnload() 
 {
 	if (!RDEVICE.b_is_Ready)
+	{
 		return;
+	}
 
 #ifndef _EDITOR
 	if (!ps_r__common_flags.test(RFLAG_DD_TEX_LOAD))
+	{
 		return;
+	}
 #endif
+
+	xrCriticalSectionGuard guard_lock(TextureReloadCS);
 
 #if defined(USE_DX11) && !defined(_EDITOR)
 	FluidManager.Destroy();
 #endif
 
-	for (auto& texture : m_textures)
-		texture.second->Unload();
+	for (const auto& [_, T] : m_textures)
+	{
+		T->Unload();
+	}
 }
 
 void CResourceManager::ED_UpdateTextures(xr_vector<xr_string>* names)

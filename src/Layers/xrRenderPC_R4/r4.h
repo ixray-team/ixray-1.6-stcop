@@ -259,7 +259,7 @@ public:
 	IRHISurface* load_texture(const char*	fname, u32& msize, bool bStaging = false) override;
 	bool get_texture_metadata(const char* absolute_path, RHITextureMetadata* p_data) override;
 
-	IRHISurface* texture_load(const char*	fname, u32& msize, bool bStaging = false);
+	IRHISurface* texture_load(const char* fname, u32& msize, bool bStaging = false, float lod_offset = -1.0f);
 
 	virtual HRESULT					shader_compile			(
 		const char*							name,

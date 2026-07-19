@@ -8,58 +8,69 @@
 	#include "../../xrCore/API/xrAPI.h"
 #endif
 
-void	CResourceManager::reset_begin			()
+void CResourceManager::reset_begin()
 {
 	// destroy everything, renderer may use
-	::Render->reset_begin		();
+	::Render->reset_begin();
 
 	// destroy state-blocks
-	for (u32 _it=0; _it<v_states.size(); _it++)
+	for (u32 _it = 0; _it < v_states.size(); _it++)
+	{
 		_RELEASE(v_states[_it]->state);
+	}
 
 	// destroy RTs
-	for (map_RTIt rt_it=m_rtargets.begin(); rt_it!=m_rtargets.end(); rt_it++)
+	for (map_RTIt rt_it = m_rtargets.begin(); rt_it != m_rtargets.end(); rt_it++)
+	{
 		rt_it->second->reset_begin();
+	}
 
 #ifdef USE_DX11
-	for (map_RTCIt rtc_it=m_rtargets_c.begin(); rtc_it!=m_rtargets_c.end(); rtc_it++)
+	for (map_RTCIt rtc_it = m_rtargets_c.begin(); rtc_it != m_rtargets_c.end(); rtc_it++)
 	{
 		rtc_it->second->reset_begin();
 	}
 #endif
 
 	// destroy DStreams
- 	RCache.old_QuadIB					= RCache.QuadIB;
- 	_RELEASE							(RCache.QuadIB);
+	RCache.old_QuadIB = RCache.QuadIB;
+	_RELEASE(RCache.QuadIB);
 
-	RCache.Index.reset_begin	();
-	RCache.Vertex.reset_begin	();
+	RCache.Index.reset_begin();
+	RCache.Vertex.reset_begin();
+
+	TextureReloadCS.Enter();
 }
 
 void CResourceManager::reset_end()
 {
 	// create RDStreams
-	RCache.Vertex.reset_end		();
-	RCache.Index.reset_end		();
-	Evict(); 
+	RCache.Vertex.reset_end();
+	RCache.Index.reset_end();
+
+	Evict();
+
 	RCache.CreateQuadIB();
 
 	// remark geom's which point to dynamic VB/IB
 	{
-		for (u32 _it=0; _it<v_geoms.size(); _it++)
+		for (u32 _it = 0; _it < v_geoms.size(); _it++)
 		{
-			SGeometry*	_G = v_geoms[_it];
-			if	(_G->vb == RCache.Vertex.old_pVB) 
-				_G->vb = RCache.Vertex.Buffer	();
+			SGeometry* _G = v_geoms[_it];
+
+			if (_G->vb == RCache.Vertex.old_pVB)
+			{
+				_G->vb = RCache.Vertex.Buffer();
+			}
 
 			// Here we may recover the buffer using one of 
 			// RCache's index buffers.
 			// Do not remove else.
-			if	(_G->ib == RCache.Index.old_pIB) 
+			if (_G->ib == RCache.Index.old_pIB)
 			{
-				_G->ib = RCache.Index.Buffer	();
+				_G->ib = RCache.Index.Buffer();
 			}
-			else if	(_G->ib == RCache.old_QuadIB) 
+			else if (_G->ib == RCache.old_QuadIB)
 			{
 				_G->ib = RCache.QuadIB;
 			}
@@ -71,20 +82,24 @@ void CResourceManager::reset_end()
 		// RT
 		m_rt_sorter.clear();
 
-		for (auto&[Name, Target] : m_rtargets)
+		for (auto& [Name, Target] : m_rtargets)
+		{
 			m_rt_sorter.push_back(Target);
+		}
 
-		std::sort(m_rt_sorter.begin(), m_rt_sorter.end(),[](const CRT* A, const CRT* B) 
+		std::sort(m_rt_sorter.begin(), m_rt_sorter.end(), [](const CRT* A, const CRT* B)
 		{
 			return A->_order < B->_order;
 		});
 
 		for (CRT* Target : m_rt_sorter)
-			Target->reset_end	();
+		{
+			Target->reset_end();
+		}
 	}
 	// create state-blocks
 	{
-		for (u32 _it=0; _it<v_states.size(); _it++)
+		for (u32 _it = 0; _it < v_states.size(); _it++)
 #ifdef USE_DX11
 			v_states[_it]->state = ID3DState::Create(v_states[_it]->state_code);
 #else //USE_DX11
@@ -93,23 +108,33 @@ void CResourceManager::reset_end()
 	}
 
 	// create everything, renderer may use
-	::Render->reset_end		();
+	::Render->reset_end();
+
 #ifdef DEBUG
 	Dump(true);
 #endif
+
+	TextureReloadCS.Leave();
 }
 
 template<class C>	void mdump(C c)
 {
-	if (0==c.size())	return;
-	for (auto &[ref, val] : c) {
-		Msg	("*        : %3d: %s", (u32)val->dwReference, val->cName.c_str());
+	if (0 == c.size())	return;
+	for (auto& [ref, val] : c)
+	{
+		Msg("*        : %3d: %s", (u32)val->dwReference, val->cName.c_str());
 	}
 }
 
-CResourceManager::~CResourceManager		()
+CResourceManager::CResourceManager() : TextureStreamerThread(CResourceManager::OnUpdateAsync, "X-Ray texture update thread")
 {
-	DestroyNecessaryTextures	();
+	bDeferredLoad = true;
+	is_thread_alife = true;
+}
+
+CResourceManager::~CResourceManager()
+{
+	DestroyNecessaryTextures();
 #ifdef DEBUG
 	Dump(false);
 #endif
@@ -117,6 +142,18 @@ CResourceManager::~CResourceManager		()
 #ifdef USE_DX11
 	m_xmlBlendCache.clear();
 #endif
+
+	is_thread_alife = false;
+
+	for (auto& T : UnloadTextureList)
+	{
+		_RELEASE(T.data);
+	}
+
+	UnloadTextureList.clear();
+
+	TextureStreamerThread.Wait();
+	TextureStreamerThread.Stop();
 }
 
 void CResourceManager::Dump(bool bBrief)

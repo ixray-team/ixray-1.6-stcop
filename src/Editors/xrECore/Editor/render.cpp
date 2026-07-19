@@ -1155,7 +1155,7 @@ HRESULT	CRender::shader_compile(
 		string_path file;
 		xr_strcpy(file, "shaders_cache\\");
 		xr_strcat(file, _VER);
-		xr_strcat(file, "\\d3d11\\");
+		xr_strcat(file, "\\editor\\d3d11\\");
 		xr_strcat(file, name);
 		xr_strcat(file, ".");
 		xr_strcat(file, extension);
@@ -1214,7 +1214,8 @@ HRESULT	CRender::shader_compile(
 			}
 			_result = create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize(), file_name, result, false);
 		}
-		else {
+		else
+		{
 			Msg("! %s", file_name);
 
 			if (pErrorBuf) {

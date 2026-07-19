@@ -395,7 +395,10 @@ void CRender::OnFrame()
 
 	//Lights Delete queue
 	for (light* L : v_all_lights_dque)
+	{
 		xr_delete(L);
+	}
+
 	v_all_lights_dque.clear();
 }
 

@@ -156,18 +156,21 @@ void CUI3dStatic::Draw()
 		pCurrentVisual->dcast_PKinematics()->CalculateBones_Invalidate();
 		pCurrentVisual->dcast_PKinematics()->CalculateBones(true);
 
-		float x1, y1, x2, y2;
+		//float x1, y1, x2, y2;
+		//
+		//FromScreenToItem(rect.left, rect.top, x1, y1);
+		//FromScreenToItem(rect.right, rect.bottom, x2, y2);
 
-		FromScreenToItem(rect.left, rect.top, x1, y1);
-		FromScreenToItem(rect.right, rect.bottom, x2, y2);
+		Fvector2 normal_size { };
+		normal_size.set(rect.right - rect.left, rect.bottom - rect.top);
 
-		Fvector2 normal_size; normal_size.set(x2 - x1, y1 - y2);
+		normal_size.x /= UI().get_current_kx();
 
 		Fbox mBox; mBox.invalidate();
 
 		GetRealBoundBox(pCurrentVisual->dcast_PKinematics(), mRotate, mBox);
 
-		if (!mBox.is_valid())
+	 	if (!mBox.is_valid())
 		{
 			mBox = pCurrentVisual->getVisData().box;
 			mBox.xform(mRotate);
@@ -184,24 +187,22 @@ void CUI3dStatic::Draw()
 		matrix.mulA_44(translate_matrix);
 
 		Fvector2 item_size; item_size.set(mBox.max.x - mBox.min.x, mBox.max.y - mBox.min.y);
-		normal_size.div(item_size);
-
-		float scale = 0.95f * std::min(std::abs(normal_size.x), std::abs(normal_size.y)) * fScaleFactor;
+		float scale = 0.95f * std::min(std::abs(normal_size.x / item_size.x), std::abs(normal_size.y / item_size.y)) * fScaleFactor;
 
 		static Fmatrix scale_matrix;
 
 		scale_matrix.scale(scale, scale, scale);
 		matrix.mulA_44(scale_matrix);
 
-		float right_item_offset, up_item_offset;
+		//float right_item_offset, up_item_offset;
 
-		FromScreenToItem(rect.left + GetWidth() * 0.5f, rect.top + GetHeight() * 0.5f, right_item_offset, up_item_offset);
+		//FromScreenToItem(rect.left + GetWidth() * 0.5f, rect.top + GetHeight() * 0.5f, right_item_offset, up_item_offset);
 
-		translate_matrix.identity();
-		translate_matrix.translate(right_item_offset, up_item_offset, fViewportDist);
-
-		matrix.mulA_44(translate_matrix);
-		matrix.mulA_44(mInvView);
+		//translate_matrix.identity();
+		//translate_matrix.translate(right_item_offset, up_item_offset, fViewportDist);
+		//
+		//matrix.mulA_44(translate_matrix);
+		//matrix.mulA_44(mInvView);
 
 		Device.vCameraTop.set(Fidentity.j);
 		Device.vCameraRight.set(Fidentity.i);
@@ -211,6 +212,18 @@ void CUI3dStatic::Draw()
 
 		Device.mView = mView;
 		Device.mProject = mProject;
+
+		static float& test_dist = CCC_Float::FastCommand("test_rad", 1.0f);
+		normal_size.mul(test_dist);
+
+		Device.mProject.build_projection_ortho
+		(
+			normal_size.x,
+			normal_size.y,
+
+			-mBox.getradius() * scale,
+			mBox.getradius() * scale
+		);
 
 		Device.m_pRender->SetCacheXform(Device.mView, Device.mProject);
 

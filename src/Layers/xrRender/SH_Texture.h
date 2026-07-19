@@ -84,6 +84,10 @@ public:
 
 	IRHISurface* pSurface;
 	bool can_unload;
+	bool IsStreamingSupport = false;
+	bool IsStreamingEnable = false;
+	float TextureRating = 0.0f;
+	int StoredLod = 0;
 
 private:
 	IRHIShaderResourceView* m_pSRView;

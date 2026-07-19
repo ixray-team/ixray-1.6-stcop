@@ -216,8 +216,28 @@ public:
 
 	xr_vector<SGeometry*>&			_GetGeoms			()		{	return v_geoms;	}
 
-	CResourceManager						()	: bDeferredLoad(true){	}
+	CResourceManager						()	;
 	~CResourceManager						()	;
+
+	struct TextureData
+	{
+		ref_texture pOwner;
+		float SSA = 0.0f;
+
+		IRHISurface* data = nullptr;
+	};
+
+	XRayWorkerThread TextureStreamerThread;
+	xrCriticalSection TextureReloadCS;
+
+	xr_vector<TextureData> Texture2Reload;
+	xr_vector<TextureData> Texture2ReloadDeffer;
+
+	xr_concurrent_vector<TextureData> UnloadTextureList;
+	
+	float LodShiftOffset = 0.1f;
+
+	volatile bool is_thread_alife = false;
 
 	void			OnDeviceCreate			(IReader* F);
 	void			OnDeviceCreate			(const char* name);
@@ -225,6 +245,9 @@ public:
 
 	void			reset_begin				();
 	void			reset_end				();
+
+	void			OnUpdate				();
+	static void		OnUpdateAsync			();
 
 	// Creation/Destroying
 	Shader*			Create					(const char* s_shader=nullptr, const char* s_textures=nullptr,	const char* s_constants=nullptr,	const char* s_matrices=nullptr);

@@ -17,20 +17,24 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_Stencil(TRUE, D3DCMP_LESSEQUAL, 0xff, 0x00);
 		C.r_StencilRef(0x01);
 
-		C.r_dx10Texture		("s_position",		r2_RT_P				);
-		C.r_dx10Texture		("s_normal",		r2_RT_N				);
-		C.r_dx10Texture		("s_diffuse",		r2_RT_albedo		);
-		C.r_dx10Texture		("s_surface",		r2_RT_S);
-		C.r_dx10Texture		("s_accumulator",	r2_RT_accum			);
-		C.r_dx10Texture		("s_material",		r2_material			);
-		C.r_dx10Texture		("env_s0",			r2_T_envs0			);
-		C.r_dx10Texture		("env_s1",			r2_T_envs1			);
-		C.r_dx10Texture		("sky_s0",			r2_T_sky0			);
-		C.r_dx10Texture		("sky_s1",			r2_T_sky1			);
-		C.r_dx10Texture		("s_env_fwd",		r2_RT_env_fwd		);
-		C.r_dx10Texture		("s_occ",			r2_RT_ssao_temp		);
-		C.r_dx10Texture		("s_half_depth",	r2_RT_half_depth	);
-		C.r_dx10Texture		("s_refl",			r2_RT_sslr			);
+		C.r_dx10Texture("s_position", r2_RT_P);
+		C.r_dx10Texture("s_normal", r2_RT_N);
+		C.r_dx10Texture("s_diffuse", r2_RT_albedo);
+		C.r_dx10Texture("s_surface", r2_RT_S);
+		C.r_dx10Texture("s_accumulator", r2_RT_accum);
+		C.r_dx10Texture("s_material", r2_material);
+		C.r_dx10Texture("env_s0", r2_T_envs0);
+		C.r_dx10Texture("env_s1", r2_T_envs1);
+		C.r_dx10Texture("sky_s0", r2_T_sky0);
+		C.r_dx10Texture("sky_s1", r2_T_sky1);
+		C.r_dx10Texture("s_env_fwd", r2_RT_env_fwd);
+		C.r_dx10Texture("s_env_dist", r2_RT_env_temp);
+		C.r_dx10Texture("s_env", r2_RT_env);
+		C.r_dx10Texture("s_occ", r2_RT_ssao_temp);
+		C.r_dx10Texture("s_half_depth", r2_RT_half_depth);
+		C.r_dx10Texture("s_refl", r2_RT_sslr);
+
+		C.r_dx10Texture("s_blue_noise", "shaders\\blue_noise_3x3");
 
 		jitter(C);
 

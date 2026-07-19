@@ -12,79 +12,89 @@
 #include "SkeletonCustom.h"
 #include "SVGStorage.h"
 
-using namespace		R_dsgraph;
+using namespace R_dsgraph;
 
-extern float		r_ssaDISCARD;
-extern float		r_ssaDONTSORT;
-extern float		r_ssaHZBvsTEX;
-extern float		r_ssaGLOD_start,	r_ssaGLOD_end;
+extern float r_ssaDISCARD;
+extern float r_ssaDONTSORT;
+extern float r_ssaHZBvsTEX;
+extern float r_ssaGLOD_start, r_ssaGLOD_end;
 
-ICF float calcLOD	(float ssa/*fDistSq*/, float R)
+ICF float calcLOD(float ssa /*fDistSq*/, float R)
 {
-	return _sqrt(clampr((ssa - r_ssaGLOD_end)/(r_ssaGLOD_start-r_ssaGLOD_end),0.f,1.f));
+	return _sqrt(clampr((ssa - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
 }
 
 void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 {
 	PROF_EVENT("r_dsgraph_render_graph");
 	//GPU_EVENT(r_dsgraph_render_graph);
+	
 	CScopeTimer Timer(Device.Statistic->RenderDUMP);
 
 	// **************************************************** NORMAL
 	// Perform sorting based on ScreenSpaceArea
 	// Sorting by SSA and changes minimizations
 	{
-		RCache.set_xform_world			(Fidentity);
+		RCache.set_xform_world(Fidentity);
+
+		// Render several passes
 		{
-			// Render several passes
 			PROF_EVENT("NORMAL_SHADER_PASSES");
 			for ( u32 iPass = 0; iPass<SHADER_PASSES_MAX; ++iPass)
 			{
-				//mapNormalVS&	vs				= mapNormal	[_priority];
-				mapNormalVS&	vs				= mapNormalPasses[_priority][iPass];
+				mapNormalVS& vs = mapNormalPasses[_priority][iPass];
 				for (mapNormalVS::TNode& Nvs : vs)
 				{
-	#ifdef USE_DX11
-					RCache.set_VS					(Nvs.key);
-	
+#ifdef USE_DX11
+					RCache.set_VS(Nvs.key);
+
 					//	GS setup
-					mapNormalGS&		gs			= Nvs.val;
+					mapNormalGS& gs = Nvs.val;
 					for (mapNormalGS::TNode& Ngs : gs)
 					{
 						GRHI->SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
-						mapNormalPS&		ps			= Ngs.val;
-	#else //USE_DX11
+						mapNormalPS& ps = Ngs.val;
+#else // USE_DX11
 						GRHI->SetShader(Nvs.key, ERHI_SHADER_TYPE::VS);
-						mapNormalPS&		ps			= Nvs.val;
-	#endif
+						mapNormalPS& ps = Nvs.val;
+#endif
 						for (mapNormalPS::TNode& Nps : ps)
 						{
-							GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);	
-	#ifdef USE_DX11
-							mapNormalCS&		cs			= Nps.val.mapCS;
+							GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);
+#ifdef USE_DX11
+							mapNormalCS& cs = Nps.val.mapCS;
 							GRHI->SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
 							GRHI->SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
-	#else //USE_DX11
-							mapNormalCS&		cs			= Nps.val;
-	#endif
+#else // USE_DX11
+							mapNormalCS& cs = Nps.val;
+#endif
 							for (mapNormalCS::TNode& Ncs : cs)
 							{
-								RCache.set_Constants			(Ncs.key);
-	
-								mapNormalStates&	states		= Ncs.val;
+								RCache.set_Constants(Ncs.key);
+
+								mapNormalStates& states = Ncs.val;
 								for (mapNormalStates::TNode& Nstate : states)
 								{
-									RCache.set_States					(Nstate.key);
-	
-									mapNormalTextures&		tex			= Nstate.val;
+									RCache.set_States(Nstate.key);
+
+									mapNormalTextures& tex = Nstate.val;
 									for (mapNormalTextures::TNode& Ntex : tex)
 									{
-										RCache.set_Textures					(Ntex.key);
-										RImplementation.apply_lmaterial		();
-	
-										mapNormalItems&				items	= Ntex.val;
+										RCache.set_Textures(Ntex.key);
+										RImplementation.apply_lmaterial();
+
+										mapNormalItems& items = Ntex.val;
+										
 										for (_NormalItem& Ni : items)
 										{
+											for (const auto& [_, T] : *Ntex.key)
+											{
+												if (T._get() && phase == PHASE_NORMAL)
+												{
+													T->TextureRating = std::max(Ni.ssa, T->TextureRating);
+													T->IsStreamingEnable = T->IsStreamingSupport;
+												}
+											}
 											float LOD = calcLOD(Ni.ssa, Ni.R);
 	#ifdef USE_DX11
 											RCache.LOD.set_LOD(LOD);
@@ -114,57 +124,58 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 		}
 	}
 
+	// **************************************************** MATRIX
+	// Perform sorting based on ScreenSpaceArea
+	// Sorting by SSA and changes minimizations
+	// Render several passes
 	{
-		// **************************************************** MATRIX
-		// Perform sorting based on ScreenSpaceArea
-		// Sorting by SSA and changes minimizations
-		// Render several passes
 		PROF_EVENT("MATRIX_SHADER_PASSES");
 		for ( u32 iPass = 0; iPass<SHADER_PASSES_MAX; ++iPass)
 		{
-			//mapMatrixVS&	vs				= mapMatrix	[_priority];
-			mapMatrixVS&	vs				= mapMatrixPasses[_priority][iPass];
+			// mapMatrixVS&	vs				= mapMatrix	[_priority];
+			mapMatrixVS& vs = mapMatrixPasses[_priority][iPass];
 			for (mapMatrixVS::TNode& Nvs : vs)
 			{
-	#ifdef USE_DX11
-				RCache.set_VS					(Nvs.key);	
-				mapMatrixGS&		gs			= Nvs.val;
+#ifdef USE_DX11
+				RCache.set_VS(Nvs.key);
+				mapMatrixGS& gs = Nvs.val;
 				for (mapMatrixGS::TNode& Ngs : gs)
 				{
 					GRHI->SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
-	
-					mapMatrixPS&		ps			= Ngs.val;
-	#else //USE_DX11
+
+					mapMatrixPS& ps = Ngs.val;
+#else // USE_DX11
 					GRHI->SetShader(Nvs.key, ERHI_SHADER_TYPE::VS);
-					mapMatrixPS&		ps			= Nvs.val;
-	#endif
+					mapMatrixPS& ps = Nvs.val;
+#endif
 					for (mapMatrixPS::TNode& Nps : ps)
 					{
 						GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);
-	#ifdef USE_DX11
-						mapMatrixCS&		cs			= Nps.val.mapCS;
+#ifdef USE_DX11
+						mapMatrixCS& cs = Nps.val.mapCS;
 						GRHI->SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
 						GRHI->SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
-	#else
-						mapMatrixCS&		cs			= Nps.val;
-	#endif
+#else
+						mapMatrixCS& cs = Nps.val;
+#endif
 						for (mapMatrixCS::TNode& Ncs : cs)
 						{
-							RCache.set_Constants			(Ncs.key);
-	
-							mapMatrixStates&	states		= Ncs.val;
+							RCache.set_Constants(Ncs.key);
+
+							mapMatrixStates& states = Ncs.val;
 							for (mapMatrixStates::TNode& Nstate : states)
 							{
-								RCache.set_States					(Nstate.key);
-	
-								mapMatrixTextures&		tex			= Nstate.val;
+								RCache.set_States(Nstate.key);
+
+								mapMatrixTextures& tex = Nstate.val;
 								for (mapMatrixTextures::TNode& Ntex : tex)
 								{
-									RCache.set_Textures					(Ntex.key);
-	
+									RCache.set_Textures(Ntex.key);
+
 									mapMatrixItems& items = Ntex.val;
 									auto& visuals = items.visuals;
-									if(!visuals.empty())
+
+									if (!visuals.empty())
 									{
 										for (_MatrixItem& Ni : visuals)
 										{
@@ -172,32 +183,77 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 											{
 												continue;
 											}
+
 											RCache.set_xform_world(Ni.Matrix);
+
 											RImplementation.apply_object(Ni.pObject);
 											RImplementation.apply_lmaterial();
-	
+
+											for (const auto& [_, T] : *Ntex.key)
+											{
+												if (T._get() && phase == PHASE_NORMAL)
+												{
+													T->TextureRating = std::max(Ni.ssa, T->TextureRating);
+													T->IsStreamingEnable = T->IsStreamingSupport;
+												}
+											}
+
 											float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
-	#ifdef USE_DX11
+#ifdef USE_DX11
 											RCache.LOD.set_LOD(LOD);
-	#endif
+#endif
 											Ni.pVisual->Render(LOD);
-										}if (_clear)items.visuals.clear();
+										}
+
+										if (_clear)
+										{
+											items.visuals.clear();
+										}
+
 										continue;
 									}
-	
+
 									auto& particles = items.particles;
 									for (dxRender_Visual* pVisual : particles)
+									{
 										pVisual->Render(0);
-									if (_clear)items.particles.clear();
-	
-								}if(_clear) tex.clear();
-							}if(_clear) states.clear();
-						}if(_clear) cs.clear();
-					}if(_clear) ps.clear();
-	#ifdef USE_DX11
-				}if(_clear) gs.clear();
-	#endif //USE_DX11
-			}if(_clear) vs.clear();
+									}
+									if (_clear)
+									{
+										items.particles.clear();
+									}
+								}
+								if (_clear)
+								{
+									tex.clear();
+								}
+							}
+							if (_clear)
+							{
+								states.clear();
+							}
+						}
+						if (_clear)
+						{
+							cs.clear();
+						}
+					}
+					if (_clear)
+					{
+						ps.clear();
+					}
+#ifdef USE_DX11
+				}
+				if (_clear)
+				{
+					gs.clear();
+				}
+#endif // USE_DX11
+			}
+			if (_clear)
+			{
+				vs.clear();
+			}
 		}
 	}
 }
@@ -209,6 +265,18 @@ ICF void RenderNode(mapSorted_Node& N)
 	VERIFY(V && V->shader._get());
 	RCache.set_Element(N.val.se);
 
+	for (const auto& [_, T] : *N.val.se->passes[0]->T)
+	{
+		if (T._get() && RImplementation.phase == CRender::PHASE_NORMAL)
+		{
+			T->TextureRating = std::max(N.val.ssa, T->TextureRating);
+			T->IsStreamingEnable = T->IsStreamingSupport;
+		}
+	}
+
+	RImplementation.apply_object(N.val.pObject);
+	RImplementation.apply_lmaterial();
+
 	if (V->dcast_ParticleCustom())
 	{
 		V->Render(0);
@@ -216,9 +284,6 @@ ICF void RenderNode(mapSorted_Node& N)
 	}
 
 	RCache.set_xform_world(N.val.Matrix);
-
-	RImplementation.apply_object(N.val.pObject);
-	RImplementation.apply_lmaterial();
 
 	V->Render(calcLOD(N.val.ssa, V->vis.sphere.R));
 }
@@ -235,7 +300,10 @@ ICF void RenderMap(mapSorted_T& Map, const bool clear = true)
 		RenderNode(Node);
 	}
 
-	if (clear) Map.clear();
+	if (clear)
+	{
+		Map.clear();
+	}
 }
 
 void R_dsgraph_structure::r_dsgraph_render_ui()

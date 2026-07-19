@@ -13,6 +13,7 @@
 #include "../../xrEngine/x_ray.h"
 #include "../xrRender/SkeletonCustom.h"
 #include "../../xrEngine/IGame_Actor.h"
+#include "../xrRender/dxRenderDeviceRender.h"
 
 ICF	float	CalcSSADynamic				(const Fvector& C, float R)
 {
@@ -374,31 +375,35 @@ void CRender::RenderUI(bool is_debug)
 	Target->u_setrt(Target->rt_ui_color, NULL, Target->rt_ui_depth->pZRT);
 
 	auto Scissor = UIRender->GetScissor();
-	Scissor.mul(2, 2);
+	//Scissor.mul(2, 2);
 
-	UIRender->SetScissor(&Scissor);
-	rmNormal();
+	UIRender->SetScissor(NULL);
 
-	if (!is_debug) 
-	{
-		Target->phase_ui_postprocess_copy();
-	}
-	else 
-	{
-		static Fvector4 debug_icon_color = { 0.5, 0, 0, 1 };
-		GRHI->ClearTarget(Target->rt_ui_color->pRT, &debug_icon_color.x);
-	}
+	RHIViewport VP = { (float)Scissor.x1, (float)Scissor.y1, (float)Scissor.x2 - (float)Scissor.x1, (float)Scissor.y2 - (float)Scissor.y1, 0, 1.f };
+	GRHI->SetViewport(VP);
+
+	//if (!is_debug) 
+	//{
+	//	Target->phase_ui_postprocess_copy();
+	//}
+	//else 
+	//{
+	//	static Fvector4 debug_icon_color = { 0.5, 0, 0, 1 };
+	//	GRHI->ClearTarget(Target->rt_ui_color->pRT, &debug_icon_color.x);
+	//}
+
+	Target->u_setrt(Target->rt_BackbufferLUT, nullptr, nullptr, Target->rt_ui_depth->pZRT);
 
 	r_dsgraph_render_ui();
 	r_dsgraph_render_sorted_ui();
 
-	Scissor.div(2, 2);
+	//Scissor.div(2, 2);
 
-	Target->u_setrt(Target->rt_BackbufferLUT, nullptr, nullptr, nullptr);
+	//Target->u_setrt(Target->rt_BackbufferLUT, nullptr, nullptr, nullptr);
 	UIRender->SetScissor(&Scissor);
 	RImplementation.rmNormal();
 
-	Target->phase_ui_postprocess();
+//	Target->phase_ui_postprocess();
 
 	++marker;
 }
@@ -409,6 +414,8 @@ void CRender::Render()
 	VERIFY(0 == mapDistort.size() + mapHUDDistort.size());
 
 	bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
+
+	DEV->OnUpdate();
 
 	if (_menu_pp)
 	{

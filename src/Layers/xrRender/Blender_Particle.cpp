@@ -160,7 +160,14 @@ void CBlender_Particle::Compile	(CBlender_Compile& C)
 			C.r_dx10Texture("s_base", C.L_textures[0]);
 			C.r_dx10Texture("s_position", "$user$position");
 
+			C.r_dx10Texture("env_s0", r2_T_envs0);
+			C.r_dx10Texture("env_s1", r2_T_envs1);
+
+			C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);
+
 			C.r_dx10Sampler("smp_base");
+			C.r_dx10Sampler("smp_smap");
+
 			C.r_dx10Sampler("smp_linear");
 			C.r_dx10Sampler("smp_nofilter");
 

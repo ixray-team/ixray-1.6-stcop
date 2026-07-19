@@ -34,7 +34,9 @@ CTexture::CTexture		()
 	flags.seqCycles		= false;
 	flags.bLoadedAsStaging = false;
 	m_material			= 1.0f;
+	StoredLod = 0;
 	can_unload = true;
+	IsStreamingSupport = false;
 	bind				= xr_make_delegate(this,&CTexture::apply_load);
 }
 
@@ -46,12 +48,21 @@ CTexture::~CTexture()
 
 void CTexture::surface_set(IRHISurface* surf)
 {
-	if (surf)			surf->AddRef();
+	if (surf)
+	{
+		surf->AddRef();
+	}
+
 	_RELEASE(pSurface);
 	_RELEASE(m_pSRView);
 
 	pSurface = surf;
 	m_pSRView = nullptr;
+
+	if(!!cName)
+	{
+		flags.bUser = !!strstr(*cName, "$user$");
+	}
 
 	if (pSurface)
 	{
@@ -319,6 +330,36 @@ void CTexture::Preload	()
 	m_material = DEV->m_textures_description.GetMaterial(cName);
 }
 
+bool ignore_mip_streaming(const char* fRName)
+{
+	if (strstr(fRName, "fx_"))
+	{
+		return true;
+	}
+	else if (strstr(fRName, "grad"))
+	{
+		return true;
+	}
+	else if (strstr(fRName, "internal"))
+	{
+		return true;
+	}
+	else if (strstr(fRName, "terrain_"))
+	{
+		return true;
+	}
+	else if (strstr(fRName, "lmap#"))
+	{
+		return true;
+	}
+	else if (strstr(fRName, "level_"))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 void CTexture::Load()
 {
 	PROF_EVENT("CTexture::Load");
@@ -489,8 +530,15 @@ void CTexture::Load()
 	{
 		// Normal texture
 		u32	mem = 0;
+
+		extern int get_texture_load_lod(const char* fn, float lod_offset);
+
+		IsStreamingSupport = !ignore_mip_streaming(*cName);
+
+		StoredLod = get_texture_load_lod(*cName, IsStreamingSupport ? psTextureLOD : 0.0f);
+
 #ifdef USE_DX11
-		pSurface = ::RImplementation.texture_load(*cName, mem, true);
+		pSurface = ::RImplementation.texture_load(*cName, mem, true, IsStreamingSupport ? -1.0f : 0.0f);
 #else
 		IDirect3DBaseTexture9* baseTexture = ::RImplementation.texture_load(*cName, mem);
 		if (baseTexture) {
@@ -509,9 +557,15 @@ void CTexture::Load()
 		}
 #endif
 
+		if (pSurface->GetMiscFlags() & (u32)ERHI_RESOURCE_MISC_FLAG::TEXTURECUBE)
+		{
+			IsStreamingSupport = false;
+		}
+
 		if (GetUsage() == ERHI_USAGE::USAGE_STAGING)
 		{
 			flags.bLoadedAsStaging = true;
+			IsStreamingSupport = false;
 			bCreateView = false;
 		}
 

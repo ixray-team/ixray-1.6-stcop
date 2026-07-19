@@ -158,54 +158,61 @@ const float		hdir		[lt_hemisamples][3] =
 };
 #pragma warning(pop)
 
-//inline CROS_impl::CubeFaces CROS_impl::get_cube_face(Fvector3& dir)
-//{
-//	float x2 = dir.x*dir.x;
-//	float y2 = dir.y*dir.y;
-//	float z2 = dir.z*dir.z;
-//
-//	if (x2 >= y2 + z2)
-//	{
-//		return (dir.x > 0) ? CUBE_FACE_POS_X : CUBE_FACE_NEG_X;
-//	}
-//	else if (y2 >= z2 + x2)
-//	{
-//		return (dir.y > 0) ? CUBE_FACE_POS_Y : CUBE_FACE_NEG_Y;
-//	}
-//	/*else*/
-//	return (dir.z > 0) ? CUBE_FACE_POS_Z : CUBE_FACE_NEG_Z;
-//}
-
 inline void CROS_impl::accum_hemi(float* hemi_cube, Fvector3& dir, float scale)
 {
-	if (dir.x>0)
-		hemi_cube[CUBE_FACE_POS_X] +=  dir.x * scale;
+	if (dir.x > 0)
+	{
+		hemi_cube[CUBE_FACE_POS_X] += dir.x * scale;
+	}
 	else
-		hemi_cube[CUBE_FACE_NEG_X] -=  dir.x * scale;	//	dir.x <= 0
+	{
+		hemi_cube[CUBE_FACE_NEG_X] -= dir.x * scale; //	dir.x <= 0
+	}
 
-	if (dir.y>0)
-		hemi_cube[CUBE_FACE_POS_Y] +=  dir.y * scale;
+	if (dir.y > 0)
+	{
+		hemi_cube[CUBE_FACE_POS_Y] += dir.y * scale;
+	}
 	else
-		hemi_cube[CUBE_FACE_NEG_Y] -=  dir.y * scale;	//	dir.y <= 0
+	{
+		hemi_cube[CUBE_FACE_NEG_Y] -= dir.y * scale; //	dir.y <= 0
+	}
 
-	if (dir.z>0)
-		hemi_cube[CUBE_FACE_POS_Z] +=  dir.z * scale;
+	if (dir.z > 0)
+	{
+		hemi_cube[CUBE_FACE_POS_Z] += dir.z * scale;
+	}
 	else
-		hemi_cube[CUBE_FACE_NEG_Z] -=  dir.z * scale;	//	dir.z <= 0
+	{
+		hemi_cube[CUBE_FACE_NEG_Z] -= dir.z * scale; //	dir.z <= 0
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
-void	CROS_impl::update	(IRenderable* O)
+void CROS_impl::update(IRenderable* O)
 {
 	// clip & verify
-	if					(dwFrame==Device.dwFrame)			return;
-	dwFrame				= Device.dwFrame;
-	if					(0==O)								return;
-	if					(0==O->renderable.visual)			return;
-	VERIFY				(dynamic_cast<CROS_impl*>			(O->renderable_ROS()));
+	if (dwFrame == Device.dwFrame)
+	{
+		return;
+	}
+
+	dwFrame = Device.dwFrame;
+
+	if (0 == O)
+	{
+		return;
+	}
+
+	if (0 == O->renderable.visual)
+	{
+		return;
+	}
+
+	VERIFY(dynamic_cast<CROS_impl*>(O->renderable_ROS()));
 	//float	dt			=	Device.fTimeDelta;
 
-	CObject*	_object	= dynamic_cast<CObject*>	(O);
+	CObject* _object = O->dcast_CObject();
 
 	// select sample, randomize position inside object
 	vis_data &vis = O->renderable.visual->getVisData();
@@ -383,8 +390,8 @@ void CROS_impl::smart_update(IRenderable* O)
 
 	--ticks_to_update;
 
-	Fvector	position;
-	VERIFY(dynamic_cast<CROS_impl*>	(O->renderable_ROS()));
+	Fvector position;
+	VERIFY(dynamic_cast<CROS_impl*>(O->renderable_ROS()));
 
 	vis_data& vis = O->renderable.visual->getVisData();
 	O->renderable.xform.transform_tiny(position, vis.sphere.P);
@@ -538,13 +545,15 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
 
 void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 {
-	CObject* _object = dynamic_cast<CObject*>(O);
+	CObject* _object = O->dcast_CObject();
 	float dt = Device.fTimeDelta * 5.0f;
 
-	vis_data &vis = O->renderable.visual->getVisData();
-	float radius; radius = vis.sphere.R;
+	vis_data& vis = O->renderable.visual->getVisData();
 
-	Fvector position; _object->Center(position);
+	float radius = vis.sphere.R;
+	Fvector position = vis.sphere.P;
+
+	O->renderable.xform.transform_tiny(position);
 
 	// light-tracing
 	BOOL bTraceLights = MODE & IRender_ObjectSpecific::TRACE_LIGHTS;
@@ -631,8 +640,8 @@ void CROS_impl::prepare_lights(Fvector& _p, IRenderable* O)
 			//
 			//P.mad(vis.box.min, vis.box.max - vis.box.min, D);
 			// 
-			//P = position;
-			_object->Center(P);
+			P = position;
+			//_object->Center(P);
 #endif
 
 			// point/spot
