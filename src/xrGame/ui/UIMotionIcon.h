@@ -54,7 +54,12 @@ private:
 
 		void			EnsureMinimapOverlays(CUIXml& uiXml, Fvector2 const& sz, Fvector2 const& pos);
 		void			SetMinimapOverlayVisibility(bool visible);
+		void			SetCompassOverlayVisibility(bool visible);
+		void			LoadContextualFadeSettings(CUIXml& uiXml, const char* path, bool& contextualFadeOut);
+		void			InitMinimapLuminosityOverlay(CUIXml& uiXml);
+		bool						_compassModeActive = false;
 		bool						_compassContextualFade = false;
+		bool						_minimapContextualFade = false;
 		float						_contextualAlpha = 0.f;
 		float						_fadeInSpeed = 6.f;
 		float						_fadeOutSpeed = 5.f;
@@ -62,7 +67,6 @@ private:
 		float						_visibilityThreshold = 0.5f;
 		CUIStatic*					_compassBackground = nullptr;
 		u32							_compassBackgroundBaseColor = 0;
-		u32							_luminosityBarBaseColor = 0;
 
 		CUIWindow*					_compassLayoutFrame = nullptr;
 		Fvector2					_compassLayoutPos = {};
@@ -71,8 +75,9 @@ private:
 		bool						_compassLayoutAlignCenter = false;
 
 		float UpdateContextualFadeAlpha(float alpha, bool isVisible) const;
-		bool IsCompassContextuallyNeeded() const;
+		bool IsContextuallyNeeded() const;
 		void ApplyCompassContextualAlpha(float alpha);
+		void ApplyMinimapLuminosityOverlayAlpha(float contextualAlpha);
 
 public:
 	virtual					~CUIMotionIcon		();
