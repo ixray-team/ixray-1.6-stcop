@@ -26,6 +26,7 @@
 
 #include "../../xrUI/Widgets/UIPropertiesBox.h"
 #include "../../xrUI/Widgets/UIListBoxItem.h"
+#include "../HudPdaAnimator.h"
 
 CUIMapWnd* g_map_wnd = nullptr; // quick temporary solution -(
 CUIMapWnd* GetMapWnd()
@@ -257,7 +258,7 @@ void CUIMapWnd::Init(const char* xml_name, const char* start_from)
 	m_controller_cursor->InitTexture("ui_cur_task");
 	m_controller_cursor->SetWndSize(Fvector2().set(19.f, 19.f));
 	m_controller_cursor->SetStretchTexture(true);
-	m_controller_cursor->SetWidth(m_controller_cursor->GetWidth()*UI().get_current_kx());
+	m_controller_cursor->SetWidth(m_controller_cursor->GetWidth()*CHudPdaAnimator::GetPDAScreen_kx());
 	m_UILevelFrame->AttachChild(m_controller_cursor);
 
 	m_controller_cursor_pos_initial = { (m_UILevelFrame->GetWidth() / 2) - (m_controller_cursor->GetWidth() / 2),
@@ -1057,8 +1058,8 @@ bool CUIMapWnd::ConvertCursorPosToMap(Fvector* return_position, CUILevelMap* cur
 	cursor_pos.sub(box_rect.lt);
 
 	Frect bound_rect = curr_map->BoundRect();
-	bound_rect.lt.x /= UI().get_current_kx();
-	bound_rect.rb.x /= UI().get_current_kx();
+	bound_rect.lt.x /= CHudPdaAnimator::GetPDAScreen_kx();
+	bound_rect.rb.x /= CHudPdaAnimator::GetPDAScreen_kx();
 	return_position->x = bound_rect.lt.x + cursor_pos.x / (box_rect.width() / bound_rect.width());
 	return_position->y = 0.f;
 	return_position->z = bound_rect.height() + bound_rect.lt.y - cursor_pos.y / (box_rect.height() / bound_rect.height());

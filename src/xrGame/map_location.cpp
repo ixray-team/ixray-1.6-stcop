@@ -28,7 +28,7 @@
 #include "GametaskManager.h"
 #include "ActorHelmet.h"
 #include "Inventory.h"
-//#include "Creature.h"
+#include "HudPdaAnimator.h"
 
 CMapLocation::CMapLocation(const char* type, u16 object_id, bool is_user_loc)
 {
@@ -219,7 +219,7 @@ void CMapLocation::LoadSpot(const char* type, bool bReload)
 			{
 				m_level_spot = new CMapSpot(this);
 			}
-			m_level_spot->Load(g_uiSpotXml,str);
+			m_level_spot->Load(g_uiSpotXml, str, CHudPdaAnimator::GetPDAScreen_kx());
 		}else{
 			VERIFY( !(bReload&&m_level_spot) );
 		}
@@ -234,7 +234,7 @@ void CMapLocation::LoadSpot(const char* type, bool bReload)
 			{
 				m_level_spot_pointer = new CMapSpotPointer(this);
 			}
-			m_level_spot_pointer->Load(g_uiSpotXml,str);
+			m_level_spot_pointer->Load(g_uiSpotXml, str, CHudPdaAnimator::GetPDAScreen_kx());
 		}else{
 			VERIFY( !(bReload && m_level_spot_pointer) );
 		}
@@ -251,7 +251,7 @@ void CMapLocation::LoadSpot(const char* type, bool bReload)
 			{
 				m_minimap_spot = new CMiniMapSpot(this);
 			}
-			m_minimap_spot->Load(g_uiSpotXml,str);
+			m_minimap_spot->Load(g_uiSpotXml,str, UI().get_current_kx());
 		}else{
 			VERIFY( !(bReload && m_minimap_spot) );
 		}
@@ -358,7 +358,7 @@ void CMapLocation::LoadSpot(const char* type, bool bReload)
 			{
 				m_minimap_spot_pointer = new CMapSpotPointer(this);
 			}
-			m_minimap_spot_pointer->Load(g_uiSpotXml,str);
+			m_minimap_spot_pointer->Load(g_uiSpotXml,str, UI().get_current_kx());
 		}else{
 			VERIFY( !(bReload && m_minimap_spot_pointer) );
 		}
@@ -375,7 +375,7 @@ void CMapLocation::LoadSpot(const char* type, bool bReload)
 			{
 				m_complex_spot = new CComplexMapSpot(this);
 			}
-			m_complex_spot->Load(g_uiSpotXml,str);
+			m_complex_spot->Load(g_uiSpotXml,str, CHudPdaAnimator::GetPDAScreen_kx());
 		}else{
 			VERIFY( !(bReload && m_complex_spot) );
 		}
@@ -389,7 +389,7 @@ void CMapLocation::LoadSpot(const char* type, bool bReload)
 			{
 				m_complex_spot_pointer = new CMapSpotPointer(this);
 			}
-			m_complex_spot_pointer->Load(g_uiSpotXml,str);
+			m_complex_spot_pointer->Load(g_uiSpotXml, str, CHudPdaAnimator::GetPDAScreen_kx());
 		}else{
 			VERIFY( !(bReload && m_complex_spot_pointer) );
 		}
@@ -869,7 +869,7 @@ CMapSpot* CMapLocation::GetSpotBorder(CMapSpot* sp)
 			if ( nullptr == m_level_map_spot_border )
 			{
 				m_level_map_spot_border			= new CMapSpot(this);
-				m_level_map_spot_border->Load	(g_uiSpotXml,m_spot_border_names[0].c_str());
+				m_level_map_spot_border->Load	(g_uiSpotXml,m_spot_border_names[0].c_str(), CHudPdaAnimator::GetPDAScreen_kx());
 			}
 			return m_level_map_spot_border;
 		}
@@ -878,7 +878,7 @@ CMapSpot* CMapLocation::GetSpotBorder(CMapSpot* sp)
 			if ( nullptr == m_mini_map_spot_border )
 			{
 				m_mini_map_spot_border			= new CMapSpot(this);
-				m_mini_map_spot_border->Load	(g_uiSpotXml,m_spot_border_names[2].c_str());
+				m_mini_map_spot_border->Load	(g_uiSpotXml,m_spot_border_names[2].c_str(), UI().get_current_kx());
 			}
 			return m_mini_map_spot_border;
 		}
@@ -887,7 +887,7 @@ CMapSpot* CMapLocation::GetSpotBorder(CMapSpot* sp)
 			if ( nullptr == m_complex_spot_border )
 			{
 				m_complex_spot_border			= new CMapSpot(this);
-				m_complex_spot_border->Load		(g_uiSpotXml,m_spot_border_names[4].c_str());
+				m_complex_spot_border->Load		(g_uiSpotXml,m_spot_border_names[4].c_str(), CHudPdaAnimator::GetPDAScreen_kx());
 			}
 			return m_complex_spot_border;
 		}
@@ -899,7 +899,7 @@ CMapSpot* CMapLocation::GetSpotBorder(CMapSpot* sp)
 			if ( nullptr == m_level_map_spot_border_na && m_spot_border_names[1].size() )
 			{
 				m_level_map_spot_border_na			= new CMapSpot(this);
-				m_level_map_spot_border_na->Load	(g_uiSpotXml,m_spot_border_names[1].c_str());
+				m_level_map_spot_border_na->Load	(g_uiSpotXml,m_spot_border_names[1].c_str(), CHudPdaAnimator::GetPDAScreen_kx());
 			}
 			return m_level_map_spot_border_na;
 		}
@@ -908,7 +908,7 @@ CMapSpot* CMapLocation::GetSpotBorder(CMapSpot* sp)
 			if ( nullptr == m_mini_map_spot_border_na && m_spot_border_names[3].size() )
 			{
 				m_mini_map_spot_border_na			= new CMapSpot(this);
-				m_mini_map_spot_border_na->Load		(g_uiSpotXml,m_spot_border_names[3].c_str());
+				m_mini_map_spot_border_na->Load		(g_uiSpotXml,m_spot_border_names[3].c_str(), UI().get_current_kx());
 			}
 			return m_mini_map_spot_border_na;
 		}
@@ -917,7 +917,7 @@ CMapSpot* CMapLocation::GetSpotBorder(CMapSpot* sp)
 			if ( nullptr == m_complex_spot_border_na && m_spot_border_names[5].size() )
 			{
 				m_complex_spot_border_na			= new CMapSpot(this);
-				m_complex_spot_border_na->Load		(g_uiSpotXml,m_spot_border_names[5].c_str());
+				m_complex_spot_border_na->Load		(g_uiSpotXml,m_spot_border_names[5].c_str(), CHudPdaAnimator::GetPDAScreen_kx());
 			}
 			return m_complex_spot_border_na;
 		}
