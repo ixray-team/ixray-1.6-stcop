@@ -63,10 +63,13 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 	io.IniFilename = xr_strdup(Platform::ANSI_TO_UTF8(m_name_ini).c_str());
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
+#ifdef IXR_WINDOWS
 	const HDC screen = GetDC(nullptr);
 	m_ScaleDpi = GetDeviceCaps(screen, LOGPIXELSX) / 96.f;
 	ReleaseDC(nullptr, screen);
-
+#else
+	m_ScaleDpi = SDL_GetWindowDisplayScale(g_AppInfo.Window);
+#endif
 	ImGui::GetStyle().ScaleAllSizes(m_ScaleDpi);
 	io.ConfigDpiScaleFonts = true;
 	io.ConfigDpiScaleViewports = true;
@@ -371,6 +374,7 @@ void XrUIManager::Draw()
 	//EndFrame();
 }
 
+#if 0
 static bool ImGui_ImplWin32_UpdateMouseCursor()
 {
 	ImGuiIO& io = ImGui::GetIO();
@@ -403,3 +407,5 @@ static bool ImGui_ImplWin32_UpdateMouseCursor()
 	}
 	return true;
 }
+
+#endif
