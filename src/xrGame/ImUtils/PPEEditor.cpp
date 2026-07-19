@@ -227,6 +227,7 @@ struct SPPEditorUIState
 struct CImGuiPPEEditor : SPPEditorUIState
 {
 	SPPEffectData data;
+	SPPEffectData data_default; // snapshot from the last load/new, for "Reset to default"
 };
 
 CImGuiPPEEditor* g_pPPEEditor = nullptr;
@@ -235,6 +236,7 @@ CImGuiPPEEditor* g_pPPEEditor = nullptr;
 struct CImGuiPPEGameState : SPPEditorUIState
 {
 	SPPEffectData data;
+	SPPEffectData data_default; // snapshot from the last load/new, for "Reset to default"
 	bool is_cyclic_playback{true};
 };
 
@@ -450,6 +452,18 @@ bool PPEEditor_SavePPE(SPPEffectData& data, const char* path)
 	return true;
 }
 
+// deep copy through the same serialization (SPPEffectData can't be
+// copied directly: CEnvelope owns raw st_Key pointers)
+void PPEEditor_CopyData(SPPEffectData& dest, SPPEffectData& source)
+{
+	CMemoryWriter writer;
+	PPEEditor_SavePPE_Writer(source, writer);
+
+	u32 file_version = 0;
+	IReader reader(writer.pointer(), writer.size());
+	PPEEditor_LoadPPE_Reader(dest, file_version, reader);
+}
+
 // envelopes must be sorted by time for Evaluate/saving; user edits
 // can break the order, so re-sort before use (save/play)
 void PPEEditor_SortKeys(SPPEffectData& data)
@@ -489,19 +503,21 @@ void PPEEditor_ReplayPreviewIfPlaying(SPPEditorUIState& state);
 void PPEEditor_StopPreviewIfMine(SPPEditorUIState& state);
 #endif
 
-void PPEEditor_LoadFileInteractive(SPPEditorUIState& state, SPPEffectData& data)
+bool PPEEditor_LoadFileInteractive(SPPEditorUIState& state, SPPEffectData& data)
 {
 	if (xr_EFS == nullptr)
 	{
-		return;
+		return false;
 	}
 
 	xr_stack_tstring<sizeof(string_path)> local_path;
 
 	if (xr_EFS->GetOpenName(local_path, XR_TEXT("PPE file\0*.ppe\0")) == false)
 	{
-		return;
+		return false;
 	}
+
+	bool result = false;
 
 #ifdef IXR_WINDOWS
 	xr_stack_string<sizeof(string_path) * 2> char_path;
@@ -519,6 +535,8 @@ void PPEEditor_LoadFileInteractive(SPPEditorUIState& state, SPPEffectData& data)
 		state.current_selected_file = 0;
 		state.Reset();
 
+		result = true;
+
 #if IXRAY_PPE_EDITOR_TAB_GAME == 1
 		PPEEditor_ReplayPreviewIfPlaying(state);
 #endif
@@ -530,10 +548,12 @@ void PPEEditor_LoadFileInteractive(SPPEditorUIState& state, SPPEffectData& data)
 		ShowMessageBox(_eMessageBoxStatus::kWarning, "Warning", "failed to load file!");
 	}
 #endif
+
+	return result;
 }
 
 // implicit load when the user picks a file in the vfs combo
-void PPEEditor_LoadFromVFSInteractive(SPPEditorUIState& state, SPPEffectData& data, const char* vfs_name)
+bool PPEEditor_LoadFromVFSInteractive(SPPEditorUIState& state, SPPEffectData& data, const char* vfs_name)
 {
 	R_ASSERT(vfs_name);
 
@@ -551,11 +571,13 @@ void PPEEditor_LoadFromVFSInteractive(SPPEditorUIState& state, SPPEffectData& da
 		// replace the running preview with the newly selected effect
 		PPEEditor_ReplayPreviewIfPlaying(state);
 #endif
+
+		return true;
 	}
-	else
-	{
-		ShowMessageBox(_eMessageBoxStatus::kWarning, "Warning", "failed to load file from virtual file system!");
-	}
+
+	ShowMessageBox(_eMessageBoxStatus::kWarning, "Warning", "failed to load file from virtual file system!");
+
+	return false;
 }
 
 // enumerates .ppe files known to the virtual file system ($game_anims$),
@@ -679,12 +701,7 @@ public:
 	{
 		// snapshot the edited data through the same serialization (deep copy),
 		// so later editor changes can't race the playing effector
-		CMemoryWriter writer;
-		PPEEditor_SavePPE_Writer(source, writer);
-
-		u32 file_version = 0;
-		IReader reader(writer.pointer(), writer.size());
-		PPEEditor_LoadPPE_Reader(m_data, file_version, reader);
+		PPEEditor_CopyData(m_data, source);
 
 		m_length = m_data.GetLength();
 
@@ -935,7 +952,7 @@ void PPEEditor_DestroyPreviewEffector()
 // Shared UI rendering (editor tab and game tab use the same code)
 // ==============================================================
 
-void RenderPPEEditorUI_MenuBar(SPPEditorUIState& state, SPPEffectData& data)
+void RenderPPEEditorUI_MenuBar(SPPEditorUIState& state, SPPEffectData& data, SPPEffectData& data_default)
 {
 	if (ImGui::BeginMenuBar())
 	{
@@ -950,6 +967,9 @@ void RenderPPEEditorUI_MenuBar(SPPEditorUIState& state, SPPEffectData& data)
 				state.current_selected_file = 0;
 				state.is_file_loaded = true;
 
+				// the fresh defaults become the new "default" snapshot
+				PPEEditor_CopyData(data_default, data);
+
 #if IXRAY_PPE_EDITOR_TAB_GAME == 1
 				PPEEditor_StopPreviewIfMine(state);
 #endif
@@ -957,7 +977,10 @@ void RenderPPEEditorUI_MenuBar(SPPEditorUIState& state, SPPEffectData& data)
 
 			if (ImGui::MenuItem("Load from disk..."))
 			{
-				PPEEditor_LoadFileInteractive(state, data);
+				if (PPEEditor_LoadFileInteractive(state, data))
+				{
+					PPEEditor_CopyData(data_default, data);
+				}
 			}
 
 			if (state.is_file_loaded)
@@ -994,7 +1017,7 @@ void RenderPPEEditorUI_MenuBar(SPPEditorUIState& state, SPPEffectData& data)
 
 // combo of .ppe files known to the virtual file system ($game_anims$);
 // selecting one loads it implicitly
-void RenderPPEEditorUI_FileSelector(SPPEditorUIState& state, SPPEffectData& data)
+void RenderPPEEditorUI_FileSelector(SPPEditorUIState& state, SPPEffectData& data, SPPEffectData& data_default)
 {
 	if (state.combo_files.empty())
 	{
@@ -1009,7 +1032,10 @@ void RenderPPEEditorUI_FileSelector(SPPEditorUIState& state, SPPEffectData& data
 	{
 		if (state.current_selected_file > 0)
 		{
-			PPEEditor_LoadFromVFSInteractive(state, data, state.combo_files[state.current_selected_file]);
+			if (PPEEditor_LoadFromVFSInteractive(state, data, state.combo_files[state.current_selected_file]))
+			{
+				PPEEditor_CopyData(data_default, data);
+			}
 		}
 	}
 
@@ -1060,6 +1086,24 @@ void PPEEditor_GetChannelRange(
 		out_min -= 0.5f;
 		out_max += 0.5f;
 	}
+}
+
+void PPEEditor_DeleteSelectedKeys(CEnvelope& channel, xr_vector<st_Key*>& selection)
+{
+	for (st_Key* selected : selection)
+	{
+		for (auto it = channel.keys.begin(); it != channel.keys.end(); ++it)
+		{
+			if (*it == selected)
+			{
+				xr_delete(*it);
+				channel.keys.erase(it);
+				break;
+			}
+		}
+	}
+
+	selection.clear();
 }
 
 constexpr int _kPPETimelineSamples = 64;
@@ -1313,6 +1357,12 @@ void RenderPPEEditorUI_Timeline(
 		}
 	}
 
+	// delete key while hovering the timeline: delete all selected keys
+	if (is_hovered && ImGui::IsKeyPressed(ImGuiKey_Delete) && selection.empty() == false)
+	{
+		PPEEditor_DeleteSelectedKeys(*p_channel, selection);
+	}
+
 	for (st_Key* key : p_channel->keys)
 	{
 		float key_x = time_to_x(key->time);
@@ -1387,24 +1437,6 @@ void RenderPPEEditorUI_Timeline(
 
 		ImGui::EndTooltip();
 	}
-}
-
-void PPEEditor_DeleteSelectedKeys(CEnvelope& channel, xr_vector<st_Key*>& selection)
-{
-	for (st_Key* selected : selection)
-	{
-		for (auto it = channel.keys.begin(); it != channel.keys.end(); ++it)
-		{
-			if (*it == selected)
-			{
-				xr_delete(*it);
-				channel.keys.erase(it);
-				break;
-			}
-		}
-	}
-
-	selection.clear();
 }
 
 // row under the timeline: edit the selected key(s) (time/value/delete)
@@ -1848,7 +1880,7 @@ void RenderPPEEditorUI_TextureSelectorModal()
 	}
 }
 
-void RenderPPEEditorUI_EffectBody(SPPEditorUIState& state, SPPEffectData& data)
+void RenderPPEEditorUI_EffectBody(SPPEditorUIState& state, SPPEffectData& data, SPPEffectData& data_default)
 {
 	if (ImGui::Combo(
 			"Param##ToolsInGameImGui_PPEditor_Combo",
@@ -1932,6 +1964,21 @@ void RenderPPEEditorUI_EffectBody(SPPEditorUIState& state, SPPEffectData& data)
 		state.timeline_selected_keys[state.current_selected_param].clear();
 	}
 
+	ImGui::SameLine();
+
+	if (ImGui::Button("Reset to default##ToolsInGameImGui_PPEEditor_ResetToDefault"))
+	{
+		// restore the state the effect had right after it was loaded/created
+		PPEEditor_CopyData(data, data_default);
+		state.Reset();
+
+#if IXRAY_PPE_EDITOR_TAB_GAME == 1
+		PPEEditor_ReplayPreviewIfPlaying(state);
+#endif
+	}
+
+	ImGui::SetItemTooltip("Restores all parameters of the effect to the state they had right after the file was loaded or created");
+
 	ImGui::PopID();
 
 	ImGui::Separator();
@@ -1967,8 +2014,8 @@ void RenderPPEEditor_Draw_Preview(SPPEffectData& data)
 
 void RenderPPEEditor_Draw_EditorTab()
 {
-	RenderPPEEditorUI_MenuBar(*g_pPPEEditor, g_pPPEEditor->data);
-	RenderPPEEditorUI_FileSelector(*g_pPPEEditor, g_pPPEEditor->data);
+	RenderPPEEditorUI_MenuBar(*g_pPPEEditor, g_pPPEEditor->data, g_pPPEEditor->data_default);
+	RenderPPEEditorUI_FileSelector(*g_pPPEEditor, g_pPPEEditor->data, g_pPPEEditor->data_default);
 
 	if (g_pPPEEditor->is_file_loaded == false)
 	{
@@ -2005,7 +2052,7 @@ void RenderPPEEditor_Draw_EditorTab()
 			{
 				case 0:
 				{
-					RenderPPEEditorUI_EffectBody(*g_pPPEEditor, g_pPPEEditor->data);
+					RenderPPEEditorUI_EffectBody(*g_pPPEEditor, g_pPPEEditor->data, g_pPPEEditor->data_default);
 					break;
 				}
 #if IXRAY_PPE_EDITOR_PREVIEW == 1
@@ -2031,8 +2078,8 @@ void RenderPPEEditor_Draw_GameTab()
 {
 	R_ASSERT(g_pPPEGame);
 
-	RenderPPEEditorUI_MenuBar(*g_pPPEGame, g_pPPEGame->data);
-	RenderPPEEditorUI_FileSelector(*g_pPPEGame, g_pPPEGame->data);
+	RenderPPEEditorUI_MenuBar(*g_pPPEGame, g_pPPEGame->data, g_pPPEGame->data_default);
+	RenderPPEEditorUI_FileSelector(*g_pPPEGame, g_pPPEGame->data, g_pPPEGame->data_default);
 
 	if (g_pPPEGame->is_file_loaded == false)
 	{
@@ -2091,7 +2138,7 @@ void RenderPPEEditor_Draw_GameTab()
 
 	ImGui::Separator();
 
-	RenderPPEEditorUI_EffectBody(*g_pPPEGame, g_pPPEGame->data);
+	RenderPPEEditorUI_EffectBody(*g_pPPEGame, g_pPPEGame->data, g_pPPEGame->data_default);
 }
 #endif
 
@@ -2143,7 +2190,17 @@ void RenderPPEEditor_Draw_HelpTab()
 	RenderPPEEditorUI_HelpBullet("The axis is time: 0.0 on the left, the end of the effect on the right.");
 	RenderPPEEditorUI_HelpBullet("Vertical marks are your keys. Hover a mark to see its time and value.");
 	RenderPPEEditorUI_HelpBullet("Click a mark to edit or delete it. Click empty space to move the cursor.");
+	RenderPPEEditorUI_HelpBullet("With 'place on click' enabled, a click on the timeline places a key at the click position: x is the time, y is the value.");
 	RenderPPEEditorUI_HelpBullet("Color sections show the channel intensity as a colored ramp. Value sections show the curve as a line with the value range on the side.");
+
+	ImGui::SeparatorText("Shortcuts and selection");
+
+	RenderPPEEditorUI_HelpBullet("Click on empty space: moves the time cursor (or places a key when 'place on click' is on).");
+	RenderPPEEditorUI_HelpBullet("Click on a mark: selects it. Its time and value can be edited in the row below, hovering shows the exact numbers.");
+	RenderPPEEditorUI_HelpBullet("Drag on empty space: draws a selection box, all keys inside it become selected.");
+	RenderPPEEditorUI_HelpBullet("Ctrl + A (while hovering the timeline): selects all keys of the current channel.");
+	RenderPPEEditorUI_HelpBullet("Delete (while hovering the timeline): deletes all selected keys.");
+	RenderPPEEditorUI_HelpBullet("Escape: closes an open window (like the texture selector), a second press closes the editor.");
 
 	ImGui::SeparatorText("Sections: colors");
 
