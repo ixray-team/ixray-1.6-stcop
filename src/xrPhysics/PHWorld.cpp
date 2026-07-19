@@ -469,52 +469,53 @@ void CPHWorld::FrameStep(dReal step)
 
 void CPHWorld::AddObject(CPHObject* object)
 {
-	m_objects.push_back(object);
+	m_objects.PushBack(object);
 }
 
 void CPHWorld::AddRecentlyDisabled(CPHObject* object)
 {
-	m_recently_disabled_objects.push_back(object);
+	m_recently_disabled_objects.PushBack(object);
 }
 
-void CPHWorld::RemoveFromRecentlyDisabled(PH_OBJECT_I i)
+void CPHWorld::RemoveFromRecentlyDisabled(CPHObject* i)
 {
-	m_recently_disabled_objects.erase(i);
+	m_recently_disabled_objects.Erase(i);
 }
 
 void CPHWorld::AddUpdateObject(CPHUpdateObject* object)
 {
-	m_update_objects.push_back(object);
+	m_update_objects.PushBack(object);
 }
 
-void CPHWorld::RemoveUpdateObject(PH_UPDATE_OBJECT_I i)
+void CPHWorld::RemoveUpdateObject(CPHUpdateObject* i)
 {
-	m_update_objects.erase(i);
+	m_update_objects.Erase(i);
 }
 
-void CPHWorld::RemoveObject(PH_OBJECT_I i){
-	m_objects.erase((i));
-};
+void CPHWorld::RemoveObject(CPHObject* i)
+{
+	m_objects.Erase(i);
+}
 
 void CPHWorld::AddFreezedObject(CPHObject* obj)
 {
-	m_freezed_objects.push_back(obj);
+	m_freezed_objects.PushBack(obj);
 }
 
-void CPHWorld::RemoveFreezedObject(PH_OBJECT_I i)
+void CPHWorld::RemoveFreezedObject(CPHObject* i)
 {
-	m_freezed_objects.erase(i);
+	m_freezed_objects.Erase(i);
 }
 
 void CPHWorld::Freeze()
 {
 	R_ASSERT2(!b_world_freezed, "already freezed!!!");
-	m_freezed_objects.move_items(m_objects);
+	m_freezed_objects.MoveItems(m_objects);
 
 	for (CPHObject* Obj : m_freezed_objects)
 		Obj->FreezeContent();
 
-	m_freezed_update_objects.move_items(m_update_objects);
+	m_freezed_update_objects.MoveItems(m_update_objects);
 
 	b_world_freezed = true;
 }
@@ -526,9 +527,9 @@ void CPHWorld::UnFreeze()
 	for (CPHObject* Obj : m_freezed_objects)
 		Obj->UnFreezeContent();
 
-	m_objects.move_items(m_freezed_objects);
+	m_objects.MoveItems(m_freezed_objects);
 
-	m_update_objects.move_items(m_freezed_update_objects);
+	m_update_objects.MoveItems(m_freezed_update_objects);
 	b_world_freezed = false;
 }
 
@@ -559,7 +560,7 @@ void CPHWorld::NetRelcase(CPhysicsShell* s)
 
 u16 CPHWorld::ObjectsNumber(bool UpdateOnly)
 {
-	return UpdateOnly ? m_update_objects.count() : m_objects.count();
+	return UpdateOnly ? m_update_objects.Count() : m_objects.Count();
 }
 
 void CPHWorld::GetState(V_PH_WORLD_STATE& state)
