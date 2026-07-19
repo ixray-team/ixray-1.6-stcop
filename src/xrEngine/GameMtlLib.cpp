@@ -104,8 +104,8 @@ void CGameMtlLibrary::Load()
     if (file_version != GAMEMTL_VERSION_COP)
     {
         Msg("CGameMtlLibrary: unsupported version [%u]. Library can't load.", file_version);
-		FS.r_close		(F);
-    	return;
+        FS.r_close(F);
+        return;
     }
 
     R_ASSERT(fs.find_chunk(GAMEMTLS_CHUNK_AUTOINC));
@@ -123,7 +123,7 @@ void CGameMtlLibrary::Load()
         	SGameMtl*	M = new SGameMtl ();
             const auto version = M->Load(*O);
             detected_version = std::max(detected_version, version);
-        	materials.push_back(M);
+            materials.push_back(M);
         }
         OBJ->close		();
     }

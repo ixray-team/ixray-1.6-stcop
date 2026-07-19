@@ -54,7 +54,7 @@ void CWeaponMagazinedWGrenade::Load(const char* section)
 		if (pSettings->line_exist(hud_section, param_name))
 		{
 			reached_sect = hud_section.c_str();
-	}
+		}
 		return reached_sect;
 	};
 

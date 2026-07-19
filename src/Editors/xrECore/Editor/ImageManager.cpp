@@ -683,8 +683,8 @@ bool CImageManager::CreateOBJThumbnail(const char* tex_name, CEditableObject* ob
 
 	if (GetRTDataU32(UI->RT, pixels, w, h))
 	{
-		EObjectThumbnail tex(tex_name,false);
-		tex.CreateFromData(pixels.data(),w,h,obj->GetFaceCount(),obj->GetVertexCount());
+		EObjectThumbnail tex(tex_name, false);
+		tex.CreateFromData(pixels.data(), w, h, obj->GetFaceCount(), obj->GetVertexCount());
 		tex.Save(age);
 	}
 	else

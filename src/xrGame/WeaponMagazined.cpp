@@ -1039,7 +1039,7 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 
 	if (!m_bIsPumpEnabled)
 	{
-	GiveAmmoFromMagToChamber();
+		GiveAmmoFromMagToChamber();
 	}
 
 	return cnt;
@@ -1097,7 +1097,7 @@ void CWeaponMagazined::OnStateSwitch	(u8 S)
 		}
 		if (H_Parent() && H_Parent()->cast_inventory_owner())
 			m_sounds_enabled = H_Parent()->cast_inventory_owner()->CanPlayShHdRldSounds();
-		switch2_Hiding	();
+		switch2_Hiding();
 		break;
 	}
 	case eHidden:
@@ -1212,7 +1212,7 @@ void CWeaponMagazined::UpdateCL			()
 				}
 				else
 				{
-					state_Fire		(dt);
+					state_Fire(dt);
 				}
 			}break;
 		case eHidden:		break;
@@ -2423,7 +2423,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 			}
 			else
 			{
-			ChangeFireMode(cmd);
+				ChangeFireMode(cmd);
 			}
 			return true;
 		};
