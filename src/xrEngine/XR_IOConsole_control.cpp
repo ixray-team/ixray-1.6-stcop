@@ -6,43 +6,63 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include <algorithm>
-
 #include "XR_IOConsole.h"
 
-void CConsole::add_cmd_history(shared_str const& str) {
-	if (str.size() == 0) {
+void CConsole::add_cmd_history(shared_str const& str) 
+{
+	if (str.size() == 0) 
+	{
 		return;
 	}
-	m_cmd_history.push_back( str );
-	if (m_cmd_history.size() > m_cmd_history_max) {
+	
+	std::erase_if(m_cmd_history, [&str](const shared_str& entry)
+	{
+		return str.equal(entry);
+	});
+	
+	m_cmd_history.push_back(str);
+	
+	if (m_cmd_history.size() > m_cmd_history_max) 
+	{
 		m_cmd_history.erase( m_cmd_history.begin() );
 	}
 }
 
-void CConsole::next_cmd_history_idx() {
+void CConsole::next_cmd_history_idx() 
+{
 	--m_cmd_history_idx;
-	m_cmd_history_idx = std::max(m_cmd_history_idx, 0);
-}
-
-void CConsole::prev_cmd_history_idx() {
-	++m_cmd_history_idx;
-	if (m_cmd_history_idx >= (int)m_cmd_history.size()) {
-		m_cmd_history_idx = (u32)m_cmd_history.size() - 1;
+	
+	if (m_cmd_history_idx < 0)
+	{
+		m_cmd_history_idx = m_cmd_history.size() - 1;
 	}
 }
 
-void CConsole::reset_cmd_history_idx() {
+void CConsole::prev_cmd_history_idx()
+{
+	++m_cmd_history_idx;
+
+	if (m_cmd_history_idx > m_cmd_history.size() - 1)
+	{
+		m_cmd_history_idx = 0;
+	}
+}
+
+void CConsole::reset_cmd_history_idx()
+{
 	m_cmd_history_idx = -1;
 }
 
-void CConsole::next_selected_tip() {
+void CConsole::next_selected_tip() 
+{
 	++m_select_tip;
 	check_next_selected_tip();
 }
 
-void CConsole::check_next_selected_tip() {
-	if (m_select_tip >= (int)m_tips.size()) {
+void CConsole::check_next_selected_tip() 
+{
+	if (m_select_tip >= (int)m_tips.size()) 
+	{
 		m_select_tip = 0;
 		m_start_tip = 0;
 	}
@@ -53,12 +73,14 @@ void CConsole::check_next_selected_tip() {
 	m_start_tip = std::max(top_cmd_pointer, m_start_tip);
 }
 
-void CConsole::prev_selected_tip() {
+void CConsole::prev_selected_tip() 
+{
 	--m_select_tip;
 	check_prev_selected_tip();
 }
 
-void CConsole::check_prev_selected_tip() {
+void CConsole::check_prev_selected_tip() 
+{
 	if (m_select_tip < 0)
 	{
 		m_select_tip = (u32)m_tips.size() - 1;
@@ -69,7 +91,8 @@ void CConsole::check_prev_selected_tip() {
 	m_start_tip = std::min(m_start_tip, m_select_tip);
 }
 
-void CConsole::reset_selected_tip() {
+void CConsole::reset_selected_tip() 
+{
 	m_select_tip = -1;
 	m_start_tip = 0;
 	m_disable_tips = false;
