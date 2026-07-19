@@ -26,8 +26,6 @@ class CPHObject:
 #ifdef DEBUG
 	friend struct SPHObjDBGDraw;
 #endif
-	DECLARE_PHLIST_ITEM(CPHObject)
-
 			Flags8	m_flags;
 
 			enum{
@@ -48,6 +46,8 @@ class CPHObject:
 			_flags<CLClassBits>	m_collide_class_bits;
 
 public:
+			DECLARE_PHLIST_ITEM(CPHObject)
+
 			enum ECastType
 			{
 					tpNotDefinite,
