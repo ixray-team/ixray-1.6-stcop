@@ -16,6 +16,8 @@
 #if IXRAY_OMF_EDITOR_TAB_GAME == 1
 #include "../Inventory.h"
 #include "../Weapon.h"
+#include "../player_hud.h"
+#include "../../Include/xrRender/KinematicsAnimated.h"
 #endif
 
 enum class _eMessageBoxStatus
@@ -201,7 +203,519 @@ struct OMFData
 	}
 };
 
-struct CImGuiOMFEditor
+// ==============================================================
+// Shared UI state.
+// Everything the OMF editor UI needs that does NOT depend on where
+// the edited data comes from (a loaded .omf file or live game data).
+// CImGuiOMFEditor (editor tab) and CImGuiOMFGameState (game tab)
+// both carry this state, so the same UI works on both data sources.
+// ==============================================================
+struct SOMFEditorUIState
+{
+	bool is_show_popup_marks_cleared{};
+	bool is_show_popup_rename_animation_param{};
+	bool is_show_popup_renamehascollision{};
+	bool is_show_popup_boneparts_was_copied_to_clipboard_suc{};
+	bool is_show_popup_boneparts_was_copied_to_clipboard_fail{};
+
+	bool is_show_popup_add_motion_mark{};
+	bool is_show_popup_duplicate_found_motion_mark{};
+
+	bool is_motion_time_format_seconds_selected{};
+	bool is_motion_time_format_keys_selected{};
+	bool is_motion_time_format_radiobutton_changed{};
+	bool is_motion_marks_enabled{};
+
+	int current_selected_animation_param{};
+	int current_selected_bone_rename{};
+	int current_selected_mark{};
+	int current_selected_mark_param{};
+
+	OMFData::omf_name_t rename_temp;
+	OMFData::omf_name_t rename_temp_bone;
+	OMFData::omf_name_t temp_motion_mark_name;
+
+	xr_vector<const char*> combo_animation_params_data;
+	xr_vector<const char*> list_box_motion_marks_names;
+	xr_vector<xr_stack_string16> list_box_motion_marks_params_names;
+
+	void Reset()
+	{
+		current_selected_animation_param = 0;
+		current_selected_mark = -1;
+		current_selected_mark_param = -1;
+
+	#if IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING == 0
+		current_selected_bone_rename = 0;
+	#else
+		current_selected_bone_rename = -1;
+	#endif
+
+		is_motion_time_format_seconds_selected = true;
+		is_motion_time_format_keys_selected = false;
+		is_motion_time_format_radiobutton_changed = true;
+		is_motion_marks_enabled = false;
+
+		is_show_popup_marks_cleared = false;
+		is_show_popup_rename_animation_param = false;
+		is_show_popup_renamehascollision = false;
+		is_show_popup_boneparts_was_copied_to_clipboard_suc = false;
+		is_show_popup_boneparts_was_copied_to_clipboard_fail = false;
+		is_show_popup_add_motion_mark = false;
+		is_show_popup_duplicate_found_motion_mark = false;
+
+		combo_animation_params_data.clear();
+		list_box_motion_marks_names.clear();
+		list_box_motion_marks_params_names.clear();
+	}
+};
+
+// ==============================================================
+// Data provider abstraction.
+// The whole OMF editor UI is written once against this interface.
+// COMFFileAnimProvider feeds it from a .omf file loaded on disk
+// (editor tab), CGameAnimProvider feeds it from the live engine
+// motions of the current hud item (game tab).
+// ==============================================================
+struct IOMFAnimDataProvider
+{
+	virtual ~IOMFAnimDataProvider() = default;
+
+	// capabilities (UI hides/gates what a source can't do)
+	virtual bool CanRenameAnimations() const = 0;
+	virtual bool CanRenameBones() const = 0;
+	virtual bool SupportsMotionMarks() const = 0;
+
+	// animation params
+	virtual int GetAnimParamsCount() const = 0;
+	virtual const char* GetAnimParamName(int index) const = 0;
+	virtual bool AnimParamNameExists(const char* name) const = 0;
+	virtual void RenameAnimParam(int index, const char* new_name) = 0;
+
+	virtual float GetSpeed(int index) const = 0;
+	virtual float GetPower(int index) const = 0;
+	virtual float GetAccrue(int index) const = 0;
+	virtual float GetFalloff(int index) const = 0;
+	virtual void SetSpeed(int index, float value) = 0;
+	virtual void SetPower(int index, float value) = 0;
+	virtual void SetAccrue(int index, float value) = 0;
+	virtual void SetFalloff(int index, float value) = 0;
+
+	virtual int GetFlags(int index) const = 0;
+	virtual void SetFlags(int index, int flags) = 0;
+
+	// raw motion length in seconds (speed = 1.0, i.e. keys_count / 30)
+	virtual float GetAnimLengthSeconds(int index) const = 0;
+
+	// motion marks
+	virtual int GetMarksCount(int anim_index) const = 0;
+	virtual const char* GetMarkName(int anim_index, int mark_index) const = 0;
+	virtual void AddMark(int anim_index, const char* name) = 0;
+	virtual void DeleteMark(int anim_index, int mark_index) = 0;
+	virtual void ClearMarks(int anim_index) = 0;
+	virtual int GetMarkParamsCount(int anim_index, int mark_index) const = 0;
+	virtual void GetMarkParam(int anim_index, int mark_index, int param_index, float& t0, float& t1) const = 0;
+	virtual void SetMarkParam(int anim_index, int mark_index, int param_index, float t0, float t1) = 0;
+	virtual void AddMarkParam(int anim_index, int mark_index) = 0;
+	virtual void DeleteMarkParam(int anim_index, int mark_index, int param_index) = 0;
+
+	// bone parts
+	virtual int GetBonePartsCount() const = 0;
+	virtual const char* GetBonePartName(int part_index) const = 0;
+	virtual int GetBonesCount(int part_index) const = 0;
+	virtual const char* GetBoneName(int part_index, int bone_index) const = 0;
+	virtual void RenameBone(int part_index, int bone_index, const char* new_name) = 0;
+};
+
+// editor tab: wraps the parsed .omf file data
+struct COMFFileAnimProvider : IOMFAnimDataProvider
+{
+	void Bind(OMFData* pData) { m_data = pData; }
+	bool IsValid() const { return m_data != nullptr; }
+
+	bool CanRenameAnimations() const override { return true; }
+	bool CanRenameBones() const override { return true; }
+	bool SupportsMotionMarks() const override { return m_data && m_data->data_bone.ogf_version == 4; }
+
+	int GetAnimParamsCount() const override { return m_data ? static_cast<int>(m_data->data_animparams.params.size()) : 0; }
+	const char* GetAnimParamName(int index) const override { return Params(index).name.c_str(); }
+
+	bool AnimParamNameExists(const char* name) const override
+	{
+		if (m_data == nullptr || name == nullptr)
+		{
+			return false;
+		}
+
+		for (const auto& param : m_data->data_animparams.params)
+		{
+			if (param.name == name)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	void RenameAnimParam(int index, const char* new_name) override { Params(index).name = new_name; }
+
+	float GetSpeed(int index) const override { return Params(index).speed; }
+	float GetPower(int index) const override { return Params(index).power; }
+	float GetAccrue(int index) const override { return Params(index).accrue; }
+	float GetFalloff(int index) const override { return Params(index).falloff; }
+	void SetSpeed(int index, float value) override { Params(index).speed = value; }
+	void SetPower(int index, float value) override { Params(index).power = value; }
+	void SetAccrue(int index, float value) override { Params(index).accrue = value; }
+	void SetFalloff(int index, float value) override { Params(index).falloff = value; }
+
+	int GetFlags(int index) const override { return Params(index).flags; }
+	void SetFlags(int index, int flags) override { Params(index).flags = flags; }
+
+	float GetAnimLengthSeconds(int index) const override
+	{
+		if (m_data == nullptr || index < 0 || index >= static_cast<int>(m_data->data_anim.anims.size()))
+		{
+			return 0.0f;
+		}
+
+		const OMFData::AnimVector& anim = m_data->data_anim.anims[index];
+
+		if (anim.data == nullptr)
+		{
+			return 0.0f;
+		}
+
+		// key count is stored at the beginning of the anim section
+		int num_keys = 0;
+		std::memcpy(&num_keys, anim.data, sizeof(num_keys));
+		return static_cast<float>(num_keys) / 30.0f;
+	}
+
+	int GetMarksCount(int anim_index) const override { return Params(anim_index).marks_count; }
+	const char* GetMarkName(int anim_index, int mark_index) const override { return Params(anim_index).marks[mark_index].name.c_str(); }
+
+	void AddMark(int anim_index, const char* name) override
+	{
+		AnimParams& param = Params(anim_index);
+		param.marks.push_back({});
+		param.marks.back().name = name;
+		param.marks_count = static_cast<int32_t>(param.marks.size());
+	}
+
+	void DeleteMark(int anim_index, int mark_index) override
+	{
+		AnimParams& param = Params(anim_index);
+		param.marks.erase(param.marks.cbegin() + mark_index);
+		param.marks_count = static_cast<int32_t>(param.marks.size());
+	}
+
+	void ClearMarks(int anim_index) override
+	{
+		AnimParams& param = Params(anim_index);
+		param.marks.clear();
+		param.marks_count = 0;
+	}
+
+	int GetMarkParamsCount(int anim_index, int mark_index) const override { return Params(anim_index).marks[mark_index].count; }
+
+	void GetMarkParam(int anim_index, int mark_index, int param_index, float& t0, float& t1) const override
+	{
+		const auto& mark_param = Params(anim_index).marks[mark_index].params[param_index];
+		t0 = mark_param.t0;
+		t1 = mark_param.t1;
+	}
+
+	void SetMarkParam(int anim_index, int mark_index, int param_index, float t0, float t1) override
+	{
+		auto& mark_param = Params(anim_index).marks[mark_index].params[param_index];
+		mark_param.t0 = t0;
+		mark_param.t1 = t1;
+	}
+
+	void AddMarkParam(int anim_index, int mark_index) override
+	{
+		auto& mark = Params(anim_index).marks[mark_index];
+		mark.params.push_back({});
+		mark.count = static_cast<int32_t>(mark.params.size());
+	}
+
+	void DeleteMarkParam(int anim_index, int mark_index, int param_index) override
+	{
+		auto& mark = Params(anim_index).marks[mark_index];
+		mark.params.erase(mark.params.cbegin() + param_index);
+		mark.count = static_cast<int32_t>(mark.params.size());
+	}
+
+	int GetBonePartsCount() const override { return m_data ? static_cast<int>(m_data->data_bone.parts.size()) : 0; }
+	const char* GetBonePartName(int part_index) const override { return m_data->data_bone.parts[part_index].name.c_str(); }
+	int GetBonesCount(int part_index) const override { return static_cast<int>(m_data->data_bone.parts[part_index].bones.size()); }
+	const char* GetBoneName(int part_index, int bone_index) const override { return m_data->data_bone.parts[part_index].bones[bone_index].name.c_str(); }
+	void RenameBone(int part_index, int bone_index, const char* new_name) override { m_data->data_bone.parts[part_index].bones[bone_index].name = new_name; }
+
+private:
+	using AnimParams = OMFData::AnimParamsData::AnimParams;
+
+	AnimParams& Params(int index)
+	{
+		R_ASSERT(m_data);
+		R_ASSERT(index >= 0 && index < static_cast<int>(m_data->data_animparams.params.size()));
+		return m_data->data_animparams.params[index];
+	}
+
+	const AnimParams& Params(int index) const
+	{
+		R_ASSERT(m_data);
+		R_ASSERT(index >= 0 && index < static_cast<int>(m_data->data_animparams.params.size()));
+		return m_data->data_animparams.params[index];
+	}
+
+	OMFData* m_data = nullptr;
+};
+
+#if IXRAY_OMF_EDITOR_TAB_GAME == 1
+// game tab: wraps the live engine motions (CMotionDef) of a hud model.
+// Editing writes directly to the shared motions_value, so changes apply
+// to every model using the same OMF and take effect on the next played
+// animation (marks are read per-frame and apply immediately).
+struct CGameAnimProvider : IOMFAnimDataProvider
+{
+	struct SMotionEntry
+	{
+		IKinematicsAnimated* model; // model the MotionID resolves against
+		CMotionDef* def;
+		MotionID mid;
+		xr_string display_name; // motion name (+ [bp] suffix for item bone-part motions)
+	};
+
+	// lists only the motions the given hud item actually uses:
+	// hand motions (anm_*) resolve on the hands model (or on the item
+	// model itself when it is a combined hands+item model), bone-part
+	// motions (anm_bp_*) always resolve on the item model
+	void Bind(attachable_hud_item* pItem, IKinematicsAnimated* pHandsModel)
+	{
+		m_entries.clear();
+		m_model = nullptr;
+		m_partition = nullptr;
+
+		if (pItem == nullptr)
+		{
+			return;
+		}
+
+		IKinematicsAnimated* pItemModel = pItem->m_model ? pItem->m_model->dcast_PKinematicsAnimated() : nullptr;
+		IKinematicsAnimated* pHands = pItem->m_model_combined ? pItemModel : pHandsModel;
+
+		for (const player_hud_motion& motion : pItem->m_hand_motions.m_anims)
+		{
+			for (const motion_descr& descr : motion.m_animations)
+			{
+				AddEntry(pHands, descr, false);
+			}
+		}
+
+		for (const attachable_hud_item_motion& motion : pItem->m_hand_motions.m_item_anims)
+		{
+			for (const motion_descr& descr : motion.m_animations)
+			{
+				AddEntry(pItemModel, descr, true);
+			}
+		}
+
+		// bone parts are shown for the model that plays the hand motions
+		m_model = pHands ? pHands : pItemModel;
+
+		if (m_model)
+		{
+			const u16 slot_count = m_model->LL_MotionsSlotCount();
+
+			for (u16 slot = 0; slot < slot_count && m_partition == nullptr; ++slot)
+			{
+				shared_motions motions = m_model->LL_MotionsSlot(slot);
+
+				if (motions.partition() && motions.partition()->count() > 0)
+				{
+					m_partition = motions.partition();
+				}
+			}
+		}
+	}
+
+	bool CanRenameAnimations() const override { return false; } // names are accel_map keys shared by all models using this OMF
+	bool CanRenameBones() const override { return false; }      // bones belong to the skeleton, not to the motion data
+	bool SupportsMotionMarks() const override { return true; }
+
+	int GetAnimParamsCount() const override { return static_cast<int>(m_entries.size()); }
+	const char* GetAnimParamName(int index) const override { return Entry(index).display_name.c_str(); }
+	bool AnimParamNameExists(const char* name) const override { return false; }
+	void RenameAnimParam(int index, const char* new_name) override { R_ASSERT(!"renaming animations is not supported for live game data"); }
+
+	float GetSpeed(int index) const override { return Entry(index).def->Speed(); }
+	float GetPower(int index) const override { return Entry(index).def->Power(); }
+	float GetAccrue(int index) const override { return Entry(index).def->Accrue(); }
+	float GetFalloff(int index) const override { return Entry(index).def->Falloff(); }
+
+	void SetSpeed(int index, float value) override
+	{
+		CMotionDef* p_def = Entry(index).def;
+		p_def->speed = p_def->Quantize(value);
+	}
+
+	void SetPower(int index, float value) override
+	{
+		CMotionDef* p_def = Entry(index).def;
+		p_def->power = p_def->Quantize(value);
+	}
+
+	void SetAccrue(int index, float value) override
+	{
+		CMotionDef* p_def = Entry(index).def;
+		p_def->accrue = p_def->Quantize(value / fQuantizerRangeExt);
+	}
+
+	void SetFalloff(int index, float value) override
+	{
+		CMotionDef* p_def = Entry(index).def;
+		p_def->falloff = p_def->Quantize(value / fQuantizerRangeExt);
+	}
+
+	int GetFlags(int index) const override { return Entry(index).def->flags; }
+	void SetFlags(int index, int flags) override { Entry(index).def->flags = static_cast<u16>(flags); }
+
+	float GetAnimLengthSeconds(int index) const override
+	{
+		const SMotionEntry& entry = Entry(index);
+
+		if (entry.model == nullptr)
+		{
+			return 0.0f;
+		}
+
+		// raw length (no speed division) to match the editor's keys/30 math
+		CMotion* p_motion = entry.model->LL_GetRootMotion(entry.mid);
+		return p_motion ? p_motion->GetLength() : 0.0f;
+	}
+
+	int GetMarksCount(int anim_index) const override { return static_cast<int>(Entry(anim_index).def->marks.size()); }
+	const char* GetMarkName(int anim_index, int mark_index) const override { return Entry(anim_index).def->marks[mark_index].name.c_str(); }
+
+	void AddMark(int anim_index, const char* name) override
+	{
+		CMotionDef* p_def = Entry(anim_index).def;
+		motion_marks& mark = p_def->marks.emplace_back();
+		mark.name = name;
+	}
+
+	void DeleteMark(int anim_index, int mark_index) override
+	{
+		CMotionDef* p_def = Entry(anim_index).def;
+		p_def->marks.erase(p_def->marks.begin() + mark_index);
+	}
+
+	void ClearMarks(int anim_index) override
+	{
+		Entry(anim_index).def->marks.clear();
+	}
+
+	int GetMarkParamsCount(int anim_index, int mark_index) const override
+	{
+		return static_cast<int>(Entry(anim_index).def->marks[mark_index].intervals.size());
+	}
+
+	void GetMarkParam(int anim_index, int mark_index, int param_index, float& t0, float& t1) const override
+	{
+		const motion_marks::interval& mark_param = Entry(anim_index).def->marks[mark_index].intervals[param_index];
+		t0 = mark_param.first;
+		t1 = mark_param.second;
+	}
+
+	void SetMarkParam(int anim_index, int mark_index, int param_index, float t0, float t1) override
+	{
+		motion_marks::interval& mark_param = Entry(anim_index).def->marks[mark_index].intervals[param_index];
+		mark_param.first = t0;
+		mark_param.second = t1;
+	}
+
+	void AddMarkParam(int anim_index, int mark_index) override
+	{
+		Entry(anim_index).def->marks[mark_index].intervals.emplace_back(0.0f, 0.0f);
+	}
+
+	void DeleteMarkParam(int anim_index, int mark_index, int param_index) override
+	{
+		motion_marks& mark = Entry(anim_index).def->marks[mark_index];
+		mark.intervals.erase(mark.intervals.begin() + param_index);
+	}
+
+	int GetBonePartsCount() const override { return m_partition ? m_partition->count() : 0; }
+	const char* GetBonePartName(int part_index) const override { return m_partition->part(static_cast<u16>(part_index)).Name.c_str(); }
+	int GetBonesCount(int part_index) const override { return static_cast<int>(m_partition->part(static_cast<u16>(part_index)).bones.size()); }
+
+	const char* GetBoneName(int part_index, int bone_index) const override
+	{
+		// LL_BoneName_dbg lives on IKinematics, not on IKinematicsAnimated
+		IKinematics* p_kinematics = m_model ? m_model->dcast_PKinematics() : nullptr;
+
+		if (p_kinematics == nullptr)
+		{
+			return "";
+		}
+
+		u32 bone_id = m_partition->part(static_cast<u16>(part_index)).bones[bone_index];
+		return p_kinematics->LL_BoneName_dbg(static_cast<u16>(bone_id));
+	}
+
+	void RenameBone(int part_index, int bone_index, const char* new_name) override { R_ASSERT(!"renaming bones is not supported for live game data"); }
+
+private:
+	void AddEntry(IKinematicsAnimated* pModel, const motion_descr& descr, bool is_bonepart)
+	{
+		if (pModel == nullptr || descr.mid.valid() == false)
+		{
+			return;
+		}
+
+		for (const SMotionEntry& entry : m_entries)
+		{
+			if (entry.model == pModel && entry.mid == descr.mid)
+			{
+				return; // already listed (several aliases can share one motion)
+			}
+		}
+
+		CMotionDef* p_def = pModel->LL_GetMotionDef(descr.mid);
+
+		if (p_def == nullptr)
+		{
+			return;
+		}
+
+		SMotionEntry& entry = m_entries.emplace_back();
+		entry.model = pModel;
+		entry.def = p_def;
+		entry.mid = descr.mid;
+		entry.display_name = descr.name.c_str();
+
+		if (is_bonepart)
+		{
+			entry.display_name += " [bp]";
+		}
+	}
+
+	const SMotionEntry& Entry(int index) const
+	{
+		R_ASSERT(index >= 0 && index < static_cast<int>(m_entries.size()));
+		return m_entries[index];
+	}
+
+	xr_vector<SMotionEntry> m_entries;
+	IKinematicsAnimated* m_model = nullptr;
+	const CPartition* m_partition = nullptr;
+};
+#endif
+
+// editor tab state = shared UI state + file-specific data
+struct CImGuiOMFEditor : SOMFEditorUIState
 {
 	~CImGuiOMFEditor()
 	{
@@ -211,45 +725,20 @@ struct CImGuiOMFEditor
 		}
 	}
 
-
-	bool is_show_popup_marks_cleared{};
-	bool is_show_popup_rename_animation_param{};
-	bool is_show_popup_renamehascollision{};
-	bool is_show_popup_boneparts_was_copied_to_clipboard_suc{};
-	bool is_show_popup_boneparts_was_copied_to_clipboard_fail{};
 	bool is_show_popup_boneparts_rename_has_collision{};
-
-	bool is_show_popup_add_motion_mark{};
-	bool is_show_popup_duplicate_found_motion_mark{};
-
 	bool is_show_popup_try_repair_applied{};
 	bool is_show_popup_add_anims_from{};
 
 	bool is_file_loaded{};
-	bool animation_param_was_changed{};
-	bool is_motion_time_format_seconds_selected{};
-	bool is_motion_time_format_keys_selected{};
-	bool is_motion_time_format_radiobutton_changed{};
-	bool is_motion_marks_enabled{};
 	bool is_input_text_addanimsfrom_updated_preview{};
 	bool is_input_text_addanimsfrom_was_edited{};
-	int current_selected_animation_param{};
-	int current_selected_bone_rename{};
-	int current_selected_mark{};
-	int current_selected_mark_param{};
 
 	OMFData* omf{};
 	OMFData* temp_omf{};
-	OMFData::omf_name_t rename_temp;
-	OMFData::omf_name_t rename_temp_bone;
-	OMFData::omf_name_t temp_motion_mark_name;
-	xr_vector<const char*> combo_animation_params_data;
-	xr_set<size_t> combo_animation_params_name_hashes;
+	COMFFileAnimProvider provider{};
+
 	xr_vector<const char*> combo_bones_data;
 	xr_set<size_t> combo_bones_name_hashes;
-
-	xr_vector<const char*> list_box_motion_marks_names;
-	xr_vector<xr_stack_string16> list_box_motion_marks_params_names;
 
 	xr_vector<OMFData::omf_name_t> addanimsfrom_animation_list;
 
@@ -258,6 +747,20 @@ struct CImGuiOMFEditor
 };
 
 CImGuiOMFEditor* g_pOMFEditor = nullptr;
+
+#if IXRAY_OMF_EDITOR_TAB_GAME == 1
+// game tab state = shared UI state + live data binding.
+// Exists alongside g_pOMFEditor, so a file can stay open in the
+// editor tab while the game tab edits the current weapon's data.
+struct CImGuiOMFGameState : SOMFEditorUIState
+{
+	CGameAnimProvider provider{};
+	attachable_hud_item* bound_item = nullptr;
+	IKinematicsAnimated* bound_model = nullptr;
+};
+
+CImGuiOMFGameState* g_pOMFGame = nullptr;
+#endif
 
 
 void OMFEditor_OnPressed(int key)
@@ -530,7 +1033,6 @@ bool OMFEditor_SaveOMF_BoneData(
 
 bool OMFEditor_LoadOMF_AnimParamsData_MotionMark(
 	OMFData::AnimParamsData::AnimParams::MotionMark& mark,
-	int16_t mark_id,
 	std::ifstream& file
 )
 {
@@ -539,14 +1041,6 @@ bool OMFEditor_LoadOMF_AnimParamsData_MotionMark(
 	OMFEditor_ReadStringMotionMark(mark.name, file);
 	file.read(reinterpret_cast<char*>(&mark.count), sizeof(mark.count));
 
-	if (mark.name.empty() == false)
-	{
-		if (g_pOMFEditor && mark_id == 0)
-		{
-			g_pOMFEditor->list_box_motion_marks_names.push_back(mark.name.c_str());
-		}
-	}
-
 	for (int32_t i = 0; i < mark.count; ++i)
 	{
 		mark.params.push_back({});
@@ -554,13 +1048,6 @@ bool OMFEditor_LoadOMF_AnimParamsData_MotionMark(
 
 		file.read(reinterpret_cast<char*>(&mark_param.t0), sizeof(mark_param.t0));
 		file.read(reinterpret_cast<char*>(&mark_param.t1), sizeof(mark_param.t1));
-
-		if (g_pOMFEditor && mark_id == 0)
-		{
-			xr_stack_string16 temp;
-			std::sprintf(temp.data(), "%hd_mark%d", mark_id, i);
-			g_pOMFEditor->list_box_motion_marks_params_names.push_back(temp);
-		}
 	}
 
 	return status;
@@ -578,11 +1065,6 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 
 	for (int16_t i = 0; i < data.count; ++i)
 	{
-		if (g_pOMFEditor)
-		{
-			g_pOMFEditor->current_selected_animation_param = 0;
-		}
-
 		data.params.push_back({});
 		OMFData::AnimParamsData::AnimParams& param = data.params.back();
 		OMFEditor_ReadString(param.name, file);
@@ -606,7 +1088,7 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 					param.marks.push_back({});
 					OMFData::AnimParamsData::AnimParams::MotionMark& mark = param.marks.back();
 
-					bool status_mark = OMFEditor_LoadOMF_AnimParamsData_MotionMark(mark, mark_id, file);
+					bool status_mark = OMFEditor_LoadOMF_AnimParamsData_MotionMark(mark, file);
 
 					if (!status_mark)
 					{
@@ -617,18 +1099,6 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 				}
 			}
 		}
-	}
-
-	if (g_pOMFEditor)
-	{
-		if (g_pOMFEditor->current_selected_animation_param != 0)
-		{
-			// invalidate it means serialized data didn't contain any animation param
-			g_pOMFEditor->current_selected_animation_param = -1;
-		}
-
-		g_pOMFEditor->current_selected_mark = -1;
-		g_pOMFEditor->current_selected_mark_param = -1;
 	}
 
 	return true;
@@ -694,20 +1164,295 @@ bool OMFEditor_SaveOMF_AnimParamsData(
 	return file.good();
 }
 
-void OMFEditor_Init_ComboAnimationParams(CImGuiOMFEditor* p_state, OMFData& data)
-{
-	R_ASSERT2(p_state->combo_animation_params_data.empty(), "did you clear data before init?");
-	R_ASSERT2(p_state->combo_animation_params_name_hashes.empty(), "did you clear data before init?");
+// ==============================================================
+// Shared UI logic. All functions work against SOMFEditorUIState +
+// IOMFAnimDataProvider, so editor (file) and game (live) tabs share
+// the exact same behavior.
+// ==============================================================
 
-	if (data.data_animparams.count > 0)
+void OMFEditorUI_RebuildComboCache(SOMFEditorUIState& state, IOMFAnimDataProvider& data)
+{
+	state.combo_animation_params_data.clear();
+
+	const int count = data.GetAnimParamsCount();
+	state.combo_animation_params_data.reserve(count);
+
+	for (int i = 0; i < count; ++i)
 	{
-		for (int16_t i = 0; i < data.data_animparams.count; ++i)
+		state.combo_animation_params_data.push_back(data.GetAnimParamName(i));
+	}
+}
+
+void OMFEditorUI_RebuildMotionMarkParamLabels(SOMFEditorUIState& state, IOMFAnimDataProvider& data)
+{
+	state.list_box_motion_marks_params_names.clear();
+
+	const int anim_index = state.current_selected_animation_param;
+
+	if (anim_index < 0 || anim_index >= data.GetAnimParamsCount())
+	{
+		return;
+	}
+
+	const int mark_index = state.current_selected_mark;
+
+	if (mark_index < 0 || mark_index >= data.GetMarksCount(anim_index))
+	{
+		return;
+	}
+
+	xr_stack_string16 temp;
+	const int params_count = data.GetMarkParamsCount(anim_index, mark_index);
+
+	for (int i = 0; i < params_count; ++i)
+	{
+		std::sprintf(temp.data(), "%d_mark%d", mark_index, i);
+		state.list_box_motion_marks_params_names.push_back(temp);
+	}
+}
+
+void OMFEditorUI_RebuildMotionMarkCaches(SOMFEditorUIState& state, IOMFAnimDataProvider& data)
+{
+	state.list_box_motion_marks_names.clear();
+	state.list_box_motion_marks_params_names.clear();
+
+	const int anim_index = state.current_selected_animation_param;
+
+	if (anim_index < 0 || anim_index >= data.GetAnimParamsCount())
+	{
+		return;
+	}
+
+	const int marks_count = data.GetMarksCount(anim_index);
+
+	for (int mark_index = 0; mark_index < marks_count; ++mark_index)
+	{
+		state.list_box_motion_marks_names.push_back(data.GetMarkName(anim_index, mark_index));
+	}
+
+	OMFEditorUI_RebuildMotionMarkParamLabels(state, data);
+}
+
+void OMFEditorUI_OnAnimParamSelected(SOMFEditorUIState& state, IOMFAnimDataProvider& data)
+{
+	state.current_selected_mark = -1;
+	state.current_selected_mark_param = -1;
+	OMFEditorUI_RebuildMotionMarkCaches(state, data);
+}
+
+bool OMFEditorUI_HasDuplicateMotionMark(
+	SOMFEditorUIState& state,
+	IOMFAnimDataProvider& data,
+	const OMFData::omf_name_t& mark_name
+)
+{
+	R_ASSERT(mark_name.empty() == false);
+
+	const int anim_index = state.current_selected_animation_param;
+
+	if (anim_index < 0 || anim_index >= data.GetAnimParamsCount() || mark_name.empty())
+	{
+		return false;
+	}
+
+	OMFData::omf_name_t lower_left;
+	OMFData::omf_name_t lower_right = mark_name;
+
+	xr_strlwr(lower_right);
+
+	const int marks_count = data.GetMarksCount(anim_index);
+
+	for (int mark_index = 0; mark_index < marks_count; ++mark_index)
+	{
+		lower_left = data.GetMarkName(anim_index, mark_index);
+		xr_strlwr(lower_left);
+
+		if (lower_left == lower_right)
 		{
-			std::string_view view = data.data_animparams.params[i].name.c_str();
-			p_state->combo_animation_params_data.push_back(data.data_animparams.params[i].name.c_str());
-			p_state->combo_animation_params_name_hashes.insert(std::hash<std::string_view>()(data.data_animparams.params[i].name.c_str()));
+			return true;
 		}
 	}
+
+	return false;
+}
+
+void OMFEditorUI_AddMotionMark(
+	SOMFEditorUIState& state,
+	IOMFAnimDataProvider& data,
+	const OMFData::omf_name_t& mark_name
+)
+{
+	R_ASSERT(mark_name.empty() == false);
+
+	const int anim_index = state.current_selected_animation_param;
+
+	if (anim_index < 0 || anim_index >= data.GetAnimParamsCount() || mark_name.empty())
+	{
+		return;
+	}
+
+	data.AddMark(anim_index, mark_name.c_str());
+	OMFEditorUI_RebuildMotionMarkCaches(state, data);
+}
+
+void OMFEditorUI_DeleteMotionMark(SOMFEditorUIState& state, IOMFAnimDataProvider& data)
+{
+	const int anim_index = state.current_selected_animation_param;
+
+	if (anim_index < 0 || anim_index >= data.GetAnimParamsCount())
+	{
+		return;
+	}
+
+	const int mark_index = state.current_selected_mark;
+
+	if (mark_index < 0 || mark_index >= data.GetMarksCount(anim_index))
+	{
+		return;
+	}
+
+	data.DeleteMark(anim_index, mark_index);
+
+	if (state.current_selected_mark >= data.GetMarksCount(anim_index))
+	{
+		state.current_selected_mark = -1;
+	}
+
+	if (state.current_selected_mark < 0)
+	{
+		state.current_selected_mark_param = -1;
+	}
+
+	OMFEditorUI_RebuildMotionMarkCaches(state, data);
+}
+
+void OMFEditorUI_AddMotionMarkParam(SOMFEditorUIState& state, IOMFAnimDataProvider& data)
+{
+	const int anim_index = state.current_selected_animation_param;
+
+	if (anim_index < 0 || anim_index >= data.GetAnimParamsCount())
+	{
+		return;
+	}
+
+	const int mark_index = state.current_selected_mark;
+
+	if (mark_index < 0 || mark_index >= data.GetMarksCount(anim_index))
+	{
+		return;
+	}
+
+	data.AddMarkParam(anim_index, mark_index);
+	OMFEditorUI_RebuildMotionMarkParamLabels(state, data);
+}
+
+void OMFEditorUI_DeleteMotionMarkParam(SOMFEditorUIState& state, IOMFAnimDataProvider& data)
+{
+	const int anim_index = state.current_selected_animation_param;
+
+	if (anim_index < 0 || anim_index >= data.GetAnimParamsCount())
+	{
+		return;
+	}
+
+	const int mark_index = state.current_selected_mark;
+
+	if (mark_index < 0 || mark_index >= data.GetMarksCount(anim_index))
+	{
+		return;
+	}
+
+	const int param_index = state.current_selected_mark_param;
+
+	if (param_index < 0 || param_index >= data.GetMarkParamsCount(anim_index, mark_index))
+	{
+		return;
+	}
+
+	data.DeleteMarkParam(anim_index, mark_index, param_index);
+
+	if (state.current_selected_mark_param >= data.GetMarkParamsCount(anim_index, mark_index))
+	{
+		state.current_selected_mark_param = -1;
+	}
+
+	OMFEditorUI_RebuildMotionMarkParamLabels(state, data);
+}
+
+// returns true when something was deselected/closed (window must stay open)
+bool OMFEditorUI_Deselect(SOMFEditorUIState& state)
+{
+	bool consumed = false;
+
+#if IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING == 1
+	if (state.current_selected_bone_rename != -1)
+	{
+		state.current_selected_bone_rename = -1;
+		consumed = true;
+	}
+#endif
+
+	if (ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId))
+	{
+		state.is_show_popup_boneparts_was_copied_to_clipboard_fail = false;
+		state.is_show_popup_boneparts_was_copied_to_clipboard_suc = false;
+		state.is_show_popup_marks_cleared = false;
+		state.is_show_popup_renamehascollision = false;
+		state.is_show_popup_rename_animation_param = false;
+		state.is_show_popup_add_motion_mark = false;
+		state.is_show_popup_duplicate_found_motion_mark = false;
+
+		consumed = true;
+	}
+
+	if (state.current_selected_mark_param >= 0)
+	{
+		state.current_selected_mark_param = -1;
+		consumed = true;
+	}
+
+	if (state.current_selected_mark >= 0)
+	{
+		state.current_selected_mark = -1;
+		consumed = true;
+	}
+
+	return consumed;
+}
+
+bool OMFEditor_CopyBonePartsToClipboard(IOMFAnimDataProvider& data)
+{
+	xr_stack_string<1024 * 64> output;
+
+	const int parts_count = data.GetBonePartsCount();
+
+	for (int part_index = 0; part_index < parts_count; ++part_index)
+	{
+		output += "[";
+		output += data.GetBonePartName(part_index);
+		output += "]";
+		output += "\n";
+
+		const int bones_count = data.GetBonesCount(part_index);
+
+		for (int bone_index = 0; bone_index < bones_count; ++bone_index)
+		{
+			output += data.GetBoneName(part_index, bone_index);
+			output += "\n";
+		}
+
+		output += "\n";
+		output += "\n";
+	}
+
+	bool result = false;
+
+	if (xr_EFS)
+	{
+		result = xr_EFS->CopyTextToClipboard(output);
+	}
+
+	return result;
 }
 
 void OMFEditor_Init_ComboBones(CImGuiOMFEditor* p_state, OMFData& data)
@@ -731,41 +1476,20 @@ void OMFEditor_Init_ComboBones(CImGuiOMFEditor* p_state, OMFData& data)
 	}
 }
 
-void OMFEditor_Init(CImGuiOMFEditor* p_state, OMFData& data)
+void OMFEditor_Init(CImGuiOMFEditor* p_state)
 {
-	if (!p_state)
+	if (!p_state || !p_state->omf)
 	{
 		return;
 	}
 
-	p_state->current_selected_animation_param = 0;
-	p_state->current_selected_mark = -1;
-	p_state->current_selected_mark_param = -1;
+	p_state->provider.Bind(p_state->omf);
+	p_state->Reset();
 
-#if IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING == 0
-	p_state->current_selected_bone_rename = 0;
-#else
-	p_state->current_selected_bone_rename = -1;
-#endif
-
-	p_state->animation_param_was_changed = false;
-
-	p_state->is_motion_time_format_seconds_selected = true;
-	p_state->is_motion_time_format_radiobutton_changed = true;
-	p_state->is_motion_marks_enabled = false;
-	p_state->combo_animation_params_data.clear();
-	p_state->combo_animation_params_name_hashes.clear();
 	p_state->combo_bones_data.clear();
 	p_state->combo_bones_name_hashes.clear();
 
-	p_state->is_show_popup_marks_cleared = false;
-	p_state->is_show_popup_rename_animation_param = false;
-	p_state->is_show_popup_renamehascollision = false;
-	p_state->is_show_popup_boneparts_was_copied_to_clipboard_suc = false;
-	p_state->is_show_popup_boneparts_was_copied_to_clipboard_fail = false;
 	p_state->is_show_popup_boneparts_rename_has_collision = false;
-	p_state->is_show_popup_add_motion_mark = false;
-	p_state->is_show_popup_duplicate_found_motion_mark = false;
 	p_state->is_show_popup_try_repair_applied = false;
 	p_state->is_show_popup_add_anims_from = false;
 
@@ -776,10 +1500,12 @@ void OMFEditor_Init(CImGuiOMFEditor* p_state, OMFData& data)
 	p_state->is_input_text_addanimsfrom_updated_preview = false;
 	p_state->is_input_text_addanimsfrom_was_edited = false;
 
-	OMFEditor_Init_ComboAnimationParams(p_state, data);
-	OMFEditor_Init_ComboBones(p_state, data);
+	OMFEditor_Init_ComboBones(p_state, *p_state->omf);
 
-	if (data.data_bone.count > 0)
+	OMFEditorUI_RebuildComboCache(*p_state, p_state->provider);
+	OMFEditorUI_RebuildMotionMarkCaches(*p_state, p_state->provider);
+
+	if (p_state->omf->data_bone.count > 0)
 	{
 		R_ASSERT2(p_state->combo_bones_data.size(), "No bones detected");
 		p_state->rename_temp_bone = p_state->combo_bones_data[0];
@@ -866,43 +1592,11 @@ void OMFEditor_LoadFile(CImGuiOMFEditor* p_state)
 
 				p_state->is_file_loaded = status;
 
-				OMFEditor_Init(p_state, *p_state->omf);
+				OMFEditor_Init(p_state);
 #endif
 			}
 		}
 	}
-}
-
-bool OMFEditor_CopyBonePartsToClipboard(CImGuiOMFEditor* p_state)
-{
-	bool result{};
-	if (p_state)
-	{
-		xr_stack_string<1024 * 64> output;
-		for (const auto& bone_part : p_state->omf->data_bone.parts)
-		{
-			output += "[";
-			output += bone_part.name;
-			output += "]";
-			output += "\n";
-
-			for (const auto& bone : bone_part.bones)
-			{
-				output += bone.name;
-				output += "\n";
-			}
-
-			output += "\n";
-			output += "\n";
-		}
-
-		if (xr_EFS)
-		{
-			result = xr_EFS->CopyTextToClipboard(output);
-		}
-	}
-
-	return result;
 }
 
 void OMFEditor_RenameBone(int bone_id, const OMFData::omf_name_t& new_name, OMFData& data)
@@ -1192,29 +1886,13 @@ void OMFEditor_SwapAnimMarks(
 			R_ASSERT(pState->omf);
 			if (pState->omf)
 			{
-				auto& selected_param = pState->omf->data_animparams.params[pState->current_selected_animation_param];
+				pState->provider.Bind(pState->omf);
+				pState->current_selected_animation_param = 0;
+				pState->current_selected_mark = -1;
+				pState->current_selected_mark_param = -1;
 
-				xr_stack_string16 temp_mark_param_name;
-				pState->list_box_motion_marks_names.clear();
-				pState->list_box_motion_marks_params_names.clear();
-
-				int i = 0;
-				for (auto& mark : selected_param.marks)
-				{
-					pState->list_box_motion_marks_names.push_back(mark.name.c_str());
-
-					if (i == 0)
-					{
-						int mark_param_id = 0;
-						for (auto& mark_param : mark.params)
-						{
-							std::sprintf(temp_mark_param_name.data(), "%d_mark%d", i, mark_param_id);
-							pState->list_box_motion_marks_params_names.push_back(temp_mark_param_name);
-							++mark_param_id;
-						}
-					}
-					++i;
-				}
+				OMFEditorUI_RebuildComboCache(*pState, pState->provider);
+				OMFEditorUI_RebuildMotionMarkCaches(*pState, pState->provider);
 			}
 		}
 	}
@@ -1362,9 +2040,8 @@ void OMFEditor_MergeWith(
 						++temp_id;
 					}
 
-					pState->combo_animation_params_data.clear();
-					pState->combo_animation_params_name_hashes.clear();
-					OMFEditor_Init_ComboAnimationParams(pState, *pState->omf);
+					OMFEditorUI_RebuildComboCache(*pState, pState->provider);
+					OMFEditorUI_RebuildMotionMarkCaches(*pState, pState->provider);
 				}
 			}
 
@@ -1412,53 +2089,33 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 		}
 		case eRequestType_OMFEditor::kDeselectCurrentSelectedOrHideWindow:
 		{
+			bool can_hide_window = true;
+
 			if (g_pOMFEditor)
 			{
-				bool can_hide_window = false;
-
-#if IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING == 1
-				can_hide_window = g_pOMFEditor->current_selected_bone_rename == -1;
-
-				if (can_hide_window == false)
-				{
-					g_pOMFEditor->current_selected_bone_rename = -1;
-				}
-#else
-				can_hide_window = true;
-#endif
-
 				if (ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId))
 				{
 					g_pOMFEditor->is_show_popup_boneparts_rename_has_collision = false;
-					g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_fail = false;
-					g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_suc = false;
-					g_pOMFEditor->is_show_popup_marks_cleared = false;
-					g_pOMFEditor->is_show_popup_renamehascollision = false;
-					g_pOMFEditor->is_show_popup_rename_animation_param = false;
-					g_pOMFEditor->is_show_popup_add_motion_mark = false;
 					g_pOMFEditor->is_show_popup_try_repair_applied = false;
 					g_pOMFEditor->is_show_popup_add_anims_from = false;
+				}
 
+				if (OMFEditorUI_Deselect(*g_pOMFEditor))
+				{
 					can_hide_window = false;
 				}
+			}
 
-				if (g_pOMFEditor->current_selected_mark_param >= 0)
-				{
-					g_pOMFEditor->current_selected_mark_param = -1;
-					can_hide_window = false;
-				}
+#if IXRAY_OMF_EDITOR_TAB_GAME == 1
+			if (g_pOMFGame && OMFEditorUI_Deselect(*g_pOMFGame))
+			{
+				can_hide_window = false;
+			}
+#endif
 
-				if (can_hide_window && g_pOMFEditor->current_selected_mark >= 0)
-				{
-					g_pOMFEditor->current_selected_mark = -1;
-					can_hide_window = false;
-				}
-
-
-				if (can_hide_window)
-				{
-					Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)] = false;
-				}
+			if (can_hide_window)
+			{
+				Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)] = false;
 			}
 
 			break;
@@ -1486,6 +2143,14 @@ void RequestHandler_OMFEditor(const SRequestData& req)
 				delete g_pOMFEditor;
 				g_pOMFEditor = nullptr;
 			}
+
+#if IXRAY_OMF_EDITOR_TAB_GAME == 1
+			if (g_pOMFGame)
+			{
+				delete g_pOMFGame;
+				g_pOMFGame = nullptr;
+			}
+#endif
 
 			break;
 		}
@@ -1570,39 +2235,50 @@ void RenderOMFEditor_Draw_TableHeader()
 	}
 }
 
-void RenderOMFEditor_Draw_TableMain_Bone_Renaming(int bone_id, OMFData::BoneParts::Bone& bone)
+// ==============================================================
+// Shared UI rendering. Same widgets for the editor (file) tab and
+// the game (live data) tab; the provider decides what is editable.
+// ==============================================================
+
+void RenderOMFEditorUI_BoneRenaming(
+	SOMFEditorUIState& state,
+	IOMFAnimDataProvider& data,
+	int bone_id,
+	int part_index,
+	int bone_index
+)
 {
 #if IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING == 1
 	ImGui::PushID(bone_id);
 
-	if (g_pOMFEditor->current_selected_bone_rename == bone_id)
+	if (state.current_selected_bone_rename == bone_id)
 	{
 		if (ImGui::InputText(
 				"##ToolsOMFEditor_DirectRenamingOfBone",
-				g_pOMFEditor->rename_temp_bone.data(),
-				g_pOMFEditor->rename_temp_bone.max_size(),
+				state.rename_temp_bone.data(),
+				state.rename_temp_bone.max_size(),
 				ImGuiInputTextFlags_EnterReturnsTrue
 			) &&
-			g_pOMFEditor->rename_temp_bone.size() > 0)
+			state.rename_temp_bone.size() > 0)
 		{
-			bone.name = g_pOMFEditor->rename_temp_bone;
-			g_pOMFEditor->current_selected_bone_rename = -1;
+			data.RenameBone(part_index, bone_index, state.rename_temp_bone.c_str());
+			state.current_selected_bone_rename = -1;
 		}
 	}
 	else
 	{
-		if (ImGui::Selectable(bone.name.c_str()))
+		if (ImGui::Selectable(data.GetBoneName(part_index, bone_index)))
 		{
 			// Optional: handle selection
 
-			g_pOMFEditor->current_selected_bone_rename = -1;
+			state.current_selected_bone_rename = -1;
 		}
 
 		// Activate editing on double-click
 		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
 		{
-			g_pOMFEditor->current_selected_bone_rename = bone_id;
-			g_pOMFEditor->rename_temp_bone = bone.name;
+			state.current_selected_bone_rename = bone_id;
+			state.rename_temp_bone = data.GetBoneName(part_index, bone_index);
 		}
 	}
 
@@ -1610,69 +2286,78 @@ void RenderOMFEditor_Draw_TableMain_Bone_Renaming(int bone_id, OMFData::BonePart
 #endif
 }
 
-void RenderOMFEditor_Draw_TableMain_Bones_Section()
+void RenderOMFEditorUI_BonePartsToolbar(SOMFEditorUIState& state, IOMFAnimDataProvider& data)
+{
+	if (ImGui::Button("copy to clipboard##ToolsInGameImGui_OMFEditor_ShowBoneParts"))
+	{
+		bool status = OMFEditor_CopyBonePartsToClipboard(data);
+
+		if (status)
+		{
+			state.is_show_popup_boneparts_was_copied_to_clipboard_suc = true;
+		}
+		else
+		{
+			state.is_show_popup_boneparts_was_copied_to_clipboard_fail = true;
+		}
+	}
+}
+
+void RenderOMFEditorUI_BonePartsTabs(SOMFEditorUIState& state, IOMFAnimDataProvider& data)
 {
 	ImGui::SeparatorText("Bone Parts");
 
-	if (g_pOMFEditor == nullptr)
-	{
-		return;
-	}
+	const int parts_count = data.GetBonePartsCount();
 
-	if (g_pOMFEditor->is_file_loaded == false)
-	{
-		return;
-	}
-
-	if (g_pOMFEditor->omf == nullptr)
-	{
-		return;
-	}
-
-	xr_vector<OMFData::BoneParts>& bone_parts = g_pOMFEditor->omf->data_bone.parts;
-
-	if (bone_parts.empty())
+	if (parts_count == 0)
 	{
 		ImGui::Text("No bones!");
+		return;
 	}
-	else
+
+	if (ImGui::BeginTabBar("##ToolsOMFEditor_TableMain_BonesPartSection"))
 	{
-		if (ImGui::BeginTabBar("##ToolsOMFEditor_TableMain_BonesPartSection"))
+		for (int part_index = 0; part_index < parts_count; ++part_index)
 		{
-			for (OMFData::BoneParts& bone_part : bone_parts)
+			if (ImGui::BeginTabItem(data.GetBonePartName(part_index)))
 			{
-				if (ImGui::BeginTabItem(bone_part.name.c_str()))
+				const int bones_count = data.GetBonesCount(part_index);
+
+				ImGui::Text("bone count: %d", bones_count);
+				ImGui::Separator();
+
+				// if (ImGui::CollapsingHeader("Bones"))
 				{
-					ImGui::Text("bone count: %d", bone_part.bones.size());
-					ImGui::Separator();
-
-					// if (ImGui::CollapsingHeader("Bones"))
+					if (ImGui::BeginChild("##ToolsOMFEditor_BonesScrollableRegion"))
 					{
-						if (ImGui::BeginChild("##ToolsOMFEditor_BonesScrollableRegion"))
-						{
 #if IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING == 0
-							for (OMFData::BoneParts::Bone& bone : bone_part.bones)
-							{
-								ImGui::Text(bone.name.c_str());
-							}
-#else
-							for (int bone_id = 0; bone_id < bone_part.bones.size(); ++bone_id)
-							{
-								OMFData::BoneParts::Bone& bone = bone_part.bones[bone_id];
-								RenderOMFEditor_Draw_TableMain_Bone_Renaming(bone_id, bone);
-							}
-#endif
+						for (int bone_index = 0; bone_index < bones_count; ++bone_index)
+						{
+							ImGui::Text(data.GetBoneName(part_index, bone_index));
 						}
-
-						ImGui::EndChild();
+#else
+						for (int bone_index = 0; bone_index < bones_count; ++bone_index)
+						{
+							if (data.CanRenameBones())
+							{
+								RenderOMFEditorUI_BoneRenaming(state, data, bone_index, part_index, bone_index);
+							}
+							else
+							{
+								ImGui::Text(data.GetBoneName(part_index, bone_index));
+							}
+						}
+#endif
 					}
 
-					ImGui::EndTabItem();
+					ImGui::EndChild();
 				}
-			}
 
-			ImGui::EndTabBar();
+				ImGui::EndTabItem();
+			}
 		}
+
+		ImGui::EndTabBar();
 	}
 }
 
@@ -1731,266 +2416,22 @@ void RenderOMFEditor_Draw_TableMain_BonesRenaming_Section()
 #endif
 }
 
-void OMFEditor_AddMotionMark(
-	CImGuiOMFEditor* pState,
-	const OMFData::omf_name_t& mark_name
-)
+void RenderOMFEditorUI_MotionMarks(SOMFEditorUIState& state, IOMFAnimDataProvider& data)
 {
-	R_ASSERT(pState);
-	R_ASSERT(mark_name.empty() == false);
+	const int anim_index = state.current_selected_animation_param;
 
-	if (
-		pState &&
-		pState->omf &&
-		pState->current_selected_animation_param >= 0 &&
-		pState->omf->data_animparams.count > 0
-	)
-	{
-		OMFData::AnimParamsData::AnimParams& param = pState->omf->data_animparams.params[pState->current_selected_animation_param];
-
-		param.marks.push_back(OMFData::AnimParamsData::AnimParams::MotionMark());
-		param.marks.back().name = mark_name;
-
-		g_pOMFEditor->list_box_motion_marks_names.push_back(param.marks.back().name.c_str());
-
-		param.marks_count = static_cast<int32_t>(param.marks.size());
-	}
-}
-
-void OMFEditor_DeleteMotionMark(
-	CImGuiOMFEditor* pState,
-	int index
-)
-{
-	R_ASSERT(pState);
-	R_ASSERT(index >= 0);
-
-	if (
-		pState &&
-		pState->omf &&
-		pState->current_selected_animation_param >= 0 &&
-		index >= 0 &&
-		pState->omf->data_animparams.count > 0
-	)
-	{
-		OMFData::AnimParamsData::AnimParams& param = pState->omf->data_animparams.params[pState->current_selected_animation_param];
-
-		if (param.marks_count > 0)
-		{
-			auto& mark = param.marks[index];
-
-			if (mark.count > 0)
-			{
-				mark.params.clear();
-				pState->list_box_motion_marks_params_names.clear();
-			}
-
-			param.marks.erase(param.marks.cbegin() + index);
-			--param.marks_count;
-
-			g_pOMFEditor->list_box_motion_marks_names.erase(g_pOMFEditor->list_box_motion_marks_names.cbegin() + index);
-
-			if (param.marks_count == 0)
-			{
-				g_pOMFEditor->current_selected_mark = -1;
-			}
-		}
-	}
-}
-
-void OMFEditor_AddMotionMarkParam(
-	CImGuiOMFEditor* pState,
-	int index_selected_animation_param,
-	int index_selected_mark
-)
-{
-	R_ASSERT(pState);
-
-	if (
-		pState &&
-		pState->omf &&
-		index_selected_animation_param >= 0 &&
-		index_selected_mark >= 0 &&
-		pState->omf->data_animparams.count > 0
-	)
-	{
-		OMFData::AnimParamsData::AnimParams& param = pState->omf->data_animparams.params[index_selected_animation_param];
-
-		R_ASSERT(param.marks_count > 0 && "if triggered something is wrong and state handling of UI state is broken or memory corruption from outside code execution");
-
-		if (param.marks_count > 0)
-		{
-			OMFData::AnimParamsData::AnimParams::MotionMark& mark = param.marks[index_selected_mark];
-
-			mark.params.push_back({});
-			++mark.count;
-			xr_stack_string16 param_name;
-
-			std::sprintf(
-				param_name.data(),
-				"%d_mark%zu",
-				index_selected_mark,
-				mark.params.size() - 1
-			);
-
-			pState->list_box_motion_marks_params_names.push_back(param_name);
-		}
-	}
-}
-
-void OMFEditor_DeleteMotionMarkParam(
-	CImGuiOMFEditor* pState,
-	int index_selected_animation_param,
-	int index_selected_mark,
-	int index_selected_mark_param
-)
-{
-	R_ASSERT(pState);
-
-	if (
-		pState &&
-		pState->omf &&
-		index_selected_animation_param >= 0 &&
-		index_selected_mark >= 0 &&
-		index_selected_mark_param >= 0 &&
-		pState->omf->data_animparams.count > 0
-	)
-	{
-		OMFData::AnimParamsData::AnimParams& param = pState->omf->data_animparams.params[index_selected_animation_param];
-
-		if (param.marks_count > 0)
-		{
-			OMFData::AnimParamsData::AnimParams::MotionMark& mark = param.marks[index_selected_mark];
-
-			mark.params.erase(mark.params.cbegin() + index_selected_mark_param);
-			--mark.count;
-			pState->list_box_motion_marks_params_names.erase(pState->list_box_motion_marks_params_names.cbegin() + index_selected_mark_param);
-
-			if (pState->list_box_motion_marks_params_names.empty() == false)
-			{
-				xr_stack_string16 temp;
-				int i = 0;
-				for (xr_stack_string16& param_name : pState->list_box_motion_marks_params_names)
-				{
-					std::sprintf(temp.data(), "%d_mark%d", index_selected_mark, i);
-					param_name = temp;
-					++i;
-				}
-			}
-			else
-			{
-				pState->current_selected_mark_param = -1;
-			}
-		}
-	}
-}
-
-bool OMFEditor_CheckDuplicateMotionMark(
-	CImGuiOMFEditor* pState,
-	const OMFData::omf_name_t& mark_name
-)
-{
-	R_ASSERT(pState);
-	R_ASSERT(mark_name.empty() == false);
-
-	if (
-		pState &&
-		pState->omf &&
-		pState->current_selected_animation_param >= 0 &&
-		pState->omf->data_animparams.count > 0
-	)
-	{
-		OMFData::omf_name_t lower_left;
-		OMFData::omf_name_t lower_right = mark_name;
-
-		xr_strlwr(lower_right);
-
-		const xr_vector<OMFData::AnimParamsData::AnimParams::MotionMark>& marks = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param].marks;
-
-
-		auto it = std::find_if(
-			marks.begin(),
-			marks.end(),
-			[&lower_left, lower_right](
-				const OMFData::AnimParamsData::AnimParams::MotionMark& left
-			) -> bool
-			{
-				lower_left = left.name;
-
-				xr_strlwr(lower_left);
-
-				return lower_left == lower_right;
-			}
-		);
-
-		return (it != marks.end());
-	}
-
-	return false;
-}
-
-void OMFEditor_ComboAnimationParamWasChanged(
-	CImGuiOMFEditor* pState,
-	int selected_animation_param_id
-)
-{
-	R_ASSERT(pState);
-	R_ASSERT(pState->omf);
-
-	if (pState &&
-		pState->omf)
-	{
-		pState->list_box_motion_marks_names.clear();
-		pState->list_box_motion_marks_params_names.clear();
-		pState->current_selected_mark = -1;
-		pState->current_selected_mark_param = -1;
-		if (selected_animation_param_id >= 0)
-		{
-			auto& param = pState->omf->data_animparams.params[selected_animation_param_id];
-
-			xr_stack_string16 temp;
-			int mark_id = 0;
-			int mark_param_id = 0;
-			for (const auto& mark : param.marks)
-			{
-				pState->list_box_motion_marks_names.push_back(mark.name.c_str());
-
-				for (const auto& mark_param : mark.params)
-				{
-					std::sprintf(temp.data(), "%d_mark%d", mark_id, mark_param_id);
-					pState->list_box_motion_marks_params_names.push_back(temp);
-					++mark_param_id;
-				}
-
-				mark_param_id = 0;
-				++mark_id;
-			}
-		}
-	}
-}
-
-void RenderOMFEditor_Draw_TableMain_MotionMarks()
-{
-	if (
-		g_pOMFEditor == nullptr ||
-		g_pOMFEditor->omf == nullptr ||
-		g_pOMFEditor->omf->data_animparams.count <= 0 ||
-		g_pOMFEditor->current_selected_animation_param < 0
-	)
+	if (anim_index < 0 || anim_index >= data.GetAnimParamsCount())
 	{
 		return;
 	}
 
+	bool has_motion_marks_selected = data.SupportsMotionMarks();
 
-	OMFData::AnimParamsData::AnimParams& param = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param];
+	has_motion_marks_selected &= state.is_motion_marks_enabled;
 
-	bool has_motion_marks_selected = (g_pOMFEditor->omf->data_bone.ogf_version == 4);
-
-	has_motion_marks_selected &= g_pOMFEditor->is_motion_marks_enabled;
-
-	if (!has_motion_marks_selected && g_pOMFEditor->is_motion_marks_enabled)
+	if (!has_motion_marks_selected && state.is_motion_marks_enabled)
 	{
-		ImGui::Text("Motion marks are only for OGF Version == 4 yours is %d", g_pOMFEditor->omf->data_bone.ogf_version);
+		ImGui::Text("Motion marks are not supported by this data (requires OGF version 4)");
 	}
 
 	ImGui::BeginDisabled(has_motion_marks_selected == false);
@@ -2005,73 +2446,42 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 
 			ImGui::SeparatorText("Mark");
 
-			OMFData::AnimParamsData::AnimParams& param_anim = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param];
-
-			/*
-			for (int i = 0; i < param_anim.marks_count; ++i)
-			{
-				g_pOMFEditor->list_box_motion_marks_names.push_back(param_anim.marks[i].name.c_str());
-			}
-			*/
-
 			bool reselected = ImGui::ListBox(
 				"##ToolsOMFEditor_MarkGroupLB",
-				&g_pOMFEditor->current_selected_mark,
-				g_pOMFEditor->list_box_motion_marks_names.data(),
-				g_pOMFEditor->list_box_motion_marks_names.size()
+				&state.current_selected_mark,
+				state.list_box_motion_marks_names.data(),
+				state.list_box_motion_marks_names.size()
 			);
 
 			if (reselected)
 			{
-				g_pOMFEditor->list_box_motion_marks_params_names.clear();
-
-				R_ASSERT(g_pOMFEditor->current_selected_animation_param >= 0);
-				R_ASSERT(g_pOMFEditor->current_selected_mark >= 0);
-
-				if (
-					g_pOMFEditor->current_selected_animation_param >= 0 &&
-					g_pOMFEditor->current_selected_mark >= 0 &&
-					g_pOMFEditor->omf
-				)
-				{
-					auto& mark = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param].marks[g_pOMFEditor->current_selected_mark];
-
-					if (mark.count > 0)
-					{
-						xr_stack_string16 temp;
-						for (int i = 0; i < mark.count; ++i)
-						{
-							std::sprintf(temp.data(), "%d_mark%d", g_pOMFEditor->current_selected_mark, i);
-							g_pOMFEditor->list_box_motion_marks_params_names.push_back(temp);
-						}
-					}
-				}
+				OMFEditorUI_RebuildMotionMarkParamLabels(state, data);
 			}
 
 			if (
 				ImGui::Button("Add##ToolsOMFEditor_MarkAdd") &&
-				g_pOMFEditor->is_show_popup_add_motion_mark == false
+				state.is_show_popup_add_motion_mark == false
 			)
 			{
-				g_pOMFEditor->is_show_popup_add_motion_mark = true;
-				g_pOMFEditor->temp_motion_mark_name.clear();
-				g_pOMFEditor->temp_motion_mark_name = "NewGroup";
+				state.is_show_popup_add_motion_mark = true;
+				state.temp_motion_mark_name.clear();
+				state.temp_motion_mark_name = "NewGroup";
 			}
 
 			ImGui::SameLine();
 
 			if (ImGui::Button("Delete##ToolsOMFEditor_MarkDelete"))
 			{
-				OMFEditor_DeleteMotionMark(g_pOMFEditor, g_pOMFEditor->current_selected_mark);
+				OMFEditorUI_DeleteMotionMark(state, data);
 			}
 
 			ImGui::SeparatorText("Mark Param");
 
-			ImGui::BeginDisabled(g_pOMFEditor->current_selected_mark == -1);
+			ImGui::BeginDisabled(state.current_selected_mark == -1);
 
 			ImGui::ListBox(
 				"##ToolsOMFEditor_MarkParamLB",
-				&g_pOMFEditor->current_selected_mark_param,
+				&state.current_selected_mark_param,
 				[](void* user_data, int idx) -> const char*
 				{
 					R_ASSERT(user_data);
@@ -2082,46 +2492,41 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 
 					return pCasted->operator[](idx).c_str();
 				},
-				&g_pOMFEditor->list_box_motion_marks_params_names,
-				g_pOMFEditor->list_box_motion_marks_params_names.size()
+				&state.list_box_motion_marks_params_names,
+				state.list_box_motion_marks_params_names.size()
 			);
 
 			if (ImGui::Button("Add##ToolsOMFEditor_MarkParamAdd"))
 			{
-				OMFEditor_AddMotionMarkParam(
-					g_pOMFEditor,
-					g_pOMFEditor->current_selected_animation_param,
-					g_pOMFEditor->current_selected_mark
-				);
+				OMFEditorUI_AddMotionMarkParam(state, data);
 			}
 
 			ImGui::SameLine();
 
 			if (ImGui::Button("Delete##ToolsOMFEditor_MarkParamDelete"))
 			{
-				OMFEditor_DeleteMotionMarkParam(
-					g_pOMFEditor,
-					g_pOMFEditor->current_selected_animation_param,
-					g_pOMFEditor->current_selected_mark,
-					g_pOMFEditor->current_selected_mark_param
-				);
+				OMFEditorUI_DeleteMotionMarkParam(state, data);
 			}
 
 			ImGui::EndDisabled();
 
 			ImGui::TableSetColumnIndex(1);
 
-			bool is_mark_settings_disabled = (has_motion_marks_selected) && (g_pOMFEditor->current_selected_mark_param == -1);
+			bool is_mark_settings_disabled = (has_motion_marks_selected) && (state.current_selected_mark_param == -1);
 
 			ImGui::BeginDisabled(is_mark_settings_disabled);
 
 
 			ImGui::SeparatorText("Mark settings");
 
+			const int mark_index = state.current_selected_mark;
+			const int mark_param_index = state.current_selected_mark_param;
+
 			if (
-				g_pOMFEditor->current_selected_mark_param == -1 ||
-				g_pOMFEditor->current_selected_mark == -1 ||
-				g_pOMFEditor->current_selected_animation_param == -1
+				mark_param_index == -1 ||
+				mark_index == -1 ||
+				mark_index >= data.GetMarksCount(anim_index) ||
+				mark_param_index >= data.GetMarkParamsCount(anim_index, mark_index)
 			)
 			{
 				float fStart{};
@@ -2133,26 +2538,16 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 			}
 			else
 			{
-				auto& mark = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param].marks[g_pOMFEditor->current_selected_mark];
+				float fStart{};
+				float fEnd{};
+				data.GetMarkParam(anim_index, mark_index, mark_param_index, fStart, fEnd);
 
-				if (mark.params.empty() == false)
+				bool changed = ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fStart);
+				changed |= ImGui::DragFloat("End##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fEnd);
+
+				if (changed)
 				{
-					auto& mark_param = mark.params[g_pOMFEditor->current_selected_mark_param];
-					ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &mark_param.t0);
-					ImGui::DragFloat("End##ToolsInGameImGui_OMFEditor_MotionMarksMark", &mark_param.t1);
-				}
-				else
-				{
-					ImGui::BeginDisabled(true);
-
-					float fStart{};
-					ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fStart);
-
-
-					float fEnd{};
-					ImGui::DragFloat("End##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fEnd);
-
-					ImGui::EndDisabled();
+					data.SetMarkParam(anim_index, mark_index, mark_param_index, fStart, fEnd);
 				}
 			}
 
@@ -2165,153 +2560,129 @@ void RenderOMFEditor_Draw_TableMain_MotionMarks()
 	ImGui::EndDisabled();
 }
 
-void RenderOMFEditor_Draw_ModalPopups()
+void RenderOMFEditorUI_SharedModals(SOMFEditorUIState& state, IOMFAnimDataProvider& data)
 {
 	unsigned char modal_opened = 0;
 
-	modal_opened += g_pOMFEditor->is_show_popup_marks_cleared;
-	modal_opened += g_pOMFEditor->is_show_popup_rename_animation_param;
-	modal_opened += g_pOMFEditor->is_show_popup_boneparts_rename_has_collision;
-	modal_opened += g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_suc;
-	modal_opened += g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_fail;
-	modal_opened += g_pOMFEditor->is_show_popup_renamehascollision;
-	modal_opened += g_pOMFEditor->is_show_popup_add_motion_mark;
-	modal_opened += g_pOMFEditor->is_show_popup_duplicate_found_motion_mark;
-	modal_opened += g_pOMFEditor->is_show_popup_try_repair_applied;
-	modal_opened += g_pOMFEditor->is_show_popup_add_anims_from;
+	modal_opened += state.is_show_popup_marks_cleared;
+	modal_opened += state.is_show_popup_rename_animation_param;
+	modal_opened += state.is_show_popup_boneparts_was_copied_to_clipboard_suc;
+	modal_opened += state.is_show_popup_boneparts_was_copied_to_clipboard_fail;
+	modal_opened += state.is_show_popup_renamehascollision;
+	modal_opened += state.is_show_popup_add_motion_mark;
+	modal_opened += state.is_show_popup_duplicate_found_motion_mark;
 
 	R_ASSERT(modal_opened <= 1);
 
 	if (modal_opened == 1)
 	{
-		if (g_pOMFEditor->is_show_popup_marks_cleared)
+		if (state.is_show_popup_marks_cleared)
 		{
 			ImGui::OpenPopup(_kOMFEditorModalWindow_AnimationParamMotionMarksCleared);
 		}
 
-		if (g_pOMFEditor->is_show_popup_rename_animation_param)
+		if (state.is_show_popup_rename_animation_param && data.CanRenameAnimations())
 		{
 			ImGui::OpenPopup(_kOMFEditorModalWindow_RenameAnimationParam);
 		}
 
-		if (g_pOMFEditor->is_show_popup_boneparts_rename_has_collision)
-		{
-			ImGui::OpenPopup(_kOMFEditorModalWindow_WarningRenameHasCollision);
-		}
-
-		if (g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_suc)
+		if (state.is_show_popup_boneparts_was_copied_to_clipboard_suc)
 		{
 			ImGui::OpenPopup(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSuccessful);
 		}
 
-		if (g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_fail)
+		if (state.is_show_popup_boneparts_was_copied_to_clipboard_fail)
 		{
 			ImGui::OpenPopup(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed);
 		}
 
-		if (g_pOMFEditor->is_show_popup_add_motion_mark)
+		if (state.is_show_popup_add_motion_mark)
 		{
 			ImGui::OpenPopup(_kOMFEditorModalWindow_AddMotionMark);
 		}
 
-		if (g_pOMFEditor->is_show_popup_duplicate_found_motion_mark)
+		if (state.is_show_popup_duplicate_found_motion_mark)
 		{
 			ImGui::OpenPopup(_kOMFEditorModalWindow_DuplicateFoundMotionMark);
 		}
-
-		if (g_pOMFEditor->is_show_popup_try_repair_applied)
-		{
-			ImGui::OpenPopup(_kOMFEditorModalWindow_TryRepairApplied);
-		}
-
-		if (g_pOMFEditor->is_show_popup_add_anims_from)
-		{
-			ImGui::OpenPopup(_kOMFEditorModalWindow_AddAnimsFrom);
-		}
 	}
 
-	if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_AnimationParamMotionMarksCleared, &g_pOMFEditor->is_show_popup_marks_cleared))
+	if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_AnimationParamMotionMarksCleared, &state.is_show_popup_marks_cleared))
 	{
 		ImGui::Text("Motion marks are cleared!");
 
 		if (ImGui::Button("Ok##ToolsOMFEditor_MotionMarksCleared"))
 		{
-			g_pOMFEditor->is_show_popup_marks_cleared = false;
+			state.is_show_popup_marks_cleared = false;
 		}
 
 		ImGui::EndPopup();
 	}
 
-	if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_RenameAnimationParam, &g_pOMFEditor->is_show_popup_rename_animation_param, ImGuiWindowFlags_AlwaysAutoResize))
+	if (data.CanRenameAnimations())
 	{
-		auto& current_param = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param];
-		ImGui::InputText("##ToolsInGameImGui_OMFEditor_RenameAnimationParamInputText", g_pOMFEditor->rename_temp.data(), g_pOMFEditor->rename_temp.max_size());
-
-		ImGui::SetItemDefaultFocus();
-		if (ImGui::Button("Save##ToolsInGameImGui_OMFEditor_RenameAnimationParam"))
+		if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_RenameAnimationParam, &state.is_show_popup_rename_animation_param, ImGuiWindowFlags_AlwaysAutoResize))
 		{
-			size_t hash_temp = std::hash<std::string_view>()(g_pOMFEditor->rename_temp.c_str());
+			ImGui::InputText("##ToolsInGameImGui_OMFEditor_RenameAnimationParamInputText", state.rename_temp.data(), state.rename_temp.max_size());
 
-			if (g_pOMFEditor->combo_animation_params_name_hashes.find(hash_temp) != g_pOMFEditor->combo_animation_params_name_hashes.end() && g_pOMFEditor->rename_temp != current_param.name)
+			ImGui::SetItemDefaultFocus();
+			if (ImGui::Button("Save##ToolsInGameImGui_OMFEditor_RenameAnimationParam"))
 			{
-				g_pOMFEditor->is_show_popup_renamehascollision = true;
-				g_pOMFEditor->is_show_popup_rename_animation_param = false;
-			}
-			else
-			{
-				OMFData::omf_name_t previous = current_param.name;
-				size_t previous_temp = std::hash<std::string_view>()(previous.c_str());
-				if (g_pOMFEditor->combo_animation_params_name_hashes.find(previous_temp) != g_pOMFEditor->combo_animation_params_name_hashes.end())
+				const char* current_name = data.GetAnimParamName(state.current_selected_animation_param);
+
+				if (data.AnimParamNameExists(state.rename_temp.c_str()) && !(state.rename_temp == current_name))
 				{
-					g_pOMFEditor->combo_animation_params_name_hashes.erase(previous_temp);
+					state.is_show_popup_renamehascollision = true;
+					state.is_show_popup_rename_animation_param = false;
 				}
-
-				current_param.name = g_pOMFEditor->rename_temp;
-				g_pOMFEditor->combo_animation_params_name_hashes.insert(std::hash<std::string_view>()(current_param.name.c_str()));
-				g_pOMFEditor->is_show_popup_rename_animation_param = false;
+				else
+				{
+					data.RenameAnimParam(state.current_selected_animation_param, state.rename_temp.c_str());
+					state.is_show_popup_rename_animation_param = false;
+				}
 			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Cancel##ToolsInGameImGui_OMFEditor_RenameAnimationParam"))
+			{
+				state.is_show_popup_rename_animation_param = false;
+			}
+
+			ImGui::EndPopup();
 		}
-
-		ImGui::SameLine();
-
-		if (ImGui::Button("Cancel##ToolsInGameImGui_OMFEditor_RenameAnimationParam"))
-		{
-			g_pOMFEditor->is_show_popup_rename_animation_param = false;
-		}
-
-		ImGui::EndPopup();
 	}
 
-	if (g_pOMFEditor->is_show_popup_renamehascollision)
+	if (state.is_show_popup_renamehascollision)
 	{
 		ImGui::OpenPopup(_kOMFEditorModalWindow_WarningRenameHasCollision);
 	}
 
-	if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_WarningRenameHasCollision, &g_pOMFEditor->is_show_popup_renamehascollision, ImGuiWindowFlags_AlwaysAutoResize))
+	if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_WarningRenameHasCollision, &state.is_show_popup_renamehascollision, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::Text("Failed to rename because you have already same name!");
 		ImGui::EndPopup();
 	}
 
-	if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed, &g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_fail, ImGuiWindowFlags_AlwaysAutoResize))
+	if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed, &state.is_show_popup_boneparts_was_copied_to_clipboard_fail, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::Text("Text wasn't copied to your clipboard! Try again or report to developers!");
 
 		if (ImGui::Button("OK##ToolsInGameImGui_OMFEditor_ClipBoard"))
 		{
-			g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_fail = false;
+			state.is_show_popup_boneparts_was_copied_to_clipboard_fail = false;
 		}
 
 		ImGui::EndPopup();
 	}
 
-	if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSuccessful, &g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_suc, ImGuiWindowFlags_AlwaysAutoResize))
+	if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSuccessful, &state.is_show_popup_boneparts_was_copied_to_clipboard_suc, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::Text("Text was successfully copied to your clipboard!");
 
 		if (ImGui::Button("OK##ToolsInGameImGui_OMFEditor_ClipBoard"))
 		{
-			g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_suc = false;
+			state.is_show_popup_boneparts_was_copied_to_clipboard_suc = false;
 		}
 
 		ImGui::EndPopup();
@@ -2319,33 +2690,34 @@ void RenderOMFEditor_Draw_ModalPopups()
 
 	if (ImGui::BeginPopupModal(
 			_kOMFEditorModalWindow_AddMotionMark,
-			&g_pOMFEditor->is_show_popup_add_motion_mark,
+			&state.is_show_popup_add_motion_mark,
 			ImGuiWindowFlags_AlwaysAutoResize
 		))
 	{
 		if (ImGui::InputText(
 				"##ToolsOMFEditor_MotionMarkIT",
-				g_pOMFEditor->temp_motion_mark_name.data(),
-				g_pOMFEditor->temp_motion_mark_name.max_size()
+				state.temp_motion_mark_name.data(),
+				state.temp_motion_mark_name.max_size()
 			))
 		{
 		}
 
 		if (ImGui::Button("Ok##ToolsOMFEditor_MotionMarkITOK"))
 		{
-			if (OMFEditor_CheckDuplicateMotionMark(
-					g_pOMFEditor,
-					g_pOMFEditor->temp_motion_mark_name
+			if (OMFEditorUI_HasDuplicateMotionMark(
+					state,
+					data,
+					state.temp_motion_mark_name
 				))
 			{
-				g_pOMFEditor->is_show_popup_duplicate_found_motion_mark = true;
+				state.is_show_popup_duplicate_found_motion_mark = true;
 			}
 			else
 			{
-				OMFEditor_AddMotionMark(g_pOMFEditor, g_pOMFEditor->temp_motion_mark_name);
+				OMFEditorUI_AddMotionMark(state, data, state.temp_motion_mark_name);
 			}
 
-			g_pOMFEditor->is_show_popup_add_motion_mark = false;
+			state.is_show_popup_add_motion_mark = false;
 		}
 
 		ImGui::EndPopup();
@@ -2359,11 +2731,34 @@ void RenderOMFEditor_Draw_ModalPopups()
 
 		if (ImGui::Button("Ok##ToolsOMFEditor_DuplicateFoundMM"))
 		{
-			g_pOMFEditor->is_show_popup_add_motion_mark = true;
-			g_pOMFEditor->is_show_popup_duplicate_found_motion_mark = false;
+			state.is_show_popup_add_motion_mark = true;
+			state.is_show_popup_duplicate_found_motion_mark = false;
 		}
 
 		ImGui::EndPopup();
+	}
+}
+
+void RenderOMFEditor_Draw_EditorModals()
+{
+	unsigned char modal_opened = 0;
+
+	modal_opened += g_pOMFEditor->is_show_popup_try_repair_applied;
+	modal_opened += g_pOMFEditor->is_show_popup_add_anims_from;
+
+	R_ASSERT(modal_opened <= 1);
+
+	if (modal_opened == 1)
+	{
+		if (g_pOMFEditor->is_show_popup_try_repair_applied)
+		{
+			ImGui::OpenPopup(_kOMFEditorModalWindow_TryRepairApplied);
+		}
+
+		if (g_pOMFEditor->is_show_popup_add_anims_from)
+		{
+			ImGui::OpenPopup(_kOMFEditorModalWindow_AddAnimsFrom);
+		}
 	}
 
 	if (ImGui::BeginPopupModal(
@@ -2469,23 +2864,14 @@ void RenderOMFEditor_Draw_ModalPopups()
 	}
 }
 
-void RenderOMFEditor_Draw_TableMain_Params()
+void RenderOMFEditorUI_Params(SOMFEditorUIState& state, IOMFAnimDataProvider& data)
 {
-	if (
-		g_pOMFEditor == nullptr ||
-		g_pOMFEditor->omf == nullptr ||
-		g_pOMFEditor->omf->data_animparams.count <= 0 ||
-		g_pOMFEditor->current_selected_animation_param < 0
-	)
+	const int anim_index = state.current_selected_animation_param;
+
+	if (anim_index < 0 || anim_index >= data.GetAnimParamsCount())
 	{
 		return;
 	}
-
-	bool is_disabled = false;
-
-	ImGui::BeginDisabled(is_disabled);
-
-	OMFData::AnimParamsData::AnimParams& param = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param];
 
 	if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body_Params", 2))
 	{
@@ -2494,30 +2880,48 @@ void RenderOMFEditor_Draw_TableMain_Params()
 
 		constexpr float _kMinSpeed = 0.001f;
 
-		ImGui::DragFloat("Speed", &param.speed, _kMinSpeed);
-		ImGui::DragFloat("Power", &param.power, _kMinSpeed);
-		ImGui::DragFloat("Accrue", &param.accrue, _kMinSpeed);
-		ImGui::DragFloat("Falloff", &param.falloff, _kMinSpeed);
+		float fSpeed = data.GetSpeed(anim_index);
+
+		if (ImGui::DragFloat("Speed", &fSpeed, _kMinSpeed))
+		{
+			data.SetSpeed(anim_index, fSpeed);
+		}
+
+		float fPower = data.GetPower(anim_index);
+
+		if (ImGui::DragFloat("Power", &fPower, _kMinSpeed))
+		{
+			data.SetPower(anim_index, fPower);
+		}
+
+		float fAccrue = data.GetAccrue(anim_index);
+
+		if (ImGui::DragFloat("Accrue", &fAccrue, _kMinSpeed))
+		{
+			data.SetAccrue(anim_index, fAccrue);
+		}
+
+		float fFalloff = data.GetFalloff(anim_index);
+
+		if (ImGui::DragFloat("Falloff", &fFalloff, _kMinSpeed))
+		{
+			data.SetFalloff(anim_index, fFalloff);
+		}
 
 		ImGui::BeginDisabled(true);
 
-		R_ASSERT(g_pOMFEditor->omf->data_anim.animations_count > 0);
+		float unit_time = state.is_motion_time_format_seconds_selected ? 30.0f : 1.0f;
 
-		const auto& anim = g_pOMFEditor->omf->data_anim.anims[g_pOMFEditor->current_selected_animation_param];
+		// raw seconds (speed=1.0) back to keys, so both time formats match the file editor
+		float num_keys = data.GetAnimLengthSeconds(anim_index) * 30.0f;
+		float current_speed = data.GetSpeed(anim_index);
 
-		R_ASSERT(anim.data);
-
-		int num_keys;
-		std::memcpy(&num_keys, anim.data, sizeof(num_keys));
-
-		float unit_time = g_pOMFEditor->is_motion_time_format_seconds_selected ? 30.0f : 1.0f;
-
-		float length_with_current_speed = (float(num_keys) / unit_time) / param.speed;
-		float length_with_rt = (float(num_keys) / unit_time) / 1.0f;
+		float length_with_current_speed = (num_keys / unit_time) / current_speed;
+		float length_with_rt = (num_keys / unit_time) / 1.0f;
 
 		const char* pPrintOutTemplate = "Length: %.4f | %.4f";
 
-		if (g_pOMFEditor->is_motion_time_format_seconds_selected == false)
+		if (state.is_motion_time_format_seconds_selected == false)
 		{
 			pPrintOutTemplate = "Length: %.0f | %.0f";
 		}
@@ -2534,32 +2938,32 @@ void RenderOMFEditor_Draw_TableMain_Params()
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 
-			if (ImGui::RadioButton("Keys##ToolsInGameImGui_OMFEditor_KeysRB", g_pOMFEditor->is_motion_time_format_keys_selected))
+			if (ImGui::RadioButton("Keys##ToolsInGameImGui_OMFEditor_KeysRB", state.is_motion_time_format_keys_selected))
 			{
-				g_pOMFEditor->is_motion_time_format_radiobutton_changed = true;
-				g_pOMFEditor->is_motion_time_format_seconds_selected = false;
-				g_pOMFEditor->is_motion_time_format_keys_selected = !g_pOMFEditor->is_motion_time_format_keys_selected;
+				state.is_motion_time_format_radiobutton_changed = true;
+				state.is_motion_time_format_seconds_selected = false;
+				state.is_motion_time_format_keys_selected = !state.is_motion_time_format_keys_selected;
 			}
 
 			ImGui::TableSetColumnIndex(1);
 
-			if (ImGui::RadioButton("Seconds##ToolsInGameImGui_OMFEditor_SecondsRB", g_pOMFEditor->is_motion_time_format_seconds_selected))
+			if (ImGui::RadioButton("Seconds##ToolsInGameImGui_OMFEditor_SecondsRB", state.is_motion_time_format_seconds_selected))
 			{
-				g_pOMFEditor->is_motion_time_format_radiobutton_changed = true;
-				g_pOMFEditor->is_motion_time_format_keys_selected = false;
-				g_pOMFEditor->is_motion_time_format_seconds_selected = !g_pOMFEditor->is_motion_time_format_seconds_selected;
+				state.is_motion_time_format_radiobutton_changed = true;
+				state.is_motion_time_format_keys_selected = false;
+				state.is_motion_time_format_seconds_selected = !state.is_motion_time_format_seconds_selected;
 			}
 
-			if (g_pOMFEditor->is_motion_time_format_radiobutton_changed)
+			if (state.is_motion_time_format_radiobutton_changed)
 			{
-				R_ASSERT2(!(g_pOMFEditor->is_motion_time_format_keys_selected && g_pOMFEditor->is_motion_time_format_seconds_selected), "You can't select both keys and seconds format at the same time!");
+				R_ASSERT2(!(state.is_motion_time_format_keys_selected && state.is_motion_time_format_seconds_selected), "You can't select both keys and seconds format at the same time!");
 
-				if (g_pOMFEditor->is_motion_time_format_seconds_selected == false && g_pOMFEditor->is_motion_time_format_keys_selected == false)
+				if (state.is_motion_time_format_seconds_selected == false && state.is_motion_time_format_keys_selected == false)
 				{
-					g_pOMFEditor->is_motion_time_format_seconds_selected = true;
+					state.is_motion_time_format_seconds_selected = true;
 				}
 
-				g_pOMFEditor->is_motion_time_format_radiobutton_changed = false;
+				state.is_motion_time_format_radiobutton_changed = false;
 			}
 
 			ImGui::EndTable();
@@ -2568,262 +2972,297 @@ void RenderOMFEditor_Draw_TableMain_Params()
 
 		ImGui::TableSetColumnIndex(1);
 
+		int flags = data.GetFlags(anim_index);
+		bool flags_changed = false;
+		bool check_box_changed = false;
 
-		bool stop_at_end = (param.flags & (1 << 1)) == (1 << 1);
-		bool check_box_changed = ImGui::Checkbox("Stop at end", &stop_at_end);
+		bool stop_at_end = (flags & (1 << 1)) == (1 << 1);
+		check_box_changed = ImGui::Checkbox("Stop at end", &stop_at_end);
 
 		if (check_box_changed)
 		{
 			if (stop_at_end)
 			{
-				param.flags |= (1 << 1);
+				flags |= (1 << 1);
 			}
 			else
 			{
-				param.flags &= ~(1 << 1);
+				flags &= ~(1 << 1);
 			}
+
+			flags_changed = true;
 		}
 
-		bool no_mix_selected = (param.flags & (1 << 2)) == (1 << 2);
+		bool no_mix_selected = (flags & (1 << 2)) == (1 << 2);
 		check_box_changed = ImGui::Checkbox("No mix", &no_mix_selected);
 
 		if (check_box_changed)
 		{
 			if (no_mix_selected)
 			{
-				param.flags |= (1 << 2);
+				flags |= (1 << 2);
 			}
 			else
 			{
-				param.flags &= ~(1 << 2);
+				flags &= ~(1 << 2);
 			}
+
+			flags_changed = true;
 		}
 
-		bool sync_part = (param.flags & (1 << 3)) == (1 << 3);
+		bool sync_part = (flags & (1 << 3)) == (1 << 3);
 		check_box_changed = ImGui::Checkbox("Sync part", &sync_part);
 
 		if (check_box_changed)
 		{
 			if (sync_part)
 			{
-				param.flags |= (1 << 3);
+				flags |= (1 << 3);
 			}
 			else
 			{
-				param.flags &= ~(1 << 3);
+				flags &= ~(1 << 3);
 			}
+
+			flags_changed = true;
 		}
 
-		bool use_foot_steps = (param.flags & (1 << 4)) == (1 << 4);
+		bool use_foot_steps = (flags & (1 << 4)) == (1 << 4);
 		check_box_changed = ImGui::Checkbox("Use foot steps", &use_foot_steps);
 
 		if (check_box_changed)
 		{
 			if (use_foot_steps)
 			{
-				param.flags |= (1 << 4);
+				flags |= (1 << 4);
 			}
 			else
 			{
-				param.flags &= ~(1 << 4);
+				flags &= ~(1 << 4);
 			}
+
+			flags_changed = true;
 		}
 
-		bool move_xform = (param.flags & (1 << 5)) == (1 << 5);
+		bool move_xform = (flags & (1 << 5)) == (1 << 5);
 		check_box_changed = ImGui::Checkbox("Move XForm", &move_xform);
 
 		if (check_box_changed)
 		{
 			if (move_xform)
 			{
-				param.flags |= (1 << 5);
+				flags |= (1 << 5);
 			}
 			else
 			{
-				param.flags &= ~(1 << 5);
+				flags &= ~(1 << 5);
 			}
+
+			flags_changed = true;
 		}
 
-		bool idle = (param.flags & (1 << 6)) == (1 << 6);
+		bool idle = (flags & (1 << 6)) == (1 << 6);
 		check_box_changed = ImGui::Checkbox("Idle", &idle);
 
 		if (check_box_changed)
 		{
 			if (idle)
 			{
-				param.flags |= (1 << 6);
+				flags |= (1 << 6);
 			}
 			else
 			{
-				param.flags &= ~(1 << 6);
+				flags &= ~(1 << 6);
 			}
+
+			flags_changed = true;
 		}
 
-		bool use_weapon_bone = (param.flags & (1 << 7)) == (1 << 7);
+		bool use_weapon_bone = (flags & (1 << 7)) == (1 << 7);
 		check_box_changed = ImGui::Checkbox("Use weapon bone", &use_weapon_bone);
 
 		if (check_box_changed)
 		{
 			if (use_weapon_bone)
 			{
-				param.flags |= (1 << 7);
+				flags |= (1 << 7);
 			}
 			else
 			{
-				param.flags &= ~(1 << 7);
+				flags &= ~(1 << 7);
 			}
+
+			flags_changed = true;
 		}
 
-		check_box_changed = ImGui::Checkbox("Has motion marks", &g_pOMFEditor->is_motion_marks_enabled);
+		if (flags_changed)
+		{
+			data.SetFlags(anim_index, flags);
+		}
+
+		check_box_changed = ImGui::Checkbox("Has motion marks", &state.is_motion_marks_enabled);
 
 		if (check_box_changed)
 		{
-			if (g_pOMFEditor->is_motion_marks_enabled == false)
+			if (state.is_motion_marks_enabled == false)
 			{
-				param.marks.clear();
-				param.marks_count = 0;
+				data.ClearMarks(anim_index);
 
-				g_pOMFEditor->list_box_motion_marks_names.clear();
-				g_pOMFEditor->list_box_motion_marks_params_names.clear();
+				state.list_box_motion_marks_names.clear();
+				state.list_box_motion_marks_params_names.clear();
 
-				g_pOMFEditor->is_show_popup_marks_cleared = true;
+				state.is_show_popup_marks_cleared = true;
 			}
 		}
 
 		ImGui::EndTable();
 	}
+}
 
-	ImGui::EndDisabled();
+void RenderOMFEditorUI_AnimParamsHeader(SOMFEditorUIState& state, IOMFAnimDataProvider& data)
+{
+	const int count = data.GetAnimParamsCount();
+
+	if (count <= 0)
+	{
+		ImGui::Text("No animation params!");
+		return;
+	}
+
+	if (state.current_selected_animation_param < 0 || state.current_selected_animation_param >= count)
+	{
+		state.current_selected_animation_param = 0;
+	}
+
+	if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Header", 2))
+	{
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+
+		if (ImGui::Combo("Animation params##ToolsInGameImGui_OMFEditor_Data_Header_Combo", &state.current_selected_animation_param, state.combo_animation_params_data.data(), count))
+		{
+			OMFEditorUI_OnAnimParamSelected(state, data);
+		}
+
+		ImGui::TableSetColumnIndex(1);
+
+		ImGui::Text("Selected: [%s]", data.GetAnimParamName(state.current_selected_animation_param));
+
+		if (data.CanRenameAnimations())
+		{
+			ImGui::SameLine();
+
+			if (ImGui::Button("Rename##ToolsInGameImGui_OMFEditor"))
+			{
+				state.is_show_popup_rename_animation_param = true;
+				state.rename_temp = data.GetAnimParamName(state.current_selected_animation_param);
+			}
+		}
+
+		ImGui::EndTable();
+	}
+	ImGui::Separator();
 }
 
 void RenderOMFEditor_Draw_TableMain()
 {
-	if (g_pOMFEditor->is_file_loaded)
+	if (g_pOMFEditor->is_file_loaded == false)
 	{
-		R_ASSERT2(g_pOMFEditor->omf, "must be initialized");
-		ImGui::TextWrapped("Loaded file: [%s]", g_pOMFEditor->path.c_str());
-		ImGui::Separator();
+		return;
+	}
 
-		constexpr const char* _kColumnOfMainTableNames[] = {
-			"Editing",
+	R_ASSERT2(g_pOMFEditor->omf, "must be initialized");
+
+	if (g_pOMFEditor->provider.IsValid() == false)
+	{
+		return;
+	}
+
+	ImGui::TextWrapped("Loaded file: [%s]", g_pOMFEditor->path.c_str());
+	ImGui::Separator();
+
+	constexpr const char* _kColumnOfMainTableNames[] = {
+		"Editing",
 #if IXRAY_OMF_EDITOR_ENABLE_VIEWER == 1
-			"Viewer"
+		"Viewer"
 #endif
-		};
-		constexpr u8 _kColumnOfMainTableSize = sizeof(_kColumnOfMainTableNames) / sizeof(_kColumnOfMainTableNames[0]);
+	};
+	constexpr u8 _kColumnOfMainTableSize = sizeof(_kColumnOfMainTableNames) / sizeof(_kColumnOfMainTableNames[0]);
 
-		RenderOMFEditor_Draw_ModalPopups();
+	SOMFEditorUIState& state = *g_pOMFEditor;
+	IOMFAnimDataProvider& data = g_pOMFEditor->provider;
 
-		if (ImGui::BeginTable("##TII_OE_Main", _kColumnOfMainTableSize, ImGuiTableFlags_SizingStretchProp))
+	RenderOMFEditorUI_SharedModals(state, data);
+	RenderOMFEditor_Draw_EditorModals();
+
+	if (ImGui::BeginTable("##TII_OE_Main", _kColumnOfMainTableSize, ImGuiTableFlags_SizingStretchProp))
+	{
+		for (u8 i = 0; i < static_cast<u8>(_kColumnOfMainTableSize); ++i)
 		{
-			for (u8 i = 0; i < static_cast<u8>(_kColumnOfMainTableSize); ++i)
+			ImGui::TableSetupColumn(_kColumnOfMainTableNames[i]);
+		}
+
+		ImGui::TableHeadersRow();
+
+		ImGui::TableNextRow();
+
+		for (u8 column = 0; column < _kColumnOfMainTableSize; ++column)
+		{
+			ImGui::TableSetColumnIndex(static_cast<int>(column));
+
+			switch (column)
 			{
-				ImGui::TableSetupColumn(_kColumnOfMainTableNames[i]);
-			}
-
-			ImGui::TableHeadersRow();
-
-			ImGui::TableNextRow();
-
-			for (u8 column = 0; column < _kColumnOfMainTableSize; ++column)
-			{
-				ImGui::TableSetColumnIndex(static_cast<int>(column));
-
-				switch (column)
+				case 0:
 				{
-					case 0:
+					RenderOMFEditorUI_AnimParamsHeader(state, data);
+
+					if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body", 2))
 					{
-						if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Header", 2))
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+
+						RenderOMFEditor_Draw_TableMain_BonesRenaming_Section();
+
+						if (ImGui::CollapsingHeader("Bones##ToolsInGameImGui_OMFEditor_Data_Body"))
 						{
-							ImGui::TableNextRow();
-							ImGui::TableSetColumnIndex(0);
+							RenderOMFEditorUI_BonePartsToolbar(state, data);
 
-							constexpr const char* _kEmptyAnimationParams = "";
-
-							bool is_empty = g_pOMFEditor->omf->data_animparams.count > 0;
-
-							if (ImGui::Combo("Animation params##ToolsInGameImGui_OMFEditor_Data_Header_Combo", &g_pOMFEditor->current_selected_animation_param, g_pOMFEditor->combo_animation_params_data.data(), g_pOMFEditor->omf->data_animparams.count))
-							{
-								OMFEditor_ComboAnimationParamWasChanged(
-									g_pOMFEditor,
-									g_pOMFEditor->current_selected_animation_param
-								);
-							}
-
-							ImGui::TableSetColumnIndex(1);
-
-							ImGui::Text("Selected: [%s]", g_pOMFEditor->combo_animation_params_data[g_pOMFEditor->current_selected_animation_param]);
 							ImGui::SameLine();
 
-							if (ImGui::Button("Rename##ToolsInGameImGui_OMFEditor"))
+							if (ImGui::Button("save as file##ToolsInGameImGui_OMFEditor_ShowBoneParts"))
 							{
-								g_pOMFEditor->is_show_popup_rename_animation_param = true;
-								g_pOMFEditor->rename_temp = g_pOMFEditor->omf->data_animparams.params[g_pOMFEditor->current_selected_animation_param].name;
+								R_ASSERT(false && "todo: impl");
 							}
 
-							ImGui::EndTable();
-						}
-						ImGui::Separator();
-						if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body", 2))
-						{
-							ImGui::TableNextRow();
-							ImGui::TableSetColumnIndex(0);
-
-							RenderOMFEditor_Draw_TableMain_BonesRenaming_Section();
-
-							if (ImGui::CollapsingHeader("Bones##ToolsInGameImGui_OMFEditor_Data_Body"))
-							{
-								if (ImGui::Button("copy to clipboard##ToolsInGameImGui_OMFEditor_ShowBoneParts"))
-								{
-									bool status = OMFEditor_CopyBonePartsToClipboard(g_pOMFEditor);
-
-									if (status)
-									{
-										g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_suc = true;
-									}
-									else
-									{
-										g_pOMFEditor->is_show_popup_boneparts_was_copied_to_clipboard_fail = true;
-									}
-								}
-
-								ImGui::SameLine();
-
-								if (ImGui::Button("save as file##ToolsInGameImGui_OMFEditor_ShowBoneParts"))
-								{
-									R_ASSERT(false && "todo: impl");
-								}
-
-								RenderOMFEditor_Draw_TableMain_Bones_Section();
-							}
-
-							ImGui::TableSetColumnIndex(1);
-
-							RenderOMFEditor_Draw_TableMain_Params();
-							RenderOMFEditor_Draw_TableMain_MotionMarks();
-
-							ImGui::EndTable();
+							RenderOMFEditorUI_BonePartsTabs(state, data);
 						}
 
-						break;
+						ImGui::TableSetColumnIndex(1);
+
+						RenderOMFEditorUI_Params(state, data);
+						RenderOMFEditorUI_MotionMarks(state, data);
+
+						ImGui::EndTable();
 					}
-#if IXRAY_OMF_EDITOR_ENABLE_VIEWER == 1
-					case 1:
-					{
-						if (ImGui::CollapsingHeader("Viewer"))
-						{
-							ImGui::Text("______________________________________________________________________");
-						}
 
-						break;
-					}
-#endif
+					break;
 				}
+#if IXRAY_OMF_EDITOR_ENABLE_VIEWER == 1
+				case 1:
+				{
+					if (ImGui::CollapsingHeader("Viewer"))
+					{
+						ImGui::Text("______________________________________________________________________");
+					}
+
+					break;
+				}
+#endif
 			}
-
-
-			ImGui::EndTable();
 		}
+
+
+		ImGui::EndTable();
 	}
 }
 
@@ -2847,39 +3286,115 @@ void RenderOMFEditor_Draw_Game_Editing(
 )
 {
 #if IXRAY_OMF_EDITOR_TAB_GAME == 1
-	if (pPlayer && g_player_hud)
+	if (pPlayer == nullptr || g_player_hud == nullptr)
 	{
-		PIItem pItem = pPlayer->inventory().ActiveItem();
+		return;
+	}
 
-		if (pItem && pItem->cast_hud_item())
+	PIItem pItem = pPlayer->inventory().ActiveItem();
+	CHudItem* pHI = (pItem && pItem->cast_hud_item()) ? pItem->cast_hud_item() : nullptr;
+	attachable_hud_item* pAHI = pHI ? pHI->HudItemData() : nullptr;
+
+	// resolve the model exactly like the game does: combined models play
+	// hand motions on their own model, otherwise on the global hands model
+	IKinematicsAnimated* pModel = nullptr;
+
+	if (pAHI)
+	{
+		pModel = pAHI->m_model_combined
+			? (pAHI->m_model ? pAHI->m_model->dcast_PKinematicsAnimated() : nullptr)
+			: g_player_hud->GetModel();
+	}
+
+	if (g_pOMFGame && (pAHI == nullptr || pModel == nullptr))
+	{
+		// force rebind on the next valid frame (pointers may be stale
+		// after a level change or hud reload)
+		g_pOMFGame->bound_item = nullptr;
+		g_pOMFGame->bound_model = nullptr;
+	}
+
+	if (pAHI == nullptr)
+	{
+		ImGui::Text("Withdraw weapon/item! Can't edit data of hud item!");
+		return;
+	}
+
+	if (pModel == nullptr)
+	{
+		ImGui::Text("No animated model!");
+		return;
+	}
+
+	if (pAHI->m_hand_motions.m_anims.empty())
+	{
+		ImGui::Text("No anims!");
+		return;
+	}
+
+	if (g_pOMFGame == nullptr)
+	{
+		g_pOMFGame = new CImGuiOMFGameState();
+	}
+
+	SOMFEditorUIState& state = *g_pOMFGame;
+	CGameAnimProvider& provider = g_pOMFGame->provider;
+
+	if (g_pOMFGame->bound_item != pAHI || g_pOMFGame->bound_model != pModel)
+	{
+		provider.Bind(pAHI, g_player_hud->GetModel());
+		state.Reset();
+		OMFEditorUI_RebuildComboCache(state, provider);
+		OMFEditorUI_RebuildMotionMarkCaches(state, provider);
+
+		g_pOMFGame->bound_item = pAHI;
+		g_pOMFGame->bound_model = pModel;
+	}
+
+	ImGui::Text(
+		"Source: [%s] | slots: %d | motions: %d",
+		pAHI->m_model_combined ? "item (combined)" : "hands",
+		static_cast<int>(pModel->LL_MotionsSlotCount()),
+		provider.GetAnimParamsCount()
+	);
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Refresh##ToolsOMFEditor_GameRebind"))
+	{
+		provider.Bind(pAHI, g_player_hud->GetModel());
+		state.Reset();
+		OMFEditorUI_RebuildComboCache(state, provider);
+		OMFEditorUI_RebuildMotionMarkCaches(state, provider);
+	}
+
+	ImGui::SetItemTooltip("Re-read all motions from the model (use after OMF files were reloaded/appended at runtime)");
+
+	ImGui::TextWrapped("WARNING: you are editing LIVE engine data shared by all models using the same OMF files. Changes apply to the next played animation (motion marks apply immediately) and are NOT saved to disk.");
+	ImGui::Separator();
+
+	RenderOMFEditorUI_SharedModals(state, provider);
+	RenderOMFEditorUI_AnimParamsHeader(state, provider);
+
+	if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body", 2))
+	{
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+
+		if (ImGui::CollapsingHeader("Bones##ToolsInGameImGui_OMFEditor_Data_Body"))
 		{
-			CHudItem* pHI = pItem->cast_hud_item();
+			ImGui::TextWrapped("Bones are read-only in game: runtime partitions store bone ids, names belong to the skeleton model.");
 
-			if (pHI)
-			{
-				if (pHI->HudItemData())
-				{
-					attachable_hud_item* pAHI = pHI->HudItemData();
-
-					if (pAHI->m_hand_motions.m_anims.empty() == false)
-					{
-
-					}
-					else
-					{
-						ImGui::Text("No anims!");
-					}
-				}
-				else
-				{
-					ImGui::Text("No HudItemData!");
-				}
-			}
-			else
-			{
-				ImGui::Text("Withdraw weapon/item! Can't preview data of hud item!");
-			}
+			RenderOMFEditorUI_BonePartsToolbar(state, provider);
+			RenderOMFEditorUI_BonePartsTabs(state, provider);
 		}
+
+		ImGui::TableSetColumnIndex(1);
+
+		RenderOMFEditorUI_Params(state, provider);
+		RenderOMFEditorUI_MotionMarks(state, provider);
+
+		ImGui::EndTable();
 	}
 #endif
 }
@@ -2909,6 +3424,26 @@ void RenderOMFEditor_Draw_Game_Info(
 					if (pAHI->m_hand_motions.m_anims.empty() == false)
 					{
 						ImGui::Text("Current anim:\n\t[%s]\n\tt=[%d]/[%d]\n\tstartedMotionState=[%s (%d)]", pHI->m_current_motion.c_str(), pHI->m_dwMotionCurrTm, pHI->m_dwMotionEndTm, convert_EHudStates_to_string((pHI->m_startedMotionState)).data(), pHI->m_startedMotionState);
+
+						// playback progress in the time format selected in the Editing column
+						bool is_seconds_selected = true;
+
+						if (g_pOMFGame)
+						{
+							is_seconds_selected = g_pOMFGame->is_motion_time_format_seconds_selected;
+						}
+
+						u32 timing_current_ms = (pHI->m_dwMotionCurrTm >= pHI->m_dwMotionStartTm) ? (pHI->m_dwMotionCurrTm - pHI->m_dwMotionStartTm) : 0;
+						u32 timing_total_ms = (pHI->m_dwMotionEndTm >= pHI->m_dwMotionStartTm) ? (pHI->m_dwMotionEndTm - pHI->m_dwMotionStartTm) : 0;
+
+						if (is_seconds_selected)
+						{
+							ImGui::Text("time:\n\t[%.2f]/[%.2f] sec", float(timing_current_ms) / 1000.0f, float(timing_total_ms) / 1000.0f);
+						}
+						else
+						{
+							ImGui::Text("time:\n\t[%.0f]/[%.0f] keys", float(timing_current_ms) * 0.03f, float(timing_total_ms) * 0.03f);
+						}
 
 						if (pAHI->m_hand_motions.m_banned_bone_parts.empty() == false)
 						{
