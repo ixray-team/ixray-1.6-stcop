@@ -59,7 +59,17 @@ void main(uint2 DTid : SV_DispatchThreadID, uint2 Gid : SV_GroupID, uint GI : SV
        Reflection = normalize(Reflection + O.Normal);
     }
 	
-	float3 StartPoint = ReflectPoint * 0.996f;
+	float3 StartPoint = ReflectPoint;
+	
+#ifdef USE_OFFSCREEN_REFLECTIONS
+	float ReflectDist = s_env_dist.SampleLevel(smp_linear, StartPoint.xyz, 0.0f).x;
+	
+	ReflectDist /= max(EPS, length(StartPoint));
+	StartPoint *= min(1.0f, ReflectDist);
+#endif
+	
+	StartPoint *= 0.996f;
+	
 	Point.xyz = StartPoint + Reflection * fog_params.z;	
 	
 	bool isHUDRender = O.Depth < 0.02f;
