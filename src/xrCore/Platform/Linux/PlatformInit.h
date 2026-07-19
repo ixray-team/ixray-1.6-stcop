@@ -80,6 +80,8 @@ using HMODULE = void*;
 using DWORD_PTR = uintptr_t;
 using HFILE = int;
 
+using HDC = void*;
+
 #define TRUE  1
 #define FALSE 0
 
