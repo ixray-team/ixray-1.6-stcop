@@ -45,8 +45,8 @@ class CUsableScriptObject;
 
 class CInventoryBox;
 
-class	CHudItem;
-class   CArtefact;
+class CHudItem;
+class CArtefact;
 
 struct SActorMotions;
 struct SActorVehicleAnims;
@@ -160,7 +160,7 @@ public:
 protected:
 	virtual void	AddEncyclopediaArticle(const CInfoPortion* info_portion) const;
 	virtual void	AddGameTask				(const CInfoPortion* info_portion) const;
-struct SDefNewsMsg{
+	struct SDefNewsMsg{
 		GAME_NEWS_DATA*	news_data;
 		u32				time;
 		bool operator < (const SDefNewsMsg& other) const {return time>other.time;}
@@ -420,7 +420,7 @@ public:
 
 	IC bool IsSafemode() const { return m_bIsSafemode; }
 	IC void SetSafemodeStatus(bool status) { m_bIsSafemode = status; }
-	
+
 public:
 	bool					HasCameraEffector	() const { return m_pActorEffector != nullptr; };
 	CActorCameraManager&	Cameras				() 	{VERIFY(HasCameraEffector()); return *m_pActorEffector;}
@@ -551,7 +551,7 @@ public:
 public:
 	virtual void			IR_OnMouseMove			(int x, int y);
 	virtual void			IR_GamepadUpdateStick	(int id, Fvector2 value);
-	virtual void			IR_GamepadKeyPress(int id);
+	virtual void			IR_GamepadKeyPress		(int id);
     virtual void			IR_GamepadKeyRelease    (int id);
 	virtual void			IR_GamepadKeyHold		(int id);
 	virtual void			IR_OnKeyboardPress		(int dik);

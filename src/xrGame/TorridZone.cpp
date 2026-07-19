@@ -67,7 +67,7 @@ bool CTorridZone::Disable()
 }
 
 // Lain: added
-bool   CTorridZone::light_in_slow_mode ()
+bool CTorridZone::light_in_slow_mode ()
 {
 	return true;
 }
