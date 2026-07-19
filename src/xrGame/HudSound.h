@@ -8,9 +8,9 @@ struct HUD_SOUND_ITEM
         m_alias = "";
     }
 
-    static void LoadSound(const char* section, const char* line, ref_sound& hud_snd, int type = sg_SourceType, float* volume = nullptr, float* delay = nullptr);
+    static void LoadSound(const char* section, const char* line, ref_sound& hud_snd, int type = sg_SourceType, float* volume = nullptr, float* delay = nullptr, esound_type sound_type = st_Effect);
 
-    static void LoadSound(const char* section, const char* line, HUD_SOUND_ITEM& hud_snd, int type = sg_SourceType);
+    static void LoadSound(const char* section, const char* line, HUD_SOUND_ITEM& hud_snd, int type = sg_SourceType, esound_type sound_type = st_Effect);
 
 	static void DestroySound(HUD_SOUND_ITEM& hud_snd);
 
@@ -85,7 +85,7 @@ public:
 
 	void						StopSound		(	const char* alias);
 
-    void LoadSound(const char* section, const char* line, const char* alias, bool exclusive = false, int type = sg_SourceType);
+    void LoadSound(const char* section, const char* line, const char* alias, bool exclusive = false, int type = sg_SourceType, esound_type sound_type = st_Effect);
 
 	void						SetPosition		(	const char* alias, 	const Fvector& pos);
 	void						StopAllSounds	();
@@ -101,8 +101,8 @@ public:
     void PlaySound(const char* alias, const Fvector& position, const CObject* parent, bool hud_mode, bool looped = false, bool allowOverlap = false, u8 index = u8(-1));
     void StopSound(const char* alias);
     void StopAllSounds();
-    void LoadSound(const char* section, const char* line, const char* alias, bool exclusive = false, int type = sg_SourceType);
-    void LoadSound(CInifile const* ini, const char* section, const char* line, const char* alias, bool exclusive = false, int type = sg_SourceType);
+    void LoadSound(const char* section, const char* line, const char* alias, bool exclusive = false, int type = sg_SourceType, esound_type sound_type = st_Effect);
+    void LoadSound(CInifile const* ini, const char* section, const char* line, const char* alias, bool exclusive = false, int type = sg_SourceType, esound_type sound_type = st_Effect);
     void SetPosition(const char* alias, const Fvector& pos);
 };
 //-Alundaio

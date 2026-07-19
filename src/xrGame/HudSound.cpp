@@ -12,7 +12,7 @@ void InitHudSoundSettings()
 	psHUDStepSoundVolume = READ_IF_EXISTS(pSettings, r_float, "hud_sound", "hud_step_sound_vol_k", 1.0f);
 }
 
-void HUD_SOUND_ITEM::LoadSound(const char* section, const char* line, HUD_SOUND_ITEM& hud_snd, int type)
+void HUD_SOUND_ITEM::LoadSound(const char* section, const char* line, HUD_SOUND_ITEM& hud_snd, int type, esound_type sound_type)
 {
 	hud_snd.m_activeSnd = nullptr;
 	hud_snd.sounds.clear();
@@ -26,12 +26,12 @@ void HUD_SOUND_ITEM::LoadSound(const char* section, const char* line, HUD_SOUND_
 		hud_snd.sounds.push_back(SSnd());
 		SSnd& s = hud_snd.sounds.back();
 
-		LoadSound(section, sound_line, s.snd, type, &s.volume, &s.delay);
+		LoadSound(section, sound_line, s.snd, type, &s.volume, &s.delay, sound_type);
 		xr_sprintf(sound_line, "%s%d", line, ++k);
 	}//while
 }
 
-void HUD_SOUND_ITEM::LoadSound(const char* section, const char* line, ref_sound& snd, int type, float* volume, float* delay)
+void HUD_SOUND_ITEM::LoadSound(const char* section, const char* line, ref_sound& snd, int type, float* volume, float* delay, esound_type sound_type)
 {
 	const char* str = pSettings->r_string(section, line);
 	string256 buf_str;
@@ -41,7 +41,7 @@ void HUD_SOUND_ITEM::LoadSound(const char* section, const char* line, ref_sound&
 		"In section [%s], line [%s] does not contain sound", section, line));
 
 	_GetItem(str, 0, buf_str);
-	snd.create(buf_str, st_Effect, type);
+	snd.create(buf_str, sound_type, type);
 
 	if (volume != nullptr)
 	{
@@ -224,12 +224,12 @@ void HUD_SOUND_COLLECTION::StopAllSounds()
 	}
 }
 
-void HUD_SOUND_COLLECTION::LoadSound(const char* section, const char* line, const char* alias, bool exclusive, int type)
+void HUD_SOUND_COLLECTION::LoadSound(const char* section, const char* line, const char* alias, bool exclusive, int type, esound_type sound_type)
 {
 	HUD_SOUND_ITEM* snd_item = FindSoundItem(alias, false);
 	if (snd_item)
 	{
-		HUD_SOUND_ITEM::LoadSound(section, line, *snd_item, type);
+		HUD_SOUND_ITEM::LoadSound(section, line, *snd_item, type, sound_type);
 		snd_item->m_alias = alias;
 		snd_item->m_b_exclusive = exclusive;
 	}
@@ -237,7 +237,7 @@ void HUD_SOUND_COLLECTION::LoadSound(const char* section, const char* line, cons
 	{
 		m_sound_items.resize(m_sound_items.size() + 1);
 		HUD_SOUND_ITEM& snd_item_new = m_sound_items.back();
-		HUD_SOUND_ITEM::LoadSound(section, line, snd_item_new, type);
+		HUD_SOUND_ITEM::LoadSound(section, line, snd_item_new, type, sound_type);
 		snd_item_new.m_alias = alias;
 		snd_item_new.m_b_exclusive = exclusive;
 	}
@@ -309,7 +309,7 @@ HUD_SOUND_ITEM* HUD_SOUND_COLLECTION_LAYERED::FindSoundItem(const char* alias, b
     return nullptr;
 }
 
-void HUD_SOUND_COLLECTION_LAYERED::LoadSound(const char* section, const char* line, const char* alias, bool exclusive, int type)
+void HUD_SOUND_COLLECTION_LAYERED::LoadSound(const char* section, const char* line, const char* alias, bool exclusive, int type, esound_type sound_type)
 {
 	if (!pSettings->line_exist(section, line))
 	{
@@ -335,7 +335,7 @@ void HUD_SOUND_COLLECTION_LAYERED::LoadSound(const char* section, const char* li
 		{
 			m_sound_items.resize(m_sound_items.size() + 1);
 			HUD_SOUND_COLLECTION& snd_item = m_sound_items.back();
-			snd_item.LoadSound(buf_str, sound_line, alias, exclusive, type);
+			snd_item.LoadSound(buf_str, sound_line, alias, exclusive, type, sound_type);
 			snd_item.m_alias = alias;
 			xr_sprintf(sound_line, "snd_%d_layer", ++k);
 		}
@@ -344,12 +344,12 @@ void HUD_SOUND_COLLECTION_LAYERED::LoadSound(const char* section, const char* li
 	{
 		m_sound_items.resize(m_sound_items.size() + 1);
 		HUD_SOUND_COLLECTION& snd_item = m_sound_items.back();
-		snd_item.LoadSound(section, line, alias, exclusive, type);
+		snd_item.LoadSound(section, line, alias, exclusive, type, sound_type);
 		snd_item.m_alias = alias;
 	}
 }
 
-void HUD_SOUND_COLLECTION_LAYERED::LoadSound(CInifile const* ini, const char* section, const char* line, const char* alias, bool exclusive, int type)
+void HUD_SOUND_COLLECTION_LAYERED::LoadSound(CInifile const* ini, const char* section, const char* line, const char* alias, bool exclusive, int type, esound_type sound_type)
 {
 	const char* str = ini->r_string(section, line);
 	string256 buf_str;
@@ -369,7 +369,7 @@ void HUD_SOUND_COLLECTION_LAYERED::LoadSound(CInifile const* ini, const char* se
 		{
 			m_sound_items.resize(m_sound_items.size() + 1);
 			HUD_SOUND_COLLECTION& snd_item = m_sound_items.back();
-			snd_item.LoadSound(buf_str, sound_line, alias, exclusive, type);
+			snd_item.LoadSound(buf_str, sound_line, alias, exclusive, type, sound_type);
 			snd_item.m_alias = alias;
 			xr_sprintf(sound_line, "snd_%d_layer", ++k);
 		}
@@ -378,7 +378,7 @@ void HUD_SOUND_COLLECTION_LAYERED::LoadSound(CInifile const* ini, const char* se
 	{
 		m_sound_items.resize(m_sound_items.size() + 1);
 		HUD_SOUND_COLLECTION& snd_item = m_sound_items.back();
-		snd_item.LoadSound(section, line, alias, exclusive, type);
+		snd_item.LoadSound(section, line, alias, exclusive, type, sound_type);
 		snd_item.m_alias = alias;
 	}
 }
