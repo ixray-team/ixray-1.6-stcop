@@ -13,9 +13,7 @@
 #include "../../Inventory.h"
 #include "../../ActorCondition.h"
 
-#pragma optimize("", off)
-
-STelekineticObject::STelekineticObject(STelekineticObjectParams params) : params(params)
+STelekineticObject::STelekineticObject(const STelekineticObjectParams& tele_params) : params(tele_params)
 {
 	STelekineticObject::switch_state(ETelekineticState::TS_RAISE);
 	this->params.target_height = this->params.object->Position().y + this->params.target_height;
@@ -151,19 +149,19 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 			switch (g_SingleGameDifficulty)
 			{
 				case egdNovice:
-					difficulty_modifier = .70f;
+					difficulty_modifier = 0.50f;
 					break;
 
 				case egdStalker:
-					difficulty_modifier = .80f;
+					difficulty_modifier = 0.70f;
 					break;
 
 				case egdVeteran:
-					difficulty_modifier = .90f;
+					difficulty_modifier = 0.80f;
 					break;
 
 				case egdMaster:
-					difficulty_modifier = 1.f;
+					difficulty_modifier = 1.0f;
 					break;
 			}
 		}
@@ -171,8 +169,8 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 		{
 			difficulty_modifier = .3f;
 		}
-
-		float health_loss = kinetic_energy * difficulty_modifier * .5f;
+		
+		float health_loss = kinetic_energy * difficulty_modifier;
 
 		if (actor)
 		{
@@ -185,12 +183,14 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 			PIItem item = actor->inventory().ActiveItem();
 			CCustomDevice* device = actor->GetDevice();
 
-			constexpr float porog_stamini_4tobi_vironit_pushky_iz_arms = 33;   // 1..100%
-			constexpr float porog_stamini_4tobi_vironit_detektor_iz_arms = 33; // 1..100%
-
+			constexpr float porog_stamini_4tobi_vironit_pushky_iz_arms = 33;
+			constexpr float porog_health_4tobi_vironit_pushky_iz_arms = 50;
 			bool need_kick_animator = false;
-
-			if (item != nullptr && actor->conditions().GetPower() - health_loss < porog_stamini_4tobi_vironit_pushky_iz_arms / 100.f)
+			
+			bool need_drop_gun_by_power = actor->conditions().GetPower() < porog_stamini_4tobi_vironit_pushky_iz_arms / 100.f;
+			bool need_drop_gun_by_health = actor->conditions().GetHealth() < porog_health_4tobi_vironit_pushky_iz_arms / 100.f;
+			
+			if (item != nullptr && (need_drop_gun_by_power || need_drop_gun_by_health))
 			{
 				u16 slot = actor->inventory().ActiveItem()->BaseSlot();
 
@@ -201,7 +201,13 @@ void STelekineticObject::collision_callback(bool& do_colide, bool bo1, dContact&
 				}
 			}
 
-			if (device != nullptr && actor->conditions().GetPower() - health_loss < porog_stamini_4tobi_vironit_detektor_iz_arms / 100.f)
+			constexpr float porog_stamini_4tobi_vironit_detektor_iz_arms = 33;
+			constexpr float porog_health_4tobi_vironit_detektor_iz_arms = 50;
+			
+			bool need_drop_detector_by_power = actor->conditions().GetPower() < porog_stamini_4tobi_vironit_detektor_iz_arms / 100.f;
+			bool need_drop_detector_by_health = actor->conditions().GetHealth() < porog_health_4tobi_vironit_detektor_iz_arms / 100.f;
+			
+			if (device != nullptr && (need_drop_detector_by_power || need_drop_detector_by_health))
 			{
 				device->SetDropManual(true);
 				need_kick_animator = true;
@@ -477,8 +483,8 @@ void STelekineticObject::update_hold_sound()
 
 // -------------------- WEAPON CONTROLLER --------------------
 
-STelekineticWeaponObject::STelekineticWeaponObject(STelekineticWeaponParams weapon_params, STelekineticObjectParams tele_object_params) : 
-	STelekineticObject(tele_object_params), weapon_params(weapon_params), weapon(smart_cast<CWeaponMagazined*>(tele_object_params.object))
+STelekineticWeaponObject::STelekineticWeaponObject(STelekineticWeaponParams weapon_params, const STelekineticObjectParams& tele_params) : 
+	STelekineticObject(tele_params), weapon_params(weapon_params), weapon(smart_cast<CWeaponMagazined*>(tele_params.object))
 {
 	STelekineticWeaponObject::switch_state(ETelekineticState::TS_RAISE);
 }
@@ -874,8 +880,8 @@ void STelekineticWeaponObject::switch_state(ETelekineticState new_state)
 
 // -------------------- GRENADE CONTROLLER --------------------
 
-STelekineticGrenadeObject::STelekineticGrenadeObject(ITelekineticEnemy* tele_enemy, STelekineticObjectParams tele_object_params) : 
-	STelekineticObject(tele_object_params), telekinetic_enemy(tele_enemy), grenade(smart_cast<CGrenade*>(tele_object_params.object))
+STelekineticGrenadeObject::STelekineticGrenadeObject(ITelekineticEnemy* tele_enemy, const STelekineticObjectParams& tele_params) : 
+	STelekineticObject(tele_params), telekinetic_enemy(tele_enemy), grenade(smart_cast<CGrenade*>(tele_params.object))
 {
 	STelekineticGrenadeObject::switch_state(ETelekineticState::TS_RAISE);
 }

@@ -108,6 +108,16 @@ void CTelekineticPoltergeist::load(LPCSTR section)
 	clamp(veteran_difficulty_error_angle, EPS_L, 180.f);
 	clamp(master_difficulty_error_angle, EPS_L, 180.f);
 
+	novice_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Throwed_Object_Hit_Factor", 0.1f);
+	stalker_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Stalker_Difficulty_Throwed_Object_Hit_Factor", 0.2f);
+	veteran_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Veteran_Difficulty_Throwed_Object_Hit_Factor", 0.3f);
+	master_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Master_Difficulty_Throwed_Object_Hit_Factor", 0.4f);
+
+	clamp(novice_difficulty_object_hit_factor, 0.f, 1.f);
+	clamp(stalker_difficulty_object_hit_factor, 0.f, 1.f);
+	clamp(veteran_difficulty_object_hit_factor, 0.f, 1.f);
+	clamp(master_difficulty_object_hit_factor, 0.f, 1.f);
+	
 	Sound->create(sound_tele_hold, pSettings->r_string(section, "sound_tele_hold"), st_Effect, SOUND_TYPE_WORLD);
 	Sound->create(sound_tele_throw, pSettings->r_string(section, "sound_tele_throw"), st_Effect, SOUND_TYPE_WORLD);
 
@@ -304,7 +314,11 @@ bool CTelekineticPoltergeist::tele_raise_objects()
 		.strength = raise_speed,
 		.target_height = object_height,
 		.time_to_keep = time_object_keep,
-		.rotate_object = rotate
+		.rotate_object = rotate,
+		.novice_difficulty_object_hit_factor = novice_difficulty_object_hit_factor,
+		.stalker_difficulty_object_hit_factor = stalker_difficulty_object_hit_factor,
+		.veteran_difficulty_object_hit_factor = veteran_difficulty_object_hit_factor,
+		.master_difficulty_object_hit_factor = master_difficulty_object_hit_factor,
 	};
 
 	if (physics_object->cast_weapon_magazined() && shooting_from_weapon_enable)

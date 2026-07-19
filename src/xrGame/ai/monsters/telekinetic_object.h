@@ -60,6 +60,11 @@ struct STelekineticObjectParams
 	float target_height; // Высота, на которую нужно поднять объект.
 	u32 time_to_keep; // Время удержания объекта.
 	bool rotate_object; // Крутить объект или нет. (преимущественно для CMincer)
+	
+	float novice_difficulty_object_hit_factor;
+	float stalker_difficulty_object_hit_factor;
+	float veteran_difficulty_object_hit_factor;
+	float master_difficulty_object_hit_factor;
 };
 
 struct SCollisionHitCallback : ICollisionHitCallback
@@ -92,7 +97,7 @@ struct STelekineticObject
 
 	ETelekineticState state;
 	
-	STelekineticObject(STelekineticObjectParams params);
+	STelekineticObject(const STelekineticObjectParams& tele_params);
 	virtual ~STelekineticObject() = default;
 
 	virtual void set_sound(const ref_sound& snd_hold, const ref_sound& snd_throw);
@@ -156,7 +161,7 @@ struct STelekineticWeaponObject : STelekineticObject
 	u32 first_shot_delay_ms = 0;
 	s8 backup_weapon_fire_mode = s8(-1);
 
-	STelekineticWeaponObject(STelekineticWeaponParams weapon_params, STelekineticObjectParams tele_object_params);
+	STelekineticWeaponObject(STelekineticWeaponParams weapon_params, const STelekineticObjectParams& tele_params);
 
 	void setup_local_weapon_things();
 	void restore_global_weapon_things();
@@ -194,7 +199,7 @@ struct STelekineticGrenadeObject : STelekineticObject
 	u32 throw_threshold = 700;
 	u32 time_to_explode = 2000;
 
-	STelekineticGrenadeObject(ITelekineticEnemy* tele_enemy, STelekineticObjectParams tele_object_params);
+	STelekineticGrenadeObject(ITelekineticEnemy* tele_enemy, const STelekineticObjectParams& tele_params);
 #ifdef DEBUG_DRAW
 	void debug_draw();
 #endif

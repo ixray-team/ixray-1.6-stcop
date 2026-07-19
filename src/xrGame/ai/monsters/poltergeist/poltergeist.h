@@ -337,15 +337,20 @@ public:
 	bool shooting_from_weapon_enable;
 	bool activate_n_throw_grenade;
 
-	f32 novice_difficulty_angular_speed;
-	f32 stalker_difficulty_angular_speed;
-	f32 veteran_difficulty_angular_speed;
-	f32 master_difficulty_angular_speed;
+	float novice_difficulty_angular_speed;
+	float stalker_difficulty_angular_speed;
+	float veteran_difficulty_angular_speed;
+	float master_difficulty_angular_speed;
 
-	f32 novice_difficulty_error_angle;
-	f32 stalker_difficulty_error_angle;
-	f32 veteran_difficulty_error_angle;
-	f32 master_difficulty_error_angle;
+	float novice_difficulty_error_angle;
+	float stalker_difficulty_error_angle;
+	float veteran_difficulty_error_angle;
+	float master_difficulty_error_angle;
+	
+	float novice_difficulty_object_hit_factor;
+	float stalker_difficulty_object_hit_factor;
+	float veteran_difficulty_object_hit_factor;
+	float master_difficulty_object_hit_factor;
 
 	CTelekineticPoltergeist(CPoltergeist* polter);
 	~CTelekineticPoltergeist();

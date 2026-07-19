@@ -188,6 +188,16 @@ void CBurer::Load(const char* section)
 	clamp(stalker_difficulty_error_angle, EPS_L, 180.f);
 	clamp(veteran_difficulty_error_angle, EPS_L, 180.f);
 	clamp(master_difficulty_error_angle, EPS_L, 180.f);
+	
+	novice_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Novice_Difficulty_Throwed_Object_Hit_Factor", 0.1f);
+	stalker_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Stalker_Difficulty_Throwed_Object_Hit_Factor", 0.2f);
+	veteran_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Veteran_Difficulty_Throwed_Object_Hit_Factor", 0.3f);
+	master_difficulty_object_hit_factor = READ_IF_EXISTS(pSettings, r_float, section, "Master_Difficulty_Throwed_Object_Hit_Factor", 0.4f);
+
+	clamp(novice_difficulty_object_hit_factor, 0.f, 1.f);
+	clamp(stalker_difficulty_object_hit_factor, 0.f, 1.f);
+	clamp(veteran_difficulty_object_hit_factor, 0.f, 1.f);
+	clamp(master_difficulty_object_hit_factor, 0.f, 1.f);
 
 	SVelocityParam& velocity_none = move().get_velocity(MonsterMovement::eVelocityParameterIdle);
 	SVelocityParam& velocity_turn = move().get_velocity(MonsterMovement::eVelocityParameterStand);

@@ -455,7 +455,11 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 			.strength = this->object->tele_raise_speed,
 			.target_height = height,
 			.time_to_keep = this->object->tele_time_to_hold,
-			.rotate_object = rotate
+			.rotate_object = rotate,
+			.novice_difficulty_object_hit_factor = this->object->novice_difficulty_object_hit_factor,
+			.stalker_difficulty_object_hit_factor = this->object->stalker_difficulty_object_hit_factor,
+			.veteran_difficulty_object_hit_factor = this->object->veteran_difficulty_object_hit_factor,
+			.master_difficulty_object_hit_factor = this->object->master_difficulty_object_hit_factor,
 		};
 		
 		if (object->cast_weapon_magazined() && this->object->shooting_from_weapon_enable)
