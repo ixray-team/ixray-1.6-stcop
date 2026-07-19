@@ -164,7 +164,7 @@ void CWeaponKnife::LoadSounds(const char* section)
 	}
 	else
 	{
-		m_sounds.LoadSound(section, "snd_shoot", "sndShot", false, SOUND_TYPE_WEAPON_SHOOTING);
+		m_sounds.LoadSound(section, "snd_shoot", "sndShot", false, SOUND_TYPE_WEAPON_SHOOTING, st_Shooting);
 	}
 
 	if (SoundExist(section, "snd_draw"))
