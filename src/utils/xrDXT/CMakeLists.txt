@@ -34,16 +34,5 @@ target_compile_definitions(xrDXT PRIVATE _USRDLL)
 
 # Linker list
 target_link_libraries(xrDXT PUBLIC xrEngineCore)
+target_link_libraries(xrDXT PUBLIC RedImage::RedImage)
 target_link_libraries(xrDXT PRIVATE NVTT::nvtt)
-
-if (WIN32)
-    # RedImage
-    target_link_libraries(xrDXT PUBLIC ${REDIMAGE_LIB})
-    target_include_directories(xrDXT PUBLIC "${REDIMAGE_INCL}")
-
-    ## Copy binaries
-    add_custom_command(TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${REDIMAGE_BIN} ${IXRAY_OUTPUT}
-    )
-endif()
