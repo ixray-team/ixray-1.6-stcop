@@ -39,7 +39,9 @@ CUIMotionIcon::CUIMotionIcon()
 
 CUIMotionIcon::~CUIMotionIcon()
 {
-	g_pMotionIcon	= nullptr;
+	g_pMotionIcon = nullptr;
+	m_states.clear();
+	_compassLayoutFrame = nullptr;
 }
 
 void CUIMotionIcon::ResetVisibility()
@@ -54,6 +56,42 @@ void CUIMotionIcon::ResetVisibility()
 	{
 		ApplyCompassContextualAlpha(0.f);
 	}
+	if (_minimapContextualFade && _luminosityOverlay)
+	{
+		ApplyMinimapLuminosityOverlayAlpha(0.f);
+	}
+}
+
+void CUIMotionIcon::LoadContextualFadeSettings(CUIXml& uiXml, const char* path, bool& contextualFadeOut)
+{
+	if (!uiXml.NavigateToNode(path, 0))
+	{
+		return;
+	}
+
+	contextualFadeOut = uiXml.ReadAttribInt(path, 0, "contextual_fade", contextualFadeOut ? 1 : 0) != 0;
+	_fadeInSpeed = std::max(uiXml.ReadAttribFlt(path, 0, "fade_in_speed", _fadeInSpeed), 0.1f);
+	_fadeOutSpeed = std::max(uiXml.ReadAttribFlt(path, 0, "fade_out_speed", _fadeOutSpeed), 0.1f);
+	_minVisibleAlpha = clampr(uiXml.ReadAttribFlt(path, 0, "min_visible_alpha", _minVisibleAlpha), 0.0f, 1.0f);
+	_visibilityThreshold = uiXml.ReadAttribFlt(path, 0, "visibility_threshold", _visibilityThreshold);
+}
+
+void CUIMotionIcon::InitMinimapLuminosityOverlay(CUIXml& uiXml)
+{
+	if (_luminosityOverlay || !uiXml.NavigateToNode("luminosity_overlay", 0))
+	{
+		return;
+	}
+
+	_luminosityOverlay = UIHelper::CreateStatic(uiXml, "luminosity_overlay", this, false);
+	if (!_luminosityOverlay)
+	{
+		return;
+	}
+
+	_luminosityOverlayBaseColor = _luminosityOverlay->GetTextureColor();
+	_luminosityOverlay->SetTextureColor(subst_alpha(_luminosityOverlayBaseColor, 0));
+	LoadContextualFadeSettings(uiXml, "minimap_layout", _minimapContextualFade);
 }
 
 float CUIMotionIcon::UpdateContextualFadeAlpha(float alpha, bool isVisible) const
@@ -66,36 +104,69 @@ float CUIMotionIcon::UpdateContextualFadeAlpha(float alpha, bool isVisible) cons
 	return clampr(alpha + delta * smoothT, 0.0f, 1.0f);
 }
 
-bool CUIMotionIcon::IsCompassContextuallyNeeded() const
+bool CUIMotionIcon::IsContextuallyNeeded() const
 {
 	if (!m_npc_visibility.empty())
 	{
 		return true;
 	}
 
-	if (m_luminosity_progress_bar || m_luminosity_progress_shape)
+	float luminosityNorm = 0.f;
+	if (m_luminosity_progress_bar)
 	{
-		return m_cur_pos > _visibilityThreshold;
+		const float rmin = m_luminosity_progress_bar->GetRange_min();
+		const float rmax = m_luminosity_progress_bar->GetRange_max();
+		luminosityNorm = (rmax > rmin) ? (m_cur_pos - rmin) / (rmax - rmin) : 0.f;
+	}
+	else if (m_luminosity_progress_shape)
+	{
+		luminosityNorm = m_cur_pos / 100.f;
+	}
+	else if (_luminosityOverlay != nullptr)
+	{
+		luminosityNorm = _luminosityNormalized;
+	}
+	else
+	{
+		luminosityNorm = m_luminosity > 1.f ? m_luminosity / 100.f : m_luminosity;
 	}
 
-	return m_luminosity > _visibilityThreshold;
+	if (luminosityNorm > _visibilityThreshold)
+	{
+		return true;
+	}
+
+	if (_compassModeActive)
+	{
+		return false;
+	}
+
+	return _noiseNormalized > _visibilityThreshold;
 }
 
 void CUIMotionIcon::ApplyCompassContextualAlpha(float alpha)
 {
-	if (_compassBackground)
+	if (!_compassBackground)
 	{
-		const u32 baseColor = _compassBackgroundBaseColor;
-		const u32 channelAlpha = (u32)clampr(iFloor(float(color_get_A(baseColor)) * alpha), 0, 255);
-		_compassBackground->SetTextureColor(subst_alpha(baseColor, channelAlpha));
+		return;
 	}
 
-	if (m_luminosity_progress_bar)
+	const u32 baseColor = _compassBackgroundBaseColor;
+	const u32 channelAlpha = (u32)clampr(iFloor(float(color_get_A(baseColor)) * alpha), 0, 255);
+	_compassBackground->SetTextureColor(subst_alpha(baseColor, channelAlpha));
+}
+
+void CUIMotionIcon::ApplyMinimapLuminosityOverlayAlpha(float contextualAlpha)
+{
+	if (!_luminosityOverlay)
 	{
-		const u32 baseColor = _luminosityBarBaseColor;
-		const u32 channelAlpha = (u32)clampr(iFloor(float(color_get_A(baseColor)) * alpha), 0, 255);
-		m_luminosity_progress_bar->m_UIProgressItem.SetTextureColor(subst_alpha(baseColor, channelAlpha));
+		return;
 	}
+
+	const u32 maxA = color_get_A(_luminosityOverlayBaseColor);
+	const float intensity = _minimapContextualFade ? _luminosityOverlayCur : 1.f;
+	const u32 alpha = (u32)clampr(iFloor(contextualAlpha * intensity * float(maxA)), 0, 255);
+	_luminosityOverlay->SetTextureColor(subst_alpha(_luminosityOverlayBaseColor, alpha));
 }
 
 bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar, bool useCompassLayout)
@@ -138,12 +209,13 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar, bool use
         _compassLayoutAlignCenter = (_compassLayoutFrame->GetAlignment() == waCenter) ||
             (layoutAlign.size() > 0 && strchr(layoutAlign.c_str(), 'c'));
 
-        _compassContextualFade = uiXml.ReadAttribInt(layoutPath, 0, "contextual_fade", 1) != 0;
-        _fadeInSpeed = std::max(uiXml.ReadAttribFlt(layoutPath, 0, "fade_in_speed", _fadeInSpeed), 0.1f);
-        _fadeOutSpeed = std::max(uiXml.ReadAttribFlt(layoutPath, 0, "fade_out_speed", _fadeOutSpeed), 0.1f);
-        _minVisibleAlpha = clampr(uiXml.ReadAttribFlt(layoutPath, 0, "min_visible_alpha", _minVisibleAlpha), 0.0f, 1.0f);
-        _visibilityThreshold = uiXml.ReadAttribFlt(layoutPath, 0, "visibility_threshold", _visibilityThreshold);
+        LoadContextualFadeSettings(uiXml, "compass_layout", _compassContextualFade);
         _contextualAlpha = 0.f;
+        _compassModeActive = true;
+    }
+    else if (!useCompassBar)
+    {
+        LoadContextualFadeSettings(uiXml, "minimap_layout", _minimapContextualFade);
     }
     else if (useCompassBar && useCompassLayout && !hasCompassLayout)
     {
@@ -174,9 +246,9 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar, bool use
 
     if (m_independent)
     {
-        if (!useLuminosityOverlay)
+        if (!useLuminosityOverlay && uiXml.NavigateToNode("luminosity_progress", 0))
             m_luminosity_progress_bar = UIHelper::CreateProgressBar(uiXml, "luminosity_progress", this);
-        if (!useNoiseOverlay)
+        if (!useNoiseOverlay && uiXml.NavigateToNode("noise_progress", 0))
             m_noise_progress_bar = UIHelper::CreateProgressBar(uiXml, "noise_progress", this);
     }
     else if (hasCompassLayout)
@@ -192,35 +264,32 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar, bool use
             }
         }
 
-        if (!useLuminosityOverlay && uiXml.NavigateToNode("luminosity_progress:progress", 0))
-        {
-            m_luminosity_progress_bar = UIHelper::CreateProgressBar(uiXml, "luminosity_progress", this);
-            if (m_luminosity_progress_bar)
-            {
-                _luminosityBarBaseColor = m_luminosity_progress_bar->m_UIProgressItem.GetTextureColor();
-            }
-        }
-        if (!useNoiseOverlay && uiXml.NavigateToNode("noise_progress:progress", 0))
-            m_noise_progress_bar = UIHelper::CreateProgressBar(uiXml, "noise_progress", this);
+        SetMinimapOverlayVisibility(false);
     }
     else if (!useCompassBar)
     {
         if (!useLuminosityOverlay && !m_luminosity_progress_bar)
         {
-            m_luminosity_progress_shape = UIHelper::CreateProgressShape(uiXml, "luminosity_progress", this);
-            if (m_luminosity_progress_shape)
+            if (uiXml.NavigateToNode("luminosity_progress", 0))
             {
-                m_luminosity_progress_shape->SetWndSize(sz);
-                m_luminosity_progress_shape->SetWndPos(pos);
+                m_luminosity_progress_shape = UIHelper::CreateProgressShape(uiXml, "luminosity_progress", this);
+                if (m_luminosity_progress_shape)
+                {
+                    m_luminosity_progress_shape->SetWndSize(sz);
+                    m_luminosity_progress_shape->SetWndPos(pos);
+                }
             }
         }
         if (!useNoiseOverlay && !m_noise_progress_bar)
         {
-            m_noise_progress_shape = UIHelper::CreateProgressShape(uiXml, "noise_progress", this);
-            if (m_noise_progress_shape)
+            if (uiXml.NavigateToNode("noise_progress", 0))
             {
-                m_noise_progress_shape->SetWndSize(sz);
-                m_noise_progress_shape->SetWndPos(pos);
+                m_noise_progress_shape = UIHelper::CreateProgressShape(uiXml, "noise_progress", this);
+                if (m_noise_progress_shape)
+                {
+                    m_noise_progress_shape->SetWndSize(sz);
+                    m_noise_progress_shape->SetWndPos(pos);
+                }
             }
         }
     }
@@ -270,15 +339,11 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar, bool use
 
     ShowState(stNormal);
 
-    if (useLuminosityOverlay && !useCompassBar)
+    if (!useCompassBar)
     {
-        _luminosityOverlay = UIHelper::CreateStatic(uiXml, "luminosity_overlay", this, false);
-        if (_luminosityOverlay)
-        {
-            _luminosityOverlayBaseColor = _luminosityOverlay->GetTextureColor();
-            _luminosityOverlay->SetTextureColor(subst_alpha(_luminosityOverlayBaseColor, 0));
-        }
+        InitMinimapLuminosityOverlay(uiXml);
     }
+
     if (useNoiseOverlay && !useCompassBar)
     {
         _noiseOverlay = UIHelper::CreateStatic(uiXml, "noise_overlay", this, false);
@@ -293,6 +358,10 @@ bool CUIMotionIcon::Init(Frect const& zonemap_rect, bool useCompassBar, bool use
     {
         ApplyCompassContextualAlpha(0.f);
     }
+    if (_minimapContextualFade && _luminosityOverlay)
+    {
+        ApplyMinimapLuminosityOverlayAlpha(0.f);
+    }
 
     return m_independent;
 }
@@ -304,7 +373,7 @@ void CUIMotionIcon::EnsureMinimapOverlays(CUIXml& uiXml, Fvector2 const& sz, Fve
 
     if (!useLuminosityOverlay && !m_luminosity_progress_bar)
     {
-        if (!m_luminosity_progress_shape)
+        if (!m_luminosity_progress_shape && uiXml.NavigateToNode("luminosity_progress", 0))
             m_luminosity_progress_shape = UIHelper::CreateProgressShape(uiXml, "luminosity_progress", this);
         if (m_luminosity_progress_shape)
         {
@@ -315,22 +384,12 @@ void CUIMotionIcon::EnsureMinimapOverlays(CUIXml& uiXml, Fvector2 const& sz, Fve
 
     if (!useNoiseOverlay && !m_noise_progress_bar)
     {
-        if (!m_noise_progress_shape)
+        if (!m_noise_progress_shape && uiXml.NavigateToNode("noise_progress", 0))
             m_noise_progress_shape = UIHelper::CreateProgressShape(uiXml, "noise_progress", this);
         if (m_noise_progress_shape)
         {
             m_noise_progress_shape->SetWndSize(sz);
             m_noise_progress_shape->SetWndPos(pos);
-        }
-    }
-
-    if (useLuminosityOverlay && !_luminosityOverlay)
-    {
-        _luminosityOverlay = UIHelper::CreateStatic(uiXml, "luminosity_overlay", this, false);
-        if (_luminosityOverlay)
-        {
-            _luminosityOverlayBaseColor = _luminosityOverlay->GetTextureColor();
-            _luminosityOverlay->SetTextureColor(subst_alpha(_luminosityOverlayBaseColor, 0));
         }
     }
 
@@ -343,6 +402,8 @@ void CUIMotionIcon::EnsureMinimapOverlays(CUIXml& uiXml, Fvector2 const& sz, Fve
             _noiseOverlay->SetTextureColor(subst_alpha(_noiseOverlayBaseColor, 0));
         }
     }
+
+    InitMinimapLuminosityOverlay(uiXml);
 }
 
 void CUIMotionIcon::SetMinimapOverlayVisibility(bool visible)
@@ -358,8 +419,24 @@ void CUIMotionIcon::SetMinimapOverlayVisibility(bool visible)
 
     toggle(m_luminosity_progress_shape);
     toggle(m_noise_progress_shape);
+    toggle(m_luminosity_progress_bar);
+    toggle(m_noise_progress_bar);
     toggle(_luminosityOverlay);
     toggle(_noiseOverlay);
+}
+
+void CUIMotionIcon::SetCompassOverlayVisibility(bool visible)
+{
+    if (_compassBackground)
+    {
+        _compassBackground->Show(visible);
+        _compassBackground->Enable(visible);
+    }
+
+    if (!visible && _compassContextualFade)
+    {
+        ApplyCompassContextualAlpha(0.f);
+    }
 }
 
 void CUIMotionIcon::ApplyNavigationHost(CUIWindow* attachParent, Frect const& hostRect, bool useCompassBar)
@@ -389,12 +466,33 @@ void CUIMotionIcon::ApplyNavigationHost(CUIWindow* attachParent, Frect const& ho
         const float k = UI().get_current_kx();
         sz.mul(rel_sz * k);
 
-        if (!useCompassBar)
+        _compassModeActive = useCompassBar && (_compassLayoutFrame != nullptr || _compassBackground != nullptr);
+        _contextualAlpha = 0.f;
+
+        if (_compassModeActive)
+        {
+            _noiseNormalized = 0.f;
+            _noiseOverlayCur = 0.f;
+            SetMinimapOverlayVisibility(false);
+            SetCompassOverlayVisibility(true);
+            if (_compassContextualFade)
+            {
+                ApplyCompassContextualAlpha(0.f);
+            }
+        }
+        else
+        {
+            SetCompassOverlayVisibility(false);
             EnsureMinimapOverlays(uiXml, sz, pos);
+            SetMinimapOverlayVisibility(true);
+            if (_minimapContextualFade && _luminosityOverlay)
+            {
+                ApplyMinimapLuminosityOverlayAlpha(0.f);
+            }
+        }
     }
 
     attachParent->AttachChild(this);
-    SetMinimapOverlayVisibility(!useCompassBar);
 }
 CUIWindow* CUIMotionIcon::CompassLayoutFrame()
 {
@@ -485,6 +583,9 @@ void CUIMotionIcon::SetNoise(float newPos)
 	if (!IsGameTypeSingleCompatible())
 		return;
 
+	if (_compassModeActive)
+		return;
+
 	if (m_noise_progress_shape)
 	{
 		float pos = newPos;
@@ -521,8 +622,16 @@ void CUIMotionIcon::SetLuminosity(float newPos)
 		newPos = clampr(newPos, m_luminosity_progress_bar->GetRange_min(), m_luminosity_progress_bar->GetRange_max());
 		m_luminosity = newPos;
 	}
+	else
+	{
+		m_luminosity = newPos;
+	}
+
 	if (_luminosityOverlay != nullptr && m_luminosity_progress_shape == nullptr && m_luminosity_progress_bar == nullptr)
-		_luminosityNormalized = clampr(newPos, 0.f, 1.f);
+	{
+		_luminosityNormalized = newPos > 1.f ? newPos / 100.f : newPos;
+		_luminosityNormalized = clampr(_luminosityNormalized, 0.f, 1.f);
+	}
 }
 
 float CUIMotionIcon::GetLuminosityNormalized() const
@@ -555,7 +664,7 @@ void CUIMotionIcon::Draw()
 	bool showMotionIcon = m_independent ? true : psHUD_Flags.test(HUD_MINIMAP);
 	if (!disableMotionIcon && renderHUD && showMotionIcon)
 	{
-		if (_compassContextualFade && _contextualAlpha <= _minVisibleAlpha)
+		if (_compassModeActive && _compassContextualFade && _contextualAlpha <= _minVisibleAlpha)
 		{
 			return;
 		}
@@ -632,9 +741,18 @@ void CUIMotionIcon::Update()
 		else
 			_luminosityOverlayCur -= diff * Device.fTimeDelta * OVERLAY_LUMINOSITY_SMOOTH_SPEED;
 		clamp(_luminosityOverlayCur, 0.f, 1.f);
-		u32 maxA = color_get_A(_luminosityOverlayBaseColor);
-		u32 alpha = (u32)clampr(iFloor(_luminosityOverlayCur * float(maxA)), 0, 255);
-		_luminosityOverlay->SetTextureColor(subst_alpha(_luminosityOverlayBaseColor, alpha));
+
+		if (_minimapContextualFade && !_compassModeActive)
+		{
+			_contextualAlpha = UpdateContextualFadeAlpha(_contextualAlpha, IsContextuallyNeeded());
+			ApplyMinimapLuminosityOverlayAlpha(_contextualAlpha);
+		}
+		else if (!_compassModeActive)
+		{
+			const u32 maxA = color_get_A(_luminosityOverlayBaseColor);
+			const u32 alpha = (u32)clampr(iFloor(_luminosityOverlayCur * float(maxA)), 0, 255);
+			_luminosityOverlay->SetTextureColor(subst_alpha(_luminosityOverlayBaseColor, alpha));
+		}
 	}
 	if (_noiseOverlay != nullptr)
 	{
@@ -649,9 +767,9 @@ void CUIMotionIcon::Update()
 		_noiseOverlay->SetTextureColor(subst_alpha(_noiseOverlayBaseColor, alpha));
 	}
 
-	if (_compassContextualFade)
+	if (_compassModeActive && _compassContextualFade)
 	{
-		const bool isNeeded = IsCompassContextuallyNeeded();
+		const bool isNeeded = IsContextuallyNeeded();
 		_contextualAlpha = UpdateContextualFadeAlpha(_contextualAlpha, isNeeded);
 		ApplyCompassContextualAlpha(_contextualAlpha);
 	}
