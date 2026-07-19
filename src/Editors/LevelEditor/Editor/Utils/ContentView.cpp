@@ -2205,7 +2205,7 @@ void CContentView::PasteAction(const xr_string& Path) /*const*/
 		IsCutting = false;
 
 	CopiedObjects.clear();
-	FS.rescan_path(OutDir.parent_path().string().c_str(), true);
+	//FS.rescan_path(OutDir.parent_path().string().c_str(), true);
 }
 
 void CContentView::DeleteAction(const xr_path& Path) /*const*/
@@ -2268,7 +2268,7 @@ void CContentView::RenameAction(const xr_path& FilePath, const xr_string NewName
 		}
 	}
 
-	FS.rescan_path(NewFileName.parent_path().string().c_str(), true);
+	//FS.rescan_path(NewFileName.parent_path().string().c_str(), true);
 
 }
 

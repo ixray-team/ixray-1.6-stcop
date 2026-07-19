@@ -376,10 +376,10 @@ void CSoundManager::RefreshSounds(bool bSync, bool IsSoft)
     {
         UI->SetStatus("Refresh sounds...");
 
-        string_path SoundDir = {};
-        FS.update_path(SoundDir, _sounds_, "");
+        //string_path SoundDir = {};
+        //FS.update_path(SoundDir, _sounds_, "");
 
-        FS.rescan_path(SoundDir, true);
+        //FS.rescan_path(SoundDir, true);
 
         if (bSync) 
         {
