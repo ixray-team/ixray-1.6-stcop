@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 #pragma once
-
+#include "filewatch_wrapper.h"
 #include "LocatorAPI_defs.h"
 
 class XRCORE_API CStreamReader;
@@ -145,7 +145,24 @@ private:
 	void ParseIgnoreList();
 	bool CheckSkip(const xr_path& Path) const;
 
+	// принимает путь/имя файла
+	// возвращает true когда триггер выполнил всё что хотел и нужно удалить (чтоб не копился)
+	// возвращает false, если триггер должен продолжать работу
+	using FilewatcherTrigger = std::function<bool(const char*)>;
+
+	xrCriticalSection FilewatcherOnAddCS;
+	xrCriticalSection FilewatcherOnDelCS;
+	xr_vector<FilewatcherTrigger> FilewatcherOnAdd;
+	xr_vector<FilewatcherTrigger> FilewatcherOnDel;
+	
+	void FileEventAdd(const char* file);
+	void FileEventDel(const char* file);
+	void ProcessTriggers(const char* file, xrCriticalSection& CS, xr_vector<FilewatcherTrigger>& Triggers);
+
 public:
+	void AddOnFilewatcherEventAddTrigger(FilewatcherTrigger f);
+	void AddOnFilewatcherEventDelTrigger(FilewatcherTrigger f);
+	
 								CLocatorAPI			();
 								~CLocatorAPI		();
 	void						_initialize			(u32 flags, const char* target_folder=nullptr, const char* fs_name=nullptr);
@@ -168,7 +185,7 @@ public:
 	IC IWriter*					w_open				(const char* N){return w_open(nullptr,N);}
 	IWriter*					w_open_ex			(const char* initial, const char* N);
 	IC IWriter*					w_open_ex			(const char* N){return w_open_ex(nullptr,N);}
-	void						w_close				(IWriter* &S);
+	void						w_close				(IWriter* &S, bool force_register = false);
 	
 	CWriterGuarded wg_open(const char* initial, const char* N);
 	CWriterGuarded wg_open(const char* N);
@@ -194,6 +211,7 @@ public:
 	void 						file_copy			(const char* src, const char* dest);
 	void 						file_rename			(const char* src, const char* dest,bool bOwerwrite=true);
     int							file_length			(const char* src);
+	void						file_update 		(const char* file);
 
     time_t 						get_file_age		(const char* nm);
     void 						set_file_age		(const char* nm, time_t age);
@@ -222,6 +240,29 @@ public:
 	void						rescan_pathes		(bool NeedMountAddons = true);
 	void						lock_rescan			();
 	void						unlock_rescan		();
+};
+
+class XRCORE_API CFilewatcher
+{
+	using FilewatcherImplPtr = filewatch::FileWatch<std::string>*;
+	FilewatcherImplPtr WatcherPtr = nullptr;
+	bool FilewatcherActive = false;
+
+	CFilewatcher() = default;
+	
+public:
+	~CFilewatcher();
+	CFilewatcher(const CFilewatcher&) = delete;
+	CFilewatcher& operator=(const CFilewatcher&) = delete;
+	CFilewatcher(CFilewatcher&&) = delete;
+	CFilewatcher& operator=(CFilewatcher&&) = delete;
+
+	static CFilewatcher& instance();
+
+	IC void SetFilewatcherActive(bool Active){FilewatcherActive = Active;}
+	IC bool GetFilewatcherActive() const {return FilewatcherActive;}
+	IC void SetFilewatcher(FilewatcherImplPtr Watcher);
+	
 };
 
 extern XRCORE_API	CLocatorAPI*					xr_FS;
