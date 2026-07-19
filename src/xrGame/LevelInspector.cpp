@@ -545,6 +545,7 @@ LevelInspector::LevelInspector(bool hm) : hud_mode(hm)
 					ImGui::CheckboxFlags("Level Graph", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_L_GRID);
 					ImGui::Separator();
 
+					ImGui::CheckboxFlags("SOM", &m_flags.flags, LevelInspector::ESF_DRAW_SOM);
 					ImGui::CheckboxFlags("HOM", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_HOM);
 					ImGui::CheckboxFlags("CForm", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM);
 					ImGui::CheckboxFlags("CForm Tris", &m_flags.flags, ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS);
@@ -800,7 +801,7 @@ ICF u32 positionToColorWithAlpha(const Fvector& C)
 void LevelInspector::OnRender()
 {
 	PROF_EVENT(__FUNCTION__);
-	Fmatrix Pold,Vold,FTold;
+	Fmatrix Pold, Vold, FTold;
 
 
 	if (hud_mode)
@@ -809,48 +810,78 @@ void LevelInspector::OnRender()
 		FTold = Device.mFullTransform_hud;
 		Vold = Device.mView_hud;
 
-		if(m_skeleton_flags.flags != 0u)
+		if (m_skeleton_flags.flags != 0u)
+		{
 			DrawHud();
+		}
 	}
 	else
 	{
 		Pold = Device.mProject;
 		FTold = Device.mFullTransform;
 		Vold = Device.mView;
-		
-		if (!key_toggle_mode) 
+
+		if (!key_toggle_mode)
+		{
 			visible_currents = pInput->iGetAsyncKeyState(visible_currents_key);
+		}
 
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HUD))
+		{
 			hud_prims->OnRender();
-		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_AI_PATHS))
+		}
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_AI_PATHS))
+		{
 			DrawAIPaths();
-		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION))
+		}
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SELECTION))
+		{
 			DrawObjectsInfo();
-		if(m_skeleton_flags.flags != 0u || m_zone_flags.flags != 0u || m_spatials_mask!=ESPATIAL_TYPE::NONE)
+		}
+		if (m_skeleton_flags.flags != 0u || m_zone_flags.flags != 0u || m_spatials_mask != ESPATIAL_TYPE::NONE)
+		{
 			DrawObjects();
-		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_G_GRID))
+		}
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_G_GRID))
+		{
 			DrawGameGraph();
-		if(m_flags.test(ESCENE_FLAGS::ESF_DRAW_W_GRID))
+		}
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_W_GRID))
+		{
 			DrawWayPoints();
+		}
+		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SOM))
+		{
+			DrawSOM();
+		}
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_HOM))
+		{
 			DrawHOM();
+		}
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE_ALL) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_SPATIAL_SPACE))
+		{
 			DrawSpatials();
+		}
 
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_LEVEL_BOUNDS))
+		{
 			append_aabb(g_pGameLevel->ObjectSpace.GetBoundingVolume(), color_rgba(10, 10, 10, 122), color_rgba(255, 220, 10, 50));
+		}
 	}
 
 	bool tris_empty = tris.empty();
 	bool lines_empty = lines.empty();
 
 	if (m_flags.flags == 0u && tris_empty && lines_empty)
+	{
 		return;
-	
+	}
+
 	if (!key_toggle_mode)
+	{
 		zbuffer_enable = !pInput->iGetAsyncKeyState(zbuffer_key);
-	
+	}
+
 	if (!tris_empty || !lines_empty)
 	{
 		if (hud_mode)
@@ -859,10 +890,6 @@ void LevelInspector::OnRender()
 
 			if (Device.m_pRender)
 			{
-				//extern ENGINE_API float psHUD_FOV;
-				//Device.mProject_hud.build_projection(deg2rad(psHUD_FOV), Device.fASPECT, Device.fHUDViewportNear + zbuff_shift, g_pGamePersistent->Environment().CurrentEnv->far_plane);
-				//Device.mFullTransform_hud.mul(Device.mProject_hud, Device.mView_hud);
-				//Device.mView_hud.build_camera_dir(Fvector().mad(Device.vCameraPosition, Device.vCameraDirection, zbuff_shift), Device.vCameraDirection, Device.vCameraTop);
 				Device.m_pRender->SetCacheXform(Device.mView_hud, Device.mProject_hud);
 				Device.m_pRender->SetCacheXformOld(Device.mView_hud_old, Device.mProject_hud_old);
 			}
@@ -871,7 +898,7 @@ void LevelInspector::OnRender()
 		else
 		{
 			UIRender->CacheSetXformWorld(Device.mFullTransform);
-			
+
 			if (Device.m_pRender)
 			{
 				Device.mProject.build_projection(deg2rad(Device.fFOV), Device.fASPECT, Device.fViewportNear + zbuff_shift, g_pGamePersistent->Environment().CurrentEnv->far_plane);
@@ -884,7 +911,7 @@ void LevelInspector::OnRender()
 		UIRender->SetShader(*shader);
 		UIRender->CacheSetCullMode(ERHI_CULLMODE::NONE);
 		UIRender->zb_enable(zbuffer_enable);
-		constexpr Fvector2 nulluv = { 0.f,0.f };
+		constexpr Fvector2 nulluv = {0.f, 0.f};
 
 		TrisRender(tris);
 		LinesRender(lines);
@@ -892,21 +919,27 @@ void LevelInspector::OnRender()
 		UIRender->CacheSetCullMode(ERHI_CULLMODE::BACK);
 
 		if (hud_mode)
+		{
 			Render->rmNormal();
+		}
 	}
 
-	if(!hud_mode)
+	if (!hud_mode)
 	{
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM) || m_flags.test(ESCENE_FLAGS::ESF_DRAW_CFORM_TRIS))
+		{
 			DrawCFORM();
+		}
 
 		if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_L_GRID))
+		{
 			DrawLevelGraph();
+		}
 	}
 
 	dbg_font->OnRender();
 
-	if(hud_mode)
+	if (hud_mode)
 	{
 		Device.mView_hud = Vold;
 		Device.mProject_hud = Pold;
@@ -3957,5 +3990,57 @@ void LevelInspector::DrawCFORM()
 		temp_prims[1].clear();
 		temp_prims[1].temp_tris.shrink_to_fit();
 		temp_prims[1].temp_lines.shrink_to_fit();
+	}
+}
+
+void LevelInspector::DrawSOM()
+{
+	auto SoundOcclusionGeom = ::Sound->get_geometry_som();
+
+	if (!SoundOcclusionGeom || !m_flags.test(ESCENE_FLAGS::ESF_DRAW_SOM))
+	{
+		return;
+	}
+
+	constexpr u32 som_line_color = color_rgba(255, 200, 0, 255); 
+	constexpr u32 som_tri_color = color_rgba(255, 200, 0, 30);	 
+
+	const Fvector& cam_pos = Device.vCameraPosition;
+	float render_dist = visible_currents ? 50000.f : g_pGamePersistent->pEnvironment->CurrentEnv->fog_distance;
+
+	const xr_vector<Fvector>& som_verts = SoundOcclusionGeom->get_verts();
+	const xr_vector<CDB::TRI>& som_tris = SoundOcclusionGeom->get_tris();
+
+	if (som_verts.empty() || som_tris.empty())
+	{
+		return;
+	}
+
+	for (const CDB::TRI& tri : som_tris)
+	{
+		Fvector v[3] = 
+		{
+			som_verts[tri.verts[0]],
+			som_verts[tri.verts[1]],
+			som_verts[tri.verts[2]]
+		};
+
+		append_tri({v[0], v[1], v[2], som_tri_color});
+		append_line({v[0], v[1], som_line_color});
+		append_line({v[1], v[2], som_line_color});
+		append_line({v[2], v[0], som_line_color});
+
+		//if (m_flags.test(ESCENE_FLAGS::ESF_DRAW_SOM_NORMALS))
+		//{
+		//	Fvector center = {v[0] + v[1] + v[2]};
+		//	center.mul(1.f / 3.f);
+		//
+		//	Fvector normal;
+		//	normal.mknormal(v[0], v[1], v[2]);
+		//	normal.mul(0.5f);
+		//
+		//	Fvector end = center + normal;
+		//	append_line({center, end, color_rgba(0, 255, 255, 255)});
+		//}
 	}
 }
