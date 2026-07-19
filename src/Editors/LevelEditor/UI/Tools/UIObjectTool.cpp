@@ -428,10 +428,10 @@ void UIObjectTool::RefreshList()
 	if (RefreshInProgress)
 		return;
 
-	string_path ObjectPath = {};
+	//string_path ObjectPath = {};
 
-	FS.update_path(ObjectPath, _objects_, "");
-	FS.rescan_path(ObjectPath, true);
+	//FS.update_path(ObjectPath, _objects_, "");
+	//FS.rescan_path(ObjectPath, true);
 
 	std::thread refreshThread(&UIObjectTool::RefreshListInternal, this);
 	refreshThread.detach();
