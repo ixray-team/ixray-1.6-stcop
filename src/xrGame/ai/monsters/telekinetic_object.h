@@ -54,11 +54,12 @@ struct STelekineticWeaponParams
 
 struct STelekineticObjectParams
 {
+	CTelekinesis* telekinesis;
 	CPhysicsShellHolder* object;
-	float strength;
-	float target_height;
-	u32 time_to_keep;
-	bool rotate_object;
+	float strength; // Сила, с которой объект будет подниматься.
+	float target_height; // Высота, на которую нужно поднять объект.
+	u32 time_to_keep; // Время удержания объекта.
+	bool rotate_object; // Крутить объект или нет. (преимущественно для CMincer)
 };
 
 struct SCollisionHitCallback : ICollisionHitCallback

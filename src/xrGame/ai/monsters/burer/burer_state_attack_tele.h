@@ -57,7 +57,6 @@ private:
 
 	// internal for FindObjects
 	void FindFreeObjects(xr_vector<ISpatialShared>& tpObjects, const Fvector& pos);
-	void OnGrenadeDestroyed(CGrenade* const grenade);
 
 	void FireAllToEnemy();
 	void deactivate();

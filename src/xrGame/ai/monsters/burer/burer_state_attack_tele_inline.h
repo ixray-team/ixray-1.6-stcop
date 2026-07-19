@@ -95,23 +95,6 @@ template <typename Object>
 void CStateBurerAttackTele<Object>::deactivate()
 {
 	tele_objects.clear();
-	// clear particles on active objects
-	if (this->object->CTelekinesis::is_active())
-	{
-		for (STelekineticObject* tobject : this->object->CTelekinesis::get_tele_objects())
-		{
-			CPhysicsShellHolder* cur_object = tobject->get_object();
-			if (!cur_object || !cur_object->m_pPhysicsShell || !cur_object->m_pPhysicsShell->isActive())
-			{
-				continue;
-			}
-
-			if (CGrenade* grenade = cur_object->cast_grenade())
-			{
-				grenade->set_destroy_callback(nullptr);
-			}
-		}
-	}
 
 	for (STelekineticObject* tobject : this->object->CTelekinesis::get_tele_objects())
 	{
@@ -467,6 +450,7 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 		
 		STelekineticObjectParams tele_object_params
 		{
+			.telekinesis = this->object->telekinesis(),
 			.object = object,
 			.strength = this->object->tele_raise_speed,
 			.target_height = height,
@@ -511,15 +495,15 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 			tele_obj = new STelekineticObject(tele_object_params);
 		}
 
+		if (!tele_obj->can_be_picked_up())
+		{
+			xr_delete(tele_obj);
+			return;
+		}
+
 		this->object->CTelekinesis::append_tobject(tele_obj);
 		tele_obj->set_sound(this->object->sound_tele_hold, this->object->sound_tele_throw);
 		tele_obj->set_particle(this->object->particle_tele_object);
 		tele_obj->start_object_particles();
 	}
-}
-
-template <typename Object>
-void CStateBurerAttackTele<Object>::OnGrenadeDestroyed(CGrenade* const grenade)
-{
-	this->object->CTelekinesis::remove_links(grenade);
 }

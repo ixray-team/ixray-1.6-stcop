@@ -85,14 +85,10 @@ public:
 	bool detected_enemy();
 	float get_fly_around_distance() const { return m_fly_around_distance; }
 	float get_fly_around_change_direction_time() const { return m_fly_around_change_direction_time; }
-
 	void renderable_Render() override;
 
 	ICF IPolter* ability() { return m_poltergeist; }
-
-
 	ICF bool is_hidden() { return state_invisible; }
-
 
 	// Poltergeist ability
 	void PhysicalImpulse(const Fvector& position);
@@ -110,7 +106,6 @@ public:
 	void UpdateHeight();
 
 	// Invisibility
-
 	void EnableHide() { m_disable_hide = false; }
 	void DisableHide() { m_disable_hide = true; }
 
@@ -168,10 +163,10 @@ class IPolter
 	CParticlesObject* m_particles_object;
 	CParticlesObject* m_particles_object_electro;
 
-	LPCSTR m_particles_hidden;
-	LPCSTR m_particles_damage;
-	LPCSTR m_particles_death;
-	LPCSTR m_particles_idle;
+	const char* m_particles_hidden;
+	const char* m_particles_damage;
+	const char* m_particles_death;
+	const char* m_particles_idle;
 
 	u32 m_last_hit_frame;
 
@@ -206,9 +201,9 @@ class CFlamePoltergeist final : public IPolter
 	using inherited = IPolter;
 
 	ref_sound m_sound;
-	LPCSTR m_particles_prepare;
-	LPCSTR m_particles_fire;
-	LPCSTR m_particles_stop;
+	const char* m_particles_prepare;
+	const char* m_particles_fire;
+	const char* m_particles_stop;
 	u32 m_time_fire_delay;
 	u32 m_time_fire_play;
 

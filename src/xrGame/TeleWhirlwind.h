@@ -10,11 +10,10 @@ class CGameObject;
 struct CTeleWhirlwindObject : STelekineticObject
 {
 	using inherited = STelekineticObject;
-	CTeleWhirlwind* m_telekinesis;
 	bool b_destroyable;
 	float throw_power;
 
-	CTeleWhirlwindObject(CTelekinesis* telekinesis, const STelekineticObjectParams& tele_object_params);
+	CTeleWhirlwindObject(const STelekineticObjectParams& tele_object_params);
 	void set_throw_power(float throw_pow);
 	virtual void raise(float step);
 	virtual void raise_update();
@@ -26,6 +25,7 @@ struct CTeleWhirlwindObject : STelekineticObject
 	virtual bool destroy_object(const Fvector dir, float val);
 
 	virtual CTeleWhirlwindObject* cast_whirlwind_object() { return this; }
+	virtual CTeleWhirlwindObject* cast_telewhirlwind() { return this; }
 };
 
 class CTeleWhirlwind : public CTelekinesis
@@ -50,9 +50,8 @@ public:
 	void set_destroing_particles(const shared_str& destroying_particles) { m_destroying_particles = destroying_particles; }
 	const shared_str& destroing_particles() { return m_destroying_particles; }
 	void play_destroy(CTeleWhirlwindObject* obj);
-	virtual void clear();
-	virtual void clear_notrelevant();
 	float keep_radius() { return m_keep_radius; }
 	void set_throw_power(float throw_pow);
-	ICF float get_throw_power() { return m_throw_power; };
+	ICF float get_throw_power() { return m_throw_power; }
+	virtual CTeleWhirlwind* cast_telekinesis_telewhirlwind() override { return this; }
 };

@@ -299,6 +299,7 @@ bool CTelekineticPoltergeist::tele_raise_objects()
 
 	STelekineticObjectParams tele_object_params
 	{
+		.telekinesis = this->poltergeist->telekinesis(),
 		.object = physics_object,
 		.strength = raise_speed,
 		.target_height = object_height,
