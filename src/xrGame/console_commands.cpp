@@ -1010,10 +1010,13 @@ public:
 };
 #endif
 
-struct CCC_ReloadSystemLtx : public IConsole_Command {
+#include "ImUtils/ImUtils.h"
+struct CCC_ReloadSystemLtx : public IConsole_Command 
+{
 	CCC_ReloadSystemLtx(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 
-	virtual void Execute(const char* args) {
+	virtual void Execute(const char* args) 
+	{
 		string_path fname;
 		FS.update_path(fname, _game_config_, "system.ltx");
 		CInifile::Destroy(pSettings);
@@ -1022,6 +1025,12 @@ struct CCC_ReloadSystemLtx : public IConsole_Command {
 			0 != pSettings->section_count(),
 			make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",
 				fname));
+
+#ifdef DEBUG_DRAW
+		DestroySpawnManagerWindow();
+		InitSections();
+#endif
+
 		Msg("system.ltx was reloaded.");
 	}
 };
