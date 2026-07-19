@@ -458,6 +458,11 @@ void CActor::IR_OnKeyboardHold(int dik)
 		return;
 	}
 
+	if (load_screen_renderer.IsActive())
+	{
+		return;
+	}
+
 #ifndef MASTER_GOLD
 	if (psActorFlags.test(AF_NO_CLIP) && (bind == kFWD || bind == kBACK || bind == kL_STRAFE || bind == kR_STRAFE
 		|| bind == kJUMP || bind == kCROUCH))
