@@ -198,7 +198,7 @@ void CActor::PickupModeUpdate_COD()
 
 	if (pNearestItem != nullptr)
 	{
-		if (!pPickup->CanPickItem(frustum, cam_FirstEye()->vPosition, &pNearestItem->object()))
+		if (!pPickup->CanPickItem(frustum, cam_FirstEye()->vPosition, &pNearestItem->object()) || (HudAnimator() && HudAnimator()->PdaAnimator() && HudAnimator()->PdaAnimator()->IsActive()))
 		{
 			pNearestItem = nullptr;
 		}
