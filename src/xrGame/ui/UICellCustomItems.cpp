@@ -44,9 +44,9 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 		rect.rb.set(rect.lt.x + INV_GRID_WIDTH(itm->ScaleIcon) * m_grid_size.x,
 			rect.lt.y + INV_GRID_HEIGHT(itm->ScaleIcon) * m_grid_size.y);
 
-	inherited::SetTextureRect(rect);
-	inherited::SetStretchTexture(true);
-}
+		inherited::SetTextureRect(rect);
+		inherited::SetStretchTexture(true);
+	}
 	else
 	{
 		Frect rect;

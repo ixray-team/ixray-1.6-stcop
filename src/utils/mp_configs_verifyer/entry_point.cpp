@@ -54,8 +54,8 @@ void check_file(LPCSTR file_name)
 			return;
 		}
 	}
-	u32		data_size = tmp_reader->length();
-	u8*		data = static_cast<u8*>(xr_malloc(data_size + 1));
+	u32 data_size = tmp_reader->length();
+	u8* data = static_cast<u8*>(xr_malloc(data_size + 1));
 	
 	tmp_reader->r	(data, static_cast<int>(data_size));
 	data[data_size] = 0;
