@@ -2205,20 +2205,6 @@ void RenderPPEEditor_Draw_GameTab()
 // ==============================================================
 
 #if IXRAY_PPE_EDITOR_TAB_HELP == 1
-void RenderPPEEditorUI_HelpBullet(const char* text)
-{
-	ImGui::Bullet();
-	ImGui::TextWrapped("%s", text);
-}
-
-void RenderPPEEditorUI_HelpSection(const char* name, const char* description)
-{
-	if (ImGui::CollapsingHeader(name))
-	{
-		ImGui::TextWrapped("%s", description);
-	}
-}
-
 void RenderPPEEditor_Draw_HelpTab()
 {
 	ImGui::SeparatorText("About this tool");
@@ -2227,85 +2213,85 @@ void RenderPPEEditor_Draw_HelpTab()
 
 	ImGui::SeparatorText("Basic theory (60 seconds)");
 
-	RenderPPEEditorUI_HelpBullet("An effect is a set of curves. There is one curve per screen parameter (blur, red channel, noise and so on).");
-	RenderPPEEditorUI_HelpBullet("A curve is built from keys. A key is one point: a time and a value.");
-	RenderPPEEditorUI_HelpBullet("Time is in seconds. The game draws a smooth line through your keys and reads the value from that line every frame.");
-	RenderPPEEditorUI_HelpBullet("The total length is the duration of the effect. Changing it stretches all keys at once, the shape stays the same.");
-	RenderPPEEditorUI_HelpBullet("A cyclic effect repeats until you stop it. A one-shot effect plays once and ends by itself.");
+	ImGuiEditorUI_HelpBullet("An effect is a set of curves. There is one curve per screen parameter (blur, red channel, noise and so on).");
+	ImGuiEditorUI_HelpBullet("A curve is built from keys. A key is one point: a time and a value.");
+	ImGuiEditorUI_HelpBullet("Time is in seconds. The game draws a smooth line through your keys and reads the value from that line every frame.");
+	ImGuiEditorUI_HelpBullet("The total length is the duration of the effect. Changing it stretches all keys at once, the shape stays the same.");
+	ImGuiEditorUI_HelpBullet("A cyclic effect repeats until you stop it. A one-shot effect plays once and ends by itself.");
 
 	ImGui::SeparatorText("How to create your own effect");
 
-	RenderPPEEditorUI_HelpBullet("1. Open File > New, or pick an existing effect in the combo at the top.");
-	RenderPPEEditorUI_HelpBullet("2. Choose a section in the Param combo, for example Blur.");
-	RenderPPEEditorUI_HelpBullet("3. Click on the timeline to place the white cursor where you want.");
-	RenderPPEEditorUI_HelpBullet("4. Press Add to create a key there, or drag the value / pick a color.");
-	RenderPPEEditorUI_HelpBullet("5. Add more keys at other times. The curve is drawn between them.");
-	RenderPPEEditorUI_HelpBullet("6. File > Save writes the .ppe file.");
-	RenderPPEEditorUI_HelpBullet("7. In the Game tab press Play to see the effect on screen, Stop to end it.");
+	ImGuiEditorUI_HelpBullet("1. Open File > New, or pick an existing effect in the combo at the top.");
+	ImGuiEditorUI_HelpBullet("2. Choose a section in the Param combo, for example Blur.");
+	ImGuiEditorUI_HelpBullet("3. Click on the timeline to place the white cursor where you want.");
+	ImGuiEditorUI_HelpBullet("4. Press Add to create a key there, or drag the value / pick a color.");
+	ImGuiEditorUI_HelpBullet("5. Add more keys at other times. The curve is drawn between them.");
+	ImGuiEditorUI_HelpBullet("6. File > Save writes the .ppe file.");
+	ImGuiEditorUI_HelpBullet("7. In the Game tab press Play to see the effect on screen, Stop to end it.");
 
 	ImGui::SeparatorText("Reading the timeline");
 
-	RenderPPEEditorUI_HelpBullet("The axis is time: 0.0 on the left, the end of the effect on the right.");
-	RenderPPEEditorUI_HelpBullet("Vertical marks are your keys. Hover a mark to see its time and value.");
-	RenderPPEEditorUI_HelpBullet("Click a mark to edit or delete it. Click empty space to move the cursor.");
-	RenderPPEEditorUI_HelpBullet("With 'place on click' enabled, a click on the timeline places a key at the click position: x is the time, y is the value.");
-	RenderPPEEditorUI_HelpBullet("Color sections show the channel intensity as a colored ramp. Value sections show the curve as a line with the value range on the side.");
+	ImGuiEditorUI_HelpBullet("The axis is time: 0.0 on the left, the end of the effect on the right.");
+	ImGuiEditorUI_HelpBullet("Vertical marks are your keys. Hover a mark to see its time and value.");
+	ImGuiEditorUI_HelpBullet("Click a mark to edit or delete it. Click empty space to move the cursor.");
+	ImGuiEditorUI_HelpBullet("With 'place on click' enabled, a click on the timeline places a key at the click position: x is the time, y is the value.");
+	ImGuiEditorUI_HelpBullet("Color sections show the channel intensity as a colored ramp. Value sections show the curve as a line with the value range on the side.");
 
 	ImGui::SeparatorText("Shortcuts and selection");
 
-	RenderPPEEditorUI_HelpBullet("Click on empty space: moves the time cursor (or places a key when 'place on click' is on).");
-	RenderPPEEditorUI_HelpBullet("Click on a mark: selects it. Its time and value can be edited in the row below, hovering shows the exact numbers.");
-	RenderPPEEditorUI_HelpBullet("Drag on empty space: draws a selection box. Color marks are full-height, so the box selects them by time; value dots are selected by time and value.");
-	RenderPPEEditorUI_HelpBullet("Ctrl + A: selects all keys of the current channel (not while typing in a text field).");
-	RenderPPEEditorUI_HelpBullet("Delete: deletes all selected keys (not while typing in a text field).");
-	RenderPPEEditorUI_HelpBullet("Escape: closes an open window (like the texture selector), a second press closes the editor.");
+	ImGuiEditorUI_HelpBullet("Click on empty space: moves the time cursor (or places a key when 'place on click' is on).");
+	ImGuiEditorUI_HelpBullet("Click on a mark: selects it. Its time and value can be edited in the row below, hovering shows the exact numbers.");
+	ImGuiEditorUI_HelpBullet("Drag on empty space: draws a selection box. Color marks are full-height, so the box selects them by time; value dots are selected by time and value.");
+	ImGuiEditorUI_HelpBullet("Ctrl + A: selects all keys of the current channel (not while typing in a text field).");
+	ImGuiEditorUI_HelpBullet("Delete: deletes all selected keys (not while typing in a text field).");
+	ImGuiEditorUI_HelpBullet("Escape: closes an open window (like the texture selector), a second press closes the editor.");
 
 	ImGui::SeparatorText("Sections: colors");
 
-	RenderPPEEditorUI_HelpSection("Base color", "The main color tint of the screen. Values around 0.5 are neutral. Raise a channel to make the picture more red, green or blue, lower it to darken that channel. Example: more red for a warm scene.");
-	RenderPPEEditorUI_HelpSection("Add color", "Color added on top of the picture, it makes the screen brighter. 0 means nothing is added. Small values (0.05 - 0.3) make the screen glow. Good for flashes and explosions.");
-	RenderPPEEditorUI_HelpSection("Gray color", "The color the picture fades toward. It works together with Gray value: Gray value says how strong, Gray color says into which color. The default 0.333 is neutral gray.");
-	RenderPPEEditorUI_HelpSection("Gray value", "How much the picture turns into the Gray color. 0 = normal colors, 1 = fully tinted. Think of it as the mix knob for Gray color.");
+	ImGuiEditorUI_HelpSection("Base color", "The main color tint of the screen. Values around 0.5 are neutral. Raise a channel to make the picture more red, green or blue, lower it to darken that channel. Example: more red for a warm scene.");
+	ImGuiEditorUI_HelpSection("Add color", "Color added on top of the picture, it makes the screen brighter. 0 means nothing is added. Small values (0.05 - 0.3) make the screen glow. Good for flashes and explosions.");
+	ImGuiEditorUI_HelpSection("Gray color", "The color the picture fades toward. It works together with Gray value: Gray value says how strong, Gray color says into which color. The default 0.333 is neutral gray.");
+	ImGuiEditorUI_HelpSection("Gray value", "How much the picture turns into the Gray color. 0 = normal colors, 1 = fully tinted. Think of it as the mix knob for Gray color.");
 
 	ImGui::SeparatorText("Sections: picture");
 
-	RenderPPEEditorUI_HelpSection("Blur", "How much the picture is blurred. 0 = sharp, higher values = stronger blur. Good for hits and dizziness.");
-	RenderPPEEditorUI_HelpSection("Duality H", "Double vision, shifted left-right. 0 = off. Small values give a slight ghost image next to the real one.");
-	RenderPPEEditorUI_HelpSection("Duality V", "The same as Duality H, but the ghost image is shifted up-down.");
+	ImGuiEditorUI_HelpSection("Blur", "How much the picture is blurred. 0 = sharp, higher values = stronger blur. Good for hits and dizziness.");
+	ImGuiEditorUI_HelpSection("Duality H", "Double vision, shifted left-right. 0 = off. Small values give a slight ghost image next to the real one.");
+	ImGuiEditorUI_HelpSection("Duality V", "The same as Duality H, but the ghost image is shifted up-down.");
 
 	ImGui::SeparatorText("Sections: noise");
 
-	RenderPPEEditorUI_HelpSection("Noise intensity", "How strong the film grain (static noise) on the screen is. 0 = clean picture.");
-	RenderPPEEditorUI_HelpSection("Noise grain", "The size of the noise dots. Small values = fine grain, big values = large dots.");
-	RenderPPEEditorUI_HelpSection("Noise FPS", "How fast the noise flickers. Low values = slow flicker, high values = fast flicker. The game multiplies this value by 100 when playing.");
+	ImGuiEditorUI_HelpSection("Noise intensity", "How strong the film grain (static noise) on the screen is. 0 = clean picture.");
+	ImGuiEditorUI_HelpSection("Noise grain", "The size of the noise dots. Small values = fine grain, big values = large dots.");
+	ImGuiEditorUI_HelpSection("Noise FPS", "How fast the noise flickers. Low values = slow flicker, high values = fast flicker. The game multiplies this value by 100 when playing.");
 
 	ImGui::SeparatorText("Sections: colormap");
 
-	RenderPPEEditorUI_HelpSection("CM influence", "How strongly the colormap affects the picture. 0 = off, 1 = full power. It works only when a texture is set in cm_tex1.");
-	RenderPPEEditorUI_HelpSection("cm_tex1 (colormap texture)", "A colormap is a lookup table that repaints all screen colors (color grading), for example a cold blue world or an old photo look. Press Select... to pick a texture from the list, hover an entry to preview it.");
+	ImGuiEditorUI_HelpSection("CM influence", "How strongly the colormap affects the picture. 0 = off, 1 = full power. It works only when a texture is set in cm_tex1.");
+	ImGuiEditorUI_HelpSection("cm_tex1 (colormap texture)", "A colormap is a lookup table that repaints all screen colors (color grading), for example a cold blue world or an old photo look. Press Select... to pick a texture from the list, hover an entry to preview it.");
 
 	ImGui::SeparatorText("Playback (Game tab)");
 
-	RenderPPEEditorUI_HelpBullet("Play starts the effect on your character. Pressing Play again replaces the running preview with your latest changes.");
-	RenderPPEEditorUI_HelpBullet("Stop fades the effect out.");
-	RenderPPEEditorUI_HelpBullet("The line under the buttons shows the current position and the total length, for cyclic and one-shot playback.");
-	RenderPPEEditorUI_HelpBullet("Cyclic can be toggled while the effect is playing, it applies immediately.");
+	ImGuiEditorUI_HelpBullet("Play starts the effect on your character. Pressing Play again replaces the running preview with your latest changes.");
+	ImGuiEditorUI_HelpBullet("Stop fades the effect out.");
+	ImGuiEditorUI_HelpBullet("The line under the buttons shows the current position and the total length, for cyclic and one-shot playback.");
+	ImGuiEditorUI_HelpBullet("Cyclic can be toggled while the effect is playing, it applies immediately.");
 
 	ImGui::SeparatorText("How sections combine");
 
-	RenderPPEEditorUI_HelpBullet("The game adds your effect on top of the normal picture. Empty channels do nothing at all.");
-	RenderPPEEditorUI_HelpBullet("Color sections repaint the picture: Base color multiplies it, Add color brightens it, Gray fades it into the Gray color by the Gray value.");
-	RenderPPEEditorUI_HelpBullet("Blur, Duality and Noise are applied on top of the colored picture. They all stack together.");
-	RenderPPEEditorUI_HelpBullet("The colormap (cm_tex1 + CM influence) repaints the final colors through a texture. It works only when both are set.");
-	RenderPPEEditorUI_HelpBullet("The factor of the effect fades everything in and out smoothly by itself, you do not need keys for that.");
+	ImGuiEditorUI_HelpBullet("The game adds your effect on top of the normal picture. Empty channels do nothing at all.");
+	ImGuiEditorUI_HelpBullet("Color sections repaint the picture: Base color multiplies it, Add color brightens it, Gray fades it into the Gray color by the Gray value.");
+	ImGuiEditorUI_HelpBullet("Blur, Duality and Noise are applied on top of the colored picture. They all stack together.");
+	ImGuiEditorUI_HelpBullet("The colormap (cm_tex1 + CM influence) repaints the final colors through a texture. It works only when both are set.");
+	ImGuiEditorUI_HelpBullet("The factor of the effect fades everything in and out smoothly by itself, you do not need keys for that.");
 
 	ImGui::SeparatorText("Examples");
 
-	RenderPPEEditorUI_HelpSection("Example: red hit (2 seconds)", "Base color: keys (0.0: r=0.5) -> (0.2: r=0.9) -> (2.0: r=0.5), keep g and b at 0.5. Blur: keys (0.0: 0) -> (0.2: 0.6) -> (2.0: 0). Total length: 2 sec. What you get: for two seconds the screen turns red and blurry, strongest at 0.2 sec, then everything fades back to normal.");
-	RenderPPEEditorUI_HelpSection("Example: white flash", "Add color: keys (0.0: r=g=b=0.6) -> (0.3: r=g=b=0). Total length: 0.3 sec. What you get: a short white flash. Add color brightens the picture, so the screen goes white and quickly returns to normal.");
-	RenderPPEEditorUI_HelpSection("Example: radioactive dirt", "Gray value: constant 0.2. Noise intensity: 0.3. Noise grain: 1.0. Noise FPS: 0.3. Blur: 0.1. Cyclic: on. What you get: a dirty, grainy, slightly blurred picture all the time, like standing in a radioactive area.");
-	RenderPPEEditorUI_HelpSection("Example: cold color grading", "cm_tex1: pick a cold or blue colormap with the Select... button. CM influence: constant 1.0. What you get: all colors are repainted through the texture, the world looks cold. Tip: lower CM influence to mix the grading with the normal colors.");
-	RenderPPEEditorUI_HelpSection("Example: ghost vision", "Duality H: keys (0.0: 0) -> (0.5: 0.03) -> (1.0: 0). Duality V: keep 0. Blur: 0.2 constant. Total length: 1 sec. What you get: the picture doubles sideways for a moment, like seeing double after a strong hit.");
+	ImGuiEditorUI_HelpSection("Example: red hit (2 seconds)", "Base color: keys (0.0: r=0.5) -> (0.2: r=0.9) -> (2.0: r=0.5), keep g and b at 0.5. Blur: keys (0.0: 0) -> (0.2: 0.6) -> (2.0: 0). Total length: 2 sec. What you get: for two seconds the screen turns red and blurry, strongest at 0.2 sec, then everything fades back to normal.");
+	ImGuiEditorUI_HelpSection("Example: white flash", "Add color: keys (0.0: r=g=b=0.6) -> (0.3: r=g=b=0). Total length: 0.3 sec. What you get: a short white flash. Add color brightens the picture, so the screen goes white and quickly returns to normal.");
+	ImGuiEditorUI_HelpSection("Example: radioactive dirt", "Gray value: constant 0.2. Noise intensity: 0.3. Noise grain: 1.0. Noise FPS: 0.3. Blur: 0.1. Cyclic: on. What you get: a dirty, grainy, slightly blurred picture all the time, like standing in a radioactive area.");
+	ImGuiEditorUI_HelpSection("Example: cold color grading", "cm_tex1: pick a cold or blue colormap with the Select... button. CM influence: constant 1.0. What you get: all colors are repainted through the texture, the world looks cold. Tip: lower CM influence to mix the grading with the normal colors.");
+	ImGuiEditorUI_HelpSection("Example: ghost vision", "Duality H: keys (0.0: 0) -> (0.5: 0.03) -> (1.0: 0). Duality V: keep 0. Blur: 0.2 constant. Total length: 1 sec. What you get: the picture doubles sideways for a moment, like seeing double after a strong hit.");
 }
 #endif
 
