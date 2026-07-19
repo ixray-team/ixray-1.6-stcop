@@ -604,6 +604,7 @@ struct CImGuiRequestManager
 
 /// @brief \~english if enabled 'bone renaming' section won't exist and you can directly rename from bone list  otherwise you have to rename only through 'bone renaming' section
 #define IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING 1
+#define IXRAY_OMF_EDITOR_TAB_HELP 1
 
 #define IXRAY_PPE_EDITOR_TAB_GAME 1
 #define IXRAY_PPE_EDITOR_TAB_EDITOR 1
@@ -623,6 +624,21 @@ enum class _eMessageBoxStatus
 };
 
 int ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::string_view message);
+
+// shared help-manual helpers for in-game editors
+inline void ImGuiEditorUI_HelpBullet(const char* text)
+{
+	ImGui::Bullet();
+	ImGui::TextWrapped("%s", text);
+}
+
+inline void ImGuiEditorUI_HelpSection(const char* name, const char* description)
+{
+	if (ImGui::CollapsingHeader(name))
+	{
+		ImGui::TextWrapped("%s", description);
+	}
+}
 
 /* INIT */
 void InitSections();
