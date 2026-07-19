@@ -19,6 +19,11 @@ struct SectionData
 {
 	Section Sorted{};
 	Section Unsorted{};
+	void clear()
+	{
+		Sorted.clear();
+		Unsorted.clear();
+	}
 };
 
 struct
@@ -82,6 +87,25 @@ Section FilterSectionsWithSearch(const Section& sections, const char* searchBuff
 void DestroySpawnManagerWindow()
 {
 	imgui_spawn_manager.sound_tip.reset();
+
+	imgui_spawn_manager.WeaponsSections.clear();
+	imgui_spawn_manager.ItemsSections.clear();
+	imgui_spawn_manager.ItemsUsedSections.clear();
+	imgui_spawn_manager.DevicesSections.clear();
+	imgui_spawn_manager.AmmoSections.clear();
+	imgui_spawn_manager.OutfitSections.clear();
+	imgui_spawn_manager.AddonSections.clear();
+	imgui_spawn_manager.ArtefactSections.clear();
+	imgui_spawn_manager.MpStuffSections.clear();
+
+	imgui_spawn_manager.NpcList.clear();
+	imgui_spawn_manager.Squads.clear();
+	imgui_spawn_manager.Monsters.clear();
+	imgui_spawn_manager.Vehicles.clear();
+	imgui_spawn_manager.DynamicObjects.clear();
+	imgui_spawn_manager.Explosives.clear();
+	imgui_spawn_manager.Anomalies.clear();
+	imgui_spawn_manager.Others.clear();
 }
 
 void InitSections()
