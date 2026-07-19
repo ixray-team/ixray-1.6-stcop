@@ -32,16 +32,6 @@ void RegisterImGuiInGame()
 	}
 }
 
-void DestroyImGuiInGame()
-{
-	if (Device.IsEditorMode())
-	{
-		return;
-	}
-
-	DestroySpawnManagerWindow();
-}
-
 eSelectedType CImGuiGameSearchManager::convertCLSIDToType(CLASS_ID id) {
 	eSelectedType result = eSelectedType::kSelectedType_Count;
 
