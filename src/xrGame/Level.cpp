@@ -237,7 +237,6 @@ CLevel::~CLevel()
 	
 	Device.LuaGC.clear();
 
-	DestroyImGuiInGame();
 	xr_delete					(g_player_hud);
 	delete_data					(hud_zones_list);
 	hud_zones_list				= nullptr;
