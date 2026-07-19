@@ -6,6 +6,7 @@
 #include "UIMap.h"
 #include "UIMapWnd.h"
 #include "../../xrEngine/xr_input.h"		//remove me !!!
+#include "../HudPdaAnimator.h"
 
 const u32			activeLocalMapColor			= 0xffffffff;//0xffc80000;
 const u32			inactiveLocalMapColor		= 0xffffffff;//0xff438cd1;
@@ -98,8 +99,8 @@ void CUICustomMap::Init_internal(const shared_str& name, CInifile& pLtx, const s
 	
 	if(!Heading())
 	{
-		tmp.x					*= UI().get_current_kx();
-		tmp.z					*= UI().get_current_kx();
+		tmp.x					*= CHudPdaAnimator::GetPDAScreen_kx();
+		tmp.z					*= CHudPdaAnimator::GetPDAScreen_kx();
 	}
 
 	m_BoundRect_.set		(tmp.x, tmp.y, tmp.z, tmp.w);
@@ -137,10 +138,10 @@ Fvector2 CUICustomMap::ConvertRealToLocal  (const Fvector2& src, bool for_drawin
 	if( !Heading() )
 	{
 		Frect bound_rect	= BoundRect();
-		bound_rect.x1		/= UI().get_current_kx();
-		bound_rect.x2		/= UI().get_current_kx();
+		bound_rect.x1		/= CHudPdaAnimator::GetPDAScreen_kx();
+		bound_rect.x2		/= CHudPdaAnimator::GetPDAScreen_kx();
 		res					= ConvertRealToLocalNoTransform(src, bound_rect);
-		res.x				*= UI().get_current_kx();
+		res.x				*= CHudPdaAnimator::GetPDAScreen_kx();
 	}else
 	{
 		Fvector2 heading_pivot = GetStaticItem()->GetHeadingPivot();
@@ -467,8 +468,8 @@ void CUILevelMap::Init_internal	(const shared_str& name, CInifile& pLtx, const s
 	inherited::Init_internal(name, pLtx, sect_name, sh_name);
 	Fvector4 tmp			= pGameIni->r_fvector4(MapName(),"global_rect");
 
-	tmp.x					*= UI().get_current_kx();
-	tmp.z					*= UI().get_current_kx();
+	tmp.x					*= CHudPdaAnimator::GetPDAScreen_kx();
+	tmp.z					*= CHudPdaAnimator::GetPDAScreen_kx();
 	m_GlobalRect.set		(tmp.x, tmp.y, tmp.z, tmp.w);
 
 	if (EngineExternal().ClearSkyMode())

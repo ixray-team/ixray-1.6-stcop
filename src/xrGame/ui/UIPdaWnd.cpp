@@ -34,6 +34,7 @@
 #include "UIDiaryWnd.h"
 #include "../../xrUI/UICursor.h"
 #include "../../xrUI/Widgets/UIGamepadLegend.h"
+#include "../HudPdaAnimator.h"
 
 #define PDA_XML		"pda.xml"
 
@@ -967,7 +968,7 @@ void RearrangeTabButtonsLegacy(CUITabControl* pTab, xr_vector<Fvector2>& vec_sig
 		vec_sign_places[idx].set(pos);
 		vec_sign_places[idx].y	+= iFloor(((*it)->GetWndSize().y - sign_sz.y)/2.0f);
 		vec_sign_places[idx].y	= (float)iFloor(vec_sign_places[idx].y);
-		pos.x					+= sign_sz.x * UI().get_current_kx();
+		pos.x					+= sign_sz.x * CHudPdaAnimator::GetPDAScreen_kx();
 
 		(*it)->SetWndPos		(pos);
 		(*it)->AdjustWidthToText();
