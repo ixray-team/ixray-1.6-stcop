@@ -21,6 +21,7 @@ struct LevelInspector final
 		ESF_DRAW_CFORM_ALL			= bit_lshift(13U),
 		ESF_DRAW_CFORM_TRIS			= bit_lshift(14U),
 		ESF_DRAW_LEVEL_BOUNDS		= bit_lshift(15U),
+		ESF_DRAW_SOM				= (1 << 16),
 	};
 	
 	enum ESELECTION_FLAGS
@@ -503,6 +504,7 @@ struct LevelInspector final
 	void DrawSpatials();
 	void DrawHOM();
 	void DrawCFORM();
+	void DrawSOM();
 
 	void DrawLevelGraph();
 

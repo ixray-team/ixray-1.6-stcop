@@ -84,6 +84,11 @@ public:
 	virtual void						set_geometry_occ		( CDB::MODEL*	M );
 	virtual void						set_handler				( sound_event*	E );
 
+	virtual CDB::COLLIDER* get_geometry_db();
+	virtual CDB::MODEL* get_geometry_env();
+	virtual CDB::MODEL* get_geometry_som();
+	virtual CDB::MODEL* get_geometry_occ();
+
 	virtual void						update					( const Fvector& P, const Fvector& D, const Fvector& N );
 	virtual void						update_events			( );
 	virtual void						statistic				( CSound_stats*  dest, CSound_stats_ext*  ext );
