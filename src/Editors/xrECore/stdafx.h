@@ -5,6 +5,7 @@
 // DirectX headers
 
 #define USE_DX11 1
+#include <d3d9.h>
 #include <d3d11.h>
 #include <d3d11shader.h>
 
