@@ -28,12 +28,12 @@ CMapSpot::~CMapSpot()
 {
 }
 
-void CMapSpot::Load(CUIXml* xml, const char* path)
+void CMapSpot::Load(CUIXml* xml, const char* path, float kx)
 {
 	CUIXmlInit::InitStatic(*xml,path,0,this);
 	if(!Heading())
 	{
-		SetWidth			(GetWidth()*UI().get_current_kx());
+		SetWidth			(GetWidth()*kx);
 		SetStretchTexture	(true);
 	}
 
@@ -54,11 +54,15 @@ void CMapSpot::Load(CUIXml* xml, const char* path)
 	{
 		m_border_static			= UIHelper::CreateStatic( *xml, str, this );
 		m_border_static->Show	( false );
-		if (!Heading()) {
-			m_border_static->SetWidth(m_border_static->GetWidth() * UI().get_current_kx());
-			if (!UI().is_widescreen()) {
-				m_border_static->SetHeight(m_border_static->GetHeight() * UI().get_current_kx());
-			} else {
+		if (!Heading()) 
+		{
+			m_border_static->SetWidth(m_border_static->GetWidth() * kx);
+			if (!UI().is_widescreen()) 
+			{
+				m_border_static->SetHeight(m_border_static->GetHeight() * kx);
+			} 
+			else 
+			{
 				m_border_static->SetTextureOffset(1, 0);
 			}
 			m_border_static->SetStretchTexture(true);
@@ -153,9 +157,9 @@ CMiniMapSpot::~CMiniMapSpot()
 {
 }
 
-void CMiniMapSpot::Load(CUIXml* xml, const char* path)
+void CMiniMapSpot::Load(CUIXml* xml, const char* path, float kx)
 {
-	inherited::Load(xml,path);
+	inherited::Load(xml,path,kx);
 
 	string256 buf;
 	XML_NODE* n = nullptr;
@@ -295,9 +299,9 @@ CUIStaticOrig* CComplexMapSpot::CreateStaticOrig(CUIXml& xml, const char* ui_pat
 	return					ui;
 }
 
-void CComplexMapSpot::Load( CUIXml* xml, const char* path ) // complex_spot_template
+void CComplexMapSpot::Load( CUIXml* xml, const char* path, float kx ) // complex_spot_template
 {
-	inherited::Load			(xml, path);
+	inherited::Load			(xml, path, kx);
 
 	XML_NODE* stored_root	= xml->GetLocalRoot();
 	XML_NODE* node			= xml->NavigateToNode( path, 0 );
@@ -307,9 +311,10 @@ void CComplexMapSpot::Load( CUIXml* xml, const char* path ) // complex_spot_temp
 	m_right_icon			= CreateStaticOrig(*xml, "right_icon");
 	m_top_icon				= CreateStaticOrig(*xml, "top_icon");
 	m_top_icon->SetStretchTexture(true);
-	m_top_icon->SetWidth(m_top_icon->GetWidth() * UI().get_current_kx());
-	if (!UI().is_widescreen()) {
-		m_top_icon->SetHeight(m_top_icon->GetHeight() * UI().get_current_kx());
+	m_top_icon->SetWidth(m_top_icon->GetWidth() * kx);
+	if (!UI().is_widescreen()) 
+	{
+		m_top_icon->SetHeight(m_top_icon->GetHeight() * kx);
 	}
 	m_timer					= CreateStaticOrig(*xml, "timer");
 
