@@ -72,7 +72,7 @@ private:
 	float				m_war_states_dx;
 	float				m_war_states_xcenter;
 	enum				{ max_war_state = FactionState::war_state_count };
-	svector<UIWarState*, max_war_state> m_war_state;
+	FixedVector<UIWarState*, max_war_state> m_war_state;
 
 	enum				{ max_bonuce = 6 };
 	CUIStatic*			m_our_bonuces[max_bonuce];
