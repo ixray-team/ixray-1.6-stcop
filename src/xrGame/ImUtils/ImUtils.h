@@ -607,6 +607,7 @@ struct CImGuiRequestManager
 
 #define IXRAY_PPE_EDITOR_TAB_GAME 1
 #define IXRAY_PPE_EDITOR_TAB_EDITOR 1
+#define IXRAY_PPE_EDITOR_TAB_HELP 1
 
 // todo: implement viewer
 /// @brief \~english if enabled the editor tab of the PPE editor gets a 'Preview' column for a curve viewer (not implemented yet)
