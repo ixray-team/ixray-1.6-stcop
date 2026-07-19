@@ -1317,10 +1317,16 @@ void RenderPPEEditorUI_Timeline(
 
 			for (st_Key* key : p_channel->keys)
 			{
-				if (
-					key->time >= time_min && key->time <= time_max &&
-					key->value >= value_min && key->value <= value_max
-				)
+				// color marks span the full height, so their box selects by
+				// time only; value dots are 2d points, they select by both
+				bool is_inside = (key->time >= time_min && key->time <= time_max);
+
+				if (is_inside && meta.kind == _ePPEParamKind::kValue)
+				{
+					is_inside = (key->value >= value_min && key->value <= value_max);
+				}
+
+				if (is_inside)
 				{
 					selection.push_back(key);
 				}
@@ -1346,8 +1352,14 @@ void RenderPPEEditorUI_Timeline(
 		is_drag_started = false;
 	}
 
-	// ctrl+a while hovering the timeline: select all keys of the channel
-	if (is_hovered && ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_A))
+	// ctrl+a: select all keys of the channel (works regardless of the mouse
+	// position, but not while typing in a text field or while a modal is open)
+	if (
+		ImGui::IsKeyDown(ImGuiKey_LeftCtrl) &&
+		ImGui::IsKeyPressed(ImGuiKey_A) &&
+		ImGui::GetIO().WantTextInput == false &&
+		g_ppe_tex_browser.is_open == false
+	)
 	{
 		selection.clear();
 
@@ -1357,8 +1369,13 @@ void RenderPPEEditorUI_Timeline(
 		}
 	}
 
-	// delete key while hovering the timeline: delete all selected keys
-	if (is_hovered && ImGui::IsKeyPressed(ImGuiKey_Delete) && selection.empty() == false)
+	// delete key: delete all selected keys (same conditions as ctrl+a)
+	if (
+		ImGui::IsKeyPressed(ImGuiKey_Delete) &&
+		selection.empty() == false &&
+		ImGui::GetIO().WantTextInput == false &&
+		g_ppe_tex_browser.is_open == false
+	)
 	{
 		PPEEditor_DeleteSelectedKeys(*p_channel, selection);
 	}
@@ -2197,9 +2214,9 @@ void RenderPPEEditor_Draw_HelpTab()
 
 	RenderPPEEditorUI_HelpBullet("Click on empty space: moves the time cursor (or places a key when 'place on click' is on).");
 	RenderPPEEditorUI_HelpBullet("Click on a mark: selects it. Its time and value can be edited in the row below, hovering shows the exact numbers.");
-	RenderPPEEditorUI_HelpBullet("Drag on empty space: draws a selection box, all keys inside it become selected.");
-	RenderPPEEditorUI_HelpBullet("Ctrl + A (while hovering the timeline): selects all keys of the current channel.");
-	RenderPPEEditorUI_HelpBullet("Delete (while hovering the timeline): deletes all selected keys.");
+	RenderPPEEditorUI_HelpBullet("Drag on empty space: draws a selection box. Color marks are full-height, so the box selects them by time; value dots are selected by time and value.");
+	RenderPPEEditorUI_HelpBullet("Ctrl + A: selects all keys of the current channel (not while typing in a text field).");
+	RenderPPEEditorUI_HelpBullet("Delete: deletes all selected keys (not while typing in a text field).");
 	RenderPPEEditorUI_HelpBullet("Escape: closes an open window (like the texture selector), a second press closes the editor.");
 
 	ImGui::SeparatorText("Sections: colors");
