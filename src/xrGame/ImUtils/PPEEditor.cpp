@@ -38,21 +38,23 @@ struct _SPPEParamMeta
 	const char* name;
 	_ePPEParamKind kind;
 	u8 index; // index into colors[] / values[] of SPPEffectData
+	float v_min; // accepted value range (display expands when data exceeds it)
+	float v_max;
 };
 
 // serialization order of the .ppe format (see CPostprocessAnimator::Load)
 constexpr _SPPEParamMeta _kPPEParamMetas[POSTPROCESS_PARAMS_COUNT] = {
-	{"Base color", _ePPEParamKind::kColor, 0},
-	{"Add color", _ePPEParamKind::kColor, 1},
-	{"Gray color", _ePPEParamKind::kColor, 2},
-	{"Gray value", _ePPEParamKind::kValue, 0},
-	{"Blur", _ePPEParamKind::kValue, 1},
-	{"Duality H", _ePPEParamKind::kValue, 2},
-	{"Duality V", _ePPEParamKind::kValue, 3},
-	{"Noise intensity", _ePPEParamKind::kValue, 4},
-	{"Noise grain", _ePPEParamKind::kValue, 5},
-	{"Noise FPS", _ePPEParamKind::kValue, 6},
-	{"CM influence", _ePPEParamKind::kValue, 7},
+	{"Base color", _ePPEParamKind::kColor, 0, 0.0f, 1.0f},
+	{"Add color", _ePPEParamKind::kColor, 1, 0.0f, 1.0f},
+	{"Gray color", _ePPEParamKind::kColor, 2, 0.0f, 1.0f},
+	{"Gray value", _ePPEParamKind::kValue, 0, 0.0f, 1.0f},
+	{"Blur", _ePPEParamKind::kValue, 1, 0.0f, 1.0f},
+	{"Duality H", _ePPEParamKind::kValue, 2, -1.0f, 1.0f},
+	{"Duality V", _ePPEParamKind::kValue, 3, -1.0f, 1.0f},
+	{"Noise intensity", _ePPEParamKind::kValue, 4, 0.0f, 1.0f},
+	{"Noise grain", _ePPEParamKind::kValue, 5, 0.0f, 10.0f},
+	{"Noise FPS", _ePPEParamKind::kValue, 6, 0.0f, 1.0f},
+	{"CM influence", _ePPEParamKind::kValue, 7, 0.0f, 1.0f},
 };
 
 // editor's own model of a .ppe file.
@@ -186,10 +188,15 @@ struct SPPEditorUIState
 	int current_selected_param{};
 	int current_selected_file{}; // index into combo_files, 0 = "<not selected>"
 	// timeline state, per param
+	bool timeline_place_on_click{};
 	float timeline_cursor[POSTPROCESS_PARAMS_COUNT]{};
 	float timeline_new_key_value[POSTPROCESS_PARAMS_COUNT]{};
 	int timeline_selected_channel[POSTPROCESS_PARAMS_COUNT]{};
-	st_Key* timeline_selected_key[POSTPROCESS_PARAMS_COUNT]{};
+	xr_vector<st_Key*> timeline_selected_keys[POSTPROCESS_PARAMS_COUNT];
+	float timeline_drag_time[POSTPROCESS_PARAMS_COUNT]{};
+	float timeline_drag_value[POSTPROCESS_PARAMS_COUNT]{};
+	bool timeline_drag_started[POSTPROCESS_PARAMS_COUNT]{};
+	bool timeline_is_dragging[POSTPROCESS_PARAMS_COUNT]{};
 	float total_length_edit{};
 	u32 file_version{};
 	xr_stack_string<sizeof(string_path) * 2> path;       // absolute path when loaded from disk
@@ -208,7 +215,11 @@ struct SPPEditorUIState
 			timeline_cursor[param] = 0.0f;
 			timeline_new_key_value[param] = 0.0f;
 			timeline_selected_channel[param] = 0;
-			timeline_selected_key[param] = nullptr;
+			timeline_selected_keys[param].clear();
+			timeline_drag_time[param] = 0.0f;
+			timeline_drag_value[param] = 0.0f;
+			timeline_drag_started[param] = false;
+			timeline_is_dragging[param] = false;
 		}
 	}
 };
@@ -1026,11 +1037,38 @@ void RenderPPEEditorUI_SourceInfo(SPPEditorUIState& state)
 	}
 }
 
+// the value range of a channel: the section's accepted range from the
+// meta table, expanded when the actual data exceeds it
+void PPEEditor_GetChannelRange(
+	const _SPPEParamMeta& meta,
+	const CEnvelope& channel,
+	float& out_min,
+	float& out_max
+)
+{
+	out_min = meta.v_min;
+	out_max = meta.v_max;
+
+	for (const st_Key* key : channel.keys)
+	{
+		out_min = std::min(out_min, key->value);
+		out_max = std::max(out_max, key->value);
+	}
+
+	if (out_max - out_min < 0.0001f)
+	{
+		out_min -= 0.5f;
+		out_max += 0.5f;
+	}
+}
+
 constexpr int _kPPETimelineSamples = 64;
 
-// draws the timeline axis (0.0 .. axis_length): a sampled color gradient
-// for color params, a value curve for value params, plus the marks of the
-// selected channel, the time cursor and mark/cursor interaction
+// draws the timeline axis (0.0 .. axis_length): a sampled ramp of the
+// selected channel (color params) or a value curve (value params), plus
+// the marks of the channel, the time cursor and all the interaction:
+// click = cursor/mark select, place-on-click = insert key at the click
+// position, ctrl+a = select all keys, drag = 2d selection box
 void RenderPPEEditorUI_Timeline(
 	SPPEditorUIState& state,
 	SPPEffectData& data,
@@ -1040,28 +1078,28 @@ void RenderPPEEditorUI_Timeline(
 {
 	const int param_index = state.current_selected_param;
 	float& cursor = state.timeline_cursor[param_index];
-	st_Key*& selected_key = state.timeline_selected_key[param_index];
+	xr_vector<st_Key*>& selection = state.timeline_selected_keys[param_index];
 	const int selected_channel = state.timeline_selected_channel[param_index];
 
 	clamp(cursor, 0.0f, axis_length);
 
-	// channels for gradient sampling (color params) and the channel
-	// whose keys are shown as marks
-	CEnvelope* channels[3] = {};
+	// channel whose keys are shown as marks
 	CEnvelope* p_channel = nullptr;
 
 	if (meta.kind == _ePPEParamKind::kColor)
 	{
 		SPPEffectData::SColorParam& param = data.colors[meta.index];
-		channels[0] = &param.r;
-		channels[1] = &param.g;
-		channels[2] = &param.b;
+
+		CEnvelope* channels[3] = {&param.r, &param.g, &param.b};
 		p_channel = channels[selected_channel];
 	}
 	else
 	{
 		p_channel = &data.values[meta.index].v;
 	}
+
+	float range_min = 0.0f, range_max = 1.0f;
+	PPEEditor_GetChannelRange(meta, *p_channel, range_min, range_max);
 
 	static const float _kChannelHues[3][3] = {
 		{1.0f, 0.12f, 0.12f},
@@ -1092,32 +1130,25 @@ void RenderPPEEditorUI_Timeline(
 		return canvas_pos.x + (time / axis_length) * canvas_size.x;
 	};
 
-	// value range for the curve (value params only)
-	float min_value = FLT_MAX;
-	float max_value = -FLT_MAX;
-	float samples[_kPPETimelineSamples] = {};
-
-	if (meta.kind == _ePPEParamKind::kValue)
+	auto value_to_y = [&canvas_pos, &canvas_size, range_min, range_max](float value)
 	{
-		for (int i = 0; i < _kPPETimelineSamples; ++i)
-		{
-			float t = (float)i / (_kPPETimelineSamples - 1) * axis_length;
-			samples[i] = p_channel->keys.empty() ? 0.0f : p_channel->Evaluate(t);
+		return canvas_pos.y + canvas_size.y - ((value - range_min) / (range_max - range_min)) * canvas_size.y;
+	};
 
-			min_value = std::min(min_value, samples[i]);
-			max_value = std::max(max_value, samples[i]);
-		}
-
-		if (max_value - min_value < 0.0001f)
-		{
-			min_value -= 0.5f;
-			max_value += 0.5f;
-		}
-	}
-
-	auto value_to_y = [&canvas_pos, &canvas_size, min_value, max_value](float value)
+	auto pos_to_time = [&canvas_pos, &canvas_size, axis_length](float x)
 	{
-		return canvas_pos.y + canvas_size.y - ((value - min_value) / (max_value - min_value)) * canvas_size.y;
+		float time = ((x - canvas_pos.x) / canvas_size.x) * axis_length;
+		clamp(time, 0.0f, axis_length);
+		return time;
+	};
+
+	// click y maps to the section's accepted value range (clamped):
+	// top border = max value, bottom border = min value
+	auto pos_to_value = [&canvas_pos, &canvas_size, range_min, range_max](float y)
+	{
+		float value = range_max - ((y - canvas_pos.y) / canvas_size.y) * (range_max - range_min);
+		clamp(value, range_min, range_max);
+		return value;
 	};
 
 	// preview: intensity ramp of the selected channel (color params)
@@ -1154,19 +1185,20 @@ void RenderPPEEditorUI_Timeline(
 		for (int i = 0; i < _kPPETimelineSamples; ++i)
 		{
 			float t = (float)i / (_kPPETimelineSamples - 1) * axis_length;
-			points[i] = ImVec2(time_to_x(t), value_to_y(samples[i]));
+			float value = p_channel->keys.empty() ? 0.0f : p_channel->Evaluate(t);
+			points[i] = ImVec2(time_to_x(t), value_to_y(value));
 		}
 
 		p_draw_list->AddPolyline(points, _kPPETimelineSamples, IM_COL32(90, 160, 255, 255), 0, 1.5f);
 
 		char range_label[32];
-		std::sprintf(range_label, "%.2f", max_value);
+		std::sprintf(range_label, "%.2f", range_max);
 		p_draw_list->AddText(ImVec2(canvas_pos.x + 2.0f, canvas_pos.y + 2.0f), IM_COL32(140, 140, 140, 255), range_label);
-		std::sprintf(range_label, "%.2f", min_value);
+		std::sprintf(range_label, "%.2f", range_min);
 		p_draw_list->AddText(ImVec2(canvas_pos.x + 2.0f, canvas_pos.y + canvas_size.y - 16.0f), IM_COL32(140, 140, 140, 255), range_label);
 	}
 
-	// marks of the selected channel + hover hit-test
+	// hover hit-test of marks
 	st_Key* hovered_key = nullptr;
 	const ImVec2 mouse_pos = ImGui::GetMousePos();
 
@@ -1182,18 +1214,102 @@ void RenderPPEEditorUI_Timeline(
 		}
 	}
 
+	// interaction: mark click / empty click / selection box / place on click
+	bool& is_drag_started = state.timeline_drag_started[param_index];
+	bool& is_dragging = state.timeline_is_dragging[param_index];
+	float& drag_time = state.timeline_drag_time[param_index];
+	float& drag_value = state.timeline_drag_value[param_index];
+
 	if (is_clicked)
 	{
 		if (hovered_key)
 		{
-			selected_key = hovered_key;
+			selection.clear();
+			selection.push_back(hovered_key);
+			is_drag_started = false;
+			is_dragging = false;
 		}
 		else
 		{
-			float new_cursor = ((mouse_pos.x - canvas_pos.x) / canvas_size.x) * axis_length;
-			clamp(new_cursor, 0.0f, axis_length);
-			cursor = new_cursor;
-			selected_key = nullptr;
+			// possible start of a click or a selection box
+			drag_time = pos_to_time(mouse_pos.x);
+			drag_value = pos_to_value(mouse_pos.y);
+			is_drag_started = true;
+			is_dragging = false;
+		}
+	}
+
+	if (is_drag_started && is_dragging == false && ImGui::IsItemActive())
+	{
+		// start the selection box only after a small movement threshold
+		if (
+			std::fabs(mouse_pos.x - time_to_x(drag_time)) > 4.0f ||
+			std::fabs(mouse_pos.y - value_to_y(drag_value)) > 4.0f
+		)
+		{
+			is_dragging = true;
+		}
+	}
+
+	if (is_dragging)
+	{
+		// the 2d selection box
+		float box_x0 = std::min(time_to_x(drag_time), mouse_pos.x);
+		float box_y0 = std::min(value_to_y(drag_value), mouse_pos.y);
+		float box_x1 = std::max(time_to_x(drag_time), mouse_pos.x);
+		float box_y1 = std::max(value_to_y(drag_value), mouse_pos.y);
+
+		p_draw_list->AddRectFilled(ImVec2(box_x0, box_y0), ImVec2(box_x1, box_y1), IM_COL32(90, 160, 255, 40));
+		p_draw_list->AddRect(ImVec2(box_x0, box_y0), ImVec2(box_x1, box_y1), IM_COL32(90, 160, 255, 200));
+
+		if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+		{
+			float time_min = std::min(drag_time, pos_to_time(mouse_pos.x));
+			float time_max = std::max(drag_time, pos_to_time(mouse_pos.x));
+			float value_min = std::min(drag_value, pos_to_value(mouse_pos.y));
+			float value_max = std::max(drag_value, pos_to_value(mouse_pos.y));
+
+			selection.clear();
+
+			for (st_Key* key : p_channel->keys)
+			{
+				if (
+					key->time >= time_min && key->time <= time_max &&
+					key->value >= value_min && key->value <= value_max
+				)
+				{
+					selection.push_back(key);
+				}
+			}
+
+			is_drag_started = false;
+			is_dragging = false;
+		}
+	}
+	else if (is_drag_started && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+	{
+		// simple click on empty space
+		if (state.timeline_place_on_click)
+		{
+			p_channel->InsertKey(drag_time, drag_value);
+		}
+		else
+		{
+			cursor = drag_time;
+			selection.clear();
+		}
+
+		is_drag_started = false;
+	}
+
+	// ctrl+a while hovering the timeline: select all keys of the channel
+	if (is_hovered && ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_A))
+	{
+		selection.clear();
+
+		for (st_Key* key : p_channel->keys)
+		{
+			selection.push_back(key);
 		}
 	}
 
@@ -1201,6 +1317,7 @@ void RenderPPEEditorUI_Timeline(
 	{
 		float key_x = time_to_x(key->time);
 		float intensity = 0.25f + 0.75f * std::min(std::max(key->value, 0.0f), 1.0f);
+		bool is_selected = std::find(selection.begin(), selection.end(), key) != selection.end();
 
 		if (meta.kind == _ePPEParamKind::kColor)
 		{
@@ -1216,9 +1333,9 @@ void RenderPPEEditorUI_Timeline(
 			p_draw_list->AddRectFilled(ImVec2(key_x - 2.5f, canvas_pos.y), ImVec2(key_x + 2.5f, canvas_pos.y + canvas_size.y), IM_COL32(0, 0, 0, 255));
 			p_draw_list->AddRectFilled(ImVec2(key_x - 1.0f, canvas_pos.y), ImVec2(key_x + 1.0f, canvas_pos.y + canvas_size.y), mark_color);
 
-			if (key == selected_key || key == hovered_key)
+			if (is_selected || key == hovered_key)
 			{
-				ImU32 outline_color = (key == selected_key) ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 220, 90, 255);
+				ImU32 outline_color = is_selected ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 220, 90, 255);
 				p_draw_list->AddRect(ImVec2(key_x - 3.5f, canvas_pos.y), ImVec2(key_x + 3.5f, canvas_pos.y + canvas_size.y), outline_color);
 			}
 		}
@@ -1230,9 +1347,9 @@ void RenderPPEEditorUI_Timeline(
 			p_draw_list->AddCircleFilled(ImVec2(key_x, key_y), 4.5f, IM_COL32(0, 0, 0, 255));
 			p_draw_list->AddCircleFilled(ImVec2(key_x, key_y), 3.0f, mark_color);
 
-			if (key == selected_key || key == hovered_key)
+			if (is_selected || key == hovered_key)
 			{
-				ImU32 outline_color = (key == selected_key) ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 220, 90, 255);
+				ImU32 outline_color = is_selected ? IM_COL32(255, 255, 255, 255) : IM_COL32(255, 220, 90, 255);
 				p_draw_list->AddCircle(ImVec2(key_x, key_y), 6.0f, outline_color);
 			}
 		}
@@ -1272,29 +1389,69 @@ void RenderPPEEditorUI_Timeline(
 	}
 }
 
-// row under the timeline: edit the selected key (time/value/delete) or
-// add a new key at the cursor position
+void PPEEditor_DeleteSelectedKeys(CEnvelope& channel, xr_vector<st_Key*>& selection)
+{
+	for (st_Key* selected : selection)
+	{
+		for (auto it = channel.keys.begin(); it != channel.keys.end(); ++it)
+		{
+			if (*it == selected)
+			{
+				xr_delete(*it);
+				channel.keys.erase(it);
+				break;
+			}
+		}
+	}
+
+	selection.clear();
+}
+
+// row under the timeline: edit the selected key(s) (time/value/delete)
+// or add a new key at the cursor position, plus the place-on-click toggle
 void RenderPPEEditorUI_TimelineKeyRow(
 	CEnvelope& channel,
 	SPPEditorUIState& state,
 	int param_index
 )
 {
-	st_Key*& selected_key = state.timeline_selected_key[param_index];
+	xr_vector<st_Key*>& selection = state.timeline_selected_keys[param_index];
 	float& cursor = state.timeline_cursor[param_index];
 	float& new_key_value = state.timeline_new_key_value[param_index];
 
-	if (selected_key)
+	if (selection.empty())
+	{
+		ImGui::Text("new key at cursor:");
+	}
+	else if (selection.size() == 1)
 	{
 		ImGui::Text("selected key:");
 	}
 	else
 	{
-		ImGui::Text("new key at cursor:");
+		ImGui::Text("%d keys selected", (int)selection.size());
+	}
+
+	if (selection.size() > 1)
+	{
+		ImGui::SameLine();
+
+		if (ImGui::SmallButton("Delete all##PPEKeysDeleteAll"))
+		{
+			PPEEditor_DeleteSelectedKeys(channel, selection);
+		}
+
+		ImGui::SameLine();
+		ImGui::Checkbox("place on click", &state.timeline_place_on_click);
+		ImGui::SetItemTooltip("When enabled, clicking on the timeline places a key at the click position (x = time, y = value)");
+
+		return;
 	}
 
 	ImGui::SameLine();
 	ImGui::SetNextItemWidth(100.0f);
+
+	st_Key* selected_key = selection.empty() ? nullptr : selection[0];
 
 	if (selected_key)
 	{
@@ -1342,19 +1499,13 @@ void RenderPPEEditorUI_TimelineKeyRow(
 	{
 		if (ImGui::SmallButton("Delete##PPEKeyDelete"))
 		{
-			for (auto it = channel.keys.begin(); it != channel.keys.end(); ++it)
-			{
-				if (*it == selected_key)
-				{
-					xr_delete(*it);
-					channel.keys.erase(it);
-					break;
-				}
-			}
-
-			selected_key = nullptr;
+			PPEEditor_DeleteSelectedKeys(channel, selection);
 		}
 	}
+
+	ImGui::SameLine();
+	ImGui::Checkbox("place on click", &state.timeline_place_on_click);
+	ImGui::SetItemTooltip("When enabled, clicking on the timeline places a key at the click position (x = time, y = value)");
 }
 
 // color param: channel tabs (tinted by channel hue and its value at the
@@ -1425,7 +1576,7 @@ void RenderPPEEditorUI_ColorParamEditor(
 					if (selected_channel != i)
 					{
 						selected_channel = i;
-						state.timeline_selected_key[param_index] = nullptr;
+						state.timeline_selected_keys[param_index].clear();
 					}
 				}
 
@@ -1778,7 +1929,7 @@ void RenderPPEEditorUI_EffectBody(SPPEditorUIState& state, SPPEffectData& data)
 			data.values[meta.index].v.ClearAndFree();
 		}
 
-		state.timeline_selected_key[state.current_selected_param] = nullptr;
+		state.timeline_selected_keys[state.current_selected_param].clear();
 	}
 
 	ImGui::PopID();
@@ -2024,6 +2175,22 @@ void RenderPPEEditor_Draw_HelpTab()
 	RenderPPEEditorUI_HelpBullet("Stop fades the effect out.");
 	RenderPPEEditorUI_HelpBullet("The line under the buttons shows the current position and the total length, for cyclic and one-shot playback.");
 	RenderPPEEditorUI_HelpBullet("Cyclic can be toggled while the effect is playing, it applies immediately.");
+
+	ImGui::SeparatorText("How sections combine");
+
+	RenderPPEEditorUI_HelpBullet("The game adds your effect on top of the normal picture. Empty channels do nothing at all.");
+	RenderPPEEditorUI_HelpBullet("Color sections repaint the picture: Base color multiplies it, Add color brightens it, Gray fades it into the Gray color by the Gray value.");
+	RenderPPEEditorUI_HelpBullet("Blur, Duality and Noise are applied on top of the colored picture. They all stack together.");
+	RenderPPEEditorUI_HelpBullet("The colormap (cm_tex1 + CM influence) repaints the final colors through a texture. It works only when both are set.");
+	RenderPPEEditorUI_HelpBullet("The factor of the effect fades everything in and out smoothly by itself, you do not need keys for that.");
+
+	ImGui::SeparatorText("Examples");
+
+	RenderPPEEditorUI_HelpSection("Example: red hit (2 seconds)", "Base color: keys (0.0: r=0.5) -> (0.2: r=0.9) -> (2.0: r=0.5), keep g and b at 0.5. Blur: keys (0.0: 0) -> (0.2: 0.6) -> (2.0: 0). Total length: 2 sec. What you get: for two seconds the screen turns red and blurry, strongest at 0.2 sec, then everything fades back to normal.");
+	RenderPPEEditorUI_HelpSection("Example: white flash", "Add color: keys (0.0: r=g=b=0.6) -> (0.3: r=g=b=0). Total length: 0.3 sec. What you get: a short white flash. Add color brightens the picture, so the screen goes white and quickly returns to normal.");
+	RenderPPEEditorUI_HelpSection("Example: radioactive dirt", "Gray value: constant 0.2. Noise intensity: 0.3. Noise grain: 1.0. Noise FPS: 0.3. Blur: 0.1. Cyclic: on. What you get: a dirty, grainy, slightly blurred picture all the time, like standing in a radioactive area.");
+	RenderPPEEditorUI_HelpSection("Example: cold color grading", "cm_tex1: pick a cold or blue colormap with the Select... button. CM influence: constant 1.0. What you get: all colors are repainted through the texture, the world looks cold. Tip: lower CM influence to mix the grading with the normal colors.");
+	RenderPPEEditorUI_HelpSection("Example: ghost vision", "Duality H: keys (0.0: 0) -> (0.5: 0.03) -> (1.0: 0). Duality V: keep 0. Blur: 0.2 constant. Total length: 1 sec. What you get: the picture doubles sideways for a moment, like seeing double after a strong hit.");
 }
 #endif
 
