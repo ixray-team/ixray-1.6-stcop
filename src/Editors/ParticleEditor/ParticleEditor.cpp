@@ -39,6 +39,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	splash::SetProgressStatus(20, "Core Initialization");
 
+	CFilewatcher::instance().SetFilewatcherActive(true);
     Core._initialize("Patricle", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
 	psDeviceFlags.set(rsFullscreen, false);
