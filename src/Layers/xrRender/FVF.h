@@ -1,5 +1,3 @@
-#ifndef _FVF_H_
-#define _FVF_H_
 #pragma once
 //-----------------------------------------------------------------------------
 #pragma pack(push,4)
@@ -135,6 +133,3 @@ namespace FVF {
 	const u32 F_TL4uv	= D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX4;
 };
 #pragma pack(pop)
-
-//-----------------------------------------------------------------------------
-#endif
