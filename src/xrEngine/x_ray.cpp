@@ -402,6 +402,7 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 	}
 
 	compute_build_id			();
+	CFilewatcher::instance().SetFilewatcherActive(true);
 	Core._initialize			("IXRay",nullptr, true, fsgame[0] ? fsgame : nullptr);
 
 	InitSettings				();
