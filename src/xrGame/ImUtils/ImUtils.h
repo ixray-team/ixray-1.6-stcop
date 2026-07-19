@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "../xrCore/clsid.h"
 
@@ -533,6 +533,7 @@ enum class eImGuiEditorType : u32
 	kTextureEditor,
 	kOMFEditor,
 	kQuestEditor,
+	kPPEEditor,
 	kNoEditor,
 	kInvalid = u32(-1)
 };
@@ -570,6 +571,16 @@ enum class eRequestType_OMFEditor : u32
 	kShutdown
 };
 
+enum class eRequestType_PPEditor : u32
+{
+	kReadSettings,
+	kWriteSettings,
+	kLoadFile,
+	kLoadTexturePreview,
+	kDeselectCurrentSelectedOrHideWindow,
+	kShutdown
+};
+
 struct SRequestData
 {
 	u32 editor_type = static_cast<u32>(eImGuiEditorType::kInvalid);
@@ -594,6 +605,25 @@ struct CImGuiRequestManager
 /// @brief \~english if enabled 'bone renaming' section won't exist and you can directly rename from bone list  otherwise you have to rename only through 'bone renaming' section
 #define IXRAY_OMF_EDITOR_ENABLE_DIRECT_BONE_RENAMING 1
 
+#define IXRAY_PPE_EDITOR_TAB_GAME 1
+#define IXRAY_PPE_EDITOR_TAB_EDITOR 1
+#define IXRAY_PPE_EDITOR_TAB_HELP 1
+
+// todo: implement viewer
+/// @brief \~english if enabled the editor tab of the PPE editor gets a 'Preview' column for a curve viewer (not implemented yet)
+#define IXRAY_PPE_EDITOR_PREVIEW 0
+
+// shared message box helper for in-game editors (implementation in ImUtils.cpp)
+enum class _eMessageBoxStatus
+{
+	kSuccess,
+	kWarning,
+	kError,
+	kYesOrNo
+};
+
+int ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::string_view message);
+
 /* INIT */
 void InitSections();
 void InitImGuiCLSIDInGame();
@@ -614,6 +644,7 @@ void RenderToolsInputManagerWindow();
 void RenderToolsRenderDebugSVGStorageViewerWindow();
 void RenderTextureEditor();
 void RenderQuestEditor();
+void RenderPPEEditor();
 void Render3rdAdjust();
 
 /* MISCELLANEOUS */
@@ -645,9 +676,13 @@ void QuestEditor_OnReleased(int key);
 void OMFEditor_OnPressed(int key);
 void OMFEditor_OnReleased(int key);
 
+void PPEEditor_OnPressed(int key);
+void PPEEditor_OnReleased(int key);
+
 void RequestHandler_TextureEditor(const SRequestData& req);
 void RequestHandler_QuestEditor(const SRequestData& req);
 void RequestHandler_OMFEditor(const SRequestData& req);
+void RequestHandler_PPEEditor(const SRequestData& req);
 
 void RegisterImGuiInGame();
 void execute_console_command_deferred(CConsole* c, const char* string_to_execute);
