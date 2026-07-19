@@ -20,9 +20,9 @@
 #include "Actor.h"
 #include "ActorCondition.h"
 
-DLL_Pure *CEatableItem::_construct	()
+DLL_Pure* CEatableItem::_construct()
 {
-	m_physic_item	= smart_cast<CPhysicItem*>(this);
+	m_physic_item = smart_cast<CPhysicItem*>(this);
 	return inherited::_construct();
 }
 
@@ -123,7 +123,7 @@ bool CEatableItem::Useful() const
 	return true;
 }
 
-void CEatableItem::OnH_A_Independent() 
+void CEatableItem::OnH_A_Independent()
 {
 	inherited::OnH_A_Independent();
 	if (!Useful())
@@ -132,19 +132,19 @@ void CEatableItem::OnH_A_Independent()
 		{
 			object().DestroyObject();
 		}
-	}	
+	}
 }
 
 void CEatableItem::OnH_B_Independent(bool just_before_destroy)
 {
-	if(!Useful()) 
+	if (!Useful())
 	{
 		object().setVisible(false);
 		object().setEnabled(false);
 		if (m_physic_item != nullptr)
 		{
-			m_physic_item->m_ready_to_destroy	= true;
-	}
+			m_physic_item->m_ready_to_destroy = true;
+		}
 	}
 
 	inherited::OnH_B_Independent(just_before_destroy);
@@ -317,22 +317,22 @@ void CEatableItem::Hit(SHit* pHDS)
 using namespace luabind;
 
 #pragma optimize("s",on)
-void CEatableItem::script_register(lua_State *L)
+void CEatableItem::script_register(lua_State* L)
 {
 	module(L)
 		[
 			class_<CEatableItem>("CEatableItem")
-			.def("Empty", &CEatableItem::Empty)
-			.def("CanDelete", &CEatableItem::CanDelete)
-			.def("GetMaxUses", &CEatableItem::GetMaxUses)
-			.def("GetRemainingUses", &CEatableItem::GetRemainingUses)
-			.def("SetRemainingUses", &CEatableItem::SetRemainingUses)
+				.def("Empty", &CEatableItem::Empty)
+				.def("CanDelete", &CEatableItem::CanDelete)
+				.def("GetMaxUses", &CEatableItem::GetMaxUses)
+				.def("GetRemainingUses", &CEatableItem::GetRemainingUses)
+				.def("SetRemainingUses", &CEatableItem::SetRemainingUses)
 
-			.def_readwrite("m_bRemoveAfterUse", &CEatableItem::m_bRemoveAfterUse)
-			.def_readwrite("m_fWeightFull", &CEatableItem::m_fWeightFull)
-			.def_readwrite("m_fWeightEmpty", &CEatableItem::m_fWeightEmpty)
+				.def_readwrite("m_bRemoveAfterUse", &CEatableItem::m_bRemoveAfterUse)
+				.def_readwrite("m_fWeightFull", &CEatableItem::m_fWeightFull)
+				.def_readwrite("m_fWeightEmpty", &CEatableItem::m_fWeightEmpty)
 
-			.def("Weight", &CEatableItem::Weight)
-			.def("Cost", &CEatableItem::Cost)
+				.def("Weight", &CEatableItem::Weight)
+				.def("Cost", &CEatableItem::Cost)
 		];
 }
