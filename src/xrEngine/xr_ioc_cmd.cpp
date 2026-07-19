@@ -869,6 +869,7 @@ void CCC_Register()
 	// Sound
 	CMD2(CCC_Float,		"snd_volume_eff",		&psSoundVEffects);
 	CMD2(CCC_Float,		"snd_volume_music",		&psSoundVMusic);
+	CMD2(CCC_Float,		"snd_volume_shooting",	&psSoundVShooting);
 	CMD1(CCC_SND_Restart,"snd_restart"			);
 	CMD3(CCC_Mask32,		"snd_acceleration",		&psSoundFlags,		ss_Hardware	);
 	CMD3(CCC_Mask32,		"snd_efx",				&psSoundFlags,		ss_EFX		);
