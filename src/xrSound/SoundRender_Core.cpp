@@ -157,6 +157,26 @@ void CSoundRender_Core::_restart		()
 	env_apply					();
 }
 
+CDB::COLLIDER* CSoundRender_Core::get_geometry_db()
+{
+	return &geom_DB;
+}
+
+CDB::MODEL* CSoundRender_Core::get_geometry_env()
+{
+	return geom_ENV;
+}
+
+CDB::MODEL* CSoundRender_Core::get_geometry_som()
+{
+	return geom_SOM;
+}
+
+CDB::MODEL* CSoundRender_Core::get_geometry_occ()
+{
+	return geom_MODEL;
+}
+
 void CSoundRender_Core::set_handler(sound_event* E)
 {
 	Handler			= E;
