@@ -1,68 +1,68 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
-    <string id="st_ixray_title">
-        <text>S.T.A.L.K.E.R.: Call of Pripyat</text>
-    </string>
-    <string id="st_ixray_title_cs">
-        <text>S.T.A.L.K.E.R.: Clear Sky</text>
-    </string>
-    <string id="st_ixray_title_soc">
-        <text>S.T.A.L.K.E.R.: Shadow of Chernobyl</text>
-    </string>
-    <string id="st_ixray_title_coc">
-        <text>S.T.A.L.K.E.R.: Call of Chernobyl</text>
-    </string>
-    <string id="st_discord_menu">
-        <text>Main menu</text>
-    </string>
-    <string id="st_discord_level">
-        <text>Level:</text>
-    </string>
-    <string id="quicksave">
-        <text>quick save</text>
-    </string>
-    <string id="autosave">
-        <text>auto save</text>
-    </string>
-    <string id="ui_mm_r_actor_shadow">
-        <text>Protagonist Shadow</text>
-    </string>
-    <string id="ui_mm_r2_details_shadows">
-        <text>Grass Shadows</text>
-    </string>
-    <string id="ui_mm_r4_hud_shadows">
-        <text>Hud Shadows</text>
-    </string>
-    <string id="ui_mm_r2_cloud_shadows">
-        <text>Cloud Shadows</text>
-    </string>
-    <string id="ui_mm_vid_scale">
-        <text>Rendering Scale</text>
-    </string>
-    <string id="fxaa">
-        <text>FXAA</text>
-    </string>
-    <string id="smaa">
-        <text>SMAA</text>
-    </string>
-    <string id="taa">
-        <text>TAA</text>
-    </string>
-    <string id="ui_mm_r_scale_mode">
-        <text>Scaling</text>
-    </string>
-    <string id="st_filter_linear">
-        <text>Standard (Linear)</text>
-    </string>
-    <string id="st_filter_point">
-        <text>Point</text>
-    </string>
-    <string id="st_filter_dlss">
-        <text>DLSS</text>
-    </string>
-    <string id="st_filter_fsr">
-        <text>FSR2</text>
-    </string>
+	<string id="st_ixray_title">
+		<text>S.T.A.L.K.E.R.: Call of Pripyat</text>
+	</string>
+	<string id="st_ixray_title_cs">
+		<text>S.T.A.L.K.E.R.: Clear Sky</text>
+	</string>
+	<string id="st_ixray_title_soc">
+		<text>S.T.A.L.K.E.R.: Shadow of Chernobyl</text>
+	</string>
+	<string id="st_ixray_title_coc">
+		<text>S.T.A.L.K.E.R.: Call of Chernobyl</text>
+	</string>
+	<string id="st_discord_menu">
+		<text>Main menu</text>
+	</string>
+	<string id="st_discord_level">
+		<text>Level:</text>
+	</string>
+	<string id="quicksave">
+		<text>quick save</text>
+	</string>
+	<string id="autosave">
+		<text>auto save</text>
+	</string>
+	<string id="ui_mm_r_actor_shadow">
+		<text>Protagonist Shadow</text>
+	</string>
+	<string id="ui_mm_r2_details_shadows">
+		<text>Grass Shadows</text>
+	</string>
+	<string id="ui_mm_r4_hud_shadows">
+		<text>Hud Shadows</text>
+	</string>
+	<string id="ui_mm_r2_cloud_shadows">
+		<text>Cloud Shadows</text>
+	</string>
+	<string id="ui_mm_vid_scale">
+		<text>Rendering Scale</text>
+	</string>
+	<string id="fxaa">
+		<text>FXAA</text>
+	</string>
+	<string id="smaa">
+		<text>SMAA</text>
+	</string>
+	<string id="taa">
+		<text>TAA</text>
+	</string>
+	<string id="ui_mm_r_scale_mode">
+		<text>Scaling</text>
+	</string>
+	<string id="st_filter_linear">
+		<text>Standard (Linear)</text>
+	</string>
+	<string id="st_filter_point">
+		<text>Point</text>
+	</string>
+	<string id="st_filter_dlss">
+		<text>DLSS</text>
+	</string>
+	<string id="st_filter_fsr">
+		<text>FSR2</text>
+	</string>
 	<string id="st_filter_xess">
 		<text>Intel XeSS</text>
 	</string>
@@ -360,22 +360,22 @@
 	<string id="ui_mm_grass_distance">
 		<text>Grass distance</text>
 	</string>
-    <string id="ui_mm_screenshot_format">
-        <text>Screenshot format</text>
-    </string>
-    <string id="ss_jpg">
-        <text>.jpg</text>
-    </string>
-    <string id="ss_tga">
-        <text>.tga</text>
-    </string>
-    <string id="ss_png">
-        <text>.png</text>
-    </string>
+	<string id="ui_mm_screenshot_format">
+		<text>Screenshot format</text>
+	</string>
+	<string id="ss_jpg">
+		<text>.jpg</text>
+	</string>
+	<string id="ss_tga">
+		<text>.tga</text>
+	</string>
+	<string id="ss_png">
+		<text>.png</text>
+	</string>
 	<string id="ui_mm_lang">
 		<text>Language</text>
 	</string>
-    <string id="rus">
+	<string id="rus">
 		<text>Russian</text>
 	</string>
 	<string id="eng">
