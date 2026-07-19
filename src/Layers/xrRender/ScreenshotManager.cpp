@@ -97,7 +97,7 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 		auto Fs = FS.w_open(Name);
 		R_ASSERT(Fs);
 		Fs->w(Saved.GetBufferPointer(), (u32)Saved.GetBufferSize());
-		FS.w_close(Fs);
+		FS.w_close(Fs, true);
 #else
 		// Linux: save directly to file as PNG
 		const Image* SrcImg = Small.GetImage(0,0,0);
@@ -117,7 +117,7 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 				},
 				&cbData, SrcImg->width, SrcImg->height, 4, SrcImg->pixels, SrcImg->width * 4
 			);
-			FS.w_close(Fs);
+			FS.w_close(Fs, true);
 			Hr = S_OK;
 		}
 		else
@@ -154,7 +154,7 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 			auto Fs = FS.w_open(Name);
 			R_ASSERT(Fs);
 			Fs->w(Saved.GetBufferPointer(), (u32)Saved.GetBufferSize());
-			FS.w_close(Fs);
+			FS.w_close(Fs, true);
 		}
 		else
 		{
@@ -181,7 +181,7 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, c
 					},
 					&cbData, SrcImg->width, SrcImg->height, 4, SrcImg->pixels, SrcImg->width * 4
 				);
-				FS.w_close(Fs);
+				FS.w_close(Fs, true);
 				Hr = S_OK;
 			}
 			else
