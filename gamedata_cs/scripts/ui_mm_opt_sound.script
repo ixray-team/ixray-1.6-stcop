@@ -19,7 +19,7 @@ function opt_sound:InitControls(x, y, xml, handler)
     self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
 
 	handler:addTrack(self, true, "ui_mm_master_volume", "snd_volume_eff", 0.01, false, "float", true, system_depends.sdNothing, nil, 100)
-	--handler:addTrack(self, true, "ui_mm_shoot_volume", "snd_volume_shooting", 0.01, false, "float", true, system_depends.sdNothing, nil, 100)
+	handler:addTrack(self, true, "ui_mm_shoot_volume", "snd_volume_shooting", 0.01, false, "float", true, system_depends.sdNothing, nil, 100)
 	handler:addTrack(self, true, "ui_mm_music_volume", "snd_volume_music", 0.01, false, "float", true, system_depends.sdNothing, nil, 100)
 
 	handler:addComboBox(self, true, "ui_mm_snd_device", "snd_device", 4, false, system_depends.sdSystemRestart)

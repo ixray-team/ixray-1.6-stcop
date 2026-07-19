@@ -23,6 +23,7 @@ XRSOUND_API extern float			psSoundVEffects			;
 XRSOUND_API extern float			psSoundVFactor			;
 XRSOUND_API extern float			psSoundVMusic			;
 XRSOUND_API extern float			psSoundVRecorder		;
+XRSOUND_API extern float			psSoundVShooting		;
 XRSOUND_API extern int				psSoundRecorderMode		;
 XRSOUND_API extern int				psSoundRecorderDenoise	;
 XRSOUND_API extern float			psSoundRolloff			;
@@ -59,9 +60,11 @@ enum {
 	sm_Intro			= (1ul<<2ul),	//!< Only for music and video
 	sm_forcedword		= u32(-1),
 };
-enum esound_type{
-	st_Effect			= 0,
-	st_Music			= 1,
+enum esound_type
+{
+	st_Effect,
+	st_Music,
+	st_Shooting,
 	st_forcedword		= u32(-1),
 };
 
