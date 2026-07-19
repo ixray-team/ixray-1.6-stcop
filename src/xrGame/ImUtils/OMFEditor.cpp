@@ -3469,6 +3469,77 @@ void RenderOMFEditor_Draw_Game(
 #endif
 }
 
+// ==============================================================
+// Help tab: user manual
+// ==============================================================
+
+#if IXRAY_OMF_EDITOR_TAB_HELP == 1
+void RenderOMFEditor_Draw_HelpTab()
+{
+	ImGui::SeparatorText("About this tool");
+
+	ImGui::TextWrapped("This editor views and edits .omf animation files, and the live animation data of the weapon you are holding. An .omf file stores skeletal animations for a model: the keyframes, the bone groups they play on, and a parameter block for every motion. Editor tab: load and edit a file, then save it. Game tab: edit the data of the weapon in your hands while the game is running.");
+
+	ImGui::SeparatorText("How the engine uses .omf files");
+
+	ImGuiEditorUI_HelpBullet("Every model (OGF) lists its .omf files. At load, the engine reads the bone partition, one parameter block per motion, and the keyframes for every bone.");
+	ImGuiEditorUI_HelpBullet("All loaded .omf files live in one global cache, shared by file path. Every model using the same file shares one copy in memory.");
+	ImGuiEditorUI_HelpBullet("Motions are found by name. A hidden flag (FX) decides if a motion is a cycle or a one-shot effect.");
+	ImGuiEditorUI_HelpBullet("When a motion starts, the game creates a blend: a copy of the motion's speed, power, accrue and falloff. Editing these values affects the NEXT started motion.");
+	ImGuiEditorUI_HelpBullet("Motion marks are different: the game reads them every frame, so mark edits apply immediately.");
+
+	ImGui::SeparatorText("Animation params combo");
+
+	ImGui::TextWrapped("Each entry is one motion: its name, its parameters and its flags. The entry points to the motion's keyframes by its motion id. The 'Try repair' tool re-links these ids when a file is inconsistent.");
+
+	ImGui::SeparatorText("Speed / Power / Accrue / Falloff");
+
+	ImGuiEditorUI_HelpBullet("Speed: playback rate. 1.0 = normal, 2.0 = twice as fast, 0.5 = half speed.");
+	ImGuiEditorUI_HelpBullet("Power: the strength (weight) of the motion when it mixes with others. 1.0 = full strength, lower values show the motion only partly.");
+	ImGuiEditorUI_HelpBullet("Accrue: how fast the motion fades in when it starts. Higher = faster.");
+	ImGuiEditorUI_HelpBullet("Falloff: how fast the motion fades out when it is replaced. Higher = faster. The engine keeps falloff below accrue for cycle motions.");
+	ImGuiEditorUI_HelpBullet("Note: the engine stores these four values as 16-bit numbers. The game tab snaps to that grid (about 0.0015 steps), the file editor keeps full float precision.");
+
+	ImGui::SeparatorText("Flags");
+
+	ImGuiEditorUI_HelpSection("Stop at end", "The motion plays once and freezes at the last frame instead of looping. The game also uses this flag to know the animation length and to fire the end-of-animation event.");
+	ImGuiEditorUI_HelpSection("No mix", "The motion starts without blending into the previous one (a hard switch). The runtime here does not read it; it is used by tools and AI code when starting motions.");
+	ImGuiEditorUI_HelpSection("Sync part", "When switching between two motions that both have this flag, the new one continues from the same time as the old one. This keeps body parts in sync, for example in walk cycles.");
+	ImGuiEditorUI_HelpSection("Use foot steps", "The motion is expected to produce footsteps (through motion marks). The legs controller warns in debug when a flagged motion has no marks.");
+	ImGuiEditorUI_HelpSection("Move XForm", "The root bone translation moves the object itself: the character really walks forward instead of walking in place.");
+	ImGuiEditorUI_HelpSection("Idle", "Marks the motion as an idle animation. The IK system treats idle motions specially.");
+	ImGuiEditorUI_HelpSection("Use weapon bone", "Part of the format for tools. The current runtime does not read it.");
+
+	ImGui::SeparatorText("Motion marks");
+
+	ImGuiEditorUI_HelpBullet("Only for OGF version 4 files. A mark is a name plus time intervals in seconds (start, end).");
+	ImGuiEditorUI_HelpBullet("While a motion plays, the game checks every frame if playback crosses an interval and fires an event. Used for sounds, shell ejection, footsteps and so on.");
+	ImGuiEditorUI_HelpBullet("The 'Has motion marks' checkbox clears all marks of the selected motion when you turn it off.");
+
+	ImGui::SeparatorText("Bone parts");
+
+	ImGuiEditorUI_HelpBullet("A partition is a set of named bone groups (for example left_hand, right_hand). A motion can play on the whole skeleton or only on one part.");
+	ImGuiEditorUI_HelpBullet("Bone names are resolved to bone ids when the model loads. That is why the game tab shows them read-only: at runtime there are no names left to rename, only ids.");
+
+	ImGui::SeparatorText("Game tab");
+
+	ImGuiEditorUI_HelpBullet("You edit the live engine data of the weapon in your hands. The combo lists only the motions that weapon actually uses: its anm_* config entries with their random variants, plus anm_bp_* bone-part motions.");
+	ImGuiEditorUI_HelpBullet("Changes are runtime-only, they are NOT saved to disk, and they affect every model that uses the same .omf file (the engine shares one copy).");
+	ImGuiEditorUI_HelpBullet("Renaming is disabled here: motion names are lookup keys inside the engine.");
+	ImGuiEditorUI_HelpBullet("Switching weapons re-reads the data automatically. Refresh re-reads it manually, for example after OMF files were appended at runtime.");
+
+	ImGui::SeparatorText("File tools (Editor tab)");
+
+	ImGuiEditorUI_HelpBullet("Save / Merge with / Add anims from: write the file or extend it with motions from other files.");
+	ImGuiEditorUI_HelpBullet("Try repair: re-links motion ids and names when a file is inconsistent.");
+	ImGuiEditorUI_HelpBullet("Swap anim marks: copies motion marks from another .omf file into motions with matching names.");
+
+	ImGui::SeparatorText("Shortcuts");
+
+	ImGuiEditorUI_HelpBullet("Escape: closes popups and selections first, then the window.");
+}
+#endif
+
 void RenderToolsOMFEditorWindow()
 {
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)])
@@ -3529,6 +3600,15 @@ void RenderToolsOMFEditorWindow()
 				}
 
 				ImGui::EndDisabled();
+#endif
+
+#if IXRAY_OMF_EDITOR_TAB_HELP == 1
+				if (ImGui::BeginTabItem("Help"))
+				{
+					RenderOMFEditor_Draw_HelpTab();
+
+					ImGui::EndTabItem();
+				}
 #endif
 
 				ImGui::EndTabBar();
