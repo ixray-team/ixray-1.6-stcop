@@ -1,5 +1,5 @@
 #pragma once
-#include <fswatcher/filewatch.hpp>
+#include "../xrCore/filewatch_wrapper.h"
 
 #include "ThmProperties.h"
 
