@@ -197,6 +197,11 @@ struct SPPEditorUIState
 	float timeline_drag_value[POSTPROCESS_PARAMS_COUNT]{};
 	bool timeline_drag_started[POSTPROCESS_PARAMS_COUNT]{};
 	bool timeline_is_dragging[POSTPROCESS_PARAMS_COUNT]{};
+	// vertical axis range, per (param, channel): auto (fits section range
+	// and data) or custom user values
+	bool timeline_range_auto[POSTPROCESS_PARAMS_COUNT][3]{};
+	float timeline_range_min[POSTPROCESS_PARAMS_COUNT][3]{};
+	float timeline_range_max[POSTPROCESS_PARAMS_COUNT][3]{};
 	float total_length_edit{};
 	u32 file_version{};
 	xr_stack_string<sizeof(string_path) * 2> path;       // absolute path when loaded from disk
@@ -220,6 +225,13 @@ struct SPPEditorUIState
 			timeline_drag_value[param] = 0.0f;
 			timeline_drag_started[param] = false;
 			timeline_is_dragging[param] = false;
+
+			for (int channel = 0; channel < 3; ++channel)
+			{
+				timeline_range_auto[param][channel] = true;
+				timeline_range_min[param][channel] = 0.0f;
+				timeline_range_max[param][channel] = 1.0f;
+			}
 		}
 	}
 };
@@ -1142,8 +1154,22 @@ void RenderPPEEditorUI_Timeline(
 		p_channel = &data.values[meta.index].v;
 	}
 
-	float range_min = 0.0f, range_max = 1.0f;
-	PPEEditor_GetChannelRange(meta, *p_channel, range_min, range_max);
+	// vertical range: auto (synced from the section range + data every
+	// frame) or custom values set by the user
+	const int channel_index = (meta.kind == _ePPEParamKind::kColor) ? selected_channel : 0;
+	bool& range_auto = state.timeline_range_auto[param_index][channel_index];
+	float& range_min = state.timeline_range_min[param_index][channel_index];
+	float& range_max = state.timeline_range_max[param_index][channel_index];
+
+	if (range_auto)
+	{
+		PPEEditor_GetChannelRange(meta, *p_channel, range_min, range_max);
+	}
+
+	if (range_max - range_min < 0.0001f)
+	{
+		range_max = range_min + 0.0001f;
+	}
 
 	static const float _kChannelHues[3][3] = {
 		{1.0f, 0.12f, 0.12f},
@@ -1437,6 +1463,21 @@ void RenderPPEEditorUI_Timeline(
 	p_draw_list->AddText(ImVec2(canvas_pos.x + canvas_size.x - label_size.x - 2.0f, canvas_pos.y + canvas_size.y + 2.0f), IM_COL32(140, 140, 140, 255), length_label);
 
 	ImGui::Dummy(ImVec2(0.0f, 16.0f));
+
+	// vertical axis range controls
+	ImGui::Checkbox("auto y##PPERangeAuto", &range_auto);
+	ImGui::SetItemTooltip("Automatic vertical range (fits the section's accepted range and the actual data)");
+
+	if (range_auto == false)
+	{
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(80.0f);
+		ImGui::DragFloat("min##PPERangeMin", &range_min, 0.005f, 0.0f, 0.0f, "min=%.3f");
+
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(80.0f);
+		ImGui::DragFloat("max##PPERangeMax", &range_max, 0.005f, 0.0f, 0.0f, "max=%.3f");
+	}
 
 	// mark hover tooltip: time and channel value of the key
 	if (hovered_key)
