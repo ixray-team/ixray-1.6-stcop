@@ -3,9 +3,9 @@
 
 #ifdef IXR_WINDOWS
 #define SystemOpenURL(url) std::system((xr_string("start ") + url).c_str())
-#elif IXR_APPLE_SERIES
+#elif defined(IXR_APPLE_SERIES)
 #define SystemOpenURL(url) std::system((xr_string("open ") + url).c_str())
-#elif IXR_LINUX
+#elif defined(IXR_LINUX)
 #define SystemOpenURL(url) std::system((xr_string("xdg-open ") + url).c_str())
 #else
 #error "Unknown compiler"

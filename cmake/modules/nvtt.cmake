@@ -12,18 +12,18 @@ if (WIN32)
         "${NVTT_BIN}"
     )
 else()
-    FetchContent_Declare(
-        nvtt
-        GIT_REPOSITORY https://github.com/imesense-forks/castano-nvidia-texture-tools.git
-        GIT_TAG default
-    )
-    FetchContent_MakeAvailable(nvtt)
-
-    if(NOT TARGET NVTT::nvtt)
-        add_library(NVTT::nvtt INTERFACE IMPORTED)
-        set_target_properties(NVTT::nvtt PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES "${nvtt_SOURCE_DIR}/src"
-            INTERFACE_LINK_LIBRARIES nvtt
-        )
-    endif()
+    #FetchContent_Declare(
+    #    nvtt
+    #    GIT_REPOSITORY https://github.com/imesense-forks/castano-nvidia-texture-tools.git
+    #    GIT_TAG default
+    #)
+    #FetchContent_MakeAvailable(nvtt)
+#
+    #if(NOT TARGET NVTT::nvtt)
+    #    add_library(NVTT::nvtt INTERFACE IMPORTED)
+    #    set_target_properties(NVTT::nvtt PROPERTIES
+    #        INTERFACE_INCLUDE_DIRECTORIES "${nvtt_SOURCE_DIR}/src"
+    #        INTERFACE_LINK_LIBRARIES nvtt
+    #    )
+    #endif()
 endif()
