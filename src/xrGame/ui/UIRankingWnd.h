@@ -11,6 +11,7 @@
 #include "UIRankFaction.h"
 #include "UIAchievements.h"
 #include "UIRankingsCoC.h"
+#include "../../xrCore/FormatParsers/XML/xrXMLParser.h"
 
 class CUIStatic;
 class CUIStackPanel;
