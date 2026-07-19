@@ -86,7 +86,7 @@ ICF bool RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_t
 
 ICF void RenewItem(CEffect_Rain::Item& dest, float height, bool bHit, u32 time_global, u32 dt)
 {
-	dest.uv_set			= Random.randI(2);
+	dest.uv_set = Random.randI(2);
 	if (bHit)
 	{
 		dest.dwTime_Life= time_global + iFloor(1000.f*height/dest.fSpeed) - dt;
@@ -323,7 +323,7 @@ void CEffect_Rain::UpdateItems()
 
 	CEnvironment& env = g_pGamePersistent->Environment();
 	float factor = env.CurrentEnv->rain_density;
-	if (factor < EPS_L)			return;
+	if (factor < EPS_L) return;
 
 	float dt = Device.fTimeDelta;
 	u32 udt = Device.dwTimeDelta;
@@ -390,7 +390,7 @@ void CEffect_Rain::UpdateItems()
 		pos_head.mad(one.D, one.fSpeed * dt);
 
 		Fvector	wdir; wdir.set(pos_head.x - vEye.x, 0, pos_head.z - vEye.z);
-		float	wlen = wdir.square_magnitude();
+		float wlen = wdir.square_magnitude();
 		if (wlen > b_radius_wrap_sqr)
 		{
 			wlen = _sqrt(wlen);
@@ -398,7 +398,7 @@ void CEffect_Rain::UpdateItems()
 				one.dwTime_Life = 0;
 			else
 			{
-				Fvector		inv_dir, src_p;
+				Fvector inv_dir, src_p;
 				inv_dir.invert(one.D);
 				wdir.div(wlen);
 
@@ -443,7 +443,7 @@ void CEffect_Rain::UpdateItems()
 		u32 s = one.uv_set;
 		xrCriticalSectionGuard guard(&rainCS);
 		m_sprites.push_back(
-					{
+			{
 				Fvector().mad(pos_trail,lineTop,-rain_width),u_rain_color,Sprite_UV[s][0].x,Sprite_UV[s][0].y,
 				Fvector().mad(pos_trail,lineTop,rain_width)	,u_rain_color,Sprite_UV[s][1].x,Sprite_UV[s][1].y,
 				Fvector().mad(pos_head,lineTop,-rain_width)	,u_rain_color,Sprite_UV[s][2].x,Sprite_UV[s][2].y,

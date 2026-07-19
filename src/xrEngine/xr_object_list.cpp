@@ -274,7 +274,7 @@ void CObjectList::Update		(bool bForce)
 				(*oit)->net_Relcase(obj);
 				g_pGameLevel->SoundEvent_net_Relcase(obj);
 			}
-			}
+		}
 		for (Objects::iterator oit=objects_sleeping.begin(); oit!=objects_sleeping.end(); oit++)
 		{
 			for (int it = (int)destroy_queue.size() - 1; it >= 0; it--)
@@ -291,7 +291,7 @@ void CObjectList::Update		(bool bForce)
 		RELCASE_CALLBACK_VEC::iterator Ite	= m_relcase_callbacks.end();
 		for(;It!=Ite; ++It)
 		{
-			VERIFY			(*(*It).m_ID==(It-m_relcase_callbacks.begin()));
+			VERIFY(*(*It).m_ID==(It-m_relcase_callbacks.begin()));
 			Objects::iterator dIt	= destroy_queue.begin();
 			Objects::iterator dIte	= destroy_queue.end();
 			for (;dIt!=dIte; ++dIt)

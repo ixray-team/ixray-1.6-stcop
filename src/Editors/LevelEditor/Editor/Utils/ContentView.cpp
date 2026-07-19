@@ -310,34 +310,34 @@ void CContentView::Draw()
 			ImVec2 availRegion = ImGui::GetContentRegionAvail();
 			if (availRegion.x > 15)
 			{
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint).Value);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { ToolbarPadding, ToolbarPadding });
-			if (ImGui::BeginChild("##ContentBrowserSearch", ImVec2(ImGui::GetContentRegionAvail().x, 0), ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeY))
-			{
-				DrawHeader();
-			}
-			ImGui::EndChild();
-			ImGui::PopStyleVar();
-			ImGui::PopStyleColor();
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint).Value);
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { ToolbarPadding, ToolbarPadding });
+				if (ImGui::BeginChild("##ContentBrowserSearch", ImVec2(ImGui::GetContentRegionAvail().x, 0), ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeY))
+				{
+					DrawHeader();
+				}
+				ImGui::EndChild();
+				ImGui::PopStyleVar();
+				ImGui::PopStyleColor();
 			}
 			availRegion = ImGui::GetContentRegionAvail();
 			if (availRegion.x > 15)
 			{
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint).Value);
-			if (ImGui::BeginChild("##contentbrowserscroll"))
-			{
-				DrawLayout();
-			}
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelTint).Value);
+				if (ImGui::BeginChild("##contentbrowserscroll"))
+				{
+					DrawLayout();
+				}
 
-			if (CurrentItemHint.Active)
-			{
-				ImGui::SetCursorPos(CurrentItemHint.Pos);
-				ImGui::Button(CurrentItemHint.Name.c_str());
-				CurrentItemHint.Active = false;
-			}
+				if (CurrentItemHint.Active)
+				{
+					ImGui::SetCursorPos(CurrentItemHint.Pos);
+					ImGui::Button(CurrentItemHint.Name.c_str());
+					CurrentItemHint.Active = false;
+				}
 
-			ImGui::EndChild();
-			ImGui::PopStyleColor();
+				ImGui::EndChild();
+				ImGui::PopStyleColor();
 			}
 
 			const ImGuiPayload* payload = ImGui::GetDragDropPayload();

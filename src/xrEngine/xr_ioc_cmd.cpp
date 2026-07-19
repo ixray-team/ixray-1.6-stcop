@@ -257,20 +257,20 @@ public:
 //-----------------------------------------------------------------------
 void CCC_SaveCFG::Execute(const char* args)
 {
-		string_path cfg_full_name;
-		xr_strcpy(cfg_full_name, (xr_strlen(args) > 0) ? args : Console->ConfigFile);
+	string_path cfg_full_name;
+	xr_strcpy(cfg_full_name, (xr_strlen(args) > 0) ? args : Console->ConfigFile);
 
-		bool b_abs_name = xr_strlen(cfg_full_name)>2 && cfg_full_name[1]==':';
+	bool b_abs_name = xr_strlen(cfg_full_name) > 2 && cfg_full_name[1] == ':';
 
-		if(!b_abs_name)
-			FS.update_path	(cfg_full_name, "$app_data_root$", cfg_full_name);
+	if (!b_abs_name)
+		FS.update_path(cfg_full_name, "$app_data_root$", cfg_full_name);
 
-		if (strext(cfg_full_name))	
-			*strext(cfg_full_name) = 0;
-		xr_strcat			(cfg_full_name,".ltx");
-		
+	if (strext(cfg_full_name))
+		*strext(cfg_full_name) = 0;
+	xr_strcat(cfg_full_name, ".ltx");
+
 	bool b_allow = true;
-		if ( FS.exist(cfg_full_name) )
+	if (FS.exist(cfg_full_name))
 	{
 #ifdef IXR_WINDOWS
 		b_allow = !!SetFileAttributes(Platform::ANSI_TO_TCHAR(cfg_full_name), FILE_ATTRIBUTE_NORMAL);
@@ -291,47 +291,47 @@ void CCC_SaveCFG::Execute(const char* args)
 
 	if (b_allow)
 	{
-			IWriter* F			= FS.w_open(cfg_full_name);
+		IWriter* F = FS.w_open(cfg_full_name);
 		for (auto& pair : Console->Commands)
 			pair.second->Save(F);
-				FS.w_close			(F);
-				Msg("Config-file [%s] saved successfully",cfg_full_name);
+		FS.w_close(F);
+		Msg("Config-file [%s] saved successfully", cfg_full_name);
 	}
 	else
-			Msg("!Cannot store config file [%s]", cfg_full_name);
-	}
+		Msg("!Cannot store config file [%s]", cfg_full_name);
+}
 
 void CCC_LoadCFG::Execute(const char* args) 
 {
-		string_path						cfg_name;
+	string_path cfg_name;
 	xr_strcpy(cfg_name, (xr_strlen(args) > 0) ? args : Console->ConfigFile);
 	Msg("Executing config-script \"%s\"...", cfg_name);
 
 	if (strext(cfg_name))
 		*strext(cfg_name) = 0;
-		xr_strcat							(cfg_name,".ltx");
+	xr_strcat(cfg_name,".ltx");
 
-		string_path						cfg_full_name;
+	string_path cfg_full_name;
 
-		FS.update_path					(cfg_full_name, "$app_data_root$", cfg_name);
-			
-		if( nullptr == FS.exist(cfg_full_name) )
-			xr_strcpy						(cfg_full_name, cfg_name);
+	FS.update_path(cfg_full_name, "$app_data_root$", cfg_name);
 		
-		IReader* F						= FS.r_open(cfg_full_name);
-		
+	if( nullptr == FS.exist(cfg_full_name) )
+		xr_strcpy(cfg_full_name, cfg_name);
+	
+	IReader* F = FS.r_open(cfg_full_name);
+	
 	if (F)
 	{
-		string1024						str;
+		string1024 str;
 		while (!F->eof())
 		{
-				F->r_string				(str,sizeof(str));
-				if(allow(str))
-					Console->Execute	(str);
-			}
-			FS.r_close(F);
-			Msg("[%s] successfully loaded.",cfg_full_name);
+			F->r_string(str,sizeof(str));
+			if(allow(str))
+				Console->Execute(str);
 		}
+		FS.r_close(F);
+		Msg("[%s] successfully loaded.",cfg_full_name);
+	}
 	else
 		Msg("! Cannot open script file [%s]",cfg_full_name);
 }
@@ -818,16 +818,16 @@ void CCC_Register()
 #endif
 	// Render device states
 	CMD3(CCC_Mask32, "rs_device_active", &psDeviceFlags, rsDeviceActive);
-	
+
 	extern xr_token fps_text_pos_tokens[4];
 	extern u32 fps_text_current_pos;
-	
+
 	CMD2(CCC_Boolean, "rs_fps_show", &IsFpsShow)
 	CMD4(CCC_Integer, "rs_fps_limit", &fps_limit, 0, 1000)
 	CMD4(CCC_Float, "rs_fps_smoothing_factor", &fps_smoothing_alpha, EPS_S, 1.f - EPS_S)
 	CMD4(CCC_Integer, "rs_main_menu_fps_limit", &main_menu_fps_limit, 0, 1000)
 	CMD3(CCC_Token, "rs_fps_pos", &fps_text_current_pos, fps_text_pos_tokens)
-	
+
 
 	CMD3(CCC_Mask32,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
 	
