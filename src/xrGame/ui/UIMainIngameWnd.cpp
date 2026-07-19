@@ -153,13 +153,17 @@ CUIMainIngameWnd::~CUIMainIngameWnd()
 	DestroyFlashingIcons		();
 	if (UIMotionIcon)
 	{
+		UIMotionIcon->SetAutoDelete(false);
 		if (CUIWindow* parent = UIMotionIcon->GetParent())
 			parent->DetachChild(UIMotionIcon);
 		xr_delete(UIMotionIcon);
 	}
 	xr_delete(UIZoneMap);
 	if (UICompassBar && IsChild(UICompassBar))
+	{
+		UICompassBar->SetAutoDelete(false);
 		DetachChild(UICompassBar);
+	}
 	xr_delete(UICompassBar);
 	HUD_SOUND_ITEM::DestroySound(m_contactSnd);
 	xr_delete					(g_MissileForceShape);
@@ -372,15 +376,7 @@ void CUIMainIngameWnd::Init()
 	UIMotionIcon = new CUIMotionIcon(); UIMotionIcon->SetAutoDelete(true);
 	bool independent = false;
 	const bool useCompassBar = EngineExternal()[EEngineExternalUI::UseCompassBar];
-	if (UIZoneMap)
-	{
-		independent = UIMotionIcon->Init(UIZoneMap->MapFrame().GetWndRect(), useCompassBar);
-		if (!independent)
-			UIZoneMap->MapFrame().AttachChild(UIMotionIcon);
-		else
-			AttachChild(UIMotionIcon);
-	}
-	else if (UICompassBar)
+	if (useCompassBar && EnsureCompassBar())
 	{
 		independent = UIMotionIcon->Init(Frect(), useCompassBar, true);
 		CUIWindow* layoutFrame = UIMotionIcon->CompassLayoutFrame();
@@ -390,14 +386,22 @@ void CUIMainIngameWnd::Init()
 			layoutFrame->AttachChild(UIMotionIcon);
 			UIMotionIcon->ApplyCompassLayout(UICompassBar);
 		}
+		else if (!independent)
+		{
+			UICompassBar->AttachChild(UIMotionIcon);
+		}
 		else
 		{
-			independent = UIMotionIcon->Init(UICompassBar->GetFrame()->GetWndRect(), useCompassBar);
-			if (!independent)
-				UICompassBar->AttachChild(UIMotionIcon);
-			else
-				AttachChild(UIMotionIcon);
+			AttachChild(UIMotionIcon);
 		}
+	}
+	else if (UIZoneMap)
+	{
+		independent = UIMotionIcon->Init(UIZoneMap->MapFrame().GetWndRect(), useCompassBar);
+		if (!independent)
+			UIZoneMap->MapFrame().AttachChild(UIMotionIcon);
+		else
+			AttachChild(UIMotionIcon);
 	}
 	else
 		AttachChild(UIMotionIcon);
@@ -654,18 +658,45 @@ void CUIMainIngameWnd::RebindNavigationChildren()
 		return;
 
 	const bool compass = IsCompassBarMode();
-	CUIWindow* attachParent = this;
-	Frect hostRect = GetNavigationHostRect();
 
-	if (!UIMotionIcon->IsIndependent())
+	if (compass && IsCompassBarInitialized())
 	{
-		if (compass && IsCompassBarInitialized())
-			attachParent = UICompassBar;
-		else if (UIZoneMap)
-			attachParent = &UIZoneMap->MapFrame();
-	}
+		CUIWindow* layoutFrame = UIMotionIcon->CompassLayoutFrame();
+		if (layoutFrame)
+		{
+			if (layoutFrame->GetParent() != UICompassBar)
+			{
+				layoutFrame->SetAutoDelete(false);
+				if (CUIWindow* parent = layoutFrame->GetParent())
+				{
+					parent->DetachChild(layoutFrame);
+				}
+				UICompassBar->AttachChild(layoutFrame);
+				layoutFrame->SetAutoDelete(true);
+			}
 
-	UIMotionIcon->ApplyNavigationHost(attachParent, hostRect, compass);
+			if (UIMotionIcon->GetParent() != layoutFrame)
+			{
+				UIMotionIcon->SetAutoDelete(false);
+				if (CUIWindow* parent = UIMotionIcon->GetParent())
+				{
+					parent->DetachChild(UIMotionIcon);
+				}
+				layoutFrame->AttachChild(UIMotionIcon);
+				UIMotionIcon->SetAutoDelete(true);
+			}
+
+			UIMotionIcon->ApplyCompassLayout(UICompassBar);
+		}
+		else if (!UIMotionIcon->IsIndependent())
+		{
+			UIMotionIcon->ApplyNavigationHost(UICompassBar, GetNavigationHostRect(), true);
+		}
+	}
+	else if (!UIMotionIcon->IsIndependent() && UIZoneMap)
+	{
+		UIMotionIcon->ApplyNavigationHost(&UIZoneMap->MapFrame(), GetNavigationHostRect(), false);
+	}
 
 	if (UIPdaOnline)
 	{
