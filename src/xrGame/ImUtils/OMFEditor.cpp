@@ -3425,6 +3425,26 @@ void RenderOMFEditor_Draw_Game_Info(
 					{
 						ImGui::Text("Current anim:\n\t[%s]\n\tt=[%d]/[%d]\n\tstartedMotionState=[%s (%d)]", pHI->m_current_motion.c_str(), pHI->m_dwMotionCurrTm, pHI->m_dwMotionEndTm, convert_EHudStates_to_string((pHI->m_startedMotionState)).data(), pHI->m_startedMotionState);
 
+						// playback progress in the time format selected in the Editing column
+						bool is_seconds_selected = true;
+
+						if (g_pOMFGame)
+						{
+							is_seconds_selected = g_pOMFGame->is_motion_time_format_seconds_selected;
+						}
+
+						u32 timing_current_ms = (pHI->m_dwMotionCurrTm >= pHI->m_dwMotionStartTm) ? (pHI->m_dwMotionCurrTm - pHI->m_dwMotionStartTm) : 0;
+						u32 timing_total_ms = (pHI->m_dwMotionEndTm >= pHI->m_dwMotionStartTm) ? (pHI->m_dwMotionEndTm - pHI->m_dwMotionStartTm) : 0;
+
+						if (is_seconds_selected)
+						{
+							ImGui::Text("time:\n\t[%.2f]/[%.2f] sec", float(timing_current_ms) / 1000.0f, float(timing_total_ms) / 1000.0f);
+						}
+						else
+						{
+							ImGui::Text("time:\n\t[%.0f]/[%.0f] keys", float(timing_current_ms) * 0.03f, float(timing_total_ms) * 0.03f);
+						}
+
 						if (pAHI->m_hand_motions.m_banned_bone_parts.empty() == false)
 						{
 							if (ImGui::CollapsingHeader("banned bone parts:"))
