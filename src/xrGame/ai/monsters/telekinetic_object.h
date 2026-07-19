@@ -1,5 +1,6 @@
 #pragma once
 #include "../xrPhysics/ExtendedGeom.h"
+#include "PhysicsShellHolder.h"
 
 class CGameObject;
 class CPhysicsShellHolder;
@@ -67,7 +68,8 @@ struct STelekineticObjectParams
 	float master_difficulty_object_hit_factor;
 };
 
-struct SCollisionHitCallback : ICollisionHitCallback
+struct SCollisionHitCallback : 
+	public ICollisionHitCallback
 {
 	CPhysicsShellHolder* object;
 
