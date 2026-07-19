@@ -647,3 +647,21 @@ bool CHudPdaAnimator::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	
 	return true; //always true because StopAnyMove() == false
 }
+
+
+float CHudPdaAnimator::GetPDAScreen_kx()
+{
+	static const bool Use3DPDA = EngineExternal()[EEngineExternalGame::Enable3DPDA];
+	if (Use3DPDA)
+	{
+		if (pGameGlobals->line_exist("pda", "pda_animator"))
+		{
+			const char* pda_animator = pGameGlobals->r_string("pda", "pda_animator");
+			if (pSettings->section_exist(pda_animator))
+			{
+				return READ_IF_EXISTS(pSettings, r_float, pda_animator, "screen_kx", 1.0f);
+			}
+		}
+	}
+	return UI().get_current_kx();
+}
