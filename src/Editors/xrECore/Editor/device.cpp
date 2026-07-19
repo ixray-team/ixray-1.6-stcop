@@ -620,10 +620,10 @@ void CEditorRenderDevice::DIP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 bas
 
 void CEditorRenderDevice::ReloadTextures()
 {
-	string_path Path = {};
+	//string_path Path = {};
 
-	FS.update_path(Path, _game_textures_, "");
-	FS.rescan_path(Path, true);
+	//FS.update_path(Path, _game_textures_, "");
+	//FS.rescan_path(Path, true);
 
 	Msg("* Reload textures...");
 	UI->Resize();

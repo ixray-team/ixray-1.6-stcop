@@ -106,6 +106,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		sscanf(strstr(pCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
 	}
 
+	CFilewatcher::instance().SetFilewatcherActive(true);
 	Core._initialize("Actor", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
 	xrLogger::EnableFastDebugLog();

@@ -54,6 +54,59 @@ bool CLocatorAPI::CheckSkip(const xr_path& Path) const
 	return false;
 }
 
+void CLocatorAPI::FileEventAdd(const char* file)
+{
+	size_t FileSize = std::filesystem::file_size(file);
+	size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(file));
+	Register(file, 0xffffffff, 0, 0, FileSize, FileSize, FileModif);
+
+	ProcessTriggers(file, FilewatcherOnAddCS, FilewatcherOnAdd);
+}
+
+void CLocatorAPI::FileEventDel(const char* file)
+{
+	{
+		xrSRWLockGuard g(m_files_lock);
+		const files_it I = file_find_it(file);
+		if (I != m_files.end())
+		{
+			m_files.erase(I);
+		}
+	}
+	
+	ProcessTriggers(file, FilewatcherOnDelCS, FilewatcherOnDel);
+}
+
+void CLocatorAPI::ProcessTriggers(const char* file, xrCriticalSection& CS, xr_vector<FilewatcherTrigger>& Triggers)
+{
+	xrCriticalSectionGuard g(CS);
+	int i = 0, end_index = Triggers.size();
+	while(i < end_index)
+	{
+		auto& Trigger = Triggers[i];
+		if(Trigger(file))
+		{
+			Triggers[i] = Triggers[(end_index--) - 1];
+		} else
+		{
+			++i;
+		}
+	}
+	Triggers.resize(end_index);
+}
+
+void CLocatorAPI::AddOnFilewatcherEventAddTrigger(FilewatcherTrigger f)
+{
+	xrCriticalSectionGuard g(FilewatcherOnAddCS);
+	FilewatcherOnAdd.emplace_back(f);
+}
+
+void CLocatorAPI::AddOnFilewatcherEventDelTrigger(FilewatcherTrigger f)
+{
+	xrCriticalSectionGuard g(FilewatcherOnDelCS);
+	FilewatcherOnDel.emplace_back(f);
+}
+
 CLocatorAPI::CLocatorAPI()
 {
 	m_Flags.zero();
@@ -94,27 +147,27 @@ void CLocatorAPI::Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size
 
 	{
 		xrSRWLockGuard g(m_files_lock, true);
-	files_it			I = m_files.find(desc);
+		files_it			I = m_files.find(desc);
 
-	if (I != m_files.end()) 
-	{
-		desc.name		= I->name;
+		if (I != m_files.end()) 
+		{
+			desc.name		= I->name;
 
-		// sad but true, performance option
-		// correct way is to erase and then insert new record:
-		const_cast<file&>(*I)	= desc;
-		return;
-	}
-	else
-	{
-		desc.name		= xr_strdup(desc.name);
-	}
+			// sad but true, performance option
+			// correct way is to erase and then insert new record:
+			const_cast<file&>(*I)	= desc;
+			return;
+		}
+		else
+		{
+			desc.name		= xr_strdup(desc.name);
+		}
 	}
 
 	// otherwise insert file
 	{
 		xrSRWLockGuard g(m_files_lock);
-	m_files.insert		(desc); 
+		m_files.insert		(desc);
 	}
 	
 	// Try to register folder(s)
@@ -830,6 +883,46 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 	{
 		xrLogger::OpenLogFile();
 	}
+
+	// TODO: idk wtf, but exclusively in compilers filewatcher cannot init and causes deadlock
+	if (CFilewatcher::instance().GetFilewatcherActive())
+	{
+		xr_string WatchedPath = Platform::ValidPath(".\\");
+		CFilewatcher::instance().SetFilewatcher(new filewatch::FileWatch<std::string>(
+			WatchedPath.data(),
+			[this](const std::string& file, const filewatch::Event Event)
+			{
+				// TODO: Encoding in saves problem!
+				if (CheckSkip(file.c_str()))
+				{
+					return;
+				}
+				switch (Event)
+				{
+				case filewatch::Event::added:
+					{
+						FileEventAdd(file.c_str());
+						break;
+					}
+				case filewatch::Event::removed:
+					{
+						FileEventDel(file.c_str());
+						break;
+					}
+				case filewatch::Event::renamed_old:
+					{
+						FileEventDel(file.c_str());
+						break;
+					}
+				case filewatch::Event::renamed_new:
+					{
+						FileEventAdd(file.c_str());
+						break;
+					}
+				}
+			}
+			));
+	}
 }
 
 void CLocatorAPI::_destroy()
@@ -912,11 +1005,11 @@ xr_vector<char*>* CLocatorAPI::file_list_open			(const char* _path, u32 flags)
 
 	string_path		N;
 
-	if (path_exist(_path))	
+	if (path_exist(_path))
 	{
 		update_path	(N,_path,"");
 	}
-	else					
+	else
 	{
 		xr_strcpy(N,sizeof(N), _path);
 	}
@@ -1525,14 +1618,14 @@ IWriter* CLocatorAPI::w_open_ex	(const char* path, const char* _fname)
 	return W;
 }
 
-void CLocatorAPI::w_close(IWriter*& S)
+void CLocatorAPI::w_close(IWriter*& S, bool force_register)
 {
 	if (S)
 		{
 		R_ASSERT(S->fName.size());
 		string_path	fname;
 		xr_strcpy(fname, sizeof(fname), *S->fName);
-		bool bReg = S->valid();
+		bool bReg = S->valid() && (force_register || !CFilewatcher::instance().GetFilewatcherActive());
 		xr_delete(S);
 
 		if (bReg)
@@ -1751,6 +1844,27 @@ int	CLocatorAPI::file_length(const char* src)
 	return (I!=m_files.end())?I->size_real:-1;
 }
 
+void CLocatorAPI::file_update(const char* file_name)
+{
+	{
+		xrSRWLockGuard g(m_files_lock);
+		auto I = file_find_it(file_name);
+		if(I != m_files.end())
+		{
+			auto& Data = const_cast<file&>(*I); // safe, because changed fields are not affected on order
+			size_t FileSize = std::filesystem::file_size(file_name);
+			size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(file_name));
+			Data.size_real = FileSize;
+			Data.size_compressed = FileSize;
+			Data.modif = FileModif;
+			return;
+		}
+	}
+	// File not in VFS yet - register it outside the lock to avoid deadlock
+	// (Register also acquires m_files_lock)
+	TryLoad(file_name);
+}
+
 bool CLocatorAPI::path_exist(const char* path)
 {
 	PathPairIt P 			= pathes.find(path); 
@@ -1842,26 +1956,26 @@ void CLocatorAPI::rescan_path(const char* full_path, bool bRecurse, bool NeedMou
 	desc.name		= full_path;
 	{
 		xrSRWLockGuard g(m_files_lock);
-	files_it	I 	= m_files.lower_bound(desc);
-	if (I == m_files.end())
+		files_it	I 	= m_files.lower_bound(desc);
+		if (I == m_files.end())
 		{
-		return;
+			return;
 		}
+		
+		size_t base_len			= xr_strlen(full_path);
+		for (; I != m_files.end(); )
+		{
+			files_it cur_item	= I;
+			const file& entry 	= *cur_item;
+			I					= cur_item; I++;
 	
-	size_t base_len			= xr_strlen(full_path);
-	for (; I != m_files.end(); )
-	{
-		files_it cur_item	= I;
-		const file& entry 	= *cur_item;
-		I					= cur_item; I++;
-
-		if (0 != strncmp(entry.name, full_path, base_len))
-		{
-			break;	// end of list
-		}
-
-		if (entry.vfs != 0xFFFFFFFF)
-		{
+			if (0 != strncmp(entry.name, full_path, base_len))
+			{
+				break;	// end of list
+			}
+	
+			if (entry.vfs != 0xFFFFFFFF)
+			{
 				continue;
 			}
 	
@@ -1919,6 +2033,29 @@ void CLocatorAPI::unlock_rescan()
 	m_iLockRescan--;  VERIFY(m_iLockRescan>=0);
 	if ((0==m_iLockRescan)&&m_Flags.is(flNeedRescan)) 
 		rescan_pathes();
+}
+
+CFilewatcher::~CFilewatcher()
+{
+	if (WatcherPtr)
+	{
+		xr_delete(WatcherPtr);
+	}
+}
+
+CFilewatcher& CFilewatcher::instance()
+{
+	static CFilewatcher instance;
+	return instance;
+}
+
+void CFilewatcher::SetFilewatcher(FilewatcherImplPtr Watcher)
+{
+	if (WatcherPtr)
+	{
+		xr_delete(WatcherPtr);
+	}
+	WatcherPtr = Watcher;
 }
 
 void CLocatorAPI::check_pathes()
