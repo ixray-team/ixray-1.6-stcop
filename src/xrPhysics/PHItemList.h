@@ -1,104 +1,338 @@
-#ifndef PH_ITEM_LIST_H
-#define PH_ITEM_LIST_H
-/*
-#define DECLARE_PHLIST_ITEM(class_name)			public:\
-												class CPHListItem\
-												{\
-													friend class CPHItemList<class_name>;\
-													friend class CPHItemList<class_name>::iterator;\
-													class_name* next;\
-													class_name** tome;\
-												};\
-												private:
-*/
-#define DECLARE_PHLIST_ITEM(class_name)			friend class CPHItemList<class_name>;\
-												friend class CPHItemList<class_name>::iterator<class_name>;\
-												class_name* next;\
-												class_name** tome;
-#define DECLARE_PHSTACK_ITEM(class_name)		DECLARE_PHLIST_ITEM(class_name)\
-												friend class CPHItemStack<class_name>;\
-												u16 stack_pos;
-						
-//#define TPI(item)								((T::CPHListItem*)item)	
+#pragma once
 
-template<class T>
+/*
+ * FX: »нтрузивный список на основе вектора с пулом свободных слотов
+ *
+ * ¬место св¤зного списка используем вектор указателей.
+ * ”даленные элементы помечаютс¤ nullptr и их индексы сохран¤ютс¤ в пуле свободных слотов дл¤ переиспользовани¤.
+ */
+
+#define DECLARE_PHLIST_ITEM(class_name)             \
+	friend class CPHItemList<class_name>;           \
+	friend class CPHItemList<class_name>::iterator; \
+	u32 PhListIndex;								\
+	u32 PhListVersion;
+
+#define DECLARE_PHSTACK_ITEM(class_name)   \
+	DECLARE_PHLIST_ITEM(class_name)        \
+	friend class CPHItemStack<class_name>; \
+	u16 StackPos;
+
+template <class T>
 class CPHItemList
 {
-	T* first_next;
-	T** last_tome;
-protected:
-	u16 size;
-
-public:
-
-	template<class TI>
-	class iterator
+private:
+	struct SItemSlot
 	{
+		T* Ptr;
+		u32 NextFree;
 
-		TI* my_ptr;
-	public:
-		iterator() { my_ptr = 0; }
-		iterator(TI* i) { my_ptr = i; }
-		iterator	operator ++ () { return my_ptr = ((my_ptr)->next); }
-		TI* operator *	() { return	my_ptr; }
-		bool		operator !=	 (iterator right) { return my_ptr != right.my_ptr; }
+		SItemSlot()
+			: Ptr(nullptr), NextFree(u32(-1)) {}
 	};
 
-	CPHItemList() { empty(); }
-	u16				count() { return size; }
-	void			push_back(T* item)
+	xr_vector<SItemSlot> Items;
+	u32 FreeHead;
+	u16 Size;
+
+	bool IsValidIndex(u32 idx) const
 	{
-		*(last_tome) = item;
-		item->tome = last_tome;
-		last_tome = &((item)->next);
-		item->next = 0;
-		size++;
+		return idx < Items.size() && Items[idx].Ptr != nullptr;
 	}
-	void			move_items(CPHItemList<T>& sourse_list)
+
+public:
+	class iterator
 	{
-		if (!sourse_list.first_next) return;
-		*(last_tome) = sourse_list.first_next;
-		sourse_list.first_next->tome = last_tome;
-		last_tome = sourse_list.last_tome;
-		size = size + sourse_list.size;
-		sourse_list.empty();
+		CPHItemList<T>* List;
+		u32 Idx;
+
+		void Advance()
+		{
+			if (!List || Idx == u32(-1))
+			{
+				Idx = u32(-1);
+				return;
+			}
+
+			// »щем следующий не-nullptr слот
+			u32 size = (u32)List->Items.size();
+			while (Idx < size && List->Items[Idx].Ptr == nullptr)
+			{
+				++Idx;
+			}
+
+			if (Idx >= size)
+			{
+				Idx = u32(-1);
+			}
+		}
+
+	public:
+		iterator()
+			: List(nullptr), Idx(u32(-1)) {}
+
+		iterator(CPHItemList<T>* list, u32 idx = 0)
+			: List(list), Idx(idx)
+		{
+			if (List && Idx != u32(-1))
+			{
+				Advance();
+			}
+		}
+
+		iterator& operator++()
+		{
+			if (List && Idx != u32(-1))
+			{
+				++Idx;
+				Advance();
+			}
+			return *this;
+		}
+
+		iterator operator++(int)
+		{
+			iterator temp = *this;
+			++(*this);
+			return temp;
+		}
+
+		T* operator*() const
+		{
+			if (List && IsValid())
+			{
+				return List->Items[Idx].Ptr;
+			}
+			return nullptr;
+		}
+
+		T* operator->() const
+		{
+			return **this;
+		}
+
+		bool operator==(const iterator& right) const
+		{
+			if (List != right.List)
+			{
+				return false;
+			}
+			if (Idx == u32(-1) && right.Idx == u32(-1))
+			{
+				return true;
+			}
+			return Idx == right.Idx;
+		}
+
+		bool operator!=(const iterator& right) const
+		{
+			return !(*this == right);
+		}
+
+		bool IsValid() const
+		{
+			return List && Idx != u32(-1) &&
+				   Idx < List->Items.size() &&
+				   List->Items[Idx].Ptr != nullptr;
+		}
+
+		operator T*() const
+		{
+			return **this;
+		}
+
+		u32 GetIndex() const { return Idx; }
+	};
+
+	CPHItemList()
+		: FreeHead(u32(-1)), Size(0)
+	{
+		Reserve(1024);
 	}
-	void			erase(iterator<T> i)
+
+	~CPHItemList() = default;
+
+	void Reserve(size_t count)
 	{
-		T* item = *i;
-		T* next = item->next;
-		*(item->tome) = next;
-		if (next)next->tome = item->tome;
-		else last_tome = item->tome;
-		size--;
+		Items.reserve(count);
 	}
-	void			empty()
+
+	u16 Count() const
 	{
-		last_tome = &first_next;
-		first_next = 0;
-		size = 0;
+		return Size;
 	}
-	iterator<T>			begin()
+
+	bool IsEmpty() const
 	{
-		return iterator<T>(first_next);
+		return Size == 0;
 	}
-	iterator<T>			end()
+
+	void PushBack(T* item)
 	{
-		return iterator<T>(0);
+		if (!item)
+		{
+			return;
+		}
+
+		u32 idx;
+
+		if (FreeHead != u32(-1))
+		{
+			idx = FreeHead;
+			FreeHead = Items[idx].NextFree;
+			Items[idx].Ptr = item;
+		}
+		else
+		{
+			idx = (u32)Items.size();
+			Items.emplace_back();
+			Items[idx].Ptr = item;
+		}
+
+		item->PhListIndex = idx;
+		item->PhListVersion = 1;
+
+		++Size;
+	}
+
+	void Erase(iterator& it)
+	{
+		if (!it.IsValid())
+		{
+			return;
+		}
+
+		u32 idx = it.GetIndex();
+		T* item = Items[idx].Ptr;
+
+		if (item)
+		{
+			Items[idx].Ptr = nullptr;
+			Items[idx].NextFree = FreeHead;
+			FreeHead = idx;
+
+			item->PhListIndex = u32(-1);
+			++item->PhListVersion;
+
+			--Size;
+		}
+
+		it = end();
+	}
+
+	void Erase(T* item)
+	{
+		if (!item || item->PhListIndex >= Items.size())
+		{
+			return;
+		}
+
+		u32 idx = item->PhListIndex;
+		if (Items[idx].Ptr == item)
+		{
+			Items[idx].Ptr = nullptr;
+			Items[idx].NextFree = FreeHead;
+			FreeHead = idx;
+
+			item->PhListIndex = u32(-1);
+			++item->PhListVersion;
+
+			--Size;
+		}
+	}
+
+	void MoveItems(CPHItemList<T>& InputList)
+	{
+		if (InputList.IsEmpty())
+		{
+			return;
+		}
+
+		Reserve(Items.size() + InputList.Size);
+
+		for (T* MovedItem : InputList)
+		{
+			if (MovedItem)
+			{
+				PushBack(MovedItem);
+			}
+		}
+
+		InputList.Empty();
+	}
+
+	void Empty()
+	{
+		Items.clear();
+		FreeHead = u32(-1);
+		Size = 0;
+	}
+
+	void Compact()
+	{
+		if (FreeHead == u32(-1))
+		{
+			return;
+		}
+
+		xr_vector<SItemSlot> compacted;
+		compacted.reserve(Size);
+
+		for (auto& slot : Items)
+		{
+			if (slot.Ptr)
+			{
+				compacted.push_back(slot);
+			}
+		}
+
+		for (u32 i = 0; i < compacted.size(); ++i)
+		{
+			if (compacted[i].Ptr)
+			{
+				compacted[i].Ptr->PhListIndex = i;
+			}
+		}
+
+		Items.swap(compacted);
+		FreeHead = u32(-1);
+	}
+
+	iterator begin()
+	{
+		return iterator(this, 0);
+	}
+
+	iterator end()
+	{
+		return iterator(this, u32(-1));
+	}
+
+	iterator begin() const
+	{
+		return iterator(const_cast<CPHItemList<T>*>(this), 0);
+	}
+
+	iterator end() const
+	{
+		return iterator(const_cast<CPHItemList<T>*>(this), u32(-1));
+	}
+
+	T* operator[](u32 idx) const
+	{
+		if (idx < Items.size() && Items[idx].Ptr)
+		{
+			return Items[idx].Ptr;
+		}
+		return nullptr;
+	}
+
+	const xr_vector<SItemSlot>& GetItems() const
+	{
+		return Items;
 	}
 };
 
-template<class T>
-	class CPHItemStack : 
-		public CPHItemList<T>
-	{
-	public:	
-		void			push_back		(T* item)	
-		{
-			item->stack_pos=this->size;
-			CPHItemList<T>::push_back(item);
-		}
-	};
-#define DEFINE_PHITEM_LIST(T,N,I)		typedef CPHItemList<T>	N; typedef CPHItemList<T>::iterator<T> I;
-#define DEFINE_PHITEM_STACK(T,N,I)		typedef CPHItemStack<T>	N; typedef CPHItemStack<T>::iterator<T> I;
-#endif
+#define DEFINE_PHITEM_LIST(T, N, I) \
+	typedef CPHItemList<T> N;       \
+	typedef CPHItemList<T>::iterator I;
