@@ -33,6 +33,7 @@ public:
 	virtual void UpdateHudAdditonal(Fmatrix&) override;
 
 	virtual CHudPdaAnimator* cast_pda_animator() { return this; }
+	static float GetPDAScreen_kx();
 
 protected:
 	//void OnMotionMark(const motion_marks& mark);

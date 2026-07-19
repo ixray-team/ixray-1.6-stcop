@@ -20,7 +20,7 @@
 #include "../Actor.h"
 #include "../ai_space.h"
 #include "../alife_simulator.h"
-
+#include "../HudPdaAnimator.h"
 #include "../../xrScripts/script_engine.h"
 #include "../character_community.h"
 #include "../character_reputation.h"
@@ -501,7 +501,7 @@ void CUIRankingWnd::get_favorite_weapon()
 			m_favorite_weapon_icon->SetTextureRect(tex_rect);
 			m_favorite_weapon_icon->TextureOn();
 			m_favorite_weapon_icon->SetTextureColor(color_rgba(255,255,255,255));
-			m_favorite_weapon_icon->SetWndSize(Fvector2().set((tex_rect.x2-tex_rect.x1)*UI().get_current_kx()*0.8, (tex_rect.y2-tex_rect.y1)*0.8));
+			m_favorite_weapon_icon->SetWndSize(Fvector2().set((tex_rect.x2-tex_rect.x1)*CHudPdaAnimator::GetPDAScreen_kx()*0.8, (tex_rect.y2-tex_rect.y1)*0.8));
 			m_favorite_weapon_icon->SetStretchTexture(true);
 		}
 		m_last_weapon_icon = str;
