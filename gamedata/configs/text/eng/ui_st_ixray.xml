@@ -201,6 +201,9 @@
 	<string id="st_proc">
 		<text>%</text>
 	</string>
+	<string id="st_parse">
+		<text>parse</text>
+	</string>					   
 	<string id="WP_BINOC">
 		<text>Binocular</text>
 	</string>
