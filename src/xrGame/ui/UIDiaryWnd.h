@@ -43,7 +43,6 @@ protected:
 	u32					m_uTreeRootColor;
 	CGameFont*			m_pTreeItemFont;
 	u32					m_uTreeItemColor;
-	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 	CPdaUiSounds*		m_pUiSounds = nullptr;
 
 	xr_vector<Fvector2>	m_sign_places;
@@ -79,6 +78,8 @@ public:
 	virtual void		Update					();
 	virtual bool		OnGamepadKeyAction		(int id, EUIMessages gamepad_action);
 	virtual bool		OnGamepadKeyHold		(int id);
+
+	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 };

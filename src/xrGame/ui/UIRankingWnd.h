@@ -116,7 +116,6 @@ private:
 	const char*				m_last_monster_icon;
 	const char*				m_last_weapon_icon;
 	shared_str				m_last_valuable_artifact_icon;
-	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 	CPdaUiSounds*		m_pUiSounds = nullptr;
 
@@ -140,6 +139,8 @@ public:
 
 			bool		OnGamepadKeyAction		(int key, EUIMessages gamepad_action) override;
 			bool		OnGamepadKeyHold		(int key) override;
+
+	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 

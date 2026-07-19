@@ -92,7 +92,6 @@ private:
 	xr_vector<u32>		m_talk_in_queue;
 
 	CUIXml				m_uiXml;
-	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 	CPdaUiSounds*		m_pUiSounds = nullptr;
 
 	shared_str			ResolveItemTemplatePath(const char* listNode, const char* siblingNode);
@@ -136,6 +135,8 @@ public:
 		SyncCalendarState();
 	}
 	void		PerformWork			();
+
+	CUIGamepadLegend*	m_gamepad_legend = nullptr;
 
 	virtual CUIWindow* ui_cast_window() override { return this; }
 
