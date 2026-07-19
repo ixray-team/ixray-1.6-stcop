@@ -254,12 +254,5 @@ source_group("pch" FILES ${GAME_SOURCE_PCH_FILES})
 
 # RedImage
 if(IXRAY_MP)
-	target_link_libraries(xrGame PUBLIC ${REDIMAGE_LIB})
-	target_include_directories(xrGame PUBLIC "${REDIMAGE_INCL}")
-
-	## Copy binaries
-	add_custom_command(TARGET ${PROJECT_NAME}
-	    POST_BUILD
-	    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${REDIMAGE_BIN} ${IXRAY_OUTPUT}
-	)
+	target_link_libraries(xrGame PUBLIC RedImage::RedImage)
 endif()
