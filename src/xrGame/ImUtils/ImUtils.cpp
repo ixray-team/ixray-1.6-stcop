@@ -1,4 +1,4 @@
-﻿#include "StdAfx.h"
+#include "StdAfx.h"
 
 #include "ImUtils.h"
 #include "../xrEngine/xr_input.h"
@@ -6,6 +6,67 @@
 clsid_manager* g_pClsidManager;
 CImGuiGameSearchManager imgui_search_manager;
 CHudAdjustManager imgui_hud_adjust_manager;
+
+int ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::string_view message)
+{
+	const SDL_MessageBoxButtonData buttons[] =
+		{
+			{0, 0, "Ok"}
+		};
+
+	const SDL_MessageBoxButtonData buttons_yesorno[] =
+		{
+			{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes"},
+			{0, 0, "No"},
+		};
+
+	u32 type = SDL_MESSAGEBOX_INFORMATION;
+
+	switch (status)
+	{
+		case _eMessageBoxStatus::kWarning:
+		{
+			type = SDL_MESSAGEBOX_WARNING;
+			break;
+		}
+		case _eMessageBoxStatus::kError:
+		{
+			type = SDL_MESSAGEBOX_ERROR;
+			break;
+		}
+	}
+
+	const SDL_MessageBoxButtonData* pButtons = buttons;
+	int size_buttons = std::size(buttons);
+
+	if (status == _eMessageBoxStatus::kYesOrNo)
+	{
+		pButtons = buttons_yesorno;
+		size_buttons = std::size(buttons_yesorno);
+	}
+
+	const SDL_MessageBoxData messageboxdata =
+		{
+			type | SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT, /* .flags */
+			nullptr,									 /* .window */
+			title.data(),								 /* .title */
+			message.data(),								 /* .message */
+			size_buttons,								 /* .numbuttons */
+			pButtons,									 /* .buttons */
+			nullptr										 /* .colorScheme */
+		};
+
+	int button_id = -1;
+
+	int ret = SDL_ShowMessageBox(&messageboxdata, &button_id);
+
+	if (ret < 0)
+	{
+		button_id = -1;
+	}
+
+	return button_id;
+}
 
 void RegisterImGuiInGame()
 {
@@ -19,6 +80,7 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("Car Editor", CImGuiManager::ERenderPriority::eMedium, RenderCarConfigEditor);
 		CImGuiManager::Instance().Subscribe("Texture Editor", CImGuiManager::ERenderPriority::eMedium, RenderTextureEditor);
 		CImGuiManager::Instance().Subscribe("Quest Editor", CImGuiManager::ERenderPriority::eMedium, RenderQuestEditor);
+		CImGuiManager::Instance().Subscribe("PPE Editor", CImGuiManager::ERenderPriority::eMedium, RenderPPEEditor);
 		CImGuiManager::Instance().Subscribe("Input Manager", CImGuiManager::ERenderPriority::eMedium, RenderToolsInputManagerWindow);
 		CImGuiManager::Instance().Subscribe("SVGStorageViewer", CImGuiManager::ERenderPriority::eMedium, RenderToolsRenderDebugSVGStorageViewerWindow);
 		CImGuiManager::Instance().Subscribe("Hud Adjust", CImGuiManager::ERenderPriority::eMedium, RenderHUDAdjustManager);
@@ -485,6 +547,11 @@ void AllEditors_ExecuteRequest(const SRequestData& req)
 		RequestHandler_QuestEditor(req);
 		break;
 	}
+	case eImGuiEditorType::kPPEEditor:
+	{
+		RequestHandler_PPEEditor(req);
+		break;
+	}
 	case eImGuiEditorType::kNoEditor:break;
 	default:
 	{
@@ -519,6 +586,11 @@ void AllEditors_OnPressed(int key)
 	{
 		OMFEditor_OnPressed(key);
 	}
+
+	if (Engine.External.EditorStates[u8(EditorUI::Tools_PostProcessEffectorEditor)])
+	{
+		PPEEditor_OnPressed(key);
+	}
 }
 
 void AllEditors_OnReleased(int key)
@@ -544,6 +616,11 @@ void AllEditors_OnReleased(int key)
 	if (Engine.External.EditorStates[u8(EditorUI::Tools_OMFEditor)])
 	{
 		OMFEditor_OnReleased(key);
+	}
+
+	if (Engine.External.EditorStates[u8(EditorUI::Tools_PostProcessEffectorEditor)])
+	{
+		PPEEditor_OnReleased(key);
 	}
 }
 
@@ -676,6 +753,20 @@ void AllEditors_Shutdown()
 			SRequestData{
 				.editor_type = u32(eImGuiEditorType::kOMFEditor),
 				.request_type = u32(eRequestType_OMFEditor::kShutdown)
+			}
+		});
+	}
+
+	// ppe editor
+	{
+		AllEditors_SendRequests_Sequential(xr_array<SRequestData, 2>{
+			SRequestData{
+				.editor_type = u32(eImGuiEditorType::kPPEEditor),
+				.request_type = u32(eRequestType_PPEditor::kWriteSettings)
+			},
+			SRequestData{
+				.editor_type = u32(eImGuiEditorType::kPPEEditor),
+				.request_type = u32(eRequestType_PPEditor::kShutdown)
 			}
 		});
 	}
