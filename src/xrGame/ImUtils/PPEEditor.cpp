@@ -472,6 +472,12 @@ void PPEEditor_SortKeys(SPPEffectData& data)
 // File operations (dialogs + vfs)
 // ==============================================================
 
+#if IXRAY_PPE_EDITOR_TAB_GAME == 1
+// defined in the playback section below
+void PPEEditor_ReplayPreviewIfPlaying(SPPEditorUIState& state);
+void PPEEditor_StopPreviewIfMine(SPPEditorUIState& state);
+#endif
+
 void PPEEditor_LoadFileInteractive(SPPEditorUIState& state, SPPEffectData& data)
 {
 	if (xr_EFS == nullptr)
@@ -501,6 +507,10 @@ void PPEEditor_LoadFileInteractive(SPPEditorUIState& state, SPPEffectData& data)
 		state.selected_file.clear();
 		state.current_selected_file = 0;
 		state.Reset();
+
+#if IXRAY_PPE_EDITOR_TAB_GAME == 1
+		PPEEditor_ReplayPreviewIfPlaying(state);
+#endif
 	}
 	else
 	{
@@ -525,6 +535,11 @@ void PPEEditor_LoadFromVFSInteractive(SPPEditorUIState& state, SPPEffectData& da
 		state.is_file_loaded = true;
 		state.path.clear();
 		state.Reset();
+
+#if IXRAY_PPE_EDITOR_TAB_GAME == 1
+		// replace the running preview with the newly selected effect
+		PPEEditor_ReplayPreviewIfPlaying(state);
+#endif
 	}
 	else
 	{
@@ -875,6 +890,25 @@ void PPEEditor_SetCmTextureInGame(const char* name)
 	}
 }
 
+// restarts the preview with the current data when the game tab's
+// effect is playing (call after the game tab's data was replaced)
+void PPEEditor_ReplayPreviewIfPlaying(SPPEditorUIState& state)
+{
+	if (&state == g_pPPEGame && g_pPPEGame && PPEEditor_IsPlayingInGame())
+	{
+		PPEEditor_PlayInGame(g_pPPEGame);
+	}
+}
+
+// stops the preview when the game tab's data was dropped (New/Close)
+void PPEEditor_StopPreviewIfMine(SPPEditorUIState& state)
+{
+	if (&state == g_pPPEGame && g_pPPEGame)
+	{
+		PPEEditor_StopInGame();
+	}
+}
+
 // the preview effector owns a data snapshot, but remove it explicitly
 // when the editor is shut down
 void PPEEditor_DestroyPreviewEffector()
@@ -904,6 +938,10 @@ void RenderPPEEditorUI_MenuBar(SPPEditorUIState& state, SPPEffectData& data)
 				state.selected_file.clear();
 				state.current_selected_file = 0;
 				state.is_file_loaded = true;
+
+#if IXRAY_PPE_EDITOR_TAB_GAME == 1
+				PPEEditor_StopPreviewIfMine(state);
+#endif
 			}
 
 			if (ImGui::MenuItem("Load from disk..."))
@@ -929,6 +967,10 @@ void RenderPPEEditorUI_MenuBar(SPPEditorUIState& state, SPPEffectData& data)
 					state.path.clear();
 					state.selected_file.clear();
 					state.current_selected_file = 0;
+
+#if IXRAY_PPE_EDITOR_TAB_GAME == 1
+					PPEEditor_StopPreviewIfMine(state);
+#endif
 				}
 			}
 
