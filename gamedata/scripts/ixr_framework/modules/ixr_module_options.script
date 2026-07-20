@@ -16,6 +16,7 @@ local USE_FILE_LOG = true
 local USE_CONSOLE_LOG = false
 local APPDATA_ALIAS = '$app_data_root$'
 local OPTIONS_FILE_NAME = "ixr_options.ixr"
+local DRAW_VAR_NAME = false
 
 local CONST_APPDATA_FOLDER = nil -- auto
 local options_scroll_wnd = nil
@@ -202,9 +203,9 @@ function ixr_options.init()
 	local addons_data = get_addons_list()
 
 	for i, addon_data in ipairs(addons_data) do
-		ixr_options.toLog("Аддон " .. i .. ": " .. addon_data.addon_folder)
+		ixr_options.toLog("РђРґРґРѕРЅ " .. i .. ": " .. addon_data.addon_folder)
 		for j, script_name in ipairs(addon_data.script_files_names) do
-			ixr_options.toLog("  Скрипт " .. j .. ": " .. script_name)
+			ixr_options.toLog("  РЎРєСЂРёРїС‚ " .. j .. ": " .. script_name)
 		end
 	end
 	--]]
@@ -403,6 +404,17 @@ end
 -- #######################################
 -- #	 	 SCRIPT UI TOOLS 	 	 	 #
 -- #######################################
+
+
+function ixr_options.set_draw_variable_names_state(flag)
+	DRAW_VAR_NAME = flag
+	ReDraw()
+end
+
+function ixr_options.get_draw_variable_names_state()
+	return DRAW_VAR_NAME
+end
+
 
 function ixr_options.check_box(def_value)
 	return {
@@ -967,7 +979,14 @@ function add_single_ungroupped_option(option_index, padding, alpha, option_data)
 		local CTRLText = get_options_xml():InitStatic("ixr_product_sans_12_l", option_bg)
 		CTRLText:SetWndPos(vector2():set(5, 8))
 		CTRLText:SetWndSize(vector2():set(250, 25))
-		CTRLText:TextControl():SetText(tostring(variable_name) .. " (" .. tostring( game.translate_string(tostring(display_text) or display_text) ) .. ")")
+		
+		if DRAW_VAR_NAME then
+			CTRLText:TextControl():SetText( tostring(variable_name) .. " (" .. tostring(game.translate_string(tostring(display_text) or display_text)) .. ")" )
+		else
+			CTRLText:TextControl():SetText( tostring(game.translate_string(tostring(display_text) or display_text)) )
+		end
+		
+		
 		CTRLText:TextControl():SetTextColor(GetARGB(255, 200, 200, 200))
 		CTRLText:Show(true)
 		get_menu_ref():Register(CTRLText, "ixr_controll_label_"  .. tostring(option_index))
@@ -1018,7 +1037,11 @@ function add_option_group(option_index, padding, alpha, count, group_display_tex
 		option_name_controll:SetWndPos(vector2():set(padding + padding, 5 + padding + y_offset))
 		option_name_controll:SetWndSize(vector2():set(texture_width - padding, group_name_text_height))
 		
-		option_name_controll:TextControl():SetText(tostring(variable_name) .. " (" .. tostring(game.translate_string(tostring(display_text)) or display_text) .. ")")
+		if DRAW_VAR_NAME then
+			option_name_controll:TextControl():SetText( tostring(variable_name) .. " (" .. tostring(game.translate_string(tostring(display_text) or display_text)) .. ")" )
+		else
+			option_name_controll:TextControl():SetText( tostring(game.translate_string(tostring(display_text) or display_text)) )
+		end
 		
 		option_name_controll:TextControl():SetTextColor(GetARGB(255, 200, 200, 200))
 		option_name_controll:Show(true)
@@ -1458,7 +1481,8 @@ function IXRComboBox:SetValueIndex(index)
 	
 	if #self.list_values > 0 and self.list_values[index] then
 		self:UpdateTextColor()
-		self.controll_text:TextControl():SetText(tostring(self.list_values[index]["option_display_name"] or nil))
+		local display_text = tostring(self.list_values[index]["option_display_name"] or "nil")
+		self.controll_text:TextControl():SetText(game.translate_string(display_text) or display_text)
 	end
 
 	self:UpdateArrowsVisibility()
