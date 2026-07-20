@@ -1,6 +1,5 @@
 #pragma once
 
-#include <charconv>
 #include "XR_IOConsole.h"
 
 #define CMD0(cls)					{ static cls x##cls();				Console->AddCommand(&x##cls);}
@@ -23,62 +22,74 @@ class ENGINE_API CCC_String;
 class ENGINE_API IConsole_Command
 {
 public:
-	friend class	CConsole;
-	using TInfo		= char[512];
-	using TStatus	= char[256];
-	using vecTips	= xr_vector<shared_str>;
-	using vecLRU	= xr_vector<shared_str>;
+	friend class CConsole;
+	using TInfo = string512;
+	using TStatus = string256;
+	using vecTips = xr_vector<shared_str>;
+	using vecLRU = xr_vector<shared_str>;
 
-protected	:
-	const char*			cName;
-	bool			bEnabled;
-	bool			bLowerCaseArgs;
-	bool			bEmptyArgsHandled;
+protected:
+	const char* cName;
+	bool bEnabled;
+	bool bLowerCaseArgs;
+	bool bEmptyArgsHandled;
+
+	vecLRU m_LRU;
+
+	static constexpr int LRU_MAX_COUNT = 10;
+
+	ICF bool EQ(const char* S1, const char* S2) { return xr_strcmp(S1, S2) == 0; }
+
+public:
+	IConsole_Command(const char* N) : cName(N), bEnabled(true), bLowerCaseArgs(true), bEmptyArgsHandled(false)
+	{
+		m_LRU.reserve(LRU_MAX_COUNT + 1);
+		m_LRU.clear();
+	}
 	
-	vecLRU			m_LRU;
-
-	enum {
-		LRU_MAX_COUNT = 10
-	};
-
-	IC	bool		EQ(const char* S1, const char* S2) { return xr_strcmp(S1,S2)==0; }
-public		:
-	IConsole_Command		(const char* N) : 
-	  cName				(N),
-	  bEnabled			(true),
-	  bLowerCaseArgs	(true),
-	  bEmptyArgsHandled	(false) {
-		  m_LRU.reserve(LRU_MAX_COUNT + 1);
-		  m_LRU.clear();
-	  }
 	virtual ~IConsole_Command()
 	{
-		if(Console)
+		if (Console)
+		{
 			Console->RemoveCommand(this);
-	};
+		}
+	}
 
-	const char*			Name()			{ return cName;	}
-	void			InvalidSyntax() {
-		TInfo I; Info(I);
-		Msg("~ Invalid syntax in call to '%s'",cName);
+	const char* Name() { return cName; }
+	
+	void InvalidSyntax()
+	{
+		TInfo I;
+		Info(I);
+		Msg("~ Invalid syntax in call to '%s'", cName);
 		Msg("~ Valid arguments: %s", I);
 	}
-	virtual void	Execute	(const char* args)	= 0;
-	virtual void	Status	(TStatus& S)	{ S[0]=0; }
-	virtual void	Info	(TInfo& I)		{ xr_strcpy(I,"(no arguments)"); }
-	virtual void	Save	(IWriter *F)	{
-		TStatus		S = {};	Status(S);
-		if (S[0])	F->w_printf("%s %s\r\n",cName,S); 
+	
+	virtual void Execute(const char* args) = 0;
+	
+	virtual void Status(TStatus& S) { S[0] = 0; }
+	
+	virtual void Info(TInfo& I) { xr_strcpy(I, "(no arguments)"); }
+	
+	virtual void Save(IWriter* F)
+	{
+		TStatus S = {};
+		Status(S);
+		if (S[0])
+		{
+			F->w_printf("%s %s\r\n", cName, S);
+		}
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode) {
-		add_LRU_to_tips( tips );
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		add_LRU_to_tips(tips);
 	}
 
-	virtual void	add_to_LRU		(shared_str const& arg);
-			void	add_LRU_to_tips	(vecTips& tips);
+	virtual void add_to_LRU(shared_str const& arg);
+	void add_LRU_to_tips(vecTips& tips);
 
-	virtual IConsole_Command* dcast_icommand(){return this;}
+	virtual IConsole_Command* dcast_icommand() { return this; }
 	virtual CCC_Mask64* dcast_mask64() { return nullptr; }
 	virtual CCC_Mask32* dcast_mask32() { return nullptr; }
 	virtual CCC_Mask16* dcast_mask16() { return nullptr; }
@@ -89,7 +100,7 @@ public		:
 	virtual CCC_Integer* dcast_int() { return nullptr; }
 	virtual CCC_Boolean* dcast_bool() { return nullptr; }
 	virtual CCC_String* dcast_string() { return nullptr; }
-}; // class IConsole_Command
+};
 
 class ENGINE_API CCC_Mask64 : public IConsole_Command
 {
@@ -151,16 +162,16 @@ public :
 
 	static Flags64& FastCommand(const char* command_name, Flags64 default_value = {}, u64 mask = 0)
 	{
-		auto it = Console->Commands.find(command_name);
+		const auto it = Console->Commands.find(command_name);
 
 		if (it == Console->Commands.end())
 		{
-			auto new_cmd = new CCC_Mask64(command_name, new Flags64, mask);
+			const auto new_cmd = new CCC_Mask64(command_name, new Flags64, mask);
 			Console->AddCommand(new_cmd);
 			*new_cmd->value = default_value;
 			return *new_cmd->value;
 		}
-		return *static_cast<CCC_Mask64*>(it->second)->value;
+		return *smart_cast<CCC_Mask64*>(it->second)->value;
 	}
 
 	CCC_Mask64* dcast_mask64() override { return this; }
@@ -224,25 +235,24 @@ public :
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static Flags32& FastCommand(const char* command_name, Flags32 default_value = {0}, u32 mask = 0)
+	static Flags32& FastCommand(const char* command_name, Flags32 default_value = {}, u32 mask = 0)
 	{
-		auto it = Console->Commands.find(command_name);
+		const auto it = Console->Commands.find(command_name);
 
 		if (it == Console->Commands.end())
 		{
 			CCC_Mask32* new_cmd = new CCC_Mask32(command_name, new Flags32, mask);
 			Console->AddCommand(new_cmd);
 			*new_cmd->value = default_value;
-			return *(new_cmd)->value;
+			return *new_cmd->value;
 		}
-		return *static_cast<CCC_Mask32*>((*it).second)->value;
+		return *smart_cast<CCC_Mask32*>(it->second)->value;
 	}
 
 	virtual CCC_Mask32* dcast_mask32() { return this; }
 };
 
-class ENGINE_API CCC_Mask16 : 
-	public IConsole_Command
+class ENGINE_API CCC_Mask16 : public IConsole_Command
 {
 protected	:
 	Flags16*	value;
@@ -252,7 +262,8 @@ public		:
 	  IConsole_Command(N),
 	  value(V),
 	  mask(M)
-	{};
+	{
+	}
 
 	bool GetValue() const { return value->test(mask); }
 
@@ -289,18 +300,17 @@ public		:
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static Flags16& FastCommand(const char* command_name, Flags16 default_value = { 0 }, u32 mask = 0)
+	static Flags16& FastCommand(const char* command_name, Flags16 default_value = {}, u32 mask = 0)
 	{
-		auto it = Console->Commands.find(command_name);
+		const auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
 			CCC_Mask16* new_cmd = new CCC_Mask16(command_name, new Flags16, mask);
 			Console->AddCommand(new_cmd);
 			*new_cmd->value = default_value;
-			return *static_cast<CCC_Mask16*>(new_cmd)->value;
+			return *new_cmd->value;
 		}
-		else
-			return *static_cast<CCC_Mask16*>((*it).second)->value;
+		return *smart_cast<CCC_Mask16*>(it->second)->value;
 	}
 
 	virtual CCC_Mask16* dcast_mask16() { return this; }
@@ -316,8 +326,9 @@ public		:
 	  IConsole_Command(N),
 	  value(V),
 	  mask(M)
-	{bEmptyArgsHandled=true;};
-	  const bool GetValue()const{ return value->test(mask); }
+	{bEmptyArgsHandled=true;
+	}
+	bool GetValue()const{ return value->test(mask); }
 	virtual void	Execute	(const char* args)
 	{
 		value->set(mask,!GetValue());
@@ -340,18 +351,17 @@ public		:
 		IConsole_Command::fill_tips(tips, mode);
 	}
 
-	static Flags32& FastCommand(const char* command_name, Flags32 default_value = { 0 }, u32 mask = 0)
+	static Flags32& FastCommand(const char* command_name, Flags32 default_value = {}, u32 mask = 0)
 	{
-		auto it = Console->Commands.find(command_name);
+		const auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
 			CCC_ToggleMask* new_cmd = new CCC_ToggleMask(command_name, new Flags32, mask);
 			Console->AddCommand(new_cmd);
 			*new_cmd->value = default_value;
-			return *static_cast<CCC_ToggleMask*>(new_cmd)->value;
+			return *new_cmd->value;
 		}
-		else
-			return *static_cast<CCC_ToggleMask*>((*it).second)->value;
+		return *smart_cast<CCC_ToggleMask*>(it->second)->value;
 	}
 
 	virtual CCC_ToggleMask* dcast_tmask() { return this; }
@@ -368,11 +378,12 @@ public		:
 	  IConsole_Command(N),
 	  value(V),
 	  tokens(T)
-	{};
+	{
+	}
 
 	virtual void	Execute	(const char* args)
 	{
-		xr_token* tok = tokens;
+		const xr_token* tok = tokens;
 		while (tok->name) {
 			if (_stricmp(tok->name,args)==0) {
 				*value=tok->id;
@@ -384,21 +395,20 @@ public		:
 	}
 	virtual void	Status	(TStatus& S)
 	{
-		xr_token *tok = tokens;
+		const xr_token *tok = tokens;
 		while (tok->name) {
-			if (tok->id==(int)(*value)) {
+			if (std::cmp_equal(tok->id, *value)) {
 				xr_strcpy(S,tok->name);
 				return;
 			}
 			tok++;
 		}
 		xr_strcpy(S,"?");
-		return;
 	}
 	virtual void	Info	(TInfo& I)
 	{	
 		I[0]=0;
-		xr_token *tok = GetToken();
+		const xr_token *tok = GetToken();
 		for (int Iter = 0;;Iter++) {
 			if (tok[Iter].name == nullptr) {
 				break;
@@ -418,7 +428,7 @@ public		:
 
 		while (tok->name && !res)
 		{
-			if (tok->id == static_cast<int>(*value))
+			if (std::cmp_equal(tok->id, *value))
 			{
 				xr_sprintf(str, sizeof(str), "%s (current)", tok->name);
 				tips.emplace_back(str);
@@ -443,23 +453,19 @@ public		:
 
 	static u32& FastCommand(const char* command_name, xr_token&& token, u32 default_value = 0)
 	{
-		auto it = Console->Commands.find(command_name);
-		if (it == Console->Commands.end())
+		if (const auto it = Console->Commands.find(command_name); it == Console->Commands.end())
 		{
-			CCC_Token* new_cmd = new CCC_Token(command_name, new u32, new xr_token(std::move(token)));
+			CCC_Token* new_cmd = new CCC_Token(command_name, new u32, new xr_token(token));
 			Console->AddCommand(new_cmd);
 			*new_cmd->value = default_value;
-			return *static_cast<CCC_Token*>(new_cmd)->value;
+			return *new_cmd->value;
 		}
 		else
-			return *static_cast<CCC_Token*>((*it).second)->value;
+			return *smart_cast<CCC_Token*>(it->second)->value;
 	}
 
 	virtual CCC_Token* dcast_token() { return this; }
 };
-
-#undef min
-#undef max
 
 class ENGINE_API CCC_Float : public IConsole_Command
 {
@@ -472,8 +478,9 @@ public:
 	  value(V),
 	  min(_min),
 	  max(_max)
-	{};
-	  const float	GetValue	() const {return *value;};
+	{
+	}
+	float	GetValue	() const {return *value; }
 	void GetBounds(float& fmin, float& fmax) const {
 		fmin = min;
 		fmax = max;
@@ -481,14 +488,14 @@ public:
 
 	virtual void	Execute	(const char* args)
 	{
-		float v = float(atof(args));
-		if (v<(min-EPS) || v>(max+EPS) ) InvalidSyntax();
+		const float v = float(atof(args));
+		if (v< min - EPS || v> max + EPS ) InvalidSyntax();
 		else	*value = v;
 	}
 	virtual void	Status	(TStatus& S)
 	{	
 		xr_sprintf	(S,sizeof(S),"%3.3f",*value);
-		while	(xr_strlen(S) && ('0'==S[xr_strlen(S)-1]))	S[xr_strlen(S)-1] = 0;
+		while	(xr_strlen(S) && '0' == S[xr_strlen(S) - 1])	S[xr_strlen(S)-1] = 0;
 	}
 	virtual void	Info	(TInfo& I)
 	{	
@@ -507,16 +514,15 @@ public:
 
 	static float& FastCommand(const char* command_name, float default_value = 0.f, float min = -1000.f, float max = 1000.f)
 	{
-		auto it = Console->Commands.find(command_name);
+		const auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
 			CCC_Float* new_cmd = new CCC_Float(command_name, new float, min, max);
 			Console->AddCommand(new_cmd);
 			*new_cmd->value = default_value;
-			return *static_cast<CCC_Float*>(new_cmd)->value;
+			return *new_cmd->value;
 		}
-		else
-			return *static_cast<CCC_Float*>((*it).second)->value;
+		return *smart_cast<CCC_Float*>(it->second)->value;
 	}
 
 	virtual CCC_Float* dcast_float() { return this; }
@@ -534,9 +540,9 @@ public:
 	{
 		min.set(_min);
 		max.set(_max);
-	};
-	const Fvector	GetValue	() const {return *value;};
-	Fvector*		GetValuePtr	() const {return value;};
+	}
+	Fvector GetValue() const { return *value; }
+	Fvector*		GetValuePtr	() const {return value; }
 
 	virtual void Execute(const char* args)
 	{
@@ -587,16 +593,15 @@ public:
 
 	static Fvector& FastCommand(const char* command_name, Fvector default_value = zero_vel, Fvector min = { -1000.f, -1000.f, -1000.f }, Fvector max = { 1000.f, 1000.f, 1000.f })
 	{
-		auto it = Console->Commands.find(command_name);
+		const auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
 			CCC_Vector3* new_cmd = new CCC_Vector3(command_name, new Fvector, min, max);
 			*new_cmd->value = default_value;
 			Console->AddCommand(new_cmd);
-			return *static_cast<CCC_Vector3*>(new_cmd)->value;
+			return *new_cmd->value;
 		}
-		else
-			return *static_cast<CCC_Vector3*>((*it).second)->value;
+		return *smart_cast<CCC_Vector3*>(it->second)->value;
 	}
 
 	virtual CCC_Vector3* dcast_vector() { return this; }
@@ -635,11 +640,11 @@ public:
 		min(_min),
 		max(_max)
 	{
-	};
+	}
 
 	void Execute(const char* args) override
 	{
-		int v = atoi(args);
+		const int v = atoi(args);
 		if (v < min || v > max) InvalidSyntax();
 		else *value = v;
 	}
@@ -666,15 +671,15 @@ public:
 
 	static int& FastCommand(const char* command_name, int default_value = 0, int min = -1000, int max = 1000)
 	{
-		auto it = Console->Commands.find(command_name);
+		const auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
-			auto new_cmd = new CCC_Integer(command_name, new int, min, max);
+			const auto new_cmd = new CCC_Integer(command_name, new int, min, max);
 			*new_cmd->value = default_value;
 			Console->AddCommand(new_cmd);
 			return *new_cmd->value;
 		}
-		return *static_cast<CCC_Integer*>(it->second)->value;
+		return *smart_cast<CCC_Integer*>(it->second)->value;
 	}
 
 	CCC_Integer* dcast_int() override { return this; }
@@ -740,16 +745,15 @@ public:
 
 	static bool& FastCommand(const char* command_name, bool default_value = false, bool min = false, bool max = true)
 	{
-		auto it = Console->Commands.find(command_name);
+		const auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
 			CCC_Boolean* new_cmd = new CCC_Boolean(command_name, new bool, min, max);
 			*new_cmd->value = default_value;
 			Console->AddCommand(new_cmd);
-			return *static_cast<CCC_Boolean*>(new_cmd)->value;
+			return *new_cmd->value;
 		}
-		else
-			return *static_cast<CCC_Boolean*>((*it).second)->value;
+		return *smart_cast<CCC_Boolean*>(it->second)->value;
 	}
 
 	virtual CCC_Boolean* dcast_bool() { return this; }
@@ -798,15 +802,14 @@ public:
 
 	static LPSTR FastCommand(const char* command_name, const char* default_value = "\0", int _size = 512)
 	{
-		auto it = Console->Commands.find(command_name);
+		const auto it = Console->Commands.find(command_name);
 		if (it == Console->Commands.end())
 		{
-			CCC_String* new_cmd = new CCC_String(command_name, strdup(default_value), _size);
+			CCC_String* new_cmd = new CCC_String(command_name, xr_strdup(default_value), _size);
 			Console->AddCommand(new_cmd);
-			return static_cast<CCC_String*>(new_cmd)->value;
+			return new_cmd->value;
 		}
-		else
-			return static_cast<CCC_String*>((*it).second)->value;
+		return smart_cast<CCC_String*>(it->second)->value;
 	}
 
 	virtual CCC_String* dcast_string() { return this; }
@@ -815,22 +818,23 @@ public:
 class ENGINE_API CCC_SaveCFG : public IConsole_Command
 {
 public:
-	CCC_SaveCFG(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	CCC_SaveCFG(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
 	virtual void Execute(const char* args);
 };
 
 class ENGINE_API CCC_LoadCFG : public IConsole_Command
 {
 public:
-	CCC_LoadCFG(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual bool	allow(const char* cmd) { return true; };
-	virtual void	Execute			(const char* args);
+	CCC_LoadCFG(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+	virtual bool allow(const char* cmd) { return true; }
+	virtual void Execute(const char* args);
 };
 
 class ENGINE_API CCC_LoadCFG_custom : public CCC_LoadCFG
 {
-	string64		m_cmd;
+	string64 m_cmd;
+
 public:
-					CCC_LoadCFG_custom(const char* cmd);
-	virtual bool	allow			(const char* cmd);
+	CCC_LoadCFG_custom(const char* cmd);
+	virtual bool allow(const char* cmd);
 };
