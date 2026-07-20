@@ -49,6 +49,7 @@
 #include "Grenade.h"
 #include "InteractiveObject.h"
 #include "nvg.h"
+#include "PickupManager.h"
 
 extern u32 hud_adj_mode;
 
