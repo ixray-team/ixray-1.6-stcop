@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Actor.h"
+#include "PickupManager.h"
 #include "Torch.h"
 #include "trade.h"
 #include "../xrEngine/CameraBase.h"
