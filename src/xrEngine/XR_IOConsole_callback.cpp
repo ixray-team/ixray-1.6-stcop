@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////
 //	Module 		: XR_IOConsole_callback.cpp
 //	Created 	: 17.05.2008
+//	Modified	: 21.07.2026
 //	Author		: Evgeniy Sokolov
 //	Description : Console`s callback functions class implementation
 ////////////////////////////////////////////////////////////////////////////
@@ -8,9 +9,7 @@
 #include "stdafx.h"
 
 #include "line_editor.h"
-#include "xr_input.h"
 #include "xr_ioc_cmd.h"
-
 
 void CConsole::Register_callbacks()
 {
@@ -21,7 +20,6 @@ void CConsole::Register_callbacks()
 
 	ec().assign_callback(SDL_SCANCODE_TAB, text_editor::ks_free, Callback(this, &CConsole::Find_cmd));
 	ec().assign_callback(SDL_SCANCODE_TAB, text_editor::ks_Shift, Callback(this, &CConsole::Find_cmd_back));
-	ec().assign_callback(SDL_SCANCODE_TAB, text_editor::ks_Alt, Callback(this, &CConsole::GamePause));
 
 	ec().assign_callback(SDL_SCANCODE_UP, text_editor::ks_free, Callback(this, &CConsole::Prev_tip));
 	ec().assign_callback(SDL_SCANCODE_DOWN, text_editor::ks_free, Callback(this, &CConsole::Next_tip));
@@ -41,7 +39,10 @@ void CConsole::Register_callbacks()
 	ec().assign_callback(SDL_SCANCODE_DELETE, text_editor::ks_Ctrl, Callback(this, &CConsole::Clear));
 }
 
-void CConsole::Prev_log() // DIK_PRIOR=PAGE_UP
+/**
+ * @code SDL_SCANCODE_PAGEUP @endcode
+ */
+void CConsole::Prev_log()
 {
 	scroll_delta++;
 	scroll_delta = std::min<int>(scroll_delta, (int)m_log_history.GetSize());
@@ -55,26 +56,36 @@ void CConsole::Prev_log() // DIK_PRIOR=PAGE_UP
 	}
 }
 
-void CConsole::Next_log() // DIK_NEXT=PAGE_DOWN
+/**
+ * @code SDL_SCANCODE_PAGEDOWN @endcode
+ */
+void CConsole::Next_log()
 {
 	scroll_delta--;
-	if ( scroll_delta < 0 )
-	{
-		scroll_delta = 0;
-	}
+	scroll_delta = std::max(scroll_delta, 0);
 }
 
-void CConsole::Begin_log() // PAGE_UP+Ctrl
+/**
+ * @code SDL_SCANCODE_PAGEUP + KMOD_CTRL @endcode
+ */
+void CConsole::Begin_log()
 {
 	scroll_delta = 0;
 }
 
-void CConsole::End_log() // PAGE_DOWN+Ctrl
+/**
+ * @code SDL_SCANCODE_PAGEDOWN + KMOD_CTRL @endcode
+ */
+void CConsole::End_log()
 {
 	scroll_delta = 0;
 }
 
-void CConsole::Find_cmd() { // DIK_TAB
+/**
+ * @code SDL_SCANCODE_TAB @endcode
+ */
+void CConsole::Find_cmd() 
+{
 	shared_str out_str;
 		
 	IConsole_Command* cc = find_next_cmd( ec().str_edit(), out_str );
@@ -83,7 +94,10 @@ void CConsole::Find_cmd() { // DIK_TAB
 	}
 }
 
-void CConsole::Find_cmd_back() // DIK_TAB+shift
+/**
+ * @code SDL_SCANCODE_TAB + KMOD_SHIFT @endcode
+ */
+void CConsole::Find_cmd_back()
 {
 	const char* edt      = ec().str_edit();
 	const char* radmin_cmd_name = "ra ";
@@ -105,18 +119,31 @@ void CConsole::Find_cmd_back() // DIK_TAB+shift
 	}
 }
 
-void CConsole::Prev_cmd() { // DIK_UP + Ctrl
+/**
+ * @code SDL_SCANCODE_UP + KMOD_CTRL @endcode
+ */
+void CConsole::Prev_cmd() 
+{
 	prev_cmd_history_idx();
 	SelectCommand();
 }
 
-void CConsole::Next_cmd() { // DIK_DOWN + Ctrl
+/**
+ * @code SDL_SCANCODE_DOWN + KMOD_CTRL @endcode
+ */
+void CConsole::Next_cmd() 
+{
 	next_cmd_history_idx();
 	SelectCommand();
 }
 
-void CConsole::Prev_tip() { // DIK_UP
-	if (xr_strlen(ec().str_edit()) == 0) {
+/**
+ * @code SDL_SCANCODE_UP @endcode
+ */
+void CConsole::Prev_tip()
+{
+	if (xr_strlen(ec().str_edit()) == 0)
+	{
 		prev_cmd_history_idx();
 		SelectCommand();
 		return;
@@ -124,8 +151,13 @@ void CConsole::Prev_tip() { // DIK_UP
 	prev_selected_tip();
 }
 
-void CConsole::Next_tip() { // DIK_DOWN + Ctrl
-	if (xr_strlen( ec().str_edit()) == 0) {
+/**
+ * @code SDL_SCANCODE_DOWN + KMOD_CTRL @endcode
+ */
+void CConsole::Next_tip()
+{
+	if (xr_strlen(ec().str_edit()) == 0)
+	{
 		next_cmd_history_idx();
 		SelectCommand();
 		return;
@@ -154,24 +186,29 @@ void CConsole::PageDown_tips() {
 	check_next_selected_tip();
 }
 
+/**
+ * @code SDL_SCANCODE_RETURN, SDL_SCANCODE_KP_ENTER @endcode
+ */
 void CConsole::Execute_cmd()
-{ 
-	// DIK_RETURN, DIK_NUMPADENTER
-	if (0 <= m_select_tip && m_select_tip < (int)m_tips.size()) 
+{
+	if (0 <= m_select_tip && std::cmp_less(m_select_tip, m_tips.size()))
 	{
 		shared_str const& str = m_tips[m_select_tip].text;
-		if (m_tips_mode == 1) {
+		if (m_tips_mode == 1)
+		{
 			string512 buf = {};
-			xr_strconcat( buf, str.c_str(), " " );
-			ec().set_edit( buf );
-		} else if (m_tips_mode == 2) {
+			xr_strconcat(buf, str.c_str(), " ");
+			ec().set_edit(buf);
+		}
+		else if (m_tips_mode == 2)
+		{
 			string512 buf = {};
-			xr_strconcat( buf, m_cur_cmd.c_str(), " ", str.c_str() );
-			ec().set_edit( buf );
+			xr_strconcat(buf, m_cur_cmd.c_str(), " ", str.c_str());
+			ec().set_edit(buf);
 		}
 		reset_selected_tip();
 	}
-	else 
+	else
 	{
 		ExecuteCommand(ec().str_edit(), true, false);
 	}
@@ -188,15 +225,12 @@ void CConsole::Hide_cmd()
 	Hide();
 }
 
-void CConsole::Hide_cmd_esc() {
-	if (0 <= m_select_tip && m_select_tip < (int)m_tips.size()) {
+void CConsole::Hide_cmd_esc()
+{
+	if (0 <= m_select_tip && std::cmp_less(m_select_tip, m_tips.size()))
+	{
 		m_disable_tips = true;
 		return;
 	}
 	Hide();
-}
-
-void CConsole::GamePause()
-{
-
 }

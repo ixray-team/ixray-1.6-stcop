@@ -92,20 +92,40 @@ ICF u32							xr_strlen				( const char* S );
 // string management
 
 // return pointer to ".ext"
-ICF char*						strext					( const char* S )
-{	return (char*) strrchr(S,'.');	}
+ICF char* strext(const char* S)
+{
+	return (char*)strrchr(S, '.');
+}
 
-ICF u32							xr_strlen				( const char* S )
-{	return (u32)strlen(S);			}
+ICF u32 xr_strlen(const char* S)
+{
+	return (u32)strlen(S);
+}
 
-ICF char*						xr_strlwr				(char* S)
-{	return _strlwr(S);				}
+ICF char* xr_strlwr(char* S)
+{
+	return _strlwr(S);
+}
 
-ICF int							xr_strcmp				( const char* S1, const char* S2 )
-{	return (int)strcmp(S1,S2);  }
+ICF int xr_strcmp(const char* S1, const char* S2)
+{
+	return strcmp(S1, S2);
+}
 
-ICF int							xr_strncmp				( const char* S1, const char* S2, int n )
-{	return (int)strncmp(S1,S2,n);	}
+ICF int xr_strncmp(const char* S1, const char* S2, int n)
+{
+	return strncmp(S1, S2, n);
+}
+
+ICF int xr_stricmp(char const* S1, char const* S2)
+{
+	return _stricmp(S1, S2);
+}
+
+ICF char const* xr_strstr(char const* S1, char const* S2)
+{
+	return strstr(S1, S2);
+}
 
 ICF errno_t xr_strcpy	( LPSTR destination, size_t const destination_size, const char* source )
 {

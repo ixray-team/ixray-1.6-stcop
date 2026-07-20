@@ -69,6 +69,7 @@
 #pragma warning (disable:4702)
 #include <typeinfo>
 #include <algorithm>
+#include <ranges>
 #include <limits>
 #include <regex>
 #include <vector>
