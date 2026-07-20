@@ -23,62 +23,68 @@ class ENGINE_API CCC_String;
 class ENGINE_API IConsole_Command
 {
 public:
-	friend class	CConsole;
-	using TInfo		= char[512];
-	using TStatus	= char[256];
-	using vecTips	= xr_vector<shared_str>;
-	using vecLRU	= xr_vector<shared_str>;
+	friend class CConsole;
+	using TInfo = string512;
+	using TStatus = string256;
+	using vecTips = xr_vector<shared_str>;
+	using vecLRU = xr_vector<shared_str>;
 
-protected	:
-	const char*			cName;
-	bool			bEnabled;
-	bool			bLowerCaseArgs;
-	bool			bEmptyArgsHandled;
-	
-	vecLRU			m_LRU;
+protected:
+	const char* cName;
+	bool bEnabled;
+	bool bLowerCaseArgs;
+	bool bEmptyArgsHandled;
 
-	enum {
-		LRU_MAX_COUNT = 10
-	};
+	vecLRU m_LRU;
 
-	IC	bool		EQ(const char* S1, const char* S2) { return xr_strcmp(S1,S2)==0; }
-public		:
-	IConsole_Command		(const char* N) : 
-	  cName				(N),
-	  bEnabled			(true),
-	  bLowerCaseArgs	(true),
-	  bEmptyArgsHandled	(false) {
-		  m_LRU.reserve(LRU_MAX_COUNT + 1);
-		  m_LRU.clear();
-	  }
+	static constexpr int LRU_MAX_COUNT = 10;
+
+	ICF bool EQ(const char* S1, const char* S2) { return xr_strcmp(S1, S2) == 0; }
+
+public:
+	IConsole_Command(const char* N) : cName(N), bEnabled(true), bLowerCaseArgs(true), bEmptyArgsHandled(false)
+	{
+		m_LRU.reserve(LRU_MAX_COUNT + 1);
+		m_LRU.clear();
+	}
 	virtual ~IConsole_Command()
 	{
-		if(Console)
+		if (Console)
+		{
 			Console->RemoveCommand(this);
+		}
 	};
 
-	const char*			Name()			{ return cName;	}
-	void			InvalidSyntax() {
-		TInfo I; Info(I);
-		Msg("~ Invalid syntax in call to '%s'",cName);
+	const char* Name() { return cName; }
+	void InvalidSyntax()
+	{
+		TInfo I;
+		Info(I);
+		Msg("~ Invalid syntax in call to '%s'", cName);
 		Msg("~ Valid arguments: %s", I);
 	}
-	virtual void	Execute	(const char* args)	= 0;
-	virtual void	Status	(TStatus& S)	{ S[0]=0; }
-	virtual void	Info	(TInfo& I)		{ xr_strcpy(I,"(no arguments)"); }
-	virtual void	Save	(IWriter *F)	{
-		TStatus		S = {};	Status(S);
-		if (S[0])	F->w_printf("%s %s\r\n",cName,S); 
+	virtual void Execute(const char* args) = 0;
+	virtual void Status(TStatus& S) { S[0] = 0; }
+	virtual void Info(TInfo& I) { xr_strcpy(I, "(no arguments)"); }
+	virtual void Save(IWriter* F)
+	{
+		TStatus S = {};
+		Status(S);
+		if (S[0])
+		{
+			F->w_printf("%s %s\r\n", cName, S);
+		}
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode) {
-		add_LRU_to_tips( tips );
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		add_LRU_to_tips(tips);
 	}
 
-	virtual void	add_to_LRU		(shared_str const& arg);
-			void	add_LRU_to_tips	(vecTips& tips);
+	virtual void add_to_LRU(shared_str const& arg);
+	void add_LRU_to_tips(vecTips& tips);
 
-	virtual IConsole_Command* dcast_icommand(){return this;}
+	virtual IConsole_Command* dcast_icommand() { return this; }
 	virtual CCC_Mask64* dcast_mask64() { return nullptr; }
 	virtual CCC_Mask32* dcast_mask32() { return nullptr; }
 	virtual CCC_Mask16* dcast_mask16() { return nullptr; }
