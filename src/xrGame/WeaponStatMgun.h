@@ -76,6 +76,10 @@ private:
 	float 					m_overheat_threshold;
 	shared_str				m_overheat_particles;
 	xr_shared_ptr<CParticlesObject>		p_overheat;
+
+	float					m_vibration_time = 0.1f;
+	float					m_vibration_factor_left = 1.0f;
+	float					m_vibration_factor_right = 1.0f;
 protected:
 	void					UpdateBarrelDir		();
 	virtual const Fvector&	get_CurrentFirePoint();
