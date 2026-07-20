@@ -95,6 +95,10 @@ void CWeaponMagazined::Load(const char* section)
 	}
 
 	LoadSilencerKoeffs();
+	
+	m_vibration_time = READ_IF_EXISTS(pSettings, r_float, section, "vibration_time", 0.1f);
+	m_vibration_factor_left = READ_IF_EXISTS(pSettings, r_float, section, "vibration_factor_left", 1.0f);
+	m_vibration_factor_right = READ_IF_EXISTS(pSettings, r_float, section, "vibration_factor_right", 1.0f);
 }
 
 void CWeaponMagazined::LoadSounds(const char* section)
@@ -1610,7 +1614,9 @@ void CWeaponMagazined::OnShot()
 		AddShotEffector();
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
-		pInput->feedback(65535, 65535, 0.1f);
+	{
+		pInput->feedback(65535 * m_vibration_factor_left, 65535 * m_vibration_factor_right, m_vibration_time);
+	}
 
 	// Animation
 	PlayAnimShoot();

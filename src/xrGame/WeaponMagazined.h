@@ -165,6 +165,10 @@ protected:
 	//только разных типов патронов
 	bool m_bLockType = false;
 
+	float m_vibration_time = 0.1f;
+	float m_vibration_factor_left = 1.0f;
+	float m_vibration_factor_right = 1.0f;
+
 public:
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();

@@ -131,7 +131,7 @@ void CWeaponStatMgun::OnShot()
 
 	if (Owner() && Owner() == Level().CurrentControlEntity())
 	{
-		pInput->feedback(65535, 65535, 0.1f);
+		pInput->feedback(65535 * m_vibration_factor_left, 65535 * m_vibration_factor_right, m_vibration_time);
 	}
 
 	AddShotEffector();
