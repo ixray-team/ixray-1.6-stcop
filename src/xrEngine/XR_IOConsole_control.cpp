@@ -84,7 +84,7 @@ void CConsole::check_prev_selected_tip()
 	if (m_select_tip < 0)
 	{
 		m_select_tip = (u32)m_tips.size() - 1;
-		m_start_tip = std::max(m_select_tip - VIEW_TIPS_COUNT + 1, 0);
+		m_start_tip = std::max(m_select_tip - (int)VIEW_TIPS_COUNT + 1, 0);
 	}
 
 	m_select_tip = std::max(m_select_tip, 0);
