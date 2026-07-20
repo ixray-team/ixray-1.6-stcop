@@ -87,6 +87,10 @@ void CWeaponStatMgun::Load(const char* section)
 	m_bEnterLocked = !!READ_IF_EXISTS(pSettings, r_bool, section, "lock_enter", false);
 	m_bExitLocked = !!READ_IF_EXISTS(pSettings, r_bool, section, "lock_exit", false);
 
+	m_vibration_time = READ_IF_EXISTS(pSettings, r_float, section, "vibration_time", 0.1f);
+	m_vibration_factor_left = READ_IF_EXISTS(pSettings, r_float, section, "vibration_factor_left", 1.0f);
+	m_vibration_factor_right = READ_IF_EXISTS(pSettings, r_float, section, "vibration_factor_right", 1.0f);
+
 	VERIFY(!fis_zero(camMaxAngle));
 	VERIFY(!fis_zero(camRelaxSpeed));
 }
