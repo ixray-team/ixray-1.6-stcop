@@ -218,9 +218,7 @@ protected:
 	void Show_cmd();
 	void Hide_cmd();
 	void Hide_cmd_esc();
-
-	void GamePause();
-
+	
 	void add_cmd_history(shared_str const& str);
 	void next_cmd_history_idx();
 	void prev_cmd_history_idx();

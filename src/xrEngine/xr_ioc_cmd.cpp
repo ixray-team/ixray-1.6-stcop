@@ -72,15 +72,18 @@ xr_token qscale_mode_token[] =
 //-----------------------------------------------------------------------
 
 void IConsole_Command::add_to_LRU(shared_str const& arg) {
-	if (arg.size() == 0 || bEmptyArgsHandled) {
+	if (!arg.size() || bEmptyArgsHandled) 
+	{
 		return;
 	}
 	
-	bool dup = ( std::find( m_LRU.begin(), m_LRU.end(), arg ) != m_LRU.end() );
-	if (!dup) {
-		m_LRU.push_back( arg );
-		if (m_LRU.size() > LRU_MAX_COUNT) {
-			m_LRU.erase( m_LRU.begin() );
+	if (bool dup = std::ranges::contains(m_LRU, arg); !dup)
+	{
+		m_LRU.push_back(arg);
+
+		if (m_LRU.size() > LRU_MAX_COUNT)
+		{
+			m_LRU.erase(m_LRU.begin());
 		}
 	}
 }
