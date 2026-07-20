@@ -532,6 +532,9 @@ void CActor::IR_OnKeyboardHold(int dik)
 					mstate_wishful |= mcCrouch;
 
 		}break;
+		case kUSE:
+			ActorUse();
+			break;
 	}
 
 	switch (get_binded_action(dik, agAiming))
@@ -1000,6 +1003,12 @@ void CActor::IR_GamepadKeyHold(int id)
 			}
 			break;
 		}
+
+		case kUSE:
+		{
+			ActorUse();
+			break;
+		}
 	}
 
 	switch (get_binded_action(id, agAiming))
@@ -1412,6 +1421,11 @@ void CActor::ActorUse()
 			}
 
 		}
+	}
+
+	if (g_Alive())
+	{
+		pPickup->SetPickupMode(true);
 	}
 }
 
