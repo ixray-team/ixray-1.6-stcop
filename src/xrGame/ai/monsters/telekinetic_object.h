@@ -3,7 +3,6 @@
 #include "PhysicsShellHolder.h"
 
 class CGameObject;
-class CPhysicsShellHolder;
 class CPHUpdateObject;
 class CTelekinesis;
 class CWeaponMagazined;
