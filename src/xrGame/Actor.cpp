@@ -1701,31 +1701,6 @@ void CActor::UpdateCL()
 		}
 	}
 
-	if(g_Alive() && Level().CurrentViewEntity() == this)
-	{
-		if(CurrentGameUI() && nullptr==CurrentGameUI()->TopInputReceiver())
-		{
-			int dik = get_action_dik(kUSE, 0);
-			if(dik && pInput->iGetAsyncKeyState(dik))
-				pPickup->SetPickupMode(true);
-			
-			dik = get_action_dik(kUSE, 1);
-			if(dik && pInput->iGetAsyncKeyState(dik))
-				pPickup->SetPickupMode(true);
-
-			if (pInput->GetControllerMode())
-			{
-				dik = get_action_dik(kUSE, 0);
-				if (pInput->iGetAsyncGamepadKeyState(dik))
-					pPickup->SetPickupMode(true);
-
-				dik = get_action_dik(kUSE, 1);
-				if (pInput->iGetAsyncGamepadKeyState(dik))
-					pPickup->SetPickupMode(true);
-			}
-		}
-	}
-
 	UpdateInventoryOwner(Device.dwTimeDelta);
 	
 	float current_fov = currentFOV();
@@ -1740,17 +1715,14 @@ void CActor::UpdateCL()
 	inherited::UpdateCL();
 	m_pPhysics_support->in_UpdateCL();
 
-
-	if (g_Alive())
-		PickupModeUpdate();
-
-	PickupModeUpdate_COD();
-
 	SetZoomAimingMode		(false);
 	CWeapon* pWeapon = item != nullptr ? item->cast_weapon() : nullptr;
 	CMissile* pMissile = item != nullptr ? item->cast_missile() : nullptr;
 
-	cam_Update(float(Device.dwTimeDelta)/1000.0f, current_fov);
+	PickupModeUpdate();
+	PickupModeUpdate_COD();
+	
+	cam_Update(Device.fTimeDelta, current_fov);
 
 	if (Level().CurrentEntity() == this)
 	{
