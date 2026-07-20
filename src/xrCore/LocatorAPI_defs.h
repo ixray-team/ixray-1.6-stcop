@@ -1,5 +1,8 @@
 #pragma once
 
+// general path definition
+#define _app_data_root_			"$app_data_root$"
+
 // game path definition
 #define _game_data_				"$game_data$"
 #define _game_textures_			"$game_textures$"
