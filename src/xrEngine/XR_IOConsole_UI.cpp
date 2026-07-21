@@ -9,6 +9,9 @@ static void DrawStar(ImVec2 Center, float Radius, bool Filled, bool Hovered)
 {
 	ImDrawList* DrawList = ImGui::GetWindowDrawList();
 
+	Center.x = ImFloor(Center.x);
+	Center.y = ImFloor(Center.y);
+
 	ImU32 Color;
 	if (Filled)
 	{
@@ -27,7 +30,6 @@ static void DrawStar(ImVec2 Center, float Radius, bool Filled, bool Hovered)
 	constexpr float InnerRadiusFactor = 0.38196601125f;
 
 	ImVec2 Vertices[PointCount * 2];
-
 	const float StartAngle = -IM_PI * 0.5f;
 
 	for (int Index = 0; Index < IM_ARRAYSIZE(Vertices); ++Index)
@@ -36,41 +38,24 @@ static void DrawStar(ImVec2 Center, float Radius, bool Filled, bool Hovered)
 		float Angle = StartAngle + IM_PI * Index / PointCount;
 
 		Vertices[Index] =
-			{
-				Center.x + cosf(Angle) * CurrentRadius,
-				Center.y + sinf(Angle) * CurrentRadius
-			};
+		{
+			Center.x + cosf(Angle) * CurrentRadius,
+			Center.y + sinf(Angle) * CurrentRadius
+		};
 	}
+
+	float Thickness = Radius < 10.0f ? 1.0f : 2.0f;
 
 	if (Filled)
 	{
-		ImVec2 StarCenter = {};
-
-		for (const ImVec2& Vertex : Vertices)
-		{
-			StarCenter.x += Vertex.x;
-			StarCenter.y += Vertex.y;
-		}
-
-		StarCenter.x /= IM_ARRAYSIZE(Vertices);
-		StarCenter.y /= IM_ARRAYSIZE(Vertices);
-
-		for (int Index = 0; Index < IM_ARRAYSIZE(Vertices); ++Index)
-		{
-			DrawList->AddTriangleFilled(
-				StarCenter,
-				Vertices[Index],
-				Vertices[(Index + 1) % IM_ARRAYSIZE(Vertices)],
-				Color
-			);
-		}
+		DrawList->AddConvexPolyFilled(Vertices, IM_ARRAYSIZE(Vertices), Color);
 
 		DrawList->AddPolyline(
 			Vertices,
 			IM_ARRAYSIZE(Vertices),
 			Color,
 			ImDrawFlags_Closed,
-			2.0f
+			Thickness
 		);
 	}
 	else
@@ -80,7 +65,7 @@ static void DrawStar(ImVec2 Center, float Radius, bool Filled, bool Hovered)
 			IM_ARRAYSIZE(Vertices),
 			Color,
 			ImDrawFlags_Closed,
-			2.0f
+			Thickness
 		);
 	}
 }
@@ -104,7 +89,7 @@ static void DrawFavoriteButton(IConsole_Command* Cmd, xr_vector<const char*>& Fa
 
 	ImVec2 cursor_screen_pos = ImGui::GetCursorScreenPos();
 	float font_size = ImGui::GetFontSize();
-	float star_size = font_size * 0.45f;
+	float star_size = font_size * 0.25f;
 
 	ImVec2 center = ImVec2
 	(
