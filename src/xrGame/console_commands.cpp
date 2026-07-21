@@ -123,7 +123,7 @@ void register_mp_console_commands();
 bool	g_bCheckTime = false;
 int		net_cl_inputupdaterate = 50;
 #ifdef DEBUG_DRAW
-Flags32	dbg_net_Draw_Flags = { 0 };
+Flags32	dbg_net_Draw_Flags = {};
 #endif
 
 #ifdef DEBUG
@@ -741,7 +741,6 @@ public:
 	virtual void Execute(const char*) {
 		Console->ClearLog();
 		xrLogger::FlushLog();
-		Msg("* Log file has been cleaned successfully!");
 	}
 };
 
