@@ -119,8 +119,6 @@ CConsole::CConsole() : m_hShader_back(nullptr)
 	m_disable_tips = false;
 	Register_callbacks();
 	xrLogger::AddLogCallback(ConsoleLogCallback);
-	
-	Device.seqResolutionChanged.Add(this);
 }
 
 #ifdef DEBUG_DRAW
@@ -193,8 +191,6 @@ CConsole::~CConsole()
 	xr_delete( m_hShader_back );
 	xr_delete( m_editor );
 	Destroy();
-
-	Device.seqResolutionChanged.Remove(this);
 }
 
 void CConsole::Destroy()
@@ -300,6 +296,8 @@ void CConsole::RemoveCommand(IConsole_Command* cc)
 
 void CConsole::OnFrame()
 {
+	PROF_EVENT(__FUNCTION__);
+
 	m_editor->on_frame();
 	
 	if (Device.dwFrame % 10 == 0) 
@@ -324,8 +322,7 @@ void CConsole::OutFont( const char* text, float& pos_y )
 			one_line[ln + sz] = text[sz];
 			one_line[ln + sz + 1] = 0;
 
-			float t = pFont->SizeOf_(one_line + ln);
-			if (t > scr_width)
+			if (float t = pFont->SizeOf_(one_line + ln); t > scr_width)
 			{
 				OutFont(text + sz + 1, pos_y);
 				pos_y -= m_line_height;
@@ -342,12 +339,10 @@ void CConsole::OutFont( const char* text, float& pos_y )
 	}
 }
 
-void CConsole::OnScreenResolutionChanged()
-{
-}
-
 void CConsole::OnRender()
 {
+	PROF_EVENT(__FUNCTION__);
+
 	if ( !bVisible )
 	{
 		return;
@@ -660,13 +655,13 @@ void CConsole::ExecuteCommand(const char* cmd_str, bool record_cmd, bool Silent)
 	// search
 	if (vecCMD_IT it = Commands.find(first); it != Commands.end())
 	{
-		IConsole_Command* cc = it->second;
-		if ( cc && cc->bEnabled )
+		if (IConsole_Command* cc = it->second; cc && cc->bEnabled )
 		{
 			if ( cc->bLowerCaseArgs )
 			{
 				_strlwr( last );
 			}
+			
 			if ( last[0] == 0 )
 			{
 				if ( cc->bEmptyArgsHandled )
@@ -703,7 +698,7 @@ void CConsole::ExecuteCommand(const char* cmd_str, bool record_cmd, bool Silent)
 	xr_delete(first);
 	xr_delete(last);
 
-	if ( record_cmd )
+	if (record_cmd)
 	{
 		ec().clear_states();
 	}
@@ -712,30 +707,34 @@ void CConsole::ExecuteCommand(const char* cmd_str, bool record_cmd, bool Silent)
 void CConsole::Show()
 {
 	if (bVisible)
+	{
 		return;
-	
+	}
+
 	bVisible = true;
 	scroll_delta = 0;
 
 	update_tips();
 	m_editor->IR_Capture();
-	
-	Device.seqRender.Add( this, 1 );
-	Device.seqFrame.Add( this );
+
+	Device.seqRender.Add(this, 1);
+	Device.seqFrame.Add(this);
 }
 
 void CConsole::Hide()
 {
 	if (!bVisible || (g_pGamePersistent && g_dedicated_server))
+	{
 		return;
+	}
 
 	bVisible = false;
-	
+
 	update_tips();
 
 	Device.seqFrame.Remove(this);
 	Device.seqRender.Remove(this);
-	
+
 	m_editor->IR_Release();
 }
 
@@ -821,7 +820,7 @@ bool CConsole::add_next_cmds(const char* in_str, vecTipsEx& out_v)
 	{
 		temp = cc->Name();
 
-		if (bool dup = std::ranges::contains(out_v, temp, &TipString::text); !dup)
+		if (!std::ranges::contains(out_v, temp, &TipString::text))
 		{
 			TipString ts(temp);
 			out_v.push_back(ts);
@@ -869,7 +868,7 @@ bool CConsole::add_internal_cmds( const char* in_str, vecTipsEx& out_v )
 			{
 				shared_str temp = name;
 
-				if (bool dup = std::ranges::contains(out_v, temp, &TipString::text); !dup)
+				if (!std::ranges::contains(out_v, temp, &TipString::text))
 				{
 					out_v.emplace_back(temp, 0, in_sz);
 					res = true;
@@ -891,7 +890,7 @@ bool CConsole::add_internal_cmds( const char* in_str, vecTipsEx& out_v )
 			shared_str temp;
 			temp._set(name);
 
-			if (bool dup = std::ranges::contains(out_v, temp, &TipString::text); !dup)
+			if (!std::ranges::contains(out_v, temp, &TipString::text))
 			{
 				u32 name_sz = xr_strlen(name);
 				int fd_sz = name_sz - xr_strlen(fd_str);
@@ -987,21 +986,18 @@ void CConsole::update_tips() {
 
 }
 
-void CConsole::select_for_filter(const char* filter_str, vecTips& in_v, vecTipsEx& out_v)
+void CConsole::select_for_filter(const char* filter_str, const vecTips& in_v, vecTipsEx& out_v)
 {
 	out_v.clear();
 
-	u32 in_count = (u32)in_v.size();
-	if (in_count == 0 || !filter_str)
+	if (u32 in_count = (u32)in_v.size(); in_count == 0 || !filter_str)
 	{
 		return;
 	}
 
-	bool all = xr_strlen(filter_str) == 0;
-
 	for (shared_str const& str : in_v)
 	{
-		if (all)
+		if (xr_strlen(filter_str) == 0)
 		{
 			out_v.emplace_back(str);
 		}
