@@ -742,7 +742,6 @@ void CConsole::Clear()
 {
 	Console->ClearLog();
 	xrLogger::FlushLog();
-	Msg("* Log file has been cleaned successfully!");
 }
 
 void CConsole::SelectCommand()
