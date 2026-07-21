@@ -1,9 +1,89 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "xr_ioc_cmd.h"
 
 #ifdef DEBUG_DRAW
 #include <imgui.h>
 #include <imgui_internal.h>
+
+static void DrawStar(ImVec2 Center, float Radius, bool Filled, bool Hovered)
+{
+	ImDrawList* DrawList = ImGui::GetWindowDrawList();
+
+	ImU32 Color;
+	if (Filled)
+	{
+		Color = Hovered
+					? IM_COL32(255, 235, 80, 255)
+					: IM_COL32(255, 215, 0, 255); // Gold
+	}
+	else
+	{
+		Color = Hovered
+					? IM_COL32(255, 235, 80, 255)
+					: ImGui::GetColorU32(ImGuiCol_Text);
+	}
+
+	constexpr int PointCount = 5;
+	constexpr float InnerRadiusFactor = 0.38196601125f;
+
+	ImVec2 Vertices[PointCount * 2];
+
+	const float StartAngle = -IM_PI * 0.5f;
+
+	for (int Index = 0; Index < IM_ARRAYSIZE(Vertices); ++Index)
+	{
+		float CurrentRadius = (Index & 1) ? Radius * InnerRadiusFactor : Radius;
+		float Angle = StartAngle + IM_PI * Index / PointCount;
+
+		Vertices[Index] =
+			{
+				Center.x + cosf(Angle) * CurrentRadius,
+				Center.y + sinf(Angle) * CurrentRadius
+			};
+	}
+
+	if (Filled)
+	{
+		ImVec2 StarCenter = {};
+
+		for (const ImVec2& Vertex : Vertices)
+		{
+			StarCenter.x += Vertex.x;
+			StarCenter.y += Vertex.y;
+		}
+
+		StarCenter.x /= IM_ARRAYSIZE(Vertices);
+		StarCenter.y /= IM_ARRAYSIZE(Vertices);
+
+		for (int Index = 0; Index < IM_ARRAYSIZE(Vertices); ++Index)
+		{
+			DrawList->AddTriangleFilled(
+				StarCenter,
+				Vertices[Index],
+				Vertices[(Index + 1) % IM_ARRAYSIZE(Vertices)],
+				Color
+			);
+		}
+
+		DrawList->AddPolyline(
+			Vertices,
+			IM_ARRAYSIZE(Vertices),
+			Color,
+			ImDrawFlags_Closed,
+			2.0f
+		);
+	}
+	else
+	{
+		DrawList->AddPolyline(
+			Vertices,
+			IM_ARRAYSIZE(Vertices),
+			Color,
+			ImDrawFlags_Closed,
+			2.0f
+		);
+	}
+}
 
 auto FindFavIterator(xr_vector<const char*>& FavCommands, const char* Name)
 {
@@ -13,28 +93,50 @@ auto FindFavIterator(xr_vector<const char*>& FavCommands, const char* Name)
 	});
 }
 
-ICF void DrawFavoriteButton(IConsole_Command* Cmd, xr_vector<const char*>& FavCommands)
+static void DrawFavoriteButton(IConsole_Command* Cmd, xr_vector<const char*>& FavCommands)
 {
-    ImGui::SameLine();
-	
-    auto It = FindFavIterator(FavCommands, Cmd->Name());
-    bool IsFav = It != FavCommands.end();
-	
-    ImGui::PushID(Cmd);
-    if (ImGui::SmallButton(IsFav ? "Unfavorite" : "Favorite"))
-    {
-        if (IsFav)
-        {
-            xr_free(*It);
-            FavCommands.erase(It);
-        }
-        else
-        {
-            FavCommands.push_back(xr_strdup(Cmd->Name()));
-        }
-        ImGui::MarkIniSettingsDirty();
-    }
-    ImGui::PopID();
+	ImGui::SameLine(0, 5);
+
+	auto It = FindFavIterator(FavCommands, Cmd->Name());
+	bool IsFav = It != FavCommands.end();
+
+	ImGui::PushID(Cmd);
+
+	ImVec2 cursor_screen_pos = ImGui::GetCursorScreenPos();
+	float font_size = ImGui::GetFontSize();
+	float star_size = font_size * 0.45f;
+
+	ImVec2 center = ImVec2
+	(
+		cursor_screen_pos.x + star_size + 2,
+		cursor_screen_pos.y + font_size * 0.5f
+	);
+
+	ImGui::SetCursorScreenPos(cursor_screen_pos);
+	ImGui::InvisibleButton("##star", ImVec2(star_size * 2 + 4, font_size * 0.8f));
+
+	DrawStar(center, star_size, IsFav, ImGui::IsItemHovered());
+
+	if (ImGui::IsItemClicked())
+	{
+		if (IsFav)
+		{
+			xr_free(*It);
+			FavCommands.erase(It);
+		}
+		else
+		{
+			FavCommands.push_back(xr_strdup(Cmd->Name()));
+		}
+		ImGui::MarkIniSettingsDirty();
+	}
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetTooltip(IsFav ? "Remove from favorites" : "Add to favorites");
+	}
+
+	ImGui::PopID();
 }
 
 ICF void RenderCommandManipulator(IConsole_Command* Command, xr_vector<const char*>& FavCommands)
@@ -227,7 +329,7 @@ void CConsole::ImGuiDrawUIConsoleVars()
 
 	ImGui::Text("Search:");
 	ImGui::SameLine();
-	ImGui::InputText("", SearchQuery, sizeof(SearchQuery));
+	ImGui::InputText("##inputsearch", SearchQuery, sizeof(SearchQuery));
 
 	for (const auto& [Name, Command] : Commands)
 	{
