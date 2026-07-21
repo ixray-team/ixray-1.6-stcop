@@ -118,7 +118,6 @@ CConsole::CConsole() : m_hShader_back(nullptr)
 	m_cmd_history_max = cmd_history_max;
 	m_disable_tips = false;
 	Register_callbacks();
-	ReadLastCmds();
 	xrLogger::AddLogCallback(ConsoleLogCallback);
 	
 	Device.seqResolutionChanged.Add(this);
@@ -148,6 +147,7 @@ void CConsole::Initialize()
 
 	m_cmd_history.reserve(m_cmd_history_max + 2);
 	m_cmd_history.clear();
+	ReadLastCmds();
 	reset_cmd_history_idx();
 
 	m_tips.reserve(MAX_TIPS_COUNT + 1);
