@@ -38,6 +38,8 @@ function anabiotic_callback()
 		end
 	end
 	
+	SendScriptCallback("anabiotic_callback_before_change_weather")
+	
 	level.change_game_time(0,0,rnd)
 	level_weathers.get_weather_manager():forced_weather_change()
 	
