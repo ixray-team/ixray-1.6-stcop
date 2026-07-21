@@ -303,11 +303,11 @@ void line_edit_control::create_char_pair(u32 const dik, char c, char c_shift, bo
 	m_actions[dik] = new type_pair(dik, c, c_shift, translate);
 }
 
-void line_edit_control::assign_callback(u32 const dik, key_state state, Callback const& callback) {
-	VERIFY( dik < DIK_COUNT );
-	Base* prev_action = m_actions[dik];
-	m_actions[dik] = new callback_base( callback, state );
-	m_actions[dik]->on_assign( prev_action );
+void line_edit_control::assign_callback(u32 const sdl_scancode, key_state state, Callback const& callback) {
+	VERIFY( dik < CMD_SDL_SCANCODE_COUNT );
+	Base* prev_action = m_actions[sdl_scancode];
+	m_actions[sdl_scancode] = new callback_base( callback, state );
+	m_actions[sdl_scancode]->on_assign( prev_action );
 }
 
 void line_edit_control::insert_character( char c )
@@ -338,9 +338,9 @@ void line_edit_control::set_edit( const char* str )
 	update_bufs();
 }
 
-void line_edit_control::on_key_press( int dik )
+void line_edit_control::on_key_press( int sdl_scancode )
 {
-	if (std::cmp_less_equal(CMD_SDL_SCANCODE_COUNT, dik))
+	if (std::cmp_less_equal(CMD_SDL_SCANCODE_COUNT, sdl_scancode))
 	{
 		return;
 	}
@@ -355,12 +355,12 @@ void line_edit_control::on_key_press( int dik )
 	clear_inserted();
 	compute_positions();
 
-	if ( m_actions[dik] )
+	if ( m_actions[sdl_scancode] )
 	{
-		m_actions[dik]->on_key_press( this );
+		m_actions[sdl_scancode]->on_key_press( this );
 	}
 
-	if ( dik == SDL_SCANCODE_LCTRL || dik == SDL_SCANCODE_RCTRL)
+	if ( sdl_scancode == SDL_SCANCODE_LCTRL || sdl_scancode == SDL_SCANCODE_RCTRL)
 	{
 		m_mark = false;	
 	}
@@ -377,17 +377,17 @@ void line_edit_control::on_key_press( int dik )
 
 	m_repeat_mode = false;
 	m_rep_time    = 0.0f;
-	
+
 	update_key_states( );
 	update_bufs();
 }
 
-void line_edit_control::on_key_hold( int dik )
+void line_edit_control::on_key_hold( int sdl_scancode )
 {
 	update_key_states();
 	update_bufs();
 	
-	switch (dik)
+	switch (sdl_scancode)
 	{
 		case SDL_SCANCODE_TAB:
 		case SDL_SCANCODE_LSHIFT:
@@ -403,15 +403,15 @@ void line_edit_control::on_key_hold( int dik )
 	{
 		float buf_time = m_rep_time;
 		m_hold_mode    = true;
-		
-		on_key_press( dik );
-		
+
+		on_key_press( sdl_scancode );
+
 		m_hold_mode    = false;
 		m_rep_time     = buf_time;
 	}
 }
 
-void line_edit_control::on_key_release( int dik )
+void line_edit_control::on_key_release( int sdl_scancode )
 {
 	m_accel         = 1.0f;
 	m_rep_time      = 0.0f;
