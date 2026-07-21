@@ -35,6 +35,22 @@ player_hud_default = actor_hud_05
 ![m_burer_e]
 icon = ui_npc_monster_burer
 
+;artefacts.ltx
+![af_glass]
+3d_static_scale			= 0.3
+
+![af_medusa]
+3d_static_scale			= 0.9
+
+![af_electra_flash]
+3d_static_scale			= 0.3
+
+![af_electra_sparkler]
+3d_static_scale			= 0.7
+
+![af_dummy_glassbeads]
+3d_static_rotate			= 0,0,-45
+
 ;items.ltx
 ![bread]
 use_text = st_eat
@@ -118,20 +134,21 @@ sound_deactivate        = device\torch_click_off
 ;outfit.ltx
 ![outfit_base]
 3d_static_rotate			= -90,-180,0
+3d_static_scale				= 0.8
 
 ![stalker_outfit]
 3d_static_rotate = -84,170,-10
 3d_static_scale = 1
 
 ![svoboda_light_outfit]
-3d_static_rotate = -90,0,0
+3d_static_rotate = -90,-180,0
 
 ![helm_respirator]
-3d_static_rotate = -90,4,-180
+3d_static_rotate = -90,0,-180
 3d_static_scale = 0.9
 
 ![helm_hardhat]
-3d_static_rotate = -40,0,0
+3d_static_rotate			= -20,180,0
 
 ![helm_protective]
 3d_static_rotate = -90,180,0
@@ -171,6 +188,8 @@ detonation_threshold_hit= 0.3
 explosion_on_hit = true
 explosion_hit_types = 6, 8 
 explosive_while_not_activated = true
+3d_static_rotate			= -45,-90,0
+3d_static_scale			= 0.7
 
 ;w_rgd5.ltx
 ![grenade_rgd5]
@@ -178,6 +197,12 @@ detonation_threshold_hit = 0.3
 explosion_on_hit = true
 explosion_hit_types = 6, 8 
 explosive_while_not_activated = true
+3d_static_rotate			= -45,-90,0
+3d_static_scale			= 0.7
+
+![grenade_gd-05]
+3d_static_rotate			= -45,-90,0
+3d_static_scale			= 0.7
 
 ;helicopter.ltx
 ![helicopter]
@@ -621,6 +646,12 @@ show_text = true
 ![lx8_service_instruction]
 3d_static_rotate = 16,-23,4
 
+![zat_b12_documents_2]
+3d_static_rotate = 40,130,60
+
+![af_quest_b14_twisted]
+3d_static_rotate			= -45,0,0
+
 ;weapons.ltx
 ![ammo_base]
 3d_static_rotate = 11,-12,1
@@ -645,54 +676,70 @@ show_text = true
 3d_static_scale = 1
 
 ![ammo_vog-25]
-3d_static_rotate = 31,-32,1
+3d_static_rotate = -149,32,1
 
 ![ammo_m209]
-3d_static_rotate = 31,-32,1
+3d_static_rotate = -149,32,1
 
 ![wpn_addon_scope]
-3d_static_rotate = 0,90,-80
+3d_static_rotate = 0,-90,-90
 
 ![wpn_addon_scope_x2.7]
-3d_static_rotate = 0,90,-80
+3d_static_rotate = 0,-90,-90
 
 ![wpn_addon_scope_detector]
-3d_static_rotate = 0,90,-80
+3d_static_rotate = 0,-90,-90
 
 ![wpn_addon_scope_night]
-3d_static_rotate = 0,90,-80
+3d_static_rotate = 0,-90,-90
 
 ![wpn_addon_scope_susat]
-3d_static_rotate = 0,80,0
+3d_static_rotate = 0,-90,0
 
 ![wpn_addon_scope_susat_x1.6]
-3d_static_rotate = 0,80,0
+3d_static_rotate = 0,-90,0
 
 ![wpn_addon_scope_susat_custom]
-3d_static_rotate = 0,80,0
+3d_static_rotate = 0,-90,0
 
 ![wpn_addon_scope_susat_dusk]
-3d_static_rotate = 0,80,0
+3d_static_rotate = 0,-90,0
 
 ![wpn_addon_scope_susat_night]
-3d_static_rotate = 0,80,0
+3d_static_rotate = 0,-90,0
 
 ![wpn_addon_silencer]
-3d_static_rotate = 0,90,0
+3d_static_rotate = 0,-90,0
 
 ![wpn_addon_grenade_launcher]
-3d_static_rotate = 0,-60,0
+3d_static_rotate = 0,-90,0
 
 ![wpn_addon_grenade_launcher_m203]
-3d_static_rotate = 0,-60,0
+3d_static_rotate = 0,-90,0
+
+;w_binoc.ltx
+![wpn_binoc]
+3d_static_rotate = 22.5, 22.5, -11.25
 
 ;w_gauss.ltx
 ![wpn_gauss]
 vibration_time = 2.0
 
+;w_mp5.ltx
+![wpn_mp5]
+3d_static_scale = 0.8
+
 ;w_pm.ltx
 ![wpn_pm]
 3d_static_scale = 0.9
+
+;w_svd.ltx
+![wpn_svd]
+3d_static_scale			= 0.6
+
+;w_svu.ltx
+![wpn_svu]
+3d_static_scale			= 0.7
 
 [hud_movement_layers]
 movement_layer_0             = blend\walk.anm, 1, 1.5        	 ; Walk
