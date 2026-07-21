@@ -158,3 +158,24 @@ function get_translated_section_name(real_sect)
 		return real_sect
 	end
 end
+
+function parse_section_to_array(ini, section)
+	local tmp=nil
+	if ini and ini:section_exist(section) then
+		tmp={}
+		local result, id, value = nil, nil, nil
+		
+		for a=0,ini:line_count(section)-1 do
+			result, id, value = ini:r_line(section, a, "", "")
+			
+			if id~=nil then
+				id = ffx_string_utils.trim(id)
+				if id ~= "" and id ~= nil then
+					tmp[trim(id)] = ffx_string_utils.trim(value)
+				end
+			end
+		end
+	end
+	
+	return tmp
+end

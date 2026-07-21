@@ -1,3 +1,9 @@
+local use_light = false
+
+function set_use_light_state(flag)
+	use_light = flag
+end
+
 function init(obj)
 	printf("_bp: init(): name='%s'", obj:name())
 
@@ -95,8 +101,10 @@ function signal_light_binder:launch()
 
 	local obj = self.object
 	obj:set_const_force(vector():set(0,1,0), 180, 1500)
-	--obj:start_particles("weapons\\light_signal", "link")
-	--obj:get_hanging_lamp():turn_on()
+	if obj and use_light then
+		obj:start_particles("weapons\\light_signal", "link")
+		obj:get_hanging_lamp():turn_on()
+	end
 
 	self.start_time = time_global()
 	self.slow_fly_started = false
