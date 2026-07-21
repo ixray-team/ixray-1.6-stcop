@@ -731,7 +731,6 @@ public:
 	CCC_FlushLog(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 	virtual void Execute(const char* /**args/**/) {
 		xrLogger::FlushLog();
-		Msg("* Log file has been saved successfully!");
 	}
 };
 
