@@ -288,5 +288,7 @@ function configure(_ref_ixr_signals)
 	_ref_ixr_signals.add_intercept("on_object_sound_init",  				{"ref_binder", "snd_ini", "section"})
 	_ref_ixr_signals.add_intercept("on_object_sound_play",  				{"ref_binder", "obj_id", "faction", "point", "msg"})
 
+	_ref_ixr_signals.add_intercept("anabiotic_callback_before_change_weather",	{})
+
 	if ffx_death_manager then _ref_ixr_signals.add_intercept("ffx_death_manager_on_corpse_removed",    {"object_id", "population_data"}) end
 end

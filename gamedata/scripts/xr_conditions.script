@@ -1,3 +1,7 @@
+-- расширяемая из вне таблица валидаторов выброса
+surge_checkers = {
+	["surge_manager"] = surge_manager.is_started
+}
 
 -- Каждая функция в этом файле используется как условие xr_logic: {=функция !функция}
 -- Если в функцию необходимо передавать параметры, то:  {=функция(парам1:парам2:...) !функция(парам1:парам2:...)}
@@ -1065,8 +1069,16 @@ function surge_complete()
 	return surge_manager.is_finished()
 end
 
+
 function surge_started()
-	return surge_manager.is_started()
+	local is_surge_processing = false
+	for k,v in pairs(surge_checkers) do
+		if v() then
+			is_surge_processing = true
+			break
+		end
+	end
+	return is_surge_processing
 end
 
 function surge_kill_all()
