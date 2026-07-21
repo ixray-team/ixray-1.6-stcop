@@ -12,11 +12,11 @@ inv_scale = 2.0
 ![inventory]
 slot_persistent_4 = false ;grenades
 
-; Legacy CS: second slot column paired with primary for pistols-only style UI (replaces engine_external EnableInventoryPistolSlot).
-inventory_secondary_slot_pairing_strict = true
-
 slot_persistent_13  = false ;backpack
 slot_active_13      = false
+
+; Legacy CS: second slot column paired with primary for pistols-only style UI (replaces engine_external EnableInventoryPistolSlot).
+inventory_secondary_slot_pairing_strict = true
 
 ![actor_look_cam_psp]
 !offset
@@ -47,6 +47,21 @@ icon				= ui_npc_monster_kontroler_5
 ![af_base]
 default_to_ruck			= true
 
+![af_glass]
+3d_static_scale			= 0.3
+
+![af_medusa]
+3d_static_scale			= 0.9
+
+![af_electra_flash]
+3d_static_scale			= 0.3
+
+![af_electra_sparkler]
+3d_static_scale			= 0.7
+
+![af_dummy_glassbeads]
+3d_static_rotate			= 0,0,-45
+
 ;items_mp.ltx
 ![mp_af_electra_flash]
 default_to_ruck			= false
@@ -75,15 +90,10 @@ use_text = st_eat
 eat_portions_num = 1
 3d_static_rotate = 19,0,0
 
-![antirad]
-eat_portions_num = 1
-3d_static_rotate = 54,-12,3
-3d_static_scale = 0.9
-
 ![vodka]
 use_text = st_drink
 eat_portions_num = 1
-3d_static_rotate = -10,-10,40
+3d_static_rotate = 0,0,0
 
 ![guitar_a]
 3d_static_rotate = 0,-100,100
@@ -94,16 +104,21 @@ eat_portions_num = 1
 ![bandage]
 3d_static_rotate = 40,70,130
 
+![antirad]
+eat_portions_num = 1
+3d_static_rotate = 54,-12,3
+3d_static_scale = 0.9
+
 ![medkit]
-3d_static_rotate = 58,-19,0
+3d_static_rotate = 30,-20,0
 3d_static_scale = 0.9
 
 ![medkit_army]
-3d_static_rotate = 58,-19,0
+3d_static_rotate = 30,-20,0
 3d_static_scale = 0.9
 
 ![medkit_scientic]
-3d_static_rotate = 58,-19,0
+3d_static_rotate = 30,-20,0
 3d_static_scale = 0.9
 
 ![device_pda]
@@ -122,13 +137,15 @@ sound_deactivate        = device\torch_click_off
 ;outfit.ltx
 ![outfit_base]
 3d_static_rotate			= -90,-180,0
+3d_static_scale				= 0.8
 
 ![stalker_outfit]
 3d_static_rotate = -84,170,-10
 3d_static_scale = 1
 
 ![svoboda_light_outfit]
-3d_static_rotate = -90,0,0
+3d_static_rotate = -90,-180,0
+
 
 ;devices.ltx
 ![detector_simple]
@@ -157,6 +174,8 @@ detonation_threshold_hit= 0.3
 explosion_on_hit = true
 explosion_hit_types = 6, 8 
 explosive_while_not_activated = true
+3d_static_rotate			= -45,-90,0
+3d_static_scale			= 0.7
 
 ;w_rgd5.ltx
 ![grenade_rgd5]
@@ -164,6 +183,12 @@ detonation_threshold_hit = 0.3
 explosion_on_hit = true
 explosion_hit_types = 6, 8 
 explosive_while_not_activated = true
+3d_static_rotate			= -45,-90,0
+3d_static_scale			= 0.7
+
+![grenade_gd-05]
+3d_static_rotate			= -45,-90,0
+3d_static_scale			= 0.7
 
 ;helicopter.ltx
 ![helicopter]
@@ -584,54 +609,73 @@ amplitude_delta			= 	0.01
 3d_static_scale = 1
 
 ![ammo_vog-25]
-3d_static_rotate = 31,-32,1
+3d_static_rotate = -149,32,1
+
+![ammo_vog-25p]
+3d_static_rotate = -149,32,1
 
 ![ammo_m209]
-3d_static_rotate = 31,-32,1
+3d_static_rotate = -149,32,1
 
 ![wpn_addon_scope]
-3d_static_rotate = 0,90,-80
+3d_static_rotate = 0,-90,-90
 
 ![wpn_addon_scope_x2.7]
-3d_static_rotate = 0,90,-80
+3d_static_rotate = 0,-90,-90
 
 ![wpn_addon_scope_detector]
-3d_static_rotate = 0,90,-80
+3d_static_rotate = 0,-90,-90
 
 ![wpn_addon_scope_night]
-3d_static_rotate = 0,90,-80
+3d_static_rotate = 0,-90,-90
 
 ![wpn_addon_scope_susat]
-3d_static_rotate = 0,80,0
+3d_static_rotate = 0,-90,0
 
 ![wpn_addon_scope_susat_x1.6]
-3d_static_rotate = 0,80,0
+3d_static_rotate = 0,-90,0
 
 ![wpn_addon_scope_susat_custom]
-3d_static_rotate = 0,80,0
+3d_static_rotate = 0,-90,0
 
 ![wpn_addon_scope_susat_dusk]
-3d_static_rotate = 0,80,0
+3d_static_rotate = 0,-90,0
 
 ![wpn_addon_scope_susat_night]
-3d_static_rotate = 0,80,0
+3d_static_rotate = 0,-90,0
 
 ![wpn_addon_silencer]
-3d_static_rotate = 0,90,0
+3d_static_rotate = 0,-90,0
 
 ![wpn_addon_grenade_launcher]
-3d_static_rotate = 0,-60,0
+3d_static_rotate = 0,-90,0
 
 ![wpn_addon_grenade_launcher_m203]
-3d_static_rotate = 0,-60,0
+3d_static_rotate = 0,-90,0
+
+;w_binoc.ltx
+![wpn_binoc]
+3d_static_rotate = 22.5, 22.5, -11.25
+
+;w_gauss.ltx
+![wpn_gauss]
+vibration_time = 2.0
+
+;w_mp5.ltx
+![wpn_mp5]
+3d_static_scale = 0.8
 
 ;w_pm.ltx
 ![wpn_pm]
 3d_static_scale = 0.9
 
-;w_gauss.ltx
-![wpn_gauss]
-vibration_time = 2.0
+;w_svd.ltx
+![wpn_svd]
+3d_static_scale			= 0.6
+
+;w_svu.ltx
+![wpn_svu]
+3d_static_scale			= 0.7
 
 [hud_movement_layers]
 movement_layer_0             = blend\walk.anm, 1, 1.5        	 ; Walk
@@ -640,6 +684,65 @@ movement_layer_2             = blend\walk.anm, 0.5, 1.5        ; Crouch
 movement_layer_3             = blend\walk.anm, 0.3, 1.5        ; Crouch slow
 movement_layer_4             = blend\sprint.anm, 1.55, 2       ; Sprint
 
+
+[inventory_sort_categories]
+all = 1
+weapons = 1
+ammo = 1
+armor = 1
+devices = 1
+consumables = 1
+artefacts = 1
+attachments = 1
+
+[inventory_sort_categories:all]
+name = st_inv_sort_all
+hint = st_inv_sort_all_hint
+show_text = true
+
+[inventory_sort_categories:weapons]
+name = st_inv_sort_weapons
+hint = st_inv_sort_weapons_hint
+icon = ui_icon_weapons
+show_text = true
+
+[inventory_sort_categories:ammo]
+name = st_inv_sort_ammo
+hint = st_inv_sort_ammo_hint
+show_text = true
+
+[inventory_sort_categories:armor]
+name = st_inv_sort_armor
+hint = st_inv_sort_armor_hint
+show_text = true
+
+[inventory_sort_categories:devices]
+name = st_inv_sort_devices
+hint = st_inv_sort_devices_hint
+show_text = true
+
+[inventory_sort_categories:consumables]
+name = st_inv_sort_consumables
+hint = st_inv_sort_consumables_hint
+show_text = true
+
+[inventory_sort_categories:artefacts]
+name = st_inv_sort_artefacts
+hint = st_inv_sort_artefacts_hint
+show_text = true
+
+[inventory_sort_categories:attachments]
+name = st_inv_sort_attachments
+hint = st_inv_sort_attachments_hint
+show_text = true
+
+[dynamic_wallmark]:space_restrictor
+GroupControlSection =
+$spawn      = "ai\dynamic_wallmark"
+$def_sphere = 1
+class = DYNA_WM
+
+shape_transp_color    = 135, 245, 66, 24
 [auto_aiming]
 
 ; fraction of the full height of the target. 0.0 aim at legs, 1.0f aim at head
@@ -666,17 +769,78 @@ dotp_c_easy = 0.9
 ; a-b works as easy
 ; b-c targets are ignored
 
-![m_poltergeist_normal_tele] ;m_poltergeist.ltx
+![m_poltergeist_normal_tele];m_poltergeist.ltx
 Tele_Time_Object_Keep					= 10000
 Tele_Object_Min_Mass					= 0
 Tele_Object_Max_Mass					= 10000
 
 Tele_Shooting_From_Weapon_Enable        = on;                   Разрешает возможность стрелять с оружия по врагу.
 Tele_Activate_N_Throw_Grenade           = on;                   Разрешает выдрать чеку и кинуть гранату во врага.
-Tele_Max_Pickuped_Weapons				= 2; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
-Tele_Weapon_Slide_Enable				= off; 					Слайды влево-право стреляющего оружия.
-Tele_Min_Slide_Delay					= 1000; 				Нижний порог для случайного времени слайда оружия. (in ms)
-Tele_Max_Slide_Delay  					= 1500; 				Верхний порог для случайного времени слайда оружия. (in ms)
-Tele_AutoAim_Torque_Factor				= 0.33; 			    Множитель угловой скорости оружия. Чем больше - тем быстрее поворачивается оружие при автонаведении. (типа инерция)
+Tele_Max_Pickuped_Weapons				= 3; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
 Tele_Delay_Before_First_Shoot			= 0; 				    Задержка перед первым выстрелом. (in ms)
-Particle_Tele_Object					= static\fire_distort
+Particle_Tele_Object					= static\fire_distort;	Проигрываемый партикл под предметом, чисто для красоты.
+
+; Зачем нужены множители ниже?
+; Без масштабирования реальная физическая энергия в рамках геймплея оказывается избыточной.
+; Множитель позволяет искусственно снизить (поделить в N раз) или повысить урон для игрового баланса.
+; Указывается в пределах: 0..1
+; 1 = 100% урон, 0 - урон от попаданий предметами отключается, 0.5 - 50% урона.
+Novice_Difficulty_Throwed_Object_Hit_Factor = 0.1
+Stalker_Difficulty_Throwed_Object_Hit_Factor = 0.2
+Veteran_Difficulty_Throwed_Object_Hit_Factor = 0.3
+Master_Difficulty_Throwed_Object_Hit_Factor = 0.4
+
+; Угловая скорость наведения оружия на врага.
+; Указывается в градусах/с. 
+; Нужно чтобы оружие не наводилось турель-like. Хотя, вы можете это сделлать, проставив везде 360.
+Novice_Difficulty_Angular_Speed			= 180.0
+Stalker_Difficulty_Angular_Speed		= 200.0
+Veteran_Difficulty_Angular_Speed		= 240.0
+Master_Difficulty_Angular_Speed			= 280.0
+
+; Погрешность наведения на врага, после которой можно стрелять. Указывается в градусах/с (1..180)
+; Чем ниже сложность - тем больше погрешность для начала стрельбы - тем больше будет потрачено патрон.
+; Настраивается вместе с параметрами %difficulty%_Angular_Speed, чтобы при низких уровнях сложности - оружие в случае идеального наведения на модель врага.
+; 1deg отклонения автоаима - оружие начнёт стрелять только в случае идеального наведения в центр модели врага.
+; 180deg отклонения - оружие начинает стрелять, даже когда смотрит в противоположну сторону, относительно врага.
+Novice_Difficulty_Error_Angle			= 30.0
+Stalker_Difficulty_Error_Angle			= 20.0
+Veteran_Difficulty_Error_Angle			= 15.0
+Master_Difficulty_Error_Angle			= 8
+
+![m_burer_e];m_burer.ltx
+Tele_Time_To_Hold		 				= 10000
+Tele_Object_Min_Mass					= 1
+Tele_Object_Max_Mass					= 10000
+Tele_Shooting_From_Weapon_Enable        = on;                   Разрешает возможность стрелять с оружия по врагу.
+Tele_Activate_N_Throw_Grenade           = on;                   Разрешает выдрать чеку и кинуть гранату во врага.
+Tele_Max_Pickuped_Weapons				= 1; 					Кол-во стреляющего оружия, которое может быть захвачено телекинезом.
+Tele_Delay_Before_First_Shoot			= 0; 				    Задержка перед первым выстрелом. (in ms)
+Particle_Tele_Object					= static\fire_distort;	Проигрываемый партикл под предметом, чисто для красоты.
+
+; Зачем нужены множители ниже?
+; Без масштабирования реальная физическая энергия в рамках геймплея оказывается избыточной.
+; Множитель позволяет искусственно снизить (поделить в N раз) или повысить урон для игрового баланса.
+; Указывается в пределах: 0..1
+; 1 = 100% урон, 0 - урон от попаданий предметами отключается, 0.5 - 50% урона.
+Novice_Difficulty_Throwed_Object_Hit_Factor = 0.1
+Stalker_Difficulty_Throwed_Object_Hit_Factor = 0.2
+Veteran_Difficulty_Throwed_Object_Hit_Factor = 0.3
+Master_Difficulty_Throwed_Object_Hit_Factor = 0.4
+
+; Угловая скорость наведения оружия на врага. Указывается в градусах/с. 
+; Нужно чтобы оружие не наводилось турель-like. Хотя, вы можете это сделлать, проставив везде 360.
+Novice_Difficulty_Angular_Speed			= 180.0
+Stalker_Difficulty_Angular_Speed		= 200.0
+Veteran_Difficulty_Angular_Speed		= 240.0
+Master_Difficulty_Angular_Speed			= 280.0
+
+; Погрешность наведения на врага, после которой можно стрелять. Указывается в градусах/с (1..180)
+; Чем ниже сложность - тем больше погрешность для начала стрельбы - тем больше будет потрачено патрон.
+; Настраивается вместе с параметрами %difficulty%_Angular_Speed, чтобы при низких уровнях сложности - оружие в случае идеального наведения на модель врага.
+; 1deg отклонения автоаима - оружие начнёт стрелять только в случае идеального наведения в центр модели врага.
+; 180deg отклонения - оружие начинает стрелять, даже когда смотрит в противоположну сторону, относительно врага.
+Novice_Difficulty_Error_Angle			= 30.0
+Stalker_Difficulty_Error_Angle			= 20.0
+Veteran_Difficulty_Error_Angle			= 15.0
+Master_Difficulty_Error_Angle			= 8
