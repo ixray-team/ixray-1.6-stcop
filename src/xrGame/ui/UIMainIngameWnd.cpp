@@ -1289,6 +1289,7 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 		UIPickUpItemIcon->SetVisual(icons_struct._3d_static_visual);
 		UIPickUpItemIcon->SetXYZ(icons_struct._3d_static_rotate);
 		UIPickUpItemIcon->SetScaleFactor(icons_struct._3d_static_scale);
+		UIPickUpItemIcon->SetBonesVisible(m_pPickUpItem->object().Visual()->dcast_PKinematics());
 	}
 	else
 		UIPickUpItemIcon->SetVisual(nullptr);
