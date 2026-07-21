@@ -11,6 +11,11 @@ int dik_to_bind(int dik, int ag)
 	return get_binded_action(dik, (_action_group)ag);
 }
 
+void gamepad_feedback(float left, float right, float time)
+{
+	pInput->feedback(65535 * left, 65535 * right, time);
+}
+
 #pragma optimize("s",on)
 void key_binding_registrator::script_register(lua_State *L)
 {
@@ -22,6 +27,7 @@ void key_binding_registrator::script_register(lua_State *L)
                 return dik_to_bind(dik, agDefault);
             }),
         def("any_binded_key_for_action_pressed_c", &any_binded_key_for_action_pressed_c),
+        def("gamepad_feedback", &gamepad_feedback),
 
 		class_<enum_exporter<EGameActions> >("key_bindings")
 			.enum_("commands")
