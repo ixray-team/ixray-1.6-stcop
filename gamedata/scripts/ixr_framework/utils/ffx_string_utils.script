@@ -272,3 +272,15 @@ function escape_regex_special_chars(str)
 	local result = str:gsub("([%%%^%$%(%)%.%[%]%*%+%-%?])", "%%%1")
 	return result
 end
+
+--[[
+Description:
+  Replace substring from string
+Parameters:
+  text (string) - the original string
+  substring (string) - string for remove
+Returns: string - with replaced
+]]
+function remove_substring(text, substring)
+    return text:gsub(substring, "")
+end
