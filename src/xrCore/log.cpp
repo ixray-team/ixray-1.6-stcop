@@ -198,7 +198,9 @@ void xrLogger::LogThreadEntry()
 			{
 				IWriter* mutableWritter = (IWriter*)logFile;
 				mutableWritter->flush();
+				::Msg("* Log file has been flushed successfully!");
 			}
+			bFlushRequested = false;
 		}
 	};
 
