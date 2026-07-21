@@ -54,12 +54,12 @@ public:
 	~line_edit_control();
 
 	void clear_states();
-	void on_key_press(int dik);
-	void on_key_hold(int dik);
-	void on_key_release(int dik);
+	void on_key_press(int sdl_scancode);
+	void on_key_hold(int sdl_scancode);
+	void on_key_release(int sdl_scancode);
 	void on_frame();
 
-	void assign_callback(u32 dik, key_state state, Callback const& callback);
+	void assign_callback(u32 sdl_scancode, key_state state, Callback const& callback);
 
 	void insert_character(char c);
 
