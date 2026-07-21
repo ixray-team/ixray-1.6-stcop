@@ -495,13 +495,18 @@ function ixr_options.numeric_up_down(default_value, min_value, max_value, value_
 	}
 end
 
-function ixr_options.track_bar(default_value, min_value, max_value, value_offset)
+function ixr_options.track_bar(default_value, min_value, max_value, value_offset, use_ceil)
+	if use_ceil == nil then
+		use_ceil = false 
+	end
+	
 	return {
 		["controll"] = "track_bar",
 		["default_value"] = default_value,
 		["min_value"] = min_value,
 		["max_value"] = max_value,
 		["value_offset"] = value_offset,
+		["use_ceil"] = use_ceil,
 	}
 end
 
@@ -653,13 +658,13 @@ function register_numeric_up_down(name_controll, x, y, alpha, default_value, min
 	register_controll(name_controll)
 end
 
-function register_track_bar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _ref, _callback)
+function register_track_bar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _ref, _callback)
 	if _ref == nil then
 		_ref = get_menu_ref()
 	end
 	
 	name_controll = name_controll .. "_track_bar_"
-	set_controll(name_controll, IXRTrackBar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, _callback, _ref))
+	set_controll(name_controll, IXRTrackBar(name_controll, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _callback, _ref))
 	get_controll(name_controll):Show(true)
 	register_controll(name_controll)
 end
@@ -948,6 +953,7 @@ function pick_controll(option_data, option_bg, option_key_name)
 			option_data["controll_data"]["min_value"],
 			option_data["controll_data"]["max_value"],
 			option_data["controll_data"]["value_offset"],
+			option_data["controll_data"]["use_ceil"],
 			option_bg,
 			__callback_handler
 		)
@@ -1082,9 +1088,10 @@ end
 -- 												TRACK BAR
 -- #########################################################################################################
 class "IXRTrackBar" (CUIStatic)
-function IXRTrackBar:__init(controll_name, x, y, alpha, default_value, min_value, max_value, value_offset, _callback, _ref)
+function IXRTrackBar:__init(controll_name, x, y, alpha, default_value, min_value, max_value, value_offset, use_ceil, _callback, _ref)
 	super()
 	
+	self.use_ceil = use_ceil
 	self.visible = false
 	self.value = 0.0
 	self.value_offset = value_offset
@@ -1111,7 +1118,11 @@ function IXRTrackBar:__init(controll_name, x, y, alpha, default_value, min_value
 	self.controll_text:SetWndPos(vector2():set(3, 2))
 	self.controll_text:SetWndSize(vector2():set(50, 16))
 	self.controll_text:Show(false)
-	self.controll_text:TextControl():SetText("0.0")
+	if self.use_ceil then
+		self.controll_text:TextControl():SetText("0")
+	else
+		self.controll_text:TextControl():SetText("0.0")
+	end
 	self.controll_text:TextControl():SetTextColor(GetARGB(200, 255, 255, 255))
 	
 	self.controll_track_bar = get_options_xml():InitTrackBar("track_bar", self.controll_background)
@@ -1146,9 +1157,18 @@ function IXRTrackBar:Show(flag)
 end
 
 function IXRTrackBar:OnChangeState()
-	self.controll_text:TextControl():SetText(tostring(string.format("%.3f", self.value)))
+	if self.use_ceil then
+		self.controll_text:TextControl():SetText(tostring(math.ceil(self.value)))
+	else
+		self.controll_text:TextControl():SetText(tostring(string.format("%.3f", self.value)))
+	end
+	
 	if self.visible and self.on_change_callback then
-		self.on_change_callback(self:GetValue(), self.controll_name)
+		if self.use_ceil then
+			self.on_change_callback(math.ceil(self:GetValue()), self.controll_name)
+		else
+			self.on_change_callback(self:GetValue(), self.controll_name)
+		end
 	end
 end
 
