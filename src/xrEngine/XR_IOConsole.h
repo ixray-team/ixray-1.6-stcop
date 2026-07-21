@@ -60,8 +60,7 @@ struct TipString
 
 class ENGINE_API CConsole :
 	public pureRender,
-	public pureFrame,
-	public pureScreenResolutionChanged
+	public pureFrame
 {
 public:
 	struct str_pred
@@ -136,7 +135,6 @@ public:
 
 	virtual void OnRender();
 	virtual void _BCL OnFrame();
-	virtual void OnScreenResolutionChanged();
 
 	void AddCommand(IConsole_Command* cc);
 	void RemoveCommand(IConsole_Command* cc);
@@ -235,7 +233,7 @@ protected:
 	bool add_internal_cmds(const char* in_str, vecTipsEx& out_v);
 
 	void update_tips();
-	void select_for_filter(const char* filter_str, vecTips& in_v, vecTipsEx& out_v);
+	void select_for_filter(const char* filter_str, const vecTips& in_v, vecTipsEx& out_v);
 
 }; // class CConsole
 

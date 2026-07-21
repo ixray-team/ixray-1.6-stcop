@@ -28,7 +28,7 @@ xr_token vid_bpp_token[] =
 {
 	{ "16", 16 },
 	{ "32", 32 },
-	{ 0,	 0 }
+	{ nullptr,	 0 }
 };
 
 xr_token vid_scale_preset_token[] = 
@@ -40,7 +40,7 @@ xr_token vid_scale_preset_token[] =
 	{ "st_scale_ultraperformance", 4 },
 
 	{ "st_scale_custom", 5 },
-	{ 0, 0 }
+	{ nullptr, 0 }
 };
 
 xr_token gamepad_prefix_override_token[] = 
@@ -52,7 +52,7 @@ xr_token gamepad_prefix_override_token[] =
 //	todo: fix some icon bugs for switch
 //	{ "switch", 4 },
 
-	{ 0, 0 }
+	{ nullptr, 0 }
 };
 
 ENGINE_API u32 ps_r_scale_mode = 1;
@@ -66,10 +66,8 @@ xr_token qscale_mode_token[] =
 	{ "st_filter_dlss", 2},
 	{ "st_filter_fsr", 3},
 //	{ "st_filter_xess", 4},
-	{ 0, 0 }
+	{ nullptr, 0 }
 };
-
-//-----------------------------------------------------------------------
 
 void IConsole_Command::add_to_LRU(shared_str const& arg) {
 	if (!arg.size() || bEmptyArgsHandled) 
@@ -88,20 +86,19 @@ void IConsole_Command::add_to_LRU(shared_str const& arg) {
 	}
 }
 
-void  IConsole_Command::add_LRU_to_tips(vecTips& tips) {
+void  IConsole_Command::add_LRU_to_tips(vecTips& tips) 
+{
 	vecLRU::reverse_iterator	it_rb = m_LRU.rbegin();
 	vecLRU::reverse_iterator	it_re = m_LRU.rend();
 	for (; it_rb != it_re; ++it_rb) {
-		tips.push_back( (*it_rb) );
+		tips.push_back( *it_rb );
 	}
 }
-
-// =======================================================
 
 class CCC_Quit : public IConsole_Command
 {
 public:
-	CCC_Quit(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
+	CCC_Quit(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; }
 	virtual void Execute(const char* args) 
 	{
 		if (Device.IsEditorMode())
@@ -114,39 +111,41 @@ public:
 		g_pEventManager->Event.Defer("KERNEL:quit");
 	}
 };
-//-----------------------------------------------------------------------
+
 class CCC_MotionsStat : public IConsole_Command
 {
 public:
-	CCC_MotionsStat(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
+	CCC_MotionsStat(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; }
 	virtual void Execute(const char* args) {
 		//g_pMotionsContainer->dump();
 		//	TODO: move this console commant into renderer
 		VERIFY(0);
 	}
 };
+
 class CCC_TexturesStat : public IConsole_Command
 {
 public:
-	CCC_TexturesStat(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
+	CCC_TexturesStat(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; }
 	virtual void Execute(const char* args) 
 	{
 		Device.DumpResourcesMemoryUsage();
 	}
 };
-//-----------------------------------------------------------------------
+
 class CCC_E_Dump : public IConsole_Command
 {
 public:
-	CCC_E_Dump(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
+	CCC_E_Dump(const char* N) : IConsole_Command(N)  { bEmptyArgsHandled = true; }
 	virtual void Execute(const char* args) {
 		g_pEventManager->Event.Dump();
 	}
 };
+
 class CCC_E_Signal : public IConsole_Command
 {
 public:
-	CCC_E_Signal(const char* N) : IConsole_Command(N)  { };
+	CCC_E_Signal(const char* N) : IConsole_Command(N)  { }
 	virtual void Execute(const char* args) {
 		char	Event[128],Param[128];
 		Event[0]=0; Param[0]=0;
@@ -155,9 +154,6 @@ public:
 	}
 };
 
-
-
-//-----------------------------------------------------------------------
 class CCC_Help : public IConsole_Command
 {
 public:
@@ -173,7 +169,7 @@ public:
 	    	u32 max_name_len = 0;
 	    	u32 max_status_len = 0;
 
-	    	for (auto [cmd_name, cmd_ptr] : Console->Commands)
+	    	for (auto cmd_ptr : Console->Commands | std::views::values)
 	    	{
 	    		u32 cur_name_len = xr_strlen(cmd_ptr->Name());
 	    		max_name_len = std::max(cur_name_len, max_name_len);
@@ -212,7 +208,7 @@ public:
 	    		out[char_pos] = '\0';
 	    	};
 
-	    	for (auto [cmd_name, cmd_ptr] : Console->Commands)
+	    	for (const auto& cmd_ptr : Console->Commands | std::views::values)
 	    	{
 	    		TStatus status;
 	    		cmd_ptr->Status(status);
@@ -223,7 +219,7 @@ public:
 	    		TStatus formatted_status;
 	    		print_center(formatted_status, status, max_status_len);
 
-	    		Msg("%-*s (%s) - %s",
+				Msg("%-*s (%s) - %s",
 					max_name_len,
 					cmd_ptr->Name(),
 					formatted_status,
@@ -257,16 +253,15 @@ public:
 	}
 };
 
-//-----------------------------------------------------------------------
 void CCC_SaveCFG::Execute(const char* args)
 {
 	string_path cfg_full_name;
-	xr_strcpy(cfg_full_name, (xr_strlen(args) > 0) ? args : Console->ConfigFile);
+	xr_strcpy(cfg_full_name, xr_strlen(args) > 0 ? args : Console->ConfigFile);
 
 	bool b_abs_name = xr_strlen(cfg_full_name) > 2 && cfg_full_name[1] == ':';
 
 	if (!b_abs_name)
-		FS.update_path(cfg_full_name, "$app_data_root$", cfg_full_name);
+		FS.update_path(cfg_full_name, _app_data_root_, cfg_full_name);
 
 	if (strext(cfg_full_name))
 		*strext(cfg_full_name) = 0;
@@ -295,8 +290,10 @@ void CCC_SaveCFG::Execute(const char* args)
 	if (b_allow)
 	{
 		IWriter* F = FS.w_open(cfg_full_name);
-		for (auto& pair : Console->Commands)
-			pair.second->Save(F);
+		for (auto& val : Console->Commands | std::views::values)
+		{
+			val->Save(F);
+		}
 		FS.w_close(F);
 		Msg("Config-file [%s] saved successfully", cfg_full_name);
 	}
@@ -307,7 +304,7 @@ void CCC_SaveCFG::Execute(const char* args)
 void CCC_LoadCFG::Execute(const char* args) 
 {
 	string_path cfg_name;
-	xr_strcpy(cfg_name, (xr_strlen(args) > 0) ? args : Console->ConfigFile);
+	xr_strcpy(cfg_name, xr_strlen(args) > 0 ? args : Console->ConfigFile);
 	Msg("Executing config-script \"%s\"...", cfg_name);
 
 	if (strext(cfg_name))
@@ -316,7 +313,7 @@ void CCC_LoadCFG::Execute(const char* args)
 
 	string_path cfg_full_name;
 
-	FS.update_path(cfg_full_name, "$app_data_root$", cfg_name);
+	FS.update_path(cfg_full_name, _app_data_root_, cfg_name);
 		
 	if( nullptr == FS.exist(cfg_full_name) )
 		xr_strcpy(cfg_full_name, cfg_name);
@@ -343,13 +340,13 @@ CCC_LoadCFG_custom::CCC_LoadCFG_custom(const char* cmd)
 :CCC_LoadCFG(cmd)
 {
 	xr_strcpy(m_cmd, cmd);
-};
+}
+
 bool CCC_LoadCFG_custom::allow(const char* cmd)
 {
-	return (cmd == strstr(cmd, m_cmd) );
-};
+	return cmd == strstr(cmd, m_cmd);
+}
 
-//-----------------------------------------------------------------------
 class CCC_Start : public IConsole_Command
 {
 	void	parse		(LPSTR dest, const char* args, const char* name)
@@ -378,7 +375,7 @@ class CCC_Start : public IConsole_Command
 		}
 
 		const char* name2 = strchr( name1, '/' );
-		int end_p = xr_strlen( str ) - ((name2)? xr_strlen(name2) : 0);
+		int end_p = xr_strlen( str ) - (name2? xr_strlen(name2) : 0);
 		if ( begin_p >= end_p )
 		{
 			return;
@@ -389,14 +386,9 @@ class CCC_Start : public IConsole_Command
 		}
 	}
 public:
-	CCC_Start(const char* N) : IConsole_Command(N)	{ 	  bLowerCaseArgs = false; };
+	CCC_Start(const char* N) : IConsole_Command(N)	{ 	  bLowerCaseArgs = false; }
 	virtual void Execute(const char* args)
 	{
-/*		if (g_pGameLevel)	{
-			Log		("! Please disconnect/unload first");
-			return;
-		}
-*/
 		string4096	op_server,op_client,op_demo;
 		op_server[0] = 0;
 		op_client[0] = 0;
@@ -411,7 +403,7 @@ public:
 		if(!op_client[0] && strstr(op_server,"single"))
 			xr_strcpy(op_client, "localhost");
 
-		if ((0==xr_strlen(op_client)) && (0 == xr_strlen(op_demo)))
+		if (0 == xr_strlen(op_client) && 0 == xr_strlen(op_demo))
 		{
 			Msg("! Can't start game without client. Arguments: '%s'.",args);
 			return;
@@ -424,7 +416,7 @@ public:
 			g_pEventManager->Event.Defer	("KERNEL:start_mp_demo",u64(xr_strdup(op_demo)),0);
 		} else
 		{
-			g_pEventManager->Event.Defer	("KERNEL:start",u64(xr_strlen(op_server)?xr_strdup(op_server):0),u64(xr_strdup(op_client)));
+			g_pEventManager->Event.Defer	("KERNEL:start",u64(xr_strlen(op_server)?xr_strdup(op_server):nullptr),u64(xr_strdup(op_client)));
 		}
 	}
 };
@@ -432,27 +424,28 @@ public:
 class CCC_Disconnect : public IConsole_Command
 {
 public:
-	CCC_Disconnect(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	CCC_Disconnect(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
 	virtual void Execute(const char* args) {
 		g_pEventManager->Event.Defer("KERNEL:disconnect");
 	}
 };
-//-----------------------------------------------------------------------
+
 class CCC_VID_Reset : public IConsole_Command
 {
 public:
-	CCC_VID_Reset(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	CCC_VID_Reset(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
 	virtual void Execute(const char* args) {
 		if (Device.b_is_Ready) {
 			Device.Reset	();
 		}
 	}
 };
+
 class CCC_VidMode : public CCC_Token
 {
 	u32		_dummy;
 public :
-					CCC_VidMode(const char* N) : CCC_Token(N, &_dummy, nullptr) { bEmptyArgsHandled = false; };
+					CCC_VidMode(const char* N) : CCC_Token(N, &_dummy, nullptr) { bEmptyArgsHandled = false; }
 	virtual void	Execute(const char* args){
 		u32 _w, _h;
 		int cnt = sscanf		(args,"%dx%d",&_w,&_h);
@@ -461,7 +454,6 @@ public :
 			psCurrentVidMode[1] = _h;
 		}else{
 			Msg("! Wrong video mode [%s]", args);
-			return;
 		}
 	}
 	virtual void	Status	(TStatus& S)	
@@ -483,33 +475,32 @@ public :
 		while (tok->name && !res) {
 			if (!xr_strcmp(tok->name, cur)) {
 				xr_sprintf(str, sizeof(str), "%s  (current)", tok->name);
-				tips.push_back( str );
+				tips.emplace_back(str );
 				res = true;
 			}
 			tok++;
 		}
 		if (!res) {
-			tips.push_back( "---  (current)" );
+			tips.emplace_back("---  (current)" );
 		}
 		tok = GetToken();
 		while (tok->name) {
-			tips.push_back( tok->name );
+			tips.emplace_back(tok->name );
 			tok++;
 		}
 	}
 
 };
-//-----------------------------------------------------------------------
+
 class CCC_SND_Restart : public IConsole_Command
 {
 public:
-	CCC_SND_Restart(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	CCC_SND_Restart(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
 	virtual void Execute(const char* args) {
 		Sound->_restart();
 	}
 };
 
-//-----------------------------------------------------------------------
 float	ps_gamma=1.f,ps_brightness=1.f,ps_contrast=1.f;
 class CCC_Gamma : public CCC_Float
 {
@@ -524,85 +515,27 @@ public:
 			return;
 		}
 		CCC_Float::Execute		(args);
-		//Device.Gamma.Gamma		(ps_gamma);
 		Device.m_pRender->setGamma(ps_gamma);
-		//Device.Gamma.Brightness	(ps_brightness);
 		Device.m_pRender->setBrightness(ps_brightness);
-		//Device.Gamma.Contrast	(ps_contrast);
 		Device.m_pRender->setContrast(ps_contrast);
-		//Device.Gamma.Update		();
 		Device.m_pRender->updateGamma();
 	}
 };
 
-//-----------------------------------------------------------------------
-/*
-#ifdef	DEBUG
-extern  INT	g_bDR_LM_UsePointsBBox;
-extern	INT	g_bDR_LM_4Steps;
-extern	INT g_iDR_LM_Step;
-extern	Fvector	g_DR_LM_Min, g_DR_LM_Max;
-
-class CCC_DR_ClearPoint : public IConsole_Command
-{
-public:
-	CCC_DR_ClearPoint(const char* N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args) {
-		g_DR_LM_Min.x = 1000000.0f;
-		g_DR_LM_Min.z = 1000000.0f;
-
-		g_DR_LM_Max.x = -1000000.0f;
-		g_DR_LM_Max.z = -1000000.0f;
-
-		Msg("Local BBox (%f, %f) - (%f, %f)", g_DR_LM_Min.x, g_DR_LM_Min.z, g_DR_LM_Max.x, g_DR_LM_Max.z);
-	}
-};
-
-class CCC_DR_TakePoint : public IConsole_Command
-{
-public:
-	CCC_DR_TakePoint(const char* N) : IConsole_Command(N)	{ bEmptyArgsHandled = true; };
-	virtual void Execute(const char* args) {
-		Fvector CamPos =  Device.vCameraPosition;
-
-		if (g_DR_LM_Min.x > CamPos.x)	g_DR_LM_Min.x = CamPos.x;
-		if (g_DR_LM_Min.z > CamPos.z)	g_DR_LM_Min.z = CamPos.z;
-
-		if (g_DR_LM_Max.x < CamPos.x)	g_DR_LM_Max.x = CamPos.x;
-		if (g_DR_LM_Max.z < CamPos.z)	g_DR_LM_Max.z = CamPos.z;
-
-		Msg("Local BBox (%f, %f) - (%f, %f)", g_DR_LM_Min.x, g_DR_LM_Min.z, g_DR_LM_Max.x, g_DR_LM_Max.z);
-	}
-};
-
-class CCC_DR_UsePoints : public CCC_Integer
-{
-public:
-	CCC_DR_UsePoints(const char* N, int* V, int _min=0, int _max=999) : CCC_Integer(N, V, _min, _max)	{};
-	virtual void	Save	(IWriter *F)	{};
-};
-#endif
-*/
-
 ENGINE_API bool r2_sun_static = true;
 
 u32	renderer_value	= 0;
-//void fill_render_mode_list();
-//void free_render_mode_list();
-
 class CCC_r2 : public CCC_Token
 {
 	typedef CCC_Token inherited;
 public:
-	CCC_r2(const char* N) :inherited(N, &renderer_value, vid_quality_token){renderer_value=0; };
+	CCC_r2(const char* N) :inherited(N, &renderer_value, vid_quality_token){renderer_value=0; }
 	virtual			~CCC_r2	()
 	{
-		//free_render_mode_list();
+		
 	}
 	virtual void	Execute	(const char* args)
 	{
-		//fill_render_mode_list	();
-		//	vid_quality_token must be already created!
 		tokens					= vid_quality_token;
 
 		inherited::Execute		(args);
@@ -615,7 +548,6 @@ public:
 
 	virtual void	Save	(IWriter *F)	
 	{
-		//fill_render_mode_list	();
 		tokens = vid_quality_token;
 		inherited::Save(F);
 	}
@@ -632,7 +564,7 @@ class CCC_GamepadPrefixOverride : public CCC_Token
 {
 	typedef CCC_Token inherited;
 public:
-	CCC_GamepadPrefixOverride(const char* N) : inherited(N, &ps_gamepad_prefix_override, gamepad_prefix_override_token) { ps_gamepad_prefix_override = 0; };
+	CCC_GamepadPrefixOverride(const char* N) : inherited(N, &ps_gamepad_prefix_override, gamepad_prefix_override_token) { ps_gamepad_prefix_override = 0; }
 	virtual ~CCC_GamepadPrefixOverride() {}
 	virtual void	Execute	(const char* args)
 	{
@@ -640,7 +572,7 @@ public:
 
 		inherited::Execute		(args);
 		pInput->SelectGamepadPrefix();
-		g_pStringTable->ReparseKeyBindings();
+		CStringTable::ReparseKeyBindings();
 	}
 
 	virtual void	Save	(IWriter *F)	
@@ -661,7 +593,7 @@ class CCC_soundDevice : public CCC_Token
 {
 	typedef CCC_Token inherited;
 public:
-	CCC_soundDevice(const char* N) :inherited(N, &snd_device_id, nullptr){};
+	CCC_soundDevice(const char* N) :inherited(N, &snd_device_id, nullptr){}
 	virtual			~CCC_soundDevice	()
 	{}
 
@@ -742,7 +674,7 @@ extern float fps_smoothing_alpha;
 
 extern bool use_smoothed_delta;
 
-#if defined(IXRAY_PROFILER)
+#ifdef IXRAY_PROFILER
 class CCC_Profiler : public IConsole_Command
 {
 	bool start_profile = false;
@@ -782,7 +714,7 @@ void CCC_Register()
 	CMD2(CCC_Boolean, "ui_dbg_cmd_vars",	&Engine.External.EditorStates[(int)EditorUI::CmdVars]);
 	CMD2(CCC_Boolean, "ui_dbg_cmd_console", &Engine.External.EditorStates[(int)EditorUI::CmdConsole]);
 
-#if defined(IXRAY_PROFILER)
+#ifdef IXRAY_PROFILER
 	CMD1(CCC_Profiler, "profiler_switch");
 #endif
 	// General
