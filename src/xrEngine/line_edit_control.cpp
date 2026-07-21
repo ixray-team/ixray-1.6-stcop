@@ -304,7 +304,7 @@ void line_edit_control::create_char_pair(u32 const dik, char c, char c_shift, bo
 }
 
 void line_edit_control::assign_callback(u32 const sdl_scancode, key_state state, Callback const& callback) {
-	VERIFY( dik < CMD_SDL_SCANCODE_COUNT );
+	VERIFY( sdl_scancode < CMD_SDL_SCANCODE_COUNT );
 	Base* prev_action = m_actions[sdl_scancode];
 	m_actions[sdl_scancode] = new callback_base( callback, state );
 	m_actions[sdl_scancode]->on_assign( prev_action );
