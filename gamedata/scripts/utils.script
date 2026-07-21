@@ -609,6 +609,18 @@ end
 
 -- Упаковка CTime в таблицу
 function get_table_CTime(t)
+	if t == nil then
+		return {
+			Y = - 2000,
+			M = 0,
+			D = 0,
+			h = 0,
+			m = 0,
+			s = 0,
+			ms = 0
+		}
+	end
+	
 	local Y, M, D, h, m, s, ms = 0, 0, 0, 0, 0, 0, 0
 		Y, M, D, h, m, s, ms = t:get( Y, M, D, h, m, s, ms )
 		
@@ -626,6 +638,11 @@ end
 -- Распаковка CTime из таблицы
 function get_CTime_from_table(c_time_tbl)
 	local tm = game.CTime()
+	if c_time_tbl == nil then
+		tm:set(0, 0, 0, 0, 0, 0, 0)
+		return tm
+	end
+	
 	return tm:set(c_time_tbl.Y + 2000,  c_time_tbl.M, c_time_tbl.D, c_time_tbl.h, c_time_tbl.m, c_time_tbl.s, c_time_tbl.ms)
 end
 
