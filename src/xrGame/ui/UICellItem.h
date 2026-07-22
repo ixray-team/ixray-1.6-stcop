@@ -46,6 +46,7 @@ protected:
 	CUIStatic*				m_custom_mark;
 	CUIStatic*				m_filter_icon;
 	Fvector2				m_custom_mark_pos;
+	xr_vector<CUIProgressBar*> m_pCellsConditions;
 
 	virtual void			UpdateItemText			();
 			void			init					();

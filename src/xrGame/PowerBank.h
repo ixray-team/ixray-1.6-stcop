@@ -24,13 +24,13 @@ class PowerBank final :
 	public pureFrame
 {
 private:
-	u32 m_max_count_power_cells = 0;
 	xr_vector<xr_string> m_allowed_power_cells_sections;
-	xr_vector<PowerCellData> m_power_cells;
 	xr_vector<AwaitAlifeObject> m_await_objects_apply_params;
-	xr_vector<CUIProgressBar*> m_pCellsConditions;
 
 public:
+	u32 m_max_count_power_cells = 0;
+	xr_vector<PowerCellData> m_power_cells;
+	
 	PowerBank();
 	virtual ~PowerBank();
 
@@ -50,9 +50,6 @@ public:
 	bool OnPropertiesBoxForUsing(CUIPropertiesBox* m_UIPropertiesBox);
 	bool OnProcessPropertiesBoxClicked(CUIPropertiesBox* m_UIPropertiesBox);
 	void EjectPowerCells();
-
-	void CellUpdate(CUICellItem* oCUICellItem, Ivector2 cell_size, Ivector2 cell_space, Ivector2 itm_grid_size);
-	void OnCellsDestroy(CUICellItem* oCUICellItem);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
