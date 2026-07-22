@@ -67,6 +67,7 @@ private:
 	bool				m_weapon_icon_show_weapon_name = false;
 	bool				m_use_adaptive_ammo_widget = false;
 	bool				m_use_fire_mode_icons = false;
+	bool				m_use_fire_mode_text_labels = false;
 	EWpnIconHudMode		m_wpnIconHudMode = EWpnIconHudMode::Legacy;
 
 	bool				m_isZoneTouch = false;
@@ -82,6 +83,7 @@ private:
 	CUIHudGroupCatalog*		m_hud_group_catalog = nullptr;
 
 	xr_map<shared_str, shared_str>	m_fire_mode_icon_map;
+	xr_map<shared_str, shared_str>	m_fire_mode_label_map;
 
 	CUIStackPanel*		UIStackPanelDangers;
 public:
@@ -145,5 +147,6 @@ protected:
 
 			void	HideCaliberHudWidgets	();
 			void	UpdateCaliberHudForItem	( CInventoryItem* item );
+			shared_str ResolveFireModeDisplayText(const shared_str& fireModeCode) const;
 
 }; // class CUIHudStatesWnd
