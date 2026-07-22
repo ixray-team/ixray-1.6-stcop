@@ -51,12 +51,8 @@ CUICellItem::~CUICellItem()
 {
 	if (m_b_destroy_childs) {
 		PIItem item = (PIItem)m_pData;
-		if (item) {
-			if (PowerBank* oPowerBank = smart_cast<PowerBank*>(item->cast_inventory_item()))
-			{
-				oPowerBank->OnCellsDestroy(this);
-			}
-
+		if (item) 
+		{
 			if (IPowerManager* oPowerManager = smart_cast<IPowerManager*>(item->cast_inventory_item()))
 			{
 				oPowerManager->OnCellsDestroy(this);
@@ -67,6 +63,7 @@ CUICellItem::~CUICellItem()
 	}
 
 	delete_data		(m_custom_draw);
+	m_pCellsConditions.clear();
 }
 
 void CUICellItem::init()
@@ -215,15 +212,57 @@ void CUICellItem::Update()
 	Ivector2 cell_size = m_pParentList->CellSize();
 	Ivector2 cell_space = m_pParentList->CellsSpacing();
 
-	if (item) {
-		if (IPowerManager* oPowerManager = smart_cast<IPowerManager*>(item->cast_inventory_item()))
+	if (item) 
+	{
+		if (IPowerManager* oPowerManager = smart_cast<IPowerManager*>(item))
 		{
 			oPowerManager->CellUpdate(this, cell_size, cell_space, itm_grid_size);
 		}
 
-		if (PowerBank* oPowerBank = smart_cast<PowerBank*>(item->cast_inventory_item()))
+		
+		if (PowerBank* pb = smart_cast<PowerBank*>(item))
 		{
-			oPowerBank->CellUpdate(this, cell_size, cell_space, itm_grid_size);
+			if (m_pCellsConditions.empty())
+			{
+				for (int i = 0; i < pb->m_max_count_power_cells; i++)
+				{
+					CUIProgressBar* bar = new CUIProgressBar();
+					bar->SetAutoDelete(true);
+					AttachChild(bar);
+					CUIXmlInit::InitProgressBar(GetXml(), "condition_progess_bar", 0, bar);
+					bar->SetProgressPos(0.f);
+					bar->Show(false);
+					m_pCellsConditions.push_back(bar);
+				}
+			}
+
+			size_t cnt = m_pCellsConditions.size();
+			size_t cnt_cells = pb->m_power_cells.size();
+
+			for (size_t i = 0; i < cnt; i++)
+			{
+				if (CUIProgressBar* bar = m_pCellsConditions[i])
+				{
+					const Fvector2 pos{
+						1.f,
+						itm_grid_size.y * (cell_size.y + cell_space.y) - bar->GetHeight() - (10.f + (6.f * i))
+					};
+
+					bar->SetWndPos(pos);
+					bar->SetProgressPos(iCeil(pb->GetCalculatedCondition() * 13.0f) / 13.0f);
+					bar->SetProgressPos(0);
+					bar->Show(true);
+				}
+			}
+
+			for (size_t i = 0; i < cnt_cells; i++)
+			{
+				if (CUIProgressBar* bar = m_pCellsConditions[i])
+				{
+					bar->SetProgressPos(((pb->m_power_cells[i].current_power * 100) / pb->m_power_cells[i].max_power) / 100);
+				}
+			}
+			return;
 		}
 
 		if (IAntigas* antigas = smart_cast<IAntigas*>(item->cast_inventory_item()))
