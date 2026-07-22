@@ -59,7 +59,7 @@ public:
 	void on_key_release(int sdl_scancode);
 	void on_frame();
 
-	void assign_callback(u32 sdl_scancode, key_state state, Callback const& callback);
+	void assign_callback(u32 scancode, key_state state, Callback const& callback);
 
 	void insert_character(char c);
 
@@ -69,11 +69,11 @@ public:
 	ICF bool cursor_view() const { return m_cursor_view; }
 	ICF bool need_update() const { return m_need_update; }
 
-	ICF const char* str_edit() const { return m_edit_str; }
-	ICF const char* str_before_cursor() const { return m_buf0; }
-	ICF const char* str_before_mark() const { return m_buf1; }
-	ICF const char* str_mark() const { return m_buf2; }
-	ICF const char* str_after_mark() const { return m_buf3; }
+	ICF const char* str_edit() const { return m_buf_edit_str; }
+	ICF const char* str_before_cursor() const { return m_buf_before_cursor; }
+	ICF const char* str_before_mark() const { return m_buf_before_mark; }
+	ICF const char* str_mark() const { return m_buf_mark; }
+	ICF const char* str_after_mark() const { return m_after_mark; }
 
 	void set_edit(const char* str);
 	void set_selected_mode(bool status) { m_unselected_mode = !status; }
@@ -110,8 +110,8 @@ private:
 	void SwitchKL();
 
 	void assign_char_pairs(init_mode mode);
-	void create_key_state(u32 dik, key_state state);
-	void create_char_pair(u32 dik, char c, char c_shift, bool translate = false);
+	void create_key_state(u32 scancode, key_state state);
+	void create_char_pair(u32 scancode, char c, char c_shift, bool translate = false);
 
 	void clear_inserted();
 	bool empty_inserted();
@@ -128,13 +128,13 @@ private:
 
 	Base* m_actions[CMD_SDL_SCANCODE_COUNT];
 
-	char* m_edit_str;
+	char* m_buf_edit_str;
 	char* m_undo_buf;
 	char* m_inserted;
-	char* m_buf0;
-	char* m_buf1;
-	char* m_buf2;
-	char* m_buf3;
+	char* m_buf_before_cursor;
+	char* m_buf_before_mark;
+	char* m_buf_mark;
+	char* m_after_mark;
 
 	u32 m_buffer_size;
 
