@@ -63,7 +63,7 @@ struct
 	Section Anomalies{};
 	Section Others{};
 
-	xr_unique_ptr<CScriptSound> sound_tip;
+	CScriptSound* sound_tip;
 	string_path sound_tip_path{};
 	bool legacyNewsMode{false};
 } imgui_spawn_manager;
@@ -86,8 +86,6 @@ Section FilterSectionsWithSearch(const Section& sections, const char* searchBuff
 
 void DestroySpawnManagerWindow()
 {
-	imgui_spawn_manager.sound_tip.reset();
-
 	imgui_spawn_manager.WeaponsSections.clear();
 	imgui_spawn_manager.ItemsSections.clear();
 	imgui_spawn_manager.ItemsUsedSections.clear();
@@ -356,9 +354,9 @@ void RenderSpawnManagerWindow() {
 	if (g_pClsidManager == nullptr)
 		return;
 
-	if (imgui_spawn_manager.sound_tip.get() == nullptr)
+	if (imgui_spawn_manager.sound_tip == nullptr)
 	{
-		imgui_spawn_manager.sound_tip = xr_make_unique<CScriptSound>(imgui_spawn_manager.sound_tip_path);
+		imgui_spawn_manager.sound_tip = new CScriptSound(imgui_spawn_manager.sound_tip_path);
 		imgui_spawn_manager.sound_tip->SetVolume(0.8f);
 	}
 
@@ -1223,7 +1221,7 @@ void SpawnManager_HandleButtonPress(CInifile::Sect* section)
 
 	if (Actor())
 	{
-		if (imgui_spawn_manager.sound_tip.get())
+		if (imgui_spawn_manager.sound_tip)
 		{
 			imgui_spawn_manager.sound_tip->PlayAtPos(Actor()->lua_game_object(), Fvector().set(0.0f, 0.0f, 0.0f), 0.0f, sm_2D);
 		}
