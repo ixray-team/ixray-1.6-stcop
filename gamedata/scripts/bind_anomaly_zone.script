@@ -1,5 +1,5 @@
 --'******************************************************
---'*  Ð‘Ð¸Ð½Ð´ÐµÑ€ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° Ð·Ð¾Ð½Ñ‹ Ð°Ð½Ð¾Ð¼Ð°Ð»Ð¸Ð¸ .
+--'*  Áèíäåð îáúåêòà çîíû àíîìàëèè .
 --'******************************************************
 artefact_ways_by_id					= {}
 artefact_points_by_id				= {}
@@ -7,7 +7,10 @@ parent_zones_by_artefact_id			= {}
 ANOMAL_ZONE_SECT = "anomal_zone"
 
 function bind(obj)
-	obj:bind_object(anomaly_zone_binder(obj))
+	-- IX-Ray: Added security check for multiplayer compatibility
+	if IsGameTypeSingle() or OnServer() then
+		obj:bind_object(anomaly_zone_binder(obj))
+	end
 end
 
 class "anomaly_zone_binder" (object_binder)
@@ -39,8 +42,6 @@ function anomaly_zone_binder:__init(obj) super(obj)
 	self.max_artefacts_table = {}
 	self.forces_table = {}
 	self.spawned_count = 0
-	
-	self.last_update_time = 0
 
 	self.respawn_artefacts = true
 	self.forced_spawn = false
@@ -136,9 +137,6 @@ function anomaly_zone_binder:__init(obj) super(obj)
 	self.max_artefacts = self.max_artefacts_table[self.cur_layer]
 	self.applying_force_xz = self.forces_table[self.cur_layer].xz
 	self.applying_force_y = self.forces_table[self.cur_layer].y
-	
-	
-	SendScriptCallback("anomaly_zone_on_init", self, obj)
 end
 
 function anomaly_zone_binder:disable_anomaly_fields()
@@ -192,6 +190,13 @@ end
 function anomaly_zone_binder:respawn_artefacts_and_replace_anomaly_zone()
 	local anom_fields = bind_anomaly_field.fields_by_names
 	self.respawn_artefacts = true
+	
+	-- START IX-Ray: Added security check for multiplayer compatibility
+	if not IsGameTypeSingle() then
+		return
+	end
+	-- END IX-Ray
+	
 	if(self.custom_placement) then
 		local layer = self.cur_layer
 		for k,v in pairs(self.fields_table[layer]) do
@@ -234,10 +239,7 @@ function anomaly_zone_binder:spawn_artefact_randomly()
 		rnd_artefact = self.start_artefacts_table[layer][#self.start_artefacts_table[layer]]
 		self.forced_spawn = false
 	else
-	
-		local flags_table = {spawn_chance = 17}
-		SendScriptCallback("anomaly_zone_override_artefact_spawn_Ñhance", self, self.object, flags_table)
-		if math.random(1,100) > flags_table.spawn_chance then
+		if math.random(1,100) > 17 then
 			return
 		end
 
@@ -277,10 +279,10 @@ function anomaly_zone_binder:spawn_artefact_randomly()
 	self.artefact_points_by_id[artefact_obj.id] = rnd_path_point
 	parent_zones_by_artefact_id[artefact_obj.id] = self
 	self.spawned_count = self.spawned_count + 1
-
-	-- from 1.6.03 Unofficial
+	
+	-- START IX-Ray
 	pda.change_anomalies_names()
-	SendScriptCallback("anomaly_zone_on_spawn_artefact_randomly", self, self.object, artefact_obj)
+	-- END IX-Ray
 end
 
 function anomaly_zone_binder:get_artefact_path()
@@ -341,23 +343,6 @@ end
 
 function anomaly_zone_binder:update(delta)
 	object_binder.update(self, delta)
-	
-	SendScriptCallback("anomaly_zone_on_update", self, self.object)
-
-	-- Fix actual count of artefacts - like 1.6.03 Unofficial
-	if (time_global()>=self.last_update_time+1000) then
-		self.last_update_time = time_global()
-		local real_af_count = 0
-		for k, v in pairs(self.artefact_ways_by_id) do
-			if alife():object(tonumber(k)) then
-				real_af_count = real_af_count + 1
-			end
-		end
-		if self.spawned_count~=real_af_count then
-			self.spawned_count = real_af_count
-		end
-	end
-	
  	if (not self.turned_off) and (self.spawned_count < self.max_artefacts) and self.respawn_artefacts then
  		local cnt = self.respawn_tries
  		if cnt > self.max_artefacts - self.spawned_count then
@@ -375,19 +360,6 @@ function anomaly_zone_binder:update(delta)
 
 	if not(self.disabled) then
 		self:disable_anomaly_fields()
-	end
-end
-
-
-function anomaly_zone_binder:cleanup()
--- function from 1.6.03 Unofficial
-	self:turn_off()
-	self:turn_on()
-
-	for k,v in pairs(parent_zones_by_artefact_id) do
-		if (v and v.object:id() == self.object:id()) then
-			parent_zones_by_artefact_id[k] = nil
-		end
 	end
 end
 
@@ -428,14 +400,6 @@ function anomaly_zone_binder:on_artefact_take(obj)
 	self.artefact_ways_by_id[id] = nil
 	self.artefact_points_by_id[id] = nil
 	self.spawned_count = self.spawned_count - 1
-
-	SendScriptCallback("anomaly_zone_on_artefact_take", self, self.object, id, obj, parent_zones_by_artefact_id)
-
--- block from 1.6.03 Unofficial
-	parent_zones_by_artefact_id[id] = nil
-	if (self.spawned_count < 0) then
-		self.spawned_count = 0
-	end
 
 	pda.change_anomalies_names()
 end
@@ -481,7 +445,6 @@ function anomaly_zone_binder:save(thread)
 		thread:w_u8(-1)
 	end
 	thread:w_bool(self.turned_off)
-	SendScriptCallback("anomaly_zone_on_save", self, self.object, thread, parent_zones_by_artefact_id)
 	set_save_marker(thread, "save", true, "anomaly_zone_binder")
 end
 -- Loading anomaly zone
@@ -516,11 +479,5 @@ function anomaly_zone_binder:load(thread)
 		self.cur_layer = "layer_"..layer_num
 	end
 	self.turned_off = thread:r_bool()
-	SendScriptCallback("anomaly_zone_on_load", self, self.object, thread, parent_zones_by_artefact_id)
 	set_save_marker(thread, "load", true, "anomaly_zone_binder")
-
-	-- from 1.6.03 Unofficial
-	if (self.spawned_count < 0 or self.spawned_count > 200) then
- 		self:cleanup()
-	end
 end

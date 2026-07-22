@@ -26,19 +26,27 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	self:SetWndSize(vector2():set(738,416))
 	self:SetAutoDelete(true)
 
-	if xml:NodeExist("frame_videoadv", 0) then
-		xml:InitFrame("frame_videoadv", self)
-	end
-	self.focusList = {}
-	self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
+	self.scroll_v = xml:InitScrollView("video_adv:scroll_v", self)
     handler.scroll_v = self.scroll_v
-	
-	self.btn_simply = xml:Init3tButton("main_dialog:btn_template", self)
-	self.btn_simply:SetTextST("ui_mm_simply")
-	handler:Register(self.btn_simply, "btn_simply_graphic")
+
+	btn = xml:Init3tButton("video_adv:btn_to_simply", self)
+	handler:Register(btn, "btn_simply_graphic")
 	
 	local ctl = nil
+    local _st = nil
+	
+	-----------------------------------------------------------------------------
+	-----------------------------------------------------------------------------
+	-----------------------------------------------------------------------------
 
+    local lineFrame = function (prec, text)
+        local static = xml:InitStatic("video_adv:templ_item", nil)
+        local temp = xml:InitFrameLine("video_adv:header_setup", static)
+        local tempText = xml:InitTextWnd("video_adv:cap_header_setup", temp)
+        table.insert(handler.m_preconditions, {func=prec, control=static})
+        tempText:SetTextST(text)
+    end
+	
 	local reloadControls = function()
 		local pos = handler.scroll_v:GetCurrentScrollPos()
 		handler:UpdateDependControls()
@@ -49,106 +57,196 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
 	
-	handler:lineFrame(self, all_modes, "st_common_settings")
+	lineFrame(all_modes, "st_common_settings")
 
-	handler:addTrack(self, all_modes, "ui_mm_detail_density", "r__detail_density", 0.02, true, "float", false, system_depends.sdVidRestart)
-	handler:addTrack(self, all_modes, "ui_mm_grass_distance", "r__detail_radius", 1, false, "int", true, system_depends.sdNothing)    
-	handler:addTrack(self, all_modes, "ui_mm_vis_distance", "rs_vis_distance", 0.1, false, "float", false, system_depends.sdNothing)
-	handler:addTrack(self, all_modes, "ui_mm_geometry_lod", "r__geometry_lod", 0.1, false, "float", false, system_depends.sdNothing)
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_detail_density", _st)
+	xml:InitTrackBar("video_adv:track_detail_density", _st)
+	table.insert(handler.m_preconditions, {func=all_modes, control=_st})
+	
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_vis_dist", _st)
+	xml:InitTrackBar("video_adv:track_vis_dist", _st)
+	table.insert(handler.m_preconditions, {func=all_modes, control=_st})
 
+	_st	= xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_geometry_lod", _st)
+	xml:InitTrackBar("video_adv:track_geometry_lod", _st)
+	table.insert(handler.m_preconditions, {func=all_modes, control=_st})
+
+-----------------------------------------------------------------------------
+	-----------------------------------------------------------------------------
+	-----------------------------------------------------------------------------
+	
+	lineFrame(all_modes, "st_surface_options")
+
+    _st	= xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_texture_lod",	_st)
+	ctl = xml:InitTrackBar("video_adv:track_texture_lod", _st)
+	handler.texture_lod_track = ctl
+	table.insert(handler.m_preconditions, {func=all_modes, control=_st})
+
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_aniso", _st)
+	xml:InitTrackBar("video_adv:track_aniso", _st)
+	table.insert(handler.m_preconditions, {func=all_modes, control=_st})
+
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_r1_detail_textures", _st)
+	ctl = xml:InitCheck("video_adv:check_r1_detail_textures", _st)
+	table.insert(handler.m_preconditions, {func=mode_1, control=_st})
+
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_r2_detail_bump", _st)
+	ctl = xml:InitCheck("video_adv:check_r2_detail_bump", _st)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_r2_steep_parallax", _st)
+	ctl = xml:InitCheck("video_adv:check_r2_steep_parallax", _st)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+	
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_r4_tessellation", _st)
+	ctl = xml:InitCheck("video_adv:check_r4_tessellation", _st)
+	table.insert(handler.m_preconditions, {func=mode_4, control=_st})
+	
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
 	
-	handler:lineFrame(self, all_modes, "st_surface_options")
+	lineFrame(all_modes, "st_aa_options")
 
-	handler:addTrack(self, all_modes, "ui_mm_texture_quality", "texture_lod", 1, true, "int", false, system_depends.sdVidRestart)
-	handler:addTrack(self, all_modes, "ui_mm_anisotropic", "r__tf_aniso", 1, false, "int", false, system_depends.sdNothing)
-	
-	handler:addCheck(self, mode_1, "ui_mm_r1_detail_textures", "r1_detail_textures", system_depends.sdNothing)
-	handler:addCheck(self, mode_2, "ui_mm_r2_detail_bump", "r2_detail_bump", system_depends.sdNothing)
-	handler:addCheck(self, mode_2, "ui_mm_r2_steep_parallax", "r2_steep_parallax", system_depends.sdNothing)
-	handler:addCheck(self, mode_4, "ui_mm_r4_enable_tessellation", "r4_enable_tessellation", system_depends.sdVidRestart)
-	
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	
-	handler:lineFrame(self, all_modes, "st_aa_options")
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("video_adv:cap_r_scale_mode", _st)
+    ctl = xml:InitComboBox("video_adv:list_r_scale_mode", _st)
 
- 	handler:addComboBox(self, mode_4, "ui_mm_r_scale_mode", "vid_scale_mode", 5, false, system_depends.sdVidRestart, "scaleMode")
+	handler:Register(ctl, "scaleMode")
+	handler.scaleMode = ctl
+	
+    table.insert(handler.m_preconditions, {func=mode_4, control=_st})
     handler:AddCallback("scaleMode", ui_events.LIST_ITEM_SELECT, reloadControls, nil)
 	
 	local scalePresetPrec = function(id)
 		if mode_4(id) then
-			local current_id = handler:GetComboBox("scaleMode"):CurrentID()
+			local current_id = handler.scaleMode:CurrentID()
 			if current_id > 1 then
 				return true
 			end
+			-- get_console():execute("vid_scale_preset st_scale_custom")
+			-- handler.scalePreset:SetCurrentOptValue()
 		end
 		return false
 	end
 	
- 	handler:addComboBox(self, scalePresetPrec, "ui_mm_r_scale_preset", "vid_scale_preset", 7, false, system_depends.sdVidRestart, "scalePreset")
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("video_adv:cap_r_scale_preset", _st)
+    ctl = xml:InitComboBox("video_adv:list_r_scale_preset", _st)
+	
+	handler:Register(ctl, "scalePreset")
+	handler.scalePreset = ctl
+	
+    table.insert(handler.m_preconditions, {func=scalePresetPrec, control=_st})
     handler:AddCallback("scalePreset", ui_events.LIST_ITEM_SELECT, reloadControls, nil)
+	
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_vid_scale", _st)
+	ctl = xml:InitTrackBar("video_adv:track_vid_scale", _st)
 	
 	local vidScalePrec = function(id)
 		if mode_4(id) then
-			local scale_mode = handler:GetComboBox("scaleMode"):CurrentID()
+			local scale_mode = handler.scaleMode:CurrentID()
 			if scale_mode > 1 then
-				local scale_preset = handler:GetComboBox("scalePreset"):CurrentID()
-				local value = handler:GetComboBox("scalePreset"):GetValueOf(scale_preset)
+				local scale_preset = handler.scalePreset:CurrentID()
+				local value = handler.scalePreset:GetValueOf(scale_preset)
 				return value == "st_scale_custom"
 			end
 			return true
 		end
-		return false
+		return mode_1(id)
 	end
 	
-	handler:addTrack(self, vidScalePrec, "ui_mm_vid_scale", "vid_scale", 0.01, false, "float", true, system_depends.sdVidRestart, "scaleTrack", 100)
+	table.insert(handler.m_preconditions, {func=vidScalePrec, control=_st})
 
 	local typeAAPrec = function(id)
 		if mode_4(id) then
-			local current_id = handler:GetComboBox("scaleMode"):CurrentID()
+			local current_id = handler.scaleMode:CurrentID()
 			if current_id > 1 then
-				handler:GetCheck("hashedAlpha"):Enable(true)
+				handler.hashedAplha:Enable(true)
 				return false
 			end
-			handler:GetCheck("hashedAlpha"):Enable(false)
-			handler:GetCheck("hashedAlpha"):SetCheck(false)
+			handler.hashedAplha:Enable(false)
+			handler.hashedAplha:SetCheck(false)
 		end
 		return true
 	end
 	
-	handler:addTrack(self, mode_4, "ui_mm_cas_sharpening", "r4_cas_sharpening", 0.01, false, "float", true, system_depends.sdNothing, "sharpeningTrack", 100)
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("video_adv:cap_r_type_aa", _st)
+    ctl = xml:InitComboBox("video_adv:list_r_type_aa", _st)
+    table.insert(handler.m_preconditions, {func=typeAAPrec, control=_st})
 
-	handler:addCheck(self, mode_4, "ui_mm_hashed_alpha_test", "r4_hashed_alpha_test", system_depends.sdSystemRestart, "hashedAlpha")
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("video_adv:cap_cas_sharpening", _st)
+    xml:InitTrackBar("video_adv:track_cas_sharpening", _st)
+    table.insert(handler.m_preconditions, {func=mode_4, control=_st})
 	
-	handler:addComboBox(self, typeAAPrec, "ui_mm_supersample", "r_aa", 4, false, system_depends.sdNothing)
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("video_adv:cap_r4_hashed_aref", _st)
+    ctl = xml:InitCheck ("video_adv:check_r4_hashed_aref", _st)
+    table.insert(handler.m_preconditions, {func=mode_4, control=_st})
+	handler.hashedAplha = ctl
 	
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
 	
-	handler:lineFrame(self, all_modes, "st_lights_options")
+	lineFrame(all_modes, "st_lights_options")
 
-	handler:addTrack(self, mode_2, "ui_mm_sun_quality", "r2_ls_squality", 0.1, false, "float", false, system_depends.sdNothing)
-	handler:addTrack(self, mode_2, "ui_mm_light_distance", "r2_slight_fade", 0.01, false, "float", false, system_depends.sdNothing)
-	handler:addCheck(self, all_modes, "ui_mm_npc_torch", "ai_use_torch_dynamic_lights", system_depends.sdNothing)
-	handler:addCheck(self, mode_2, "ui_mm_volumetric_light", "r2_volumetric_lights", system_depends.sdVidRestart)
-	handler:addCheck(self, mode_4, "ui_mm_r4_hud_shadows", "r4_hud_shadows", system_depends.sdVidRestart)
-	handler:addCheck(self, all_modes, "ui_mm_r_actor_shadow", "r_actor_shadow", system_depends.sdNothing)
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_particles_distance", _st)
+	ctl = xml:InitTrackBar("video_adv:track_particles_distance", _st)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+	
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_light_distance", _st)
+	ctl = xml:InitTrackBar("video_adv:track_light_distance", _st)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_npc_torch", _st)
+	xml:InitCheck("video_adv:check_npc_torch", _st)
+	table.insert(handler.m_preconditions, {func=all_modes, control=_st})
+	
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_volumetric_light", _st)
+	ctl = xml:InitCheck("video_adv:check_volumetric_light", _st)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+	
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("video_adv:cap_r4_hud_shadows", _st)
+    ctl = xml:InitCheck ("video_adv:check_r4_hud_shadows", _st)
+    table.insert(handler.m_preconditions, {func=mode_4, control=_st})
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("video_adv:cap_r_actor_shadow", _st)
+    ctl = xml:InitCheck ("video_adv:check_r_actor_shadow", _st)
+    table.insert(handler.m_preconditions, {func=all_modes, control=_st})
 	
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
 	
-	handler:lineFrame(self, mode_2, "st_sunlight_options")
+	lineFrame(mode_2, "st_sunlight_options")
+
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_r2_sun", _st)
+	ctl = xml:InitCheck("video_adv:check_r2_sun", _st)
+	
+    handler:Register(ctl, "enableSun")
+    handler.enableSun = ctl
 
     local sunTable = {}	
-	
-	handler.enableSun = handler:addCheck(self, nil, "ui_mm_r2_sun", "r2_sun", system_depends.sdSystemRestart, "enableSun")
-
     local enableSunFunc = function(id)
 		if mode_2(id) then
 			for _, control in pairs(sunTable) do
@@ -162,58 +260,116 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		return false
     end
 	
-	table.insert(handler.m_preconditions, {func=enableSunFunc, control=handler.enableSun:GetParent()})
+	table.insert(handler.m_preconditions, {func=enableSunFunc, control=_st})
     handler:AddCallback("enableSun", ui_events.BUTTON_CLICKED, reloadControls, nil)
 
-	ctl = handler:addCheck(self, mode_2, "ui_mm_r2_details_shadows", "r2_sun_details", system_depends.sdNothing)
-    table.insert(sunTable, ctl)
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_r2_sun_details", _st)
+	ctl = xml:InitCheck ("video_adv:check_r2_sun_details", _st)
 	
-	ctl = handler:addCheck(self, mode_2, "ui_mm_lights_details", "r2_lights_details", system_depends.sdNothing)
     table.insert(sunTable, ctl)
+    table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+    
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("video_adv:cap_r2_cloud_shadows", _st)
+    ctl = xml:InitCheck ("video_adv:check_r2_cloud_shadows", _st)
 	
-	ctl = handler:addCheck(self, mode_2, "ui_mm_r2_cloud_shadows", "r2_cloud_shadows", system_depends.sdVidRestart)
     table.insert(sunTable, ctl)
+    table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 	
-  	ctl = handler:addComboBox(self, mode_2, "ui_mm_r2_sun_quality", "r2_sun_quality", 6, false, system_depends.sdVidRestart)
-    table.insert(sunTable, ctl)
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_r2_sun_quality", _st)
+	ctl = xml:InitComboBox("video_adv:list_r2_sun_quality", _st)
 	
-  	ctl = handler:addComboBox(self, mode_2, "ui_mm_sun_shafts", "r2_sun_shafts", 5, false, system_depends.sdVidRestart)
     table.insert(sunTable, ctl)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
-  	handler:addComboBox(self, mode_2, "ui_mm_r__smap_size", "r2_smap_size", 5, false, system_depends.sdSystemRestart)
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_sun_shafts", _st)
+	ctl = xml:InitComboBox("video_adv:combo_sun_shafts", _st)
 	
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	-----------------------------------------------------------------------------
-	
-	handler:lineFrame(self, mode_2, "st_effects_options")
+    table.insert(sunTable, ctl)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
-  	handler:addComboBox(self, mode_2, "ui_mm_ssao_text", "r2_ssao_mode", 5, false, system_depends.sdSystemRestart)
-
-	handler:addCheck(self, mode_2, "ui_mm_soft_water", "r2_soft_water", system_depends.sdVidRestart)
-	handler:addCheck(self, mode_2, "ui_mm_soft_particles", "r2_soft_particles", system_depends.sdVidRestart)
-	handler:addCheck(self, mode_4, "ui_mm_r3_dynamic_wet_surfaces", "r3_dynamic_wet_surfaces", system_depends.sdNothing)
-	handler:addCheck(self, mode_4, "ui_mm_sslr_water", "r4_sslr_water", system_depends.sdSystemRestart)
-	handler:addCheck(self, mode_4, "ui_mm_r3_volumetric_smoke", "r3_volumetric_smoke", system_depends.sdNothing)
-	handler:addCheck(self, mode_4, "ui_mm_puddles", "r4_puddles", system_depends.sdNothing)
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_smap_size", _st)
+	ctl = xml:InitComboBox("video_adv:combo_smap_size", _st)
+	handler.combo_smap_size = ctl
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+	
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
 	
-	handler:lineFrame(self, mode_2, "st_postprocess_options")
-	
-	handler:addCheck(self, mode_2, "ui_mm_vignette", "r2_vignette", system_depends.sdNothing)
-	handler:addCheck(self, mode_2, "ui_mm_aberration", "r2_aberration", system_depends.sdNothing)
-	handler:addCheck(self, mode_2, "ui_mm_saturation", "r2_saturation", system_depends.sdNothing)
-	handler:addCheck(self, mode_4, "ui_mm_r4_use_gasmask", "r4_use_gasmask", system_depends.sdNothing)
-	handler:addCheck(self, mode_2, "ui_mm_r2_use_rain_drops", "r2_use_rain_drops", system_depends.sdNothing)
+	lineFrame(mode_2, "st_effects_options")
 
-	handler.enableDof = handler:addCheck(self, mode_2, "ui_mm_dof", "r2_dof_enable", system_depends.sdVidRestart, "enableDof")
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_ao", _st)
+	ctl = xml:InitComboBox("video_adv:combo_ao_options", _st)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_soft_water", _st)
+	ctl = xml:InitCheck("video_adv:check_soft_water", _st)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_soft_particles", _st)
+	ctl = xml:InitCheck("video_adv:check_soft_particles", _st)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_r3_dynamic_wet_surfaces", _st)
+	ctl = xml:InitCheck ("video_adv:check_r3_dynamic_wet_surfaces", _st)
+	table.insert(handler.m_preconditions, {func=mode_4, control=_st})
+	
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_sslr_water", _st)
+	ctl = xml:InitCheck("video_adv:check_sslr_water", _st)
+	table.insert(handler.m_preconditions, {func=mode_4, control=_st})
+
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_r3_volumetric_smoke", _st)
+	ctl = xml:InitCheck("video_adv:check_r3_volumetric_smoke", _st)
+	table.insert(handler.m_preconditions, {func=mode_4, control=_st})
+	
+	-----------------------------------------------------------------------------
+	-----------------------------------------------------------------------------
+	-----------------------------------------------------------------------------
+	
+	lineFrame(mode_2, "st_postprocess_options")
+	
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_vignette", _st)
+	ctl = xml:InitCheck("video_adv:check_vignette", _st)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_aberration", _st)
+	ctl = xml:InitCheck("video_adv:check_aberration", _st)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_saturation", _st)
+	ctl = xml:InitCheck("video_adv:check_saturation", _st)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+	
+	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_dof", _st)
+	ctl = xml:InitCheck("video_adv:check_dof", _st)
+	
+    handler:Register(ctl, "enableDof")
+    handler.enableDof = ctl
+	
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
     handler:AddCallback("enableDof", ui_events.BUTTON_CLICKED, reloadControls, nil)
 
-	handler.reloadDof = handler:addCheck(self, nil, "ui_mm_dof_reload", "enable_dof_reload", system_depends.sdNothing)
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("video_adv:cap_dof_reload", _st)
+    ctl = xml:InitCheck("video_adv:check_dof_reload", _st)
+    handler.reloadDof = ctl
     
-    local enableReloadDofFunc = function(id)
+    local enableDofFunc = function(id)
 		if mode_2(id) then
 			handler.reloadDof:Enable(handler.enableDof:GetCheck())
 			handler.reloadDof:SetCheck(handler.reloadDof:GetCheck() and handler.enableDof:GetCheck())
@@ -222,18 +378,5 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		return false
     end
 	
-    table.insert(handler.m_preconditions, {func=enableReloadDofFunc, control=handler.reloadDof:GetParent()})
-
-   	handler.talkDof = handler:addCheck(self, nil, "ui_mm_dof_talk", "enable_dof_talk", system_depends.sdNothing)
-    
-    local enableTalkDofFunc = function(id)
-		if mode_2(id) then
-			handler.talkDof:Enable(handler.enableDof:GetCheck())
-			handler.talkDof:SetCheck(handler.talkDof:GetCheck() and handler.enableDof:GetCheck())
-			return true
-		end
-		return false
-    end
-	
-    table.insert(handler.m_preconditions, {func=enableTalkDofFunc, control=handler.talkDof:GetParent()})
+    table.insert(handler.m_preconditions, {func=enableDofFunc, control=_st})
 end

@@ -215,7 +215,6 @@ void CController::Load(const char* section)
 	load_friend_community_overrides(section);
 
 	// load
-	m_sound_hit_fx.create		("affects\\tinnitus3a",st_Effect,sg_SourceType);
 
 	m_sound_aura_left_channel.create		("monsters\\controller\\controller_psy_aura_l",st_Effect,sg_SourceType);
 	m_sound_aura_right_channel.create		("monsters\\controller\\controller_psy_aura_r",st_Effect,sg_SourceType);
@@ -609,16 +608,6 @@ bool CController::can_tube_fire()
 {
 	using namespace controller::detail;
 
-	if ( 0 && m_tube_at_once )
-	{
-		if ( EnemyMan.get_enemy() && EnemyMan.see_enemy_now() && m_psy_hit->check_start_conditions() )
-		{
-			return true;
-		}
-
-		return false;
-	}
-
 	if ( !EnemyMan.get_enemy() )
 		return false;
 	
@@ -899,55 +888,3 @@ CBaseMonster::SDebugInfo CController::show_debug_info()
 	return CBaseMonster::SDebugInfo();
 }
 #endif
-
-#ifdef _DEBUG
-void CController::debug_on_key(int key)
-{
-	switch (key){
-	case SDL_SCANCODE_MINUS:
-		//m_sound_aura_left_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
-		//m_sound_aura_right_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
-		
-		if (m_psy_hit->check_start_conditions()) {
-			control().activate(ControlCom::eComCustom1);
-		}
-		//P1.set		(Actor()->Position());		
-		//
-		//DBG().level_info(this).remove_item	(u32(0));
-		//DBG().level_info(this).add_item(P1,0.5f,COLOR_BLUE,0);
-	
-
-		//if (!fsimilar(P1.square_magnitude(),0.f) && 
-		//	!fsimilar(P2.square_magnitude(),0.f)) {
-		//	const CCoverPoint *cover = CoverMan->find_cover(P1,P2,10.f,40.f);
-		//	if (cover) {
-		//		DBG().level_info(this).remove_item	(3);
-		//		DBG().level_info(this).add_item		(cover->position(),0.8f,COLOR_RED,3);
-		//	}
-		//}
-
-
-		break;
-	case SDL_SCANCODE_EQUALS:
-		P2.set		(Actor()->Position());
-		DBG().level_info(this).remove_item	(1);
-		DBG().level_info(this).add_item(P2,0.5f,COLOR_GREEN,1);
-
-		if (!fsimilar(P1.square_magnitude(),0.f) && 
-			!fsimilar(P2.square_magnitude(),0.f)) {
-			const CCoverPoint *cover = CoverMan->find_cover(P1,P2,10.f,40.f);
-			if (cover) {
-				DBG().level_info(this).remove_item	(3);
-				DBG().level_info(this).add_item		(cover->position(),0.8f,COLOR_RED,3);
-			}
-		}
-		
-		//m_sound_aura_hit_left_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
-		//m_sound_aura_hit_right_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
-		break;
-	}
-}
-#endif
-
-
-

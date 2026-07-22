@@ -21,7 +21,11 @@ XRay.code-workspace
 obj/
 lib/
 bin/
-build*/
+build/
+build_win32/
+build32/
+build_nounity/
+rawdata/
 
 # Common logs
 *.log
@@ -65,8 +69,8 @@ packages/
 
 # Temporary files
 temp/
-gamedata*_origin/
-patch*/
+gamedata_origin/
+patch/
 
 # Generated files
 imgui.ini
@@ -75,7 +79,3 @@ changelog.txt
 
 # CLion cache
 cmake-build*/
-
-# Optick
-*.opt
-linux/sal.h
