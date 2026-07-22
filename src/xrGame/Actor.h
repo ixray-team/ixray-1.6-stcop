@@ -863,6 +863,7 @@ public:
 			void				ClearMask						();
 			void				ClearMaskCB						();
 			void				MakeKick						();
+			void				UpdatePickupMode				();
 	CNightVisionEffector*		GetNightVisionEffector			() { return m_night_vision;}
 
 	CCustomDevice*				GetDevice						(bool in_slot = false);
