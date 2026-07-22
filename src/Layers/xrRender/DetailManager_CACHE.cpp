@@ -288,3 +288,67 @@ DetailSlot&	CDetailManager::QueryDB(int sx, int sz)
 		return DS_empty;
 	}
 }
+
+float CDetailManager::TraceVisibility(
+	Fvector const& eye,
+	Fvector const& target,
+	float minHeight,
+	float opaqueDistance,
+	float sampleStep)
+{
+	if (!dtSlots || opaqueDistance <= EPS_L || sampleStep <= EPS_L)
+		return 1.f;
+
+	Fvector direction;
+	direction.sub(target, eye);
+	float const distance = direction.magnitude();
+	if (distance <= EPS_L)
+		return 1.f;
+
+	direction.mul(1.f / distance);
+
+	u32 sampleCount = u32(iFloor(distance / sampleStep)) + 1;
+	clamp(sampleCount, u32(1), u32(16));
+	float const step = distance / float(sampleCount);
+
+	float opticalLength = 0.f;
+	for (u32 i = 1; i <= sampleCount; ++i)
+	{
+		Fvector sample;
+		sample.mad(eye, direction, step * float(i));
+
+		int const sx = iFloor(sample.x / dm_slot_size);
+		int const sz = iFloor(sample.z / dm_slot_size);
+		DetailSlot& slot = QueryDB(sx, sz);
+
+		if ((slot.id0 == DetailSlot::ID_Empty) &&
+			(slot.id1 == DetailSlot::ID_Empty) &&
+			(slot.id2 == DetailSlot::ID_Empty) &&
+			(slot.id3 == DetailSlot::ID_Empty))
+			continue;
+
+		float const height = slot.r_yheight();
+		if (height < minHeight)
+			continue;
+
+		float const yBase = slot.r_ybase();
+		if ((sample.y < yBase) || (sample.y > (yBase + height)))
+			continue;
+
+		u32 occupied = 0;
+		if (slot.id0 != DetailSlot::ID_Empty)
+			++occupied;
+		if (slot.id1 != DetailSlot::ID_Empty)
+			++occupied;
+		if (slot.id2 != DetailSlot::ID_Empty)
+			++occupied;
+		if (slot.id3 != DetailSlot::ID_Empty)
+			++occupied;
+
+		opticalLength += (float(occupied) / 4.f) * step;
+		if (opticalLength >= opaqueDistance)
+			return 0.f;
+	}
+
+	return clampr(1.f - opticalLength / opaqueDistance, 0.f, 1.f);
+}
