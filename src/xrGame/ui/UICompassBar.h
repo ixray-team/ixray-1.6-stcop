@@ -1,5 +1,6 @@
 #pragma once
 #include "../../xrCore/vector.h"
+#include "../../xrCore/_stl_extensions.h"
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/uiabstract.h"
@@ -20,7 +21,6 @@ struct SSpotRenderItem
     const shared_str* textureName;
     Fvector2 iconSize;
     u32 color;
-    SUITextureShadowParams shadow;
 
     bool operator<(const SSpotRenderItem& other) const
     {
@@ -82,7 +82,6 @@ struct SCompassSpotLayerConfig
     float spotHeight = 0.0f;
     float collectInterval = 0.1f;
     u32 defaultSpotColor = 0;
-    SUITextureShadowParams defaultShadow;
 };
 
 struct SSpotCandidate
@@ -96,14 +95,47 @@ struct SSpotCandidate
     Fvector2 iconSize;
     EVTextAlignment valign = valCenter;
     float distance = 0.0f;
-    SUITextureShadowParams shadow;
 };
 
-struct SCompassUpdateState
+struct SCompassDirtyState
 {
     float lastHeading = 0.0f;
+    float lastStripU = -1.0e9f;
+    float lastDistanceMeters = -1.0f;
     u32 lastCandidateHash = 0;
+    u32 lastLogicFrame = u32(-1);
     bool spotsDirty = true;
+    bool membershipChanged = true;
+    bool layoutRefresh = true;
+};
+
+struct SCompassLayoutUnits
+{
+    Fvector2 barRelPos = Fvector2().set(0.0f, 0.0f);
+    Fvector2 barRelSize = Fvector2().set(1.0f, 1.0f);
+};
+
+struct SCompassCardinalMarkerConfig
+{
+    shared_str texture;
+    float width = 0.0f;
+    float height = 0.0f;
+    float offsetY = 1.0f;
+    bool stretch = true;
+};
+
+struct SCompassCardinalEntry
+{
+    CUIWindow* host = nullptr;
+    CUIStatic* text = nullptr;
+    CUIStatic* marker = nullptr;
+    Fvector3 layout = Fvector3().set(0.0f, 0.0f, 0.0f);
+    Fvector2 dirXZ = Fvector2().set(0.0f, 0.0f);
+    float alpha = 1.0f;
+    float lastRelX = 0.0f;
+    u32 baseTextColor = 0;
+    u32 baseMarkerColor = 0;
+    SCompassCardinalMarkerConfig markerCfg;
 };
 
 class CUICompassClipWindow final :
@@ -127,6 +159,7 @@ public:
     void Init();
     void Draw() override;
     void Update() override;
+    void Show(bool status) override;
 
     bool IsInitialized() const { return _isInitialized; }
 
@@ -135,6 +168,9 @@ public:
 
     void SetActiveTarget(CMapLocation* loc);
     void Reset();
+
+    bool GetHudVisible() const { return visible; }
+    void SetHudVisible(bool status);
 
     bool visible = true;
 
@@ -153,7 +189,8 @@ private:
     static constexpr float _kDefaultFovFadeOuter = 0.70f;
     static constexpr float _kDefaultFovFadeEdgeLo = 0.05f;
     static constexpr float _kDefaultFovFadeEdgeHi = 0.95f;
-    static constexpr float _kHeadingDirtyEpsilon = 0.0001f;
+    static constexpr float _kHeadingPixelEpsilon = 0.5f;
+    static constexpr float _kAlphaSaturatedEpsilon = 0.001f;
     static constexpr u32 _kMaxCardinalPoints = 8;
     static constexpr u32 _kDefaultColorWhite = 0xFFFFFFFF;
 
@@ -161,16 +198,14 @@ private:
 
     SCompassBarRuntimeConfig _runtimeCfg;
     SCompassSpotLayerConfig _spotCfg;
-    SCompassUpdateState _updateState;
+    SCompassDirtyState _dirty;
+    SCompassLayoutUnits _layoutUnits;
 
     CUIStatic* _background;
     CUIWindow* _layerBg;
     CUIStatic* _strip;
     CUICompassClipWindow* _stripContainer;
-    xr_vector<Fvector3> _cardinalLayout;
-    xr_vector<CUIStatic*> _cardinals;
-    xr_vector<float> _cardinalAlpha;
-    xr_vector<u32> _cardinalBaseTextColor;
+    xr_vector<SCompassCardinalEntry> _cardinalEntries;
     CUIWindow* _layerFg;
     CUIWindow* _activeTargetContainer;
     CUIStatic* _activeAltitudeArrow;
@@ -186,6 +221,7 @@ private:
     float _activeTargetCurX;
 
     xr_vector<SSpotCandidate> _spotCandidates;
+    xr_vector<CMapLocation*> _spotCollectScratch;
     xr_vector<SSpotRenderItem> _renderQueue;
     float _collectSpotsTimer;
     xr_vector<CUIStatic*> _poolSpots;
@@ -193,12 +229,11 @@ private:
     xr_vector<shared_str> _poolSpotTextureNames;
     xr_vector<float> _poolSpotAlpha;
     xr_vector<u32> _poolSpotBaseColor;
-    xr_vector<SUITextureShadowParams> _poolSpotShadow;
+    xr_vector<u8> _poolSlotUsed;
+    xr_hash_map<CMapLocation*, u32> _spotSlotByLoc;
 
     shared_str _activeMarkerFallbackTexture;
     shared_str _activeMarkerLastTexture;
-    u32 _activeMarkerFallbackColor;
-    SUITextureShadowParams _activeMarkerShadow;
 
     float _stripWidth;
     float _stripTexWidth;
@@ -207,10 +242,14 @@ private:
     float _stripTextureScaleY;
     float _stripTextureOffsetX;
     float _stripTextureOffsetY;
+    bool _stripTextureStretch;
+    Frect _stripBaseTexRect;
+    Fvector2 _stripNativeTexSize;
+    Fvector2 _stripRelPos;
+    Fvector2 _stripRelSize;
 
     bool _isInitialized;
     bool _isGameTypeSingleCompatible;
-    size_t _fadeStorageCardinalCount;
     size_t _fadeStorageSpotCount;
     mutable SCompassStripGeometry _cachedStripGeometry;
     mutable bool _stripGeometryCached;
@@ -222,12 +261,12 @@ private:
     void UpdateCardinals(const SCompassFrameContext& ctx);
     void CollectSpotCandidates(const Fvector& actorPos, const shared_str& levelName);
     void BuildRenderQueueFromCandidates(float camHeading, const Fvector& actorPos);
-    void CommitLayout();
+    void CommitLayout(bool positionsOnly);
     void UpdateActiveTarget(const Fvector& actorPos, float camHeading, const shared_str& levelName);
     void UpdateSpotsLayout(float heading, const SCompassFrameContext& ctx);
 
     CUIStatic* GetSpotFromPool(xr_vector<CUIStatic*>& pool, CUIWindow* parent, u32 index);
-    u32 AllocateSpotPoolSlot(CMapLocation* sourceLoc, xr_vector<u8>& poolSlotUsed);
+    u32 AllocateSpotPoolSlot(CMapLocation* sourceLoc);
     bool ShouldShowSpot(CMapLocation* loc, const Fvector& actorPos, const shared_str& levelName,
         CMapLocation* activeTaskLoc) const;
     SSpotCandidate CreateSpotCandidate(CMapLocation* loc) const;
@@ -243,13 +282,22 @@ private:
     void InvalidateStripGeometry();
     u32 ComputeCandidateHash() const;
     void MarkSpotsDirty();
+    bool IsHeadingPixelDirty(float heading) const;
+    bool HasFadingSpots() const;
 
     void InitWindowAndBackground(CUIXml& uiXml, CUIXmlInit& xmlInit);
     void InitLayoutFromXml(CUIXml& uiXml);
     void ParseSpots(CUIXml& uiXml, const char* path);
     void InitCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit, CUIWindow* stripParent);
-    CUIStatic* InitCardinalStatic(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath, const char* groupPath,
-        const char* directionNode, float defaultY, float defaultW, float defaultH, xr_vector<Fvector3>* outLayout);
+    void ParseCardinalMarkerConfig(CUIXml& uiXml, LPCSTR path, SCompassCardinalMarkerConfig& cfg) const;
+    bool InitCardinalEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCSTR cardinalsPath, LPCSTR groupPath,
+        LPCSTR directionNode, float defaultY, float defaultW, float defaultH,
+        const SCompassCardinalMarkerConfig& defaultMarkerCfg);
+    CUIStatic* CreateCardinalMarker(CUIXml& uiXml, const SCompassCardinalMarkerConfig& cfg, LPCSTR colorPath) const;
+    float GetCardinalTextHeight(CUIStatic* textStatic);
+    float GetCardinalTextBottom(SCompassCardinalEntry& entry);
+    float GetCardinalTextCenterX(const SCompassCardinalEntry& entry) const;
+    void ApplyCardinalMarkerLayout(SCompassCardinalEntry& entry);
     void InitActiveTargetWidgets(CUIXml& uiXml, CUIXmlInit& xmlInit);
     void CreateDefaultActiveTargetWidgets(CUIXml& uiXml);
 
