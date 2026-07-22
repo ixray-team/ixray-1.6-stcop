@@ -24,14 +24,16 @@ public:
 	void Initialize();
 	bool CanApply(xr_string& TempPath, CLocatorAPI::file& Desc);
 
+	void MountAddons();
+
+
 private:
 	void CollectAddons();
 	void ReadMetaInfo(const xr_string& InitFile);
 	void ResolveDependencies();
-	void MountAddons();
 
 public:
 	xr_vector<AddonInfo> Addons;
 };
 
-extern XRCORE_API CAddonManager* g_pAddonsManager;
+extern XRCORE_API CAddonManager* GAddonsManager;
