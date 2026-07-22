@@ -44,40 +44,37 @@ static bool terminate_char( char c, bool check_space = false )
 	return false;
 }
 
-// -------------------------------------------------------------------------------------------------
-
-line_edit_control::line_edit_control( u32 str_buffer_size )
+line_edit_control::line_edit_control(u32 str_buffer_size)
 {
-	m_edit_str	= nullptr;
-	m_inserted	= nullptr;
-	m_undo_buf	= nullptr;
-	m_buf0		= nullptr;
-	m_buf1		= nullptr;
-	m_buf2		= nullptr;
-	m_buf3		= nullptr;
+	m_buf_edit_str = nullptr;
+	m_inserted = nullptr;
+	m_undo_buf = nullptr;
+	m_buf_before_cursor = nullptr;
+	m_buf_before_mark = nullptr;
+	m_buf_mark = nullptr;
+	m_after_mark = nullptr;
 
 	for (auto& m_action : m_actions)
 	{
 		m_action = nullptr;
 	}
 
-	init( str_buffer_size );
-
-	update_key_states	();
+	init(str_buffer_size);
+	update_key_states();
 }
 
 line_edit_control::~line_edit_control()
 {
-	xr_free(m_edit_str);
+	xr_free(m_buf_edit_str);
 	xr_free(m_inserted);
 	xr_free(m_undo_buf);
-	xr_free(m_buf0);
-	xr_free(m_buf1);
-	xr_free(m_buf2);
-	xr_free(m_buf3);
+	xr_free(m_buf_before_cursor);
+	xr_free(m_buf_before_mark);
+	xr_free(m_buf_mark);
+	xr_free(m_after_mark);
 
 	size_t const array_size = std::size(m_actions);
-	buffer_vector<Base*> actions(m_actions, array_size, &m_actions[0], &m_actions[0] + array_size);
+	buffer_vector<Base*> actions(*m_actions, array_size, &m_actions[0], &m_actions[0] + array_size);
 
 	std::ranges::sort(actions);
 	actions.erase(std::ranges::unique(actions).begin(), actions.end());
@@ -99,36 +96,36 @@ void line_edit_control::update_key_states()
 
 void line_edit_control::clear_states()
 {
-	m_edit_str[0]	= 0;
+	m_buf_edit_str[0] = 0;
 	clear_inserted();
-	m_undo_buf[0]	= 0;
+	m_undo_buf[0] = 0;
 
-	m_buf0[0]		= 0;
-	m_buf1[0]		= 0;
-	m_buf2[0]		= 0;
-	m_buf3[0]		= 0;
+	m_buf_before_cursor[0] = 0;
+	m_buf_before_mark[0] = 0;
+	m_buf_mark[0] = 0;
+	m_after_mark[0] = 0;
 
-	m_cur_pos		= 0;
-	m_select_start	= 0;
-	m_p1			= 0;
-	m_p2			= 0;
+	m_cur_pos = 0;
+	m_select_start = 0;
+	m_p1 = 0;
+	m_p2 = 0;
 
-	m_accel				= 1.0f;
-	m_cur_time			= 0.0f;
-	m_rep_time			= 0.0f;
-	m_last_frame_time	= 0;
-	m_last_key_time		= 0.0f;
-	m_last_changed_frame  = 0;
+	m_accel = 1.0f;
+	m_cur_time = 0.0f;
+	m_rep_time = 0.0f;
+	m_last_frame_time = 0;
+	m_last_key_time = 0.0f;
+	m_last_changed_frame = 0;
 
-	m_hold_mode			= false;
-	m_insert_mode		= false;
-	m_repeat_mode		= false;
-	m_mark				= false;
-	m_cursor_view		= false;
-	m_need_update		= false;
-	m_unselected_mode	= false;
+	m_hold_mode = false;
+	m_insert_mode = false;
+	m_repeat_mode = false;
+	m_mark = false;
+	m_cursor_view = false;
+	m_need_update = false;
+	m_unselected_mode = false;
 
-	update_key_states	( );
+	update_key_states();
 }
 
 void line_edit_control::init(u32 str_buffer_size, init_mode mode)
@@ -136,36 +133,36 @@ void line_edit_control::init(u32 str_buffer_size, init_mode mode)
 	m_buffer_size = str_buffer_size;
 	clamp(m_buffer_size, MIN_BUF_SIZE, MAX_BUF_SIZE);
 
-	xr_free(m_edit_str);
-	m_edit_str = (LPSTR)xr_malloc(m_buffer_size * sizeof(char));
-	
-	xr_free(m_inserted);
-	m_inserted = (LPSTR)xr_malloc(m_buffer_size * sizeof(char));
-	
-	xr_free(m_undo_buf);
-	m_undo_buf = (LPSTR)xr_malloc(m_buffer_size * sizeof(char));
+	xr_free(m_buf_edit_str);
+	m_buf_edit_str = (char*)xr_malloc(m_buffer_size * sizeof(char));
 
-	xr_free(m_buf0);
-	m_buf0 = (LPSTR)xr_malloc(m_buffer_size * sizeof(char));
-	
-	xr_free(m_buf1);
-	m_buf1 = (LPSTR)xr_malloc(m_buffer_size * sizeof(char));
-	
-	xr_free(m_buf2);
-	m_buf2 = (LPSTR)xr_malloc(m_buffer_size * sizeof(char));
-	
-	xr_free(m_buf3);
-	m_buf3 = (LPSTR)xr_malloc(m_buffer_size * sizeof(char));
+	xr_free(m_inserted);
+	m_inserted = (char*)xr_malloc(m_buffer_size * sizeof(char));
+
+	xr_free(m_undo_buf);
+	m_undo_buf = (char*)xr_malloc(m_buffer_size * sizeof(char));
+
+	xr_free(m_buf_before_cursor);
+	m_buf_before_cursor = (char*)xr_malloc(m_buffer_size * sizeof(char));
+
+	xr_free(m_buf_before_mark);
+	m_buf_before_mark = (char*)xr_malloc(m_buffer_size * sizeof(char));
+
+	xr_free(m_buf_mark);
+	m_buf_mark = (char*)xr_malloc(m_buffer_size * sizeof(char));
+
+	xr_free(m_after_mark);
+	m_after_mark = (char*)xr_malloc(m_buffer_size * sizeof(char));
 
 	clear_states();
 
-	for ( u32 i = 0; i < CMD_SDL_SCANCODE_COUNT; ++i )
+	for (auto& action : m_actions)
 	{
-		xr_delete( m_actions[i] );
-		m_actions[i] = nullptr;
+		xr_delete(action);
+		action = nullptr;
 	}
 
-	if ( mode == im_read_only )
+	if (mode == im_read_only)
 	{
 		assign_callback(SDL_SCANCODE_A, ks_Ctrl, Callback(this, &line_edit_control::select_all_buf));
 		assign_callback(SDL_SCANCODE_C, ks_Ctrl, Callback(this, &line_edit_control::copy_to_clipboard));
@@ -218,19 +215,24 @@ void line_edit_control::init(u32 str_buffer_size, init_mode mode)
 	create_key_state(SDL_SCANCODE_RALT, ks_RAlt);
 }
 
-void line_edit_control::assign_char_pairs(init_mode mode) {
-	for (int i = 0; i < 9; ++i) {
+void line_edit_control::assign_char_pairs(init_mode mode) 
+{
+	for (int i = 0; i < 9; ++i) 
+		{
 		create_char_pair(SDL_SCANCODE_KP_1 + i, '1' + i, '1' + i);
 	}
+	
 	create_char_pair(SDL_SCANCODE_KP_0, '0', '0');
 
 	// Number only mode:
-	if (mode == im_number_only) {
-		for (int i = 0; i < 9; ++i) {
+	if (mode == im_number_only) 
+	{
+		for (int i = 0; i < 9; ++i) 
+		{
 			create_char_pair(SDL_SCANCODE_1 + i, '1' + i, '1' + i);
 		}
+		
 		create_char_pair(SDL_SCANCODE_0, '0', '0');
-
 		create_char_pair(SDL_SCANCODE_KP_MINUS, '-', '-');
 		create_char_pair(SDL_SCANCODE_MINUS, '-', '-');
 		create_char_pair(SDL_SCANCODE_KP_PLUS, '+', '+');
@@ -239,7 +241,8 @@ void line_edit_control::assign_char_pairs(init_mode mode) {
 		return;
 	}
 
-	if (mode != im_file_name_mode) {
+	if (mode != im_file_name_mode) 
+	{
 		// Character pairs for symbols not allowed in Windows file naming
 		create_char_pair(SDL_SCANCODE_BACKSLASH, '\\', '|', true);
 		create_char_pair(SDL_SCANCODE_8, '8', '*', true);
@@ -287,27 +290,28 @@ void line_edit_control::assign_char_pairs(init_mode mode) {
 	}
 }
 
-void line_edit_control::create_key_state( u32 const dik, key_state state )
+void line_edit_control::create_key_state(u32 const scancode, key_state state)
 {
-	Base* prev = m_actions[dik];
-	m_actions[dik] = new key_state_base( state, prev );
+	Base* prev = m_actions[scancode];
+	m_actions[scancode] = new key_state_base( state, prev );
 }
 
-void line_edit_control::create_char_pair(u32 const dik, char c, char c_shift, bool translate)
+void line_edit_control::create_char_pair(u32 const scancode, char c, char c_shift, bool translate)
 {
-	if (m_actions[dik])
+	if (m_actions[scancode])
 	{
-		xr_delete(m_actions[dik]);
+		xr_delete(m_actions[scancode]);
 	}
 
-	m_actions[dik] = new type_pair(dik, c, c_shift, translate);
+	m_actions[scancode] = new type_pair(scancode, c, c_shift, translate);
 }
 
-void line_edit_control::assign_callback(u32 const sdl_scancode, key_state state, Callback const& callback) {
-	VERIFY( sdl_scancode < CMD_SDL_SCANCODE_COUNT );
-	Base* prev_action = m_actions[sdl_scancode];
-	m_actions[sdl_scancode] = new callback_base( callback, state );
-	m_actions[sdl_scancode]->on_assign( prev_action );
+void line_edit_control::assign_callback(u32 scancode, key_state state, Callback const& callback) 
+{
+	VERIFY(scancode < CMD_SDL_SCANCODE_COUNT);
+	Base* prev_action = m_actions[scancode];
+	m_actions[scancode] = new callback_base( callback, state );
+	m_actions[scancode]->on_assign( prev_action );
 }
 
 void line_edit_control::insert_character( char c )
@@ -329,8 +333,8 @@ void line_edit_control::set_edit( const char* str )
 {
 	u32 str_size = xr_strlen( str );
 	clamp( str_size, 0u, m_buffer_size - 1);
-	strncpy_s( m_edit_str, m_buffer_size, str, str_size );
-	m_edit_str[str_size] = 0;
+	strncpy_s( m_buf_edit_str, m_buffer_size, str, str_size );
+	m_buf_edit_str[str_size] = 0;
 
 	m_cur_pos      = str_size;
 	m_select_start = m_cur_pos;
@@ -365,7 +369,7 @@ void line_edit_control::on_key_press( int sdl_scancode )
 		m_mark = false;	
 	}
 	
-	m_edit_str[m_buffer_size-1] = 0;
+	m_buf_edit_str[m_buffer_size-1] = 0;
 	clamp_cur_pos();
 
 	add_inserted_text();
@@ -433,16 +437,6 @@ void line_edit_control::on_frame()
 	m_cur_time += dt;
 
 	m_cursor_view = true;
-	
-	if (m_cur_time > 0.3f)
-	{
-		m_cursor_view = false;
-	}
-	
-	if (m_cur_time > 0.4f)
-	{
-		m_cur_time = 0.0f;
-	}
 
 	m_rep_time += dt * m_accel;
 	if (m_rep_time > g_console_sensitive) // 0.2
@@ -462,18 +456,18 @@ void line_edit_control::on_frame()
 void line_edit_control::update_bufs()
 {
 	// separate_buffer
-	m_buf0[0] = 0;
-	m_buf1[0] = 0;
-	m_buf2[0] = 0;
-	m_buf3[0] = 0;
+	m_buf_before_cursor[0] = 0;
+	m_buf_before_mark[0] = 0;
+	m_buf_mark[0] = 0;
+	m_after_mark[0] = 0;
 
-	u32 edit_size = xr_strlen(m_edit_str);
+	u32 edit_size = xr_strlen(m_buf_edit_str);
 	u32 ds = m_cursor_view && m_insert_mode && m_p2 < edit_size ? 1 : 0;
 
-	strncpy_s(m_buf0, m_buffer_size, m_edit_str, m_cur_pos);
-	strncpy_s(m_buf1, m_buffer_size, m_edit_str, m_p1);
-	strncpy_s(m_buf2, m_buffer_size, m_edit_str + m_p1, m_p2 - m_p1 + ds);
-	strncpy_s(m_buf3, m_buffer_size, m_edit_str + m_p2 + ds, edit_size - m_p2 - ds);
+	strncpy_s(m_buf_before_cursor, m_buffer_size, m_buf_edit_str, m_cur_pos);
+	strncpy_s(m_buf_before_mark, m_buffer_size, m_buf_edit_str, m_p1);
+	strncpy_s(m_buf_mark, m_buffer_size, m_buf_edit_str + m_p1, m_p2 - m_p1 + ds);
+	strncpy_s(m_after_mark, m_buffer_size, m_buf_edit_str + m_p2 + ds, edit_size - m_p2 - ds);
 
 	m_need_update = true;
 	m_last_changed_frame = Device.dwFrame;
@@ -486,20 +480,20 @@ void line_edit_control::add_inserted_text()
 		return;
 	}
 
-	u32 old_edit_size = xr_strlen(m_edit_str);
+	u32 old_edit_size = xr_strlen(m_buf_edit_str);
 	
 	for (u32 i = 0; i < old_edit_size; ++i)
 	{
-		if (m_edit_str[i] == '\n' || m_edit_str[i] == '\t')
+		if (m_buf_edit_str[i] == '\n' || m_buf_edit_str[i] == '\t')
 		{
-			m_edit_str[i] = ' ';
+			m_buf_edit_str[i] = ' ';
 		}
 	}
 
 	char* buf = (char*)_alloca((m_buffer_size + 1) * sizeof(char));
 
-	strncpy_s(buf, m_buffer_size, m_edit_str, m_p1); // part 1
-	strncpy_s(m_undo_buf, m_buffer_size, m_edit_str + m_p1, m_p2 - m_p1);
+	strncpy_s(buf, m_buffer_size, m_buf_edit_str, m_p1); // part 1
+	strncpy_s(m_undo_buf, m_buffer_size, m_buf_edit_str + m_p1, m_p2 - m_p1);
 
 	u32 new_size = xr_strlen(m_inserted);
 	
@@ -512,15 +506,15 @@ void line_edit_control::add_inserted_text()
 	strncpy_s(buf + m_p1, m_buffer_size, m_inserted, std::min(new_size, m_buffer_size - m_p1)); // part 2
 
 	u8 ds = m_insert_mode && m_p2 < old_edit_size ? 1 : 0;
-	strncpy_s(buf + m_p1 + new_size, m_buffer_size, m_edit_str + m_p2 + ds, std::min(old_edit_size - m_p2 - ds, m_buffer_size - m_p1 - new_size)); // part 3
+	strncpy_s(buf + m_p1 + new_size, m_buffer_size, m_buf_edit_str + m_p2 + ds, std::min(old_edit_size - m_p2 - ds, m_buffer_size - m_p1 - new_size)); // part 3
 	buf[m_buffer_size] = 0;
 
 	u32 szn = m_p1 + new_size + old_edit_size - m_p2 - ds;
 	
 	if (szn < m_buffer_size)
 	{
-		strncpy_s(m_edit_str, m_buffer_size, buf, szn); // part 1+2+3
-		m_edit_str[m_buffer_size - 1] = 0;
+		strncpy_s(m_buf_edit_str, m_buffer_size, buf, szn); // part 1+2+3
+		m_buf_edit_str[m_buffer_size - 1] = 0;
 		m_cur_pos = m_p1 + new_size;
 	}
 	clamp_cur_pos();
@@ -534,9 +528,9 @@ void line_edit_control::copy_to_clipboard()
 	{
 		return;
 	}
-	u32 edit_len = xr_strlen( m_edit_str );
+	u32 edit_len = xr_strlen( m_buf_edit_str );
 	char* buf = (char*)_alloca( (edit_len + 1) * sizeof(char) );
-	strncpy_s( buf, edit_len + 1, m_edit_str + m_p1, m_p2 - m_p1 );
+	strncpy_s( buf, edit_len + 1, m_buf_edit_str + m_p1, m_p2 - m_p1 );
 	buf[edit_len] = 0;
 	os_clipboard::copy_to_clipboard( buf );
 	m_mark = false;
@@ -562,7 +556,7 @@ void line_edit_control::undo_buf()
 void line_edit_control::select_all_buf()
 {
 	m_select_start = 0;
-	m_cur_pos = (int)xr_strlen( m_edit_str );
+	m_cur_pos = (int)xr_strlen( m_buf_edit_str );
 	m_mark = false;
 }
 
@@ -585,22 +579,22 @@ void line_edit_control::delete_selected_forward()
 void line_edit_control::delete_selected( bool back )
 {
 	clamp_cur_pos();
-	u32 edit_len = xr_strlen(m_edit_str);
+	u32 edit_len = xr_strlen(m_buf_edit_str);
 
 	if (edit_len > 0u)
 	{
 		if (back)
 		{
 			u8 dp = m_p1 == m_p2 && m_p1 > 0 ? 1 : 0;
-			strncpy_s(m_undo_buf, m_buffer_size, m_edit_str + m_p1 - dp, m_p2 - m_p1 + dp);
-			strncpy_s(m_edit_str + m_p1 - dp, m_buffer_size, m_edit_str + m_p2, edit_len - m_p2);
+			strncpy_s(m_undo_buf, m_buffer_size, m_buf_edit_str + m_p1 - dp, m_p2 - m_p1 + dp);
+			strncpy_s(m_buf_edit_str + m_p1 - dp, m_buffer_size, m_buf_edit_str + m_p2, edit_len - m_p2);
 			m_cur_pos = m_p1 - dp;
 		}
 		else
 		{
 			u8 dn = m_p1 == m_p2 && m_p2 < edit_len ? 1 : 0;
-			strncpy_s(m_undo_buf, m_buffer_size, m_edit_str + m_p1, m_p2 - m_p1 + dn);
-			strncpy_s(m_edit_str + m_p1, m_buffer_size, m_edit_str + m_p2 + dn, edit_len - m_p2 - dn);
+			strncpy_s(m_undo_buf, m_buffer_size, m_buf_edit_str + m_p1, m_p2 - m_p1 + dn);
+			strncpy_s(m_buf_edit_str + m_p1, m_buffer_size, m_buf_edit_str + m_p2 + dn, edit_len - m_p2 - dn);
 			m_cur_pos = m_p1;
 		}
 		clamp_cur_pos();
@@ -638,7 +632,7 @@ void line_edit_control::move_pos_home()
 
 void line_edit_control::move_pos_end()
 {
-	m_cur_pos = xr_strlen( m_edit_str );
+	m_cur_pos = xr_strlen( m_buf_edit_str );
 }
 
 u32 line_edit_control::set_pos(u32 index)
@@ -667,13 +661,13 @@ void line_edit_control::move_pos_right()
 void line_edit_control::move_pos_left_word()
 {
 	int i = m_cur_pos - 1;
-	while (i >= 0 && m_edit_str[i] == ' ')
+	while (i >= 0 && m_buf_edit_str[i] == ' ')
 	{
 		--i;
 	}
-	if (!terminate_char(m_edit_str[i]))
+	if (!terminate_char(m_buf_edit_str[i]))
 	{
-		while (i >= 0 && !terminate_char(m_edit_str[i], true))
+		while (i >= 0 && !terminate_char(m_buf_edit_str[i], true))
 		{
 			--i;
 		}
@@ -685,13 +679,13 @@ void line_edit_control::move_pos_left_word()
 
 void line_edit_control::move_pos_right_word()
 {
-	int edit_len = (int)xr_strlen(m_edit_str);
+	int edit_len = (int)xr_strlen(m_buf_edit_str);
 	int i = m_cur_pos + 1;
-	while (i < edit_len && !terminate_char(m_edit_str[i], true))
+	while (i < edit_len && !terminate_char(m_buf_edit_str[i], true))
 	{
 		++i;
 	}
-	while (i < edit_len && m_edit_str[i] == ' ')
+	while (i < edit_len && m_buf_edit_str[i] == ' ')
 	{
 		++i;
 	}
@@ -720,7 +714,7 @@ void line_edit_control::compute_positions()
 
 void line_edit_control::clamp_cur_pos()
 {
-	clamp(m_cur_pos, 0u, xr_strlen(m_edit_str));
+	clamp(m_cur_pos, 0u, xr_strlen(m_buf_edit_str));
 }
 
 void line_edit_control::SwitchKL()
