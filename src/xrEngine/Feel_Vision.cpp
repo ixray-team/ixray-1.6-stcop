@@ -202,6 +202,7 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold) {
 					}, &feel_params, nullptr, m_owner))
 
 					{
+						feel_vision_apply_extra(P, OP, feel_params.vis);
 						I->Cache_vis = feel_params.vis;
 						I->Cache.set(P, D, f, true);
 					}
