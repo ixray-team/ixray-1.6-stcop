@@ -1,0 +1,26 @@
+; Stalker vision balance: shorter range/FOV and hard vegetation occlusion.
+; Does not edit legacy m_stalker.ltx; applied as DLTX override of system.ltx.
+
+![stalker]
+eye_fov   = 120
+eye_range = 60
+
+![stalker_vision_free]
+min_view_distance            = 0.3
+max_view_distance            = 0.55
+visibility_threshold         = 100
+time_quant                   = 0.01
+transparency_threshold       = 0.55
+vegetation_min_height        = 0.8
+vegetation_opaque_distance   = 2.5
+vegetation_sample_step       = 1.0
+
+![stalker_vision_danger]
+min_view_distance            = 0.45
+max_view_distance            = 0.75
+visibility_threshold         = 60
+time_quant                   = 0.003
+transparency_threshold       = 0.55
+vegetation_min_height        = 0.8
+vegetation_opaque_distance   = 2.5
+vegetation_sample_step       = 1.0
