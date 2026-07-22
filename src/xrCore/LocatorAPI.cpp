@@ -77,7 +77,7 @@ void CLocatorAPI::Register(const char* name, u32 vfs, u32 crc, u32 ptr, u32 size
 
 	if (IsAddonPhase && !IsArchivePhase)
 	{
-		if (!g_pAddonsManager->CanApply(TempPath, desc))
+		if (!GAddonsManager->CanApply(TempPath, desc))
 		{
 			return;
 		}
@@ -794,9 +794,9 @@ void CLocatorAPI::_initialize(u32 flags, const char* target_folder, const char* 
 	// Load addons
 	if (FS.path_exist("$arch_dir_addons$"))
 	{
-		g_pAddonsManager = new CAddonManager;
+		GAddonsManager = new CAddonManager;
 		GetScannedDirsBuffer()->clear();
-		g_pAddonsManager->Initialize();
+		GAddonsManager->Initialize();
 	}
 
 	// u32	M2 = Memory.mem_usage();
@@ -1840,7 +1840,7 @@ void CLocatorAPI::set_file_age(const char* nm, time_t age)
 	}
 }
 
-void CLocatorAPI::rescan_path(const char* full_path, bool bRecurse)
+void CLocatorAPI::rescan_path(const char* full_path, bool bRecurse, bool NeedMountAddons)
 {
 	file desc = {};
 	desc.name		= full_path;
@@ -1887,6 +1887,11 @@ void CLocatorAPI::rescan_path(const char* full_path, bool bRecurse)
 	
 	GetScanCacheBuffer().reset();
 	GetScannedDirsBuffer().reset();
+
+	if (NeedMountAddons && GAddonsManager != nullptr)
+	{
+		GAddonsManager->MountAddons();
+	}
 }
 
 void  CLocatorAPI::rescan_pathes()
@@ -1897,9 +1902,14 @@ void  CLocatorAPI::rescan_pathes()
 		FS_Path* P	= p_it->second;
 		if (P->m_Flags.is(FS_Path::flNeedRescan))
 		{
-			rescan_path(P->m_Path,P->m_Flags.is(FS_Path::flRecurse));
+			rescan_path(P->m_Path,P->m_Flags.is(FS_Path::flRecurse), false);
 			P->m_Flags.set(FS_Path::flNeedRescan,false);
 		}
+	}
+
+	if (GAddonsManager != nullptr)
+	{
+		GAddonsManager->MountAddons();
 	}
 }
 
