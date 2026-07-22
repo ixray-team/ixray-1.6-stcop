@@ -74,7 +74,7 @@ line_edit_control::~line_edit_control()
 	xr_free(m_after_mark);
 
 	size_t const array_size = std::size(m_actions);
-	buffer_vector<Base*> actions(*m_actions, array_size, &m_actions[0], &m_actions[0] + array_size);
+	buffer_vector<Base*> actions(m_actions, array_size, &m_actions[0], &m_actions[0] + array_size);
 
 	std::ranges::sort(actions);
 	actions.erase(std::ranges::unique(actions).begin(), actions.end());
