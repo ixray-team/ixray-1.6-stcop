@@ -103,6 +103,7 @@ public:
 	void				OnSectorChanged(int sector);
 
 	xr_vector<CUI3dStatic* > m_quick_slots_icons;
+	xr_vector<u32> m_quick_slots_counter_base_color;
 	CUIStatic* m_QuickSlotText1;
 	CUIStatic* m_QuickSlotText2;
 	CUIStatic* m_QuickSlotText3;
