@@ -225,12 +225,14 @@ void CScriptEngine::init()
 		DebbugerAttach();
 	}
 
-	if (g_pAddonsManager != nullptr)
+	if (GAddonsManager != nullptr)
 	{
-		for (auto& Addon : g_pAddonsManager->Addons)
+		for (auto& Addon : GAddonsManager->Addons)
 		{
 			if (Addon.ScriptInit.size() == 0)
+			{
 				continue;
+			}
 
 			LoadScriptToGlobal(lua(), Addon.ScriptInit.c_str(), false);
 		}
