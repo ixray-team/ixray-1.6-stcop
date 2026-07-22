@@ -51,12 +51,8 @@ CUICellItem::~CUICellItem()
 {
 	if (m_b_destroy_childs) {
 		PIItem item = (PIItem)m_pData;
-		if (item) {
-			if (PowerBank* oPowerBank = smart_cast<PowerBank*>(item->cast_inventory_item()))
-			{
-				oPowerBank->OnCellsDestroy(this);
-			}
-
+		if (item) 
+		{
 			if (IPowerManager* oPowerManager = smart_cast<IPowerManager*>(item->cast_inventory_item()))
 			{
 				oPowerManager->OnCellsDestroy(this);
@@ -215,15 +211,11 @@ void CUICellItem::Update()
 	Ivector2 cell_size = m_pParentList->CellSize();
 	Ivector2 cell_space = m_pParentList->CellsSpacing();
 
-	if (item) {
+	if (item) 
+	{
 		if (IPowerManager* oPowerManager = smart_cast<IPowerManager*>(item->cast_inventory_item()))
 		{
 			oPowerManager->CellUpdate(this, cell_size, cell_space, itm_grid_size);
-		}
-
-		if (PowerBank* oPowerBank = smart_cast<PowerBank*>(item->cast_inventory_item()))
-		{
-			oPowerBank->CellUpdate(this, cell_size, cell_space, itm_grid_size);
 		}
 
 		if (IAntigas* antigas = smart_cast<IAntigas*>(item->cast_inventory_item()))
@@ -561,6 +553,10 @@ void CUICellItem::UpdateConditionProgressBar()
 		display.portionMax > 1)
 	{
 		m_pConditionState->SetPortion(display.portionCurrent, display.portionMax);
+	}
+	else if (PowerBank* pb = smart_cast<PowerBank*>(itm))
+	{
+		m_pConditionState->SetState(pb->GetCalculatedCondition());
 	}
 	else
 	{
