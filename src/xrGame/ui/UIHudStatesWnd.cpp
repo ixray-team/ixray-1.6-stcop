@@ -399,12 +399,65 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
     }
 
 
-    // Check if fire mode icon mode is enabled
+    // Fire mode HUD: optional icon mode or localized text labels (explicit XML flags).
     if (xml.NavigateToNode("static_fire_mode", 0))
     {
         m_fire_mode = UIHelper::CreateStatic( xml, "static_fire_mode", this );
-        int use_icon = xml.ReadAttribInt("static_fire_mode", 0, "use_icon", 0);
-        if (use_icon == 1)
+        const int use_icon = xml.ReadAttribInt("static_fire_mode", 0, "use_icon", 0);
+        const int use_text_labels = xml.ReadAttribInt("static_fire_mode", 0, "use_text_labels", 0);
+        m_use_fire_mode_text_labels = (use_text_labels == 1);
+
+        XML_NODE* fire_mode_node = xml.NavigateToNode("static_fire_mode", 0);
+
+        if (m_use_fire_mode_text_labels)
+        {
+            m_use_fire_mode_icons = false;
+            if (fire_mode_node)
+            {
+                const int label_count = xml.GetNodesNum(fire_mode_node, "mode_label");
+                for (int i = 0; i < label_count; ++i)
+                {
+                    XML_NODE* label_node = xml.NavigateToNode(fire_mode_node, "mode_label", i);
+                    if (!label_node)
+                    {
+                        continue;
+                    }
+                    const shared_str mode_text = xml.ReadAttrib(label_node, "text", "");
+                    const shared_str st_id = xml.ReadAttrib(label_node, "st", "");
+                    if (mode_text.size() && st_id.size())
+                    {
+                        m_fire_mode_label_map[mode_text] = st_id;
+                    }
+                }
+
+                // Optional: reuse mode_mapping nodes with st="..." when migrating from icons.
+                const int mapping_count = xml.GetNodesNum(fire_mode_node, "mode_mapping");
+                for (int i = 0; i < mapping_count; ++i)
+                {
+                    XML_NODE* mapping_node = xml.NavigateToNode(fire_mode_node, "mode_mapping", i);
+                    if (!mapping_node)
+                    {
+                        continue;
+                    }
+                    const shared_str mode_text = xml.ReadAttrib(mapping_node, "text", "");
+                    const shared_str st_id = xml.ReadAttrib(mapping_node, "st", "");
+                    if (mode_text.size() && st_id.size() && m_fire_mode_label_map.find(mode_text) == m_fire_mode_label_map.end())
+                    {
+                        m_fire_mode_label_map[mode_text] = st_id;
+                    }
+                }
+            }
+
+            if (m_fire_mode_label_map.empty())
+            {
+                m_fire_mode_label_map["1"] = "ui_fire_mode_single";
+                m_fire_mode_label_map["a"] = "ui_fire_mode_auto";
+                m_fire_mode_label_map["A"] = "ui_fire_mode_auto";
+                m_fire_mode_label_map["2"] = "ui_fire_mode_burst_2";
+                m_fire_mode_label_map["3"] = "ui_fire_mode_burst_3";
+            }
+        }
+        else if (use_icon == 1)
         {
             m_use_fire_mode_icons = true;
 
@@ -418,7 +471,6 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, const char* path )
 
             // Initialize fire mode icon mapping
             // Check for custom mappings in XML
-            XML_NODE* fire_mode_node = xml.NavigateToNode("static_fire_mode", 0);
             if (fire_mode_node)
             {
                 int mapping_count = xml.GetNodesNum(fire_mode_node, "mode_mapping");
@@ -735,6 +787,22 @@ void CUIHudStatesWnd::HideCaliberHudWidgets()
     }
 }
 
+shared_str CUIHudStatesWnd::ResolveFireModeDisplayText(const shared_str& fireModeCode) const
+{
+    if (!m_use_fire_mode_text_labels || !fireModeCode.size() || !g_pStringTable)
+    {
+        return fireModeCode;
+    }
+
+    const auto it = m_fire_mode_label_map.find(fireModeCode);
+    if (it == m_fire_mode_label_map.end() || !it->second.size())
+    {
+        return fireModeCode;
+    }
+
+    return g_pStringTable->translate(it->second);
+}
+
 void CUIHudStatesWnd::UpdateCaliberHudForItem(CInventoryItem* item)
 {
     if (m_wpnIconHudMode != EWpnIconHudMode::Caliber || !m_hud_group_catalog || !m_hud_group_catalog->IsLoaded())
@@ -961,10 +1029,19 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
             m_static_weapon->SetText(ammoName);
         }
 
-        // Fire mode display: icon or text
+        // Fire mode display: localized labels, icons, or raw queue code
         if (m_fire_mode)
         {
-            if (m_use_fire_mode_icons && m_ui_fire_mode_icon)
+            if (m_use_fire_mode_text_labels)
+            {
+                m_fire_mode->SetText(ResolveFireModeDisplayText(m_item_info.fire_mode).c_str());
+                m_fire_mode->Show(true);
+                if (m_ui_fire_mode_icon)
+                {
+                    m_ui_fire_mode_icon->Show(false);
+                }
+            }
+            else if (m_use_fire_mode_icons && m_ui_fire_mode_icon)
             {
                 // Icon mode
                 shared_str fire_mode_str = m_item_info.fire_mode.c_str();
@@ -985,7 +1062,7 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
                     else
                     {
                         // Fallback to text if icon not found
-                        m_fire_mode->SetText(m_item_info.fire_mode.c_str());
+                        m_fire_mode->SetText(ResolveFireModeDisplayText(m_item_info.fire_mode).c_str());
                         m_fire_mode->Show(true);
                         m_ui_fire_mode_icon->Show(false);
                     }
@@ -993,14 +1070,14 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
                 else
                 {
                     // No mapping found, use text
-                    m_fire_mode->SetText(m_item_info.fire_mode.c_str());
+                    m_fire_mode->SetText(ResolveFireModeDisplayText(m_item_info.fire_mode).c_str());
                     m_fire_mode->Show(true);
                     m_ui_fire_mode_icon->Show(false);
                 }
             }
             else
             {
-                // Text mode (default)
+                // Text mode (default raw codes: 1 / A / 2 / 3)
                 m_fire_mode->SetText(m_item_info.fire_mode.c_str());
                 m_fire_mode->Show(true);
                 if (m_ui_fire_mode_icon)
