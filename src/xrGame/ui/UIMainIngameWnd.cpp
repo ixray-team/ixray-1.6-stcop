@@ -688,7 +688,7 @@ void CUIMainIngameWnd::SetNavigationMode(ENavigationHudMode mode)
 		}
 		if (UICompassBar)
 		{
-			UICompassBar->visible = false;
+			UICompassBar->SetHudVisible(false);
 		}
 		if (UIZoneMap)
 		{
@@ -713,7 +713,7 @@ void CUIMainIngameWnd::SyncNavigationVisibility()
 
 	if (IsCompassBarActive())
 	{
-		UICompassBar->visible = navVisible;
+		UICompassBar->SetHudVisible(navVisible);
 		if (UIZoneMap)
 		{
 			UIZoneMap->visible = false;
@@ -838,8 +838,15 @@ void CUIMainIngameWnd::SetMPChatLog(CUIWindow* pChat, CUIWindow* pLog){
 
 void CUIMainIngameWnd::Update()
 {
-	CUIWindow::Update();
 	CActor* pActor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
+
+	// NavigationHud owns the compass tick (SetActiveTarget + Update) before the generic child walk.
+	if (pActor)
+	{
+		UpdateNavigationHud();
+	}
+
+	CUIWindow::Update();
 
 	if (m_pMPChatWnd)
 	{
@@ -855,8 +862,6 @@ void CUIMainIngameWnd::Update()
 	{
 		return;
 	}
-
-	UpdateNavigationHud();
 
 	UIMotionIcon->SetPower		(pActor->conditions().GetPower()*100.0f);
 	
@@ -1397,7 +1402,7 @@ void CUIMainIngameWnd::ShowZoneMap(bool status)
 {
 	if (IsCompassBarActive())
 	{
-		UICompassBar->visible = status;
+		UICompassBar->SetHudVisible(status);
 	}
 	else if (UIZoneMap)
 	{
