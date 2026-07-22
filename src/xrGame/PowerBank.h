@@ -24,12 +24,13 @@ class PowerBank final :
 	public pureFrame
 {
 private:
-	u32 m_max_count_power_cells = 0;
 	xr_vector<xr_string> m_allowed_power_cells_sections;
-	xr_vector<PowerCellData> m_power_cells;
 	xr_vector<AwaitAlifeObject> m_await_objects_apply_params;
 
 public:
+	u32 m_max_count_power_cells = 0;
+	xr_vector<PowerCellData> m_power_cells;
+	
 	PowerBank();
 	virtual ~PowerBank();
 
