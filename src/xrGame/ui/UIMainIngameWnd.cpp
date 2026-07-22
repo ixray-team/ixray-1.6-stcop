@@ -534,7 +534,13 @@ void CUIMainIngameWnd::Init()
 			AttachChild(m_quick_slots_icons.back());
 			CUIXmlInit::InitStatic(uiXml, path, 0, m_quick_slots_icons.back());
 			xr_sprintf(path, "%s:counter", path);
-			UIHelper::CreateStatic(uiXml, path, m_quick_slots_icons.back());
+			CUIStatic* counter = UIHelper::CreateStatic(uiXml, path, m_quick_slots_icons.back());
+			u32 counterColor = color_rgba(255, 255, 255, 255);
+			if (counter && counter->TextItemControl())
+			{
+				counterColor = counter->TextItemControl()->GetTextColor();
+			}
+			m_quick_slots_counter_base_color.push_back(counterColor);
 		}
 	}
 	if (uiXml.NavigateToNode("quick_slot0_text", 0))
@@ -1916,7 +1922,10 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 					}
 					else
 					{
-						wnd->TextItemControl()->SetTextColor(subst_alpha(color_rgba(255, 255, 255, 255), 255));
+						const u32 baseColor = (i < (int)m_quick_slots_counter_base_color.size())
+							? m_quick_slots_counter_base_color[i]
+							: color_rgba(255, 255, 255, 255);
+						wnd->TextItemControl()->SetTextColor(baseColor);
 					}
 				}
 			}
