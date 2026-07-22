@@ -1613,6 +1613,9 @@ void CUICompassBar::UpdateActiveTargetMarker(CMapLocation* activeLoc)
         CUITextureMaster::InitTexture(texName, &_activeMarker->GetUIStaticItem());
         _activeMarkerLastTexture = texName;
     }
+
+    const u32 locColor = activeLoc->GetCompassColor();
+    _activeMarker->SetTextureColor(locColor != 0 ? locColor : _kDefaultColorWhite);
     _activeMarker->Show(true);
 }
 
