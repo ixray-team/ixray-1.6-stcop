@@ -71,3 +71,4 @@ cmake-build*/
 *.opt
 linux/sal.h
 *.TMP
+util/wrap_config.json
