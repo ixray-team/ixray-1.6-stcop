@@ -160,6 +160,14 @@ public:
 
 	// get unpacked slot
 	DetailSlot&						QueryDB			(int sx, int sz);
+
+	// Cheap slot-grid LOS factor for AI vision (no instance decompress).
+	float							TraceVisibility	(
+		Fvector const& eye,
+		Fvector const& target,
+		float minHeight,
+		float opaqueDistance,
+		float sampleStep);
     
 	void							cache_ReInitialize();
 	void							cache_Update	(const Fvector& view);
