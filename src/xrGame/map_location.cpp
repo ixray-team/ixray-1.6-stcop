@@ -323,7 +323,22 @@ void CMapLocation::LoadSpot(const char* type, bool bReload)
 				}
 				else
 				{
-					m_compassOverrideColor = 0;
+					const int r = g_uiSpotXml->ReadAttribInt(compassPath, 0, "r", -1);
+					const int g = g_uiSpotXml->ReadAttribInt(compassPath, 0, "g", -1);
+					const int b = g_uiSpotXml->ReadAttribInt(compassPath, 0, "b", -1);
+					const int a = g_uiSpotXml->ReadAttribInt(compassPath, 0, "a", 255);
+					if (r >= 0 || g >= 0 || b >= 0)
+					{
+						m_compassOverrideColor = color_argb(
+							a >= 0 ? a : 255,
+							r >= 0 ? r : 255,
+							g >= 0 ? g : 255,
+							b >= 0 ? b : 255);
+					}
+					else
+					{
+						m_compassOverrideColor = 0;
+					}
 				}
 				
 				const char* vertAlignStr = g_uiSpotXml->ReadAttrib(compassPath, 0, "vert_align", nullptr);
