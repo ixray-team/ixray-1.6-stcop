@@ -217,7 +217,7 @@ public:
 	u64							auth_get			();
 	void						auth_runtime		(void*);
 
-	void						rescan_path			(const char* full_path, bool bRecurse);
+	void						rescan_path			(const char* full_path, bool bRecurse, bool NeedMountAddons = true);
 	// editor functions
 	void						rescan_pathes		();
 	void						lock_rescan			();
