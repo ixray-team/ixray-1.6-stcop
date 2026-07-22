@@ -158,59 +158,6 @@ void PowerBank::OnFrame()
 	}
 }
 
-void PowerBank::CellUpdate(CUICellItem* oCUICellItem, Ivector2 cell_size, Ivector2 cell_space, Ivector2 itm_grid_size)
-{
-	if (!m_pCellsConditions.empty())
-	{
-		size_t cnt = m_pCellsConditions.size();
-		size_t cnt_cells = m_power_cells.size();
-
-		for (size_t i = 0; i < cnt; i++)
-		{
-			if (CUIProgressBar* bar = m_pCellsConditions[i])
-			{
-				const Fvector2 pos
-				{
-					1.f,
-					itm_grid_size.y * (cell_size.y + cell_space.y) - bar->GetHeight() - (10.f + (6.f * i))
-				};
-
-				bar->SetWndPos(pos);
-				bar->SetProgressPos(iCeil(GetCalculatedCondition() * 13.0f) / 13.0f);
-				bar->SetProgressPos(0);
-				bar->Show(true);
-			}
-		}
-
-		for (size_t i = 0; i < cnt_cells; i++)
-		{
-			if (CUIProgressBar* bar = m_pCellsConditions[i])
-			{
-				bar->SetProgressPos(((m_power_cells[i].current_power * 100) / m_power_cells[i].max_power) / 100);
-			}
-		}
-	}
-	else
-	{
-		m_pCellsConditions.clear();
-		for (u32 i = 0; i < m_max_count_power_cells; i++)
-		{
-			CUIProgressBar* bar = new CUIProgressBar();
-			bar->SetAutoDelete(true);
-			oCUICellItem->AttachChild(bar);
-			CUIXmlInit::InitProgressBar(oCUICellItem->GetXml(), "condition_progess_bar", 0, bar);
-			bar->SetProgressPos(0.f);
-			bar->Show(false);
-			m_pCellsConditions.push_back(bar);
-		}
-	}
-}
-
-void PowerBank::OnCellsDestroy(CUICellItem* oCUICellItem)
-{
-	m_pCellsConditions.clear();
-}
-
 float PowerBank::GetPower()
 {
 	float result = 0.0f;
