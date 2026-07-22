@@ -15,6 +15,7 @@
 #include "../../xrUI/UIHelper.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UILines.h"
+#include "../../xrUI/Widgets/UILines.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/UITextureMaster.h"
 #include "../../xrUI/ui_defs.h"
@@ -64,13 +65,14 @@ CUICompassBar::CUICompassBar()
       _stripTextureScaleY(1.0f),
       _stripTextureOffsetX(0.0f),
       _stripTextureOffsetY(0.0f),
+      _stripTextureStretch(true),
+      _stripRelPos(Fvector2().set(0.0f, 0.0f)),
+      _stripRelSize(Fvector2().set(1.0f, 1.0f)),
       _collectSpotsTimer(0.0f),
       _isInitialized(false),
       _isGameTypeSingleCompatible(false),
-      _fadeStorageCardinalCount(0),
       _fadeStorageSpotCount(0),
-      _stripGeometryCached(false),
-      _activeMarkerFallbackColor(_kDefaultColorWhite)
+      _stripGeometryCached(false)
 {
     _runtimeCfg.fovRad = deg2rad(_kDefaultFovDeg);
     _runtimeCfg.activePadding = _kDefaultActivePadding;
@@ -158,6 +160,11 @@ void CUICompassBar::InitWindowAndBackground(CUIXml& uiXml, CUIXmlInit& xmlInit)
 void CUICompassBar::InitLayoutFromXml(CUIXml& uiXml)
 {
     const char* barPath = "compass_bar";
+    _layoutUnits.barRelPos.x = uiXml.ReadAttribFlt(barPath, 0, "x", 0.0f);
+    _layoutUnits.barRelPos.y = uiXml.ReadAttribFlt(barPath, 0, "y", 0.0f);
+    _layoutUnits.barRelSize.x = uiXml.ReadAttribFlt(barPath, 0, "width", 1.0f);
+    _layoutUnits.barRelSize.y = uiXml.ReadAttribFlt(barPath, 0, "height", 1.0f);
+
     const float fovDeg = uiXml.ReadAttribFlt(barPath, 0, "fov_angle", _kDefaultFovDeg);
     _runtimeCfg.fovRad = (fovDeg > 0.0f) ? deg2rad(fovDeg) : deg2rad(_kDefaultFovDeg);
 
@@ -177,7 +184,10 @@ void CUICompassBar::InitLayoutFromXml(CUIXml& uiXml)
         _runtimeCfg.activePadding = uiXml.ReadAttribFlt(targetPath, 0, "padding",
             uiXml.ReadAttribFlt(targetPath, 0, "active_target_padding", _kDefaultActivePadding));
         _runtimeCfg.smoothingSpeed = uiXml.ReadAttribFlt(targetPath, 0, "smoothing_speed", _kDefaultSmoothingSpeed);
-        _runtimeCfg.activeOffsetY = uiXml.ReadAttribFlt(targetPath, 0, "y", 0.0f);
+        // Legacy `y` is the vertical offset in px; prefer explicit aliases when present.
+        const float legacyY = uiXml.ReadAttribFlt(targetPath, 0, "y", 0.0f);
+        const float offsetY = uiXml.ReadAttribFlt(targetPath, 0, "offset_y", legacyY);
+        _runtimeCfg.activeOffsetY = uiXml.ReadAttribFlt(targetPath, 0, "active_offset_y", offsetY);
         _runtimeCfg.altitudeDeadzone = uiXml.ReadAttribFlt(targetPath, 0, "altitude_deadzone", _kDefaultAltitudeDeadzone);
     }
 }
@@ -201,14 +211,6 @@ void CUICompassBar::ParseSpots(CUIXml& uiXml, const char* path)
     {
         _spotCfg.spotWidth = uiXml.ReadAttribFlt(tmplPath, 0, "width", 0.0f);
         _spotCfg.spotHeight = uiXml.ReadAttribFlt(tmplPath, 0, "height", 0.0f);
-        CUIXmlInit::ReadShadowsNode(uiXml, tmplPath, 0, _spotCfg.defaultShadow);
-    }
-
-    SUITextureShadowParams spotsShadow;
-    CUIXmlInit::ReadShadowsNode(uiXml, path, 0, spotsShadow);
-    if (spotsShadow.enabled)
-    {
-        _spotCfg.defaultShadow = spotsShadow;
     }
 
     const CUIXmlInit::ColorDefs* colorDefs = CUIXmlInit::GetColorDefs();
@@ -236,6 +238,11 @@ void CUICompassBar::InitCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit, CUIWindo
     _stripTexLoop = uiXml.ReadAttribInt(stripPath, 0, "tex_loop", 1) != 0;
     _runtimeCfg.cardinalFakeDistance = uiXml.ReadAttribFlt(cardinalsPath, 0, "fake_target_distance", _kDefaultFakeTargetDistance);
 
+    _stripRelPos.x = uiXml.ReadAttribFlt(stripPath, 0, "x", 0.0f);
+    _stripRelPos.y = uiXml.ReadAttribFlt(stripPath, 0, "y", 0.0f);
+    _stripRelSize.x = uiXml.ReadAttribFlt(stripPath, 0, "width", 1.0f);
+    _stripRelSize.y = uiXml.ReadAttribFlt(stripPath, 0, "height", 1.0f);
+
     _stripContainer = new CUICompassClipWindow();
     _stripContainer->SetAutoDelete(true);
     xmlInit.InitWindow(uiXml, stripPath, 0, _stripContainer);
@@ -244,25 +251,64 @@ void CUICompassBar::InitCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit, CUIWindo
     string_path texPath;
     xr_strconcat(texPath, stripPath, ":texture");
     shared_str texName = uiXml.Read(texPath, 0, "ui_inGame2_compass_dial");
-    _stripTextureScaleX = uiXml.ReadAttribFlt(texPath, 0, "width", 1.0f);
-    _stripTextureScaleY = uiXml.ReadAttribFlt(texPath, 0, "height", 1.0f);
-    _stripTextureOffsetX = uiXml.ReadAttribFlt(texPath, 0, "x", 0.0f);
-    _stripTextureOffsetY = uiXml.ReadAttribFlt(texPath, 0, "y", 0.0f);
+    // Explicit draw units; legacy width/height/x/y remain aliases.
+    const float legacyScaleX = uiXml.ReadAttribFlt(texPath, 0, "width", 1.0f);
+    const float legacyScaleY = uiXml.ReadAttribFlt(texPath, 0, "height", 1.0f);
+    const float drawScale = uiXml.ReadAttribFlt(texPath, 0, "draw_scale", -1.0f);
+    _stripTextureScaleX = uiXml.ReadAttribFlt(texPath, 0, "draw_scale_x", (drawScale > 0.0f) ? drawScale : legacyScaleX);
+    _stripTextureScaleY = uiXml.ReadAttribFlt(texPath, 0, "draw_scale_y", (drawScale > 0.0f) ? drawScale : legacyScaleY);
+    _stripTextureOffsetX = uiXml.ReadAttribFlt(texPath, 0, "draw_offset_x",
+        uiXml.ReadAttribFlt(texPath, 0, "x", 0.0f));
+    _stripTextureOffsetY = uiXml.ReadAttribFlt(texPath, 0, "draw_offset_y",
+        uiXml.ReadAttribFlt(texPath, 0, "y", 0.0f));
+    _stripTextureStretch = uiXml.ReadAttribInt(texPath, 0, "stretch", 1) != 0;
 
     _strip = new CUIStatic();
     _strip->SetAutoDelete(true);
     _strip->SetWndPos(Fvector2().set(0.0f, 0.0f));
     _strip->SetWndSize(Fvector2().set(1.0f, 1.0f));
-    _strip->SetStretchTexture(true);
     _strip->InitTexture(texName.c_str(), false) || _strip->InitTexture("ui_inGame2_compass_dial", false);
+    _strip->SetStretchTexture(_stripTextureStretch);
+    _strip->SetTextureColor(CUIXmlInit::GetColor(uiXml, texPath, 0, 0xFFFFFFFF));
+
+    _stripBaseTexRect = _strip->GetTextureRect();
+    _stripNativeTexSize.set(_stripBaseTexRect.width(), _stripBaseTexRect.height());
+
+    if (_stripNativeTexSize.x > 0.0f)
+    {
+        const float atlasRatio = _stripTexWidth / _stripNativeTexSize.x;
+        if (atlasRatio < 0.5f || atlasRatio > 2.0f)
+        {
+            Msg("! CUICompassBar: tex_width (%.0f) differs strongly from atlas width (%.0f)",
+                _stripTexWidth, _stripNativeTexSize.x);
+        }
+    }
+
+    if (!_stripTextureStretch)
+    {
+        if (_stripTextureScaleX > 0.0f)
+        {
+            _stripBaseTexRect.x2 = _stripBaseTexRect.x1 + _stripNativeTexSize.x * _stripTextureScaleX;
+        }
+        if (_stripTextureScaleY > 0.0f)
+        {
+            _stripBaseTexRect.y2 = _stripBaseTexRect.y1 + _stripNativeTexSize.y * _stripTextureScaleY;
+        }
+        _strip->SetTextureRect(_stripBaseTexRect);
+    }
+
     _stripContainer->AttachChild(_strip);
 
     const float defY = uiXml.ReadAttribFlt(cardinalsPath, 0, "y", 0.0f);
     const float defW = uiXml.ReadAttribFlt(cardinalsPath, 0, "width", 16.0f);
     const float defH = uiXml.ReadAttribFlt(cardinalsPath, 0, "height", 14.0f);
 
-    _cardinals.reserve(_kMaxCardinalPoints);
-    _cardinalLayout.reserve(_kMaxCardinalPoints);
+    _cardinalEntries.reserve(_kMaxCardinalPoints);
+
+    SCompassCardinalMarkerConfig defaultMarkerCfg;
+    string_path defaultMarkerPath;
+    xr_strconcat(defaultMarkerPath, cardinalsPath, ":marker");
+    ParseCardinalMarkerConfig(uiXml, defaultMarkerPath, defaultMarkerCfg);
 
     string_path mainPath;
     xr_strconcat(mainPath, cardinalsPath, ":main_cardinals");
@@ -273,13 +319,10 @@ void CUICompassBar::InitCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit, CUIWindo
         xr_sprintf(nodePath, "%s:%s", mainPath, d);
         if (uiXml.NavigateToNode(nodePath, 0))
         {
-            CUIStatic* st = InitCardinalStatic(uiXml, xmlInit, cardinalsPath, mainPath, d, defY, defW, defH, &_cardinalLayout);
-            if (st && _stripContainer)
+            if (InitCardinalEntry(uiXml, xmlInit, cardinalsPath, mainPath, d, defY, defW, defH, defaultMarkerCfg) &&
+                _stripContainer && !_cardinalEntries.empty())
             {
-                _stripContainer->AttachChild(st);
-                _cardinals.push_back(st);
-                _cardinalAlpha.push_back(1.0f);
-                _cardinalBaseTextColor.push_back(st->GetTextColor());
+                _stripContainer->AttachChild(_cardinalEntries.back().host);
             }
         }
     }
@@ -295,89 +338,301 @@ void CUICompassBar::InitCompassDial(CUIXml& uiXml, CUIXmlInit& xmlInit, CUIWindo
             xr_sprintf(nodePath, "%s:%s", interPath, d);
             if (uiXml.NavigateToNode(nodePath, 0))
             {
-                CUIStatic* st = InitCardinalStatic(uiXml, xmlInit, cardinalsPath, interPath, d, defY, defW, defH, &_cardinalLayout);
-                if (st && _stripContainer)
+                if (InitCardinalEntry(uiXml, xmlInit, cardinalsPath, interPath, d, defY, defW, defH, defaultMarkerCfg) &&
+                    _stripContainer && !_cardinalEntries.empty())
                 {
-                    _stripContainer->AttachChild(st);
-                    _cardinals.push_back(st);
-                    _cardinalAlpha.push_back(1.0f);
-                    _cardinalBaseTextColor.push_back(st->GetTextColor());
+                    _stripContainer->AttachChild(_cardinalEntries.back().host);
                 }
             }
         }
     }
 }
 
-CUIStatic* CUICompassBar::InitCardinalStatic(CUIXml& uiXml, CUIXmlInit& xmlInit, const char* cardinalsPath,
-    const char* groupPath, const char* directionNode, float defaultY, float defaultW, float defaultH,
-    xr_vector<Fvector3>* outLayout)
+void CUICompassBar::ParseCardinalMarkerConfig(CUIXml& uiXml, LPCSTR path, SCompassCardinalMarkerConfig& cfg) const
+{
+    if (!uiXml.NavigateToNode(path, 0))
+    {
+        return;
+    }
+
+    cfg.width = uiXml.ReadAttribFlt(path, 0, "width", cfg.width);
+    cfg.height = uiXml.ReadAttribFlt(path, 0, "height", cfg.height);
+    cfg.offsetY = uiXml.ReadAttribFlt(path, 0, "offset_y", cfg.offsetY);
+    cfg.stretch = uiXml.ReadAttribInt(path, 0, "stretch", cfg.stretch ? 1 : 0) != 0;
+
+    string_path texPath;
+    xr_strconcat(texPath, path, ":texture");
+    shared_str texName = uiXml.Read(texPath, 0, nullptr);
+    if (!texName.size())
+    {
+        texName = uiXml.ReadAttrib(path, 0, "texture", nullptr);
+    }
+    if (texName.size())
+    {
+        cfg.texture = texName;
+    }
+}
+
+CUIStatic* CUICompassBar::CreateCardinalMarker(CUIXml& uiXml, const SCompassCardinalMarkerConfig& cfg,
+    LPCSTR colorPath) const
+{
+    if (!cfg.texture.size())
+    {
+        return nullptr;
+    }
+
+    CUIStatic* marker = new CUIStatic();
+    marker->SetAutoDelete(true);
+    if (!marker->InitTexture(cfg.texture.c_str(), false))
+    {
+        xr_delete(marker);
+        return nullptr;
+    }
+
+    marker->SetStretchTexture(cfg.stretch);
+    marker->SetTextureColor(CUIXmlInit::GetColor(uiXml, colorPath, 0, 0xFFFFFFFF));
+    return marker;
+}
+
+float CUICompassBar::GetCardinalTextHeight(CUIStatic* textStatic)
+{
+    if (!textStatic || !textStatic->TextItemControl())
+    {
+        return 0.0f;
+    }
+
+    CUILines* lines = textStatic->TextItemControl();
+    if (CGameFont* font = lines->GetFont())
+    {
+        return font->CurrentHeight_();
+    }
+
+    return textStatic->GetHeight();
+}
+
+float CUICompassBar::GetCardinalTextBottom(SCompassCardinalEntry& entry)
+{
+    if (!entry.host || !entry.text)
+    {
+        return 0.0f;
+    }
+
+    const float hostH = entry.host->GetHeight();
+    const float textH = GetCardinalTextHeight(entry.text);
+    CUILines* lines = entry.text->TextItemControl();
+    if (!lines)
+    {
+        return hostH * 0.5f + textH * 0.5f;
+    }
+
+    switch (lines->GetVTextAlignment())
+    {
+    case valTop:
+        return textH + lines->m_TextOffset.y;
+    case valBotton:
+        return hostH - lines->m_TextOffset.y;
+    default:
+        return hostH * 0.5f + textH * 0.5f + lines->m_TextOffset.y;
+    }
+}
+
+float CUICompassBar::GetCardinalTextCenterX(const SCompassCardinalEntry& entry) const
+{
+    if (!entry.host || !entry.text)
+    {
+        return 0.0f;
+    }
+
+    const float hostW = entry.host->GetWidth();
+    CUILines* lines = entry.text->TextItemControl();
+    if (!lines || !lines->GetFont())
+    {
+        return hostW * 0.5f;
+    }
+
+    const char* caption = lines->GetText();
+    float textW = 0.0f;
+    if (caption && *caption)
+    {
+        textW = lines->GetFont()->SizeOf_(caption);
+        UI().ClientToScreenScaledWidth(textW);
+    }
+
+    const float offsetX = lines->m_TextOffset.x;
+    switch (lines->GetTextAlignment())
+    {
+    case CGameFont::alLeft:
+        return offsetX + textW * 0.5f;
+    case CGameFont::alRight:
+        return offsetX + hostW - textW * 0.5f;
+    case CGameFont::alCenter:
+    default:
+        return offsetX + hostW * 0.5f;
+    }
+}
+
+void CUICompassBar::ApplyCardinalMarkerLayout(SCompassCardinalEntry& entry)
+{
+    if (!entry.host || !entry.marker)
+    {
+        return;
+    }
+
+    const float hostW = entry.host->GetWidth();
+    const float hostH = entry.host->GetHeight();
+    const SCompassCardinalMarkerConfig& cfg = entry.markerCfg;
+
+    float markerW = cfg.width;
+    float markerH = cfg.height;
+    if (markerW > 0.0f && markerW <= 1.0f)
+    {
+        markerW = hostW * cfg.width;
+    }
+    if (markerH > 0.0f && markerH <= 1.0f)
+    {
+        markerH = hostH * cfg.height;
+    }
+
+    if (markerW <= 0.0f || markerH <= 0.0f)
+    {
+        const Frect nativeRect = entry.marker->GetTextureRect();
+        if (markerW <= 0.0f)
+        {
+            markerW = nativeRect.width();
+        }
+        if (markerH <= 0.0f)
+        {
+            markerH = nativeRect.height();
+        }
+    }
+
+    // Center tick under glyph bbox, not under host (E/W use align r/l).
+    const float textCenterX = GetCardinalTextCenterX(entry);
+    entry.marker->SetWndSize(Fvector2().set(markerW, markerH));
+    entry.marker->SetWndPos(Fvector2().set(
+        textCenterX - markerW * 0.5f,
+        GetCardinalTextBottom(entry) + cfg.offsetY));
+}
+
+bool CUICompassBar::InitCardinalEntry(CUIXml& uiXml, CUIXmlInit& xmlInit, LPCSTR cardinalsPath, LPCSTR groupPath,
+    LPCSTR directionNode, float defaultY, float defaultW, float defaultH,
+    const SCompassCardinalMarkerConfig& defaultMarkerCfg)
 {
     string_path childPath;
     string_path defaultTextPath;
     string_path groupTextPath;
     string_path childTextPath;
+    string_path markerPath;
     xr_strconcat(childPath, groupPath, ":", directionNode);
     xr_strconcat(defaultTextPath, cardinalsPath, ":text");
     xr_strconcat(groupTextPath, groupPath, ":text");
     xr_strconcat(childTextPath, childPath, ":text");
+    xr_strconcat(markerPath, childPath, ":marker");
 
-    float y = uiXml.ReadAttribFlt(childPath, 0, "y", defaultY);
-    float w = uiXml.ReadAttribFlt(childPath, 0, "width", defaultW);
-    float h = uiXml.ReadAttribFlt(childPath, 0, "height", defaultH);
+    const float y = uiXml.ReadAttribFlt(childPath, 0, "y", defaultY);
+    const float w = uiXml.ReadAttribFlt(childPath, 0, "width", defaultW);
+    const float h = uiXml.ReadAttribFlt(childPath, 0, "height", defaultH);
 
-    if (outLayout)
-    {
-        outLayout->push_back(Fvector3().set(y, w, h));
-    }
+    CUIWindow* host = new CUIWindow();
+    host->SetAutoDelete(true);
+    host->SetWndPos(Fvector2().set(0.0f, y));
+    host->SetWndSize(Fvector2().set(w, h));
 
-    CUIStatic* st = new CUIStatic();
-    st->SetAutoDelete(true);
-    st->SetWndPos(Fvector2().set(0.0f, y));
-    st->SetWndSize(Fvector2().set(w, h));
+    CUIStatic* text = new CUIStatic();
+    text->SetAutoDelete(true);
+    text->SetWndPos(Fvector2().set(0.0f, 0.0f));
+    text->SetWndSize(Fvector2().set(w, h));
 
     if (uiXml.NavigateToNode(defaultTextPath, 0))
     {
-        xmlInit.InitText(uiXml, defaultTextPath, 0, st);
+        xmlInit.InitText(uiXml, defaultTextPath, 0, text);
     }
     if (uiXml.NavigateToNode(groupTextPath, 0))
     {
-        xmlInit.InitText(uiXml, groupTextPath, 0, st);
+        xmlInit.InitText(uiXml, groupTextPath, 0, text);
     }
     if (uiXml.NavigateToNode(childTextPath, 0))
     {
-        xmlInit.InitText(uiXml, childTextPath, 0, st);
+        xmlInit.InitText(uiXml, childTextPath, 0, text);
     }
     else
     {
         const char* caption = uiXml.Read(childPath, 0, nullptr);
         if (caption && *caption)
         {
-            st->SetText(caption);
+            text->SetText(caption);
         }
         const char* colorAttr = uiXml.ReadAttrib(childPath, 0, "color", nullptr);
         const char* rAttr = uiXml.ReadAttrib(childPath, 0, "r", nullptr);
         if (colorAttr || rAttr)
         {
-            st->SetTextColor(CUIXmlInit::GetColor(uiXml, childPath, 0, _kDefaultColorWhite));
+            text->SetTextColor(CUIXmlInit::GetColor(uiXml, childPath, 0, _kDefaultColorWhite));
         }
         const char* alignStr = uiXml.ReadAttrib(childPath, 0, "align", nullptr);
-        if (alignStr && st->TextItemControl())
+        if (alignStr && text->TextItemControl())
         {
             if (alignStr[0] == 'l' || alignStr[0] == 'L')
             {
-                st->TextItemControl()->SetTextAlignment(CGameFont::alLeft);
+                text->TextItemControl()->SetTextAlignment(CGameFont::alLeft);
             }
             else if (alignStr[0] == 'r' || alignStr[0] == 'R')
             {
-                st->TextItemControl()->SetTextAlignment(CGameFont::alRight);
+                text->TextItemControl()->SetTextAlignment(CGameFont::alRight);
             }
             else
             {
-                st->TextItemControl()->SetTextAlignment(CGameFont::alCenter);
+                text->TextItemControl()->SetTextAlignment(CGameFont::alCenter);
             }
         }
     }
-    return st;
+
+    host->AttachChild(text);
+
+    SCompassCardinalMarkerConfig markerCfg = defaultMarkerCfg;
+    ParseCardinalMarkerConfig(uiXml, markerPath, markerCfg);
+    shared_str markerTextureOverride = uiXml.ReadAttrib(childPath, 0, "marker_texture", nullptr);
+    if (markerTextureOverride.size())
+    {
+        markerCfg.texture = markerTextureOverride;
+    }
+
+    CUIStatic* marker = nullptr;
+    if (markerCfg.texture.size())
+    {
+        string_path colorPath;
+        if (uiXml.NavigateToNode(markerPath, 0))
+        {
+            xr_strcpy(colorPath, markerPath);
+        }
+        else
+        {
+            xr_strconcat(colorPath, cardinalsPath, ":marker");
+        }
+        marker = CreateCardinalMarker(uiXml, markerCfg, colorPath);
+        if (marker)
+        {
+            host->AttachChild(marker);
+        }
+    }
+
+    SCompassCardinalEntry entry;
+    entry.host = host;
+    entry.text = text;
+    entry.marker = marker;
+    entry.layout.set(y, w, h);
+    entry.baseTextColor = text->GetTextColor();
+    entry.baseMarkerColor = marker ? marker->GetTextureColor() : 0;
+    entry.markerCfg = markerCfg;
+    entry.alpha = 1.0f;
+    const u32 cardinalIndex = (u32)_cardinalEntries.size();
+    if (cardinalIndex < _kMaxCardinalPoints)
+    {
+        entry.dirXZ.set(cosf(_kCardinalAngles[cardinalIndex]), sinf(_kCardinalAngles[cardinalIndex]));
+    }
+    _cardinalEntries.push_back(entry);
+    ApplyCardinalMarkerLayout(_cardinalEntries.back());
+
+    return true;
 }
 
 void CUICompassBar::InitActiveTargetWidgets(CUIXml& uiXml, CUIXmlInit& xmlInit)
@@ -468,12 +723,6 @@ void CUICompassBar::InitActiveTargetWidgets(CUIXml& uiXml, CUIXmlInit& xmlInit)
         if (_activeMarker)
         {
             _activeMarker->SetAutoDelete(false);
-            _activeMarkerFallbackColor = _activeMarker->GetTextureColor();
-            CUIXmlInit::ReadShadowsNode(uiXml, markerPath, 0, _activeMarkerShadow);
-            if (_activeMarkerShadow.enabled)
-            {
-                _activeMarker->SetTextureShadow(true, _activeMarkerShadow.thickness, _activeMarkerShadow.color);
-            }
         }
     }
 }
@@ -523,7 +772,6 @@ void CUICompassBar::CreateDefaultActiveTargetWidgets(CUIXml& uiXml)
         _activeMarker->SetWndPos(Fvector2().set(0.0f, 0.0f));
         _activeMarker->SetStretchTexture(true);
         _activeMarker->InitTexture(_activeMarkerFallbackTexture.c_str(), false);
-        _activeMarkerFallbackColor = _activeMarker->GetTextureColor();
         _activeTargetContainer->AttachChild(_activeMarker);
     }
 }
@@ -557,19 +805,17 @@ void CUICompassBar::ApplyRelativeLayout()
 
 void CUICompassBar::ApplyMainWindowLayout()
 {
-    Fvector2 temp;
+    // compass_bar x/y/width/height are always parent-relative fractions (no ProbablyRelative heuristic).
     const float k = UI().get_current_kx();
-    if (WndRectIsProbablyRelative())
-    {
-        temp = GetWndSize();
-        temp.y *= UI_BASE_HEIGHT;
-        temp.x *= UI_BASE_WIDTH * k;
-        SetWndSize(temp);
-        temp = GetWndPos();
-        temp.x *= UI_BASE_WIDTH;
-        temp.y *= UI_BASE_HEIGHT;
-        SetWndPos(temp);
-    }
+    Fvector2 size;
+    size.y = _layoutUnits.barRelSize.y * UI_BASE_HEIGHT;
+    size.x = _layoutUnits.barRelSize.x * UI_BASE_WIDTH * k;
+    SetWndSize(size);
+
+    Fvector2 pos;
+    pos.x = _layoutUnits.barRelPos.x * UI_BASE_WIDTH;
+    pos.y = _layoutUnits.barRelPos.y * UI_BASE_HEIGHT;
+    SetWndPos(pos);
 }
 
 void CUICompassBar::ApplyLayerLayouts()
@@ -604,21 +850,29 @@ void CUICompassBar::ApplyStripLayout()
         return;
     }
 
-    if (_stripContainer->WndRectIsProbablyRelative())
-    {
-        const Fvector2 containerSize = _stripContainer->GetWndSize();
-        _stripContainer->SetWndSize(Fvector2().set(containerSize.x * GetWidth(), containerSize.y * GetHeight()));
-
-        const Fvector2 containerPos = _stripContainer->GetWndPos();
-        _stripContainer->SetWndPos(Fvector2().set(containerPos.x * GetWidth(), containerPos.y * GetHeight()));
-    }
+    const float parentW = GetWidth();
+    const float parentH = GetHeight();
+    _stripContainer->SetWndSize(Fvector2().set(_stripRelSize.x * parentW, _stripRelSize.y * parentH));
+    _stripContainer->SetWndPos(Fvector2().set(_stripRelPos.x * parentW, _stripRelPos.y * parentH));
 
     if (_strip)
     {
         const float cw = _stripContainer->GetWidth();
         const float ch = _stripContainer->GetHeight();
-        const float texW = cw * _stripTextureScaleX;
-        const float texH = ch * _stripTextureScaleY;
+        float texW = 0.0f;
+        float texH = 0.0f;
+
+        if (_stripTextureStretch)
+        {
+            texW = cw * _stripTextureScaleX;
+            texH = ch * _stripTextureScaleY;
+        }
+        else
+        {
+            texW = _stripNativeTexSize.x * _stripTextureScaleX;
+            texH = _stripNativeTexSize.y * _stripTextureScaleY;
+        }
+
         _strip->SetWndSize(Fvector2().set(texW, texH));
         _strip->SetWndPos(Fvector2().set((cw - texW) * 0.5f + _stripTextureOffsetX, (ch - texH) * 0.5f + _stripTextureOffsetY));
     }
@@ -627,7 +881,7 @@ void CUICompassBar::ApplyStripLayout()
 
 void CUICompassBar::ApplyCardinalsLayout()
 {
-    if (!_stripContainer || _cardinalLayout.size() != _cardinals.size())
+    if (!_stripContainer || _cardinalEntries.empty())
     {
         return;
     }
@@ -635,15 +889,21 @@ void CUICompassBar::ApplyCardinalsLayout()
     const float cw = _stripContainer->GetWidth();
     const float ch = _stripContainer->GetHeight();
 
-    for (size_t i = 0; i < _cardinals.size(); ++i)
+    for (SCompassCardinalEntry& entry : _cardinalEntries)
     {
-        CUIStatic* st = _cardinals[i];
-        if (st)
+        if (!entry.host || !entry.text)
         {
-            const Fvector3& l = _cardinalLayout[i];
-            st->SetWndPos(Fvector2().set(0.0f, l.x * ch));
-            st->SetWndSize(Fvector2().set(l.y * cw, l.z * ch));
+            continue;
         }
+
+        const Fvector3& layout = entry.layout;
+        const float hostW = layout.y * cw;
+        const float hostH = layout.z * ch;
+        entry.host->SetWndPos(Fvector2().set(0.0f, layout.x * ch));
+        entry.host->SetWndSize(Fvector2().set(hostW, hostH));
+        entry.text->SetWndPos(Fvector2().set(0.0f, 0.0f));
+        entry.text->SetWndSize(Fvector2().set(hostW, hostH));
+        ApplyCardinalMarkerLayout(entry);
     }
 }
 
@@ -705,19 +965,11 @@ SCompassStripGeometry CUICompassBar::GetStripGeometry() const
 void CUICompassBar::InvalidateStripGeometry()
 {
     _stripGeometryCached = false;
-    const size_t cardinalCount = _cardinals.size();
-    const size_t spotCount = _poolSpots.size();
-    
-    _cardinalAlpha.resize(cardinalCount, 1.0f);
-    _cardinalBaseTextColor.resize(cardinalCount, _kDefaultColorWhite);
-    _poolSpotAlpha.resize(spotCount, 0.0f);
-    _poolSpotBaseColor.resize(spotCount, _kDefaultColorWhite);
-    _poolSpotShadow.resize(spotCount, SUITextureShadowParams{});
 }
 
 void CUICompassBar::MarkSpotsDirty()
 {
-    _updateState.spotsDirty = true;
+    _dirty.spotsDirty = true;
 }
 
 u32 CUICompassBar::ComputeCandidateHash() const
@@ -726,8 +978,43 @@ u32 CUICompassBar::ComputeCandidateHash() const
     for (const SSpotCandidate& cand : _spotCandidates)
     {
         hash ^= (u32)(size_t)cand.sourceLoc;
+        hash ^= (u32)(size_t)cand.textureName.c_str();
+        hash ^= *(const u32*)&cand.iconSize.x;
+        hash ^= *(const u32*)&cand.iconSize.y;
     }
     return hash;
+}
+
+bool CUICompassBar::IsHeadingPixelDirty(float heading) const
+{
+    if (_stripWidth <= 0.0f || _runtimeCfg.fovRad <= 0.0f)
+    {
+        return true;
+    }
+
+    const float delta = angle_normalize_signed(heading - _dirty.lastHeading);
+    const float halfFov = _runtimeCfg.fovRad * 0.5f;
+    const float projectedDeltaPx = std::abs(delta / halfFov) * (_stripWidth * 0.5f);
+    return projectedDeltaPx >= _kHeadingPixelEpsilon;
+}
+
+bool CUICompassBar::HasFadingSpots() const
+{
+    for (float alpha : _poolSpotAlpha)
+    {
+        if (alpha > _runtimeCfg.minVisibleAlpha && alpha < (1.0f - _kAlphaSaturatedEpsilon))
+        {
+            return true;
+        }
+    }
+    for (const SCompassCardinalEntry& entry : _cardinalEntries)
+    {
+        if (entry.alpha > _runtimeCfg.minVisibleAlpha && entry.alpha < (1.0f - _kAlphaSaturatedEpsilon))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 // --- Strip ---
@@ -771,29 +1058,56 @@ void CUICompassBar::UpdateStrip(float heading)
     {
         return;
     }
+
     static const float kHalfCircleRad = deg2rad(_kHalfCircleRad);
     static const float kTwoHalfCirclesRad = deg2rad(_kTwoPiRad);
     const float uvCenter = (heading + kHalfCircleRad) / kTwoHalfCirclesRad;
+    const float atlasCircumference = _stripNativeTexSize.x;
     const float stripTexW = _stripTexWidth > 0.0f ? _stripTexWidth : _kDefaultStripTexWidth;
-    const float w = _stripContainer->GetWidth();
+    const float texToAtlas = (stripTexW > 0.0f) ? (atlasCircumference / stripTexW) : 1.0f;
     const float kx = UI().get_current_kx();
-    const float winW = w / kx;
-    float u = uvCenter * stripTexW - winW * 0.5f;
+    const float widgetW = _strip->GetWidth();
+
+    float winWAtlas = 0.0f;
+    if (_stripTextureStretch)
+    {
+        winWAtlas = (widgetW / kx) * texToAtlas;
+    }
+    else
+    {
+        winWAtlas = _stripBaseTexRect.width();
+    }
+
+    if (winWAtlas <= 0.0f || atlasCircumference <= 0.0f)
+    {
+        return;
+    }
+
+    float uAtlas = uvCenter * atlasCircumference - winWAtlas * 0.5f;
     if (_stripTexLoop)
     {
-        u = fmodf(u, stripTexW);
-        if (u < 0.0f)
+        uAtlas = fmodf(uAtlas, atlasCircumference);
+        if (uAtlas < 0.0f)
         {
-            u += stripTexW;
+            uAtlas += atlasCircumference;
         }
     }
     else
     {
-        u = clampr(u, 0.0f, stripTexW - winW);
+        uAtlas = clampr(uAtlas, 0.0f, atlasCircumference - winWAtlas);
     }
-    Frect rect = _strip->GetTextureRect();
-    rect.lt.x = u;
-    rect.rb.x = u + winW;
+
+    if (std::abs(uAtlas - _dirty.lastStripU) < 0.01f)
+    {
+        return;
+    }
+    _dirty.lastStripU = uAtlas;
+
+    Frect rect;
+    rect.lt.y = _stripBaseTexRect.lt.y;
+    rect.rb.y = _stripBaseTexRect.rb.y;
+    rect.lt.x = _stripBaseTexRect.x1 + uAtlas;
+    rect.rb.x = rect.lt.x + winWAtlas;
     _strip->SetTextureRect(rect);
 }
 
@@ -841,15 +1155,8 @@ float CUICompassBar::CalculateFovEdgeFade(float relX, float stripWidth) const
 
 void CUICompassBar::EnsureFadeStorage()
 {
-    const size_t cardinalCount = _cardinals.size();
     const size_t spotCount = _poolSpots.size();
 
-    if (cardinalCount > _fadeStorageCardinalCount)
-    {
-        _cardinalAlpha.resize(cardinalCount, 1.0f);
-        _cardinalBaseTextColor.resize(cardinalCount, _kDefaultColorWhite);
-        _fadeStorageCardinalCount = cardinalCount;
-    }
     if (spotCount > _fadeStorageSpotCount)
     {
         _poolSpotAlpha.resize(spotCount, 0.0f);
@@ -860,43 +1167,70 @@ void CUICompassBar::EnsureFadeStorage()
 
 void CUICompassBar::UpdateCardinals(const SCompassFrameContext& ctx)
 {
-    if (!_stripContainer || _cardinals.empty())
+    if (!_stripContainer || _cardinalEntries.empty())
     {
         return;
     }
+
     SCompassStripGeometry geom = GetStripGeometry();
     EnsureFadeStorage();
-    for (u32 i = 0; i < _cardinals.size() && i < _kMaxCardinalPoints; ++i)
+    const bool headingDirty = IsHeadingPixelDirty(ctx.heading);
+
+    for (u32 i = 0; i < _cardinalEntries.size() && i < _kMaxCardinalPoints; ++i)
     {
-        CUIStatic* st = _cardinals[i];
-        if (!st)
+        SCompassCardinalEntry& entry = _cardinalEntries[i];
+        CUIWindow* host = entry.host;
+        CUIStatic* text = entry.text;
+        if (!host || !text)
         {
             continue;
         }
+
         Fvector fakeTarget;
-        fakeTarget.set(ctx.actorPos.x + cosf(_kCardinalAngles[i]) * _runtimeCfg.cardinalFakeDistance,
-            ctx.actorPos.y, ctx.actorPos.z + sinf(_kCardinalAngles[i]) * _runtimeCfg.cardinalFakeDistance);
+        fakeTarget.set(
+            ctx.actorPos.x + entry.dirXZ.x * _runtimeCfg.cardinalFakeDistance,
+            ctx.actorPos.y,
+            ctx.actorPos.z + entry.dirXZ.y * _runtimeCfg.cardinalFakeDistance);
+
         float relX;
-        bool isVisible = ProjectToStrip(fakeTarget, ctx.actorPos, ctx.heading, relX, false);
-        _cardinalAlpha[i] = UpdateFadeAlpha(_cardinalAlpha[i], isVisible, _runtimeCfg.fadeInSpeed, _runtimeCfg.fadeOutSpeed);
+        const bool isVisible = ProjectToStrip(fakeTarget, ctx.actorPos, ctx.heading, relX, false);
+        entry.lastRelX = relX;
+
+        const float prevAlpha = entry.alpha;
+        entry.alpha = UpdateFadeAlpha(entry.alpha, isVisible, _runtimeCfg.fadeInSpeed, _runtimeCfg.fadeOutSpeed);
         const float edgeFade = isVisible ? CalculateFovEdgeFade(relX, geom.width) : 0.0f;
-        const float finalAlpha = _cardinalAlpha[i] * edgeFade;
+        const float finalAlpha = entry.alpha * edgeFade;
+        const bool alphaStable = (std::abs(entry.alpha - prevAlpha) <= _kAlphaSaturatedEpsilon) &&
+                                 (entry.alpha <= _runtimeCfg.minVisibleAlpha ||
+                                  entry.alpha >= (1.0f - _kAlphaSaturatedEpsilon));
+        const bool skipUiMutation = !headingDirty && alphaStable && (host->IsShown() == (finalAlpha > _runtimeCfg.minVisibleAlpha));
+
+        if (skipUiMutation)
+        {
+            continue;
+        }
+
         if (finalAlpha > _runtimeCfg.minVisibleAlpha)
         {
             if (isVisible)
             {
-                float cw = st->GetWidth();
-                float posX = geom.CenterX() + relX - cw * 0.5f;
-                st->SetWndPos(Fvector2().set(posX, st->GetWndPos().y));
+                const float hostW = host->GetWidth();
+                const float posX = geom.CenterX() + relX - hostW * 0.5f;
+                host->SetWndPos(Fvector2().set(posX, host->GetWndPos().y));
             }
-            u32 baseColor = _cardinalBaseTextColor[i];
-            u32 alpha = (u32)clampr(iFloor(float(color_get_A(baseColor)) * finalAlpha), 0, 255);
-            st->SetTextColor(subst_alpha(baseColor, alpha));
-            st->Show(true);
+            const u32 alpha = (u32)clampr(iFloor(float(color_get_A(entry.baseTextColor)) * finalAlpha), 0, 255);
+            text->SetTextColor(subst_alpha(entry.baseTextColor, alpha));
+            text->Show(true);
+            if (entry.marker)
+            {
+                entry.marker->SetTextureColor(subst_alpha(entry.baseMarkerColor, alpha));
+                entry.marker->Show(true);
+            }
+            host->Show(true);
         }
         else
         {
-            st->Show(false);
+            host->Show(false);
         }
     }
 }
@@ -928,16 +1262,6 @@ SSpotCandidate CUICompassBar::CreateSpotCandidate(CMapLocation* loc) const
     const Fvector2 locSize = loc->GetCompassSize();
     cand.iconSize = (locSize.x > 0.0f && locSize.y > 0.0f) ? locSize : Fvector2().set(_spotCfg.spotWidth, _spotCfg.spotHeight);
 
-    const SUITextureShadowParams& locShadow = loc->GetCompassTextureShadow();
-    if (loc->HasCompassShadowOverride())
-    {
-        cand.shadow = locShadow;
-    }
-    else
-    {
-        cand.shadow = locShadow.enabled ? locShadow : _spotCfg.defaultShadow;
-    }
-    
     return cand;
 }
 
@@ -953,15 +1277,32 @@ void CUICompassBar::CollectSpotCandidates(const Fvector& actorPos, const shared_
     {
         return;
     }
-    Locations locationsSnapshot;
+
+    _spotCollectScratch.clear();
     {
         xrCriticalSectionGuard guard(mapManager->UpdateCS);
-        locationsSnapshot = mapManager->Locations();
+        const Locations& locations = mapManager->Locations();
+        if (_spotCollectScratch.capacity() < locations.size())
+        {
+            _spotCollectScratch.reserve(locations.size());
+        }
+        for (const SLocationKey& key : locations)
+        {
+            if (key.location)
+            {
+                _spotCollectScratch.push_back(key.location);
+            }
+        }
     }
-    CMapLocation* activeTaskLoc = _activeTargetLoc;
-    for (const SLocationKey& key : locationsSnapshot)
+
+    if (_spotCandidates.capacity() < _spotCollectScratch.size())
     {
-        CMapLocation* loc = key.location;
+        _spotCandidates.reserve(_spotCollectScratch.size());
+    }
+
+    CMapLocation* activeTaskLoc = _activeTargetLoc;
+    for (CMapLocation* loc : _spotCollectScratch)
+    {
         if (!ShouldShowSpot(loc, actorPos, levelName, activeTaskLoc))
         {
             continue;
@@ -976,6 +1317,16 @@ void CUICompassBar::CollectSpotCandidates(const Fvector& actorPos, const shared_
         cand.distance = actorPos.distance_to(pos);
         _spotCandidates.push_back(cand);
     }
+
+    const u32 candidateHash = ComputeCandidateHash();
+    if (candidateHash != _dirty.lastCandidateHash)
+    {
+        _dirty.membershipChanged = true;
+        _dirty.lastCandidateHash = candidateHash;
+        MarkSpotsDirty();
+    }
+    // Same membership can still move in world space; refresh projected X/alpha.
+    _dirty.layoutRefresh = true;
 }
 
 void CUICompassBar::BuildRenderQueueFromCandidates(float camHeading, const Fvector& actorPos)
@@ -1009,7 +1360,6 @@ void CUICompassBar::BuildRenderQueueFromCandidates(float camHeading, const Fvect
         item.textureName = &cand.textureName;
         item.iconSize = cand.iconSize;
         item.color = cand.color;
-        item.shadow = cand.shadow;
         _renderQueue.push_back(item);
     }
 }
@@ -1037,79 +1387,92 @@ CUIStatic* CUICompassBar::GetSpotFromPool(xr_vector<CUIStatic*>& pool, CUIWindow
     _poolSpotBaseColor.push_back(_kDefaultColorWhite);
     _fadeStorageSpotCount = pool.size();
 
-    _poolSpotShadow.push_back(SUITextureShadowParams{});
-    
     return item;
 }
 
-u32 CUICompassBar::AllocateSpotPoolSlot(CMapLocation* sourceLoc, xr_vector<u8>& poolSlotUsed)
+u32 CUICompassBar::AllocateSpotPoolSlot(CMapLocation* sourceLoc)
 {
-    for (u32 i = 0; i < _poolSpotOwners.size(); ++i)
+    xr_hash_map<CMapLocation*, u32>::iterator mapped = _spotSlotByLoc.find(sourceLoc);
+    if (mapped != _spotSlotByLoc.end())
     {
-        if (_poolSpotOwners[i] == sourceLoc)
+        const u32 mappedIdx = mapped->second;
+        if (mappedIdx < _poolSpotOwners.size() && _poolSpotOwners[mappedIdx] == sourceLoc)
         {
-            return i;
+            return mappedIdx;
         }
+        _spotSlotByLoc.erase(mapped);
     }
 
     for (u32 i = 0; i < _poolSpots.size(); ++i)
     {
         const bool slotFree = (_poolSpotOwners[i] == nullptr) ||
-                              (_poolSpotAlpha[i] <= _runtimeCfg.minVisibleAlpha && !poolSlotUsed[i]);
+                              (_poolSpotAlpha[i] <= _runtimeCfg.minVisibleAlpha &&
+                               (i >= _poolSlotUsed.size() || !_poolSlotUsed[i]));
         if (slotFree)
         {
             return i;
         }
     }
 
-    return _poolSpots.size();
+    return (u32)_poolSpots.size();
 }
 
-void CUICompassBar::CommitLayout()
+void CUICompassBar::CommitLayout(bool positionsOnly)
 {
     if (!_stripContainer || !_layerFg)
     {
         return;
     }
-    std::sort(_renderQueue.begin(), _renderQueue.end());
+
+    if (!positionsOnly)
+    {
+        std::sort(_renderQueue.begin(), _renderQueue.end());
+    }
+
     if (_poolSpotTextureNames.capacity() < _renderQueue.size())
     {
         _poolSpotTextureNames.reserve(_renderQueue.size());
     }
+
     SCompassStripGeometry geom = GetStripGeometry();
     const float compassBarHeight = GetHeight();
     const float kx = UI().get_current_kx();
     EnsureFadeStorage();
-    xr_vector<u8> poolSlotUsed;
-    poolSlotUsed.assign(_poolSpots.size(), 0);
+    _poolSlotUsed.assign(_poolSpots.size(), 0);
 
     for (const SSpotRenderItem& item : _renderQueue)
     {
-        const u32 poolIdx = AllocateSpotPoolSlot(item.sourceLoc, poolSlotUsed);
+        const u32 poolIdx = AllocateSpotPoolSlot(item.sourceLoc);
         CUIStatic* wnd = GetSpotFromPool(_poolSpots, _layerFg, poolIdx);
         if (!wnd)
         {
             continue;
         }
-        if (poolSlotUsed.size() <= poolIdx)
+        if (_poolSlotUsed.size() <= poolIdx)
         {
-            poolSlotUsed.resize(poolIdx + 1, 0);
+            _poolSlotUsed.resize(poolIdx + 1, 0);
         }
         if (_poolSpotTextureNames.size() <= poolIdx)
         {
             _poolSpotTextureNames.resize(poolIdx + 1);
         }
-        if (_poolSpotTextureNames[poolIdx] != *item.textureName)
-        {
-            CUITextureMaster::InitTexture(*item.textureName, &wnd->GetUIStaticItem());
-            _poolSpotTextureNames[poolIdx] = *item.textureName;
-        }
+
+        _spotSlotByLoc[item.sourceLoc] = poolIdx;
         _poolSpotOwners[poolIdx] = item.sourceLoc;
-        poolSlotUsed[poolIdx] = 1;
+        _poolSlotUsed[poolIdx] = 1;
         _poolSpotBaseColor[poolIdx] = item.color;
-        _poolSpotShadow[poolIdx] = item.shadow;
-        Fvector2 spotSize(item.iconSize.x * kx, item.iconSize.y);
-        wnd->SetWndSize(spotSize);
+
+        if (!positionsOnly || _poolSpotTextureNames[poolIdx] != *item.textureName)
+        {
+            if (_poolSpotTextureNames[poolIdx] != *item.textureName)
+            {
+                CUITextureMaster::InitTexture(*item.textureName, &wnd->GetUIStaticItem());
+                _poolSpotTextureNames[poolIdx] = *item.textureName;
+            }
+            Fvector2 spotSize(item.iconSize.x * kx, item.iconSize.y);
+            wnd->SetWndSize(spotSize);
+        }
+
         float posOffsetX = 0.0f;
         if (kx > 0.0f && kx != 1.0f)
         {
@@ -1155,30 +1518,17 @@ void CUICompassBar::CommitLayout()
             u32 baseColor = _poolSpotBaseColor[poolIdx];
             u32 alpha = (u32)clampr(iFloor(float(color_get_A(baseColor)) * finalAlpha), 0, 255);
             wnd->SetTextureColor(subst_alpha(baseColor, alpha));
-
-            const SUITextureShadowParams& slotShadow = _poolSpotShadow[poolIdx];
-            if (slotShadow.enabled)
-            {
-                const u32 shadowAlpha = (u32)clampr(
-                    iFloor(float(color_get_A(slotShadow.color)) * finalAlpha), 0, 255);
-                wnd->SetTextureShadow(true, slotShadow.thickness,
-                    subst_alpha(slotShadow.color, shadowAlpha));
-            }
-            else
-            {
-                wnd->SetTextureShadow(false, 0.0f, 0);
-            }
             wnd->Show(true);
         }
         else
         {
-            wnd->SetTextureShadow(false, 0.0f, 0);
             wnd->Show(false);
         }
     }
+
     for (u32 i = 0; i < _poolSpots.size(); ++i)
     {
-        if (poolSlotUsed[i])
+        if (i < _poolSlotUsed.size() && _poolSlotUsed[i])
         {
             continue;
         }
@@ -1196,26 +1546,15 @@ void CUICompassBar::CommitLayout()
             u32 baseColor = (i < _poolSpotBaseColor.size()) ? _poolSpotBaseColor[i] : _kDefaultColorWhite;
             u32 alpha = (u32)clampr(iFloor(float(color_get_A(baseColor)) * _poolSpotAlpha[i]), 0, 255);
             wnd->SetTextureColor(subst_alpha(baseColor, alpha));
-
-            const SUITextureShadowParams& slotShadow =
-                (i < _poolSpotShadow.size()) ? _poolSpotShadow[i] : SUITextureShadowParams{};
-            if (slotShadow.enabled)
-            {
-                const u32 shadowAlpha = (u32)clampr(
-                    iFloor(float(color_get_A(slotShadow.color)) * _poolSpotAlpha[i]), 0, 255);
-                wnd->SetTextureShadow(true, slotShadow.thickness,
-                    subst_alpha(slotShadow.color, shadowAlpha));
-            }
-            else
-            {
-                wnd->SetTextureShadow(false, 0.0f, 0);
-            }
             wnd->Show(true);
         }
         else
         {
-            wnd->SetTextureShadow(false, 0.0f, 0);
             wnd->Show(false);
+            if (_poolSpotOwners[i])
+            {
+                _spotSlotByLoc.erase(_poolSpotOwners[i]);
+            }
             _poolSpotOwners[i] = nullptr;
         }
     }
@@ -1223,18 +1562,23 @@ void CUICompassBar::CommitLayout()
 
 void CUICompassBar::UpdateSpotsLayout(float heading, const SCompassFrameContext& ctx)
 {
-    const bool headingChanged = std::abs(heading - _updateState.lastHeading) > _kHeadingDirtyEpsilon;
-    const u32 candidateHash = ComputeCandidateHash();
-    const bool candidatesChanged = candidateHash != _updateState.lastCandidateHash;
+    const bool headingChanged = IsHeadingPixelDirty(heading);
+    const bool membershipChanged = _dirty.membershipChanged;
+    const bool fading = HasFadingSpots();
 
-    if (_updateState.spotsDirty || headingChanged || candidatesChanged)
+    if (!_dirty.spotsDirty && !headingChanged && !membershipChanged && !fading && !_dirty.layoutRefresh)
     {
-        BuildRenderQueueFromCandidates(heading, ctx.actorPos);
-        CommitLayout();
-        _updateState.lastHeading = heading;
-        _updateState.lastCandidateHash = candidateHash;
-        _updateState.spotsDirty = false;
+        return;
     }
+
+    BuildRenderQueueFromCandidates(heading, ctx.actorPos);
+    const bool positionsOnly = !membershipChanged && !_dirty.spotsDirty;
+    CommitLayout(positionsOnly);
+
+    _dirty.lastHeading = heading;
+    _dirty.spotsDirty = false;
+    _dirty.membershipChanged = false;
+    _dirty.layoutRefresh = false;
 }
 
 // --- Active target ---
@@ -1269,20 +1613,6 @@ void CUICompassBar::UpdateActiveTargetMarker(CMapLocation* activeLoc)
         CUITextureMaster::InitTexture(texName, &_activeMarker->GetUIStaticItem());
         _activeMarkerLastTexture = texName;
     }
-
-    const u32 locColor = activeLoc->GetCompassColor();
-    const u32 baseColor = (locColor != 0) ? locColor : _activeMarkerFallbackColor;
-    _activeMarker->SetTextureColor(baseColor);
-
-    if (_activeMarkerShadow.enabled)
-    {
-        _activeMarker->SetTextureShadow(true, _activeMarkerShadow.thickness, _activeMarkerShadow.color);
-    }
-    else
-    {
-        _activeMarker->SetTextureShadow(false, 0.0f, 0);
-    }
-
     _activeMarker->Show(true);
 }
 
@@ -1293,6 +1623,13 @@ void CUICompassBar::UpdateActiveTargetText(const Fvector& actorPos, const Fvecto
         return;
     }
     const float dist = actorPos.distance_to(tgtPos);
+    const float distRounded = float(iFloor(dist + 0.5f));
+    if (std::abs(distRounded - _dirty.lastDistanceMeters) < 0.1f)
+    {
+        _activeDistText->Show(true);
+        return;
+    }
+    _dirty.lastDistanceMeters = distRounded;
     string64 buf;
     xr_sprintf(buf, sizeof(buf), _runtimeCfg.distanceFormat.c_str(), dist);
     _activeDistText->SetText(buf);
@@ -1415,6 +1752,17 @@ void CUICompassBar::UpdateActiveAltitudeArrow(const Fvector& actorPos, const Fve
 
 // --- Draw / Update ---
 
+void CUICompassBar::SetHudVisible(bool status)
+{
+    visible = status;
+    inherited::Show(status);
+}
+
+void CUICompassBar::Show(bool status)
+{
+    SetHudVisible(status);
+}
+
 void CUICompassBar::Draw()
 {
     if (visible)
@@ -1425,10 +1773,17 @@ void CUICompassBar::Draw()
 
 void CUICompassBar::Update()
 {
+    if (_dirty.lastLogicFrame == Device.dwFrame)
+    {
+        return;
+    }
+
     if (!visible || !g_pGameLevel)
     {
         return;
     }
+
+    _dirty.lastLogicFrame = Device.dwFrame;
 
     SCompassFrameContext ctx;
     if (!BuildFrameContext(ctx))
@@ -1445,7 +1800,6 @@ void CUICompassBar::Update()
     {
         _collectSpotsTimer = _spotCfg.collectInterval;
         CollectSpotCandidates(ctx.actorPos, ctx.levelName);
-        MarkSpotsDirty();
     }
 
     UpdateSpotsLayout(ctx.heading, ctx);
@@ -1468,6 +1822,7 @@ void CUICompassBar::SetActiveTarget(CMapLocation* loc)
 {
     if (_activeTargetLoc != loc)
     {
+        _dirty.membershipChanged = true;
         MarkSpotsDirty();
     }
     _activeTargetLoc = loc;
@@ -1478,10 +1833,16 @@ void CUICompassBar::Reset()
     _activeTargetLoc = nullptr;
     _lastActiveLoc = nullptr;
     _activeTargetCurX = 0.0f;
+    _dirty.lastDistanceMeters = -1.0f;
+    _dirty.lastStripU = -1.0e9f;
+    _dirty.lastLogicFrame = u32(-1);
+    _spotSlotByLoc.clear();
     for (u32 i = 0; i < _poolSpotOwners.size(); ++i)
     {
         _poolSpotOwners[i] = nullptr;
     }
+    _dirty.membershipChanged = true;
+    _dirty.layoutRefresh = true;
     MarkSpotsDirty();
 }
 
