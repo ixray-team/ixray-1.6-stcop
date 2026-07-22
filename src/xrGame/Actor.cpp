@@ -41,6 +41,7 @@
 #include "../xrEngine/Rain.h"
 #include "script_hit.h"
 #include "ParticlesObject.h"
+#include "UIActorMenu.h"
 #include "UIPdaWnd.h"
 #include "../xrUI/UICursor.h"
 #include "Wound.h"

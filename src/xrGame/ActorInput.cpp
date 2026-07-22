@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Actor.h"
+#include "PickupManager.h"
 #include "Torch.h"
 #include "trade.h"
 #include "../xrEngine/CameraBase.h"
@@ -224,6 +225,7 @@ void CActor::IR_OnKeyboardPress(int dik)
 	}break;
 	case kUSE:
 		ActorUse();
+		UpdatePickupMode();
 		break;
 	case kDROP:
 		b_DropActivated			= true;
@@ -534,7 +536,7 @@ void CActor::IR_OnKeyboardHold(int dik)
 
 		}break;
 		case kUSE:
-			ActorUse();
+			UpdatePickupMode();
 			break;
 	}
 
@@ -866,6 +868,7 @@ void CActor::IR_GamepadKeyPress(int id)
 		case kUSE:
 		{
 			ActorUse();
+			UpdatePickupMode();
 			break;
 		}
 		case kCROUCH:
@@ -1067,10 +1070,10 @@ void CActor::IR_GamepadKeyHold(int id)
 			}
 			break;
 		}
-
+	
 		case kUSE:
 		{
-			ActorUse();
+			UpdatePickupMode();
 			break;
 		}
 	}
@@ -1485,11 +1488,6 @@ void CActor::ActorUse()
 			}
 
 		}
-	}
-
-	if (g_Alive())
-	{
-		pPickup->SetPickupMode(true);
 	}
 }
 
@@ -1994,6 +1992,14 @@ void CActor::MakeKick()
 	if (CWeaponKnife* pWeaponKnife = knife_item != nullptr ? knife_item->cast_weapon_knife() : nullptr)
 	{
 		pWeaponKnife->FastKick();
+	}
+}
+
+void CActor::UpdatePickupMode()
+{
+	if (g_Alive() && !CurrentGameUI()->ActorMenu()->IsShown())
+	{
+		pPickup->SetPickupMode(true);
 	}
 }
 
