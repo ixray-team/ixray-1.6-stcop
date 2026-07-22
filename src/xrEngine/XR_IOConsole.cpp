@@ -45,7 +45,7 @@ extern char const* const ioc_prompt;
 char const* const ioc_prompt = ">>> ";
 
 extern char const* const ch_cursor;
-char const* const ch_cursor = "_";
+char const* const ch_cursor = "|";
 
 text_editor::line_edit_control& CConsole::ec()
 {
@@ -415,8 +415,7 @@ void CConsole::OnRender()
 			}
 		}	
 	}
-
-	// ===== ==============================================
+	
 	pFont->SetColor ( cmd_font_color );
 	pFont2->SetColor( cmd_font_color );
 
@@ -426,15 +425,16 @@ void CConsole::OnRender()
 	outX += pFont2->SizeOf_(strSelected);
 	pFont->OutI(-1.0f + outX * relativeX, outY, "%s", strAfterSelected);
 
-	//pFont2->OutI( -1.0f + ioc_d * scr_x, ypos, "%s", editor=all );
-	
-	if( ec().cursor_view() )
+	if (ec().cursor_view())
 	{
-		pFont->SetColor( cursor_font_color );		
+		static float t = 0.f;
+		t += 5.f * Device.fTimeDelta;
+		u32 color = color_rgba(255, 255, 255, 255u * fabsf(sin(t)));
+		
+		pFont->SetColor( color );		
 		pFont->OutI(-1.0f + strWidth * relativeX, outY, "%s", ch_cursor);
 	}
 	
-	// ---------------------
 	m_log_history_guard.Enter();
 	u32 log_line = m_log_history.GetTail();
 	outY -= m_line_height;
