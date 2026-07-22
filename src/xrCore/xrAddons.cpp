@@ -5,7 +5,7 @@
 #include <FormatParsers/YAML/xr_yaml_reader.h>
 #include <filesystem>
 
-XRCORE_API CAddonManager* g_pAddonsManager = nullptr;
+XRCORE_API CAddonManager* GAddonsManager = nullptr;
 
 void CAddonManager::Initialize()
 {
@@ -210,7 +210,7 @@ void CAddonManager::MountAddons()
         {
             xr_stack_string_path addon_path = Addon.EntryDir.c_str();
             addon_path.append("\\");
-            FS.rescan_path(addon_path.c_str(), true);
+            FS.rescan_path(addon_path.c_str(), true, false);
         }
         else if (AddonPath.extension() == ".db" && std::filesystem::is_regular_file(AddonPath))
         {
