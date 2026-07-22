@@ -557,7 +557,7 @@ void CUIActorMenu::script_register(lua_State *L)
 
 				class_< CUICompassBar >("CUICompassBar")
 				.def(constructor<>())
-				.def_readwrite("visible", &CUICompassBar::visible)
+				.property("visible", &CUICompassBar::GetHudVisible, &CUICompassBar::SetHudVisible)
 				.def("Background", &CUICompassBar::Background)
 				.def("GetFrame", &CUICompassBar::GetFrame),
 
