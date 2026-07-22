@@ -116,7 +116,8 @@ jobs:
             meson \
             glslang-tools \
             libvulkan-dev \
-            spirv-headers
+            spirv-headers \
+            ispc
 
       - name: Configure engine
         run: |
