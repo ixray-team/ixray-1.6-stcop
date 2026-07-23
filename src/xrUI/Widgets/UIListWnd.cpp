@@ -36,14 +36,14 @@ bool CUIListWnd::_initListScrollBar(Fvector2 size)
 {
     const Fvector2 scrollPos = Fvector2().set(size.x, 0.0f);
     const char* profile = m_scrollbar_profile.size() ? *m_scrollbar_profile : nullptr;
+    const char* profileName = (profile && profile[0]) ? profile : "default";
 
-    if (!CUIScrollBar::InitForProfile(*m_ScrollBar, scrollPos, size.y, false, profile))
+    if (!CUIScrollBar::InitForProfile(*m_ScrollBar, scrollPos, size.y, false, profileName))
     {
         return false;
     }
 
-    m_ScrollBar->SetWndPos(Fvector2().set(m_ScrollBar->GetWndPos().x - m_ScrollBar->GetWidth(),
-                                          m_ScrollBar->GetWndPos().y));
+    m_ScrollBar->SetWndPos(Fvector2().set(size.x - m_ScrollBar->GetWidth(), 0.0f));
     return true;
 }
 

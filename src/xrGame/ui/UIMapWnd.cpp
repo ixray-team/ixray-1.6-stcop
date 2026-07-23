@@ -176,6 +176,23 @@ void CUIMapWnd::Init(const char* xml_name, const char* start_from)
 		scrollParent->AttachChild		(m_UIMainScrollV);
 		Register						(m_UIMainScrollV);
 		AddCallback						(m_UIMainScrollV,SCROLLBAR_VSCROLL,CUIWndCallback::void_function(this,&CUIMapWnd::OnScrollV));
+
+		float needW = scrollParent->GetWidth();
+		float needH = scrollParent->GetHeight();
+		if (m_UIMainScrollH)
+		{
+			needW = std::max(needW, m_UIMainScrollH->GetWndPos().x + m_UIMainScrollH->GetWidth());
+			needH = std::max(needH, m_UIMainScrollH->GetWndPos().y + m_UIMainScrollH->GetHeight());
+		}
+		if (m_UIMainScrollV)
+		{
+			needW = std::max(needW, m_UIMainScrollV->GetWndPos().x + m_UIMainScrollV->GetWidth());
+			needH = std::max(needH, m_UIMainScrollV->GetWndPos().y + m_UIMainScrollV->GetHeight());
+		}
+		if (needW > scrollParent->GetWidth() || needH > scrollParent->GetHeight())
+		{
+			scrollParent->SetWndSize(Fvector2().set(needW, needH));
+		}
 	}
 
 	xr_strconcat(pth,start_from,":map_hint_item");
