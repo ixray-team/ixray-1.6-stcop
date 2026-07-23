@@ -88,7 +88,6 @@ private:
 	bool ScrollDec(bool byScrollbox = false);
 	void UpdateScrollBar();
 	void layoutThumbGeometry(CUIWindow* thumb, float boxSz);
-	u32 ScrollSize() const { return std::max(1, _maxPos - _minPos - _pageSize + 1); }
 	void ClampByViewRect();
 	void SetPosScrollFromView(float viewPos, float viewWidth, float viewOffs);
 	int PosViewFromScroll(int viewSize, int viewOffs);
@@ -163,6 +162,7 @@ public:
 	void GetRange(int& minPos, int& maxPos) const { minPos = _minPos; maxPos = _maxPos; }
 	int GetMaxRange() const { return _maxPos; }
 	int GetMinRange() const { return _minPos; }
+	u32 ScrollSize() const { return std::max(1, _maxPos - _minPos - _pageSize + 1); }
 
 	void SetPageSize(int page) { _pageSize = std::max(0, page); UpdateScrollBar(); }
 	int GetPageSize() const { return _pageSize; }
