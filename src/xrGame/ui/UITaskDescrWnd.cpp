@@ -71,10 +71,16 @@ void CUITaskDescrWnd::AddArticle					(CEncyclopediaArticle* article)
 
 void CUITaskDescrWnd::ScrollUp()
 {
-	m_UITaskInfoWnd->ScrollBar()->TryScrollDec();
+	if (CUIScrollBar* bar = m_UITaskInfoWnd->ScrollBar())
+	{
+		bar->TryScrollDec();
+	}
 }
 
 void CUITaskDescrWnd::ScrollDown()
 {
-	m_UITaskInfoWnd->ScrollBar()->TryScrollInc();
+	if (CUIScrollBar* bar = m_UITaskInfoWnd->ScrollBar())
+	{
+		bar->TryScrollInc();
+	}
 }

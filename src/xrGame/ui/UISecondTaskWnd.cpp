@@ -164,9 +164,19 @@ void UITaskListWnd::OnMouseScroll( float iDirection )
 	}
 
 	if ( (u32)iDirection == WINDOW_MOUSE_WHEEL_UP )
-		m_list->ScrollBar()->TryScrollDec();
+	{
+		if (CUIScrollBar* bar = m_list->ScrollBar())
+		{
+			bar->TryScrollDec();
+		}
+	}
 	else if ((u32)iDirection == WINDOW_MOUSE_WHEEL_DOWN )
-		m_list->ScrollBar()->TryScrollInc();
+	{
+		if (CUIScrollBar* bar = m_list->ScrollBar())
+		{
+			bar->TryScrollInc();
+		}
+	}
 }
 void UITaskListWnd::Show( bool status )
 {
@@ -383,7 +393,8 @@ bool UITaskListWnd::SelectNextToSelected(bool bNext)
 					{
 						UITaskListWndItem* nextToItem = static_cast<UITaskListWndItem*>(*(it + 1));
 						taskManager->SetActiveTask(nextToItem->get_task());
-						m_list->ScrollToItem(nextToItem, iFloor(-m_list->ScrollBar()->GetHeight() / 2.0f + nextToItem->GetWndRect().height() / 2.0f));
+						const float barHeight = m_list->ScrollBar() ? m_list->ScrollBar()->GetHeight() : 0.0f;
+						m_list->ScrollToItem(nextToItem, iFloor(-barHeight / 2.0f + nextToItem->GetWndRect().height() / 2.0f));
 						if (m_pUiSounds)
 						{
 							m_pUiSounds->Play(EPdaUiSound::ListSelect);
@@ -397,7 +408,8 @@ bool UITaskListWnd::SelectNextToSelected(bool bNext)
 					{
 						UITaskListWndItem* nextToItem = static_cast<UITaskListWndItem*>(*(it - 1));
 						taskManager->SetActiveTask(nextToItem->get_task());
-						m_list->ScrollToItem(nextToItem, iFloor(-m_list->ScrollBar()->GetHeight() / 2.0f + nextToItem->GetWndRect().height() / 2.0f));
+						const float barHeight = m_list->ScrollBar() ? m_list->ScrollBar()->GetHeight() : 0.0f;
+						m_list->ScrollToItem(nextToItem, iFloor(-barHeight / 2.0f + nextToItem->GetWndRect().height() / 2.0f));
 						if (m_pUiSounds)
 						{
 							m_pUiSounds->Play(EPdaUiSound::ListSelect);

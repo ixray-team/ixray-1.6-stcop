@@ -344,13 +344,19 @@ bool CUIEncyclopediaWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 			else if (is_binded(kUI_SECONDARY_UP, id))
 			{
 				ActionRepeaters()->SetActionStarted(this, kUI_SECONDARY_UP);
-				UIInfoList->ScrollBar()->TryScrollDec();
+				if (CUIScrollBar* bar = UIInfoList->ScrollBar())
+				{
+					bar->TryScrollDec();
+				}
 				return true;
 			}
 			else if (is_binded(kUI_SECONDARY_DOWN, id))
 			{
 				ActionRepeaters()->SetActionStarted(this, kUI_SECONDARY_DOWN);
-				UIInfoList->ScrollBar()->TryScrollInc();
+				if (CUIScrollBar* bar = UIInfoList->ScrollBar())
+				{
+					bar->TryScrollInc();
+				}
 				return true;
 			}
 			else if (is_binded(kUI_LEFT, id) || is_binded(kUI_RIGHT, id) || is_binded(kUI_ACCEPT, id))
@@ -435,13 +441,23 @@ bool CUIEncyclopediaWnd::OnGamepadKeyHold(int id)
 	else if (is_binded(kUI_SECONDARY_UP, id))
 	{
 		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_SECONDARY_UP))
-			UIInfoList->ScrollBar()->TryScrollDec();
+		{
+			if (CUIScrollBar* bar = UIInfoList->ScrollBar())
+			{
+				bar->TryScrollDec();
+			}
+		}
 		return true;
 	}
 	else if (is_binded(kUI_SECONDARY_DOWN, id))
 	{
 		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_SECONDARY_DOWN))
-			UIInfoList->ScrollBar()->TryScrollInc();
+		{
+			if (CUIScrollBar* bar = UIInfoList->ScrollBar())
+			{
+				bar->TryScrollInc();
+			}
+		}
 		return true;
 	}
 
