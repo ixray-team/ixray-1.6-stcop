@@ -148,6 +148,9 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 #include "../../xrUI/Widgets/UIProgressShape.h"
 extern CUIProgressShape* g_MissileForceShape;
 
+bool CUIMainIngameWnd::s_hasPersistedNavigationMode = false;
+ENavigationHudMode CUIMainIngameWnd::s_persistedNavigationMode = ENavigationHudMode::Minimap;
+
 CUIMainIngameWnd::~CUIMainIngameWnd()
 {
 	DestroyFlashingIcons		();
@@ -593,15 +596,21 @@ void CUIMainIngameWnd::Init()
 		if (m_QuickSlotText4) m_QuickSlotText4->Show(false);
 	}
 
-	SetNavigationMode(ENavigationHudMode::Minimap);
+	const ENavigationHudMode desiredMode =
+		s_hasPersistedNavigationMode
+			? s_persistedNavigationMode
+			: (EngineExternal()[EEngineExternalUI::UseCompassBar]
+				? ENavigationHudMode::CompassBar
+				: ENavigationHudMode::Minimap);
 
-	// Deprecated boot-time hint for mods without Lua runtime switch
-	if (EngineExternal()[EEngineExternalUI::UseCompassBar])
+	if (desiredMode == ENavigationHudMode::CompassBar)
 	{
 		SetNavigationMode(ENavigationHudMode::CompassBar);
 	}
 	else
 	{
+		PersistNavigationMode(ENavigationHudMode::Minimap);
+		SyncNavigationVisibility();
 		RebindNavigationChildren();
 	}
 }
@@ -715,10 +724,17 @@ void CUIMainIngameWnd::RebindNavigationChildren()
 	}
 }
 
+void CUIMainIngameWnd::PersistNavigationMode(ENavigationHudMode mode)
+{
+	s_hasPersistedNavigationMode = true;
+	s_persistedNavigationMode = mode;
+}
+
 void CUIMainIngameWnd::SetNavigationMode(ENavigationHudMode mode)
 {
 	if (m_navigationMode == mode)
 	{
+		PersistNavigationMode(mode);
 		return;
 	}
 
@@ -734,6 +750,7 @@ void CUIMainIngameWnd::SetNavigationMode(ENavigationHudMode mode)
 	}
 
 	m_navigationMode = mode;
+	PersistNavigationMode(mode);
 	SyncNavigationVisibility();
 
 	if (IsCompassBarActive())
