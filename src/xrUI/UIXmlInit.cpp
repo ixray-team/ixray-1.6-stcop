@@ -1122,7 +1122,11 @@ bool CUIXmlInit::InitFrameLine(CUIXml& xml_doc, const char* path, int index, CUI
 	xr_strconcat(buf,path,":texture");
 	shared_str base_name = xml_doc.Read(buf, index, nullptr);
 
-	VERIFY			(base_name);
+	if (!base_name.size())
+	{
+		R_ASSERT4(!fatal, "FrameLine texture missing", path, xml_doc.m_xml_file_name);
+		return false;
+	}
 
 	u32 color		= GetColor	(xml_doc,buf,index,0xff);
 	pWnd->SetTextureColor	(color);

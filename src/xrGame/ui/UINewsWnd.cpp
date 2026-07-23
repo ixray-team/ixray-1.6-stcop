@@ -133,13 +133,19 @@ bool CUINewsWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 			case kPDA_LOG_SCROLL_UP:
 			{
 				ActionRepeaters()->SetActionStarted(this, kPDA_LOG_SCROLL_UP);
-				UIScrollWnd->ScrollBar()->TryScrollDec();
+				if (CUIScrollBar* bar = UIScrollWnd->ScrollBar())
+				{
+					bar->TryScrollDec();
+				}
 				return true;
 			}
 			case kPDA_LOG_SCROLL_DOWN:
 			{
 				ActionRepeaters()->SetActionStarted(this, kPDA_LOG_SCROLL_DOWN);
-				UIScrollWnd->ScrollBar()->TryScrollInc();
+				if (CUIScrollBar* bar = UIScrollWnd->ScrollBar())
+				{
+					bar->TryScrollInc();
+				}
 				return true;
 			}
 		}
@@ -156,7 +162,10 @@ bool CUINewsWnd::OnGamepadKeyHold(int key)
 		{
 			if (ActionRepeaters()->CanRepeatActionNow(this, kPDA_LOG_SCROLL_UP))
 			{
-				UIScrollWnd->ScrollBar()->TryScrollDec();
+				if (CUIScrollBar* bar = UIScrollWnd->ScrollBar())
+				{
+					bar->TryScrollDec();
+				}
 			}
 			return true;
 		}
@@ -164,7 +173,10 @@ bool CUINewsWnd::OnGamepadKeyHold(int key)
 		{
 			if (ActionRepeaters()->CanRepeatActionNow(this, kPDA_LOG_SCROLL_DOWN))
 			{
-				UIScrollWnd->ScrollBar()->TryScrollInc();
+				if (CUIScrollBar* bar = UIScrollWnd->ScrollBar())
+				{
+					bar->TryScrollInc();
+				}
 			}
 			return true;
 		}
