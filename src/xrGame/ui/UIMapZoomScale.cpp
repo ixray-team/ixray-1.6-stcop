@@ -7,7 +7,7 @@
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UILines.h"
 
-#include "../../xrEngine/Device.h"
+#include "../../xrEngine/device.h"
 #include "../../xrEngine/string_table.h"
 
 namespace
