@@ -2,7 +2,7 @@
 #include "PdaUiSound.h"
 
 #include "PdaConstants.h"
-#include "../../xrEngine/Device.h"
+#include "../../xrEngine/device.h"
 #include "../../xrUI/xrUIXmlParser.h"
 
 namespace
