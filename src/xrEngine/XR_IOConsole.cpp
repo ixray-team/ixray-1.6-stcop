@@ -954,11 +954,6 @@ void CConsole::update_tips() {
 				m_cur_cmd._set( first );
 				select_for_filter( last, m_temp_tips, m_tips );
 
-				if (m_tips.empty())
-				{
-					m_tips.emplace_back("(empty)");
-				}
-				
 				if (std::cmp_less_equal(m_tips.size(), m_select_tip)) 
 				{
 					reset_selected_tip();
