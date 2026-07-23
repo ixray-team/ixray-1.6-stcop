@@ -3663,7 +3663,7 @@ bool CWeaponMagazined::install_upgrade_impl(const char* section, bool test)
 		result2 = process_if_exists_set(section, "snd_silncer_shot", str, test);
 		if (result2 && !test)
 		{
-			m_layered_sounds.LoadSound(section, "snd_silncer_shot", "sndSilencerShot", false, m_eSoundShot);
+			m_layered_sounds.LoadSound(section, "snd_silncer_shot", "sndSilencerShot", false, m_eSoundShot, st_Shooting);
 		}
 		result |= result2;
 
@@ -3671,7 +3671,7 @@ bool CWeaponMagazined::install_upgrade_impl(const char* section, bool test)
 		if (result2 && !test)
 		{
 			m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor_sil, true);
-			m_layered_sounds.LoadSound(section, "snd_silncer_shot_actor", "sndSilencerShotActor", false, m_eSoundShot);
+			m_layered_sounds.LoadSound(section, "snd_silncer_shot_actor", "sndSilencerShotActor", false, m_eSoundShot, st_Shooting);
 		}
 		result |= result2;
 

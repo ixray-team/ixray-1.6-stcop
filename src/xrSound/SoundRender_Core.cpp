@@ -347,6 +347,7 @@ void	CSoundRender_Core::play_no_feedback		( ref_sound& S, CObject* O, u32 flags,
 	S._p->handle		= orig->handle;
 	S._p->g_type		= orig->g_type;
 	S._p->g_object		= O;
+	S._p->s_type		= orig->s_type;
 	S._p->dwBytesTotal	= orig->dwBytesTotal;
 	S._p->fTimeTotal	= orig->fTimeTotal;
 	S._p->fn_attached[0]	= orig->fn_attached[0];
