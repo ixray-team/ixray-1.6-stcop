@@ -211,6 +211,7 @@ void CUICompassBar::ParseSpots(CUIXml& uiXml, const char* path)
     {
         _spotCfg.spotWidth = uiXml.ReadAttribFlt(tmplPath, 0, "width", 0.0f);
         _spotCfg.spotHeight = uiXml.ReadAttribFlt(tmplPath, 0, "height", 0.0f);
+        CUIXmlInit::ReadShadowsNode(uiXml, tmplPath, 0, _spotCfg.defaultShadow);
     }
 
     const CUIXmlInit::ColorDefs* colorDefs = CUIXmlInit::GetColorDefs();
@@ -685,6 +686,7 @@ void CUICompassBar::InitActiveTargetWidgets(CUIXml& uiXml, CUIXmlInit& xmlInit)
         {
             _activeAltitudeArrow->InitTexture(_altitudeArrowTextureUp.c_str(), false);
             _activeAltitudeArrow->SetStretchTexture(uiXml.ReadAttribInt(arrowPath, 0, "stretch", 1) != 0);
+            CUIXmlInit::ApplyShadowsToStatic(uiXml, arrowPath, 0, _activeAltitudeArrow);
             _activeTargetContainer->AttachChild(_activeAltitudeArrow);
         }
         else
@@ -1473,6 +1475,31 @@ void CUICompassBar::CommitLayout(bool positionsOnly)
             wnd->SetWndSize(spotSize);
         }
 
+        {
+            SUITextureShadowParams shadow;
+            if (item.sourceLoc)
+            {
+                shadow = item.sourceLoc->GetCompassTextureShadow();
+                if (!item.sourceLoc->HasCompassShadowOverride() && !shadow.enabled)
+                {
+                    shadow = _spotCfg.defaultShadow;
+                }
+            }
+            else
+            {
+                shadow = _spotCfg.defaultShadow;
+            }
+
+            if (shadow.enabled)
+            {
+                wnd->SetTextureShadow(true, shadow.thickness, shadow.color);
+            }
+            else
+            {
+                wnd->SetTextureShadow(false, 0.0f, 0);
+            }
+        }
+
         float posOffsetX = 0.0f;
         if (kx > 0.0f && kx != 1.0f)
         {
@@ -1616,6 +1643,21 @@ void CUICompassBar::UpdateActiveTargetMarker(CMapLocation* activeLoc)
 
     const u32 locColor = activeLoc->GetCompassColor();
     _activeMarker->SetTextureColor(locColor != 0 ? locColor : _kDefaultColorWhite);
+
+    SUITextureShadowParams shadow = activeLoc->GetCompassTextureShadow();
+    if (!activeLoc->HasCompassShadowOverride() && !shadow.enabled)
+    {
+        shadow = _spotCfg.defaultShadow;
+    }
+    if (shadow.enabled)
+    {
+        _activeMarker->SetTextureShadow(true, shadow.thickness, shadow.color);
+    }
+    else
+    {
+        _activeMarker->SetTextureShadow(false, 0.0f, 0);
+    }
+
     _activeMarker->Show(true);
 }
 
