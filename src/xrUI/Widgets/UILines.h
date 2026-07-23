@@ -2,6 +2,7 @@
 
 #include "UILine.h"
 #include "../uiabstract.h"
+#include "../ui_defs.h"
 
 class UI_API CUILines :
 	public CDeviceResetNotifier 
@@ -40,6 +41,11 @@ CGameFont::EGradientMode	GetTextGradientMode()						{return m_eTextGradientMode;
 			void			SetUseNewLineMode							(bool mode);
 			void			SetEllipsis									(bool mode);
 
+			void			SetTextShadow								(bool enabled, float thickness, u32 color);
+			void			SetTextShadow								(const SUIOutlineParams& params);
+			bool			GetTextShadowEnabled						() const { return m_textShadow.enabled; }
+			const SUIOutlineParams& GetTextShadow						() const { return m_textShadow; }
+
 			void			Draw										(float x, float y);
 			void			DrawWS										(float x, float y); // TODO Emmis: временое решение для рендера текста субтитров
 
@@ -64,6 +70,7 @@ protected:
 		float				GetVIndentByAlign							();
 		void				CutFirstColoredTextEntry					(xr_string& entry, u32& color,xr_string& text)	const;
 	CUILine*				ParseTextToColoredLine						(const xr_string& str);
+			void			DrawInternal								(float x, float y, bool worldSpace);
 
 	typedef xr_vector<CUILine>				LinesVector;
 	typedef LinesVector::iterator			LinesVector_it;
@@ -76,6 +83,7 @@ protected:
 	EVTextAlignment			m_eVTextAlign;
 	u32						m_dwTextColor;
 	u32						m_dwTextGradientColor;
+	SUIOutlineParams		m_textShadow;
 
 	CGameFont*				m_pFont;
 

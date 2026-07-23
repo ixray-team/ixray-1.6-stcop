@@ -20,8 +20,8 @@ public:
 CUISubLine& operator=(const CUISubLine& other);
 	
 const CUISubLine*	Cut2Pos(int i);
-	void			Draw(CGameFont* pFont, float x, float y)	const;
-	void			DrawWS(CGameFont* pFont, float x, float y)	const; // TODO Emmis: временое решение для рендера текста субтитров
+	void			Draw(CGameFont* pFont, float x, float y, u32 colorOverride = 0)	const;
+	void			DrawWS(CGameFont* pFont, float x, float y, u32 colorOverride = 0)	const;
 
 	xr_string	m_text;
 	u32			m_color;

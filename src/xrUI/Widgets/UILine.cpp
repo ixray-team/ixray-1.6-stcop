@@ -119,27 +119,27 @@ void CUILine::ProcessNewLines()
 	}
 }
 
-void CUILine::Draw(CGameFont* pFont, float x, float y) const{
+void CUILine::Draw(CGameFont* pFont, float x, float y, u32 colorOverride) const{
 	float length = 0;
 	int size = (int)m_subLines.size();
 
 	for (int i=0; i<size; i++)
 	{
-		m_subLines[i].Draw(pFont, x+length, y);
+		m_subLines[i].Draw(pFont, x+length, y, colorOverride);
 		float ll = pFont->SizeOf_(m_subLines[i].m_text.c_str()); //. all ok
 		UI().ClientToScreenScaledWidth(ll);
 		length	+= ll;
 	}
 }
 
-void CUILine::DrawWS(CGameFont* pFont, float x, float y) const
+void CUILine::DrawWS(CGameFont* pFont, float x, float y, u32 colorOverride) const
 {
 	float length = 0;
 	int size = (int)m_subLines.size();
 
 	for (int i = 0; i < size; i++)
 	{
-		m_subLines[i].DrawWS(pFont, x + length, y);
+		m_subLines[i].DrawWS(pFont, x + length, y, colorOverride);
 		float ll = pFont->SizeOf_(m_subLines[i].m_text.c_str()); //. all ok
 		// UI().ClientToScreenScaledWidth(ll);
 		length += ll;

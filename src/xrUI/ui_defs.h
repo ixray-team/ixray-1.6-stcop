@@ -9,12 +9,24 @@ typedef	FactoryPtr<IUIShader>	ui_shader;
 #define UI_BASE_WIDTH	1024.0f
 #define UI_BASE_HEIGHT	768.0f
 
-struct UI_API SUITextureShadowParams
+// Programmatic 8-dir outline for UI textures and text (XML node: <shadows/>).
+struct UI_API SUIOutlineParams
 {
 	bool enabled = false;
 	float thickness = 1.0f;
 	u32 color = 0;
 };
+
+using SUITextureShadowParams = SUIOutlineParams;
+
+namespace UIOutline
+{
+	inline const Fvector2 kDirs8[8] = {
+		{-1.0f, -1.0f}, { 0.0f, -1.0f}, { 1.0f, -1.0f},
+		{-1.0f,  0.0f},                 { 1.0f,  0.0f},
+		{-1.0f,  1.0f}, { 0.0f,  1.0f}, { 1.0f,  1.0f}
+	};
+}
 
 enum EUIItemAlign
 {

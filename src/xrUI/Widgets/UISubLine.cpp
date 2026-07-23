@@ -93,14 +93,26 @@ const CUISubLine* CUISubLine::Cut2Pos(int i)
 	return m_pTempLine;
 }
 
-void CUISubLine::Draw(CGameFont* pFont, float x, float y) const
+void CUISubLine::Draw(CGameFont* pFont, float x, float y, u32 colorOverride) const
 {
-	pFont->SetColor		(m_color);
-	pFont->Out			(UI().ClientToScreenScaledX(x), UI().ClientToScreenScaledY(y), "%s", m_text.c_str() );
+	u32 drawColor = m_color;
+	if (colorOverride != 0)
+	{
+		const u32 alpha = (color_get_A(colorOverride) * color_get_A(m_color)) / 255;
+		drawColor = subst_alpha(colorOverride, alpha);
+	}
+	pFont->SetColor(drawColor);
+	pFont->Out(UI().ClientToScreenScaledX(x), UI().ClientToScreenScaledY(y), "%s", m_text.c_str());
 }
 
-void CUISubLine::DrawWS(CGameFont* pFont, float x, float y) const
+void CUISubLine::DrawWS(CGameFont* pFont, float x, float y, u32 colorOverride) const
 {
-	pFont->SetColor(m_color);
+	u32 drawColor = m_color;
+	if (colorOverride != 0)
+	{
+		const u32 alpha = (color_get_A(colorOverride) * color_get_A(m_color)) / 255;
+		drawColor = subst_alpha(colorOverride, alpha);
+	}
+	pFont->SetColor(drawColor);
 	pFont->Out(x, y, "%s", m_text.c_str());
 }
