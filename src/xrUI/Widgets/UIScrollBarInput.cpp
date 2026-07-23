@@ -14,9 +14,10 @@ ScrollHitZone CUIScrollBar::hitTestScrollZone() const
 
 	Fvector2 cursorPos = GetUICursor().GetCursorPosition();
 	Frect boxRect;
+	thumb->GetAbsoluteRect(boxRect);
+
 	Frect decRect;
 	Frect incRect;
-	thumb->GetAbsoluteRect(boxRect);
 	_decButton->GetAbsoluteRect(decRect);
 	_incButton->GetAbsoluteRect(incRect);
 
@@ -30,25 +31,32 @@ ScrollHitZone CUIScrollBar::hitTestScrollZone() const
 		return ScrollHitZone::IncButton;
 	}
 
-	Frect dec2Rect;
-	Frect inc2Rect;
+	Frect barRect;
+	const_cast<CUIScrollBar*>(this)->GetAbsoluteRect(barRect);
+
+	Frect trackBefore;
+	Frect trackAfter;
 	if (_isHorizontal)
 	{
-		dec2Rect.set(decRect.x2, decRect.y1, boxRect.x1, boxRect.y2);
-		inc2Rect.set(boxRect.x2, boxRect.y1, incRect.x1, incRect.y2);
+		const float left = _decButton->IsShown() ? decRect.x2 : barRect.x1;
+		const float right = _incButton->IsShown() ? incRect.x1 : barRect.x2;
+		trackBefore.set(left, barRect.y1, boxRect.x1, barRect.y2);
+		trackAfter.set(boxRect.x2, barRect.y1, right, barRect.y2);
 	}
 	else
 	{
-		dec2Rect.set(decRect.x1, decRect.y2, boxRect.x2, boxRect.y1);
-		inc2Rect.set(boxRect.x1, boxRect.y2, incRect.x2, incRect.y1);
+		const float top = _decButton->IsShown() ? decRect.y2 : barRect.y1;
+		const float bottom = _incButton->IsShown() ? incRect.y1 : barRect.y2;
+		trackBefore.set(barRect.x1, top, barRect.x2, boxRect.y1);
+		trackAfter.set(barRect.x1, boxRect.y2, barRect.x2, bottom);
 	}
 
-	if (_decButton->IsShown() && dec2Rect.in(cursorPos) && (_mouseState != 2))
+	if (trackBefore.in(cursorPos) && (_mouseState != 2))
 	{
 		return ScrollHitZone::TrackBefore;
 	}
 
-	if (_incButton->IsShown() && inc2Rect.in(cursorPos) && (_mouseState != 1))
+	if (trackAfter.in(cursorPos) && (_mouseState != 1))
 	{
 		return ScrollHitZone::TrackAfter;
 	}
@@ -154,7 +162,7 @@ bool CUIScrollBar::OnMouseAction(float x, float y, EUIMessages mouseAction)
 	}
 
 	CUIWindow* thumb = GetThumbWindow();
-	if (_layoutMode == ScrollLayoutMode::Fixed && thumb)
+	if (thumb && (_layoutMode == ScrollLayoutMode::Fixed || thumb == _fixedThumb))
 	{
 		if (handleFixedLayoutMouseAction(thumb, mouseAction))
 		{

@@ -387,7 +387,10 @@ void CServerList::UpdateSizes()
 	float height = m_bShowServerInfo ? m_fListH[1] : m_fListH[0];
 	m_list[LST_SERVER].SetHeight(height);
 	int page_size = (m_list[LST_SERVER].GetSize()*m_list[LST_SERVER].GetItemHeight() < height) ? 0 : int(height);
-	m_list[LST_SERVER].ScrollBar()->SetPageSize(page_size);
+	if (CUIScrollBar* bar = m_list[LST_SERVER].ScrollBar())
+	{
+		bar->SetPageSize(page_size);
+	}
 	m_list[LST_SERVER].ForceUpdate();
 
 	m_frame[LST_SERVER].SetHeight	(height+2.0f);
