@@ -58,6 +58,7 @@ CUICompassBar::CUICompassBar()
       _activeTargetLoc(nullptr),
       _lastActiveLoc(nullptr),
       _activeTargetCurX(0.0f),
+      _activeDistTextFollowMarkerColor(true),
       _stripWidth(0.0f),
       _stripTexWidth(_kDefaultStripTexWidth),
       _stripTexLoop(true),
@@ -717,6 +718,21 @@ void CUICompassBar::InitActiveTargetWidgets(CUIXml& uiXml, CUIXmlInit& xmlInit)
         if (_activeDistText)
         {
             _activeDistText->SetAutoDelete(false);
+
+            string_path distTextPath;
+            xr_strconcat(distTextPath, distPath, ":text");
+            const bool hasColorOnRoot =
+                uiXml.ReadAttrib(distPath, 0, "color", nullptr) != nullptr ||
+                uiXml.ReadAttrib(distPath, 0, "r", nullptr) != nullptr ||
+                uiXml.ReadAttrib(distPath, 0, "g", nullptr) != nullptr ||
+                uiXml.ReadAttrib(distPath, 0, "b", nullptr) != nullptr;
+            const bool hasColorOnText =
+                uiXml.NavigateToNode(distTextPath, 0) &&
+                (uiXml.ReadAttrib(distTextPath, 0, "color", nullptr) != nullptr ||
+                 uiXml.ReadAttrib(distTextPath, 0, "r", nullptr) != nullptr ||
+                 uiXml.ReadAttrib(distTextPath, 0, "g", nullptr) != nullptr ||
+                 uiXml.ReadAttrib(distTextPath, 0, "b", nullptr) != nullptr);
+            _activeDistTextFollowMarkerColor = !hasColorOnRoot && !hasColorOnText;
         }
     }
     if (uiXml.NavigateToNode("compass_bar:active_target:marker", 0))
@@ -753,10 +769,27 @@ void CUICompassBar::CreateDefaultActiveTargetWidgets(CUIXml& uiXml)
         {
             _activeDistText->SetFont(font);
         }
-        const char* colorName = uiXml.ReadAttrib("compass_bar:active_target:distance_text", 0, "color", "ui_1");
-        CUIXmlInit::ColorDefs::const_iterator colorIt = CUIXmlInit::GetColorDefs()->find(colorName);
-        u32 textColor = (colorIt != CUIXmlInit::GetColorDefs()->end()) ? colorIt->second : _kDefaultColorWhite;
-        _activeDistText->SetTextColor(textColor);
+        const char* colorName = uiXml.ReadAttrib("compass_bar:active_target:distance_text", 0, "color", nullptr);
+        const char* rAttr = uiXml.ReadAttrib("compass_bar:active_target:distance_text", 0, "r", nullptr);
+        if (colorName || rAttr)
+        {
+            _activeDistTextFollowMarkerColor = false;
+            u32 textColor = _kDefaultColorWhite;
+            if (colorName)
+            {
+                CUIXmlInit::ColorDefs::const_iterator colorIt = CUIXmlInit::GetColorDefs()->find(colorName);
+                textColor = (colorIt != CUIXmlInit::GetColorDefs()->end()) ? colorIt->second : _kDefaultColorWhite;
+            }
+            else
+            {
+                textColor = CUIXmlInit::GetColor(uiXml, "compass_bar:active_target:distance_text", 0, _kDefaultColorWhite);
+            }
+            _activeDistText->SetTextColor(textColor);
+        }
+        else
+        {
+            _activeDistTextFollowMarkerColor = true;
+        }
         if (_activeDistText->TextItemControl())
         {
             _activeDistText->TextItemControl()->SetTextAlignment(CGameFont::alCenter);
@@ -1661,12 +1694,19 @@ void CUICompassBar::UpdateActiveTargetMarker(CMapLocation* activeLoc)
     _activeMarker->Show(true);
 }
 
-void CUICompassBar::UpdateActiveTargetText(const Fvector& actorPos, const Fvector& tgtPos)
+void CUICompassBar::UpdateActiveTargetText(const Fvector& actorPos, const Fvector& tgtPos, CMapLocation* activeLoc)
 {
     if (!_activeDistText)
     {
         return;
     }
+
+    if (_activeDistTextFollowMarkerColor && activeLoc)
+    {
+        const u32 locColor = activeLoc->GetCompassColor();
+        _activeDistText->SetTextColor(locColor != 0 ? locColor : _kDefaultColorWhite);
+    }
+
     const float dist = actorPos.distance_to(tgtPos);
     const float distRounded = float(iFloor(dist + 0.5f));
     if (std::abs(distRounded - _dirty.lastDistanceMeters) < 0.1f)
@@ -1755,7 +1795,7 @@ void CUICompassBar::UpdateActiveTarget(const Fvector& actorPos, float camHeading
     }
     if (_activeDistText)
     {
-        UpdateActiveTargetText(actorPos, tgtPos);
+        UpdateActiveTargetText(actorPos, tgtPos, activeLoc);
     }
     if (_activeAltitudeArrow)
     {
