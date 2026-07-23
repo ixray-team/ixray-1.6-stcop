@@ -12,15 +12,6 @@
 
 bool is_in2(const Frect& b1, const Frect& b2);
 
-namespace
-{
-	constexpr Fvector2 kOutlineDirs8[8] = {
-		{-1.0f, -1.0f}, { 0.0f, -1.0f}, { 1.0f, -1.0f},
-		{-1.0f,  0.0f},                 { 1.0f,  0.0f},
-		{-1.0f,  1.0f}, { 0.0f,  1.0f}, { 1.0f,  1.0f}
-	};
-}
-
 void lanim_cont::set_defaults()
 {
 	m_lanim					= nullptr;	
@@ -56,6 +47,16 @@ void CUIStatic::SetTextureShadow(bool enabled, float thickness, u32 color)
 	m_textureShadowEnabled = enabled;
 	m_textureShadowThickness = thickness;
 	m_textureShadowColor = color;
+}
+
+void CUIStatic::SetTextShadow(bool enabled, float thickness, u32 color)
+{
+	TextItemControl()->SetTextShadow(enabled, thickness, color);
+}
+
+void CUIStatic::SetTextShadow(const SUIOutlineParams& params)
+{
+	TextItemControl()->SetTextShadow(params);
 }
 
 CUIStatic::~CUIStatic()
@@ -221,16 +222,23 @@ void CUIStatic::DrawTexture()
 	if (!m_bTextureEnable || !GetShader() || !GetShader()->inited())
 		return;
 
+	const u32 textureColor = GetTextureColor();
 	if (m_textureShadowEnabled && m_textureShadowThickness > 0.0f)
 	{
-		for (const Fvector2& d : kOutlineDirs8)
+		const u32 textureAlpha = color_get_A(textureColor);
+		const u32 shadowAlpha = (color_get_A(m_textureShadowColor) * textureAlpha) / 255;
+		if (shadowAlpha > 0)
 		{
-			DrawTexturePass(m_textureShadowColor,
-				Fvector2().set(d.x * m_textureShadowThickness, d.y * m_textureShadowThickness));
+			const u32 shadowColor = subst_alpha(m_textureShadowColor, shadowAlpha);
+			for (const Fvector2& d : UIOutline::kDirs8)
+			{
+				DrawTexturePass(shadowColor,
+					Fvector2().set(d.x * m_textureShadowThickness, d.y * m_textureShadowThickness));
+			}
 		}
 	}
 
-	DrawTexturePass(GetTextureColor(), Fvector2().set(0.0f, 0.0f));
+	DrawTexturePass(textureColor, Fvector2().set(0.0f, 0.0f));
 }
 
 void CUIStatic::Update()
