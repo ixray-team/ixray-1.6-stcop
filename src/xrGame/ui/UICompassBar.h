@@ -82,6 +82,7 @@ struct SCompassSpotLayerConfig
     float spotHeight = 0.0f;
     float collectInterval = 0.1f;
     u32 defaultSpotColor = 0;
+    SUITextureShadowParams defaultShadow;
 };
 
 struct SSpotCandidate

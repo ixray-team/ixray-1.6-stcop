@@ -45,8 +45,8 @@ public:
 	void 			Clear					();
 	void 			ProcessNewLines			();
 
-void 				Draw					(CGameFont* pFont, float x, float y)						const;
-void 				DrawWS					(CGameFont* pFont, float x, float y)						const; // TODO Emmis: временое решение для рендера текста субтитров
+void 				Draw					(CGameFont* pFont, float x, float y, u32 colorOverride = 0)						const;
+void 				DrawWS					(CGameFont* pFont, float x, float y, u32 colorOverride = 0)						const;
 bool				IsEmpty					() {return m_subLines.empty();}
 
 protected:
