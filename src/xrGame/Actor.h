@@ -868,6 +868,8 @@ public:
 
 #ifndef MASTER_GOLD
 			void				NoClipFly						(int cmd);
+			void				NoClipFlyGamepad				(int cmd);
+			void				NoClipFlyStick					(Fvector2 val);
 #endif //DEBUG
 
 public:
