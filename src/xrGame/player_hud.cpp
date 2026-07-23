@@ -72,6 +72,11 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 		if (strstr(res.c_str(), "anim_") == res.c_str() &&
 			res.find_first_of("anim_") != xr_string::npos)
 		{
+			if (model == g_player_hud->GetModel())
+			{
+				// don't load this if using CoP system
+				continue;
+			}
 			xr_string str = res.substr(5);
 			res = "anm_" + str;
 		};
@@ -741,7 +746,7 @@ void attachable_hud_item::load(const shared_str& sect_name)
 	m_sect_name					= sect_name;
 
 	// Visual
-	m_model_combined			= pSettings->line_exist(sect_name, "visual");
+	m_model_combined			= !pSettings->line_exist(sect_name, "item_visual");
 	m_visual_name = m_model_combined ? pSettings->r_string(sect_name, "visual") : pSettings->r_string(sect_name, "item_visual");
 	m_model						 = PKinematics(::Render->model_Create(m_visual_name.c_str()));
 
