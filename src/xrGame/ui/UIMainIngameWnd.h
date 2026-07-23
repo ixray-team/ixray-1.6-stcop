@@ -146,9 +146,13 @@ protected:
 	bool				useLegacyIndicators;
 	ENavigationHudMode	m_navigationMode = ENavigationHudMode::Minimap;
 
+	static bool					s_hasPersistedNavigationMode;
+	static ENavigationHudMode	s_persistedNavigationMode;
+
 protected:
 	Frect				GetNavigationHostRect() const;
 	void				RebindNavigationChildren();
+	void				PersistNavigationMode(ENavigationHudMode mode);
 
 	bool				EnsureCompassBar();
 	bool				IsCompassBarInitialized() const;
