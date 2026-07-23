@@ -235,6 +235,7 @@ private:
 
     shared_str _activeMarkerFallbackTexture;
     shared_str _activeMarkerLastTexture;
+    bool _activeDistTextFollowMarkerColor;
 
     float _stripWidth;
     float _stripTexWidth;
@@ -275,7 +276,7 @@ private:
     void CalculateActiveTargetPosition(const Fvector& actorPos, float camHeading, const Fvector& tgtPos,
         float& outX) const;
     void UpdateActiveTargetMarker(CMapLocation* activeLoc);
-    void UpdateActiveTargetText(const Fvector& actorPos, const Fvector& tgtPos);
+    void UpdateActiveTargetText(const Fvector& actorPos, const Fvector& tgtPos, CMapLocation* activeLoc);
     void UpdateActiveAltitudeArrow(const Fvector& actorPos, const Fvector& tgtPos);
 
     bool BuildFrameContext(SCompassFrameContext& out) const;
