@@ -364,13 +364,19 @@ bool CUIDiaryWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 			else if (is_binded(kUI_SECONDARY_UP, id))
 			{
 				ActionRepeaters()->SetActionStarted(this, kUI_SECONDARY_UP);
-				m_DescrView->ScrollBar()->TryScrollDec();
+				if (CUIScrollBar* bar = m_DescrView->ScrollBar())
+				{
+					bar->TryScrollDec();
+				}
 				return true;
 			}
 			else if (is_binded(kUI_SECONDARY_DOWN, id))
 			{
 				ActionRepeaters()->SetActionStarted(this, kUI_SECONDARY_DOWN);
-				m_DescrView->ScrollBar()->TryScrollInc();
+				if (CUIScrollBar* bar = m_DescrView->ScrollBar())
+				{
+					bar->TryScrollInc();
+				}
 				return true;
 			}
 			else if (is_binded(kUI_LEFT, id) || is_binded(kUI_RIGHT, id) || is_binded(kUI_ACCEPT, id))
@@ -453,7 +459,10 @@ bool CUIDiaryWnd::OnGamepadKeyHold(int id)
 	{
 		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_SECONDARY_UP))
 		{
-			m_DescrView->ScrollBar()->TryScrollDec();
+			if (CUIScrollBar* bar = m_DescrView->ScrollBar())
+			{
+				bar->TryScrollDec();
+			}
 			return true;
 		}
 	}
@@ -461,7 +470,10 @@ bool CUIDiaryWnd::OnGamepadKeyHold(int id)
 	{
 		if (ActionRepeaters()->CanRepeatActionNow(this, kUI_SECONDARY_DOWN))
 		{
-			m_DescrView->ScrollBar()->TryScrollInc();
+			if (CUIScrollBar* bar = m_DescrView->ScrollBar())
+			{
+				bar->TryScrollInc();
+			}
 			return true;
 		}
 	}

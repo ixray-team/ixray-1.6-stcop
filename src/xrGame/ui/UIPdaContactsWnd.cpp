@@ -310,7 +310,8 @@ bool CUIPdaContactsWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 			}
 			if (UIListWnd->GetSelected())
 			{
-				UIListWnd->ScrollToItem(UIListWnd->GetSelected(), iFloor(-UIListWnd->ScrollBar()->GetHeight() / 2.0f + UIListWnd->GetSelected()->GetWndRect().height() / 2.0f));
+				const float barHeight = UIListWnd->ScrollBar() ? UIListWnd->ScrollBar()->GetHeight() : 0.0f;
+				UIListWnd->ScrollToItem(UIListWnd->GetSelected(), iFloor(-barHeight / 2.0f + UIListWnd->GetSelected()->GetWndRect().height() / 2.0f));
 			}
 			return true;
 		}
@@ -330,7 +331,8 @@ bool CUIPdaContactsWnd::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
 			}
 			if (UIListWnd->GetSelected())
 			{
-				UIListWnd->ScrollToItem(UIListWnd->GetSelected(), iFloor(-UIListWnd->ScrollBar()->GetHeight() / 2.0f + UIListWnd->GetSelected()->GetWndRect().height() / 2.0f));
+				const float barHeight = UIListWnd->ScrollBar() ? UIListWnd->ScrollBar()->GetHeight() : 0.0f;
+				UIListWnd->ScrollToItem(UIListWnd->GetSelected(), iFloor(-barHeight / 2.0f + UIListWnd->GetSelected()->GetWndRect().height() / 2.0f));
 			}
 			return true;
 		}
@@ -358,7 +360,8 @@ bool CUIPdaContactsWnd::OnGamepadKeyHold(int id)
 			}
 			if (UIListWnd->GetSelected())
 			{
-				UIListWnd->ScrollToItem(UIListWnd->GetSelected(), iFloor(-UIListWnd->ScrollBar()->GetHeight() / 2.0f + UIListWnd->GetSelected()->GetWndRect().height() / 2.0f));
+				const float barHeight = UIListWnd->ScrollBar() ? UIListWnd->ScrollBar()->GetHeight() : 0.0f;
+				UIListWnd->ScrollToItem(UIListWnd->GetSelected(), iFloor(-barHeight / 2.0f + UIListWnd->GetSelected()->GetWndRect().height() / 2.0f));
 			}
 		}
 		return true;
@@ -380,7 +383,8 @@ bool CUIPdaContactsWnd::OnGamepadKeyHold(int id)
 			}
 			if (UIListWnd->GetSelected())
 			{
-				UIListWnd->ScrollToItem(UIListWnd->GetSelected(), iFloor(-UIListWnd->ScrollBar()->GetHeight() / 2.0f + UIListWnd->GetSelected()->GetWndRect().height() / 2.0f));
+				const float barHeight = UIListWnd->ScrollBar() ? UIListWnd->ScrollBar()->GetHeight() : 0.0f;
+				UIListWnd->ScrollToItem(UIListWnd->GetSelected(), iFloor(-barHeight / 2.0f + UIListWnd->GetSelected()->GetWndRect().height() / 2.0f));
 			}
 		}
 		return true;

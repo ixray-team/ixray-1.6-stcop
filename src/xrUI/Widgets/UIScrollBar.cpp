@@ -14,16 +14,16 @@ CUIScrollBar::CUIScrollBar()
 	_incButton->SetAutoDelete(true);
 	AttachChild(_incButton);
 
+	_frameBackground = new CUIFrameLineWnd();
+	_frameBackground->SetAutoDelete(true);
+	AttachChild(_frameBackground);
+
 	_scrollBox = new CUIScrollBox();
 	_scrollBox->SetAutoDelete(true);
 	AttachChild(_scrollBox);
 
 	_fixedThumb = new CUI3tButton();
 	_fixedThumb->SetAutoDelete(true);
-
-	_frameBackground = new CUIFrameLineWnd();
-	_frameBackground->SetAutoDelete(true);
-	AttachChild(_frameBackground);
 }
 
 CUIScrollBar::~CUIScrollBar() = default;
@@ -58,7 +58,7 @@ float CUIScrollBar::crossBarSpan() const
 
 float CUIScrollBar::thumbViewOffset() const
 {
-	return crossBarSpan();
+	return GetDecSpan() + scrollBoxInset();
 }
 
 float CUIScrollBar::scrollBoxInset() const
@@ -90,7 +90,7 @@ void CUIScrollBar::RecalcWorkArea(float thickness)
 
 CUIWindow* CUIScrollBar::GetThumbWindow() const
 {
-	if (_layoutMode == ScrollLayoutMode::Fixed && _partFlags.hasThumb && _fixedThumb->IsShown())
+	if (_partFlags.hasThumb && _fixedThumb->IsShown())
 	{
 		return _fixedThumb;
 	}
@@ -185,24 +185,23 @@ void CUIScrollBar::layoutThumbGeometry(CUIWindow* thumb, float boxSz)
 		const float inset = 2.0f * scrollBoxInset();
 		const float fixedMin = std::min(crossBarSpan(), maxMain - inset);
 		clamp(clamped, fixedMin, maxMain - inset);
-		if (_isHorizontal)
-		{
-			_fixedThumb->SetWidth(clamped);
-		}
-		else
-		{
-			_fixedThumb->SetHeight(clamped);
-		}
 	}
-	else if (_isHorizontal)
+
+	if (_isHorizontal)
 	{
-		_scrollBox->SetWidth(clamped);
-		_scrollBox->SetHeight(GetHeight());
+		thumb->SetWidth(clamped);
+		if (thumb == _scrollBox)
+		{
+			thumb->SetHeight(GetHeight());
+		}
 	}
 	else
 	{
-		_scrollBox->SetHeight(clamped);
-		_scrollBox->SetWidth(GetWidth());
+		thumb->SetHeight(clamped);
+		if (thumb == _scrollBox)
+		{
+			thumb->SetWidth(GetWidth());
+		}
 	}
 
 	const int pos = PosViewFromScroll(iFloor(clamped), iFloor(thumbViewOffset()));
@@ -234,14 +233,13 @@ void CUIScrollBar::UpdateScrollBar()
 		}
 
 		const float boxSz = float(_scrollWorkArea) * float(_pageSize ? _pageSize : 1) / float(_maxPos - _minPos);
-		if (IsRelevant())
-		{
-			layoutThumbGeometry(thumb, boxSz);
-		}
+		layoutThumbGeometry(thumb, boxSz);
 	}
 
-	const u32 thumbColor = IsRelevant() ? color_rgba(255, 255, 255, 255) : color_rgba(255, 255, 255, 0);
-	if (_layoutMode == ScrollLayoutMode::Fixed && _partFlags.hasThumb && _fixedThumb->IsShown())
+	const u32 thumbColor = IsRelevant()
+		? color_rgba(255, 255, 255, 255)
+		: color_rgba(255, 255, 255, 200);
+	if (_fixedThumb->IsShown())
 	{
 		_fixedThumb->SetTextureColor(thumbColor);
 	}

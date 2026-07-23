@@ -1113,6 +1113,32 @@ void CUIRankingWnd::ResetAll()
 }
 
 #define RANKING_WND_SCROLL_STEP_SIZE 16.0f
+
+static void RankingWndScrollByStep(CUIScrollView* scroll, bool scrollUp)
+{
+	if (!scroll)
+	{
+		return;
+	}
+	CUIScrollBar* bar = scroll->ScrollBar();
+	if (!bar)
+	{
+		return;
+	}
+
+	const int orig = bar->GetStepSize();
+	bar->SetStepSize(RANKING_WND_SCROLL_STEP_SIZE);
+	if (scrollUp)
+	{
+		bar->TryScrollDec();
+	}
+	else
+	{
+		bar->TryScrollInc();
+	}
+	bar->SetStepSize(orig);
+}
+
 bool CUIRankingWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 {
 	if (gamepad_action == WINDOW_KEY_PRESSED)
@@ -1125,11 +1151,7 @@ bool CUIRankingWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 				{
 					m_pUiSounds->Play(EPdaUiSound::ListScroll, true);
 				}
-				CUIScrollView* scroll = m_achievements ? m_achievements : m_factions_list;
-				int orig = scroll->ScrollBar()->GetStepSize();
-				scroll->ScrollBar()->SetStepSize(RANKING_WND_SCROLL_STEP_SIZE);
-				scroll->ScrollBar()->TryScrollDec();
-				scroll->ScrollBar()->SetStepSize(orig);
+				RankingWndScrollByStep(m_achievements ? m_achievements : m_factions_list, true);
 				return true;
 			}
 			case kPDA_LOG_SCROLL_DOWN:
@@ -1138,11 +1160,7 @@ bool CUIRankingWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 				{
 					m_pUiSounds->Play(EPdaUiSound::ListScroll, true);
 				}
-				CUIScrollView* scroll = m_achievements ? m_achievements : m_factions_list;
-				int orig = scroll->ScrollBar()->GetStepSize();
-				scroll->ScrollBar()->SetStepSize(RANKING_WND_SCROLL_STEP_SIZE);
-				scroll->ScrollBar()->TryScrollInc();
-				scroll->ScrollBar()->SetStepSize(orig);
+				RankingWndScrollByStep(m_achievements ? m_achievements : m_factions_list, false);
 				return true;
 			}
 		}
@@ -1158,11 +1176,7 @@ bool CUIRankingWnd::OnGamepadKeyHold(int key)
 		{
 			if (!any_binded_key_for_action_pressed_c(kPDA_LOG_SCROLL_DOWN))
 			{
-				CUIScrollView* scroll = m_achievements ? m_achievements : m_factions_list;
-				int orig = scroll->ScrollBar()->GetStepSize();
-				scroll->ScrollBar()->SetStepSize(RANKING_WND_SCROLL_STEP_SIZE);
-				scroll->ScrollBar()->TryScrollDec();
-				scroll->ScrollBar()->SetStepSize(orig);
+				RankingWndScrollByStep(m_achievements ? m_achievements : m_factions_list, true);
 			}
 			return true;
 		}
@@ -1170,11 +1184,7 @@ bool CUIRankingWnd::OnGamepadKeyHold(int key)
 		{
 			if (!any_binded_key_for_action_pressed_c(kPDA_LOG_SCROLL_UP))
 			{
-				CUIScrollView* scroll = m_achievements ? m_achievements : m_factions_list;
-				int orig = scroll->ScrollBar()->GetStepSize();
-				scroll->ScrollBar()->SetStepSize(RANKING_WND_SCROLL_STEP_SIZE);
-				scroll->ScrollBar()->TryScrollInc();
-				scroll->ScrollBar()->SetStepSize(orig);
+				RankingWndScrollByStep(m_achievements ? m_achievements : m_factions_list, false);
 			}
 			return true;
 		}

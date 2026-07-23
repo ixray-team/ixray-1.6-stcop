@@ -5,6 +5,7 @@
 #include "UIXmlInit.h"
 #include "UIStatic.h"
 #include "UIFrameLineWnd.h"
+#include "UITextureMaster.h"
 
 namespace
 {
@@ -45,6 +46,47 @@ bool ThumbFromAttrib(const char* thumbStr, bool isFixedLayout, bool& thumbAsButt
 		return true;
 	}
 	return false;
+}
+
+bool IsFrameLineTextureBase(const char* textureBase)
+{
+	if (!textureBase || !textureBase[0])
+	{
+		return false;
+	}
+
+	string256 backName;
+	string256 beginName;
+	string256 endName;
+	xr_strconcat(backName, textureBase, "_back");
+	xr_strconcat(beginName, textureBase, "_b");
+	xr_strconcat(endName, textureBase, "_e");
+	return CUITextureMaster::ItemExist(backName)
+		&& CUITextureMaster::ItemExist(beginName)
+		&& CUITextureMaster::ItemExist(endName);
+}
+
+bool ReadPartTextureName(CUIXml& xmlDoc, const char* nodePath, string256& outTexture)
+{
+	string256 texturePath;
+	xr_strconcat(texturePath, nodePath, ":texture");
+	const char* texture = xmlDoc.Read(texturePath, 0, nullptr);
+	if (!texture || !texture[0])
+	{
+		outTexture[0] = 0;
+		return false;
+	}
+
+	xr_strcpy(outTexture, texture);
+	return true;
+}
+
+bool NodeHasButtonTextures(CUIXml& xmlDoc, const char* nodePath)
+{
+	string256 texturePath;
+	xr_strconcat(texturePath, nodePath, ":texture_e");
+	const char* texture = xmlDoc.Read(texturePath, 0, nullptr);
+	return texture && texture[0];
 }
 } // namespace
 
@@ -98,6 +140,15 @@ bool CUIScrollBar::ParseProfile(CUIXml& xmlDoc, const char* profile, bool isHori
 	}
 
 	out.thickness = xmlDoc.ReadAttribFlt(profile, 0, isHorizontal ? "height" : "height_v", 0.0f);
+	// SoC default often has only `height` (shared thickness for both axes).
+	if (out.thickness <= 0.0f && !isHorizontal)
+	{
+		out.thickness = height;
+	}
+	if (out.thickness <= 0.0f && isHorizontal)
+	{
+		out.thickness = heightV > 0.0f ? heightV : height;
+	}
 	if (out.thickness <= 0.0f)
 	{
 		out.thickness = (out.layoutMode == ScrollLayoutMode::Fixed) ? 17.0f : 16.0f;
@@ -211,13 +262,66 @@ void CUIScrollBar::ApplyStaticThumbHack(CUIStatic* tempStatic, CUIWindow* target
 		return;
 	}
 
-	frame->InitFrameLineWnd(tempStatic->GetWndPos(), GetWndSize(), _isHorizontal);
+	const Frect texRect = tempStatic->GetTextureRect();
+	Fvector2 size = tempStatic->GetWndSize();
+	if (size.x <= 0.0f)
+	{
+		size.x = texRect.width() > 0.0f ? texRect.width() : crossBarSpan();
+	}
+	if (size.y <= 0.0f)
+	{
+		size.y = texRect.height() > 0.0f ? texRect.height() : crossBarSpan();
+	}
+
+	if (_isHorizontal)
+	{
+		size.y = GetHeight();
+	}
+	else
+	{
+		size.x = GetWidth();
+	}
+
+	frame->InitFrameLineWnd(tempStatic->GetWndPos(), size, _isHorizontal);
 	frame->SetShader(tempStatic->GetShader());
-	frame->SetTextureRect(tempStatic->GetTextureRect(), CUIFrameLineWnd::flBack);
+	frame->SetTextureRect(texRect, CUIFrameLineWnd::flBack);
 	frame->SetTextureRect({ 0, 0, 0, 0 }, CUIFrameLineWnd::flFirst);
 	frame->SetTextureRect({ 0, 0, 0, 0 }, CUIFrameLineWnd::flSecond);
 	frame->SetTextureVisible(true);
 	frame->Show(true);
+}
+
+bool CUIScrollBar::InitFramePartFromSingleTexture(CUIFrameLineWnd* frame, const char* textureName, Fvector2 pos, Fvector2 size)
+{
+	if (!frame || !textureName || !textureName[0])
+	{
+		return false;
+	}
+
+	ui_shader shader;
+	Frect texRect;
+	if (!CUITextureMaster::InitTexture(textureName, "hud\\default", shader, texRect, false))
+	{
+		return false;
+	}
+
+	if (size.x <= 0.0f)
+	{
+		size.x = texRect.width() > 0.0f ? texRect.width() : crossBarSpan();
+	}
+	if (size.y <= 0.0f)
+	{
+		size.y = texRect.height() > 0.0f ? texRect.height() : crossBarSpan();
+	}
+
+	frame->InitFrameLineWnd(pos, size, _isHorizontal);
+	frame->SetShader(shader);
+	frame->SetTextureRect(texRect, CUIFrameLineWnd::flBack);
+	frame->SetTextureRect({ 0, 0, 0, 0 }, CUIFrameLineWnd::flFirst);
+	frame->SetTextureRect({ 0, 0, 0, 0 }, CUIFrameLineWnd::flSecond);
+	frame->SetTextureVisible(true);
+	frame->Show(true);
+	return true;
 }
 
 void CUIScrollBar::ApplyStaticTrackHack(CUIStatic* tempBackground)
@@ -236,13 +340,67 @@ void CUIScrollBar::ApplyStaticTrackHack(CUIStatic* tempBackground)
 		SetWidth(tempBackground->GetWidth());
 	}
 
-	_frameBackground->InitFrameLineWnd(GetWndPos(), GetWndSize(), _isHorizontal);
+	_frameBackground->InitFrameLineWnd(Fvector2().set(0.0f, 0.0f), GetWndSize(), _isHorizontal);
 	_frameBackground->SetShader(tempBackground->GetShader());
 	_frameBackground->SetTextureRect(tempBackground->GetTextureRect(), CUIFrameLineWnd::flBack);
 	_frameBackground->SetTextureRect({ 0, 0, 0, 0 }, CUIFrameLineWnd::flFirst);
 	_frameBackground->SetTextureRect({ 0, 0, 0, 0 }, CUIFrameLineWnd::flSecond);
 	_frameBackground->SetTextureVisible(true);
 	_frameBackground->Show(true);
+}
+
+bool CUIScrollBar::InitThumbAsBox(CUIXml& xmlDoc, const char* nodePath)
+{
+	_fixedThumb->Show(false);
+	if (IsChild(_fixedThumb))
+	{
+		DetachChild(_fixedThumb);
+	}
+
+	_scrollBox->SetHorizontal(_isHorizontal);
+
+	string256 textureName;
+	const bool hasTexture = ReadPartTextureName(xmlDoc, nodePath, textureName);
+	const bool preferFrameLine = hasTexture && IsFrameLineTextureBase(textureName);
+
+	if (preferFrameLine && CUIXmlInit::InitFrameLine(xmlDoc, nodePath, 0, _scrollBox, false))
+	{
+		_scrollBox->Show(true);
+		_partFlags.hasThumb = true;
+		return true;
+	}
+
+	if (hasTexture)
+	{
+		const float width = xmlDoc.ReadAttribFlt(nodePath, 0, "width", 0.0f);
+		const float height = xmlDoc.ReadAttribFlt(nodePath, 0, "height", 0.0f);
+		const float x = xmlDoc.ReadAttribFlt(nodePath, 0, "x", 0.0f);
+		const float y = xmlDoc.ReadAttribFlt(nodePath, 0, "y", 0.0f);
+		if (InitFramePartFromSingleTexture(_scrollBox, textureName, Fvector2().set(x, y), Fvector2().set(width, height)))
+		{
+			_partFlags.hasThumb = true;
+			return true;
+		}
+	}
+
+	if (xmlDoc.NavigateToNode(nodePath, 0))
+	{
+		// HACK: SoC/CS static thumb fallback
+		CUIStatic* tempStatic = new CUIStatic();
+		bool ok = false;
+		if (CUIXmlInit::InitStatic(xmlDoc, nodePath, 0, tempStatic, false))
+		{
+			tempStatic->Show(true);
+			ApplyStaticThumbHack(tempStatic, _scrollBox);
+			_scrollBox->Show(true);
+			_partFlags.hasThumb = true;
+			ok = true;
+		}
+		xr_delete(tempStatic);
+		return ok;
+	}
+
+	return false;
 }
 
 bool CUIScrollBar::TryInitPart(CUIXml& xmlDoc, const char* nodePath, ScrollBarPart part, const ScrollBarProfileConfig& config)
@@ -268,7 +426,6 @@ bool CUIScrollBar::TryInitPart(CUIXml& xmlDoc, const char* nodePath, ScrollBarPa
 		return false;
 	}
 
-	string256 texturePath;
 	CUIStatic* tempStatic = nullptr;
 	bool ok = false;
 
@@ -293,43 +450,80 @@ bool CUIScrollBar::TryInitPart(CUIXml& xmlDoc, const char* nodePath, ScrollBarPa
 		break;
 
 	case ScrollBarPart::Track:
-		if (CUIXmlInit::InitFrameLine(xmlDoc, nodePath, 0, _frameBackground, false))
+	{
+		string256 textureName;
+		const bool hasTexture = ReadPartTextureName(xmlDoc, nodePath, textureName);
+		const bool preferFrameLine = hasTexture && IsFrameLineTextureBase(textureName);
+
+		if (preferFrameLine && CUIXmlInit::InitFrameLine(xmlDoc, nodePath, 0, _frameBackground, false))
 		{
 			_frameBackground->SetHorizontal(_isHorizontal);
 			_frameBackground->Show(true);
 			_partFlags.hasTrack = true;
 			ok = true;
 		}
-		else
+		else if (hasTexture)
 		{
-			xr_strconcat(texturePath, nodePath, ":texture");
-			const char* texture = xmlDoc.Read(texturePath, 0, nullptr);
-			if (texture && texture[0] && _frameBackground->InitTexture(texture, "hud\\default", false))
+			const float width = xmlDoc.ReadAttribFlt(nodePath, 0, "width", 0.0f);
+			const float height = xmlDoc.ReadAttribFlt(nodePath, 0, "height", 0.0f);
+			Fvector2 size = Fvector2().set(width, height);
+			if (_isHorizontal)
 			{
-				_frameBackground->SetHorizontal(_isHorizontal);
-				_frameBackground->Show(true);
+				if (size.y <= 0.0f)
+				{
+					size.y = GetHeight();
+				}
+				if (size.x <= 0.0f)
+				{
+					size.x = GetWidth();
+				}
+			}
+			else
+			{
+				if (size.x <= 0.0f)
+				{
+					size.x = GetWidth();
+				}
+				if (size.y <= 0.0f)
+				{
+					size.y = GetHeight();
+				}
+			}
+
+			if (InitFramePartFromSingleTexture(_frameBackground, textureName, Fvector2().set(0.0f, 0.0f), size))
+			{
+				if (_isHorizontal)
+				{
+					SetHeight(size.y);
+				}
+				else
+				{
+					SetWidth(size.x);
+				}
 				_partFlags.hasTrack = true;
 				ok = true;
 			}
-			else if (xmlDoc.NavigateToNode(nodePath, 0))
+		}
+
+		if (!ok)
+		{
+			// HACK: SoC/CS static track fallback
+			tempStatic = new CUIStatic();
+			tempStatic->SetWndRect(GetWndRect());
+			if (CUIXmlInit::InitStatic(xmlDoc, nodePath, 0, tempStatic, false))
 			{
-				// HACK: SoC/CS static track fallback
-				tempStatic = new CUIStatic();
-				tempStatic->SetWndRect(GetWndRect());
-				if (CUIXmlInit::InitStatic(xmlDoc, nodePath, 0, tempStatic, false))
-				{
-					tempStatic->Show(true);
-					ApplyStaticTrackHack(tempStatic);
-					_partFlags.hasTrack = true;
-					ok = true;
-				}
-				xr_delete(tempStatic);
+				tempStatic->Show(true);
+				ApplyStaticTrackHack(tempStatic);
+				_partFlags.hasTrack = true;
+				ok = true;
 			}
+			xr_delete(tempStatic);
 		}
 		break;
+	}
 
 	case ScrollBarPart::Thumb:
-		if (config.thumbAsButton)
+		if (config.thumbAsButton && NodeHasButtonTextures(xmlDoc, nodePath))
 		{
 			if (!IsChild(_fixedThumb))
 			{
@@ -342,35 +536,14 @@ bool CUIScrollBar::TryInitPart(CUIXml& xmlDoc, const char* nodePath, ScrollBarPa
 				_fixedThumb->Show(true);
 				_partFlags.hasThumb = true;
 			}
+			else
+			{
+				ok = InitThumbAsBox(xmlDoc, nodePath);
+			}
 		}
 		else
 		{
-			_fixedThumb->Show(false);
-			if (IsChild(_fixedThumb))
-			{
-				DetachChild(_fixedThumb);
-			}
-			_scrollBox->SetHorizontal(_isHorizontal);
-			if (CUIXmlInit::InitFrameLine(xmlDoc, nodePath, 0, _scrollBox, false))
-			{
-				_scrollBox->Show(true);
-				_partFlags.hasThumb = true;
-				ok = true;
-			}
-			else if (xmlDoc.NavigateToNode(nodePath, 0))
-			{
-				// HACK: SoC/CS static thumb fallback
-				tempStatic = new CUIStatic();
-				if (CUIXmlInit::InitStatic(xmlDoc, nodePath, 0, tempStatic, false))
-				{
-					tempStatic->Show(true);
-					ApplyStaticThumbHack(tempStatic, _scrollBox);
-					_scrollBox->Show(true);
-					_partFlags.hasThumb = true;
-					ok = true;
-				}
-				xr_delete(tempStatic);
-			}
+			ok = InitThumbAsBox(xmlDoc, nodePath);
 		}
 		break;
 	}
@@ -387,11 +560,21 @@ bool CUIScrollBar::InitPartsFromProfile(CUIXml& xmlDoc, const char* profile, boo
 		TryInitPart(xmlDoc, partPath, ScrollBarPart::Dec, _profileConfig);
 		_decButton->SetWndPos(Fvector2().set(0, 0));
 	}
+	else
+	{
+		_decButton->Show(false);
+		_partFlags.hasDec = false;
+	}
 
 	if (ResolvePartPath(xmlDoc, profile, ScrollBarPart::Inc, isHorizontal, partPath))
 	{
 		TryInitPart(xmlDoc, partPath, ScrollBarPart::Inc, _profileConfig);
 		PositionIncButton(incAnchorLength);
+	}
+	else
+	{
+		_incButton->Show(false);
+		_partFlags.hasInc = false;
 	}
 
 	if (ResolvePartPath(xmlDoc, profile, ScrollBarPart::Thumb, isHorizontal, partPath))
@@ -415,6 +598,11 @@ bool CUIScrollBar::InitStretchLayout(CUIXml& xmlDoc, const char* profile, Fvecto
 	{
 		return false;
 	}
+
+	_profileConfig.layoutMode = ScrollLayoutMode::Stretch;
+
+	const char* thumbStr = xmlDoc.ReadAttrib(profile, 0, "thumb", "auto");
+	ThumbFromAttrib(thumbStr, false, _profileConfig.thumbAsButton);
 
 	_holdDelay = _profileConfig.holdDelay;
 	_scrollBoxOffset = _profileConfig.scrollBoxOffset;
