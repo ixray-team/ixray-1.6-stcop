@@ -100,6 +100,8 @@ private:
 	bool TryInitPart(CUIXml& xmlDoc, const char* nodePath, ScrollBarPart part, const ScrollBarProfileConfig& config);
 	void ApplyStaticThumbHack(CUIStatic* tempStatic, CUIWindow* targetWnd);
 	void ApplyStaticTrackHack(CUIStatic* tempBackground);
+	bool InitFramePartFromSingleTexture(CUIFrameLineWnd* frame, const char* textureName, Fvector2 pos, Fvector2 size);
+	bool InitThumbAsBox(CUIXml& xmlDoc, const char* nodePath);
 	void RecalcWorkArea(float thickness);
 	bool InitStretchLayout(CUIXml& xmlDoc, const char* profile, Fvector2 pos, float length, bool isHorizontal);
 	bool InitFixedLayout(CUIXml& xmlDoc, const char* profile, Fvector2 pos, bool isHorizontal);
