@@ -282,7 +282,9 @@ void CUIScrollView::_applyScrollPos(int scrollPos)
 		return;
 	}
 	Fvector2 wPos = m_pad->GetWndPos();
-	m_pad->SetWndPos(Fvector2().set(wPos.x, float(-scrollPos)));
+	float scrollPosReal = scrollPos;
+	clamp(scrollPosReal, (float)m_VScrollBar->GetMinRange(), (float)m_VScrollBar->ScrollSize());
+	m_pad->SetWndPos(Fvector2().set(wPos.x, float(-scrollPosReal)));
 	m_visible_rgn.set(-1, -1);
 }
 
