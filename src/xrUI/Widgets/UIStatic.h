@@ -134,6 +134,9 @@ public:
 			bool			GetStretchTexture		()						{return m_bStretchTexture;}
 			void			SetTextureShadow		(bool enabled, float thickness, u32 color);
 			bool			GetTextureShadowEnabled	() const					{return m_textureShadowEnabled;}
+			void			SetTextShadow			(bool enabled, float thickness, u32 color);
+			void			SetTextShadow			(const SUIOutlineParams& params);
+			bool			GetTextShadowEnabled	() const					{return m_pTextControl && m_pTextControl->GetTextShadowEnabled();}
 			void			SetEllipsis				(int pos, int indent)	{ TextItemControl()->SetEllipsis(pos != 0); }
 			void			SetEllipsis_script		(bool mode)				{ TextItemControl()->SetEllipsis(mode); }
 
