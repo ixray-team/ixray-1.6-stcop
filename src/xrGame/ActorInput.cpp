@@ -632,6 +632,14 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 		return;
 	}
 
+#ifndef MASTER_GOLD
+	if (psActorFlags.test(AF_NO_CLIP) && id == 0)
+	{
+		NoClipFlyStick(value);
+		return;
+	}
+#endif // DEBUG
+
 	float absValueX = std::abs(value.x);
 	if (id != 2 && fis_zero(value.x) && fis_zero(value.y) || 
 		(CurrentGameUI() && CurrentGameUI()->RadialMenuWeapon()->isInitialized && CurrentGameUI()->RadialMenuWeapon()->IsShown())
@@ -760,7 +768,7 @@ void CActor::IR_GamepadKeyPress(int id)
 #ifndef MASTER_GOLD
 	if (psActorFlags.test(AF_NO_CLIP))
 	{
-		NoClipFly(bind);
+		NoClipFlyGamepad(bind);
 		if (m_holder && kUSE != bind)
 			m_holder->OnGamepadKeyPress(id);
 		return;
@@ -974,6 +982,14 @@ void CActor::IR_GamepadKeyHold(int id)
 	{
 		return;
 	}
+
+#ifndef MASTER_GOLD
+	if (psActorFlags.test(AF_NO_CLIP) && (bind == kJUMP || bind == kSPRINT_TOGGLE))
+	{
+		NoClipFlyGamepad(bind);
+		return;
+	}
+#endif // DEBUG
 
 	if(m_holder)
 	{
@@ -2068,12 +2084,168 @@ void CActor::NoClipFly(int cmd)
 				}
 			}
 		}break;
+		case kWPN_RADIAL_MENU:
+		{
+			CUIRadialMenuWeapon* RMW = CurrentGameUI()->RadialMenuWeapon();
+			if (RMW->isInitialized && !RMW->IsShown())
+			{
+				RMW->ShowDialog(false);
+			}
+			break;
+		}
 	}
 	if(!m_pPhysicsShell && !pCar)
 		SetPhPosition(XFORM().translate_add(cur_pos.mul(GetNoclipSpeedScale() * Device.fTimeDelta)));
 
 	if(inventory().Action((u16)cmd, CMD_START))return;
 }
+
+void CActor::NoClipFlyStick(Fvector2 value)
+{
+	Fvector cur_pos;
+	cur_pos.set(0, 0, 0);
+	CCar* pCar = m_holder ? m_holder->cast_car() : nullptr;
+
+	if (!fis_zero(value.x))
+	{
+		Fvector camDir = Device.vCameraRight;
+		if (value.x < 0.0f)
+		{
+			camDir.invert();
+		}
+		cur_pos.mad(camDir, (GetNoclipSpeedScale() / 2.0f) * std::abs(value.x));
+		if (m_pPhysicsShell)
+		{
+			m_pPhysicsShell->applyImpulseTrace(cur_pos, camDir, (GetNoclipSpeedScale() * std::abs(value.x) * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+		}
+		if (pCar && pCar->m_pPhysicsShell)
+		{
+			pCar->m_pPhysicsShell->applyImpulse(camDir, (GetNoclipSpeedScale() * std::abs(value.x) * pCar->m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+		}
+	}
+
+	if (!fis_zero(value.y))
+	{
+		Fvector camDir = Device.vCameraDirection;
+		if (value.y < 0.0f)
+		{
+			camDir.invert();
+		}
+		cur_pos.mad(camDir, GetNoclipSpeedScale() / 2.0f * std::abs(value.y));
+		if (m_pPhysicsShell)
+		{
+			m_pPhysicsShell->applyImpulseTrace(cur_pos, camDir, (GetNoclipSpeedScale() * std::abs(value.y) * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+		}
+		if (pCar && pCar->m_pPhysicsShell)
+		{
+			pCar->m_pPhysicsShell->applyImpulse(camDir, (GetNoclipSpeedScale() * std::abs(value.y) * pCar->m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+		}
+	}
+
+	if(!m_pPhysicsShell && !pCar)
+		SetPhPosition(XFORM().translate_add(cur_pos.mul(GetNoclipSpeedScale() * Device.fTimeDelta)));
+}
+
+
+void CActor::NoClipFlyGamepad(int cmd)
+{
+	Fvector cur_pos;
+	cur_pos.set(0, 0, 0);
+	CCar* pCar = m_holder ? m_holder->cast_car() : nullptr;
+
+	switch (cmd)
+	{
+		case kJUMP:
+		{
+			Fvector top;
+			top.set(Device.vCameraTop);
+			cur_pos.mad(top, GetNoclipSpeedScale() / 2.0f);
+			if (m_pPhysicsShell)
+			{
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, top, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+			}
+			if (pCar && pCar->m_pPhysicsShell)
+			{
+				pCar->m_pPhysicsShell->applyImpulse(top, (GetNoclipSpeedScale() * pCar->m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+			}
+		}
+		break;
+		case kSPRINT_TOGGLE:
+		{
+			Fvector down;
+			down.set(Device.vCameraTop).invert();
+			cur_pos.mad(down, GetNoclipSpeedScale() / 2.0f);
+			if (m_pPhysicsShell)
+			{
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, down, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+			}
+			if (pCar && pCar->m_pPhysicsShell)
+			{
+				pCar->m_pPhysicsShell->applyImpulse(down, (GetNoclipSpeedScale() * pCar->m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+			}
+		}
+		break;
+		case kTORCH:
+			SwitchTorch();
+			break;
+		case kUSE:
+			ActorUse();
+			break;
+		case kCROUCH:
+		{
+			collide::rq_result RQ = GetPickResult(Device.vCameraPosition, Device.vCameraDirection, 1000.0f, this);
+			if (RQ.element >= 0)
+			{
+				if (pCar)
+				{
+					pCar->m_pPhysicsShell->Disable();
+					pCar->m_pPhysicsShell->DisableCollision();
+					pCar->m_pPhysicsShell->SetGlTransformDynamic(pCar->XFORM().translate(Fvector(Device.vCameraPosition).mad(Fvector(Device.vCameraDirection), RQ.range)));
+					pCar->correct_spawn_pos();
+					pCar->m_pPhysicsShell->set_LinearVel(zero_vel);
+					pCar->m_pPhysicsShell->set_AngularVel(zero_vel);
+					pCar->m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
+					pCar->m_pPhysicsShell->Enable();
+				}
+				else if (m_pPhysicsShell)
+				{
+					m_pPhysicsShell->Disable();
+					m_pPhysicsShell->DisableCollision();
+					m_pPhysicsShell->SetGlTransformDynamic(XFORM().translate(Fvector(Device.vCameraPosition).mad(Fvector(Device.vCameraDirection), RQ.range)));
+					correct_spawn_pos();
+					m_pPhysicsShell->set_LinearVel(zero_vel);
+					m_pPhysicsShell->set_AngularVel(zero_vel);
+					m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
+					m_pPhysicsShell->Enable();
+				}
+				else
+				{
+					SetPhPosition(XFORM().translate(Fvector(Device.vCameraPosition).mad(Fvector(Device.vCameraDirection), RQ.range)));
+				}
+			}
+			break;
+		}
+		case kWPN_RADIAL_MENU:
+		{
+			CUIRadialMenuWeapon* RMW = CurrentGameUI()->RadialMenuWeapon();
+			if (RMW->isInitialized && !RMW->IsShown())
+			{
+				RMW->ShowDialog(false);
+			}
+			break;
+		}
+	}
+	if (!m_pPhysicsShell && !pCar)
+	{
+		SetPhPosition(XFORM().translate_add(cur_pos.mul(GetNoclipSpeedScale() * Device.fTimeDelta)));
+	}
+
+	if (inventory().Action((u16)cmd, CMD_START))
+	{
+		return;
+	}
+}
+
 #endif //DEBUG
 
 void CActor::ActorQuickSlotUse(int cmd)
