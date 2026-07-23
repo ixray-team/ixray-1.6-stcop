@@ -180,6 +180,22 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, const char* path, int index, CUISta
 	InitTexture			(xml_doc, path, index, pWnd, fatal);
 	InitTextureOffset	(xml_doc,path,index,pWnd);
 
+	{
+		SUIOutlineParams rootShadow;
+		ReadShadowsNode(xml_doc, path, index, rootShadow);
+		if (rootShadow.enabled)
+		{
+			if (!pWnd->GetTextureShadowEnabled())
+			{
+				pWnd->SetTextureShadow(true, rootShadow.thickness, rootShadow.color);
+			}
+			if (pWnd->m_text_control_exists && !pWnd->GetTextShadowEnabled())
+			{
+				pWnd->SetTextShadow(rootShadow);
+			}
+		}
+	}
+
 	int flag = xml_doc.ReadAttribInt(path, index, "heading", 0);
 	pWnd->EnableHeading( (flag)?true:false);
 
@@ -403,6 +419,8 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, const char* path, int index, CUILines
 		pLines->m_text_src = text;
 		pLines->SetText(g_pStringTable->translate(text).c_str());
 	}
+
+	ApplyShadowsToLines(xml_doc, path, index, pLines);
 
 	return true;
 }
@@ -1807,7 +1825,7 @@ u32	CUIXmlInit::GetColor(CUIXml& xml_doc, const char* path, int index, u32 def_c
 
 }
 
-void CUIXmlInit::ReadShadowsNode(CUIXml& xml_doc, const char* parentPath, int index, SUITextureShadowParams& out)
+void CUIXmlInit::ReadShadowsNode(CUIXml& xml_doc, const char* parentPath, int index, SUIOutlineParams& out)
 {
 	string512 shadowsPath;
 	xr_strconcat(shadowsPath, parentPath, ":shadows");
@@ -1844,7 +1862,7 @@ void CUIXmlInit::ApplyShadowsToStatic(CUIXml& xml_doc, const char* parentPath, i
 {
 	VERIFY(pWnd);
 
-	SUITextureShadowParams shadowParams;
+	SUIOutlineParams shadowParams;
 	ReadShadowsNode(xml_doc, parentPath, index, shadowParams);
 	if (!shadowParams.enabled)
 	{
@@ -1853,6 +1871,21 @@ void CUIXmlInit::ApplyShadowsToStatic(CUIXml& xml_doc, const char* parentPath, i
 	}
 
 	pWnd->SetTextureShadow(true, shadowParams.thickness, shadowParams.color);
+}
+
+void CUIXmlInit::ApplyShadowsToLines(CUIXml& xml_doc, const char* parentPath, int index, CUILines* pLines)
+{
+	VERIFY(pLines);
+
+	SUIOutlineParams shadowParams;
+	ReadShadowsNode(xml_doc, parentPath, index, shadowParams);
+	if (!shadowParams.enabled)
+	{
+		pLines->SetTextShadow(false, 0.0f, 0);
+		return;
+	}
+
+	pLines->SetTextShadow(shadowParams);
 }
 
 u32	CUIXmlInit::GetGradientColor(CUIXml& xml_doc, const char* path, int index, u32 def_clr)
