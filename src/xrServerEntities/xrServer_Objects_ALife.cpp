@@ -536,7 +536,7 @@ void CSE_ALifeObject::STATE_Read			(NET_Packet &tNetPacket, u16 size)
 	if (m_wVersion > 111)
 		tNetPacket.r_u32		(m_spawn_story_id);
 
-	if (m_wVersion > 129)
+	if (m_wVersion > 130)
 		tNetPacket.r_stringZ		(m_script_story_ID);
 }
 
