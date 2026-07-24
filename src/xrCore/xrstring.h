@@ -3,7 +3,9 @@
 IC bool IsUTF8(const char* string)
 {
 	if (!string)
+	{
 		return true;
+	}
 
 	const unsigned char* bytes = (const unsigned char*)string;
 	int num;
@@ -30,12 +32,16 @@ IC bool IsUTF8(const char* string)
 			num = 4;
 		}
 		else
+		{
 			return false;
+		}
 		bytes += 1;
 		for (int i = 1; i < num; ++i)
 		{
 			if ((*bytes & 0xC0) != 0x80)
+			{
 				return false;
+			}
 			bytes += 1;
 		}
 	}
@@ -97,28 +103,29 @@ public:
 using SStringVec = xr_vector<xr_string>;
 using SStringVecIt = SStringVec::iterator;
 
-namespace std 
+namespace std
 {
-	template<>
-	class hash<xr_string> 
+template <>
+class hash<xr_string>
+{
+public:
+	using is_transparent = void;
+	using hash_type = std::hash<std::string_view>;
+
+public:
+	size_t operator()(const xr_string& s) const
 	{
-	public:
-		using is_transparent = void;
-		using hash_type = std::hash<std::string_view>;
-	public:
-		size_t operator()(const xr_string& s) const 
-		{
-			return hash_type{}(s);
-		}
+		return hash_type{}(s);
+	}
 
-		size_t operator()(std::string_view s) const
-		{
-			return hash_type{}(s);
-		}
-	};
-}
+	size_t operator()(std::string_view s) const
+	{
+		return hash_type{}(s);
+	}
+};
+} // namespace std
 
-IC void	xr_strlwr(xr_string& src)
+IC void xr_strlwr(xr_string& src)
 {
 	for (xr_string::iterator it = src.begin(); it != src.end(); it++)
 	{
@@ -130,16 +137,20 @@ IC void	xr_strlwr(xr_string& src)
 IC xr_string xr_strlwr_rus(const xr_string& str)
 {
 	xr_string result = str;
-	for (char& c : result) {
+	for (char& c : result)
+	{
 		// Русские заглавные буквы в UTF-8 (Windows-1251)
-		if (c >= -64 && c <= -33) { // А-Я
+		if (c >= -64 && c <= -33)
+		{			 // А-Я
 			c += 32; // преобразуем в а-я
 		}
-		else if (c == -88) { // Ё
+		else if (c == -88)
+		{			 // Ё
 			c = -72; // ё
 		}
 		// Английские буквы
-		else if (c >= 'A' && c <= 'Z') {
+		else if (c >= 'A' && c <= 'Z')
+		{
 			c += 32; // преобразуем в a-z
 		}
 	}
@@ -147,7 +158,7 @@ IC xr_string xr_strlwr_rus(const xr_string& str)
 }
 
 // xr_string: template magic
-template<size_t ArrayLenght>
+template <size_t ArrayLenght>
 inline xr_string::xr_string(char* (&InArray)[ArrayLenght])
 {
 	assign(InArray, ArrayLenght);
@@ -155,7 +166,7 @@ inline xr_string::xr_string(char* (&InArray)[ArrayLenght])
 
 // warning
 // this function can be used for debug purposes only
-template<typename String, typename... Args>
+template <typename String, typename... Args>
 IC String make_string(const char* format, Args... args)
 {
 	static constexpr size_t bufferSize = 4096;
@@ -166,11 +177,11 @@ IC String make_string(const char* format, Args... args)
 
 // FX: Hash str container
 // Support: xr_string and shared_str
-template<typename Key, typename Value>
+template <typename Key, typename Value>
 using xr_string_map = std::unordered_map<Key, Value, std::hash<Key>, std::equal_to<>>;
 
 namespace XRay::Concepts
 {
-	template <typename T>
-	concept XRayString = std::same_as<std::remove_cvref_t<T>, xr_string> || std::same_as<std::remove_cvref_t<T>, shared_str>;
+template <typename T>
+concept XRayString = std::same_as<std::remove_cvref_t<T>, xr_string> || std::same_as<std::remove_cvref_t<T>, shared_str>;
 }

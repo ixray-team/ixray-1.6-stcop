@@ -24,7 +24,9 @@ int main()
 	{
 		const auto Plan = MakeEditorNriFramePlan(Frame, 3, 4);
 		if (!Plan)
+		{
 			return Fail("A valid NRI editor frame plan was rejected");
+		}
 		if (Plan->FrameContextIndex != Frame % 3 ||
 			Plan->RecycledSemaphoreIndex != Frame % 4)
 		{
@@ -32,9 +34,13 @@ int main()
 		}
 		const u64 ExpectedReuse = Frame >= 3 ? 1 + Frame - 3 : 0;
 		if (Plan->ReuseFenceValue != ExpectedReuse)
+		{
 			return Fail("NRI editor frame context can be reused before its fence");
+		}
 		if (Plan->SignalFenceValue != Frame + 1)
+		{
 			return Fail("NRI editor timeline fence signal is not monotonic");
+		}
 	}
 
 	return EXIT_SUCCESS;

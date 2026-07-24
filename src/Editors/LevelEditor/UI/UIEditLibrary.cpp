@@ -62,11 +62,7 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 			Surface->Release();
 			if (m_Thm->Valid())
 			{
-				(void)UI->UpdateImGuiTexture(m_RealTextureEditor,
-					m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT,
-					THUMB_WIDTH * 4, ++m_RealTextureRevision,
-					"editor-library-object-thumbnail",
-					EEditorTextureFormat::Bgra8Unorm, true);
+				(void)UI->UpdateImGuiTexture(m_RealTextureEditor, m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT, THUMB_WIDTH * 4, ++m_RealTextureRevision, "editor-library-object-thumbnail", EEditorTextureFormat::Bgra8Unorm, true);
 			}
 
 			m_Thm->FillInfo(Info);
@@ -86,7 +82,9 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 		}
 
 		if (bShowProps)
+		{
 			OnPropertiesClick();
+		}
 	}
 	else
 	{
@@ -99,12 +97,14 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 void UIEditLibrary::OnItemUnfocused(ListItem* item)
 {
 	if (!m_Preview)
+	{
 		return;
+	}
 
 	if (item != nullptr)
 	{
 		auto Iter = std::find(FocusedItems.begin(), FocusedItems.end(), item);
-		
+
 		if (Iter != FocusedItems.end())
 		{
 			FocusedItems.erase(Iter);
@@ -113,7 +113,7 @@ void UIEditLibrary::OnItemUnfocused(ListItem* item)
 	}
 }
 
-UIEditLibrary::~UIEditLibrary() 
+UIEditLibrary::~UIEditLibrary()
 {
 	UI->DestroyImGuiTexture(m_RealTextureEditor);
 	xr_delete(PreviewProps);
@@ -139,12 +139,18 @@ void UIEditLibrary::InitObjects()
 void UIEditLibrary::Update()
 {
 	if (!Form)
+	{
 		return;
+	}
 
 	if (!Form->IsClosed())
+	{
 		Form->Draw();
+	}
 	else
+	{
 		Close();
+	}
 }
 
 void UIEditLibrary::Show()
@@ -211,7 +217,7 @@ void UIEditLibrary::DrawObjects()
 
 	if (GUIManager->SearchIcon)
 	{
-		ImVec2 IconSize = { 12,12 };
+		ImVec2 IconSize = {12, 12};
 
 		ImGui::SameLine();
 		ImVec2 cursorPos = ImGui::GetCursorPos();
@@ -227,7 +233,9 @@ void UIEditLibrary::DrawObjects()
 	ImGui::EndChild();
 
 	if (ImGui::IsItemHovered())
+	{
 		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+	}
 }
 
 void UIEditLibrary::GenerateLOD(const RStringVec& props, bool bHighQuality)
@@ -239,7 +247,7 @@ void UIEditLibrary::GenerateLOD(const RStringVec& props, bool bHighQuality)
 	{
 		RStringVec reference;
 		reference.push_back(str);
-		ChangeReference(reference);   // select item
+		ChangeReference(reference); // select item
 
 		R_ASSERT(m_pEditObjects.size() == 1);
 		CSceneObject* SO = m_pEditObjects[0];
@@ -270,13 +278,17 @@ void UIEditLibrary::GenerateLOD(const RStringVec& props, bool bHighQuality)
 		}
 
 		if (UI->NeedAbort())
+		{
 			break;
+		}
 	}
 
 	UI->ProgressEnd(pb);
 
 	if (lodsCnt)
+	{
 		ELog.DlgMsg(mtInformation, "+ '%u' LOD's succesfully created.", lodsCnt);
+	}
 }
 
 static xr_task_group LODTask;
@@ -285,7 +297,9 @@ void UIEditLibrary::MakeLOD(bool bHighQuality)
 	int res = ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() | mbYes | mbNo | mbCancel, "Do you want to select multiple objects?");
 
 	if (res == mrCancel)
+	{
 		return;
+	}
 
 	if (res == mrNo)
 	{
@@ -295,13 +309,13 @@ void UIEditLibrary::MakeLOD(bool bHighQuality)
 			sel_items.push_back(ListItem->Key());
 		}
 
-		//LODTask.wait();
-		//LODTask.run
+		// LODTask.wait();
+		// LODTask.run
 		//(
 		//	[this, sel_items, bHighQuality]()
-			{
-				GenerateLOD(sel_items, bHighQuality);
-			}
+		{
+			GenerateLOD(sel_items, bHighQuality);
+		}
 		//);
 
 		return;
@@ -324,7 +338,9 @@ void UIEditLibrary::OnMakeThmClick()
 			FS.update_path(fn, _objects_, ChangeFileExt(obj->GetName(), ".thm").c_str());
 
 			if (ImageLib.CreateOBJThumbnail(fn, obj, obj->Version()))
+			{
 				ELog.Msg(mtInformation, "+ Thumbnail successfully created.");
+			}
 		}
 		else
 		{
@@ -352,7 +368,7 @@ void UIEditLibrary::OnPropertiesClick()
 
 		for (SurfaceIt it = NE->m_Surfaces.begin(); it != NE->m_Surfaces.end(); it++)
 		{
-			AnsiString	pref = AnsiString("Surfaces\\") + (*it)->_Name();
+			AnsiString pref = AnsiString("Surfaces\\") + (*it)->_Name();
 			PropValue* V = PHelper().CreateCaption(Info, pref.c_str(), "");
 			V->tag = (int)*it;
 			NE->FillSurfaceProps(*it, pref.c_str(), Info);
@@ -370,13 +386,13 @@ void UIEditLibrary::DrawRightBar()
 	if (ImGui::BeginChild("Right", ImVec2(0, 0)))
 	{
 		const ImTextureID PreviewTexture = m_RealTextureEditor.IsValid()
-			? UI->GetImGuiTexture(m_RealTextureEditor)
-			: UI->GetImGuiTexture(EDevice->texture_null);
+											   ? UI->GetImGuiTexture(m_RealTextureEditor)
+											   : UI->GetImGuiTexture(EDevice->texture_null);
 		ImGui::Image(PreviewTexture, ImVec2(200, 200));
 
 		PreviewProps->Draw();
 
-		shared_str IconEye = UseWorldPropWnd ? ICON_FA_EYE"##" : ICON_FA_EYE_SLASH"##";
+		shared_str IconEye = UseWorldPropWnd ? ICON_FA_EYE "##" : ICON_FA_EYE_SLASH "##";
 
 		if (ImGui::Button(*IconEye, ImVec2(25, 0)))
 		{
@@ -394,11 +410,10 @@ void UIEditLibrary::DrawRightBar()
 
 		if (ImGui::IsItemHovered())
 		{
-			ImGui::SetTooltip
-			(
+			ImGui::SetTooltip(
 				UseWorldPropWnd
-				? "Currently using the shared properties window\nClick to switch to the internal properties window"
-				: "Currently using the internal properties window\nClick to switch to the shared properties window"
+					? "Currently using the shared properties window\nClick to switch to the internal properties window"
+					: "Currently using the internal properties window\nClick to switch to the shared properties window"
 			);
 		}
 		ImGui::SameLine();
@@ -409,7 +424,9 @@ void UIEditLibrary::DrawRightBar()
 		}
 
 		if (ImGui::IsItemHovered())
+		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		}
 
 		// Make Thumbnail & Lod
 		{
@@ -426,38 +443,46 @@ void UIEditLibrary::DrawRightBar()
 				UI->RedrawScene(false);
 
 				UI->CommandList[TUI::ECommandListID::CurrentFrame].push_back([this]
-				{
+																			 {
 					UI->ViewID = View.ViewportID;
-					View.OnFocusCallback();
-				});
-				
+					View.OnFocusCallback(); });
+
 				UI->CommandList[TUI::ECommandListID::NextFrame].push_back([this]
-				{
+																		  {
 					OnMakeThmClick();
 
 					for (auto Item : ActualItemList().m_SelectedItems)
 					{
 						OnItemFocused(Item);
-					}
-				});
+					} });
 			}
 			if (ImGui::IsItemHovered())
+			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
 
 			ImGui::Text("Make LOD:");
 			ImGui::SameLine();
 
 			if (ImGui::Button("HQ", ImVec2(25, 0)))
+			{
 				MakeLOD(true);
+			}
 			if (ImGui::IsItemHovered())
+			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
 
 			ImGui::SameLine();
 
 			if (ImGui::Button("LQ", ImVec2(25, 0)))
+			{
 				MakeLOD(false);
+			}
 			if (ImGui::IsItemHovered())
+			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
 
 			if (!enableMakeThumbnailAndLod)
 			{
@@ -475,24 +500,32 @@ void UIEditLibrary::DrawRightBar()
 		ImGui::SameLine();
 
 		if (ImGui::Checkbox("Dropper", &m_Dropper))
+		{
 			PickSurface();
+		}
 
 		if (ImGui::IsItemHovered())
+		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		}
 		if (ImGui::Button("Remove Object", ImVec2(-1, 0)))
 		{
 			ActualItemList().RemoveSelectItem();
 		}
-		
+
 		if (ImGui::IsItemHovered())
+		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		}
 		if (ImGui::Button("Import Object", ImVec2(-1, 0)))
 		{
 			ImportClick();
 		}
 
 		if (ImGui::IsItemHovered())
+		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		}
 		if (ImGui::Button("Export OBJ", ImVec2(-1, 0)))
 		{
 			ExportObj();
@@ -512,12 +545,18 @@ void UIEditLibrary::DrawRightBar()
 		}
 
 		if (ImGui::IsItemHovered())
+		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		}
 
 		if (ImGui::Button("Close", ImVec2(-1, 0)))
+		{
 			Close();
+		}
 		if (ImGui::IsItemHovered())
+		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		}
 	}
 	ImGui::EndChild();
 
@@ -533,7 +572,9 @@ void UIEditLibrary::DrawRightBar()
 				RStringVec selItems;
 
 				for (const xr_string& xrStr : lst)
+				{
 					selItems.push_back(xrStr.c_str());
+				}
 
 				GenerateLOD(selItems, m_HighQualityLod);
 			}
@@ -579,7 +620,9 @@ void UIEditLibrary::RefreshSelected()
 			mt = SelectionToReference(&vec);
 		}
 		else
+		{
 			mt = SelectionToReference(nullptr);
+		}
 	}
 
 	UI->RedrawScene();
@@ -618,16 +661,20 @@ void UIEditLibrary::PickCallback()
 		Obj->RayPick(dis, StartPos, StartDir, &pinf);
 
 		if (pinf.e_mesh == nullptr)
+		{
 			continue;
+		}
 
 		CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
 		PrevClick = AnsiString("Surfaces\\") + AnsiString(surf->_Name());
 
 		UIPropertiesItem* Itm = GetPropertyWnd()->FindPropItem(PrevClick.c_str());
-		
+
 		if (Itm == nullptr)
+		{
 			continue;
-		
+		}
+
 		Itm->SetSelect();
 	}
 }
@@ -656,10 +703,10 @@ bool UIEditLibrary::SelectionToReference(ListItemsVec* props)
 
 void UIEditLibrary::ExportOneOBJ(CEditableObject* EO)
 {
-	string_path			fn;
+	string_path fn;
 	FS.update_path(fn, _import_, EO->m_LibName.c_str());
-	CExportObjectOGF 	E(EO);
-	CMemoryWriter 		F;
+	CExportObjectOGF E(EO);
+	CMemoryWriter F;
 	if (E.ExportAsWavefrontOBJ(F, fn))
 	{
 		strcat(fn, ".obj");
@@ -691,7 +738,9 @@ void UIEditLibrary::ExportObj()
 		}
 
 		if (UI->NeedAbort())
+		{
 			xr_delete(SO);
+		}
 
 		UI->ProgressEnd(pb);
 	}
@@ -709,7 +758,9 @@ void UIEditLibrary::ExportObj()
 			}
 
 			if (UI->NeedAbort())
+			{
 				break;
+			}
 		}
 		UI->ProgressEnd(pb);
 	}
@@ -724,7 +775,9 @@ UIPropertiesForm* UIEditLibrary::GetPropertyWnd()
 void UIEditLibrary::OnModified()
 {
 	if (!Form)
+	{
 		return;
+	}
 
 	Form->IsModify = true;
 
@@ -789,7 +842,9 @@ void UIEditLibrary::OnRender()
 	}
 
 	if (!Form->m_Preview)
+	{
 		return;
+	}
 
 	for (auto& it : Form->m_pEditObjects)
 	{
@@ -802,13 +857,19 @@ void UIEditLibrary::OnRender()
 			S->m_RT_Flags.set(S->flRT_Visible, true);
 
 			if (!S->FPosition.similar(O->t_vPosition))
+			{
 				S->FPosition = O->t_vPosition;
+			}
 
 			if (!S->FRotation.similar(O->t_vRotate))
+			{
 				S->FRotation = O->t_vRotate;
+			}
 
 			if (!S->FScale.similar(O->t_vScale))
+			{
 				S->FScale = O->t_vScale;
+			}
 
 			SO->OnFrame();
 			SO->RenderSingle();
@@ -849,7 +910,9 @@ void UIEditLibrary::Draw()
 		ImGui::BeginGroup();
 
 		if (ImGui::BeginChild("Left", ImVec2(-220, -ImGui::GetFrameHeight() - 4), true))
+		{
 			DrawObjects();
+		}
 
 		ImGui::EndChild();
 		ImGui::SetNextItemWidth(-200);

@@ -20,7 +20,8 @@ class FDx9UIRendererBackend final : public IXrUIRendererBackend
 public:
 	explicit FDx9UIRendererBackend(IDirect3DDevice9* InDevice)
 		: RenderDevice(InDevice)
-	{}
+	{
+	}
 
 	[[nodiscard]] EXrUIRendererPlatform GetPlatform() const noexcept override
 	{
@@ -82,7 +83,7 @@ XrUIManager::~XrUIManager()
 
 xr_map<xr_string, ImFont*> FontsStorage;
 xr_string ImCurrentFont;
-xr_vector<xr_string> LazyFonts; 
+xr_vector<xr_string> LazyFonts;
 
 void LoadImGuiFont(const char* Font)
 {
@@ -105,7 +106,7 @@ void LoadImGuiFontBase(const char* Font, float scale)
 		}
 
 		ImCurrentFont = Font;
-		//ImGui::GetIO().Fonts->AddFontDefault(&FontsStorage[Font]);
+		// ImGui::GetIO().Fonts->AddFontDefault(&FontsStorage[Font]);
 
 		ImGui::GetIO().FontDefault = FontsStorage[Font];
 	}
@@ -156,13 +157,13 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+	static const ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
 	ImFontConfig icons_config = {};
 	icons_config.MergeMode = true;
 	float FontSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::FontSize);
 	FontsStorage["_fa"] = io.Fonts->AddFontFromMemoryCompressedTTF(FontAwesome_compressed_data, FontAwesome_compressed_size, FontSize * 0.75f, &icons_config, icons_ranges);
 
-	//io.Fonts->Build();
+	// io.Fonts->Build();
 
 	if (!m_RenderBackend)
 	{
@@ -172,35 +173,43 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 
 	switch (m_RenderBackend->GetPlatform())
 	{
-	case EXrUIRendererPlatform::D3D:
-		R_ASSERT(ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window));
-		break;
-	case EXrUIRendererPlatform::Vulkan:
-		R_ASSERT(ImGui_ImplSDL3_InitForVulkan(g_AppInfo.Window));
-		break;
-	case EXrUIRendererPlatform::Other:
-		R_ASSERT(ImGui_ImplSDL3_InitForOther(g_AppInfo.Window));
-		break;
+		case EXrUIRendererPlatform::D3D:
+			R_ASSERT(ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window));
+			break;
+		case EXrUIRendererPlatform::Vulkan:
+			R_ASSERT(ImGui_ImplSDL3_InitForVulkan(g_AppInfo.Window));
+			break;
+		case EXrUIRendererPlatform::Other:
+			R_ASSERT(ImGui_ImplSDL3_InitForOther(g_AppInfo.Window));
+			break;
 	}
 
 	R_ASSERT2(m_RenderBackend->Initialize(), "Failed to initialize the editor ImGui renderer backend");
 	m_RenderBackendInitialized = true;
 	if (m_RenderBackend->SupportsPlatformViewports())
+	{
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	}
 	else
+	{
 		io.ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;
+	}
 }
 
 void XrUIManager::Destroy()
 {
 	m_MainPresentationPending = false;
 	if (m_RenderBackendInitialized && m_RenderBackend)
+	{
 		m_RenderBackend->Shutdown();
+	}
 	m_RenderBackendInitialized = false;
 	ImGui_ImplSDL3_Shutdown();
 	ImGui::DestroyContext();
 	if (m_OwnRenderBackend)
+	{
 		xr_delete(m_RenderBackend);
+	}
 	m_RenderBackend = nullptr;
 	m_OwnRenderBackend = false;
 }
@@ -208,9 +217,13 @@ void XrUIManager::Destroy()
 bool XrUIManager::InstallRenderBackend(IXrUIRendererBackend* Backend) noexcept
 {
 	if (m_RenderBackendInitialized)
+	{
 		return false;
+	}
 	if (m_OwnRenderBackend)
+	{
 		xr_delete(m_RenderBackend);
+	}
 	m_RenderBackend = Backend;
 	m_OwnRenderBackend = false;
 	return true;
@@ -219,15 +232,16 @@ bool XrUIManager::InstallRenderBackend(IXrUIRendererBackend* Backend) noexcept
 bool XrUIManager::ProcessEvent(void* Event)
 {
 	if (!ImGui_ImplSDL3_ProcessEvent((SDL_Event*)Event))
+	{
 		return false;
+	}
 
 	return true;
 }
 
 void XrUIManager::BeginFrame()
 {
-	R_ASSERT2(!m_MainPresentationPending,
-		"The external editor renderer did not present the previous ImGui frame");
+	R_ASSERT2(!m_MainPresentationPending, "The external editor renderer did not present the previous ImGui frame");
 
 	for (auto str : LazyFonts)
 	{
@@ -247,9 +261,13 @@ void XrUIManager::EndFrame()
 	if (ImDrawData* DrawData = ImGui::GetDrawData())
 	{
 		if (m_RenderBackend->OwnsMainPresentation())
+		{
 			m_MainPresentationPending = true;
+		}
 		else
+		{
 			m_RenderBackend->RenderDrawData(*DrawData);
+		}
 	}
 
 	for (size_t i = m_UIArray.size(); i > 0; i--)
@@ -262,7 +280,10 @@ void XrUIManager::EndFrame()
 			}
 			m_UIArray.erase(m_UIArray.begin() + (i - 1));
 			i = m_UIArray.size();
-			if (i == 0)return;
+			if (i == 0)
+			{
+				return;
+			}
 		}
 	}
 }
@@ -270,13 +291,16 @@ void XrUIManager::EndFrame()
 void XrUIManager::PresentMainFrame()
 {
 	if (!m_MainPresentationPending)
+	{
 		return;
+	}
 
 	R_ASSERT(m_RenderBackendInitialized && m_RenderBackend);
-	R_ASSERT2(m_RenderBackend->OwnsMainPresentation(),
-		"Only an external editor renderer can own deferred main presentation");
+	R_ASSERT2(m_RenderBackend->OwnsMainPresentation(), "Only an external editor renderer can own deferred main presentation");
 	if (ImDrawData* DrawData = ImGui::GetDrawData())
+	{
 		m_RenderBackend->RenderDrawData(*DrawData);
+	}
 	m_MainPresentationPending = false;
 }
 
@@ -299,13 +323,17 @@ void XrUIManager::ResetBegin()
 	}
 
 	if (m_RenderBackendInitialized && m_RenderBackend)
+	{
 		m_RenderBackend->InvalidateDeviceObjects();
+	}
 }
 
 void XrUIManager::ResetEnd(void* NewDevice)
 {
 	if (m_RenderBackendInitialized && m_RenderBackend)
+	{
 		m_RenderBackend->CreateDeviceObjects();
+	}
 
 	for (auto Ptr : m_UIArray)
 	{
@@ -319,7 +347,10 @@ void XrUIManager::OnDrawUI()
 
 void XrUIManager::ApplyShortCutInput(DWORD Key)
 {
-	if ((ImGui::GetIO().WantTextInput))return;
+	if ((ImGui::GetIO().WantTextInput))
+	{
+		return;
+	}
 	bool IsFail = true;
 	if (Key >= SDL_SCANCODE_A && Key <= SDL_SCANCODE_Z)
 	{
@@ -333,73 +364,91 @@ void XrUIManager::ApplyShortCutInput(DWORD Key)
 	{
 		switch (Key)
 		{
-		case SDL_SCANCODE_LEFT:
-		case SDL_SCANCODE_RIGHT:
-		case SDL_SCANCODE_UP:
-		case SDL_SCANCODE_DOWN:
-		case SDL_SCANCODE_KP_0:
-		case SDL_SCANCODE_KP_1:
-		case SDL_SCANCODE_KP_2:
-		case SDL_SCANCODE_KP_3:
-		case SDL_SCANCODE_KP_4:
-		case SDL_SCANCODE_KP_5:
-		case SDL_SCANCODE_KP_6:
-		case SDL_SCANCODE_KP_7:
-		case SDL_SCANCODE_KP_8:
-		case SDL_SCANCODE_KP_9:
-		case SDL_SCANCODE_F1:
-		case SDL_SCANCODE_F2:
-		case SDL_SCANCODE_F3:
-		case SDL_SCANCODE_F4:
-		case SDL_SCANCODE_F5:
-		case SDL_SCANCODE_F6:
-		case SDL_SCANCODE_F7:
-		case SDL_SCANCODE_F8:
-		case SDL_SCANCODE_F9:
-		case SDL_SCANCODE_F10:
-		case SDL_SCANCODE_F11:
-		case SDL_SCANCODE_F12:
-		case SDL_SCANCODE_DELETE:
-		case SDL_SCANCODE_RIGHTBRACKET:
-		case SDL_SCANCODE_LEFTBRACKET:
-		case SDL_SCANCODE_MENU:
-		case SDL_SCANCODE_MINUS:
-		case SDL_SCANCODE_EQUALS:
-		case SDL_SCANCODE_BACKSLASH:
-		//case SDL_SCANCODE_ADD:
-		//case SDL_SCANCODE_SUBTRACT:
-		//case SDL_SCANCODE_MULTIPLY:
-		//case SDL_SCANCODE_DIVIDE:
-		//case SDL_SCANCODE_OEM_PLUS:
-		//case SDL_SCANCODE_OEM_MINUS:
-		//case SDL_SCANCODE_OEM_1:
-		//case SDL_SCANCODE_OEM_COMMA:
-		//case SDL_SCANCODE_OEM_PERIOD:
-		//case SDL_SCANCODE_OEM_2:
-		//case SDL_SCANCODE_OEM_4:
-		//case SDL_SCANCODE_OEM_5:
-		//case SDL_SCANCODE_OEM_6:
-		//case SDL_SCANCODE_OEM_7:
-		case SDL_SCANCODE_SPACE:
-		case SDL_SCANCODE_CANCEL:
-		case SDL_SCANCODE_RETURN:
-			IsFail = false;
-			break;
-		default:
-			break;
+			case SDL_SCANCODE_LEFT:
+			case SDL_SCANCODE_RIGHT:
+			case SDL_SCANCODE_UP:
+			case SDL_SCANCODE_DOWN:
+			case SDL_SCANCODE_KP_0:
+			case SDL_SCANCODE_KP_1:
+			case SDL_SCANCODE_KP_2:
+			case SDL_SCANCODE_KP_3:
+			case SDL_SCANCODE_KP_4:
+			case SDL_SCANCODE_KP_5:
+			case SDL_SCANCODE_KP_6:
+			case SDL_SCANCODE_KP_7:
+			case SDL_SCANCODE_KP_8:
+			case SDL_SCANCODE_KP_9:
+			case SDL_SCANCODE_F1:
+			case SDL_SCANCODE_F2:
+			case SDL_SCANCODE_F3:
+			case SDL_SCANCODE_F4:
+			case SDL_SCANCODE_F5:
+			case SDL_SCANCODE_F6:
+			case SDL_SCANCODE_F7:
+			case SDL_SCANCODE_F8:
+			case SDL_SCANCODE_F9:
+			case SDL_SCANCODE_F10:
+			case SDL_SCANCODE_F11:
+			case SDL_SCANCODE_F12:
+			case SDL_SCANCODE_DELETE:
+			case SDL_SCANCODE_RIGHTBRACKET:
+			case SDL_SCANCODE_LEFTBRACKET:
+			case SDL_SCANCODE_MENU:
+			case SDL_SCANCODE_MINUS:
+			case SDL_SCANCODE_EQUALS:
+			case SDL_SCANCODE_BACKSLASH:
+			// case SDL_SCANCODE_ADD:
+			// case SDL_SCANCODE_SUBTRACT:
+			// case SDL_SCANCODE_MULTIPLY:
+			// case SDL_SCANCODE_DIVIDE:
+			// case SDL_SCANCODE_OEM_PLUS:
+			// case SDL_SCANCODE_OEM_MINUS:
+			// case SDL_SCANCODE_OEM_1:
+			// case SDL_SCANCODE_OEM_COMMA:
+			// case SDL_SCANCODE_OEM_PERIOD:
+			// case SDL_SCANCODE_OEM_2:
+			// case SDL_SCANCODE_OEM_4:
+			// case SDL_SCANCODE_OEM_5:
+			// case SDL_SCANCODE_OEM_6:
+			// case SDL_SCANCODE_OEM_7:
+			case SDL_SCANCODE_SPACE:
+			case SDL_SCANCODE_CANCEL:
+			case SDL_SCANCODE_RETURN:
+				IsFail = false;
+				break;
+			default:
+				break;
 		}
 	}
-	if (IsFail)return;
+	if (IsFail)
+	{
+		return;
+	}
 
 	int ShiftState = ssNone;
 
-	if (ImGui::GetIO().KeyShift)ShiftState |= ssShift;
-	if (ImGui::GetIO().KeyCtrl)ShiftState |= ssCtrl;
-	if (ImGui::GetIO().KeyAlt)ShiftState |= ssAlt;
+	if (ImGui::GetIO().KeyShift)
+	{
+		ShiftState |= ssShift;
+	}
+	if (ImGui::GetIO().KeyCtrl)
+	{
+		ShiftState |= ssCtrl;
+	}
+	if (ImGui::GetIO().KeyAlt)
+	{
+		ShiftState |= ssAlt;
+	}
 
 
-	if (ImGui::IsMouseDown(ImGuiMouseButton_Left))ShiftState |= ssLeft;
-	if (ImGui::IsMouseDown(ImGuiMouseButton_Right))ShiftState |= ssRight;
+	if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
+	{
+		ShiftState |= ssLeft;
+	}
+	if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
+	{
+		ShiftState |= ssRight;
+	}
 	ApplyShortCut(Key, ShiftState);
 }
 
@@ -412,7 +461,7 @@ void XrUIManager::Push(IEditorWnd* ui, bool need_deleted)
 void XrUIManager::Remove(IEditorWnd* ui)
 {
 	auto Iter = std::find(m_UIArray.begin(), m_UIArray.end(), ui);
-	
+
 	if (Iter != m_UIArray.end())
 	{
 		m_UIArray.erase(Iter);
@@ -427,22 +476,20 @@ void XrUIManager::PushBegin(IEditorWnd* ui, bool need_deleted)
 
 void XrUIManager::Draw()
 {
-	//BeginFrame(); 
+	// BeginFrame();
 
 	ImGui::NewFrame();
-    ImGuizmo::BeginFrame();
+	ImGuizmo::BeginFrame();
 
 	ImGui::PushFont(FontsStorage["_fa"]);
 	ImGui::PushFont(FontsStorage[ImCurrentFont]);
-	//ImGui::DockSpaceOverViewport();
+	// ImGui::DockSpaceOverViewport();
 	{
 		m_MenuBarHeight = ScaleByDpi(64.f);
 		m_MenuBarButtonHeight = m_MenuBarHeight - XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
 
 
-		float headerSize = 0.f
-			+ XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::PanelPadding) * 2
-			- 1 // WinAPI WindowBorder
+		float headerSize = 0.f + XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::PanelPadding) * 2 - 1 // WinAPI WindowBorder
 			;
 
 
@@ -450,12 +497,8 @@ void XrUIManager::Draw()
 		ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + m_MenuBarHeight + headerSize));
 		ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, viewport->Size.y - headerSize - m_MenuBarHeight));
 		ImGui::SetNextWindowViewport(viewport->ID);
-		ImGuiWindowFlags window_flags = 0
-			| ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking
-			| ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse
-			| ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
-			| ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-        float separatorSize = ImGui::GetStyle().DockingSeparatorSize + 1 /*WinAPI WindowBorder*/;
+		ImGuiWindowFlags window_flags = 0 | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+		float separatorSize = ImGui::GetStyle().DockingSeparatorSize + 1 /*WinAPI WindowBorder*/;
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(separatorSize, separatorSize));
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
 		ImGui::PushStyleColor(ImGuiCol_Border, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
@@ -467,8 +510,7 @@ void XrUIManager::Draw()
 		ImGui::DockSpace(dockMain);
 		ImGui::End();
 		ImGui::PopStyleColor(2); // Border, WindowBG
-		ImGui::PopStyleVar(1); // WindowPadding
-
+		ImGui::PopStyleVar(1);	 // WindowPadding
 	}
 
 	bool CopyBool = IsEnableInput;
@@ -477,9 +519,9 @@ void XrUIManager::Draw()
 	{
 		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 	}
-	
+
 	OnDrawUI();
-	
+
 	for (IEditorWnd* ui : m_UIArray)
 	{
 		ui->BeginDraw();
@@ -494,16 +536,18 @@ void XrUIManager::Draw()
 
 	ImGui::PopFont();
 	ImGui::PopFont();
-	//ImGui::EndFrame();
+	// ImGui::EndFrame();
 
-	//EndFrame();
+	// EndFrame();
 }
 
 static bool ImGui_ImplWin32_UpdateMouseCursor()
 {
 	ImGuiIO& io = ImGui::GetIO();
 	if (io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange)
+	{
 		return false;
+	}
 
 	ImGuiMouseCursor imgui_cursor = ImGui::GetMouseCursor();
 	if (imgui_cursor == ImGuiMouseCursor_None || io.MouseDrawCursor)
@@ -517,15 +561,33 @@ static bool ImGui_ImplWin32_UpdateMouseCursor()
 		LPTSTR win32_cursor = IDC_ARROW;
 		switch (imgui_cursor)
 		{
-		case ImGuiMouseCursor_Arrow:        win32_cursor = IDC_ARROW; break;
-		case ImGuiMouseCursor_TextInput:    win32_cursor = IDC_IBEAM; break;
-		case ImGuiMouseCursor_ResizeAll:    win32_cursor = IDC_SIZEALL; break;
-		case ImGuiMouseCursor_ResizeEW:     win32_cursor = IDC_SIZEWE; break;
-		case ImGuiMouseCursor_ResizeNS:     win32_cursor = IDC_SIZENS; break;
-		case ImGuiMouseCursor_ResizeNESW:   win32_cursor = IDC_SIZENESW; break;
-		case ImGuiMouseCursor_ResizeNWSE:   win32_cursor = IDC_SIZENWSE; break;
-		case ImGuiMouseCursor_Hand:         win32_cursor = IDC_HAND; break;
-		case ImGuiMouseCursor_NotAllowed:   win32_cursor = IDC_NO; break;
+			case ImGuiMouseCursor_Arrow:
+				win32_cursor = IDC_ARROW;
+				break;
+			case ImGuiMouseCursor_TextInput:
+				win32_cursor = IDC_IBEAM;
+				break;
+			case ImGuiMouseCursor_ResizeAll:
+				win32_cursor = IDC_SIZEALL;
+				break;
+			case ImGuiMouseCursor_ResizeEW:
+				win32_cursor = IDC_SIZEWE;
+				break;
+			case ImGuiMouseCursor_ResizeNS:
+				win32_cursor = IDC_SIZENS;
+				break;
+			case ImGuiMouseCursor_ResizeNESW:
+				win32_cursor = IDC_SIZENESW;
+				break;
+			case ImGuiMouseCursor_ResizeNWSE:
+				win32_cursor = IDC_SIZENWSE;
+				break;
+			case ImGuiMouseCursor_Hand:
+				win32_cursor = IDC_HAND;
+				break;
+			case ImGuiMouseCursor_NotAllowed:
+				win32_cursor = IDC_NO;
+				break;
 		}
 		::SetCursor(::LoadCursor(NULL, win32_cursor));
 	}

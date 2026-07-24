@@ -14,13 +14,9 @@ TiramisuShaderDefinesContainer* TiramisuShaderDefinesManager::RegistryContainer(
 {
 	TiramisuShaderDefinesContainer* ContainerItem = nullptr;
 
-	auto LowerItem = std::lower_bound
-	(
-		Defines.begin(), Defines.end(), Container,
-		[](const TiramisuShaderDefinesContainer* left, const TiramisuShaderDefinesContainer& right)
-		{
-			return (*left) < right;
-		}
+	auto LowerItem = std::lower_bound(
+		Defines.begin(), Defines.end(), Container, [](const TiramisuShaderDefinesContainer* left, const TiramisuShaderDefinesContainer& right)
+		{ return (*left) < right; }
 	);
 
 	if (LowerItem == Defines.end())

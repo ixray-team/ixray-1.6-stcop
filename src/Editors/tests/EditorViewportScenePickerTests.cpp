@@ -12,8 +12,7 @@ int Fail(const char* Message)
 	return 1;
 }
 
-FEditorStaticMeshInstance MakeInstance(const u64 ObjectId,
-	const float Z)
+FEditorStaticMeshInstance MakeInstance(const u64 ObjectId, const float Z)
 {
 	FEditorStaticMeshInstance Instance;
 	Instance.ObjectId = {ObjectId};
@@ -37,12 +36,12 @@ int main()
 	Vertices[2].Position = {0.0f, 1.0f, 0.0f};
 	const xr_array<u32, 3> Indices = {0, 1, 2};
 	const xr_array<FEditorStaticMeshSection, 1> Sections = {{{0, 3, {17}}}};
-	const xr_array<FEditorStaticMeshUpload, 1> Meshes = {{{
-		{11}, 1, Vertices, Indices, Sections}}};
+	const xr_array<FEditorStaticMeshUpload, 1> Meshes = {{{{11}, 1, Vertices, Indices, Sections}}};
 	FEditorStaticMeshInstance NearInstance = MakeInstance(102, 2.0f);
 	NearInstance.MaterialOverrides.push_back({{17}, {19}});
 	const xr_array<FEditorStaticMeshInstance, 2> Instances = {
-		MakeInstance(101, 5.0f), NearInstance};
+		MakeInstance(101, 5.0f), NearInstance
+	};
 	FEditorViewportSceneSnapshot Snapshot;
 	Snapshot.StaticMeshes = Meshes;
 	Snapshot.Instances = Instances;
@@ -62,16 +61,22 @@ int main()
 
 	Request.MaxDistance = 1.5f;
 	if (Picker.Pick(Request).Hit)
+	{
 		return Fail("MaxDistance did not reject a farther triangle");
+	}
 	Request.MaxDistance = 10.0f;
 	Request.CullBackFaces = true;
 	if (Picker.Pick(Request).Hit)
+	{
 		return Fail("Back-face culling did not reject the back side");
+	}
 	Request.RayOrigin = {0.0f, 0.0f, 3.0f};
 	Request.RayDirection = {0.0f, 0.0f, -1.0f};
 	Result = Picker.Pick(Request);
 	if (!Result.Hit || Result.ObjectId.Value != 102 || !Near(Result.Distance, 1.0f))
+	{
 		return Fail("Front-face picking failed");
+	}
 
 	const xr_array<FEditorStaticMeshInstance, 1> Moved = {MakeInstance(103, 1.0f)};
 	FEditorViewportSceneSnapshot InstanceOnly;
@@ -96,10 +101,14 @@ int main()
 	Picker.Submit(Empty);
 	Result = Picker.Pick(Request);
 	if (Result.Hit || Result.SceneRevision != 3)
+	{
 		return Fail("Removed mesh remained pickable");
+	}
 
 	Request.RayDirection = {};
 	if (Picker.Pick(Request).Hit)
+	{
 		return Fail("Invalid zero-length ray was accepted");
+	}
 	return 0;
 }

@@ -7,7 +7,6 @@ class CDS0_DebugRender :
 	public IDebugRender
 {
 public:
-
 public:
 	CDS0_DebugRender();
 	virtual void Render();

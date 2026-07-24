@@ -24,7 +24,7 @@ void DrawMainViewport()
 
 	ImGui::SetNextWindowPos(Viewport->Pos);
 	ImGui::SetNextWindowSize(ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
-	if (ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs)) 
+	if (ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs))
 	{
 		if (GRHI->APILevel != ERHI_API_LAYER::NOT_CREATED)
 		{
@@ -55,7 +55,9 @@ void free_vid_mode_list()
 void fill_vid_mode_list()
 {
 	if (vid_mode_token != nullptr)
+	{
 		return;
+	}
 
 	xr_vector<shared_str> _tmp = GRHI->DisplaySizeArray();
 	u32 _cnt = (u32)_tmp.size() + 1;
@@ -100,13 +102,14 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 
 	ImManager.PlatformNewFrameCallback = ImGui_ImplSDL3_NewFrame;
 	ImManager.PlatformDestroyCallback = ImGui_ImplSDL3_Shutdown;
-	ImManager.PlatformInitCallback = []() { ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window); };
+	ImManager.PlatformInitCallback = []()
+	{ ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window); };
 
 	ImManager.InitPlatform();
 
 	ImManager.ApplyMainViewport(DrawMainViewport);
 	ImManager.Subscribe("Dockspace", CImGuiManager::ERenderPriority::eHight, []()
-	{
+						{
 		auto& States = Engine.External.EditorStates;
 
 		if (ImGui::BeginMainMenuBar()) 
@@ -175,7 +178,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::MenuItem("Render Debug", nullptr, &States[static_cast<u8>(EditorUI::DebugDraw)]);
 				ImGui::MenuItem("ECS Viewer", nullptr, &States[static_cast<u8>(EditorUI::ECSViewer)]);
 				ImGui::MenuItem("SVG Storage Viewer Debug", nullptr, &States[static_cast<u8>(EditorUI::Tools_RenderDebug_SVGStorageViewer)]);
-			#if defined(IXRAY_PROFILER)
+#if defined(IXRAY_PROFILER)
 				if (ImGui::MenuItem("Optick Start Capture"))
 				{
 					PROF_START_CAPTURE();
@@ -196,7 +199,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 
 					PROF_SAVE_CAPTURE(optickFileName);
 				}
-			#endif
+#endif
 				
 				ImGui::EndMenu();
 			}
@@ -237,8 +240,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 		ImGui::End();
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
-	});
+		ImGui::PopStyleVar(); });
 #endif
 	GRHI->CreateDevice(API);
 
@@ -271,12 +273,12 @@ void* CRenderDevice::GetSwapchain()
 	return GRHI->GetSwapchain();
 }
 
-u32	CRenderDevice::GetSwapchainWidth()
+u32 CRenderDevice::GetSwapchainWidth()
 {
 	return TargetWidth;
 }
 
-u32	CRenderDevice::GetSwapchainHeight()
+u32 CRenderDevice::GetSwapchainHeight()
 {
 	return TargetHeight;
 }
@@ -287,7 +289,9 @@ u32 CRenderDevice::GetTimeDeltaSafe(u32 starttime)
 	u32 result = curtime - starttime;
 
 	if (result > curtime)
+	{
 		result = u32(-1) - starttime + curtime;
+	}
 
 	return result;
 }
@@ -297,7 +301,9 @@ u32 CRenderDevice::GetTimeDeltaSafe(u32 starttime, u32 endtime)
 	u32 result = endtime - starttime;
 
 	if (result > endtime)
+	{
 		result = u32(-1) - starttime + endtime;
+	}
 
 	return result;
 }
@@ -312,7 +318,7 @@ void CRenderDevice::ResizeBuffers(u32 Width, u32 Height)
 
 void CRenderDevice::ResizeWindow(u32 width, u32 height)
 {
-	if (psDeviceFlags.is(rsFullscreen)) 
+	if (psDeviceFlags.is(rsFullscreen))
 	{
 		SDL_DisplayMode displayMode;
 		displayMode.w = psCurrentVidMode[0];
@@ -320,13 +326,14 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 		SDL_SetWindowFullscreenMode(g_AppInfo.Window, &displayMode);
 		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
 	}
-	else 
+	else
 	{
 		SDL_SetWindowFullscreen(g_AppInfo.Window, 0);
 		SDL_SetWindowSize(g_AppInfo.Window, width, height);
 
 		const bool bCentered = !Core.ParamsData.test(ECoreParams::no_center_screen);
-		if (bCentered) {
+		if (bCentered)
+		{
 			SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 		}
 	}
@@ -354,22 +361,22 @@ extern int main_menu_fps_limit, fps_limit;
 void CRenderDevice::EndRender()
 {
 	PROF_EVENT("CRenderDevice::EndRender")
-    
+
 	using tick = long long;
 	using clock = std::chrono::high_resolution_clock;
-    
-	bool main_menu_active = g_pGamePersistent						   &&
-							g_pGamePersistent->m_pMainMenu			   &&
+
+	bool main_menu_active = g_pGamePersistent &&
+							g_pGamePersistent->m_pMainMenu &&
 							g_pGamePersistent->m_pMainMenu->IsActive();
 
 	if (int target_fps = main_menu_active ? main_menu_fps_limit : fps_limit; target_fps > 0)
 	{
 		static tick prev_ticks = clock::now().time_since_epoch().count();
 		tick curr_ticks = clock::now().time_since_epoch().count();
-        
+
 		tick current_ticks = curr_ticks - prev_ticks;
 		tick target_ticks = 1'000'000'000 / target_fps;
-		
+
 		if (current_ticks < target_ticks)
 		{
 #if false
@@ -387,7 +394,8 @@ void CRenderDevice::EndRender()
 			long long ticks_wait = curr_ticks + target_ticks - current_ticks;
 			{
 				PROF_EVENT("FPS limiter - spin wait")
-				while (clock::now().time_since_epoch().count() < ticks_wait);
+				while (clock::now().time_since_epoch().count() < ticks_wait)
+					;
 			}
 #endif
 		}

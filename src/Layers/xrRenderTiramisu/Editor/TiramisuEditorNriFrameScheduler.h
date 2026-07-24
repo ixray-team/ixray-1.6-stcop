@@ -15,20 +15,22 @@ struct FEditorNriFramePlan
 };
 
 [[nodiscard]] inline xr_optional<FEditorNriFramePlan>
-MakeEditorNriFramePlan(const u64 FrameIndex,
-	const u32 QueuedFrameCount,
-	const u32 SwapTextureCount) noexcept
+MakeEditorNriFramePlan(const u64 FrameIndex, const u32 QueuedFrameCount, const u32 SwapTextureCount) noexcept
 {
 	if (QueuedFrameCount == 0 || SwapTextureCount == 0)
+	{
 		return std::nullopt;
+	}
 	FEditorNriFramePlan Result;
 	Result.FrameContextIndex = static_cast<u32>(
-		FrameIndex % QueuedFrameCount);
+		FrameIndex % QueuedFrameCount
+	);
 	Result.RecycledSemaphoreIndex = static_cast<u32>(
-		FrameIndex % SwapTextureCount);
+		FrameIndex % SwapTextureCount
+	);
 	Result.ReuseFenceValue = FrameIndex >= QueuedFrameCount
-		? 1 + FrameIndex - QueuedFrameCount
-		: 0;
+								 ? 1 + FrameIndex - QueuedFrameCount
+								 : 0;
 	Result.SignalFenceValue = 1 + FrameIndex;
 	return Result;
 }

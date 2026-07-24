@@ -1,93 +1,93 @@
 #pragma once
 class UIMaterialEditorForm;
 
-class UIMainForm final:
-    public IEditorWnd
+class UIMainForm final :
+	public IEditorWnd
 {
 public:
-    UIMainForm();
-    virtual ~UIMainForm();
+	UIMainForm();
+	virtual ~UIMainForm();
 
-    virtual void Draw() override;
-    virtual void ResetEnd() override;
+	virtual void Draw() override;
+	virtual void ResetEnd() override;
 
-    void LoadWindowsStates();
-    bool Frame();
-    IC UILeftBarForm* GetLeftBarForm() {return m_LeftBar;}
-    IC UITopBarForm* GetTopBarForm() { return m_TopBar; }
-    IC UIRenderForm* GetRenderForm() { return m_Render; }
-    IC UILPropertiesForm* GetPropertiesForm() { return m_Properties; }
-    IC class UIWorldPropertiesFrom* GetWorldPropertiesFrom() { return m_WorldProperties; }
-    IC UIMaterialEditorForm* GetMaterialEditorForm() { return m_MaterialEditor; }
-
-private:
-    void DrawContextMenu();
-    void DrawRenderToolBar(ImVec2 Pos, ImVec2 Size);
-    void DrawMenuSettings();
-    void RenderOldCameraButtons();
-    void RenderAxisButtons();
-
-    shared_str GetCommandShortcat(int CommandID) const;
-    void DrawMenuItem(const char* label, int command, int param = 0, int flag = 0);
-    void DrawMenuItemI(const char* label, const char* icon, int command, int param = 0, int flag = 0);
+	void LoadWindowsStates();
+	bool Frame();
+	IC UILeftBarForm* GetLeftBarForm() { return m_LeftBar; }
+	IC UITopBarForm* GetTopBarForm() { return m_TopBar; }
+	IC UIRenderForm* GetRenderForm() { return m_Render; }
+	IC UILPropertiesForm* GetPropertiesForm() { return m_Properties; }
+	IC class UIWorldPropertiesFrom* GetWorldPropertiesFrom() { return m_WorldProperties; }
+	IC UIMaterialEditorForm* GetMaterialEditorForm() { return m_MaterialEditor; }
 
 private:
-    UITopBarForm* m_TopBar;
-    UIRenderForm* m_Render;
-    UIMainMenuForm* m_MainMenu;
-    UILeftBarForm* m_LeftBar;
-    UILPropertiesForm* m_Properties;
-    class UIWorldPropertiesFrom* m_WorldProperties;
-    UIMaterialEditorForm* m_MaterialEditor;
+	void DrawContextMenu();
+	void DrawRenderToolBar(ImVec2 Pos, ImVec2 Size);
+	void DrawMenuSettings();
+	void RenderOldCameraButtons();
+	void RenderAxisButtons();
 
-    ref_texture m_tMenu;
+	shared_str GetCommandShortcat(int CommandID) const;
+	void DrawMenuItem(const char* label, int command, int param = 0, int flag = 0);
+	void DrawMenuItemI(const char* label, const char* icon, int command, int param = 0, int flag = 0);
 
-    // Action
-    ref_texture m_tSelect;
-    ref_texture m_tAdd;
-    ref_texture m_tMove;
-    ref_texture m_tRotate;
-    ref_texture m_tScale;
+private:
+	UITopBarForm* m_TopBar;
+	UIRenderForm* m_Render;
+	UIMainMenuForm* m_MainMenu;
+	UILeftBarForm* m_LeftBar;
+	UILPropertiesForm* m_Properties;
+	class UIWorldPropertiesFrom* m_WorldProperties;
+	UIMaterialEditorForm* m_MaterialEditor;
 
-    // Snap
-    ref_texture m_tGSnap;
-    ref_texture m_tOSnap;
-    ref_texture m_tMoveToSnap;
-    ref_texture m_tNSnap;
-    ref_texture m_tVSnap;
-    ref_texture m_tASnap;
-    ref_texture m_tMSnap;
+	ref_texture m_tMenu;
 
-    ref_texture m_tZoom;
-    ref_texture m_tZoomSel;
+	// Action
+	ref_texture m_tSelect;
+	ref_texture m_tAdd;
+	ref_texture m_tMove;
+	ref_texture m_tRotate;
+	ref_texture m_tScale;
 
-    ref_texture m_tGrid;
-    ref_texture m_tScaleGrid;
-    ref_texture m_tAngle;
+	// Snap
+	ref_texture m_tGSnap;
+	ref_texture m_tOSnap;
+	ref_texture m_tMoveToSnap;
+	ref_texture m_tNSnap;
+	ref_texture m_tVSnap;
+	ref_texture m_tASnap;
+	ref_texture m_tMSnap;
 
-    ref_texture m_tCsLocal;
-    ref_texture m_tNuScale;
-    ref_texture TransformLocalOrWorld;
-    ref_texture TransformLocalOrWorld2;
+	ref_texture m_tZoom;
+	ref_texture m_tZoomSel;
 
-    // Axis
-    ref_texture m_tX;
-    ref_texture m_tY;
-    ref_texture m_tZ;
-    ref_texture m_tZX;
+	ref_texture m_tGrid;
+	ref_texture m_tScaleGrid;
+	ref_texture m_tAngle;
 
-    // View
-    ref_texture m_tVFront;
-    ref_texture m_tVBack;
-    ref_texture m_tVLeft;
-    ref_texture m_tVRight;
-    ref_texture m_tVTop;
-    ref_texture m_tVBottom;
-    ref_texture m_tVReset;
+	ref_texture m_tCsLocal;
+	ref_texture m_tNuScale;
+	ref_texture TransformLocalOrWorld;
+	ref_texture TransformLocalOrWorld2;
 
-    // Camera
-    ref_texture m_tPlaneMove;
-    ref_texture m_tArcBall;
-    ref_texture m_tFreeFly;
+	// Axis
+	ref_texture m_tX;
+	ref_texture m_tY;
+	ref_texture m_tZ;
+	ref_texture m_tZX;
+
+	// View
+	ref_texture m_tVFront;
+	ref_texture m_tVBack;
+	ref_texture m_tVLeft;
+	ref_texture m_tVRight;
+	ref_texture m_tVTop;
+	ref_texture m_tVBottom;
+	ref_texture m_tVReset;
+
+	// Camera
+	ref_texture m_tPlaneMove;
+	ref_texture m_tArcBall;
+	ref_texture m_tFreeFly;
 };
 extern UIMainForm* MainForm;

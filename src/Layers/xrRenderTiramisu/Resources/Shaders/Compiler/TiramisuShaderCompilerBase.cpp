@@ -7,11 +7,11 @@
 #if IXR_ENABLE_SHADER_COMPILER
 TiramisuShaderCompilerBase* TiramisuShaderCompilerBase::Create(nri::GraphicsAPI GraphicsAPI, bool NeedCreateShaderPDB, bool DebugShader)
 {
-	return new TiramisuShaderCompilerDesktop(GraphicsAPI,NeedCreateShaderPDB, DebugShader);
+	return new TiramisuShaderCompilerDesktop(GraphicsAPI, NeedCreateShaderPDB, DebugShader);
 }
 
-TiramisuShaderCompilerBase::TiramisuShaderCompilerBase(bool NeedCreateShaderPDB, bool DebugShader) : 
-	bNeedCreateShaderPDB(NeedCreateShaderPDB), bDebugShader(DebugShader), IncludeCrc32(0), IncludeCount(0), IncludeSize(0)
+TiramisuShaderCompilerBase::TiramisuShaderCompilerBase(bool NeedCreateShaderPDB, bool DebugShader)
+	: bNeedCreateShaderPDB(NeedCreateShaderPDB), bDebugShader(DebugShader), IncludeCrc32(0), IncludeCount(0), IncludeSize(0)
 {
 }
 
@@ -42,8 +42,8 @@ bool TiramisuShaderCompilerBase::Check(const char* SourceFileName, const Tiramis
 		return false;
 	}
 
-	bool Result = (FileResult.r_u8()>0) ==		 bDebugShader;
-	Result = Result && (FileResult.r_u8()>0) ==	 bNeedCreateShaderPDB;
+	bool Result = (FileResult.r_u8() > 0) == bDebugShader;
+	Result = Result && (FileResult.r_u8() > 0) == bNeedCreateShaderPDB;
 	Result = Result && FileResult.r_u32() == FileSourceSize;
 	Result = Result && FileResult.r_u32() == FileSourceCrc32;
 	Result = Result && FileResult.r_u32() == Defines.GetDefines().size();

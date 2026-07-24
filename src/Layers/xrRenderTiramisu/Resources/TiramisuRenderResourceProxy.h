@@ -6,12 +6,13 @@
 class TiramisuRenderResourceProxy
 {
 public:
-                    TiramisuRenderResourceProxy    ();
-    virtual         ~TiramisuRenderResourceProxy   ();
-            u32     GetOrCreateHeapID       ();
-            u32     GetHeapID               () const;
-    
-    nri::Descriptor*Descriptor = nullptr;
+	TiramisuRenderResourceProxy();
+	virtual ~TiramisuRenderResourceProxy();
+	u32 GetOrCreateHeapID();
+	u32 GetHeapID() const;
+
+	nri::Descriptor* Descriptor = nullptr;
+
 private:
-    u32             HeapID = INDEX_NONE;
+	u32 HeapID = INDEX_NONE;
 };

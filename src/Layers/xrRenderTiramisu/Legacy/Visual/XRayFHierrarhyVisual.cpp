@@ -6,9 +6,12 @@
 
 void CDS0_FHierrarhyVisual::Release()
 {
-	if (!m_DontDelete) {
+	if (!m_DontDelete)
+	{
 		for (u32 i = 0; i < children.size(); i++)
+		{
 			children[i]->Release();
+		}
 	}
 }
 
@@ -20,8 +23,8 @@ void CDS0_FHierrarhyVisual::Load(const char* N, IReader* data, u32 dwFlags)
 		// From Link
 		u32 count = data->r_u32();
 		children.resize(count);
-		for (u32 i = 0; i < count; i++) {
-
+		for (u32 i = 0; i < count; i++)
+		{
 			u32 ID = data->r_u32();
 			children[i] = LegacyOwner->GetVisual(ID);
 		}
@@ -33,13 +36,17 @@ void CDS0_FHierrarhyVisual::Load(const char* N, IReader* data, u32 dwFlags)
 		{
 			// From stream
 			IReader* OBJ = data->open_chunk(OGF_CHILDREN);
-			if (OBJ) {
+			if (OBJ)
+			{
 				IReader* O = OBJ->open_chunk(0);
-				for (int count = 1; O; count++) 
+				for (int count = 1; O; count++)
 				{
-					string_path			name_load, short_name, num;
+					string_path name_load, short_name, num;
 					xr_strcpy(short_name, N);
-					if (strext(short_name)) *strext(short_name) = 0;
+					if (strext(short_name))
+					{
+						*strext(short_name) = 0;
+					}
 					xr_strcpy(name_load, short_name);
 					xr_strcat(name_load, ":");
 					xr_strcat(name_load, itoa(count, num, 10));
@@ -66,9 +73,9 @@ void CDS0_FHierrarhyVisual::Copy(CDS0_RenderVisual* from)
 	children.clear();
 	children.reserve(pFrom->children.size());
 
-	for (u32 i = 0; i < pFrom->children.size(); i++) 
+	for (u32 i = 0; i < pFrom->children.size(); i++)
 	{
-		CDS0_RenderVisual* p = (CDS0_RenderVisual*) ::Render->model_Duplicate(pFrom->children[i]);
+		CDS0_RenderVisual* p = (CDS0_RenderVisual*)::Render->model_Duplicate(pFrom->children[i]);
 		children.push_back(p);
 	}
 	m_DontDelete = false;
@@ -80,9 +87,12 @@ CDS0_FHierrarhyVisual::CDS0_FHierrarhyVisual()
 
 CDS0_FHierrarhyVisual::~CDS0_FHierrarhyVisual()
 {
-	if (!m_DontDelete) {
+	if (!m_DontDelete)
+	{
 		for (u32 i = 0; i < children.size(); i++)
+		{
 			::Render->model_Delete((IRenderVisual*&)children[i]);
+		}
 	}
 	children.clear();
 }

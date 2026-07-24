@@ -34,7 +34,10 @@ bool TiramisuRenderTextureSequence::LoadFromSeqFile(const char* FilePath)
 
 	// Read FPS
 	FPS = atoi(Buffer);
-	if (FPS == 0) FPS = 30;
+	if (FPS == 0)
+	{
+		FPS = 30;
+	}
 	MSPF = 1000 / FPS;
 
 	while (!Reader->eof())
@@ -74,7 +77,7 @@ bool TiramisuRenderTextureSequence::LoadFrameTexture(const char* TextureName)
 		FrameTextures.push_back(ExistingTexture);
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -86,9 +89,9 @@ void TiramisuRenderTextureSequence::Update()
 		return;
 	}
 
-	u32	Frame = DevicePtr->dwTimeContinual / MSPF;
-	u32	FrameData = FrameTextures.size();
-	u32	FrameID;
+	u32 Frame = DevicePtr->dwTimeContinual / MSPF;
+	u32 FrameData = FrameTextures.size();
+	u32 FrameID;
 
 	if (bCycles)
 	{

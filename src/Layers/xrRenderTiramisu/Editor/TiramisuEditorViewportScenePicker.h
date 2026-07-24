@@ -17,7 +17,8 @@ public:
 	// Submit атомарно заменяет scene snapshot; Pick читает согласованную CPU-копию.
 	void Submit(const FEditorViewportSceneSnapshot& Snapshot);
 	[[nodiscard]] FEditorViewportPickResult Pick(
-		const FEditorViewportPickRequest& Request) const;
+		const FEditorViewportPickRequest& Request
+	) const;
 
 private:
 	// CPU-представление mesh для editor picking.

@@ -13,7 +13,7 @@ UIImageEditorForm::UIImageEditorForm()
 	m_ItemList = new UIItemListForm();
 	m_ItemList->m_Flags.set(UIItemListForm::fMultiSelect, true);
 
-	m_ItemList->SetOnItemsFocusedEvent({this,&UIImageEditorForm::OnItemsFocused});
+	m_ItemList->SetOnItemsFocusedEvent({this, &UIImageEditorForm::OnItemsFocused});
 	m_ItemList->SetOnItemRemoveEvent({&ImageLib, &CImageManager::RemoveTexture});
 
 	m_bFilterImage = true;
@@ -27,7 +27,8 @@ UIImageEditorForm::UIImageEditorForm()
 UIImageEditorForm::~UIImageEditorForm()
 {
 	UI->DestroyImGuiTexture(m_EditorTexture);
-	m_Texture.destroy();;
+	m_Texture.destroy();
+	;
 
 	xr_delete(m_ItemList);
 	xr_delete(m_ItemProps);
@@ -54,26 +55,51 @@ void UIImageEditorForm::Draw()
 	{
 		float MinWidth = ImGui::GetWindowWidth() * 0.35f;
 		if (ImGui::GetColumnWidth() < MinWidth)
+		{
 			ImGui::SetColumnOffset(1, MinWidth);
+		}
 
 		ImGui::BeginGroup();
 		ImGui::BeginChild("Left", ImVec2(0, -ImGui::GetFrameHeight() - (bImportMode ? 4 : 24)), true, ImGuiWindowFlags_HorizontalScrollbar);
 		{
 			m_ItemList->Draw();
 			if (!IsDocked)
+			{
 				IsDocked = ImGui::IsWindowDocked();
+			}
 			if (!IsFocused)
+			{
 				IsFocused = ImGui::IsWindowFocused();
+			}
 		}
 		ImGui::EndChild();
 
 		if (!bImportMode)
 		{
-			if (ImGui::Checkbox("Image", &m_bFilterImage))FilterUpdate(); ImGui::SameLine();
-			if (ImGui::Checkbox("Cube", &m_bFilterCube))FilterUpdate(); ImGui::SameLine();
-			if (ImGui::Checkbox("Bump", &m_bFilterBump))FilterUpdate(); ImGui::SameLine();
-			if (ImGui::Checkbox("Normal", &m_bFilterNormal))FilterUpdate(); ImGui::SameLine();
-			if (ImGui::Checkbox("Terrain", &m_bFilterTerrain))FilterUpdate();
+			if (ImGui::Checkbox("Image", &m_bFilterImage))
+			{
+				FilterUpdate();
+			}
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Cube", &m_bFilterCube))
+			{
+				FilterUpdate();
+			}
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Bump", &m_bFilterBump))
+			{
+				FilterUpdate();
+			}
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Normal", &m_bFilterNormal))
+			{
+				FilterUpdate();
+			}
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Terrain", &m_bFilterTerrain))
+			{
+				FilterUpdate();
+			}
 		}
 
 		if (ImGui::Button("Close"))
@@ -96,9 +122,11 @@ void UIImageEditorForm::Draw()
 				m_ItemList->RemoveSelectItem();
 			}
 		}
-		else {
+		else
+		{
 			ImGui::SameLine();
-			if(ImGui::Button("Selected")) {
+			if (ImGui::Button("Selected"))
+			{
 				UpdateSelected();
 				HideLib();
 			}
@@ -123,15 +151,19 @@ void UIImageEditorForm::Draw()
 				}
 			}
 			const ImTextureID Preview = m_EditorTexture.IsValid()
-				? UI->GetImGuiTexture(m_EditorTexture)
-				: UI->LoadTexture("ed\\ed_nodata");
+											? UI->GetImGuiTexture(m_EditorTexture)
+											: UI->LoadTexture("ed\\ed_nodata");
 			ImGui::Image(Preview, ImVec2(128, 128));
 			m_ItemProps->Draw();
 
 			if (!IsDocked)
+			{
 				IsDocked = ImGui::IsWindowDocked();
+			}
 			if (!IsFocused)
+			{
 				IsFocused = ImGui::IsWindowFocused();
+			}
 		}
 		ImGui::EndChild();
 	}
@@ -168,7 +200,8 @@ void UIImageEditorForm::Update()
 
 void UIImageEditorForm::Show(bool bImport)
 {
-	if(Form == nullptr) {
+	if (Form == nullptr)
+	{
 		Form = new UIImageEditorForm();
 	}
 	Form->bImportMode = bImport;
@@ -215,7 +248,7 @@ void UIImageEditorForm::ImportTextures()
 	int new_cnt = ImageLib.GetLocalNewTextures(TextureMap);
 	if (new_cnt)
 	{
-		if (ELog.DlgMsg(mtInformation, mbOK|mbCancel, "Found %d new texture(s)", new_cnt) == mrOK)
+		if (ELog.DlgMsg(mtInformation, mbOK | mbCancel, "Found %d new texture(s)", new_cnt) == mrOK)
 		{
 			Form = new UIImageEditorForm();
 			Form->texture_map.swap(TextureMap);
@@ -232,7 +265,9 @@ ETextureThumbnail* UIImageEditorForm::FindUsedTHM(const shared_str& name)
 {
 	THMMapIt it = m_THM_Used.find(name);
 	if (it != m_THM_Used.end())
+	{
 		return it->second;
+	}
 
 	ETextureThumbnail* thm = new ETextureThumbnail(name.c_str(), false);
 	m_THM_Used[name] = thm;
@@ -306,22 +341,24 @@ void UIImageEditorForm::RegisterModifiedTHM()
 
 void UIImageEditorForm::OnCubeMapBtnClick(ButtonValue* value, bool& bModif, bool& bSafe)
 {
-	ButtonValue* B = dynamic_cast<ButtonValue*>(value); R_ASSERT(B);
+	ButtonValue* B = dynamic_cast<ButtonValue*>(value);
+	R_ASSERT(B);
 	bModif = false;
-	switch (B->btn_num) {
-	case 0: 
+	switch (B->btn_num)
 	{
-		RStringVec items;
-		if (0 != m_ItemList->GetSelected(items))
+		case 0:
 		{
-			for (RStringVecIt it = items.begin(); it != items.end(); it++)
+			RStringVec items;
+			if (0 != m_ItemList->GetSelected(items))
 			{
-				xr_string new_name = xr_string(it->c_str()) + "#small";
-				ImageLib.CreateSmallerCubeMap(it->c_str(), new_name.c_str());
+				for (RStringVecIt it = items.begin(); it != items.end(); it++)
+				{
+					xr_string new_name = xr_string(it->c_str()) + "#small";
+					ImageLib.CreateSmallerCubeMap(it->c_str(), new_name.c_str());
+				}
 			}
 		}
-	}
-	break;
+		break;
 	}
 }
 
@@ -335,7 +372,7 @@ void UIImageEditorForm::UpdateProperties()
 	ListItemsVec vec;
 	m_ItemList->GetSelected(nullptr, vec, false);
 
-	//if (vec.size() == 1)
+	// if (vec.size() == 1)
 	{
 		m_ItemProps->ClearProperties();
 		OnItemsFocused(vec);
@@ -346,7 +383,9 @@ void UIImageEditorForm::InitItemList()
 {
 	R_ASSERT(m_THM_Used.empty());
 	if (!bImportMode)
+	{
 		ImageLib.GetTexturesRaw(texture_map);
+	}
 	/*
 		FS_FileSet				flist;
 		FS.file_list			(flist,"$game_textures$",FS_ListFiles|FS_ClampExt,"*.thm");
@@ -361,7 +400,7 @@ void UIImageEditorForm::InitItemList()
 		}
 	*/
 
-	ListItemsVec 			items;
+	ListItemsVec items;
 	// fill
 	FS_FileSetIt it = texture_map.begin();
 	FS_FileSetIt _E = texture_map.end();
@@ -392,7 +431,7 @@ void UIImageEditorForm::UpdateLib()
 		// rename with folder
 		FS_FileSet files = texture_map;
 		texture_map.clear();
-		xr_string               fn;
+		xr_string fn;
 		FS_FileSetIt it = files.begin();
 		FS_FileSetIt _E = files.end();
 
@@ -400,7 +439,7 @@ void UIImageEditorForm::UpdateLib()
 		{
 			fn = EFS.ChangeFileExt(it->name.c_str(), "");
 			ImageLib.UpdateFileName(fn);
-			FS_File				F(*it);
+			FS_File F(*it);
 			F.name = fn;
 			texture_map.insert(F);
 		}
@@ -420,16 +459,17 @@ void UIImageEditorForm::UpdateLib()
 	}
 }
 
-void UIImageEditorForm::UpdateSelected() 
+void UIImageEditorForm::UpdateSelected()
 {
 	texture_map.clear();
-	RStringVec items; 
+	RStringVec items;
 	string_path fn{};
 
-	if(m_ItemList->GetSelected(items)) 
+	if (m_ItemList->GetSelected(items))
 	{
-		for(auto item : items) {
-			if(auto file = FS.exist(fn, _import_, *item)) 
+		for (auto item : items)
+		{
+			if (auto file = FS.exist(fn, _import_, *item))
 			{
 				texture_map.insert(xr_string(item.c_str()));
 			}
@@ -471,10 +511,7 @@ void UIImageEditorForm::OnItemsFocused(ListItemsVec& item)
 		Surf->Release();
 		if (thm->Valid())
 		{
-			(void)UI->UpdateImGuiTexture(m_EditorTexture, thm->Pixels(),
-				THUMB_WIDTH, THUMB_HEIGHT, THUMB_WIDTH * 4,
-				++m_EditorTextureRevision, "image-editor-thumbnail",
-				EEditorTextureFormat::Bgra8Unorm, true);
+			(void)UI->UpdateImGuiTexture(m_EditorTexture, thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT, THUMB_WIDTH * 4, ++m_EditorTextureRevision, "image-editor-thumbnail", EEditorTextureFormat::Bgra8Unorm, true);
 		}
 	}
 
@@ -486,7 +523,9 @@ void UIImageEditorForm::SaveUsedTHM()
 	for (THMMapIt t_it = m_THM_Used.begin(); t_it != m_THM_Used.end(); ++t_it)
 	{
 		if (modif_map.find(FS_File(t_it->second->SrcName())) != modif_map.end())
+		{
 			t_it->second->Save();
+		}
 	}
 }
 
@@ -503,19 +542,28 @@ void UIImageEditorForm::FilterUpdate()
 
 		bool bVis = false;
 		int type = thm->_Format().type;
-		if (STextureParams::ttImage == type&&m_bFilterImage)
+		if (STextureParams::ttImage == type && m_bFilterImage)
+		{
 			bVis = true;
+		}
 		else if (STextureParams::ttCubeMap == type && m_bFilterCube)
+		{
 			bVis = true;
-		else if (STextureParams::ttBumpMap== type && m_bFilterBump)
+		}
+		else if (STextureParams::ttBumpMap == type && m_bFilterBump)
+		{
 			bVis = true;
+		}
 		else if (STextureParams::ttNormalMap == type && m_bFilterNormal)
+		{
 			bVis = true;
+		}
 		else if (STextureParams::ttTerrain == type && m_bFilterTerrain)
+		{
 			bVis = true;
+		}
 
 		I->Visible(bVis);
-		
 	}
 	m_ItemList->ClearSelected();
 }

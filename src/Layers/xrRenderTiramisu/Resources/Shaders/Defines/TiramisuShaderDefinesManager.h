@@ -7,10 +7,10 @@ class TiramisuShaderDefinesContainer;
 class TiramisuShaderDefinesManager
 {
 public:
-								TiramisuShaderDefinesManager		() = default;
-								~TiramisuShaderDefinesManager		();
-	TiramisuShaderDefinesContainer*	RegistryContainer			(const TiramisuShaderDefinesContainer& Container);
+	TiramisuShaderDefinesManager() = default;
+	~TiramisuShaderDefinesManager();
+	TiramisuShaderDefinesContainer* RegistryContainer(const TiramisuShaderDefinesContainer& Container);
 
 private:
-	xr_vector<TiramisuShaderDefinesContainer*>	Defines;
+	xr_vector<TiramisuShaderDefinesContainer*> Defines;
 };

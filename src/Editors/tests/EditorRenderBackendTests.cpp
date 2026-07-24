@@ -8,7 +8,8 @@ namespace
 class FTestEditorRenderBackend final : public IEditorRenderBackend
 {
 public:
-	explicit FTestEditorRenderBackend(const EEditorRenderBackendKind InKind) : Kind(InKind) {}
+	explicit FTestEditorRenderBackend(const EEditorRenderBackendKind InKind)
+		: Kind(InKind) {}
 
 	[[nodiscard]] EEditorRenderBackendKind GetKind() const noexcept override
 	{
@@ -21,16 +22,14 @@ public:
 		++CaptureCount;
 	}
 
-	void ResizeViewport(const u32 ViewportId, const u32 Width,
-		const u32 Height) override
+	void ResizeViewport(const u32 ViewportId, const u32 Width, const u32 Height) override
 	{
 		ResizedViewport = ViewportId;
 		Surface.Width = Width;
 		Surface.Height = Height;
 	}
 
-	bool SubmitViewportScene(const u32 ViewportId,
-		const FEditorViewportSceneSnapshot& Snapshot) override
+	bool SubmitViewportScene(const u32 ViewportId, const FEditorViewportSceneSnapshot& Snapshot) override
 	{
 		SubmittedViewport = ViewportId;
 		SubmittedRevision = Snapshot.Revision;
@@ -43,14 +42,14 @@ public:
 			static_cast<u32>(Snapshot.OverlayLines.size());
 		SubmittedOverlayTriangleCount =
 			static_cast<u32>(Snapshot.OverlayTriangles.size());
-		SubmittedOverlayText.assign(Snapshot.OverlayText.begin(),
-			Snapshot.OverlayText.end());
+		SubmittedOverlayText.assign(Snapshot.OverlayText.begin(), Snapshot.OverlayText.end());
 		return AcceptScene;
 	}
 
 	[[nodiscard]] FEditorViewportPickResult PickViewport(
 		const u32 ViewportId,
-		const FEditorViewportPickRequest& Request) const override
+		const FEditorViewportPickRequest& Request
+	) const override
 	{
 		PickedViewport = ViewportId;
 		PickOrigin = Request.RayOrigin;
@@ -65,25 +64,26 @@ public:
 		return Result;
 	}
 
-	void CopyViewportOverlayText(const u32 ViewportId,
-		xr_vector<FEditorOverlayText>& OutText) const override
+	void CopyViewportOverlayText(const u32 ViewportId, xr_vector<FEditorOverlayText>& OutText) const override
 	{
 		RequestedOverlayViewport = ViewportId;
 		OutText = SubmittedOverlayText;
 	}
 
 	[[nodiscard]] FEditorTextureHandle CreateTexture(
-		const FEditorTextureUpload& Upload) override
+		const FEditorTextureUpload& Upload
+	) override
 	{
 		TextureRevision = Upload.Revision;
 		return TextureHandle;
 	}
 
-	bool UpdateTexture(const FEditorTextureHandle Handle,
-		const FEditorTextureUpload& Upload) override
+	bool UpdateTexture(const FEditorTextureHandle Handle, const FEditorTextureUpload& Upload) override
 	{
 		if (Handle != TextureHandle)
+		{
 			return false;
+		}
 		TextureRevision = Upload.Revision;
 		return true;
 	}
@@ -91,11 +91,14 @@ public:
 	void DestroyTexture(const FEditorTextureHandle Handle) override
 	{
 		if (Handle == TextureHandle)
+		{
 			TextureDestroyed = true;
+		}
 	}
 
 	[[nodiscard]] FEditorViewportSurface GetTextureSurface(
-		const FEditorTextureHandle Handle) const override
+		const FEditorTextureHandle Handle
+	) const override
 	{
 		FEditorViewportSurface Result;
 		if (Handle == TextureHandle && !TextureDestroyed)
@@ -130,8 +133,7 @@ public:
 	FEditorTextureHandle TextureHandle{3, 7};
 	u64 TextureRevision = 0;
 	bool TextureDestroyed = false;
-	FEditorViewportPickResult PickResult{true, {91}, {92}, {93},
-		{1.0f, 2.0f, 3.0f}, {0.0f, 1.0f, 0.0f}, 4.0f, 5, 42};
+	FEditorViewportPickResult PickResult{true, {91}, {92}, {93}, {1.0f, 2.0f, 3.0f}, {0.0f, 1.0f, 0.0f}, 4.0f, 5, 42};
 };
 
 struct FResetEditorRenderBackend
@@ -152,7 +154,9 @@ int Fail(const char* Message)
 int main()
 {
 	if (GetEditorRenderBackend().GetKind() != EEditorRenderBackendKind::Legacy)
+	{
 		return Fail("The built-in editor renderer must default to the legacy adapter");
+	}
 	FEditorDebugLine CapturedLine;
 	CapturedLine.Vertices[0].Position = {1.0f, 2.0f, 3.0f};
 	FEditorDebugTriangle CapturedTriangle;
@@ -165,26 +169,34 @@ int main()
 	xr_vector<FEditorTransientMeshCapture> CapturedTransientMeshes;
 	CaptureEditorDebugLine(CapturedLine);
 	CaptureEditorOverlayLine({});
-	EndEditorDebugDrawCapture(CapturedLines, CapturedTriangles,
-		CapturedOverlayLines, CapturedOverlayTriangles, CapturedOverlayText,
-		CapturedTransientMeshes);
+	EndEditorDebugDrawCapture(CapturedLines, CapturedTriangles, CapturedOverlayLines, CapturedOverlayTriangles, CapturedOverlayText, CapturedTransientMeshes);
 	if (!CapturedLines.empty() || !CapturedTriangles.empty() ||
 		!CapturedOverlayLines.empty() || !CapturedOverlayTriangles.empty() ||
 		!CapturedOverlayText.empty() || !CapturedTransientMeshes.empty())
+	{
 		return Fail("Inactive editor debug capture accepted primitives");
+	}
 	BeginEditorDebugDrawCapture();
 	if (!IsEditorDebugDrawCaptureActive())
+	{
 		return Fail("Editor debug capture did not become active");
+	}
 	const int ObjectIdentity = 0;
 	if (GetEditorTransientObjectIdentity() != nullptr)
+	{
 		return Fail("Editor transient object identity was not reset at capture start");
+	}
 	{
 		TiramisuEditorTransientObjectCaptureScope IdentityScope(&ObjectIdentity);
 		if (GetEditorTransientObjectIdentity() != &ObjectIdentity)
+		{
 			return Fail("Editor transient object identity scope was not published");
+		}
 	}
 	if (GetEditorTransientObjectIdentity() != nullptr)
+	{
 		return Fail("Editor transient object identity scope was not restored");
+	}
 	CaptureEditorDebugLine(CapturedLine);
 	CaptureEditorDebugTriangle(CapturedTriangle);
 	FEditorOverlayLine CapturedOverlayLine;
@@ -209,9 +221,7 @@ int main()
 	CaptureEditorOverlayText(CapturedText);
 	CaptureEditorTransientMesh(CapturedMesh);
 	CapturedMesh.TextureName = "mutated after capture";
-	EndEditorDebugDrawCapture(CapturedLines, CapturedTriangles,
-		CapturedOverlayLines, CapturedOverlayTriangles, CapturedOverlayText,
-		CapturedTransientMeshes);
+	EndEditorDebugDrawCapture(CapturedLines, CapturedTriangles, CapturedOverlayLines, CapturedOverlayTriangles, CapturedOverlayText, CapturedTransientMeshes);
 	if (IsEditorDebugDrawCaptureActive() || CapturedLines.size() != 1 ||
 		CapturedTriangles.size() != 1 ||
 		CapturedOverlayLines.size() != 1 ||
@@ -238,11 +248,15 @@ int main()
 
 	FTestEditorRenderBackend First(EEditorRenderBackendKind::Tiramisu);
 	if (InstallEditorRenderBackend(&First) != nullptr)
+	{
 		return Fail("The first installed backend unexpectedly replaced a custom backend");
+	}
 	FResetEditorRenderBackend ResetOnExit;
 
 	if (&GetEditorRenderBackend() != &First)
+	{
 		return Fail("GetEditorRenderBackend did not publish the installed backend");
+	}
 
 	IEditorRenderBackend& Active = GetEditorRenderBackend();
 	Active.CaptureViewport(7);
@@ -265,7 +279,9 @@ int main()
 	Snapshot.DebugDrawRevision = 24;
 	Snapshot.Revision = 42;
 	if (!Active.SubmitViewportScene(7, Snapshot))
+	{
 		return Fail("The installed backend rejected a valid scene snapshot");
+	}
 	FEditorViewportPickRequest PickRequest;
 	PickRequest.RayOrigin = {4.0f, 5.0f, 6.0f};
 	const FEditorViewportPickResult PickResult =
@@ -275,7 +291,9 @@ int main()
 	Active.CopyViewportOverlayText(7, CopiedOverlayText);
 	if (First.CaptureCount != 1 || First.CapturedViewport != 7 || First.ResizedViewport != 7 ||
 		First.RequestedViewport != 7)
+	{
 		return Fail("Viewport operations were not forwarded to the installed backend");
+	}
 	if (First.SubmittedViewport != 7 || First.SubmittedRevision != 42 ||
 		First.SubmittedInstanceCount != 1 || First.SubmittedDebugLineCount != 1 ||
 		First.SubmittedDebugTriangleCount != 1 ||
@@ -284,27 +302,45 @@ int main()
 		First.RequestedOverlayViewport != 7 || CopiedOverlayText.size() != 1 ||
 		CopiedOverlayText[0].Text != "viewport label" ||
 		First.SubmittedDebugDrawRevision != 24)
+	{
 		return Fail("Scene snapshots were not forwarded to the installed backend");
+	}
 	if (!PickResult.Hit || PickResult.ObjectId.Value != 91 ||
 		First.PickedViewport != 7 || First.PickOrigin != PickRequest.RayOrigin)
+	{
 		return Fail("Viewport picking was not forwarded to the installed backend");
+	}
 	if (!Surface.IsValid() || Surface.Width != 640 || Surface.Height != 360)
+	{
 		return Fail("The installed backend did not return its opaque viewport surface");
+	}
 
 	FTestEditorRenderBackend Second(EEditorRenderBackendKind::Tiramisu);
 	if (InstallEditorRenderBackend(&Second) != &First)
+	{
 		return Fail("Installing a nested backend did not return the previous backend");
+	}
 	if (&GetEditorRenderBackend() != &Second)
+	{
 		return Fail("The nested backend was not published");
+	}
 	if (InstallEditorRenderBackend(&First) != &Second)
+	{
 		return Fail("Restoring the previous backend did not return the replaced backend");
+	}
 	if (&GetEditorRenderBackend() != &First)
+	{
 		return Fail("The previous backend was not restored");
+	}
 
 	if (InstallEditorRenderBackend(nullptr) != &First)
+	{
 		return Fail("Resetting the backend did not return the installed backend");
+	}
 	if (GetEditorRenderBackend().GetKind() != EEditorRenderBackendKind::Legacy)
+	{
 		return Fail("Resetting the backend did not restore the legacy adapter");
+	}
 
 	return 0;
 }

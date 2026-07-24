@@ -5,8 +5,8 @@
 #include "compression/ppmd/compression_ppmd_stream.h"
 
 #ifdef IXR_WINDOWS
-#	include <mmsystem.h>
-#	include <objbase.h>
+#include <mmsystem.h>
+#include <objbase.h>
 #endif
 
 #include "xrCore.h"
@@ -15,16 +15,16 @@
 #include "stack_string.h"
 #include "ECS/EntityManager.h"
 
-XRCORE_API xrCore	Core;
-XRCORE_API u32		build_id;
-XRCORE_API const char*	build_date;
+XRCORE_API xrCore Core;
+XRCORE_API u32 build_id;
+XRCORE_API const char* build_date;
 XRCORE_API bool ignore_error_window = false;
 namespace CPU
 {
-	extern void Detect();
+extern void Detect();
 };
 
-static u32	init_counter	= 0;
+static u32 init_counter = 0;
 
 char g_application_path[256];
 
@@ -32,22 +32,22 @@ char g_application_path[256];
 
 extern xr_hash_map<xr_string, CInifile*>* cached_ini_map;
 
-void xrCore::_initialize	(const char* _ApplicationName, xrLogger::LogCallback cb, bool init_fs, const char* fs_fname)
+void xrCore::_initialize(const char* _ApplicationName, xrLogger::LogCallback cb, bool init_fs, const char* fs_fname)
 {
 	GECSManager = new CECSManager;
 
 	cached_ini_map = new xr_hash_map<xr_string, CInifile*>();
 
 	PROF_EVENT("xrCore::_initialize");
-	xr_strcpy					(ApplicationName,_ApplicationName);
-	if (0==init_counter) 
+	xr_strcpy(ApplicationName, _ApplicationName);
+	if (0 == init_counter)
 	{
 		// Init COM so we can use CoCreateInstance
 #ifdef IXR_WINDOWS
-        CoInitializeEx	(nullptr, COINIT_MULTITHREADED);
+		CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
-		xr_strcpy			(Params,sizeof(Params),GetCommandLineA());
-		_strlwr_s			(Params,sizeof(Params));
+		xr_strcpy(Params, sizeof(Params), GetCommandLineA());
+		_strlwr_s(Params, sizeof(Params));
 
 		LoadParams();
 #endif
@@ -66,25 +66,27 @@ void xrCore::_initialize	(const char* _ApplicationName, xrLogger::LogCallback cb
 		xr_strcpy(CompName, sizeof(CompName), comp_name.c_str());
 
 		// Mathematics & PSI detection
-		CPU::Detect			();
-		
+		CPU::Detect();
+
 		Memory._initialize();
 
 		xrLogger::InitLog();
 		if (ParamsData.test(ECoreParams::renderdoc) ||
 			xrRenderDoc::IsLoaded())
+		{
 			xrRenderDoc::Initialize();
-		_initialize_cpu		();
+		}
+		_initialize_cpu();
 
-		rtc_initialize		();
+		rtc_initialize();
 
-		xr_FS				= new CLocatorAPI	();
+		xr_FS = new CLocatorAPI();
 
-		xr_EFS				= new EFS_Utils		();
+		xr_EFS = new EFS_Utils();
 		g_uiExpressionMgr = new CExpressionManager();
 
 		g_Discord.Init();
-		
+
 #ifdef IXR_WINDOWS
 		g_AppInfo.IsLaunchedViaWineOrProton = std::getenv("WINELOADER") != nullptr;
 #endif
@@ -93,28 +95,32 @@ void xrCore::_initialize	(const char* _ApplicationName, xrLogger::LogCallback cb
 	if (init_fs)
 	{
 		u32 flags = 0;
-		if (Core.ParamsData.test(ECoreParams::build))	
+		if (Core.ParamsData.test(ECoreParams::build))
+		{
 			flags |= CLocatorAPI::flBuildCopy;
+		}
 
 		if (Core.ParamsData.test(ECoreParams::ebuild))
-			flags |= CLocatorAPI::flBuildCopy|CLocatorAPI::flEBuildCopy;
+		{
+			flags |= CLocatorAPI::flBuildCopy | CLocatorAPI::flEBuildCopy;
+		}
 
 		flags |= CLocatorAPI::flScanAppRoot;
 
-		FS._initialize		(flags,nullptr,fs_fname);
-		BuildId             = build_id;
-		Msg					("'%s' build %d, %s\n","xrCore",build_id, build_date);
-		EFS._initialize		();
+		FS._initialize(flags, nullptr, fs_fname);
+		BuildId = build_id;
+		Msg("'%s' build %d, %s\n", "xrCore", build_id, build_date);
+		EFS._initialize();
 #if defined(DEBUG) && defined(IXR_WINDOWS)
-		Msg					("CRT heap 0x%08x",_get_heap_handle());
-		Msg					("Process heap 0x%08x",GetProcessHeap());
+		Msg("CRT heap 0x%08x", _get_heap_handle());
+		Msg("Process heap 0x%08x", GetProcessHeap());
 #endif // DEBUG
 	}
 	xrLogger::AddLogCallback(cb);
 	init_counter++;
 }
 
-extern compression::ppmd::stream	*trained_model;
+extern compression::ppmd::stream* trained_model;
 
 void xrCore::_destroy()
 {
@@ -128,7 +134,8 @@ void xrCore::_destroy()
 
 		xr_delete(GECSManager);
 
-		if (trained_model) {
+		if (trained_model)
+		{
 			void* buffer = trained_model->buffer();
 			xr_free(buffer);
 			xr_delete(trained_model);
@@ -143,21 +150,21 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD ul_reason_for_call, LPVOID lpvRese
 {
 	switch (ul_reason_for_call)
 	{
-	case DLL_PROCESS_ATTACH:
+		case DLL_PROCESS_ATTACH:
 		{
-			_control87		( _RC_CHOP, MCW_RC );
-			_control87		( _RC_NEAR, MCW_RC );
-			_control87		( _MCW_EM,  MCW_EM );
+			_control87(_RC_CHOP, MCW_RC);
+			_control87(_RC_NEAR, MCW_RC);
+			_control87(_MCW_EM, MCW_EM);
 		}
 		break;
-	case DLL_THREAD_ATTACH:
-		timeBeginPeriod	(1);
-		break;
-	case DLL_THREAD_DETACH:
-		break;
-	case DLL_PROCESS_DETACH:
-		break;
+		case DLL_THREAD_ATTACH:
+			timeBeginPeriod(1);
+			break;
+		case DLL_THREAD_DETACH:
+			break;
+		case DLL_PROCESS_DETACH:
+			break;
 	}
-    return true;
+	return true;
 }
 #endif

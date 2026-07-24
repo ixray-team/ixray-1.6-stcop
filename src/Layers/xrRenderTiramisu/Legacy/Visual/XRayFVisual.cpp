@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#define VLOAD_NOVERTICES 1<<0
+#define VLOAD_NOVERTICES 1 << 0
 #include "XRayFVisual.h"
 
 #include "Legacy/Scene/TiramisuLegacyScene.h"
@@ -26,7 +26,7 @@ void CDS0_FVisual::Load(const char* N, IReader* data, u32 dwFlags)
 	if (dwFlags & VLOAD_SWI)
 	{
 		destructor<IReader> lods(data->open_chunk(OGF_SWIDATA));
-		nSWI.reserved[0] = lods().r_u32();	// reserved 16 bytes
+		nSWI.reserved[0] = lods().r_u32(); // reserved 16 bytes
 		nSWI.reserved[1] = lods().r_u32();
 		nSWI.reserved[2] = lods().r_u32();
 		nSWI.reserved[3] = lods().r_u32();
@@ -75,15 +75,14 @@ void CDS0_FVisual::Load(const char* N, IReader* data, u32 dwFlags)
 			R_ASSERT(data->find_chunk(OGF_INDICES));
 			CountIndex = data->r_u32();
 		}
-
 	}
 }
-#define PCOPY(a)	a = pFrom->a
+#define PCOPY(a) a = pFrom->a
 void CDS0_FVisual::Copy(CDS0_RenderVisual* from)
 {
 	CDS0_RenderVisual::Copy(from);
 
-	CDS0_FVisual* pFrom = dynamic_cast<CDS0_FVisual*> (from);
+	CDS0_FVisual* pFrom = dynamic_cast<CDS0_FVisual*>(from);
 
 	PCOPY(FVF);
 }
@@ -94,7 +93,7 @@ bool CDS0_FVisual::MakeRenderItem(float LOD, FLegacyVisualRenderItem& RenderItem
 	{
 		return false;
 	}
-	
+
 	RenderItem.CountVertex = CountVertex;
 	RenderItem.OffsetVertex = OffsetVertex;
 	RenderItem.CountIndex = CountIndex;
@@ -102,6 +101,6 @@ bool CDS0_FVisual::MakeRenderItem(float LOD, FLegacyVisualRenderItem& RenderItem
 	RenderItem.SceneVertexBuffer = SceneVertexBuffer;
 	RenderItem.SceneIndexBuffer = SceneIndexBuffer;
 	RenderItem.Material = Material;
-	
+
 	return true;
 }

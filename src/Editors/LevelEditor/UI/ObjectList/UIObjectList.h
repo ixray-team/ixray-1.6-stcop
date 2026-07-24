@@ -1,9 +1,10 @@
 #pragma once
 class CCustomObject;
-class UIObjectList:
+class UIObjectList :
 	public IEditorWnd
 {
 	friend class UIObjectListItem;
+
 public:
 	UIObjectList();
 	virtual ~UIObjectList();
@@ -11,7 +12,7 @@ public:
 	static void Update();
 	static void Show();
 	static void Close();
-	static IC bool IsOpen()  { return Form; }
+	static IC bool IsOpen() { return Form; }
 	static void Refresh();
 
 private:

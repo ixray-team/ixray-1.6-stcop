@@ -1,11 +1,11 @@
 #pragma once
 
 #include "TiramisuRenderTypes.h"
-class CDS0_ThunderboltRender:public IThunderboltRender
+class CDS0_ThunderboltRender : public IThunderboltRender
 {
 public:
 	CDS0_ThunderboltRender();
-	virtual void Copy(IThunderboltRender &_in) ;
+	virtual void Copy(IThunderboltRender& _in);
 
-	virtual void Render(CEffect_Thunderbolt &owner);
+	virtual void Render(CEffect_Thunderbolt& owner);
 };

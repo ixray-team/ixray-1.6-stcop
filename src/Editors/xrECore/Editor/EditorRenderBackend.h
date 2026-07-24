@@ -35,10 +35,8 @@ struct FEditorTransientMeshCapture
 	xr_vector<FEditorStaticMeshVertex> Vertices;
 	xr_vector<u32> Indices;
 	xr_array<float, 16> LocalToWorld = {
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f};
+		1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f
+	};
 	EEditorSceneInstanceFlags InstanceFlags = EEditorSceneInstanceFlags::None;
 };
 
@@ -51,7 +49,8 @@ ECORE_API void BeginEditorDebugDrawCapture();
 // Legacy objects publish their address only as a process-lifetime object ID;
 // the pointer is never dereferenced by the renderer or serialized.
 [[nodiscard]] ECORE_API const void* SetEditorTransientObjectIdentity(
-	const void* Identity) noexcept;
+	const void* Identity
+) noexcept;
 [[nodiscard]] ECORE_API const void* GetEditorTransientObjectIdentity() noexcept;
 
 class TiramisuEditorTransientObjectCaptureScope
@@ -59,15 +58,18 @@ class TiramisuEditorTransientObjectCaptureScope
 public:
 	explicit TiramisuEditorTransientObjectCaptureScope(const void* Identity) noexcept
 		: Previous(SetEditorTransientObjectIdentity(Identity))
-	{}
+	{
+	}
 	~TiramisuEditorTransientObjectCaptureScope()
 	{
 		(void)SetEditorTransientObjectIdentity(Previous);
 	}
 	TiramisuEditorTransientObjectCaptureScope(
-		const TiramisuEditorTransientObjectCaptureScope&) = delete;
+		const TiramisuEditorTransientObjectCaptureScope&
+	) = delete;
 	TiramisuEditorTransientObjectCaptureScope& operator=(
-		const TiramisuEditorTransientObjectCaptureScope&) = delete;
+		const TiramisuEditorTransientObjectCaptureScope&
+	) = delete;
 
 private:
 	const void* Previous = nullptr;
@@ -78,7 +80,8 @@ ECORE_API void CaptureEditorDebugLine(const FEditorDebugLine& Line);
 ECORE_API void CaptureEditorDebugTriangle(const FEditorDebugTriangle& Triangle);
 ECORE_API void CaptureEditorOverlayLine(const FEditorOverlayLine& Line);
 ECORE_API void CaptureEditorOverlayTriangle(
-	const FEditorOverlayTriangle& Triangle);
+	const FEditorOverlayTriangle& Triangle
+);
 ECORE_API void CaptureEditorOverlayText(const FEditorOverlayText& Text);
 ECORE_API void EndEditorDebugDrawCapture(
 	xr_vector<FEditorDebugLine>& Lines,
@@ -86,4 +89,5 @@ ECORE_API void EndEditorDebugDrawCapture(
 	xr_vector<FEditorOverlayLine>& OverlayLines,
 	xr_vector<FEditorOverlayTriangle>& OverlayTriangles,
 	xr_vector<FEditorOverlayText>& OverlayText,
-	xr_vector<FEditorTransientMeshCapture>& TransientMeshes) noexcept;
+	xr_vector<FEditorTransientMeshCapture>& TransientMeshes
+) noexcept;

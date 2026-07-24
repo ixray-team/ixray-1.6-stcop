@@ -43,51 +43,51 @@ UIMainForm::UIMainForm()
 	m_Render->OnFocusCallback = (xr_delegate<void()>)ViewportFocusCallback;
 
 	// Action
-	m_tMenu         = EDevice->Resources->_CreateTexture("ed\\bar\\menu");
-	m_tSelect       = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Select");
-	m_tAdd          = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Add");
-	m_tMove         = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Move");
-	m_tScale        = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Scale");
-	m_tRotate       = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Rotate");
+	m_tMenu = EDevice->Resources->_CreateTexture("ed\\bar\\menu");
+	m_tSelect = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Select");
+	m_tAdd = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Add");
+	m_tMove = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Move");
+	m_tScale = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Scale");
+	m_tRotate = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Rotate");
 
 	// Snap
-	m_tGSnap        = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Align to Normal");
-	m_tOSnap        = EDevice->Resources->_CreateTexture("ed\\icons\\Snap to Grid");
-	m_tMoveToSnap   = EDevice->Resources->_CreateTexture("ed\\icons\\Snap to Object");
-	m_tNSnap        = EDevice->Resources->_CreateTexture("ed\\icons\\Snap while Moving");
-	m_tVSnap        = EDevice->Resources->_CreateTexture("ed\\icons\\Snap to Vertex");
-	m_tASnap        = EDevice->Resources->_CreateTexture("ed\\bar\\asnap"); //????
-	m_tMSnap        = EDevice->Resources->_CreateTexture("ed\\bar\\msnap"); //????
+	m_tGSnap = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Align to Normal");
+	m_tOSnap = EDevice->Resources->_CreateTexture("ed\\icons\\Snap to Grid");
+	m_tMoveToSnap = EDevice->Resources->_CreateTexture("ed\\icons\\Snap to Object");
+	m_tNSnap = EDevice->Resources->_CreateTexture("ed\\icons\\Snap while Moving");
+	m_tVSnap = EDevice->Resources->_CreateTexture("ed\\icons\\Snap to Vertex");
+	m_tASnap = EDevice->Resources->_CreateTexture("ed\\bar\\asnap"); //????
+	m_tMSnap = EDevice->Resources->_CreateTexture("ed\\bar\\msnap"); //????
 
-	m_tZoom         = EDevice->Resources->_CreateTexture("ed\\icons\\Zoom Extent");
-	m_tZoomSel      = EDevice->Resources->_CreateTexture("ed\\icons\\Zoom Extents Selected");
+	m_tZoom = EDevice->Resources->_CreateTexture("ed\\icons\\Zoom Extent");
+	m_tZoomSel = EDevice->Resources->_CreateTexture("ed\\icons\\Zoom Extents Selected");
 
 	// Axis
-	m_tX            = EDevice->Resources->_CreateTexture("ed\\bar\\AxisX");
-	m_tY            = EDevice->Resources->_CreateTexture("ed\\bar\\AxisY");
-	m_tZ            = EDevice->Resources->_CreateTexture("ed\\bar\\AxisZ");
-	m_tZX           = EDevice->Resources->_CreateTexture("ed\\bar\\AxisZX");
-	
-	m_tGrid         = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Moving");
-	m_tScaleGrid    = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Scale");
-	m_tAngle        = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Rotate");
+	m_tX = EDevice->Resources->_CreateTexture("ed\\bar\\AxisX");
+	m_tY = EDevice->Resources->_CreateTexture("ed\\bar\\AxisY");
+	m_tZ = EDevice->Resources->_CreateTexture("ed\\bar\\AxisZ");
+	m_tZX = EDevice->Resources->_CreateTexture("ed\\bar\\AxisZX");
 
-	m_tCsLocal      = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Parent CS");
-	m_tNuScale      = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Non-Uniform Scale");
+	m_tGrid = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Moving");
+	m_tScaleGrid = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Scale");
+	m_tAngle = EDevice->Resources->_CreateTexture("ed\\icons\\Snap Rotate");
+
+	m_tCsLocal = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Parent CS");
+	m_tNuScale = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Non-Uniform Scale");
 
 	// View
-	m_tVFront       = EDevice->Resources->_CreateTexture("ed\\bar\\ViewFront");
-	m_tVBack        = EDevice->Resources->_CreateTexture("ed\\bar\\ViewB");
-	m_tVLeft        = EDevice->Resources->_CreateTexture("ed\\bar\\ViewLeft");
-	m_tVRight       = EDevice->Resources->_CreateTexture("ed\\bar\\ViewRight");
-	m_tVTop         = EDevice->Resources->_CreateTexture("ed\\bar\\ViewTop");
-	m_tVBottom      = EDevice->Resources->_CreateTexture("ed\\bar\\ViewB");
-	m_tVReset       = EDevice->Resources->_CreateTexture("ed\\bar\\ViewReset");
+	m_tVFront = EDevice->Resources->_CreateTexture("ed\\bar\\ViewFront");
+	m_tVBack = EDevice->Resources->_CreateTexture("ed\\bar\\ViewB");
+	m_tVLeft = EDevice->Resources->_CreateTexture("ed\\bar\\ViewLeft");
+	m_tVRight = EDevice->Resources->_CreateTexture("ed\\bar\\ViewRight");
+	m_tVTop = EDevice->Resources->_CreateTexture("ed\\bar\\ViewTop");
+	m_tVBottom = EDevice->Resources->_CreateTexture("ed\\bar\\ViewB");
+	m_tVReset = EDevice->Resources->_CreateTexture("ed\\bar\\ViewReset");
 
 	// Camera
-	m_tPlaneMove    = EDevice->Resources->_CreateTexture("ed\\bar\\PlaneMove");
-	m_tArcBall      = EDevice->Resources->_CreateTexture("ed\\bar\\ArcBall");
-	m_tFreeFly      = EDevice->Resources->_CreateTexture("ed\\bar\\FreeFly");
+	m_tPlaneMove = EDevice->Resources->_CreateTexture("ed\\bar\\PlaneMove");
+	m_tArcBall = EDevice->Resources->_CreateTexture("ed\\bar\\ArcBall");
+	m_tFreeFly = EDevice->Resources->_CreateTexture("ed\\bar\\FreeFly");
 
 	TransformLocalOrWorld = EDevice->Resources->_CreateTexture("ed\\icons\\Tool Local");
 	TransformLocalOrWorld2 = EDevice->Resources->_CreateTexture("ed\\icons\\Tool World");
@@ -130,10 +130,10 @@ void UIMainForm::LoadWindowsStates()
 		m_WorldProperties->Close();
 	}
 
-	//if (LPrefs->OpenLightAnim)
+	// if (LPrefs->OpenLightAnim)
 	//{
 	//	UIEditLightAnim::Show();
-	//}
+	// }
 }
 
 UIMainForm::~UIMainForm()
@@ -211,12 +211,16 @@ shared_str UIMainForm::GetCommandShortcat(int CommandID) const
 	ECommandVec& CommandVec = GetEditorCommands();
 
 	if (CommandVec[CommandID] == nullptr)
+	{
 		return {};
+	}
 
 	ESubCommandVec& SubCommandVec = CommandVec[CommandID]->sub_commands;
 
 	if (SubCommandVec.empty())
+	{
 		return {};
+	}
 
 	const xr_shortcut& Cat = SubCommandVec[0]->shortcut;
 
@@ -365,16 +369,16 @@ void UIMainForm::DrawContextMenu()
 
 void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 {
-	const	float	ButtonSize		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
-	const	float	ToolbarPadding	= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding);
+	const float ButtonSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+	const float ToolbarPadding = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding);
 	ImGui::PushStyleColor(ImGuiCol_ChildBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint).Value);
-	ImGui::BeginChild("##RenderFormToolbar", { 0, ButtonSize + ToolbarPadding * 2 }, 0, ImGuiWindowFlags_NoScrollbar);
+	ImGui::BeginChild("##RenderFormToolbar", {0, ButtonSize + ToolbarPadding * 2}, 0, ImGuiWindowFlags_NoScrollbar);
 	ImGui::PopStyleColor();
 
 	// Параметры таблицы, которые может настроить пользователь
-	static ImVec2 cellPadding = ImVec2(ToolbarPadding, ToolbarPadding); // Отступы внутри ячеек
+	static ImVec2 cellPadding = ImVec2(ToolbarPadding, ToolbarPadding);	   // Отступы внутри ячеек
 	static ImVec2 minColumnWidth = ImVec2(GUIManager->ScaleByDpi(100), 0); // Минимальная ширина колонок (0 = авто)
-	static bool stretchColumns = true; // Растягивать ли колонки
+	static bool stretchColumns = true;									   // Растягивать ли колонки
 
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 	ImGui::SameLine(0, ToolbarPadding);
@@ -483,7 +487,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		DrawSettingsButton("##DrawRenderToolBar1173", m_tCsLocal, etfCSParent, "Parent Constraint Toggle", ImDrawFlags_RoundCornersLeft);
 		ImGui::SameLine();
 		DrawSettingsButton("##DrawRenderToolBar1200", m_tNuScale, etfNUScale, "Scaling by Axes only", ImDrawFlags_RoundCornersNone);
-		
+
 		ImGui::SameLine(0);
 		const ETAction action = LTools->GetAction();
 		ImGui::BeginDisabled(action == etaScale || action == etaSelect || action == etaAdd);
@@ -532,7 +536,9 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		}
 
 		if (ImGui::IsItemHovered())
+		{
 			ImGui::SetTooltip("Focus on the selected object");
+		}
 
 		ImGui::EndGroup();
 
@@ -541,7 +547,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		ImGui::BeginGroup();
 		DrawSettingsButton("##DrawRenderToolBar859", m_tGrid, etfMSnap, "Fixed object movement", ImDrawFlags_RoundCornersLeft);
 
-		const float moveValues[] = { 0.01f, 0.05f, 0.1f, 0.5f, 1.f, 2.f, 5.f, 10.f, 25.f, 50.f, 100.f, 250.f, 500.f };
+		const float moveValues[] = {0.01f, 0.05f, 0.1f, 0.5f, 1.f, 2.f, 5.f, 10.f, 25.f, 50.f, 100.f, 250.f, 500.f};
 		DrawSnapCombo("##move", Tools->m_MoveSnap, moveValues, 13, "The choice of a fixed distance of movement of the object");
 		ImGui::EndGroup();
 
@@ -550,7 +556,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		ImGui::BeginGroup();
 		DrawSettingsButton("##DrawRenderToolBar972", m_tScaleGrid, etfScaleFixed, "Fixed Object Scaling", ImDrawFlags_RoundCornersLeft);
 
-		const float scaleValues[] = { 0.01f, 0.05f, 0.1f, 0.25f, 0.5f, 1.f, 2.f, 5.f, 10.f, 50.f, 200.f, 1000.f };
+		const float scaleValues[] = {0.01f, 0.05f, 0.1f, 0.25f, 0.5f, 1.f, 2.f, 5.f, 10.f, 50.f, 200.f, 1000.f};
 		DrawSnapCombo("##scale", Tools->m_ScaleFixed, scaleValues, 12, "Setting a Fixed Object Scaling");
 		ImGui::EndGroup();
 		ImGui::SameLine(0, 4);
@@ -558,7 +564,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		ImGui::BeginGroup();
 		DrawSettingsButton("##DrawRenderToolBar1085", m_tAngle, etfASnap, "Fixed object rotation angle", ImDrawFlags_RoundCornersLeft);
 
-		const float angleValues[] = { 1.f, 5.f, 10.f, 15.f, 45.f, 90.f, 180.f };
+		const float angleValues[] = {1.f, 5.f, 10.f, 15.f, 45.f, 90.f, 180.f};
 		DrawSnapCombo("##rotate", Tools->m_RotateSnapAngle, angleValues, 7, "Set a fixed rotation angle of the object (in degrees)", true);
 		ImGui::EndGroup();
 
@@ -620,7 +626,9 @@ void UIMainForm::DrawMenuSettings()
 				bool disabled = psDeviceFlags.test(rsDisableAxisCube);
 
 				if (ImGui::MenuItem("None", "", &disabled))
+				{
 					psDeviceFlags.set(rsDisableAxisCube, disabled);
+				}
 
 				ImGui::BeginDisabled(disabled);
 
@@ -629,9 +637,13 @@ void UIMainForm::DrawMenuSettings()
 				bool selectedCube = !isAxis;
 
 				if (ImGui::MenuItem("Axis", "", &selectedAxis))
+				{
 					psDeviceFlags.set(rsDrawAxis, true);
+				}
 				if (ImGui::MenuItem("Cube", "", &selectedCube))
+				{
 					psDeviceFlags.set(rsDrawAxis, false);
+				}
 
 				ImGui::EndDisabled();
 				ImGui::EndMenu();
@@ -681,15 +693,15 @@ void UIMainForm::DrawMenuSettings()
 				// Quality подменю
 				if (ImGui::BeginMenu("Quality"))
 				{
-					const char* qualities[] = { "25%", "50%", "100%", "200%" };
-					const float values[] = { 0.25f, 0.5f, 1.0f, 2.0f };
+					const char* qualities[] = {"25%", "50%", "100%", "200%"};
+					const float values[] = {0.25f, 0.5f, 1.0f, 2.0f};
 
 					for (int i = 0; i < 4; i++)
 					{
 						bool selected = (i == 0 && EDevice->m_ScreenQuality < 0.3f) ||
-							(i == 1 && EDevice->m_ScreenQuality >= 0.3f && EDevice->m_ScreenQuality < 0.6f) ||
-							(i == 2 && EDevice->m_ScreenQuality >= 0.6f && EDevice->m_ScreenQuality < 1.1f) ||
-							(i == 3 && EDevice->m_ScreenQuality >= 1.1f && EDevice->m_ScreenQuality < 2.1f);
+										(i == 1 && EDevice->m_ScreenQuality >= 0.3f && EDevice->m_ScreenQuality < 0.6f) ||
+										(i == 2 && EDevice->m_ScreenQuality >= 0.6f && EDevice->m_ScreenQuality < 1.1f) ||
+										(i == 3 && EDevice->m_ScreenQuality >= 1.1f && EDevice->m_ScreenQuality < 2.1f);
 
 						if (ImGui::MenuItem(qualities[i], "", &selected))
 						{
@@ -703,8 +715,8 @@ void UIMainForm::DrawMenuSettings()
 				// Fill Mode подменю
 				if (ImGui::BeginMenu("Fill Mode"))
 				{
-					const char* modes[] = { "Point", "Wireframe", "Solid" };
-					D3DFILLMODE d3dModes[] = { D3DFILL_POINT, D3DFILL_WIREFRAME, D3DFILL_SOLID };
+					const char* modes[] = {"Point", "Wireframe", "Solid"};
+					D3DFILLMODE d3dModes[] = {D3DFILL_POINT, D3DFILL_WIREFRAME, D3DFILL_SOLID};
 
 					for (int i = 0; i < 3; i++)
 					{
@@ -731,7 +743,7 @@ void UIMainForm::DrawMenuSettings()
 			ImGui::EndPopup();
 		}
 
-		//if (ImGui::ImageButton("##DrawRenderToolBar548", m_tMenu->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
+		// if (ImGui::ImageButton("##DrawRenderToolBar548", m_tMenu->get_SRView()->GetRawSRV(), ImVec2(16, ImGui::GetFontSize())))
 		if (XRay::ImGui::ToolbarIconButton("##DrawRenderToolBar548", UI->GetImGuiTexture(m_tMenu), nullptr, ImDrawFlags_RoundCornersLeft))
 		{
 			ImGui::OpenPopup("MenuScene");
@@ -739,7 +751,7 @@ void UIMainForm::DrawMenuSettings()
 
 		ImGui::SameLine();
 		const float ButtonSize = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
-		XRay::ImGui::ToolbarButton("##HintButton", ICON_FA_LIGHTBULB, &MainForm->GetRenderForm()->UseHint, { ButtonSize, ButtonSize }, ImDrawFlags_RoundCornersRight);
+		XRay::ImGui::ToolbarButton("##HintButton", ICON_FA_LIGHTBULB, &MainForm->GetRenderForm()->UseHint, {ButtonSize, ButtonSize}, ImDrawFlags_RoundCornersRight);
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetTooltip("Hint");

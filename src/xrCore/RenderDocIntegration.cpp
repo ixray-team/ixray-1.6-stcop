@@ -14,17 +14,23 @@ bool InitializationAttempted = false;
 xr_string WideToUtf8(const wchar_t* Value)
 {
 	if (!Value || !Value[0])
+	{
 		return {};
+	}
 
 	const int Length = WideCharToMultiByte(
-		CP_UTF8, 0, Value, -1, nullptr, 0, nullptr, nullptr);
+		CP_UTF8, 0, Value, -1, nullptr, 0, nullptr, nullptr
+	);
 	if (Length <= 1)
+	{
 		return {};
+	}
 
 	xr_string Result;
 	Result.resize(static_cast<size_t>(Length));
 	WideCharToMultiByte(
-		CP_UTF8, 0, Value, -1, Result.data(), Length, nullptr, nullptr);
+		CP_UTF8, 0, Value, -1, Result.data(), Length, nullptr, nullptr
+	);
 	Result.pop_back();
 	return Result;
 }
@@ -33,14 +39,18 @@ std::wstring GetEnvironmentPath(const wchar_t* Name)
 {
 	const DWORD Required = GetEnvironmentVariableW(Name, nullptr, 0);
 	if (Required <= 1)
+	{
 		return {};
+	}
 
 	std::wstring Value;
 	Value.resize(Required);
 	const DWORD Written =
 		GetEnvironmentVariableW(Name, Value.data(), Required);
 	if (Written == 0 || Written >= Required)
+	{
 		return {};
+	}
 
 	Value.resize(Written);
 	return Value;
@@ -51,14 +61,19 @@ std::wstring GetExecutableDirectory()
 	std::wstring Path;
 	Path.resize(32768);
 	const DWORD Length = GetModuleFileNameW(
-		nullptr, Path.data(), static_cast<DWORD>(Path.size()));
+		nullptr, Path.data(), static_cast<DWORD>(Path.size())
+	);
 	if (Length == 0 || Length >= Path.size())
+	{
 		return {};
+	}
 
 	Path.resize(Length);
 	const size_t Separator = Path.find_last_of(L"\\/");
 	if (Separator == std::wstring::npos)
+	{
 		return {};
+	}
 
 	Path.resize(Separator);
 	return Path;
@@ -70,7 +85,8 @@ HMODULE LoadRenderDocModule(xr_string& LoadedPath)
 	{
 		wchar_t ModulePath[32768] = {};
 		GetModuleFileNameW(
-			Existing, ModulePath, static_cast<DWORD>(std::size(ModulePath)));
+			Existing, ModulePath, static_cast<DWORD>(std::size(ModulePath))
+		);
 		LoadedPath = WideToUtf8(ModulePath);
 		return Existing;
 	}
@@ -86,7 +102,8 @@ HMODULE LoadRenderDocModule(xr_string& LoadedPath)
 		!ExecutableDirectory.empty())
 	{
 		Candidates.push_back(
-			ExecutableDirectory + L"\\renderdoc.dll");
+			ExecutableDirectory + L"\\renderdoc.dll"
+		);
 	}
 
 	// Allows deployments which place RenderDoc on PATH.
@@ -96,18 +113,22 @@ HMODULE LoadRenderDocModule(xr_string& LoadedPath)
 		!ProgramFilesPath.empty())
 	{
 		Candidates.push_back(
-			ProgramFilesPath + L"\\RenderDoc\\renderdoc.dll");
+			ProgramFilesPath + L"\\RenderDoc\\renderdoc.dll"
+		);
 	}
 
 	for (const std::wstring& Candidate : Candidates)
 	{
 		HMODULE Module = LoadLibraryW(Candidate.c_str());
 		if (!Module)
+		{
 			continue;
+		}
 
 		wchar_t ModulePath[32768] = {};
 		GetModuleFileNameW(
-			Module, ModulePath, static_cast<DWORD>(std::size(ModulePath)));
+			Module, ModulePath, static_cast<DWORD>(std::size(ModulePath))
+		);
 		LoadedPath = WideToUtf8(ModulePath);
 		return Module;
 	}
@@ -121,7 +142,9 @@ bool xrRenderDoc::Initialize()
 {
 #ifdef IXR_WINDOWS
 	if (InitializationAttempted)
+	{
 		return RenderDocApi != nullptr;
+	}
 
 	InitializationAttempted = true;
 
@@ -135,7 +158,8 @@ bool xrRenderDoc::Initialize()
 	}
 
 	const auto GetApi = reinterpret_cast<pRENDERDOC_GetAPI>(
-		GetProcAddress(RenderDocModule, "RENDERDOC_GetAPI"));
+		GetProcAddress(RenderDocModule, "RENDERDOC_GetAPI")
+	);
 	if (!GetApi)
 	{
 		Msg("! RenderDoc: RENDERDOC_GetAPI is missing in %s",
@@ -163,7 +187,8 @@ bool xrRenderDoc::Initialize()
 	// capture is finalized from Present().
 	RenderDocApi->UnloadCrashHandler();
 	RenderDocApi->SetCaptureOptionU32(
-		eRENDERDOC_Option_DebugOutputMute, 1);
+		eRENDERDOC_Option_DebugOutputMute, 1
+	);
 
 	RENDERDOC_InputButton CaptureKey = eRENDERDOC_Key_F12;
 	RenderDocApi->SetCaptureKeys(&CaptureKey, 1);
@@ -185,7 +210,9 @@ bool xrRenderDoc::Initialize()
 	RenderDocApi->SetCaptureFilePathTemplate(CapturePathTemplate.c_str());
 
 	Msg("* RenderDoc: API %d.%d.%d loaded before graphics device creation",
-		Major, Minor, Patch);
+		Major,
+		Minor,
+		Patch);
 	Msg("* RenderDoc: module=%s", LoadedPath.c_str());
 	Msg("* RenderDoc: internal crash handler disabled; xrCore/debugger owns "
 		"exception handling");
@@ -216,7 +243,7 @@ bool xrRenderDoc::IsLoaded()
 {
 #ifdef IXR_WINDOWS
 	return RenderDocModule != nullptr ||
-		GetModuleHandleW(L"renderdoc.dll") != nullptr;
+		   GetModuleHandleW(L"renderdoc.dll") != nullptr;
 #else
 	return false;
 #endif
@@ -244,7 +271,9 @@ bool xrRenderDoc::TriggerCapture()
 {
 #ifdef IXR_WINDOWS
 	if (!RenderDocApi)
+	{
 		return false;
+	}
 
 	RenderDocApi->TriggerCapture();
 	return true;

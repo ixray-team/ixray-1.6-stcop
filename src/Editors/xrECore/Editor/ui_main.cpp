@@ -24,42 +24,44 @@
 
 #include <RedImage/RedImage.hpp>
 
-#define TRelease(x) if (x) x->pSurface->Release()
+#define TRelease(x) \
+	if (x)          \
+	x->pSurface->Release()
 
 ECORE_API extern bool bIsLevelEditor;
 namespace ImGui
 {
-	XREUI_API ImFont* LightFont;
-	XREUI_API ImFont* RegularFont;
-	XREUI_API ImFont* MediumFont;
-	XREUI_API ImFont* BoldFont;
-}
+XREUI_API ImFont* LightFont;
+XREUI_API ImFont* RegularFont;
+XREUI_API ImFont* MediumFont;
+XREUI_API ImFont* BoldFont;
+} // namespace ImGui
 
 TUI* UI = nullptr;
 
 TUI::TUI()
 {
 	m_HConsole = nullptr;
-	UI				= this;
+	UI = this;
 	m_AppClosed = false;
-	m_bAppActive 	= false;
-	m_bReady 		= false;
-	bNeedAbort   	= false;
+	m_bAppActive = false;
+	m_bReady = false;
+	bNeedAbort = false;
 
-	m_CurrentRStart.set(0,0,0);
-	m_CurrentRDir.set(0,0,0);
+	m_CurrentRStart.set(0, 0, 0);
+	m_CurrentRDir.set(0, 0, 0);
 
-	m_Flags.assign	(flResize);
+	m_Flags.assign(flResize);
 
-	m_Pivot.set		( 0, 0, 0 );
+	m_Pivot.set(0, 0, 0);
 
 	m_MouseCaptured = false;
 	m_MouseMultiClickCaptured = false;
 	m_SelectionRect = false;
-	bMouseInUse		= false;
+	bMouseInUse = false;
 
-	m_bHintShowing	= false;
-	m_LastHint		= "";
+	m_bHintShowing = false;
+	m_LastHint = "";
 
 	int DisplayX = GetSystemMetrics(SM_CXFULLSCREEN);
 	int DisplayY = GetSystemMetrics(SM_CYFULLSCREEN);
@@ -74,8 +76,8 @@ TUI::TUI()
 //---------------------------------------------------------------------------
 TUI::~TUI()
 {
-	VERIFY(m_ProgressItems.size()==0);
-	VERIFY(m_EditorState.size()==0);
+	VERIFY(m_ProgressItems.size() == 0);
+	VERIFY(m_EditorState.size() == 0);
 
 	TRelease(m_HeaderLogo);
 	TRelease(m_WinMin);
@@ -87,30 +89,34 @@ TUI::~TUI()
 ImTextureID TUI::LoadTexture(const char* Texture) const
 {
 	if (!Texture || !Texture[0])
+	{
 		return nullptr;
+	}
 
 	IEditorRenderBackend& EditorRenderer = GetEditorRenderBackend();
 	if (EditorRenderer.GetKind() == EEditorRenderBackendKind::Tiramisu)
 	{
 		const auto Existing = EditorTextureStack.find(Texture);
 		if (Existing != EditorTextureStack.end())
+		{
 			return EditorRenderer.GetTextureSurface(Existing->second).ImGuiTextureId;
+		}
 
 		string_path Normalized = {};
 		xr_strcpy(Normalized, Texture);
 		if (char* Extension = strext(Normalized);
 			Extension && (_stricmp(Extension, ".tga") == 0 ||
-				_stricmp(Extension, ".dds") == 0 ||
-				_stricmp(Extension, ".bmp") == 0 ||
-				_stricmp(Extension, ".ogm") == 0))
+						  _stricmp(Extension, ".dds") == 0 ||
+						  _stricmp(Extension, ".bmp") == 0 ||
+						  _stricmp(Extension, ".ogm") == 0))
 		{
 			*Extension = 0;
 		}
 
 		string_path FileName = {};
 		bool Found = FS.exist(FileName, "$level$", Normalized, ".dds") ||
-			FS.exist(FileName, "$game_saves$", Normalized, ".dds") ||
-			FS.exist(FileName, _game_textures_, Normalized, ".dds");
+					 FS.exist(FileName, "$game_saves$", Normalized, ".dds") ||
+					 FS.exist(FileName, _game_textures_, Normalized, ".dds");
 		if (!Found)
 		{
 			xr_string LooseName = xr_string(Normalized) + ".dds";
@@ -121,19 +127,26 @@ ImTextureID TUI::LoadTexture(const char* Texture) const
 			}
 		}
 		if (!Found)
-			Found = FS.exist(FileName, _game_textures_,
-				"ed\\ed_not_existing_texture", ".dds");
+		{
+			Found = FS.exist(FileName, _game_textures_, "ed\\ed_not_existing_texture", ".dds");
+		}
 		if (!Found)
+		{
 			return nullptr;
+		}
 
 		IReader* Reader = FS.r_open(FileName);
 		if (!Reader)
+		{
 			return nullptr;
+		}
 		RedImageTool::RedImage Image;
 		const bool Loaded = Image.LoadFromMemory(Reader->pointer(), Reader->length());
 		FS.r_close(Reader);
 		if (!Loaded || Image.IsCubeMap() || Image.GetDepth() != 1)
+		{
 			return nullptr;
+		}
 		Image.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
 
 		FEditorTextureUpload Upload;
@@ -141,13 +154,14 @@ ImTextureID TUI::LoadTexture(const char* Texture) const
 		Upload.Height = Image.GetHeight();
 		Upload.RowPitch = Upload.Width * 4;
 		Upload.Format = EEditorTextureFormat::Rgba8Unorm;
-		Upload.Pixels = std::span(reinterpret_cast<const std::byte*>(*Image),
-			static_cast<std::size_t>(Upload.RowPitch) * Upload.Height);
+		Upload.Pixels = std::span(reinterpret_cast<const std::byte*>(*Image), static_cast<std::size_t>(Upload.RowPitch) * Upload.Height);
 		Upload.Revision = 1;
 		Upload.DebugName = Texture;
 		const FEditorTextureHandle Handle = EditorRenderer.CreateTexture(Upload);
 		if (!Handle.IsValid())
+		{
 			return nullptr;
+		}
 		EditorTextureStack.emplace(Texture, Handle);
 		return EditorRenderer.GetTextureSurface(Handle).ImGuiTextureId;
 	}
@@ -176,13 +190,17 @@ ImTextureID TUI::LoadTexture(const char* Texture) const
 ImTextureID TUI::GetImGuiTexture(const ref_texture& Texture) const
 {
 	if (!Texture)
+	{
 		return nullptr;
+	}
 	if (GetEditorRenderBackend().GetKind() == EEditorRenderBackendKind::Tiramisu)
 	{
 		return Texture->cName.size() ? LoadTexture(*Texture->cName) : nullptr;
 	}
 	if (!Texture->pSurface)
+	{
 		Texture->Load();
+	}
 	return Texture->get_SRView() ? Texture->get_SRView()->GetRawSRV() : nullptr;
 }
 
@@ -191,8 +209,7 @@ ImTextureID TUI::GetImGuiTexture(const FEditorTextureHandle Handle) const
 	return GetEditorTextureSurface(Handle).ImGuiTextureId;
 }
 
-bool TUI::UpdateEditorTexture(FEditorTextureHandle& Handle,
-	const FEditorTextureUpload& Upload) const
+bool TUI::UpdateEditorTexture(FEditorTextureHandle& Handle, const FEditorTextureUpload& Upload) const
 {
 	IEditorRenderBackend& Renderer = GetEditorRenderBackend();
 	if (!Handle.IsValid())
@@ -206,24 +223,26 @@ bool TUI::UpdateEditorTexture(FEditorTextureHandle& Handle,
 void TUI::DestroyEditorTexture(FEditorTextureHandle& Handle) const
 {
 	if (!Handle.IsValid())
+	{
 		return;
+	}
 	GetEditorRenderBackend().DestroyTexture(Handle);
 	Handle = {};
 }
 
 FEditorViewportSurface TUI::GetEditorTextureSurface(
-	const FEditorTextureHandle Handle) const
+	const FEditorTextureHandle Handle
+) const
 {
 	return GetEditorRenderBackend().GetTextureSurface(Handle);
 }
 
-bool TUI::UpdateImGuiTexture(FEditorTextureHandle& Handle, const void* Pixels,
-	const u32 Width, const u32 Height, const u32 RowPitch, const u64 Revision,
-	const char* DebugName, const EEditorTextureFormat Format,
-	const bool FlipVertical) const
+bool TUI::UpdateImGuiTexture(FEditorTextureHandle& Handle, const void* Pixels, const u32 Width, const u32 Height, const u32 RowPitch, const u64 Revision, const char* DebugName, const EEditorTextureFormat Format, const bool FlipVertical) const
 {
 	if (!Pixels)
+	{
 		return false;
+	}
 	FEditorTextureUpload Upload;
 	Upload.Width = Width;
 	Upload.Height = Height;
@@ -236,16 +255,13 @@ bool TUI::UpdateImGuiTexture(FEditorTextureHandle& Handle, const void* Pixels,
 		const auto* Source = reinterpret_cast<const std::byte*>(Pixels);
 		for (u32 Y = 0; Y < Height; ++Y)
 		{
-			memcpy(FlippedPixels.data() + static_cast<std::size_t>(Y) * RowPitch,
-				Source + static_cast<std::size_t>(Height - Y - 1) * RowPitch,
-				RowPitch);
+			memcpy(FlippedPixels.data() + static_cast<std::size_t>(Y) * RowPitch, Source + static_cast<std::size_t>(Height - Y - 1) * RowPitch, RowPitch);
 		}
 		Upload.Pixels = FlippedPixels;
 	}
 	else
 	{
-		Upload.Pixels = std::span(reinterpret_cast<const std::byte*>(Pixels),
-			static_cast<std::size_t>(RowPitch) * Height);
+		Upload.Pixels = std::span(reinterpret_cast<const std::byte*>(Pixels), static_cast<std::size_t>(RowPitch) * Height);
 	}
 	Upload.Revision = Revision;
 	Upload.DebugName = DebugName ? DebugName : "editor-ui-texture";
@@ -286,20 +302,25 @@ bool TUI::IsModified()
 }
 //---------------------------------------------------------------------------
 
-void TUI::EnableSelectionRect( bool flag ){
+void TUI::EnableSelectionRect(bool flag)
+{
 	m_SelectionRect = flag;
 	m_SelEnd.x = m_SelStart.x = 0;
 	m_SelEnd.y = m_SelStart.y = 0;
 }
 
-void TUI::UpdateSelectionRect( const Ivector2& from, const Ivector2& to ){
+void TUI::UpdateSelectionRect(const Ivector2& from, const Ivector2& to)
+{
 	m_SelStart.set(from);
 	m_SelEnd.set(to);
 }
 
-bool  TUI::KeyDown (WORD Key, TShiftState Shift)
+bool TUI::KeyDown(WORD Key, TShiftState Shift)
 {
-	if (!m_bReady) return false;
+	if (!m_bReady)
+	{
+		return false;
+	}
 	if (Console->bVisible)
 	{
 		if (Key == 0xC0)
@@ -308,49 +329,69 @@ bool  TUI::KeyDown (WORD Key, TShiftState Shift)
 		}
 		return true;
 	}
-   
+
 	if (Key == 0xC0)
 	{
 		Console->Show();
 		return true;
 	}
-//	m_ShiftState = Shift;
-//	Log("Dn  ",Shift.Contains(ssShift)?"1":"0");
-	if (UI->CurrentView().m_Camera.KeyDown(Key,Shift)) return true;
+	//	m_ShiftState = Shift;
+	//	Log("Dn  ",Shift.Contains(ssShift)?"1":"0");
+	if (UI->CurrentView().m_Camera.KeyDown(Key, Shift))
+	{
+		return true;
+	}
 	return Tools->KeyDown(Key, Shift);
 }
 
-bool  TUI::KeyUp   (WORD Key, TShiftState Shift)
+bool TUI::KeyUp(WORD Key, TShiftState Shift)
 {
-	if (!m_bReady) return false;
-//	m_ShiftState = Shift;
-	if (UI->CurrentView().m_Camera.KeyUp(Key,Shift)) return true;
+	if (!m_bReady)
+	{
+		return false;
+	}
+	//	m_ShiftState = Shift;
+	if (UI->CurrentView().m_Camera.KeyUp(Key, Shift))
+	{
+		return true;
+	}
 	return Tools->KeyUp(Key, Shift);
 }
 
-bool  TUI::KeyPress(WORD Key, TShiftState Shift)
+bool TUI::KeyPress(WORD Key, TShiftState Shift)
 {
-	if (!m_bReady) return false;
+	if (!m_bReady)
+	{
+		return false;
+	}
 	return Tools->KeyPress(Key, Shift);
 }
 //----------------------------------------------------
 
 void TUI::MousePress(TShiftState Shift, int X, int Y)
 {
-	if (!m_bReady) return;
-	if (m_MouseCaptured) return;
+	if (!m_bReady)
+	{
+		return;
+	}
+	if (m_MouseCaptured)
+	{
+		return;
+	}
 
 	bMouseInUse = true;
 
 	m_ShiftState = Shift;
 
 	// camera activate
-	if(!UI->CurrentView().m_Camera.MoveStart(m_ShiftState))
+	if (!UI->CurrentView().m_Camera.MoveStart(m_ShiftState))
 	{
-		if (Tools->Pick(Shift)) 
+		if (Tools->Pick(Shift))
+		{
 			return;
+		}
 
-		if( !m_MouseCaptured )
+		if (!m_MouseCaptured)
 		{
 			if (Tools->HiddenMode())
 			{
@@ -361,13 +402,16 @@ void TUI::MousePress(TShiftState Shift, int X, int Y)
 			{
 				m_CurrentCp = GetRenderMousePosition();
 				m_StartCp = m_CurrentCp;
-				UI->CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp );
+				UI->CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
 				m_StartRDir = m_CurrentRDir;
 			}
-		   
-			if(Tools->MouseStart(m_ShiftState))
+
+			if (Tools->MouseStart(m_ShiftState))
 			{
-				if(Tools->HiddenMode()) ShowCursor( false );
+				if (Tools->HiddenMode())
+				{
+					ShowCursor(false);
+				}
 				m_MouseCaptured = true;
 			}
 		}
@@ -377,55 +421,73 @@ void TUI::MousePress(TShiftState Shift, int X, int Y)
 
 void TUI::MouseRelease(TShiftState Shift, int X, int Y)
 {
-	if (!m_bReady) return;
+	if (!m_bReady)
+	{
+		return;
+	}
 
 	m_ShiftState = Shift;
 
-	if( UI->CurrentView().m_Camera.IsMoving() ){
-		if (UI->CurrentView().m_Camera.MoveEnd(m_ShiftState)) bMouseInUse = false;
-	}else{
+	if (UI->CurrentView().m_Camera.IsMoving())
+	{
+		if (UI->CurrentView().m_Camera.MoveEnd(m_ShiftState))
+		{
+			bMouseInUse = false;
+		}
+	}
+	else
+	{
 		bMouseInUse = false;
-		if( m_MouseCaptured ){
-			if( !Tools->HiddenMode() ){
+		if (m_MouseCaptured)
+		{
+			if (!Tools->HiddenMode())
+			{
 				m_CurrentCp = GetRenderMousePosition();
-				UI->CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart,m_CurrentRDir,m_CurrentCp );
+				UI->CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
 			}
 			bool bIsHiddenMode = Tools->HiddenMode();
-			if( Tools->MouseEnd(m_ShiftState) ){
-				if(bIsHiddenMode){
-					SetCursorPos(m_StartCpH.x,m_StartCpH.y);
-					ShowCursor( true );
+			if (Tools->MouseEnd(m_ShiftState))
+			{
+				if (bIsHiddenMode)
+				{
+					SetCursorPos(m_StartCpH.x, m_StartCpH.y);
+					ShowCursor(true);
 				}
 				m_MouseCaptured = false;
 			}
 		}
 	}
 	// update tools (change action)
-	Tools->OnFrame	();
-	RedrawScene		();
+	Tools->OnFrame();
+	RedrawScene();
 }
 //----------------------------------------------------
 void TUI::MouseMove(TShiftState Shift, int X, int Y)
 {
-	if (!m_bReady) return;
+	if (!m_bReady)
+	{
+		return;
+	}
 	m_ShiftState = Shift;
 }
 //----------------------------------------------------
 void TUI::IR_OnMouseMove(int x, int y)
 {
-	if (!m_bReady) 
+	if (!m_bReady)
+	{
 		return;
+	}
 
 	bool bRayUpdated = false;
 
-	if (!UI->CurrentView().m_Camera.Process(m_ShiftState,x,y))
+	if (!UI->CurrentView().m_Camera.Process(m_ShiftState, x, y))
 	{
-		if( m_MouseCaptured || m_MouseMultiClickCaptured )
+		if (m_MouseCaptured || m_MouseMultiClickCaptured)
 		{
-			if( Tools->HiddenMode() )
+			if (Tools->HiddenMode())
 			{
-				m_DeltaCpH.set(x,y);
-				if( m_DeltaCpH.x || m_DeltaCpH.y )
+				m_DeltaCpH.set(x, y);
+				if (m_DeltaCpH.x || m_DeltaCpH.y)
 				{
 					Tools->MouseMove(m_ShiftState);
 				}
@@ -433,7 +495,7 @@ void TUI::IR_OnMouseMove(int x, int y)
 			else
 			{
 				m_CurrentCp = GetRenderMousePosition();
-				UI->CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart,m_CurrentRDir,m_CurrentCp);
+				UI->CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
 				Tools->MouseMove(m_ShiftState);
 			}
 
@@ -453,8 +515,12 @@ void TUI::IR_OnMouseMove(int x, int y)
 void TUI::OnAppActivate()
 {
 	m_bAppActive = true;
-	if (!m_bReady)return;
-	if (pInput){
+	if (!m_bReady)
+	{
+		return;
+	}
+	if (pInput)
+	{
 		m_ShiftState = ssNone;
 		pInput->OnAppActivate();
 		EDevice->seqAppActivate.Process<&pureAppActivate::OnAppActivate>();
@@ -465,8 +531,12 @@ void TUI::OnAppActivate()
 void TUI::OnAppDeactivate()
 {
 	m_bAppActive = false;
-	if (!m_bReady)return;
-	if (pInput){
+	if (!m_bReady)
+	{
+		return;
+	}
+	if (pInput)
+	{
 		pInput->OnAppDeactivate();
 		m_ShiftState = ssNone;
 		EDevice->seqAppDeactivate.Process<&pureAppDeactivate::OnAppDeactivate>();
@@ -488,7 +558,7 @@ bool TUI::ShowHint(const AStringVec& SS)
 		ImGui::EndTooltip();
 	}
 
-	//not_implemented();
+	// not_implemented();
 	return m_bHintShowing;
 }
 //---------------------------------------------------------------------------
@@ -507,8 +577,10 @@ void TUI::ShowHint()
 	AStringVec SS;
 	Tools->OnShowHint(SS);
 
-	if (!ShowHint(SS)) 
+	if (!ShowHint(SS))
+	{
 		HideHint();
+	}
 }
 
 //---------------------------------------------------------------------------
@@ -616,7 +688,7 @@ void TUI::Redraw()
 			m_Flags.set(flRedraw, false);
 			++EDevice->dwRenderFrame;
 
-			float ColorRGBA[4] = { 0.0f,0.0f,0.0f,1 };
+			float ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 1};
 			GRHI->ClearTarget(RTNormal->pRT, ColorRGBA);
 			GRHI->ClearTarget(RTDiffuse->pRT, ColorRGBA);
 			GRHI->ClearTarget(RTPostion->pRT, ColorRGBA);
@@ -651,34 +723,43 @@ void TUI::Redraw()
 						FEditorOverlayVertex Vertex;
 						Vertex.Position = {
 							X * EDevice->m_ScreenQuality * 2.0f /
-								static_cast<float>(EDevice->TargetWidth) - 1.0f,
+									static_cast<float>(EDevice->TargetWidth) -
+								1.0f,
 							1.0f - Y * EDevice->m_ScreenQuality * 2.0f /
-								static_cast<float>(EDevice->TargetHeight),
-							0.0f};
+									   static_cast<float>(EDevice->TargetHeight),
+							0.0f
+						};
 						constexpr float Scale = 1.0f / 255.0f;
 						Vertex.Color = {
 							static_cast<float>((SelectionColor >> 16u) & 0xffu) * Scale,
 							static_cast<float>((SelectionColor >> 8u) & 0xffu) * Scale,
 							static_cast<float>(SelectionColor & 0xffu) * Scale,
-							static_cast<float>(SelectionColor >> 24u) * Scale};
+							static_cast<float>(SelectionColor >> 24u) * Scale
+						};
 						return Vertex;
 					};
 					const FEditorOverlayVertex TopLeft = MakeVertex(
 						static_cast<float>(m_SelStart.x),
-						static_cast<float>(m_SelStart.y));
+						static_cast<float>(m_SelStart.y)
+					);
 					const FEditorOverlayVertex BottomLeft = MakeVertex(
 						static_cast<float>(m_SelStart.x),
-						static_cast<float>(m_SelEnd.y));
+						static_cast<float>(m_SelEnd.y)
+					);
 					const FEditorOverlayVertex BottomRight = MakeVertex(
 						static_cast<float>(m_SelEnd.x),
-						static_cast<float>(m_SelEnd.y));
+						static_cast<float>(m_SelEnd.y)
+					);
 					const FEditorOverlayVertex TopRight = MakeVertex(
 						static_cast<float>(m_SelEnd.x),
-						static_cast<float>(m_SelStart.y));
+						static_cast<float>(m_SelStart.y)
+					);
 					CaptureEditorOverlayTriangle(
-						{{TopLeft, BottomLeft, BottomRight}});
+						{{TopLeft, BottomLeft, BottomRight}}
+					);
 					CaptureEditorOverlayTriangle(
-						{{TopLeft, BottomRight, TopRight}});
+						{{TopLeft, BottomRight, TopRight}}
+					);
 				}
 			}
 
@@ -686,12 +767,14 @@ void TUI::Redraw()
 
 			for (u32 k = 0; k < Caps.raster.dwStages; k++)
 			{
-				if (psDeviceFlags.is(rsFilterLinear)) {
+				if (psDeviceFlags.is(rsFilterLinear))
+				{
 					EDevice->SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 					EDevice->SetSS(k, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 					EDevice->SetSS(k, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 				}
-				else {
+				else
+				{
 					EDevice->SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
 					EDevice->SetSS(k, D3DSAMP_MINFILTER, D3DTEXF_POINT);
 					EDevice->SetSS(k, D3DSAMP_MIPFILTER, D3DTEXF_POINT);
@@ -715,10 +798,12 @@ void TUI::Redraw()
 
 			// draw axis
 			if (GetEditorRenderBackend().GetKind() ==
-				EEditorRenderBackendKind::Legacy &&
+					EEditorRenderBackendKind::Legacy &&
 				psDeviceFlags.test(rsDrawAxis) &&
 				!psDeviceFlags.test(rsDisableAxisCube))
+			{
 				DU_impl.DrawAxis(UI->CurrentView().m_Camera.GetTransform());
+			}
 
 
 			EDevice->Statistic->RenderDUMP_RT.End();
@@ -764,34 +849,38 @@ void TUI::Redraw()
 
 void TUI::RealResize()
 {
-	m_Flags.set			(flResize,false);
-	if(m_Size.x&& m_Size.y)
-	EDevice->Resize(m_Size.x, m_Size.y,m_Size_Maximize);
-	ExecCommand			(COMMAND_UPDATE_PROPERTIES);
+	m_Flags.set(flResize, false);
+	if (m_Size.x && m_Size.y)
+	{
+		EDevice->Resize(m_Size.x, m_Size.y, m_Size_Maximize);
+	}
+	ExecCommand(COMMAND_UPDATE_PROPERTIES);
 }
 void TUI::RealUpdateScene()
 {
-	Tools->UpdateProperties	(false);
-	m_Flags.set			(flUpdateScene,false);
+	Tools->UpdateProperties(false);
+	m_Flags.set(flUpdateScene, false);
 }
 void TUI::RealRedrawScene()
 {
-
-	Redraw				();         
+	Redraw();
 }
 void TUI::OnFrame()
 {
-	EDevice->FrameMove	();
-	SndLib->OnFrame		();
+	EDevice->FrameMove();
+	SndLib->OnFrame();
 	// tools on frame
-	if (m_Flags.is(flUpdateScene)) RealUpdateScene();
-	Tools->OnFrame		();
+	if (m_Flags.is(flUpdateScene))
+	{
+		RealUpdateScene();
+	}
+	Tools->OnFrame();
 
 	// show hint
-	ResetBreak			();
+	ResetBreak();
 
 	// Progress
-	ProgressDraw		();
+	ProgressDraw();
 }
 
 bool TUI::Idle()
@@ -816,7 +905,9 @@ bool TUI::Idle()
 	} while (msg.message);
 
 	if (m_Flags.is(flResetUI))
+	{
 		RealResetUI();
+	}
 
 	Sleep(1);
 
@@ -833,7 +924,7 @@ bool TUI::Idle()
 	}
 
 	Device.SecondaryTasks.run([]()
-	{
+							  {
 		PROF_THREAD("Secondary async")
 		{
 			PROF_EVENT("Sheduler")
@@ -842,23 +933,27 @@ bool TUI::Idle()
 
 		{
 			PROF_EVENT("seqParallel")
-			for (u32 pit = 0; pit < EDevice->seqParallel.size(); pit++)
+			for (u32 pit = 0; pit < EDevice->seqParallel.size(); pit++){
 				EDevice->seqParallel[pit]();
+}
 			EDevice->seqParallel.clear();
 		}
 
 		{
 			PROF_EVENT("seqFrameMT")
 			EDevice->seqFrameMT.Process<&pureFrame::OnFrame>();
-		}
-	});
+		} });
 
 	if (EDevice->b_is_Active && !m_Flags.is(flNeedQuit) && !m_AppClosed)
+	{
 		RealRedrawScene();
+	}
 
 	// test quit
-	if (m_Flags.is(flNeedQuit))	
+	if (m_Flags.is(flNeedQuit))
+	{
 		RealQuit();
+	}
 
 	Device.SecondaryTasks.wait();
 
@@ -872,7 +967,7 @@ void ResetActionToSelect()
 
 bool TUI::OnCreate()
 {
-// create base class
+	// create base class
 	EDevice->InitTimer();
 
 	EDevice->Initialize();
@@ -880,23 +975,24 @@ bool TUI::OnCreate()
 	extern CDB::COLLIDER XRC;
 	XRC.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
 
-	pInput			= new CInput(false, all_device_key);
+	pInput = new CInput(false, all_device_key);
 
 	Console = new CConsole();
 	Console->Initialize();
 
-	UI->IR_Capture	();
+	UI->IR_Capture();
 
-	m_bReady		= true;
+	m_bReady = true;
 
 	string_path log_path;
-	if (!FS.exist(log_path,_temp_,""))
+	if (!FS.exist(log_path, _temp_, ""))
 	{
 		VerifyPath(log_path);
 	}
-	if (!FS.path_exist(_local_root_)){
-		ELog.DlgMsg	(mtError,"Undefined Editor local directory.");
-		return 		false;
+	if (!FS.path_exist(_local_root_))
+	{
+		ELog.DlgMsg(mtError, "Undefined Editor local directory.");
+		return false;
 	}
 
 	BeginEState(esEditScene);
@@ -906,7 +1002,7 @@ bool TUI::OnCreate()
 
 	for (auto& [ID, View] : Views)
 	{
-		View.RTSize = { (int)GetRenderWidth(), (int)GetRenderHeight() };
+		View.RTSize = {(int)GetRenderWidth(), (int)GetRenderHeight()};
 		View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)UI->ViewID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
 	}
 
@@ -951,12 +1047,12 @@ void TUI::OnDestroy()
 	RTDiffuse.destroy();
 
 	VERIFY(m_bReady);
-	m_bReady		= false;
-	UI->IR_Release	();
-	xr_delete		(pInput);
-	EndEState		();
+	m_bReady = false;
+	UI->IR_Release();
+	xr_delete(pInput);
+	EndEState();
 
-	EDevice->ShutDown();    
+	EDevice->ShutDown();
 }
 
 SPBItem* TUI::ProgressStart(float max_val, const char* text)
@@ -975,9 +1071,10 @@ SPBItem* TUI::ProgressStart(float max_val, const char* text)
 void TUI::ProgressEnd(SPBItem*& pbi)
 {
 	VERIFY(m_bReady);
-	if (pbi) 
+	if (pbi)
 	{
-		PBVecIt it = std::find(m_ProgressItems.begin(), m_ProgressItems.end(), pbi); VERIFY(it != m_ProgressItems.end());
+		PBVecIt it = std::find(m_ProgressItems.begin(), m_ProgressItems.end(), pbi);
+		VERIFY(it != m_ProgressItems.end());
 		m_ProgressItems.erase(it);
 		xr_delete(pbi);
 		ProgressDraw();
@@ -992,7 +1089,7 @@ void TUI::ProgressDraw()
 	if (pbi)
 	{
 		xr_string txt;
-		float 		p, m;
+		float p, m;
 		pbi->GetInfo(txt, p, m);
 		// progress
 		ProgressStatus = fis_zero(m) ? 0 : (int)((p / m) * 100);
@@ -1020,7 +1117,7 @@ void TUI::CreateViewport(int ID, UIRenderForm* Form)
 	MainView.ViewportForm = Form;
 	MainView.ViewGlobalIDX = ID;
 
-	MainView.RTSize = { (int)GetRenderWidth(), (int)GetRenderHeight() };
+	MainView.RTSize = {(int)GetRenderWidth(), (int)GetRenderHeight()};
 	MainView.RTFreez.create(("$user$rt_freez" + xr_string::ToString(ID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
 }
 
@@ -1038,38 +1135,36 @@ void TUI::DestroyViewport(int ID)
 
 namespace
 {
-void UploadEditorSvgIcon(FEditorTextureHandle& Handle, const char* SvgText,
-	const int Width, const int Height, const char* DebugName)
+void UploadEditorSvgIcon(FEditorTextureHandle& Handle, const char* SvgText, const int Width, const int Height, const char* DebugName)
 {
 	if (GetEditorRenderBackend().GetKind() != EEditorRenderBackendKind::Tiramisu)
+	{
 		return;
+	}
 	const auto Document = lunasvg::Document::loadFromData(SvgText);
 	if (!Document)
+	{
 		return;
+	}
 	const auto Bitmap = Document->renderToBitmap(
-		Width * GUIManager->GetScaleDpi(), Height * GUIManager->GetScaleDpi());
-	(void)UI->UpdateImGuiTexture(Handle, Bitmap.data(), Bitmap.width(),
-		Bitmap.height(), Bitmap.width() * 4, 1, DebugName);
+		Width * GUIManager->GetScaleDpi(), Height * GUIManager->GetScaleDpi()
+	);
+	(void)UI->UpdateImGuiTexture(Handle, Bitmap.data(), Bitmap.width(), Bitmap.height(), Bitmap.width() * 4, 1, DebugName);
 }
 } // namespace
 
 void TUI::InitWindowIcons()
 {
-	m_HeaderLogo	= chezze_svg_temporary::RasterizeSvg(IX_RAY_LOGO, 64, 64); //EDevice->Resources->_CreateTexture("ed\\bar\\win_header_logo");
-	m_WinMin		= chezze_svg_temporary::RasterizeSvg(IX_MIN_ICON, 10, 10);
-	m_WinMax		= chezze_svg_temporary::RasterizeSvg(IX_MAX_ICON, 10, 10);
-	m_WinRes		= chezze_svg_temporary::RasterizeSvg(IX_RESTORE_ICON, 10, 10);
-	m_WinClose		= chezze_svg_temporary::RasterizeSvg(IX_CLOSE_ICON, 10, 10);
-	UploadEditorSvgIcon(m_HeaderLogoEditor, IX_RAY_LOGO, 64, 64,
-		"editor-window-logo");
-	UploadEditorSvgIcon(m_WinMinEditor, IX_MIN_ICON, 10, 10,
-		"editor-window-minimize");
-	UploadEditorSvgIcon(m_WinMaxEditor, IX_MAX_ICON, 10, 10,
-		"editor-window-maximize");
-	UploadEditorSvgIcon(m_WinResEditor, IX_RESTORE_ICON, 10, 10,
-		"editor-window-restore");
-	UploadEditorSvgIcon(m_WinCloseEditor, IX_CLOSE_ICON, 10, 10,
-		"editor-window-close");
+	m_HeaderLogo = chezze_svg_temporary::RasterizeSvg(IX_RAY_LOGO, 64, 64); // EDevice->Resources->_CreateTexture("ed\\bar\\win_header_logo");
+	m_WinMin = chezze_svg_temporary::RasterizeSvg(IX_MIN_ICON, 10, 10);
+	m_WinMax = chezze_svg_temporary::RasterizeSvg(IX_MAX_ICON, 10, 10);
+	m_WinRes = chezze_svg_temporary::RasterizeSvg(IX_RESTORE_ICON, 10, 10);
+	m_WinClose = chezze_svg_temporary::RasterizeSvg(IX_CLOSE_ICON, 10, 10);
+	UploadEditorSvgIcon(m_HeaderLogoEditor, IX_RAY_LOGO, 64, 64, "editor-window-logo");
+	UploadEditorSvgIcon(m_WinMinEditor, IX_MIN_ICON, 10, 10, "editor-window-minimize");
+	UploadEditorSvgIcon(m_WinMaxEditor, IX_MAX_ICON, 10, 10, "editor-window-maximize");
+	UploadEditorSvgIcon(m_WinResEditor, IX_RESTORE_ICON, 10, 10, "editor-window-restore");
+	UploadEditorSvgIcon(m_WinCloseEditor, IX_CLOSE_ICON, 10, 10, "editor-window-close");
 }
 
 void TUI::OnDrawUI()
@@ -1093,7 +1188,7 @@ void TUI::OnDrawUI()
 void TUI::RealResetUI()
 {
 	m_Flags.set(flResetUI, false);
-	string_path 		ini_path;
+	string_path ini_path;
 	if (FS.exist(ini_path, "$server_data_root$", UI->EditorName(), "_imgui_default.ini"))
 	{
 		UI->Resize(1280, 800);
@@ -1105,8 +1200,14 @@ void SPBItem::GetInfo(xr_string& txt, float& p, float& m)
 {
 	string256 temp_buff = {};
 
-	if (info.size())sprintf(temp_buff, "%s (%s)", text.c_str(), info.c_str());
-	else			sprintf(temp_buff, "%s", text.c_str());
+	if (info.size())
+	{
+		sprintf(temp_buff, "%s (%s)", text.c_str(), info.c_str());
+	}
+	else
+	{
+		sprintf(temp_buff, "%s", text.c_str());
+	}
 
 	txt = temp_buff;
 
@@ -1131,8 +1232,8 @@ void SPBItem::Info(const char* text, bool bWarn)
 	if (text && text[0])
 	{
 		info = text;
-		xr_string 				txt;
-		float 					p, m;
+		xr_string txt;
+		float p, m;
 		GetInfo(txt, p, m);
 		ELog.Msg(bWarn ? mtError : mtInformation, txt.c_str());
 		UI->ProgressDraw();

@@ -5,6 +5,7 @@ IndentWidth: 4
 TabWidth: 4
 SortIncludes: Never
 BreakBeforeBraces: Allman
+BreakAfterReturnType: None
 
 BreakInheritanceList: AfterColon
 ConstructorInitializerIndentWidth: 4

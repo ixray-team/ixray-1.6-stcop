@@ -4,7 +4,7 @@
 #include "../../../xrCore/os_clipboard.h"
 #include "imgui.h"
 
-UIMinimapEditorForm*    UIMinimapEditorForm::Form = nullptr;
+UIMinimapEditorForm* UIMinimapEditorForm::Form = nullptr;
 
 UIMinimapEditorForm::UIMinimapEditorForm()
 {
@@ -24,10 +24,14 @@ UIMinimapEditorForm::UIMinimapEditorForm()
 UIMinimapEditorForm::~UIMinimapEditorForm()
 {
 	for (auto& element : elements)
+	{
 		ReleaseElementTexture(element);
+	}
 
 	if (m_BackgroundTexture)
+	{
 		IM_TEXTURE_RELEASE(m_BackgroundTexture);
+	}
 	UI->DestroyImGuiTexture(m_BackgroundEditorTexture);
 
 	selectedElement = nullptr;
@@ -42,9 +46,9 @@ void UIMinimapEditorForm::ReloadLevelsList()
 
 	if (FS.file_list(lst, _game_levels_, FS_ListFolders | FS_RootOnly))
 	{
-		FS_FileSetIt	it = lst.begin();
-		FS_FileSetIt	_E = lst.end();
-		for (; it != _E; it++) 
+		FS_FileSetIt it = lst.begin();
+		FS_FileSetIt _E = lst.end();
+		for (; it != _E; it++)
 		{
 			xr_string level = it->name;
 			level.erase(std::remove(level.begin(), level.end(), '\\'), level.end());
@@ -55,7 +59,8 @@ void UIMinimapEditorForm::ReloadLevelsList()
 
 void UIMinimapEditorForm::UnselectAllElements()
 {
-	for (auto& other_element : elements) {
+	for (auto& other_element : elements)
+	{
 		other_element.EdSelected = false;
 	}
 	selectedElement = nullptr;
@@ -71,20 +76,26 @@ void UIMinimapEditorForm::SelectElement(Element& el)
 ImTextureID UIMinimapEditorForm::ResolveElementTexture(const Element& Item) const
 {
 	if (Item.EditorTexture.IsValid())
+	{
 		return UI->GetImGuiTexture(Item.EditorTexture);
+	}
 	if (GetEditorRenderBackend().GetKind() == EEditorRenderBackendKind::Tiramisu)
-		return UI->LoadTexture(Item.TexturePath.empty()
-			? "ed\\ed_nodata" : Item.TexturePath.c_str());
+	{
+		return UI->LoadTexture(Item.TexturePath.empty() ? "ed\\ed_nodata" : Item.TexturePath.c_str());
+	}
 	return Item.Texture;
 }
 
 ImTextureID UIMinimapEditorForm::ResolveBackgroundTexture() const
 {
 	if (m_BackgroundEditorTexture.IsValid())
+	{
 		return UI->GetImGuiTexture(m_BackgroundEditorTexture);
+	}
 	if (GetEditorRenderBackend().GetKind() == EEditorRenderBackendKind::Tiramisu)
-		return UI->LoadTexture(m_BackgroundTexturePath.empty()
-			? "ui\\ui_nomap" : m_BackgroundTexturePath.c_str());
+	{
+		return UI->LoadTexture(m_BackgroundTexturePath.empty() ? "ui\\ui_nomap" : m_BackgroundTexturePath.c_str());
+	}
 	return m_BackgroundTexture;
 }
 
@@ -92,24 +103,30 @@ void UIMinimapEditorForm::ReleaseElementTexture(Element& Item)
 {
 	UI->DestroyImGuiTexture(Item.EditorTexture);
 	if (Item.Texture)
+	{
 		IM_TEXTURE_RELEASE(Item.Texture);
+	}
 	Item.Texture = nullptr;
 }
 
-void UIMinimapEditorForm::ShowElementList() {
-
+void UIMinimapEditorForm::ShowElementList()
+{
 	ImGui::Text(" Elements");
 	ImGui::Separator();
 	ImGui::BeginDisabled(BoundRectMode);
-	for (int i = 0; i < elements.size(); i++) 
+	for (int i = 0; i < elements.size(); i++)
 	{
-		//tyt bi iconki
+		// tyt bi iconki
 		xr_string status = "  ";
 
 		if (elements[i].EdHidden)
+		{
 			status[0] = 'H';
+		}
 		else if (elements[i].EdLocked)
+		{
 			status[0] = 'L';
+		}
 
 		ImGui::PushID(i);
 		bool is_selected = elements[i].EdSelected;
@@ -122,20 +139,24 @@ void UIMinimapEditorForm::ShowElementList() {
 	ImGui::EndDisabled();
 }
 
-void UIMinimapEditorForm::RenderCanvas() 
+void UIMinimapEditorForm::RenderCanvas()
 {
 	ImVec2 canvas_p0 = ImGui::GetCursorScreenPos();
 	ImVec2 canvas_size = ImGui::GetContentRegionAvail();
 
 	if (canvas_size.x < 64 && canvas_size.y < 64)
+	{
 		return;
+	}
 
 	ImGui::InvisibleButton("canvas", canvas_size);
 	bool is_hovered = ImGui::IsItemHovered();
 	bool is_mapItemHovered = false;
 
-	if (ImGui::IsMouseDragging(ImGuiMouseButton_Right)) {
-		if (!isDragging) {
+	if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
+	{
+		if (!isDragging)
+		{
 			isDragging = true;
 			initial_mouse_pos = ImGui::GetMousePos();
 			initial_bg_position = m_BackgroundPosition;
@@ -143,13 +164,16 @@ void UIMinimapEditorForm::RenderCanvas()
 		ImVec2 mouse_delta = ImGui::GetMousePos() - initial_mouse_pos;
 		m_BackgroundPosition = initial_bg_position + mouse_delta;
 	}
-	else {
+	else
+	{
 		isDragging = false;
 	}
 
-	if (is_hovered) {
+	if (is_hovered)
+	{
 		float scroll = ImGui::GetIO().MouseWheel;
-		if (scroll != 0.0f) {
+		if (scroll != 0.0f)
+		{
 			float old_zoom = m_Zoom;
 			m_Zoom = Clamp(m_Zoom + scroll * 0.1f, 0.1f, 5.0f);
 
@@ -160,34 +184,30 @@ void UIMinimapEditorForm::RenderCanvas()
 	}
 
 	ImVec2 bg_display_size(m_BackgroundRenderSize.x * m_Zoom, m_BackgroundRenderSize.y * m_Zoom);
-	ImGui::GetWindowDrawList()->AddImage(ResolveBackgroundTexture(),
-		canvas_p0 + m_BackgroundPosition,
-		canvas_p0 + m_BackgroundPosition + bg_display_size);
+	ImGui::GetWindowDrawList()->AddImage(ResolveBackgroundTexture(), canvas_p0 + m_BackgroundPosition, canvas_p0 + m_BackgroundPosition + bg_display_size);
 
-	
-	for (int i = 0; i < elements.size(); i++) {
+
+	for (int i = 0; i < elements.size(); i++)
+	{
 		auto& element = elements[i];
 
 		if (element.EdHidden)
+		{
 			continue;
+		}
 
 		ImVec2 element_screen_pos = canvas_p0 + m_BackgroundPosition + element.position * m_Zoom;
 		ImVec2 element_screen_size = element.RenderSize;
 		element_screen_size *= m_Zoom;
 		float handle_size = 5.0f * m_Zoom;
 
-		ImGui::GetWindowDrawList()->AddImage(ResolveElementTexture(element),
-			element_screen_pos, element_screen_pos + element_screen_size,
-			ImVec2(0,0), ImVec2(1, 1),
-			IM_COL32(255, 255, 255, m_ItemsOpacity));
+		ImGui::GetWindowDrawList()->AddImage(ResolveElementTexture(element), element_screen_pos, element_screen_pos + element_screen_size, ImVec2(0, 0), ImVec2(1, 1), IM_COL32(255, 255, 255, m_ItemsOpacity));
 
 		if (element.EdSelected || m_AlwaysDrawBorder)
 		{
 			int op_col = (element.EdLocked) ? 150 : 255;
-			
-			ImU32 col = (element.EdSelected) ?
-				IM_COL32(255, 130, 130, op_col) :
-				IM_COL32(255, 255, 255, 100);
+
+			ImU32 col = (element.EdSelected) ? IM_COL32(255, 130, 130, op_col) : IM_COL32(255, 255, 255, 100);
 
 			ImVec2 top_left = element_screen_pos - ImVec2(handle_size / 2, handle_size / 2);
 			ImVec2 bottom_right = element_screen_pos + ImVec2(handle_size / 2, handle_size / 2) + element_screen_size;
@@ -198,10 +218,9 @@ void UIMinimapEditorForm::RenderCanvas()
 		ImVec2 image_max = element_screen_pos + element_screen_size;
 
 		auto ckCursorZone = [](float x1, float x2, float y1, float y2)
-			{
-				return (ImGui::GetIO().MousePos.x >= (x1) && ImGui::GetIO().MousePos.x <= (x2) &&
-					ImGui::GetIO().MousePos.y >= (y1) && ImGui::GetIO().MousePos.y <= (y2));
-			};
+		{
+			return (ImGui::GetIO().MousePos.x >= (x1) && ImGui::GetIO().MousePos.x <= (x2) && ImGui::GetIO().MousePos.y >= (y1) && ImGui::GetIO().MousePos.y <= (y2));
+		};
 
 		bool inside = ckCursorZone(image_min.x, image_max.x, image_min.y, image_max.y);
 
@@ -218,12 +237,11 @@ void UIMinimapEditorForm::RenderCanvas()
 
 		if (inside && !element.EdLocked && (is_hovered || m_EditMode != None))
 		{
-			move_zone = ckCursorZone((image_min.x + resize_off), (image_max.x - resize_off), 
-				(image_min.y + resize_off), (image_max.y - resize_off));
+			move_zone = ckCursorZone((image_min.x + resize_off), (image_max.x - resize_off), (image_min.y + resize_off), (image_max.y - resize_off));
 
 			if (!move_zone)
 			{
-				if (ckCursorZone(image_min.x, (image_min.x + resize_off), (image_min.y+resize_off), (image_max.y - resize_off)))
+				if (ckCursorZone(image_min.x, (image_min.x + resize_off), (image_min.y + resize_off), (image_max.y - resize_off)))
 				{
 					resize_mode = 1;
 					resize_or = false;
@@ -233,12 +251,12 @@ void UIMinimapEditorForm::RenderCanvas()
 					resize_mode = 1;
 					resize_or = true;
 				}
-				else if (ckCursorZone(image_min.x+resize_off, image_max.x-resize_off, image_min.y, image_min.y+resize_off))
+				else if (ckCursorZone(image_min.x + resize_off, image_max.x - resize_off, image_min.y, image_min.y + resize_off))
 				{
 					resize_mode = 2;
 					resize_or = false;
 				}
-				else if (ckCursorZone(image_min.x + resize_off, image_max.x - resize_off, image_max.y-resize_off, image_max.y))
+				else if (ckCursorZone(image_min.x + resize_off, image_max.x - resize_off, image_max.y - resize_off, image_max.y))
 				{
 					resize_mode = 2;
 					resize_or = true;
@@ -256,7 +274,6 @@ void UIMinimapEditorForm::RenderCanvas()
 						}
 					}
 				}
-				
 			}
 			else if (!isDragging)
 			{
@@ -266,24 +283,34 @@ void UIMinimapEditorForm::RenderCanvas()
 			ImU32 x1 = IM_COL32(150, 0, 0, 100), x2 = x1, y1 = x1, y2 = x1;
 
 			if (resize_mode != 0)
+			{
 				(resize_mode == 1 ? (resize_or == 0 ? x1 : x2) : (resize_or == 0 ? y1 : y2)) = IM_COL32(150, 0, 0, 150);
+			}
 
 			ImGui::GetWindowDrawList()->AddRectFilled(
 				ImVec2(element_screen_pos.x, element_screen_pos.y + resize_off),
 				ImVec2(element_screen_pos.x + resize_off, element_screen_pos.y + element_screen_size.y - resize_off),
-				x1, 5.f);
+				x1,
+				5.f
+			);
 			ImGui::GetWindowDrawList()->AddRectFilled(
 				ImVec2(element_screen_pos.x + element_screen_size.x - resize_off, element_screen_pos.y + resize_off),
 				ImVec2(element_screen_pos.x + element_screen_size.x, element_screen_pos.y + element_screen_size.y - resize_off),
-				x2, 5.f);
+				x2,
+				5.f
+			);
 			ImGui::GetWindowDrawList()->AddRectFilled(
 				ImVec2(element_screen_pos.x + resize_off, element_screen_pos.y),
 				ImVec2(element_screen_pos.x + element_screen_size.x - resize_off, element_screen_pos.y + resize_off),
-				y1, 5.f);
+				y1,
+				5.f
+			);
 			ImGui::GetWindowDrawList()->AddRectFilled(
 				ImVec2(element_screen_pos.x + resize_off, element_screen_pos.y + element_screen_size.y - resize_off),
 				ImVec2(element_screen_pos.x + element_screen_size.x - resize_off, element_screen_pos.y + element_screen_size.y),
-				y2, 5.f);
+				y2,
+				5.f
+			);
 		}
 
 		if (!element.EdLocked && (is_hovered || m_EditMode != None))
@@ -303,31 +330,32 @@ void UIMinimapEditorForm::RenderCanvas()
 			SelectElement(element);
 		}
 
-		if (element.EdSelected && !element.EdLocked) 
+		if (element.EdSelected && !element.EdLocked)
 		{
-			if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) 
+			if (ImGui::IsKeyPressed(ImGuiKey_UpArrow))
 			{
-				element.position.y-=0.5f;
+				element.position.y -= 0.5f;
 				isEdited = true;
 			}
 			else if (ImGui::IsKeyPressed(ImGuiKey_DownArrow))
 			{
-				element.position.y+= 0.5f;
+				element.position.y += 0.5f;
 				isEdited = true;
 			}
 
-			if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow)) 
+			if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow))
 			{
-				element.position.x-= 0.5f;
+				element.position.x -= 0.5f;
 				isEdited = true;
 			}
 			else if (ImGui::IsKeyPressed(ImGuiKey_RightArrow))
 			{
-				element.position.x+= 0.5f;
+				element.position.x += 0.5f;
 				isEdited = true;
 			}
 
-			if ((is_hovered || m_EditMode != None) && (inside || m_EditMode != None) && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+			if ((is_hovered || m_EditMode != None) && (inside || m_EditMode != None) && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+			{
 				ImVec2 mouse_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
 
 				if (m_EditMode == None || m_EditMode == Move)
@@ -340,32 +368,38 @@ void UIMinimapEditorForm::RenderCanvas()
 				{
 					ImVec2 def = mouse_delta;
 
-					if (m_saveResizeMode == 1) 
+					if (m_saveResizeMode == 1)
 					{
-						if (m_saveResizeOr == 0) 
+						if (m_saveResizeOr == 0)
 						{
 							element.position.x += def.x / m_Zoom;
 							element.RenderSize.x -= def.x / m_Zoom;
 						}
-						else 
+						else
+						{
 							element.RenderSize.x += def.x / m_Zoom;
+						}
 					}
-					else if (m_saveResizeMode == 2) 
+					else if (m_saveResizeMode == 2)
 					{
-						if (m_saveResizeOr == 0) 
+						if (m_saveResizeOr == 0)
 						{
 							element.position.y += def.y / m_Zoom;
 							element.RenderSize.y -= def.y / m_Zoom;
 						}
 						else
+						{
 							element.RenderSize.y += def.y / m_Zoom;
+						}
 					}
 				}
 
 				ImGui::ResetMouseDragDelta();
 
-				if(!isEdited)
+				if (!isEdited)
+				{
 					isEdited = true;
+				}
 			}
 			else
 			{
@@ -376,47 +410,52 @@ void UIMinimapEditorForm::RenderCanvas()
 					m_saveResizeOr = 0;
 				}
 				else if (m_EditMode != Resize)
+				{
 					m_EditMode = None;
+				}
 			}
 		}
-		
+
 
 		if (m_DebugView)
 		{
-			ImGui::GetWindowDrawList()->AddRectFilled(element_screen_pos+ImVec2(resize_off, resize_off), element_screen_pos + element_screen_size - ImVec2(resize_off, resize_off), IM_COL32(50, 255, 50, 50));
+			ImGui::GetWindowDrawList()->AddRectFilled(element_screen_pos + ImVec2(resize_off, resize_off), element_screen_pos + element_screen_size - ImVec2(resize_off, resize_off), IM_COL32(50, 255, 50, 50));
 
 			ImU32 x1 = IM_COL32(50, 50, 100, 100), x2 = x1, y1 = x1, y2 = x1;
 
 			if (resize_mode != 0)
+			{
 				(resize_mode == 1 ? (resize_or == 0 ? x1 : x2) : (resize_or == 0 ? y1 : y2)) = IM_COL32(50, 50, 100, 200);
+			}
 
-			//x1
+			// x1
 			ImGui::GetWindowDrawList()->AddRectFilled(
-				ImVec2(element_screen_pos.x, element_screen_pos.y+ resize_off),
-				ImVec2(element_screen_pos.x+ resize_off, element_screen_pos.y + element_screen_size.y - resize_off),
-				x1);
-			//x2
+				ImVec2(element_screen_pos.x, element_screen_pos.y + resize_off),
+				ImVec2(element_screen_pos.x + resize_off, element_screen_pos.y + element_screen_size.y - resize_off),
+				x1
+			);
+			// x2
 			ImGui::GetWindowDrawList()->AddRectFilled(
 				ImVec2(element_screen_pos.x + element_screen_size.x - resize_off, element_screen_pos.y + resize_off),
-				ImVec2(element_screen_pos.x + element_screen_size.x , element_screen_pos.y + element_screen_size.y - resize_off),
-				x2);
-			//y1
+				ImVec2(element_screen_pos.x + element_screen_size.x, element_screen_pos.y + element_screen_size.y - resize_off),
+				x2
+			);
+			// y1
 			ImGui::GetWindowDrawList()->AddRectFilled(
 				ImVec2(element_screen_pos.x + resize_off, element_screen_pos.y),
 				ImVec2(element_screen_pos.x + element_screen_size.x - resize_off, element_screen_pos.y + resize_off),
-				y1);
-			//y2
+				y1
+			);
+			// y2
 			ImGui::GetWindowDrawList()->AddRectFilled(
-				ImVec2(element_screen_pos.x +  resize_off, element_screen_pos.y + element_screen_size.y - resize_off),
-				ImVec2(element_screen_pos.x + element_screen_size.x - resize_off, element_screen_pos.y + element_screen_size.y ),
-				y2);
+				ImVec2(element_screen_pos.x + resize_off, element_screen_pos.y + element_screen_size.y - resize_off),
+				ImVec2(element_screen_pos.x + element_screen_size.x - resize_off, element_screen_pos.y + element_screen_size.y),
+				y2
+			);
 
 			string_path dbg_info;
-			sprintf(dbg_info,
-				"= Debug Info =\nname\t = %s\nposition = %.3f : %.3f \n(convas) is_hovered = %d\nCursor inside: %d\nCursor - move zone: %d\nresize_mode = %d\nresize_or = %d\nm_EditMode = %d",
-				element.name.c_str(), element.position.x, element.position.y, is_hovered, inside, move_zone, m_saveResizeMode, m_saveResizeOr, m_EditMode
-			);
-			ImGui::GetWindowDrawList()->AddText(element_screen_pos+ImVec2(10.f*m_Zoom,10.f * m_Zoom), IM_COL32(255, 255, 255, 255), dbg_info);
+			sprintf(dbg_info, "= Debug Info =\nname\t = %s\nposition = %.3f : %.3f \n(convas) is_hovered = %d\nCursor inside: %d\nCursor - move zone: %d\nresize_mode = %d\nresize_or = %d\nm_EditMode = %d", element.name.c_str(), element.position.x, element.position.y, is_hovered, inside, move_zone, m_saveResizeMode, m_saveResizeOr, m_EditMode);
+			ImGui::GetWindowDrawList()->AddText(element_screen_pos + ImVec2(10.f * m_Zoom, 10.f * m_Zoom), IM_COL32(255, 255, 255, 255), dbg_info);
 		}
 	}
 
@@ -428,20 +467,23 @@ void UIMinimapEditorForm::RenderCanvas()
 
 void UIMinimapEditorForm::RenderBoundCanvas()
 {
-
 	ImVec2 canvas_p0 = ImGui::GetCursorScreenPos();
 	ImVec2 canvas_size = ImGui::GetContentRegionAvail();
 
 	if (canvas_size.x < 64 && canvas_size.y < 64)
+	{
 		return;
+	}
 
 	ImGui::InvisibleButton("canvas", canvas_size);
 
 	bool is_hovered = ImGui::IsItemHovered();
-	//bool is_mapItemHovered = false;
+	// bool is_mapItemHovered = false;
 
-	if (ImGui::IsMouseDragging(ImGuiMouseButton_Right)) {
-		if (!isDragging) {
+	if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
+	{
+		if (!isDragging)
+		{
 			isDragging = true;
 			initial_mouse_pos = ImGui::GetMousePos();
 			initial_bg_position = m_BoundBackgroundPosition;
@@ -449,13 +491,16 @@ void UIMinimapEditorForm::RenderBoundCanvas()
 		ImVec2 mouse_delta = ImGui::GetMousePos() - initial_mouse_pos;
 		m_BoundBackgroundPosition = initial_bg_position + mouse_delta;
 	}
-	else {
+	else
+	{
 		isDragging = false;
 	}
 
-	if (is_hovered) {
+	if (is_hovered)
+	{
 		float scroll = ImGui::GetIO().MouseWheel;
-		if (scroll != 0.0f) {
+		if (scroll != 0.0f)
+		{
 			float old_zoom = m_BZoom;
 			m_BZoom = Clamp(m_BZoom + scroll * 0.1f, 0.1f, 5.0f);
 
@@ -466,9 +511,7 @@ void UIMinimapEditorForm::RenderBoundCanvas()
 	}
 
 	ImVec2 bg_display_size(selectedElement->FileSize.x * m_BZoom, selectedElement->FileSize.y * m_BZoom);
-	ImGui::GetWindowDrawList()->AddImage(ResolveElementTexture(*selectedElement),
-		canvas_p0 + m_BoundBackgroundPosition,
-		canvas_p0 + m_BoundBackgroundPosition + bg_display_size);
+	ImGui::GetWindowDrawList()->AddImage(ResolveElementTexture(*selectedElement), canvas_p0 + m_BoundBackgroundPosition, canvas_p0 + m_BoundBackgroundPosition + bg_display_size);
 
 
 	ImVec2 element_screen_pos = canvas_p0 + m_BoundBackgroundPosition;
@@ -479,7 +522,7 @@ void UIMinimapEditorForm::RenderBoundCanvas()
 	ImVec2 top_left = element_screen_pos - ImVec2(handle_size / 2, handle_size / 2);
 	ImVec2 bottom_right = element_screen_pos + ImVec2(handle_size / 2, handle_size / 2) + element_screen_size;
 
-	//File Size Border
+	// File Size Border
 	ImGui::GetWindowDrawList()->AddRect(top_left, bottom_right, IM_COL32(130, 130, 130, 100), 0.0f, ImDrawFlags_RoundCornersNone, 1.0f);
 
 	ImVec2 topLeftBoundRect = element_screen_pos + element_screen_size / 2 - ImVec2(handle_size / 2, handle_size / 2);
@@ -497,31 +540,30 @@ void UIMinimapEditorForm::RenderBoundCanvas()
 	bool resize_or = false;
 
 	auto ckCursorZone = [](float x1, float x2, float y1, float y2)
-		{
-			return (ImGui::GetIO().MousePos.x >= (x1) && ImGui::GetIO().MousePos.x <= (x2) &&
-				ImGui::GetIO().MousePos.y >= (y1) && ImGui::GetIO().MousePos.y <= (y2));
-		};
+	{
+		return (ImGui::GetIO().MousePos.x >= (x1) && ImGui::GetIO().MousePos.x <= (x2) && ImGui::GetIO().MousePos.y >= (y1) && ImGui::GetIO().MousePos.y <= (y2));
+	};
 
 	{
 		ImVec2 image_min = topLeftBoundRect;
 		ImVec2 image_max = bottomRightBoundRect;
 
-		if (ckCursorZone(image_min.x- resize_off, (image_min.x + resize_off), (image_min.y + resize_off), (image_max.y - resize_off)))
+		if (ckCursorZone(image_min.x - resize_off, (image_min.x + resize_off), (image_min.y + resize_off), (image_max.y - resize_off)))
 		{
 			resize_mode = 1;
 			resize_or = false;
 		}
-		else if (ckCursorZone((image_max.x - resize_off), image_max.x+ resize_off, (image_min.y + resize_off), (image_max.y - resize_off)))
+		else if (ckCursorZone((image_max.x - resize_off), image_max.x + resize_off, (image_min.y + resize_off), (image_max.y - resize_off)))
 		{
 			resize_mode = 1;
 			resize_or = true;
 		}
-		else if (ckCursorZone(image_min.x + resize_off, image_max.x - resize_off, image_min.y- resize_off, image_min.y + resize_off))
+		else if (ckCursorZone(image_min.x + resize_off, image_max.x - resize_off, image_min.y - resize_off, image_min.y + resize_off))
 		{
 			resize_mode = 2;
 			resize_or = false;
 		}
-		else if (ckCursorZone(image_min.x + resize_off, image_max.x - resize_off, image_max.y - resize_off, image_max.y+ resize_off))
+		else if (ckCursorZone(image_min.x + resize_off, image_max.x - resize_off, image_max.y - resize_off, image_max.y + resize_off))
 		{
 			resize_mode = 2;
 			resize_or = true;
@@ -534,7 +576,7 @@ void UIMinimapEditorForm::RenderBoundCanvas()
 			m_saveResizeOr = resize_or;
 		}
 	}
-	
+
 	if (resize_mode == 1 || m_saveResizeMode == 1)
 	{
 		ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
@@ -543,7 +585,7 @@ void UIMinimapEditorForm::RenderBoundCanvas()
 	{
 		ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
 	}
-		//bool blockMouse = false;
+	// bool blockMouse = false;
 	if (BoundEditMode && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 	{
 		ImVec2 mouse_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
@@ -560,22 +602,30 @@ void UIMinimapEditorForm::RenderBoundCanvas()
 		{
 			if (m_saveResizeOr == 0 && topLeftBoundRect.x + mouse_delta.x < hl3.x &&
 				topLeftBoundRect.x + mouse_delta.x > element_screen_pos.x)
+			{
 				topLeftBoundRect.x += mouse_delta.x;
+			}
 			else if (m_saveResizeOr == 1 && bottomRightBoundRect.x + mouse_delta.x > hl3.x &&
-				bottomRightBoundRect.x + mouse_delta.x < element_screen_pos.x + element_screen_size.x)
+					 bottomRightBoundRect.x + mouse_delta.x < element_screen_pos.x + element_screen_size.x)
+			{
 				bottomRightBoundRect.x += mouse_delta.x;
+			}
 		}
 		else if (m_saveResizeMode == 2)
 		{
 			if (m_saveResizeOr == 0 && topLeftBoundRect.y + mouse_delta.y < hl3.y &&
 				topLeftBoundRect.y + mouse_delta.y > element_screen_pos.y)
+			{
 				topLeftBoundRect.y += mouse_delta.y;
+			}
 			else if (m_saveResizeOr == 1 && bottomRightBoundRect.y + mouse_delta.y > hl3.y &&
-				bottomRightBoundRect.y + mouse_delta.y < element_screen_pos.y + element_screen_size.y)
+					 bottomRightBoundRect.y + mouse_delta.y < element_screen_pos.y + element_screen_size.y)
+			{
 				bottomRightBoundRect.y += mouse_delta.y;
+			}
 		}
 
-		
+
 		ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
 
 		m_Bound.x = (topLeftBoundRect.x - (element_screen_pos.x + element_screen_size.x / 2 - handle_size / 2)) / m_BZoom;
@@ -589,7 +639,7 @@ void UIMinimapEditorForm::RenderBoundCanvas()
 		m_saveResizeMode = 0;
 		m_saveResizeOr = 0;
 	}
-	
+
 	ImVec2 top_leftd = element_screen_pos + element_screen_size / 2 - ImVec2(handle_size / 2, handle_size / 2);
 	ImVec2 bottom_rightd = top_leftd;
 	if (m_saveResizeMode == 1)
@@ -613,11 +663,7 @@ void UIMinimapEditorForm::RenderBoundCanvas()
 	if (m_DebugView)
 	{
 		string_path dbg_info;
-		sprintf(dbg_info,
-			"= [Debug Info] Bound Rect EDITOR =\nname\t = %s\nposition = %.3f : %.3f \nsize: %.0fx%.0f\nresize_mode: %d\nresize_or: %d\nBoundEditMode = %d",
-			selectedElement->name.c_str(), m_BoundBackgroundPosition.x, m_BoundBackgroundPosition.y, selectedElement->FileSize.x, selectedElement->FileSize.y,
-			m_saveResizeMode, m_saveResizeOr, BoundEditMode
-		);
+		sprintf(dbg_info, "= [Debug Info] Bound Rect EDITOR =\nname\t = %s\nposition = %.3f : %.3f \nsize: %.0fx%.0f\nresize_mode: %d\nresize_or: %d\nBoundEditMode = %d", selectedElement->name.c_str(), m_BoundBackgroundPosition.x, m_BoundBackgroundPosition.y, selectedElement->FileSize.x, selectedElement->FileSize.y, m_saveResizeMode, m_saveResizeOr, BoundEditMode);
 		ImGui::GetWindowDrawList()->AddText(top_left, IM_COL32(255, 255, 255, 255), dbg_info);
 
 		{
@@ -642,7 +688,9 @@ void UIMinimapEditorForm::RenderBoundCanvas()
 void UIMinimapEditorForm::ShowPreview()
 {
 	if (!PreviewMode || !ImGui::Begin("Preview", &PreviewMode, ImGuiWindowFlags_NoCollapse))
+	{
 		return;
+	}
 
 	ImVec2 WSize = ImGui::GetContentRegionAvail();
 
@@ -650,12 +698,12 @@ void UIMinimapEditorForm::ShowPreview()
 	string256 buff;
 
 	shared_str sect_name = m_mp_mode ? "level_maps_mp" : "level_maps_single";
-	sprintf
-	(
-		buff, 
+	sprintf(
+		buff,
 		"[%s]\n        bound_rect    = 0.00, 0.00, %.2f, %.2f\n        texture    = %s\n\n",
 		sect_name.c_str(),
-		m_BackgroundRenderSize.x, m_BackgroundRenderSize.y, 
+		m_BackgroundRenderSize.x,
+		m_BackgroundRenderSize.y,
 		m_BackgroundTexturePath.c_str()
 	);
 
@@ -674,12 +722,11 @@ void UIMinimapEditorForm::ShowPreview()
 
 	for (const auto& element : elements)
 	{
-		sprintf(buff, "[%s]\n        global_rect    = %.2f, %.2f, %.2f, %.2f\n", element.name.c_str(),element.position.x, 
-			element.position.y, element.position.x + element.RenderSize.x, element.position.y + element.RenderSize.y);
+		sprintf(buff, "[%s]\n        global_rect    = %.2f, %.2f, %.2f, %.2f\n", element.name.c_str(), element.position.x, element.position.y, element.position.x + element.RenderSize.x, element.position.y + element.RenderSize.y);
 		data += buff;
 	}
 
-	ImGui::InputTextMultiline(" ", data.data(), 2048*2, WSize, ImGuiInputTextFlags_ReadOnly);
+	ImGui::InputTextMultiline(" ", data.data(), 2048 * 2, WSize, ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();
 }
@@ -695,15 +742,19 @@ void UIMinimapEditorForm::CreateElementPopup()
 		if (ImGui::Checkbox("Show mp_ levels", &showMPLevels))
 		{
 			if (!showMPLevels && CreatingData.name.rfind("mp_", 0) == 0)
+			{
 				CreatingData.name.clear();
+			}
 		}
 
-		if (ImGui::BeginCombo("Level Name", CreatingData.name.data())) 
+		if (ImGui::BeginCombo("Level Name", CreatingData.name.data()))
 		{
 			for (auto level : levels)
 			{
 				if (!showMPLevels && level.rfind("mp_", 0) == 0)
+				{
 					continue;
+				}
 
 				bool used = false;
 				for (auto element : elements)
@@ -714,14 +765,18 @@ void UIMinimapEditorForm::CreateElementPopup()
 						break;
 					}
 				}
-				
-				if (used)
-					continue;
 
-				if (ImGui::Selectable(level.c_str(), (level == CreatingData.name))) 
+				if (used)
+				{
+					continue;
+				}
+
+				if (ImGui::Selectable(level.c_str(), (level == CreatingData.name)))
 				{
 					if (!GetTextureFromLevelLtx(level, CreatingData.TexturePath))
+					{
 						CreatingData.TexturePath = " ";
+					}
 					CreatingData.name = level;
 				}
 			}
@@ -739,24 +794,28 @@ void UIMinimapEditorForm::CreateElementPopup()
 		if (ImGui::Button("Add"))
 		{
 			if (CreatingData.TexturePath == " ")
+			{
 				CreatingData.TexturePath.clear();
+			}
 
 			Element el_new;
 			el_new.position = ImVec2(0, 0);
 			el_new.name = CreatingData.name;
 			el_new.TexturePath = CreatingData.TexturePath;
-			el_new.Texture = nullptr/*nullptr*/;
+			el_new.Texture = nullptr /*nullptr*/;
 
 			string_path p;
 			if (!el_new.TexturePath.empty())
+			{
 				sprintf(p, "%s%s.dds", FS.get_path(_game_textures_)->m_Path, CreatingData.TexturePath.c_str());
+			}
 
 
 			if (LoadTexture(el_new, p) != 0)
 			{
 				u32 mem = 0;
 				el_new.Texture = RImplementation.texture_load("ed\\ed_nodata", mem);
-				el_new.FileSize = ImVec2(512,512);
+				el_new.FileSize = ImVec2(512, 512);
 			}
 			el_new.RenderSize = ImVec2(512, 512);
 			elements.push_back(el_new);
@@ -775,7 +834,9 @@ void UIMinimapEditorForm::CreateElementPopup()
 			CreatingData.TexturePath.clear();
 			CreatingData.name.clear();
 			if (CreatingData.Texture)
+			{
 				IM_TEXTURE_RELEASE(CreatingData.Texture);
+			}
 
 			CreatingData.Texture = nullptr;
 		}
@@ -783,7 +844,7 @@ void UIMinimapEditorForm::CreateElementPopup()
 		ImGui::EndPopup();
 	}
 }
-void UIMinimapEditorForm::ShowMenu() 
+void UIMinimapEditorForm::ShowMenu()
 {
 	ImGui::Text((isEdited) ? " [Edited] View" : " View");
 	ImGui::Separator();
@@ -818,31 +879,30 @@ void UIMinimapEditorForm::ShowMenu()
 		}
 		ImGui::EndMenu();
 	}
-	
+
 	if (ImGui::MenuItem("Set Map Background"))
 	{
 		LoadBGClick();
 	}
-	
+
 	CreateElementPopup();
 
 	if (ImGui::MenuItem("Add Location"))
 	{
 		ImGui::OpenPopup("Add Location");
-		
 	}
 
 	ImGui::Separator();
 	if (ImGui::MenuItem("Reset pos"))
 	{
-		(BoundRectMode ? m_BoundBackgroundPosition : m_BackgroundPosition) = ImVec2(0,0);
+		(BoundRectMode ? m_BoundBackgroundPosition : m_BackgroundPosition) = ImVec2(0, 0);
 	}
 
-	if (ImGui::MenuItem("Reset zoom")) 
+	if (ImGui::MenuItem("Reset zoom"))
 	{
 		(BoundRectMode ? m_BZoom : m_Zoom) = 1.f;
 	}
-	
+
 	ImGui::Separator();
 	ImGui::Checkbox("Preview", &PreviewMode);
 	ImGui::BeginDisabled(BoundRectMode);
@@ -850,14 +910,15 @@ void UIMinimapEditorForm::ShowMenu()
 
 	ImGui::Separator();
 	ImGui::Text("Background Size:");
-	ImGui::DragFloat2("##bgs", (float*)&m_BackgroundRenderSize, 1.0f, 128, 1024*4);
+	ImGui::DragFloat2("##bgs", (float*)&m_BackgroundRenderSize, 1.0f, 128, 1024 * 4);
 	ImGui::SameLine();
 	if (ImGui::Button("to file size"))
 	{
 		m_BackgroundRenderSize = m_BackgroundSize;
 	}
 
-	ImGui::Text("Items Opacity:"); ImGui::SameLine();
+	ImGui::Text("Items Opacity:");
+	ImGui::SameLine();
 	ImGui::SliderInt("##opt", &m_ItemsOpacity, 1, 255, "%d");
 	ImGui::Separator();
 	ImGui::EndDisabled();
@@ -865,10 +926,13 @@ void UIMinimapEditorForm::ShowMenu()
 	{
 		ImGui::Text("bound_rect");
 		auto tempX = ImGui::GetContentRegionMax().x;
-		ImGui::SetNextItemWidth(tempX-7.f);
+		ImGui::SetNextItemWidth(tempX - 7.f);
 		if (ImGui::DragFloat4("##b_s", (float*)&m_Bound, 1.0f, -2048.0f, 2048))
 		{
-			if (!isEdited) isEdited = true;
+			if (!isEdited)
+			{
+				isEdited = true;
+			}
 		}
 		if (ImGui::Button("Save and Close"))
 		{
@@ -921,23 +985,28 @@ void UIMinimapEditorForm::ShowMenu()
 			if (LoadTexture(*selectedElement) == 0)
 			{
 				selectedElement->RenderSize = PreviousRenderSize;
-				//selectedElement->name = copy.name;
+				// selectedElement->name = copy.name;
 				isEdited = true;
 			}
-			
 		}
 
 		ImGui::Text("Position:");
 		if (ImGui::DragFloat2("##position", (float*)&selectedElement->position, 1.0f))
 		{
-			if (!isEdited) isEdited = true;
+			if (!isEdited)
+			{
+				isEdited = true;
+			}
 		}
 		ImGui::Text("Size:");
 		if (ImGui::DragFloat2("##size", (float*)&selectedElement->RenderSize, 1.0f, 1.0f, 1024))
 		{
-			if (!isEdited) isEdited = true;
+			if (!isEdited)
+			{
+				isEdited = true;
+			}
 		}
-		
+
 		if (ImGui::Button("Delete"))
 		{
 			auto it = elements.begin();
@@ -973,7 +1042,7 @@ void UIMinimapEditorForm::ShowMenu()
 			{
 				CInifile levelLtxFile(levelLtx, true);
 
-				if (levelLtxFile.line_exist("level_map", "bound_rect")) 
+				if (levelLtxFile.line_exist("level_map", "bound_rect"))
 				{
 					auto textureFile = levelLtxFile.r_fvector4("level_map", "bound_rect");
 					m_Bound = textureFile;
@@ -994,31 +1063,36 @@ void UIMinimapEditorForm::OpenFile()
 	ReloadMapInfo(fn);
 }
 
-//vnedrit v ReloadMapInfo
-bool UIMinimapEditorForm::GetTextureFromLevelLtx(const xr_string level_name, xr_string& dest )
+// vnedrit v ReloadMapInfo
+bool UIMinimapEditorForm::GetTextureFromLevelLtx(const xr_string level_name, xr_string& dest)
 {
 	string_path levelLtx;
 	sprintf(levelLtx, "%s%s\\level.ltx", FS.get_path("$level$")->m_Path, level_name.c_str());
 
 	bool find_result = false;
 	if (!FS.exist(levelLtx))
+	{
 		return false;
+	}
 
 	CInifile levelLtxFile(levelLtx, true);
 
 	if (!levelLtxFile.line_exist("level_map", "texture"))
+	{
 		return false;
-	
+	}
+
 	auto textureFile = levelLtxFile.r_string("level_map", "texture");
 	dest = textureFile;
 
 	return true;
-	
 }
 void UIMinimapEditorForm::ReloadMapInfo(const xr_string& fn)
 {
 	for (Element& Item : elements)
+	{
 		ReleaseElementTexture(Item);
+	}
 	elements.clear();
 
 	FS.TryLoad(fn.c_str());
@@ -1030,7 +1104,7 @@ void UIMinimapEditorForm::ReloadMapInfo(const xr_string& fn)
 		if (ltxFile->line_exist("global_map", "texture"))
 		{
 			auto tx = ltxFile->r_string("global_map", "texture");
-			
+
 			xr_stack_string_path texturePath;
 			xr_sprintf(texturePath, "%s%s.dds", FS.get_path("$game_textures$")->m_Path, tx);
 			auto data = FS.exist(texturePath.c_str());
@@ -1038,7 +1112,7 @@ void UIMinimapEditorForm::ReloadMapInfo(const xr_string& fn)
 			{
 				texturePath = data->wrap;
 			}
-			
+
 			LoadBGClick(texturePath.c_str());
 		}
 		if (ltxFile->line_exist("global_map", "bound_rect"))
@@ -1047,7 +1121,6 @@ void UIMinimapEditorForm::ReloadMapInfo(const xr_string& fn)
 			m_BackgroundRenderSize.x = tx.z;
 			m_BackgroundRenderSize.y = tx.w;
 		}
-
 	}
 
 	shared_str SectName = "level_maps_single";
@@ -1075,7 +1148,9 @@ void UIMinimapEditorForm::ReloadMapInfo(const xr_string& fn)
 		auto& levelName = it->first;
 
 		if (!ltxFile->line_exist(levelName, "global_rect"))
+		{
 			continue;
+		}
 
 		Fvector4 tmp = (ltxFile)->r_fvector4(levelName, "global_rect");
 
@@ -1140,7 +1215,7 @@ void UIMinimapEditorForm::SaveFile(bool saveCurrent)
 		return;
 	}
 
-	if (!saveCurrent) 
+	if (!saveCurrent)
 	{
 		ActiveFile = fn.c_str();
 		ActiveFileShort = FS.fix_path(fn.c_str());
@@ -1157,7 +1232,7 @@ void UIMinimapEditorForm::SaveFile(bool saveCurrent)
 		ltxFile->w_fvector4("global_map", "bound_rect", Fvector4(0.f, 0.f, m_BackgroundRenderSize.x, m_BackgroundRenderSize.y));
 	}
 
-	//old levels check
+	// old levels check
 	shared_str sect_name = m_mp_mode ? "level_maps_mp" : "level_maps_single";
 	{
 		CInifile::Sect& S = ltxFile->r_section(sect_name);
@@ -1172,11 +1247,15 @@ void UIMinimapEditorForm::SaveFile(bool saveCurrent)
 			for (auto& element : elements)
 			{
 				if (levelName == element.name.c_str())
+				{
 					res = true;
+				}
 			}
 
 			if (!res)
+			{
 				ltxFile->remove_line(sect_name.c_str(), levelName.c_str());
+			}
 		}
 	}
 
@@ -1186,7 +1265,7 @@ void UIMinimapEditorForm::SaveFile(bool saveCurrent)
 		ltxFile->w_string(sect_name.c_str(), element.name.c_str(), "");
 		//
 		ltxFile->remove_line(element.name.c_str(), "global_rect");
-		auto dat = Fvector4(element.position.x, element.position.y, element.RenderSize.x+ element.position.x, element.RenderSize.y + element.position.y);
+		auto dat = Fvector4(element.position.x, element.position.y, element.RenderSize.x + element.position.x, element.RenderSize.y + element.position.y);
 		ltxFile->w_fvector4(element.name.c_str(), "global_rect", dat);
 	}
 
@@ -1223,7 +1302,7 @@ void UIMinimapEditorForm::Draw()
 		ImVec2 elementsListSize = ImVec2(windowSize.x, windowSize.y - menuSizeY);
 		ImVec2 menuSize = ImVec2(windowSize.x, menuSizeY - 10.f);
 
-		
+
 		ImGui::BeginChild("Menu", menuSize, true);
 		ShowMenu();
 		ImGui::EndChild();
@@ -1236,18 +1315,21 @@ void UIMinimapEditorForm::Draw()
 
 		ImGui::BeginChild("Canvas", ImVec2(0, 0), true);
 		if (BoundRectMode)
+		{
 			RenderBoundCanvas();
+		}
 		else
+		{
 			RenderCanvas();
+		}
 		ImGui::EndChild();
-
 	}
-	
+
 	if (ImGui::IsKeyPressed(ImGuiKey_Equal))
 	{
 		m_DebugView = !m_DebugView;
 	}
-	
+
 	ShowPreview();
 }
 
@@ -1298,7 +1380,7 @@ int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 	{
 		return 1;
 	}
-	
+
 	u32 W, H, A;
 	const xr_string prefix = "map_";
 
@@ -1314,12 +1396,10 @@ int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 		el.TexturePath = FS.fix_path(fn);
 	}
 
-	//el.path = fn;
+	// el.path = fn;
 	el.FileSize.x = W;
 	el.FileSize.y = H;
-	(void)UI->UpdateImGuiTexture(el.EditorTexture, m_ImageData.data(),
-		W, H, W * 4, ++el.TextureRevision, el.TexturePath.c_str(),
-		EEditorTextureFormat::Bgra8Unorm);
+	(void)UI->UpdateImGuiTexture(el.EditorTexture, m_ImageData.data(), W, H, W * 4, ++el.TextureRevision, el.TexturePath.c_str(), EEditorTextureFormat::Bgra8Unorm);
 
 	ID3DTexture2D* pTexture = nullptr;
 	{
@@ -1330,7 +1410,6 @@ int UIMinimapEditorForm::LoadTexture(Element& el, const xr_string texture)
 			R_CHK(pTexture->LockRect(0, &rect, nullptr, D3DLOCK_DISCARD));
 			for (int i = 0; i < H; i++)
 			{
-
 				unsigned char* dest = static_cast<unsigned char*>(rect.pBits) + (rect.Pitch * i);
 				memcpy(dest, m_ImageData.data() + (W * i), sizeof(unsigned char) * W * 4);
 			}
@@ -1356,7 +1435,9 @@ void UIMinimapEditorForm::LoadBGClick(const xr_string texture)
 	}
 
 	if (texture == "")
+	{
 		fn = FS.fix_path(fn.c_str());
+	}
 
 	u32 m_ImageW, m_ImageH, m_ImageA;
 
@@ -1371,7 +1452,7 @@ void UIMinimapEditorForm::LoadBGClick(const xr_string texture)
 		m_BackgroundRenderSize = m_BackgroundSize;
 
 		m_BackgroundTexturePath = (fn.find(game_texture_dir) == 0) ? fn.substr(game_texture_dir.size()) : fn;
-		
+
 		if (auto p = xr_path(m_BackgroundTexturePath); p.has_extension())
 		{
 			p.replace_extension("");
@@ -1380,10 +1461,7 @@ void UIMinimapEditorForm::LoadBGClick(const xr_string texture)
 
 		m_TextureRemove = m_BackgroundTexture;
 		UI->DestroyImGuiTexture(m_BackgroundEditorTexture);
-		(void)UI->UpdateImGuiTexture(m_BackgroundEditorTexture,
-			m_ImageData.data(), m_ImageW, m_ImageH, m_ImageW * 4,
-			++m_BackgroundTextureRevision, m_BackgroundTexturePath.c_str(),
-			EEditorTextureFormat::Bgra8Unorm);
+		(void)UI->UpdateImGuiTexture(m_BackgroundEditorTexture, m_ImageData.data(), m_ImageW, m_ImageH, m_ImageW * 4, ++m_BackgroundTextureRevision, m_BackgroundTexturePath.c_str(), EEditorTextureFormat::Bgra8Unorm);
 		ID3DTexture2D* pTexture = nullptr;
 		{
 			R_CHK(REDevice->CreateTexture(m_ImageW, m_ImageH, 1, 0, D3DFMT_X8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr));
@@ -1394,7 +1472,6 @@ void UIMinimapEditorForm::LoadBGClick(const xr_string texture)
 				R_CHK(pTexture->LockRect(0, &rect, nullptr, D3DLOCK_DISCARD));
 				for (int i = 0; i < m_ImageH; i++)
 				{
-
 					unsigned char* dest = static_cast<unsigned char*>(rect.pBits) + (rect.Pitch * i);
 					memcpy(dest, m_ImageData.data() + (m_ImageW * i), sizeof(unsigned char) * m_ImageW * 4);
 				}
@@ -1402,5 +1479,4 @@ void UIMinimapEditorForm::LoadBGClick(const xr_string texture)
 			}
 		}
 	}
-	
 }

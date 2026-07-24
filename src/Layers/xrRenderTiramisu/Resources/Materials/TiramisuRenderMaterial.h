@@ -9,9 +9,9 @@ class TiramisuDefaultMaterialRenderProxy;
 class TiramisuRenderMaterial : public TiramisuRenderMaterialInterface
 {
 public:
-                                        TiramisuRenderMaterial     (const shared_str& InAssetReference);
-                                        ~TiramisuRenderMaterial    () override;
-    
-    TiramisuRenderTexture*                     Texture = nullptr;
-    TiramisuDefaultMaterialRenderProxy*        DefaultMaterialRenderProxy;
+	TiramisuRenderMaterial(const shared_str& InAssetReference);
+	~TiramisuRenderMaterial() override;
+
+	TiramisuRenderTexture* Texture = nullptr;
+	TiramisuDefaultMaterialRenderProxy* DefaultMaterialRenderProxy;
 };

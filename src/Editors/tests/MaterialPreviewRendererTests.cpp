@@ -27,8 +27,7 @@ public:
 		++DestroyCount;
 	}
 
-	void UpdatePreview(const FMaterialPreviewHandle InHandle,
-		const FMaterialPreviewSource& Source) override
+	void UpdatePreview(const FMaterialPreviewHandle InHandle, const FMaterialPreviewSource& Source) override
 	{
 		UpdatedHandle = InHandle;
 		MaterialAssetId = Source.MaterialAssetId;
@@ -41,16 +40,14 @@ public:
 		++UpdateCount;
 	}
 
-	void ResizePreview(const FMaterialPreviewHandle InHandle,
-		const u32 InWidth, const u32 InHeight) override
+	void ResizePreview(const FMaterialPreviewHandle InHandle, const u32 InWidth, const u32 InHeight) override
 	{
 		ResizedHandle = InHandle;
 		Width = InWidth;
 		Height = InHeight;
 	}
 
-	void RenderPreview(const FMaterialPreviewHandle InHandle,
-		const float DeltaSeconds) override
+	void RenderPreview(const FMaterialPreviewHandle InHandle, const float DeltaSeconds) override
 	{
 		RenderedHandle = InHandle;
 		LastDeltaSeconds = DeltaSeconds;
@@ -58,7 +55,8 @@ public:
 	}
 
 	[[nodiscard]] FMaterialPreviewFrame GetPreviewFrame(
-		const FMaterialPreviewHandle InHandle) const override
+		const FMaterialPreviewHandle InHandle
+	) const override
 	{
 		RequestedHandle = InHandle;
 		FMaterialPreviewFrame Frame;
@@ -118,7 +116,9 @@ int main()
 {
 	IMaterialPreviewRenderer& Unavailable = GetMaterialPreviewRenderer();
 	if (Unavailable.IsAvailable() || Unavailable.CreatePreview().IsValid())
+	{
 		return Fail("The default preview renderer must be safely unavailable");
+	}
 	const FMaterialPreviewFrame UnavailableFrame = Unavailable.GetPreviewFrame({});
 	if (UnavailableFrame.State != EMaterialPreviewState::Unavailable ||
 		UnavailableFrame.Diagnostic.empty())
@@ -128,15 +128,21 @@ int main()
 
 	FTestMaterialPreviewRenderer Renderer;
 	if (InstallMaterialPreviewRenderer(&Renderer) != nullptr)
+	{
 		return Fail("The first preview renderer unexpectedly replaced a custom renderer");
+	}
 	FResetMaterialPreviewRenderer ResetOnExit;
 	if (&GetMaterialPreviewRenderer() != &Renderer)
+	{
 		return Fail("The installed material preview renderer was not published");
+	}
 
 	IMaterialPreviewRenderer& Active = GetMaterialPreviewRenderer();
 	const FMaterialPreviewHandle Handle = Active.CreatePreview();
 	if (!Handle.IsValid() || Handle != Renderer.Handle || Renderer.CreateCount != 1)
+	{
 		return Fail("CreatePreview did not return the backend generation-counted handle");
+	}
 
 	const xr_string MaterialJson = R"({"asset_version":1})";
 	const xr_string InstanceJson = R"({"parent":"master"})";
@@ -163,7 +169,9 @@ int main()
 		return Fail("UpdatePreview did not forward and copy the renderer-neutral source");
 	}
 	if (Renderer.ResizedHandle != Handle || Renderer.Width != 512 || Renderer.Height != 288)
+	{
 		return Fail("ResizePreview did not reach the installed backend");
+	}
 	if (Renderer.RenderedHandle != Handle || Renderer.RenderCount != 1 ||
 		std::abs(Renderer.LastDeltaSeconds - 0.016f) > 0.0001f)
 	{
@@ -185,12 +193,18 @@ int main()
 
 	Active.DestroyPreview(Handle);
 	if (Renderer.DestroyCount != 1 || Renderer.DestroyedHandle != Handle)
+	{
 		return Fail("DestroyPreview did not release the backend handle");
+	}
 
 	if (InstallMaterialPreviewRenderer(nullptr) != &Renderer)
+	{
 		return Fail("Resetting the preview renderer did not return the installed backend");
+	}
 	if (GetMaterialPreviewRenderer().IsAvailable())
+	{
 		return Fail("Resetting the preview renderer did not restore the unavailable adapter");
+	}
 
 	return 0;
 }

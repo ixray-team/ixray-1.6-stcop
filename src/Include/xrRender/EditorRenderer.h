@@ -14,47 +14,46 @@
 
 enum class EEditorRenderBackendKind : u8
 {
-    Legacy,
-    Tiramisu
+	Legacy,
+	Tiramisu
 };
 
 // Opaque presentation data consumed by ImGui. Renderer API objects remain
 // owned by the selected editor backend and never cross this boundary.
 struct FEditorViewportSurface
 {
-    void* ImGuiTextureId = nullptr;
-    u32 Width = 0;
-    u32 Height = 0;
+	void* ImGuiTextureId = nullptr;
+	u32 Width = 0;
+	u32 Height = 0;
 
-    [[nodiscard]] bool IsValid() const noexcept
-    {
-        return ImGuiTextureId != nullptr;
-    }
+	[[nodiscard]] bool IsValid() const noexcept
+	{
+		return ImGuiTextureId != nullptr;
+	}
 };
 
 enum class EEditorTextureFormat : u8
 {
-    Rgba8Unorm,
-    Rgba8Srgb,
-    Bgra8Unorm,
-    Bgra8Srgb
+	Rgba8Unorm,
+	Rgba8Srgb,
+	Bgra8Unorm,
+	Bgra8Srgb
 };
 
 struct FEditorTextureHandle
 {
-    static constexpr u32 InvalidIndex =
-        std::numeric_limits<u32>::max();
+	static constexpr u32 InvalidIndex =
+		std::numeric_limits<u32>::max();
 
-    u32 Index = InvalidIndex;
-    u32 Generation = 0;
+	u32 Index = InvalidIndex;
+	u32 Generation = 0;
 
-    [[nodiscard]] bool IsValid() const noexcept
-    {
-        return Index != InvalidIndex && Generation != 0;
-    }
+	[[nodiscard]] bool IsValid() const noexcept
+	{
+		return Index != InvalidIndex && Generation != 0;
+	}
 
-    friend bool operator==(const FEditorTextureHandle&,
-        const FEditorTextureHandle&) = default;
+	friend bool operator==(const FEditorTextureHandle&, const FEditorTextureHandle&) = default;
 };
 
 // Pixels are valid only for the duration of CreateTexture/UpdateTexture. The
@@ -63,46 +62,43 @@ struct FEditorTextureHandle
 // increasing for one handle; equal revisions are coalesced.
 struct FEditorTextureUpload
 {
-    u32 Width = 0;
-    u32 Height = 0;
-    u32 RowPitch = 0;
-    EEditorTextureFormat Format = EEditorTextureFormat::Rgba8Unorm;
-    xr_span<const std::byte> Pixels;
-    u64 Revision = 0;
-    xr_string_view DebugName;
+	u32 Width = 0;
+	u32 Height = 0;
+	u32 RowPitch = 0;
+	EEditorTextureFormat Format = EEditorTextureFormat::Rgba8Unorm;
+	xr_span<const std::byte> Pixels;
+	u64 Revision = 0;
+	xr_string_view DebugName;
 };
 
 struct FEditorStaticMeshId
 {
-    u64 Value = 0;
+	u64 Value = 0;
 
-    [[nodiscard]] bool IsValid() const noexcept { return Value != 0; }
-    friend bool operator==(const FEditorStaticMeshId&,
-        const FEditorStaticMeshId&) = default;
+	[[nodiscard]] bool IsValid() const noexcept { return Value != 0; }
+	friend bool operator==(const FEditorStaticMeshId&, const FEditorStaticMeshId&) = default;
 };
 
 struct FEditorSceneObjectId
 {
-    u64 Value = 0;
+	u64 Value = 0;
 
-    [[nodiscard]] bool IsValid() const noexcept { return Value != 0; }
-    friend bool operator==(const FEditorSceneObjectId&,
-        const FEditorSceneObjectId&) = default;
+	[[nodiscard]] bool IsValid() const noexcept { return Value != 0; }
+	friend bool operator==(const FEditorSceneObjectId&, const FEditorSceneObjectId&) = default;
 };
 
 struct FEditorMaterialSlotId
 {
-    u64 Value = 0;
+	u64 Value = 0;
 
-    [[nodiscard]] bool IsValid() const noexcept { return Value != 0; }
-    friend bool operator==(const FEditorMaterialSlotId&,
-        const FEditorMaterialSlotId&) = default;
+	[[nodiscard]] bool IsValid() const noexcept { return Value != 0; }
+	friend bool operator==(const FEditorMaterialSlotId&, const FEditorMaterialSlotId&) = default;
 };
 
 enum class EEditorMaterialSlotFlags : u32
 {
-    None = 0,
-    TwoSided = 1u << 0
+	None = 0,
+	TwoSided = 1u << 0
 };
 
 // Complete material-source description for one visible scene snapshot. The
@@ -112,31 +108,31 @@ enum class EEditorMaterialSlotFlags : u32
 // scene format.
 struct FEditorMaterialSlotSource
 {
-    FEditorMaterialSlotId MaterialSlot;
-    xr_string_view ShaderName;
-    xr_string_view TextureName;
-    xr_string_view SurfaceName;
-    EEditorMaterialSlotFlags Flags = EEditorMaterialSlotFlags::None;
-    // New static-mesh assets provide a master/instance GUID or path directly.
-    // Empty keeps the legacy shaders.xr -> legacy-map.json migration route.
-    xr_string_view MaterialAsset;
+	FEditorMaterialSlotId MaterialSlot;
+	xr_string_view ShaderName;
+	xr_string_view TextureName;
+	xr_string_view SurfaceName;
+	EEditorMaterialSlotFlags Flags = EEditorMaterialSlotFlags::None;
+	// New static-mesh assets provide a master/instance GUID or path directly.
+	// Empty keeps the legacy shaders.xr -> legacy-map.json migration route.
+	xr_string_view MaterialAsset;
 };
 
 struct FEditorStaticMeshVertex
 {
-    xr_array<float, 3> Position = {};
-    xr_array<float, 3> Normal = {0.0f, 1.0f, 0.0f};
-    xr_array<float, 4> Tangent = {1.0f, 0.0f, 0.0f, 1.0f};
-    xr_array<float, 2> TexCoord = {};
-    xr_array<float, 2> TexCoord1 = {};
-    u32 Color = 0xffffffffu;
+	xr_array<float, 3> Position = {};
+	xr_array<float, 3> Normal = {0.0f, 1.0f, 0.0f};
+	xr_array<float, 4> Tangent = {1.0f, 0.0f, 0.0f, 1.0f};
+	xr_array<float, 2> TexCoord = {};
+	xr_array<float, 2> TexCoord1 = {};
+	u32 Color = 0xffffffffu;
 };
 
 struct FEditorStaticMeshSection
 {
-    u32 FirstIndex = 0;
-    u32 IndexCount = 0;
-    FEditorMaterialSlotId MaterialSlot;
+	u32 FirstIndex = 0;
+	u32 IndexCount = 0;
+	FEditorMaterialSlotId MaterialSlot;
 };
 
 // Source arrays are valid only for the duration of SubmitViewportScene. The
@@ -145,18 +141,18 @@ struct FEditorStaticMeshSection
 // vertex, index or section data changes.
 struct FEditorStaticMeshUpload
 {
-    FEditorStaticMeshId MeshId;
-    u64 Revision = 0;
-    xr_span<const FEditorStaticMeshVertex> Vertices;
-    xr_span<const u32> Indices;
-    xr_span<const FEditorStaticMeshSection> Sections;
+	FEditorStaticMeshId MeshId;
+	u64 Revision = 0;
+	xr_span<const FEditorStaticMeshVertex> Vertices;
+	xr_span<const u32> Indices;
+	xr_span<const FEditorStaticMeshSection> Sections;
 };
 
 enum class EEditorSceneInstanceFlags : u32
 {
-    None = 0,
-    Selected = 1u << 0,
-    TwoSided = 1u << 1
+	None = 0,
+	Selected = 1u << 0,
+	TwoSided = 1u << 1
 };
 
 // Per-component replacement of a static-mesh material slot. Both IDs must be
@@ -164,35 +160,33 @@ enum class EEditorSceneInstanceFlags : u32
 // component override without duplicating the geometry asset.
 struct FEditorMaterialSlotOverride
 {
-    FEditorMaterialSlotId BaseMaterialSlot;
-    FEditorMaterialSlotId MaterialSlot;
+	FEditorMaterialSlotId BaseMaterialSlot;
+	FEditorMaterialSlotId MaterialSlot;
 };
 
 struct FEditorStaticMeshInstance
 {
-    FEditorSceneObjectId ObjectId;
-    FEditorStaticMeshId MeshId;
-    xr_array<float, 16> LocalToWorld = {
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f};
-    EEditorSceneInstanceFlags Flags = EEditorSceneInstanceFlags::None;
-    xr_vector<FEditorMaterialSlotOverride> MaterialOverrides;
+	FEditorSceneObjectId ObjectId;
+	FEditorStaticMeshId MeshId;
+	xr_array<float, 16> LocalToWorld = {
+		1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f
+	};
+	EEditorSceneInstanceFlags Flags = EEditorSceneInstanceFlags::None;
+	xr_vector<FEditorMaterialSlotOverride> MaterialOverrides;
 };
 
 enum class EEditorSceneLightType : u8
 {
-    Directional,
-    Point,
-    Spot
+	Directional,
+	Point,
+	Spot
 };
 
 enum class EEditorSceneLightFlags : u32
 {
-    None = 0,
-    Selected = 1u << 0,
-    CastShadows = 1u << 1
+	None = 0,
+	Selected = 1u << 0,
+	CastShadows = 1u << 1
 };
 
 inline constexpr size_t EditorViewportMaxLightCount = 64;
@@ -202,42 +196,43 @@ inline constexpr size_t EditorViewportMaxLightCount = 64;
 // SubmitViewportScene and is copied before the producer returns.
 struct FEditorSceneLight
 {
-    FEditorSceneObjectId ObjectId;
-    EEditorSceneLightType Type = EEditorSceneLightType::Point;
-    xr_array<float, 16> LocalToWorld = {
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f};
-    xr_array<float, 3> Color = {1.0f, 1.0f, 1.0f};
-    float Intensity = 1.0f;
-    float Range = 10.0f;
-    float InnerConeAngleDegrees = 20.0f;
-    float OuterConeAngleDegrees = 45.0f;
-    EEditorSceneLightFlags Flags = EEditorSceneLightFlags::None;
+	FEditorSceneObjectId ObjectId;
+	EEditorSceneLightType Type = EEditorSceneLightType::Point;
+	xr_array<float, 16> LocalToWorld = {
+		1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f
+	};
+	xr_array<float, 3> Color = {1.0f, 1.0f, 1.0f};
+	float Intensity = 1.0f;
+	float Range = 10.0f;
+	float InnerConeAngleDegrees = 20.0f;
+	float OuterConeAngleDegrees = 45.0f;
+	EEditorSceneLightFlags Flags = EEditorSceneLightFlags::None;
 };
 
 [[nodiscard]] inline FEditorMaterialSlotId ResolveEditorMaterialSlot(
-    const FEditorStaticMeshInstance& Instance,
-    const FEditorMaterialSlotId BaseMaterialSlot) noexcept
+	const FEditorStaticMeshInstance& Instance,
+	const FEditorMaterialSlotId BaseMaterialSlot
+) noexcept
 {
-    for (const FEditorMaterialSlotOverride& Override :
-        Instance.MaterialOverrides)
-    {
-        if (Override.BaseMaterialSlot == BaseMaterialSlot)
-            return Override.MaterialSlot;
-    }
-    return BaseMaterialSlot;
+	for (const FEditorMaterialSlotOverride& Override :
+		 Instance.MaterialOverrides)
+	{
+		if (Override.BaseMaterialSlot == BaseMaterialSlot)
+		{
+			return Override.MaterialSlot;
+		}
+	}
+	return BaseMaterialSlot;
 }
 
 struct FEditorViewportCamera
 {
-    xr_array<float, 16> View = {};
-    xr_array<float, 16> Projection = {};
-    xr_array<float, 16> ViewProjection = {};
-    xr_array<float, 3> WorldPosition = {};
-    float NearPlane = 0.1f;
-    float FarPlane = 1000.0f;
+	xr_array<float, 16> View = {};
+	xr_array<float, 16> Projection = {};
+	xr_array<float, 16> ViewProjection = {};
+	xr_array<float, 3> WorldPosition = {};
+	float NearPlane = 0.1f;
+	float FarPlane = 1000.0f;
 };
 
 // Depth-tested world-space primitives used by editor diagnostics and gizmos.
@@ -245,18 +240,18 @@ struct FEditorViewportCamera
 // duration of SubmitViewportScene and must be copied by the backend.
 struct FEditorDebugVertex
 {
-    xr_array<float, 3> Position = {};
-    xr_array<float, 4> Color = {1.0f, 1.0f, 1.0f, 1.0f};
+	xr_array<float, 3> Position = {};
+	xr_array<float, 4> Color = {1.0f, 1.0f, 1.0f, 1.0f};
 };
 
 struct FEditorDebugLine
 {
-    xr_array<FEditorDebugVertex, 2> Vertices;
+	xr_array<FEditorDebugVertex, 2> Vertices;
 };
 
 struct FEditorDebugTriangle
 {
-    xr_array<FEditorDebugVertex, 3> Vertices;
+	xr_array<FEditorDebugVertex, 3> Vertices;
 };
 
 // Screen-space primitives use normalized device coordinates: X/Y are in
@@ -264,18 +259,18 @@ struct FEditorDebugTriangle
 // are rendered after world-space debug draw without depth testing.
 struct FEditorOverlayVertex
 {
-    xr_array<float, 3> Position = {};
-    xr_array<float, 4> Color = {1.0f, 1.0f, 1.0f, 1.0f};
+	xr_array<float, 3> Position = {};
+	xr_array<float, 4> Color = {1.0f, 1.0f, 1.0f, 1.0f};
 };
 
 struct FEditorOverlayLine
 {
-    xr_array<FEditorOverlayVertex, 2> Vertices;
+	xr_array<FEditorOverlayVertex, 2> Vertices;
 };
 
 struct FEditorOverlayTriangle
 {
-    xr_array<FEditorOverlayVertex, 3> Vertices;
+	xr_array<FEditorOverlayVertex, 3> Vertices;
 };
 
 // Text is composited by the editor UI over the renderer-owned viewport image.
@@ -284,10 +279,10 @@ struct FEditorOverlayTriangle
 // produced from temporary buffers during scene traversal.
 struct FEditorOverlayText
 {
-    xr_array<float, 2> Position = {};
-    xr_array<float, 4> Color = {1.0f, 1.0f, 1.0f, 1.0f};
-    xr_array<float, 4> ShadowColor = {0.0f, 0.0f, 0.0f, 1.0f};
-    xr_string Text;
+	xr_array<float, 2> Position = {};
+	xr_array<float, 4> Color = {1.0f, 1.0f, 1.0f, 1.0f};
+	xr_array<float, 4> ShadowColor = {0.0f, 0.0f, 0.0f, 1.0f};
+	xr_string Text;
 };
 
 // StaticMeshes contains the complete set of changed mesh assets for this
@@ -297,64 +292,64 @@ struct FEditorOverlayText
 // and DebugDrawRevision changes whenever any of these lists changes.
 struct FEditorViewportSceneSnapshot
 {
-    FEditorViewportCamera Camera;
-    xr_span<const FEditorMaterialSlotSource> MaterialSlots;
-    xr_span<const FEditorStaticMeshUpload> StaticMeshes;
-    xr_span<const FEditorStaticMeshId> RemovedStaticMeshes;
-    xr_span<const FEditorStaticMeshInstance> Instances;
-    xr_span<const FEditorSceneLight> Lights;
-    xr_span<const FEditorDebugLine> DebugLines;
-    xr_span<const FEditorDebugTriangle> DebugTriangles;
-    xr_span<const FEditorOverlayLine> OverlayLines;
-    xr_span<const FEditorOverlayTriangle> OverlayTriangles;
-    xr_span<const FEditorOverlayText> OverlayText;
-    u64 DebugDrawRevision = 0;
-    u64 Revision = 0;
+	FEditorViewportCamera Camera;
+	xr_span<const FEditorMaterialSlotSource> MaterialSlots;
+	xr_span<const FEditorStaticMeshUpload> StaticMeshes;
+	xr_span<const FEditorStaticMeshId> RemovedStaticMeshes;
+	xr_span<const FEditorStaticMeshInstance> Instances;
+	xr_span<const FEditorSceneLight> Lights;
+	xr_span<const FEditorDebugLine> DebugLines;
+	xr_span<const FEditorDebugTriangle> DebugTriangles;
+	xr_span<const FEditorOverlayLine> OverlayLines;
+	xr_span<const FEditorOverlayTriangle> OverlayTriangles;
+	xr_span<const FEditorOverlayText> OverlayText;
+	u64 DebugDrawRevision = 0;
+	u64 Revision = 0;
 };
 
 struct FEditorViewportPickRequest
 {
-    xr_array<float, 3> RayOrigin = {};
-    xr_array<float, 3> RayDirection = {0.0f, 0.0f, 1.0f};
-    float MaxDistance = std::numeric_limits<float>::max();
-    bool CullBackFaces = false;
+	xr_array<float, 3> RayOrigin = {};
+	xr_array<float, 3> RayDirection = {0.0f, 0.0f, 1.0f};
+	float MaxDistance = std::numeric_limits<float>::max();
+	bool CullBackFaces = false;
 };
 
 struct FEditorViewportPickResult
 {
-    bool Hit = false;
-    FEditorSceneObjectId ObjectId;
-    FEditorStaticMeshId MeshId;
-    FEditorMaterialSlotId MaterialSlot;
-    xr_array<float, 3> WorldPosition = {};
-    xr_array<float, 3> WorldNormal = {};
-    float Distance = std::numeric_limits<float>::max();
-    u32 TriangleIndex = 0;
-    u64 SceneRevision = 0;
+	bool Hit = false;
+	FEditorSceneObjectId ObjectId;
+	FEditorStaticMeshId MeshId;
+	FEditorMaterialSlotId MaterialSlot;
+	xr_array<float, 3> WorldPosition = {};
+	xr_array<float, 3> WorldNormal = {};
+	float Distance = std::numeric_limits<float>::max();
+	u32 TriangleIndex = 0;
+	u64 SceneRevision = 0;
 };
 
 // Диагностический снимок material path одного viewport. Структура не содержит
 // NRI-объектов и используется редактором и deterministic smoke-тестами.
 struct FEditorViewportMaterialStatus
 {
-    bool Ready = false;
-    bool SelectionOverlayReady = false;
-    bool DebugOverlayReady = false;
-    bool ScreenOverlayReady = false;
-    u64 RequestedRevision = 0;
-    u64 AcceptedRevision = 0;
-    u64 PipelineKey = 0;
-    u32 SharedPipelineReferenceCount = 0;
-    u32 DrawCount = 0;
-    u32 SelectionDrawCount = 0;
-    u32 DebugLineCount = 0;
-    u32 DebugTriangleCount = 0;
-    u32 OverlayLineCount = 0;
-    u32 OverlayTriangleCount = 0;
-    u32 OverlayTextCount = 0;
-    u32 LightCount = 0;
-    u32 ReloadCount = 0;
-    xr_string Diagnostic;
+	bool Ready = false;
+	bool SelectionOverlayReady = false;
+	bool DebugOverlayReady = false;
+	bool ScreenOverlayReady = false;
+	u64 RequestedRevision = 0;
+	u64 AcceptedRevision = 0;
+	u64 PipelineKey = 0;
+	u32 SharedPipelineReferenceCount = 0;
+	u32 DrawCount = 0;
+	u32 SelectionDrawCount = 0;
+	u32 DebugLineCount = 0;
+	u32 DebugTriangleCount = 0;
+	u32 OverlayLineCount = 0;
+	u32 OverlayTriangleCount = 0;
+	u32 OverlayTextCount = 0;
+	u32 LightCount = 0;
+	u32 ReloadCount = 0;
+	xr_string Diagnostic;
 };
 
 // Контракт передачи editor scene в выбранный renderer без NRI/D3D/Vulkan типов.
@@ -362,111 +357,109 @@ struct FEditorViewportMaterialStatus
 class IEditorRenderBackend
 {
 public:
-    virtual ~IEditorRenderBackend() = default;
+	virtual ~IEditorRenderBackend() = default;
 
-    [[nodiscard]] virtual EEditorRenderBackendKind GetKind() const noexcept = 0;
-    virtual void CaptureViewport(u32 ViewportId) = 0;
-    virtual void ResizeViewport(u32 ViewportId,
-        u32 Width, u32 Height) = 0;
-    virtual bool SubmitViewportScene(u32 ViewportId,
-        const FEditorViewportSceneSnapshot& Snapshot) = 0;
-    [[nodiscard]] virtual FEditorViewportPickResult PickViewport(
-        u32 ViewportId,
-        const FEditorViewportPickRequest& Request) const = 0;
-    [[nodiscard]] virtual FEditorViewportSurface GetViewportSurface(
-        u32 ViewportId) const = 0;
-    virtual void CopyViewportOverlayText(u32 ViewportId,
-        xr_vector<FEditorOverlayText>& OutText) const = 0;
+	[[nodiscard]] virtual EEditorRenderBackendKind GetKind() const noexcept = 0;
+	virtual void CaptureViewport(u32 ViewportId) = 0;
+	virtual void ResizeViewport(u32 ViewportId, u32 Width, u32 Height) = 0;
+	virtual bool SubmitViewportScene(u32 ViewportId, const FEditorViewportSceneSnapshot& Snapshot) = 0;
+	[[nodiscard]] virtual FEditorViewportPickResult PickViewport(
+		u32 ViewportId,
+		const FEditorViewportPickRequest& Request
+	) const = 0;
+	[[nodiscard]] virtual FEditorViewportSurface GetViewportSurface(
+		u32 ViewportId
+	) const = 0;
+	virtual void CopyViewportOverlayText(u32 ViewportId, xr_vector<FEditorOverlayText>& OutText) const = 0;
 
-    // These calls are producer-thread safe. GPU creation, upload and deferred
-    // deletion are performed by the backend consumer/render thread.
-    [[nodiscard]] virtual FEditorTextureHandle CreateTexture(
-        const FEditorTextureUpload& Upload) = 0;
-    virtual bool UpdateTexture(FEditorTextureHandle Handle,
-        const FEditorTextureUpload& Upload) = 0;
-    virtual void DestroyTexture(FEditorTextureHandle Handle) = 0;
-    [[nodiscard]] virtual FEditorViewportSurface GetTextureSurface(
-        FEditorTextureHandle Handle) const = 0;
-    [[nodiscard]] virtual FRenderStatisticsSnapshot GetRenderStatistics()
-        const noexcept
-    {
-        return {};
-    }
-    [[nodiscard]] virtual bool IsAvailable() const noexcept
-    {
-        return true;
-    }
-    [[nodiscard]] virtual FEditorViewportMaterialStatus
-        GetViewportMaterialStatus(u32 ViewportId,
-            FEditorMaterialSlotId MaterialSlot) const
-    {
-        return {};
-    }
-    [[nodiscard]] virtual xr_string_view GetLastDiagnostic() const noexcept
-    {
-        return {};
-    }
+	// These calls are producer-thread safe. GPU creation, upload and deferred
+	// deletion are performed by the backend consumer/render thread.
+	[[nodiscard]] virtual FEditorTextureHandle CreateTexture(
+		const FEditorTextureUpload& Upload
+	) = 0;
+	virtual bool UpdateTexture(FEditorTextureHandle Handle, const FEditorTextureUpload& Upload) = 0;
+	virtual void DestroyTexture(FEditorTextureHandle Handle) = 0;
+	[[nodiscard]] virtual FEditorViewportSurface GetTextureSurface(
+		FEditorTextureHandle Handle
+	) const = 0;
+	[[nodiscard]] virtual FRenderStatisticsSnapshot GetRenderStatistics()
+		const noexcept
+	{
+		return {};
+	}
+	[[nodiscard]] virtual bool IsAvailable() const noexcept
+	{
+		return true;
+	}
+	[[nodiscard]] virtual FEditorViewportMaterialStatus
+	GetViewportMaterialStatus(u32 ViewportId, FEditorMaterialSlotId MaterialSlot) const
+	{
+		return {};
+	}
+	[[nodiscard]] virtual xr_string_view GetLastDiagnostic() const noexcept
+	{
+		return {};
+	}
 };
 
 enum class EMaterialPreviewPrimitive : u8
 {
-    Sphere,
-    Cube,
-    Plane
+	Sphere,
+	Cube,
+	Plane
 };
 
 enum class EMaterialPreviewState : u8
 {
-    Unavailable,
-    Compiling,
-    Ready,
-    Error
+	Unavailable,
+	Compiling,
+	Ready,
+	Error
 };
 
 struct FMaterialPreviewHandle
 {
-    static constexpr u32 InvalidIndex =
-        std::numeric_limits<u32>::max();
+	static constexpr u32 InvalidIndex =
+		std::numeric_limits<u32>::max();
 
-    u32 Index = InvalidIndex;
-    u32 Generation = 0;
+	u32 Index = InvalidIndex;
+	u32 Generation = 0;
 
-    [[nodiscard]] bool IsValid() const noexcept
-    {
-        return Index != InvalidIndex && Generation != 0;
-    }
+	[[nodiscard]] bool IsValid() const noexcept
+	{
+		return Index != InvalidIndex && Generation != 0;
+	}
 
-    friend bool operator==(const FMaterialPreviewHandle&,
-        const FMaterialPreviewHandle&) = default;
+	friend bool operator==(const FMaterialPreviewHandle&, const FMaterialPreviewHandle&) = default;
 };
 
 // All string views are valid only for the duration of UpdatePreview. A backend
 // must copy any source data that it needs on its compiler or render threads.
 struct FMaterialPreviewSource
 {
-    xr_string_view MaterialAssetId;
-    xr_string_view MaterialJson;
-    xr_string_view MaterialInstanceJson;
-    xr_string_view GeneratedHlsl;
-    xr_string_view Environment;
-    EMaterialPreviewPrimitive Primitive = EMaterialPreviewPrimitive::Sphere;
-    u64 Revision = 0;
+	xr_string_view MaterialAssetId;
+	xr_string_view MaterialJson;
+	xr_string_view MaterialInstanceJson;
+	xr_string_view GeneratedHlsl;
+	xr_string_view Environment;
+	EMaterialPreviewPrimitive Primitive = EMaterialPreviewPrimitive::Sphere;
+	u64 Revision = 0;
 };
 
 // Diagnostic storage remains owned by the backend and is valid until its next
 // preview operation. Renderer resources never cross this interface.
 struct FMaterialPreviewFrame
 {
-    FEditorViewportSurface Surface;
-    EMaterialPreviewState State = EMaterialPreviewState::Unavailable;
-    u64 RequestedRevision = 0;
-    u64 AcceptedRevision = 0;
-    u64 PipelineKey = 0;
-    bool UsingLastGoodPipeline = false;
-    xr_string_view Backend;
-    xr_string_view RenderPass;
-    xr_string_view VertexFactory;
-    xr_string_view Diagnostic;
+	FEditorViewportSurface Surface;
+	EMaterialPreviewState State = EMaterialPreviewState::Unavailable;
+	u64 RequestedRevision = 0;
+	u64 AcceptedRevision = 0;
+	u64 PipelineKey = 0;
+	bool UsingLastGoodPipeline = false;
+	xr_string_view Backend;
+	xr_string_view RenderPass;
+	xr_string_view VertexFactory;
+	xr_string_view Diagnostic;
 };
 
 // Узкий интерфейс material preview; GPU-типы и lifetime ресурсов остаются
@@ -474,16 +467,15 @@ struct FMaterialPreviewFrame
 class IMaterialPreviewRenderer
 {
 public:
-    virtual ~IMaterialPreviewRenderer() = default;
+	virtual ~IMaterialPreviewRenderer() = default;
 
-    [[nodiscard]] virtual bool IsAvailable() const noexcept = 0;
-    [[nodiscard]] virtual FMaterialPreviewHandle CreatePreview() = 0;
-    virtual void DestroyPreview(FMaterialPreviewHandle Handle) = 0;
-    virtual void UpdatePreview(FMaterialPreviewHandle Handle,
-        const FMaterialPreviewSource& Source) = 0;
-    virtual void ResizePreview(FMaterialPreviewHandle Handle,
-        u32 Width, u32 Height) = 0;
-    virtual void RenderPreview(FMaterialPreviewHandle Handle, float DeltaSeconds) = 0;
-    [[nodiscard]] virtual FMaterialPreviewFrame GetPreviewFrame(
-        FMaterialPreviewHandle Handle) const = 0;
+	[[nodiscard]] virtual bool IsAvailable() const noexcept = 0;
+	[[nodiscard]] virtual FMaterialPreviewHandle CreatePreview() = 0;
+	virtual void DestroyPreview(FMaterialPreviewHandle Handle) = 0;
+	virtual void UpdatePreview(FMaterialPreviewHandle Handle, const FMaterialPreviewSource& Source) = 0;
+	virtual void ResizePreview(FMaterialPreviewHandle Handle, u32 Width, u32 Height) = 0;
+	virtual void RenderPreview(FMaterialPreviewHandle Handle, float DeltaSeconds) = 0;
+	[[nodiscard]] virtual FMaterialPreviewFrame GetPreviewFrame(
+		FMaterialPreviewHandle Handle
+	) const = 0;
 };

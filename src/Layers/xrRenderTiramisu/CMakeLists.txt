@@ -28,6 +28,7 @@ target_include_directories(xrRenderTiramisu PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}
 target_compile_definitions(xrRenderTiramisu PRIVATE xrRenderTiramisu_EXPORTS)
 target_compile_definitions(xrRenderTiramisu PRIVATE _USRDLL)
 target_link_libraries(xrRenderTiramisu PRIVATE xrTiramisuMaterialCore)
+target_link_libraries(xrRenderTiramisu PUBLIC RedImage::RedImage)
 
 # Linker list
 target_link_libraries(xrRenderTiramisu PRIVATE xrCore)
@@ -120,16 +121,4 @@ if (IXRAY_BUILD_TESTS)
     add_test(NAME xrTiramisuRenderGraphExecutorTests COMMAND xrTiramisuRenderGraphExecutorTests -rdbg)
     set_tests_properties(xrTiramisuRenderGraphExecutorTests PROPERTIES WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
     set_target_properties(xrTiramisuRenderGraphExecutorTests PROPERTIES FOLDER "Tests")
-endif()
-
-if (WIN32)
-    # RedImage
-    target_link_libraries(xrRenderTiramisu PUBLIC ${REDIMAGE_LIB})
-    target_include_directories(xrRenderTiramisu PUBLIC "${REDIMAGE_INCL}")
-
-    ## Copy binaries
-    add_custom_command(TARGET ${PROJECT_NAME}
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${REDIMAGE_BIN} ${IXRAY_OUTPUT}
-    )
 endif()

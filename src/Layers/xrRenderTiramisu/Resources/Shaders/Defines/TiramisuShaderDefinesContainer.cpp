@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "TiramisuShaderDefinesContainer.h"
 
-TiramisuShaderDefinesContainer::TiramisuShaderDefinesContainer() :
-	CRC32(CRC32_INITIAL)
+TiramisuShaderDefinesContainer::TiramisuShaderDefinesContainer()
+	: CRC32(CRC32_INITIAL)
 {
 	Defines.reserve(16);
 }
@@ -43,13 +43,9 @@ TiramisuShaderDefinesContainer& TiramisuShaderDefinesContainer::operator=(const 
 
 void TiramisuShaderDefinesContainer::Add(shared_str Define)
 {
-	auto Item = std::lower_bound
-	(
-		Defines.begin(), Defines.end(), Define,
-		[](const shared_str& left, const shared_str& right)
-		{
-			return left._get()->dwCRC < right._get()->dwCRC;
-		}
+	auto Item = std::lower_bound(
+		Defines.begin(), Defines.end(), Define, [](const shared_str& left, const shared_str& right)
+		{ return left._get()->dwCRC < right._get()->dwCRC; }
 	);
 
 	Defines.insert(Item, Define);
@@ -71,12 +67,12 @@ bool TiramisuShaderDefinesContainer::operator<(const TiramisuShaderDefinesContai
 	{
 		return Defines.size() < Right.Defines.size();
 	}
-	
+
 	if (CRC32 != Right.CRC32)
 	{
 		return CRC32 < Right.CRC32;
 	}
-	
+
 	for (u32 i = 0; i < Defines.size(); i++)
 	{
 		if (Defines[i] != Right.Defines[i])

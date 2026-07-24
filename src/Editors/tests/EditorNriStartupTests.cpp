@@ -18,24 +18,33 @@ int main()
 	const FEditorNriStartupConfig Default = ParseEditorNriStartupConfig("");
 	if (Default.Enabled || Default.Api != ETiramisuEditorGraphicsApi::Vulkan ||
 		Default.DeterministicTest.Enabled || !Default.IsValid())
+	{
 		return Fail("The NRI editor must remain opt-in and default to Vulkan");
+	}
 
 	const FEditorNriStartupConfig Vulkan =
 		ParseEditorNriStartupConfig("-tiramisu-editor -rdbg");
 	if (!Vulkan.Enabled || Vulkan.Api != ETiramisuEditorGraphicsApi::Vulkan)
+	{
 		return Fail("The Vulkan NRI editor command line was parsed incorrectly");
+	}
 
 	const FEditorNriStartupConfig D3D12 =
 		ParseEditorNriStartupConfig("-dx12\t-tiramisu-editor");
 	if (!D3D12.Enabled || D3D12.Api != ETiramisuEditorGraphicsApi::D3D12)
+	{
 		return Fail("The D3D12 NRI editor command line was parsed incorrectly");
+	}
 
 	if (ParseEditorNriStartupConfig("-tiramisu-editor-disabled").Enabled)
+	{
 		return Fail("A partial command-line token enabled the NRI editor");
+	}
 
 	const FEditorNriStartupConfig Deterministic =
 		ParseEditorNriStartupConfig(
-			"-tiramisu-editor -rdbg -render-deterministic");
+			"-tiramisu-editor -rdbg -render-deterministic"
+		);
 	if (!Deterministic.Enabled || !Deterministic.IsValid() ||
 		!Deterministic.DeterministicTest.Enabled ||
 		!Deterministic.DeterministicTest.RequiredRdbgPresent ||
@@ -49,25 +58,32 @@ int main()
 	}
 
 	if (ParseEditorNriStartupConfig(
-			"-tiramisu-editor -render-deterministic").IsValid())
+			"-tiramisu-editor -render-deterministic"
+		)
+			.IsValid())
 	{
 		return Fail("Deterministic GPU tests must require the exact -rdbg flag");
 	}
 
 	if (ParseEditorNriStartupConfig(
-			"-tiramisu-editor -rdebug -render-deterministic").IsValid())
+			"-tiramisu-editor -rdebug -render-deterministic"
+		)
+			.IsValid())
 	{
 		return Fail("-rdebug must not satisfy the deterministic -rdbg contract");
 	}
 
 	if (ParseEditorNriStartupConfig(
-			"-rdbg -render-deterministic").IsValid())
+			"-rdbg -render-deterministic"
+		)
+			.IsValid())
 	{
 		return Fail("The editor deterministic mode requires -tiramisu-editor");
 	}
 
 	if (ParseEditorNriStartupConfig(
-			"-tiramisu-editor -rdbg -render-deterministic-disabled")
+			"-tiramisu-editor -rdbg -render-deterministic-disabled"
+		)
 			.DeterministicTest.Enabled)
 	{
 		return Fail("A partial deterministic token enabled the test mode");
@@ -94,7 +110,8 @@ int main()
 	}
 
 	const FRenderDebugPolicy ForcedValidation = ResolveRenderDebugPolicy(
-		"-rdbg -renderdoc -renderdoc-validation", true);
+		"-rdbg -renderdoc -renderdoc-validation", true
+	);
 	if (!ForcedValidation.ShaderDebugInfo ||
 		!ForcedValidation.GraphicsApiValidation ||
 		!ForcedValidation.NriValidation ||

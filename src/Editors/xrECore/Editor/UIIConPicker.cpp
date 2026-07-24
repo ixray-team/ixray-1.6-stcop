@@ -5,8 +5,7 @@ UIIconPicker* UIIconPicker::Form = nullptr;
 
 UIIconPicker::UIIconPicker()
 {
-
-	Icons["ed_nodata"] = { EDevice->Resources->_CreateTexture("ed\\ed_nodata"),	true };
+	Icons["ed_nodata"] = {EDevice->Resources->_CreateTexture("ed\\ed_nodata"), true};
 }
 
 UIIconPicker::~UIIconPicker()
@@ -22,15 +21,18 @@ bool UIIconPicker::ShowIcons()
 	FS_FileSetIt it = texture_map.begin();
 	FS_FileSetIt _E = texture_map.end();
 
-	for (; it != _E; ++it) {
+	for (; it != _E; ++it)
+	{
 		float available_width = ImGui::GetContentRegionAvail().x;
 
-		if (available_width < button_size) {
+		if (available_width < button_size)
+		{
 			ImGui::NewLine();
 		}
 		xr_string id = "##ibUIIconPicker";
 		id += it->name;
-		if (ImGui::ImageButton(id.c_str(), UI->GetImGuiTexture(Icons[it->name]), ImVec2(button_size, button_size))) {
+		if (ImGui::ImageButton(id.c_str(), UI->GetImGuiTexture(Icons[it->name]), ImVec2(button_size, button_size)))
+		{
 			ImGui::Text("Button %d pressed", 0);
 			EPrefs->custom_icons[file_path.c_str()] = it->name;
 			return true;
@@ -58,9 +60,13 @@ void UIIconPicker::Draw()
 			}
 
 			if (!IsDocked)
+			{
 				IsDocked = ImGui::IsWindowDocked();
+			}
 			if (!IsFocused)
+			{
 				IsFocused = ImGui::IsWindowFocused();
+			}
 		}
 		ImGui::EndChild();
 
@@ -68,8 +74,8 @@ void UIIconPicker::Draw()
 		{
 			HideLib();
 		}
-		
-		if (EPrefs->custom_icons.contains(file_path.c_str())) 
+
+		if (EPrefs->custom_icons.contains(file_path.c_str()))
 		{
 			ImGui::SameLine();
 			if (ImGui::Button("Default Icon"))
@@ -108,7 +114,8 @@ void UIIconPicker::Update()
 
 void UIIconPicker::Show(const xr_string file_path)
 {
-	if (Form == nullptr) {
+	if (Form == nullptr)
+	{
 		Form = new UIIconPicker();
 	}
 	Form->file_path = file_path;
@@ -134,7 +141,9 @@ void UIIconPicker::InitItemList()
 void UIIconPicker::InitPreviewTexture(const xr_string& Tag, const string_path& Path)
 {
 	if (Icons.contains(Tag))
+	{
 		return;
+	}
 
 	xr_string NewPath = Path + Tag;
 	Icons[Tag] = EDevice->Resources->_CreateTexture(NewPath.c_str());

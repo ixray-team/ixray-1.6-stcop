@@ -17,7 +17,7 @@ public:
 	void AddStatic(CDS0_RenderVisual* Visual);
 	void AddStaticLeafs(CDS0_RenderVisual* Visual);
 
-	
+
 	TRenderList RenderList;
 
 private:

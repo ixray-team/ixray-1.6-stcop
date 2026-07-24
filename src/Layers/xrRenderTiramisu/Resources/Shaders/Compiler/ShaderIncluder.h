@@ -2,13 +2,14 @@
 
 #include "TiramisuRenderTypes.h"
 // DXC include handler, разрешающий shader includes через engine filesystem.
-struct DXCInluder :public IDxcIncludeHandler
+struct DXCInluder : public IDxcIncludeHandler
 {
-	DXCInluder(IDxcLibrary*pLibrary)
+	DXCInluder(IDxcLibrary* pLibrary)
 	{
 		DxcLibrary = pLibrary;
 	}
-	HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** ppvObject) override {
+	HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** ppvObject) override
+	{
 		return E_FAIL;
 	}
 	virtual ULONG STDMETHODCALLTYPE AddRef(void)
@@ -23,7 +24,10 @@ struct DXCInluder :public IDxcIncludeHandler
 	IC bool ReadFile(const char* Name, xr_vector<char>& Data)
 	{
 		FILE* File = fopen(Name, "rb");
-		if (!File)return false;
+		if (!File)
+		{
+			return false;
+		}
 		fseek(File, 0, SEEK_END);
 		size_t Size = _ftelli64(File);
 		fseek(File, 0, SEEK_SET);
@@ -36,20 +40,19 @@ struct DXCInluder :public IDxcIncludeHandler
 	xr_vector<IReader*> Readers;
 	xr_vector<IDxcBlobEncoding*> BlobEncodings;
 
-	DXCInluder()  {}
+	DXCInluder() {}
 	~DXCInluder()
 	{
-		for (IReader* i : Readers) 
-		{ 
-			FS.r_close(i); 
+		for (IReader* i : Readers)
+		{
+			FS.r_close(i);
 		}
 	}
 
 	virtual HRESULT STDMETHODCALLTYPE LoadSource(LPCWSTR pFilename, IDxcBlob** ppIncludeSource)
 	{
-
 		string_path Name;
-		if (wcsncmp(pFilename,  L".---",4)==0)
+		if (wcsncmp(pFilename, L".---", 4) == 0)
 		{
 			pFilename += 4;
 		}
@@ -71,7 +74,10 @@ struct DXCInluder :public IDxcIncludeHandler
 		}
 		for (size_t i = 0; Name[i]; i++)
 		{
-			if (Name[i] == '/')Name[i] = '\\';
+			if (Name[i] == '/')
+			{
+				Name[i] = '\\';
+			}
 		}
 		xr_strlwr(Name);
 		string_path FileName;
@@ -81,7 +87,7 @@ struct DXCInluder :public IDxcIncludeHandler
 		auto TryGameShader = [&FileName](const char* RelativeName)
 		{
 			return FS.exist(FileName, "$game_shaders$", RelativeName) !=
-				nullptr;
+				   nullptr;
 		};
 
 		// DXC может передать include как исходное имя либо как путь,

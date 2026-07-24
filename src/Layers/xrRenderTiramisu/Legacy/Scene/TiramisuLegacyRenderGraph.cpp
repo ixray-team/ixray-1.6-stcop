@@ -110,7 +110,7 @@ void TiramisuLegacyRenderGraph::AddStatic(CDS0_RenderVisual* Visual)
 	{
 		return;
 	}
-	
+
 	CDS0_FHierrarhyVisual* HierarchyVisual = nullptr;
 	if (Visual->Type == MT_HIERRARHY)
 	{
@@ -146,13 +146,13 @@ void TiramisuLegacyRenderGraph::AddStaticLeafs(CDS0_RenderVisual* Visual)
 	{
 		return;
 	}
-	
+
 	CDS0_FHierrarhyVisual* HierarchyVisual = nullptr;
 	if (Visual->Type == MT_HIERRARHY)
 	{
 		HierarchyVisual = static_cast<CDS0_FHierrarhyVisual*>(Visual);
 	}
-	
+
 	if (!HierarchyVisual)
 	{
 		InsertStatic(Visual);
@@ -175,16 +175,14 @@ void TiramisuLegacyRenderGraph::InsertStatic(CDS0_RenderVisual* Visual)
 	}
 
 	const auto FoundVisual = std::find_if(RenderList.begin(), RenderList.end(), [Visual](const FLegacyVisualRenderItem& Item)
-	{
-		return Item.Owner == Visual;
-	});
+										  { return Item.Owner == Visual; });
 
 	if (FoundVisual != RenderList.end())
 	{
 		return;
 	}
 	FLegacyVisualRenderItem RenderItem;
-	if (Visual->MakeRenderItem(CalculateLod(Ssa),RenderItem))
+	if (Visual->MakeRenderItem(CalculateLod(Ssa), RenderItem))
 	{
 		RenderList.emplace_back(RenderItem);
 	}

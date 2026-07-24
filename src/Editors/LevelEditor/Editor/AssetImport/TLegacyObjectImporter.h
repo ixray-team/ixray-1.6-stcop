@@ -26,8 +26,10 @@ struct FLegacyObjectImportResult
 [[nodiscard]] FLegacyObjectImportResult ImportLegacyObjectAsset(
 	const std::filesystem::path& SourcePath,
 	const std::filesystem::path& MaterialRoot,
-	const std::filesystem::path& StaticMeshRoot);
+	const std::filesystem::path& StaticMeshRoot
+);
 
 [[nodiscard]] std::filesystem::path MakeImportedStaticMeshPath(
 	const std::filesystem::path& SourcePath,
-	const std::filesystem::path& StaticMeshRoot);
+	const std::filesystem::path& StaticMeshRoot
+);

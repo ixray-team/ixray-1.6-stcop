@@ -35,14 +35,12 @@ void UIDOShuffle::Draw()
 	{
 		ImVec2 StartPos = ImGui::GetCursorPos();
 
-		ImGui::Image(m_MaskTextureEditor.IsValid()
-			? UI->GetImGuiTexture(m_MaskTextureEditor)
-			: UI->GetImGuiTexture(m_TextureNull), ImVec2(256, 256));
+		ImGui::Image(m_MaskTextureEditor.IsValid() ? UI->GetImGuiTexture(m_MaskTextureEditor) : UI->GetImGuiTexture(m_TextureNull), ImVec2(256, 256));
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 		{
 			ImVec2 ClickPos = ImGui::GetMousePos();
 			ClickPos -= ImGui::GetWindowPos();
-			//ClickPos -= ImGui::GetStyle().ItemSpacing;
+			// ClickPos -= ImGui::GetStyle().ItemSpacing;
 			ClickPos -= StartPos;
 
 			size_t PixelIndex = ClickPos.y * 256 * 4 + (ClickPos.x * 4);
@@ -60,7 +58,11 @@ void UIDOShuffle::Draw()
 
 		int selected = m_list_selected;
 		ImGui::SetNextItemWidth(-1);
-		if (ImGui::ListBox("##list", &selected, [](void* data, int ind, const char** out)->bool {auto item = reinterpret_cast<xr_vector<xr_string>*>(data)->at(ind).c_str();; *out = item; return true; }, reinterpret_cast<void*>(&m_list), m_list.size(), 14))
+		if (ImGui::ListBox("##list", &selected, [](void* data, int ind, const char** out) -> bool
+						   {auto item = reinterpret_cast<xr_vector<xr_string>*>(data)->at(ind).c_str();; *out = item; return true; },
+						   reinterpret_cast<void*>(&m_list),
+						   m_list.size(),
+						   14))
 		{
 			if (m_list_selected != selected)
 			{
@@ -78,18 +80,21 @@ void UIDOShuffle::Draw()
 			m_RealTexture.destroy();
 			m_RealTexture = m_Texture;
 		}
-		ImGui::Image(m_ObjectTextureEditor.IsValid()
-			? UI->GetImGuiTexture(m_ObjectTextureEditor)
-			: UI->GetImGuiTexture(m_TextureNull), ImVec2(256, 256));
+		ImGui::Image(m_ObjectTextureEditor.IsValid() ? UI->GetImGuiTexture(m_ObjectTextureEditor) : UI->GetImGuiTexture(m_TextureNull), ImVec2(256, 256));
 
 		{
-			if (ImGui::Button("+", ImVec2(0, ImGui::GetFrameHeight()))) { UIChooseForm::SelectItem(smObject, 8); m_ChooseObject = true; }; ImGui::SameLine();
-			if (ImGui::Button("-", ImVec2(0, ImGui::GetFrameHeight()))) 
+			if (ImGui::Button("+", ImVec2(0, ImGui::GetFrameHeight())))
+			{
+				UIChooseForm::SelectItem(smObject, 8);
+				m_ChooseObject = true;
+			};
+			ImGui::SameLine();
+			if (ImGui::Button("-", ImVec2(0, ImGui::GetFrameHeight())))
 			{
 				if (m_list_selected >= 0 && m_list.size() > m_list_selected)
 				{
 					DM->RemoveDO(m_list[m_list_selected].c_str());
-					for (UIDOOneColor& one_color : m_color_indices) 
+					for (UIDOOneColor& one_color : m_color_indices)
 					{
 						one_color.RemoveObject(m_list[m_list_selected]);
 					}
@@ -113,7 +118,8 @@ void UIDOShuffle::Draw()
 			if (ImGui::Button("Load..", ImVec2(0, ImGui::GetFrameHeight())))
 			{
 				xr_string fname;
-				if (EFS.GetOpenName(_detail_objects_, fname)) {
+				if (EFS.GetOpenName(_detail_objects_, fname))
+				{
 					LoadFromStream(fname);
 				}
 			}
@@ -121,28 +127,29 @@ void UIDOShuffle::Draw()
 			if (ImGui::Button("Save..", ImVec2(0, ImGui::GetFrameHeight())))
 			{
 				xr_string fname;
-				if (EFS.GetSaveName(_detail_objects_, fname)) 
+				if (EFS.GetSaveName(_detail_objects_, fname))
 				{
 					ApplyChanges(false);
 					DM->ExportColorIndices(fname.c_str());
 				}
-				
 			}
 		}
 		{
-			ImGui::BeginChild("Props",  ImVec2(0, 0), false);
+			ImGui::BeginChild("Props", ImVec2(0, 0), false);
 			m_Props->Draw();
 			ImGui::EndChild();
 		}
-		
 	}
 	ImGui::EndChild();
 	ImGui::NextColumn();
 	ImGui::BeginChild("Right");
 	{
-		if (ImGui::Button("X")) { ClearIndexForms(); }
+		if (ImGui::Button("X"))
+		{
+			ClearIndexForms();
+		}
 		ImGui::SameLine();
-		if (ImGui::Button("Append Color Index", ImVec2(-1,0))) 
+		if (ImGui::Button("Append Color Index", ImVec2(-1, 0)))
 		{
 			UIDOOneColor& Color = m_color_indices.emplace_back();
 			Color.DOShuffle = this;
@@ -152,7 +159,7 @@ void UIDOShuffle::Draw()
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 		{
 			int index = 0;
-			
+
 			xr_vector<size_t> NeedToClear;
 			for (UIDOOneColor& OneColor : m_color_indices)
 			{
@@ -162,12 +169,10 @@ void UIDOShuffle::Draw()
 				index++;
 			}
 
-			m_color_indices.erase
-			(
-				std::remove_if
-				(
-					m_color_indices.begin(), m_color_indices.end(),
-					[](const UIDOOneColor& OneColor) { return OneColor.IsClosed(); }
+			m_color_indices.erase(
+				std::remove_if(
+					m_color_indices.begin(), m_color_indices.end(), [](const UIDOOneColor& OneColor)
+					{ return OneColor.IsClosed(); }
 				),
 				m_color_indices.end()
 			);
@@ -180,13 +185,13 @@ void UIDOShuffle::Draw()
 	{
 		bool ok = false;
 		xr_vector<xr_string> list;
-		if (UIChooseForm::GetResult(ok,list))
+		if (UIChooseForm::GetResult(ok, list))
 		{
 			if (ok)
 			{
 				for (xr_string& l : list)
 				{
-					if (!FindItem(l.c_str())) 
+					if (!FindItem(l.c_str()))
 					{
 						DM->AppendDO(l.c_str());
 						m_list_selected = m_list.size();
@@ -220,13 +225,12 @@ void UIDOShuffle::Update()
 	if (Form && !Form->IsClosed())
 	{
 		ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_::ImGuiCond_FirstUseEver);
-		if (ImGui::BeginPopupModal("Detail Object List", &Form->bOpen,0,true))
+		if (ImGui::BeginPopupModal("Detail Object List", &Form->bOpen, 0, true))
 		{
 			Form->Draw();
 			ImGui::EndPopup();
 		}
 	}
-
 }
 
 bool UIDOShuffle::GetResult()
@@ -275,10 +279,7 @@ void UIDOShuffle::FillData(bool ReloadTex)
 
 			if (!Pixels.empty())
 			{
-				(void)UI->UpdateImGuiTexture(m_MaskTextureEditor,
-					Pixels.data(), 256, 256, 256 * 4,
-					++m_MaskTextureRevision, "detail-object-mask",
-					EEditorTextureFormat::Bgra8Unorm);
+				(void)UI->UpdateImGuiTexture(m_MaskTextureEditor, Pixels.data(), 256, 256, 256 * 4, ++m_MaskTextureRevision, "detail-object-mask", EEditorTextureFormat::Bgra8Unorm);
 				m_MaskTexture = new CTexture();
 
 				RHITextureDesc textureDesc = {};
@@ -306,28 +307,30 @@ void UIDOShuffle::FillData(bool ReloadTex)
 	}
 
 	for (CDetailManager::DetailIt d_it = DM->objects.begin(); d_it != DM->objects.end(); d_it++)
+	{
 		m_list.push_back(((EDetail*)(*d_it))->GetName());
+	}
 	ClearIndexForms();
 	ColorIndexPairIt S = DM->m_ColorIndices.begin();
 	ColorIndexPairIt E = DM->m_ColorIndices.end();
 	ColorIndexPairIt it = S;
-	for (; it != E; it++) {
-		
+	for (; it != E; it++)
+	{
 		UIDOOneColor& OneColor = m_color_indices.emplace_back();
 		OneColor.DOShuffle = this;
-		OneColor.Color[0] = color_get_R(it->first)/255.f;
+		OneColor.Color[0] = color_get_R(it->first) / 255.f;
 		OneColor.Color[1] = color_get_G(it->first) / 255.f;
 		OneColor.Color[2] = color_get_B(it->first) / 255.f;
 
-		for (DOIt do_it = it->second.begin(); do_it != it->second.end(); do_it++) 
+		for (DOIt do_it = it->second.begin(); do_it != it->second.end(); do_it++)
 		{
 			EDetail* dd = 0;
 			for (CDetailManager::DetailIt d_it = DM->objects.begin(); d_it != DM->objects.end(); d_it++)
 			{
-				if (0 == strcmp(((EDetail*)(*d_it))->GetName(), (*do_it)->GetName())) 
+				if (0 == strcmp(((EDetail*)(*d_it))->GetName(), (*do_it)->GetName()))
 				{
 					dd = (EDetail*)*d_it;
-					break; 
+					break;
 				}
 			}
 
@@ -351,15 +354,12 @@ void UIDOShuffle::OnItemFocused(const char* name)
 	m_Thm = ImageLib.CreateThumbnail(name, EImageThumbnail::ETObject);
 	m_Texture.destroy();
 	UI->DestroyImGuiTexture(m_ObjectTextureEditor);
-	
+
 	if (m_Thm)
 	{
 		if (m_Thm->Valid())
 		{
-			(void)UI->UpdateImGuiTexture(m_ObjectTextureEditor,
-				m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT,
-				THUMB_WIDTH * 4, ++m_ObjectTextureRevision,
-				"detail-object-thumbnail", EEditorTextureFormat::Bgra8Unorm, true);
+			(void)UI->UpdateImGuiTexture(m_ObjectTextureEditor, m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT, THUMB_WIDTH * 4, ++m_ObjectTextureRevision, "detail-object-thumbnail", EEditorTextureFormat::Bgra8Unorm, true);
 		}
 		IRHISurface* Surface = nullptr;
 		m_Thm->Update(Surface);
@@ -382,11 +382,11 @@ void UIDOShuffle::OnItemFocused(const char* name)
 
 	xr_delete(m_Thm);
 
-	EDetail *dd= DM->FindDOByName(name);
+	EDetail* dd = DM->FindDOByName(name);
 	VERIFY(dd);
 	PropItemVec items;
 
-	//PHelper().CreateCaption(items, "Ref Name", dd->GetName());
+	// PHelper().CreateCaption(items, "Ref Name", dd->GetName());
 	PHelper().CreateFloat(items, "Density", &dd->m_fDensityFactor, 0.1f, 1.0f);
 	PHelper().CreateFloat(items, "Min Scale", &dd->m_fMinScale, 0.1f, 100.0f);
 	PHelper().CreateFloat(items, "Max Scale", &dd->m_fMaxScale, 0.1f, 100.f);
@@ -399,7 +399,10 @@ bool UIDOShuffle::FindItem(const char* name)
 {
 	for (xr_string& nm : m_list)
 	{
-		if (nm == name)return true;
+		if (nm == name)
+		{
+			return true;
+		}
 	}
 	return false;
 }
@@ -409,7 +412,7 @@ void UIDOShuffle::ClearIndexForms()
 	m_color_indices.clear();
 }
 
-bool UIDOShuffle::ApplyChanges(bool msg )
+bool UIDOShuffle::ApplyChanges(bool msg)
 {
 	DM->RemoveColorIndices();
 	for (UIDOOneColor& OneColor : m_color_indices)
@@ -424,7 +427,7 @@ bool UIDOShuffle::ApplyChanges(bool msg )
 		}
 	}
 
-	if (/*bNeedUpdate||*/bModif && msg)
+	if (/*bNeedUpdate||*/ bModif && msg)
 	{
 		ELog.DlgMsg(mtInformation, "Object or object list changed. Reinitialize needed!");
 		DM->InvalidateSlots();
@@ -432,4 +435,3 @@ bool UIDOShuffle::ApplyChanges(bool msg )
 	}
 	return false;
 }
-

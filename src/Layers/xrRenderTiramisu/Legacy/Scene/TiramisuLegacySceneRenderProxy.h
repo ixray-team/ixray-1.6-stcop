@@ -5,14 +5,14 @@
 
 
 // Scene proxy, преобразующий legacy render items в mesh batches Tiramisu.
-class TiramisuLegacySceneRenderProxy:public TiramisuPrimitiveSceneProxy
+class TiramisuLegacySceneRenderProxy : public TiramisuPrimitiveSceneProxy
 {
 public:
-                                TiramisuLegacySceneRenderProxy   ();
-                                ~TiramisuLegacySceneRenderProxy  ();
-    virtual bool                GetMeshBatch                (u32 BatchIndex, FMeshBatch& OutMeshBatch) override;
-    virtual u32                 GetNumMeshBatches           () const override;
-    
-    TiramisuStaticMeshRenderData* RenderData = nullptr;
-    xr_vector<FMeshBatch> MeshBatches;
+	TiramisuLegacySceneRenderProxy();
+	~TiramisuLegacySceneRenderProxy();
+	virtual bool GetMeshBatch(u32 BatchIndex, FMeshBatch& OutMeshBatch) override;
+	virtual u32 GetNumMeshBatches() const override;
+
+	TiramisuStaticMeshRenderData* RenderData = nullptr;
+	xr_vector<FMeshBatch> MeshBatches;
 };

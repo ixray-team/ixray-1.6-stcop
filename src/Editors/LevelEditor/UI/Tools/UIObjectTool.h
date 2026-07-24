@@ -22,7 +22,7 @@ public:
 
 private:
 	void RefreshListInternal();
-	void OnItemFocused(ListItem*item);
+	void OnItemFocused(ListItem* item);
 	void SelByRefObject(bool flag);
 	void MultiSelByRefObject(bool flag);
 	void ClearSurface(bool selected);

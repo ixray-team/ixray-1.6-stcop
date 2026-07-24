@@ -30,7 +30,7 @@ private:
 		Channel_B = 1 << 2,
 		Channel_A = 1 << 3
 	};
-	
+
 	xr_string CurrentFileName;
 
 	float Zoom = 1.f;

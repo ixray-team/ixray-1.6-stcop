@@ -58,7 +58,9 @@ void UIObjectTool::HandleDragDrop()
 	}
 
 	if (!ImGui::BeginDragDropTarget())
+	{
 		return;
+	}
 
 	auto ImData = ImGui::AcceptDragDropPayload("TEST#rai");
 
@@ -83,25 +85,25 @@ void UIObjectTool::HandleDragDrop()
 
 void UIObjectTool::Draw()
 {
-	const float ButtonHeight		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
-	const float	ItemSpacingX		= ImGui::GetStyle().ItemSpacing.x;
-	const float TableRowHeight		= XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
+	const float ButtonHeight = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+	const float ItemSpacingX = ImGui::GetStyle().ItemSpacing.x;
+	const float TableRowHeight = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::TableRowHeight);
 
-	if (XRay::ImGui::BeginDarkChild("ObjectToolsBorder", { 0, 0 }, ImGuiChildFlags_AutoResizeY))
+	if (XRay::ImGui::BeginDarkChild("ObjectToolsBorder", {0, 0}, ImGuiChildFlags_AutoResizeY))
 	{
-		if (XRay::ImGui::Button("Multiple Append in World Center", { -0.01, 0 }))
+		if (XRay::ImGui::Button("Multiple Append in World Center", {-0.01, 0}))
 		{
 			m_MultiAppend = true;
 			UIChooseForm::SelectItem(smObject, 512, 0);
 		}
 		XRay::ImGui::Separator();
 
-		if (XRay::ImGui::ToggleButton("Random Append", m_RandomAppend, { -(ButtonHeight + ItemSpacingX) * 2, ButtonHeight }))
+		if (XRay::ImGui::ToggleButton("Random Append", m_RandomAppend, {-(ButtonHeight + ItemSpacingX) * 2, ButtonHeight}))
 		{
 			ParentTools->ActivateAppendRandom(m_RandomAppend);
 		}
 		ImGui::SameLine(0, ItemSpacingX);
-		if (XRay::ImGui::Button(ICON_FA_FILE_IMPORT, { ButtonHeight, ButtonHeight }))
+		if (XRay::ImGui::Button(ICON_FA_FILE_IMPORT, {ButtonHeight, ButtonHeight}))
 		{
 			xr_string Outfile;
 
@@ -111,7 +113,7 @@ void UIObjectTool::Draw()
 			}
 		}
 		ImGui::SameLine(0, ItemSpacingX);
-		if (XRay::ImGui::Button(ICON_FA_FLOPPY_DISK, { ButtonHeight, ButtonHeight }))
+		if (XRay::ImGui::Button(ICON_FA_FLOPPY_DISK, {ButtonHeight, ButtonHeight}))
 		{
 			xr_string Outfile;
 
@@ -153,7 +155,7 @@ void UIObjectTool::Draw()
 
 			PropsRandomAppend.Draw();
 
-			if (XRay::ImGui::Button("Random Append in Selected Object", { -0.01, 0 }))
+			if (XRay::ImGui::Button("Random Append in Selected Object", {-0.01, 0}))
 			{
 				GenerateGarbage();
 			}
@@ -168,9 +170,39 @@ void UIObjectTool::Draw()
 		{
 			if (XRay::ImGui::BeginTable("##objecttools_refselect", 4, ImGuiTableFlags_BordersInner | ImGuiTableFlags_RowBg))
 			{
-												ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);					ImGui::TableSetupColumn("-", ImGuiTableColumnFlags_WidthFixed);													ImGui::TableSetupColumn("--", ImGuiTableColumnFlags_WidthFixed);												ImGui::TableSetupColumn("--", ImGuiTableColumnFlags_WidthStretch);
-				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn();	XRay::ImGui::TextFramed("Select by Current: ");		XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button(" +", { GUIManager->ScaleByDpi(24.f), 0})) { SelByRefObject(true); }		XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button(" -", { GUIManager->ScaleByDpi(24.f), 0})) { SelByRefObject(false); }
-				XRay::ImGui::TableNextRow();	XRay::ImGui::TableNextColumn();	XRay::ImGui::TextFramed("Select by Selected: ");	XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button("=%", { GUIManager->ScaleByDpi(24.f), 0})) { MultiSelByRefObject(true); }	XRay::ImGui::TableNextColumn();		if (XRay::ImGui::Button("+%", { GUIManager->ScaleByDpi(24.f), 0})) { MultiSelByRefObject(false); }	XRay::ImGui::TableNextColumn();		ImGui::SetNextItemWidth(-TableRowHeight); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
+				ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
+				ImGui::TableSetupColumn("-", ImGuiTableColumnFlags_WidthFixed);
+				ImGui::TableSetupColumn("--", ImGuiTableColumnFlags_WidthFixed);
+				ImGui::TableSetupColumn("--", ImGuiTableColumnFlags_WidthStretch);
+				XRay::ImGui::TableNextRow();
+				XRay::ImGui::TableNextColumn();
+				XRay::ImGui::TextFramed("Select by Current: ");
+				XRay::ImGui::TableNextColumn();
+				if (XRay::ImGui::Button(" +", {GUIManager->ScaleByDpi(24.f), 0}))
+				{
+					SelByRefObject(true);
+				}
+				XRay::ImGui::TableNextColumn();
+				if (XRay::ImGui::Button(" -", {GUIManager->ScaleByDpi(24.f), 0}))
+				{
+					SelByRefObject(false);
+				}
+				XRay::ImGui::TableNextRow();
+				XRay::ImGui::TableNextColumn();
+				XRay::ImGui::TextFramed("Select by Selected: ");
+				XRay::ImGui::TableNextColumn();
+				if (XRay::ImGui::Button("=%", {GUIManager->ScaleByDpi(24.f), 0}))
+				{
+					MultiSelByRefObject(true);
+				}
+				XRay::ImGui::TableNextColumn();
+				if (XRay::ImGui::Button("+%", {GUIManager->ScaleByDpi(24.f), 0}))
+				{
+					MultiSelByRefObject(false);
+				}
+				XRay::ImGui::TableNextColumn();
+				ImGui::SetNextItemWidth(-TableRowHeight);
+				ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
 				XRay::ImGui::EndTable();
 			}
 
@@ -182,13 +214,13 @@ void UIObjectTool::Draw()
 		{
 			float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
 
-			if (XRay::ImGui::Button("Clear Select", { SizeX, 0 }))
+			if (XRay::ImGui::Button("Clear Select", {SizeX, 0}))
 			{
 				Scene->UndoSave();
 				ClearSurface(true);
 			}
 			ImGui::SameLine(0, ItemSpacingX);
-			if (XRay::ImGui::Button("Clear Level", { SizeX, 0 }))
+			if (XRay::ImGui::Button("Clear Level", {SizeX, 0}))
 			{
 				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to reset surface in level?") == mrYes)
 				{
@@ -204,13 +236,13 @@ void UIObjectTool::Draw()
 		{
 			float SizeX = (ImGui::GetContentRegionAvail().x - ItemSpacingX) / 2;
 
-			if (XRay::ImGui::Button("Select", { SizeX, 0 }))
+			if (XRay::ImGui::Button("Select", {SizeX, 0}))
 			{
 				UIChooseForm::SelectItem(smObject, 1, m_Current, 0, 0, 0, 0, 0);
 				m_Selection = true;
 			}
 			ImGui::SameLine(0, ItemSpacingX);
-			if (XRay::ImGui::Button("Refresh", { SizeX, 0 }))
+			if (XRay::ImGui::Button("Refresh", {SizeX, 0}))
 			{
 				RefreshList();
 			}
@@ -235,7 +267,9 @@ void UIObjectTool::GenerateGarbage()
 	for (CCustomObject* Object : ObjectList)
 	{
 		if (!Object->Selected())
+		{
 			continue;
+		}
 
 		Generator.Generate((CSceneObject*)Object);
 		Placed = true;
@@ -249,16 +283,16 @@ void UIObjectTool::GenerateGarbage()
 
 void UIObjectTool::DrawRandomAppend()
 {
-	if (ImGui::BeginChild("##objecttools_randomappend", { 0, 0 }, ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysAutoResize))
+	if (ImGui::BeginChild("##objecttools_randomappend", {0, 0}, ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysAutoResize))
 	{
 		if (!RAIFile.empty())
 		{
-			ImVec4 TextColor = { 1.f, 1.f, 0.7f, 1.f };
+			ImVec4 TextColor = {1.f, 1.f, 0.7f, 1.f};
 			ImGui::TextColored(TextColor, RAIFile.data());
 		}
 
 		float ButtonSize = ImGui::GetWindowSize().x / 2 - 10;
-		if (ImGui::Button("Multiple Append", { ButtonSize , 0 }))
+		if (ImGui::Button("Multiple Append", {ButtonSize, 0}))
 		{
 			UIChooseForm::SelectItem(smObject, 512, 0);
 			m_MultiAppend = true;
@@ -266,7 +300,7 @@ void UIObjectTool::DrawRandomAppend()
 
 		ImGui::SameLine();
 		ImGui::BeginDisabled(ParentTools->m_AppendRandomObjects.empty());
-		if (ImGui::Button("Generate Garbage", { ButtonSize , 0 }))
+		if (ImGui::Button("Generate Garbage", {ButtonSize, 0}))
 		{
 			static EGarbageGenerator Generator;
 			ESceneObjectTool* ObjectToolPtr = static_cast<ESceneObjectTool*>(Scene->GetTool(OBJCLASS_SCENEOBJECT));
@@ -277,7 +311,9 @@ void UIObjectTool::DrawRandomAppend()
 			for (CCustomObject* Object : ObjectList)
 			{
 				if (!Object->Selected())
+				{
 					continue;
+				}
 
 				Generator.Generate((CSceneObject*)Object);
 				Placed = true;
@@ -395,26 +431,28 @@ void UIObjectTool::LoadFromFile(xr_string& Outfile)
 void UIObjectTool::DrawObjectsList()
 {
 	if (!bDrawList)
+	{
 		return;
+	}
 
 	if (ImGui::Begin("Edit Group Items", &bDrawList))
 	{
 		if (!RefreshInProgress)
 		{
-			//if (ImGui::BeginChild("Props"))
+			// if (ImGui::BeginChild("Props"))
 			{
 				const ImTextureID PreviewTexture = m_RealTextureEditor.IsValid()
-					? UI->GetImGuiTexture(m_RealTextureEditor)
-					: UI->GetImGuiTexture(m_TextureNull);
+													   ? UI->GetImGuiTexture(m_RealTextureEditor)
+													   : UI->GetImGuiTexture(m_TextureNull);
 				ImGui::Image(PreviewTexture, ImVec2(128, 128));
 				ImGui::SameLine();
-				ImGui::BeginChild("##EGIProps", { 0, 128 });
+				ImGui::BeginChild("##EGIProps", {0, 128});
 				m_Props->Draw();
 				ImGui::EndChild();
 
 				ImGui::Separator();
 			}
-			//ImGui::EndChild();
+			// ImGui::EndChild();
 			if (ImGui::BeginChild("##objectslist"))
 			{
 				m_ObjectList->Draw();
@@ -422,7 +460,9 @@ void UIObjectTool::DrawObjectsList()
 			ImGui::EndChild();
 		}
 		else
+		{
 			ImGui::Text("Loading...");
+		}
 	}
 	ImGui::End();
 }
@@ -430,12 +470,14 @@ void UIObjectTool::DrawObjectsList()
 void UIObjectTool::RefreshList()
 {
 	if (RefreshInProgress)
+	{
 		return;
+	}
 
-	//string_path ObjectPath = {};
+	// string_path ObjectPath = {};
 
-	//FS.update_path(ObjectPath, _objects_, "");
-	//FS.rescan_path(ObjectPath, true);
+	// FS.update_path(ObjectPath, _objects_, "");
+	// FS.rescan_path(ObjectPath, true);
 
 	std::thread refreshThread(&UIObjectTool::RefreshListInternal, this);
 	refreshThread.detach();
@@ -447,18 +489,21 @@ void UIObjectTool::RefreshListInternal()
 
 	ListItemsVec items;
 	FS_FileSet lst;
-	
-	if (Lib.GetObjects(lst)) 
+
+	if (Lib.GetObjects(lst))
 	{
-		FS_FileSetIt	it = lst.begin();
-		FS_FileSetIt	_E = lst.end();
-		for (; it != _E; it++) {
+		FS_FileSetIt it = lst.begin();
+		FS_FileSetIt _E = lst.end();
+		for (; it != _E; it++)
+		{
 			xr_string fn;
 			ListItem* I = LHelper().CreateItem(items, it->name.c_str(), 0, ListItem::flDrawThumbnail, 0);
 		}
 	}
 	if (m_RealTexture)
+	{
 		m_RemoveTexture = m_RealTexture;
+	}
 
 	m_RealTexture = nullptr;
 	m_Props->ClearProperties();
@@ -492,8 +537,8 @@ void UIObjectTool::OnDrawUI()
 		{
 			if (change)
 			{
-				Fvector pos = { 0.f,0.f,0.f };
-				Fvector up = { 0.f,1.f,0.f };
+				Fvector pos = {0.f, 0.f, 0.f};
+				Fvector up = {0.f, 1.f, 0.f};
 				Scene->SelectObjects(false, OBJCLASS_SCENEOBJECT);
 
 				SPBItem* pb = UI->ProgressStart(lst.size(), "Append object: ");
@@ -529,7 +574,10 @@ void UIObjectTool::OnDrawUI()
 }
 void UIObjectTool::OnItemFocused(ListItem* item)
 {
-	if (m_RealTexture)m_RemoveTexture = m_RealTexture;
+	if (m_RealTexture)
+	{
+		m_RemoveTexture = m_RealTexture;
+	}
 	m_RealTexture = nullptr;
 	UI->DestroyImGuiTexture(m_RealTextureEditor);
 
@@ -538,16 +586,12 @@ void UIObjectTool::OnItemFocused(ListItem* item)
 	if (item)
 	{
 		m_Current = item->Key();
-		auto * m_Thm = ImageLib.CreateThumbnail(m_Current, EImageThumbnail::ETObject);
+		auto* m_Thm = ImageLib.CreateThumbnail(m_Current, EImageThumbnail::ETObject);
 		if (m_Thm)
 		{
 			if (m_Thm->Valid())
 			{
-				(void)UI->UpdateImGuiTexture(m_RealTextureEditor,
-					m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT,
-					THUMB_WIDTH * 4, ++m_RealTextureRevision,
-					"editor-object-tool-thumbnail",
-					EEditorTextureFormat::Bgra8Unorm, true);
+				(void)UI->UpdateImGuiTexture(m_RealTextureEditor, m_Thm->Pixels(), THUMB_WIDTH, THUMB_HEIGHT, THUMB_WIDTH * 4, ++m_RealTextureRevision, "editor-object-tool-thumbnail", EEditorTextureFormat::Bgra8Unorm, true);
 			}
 			IRHISurface* Surface = nullptr;
 			m_Thm->Update(Surface);
@@ -570,13 +614,19 @@ void UIObjectTool::OnItemFocused(ListItem* item)
 void UIObjectTool::SelByRefObject(bool flag)
 {
 	const char* N = Current();
-	if (N) {
+	if (N)
+	{
 		ObjectIt _F = Scene->FirstObj(OBJCLASS_SCENEOBJECT);
 		ObjectIt _E = Scene->LastObj(OBJCLASS_SCENEOBJECT);
-		for (; _F != _E; _F++) {
-			if ((*_F)->Visible()) {
+		for (; _F != _E; _F++)
+		{
+			if ((*_F)->Visible())
+			{
 				CSceneObject* _O = (CSceneObject*)(*_F);
-				if (_O->RefCompare(N)) _O->Select(flag);
+				if (_O->RefCompare(N))
+				{
+					_O->Select(flag);
+				}
 			}
 		}
 	}
@@ -584,23 +634,31 @@ void UIObjectTool::SelByRefObject(bool flag)
 
 void UIObjectTool::MultiSelByRefObject(bool clear_prev)
 {
-	ObjectList 	objlist;
-	LPU32Vec 	sellist;
-	if (Scene->GetQueryObjects(objlist, OBJCLASS_SCENEOBJECT, 1, 1, -1)) {
-		for (ObjectIt it = objlist.begin(); it != objlist.end(); it++) {
+	ObjectList objlist;
+	LPU32Vec sellist;
+	if (Scene->GetQueryObjects(objlist, OBJCLASS_SCENEOBJECT, 1, 1, -1))
+	{
+		for (ObjectIt it = objlist.begin(); it != objlist.end(); it++)
+		{
 			const char* N = ((CSceneObject*)*it)->RefName();
 			ObjectIt _F = Scene->FirstObj(OBJCLASS_SCENEOBJECT);
 			ObjectIt _E = Scene->LastObj(OBJCLASS_SCENEOBJECT);
-			for (; _F != _E; _F++) {
+			for (; _F != _E; _F++)
+			{
 				CSceneObject* _O = (CSceneObject*)(*_F);
-				if ((*_F)->Visible() && _O->RefCompare(N)) {
-					if (clear_prev) {
+				if ((*_F)->Visible() && _O->RefCompare(N))
+				{
+					if (clear_prev)
+					{
 						_O->Select(false);
 						sellist.push_back((u32*)_O);
 					}
-					else {
+					else
+					{
 						if (!_O->Selected())
+						{
 							sellist.push_back((u32*)_O);
+						}
 					}
 				}
 			}
@@ -610,7 +668,8 @@ void UIObjectTool::MultiSelByRefObject(bool clear_prev)
 		random_shuffle(sellist.begin(), sellist.end());
 		int max_k = iFloor(float(sellist.size()) / 100.f * float(m_selPercent) + 0.5f);
 		int k = 0;
-		for (LPU32It o_it = sellist.begin(); k < max_k; o_it++, k++) {
+		for (LPU32It o_it = sellist.begin(); k < max_k; o_it++, k++)
+		{
 			CSceneObject* _O = (CSceneObject*)(*o_it);
 			_O->Select(true);
 		}
@@ -622,10 +681,12 @@ void UIObjectTool::ClearSurface(bool selected)
 	{
 		ObjectIt _F = Scene->FirstObj(OBJCLASS_SCENEOBJECT);
 		ObjectIt _E = Scene->LastObj(OBJCLASS_SCENEOBJECT);
-		for (; _F != _E; _F++) {
-			if ((*_F)->Visible()) {
+		for (; _F != _E; _F++)
+		{
+			if ((*_F)->Visible())
+			{
 				CSceneObject* _O = (CSceneObject*)(*_F);
-				if ((_O->Selected() && _O->Visible())||!selected)
+				if ((_O->Selected() && _O->Visible()) || !selected)
 				{
 					_O->ClearSurface();
 				}

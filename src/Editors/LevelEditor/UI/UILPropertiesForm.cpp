@@ -78,7 +78,8 @@ FNativeLightDetailsUiState& GetNativeLightDetailsUiState()
 
 void RefreshNativeDetailsUiState(
 	const TiramisuEditorNativeSceneDocument& Document,
-	const FEditorNativeSceneComponentDetails& Details)
+	const FEditorNativeSceneComponentDetails& Details
+)
 {
 	FNativeDetailsUiState& State = GetNativeDetailsUiState();
 	State.Revision = Document.GetRevision();
@@ -90,22 +91,23 @@ void RefreshNativeDetailsUiState(
 	State.MaterialSlots.clear();
 	State.MaterialSlots.reserve(Details.MaterialSlots.size());
 	for (const FEditorNativeSceneMaterialSlotDetails& Slot :
-		Details.MaterialSlots)
+		 Details.MaterialSlots)
 	{
 		FNativeMaterialSlotDraft Draft;
 		Draft.MaterialSlot = Slot.MaterialSlot;
 		Draft.HasOverride = Slot.HasOverride;
 		Draft.TwoSided = Slot.HasOverride
-			? Slot.OverrideTwoSided : Slot.BaseTwoSided;
-		CopyDraft(Draft.Material, Slot.HasOverride
-			? Slot.OverrideMaterial : Slot.BaseMaterial);
+							 ? Slot.OverrideTwoSided
+							 : Slot.BaseTwoSided;
+		CopyDraft(Draft.Material, Slot.HasOverride ? Slot.OverrideMaterial : Slot.BaseMaterial);
 		State.MaterialSlots.push_back(std::move(Draft));
 	}
 }
 
 void RefreshNativeBulkDetailsUiState(
 	const TiramisuEditorNativeSceneDocument& Document,
-	const FEditorNativeSceneBulkMaterialDetails& Details)
+	const FEditorNativeSceneBulkMaterialDetails& Details
+)
 {
 	FNativeBulkDetailsUiState& State = GetNativeBulkDetailsUiState();
 	State.Revision = Document.GetRevision();
@@ -113,7 +115,7 @@ void RefreshNativeBulkDetailsUiState(
 	State.MaterialSlots.clear();
 	State.MaterialSlots.reserve(Details.MaterialSlots.size());
 	for (const FEditorNativeSceneBulkMaterialSlotDetails& Slot :
-		Details.MaterialSlots)
+		 Details.MaterialSlots)
 	{
 		FNativeBulkMaterialSlotDraft Draft;
 		Draft.MaterialSlot = Slot.MaterialSlot;
@@ -123,7 +125,7 @@ void RefreshNativeBulkDetailsUiState(
 			CopyDraft(Draft.Material, Slot.OverrideMaterial);
 		}
 		else if (Slot.OverrideCount == 0 &&
-			!Slot.BaseMaterialMixed)
+				 !Slot.BaseMaterialMixed)
 		{
 			CopyDraft(Draft.Material, Slot.BaseMaterial);
 		}
@@ -138,14 +140,15 @@ void RefreshNativeBulkDetailsUiState(
 			Draft.TwoSided = Slot.OverrideTwoSided;
 		}
 		else if (Slot.OverrideCount == 0 &&
-			!Slot.BaseTwoSidedMixed)
+				 !Slot.BaseTwoSidedMixed)
 		{
 			Draft.TwoSided = Slot.BaseTwoSided;
 		}
 		else
 		{
 			Draft.TwoSided = Slot.OverrideCount != 0
-				? Slot.OverrideTwoSided : Slot.BaseTwoSided;
+								 ? Slot.OverrideTwoSided
+								 : Slot.BaseTwoSided;
 			Draft.TwoSidedMixed = true;
 		}
 		State.MaterialSlots.push_back(std::move(Draft));
@@ -154,7 +157,8 @@ void RefreshNativeBulkDetailsUiState(
 
 void RefreshNativeLightDetailsUiState(
 	const TiramisuEditorNativeSceneDocument& Document,
-	const FEditorNativeSceneLightDetails& Details)
+	const FEditorNativeSceneLightDetails& Details
+)
 {
 	FNativeLightDetailsUiState& State =
 		GetNativeLightDetailsUiState();
@@ -171,7 +175,8 @@ void ReportNativeDetailsError(const xr_string& Diagnostic)
 }
 
 void DrawNativeBulkMaterialProperties(
-	TiramisuEditorNativeSceneDocument& Document)
+	TiramisuEditorNativeSceneDocument& Document
+)
 {
 	const xr_optional<FEditorNativeSceneBulkMaterialDetails> Details =
 		Document.GetSelectedComponentsMaterialDetails();
@@ -190,19 +195,22 @@ void DrawNativeBulkMaterialProperties(
 	}
 
 	ImGui::TextDisabled("%zu components selected. Material edits apply "
-		"to all.", State.Details.ComponentCount);
+						"to all.",
+						State.Details.ComponentCount);
 	ImGui::SeparatorText("Common material slots");
 	if (State.Details.MaterialSlots.empty())
 	{
 		ImGui::TextDisabled(
-			"The selection has no common material slots.");
+			"The selection has no common material slots."
+		);
 		return;
 	}
 
 	const bool Editable = Document.IsEditableRenderScene();
 	ImGui::BeginDisabled(!Editable);
 	for (size_t Index = 0;
-		Index < State.Details.MaterialSlots.size(); ++Index)
+		 Index < State.Details.MaterialSlots.size();
+		 ++Index)
 	{
 		const FEditorNativeSceneBulkMaterialSlotDetails& Slot =
 			State.Details.MaterialSlots[Index];
@@ -212,40 +220,33 @@ void DrawNativeBulkMaterialProperties(
 		const xr_string Header =
 			xr_string(std::to_string(Slot.MaterialSlot)) + ": " +
 			(Slot.NameMixed ? "<multiple slot names>" : Slot.Name);
-		if (ImGui::CollapsingHeader(Header.c_str(),
-				ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader(Header.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			ImGui::TextWrapped("Base: %s",
-				Slot.BaseMaterialMixed
-					? "<multiple materials>"
-					: Slot.BaseMaterial.c_str());
+			ImGui::TextWrapped("Base: %s", Slot.BaseMaterialMixed ? "<multiple materials>" : Slot.BaseMaterial.c_str());
 			if (Slot.OverrideCount == 0)
 			{
 				ImGui::TextDisabled("Overrides: none");
 			}
 			else if (Slot.OverrideCount == Slot.ComponentCount)
 			{
-				ImGui::TextDisabled("Overrides: all%s",
-					Slot.OverrideMaterialMixed
-						? " (mixed values)" : "");
+				ImGui::TextDisabled("Overrides: all%s", Slot.OverrideMaterialMixed ? " (mixed values)" : "");
 			}
 			else
 			{
-				ImGui::TextDisabled("Overrides: %zu of %zu",
-					Slot.OverrideCount, Slot.ComponentCount);
+				ImGui::TextDisabled("Overrides: %zu of %zu", Slot.OverrideCount, Slot.ComponentCount);
 			}
 
 			const char* MaterialHint = Draft.MaterialMixed
-				? "<enter one material for all selected>"
-				: "Material/MaterialInstance GUID or path";
-			if (ImGui::InputTextWithHint("Material", MaterialHint,
-					Draft.Material.data(), Draft.Material.size()))
+										   ? "<enter one material for all selected>"
+										   : "Material/MaterialInstance GUID or path";
+			if (ImGui::InputTextWithHint("Material", MaterialHint, Draft.Material.data(), Draft.Material.size()))
 			{
 				Draft.MaterialMixed = false;
 			}
 
 			ImGui::PushItemFlag(
-				ImGuiItemFlags_MixedValue, Draft.TwoSidedMixed);
+				ImGuiItemFlags_MixedValue, Draft.TwoSidedMixed
+			);
 			if (ImGui::Checkbox("Two sided", &Draft.TwoSided))
 			{
 				Draft.TwoSidedMixed = false;
@@ -258,11 +259,11 @@ void DrawNativeBulkMaterialProperties(
 				xr_string Diagnostic;
 				const xr_optional<bool> TwoSided =
 					Draft.TwoSidedEdited
-					? xr_optional<bool>(Draft.TwoSided)
-					: std::nullopt;
+						? xr_optional<bool>(Draft.TwoSided)
+						: std::nullopt;
 				if (!Document.SetSelectedComponentsMaterialOverride(
-						Draft.MaterialSlot, Draft.Material.data(),
-						TwoSided, Diagnostic))
+						Draft.MaterialSlot, Draft.Material.data(), TwoSided, Diagnostic
+					))
 				{
 					ReportNativeDetailsError(Diagnostic);
 				}
@@ -274,7 +275,8 @@ void DrawNativeBulkMaterialProperties(
 			{
 				xr_string Diagnostic;
 				if (!Document.ClearSelectedMaterialOverride(
-						Draft.MaterialSlot, Diagnostic))
+						Draft.MaterialSlot, Diagnostic
+					))
 				{
 					ReportNativeDetailsError(Diagnostic);
 				}
@@ -284,7 +286,7 @@ void DrawNativeBulkMaterialProperties(
 			if (Draft.TwoSidedMixed && !Draft.TwoSidedEdited)
 			{
 				ImGui::TextDisabled("Mixed Two sided values are "
-					"preserved until the checkbox is changed.");
+									"preserved until the checkbox is changed.");
 			}
 		}
 		ImGui::PopID();
@@ -294,19 +296,22 @@ void DrawNativeBulkMaterialProperties(
 
 void DrawNativeLightProperties(
 	TiramisuEditorNativeSceneDocument& Document,
-	const FEditorNativeSceneLightDetails& Details)
+	const FEditorNativeSceneLightDetails& Details
+)
 {
 	FNativeLightDetailsUiState& State =
 		GetNativeLightDetailsUiState();
 	if (State.LightId != Details.Id)
 	{
 		if (State.PropertyTransaction)
+		{
 			(void)Document.EndEditTransaction();
+		}
 		State.PropertyTransaction = false;
 		RefreshNativeLightDetailsUiState(Document, Details);
 	}
 	else if (!State.PropertyTransaction &&
-		State.Revision != Document.GetRevision())
+			 State.Revision != Document.GetRevision())
 	{
 		RefreshNativeLightDetailsUiState(Document, Details);
 	}
@@ -316,7 +321,8 @@ void DrawNativeLightProperties(
 		State.Details.Name = State.Name.data();
 		xr_string Diagnostic;
 		if (!Document.SetSelectedLightDetails(
-				State.Details, Diagnostic))
+				State.Details, Diagnostic
+			))
 		{
 			ReportNativeDetailsError(Diagnostic);
 			State.Revision = 0;
@@ -347,8 +353,7 @@ void DrawNativeLightProperties(
 
 	const bool Editable = Document.IsEditableRenderScene();
 	ImGui::BeginDisabled(!Editable);
-	if (ImGui::InputText("Name", State.Name.data(), State.Name.size(),
-			ImGuiInputTextFlags_EnterReturnsTrue))
+	if (ImGui::InputText("Name", State.Name.data(), State.Name.size(), ImGuiInputTextFlags_EnterReturnsTrue))
 	{
 		(void)Apply();
 		State.Revision = 0;
@@ -359,7 +364,8 @@ void DrawNativeLightProperties(
 		State.Revision = 0;
 	}
 	if (ImGui::Checkbox(
-			"Cast shadows", &State.Details.CastShadows))
+			"Cast shadows", &State.Details.CastShadows
+		))
 	{
 		(void)Apply();
 		State.Revision = 0;
@@ -368,108 +374,117 @@ void DrawNativeLightProperties(
 	const char* LightType = "Point";
 	switch (State.Details.Type)
 	{
-	case Tiramisu::Scene::ELightType::Directional:
-		LightType = "Directional";
-		break;
-	case Tiramisu::Scene::ELightType::Point:
-		LightType = "Point";
-		break;
-	case Tiramisu::Scene::ELightType::Spot:
-		LightType = "Spot";
-		break;
+		case Tiramisu::Scene::ELightType::Directional:
+			LightType = "Directional";
+			break;
+		case Tiramisu::Scene::ELightType::Point:
+			LightType = "Point";
+			break;
+		case Tiramisu::Scene::ELightType::Spot:
+			LightType = "Spot";
+			break;
 	}
 	if (ImGui::BeginCombo("Type", LightType))
 	{
 		const auto TypeItem =
 			[&](const char* Label,
 				const Tiramisu::Scene::ELightType Type)
+		{
+			const bool Selected = State.Details.Type == Type;
+			if (ImGui::Selectable(Label, Selected))
 			{
-				const bool Selected = State.Details.Type == Type;
-				if (ImGui::Selectable(Label, Selected))
-				{
-					State.Details.Type = Type;
-					(void)Apply();
-					State.Revision = 0;
-				}
-				if (Selected)
-					ImGui::SetItemDefaultFocus();
-			};
-		TypeItem("Directional",
-			Tiramisu::Scene::ELightType::Directional);
+				State.Details.Type = Type;
+				(void)Apply();
+				State.Revision = 0;
+			}
+			if (Selected)
+			{
+				ImGui::SetItemDefaultFocus();
+			}
+		};
+		TypeItem("Directional", Tiramisu::Scene::ELightType::Directional);
 		TypeItem("Point", Tiramisu::Scene::ELightType::Point);
 		TypeItem("Spot", Tiramisu::Scene::ELightType::Spot);
 		ImGui::EndCombo();
 	}
 
 	const bool PositionChanged = ImGui::DragFloat3(
-		"Position", State.Details.Position.data(), 0.01f);
+		"Position", State.Details.Position.data(), 0.01f
+	);
 	BeginContinuousEdit();
 	if (PositionChanged)
+	{
 		(void)Apply();
+	}
 	EndContinuousEdit();
 
 	const bool ColorChanged = ImGui::ColorEdit3(
-		"Color", State.Details.Color.data(),
-		ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR);
+		"Color", State.Details.Color.data(), ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR
+	);
 	BeginContinuousEdit();
 	if (ColorChanged)
+	{
 		(void)Apply();
+	}
 	EndContinuousEdit();
 
 	const bool IntensityChanged = ImGui::DragFloat(
-		"Intensity", &State.Details.Intensity, 0.05f,
-		0.0f, 1000000.0f, "%.3f",
-		ImGuiSliderFlags_AlwaysClamp);
+		"Intensity", &State.Details.Intensity, 0.05f, 0.0f, 1000000.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp
+	);
 	BeginContinuousEdit();
 	if (IntensityChanged)
+	{
 		(void)Apply();
+	}
 	EndContinuousEdit();
 
 	if (State.Details.Type !=
 		Tiramisu::Scene::ELightType::Directional)
 	{
 		const bool RangeChanged = ImGui::DragFloat(
-			"Range", &State.Details.Range, 0.1f,
-			0.001f, 1000000.0f, "%.3f",
-			ImGuiSliderFlags_AlwaysClamp);
+			"Range", &State.Details.Range, 0.1f, 0.001f, 1000000.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp
+		);
 		BeginContinuousEdit();
 		if (RangeChanged)
+		{
 			(void)Apply();
+		}
 		EndContinuousEdit();
 	}
 	if (State.Details.Type == Tiramisu::Scene::ELightType::Spot)
 	{
 		bool ConeChanged = ImGui::DragFloat(
-			"Inner cone", &State.Details.InnerConeAngleDegrees,
-			0.1f, 0.0f, 89.0f, "%.2f deg",
-			ImGuiSliderFlags_AlwaysClamp);
+			"Inner cone", &State.Details.InnerConeAngleDegrees, 0.1f, 0.0f, 89.0f, "%.2f deg", ImGuiSliderFlags_AlwaysClamp
+		);
 		BeginContinuousEdit();
 		if (ConeChanged)
 		{
 			State.Details.InnerConeAngleDegrees = std::min(
 				State.Details.InnerConeAngleDegrees,
-				State.Details.OuterConeAngleDegrees);
+				State.Details.OuterConeAngleDegrees
+			);
 			(void)Apply();
 		}
 		EndContinuousEdit();
 
 		ConeChanged = ImGui::DragFloat(
-			"Outer cone", &State.Details.OuterConeAngleDegrees,
-			0.1f, 0.01f, 89.9f, "%.2f deg",
-			ImGuiSliderFlags_AlwaysClamp);
+			"Outer cone", &State.Details.OuterConeAngleDegrees, 0.1f, 0.01f, 89.9f, "%.2f deg", ImGuiSliderFlags_AlwaysClamp
+		);
 		BeginContinuousEdit();
 		if (ConeChanged)
 		{
 			State.Details.OuterConeAngleDegrees = std::max(
 				State.Details.OuterConeAngleDegrees,
-				State.Details.InnerConeAngleDegrees);
+				State.Details.InnerConeAngleDegrees
+			);
 			(void)Apply();
 		}
 		EndContinuousEdit();
 	}
 	ImGui::EndDisabled();
 	ImGui::TextDisabled(
-		"Native renderer-neutral LightComponent (RenderScene v2).");
+		"Native renderer-neutral LightComponent (RenderScene v2)."
+	);
 }
 
 void DrawNativeProperties()
@@ -478,8 +493,7 @@ void DrawNativeProperties()
 		GetEditorNativeSceneDocument();
 	const std::filesystem::path& SourcePath = Document.GetSourcePath();
 	ImGui::TextUnformatted("Native RenderScene");
-	ImGui::TextDisabled("%s", SourcePath.empty()
-		? "Unsaved" : SourcePath.generic_string().c_str());
+	ImGui::TextDisabled("%s", SourcePath.empty() ? "Unsaved" : SourcePath.generic_string().c_str());
 	ImGui::Separator();
 
 	if (Document.GetSelectionCount() == 0)
@@ -511,24 +525,24 @@ void DrawNativeProperties()
 	if (State.ComponentId != Details->Id)
 	{
 		if (State.PositionTransaction)
+		{
 			(void)Document.EndEditTransaction();
+		}
 		State.PositionTransaction = false;
 		RefreshNativeDetailsUiState(Document, *Details);
 	}
 	else if (!State.PositionTransaction &&
-		State.Revision != Document.GetRevision())
+			 State.Revision != Document.GetRevision())
 	{
 		RefreshNativeDetailsUiState(Document, *Details);
 	}
 
 	const bool Editable = Document.IsEditableRenderScene();
 	ImGui::BeginDisabled(!Editable);
-	if (ImGui::InputText("Name", State.Name.data(), State.Name.size(),
-			ImGuiInputTextFlags_EnterReturnsTrue))
+	if (ImGui::InputText("Name", State.Name.data(), State.Name.size(), ImGuiInputTextFlags_EnterReturnsTrue))
 	{
 		xr_string Diagnostic;
-		if (!Document.SetSelectedComponentName(State.Name.data(),
-				Diagnostic))
+		if (!Document.SetSelectedComponentName(State.Name.data(), Diagnostic))
 		{
 			ReportNativeDetailsError(Diagnostic);
 		}
@@ -537,13 +551,17 @@ void DrawNativeProperties()
 	if (ImGui::Checkbox("Visible", &State.Visible))
 	{
 		if (!Document.SetSelectedComponentVisibility(State.Visible))
+		{
 			ReportNativeDetailsError(
-				"Cannot update component visibility.");
+				"Cannot update component visibility."
+			);
+		}
 		State.Revision = 0;
 	}
 
 	const bool PositionChanged = ImGui::DragFloat3(
-		"Position", State.Position.data(), 0.01f);
+		"Position", State.Position.data(), 0.01f
+	);
 	if (ImGui::IsItemActivated() && !State.PositionTransaction)
 	{
 		State.PositionTransaction = Document.BeginEditTransaction();
@@ -551,7 +569,9 @@ void DrawNativeProperties()
 	if (PositionChanged)
 	{
 		if (!Document.SetSelectedComponentPosition(State.Position))
+		{
 			ReportNativeDetailsError("Cannot update component position.");
+		}
 		State.Revision = Document.GetRevision();
 	}
 	if (ImGui::IsItemDeactivated() && State.PositionTransaction)
@@ -561,11 +581,11 @@ void DrawNativeProperties()
 		State.Revision = 0;
 	}
 
-	ImGui::TextDisabled("StaticMesh: %s",
-		State.Details.StaticMesh.c_str());
+	ImGui::TextDisabled("StaticMesh: %s", State.Details.StaticMesh.c_str());
 	ImGui::SeparatorText("Material overrides");
 	for (size_t Index = 0;
-		Index < State.Details.MaterialSlots.size(); ++Index)
+		 Index < State.Details.MaterialSlots.size();
+		 ++Index)
 	{
 		const FEditorNativeSceneMaterialSlotDetails& Slot =
 			State.Details.MaterialSlots[Index];
@@ -573,8 +593,7 @@ void DrawNativeProperties()
 		ImGui::PushID(static_cast<int>(Slot.MaterialSlot));
 		const xr_string Header =
 			xr_string(std::to_string(Slot.MaterialSlot)) + ": " + Slot.Name;
-		if (ImGui::CollapsingHeader(Header.c_str(),
-				ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader(Header.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			ImGui::TextWrapped("Base: %s", Slot.BaseMaterial.c_str());
 			if (ImGui::Checkbox("Override", &Draft.HasOverride))
@@ -584,47 +603,54 @@ void DrawNativeProperties()
 				if (Draft.HasOverride)
 				{
 					if (Draft.Material[0] == '\0')
+					{
 						CopyDraft(Draft.Material, Slot.BaseMaterial);
+					}
 					Changed = Document.SetSelectedMaterialOverride(
-						Draft.MaterialSlot, Draft.Material.data(),
-						Draft.TwoSided, Diagnostic);
+						Draft.MaterialSlot, Draft.Material.data(), Draft.TwoSided, Diagnostic
+					);
 				}
 				else
 				{
 					Changed = Document.ClearSelectedMaterialOverride(
-						Draft.MaterialSlot, Diagnostic);
+						Draft.MaterialSlot, Diagnostic
+					);
 				}
 				if (!Changed)
+				{
 					ReportNativeDetailsError(Diagnostic);
+				}
 				State.Revision = 0;
 			}
 			if (Draft.HasOverride)
 			{
-				bool Apply = ImGui::InputText("Material",
-					Draft.Material.data(), Draft.Material.size(),
-					ImGuiInputTextFlags_EnterReturnsTrue);
+				bool Apply = ImGui::InputText("Material", Draft.Material.data(), Draft.Material.size(), ImGuiInputTextFlags_EnterReturnsTrue);
 				Apply |= ImGui::Checkbox(
-					"Two sided", &Draft.TwoSided);
+					"Two sided", &Draft.TwoSided
+				);
 				if (Apply)
 				{
 					xr_string Diagnostic;
 					if (!Document.SetSelectedMaterialOverride(
-							Draft.MaterialSlot, Draft.Material.data(),
-							Draft.TwoSided, Diagnostic))
+							Draft.MaterialSlot, Draft.Material.data(), Draft.TwoSided, Diagnostic
+						))
 					{
 						ReportNativeDetailsError(Diagnostic);
 					}
 					State.Revision = 0;
 				}
 				ImGui::TextDisabled(
-					"Enter a Material/MaterialInstance GUID or path.");
+					"Enter a Material/MaterialInstance GUID or path."
+				);
 			}
 		}
 		ImGui::PopID();
 	}
 	ImGui::EndDisabled();
 	if (!Editable)
+	{
 		ImGui::TextDisabled("StaticMesh preview is read-only.");
+	}
 }
 } // namespace
 

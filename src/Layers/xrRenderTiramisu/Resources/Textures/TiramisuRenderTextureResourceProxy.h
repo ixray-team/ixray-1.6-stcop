@@ -7,7 +7,7 @@
 class TiramisuRenderTextureResourceProxy : public TiramisuRenderResourceProxy
 {
 public:
-                        ~TiramisuRenderTextureResourceProxy() override;
-    nri::Texture*       Texture = nullptr;
-    nri::TextureDesc    TextureDescription  = {};
+	~TiramisuRenderTextureResourceProxy() override;
+	nri::Texture* Texture = nullptr;
+	nri::TextureDesc TextureDescription = {};
 };

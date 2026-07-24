@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIToolbar.h"
 
-void CUIToolbar::CheckAction(ETAction Action) 
+void CUIToolbar::CheckAction(ETAction Action)
 {
 	auto ActiveAction = Tools->GetAction();
 
@@ -51,8 +51,8 @@ void CUIToolbar::Draw()
 	if (ImGui::Begin("##ToolbarHor", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
 	{
 		bFocus = ImGui::IsWindowFocused();
-		constexpr ImVec2 SizeImg = { 14, 17 };
-		constexpr ImVec2 SizeBtn = { 24, 24 };
+		constexpr ImVec2 SizeImg = {14, 17};
+		constexpr ImVec2 SizeBtn = {24, 24};
 
 		CheckAction(etaSelect);
 		if (ImGui::ImageButton("##ibCUIToolbar001", UI->GetImGuiTexture(Select), SizeImg))

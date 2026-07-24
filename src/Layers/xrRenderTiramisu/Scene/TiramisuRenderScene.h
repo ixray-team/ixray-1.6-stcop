@@ -7,22 +7,22 @@ class TiramisuPrimitiveSceneProxy;
 class TiramisuRenderScene
 {
 public:
-                                        TiramisuRenderScene                    ();
-                                        ~TiramisuRenderScene                   ();
-                            
-        void                            AddRenderSceneProxy            (TiramisuPrimitiveSceneProxy* NewProxy);
-        void                            RemoveRenderSceneProxy         (TiramisuPrimitiveSceneProxy* InProxy);
-        void                            Update                         ();
-    
-    xr_vector<TiramisuPrimitiveSceneProxy*>    RenderSceneProxies;
+	TiramisuRenderScene();
+	~TiramisuRenderScene();
+
+	void AddRenderSceneProxy(TiramisuPrimitiveSceneProxy* NewProxy);
+	void RemoveRenderSceneProxy(TiramisuPrimitiveSceneProxy* InProxy);
+	void Update();
+
+	xr_vector<TiramisuPrimitiveSceneProxy*> RenderSceneProxies;
 };
 
 template <typename T>
 void RemoveRenderSceneProxy(T*& InProxy)
 {
-    if (InProxy)
-    {
-        GRenderResourcesManager->RenderScene->RemoveRenderSceneProxy(InProxy);
-    }
-    InProxy = nullptr;
+	if (InProxy)
+	{
+		GRenderResourcesManager->RenderScene->RemoveRenderSceneProxy(InProxy);
+	}
+	InProxy = nullptr;
 }

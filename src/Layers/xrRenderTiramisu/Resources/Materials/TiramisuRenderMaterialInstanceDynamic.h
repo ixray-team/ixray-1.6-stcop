@@ -9,15 +9,17 @@ class TiramisuMaterialInstanceDynamicRenderProxy;
 class TiramisuRenderMaterialInstanceDynamic : public TiramisuRenderMaterialInterface
 {
 public:
-                                        TiramisuRenderMaterialInstanceDynamic  (TiramisuRenderMaterialInterface* InParent);
-                                        ~TiramisuRenderMaterialInstanceDynamic ();
-    void                                SetTexture                      (TiramisuRenderTexture* NewTexture);
-    void                                SetTextureParameter             (
-                                            const FMaterialParameterId& Parameter,
-                                            TiramisuRenderTexture* NewTexture);
+	TiramisuRenderMaterialInstanceDynamic(TiramisuRenderMaterialInterface* InParent);
+	~TiramisuRenderMaterialInstanceDynamic();
+	void SetTexture(TiramisuRenderTexture* NewTexture);
+	void SetTextureParameter(
+		const FMaterialParameterId& Parameter,
+		TiramisuRenderTexture* NewTexture
+	);
+
 private:
-    xr_map<FMaterialParameterId, TiramisuRenderTexture*>
-                                        TextureParameters;
-    TiramisuRenderMaterialInterface*           Parent = nullptr;
-    TiramisuMaterialInstanceDynamicRenderProxy*       MaterialInstanceRenderProxy = nullptr;
+	xr_map<FMaterialParameterId, TiramisuRenderTexture*>
+		TextureParameters;
+	TiramisuRenderMaterialInterface* Parent = nullptr;
+	TiramisuMaterialInstanceDynamicRenderProxy* MaterialInstanceRenderProxy = nullptr;
 };

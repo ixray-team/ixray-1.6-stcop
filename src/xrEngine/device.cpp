@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "../xrCore/Collision/Frustum.h"
-#include "../xrCore/RenderTestPolicy.h"
 
 #include "x_ray.h"
 #include "Render.h"
@@ -142,21 +141,25 @@ void CRenderDevice::time_factor(const float &time_factor)
 
 void CRenderDevice::on_idle		()
 {
-	if (!b_is_Ready) {
+#ifdef IXRAY_PROFILER // optick
+	PROF_FRAME("CPU FRAME BEGIN");
+#endif
+
+	PROF_EVENT("on_idle");
+
+	if (!b_is_Ready)
+	{
 		Sleep(100);
 		return;
 	}
-	
-	bool main_menu_active = g_pGamePersistent						   &&
-							g_pGamePersistent->m_pMainMenu			   &&
-							g_pGamePersistent->m_pMainMenu->IsActive();
 
-	PROF_FRAME("Main Thread");
+	const bool IsMainMenuActive = g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive();
+
 	Platform::SetThreadName("X-Ray Primary Thread");
 
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
-	const bool Focus = psDeviceFlags.test(rsFullscreen) || (!Minimized && !main_menu_active && !CImGuiManager::Instance().IsCapturingInputs());
+	const bool Focus = psDeviceFlags.test(rsFullscreen) || (!Minimized && !IsMainMenuActive && !CImGuiManager::Instance().IsCapturingInputs());
 
 	SDL_SetWindowMouseGrab(g_AppInfo.Window, !g_dedicated_server && Focus);
 	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, !g_dedicated_server && Focus);
@@ -165,42 +168,52 @@ void CRenderDevice::on_idle		()
 
 	if (!g_loading_events.empty())
 	{
+		PROF_EVENT("LoadDraw");
+
+		if (g_loading_events.front()())
 		{
 			PROF_EVENT("Loading...");
-			if (g_loading_events.front()())
-				g_loading_events.pop_front();
+			g_loading_events.pop_front();
 		}
-		PROF_EVENT("LoadDraw");
+
 		pApp->LoadDraw();
 
 		return;
 	}
 	else 
 	{
-		if (g_pGamePersistent)
+		if (g_pGamePersistent != nullptr)
+		{
+			PROF_EVENT("UpdatePlayDestroyParticles");
 			g_pGamePersistent->UpdatePlayDestroyParticles();
+		}
 
-		if (Device.ModelDefferClear)
+		if (Device.ModelDefferClear != nullptr)
+		{
+			PROF_EVENT("ModelDefferClear");
 			Device.ModelDefferClear();
+		}
 
 		u32 tglob = Device.dwTimeGlobal;
 		for (auto it = m_time_callbacks.begin(); it != m_time_callbacks.end();)
 		{
-		    if (tglob >= it->first)
+			if (tglob >= it->first)
 			{
 				it->second();
 				fast_erase(m_time_callbacks, it);
-		    }
-			else
-		       ++it;
+				continue;
+			}
+
+			++it;
 		}
 
 		if (GActorInterface != nullptr)
 		{
+			PROF_EVENT("UpdatePlayerHud");
 			GActorInterface->UpdatePlayerHud();
 		}
 
-		secondary_tasks.run(&XRay::Engine::PreRenderThread);
+		PreRenderThread.Run();
 		FrameMove();
 	}
 
@@ -217,7 +230,7 @@ void CRenderDevice::on_idle		()
 		CalculateTransforms();
 	}
 
-	secondary_tasks.run(&XRay::Engine::GameThread);
+	GameThread.Run();
 
 	if (!g_dedicated_server)
 	{
@@ -227,14 +240,22 @@ void CRenderDevice::on_idle		()
 		{
 			if (Begin())
 			{
-				seqRender.Process<&pureRender::OnRender>();
-				
-				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
+				{
+					PROF_EVENT("------ [OnRender phase] ------")
+					seqRender.Process<&pureRender::OnRender>();
+				}
+
+				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || !Statistic->errors.empty())
+				{
 					Statistic->Show();
+				}
 
+				bool show_fps_counter = IsFpsShow && g_pGameLevel && !IsMainMenuActive && !load_screen_renderer.IsActive() && !Device.Paused();
 
-				if (IsFpsShow && g_pGameLevel && !main_menu_active && !load_screen_renderer.IsActive())
+				if (show_fps_counter)
+				{
 					pFPSCounter->OnRender();
+				}
 
 				End();
 			}
@@ -243,9 +264,16 @@ void CRenderDevice::on_idle		()
 		Statistic->RenderTOTAL_Real.FrameEnd();
 		Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
 	}
-	secondary_tasks.wait();
+
+	PreRenderThread.Wait();
+	GameThread.Wait();
 
 	Device.EndRender();
+	
+#ifdef IXRAY_PROFILER_TRACY
+	PROF_FRAME("idle");
+#endif
+	
 	if (!b_is_Active)
 	{
 		Sleep(1);
@@ -297,7 +325,7 @@ void CRenderDevice::CalculateTransforms()
 	vCameraTop_saved = vCameraTop;
 }
 
-bool quiting = false;
+volatile bool quiting = false;
 
 void CRenderDevice::message_loop()
 {
@@ -355,8 +383,15 @@ void CRenderDevice::Run()
 	seqAppEnd.Process<&pureAppEnd::OnAppEnd>();
 
 	// Stop Balance-Threads
-	secondary_tasks.wait();
-	details_task.wait();
+	PreRenderThread.Wait();
+	GameThread.Wait();
+	//GCThread.Wait();
+
+	PreRenderThread.Stop();
+	GameThread.Stop();
+	//GCThread.Stop();
+
+	DetailsTask.wait();
 }
 
 u32 app_inactive_time		= 0;
@@ -465,69 +500,60 @@ struct EfficientFilteredDelta
 bool use_smoothed_delta = false;
 void CRenderDevice::FrameMove()
 {
-	PROF_EVENT("Render: Frame Move");
 	dwFrame++;
-
-	static const FRenderDeterministicTestPolicy DeterministicTest =
-		ResolveRenderDeterministicTestPolicy(
-			Core.Params ? Core.Params : "");
-	if (DeterministicTest.Enabled)
+	dwTimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
+	
+	float dt = 0;
+	
+	if (!Paused())
 	{
-		const u32 PreviousGlobal = dwTimeGlobal;
-		fTimeDelta = Paused() ? 0.0f :
-			DeterministicTest.FixedDeltaSeconds;
-		fTimeDeltaSmoothing = fTimeDelta;
-		fTimeGlobal = static_cast<float>(dwFrame - 1) *
-			DeterministicTest.FixedDeltaSeconds;
-		dwTimeGlobal = static_cast<u32>(
-			fTimeGlobal * 1000.0f + 0.5f);
-		dwTimeDelta = dwTimeGlobal - PreviousGlobal;
-		dwTimeContinual = dwTimeGlobal;
+		dt = Timer.GetElapsed_sec();
+		Timer.Start();
 	}
 	else
 	{
-		dwTimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
-
-		const float smoothing_alpha = .1f;
-		const float current_delta = Timer.GetElapsed_sec();
-		Timer.Start();
-		const float previous_delta = fTimeDelta;
-
-		// EMA smoothing
-		fTimeDelta = smoothing_alpha * current_delta +
-			(1.f - smoothing_alpha) * previous_delta;
-
-		clamp(fTimeDelta, EPS_S, .1f);
-
-		fTimeDeltaSmoothing = fTimeDelta;
-
-		if (!Paused())
-			delta_filter.CalculateSmoothedDelta(fTimeDeltaSmoothing);
-
-		clamp(fTimeDeltaSmoothing, EPS_S, .1f);
-
-		if (use_smoothed_delta)
-			fTimeDelta = fTimeDeltaSmoothing;
-
-		if (Paused())
-		{
-			fTimeDelta = 0.0f;
-			fTimeDeltaSmoothing = 0.0f;
-		}
-
-		fTimeGlobal = TimerGlobal.GetElapsed_sec();
-		const u32 OldGlobal = dwTimeGlobal;
-		dwTimeGlobal = TimerGlobal.GetElapsed_ms();
-		dwTimeDelta = dwTimeGlobal - OldGlobal;
+		fTimeDelta = 0.0f;
+		fTimeDeltaSmoothing = 0.0f;
+		dt = fTimeDelta;
 	}
+	
+	float prev_dt = fTimeDelta;
+	fRealTimeDelta = dt * (1.f/time_factor());
+	constexpr float a = .1f;
+	fTimeDelta = a * dt + (1.f - a) * prev_dt;
+	fTimeDeltaSmoothing = fTimeDelta;
+
+	if (use_smoothed_delta)
+	{
+		delta_filter.CalculateSmoothedDelta(fTimeDeltaSmoothing);
+		fTimeDelta = fTimeDeltaSmoothing;
+	}
+	
+	// don't touch! some hud & graphics artefacts can be without clamp.
+	clamp(fTimeDelta, EPS_S, .1f);
+	clamp(fTimeDeltaSmoothing, EPS_S, .1f);
+
+	fTimeGlobal = TimerGlobal.GetElapsed_sec();
+	u32 _old_global = dwTimeGlobal;
+	dwTimeGlobal = TimerGlobal.GetElapsed_ms();
+	dwTimeDelta = dwTimeGlobal - _old_global;
 
 	Statistic->EngineTOTAL.Begin();
-	Device.seqFrame.Process<&pureFrame::OnFrame>();
-	g_bLoaded = true;
+	{
+		{
+			PROF_EVENT("------ [OnFrame phase] ------")
+		   Device.seqFrame.Process<&pureFrame::OnFrame>();
+		}
+		g_bLoaded = true;
+	}
 	Statistic->EngineTOTAL.End();
 }
 
-CRenderDevice::CRenderDevice() : dwPrecacheTotal(0), m_pRender(nullptr), Statistic(nullptr)
+CRenderDevice::CRenderDevice() : 
+	dwPrecacheTotal(0), m_pRender(nullptr), Statistic(nullptr), 
+	//GCThread(XRay::Engine::GCThread, "X-Ray GC Thread"),
+	PreRenderThread(XRay::Engine::PreRenderThread, "X-Ray PreRender Thread"),
+	GameThread(XRay::Engine::GameThread, "X-Ray Game Thread")
 {
 	b_is_Active = true;
 	b_is_Ready = false;

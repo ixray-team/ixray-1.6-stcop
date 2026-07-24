@@ -9,10 +9,9 @@ class TiramisuMaterialRenderProxy;
 class TiramisuRenderMaterialInterface
 {
 public:
-    
-    virtual                             ~TiramisuRenderMaterialInterface    ();
-    TiramisuMaterialRenderProxy*               MaterialRenderProxy = nullptr;
-    shared_str              	        Name = "";
-    u32                	        Counter = 1;
-    FMaterialHandle CoreMaterialHandle;
+	virtual ~TiramisuRenderMaterialInterface();
+	TiramisuMaterialRenderProxy* MaterialRenderProxy = nullptr;
+	shared_str Name = "";
+	u32 Counter = 1;
+	FMaterialHandle CoreMaterialHandle;
 };

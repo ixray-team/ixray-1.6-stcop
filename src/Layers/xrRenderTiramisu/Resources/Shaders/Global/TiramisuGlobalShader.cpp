@@ -10,14 +10,14 @@ TiramisuGlobalShader::TiramisuGlobalShader(IReader* Reader)
 }
 
 #if IXR_ENABLE_SHADER_COMPILER
-TiramisuGlobalShader::TiramisuGlobalShader(const xr_vector<char>& InData, EShaderType InType, TiramisuShaderDefinesContainer* InDefinesContainer) :
-	Type(InType), DefinesContainer(InDefinesContainer)
+TiramisuGlobalShader::TiramisuGlobalShader(const xr_vector<char>& InData, EShaderType InType, TiramisuShaderDefinesContainer* InDefinesContainer)
+	: Type(InType), DefinesContainer(InDefinesContainer)
 {
 	Data = InData;
 }
 
-TiramisuGlobalShader::TiramisuGlobalShader(unsigned char* InData, size_t Len, EShaderType InType, TiramisuShaderDefinesContainer* InDefinesContainer) :
-	Type(InType), DefinesContainer(InDefinesContainer)
+TiramisuGlobalShader::TiramisuGlobalShader(unsigned char* InData, size_t Len, EShaderType InType, TiramisuShaderDefinesContainer* InDefinesContainer)
+	: Type(InType), DefinesContainer(InDefinesContainer)
 {
 	Data.resize(Len);
 	memcpy(Data.data(), InData, Len);
@@ -35,12 +35,12 @@ bool TiramisuGlobalShader::IsEqual(EShaderType InType, TiramisuShaderDefinesCont
 	{
 		return false;
 	}
-	
+
 	if (DefinesContainer != InDefinesContainer)
 	{
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -50,12 +50,12 @@ bool TiramisuGlobalShader::IsLess(EShaderType InType, TiramisuShaderDefinesConta
 	{
 		return Type < InType;
 	}
-	
+
 	if (DefinesContainer != InDefinesContainer)
 	{
 		return DefinesContainer < InDefinesContainer;
 	}
-	
+
 	return false;
 }
 

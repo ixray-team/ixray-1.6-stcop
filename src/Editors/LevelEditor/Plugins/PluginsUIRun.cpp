@@ -2,8 +2,8 @@
 #include "PluginsUIRun.h"
 #include "PluginManager.h"
 
-CPluginUIRun::CPluginUIRun(IPluginBase* Plug):
-	InputPlugin(Plug)
+CPluginUIRun::CPluginUIRun(IPluginBase* Plug)
+	: InputPlugin(Plug)
 {
 	bOpen = true;
 	OpenImage = EDevice->Resources->_CreateTexture("ed\\bar\\open_gamedata");
@@ -41,7 +41,7 @@ void CPluginUIRun::Draw()
 			ImGui::InputText(("##" + Arg).c_str(), InputPlugin->InputArgsValues[Arg], 256);
 
 			ImGui::SameLine();
-			if (ImGui::ImageButton(("##Open" + Arg).c_str(), UI->GetImGuiTexture(OpenImage), { 10, 14 }))
+			if (ImGui::ImageButton(("##Open" + Arg).c_str(), UI->GetImGuiTexture(OpenImage), {10, 14}))
 			{
 				xr_string TempPath;
 				EFS.GetOpenName("$fs_root$", TempPath, false, nullptr, -1, "*.*");

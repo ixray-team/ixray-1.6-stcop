@@ -7,10 +7,9 @@
 class TiramisuRenderTarget2D : public TiramisuRenderTexture
 {
 public:
-                    TiramisuRenderTarget2D         (u32 InWidth, u32 InHeight,nri::Format InRenderTargetFormat, nri::ClearValue InClearValue = {}, const shared_str& InName = "None");
-    virtual         ~TiramisuRenderTarget2D        () override;
-    
+	TiramisuRenderTarget2D(u32 InWidth, u32 InHeight, nri::Format InRenderTargetFormat, nri::ClearValue InClearValue = {}, const shared_str& InName = "None");
+	virtual ~TiramisuRenderTarget2D() override;
 
-    
-    TiramisuRenderTargetResourceProxy*	    RenderTargetResourceProxy = nullptr;
+
+	TiramisuRenderTargetResourceProxy* RenderTargetResourceProxy = nullptr;
 };

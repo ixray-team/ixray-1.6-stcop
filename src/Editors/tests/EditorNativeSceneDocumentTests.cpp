@@ -23,7 +23,8 @@ void WriteText(const std::filesystem::path& Path, const xr_string& Text)
 
 FEditorNativeSceneSelectionFrustum MakeBoxFrustum(
 	const xr_array<float, 3>& Minimum,
-	const xr_array<float, 3>& Maximum)
+	const xr_array<float, 3>& Maximum
+)
 {
 	FEditorNativeSceneSelectionFrustum Frustum;
 	Frustum.Planes = {
@@ -32,7 +33,8 @@ FEditorNativeSceneSelectionFrustum MakeBoxFrustum(
 		{{0.0f, 1.0f, 0.0f}, -Maximum[1]},
 		{{0.0f, -1.0f, 0.0f}, Minimum[1]},
 		{{0.0f, 0.0f, 1.0f}, -Maximum[2]},
-		{{0.0f, 0.0f, -1.0f}, Minimum[2]}};
+		{{0.0f, 0.0f, -1.0f}, Minimum[2]}
+	};
 	return Frustum;
 }
 } // namespace
@@ -43,7 +45,8 @@ int main()
 	const std::filesystem::path Root =
 		std::filesystem::temp_directory_path() /
 		("ixray-native-scene-document-" + std::to_string(
-			std::chrono::steady_clock::now().time_since_epoch().count()));
+											  std::chrono::steady_clock::now().time_since_epoch().count()
+										  ));
 	struct FCleanup
 	{
 		std::filesystem::path Path;
@@ -56,23 +59,29 @@ int main()
 	std::error_code Error;
 	std::filesystem::create_directories(Root, Error);
 	if (Error)
+	{
 		return Fail("Cannot create test directory");
+	}
 
 	FStaticMeshAsset Mesh;
 	Mesh.Id = "a520c30d-b7a7-4a65-9915-558343d43d9a";
 	Mesh.Name = "Triangle";
 	Mesh.MaterialSlots.push_back(
-		{"Surface", "128e21af-5c6f-4ec4-a2e3-8b44f90cb553", false});
+		{"Surface", "128e21af-5c6f-4ec4-a2e3-8b44f90cb553", false}
+	);
 	Mesh.Vertices = {
 		{{{-1.0f, -1.0f, 0.0f}}},
 		{{{0.0f, 1.0f, 0.0f}}},
-		{{{1.0f, -1.0f, 0.0f}}}};
+		{{{1.0f, -1.0f, 0.0f}}}
+	};
 	Mesh.Indices = {0, 1, 2};
 	Mesh.Sections.push_back({0, 3, 0});
 	const std::filesystem::path MeshPath =
 		Root / "triangle.static-mesh.json";
 	if (!SaveStaticMeshAsset(MeshPath, Mesh).Succeeded())
+	{
 		return Fail("Cannot save binary native static mesh");
+	}
 
 	FRenderSceneAsset Scene;
 	Scene.Id = "eb39395e-57b0-4bd7-a79b-f81062cf36ec";
@@ -95,8 +104,7 @@ int main()
 	}
 
 	const u64 ObjectId = StableSceneIdHash(Component.Id);
-	if (!Document.SelectObject(ObjectId,
-			EEditorNativeSceneSelectionMode::Replace) ||
+	if (!Document.SelectObject(ObjectId, EEditorNativeSceneSelectionMode::Replace) ||
 		Document.GetSelectionCount() != 1 ||
 		!Document.IsComponentSelected(Component.Id))
 	{
@@ -120,19 +128,20 @@ int main()
 	}
 
 	if (!Document.Undo() || Document.IsDirty() ||
-		Document.GetScene()->Scene.StaticMeshComponents[0]
-			.LocalToWorld[12] != 0.0f ||
+		Document.GetScene()->Scene.StaticMeshComponents[0].LocalToWorld[12] != 0.0f ||
 		!Document.Redo() || !Document.IsDirty())
 	{
 		return Fail("Native undo/redo did not restore document state");
 	}
 
 	if (!Document.Save(Diagnostic) || Document.IsDirty())
+	{
 		return Fail("Native scene save failed");
+	}
 	const FResolvedRenderSceneResult Reloaded = LoadRenderSceneAsset(ScenePath);
 	if (!Reloaded.Succeeded() ||
 		Reloaded.Value.Scene.StaticMeshComponents[0]
-			.LocalToWorld[12] != 1.5f)
+				.LocalToWorld[12] != 1.5f)
 	{
 		return Fail("Saved native scene did not round-trip");
 	}
@@ -174,18 +183,15 @@ int main()
 	}
 	const u64 RevisionBeforeInvalidOverride =
 		Document.GetRevision();
-	if (Document.SetSelectedMaterialOverride(5, "invalid", false,
-			Diagnostic) ||
+	if (Document.SetSelectedMaterialOverride(5, "invalid", false, Diagnostic) ||
 		Document.GetRevision() != RevisionBeforeInvalidOverride)
 	{
 		return Fail("Invalid native material override changed the scene");
 	}
-	if (!Document.SetSelectedComponentName("Renamed component",
-			Diagnostic) ||
+	if (!Document.SetSelectedComponentName("Renamed component", Diagnostic) ||
 		!Document.SetSelectedComponentVisibility(false) ||
 		!Document.SetSelectedComponentPosition({2.0f, 3.0f, 4.0f}) ||
-		!Document.SetSelectedMaterialOverride(0,
-			"generated/test.material-instance.json", true, Diagnostic))
+		!Document.SetSelectedMaterialOverride(0, "generated/test.material-instance.json", true, Diagnostic))
 	{
 		return Fail("Native component details edit failed");
 	}
@@ -204,21 +210,27 @@ int main()
 	}
 	if (!Document.Undo() ||
 		Document.GetSingleSelectedComponentDetails()
-			->MaterialSlots[0].HasOverride ||
+			->MaterialSlots[0]
+			.HasOverride ||
 		!Document.Redo() ||
 		!Document.GetSingleSelectedComponentDetails()
-			->MaterialSlots[0].HasOverride ||
+			 ->MaterialSlots[0]
+			 .HasOverride ||
 		!Document.ClearSelectedMaterialOverride(0, Diagnostic) ||
 		Document.GetSingleSelectedComponentDetails()
-			->MaterialSlots[0].HasOverride ||
+			->MaterialSlots[0]
+			.HasOverride ||
 		!Document.Undo() ||
 		!Document.GetSingleSelectedComponentDetails()
-			->MaterialSlots[0].HasOverride)
+			 ->MaterialSlots[0]
+			 .HasOverride)
 	{
 		return Fail("Native material override undo/clear failed");
 	}
 	if (!Document.Save(Diagnostic))
+	{
 		return Fail("Native component details save failed");
+	}
 	const FResolvedRenderSceneResult DetailsReloaded =
 		LoadRenderSceneAsset(Document.GetSourcePath());
 	if (!DetailsReloaded.Succeeded() ||
@@ -226,7 +238,7 @@ int main()
 			"Renamed component" ||
 		DetailsReloaded.Value.Scene.StaticMeshComponents[0].Visible ||
 		DetailsReloaded.Value.Scene.StaticMeshComponents[0]
-			.MaterialOverrides.size() != 1)
+				.MaterialOverrides.size() != 1)
 	{
 		return Fail("Native component details did not round-trip");
 	}
@@ -235,7 +247,8 @@ int main()
 		FStaticMeshComponent{}.LocalToWorld;
 	AddedTransform[12] = 4.0f;
 	if (!Document.AddStaticMeshComponent(
-			MeshPath, AddedTransform, Diagnostic) ||
+			MeshPath, AddedTransform, Diagnostic
+		) ||
 		Document.GetSelectionCount() != 1 ||
 		Document.GetScene()->Scene.StaticMeshComponents.size() != 2 ||
 		Document.RemoveSelected() != 1 ||
@@ -255,13 +268,17 @@ int main()
 	OtherMesh.Id = "7f9313b7-9347-4cbe-adc2-c4dbb0563787";
 	OtherMesh.Name = "Other triangle";
 	OtherMesh.MaterialSlots[0] = {
-		"Coating", "0de31eb6-0fba-4f89-8f61-355d1d59b5e0", false};
+		"Coating", "0de31eb6-0fba-4f89-8f61-355d1d59b5e0", false
+	};
 	OtherMesh.MaterialSlots.push_back(
-		{"Detail", "573bbb5a-8cd8-46b5-89e2-89c037340ce7", true});
+		{"Detail", "573bbb5a-8cd8-46b5-89e2-89c037340ce7", true}
+	);
 	const std::filesystem::path OtherMeshPath =
 		Root / "other.static-mesh.json";
 	if (!SaveStaticMeshAsset(OtherMeshPath, OtherMesh).Succeeded())
+	{
 		return Fail("Cannot save heterogeneous bulk-details mesh");
+	}
 
 	FRenderSceneAsset SelectionScene;
 	SelectionScene.Id = "0a2ec6b2-ee69-4b51-975f-a5590c9d78cf";
@@ -270,7 +287,8 @@ int main()
 	SelectionNear.Id = "8e90aa84-b289-4862-b6ba-19b4dcd91f71";
 	SelectionNear.Name = "Near";
 	SelectionNear.MaterialOverrides.push_back(
-		{0, "legacy/near.material-instance.json", true});
+		{0, "legacy/near.material-instance.json", true}
+	);
 	FStaticMeshComponent SelectionFar = Component;
 	SelectionFar.Id = "8fca2359-b73d-45ce-9291-f987aed5dafc";
 	SelectionFar.Name = "Far";
@@ -281,18 +299,20 @@ int main()
 	SelectionHidden.Name = "Hidden";
 	SelectionHidden.Visible = false;
 	SelectionScene.StaticMeshComponents = {
-		SelectionNear, SelectionFar, SelectionHidden};
+		SelectionNear, SelectionFar, SelectionHidden
+	};
 	const std::filesystem::path SelectionScenePath =
 		Root / "selection.render-scene.json";
-	WriteText(SelectionScenePath,
-		SerializeRenderSceneAssetJson(SelectionScene));
+	WriteText(SelectionScenePath, SerializeRenderSceneAssetJson(SelectionScene));
 	if (!Document.OpenRenderScene(SelectionScenePath, Diagnostic))
+	{
 		return Fail("Rectangle selection scene did not open");
+	}
 
 	const xr_array<xr_string, 2> BulkSelection = {
-		SelectionNear.Id, SelectionFar.Id};
-	if (Document.SelectComponents(BulkSelection,
-			EEditorNativeSceneSelectionMode::Replace) != 2 ||
+		SelectionNear.Id, SelectionFar.Id
+	};
+	if (Document.SelectComponents(BulkSelection, EEditorNativeSceneSelectionMode::Replace) != 2 ||
 		Document.GetSelectionCount() != 2)
 	{
 		return Fail("Native outliner bulk selection failed");
@@ -326,16 +346,13 @@ int main()
 	}
 	const u64 RevisionBeforeInvalidBulk =
 		Document.GetRevision();
-	if (Document.SetSelectedComponentsMaterialOverride(1,
-			"invalid", std::nullopt, Diagnostic) ||
+	if (Document.SetSelectedComponentsMaterialOverride(1, "invalid", std::nullopt, Diagnostic) ||
 		Document.ClearSelectedMaterialOverride(1, Diagnostic) ||
 		Document.GetRevision() != RevisionBeforeInvalidBulk)
 	{
 		return Fail("Invalid bulk material slot changed the scene");
 	}
-	if (!Document.SetSelectedComponentsMaterialOverride(0,
-			"generated/bulk.material-instance.json", std::nullopt,
-			Diagnostic))
+	if (!Document.SetSelectedComponentsMaterialOverride(0, "generated/bulk.material-instance.json", std::nullopt, Diagnostic))
 	{
 		return Fail("Native bulk material override failed");
 	}
@@ -353,27 +370,19 @@ int main()
 		return Fail("Bulk material edit did not preserve mixed TwoSided");
 	}
 	if (!Document.Undo() || Document.IsDirty() ||
-		Document.GetScene()->Scene.StaticMeshComponents[0]
-			.MaterialOverrides.size() != 1 ||
-		!Document.GetScene()->Scene.StaticMeshComponents[1]
-			.MaterialOverrides.empty() ||
+		Document.GetScene()->Scene.StaticMeshComponents[0].MaterialOverrides.size() != 1 ||
+		!Document.GetScene()->Scene.StaticMeshComponents[1].MaterialOverrides.empty() ||
 		!Document.Redo() ||
-		!Document.SetSelectedMaterialOverride(0,
-			"generated/bulk-explicit.material-instance.json", true,
-			Diagnostic) ||
-		!Document.GetScene()->Scene.StaticMeshComponents[0]
-			.MaterialOverrides[0].TwoSided ||
-		!Document.GetScene()->Scene.StaticMeshComponents[1]
-			.MaterialOverrides[0].TwoSided ||
+		!Document.SetSelectedMaterialOverride(0, "generated/bulk-explicit.material-instance.json", true, Diagnostic) ||
+		!Document.GetScene()->Scene.StaticMeshComponents[0].MaterialOverrides[0].TwoSided ||
+		!Document.GetScene()->Scene.StaticMeshComponents[1].MaterialOverrides[0].TwoSided ||
 		!Document.Undo())
 	{
 		return Fail("Bulk material override was not one undo record");
 	}
 	if (!Document.ClearSelectedMaterialOverride(0, Diagnostic) ||
-		!Document.GetScene()->Scene.StaticMeshComponents[0]
-			.MaterialOverrides.empty() ||
-		!Document.GetScene()->Scene.StaticMeshComponents[1]
-			.MaterialOverrides.empty() ||
+		!Document.GetScene()->Scene.StaticMeshComponents[0].MaterialOverrides.empty() ||
+		!Document.GetScene()->Scene.StaticMeshComponents[1].MaterialOverrides.empty() ||
 		!Document.Undo() || !Document.Undo() || Document.IsDirty())
 	{
 		return Fail("Bulk material clear/undo did not restore baseline");
@@ -444,8 +453,7 @@ int main()
 	{
 		return Fail("Native duplicate did not preserve data/undo atomically");
 	}
-	if (Document.SelectComponents(BulkSelection,
-			EEditorNativeSceneSelectionMode::Replace) != 2)
+	if (Document.SelectComponents(BulkSelection, EEditorNativeSceneSelectionMode::Replace) != 2)
 	{
 		return Fail("Cannot prepare native clipboard test");
 	}
@@ -470,10 +478,8 @@ int main()
 	}
 
 	const FEditorNativeSceneSelectionFrustum NearFrustum =
-		MakeBoxFrustum({-0.1f, -0.1f, -1.0f},
-			{0.1f, 0.1f, 1.0f});
-	if (Document.SelectFrustum(NearFrustum,
-			EEditorNativeSceneSelectionMode::Replace) != 1 ||
+		MakeBoxFrustum({-0.1f, -0.1f, -1.0f}, {0.1f, 0.1f, 1.0f});
+	if (Document.SelectFrustum(NearFrustum, EEditorNativeSceneSelectionMode::Replace) != 1 ||
 		Document.GetSelectionCount() != 1 ||
 		!Document.IsComponentSelected(SelectionNear.Id) ||
 		Document.IsComponentSelected(SelectionHidden.Id))
@@ -481,31 +487,25 @@ int main()
 		return Fail("Native rectangle replace selection failed");
 	}
 	const FEditorNativeSceneSelectionFrustum FarFrustum =
-		MakeBoxFrustum({4.0f, -2.0f, -1.0f},
-			{8.0f, 2.0f, 1.0f});
-	if (Document.SelectFrustum(FarFrustum,
-			EEditorNativeSceneSelectionMode::Add) != 1 ||
+		MakeBoxFrustum({4.0f, -2.0f, -1.0f}, {8.0f, 2.0f, 1.0f});
+	if (Document.SelectFrustum(FarFrustum, EEditorNativeSceneSelectionMode::Add) != 1 ||
 		Document.GetSelectionCount() != 2 ||
 		!Document.IsComponentSelected(SelectionFar.Id) ||
-		Document.SelectFrustum(NearFrustum,
-			EEditorNativeSceneSelectionMode::Remove) != 1 ||
+		Document.SelectFrustum(NearFrustum, EEditorNativeSceneSelectionMode::Remove) != 1 ||
 		Document.GetSelectionCount() != 1 ||
 		!Document.IsComponentSelected(SelectionFar.Id) ||
-		Document.SelectFrustum(FarFrustum,
-			EEditorNativeSceneSelectionMode::Toggle) != 1 ||
+		Document.SelectFrustum(FarFrustum, EEditorNativeSceneSelectionMode::Toggle) != 1 ||
 		Document.GetSelectionCount() != 0)
 	{
 		return Fail("Native rectangle add/remove/toggle selection failed");
 	}
-	if (!Document.SelectObject(StableSceneIdHash(SelectionFar.Id),
-			EEditorNativeSceneSelectionMode::Replace))
+	if (!Document.SelectObject(StableSceneIdHash(SelectionFar.Id), EEditorNativeSceneSelectionMode::Replace))
 	{
 		return Fail("Cannot prepare invalid-frustum selection test");
 	}
 	FEditorNativeSceneSelectionFrustum InvalidFrustum;
 	InvalidFrustum.Planes.push_back({});
-	if (Document.SelectFrustum(InvalidFrustum,
-			EEditorNativeSceneSelectionMode::Replace) != 0 ||
+	if (Document.SelectFrustum(InvalidFrustum, EEditorNativeSceneSelectionMode::Replace) != 0 ||
 		Document.GetSelectionCount() != 1 ||
 		!Document.IsComponentSelected(SelectionFar.Id))
 	{
@@ -527,7 +527,9 @@ int main()
 	}
 	Document.NewRenderScene("Clipboard target scene");
 	if (Document.GetWorldBounds(false))
+	{
 		return Fail("Empty native scene unexpectedly has world bounds");
+	}
 	if (Document.PasteClipboard(Diagnostic) != 1 ||
 		Document.GetSelectionCount() != 1 ||
 		Document.GetScene()->Scene.StaticMeshComponents.size() != 1 ||
@@ -538,7 +540,9 @@ int main()
 	const std::filesystem::path ClipboardScenePath =
 		Root / "clipboard.render-scene.json";
 	if (!Document.SaveAs(ClipboardScenePath, Diagnostic))
+	{
 		return Fail("Cross-scene clipboard target did not save");
+	}
 	const FResolvedRenderSceneResult ClipboardReloaded =
 		LoadRenderSceneAsset(ClipboardScenePath);
 	if (!ClipboardReloaded.Succeeded() ||
@@ -552,7 +556,9 @@ int main()
 
 	Document.Close();
 	if (Document.IsOpen() || Document.GetSelectionCount() != 0)
+	{
 		return Fail("Closing native document did not clear state");
+	}
 	Document.NewRenderScene("Empty native scene");
 	if (!Document.IsOpen() || !Document.IsEditableRenderScene() ||
 		!Document.IsDirty() || !Document.GetSourcePath().empty() ||
@@ -589,7 +595,8 @@ int main()
 	LightTransform[13] = 4.0f;
 	LightTransform[14] = 5.0f;
 	if (!Document.AddLightComponent(
-			ELightType::Spot, LightTransform, Diagnostic) ||
+			ELightType::Spot, LightTransform, Diagnostic
+		) ||
 		Document.GetSelectionCount() != 1 ||
 		Document.GetScene()->Scene.Version != RenderSceneAssetVersion ||
 		Document.GetScene()->Scene.LightComponents.size() != 1)
@@ -677,8 +684,7 @@ int main()
 		Document.GetScene()->Scene.LightComponents[1].Intensity != 6.0f ||
 		!Document.Undo() ||
 		Document.GetScene()->Scene.LightComponents.size() != 1 ||
-		!Document.SelectObject(StableSceneIdHash(OriginalLightId),
-			EEditorNativeSceneSelectionMode::Replace))
+		!Document.SelectObject(StableSceneIdHash(OriginalLightId), EEditorNativeSceneSelectionMode::Replace))
 	{
 		return Fail("Native light copy/cut/paste/undo failed");
 	}
@@ -692,8 +698,7 @@ int main()
 	{
 		return Fail("Native light duplicate/undo failed");
 	}
-	if (!Document.SelectObject(StableSceneIdHash(OriginalLightId),
-			EEditorNativeSceneSelectionMode::Replace) ||
+	if (!Document.SelectObject(StableSceneIdHash(OriginalLightId), EEditorNativeSceneSelectionMode::Replace) ||
 		Document.SetSelectedComponentsVisibility(false) != 1 ||
 		Document.GetScene()->Scene.LightComponents[0].Visible ||
 		!Document.Undo() ||
@@ -702,10 +707,8 @@ int main()
 		return Fail("Native light selection/visibility failed");
 	}
 	const FEditorNativeSceneSelectionFrustum LightFrustum =
-		MakeBoxFrustum({2.0f, 3.0f, 4.0f},
-			{4.0f, 5.0f, 6.0f});
-	if (Document.SelectFrustum(LightFrustum,
-			EEditorNativeSceneSelectionMode::Replace) != 1 ||
+		MakeBoxFrustum({2.0f, 3.0f, 4.0f}, {4.0f, 5.0f, 6.0f});
+	if (Document.SelectFrustum(LightFrustum, EEditorNativeSceneSelectionMode::Replace) != 1 ||
 		!Document.IsComponentSelected(OriginalLightId) ||
 		Document.RemoveSelected() != 1 ||
 		!Document.GetScene()->Scene.LightComponents.empty() ||
@@ -715,7 +718,9 @@ int main()
 		return Fail("Native light frustum/remove/undo failed");
 	}
 	if (!Document.Save(Diagnostic))
+	{
 		return Fail("Native light scene did not save");
+	}
 	const FResolvedRenderSceneResult LightReloaded =
 		LoadRenderSceneAsset(Document.GetSourcePath());
 	if (!LightReloaded.Succeeded() ||
@@ -728,8 +733,7 @@ int main()
 		return Fail("Native light did not round-trip through Save");
 	}
 
-	if (!Document.SelectObject(StableSceneIdHash(OriginalLightId),
-			EEditorNativeSceneSelectionMode::Replace) ||
+	if (!Document.SelectObject(StableSceneIdHash(OriginalLightId), EEditorNativeSceneSelectionMode::Replace) ||
 		Document.CopySelectedToClipboard(Diagnostic) != 1)
 	{
 		return Fail("Cannot prepare cross-scene light clipboard");
@@ -749,7 +753,9 @@ int main()
 	const std::filesystem::path LightClipboardScenePath =
 		Root / "light-clipboard.render-scene.json";
 	if (!Document.SaveAs(LightClipboardScenePath, Diagnostic))
+	{
 		return Fail("Cross-scene light clipboard target did not save");
+	}
 	const FResolvedRenderSceneResult LightClipboardReloaded =
 		LoadRenderSceneAsset(LightClipboardScenePath);
 	if (!LightClipboardReloaded.Succeeded() ||
@@ -770,12 +776,13 @@ int main()
 	LegacyDocumentScene.Name = "Legacy native scene";
 	const std::filesystem::path LegacyDocumentPath =
 		Root / "legacy-v1.render-scene.json";
-	WriteText(LegacyDocumentPath,
-		SerializeRenderSceneAssetJson(LegacyDocumentScene));
+	WriteText(LegacyDocumentPath, SerializeRenderSceneAssetJson(LegacyDocumentScene));
 	if (!Document.OpenRenderScene(LegacyDocumentPath, Diagnostic) ||
 		!Document.AddLightComponent(
 			ELightType::Point,
-			FLightComponent{}.LocalToWorld, Diagnostic) ||
+			FLightComponent{}.LocalToWorld,
+			Diagnostic
+		) ||
 		Document.GetScene()->Scene.Version != RenderSceneAssetVersion ||
 		!Document.Save(Diagnostic))
 	{

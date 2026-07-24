@@ -13,11 +13,17 @@
 #include "UI_ToolsCustom.h"
 #include "SoundProcessor.h"
 #include "device_win_custom.h"
-CEditorRenderDevice 	*	EDevice;
+CEditorRenderDevice* EDevice;
 bool g_bIsEditor;
 
-void CEditorRenderDevice::AddSeqFrame(pureFrame* f, bool mt) { seqFrame.Add(f, REG_PRIORITY_LOW); }
-void CEditorRenderDevice::RemoveSeqFrame(pureFrame* f) { seqFrame.Remove(f); }
+void CEditorRenderDevice::AddSeqFrame(pureFrame* f, bool mt)
+{
+	seqFrame.Add(f, REG_PRIORITY_LOW);
+}
+void CEditorRenderDevice::RemoveSeqFrame(pureFrame* f)
+{
+	seqFrame.Remove(f);
+}
 
 ENGINE_API xr_atomic_bool g_bRendering;
 //---------------------------------------------------------------------------
@@ -32,14 +38,14 @@ static LPVOID __cdecl luabind_allocator(
 {
 	if (!size)
 	{
-		LPVOID	non_const_pointer = const_cast<LPVOID>(pointer);
+		LPVOID non_const_pointer = const_cast<LPVOID>(pointer);
 		xr_free(non_const_pointer);
-		return	(nullptr);
+		return (nullptr);
 	}
 
 	if (!pointer)
 	{
-		return	(Memory.mem_alloc(size));
+		return (Memory.mem_alloc(size));
 	}
 
 	LPVOID non_const_pointer = const_cast<LPVOID>(pointer);
@@ -56,36 +62,36 @@ void setup_luabind_allocator()
 CEditorRenderDevice::CEditorRenderDevice()
 {
 	RenderRadius = 400;
-	psDeviceFlags.assign(rsStatistic|rsFilterLinear|rsFog|rsDrawGrid);
-// default initialization
-    m_ScreenQuality = 1.f;
+	psDeviceFlags.assign(rsStatistic | rsFilterLinear | rsFog | rsDrawGrid);
+	// default initialization
+	m_ScreenQuality = 1.f;
 
-    TargetWidth = TargetHeight 	= 256;
+	TargetWidth = TargetHeight = 256;
 	Width = Height = 256;
 	mProject.identity();
-    mFullTransform.identity();
-    mView.identity	();
-	m_WireShader	= nullptr;
+	mFullTransform.identity();
+	mView.identity();
+	m_WireShader = nullptr;
 	m_SelectionShader = nullptr;
 
-    b_is_Ready 			= false;
-	b_is_Active			= false;
+	b_is_Ready = false;
+	b_is_Active = false;
 
 	// Engine flow-control
-	fTimeDelta		= 0;
-	fTimeGlobal		= 0;
-	dwTimeDelta		= 0;
-	dwTimeGlobal	= 0;
+	fTimeDelta = 0;
+	fTimeGlobal = 0;
+	dwTimeDelta = 0;
+	dwTimeGlobal = 0;
 
-	dwFillMode		= D3DFILL_SOLID;
-    dwShadeMode		= D3DSHADE_GOURAUD;
+	dwFillMode = D3DFILL_SOLID;
+	dwShadeMode = D3DSHADE_GOURAUD;
 
-    m_CurrentShader	= nullptr;
-    //pSystemFont		= 0;
+	m_CurrentShader = nullptr;
+	// pSystemFont		= 0;
 
-	fASPECT 		= 1.f;
-	fFOV 			= 60.f;
-    dwPrecacheFrame = 0;
+	fASPECT = 1.f;
+	fFOV = 60.f;
+	dwPrecacheFrame = 0;
 	GameMaterialLibraryEditors = new XrGameMaterialLibraryEditors();
 	PGMLib = GameMaterialLibraryEditors;
 
@@ -112,7 +118,7 @@ typedef void __cdecl ttapi_Done_func(void);
 
 void CEditorRenderDevice::Initialize()
 {
-    m_DefaultMat.set(1,1,1);
+	m_DefaultMat.set(1, 1, 1);
 
 	RenderFactory = &RenderFactoryImpl;
 	UIRender = &UIRenderImpl;
@@ -122,20 +128,23 @@ void CEditorRenderDevice::Initialize()
 #endif
 
 	// compiler shader
-    string_path fn;
-    FS.update_path(fn,_game_data_,"shaders_xrlc.xr");
-    if (FS.exist(fn)){
-    	ShaderXRLC.Load(fn);
-    }else{
-    	ELog.DlgMsg(mtInformation,"Can't find file '%s'",fn);
-    }
+	string_path fn;
+	FS.update_path(fn, _game_data_, "shaders_xrlc.xr");
+	if (FS.exist(fn))
+	{
+		ShaderXRLC.Load(fn);
+	}
+	else
+	{
+		ELog.DlgMsg(mtInformation, "Can't find file '%s'", fn);
+	}
 	CreateWindow();
 
 
 	// Startup shaders
 	Create();
 
-    ::RImplementation.Initialize();
+	::RImplementation.Initialize();
 	UIRenderImpl.CreateUIGeom();
 
 	Resize(EPrefs->start_w, EPrefs->start_h, EPrefs->start_maximized);
@@ -144,11 +153,13 @@ void CEditorRenderDevice::Initialize()
 	SDL_GetWindowPosition(g_AppInfo.Window, &PosX, &PosY);
 
 	if (EPrefs->start_maximized)
+	{
 		SDL_MaximizeWindow(g_AppInfo.Window);
-	
+	}
+
 	SDL_ShowWindow(g_AppInfo.Window);
 	SDL_RaiseWindow(g_AppInfo.Window);
-	
+
 
 	if (psDeviceFlags.test(mtSound))
 	{
@@ -163,9 +174,9 @@ void CEditorRenderDevice::Initialize()
 void CEditorRenderDevice::ShutDown()
 {
 	UIRenderImpl.DestroyUIGeom();
-	::RImplementation.ShutDown	();
+	::RImplementation.ShutDown();
 
-	ShaderXRLC.Unload	();
+	ShaderXRLC.Unload();
 
 	// destroy context
 	Destroy();
@@ -185,7 +196,8 @@ void CEditorRenderDevice::InitTimer()
 	Timer_MM_Delta = 0;
 	{
 		u32 time_mm = clock();
-		while (clock() == time_mm);			// wait for next tick
+		while (clock() == time_mm)
+			; // wait for next tick
 		u32 time_system = clock();
 		u32 time_local = TimerAsync();
 		Timer_MM_Delta = time_system - time_local;
@@ -209,61 +221,72 @@ void CEditorRenderDevice::Clear()
 }
 
 //---------------------------------------------------------------------------
-void CEditorRenderDevice::RenderNearer(float n){
-    mProject._43=m_fNearer-n;
-    RCache.set_xform_project(mProject);
+void CEditorRenderDevice::RenderNearer(float n)
+{
+	mProject._43 = m_fNearer - n;
+	RCache.set_xform_project(mProject);
 }
-void CEditorRenderDevice::ResetNearer(){
-    mProject._43=m_fNearer;
-    RCache.set_xform_project(mProject);
+void CEditorRenderDevice::ResetNearer()
+{
+	mProject._43 = m_fNearer;
+	RCache.set_xform_project(mProject);
 }
 //---------------------------------------------------------------------------
 bool CEditorRenderDevice::Create()
 {
-	if (b_is_Ready)	return false;
+	if (b_is_Ready)
+	{
+		return false;
+	}
 	psDeviceFlags.set(rsVSync, true);
 
 	TimerGlobal.Start();
-	//Statistic = EStatistic;
-	ELog.Msg(mtInformation,"Starting RENDER device...");
+	// Statistic = EStatistic;
+	ELog.Msg(mtInformation, "Starting RENDER device...");
 
 
-	//HW.CreateDevice		(m_hWnd, true);
+	// HW.CreateDevice		(m_hWnd, true);
 	if (UI)
 	{
 		HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
-		string_path 		ini_path;
-		string_path			ini_name;
-		xr_strcpy			(ini_name, UI->EditorName());
-		xr_strcat			(ini_name, "_imgui.ini");
+		string_path ini_path;
+		string_path ini_name;
+		xr_strcpy(ini_name, UI->EditorName());
+		xr_strcat(ini_name, "_imgui.ini");
 		FS.update_path(ini_path, "$app_data_root$", ini_name);
-		
+
 		if (!FS.exist(ini_path))
+		{
 			UI->ResetUI();
-		
+		}
+
 		InitRenderDeviceEditor();
 		UI->Initialize(hwnd, ini_path);
 	}
-	
+
 	// after creation
-	dwFrame				= 0;
+	dwFrame = 0;
 
-	string_path 		sh;
-    FS.update_path		(sh,_game_data_,"shaders.xr");
+	string_path sh;
+	FS.update_path(sh, _game_data_, "shaders.xr");
 
-    IReader* F			= nullptr;
+	IReader* F = nullptr;
 	if (FS.exist(sh))
-		F				= FS.r_open(nullptr,sh);
-	Resources			= new CResourceManager	();
+	{
+		F = FS.r_open(nullptr, sh);
+	}
+	Resources = new CResourceManager();
 
-    // if build options - load textures immediately
-    if (strstr(Core.Params,"-build")||strstr(Core.Params,"-ebuild"))
-        EDevice->Resources->DeferredLoad(false);
+	// if build options - load textures immediately
+	if (strstr(Core.Params, "-build") || strstr(Core.Params, "-ebuild"))
+	{
+		EDevice->Resources->DeferredLoad(false);
+	}
 
 	g_FontManager = new CFontManager();
 
-    _Create				(F);
-	FS.r_close			(F);
+	_Create(F);
+	FS.r_close(F);
 
 	::Render->create();
 
@@ -271,7 +294,7 @@ bool CEditorRenderDevice::Create()
 
 	Statistic = new CEStats();
 
-	ELog.Msg			(mtInformation, "D3D: initialized");
+	ELog.Msg(mtInformation, "D3D: initialized");
 
 	return true;
 }
@@ -279,7 +302,10 @@ bool CEditorRenderDevice::Create()
 //---------------------------------------------------------------------------
 void CEditorRenderDevice::Destroy()
 {
-	if (!b_is_Ready) return;
+	if (!b_is_Ready)
+	{
+		return;
+	}
 	ELog.Msg(mtInformation, "Destroying Direct3D...");
 
 	SearchIcon.destroy();
@@ -297,7 +323,7 @@ void CEditorRenderDevice::Destroy()
 //---------------------------------------------------------------------------
 void CEditorRenderDevice::_SetupStates()
 {
-	//Caps.Update();
+	// Caps.Update();
 #if 0
 	for (u32 i=0; i<Caps.raster.dwStages; i++){
 		float fBias = -1.f;
@@ -318,19 +344,19 @@ void CEditorRenderDevice::_SetupStates()
 	EDevice->SetRS(D3DRS_AMBIENTMATERIALSOURCE, D3DMCS_MATERIAL);
 	EDevice->SetRS(D3DRS_EMISSIVEMATERIALSOURCE,D3DMCS_COLOR1	);
 #endif
-    ResetMaterial();
+	ResetMaterial();
 }
 //---------------------------------------------------------------------------
 void CEditorRenderDevice::_Create(IReader* F)
 {
-	b_is_Ready				= true;
+	b_is_Ready = true;
 
 	// General Render States
-    _SetupStates		();
-    
-    RCache.OnDeviceCreate		();
-	Resources->OnDeviceCreate	(F);
-	::RImplementation.OnDeviceCreate	();
+	_SetupStates();
+
+	RCache.OnDeviceCreate();
+	Resources->OnDeviceCreate(F);
+	::RImplementation.OnDeviceCreate();
 
 	m_WireShader.create("editor\\wire");
 	m_SelectionShader.create("editor\\selection");
@@ -341,29 +367,29 @@ void CEditorRenderDevice::_Create(IReader* F)
 	UIChooseForm::SetNullTexture(texture_null->get_SRView()->GetRawSRV());
 
 	// signal another objects
-    UI->OnDeviceCreate			();       
+	UI->OnDeviceCreate();
 
 	EDevice->InitWindowStyle();
 }
 
-void CEditorRenderDevice::_Destroy(bool	bKeepTextures)
+void CEditorRenderDevice::_Destroy(bool bKeepTextures)
 {
-	b_is_Ready 						= false;
-    m_CurrentShader				= nullptr;
+	b_is_Ready = false;
+	m_CurrentShader = nullptr;
 
-    UI->OnDeviceDestroy			();
+	UI->OnDeviceDestroy();
 
-	m_WireShader.destroy		();
-	m_SelectionShader.destroy	();
-	ShaderTL.destroy	();
-	texture_null.destroy		();
+	m_WireShader.destroy();
+	m_SelectionShader.destroy();
+	ShaderTL.destroy();
+	texture_null.destroy();
 
-	::RImplementation.Models->OnDeviceDestroy	();
+	::RImplementation.Models->OnDeviceDestroy();
 
-	Resources->OnDeviceDestroy	(bKeepTextures);
+	Resources->OnDeviceDestroy(bKeepTextures);
 
-	RCache.OnDeviceDestroy		();
-	::RImplementation.OnDeviceDestroy	();
+	RCache.OnDeviceDestroy();
+	::RImplementation.OnDeviceDestroy();
 }
 
 //---------------------------------------------------------------------------
@@ -420,7 +446,8 @@ void CEditorRenderDevice::Reset(IReader* F, bool bKeepTextures)
 void CEditorRenderDevice::MaximizedWindow()
 {
 	auto hwnd = GetHWND();
-	if (EDevice->isZoomed) {
+	if (EDevice->isZoomed)
+	{
 		ResoreWindow(false);
 		return;
 	}
@@ -437,12 +464,12 @@ void CEditorRenderDevice::ResoreWindow(bool moving)
 	WINDOWPLACEMENT wp{};
 	wp.length = sizeof(wp);
 
-	if (GetWindowPlacement(GetHWND(), &wp)) //analog EDevice->NormalWinSizeSaved
+	if (GetWindowPlacement(GetHWND(), &wp)) // analog EDevice->NormalWinSizeSaved
 	{
 		RECT r = wp.rcNormalPosition;
 		MoveWindow(GetHWND(), r.left, r.top, r.right - r.left, r.bottom - r.top, true);
 	}
-	
+
 	EDevice->isZoomed = false;
 }
 
@@ -460,14 +487,14 @@ bool CEditorRenderDevice::Begin()
 
 	RCache.OnFrameBegin();
 	g_bRendering = true;
-	return		true;
+	return true;
 }
 
 //---------------------------------------------------------------------------
 void CEditorRenderDevice::End()
 {
 	VERIFY(b_is_Ready);
-	g_bRendering = 	false;
+	g_bRendering = false;
 	// end scene
 	RCache.OnFrameEnd();
 	if (UI && UI->UsesExternalMainPresentation())
@@ -486,16 +513,16 @@ void CEditorRenderDevice::End()
 
 void CEditorRenderDevice::UpdateView()
 {
-// set camera matrix
+	// set camera matrix
 	if (!Tools->UpdateCamera())
 	{
 		UI->CurrentView().m_Camera.GetView(mView);
 	}
-    RCache.set_xform_view(mView);
-    mFullTransform.mul(mProject,mView);
+	RCache.set_xform_view(mView);
+	mFullTransform.mul(mProject, mView);
 
-// frustum culling sets
-    ::Render->ViewBase.CreateFromMatrix(mFullTransform,FRUSTUM_P_ALL);
+	// frustum culling sets
+	::Render->ViewBase.CreateFromMatrix(mFullTransform, FRUSTUM_P_ALL);
 }
 
 void CEditorRenderDevice::FrameMove()
@@ -504,14 +531,16 @@ void CEditorRenderDevice::FrameMove()
 
 	static const FRenderDeterministicTestPolicy DeterministicTest =
 		ResolveRenderDeterministicTestPolicy(
-			Core.Params ? Core.Params : "");
+			Core.Params ? Core.Params : ""
+		);
 	if (DeterministicTest.Enabled)
 	{
 		const u32 PreviousGlobal = dwTimeGlobal;
 		fTimeDelta = DeterministicTest.FixedDeltaSeconds;
 		fTimeGlobal = static_cast<float>(dwFrame - 1) * fTimeDelta;
 		dwTimeGlobal = static_cast<u32>(
-			fTimeGlobal * 1000.0f + 0.5f);
+			fTimeGlobal * 1000.0f + 0.5f
+		);
 		dwTimeDelta = dwTimeGlobal - PreviousGlobal;
 		dwTimeContinual = dwTimeGlobal;
 	}
@@ -522,7 +551,9 @@ void CEditorRenderDevice::FrameMove()
 		Timer.Start();
 		fTimeDelta = 0.1f * fTimeDelta + 0.9f * fPreviousFrameTime;
 		if (fTimeDelta > .1f)
+		{
 			fTimeDelta = .1f;
+		}
 
 		fTimeGlobal = TimerGlobal.GetElapsed_sec();
 		dwTimeGlobal = TimerGlobal.GetElapsed_ms();
@@ -535,7 +566,7 @@ void CEditorRenderDevice::FrameMove()
 		UI->CurrentView().m_Camera.Update(fTimeDelta);
 	}
 
-    // process objects
+	// process objects
 	seqFrame.Process<&pureFrame::OnFrame>();
 }
 
@@ -544,12 +575,15 @@ void CEditorRenderDevice::FrameMove()
 SDL_HitTestResult SDLCALL HitTest(
 	SDL_Window* window,
 	const SDL_Point* pt,
-	void* data)
+	void* data
+)
 {
 	bool isZoomed = *(bool*)data;
 
 	if (isZoomed)
+	{
 		return SDL_HITTEST_NORMAL;
+	}
 
 	int w, h;
 	SDL_GetWindowSize(window, &w, &h);
@@ -558,38 +592,54 @@ SDL_HitTestResult SDLCALL HitTest(
 
 	// TOP LEFT
 	if (pt->x < border && pt->y < border)
+	{
 		return SDL_HITTEST_RESIZE_TOPLEFT;
+	}
 
 	// TOP RIGHT
 	if (pt->x > w - border && pt->y < border)
+	{
 		return SDL_HITTEST_RESIZE_TOPRIGHT;
+	}
 
 	// BOTTOM LEFT
 	if (pt->x < border && pt->y > h - border)
+	{
 		return SDL_HITTEST_RESIZE_BOTTOMLEFT;
+	}
 
 	// BOTTOM RIGHT
 	if (pt->x > w - border && pt->y > h - border)
+	{
 		return SDL_HITTEST_RESIZE_BOTTOMRIGHT;
+	}
 
 	// TOP
 	if (pt->y < border)
+	{
 		return SDL_HITTEST_RESIZE_TOP;
+	}
 
 	// BOTTOM
 	if (pt->y > h - border)
+	{
 		return SDL_HITTEST_RESIZE_BOTTOM;
+	}
 
 	// LEFT
 	if (pt->x < border)
+	{
 		return SDL_HITTEST_RESIZE_LEFT;
+	}
 
 	// RIGHT
 	if (pt->x > w - border)
+	{
 		return SDL_HITTEST_RESIZE_RIGHT;
+	}
 
 	// title bar area
-	//if (pt->y < 32)
+	// if (pt->y < 32)
 	//	return SDL_HITTEST_DRAGGABLE;
 
 	return SDL_HITTEST_NORMAL;
@@ -622,38 +672,38 @@ void CEditorRenderDevice::SetShader(ref_shader sh)
 
 void CEditorRenderDevice::DP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 vBase, u32 pc)
 {
-	ref_shader S 			= m_CurrentShader?m_CurrentShader:m_WireShader;
-    u32 dwRequired			= S->E[0]->passes.size();
+	ref_shader S = m_CurrentShader ? m_CurrentShader : m_WireShader;
+	u32 dwRequired = S->E[0]->passes.size();
 
-    for (u32 dwPass = 0; dwPass<dwRequired; dwPass++)
+	for (u32 dwPass = 0; dwPass < dwRequired; dwPass++)
 	{
-    	RCache.set_Shader	(S,dwPass);
+		RCache.set_Shader(S, dwPass);
 		EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
 		RCache.set_Geometry(geom);
-		RCache.Render		(pt,vBase,pc);
-    }
+		RCache.Render(pt, vBase, pc);
+	}
 }
 
 void CEditorRenderDevice::DIP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
-	ref_shader S 			= m_CurrentShader?m_CurrentShader:m_WireShader;
-    u32 dwRequired			= S->E[0]->passes.size();
-    RCache.set_Geometry		(geom);
+	ref_shader S = m_CurrentShader ? m_CurrentShader : m_WireShader;
+	u32 dwRequired = S->E[0]->passes.size();
+	RCache.set_Geometry(geom);
 
-    for (u32 dwPass = 0; dwPass<dwRequired; dwPass++)
+	for (u32 dwPass = 0; dwPass < dwRequired; dwPass++)
 	{
-    	RCache.set_Shader	(S,dwPass);
+		RCache.set_Shader(S, dwPass);
 		EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
-		RCache.Render		(pt,baseV,startV,countV,startI,PC);
-    }
+		RCache.Render(pt, baseV, startV, countV, startI, PC);
+	}
 }
 
 void CEditorRenderDevice::ReloadTextures()
 {
-	//string_path Path = {};
+	// string_path Path = {};
 
-	//FS.update_path(Path, _game_textures_, "");
-	//FS.rescan_path(Path, true);
+	// FS.update_path(Path, _game_textures_, "");
+	// FS.rescan_path(Path, true);
 
 	Msg("* Reload textures...");
 	UI->Resize();
@@ -665,8 +715,8 @@ void CEditorRenderDevice::UnloadTextures()
 
 void CEditorRenderDevice::time_factor(float v)
 {
-	 Timer.time_factor(v);
-	 TimerGlobal.time_factor(v);
+	Timer.time_factor(v);
+	TimerGlobal.time_factor(v);
 }
 
 HWND CEditorRenderDevice::GetHWND() const

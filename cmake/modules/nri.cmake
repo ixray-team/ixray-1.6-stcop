@@ -2,7 +2,7 @@ include(FetchContent)
 
 FetchContent_Declare(
     NRI
-    GIT_REPOSITORY https://github.com/ixray-team/NRI.git
+    GIT_REPOSITORY https://github.com/NVIDIA-RTX/NRI.git
     GIT_TAG main
 )
 

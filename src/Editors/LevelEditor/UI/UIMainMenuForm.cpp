@@ -35,12 +35,16 @@ shared_str UIMainMenuForm::GetCommandShortcat(int CommandID) const
 	ECommandVec& CommandVec = GetEditorCommands();
 
 	if (CommandVec[CommandID] == nullptr)
+	{
 		return {};
+	}
 
 	ESubCommandVec& SubCommandVec = CommandVec[CommandID]->sub_commands;
 
 	if (SubCommandVec.empty())
+	{
 		return {};
+	}
 
 	const xr_shortcut& Cat = SubCommandVec[0]->shortcut;
 
@@ -108,14 +112,14 @@ void UIMainMenuForm::Draw()
 {
 	ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::BackgroundTint).Value);
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-	//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.f, 8.f));
+	// ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.f, 8.f));
 
 	if (IXBeginMainMenuBar())
 	{
 		ImVec2 cp;
-		if (ImGui::BeginMenu("File")){
-			DrawMenuItemI("New / Clear", ICON_FA_FILE,
-				COMMAND_CREATE_NATIVE_SCENE);
+		if (ImGui::BeginMenu("File"))
+		{
+			DrawMenuItemI("New / Clear", ICON_FA_FILE, COMMAND_CREATE_NATIVE_SCENE);
 			DrawMenuItemI("Open", ICON_FA_FILE_IMPORT, COMMAND_LOAD);
 			DrawMenuItemI("Save", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, LTools->m_LastFileName);
 			DrawMenuItemI("Save As...", ICON_FA_FLOPPY_DISK, COMMAND_SAVE, 0, 1);
@@ -150,17 +154,22 @@ void UIMainMenuForm::Draw()
 			DrawMenuItemI("Quit", ICON_FA_POWER_OFF, COMMAND_QUIT);
 			ImGui::EndMenu();
 		}
-		
 
-		if (ImGui::BeginMenu("Scene")){
+
+		if (ImGui::BeginMenu("Scene"))
+		{
 			{
 				bool selected = !MainForm->GetWorldPropertiesFrom()->IsClosed();
 				if (ImGui::MenuItemI("World Properties", ICON_FA_EARTH_EUROPE, "", &selected))
 				{
 					if (selected)
+					{
 						MainForm->GetWorldPropertiesFrom()->Open();
+					}
 					else
+					{
 						MainForm->GetWorldPropertiesFrom()->Close();
+					}
 				}
 
 				if (ImGui::MenuItemI("Export as archive", ICON_FA_FILE_ZIPPER))
@@ -180,7 +189,7 @@ void UIMainMenuForm::Draw()
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Summary Info", "")) 
+			if (ImGui::MenuItem("Summary Info", ""))
 			{
 				ExecCommand(COMMAND_CLEAR_SCENE_SUMMARY);
 				ExecCommand(COMMAND_COLLECT_SCENE_SUMMARY);
@@ -207,7 +216,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Compile")) {
+		if (ImGui::BeginMenu("Compile"))
+		{
 			if (ImGui::BeginMenuI("Make", ICON_FA_WRENCH))
 			{
 				DrawMenuItem("Make All", COMMAND_BUILD);
@@ -282,15 +292,16 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Objects")) {
+		if (ImGui::BeginMenu("Objects"))
+		{
 			DrawMenuItemI("Library Editor", ICON_FA_BOOK, COMMAND_LIBRARY_EDITOR);
 			ImGui::Separator();
 
 			DrawMenuItem("Clip Editor", COMMAND_SHOW_CLIP_EDITOR);
 			DrawMenuItem("Multi Rename", COMMAND_MULTI_RENAME_OBJECTS);
 
-			if (ImGui::MenuItem("Multi Replace")) 
-			{ 
+			if (ImGui::MenuItem("Multi Replace"))
+			{
 				UIReferenceReplacer* RefUI = new UIReferenceReplacer;
 				RefUI->UpdateReferences();
 
@@ -300,7 +311,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Images")) {
+		if (ImGui::BeginMenu("Images"))
+		{
 			DrawMenuItemI("Image Editor", ICON_FA_IMAGE, COMMAND_IMAGE_EDITOR);
 			ImGui::Separator();
 
@@ -314,7 +326,7 @@ void UIMainMenuForm::Draw()
 			DrawMenuItemI("Edit minimap", ICON_FA_MAP, COMMAND_MINIMAP_EDITOR);
 			if (ImGui::MenuItemI("Sync THM", ICON_FA_REPEAT, ""))
 			{
-				FS_FileSet      files;
+				FS_FileSet files;
 				FS.file_list(files, _textures_, FS_ListFiles, "*.thm");
 				FS_FileSet::iterator I = files.begin();
 				FS_FileSet::iterator E = files.end();
@@ -330,7 +342,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Sounds")) {
+		if (ImGui::BeginMenu("Sounds"))
+		{
 			DrawMenuItemI("Sound Editor", ICON_FA_MUSIC, COMMAND_SOUND_EDITOR, "");
 			ImGui::Separator();
 
@@ -343,12 +356,13 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Options")) {
+		if (ImGui::BeginMenu("Options"))
+		{
 			if (ImGui::BeginMenu("Render"))
 			{
 				if (ImGui::BeginMenu("Quality"))
 				{
-					static bool selected[4] = { false,false,true,false };
+					static bool selected[4] = {false, false, true, false};
 					if (ImGui::MenuItem("25%", "", &selected[0]))
 					{
 						selected[1] = selected[2] = selected[3] = false;
@@ -377,7 +391,7 @@ void UIMainMenuForm::Draw()
 				}
 				if (ImGui::BeginMenu("Fill Mode"))
 				{
-					bool selected[3] = { false,EDevice->dwFillMode == D3DFILL_WIREFRAME,EDevice->dwFillMode == D3DFILL_SOLID };
+					bool selected[3] = {false, EDevice->dwFillMode == D3DFILL_WIREFRAME, EDevice->dwFillMode == D3DFILL_SOLID};
 					if (ImGui::MenuItem("Wireframe", "", &selected[1]))
 					{
 						EDevice->dwFillMode = D3DFILL_WIREFRAME;
@@ -392,7 +406,7 @@ void UIMainMenuForm::Draw()
 				}
 				if (ImGui::BeginMenu("Shader Mode"))
 				{
-					bool selected[2] = { EDevice->dwShadeMode == D3DSHADE_FLAT,EDevice->dwShadeMode == D3DSHADE_GOURAUD };
+					bool selected[2] = {EDevice->dwShadeMode == D3DSHADE_FLAT, EDevice->dwShadeMode == D3DSHADE_GOURAUD};
 					if (ImGui::MenuItem("Flat", "", &selected[0]))
 					{
 						EDevice->dwShadeMode = D3DSHADE_FLAT;
@@ -488,26 +502,30 @@ void UIMainMenuForm::Draw()
 					UI->RedrawScene();
 				}
 			}
-            // Погода
+			// Погода
 			{
 				if (ImGui::BeginMenuI("Environment", ICON_FA_CLOUD_SUN))
 				{
-                    {
-                        if (ImGui::Button("Weather properties"))
-                        {
-                            ExecCommand(COMMAND_WEATHER_PROPERTIES);
-                        }
-                        if (ImGui::IsItemHovered())
-                            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-                    }
+					{
+						if (ImGui::Button("Weather properties"))
+						{
+							ExecCommand(COMMAND_WEATHER_PROPERTIES);
+						}
+						if (ImGui::IsItemHovered())
+						{
+							ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+						}
+					}
 					bool selected = !psDeviceFlags.test(rsEnvironment);
 					if (ImGui::MenuItem("None", "", &selected))
 					{
 						psDeviceFlags.set(rsEnvironment, false);
 						UI->RedrawScene();
 					}
-                    if (ImGui::IsItemHovered())
-                        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+					}
 					ImGui::Separator();
 					for (auto& i : g_pGamePersistent->Environment().WeatherCycles)
 					{
@@ -518,8 +536,10 @@ void UIMainMenuForm::Draw()
 							g_pGamePersistent->Environment().SetWeather(i.first.c_str(), true);
 							UI->RedrawScene();
 						}
-                        if (ImGui::IsItemHovered())
-                            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+						if (ImGui::IsItemHovered())
+						{
+							ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+						}
 					}
 
 					ImGui::EndMenu();
@@ -552,7 +572,7 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Windows")) 
+		if (ImGui::BeginMenu("Windows"))
 		{
 			bool MaterialEditorVisible = !MainForm->GetMaterialEditorForm()->IsClosed();
 			if (ImGui::MenuItemI("Material Editor", ICON_FA_SQUARE_SHARE_NODES, "", &MaterialEditorVisible))
@@ -589,9 +609,13 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItemI("Properties", ICON_FA_GEAR, "", &selected))
 				{
 					if (selected)
+					{
 						MainForm->GetPropertiesForm()->Open();
+					}
 					else
+					{
 						MainForm->GetPropertiesForm()->Close();
+					}
 				}
 			}
 			{
@@ -615,7 +639,9 @@ void UIMainMenuForm::Draw()
 						ThemeInstance.Show(true);
 					}
 					else
+					{
 						ThemeInstance.Show(false);
+					}
 				}
 			}
 
@@ -627,19 +653,20 @@ void UIMainMenuForm::Draw()
 					auto& W = CUIWidgetsTest::Instance();
 
 					if (!UI->HasWindow<CUIWidgetsTest>())
-						UI->Push(&W, false);      // false = не удалять UI менеджером
+					{
+						UI->Push(&W, false); // false = не удалять UI менеджером
+					}
 
 					W.Show(true);
 				}
-
 			}
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Help")) {
+		if (ImGui::BeginMenu("Help"))
+		{
 			if (ImGui::MenuItem("Wiki", ""))
 			{
-
 			}
 			ImGui::Separator();
 			if (ImGui::MenuItem("About...", ""))
@@ -651,7 +678,8 @@ void UIMainMenuForm::Draw()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Plugins", "")) {
+		if (ImGui::BeginMenu("Plugins", ""))
+		{
 			CPluginsManagers& PlugMngr = CPluginsManagers::Instance();
 
 			bool NeedReinit = false;
@@ -667,11 +695,11 @@ void UIMainMenuForm::Draw()
 			{
 				if (Plug->Type == EPluginType::Lua)
 				{
-					ImGui::Image(UI->GetImGuiTexture(PlugLua), { 15, 15 });
+					ImGui::Image(UI->GetImGuiTexture(PlugLua), {15, 15});
 				}
 				else
 				{
-					ImGui::Image(UI->GetImGuiTexture(PlugPy), { 15, 15 });
+					ImGui::Image(UI->GetImGuiTexture(PlugPy), {15, 15});
 				}
 				ImGui::SameLine();
 				if (ImGui::MenuItem(Plug->Name.c_str(), ""))
@@ -710,7 +738,7 @@ void UIMainMenuForm::Draw()
 				}
 			}
 		}
-		
+
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 405);
 		ImGui::SetCursorPosY(4);
@@ -819,7 +847,7 @@ void UIMainMenuForm::ExportLevelAsArchive()
 			}
 		}
 	};
-	
+
 	auto ParseObject = [&](auto Obj, xr_path FilePath, xr_path DirFilePath)
 	{
 		auto Dirs = FilePath.xstring().Split('\\');
@@ -866,7 +894,7 @@ void UIMainMenuForm::ExportLevelAsArchive()
 			ParseBumpFromTexture(InFileThm);
 		}
 	};
-	
+
 	// LOD's
 	auto CopyLodTexture = [&TextureLodsObjectPath](const xr_string& InputFile)
 	{
@@ -884,7 +912,9 @@ void UIMainMenuForm::ExportLevelAsArchive()
 		}
 
 		if (!std::filesystem::exists(LodTexturePathThm))
+		{
 			return;
+		}
 
 		xr_string OutLodTextureThm = TextureLodsObjectPath;
 		OutLodTextureThm += "\\" + xr_path(InputFile).xfilename() + ".thm";
@@ -895,13 +925,15 @@ void UIMainMenuForm::ExportLevelAsArchive()
 	// Parse objects
 	for (; _F != _E; _F++)
 	{
-		CSceneObject* Obj = (CSceneObject *)*_F;
+		CSceneObject* Obj = (CSceneObject*)*_F;
 		ParseObject(Obj, Obj->GetReference()->GetName(), RawObjectPath);
-		
+
 		const xr_string& LodTexture = Obj->GetReference()->GetLODTextureName();
 
 		if (LodTexture.empty())
+		{
 			continue;
+		}
 
 		CopyLodTexture(LodTexture);
 		CopyLodTexture(LodTexture + "_nm");
@@ -914,12 +946,11 @@ void UIMainMenuForm::ExportLevelAsArchive()
 	xr_path OutLevelDir = LevelPath / File.xfilename().substr(0, File.xfilename().size() - xr_strlen(".level")).c_str();
 	std::filesystem::copy(LevelDir, OutLevelDir, std::filesystem::copy_options::update_existing | std::filesystem::copy_options::recursive);
 
-	// Parse details 
+	// Parse details
 	EDetailManager* pDetTool = (EDetailManager*)Scene->GetTool(OBJCLASS_DO);
 
 	if (pDetTool->m_Base.name.size() > 0)
 	{
-
 		xr_string TexturePath = GameTextures;
 		TexturePath += *pDetTool->m_Base.name;
 		TexturePath += ".dds";
@@ -946,4 +977,3 @@ void UIMainMenuForm::ExportLevelAsArchive()
 		ParseObject(NormalPtr->m_pRefs, NormalPtr->m_pRefs->GetName(), RawObjectPath);
 	}
 }
-

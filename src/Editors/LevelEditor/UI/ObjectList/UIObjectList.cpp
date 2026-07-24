@@ -3,8 +3,8 @@
 
 UIObjectList* UIObjectList::Form = nullptr;
 
-UIObjectList::UIObjectList():
-	m_Root("")
+UIObjectList::UIObjectList()
+	: m_Root("")
 {
 	m_Mode = M_Visible;
 	m_Filter[0] = 0;
@@ -71,7 +71,9 @@ void UIObjectList::Draw()
 				RItem->Object->Select(true);
 				Fbox bb;
 				if (RItem->Object->GetBox(bb))
+				{
 					UI->CurrentView().m_Camera.ZoomExtents(bb);
+				}
 
 				UI->RedrawScene();
 				break;
@@ -86,7 +88,9 @@ void UIObjectList::Draw()
 		{
 			UIObjectListItem* RItem = (UIObjectListItem*)Item;
 			if (RItem->bIsSelected)
+			{
 				RItem->Object->Show(true);
+			}
 		}
 	}
 
@@ -97,7 +101,9 @@ void UIObjectList::Draw()
 		{
 			UIObjectListItem* RItem = (UIObjectListItem*)Item;
 			if (RItem->bIsSelected)
+			{
 				RItem->Object->Show(false);
+			}
 		}
 	}
 
@@ -112,7 +118,7 @@ void UIObjectList::Draw()
 
 	if (GUIManager->SearchIcon)
 	{
-		ImVec2 IconSize = { 12,12 };
+		ImVec2 IconSize = {12, 12};
 
 		ImGui::SameLine();
 		ImVec2 cursorPos = ImGui::GetCursorPos();
@@ -142,7 +148,6 @@ void UIObjectList::Update()
 			xr_delete(Form);
 		}
 	}
-
 }
 
 void UIObjectList::Show()
@@ -166,7 +171,9 @@ void UIObjectList::Close()
 void UIObjectList::Refresh()
 {
 	if (Form == nullptr)
+	{
 		return;
+	}
 
 	xrCriticalSectionGuard guard(Form->LoaderCS);
 
@@ -185,20 +192,23 @@ void UIObjectList::Refresh()
 		if (ot && ((Form->m_cur_cls == OBJCLASS_DUMMY) || (it->first == Form->m_cur_cls)))
 		{
 			if (it->first == OBJCLASS_DUMMY)
+			{
 				continue;
+			}
 
 			ObjectList lst = ot->GetObjects();
 			size_t Index = 0;
 
 			lst.sort([](CCustomObject* A, CCustomObject* B)
-				{
-					if (A->GetName() == nullptr || A->GetName()[0] == 0)
+					 {
+					if (A->GetName() == nullptr || A->GetName()[0] == 0){
 						return false;
-					if (B->GetName() == nullptr || B->GetName()[0] == 0)
+}
+					if (B->GetName() == nullptr || B->GetName()[0] == 0){
 						return true;
+}
 
-					return NaturalCompare(A->GetName(), B->GetName());
-				}
+					return NaturalCompare(A->GetName(), B->GetName()); }
 			);
 
 			for (CCustomObject* Obj : lst)
@@ -228,7 +238,9 @@ void UIObjectList::DrawNativeObjects()
 	const Tiramisu::Scene::FResolvedRenderScene* Scene =
 		Document.GetScene();
 	if (!Scene)
+	{
 		return;
+	}
 
 	struct FNativeObjectRow
 	{
@@ -241,32 +253,41 @@ void UIObjectList::DrawNativeObjects()
 
 	ImGui::BeginGroup();
 	if (ImGui::RadioButton("All", m_Mode == M_All))
+	{
 		m_Mode = M_All;
+	}
 	ImGui::SameLine();
 	if (ImGui::RadioButton("Visible", m_Mode == M_Visible))
+	{
 		m_Mode = M_Visible;
+	}
 	ImGui::SameLine();
 	if (ImGui::RadioButton("Invisible", m_Mode == M_Inbvisible))
+	{
 		m_Mode = M_Inbvisible;
+	}
 
 	ImGui::SetNextItemWidth(-1);
 	if (ImGui::InputTextWithHint(
-			"##NativeObjectSearch", "Search native objects...",
-			m_Filter, sizeof(m_Filter)))
+			"##NativeObjectSearch", "Search native objects...", m_Filter, sizeof(m_Filter)
+		))
 	{
 		m_LastNativeSelected.clear();
 	}
 
 	xr_vector<FNativeObjectRow> Objects;
-	Objects.reserve(Scene->Scene.StaticMeshComponents.size() +
-		Scene->Scene.LightComponents.size());
+	Objects.reserve(Scene->Scene.StaticMeshComponents.size() + Scene->Scene.LightComponents.size());
 	for (const Tiramisu::Scene::FStaticMeshComponent& Component :
-		Scene->Scene.StaticMeshComponents)
+		 Scene->Scene.StaticMeshComponents)
 	{
 		if (m_Mode == M_Visible && !Component.Visible)
+		{
 			continue;
+		}
 		if (m_Mode == M_Inbvisible && Component.Visible)
+		{
 			continue;
+		}
 		if (m_Filter[0] &&
 			!std::strstr(Component.Name.c_str(), m_Filter) &&
 			!std::strstr(Component.StaticMesh.c_str(), m_Filter) &&
@@ -274,28 +295,31 @@ void UIObjectList::DrawNativeObjects()
 		{
 			continue;
 		}
-		Objects.push_back({Component.Id, Component.Name, "StaticMesh",
-			Component.StaticMesh, Component.Visible});
+		Objects.push_back({Component.Id, Component.Name, "StaticMesh", Component.StaticMesh, Component.Visible});
 	}
 	for (const Tiramisu::Scene::FLightComponent& Light :
-		Scene->Scene.LightComponents)
+		 Scene->Scene.LightComponents)
 	{
 		if (m_Mode == M_Visible && !Light.Visible)
+		{
 			continue;
+		}
 		if (m_Mode == M_Inbvisible && Light.Visible)
+		{
 			continue;
+		}
 		xr_string Type;
 		switch (Light.Type)
 		{
-		case Tiramisu::Scene::ELightType::Directional:
-			Type = "Directional Light";
-			break;
-		case Tiramisu::Scene::ELightType::Point:
-			Type = "Point Light";
-			break;
-		case Tiramisu::Scene::ELightType::Spot:
-			Type = "Spot Light";
-			break;
+			case Tiramisu::Scene::ELightType::Directional:
+				Type = "Directional Light";
+				break;
+			case Tiramisu::Scene::ELightType::Point:
+				Type = "Point Light";
+				break;
+			case Tiramisu::Scene::ELightType::Spot:
+				Type = "Spot Light";
+				break;
 		}
 		if (m_Filter[0] &&
 			!std::strstr(Light.Name.c_str(), m_Filter) &&
@@ -304,15 +328,13 @@ void UIObjectList::DrawNativeObjects()
 			continue;
 		}
 		Objects.push_back(
-			{Light.Id, Light.Name, std::move(Type), {}, Light.Visible});
+			{Light.Id, Light.Name, std::move(Type), {}, Light.Visible}
+		);
 	}
-	std::ranges::sort(Objects,
-		[](const FNativeObjectRow& Left,
-			const FNativeObjectRow& Right)
-		{
-			return NaturalCompare(
-				Left.Name.c_str(), Right.Name.c_str());
-		});
+	std::ranges::sort(Objects, [](const FNativeObjectRow& Left, const FNativeObjectRow& Right)
+					  { return NaturalCompare(
+							Left.Name.c_str(), Right.Name.c_str()
+						); });
 
 	ImGui::BeginDisabled(!Document.IsEditableRenderScene());
 	if (ImGui::BeginCombo("##AddNativeObject", "Add object"))
@@ -320,30 +342,33 @@ void UIObjectList::DrawNativeObjects()
 		const auto AddLight =
 			[&](const char* Label,
 				const Tiramisu::Scene::ELightType Type)
+		{
+			if (!ImGui::Selectable(Label))
 			{
-				if (!ImGui::Selectable(Label))
-					return;
-				xr_string Diagnostic;
-				const xr_array<float, 16> Transform =
-					Tiramisu::Scene::FLightComponent{}.LocalToWorld;
-				if (!Document.AddLightComponent(
-						Type, Transform, Diagnostic))
-				{
-					Msg("! Native scene add light: %s",
-						Diagnostic.c_str());
-					UI->SetStatus(
-						"Cannot add native light. See log.");
-				}
-				else
-				{
-					m_LastNativeSelected.clear();
-					UI->RedrawScene();
-				}
-			};
+				return;
+			}
+			xr_string Diagnostic;
+			const xr_array<float, 16> Transform =
+				Tiramisu::Scene::FLightComponent{}.LocalToWorld;
+			if (!Document.AddLightComponent(
+					Type, Transform, Diagnostic
+				))
+			{
+				Msg("! Native scene add light: %s",
+					Diagnostic.c_str());
+				UI->SetStatus(
+					"Cannot add native light. See log."
+				);
+			}
+			else
+			{
+				m_LastNativeSelected.clear();
+				UI->RedrawScene();
+			}
+		};
 		AddLight("Point Light", Tiramisu::Scene::ELightType::Point);
 		AddLight("Spot Light", Tiramisu::Scene::ELightType::Spot);
-		AddLight("Directional Light",
-			Tiramisu::Scene::ELightType::Directional);
+		AddLight("Directional Light", Tiramisu::Scene::ELightType::Directional);
 		ImGui::EndCombo();
 	}
 	ImGui::EndDisabled();
@@ -353,7 +378,9 @@ void UIObjectList::DrawNativeObjects()
 	const float ButtonWidth = (Available - Spacing * 4.0f) / 5.0f;
 	ImGui::BeginDisabled(Document.GetSelectionCount() == 0);
 	if (ImGui::Button("Focus", {ButtonWidth, 0.0f}))
+	{
 		ExecCommand(COMMAND_ZOOM_EXTENTS, true);
+	}
 	ImGui::EndDisabled();
 	ImGui::SameLine();
 	if (ImGui::Button("All", {ButtonWidth, 0.0f}))
@@ -368,8 +395,7 @@ void UIObjectList::DrawNativeObjects()
 		UI->RedrawScene();
 	}
 	ImGui::SameLine();
-	ImGui::BeginDisabled(!Document.IsEditableRenderScene() ||
-		Document.GetSelectionCount() == 0);
+	ImGui::BeginDisabled(!Document.IsEditableRenderScene() || Document.GetSelectionCount() == 0);
 	if (ImGui::Button("Show", {ButtonWidth, 0.0f}))
 	{
 		(void)Document.SetSelectedComponentsVisibility(true);
@@ -383,26 +409,28 @@ void UIObjectList::DrawNativeObjects()
 	}
 	ImGui::EndDisabled();
 
-	ImGui::TextDisabled("%zu objects, %zu selected",
-		Objects.size(), Document.GetSelectionCount());
+	ImGui::TextDisabled("%zu objects, %zu selected", Objects.size(), Document.GetSelectionCount());
 	const ImGuiTableFlags Flags =
 		ImGuiTableFlags_BordersV |
 		ImGuiTableFlags_BordersOuterH |
 		ImGuiTableFlags_Resizable |
 		ImGuiTableFlags_RowBg |
 		ImGuiTableFlags_ScrollY;
-	if (ImGui::BeginTable("native_objects", 4, Flags,
-			ImVec2(0, 0)))
+	if (ImGui::BeginTable("native_objects", 4, Flags, ImVec2(0, 0)))
 	{
 		ImGui::TableSetupScrollFreeze(0, 1);
 		ImGui::TableSetupColumn(
-			"Name", ImGuiTableColumnFlags_WidthStretch);
+			"Name", ImGuiTableColumnFlags_WidthStretch
+		);
 		ImGui::TableSetupColumn(
-			"Type", ImGuiTableColumnFlags_WidthFixed);
+			"Type", ImGuiTableColumnFlags_WidthFixed
+		);
 		ImGui::TableSetupColumn(
-			"Asset", ImGuiTableColumnFlags_WidthStretch);
+			"Asset", ImGuiTableColumnFlags_WidthStretch
+		);
 		ImGui::TableSetupColumn(
-			"State", ImGuiTableColumnFlags_WidthFixed);
+			"State", ImGuiTableColumnFlags_WidthFixed
+		);
 		ImGui::TableHeadersRow();
 
 		ImGuiListClipper Clipper;
@@ -410,7 +438,8 @@ void UIObjectList::DrawNativeObjects()
 		while (Clipper.Step())
 		{
 			for (int Index = Clipper.DisplayStart;
-				Index < Clipper.DisplayEnd; ++Index)
+				 Index < Clipper.DisplayEnd;
+				 ++Index)
 			{
 				const FNativeObjectRow& Object =
 					Objects[static_cast<size_t>(Index)];
@@ -419,58 +448,61 @@ void UIObjectList::DrawNativeObjects()
 				ImGui::TableNextColumn();
 				const bool Selected =
 					Document.IsComponentSelected(Object.Id);
-				if (ImGui::Selectable(Object.Name.c_str(), Selected,
-						ImGuiSelectableFlags_SpanAllColumns))
+				if (ImGui::Selectable(Object.Name.c_str(), Selected, ImGuiSelectableFlags_SpanAllColumns))
 				{
 					if (ImGui::GetIO().KeyShift &&
 						!m_LastNativeSelected.empty())
 					{
 						auto Last = std::ranges::find(
-							Objects, m_LastNativeSelected,
-							[](const FNativeObjectRow& Item)
-							{
-								return Item.Id;
-							});
+							Objects, m_LastNativeSelected, [](const FNativeObjectRow& Item)
+							{ return Item.Id; }
+						);
 						if (Last != Objects.end())
 						{
 							const size_t LastIndex =
 								static_cast<size_t>(
-									std::distance(Objects.begin(), Last));
+									std::distance(Objects.begin(), Last)
+								);
 							const size_t First =
 								std::min<size_t>(
-									LastIndex, Index);
+									LastIndex, Index
+								);
 							const size_t LastRange =
 								std::max<size_t>(
-									LastIndex, Index);
+									LastIndex, Index
+								);
 							xr_vector<xr_string> Range;
 							Range.reserve(LastRange - First + 1);
 							for (size_t RangeIndex = First;
-								RangeIndex <= LastRange; ++RangeIndex)
+								 RangeIndex <= LastRange;
+								 ++RangeIndex)
 							{
 								Range.push_back(
-									Objects[RangeIndex].Id);
+									Objects[RangeIndex].Id
+								);
 							}
-							(void)Document.SelectComponents(Range,
-								ImGui::GetIO().KeyCtrl
-									? EEditorNativeSceneSelectionMode::Add
-									: EEditorNativeSceneSelectionMode::Replace);
+							(void)Document.SelectComponents(Range, ImGui::GetIO().KeyCtrl ? EEditorNativeSceneSelectionMode::Add : EEditorNativeSceneSelectionMode::Replace);
 						}
 						else
 						{
 							(void)Document.SelectObject(
 								Tiramisu::Scene::StableSceneIdHash(
-									Object.Id),
-								EEditorNativeSceneSelectionMode::Replace);
+									Object.Id
+								),
+								EEditorNativeSceneSelectionMode::Replace
+							);
 						}
 					}
 					else
 					{
 						(void)Document.SelectObject(
 							Tiramisu::Scene::StableSceneIdHash(
-								Object.Id),
+								Object.Id
+							),
 							ImGui::GetIO().KeyCtrl
 								? EEditorNativeSceneSelectionMode::Toggle
-								: EEditorNativeSceneSelectionMode::Replace);
+								: EEditorNativeSceneSelectionMode::Replace
+						);
 					}
 					m_LastNativeSelected = Object.Id;
 					UI->RedrawScene();
@@ -478,11 +510,11 @@ void UIObjectList::DrawNativeObjects()
 				ImGui::TableNextColumn();
 				ImGui::TextUnformatted(Object.Type.c_str());
 				ImGui::TableNextColumn();
-				ImGui::TextDisabled("%s",
-					Object.Asset.empty() ? "-" : Object.Asset.c_str());
+				ImGui::TextDisabled("%s", Object.Asset.empty() ? "-" : Object.Asset.c_str());
 				ImGui::TableNextColumn();
 				ImGui::TextUnformatted(
-					Object.Visible ? "Visible" : "Hidden");
+					Object.Visible ? "Visible" : "Hidden"
+				);
 				ImGui::PopID();
 			}
 		}
@@ -494,14 +526,16 @@ void UIObjectList::DrawNativeObjects()
 void UIObjectList::DrawObjects()
 {
 	if (LTools->CurrentClassID() != m_cur_cls)
+	{
 		Refresh();
+	}
 
 	xrCriticalSectionGuard guard(Form->LoaderCS);
-	static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody| ImGuiTableFlags_ScrollY;
+	static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_ScrollY;
 
 	if (ImGui::BeginTable("objects", 1, flags, ImVec2(0, -ImGui::GetFrameHeight() - 4)))
 	{
-		//IsDocked = ImGui::IsWindowDocked();
+		// IsDocked = ImGui::IsWindowDocked();
 		IsFocused = IsDocked || ImGui::IsWindowFocused();
 
 		ImGui::TableSetupScrollFreeze(1, 1);
@@ -511,5 +545,3 @@ void UIObjectList::DrawObjects()
 		ImGui::EndTable();
 	}
 }
-
-

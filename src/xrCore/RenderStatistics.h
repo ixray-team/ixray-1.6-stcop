@@ -59,14 +59,17 @@ public:
 	void RecordPass(const u32 Count = 1) noexcept
 	{
 		if (FrameOpen)
+		{
 			Snapshot.Frame.PassCount += Count;
+		}
 	}
 
-	void RecordDraw(const u64 TriangleCount,
-		const u64 LineCount = 0) noexcept
+	void RecordDraw(const u64 TriangleCount, const u64 LineCount = 0) noexcept
 	{
 		if (!FrameOpen)
+		{
 			return;
+		}
 		++Snapshot.Frame.DrawCallCount;
 		Snapshot.Frame.TriangleCount += TriangleCount;
 		Snapshot.Frame.LineCount += LineCount;
@@ -75,13 +78,17 @@ public:
 	void RecordDispatch(const u32 Count = 1) noexcept
 	{
 		if (FrameOpen)
+		{
 			Snapshot.Frame.DispatchCallCount += Count;
+		}
 	}
 
 	void RecordUpload(const u64 ByteCount) noexcept
 	{
 		if (FrameOpen)
+		{
 			Snapshot.Frame.UploadBytes += ByteCount;
+		}
 	}
 
 	void SetResources(const FRenderResourceStatistics& Resources) noexcept
@@ -89,12 +96,12 @@ public:
 		Snapshot.Resources = Resources;
 	}
 
-	void EndFrame(const u64 CpuFrameNanoseconds,
-		const u64 GpuFrameNanoseconds = 0,
-		const bool GpuTimingValid = false) noexcept
+	void EndFrame(const u64 CpuFrameNanoseconds, const u64 GpuFrameNanoseconds = 0, const bool GpuTimingValid = false) noexcept
 	{
 		if (!FrameOpen)
+		{
 			return;
+		}
 		Snapshot.Frame.CpuFrameNanoseconds = CpuFrameNanoseconds;
 		Snapshot.Frame.GpuFrameNanoseconds =
 			GpuTimingValid ? GpuFrameNanoseconds : 0;

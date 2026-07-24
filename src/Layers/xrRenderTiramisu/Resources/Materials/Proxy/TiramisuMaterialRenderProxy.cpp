@@ -2,5 +2,5 @@
 
 TiramisuMaterialRenderProxy::~TiramisuMaterialRenderProxy()
 {
-    CheckIsRenderThread();
+	CheckIsRenderThread();
 }

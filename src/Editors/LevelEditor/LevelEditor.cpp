@@ -42,9 +42,10 @@ xr_string ReadEditorVirtualFile(const char* Alias, const char* RelativePath)
 {
 	IReader* Reader = FS.r_open(Alias, RelativePath);
 	if (!Reader)
+	{
 		return {};
-	xr_string Result(static_cast<const char*>(Reader->pointer()),
-		static_cast<size_t>(Reader->length()));
+	}
+	xr_string Result(static_cast<const char*>(Reader->pointer()), static_cast<size_t>(Reader->length()));
 	FS.r_close(Reader);
 	return Result;
 }
@@ -53,23 +54,24 @@ xr_string ReadEditorDiskFile(const std::filesystem::path& Path)
 {
 	std::ifstream Input(Path, std::ios::binary);
 	if (!Input)
+	{
 		return {};
-	const std::string Text{std::istreambuf_iterator<char>(Input),
-		std::istreambuf_iterator<char>()};
+	}
+	const std::string Text{std::istreambuf_iterator<char>(Input), std::istreambuf_iterator<char>()};
 	return xr_string(Text);
 }
 
 void LogConversionDiagnostics(
 	const xr_vector<Tiramisu::Scene::FSceneConversionDiagnostic>&
-		Diagnostics)
+		Diagnostics
+)
 {
 	for (const Tiramisu::Scene::FSceneConversionDiagnostic& Diagnostic :
-		Diagnostics)
+		 Diagnostics)
 	{
-		const char* Prefix = Diagnostic.Severity == "error" ? "!" :
-			Diagnostic.Severity == "warning" ? "~" : "*";
-		Msg("%s Legacy conversion smoke [%s]: %s", Prefix,
-			Diagnostic.Code.c_str(), Diagnostic.Message.c_str());
+		const char* Prefix = Diagnostic.Severity == "error" ? "!" : Diagnostic.Severity == "warning" ? "~"
+																									 : "*";
+		Msg("%s Legacy conversion smoke [%s]: %s", Prefix, Diagnostic.Code.c_str(), Diagnostic.Message.c_str());
 	}
 }
 
@@ -81,15 +83,18 @@ struct FLegacyConversionSmokeOptions
 };
 
 bool RunLegacyConversionSmoke(
-	const FLegacyConversionSmokeOptions& Options = {})
+	const FLegacyConversionSmokeOptions& Options = {}
+)
 {
 	using namespace Tiramisu::Scene;
 	const std::filesystem::path TemporaryRoot =
 		Options.OutputRoot.empty()
 			? std::filesystem::temp_directory_path() /
-				("ixray-legacy-conversion-smoke-" + std::to_string(
-					std::chrono::steady_clock::now()
-						.time_since_epoch().count()))
+				  ("ixray-legacy-conversion-smoke-" + std::to_string(
+														  std::chrono::steady_clock::now()
+															  .time_since_epoch()
+															  .count()
+													  ))
 			: Options.OutputRoot;
 	struct FCleanup
 	{
@@ -98,7 +103,9 @@ bool RunLegacyConversionSmoke(
 		~FCleanup()
 		{
 			if (!Enabled)
+			{
 				return;
+			}
 			std::error_code Error;
 			std::filesystem::remove_all(Path, Error);
 		}
@@ -114,8 +121,7 @@ bool RunLegacyConversionSmoke(
 	std::filesystem::create_directories(TemporaryRoot, Error);
 	if (!Error)
 	{
-		std::filesystem::copy("gamedata/render_materials", MaterialRoot,
-			std::filesystem::copy_options::recursive, Error);
+		std::filesystem::copy("gamedata/render_materials", MaterialRoot, std::filesystem::copy_options::recursive, Error);
 	}
 	if (Error)
 	{
@@ -128,12 +134,12 @@ bool RunLegacyConversionSmoke(
 		TemporaryRoot / "missing.level";
 	const FLegacyLevelImportResult FailedLevel =
 		WriteLegacyLevelLoadFailureDump(
-			MissingLevelSource, RenderSceneRoot,
-			"level_import.source_open_failed",
-			"Smoke-test source cannot be opened.");
+			MissingLevelSource, RenderSceneRoot, "level_import.source_open_failed", "Smoke-test source cannot be opened."
+		);
 	const FSceneConversionDumpParseResult FailedLevelDump =
 		ParseSceneConversionDumpJson(
-			ReadEditorDiskFile(FailedLevel.DumpPath));
+			ReadEditorDiskFile(FailedLevel.DumpPath)
+		);
 	if (FailedLevel.Succeeded || !FailedLevelDump.Succeeded() ||
 		FailedLevelDump.Value.Status != ESceneConversionStatus::Failed ||
 		FailedLevelDump.Value.Diagnostics.empty())
@@ -146,7 +152,8 @@ bool RunLegacyConversionSmoke(
 		"rawdata/objects/detail/det_hvosh.object";
 	const FLegacyObjectImportResult FirstObject =
 		ImportLegacyObjectAsset(
-			ObjectSource, MaterialRoot, StaticMeshRoot);
+			ObjectSource, MaterialRoot, StaticMeshRoot
+		);
 	LogConversionDiagnostics(FirstObject.Diagnostics);
 	if (!FirstObject.Succeeded)
 	{
@@ -158,14 +165,16 @@ bool RunLegacyConversionSmoke(
 		LoadStaticMeshAsset(FirstObject.TargetPath);
 	const FSceneConversionDumpParseResult FirstObjectDump =
 		ParseSceneConversionDumpJson(ReadEditorDiskFile(
-			FirstObject.DumpPath));
+			FirstObject.DumpPath
+		));
 	if (!Mesh.Succeeded() || !FirstObjectDump.Succeeded() ||
 		FirstObjectDump.Value.Status !=
 			ESceneConversionStatus::Succeeded ||
 		FirstObjectDump.Value.TargetPayloadPath !=
 			xr_string(FirstObject.TargetPayloadPath.generic_string()) ||
 		!std::filesystem::is_regular_file(
-			FirstObject.TargetPayloadPath))
+			FirstObject.TargetPayloadPath
+		))
 	{
 		Msg("! Legacy object conversion smoke produced an invalid asset or dump");
 		return false;
@@ -173,10 +182,12 @@ bool RunLegacyConversionSmoke(
 
 	const FLegacyObjectImportResult SecondObject =
 		ImportLegacyObjectAsset(
-			ObjectSource, MaterialRoot, StaticMeshRoot);
+			ObjectSource, MaterialRoot, StaticMeshRoot
+		);
 	const FSceneConversionDumpParseResult SecondObjectDump =
 		ParseSceneConversionDumpJson(ReadEditorDiskFile(
-			SecondObject.DumpPath));
+			SecondObject.DumpPath
+		));
 	if (!SecondObject.Succeeded || !SecondObjectDump.Succeeded() ||
 		SecondObject.TargetAssetId != FirstObject.TargetAssetId ||
 		SecondObjectDump.Value.CreatedMaterialInstances != 0 ||
@@ -189,7 +200,8 @@ bool RunLegacyConversionSmoke(
 
 	Scene->setSkipCantFindDialog(true);
 	const bool Loaded = Scene->LoadLTX(
-		Options.LevelSource.string().c_str(), false);
+		Options.LevelSource.string().c_str(), false
+	);
 	Scene->setSkipCantFindDialog(false);
 	if (!Loaded)
 	{
@@ -198,8 +210,7 @@ bool RunLegacyConversionSmoke(
 		return false;
 	}
 	const FLegacyLevelImportResult Level =
-		ImportLoadedLegacyLevelAsset(Options.LevelSource, *Scene, MaterialRoot,
-			StaticMeshRoot, RenderSceneRoot);
+		ImportLoadedLegacyLevelAsset(Options.LevelSource, *Scene, MaterialRoot, StaticMeshRoot, RenderSceneRoot);
 	LogConversionDiagnostics(Level.Diagnostics);
 	if (!Level.Succeeded)
 	{
@@ -224,7 +235,8 @@ bool RunLegacyConversionSmoke(
 	}
 	Msg("* Legacy conversion smoke: success (meshes=%u, components=%u, "
 		"materials created=%u, reused=%u)",
-		LevelDump.Value.MeshCount, LevelDump.Value.ComponentCount,
+		LevelDump.Value.MeshCount,
+		LevelDump.Value.ComponentCount,
 		LevelDump.Value.CreatedMaterialInstances,
 		LevelDump.Value.ReusedMaterialInstances);
 	if (Options.KeepOutput)
@@ -254,15 +266,16 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	splash::SetProgressStatus(5, "Initializing Debugger");
 
 	Debug._initialize(false);
-	
+
 	splash::SetProgressStatus(10, "Initializing Core System");
 
 	const char* FSName = "fs.ltx";
 	const char* fsgame_ltx_name = "-fsltx ";
 	string_path fsgame = "";
 
-	if (strstr(pCmdLine, fsgame_ltx_name)) {
-		int						sz = xr_strlen(fsgame_ltx_name);
+	if (strstr(pCmdLine, fsgame_ltx_name))
+	{
+		int sz = xr_strlen(fsgame_ltx_name);
 		sscanf(strstr(pCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
 	}
 
@@ -280,7 +293,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	if (EditorNriConfig.DeterministicTest.Enabled)
 	{
 		Random.seed(static_cast<s32>(
-			EditorNriConfig.DeterministicTest.RandomSeed));
+			EditorNriConfig.DeterministicTest.RandomSeed
+		));
 		Msg("* LevelEditor: deterministic GPU test mode enabled "
 			"(seed=%u, delta=%.6f, shader-time=%.3f)",
 			EditorNriConfig.DeterministicTest.RandomSeed,
@@ -297,7 +311,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	UI = new CLevelMain();
 	UI->RegisterCommands();
-	UI->GeneralTabs.push_back({ "Scene View", nullptr });
+	UI->GeneralTabs.push_back({"Scene View", nullptr});
 
 	LUI = static_cast<CLevelMain*>(UI);
 	FTiramisuEditorRendererInstance EditorRendererInstance;
@@ -306,21 +320,20 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	IMaterialPreviewRenderer* PreviousMaterialPreviewRenderer = nullptr;
 	if (EditorNriConfig.Enabled)
 	{
-		R_ASSERT2(CreateTiramisuEditorRenderer(nullptr, EditorNriConfig.Api,
-			EditorNriConfig.DeterministicTest, EditorRendererInstance),
-			"xrRenderTiramisu failed to create the editor renderer");
-		R_ASSERT2(EditorRendererInstance.IsValid(),
-			"xrRenderTiramisu returned incomplete editor renderer interfaces");
+		R_ASSERT2(CreateTiramisuEditorRenderer(nullptr, EditorNriConfig.Api, EditorNriConfig.DeterministicTest, EditorRendererInstance), "xrRenderTiramisu failed to create the editor renderer");
+		R_ASSERT2(EditorRendererInstance.IsValid(), "xrRenderTiramisu returned incomplete editor renderer interfaces");
 		EditorNriBackend = EditorRendererInstance.EditorBackend;
-		R_ASSERT2(UI->InstallRenderBackend(EditorRendererInstance.UiBackend),
-			"The Tiramisu editor renderer must be installed before device initialization");
+		R_ASSERT2(UI->InstallRenderBackend(EditorRendererInstance.UiBackend), "The Tiramisu editor renderer must be installed before device initialization");
 		PreviousEditorRenderBackend = InstallEditorRenderBackend(
-			EditorRendererInstance.EditorBackend);
+			EditorRendererInstance.EditorBackend
+		);
 		PreviousMaterialPreviewRenderer = InstallMaterialPreviewRenderer(
-			EditorRendererInstance.MaterialPreviewRenderer);
+			EditorRendererInstance.MaterialPreviewRenderer
+		);
 		Msg("* LevelEditor: xrRenderTiramisu editor presenter selected (%s)",
 			EditorNriConfig.Api == ETiramisuEditorGraphicsApi::D3D12
-				? "D3D12" : "Vulkan");
+				? "D3D12"
+				: "Vulkan");
 	}
 
 	splash::SetProgressStatus(30, "Creating Editor Scene");
@@ -351,7 +364,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	if (EditorNriConfig.DeterministicTest.Enabled)
 	{
 		g_pGamePersistent->Environment().SetGameTime(
-			EditorNriConfig.DeterministicTest.FixedWeatherTimeSeconds, 0.0f);
+			EditorNriConfig.DeterministicTest.FixedWeatherTimeSeconds, 0.0f
+		);
 	}
 	EDevice->seqAppStart.Process<&pureAppStart::OnAppStart>();
 
@@ -361,7 +375,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	xr_strcpy(Console->ConfigFile, "user_editor.ltx");
 
-	if (strstr(Core.Params, "-ltx ")) {
+	if (strstr(Core.Params, "-ltx "))
+	{
 		string64 c_name;
 		sscanf(strstr(Core.Params, "-ltx ") + 5, "%[^ ] ", c_name);
 		xr_strcpy(Console->ConfigFile, c_name);
@@ -381,7 +396,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	bool NeedExit = false;
 	splash::SetProgressStatus(85, "Performing Final Checks");
 	MainForm->GetRenderForm()->DragFunctor = DragDrop;
-	
+
 	splash::SetProgressStatus(90, "Finalizing UI Setup");
 	GContentView->Init();
 	UI->PushBegin(GContentView);
@@ -405,7 +420,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	IMaterialPreviewRenderer* SmokePreviewRenderer = nullptr;
 	FMaterialPreviewHandle SmokePreviewHandle;
 	const auto SmokeDeadline = std::chrono::steady_clock::now() +
-		std::chrono::seconds(60);
+							   std::chrono::seconds(60);
 	if (MaterialPreviewSmokeRequested)
 	{
 		SmokePreviewRenderer = &GetMaterialPreviewRenderer();
@@ -418,18 +433,17 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 		else
 		{
-			const xr_string MaterialJson = ReadEditorVirtualFile("$game_render_materials$",
-				"standard_surface.material.json");
-			const xr_string InstanceJson = ReadEditorVirtualFile("$game_render_materials$",
-				"example_red.material-instance.json");
-			const xr_string MaterialHlsl = ReadEditorVirtualFile("$game_shaders$",
-				"r5\\materials\\StandardSurface.hlsl");
+			const xr_string MaterialJson = ReadEditorVirtualFile("$game_render_materials$", "standard_surface.material.json");
+			const xr_string InstanceJson = ReadEditorVirtualFile("$game_render_materials$", "example_red.material-instance.json");
+			const xr_string MaterialHlsl = ReadEditorVirtualFile("$game_shaders$", "r5\\materials\\StandardSurface.hlsl");
 			SmokePreviewHandle = SmokePreviewRenderer->CreatePreview();
 			if (MaterialJson.empty() || InstanceJson.empty() || MaterialHlsl.empty() ||
 				!SmokePreviewHandle.IsValid())
 			{
 				Msg("! Material preview smoke setup failed: material=%zu, instance=%zu, hlsl=%zu, handle=%s",
-					MaterialJson.size(), InstanceJson.size(), MaterialHlsl.size(),
+					MaterialJson.size(),
+					InstanceJson.size(),
+					MaterialHlsl.size(),
 					SmokePreviewHandle.IsValid() ? "valid" : "invalid");
 				ProcessExitCode = 3;
 				GContentView->Destroy();
@@ -454,17 +468,21 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	constexpr u32 SmokeSceneViewportId = 0x7ffffff0u;
 	constexpr FEditorMaterialSlotId SmokeSceneMaterialSlot = {
-		0x736d6f6b656d6174ull};
+		0x736d6f6b656d6174ull
+	};
 	constexpr FEditorMaterialSlotId SmokeSceneSpriteMaterialSlot = {
-		0x7370726974656d61ull};
+		0x7370726974656d61ull
+	};
 	constexpr FEditorMaterialSlotId SmokeSceneParticleMaterialSlot = {
-		0x7061727469636c65ull};
+		0x7061727469636c65ull
+	};
 	constexpr u64 SmokeSceneCloneMaterialSlotBase =
 		0x636c6f6e65000100ull;
 	constexpr u32 SmokeSceneCloneMaterialCount = 16;
 	constexpr FEditorMaterialSlotId SmokeSceneLastCloneMaterialSlot = {
 		SmokeSceneCloneMaterialSlotBase +
-			SmokeSceneCloneMaterialCount - 1};
+		SmokeSceneCloneMaterialCount - 1
+	};
 	if (ViewportMaterialSmokeRequested && !NeedExit)
 	{
 		if (!EditorNriBackend || !EditorNriBackend->IsAvailable())
@@ -501,14 +519,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			Vertices[7].TexCoord = {0.5f, 0.0f};
 			Vertices[8].TexCoord = {1.0f, 1.0f};
 			const xr_array<u32, 9> Indices = {
-				0, 1, 2, 3, 4, 5, 6, 7, 8};
-			const xr_array<FEditorStaticMeshSection, 3> Sections = {{
-				{0, 3, SmokeSceneMaterialSlot},
-				{3, 3, SmokeSceneSpriteMaterialSlot},
-				{6, 3, SmokeSceneParticleMaterialSlot}}};
+				0, 1, 2, 3, 4, 5, 6, 7, 8
+			};
+			const xr_array<FEditorStaticMeshSection, 3> Sections = {{{0, 3, SmokeSceneMaterialSlot}, {3, 3, SmokeSceneSpriteMaterialSlot}, {6, 3, SmokeSceneParticleMaterialSlot}}};
 			const FEditorStaticMeshId MeshId = {0x736d6f6b656d6573ull};
-			const xr_array<FEditorStaticMeshUpload, 1> Meshes = {{
-				MeshId, 1, Vertices, Indices, Sections}};
+			const xr_array<FEditorStaticMeshUpload, 1> Meshes = {{MeshId, 1, Vertices, Indices, Sections}};
 			xr_array<FEditorStaticMeshInstance, 1> Instances;
 			Instances[0].ObjectId = {0x736d6f6b656f626aull};
 			Instances[0].MeshId = MeshId;
@@ -518,50 +533,51 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			Instances[0].LocalToWorld[12] = 0.6f;
 			Instances[0].Flags = EEditorSceneInstanceFlags::Selected;
 			xr_vector<FEditorMaterialSlotSource> Materials = {
-				{SmokeSceneMaterialSlot, "default", "textures/kung",
-					"Viewport material smoke", EEditorMaterialSlotFlags::None},
-				{SmokeSceneSpriteMaterialSlot, "editor\\spawn_icon",
-					"textures/default/default_white", "Editor sprite smoke",
-					EEditorMaterialSlotFlags::TwoSided},
-				{SmokeSceneParticleMaterialSlot, "editor\\particle_additive",
-					"textures/default/default_white", "Editor particle smoke",
-					EEditorMaterialSlotFlags::TwoSided}};
+				{SmokeSceneMaterialSlot, "default", "textures/kung", "Viewport material smoke", EEditorMaterialSlotFlags::None},
+				{SmokeSceneSpriteMaterialSlot, "editor\\spawn_icon", "textures/default/default_white", "Editor sprite smoke", EEditorMaterialSlotFlags::TwoSided},
+				{SmokeSceneParticleMaterialSlot, "editor\\particle_additive", "textures/default/default_white", "Editor particle smoke", EEditorMaterialSlotFlags::TwoSided}
+			};
 			Materials.reserve(3 + SmokeSceneCloneMaterialCount);
 			for (u32 Index = 0;
-				Index < SmokeSceneCloneMaterialCount; ++Index)
+				 Index < SmokeSceneCloneMaterialCount;
+				 ++Index)
 			{
-				Materials.push_back({
-					{SmokeSceneCloneMaterialSlotBase + Index},
-					"default",
-					(Index & 1u) != 0 ? "briks\\briks_br2" :
-						"textures\\kung",
-					"Shared standard permutation smoke",
-					EEditorMaterialSlotFlags::None});
+				Materials.push_back({{SmokeSceneCloneMaterialSlotBase + Index}, "default", (Index & 1u) != 0 ? "briks\\briks_br2" : "textures\\kung", "Shared standard permutation smoke", EEditorMaterialSlotFlags::None});
 			}
 			xr_array<FEditorDebugLine, 1> DebugLines;
 			DebugLines[0].Vertices[0] = {
-				{-0.9f, 0.0f, -0.01f}, {1.0f, 0.0f, 0.0f, 1.0f}};
+				{-0.9f, 0.0f, -0.01f}, {1.0f, 0.0f, 0.0f, 1.0f}
+			};
 			DebugLines[0].Vertices[1] = {
-				{0.9f, 0.0f, -0.01f}, {0.0f, 1.0f, 0.0f, 1.0f}};
+				{0.9f, 0.0f, -0.01f}, {0.0f, 1.0f, 0.0f, 1.0f}
+			};
 			xr_array<FEditorDebugTriangle, 1> DebugTriangles;
 			DebugTriangles[0].Vertices[0] = {
-				{-0.2f, -0.2f, -0.02f}, {0.0f, 0.0f, 1.0f, 0.5f}};
+				{-0.2f, -0.2f, -0.02f}, {0.0f, 0.0f, 1.0f, 0.5f}
+			};
 			DebugTriangles[0].Vertices[1] = {
-				{0.0f, 0.2f, -0.02f}, {0.0f, 0.0f, 1.0f, 0.5f}};
+				{0.0f, 0.2f, -0.02f}, {0.0f, 0.0f, 1.0f, 0.5f}
+			};
 			DebugTriangles[0].Vertices[2] = {
-				{0.2f, -0.2f, -0.02f}, {0.0f, 0.0f, 1.0f, 0.5f}};
+				{0.2f, -0.2f, -0.02f}, {0.0f, 0.0f, 1.0f, 0.5f}
+			};
 			xr_array<FEditorOverlayLine, 1> OverlayLines;
 			OverlayLines[0].Vertices[0] = {
-				{-0.75f, 0.75f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}};
+				{-0.75f, 0.75f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}
+			};
 			OverlayLines[0].Vertices[1] = {
-				{-0.25f, 0.75f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}};
+				{-0.25f, 0.75f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}
+			};
 			xr_array<FEditorOverlayTriangle, 1> OverlayTriangles;
 			OverlayTriangles[0].Vertices[0] = {
-				{0.25f, 0.75f, 0.0f}, {1.0f, 1.0f, 0.0f, 0.4f}};
+				{0.25f, 0.75f, 0.0f}, {1.0f, 1.0f, 0.0f, 0.4f}
+			};
 			OverlayTriangles[0].Vertices[1] = {
-				{0.75f, 0.75f, 0.0f}, {1.0f, 1.0f, 0.0f, 0.4f}};
+				{0.75f, 0.75f, 0.0f}, {1.0f, 1.0f, 0.0f, 0.4f}
+			};
 			OverlayTriangles[0].Vertices[2] = {
-				{0.5f, 0.25f, 0.0f}, {1.0f, 1.0f, 0.0f, 0.4f}};
+				{0.5f, 0.25f, 0.0f}, {1.0f, 1.0f, 0.0f, 0.4f}
+			};
 			xr_array<FEditorOverlayText, 1> OverlayText;
 			OverlayText[0].Position = {-0.75f, -0.75f};
 			OverlayText[0].Color = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -581,10 +597,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			Lights[1].Range = 4.0f;
 			FEditorViewportSceneSnapshot Snapshot;
 			Snapshot.Camera.View = {
-				1.0f, 0.0f, 0.0f, 0.0f,
-				0.0f, 1.0f, 0.0f, 0.0f,
-				0.0f, 0.0f, 1.0f, 0.0f,
-				0.0f, 0.0f, 0.0f, 1.0f};
+				1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f
+			};
 			Snapshot.Camera.Projection = Snapshot.Camera.View;
 			Snapshot.Camera.ViewProjection = Snapshot.Camera.View;
 			Snapshot.Camera.WorldPosition = {0.0f, 0.0f, -3.0f};
@@ -603,7 +617,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			Snapshot.Revision = 1;
 			EditorNriBackend->ResizeViewport(SmokeSceneViewportId, 512, 512);
 			if (!EditorNriBackend->SubmitViewportScene(
-					SmokeSceneViewportId, Snapshot))
+					SmokeSceneViewportId, Snapshot
+				))
 			{
 				Msg("! Viewport material smoke setup failed: %.*s",
 					static_cast<int>(EditorNriBackend->GetLastDiagnostic().size()),
@@ -620,7 +635,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				PickRequest.MaxDistance = 10.0f;
 				const FEditorViewportPickResult Pick =
 					EditorNriBackend->PickViewport(
-						SmokeSceneViewportId, PickRequest);
+						SmokeSceneViewportId, PickRequest
+					);
 				if (!Pick.Hit || Pick.ObjectId != Instances[0].ObjectId ||
 					Pick.MaterialSlot != SmokeSceneMaterialSlot)
 				{
@@ -652,17 +668,23 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			if (ZatonConversionSmokeRequested)
 			{
 				SmokeOptions.LevelSource = std::filesystem::absolute(
-					"rawdata/levels/!FinalSP/zaton.level");
+					"rawdata/levels/!FinalSP/zaton.level"
+				);
 				SmokeOptions.OutputRoot = std::filesystem::absolute(
-					"build/test-results/tiramisu") /
-					("zaton-" + std::to_string(
-						std::chrono::system_clock::now()
-							.time_since_epoch().count()));
+											  "build/test-results/tiramisu"
+										  ) /
+										  ("zaton-" + std::to_string(
+														  std::chrono::system_clock::now()
+															  .time_since_epoch()
+															  .count()
+													  ));
 				SmokeOptions.KeepOutput = true;
 				Msg("* Legacy conversion smoke: full zaton level selected");
 			}
 			if (!RunLegacyConversionSmoke(SmokeOptions))
+			{
 				ProcessExitCode = 10;
+			}
 		}
 		GContentView->Destroy();
 		NeedExit = true;
@@ -675,116 +697,143 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		{
 			switch (Event.type)
 			{
-			case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-			{
-				SDL_WindowID MainWndID = SDL_GetWindowID(g_AppInfo.Window);
-				if (Event.window.windowID == MainWndID)
+				case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
 				{
-					GContentView->Destroy();
-					NeedExit = true;
-				}
-
-				break;
-			}
-			case SDL_EVENT_WINDOW_RESIZED:
-			{
-				SDL_WindowID MainWndID = SDL_GetWindowID(g_AppInfo.Window);
-				if (UI && REDevice && Event.window.windowID == MainWndID)
-				{
-					if (Event.window.data1 != DevicePtr->Width || Event.window.data2 != DevicePtr->Height)
+					SDL_WindowID MainWndID = SDL_GetWindowID(g_AppInfo.Window);
+					if (Event.window.windowID == MainWndID)
 					{
-						UI->Resize(Event.window.data1, Event.window.data2, true);
-						EPrefs->SaveConfig();
+						GContentView->Destroy();
+						NeedExit = true;
+					}
+
+					break;
+				}
+				case SDL_EVENT_WINDOW_RESIZED:
+				{
+					SDL_WindowID MainWndID = SDL_GetWindowID(g_AppInfo.Window);
+					if (UI && REDevice && Event.window.windowID == MainWndID)
+					{
+						if (Event.window.data1 != DevicePtr->Width || Event.window.data2 != DevicePtr->Height)
+						{
+							UI->Resize(Event.window.data1, Event.window.data2, true);
+							EPrefs->SaveConfig();
+						}
+					}
+					break;
+				}
+				case SDL_EVENT_WINDOW_SHOWN:
+				case SDL_EVENT_WINDOW_MOUSE_ENTER:
+					Device.b_is_Active = true;
+					// if (UI) UI->OnAppActivate();
+
+					break;
+				case SDL_EVENT_WINDOW_HIDDEN:
+				case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+					Device.b_is_Active = !!psDeviceFlags.test(rsDeviceActive);
+					// if (UI)UI->OnAppDeactivate();
+					break;
+
+				case SDL_EVENT_KEY_DOWN:
+					if (UI)
+					{
+						UI->KeyDown(Event.key.scancode, UI->GetShiftState());
+						UI->ApplyShortCutInput(Event.key.scancode);
+
+						if (UI->IsPlayInEditor())
+						{
+							if (pInput->IsAcquire)
+							{
+								pInput->KeyboardButtonUpdate(Event.key.scancode, true);
+							}
+							else if (Event.key.scancode == SDL_SCANCODE_LALT)
+							{
+								pInput->acquire();
+								UI->IsEnableInput = false;
+								ShowCursor(false);
+							}
+						}
+					}
+					break;
+				case SDL_EVENT_KEY_UP:
+					if (UI)
+					{
+						UI->KeyUp(Event.key.scancode, UI->GetShiftState());
+						if (UI->IsPlayInEditor() && pInput->IsAcquire)
+						{
+							if (pInput->IsAcquire)
+							{
+								pInput->KeyboardButtonUpdate(Event.key.scancode, false);
+							}
+						}
+					}
+					break;
+				case SDL_EVENT_MOUSE_MOTION:
+				{
+					if (UI->IsPlayInEditor() && !pInput->IsAcquire)
+					{
+						break;
+					}
+
+					pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
+				}
+				break;
+				case SDL_EVENT_MOUSE_WHEEL:
+				{
+					if (UI->IsPlayInEditor() && !pInput->IsAcquire)
+					{
+						break;
+					}
+
+					pInput->MouseScroll(Event.wheel.y);
+				}
+				break;
+				case SDL_EVENT_MOUSE_BUTTON_DOWN:
+				case SDL_EVENT_MOUSE_BUTTON_UP:
+				{
+					if (UI->IsPlayInEditor() && !pInput->IsAcquire)
+					{
+						break;
+					}
+
+					int mouse_button = 0;
+					if (Event.button.button == SDL_BUTTON_LEFT)
+					{
+						mouse_button = 0;
+					}
+					if (Event.button.button == SDL_BUTTON_RIGHT)
+					{
+						mouse_button = 1;
+					}
+					if (Event.button.button == SDL_BUTTON_MIDDLE)
+					{
+						mouse_button = 2;
+					}
+					if (Event.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
+					{
+						pInput->MousePressed(mouse_button);
+					}
+					else
+					{
+						pInput->MouseReleased(mouse_button);
 					}
 				}
 				break;
-			}
-			case SDL_EVENT_WINDOW_SHOWN:
-			case SDL_EVENT_WINDOW_MOUSE_ENTER:
-				Device.b_is_Active = true;
-				//if (UI) UI->OnAppActivate();
-
-				break;
-			case SDL_EVENT_WINDOW_HIDDEN:
-			case SDL_EVENT_WINDOW_MOUSE_LEAVE:
-				Device.b_is_Active = !!psDeviceFlags.test(rsDeviceActive);
-				//if (UI)UI->OnAppDeactivate();
-				break;
-
-			case SDL_EVENT_KEY_DOWN:
-				if (UI)
-				{
-					UI->KeyDown(Event.key.scancode, UI->GetShiftState());
-					UI->ApplyShortCutInput(Event.key.scancode);
-
-					if (UI->IsPlayInEditor())
-					{
-						if (pInput->IsAcquire)
-						{
-							pInput->KeyboardButtonUpdate(Event.key.scancode, true);
-						}
-						else if (Event.key.scancode == SDL_SCANCODE_LALT)
-						{
-							pInput->acquire();
-							UI->IsEnableInput = false;
-							ShowCursor(false);
-						}
-					}
-				}break;
-			case SDL_EVENT_KEY_UP:
-				if (UI) {
-					UI->KeyUp(Event.key.scancode, UI->GetShiftState());
-					if(UI->IsPlayInEditor() && pInput->IsAcquire) 
-					{
-						if (pInput->IsAcquire)
-						{
-							pInput->KeyboardButtonUpdate(Event.key.scancode, false);
-						}
-					}
-				}
-				break;
-			case SDL_EVENT_MOUSE_MOTION:
-			{
-				if (UI->IsPlayInEditor() && !pInput->IsAcquire)
-					break;
-
-				pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
-			} break;
-			case SDL_EVENT_MOUSE_WHEEL:
-			{
-				if (UI->IsPlayInEditor() && !pInput->IsAcquire)
-					break;
-
-				pInput->MouseScroll(Event.wheel.y);
-			}break;
-			case SDL_EVENT_MOUSE_BUTTON_DOWN:
-			case SDL_EVENT_MOUSE_BUTTON_UP:
-			{
-				if (UI->IsPlayInEditor() && !pInput->IsAcquire)
-					break;
-
-				int mouse_button = 0;
-				if (Event.button.button == SDL_BUTTON_LEFT) { mouse_button = 0; }
-				if (Event.button.button == SDL_BUTTON_RIGHT) { mouse_button = 1; }
-				if (Event.button.button == SDL_BUTTON_MIDDLE) { mouse_button = 2; }
-				if (Event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-					pInput->MousePressed(mouse_button);
-				}
-				else {
-					pInput->MouseReleased(mouse_button);
-				}
-			}
-			break;
 			}
 
 			if (!UI->ProcessEvent(&Event))
+			{
 				break;
+			}
 		}
 
 		if (SmokePreviewHandle.IsValid())
+		{
 			SmokePreviewRenderer->RenderPreview(SmokePreviewHandle, 1.0f / 60.0f);
+		}
 		if (ViewportMaterialSmokeRequested && EditorNriBackend)
+		{
 			EditorNriBackend->CaptureViewport(SmokeSceneViewportId);
+		}
 
 		MainForm->Frame();
 
@@ -796,10 +845,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 			if (Frame.State == EMaterialPreviewState::Error || TimedOut)
 			{
 				if (Frame.Diagnostic.empty())
+				{
 					Msg("! Material preview smoke timed out");
+				}
 				else
+				{
 					Msg("! Material preview smoke failed: %.*s",
-						static_cast<int>(Frame.Diagnostic.size()), Frame.Diagnostic.data());
+						static_cast<int>(Frame.Diagnostic.size()),
+						Frame.Diagnostic.data());
+				}
 				ProcessExitCode = 4;
 				SmokePreviewRenderer->DestroyPreview(SmokePreviewHandle);
 				SmokePreviewHandle = {};
@@ -807,10 +861,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				NeedExit = true;
 			}
 			else if (Frame.State == EMaterialPreviewState::Ready &&
-				Frame.AcceptedRevision == 1 && Frame.Surface.IsValid())
+					 Frame.AcceptedRevision == 1 && Frame.Surface.IsValid())
 			{
 				Msg("* Material preview smoke: success (%ux%u)",
-					Frame.Surface.Width, Frame.Surface.Height);
+					Frame.Surface.Width,
+					Frame.Surface.Height);
 				SmokePreviewRenderer->DestroyPreview(SmokePreviewHandle);
 				SmokePreviewHandle = {};
 				MaterialPreviewSmokeComplete = true;
@@ -827,17 +882,21 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		{
 			const FEditorViewportMaterialStatus Status =
 				EditorNriBackend->GetViewportMaterialStatus(
-					SmokeSceneViewportId, SmokeSceneMaterialSlot);
+					SmokeSceneViewportId, SmokeSceneMaterialSlot
+				);
 			const FEditorViewportMaterialStatus SpriteStatus =
 				EditorNriBackend->GetViewportMaterialStatus(
-					SmokeSceneViewportId, SmokeSceneSpriteMaterialSlot);
+					SmokeSceneViewportId, SmokeSceneSpriteMaterialSlot
+				);
 			const FEditorViewportMaterialStatus ParticleStatus =
 				EditorNriBackend->GetViewportMaterialStatus(
-					SmokeSceneViewportId, SmokeSceneParticleMaterialSlot);
+					SmokeSceneViewportId, SmokeSceneParticleMaterialSlot
+				);
 			const FEditorViewportMaterialStatus CloneStatus =
 				EditorNriBackend->GetViewportMaterialStatus(
 					SmokeSceneViewportId,
-					SmokeSceneLastCloneMaterialSlot);
+					SmokeSceneLastCloneMaterialSlot
+				);
 			const FEditorViewportSurface Surface =
 				EditorNriBackend->GetViewportSurface(SmokeSceneViewportId);
 			const FRenderStatisticsSnapshot RendererStatistics =
@@ -851,88 +910,105 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 				RendererStatistics.Resources.TrackedPipelineCount != 0;
 			const bool TimedOut = std::chrono::steady_clock::now() >= SmokeDeadline;
 			const bool SurfaceMaterialFailed = Status.RequestedRevision != 0 &&
-				Status.AcceptedRevision < Status.RequestedRevision &&
-				!Status.Diagnostic.empty();
+											   Status.AcceptedRevision < Status.RequestedRevision &&
+											   !Status.Diagnostic.empty();
 			const bool SpriteMaterialFailed = SpriteStatus.RequestedRevision != 0 &&
-				SpriteStatus.AcceptedRevision < SpriteStatus.RequestedRevision &&
-				!SpriteStatus.Diagnostic.empty();
+											  SpriteStatus.AcceptedRevision < SpriteStatus.RequestedRevision &&
+											  !SpriteStatus.Diagnostic.empty();
 			const bool ParticleMaterialFailed = ParticleStatus.RequestedRevision != 0 &&
-				ParticleStatus.AcceptedRevision < ParticleStatus.RequestedRevision &&
-				!ParticleStatus.Diagnostic.empty();
+												ParticleStatus.AcceptedRevision < ParticleStatus.RequestedRevision &&
+												!ParticleStatus.Diagnostic.empty();
 			const bool CloneMaterialFailed = CloneStatus.RequestedRevision != 0 &&
-				CloneStatus.AcceptedRevision < CloneStatus.RequestedRevision &&
-				!CloneStatus.Diagnostic.empty();
+											 CloneStatus.AcceptedRevision < CloneStatus.RequestedRevision &&
+											 !CloneStatus.Diagnostic.empty();
 			if (SurfaceMaterialFailed || SpriteMaterialFailed ||
 				ParticleMaterialFailed || CloneMaterialFailed || TimedOut)
 			{
 				const xr_string& MaterialDiagnostic = SurfaceMaterialFailed
-					? Status.Diagnostic : SpriteMaterialFailed
-						? SpriteStatus.Diagnostic : ParticleMaterialFailed
-							? ParticleStatus.Diagnostic :
-								CloneStatus.Diagnostic;
+														  ? Status.Diagnostic
+													  : SpriteMaterialFailed
+														  ? SpriteStatus.Diagnostic
+													  : ParticleMaterialFailed
+														  ? ParticleStatus.Diagnostic
+														  : CloneStatus.Diagnostic;
 				if (MaterialDiagnostic.empty())
+				{
 					Msg("! Viewport material smoke timed out");
+				}
 				else
+				{
 					Msg("! Viewport material smoke failed: %s",
 						MaterialDiagnostic.c_str());
+				}
 				ProcessExitCode = 7;
 				GContentView->Destroy();
 				NeedExit = true;
 			}
 			else if (Status.Ready && SpriteStatus.Ready && ParticleStatus.Ready &&
-				CloneStatus.Ready &&
-				CloneStatus.PipelineKey == Status.PipelineKey &&
-				Status.SharedPipelineReferenceCount >=
-					SmokeSceneCloneMaterialCount + 1 &&
-				Surface.IsValid() && Status.DrawCount == 3 &&
-				Status.SelectionOverlayReady &&
-				Status.SelectionDrawCount == 3 &&
-				Status.DebugOverlayReady &&
-				Status.DebugLineCount == 1 &&
-				Status.DebugTriangleCount == 1 &&
-				Status.ScreenOverlayReady &&
-				Status.OverlayLineCount == 1 &&
-				Status.OverlayTriangleCount == 1 &&
-				Status.OverlayTextCount == 1 &&
-				Status.LightCount == 2 &&
-				RendererStatisticsReady &&
-				(!ViewportMaterialReloadSmokeRequested ||
-					(Status.ReloadCount >= 1 && SpriteStatus.ReloadCount >= 1 &&
-						ParticleStatus.ReloadCount >= 1 &&
-						CloneStatus.ReloadCount >= 1)))
+					 CloneStatus.Ready &&
+					 CloneStatus.PipelineKey == Status.PipelineKey &&
+					 Status.SharedPipelineReferenceCount >=
+						 SmokeSceneCloneMaterialCount + 1 &&
+					 Surface.IsValid() && Status.DrawCount == 3 &&
+					 Status.SelectionOverlayReady &&
+					 Status.SelectionDrawCount == 3 &&
+					 Status.DebugOverlayReady &&
+					 Status.DebugLineCount == 1 &&
+					 Status.DebugTriangleCount == 1 &&
+					 Status.ScreenOverlayReady &&
+					 Status.OverlayLineCount == 1 &&
+					 Status.OverlayTriangleCount == 1 &&
+					 Status.OverlayTextCount == 1 &&
+					 Status.LightCount == 2 &&
+					 RendererStatisticsReady &&
+					 (!ViewportMaterialReloadSmokeRequested ||
+					  (Status.ReloadCount >= 1 && SpriteStatus.ReloadCount >= 1 &&
+					   ParticleStatus.ReloadCount >= 1 &&
+					   CloneStatus.ReloadCount >= 1)))
 			{
 				Msg("* Viewport material smoke: success (%ux%u, draws=%u, selection=%u, debug-lines=%u, debug-triangles=%u, overlay-lines=%u, overlay-triangles=%u, overlay-text=%u, lights=%u, pipeline=%llu, shared-pipeline-refs=%u, sprite-pipeline=%llu, particle-pipeline=%llu, revision=%llu, reloads=%u/%u/%u/%u, stats-revision=%llu, passes=%u, gpu-draws=%u, triangles=%llu, buffers=%u/%llu, textures=%u/%llu, pipelines=%u, descriptors=%u, deferred=%u, cpu-ns=%llu, gpu-timing=%s)",
-					Surface.Width, Surface.Height, Status.DrawCount,
+					Surface.Width,
+					Surface.Height,
+					Status.DrawCount,
 					Status.SelectionDrawCount,
-					Status.DebugLineCount, Status.DebugTriangleCount,
-					Status.OverlayLineCount, Status.OverlayTriangleCount,
-					Status.OverlayTextCount, Status.LightCount,
+					Status.DebugLineCount,
+					Status.DebugTriangleCount,
+					Status.OverlayLineCount,
+					Status.OverlayTriangleCount,
+					Status.OverlayTextCount,
+					Status.LightCount,
 					static_cast<unsigned long long>(Status.PipelineKey),
 					Status.SharedPipelineReferenceCount,
 					static_cast<unsigned long long>(SpriteStatus.PipelineKey),
 					static_cast<unsigned long long>(ParticleStatus.PipelineKey),
 					static_cast<unsigned long long>(Status.AcceptedRevision),
-					Status.ReloadCount, SpriteStatus.ReloadCount,
-					ParticleStatus.ReloadCount, CloneStatus.ReloadCount,
+					Status.ReloadCount,
+					SpriteStatus.ReloadCount,
+					ParticleStatus.ReloadCount,
+					CloneStatus.ReloadCount,
 					static_cast<unsigned long long>(
-						RendererStatistics.Revision),
+						RendererStatistics.Revision
+					),
 					RendererStatistics.Frame.PassCount,
 					RendererStatistics.Frame.DrawCallCount,
 					static_cast<unsigned long long>(
-						RendererStatistics.Frame.TriangleCount),
+						RendererStatistics.Frame.TriangleCount
+					),
 					RendererStatistics.Resources.TrackedBufferCount,
 					static_cast<unsigned long long>(
-						RendererStatistics.Resources.TrackedBufferBytes),
+						RendererStatistics.Resources.TrackedBufferBytes
+					),
 					RendererStatistics.Resources.TrackedTextureCount,
 					static_cast<unsigned long long>(
-						RendererStatistics.Resources.TrackedTextureBytes),
+						RendererStatistics.Resources.TrackedTextureBytes
+					),
 					RendererStatistics.Resources.TrackedPipelineCount,
 					RendererStatistics.Resources.TrackedDescriptorCount,
 					RendererStatistics.Resources.DeferredResourceCount,
 					static_cast<unsigned long long>(
-						RendererStatistics.Frame.CpuFrameNanoseconds),
-					RendererStatistics.Frame.GpuTimingValid ? "valid" :
-						"not-collected");
+						RendererStatistics.Frame.CpuFrameNanoseconds
+					),
+					RendererStatistics.Frame.GpuTimingValid ? "valid" : "not-collected");
 				ViewportMaterialSmokeComplete = true;
 				if (MaterialPreviewSmokeComplete)
 				{
@@ -943,10 +1019,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 		}
 
 		if (g_pGamePersistent)
+		{
 			g_pGamePersistent->UpdateParticles();
+		}
 	}
 	if (SmokePreviewHandle.IsValid())
+	{
 		SmokePreviewRenderer->DestroyPreview(SmokePreviewHandle);
+	}
 	s.join();
 	xr_delete(g_FontManager);
 
@@ -961,7 +1041,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 	}
 	EditorNriBackend = nullptr;
 	DestroyTiramisuEditorRenderer(EditorRendererInstance);
-	//очищение памяти таблицы строк
+	// очищение памяти таблицы строк
 	CStringTable::Destroy();
 	xr_delete(pApp);
 	xr_delete(g_XrGameManager);

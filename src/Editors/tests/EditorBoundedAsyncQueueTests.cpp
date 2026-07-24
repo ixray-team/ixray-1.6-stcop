@@ -20,15 +20,19 @@ int main()
 			const size_t Current = Running.fetch_add(1) + 1;
 			size_t Peak = ObservedPeak.load();
 			while (Peak < Current &&
-				!ObservedPeak.compare_exchange_weak(Peak, Current))
-			{}
+				   !ObservedPeak.compare_exchange_weak(Peak, Current))
+			{
+			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(2));
 			Running.fetch_sub(1);
 			return Value * Value;
-		});
+		}
+	);
 
 	for (u32 Index = 0; Index < RequestCount; ++Index)
+	{
 		Queue.Enqueue(Index);
+	}
 	if (Queue.ActiveCount() != MaximumConcurrency ||
 		Queue.PendingCount() != RequestCount - MaximumConcurrency)
 	{

@@ -6,68 +6,97 @@
 using std::swap;
 
 #ifdef _M_AMD64
-#	define M_DONTDEFERCLEAR_EXT
+#define M_DONTDEFERCLEAR_EXT
 #endif
 
 template <class T>
-class	xalloc	{
+class xalloc
+{
 public:
-	typedef	size_t		size_type;
-	typedef ptrdiff_t	difference_type;
-	typedef T*			pointer;
-	typedef const T*	const_pointer;
-	typedef T&			reference;
-	typedef const T&	const_reference;
-	typedef T			value_type;
+	typedef size_t size_type;
+	typedef ptrdiff_t difference_type;
+	typedef T* pointer;
+	typedef const T* const_pointer;
+	typedef T& reference;
+	typedef const T& const_reference;
+	typedef T value_type;
 
 public:
-	template<class _Other>	
-	struct rebind			{	typedef xalloc<_Other> other;	};
-public:
-							pointer					address			(reference _Val) const					{	return (&_Val);	}
-							const_pointer			address			(const_reference _Val) const			{	return (&_Val);	}
-													xalloc			() = default;
-	xalloc			(const xalloc<T>&) = default;
-	template<class _Other>							xalloc			(const xalloc<_Other>&)					{	}
-	template<class _Other>	xalloc<T>&				operator=		(const xalloc<_Other>&)					{	return (*this);	}
-							pointer					allocate		(size_type n, const void* p=nullptr) const	{	return xr_alloc<T>((u32)n);	}
-							char*					_charalloc		(size_type n)							{	return (char*)allocate(n); }
-							void					deallocate		(pointer p, size_type n) const			{	xr_free	(p);				}
-							void					deallocate		(void* p, size_type n) const			{	xr_free	(p);				}
-							//void					construct		(pointer p, const T& _Val)				{	::new(p) T(_Val);	}
-							
-							template <typename... Args>
-							static void construct(pointer* ptr, Args&&... args)
-							{
-								new (ptr) T(std::forward<Args>(args)...);
-							}
-
-							void					destroy			(pointer p)								{	p->~T();			}
-							size_type				max_size		() const								{	size_type _Count = (size_type)(-1) / sizeof (T);	return _Count;	}
-};
-
-struct xr_allocator {
-	template <typename T>
-	struct helper {
-		typedef xalloc<T>	result;
+	template <class _Other>
+	struct rebind
+	{
+		typedef xalloc<_Other> other;
 	};
 
-	static	void	*alloc		(const u32 n)	{	return xr_malloc((u32)n);	}
-	template <typename T>
-	static	void	dealloc		(T *&p)			{	xr_free(p);					}
+public:
+	pointer address(reference _Val) const { return (&_Val); }
+	const_pointer address(const_reference _Val) const { return (&_Val); }
+	xalloc() = default;
+	xalloc(const xalloc<T>&) = default;
+	template <class _Other>
+	xalloc(const xalloc<_Other>&) {}
+	template <class _Other>
+	xalloc<T>& operator=(const xalloc<_Other>&) { return (*this); }
+	pointer allocate(size_type n, const void* p = nullptr) const { return xr_alloc<T>((u32)n); }
+	char* _charalloc(size_type n) { return (char*)allocate(n); }
+	void deallocate(pointer p, size_type n) const { xr_free(p); }
+	void deallocate(void* p, size_type n) const { xr_free(p); }
+	// void					construct		(pointer p, const T& _Val)				{	::new(p) T(_Val);	}
+
+	template <typename... Args>
+	static void construct(pointer* ptr, Args&&... args)
+	{
+		new (ptr) T(std::forward<Args>(args)...);
+	}
+
+	void destroy(pointer p) { p->~T(); }
+	size_type max_size() const
+	{
+		size_type _Count = (size_type)(-1) / sizeof(T);
+		return _Count;
+	}
 };
 
-template<class _Ty,	class _Other>	inline	bool operator==(const xalloc<_Ty>&, const xalloc<_Other>&)		{	return (true);							}
-template<class _Ty, class _Other>	inline	bool operator!=(const xalloc<_Ty>&, const xalloc<_Other>&)		{	return (false);							}
+struct xr_allocator
+{
+	template <typename T>
+	struct helper
+	{
+		typedef xalloc<T> result;
+	};
+
+	static void* alloc(const u32 n) { return xr_malloc((u32)n); }
+	template <typename T>
+	static void dealloc(T*& p) { xr_free(p); }
+};
+
+template <class _Ty, class _Other>
+inline bool operator==(const xalloc<_Ty>&, const xalloc<_Other>&)
+{
+	return (true);
+}
+template <class _Ty, class _Other>
+inline bool operator!=(const xalloc<_Ty>&, const xalloc<_Other>&)
+{
+	return (false);
+}
 
 namespace std
 {
-	template<class _Tp1, class _Tp2>	inline	xalloc<_Tp2>&	__stl_alloc_rebind(xalloc<_Tp1>& __a, const _Tp2*)	{	return (xalloc<_Tp2>&)(__a);	}
-	template<class _Tp1, class _Tp2>	inline	xalloc<_Tp2>	__stl_alloc_create(xalloc<_Tp1>&, const _Tp2*)		{	return xalloc<_Tp2>();			}
-};
+template <class _Tp1, class _Tp2>
+inline xalloc<_Tp2>& __stl_alloc_rebind(xalloc<_Tp1>& __a, const _Tp2*)
+{
+	return (xalloc<_Tp2>&)(__a);
+}
+template <class _Tp1, class _Tp2>
+inline xalloc<_Tp2> __stl_alloc_create(xalloc<_Tp1>&, const _Tp2*)
+{
+	return xalloc<_Tp2>();
+}
+}; // namespace std
 
 // vector
-template <typename T, typename allocator = xalloc<T> >
+template <typename T, typename allocator = xalloc<T>>
 using xr_vector = std::vector<T, allocator>;
 
 template <typename T>
@@ -95,43 +124,49 @@ template <typename T, typename container = xr_deque<T>>
 using xr_queue = std::queue<T, container>;
 
 // stack
-template <typename T, class C = xr_deque<T> >
+template <typename T, class C = xr_deque<T>>
 using xr_stack = std::stack<T, C>;
 
-template <typename T, typename allocator = xalloc<T> >							
+template <typename T, typename allocator = xalloc<T>>
 using xr_list = std::list<T, allocator>;
 
-template <typename K, class P = std::less<K>, typename allocator = xalloc<K> >				
+template <typename K, class P = std::less<K>, typename allocator = xalloc<K>>
 using xr_set = std::set<K, P, allocator>;
 
-template <typename K, class P = std::less<K>, typename allocator = xalloc<K> >			
+template <typename K, class P = std::less<K>, typename allocator = xalloc<K>>
 using xr_multiset = std::multiset<K, P, allocator>;
 
-template <typename K, class V, class P = std::less<K>, typename allocator = xalloc<std::pair<const K,V> > >	
+template <typename K, class V, class P = std::less<K>, typename allocator = xalloc<std::pair<const K, V>>>
 using xr_map = std::map<K, V, P, allocator>;
 
-template <typename K, class V, class P=std::less<K>, typename allocator = xalloc<std::pair<const K,V> > >	
+template <typename K, class V, class P = std::less<K>, typename allocator = xalloc<std::pair<const K, V>>>
 using xr_multimap = std::multimap<K, V, P, allocator>;
 
-template <typename K, class V, class Hash = std::hash<K>, class _Traits = std::equal_to<K>,
-    typename allocator = xalloc<std::pair<const K, V>>>
+template <typename K, class V, class Hash = std::hash<K>, class _Traits = std::equal_to<K>, typename allocator = xalloc<std::pair<const K, V>>>
 using xr_hash_map = std::unordered_map<K, V, Hash, _Traits, allocator>;
 
-template <typename K, typename H = std::hash<K>, class _Traits = std::equal_to<K>, typename allocator = xalloc<K> >
+template <typename K, typename H = std::hash<K>, class _Traits = std::equal_to<K>, typename allocator = xalloc<K>>
 using xr_hash_set = std::unordered_set<K, H, _Traits, allocator>;
 
-//#if __cplusplus > 202002L
-//#include <scope>
-//using xr_scope_exit = std::scope_exit;
-//#else
-template<typename T>
-requires requires(T a) { {a()} -> std::convertible_to<void>; }
+// #if __cplusplus > 202002L
+// #include <scope>
+// using xr_scope_exit = std::scope_exit;
+// #else
+template <typename T>
+	requires requires(T a) { {a()} -> std::convertible_to<void>; }
 struct xr_scope_exit
 {
 	T Func;
 	bool IsActive = true;
-	xr_scope_exit(T &&t) : Func(t) {}
-	~xr_scope_exit(){ if (IsActive) { Func(); }}
+	xr_scope_exit(T&& t)
+		: Func(t) {}
+	~xr_scope_exit()
+	{
+		if (IsActive)
+		{
+			Func();
+		}
+	}
 	void release() { IsActive = false; }
 
 	xr_scope_exit(const xr_scope_exit&) = delete;
@@ -139,38 +174,40 @@ struct xr_scope_exit
 	xr_scope_exit(xr_scope_exit&&) noexcept = default;
 	xr_scope_exit& operator=(xr_scope_exit&&) noexcept = default;
 };
-//#endif
+// #endif
 
-struct pred_str {
-	IC bool operator()(const char* x, const char* y) const				{	return xr_strcmp(x,y)<0;	}
+struct pred_str
+{
+	IC bool operator()(const char* x, const char* y) const { return xr_strcmp(x, y) < 0; }
 };
-struct pred_stri {
-	IC bool operator()(const char* x, const char* y) const				{	return _stricmp(x,y)<0;	}
+struct pred_stri
+{
+	IC bool operator()(const char* x, const char* y) const { return _stricmp(x, y) < 0; }
 };
 
 // STL extensions
 #include "Containers/buffer_vector.h"
 
 // auxilary definition
-using FvectorVec = xr_vector<Fvector>;	 
+using FvectorVec = xr_vector<Fvector>;
 using FvectorIt = FvectorVec::iterator;
 
-using LPSTRVec = xr_vector<LPSTR>;		 
+using LPSTRVec = xr_vector<LPSTR>;
 using LPSTRIt = LPSTRVec::iterator;
 
-using LPCSTRVec = xr_vector<const char*>;	 
+using LPCSTRVec = xr_vector<const char*>;
 using LPCSTRIt = LPCSTRVec::iterator;
 
-using U16Vec = xr_vector<u16>;			 
+using U16Vec = xr_vector<u16>;
 using U16It = U16Vec::iterator;
 
-using U32Vec = xr_vector<u32>;			 
+using U32Vec = xr_vector<u32>;
 using U32It = U32Vec::iterator;
 
-using FloatVec = xr_vector<float>;		 
+using FloatVec = xr_vector<float>;
 using FloatIt = FloatVec::iterator;
 
-using IntVec = xr_vector<int>;			 
+using IntVec = xr_vector<int>;
 using IntIt = IntVec::iterator;
 
 using BOOLVec = xr_vector<bool>;
@@ -243,7 +280,7 @@ using U8It = U8Vec::iterator;
 using LPU32Vec = xr_vector<u32*>;
 using LPU32It = LPU32Vec::iterator;
 
-template<class RandomIt>
+template <class RandomIt>
 void random_shuffle(RandomIt first, RandomIt last)
 {
 	typedef typename std::iterator_traits<RandomIt>::difference_type diff_t;

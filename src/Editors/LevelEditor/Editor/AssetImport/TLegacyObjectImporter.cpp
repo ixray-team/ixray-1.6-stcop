@@ -30,8 +30,7 @@ constexpr u32 LegacyObjectImporterVersion = 2;
 constexpr u64 FnvOffset = 14695981039346656037ull;
 constexpr u64 FnvPrime = 1099511628211ull;
 
-void HashBytes(u64& Hash, const void* Data,
-	const size_t Size)
+void HashBytes(u64& Hash, const void* Data, const size_t Size)
 {
 	const auto* Bytes = static_cast<const u8*>(Data);
 	for (size_t Index = 0; Index < Size; ++Index)
@@ -45,7 +44,9 @@ void HashBytes(u64& Hash, const void* Data,
 {
 	std::ifstream Input(Path, std::ios::binary);
 	if (!Input)
+	{
 		return {};
+	}
 	u64 Hash = FnvOffset;
 	xr_array<char, 64 * 1024> Buffer;
 	while (Input)
@@ -53,7 +54,9 @@ void HashBytes(u64& Hash, const void* Data,
 		Input.read(Buffer.data(), Buffer.size());
 		const std::streamsize Count = Input.gcount();
 		if (Count > 0)
+		{
 			HashBytes(Hash, Buffer.data(), static_cast<size_t>(Count));
+		}
 	}
 	std::ostringstream Text;
 	Text << std::hex << std::setfill('0') << std::setw(16) << Hash;
@@ -61,41 +64,39 @@ void HashBytes(u64& Hash, const void* Data,
 }
 
 [[nodiscard]] xr_string NormalizeSourceIdentity(
-	const std::filesystem::path& Path)
+	const std::filesystem::path& Path
+)
 {
 	xr_string Result = Path.lexically_normal().generic_string();
-	std::ranges::transform(Result, Result.begin(),
-		[](const char Character)
-		{
-			return static_cast<char>(std::tolower(
-				static_cast<unsigned char>(Character)));
-		});
+	std::ranges::transform(Result, Result.begin(), [](const char Character)
+						   { return static_cast<char>(std::tolower(
+								 static_cast<unsigned char>(Character)
+							 )); });
 	return Result;
 }
 
-void AddDiagnostic(Scene::FSceneConversionDump& Dump,
-	xr_string Severity, xr_string Code, xr_string Message)
+void AddDiagnostic(Scene::FSceneConversionDump& Dump, xr_string Severity, xr_string Code, xr_string Message)
 {
 	Dump.Diagnostics.push_back(
-		{std::move(Severity), std::move(Code), std::move(Message)});
+		{std::move(Severity), std::move(Code), std::move(Message)}
+	);
 }
 
-void AppendMaterialDiagnostics(Scene::FSceneConversionDump& Dump,
-	const xr_vector<FMaterialDiagnostic>& Diagnostics)
+void AppendMaterialDiagnostics(Scene::FSceneConversionDump& Dump, const xr_vector<FMaterialDiagnostic>& Diagnostics)
 {
 	for (const FMaterialDiagnostic& Diagnostic : Diagnostics)
 	{
 		const char* Severity = "info";
 		switch (Diagnostic.Severity)
 		{
-		case EMaterialDiagnosticSeverity::Warning:
-			Severity = "warning";
-			break;
-		case EMaterialDiagnosticSeverity::Error:
-			Severity = "error";
-			break;
-		default:
-			break;
+			case EMaterialDiagnosticSeverity::Warning:
+				Severity = "warning";
+				break;
+			case EMaterialDiagnosticSeverity::Error:
+				Severity = "error";
+				break;
+			default:
+				break;
 		}
 		AddDiagnostic(Dump, Severity, Diagnostic.Code, Diagnostic.Message);
 	}
@@ -103,26 +104,24 @@ void AppendMaterialDiagnostics(Scene::FSceneConversionDump& Dump,
 
 [[nodiscard]] bool HasErrors(const Scene::FSceneConversionDump& Dump)
 {
-	return std::ranges::any_of(Dump.Diagnostics,
-		[](const Scene::FSceneConversionDiagnostic& Diagnostic)
-		{
-			return Diagnostic.Severity == "error";
-		});
+	return std::ranges::any_of(Dump.Diagnostics, [](const Scene::FSceneConversionDiagnostic& Diagnostic)
+							   { return Diagnostic.Severity == "error"; });
 }
 
-[[nodiscard]] bool WriteDump(const std::filesystem::path& Path,
-	const Scene::FSceneConversionDump& Dump)
+[[nodiscard]] bool WriteDump(const std::filesystem::path& Path, const Scene::FSceneConversionDump& Dump)
 {
 	std::error_code Error;
 	std::filesystem::create_directories(Path.parent_path(), Error);
 	if (Error)
+	{
 		return false;
-	return Editor::WriteTextFileAtomically(Path,
-		Scene::SerializeSceneConversionDumpJson(Dump)).Success;
+	}
+	return Editor::WriteTextFileAtomically(Path, Scene::SerializeSceneConversionDumpJson(Dump)).Success;
 }
 
 [[nodiscard]] std::filesystem::path FailedDumpPath(
-	const std::filesystem::path& Target)
+	const std::filesystem::path& Target
+)
 {
 	std::filesystem::path Result = Target;
 	Result += ".migration.failed.json";
@@ -130,7 +129,8 @@ void AppendMaterialDiagnostics(Scene::FSceneConversionDump& Dump,
 }
 
 [[nodiscard]] std::filesystem::path SuccessDumpPath(
-	const std::filesystem::path& Target)
+	const std::filesystem::path& Target
+)
 {
 	std::filesystem::path Result = Target;
 	Result += ".migration.json";
@@ -138,7 +138,7 @@ void AppendMaterialDiagnostics(Scene::FSceneConversionDump& Dump,
 }
 
 [[nodiscard]] xr_vector<Editor::FLegacyObjectSurfaceDescriptor>
-	BuildSurfaceDescriptors(CEditableObject& Object)
+BuildSurfaceDescriptors(CEditableObject& Object)
 {
 	xr_vector<Editor::FLegacyObjectSurfaceDescriptor> Result;
 	Result.reserve(Object.Surfaces().size());
@@ -163,9 +163,7 @@ void AppendMaterialDiagnostics(Scene::FSceneConversionDump& Dump,
 	return Result;
 }
 
-void ReadTexCoords(CEditableMesh& Mesh, const st_FaceVert& FaceVertex,
-	xr_array<float, 2>& TexCoord0,
-	xr_array<float, 2>& TexCoord1)
+void ReadTexCoords(CEditableMesh& Mesh, const st_FaceVert& FaceVertex, xr_array<float, 2>& TexCoord0, xr_array<float, 2>& TexCoord1)
 {
 	if (FaceVertex.vmref < 0 ||
 		static_cast<size_t>(FaceVertex.vmref) >=
@@ -176,8 +174,8 @@ void ReadTexCoords(CEditableMesh& Mesh, const st_FaceVert& FaceVertex,
 	const st_VMapPtLst& References = Mesh.GetVMRefs()[FaceVertex.vmref];
 	u32 TexCoordIndex = 0;
 	for (u32 ReferenceIndex = 0;
-		ReferenceIndex < References.count && TexCoordIndex < 2;
-		++ReferenceIndex)
+		 ReferenceIndex < References.count && TexCoordIndex < 2;
+		 ++ReferenceIndex)
 	{
 		const st_VMapPt& Point = References.pts[ReferenceIndex];
 		if (Point.vmap_index < 0 || Point.index < 0 ||
@@ -199,7 +197,8 @@ void ReadTexCoords(CEditableMesh& Mesh, const st_FaceVert& FaceVertex,
 }
 
 void CalculateTriangleTangents(
-	xr_vector<Scene::FStaticMeshVertex>& Vertices)
+	xr_vector<Scene::FStaticMeshVertex>& Vertices
+)
 {
 	for (size_t Base = 0; Base + 2 < Vertices.size(); Base += 3)
 	{
@@ -225,18 +224,21 @@ void CalculateTriangleTangents(
 			Tangent = {
 				(E1x * Dv2 - E2x * Dv1) * Inverse,
 				(E1y * Dv2 - E2y * Dv1) * Inverse,
-				(E1z * Dv2 - E2z * Dv1) * Inverse};
+				(E1z * Dv2 - E2z * Dv1) * Inverse
+			};
 			Bitangent = {
 				(E2x * Du1 - E1x * Du2) * Inverse,
 				(E2y * Du1 - E1y * Du2) * Inverse,
-				(E2z * Du1 - E1z * Du2) * Inverse};
+				(E2z * Du1 - E1z * Du2) * Inverse
+			};
 		}
-		const float Length = std::sqrt(Tangent[0] * Tangent[0] +
-			Tangent[1] * Tangent[1] + Tangent[2] * Tangent[2]);
+		const float Length = std::sqrt(Tangent[0] * Tangent[0] + Tangent[1] * Tangent[1] + Tangent[2] * Tangent[2]);
 		if (Length > 1.0e-8f)
 		{
 			for (float& Value : Tangent)
+			{
 				Value /= Length;
+			}
 		}
 		for (Scene::FStaticMeshVertex* Vertex : {&V0, &V1, &V2})
 		{
@@ -244,26 +246,27 @@ void CalculateTriangleTangents(
 			const xr_array<float, 3> Cross = {
 				N[1] * Tangent[2] - N[2] * Tangent[1],
 				N[2] * Tangent[0] - N[0] * Tangent[2],
-				N[0] * Tangent[1] - N[1] * Tangent[0]};
+				N[0] * Tangent[1] - N[1] * Tangent[0]
+			};
 			const float Handedness =
 				Cross[0] * Bitangent[0] +
-				Cross[1] * Bitangent[1] +
-				Cross[2] * Bitangent[2] < 0.0f ? -1.0f : 1.0f;
+							Cross[1] * Bitangent[1] +
+							Cross[2] * Bitangent[2] <
+						0.0f
+					? -1.0f
+					: 1.0f;
 			Vertex->Tangent = {
-				Tangent[0], Tangent[1], Tangent[2], Handedness};
+				Tangent[0], Tangent[1], Tangent[2], Handedness
+			};
 		}
 	}
 }
 
-[[nodiscard]] bool BuildStaticMeshGeometry(CEditableObject& Object,
-	const xr_vector<Editor::FLegacyObjectMaterialBinding>& Bindings,
-	Scene::FStaticMeshAsset& Asset,
-	Scene::FSceneConversionDump& Dump)
+[[nodiscard]] bool BuildStaticMeshGeometry(CEditableObject& Object, const xr_vector<Editor::FLegacyObjectMaterialBinding>& Bindings, Scene::FStaticMeshAsset& Asset, Scene::FSceneConversionDump& Dump)
 {
 	if (Object.Surfaces().size() != Bindings.size())
 	{
-		AddDiagnostic(Dump, "error", "object_import.surface_mismatch",
-			"Material migration returned a different surface count.");
+		AddDiagnostic(Dump, "error", "object_import.surface_mismatch", "Material migration returned a different surface count.");
 		return false;
 	}
 
@@ -273,14 +276,14 @@ void CalculateTriangleTangents(
 		const CSurface* Surface = Object.Surfaces()[Index];
 		if (!Surface)
 		{
-			AddDiagnostic(Dump, "error", "object_import.null_surface",
-				"Legacy object contains a null surface.");
+			AddDiagnostic(Dump, "error", "object_import.null_surface", "Legacy object contains a null surface.");
 			return false;
 		}
 		Asset.MaterialSlots.push_back(
 			{Bindings[Index].SurfaceName,
-				Bindings[Index].MaterialInstance,
-				Bindings[Index].TwoSided});
+			 Bindings[Index].MaterialInstance,
+			 Bindings[Index].TwoSided}
+		);
 	}
 
 	struct FMeshNormalScope
@@ -289,7 +292,8 @@ void CalculateTriangleTangents(
 		const Fvector* Normals = nullptr;
 		FMeshNormalScope(CEditableMesh* InMesh, const Fvector* InNormals)
 			: Mesh(InMesh), Normals(InNormals)
-		{}
+		{
+		}
 		FMeshNormalScope(const FMeshNormalScope&) = delete;
 		FMeshNormalScope& operator=(const FMeshNormalScope&) = delete;
 		FMeshNormalScope(FMeshNormalScope&& Other) noexcept
@@ -302,7 +306,9 @@ void CalculateTriangleTangents(
 		~FMeshNormalScope()
 		{
 			if (Mesh)
+			{
 				Mesh->UnloadVNormals();
+			}
 		}
 	};
 	xr_vector<FMeshNormalScope> NormalScopes;
@@ -310,10 +316,13 @@ void CalculateTriangleTangents(
 	for (CEditableMesh* Mesh : Object.Meshes())
 	{
 		if (!Mesh)
+		{
 			continue;
+		}
 		Mesh->GenerateVNormals(nullptr);
 		const Fvector* Normals = Mesh->m_VertexNormals
-			? Mesh->m_VertexNormals : Mesh->m_Normals;
+									 ? Mesh->m_VertexNormals
+									 : Mesh->m_Normals;
 		NormalScopes.emplace_back(Mesh, Normals);
 	}
 
@@ -328,18 +337,19 @@ void CalculateTriangleTangents(
 		{
 			CEditableMesh& Mesh = *Scope.Mesh;
 			const auto Found = Mesh.GetSurfFaces().find(
-				const_cast<CSurface*>(Surface));
+				const_cast<CSurface*>(Surface)
+			);
 			if (Found == Mesh.GetSurfFaces().end())
+			{
 				continue;
+			}
 			for (const int SignedFaceIndex : Found->second)
 			{
 				if (SignedFaceIndex < 0 ||
 					static_cast<u32>(SignedFaceIndex) >=
 						Mesh.GetFCount())
 				{
-					AddDiagnostic(Dump, "error",
-						"object_import.face_out_of_range",
-						"Legacy surface references a face outside its mesh.");
+					AddDiagnostic(Dump, "error", "object_import.face_out_of_range", "Legacy surface references a face outside its mesh.");
 					return false;
 				}
 				const u32 FaceIndex =
@@ -352,28 +362,29 @@ void CalculateTriangleTangents(
 						static_cast<u32>(FaceVertex.pindex) >=
 							Mesh.GetVCount())
 					{
-						AddDiagnostic(Dump, "error",
-							"object_import.vertex_out_of_range",
-							"Legacy face references a vertex outside its mesh.");
+						AddDiagnostic(Dump, "error", "object_import.vertex_out_of_range", "Legacy face references a vertex outside its mesh.");
 						return false;
 					}
 					Scene::FStaticMeshVertex Vertex;
 					const Fvector& Position =
 						Mesh.GetVertices()[FaceVertex.pindex];
 					Vertex.Position = {
-						Position.x, Position.y, Position.z};
+						Position.x, Position.y, Position.z
+					};
 					if (Scope.Normals)
 					{
 						const Fvector& Normal =
 							Scope.Normals[FaceIndex * 3 + Corner];
 						Vertex.Normal = {
-							Normal.x, Normal.y, Normal.z};
+							Normal.x, Normal.y, Normal.z
+						};
 					}
-					ReadTexCoords(Mesh, FaceVertex, Vertex.TexCoord0,
-						Vertex.TexCoord1);
+					ReadTexCoords(Mesh, FaceVertex, Vertex.TexCoord0, Vertex.TexCoord1);
 					Asset.Indices.push_back(
 						static_cast<u32>(
-							Asset.Vertices.size()));
+							Asset.Vertices.size()
+						)
+					);
 					Asset.Vertices.push_back(Vertex);
 				}
 			}
@@ -382,12 +393,13 @@ void CalculateTriangleTangents(
 			static_cast<u32>(Asset.Indices.size()) -
 			Section.FirstIndex;
 		if (Section.IndexCount != 0)
+		{
 			Asset.Sections.push_back(Section);
+		}
 	}
 	if (Asset.Vertices.empty() || Asset.Indices.empty())
 	{
-		AddDiagnostic(Dump, "error", "object_import.empty_geometry",
-			"Legacy object produced no renderable static-mesh geometry.");
+		AddDiagnostic(Dump, "error", "object_import.empty_geometry", "Legacy object produced no renderable static-mesh geometry.");
 		return false;
 	}
 	CalculateTriangleTangents(Asset.Vertices);
@@ -397,28 +409,31 @@ void CalculateTriangleTangents(
 
 std::filesystem::path MakeImportedStaticMeshPath(
 	const std::filesystem::path& SourcePath,
-	const std::filesystem::path& StaticMeshRoot)
+	const std::filesystem::path& StaticMeshRoot
+)
 {
 	std::filesystem::path Relative = SourcePath.filename();
 	const std::filesystem::path Normalized =
 		SourcePath.lexically_normal();
 	xr_vector<std::filesystem::path> Parts;
 	for (const std::filesystem::path& Part : Normalized)
+	{
 		Parts.push_back(Part);
+	}
 	for (size_t Index = 0; Index < Parts.size(); ++Index)
 	{
 		xr_string Name = Parts[Index].generic_string();
-		std::ranges::transform(Name, Name.begin(),
-			[](const char Character)
-			{
-				return static_cast<char>(std::tolower(
-					static_cast<unsigned char>(Character)));
-			});
+		std::ranges::transform(Name, Name.begin(), [](const char Character)
+							   { return static_cast<char>(std::tolower(
+									 static_cast<unsigned char>(Character)
+								 )); });
 		if (Name == "objects" && Index + 1 < Parts.size())
 		{
 			Relative.clear();
 			for (size_t Tail = Index + 1; Tail < Parts.size(); ++Tail)
+			{
 				Relative /= Parts[Tail];
+			}
 			break;
 		}
 	}
@@ -429,13 +444,15 @@ std::filesystem::path MakeImportedStaticMeshPath(
 FLegacyObjectImportResult ImportLegacyObjectAsset(
 	const std::filesystem::path& SourcePath,
 	const std::filesystem::path& MaterialRoot,
-	const std::filesystem::path& StaticMeshRoot)
+	const std::filesystem::path& StaticMeshRoot
+)
 {
 	using namespace Tiramisu;
 	FLegacyObjectImportResult Result;
 	Result.SourcePath = SourcePath.lexically_normal();
 	Result.TargetPath = MakeImportedStaticMeshPath(
-		Result.SourcePath, StaticMeshRoot);
+		Result.SourcePath, StaticMeshRoot
+	);
 	Result.TargetPayloadPath =
 		Scene::MakeStaticMeshGeometryPath(Result.TargetPath);
 
@@ -450,8 +467,7 @@ FLegacyObjectImportResult ImportLegacyObjectAsset(
 		Result.TargetPayloadPath.generic_string();
 	if (Dump.SourceHash.empty())
 	{
-		AddDiagnostic(Dump, "error", "object_import.source_read_failed",
-			"Cannot read legacy .object source.");
+		AddDiagnostic(Dump, "error", "object_import.source_read_failed", "Cannot read legacy .object source.");
 		Result.DumpPath = FailedDumpPath(Result.TargetPath);
 		(void)WriteDump(Result.DumpPath, Dump);
 		Result.Diagnostics = Dump.Diagnostics;
@@ -461,8 +477,7 @@ FLegacyObjectImportResult ImportLegacyObjectAsset(
 	CEditableObject Object(Result.SourcePath.stem().string().c_str());
 	if (!Object.Load(Result.SourcePath.string().c_str()))
 	{
-		AddDiagnostic(Dump, "error", "object_import.load_failed",
-			"CEditableObject could not load the legacy source.");
+		AddDiagnostic(Dump, "error", "object_import.load_failed", "CEditableObject could not load the legacy source.");
 		Result.DumpPath = FailedDumpPath(Result.TargetPath);
 		(void)WriteDump(Result.DumpPath, Dump);
 		Result.Diagnostics = Dump.Diagnostics;
@@ -475,9 +490,7 @@ FLegacyObjectImportResult ImportLegacyObjectAsset(
 	if (!Migration.Initialize(MaterialRoot, &InitializeDiagnostics))
 	{
 		AppendMaterialDiagnostics(Dump, InitializeDiagnostics);
-		AddDiagnostic(Dump, "error",
-			"object_import.material_migration_unavailable",
-			"Material migration database could not be initialized.");
+		AddDiagnostic(Dump, "error", "object_import.material_migration_unavailable", "Material migration database could not be initialized.");
 		Result.DumpPath = FailedDumpPath(Result.TargetPath);
 		(void)WriteDump(Result.DumpPath, Dump);
 		Result.Diagnostics = Dump.Diagnostics;
@@ -486,19 +499,16 @@ FLegacyObjectImportResult ImportLegacyObjectAsset(
 	const xr_vector SurfaceDescriptors =
 		BuildSurfaceDescriptors(Object);
 	Editor::FLegacyObjectMaterialMigrationResult MaterialMigration =
-		Migration.Migrate(Result.SourcePath.generic_string(),
-			SurfaceDescriptors);
+		Migration.Migrate(Result.SourcePath.generic_string(), SurfaceDescriptors);
 	AppendMaterialDiagnostics(Dump, MaterialMigration.Diagnostics);
 	Dump.CreatedMaterialInstances =
 		MaterialMigration.CreatedInstanceCount;
 	Dump.ReusedMaterialInstances =
 		MaterialMigration.ReusedInstanceCount;
 	for (const Editor::FLegacyObjectMaterialBinding& Binding :
-		MaterialMigration.Bindings)
+		 MaterialMigration.Bindings)
 	{
-		Dump.MaterialMappings.push_back({
-			Binding.SurfaceName, Binding.SourceKey,
-			Binding.MaterialInstance, Binding.TwoSided, Binding.Created});
+		Dump.MaterialMappings.push_back({Binding.SurfaceName, Binding.SourceKey, Binding.MaterialInstance, Binding.TwoSided, Binding.Created});
 	}
 	if (!MaterialMigration.Succeeded())
 	{
@@ -511,12 +521,12 @@ FLegacyObjectImportResult ImportLegacyObjectAsset(
 	Scene::FStaticMeshAsset Asset;
 	Asset.Id = GenerateDeterministicMaterialGuid(
 		"legacy-object-static-mesh",
-		NormalizeSourceIdentity(Result.SourcePath));
+		NormalizeSourceIdentity(Result.SourcePath)
+	);
 	Asset.Name = Object.GetName();
 	Asset.SourcePath = Result.TargetPath.generic_string();
 	Dump.TargetAssetId = Asset.Id;
-	if (!BuildStaticMeshGeometry(Object, MaterialMigration.Bindings,
-			Asset, Dump))
+	if (!BuildStaticMeshGeometry(Object, MaterialMigration.Bindings, Asset, Dump))
 	{
 		Result.DumpPath = FailedDumpPath(Result.TargetPath);
 		(void)WriteDump(Result.DumpPath, Dump);
@@ -528,12 +538,9 @@ FLegacyObjectImportResult ImportLegacyObjectAsset(
 	const Scene::FStaticMeshAssetWriteResult Write =
 		Scene::SaveStaticMeshAsset(Result.TargetPath, Asset);
 	for (const Scene::FSceneDiagnostic& Diagnostic :
-		Write.Diagnostics)
+		 Write.Diagnostics)
 	{
-		AddDiagnostic(Dump,
-			Diagnostic.Severity == Scene::ESceneDiagnosticSeverity::Error
-				? "error" : "warning",
-			Diagnostic.Code, Diagnostic.Message);
+		AddDiagnostic(Dump, Diagnostic.Severity == Scene::ESceneDiagnosticSeverity::Error ? "error" : "warning", Diagnostic.Code, Diagnostic.Message);
 	}
 	if (!Write.Succeeded() || HasErrors(Dump))
 	{
@@ -545,16 +552,11 @@ FLegacyObjectImportResult ImportLegacyObjectAsset(
 
 	Dump.Status = Scene::ESceneConversionStatus::Succeeded;
 	Result.DumpPath = SuccessDumpPath(Result.TargetPath);
-	Dump.AssetMappings.push_back({
-		Result.SourcePath.generic_string(),
-		Result.TargetPath.generic_string(),
-		Result.DumpPath.generic_string(), Asset.Id,
-		Result.TargetPayloadPath.generic_string()});
+	Dump.AssetMappings.push_back({Result.SourcePath.generic_string(), Result.TargetPath.generic_string(), Result.DumpPath.generic_string(), Asset.Id, Result.TargetPayloadPath.generic_string()});
 	if (!WriteDump(Result.DumpPath, Dump))
 	{
-		AddDiagnostic(Dump, "error", "object_import.dump_write_failed",
-			"Native asset was written, but the mandatory conversion dump "
-			"could not be published.");
+		AddDiagnostic(Dump, "error", "object_import.dump_write_failed", "Native asset was written, but the mandatory conversion dump "
+																		"could not be published.");
 		Result.Diagnostics = Dump.Diagnostics;
 		return Result;
 	}

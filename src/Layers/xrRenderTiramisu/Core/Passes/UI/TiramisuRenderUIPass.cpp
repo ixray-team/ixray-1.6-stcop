@@ -6,20 +6,19 @@
 TiramisuRenderUIPass::TiramisuRenderUIPass()
 {
 	CheckIsRenderThread();
-	{ 
+	{
 		nri::BufferDesc BufferDescription = {};
-		BufferDescription.size = 16 * 1024* 6* sizeof(FUIVertex);
+		BufferDescription.size = 16 * 1024 * 6 * sizeof(FUIVertex);
 		BufferDescription.usage = nri::BufferUsageBits::VERTEX_BUFFER;
-		NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(*GRenderDevice.Device,nri::MemoryLocation::DEVICE ,0.f, BufferDescription,GeometryBuffer));
-		
+		NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(*GRenderDevice.Device, nri::MemoryLocation::DEVICE, 0.f, BufferDescription, GeometryBuffer));
 	}
-	 
-	{ 
+
+	{
 		nri::BufferDesc BufferDescription = {};
-		BufferDescription.size = 16 * 1024* 6* sizeof(FUIVertex);
-		NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(*GRenderDevice.Device,nri::MemoryLocation::DEVICE_UPLOAD ,0, BufferDescription, UploadBuffer));
+		BufferDescription.size = 16 * 1024 * 6 * sizeof(FUIVertex);
+		NRI_CHECK(GRenderDevice.CoreInterface.CreateCommittedBuffer(*GRenderDevice.Device, nri::MemoryLocation::DEVICE_UPLOAD, 0, BufferDescription, UploadBuffer));
 	}
-	
+
 	{
 		nri::VertexStreamDesc vertexStreamDesc = {};
 		vertexStreamDesc.bindingSlot = 0;
@@ -41,14 +40,14 @@ TiramisuRenderUIPass::TiramisuRenderUIPass()
 		colorAttachmentDesc.format = nri::Format::RGBA8_UNORM;
 		colorAttachmentDesc.colorWriteMask = nri::ColorWriteBits::RGBA;
 		colorAttachmentDesc.blendEnabled = true;
-		colorAttachmentDesc.colorBlend = { nri::BlendFactor::SRC_ALPHA, nri::BlendFactor::ONE_MINUS_SRC_ALPHA, nri::BlendOp::ADD};
+		colorAttachmentDesc.colorBlend = {nri::BlendFactor::SRC_ALPHA, nri::BlendFactor::ONE_MINUS_SRC_ALPHA, nri::BlendOp::ADD};
 
 		nri::OutputMergerDesc OutputMergerDescription = {};
 		OutputMergerDescription.colors = &colorAttachmentDesc;
 		OutputMergerDescription.depthStencilFormat = nri::Format::D24_UNORM_S8_UINT;
-		OutputMergerDescription.depth = {nri::CompareOp::ALWAYS,false,false};
+		OutputMergerDescription.depth = {nri::CompareOp::ALWAYS, false, false};
 		OutputMergerDescription.colorNum = 1;
-		
+
 
 		TiramisuShaderDefinesContainer ShaderDefinesContainer;
 
@@ -61,13 +60,13 @@ TiramisuRenderUIPass::TiramisuRenderUIPass()
 			shaderStages[0].entryPointName = "Main";
 		}
 		{
-			const xr_vector<char>& ShaderCode = GRenderResourcesManager->GlobalShadersManager->GetShader("ui",EShaderType::Pixel,ShaderDefinesContainer);
+			const xr_vector<char>& ShaderCode = GRenderResourcesManager->GlobalShadersManager->GetShader("ui", EShaderType::Pixel, ShaderDefinesContainer);
 			shaderStages[1].stage = nri::StageBits::FRAGMENT_SHADER;
 			shaderStages[1].bytecode = ShaderCode.data();
 			shaderStages[1].size = ShaderCode.size();
 			shaderStages[1].entryPointName = "Main";
 		}
-		
+
 		nri::GraphicsPipelineDesc graphicsPipelineDesc = {};
 		graphicsPipelineDesc.pipelineLayout = GRenderResourcesManager->GlobalPipelineLayout;
 		graphicsPipelineDesc.vertexInput = &vertexInputDesc;
@@ -78,9 +77,8 @@ TiramisuRenderUIPass::TiramisuRenderUIPass()
 		graphicsPipelineDesc.shaderNum = 2;
 		graphicsPipelineDesc.cache = nullptr;
 		NRI_CHECK(GRenderDevice.CoreInterface.CreateGraphicsPipeline(*GRenderDevice.Device, graphicsPipelineDesc, Pipeline));
-
 	}
-	
+
 	BufferBarrierDescription.buffer = GeometryBuffer;
 	BufferBarrierDescription.before = {nri::AccessBits::NONE, nri::StageBits::NONE};
 	BufferBarrierDescription.after = {nri::AccessBits::NONE, nri::StageBits::NONE};
@@ -91,14 +89,14 @@ TiramisuRenderUIPass::~TiramisuRenderUIPass()
 	CheckIsRenderThread();
 	GRenderDevice.CoreInterface.DestroyBuffer(GeometryBuffer);
 	GRenderDevice.CoreInterface.DestroyBuffer(UploadBuffer);
-	
+
 	GRenderDevice.CoreInterface.DestroyPipeline(Pipeline);
 }
 
 void TiramisuRenderUIPass::Upload(nri::CommandBuffer& CurrentCommandBuffer)
 {
 	CheckIsRenderThread();
-	if (Vertexes.size() >= 16 * 1024* 6)
+	if (Vertexes.size() >= 16 * 1024 * 6)
 	{
 		return;
 	}
@@ -108,39 +106,42 @@ void TiramisuRenderUIPass::Upload(nri::CommandBuffer& CurrentCommandBuffer)
 			memcpy(UploadVertexes, Vertexes.data(), Vertexes.size() * sizeof(FUIVertex));
 			GRenderDevice.CoreInterface.UnmapBuffer(*UploadBuffer);
 			if (GRender)
+			{
 				GRender->RecordUploadStatistics_RenderThread(
-					Vertexes.size() * sizeof(FUIVertex));
+					Vertexes.size() * sizeof(FUIVertex)
+				);
+			}
 		}
 	}
-	
+
 	{
 		nri::BarrierDesc BarrierDescription = {};
 		BarrierDescription.bufferNum = 1;
-		BarrierDescription.buffers  = &BufferBarrierDescription;
-		
-		
+		BarrierDescription.buffers = &BufferBarrierDescription;
+
+
 		BufferBarrierDescription.before = BufferBarrierDescription.after;
 		BufferBarrierDescription.after = {nri::AccessBits::COPY_DESTINATION, nri::StageBits::COPY};
-		GRenderDevice.CoreInterface.CmdBarrier(CurrentCommandBuffer,BarrierDescription);
-		
-		GRenderDevice.CoreInterface.CmdCopyBuffer(CurrentCommandBuffer,*GeometryBuffer,0,*UploadBuffer,0,nri::WHOLE_SIZE);
-		
+		GRenderDevice.CoreInterface.CmdBarrier(CurrentCommandBuffer, BarrierDescription);
+
+		GRenderDevice.CoreInterface.CmdCopyBuffer(CurrentCommandBuffer, *GeometryBuffer, 0, *UploadBuffer, 0, nri::WHOLE_SIZE);
+
 		BufferBarrierDescription.before = BufferBarrierDescription.after;
 		BufferBarrierDescription.after = {nri::AccessBits::VERTEX_BUFFER, nri::StageBits::VERTEX_SHADER};
-		GRenderDevice.CoreInterface.CmdBarrier(CurrentCommandBuffer,BarrierDescription);
+		GRenderDevice.CoreInterface.CmdBarrier(CurrentCommandBuffer, BarrierDescription);
 	}
 }
 
-void TiramisuRenderUIPass::Render(nri::CommandBuffer& CurrentCommandBuffer,const nri::Viewport& Viewport)
+void TiramisuRenderUIPass::Render(nri::CommandBuffer& CurrentCommandBuffer, const nri::Viewport& Viewport)
 {
 	CheckIsRenderThread();
-	GRenderDevice.CoreInterface.CmdBeginAnnotation(CurrentCommandBuffer,"UI",nri::BGRA_UNUSED);
-	if (Vertexes.size() >= 16 * 1024* 6)
+	GRenderDevice.CoreInterface.CmdBeginAnnotation(CurrentCommandBuffer, "UI", nri::BGRA_UNUSED);
+	if (Vertexes.size() >= 16 * 1024 * 6)
 	{
 		GRenderDevice.CoreInterface.CmdEndAnnotation(CurrentCommandBuffer);
 		return;
 	}
-	
+
 	GRenderDevice.CoreInterface.CmdSetPipeline(CurrentCommandBuffer, *Pipeline);
 
 	nri::VertexBufferDesc VertexBufferDescription = {};
@@ -148,24 +149,24 @@ void TiramisuRenderUIPass::Render(nri::CommandBuffer& CurrentCommandBuffer,const
 	VertexBufferDescription.offset = 0;
 	VertexBufferDescription.stride = sizeof(FUIVertex);
 	GRenderDevice.CoreInterface.CmdSetVertexBuffers(CurrentCommandBuffer, 0, &VertexBufferDescription, 1);
-	
 
-	nri::Rect LastScissorRect = { 0, 0, (nri::Dim_t)Viewport.width, (nri::Dim_t)Viewport.height };
-	for (const FXRayUIPrimitive& Primitve :Primitivs)
+
+	nri::Rect LastScissorRect = {0, 0, (nri::Dim_t)Viewport.width, (nri::Dim_t)Viewport.height};
+	for (const FXRayUIPrimitive& Primitve : Primitivs)
 	{
 		if (Primitve.VertexCount == 0)
 		{
 			continue;
 		}
 
-		nri::Rect ScissorRect = { 0, 0, (nri::Dim_t)Viewport.width, (nri::Dim_t)Viewport.height };
+		nri::Rect ScissorRect = {0, 0, (nri::Dim_t)Viewport.width, (nri::Dim_t)Viewport.height};
 
 		if (Primitve.ScissorRect.x1 != Primitve.ScissorRect.x2)
 		{
-			ScissorRect = { (s16)Primitve.ScissorRect.x1, (s16)Primitve.ScissorRect.y1, (u16)(Primitve.ScissorRect.x2 - Primitve.ScissorRect.x1), (u16)(Primitve.ScissorRect.y2 - Primitve.ScissorRect.y1) };
+			ScissorRect = {(s16)Primitve.ScissorRect.x1, (s16)Primitve.ScissorRect.y1, (u16)(Primitve.ScissorRect.x2 - Primitve.ScissorRect.x1), (u16)(Primitve.ScissorRect.y2 - Primitve.ScissorRect.y1)};
 		}
-		if (ScissorRect.x != LastScissorRect.x || 
-			ScissorRect.y != LastScissorRect.y || 
+		if (ScissorRect.x != LastScissorRect.x ||
+			ScissorRect.y != LastScissorRect.y ||
 			ScissorRect.width != LastScissorRect.width ||
 			ScissorRect.height != LastScissorRect.height)
 		{
@@ -174,14 +175,15 @@ void TiramisuRenderUIPass::Render(nri::CommandBuffer& CurrentCommandBuffer,const
 		}
 		if (Primitve.TextureResourceProxy)
 		{
-			GRenderDevice.CoreInterface.CmdDraw(CurrentCommandBuffer, { Primitve.VertexCount , 1, Primitve.VertexOffset,  Primitve.TextureResourceProxy->GetOrCreateHeapID() });
+			GRenderDevice.CoreInterface.CmdDraw(CurrentCommandBuffer, {Primitve.VertexCount, 1, Primitve.VertexOffset, Primitve.TextureResourceProxy->GetOrCreateHeapID()});
 			if (GRender)
+			{
 				GRender->RecordDrawStatistics_RenderThread(
-					Primitve.VertexCount / 3);
+					Primitve.VertexCount / 3
+				);
+			}
 		}
 	}
-	
+
 	GRenderDevice.CoreInterface.CmdEndAnnotation(CurrentCommandBuffer);
 }
-
-

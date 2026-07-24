@@ -9,7 +9,7 @@ CDS0_RenderDeviceRender::~CDS0_RenderDeviceRender()
 	R_ASSERT(Viewport == nullptr);
 }
 
-void CDS0_RenderDeviceRender::Copy(IRenderDeviceRender & _in)
+void CDS0_RenderDeviceRender::Copy(IRenderDeviceRender& _in)
 {
 	R_ASSERT(0);
 }
@@ -112,7 +112,6 @@ void CDS0_RenderDeviceRender::Begin()
 
 void CDS0_RenderDeviceRender::Clear()
 {
-	
 }
 
 void CDS0_RenderDeviceRender::End()
@@ -123,7 +122,7 @@ void CDS0_RenderDeviceRender::ClearTarget()
 {
 }
 
-void CDS0_RenderDeviceRender::SetCacheXform( Fmatrix& mView,  Fmatrix& mProject)
+void CDS0_RenderDeviceRender::SetCacheXform(Fmatrix& mView, Fmatrix& mProject)
 {
 }
 
@@ -146,7 +145,7 @@ void CDS0_RenderDeviceRender::Reset(SDL_Window* window, u32& dwWidth, u32& dwHei
 		Viewport = new TiramisuRenderViewport;
 		GRender->SetViewport(Viewport);
 	}
-	
+
 	SDL_SetWindowFullscreen(g_AppInfo.Window, 0);
 	SDL_SetWindowSize(window, psCurrentVidMode[0], psCurrentVidMode[1]);
 	dwWidth = psCurrentVidMode[0];
@@ -157,15 +156,14 @@ void CDS0_RenderDeviceRender::Reset(SDL_Window* window, u32& dwWidth, u32& dwHei
 	{
 		SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	}
-	Viewport->CreateOrReset(window,dwWidth,dwHeight,false);
+	Viewport->CreateOrReset(window, dwWidth, dwHeight, false);
 	GRender->ResizeRenderTarget(dwWidth, dwHeight);
-	
+
 	Tiramisu::RenderCommands::FlushRenderCommands();
 }
 
 void CDS0_RenderDeviceRender::Create(SDL_Window* window, u32& dwWidth, u32& dwHeight, bool)
 {
-	
 }
 
 void CDS0_RenderDeviceRender::ResourcesDeferredUnload()
@@ -214,5 +212,4 @@ Frect CDS0_RenderDeviceRender::GetSVGUV(const xr_string_view& subpath, float req
 
 void CDS0_RenderDeviceRender::PostCreate()
 {
-
 }

@@ -10,20 +10,20 @@ class TiramisuShaderDefinesContainer;
 class TiramisuGlobalShader
 {
 public:
-								TiramisuGlobalShader		(IReader* Reader);
+	TiramisuGlobalShader(IReader* Reader);
 #if IXR_ENABLE_SHADER_COMPILER
-								TiramisuGlobalShader		(const xr_vector<char>&InData, EShaderType InType, TiramisuShaderDefinesContainer* InDefinesContainer);
-								TiramisuGlobalShader		(unsigned char* InData, size_t Len, EShaderType InType, TiramisuShaderDefinesContainer* InDefinesContainer);
+	TiramisuGlobalShader(const xr_vector<char>& InData, EShaderType InType, TiramisuShaderDefinesContainer* InDefinesContainer);
+	TiramisuGlobalShader(unsigned char* InData, size_t Len, EShaderType InType, TiramisuShaderDefinesContainer* InDefinesContainer);
 #endif
-								~TiramisuGlobalShader		() = default;
-	const xr_vector<char>&		Get					() const;
-	bool						IsEqual				(EShaderType InType, TiramisuShaderDefinesContainer* InDefinesContainer) const;
-	bool						IsLess				(EShaderType InType, TiramisuShaderDefinesContainer* InDefinesContainer) const;
-	bool						operator<			(const TiramisuGlobalShader&Right) const;
-	
-	EShaderType					Type;
-	xr_vector<char>				Data;
-	TiramisuShaderDefinesContainer*	DefinesContainer;
+	~TiramisuGlobalShader() = default;
+	const xr_vector<char>& Get() const;
+	bool IsEqual(EShaderType InType, TiramisuShaderDefinesContainer* InDefinesContainer) const;
+	bool IsLess(EShaderType InType, TiramisuShaderDefinesContainer* InDefinesContainer) const;
+	bool operator<(const TiramisuGlobalShader& Right) const;
+
+	EShaderType Type;
+	xr_vector<char> Data;
+	TiramisuShaderDefinesContainer* DefinesContainer;
 };
 
 #if IXR_ENABLE_SHADER_COMPILER

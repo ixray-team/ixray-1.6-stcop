@@ -29,7 +29,8 @@ struct FLegacyLevelImportResult
 	EScene& LegacyScene,
 	const std::filesystem::path& MaterialRoot,
 	const std::filesystem::path& StaticMeshRoot,
-	const std::filesystem::path& RenderSceneRoot);
+	const std::filesystem::path& RenderSceneRoot
+);
 
 // Publishes the mandatory failed-conversion dump when the legacy editor scene
 // could not be loaded and ImportLoadedLegacyLevelAsset therefore cannot run.
@@ -37,8 +38,10 @@ struct FLegacyLevelImportResult
 	const std::filesystem::path& SourcePath,
 	const std::filesystem::path& RenderSceneRoot,
 	xr_string DiagnosticCode,
-	xr_string DiagnosticMessage);
+	xr_string DiagnosticMessage
+);
 
 [[nodiscard]] std::filesystem::path MakeImportedRenderScenePath(
 	const std::filesystem::path& SourcePath,
-	const std::filesystem::path& RenderSceneRoot);
+	const std::filesystem::path& RenderSceneRoot
+);

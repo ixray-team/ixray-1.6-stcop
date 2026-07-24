@@ -11,21 +11,21 @@
 
 extern ENGINE_API bool bIsSndOnRoof;
 extern ENGINE_API bool bIsRaindropCollision;
-extern ECORE_API bool  bIsShowSun              = false;
-extern ECORE_API bool  bIsUseSunDir            = false;
-extern ECORE_API bool  bIsUseHemi              = false;
-UIWeatherPropForm*     UIWeatherPropForm::Form = nullptr;
+extern ECORE_API bool bIsShowSun = false;
+extern ECORE_API bool bIsUseSunDir = false;
+extern ECORE_API bool bIsUseHemi = false;
+UIWeatherPropForm* UIWeatherPropForm::Form = nullptr;
 
 UIWeatherPropForm::UIWeatherPropForm()
 {
 	m_weather_properties = EDevice->Resources->_CreateTexture("ed\\bar\\WeatherProp");
-	m_speed_time         = EPrefs->env_speed;
-	m_snd_on_roof        = bIsSndOnRoof;
+	m_speed_time = EPrefs->env_speed;
+	m_snd_on_roof = bIsSndOnRoof;
 	m_raindrop_collision = bIsRaindropCollision;
 
-	m_sun_visible        = false;
-	m_use_sun_dir        = false;
-	m_use_hemi           = false;
+	m_sun_visible = false;
+	m_use_sun_dir = false;
+	m_use_hemi = false;
 }
 
 UIWeatherPropForm::~UIWeatherPropForm() {}
@@ -33,10 +33,10 @@ UIWeatherPropForm::~UIWeatherPropForm() {}
 void UIWeatherPropForm::Draw()
 {
 	auto& env = g_pGamePersistent->Environment();
-	float  time = g_pGameLevel ? g_pGameLevel->GetEnvironmentGameDayTimeSec() : env.GetGameTime();
-	float  time_factor = g_pGameLevel ? g_pGameLevel->GetEnvironmentTimeFactor() : env.fTimeFactor;
-	ImVec2 sizeImage = ImVec2(454.0f, 250.0f);   // Размер изображения, которое мы хотим сделать видимым
-	ImVec2 sizeButton = ImVec2(100.0f, 22.0f);    // Размер кнопки, которое мы хотим сделать видимым
+	float time = g_pGameLevel ? g_pGameLevel->GetEnvironmentGameDayTimeSec() : env.GetGameTime();
+	float time_factor = g_pGameLevel ? g_pGameLevel->GetEnvironmentTimeFactor() : env.fTimeFactor;
+	ImVec2 sizeImage = ImVec2(454.0f, 250.0f); // Размер изображения, которое мы хотим сделать видимым
+	ImVec2 sizeButton = ImVec2(100.0f, 22.0f); // Размер кнопки, которое мы хотим сделать видимым
 
 	// --------------------------------------------------------------------------------------------
 	// Картинка
@@ -97,7 +97,9 @@ void UIWeatherPropForm::Draw()
 			{
 				env.Invalidate();
 				if (g_pGameLevel)
+				{
 					g_pGameLevel->SetEnvironmentGameTimeFactor(iFloor(static_cast<u64>(time) * 1000.f), time_factor);
+				}
 				env.SetGameTime(time, time_factor);
 				float current_weight;
 				env.lerp(current_weight);
@@ -105,7 +107,9 @@ void UIWeatherPropForm::Draw()
 			if (ImGui::DragFloat("Time factor", &time_factor, 1.f, 1.f, 10000.f))
 			{
 				if (g_pGameLevel)
+				{
 					g_pGameLevel->SetEnvironmentGameTimeFactor(iFloor(static_cast<u64>(time) * 10000.f), time_factor);
+				}
 				env.SetGameTime(time, time_factor);
 			}
 			ImGui::Separator();
@@ -293,7 +297,9 @@ void UIWeatherPropForm::Draw()
 				psDeviceFlags.set(rsRenderRealTime, RealTime);
 			}
 			if (ImGui::IsItemHovered())
+			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
 		}
 		// --------------------------------------------------------------------------------------------
 		ImGui::Spacing();
@@ -343,7 +349,9 @@ void UIWeatherPropForm::Draw()
 				UI->RedrawScene();
 			}
 			if (ImGui::IsItemHovered())
+			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
 		}
 		// --------------------------------------------------------------------------------------------
 		ImGui::Spacing();
@@ -357,12 +365,16 @@ void UIWeatherPropForm::Draw()
 		if (ImGui::Button("Apply", sizeButton))
 		{
 			if (selectedWeather)
+			{
 				env.SetWeather(EPrefs->sWeather, true);
+			}
 			env.fTimeFactor = m_speed_time;
 			UI->RedrawScene();
 		}
 		if (ImGui::IsItemHovered())
+		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		}
 	}
 	// --------------------------------------------------------------------------------------------
 	ImGui::SameLine();
@@ -376,7 +388,9 @@ void UIWeatherPropForm::Draw()
 			bOpen = false;
 		}
 		if (ImGui::IsItemHovered())
+		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		}
 	}
 	// --------------------------------------------------------------------------------------------
 	ImGui::Spacing();
@@ -385,12 +399,14 @@ void UIWeatherPropForm::Draw()
 void UIWeatherPropForm::Update()
 {
 	if (!Form)
+	{
 		return;
+	}
 
 	if (!Form->IsClosed())
 	{
-		ImGui::SetNextWindowPos(ImGui::GetWindowViewport()->GetCenter(), ImGuiCond_Appearing, { 0.5f, 0.5f });
-		if (ImGui::Begin("Weather Properties", nullptr, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize/* | ImGuiWindowFlags_NoBackground*/))
+		ImGui::SetNextWindowPos(ImGui::GetWindowViewport()->GetCenter(), ImGuiCond_Appearing, {0.5f, 0.5f});
+		if (ImGui::Begin("Weather Properties", nullptr, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize /* | ImGuiWindowFlags_NoBackground*/))
 		{
 			Form->Draw();
 		}

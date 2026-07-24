@@ -1,10 +1,10 @@
 #include <RedImage/RedImage.hpp>
 #include "Resources/Textures/TiramisuRenderTexture2D.h"
 
-ENGINE_API extern  Fvector2 g_current_font_scale;
+ENGINE_API extern Fvector2 g_current_font_scale;
 
-CDS0_FontRender::CDS0_FontRender() : 
-	Atlas(nullptr)
+CDS0_FontRender::CDS0_FontRender()
+	: Atlas(nullptr)
 {
 }
 
@@ -50,8 +50,12 @@ void CDS0_FontRender::OnRender(CGameFont& Owner)
 			float width = float(Owner.WidthOf(String.string));
 			switch (String.align)
 			{
-				case CGameFont::alCenter: X -= iFloor(width * 0.5f); break;
-				case CGameFont::alRight:  X -= iFloor(width); break;
+				case CGameFont::alCenter:
+					X -= iFloor(width * 0.5f);
+					break;
+				case CGameFont::alRight:
+					X -= iFloor(width);
+					break;
 			}
 		}
 
@@ -125,20 +129,20 @@ void CDS0_FontRender::OnRender(CGameFont& Owner)
 
 			switch (String.gradientMode)
 			{
-			case CGameFont::gm_horz:
-				break;
-			case CGameFont::gm_back:
-				ColorTL = Clr2;
-				ColorBL = Clr2;
-				break;
-			case CGameFont::gm_down:
-				ColorBL = Clr2;
-				ColorBR = Clr;
-				break;
-			default:
-				ColorTL = Clr2;
-				ColorBR = Clr;
-				break;
+				case CGameFont::gm_horz:
+					break;
+				case CGameFont::gm_back:
+					ColorTL = Clr2;
+					ColorBL = Clr2;
+					break;
+				case CGameFont::gm_down:
+					ColorBL = Clr2;
+					ColorBR = Clr;
+					break;
+				default:
+					ColorTL = Clr2;
+					ColorBR = Clr;
+					break;
 			}
 
 			GUIRender.PushPoint(X, GlyphY2, .0001f, ColorBL, u1, v2);
@@ -160,9 +164,9 @@ void CDS0_FontRender::OnRender(CGameFont& Owner)
 
 void CDS0_FontRender::CreateFontAtlas(u32 Width, u32 Height, const char* Name, void* Bitmap)
 {
-	RedImageTool::RedImage Image(Width, Height,1,1);
+	RedImageTool::RedImage Image(Width, Height, 1, 1);
 	memcpy(*Image, Bitmap, Image.GetSizeInMemory());
-	
+
 	xr_delete(Atlas);
 	Atlas = new TiramisuRenderTexture2D(Name);
 	Atlas->LoadFromImage(Image);

@@ -2,92 +2,95 @@
 
 #include <RedImage/RedImage.hpp>
 
-TiramisuRenderTexture2D::TiramisuRenderTexture2D(const shared_str& InName):TiramisuRenderTexture(InName)
+TiramisuRenderTexture2D::TiramisuRenderTexture2D(const shared_str& InName)
+	: TiramisuRenderTexture(InName)
 {
 }
 
-nri::Format ConvertFormatToNRI(RedImageTool::RedTexturePixelFormat InFormat,bool bSrgb)
+nri::Format ConvertFormatToNRI(RedImageTool::RedTexturePixelFormat InFormat, bool bSrgb)
 {
-    switch (InFormat) 
-    {
-    case RedImageTool::RedTexturePixelFormat::R8:
-        return nri::Format::R8_UNORM;
-    case RedImageTool::RedTexturePixelFormat::R8G8:
-        return nri::Format::RG8_UNORM;
-    case RedImageTool::RedTexturePixelFormat::R8G8B8:
-        return bSrgb?nri::Format::RGBA8_SRGB:nri::Format::RGBA8_UNORM;
-    case RedImageTool::RedTexturePixelFormat::R8G8B8A8:
-        return bSrgb?nri::Format::RGBA8_SRGB:nri::Format::RGBA8_UNORM;
-    case RedImageTool::RedTexturePixelFormat::R32F:
-        return nri::Format::R32_SFLOAT;
-    case RedImageTool::RedTexturePixelFormat::R32G32F:
-        return nri::Format::RG32_SFLOAT;
-    case RedImageTool::RedTexturePixelFormat::R32G32B32F:
-        return nri::Format::RGB32_SFLOAT;
-    case RedImageTool::RedTexturePixelFormat::R32G32B32A32F:
-        return nri::Format::RGBA32_SFLOAT;
-    case RedImageTool::RedTexturePixelFormat::BC1:
-        return bSrgb?nri::Format::BC1_RGBA_SRGB:nri::Format::BC1_RGBA_UNORM;
-    case RedImageTool::RedTexturePixelFormat::BC2:
-        return bSrgb?nri::Format::BC2_RGBA_SRGB:nri::Format::BC2_RGBA_UNORM;
-    case RedImageTool::RedTexturePixelFormat::BC3:
-        return bSrgb?nri::Format::BC3_RGBA_SRGB:nri::Format::BC3_RGBA_UNORM;
-    case RedImageTool::RedTexturePixelFormat::BC4:
-        return nri::Format::BC4_R_UNORM;
-    case RedImageTool::RedTexturePixelFormat::BC5:
-        return nri::Format::BC5_RG_SNORM;
-    case RedImageTool::RedTexturePixelFormat::BC6:
-        return nri::Format::BC6H_RGB_UFLOAT;
-    case RedImageTool::RedTexturePixelFormat::BC7:
-        return bSrgb?nri::Format::BC7_RGBA_SRGB:nri::Format::BC7_RGBA_UNORM;
-    }
-    return nri::Format::UNKNOWN;
+	switch (InFormat)
+	{
+		case RedImageTool::RedTexturePixelFormat::R8:
+			return nri::Format::R8_UNORM;
+		case RedImageTool::RedTexturePixelFormat::R8G8:
+			return nri::Format::RG8_UNORM;
+		case RedImageTool::RedTexturePixelFormat::R8G8B8:
+			return bSrgb ? nri::Format::RGBA8_SRGB : nri::Format::RGBA8_UNORM;
+		case RedImageTool::RedTexturePixelFormat::R8G8B8A8:
+			return bSrgb ? nri::Format::RGBA8_SRGB : nri::Format::RGBA8_UNORM;
+		case RedImageTool::RedTexturePixelFormat::R32F:
+			return nri::Format::R32_SFLOAT;
+		case RedImageTool::RedTexturePixelFormat::R32G32F:
+			return nri::Format::RG32_SFLOAT;
+		case RedImageTool::RedTexturePixelFormat::R32G32B32F:
+			return nri::Format::RGB32_SFLOAT;
+		case RedImageTool::RedTexturePixelFormat::R32G32B32A32F:
+			return nri::Format::RGBA32_SFLOAT;
+		case RedImageTool::RedTexturePixelFormat::BC1:
+			return bSrgb ? nri::Format::BC1_RGBA_SRGB : nri::Format::BC1_RGBA_UNORM;
+		case RedImageTool::RedTexturePixelFormat::BC2:
+			return bSrgb ? nri::Format::BC2_RGBA_SRGB : nri::Format::BC2_RGBA_UNORM;
+		case RedImageTool::RedTexturePixelFormat::BC3:
+			return bSrgb ? nri::Format::BC3_RGBA_SRGB : nri::Format::BC3_RGBA_UNORM;
+		case RedImageTool::RedTexturePixelFormat::BC4:
+			return nri::Format::BC4_R_UNORM;
+		case RedImageTool::RedTexturePixelFormat::BC5:
+			return nri::Format::BC5_RG_SNORM;
+		case RedImageTool::RedTexturePixelFormat::BC6:
+			return nri::Format::BC6H_RGB_UFLOAT;
+		case RedImageTool::RedTexturePixelFormat::BC7:
+			return bSrgb ? nri::Format::BC7_RGBA_SRGB : nri::Format::BC7_RGBA_UNORM;
+	}
+	return nri::Format::UNKNOWN;
 }
 
 bool TiramisuRenderTexture2D::LoadFromFile(const char* FilePath, bool bSrgb)
 {
-    CheckIsGameThread();
-    RedImageTool::RedImage RedImage;
-    
-    IReader* FileReader = FS.r_open(FilePath);
-    if (!RedImage.LoadFromMemory(FileReader->pointer(), FileReader->length()))
-    {
-        FS.r_close(FileReader);
-        return false;
-    }
-    FS.r_close(FileReader);
+	CheckIsGameThread();
+	RedImageTool::RedImage RedImage;
 
-    if (RedImage.GetFormat() == RedImageTool::RedTexturePixelFormat::R8G8B8)
-    {
-        RedImage.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
-    }
-    return LoadFromImage(RedImage, bSrgb);
+	IReader* FileReader = FS.r_open(FilePath);
+	if (!RedImage.LoadFromMemory(FileReader->pointer(), FileReader->length()))
+	{
+		FS.r_close(FileReader);
+		return false;
+	}
+	FS.r_close(FileReader);
+
+	if (RedImage.GetFormat() == RedImageTool::RedTexturePixelFormat::R8G8B8)
+	{
+		RedImage.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
+	}
+	return LoadFromImage(RedImage, bSrgb);
 }
 
 bool TiramisuRenderTexture2D::LoadFromImage(const RedImageTool::RedImage& FromImage, bool bSrgb)
 {
-    CheckIsGameThread();
-    if (FromImage.GetFormat() == RedImageTool::RedTexturePixelFormat::R8G8B8)
-    {
-        return false;
-    }
-    
-    
-    TextureDescription.type = nri::TextureType::TEXTURE_2D;
-    TextureDescription.usage = nri::TextureUsageBits::SHADER_RESOURCE;
-    TextureDescription.format = ConvertFormatToNRI(FromImage.GetFormat(), bSrgb);
-    if (TextureDescription.format == nri::Format::UNKNOWN)
-        return false;
-    TextureDescription.width = FromImage.GetWidth();
-    TextureDescription.height = FromImage.GetHeight();
-    TextureDescription.mipNum = FromImage.GetMips();
-    TextureDescription.layerNum = FromImage.GetDepth();
-    
-    ResourceProxy = new TiramisuRenderTextureResourceProxy;
-    ResourceProxy->TextureDescription = TextureDescription;
-    
-    ENQUEUE_RENDER_COMMAND(TiramisuRenderTexture2D::LoadFromImage)([ResourceProxy = ResourceProxy,FromImage = std::move(FromImage), InName = Name]()
-    {
+	CheckIsGameThread();
+	if (FromImage.GetFormat() == RedImageTool::RedTexturePixelFormat::R8G8B8)
+	{
+		return false;
+	}
+
+
+	TextureDescription.type = nri::TextureType::TEXTURE_2D;
+	TextureDescription.usage = nri::TextureUsageBits::SHADER_RESOURCE;
+	TextureDescription.format = ConvertFormatToNRI(FromImage.GetFormat(), bSrgb);
+	if (TextureDescription.format == nri::Format::UNKNOWN)
+	{
+		return false;
+	}
+	TextureDescription.width = FromImage.GetWidth();
+	TextureDescription.height = FromImage.GetHeight();
+	TextureDescription.mipNum = FromImage.GetMips();
+	TextureDescription.layerNum = FromImage.GetDepth();
+
+	ResourceProxy = new TiramisuRenderTextureResourceProxy;
+	ResourceProxy->TextureDescription = TextureDescription;
+
+	ENQUEUE_RENDER_COMMAND(TiramisuRenderTexture2D::LoadFromImage)([ResourceProxy = ResourceProxy, FromImage = std::move(FromImage), InName = Name]()
+																   {
         CheckIsRenderThread();
         NRI_CHECK(GRenderDevice.CoreInterface.CreatePlacedTexture(*GRenderDevice.Device, NriDeviceHeap, ResourceProxy->TextureDescription, ResourceProxy->Texture));
         nri::TextureViewDesc TextureViewDescription = {ResourceProxy->Texture, nri::TextureView::TEXTURE, ResourceProxy->TextureDescription.format};
@@ -118,8 +121,7 @@ bool TiramisuRenderTexture2D::LoadFromImage(const RedImageTool::RedImage& FromIm
         textureUploadDesc.texture = ResourceProxy->Texture;
         textureUploadDesc.after = {nri::AccessBits::SHADER_RESOURCE, nri::Layout::SHADER_RESOURCE};
 
-        NRI_CHECK(GRenderDevice.HelperInterface.UploadData(*GRenderDevice.GraphicsQueue, &textureUploadDesc, 1, nullptr, 0));
-    }); 
-    
-   return true;
+        NRI_CHECK(GRenderDevice.HelperInterface.UploadData(*GRenderDevice.GraphicsQueue, &textureUploadDesc, 1, nullptr, 0)); });
+
+	return true;
 }

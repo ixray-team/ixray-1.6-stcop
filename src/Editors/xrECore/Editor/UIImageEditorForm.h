@@ -1,17 +1,19 @@
 //---------------------------------------------------------------------------
 #pragma once
 
-class UIImageEditorForm :public IEditorWnd
+class UIImageEditorForm : public IEditorWnd
 {
 public:
 	UIImageEditorForm();
 	virtual ~UIImageEditorForm();
 	virtual void Draw();
+
 public:
 	static void Update();
 	static void Show(bool bImport);
 	static void ImportTextures();
 	static void FindInEditor(xr_string, bool = false);
+
 private:
 	using THMVec = xr_vector<ETextureThumbnail*>;
 	using THMIt = THMVec::iterator;
@@ -23,8 +25,8 @@ private:
 	THMVec m_THM_Current;
 	UIItemListForm* m_ItemList;
 	UIPropertiesForm* m_ItemProps;
-	FS_FileSet	texture_map;
-	FS_FileSet	modif_map;
+	FS_FileSet texture_map;
+	FS_FileSet modif_map;
 	bool bImportMode;
 	bool bReadonlyMode;
 	static UIImageEditorForm* Form;
@@ -32,6 +34,7 @@ private:
 	ref_texture m_TextureRemove;
 	FEditorTextureHandle m_EditorTexture;
 	u64 m_EditorTextureRevision = 0;
+
 private:
 	ETextureThumbnail* FindUsedTHM(const shared_str& name);
 	void RegisterModifiedTHM();
@@ -44,6 +47,7 @@ private:
 	void UpdateSelected();
 	void OnItemsFocused(ListItemsVec& item);
 	void SaveUsedTHM();
+
 private:
 	bool m_bFilterImage;
 	bool m_bFilterTerrain;

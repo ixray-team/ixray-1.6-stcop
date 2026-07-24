@@ -22,7 +22,8 @@ public:
 	void RenderPreview(FMaterialPreviewHandle, float) override {}
 
 	[[nodiscard]] FMaterialPreviewFrame GetPreviewFrame(
-		FMaterialPreviewHandle) const override
+		FMaterialPreviewHandle
+	) const override
 	{
 		FMaterialPreviewFrame Frame;
 		Frame.Diagnostic = "Tiramisu material preview backend is not installed";
@@ -37,12 +38,13 @@ IMaterialPreviewRenderer* InstalledMaterialPreviewRenderer = nullptr;
 IMaterialPreviewRenderer& GetMaterialPreviewRenderer() noexcept
 {
 	return InstalledMaterialPreviewRenderer
-		? *InstalledMaterialPreviewRenderer
-		: UnavailableMaterialPreviewRenderer;
+			   ? *InstalledMaterialPreviewRenderer
+			   : UnavailableMaterialPreviewRenderer;
 }
 
 IMaterialPreviewRenderer* InstallMaterialPreviewRenderer(
-	IMaterialPreviewRenderer* Renderer) noexcept
+	IMaterialPreviewRenderer* Renderer
+) noexcept
 {
 	IMaterialPreviewRenderer* Previous = InstalledMaterialPreviewRenderer;
 	InstalledMaterialPreviewRenderer = Renderer;

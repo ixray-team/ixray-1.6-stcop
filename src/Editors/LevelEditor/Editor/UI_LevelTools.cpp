@@ -7,7 +7,7 @@
 #include "../Renderer/Tiramisu/TiramisuEditorNativeScene.h"
 #include "../../xrECore/Editor/EditorRenderBackend.h"
 
-CLevelTool*	LTools=(CLevelTool*)Tools;
+CLevelTool* LTools = (CLevelTool*)Tools;
 
 TShiftState ssRBOnly;
 
@@ -28,8 +28,8 @@ void CLevelTool::RemoveViewport(IViewport* VP)
 
 CLevelTool::CLevelTool()
 {
-	fFogness	= 0.9f;
-	dwFogColor	= 0xffffffff;
+	fFogness = 0.9f;
+	dwFogColor = 0xffffffff;
 	m_Flags.zero();
 	m_ToolForm = 0;
 	m_CompilerProcess.hProcess = 0;
@@ -41,7 +41,6 @@ CLevelTool::CLevelTool()
 
 CLevelTool::~CLevelTool()
 {
-	
 }
 
 bool CLevelTool::OnCreate()
@@ -80,7 +79,7 @@ void CLevelTool::OnDestroy()
 
 void CLevelTool::Reset()
 {
-	RealSetTarget(GetTarget(),estDefault,true);
+	RealSetTarget(GetTarget(), estDefault, true);
 }
 
 
@@ -92,7 +91,7 @@ bool CLevelTool::MouseStart(TShiftState Shift)
 	}
 
 	inherited::MouseStart(Shift);
-	if(CurrentTool && CurrentTool->pCurControl)
+	if (CurrentTool && CurrentTool->pCurControl)
 	{
 		if ((CurrentTool->pCurControl->Action() != etaSelect) && (!CurrentTool->IsEditable() || !CurrentTool->AllowMouseStart() || (CurrentTool->FClassID == OBJCLASS_DUMMY)))
 		{
@@ -107,7 +106,7 @@ bool CLevelTool::MouseStart(TShiftState Shift)
 void CLevelTool::MouseMove(TShiftState Shift)
 {
 	inherited::MouseMove(Shift);
-	if(CurrentTool&&CurrentTool->pCurControl)
+	if (CurrentTool && CurrentTool->pCurControl)
 	{
 		if (HiddenMode())
 		{
@@ -121,7 +120,7 @@ void CLevelTool::MouseMove(TShiftState Shift)
 bool CLevelTool::MouseEnd(TShiftState Shift)
 {
 	inherited::MouseEnd(Shift);
-	if(CurrentTool&&CurrentTool->pCurControl)
+	if (CurrentTool && CurrentTool->pCurControl)
 	{
 		if (HiddenMode())
 		{
@@ -148,7 +147,7 @@ bool CLevelTool::HiddenMode()
 	{
 		return CurrentTool->pCurControl->HiddenMode();
 	}
-	
+
 	return false;
 }
 
@@ -190,7 +189,7 @@ void CLevelTool::RealSetAction(ETAction act)
 		CurrentTool->SetAction(act);
 	}
 
-	m_Flags.set	(flChangeAction,false);
+	m_Flags.set(flChangeAction, false);
 }
 
 void CLevelTool::SetAction(ETAction act)
@@ -206,7 +205,7 @@ void CLevelTool::SetAction(ETAction act)
 	RealSetAction(act);
 }
 
-void  CLevelTool::RealSetTarget(ObjClassID tgt, int sub_tgt, bool bForced)
+void CLevelTool::RealSetTarget(ObjClassID tgt, int sub_tgt, bool bForced)
 {
 	if (bForced || (target != tgt) || (sub_target != sub_tgt))
 	{
@@ -272,12 +271,13 @@ void CLevelTool::OnShowHint(AStringVec& ss)
 
 bool CLevelTool::Pick(TShiftState Shift)
 {
-	if( Scene->locked() && (esEditLibrary==UI->GetEState())){
+	if (Scene->locked() && (esEditLibrary == UI->GetEState()))
+	{
 		UI->m_CurrentCp = MainForm->GetRenderForm()->GetMousePos();
 		UI->m_StartCp = UI->m_CurrentCp;
-		UI->CurrentView().m_Camera.MouseRayFromPoint(UI->m_CurrentRStart, UI->m_CurrentRDir, UI->m_CurrentCp );
+		UI->CurrentView().m_Camera.MouseRayFromPoint(UI->m_CurrentRStart, UI->m_CurrentRDir, UI->m_CurrentCp);
 		SRayPickInfo pinf;
-		//TfrmEditLibrary::RayPick(UI->m_CurrentRStart,UI->m_CurrentRDir,&pinf);
+		// TfrmEditLibrary::RayPick(UI->m_CurrentRStart,UI->m_CurrentRDir,&pinf);
 		return true;
 	}
 	return false;
@@ -322,7 +322,7 @@ void CLevelTool::mtUpdateProperties(void* This)
 		{
 			std::this_thread::yield();
 		}
-		
+
 		pTool->m_WorldProps->ClearProperties();
 		pTool->m_Props->ClearProperties();
 
@@ -365,7 +365,9 @@ void CLevelTool::UpdateProperties()
 	if (GetEditorNativeSceneDocument().IsOpen())
 	{
 		if (MainForm != nullptr && MainForm->GetPropertiesForm())
+		{
 			MainForm->GetPropertiesForm()->PropUpdateIsCompleted = true;
+		}
 		m_Flags.set(flUpdateProperties, false);
 		m_Props->setModified(false);
 		return;
@@ -376,7 +378,7 @@ void CLevelTool::UpdateProperties()
 	m_Props->setModified(false);
 }
 
-void  CLevelTool::OnPropsModified()
+void CLevelTool::OnPropsModified()
 {
 	Scene->Modified();
 	UI->RedrawScene();
@@ -399,15 +401,13 @@ void CLevelTool::ZoomObject(bool bSelectedOnly)
 		if (!Bounds)
 		{
 			ELog.Msg(mtError, "Can't calculate native scene bounding box. "
-				"Nothing visible is selected or the mesh is unresolved.");
+							  "Nothing visible is selected or the mesh is unresolved.");
 			return;
 		}
 		Fvector Minimum;
-		Minimum.set(Bounds->Minimum[0], Bounds->Minimum[1],
-			Bounds->Minimum[2]);
+		Minimum.set(Bounds->Minimum[0], Bounds->Minimum[1], Bounds->Minimum[2]);
 		Fvector Maximum;
-		Maximum.set(Bounds->Maximum[0], Bounds->Maximum[1],
-			Bounds->Maximum[2]);
+		Maximum.set(Bounds->Maximum[0], Bounds->Maximum[1], Bounds->Maximum[2]);
 		Fbox Box;
 		Box.set(Minimum, Maximum);
 		UI->CurrentView().m_Camera.ZoomExtents(Box);
@@ -438,7 +438,7 @@ void CLevelTool::GetCurrentFog(u32& fog_color, float& s_fog, float& e_fog)
 const char* CLevelTool::GetInfo()
 {
 	static xr_string sel;
-	int cnt = Scene->SelectionCount(true,CurrentClassID());
+	int cnt = Scene->SelectionCount(true, CurrentClassID());
 	sel = " Sel: " + xr_string::ToString(cnt);
 
 	return sel.c_str();
@@ -455,12 +455,24 @@ void CLevelTool::OnFrame()
 	if ((est == esEditScene) || (est == esEditLibrary) || (est == esEditLightAnim))
 	{
 		// если нужно изменить target выполняем после того как мышь освободится
-		if (m_Flags.is(flChangeTarget)) 		RealSetTarget(iNeedTarget, iNeedSubTarget, false);
+		if (m_Flags.is(flChangeTarget))
+		{
+			RealSetTarget(iNeedTarget, iNeedSubTarget, false);
+		}
 		// если нужно изменить action выполняем после того как мышь освободится
-		if (m_Flags.is(flChangeAction)) 		RealSetAction(ETAction(iNeedAction));
+		if (m_Flags.is(flChangeAction))
+		{
+			RealSetAction(ETAction(iNeedAction));
+		}
 
-		if (m_Flags.is(flUpdateProperties)) 	UpdateProperties();
-		if (m_Flags.is(flUpdateObjectList)) 	UpdateObjectList();
+		if (m_Flags.is(flUpdateProperties))
+		{
+			UpdateProperties();
+		}
+		if (m_Flags.is(flUpdateObjectList))
+		{
+			UpdateObjectList();
+		}
 	}
 
 	if (IsCompilerRunning())
@@ -470,7 +482,6 @@ void CLevelTool::OnFrame()
 		{
 			Msg("! Cannot return exit code in compiler process (%d).\n", GetLastError());
 			m_CompilerProcess.hProcess = 0;
-
 		}
 		else
 		{
@@ -489,7 +500,6 @@ void CLevelTool::OnFrame()
 		{
 			Msg("! Cannot return exit code in compiler process (%d).\n", GetLastError());
 			m_GameProcess.hProcess = 0;
-
 		}
 		else
 		{
@@ -503,25 +513,26 @@ void CLevelTool::OnFrame()
 	}
 }
 
-void  CLevelTool::RenderEnvironment()
+void CLevelTool::RenderEnvironment()
 {
 	// draw sky
-	EEditorState est 		= UI->GetEState();
-	switch(est){
-	case esEditLightAnim:
-	case esEditScene:		
-		if (psDeviceFlags.is(rsEnvironment)|| UI->IsPlayInEditor())
-		{ 
-			g_pGamePersistent->Environment().RenderSky	();
-			g_pGamePersistent->Environment().RenderClouds	();
-		}
+	EEditorState est = UI->GetEState();
+	switch (est)
+	{
+		case esEditLightAnim:
+		case esEditScene:
+			if (psDeviceFlags.is(rsEnvironment) || UI->IsPlayInEditor())
+			{
+				g_pGamePersistent->Environment().RenderSky();
+				g_pGamePersistent->Environment().RenderClouds();
+			}
 	}
 }
 
 void CLevelTool::Render()
 {
 	// Render update
-	if(!Scene->IsPlayInEditor())
+	if (!Scene->IsPlayInEditor())
 	{
 		::Render->Calculate();
 		::Render->Render();
@@ -529,23 +540,27 @@ void CLevelTool::Render()
 
 	EEditorState est = UI->GetEState();
 	// draw scene
-	switch(est)
+	switch (est)
 	{
 		case esEditLibrary:
-			UIEditLibrary::OnRender(); 
+			UIEditLibrary::OnRender();
 			break;
 
 		case esEditLightAnim:
 		case esEditScene:
 			if (!GetEditorNativeSceneDocument().IsOpen())
+			{
 				Scene->Render(UI->CurrentView().m_Camera.GetTransform());
-		    if (psDeviceFlags.is(rsEnvironment) || UI->IsPlayInEditor())
-		    {
-		        g_pGamePersistent->Environment().RenderFlares();
-		        g_pGamePersistent->Environment().RenderLast();
-		    }
-		break;
-		case esBuildLevel: Builder.OnRender(); break;
+			}
+			if (psDeviceFlags.is(rsEnvironment) || UI->IsPlayInEditor())
+			{
+				g_pGamePersistent->Environment().RenderFlares();
+				g_pGamePersistent->Environment().RenderLast();
+			}
+			break;
+		case esBuildLevel:
+			Builder.OnRender();
+			break;
 		case esEditCustom:
 		{
 			for (IViewport* VP : Viewlist)
@@ -557,23 +572,26 @@ void CLevelTool::Render()
 
 	// draw cursor
 	LUI->m_Cursor->Render();
-    inherited::Render();
+	inherited::Render();
 	if (est == esEditLightAnim || est == esEditScene)
 	{
 		(void)SubmitEditorSceneToEditorRenderer(
-			static_cast<u32>(UI->ViewID));
+			static_cast<u32>(UI->ViewID)
+		);
 	}
 }
 
 void CLevelTool::UpdateObjectList()
 {
-	m_Flags.set(flUpdateObjectList,false);
+	m_Flags.set(flUpdateObjectList, false);
 }
 
 bool CLevelTool::IsModified()
 {
 	if (GetEditorNativeSceneDocument().IsDirty())
+	{
 		return true;
+	}
 	return Scene->IsUnsaved();
 }
 
@@ -590,43 +608,64 @@ bool CLevelTool::RayPick(const Fvector& start, const Fvector& dir, float& dist, 
 		Request.MaxDistance = dist;
 		const FEditorViewportPickResult Pick =
 			GetEditorRenderBackend().PickViewport(
-				static_cast<u32>(UI->ViewID), Request);
+				static_cast<u32>(UI->ViewID), Request
+			);
 		if (Pick.Hit)
 		{
 			dist = Pick.Distance;
 			if (pt)
-				pt->set(Pick.WorldPosition[0], Pick.WorldPosition[1],
-					Pick.WorldPosition[2]);
+			{
+				pt->set(Pick.WorldPosition[0], Pick.WorldPosition[1], Pick.WorldPosition[2]);
+			}
 			if (n)
-				n->set(Pick.WorldNormal[0], Pick.WorldNormal[1],
-					Pick.WorldNormal[2]);
-			return true;
-		}
-	}
-	if (Scene->ObjCount()&&(UI->GetEState()==esEditScene)){
-		SRayPickInfo pinf;
-		pinf.inf.range	= dist;
-		if (Scene->RayPickObject(dist, start,dir,OBJCLASS_SCENEOBJECT,&pinf,0)){ 
-			dist		= pinf.inf.range;
-			if (pt) 	pt->set(pinf.pt); 
-			if (n){	
-				const Fvector* PT[3];
-				pinf.e_mesh->GetFacePT(pinf.inf.id, PT);
-				n->mknormal(*PT[0],*PT[1],*PT[2]);
+			{
+				n->set(Pick.WorldNormal[0], Pick.WorldNormal[1], Pick.WorldNormal[2]);
 			}
 			return true;
 		}
 	}
-	Fvector N={0.f,-1.f,0.f};
-	Fvector P={0.f,0.f,0.f};
-	Fplane PL; PL.build(P,N);
+	if (Scene->ObjCount() && (UI->GetEState() == esEditScene))
+	{
+		SRayPickInfo pinf;
+		pinf.inf.range = dist;
+		if (Scene->RayPickObject(dist, start, dir, OBJCLASS_SCENEOBJECT, &pinf, 0))
+		{
+			dist = pinf.inf.range;
+			if (pt)
+			{
+				pt->set(pinf.pt);
+			}
+			if (n)
+			{
+				const Fvector* PT[3];
+				pinf.e_mesh->GetFacePT(pinf.inf.id, PT);
+				n->mknormal(*PT[0], *PT[1], *PT[2]);
+			}
+			return true;
+		}
+	}
+	Fvector N = {0.f, -1.f, 0.f};
+	Fvector P = {0.f, 0.f, 0.f};
+	Fplane PL;
+	PL.build(P, N);
 	float d;
-	if (PL.intersectRayDist(start,dir,d)&&(d<=dist)){
+	if (PL.intersectRayDist(start, dir, d) && (d <= dist))
+	{
 		dist = d;
-		if (pt) pt->mad(start,dir,dist); 
-		if (n)	n->set(N);
+		if (pt)
+		{
+			pt->mad(start, dir, dist);
+		}
+		if (n)
+		{
+			n->set(N);
+		}
 		return true;
-	}else return false;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool CLevelTool::GetSelectionPosition(Fmatrix& result)
@@ -686,12 +725,12 @@ void CLevelTool::Simulate()
 		g_scene_physics.DestroyAll();
 	}
 
-    UI->RedrawScene();
+	UI->RedrawScene();
 }
 
 void CLevelTool::UseSimulatePositions()
 {
-    g_scene_physics.UseSimulatePoses();
+	g_scene_physics.UseSimulatePoses();
 }
 
 void CLevelTool::RunGame(const char* Params)
@@ -711,18 +750,18 @@ void CLevelTool::RunGame(const char* Params)
 	string_path CommandLine;
 	xr_sprintf(CommandLine, "xrEngine.exe %s", Params);
 	Msg("~ Run Game %s.\n", CommandLine);
-	// Start the child process. 
-	if (!CreateProcessA(NULL,   // No module name (use command line)
-		CommandLine,        // Command line
-		NULL,           // Process handle not inheritable
-		NULL,           // Thread handle not inheritable
-		false,          // Set handle inheritance to false
-		0,              // No creation flags
-		NULL,           // Use parent's environment block
-		NULL,           // Use parent's starting directory 
-		&si,            // Pointer to STARTUPINFO structure
-		&m_GameProcess)           // Pointer to PROCESS_INFORMATION structure
-		)
+	// Start the child process.
+	if (!CreateProcessA(NULL,			// No module name (use command line)
+						CommandLine,	// Command line
+						NULL,			// Process handle not inheritable
+						NULL,			// Thread handle not inheritable
+						false,			// Set handle inheritance to false
+						0,				// No creation flags
+						NULL,			// Use parent's environment block
+						NULL,			// Use parent's starting directory
+						&si,			// Pointer to STARTUPINFO structure
+						&m_GameProcess) // Pointer to PROCESS_INFORMATION structure
+	)
 	{
 		Msg("! PlayPC:CreateProcess failed (%d).\n", GetLastError());
 		return;
@@ -732,10 +771,14 @@ void CLevelTool::RunGame(const char* Params)
 void CLevelTool::RunXrLC()
 {
 	if (m_CompilerProcess.hProcess)
+	{
 		return;
+	}
 
 	if (m_GameProcess.hProcess)
+	{
 		return;
+	}
 
 	STARTUPINFOA si = {};
 
@@ -758,18 +801,18 @@ void CLevelTool::RunXrLC()
 	}
 
 	Msg("~ Run %s.\n", CommandLine);
-	// Start the child process. 
-	if (!CreateProcessA(NULL,   // No module name (use command line)
-		CommandLine,        // Command line
-		NULL,           // Process handle not inheritable
-		NULL,           // Thread handle not inheritable
-		false,          // Set handle inheritance to false
-		0,              // No creation flags
-		NULL,           // Use parent's environment block
-		NULL,           // Use parent's starting directory 
-		&si,            // Pointer to STARTUPINFO structure
-		&m_CompilerProcess)           // Pointer to PROCESS_INFORMATION structure
-		)
+	// Start the child process.
+	if (!CreateProcessA(NULL,				// No module name (use command line)
+						CommandLine,		// Command line
+						NULL,				// Process handle not inheritable
+						NULL,				// Thread handle not inheritable
+						false,				// Set handle inheritance to false
+						0,					// No creation flags
+						NULL,				// Use parent's environment block
+						NULL,				// Use parent's starting directory
+						&si,				// Pointer to STARTUPINFO structure
+						&m_CompilerProcess) // Pointer to PROCESS_INFORMATION structure
+	)
 	{
 		Msg("! XrLC:CreateProcess failed (%d).\n", GetLastError());
 		return;
@@ -778,10 +821,14 @@ void CLevelTool::RunXrLC()
 void CLevelTool::RunXrDO()
 {
 	if (m_CompilerProcess.hProcess)
+	{
 		return;
+	}
 
 	if (m_GameProcess.hProcess)
+	{
 		return;
+	}
 
 	STARTUPINFOA si = {};
 
@@ -801,18 +848,18 @@ void CLevelTool::RunXrDO()
 		xr_sprintf(CommandLine, "%s -f %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str());
 	}
 	Msg("~ Run %s.\n", CommandLine);
-	// Start the child process. 
-	if (!CreateProcessA(NULL,   // No module name (use command line)
-		CommandLine,        // Command line
-		NULL,           // Process handle not inheritable
-		NULL,           // Thread handle not inheritable
-		false,          // Set handle inheritance to false
-		0,              // No creation flags
-		NULL,           // Use parent's environment block
-		NULL,           // Use parent's starting directory 
-		&si,            // Pointer to STARTUPINFO structure
-		&m_CompilerProcess)           // Pointer to PROCESS_INFORMATION structure
-		)
+	// Start the child process.
+	if (!CreateProcessA(NULL,				// No module name (use command line)
+						CommandLine,		// Command line
+						NULL,				// Process handle not inheritable
+						NULL,				// Thread handle not inheritable
+						false,				// Set handle inheritance to false
+						0,					// No creation flags
+						NULL,				// Use parent's environment block
+						NULL,				// Use parent's starting directory
+						&si,				// Pointer to STARTUPINFO structure
+						&m_CompilerProcess) // Pointer to PROCESS_INFORMATION structure
+	)
 	{
 		Msg("! xrDO_light:CreateProcess failed (%d).\n", GetLastError());
 		return;
@@ -821,10 +868,14 @@ void CLevelTool::RunXrDO()
 void CLevelTool::RunXrAI_Spawn(bool current_level)
 {
 	if (m_CompilerProcess.hProcess)
+	{
 		return;
+	}
 
 	if (m_GameProcess.hProcess)
+	{
 		return;
+	}
 
 	STARTUPINFOA si = {};
 
@@ -844,18 +895,18 @@ void CLevelTool::RunXrAI_Spawn(bool current_level)
 		xr_sprintf(CommandLine, "%s -no_separator_check -s %s -out all", CompPath.data(), current_level ? Scene->m_LevelOp.m_FNLevelPath.c_str() : "");
 	}
 	Msg("~ Run %s.\n", CommandLine);
-	// Start the child process. 
-	if (!CreateProcessA(NULL,   // No module name (use command line)
-		CommandLine,        // Command line
-		NULL,           // Process handle not inheritable
-		NULL,           // Thread handle not inheritable
-		false,          // Set handle inheritance to false
-		0,              // No creation flags
-		NULL,           // Use parent's environment block
-		NULL,           // Use parent's starting directory 
-		&si,            // Pointer to STARTUPINFO structure
-		&m_CompilerProcess)           // Pointer to PROCESS_INFORMATION structure
-		)
+	// Start the child process.
+	if (!CreateProcessA(NULL,				// No module name (use command line)
+						CommandLine,		// Command line
+						NULL,				// Process handle not inheritable
+						NULL,				// Thread handle not inheritable
+						false,				// Set handle inheritance to false
+						0,					// No creation flags
+						NULL,				// Use parent's environment block
+						NULL,				// Use parent's starting directory
+						&si,				// Pointer to STARTUPINFO structure
+						&m_CompilerProcess) // Pointer to PROCESS_INFORMATION structure
+	)
 	{
 		Msg("! xrAI:CreateProcess failed (%d).\n", GetLastError());
 		return;
@@ -864,10 +915,14 @@ void CLevelTool::RunXrAI_Spawn(bool current_level)
 void CLevelTool::RunXrAI_AIMap(bool draw)
 {
 	if (m_CompilerProcess.hProcess)
+	{
 		return;
+	}
 
 	if (m_GameProcess.hProcess)
+	{
 		return;
+	}
 
 	STARTUPINFOA si = {};
 
@@ -886,20 +941,20 @@ void CLevelTool::RunXrAI_AIMap(bool draw)
 	{
 		xr_sprintf(CommandLine, "%s -f %s %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str(), draw ? "-draft" : "");
 	}
-	
+
 	Msg("~ Run %s.\n", CommandLine);
-	// Start the child process. 
-	if (!CreateProcessA(NULL,   // No module name (use command line)
-		CommandLine,        // Command line
-		NULL,           // Process handle not inheritable
-		NULL,           // Thread handle not inheritable
-		false,          // Set handle inheritance to false
-		0,              // No creation flags
-		NULL,           // Use parent's environment block
-		NULL,           // Use parent's starting directory 
-		&si,            // Pointer to STARTUPINFO structure
-		&m_CompilerProcess)           // Pointer to PROCESS_INFORMATION structure
-		)
+	// Start the child process.
+	if (!CreateProcessA(NULL,				// No module name (use command line)
+						CommandLine,		// Command line
+						NULL,				// Process handle not inheritable
+						NULL,				// Thread handle not inheritable
+						false,				// Set handle inheritance to false
+						0,					// No creation flags
+						NULL,				// Use parent's environment block
+						NULL,				// Use parent's starting directory
+						&si,				// Pointer to STARTUPINFO structure
+						&m_CompilerProcess) // Pointer to PROCESS_INFORMATION structure
+	)
 	{
 		Msg("! xrAI:CreateProcess failed (%d).\n", GetLastError());
 		return;
@@ -908,10 +963,14 @@ void CLevelTool::RunXrAI_AIMap(bool draw)
 void CLevelTool::RunXrAI_Verify()
 {
 	if (m_CompilerProcess.hProcess)
+	{
 		return;
+	}
 
 	if (m_GameProcess.hProcess)
+	{
 		return;
+	}
 
 	STARTUPINFOA si = {};
 
@@ -928,22 +987,22 @@ void CLevelTool::RunXrAI_Verify()
 	}
 	else
 	{
-	    xr_sprintf(CommandLine, "%s -verify %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str());
+		xr_sprintf(CommandLine, "%s -verify %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str());
 	}
-	
+
 	Msg("~ Run %s.\n", CommandLine);
-	// Start the child process. 
-	if (!CreateProcessA(NULL,   // No module name (use command line)
-		CommandLine,        // Command line
-		NULL,           // Process handle not inheritable
-		NULL,           // Thread handle not inheritable
-		false,          // Set handle inheritance to false
-		0,              // No creation flags
-		NULL,           // Use parent's environment block
-		NULL,           // Use parent's starting directory 
-		&si,            // Pointer to STARTUPINFO structure
-		&m_CompilerProcess)           // Pointer to PROCESS_INFORMATION structure
-		)
+	// Start the child process.
+	if (!CreateProcessA(NULL,				// No module name (use command line)
+						CommandLine,		// Command line
+						NULL,				// Process handle not inheritable
+						NULL,				// Thread handle not inheritable
+						false,				// Set handle inheritance to false
+						0,					// No creation flags
+						NULL,				// Use parent's environment block
+						NULL,				// Use parent's starting directory
+						&si,				// Pointer to STARTUPINFO structure
+						&m_CompilerProcess) // Pointer to PROCESS_INFORMATION structure
+	)
 	{
 		Msg("! xrAI:CreateProcess failed (%d).\n", GetLastError());
 		return;

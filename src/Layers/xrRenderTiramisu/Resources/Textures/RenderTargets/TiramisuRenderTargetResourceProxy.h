@@ -6,9 +6,9 @@
 class TiramisuRenderTargetResourceProxy : public TiramisuRenderTextureResourceProxy
 {
 public:
-    virtual                         ~TiramisuRenderTargetResourceProxy     () override;
-    void                            SetNewAccessLayoutStage         (nri::TextureBarrierDesc& TextureBarrierDescription, nri::AccessLayoutStage AfterAccessLayoutStage);
-    
-    nri::AccessLayoutStage          LastAccessLayoutStage;
-    nri::Descriptor*                DescriptorAttachment = nullptr;
+	virtual ~TiramisuRenderTargetResourceProxy() override;
+	void SetNewAccessLayoutStage(nri::TextureBarrierDesc& TextureBarrierDescription, nri::AccessLayoutStage AfterAccessLayoutStage);
+
+	nri::AccessLayoutStage LastAccessLayoutStage;
+	nri::Descriptor* DescriptorAttachment = nullptr;
 };

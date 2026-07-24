@@ -36,22 +36,6 @@
 #include <SDL3/SDL.h>
 #include <imgui.h>
 
-#include <array>
-#include <bit>
-#include <cctype>
-#include <chrono>
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
-#include <future>
-#include <limits>
-#include <mutex>
-#include <optional>
-#include <string>
-#include <unordered_map>
-#include <utility>
-#include <vector>
-
 namespace
 {
 constexpr u32 QueuedFrameCount = 3;
@@ -73,7 +57,8 @@ static_assert(sizeof(FEditorDebugVertex) == 28);
 static_assert(sizeof(FEditorOverlayVertex) == sizeof(FEditorDebugVertex));
 
 [[nodiscard]] xr_array<float, 16> MakeConstantBufferMatrix(
-	const Fmatrix& XRayMatrix)
+	const Fmatrix& XRayMatrix
+)
 {
 	xr_array<float, 16> Result = {};
 	std::copy_n(XRayMatrix.mm, Result.size(), Result.begin());
@@ -105,7 +90,7 @@ constexpr u32 MaxSceneDrawsPerViewport = 8192;
 constexpr u32 MaxSceneLightsPerViewport =
 	static_cast<u32>(EditorViewportMaxLightCount);
 constexpr u32 MaxEditorDrawRecords = MaxMaterialPreviews +
-	MaxSceneViewports * MaxSceneDrawsPerViewport;
+									 MaxSceneViewports * MaxSceneDrawsPerViewport;
 constexpr u32 PreviewDrawDataDescriptorIndex = 0;
 constexpr u32 PreviewMaterialInstanceDescriptorIndex = 1;
 constexpr u32 PreviewMaterialParameterDescriptorIndex = 2;
@@ -118,58 +103,63 @@ constexpr u32 PreviewDefaultSamplerIndex = 0;
 constexpr size_t MaxConcurrentSceneMaterialCompiles = 2;
 
 nri::Format MaterialPreviewTextureFormat(
-	const RedImageTool::RedTexturePixelFormat Format, const bool Srgb) noexcept
+	const RedImageTool::RedTexturePixelFormat Format, const bool Srgb
+) noexcept
 {
 	using RedImageTool::RedTexturePixelFormat;
 	switch (Format)
 	{
-	case RedTexturePixelFormat::R8:
-		return nri::Format::R8_UNORM;
-	case RedTexturePixelFormat::R8G8:
-		return nri::Format::RG8_UNORM;
-	case RedTexturePixelFormat::R8G8B8A8:
-		return Srgb ? nri::Format::RGBA8_SRGB : nri::Format::RGBA8_UNORM;
-	case RedTexturePixelFormat::R32F:
-		return nri::Format::R32_SFLOAT;
-	case RedTexturePixelFormat::R32G32F:
-		return nri::Format::RG32_SFLOAT;
-	case RedTexturePixelFormat::R32G32B32F:
-		return nri::Format::RGB32_SFLOAT;
-	case RedTexturePixelFormat::R32G32B32A32F:
-		return nri::Format::RGBA32_SFLOAT;
-	case RedTexturePixelFormat::BC1:
-		return Srgb ? nri::Format::BC1_RGBA_SRGB : nri::Format::BC1_RGBA_UNORM;
-	case RedTexturePixelFormat::BC2:
-		return Srgb ? nri::Format::BC2_RGBA_SRGB : nri::Format::BC2_RGBA_UNORM;
-	case RedTexturePixelFormat::BC3:
-		return Srgb ? nri::Format::BC3_RGBA_SRGB : nri::Format::BC3_RGBA_UNORM;
-	case RedTexturePixelFormat::BC4:
-		return nri::Format::BC4_R_UNORM;
-	case RedTexturePixelFormat::BC5:
-		return nri::Format::BC5_RG_UNORM;
-	case RedTexturePixelFormat::BC6:
-		return nri::Format::BC6H_RGB_UFLOAT;
-	case RedTexturePixelFormat::BC7:
-		return Srgb ? nri::Format::BC7_RGBA_SRGB : nri::Format::BC7_RGBA_UNORM;
-	default:
-		return nri::Format::UNKNOWN;
+		case RedTexturePixelFormat::R8:
+			return nri::Format::R8_UNORM;
+		case RedTexturePixelFormat::R8G8:
+			return nri::Format::RG8_UNORM;
+		case RedTexturePixelFormat::R8G8B8A8:
+			return Srgb ? nri::Format::RGBA8_SRGB : nri::Format::RGBA8_UNORM;
+		case RedTexturePixelFormat::R32F:
+			return nri::Format::R32_SFLOAT;
+		case RedTexturePixelFormat::R32G32F:
+			return nri::Format::RG32_SFLOAT;
+		case RedTexturePixelFormat::R32G32B32F:
+			return nri::Format::RGB32_SFLOAT;
+		case RedTexturePixelFormat::R32G32B32A32F:
+			return nri::Format::RGBA32_SFLOAT;
+		case RedTexturePixelFormat::BC1:
+			return Srgb ? nri::Format::BC1_RGBA_SRGB : nri::Format::BC1_RGBA_UNORM;
+		case RedTexturePixelFormat::BC2:
+			return Srgb ? nri::Format::BC2_RGBA_SRGB : nri::Format::BC2_RGBA_UNORM;
+		case RedTexturePixelFormat::BC3:
+			return Srgb ? nri::Format::BC3_RGBA_SRGB : nri::Format::BC3_RGBA_UNORM;
+		case RedTexturePixelFormat::BC4:
+			return nri::Format::BC4_R_UNORM;
+		case RedTexturePixelFormat::BC5:
+			return nri::Format::BC5_RG_UNORM;
+		case RedTexturePixelFormat::BC6:
+			return nri::Format::BC6H_RGB_UFLOAT;
+		case RedTexturePixelFormat::BC7:
+			return Srgb ? nri::Format::BC7_RGBA_SRGB : nri::Format::BC7_RGBA_UNORM;
+		default:
+			return nri::Format::UNKNOWN;
 	}
 }
 
-void NRI_CALL EditorNriMessageCallback(const nri::Message MessageType,
-	const char* File, const u32 Line, const char* Message, void*)
+void NRI_CALL EditorNriMessageCallback(const nri::Message MessageType, const char* File, const u32 Line, const char* Message, void*)
 {
-	const char* Severity = MessageType == nri::Message::ERROR ? "error" :
-		MessageType == nri::Message::WARNING ? "warning" : "info";
-	Msg("%s NRI[%s] %s:%u: %s",
-		MessageType == nri::Message::ERROR ? "!" : "*", Severity,
-		File ? File : "<unknown>", Line, Message ? Message : "<no message>");
+	const char* Severity = MessageType == nri::Message::ERROR ? "error" : MessageType == nri::Message::WARNING ? "warning"
+																											   : "info";
+	Msg
+	(
+		"%s NRI[%s] %s:%u: %s",
+		MessageType == nri::Message::ERROR ? "!" : "*",
+		Severity,
+		File ? File : "<unknown>",
+		Line,
+		Message ? Message : "<no message>"
+	);
 }
 
 bool IsSrgb(const nri::Format Format) noexcept
 {
-	return Format == nri::Format::RGBA8_SRGB ||
-		Format == nri::Format::BGRA8_SRGB;
+	return Format == nri::Format::RGBA8_SRGB || Format == nri::Format::BGRA8_SRGB;
 }
 
 u64 TextureHandleKey(const FEditorTextureHandle Handle) noexcept
@@ -356,13 +346,15 @@ struct TiramisuEditorRenderBridge::FImpl
 	struct FScenePipelineCacheKeyHash
 	{
 		size_t operator()(
-			const FScenePipelineCacheKey& Key) const noexcept
+			const FScenePipelineCacheKey& Key
+		) const noexcept
 		{
 			const u64 Sidedness =
 				Key.TwoSided ? 0x9e3779b97f4a7c15ull : 0;
 			return static_cast<size_t>(
 				Key.PipelineKey ^ (Sidedness + (Key.PipelineKey << 6u) +
-					(Key.PipelineKey >> 2u)));
+								   (Key.PipelineKey >> 2u))
+			);
 		}
 	};
 
@@ -379,13 +371,9 @@ struct TiramisuEditorRenderBridge::FImpl
 		bool Loaded = false;
 	};
 
-	explicit FImpl(SDL_Window* InWindow, const ETiramisuEditorGraphicsApi InApi,
-		const FRenderDeterministicTestPolicy& InDeterministicTest)
-		: Window(InWindow), Api(InApi),
-		  DeterministicTest(InDeterministicTest),
-		  SceneMaterialCompileQueue(MaxConcurrentSceneMaterialCompiles,
-			  [](FSceneMaterialCompileRequest Request)
-			  {
+	explicit FImpl(SDL_Window* InWindow, const ETiramisuEditorGraphicsApi InApi, const FRenderDeterministicTestPolicy& InDeterministicTest)
+		: Window(InWindow), Api(InApi), DeterministicTest(InDeterministicTest), SceneMaterialCompileQueue(MaxConcurrentSceneMaterialCompiles, [](FSceneMaterialCompileRequest Request)
+																										  {
 				  FSceneMaterialCompileResult Result;
 				  Result.MaterialSlot = Request.MaterialSlot;
 				  Result.Revision = Request.Revision;
@@ -393,45 +381,56 @@ struct TiramisuEditorRenderBridge::FImpl
 				  Result.Reload = Request.Reload;
 				  Result.Compiled =
 					  Tiramisu::Editor::CompileMaterialPreview(Request.Request);
-				  return Result;
-			  })
-	{}
+				  return Result; })
+	{
+	}
 
 	bool Check(const nri::Result Result, const char* Message)
 	{
 		if (Result == nri::Result::SUCCESS)
+		{
 			return true;
+		}
 		Diagnostic = Message;
 		return false;
 	}
 
 	[[nodiscard]] FMaterialPreview* FindPreview(
-		const FMaterialPreviewHandle Handle) noexcept
+		const FMaterialPreviewHandle Handle
+	) noexcept
 	{
 		if (Handle.Index >= MaterialPreviews.size())
+		{
 			return nullptr;
+		}
 		FMaterialPreview& Preview = MaterialPreviews[Handle.Index];
 		return Preview.Alive && Preview.Generation == Handle.Generation
-			? &Preview : nullptr;
+				   ? &Preview
+				   : nullptr;
 	}
 
 	[[nodiscard]] const FMaterialPreview* FindPreview(
-		const FMaterialPreviewHandle Handle) const noexcept
+		const FMaterialPreviewHandle Handle
+	) const noexcept
 	{
 		if (Handle.Index >= MaterialPreviews.size())
+		{
 			return nullptr;
+		}
 		const FMaterialPreview& Preview = MaterialPreviews[Handle.Index];
 		return Preview.Alive && Preview.Generation == Handle.Generation
-			? &Preview : nullptr;
+				   ? &Preview
+				   : nullptr;
 	}
 
 	[[nodiscard]] xr_string ReadGameShader(const char* RelativePath)
 	{
 		IReader* Reader = FS.r_open("$game_shaders$", RelativePath);
 		if (!Reader)
+		{
 			return {};
-		xr_string Source(static_cast<const char*>(Reader->pointer()),
-			static_cast<size_t>(Reader->length()));
+		}
+		xr_string Source(static_cast<const char*>(Reader->pointer()), static_cast<size_t>(Reader->length()));
 		FS.r_close(Reader);
 		return Source;
 	}
@@ -441,95 +440,114 @@ struct TiramisuEditorRenderBridge::FImpl
 		xr_string Path(RelativePath);
 		std::ranges::replace(Path, '/', '\\');
 		if (!Path.starts_with("r5\\"))
+		{
 			Path.insert(0, "r5\\");
+		}
 		return ReadGameShader(Path.c_str());
 	}
 
 	[[nodiscard]] std::filesystem::path ResolveR5ShaderPath(
-		const xr_string_view RelativePath) const
+		const xr_string_view RelativePath
+	) const
 	{
 		string_path ShaderRoot = {};
 		FS.update_path(ShaderRoot, "$game_shaders$", "r5\\");
 		xr_string Path(RelativePath);
 		std::ranges::replace(Path, '/', '\\');
 		if (Path.starts_with("r5\\"))
+		{
 			Path.erase(0, 3);
+		}
 		return (std::filesystem::path(ShaderRoot) / Path.c_str()).lexically_normal();
 	}
 
 	[[nodiscard]] Tiramisu::Editor::FMaterialPreviewCompileRequest
-		MakePreviewCompileRequest(const FMaterialPreviewSource& Source)
+	MakePreviewCompileRequest(const FMaterialPreviewSource& Source)
 	{
 		Tiramisu::Editor::FMaterialPreviewCompileRequest Request;
 		Request.Backend = Api == ETiramisuEditorGraphicsApi::D3D12
-			? EMaterialShaderBackend::D3D12
-			: EMaterialShaderBackend::Vulkan;
+							  ? EMaterialShaderBackend::D3D12
+							  : EMaterialShaderBackend::Vulkan;
 		Request.MaterialJson.assign(Source.MaterialJson);
 		Request.MaterialInstanceJson.assign(Source.MaterialInstanceJson);
 		Request.GeneratedHlsl.assign(Source.GeneratedHlsl);
 		Request.TemplateSource = ReadGameShader(
-			"r5\\materials\\MaterialTemplate.hlsl");
+			"r5\\materials\\MaterialTemplate.hlsl"
+		);
 		Request.VertexFactorySource = ReadGameShader(
-			"r5\\materials\\vertex\\MaterialLevelStaticVertexFactory.hlsl");
+			"r5\\materials\\vertex\\MaterialLevelStaticVertexFactory.hlsl"
+		);
 		Request.Pass = EMaterialPass::Validation;
 		Request.PassSource = ReadGameShader(
-			"r5\\materials\\passes\\MaterialPreviewPass.hlsl");
+			"r5\\materials\\passes\\MaterialPreviewPass.hlsl"
+		);
 		Request.DependencySources.push_back(ReadGameShader(
-			"r5\\materials\\passes\\MaterialLightingCommon.hlsl"));
+			"r5\\materials\\passes\\MaterialLightingCommon.hlsl"
+		));
 
 		string_path ShaderRoot = {};
 		FS.update_path(ShaderRoot, "$game_shaders$", "r5\\");
 		const std::filesystem::path Root = ShaderRoot;
-		Request.IncludeDirectories = {Root, Root / "common", Root / "materials",
-			Root / "materials/passes", Root / "materials/vertex"};
+		Request.IncludeDirectories = {Root, Root / "common", Root / "materials", Root / "materials/passes", Root / "materials/vertex"};
 		Request.Debug = strstr(Core.Params, "-rdebug") != nullptr ||
-			strstr(Core.Params, "-rdbg") != nullptr;
+						strstr(Core.Params, "-rdbg") != nullptr;
 		return Request;
 	}
 
 	[[nodiscard]] Tiramisu::Editor::FMaterialPreviewCompileRequest
-		MakeSceneMaterialCompileRequest(
-			const Tiramisu::Editor::FEditorViewportMaterialResolution& Resolution)
+	MakeSceneMaterialCompileRequest(
+		const Tiramisu::Editor::FEditorViewportMaterialResolution& Resolution
+	)
 	{
 		Tiramisu::Editor::FMaterialPreviewCompileRequest Request;
 		Request.Backend = Api == ETiramisuEditorGraphicsApi::D3D12
-			? EMaterialShaderBackend::D3D12
-			: EMaterialShaderBackend::Vulkan;
+							  ? EMaterialShaderBackend::D3D12
+							  : EMaterialShaderBackend::Vulkan;
 		Request.MaterialJson = SerializeMaterialAssetJson(Resolution.Master);
 		Request.MaterialInstanceJson = SerializeMaterialInstanceJson(
-			Resolution.FlattenedInstance);
+			Resolution.FlattenedInstance
+		);
 		if (Resolution.Master.Implementation.Type ==
 			EMaterialImplementationType::Hlsl)
 		{
 			Request.GeneratedHlsl = ReadR5Shader(
-				Resolution.Master.Implementation.Source);
+				Resolution.Master.Implementation.Source
+			);
 		}
 		Request.TemplateSource = ReadR5Shader(
-			Resolution.Master.HlslTemplate);
+			Resolution.Master.HlslTemplate
+		);
 		const FMaterialVertexFactoryDefinition* VertexFactory =
 			FindMaterialVertexFactoryDefinition("level_static");
 		const FMaterialPassDefinition* Forward =
 			FindMaterialPassDefinition(EMaterialPass::Forward);
 		if (VertexFactory)
+		{
 			Request.VertexFactorySource = ReadR5Shader(
-				VertexFactory->ShaderSource);
+				VertexFactory->ShaderSource
+			);
+		}
 		if (Forward)
+		{
 			Request.PassSource = ReadR5Shader(Forward->ShaderSource);
+		}
 		Request.Pass = EMaterialPass::Forward;
 		Request.RenderPassSignature = "editor_forward:rgba8:d32";
 		Request.CompilerOptions = "editor_viewport_scene_v1";
 		for (const xr_string& Dependency : Resolution.Master.Dependencies)
+		{
 			Request.DependencySources.push_back(ReadR5Shader(Dependency));
+		}
 		Request.DependencySources.push_back(ReadR5Shader(
-			"materials/passes/MaterialLightingCommon.hlsl"));
+			"materials/passes/MaterialLightingCommon.hlsl"
+		));
 
 		string_path ShaderRoot = {};
 		FS.update_path(ShaderRoot, "$game_shaders$", "r5\\");
 		const std::filesystem::path Root = ShaderRoot;
-		Request.IncludeDirectories = {Root, Root / "common", Root / "materials",
-			Root / "materials/passes", Root / "materials/vertex"};
+		Request.IncludeDirectories = {Root, Root / "common", Root / "materials", Root / "materials/passes", Root / "materials/vertex"};
 		Request.Debug = strstr(Core.Params, "-rdebug") != nullptr ||
-			strstr(Core.Params, "-rdbg") != nullptr;
+						strstr(Core.Params, "-rdbg") != nullptr;
 		return Request;
 	}
 
@@ -545,70 +563,91 @@ struct TiramisuEditorRenderBridge::FImpl
 		for (const auto& Item : Diagnostics)
 		{
 			if (Item.Severity != EMaterialDiagnosticSeverity::Info)
+			{
 				Msg("%s Editor material resolver [%s]: %s",
 					Item.Severity == EMaterialDiagnosticSeverity::Error
-						? "!" : "*", Item.Code.c_str(), Item.Message.c_str());
+						? "!"
+						: "*",
+					Item.Code.c_str(),
+					Item.Message.c_str());
+			}
 		}
 		if (!Loaded)
+		{
 			Diagnostic = "Failed to load editor viewport material assets";
+		}
 		else
+		{
 			SceneMaterialResolver = std::move(Candidate);
+		}
 		return Loaded;
 	}
 
 	void RegisterSceneMaterialDependencies(
-		const Tiramisu::Editor::FEditorViewportMaterialResolution& Resolution)
+		const Tiramisu::Editor::FEditorViewportMaterialResolution& Resolution
+	)
 	{
 		xr_vector<std::filesystem::path> Dependencies =
 			SceneMaterialDependencies;
-		Dependencies.insert(Dependencies.end(),
-			Resolution.AssetDependencies.begin(), Resolution.AssetDependencies.end());
+		Dependencies.insert(Dependencies.end(), Resolution.AssetDependencies.begin(), Resolution.AssetDependencies.end());
 		Dependencies.push_back(ResolveR5ShaderPath(
-			Resolution.Master.HlslTemplate));
+			Resolution.Master.HlslTemplate
+		));
 		if (Resolution.Master.Implementation.Type == EMaterialImplementationType::Hlsl)
 		{
 			Dependencies.push_back(ResolveR5ShaderPath(
-				Resolution.Master.Implementation.Source));
+				Resolution.Master.Implementation.Source
+			));
 		}
 		for (const xr_string& Dependency : Resolution.Master.Dependencies)
+		{
 			Dependencies.push_back(ResolveR5ShaderPath(Dependency));
+		}
 		if (const FMaterialVertexFactoryDefinition* VertexFactory =
-			FindMaterialVertexFactoryDefinition("level_static"))
+				FindMaterialVertexFactoryDefinition("level_static"))
 		{
 			Dependencies.push_back(ResolveR5ShaderPath(
-				VertexFactory->ShaderSource));
+				VertexFactory->ShaderSource
+			));
 		}
 		if (const FMaterialPassDefinition* Forward =
-			FindMaterialPassDefinition(EMaterialPass::Forward))
+				FindMaterialPassDefinition(EMaterialPass::Forward))
 		{
 			Dependencies.push_back(ResolveR5ShaderPath(
-				Forward->ShaderSource));
+				Forward->ShaderSource
+			));
 		}
 		Dependencies.push_back(ResolveR5ShaderPath(
-			"materials/passes/MaterialLightingCommon.hlsl"));
+			"materials/passes/MaterialLightingCommon.hlsl"
+		));
 		std::ranges::sort(Dependencies);
 		const auto Unique = std::ranges::unique(Dependencies);
 		Dependencies.erase(Unique.begin(), Unique.end());
 		if (Dependencies == SceneMaterialDependencies)
+		{
 			return;
+		}
 		SceneMaterialDependencies = std::move(Dependencies);
 		SceneMaterialDependencyWatcher.Reset(SceneMaterialDependencies);
 	}
 
-	void QueueSceneMaterialCompile(const FEditorOwnedMaterialSlotSource& Source,
-		const bool Force = false)
+	void QueueSceneMaterialCompile(const FEditorOwnedMaterialSlotSource& Source, const bool Force = false)
 	{
 		if (!SceneMaterialResolver || !SceneMaterialResolver->IsLoaded())
+		{
 			return;
+		}
 		Tiramisu::Editor::FEditorViewportLegacyMaterialSource Legacy;
 		Legacy.MaterialSlot = Source.MaterialSlot.Value;
 		Legacy.MaterialAsset = Source.MaterialAsset;
 		Legacy.ShaderName = Source.ShaderName;
 		if (!Source.TextureName.empty())
+		{
 			Legacy.Textures.push_back(Source.TextureName);
+		}
 		Legacy.SurfaceName = Source.SurfaceName;
 		Legacy.TwoSided = (static_cast<u32>(Source.Flags) &
-			static_cast<u32>(EEditorMaterialSlotFlags::TwoSided)) != 0;
+						   static_cast<u32>(EEditorMaterialSlotFlags::TwoSided)) != 0;
 		Tiramisu::Editor::FEditorViewportMaterialResolution Resolution =
 			SceneMaterialResolver->Resolve(Legacy);
 		FSceneMaterial& Material = SceneMaterials[Source.MaterialSlot.Value];
@@ -643,10 +682,12 @@ struct TiramisuEditorRenderBridge::FImpl
 		Material.RequestedRevision = ++SceneMaterialRevision;
 		SceneMaterialCompileQueue.ErasePendingIf(
 			[Slot = Source.MaterialSlot.Value](
-				const FSceneMaterialCompileRequest& Request)
+				const FSceneMaterialCompileRequest& Request
+			)
 			{
 				return Request.MaterialSlot == Slot;
-			});
+			}
+		);
 		FSceneMaterialCompileRequest Request;
 		Request.MaterialSlot = Source.MaterialSlot.Value;
 		Request.Revision = Material.RequestedRevision;
@@ -659,17 +700,17 @@ struct TiramisuEditorRenderBridge::FImpl
 	void StartSceneMaterialResolverReload()
 	{
 		if (SceneMaterialResolverReload.valid() || SceneMaterialRoot.empty())
+		{
 			return;
+		}
 		const std::filesystem::path Root = SceneMaterialRoot;
-		SceneMaterialResolverReload = std::async(std::launch::async,
-			[Root]() mutable
-			{
+		SceneMaterialResolverReload = std::async(std::launch::async, [Root]() mutable
+												 {
 				FSceneMaterialResolverReloadResult Result;
 				Result.Resolver = std::make_unique<
 					Tiramisu::Editor::TiramisuEditorViewportMaterialResolver>();
 				Result.Loaded = Result.Resolver->Load(Root, &Result.Diagnostics);
-				return Result;
-			});
+				return Result; });
 	}
 
 	void PollSceneMaterialDependencies()
@@ -677,11 +718,8 @@ struct TiramisuEditorRenderBridge::FImpl
 		using namespace std::chrono_literals;
 		if (!SceneMaterialReloadSmokeTriggered &&
 			strstr(Core.Params, "-viewport-material-reload-smoke") != nullptr &&
-			std::ranges::any_of(SceneMaterials,
-				[](const auto& Entry)
-				{
-					return Entry.second.AcceptedRevision != 0;
-				}))
+			std::ranges::any_of(SceneMaterials, [](const auto& Entry)
+								{ return Entry.second.AcceptedRevision != 0; }))
 		{
 			SceneMaterialReloadSmokeTriggered = true;
 			StartSceneMaterialResolverReload();
@@ -719,7 +757,9 @@ struct TiramisuEditorRenderBridge::FImpl
 			}
 			SceneMaterialDependencies.clear();
 			for (const FEditorOwnedMaterialSlotSource& Source : Sources)
+			{
 				QueueSceneMaterialCompile(Source, true);
+			}
 			Msg("* Editor scene materials reloaded: %u slots queued",
 				static_cast<unsigned>(Sources.size()));
 			return;
@@ -729,19 +769,27 @@ struct TiramisuEditorRenderBridge::FImpl
 		// depend on host timing. Deterministic tests still permit the explicit
 		// reload-smoke transaction above, but ignore ambient file changes.
 		if (DeterministicTest.Enabled)
+		{
 			return;
+		}
 
 		const auto Now = std::chrono::steady_clock::now();
 		if (Now < NextSceneMaterialDependencyPoll)
+		{
 			return;
+		}
 		NextSceneMaterialDependencyPoll = Now + 250ms;
 		const xr_vector<Tiramisu::Editor::FMaterialDependencyChange> Changes =
 			SceneMaterialDependencyWatcher.Poll();
 		if (Changes.empty())
+		{
 			return;
+		}
 		for (const auto& Change : Changes)
+		{
 			Msg("* Editor scene material dependency changed: %s",
 				Change.Path.string().c_str());
+		}
 		StartSceneMaterialResolverReload();
 	}
 
@@ -756,7 +804,9 @@ struct TiramisuEditorRenderBridge::FImpl
 		else
 		{
 			if (MaterialPreviews.size() >= MaxMaterialPreviews)
+			{
 				return {};
+			}
 			Index = static_cast<u32>(MaterialPreviews.size());
 			MaterialPreviews.emplace_back();
 		}
@@ -765,8 +815,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		VERIFY(!Preview.Alive);
 		Preview.Alive = true;
 		Preview.ViewportId = 0x80000000u | Index;
-		Preview.MeshId = {0xf000000000000000ull |
-			(static_cast<u64>(Preview.Generation) << 32u) | Index};
+		Preview.MeshId = {0xf000000000000000ull | (static_cast<u64>(Preview.Generation) << 32u) | Index};
 		Preview.Primitive = EMaterialPreviewPrimitive::Sphere;
 		Preview.Environment = "Studio";
 		Preview.State = EMaterialPreviewState::Unavailable;
@@ -782,18 +831,21 @@ struct TiramisuEditorRenderBridge::FImpl
 		return {Index, Preview.Generation};
 	}
 
-	void QueueMaterialPreviewCompile(const FMaterialPreviewHandle Handle,
-		const FMaterialPreviewSource& Source)
+	void QueueMaterialPreviewCompile(const FMaterialPreviewHandle Handle, const FMaterialPreviewSource& Source)
 	{
 		FMaterialPreview* Preview = FindPreview(Handle);
 		if (!Preview || Source.Revision <= Preview->RequestedRevision)
+		{
 			return;
+		}
 		const bool PrimitiveChanged = Preview->Primitive != Source.Primitive;
 		Preview->RequestedRevision = Source.Revision;
 		Preview->Primitive = Source.Primitive;
 		Preview->Environment.assign(Source.Environment);
 		if (PrimitiveChanged && GpuMeshes.contains(Preview->MeshId.Value))
+		{
 			(void)RebuildPreviewMesh(*Preview);
+		}
 		Preview->State = EMaterialPreviewState::Compiling;
 		Preview->Diagnostic.clear();
 		Tiramisu::Editor::FMaterialPreviewCompileRequest Request =
@@ -801,11 +853,8 @@ struct TiramisuEditorRenderBridge::FImpl
 		FMaterialPreviewCompileJob Job;
 		Job.Handle = Handle;
 		Job.Revision = Source.Revision;
-		Job.Future = std::async(std::launch::async,
-			[Request = std::move(Request)]() mutable
-			{
-				return Tiramisu::Editor::CompileMaterialPreview(Request);
-			});
+		Job.Future = std::async(std::launch::async, [Request = std::move(Request)]() mutable
+								{ return Tiramisu::Editor::CompileMaterialPreview(Request); });
 		MaterialPreviewCompileJobs.push_back(std::move(Job));
 	}
 
@@ -829,7 +878,9 @@ struct TiramisuEditorRenderBridge::FImpl
 		nri::SwapChainDesc Desc = {};
 		Desc.window.windows.hwnd = SDL_GetPointerProperty(
 			SDL_GetWindowProperties(Window),
-			SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+			SDL_PROP_WINDOW_WIN32_HWND_POINTER,
+			nullptr
+		);
 		Desc.queue = GraphicsQueue;
 		Desc.width = static_cast<nri::Dim_t>(PixelWidth);
 		Desc.height = static_cast<nri::Dim_t>(PixelHeight);
@@ -838,9 +889,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		Desc.flags = nri::SwapChainBits::VSYNC;
 		Desc.queuedFrameNum = static_cast<u8>(QueuedFrameCount);
 		if (!Desc.window.windows.hwnd ||
-			!Check(SwapChainInterface.CreateSwapChain(
-				*NriDevice, Desc, SwapChain),
-				"Failed to create the NRI editor swapchain"))
+			!Check(SwapChainInterface.CreateSwapChain(*NriDevice, Desc, SwapChain), "Failed to create the NRI editor swapchain"))
 		{
 			return false;
 		}
@@ -866,14 +915,9 @@ struct TiramisuEditorRenderBridge::FImpl
 			View.texture = Item.Texture;
 			View.type = nri::TextureView::COLOR_ATTACHMENT;
 			View.format = SwapFormat;
-			if (!Check(CoreInterface.CreateTextureView(View, Item.ColorAttachment),
-					"Failed to create an NRI editor swapchain attachment") ||
-				!Check(CoreInterface.CreateFence(*NriDevice,
-					nri::SWAPCHAIN_SEMAPHORE, Item.AcquireSemaphore),
-					"Failed to create an NRI editor acquire semaphore") ||
-				!Check(CoreInterface.CreateFence(*NriDevice,
-					nri::SWAPCHAIN_SEMAPHORE, Item.ReleaseSemaphore),
-					"Failed to create an NRI editor release semaphore"))
+			if (!Check(CoreInterface.CreateTextureView(View, Item.ColorAttachment), "Failed to create an NRI editor swapchain attachment") ||
+				!Check(CoreInterface.CreateFence(*NriDevice, nri::SWAPCHAIN_SEMAPHORE, Item.AcquireSemaphore), "Failed to create an NRI editor acquire semaphore") ||
+				!Check(CoreInterface.CreateFence(*NriDevice, nri::SWAPCHAIN_SEMAPHORE, Item.ReleaseSemaphore), "Failed to create an NRI editor release semaphore"))
 			{
 				DestroySwapchain();
 				return false;
@@ -890,15 +934,23 @@ struct TiramisuEditorRenderBridge::FImpl
 		for (FSwapTexture& Item : SwapTextures)
 		{
 			if (Item.AcquireSemaphore)
+			{
 				CoreInterface.DestroyFence(Item.AcquireSemaphore);
+			}
 			if (Item.ReleaseSemaphore)
+			{
 				CoreInterface.DestroyFence(Item.ReleaseSemaphore);
+			}
 			if (Item.ColorAttachment)
+			{
 				CoreInterface.DestroyDescriptor(Item.ColorAttachment);
+			}
 		}
 		SwapTextures.clear();
 		if (SwapChain)
+		{
 			SwapChainInterface.DestroySwapChain(SwapChain);
+		}
 		SwapChain = nullptr;
 		SwapFormat = nri::Format::UNKNOWN;
 		Width = 0;
@@ -911,7 +963,9 @@ struct TiramisuEditorRenderBridge::FImpl
 		int PixelHeight = 0;
 		SDL_GetWindowSizeInPixels(Window, &PixelWidth, &PixelHeight);
 		if (PixelWidth <= 0 || PixelHeight <= 0)
+		{
 			return false;
+		}
 		if (SwapChain && Width == static_cast<u32>(PixelWidth) &&
 			Height == static_cast<u32>(PixelHeight))
 		{
@@ -926,19 +980,31 @@ struct TiramisuEditorRenderBridge::FImpl
 	{
 		RegisteredUserTextures.Unregister(Viewport.ShaderResource);
 		if (Viewport.ShaderResource)
+		{
 			CoreInterface.DestroyDescriptor(Viewport.ShaderResource);
+		}
 		if (Viewport.ColorAttachment)
+		{
 			CoreInterface.DestroyDescriptor(Viewport.ColorAttachment);
+		}
 		if (Viewport.DepthAttachment)
+		{
 			CoreInterface.DestroyDescriptor(Viewport.DepthAttachment);
+		}
 		if (Viewport.Texture)
+		{
 			CoreInterface.DestroyTexture(Viewport.Texture);
+		}
 		if (Viewport.DepthTexture)
+		{
 			CoreInterface.DestroyTexture(Viewport.DepthTexture);
+		}
 		for (nri::Memory* MemoryAllocation : Viewport.Memory)
 		{
 			if (MemoryAllocation)
+			{
 				CoreInterface.FreeMemory(MemoryAllocation);
+			}
 		}
 		Viewport.Texture = nullptr;
 		Viewport.Memory.clear();
@@ -958,7 +1024,9 @@ struct TiramisuEditorRenderBridge::FImpl
 		{
 			(void)ViewportId;
 			if (Viewport.DebugDrawBuffer)
+			{
 				CoreInterface.DestroyBuffer(Viewport.DebugDrawBuffer);
+			}
 			Viewport.DebugDrawBuffer = nullptr;
 			DestroyViewport(Viewport);
 			DestroySceneViewportMaterialContext(Viewport);
@@ -971,8 +1039,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		RegisteredUserTextures.Unregister(Texture.ShaderResource);
 		if (Texture.Texture || Texture.ShaderResource)
 		{
-			DeferredUiTextures.push_back({Texture.Texture,
-				Texture.ShaderResource, FrameIndex});
+			DeferredUiTextures.push_back({Texture.Texture, Texture.ShaderResource, FrameIndex});
 		}
 		Texture = {};
 	}
@@ -980,9 +1047,13 @@ struct TiramisuEditorRenderBridge::FImpl
 	void DestroyUiTexture(FDeferredUiTexture& Texture)
 	{
 		if (Texture.ShaderResource)
+		{
 			CoreInterface.DestroyDescriptor(Texture.ShaderResource);
+		}
 		if (Texture.Texture)
+		{
 			CoreInterface.DestroyTexture(Texture.Texture);
+		}
 		Texture = {};
 	}
 
@@ -1000,32 +1071,29 @@ struct TiramisuEditorRenderBridge::FImpl
 		}
 	}
 
-	bool CreateUiTexture(const FEditorOwnedTextureUpload& Upload,
-		FUiTexture& OutTexture)
+	bool CreateUiTexture(const FEditorOwnedTextureUpload& Upload, FUiTexture& OutTexture)
 	{
 		nri::TextureDesc Desc = {};
 		Desc.type = nri::TextureType::TEXTURE_2D;
 		Desc.usage = nri::TextureUsageBits::SHADER_RESOURCE;
 		switch (Upload.Format)
 		{
-		case EEditorTextureFormat::Rgba8Srgb:
-			Desc.format = nri::Format::RGBA8_SRGB;
-			break;
-		case EEditorTextureFormat::Bgra8Unorm:
-			Desc.format = nri::Format::BGRA8_UNORM;
-			break;
-		case EEditorTextureFormat::Bgra8Srgb:
-			Desc.format = nri::Format::BGRA8_SRGB;
-			break;
-		default:
-			Desc.format = nri::Format::RGBA8_UNORM;
-			break;
+			case EEditorTextureFormat::Rgba8Srgb:
+				Desc.format = nri::Format::RGBA8_SRGB;
+				break;
+			case EEditorTextureFormat::Bgra8Unorm:
+				Desc.format = nri::Format::BGRA8_UNORM;
+				break;
+			case EEditorTextureFormat::Bgra8Srgb:
+				Desc.format = nri::Format::BGRA8_SRGB;
+				break;
+			default:
+				Desc.format = nri::Format::RGBA8_UNORM;
+				break;
 		}
 		Desc.width = static_cast<nri::Dim_t>(Upload.Width);
 		Desc.height = static_cast<nri::Dim_t>(Upload.Height);
-		if (!Check(CoreInterface.CreateCommittedTexture(*NriDevice,
-				nri::MemoryLocation::DEVICE, 1.0f, Desc, OutTexture.Texture),
-				"Failed to create an NRI editor UI texture"))
+		if (!Check(CoreInterface.CreateCommittedTexture(*NriDevice, nri::MemoryLocation::DEVICE, 1.0f, Desc, OutTexture.Texture), "Failed to create an NRI editor UI texture"))
 		{
 			return false;
 		}
@@ -1034,16 +1102,19 @@ struct TiramisuEditorRenderBridge::FImpl
 		View.texture = OutTexture.Texture;
 		View.type = nri::TextureView::TEXTURE;
 		View.format = Desc.format;
-		if (!Check(CoreInterface.CreateTextureView(View, OutTexture.ShaderResource),
-				"Failed to create an NRI editor UI texture view"))
+		if (!Check(CoreInterface.CreateTextureView(View, OutTexture.ShaderResource), "Failed to create an NRI editor UI texture view"))
 		{
 			if (OutTexture.Texture)
+			{
 				CoreInterface.DestroyTexture(OutTexture.Texture);
+			}
 			OutTexture = {};
 			return false;
 		}
 		if (!Upload.DebugName.empty())
+		{
 			CoreInterface.SetDebugName(OutTexture.ShaderResource, Upload.DebugName.c_str());
+		}
 
 		nri::TextureSubresourceUploadDesc Subresource = {};
 		Subresource.slices = Upload.Pixels.data();
@@ -1054,11 +1125,8 @@ struct TiramisuEditorRenderBridge::FImpl
 		nri::TextureUploadDesc TextureUpload = {};
 		TextureUpload.subresources = &Subresource;
 		TextureUpload.texture = OutTexture.Texture;
-		TextureUpload.after = {nri::AccessBits::SHADER_RESOURCE,
-			nri::Layout::SHADER_RESOURCE};
-		if (!Check(HelperInterface.UploadData(*GraphicsQueue,
-				&TextureUpload, 1, nullptr, 0),
-				"Failed to upload an NRI editor UI texture"))
+		TextureUpload.after = {nri::AccessBits::SHADER_RESOURCE, nri::Layout::SHADER_RESOURCE};
+		if (!Check(HelperInterface.UploadData(*GraphicsQueue, &TextureUpload, 1, nullptr, 0), "Failed to upload an NRI editor UI texture"))
 		{
 			CoreInterface.DestroyDescriptor(OutTexture.ShaderResource);
 			CoreInterface.DestroyTexture(OutTexture.Texture);
@@ -1076,14 +1144,18 @@ struct TiramisuEditorRenderBridge::FImpl
 	{
 		TiramisuEditorTextureMailboxPacket Packet;
 		if (!UiTextureMailbox.Consume(Packet))
+		{
 			return;
+		}
 
 		std::scoped_lock Lock(UiTexturesMutex);
 		for (const FEditorTextureHandle Handle : Packet.Releases)
 		{
 			const auto It = UiTextures.find(TextureHandleKey(Handle));
 			if (It == UiTextures.end())
+			{
 				continue;
+			}
 			DeferUiTexture(It->second);
 			UiTextures.erase(It);
 		}
@@ -1091,7 +1163,9 @@ struct TiramisuEditorRenderBridge::FImpl
 		{
 			FUiTexture NewTexture;
 			if (!CreateUiTexture(Upload, NewTexture))
+			{
 				continue;
+			}
 			const u64 Key = TextureHandleKey(Upload.Handle);
 			const auto Existing = UiTextures.find(Key);
 			if (Existing != UiTextures.end())
@@ -1114,27 +1188,24 @@ struct TiramisuEditorRenderBridge::FImpl
 		{
 			(void)Key;
 			RegisteredUserTextures.Unregister(Texture.ShaderResource);
-			FDeferredUiTexture Immediate{Texture.Texture,
-				Texture.ShaderResource, 0};
+			FDeferredUiTexture Immediate{Texture.Texture, Texture.ShaderResource, 0};
 			DestroyUiTexture(Immediate);
 		}
 		UiTextures.clear();
 		for (FDeferredUiTexture& Texture : DeferredUiTextures)
+		{
 			DestroyUiTexture(Texture);
+		}
 		DeferredUiTextures.clear();
 	}
 
-	[[nodiscard]] bool CreatePreviewBuffer(const u64 Size,
-		const nri::BufferUsageBits Usage, const nri::BufferView ViewType,
-		nri::Buffer*& Buffer, nri::Descriptor*& Descriptor)
+	[[nodiscard]] bool CreatePreviewBuffer(const u64 Size, const nri::BufferUsageBits Usage, const nri::BufferView ViewType, nri::Buffer*& Buffer, nri::Descriptor*& Descriptor)
 	{
 		nri::BufferDesc Desc = {};
 		Desc.size = Size;
 		Desc.structureStride = ViewType == nri::BufferView::CONSTANT_BUFFER ? 0 : 4;
 		Desc.usage = Usage;
-		if (!Check(CoreInterface.CreateCommittedBuffer(*NriDevice,
-				nri::MemoryLocation::DEVICE_UPLOAD, 0.5f, Desc, Buffer),
-				"Failed to create a material preview buffer"))
+		if (!Check(CoreInterface.CreateCommittedBuffer(*NriDevice, nri::MemoryLocation::DEVICE_UPLOAD, 0.5f, Desc, Buffer), "Failed to create a material preview buffer"))
 		{
 			return false;
 		}
@@ -1143,8 +1214,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		View.type = ViewType;
 		View.offset = 0;
 		View.size = Size;
-		if (!Check(CoreInterface.CreateBufferView(View, Descriptor),
-				"Failed to create a material preview buffer view"))
+		if (!Check(CoreInterface.CreateBufferView(View, Descriptor), "Failed to create a material preview buffer view"))
 		{
 			CoreInterface.DestroyBuffer(Buffer);
 			Buffer = nullptr;
@@ -1153,14 +1223,17 @@ struct TiramisuEditorRenderBridge::FImpl
 		return true;
 	}
 
-	[[nodiscard]] bool WritePreviewBuffer(nri::Buffer* Buffer,
-		const u64 Offset, const void* Data, const u64 Size)
+	[[nodiscard]] bool WritePreviewBuffer(nri::Buffer* Buffer, const u64 Offset, const void* Data, const u64 Size)
 	{
 		if (!Buffer || !Data || Size == 0)
+		{
 			return false;
+		}
 		void* Destination = CoreInterface.MapBuffer(*Buffer, Offset, Size);
 		if (!Destination)
+		{
 			return false;
+		}
 		std::memcpy(Destination, Data, static_cast<size_t>(Size));
 		CoreInterface.UnmapBuffer(*Buffer);
 		Statistics.RecordUpload(Size);
@@ -1176,10 +1249,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		Desc.width = 1;
 		Desc.height = 1;
 		Desc.layerNum = 6;
-		if (!Check(CoreInterface.CreateCommittedTexture(*NriDevice,
-				nri::MemoryLocation::DEVICE, 1.0f, Desc,
-				PreviewWhiteCubeTexture),
-				"Failed to create the material preview fallback cube"))
+		if (!Check(CoreInterface.CreateCommittedTexture(*NriDevice, nri::MemoryLocation::DEVICE, 1.0f, Desc, PreviewWhiteCubeTexture), "Failed to create the material preview fallback cube"))
 		{
 			return false;
 		}
@@ -1190,9 +1260,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		View.format = Desc.format;
 		View.mipNum = 1;
 		View.layerNum = 6;
-		if (!Check(CoreInterface.CreateTextureView(View,
-				PreviewWhiteCubeDescriptor),
-				"Failed to create the material preview fallback cube view"))
+		if (!Check(CoreInterface.CreateTextureView(View, PreviewWhiteCubeDescriptor), "Failed to create the material preview fallback cube view"))
 		{
 			return false;
 		}
@@ -1209,38 +1277,40 @@ struct TiramisuEditorRenderBridge::FImpl
 		nri::TextureUploadDesc Upload = {};
 		Upload.subresources = Subresources.data();
 		Upload.texture = PreviewWhiteCubeTexture;
-		Upload.after = {nri::AccessBits::SHADER_RESOURCE,
-			nri::Layout::SHADER_RESOURCE};
-		return Check(HelperInterface.UploadData(*GraphicsQueue,
-			&Upload, 1, nullptr, 0),
-			"Failed to upload the material preview fallback cube");
+		Upload.after = {nri::AccessBits::SHADER_RESOURCE, nri::Layout::SHADER_RESOURCE};
+		return Check(HelperInterface.UploadData(*GraphicsQueue, &Upload, 1, nullptr, 0), "Failed to upload the material preview fallback cube");
 	}
 
 	[[nodiscard]] xr_optional<xr_string> ResolveMaterialPreviewTextureFile(
-		const xr_string_view AssetPath) const
+		const xr_string_view AssetPath
+	) const
 	{
 		const xr_string Normalized =
 			Tiramisu::Editor::NormalizeMaterialPreviewTexturePath(AssetPath);
 		if (Normalized.empty())
+		{
 			return std::nullopt;
+		}
 		xr_string VirtualName = Normalized;
 		std::ranges::replace(VirtualName, '/', '\\');
 		string_path FileName = {};
 		if (!FS.exist(FileName, _game_textures_, VirtualName.c_str(), ".dds"))
+		{
 			return std::nullopt;
+		}
 		VirtualName += ".dds";
 		return VirtualName;
 	}
 
 	[[nodiscard]] u32 ResolveMaterialPreviewTexture(
-		const xr_string_view AssetPath, const bool ExpectCube,
-		xr_string& Warning)
+		const xr_string_view AssetPath, const bool ExpectCube, xr_string& Warning
+	)
 	{
 		using namespace Tiramisu::Editor;
 		const xr_string Normalized =
 			NormalizeMaterialPreviewTexturePath(AssetPath);
 		const xr_string CacheKey = xr_string(ExpectCube ? "cube:" : "2d:") +
-			Normalized;
+								   Normalized;
 		if (const auto It = MaterialPreviewTextures.find(CacheKey);
 			It != MaterialPreviewTextures.end())
 		{
@@ -1248,16 +1318,18 @@ struct TiramisuEditorRenderBridge::FImpl
 		}
 
 		const u32 Fallback = ExpectCube
-			? PreviewWhiteCubeDescriptorIndex
-			: PreviewWhiteTextureDescriptorIndex;
+								 ? PreviewWhiteCubeDescriptorIndex
+								 : PreviewWhiteTextureDescriptorIndex;
 		const xr_optional<xr_string> FileName =
 			ResolveMaterialPreviewTextureFile(AssetPath);
 		if (!FileName)
 		{
 			// The built-in white reference intentionally has no disk asset.
 			if (Normalized != "default/default_white")
+			{
 				Warning = "Material preview texture was not found: " +
-					xr_string(AssetPath);
+						  xr_string(AssetPath);
+			}
 			return Fallback;
 		}
 
@@ -1276,13 +1348,15 @@ struct TiramisuEditorRenderBridge::FImpl
 			return Fallback;
 		}
 		if (Image.GetFormat() == RedImageTool::RedTexturePixelFormat::R8G8B8)
+		{
 			Image.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
+		}
 		if (ExpectCube != Image.IsCubeMap() ||
 			(!ExpectCube && Image.GetDepth() != 1) ||
 			(ExpectCube && Image.GetDepth() != 6))
 		{
 			Warning = "Material preview texture has the wrong dimension: " +
-				xr_string(AssetPath);
+					  xr_string(AssetPath);
 			return Fallback;
 		}
 		if (NextMaterialPreviewTextureDescriptor >= PreviewResourceDescriptorCount)
@@ -1292,12 +1366,13 @@ struct TiramisuEditorRenderBridge::FImpl
 		}
 
 		const nri::Format Format = MaterialPreviewTextureFormat(
-			Image.GetFormat(), true);
+			Image.GetFormat(), true
+		);
 		if (Format == nri::Format::UNKNOWN || Image.GetWidth() == 0 ||
 			Image.GetHeight() == 0 || Image.GetMips() == 0)
 		{
 			Warning = "Material preview texture format is unsupported: " +
-				xr_string(AssetPath);
+					  xr_string(AssetPath);
 			return Fallback;
 		}
 
@@ -1312,19 +1387,17 @@ struct TiramisuEditorRenderBridge::FImpl
 		Desc.height = static_cast<nri::Dim_t>(Image.GetHeight());
 		Desc.mipNum = static_cast<nri::Dim_t>(Image.GetMips());
 		Desc.layerNum = static_cast<nri::Dim_t>(Image.GetDepth());
-		if (CoreInterface.CreateCommittedTexture(*NriDevice,
-				nri::MemoryLocation::DEVICE, 1.0f, Desc, Resource.Texture) !=
+		if (CoreInterface.CreateCommittedTexture(*NriDevice, nri::MemoryLocation::DEVICE, 1.0f, Desc, Resource.Texture) !=
 			nri::Result::SUCCESS)
 		{
 			Warning = "NRI could not create material preview texture: " +
-				xr_string(AssetPath);
+					  xr_string(AssetPath);
 			return Fallback;
 		}
 
 		nri::TextureViewDesc View = {};
 		View.texture = Resource.Texture;
-		View.type = ExpectCube ? nri::TextureView::TEXTURE_CUBE :
-			nri::TextureView::TEXTURE;
+		View.type = ExpectCube ? nri::TextureView::TEXTURE_CUBE : nri::TextureView::TEXTURE;
 		View.format = Format;
 		View.mipNum = Desc.mipNum;
 		View.layerNum = Desc.layerNum;
@@ -1333,7 +1406,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		{
 			CoreInterface.DestroyTexture(Resource.Texture);
 			Warning = "NRI could not create material preview texture view: " +
-				xr_string(AssetPath);
+					  xr_string(AssetPath);
 			return Fallback;
 		}
 
@@ -1351,14 +1424,18 @@ struct TiramisuEditorRenderBridge::FImpl
 				nri::TextureSubresourceUploadDesc& Subresource =
 					Subresources.emplace_back();
 				Subresource.slices = RedImageTool::RedTextureUtils::GetImage(
-					Pixels, Image.GetWidth(), Image.GetHeight(), Image.GetMips(),
-					Layer, Mip, Image.GetFormat());
+					Pixels, Image.GetWidth(), Image.GetHeight(), Image.GetMips(), Layer, Mip, Image.GetFormat()
+				);
 				Subresource.rowPitch = static_cast<u32>(
 					RedImageTool::RedTextureUtils::GetSizeWidth(
-						Width, Image.GetFormat()));
+						Width, Image.GetFormat()
+					)
+				);
 				Subresource.slicePitch = static_cast<u32>(
 					RedImageTool::RedTextureUtils::GetSizeDepth(
-						Width, Height, Image.GetFormat()));
+						Width, Height, Image.GetFormat()
+					)
+				);
 				Subresource.sliceNum = 1;
 				Resource.ByteSize += Subresource.slicePitch;
 			}
@@ -1366,27 +1443,29 @@ struct TiramisuEditorRenderBridge::FImpl
 		nri::TextureUploadDesc Upload = {};
 		Upload.subresources = Subresources.data();
 		Upload.texture = Resource.Texture;
-		Upload.after = {nri::AccessBits::SHADER_RESOURCE,
-			nri::Layout::SHADER_RESOURCE};
+		Upload.after = {nri::AccessBits::SHADER_RESOURCE, nri::Layout::SHADER_RESOURCE};
 		if (HelperInterface.UploadData(*GraphicsQueue, &Upload, 1, nullptr, 0) !=
 			nri::Result::SUCCESS)
 		{
 			CoreInterface.DestroyDescriptor(Resource.Descriptor);
 			CoreInterface.DestroyTexture(Resource.Texture);
 			Warning = "NRI could not upload material preview texture: " +
-				xr_string(AssetPath);
+					  xr_string(AssetPath);
 			return Fallback;
 		}
 
 		const nri::Descriptor* Descriptors[] = {Resource.Descriptor};
-		const nri::UpdateDescriptorRangeDesc Update = {PreviewResourcesSet, 0,
-			Resource.DescriptorIndex, Descriptors, 1};
+		const nri::UpdateDescriptorRangeDesc Update = {PreviewResourcesSet, 0, Resource.DescriptorIndex, Descriptors, 1};
 		CoreInterface.UpdateDescriptorRanges(&Update, 1);
 		++NextMaterialPreviewTextureDescriptor;
 		const u32 Result = Resource.DescriptorIndex;
 		Msg("* Material preview texture loaded: %s (%s, %zux%zu, mips=%zu, descriptor=%u)",
-			Normalized.c_str(), ExpectCube ? "TextureCube" : "Texture2D",
-			Image.GetWidth(), Image.GetHeight(), Image.GetMips(), Result);
+			Normalized.c_str(),
+			ExpectCube ? "TextureCube" : "Texture2D",
+			Image.GetWidth(),
+			Image.GetHeight(),
+			Image.GetMips(),
+			Result);
 		MaterialPreviewTextures.emplace(CacheKey, std::move(Resource));
 		return Result;
 	}
@@ -1398,50 +1477,37 @@ struct TiramisuEditorRenderBridge::FImpl
 		Pool.mutableMaxNum = PreviewResourceDescriptorCount;
 		Pool.samplerMaxNum = 4;
 		Pool.constantBufferMaxNum = 1 + MaxSceneViewports * QueuedFrameCount;
-		if (!Check(CoreInterface.CreateDescriptorPool(
-				*NriDevice, Pool, PreviewDescriptorPool),
-				"Failed to create the material preview descriptor pool"))
+		if (!Check(CoreInterface.CreateDescriptorPool(*NriDevice, Pool, PreviewDescriptorPool), "Failed to create the material preview descriptor pool"))
 		{
 			return false;
 		}
 
 		const nri::DescriptorRangeDesc Ranges[] = {
-			{0, PreviewResourceDescriptorCount, nri::DescriptorType::MUTABLE,
-				nri::StageBits::VERTEX_SHADER | nri::StageBits::FRAGMENT_SHADER,
-				nri::DescriptorRangeBits::ARRAY |
-					nri::DescriptorRangeBits::PARTIALLY_BOUND},
-			{1, 4, nri::DescriptorType::SAMPLER,
-				nri::StageBits::VERTEX_SHADER | nri::StageBits::FRAGMENT_SHADER,
-				nri::DescriptorRangeBits::ARRAY |
-					nri::DescriptorRangeBits::PARTIALLY_BOUND}};
-		const nri::DescriptorRangeDesc Constants = {0, 1,
-			nri::DescriptorType::CONSTANT_BUFFER, nri::StageBits::ALL};
+			{0, PreviewResourceDescriptorCount, nri::DescriptorType::MUTABLE, nri::StageBits::VERTEX_SHADER | nri::StageBits::FRAGMENT_SHADER, nri::DescriptorRangeBits::ARRAY | nri::DescriptorRangeBits::PARTIALLY_BOUND},
+			{1, 4, nri::DescriptorType::SAMPLER, nri::StageBits::VERTEX_SHADER | nri::StageBits::FRAGMENT_SHADER, nri::DescriptorRangeBits::ARRAY | nri::DescriptorRangeBits::PARTIALLY_BOUND}
+		};
+		const nri::DescriptorRangeDesc Constants = {0, 1, nri::DescriptorType::CONSTANT_BUFFER, nri::StageBits::ALL};
 		const nri::DescriptorSetDesc Sets[] = {
-			{0, &Ranges[0], 1}, {1, &Ranges[1], 1}, {2, &Constants, 1}};
+			{0, &Ranges[0], 1}, {1, &Ranges[1], 1}, {2, &Constants, 1}
+		};
 		nri::PipelineLayoutDesc Layout = {};
 		Layout.descriptorSets = Sets;
 		Layout.descriptorSetNum = static_cast<u32>(std::size(Sets));
 		Layout.shaderStages = nri::StageBits::VERTEX_SHADER |
-			nri::StageBits::FRAGMENT_SHADER;
+							  nri::StageBits::FRAGMENT_SHADER;
 		Layout.flags = nri::PipelineLayoutBits::RESOURCE_HEAP_DIRECTLY_INDEXED |
-			nri::PipelineLayoutBits::SAMPLER_HEAP_DIRECTLY_INDEXED;
+					   nri::PipelineLayoutBits::SAMPLER_HEAP_DIRECTLY_INDEXED;
 		if (Api == ETiramisuEditorGraphicsApi::D3D12)
+		{
 			Layout.flags |= nri::PipelineLayoutBits::ENABLE_DRAW_PARAMETERS_EMULATION;
-		if (!Check(CoreInterface.CreatePipelineLayout(
-				*NriDevice, Layout, PreviewPipelineLayout),
-				"Failed to create the material preview pipeline layout"))
+		}
+		if (!Check(CoreInterface.CreatePipelineLayout(*NriDevice, Layout, PreviewPipelineLayout), "Failed to create the material preview pipeline layout"))
 		{
 			return false;
 		}
-		if (!Check(CoreInterface.AllocateDescriptorSets(*PreviewDescriptorPool,
-				*PreviewPipelineLayout, 0, &PreviewResourcesSet, 1, 0),
-				"Failed to allocate the material preview resource heap") ||
-			!Check(CoreInterface.AllocateDescriptorSets(*PreviewDescriptorPool,
-				*PreviewPipelineLayout, 1, &PreviewSamplersSet, 1, 0),
-				"Failed to allocate the material preview sampler heap") ||
-			!Check(CoreInterface.AllocateDescriptorSets(*PreviewDescriptorPool,
-				*PreviewPipelineLayout, 2, &PreviewConstantsSet, 1, 0),
-				"Failed to allocate the material preview constant set"))
+		if (!Check(CoreInterface.AllocateDescriptorSets(*PreviewDescriptorPool, *PreviewPipelineLayout, 0, &PreviewResourcesSet, 1, 0), "Failed to allocate the material preview resource heap") ||
+			!Check(CoreInterface.AllocateDescriptorSets(*PreviewDescriptorPool, *PreviewPipelineLayout, 1, &PreviewSamplersSet, 1, 0), "Failed to allocate the material preview sampler heap") ||
+			!Check(CoreInterface.AllocateDescriptorSets(*PreviewDescriptorPool, *PreviewPipelineLayout, 2, &PreviewConstantsSet, 1, 0), "Failed to allocate the material preview constant set"))
 		{
 			return false;
 		}
@@ -1451,21 +1517,25 @@ struct TiramisuEditorRenderBridge::FImpl
 					MaterialDrawGpuDataSize,
 				nri::BufferUsageBits::SHADER_RESOURCE,
 				nri::BufferView::BYTE_ADDRESS_BUFFER,
-				PreviewDrawDataBuffer, PreviewDrawDataDescriptor) ||
+				PreviewDrawDataBuffer,
+				PreviewDrawDataDescriptor
+			) ||
 			!CreatePreviewBuffer(
 				u64(MaxEditorMaterialInstances) * QueuedFrameCount *
 					MaterialInstanceGpuDataSize,
 				nri::BufferUsageBits::SHADER_RESOURCE,
 				nri::BufferView::BYTE_ADDRESS_BUFFER,
 				PreviewMaterialInstanceBuffer,
-				PreviewMaterialInstanceDescriptor) ||
+				PreviewMaterialInstanceDescriptor
+			) ||
 			!CreatePreviewBuffer(
 				u64(MaxEditorMaterialInstances) * QueuedFrameCount *
 					PreviewParameterStride,
 				nri::BufferUsageBits::SHADER_RESOURCE,
 				nri::BufferView::BYTE_ADDRESS_BUFFER,
 				PreviewMaterialParameterBuffer,
-				PreviewMaterialParameterDescriptor) ||
+				PreviewMaterialParameterDescriptor
+			) ||
 			!CreatePreviewBuffer(
 				u64(MaxSceneViewports) * QueuedFrameCount *
 					MaxSceneLightsPerViewport *
@@ -1473,22 +1543,17 @@ struct TiramisuEditorRenderBridge::FImpl
 				nri::BufferUsageBits::SHADER_RESOURCE,
 				nri::BufferView::BYTE_ADDRESS_BUFFER,
 				PreviewLightDataBuffer,
-				PreviewLightDataDescriptor) ||
-			!CreatePreviewBuffer(256, nri::BufferUsageBits::CONSTANT_BUFFER,
-				nri::BufferView::CONSTANT_BUFFER,
-				PreviewGlobalConstantsBuffer,
-				PreviewGlobalConstantsDescriptor))
+				PreviewLightDataDescriptor
+			) ||
+			!CreatePreviewBuffer(256, nri::BufferUsageBits::CONSTANT_BUFFER, nri::BufferView::CONSTANT_BUFFER, PreviewGlobalConstantsBuffer, PreviewGlobalConstantsDescriptor))
 		{
 			return false;
 		}
 
 		nri::SamplerDesc Sampler = {};
-		Sampler.filters = {nri::Filter::LINEAR, nri::Filter::LINEAR,
-			nri::Filter::LINEAR};
+		Sampler.filters = {nri::Filter::LINEAR, nri::Filter::LINEAR, nri::Filter::LINEAR};
 		Sampler.mipMax = 16.0f;
-		if (!Check(CoreInterface.CreateSampler(*NriDevice, Sampler,
-				PreviewDefaultSampler),
-				"Failed to create the material preview sampler"))
+		if (!Check(CoreInterface.CreateSampler(*NriDevice, Sampler, PreviewDefaultSampler), "Failed to create the material preview sampler"))
 		{
 			return false;
 		}
@@ -1499,10 +1564,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		White.format = nri::Format::RGBA8_UNORM;
 		White.width = 1;
 		White.height = 1;
-		if (!Check(CoreInterface.CreateCommittedTexture(*NriDevice,
-				nri::MemoryLocation::DEVICE, 1.0f, White,
-				PreviewWhiteTexture),
-				"Failed to create the material preview fallback texture"))
+		if (!Check(CoreInterface.CreateCommittedTexture(*NriDevice, nri::MemoryLocation::DEVICE, 1.0f, White, PreviewWhiteTexture), "Failed to create the material preview fallback texture"))
 		{
 			return false;
 		}
@@ -1510,9 +1572,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		WhiteView.texture = PreviewWhiteTexture;
 		WhiteView.type = nri::TextureView::TEXTURE;
 		WhiteView.format = White.format;
-		if (!Check(CoreInterface.CreateTextureView(
-				WhiteView, PreviewWhiteTextureDescriptor),
-				"Failed to create the material preview fallback texture view"))
+		if (!Check(CoreInterface.CreateTextureView(WhiteView, PreviewWhiteTextureDescriptor), "Failed to create the material preview fallback texture view"))
 		{
 			return false;
 		}
@@ -1525,40 +1585,38 @@ struct TiramisuEditorRenderBridge::FImpl
 		nri::TextureUploadDesc WhiteUpload = {};
 		WhiteUpload.subresources = &WhiteSubresource;
 		WhiteUpload.texture = PreviewWhiteTexture;
-		WhiteUpload.after = {nri::AccessBits::SHADER_RESOURCE,
-			nri::Layout::SHADER_RESOURCE};
-		if (!Check(HelperInterface.UploadData(*GraphicsQueue,
-				&WhiteUpload, 1, nullptr, 0),
-				"Failed to upload the material preview fallback texture"))
+		WhiteUpload.after = {nri::AccessBits::SHADER_RESOURCE, nri::Layout::SHADER_RESOURCE};
+		if (!Check(HelperInterface.UploadData(*GraphicsQueue, &WhiteUpload, 1, nullptr, 0), "Failed to upload the material preview fallback texture"))
 		{
 			return false;
 		}
 		if (!CreateMaterialPreviewFallbackCube())
+		{
 			return false;
+		}
 
 		const nri::Descriptor* BufferDescriptors[] = {
-			PreviewDrawDataDescriptor, PreviewMaterialInstanceDescriptor,
-			PreviewMaterialParameterDescriptor};
+			PreviewDrawDataDescriptor, PreviewMaterialInstanceDescriptor, PreviewMaterialParameterDescriptor
+		};
 		const nri::Descriptor* LightBufferDescriptors[] = {
-			PreviewLightDataDescriptor};
+			PreviewLightDataDescriptor
+		};
 		const nri::Descriptor* TextureDescriptors[] = {
-			PreviewWhiteTextureDescriptor, PreviewWhiteCubeDescriptor};
+			PreviewWhiteTextureDescriptor, PreviewWhiteCubeDescriptor
+		};
 		const nri::Descriptor* Samplers[] = {PreviewDefaultSampler};
 		const nri::Descriptor* ConstantsDescriptors[] = {
-			PreviewGlobalConstantsDescriptor};
+			PreviewGlobalConstantsDescriptor
+		};
 		const nri::UpdateDescriptorRangeDesc Updates[] = {
 			// NRI mutable ranges require one descriptor type per update call.
-			{PreviewResourcesSet, 0, 0, BufferDescriptors,
-				static_cast<u32>(std::size(BufferDescriptors))},
-			{PreviewResourcesSet, 0, PreviewWhiteTextureDescriptorIndex,
-				TextureDescriptors,
-				static_cast<u32>(std::size(TextureDescriptors))},
-			{PreviewResourcesSet, 0, PreviewLightDataDescriptorIndex,
-				LightBufferDescriptors, 1},
+			{PreviewResourcesSet, 0, 0, BufferDescriptors, static_cast<u32>(std::size(BufferDescriptors))},
+			{PreviewResourcesSet, 0, PreviewWhiteTextureDescriptorIndex, TextureDescriptors, static_cast<u32>(std::size(TextureDescriptors))},
+			{PreviewResourcesSet, 0, PreviewLightDataDescriptorIndex, LightBufferDescriptors, 1},
 			{PreviewSamplersSet, 0, 0, Samplers, 1},
-			{PreviewConstantsSet, 0, 0, ConstantsDescriptors, 1}};
-		CoreInterface.UpdateDescriptorRanges(Updates,
-			static_cast<u32>(std::size(Updates)));
+			{PreviewConstantsSet, 0, 0, ConstantsDescriptors, 1}
+		};
+		CoreInterface.UpdateDescriptorRanges(Updates, static_cast<u32>(std::size(Updates)));
 
 		Fmatrix View;
 		Fmatrix Projection;
@@ -1572,9 +1630,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		FEditorMaterialGlobalConstants Global;
 		Global.ViewProjectionWorldMatrix =
 			MakeConstantBufferMatrix(ViewProjection);
-		Global.CameraPositionAndTime = {Position.x, Position.y, Position.z,
-			DeterministicTest.Enabled
-				? DeterministicTest.FixedShaderTimeSeconds : 0.0f};
+		Global.CameraPositionAndTime = {Position.x, Position.y, Position.z, DeterministicTest.Enabled ? DeterministicTest.FixedShaderTimeSeconds : 0.0f};
 		Global.DrawDataBufferIndex = PreviewDrawDataDescriptorIndex;
 		Global.MaterialInstanceBufferIndex =
 			PreviewMaterialInstanceDescriptorIndex;
@@ -1584,8 +1640,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		Global.LightDataBufferIndex = PreviewLightDataDescriptorIndex;
 		NextMaterialPreviewTextureDescriptor =
 			PreviewFirstAssetTextureDescriptorIndex;
-		return WritePreviewBuffer(PreviewGlobalConstantsBuffer, 0,
-			&Global, sizeof(Global));
+		return WritePreviewBuffer(PreviewGlobalConstantsBuffer, 0, &Global, sizeof(Global));
 	}
 
 	[[nodiscard]] bool EnsureSceneViewportMaterialContext(FViewport& Viewport)
@@ -1599,20 +1654,19 @@ struct TiramisuEditorRenderBridge::FImpl
 			}
 			const u32 ViewportSlot = SceneViewportCount++;
 			Viewport.SceneDrawBase = MaxMaterialPreviews +
-				ViewportSlot * MaxSceneDrawsPerViewport;
+									 ViewportSlot * MaxSceneDrawsPerViewport;
 			Viewport.SceneLightBase =
 				ViewportSlot * MaxSceneLightsPerViewport;
 		}
 		if (Viewport.SceneConstantsBuffer)
+		{
 			return true;
+		}
 
 		nri::BufferDesc Buffer = {};
 		Buffer.size = 256ull * QueuedFrameCount;
 		Buffer.usage = nri::BufferUsageBits::CONSTANT_BUFFER;
-		if (!Check(CoreInterface.CreateCommittedBuffer(*NriDevice,
-				nri::MemoryLocation::DEVICE_UPLOAD, 0.5f, Buffer,
-				Viewport.SceneConstantsBuffer),
-				"Failed to create editor scene material constants"))
+		if (!Check(CoreInterface.CreateCommittedBuffer(*NriDevice, nri::MemoryLocation::DEVICE_UPLOAD, 0.5f, Buffer, Viewport.SceneConstantsBuffer), "Failed to create editor scene material constants"))
 		{
 			return false;
 		}
@@ -1623,20 +1677,17 @@ struct TiramisuEditorRenderBridge::FImpl
 			View.type = nri::BufferView::CONSTANT_BUFFER;
 			View.offset = 256ull * Frame;
 			View.size = 256;
-			if (!Check(CoreInterface.CreateBufferView(View,
-					Viewport.SceneConstantsDescriptors[Frame]),
-					"Failed to create editor scene material constants view") ||
-				!Check(CoreInterface.AllocateDescriptorSets(*PreviewDescriptorPool,
-					*PreviewPipelineLayout, 2,
-					&Viewport.SceneConstantsSets[Frame], 1, 0),
-					"Failed to allocate editor scene material constants set"))
+			if (!Check(CoreInterface.CreateBufferView(View, Viewport.SceneConstantsDescriptors[Frame]), "Failed to create editor scene material constants view") ||
+				!Check(CoreInterface.AllocateDescriptorSets(*PreviewDescriptorPool, *PreviewPipelineLayout, 2, &Viewport.SceneConstantsSets[Frame], 1, 0), "Failed to allocate editor scene material constants set"))
 			{
 				return false;
 			}
 			const nri::Descriptor* Constants[] = {
-				Viewport.SceneConstantsDescriptors[Frame]};
+				Viewport.SceneConstantsDescriptors[Frame]
+			};
 			const nri::UpdateDescriptorRangeDesc Update = {
-				Viewport.SceneConstantsSets[Frame], 0, 0, Constants, 1};
+				Viewport.SceneConstantsSets[Frame], 0, 0, Constants, 1
+			};
 			CoreInterface.UpdateDescriptorRanges(&Update, 1);
 		}
 		return true;
@@ -1647,11 +1698,15 @@ struct TiramisuEditorRenderBridge::FImpl
 		for (nri::Descriptor*& Descriptor : Viewport.SceneConstantsDescriptors)
 		{
 			if (Descriptor)
+			{
 				CoreInterface.DestroyDescriptor(Descriptor);
+			}
 			Descriptor = nullptr;
 		}
 		if (Viewport.SceneConstantsBuffer)
+		{
 			CoreInterface.DestroyBuffer(Viewport.SceneConstantsBuffer);
+		}
 		Viewport.SceneConstantsBuffer = nullptr;
 		Viewport.SceneConstantsSets = {};
 	}
@@ -1659,15 +1714,24 @@ struct TiramisuEditorRenderBridge::FImpl
 	void DestroyMaterialPreviewContext()
 	{
 		for (FMaterialPreviewCompileJob& Job : MaterialPreviewCompileJobs)
-			if (Job.Future.valid()) Job.Future.wait();
+		{
+			if (Job.Future.valid())
+			{
+				Job.Future.wait();
+			}
+		}
 		MaterialPreviewCompileJobs.clear();
 		SceneMaterialCompileQueue.CancelPendingAndWait();
 		if (SceneMaterialResolverReload.valid())
+		{
 			SceneMaterialResolverReload.wait();
+		}
 		for (FMaterialPreview& Preview : MaterialPreviews)
 		{
 			if (Preview.Pipeline)
+			{
 				CoreInterface.DestroyPipeline(Preview.Pipeline);
+			}
 			Preview.Pipeline = nullptr;
 		}
 		for (auto& [Slot, Material] : SceneMaterials)
@@ -1682,42 +1746,104 @@ struct TiramisuEditorRenderBridge::FImpl
 		{
 			(void)Key;
 			if (Entry.Pipeline)
+			{
 				CoreInterface.DestroyPipeline(Entry.Pipeline);
+			}
 		}
 		ScenePipelineCache.clear();
 		SceneMaterialResolver.reset();
 		SceneMaterialDependencies.clear();
 		SceneMaterialDependencyWatcher.Reset({});
 		for (FDeferredPipeline& Deferred : DeferredPipelines)
-			if (Deferred.Pipeline) CoreInterface.DestroyPipeline(Deferred.Pipeline);
+		{
+			if (Deferred.Pipeline)
+			{
+				CoreInterface.DestroyPipeline(Deferred.Pipeline);
+			}
+		}
 		DeferredPipelines.clear();
 		for (auto& [Key, Resource] : MaterialPreviewTextures)
 		{
 			(void)Key;
 			if (Resource.Descriptor)
+			{
 				CoreInterface.DestroyDescriptor(Resource.Descriptor);
+			}
 			if (Resource.Texture)
+			{
 				CoreInterface.DestroyTexture(Resource.Texture);
+			}
 		}
 		MaterialPreviewTextures.clear();
 
-		if (PreviewDefaultSampler) CoreInterface.DestroyDescriptor(PreviewDefaultSampler);
-		if (PreviewWhiteCubeDescriptor) CoreInterface.DestroyDescriptor(PreviewWhiteCubeDescriptor);
-		if (PreviewWhiteTextureDescriptor) CoreInterface.DestroyDescriptor(PreviewWhiteTextureDescriptor);
-		if (PreviewGlobalConstantsDescriptor) CoreInterface.DestroyDescriptor(PreviewGlobalConstantsDescriptor);
-		if (PreviewLightDataDescriptor) CoreInterface.DestroyDescriptor(PreviewLightDataDescriptor);
-		if (PreviewMaterialParameterDescriptor) CoreInterface.DestroyDescriptor(PreviewMaterialParameterDescriptor);
-		if (PreviewMaterialInstanceDescriptor) CoreInterface.DestroyDescriptor(PreviewMaterialInstanceDescriptor);
-		if (PreviewDrawDataDescriptor) CoreInterface.DestroyDescriptor(PreviewDrawDataDescriptor);
-		if (PreviewWhiteCubeTexture) CoreInterface.DestroyTexture(PreviewWhiteCubeTexture);
-		if (PreviewWhiteTexture) CoreInterface.DestroyTexture(PreviewWhiteTexture);
-		if (PreviewGlobalConstantsBuffer) CoreInterface.DestroyBuffer(PreviewGlobalConstantsBuffer);
-		if (PreviewLightDataBuffer) CoreInterface.DestroyBuffer(PreviewLightDataBuffer);
-		if (PreviewMaterialParameterBuffer) CoreInterface.DestroyBuffer(PreviewMaterialParameterBuffer);
-		if (PreviewMaterialInstanceBuffer) CoreInterface.DestroyBuffer(PreviewMaterialInstanceBuffer);
-		if (PreviewDrawDataBuffer) CoreInterface.DestroyBuffer(PreviewDrawDataBuffer);
-		if (PreviewDescriptorPool) CoreInterface.DestroyDescriptorPool(PreviewDescriptorPool);
-		if (PreviewPipelineLayout) CoreInterface.DestroyPipelineLayout(PreviewPipelineLayout);
+		if (PreviewDefaultSampler)
+		{
+			CoreInterface.DestroyDescriptor(PreviewDefaultSampler);
+		}
+		if (PreviewWhiteCubeDescriptor)
+		{
+			CoreInterface.DestroyDescriptor(PreviewWhiteCubeDescriptor);
+		}
+		if (PreviewWhiteTextureDescriptor)
+		{
+			CoreInterface.DestroyDescriptor(PreviewWhiteTextureDescriptor);
+		}
+		if (PreviewGlobalConstantsDescriptor)
+		{
+			CoreInterface.DestroyDescriptor(PreviewGlobalConstantsDescriptor);
+		}
+		if (PreviewLightDataDescriptor)
+		{
+			CoreInterface.DestroyDescriptor(PreviewLightDataDescriptor);
+		}
+		if (PreviewMaterialParameterDescriptor)
+		{
+			CoreInterface.DestroyDescriptor(PreviewMaterialParameterDescriptor);
+		}
+		if (PreviewMaterialInstanceDescriptor)
+		{
+			CoreInterface.DestroyDescriptor(PreviewMaterialInstanceDescriptor);
+		}
+		if (PreviewDrawDataDescriptor)
+		{
+			CoreInterface.DestroyDescriptor(PreviewDrawDataDescriptor);
+		}
+		if (PreviewWhiteCubeTexture)
+		{
+			CoreInterface.DestroyTexture(PreviewWhiteCubeTexture);
+		}
+		if (PreviewWhiteTexture)
+		{
+			CoreInterface.DestroyTexture(PreviewWhiteTexture);
+		}
+		if (PreviewGlobalConstantsBuffer)
+		{
+			CoreInterface.DestroyBuffer(PreviewGlobalConstantsBuffer);
+		}
+		if (PreviewLightDataBuffer)
+		{
+			CoreInterface.DestroyBuffer(PreviewLightDataBuffer);
+		}
+		if (PreviewMaterialParameterBuffer)
+		{
+			CoreInterface.DestroyBuffer(PreviewMaterialParameterBuffer);
+		}
+		if (PreviewMaterialInstanceBuffer)
+		{
+			CoreInterface.DestroyBuffer(PreviewMaterialInstanceBuffer);
+		}
+		if (PreviewDrawDataBuffer)
+		{
+			CoreInterface.DestroyBuffer(PreviewDrawDataBuffer);
+		}
+		if (PreviewDescriptorPool)
+		{
+			CoreInterface.DestroyDescriptorPool(PreviewDescriptorPool);
+		}
+		if (PreviewPipelineLayout)
+		{
+			CoreInterface.DestroyPipelineLayout(PreviewPipelineLayout);
+		}
 
 		PreviewDefaultSampler = nullptr;
 		PreviewWhiteCubeDescriptor = nullptr;
@@ -1756,13 +1882,11 @@ struct TiramisuEditorRenderBridge::FImpl
 		nri::TextureDesc TextureDesc = {};
 		TextureDesc.type = nri::TextureType::TEXTURE_2D;
 		TextureDesc.usage = nri::TextureUsageBits::SHADER_RESOURCE |
-			nri::TextureUsageBits::COLOR_ATTACHMENT;
+							nri::TextureUsageBits::COLOR_ATTACHMENT;
 		TextureDesc.format = nri::Format::RGBA8_UNORM;
 		TextureDesc.width = static_cast<nri::Dim_t>(Viewport.DesiredWidth);
 		TextureDesc.height = static_cast<nri::Dim_t>(Viewport.DesiredHeight);
-		if (!Check(CoreInterface.CreateTexture(*NriDevice,
-				TextureDesc, Viewport.Texture),
-				"Failed to create an NRI editor viewport texture"))
+		if (!Check(CoreInterface.CreateTexture(*NriDevice, TextureDesc, Viewport.Texture), "Failed to create an NRI editor viewport texture"))
 		{
 			return false;
 		}
@@ -1780,9 +1904,7 @@ struct TiramisuEditorRenderBridge::FImpl
 			return false;
 		}
 		Viewport.Memory.resize(AllocationCount);
-		if (!Check(HelperInterface.AllocateAndBindMemory(*NriDevice,
-				ResourceGroup, Viewport.Memory.data()),
-				"Failed to allocate an NRI editor viewport texture"))
+		if (!Check(HelperInterface.AllocateAndBindMemory(*NriDevice, ResourceGroup, Viewport.Memory.data()), "Failed to allocate an NRI editor viewport texture"))
 		{
 			DestroyViewport(Viewport);
 			return false;
@@ -1794,12 +1916,8 @@ struct TiramisuEditorRenderBridge::FImpl
 		ShaderView.format = TextureDesc.format;
 		nri::TextureViewDesc AttachmentView = ShaderView;
 		AttachmentView.type = nri::TextureView::COLOR_ATTACHMENT;
-		if (!Check(CoreInterface.CreateTextureView(
-				ShaderView, Viewport.ShaderResource),
-				"Failed to create an NRI editor viewport shader resource") ||
-			!Check(CoreInterface.CreateTextureView(
-				AttachmentView, Viewport.ColorAttachment),
-				"Failed to create an NRI editor viewport attachment"))
+		if (!Check(CoreInterface.CreateTextureView(ShaderView, Viewport.ShaderResource), "Failed to create an NRI editor viewport shader resource") ||
+			!Check(CoreInterface.CreateTextureView(AttachmentView, Viewport.ColorAttachment), "Failed to create an NRI editor viewport attachment"))
 		{
 			DestroyViewport(Viewport);
 			return false;
@@ -1812,10 +1930,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		DepthDesc.width = static_cast<nri::Dim_t>(Viewport.DesiredWidth);
 		DepthDesc.height = static_cast<nri::Dim_t>(Viewport.DesiredHeight);
 		DepthDesc.optimizedClearValue.depthStencil = {1.0f, 0};
-		if (!Check(CoreInterface.CreateCommittedTexture(*NriDevice,
-				nri::MemoryLocation::DEVICE, 1.0f, DepthDesc,
-				Viewport.DepthTexture),
-				"Failed to create an NRI editor viewport depth texture"))
+		if (!Check(CoreInterface.CreateCommittedTexture(*NriDevice, nri::MemoryLocation::DEVICE, 1.0f, DepthDesc, Viewport.DepthTexture), "Failed to create an NRI editor viewport depth texture"))
 		{
 			DestroyViewport(Viewport);
 			return false;
@@ -1827,9 +1942,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		// ALL means every plane is writable. Supplying only DEPTH makes NRI
 		// request a read-only stencil plane, which is invalid for D32_SFLOAT.
 		DepthView.planes = nri::PlaneBits::ALL;
-		if (!Check(CoreInterface.CreateTextureView(
-				DepthView, Viewport.DepthAttachment),
-				"Failed to create an NRI editor viewport depth attachment"))
+		if (!Check(CoreInterface.CreateTextureView(DepthView, Viewport.DepthAttachment), "Failed to create an NRI editor viewport depth attachment"))
 		{
 			DestroyViewport(Viewport);
 			return false;
@@ -1854,8 +1967,8 @@ struct TiramisuEditorRenderBridge::FImpl
 		{
 			FMaterialShaderCompileRequest Request;
 			Request.Backend = Api == ETiramisuEditorGraphicsApi::D3D12
-				? EMaterialShaderBackend::D3D12
-				: EMaterialShaderBackend::Vulkan;
+								  ? EMaterialShaderBackend::D3D12
+								  : EMaterialShaderBackend::Vulkan;
 			Request.Source.assign(EditorViewportSceneShaderSource);
 			Request.SourceName = "editor-viewport-scene.hlsl";
 			Request.EntryPoint = EntryPoint;
@@ -1863,7 +1976,8 @@ struct TiramisuEditorRenderBridge::FImpl
 			string_path ShaderRoot = {};
 			FS.update_path(ShaderRoot, "$game_shaders$", "r5\\");
 			Request.IncludeDirectories = {
-				std::filesystem::path(ShaderRoot) / "common"};
+				std::filesystem::path(ShaderRoot) / "common"
+			};
 			return Compiler.Compile(Request);
 		};
 
@@ -1892,19 +2006,16 @@ struct TiramisuEditorRenderBridge::FImpl
 		Layout.rootConstants = &RootConstants;
 		Layout.rootConstantNum = 1;
 		Layout.shaderStages = nri::StageBits::VERTEX_SHADER |
-			nri::StageBits::FRAGMENT_SHADER;
-		if (!Check(CoreInterface.CreatePipelineLayout(
-				*NriDevice, Layout, ScenePipelineLayout),
-				"Failed to create the NRI editor scene pipeline layout"))
+							  nri::StageBits::FRAGMENT_SHADER;
+		if (!Check(CoreInterface.CreatePipelineLayout(*NriDevice, Layout, ScenePipelineLayout), "Failed to create the NRI editor scene pipeline layout"))
 		{
 			return false;
 		}
 
 		const nri::VertexAttributeDesc Attributes[] = {
-			{{"POSITION", 0}, {0}, offsetof(FEditorStaticMeshVertex, Position),
-				nri::Format::RGB32_SFLOAT, 0},
-			{{"NORMAL", 0}, {1}, offsetof(FEditorStaticMeshVertex, Normal),
-				nri::Format::RGB32_SFLOAT, 0}};
+			{{"POSITION", 0}, {0}, offsetof(FEditorStaticMeshVertex, Position), nri::Format::RGB32_SFLOAT, 0},
+			{{"NORMAL", 0}, {1}, offsetof(FEditorStaticMeshVertex, Normal), nri::Format::RGB32_SFLOAT, 0}
+		};
 		nri::VertexStreamDesc Stream = {};
 		Stream.bindingSlot = 0;
 		Stream.stride = sizeof(FEditorStaticMeshVertex);
@@ -1928,11 +2039,12 @@ struct TiramisuEditorRenderBridge::FImpl
 		OutputMerger.depthStencilFormat = nri::Format::D32_SFLOAT;
 		OutputMerger.depth = {nri::CompareOp::LESS, true, false};
 
-		const nri::ShaderDesc Shaders[] = {
-			{nri::StageBits::VERTEX_SHADER, Vertex.Bytecode.data(),
-				Vertex.Bytecode.size(), "VSMain"},
-			{nri::StageBits::FRAGMENT_SHADER, Pixel.Bytecode.data(),
-				Pixel.Bytecode.size(), "PSMain"}};
+		const nri::ShaderDesc Shaders[] = 
+		{
+			{nri::StageBits::VERTEX_SHADER, Vertex.Bytecode.data(), Vertex.Bytecode.size(), "VSMain"},
+			{nri::StageBits::FRAGMENT_SHADER, Pixel.Bytecode.data(), Pixel.Bytecode.size(), "PSMain"}
+		};
+
 		nri::GraphicsPipelineDesc Pipeline = {};
 		Pipeline.pipelineLayout = ScenePipelineLayout;
 		Pipeline.vertexInput = &VertexInput;
@@ -1941,9 +2053,8 @@ struct TiramisuEditorRenderBridge::FImpl
 		Pipeline.outputMerger = OutputMerger;
 		Pipeline.shaders = Shaders;
 		Pipeline.shaderNum = static_cast<u32>(std::size(Shaders));
-		if (!Check(CoreInterface.CreateGraphicsPipeline(
-				*NriDevice, Pipeline, ScenePipeline),
-				"Failed to create the NRI editor scene pipeline"))
+
+		if (!Check(CoreInterface.CreateGraphicsPipeline(*NriDevice, Pipeline, ScenePipeline), "Failed to create the NRI editor scene pipeline"))
 		{
 			CoreInterface.DestroyPipelineLayout(ScenePipelineLayout);
 			ScenePipelineLayout = nullptr;
@@ -1954,9 +2065,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		OutputMerger.depth = {nri::CompareOp::LESS_EQUAL, false, false};
 		Pipeline.rasterization = Rasterization;
 		Pipeline.outputMerger = OutputMerger;
-		if (!Check(CoreInterface.CreateGraphicsPipeline(
-				*NriDevice, Pipeline, SceneSelectionPipeline),
-				"Failed to create the NRI editor selection pipeline"))
+		if (!Check(CoreInterface.CreateGraphicsPipeline(*NriDevice, Pipeline, SceneSelectionPipeline), "Failed to create the NRI editor selection pipeline"))
 		{
 			CoreInterface.DestroyPipeline(ScenePipeline);
 			CoreInterface.DestroyPipelineLayout(ScenePipelineLayout);
@@ -1966,10 +2075,9 @@ struct TiramisuEditorRenderBridge::FImpl
 		}
 
 		const nri::VertexAttributeDesc DebugAttributes[] = {
-			{{"POSITION", 0}, {0}, offsetof(FEditorDebugVertex, Position),
-				nri::Format::RGB32_SFLOAT, 0},
-			{{"COLOR", 0}, {1}, offsetof(FEditorDebugVertex, Color),
-				nri::Format::RGBA32_SFLOAT, 0}};
+			{{"POSITION", 0}, {0}, offsetof(FEditorDebugVertex, Position), nri::Format::RGB32_SFLOAT, 0},
+			{{"COLOR", 0}, {1}, offsetof(FEditorDebugVertex, Color), nri::Format::RGBA32_SFLOAT, 0}
+		};
 		nri::VertexStreamDesc DebugStream = {};
 		DebugStream.bindingSlot = 0;
 		DebugStream.stride = sizeof(FEditorDebugVertex);
@@ -1980,15 +2088,12 @@ struct TiramisuEditorRenderBridge::FImpl
 		DebugVertexInput.streams = &DebugStream;
 		DebugVertexInput.streamNum = 1;
 		const nri::ShaderDesc DebugShaders[] = {
-			{nri::StageBits::VERTEX_SHADER, DebugVertex.Bytecode.data(),
-				DebugVertex.Bytecode.size(), "VSDebug"},
-			{nri::StageBits::FRAGMENT_SHADER, DebugPixel.Bytecode.data(),
-				DebugPixel.Bytecode.size(), "PSDebug"}};
+			{nri::StageBits::VERTEX_SHADER, DebugVertex.Bytecode.data(), DebugVertex.Bytecode.size(), "VSDebug"},
+			{nri::StageBits::FRAGMENT_SHADER, DebugPixel.Bytecode.data(), DebugPixel.Bytecode.size(), "PSDebug"}
+		};
 		Color.blendEnabled = true;
-		Color.colorBlend = {nri::BlendFactor::SRC_ALPHA,
-			nri::BlendFactor::ONE_MINUS_SRC_ALPHA, nri::BlendOp::ADD};
-		Color.alphaBlend = {nri::BlendFactor::ONE,
-			nri::BlendFactor::ONE_MINUS_SRC_ALPHA, nri::BlendOp::ADD};
+		Color.colorBlend = {nri::BlendFactor::SRC_ALPHA, nri::BlendFactor::ONE_MINUS_SRC_ALPHA, nri::BlendOp::ADD};
+		Color.alphaBlend = {nri::BlendFactor::ONE, nri::BlendFactor::ONE_MINUS_SRC_ALPHA, nri::BlendOp::ADD};
 		OutputMerger.depth = {nri::CompareOp::LESS_EQUAL, false, false};
 		Rasterization.fillMode = nri::FillMode::SOLID;
 		Pipeline.vertexInput = &DebugVertexInput;
@@ -1998,9 +2103,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		Pipeline.shaderNum = static_cast<u32>(std::size(DebugShaders));
 		InputAssembly.topology = nri::Topology::LINE_LIST;
 		Pipeline.inputAssembly = InputAssembly;
-		if (!Check(CoreInterface.CreateGraphicsPipeline(
-				*NriDevice, Pipeline, SceneDebugLinePipeline),
-				"Failed to create the NRI editor debug-line pipeline"))
+		if (!Check(CoreInterface.CreateGraphicsPipeline(*NriDevice, Pipeline, SceneDebugLinePipeline), "Failed to create the NRI editor debug-line pipeline"))
 		{
 			CoreInterface.DestroyPipeline(SceneSelectionPipeline);
 			CoreInterface.DestroyPipeline(ScenePipeline);
@@ -2012,9 +2115,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		}
 		InputAssembly.topology = nri::Topology::TRIANGLE_LIST;
 		Pipeline.inputAssembly = InputAssembly;
-		if (!Check(CoreInterface.CreateGraphicsPipeline(
-				*NriDevice, Pipeline, SceneDebugTrianglePipeline),
-				"Failed to create the NRI editor debug-triangle pipeline"))
+		if (!Check(CoreInterface.CreateGraphicsPipeline(*NriDevice, Pipeline, SceneDebugTrianglePipeline), "Failed to create the NRI editor debug-triangle pipeline"))
 		{
 			CoreInterface.DestroyPipeline(SceneDebugLinePipeline);
 			CoreInterface.DestroyPipeline(SceneSelectionPipeline);
@@ -2028,18 +2129,15 @@ struct TiramisuEditorRenderBridge::FImpl
 		}
 
 		const nri::ShaderDesc OverlayShaders[] = {
-			{nri::StageBits::VERTEX_SHADER, OverlayVertex.Bytecode.data(),
-				OverlayVertex.Bytecode.size(), "VSOverlay"},
-			{nri::StageBits::FRAGMENT_SHADER, DebugPixel.Bytecode.data(),
-				DebugPixel.Bytecode.size(), "PSDebug"}};
+			{nri::StageBits::VERTEX_SHADER, OverlayVertex.Bytecode.data(), OverlayVertex.Bytecode.size(), "VSOverlay"},
+			{nri::StageBits::FRAGMENT_SHADER, DebugPixel.Bytecode.data(), DebugPixel.Bytecode.size(), "PSDebug"}
+		};
 		OutputMerger.depth = {nri::CompareOp::ALWAYS, false, false};
 		Pipeline.outputMerger = OutputMerger;
 		Pipeline.shaders = OverlayShaders;
 		InputAssembly.topology = nri::Topology::LINE_LIST;
 		Pipeline.inputAssembly = InputAssembly;
-		if (!Check(CoreInterface.CreateGraphicsPipeline(
-				*NriDevice, Pipeline, SceneOverlayLinePipeline),
-				"Failed to create the NRI editor overlay-line pipeline"))
+		if (!Check(CoreInterface.CreateGraphicsPipeline(*NriDevice, Pipeline, SceneOverlayLinePipeline), "Failed to create the NRI editor overlay-line pipeline"))
 		{
 			CoreInterface.DestroyPipeline(SceneDebugTrianglePipeline);
 			CoreInterface.DestroyPipeline(SceneDebugLinePipeline);
@@ -2055,9 +2153,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		}
 		InputAssembly.topology = nri::Topology::TRIANGLE_LIST;
 		Pipeline.inputAssembly = InputAssembly;
-		if (!Check(CoreInterface.CreateGraphicsPipeline(
-				*NriDevice, Pipeline, SceneOverlayTrianglePipeline),
-				"Failed to create the NRI editor overlay-triangle pipeline"))
+		if (!Check(CoreInterface.CreateGraphicsPipeline(*NriDevice, Pipeline, SceneOverlayTrianglePipeline), "Failed to create the NRI editor overlay-triangle pipeline"))
 		{
 			CoreInterface.DestroyPipeline(SceneOverlayLinePipeline);
 			CoreInterface.DestroyPipeline(SceneDebugTrianglePipeline);
@@ -2077,7 +2173,8 @@ struct TiramisuEditorRenderBridge::FImpl
 	}
 
 	[[nodiscard]] FEditorOwnedStaticMeshUpload BuildPreviewMesh(
-		const FMaterialPreview& Preview) const
+		const FMaterialPreview& Preview
+	) const
 	{
 		FEditorOwnedStaticMeshUpload Mesh;
 		Mesh.MeshId = Preview.MeshId;
@@ -2101,26 +2198,17 @@ struct TiramisuEditorRenderBridge::FImpl
 		}
 		else if (Preview.Primitive == EMaterialPreviewPrimitive::Cube)
 		{
-			const xr_array<xr_array<float, 3>, 6> Normals = {{
-				{0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 1.0f},
-				{-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f},
-				{0.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}}};
-			const xr_array<xr_array<xr_array<float, 3>, 4>, 6> Faces = {{
-				{{{-0.8f, -0.8f, -0.8f}, {-0.8f, 0.8f, -0.8f}, {0.8f, 0.8f, -0.8f}, {0.8f, -0.8f, -0.8f}}},
-				{{{0.8f, -0.8f, 0.8f}, {0.8f, 0.8f, 0.8f}, {-0.8f, 0.8f, 0.8f}, {-0.8f, -0.8f, 0.8f}}},
-				{{{-0.8f, -0.8f, 0.8f}, {-0.8f, 0.8f, 0.8f}, {-0.8f, 0.8f, -0.8f}, {-0.8f, -0.8f, -0.8f}}},
-				{{{0.8f, -0.8f, -0.8f}, {0.8f, 0.8f, -0.8f}, {0.8f, 0.8f, 0.8f}, {0.8f, -0.8f, 0.8f}}},
-				{{{-0.8f, -0.8f, 0.8f}, {-0.8f, -0.8f, -0.8f}, {0.8f, -0.8f, -0.8f}, {0.8f, -0.8f, 0.8f}}},
-				{{{-0.8f, 0.8f, -0.8f}, {-0.8f, 0.8f, 0.8f}, {0.8f, 0.8f, 0.8f}, {0.8f, 0.8f, -0.8f}}}}};
-			const xr_array<xr_array<float, 2>, 4> Uvs = {{
-				{0.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}}};
+			const xr_array<xr_array<float, 3>, 6> Normals = {{{0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}}};
+			const xr_array<xr_array<xr_array<float, 3>, 4>, 6> Faces = {{{{{-0.8f, -0.8f, -0.8f}, {-0.8f, 0.8f, -0.8f}, {0.8f, 0.8f, -0.8f}, {0.8f, -0.8f, -0.8f}}}, {{{0.8f, -0.8f, 0.8f}, {0.8f, 0.8f, 0.8f}, {-0.8f, 0.8f, 0.8f}, {-0.8f, -0.8f, 0.8f}}}, {{{-0.8f, -0.8f, 0.8f}, {-0.8f, 0.8f, 0.8f}, {-0.8f, 0.8f, -0.8f}, {-0.8f, -0.8f, -0.8f}}}, {{{0.8f, -0.8f, -0.8f}, {0.8f, 0.8f, -0.8f}, {0.8f, 0.8f, 0.8f}, {0.8f, -0.8f, 0.8f}}}, {{{-0.8f, -0.8f, 0.8f}, {-0.8f, -0.8f, -0.8f}, {0.8f, -0.8f, -0.8f}, {0.8f, -0.8f, 0.8f}}}, {{{-0.8f, 0.8f, -0.8f}, {-0.8f, 0.8f, 0.8f}, {0.8f, 0.8f, 0.8f}, {0.8f, 0.8f, -0.8f}}}}};
+			const xr_array<xr_array<float, 2>, 4> Uvs = {{{0.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}}};
 			for (u32 Face = 0; Face < Faces.size(); ++Face)
 			{
 				const u32 Base = static_cast<u32>(Mesh.Vertices.size());
 				for (u32 Corner = 0; Corner < 4; ++Corner)
+				{
 					AddVertex(Faces[Face][Corner], Normals[Face], Uvs[Corner]);
-				Mesh.Indices.insert(Mesh.Indices.end(),
-					{Base, Base + 1, Base + 2, Base, Base + 2, Base + 3});
+				}
+				Mesh.Indices.insert(Mesh.Indices.end(), {Base, Base + 1, Base + 2, Base, Base + 2, Base + 3});
 			}
 		}
 		else
@@ -2138,7 +2226,8 @@ struct TiramisuEditorRenderBridge::FImpl
 					const float U = static_cast<float>(Segment) / Segments;
 					const float Phi = U * PI_MUL_2;
 					const xr_array<float, 3> Normal = {
-						Radius * std::cos(Phi), Y, Radius * std::sin(Phi)};
+						Radius * std::cos(Phi), Y, Radius * std::sin(Phi)
+					};
 					AddVertex(Normal, Normal, {U, V});
 				}
 			}
@@ -2148,13 +2237,11 @@ struct TiramisuEditorRenderBridge::FImpl
 				{
 					const u32 A = Ring * (Segments + 1) + Segment;
 					const u32 B = A + Segments + 1;
-					Mesh.Indices.insert(Mesh.Indices.end(),
-						{A, B, A + 1, A + 1, B, B + 1});
+					Mesh.Indices.insert(Mesh.Indices.end(), {A, B, A + 1, A + 1, B, B + 1});
 				}
 			}
 		}
-		Mesh.Sections.push_back({0,
-			static_cast<u32>(Mesh.Indices.size()), {1}});
+		Mesh.Sections.push_back({0, static_cast<u32>(Mesh.Indices.size()), {1}});
 		return Mesh;
 	}
 
@@ -2163,7 +2250,9 @@ struct TiramisuEditorRenderBridge::FImpl
 		FEditorOwnedStaticMeshUpload Upload = BuildPreviewMesh(Preview);
 		FGpuMesh Replacement;
 		if (!CreateGpuMesh(Upload, Replacement))
+		{
 			return false;
+		}
 		const auto Existing = GpuMeshes.find(Preview.MeshId.Value);
 		if (Existing != GpuMeshes.end())
 		{
@@ -2179,32 +2268,32 @@ struct TiramisuEditorRenderBridge::FImpl
 
 	[[nodiscard]] nri::Pipeline* CreateEditorMaterialPipeline(
 		const Tiramisu::Editor::FMaterialPreviewCompileResult& Compiled,
-		const bool TwoSided)
+		const bool TwoSided
+	)
 	{
 		const nri::VertexAttributeDesc Attributes[] = {
-			{{"POSITION", 0}, {0}, offsetof(FEditorStaticMeshVertex, Position),
-				nri::Format::RGB32_SFLOAT, 0},
-			{{"NORMAL", 0}, {1}, offsetof(FEditorStaticMeshVertex, Normal),
-				nri::Format::RGB32_SFLOAT, 0},
-			{{"TANGENT", 0}, {2}, offsetof(FEditorStaticMeshVertex, Tangent),
-				nri::Format::RGBA32_SFLOAT, 0},
-			{{"TEXCOORD", 0}, {3}, offsetof(FEditorStaticMeshVertex, TexCoord),
-				nri::Format::RG32_SFLOAT, 0},
-			{{"TEXCOORD", 1}, {4}, offsetof(FEditorStaticMeshVertex, TexCoord1),
-				nri::Format::RG32_SFLOAT, 0},
-			{{"COLOR", 0}, {5}, offsetof(FEditorStaticMeshVertex, Color),
-				nri::Format::RGBA8_UNORM, 0}};
+			{{"POSITION", 0}, {0}, offsetof(FEditorStaticMeshVertex, Position), nri::Format::RGB32_SFLOAT, 0},
+			{{"NORMAL", 0}, {1}, offsetof(FEditorStaticMeshVertex, Normal), nri::Format::RGB32_SFLOAT, 0},
+			{{"TANGENT", 0}, {2}, offsetof(FEditorStaticMeshVertex, Tangent), nri::Format::RGBA32_SFLOAT, 0},
+			{{"TEXCOORD", 0}, {3}, offsetof(FEditorStaticMeshVertex, TexCoord), nri::Format::RG32_SFLOAT, 0},
+			{{"TEXCOORD", 1}, {4}, offsetof(FEditorStaticMeshVertex, TexCoord1), nri::Format::RG32_SFLOAT, 0},
+			{{"COLOR", 0}, {5}, offsetof(FEditorStaticMeshVertex, Color), nri::Format::RGBA8_UNORM, 0}
+		};
 		const nri::VertexAttributeDesc VulkanAttributes[] = {
-			Attributes[0], Attributes[1], Attributes[3], Attributes[4], Attributes[5]};
+			Attributes[0], Attributes[1], Attributes[3], Attributes[4], Attributes[5]
+		};
 		nri::VertexStreamDesc Stream = {};
 		Stream.bindingSlot = 0;
 		Stream.stride = sizeof(FEditorStaticMeshVertex);
 		nri::VertexInputDesc VertexInput = {};
 		VertexInput.attributes = Api == ETiramisuEditorGraphicsApi::Vulkan
-			? VulkanAttributes : Attributes;
+									 ? VulkanAttributes
+									 : Attributes;
 		VertexInput.attributeNum = static_cast<u8>(
 			Api == ETiramisuEditorGraphicsApi::Vulkan
-				? std::size(VulkanAttributes) : std::size(Attributes));
+				? std::size(VulkanAttributes)
+				: std::size(Attributes)
+		);
 		VertexInput.streams = &Stream;
 		VertexInput.streamNum = 1;
 		nri::InputAssemblyDesc InputAssembly = {};
@@ -2212,7 +2301,8 @@ struct TiramisuEditorRenderBridge::FImpl
 		nri::RasterizationDesc Rasterization = {};
 		Rasterization.fillMode = nri::FillMode::SOLID;
 		Rasterization.cullMode = TwoSided
-			? nri::CullMode::NONE : nri::CullMode::BACK;
+									 ? nri::CullMode::NONE
+									 : nri::CullMode::BACK;
 		nri::ColorAttachmentDesc Color = {};
 		Color.format = nri::Format::RGBA8_UNORM;
 		Color.colorWriteMask = nri::ColorWriteBits::RGBA;
@@ -2220,42 +2310,35 @@ struct TiramisuEditorRenderBridge::FImpl
 			EMaterialBlendMode::Translucent)
 		{
 			Color.blendEnabled = true;
-			Color.colorBlend = {nri::BlendFactor::SRC_ALPHA,
-				nri::BlendFactor::ONE_MINUS_SRC_ALPHA, nri::BlendOp::ADD};
-			Color.alphaBlend = {nri::BlendFactor::ONE,
-				nri::BlendFactor::ONE_MINUS_SRC_ALPHA, nri::BlendOp::ADD};
+			Color.colorBlend = {nri::BlendFactor::SRC_ALPHA, nri::BlendFactor::ONE_MINUS_SRC_ALPHA, nri::BlendOp::ADD};
+			Color.alphaBlend = {nri::BlendFactor::ONE, nri::BlendFactor::ONE_MINUS_SRC_ALPHA, nri::BlendOp::ADD};
 		}
 		else if (Compiled.ResolvedMaterial.BlendMode ==
-			EMaterialBlendMode::Additive)
+				 EMaterialBlendMode::Additive)
 		{
 			Color.blendEnabled = true;
-			Color.colorBlend = {nri::BlendFactor::SRC_ALPHA,
-				nri::BlendFactor::ONE, nri::BlendOp::ADD};
-			Color.alphaBlend = {nri::BlendFactor::ONE,
-				nri::BlendFactor::ONE, nri::BlendOp::ADD};
+			Color.colorBlend = {nri::BlendFactor::SRC_ALPHA, nri::BlendFactor::ONE, nri::BlendOp::ADD};
+			Color.alphaBlend = {nri::BlendFactor::ONE, nri::BlendFactor::ONE, nri::BlendOp::ADD};
 		}
 		else if (Compiled.ResolvedMaterial.BlendMode ==
-			EMaterialBlendMode::Modulate)
+				 EMaterialBlendMode::Modulate)
 		{
 			Color.blendEnabled = true;
-			Color.colorBlend = {nri::BlendFactor::DST_COLOR,
-				nri::BlendFactor::ZERO, nri::BlendOp::ADD};
-			Color.alphaBlend = {nri::BlendFactor::ONE,
-				nri::BlendFactor::ZERO, nri::BlendOp::ADD};
+			Color.colorBlend = {nri::BlendFactor::DST_COLOR, nri::BlendFactor::ZERO, nri::BlendOp::ADD};
+			Color.alphaBlend = {nri::BlendFactor::ONE, nri::BlendFactor::ZERO, nri::BlendOp::ADD};
 		}
 		nri::OutputMergerDesc Output = {};
 		Output.colors = &Color;
 		Output.colorNum = 1;
 		Output.depthStencilFormat = nri::Format::D32_SFLOAT;
 		const bool WritesDepth = Compiled.ResolvedMaterial.BlendMode ==
-			EMaterialBlendMode::Opaque ||
-			Compiled.ResolvedMaterial.BlendMode == EMaterialBlendMode::Masked;
+									 EMaterialBlendMode::Opaque ||
+								 Compiled.ResolvedMaterial.BlendMode == EMaterialBlendMode::Masked;
 		Output.depth = {nri::CompareOp::LESS, WritesDepth, false};
 		const nri::ShaderDesc Shaders[] = {
-			{nri::StageBits::VERTEX_SHADER, Compiled.VertexBytecode.data(),
-				Compiled.VertexBytecode.size(), "Main"},
-			{nri::StageBits::FRAGMENT_SHADER, Compiled.PixelBytecode.data(),
-				Compiled.PixelBytecode.size(), "Main"}};
+			{nri::StageBits::VERTEX_SHADER, Compiled.VertexBytecode.data(), Compiled.VertexBytecode.size(), "Main"},
+			{nri::StageBits::FRAGMENT_SHADER, Compiled.PixelBytecode.data(), Compiled.PixelBytecode.size(), "Main"}
+		};
 		nri::GraphicsPipelineDesc Pipeline = {};
 		Pipeline.pipelineLayout = PreviewPipelineLayout;
 		Pipeline.vertexInput = &VertexInput;
@@ -2265,9 +2348,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		Pipeline.shaders = Shaders;
 		Pipeline.shaderNum = static_cast<u32>(std::size(Shaders));
 		nri::Pipeline* Result = nullptr;
-		if (!Check(CoreInterface.CreateGraphicsPipeline(
-				*NriDevice, Pipeline, Result),
-				"Failed to create the NRI editor material pipeline"))
+		if (!Check(CoreInterface.CreateGraphicsPipeline(*NriDevice, Pipeline, Result), "Failed to create the NRI editor material pipeline"))
 		{
 			return nullptr;
 		}
@@ -2275,21 +2356,22 @@ struct TiramisuEditorRenderBridge::FImpl
 	}
 
 	[[nodiscard]] xr_string FormatMaterialDiagnostics(
-		const xr_vector<FMaterialDiagnostic>& Diagnostics) const
+		const xr_vector<FMaterialDiagnostic>& Diagnostics
+	) const
 	{
 		xr_string Text;
 		for (const auto& Item : Diagnostics)
 		{
-			if (!Text.empty()) Text += '\n';
+			if (!Text.empty())
+			{
+				Text += '\n';
+			}
 			Text += '[' + Item.Code + "] " + Item.Message;
 		}
 		return Text;
 	}
 
-	void InstallMaterialPreviewResult(FMaterialPreview& Preview,
-		const u32 PreviewIndex,
-		Tiramisu::Editor::FMaterialPreviewCompileResult Compiled,
-		const u64 Revision)
+	void InstallMaterialPreviewResult(FMaterialPreview& Preview, const u32 PreviewIndex, Tiramisu::Editor::FMaterialPreviewCompileResult Compiled, const u64 Revision)
 	{
 		if (!Compiled.Succeeded())
 		{
@@ -2308,11 +2390,14 @@ struct TiramisuEditorRenderBridge::FImpl
 		FMaterialParameterPackResult Patched = PatchMaterialParameterResources(
 			Compiled.ParameterBlock,
 			[this, &ResourceWarnings](
-				const FMaterialParameterResourceReference& Reference)
+				const FMaterialParameterResourceReference& Reference
+			)
 				-> xr_optional<FDescriptorHeapIndex>
 			{
 				if (Reference.Type == EMaterialParameterType::SamplerPreset)
+				{
 					return FDescriptorHeapIndex{PreviewDefaultSamplerIndex};
+				}
 				if (Reference.Type == EMaterialParameterType::Texture2D ||
 					Reference.Type == EMaterialParameterType::TextureCube)
 				{
@@ -2320,13 +2405,17 @@ struct TiramisuEditorRenderBridge::FImpl
 					const u32 Index = ResolveMaterialPreviewTexture(
 						Reference.AssetPath,
 						Reference.Type == EMaterialParameterType::TextureCube,
-						Warning);
+						Warning
+					);
 					if (!Warning.empty())
+					{
 						ResourceWarnings.push_back(std::move(Warning));
+					}
 					return FDescriptorHeapIndex{Index};
 				}
 				return std::nullopt;
-			});
+			}
+		);
 		if (!Patched.Succeeded())
 		{
 			Preview.State = EMaterialPreviewState::Error;
@@ -2336,12 +2425,15 @@ struct TiramisuEditorRenderBridge::FImpl
 		xr_string EnvironmentWarning;
 		const u32 EnvironmentDescriptor = ResolveMaterialPreviewTexture(
 			Tiramisu::Editor::MaterialPreviewEnvironmentAsset(Preview.Environment),
-			true, EnvironmentWarning);
+			true,
+			EnvironmentWarning
+		);
 		if (!EnvironmentWarning.empty())
+		{
 			ResourceWarnings.push_back(std::move(EnvironmentWarning));
+		}
 
-		nri::Pipeline* NewPipeline = CreateEditorMaterialPipeline(Compiled,
-			Compiled.ResolvedMaterial.TwoSided);
+		nri::Pipeline* NewPipeline = CreateEditorMaterialPipeline(Compiled, Compiled.ResolvedMaterial.TwoSided);
 		if (!NewPipeline)
 		{
 			Preview.State = EMaterialPreviewState::Error;
@@ -2357,7 +2449,9 @@ struct TiramisuEditorRenderBridge::FImpl
 		}
 
 		if (Preview.Pipeline)
+		{
 			DeferredPipelines.push_back({Preview.Pipeline, FrameIndex});
+		}
 		Preview.Pipeline = NewPipeline;
 		Preview.PipelineKey = Compiled.PipelineKey;
 		Preview.ParameterData = std::move(Patched.Value.Data);
@@ -2369,7 +2463,9 @@ struct TiramisuEditorRenderBridge::FImpl
 		for (const xr_string& Warning : ResourceWarnings)
 		{
 			if (!Preview.Diagnostic.empty())
+			{
 				Preview.Diagnostic += '\n';
+			}
 			Preview.Diagnostic += "[preview.resource_warning] " + Warning;
 			Msg("! Material preview resource warning: %s", Warning.c_str());
 		}
@@ -2378,7 +2474,7 @@ struct TiramisuEditorRenderBridge::FImpl
 	void PollMaterialPreviewCompiles()
 	{
 		for (auto It = MaterialPreviewCompileJobs.begin();
-			It != MaterialPreviewCompileJobs.end();)
+			 It != MaterialPreviewCompileJobs.end();)
 		{
 			if (It->Future.wait_for(std::chrono::seconds(0)) !=
 				std::future_status::ready)
@@ -2390,18 +2486,21 @@ struct TiramisuEditorRenderBridge::FImpl
 				It->Future.get();
 			FMaterialPreview* Preview = FindPreview(It->Handle);
 			if (Preview && It->Revision == Preview->RequestedRevision)
-				InstallMaterialPreviewResult(*Preview, It->Handle.Index,
-					std::move(Result), It->Revision);
+			{
+				InstallMaterialPreviewResult(*Preview, It->Handle.Index, std::move(Result), It->Revision);
+			}
 			It = MaterialPreviewCompileJobs.erase(It);
 		}
 	}
 
 	[[nodiscard]] nri::Pipeline* AcquireSceneMaterialPipeline(
 		const Tiramisu::Editor::FMaterialPreviewCompileResult& Compiled,
-		const bool TwoSided)
+		const bool TwoSided
+	)
 	{
 		const FScenePipelineCacheKey Key = {
-			Compiled.PipelineKey, TwoSided};
+			Compiled.PipelineKey, TwoSided
+		};
 		if (const auto Existing = ScenePipelineCache.find(Key);
 			Existing != ScenePipelineCache.end())
 		{
@@ -2412,18 +2511,22 @@ struct TiramisuEditorRenderBridge::FImpl
 		nri::Pipeline* Pipeline =
 			CreateEditorMaterialPipeline(Compiled, TwoSided);
 		if (!Pipeline)
+		{
 			return nullptr;
-		ScenePipelineCache.emplace(Key,
-			FScenePipelineCacheEntry{Pipeline, 1});
+		}
+		ScenePipelineCache.emplace(Key, FScenePipelineCacheEntry{Pipeline, 1});
 		return Pipeline;
 	}
 
 	void ReleaseSceneMaterialPipeline(FSceneMaterial& Material)
 	{
 		if (!Material.Pipeline || Material.PipelineKey == 0)
+		{
 			return;
+		}
 		const FScenePipelineCacheKey Key = {
-			Material.PipelineKey, Material.PipelineTwoSided};
+			Material.PipelineKey, Material.PipelineTwoSided
+		};
 		const auto Existing = ScenePipelineCache.find(Key);
 		if (Existing == ScenePipelineCache.end())
 		{
@@ -2433,11 +2536,14 @@ struct TiramisuEditorRenderBridge::FImpl
 			return;
 		}
 		if (Existing->second.ReferenceCount > 1)
+		{
 			--Existing->second.ReferenceCount;
+		}
 		else
 		{
 			DeferredPipelines.push_back(
-				{Existing->second.Pipeline, FrameIndex});
+				{Existing->second.Pipeline, FrameIndex}
+			);
 			ScenePipelineCache.erase(Existing);
 		}
 		Material.Pipeline = nullptr;
@@ -2445,9 +2551,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		Material.PipelineTwoSided = false;
 	}
 
-	void InstallSceneMaterialResult(const u64 MaterialSlot,
-		Tiramisu::Editor::FMaterialPreviewCompileResult Compiled,
-		const u64 Revision, const bool TwoSided, const bool Reload)
+	void InstallSceneMaterialResult(const u64 MaterialSlot, Tiramisu::Editor::FMaterialPreviewCompileResult Compiled, const u64 Revision, const bool TwoSided, const bool Reload)
 	{
 		const auto Found = SceneMaterials.find(MaterialSlot);
 		if (Found == SceneMaterials.end() ||
@@ -2473,11 +2577,14 @@ struct TiramisuEditorRenderBridge::FImpl
 		FMaterialParameterPackResult Patched = PatchMaterialParameterResources(
 			Compiled.ParameterBlock,
 			[this, &ResourceWarnings](
-				const FMaterialParameterResourceReference& Reference)
+				const FMaterialParameterResourceReference& Reference
+			)
 				-> xr_optional<FDescriptorHeapIndex>
 			{
 				if (Reference.Type == EMaterialParameterType::SamplerPreset)
+				{
 					return FDescriptorHeapIndex{PreviewDefaultSamplerIndex};
+				}
 				if (Reference.Type == EMaterialParameterType::Texture2D ||
 					Reference.Type == EMaterialParameterType::TextureCube)
 				{
@@ -2485,13 +2592,17 @@ struct TiramisuEditorRenderBridge::FImpl
 					const u32 Index = ResolveMaterialPreviewTexture(
 						Reference.AssetPath,
 						Reference.Type == EMaterialParameterType::TextureCube,
-						Warning);
+						Warning
+					);
 					if (!Warning.empty())
+					{
 						ResourceWarnings.push_back(std::move(Warning));
+					}
 					return FDescriptorHeapIndex{Index};
 				}
 				return std::nullopt;
-			});
+			}
+		);
 		if (!Patched.Succeeded())
 		{
 			Material.Diagnostic = FormatMaterialDiagnostics(Patched.Diagnostics);
@@ -2501,13 +2612,14 @@ struct TiramisuEditorRenderBridge::FImpl
 		const bool PipelineTwoSided =
 			TwoSided || Compiled.ResolvedMaterial.TwoSided;
 		const bool ReusesActivePipeline = Material.Pipeline &&
-			Material.PipelineKey == Compiled.PipelineKey &&
-			Material.PipelineTwoSided == PipelineTwoSided;
+										  Material.PipelineKey == Compiled.PipelineKey &&
+										  Material.PipelineTwoSided == PipelineTwoSided;
 		nri::Pipeline* NewPipeline = Material.Pipeline;
 		if (!ReusesActivePipeline)
 		{
 			NewPipeline = AcquireSceneMaterialPipeline(
-				Compiled, PipelineTwoSided);
+				Compiled, PipelineTwoSided
+			);
 			if (!NewPipeline)
 			{
 				Material.Diagnostic = Diagnostic;
@@ -2522,12 +2634,16 @@ struct TiramisuEditorRenderBridge::FImpl
 		Material.ParameterLayoutHash = Patched.Value.LayoutHash;
 		Material.AcceptedRevision = Revision;
 		if (Reload)
+		{
 			++Material.ReloadCount;
+		}
 		Material.Diagnostic.clear();
 		for (const xr_string& Warning : ResourceWarnings)
 		{
 			if (!Material.Diagnostic.empty())
+			{
 				Material.Diagnostic += '\n';
+			}
 			Material.Diagnostic += "[scene.resource_warning] " + Warning;
 			Msg("! Editor scene material resource warning: %s", Warning.c_str());
 		}
@@ -2536,18 +2652,15 @@ struct TiramisuEditorRenderBridge::FImpl
 	void PollSceneMaterialCompiles()
 	{
 		for (FSceneMaterialCompileResult& Result :
-			SceneMaterialCompileQueue.PollReady())
+			 SceneMaterialCompileQueue.PollReady())
 		{
-			InstallSceneMaterialResult(Result.MaterialSlot,
-				std::move(Result.Compiled), Result.Revision,
-				Result.TwoSided, Result.Reload);
+			InstallSceneMaterialResult(Result.MaterialSlot, std::move(Result.Compiled), Result.Revision, Result.TwoSided, Result.Reload);
 		}
 	}
 
 	[[nodiscard]] bool UploadMaterialInstanceForFrame(
-		const u32 FrameContext, const u32 LocalInstanceIndex,
-		const xr_vector<u8>& Parameters,
-		const u64 LayoutHash)
+		const u32 FrameContext, const u32 LocalInstanceIndex, const xr_vector<u8>& Parameters, const u64 LayoutHash
+	)
 	{
 		if (FrameContext >= QueuedFrameCount ||
 			LocalInstanceIndex >= MaxEditorMaterialInstances ||
@@ -2559,9 +2672,9 @@ struct TiramisuEditorRenderBridge::FImpl
 			FrameContext * MaxEditorMaterialInstances + LocalInstanceIndex;
 		const u64 ParameterOffset =
 			(u64(FrameContext) * MaxEditorMaterialInstances +
-				LocalInstanceIndex) * PreviewParameterStride;
-		if (!WritePreviewBuffer(PreviewMaterialParameterBuffer, ParameterOffset,
-				Parameters.data(), Parameters.size()))
+			 LocalInstanceIndex) *
+			PreviewParameterStride;
+		if (!WritePreviewBuffer(PreviewMaterialParameterBuffer, ParameterOffset, Parameters.data(), Parameters.size()))
 		{
 			return false;
 		}
@@ -2570,9 +2683,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		Instance.ParameterDataSize = static_cast<u32>(Parameters.size());
 		Instance.LayoutHashLow = static_cast<u32>(LayoutHash);
 		Instance.LayoutHashHigh = static_cast<u32>(LayoutHash >> 32u);
-		return WritePreviewBuffer(PreviewMaterialInstanceBuffer,
-			u64(AbsoluteInstanceIndex) * sizeof(Instance),
-			&Instance, sizeof(Instance));
+		return WritePreviewBuffer(PreviewMaterialInstanceBuffer, u64(AbsoluteInstanceIndex) * sizeof(Instance), &Instance, sizeof(Instance));
 	}
 
 	void UploadMaterialFrameData(const u32 FrameContext)
@@ -2581,17 +2692,15 @@ struct TiramisuEditorRenderBridge::FImpl
 		{
 			const FMaterialPreview& Preview = MaterialPreviews[Index];
 			if (!Preview.Alive || !Preview.Pipeline || Preview.ParameterData.empty())
+			{
 				continue;
-			if (!UploadMaterialInstanceForFrame(FrameContext, Index,
-					Preview.ParameterData, Preview.ParameterLayoutHash))
+			}
+			if (!UploadMaterialInstanceForFrame(FrameContext, Index, Preview.ParameterData, Preview.ParameterLayoutHash))
 			{
 				continue;
 			}
 			FMaterialDrawGpuData Draw;
-			Draw.LocalToWorld = {1.0f, 0.0f, 0.0f, 0.0f,
-				0.0f, 1.0f, 0.0f, 0.0f,
-				0.0f, 0.0f, 1.0f, 0.0f,
-				0.0f, 0.0f, 0.0f, 1.0f};
+			Draw.LocalToWorld = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
 			Draw.PreviousLocalToWorld = Draw.LocalToWorld;
 			Draw.MaterialInstanceIndex =
 				FrameContext * MaxEditorMaterialInstances + Index;
@@ -2599,65 +2708,64 @@ struct TiramisuEditorRenderBridge::FImpl
 			Draw.Flags = Preview.DrawFlags;
 			const u32 AbsoluteDrawIndex =
 				FrameContext * MaxEditorDrawRecords + Index;
-			(void)WritePreviewBuffer(PreviewDrawDataBuffer,
-				u64(AbsoluteDrawIndex) * sizeof(Draw),
-				&Draw, sizeof(Draw));
+			(void)WritePreviewBuffer(PreviewDrawDataBuffer, u64(AbsoluteDrawIndex) * sizeof(Draw), &Draw, sizeof(Draw));
 		}
 		for (const auto& [Slot, Material] : SceneMaterials)
 		{
 			(void)Slot;
 			if (!Material.Pipeline || Material.ParameterData.empty())
+			{
 				continue;
-			(void)UploadMaterialInstanceForFrame(FrameContext,
-				Material.InstanceIndex, Material.ParameterData,
-				Material.ParameterLayoutHash);
+			}
+			(void)UploadMaterialInstanceForFrame(FrameContext, Material.InstanceIndex, Material.ParameterData, Material.ParameterLayoutHash);
 		}
 	}
 
 	void QueueBufferDeletion(nri::Buffer* Buffer)
 	{
 		if (Buffer)
+		{
 			DeferredBuffers.push_back({Buffer, FrameIndex + 1});
+		}
 	}
 
 	void CollectDeferredBuffers(const u64 CompletedFence)
 	{
 		std::erase_if(DeferredBuffers, [&](const FDeferredBuffer& Item)
-		{
-			if (Item.RetireFence > CompletedFence)
+					  {
+			if (Item.RetireFence > CompletedFence){
 				return false;
+}
 			CoreInterface.DestroyBuffer(Item.Buffer);
-			return true;
-		});
+			return true; });
 	}
 
 	void CollectDeferredPipelines(const u64 CompletedFence)
 	{
 		std::erase_if(DeferredPipelines, [&](const FDeferredPipeline& Item)
-		{
-			if (Item.RetireFence > CompletedFence)
+					  {
+			if (Item.RetireFence > CompletedFence){
 				return false;
+}
 			CoreInterface.DestroyPipeline(Item.Pipeline);
-			return true;
-		});
+			return true; });
 	}
 
 	[[nodiscard]] bool CreateGpuMesh(
-		const FEditorOwnedStaticMeshUpload& Upload, FGpuMesh& OutMesh)
+		const FEditorOwnedStaticMeshUpload& Upload, FGpuMesh& OutMesh
+	)
 	{
 		constexpr u64 Alignment = 16;
 		const u64 IndexBytes = Upload.Indices.size() * sizeof(u32);
 		const u64 VertexBytes = Upload.Vertices.size() *
-			sizeof(FEditorStaticMeshVertex);
+								sizeof(FEditorStaticMeshVertex);
 		const u64 VertexOffset =
 			(IndexBytes + Alignment - 1) & ~(Alignment - 1);
 		nri::BufferDesc Desc = {};
 		Desc.size = VertexOffset + VertexBytes;
 		Desc.usage = nri::BufferUsageBits::VERTEX_BUFFER |
-			nri::BufferUsageBits::INDEX_BUFFER;
-		if (!Check(CoreInterface.CreateCommittedBuffer(*NriDevice,
-				nri::MemoryLocation::HOST_UPLOAD, 0.5f, Desc, OutMesh.Buffer),
-				"Failed to create an NRI editor static-mesh buffer"))
+					 nri::BufferUsageBits::INDEX_BUFFER;
+		if (!Check(CoreInterface.CreateCommittedBuffer(*NriDevice, nri::MemoryLocation::HOST_UPLOAD, 0.5f, Desc, OutMesh.Buffer), "Failed to create an NRI editor static-mesh buffer"))
 		{
 			return false;
 		}
@@ -2670,8 +2778,7 @@ struct TiramisuEditorRenderBridge::FImpl
 			return false;
 		}
 		std::memcpy(Destination, Upload.Indices.data(), IndexBytes);
-		std::memcpy(static_cast<u8*>(Destination) + VertexOffset,
-			Upload.Vertices.data(), VertexBytes);
+		std::memcpy(static_cast<u8*>(Destination) + VertexOffset, Upload.Vertices.data(), VertexBytes);
 		CoreInterface.UnmapBuffer(*OutMesh.Buffer);
 		OutMesh.VertexOffset = VertexOffset;
 		OutMesh.IndexCount = static_cast<u32>(Upload.Indices.size());
@@ -2681,15 +2788,18 @@ struct TiramisuEditorRenderBridge::FImpl
 		return true;
 	}
 
-	[[nodiscard]] bool UpdateViewportDebugDraw(FViewport& Viewport,
-		const FEditorOwnedViewportScenePacket& Packet)
+	[[nodiscard]] bool UpdateViewportDebugDraw(FViewport& Viewport, const FEditorOwnedViewportScenePacket& Packet)
 	{
 		if (Viewport.DebugDrawRevision == Packet.DebugDrawRevision)
+		{
 			return true;
+		}
 		const u32 LineVertexCount = static_cast<u32>(
-			Packet.DebugLines.size() * 2);
+			Packet.DebugLines.size() * 2
+		);
 		const u32 TriangleVertexCount = static_cast<u32>(
-			Packet.DebugTriangles.size() * 3);
+			Packet.DebugTriangles.size() * 3
+		);
 		const u32 OverlayLineVertexCount =
 			static_cast<u32>(Packet.OverlayLines.size() * 2);
 		const u32 OverlayTriangleVertexCount =
@@ -2713,16 +2823,17 @@ struct TiramisuEditorRenderBridge::FImpl
 		}
 
 		xr_vector<FEditorDebugVertex> Vertices;
-		Vertices.reserve(static_cast<size_t>(LineVertexCount) +
-			TriangleVertexCount + OverlayLineVertexCount +
-			OverlayTriangleVertexCount);
+		Vertices.reserve(static_cast<size_t>(LineVertexCount) + TriangleVertexCount + OverlayLineVertexCount + OverlayTriangleVertexCount);
 		for (const FEditorDebugLine& Line : Packet.DebugLines)
+		{
 			Vertices.insert(Vertices.end(), Line.Vertices.begin(), Line.Vertices.end());
+		}
 		const u64 TriangleOffset =
 			Vertices.size() * sizeof(FEditorDebugVertex);
 		for (const FEditorDebugTriangle& Triangle : Packet.DebugTriangles)
-			Vertices.insert(Vertices.end(), Triangle.Vertices.begin(),
-				Triangle.Vertices.end());
+		{
+			Vertices.insert(Vertices.end(), Triangle.Vertices.begin(), Triangle.Vertices.end());
+		}
 		const u64 OverlayLineOffset =
 			Vertices.size() * sizeof(FEditorDebugVertex);
 		auto AppendOverlayVertex = [&](const FEditorOverlayVertex& Source)
@@ -2733,21 +2844,27 @@ struct TiramisuEditorRenderBridge::FImpl
 			Vertices.push_back(Destination);
 		};
 		for (const FEditorOverlayLine& Line : Packet.OverlayLines)
+		{
 			for (const FEditorOverlayVertex& Vertex : Line.Vertices)
+			{
 				AppendOverlayVertex(Vertex);
+			}
+		}
 		const u64 OverlayTriangleOffset =
 			Vertices.size() * sizeof(FEditorDebugVertex);
 		for (const FEditorOverlayTriangle& Triangle : Packet.OverlayTriangles)
+		{
 			for (const FEditorOverlayVertex& Vertex : Triangle.Vertices)
+			{
 				AppendOverlayVertex(Vertex);
+			}
+		}
 
 		nri::BufferDesc Desc = {};
 		Desc.size = Vertices.size() * sizeof(FEditorDebugVertex);
 		Desc.usage = nri::BufferUsageBits::VERTEX_BUFFER;
 		nri::Buffer* Replacement = nullptr;
-		if (!Check(CoreInterface.CreateCommittedBuffer(*NriDevice,
-				nri::MemoryLocation::HOST_UPLOAD, 0.5f, Desc, Replacement),
-				"Failed to create the NRI editor debug-draw buffer"))
+		if (!Check(CoreInterface.CreateCommittedBuffer(*NriDevice, nri::MemoryLocation::HOST_UPLOAD, 0.5f, Desc, Replacement), "Failed to create the NRI editor debug-draw buffer"))
 		{
 			return false;
 		}
@@ -2776,16 +2893,19 @@ struct TiramisuEditorRenderBridge::FImpl
 		return true;
 	}
 
-	void ApplyScenePacket(FViewport& Viewport,
-		const FEditorOwnedViewportScenePacket& Packet)
+	void ApplyScenePacket(FViewport& Viewport, const FEditorOwnedViewportScenePacket& Packet)
 	{
 		for (const FEditorOwnedMaterialSlotSource& Material : Packet.MaterialSlots)
+		{
 			QueueSceneMaterialCompile(Material);
+		}
 		for (const FEditorStaticMeshId Removed : Packet.RemovedStaticMeshes)
 		{
 			const auto Existing = GpuMeshes.find(Removed.Value);
 			if (Existing == GpuMeshes.end())
+			{
 				continue;
+			}
 			QueueBufferDeletion(Existing->second.Buffer);
 			GpuMeshes.erase(Existing);
 		}
@@ -2793,7 +2913,9 @@ struct TiramisuEditorRenderBridge::FImpl
 		{
 			FGpuMesh Replacement;
 			if (!CreateGpuMesh(Upload, Replacement))
+			{
 				continue;
+			}
 			const auto Existing = GpuMeshes.find(Upload.MeshId.Value);
 			if (Existing != GpuMeshes.end())
 			{
@@ -2807,11 +2929,12 @@ struct TiramisuEditorRenderBridge::FImpl
 		}
 		(void)UpdateViewportDebugDraw(Viewport, Packet);
 		if (!Packet.Instances.empty())
+		{
 			(void)EnsureSceneViewportMaterialContext(Viewport);
+		}
 	}
 
-	[[nodiscard]] bool UploadSceneViewportFrameData(FViewport& Viewport,
-		const u32 FrameContext)
+	[[nodiscard]] bool UploadSceneViewportFrameData(FViewport& Viewport, const u32 FrameContext)
 	{
 		if (Viewport.ScenePacket.Instances.empty())
 		{
@@ -2826,10 +2949,7 @@ struct TiramisuEditorRenderBridge::FImpl
 		}
 
 		FEditorMaterialGlobalConstants Global;
-		Global.SceneView = {Viewport.ScenePacket.Camera.NearPlane,
-			Viewport.ScenePacket.Camera.FarPlane,
-			static_cast<float>(Viewport.Width),
-			static_cast<float>(Viewport.Height)};
+		Global.SceneView = {Viewport.ScenePacket.Camera.NearPlane, Viewport.ScenePacket.Camera.FarPlane, static_cast<float>(Viewport.Width), static_cast<float>(Viewport.Height)};
 		Global.ViewProjectionWorldMatrix =
 			Viewport.ScenePacket.Camera.ViewProjection;
 		Global.CameraPositionAndTime = {
@@ -2837,7 +2957,9 @@ struct TiramisuEditorRenderBridge::FImpl
 			Viewport.ScenePacket.Camera.WorldPosition[1],
 			Viewport.ScenePacket.Camera.WorldPosition[2],
 			DeterministicTest.Enabled
-				? DeterministicTest.FixedShaderTimeSeconds : 0.0f};
+				? DeterministicTest.FixedShaderTimeSeconds
+				: 0.0f
+		};
 		Global.DrawDataBufferIndex = PreviewDrawDataDescriptorIndex;
 		Global.MaterialInstanceBufferIndex =
 			PreviewMaterialInstanceDescriptorIndex;
@@ -2849,8 +2971,10 @@ struct TiramisuEditorRenderBridge::FImpl
 		const u32 LightCount =
 			std::min<u32>(
 				static_cast<u32>(
-					Viewport.ScenePacket.Lights.size()),
-				MaxSceneLightsPerViewport);
+					Viewport.ScenePacket.Lights.size()
+				),
+				MaxSceneLightsPerViewport
+			);
 		const u32 AbsoluteLightIndex =
 			FrameContext * MaxSceneViewports *
 				MaxSceneLightsPerViewport +
@@ -2868,21 +2992,26 @@ struct TiramisuEditorRenderBridge::FImpl
 			Light.Position = {
 				Source.LocalToWorld[12],
 				Source.LocalToWorld[13],
-				Source.LocalToWorld[14]};
+				Source.LocalToWorld[14]
+			};
 			Light.Range = Source.Range;
 			Light.Direction = {
 				Source.LocalToWorld[8],
 				Source.LocalToWorld[9],
-				Source.LocalToWorld[10]};
+				Source.LocalToWorld[10]
+			};
 			const float DirectionLength = std::sqrt(
 				Light.Direction[0] * Light.Direction[0] +
 				Light.Direction[1] * Light.Direction[1] +
-				Light.Direction[2] * Light.Direction[2]);
+				Light.Direction[2] * Light.Direction[2]
+			);
 			if (DirectionLength >
 				std::numeric_limits<float>::epsilon())
 			{
 				for (float& Component : Light.Direction)
+				{
 					Component /= DirectionLength;
+				}
 			}
 			else
 			{
@@ -2890,54 +3019,58 @@ struct TiramisuEditorRenderBridge::FImpl
 			}
 			switch (Source.Type)
 			{
-			case EEditorSceneLightType::Directional:
-				Light.Type = static_cast<u32>(
-					EMaterialLightType::Directional);
-				break;
-			case EEditorSceneLightType::Point:
-				Light.Type = static_cast<u32>(
-					EMaterialLightType::Point);
-				break;
-			case EEditorSceneLightType::Spot:
-				Light.Type = static_cast<u32>(
-					EMaterialLightType::Spot);
-				break;
+				case EEditorSceneLightType::Directional:
+					Light.Type = static_cast<u32>(
+						EMaterialLightType::Directional
+					);
+					break;
+				case EEditorSceneLightType::Point:
+					Light.Type = static_cast<u32>(
+						EMaterialLightType::Point
+					);
+					break;
+				case EEditorSceneLightType::Spot:
+					Light.Type = static_cast<u32>(
+						EMaterialLightType::Spot
+					);
+					break;
 			}
 			Light.Color = Source.Color;
 			Light.Intensity = Source.Intensity;
 			constexpr float DegreesToRadians =
 				3.14159265358979323846f / 180.0f;
 			Light.CosInnerCone = std::cos(
-				Source.InnerConeAngleDegrees * DegreesToRadians);
+				Source.InnerConeAngleDegrees * DegreesToRadians
+			);
 			Light.CosOuterCone = std::cos(
-				Source.OuterConeAngleDegrees * DegreesToRadians);
+				Source.OuterConeAngleDegrees * DegreesToRadians
+			);
 			const u32 SourceFlags =
 				static_cast<u32>(Source.Flags);
 			if ((SourceFlags & static_cast<u32>(
-					EEditorSceneLightFlags::CastShadows)) != 0)
+								   EEditorSceneLightFlags::CastShadows
+							   )) != 0)
 			{
 				Light.Flags |= static_cast<u32>(
-					EMaterialLightFlags::CastShadows);
+					EMaterialLightFlags::CastShadows
+				);
 			}
 			if ((SourceFlags & static_cast<u32>(
-					EEditorSceneLightFlags::Selected)) != 0)
+								   EEditorSceneLightFlags::Selected
+							   )) != 0)
 			{
 				Light.Flags |= static_cast<u32>(
-					EMaterialLightFlags::Selected);
+					EMaterialLightFlags::Selected
+				);
 			}
 			GpuLights.push_back(Light);
 		}
 		if (!GpuLights.empty() &&
-			!WritePreviewBuffer(PreviewLightDataBuffer,
-				u64(AbsoluteLightIndex) *
-					MaterialLightGpuDataSize,
-				GpuLights.data(),
-				GpuLights.size() * MaterialLightGpuDataSize))
+			!WritePreviewBuffer(PreviewLightDataBuffer, u64(AbsoluteLightIndex) * MaterialLightGpuDataSize, GpuLights.data(), GpuLights.size() * MaterialLightGpuDataSize))
 		{
 			return false;
 		}
-		if (!WritePreviewBuffer(Viewport.SceneConstantsBuffer,
-				u64(FrameContext) * 256, &Global, sizeof(Global)))
+		if (!WritePreviewBuffer(Viewport.SceneConstantsBuffer, u64(FrameContext) * 256, &Global, sizeof(Global)))
 		{
 			return false;
 		}
@@ -2946,11 +3079,13 @@ struct TiramisuEditorRenderBridge::FImpl
 		Viewport.SceneSelectionDrawCount = 0;
 		Draws.reserve(Viewport.ScenePacket.Instances.size());
 		for (const FEditorStaticMeshInstance& Instance :
-			Viewport.ScenePacket.Instances)
+			 Viewport.ScenePacket.Instances)
 		{
 			const auto MeshIt = GpuMeshes.find(Instance.MeshId.Value);
 			if (MeshIt == GpuMeshes.end())
+			{
 				continue;
+			}
 			for (const FEditorStaticMeshSection& Section : MeshIt->second.Sections)
 			{
 				if (Draws.size() >= MaxSceneDrawsPerViewport)
@@ -2960,39 +3095,42 @@ struct TiramisuEditorRenderBridge::FImpl
 				}
 				FMaterialDrawGpuData Draw;
 				Draw.LocalToWorld = MakeMaterialDrawBufferMatrix(
-					Instance.LocalToWorld);
+					Instance.LocalToWorld
+				);
 				Draw.PreviousLocalToWorld = Draw.LocalToWorld;
 				const FEditorMaterialSlotId MaterialSlot =
 					ResolveEditorMaterialSlot(
-						Instance, Section.MaterialSlot);
+						Instance, Section.MaterialSlot
+					);
 				const auto Material = SceneMaterials.find(MaterialSlot.Value);
 				const u32 LocalMaterialIndex =
-					Material == SceneMaterials.end() ? 0u :
-					Material->second.InstanceIndex;
+					Material == SceneMaterials.end() ? 0u : Material->second.InstanceIndex;
 				Draw.MaterialInstanceIndex =
 					FrameContext * MaxEditorMaterialInstances +
 					LocalMaterialIndex;
 				Draw.ObjectId = static_cast<u32>(Instance.ObjectId.Value) ^
-					static_cast<u32>(Instance.ObjectId.Value >> 32u);
+								static_cast<u32>(Instance.ObjectId.Value >> 32u);
 				Draw.Flags = static_cast<u32>(Instance.Flags);
 				Draws.push_back(Draw);
 				if ((static_cast<u32>(Instance.Flags) &
-					static_cast<u32>(EEditorSceneInstanceFlags::Selected)) != 0)
+					 static_cast<u32>(EEditorSceneInstanceFlags::Selected)) != 0)
 				{
 					++Viewport.SceneSelectionDrawCount;
 				}
 			}
 			if (Draws.size() >= MaxSceneDrawsPerViewport)
+			{
 				break;
+			}
 		}
 		Viewport.SceneDrawCount = static_cast<u32>(Draws.size());
 		if (Draws.empty())
+		{
 			return true;
+		}
 		const u32 AbsoluteDrawIndex =
 			FrameContext * MaxEditorDrawRecords + Viewport.SceneDrawBase;
-		return WritePreviewBuffer(PreviewDrawDataBuffer,
-			u64(AbsoluteDrawIndex) * sizeof(FMaterialDrawGpuData),
-			Draws.data(), Draws.size() * sizeof(FMaterialDrawGpuData));
+		return WritePreviewBuffer(PreviewDrawDataBuffer, u64(AbsoluteDrawIndex) * sizeof(FMaterialDrawGpuData), Draws.data(), Draws.size() * sizeof(FMaterialDrawGpuData));
 	}
 
 	void RecordPendingMeshBarriers(nri::CommandBuffer& CommandBuffer)
@@ -3002,13 +3140,13 @@ struct TiramisuEditorRenderBridge::FImpl
 		{
 			(void)MeshId;
 			if (!Mesh.NeedsBarrier)
+			{
 				continue;
+			}
 			nri::BufferBarrierDesc Barrier = {};
 			Barrier.buffer = Mesh.Buffer;
 			Barrier.before = {nri::AccessBits::NONE, nri::StageBits::NONE};
-			Barrier.after = {nri::AccessBits::VERTEX_BUFFER |
-				nri::AccessBits::INDEX_BUFFER,
-				nri::StageBits::VERTEX_SHADER | nri::StageBits::INDEX_INPUT};
+			Barrier.after = {nri::AccessBits::VERTEX_BUFFER | nri::AccessBits::INDEX_BUFFER, nri::StageBits::VERTEX_SHADER | nri::StageBits::INDEX_INPUT};
 			Barriers.push_back(Barrier);
 			Mesh.NeedsBarrier = false;
 		}
@@ -3016,42 +3154,41 @@ struct TiramisuEditorRenderBridge::FImpl
 		{
 			(void)ViewportId;
 			if (!Viewport.DebugDrawBuffer || !Viewport.DebugDrawNeedsBarrier)
+			{
 				continue;
+			}
 			nri::BufferBarrierDesc Barrier = {};
 			Barrier.buffer = Viewport.DebugDrawBuffer;
 			Barrier.before = {nri::AccessBits::NONE, nri::StageBits::NONE};
-			Barrier.after = {nri::AccessBits::VERTEX_BUFFER,
-				nri::StageBits::VERTEX_SHADER};
+			Barrier.after = {nri::AccessBits::VERTEX_BUFFER, nri::StageBits::VERTEX_SHADER};
 			Barriers.push_back(Barrier);
 			Viewport.DebugDrawNeedsBarrier = false;
 		}
 		if (Barriers.empty())
+		{
 			return;
+		}
 		nri::BarrierDesc Desc = {};
 		Desc.buffers = Barriers.data();
 		Desc.bufferNum = static_cast<u32>(Barriers.size());
 		CoreInterface.CmdBarrier(CommandBuffer, Desc);
 	}
 
-	void RecordSceneGeometry(nri::CommandBuffer& CommandBuffer,
-		const FViewport& Viewport, const u32 FrameContext)
+	void RecordSceneGeometry(nri::CommandBuffer& CommandBuffer, const FViewport& Viewport, const u32 FrameContext)
 	{
 		if (!ScenePipeline || !ScenePipelineLayout ||
 			FrameContext >= QueuedFrameCount)
+		{
 			return;
-		const nri::Viewport NriViewport = {0.0f, 0.0f,
-			static_cast<float>(Viewport.Width), static_cast<float>(Viewport.Height),
-			0.0f, 1.0f};
+		}
+		const nri::Viewport NriViewport = {0.0f, 0.0f, static_cast<float>(Viewport.Width), static_cast<float>(Viewport.Height), 0.0f, 1.0f};
 		CoreInterface.CmdSetViewports(CommandBuffer, &NriViewport, 1);
-		const nri::Rect Scissor = {0, 0,
-			static_cast<nri::Dim_t>(Viewport.Width),
-			static_cast<nri::Dim_t>(Viewport.Height)};
+		const nri::Rect Scissor = {0, 0, static_cast<nri::Dim_t>(Viewport.Width), static_cast<nri::Dim_t>(Viewport.Height)};
 		CoreInterface.CmdSetScissors(CommandBuffer, &Scissor, 1);
 
 		// The first frame normally uses the diagnostic pipeline while the real
 		// material permutation is compiling in the background.
-		CoreInterface.CmdSetPipelineLayout(CommandBuffer,
-			nri::BindPoint::GRAPHICS, *ScenePipelineLayout);
+		CoreInterface.CmdSetPipelineLayout(CommandBuffer, nri::BindPoint::GRAPHICS, *ScenePipelineLayout);
 		bool MaterialLayoutBound = false;
 		nri::Pipeline* BoundPipeline = nullptr;
 		u32 DrawOffset = 0;
@@ -3059,52 +3196,55 @@ struct TiramisuEditorRenderBridge::FImpl
 		{
 			const auto MeshIt = GpuMeshes.find(Instance.MeshId.Value);
 			if (MeshIt == GpuMeshes.end())
+			{
 				continue;
+			}
 			const FGpuMesh& Mesh = MeshIt->second;
-			CoreInterface.CmdSetIndexBuffer(CommandBuffer, *Mesh.Buffer,
-				0, nri::IndexType::UINT32);
+			CoreInterface.CmdSetIndexBuffer(CommandBuffer, *Mesh.Buffer, 0, nri::IndexType::UINT32);
 			const nri::VertexBufferDesc VertexBuffer = {
-				Mesh.Buffer, Mesh.VertexOffset, sizeof(FEditorStaticMeshVertex)};
+				Mesh.Buffer, Mesh.VertexOffset, sizeof(FEditorStaticMeshVertex)
+			};
 			CoreInterface.CmdSetVertexBuffers(CommandBuffer, 0, &VertexBuffer, 1);
 			for (const FEditorStaticMeshSection& Section : Mesh.Sections)
 			{
 				if (DrawOffset >= Viewport.SceneDrawCount)
+				{
 					return;
+				}
 				const FEditorMaterialSlotId MaterialSlot =
 					ResolveEditorMaterialSlot(
-						Instance, Section.MaterialSlot);
+						Instance, Section.MaterialSlot
+					);
 				const auto MaterialIt = SceneMaterials.find(MaterialSlot.Value);
 				const FSceneMaterial* Material = MaterialIt == SceneMaterials.end()
-					? nullptr : &MaterialIt->second;
+													 ? nullptr
+													 : &MaterialIt->second;
 				if (Material && Material->Pipeline &&
 					Viewport.SceneConstantsSets[FrameContext])
 				{
 					if (!MaterialLayoutBound)
 					{
-						CoreInterface.CmdSetDescriptorPool(CommandBuffer,
-							*PreviewDescriptorPool);
-						CoreInterface.CmdSetPipelineLayout(CommandBuffer,
-							nri::BindPoint::GRAPHICS, *PreviewPipelineLayout);
+						CoreInterface.CmdSetDescriptorPool(CommandBuffer, *PreviewDescriptorPool);
+						CoreInterface.CmdSetPipelineLayout(CommandBuffer, nri::BindPoint::GRAPHICS, *PreviewPipelineLayout);
 						const nri::SetDescriptorSetDesc Sets[] = {
-							{0, PreviewResourcesSet}, {1, PreviewSamplersSet},
-							{2, Viewport.SceneConstantsSets[FrameContext]}};
+							{0, PreviewResourcesSet}, {1, PreviewSamplersSet}, {2, Viewport.SceneConstantsSets[FrameContext]}
+						};
 						for (const nri::SetDescriptorSetDesc& Set : Sets)
+						{
 							CoreInterface.CmdSetDescriptorSet(CommandBuffer, Set);
+						}
 						MaterialLayoutBound = true;
 						BoundPipeline = nullptr;
 					}
 					if (BoundPipeline != Material->Pipeline)
 					{
-						CoreInterface.CmdSetPipeline(CommandBuffer,
-							*Material->Pipeline);
+						CoreInterface.CmdSetPipeline(CommandBuffer, *Material->Pipeline);
 						BoundPipeline = Material->Pipeline;
 					}
 					const u32 AbsoluteDrawIndex =
 						FrameContext * MaxEditorDrawRecords +
 						Viewport.SceneDrawBase + DrawOffset;
-					CoreInterface.CmdDrawIndexed(CommandBuffer,
-						{Section.IndexCount, 1, Section.FirstIndex, 0,
-							AbsoluteDrawIndex});
+					CoreInterface.CmdDrawIndexed(CommandBuffer, {Section.IndexCount, 1, Section.FirstIndex, 0, AbsoluteDrawIndex});
 					Statistics.RecordDraw(Section.IndexCount / 3);
 					++DrawOffset;
 					continue;
@@ -3112,8 +3252,7 @@ struct TiramisuEditorRenderBridge::FImpl
 
 				if (MaterialLayoutBound)
 				{
-					CoreInterface.CmdSetPipelineLayout(CommandBuffer,
-						nri::BindPoint::GRAPHICS, *ScenePipelineLayout);
+					CoreInterface.CmdSetPipelineLayout(CommandBuffer, nri::BindPoint::GRAPHICS, *ScenePipelineLayout);
 					MaterialLayoutBound = false;
 					BoundPipeline = nullptr;
 				}
@@ -3123,203 +3262,195 @@ struct TiramisuEditorRenderBridge::FImpl
 					Viewport.ScenePacket.Camera.ViewProjection,
 					static_cast<u32>(MaterialSlot.Value),
 					static_cast<u32>(MaterialSlot.Value >> 32u),
-					static_cast<u32>(Instance.Flags)};
+					static_cast<u32>(Instance.Flags)
+				};
 				const nri::SetRootConstantsDesc RootConstants = {
-					0, &Constants, sizeof(Constants), 0,
-					nri::BindPoint::GRAPHICS};
+					0, &Constants, sizeof(Constants), 0, nri::BindPoint::GRAPHICS
+				};
 				CoreInterface.CmdSetRootConstants(CommandBuffer, RootConstants);
-				CoreInterface.CmdDrawIndexed(CommandBuffer,
-					{Section.IndexCount, 1, Section.FirstIndex, 0, 0});
+				CoreInterface.CmdDrawIndexed(CommandBuffer, {Section.IndexCount, 1, Section.FirstIndex, 0, 0});
 				Statistics.RecordDraw(Section.IndexCount / 3);
 				++DrawOffset;
 			}
 		}
 	}
 
-	void RecordSceneSelectionOverlay(nri::CommandBuffer& CommandBuffer,
-		const FViewport& Viewport)
+	void RecordSceneSelectionOverlay(nri::CommandBuffer& CommandBuffer, const FViewport& Viewport)
 	{
 		if (!SceneSelectionPipeline || !ScenePipelineLayout ||
 			Viewport.SceneSelectionDrawCount == 0)
 		{
 			return;
 		}
-		CoreInterface.CmdSetPipelineLayout(CommandBuffer,
-			nri::BindPoint::GRAPHICS, *ScenePipelineLayout);
+		CoreInterface.CmdSetPipelineLayout(CommandBuffer, nri::BindPoint::GRAPHICS, *ScenePipelineLayout);
 		CoreInterface.CmdSetPipeline(CommandBuffer, *SceneSelectionPipeline);
 		for (const FEditorStaticMeshInstance& Instance : Viewport.ScenePacket.Instances)
 		{
 			if ((static_cast<u32>(Instance.Flags) &
-				static_cast<u32>(EEditorSceneInstanceFlags::Selected)) == 0)
+				 static_cast<u32>(EEditorSceneInstanceFlags::Selected)) == 0)
 			{
 				continue;
 			}
 			const auto MeshIt = GpuMeshes.find(Instance.MeshId.Value);
 			if (MeshIt == GpuMeshes.end())
+			{
 				continue;
+			}
 			const FGpuMesh& Mesh = MeshIt->second;
-			CoreInterface.CmdSetIndexBuffer(CommandBuffer, *Mesh.Buffer,
-				0, nri::IndexType::UINT32);
+			CoreInterface.CmdSetIndexBuffer(CommandBuffer, *Mesh.Buffer, 0, nri::IndexType::UINT32);
 			const nri::VertexBufferDesc VertexBuffer = {
-				Mesh.Buffer, Mesh.VertexOffset, sizeof(FEditorStaticMeshVertex)};
+				Mesh.Buffer, Mesh.VertexOffset, sizeof(FEditorStaticMeshVertex)
+			};
 			CoreInterface.CmdSetVertexBuffers(CommandBuffer, 0, &VertexBuffer, 1);
 			for (const FEditorStaticMeshSection& Section : Mesh.Sections)
 			{
 				const FEditorMaterialSlotId MaterialSlot =
 					ResolveEditorMaterialSlot(
-						Instance, Section.MaterialSlot);
+						Instance, Section.MaterialSlot
+					);
 				FEditorSceneDrawConstants Constants = {
 					Instance.LocalToWorld,
 					Viewport.ScenePacket.Camera.ViewProjection,
 					static_cast<u32>(MaterialSlot.Value),
 					static_cast<u32>(MaterialSlot.Value >> 32u),
-					static_cast<u32>(Instance.Flags)};
+					static_cast<u32>(Instance.Flags)
+				};
 				const nri::SetRootConstantsDesc RootConstants = {
-					0, &Constants, sizeof(Constants), 0,
-					nri::BindPoint::GRAPHICS};
+					0, &Constants, sizeof(Constants), 0, nri::BindPoint::GRAPHICS
+				};
 				CoreInterface.CmdSetRootConstants(CommandBuffer, RootConstants);
-				CoreInterface.CmdDrawIndexed(CommandBuffer,
-					{Section.IndexCount, 1, Section.FirstIndex, 0, 0});
+				CoreInterface.CmdDrawIndexed(CommandBuffer, {Section.IndexCount, 1, Section.FirstIndex, 0, 0});
 				Statistics.RecordDraw(Section.IndexCount / 3);
 			}
 		}
 	}
 
-	void RecordViewportDebugDraw(nri::CommandBuffer& CommandBuffer,
-		const FViewport& Viewport)
+	void RecordViewportDebugDraw(nri::CommandBuffer& CommandBuffer, const FViewport& Viewport)
 	{
 		if (!ScenePipelineLayout || !Viewport.DebugDrawBuffer ||
 			(Viewport.DebugLineVertexCount == 0 &&
-				Viewport.DebugTriangleVertexCount == 0 &&
-				Viewport.OverlayLineVertexCount == 0 &&
-				Viewport.OverlayTriangleVertexCount == 0))
+			 Viewport.DebugTriangleVertexCount == 0 &&
+			 Viewport.OverlayLineVertexCount == 0 &&
+			 Viewport.OverlayTriangleVertexCount == 0))
 		{
 			return;
 		}
-		const nri::Viewport NriViewport = {0.0f, 0.0f,
-			static_cast<float>(Viewport.Width), static_cast<float>(Viewport.Height),
-			0.0f, 1.0f};
+		const nri::Viewport NriViewport = {0.0f, 0.0f, static_cast<float>(Viewport.Width), static_cast<float>(Viewport.Height), 0.0f, 1.0f};
 		CoreInterface.CmdSetViewports(CommandBuffer, &NriViewport, 1);
-		const nri::Rect Scissor = {0, 0,
-			static_cast<nri::Dim_t>(Viewport.Width),
-			static_cast<nri::Dim_t>(Viewport.Height)};
+		const nri::Rect Scissor = {0, 0, static_cast<nri::Dim_t>(Viewport.Width), static_cast<nri::Dim_t>(Viewport.Height)};
 		CoreInterface.CmdSetScissors(CommandBuffer, &Scissor, 1);
-		CoreInterface.CmdSetPipelineLayout(CommandBuffer,
-			nri::BindPoint::GRAPHICS, *ScenePipelineLayout);
+		CoreInterface.CmdSetPipelineLayout(CommandBuffer, nri::BindPoint::GRAPHICS, *ScenePipelineLayout);
 		FEditorSceneDrawConstants Constants = {};
 		Constants.LocalToWorld = {
-			1.0f, 0.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 1.0f, 0.0f,
-			0.0f, 0.0f, 0.0f, 1.0f};
+			1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f
+		};
 		Constants.ViewProjection =
 			Viewport.ScenePacket.Camera.ViewProjection;
 		const nri::SetRootConstantsDesc RootConstants = {
-			0, &Constants, sizeof(Constants), 0, nri::BindPoint::GRAPHICS};
+			0, &Constants, sizeof(Constants), 0, nri::BindPoint::GRAPHICS
+		};
 		CoreInterface.CmdSetRootConstants(CommandBuffer, RootConstants);
 
 		if (Viewport.DebugLineVertexCount != 0 && SceneDebugLinePipeline)
 		{
 			CoreInterface.CmdSetPipeline(CommandBuffer, *SceneDebugLinePipeline);
 			const nri::VertexBufferDesc VertexBuffer = {
-				Viewport.DebugDrawBuffer, 0, sizeof(FEditorDebugVertex)};
+				Viewport.DebugDrawBuffer, 0, sizeof(FEditorDebugVertex)
+			};
 			CoreInterface.CmdSetVertexBuffers(CommandBuffer, 0, &VertexBuffer, 1);
-			CoreInterface.CmdDraw(CommandBuffer,
-				{Viewport.DebugLineVertexCount, 1, 0, 0});
+			CoreInterface.CmdDraw(CommandBuffer, {Viewport.DebugLineVertexCount, 1, 0, 0});
 			Statistics.RecordDraw(0, Viewport.DebugLineVertexCount / 2);
 		}
 		if (Viewport.DebugTriangleVertexCount != 0 &&
 			SceneDebugTrianglePipeline)
 		{
-			CoreInterface.CmdSetPipeline(CommandBuffer,
-				*SceneDebugTrianglePipeline);
+			CoreInterface.CmdSetPipeline(CommandBuffer, *SceneDebugTrianglePipeline);
 			const nri::VertexBufferDesc VertexBuffer = {
-				Viewport.DebugDrawBuffer, Viewport.DebugTriangleOffset,
-				sizeof(FEditorDebugVertex)};
+				Viewport.DebugDrawBuffer, Viewport.DebugTriangleOffset, sizeof(FEditorDebugVertex)
+			};
 			CoreInterface.CmdSetVertexBuffers(CommandBuffer, 0, &VertexBuffer, 1);
-			CoreInterface.CmdDraw(CommandBuffer,
-				{Viewport.DebugTriangleVertexCount, 1, 0, 0});
+			CoreInterface.CmdDraw(CommandBuffer, {Viewport.DebugTriangleVertexCount, 1, 0, 0});
 			Statistics.RecordDraw(Viewport.DebugTriangleVertexCount / 3);
 		}
 		if (Viewport.OverlayLineVertexCount != 0 && SceneOverlayLinePipeline)
 		{
 			CoreInterface.CmdSetPipeline(CommandBuffer, *SceneOverlayLinePipeline);
 			const nri::VertexBufferDesc VertexBuffer = {
-				Viewport.DebugDrawBuffer, Viewport.OverlayLineOffset,
-				sizeof(FEditorDebugVertex)};
+				Viewport.DebugDrawBuffer, Viewport.OverlayLineOffset, sizeof(FEditorDebugVertex)
+			};
 			CoreInterface.CmdSetVertexBuffers(CommandBuffer, 0, &VertexBuffer, 1);
-			CoreInterface.CmdDraw(CommandBuffer,
-				{Viewport.OverlayLineVertexCount, 1, 0, 0});
+			CoreInterface.CmdDraw(CommandBuffer, {Viewport.OverlayLineVertexCount, 1, 0, 0});
 			Statistics.RecordDraw(0, Viewport.OverlayLineVertexCount / 2);
 		}
 		if (Viewport.OverlayTriangleVertexCount != 0 &&
 			SceneOverlayTrianglePipeline)
 		{
-			CoreInterface.CmdSetPipeline(CommandBuffer,
-				*SceneOverlayTrianglePipeline);
+			CoreInterface.CmdSetPipeline(CommandBuffer, *SceneOverlayTrianglePipeline);
 			const nri::VertexBufferDesc VertexBuffer = {
-				Viewport.DebugDrawBuffer, Viewport.OverlayTriangleOffset,
-				sizeof(FEditorDebugVertex)};
+				Viewport.DebugDrawBuffer, Viewport.OverlayTriangleOffset, sizeof(FEditorDebugVertex)
+			};
 			CoreInterface.CmdSetVertexBuffers(CommandBuffer, 0, &VertexBuffer, 1);
-			CoreInterface.CmdDraw(CommandBuffer,
-				{Viewport.OverlayTriangleVertexCount, 1, 0, 0});
+			CoreInterface.CmdDraw(CommandBuffer, {Viewport.OverlayTriangleVertexCount, 1, 0, 0});
 			Statistics.RecordDraw(Viewport.OverlayTriangleVertexCount / 3);
 		}
 	}
 
 	[[nodiscard]] FMaterialPreview* FindPreviewByViewport(
-		const u32 ViewportId) noexcept
+		const u32 ViewportId
+	) noexcept
 	{
 		if ((ViewportId & 0x80000000u) == 0)
+		{
 			return nullptr;
+		}
 		const u32 Index = ViewportId & 0x7fffffffu;
 		if (Index >= MaterialPreviews.size())
+		{
 			return nullptr;
+		}
 		FMaterialPreview& Preview = MaterialPreviews[Index];
 		return Preview.Alive && Preview.ViewportId == ViewportId ? &Preview : nullptr;
 	}
 
-	void RecordMaterialPreviewGeometry(nri::CommandBuffer& CommandBuffer,
-		const FViewport& Viewport, const FMaterialPreview& Preview,
-		const u32 FrameContext)
+	void RecordMaterialPreviewGeometry(nri::CommandBuffer& CommandBuffer, const FViewport& Viewport, const FMaterialPreview& Preview, const u32 FrameContext)
 	{
 		if (!Preview.Pipeline || !PreviewPipelineLayout)
+		{
 			return;
+		}
 		const auto MeshIt = GpuMeshes.find(Preview.MeshId.Value);
 		if (MeshIt == GpuMeshes.end())
+		{
 			return;
+		}
 		// Direct descriptor-heap indexing is part of the material shader
 		// contract, so the owning heap must be bound before its root signature.
 		CoreInterface.CmdSetDescriptorPool(CommandBuffer, *PreviewDescriptorPool);
-		CoreInterface.CmdSetPipelineLayout(CommandBuffer,
-			nri::BindPoint::GRAPHICS, *PreviewPipelineLayout);
+		CoreInterface.CmdSetPipelineLayout(CommandBuffer, nri::BindPoint::GRAPHICS, *PreviewPipelineLayout);
 		const nri::SetDescriptorSetDesc Sets[] = {
-			{0, PreviewResourcesSet}, {1, PreviewSamplersSet},
-			{2, PreviewConstantsSet}};
+			{0, PreviewResourcesSet}, {1, PreviewSamplersSet}, {2, PreviewConstantsSet}
+		};
 		for (const nri::SetDescriptorSetDesc& Set : Sets)
+		{
 			CoreInterface.CmdSetDescriptorSet(CommandBuffer, Set);
+		}
 		CoreInterface.CmdSetPipeline(CommandBuffer, *Preview.Pipeline);
-		const nri::Viewport NriViewport = {0.0f, 0.0f,
-			static_cast<float>(Viewport.Width), static_cast<float>(Viewport.Height),
-			0.0f, 1.0f};
+		const nri::Viewport NriViewport = {0.0f, 0.0f, static_cast<float>(Viewport.Width), static_cast<float>(Viewport.Height), 0.0f, 1.0f};
 		CoreInterface.CmdSetViewports(CommandBuffer, &NriViewport, 1);
-		const nri::Rect Scissor = {0, 0,
-			static_cast<nri::Dim_t>(Viewport.Width),
-			static_cast<nri::Dim_t>(Viewport.Height)};
+		const nri::Rect Scissor = {0, 0, static_cast<nri::Dim_t>(Viewport.Width), static_cast<nri::Dim_t>(Viewport.Height)};
 		CoreInterface.CmdSetScissors(CommandBuffer, &Scissor, 1);
 
 		const FGpuMesh& Mesh = MeshIt->second;
-		CoreInterface.CmdSetIndexBuffer(CommandBuffer, *Mesh.Buffer,
-			0, nri::IndexType::UINT32);
+		CoreInterface.CmdSetIndexBuffer(CommandBuffer, *Mesh.Buffer, 0, nri::IndexType::UINT32);
 		const nri::VertexBufferDesc VertexBuffer = {
-			Mesh.Buffer, Mesh.VertexOffset, sizeof(FEditorStaticMeshVertex)};
+			Mesh.Buffer, Mesh.VertexOffset, sizeof(FEditorStaticMeshVertex)
+		};
 		CoreInterface.CmdSetVertexBuffers(CommandBuffer, 0, &VertexBuffer, 1);
 		const u32 PreviewIndex =
 			static_cast<u32>(&Preview - MaterialPreviews.data());
 		const u32 AbsoluteDrawIndex =
 			FrameContext * MaxEditorDrawRecords + PreviewIndex;
-		CoreInterface.CmdDrawIndexed(CommandBuffer,
-			{Mesh.IndexCount, 1, 0, 0, AbsoluteDrawIndex});
+		CoreInterface.CmdDrawIndexed(CommandBuffer, {Mesh.IndexCount, 1, 0, 0, AbsoluteDrawIndex});
 		Statistics.RecordDraw(Mesh.IndexCount / 3);
 	}
 
@@ -3330,17 +3461,21 @@ struct TiramisuEditorRenderBridge::FImpl
 		{
 			(void)ViewportId;
 			MustWaitForResize |= Viewport.Texture &&
-				(Viewport.Width != Viewport.DesiredWidth ||
-					Viewport.Height != Viewport.DesiredHeight);
+								 (Viewport.Width != Viewport.DesiredWidth ||
+								  Viewport.Height != Viewport.DesiredHeight);
 		}
 		if (MustWaitForResize)
+		{
 			CoreInterface.QueueWaitIdle(GraphicsQueue);
+		}
 
 		for (auto& [ViewportId, Viewport] : Viewports)
 		{
 			(void)ViewportId;
 			if (Viewport.DesiredWidth == 0 || Viewport.DesiredHeight == 0)
+			{
 				continue;
+			}
 			if (Viewport.Texture && Viewport.Width == Viewport.DesiredWidth &&
 				Viewport.Height == Viewport.DesiredHeight)
 			{
@@ -3348,31 +3483,33 @@ struct TiramisuEditorRenderBridge::FImpl
 			}
 			DestroyViewport(Viewport);
 			if (!CreateViewport(Viewport))
+			{
 				return false;
+			}
 		}
 		return true;
 	}
 
-	void RecordViewportPasses(nri::CommandBuffer& CommandBuffer,
-		const u32 FrameContext)
+	void RecordViewportPasses(nri::CommandBuffer& CommandBuffer, const u32 FrameContext)
 	{
 		UploadMaterialFrameData(FrameContext);
 		for (auto& [ViewportId, Viewport] : Viewports)
 		{
 			if (!Viewport.CaptureRequested || !Viewport.Texture)
+			{
 				continue;
+			}
 			FMaterialPreview* MaterialPreview = FindPreviewByViewport(ViewportId);
-			CoreInterface.CmdBeginAnnotation(CommandBuffer,
-				MaterialPreview ? "Editor.MaterialPreview" :
-					"Editor.SceneViewport",
-				nri::BGRA_UNUSED);
+			CoreInterface.CmdBeginAnnotation(CommandBuffer, MaterialPreview ? "Editor.MaterialPreview" : "Editor.SceneViewport", nri::BGRA_UNUSED);
 			Statistics.RecordPass();
 
 			// Consume only while recording the renderer frame. The mailbox owns
 			// editor-side arrays, so a dedicated render thread can replace this
 			// call site without changing the scene submission contract.
 			if (Viewport.SceneMailbox->Consume(Viewport.ScenePacket))
+			{
 				ApplyScenePacket(Viewport, Viewport.ScenePacket);
+			}
 			if (!MaterialPreview &&
 				!UploadSceneViewportFrameData(Viewport, FrameContext))
 			{
@@ -3384,11 +3521,9 @@ struct TiramisuEditorRenderBridge::FImpl
 			ToAttachment.texture = Viewport.Texture;
 			if (Viewport.HasShaderResourceState)
 			{
-				ToAttachment.before = {nri::AccessBits::SHADER_RESOURCE,
-					nri::Layout::SHADER_RESOURCE, nri::StageBits::FRAGMENT_SHADER};
+				ToAttachment.before = {nri::AccessBits::SHADER_RESOURCE, nri::Layout::SHADER_RESOURCE, nri::StageBits::FRAGMENT_SHADER};
 			}
-			ToAttachment.after = {nri::AccessBits::COLOR_ATTACHMENT_WRITE,
-				nri::Layout::COLOR_ATTACHMENT, nri::StageBits::COLOR_ATTACHMENT};
+			ToAttachment.after = {nri::AccessBits::COLOR_ATTACHMENT_WRITE, nri::Layout::COLOR_ATTACHMENT, nri::StageBits::COLOR_ATTACHMENT};
 			ToAttachment.mipNum = 1;
 			ToAttachment.layerNum = 1;
 			xr_array<nri::TextureBarrierDesc, 2> AttachmentBarriers = {};
@@ -3399,9 +3534,7 @@ struct TiramisuEditorRenderBridge::FImpl
 				nri::TextureBarrierDesc& ToDepth =
 					AttachmentBarriers[AttachmentBarrierCount++];
 				ToDepth.texture = Viewport.DepthTexture;
-				ToDepth.after = {nri::AccessBits::DEPTH_STENCIL_ATTACHMENT_WRITE,
-					nri::Layout::DEPTH_STENCIL_ATTACHMENT,
-					nri::StageBits::DEPTH_STENCIL_ATTACHMENT};
+				ToDepth.after = {nri::AccessBits::DEPTH_STENCIL_ATTACHMENT_WRITE, nri::Layout::DEPTH_STENCIL_ATTACHMENT, nri::StageBits::DEPTH_STENCIL_ATTACHMENT};
 				ToDepth.mipNum = 1;
 				ToDepth.layerNum = 1;
 				ToDepth.planes = nri::PlaneBits::DEPTH;
@@ -3416,13 +3549,19 @@ struct TiramisuEditorRenderBridge::FImpl
 			Color.descriptor = Viewport.ColorAttachment;
 			Color.loadOp = nri::LoadOp::CLEAR;
 			if (MaterialPreview && MaterialPreview->Environment == "Neutral")
+			{
 				Color.clearValue.color.f = {0.12f, 0.12f, 0.12f, 1.0f};
+			}
 			else if (MaterialPreview && MaterialPreview->Environment == "Outdoor")
+			{
 				Color.clearValue.color.f = {0.16f, 0.24f, 0.34f, 1.0f};
+			}
 			else
+			{
 				Color.clearValue.color.f = MaterialPreview
-					? nri::Color32f{0.035f, 0.04f, 0.055f, 1.0f}
-					: nri::Color32f{0.025f + Accent, 0.035f, 0.055f, 1.0f};
+											   ? nri::Color32f{0.035f, 0.04f, 0.055f, 1.0f}
+											   : nri::Color32f{0.025f + Accent, 0.035f, 0.055f, 1.0f};
+			}
 			nri::AttachmentDesc Depth = {};
 			Depth.descriptor = Viewport.DepthAttachment;
 			Depth.loadOp = nri::LoadOp::CLEAR;
@@ -3434,8 +3573,9 @@ struct TiramisuEditorRenderBridge::FImpl
 			Rendering.depth = Depth;
 			CoreInterface.CmdBeginRendering(CommandBuffer, Rendering);
 			if (MaterialPreview)
-				RecordMaterialPreviewGeometry(CommandBuffer, Viewport,
-					*MaterialPreview, FrameContext);
+			{
+				RecordMaterialPreviewGeometry(CommandBuffer, Viewport, *MaterialPreview, FrameContext);
+			}
 			else
 			{
 				RecordSceneGeometry(CommandBuffer, Viewport, FrameContext);
@@ -3446,8 +3586,7 @@ struct TiramisuEditorRenderBridge::FImpl
 
 			nri::TextureBarrierDesc ToShaderResource = ToAttachment;
 			ToShaderResource.before = ToAttachment.after;
-			ToShaderResource.after = {nri::AccessBits::SHADER_RESOURCE,
-				nri::Layout::SHADER_RESOURCE, nri::StageBits::FRAGMENT_SHADER};
+			ToShaderResource.after = {nri::AccessBits::SHADER_RESOURCE, nri::Layout::SHADER_RESOURCE, nri::StageBits::FRAGMENT_SHADER};
 			Barrier.textures = &ToShaderResource;
 			Barrier.textureNum = 1;
 			CoreInterface.CmdBarrier(CommandBuffer, Barrier);
@@ -3462,30 +3601,38 @@ struct TiramisuEditorRenderBridge::FImpl
 	{
 		FRenderResourceStatistics Result;
 		const auto AddBuffer = [&](const nri::Buffer* Buffer,
-			const u64 Bytes = 0)
+								   const u64 Bytes = 0)
 		{
 			if (!Buffer)
+			{
 				return;
+			}
 			++Result.TrackedBufferCount;
 			Result.TrackedBufferBytes += Bytes;
 		};
 		const auto AddTexture = [&](const nri::Texture* Texture,
-			const u64 Bytes = 0)
+									const u64 Bytes = 0)
 		{
 			if (!Texture)
+			{
 				return;
+			}
 			++Result.TrackedTextureCount;
 			Result.TrackedTextureBytes += Bytes;
 		};
 		const auto AddPipeline = [&](const nri::Pipeline* Pipeline)
 		{
 			if (Pipeline)
+			{
 				++Result.TrackedPipelineCount;
+			}
 		};
 		const auto AddDescriptor = [&](const void* Descriptor)
 		{
 			if (Descriptor)
+			{
 				++Result.TrackedDescriptorCount;
+			}
 		};
 
 		const u64 SwapTextureBytes =
@@ -3506,12 +3653,10 @@ struct TiramisuEditorRenderBridge::FImpl
 			AddDescriptor(Viewport.ShaderResource);
 			AddDescriptor(Viewport.ColorAttachment);
 			AddDescriptor(Viewport.DepthAttachment);
-			AddBuffer(Viewport.DebugDrawBuffer,
-				Viewport.DebugDrawBufferBytes);
-			AddBuffer(Viewport.SceneConstantsBuffer,
-				256ull * QueuedFrameCount);
+			AddBuffer(Viewport.DebugDrawBuffer, Viewport.DebugDrawBufferBytes);
+			AddBuffer(Viewport.SceneConstantsBuffer, 256ull * QueuedFrameCount);
 			for (const nri::Descriptor* Descriptor :
-				Viewport.SceneConstantsDescriptors)
+				 Viewport.SceneConstantsDescriptors)
 			{
 				AddDescriptor(Descriptor);
 			}
@@ -3522,16 +3667,16 @@ struct TiramisuEditorRenderBridge::FImpl
 			AddBuffer(Mesh.Buffer, Mesh.ByteSize);
 		}
 		for (const FDeferredBuffer& Buffer : DeferredBuffers)
+		{
 			AddBuffer(Buffer.Buffer);
+		}
 
 		{
 			std::scoped_lock Lock(UiTexturesMutex);
 			for (const auto& [TextureId, Texture] : UiTextures)
 			{
 				(void)TextureId;
-				AddTexture(Texture.Texture,
-					static_cast<u64>(Texture.Width) *
-						Texture.Height * 4);
+				AddTexture(Texture.Texture, static_cast<u64>(Texture.Width) * Texture.Height * 4);
 				AddDescriptor(Texture.ShaderResource);
 			}
 		}
@@ -3583,19 +3728,24 @@ struct TiramisuEditorRenderBridge::FImpl
 		AddPipeline(SceneOverlayLinePipeline);
 		AddPipeline(SceneOverlayTrianglePipeline);
 		for (const FMaterialPreview& Preview : MaterialPreviews)
+		{
 			if (Preview.Alive)
+			{
 				AddPipeline(Preview.Pipeline);
+			}
+		}
 		for (const auto& [PipelineKey, Entry] : ScenePipelineCache)
 		{
 			(void)PipelineKey;
 			AddPipeline(Entry.Pipeline);
 		}
 		for (const FDeferredPipeline& Pipeline : DeferredPipelines)
+		{
 			AddPipeline(Pipeline.Pipeline);
+		}
 
 		Result.DeferredResourceCount =
-			static_cast<u32>(DeferredBuffers.size() +
-				DeferredUiTextures.size() + DeferredPipelines.size());
+			static_cast<u32>(DeferredBuffers.size() + DeferredUiTextures.size() + DeferredPipelines.size());
 		return Result;
 	}
 
@@ -3605,29 +3755,47 @@ struct TiramisuEditorRenderBridge::FImpl
 		{
 			(void)MeshId;
 			if (Mesh.Buffer)
+			{
 				CoreInterface.DestroyBuffer(Mesh.Buffer);
+			}
 		}
 		GpuMeshes.clear();
 		for (const FDeferredBuffer& Item : DeferredBuffers)
 		{
 			if (Item.Buffer)
+			{
 				CoreInterface.DestroyBuffer(Item.Buffer);
+			}
 		}
 		DeferredBuffers.clear();
 		if (ScenePipeline)
+		{
 			CoreInterface.DestroyPipeline(ScenePipeline);
+		}
 		if (SceneSelectionPipeline)
+		{
 			CoreInterface.DestroyPipeline(SceneSelectionPipeline);
+		}
 		if (SceneDebugLinePipeline)
+		{
 			CoreInterface.DestroyPipeline(SceneDebugLinePipeline);
+		}
 		if (SceneDebugTrianglePipeline)
+		{
 			CoreInterface.DestroyPipeline(SceneDebugTrianglePipeline);
+		}
 		if (SceneOverlayLinePipeline)
+		{
 			CoreInterface.DestroyPipeline(SceneOverlayLinePipeline);
+		}
 		if (SceneOverlayTrianglePipeline)
+		{
 			CoreInterface.DestroyPipeline(SceneOverlayTrianglePipeline);
+		}
 		if (ScenePipelineLayout)
+		{
 			CoreInterface.DestroyPipelineLayout(ScenePipelineLayout);
+		}
 		ScenePipeline = nullptr;
 		SceneSelectionPipeline = nullptr;
 		SceneDebugLinePipeline = nullptr;
@@ -3640,7 +3808,9 @@ struct TiramisuEditorRenderBridge::FImpl
 	void Destroy()
 	{
 		if (GraphicsQueue && CoreInterface.QueueWaitIdle)
+		{
 			CoreInterface.QueueWaitIdle(GraphicsQueue);
+		}
 		DestroyViewports();
 		DestroyUiTextures();
 		DestroyMaterialPreviewContext();
@@ -3649,22 +3819,32 @@ struct TiramisuEditorRenderBridge::FImpl
 		for (FFrame& Frame : Frames)
 		{
 			if (Frame.CommandBuffer)
+			{
 				CoreInterface.DestroyCommandBuffer(Frame.CommandBuffer);
+			}
 			if (Frame.Allocator)
+			{
 				CoreInterface.DestroyCommandAllocator(Frame.Allocator);
+			}
 		}
 		Frames = {};
 		if (FrameFence)
+		{
 			CoreInterface.DestroyFence(FrameFence);
+		}
 		FrameFence = nullptr;
 		if (Imgui)
+		{
 			ImguiInterface.DestroyImgui(Imgui);
+		}
 		Imgui = nullptr;
 		Streamer = nullptr;
 		GraphicsQueue = nullptr;
 		NriDevice = nullptr;
 		if (OwnsRenderDevice)
+		{
 			GRenderDevice.Destroy();
+		}
 		OwnsRenderDevice = false;
 		CoreInterface = {};
 		HelperInterface = {};
@@ -3723,10 +3903,8 @@ struct TiramisuEditorRenderBridge::FImpl
 	std::chrono::steady_clock::time_point NextSceneMaterialDependencyPoll{};
 	bool SceneMaterialReloadSmokeTriggered = false;
 	xr_hash_map<u64, FSceneMaterial> SceneMaterials;
-	TEditorBoundedAsyncQueue<FSceneMaterialCompileRequest,
-		FSceneMaterialCompileResult> SceneMaterialCompileQueue;
-	xr_hash_map<FScenePipelineCacheKey, FScenePipelineCacheEntry,
-		FScenePipelineCacheKeyHash> ScenePipelineCache;
+	TEditorBoundedAsyncQueue<FSceneMaterialCompileRequest, FSceneMaterialCompileResult> SceneMaterialCompileQueue;
+	xr_hash_map<FScenePipelineCacheKey, FScenePipelineCacheEntry, FScenePipelineCacheKeyHash> ScenePipelineCache;
 	u32 NextSceneMaterialInstance = MaxMaterialPreviews;
 	u32 SceneViewportCount = 0;
 	u64 SceneMaterialRevision = 0;
@@ -3768,10 +3946,11 @@ struct TiramisuEditorRenderBridge::FImpl
 };
 
 TiramisuEditorRenderBridge::TiramisuEditorRenderBridge(
-	SDL_Window* Window, const ETiramisuEditorGraphicsApi Api,
-	const FRenderDeterministicTestPolicy& DeterministicTest)
+	SDL_Window* Window, const ETiramisuEditorGraphicsApi Api, const FRenderDeterministicTestPolicy& DeterministicTest
+)
 	: Impl(std::make_unique<FImpl>(Window, Api, DeterministicTest))
-{}
+{
+}
 
 TiramisuEditorRenderBridge::~TiramisuEditorRenderBridge()
 {
@@ -3781,8 +3960,8 @@ TiramisuEditorRenderBridge::~TiramisuEditorRenderBridge()
 EXrUIRendererPlatform TiramisuEditorRenderBridge::GetPlatform() const noexcept
 {
 	return Impl->Api == ETiramisuEditorGraphicsApi::Vulkan
-		? EXrUIRendererPlatform::Vulkan
-		: EXrUIRendererPlatform::D3D;
+			   ? EXrUIRendererPlatform::Vulkan
+			   : EXrUIRendererPlatform::D3D;
 }
 
 bool TiramisuEditorRenderBridge::SupportsPlatformViewports() const noexcept
@@ -3798,15 +3977,19 @@ bool TiramisuEditorRenderBridge::OwnsMainPresentation() const noexcept
 bool TiramisuEditorRenderBridge::Initialize()
 {
 	if (Impl->Initialized)
+	{
 		return true;
+	}
 	Impl->Diagnostic.clear();
 	if (!Impl->Window)
+	{
 		Impl->Window = g_AppInfo.Window;
+	}
 
 	const nri::GraphicsAPI RequestedApi =
 		Impl->Api == ETiramisuEditorGraphicsApi::D3D12
-		? nri::GraphicsAPI::D3D12
-		: nri::GraphicsAPI::VK;
+			? nri::GraphicsAPI::D3D12
+			: nri::GraphicsAPI::VK;
 	if (GRenderDevice.IsInitialized() &&
 		GRenderDevice.GraphicsApi != RequestedApi)
 	{
@@ -3848,12 +4031,8 @@ bool TiramisuEditorRenderBridge::Initialize()
 
 	nri::ImguiDesc ImguiDesc = {};
 	ImguiDesc.descriptorPoolSize = 16384;
-	if (!Impl->Check(Impl->ImguiInterface.CreateImgui(
-			*Impl->NriDevice, ImguiDesc, Impl->Imgui),
-			"Failed to create the NRI editor ImGui renderer") ||
-		!Impl->Check(Impl->CoreInterface.CreateFence(
-			*Impl->NriDevice, 0, Impl->FrameFence),
-			"Failed to create the NRI editor frame fence"))
+	if (!Impl->Check(Impl->ImguiInterface.CreateImgui(*Impl->NriDevice, ImguiDesc, Impl->Imgui), "Failed to create the NRI editor ImGui renderer") ||
+		!Impl->Check(Impl->CoreInterface.CreateFence(*Impl->NriDevice, 0, Impl->FrameFence), "Failed to create the NRI editor frame fence"))
 	{
 		Impl->Destroy();
 		return false;
@@ -3861,12 +4040,8 @@ bool TiramisuEditorRenderBridge::Initialize()
 
 	for (FImpl::FFrame& Frame : Impl->Frames)
 	{
-		if (!Impl->Check(Impl->CoreInterface.CreateCommandAllocator(
-				*Impl->GraphicsQueue, Frame.Allocator),
-				"Failed to create an NRI editor command allocator") ||
-			!Impl->Check(Impl->CoreInterface.CreateCommandBuffer(
-				*Frame.Allocator, Frame.CommandBuffer),
-				"Failed to create an NRI editor command buffer"))
+		if (!Impl->Check(Impl->CoreInterface.CreateCommandAllocator(*Impl->GraphicsQueue, Frame.Allocator), "Failed to create an NRI editor command allocator") ||
+			!Impl->Check(Impl->CoreInterface.CreateCommandBuffer(*Frame.Allocator, Frame.CommandBuffer), "Failed to create an NRI editor command buffer"))
 		{
 			Impl->Destroy();
 			return false;
@@ -3921,18 +4096,23 @@ void TiramisuEditorRenderBridge::RenderDrawData(ImDrawData& DrawData)
 	}
 
 	const xr_optional<FEditorNriFramePlan> Plan = MakeEditorNriFramePlan(
-		Impl->FrameIndex, QueuedFrameCount,
-		static_cast<u32>(Impl->SwapTextures.size()));
+		Impl->FrameIndex, QueuedFrameCount, static_cast<u32>(Impl->SwapTextures.size())
+	);
 	if (!Plan)
+	{
 		return;
+	}
 	FImpl::FFrame& Frame = Impl->Frames[Plan->FrameContextIndex];
 	Impl->CoreInterface.Wait(*Impl->FrameFence, Plan->ReuseFenceValue);
 	Impl->CollectDeferredBuffers(
-		Impl->CoreInterface.GetFenceValue(*Impl->FrameFence));
+		Impl->CoreInterface.GetFenceValue(*Impl->FrameFence)
+	);
 	Impl->CollectDeferredUiTextures(
-		Impl->CoreInterface.GetFenceValue(*Impl->FrameFence));
+		Impl->CoreInterface.GetFenceValue(*Impl->FrameFence)
+	);
 	Impl->CollectDeferredPipelines(
-		Impl->CoreInterface.GetFenceValue(*Impl->FrameFence));
+		Impl->CoreInterface.GetFenceValue(*Impl->FrameFence)
+	);
 	// Install completed CPU/DXC jobs only after this frame context is no
 	// longer in flight. Per-frame material records prevent writes from racing
 	// the other two queued contexts.
@@ -3946,7 +4126,8 @@ void TiramisuEditorRenderBridge::RenderDrawData(ImDrawData& DrawData)
 	const nri::Result AcquireResult = Impl->SwapChainInterface.AcquireNextTexture(
 		*Impl->SwapChain,
 		*Impl->SwapTextures[RecycledSemaphore].AcquireSemaphore,
-		TextureIndex);
+		TextureIndex
+	);
 	if (AcquireResult == nri::Result::OUT_OF_DATE)
 	{
 		Impl->CoreInterface.QueueWaitIdle(Impl->GraphicsQueue);
@@ -3954,23 +4135,19 @@ void TiramisuEditorRenderBridge::RenderDrawData(ImDrawData& DrawData)
 		Impl->CreateSwapchain();
 		return;
 	}
-	if (!Impl->Check(AcquireResult,
-		"Failed to acquire the NRI editor swapchain texture"))
+	if (!Impl->Check(AcquireResult, "Failed to acquire the NRI editor swapchain texture"))
 	{
 		return;
 	}
 
 	FImpl::FSwapTexture& Target = Impl->SwapTextures[TextureIndex];
-	if (!Impl->Check(Impl->CoreInterface.BeginCommandBuffer(
-			*Frame.CommandBuffer, nullptr),
-			"Failed to begin the NRI editor command buffer"))
+	if (!Impl->Check(Impl->CoreInterface.BeginCommandBuffer(*Frame.CommandBuffer, nullptr), "Failed to begin the NRI editor command buffer"))
 	{
 		return;
 	}
 	const auto CpuFrameStart = std::chrono::steady_clock::now();
 	Impl->Statistics.BeginFrame(Impl->FrameIndex);
-	Impl->RecordViewportPasses(*Frame.CommandBuffer,
-		Plan->FrameContextIndex);
+	Impl->RecordViewportPasses(*Frame.CommandBuffer, Plan->FrameContextIndex);
 
 	// During migration many editor panels still submit raw DX9 pointers as
 	// user textures. Passing one to NRI as a Descriptor would be an invalid
@@ -3996,12 +4173,15 @@ void TiramisuEditorRenderBridge::RenderDrawData(ImDrawData& DrawData)
 					// renderer-owned descriptor so validation never dereferences a
 					// DX9 or null handle.
 					Command.TexRef = ImTextureRef(static_cast<ImTextureID>(
-						Impl->PreviewWhiteTextureDescriptor));
+						Impl->PreviewWhiteTextureDescriptor
+					));
 					++Impl->SkippedIncompatibleTextureCount;
 				}
 			}
 			if (!Command.UserCallback && Command.ElemCount != 0)
+			{
 				Impl->Statistics.RecordDraw(Command.ElemCount / 3);
+			}
 		}
 	}
 	if (strstr(Core.Params, "-rdbg"))
@@ -4016,10 +4196,16 @@ void TiramisuEditorRenderBridge::RenderDrawData(ImDrawData& DrawData)
 			if (DrawData.Textures)
 			{
 				for (ImTextureData* Texture : *DrawData.Textures)
+				{
 					Msg("* NRI ImGui texture update: data=%p id=%llu status=%d size=%dx%d",
-						Texture, static_cast<unsigned long long>(
-							std::bit_cast<std::uintptr_t>(Texture->TexID)),
-						static_cast<int>(Texture->Status), Texture->Width, Texture->Height);
+						Texture,
+						static_cast<unsigned long long>(
+							std::bit_cast<std::uintptr_t>(Texture->TexID)
+						),
+						static_cast<int>(Texture->Status),
+						Texture->Width,
+						Texture->Height);
+				}
 			}
 		}
 	}
@@ -4033,15 +4219,13 @@ void TiramisuEditorRenderBridge::RenderDrawData(ImDrawData& DrawData)
 		CopyDesc.textureNum = static_cast<u32>(DrawData.Textures->Size);
 	}
 	Impl->ImguiInterface.CmdCopyImguiData(
-		*Frame.CommandBuffer, *Impl->Streamer, *Impl->Imgui, CopyDesc);
+		*Frame.CommandBuffer, *Impl->Streamer, *Impl->Imgui, CopyDesc
+	);
 
 	nri::TextureBarrierDesc ToAttachment = {};
 	ToAttachment.texture = Target.Texture;
-	ToAttachment.before = {nri::AccessBits::NONE,
-		Target.HasPresentState ? nri::Layout::PRESENT : nri::Layout::UNDEFINED,
-		nri::StageBits::NONE};
-	ToAttachment.after = {nri::AccessBits::COLOR_ATTACHMENT_WRITE,
-		nri::Layout::COLOR_ATTACHMENT, nri::StageBits::COLOR_ATTACHMENT};
+	ToAttachment.before = {nri::AccessBits::NONE, Target.HasPresentState ? nri::Layout::PRESENT : nri::Layout::UNDEFINED, nri::StageBits::NONE};
+	ToAttachment.after = {nri::AccessBits::COLOR_ATTACHMENT_WRITE, nri::Layout::COLOR_ATTACHMENT, nri::StageBits::COLOR_ATTACHMENT};
 	ToAttachment.mipNum = 1;
 	ToAttachment.layerNum = 1;
 	nri::BarrierDesc Barrier = {};
@@ -4057,8 +4241,7 @@ void TiramisuEditorRenderBridge::RenderDrawData(ImDrawData& DrawData)
 	Rendering.colors = &Color;
 	Rendering.colorNum = 1;
 	Impl->CoreInterface.CmdBeginRendering(*Frame.CommandBuffer, Rendering);
-	Impl->CoreInterface.CmdBeginAnnotation(*Frame.CommandBuffer,
-		"Editor.ImGui", nri::BGRA_UNUSED);
+	Impl->CoreInterface.CmdBeginAnnotation(*Frame.CommandBuffer, "Editor.ImGui", nri::BGRA_UNUSED);
 	Impl->Statistics.RecordPass();
 
 	nri::DrawImguiDesc DrawDesc = {};
@@ -4066,33 +4249,35 @@ void TiramisuEditorRenderBridge::RenderDrawData(ImDrawData& DrawData)
 	DrawDesc.drawListNum = static_cast<u32>(DrawData.CmdLists.Size);
 	DrawDesc.displaySize = {
 		static_cast<nri::Dim_t>(DrawData.DisplaySize.x),
-		static_cast<nri::Dim_t>(DrawData.DisplaySize.y)};
+		static_cast<nri::Dim_t>(DrawData.DisplaySize.y)
+	};
 	DrawDesc.hdrScale = 1.0f;
 	DrawDesc.attachmentFormat = Impl->SwapFormat;
 	DrawDesc.linearColor = IsSrgb(Impl->SwapFormat);
 	Impl->ImguiInterface.CmdDrawImgui(
-		*Frame.CommandBuffer, *Impl->Imgui, DrawDesc);
+		*Frame.CommandBuffer, *Impl->Imgui, DrawDesc
+	);
 	Impl->CoreInterface.CmdEndAnnotation(*Frame.CommandBuffer);
 	Impl->CoreInterface.CmdEndRendering(*Frame.CommandBuffer);
 
 	nri::TextureBarrierDesc ToPresent = {};
 	ToPresent.texture = Target.Texture;
 	ToPresent.before = ToAttachment.after;
-	ToPresent.after = {nri::AccessBits::NONE, nri::Layout::PRESENT,
-		nri::StageBits::NONE};
+	ToPresent.after = {nri::AccessBits::NONE, nri::Layout::PRESENT, nri::StageBits::NONE};
 	ToPresent.mipNum = 1;
 	ToPresent.layerNum = 1;
 	Barrier.textures = &ToPresent;
 	Impl->CoreInterface.CmdBarrier(*Frame.CommandBuffer, Barrier);
-	if (!Impl->Check(Impl->CoreInterface.EndCommandBuffer(*Frame.CommandBuffer),
-			"Failed to end the NRI editor command buffer"))
+	if (!Impl->Check(Impl->CoreInterface.EndCommandBuffer(*Frame.CommandBuffer), "Failed to end the NRI editor command buffer"))
 	{
 		return;
 	}
 
 	nri::FenceSubmitDesc Wait = {
 		Impl->SwapTextures[RecycledSemaphore].AcquireSemaphore,
-		0, nri::StageBits::COLOR_ATTACHMENT};
+		0,
+		nri::StageBits::COLOR_ATTACHMENT
+	};
 	const nri::FenceSubmitDesc Signals[] = {
 		{Target.ReleaseSemaphore, 0, nri::StageBits::ALL},
 		{Impl->FrameFence, Plan->SignalFenceValue, nri::StageBits::ALL},
@@ -4105,16 +4290,15 @@ void TiramisuEditorRenderBridge::RenderDrawData(ImDrawData& DrawData)
 	Submit.commandBufferNum = 1;
 	Submit.signalFences = Signals;
 	Submit.signalFenceNum = static_cast<u32>(std::size(Signals));
-	if (!Impl->Check(Impl->CoreInterface.QueueSubmit(
-			*Impl->GraphicsQueue, Submit),
-			"Failed to submit the NRI editor ImGui frame"))
+	if (!Impl->Check(Impl->CoreInterface.QueueSubmit(*Impl->GraphicsQueue, Submit), "Failed to submit the NRI editor ImGui frame"))
 	{
 		return;
 	}
 	Target.HasPresentState = true;
 	Impl->StreamerInterface.EndStreamerFrame(*Impl->Streamer);
 	const nri::Result PresentResult = Impl->SwapChainInterface.QueuePresent(
-		*Impl->SwapChain, *Target.ReleaseSemaphore);
+		*Impl->SwapChain, *Target.ReleaseSemaphore
+	);
 	if (PresentResult == nri::Result::OUT_OF_DATE)
 	{
 		Impl->CoreInterface.QueueWaitIdle(Impl->GraphicsQueue);
@@ -4129,7 +4313,10 @@ void TiramisuEditorRenderBridge::RenderDrawData(ImDrawData& DrawData)
 	const auto CpuFrameEnd = std::chrono::steady_clock::now();
 	Impl->Statistics.EndFrame(static_cast<u64>(
 		std::chrono::duration_cast<std::chrono::nanoseconds>(
-			CpuFrameEnd - CpuFrameStart).count()));
+			CpuFrameEnd - CpuFrameStart
+		)
+			.count()
+	));
 	++Impl->FrameIndex;
 }
 
@@ -4153,16 +4340,14 @@ void TiramisuEditorRenderBridge::CaptureViewport(const u32 ViewportId)
 	Impl->Viewports[ViewportId].CaptureRequested = true;
 }
 
-void TiramisuEditorRenderBridge::ResizeViewport(const u32 ViewportId,
-	const u32 Width, const u32 Height)
+void TiramisuEditorRenderBridge::ResizeViewport(const u32 ViewportId, const u32 Width, const u32 Height)
 {
 	FImpl::FViewport& Viewport = Impl->Viewports[ViewportId];
 	Viewport.DesiredWidth = Width;
 	Viewport.DesiredHeight = Height;
 }
 
-bool TiramisuEditorRenderBridge::SubmitViewportScene(const u32 ViewportId,
-	const FEditorViewportSceneSnapshot& Snapshot)
+bool TiramisuEditorRenderBridge::SubmitViewportScene(const u32 ViewportId, const FEditorViewportSceneSnapshot& Snapshot)
 {
 	FImpl::FViewport& Viewport = Impl->Viewports[ViewportId];
 	xr_string SubmitDiagnostic;
@@ -4177,20 +4362,25 @@ bool TiramisuEditorRenderBridge::SubmitViewportScene(const u32 ViewportId,
 
 FEditorViewportPickResult TiramisuEditorRenderBridge::PickViewport(
 	const u32 ViewportId,
-	const FEditorViewportPickRequest& Request) const
+	const FEditorViewportPickRequest& Request
+) const
 {
 	const auto Found = Impl->Viewports.find(ViewportId);
 	return Found == Impl->Viewports.end()
-		? FEditorViewportPickResult{} : Found->second.ScenePicker->Pick(Request);
+			   ? FEditorViewportPickResult{}
+			   : Found->second.ScenePicker->Pick(Request);
 }
 
 FEditorViewportSurface TiramisuEditorRenderBridge::GetViewportSurface(
-	const u32 ViewportId) const
+	const u32 ViewportId
+) const
 {
 	FEditorViewportSurface Surface;
 	const auto It = Impl->Viewports.find(ViewportId);
 	if (It == Impl->Viewports.end())
+	{
 		return Surface;
+	}
 	const FImpl::FViewport& Viewport = It->second;
 	Surface.ImGuiTextureId = Viewport.ShaderResource;
 	Surface.Width = Viewport.Width;
@@ -4200,28 +4390,33 @@ FEditorViewportSurface TiramisuEditorRenderBridge::GetViewportSurface(
 
 void TiramisuEditorRenderBridge::CopyViewportOverlayText(
 	const u32 ViewportId,
-	xr_vector<FEditorOverlayText>& OutText) const
+	xr_vector<FEditorOverlayText>& OutText
+) const
 {
 	OutText.clear();
 	const auto Viewport = Impl->Viewports.find(ViewportId);
 	if (Viewport == Impl->Viewports.end())
+	{
 		return;
+	}
 	OutText = Viewport->second.ScenePacket.OverlayText;
 }
 
 FEditorTextureHandle TiramisuEditorRenderBridge::CreateTexture(
-	const FEditorTextureUpload& Upload)
+	const FEditorTextureUpload& Upload
+)
 {
 	xr_string SubmitDiagnostic;
 	const FEditorTextureHandle Handle =
 		Impl->UiTextureMailbox.Create(Upload, &SubmitDiagnostic);
 	if (!Handle.IsValid())
+	{
 		Impl->Diagnostic = std::move(SubmitDiagnostic);
+	}
 	return Handle;
 }
 
-bool TiramisuEditorRenderBridge::UpdateTexture(const FEditorTextureHandle Handle,
-	const FEditorTextureUpload& Upload)
+bool TiramisuEditorRenderBridge::UpdateTexture(const FEditorTextureHandle Handle, const FEditorTextureUpload& Upload)
 {
 	xr_string SubmitDiagnostic;
 	if (!Impl->UiTextureMailbox.Update(Handle, Upload, &SubmitDiagnostic))
@@ -4238,15 +4433,20 @@ void TiramisuEditorRenderBridge::DestroyTexture(const FEditorTextureHandle Handl
 }
 
 FEditorViewportSurface TiramisuEditorRenderBridge::GetTextureSurface(
-	const FEditorTextureHandle Handle) const
+	const FEditorTextureHandle Handle
+) const
 {
 	FEditorViewportSurface Surface;
 	if (!Impl->UiTextureMailbox.IsAlive(Handle))
+	{
 		return Surface;
+	}
 	std::scoped_lock Lock(Impl->UiTexturesMutex);
 	const auto It = Impl->UiTextures.find(TextureHandleKey(Handle));
 	if (It == Impl->UiTextures.end())
+	{
 		return Surface;
+	}
 	Surface.ImGuiTextureId = It->second.ShaderResource;
 	Surface.Width = It->second.Width;
 	Surface.Height = It->second.Height;
@@ -4267,18 +4467,25 @@ bool TiramisuEditorRenderBridge::IsAvailable() const noexcept
 FMaterialPreviewHandle TiramisuEditorRenderBridge::CreatePreview()
 {
 	if (!IsAvailable())
+	{
 		return {};
+	}
 	return Impl->CreateMaterialPreview();
 }
 
 void TiramisuEditorRenderBridge::DestroyPreview(
-	const FMaterialPreviewHandle Handle)
+	const FMaterialPreviewHandle Handle
+)
 {
 	FImpl::FMaterialPreview* Preview = Impl->FindPreview(Handle);
 	if (!Preview)
+	{
 		return;
+	}
 	if (Impl->GraphicsQueue)
+	{
 		Impl->CoreInterface.QueueWaitIdle(Impl->GraphicsQueue);
+	}
 	const auto Viewport = Impl->Viewports.find(Preview->ViewportId);
 	if (Viewport != Impl->Viewports.end())
 	{
@@ -4289,11 +4496,15 @@ void TiramisuEditorRenderBridge::DestroyPreview(
 	if (Mesh != Impl->GpuMeshes.end())
 	{
 		if (Mesh->second.Buffer)
+		{
 			Impl->CoreInterface.DestroyBuffer(Mesh->second.Buffer);
+		}
 		Impl->GpuMeshes.erase(Mesh);
 	}
 	if (Preview->Pipeline)
+	{
 		Impl->CoreInterface.DestroyPipeline(Preview->Pipeline);
+	}
 	Preview->Pipeline = nullptr;
 	Preview->Alive = false;
 	Preview->State = EMaterialPreviewState::Unavailable;
@@ -4302,42 +4513,54 @@ void TiramisuEditorRenderBridge::DestroyPreview(
 	Preview->ParameterLayoutHash = 0;
 	Preview->DrawFlags = PreviewWhiteCubeDescriptorIndex;
 	Preview->Generation = Preview->Generation ==
-		std::numeric_limits<u32>::max()
-		? 1 : Preview->Generation + 1;
+								  std::numeric_limits<u32>::max()
+							  ? 1
+							  : Preview->Generation + 1;
 	Impl->FreeMaterialPreviewSlots.push_back(Handle.Index);
 }
 
 void TiramisuEditorRenderBridge::UpdatePreview(
-	const FMaterialPreviewHandle Handle, const FMaterialPreviewSource& Source)
+	const FMaterialPreviewHandle Handle, const FMaterialPreviewSource& Source
+)
 {
 	if (IsAvailable())
+	{
 		Impl->QueueMaterialPreviewCompile(Handle, Source);
+	}
 }
 
 void TiramisuEditorRenderBridge::ResizePreview(
 	const FMaterialPreviewHandle Handle,
-	const u32 Width, const u32 Height)
+	const u32 Width,
+	const u32 Height
+)
 {
 	FImpl::FMaterialPreview* Preview = Impl->FindPreview(Handle);
 	if (!Preview)
+	{
 		return;
+	}
 	FImpl::FViewport& Viewport = Impl->Viewports[Preview->ViewportId];
 	Viewport.DesiredWidth = std::max(1u, Width);
 	Viewport.DesiredHeight = std::max(1u, Height);
 }
 
 void TiramisuEditorRenderBridge::RenderPreview(
-	const FMaterialPreviewHandle Handle, const float DeltaSeconds)
+	const FMaterialPreviewHandle Handle, const float DeltaSeconds
+)
 {
 	(void)DeltaSeconds;
 	FImpl::FMaterialPreview* Preview = Impl->FindPreview(Handle);
 	if (!Preview)
+	{
 		return;
+	}
 	Impl->Viewports[Preview->ViewportId].CaptureRequested = true;
 }
 
 FMaterialPreviewFrame TiramisuEditorRenderBridge::GetPreviewFrame(
-	const FMaterialPreviewHandle Handle) const
+	const FMaterialPreviewHandle Handle
+) const
 {
 	FMaterialPreviewFrame Frame;
 	const FImpl::FMaterialPreview* Preview = Impl->FindPreview(Handle);
@@ -4351,10 +4574,11 @@ FMaterialPreviewFrame TiramisuEditorRenderBridge::GetPreviewFrame(
 	Frame.AcceptedRevision = Preview->AcceptedRevision;
 	Frame.PipelineKey = Preview->PipelineKey;
 	Frame.UsingLastGoodPipeline = Preview->Pipeline != nullptr &&
-		Preview->AcceptedRevision != 0 &&
-		Preview->AcceptedRevision < Preview->RequestedRevision;
+								  Preview->AcceptedRevision != 0 &&
+								  Preview->AcceptedRevision < Preview->RequestedRevision;
 	Frame.Backend = Impl->Api == ETiramisuEditorGraphicsApi::D3D12
-		? "D3D12/DXIL" : "Vulkan/SPIR-V";
+						? "D3D12/DXIL"
+						: "Vulkan/SPIR-V";
 	Frame.RenderPass = "MaterialPreview";
 	Frame.VertexFactory = "MaterialLevelStatic";
 	Frame.Diagnostic = Preview->Diagnostic;
@@ -4371,13 +4595,17 @@ FMaterialPreviewFrame TiramisuEditorRenderBridge::GetPreviewFrame(
 void TiramisuEditorRenderBridge::RegisterImguiTexture(void* ShaderResourceDescriptor)
 {
 	if (ShaderResourceDescriptor)
+	{
 		Impl->RegisteredUserTextures.Register(ShaderResourceDescriptor);
+	}
 }
 
 void TiramisuEditorRenderBridge::UnregisterImguiTexture(void* ShaderResourceDescriptor)
 {
 	if (ShaderResourceDescriptor)
+	{
 		Impl->RegisteredUserTextures.Unregister(ShaderResourceDescriptor);
+	}
 }
 
 u32 TiramisuEditorRenderBridge::GetSkippedIncompatibleTextureCount() const noexcept
@@ -4387,13 +4615,16 @@ u32 TiramisuEditorRenderBridge::GetSkippedIncompatibleTextureCount() const noexc
 
 FEditorViewportMaterialStatus TiramisuEditorRenderBridge::GetViewportMaterialStatus(
 	const u32 ViewportId,
-	const FEditorMaterialSlotId MaterialSlot) const
+	const FEditorMaterialSlotId MaterialSlot
+) const
 {
 	FEditorViewportMaterialStatus Status;
 	const auto Viewport = Impl->Viewports.find(ViewportId);
 	const auto Material = Impl->SceneMaterials.find(MaterialSlot.Value);
 	if (Viewport == Impl->Viewports.end() || Material == Impl->SceneMaterials.end())
+	{
 		return Status;
+	}
 	Status.RequestedRevision = Material->second.RequestedRevision;
 	Status.AcceptedRevision = Material->second.AcceptedRevision;
 	Status.PipelineKey = Material->second.PipelineKey;
@@ -4401,7 +4632,8 @@ FEditorViewportMaterialStatus TiramisuEditorRenderBridge::GetViewportMaterialSta
 	{
 		const FImpl::FScenePipelineCacheKey CacheKey = {
 			Material->second.PipelineKey,
-			Material->second.PipelineTwoSided};
+			Material->second.PipelineTwoSided
+		};
 		if (const auto Cached = Impl->ScenePipelineCache.find(CacheKey);
 			Cached != Impl->ScenePipelineCache.end())
 		{
@@ -4412,34 +4644,37 @@ FEditorViewportMaterialStatus TiramisuEditorRenderBridge::GetViewportMaterialSta
 	Status.DrawCount = Viewport->second.SceneDrawCount;
 	Status.SelectionDrawCount = Viewport->second.SceneSelectionDrawCount;
 	Status.SelectionOverlayReady = Impl->SceneSelectionPipeline != nullptr &&
-		Status.SelectionDrawCount != 0;
+								   Status.SelectionDrawCount != 0;
 	Status.DebugLineCount = Viewport->second.DebugLineVertexCount / 2;
 	Status.DebugTriangleCount = Viewport->second.DebugTriangleVertexCount / 3;
 	Status.OverlayLineCount = Viewport->second.OverlayLineVertexCount / 2;
 	Status.OverlayTriangleCount =
 		Viewport->second.OverlayTriangleVertexCount / 3;
 	Status.OverlayTextCount = static_cast<u32>(
-		Viewport->second.ScenePacket.OverlayText.size());
+		Viewport->second.ScenePacket.OverlayText.size()
+	);
 	Status.LightCount = std::min<u32>(
 		static_cast<u32>(
-			Viewport->second.ScenePacket.Lights.size()),
-		MaxSceneLightsPerViewport);
+			Viewport->second.ScenePacket.Lights.size()
+		),
+		MaxSceneLightsPerViewport
+	);
 	Status.DebugOverlayReady = Viewport->second.DebugDrawBuffer != nullptr &&
-		(Status.DebugLineCount == 0 || Impl->SceneDebugLinePipeline != nullptr) &&
-		(Status.DebugTriangleCount == 0 ||
-			Impl->SceneDebugTrianglePipeline != nullptr) &&
-		(Status.DebugLineCount != 0 || Status.DebugTriangleCount != 0);
+							   (Status.DebugLineCount == 0 || Impl->SceneDebugLinePipeline != nullptr) &&
+							   (Status.DebugTriangleCount == 0 ||
+								Impl->SceneDebugTrianglePipeline != nullptr) &&
+							   (Status.DebugLineCount != 0 || Status.DebugTriangleCount != 0);
 	Status.ScreenOverlayReady = Viewport->second.DebugDrawBuffer != nullptr &&
-		(Status.OverlayLineCount == 0 ||
-			Impl->SceneOverlayLinePipeline != nullptr) &&
-		(Status.OverlayTriangleCount == 0 ||
-			Impl->SceneOverlayTrianglePipeline != nullptr) &&
-		(Status.OverlayLineCount != 0 || Status.OverlayTriangleCount != 0);
+								(Status.OverlayLineCount == 0 ||
+								 Impl->SceneOverlayLinePipeline != nullptr) &&
+								(Status.OverlayTriangleCount == 0 ||
+								 Impl->SceneOverlayTrianglePipeline != nullptr) &&
+								(Status.OverlayLineCount != 0 || Status.OverlayTriangleCount != 0);
 	Status.ReloadCount = Material->second.ReloadCount;
 	Status.Diagnostic = Material->second.Diagnostic;
 	Status.Ready = Material->second.Pipeline != nullptr &&
-		Status.AcceptedRevision != 0 && Status.PipelineKey != 0 &&
-		Status.DrawCount != 0;
+				   Status.AcceptedRevision != 0 && Status.PipelineKey != 0 &&
+				   Status.DrawCount != 0;
 	return Status;
 }
 

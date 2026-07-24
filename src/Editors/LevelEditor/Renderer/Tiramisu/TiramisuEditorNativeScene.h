@@ -105,90 +105,109 @@ class TiramisuEditorNativeSceneDocument
 public:
 	void NewRenderScene(xr_string_view Name = "Untitled Render Scene");
 	[[nodiscard]] bool OpenStaticMesh(
-		const std::filesystem::path& Path, xr_string& Diagnostic);
+		const std::filesystem::path& Path, xr_string& Diagnostic
+	);
 	[[nodiscard]] bool OpenRenderScene(
-		const std::filesystem::path& Path, xr_string& Diagnostic);
+		const std::filesystem::path& Path, xr_string& Diagnostic
+	);
 	void Close() noexcept;
 
 	[[nodiscard]] bool IsOpen() const noexcept;
 	[[nodiscard]] bool IsEditableRenderScene() const noexcept;
 	[[nodiscard]] bool IsDirty() const noexcept;
 	[[nodiscard]] const Tiramisu::Scene::FResolvedRenderScene*
-		GetScene() const noexcept;
+	GetScene() const noexcept;
 	[[nodiscard]] bool IsComponentSelected(
-		xr_string_view ComponentId) const;
+		xr_string_view ComponentId
+	) const;
 	[[nodiscard]] size_t GetSelectionCount() const noexcept;
 	[[nodiscard]] xr_optional<FEditorNativeSceneComponentDetails>
-		GetSingleSelectedComponentDetails() const;
+	GetSingleSelectedComponentDetails() const;
 	[[nodiscard]] xr_optional<FEditorNativeSceneLightDetails>
-		GetSingleSelectedLightDetails() const;
+	GetSingleSelectedLightDetails() const;
 	[[nodiscard]] xr_optional<FEditorNativeSceneBulkMaterialDetails>
-		GetSelectedComponentsMaterialDetails() const;
+	GetSelectedComponentsMaterialDetails() const;
 	[[nodiscard]] xr_optional<FEditorNativeSceneBounds>
-		GetWorldBounds(bool SelectedOnly) const;
+	GetWorldBounds(bool SelectedOnly) const;
 	void ClearSelection();
 	[[nodiscard]] bool SelectObject(
 		u64 ObjectId,
-		EEditorNativeSceneSelectionMode Mode);
+		EEditorNativeSceneSelectionMode Mode
+	);
 	[[nodiscard]] size_t SelectComponents(
 		xr_span<const xr_string> ComponentIds,
-		EEditorNativeSceneSelectionMode Mode);
+		EEditorNativeSceneSelectionMode Mode
+	);
 	[[nodiscard]] size_t SelectFrustum(
 		const FEditorNativeSceneSelectionFrustum& Frustum,
-		EEditorNativeSceneSelectionMode Mode);
+		EEditorNativeSceneSelectionMode Mode
+	);
 	void SelectAll();
 	void InvertSelection();
 	[[nodiscard]] bool AddStaticMeshComponent(
 		const std::filesystem::path& StaticMeshPath,
 		const xr_array<float, 16>& LocalToWorld,
-		xr_string& Diagnostic);
+		xr_string& Diagnostic
+	);
 	[[nodiscard]] bool AddLightComponent(
 		Tiramisu::Scene::ELightType Type,
 		const xr_array<float, 16>& LocalToWorld,
-		xr_string& Diagnostic);
+		xr_string& Diagnostic
+	);
 	[[nodiscard]] size_t DuplicateSelected(
-		xr_string& Diagnostic);
+		xr_string& Diagnostic
+	);
 	[[nodiscard]] size_t CopySelectedToClipboard(
-		xr_string& Diagnostic);
+		xr_string& Diagnostic
+	);
 	[[nodiscard]] size_t CutSelectedToClipboard(
-		xr_string& Diagnostic);
+		xr_string& Diagnostic
+	);
 	[[nodiscard]] size_t PasteClipboard(
-		xr_string& Diagnostic);
+		xr_string& Diagnostic
+	);
 	[[nodiscard]] size_t RemoveSelected();
 	[[nodiscard]] bool SetSelectedComponentName(
-		xr_string_view Name, xr_string& Diagnostic);
+		xr_string_view Name, xr_string& Diagnostic
+	);
 	[[nodiscard]] bool SetSelectedComponentVisibility(bool Visible);
 	[[nodiscard]] size_t SetSelectedComponentsVisibility(bool Visible);
 	[[nodiscard]] size_t SetUnselectedComponentsVisibility(bool Visible);
 	[[nodiscard]] size_t SetAllComponentsVisibility(bool Visible);
 	[[nodiscard]] bool SetSelectedComponentPosition(
-		const xr_array<float, 3>& Position);
+		const xr_array<float, 3>& Position
+	);
 	[[nodiscard]] bool SetSelectedLightDetails(
 		const FEditorNativeSceneLightDetails& Details,
-		xr_string& Diagnostic);
+		xr_string& Diagnostic
+	);
 	[[nodiscard]] bool SetSelectedMaterialOverride(
-		u32 MaterialSlot, xr_string_view Material,
-		bool TwoSided, xr_string& Diagnostic);
+		u32 MaterialSlot, xr_string_view Material, bool TwoSided, xr_string& Diagnostic
+	);
 	[[nodiscard]] bool SetSelectedComponentsMaterialOverride(
-		u32 MaterialSlot, xr_string_view Material,
-		xr_optional<bool> TwoSided, xr_string& Diagnostic);
+		u32 MaterialSlot, xr_string_view Material, xr_optional<bool> TwoSided, xr_string& Diagnostic
+	);
 	[[nodiscard]] bool ClearSelectedMaterialOverride(
-		u32 MaterialSlot, xr_string& Diagnostic);
+		u32 MaterialSlot, xr_string& Diagnostic
+	);
 
 	// Transform tools bracket continuous mouse input in one transaction so a
 	// drag produces one undo record. Callback changes are validated before
 	// publication and never expose renderer-specific types.
 	[[nodiscard]] bool BeginEditTransaction();
 	[[nodiscard]] bool TransformSelected(
-		const std::function<void(xr_array<float, 16>&)>& Transform);
+		const std::function<void(xr_array<float, 16>&)>& Transform
+	);
 	[[nodiscard]] bool TranslateSelected(
-		const xr_array<float, 3>& Delta);
+		const xr_array<float, 3>& Delta
+	);
 	[[nodiscard]] bool EndEditTransaction(bool Commit = true);
 	[[nodiscard]] bool Undo();
 	[[nodiscard]] bool Redo();
 	[[nodiscard]] bool Save(xr_string& Diagnostic);
 	[[nodiscard]] bool SaveAs(
-		const std::filesystem::path& Path, xr_string& Diagnostic);
+		const std::filesystem::path& Path, xr_string& Diagnostic
+	);
 
 	[[nodiscard]] const std::filesystem::path& GetSourcePath() const noexcept
 	{
@@ -228,5 +247,4 @@ private:
 	bool Dirty = false;
 };
 
-[[nodiscard]] TiramisuEditorNativeSceneDocument& GetEditorNativeSceneDocument()
-	noexcept;
+[[nodiscard]] TiramisuEditorNativeSceneDocument& GetEditorNativeSceneDocument() noexcept;

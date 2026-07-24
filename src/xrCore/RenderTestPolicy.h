@@ -26,7 +26,8 @@ struct FRenderDeterministicTestPolicy
 
 [[nodiscard]] inline FRenderDeterministicTestPolicy
 ResolveRenderDeterministicTestPolicy(
-	const std::string_view CommandLine) noexcept
+	const std::string_view CommandLine
+) noexcept
 {
 	FRenderDeterministicTestPolicy Result;
 	Result.Enabled =

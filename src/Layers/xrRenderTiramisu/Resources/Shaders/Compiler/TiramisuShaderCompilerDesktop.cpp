@@ -13,7 +13,9 @@
 std::wstring Utf8ToWide(const xr_string& str)
 {
 	if (str.empty())
+	{
 		return {};
+	}
 
 	int size = MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), nullptr, 0);
 
@@ -48,28 +50,28 @@ bool TiramisuShaderCompilerDesktop::CompileDX12(const TiramisuShaderDefinesConta
 
 	switch (ShaderType)
 	{
-	case EShaderType::Pixel:
-		Arguments.push_back(L"-Tps_6_6");
-		break;
-	case EShaderType::Hull:
-		Arguments.push_back(L"-Ths_6_6");
-		break;
-	case EShaderType::Domain:
-		Arguments.push_back(L"-Tds_6_6");
-		break;
-	case EShaderType::Geometry:
-		Arguments.push_back(L"-Tgs_6_6");
-		break;
-	case EShaderType::Vertex:
-		Arguments.push_back(L"-Tvs_6_6");
+		case EShaderType::Pixel:
+			Arguments.push_back(L"-Tps_6_6");
+			break;
+		case EShaderType::Hull:
+			Arguments.push_back(L"-Ths_6_6");
+			break;
+		case EShaderType::Domain:
+			Arguments.push_back(L"-Tds_6_6");
+			break;
+		case EShaderType::Geometry:
+			Arguments.push_back(L"-Tgs_6_6");
+			break;
+		case EShaderType::Vertex:
+			Arguments.push_back(L"-Tvs_6_6");
 
-		break;
-	case EShaderType::Compute:
-		Arguments.push_back(L"-Tcs_6_6");
-		break;
-	default:
-		NODEFAULT;
-		break;
+			break;
+		case EShaderType::Compute:
+			Arguments.push_back(L"-Tcs_6_6");
+			break;
+		default:
+			NODEFAULT;
+			break;
 	}
 	Arguments.push_back(L"-E");
 	Arguments.push_back(L"Main");
@@ -84,10 +86,10 @@ bool TiramisuShaderCompilerDesktop::CompileDX12(const TiramisuShaderDefinesConta
 		Arguments.push_back(L"-D");
 		Arguments.push_back(UniDefine.c_str());
 	}
-	
+
 	Arguments.push_back(L"-D");
 	Arguments.push_back(L"NRI_ENABLE_DRAW_PARAMETERS_EMULATION=1");
-	
+
 	if (bNeedCreateShaderPDB)
 	{
 		Arguments.push_back(L"-Zi");
@@ -156,7 +158,6 @@ bool TiramisuShaderCompilerDesktop::CompileDX12(const TiramisuShaderDefinesConta
 		pPDBShader->Release();
 	}
 	{
-
 		CMemoryWriter File;
 		string_path FileName;
 		xr_strconcat(FileName, ResultFileName, ".checksum");
@@ -228,7 +229,8 @@ bool TiramisuShaderCompilerDesktop::FileExists(const char* name)
 	return std::filesystem::exists(name);
 }
 
-TiramisuShaderCompilerDesktop::TiramisuShaderCompilerDesktop(nri::GraphicsAPI InGraphicsAPI, bool NeedCreateShaderPDB, bool DebugShader):TiramisuShaderCompilerBase(NeedCreateShaderPDB, DebugShader)
+TiramisuShaderCompilerDesktop::TiramisuShaderCompilerDesktop(nri::GraphicsAPI InGraphicsAPI, bool NeedCreateShaderPDB, bool DebugShader)
+	: TiramisuShaderCompilerBase(NeedCreateShaderPDB, DebugShader)
 {
 	GraphicsAPI = InGraphicsAPI;
 	DX_CHK(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(DxcCompiler.ReleaseAndGetAddressOf())));
@@ -239,9 +241,12 @@ const char* TiramisuShaderCompilerDesktop::GetDirectionName()
 {
 	switch (GraphicsAPI)
 	{
-		case nri::GraphicsAPI::D3D11: return "desktop\\dxbc\\";
-		case nri::GraphicsAPI::D3D12: return "desktop\\dxil\\";
-		case nri::GraphicsAPI::VK:    return "desktop\\spirv\\";
+		case nri::GraphicsAPI::D3D11:
+			return "desktop\\dxbc\\";
+		case nri::GraphicsAPI::D3D12:
+			return "desktop\\dxil\\";
+		case nri::GraphicsAPI::VK:
+			return "desktop\\spirv\\";
 	}
 	return "desktop\\";
 }
@@ -262,7 +267,7 @@ bool TiramisuShaderCompilerDesktop::CompileVK(const TiramisuShaderDefinesContain
 
 	Arguments.push_back(L"-spirv");
 	Arguments.push_back(L"-fspv-target-env=vulkan1.3");
-	//Arguments.push_back(L"-fvk-support-nonzero-base-instance");
+	// Arguments.push_back(L"-fvk-support-nonzero-base-instance");
 
 	Arguments.push_back(L"-fvk-s-shift");
 	Arguments.push_back(L"0");
@@ -300,28 +305,28 @@ bool TiramisuShaderCompilerDesktop::CompileVK(const TiramisuShaderDefinesContain
 
 	switch (ShaderType)
 	{
-	case EShaderType::Pixel:
-		Arguments.push_back(L"-Tps_6_6");
-		break;
-	case EShaderType::Hull:
-		Arguments.push_back(L"-Ths_6_6");
-		break;
-	case EShaderType::Domain:
-		Arguments.push_back(L"-Tds_6_6");
-		break;
-	case EShaderType::Geometry:
-		Arguments.push_back(L"-Tgs_6_6");
-		break;
-	case EShaderType::Vertex:
-		Arguments.push_back(L"-Tvs_6_6");
+		case EShaderType::Pixel:
+			Arguments.push_back(L"-Tps_6_6");
+			break;
+		case EShaderType::Hull:
+			Arguments.push_back(L"-Ths_6_6");
+			break;
+		case EShaderType::Domain:
+			Arguments.push_back(L"-Tds_6_6");
+			break;
+		case EShaderType::Geometry:
+			Arguments.push_back(L"-Tgs_6_6");
+			break;
+		case EShaderType::Vertex:
+			Arguments.push_back(L"-Tvs_6_6");
 
-		break;
-	case EShaderType::Compute:
-		Arguments.push_back(L"-Tcs_6_6");
-		break;
-	default:
-		NODEFAULT;
-		break;
+			break;
+		case EShaderType::Compute:
+			Arguments.push_back(L"-Tcs_6_6");
+			break;
+		default:
+			NODEFAULT;
+			break;
 	}
 	Arguments.push_back(L"-E");
 	Arguments.push_back(L"Main");
@@ -336,7 +341,7 @@ bool TiramisuShaderCompilerDesktop::CompileVK(const TiramisuShaderDefinesContain
 		Arguments.push_back(L"-D");
 		Arguments.push_back(UniDefine.c_str());
 	}
-	
+
 
 	if (bNeedCreateShaderPDB)
 	{

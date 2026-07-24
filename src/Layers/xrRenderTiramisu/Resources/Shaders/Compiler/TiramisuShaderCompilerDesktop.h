@@ -11,24 +11,26 @@ class IDxcCompiler3;
 class IDxcLibrary;
 
 // Desktop DXC compiler для DXIL и SPIR-V permutations.
-class TiramisuShaderCompilerDesktop:
+class TiramisuShaderCompilerDesktop :
 	public TiramisuShaderCompilerBase
 {
 public:
-											TiramisuShaderCompilerDesktop		(nri::GraphicsAPI InGraphicsAPI, bool NeedCreateShaderPDB,bool DebugShader);
-											~TiramisuShaderCompilerDesktop		() override = default;
-			const char*						GetDirectionName			() override;
-			bool							CompileVK					(const TiramisuShaderDefinesContainer& Defines, EShaderType ShaderType, const xr_vector<xr_string>& IncludePaths,const char*source_file_name,const char* result_file_name ,xr_string&OutMessage);
-			bool							CompileDX12					(const TiramisuShaderDefinesContainer& Defines, EShaderType ShaderType, const xr_vector<xr_string>& IncludePaths,const char*source_file_name,const char* result_file_name ,xr_string&OutMessage);
-			bool							CompileDX11					(const TiramisuShaderDefinesContainer& Defines, EShaderType ShaderType, const xr_vector<xr_string>& IncludePaths,const char*source_file_name,const char* result_file_name ,xr_string&OutMessage);
-			bool							Compile						(const TiramisuShaderDefinesContainer& Defines, EShaderType ShaderType, const xr_vector<xr_string>& IncludePaths,const char*source_file_name,const char* result_file_name ,xr_string&OutMessage) override;
+	TiramisuShaderCompilerDesktop(nri::GraphicsAPI InGraphicsAPI, bool NeedCreateShaderPDB, bool DebugShader);
+	~TiramisuShaderCompilerDesktop() override = default;
+	const char* GetDirectionName() override;
+	bool CompileVK(const TiramisuShaderDefinesContainer& Defines, EShaderType ShaderType, const xr_vector<xr_string>& IncludePaths, const char* source_file_name, const char* result_file_name, xr_string& OutMessage);
+	bool CompileDX12(const TiramisuShaderDefinesContainer& Defines, EShaderType ShaderType, const xr_vector<xr_string>& IncludePaths, const char* source_file_name, const char* result_file_name, xr_string& OutMessage);
+	bool CompileDX11(const TiramisuShaderDefinesContainer& Defines, EShaderType ShaderType, const xr_vector<xr_string>& IncludePaths, const char* source_file_name, const char* result_file_name, xr_string& OutMessage);
+	bool Compile(const TiramisuShaderDefinesContainer& Defines, EShaderType ShaderType, const xr_vector<xr_string>& IncludePaths, const char* source_file_name, const char* result_file_name, xr_string& OutMessage) override;
+
 protected:
-	virtual void							ReadFile					(const char* Name, xr_vector<char>& Data) override;
-	virtual bool							FileExists					(const char* name) override;
+	virtual void ReadFile(const char* Name, xr_vector<char>& Data) override;
+	virtual bool FileExists(const char* name) override;
+
 private:
-	Microsoft::WRL::ComPtr<IDxcCompiler3>	DxcCompiler;
-	Microsoft::WRL::ComPtr<IDxcLibrary>		DxcLibrary;
-	nri::GraphicsAPI						GraphicsAPI;
+	Microsoft::WRL::ComPtr<IDxcCompiler3> DxcCompiler;
+	Microsoft::WRL::ComPtr<IDxcLibrary> DxcLibrary;
+	nri::GraphicsAPI GraphicsAPI;
 };
 
 #endif

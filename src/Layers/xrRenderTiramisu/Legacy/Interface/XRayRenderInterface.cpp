@@ -17,7 +17,6 @@ CDS0_RenderInterface GRenderInterface;
 
 CDS0_RenderInterface::CDS0_RenderInterface()
 {
-
 }
 
 bool CDS0_RenderInterface::is_sun_static()
@@ -165,8 +164,7 @@ void CDS0_RenderInterface::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* 
 {
 }
 
-StaticWallmarkHandle::WallmarkHandlePtr CDS0_RenderInterface::add_DynamicWallmark(const wm_shader& S, const Fvector& P,
-	float w, float h, float r, CDB::TRI* T, Fvector* V)
+StaticWallmarkHandle::WallmarkHandlePtr CDS0_RenderInterface::add_DynamicWallmark(const wm_shader& S, const Fvector& P, float w, float h, float r, CDB::TRI* T, Fvector* V)
 {
 	return nullptr;
 }
@@ -210,7 +208,7 @@ IRenderVisual* CDS0_RenderInterface::model_Create(LPCSTR name, IReader* data)
 
 IRenderVisual* CDS0_RenderInterface::model_CreateChild(LPCSTR name, IReader* data)
 {
-	return  GModelPool->CreateChild(name, data);
+	return GModelPool->CreateChild(name, data);
 }
 
 IRenderVisual* CDS0_RenderInterface::model_Duplicate(IRenderVisual* V)
@@ -221,7 +219,9 @@ IRenderVisual* CDS0_RenderInterface::model_Duplicate(IRenderVisual* V)
 void CDS0_RenderInterface::model_Delete(IRenderVisual*& V, bool bDiscard)
 {
 	if (V == nullptr)
+	{
 		return;
+	}
 
 	CDS0_RenderVisual* pVisual = (CDS0_RenderVisual*)V;
 
@@ -307,16 +307,15 @@ void CDS0_RenderInterface::Render()
 {
 	CheckIsGameThread();
 	GModelPool->Render();
-	
-	g_pGamePersistent->OnRenderPPUI_main();	// PP-UI
-	
-	ENQUEUE_RENDER_COMMAND(CDS0_RenderInterface::Render)([Primitivs = GUIRender.Primitivs,Vertexes = std::move(GUIRender.Vertexes)]
-	{
+
+	g_pGamePersistent->OnRenderPPUI_main(); // PP-UI
+
+	ENQUEUE_RENDER_COMMAND(CDS0_RenderInterface::Render)([Primitivs = GUIRender.Primitivs, Vertexes = std::move(GUIRender.Vertexes)]
+														 {
 		CheckIsRenderThread();
 		GRender->UIPass->Primitivs = Primitivs;
-		GRender->UIPass->Vertexes = Vertexes;
-	});
-	
+		GRender->UIPass->Vertexes = Vertexes; });
+
 	GUIRender.Flush();
 
 	// LevelEditor уже начал ImGui frame через xrEUI. Повторный NewFrame
@@ -338,7 +337,7 @@ void CDS0_RenderInterface::OnFrame()
 
 	for (IKinematics* IK : KinematicPool)
 	{
-		//IK->CalculateBones_Invalidate();
+		// IK->CalculateBones_Invalidate();
 		IK->CalculateBones();
 	}
 	KinematicPool.clear();

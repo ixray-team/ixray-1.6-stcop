@@ -13,24 +13,27 @@ struct FRenderDebugPolicy
 };
 
 [[nodiscard]] inline bool HasRenderCommandLineFlag(
-	const std::string_view CommandLine, const std::string_view Flag) noexcept
+	const std::string_view CommandLine, const std::string_view Flag
+) noexcept
 {
 	std::size_t Position = 0;
 	while (Position < CommandLine.size())
 	{
 		while (Position < CommandLine.size() &&
-			(CommandLine[Position] == ' ' || CommandLine[Position] == '\t'))
+			   (CommandLine[Position] == ' ' || CommandLine[Position] == '\t'))
 		{
 			++Position;
 		}
 		const std::size_t Begin = Position;
 		while (Position < CommandLine.size() &&
-			CommandLine[Position] != ' ' && CommandLine[Position] != '\t')
+			   CommandLine[Position] != ' ' && CommandLine[Position] != '\t')
 		{
 			++Position;
 		}
 		if (CommandLine.substr(Begin, Position - Begin) == Flag)
+		{
 			return true;
+		}
 	}
 	return false;
 }
@@ -38,7 +41,8 @@ struct FRenderDebugPolicy
 // -rdbg keeps shader debug information under RenderDoc, but conflicting
 // graphics API and NRI validation layers are suppressed by default.
 [[nodiscard]] inline FRenderDebugPolicy ResolveRenderDebugPolicy(
-	const std::string_view CommandLine, const bool RenderDocActive) noexcept
+	const std::string_view CommandLine, const bool RenderDocActive
+) noexcept
 {
 	FRenderDebugPolicy Result;
 	Result.RenderDocActive = RenderDocActive;

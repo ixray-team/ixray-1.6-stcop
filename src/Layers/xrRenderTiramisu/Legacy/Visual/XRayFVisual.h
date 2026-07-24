@@ -15,8 +15,8 @@ public:
 	virtual bool MakeRenderItem(float LOD, FLegacyVisualRenderItem& RenderItem) override;
 
 	FLegacyVisualSceneVertexBuffer SceneVertexBuffer;
-	FLegacyVisualSceneIndexBuffer  SceneIndexBuffer;
-	
+	FLegacyVisualSceneIndexBuffer SceneIndexBuffer;
+
 	u32 CountIndex;
 	u32 OffsetIndex;
 	u32 CountVertex;
@@ -29,5 +29,4 @@ public:
 
 protected:
 	FSlideWindowItem nSWI;
-
 };

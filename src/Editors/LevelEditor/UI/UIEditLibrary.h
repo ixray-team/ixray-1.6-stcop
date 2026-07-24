@@ -48,7 +48,14 @@ private:
 	UIPropertiesForm* GetPropertyWnd();
 
 	static void OnModified();
-	UIItemListForm& ActualItemList() { if (SearchQuery.empty()) return *m_ObjectList; return SearchList; }
+	UIItemListForm& ActualItemList()
+	{
+		if (SearchQuery.empty())
+		{
+			return *m_ObjectList;
+		}
+		return SearchList;
+	}
 	UIItemListForm* m_ObjectList;
 	UIItemListForm SearchList;
 	const char* m_Current;

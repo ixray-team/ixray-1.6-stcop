@@ -2,10 +2,10 @@
 
 TiramisuPrimitiveSceneProxy::TiramisuPrimitiveSceneProxy()
 {
-    CheckIsGameThread();
+	CheckIsGameThread();
 }
 
 TiramisuPrimitiveSceneProxy::~TiramisuPrimitiveSceneProxy()
 {
-    CheckIsRenderThread();
+	CheckIsRenderThread();
 }

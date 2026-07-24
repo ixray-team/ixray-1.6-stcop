@@ -19,32 +19,32 @@ class engine_impl;
 struct RENDERDOC_API_1_6_0;
 union SDL_Event;
 
-#pragma pack(push,4)
+#pragma pack(push, 4)
 
 class IRenderDevice
 {
 public:
 	virtual ~IRenderDevice() = default;
-	virtual		CStatsPhysics*	_BCL		StatPhysics		()							= 0;								
-	virtual				void	_BCL		AddSeqFrame		( pureFrame* f, bool mt )	= 0;
-	virtual				void	_BCL		RemoveSeqFrame	( pureFrame* f )			= 0;
+	virtual CStatsPhysics* _BCL StatPhysics() = 0;
+	virtual void _BCL AddSeqFrame(pureFrame* f, bool mt) = 0;
+	virtual void _BCL RemoveSeqFrame(pureFrame* f) = 0;
 
-	virtual				bool				InitRenderDevice(ERHI_API_LAYER API) = 0;
-	virtual				void				DestroyRenderDevice() = 0;
+	virtual bool InitRenderDevice(ERHI_API_LAYER API) = 0;
+	virtual void DestroyRenderDevice() = 0;
 
-	virtual				void*               GetRenderDevice() = 0;
+	virtual void* GetRenderDevice() = 0;
 
-	virtual				void*				GetSwapchain() = 0;
-	virtual				u32					GetSwapchainWidth() = 0;
-	virtual				u32					GetSwapchainHeight() = 0;
+	virtual void* GetSwapchain() = 0;
+	virtual u32 GetSwapchainWidth() = 0;
+	virtual u32 GetSwapchainHeight() = 0;
 
-	virtual				void				ResizeWindow(u32 width, u32 height) = 0;
+	virtual void ResizeWindow(u32 width, u32 height) = 0;
 
-	virtual				RENDERDOC_API_1_6_0* GetRenderDocAPI() = 0;
+	virtual RENDERDOC_API_1_6_0* GetRenderDocAPI() = 0;
 
-	virtual				void				BeginRender() = 0;
-	virtual				void				EndRender() = 0;
-	virtual				bool				IsEditorMode() { return false; }
+	virtual void BeginRender() = 0;
+	virtual void EndRender() = 0;
+	virtual bool IsEditorMode() { return false; }
 };
 
 struct SWristwatchHudData
@@ -59,28 +59,29 @@ struct SWristwatchHudData
 	bool showAnalogHands = true;
 	bool showLcd = false;
 	bool fontReady = false;
-	Fvector4 lcdDigits = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Fvector4 lcdLayout = { 0.5f, 0.5f, 0.128f, 0.078f };
-	Fvector4 fontGlyph0 = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Fvector4 fontGlyph1 = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Fvector4 fontGlyph2 = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Fvector4 fontGlyph3 = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Fvector4 fontGlyphColon = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Fvector4 fontGlyphEight = { 0.0f, 0.0f, 0.0f, 0.0f };
+	Fvector4 lcdDigits = {0.0f, 0.0f, 0.0f, 0.0f};
+	Fvector4 lcdLayout = {0.5f, 0.5f, 0.128f, 0.078f};
+	Fvector4 fontGlyph0 = {0.0f, 0.0f, 0.0f, 0.0f};
+	Fvector4 fontGlyph1 = {0.0f, 0.0f, 0.0f, 0.0f};
+	Fvector4 fontGlyph2 = {0.0f, 0.0f, 0.0f, 0.0f};
+	Fvector4 fontGlyph3 = {0.0f, 0.0f, 0.0f, 0.0f};
+	Fvector4 fontGlyphColon = {0.0f, 0.0f, 0.0f, 0.0f};
+	Fvector4 fontGlyphEight = {0.0f, 0.0f, 0.0f, 0.0f};
 };
 
 class ENGINE_API CRenderDeviceData
 {
+public:
+	u32 TargetWidth;
+	u32 TargetHeight;
+
+	u32 dwPrecacheFrame;
+	bool b_is_Ready;
+	bool b_is_Active;
 
 public:
-	u32										TargetWidth;
-	u32										TargetHeight;
-	
-	u32										dwPrecacheFrame;
-	bool									b_is_Ready;
-	bool									b_is_Active;
-public:
-	struct {
+	struct
+	{
 		float renderZoomFactor = 1.0f;
 		float renderZoomRotateFactor = 0.0f;
 		bool isRenderActive = false;
@@ -102,77 +103,77 @@ public:
 	} hudViewportData;
 
 	// Engine flow-control
-	u32										dwFrame;
-	u32										dwRenderFrame = 0;
+	u32 dwFrame;
+	u32 dwRenderFrame = 0;
 
-	float									fTimeDeltaSmoothing;
-	float									fRealTimeDelta;
-	float									fTimeDelta;
-	float									fTimeGlobal;
-	u32										dwTimeDelta;
-	u32										dwTimeGlobal;
-	u32										dwTimeContinual;
+	float fTimeDeltaSmoothing;
+	float fRealTimeDelta;
+	float fTimeDelta;
+	float fTimeGlobal;
+	u32 dwTimeDelta;
+	u32 dwTimeGlobal;
+	u32 dwTimeContinual;
 
-	Fvector									vCameraPosition;
-	Fvector									vCameraDirection;
-	Fvector									vCameraTop;
-	Fvector									vCameraRight;
+	Fvector vCameraPosition;
+	Fvector vCameraDirection;
+	Fvector vCameraTop;
+	Fvector vCameraRight;
 
-	Fmatrix									mView;
-	Fmatrix									mProject;
-	Fmatrix									mFullTransform;
-	Fmatrix									mInvFullTransform;
-	Fmatrix									mInv3x4FullTransform;
+	Fmatrix mView;
+	Fmatrix mProject;
+	Fmatrix mFullTransform;
+	Fmatrix mInvFullTransform;
+	Fmatrix mInv3x4FullTransform;
 
 	// Copies of corresponding members. Used for synchronization.
-	Fvector									vCameraPosition_saved;
+	Fvector vCameraPosition_saved;
 
-	Fvector									vCameraDirection_saved;
-	Fvector									vCameraRight_saved;
-	Fvector									vCameraTop_saved;
+	Fvector vCameraDirection_saved;
+	Fvector vCameraRight_saved;
+	Fvector vCameraTop_saved;
 
-	Fmatrix									mView_saved;
-	Fmatrix									mProject_saved;
-	Fmatrix									mFullTransform_saved;
+	Fmatrix mView_saved;
+	Fmatrix mProject_saved;
+	Fmatrix mFullTransform_saved;
 
-	Fmatrix									mView_old;
-	Fmatrix									mProject_old;
-	Fmatrix									mFullTransform_old;
+	Fmatrix mView_old;
+	Fmatrix mProject_old;
+	Fmatrix mFullTransform_old;
 
-	Fmatrix									mView_hud;
-	Fmatrix									mProject_hud;
-	Fmatrix									mFullTransform_hud;
-	Fmatrix									mFullTransform_hud_special;
-	Fmatrix									mInv3x4FullTransform_hud_special;
+	Fmatrix mView_hud;
+	Fmatrix mProject_hud;
+	Fmatrix mFullTransform_hud;
+	Fmatrix mFullTransform_hud_special;
+	Fmatrix mInv3x4FullTransform_hud_special;
 
-	Fmatrix									mView_hud_old;
-	Fmatrix									mProject_hud_old;
-	Fmatrix									mFullTransform_hud_old;
+	Fmatrix mView_hud_old;
+	Fmatrix mProject_hud_old;
+	Fmatrix mFullTransform_hud_old;
 
-	float									fFOV;
-	float									fASPECT;
-	float									fViewportNear = 0.2f;
-	float									fHUDViewportNear = 0.05f;
+	float fFOV;
+	float fASPECT;
+	float fViewportNear = 0.2f;
+	float fHUDViewportNear = 0.05f;
+
 protected:
+	u32 Timer_MM_Delta;
+	CTimer_paused Timer;
+	CTimer_paused TimerGlobal;
 
-	u32										Timer_MM_Delta;
-	CTimer_paused							Timer;
-	CTimer_paused							TimerGlobal;
 public:
-
-// Registrators
-	CRegistrator	<pureRender			>			seqRender;
-	CRegistrator	<pureAppActivate	>			seqAppActivate;
-	CRegistrator	<pureAppDeactivate	>			seqAppDeactivate;
-	CRegistrator	<pureAppStart		>			seqAppStart;
-	CRegistrator	<pureAppEnd			>			seqAppEnd;
-	CRegistrator	<pureFrame			>			seqFrame;
-	CRegistrator	<pureScreenResolutionChanged>	seqResolutionChanged;
+	// Registrators
+	CRegistrator<pureRender> seqRender;
+	CRegistrator<pureAppActivate> seqAppActivate;
+	CRegistrator<pureAppDeactivate> seqAppDeactivate;
+	CRegistrator<pureAppStart> seqAppStart;
+	CRegistrator<pureAppEnd> seqAppEnd;
+	CRegistrator<pureFrame> seqFrame;
+	CRegistrator<pureScreenResolutionChanged> seqResolutionChanged;
 };
 
 #pragma pack(pop)
 // refs
-class ENGINE_API CRenderDevice:
+class ENGINE_API CRenderDevice :
 	public IRenderDevice,
 	public CRenderDeviceData
 {
@@ -181,11 +182,11 @@ class ENGINE_API CRenderDevice:
 public:
 	int Width = 0, Height = 0, PosX = 0, PosY = 0;
 
-	CTimer									TimerMM;
+	CTimer TimerMM;
 
-	void									_Create		(const char* shName);
-	void									_Destroy	(bool	bKeepTextures);
-	void									_SetupStates();
+	void _Create(const char* shName);
+	void _Destroy(bool bKeepTextures);
+	void _SetupStates();
 
 	bool InitRenderDeviceEditor();
 	bool InitRenderDevice(ERHI_API_LAYER API) override;
@@ -197,8 +198,8 @@ public:
 	u32 GetTimeDeltaSafe(u32 starttime, u32 endtime);
 
 	void* GetSwapchain() override;
-	u32	GetSwapchainWidth() override;
-	u32	GetSwapchainHeight() override;
+	u32 GetSwapchainWidth() override;
+	u32 GetSwapchainHeight() override;
 
 	void ResizeBuffers(u32 Width, u32 Height);
 	void ResizeWindow(u32 width, u32 height);
@@ -209,89 +210,93 @@ public:
 	void EndRender() override;
 
 public:
-	u32										dwPrecacheTotal;
-	void									OnWM_Activate(bool active, bool minimized);
+	u32 dwPrecacheTotal;
+	void OnWM_Activate(bool active, bool minimized);
 
 public:
-	IRenderDeviceRender						*m_pRender;
+	IRenderDeviceRender* m_pRender;
 
-	bool									m_bNearer;
-	void									SetNearer	(bool enabled)
+	bool m_bNearer;
+	void SetNearer(bool enabled)
 	{
-		if (enabled&&!m_bNearer){
-			m_bNearer						= true;
-			mProject._43					-= EPS_L;
-		}else if (!enabled&&m_bNearer){
-			m_bNearer						= false;
-			mProject._43					+= EPS_L;
+		if (enabled && !m_bNearer)
+		{
+			m_bNearer = true;
+			mProject._43 -= EPS_L;
+		}
+		else if (!enabled && m_bNearer)
+		{
+			m_bNearer = false;
+			mProject._43 += EPS_L;
 		}
 		m_pRender->SetCacheXform(mView, mProject);
 	}
 
-	void									DumpResourcesMemoryUsage() { m_pRender->ResourcesDumpMemoryUsage();}
+	void DumpResourcesMemoryUsage() { m_pRender->ResourcesDumpMemoryUsage(); }
+
 public:
 	// Registrators
-	CRegistrator	<pureFrame			>			seqFrameMT;
-	CRegistrator	<pureDeviceReset	>			seqDeviceReset;
-	xr_vector		<xr_delegate<void()>>	seqParallel;
-	xr_vector		<xr_delegate<void()>>	seqParallelRender;
+	CRegistrator<pureFrame> seqFrameMT;
+	CRegistrator<pureDeviceReset> seqDeviceReset;
+	xr_vector<xr_delegate<void()>> seqParallel;
+	xr_vector<xr_delegate<void()>> seqParallelRender;
 
 	xr_delegate<void()> ModelDefferClear;
 	xr_delegate<void()> LuaGC;
 
-	xr_vector<xr_pair<u32,std::function<void()>>> m_time_callbacks;
+	xr_vector<xr_pair<u32, std::function<void()>>> m_time_callbacks;
 	ICF void callback(u32 cb_time, const std::function<void()>& func)
 	{
-		m_time_callbacks.push_back({ dwTimeGlobal + cb_time,func });
+		m_time_callbacks.push_back({dwTimeGlobal + cb_time, func});
 	}
 	// Dependent classes
-	CStats*									Statistic;
-	
+	CStats* Statistic;
+
 	CRenderDevice();
 	virtual ~CRenderDevice() noexcept = default;
 
-	virtual void	Pause							(bool bOn, bool bTimer, bool bSound, const char* reason);
-	bool	Paused							();
+	virtual void Pause(bool bOn, bool bTimer, bool bSound, const char* reason);
+	bool Paused();
 
 	// Scene control
-	virtual void PreCache							(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input);
-	bool Begin								();
-	virtual void Clear						();
-	void End								();
-	void FrameMove							();
-	void CalculateTransforms				();
-	void overdrawBegin						();
-	void overdrawEnd						();
+	virtual void PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input);
+	bool Begin();
+	virtual void Clear();
+	void End();
+	void FrameMove();
+	void CalculateTransforms();
+	void overdrawBegin();
+	void overdrawEnd();
 
 	// Mode control
-	IC	 CTimer_paused* GetTimerGlobal		()	{ return &TimerGlobal;								}
-	u32	 TimerAsync							()	{ return TimerGlobal.GetElapsed_ms();				}
-	u32	 TimerAsync_MMT						()	{ return TimerMM.GetElapsed_ms() +	Timer_MM_Delta; }
+	IC CTimer_paused* GetTimerGlobal() { return &TimerGlobal; }
+	u32 TimerAsync() { return TimerGlobal.GetElapsed_ms(); }
+	u32 TimerAsync_MMT() { return TimerMM.GetElapsed_ms() + Timer_MM_Delta; }
 
 	// Creation & Destroying
 	void ConnectToRender();
-	void Create								(void);
+	void Create(void);
 	void Run(void);
-	void Destroy							(void);
-	void Reset								(bool precache = true);
+	void Destroy(void);
+	void Reset(bool precache = true);
 
-	void Initialize							(void);
-	void ShutDown							(void);
+	void Initialize(void);
+	void ShutDown(void);
 
 public:
-	void time_factor						(const float &time_factor);
-	
-	IC	const float &time_factor			() const
+	void time_factor(const float& time_factor);
+
+	IC const float& time_factor() const
 	{
-		VERIFY					(Timer.time_factor() == TimerGlobal.time_factor());
-		return					(Timer.time_factor());
+		VERIFY(Timer.time_factor() == TimerGlobal.time_factor());
+		return (Timer.time_factor());
 	}
 
 	// Multi-threading
 	xr_task_group DetailsTask;
 	xr_task_group SecondaryTasks;
 
-	//XRayWorkerThread GCThread;
+	// XRayWorkerThread GCThread;
 	XRayWorkerThread PreRenderThread;
 	XRayWorkerThread GameThread;
 
@@ -349,14 +354,14 @@ public:
 	}
 
 public:
-			void 		on_idle				();
-			bool 		on_event			(SDL_Event& Event);
+	void on_idle();
+	bool on_event(SDL_Event& Event);
 
 private:
-			void					message_loop		();
-virtual		void			_BCL	AddSeqFrame			( pureFrame* f, bool mt );
-virtual		void			_BCL	RemoveSeqFrame		( pureFrame* f );
-virtual		CStatsPhysics*	_BCL	StatPhysics			()	{ return  Statistic ;}
+	void message_loop();
+	virtual void _BCL AddSeqFrame(pureFrame* f, bool mt);
+	virtual void _BCL RemoveSeqFrame(pureFrame* f);
+	virtual CStatsPhysics* _BCL StatPhysics() { return Statistic; }
 };
 
 extern ENGINE_API CRenderDevice* DevicePtr;
@@ -365,24 +370,25 @@ extern ENGINE_API bool loading_save_timer_started;
 
 
 #define Device (*DevicePtr)
-#define	RDEVICE	Device
+#define RDEVICE Device
 
-typedef xr_delegate<bool()>		LOADING_EVENT;
-extern	ENGINE_API xr_list<LOADING_EVENT>		g_loading_events;
+typedef xr_delegate<bool()> LOADING_EVENT;
+extern ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
 
-class ENGINE_API CLoadScreenRenderer :public pureRender
+class ENGINE_API CLoadScreenRenderer : public pureRender
 {
 public:
-					CLoadScreenRenderer	();
-	void			start				(bool b_user_input);
-	void			stop				();
-	virtual void	OnRender			();
+	CLoadScreenRenderer();
+	void start(bool b_user_input);
+	void stop();
+	virtual void OnRender();
 
-	bool IsActive() const {
+	bool IsActive() const
+	{
 		return b_registered;
 	}
 
-	bool			b_registered;
-	bool			b_need_user_input;
+	bool b_registered;
+	bool b_need_user_input;
 };
 extern ENGINE_API CLoadScreenRenderer load_screen_renderer;

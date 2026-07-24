@@ -18,34 +18,42 @@ public:
 	void CaptureViewport(const u32 ViewportId) override
 	{
 		if (!UI || !GRHI || !UI->RT)
+		{
 			return;
+		}
 
 		const auto It = UI->Views.find(static_cast<int>(ViewportId));
 		if (It == UI->Views.end() || !It->second.RTFreez)
+		{
 			return;
+		}
 
 		const ref_rt& Target = It->second.RTFreez;
 		if (!Target->pRT || !UI->RT->pRT)
+		{
 			return;
+		}
 
 		GRHI->CopySurface(Target->pRT, UI->RT->pRT);
 	}
 
-	void ResizeViewport(const u32 ViewportId, const u32 Width,
-		const u32 Height) override
+	void ResizeViewport(const u32 ViewportId, const u32 Width, const u32 Height) override
 	{
 		if (!UI)
+		{
 			return;
+		}
 
 		const auto It = UI->Views.find(static_cast<int>(ViewportId));
 		if (It == UI->Views.end())
+		{
 			return;
+		}
 
 		It->second.RTSize.set(static_cast<int>(Width), static_cast<int>(Height));
 	}
 
-	bool SubmitViewportScene(const u32 ViewportId,
-		const FEditorViewportSceneSnapshot& Snapshot) override
+	bool SubmitViewportScene(const u32 ViewportId, const FEditorViewportSceneSnapshot& Snapshot) override
 	{
 		(void)ViewportId;
 		(void)Snapshot;
@@ -56,7 +64,8 @@ public:
 
 	[[nodiscard]] FEditorViewportPickResult PickViewport(
 		const u32 ViewportId,
-		const FEditorViewportPickRequest& Request) const override
+		const FEditorViewportPickRequest& Request
+	) const override
 	{
 		(void)ViewportId;
 		(void)Request;
@@ -68,15 +77,21 @@ public:
 	{
 		FEditorViewportSurface Surface;
 		if (!UI)
+		{
 			return Surface;
+		}
 
 		const auto It = UI->Views.find(static_cast<int>(ViewportId));
 		if (It == UI->Views.end() || !It->second.RTFreez)
+		{
 			return Surface;
+		}
 
 		const TUI::Viewport& Viewport = It->second;
 		if (!Viewport.RTFreez->pSurface)
+		{
 			return Surface;
+		}
 
 		Surface.ImGuiTextureId = Viewport.RTFreez->pSurface->GetRawTexture();
 		Surface.Width = Viewport.RTSize.x > 0 ? static_cast<u32>(Viewport.RTSize.x) : 0;
@@ -84,8 +99,7 @@ public:
 		return Surface;
 	}
 
-	void CopyViewportOverlayText(const u32 ViewportId,
-		xr_vector<FEditorOverlayText>& OutText) const override
+	void CopyViewportOverlayText(const u32 ViewportId, xr_vector<FEditorOverlayText>& OutText) const override
 	{
 		(void)ViewportId;
 		OutText.clear();
@@ -93,10 +107,13 @@ public:
 	}
 
 	[[nodiscard]] FEditorTextureHandle CreateTexture(
-		const FEditorTextureUpload& Upload) override
+		const FEditorTextureUpload& Upload
+	) override
 	{
 		if (!ValidateUpload(Upload))
+		{
 			return {};
+		}
 		std::scoped_lock Lock(TextureMutex);
 		u32 Index = FEditorTextureHandle::InvalidIndex;
 		if (!FreeTextureSlots.empty())
@@ -122,17 +139,22 @@ public:
 		return {Index, Slot.Generation};
 	}
 
-	bool UpdateTexture(const FEditorTextureHandle Handle,
-		const FEditorTextureUpload& Upload) override
+	bool UpdateTexture(const FEditorTextureHandle Handle, const FEditorTextureUpload& Upload) override
 	{
 		if (!ValidateUpload(Upload))
+		{
 			return false;
+		}
 		std::scoped_lock Lock(TextureMutex);
 		FTextureSlot* Slot = FindTexture(Handle);
 		if (!Slot || Upload.Revision < Slot->Revision)
+		{
 			return false;
+		}
 		if (Upload.Revision == Slot->Revision)
+		{
 			return true;
+		}
 		return UploadTexture(*Slot, Upload);
 	}
 
@@ -141,9 +163,13 @@ public:
 		std::scoped_lock Lock(TextureMutex);
 		FTextureSlot* Slot = FindTexture(Handle);
 		if (!Slot)
+		{
 			return;
+		}
 		if (Slot->Surface)
+		{
 			Slot->Surface->Release();
+		}
 		Slot->Surface = nullptr;
 		Slot->Alive = false;
 		Slot->Revision = 0;
@@ -153,13 +179,16 @@ public:
 	}
 
 	[[nodiscard]] FEditorViewportSurface GetTextureSurface(
-		const FEditorTextureHandle Handle) const override
+		const FEditorTextureHandle Handle
+	) const override
 	{
 		FEditorViewportSurface Result;
 		std::scoped_lock Lock(TextureMutex);
 		const FTextureSlot* Slot = FindTexture(Handle);
 		if (!Slot || !Slot->Surface)
+		{
 			return Result;
+		}
 		Result.ImGuiTextureId = Slot->Surface->GetRawTexture();
 		Result.Width = Slot->Width;
 		Result.Height = Slot->Height;
@@ -200,17 +229,17 @@ private:
 		ERHI_FORMAT Format = ERHI_FORMAT::R8G8B8A8_UNORM;
 		switch (Upload.Format)
 		{
-		case EEditorTextureFormat::Rgba8Srgb:
-			Format = ERHI_FORMAT::R8G8B8A8_UNORM_SRGB;
-			break;
-		case EEditorTextureFormat::Bgra8Unorm:
-			Format = ERHI_FORMAT::B8G8R8A8_UNORM;
-			break;
-		case EEditorTextureFormat::Bgra8Srgb:
-			Format = ERHI_FORMAT::B8G8R8A8_UNORM_SRGB;
-			break;
-		default:
-			break;
+			case EEditorTextureFormat::Rgba8Srgb:
+				Format = ERHI_FORMAT::R8G8B8A8_UNORM_SRGB;
+				break;
+			case EEditorTextureFormat::Bgra8Unorm:
+				Format = ERHI_FORMAT::B8G8R8A8_UNORM;
+				break;
+			case EEditorTextureFormat::Bgra8Srgb:
+				Format = ERHI_FORMAT::B8G8R8A8_UNORM_SRGB;
+				break;
+			default:
+				break;
 		}
 		RHITextureDesc Desc;
 		Desc.Width = Upload.Width;
@@ -232,7 +261,9 @@ private:
 			Slot.Height != Upload.Height || Slot.Surface->GetFormat() != Format)
 		{
 			if (Slot.Surface)
+			{
 				Slot.Surface->Release();
+			}
 			Slot.Surface = GRHI->CreateTexture2D(Desc, Subresource);
 		}
 		else
@@ -247,7 +278,9 @@ private:
 			Slot.Surface->UpdateData(0, 0, &Subresource, Box);
 		}
 		if (!Slot.Surface)
+		{
 			return false;
+		}
 		Slot.Width = Upload.Width;
 		Slot.Height = Upload.Height;
 		Slot.Revision = Upload.Revision;
@@ -257,16 +290,21 @@ private:
 	[[nodiscard]] FTextureSlot* FindTexture(const FEditorTextureHandle Handle)
 	{
 		if (!Handle.IsValid() || Handle.Index >= TextureSlots.size())
+		{
 			return nullptr;
+		}
 		FTextureSlot& Slot = TextureSlots[Handle.Index];
 		return Slot.Alive && Slot.Generation == Handle.Generation ? &Slot : nullptr;
 	}
 
 	[[nodiscard]] const FTextureSlot* FindTexture(
-		const FEditorTextureHandle Handle) const
+		const FEditorTextureHandle Handle
+	) const
 	{
 		if (!Handle.IsValid() || Handle.Index >= TextureSlots.size())
+		{
 			return nullptr;
+		}
 		const FTextureSlot& Slot = TextureSlots[Handle.Index];
 		return Slot.Alive && Slot.Generation == Handle.Generation ? &Slot : nullptr;
 	}
@@ -392,12 +430,7 @@ void CaptureEditorOverlayText(const FEditorOverlayText& Text)
 	CapturedEditorOverlayText.push_back(Text);
 }
 
-void EndEditorDebugDrawCapture(xr_vector<FEditorDebugLine>& Lines,
-	xr_vector<FEditorDebugTriangle>& Triangles,
-	xr_vector<FEditorOverlayLine>& OverlayLines,
-	xr_vector<FEditorOverlayTriangle>& OverlayTriangles,
-	xr_vector<FEditorOverlayText>& OverlayText,
-	xr_vector<FEditorTransientMeshCapture>& TransientMeshes) noexcept
+void EndEditorDebugDrawCapture(xr_vector<FEditorDebugLine>& Lines, xr_vector<FEditorDebugTriangle>& Triangles, xr_vector<FEditorOverlayLine>& OverlayLines, xr_vector<FEditorOverlayTriangle>& OverlayTriangles, xr_vector<FEditorOverlayText>& OverlayText, xr_vector<FEditorTransientMeshCapture>& TransientMeshes) noexcept
 {
 	EditorDebugDrawCaptureActive = false;
 	Lines.swap(CapturedEditorDebugLines);

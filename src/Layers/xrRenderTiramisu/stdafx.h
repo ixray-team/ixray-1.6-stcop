@@ -51,13 +51,17 @@
 #undef Device
 #include "NRI.h"
 
-enum :uint32_t {INDEX_NONE	= -1				};
+enum : uint32_t
+{
+	INDEX_NONE = -1
+};
 template <typename T>
-inline T Align(T x, size_t alignment) {
-    return (T)((size_t(x) + alignment - 1) & ~(alignment - 1));
+inline T Align(T x, size_t alignment)
+{
+	return (T)((size_t(x) + alignment - 1) & ~(alignment - 1));
 }
 
-#define NRI_CHECK(x) R_ASSERT((x) ==  nri::Result::SUCCESS)
+#define NRI_CHECK(x) R_ASSERT((x) == nri::Result::SUCCESS)
 
 
 extern std::atomic_size_t GRenderThreadId;
@@ -65,16 +69,14 @@ extern const size_t GGameThreadId;
 #include "Core/TThreadAffinity.h"
 inline bool IsRenderThreadRunning()
 {
-    return GRenderThreadId.load(std::memory_order_acquire) != GGameThreadId;
+	return GRenderThreadId.load(std::memory_order_acquire) != GGameThreadId;
 }
-#define CheckIsGameThread() VERIFY(Tiramisu::Threading::IsThreadRoleSatisfied( \
-    Tiramisu::Threading::EThreadRole::Game, IsRenderThreadRunning(), \
-    Platform::GetCurrentThreadId(), GGameThreadId, \
-    GRenderThreadId.load(std::memory_order_acquire)))
-#define CheckIsRenderThread() VERIFY(Tiramisu::Threading::IsThreadRoleSatisfied( \
-    Tiramisu::Threading::EThreadRole::Render, IsRenderThreadRunning(), \
-    Platform::GetCurrentThreadId(), GGameThreadId, \
-    GRenderThreadId.load(std::memory_order_acquire)))
+#define CheckIsGameThread() VERIFY(Tiramisu::Threading::IsThreadRoleSatisfied(                                                                                      \
+	Tiramisu::Threading::EThreadRole::Game, IsRenderThreadRunning(), Platform::GetCurrentThreadId(), GGameThreadId, GRenderThreadId.load(std::memory_order_acquire) \
+))
+#define CheckIsRenderThread() VERIFY(Tiramisu::Threading::IsThreadRoleSatisfied(                                                                                      \
+	Tiramisu::Threading::EThreadRole::Render, IsRenderThreadRunning(), Platform::GetCurrentThreadId(), GGameThreadId, GRenderThreadId.load(std::memory_order_acquire) \
+))
 
 #include "RenderCommandQueue.h"
 #include "Core/TiramisuRenderDevice.h"

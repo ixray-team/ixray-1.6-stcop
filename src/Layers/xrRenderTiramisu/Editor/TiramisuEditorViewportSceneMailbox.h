@@ -60,11 +60,12 @@ struct FEditorOwnedViewportScenePacket
 class TiramisuEditorViewportSceneMailbox
 {
 public:
-	[[nodiscard]] bool Submit(const FEditorViewportSceneSnapshot& Snapshot,
-		xr_string* OutDiagnostic = nullptr)
+	[[nodiscard]] bool Submit(const FEditorViewportSceneSnapshot& Snapshot, xr_string* OutDiagnostic = nullptr)
 	{
 		if (OutDiagnostic)
+		{
 			OutDiagnostic->clear();
+		}
 		xr_vector<FEditorOwnedMaterialSlotSource> MaterialCopies;
 		MaterialCopies.reserve(Snapshot.MaterialSlots.size());
 		xr_hash_set<u64> SubmittedMaterialIds;
@@ -73,14 +74,10 @@ public:
 			if (!Material.MaterialSlot.IsValid() ||
 				!SubmittedMaterialIds.insert(Material.MaterialSlot.Value).second)
 			{
-				SetDiagnostic(OutDiagnostic,
-					"Material source has an invalid or duplicate slot ID");
+				SetDiagnostic(OutDiagnostic, "Material source has an invalid or duplicate slot ID");
 				return false;
 			}
-			MaterialCopies.push_back({Material.MaterialSlot,
-				xr_string(Material.ShaderName), xr_string(Material.TextureName),
-				xr_string(Material.SurfaceName), Material.Flags,
-				xr_string(Material.MaterialAsset)});
+			MaterialCopies.push_back({Material.MaterialSlot, xr_string(Material.ShaderName), xr_string(Material.TextureName), xr_string(Material.SurfaceName), Material.Flags, xr_string(Material.MaterialAsset)});
 		}
 
 		xr_vector<FEditorOwnedStaticMeshUpload> MeshCopies;
@@ -89,9 +86,10 @@ public:
 
 		for (const FEditorStaticMeshUpload& Mesh : Snapshot.StaticMeshes)
 		{
-			if (!ValidateMesh(Mesh, SubmittedIds, SubmittedMaterialIds,
-					OutDiagnostic))
+			if (!ValidateMesh(Mesh, SubmittedIds, SubmittedMaterialIds, OutDiagnostic))
+			{
 				return false;
+			}
 
 			FEditorOwnedStaticMeshUpload Copy;
 			Copy.MeshId = Mesh.MeshId;
@@ -103,7 +101,9 @@ public:
 		}
 
 		if (!ValidateCamera(Snapshot.Camera, OutDiagnostic))
+		{
 			return false;
+		}
 		for (const FEditorStaticMeshId Removed : Snapshot.RemovedStaticMeshes)
 		{
 			if (!Removed.IsValid())
@@ -117,37 +117,40 @@ public:
 			if (!Instance.ObjectId.IsValid() || !Instance.MeshId.IsValid() ||
 				!IsFinite(Instance.LocalToWorld))
 			{
-				SetDiagnostic(OutDiagnostic,
-					"Scene instance has an invalid ID or transform");
+				SetDiagnostic(OutDiagnostic, "Scene instance has an invalid ID or transform");
 				return false;
 			}
 			xr_hash_set<u64> OverriddenBaseSlots;
 			for (const FEditorMaterialSlotOverride& Override :
-				Instance.MaterialOverrides)
+				 Instance.MaterialOverrides)
 			{
 				if (!Override.BaseMaterialSlot.IsValid() ||
 					!Override.MaterialSlot.IsValid() ||
 					!OverriddenBaseSlots.insert(
-						Override.BaseMaterialSlot.Value).second ||
+											Override.BaseMaterialSlot.Value
+					)
+						 .second ||
 					!SubmittedMaterialIds.contains(
-						Override.MaterialSlot.Value))
+						Override.MaterialSlot.Value
+					))
 				{
-					SetDiagnostic(OutDiagnostic,
-						"Scene instance has an invalid, duplicate or missing "
-						"material override");
+					SetDiagnostic(OutDiagnostic, "Scene instance has an invalid, duplicate or missing "
+												 "material override");
 					return false;
 				}
 			}
 		}
 		xr_hash_set<u64> SceneObjectIds;
 		SceneObjectIds.reserve(
-			Snapshot.Instances.size() + Snapshot.Lights.size());
+			Snapshot.Instances.size() + Snapshot.Lights.size()
+		);
 		for (const FEditorStaticMeshInstance& Instance : Snapshot.Instances)
+		{
 			SceneObjectIds.insert(Instance.ObjectId.Value);
+		}
 		if (Snapshot.Lights.size() > EditorViewportMaxLightCount)
 		{
-			SetDiagnostic(OutDiagnostic,
-				"Scene light count exceeds the viewport limit");
+			SetDiagnostic(OutDiagnostic, "Scene light count exceeds the viewport limit");
 			return false;
 		}
 		for (const FEditorSceneLight& Light : Snapshot.Lights)
@@ -167,34 +170,22 @@ public:
 				!IsFinite(Light.Color) ||
 				!std::isfinite(Light.Intensity) ||
 				Light.Intensity < 0.0f ||
-				std::ranges::any_of(Light.Color,
-					[](const float Value) { return Value < 0.0f; }) ||
-				(LocalLight &&
-					(!std::isfinite(Light.Range) ||
-						Light.Range <= 0.0f)) ||
-				(Spot &&
-					(!std::isfinite(Light.InnerConeAngleDegrees) ||
-						!std::isfinite(Light.OuterConeAngleDegrees) ||
-						Light.InnerConeAngleDegrees < 0.0f ||
-						Light.OuterConeAngleDegrees <= 0.0f ||
-						Light.InnerConeAngleDegrees >
-							Light.OuterConeAngleDegrees ||
-						Light.OuterConeAngleDegrees >= 90.0f)))
+				std::ranges::any_of(Light.Color, [](const float Value)
+									{ return Value < 0.0f; }) ||
+				(LocalLight && (!std::isfinite(Light.Range) || Light.Range <= 0.0f)) || (Spot && (!std::isfinite(Light.InnerConeAngleDegrees) || !std::isfinite(Light.OuterConeAngleDegrees) || Light.InnerConeAngleDegrees < 0.0f || Light.OuterConeAngleDegrees <= 0.0f || Light.InnerConeAngleDegrees > Light.OuterConeAngleDegrees || Light.OuterConeAngleDegrees >= 90.0f)))
 			{
-				SetDiagnostic(OutDiagnostic,
-					"Scene light has invalid IDs, transform, radiometry, "
-					"range or cone angles");
+				SetDiagnostic(OutDiagnostic, "Scene light has invalid IDs, transform, radiometry, "
+											 "range or cone angles");
 				return false;
 			}
 		}
 		if ((!Snapshot.DebugLines.empty() || !Snapshot.DebugTriangles.empty() ||
-				!Snapshot.OverlayLines.empty() ||
-				!Snapshot.OverlayTriangles.empty() ||
-				!Snapshot.OverlayText.empty()) &&
+			 !Snapshot.OverlayLines.empty() ||
+			 !Snapshot.OverlayTriangles.empty() ||
+			 !Snapshot.OverlayText.empty()) &&
 			Snapshot.DebugDrawRevision == 0)
 		{
-			SetDiagnostic(OutDiagnostic,
-				"Non-empty editor debug draw has no revision");
+			SetDiagnostic(OutDiagnostic, "Non-empty editor debug draw has no revision");
 			return false;
 		}
 		for (const FEditorDebugLine& Line : Snapshot.DebugLines)
@@ -203,8 +194,7 @@ public:
 			{
 				if (!ValidateDebugVertex(Vertex))
 				{
-					SetDiagnostic(OutDiagnostic,
-						"Editor debug line contains a non-finite vertex");
+					SetDiagnostic(OutDiagnostic, "Editor debug line contains a non-finite vertex");
 					return false;
 				}
 			}
@@ -215,8 +205,7 @@ public:
 			{
 				if (!ValidateDebugVertex(Vertex))
 				{
-					SetDiagnostic(OutDiagnostic,
-						"Editor debug triangle contains a non-finite vertex");
+					SetDiagnostic(OutDiagnostic, "Editor debug triangle contains a non-finite vertex");
 					return false;
 				}
 			}
@@ -227,8 +216,7 @@ public:
 			{
 				if (!ValidateOverlayVertex(Vertex))
 				{
-					SetDiagnostic(OutDiagnostic,
-						"Editor overlay line contains an invalid vertex");
+					SetDiagnostic(OutDiagnostic, "Editor overlay line contains an invalid vertex");
 					return false;
 				}
 			}
@@ -239,8 +227,7 @@ public:
 			{
 				if (!ValidateOverlayVertex(Vertex))
 				{
-					SetDiagnostic(OutDiagnostic,
-						"Editor overlay triangle contains an invalid vertex");
+					SetDiagnostic(OutDiagnostic, "Editor overlay triangle contains an invalid vertex");
 					return false;
 				}
 			}
@@ -249,8 +236,7 @@ public:
 		{
 			if (!ValidateOverlayText(Text))
 			{
-				SetDiagnostic(OutDiagnostic,
-					"Editor overlay text is empty, oversized or non-finite");
+				SetDiagnostic(OutDiagnostic, "Editor overlay text is empty, oversized or non-finite");
 				return false;
 			}
 		}
@@ -264,15 +250,18 @@ public:
 			AvailableMeshIds.insert(MeshId);
 		}
 		for (const FEditorStaticMeshId Removed : Snapshot.RemovedStaticMeshes)
+		{
 			AvailableMeshIds.erase(Removed.Value);
+		}
 		for (const FEditorOwnedStaticMeshUpload& Mesh : MeshCopies)
+		{
 			AvailableMeshIds.insert(Mesh.MeshId.Value);
+		}
 		for (const FEditorStaticMeshInstance& Instance : Snapshot.Instances)
 		{
 			if (!AvailableMeshIds.contains(Instance.MeshId.Value))
 			{
-				SetDiagnostic(OutDiagnostic,
-					"Scene instance references a mesh that was not submitted");
+				SetDiagnostic(OutDiagnostic, "Scene instance references a mesh that was not submitted");
 				return false;
 			}
 
@@ -293,19 +282,18 @@ public:
 					MeshMaterialSlots.insert(Section.MaterialSlot.Value);
 					if (!SubmittedMaterialIds.contains(Section.MaterialSlot.Value))
 					{
-						SetDiagnostic(OutDiagnostic,
-							"Scene instance references a material slot absent from the snapshot");
+						SetDiagnostic(OutDiagnostic, "Scene instance references a material slot absent from the snapshot");
 						return false;
 					}
 				}
 				for (const FEditorMaterialSlotOverride& Override :
-					Instance.MaterialOverrides)
+					 Instance.MaterialOverrides)
 				{
 					if (!MeshMaterialSlots.contains(
-							Override.BaseMaterialSlot.Value))
+							Override.BaseMaterialSlot.Value
+						))
 					{
-						SetDiagnostic(OutDiagnostic,
-							"Scene instance overrides a slot absent from its mesh");
+						SetDiagnostic(OutDiagnostic, "Scene instance overrides a slot absent from its mesh");
 						return false;
 					}
 				}
@@ -313,32 +301,29 @@ public:
 			else
 			{
 				const auto CachedSlots = AcceptedMeshMaterialSlots.find(
-					Instance.MeshId.Value);
+					Instance.MeshId.Value
+				);
 				if (CachedSlots == AcceptedMeshMaterialSlots.end())
 				{
-					SetDiagnostic(OutDiagnostic,
-						"Scene instance references a mesh without material metadata");
+					SetDiagnostic(OutDiagnostic, "Scene instance references a mesh without material metadata");
 					return false;
 				}
 				for (const u64 Slot : CachedSlots->second)
 				{
 					if (!SubmittedMaterialIds.contains(Slot))
 					{
-						SetDiagnostic(OutDiagnostic,
-							"Cached mesh material slot is absent from the snapshot");
+						SetDiagnostic(OutDiagnostic, "Cached mesh material slot is absent from the snapshot");
 						return false;
 					}
 				}
 				for (const FEditorMaterialSlotOverride& Override :
-					Instance.MaterialOverrides)
+					 Instance.MaterialOverrides)
 				{
-					if (std::ranges::find(CachedSlots->second,
-							Override.BaseMaterialSlot.Value) ==
+					if (std::ranges::find(CachedSlots->second, Override.BaseMaterialSlot.Value) ==
 						CachedSlots->second.end())
 					{
-						SetDiagnostic(OutDiagnostic,
-							"Scene instance overrides a slot absent from its "
-							"cached mesh");
+						SetDiagnostic(OutDiagnostic, "Scene instance overrides a slot absent from its "
+													 "cached mesh");
 						return false;
 					}
 				}
@@ -369,7 +354,9 @@ public:
 			MaterialSlots.clear();
 			MaterialSlots.reserve(Mesh.Sections.size());
 			for (const FEditorStaticMeshSection& Section : Mesh.Sections)
+			{
 				MaterialSlots.push_back(Section.MaterialSlot.Value);
+			}
 			PendingRemovedMeshes.erase(Mesh.MeshId.Value);
 			PendingMeshUpdates[Mesh.MeshId.Value] = std::move(Mesh);
 		}
@@ -379,14 +366,10 @@ public:
 		PendingInstances.assign(Snapshot.Instances.begin(), Snapshot.Instances.end());
 		PendingLights.assign(Snapshot.Lights.begin(), Snapshot.Lights.end());
 		PendingDebugLines.assign(Snapshot.DebugLines.begin(), Snapshot.DebugLines.end());
-		PendingDebugTriangles.assign(Snapshot.DebugTriangles.begin(),
-			Snapshot.DebugTriangles.end());
-		PendingOverlayLines.assign(Snapshot.OverlayLines.begin(),
-			Snapshot.OverlayLines.end());
-		PendingOverlayTriangles.assign(Snapshot.OverlayTriangles.begin(),
-			Snapshot.OverlayTriangles.end());
-		PendingOverlayText.assign(Snapshot.OverlayText.begin(),
-			Snapshot.OverlayText.end());
+		PendingDebugTriangles.assign(Snapshot.DebugTriangles.begin(), Snapshot.DebugTriangles.end());
+		PendingOverlayLines.assign(Snapshot.OverlayLines.begin(), Snapshot.OverlayLines.end());
+		PendingOverlayTriangles.assign(Snapshot.OverlayTriangles.begin(), Snapshot.OverlayTriangles.end());
+		PendingOverlayText.assign(Snapshot.OverlayText.begin(), Snapshot.OverlayText.end());
 		PendingDebugDrawRevision = Snapshot.DebugDrawRevision;
 		PendingRevision = Snapshot.Revision;
 		HasPendingScene = true;
@@ -397,7 +380,9 @@ public:
 	{
 		std::scoped_lock Lock(Mutex);
 		if (!HasPendingScene)
+		{
 			return false;
+		}
 
 		OutPacket = {};
 		OutPacket.Camera = PendingCamera;
@@ -418,7 +403,9 @@ public:
 			OutPacket.StaticMeshUpdates.push_back(std::move(Mesh));
 		}
 		for (const u64 MeshId : PendingRemovedMeshes)
+		{
 			OutPacket.RemovedStaticMeshes.push_back({MeshId});
+		}
 
 		PendingMeshUpdates.clear();
 		PendingRemovedMeshes.clear();
@@ -430,7 +417,9 @@ private:
 	static void SetDiagnostic(xr_string* OutDiagnostic, const char* Text)
 	{
 		if (OutDiagnostic)
+		{
 			*OutDiagnostic = Text;
+		}
 	}
 
 	template <size_t Size>
@@ -439,13 +428,14 @@ private:
 		for (const float Value : Values)
 		{
 			if (!std::isfinite(Value))
+			{
 				return false;
+			}
 		}
 		return true;
 	}
 
-	[[nodiscard]] static bool ValidateCamera(const FEditorViewportCamera& Camera,
-		xr_string* OutDiagnostic)
+	[[nodiscard]] static bool ValidateCamera(const FEditorViewportCamera& Camera, xr_string* OutDiagnostic)
 	{
 		if (!IsFinite(Camera.View) || !IsFinite(Camera.Projection) ||
 			!IsFinite(Camera.ViewProjection) || !IsFinite(Camera.WorldPosition) ||
@@ -459,38 +449,37 @@ private:
 	}
 
 	[[nodiscard]] static bool ValidateDebugVertex(
-		const FEditorDebugVertex& Vertex)
+		const FEditorDebugVertex& Vertex
+	)
 	{
 		return IsFinite(Vertex.Position) && IsFinite(Vertex.Color);
 	}
 
 	[[nodiscard]] static bool ValidateOverlayVertex(
-		const FEditorOverlayVertex& Vertex)
+		const FEditorOverlayVertex& Vertex
+	)
 	{
 		// Off-screen coordinates are legal and are clipped by the rasterizer.
 		return IsFinite(Vertex.Position) && IsFinite(Vertex.Color);
 	}
 
 	[[nodiscard]] static bool ValidateOverlayText(
-		const FEditorOverlayText& Text)
+		const FEditorOverlayText& Text
+	)
 	{
 		constexpr size_t MaxOverlayTextLength = 4096;
 		return !Text.Text.empty() && Text.Text.size() <= MaxOverlayTextLength &&
-			IsFinite(Text.Position) && IsFinite(Text.Color) &&
-			IsFinite(Text.ShadowColor);
+			   IsFinite(Text.Position) && IsFinite(Text.Color) &&
+			   IsFinite(Text.ShadowColor);
 	}
 
-	[[nodiscard]] static bool ValidateMesh(const FEditorStaticMeshUpload& Mesh,
-		xr_hash_set<u64>& SubmittedIds,
-		const xr_hash_set<u64>& SubmittedMaterialIds,
-		xr_string* OutDiagnostic)
+	[[nodiscard]] static bool ValidateMesh(const FEditorStaticMeshUpload& Mesh, xr_hash_set<u64>& SubmittedIds, const xr_hash_set<u64>& SubmittedMaterialIds, xr_string* OutDiagnostic)
 	{
 		if (!Mesh.MeshId.IsValid() || Mesh.Revision == 0 || Mesh.Vertices.empty() ||
 			Mesh.Indices.empty() || Mesh.Indices.size() % 3 != 0 ||
 			!SubmittedIds.insert(Mesh.MeshId.Value).second)
 		{
-			SetDiagnostic(OutDiagnostic,
-				"Static mesh has an invalid ID, revision, topology or duplicate ID");
+			SetDiagnostic(OutDiagnostic, "Static mesh has an invalid ID, revision, topology or duplicate ID");
 			return false;
 		}
 		for (const FEditorStaticMeshVertex& Vertex : Mesh.Vertices)
@@ -514,22 +503,20 @@ private:
 		for (const FEditorStaticMeshSection& Section : Mesh.Sections)
 		{
 			const u64 End = static_cast<u64>(Section.FirstIndex) +
-				Section.IndexCount;
+							Section.IndexCount;
 			if (!Section.MaterialSlot.IsValid() ||
 				!SubmittedMaterialIds.contains(Section.MaterialSlot.Value) ||
 				Section.FirstIndex != ExpectedFirstIndex || Section.IndexCount == 0 ||
 				Section.IndexCount % 3 != 0 || End > Mesh.Indices.size())
 			{
-				SetDiagnostic(OutDiagnostic,
-					"Static mesh section has an invalid material or index range");
+				SetDiagnostic(OutDiagnostic, "Static mesh section has an invalid material or index range");
 				return false;
 			}
 			ExpectedFirstIndex = End;
 		}
 		if (ExpectedFirstIndex != Mesh.Indices.size())
 		{
-			SetDiagnostic(OutDiagnostic,
-				"Static mesh sections do not cover the complete index buffer");
+			SetDiagnostic(OutDiagnostic, "Static mesh sections do not cover the complete index buffer");
 			return false;
 		}
 		return true;

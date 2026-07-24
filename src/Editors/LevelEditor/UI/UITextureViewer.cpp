@@ -28,7 +28,6 @@ void CUITextureViewer::Draw()
 	}
 	ImGui::End();
 	ImGui::PopStyleVar();
-
 }
 
 void CUITextureViewer::DrawView()
@@ -45,8 +44,14 @@ void CUITextureViewer::DrawView()
 		ImGui::PushStyleColor(ImGuiCol_Text, textCol);
 		if (ImGui::Button(label, buttonSize))
 		{
-			if (active) ChannelMask &= ~bit;
-			else        ChannelMask |= bit;
+			if (active)
+			{
+				ChannelMask &= ~bit;
+			}
+			else
+			{
+				ChannelMask |= bit;
+			}
 			UpdateTexture();
 		}
 		ImGui::PopStyleColor(2);
@@ -66,7 +71,7 @@ void CUITextureViewer::DrawView()
 		ImVec4 col = GrayMode ? ImVec4(0.7f, 0.7f, 0.7f, 1.0f) : ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
 		ImGui::SameLine(0.0f, 10.0f);
 		ImGui::PushStyleColor(ImGuiCol_Button, col);
-		if (ImGui::Button("Gray", { 35, 22 }))
+		if (ImGui::Button("Gray", {35, 22}))
 		{
 			GrayMode = !GrayMode;
 			UpdateTexture();
@@ -115,7 +120,8 @@ void CUITextureViewer::DrawView()
 	ImGui::PopStyleVar();
 
 	const ImTextureID TextureId = EditorTexture.IsValid()
-		? UI->GetImGuiTexture(EditorTexture) : nullptr;
+									  ? UI->GetImGuiTexture(EditorTexture)
+									  : nullptr;
 	if (TextureId)
 	{
 		ImVec2 avail = ImGui::GetContentRegionAvail();
@@ -226,10 +232,22 @@ void CUITextureViewer::UpdateTexture()
 			else if (GrayMode)
 			{
 				uint8_t v = 0;
-				if (ChannelMask & Channel_R) v = b;
-				if (ChannelMask & Channel_G) v = g;
-				if (ChannelMask & Channel_B) v = r;
-				if (ChannelMask & Channel_A) v = a;
+				if (ChannelMask & Channel_R)
+				{
+					v = b;
+				}
+				if (ChannelMask & Channel_G)
+				{
+					v = g;
+				}
+				if (ChannelMask & Channel_B)
+				{
+					v = r;
+				}
+				if (ChannelMask & Channel_A)
+				{
+					v = a;
+				}
 
 				R = G = B = v;
 				A = 255;
@@ -249,8 +267,6 @@ void CUITextureViewer::UpdateTexture()
 		}
 	}
 
-	(void)UI->UpdateImGuiTexture(EditorTexture, Data, Width, Height,
-		Width * 4, ++TextureRevision, CurrentFileName.c_str(),
-		EEditorTextureFormat::Bgra8Unorm);
+	(void)UI->UpdateImGuiTexture(EditorTexture, Data, Width, Height, Width * 4, ++TextureRevision, CurrentFileName.c_str(), EEditorTextureFormat::Bgra8Unorm);
 	Surf->Unlock();
 }

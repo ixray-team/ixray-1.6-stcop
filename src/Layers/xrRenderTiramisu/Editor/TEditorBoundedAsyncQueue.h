@@ -22,10 +22,11 @@ public:
 	using FWorker = std::function<TResult(TRequest)>;
 
 	explicit TEditorBoundedAsyncQueue(
-		const size_t InMaxConcurrency, FWorker InWorker)
-		: MaxConcurrency(std::max<size_t>(1, InMaxConcurrency)),
-		  Worker(std::move(InWorker))
-	{}
+		const size_t InMaxConcurrency, FWorker InWorker
+	)
+		: MaxConcurrency(std::max<size_t>(1, InMaxConcurrency)), Worker(std::move(InWorker))
+	{
+	}
 
 	void Enqueue(TRequest Request)
 	{
@@ -61,7 +62,12 @@ public:
 	{
 		Pending.clear();
 		for (std::future<TResult>& Job : Active)
-			if (Job.valid()) Job.wait();
+		{
+			if (Job.valid())
+			{
+				Job.wait();
+			}
+		}
 		Active.clear();
 	}
 
@@ -87,11 +93,8 @@ private:
 		{
 			TRequest Request = std::move(Pending.front());
 			Pending.pop_front();
-			Active.push_back(std::async(std::launch::async,
-				[Worker = Worker, Request = std::move(Request)]() mutable
-				{
-					return Worker(std::move(Request));
-				}));
+			Active.push_back(std::async(std::launch::async, [Worker = Worker, Request = std::move(Request)]() mutable
+										{ return Worker(std::move(Request)); }));
 			PeakActive = std::max(PeakActive, Active.size());
 		}
 	}

@@ -6,37 +6,37 @@
 
 UITopBarForm::UITopBarForm()
 {
-    m_timeUndo               = 0;
-    m_timeRedo               = 0;
-    m_tAIMap                 = EDevice->Resources->_CreateTexture("ed\\bar\\AIMap");
-    m_tPlayInEditor          = EDevice->Resources->_CreateTexture("ed\\bar\\play_in_editor");
-    m_tPlayPC                = EDevice->Resources->_CreateTexture("ed\\bar\\play_pc");
-    m_tPlayCleanGame         = EDevice->Resources->_CreateTexture("ed\\bar\\play_clean_game");
-    m_tTerminated            = EDevice->Resources->_CreateTexture("ed\\bar\\terminated");
+	m_timeUndo = 0;
+	m_timeRedo = 0;
+	m_tAIMap = EDevice->Resources->_CreateTexture("ed\\bar\\AIMap");
+	m_tPlayInEditor = EDevice->Resources->_CreateTexture("ed\\bar\\play_in_editor");
+	m_tPlayPC = EDevice->Resources->_CreateTexture("ed\\bar\\play_pc");
+	m_tPlayCleanGame = EDevice->Resources->_CreateTexture("ed\\bar\\play_clean_game");
+	m_tTerminated = EDevice->Resources->_CreateTexture("ed\\bar\\terminated");
 
-    m_tReloadConfigs         = EDevice->Resources->_CreateTexture("ed\\bar\\reload_configs");
-    
+	m_tReloadConfigs = EDevice->Resources->_CreateTexture("ed\\bar\\reload_configs");
+
 	InitIcons();
 
 	m_VerifySpaceRestrictors = false;
-    m_Simulate               = false;
+	m_Simulate = false;
 }
 
-UITopBarForm::~UITopBarForm() 
+UITopBarForm::~UITopBarForm()
 {
 	Icons.clear();
 }
 
 
-#define IMGUI_HINT_BUTTON(Name, Ptr, Hint, dImDrawFlags, Callback) \
-			if (XRay::ImGui::ToolbarIconButton("##" Name, UI->GetImGuiTexture(Ptr), nullptr, dImDrawFlags)) \
-				Callback(); \
-			if (ImGui::IsItemHovered()) \
-			{ \
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand); \
-				ImGui::SetTooltip(Hint); \
-			} \
-			ImGui::SameLine()
+#define IMGUI_HINT_BUTTON(Name, Ptr, Hint, dImDrawFlags, Callback)                                  \
+	if (XRay::ImGui::ToolbarIconButton("##" Name, UI->GetImGuiTexture(Ptr), nullptr, dImDrawFlags)) \
+		Callback();                                                                                 \
+	if (ImGui::IsItemHovered())                                                                     \
+	{                                                                                               \
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);                                               \
+		ImGui::SetTooltip(Hint);                                                                    \
+	}                                                                                               \
+	ImGui::SameLine()
 
 void UITopBarForm::Draw()
 {
@@ -49,14 +49,7 @@ void UITopBarForm::Draw()
 	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, ButtonSize + ToolbarPadding * 2));
 	ImGui::SetNextWindowViewport(viewport->ID);
 
-	ImGuiWindowFlags window_flags = 0
-		| ImGuiWindowFlags_NoDocking
-		| ImGuiWindowFlags_NoTitleBar
-		| ImGuiWindowFlags_NoResize
-		| ImGuiWindowFlags_NoMove
-		| ImGuiWindowFlags_NoScrollbar
-		| ImGuiWindowFlags_NoScrollWithMouse
-		;
+	ImGuiWindowFlags window_flags = 0 | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(ToolbarPadding, 0));
@@ -66,7 +59,7 @@ void UITopBarForm::Draw()
 	ImGui::PushStyleColor(ImGuiCol_Button, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::ToolbarButtonTint).Value);
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::PanelBorderTint).Value);
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, { ButtonSize, ButtonSize + ToolbarPadding * 2 });
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, {ButtonSize, ButtonSize + ToolbarPadding * 2});
 	if (ImGui::Begin("TOOLBAR", NULL, window_flags))
 	{
 		ImGui::PopStyleVar(); // WindowMinSize
@@ -88,14 +81,13 @@ void UITopBarForm::Draw()
 			{
 				IMGUI_HINT_BUTTON("Undo", Icons["undo"], "Undo the last action", ImDrawFlags_RoundCornersLeft, ClickUndo);
 				IMGUI_HINT_BUTTON("Redo", Icons["redo"], "Repeat the last action", ImDrawFlags_RoundCornersRight, ClickRedo);
-
 			}
 
 			if (ImGui::TableNextColumn())
 			{
-				IMGUI_HINT_BUTTON("I_CNS", Icons["new_scene"],"Clear/New Scene", ImDrawFlags_RoundCornersLeft, ClickNew);
+				IMGUI_HINT_BUTTON("I_CNS", Icons["new_scene"], "Clear/New Scene", ImDrawFlags_RoundCornersLeft, ClickNew);
 				IMGUI_HINT_BUTTON("I_OL", Icons["open_level"], "Open level", ImDrawFlags_RoundCornersNone, ClickOpen);
-				IMGUI_HINT_BUTTON("I_SL", Icons["save_level"],"Save level", ImDrawFlags_RoundCornersRight, ClickSave);
+				IMGUI_HINT_BUTTON("I_SL", Icons["save_level"], "Save level", ImDrawFlags_RoundCornersRight, ClickSave);
 			}
 
 			if (ImGui::TableNextColumn())
@@ -120,7 +112,7 @@ void UITopBarForm::Draw()
 					IMGUI_HINT_BUTTON("StartPIE", Icons["play_in_editor"], "Start Play in Editor", ImDrawFlags_RoundCornersLeft, ClickPlayInEditor);
 				}
 
-				if (XRay::ImGui::ToolbarIconButton("##PlaySettings", UI->GetImGuiTexture(Icons["play_in_editor_settings"]), nullptr, ImDrawFlags_RoundCornersRight, ButtonRadius, { ButtonSize * 0.5f, ButtonSize }, { IconSize * 0.4f, IconSize * 0.4f }))
+				if (XRay::ImGui::ToolbarIconButton("##PlaySettings", UI->GetImGuiTexture(Icons["play_in_editor_settings"]), nullptr, ImDrawFlags_RoundCornersRight, ButtonRadius, {ButtonSize * 0.5f, ButtonSize}, {IconSize * 0.4f, IconSize * 0.4f}))
 				{
 					ImGui::OpenPopup("test");
 				}
@@ -158,7 +150,7 @@ void UITopBarForm::Draw()
 
 			if (ImGui::TableNextColumn())
 			{
-				IMGUI_HINT_BUTTON("I_OGF", Icons["open_gamedata_folder"],"Open 'gamedata' folder", ImDrawFlags_RoundCornersAll, ClickOpenGameData);
+				IMGUI_HINT_BUTTON("I_OGF", Icons["open_gamedata_folder"], "Open 'gamedata' folder", ImDrawFlags_RoundCornersAll, ClickOpenGameData);
 			}
 
 			if (ImGui::TableNextColumn())
@@ -174,8 +166,8 @@ void UITopBarForm::Draw()
 			if (ImGui::TableNextColumn())
 			{
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, XRay::ImGui::GetEditorColor(XRay::ImGui::EEditorColors::Accent).Value);
-				
-				if (XRay::ImGui::ToolbarButton("PhysSimulation228","Phys Simulation", &m_Simulate, { 0.f, ButtonSize }, ImDrawFlags_RoundCornersLeft))
+
+				if (XRay::ImGui::ToolbarButton("PhysSimulation228", "Phys Simulation", &m_Simulate, {0.f, ButtonSize}, ImDrawFlags_RoundCornersLeft))
 				{
 					ExecCommand(COMMAND_SIMULATE, true);
 				}
@@ -186,7 +178,7 @@ void UITopBarForm::Draw()
 				}
 				ImGui::SameLine(0, 0);
 
-				if (XRay::ImGui::ToolbarButton("UsePos228", "Use Pos", nullptr, { 0.f, ButtonSize }, ImDrawFlags_RoundCornersRight))
+				if (XRay::ImGui::ToolbarButton("UsePos228", "Use Pos", nullptr, {0.f, ButtonSize}, ImDrawFlags_RoundCornersRight))
 				{
 					ExecCommand(COMMAND_USE_SIMULATE_POSITIONS, true);
 				}
@@ -203,7 +195,7 @@ void UITopBarForm::Draw()
 			{
 				IMGUI_HINT_BUTTON("I_Preferences", Icons["prefs"], "Preferences", ImDrawFlags_RoundCornersAll, ClickPreferences);
 			}
-        }
+		}
 		ImGui::EndTable();
 	}
 	ImGui::End();
@@ -230,7 +222,6 @@ void UITopBarForm::InitIcons()
 	Icons["play_level_in_game"] = EDevice->Resources->_CreateTexture("ed\\icons\\Play Game");
 	Icons["open_gamedata_folder"] = EDevice->Resources->_CreateTexture("ed\\icons\\File Open Game Data Folder");
 	Icons["prefs"] = EDevice->Resources->_CreateTexture("ed\\icons\\Tab Outliner");
-
 }
 
 void UITopBarForm::ClickUndo()
@@ -258,11 +249,11 @@ void UITopBarForm::ClickSave()
 void UITopBarForm::ClickReloadConfigs()
 {
 	xr_delete(pSettings);
-	string_path 			si_name;
+	string_path si_name;
 	FS.update_path(si_name, "$game_config$", "system.ltx");
-	pSettings = new CInifile(si_name, true);// false,true,true);
+	pSettings = new CInifile(si_name, true); // false,true,true);
 	xr_delete(pGameIni);
-	string_path					fname;
+	string_path fname;
 	FS.update_path(fname, "$game_config$", "game.ltx");
 	pGameIni = new CInifile(fname, true);
 	g_SEFactoryManager->reload();
@@ -280,17 +271,14 @@ void UITopBarForm::ClickOpenGameData()
 void UITopBarForm::ClickCForm()
 {
 	Scene->BuildCForm();
-
 }
 void UITopBarForm::ClickAIMap()
 {
 	Scene->BuildAIMap();
-
 }
 void UITopBarForm::ClickGGraph()
 {
 	Scene->BuildGameGraph();
-
 }
 void UITopBarForm::ClickPlayInEditor()
 {
@@ -298,7 +286,7 @@ void UITopBarForm::ClickPlayInEditor()
 }
 void UITopBarForm::ClickBuildAndMake()
 {
-	if (Builder.Compile(false,false))
+	if (Builder.Compile(false, false))
 	{
 		LTools->RunXrLC();
 	}
@@ -310,13 +298,14 @@ void UITopBarForm::ClickTerminated()
 void UITopBarForm::ClickPlayPC()
 {
 	if (!Scene->BuildForPCPlay())
+	{
 		return;
+	}
 
 	string_path params;
 	xr_sprintf(params, "-r4 -start server(%s/single/alife/new) client(localhost) -noprefetch -nointro -fsltx fsgame_editor.ltx", Scene->m_LevelOp.m_FNLevelPath.c_str());
 
 	LTools->RunGame(params);
-
 }
 void UITopBarForm::ClickPlayCleanGame()
 {

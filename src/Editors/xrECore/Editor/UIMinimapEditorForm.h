@@ -1,38 +1,47 @@
 //---------------------------------------------------------------------------
 #pragma once
 
-class UIMinimapEditorForm:
+class UIMinimapEditorForm :
 	public IEditorWnd
 {
 private:
-	struct Element {
+	struct Element
+	{
 		xr_string name;
 		ImVec2 position;
 		ImVec2 RenderSize;
 		ImVec2 FileSize;
-		ImTextureID	Texture;
+		ImTextureID Texture;
 		FEditorTextureHandle EditorTexture;
 		u64 TextureRevision = 0;
 		xr_string TexturePath;
-		
+
 		bool EdSelected = false;
 		bool EdLocked = false;
 		bool EdHidden = false;
 	};
 
-	template<typename T>
-	T Clamp(T value, T min, T max) {
-		if (value < min) return min;
-		if (value > max) return max;
+	template <typename T>
+	T Clamp(T value, T min, T max)
+	{
+		if (value < min)
+		{
+			return min;
+		}
+		if (value > max)
+		{
+			return max;
+		}
 		return value;
 	}
 
 	enum EdMode
 	{
-		None =0,
+		None = 0,
 		Move,
 		Resize,
 	};
+
 public:
 	UIMinimapEditorForm();
 	virtual ~UIMinimapEditorForm();
@@ -84,8 +93,8 @@ private:
 
 	ImVec2 initial_bg_position;
 	ImVec2 initial_mouse_pos;
-	
-	Element* selectedElement=nullptr;
+
+	Element* selectedElement = nullptr;
 
 	xr_string ActiveFile;
 	xr_string ActiveFileShort;
@@ -95,27 +104,28 @@ private:
 	bool showMPLevels = false;
 
 	EdMode m_EditMode = None;
-	int m_saveResizeMode	= 0;
-	int m_saveResizeOr		= 0;
+	int m_saveResizeMode = 0;
+	int m_saveResizeOr = 0;
 
-	//bound
+	// bound
 	void RenderBoundCanvas();
 	bool BoundRectMode = false;
 	bool BoundEditMode = false;
 	float m_BZoom = 1.0f;
-	ImVec2		m_BoundBackgroundPosition{ 0,0 };
-	Fvector4	m_Bound { 0,0,0,0};
+	ImVec2 m_BoundBackgroundPosition{0, 0};
+	Fvector4 m_Bound{0, 0, 0, 0};
+
 private:
-	ImTextureID					m_BackgroundTexture;
-	FEditorTextureHandle		m_BackgroundEditorTexture;
-	u64						m_BackgroundTextureRevision = 0;
-	ImTextureID					m_TextureRemove;
+	ImTextureID m_BackgroundTexture;
+	FEditorTextureHandle m_BackgroundEditorTexture;
+	u64 m_BackgroundTextureRevision = 0;
+	ImTextureID m_TextureRemove;
 	//
-	ImVec2		m_BackgroundPosition;
-	ImVec2		m_BackgroundRenderSize;
-	ImVec2		m_BackgroundSize;
+	ImVec2 m_BackgroundPosition;
+	ImVec2 m_BackgroundRenderSize;
+	ImVec2 m_BackgroundSize;
 	//
-	U32Vec      m_ImageData;
-	xr_string	m_BackgroundTexturePath;
-	bool		m_mp_mode = false;
+	U32Vec m_ImageData;
+	xr_string m_BackgroundTexturePath;
+	bool m_mp_mode = false;
 };

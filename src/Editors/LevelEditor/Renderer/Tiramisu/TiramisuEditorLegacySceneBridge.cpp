@@ -58,7 +58,9 @@ void HashBytes(u64& Hash, const void* Data, const size_t Size)
 void HashString(u64& Hash, const char* Text)
 {
 	if (Text)
+	{
 		HashBytes(Hash, Text, xr_strlen(Text));
+	}
 	const u8 Separator = 0;
 	HashBytes(Hash, &Separator, sizeof(Separator));
 }
@@ -66,7 +68,8 @@ void HashString(u64& Hash, const char* Text)
 [[nodiscard]] u64 MakePointerId(const void* Pointer)
 {
 	u64 Value = static_cast<u64>(
-		reinterpret_cast<std::uintptr_t>(Pointer));
+		reinterpret_cast<std::uintptr_t>(Pointer)
+	);
 	// Zero is reserved for invalid handles. Pointer identity is only used for
 	// the lifetime of this editor process and never serialized into assets.
 	return Value == 0 ? 1 : Value;
@@ -75,7 +78,9 @@ void HashString(u64& Hash, const char* Text)
 [[nodiscard]] FEditorMaterialSlotId MakeMaterialSlotId(const CSurface* Surface)
 {
 	if (!Surface)
+	{
 		return {FallbackMaterialSlot};
+	}
 	u64 Hash = FnvOffset;
 	HashString(Hash, Surface->_ShaderName());
 	HashString(Hash, Surface->_Texture());
@@ -83,67 +88,72 @@ void HashString(u64& Hash, const char* Text)
 	const bool TwoSided = Surface->m_Flags.is(CSurface::sf2Sided);
 	HashBytes(Hash, &TwoSided, sizeof(TwoSided));
 	if (Hash == 0)
+	{
 		Hash = 1;
+	}
 	return {Hash};
 }
 
 [[nodiscard]] FEditorMaterialSlotSource MakeMaterialSlotSource(
-	const CSurface* Surface)
+	const CSurface* Surface
+)
 {
 	if (!Surface)
 	{
-		return {{FallbackMaterialSlot}, "default",
-			"textures/default/default_white", "Unassigned",
-			EEditorMaterialSlotFlags::None};
+		return {{FallbackMaterialSlot}, "default", "textures/default/default_white", "Unassigned", EEditorMaterialSlotFlags::None};
 	}
-	return {MakeMaterialSlotId(Surface), Surface->_ShaderName(),
-		Surface->_Texture(), Surface->_Name(),
-		Surface->m_Flags.is(CSurface::sf2Sided)
-			? EEditorMaterialSlotFlags::TwoSided
-			: EEditorMaterialSlotFlags::None};
+	return {MakeMaterialSlotId(Surface), Surface->_ShaderName(), Surface->_Texture(), Surface->_Name(), Surface->m_Flags.is(CSurface::sf2Sided) ? EEditorMaterialSlotFlags::TwoSided : EEditorMaterialSlotFlags::None};
 }
 
 [[nodiscard]] FEditorMaterialSlotId MakeMaterialOverrideSlotId(
 	const FEditorMaterialSlotId BaseMaterialSlot,
-	const xr_string_view MaterialAsset)
+	const xr_string_view MaterialAsset
+)
 {
 	u64 Hash = FnvOffset;
 	HashString(Hash, "legacy-scene-material-override");
-	HashBytes(Hash, &BaseMaterialSlot.Value,
-		sizeof(BaseMaterialSlot.Value));
+	HashBytes(Hash, &BaseMaterialSlot.Value, sizeof(BaseMaterialSlot.Value));
 	HashBytes(Hash, MaterialAsset.data(), MaterialAsset.size());
 	if (Hash == 0)
+	{
 		Hash = 1;
+	}
 	return {Hash};
 }
 
 [[nodiscard]] const CSurface* FindObjectSurface(
-	const CSceneObject& SceneObject, const char* SurfaceName)
+	const CSceneObject& SceneObject, const char* SurfaceName
+)
 {
 	if (!SurfaceName)
+	{
 		return nullptr;
+	}
 	for (const CSurface* Surface : SceneObject.m_Surfaces)
 	{
 		if (Surface && xr_strcmp(Surface->_Name(), SurfaceName) == 0)
+		{
 			return Surface;
+		}
 	}
 	return nullptr;
 }
 
-void AppendLegacyMaterialOverrides(CSceneObject& SceneObject,
-	CEditableMesh& Mesh, FEditorStaticMeshInstance& Instance,
-	xr_hash_map<u64, FEditorMaterialSlotSource>&
-		MaterialSlotsById)
+void AppendLegacyMaterialOverrides(CSceneObject& SceneObject, CEditableMesh& Mesh, FEditorStaticMeshInstance& Instance, xr_hash_map<u64, FEditorMaterialSlotSource>& MaterialSlotsById)
 {
 	for (const auto& [BaseSurface, Faces] : Mesh.GetSurfFaces())
 	{
 		(void)Faces;
 		if (!BaseSurface)
+		{
 			continue;
+		}
 		const char* MaterialAsset =
 			SceneObject.GetRenderMaterialAsset(BaseSurface->_Name());
 		if (!MaterialAsset || !MaterialAsset[0])
+		{
 			continue;
+		}
 
 		const FEditorMaterialSlotId BaseSlot =
 			MakeMaterialSlotId(BaseSurface);
@@ -152,8 +162,7 @@ void AppendLegacyMaterialOverrides(CSceneObject& SceneObject,
 		const CSurface* ObjectSurface =
 			FindObjectSurface(SceneObject, BaseSurface->_Name());
 		FEditorMaterialSlotSource Source =
-			MakeMaterialSlotSource(ObjectSurface
-				? ObjectSurface : BaseSurface);
+			MakeMaterialSlotSource(ObjectSurface ? ObjectSurface : BaseSurface);
 		Source.MaterialSlot = OverrideSlot;
 		Source.MaterialAsset = MaterialAsset;
 		MaterialSlotsById.insert_or_assign(OverrideSlot.Value, Source);
@@ -166,8 +175,7 @@ void CopyMatrix(const Fmatrix& Source, xr_array<float, 16>& Destination)
 	std::copy_n(Source.mm, Destination.size(), Destination.begin());
 }
 
-[[nodiscard]] FEditorDebugVertex MakeDebugVertex(const Fvector& Position,
-	const u32 Color)
+[[nodiscard]] FEditorDebugVertex MakeDebugVertex(const Fvector& Position, const u32 Color)
 {
 	FEditorDebugVertex Vertex;
 	Vertex.Position = {Position.x, Position.y, Position.z};
@@ -177,12 +185,12 @@ void CopyMatrix(const Fmatrix& Source, xr_array<float, 16>& Destination)
 		static_cast<float>((Color >> 16u) & 0xffu) * Scale,
 		static_cast<float>((Color >> 8u) & 0xffu) * Scale,
 		static_cast<float>(Color & 0xffu) * Scale,
-		Alpha == 0 ? 1.0f : static_cast<float>(Alpha) * Scale};
+		Alpha == 0 ? 1.0f : static_cast<float>(Alpha) * Scale
+	};
 	return Vertex;
 }
 
-void AppendDebugLine(xr_vector<FEditorDebugLine>& Lines,
-	const Fvector& Start, const Fvector& End, const u32 Color)
+void AppendDebugLine(xr_vector<FEditorDebugLine>& Lines, const Fvector& Start, const Fvector& End, const u32 Color)
 {
 	FEditorDebugLine& Line = Lines.emplace_back();
 	Line.Vertices[0] = MakeDebugVertex(Start, Color);
@@ -195,7 +203,8 @@ void AppendDebugLine(xr_vector<FEditorDebugLine>& Lines,
 	xr_vector<FEditorOverlayLine>& OverlayLines,
 	xr_vector<FEditorOverlayTriangle>& OverlayTriangles,
 	xr_vector<FEditorOverlayText>& OverlayText,
-	xr_vector<FEditorTransientMeshCapture>& TransientMeshes)
+	xr_vector<FEditorTransientMeshCapture>& TransientMeshes
+)
 {
 	Lines.clear();
 	Triangles.clear();
@@ -210,9 +219,7 @@ void AppendDebugLine(xr_vector<FEditorDebugLine>& Lines,
 	xr_vector<FEditorOverlayTriangle> CapturedOverlayTriangles;
 	xr_vector<FEditorOverlayText> CapturedOverlayText;
 	xr_vector<FEditorTransientMeshCapture> CapturedTransientMeshes;
-	EndEditorDebugDrawCapture(CapturedLines, CapturedTriangles,
-		CapturedOverlayLines, CapturedOverlayTriangles, CapturedOverlayText,
-		CapturedTransientMeshes);
+	EndEditorDebugDrawCapture(CapturedLines, CapturedTriangles, CapturedOverlayLines, CapturedOverlayTriangles, CapturedOverlayText, CapturedTransientMeshes);
 	if (CaptureActive)
 	{
 		Lines = std::move(CapturedLines);
@@ -238,7 +245,9 @@ void AppendDebugLine(xr_vector<FEditorDebugLine>& Lines,
 			}
 		}
 		for (const CToolCustom::SDebugDraw::Line& Line : Source.m_Lines)
+		{
 			AppendDebugLine(Lines, Line.p[0], Line.p[1], Line.c);
+		}
 		for (const CToolCustom::SDebugDraw::Face& Face : Source.m_WireFaces)
 		{
 			AppendDebugLine(Lines, Face.p[0], Face.p[1], Face.c);
@@ -249,7 +258,9 @@ void AppendDebugLine(xr_vector<FEditorDebugLine>& Lines,
 		{
 			FEditorDebugTriangle& Triangle = Triangles.emplace_back();
 			for (u32 Corner = 0; Corner < 3; ++Corner)
+			{
 				Triangle.Vertices[Corner] = MakeDebugVertex(Face.p[Corner], Face.c);
+			}
 		}
 		for (const Fobb& Box : Source.m_OBB)
 		{
@@ -258,69 +269,77 @@ void AppendDebugLine(xr_vector<FEditorDebugLine>& Lines,
 			{
 				Fvector& Corner = Corners[Index];
 				Corner = Box.m_translate;
-				Corner.mad(Box.m_rotate.i,
-					(Index & 1u) ? Box.m_halfsize.x : -Box.m_halfsize.x);
-				Corner.mad(Box.m_rotate.j,
-					(Index & 2u) ? Box.m_halfsize.y : -Box.m_halfsize.y);
-				Corner.mad(Box.m_rotate.k,
-					(Index & 4u) ? Box.m_halfsize.z : -Box.m_halfsize.z);
+				Corner.mad(Box.m_rotate.i, (Index & 1u) ? Box.m_halfsize.x : -Box.m_halfsize.x);
+				Corner.mad(Box.m_rotate.j, (Index & 2u) ? Box.m_halfsize.y : -Box.m_halfsize.y);
+				Corner.mad(Box.m_rotate.k, (Index & 4u) ? Box.m_halfsize.z : -Box.m_halfsize.z);
 			}
-			constexpr xr_array<xr_array<u32, 2>, 12> Edges = {{
-				{{0, 1}}, {{2, 3}}, {{4, 5}}, {{6, 7}},
-				{{0, 2}}, {{1, 3}}, {{4, 6}}, {{5, 7}},
-				{{0, 4}}, {{1, 5}}, {{2, 6}}, {{3, 7}}}};
+			constexpr xr_array<xr_array<u32, 2>, 12> Edges = {{{{0, 1}}, {{2, 3}}, {{4, 5}}, {{6, 7}}, {{0, 2}}, {{1, 3}}, {{4, 6}}, {{5, 7}}, {{0, 4}}, {{1, 5}}, {{2, 6}}, {{3, 7}}}};
 			for (const auto& Edge : Edges)
-				AppendDebugLine(Lines, Corners[Edge[0]], Corners[Edge[1]],
-					0xff00ff00u);
+			{
+				AppendDebugLine(Lines, Corners[Edge[0]], Corners[Edge[1]], 0xff00ff00u);
+			}
 		}
 	}
 
 	u64 Revision = FnvOffset;
 	auto HashVertex = [&](const FEditorDebugVertex& Vertex)
 	{
-		HashBytes(Revision, Vertex.Position.data(),
-			Vertex.Position.size() * sizeof(float));
-		HashBytes(Revision, Vertex.Color.data(),
-			Vertex.Color.size() * sizeof(float));
+		HashBytes(Revision, Vertex.Position.data(), Vertex.Position.size() * sizeof(float));
+		HashBytes(Revision, Vertex.Color.data(), Vertex.Color.size() * sizeof(float));
 	};
 	for (const FEditorDebugLine& Line : Lines)
-		for (const FEditorDebugVertex& Vertex : Line.Vertices) HashVertex(Vertex);
+	{
+		for (const FEditorDebugVertex& Vertex : Line.Vertices)
+		{
+			HashVertex(Vertex);
+		}
+	}
 	for (const FEditorDebugTriangle& Triangle : Triangles)
-		for (const FEditorDebugVertex& Vertex : Triangle.Vertices) HashVertex(Vertex);
+	{
+		for (const FEditorDebugVertex& Vertex : Triangle.Vertices)
+		{
+			HashVertex(Vertex);
+		}
+	}
 	auto HashOverlayVertex = [&](const FEditorOverlayVertex& Vertex)
 	{
-		HashBytes(Revision, Vertex.Position.data(),
-			Vertex.Position.size() * sizeof(float));
-		HashBytes(Revision, Vertex.Color.data(),
-			Vertex.Color.size() * sizeof(float));
+		HashBytes(Revision, Vertex.Position.data(), Vertex.Position.size() * sizeof(float));
+		HashBytes(Revision, Vertex.Color.data(), Vertex.Color.size() * sizeof(float));
 	};
 	for (const FEditorOverlayLine& Line : OverlayLines)
+	{
 		for (const FEditorOverlayVertex& Vertex : Line.Vertices)
+		{
 			HashOverlayVertex(Vertex);
+		}
+	}
 	for (const FEditorOverlayTriangle& Triangle : OverlayTriangles)
+	{
 		for (const FEditorOverlayVertex& Vertex : Triangle.Vertices)
+		{
 			HashOverlayVertex(Vertex);
+		}
+	}
 	for (const FEditorOverlayText& Text : OverlayText)
 	{
-		HashBytes(Revision, Text.Position.data(),
-			Text.Position.size() * sizeof(float));
+		HashBytes(Revision, Text.Position.data(), Text.Position.size() * sizeof(float));
 		HashBytes(Revision, Text.Color.data(), Text.Color.size() * sizeof(float));
-		HashBytes(Revision, Text.ShadowColor.data(),
-			Text.ShadowColor.size() * sizeof(float));
+		HashBytes(Revision, Text.ShadowColor.data(), Text.ShadowColor.size() * sizeof(float));
 		HashString(Revision, Text.Text.c_str());
 	}
 	return Revision == 0 ? 1 : Revision;
 }
 
-[[nodiscard]] bool ComputeMeshRevision(CEditableMesh& Mesh,
-	u64& OutRevision)
+[[nodiscard]] bool ComputeMeshRevision(CEditableMesh& Mesh, u64& OutRevision)
 {
 	const Fvector* Vertices = Mesh.GetVertices();
 	const st_Face* Faces = Mesh.GetFaces();
 	const u32 VertexCount = Mesh.GetVCount();
 	const u32 FaceCount = Mesh.GetFCount();
 	if (!Vertices || !Faces || VertexCount == 0 || FaceCount == 0)
+	{
 		return false;
+	}
 
 	u64 Hash = FnvOffset;
 	HashBytes(Hash, &VertexCount, sizeof(VertexCount));
@@ -348,14 +367,15 @@ void AppendDebugLine(xr_vector<FEditorDebugLine>& Lines,
 		const FEditorMaterialSlotId Slot = MakeMaterialSlotId(Surface);
 		HashBytes(Hash, &Slot.Value, sizeof(Slot.Value));
 		for (const int FaceIndex : SurfaceFaces)
+		{
 			HashBytes(Hash, &FaceIndex, sizeof(FaceIndex));
+		}
 	}
 	OutRevision = Hash == 0 ? 1 : Hash;
 	return true;
 }
 
-void AppendFace(CEditableMesh& Mesh, const u32 FaceIndex,
-	FMeshPayload& Payload)
+void AppendFace(CEditableMesh& Mesh, const u32 FaceIndex, FMeshPayload& Payload)
 {
 	const st_Face& Face = Mesh.GetFaces()[FaceIndex];
 	const Fvector* SourceVertices = Mesh.GetVertices();
@@ -399,14 +419,13 @@ void AppendFace(CEditableMesh& Mesh, const u32 FaceIndex,
 			}
 		}
 		Payload.Indices.push_back(
-			static_cast<u32>(Payload.Vertices.size()));
+			static_cast<u32>(Payload.Vertices.size())
+		);
 		Payload.Vertices.push_back(Vertex);
 	}
 }
 
-[[nodiscard]] bool BuildMeshPayload(CEditableMesh& Mesh,
-	const FEditorStaticMeshId MeshId, const u64 Revision,
-	FMeshPayload& OutPayload)
+[[nodiscard]] bool BuildMeshPayload(CEditableMesh& Mesh, const FEditorStaticMeshId MeshId, const u64 Revision, FMeshPayload& OutPayload)
 {
 	OutPayload = {};
 	OutPayload.MeshId = MeshId;
@@ -422,18 +441,24 @@ void AppendFace(CEditableMesh& Mesh, const u32 FaceIndex,
 		for (const int SignedFaceIndex : SurfaceFaces)
 		{
 			if (SignedFaceIndex < 0)
+			{
 				continue;
+			}
 			const u32 FaceIndex =
 				static_cast<u32>(SignedFaceIndex);
 			if (FaceIndex >= FaceCount || AddedFaces[FaceIndex])
+			{
 				continue;
+			}
 			AppendFace(Mesh, FaceIndex, OutPayload);
 			AddedFaces[FaceIndex] = true;
 		}
 		Section.IndexCount = static_cast<u32>(OutPayload.Indices.size()) -
-			Section.FirstIndex;
+							 Section.FirstIndex;
 		if (Section.IndexCount != 0)
+		{
 			OutPayload.Sections.push_back(Section);
+		}
 	}
 
 	FEditorStaticMeshSection Unassigned;
@@ -441,19 +466,24 @@ void AppendFace(CEditableMesh& Mesh, const u32 FaceIndex,
 	for (u32 FaceIndex = 0; FaceIndex < FaceCount; ++FaceIndex)
 	{
 		if (!AddedFaces[FaceIndex])
+		{
 			AppendFace(Mesh, FaceIndex, OutPayload);
+		}
 	}
 	Unassigned.IndexCount = static_cast<u32>(OutPayload.Indices.size()) -
-		Unassigned.FirstIndex;
+							Unassigned.FirstIndex;
 	if (Unassigned.IndexCount != 0)
+	{
 		OutPayload.Sections.push_back(Unassigned);
+	}
 
 	return !OutPayload.Vertices.empty() && !OutPayload.Indices.empty();
 }
 
 [[nodiscard]] FEditorMaterialSlotId MakeNativeMaterialSlotId(
 	const Tiramisu::Scene::FStaticMeshAsset& Mesh,
-	const u32 SlotIndex)
+	const u32 SlotIndex
+)
 {
 	xr_string Identity = Mesh.Id;
 	Identity += ":material-slot:";
@@ -463,7 +493,8 @@ void AppendFace(CEditableMesh& Mesh, const u32 FaceIndex,
 
 [[nodiscard]] FEditorMaterialSlotId MakeNativeMaterialOverrideId(
 	const Tiramisu::Scene::FStaticMeshComponent& Component,
-	const Tiramisu::Scene::FStaticMeshMaterialOverride& Override)
+	const Tiramisu::Scene::FStaticMeshMaterialOverride& Override
+)
 {
 	xr_string Identity = Component.Id;
 	Identity += ":material-override:";
@@ -482,31 +513,34 @@ void AppendFace(CEditableMesh& Mesh, const u32 FaceIndex,
 		MaterialSlotsById,
 	xr_vector<FMeshPayload>& ChangedPayloads,
 	xr_vector<FEditorStaticMeshInstance>& Instances,
-	xr_vector<FEditorSceneLight>& Lights)
+	xr_vector<FEditorSceneLight>& Lights
+)
 {
 	for (const auto& [Reference, Mesh] : NativeScene.StaticMeshes)
 	{
 		(void)Reference;
 		const FEditorStaticMeshId MeshId{
-			Tiramisu::Scene::StableSceneIdHash(Mesh.Id)};
+			Tiramisu::Scene::StableSceneIdHash(Mesh.Id)
+		};
 		const u64 Revision =
 			Tiramisu::Scene::CalculateStaticMeshRevision(Mesh);
 		if (!CurrentMeshRevisions.emplace(MeshId.Value, Revision).second)
+		{
 			return false;
+		}
 
 		for (u32 SlotIndex = 0;
-			SlotIndex < Mesh.MaterialSlots.size(); ++SlotIndex)
+			 SlotIndex < Mesh.MaterialSlots.size();
+			 ++SlotIndex)
 		{
 			const Tiramisu::Scene::FStaticMeshMaterialSlot& Slot =
 				Mesh.MaterialSlots[SlotIndex];
 			const FEditorMaterialSlotId SlotId =
 				MakeNativeMaterialSlotId(Mesh, SlotIndex);
 			const EEditorMaterialSlotFlags Flags = Slot.TwoSided
-				? EEditorMaterialSlotFlags::TwoSided
-				: EEditorMaterialSlotFlags::None;
-			MaterialSlotsById.insert_or_assign(SlotId.Value,
-				FEditorMaterialSlotSource{SlotId, {}, {}, Slot.Name,
-					Flags, Slot.Material});
+													   ? EEditorMaterialSlotFlags::TwoSided
+													   : EEditorMaterialSlotFlags::None;
+			MaterialSlotsById.insert_or_assign(SlotId.Value, FEditorMaterialSlotSource{SlotId, {}, {}, Slot.Name, Flags, Slot.Material});
 		}
 
 		const auto Existing = State.MeshRevisions.find(MeshId.Value);
@@ -520,7 +554,7 @@ void AppendFace(CEditableMesh& Mesh, const u32 FaceIndex,
 		Payload.Revision = Revision;
 		Payload.Vertices.reserve(Mesh.Vertices.size());
 		for (const Tiramisu::Scene::FStaticMeshVertex& Source :
-			Mesh.Vertices)
+			 Mesh.Vertices)
 		{
 			FEditorStaticMeshVertex Vertex;
 			Vertex.Position = Source.Position;
@@ -534,36 +568,44 @@ void AppendFace(CEditableMesh& Mesh, const u32 FaceIndex,
 		Payload.Indices = Mesh.Indices;
 		Payload.Sections.reserve(Mesh.Sections.size());
 		for (const Tiramisu::Scene::FStaticMeshSection& Source :
-			Mesh.Sections)
+			 Mesh.Sections)
 		{
 			if (Source.MaterialSlot >= Mesh.MaterialSlots.size())
+			{
 				return false;
-			Payload.Sections.push_back({Source.FirstIndex,
-				Source.IndexCount,
-				MakeNativeMaterialSlotId(Mesh, Source.MaterialSlot)});
+			}
+			Payload.Sections.push_back({Source.FirstIndex, Source.IndexCount, MakeNativeMaterialSlotId(Mesh, Source.MaterialSlot)});
 		}
 		ChangedPayloads.push_back(std::move(Payload));
 	}
 
 	Instances.reserve(NativeScene.Scene.StaticMeshComponents.size());
 	for (const Tiramisu::Scene::FStaticMeshComponent& Component :
-		NativeScene.Scene.StaticMeshComponents)
+		 NativeScene.Scene.StaticMeshComponents)
 	{
 		if (!Component.Visible)
+		{
 			continue;
+		}
 		const auto Mesh = NativeScene.StaticMeshes.find(Component.StaticMesh);
 		if (Mesh == NativeScene.StaticMeshes.end())
+		{
 			return false;
+		}
 		FEditorStaticMeshInstance Instance;
 		Instance.ObjectId = {
-			Tiramisu::Scene::StableSceneIdHash(Component.Id)};
+			Tiramisu::Scene::StableSceneIdHash(Component.Id)
+		};
 		Instance.MeshId = {
-			Tiramisu::Scene::StableSceneIdHash(Mesh->second.Id)};
+			Tiramisu::Scene::StableSceneIdHash(Mesh->second.Id)
+		};
 		Instance.LocalToWorld = Component.LocalToWorld;
 		if (Document.IsComponentSelected(Component.Id))
+		{
 			Instance.Flags = EEditorSceneInstanceFlags::Selected;
+		}
 		for (const Tiramisu::Scene::FStaticMeshMaterialOverride& Override :
-			Component.MaterialOverrides)
+			 Component.MaterialOverrides)
 		{
 			if (Override.MaterialSlot >=
 				Mesh->second.MaterialSlots.size())
@@ -572,42 +614,45 @@ void AppendFace(CEditableMesh& Mesh, const u32 FaceIndex,
 			}
 			const FEditorMaterialSlotId BaseSlot =
 				MakeNativeMaterialSlotId(
-					Mesh->second, Override.MaterialSlot);
+					Mesh->second, Override.MaterialSlot
+				);
 			const FEditorMaterialSlotId OverrideSlot =
 				MakeNativeMaterialOverrideId(Component, Override);
 			const Tiramisu::Scene::FStaticMeshMaterialSlot& Base =
 				Mesh->second.MaterialSlots[Override.MaterialSlot];
 			const EEditorMaterialSlotFlags Flags = Override.TwoSided
-				? EEditorMaterialSlotFlags::TwoSided
-				: EEditorMaterialSlotFlags::None;
-			MaterialSlotsById.insert_or_assign(OverrideSlot.Value,
-				FEditorMaterialSlotSource{OverrideSlot, {}, {},
-					Base.Name, Flags, Override.Material});
+													   ? EEditorMaterialSlotFlags::TwoSided
+													   : EEditorMaterialSlotFlags::None;
+			MaterialSlotsById.insert_or_assign(OverrideSlot.Value, FEditorMaterialSlotSource{OverrideSlot, {}, {}, Base.Name, Flags, Override.Material});
 			Instance.MaterialOverrides.push_back(
-				{BaseSlot, OverrideSlot});
+				{BaseSlot, OverrideSlot}
+			);
 		}
 		Instances.push_back(Instance);
 	}
 	Lights.reserve(NativeScene.Scene.LightComponents.size());
 	for (const Tiramisu::Scene::FLightComponent& Source :
-		NativeScene.Scene.LightComponents)
+		 NativeScene.Scene.LightComponents)
 	{
 		if (!Source.Visible)
+		{
 			continue;
+		}
 		FEditorSceneLight Light;
 		Light.ObjectId = {
-			Tiramisu::Scene::StableSceneIdHash(Source.Id)};
+			Tiramisu::Scene::StableSceneIdHash(Source.Id)
+		};
 		switch (Source.Type)
 		{
-		case Tiramisu::Scene::ELightType::Directional:
-			Light.Type = EEditorSceneLightType::Directional;
-			break;
-		case Tiramisu::Scene::ELightType::Point:
-			Light.Type = EEditorSceneLightType::Point;
-			break;
-		case Tiramisu::Scene::ELightType::Spot:
-			Light.Type = EEditorSceneLightType::Spot;
-			break;
+			case Tiramisu::Scene::ELightType::Directional:
+				Light.Type = EEditorSceneLightType::Directional;
+				break;
+			case Tiramisu::Scene::ELightType::Point:
+				Light.Type = EEditorSceneLightType::Point;
+				break;
+			case Tiramisu::Scene::ELightType::Spot:
+				Light.Type = EEditorSceneLightType::Spot;
+				break;
 		}
 		Light.LocalToWorld = Source.LocalToWorld;
 		Light.Color = Source.Color;
@@ -618,13 +663,15 @@ void AppendFace(CEditableMesh& Mesh, const u32 FaceIndex,
 		Light.OuterConeAngleDegrees =
 			Source.OuterConeAngleDegrees;
 		u32 Flags = Source.CastShadows
-			? static_cast<u32>(
-				EEditorSceneLightFlags::CastShadows)
-			: 0u;
+						? static_cast<u32>(
+							  EEditorSceneLightFlags::CastShadows
+						  )
+						: 0u;
 		if (Document.IsComponentSelected(Source.Id))
 		{
 			Flags |= static_cast<u32>(
-				EEditorSceneLightFlags::Selected);
+				EEditorSceneLightFlags::Selected
+			);
 		}
 		Light.Flags = static_cast<EEditorSceneLightFlags>(Flags);
 		Lights.push_back(Light);
@@ -648,7 +695,8 @@ void AppendFace(CEditableMesh& Mesh, const u32 FaceIndex,
 void AppendNativeLightDebugDraw(
 	const xr_vector<FEditorSceneLight>& Lights,
 	xr_vector<FEditorDebugLine>& Lines,
-	u64& Revision)
+	u64& Revision
+)
 {
 	const size_t FirstLine = Lines.size();
 	for (const FEditorSceneLight& Light : Lights)
@@ -656,25 +704,29 @@ void AppendNativeLightDebugDraw(
 		const xr_array<float, 3> Position = {
 			Light.LocalToWorld[12],
 			Light.LocalToWorld[13],
-			Light.LocalToWorld[14]};
+			Light.LocalToWorld[14]
+		};
 		xr_array<float, 4> Color = {
 			std::clamp(Light.Color[0], 0.1f, 1.0f),
 			std::clamp(Light.Color[1], 0.1f, 1.0f),
-			std::clamp(Light.Color[2], 0.1f, 1.0f), 1.0f};
+			std::clamp(Light.Color[2], 0.1f, 1.0f),
+			1.0f
+		};
 		if ((static_cast<u32>(Light.Flags) &
-				static_cast<u32>(
-					EEditorSceneLightFlags::Selected)) != 0)
+			 static_cast<u32>(
+				 EEditorSceneLightFlags::Selected
+			 )) != 0)
 		{
 			Color = {1.0f, 0.55f, 0.08f, 1.0f};
 		}
 		const auto AddLine =
 			[&](const xr_array<float, 3>& Start,
 				const xr_array<float, 3>& End)
-			{
-				FEditorDebugLine& Line = Lines.emplace_back();
-				Line.Vertices[0] = {Start, Color};
-				Line.Vertices[1] = {End, Color};
-			};
+		{
+			FEditorDebugLine& Line = Lines.emplace_back();
+			Line.Vertices[0] = {Start, Color};
+			Line.Vertices[1] = {End, Color};
+		};
 		constexpr float IconExtent = 0.25f;
 		for (size_t Axis = 0; Axis < 3; ++Axis)
 		{
@@ -689,19 +741,24 @@ void AppendNativeLightDebugDraw(
 			xr_array<float, 3> Direction = {
 				Light.LocalToWorld[8],
 				Light.LocalToWorld[9],
-				Light.LocalToWorld[10]};
+				Light.LocalToWorld[10]
+			};
 			const float Length = std::sqrt(
 				Direction[0] * Direction[0] +
 				Direction[1] * Direction[1] +
-				Direction[2] * Direction[2]);
+				Direction[2] * Direction[2]
+			);
 			if (Length > 1.0e-6f)
 			{
 				const float Scale =
 					Light.Type == EEditorSceneLightType::Spot
-					? std::min(Light.Range, 2.0f) : 2.0f;
+						? std::min(Light.Range, 2.0f)
+						: 2.0f;
 				xr_array<float, 3> End = Position;
 				for (size_t Axis = 0; Axis < 3; ++Axis)
+				{
 					End[Axis] += Direction[Axis] / Length * Scale;
+				}
 				AddLine(Position, End);
 			}
 		}
@@ -710,24 +767,28 @@ void AppendNativeLightDebugDraw(
 	{
 		for (const FEditorDebugVertex& Vertex : Lines[Index].Vertices)
 		{
-			HashBytes(Revision, Vertex.Position.data(),
-				Vertex.Position.size() * sizeof(float));
-			HashBytes(Revision, Vertex.Color.data(),
-				Vertex.Color.size() * sizeof(float));
+			HashBytes(Revision, Vertex.Position.data(), Vertex.Position.size() * sizeof(float));
+			HashBytes(Revision, Vertex.Color.data(), Vertex.Color.size() * sizeof(float));
 		}
 	}
 	if (Revision == 0)
+	{
 		Revision = 1;
+	}
 }
 } // namespace
 
 bool SubmitEditorSceneToEditorRenderer(const u32 ViewportId)
 {
 	if (!Scene || !UI || !EDevice)
+	{
 		return false;
+	}
 	IEditorRenderBackend& Renderer = GetEditorRenderBackend();
 	if (Renderer.GetKind() != EEditorRenderBackendKind::Tiramisu)
+	{
 		return true;
+	}
 
 	FViewportBridgeState& State = ViewportStates[ViewportId];
 	const TiramisuEditorNativeSceneDocument& NativeDocument =
@@ -739,27 +800,35 @@ bool SubmitEditorSceneToEditorRenderer(const u32 ViewportId)
 	if (!NativeScene)
 	{
 		for (CCustomObject* CustomObject :
-			Scene->ListObj(OBJCLASS_SCENEOBJECT))
+			 Scene->ListObj(OBJCLASS_SCENEOBJECT))
 		{
 			if (!CustomObject || !CustomObject->Visible())
+			{
 				continue;
+			}
 			auto* SceneObject = static_cast<CSceneObject*>(CustomObject);
 			// Resolve all visible legacy objects in one migration transaction.
 			// The cache makes subsequent viewport submissions read-only.
 			SceneObject->ResolveRenderMaterials(true);
 			EditMeshVec* Meshes = SceneObject->Meshes();
 			if (!Meshes)
+			{
 				continue;
+			}
 			for (CEditableMesh* Mesh : *Meshes)
 			{
 				if (!Mesh || !Mesh->Visible())
+				{
 					continue;
+				}
 				VisibleMeshInstances.emplace_back(SceneObject, Mesh);
 				UniqueMeshes.insert(Mesh);
 			}
 		}
 		if (!CSceneObject::FlushRenderMaterialMigration())
+		{
 			Msg("! Tiramisu could not publish legacy scene material migration database.");
+		}
 	}
 
 	xr_hash_map<u64, u64> CurrentMeshRevisions;
@@ -769,8 +838,7 @@ bool SubmitEditorSceneToEditorRenderer(const u32 ViewportId)
 	{
 		const FEditorMaterialSlotSource FallbackMaterial =
 			MakeMaterialSlotSource(nullptr);
-		MaterialSlotsById.emplace(FallbackMaterial.MaterialSlot.Value,
-			FallbackMaterial);
+		MaterialSlotsById.emplace(FallbackMaterial.MaterialSlot.Value, FallbackMaterial);
 		for (CEditableMesh* Mesh : UniqueMeshes)
 		{
 			for (const auto& [Surface, Faces] : Mesh->GetSurfFaces())
@@ -779,7 +847,8 @@ bool SubmitEditorSceneToEditorRenderer(const u32 ViewportId)
 				const FEditorMaterialSlotSource Material =
 					MakeMaterialSlotSource(Surface);
 				MaterialSlotsById.insert_or_assign(
-					Material.MaterialSlot.Value, Material);
+					Material.MaterialSlot.Value, Material
+				);
 			}
 		}
 	}
@@ -788,9 +857,7 @@ bool SubmitEditorSceneToEditorRenderer(const u32 ViewportId)
 	xr_vector<FEditorSceneLight> Lights;
 	if (NativeScene)
 	{
-		if (!BuildNativeScenePayload(NativeDocument, *NativeScene, State,
-				CurrentMeshRevisions, MaterialSlotsById,
-				ChangedPayloads, Instances, Lights))
+		if (!BuildNativeScenePayload(NativeDocument, *NativeScene, State, CurrentMeshRevisions, MaterialSlotsById, ChangedPayloads, Instances, Lights))
 		{
 			return false;
 		}
@@ -802,17 +869,25 @@ bool SubmitEditorSceneToEditorRenderer(const u32 ViewportId)
 			const FEditorStaticMeshId MeshId{MakePointerId(Mesh)};
 			u64 Revision = 0;
 			if (!ComputeMeshRevision(*Mesh, Revision))
+			{
 				continue;
+			}
 			CurrentMeshRevisions.emplace(MeshId.Value, Revision);
 			const auto Existing = State.MeshRevisions.find(MeshId.Value);
 			if (Existing != State.MeshRevisions.end() &&
 				Existing->second == Revision)
+			{
 				continue;
+			}
 			FMeshPayload Payload;
 			if (BuildMeshPayload(*Mesh, MeshId, Revision, Payload))
+			{
 				ChangedPayloads.push_back(std::move(Payload));
+			}
 			else
+			{
 				CurrentMeshRevisions.erase(MeshId.Value);
+			}
 		}
 
 		Instances.reserve(VisibleMeshInstances.size());
@@ -820,7 +895,9 @@ bool SubmitEditorSceneToEditorRenderer(const u32 ViewportId)
 		{
 			const FEditorStaticMeshId MeshId{MakePointerId(Mesh)};
 			if (!CurrentMeshRevisions.contains(MeshId.Value))
+			{
 				continue;
+			}
 			FEditorStaticMeshInstance Instance;
 			Instance.ObjectId = {MakePointerId(SceneObject)};
 			Instance.MeshId = MeshId;
@@ -828,9 +905,10 @@ bool SubmitEditorSceneToEditorRenderer(const u32 ViewportId)
 			SceneObject->GetFullTransformToWorld(LocalToWorld);
 			CopyMatrix(LocalToWorld, Instance.LocalToWorld);
 			if (SceneObject->Selected())
+			{
 				Instance.Flags = EEditorSceneInstanceFlags::Selected;
-			AppendLegacyMaterialOverrides(*SceneObject, *Mesh, Instance,
-				MaterialSlotsById);
+			}
+			AppendLegacyMaterialOverrides(*SceneObject, *Mesh, Instance, MaterialSlotsById);
 			Instances.push_back(Instance);
 		}
 	}
@@ -841,19 +919,18 @@ bool SubmitEditorSceneToEditorRenderer(const u32 ViewportId)
 	xr_vector<FEditorOverlayText> OverlayText;
 	xr_vector<FEditorTransientMeshCapture> TransientMeshes;
 	u64 DebugDrawRevision =
-		BuildDebugDraw(DebugLines, DebugTriangles, OverlayLines,
-			OverlayTriangles, OverlayText, TransientMeshes);
+		BuildDebugDraw(DebugLines, DebugTriangles, OverlayLines, OverlayTriangles, OverlayText, TransientMeshes);
 	AppendNativeLightDebugDraw(
-		Lights, DebugLines, DebugDrawRevision);
+		Lights, DebugLines, DebugDrawRevision
+	);
 
 	for (const FEditorTransientMeshCapture& Capture : TransientMeshes)
 	{
-		MaterialSlotsById.insert_or_assign(Capture.MaterialSlot.Value,
-			FEditorMaterialSlotSource{Capture.MaterialSlot, Capture.ShaderName,
-				Capture.TextureName, Capture.SurfaceName, Capture.MaterialFlags});
+		MaterialSlotsById.insert_or_assign(Capture.MaterialSlot.Value, FEditorMaterialSlotSource{Capture.MaterialSlot, Capture.ShaderName, Capture.TextureName, Capture.SurfaceName, Capture.MaterialFlags});
 
 		const auto [RevisionIt, Inserted] = CurrentMeshRevisions.emplace(
-			Capture.MeshId.Value, Capture.Revision);
+			Capture.MeshId.Value, Capture.Revision
+		);
 		if (Inserted)
 		{
 			const auto Existing = State.MeshRevisions.find(Capture.MeshId.Value);
@@ -865,9 +942,7 @@ bool SubmitEditorSceneToEditorRenderer(const u32 ViewportId)
 				Payload.Revision = Capture.Revision;
 				Payload.Vertices = Capture.Vertices;
 				Payload.Indices = Capture.Indices;
-				Payload.Sections.push_back({0,
-					static_cast<u32>(Payload.Indices.size()),
-					Capture.MaterialSlot});
+				Payload.Sections.push_back({0, static_cast<u32>(Payload.Indices.size()), Capture.MaterialSlot});
 				ChangedPayloads.push_back(std::move(Payload));
 			}
 		}
@@ -894,23 +969,24 @@ bool SubmitEditorSceneToEditorRenderer(const u32 ViewportId)
 		(void)Slot;
 		MaterialSlots.push_back(Material);
 	}
-	std::ranges::sort(MaterialSlots, {},
-		[](const FEditorMaterialSlotSource& Material)
-		{
-			return Material.MaterialSlot.Value;
-		});
+	std::ranges::sort(MaterialSlots, {}, [](const FEditorMaterialSlotSource& Material)
+					  { return Material.MaterialSlot.Value; });
 
 	xr_vector<FEditorStaticMeshUpload> ChangedMeshes;
 	ChangedMeshes.reserve(ChangedPayloads.size());
 	for (const FMeshPayload& Payload : ChangedPayloads)
+	{
 		ChangedMeshes.push_back(Payload.MakeUpload());
+	}
 
 	xr_vector<FEditorStaticMeshId> RemovedMeshes;
 	for (const auto& [MeshId, Revision] : State.MeshRevisions)
 	{
 		(void)Revision;
 		if (!CurrentMeshRevisions.contains(MeshId))
+		{
 			RemovedMeshes.push_back({MeshId});
+		}
 	}
 
 	FEditorViewportSceneSnapshot Snapshot;
@@ -928,7 +1004,9 @@ bool SubmitEditorSceneToEditorRenderer(const u32 ViewportId)
 	Snapshot.DebugDrawRevision = DebugDrawRevision;
 	Snapshot.Revision = ++State.SceneRevision;
 	if (!Renderer.SubmitViewportScene(ViewportId, Snapshot))
+	{
 		return false;
+	}
 	State.MeshRevisions = std::move(CurrentMeshRevisions);
 	return true;
 }

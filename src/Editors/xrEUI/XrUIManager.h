@@ -20,14 +20,14 @@ class XREUI_API XrUIManager
 {
 public:
 	XrUIManager();
-	void PushBegin(IEditorWnd*ui,bool need_deleted =true);
-	void Push(IEditorWnd*ui,bool need_deleted =true);
-	void Remove(IEditorWnd*ui);
+	void PushBegin(IEditorWnd* ui, bool need_deleted = true);
+	void Push(IEditorWnd* ui, bool need_deleted = true);
+	void Remove(IEditorWnd* ui);
 	void Draw();
-		
+
 	virtual ~XrUIManager();
 
-	void Initialize(HWND hWnd, const char*ini_path);
+	void Initialize(HWND hWnd, const char* ini_path);
 	void Destroy();
 	// Must be called before Initialize. Passing nullptr selects the built-in
 	// DX9 backend. Returns false after renderer initialization has started.
@@ -53,14 +53,14 @@ public:
 
 	void ResetBegin();
 	void ResetEnd(void* NewDevice);
-	virtual bool 	ApplyShortCut(DWORD Key, TShiftState Shift)=0;
+	virtual bool ApplyShortCut(DWORD Key, TShiftState Shift) = 0;
 
-	inline float GetMenuBarHeight()const { return m_MenuBarHeight; }
+	inline float GetMenuBarHeight() const { return m_MenuBarHeight; }
 
-	inline float GetMenuBarButtonHeight()const { return m_MenuBarButtonHeight; }
+	inline float GetMenuBarButtonHeight() const { return m_MenuBarButtonHeight; }
 
 
-	inline TShiftState GetShiftState()const { return m_ShiftState; };
+	inline TShiftState GetShiftState() const { return m_ShiftState; };
 	virtual bool IsPlayInEditor() { return false; }
 	void ApplyShortCutInput(DWORD Key);
 
@@ -82,28 +82,24 @@ private:
 	bool m_RenderBackendInitialized = false;
 	bool m_MainPresentationPending = false;
 
-public: 
-	template<typename T> 
+public:
+	template <typename T>
 	IC bool HasWindow() const
 	{
-		return std::any_of
-		(
-			m_UIArray.begin(), m_UIArray.end(),
-			[](IEditorWnd* Form)
-			{
-				return smart_cast<T*>(Form);
-			}
+		return std::any_of(
+			m_UIArray.begin(), m_UIArray.end(), [](IEditorWnd* Form)
+			{ return smart_cast<T*>(Form); }
 		);
 	}
 
 	bool IsEnableInput = true;
 	EDragDropType DnDType = EDragDropType::None;
 	virtual void* LoadTexture(const char*) const { return nullptr; };
-	virtual bool UpdateEditorTexture(FEditorTextureHandle&,
-		const FEditorTextureUpload&) const { return false; }
+	virtual bool UpdateEditorTexture(FEditorTextureHandle&, const FEditorTextureUpload&) const { return false; }
 	virtual void DestroyEditorTexture(FEditorTextureHandle&) const {}
 	[[nodiscard]] virtual FEditorViewportSurface GetEditorTextureSurface(
-		FEditorTextureHandle) const { return {}; }
+		FEditorTextureHandle
+	) const { return {}; }
 	void* SearchIcon = nullptr;
 };
 

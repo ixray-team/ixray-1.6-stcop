@@ -69,7 +69,7 @@ xr_string::xr_string(const char* Str)
 {
 }
 
-xr_string& xr_string::operator=(const char* Str) 
+xr_string& xr_string::operator=(const char* Str)
 {
 	Super::operator=(Str);
 	return *this;
@@ -87,7 +87,7 @@ xr_string& xr_string::operator=(const std::string_view Other)
 	return *this;
 }
 
-xr_string& xr_string::operator=(const Super& other) 
+xr_string& xr_string::operator=(const Super& other)
 {
 	Super::operator=(other);
 	return *this;
@@ -105,7 +105,7 @@ xr_vector<xr_string> xr_string::Split(u32 NumberOfSplits, ...) const
 	{
 		char splitCh = va_arg(args, char);
 
-		//special case for first try
+		// special case for first try
 		if (i == 0)
 		{
 			Result = Split(splitCh);
@@ -131,10 +131,13 @@ xr_vector<xr_string> xr_string::Split(u32 NumberOfSplits, ...) const
 }
 
 
-xr_string xr_string::RemoveWhitespaces() const 
+xr_string xr_string::RemoveWhitespaces() const
 {
 	size_t Size = size();
-	if (Size == 0) return xr_string();
+	if (Size == 0)
+	{
+		return xr_string();
+	}
 
 	xr_string Result;
 	Result.reserve(Size);
@@ -158,18 +161,21 @@ bool xr_string::StartWith(const xr_string& Other) const
 }
 
 
-bool xr_string::StartWith(const char* Str) const 
+bool xr_string::StartWith(const char* Str) const
 {
 	u32 StrLen = xr_strlen(Str);
 	return StartWith(Str, (int)StrLen);
 }
 
-bool xr_string::StartWith(const char* Str, size_t Size) const 
+bool xr_string::StartWith(const char* Str, size_t Size) const
 {
 	size_t OurSize = size();
 
-	//String is greater then our, we can't success
-	if (OurSize < Size) return false;
+	// String is greater then our, we can't success
+	if (OurSize < Size)
+	{
+		return false;
+	}
 
 	const char* OurStr = data();
 
@@ -200,9 +206,9 @@ bool xr_string::EqualWithCaseInsensitive(const xr_string& SubStr) const
 	return Left == Right;
 }
 
-xr_string xr_string::ToString(int Value) 
+xr_string xr_string::ToString(int Value)
 {
-	string64 buf = { 0 };
+	string64 buf = {0};
 	itoa(Value, &buf[0], 10);
 
 	return xr_string(buf);
@@ -210,15 +216,15 @@ xr_string xr_string::ToString(int Value)
 
 xr_string xr_string::ToString(unsigned int Value)
 {
-	string64 buf = { 0 };
+	string64 buf = {0};
 	sprintf(buf, "%u", Value);
 
 	return xr_string(buf);
 }
 
-xr_string xr_string::ToString(float Value) 
+xr_string xr_string::ToString(float Value)
 {
-	string64 buf = { 0 };
+	string64 buf = {0};
 	sprintf(buf, "%.3f", Value);
 
 	xr_string buff = buf;
@@ -244,9 +250,9 @@ xr_string xr_string::ToString(float Value)
 	return buff;
 }
 
-xr_string xr_string::ToString(double Value) 
+xr_string xr_string::ToString(double Value)
 {
-	string64 buf = { 0 };
+	string64 buf = {0};
 	sprintf(buf, "%f", Value);
 
 	xr_string buff = buf;
@@ -272,7 +278,7 @@ xr_string xr_string::ToString(double Value)
 	return buff;
 }
 
-xr_string xr_string::Join(xrStringVector::iterator beginIter, xrStringVector::iterator endIter, const char delimeter /*= '\0'*/) 
+xr_string xr_string::Join(xrStringVector::iterator beginIter, xrStringVector::iterator endIter, const char delimeter /*= '\0'*/)
 {
 	xr_string Result;
 	xrStringVector::iterator cursorIter = beginIter;

@@ -6,6 +6,7 @@ class UIDOShuffle :
 	public IEditorWnd
 {
 	friend UIDOOneColor;
+
 public:
 	UIDOShuffle();
 	virtual ~UIDOShuffle();
@@ -48,5 +49,5 @@ private:
 	bool FindItem(const char* name);
 
 	void ClearIndexForms();
-	bool ApplyChanges(bool msg=true);
+	bool ApplyChanges(bool msg = true);
 };

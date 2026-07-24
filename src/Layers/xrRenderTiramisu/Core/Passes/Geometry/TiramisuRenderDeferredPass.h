@@ -6,7 +6,7 @@
 class TiramisuRenderDeferredPass
 {
 public:
-    TiramisuRenderDeferredPass();
-    ~TiramisuRenderDeferredPass();
-    void Render(nri::CommandBuffer& CurrentCommandBuffer);
+	TiramisuRenderDeferredPass();
+	~TiramisuRenderDeferredPass();
+	void Render(nri::CommandBuffer& CurrentCommandBuffer);
 };

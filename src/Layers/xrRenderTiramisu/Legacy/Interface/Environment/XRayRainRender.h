@@ -1,14 +1,14 @@
 #pragma once
 
 #include "TiramisuRenderTypes.h"
-class CDS0_RainRender:
+class CDS0_RainRender :
 	public IRainRender
 {
 public:
 	CDS0_RainRender();
-	virtual void Copy(IRainRender &_in) ;
+	virtual void Copy(IRainRender& _in);
 
-	virtual void Render(CEffect_Rain&owner) ;
+	virtual void Render(CEffect_Rain& owner);
 
 	virtual const Fsphere& GetDropBounds() const;
 };

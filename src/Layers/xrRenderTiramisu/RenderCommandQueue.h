@@ -14,27 +14,27 @@ namespace Tiramisu::RenderCommands
 class TiramisuRenderCommandQueue
 {
 public:
-    using CommandFunction = std::function<void()>;
+	using CommandFunction = std::function<void()>;
 
-    // Одна отложенная команда с именем для диагностики и собственным вызываемым объектом.
-    struct Command
-    {
-        const char* DebugName = nullptr;
-        CommandFunction Function;
-    };
+	// Одна отложенная команда с именем для диагностики и собственным вызываемым объектом.
+	struct Command
+	{
+		const char* DebugName = nullptr;
+		CommandFunction Function;
+	};
 
-    // Добавляет команду из game thread; выполнение произойдёт только в render thread.
-    void Enqueue(const char* debugName, CommandFunction&& function);
-    // Атомарно забирает пакет, не удерживая блокировку во время выполнения.
-    xr_vector<Command> Drain();
-    // Выполняет текущий пакет команд в порядке добавления.
-    void Execute();
-    void Clear();
-    bool Empty() const;
+	// Добавляет команду из game thread; выполнение произойдёт только в render thread.
+	void Enqueue(const char* debugName, CommandFunction&& function);
+	// Атомарно забирает пакет, не удерживая блокировку во время выполнения.
+	xr_vector<Command> Drain();
+	// Выполняет текущий пакет команд в порядке добавления.
+	void Execute();
+	void Clear();
+	bool Empty() const;
 
 private:
-    mutable xrSRWLock Lock;
-    xr_vector<Command> Pending;
+	mutable xrSRWLock Lock;
+	xr_vector<Command> Pending;
 };
 
 TiramisuRenderCommandQueue& GetRenderCommandQueue();
@@ -45,26 +45,26 @@ void FlushRenderCommands();
 class TEnqueueRenderCommand
 {
 public:
-    explicit TEnqueueRenderCommand(const char* debugName)
-        : DebugName(debugName)
-    {
-    }
+	explicit TEnqueueRenderCommand(const char* debugName)
+		: DebugName(debugName)
+	{
+	}
 
-    template <class TCallable>
-    void operator()(TCallable&& callable) const
-    {
+	template <class TCallable>
+	void operator()(TCallable&& callable) const
+	{
 #ifdef CheckIsGameThread
-        CheckIsGameThread();
+		CheckIsGameThread();
 #endif
-        GetRenderCommandQueue().Enqueue(DebugName, CommandFunction(std::forward<TCallable>(callable)));
-    }
+		GetRenderCommandQueue().Enqueue(DebugName, CommandFunction(std::forward<TCallable>(callable)));
+	}
 
 private:
-    using CommandFunction = TiramisuRenderCommandQueue::CommandFunction;
+	using CommandFunction = TiramisuRenderCommandQueue::CommandFunction;
 
-    const char* DebugName;
+	const char* DebugName;
 };
-} // namespace XRay::RenderCommands
+} // namespace Tiramisu::RenderCommands
 
 #define ENQUEUE_RENDER_COMMAND(CommandName) \
-    ::Tiramisu::RenderCommands::TEnqueueRenderCommand(#CommandName)
+	::Tiramisu::RenderCommands::TEnqueueRenderCommand(#CommandName)

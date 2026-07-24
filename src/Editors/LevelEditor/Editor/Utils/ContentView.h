@@ -3,19 +3,18 @@
 
 #include "ThmProperties.h"
 
-class CContentView:
+class CContentView :
 	public IEditorWnd
 {
 	friend class CLevelPreferences;
 
 private:
-
-	struct DragDropData 
+	struct DragDropData
 	{
 		xr_string FileName;
 	};
 
-	struct IconData 
+	struct IconData
 	{
 		ref_texture Icon;
 		bool UseButtonColor = false;
@@ -40,9 +39,9 @@ private:
 	{
 		xr_string RenameBuf;
 		xr_path Path{};
-		bool Active{ false };
-		bool Focus{ false };
-		bool SetText{ false };
+		bool Active{false};
+		bool Focus{false};
+		bool SetText{false};
 	};
 
 	struct FolderNode
@@ -99,7 +98,7 @@ private:
 
 	xr_map<xr_string, FileOptData> ScanConfigs(const xr_string& StartPath);
 	void ScanConfigsRecursive(xr_map<xr_string, CContentView::FileOptData>& TempPath, const xr_string& ParseStr);
-	void CheckFileNameRecursive(xr_path&FilePath, const xr_string&) const;
+	void CheckFileNameRecursive(xr_path& FilePath, const xr_string&) const;
 
 	bool CheckFile(const xr_path& File) const;
 
@@ -108,17 +107,18 @@ private:
 	void DeleteAction(const xr_path&) /*const*/;
 	void CutAction(/*const xr_path&*/) /*const*/;
 	void CreateAction() /*const*/;
-	void RenameAction(const xr_path& FilePath,const xr_string NewName);
+	void RenameAction(const xr_path& FilePath, const xr_string NewName);
 
 	void RenameActionActivate(const xr_path& Path);
 	void RenameActionEnd();
 
 	bool ShouldTheFileHaveTHM(const xr_path&) const;
 
-	void AcceptDragDropAction(const CContentView::FileOptData& );
+	void AcceptDragDropAction(const CContentView::FileOptData&);
 	bool BeginDragDropAction(xr_path&, xr_string&, const CContentView::FileOptData&, CContentView::IconData*);
 
 	void LoadExtDest();
+
 private:
 	EViewMode ViewMode = EViewMode::Tile;
 
@@ -131,10 +131,10 @@ private:
 	ref_texture MenuIcon;
 
 	xr_vector<xr_path> SelectedObjects;
-	mutable xr_vector <xr_path> CopiedObjects;
+	mutable xr_vector<xr_path> CopiedObjects;
 
 	RenameObjectData RenameObject;
-	//mutable xr_path CopyObjectPath;
+	// mutable xr_path CopyObjectPath;
 	mutable bool IsCutting;
 
 	xr_string CurrentDir;
@@ -166,7 +166,7 @@ private:
 	CUIThmProperties ThmPropWnd;
 	xr_vector<xr_string> GameDialogs;
 	xr_vector<xr_string> DirCollection;
-	FolderNode Root{ "root" };
+	FolderNode Root{"root"};
 };
 
 extern CContentView* GContentView;

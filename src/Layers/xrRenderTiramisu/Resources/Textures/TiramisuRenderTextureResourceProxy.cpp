@@ -2,9 +2,9 @@
 
 TiramisuRenderTextureResourceProxy::~TiramisuRenderTextureResourceProxy()
 {
-    CheckIsRenderThread();
-    if (Texture)
-    {
-        GRenderDevice.CoreInterface.DestroyTexture(Texture);
-    }
+	CheckIsRenderThread();
+	if (Texture)
+	{
+		GRenderDevice.CoreInterface.DestroyTexture(Texture);
+	}
 }

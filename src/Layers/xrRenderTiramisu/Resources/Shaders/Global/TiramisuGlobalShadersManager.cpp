@@ -36,13 +36,9 @@ const xr_vector<char>& TiramisuGlobalShadersManager::GetShader(shared_str name, 
 	auto Shader = Shaders.find(name);
 	R_ASSERT(Shader != Shaders.end());
 
-	auto LowerItem = std::lower_bound
-	(
-		Shader->second.begin(), Shader->second.end(), 0, 
-		[ShaderType, Defines](const TiramisuGlobalShader* Left, int) 
-		{
-			return Left->IsLess(ShaderType, Defines); 
-		}
+	auto LowerItem = std::lower_bound(
+		Shader->second.begin(), Shader->second.end(), 0, [ShaderType, Defines](const TiramisuGlobalShader* Left, int)
+		{ return Left->IsLess(ShaderType, Defines); }
 	);
 
 	R_ASSERT(LowerItem != Shader->second.end());
@@ -82,25 +78,23 @@ void TiramisuGlobalShadersManager::LoadFromBinary()
 		{
 			break;
 		}
-		
+
 		shared_str Name;
 		F->r_stringZ(Name);
-		
+
 		Shaders[Name].push_back(new TiramisuGlobalShader(F));
 		FS.r_close(F);
 	}
 
 	for (auto& [_, GlobalShaderPtr] : Shaders)
 	{
-		std::ranges::sort
-		(
+		std::ranges::sort(
 			GlobalShaderPtr,
 			[](const TiramisuGlobalShader* Left, const TiramisuGlobalShader* Right)
 			{
 				return *Left < *Right;
 			}
 		);
-
 	}
 	FS.r_close(Reader);
 }
@@ -125,7 +119,7 @@ bool TiramisuGlobalShadersManager::Cooked()
 
 	Msg("Write Engine Shadres");
 
-	size_t Count = 0;                      
+	size_t Count = 0;
 	for (const auto& [Name, Shaders] : Shaders)
 	{
 		for (TiramisuGlobalShader* GlobalShader : Shaders)
@@ -168,17 +162,21 @@ void TiramisuGlobalShadersManager::Rebuild()
 			INT ID = MessageBox(nullptr, TEXT("Failed to compile shaders.\r\n See log!."), TEXT("Error"), MB_ICONERROR | MB_RETRYCANCEL);
 			switch (ID)
 			{
-			case IDNO:
-			case IDCANCEL: exit(-1); break;
-			case IDRETRY:
-			case IDYES:
-			case IDOK: break;
-			default: exit(-1); break;
+				case IDNO:
+				case IDCANCEL:
+					exit(-1);
+					break;
+				case IDRETRY:
+				case IDYES:
+				case IDOK:
+					break;
+				default:
+					exit(-1);
+					break;
 			}
 		}
 
-	} 
-	while (!bResult);
+	} while (!bResult);
 }
 
 static void LogShaderMessage(const xr_string& InFileName, const xr_string& Message, const xr_string& Header, const xr_string& Footer)
@@ -201,12 +199,18 @@ bool TiramisuGlobalShadersManager::RegisterShader(xr_vector<shared_str> Defines,
 	{
 		switch (Type)
 		{
-			case EShaderType::Vertex:   return ".vs";
-			case EShaderType::Hull:     return ".hs";
-			case EShaderType::Domain:   return ".ds";
-			case EShaderType::Geometry: return ".gs";
-			case EShaderType::Pixel:    return ".ps";
-			case EShaderType::Compute:  return ".cs";
+			case EShaderType::Vertex:
+				return ".vs";
+			case EShaderType::Hull:
+				return ".hs";
+			case EShaderType::Domain:
+				return ".ds";
+			case EShaderType::Geometry:
+				return ".gs";
+			case EShaderType::Pixel:
+				return ".ps";
+			case EShaderType::Compute:
+				return ".cs";
 			default:
 				NODEFAULT;
 				return "";
@@ -249,7 +253,7 @@ bool TiramisuGlobalShadersManager::RegisterShader(xr_vector<shared_str> Defines,
 
 	for (u16 i = 0; i < CountShader; i++)
 	{
-		Flags16 CurrentFlags; 
+		Flags16 CurrentFlags;
 		CurrentFlags.assign(i);
 
 		TiramisuShaderDefinesContainer DefinesContainer;
@@ -298,8 +302,7 @@ bool TiramisuGlobalShadersManager::RegisterShader(xr_vector<shared_str> Defines,
 		}
 	}
 
-	std::ranges::sort
-	(
+	std::ranges::sort(
 		InShaders,
 		[](const auto Left, const auto Right)
 		{

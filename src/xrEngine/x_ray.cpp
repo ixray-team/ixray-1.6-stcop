@@ -26,35 +26,35 @@
 #include "GamepadService.h"
 
 //---------------------------------------------------------------------
-ENGINE_API CInifile* pGameIni		= nullptr;
-ENGINE_API bool g_dedicated_server  = false;
-bool	g_bIntroFinished			= false;
-extern	void	Intro				( void* fn );
-extern	void	Intro_DSHOW			( void* fn );
-//int		max_load_stage = 0;
+ENGINE_API CInifile* pGameIni = nullptr;
+ENGINE_API bool g_dedicated_server = false;
+bool g_bIntroFinished = false;
+extern void Intro(void* fn);
+extern void Intro_DSHOW(void* fn);
+// int		max_load_stage = 0;
 
 // computing build id
-XRCORE_API	const char*	build_date;
-XRCORE_API	u32		build_id;
+XRCORE_API const char* build_date;
+XRCORE_API u32 build_id;
 
 #ifdef MASTER_GOLD
-#	define NO_MULTI_INSTANCES
+#define NO_MULTI_INSTANCES
 #endif // #ifdef MASTER_GOLD
 
 
 static const char* month_id[12] =
-{
-	"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"
+	{
+		"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
-static int days_in_month[12] = 
-{
-	31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+static int days_in_month[12] =
+	{
+		31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
 
-static int start_day	= 31;	// 31
-static int start_month	= 1;	// January
-static int start_year	= 1999;	// 1999
+static int start_day = 31;	  // 31
+static int start_month = 1;	  // January
+static int start_year = 1999; // 1999
 
 void compute_build_id()
 {
@@ -75,7 +75,9 @@ void compute_build_id()
 	for (int i = 0; i < 12; i++)
 	{
 		if (_stricmp(month_id[i], month))
+		{
 			continue;
+		}
 
 		months = i;
 		break;
@@ -84,96 +86,105 @@ void compute_build_id()
 	build_id = (years - start_year) * 365 + days - start_day;
 
 	for (int i = 0; i < months; ++i)
+	{
 		build_id += days_in_month[i];
+	}
 
 	for (int i = 0; i < start_month - 1; ++i)
+	{
 		build_id -= days_in_month[i];
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
 // global variables
-ENGINE_API	CEngineApp* pApp = nullptr;
+ENGINE_API CEngineApp* pApp = nullptr;
 
-ENGINE_API	string512		g_sLaunchOnExit_params;
-ENGINE_API	string512		g_sLaunchOnExit_app;
-ENGINE_API	string_path		g_sLaunchWorkingFolder;
+ENGINE_API string512 g_sLaunchOnExit_params;
+ENGINE_API string512 g_sLaunchOnExit_app;
+ENGINE_API string_path g_sLaunchWorkingFolder;
 // -------------------------------------------
 // startup point
-void InitEngine		()
+void InitEngine()
 {
 	PROF_EVENT("InitEngine");
 	DevicePtr = new CRenderDevice();
 
-	Engine.Initialize			( );
-	while (!g_bIntroFinished)	Sleep	(100);
-	Device.Initialize			( );
+	Engine.Initialize();
+	while (!g_bIntroFinished)
+	{
+		Sleep(100);
+	}
+	Device.Initialize();
 }
 
 struct path_excluder_predicate
 {
-	explicit path_excluder_predicate(xr_auth_strings_t const * ignore) :
-		m_ignore(ignore)
+	explicit path_excluder_predicate(xr_auth_strings_t const* ignore)
+		: m_ignore(ignore)
 	{
 	}
-	bool  is_allow_include(const char* path)
+	bool is_allow_include(const char* path)
 	{
 		if (!m_ignore)
+		{
 			return true;
-		
+		}
+
 		return allow_to_include_path(*m_ignore, path);
 	}
-	xr_auth_strings_t const *	m_ignore;
+	xr_auth_strings_t const* m_ignore;
 };
 
-void InitSettings	()
+void InitSettings()
 {
 	PROF_EVENT("InitSettings");
-	string_path					fname; 
-	FS.update_path				(fname,_game_config_,"system.ltx");
+	string_path fname;
+	FS.update_path(fname, _game_config_, "system.ltx");
 #ifdef DEBUG
-	Msg							("Updated path to system.ltx is %s", fname);
+	Msg("Updated path to system.ltx is %s", fname);
 #endif // #ifdef DEBUG
-	pSettings					= new CInifile	(fname,true);
-	CHECK_OR_EXIT				(0!=pSettings->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
+	pSettings = new CInifile(fname, true);
+	CHECK_OR_EXIT(0 != pSettings->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
 
-	xr_auth_strings_t			tmp_ignore_pathes;
-	xr_auth_strings_t			tmp_check_pathes;
-	fill_auth_check_params		(tmp_ignore_pathes, tmp_check_pathes);
-	
-	path_excluder_predicate			tmp_excluder(&tmp_ignore_pathes);
-	CInifile::allow_include_func_t	tmp_functor;
+	xr_auth_strings_t tmp_ignore_pathes;
+	xr_auth_strings_t tmp_check_pathes;
+	fill_auth_check_params(tmp_ignore_pathes, tmp_check_pathes);
+
+	path_excluder_predicate tmp_excluder(&tmp_ignore_pathes);
+	CInifile::allow_include_func_t tmp_functor;
 	tmp_functor.bind(&tmp_excluder, &path_excluder_predicate::is_allow_include);
 
-	FS.update_path				(fname,_game_config_,"game.ltx");
-	pGameIni					= new CInifile	(fname,true);
-	CHECK_OR_EXIT				(0!=pGameIni->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
+	FS.update_path(fname, _game_config_, "game.ltx");
+	pGameIni = new CInifile(fname, true);
+	CHECK_OR_EXIT(0 != pGameIni->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
 }
 
-void InitInput		()
+void InitInput()
 {
 	PROF_EVENT("InitInput");
-	pInput						= new CInput		();
+	pInput = new CInput();
 }
-void destroyInput	()
+void destroyInput()
 {
-	xr_delete					( pInput		);
+	xr_delete(pInput);
 }
 
-void InitSound1		()
+void InitSound1()
 {
 	PROF_EVENT("InitSound1");
-	CSound_manager_interface::_create				(0);
+	CSound_manager_interface::_create(0);
 }
 
-void InitSound2		()
+void InitSound2()
 {
 	PROF_EVENT("InitSound2");
-	CSound_manager_interface::_create				(1);
+	CSound_manager_interface::_create(1);
 }
 
-void destroySound	()
+void destroySound()
 {
-	CSound_manager_interface::_destroy				( );
+	CSound_manager_interface::_destroy();
 }
 
 void destroySettings()
@@ -217,12 +228,18 @@ ENGINE_API void EngineLoadStage4()
 
 	// ...command line for auto start
 	{
-		const char*	pStartup = strstr(Core.Params, "-start ");
-		if (pStartup)				Console->Execute(pStartup + 1);
+		const char* pStartup = strstr(Core.Params, "-start ");
+		if (pStartup)
+		{
+			Console->Execute(pStartup + 1);
+		}
 	}
 	{
-		const char*	pStartup = strstr(Core.Params, "-load ");
-		if (pStartup)				Console->Execute(pStartup + 1);
+		const char* pStartup = strstr(Core.Params, "-load ");
+		if (pStartup)
+		{
+			Console->Execute(pStartup + 1);
+		}
 	}
 
 	// Initialize APP
@@ -268,15 +285,15 @@ ENGINE_API void EngineLoopAndDestroy()
 	xr_delete(pFPSCounter);
 
 	// Destroying
-//.	destroySound();
+	//.	destroySound();
 	destroyInput();
 
 	destroySettings();
 	LALib.OnDestroy();
-	
+
 	destroyConsole();
 
-	//очищение памяти таблицы строк
+	// очищение памяти таблицы строк
 	CStringTable::Destroy();
 
 	destroySound();
@@ -284,11 +301,12 @@ ENGINE_API void EngineLoopAndDestroy()
 }
 
 #ifdef IXR_WINDOWS
-#define dwStickyKeysStructSize sizeof( STICKYKEYS )
-#define dwFilterKeysStructSize sizeof( FILTERKEYS )
-#define dwToggleKeysStructSize sizeof( TOGGLEKEYS )
+#define dwStickyKeysStructSize sizeof(STICKYKEYS)
+#define dwFilterKeysStructSize sizeof(FILTERKEYS)
+#define dwToggleKeysStructSize sizeof(TOGGLEKEYS)
 
-struct damn_keys_filter {
+struct damn_keys_filter
+{
 	bool bScreenSaverState;
 
 	// Sticky & Filter & Toggle keys
@@ -301,83 +319,92 @@ struct damn_keys_filter {
 	DWORD dwFilterKeysFlags;
 	DWORD dwToggleKeysFlags;
 
-	damn_keys_filter	()
+	damn_keys_filter()
 	{
 		// Screen saver stuff
 
 		bScreenSaverState = false;
 
 		// Saveing current state
-		SystemParametersInfo( SPI_GETSCREENSAVEACTIVE , 0 , ( PVOID ) &bScreenSaverState , 0 );
+		SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, (PVOID)&bScreenSaverState, 0);
 
-		if ( bScreenSaverState )
+		if (bScreenSaverState)
+		{
 			// Disable screensaver
-			SystemParametersInfo( SPI_SETSCREENSAVEACTIVE , false , nullptr , 0 );
+			SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, false, nullptr, 0);
+		}
 
 		dwStickyKeysFlags = 0;
 		dwFilterKeysFlags = 0;
 		dwToggleKeysFlags = 0;
 
 
-		ZeroMemory( &StickyKeysStruct , dwStickyKeysStructSize );
-		ZeroMemory( &FilterKeysStruct , dwFilterKeysStructSize );
-		ZeroMemory( &ToggleKeysStruct , dwToggleKeysStructSize );
+		ZeroMemory(&StickyKeysStruct, dwStickyKeysStructSize);
+		ZeroMemory(&FilterKeysStruct, dwFilterKeysStructSize);
+		ZeroMemory(&ToggleKeysStruct, dwToggleKeysStructSize);
 
 		StickyKeysStruct.cbSize = dwStickyKeysStructSize;
 		FilterKeysStruct.cbSize = dwFilterKeysStructSize;
 		ToggleKeysStruct.cbSize = dwToggleKeysStructSize;
 
 		// Saving current state
-		SystemParametersInfo( SPI_GETSTICKYKEYS , dwStickyKeysStructSize , ( PVOID ) &StickyKeysStruct , 0 );
-		SystemParametersInfo( SPI_GETFILTERKEYS , dwFilterKeysStructSize , ( PVOID ) &FilterKeysStruct , 0 );
-		SystemParametersInfo( SPI_GETTOGGLEKEYS , dwToggleKeysStructSize , ( PVOID ) &ToggleKeysStruct , 0 );
+		SystemParametersInfo(SPI_GETSTICKYKEYS, dwStickyKeysStructSize, (PVOID)&StickyKeysStruct, 0);
+		SystemParametersInfo(SPI_GETFILTERKEYS, dwFilterKeysStructSize, (PVOID)&FilterKeysStruct, 0);
+		SystemParametersInfo(SPI_GETTOGGLEKEYS, dwToggleKeysStructSize, (PVOID)&ToggleKeysStruct, 0);
 
-		if ( StickyKeysStruct.dwFlags & SKF_AVAILABLE ) {
+		if (StickyKeysStruct.dwFlags & SKF_AVAILABLE)
+		{
 			// Disable StickyKeys feature
 			dwStickyKeysFlags = StickyKeysStruct.dwFlags;
 			StickyKeysStruct.dwFlags = 0;
-			SystemParametersInfo( SPI_SETSTICKYKEYS , dwStickyKeysStructSize , ( PVOID ) &StickyKeysStruct , 0 );
+			SystemParametersInfo(SPI_SETSTICKYKEYS, dwStickyKeysStructSize, (PVOID)&StickyKeysStruct, 0);
 		}
 
-		if ( FilterKeysStruct.dwFlags & FKF_AVAILABLE ) {
+		if (FilterKeysStruct.dwFlags & FKF_AVAILABLE)
+		{
 			// Disable FilterKeys feature
 			dwFilterKeysFlags = FilterKeysStruct.dwFlags;
 			FilterKeysStruct.dwFlags = 0;
-			SystemParametersInfo( SPI_SETFILTERKEYS , dwFilterKeysStructSize , ( PVOID ) &FilterKeysStruct , 0 );
+			SystemParametersInfo(SPI_SETFILTERKEYS, dwFilterKeysStructSize, (PVOID)&FilterKeysStruct, 0);
 		}
 
-		if ( ToggleKeysStruct.dwFlags & TKF_AVAILABLE ) {
+		if (ToggleKeysStruct.dwFlags & TKF_AVAILABLE)
+		{
 			// Disable FilterKeys feature
 			dwToggleKeysFlags = ToggleKeysStruct.dwFlags;
 			ToggleKeysStruct.dwFlags = 0;
-			SystemParametersInfo( SPI_SETTOGGLEKEYS , dwToggleKeysStructSize , ( PVOID ) &ToggleKeysStruct , 0 );
+			SystemParametersInfo(SPI_SETTOGGLEKEYS, dwToggleKeysStructSize, (PVOID)&ToggleKeysStruct, 0);
 		}
 	}
 
-	~damn_keys_filter	()
+	~damn_keys_filter()
 	{
-		if ( bScreenSaverState )
+		if (bScreenSaverState)
+		{
 			// Restoring screen saver
-			SystemParametersInfo( SPI_SETSCREENSAVEACTIVE , true , nullptr , 0 );
+			SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, true, nullptr, 0);
+		}
 
-		if ( dwStickyKeysFlags) {
+		if (dwStickyKeysFlags)
+		{
 			// Restore StickyKeys feature
 			StickyKeysStruct.dwFlags = dwStickyKeysFlags;
-			SystemParametersInfo( SPI_SETSTICKYKEYS , dwStickyKeysStructSize , ( PVOID ) &StickyKeysStruct , 0 );
+			SystemParametersInfo(SPI_SETSTICKYKEYS, dwStickyKeysStructSize, (PVOID)&StickyKeysStruct, 0);
 		}
 
-		if ( dwFilterKeysFlags ) {
+		if (dwFilterKeysFlags)
+		{
 			// Restore FilterKeys feature
 			FilterKeysStruct.dwFlags = dwFilterKeysFlags;
-			SystemParametersInfo( SPI_SETFILTERKEYS , dwFilterKeysStructSize , ( PVOID ) &FilterKeysStruct , 0 );
+			SystemParametersInfo(SPI_SETFILTERKEYS, dwFilterKeysStructSize, (PVOID)&FilterKeysStruct, 0);
 		}
 
-		if ( dwToggleKeysFlags ) {
+		if (dwToggleKeysFlags)
+		{
 			// Restore FilterKeys feature
 			ToggleKeysStruct.dwFlags = dwToggleKeysFlags;
-			SystemParametersInfo( SPI_SETTOGGLEKEYS , dwToggleKeysStructSize , ( PVOID ) &ToggleKeysStruct , 0 );
+			SystemParametersInfo(SPI_SETTOGGLEKEYS, dwToggleKeysStructSize, (PVOID)&ToggleKeysStruct, 0);
 		}
-
 	}
 };
 
@@ -398,17 +425,19 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 	const char* fsgame_ltx_name = "-fsltx ";
 	string_path fsgame = "";
 
-	if (strstr(lpCmdLine, fsgame_ltx_name)) {
-		int						sz = xr_strlen(fsgame_ltx_name);
-		sscanf					(strstr(lpCmdLine,fsgame_ltx_name)+sz,"%[^ ] ",fsgame);
+	if (strstr(lpCmdLine, fsgame_ltx_name))
+	{
+		int sz = xr_strlen(fsgame_ltx_name);
+		sscanf(strstr(lpCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
 	}
 
-	compute_build_id			();
+	compute_build_id();
 	CFilewatcher::instance().SetFilewatcherActive(true);
-	Core._initialize			("IXRay",nullptr, true, fsgame[0] ? fsgame : nullptr);
+	Core._initialize("IXRay", nullptr, true, fsgame[0] ? fsgame : nullptr);
 	const FRenderDeterministicTestPolicy DeterministicTest =
 		ResolveRenderDeterministicTestPolicy(
-			Core.Params ? Core.Params : "");
+			Core.Params ? Core.Params : ""
+		);
 	if (DeterministicTest.Enabled)
 	{
 		if (!DeterministicTest.IsValid())
@@ -423,12 +452,13 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 			DeterministicTest.FixedShaderTimeSeconds);
 	}
 
-	InitSettings				();
+	InitSettings();
 
 	// Adjust player & computer name for Asian
-	if ( pSettings->line_exist( "string_table" , "no_native_input" ) ) {
-			xr_strcpy( Core.UserName , sizeof( Core.UserName ) , "Player" );
-			xr_strcpy( Core.CompName , sizeof( Core.CompName ) , "Computer" );
+	if (pSettings->line_exist("string_table", "no_native_input"))
+	{
+		xr_strcpy(Core.UserName, sizeof(Core.UserName), "Player");
+		xr_strcpy(Core.CompName, sizeof(Core.CompName), "Computer");
 	}
 
 	EngineExternal();
@@ -437,7 +467,7 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 ENGINE_API const char* GetClipboardErrorMessage()
 {
 	VERIFY(g_pStringTable);
-	return g_pStringTable->translate( "st_clipboard_error_message").c_str();
+	return g_pStringTable->translate("st_clipboard_error_message").c_str();
 }
 
 ENGINE_API void EngineLoadStage2()
@@ -469,7 +499,8 @@ ENGINE_API void EngineLoadStage3()
 
 	xr_strcpy(Console->ConfigFile, *UserName);
 
-	if (strstr(Core.Params, "-ltx ")) {
+	if (strstr(Core.Params, "-ltx "))
+	{
 		string64 c_name;
 		sscanf(strstr(Core.Params, "-ltx ") + 5, "%[^ ] ", c_name);
 		xr_strcpy(Console->ConfigFile, c_name);

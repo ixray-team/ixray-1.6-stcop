@@ -8,4 +8,5 @@
 // The caller owns Renderer. It must destroy every preview handle before it
 // restores the previous implementation or destroys Renderer.
 [[nodiscard]] ECORE_API IMaterialPreviewRenderer* InstallMaterialPreviewRenderer(
-	IMaterialPreviewRenderer* Renderer) noexcept;
+	IMaterialPreviewRenderer* Renderer
+) noexcept;

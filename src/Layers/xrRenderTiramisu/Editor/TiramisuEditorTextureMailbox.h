@@ -36,12 +36,13 @@ class TiramisuEditorTextureMailbox final
 {
 public:
 	// Create/Update копируют payload, поэтому caller может сразу освободить исходную память.
-	[[nodiscard]] FEditorTextureHandle Create(const FEditorTextureUpload& Upload,
-		xr_string* OutDiagnostic = nullptr)
+	[[nodiscard]] FEditorTextureHandle Create(const FEditorTextureUpload& Upload, xr_string* OutDiagnostic = nullptr)
 	{
 		FEditorOwnedTextureUpload Copy;
 		if (!CopyUpload(Upload, Copy, OutDiagnostic))
+		{
 			return {};
+		}
 
 		std::scoped_lock Lock(Mutex);
 		u32 Index = FEditorTextureHandle::InvalidIndex;
@@ -70,12 +71,13 @@ public:
 		return {Index, Slot.Generation};
 	}
 
-	bool Update(const FEditorTextureHandle Handle,
-		const FEditorTextureUpload& Upload, xr_string* OutDiagnostic = nullptr)
+	bool Update(const FEditorTextureHandle Handle, const FEditorTextureUpload& Upload, xr_string* OutDiagnostic = nullptr)
 	{
 		FEditorOwnedTextureUpload Copy;
 		if (!CopyUpload(Upload, Copy, OutDiagnostic))
+		{
 			return false;
+		}
 
 		std::scoped_lock Lock(Mutex);
 		FSlot* Slot = FindAliveSlot(Handle);
@@ -90,7 +92,9 @@ public:
 			return false;
 		}
 		if (Upload.Revision == Slot->AcceptedRevision)
+		{
 			return true;
+		}
 
 		Copy.Handle = Handle;
 		Slot->AcceptedRevision = Upload.Revision;
@@ -104,7 +108,9 @@ public:
 		std::scoped_lock Lock(Mutex);
 		FSlot* Slot = FindAliveSlot(Handle);
 		if (!Slot)
+		{
 			return false;
+		}
 
 		Slot->Alive = false;
 		Slot->AcceptedRevision = 0;
@@ -130,7 +136,9 @@ public:
 		for (FSlot& Slot : Slots)
 		{
 			if (!Slot.Pending)
+			{
 				continue;
+			}
 			OutPacket.Updates.push_back(std::move(*Slot.Pending));
 			Slot.Pending.reset();
 		}
@@ -156,14 +164,17 @@ private:
 	static void SetDiagnostic(xr_string* OutDiagnostic, const char* Message)
 	{
 		if (OutDiagnostic)
+		{
 			*OutDiagnostic = Message;
+		}
 	}
 
-	[[nodiscard]] static bool CopyUpload(const FEditorTextureUpload& Upload,
-		FEditorOwnedTextureUpload& Out, xr_string* OutDiagnostic)
+	[[nodiscard]] static bool CopyUpload(const FEditorTextureUpload& Upload, FEditorOwnedTextureUpload& Out, xr_string* OutDiagnostic)
 	{
 		if (OutDiagnostic)
+		{
 			OutDiagnostic->clear();
+		}
 		if (Upload.Width == 0 || Upload.Height == 0 || Upload.Revision == 0)
 		{
 			SetDiagnostic(OutDiagnostic, "Editor texture dimensions and revision must be non-zero");
@@ -190,8 +201,7 @@ private:
 		Out.Height = Upload.Height;
 		Out.RowPitch = Upload.RowPitch;
 		Out.Format = Upload.Format;
-		Out.Pixels.assign(Upload.Pixels.begin(),
-			Upload.Pixels.begin() + static_cast<size_t>(RequiredSize));
+		Out.Pixels.assign(Upload.Pixels.begin(), Upload.Pixels.begin() + static_cast<size_t>(RequiredSize));
 		Out.Revision = Upload.Revision;
 		Out.DebugName.assign(Upload.DebugName);
 		return true;
@@ -200,7 +210,9 @@ private:
 	[[nodiscard]] FSlot* FindAliveSlot(const FEditorTextureHandle Handle)
 	{
 		if (!Handle.IsValid() || Handle.Index >= Slots.size())
+		{
 			return nullptr;
+		}
 		FSlot& Slot = Slots[Handle.Index];
 		return Slot.Alive && Slot.Generation == Handle.Generation ? &Slot : nullptr;
 	}
@@ -208,7 +220,9 @@ private:
 	[[nodiscard]] const FSlot* FindAliveSlot(const FEditorTextureHandle Handle) const
 	{
 		if (!Handle.IsValid() || Handle.Index >= Slots.size())
+		{
 			return nullptr;
+		}
 		const FSlot& Slot = Slots[Handle.Index];
 		return Slot.Alive && Slot.Generation == Handle.Generation ? &Slot : nullptr;
 	}

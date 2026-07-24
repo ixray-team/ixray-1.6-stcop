@@ -22,7 +22,6 @@ public:
 	void LL_Validate();
 	CBoneData* LL_GetBoneData(u16 bone_id)
 	{
-
 		VERIFY(bone_id < LL_BoneCount());
 		VERIFY(bones);
 		u32 sz = sizeof(vecBones);
@@ -87,12 +86,17 @@ public:
 	virtual void LL_SetBonesVisibleAll() override { visimask.set_all(); };
 
 public:
-	u16     LL_VisibleBoneCount() { return visimask.count(); }
-	const	CBoneInstance& LL_GetBoneInstance(u16 bone_id) const { VERIFY(bone_id < LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id]; }
+	u16 LL_VisibleBoneCount() { return visimask.count(); }
+	const CBoneInstance& LL_GetBoneInstance(u16 bone_id) const
+	{
+		VERIFY(bone_id < LL_BoneCount());
+		VERIFY(bone_instances);
+		return bone_instances[bone_id];
+	}
 
-	virtual  Fmatrix& LL_GetTransform(u16 bone_id) { return LL_GetBoneInstance(bone_id).mTransform; }
+	virtual Fmatrix& LL_GetTransform(u16 bone_id) { return LL_GetBoneInstance(bone_id).mTransform; }
 	virtual const Fmatrix& LL_GetTransform(u16 bone_id) const { return LL_GetBoneInstance(bone_id).mTransform; }
-	virtual   Fmatrix& LL_GetTransform_R(u16 bone_id) { return LL_GetBoneInstance(bone_id).mRenderTransform; } // rendering only
+	virtual Fmatrix& LL_GetTransform_R(u16 bone_id) { return LL_GetBoneInstance(bone_id).mRenderTransform; } // rendering only
 
 	virtual Fobb& LL_GetBox(u16 bone_id)
 	{
@@ -103,21 +107,25 @@ public:
 
 	virtual void LL_GetBindTransform(xr_vector<Fmatrix>& matrices);
 	virtual void LL_GetBindTransform(buffer_vector<Fmatrix>& matrices);
-	virtual int  LL_GetBoneGroups(xr_vector<xr_vector<u16>>& groups);
+	virtual int LL_GetBoneGroups(xr_vector<xr_vector<u16>>& groups);
 
-	virtual u16  LL_GetBoneRoot() { return iRoot; }
+	virtual u16 LL_GetBoneRoot() { return iRoot; }
 	virtual void LL_SetBoneRoot(u16 bone_id)
 	{
 		VERIFY(bone_id < LL_BoneCount());
 		iRoot = bone_id;
 	}
 
-	bool LL_GetBoneVisible(u16 bone_id) { VERIFY(bone_id < LL_BoneCount()); return visimask.is(bone_id); }
+	bool LL_GetBoneVisible(u16 bone_id)
+	{
+		VERIFY(bone_id < LL_BoneCount());
+		return visimask.is(bone_id);
+	}
 	virtual void LL_SetBoneVisible(u16 bone_id, bool val, bool bRecursive);
 	VisMask LL_GetBonesVisible() { return visimask; }
 	void LL_SetBonesVisible(VisMask mask);
 
-	virtual void				Release();
+	virtual void Release();
 	// Main functionality
 	virtual void CalculateBones(bool bForceExact = false); // Recalculate skeleton
 	virtual void CalculateBones_Invalidate();
@@ -144,20 +152,21 @@ public:
 	virtual void Copy(CDS0_RenderVisual* from);
 	virtual void Spawn();
 	virtual void Depart();
+
 public:
 	CDS0_RenderVisual* m_lod;
 
 	CBoneInstance* bone_instances; // bone instances
 protected:
-	//SkeletonWMVec				wallmarks;
+	// SkeletonWMVec				wallmarks;
 	u32 wm_frame;
 
 	xr_vector<CDS0_RenderVisual*> children_invisible;
 
 	// Globals
 	CInifile* pUserData;
-	vecBones* bones;			   // all bones	(shared)
-	u16 iRoot;					   // Root bone index
+	vecBones* bones; // all bones	(shared)
+	u16 iRoot;		 // Root bone index
 
 	// Fast search
 	accel* bone_map_N; // bones  associations	(shared)	- sorted by name

@@ -9,11 +9,11 @@ static int GlobalViewportIndex = 0;
 
 namespace ImGui
 {
-	XREUI_API ImFont* LightFont;
-	XREUI_API ImFont* RegularFont;
-	XREUI_API ImFont* MediumFont;
-	XREUI_API ImFont* BoldFont;
-}
+XREUI_API ImFont* LightFont;
+XREUI_API ImFont* RegularFont;
+XREUI_API ImFont* MediumFont;
+XREUI_API ImFont* BoldFont;
+} // namespace ImGui
 
 UIRenderForm::UIRenderForm()
 {
@@ -43,24 +43,24 @@ UIRenderForm::~UIRenderForm()
 
 void UIRenderForm::DrawStatistics()
 {
-	const float ToolbarHeight = 0
-		+ XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding) * 2.f
-		+ XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+	const float ToolbarHeight = 0 + XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding) * 2.f + XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
 	const float Gap = XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::DockingGap);
 	if (!psDeviceFlags.is(rsStatistic))
+	{
 		return;
+	}
 
 	auto print = [](const char* param, const char* value_fmt, ...)
-		{
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text("%s:", param);
-			ImGui::TableSetColumnIndex(1);
-			va_list args;
-			va_start(args, value_fmt);
-			ImGui::TextV(value_fmt, args);
-			va_end(args);
-		};
+	{
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+		ImGui::Text("%s:", param);
+		ImGui::TableSetColumnIndex(1);
+		va_list args;
+		va_start(args, value_fmt);
+		ImGui::TextV(value_fmt, args);
+		va_end(args);
+	};
 
 	ImGui::SetCursorPos(ImVec2(ToolbarHeight * 0.5f, ToolbarHeight * 1.5f));
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(Gap, Gap));
@@ -73,15 +73,15 @@ void UIRenderForm::DrawStatistics()
 
 	CEStats* s = static_cast<CEStats*>(EDevice->Statistic);
 
-	//color(0xFFFFFFFF);
+	// color(0xFFFFFFFF);
 	print("FPS/RFPS", "%3.1f/%3.1f", (s->fFPS), s->fRFPS);
 	ImGui::NewLine();
-	//color(0xDDDDDDDD);
+	// color(0xDDDDDDDD);
 	print("TPS", "%2.2f M", s->fTPS);
 
-	print("VERT", "%d",		s->lastDPS_verts);
-	print("POLY", "%d",		s->lastDPS_polys);
-	print("DIP/DP", "%d",	s->lastDPS_calls);
+	print("VERT", "%d", s->lastDPS_verts);
+	print("POLY", "%d", s->lastDPS_polys);
+	print("DIP/DP", "%d", s->lastDPS_calls);
 
 	if (ViewportID == 0 && EPrefs->bMoreStats)
 	{
@@ -99,14 +99,14 @@ void UIRenderForm::DrawStatistics()
 		print(" DT_Render", "%2.2fms", s->RenderDUMP_DT_Render.result);
 		print(" DT_Cache", "%2.2fms", s->RenderDUMP_DT_Cache.result);
 	}
-    if (psDeviceFlags.test(rsEnvironment))
-    {
-        ImGui::NewLine();
-        // color(0xFFC8DCAF);
-        print("GAME TIME", "%02d:%02d:%02d", s->hours, s->minutes, s->seconds);
-    }
+	if (psDeviceFlags.test(rsEnvironment))
+	{
+		ImGui::NewLine();
+		// color(0xFFC8DCAF);
+		print("GAME TIME", "%02d:%02d:%02d", s->hours, s->minutes, s->seconds);
+	}
 
-    ImGui::NewLine();
+	ImGui::NewLine();
 	print("Camera Pos", "%2.2f, %2.2f, %2.2f", UI->CurrentView().m_Camera.GetPosition().x, UI->CurrentView().m_Camera.GetPosition().y, UI->CurrentView().m_Camera.GetPosition().z);
 
 	ImGui::EndTable();
@@ -133,9 +133,7 @@ void UIRenderForm::Draw()
 
 void UIRenderForm::DrawVP()
 {
-	const float ToolbarHeight = 0
-		+ XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding) * 2.f
-		+ XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
+	const float ToolbarHeight = 0 + XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ToolbarPadding) * 2.f + XRay::ImGui::GetEditorSize(XRay::ImGui::EEditorSizes::ButtonSize);
 
 	float ScreenDPI = GUIManager->GetScaleDpi();
 
@@ -172,11 +170,15 @@ void UIRenderForm::DrawVP()
 
 	ImVec2 canvas_pos = ImGui::GetCursorScreenPos();
 	ImVec2 canvas_size = ImGui::GetContentRegionAvail();
-	if (canvas_size.x < 32.0f * ScreenDPI) canvas_size.x = 32.0f * ScreenDPI;
-	if (canvas_size.y < 32.0f * ScreenDPI) canvas_size.y = 32.0f * ScreenDPI;
-	EditorRenderer.ResizeViewport(static_cast<u32>(ViewportID),
-		static_cast<std::uint32_t>(canvas_size.x),
-		static_cast<std::uint32_t>(canvas_size.y));
+	if (canvas_size.x < 32.0f * ScreenDPI)
+	{
+		canvas_size.x = 32.0f * ScreenDPI;
+	}
+	if (canvas_size.y < 32.0f * ScreenDPI)
+	{
+		canvas_size.y = 32.0f * ScreenDPI;
+	}
+	EditorRenderer.ResizeViewport(static_cast<u32>(ViewportID), static_cast<std::uint32_t>(canvas_size.x), static_cast<std::uint32_t>(canvas_size.y));
 
 	bool cursor_in_zone = true;
 	const FEditorViewportSurface ViewportSurface = EditorRenderer.GetViewportSurface(static_cast<u32>(ViewportID));
@@ -189,15 +191,30 @@ void UIRenderForm::DrawVP()
 			auto ViewHandle = ImGui::GetWindowViewport();
 			UI->Views[ViewportID].WndHandle = SDL_GetWindowFromID((SDL_WindowID)(size_t)ViewHandle->PlatformHandle);
 
-			if (ImGui::GetIO().KeyShift)ShiftState |= ssShift;
-			if (ImGui::GetIO().KeyCtrl)	ShiftState |= ssCtrl;
-			if (ImGui::GetIO().KeyAlt)	ShiftState |= ssAlt;
+			if (ImGui::GetIO().KeyShift)
+			{
+				ShiftState |= ssShift;
+			}
+			if (ImGui::GetIO().KeyCtrl)
+			{
+				ShiftState |= ssCtrl;
+			}
+			if (ImGui::GetIO().KeyAlt)
+			{
+				ShiftState |= ssAlt;
+			}
 
-			if (ImGui::IsMouseDown(ImGuiMouseButton_Left))ShiftState |= ssLeft;
-			if (ImGui::IsMouseDown(ImGuiMouseButton_Right))ShiftState |= ssRight;
+			if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
+			{
+				ShiftState |= ssLeft;
+			}
+			if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
+			{
+				ShiftState |= ssRight;
+			}
 		}
 
-		//VERIFY(!(ShiftState & ssLeft && ShiftState & ssRight));
+		// VERIFY(!(ShiftState & ssLeft && ShiftState & ssRight));
 		ImDrawList* draw_list = ImGui::GetWindowDrawList();
 		ImVec2 mouse_pos = ImGui::GetIO().MousePos;
 		if (mouse_pos.x < canvas_pos.x)
@@ -229,28 +246,27 @@ void UIRenderForm::DrawVP()
 		draw_list->AddImage(ViewportSurface.ImGuiTextureId, canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y));
 		xr_vector<FEditorOverlayText> OverlayText;
 		EditorRenderer.CopyViewportOverlayText(
-			static_cast<u32>(ViewportID), OverlayText);
+			static_cast<u32>(ViewportID), OverlayText
+		);
 		if (!OverlayText.empty())
 		{
-			draw_list->PushClipRect(canvas_pos,
-				ImVec2(canvas_pos.x + canvas_size.x,
-					canvas_pos.y + canvas_size.y), true);
+			draw_list->PushClipRect(canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y), true);
 			for (const FEditorOverlayText& Label : OverlayText)
 			{
 				const ImVec2 Position = {
 					canvas_pos.x + (Label.Position[0] + 1.0f) *
-						0.5f * canvas_size.x,
+									   0.5f * canvas_size.x,
 					canvas_pos.y + (1.0f - Label.Position[1]) *
-						0.5f * canvas_size.y};
+									   0.5f * canvas_size.y
+				};
 				const ImU32 ShadowColor = ImGui::ColorConvertFloat4ToU32(
-					ImVec4(Label.ShadowColor[0], Label.ShadowColor[1],
-						Label.ShadowColor[2], Label.ShadowColor[3]));
+					ImVec4(Label.ShadowColor[0], Label.ShadowColor[1], Label.ShadowColor[2], Label.ShadowColor[3])
+				);
 				const ImU32 Color = ImGui::ColorConvertFloat4ToU32(
-					ImVec4(Label.Color[0], Label.Color[1],
-						Label.Color[2], Label.Color[3]));
+					ImVec4(Label.Color[0], Label.Color[1], Label.Color[2], Label.Color[3])
+				);
 				draw_list->AddText(Position, ShadowColor, Label.Text.c_str());
-				draw_list->AddText(ImVec2(Position.x - 1.0f,
-					Position.y - 1.0f), Color, Label.Text.c_str());
+				draw_list->AddText(ImVec2(Position.x - 1.0f, Position.y - 1.0f), Color, Label.Text.c_str());
 			}
 			draw_list->PopClipRect();
 		}
@@ -261,15 +277,17 @@ void UIRenderForm::DrawVP()
 		}
 
 		if (m_OnToolBar)
+		{
 			m_OnToolBar(canvas_pos, canvas_size);
+		}
 
 		if (ViewportID == UI->ViewID && !UI->IsPlayInEditor())
 		{
-			//Statistic
+			// Statistic
 			DrawStatistics();
 
 			if ((EditorRenderer.GetKind() == EEditorRenderBackendKind::Tiramisu ||
-				!psDeviceFlags.test(rsDrawAxis)) &&
+				 !psDeviceFlags.test(rsDrawAxis)) &&
 				!psDeviceFlags.test(rsDisableAxisCube))
 			{
 				ImGuizmo::SetRect(canvas_pos.x, canvas_pos.y, canvas_size.x, canvas_size.y);
@@ -278,10 +296,10 @@ void UIRenderForm::DrawVP()
 
 				float calcSide = (canvas_size.x > canvas_size.y) ? canvas_size.y : canvas_size.x;
 
-				ImVec2 size{ calcSide * 0.15f, calcSide * 0.15f };
-				ImVec2 pos{ canvas_pos.x + canvas_size.x - size.x, canvas_pos.y + ToolbarHeight };
+				ImVec2 size{calcSide * 0.15f, calcSide * 0.15f};
+				ImVec2 pos{canvas_pos.x + canvas_size.x - size.x, canvas_pos.y + ToolbarHeight};
 
-				//Device.mView for only read
+				// Device.mView for only read
 				Fmatrix TempViewMatrix = Device.mView;
 				ImGuizmo::ViewManipulate((float*)&TempViewMatrix, 10, pos, size, ImColor());
 
@@ -317,7 +335,9 @@ void UIRenderForm::DrawVP()
 		ImGui::SetCursorScreenPos(canvas_pos);
 
 		if (!ImGuizmo::IsUsing())
+		{
 			ImGui::InvisibleButton("canvas", canvas_size);
+		}
 
 		if (ImGui::IsItemFocused())
 		{
@@ -327,7 +347,7 @@ void UIRenderForm::DrawVP()
 				m_mouse_down = true;
 			}
 
-			else  if ((ImGui::IsMouseReleased(ImGuiMouseButton_Left) || ImGui::IsMouseReleased(ImGuiMouseButton_Right)) && m_mouse_down)
+			else if ((ImGui::IsMouseReleased(ImGuiMouseButton_Left) || ImGui::IsMouseReleased(ImGuiMouseButton_Right)) && m_mouse_down)
 			{
 				if (!ImGui::IsMouseDown(ImGuiMouseButton_Left) && !ImGui::IsMouseDown(ImGuiMouseButton_Right))
 				{
@@ -349,7 +369,7 @@ void UIRenderForm::DrawVP()
 				OnClickCallback();
 			}
 		}
-		else  if (m_mouse_down)
+		else if (m_mouse_down)
 		{
 			if (!ImGui::IsMouseDown(ImGuiMouseButton_Left) && !ImGui::IsMouseDown(ImGuiMouseButton_Right))
 			{
@@ -384,12 +404,12 @@ void UIRenderForm::DrawVP()
 	{
 		if (UI->IsLoading)
 		{
-			ImGui::SetCursorPos({ 10, ImGui::GetWindowHeight() - 75 });
+			ImGui::SetCursorPos({10, ImGui::GetWindowHeight() - 75});
 			ImGui::SetNextWindowBgAlpha(0.6f);
-			if (ImGui::BeginChild("##renderloader", { 300, 65 }, true))
+			if (ImGui::BeginChild("##renderloader", {300, 65}, true))
 			{
 				ImGui::Text(UI->ProgressStatusName.c_str());
-				ImGui::ProgressBar(UI->ProgressStatus / 100.f, { 280, 25 });
+				ImGui::ProgressBar(UI->ProgressStatus / 100.f, {280, 25});
 			}
 			ImGui::EndChild();
 		}
@@ -415,7 +435,9 @@ void UIRenderForm::HandleDragDrop(const ImVec2& canvas_pos)
 	}
 
 	if (ViewportID != 0 || !ImGui::BeginDragDropTarget())
+	{
 		return;
+	}
 
 	auto ImData = ImGui::AcceptDragDropPayload("TEST");
 
@@ -443,7 +465,8 @@ void UIRenderForm::HandleDragDrop(const ImVec2& canvas_pos)
 	{
 		DragFunctor(Data.FileName, 17);
 	}
-	else {
+	else
+	{
 		DragFunctor(Data.FileName, 6);
 	}
 

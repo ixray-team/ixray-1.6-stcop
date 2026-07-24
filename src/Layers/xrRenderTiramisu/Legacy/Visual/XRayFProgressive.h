@@ -3,7 +3,7 @@
 #include "TiramisuRenderTypes.h"
 #include "XRayFVisual.h"
 
-class CDS0_FProgressive:
+class CDS0_FProgressive :
 	public CDS0_FVisual
 {
 protected:

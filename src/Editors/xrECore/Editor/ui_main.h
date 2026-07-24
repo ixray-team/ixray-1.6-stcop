@@ -1,7 +1,10 @@
 #pragma once
 
 #define JSON_NOEXCEPTION
-#define JSON_THROW_USER do{}while(false);
+#define JSON_THROW_USER \
+	do                  \
+	{                   \
+	} while (false);
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
@@ -28,29 +31,32 @@ enum EEditorState
 
 struct ECORE_API SPBItem
 {
-	shared_str	text;
-	shared_str	info;
+	shared_str text;
+	shared_str info;
 	volatile float max;
 	volatile float progress;
 
 public:
-				SPBItem				(const char* txt, const char* inf, float mx):text(txt),info(inf),max(mx),progress(0.f){}
-	void		GetInfo				(xr_string& txt, float& p, float& m);
-	void		Inc					(const char* info=nullptr, bool bWarn=false);
-	void		Update				(float val);
-	void 		Info				(const char* text, bool bWarn=false);
+	SPBItem(const char* txt, const char* inf, float mx)
+		: text(txt), info(inf), max(mx), progress(0.f) {}
+	void GetInfo(xr_string& txt, float& p, float& m);
+	void Inc(const char* info = nullptr, bool bWarn = false);
+	void Update(float val);
+	void Info(const char* text, bool bWarn = false);
 };
 
 typedef xr_vector<EEditorState> EStateList;
 typedef EStateList::iterator EStateIt;
 
-class ECORE_API TUI: public IInputReceiver,public XrUIManager
+class ECORE_API TUI : public IInputReceiver, public XrUIManager
 {
 	bool m_AppClosed;
-	inline void	RealQuit() { m_AppClosed = true; }
+	inline void RealQuit() { m_AppClosed = true; }
+
 protected:
-	Ivector2    m_Size;
-	bool        m_Size_Maximize;
+	Ivector2 m_Size;
+	bool m_Size_Maximize;
+
 protected:
 	friend class CCustomPreferences;
 	friend class CEditorRenderDevice;
@@ -58,31 +64,38 @@ protected:
 	TShiftState m_ShiftState;
 
 	bool m_bAppActive;
+
 protected:
 	EStateList m_EditorState;
 	bool bNeedAbort;
+
 public:
 	bool m_bReady;
+
 protected:
 	Fvector m_Pivot;
+
 protected:
 	bool m_SelectionRect;
 	Ivector2 m_SelStart;
 	Ivector2 m_SelEnd;
+
 protected:
-	enum{
-		flRedraw		= (1<<0),
-		flUpdateScene	= (1<<1),
-		flResize		= (1<<2),
-		flNeedQuit		= (1<<3),
-		flResetUI       = (1<<4),
+	enum
+	{
+		flRedraw = (1 << 0),
+		flUpdateScene = (1 << 1),
+		flResize = (1 << 2),
+		flNeedQuit = (1 << 3),
+		flResetUI = (1 << 4),
 	};
 	Flags32 m_Flags;
+
 protected:
 	long m_StartTime;
 
-	void PrepareRedraw	();
-	void Redraw			();
+	void PrepareRedraw();
+	void Redraw();
 
 protected:
 	void D3D_CreateStateBlocks();
@@ -104,17 +117,18 @@ public:
 	// hidden ops
 	Ivector2 m_StartCpH;
 	Ivector2 m_DeltaCpH;
+
 protected:
 	bool m_MouseCaptured;
 	bool m_MouseMultiClickCaptured;
 	bool bMouseInUse;
 
 	xr_string m_LastHint;
-	bool  m_bHintShowing;
+	bool m_bHintShowing;
 	POINT m_HintPoint;
 
 	// mailslot
-	HANDLE			hMailSlot;
+	HANDLE hMailSlot;
 
 public:
 	void ShowHint();
@@ -134,137 +148,168 @@ public:
 	xr_hash_map<ECommandListID, xr_vector<std::function<void()>>> CommandList;
 
 protected:
-	virtual void 	RealUpdateScene	()=0;
-	void			RealRedrawScene	();
-	void			RealResize		();
-	void			OnFrame			();
+	virtual void RealUpdateScene() = 0;
+	void RealRedrawScene();
+	void RealResize();
+	void OnFrame();
 
 public:
-					TUI				();
-	virtual 		~TUI			();
+	TUI();
+	virtual ~TUI();
 
-	void			Quit			()	{	m_Flags.set(flNeedQuit,true); }
-	bool            NeedQuit        () const { return m_Flags.test(flNeedQuit);}
-	u32 			&GetRenderWidth	()	{   return EDevice->TargetWidth; }
-	u32&GetRenderHeight	()	{   return EDevice->TargetHeight; }
-	int 			GetRealWidth	()	{   return EDevice->Width; }
-	int 			GetRealHeight	()  {   return EDevice->Height; }
+	void Quit() { m_Flags.set(flNeedQuit, true); }
+	bool NeedQuit() const { return m_Flags.test(flNeedQuit); }
+	u32& GetRenderWidth() { return EDevice->TargetWidth; }
+	u32& GetRenderHeight() { return EDevice->TargetHeight; }
+	int GetRealWidth() { return EDevice->Width; }
+	int GetRealHeight() { return EDevice->Height; }
 
-	IC float 		ZFar			()	{	return CurrentView().m_Camera.m_Zfar; }
-	IC TShiftState	GetShiftState 	()	{	return m_ShiftState; }
+	IC float ZFar() { return CurrentView().m_Camera.m_Zfar; }
+	IC TShiftState GetShiftState() { return m_ShiftState; }
 
-	virtual bool 	OnCreate		();
-	virtual void 	OnDestroy		();
+	virtual bool OnCreate();
+	virtual void OnDestroy();
 
-	virtual char* 	GetCaption		()=0;
- 
-	bool 			IsModified		();
+	virtual char* GetCaption() = 0;
 
-	bool  Idle			();
-	void 			Resize(int x, int y, bool maximize = false, bool bForced = false) { m_Size.set(x, y); m_Size_Maximize = maximize;   m_Flags.set(flResize | flRedraw, true); if (bForced) RealResize(); }
-	void 			Resize(bool bForced = false) { m_Flags.set(flResize | flRedraw, true); if (bForced) RealResize(); }
+	bool IsModified();
+
+	bool Idle();
+	void Resize(int x, int y, bool maximize = false, bool bForced = false)
+	{
+		m_Size.set(x, y);
+		m_Size_Maximize = maximize;
+		m_Flags.set(flResize | flRedraw, true);
+		if (bForced)
+		{
+			RealResize();
+		}
+	}
+	void Resize(bool bForced = false)
+	{
+		m_Flags.set(flResize | flRedraw, true);
+		if (bForced)
+		{
+			RealResize();
+		}
+	}
 
 	// add, remove, changing objects/scene
-	void 			UpdateScene			(bool bForced=false){	m_Flags.set(flUpdateScene,true); 	if (bForced) RealUpdateScene();}
+	void UpdateScene(bool bForced = false)
+	{
+		m_Flags.set(flUpdateScene, true);
+		if (bForced)
+		{
+			RealUpdateScene();
+		}
+	}
 	// only redraw scene
-	void 			RedrawScene			(bool bForced=false){   m_Flags.set(flRedraw,true); 		if (bForced) RealRedrawScene();}
+	void RedrawScene(bool bForced = false)
+	{
+		m_Flags.set(flRedraw, true);
+		if (bForced)
+		{
+			RealRedrawScene();
+		}
+	}
 
-	void 			SetRenderQuality	(float q)      {   EDevice->m_ScreenQuality = q;}
-// mouse action
-	void 			EnableSelectionRect	(bool flag );                                               
-	void 			UpdateSelectionRect	(const Ivector2& from, const Ivector2& to );
+	void SetRenderQuality(float q) { EDevice->m_ScreenQuality = q; }
+	// mouse action
+	void EnableSelectionRect(bool flag);
+	void UpdateSelectionRect(const Ivector2& from, const Ivector2& to);
 
-	void 			MouseMultiClickCapture(bool b){m_MouseMultiClickCaptured = b;}
+	void MouseMultiClickCapture(bool b) { m_MouseMultiClickCaptured = b; }
 
-	bool  IsMouseCaptured		()	{	return m_MouseCaptured|m_MouseMultiClickCaptured;}
-	bool  IsMouseInUse		()	{	return bMouseInUse;}
+	bool IsMouseCaptured() { return m_MouseCaptured | m_MouseMultiClickCaptured; }
+	bool IsMouseInUse() { return bMouseInUse; }
 
-   virtual bool  KeyDown     		(WORD Key, TShiftState Shift);
-	bool  KeyUp       		(WORD Key, TShiftState Shift);
-	bool  KeyPress    		(WORD Key, TShiftState Shift);
-	void  MousePress			(TShiftState Shift, int X, int Y);
-	void  MouseRelease		(TShiftState Shift, int X, int Y);
-	void  MouseMove			(TShiftState Shift, int X, int Y);
+	virtual bool KeyDown(WORD Key, TShiftState Shift);
+	bool KeyUp(WORD Key, TShiftState Shift);
+	bool KeyPress(WORD Key, TShiftState Shift);
+	void MousePress(TShiftState Shift, int X, int Y);
+	void MouseRelease(TShiftState Shift, int X, int Y);
+	void MouseMove(TShiftState Shift, int X, int Y);
 
-	void 			BeginEState			(EEditorState st){ m_EditorState.push_back(st); }
-	void 			EndEState			(){ m_EditorState.pop_back(); }
-	void 			EndEState			(EEditorState st){
-		//VERIFY(std::find(m_EditorState.begin(),m_EditorState.end(),st)!=m_EditorState.end());
-		for (EStateIt it=m_EditorState.end()-1; it>=m_EditorState.begin(); it--)
-			if (*it==st){
-				m_EditorState.erase(it,m_EditorState.end());
+	void BeginEState(EEditorState st) { m_EditorState.push_back(st); }
+	void EndEState() { m_EditorState.pop_back(); }
+	void EndEState(EEditorState st)
+	{
+		// VERIFY(std::find(m_EditorState.begin(),m_EditorState.end(),st)!=m_EditorState.end());
+		for (EStateIt it = m_EditorState.end() - 1; it >= m_EditorState.begin(); it--)
+		{
+			if (*it == st)
+			{
+				m_EditorState.erase(it, m_EditorState.end());
 				break;
 			}
+		}
 	}
-	EEditorState 	GetEState			() const { return m_EditorState.back(); }
-	bool 			ContainEState		(EEditorState st){ return std::find(m_EditorState.begin(),m_EditorState.end(),st)!=m_EditorState.end(); }
+	EEditorState GetEState() const { return m_EditorState.back(); }
+	bool ContainEState(EEditorState st) { return std::find(m_EditorState.begin(), m_EditorState.end(), st) != m_EditorState.end(); }
 
-	virtual void 	SetStatus			(const char* s, bool bOutLog=true)=0;
-	virtual void 	ResetStatus			()=0;
-	
+	virtual void SetStatus(const char* s, bool bOutLog = true) = 0;
+	virtual void ResetStatus() = 0;
+
 	// direct input
-	virtual void 	IR_OnMouseMove		(int x, int y);
+	virtual void IR_OnMouseMove(int x, int y);
 
-	void 			OnAppActivate		();
-	void 			OnAppDeactivate     ();
+	void OnAppActivate();
+	void OnAppDeactivate();
 
-	bool    		NeedAbort           (){ return bNeedAbort;}
-	void 			NeedBreak			(){bNeedAbort = true;}
-	void 			ResetBreak			(){bNeedAbort = false;}
+	bool NeedAbort() { return bNeedAbort; }
+	void NeedBreak() { bNeedAbort = true; }
+	void ResetBreak() { bNeedAbort = false; }
 
-	virtual bool 	ApplyShortCut		(DWORD Key, TShiftState Shift)=0;
-	virtual bool 	ApplyGlobalShortCut	(DWORD Key, TShiftState Shift)=0;
+	virtual bool ApplyShortCut(DWORD Key, TShiftState Shift) = 0;
+	virtual bool ApplyGlobalShortCut(DWORD Key, TShiftState Shift) = 0;
 
-	void			SetGradient			(u32 color){;}
+	void SetGradient(u32 color) { ; }
 
-	void 			OnDeviceCreate		();
-	void			OnDeviceDestroy		();
+	void OnDeviceCreate();
+	void OnDeviceDestroy();
 
-	virtual const char* 	EditorName			()=0;
-	virtual const char*	EditorDesc			()=0;
+	virtual const char* EditorName() = 0;
+	virtual const char* EditorDesc() = 0;
 	virtual ImTextureID LoadTexture(const char*) const override;
-	bool UpdateEditorTexture(FEditorTextureHandle& Handle,
-		const FEditorTextureUpload& Upload) const override;
+	bool UpdateEditorTexture(FEditorTextureHandle& Handle, const FEditorTextureUpload& Upload) const override;
 	void DestroyEditorTexture(FEditorTextureHandle& Handle) const override;
 	[[nodiscard]] FEditorViewportSurface GetEditorTextureSurface(
-		FEditorTextureHandle Handle) const override;
+		FEditorTextureHandle Handle
+	) const override;
 	[[nodiscard]] ImTextureID GetImGuiTexture(const ref_texture& Texture) const;
 	[[nodiscard]] ImTextureID GetImGuiTexture(FEditorTextureHandle Handle) const;
-	bool UpdateImGuiTexture(FEditorTextureHandle& Handle, const void* Pixels,
-		u32 Width, u32 Height, u32 RowPitch, u64 Revision,
-		const char* DebugName, EEditorTextureFormat Format =
-			EEditorTextureFormat::Rgba8Unorm, bool FlipVertical = false) const;
+	bool UpdateImGuiTexture(FEditorTextureHandle& Handle, const void* Pixels, u32 Width, u32 Height, u32 RowPitch, u64 Revision, const char* DebugName, EEditorTextureFormat Format = EEditorTextureFormat::Rgba8Unorm, bool FlipVertical = false) const;
 	void DestroyImGuiTexture(FEditorTextureHandle& Handle) const;
-// commands   
-	virtual	void	RegisterCommands			()=0; 
-	void			ClearCommands				();
-	
-	CCommandVar		CommandRenderFocus			(CCommandVar p1, CCommandVar p2);
-	CCommandVar		CommandBreakLastOperation	(CCommandVar p1, CCommandVar p2);
-	CCommandVar		CommandRenderResize			(CCommandVar p1, CCommandVar p2);
+	// commands
+	virtual void RegisterCommands() = 0;
+	void ClearCommands();
 
-	virtual void	SaveSettings				(nlohmann::json&){}
-	virtual void	LoadSettings				(nlohmann::json&){}
+	CCommandVar CommandRenderFocus(CCommandVar p1, CCommandVar p2);
+	CCommandVar CommandBreakLastOperation(CCommandVar p1, CCommandVar p2);
+	CCommandVar CommandRenderResize(CCommandVar p1, CCommandVar p2);
 
-protected:    
-// progress bar
+	virtual void SaveSettings(nlohmann::json&) {}
+	virtual void LoadSettings(nlohmann::json&) {}
+
+protected:
+	// progress bar
 	using PBVec = xr_vector<SPBItem*>;
 	using PBVecIt = PBVec::iterator;
-	PBVec			m_ProgressItems;
+	PBVec m_ProgressItems;
 
 public:
-	SPBItem*		ProgressStart		(float max_val, const char* text);
-	void 			ProgressEnd			(SPBItem*&);
-	virtual void	ProgressDraw();
-	SPBItem*		ProgressLast		(){return m_ProgressItems.empty()?nullptr:m_ProgressItems.back();}
+	SPBItem* ProgressStart(float max_val, const char* text);
+	void ProgressEnd(SPBItem*&);
+	virtual void ProgressDraw();
+	SPBItem* ProgressLast() { return m_ProgressItems.empty() ? nullptr : m_ProgressItems.back(); }
 
 public:
 	// Progress load
 	volatile bool IsLoading = false;
 	volatile float ProgressStatus = 0.f;
 	xr_string ProgressStatusName;
-	using ModifierCallback = bool(*)();
-	xr_vector <std::pair<shared_str, ModifierCallback>> GeneralTabs;
+	using ModifierCallback = bool (*)();
+	xr_vector<std::pair<shared_str, ModifierCallback>> GeneralTabs;
 
 	// Render form
 	ref_rt RT;
@@ -297,19 +342,20 @@ public:
 	size_t ViewID = -1;
 	xr_map<int, Viewport> Views;
 
-	ref_texture	m_HeaderLogo = nullptr;
-	ref_texture	m_WinMin = nullptr;
-	ref_texture	m_WinRes = nullptr;
-	ref_texture	m_WinMax = nullptr;
-	ref_texture	m_WinClose = nullptr;
+	ref_texture m_HeaderLogo = nullptr;
+	ref_texture m_WinMin = nullptr;
+	ref_texture m_WinRes = nullptr;
+	ref_texture m_WinMax = nullptr;
+	ref_texture m_WinClose = nullptr;
 	FEditorTextureHandle m_HeaderLogoEditor;
 	FEditorTextureHandle m_WinMinEditor;
 	FEditorTextureHandle m_WinResEditor;
 	FEditorTextureHandle m_WinMaxEditor;
 	FEditorTextureHandle m_WinCloseEditor;
 
-	
+
 	void InitWindowIcons();
+
 protected:
 	virtual void OnDrawUI();
 	void RealResetUI();
@@ -319,12 +365,30 @@ protected:
 	mutable xr_hash_map<shared_str, FEditorTextureHandle> EditorTextureStack;
 
 public:
-   IC  void ResetUI(bool bForced=false)  { if (!bForced)m_Flags.set(flResetUI, true); if (bForced) RealResetUI(); }
-   virtual Ivector2 GetRenderMousePosition()const { return Ivector2().set(0, 0); }
+	IC void ResetUI(bool bForced = false)
+	{
+		if (!bForced)
+		{
+			m_Flags.set(flResetUI, true);
+		}
+		if (bForced)
+		{
+			RealResetUI();
+		}
+	}
+	virtual Ivector2 GetRenderMousePosition() const { return Ivector2().set(0, 0); }
 };
 
-extern ECORE_API TUI* UI;  
+extern ECORE_API TUI* UI;
 
 void ECORE_API ResetActionToSelect();
-#define COMMAND0(cmd)		{ExecCommand(cmd);bExec=true;}
-#define COMMAND1(cmd,p0)	{ExecCommand(cmd,p0);bExec=true;}
+#define COMMAND0(cmd)     \
+	{                     \
+		ExecCommand(cmd); \
+		bExec = true;     \
+	}
+#define COMMAND1(cmd, p0)     \
+	{                         \
+		ExecCommand(cmd, p0); \
+		bExec = true;         \
+	}
