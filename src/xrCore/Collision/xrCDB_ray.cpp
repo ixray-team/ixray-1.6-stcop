@@ -111,10 +111,12 @@ struct cform_ray_collider final
 void COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range)
 {
 	PROF_EVENT("COLLIDER::ray_query");
-	if (!m_def || m_def->tree == nullptr)
+	if (!m_def)
 		return;
 
 	m_def->wait_loading();
+	if (m_def->tree == nullptr)
+		return;
 	// Get nodes
 	const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
 	const AABBNoLeafNode* N = T->GetNodes();
