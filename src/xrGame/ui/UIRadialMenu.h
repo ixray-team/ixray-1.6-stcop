@@ -13,7 +13,7 @@ class CUIGamepadLegend;
 class CUIStatic;
 class CUI3dStatic;
 
-class CUIRadialMenu : public CUIDialogWnd, public pureScreenResolutionChanged
+class CUIRadialMenu : public CUIDialogWnd
 {
 	typedef CUIDialogWnd		inherited;
 
@@ -29,7 +29,6 @@ public:
 	CUIRadialMenu();
 	virtual ~CUIRadialMenu();
 
-	virtual void OnScreenResolutionChanged();
 	virtual void Init() {};
 	virtual void Init(CUIXml* pXml);
 	virtual void TryActivateSelectedSector() { }
@@ -48,7 +47,6 @@ public:
 	CUIGamepadLegend* m_pGamepadLegend;
 
 protected:
-	void RecheckSizes();
 	virtual void OnActivateSectorClicked();
 	
 	void DrawItem(CUIStatic* st, TexturedRectDrawData& trdd, u32 color_mask);
@@ -87,9 +85,6 @@ protected:
 	float radius;
 	float inner_radius;
 	float selected_radius;
-
-	u32 screen_width;
-	u32 screen_height;
 
 	float gap;
 	float sector;
