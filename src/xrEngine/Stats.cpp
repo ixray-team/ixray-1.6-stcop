@@ -1,7 +1,5 @@
 #include "stdafx.h"
 #include "GameFont.h"
-
-
 #include "../xrCore/Collision/ISpatial.h"
 #include "IGame_Persistent.h"
 #include "Render.h"
@@ -18,13 +16,13 @@ Flags32 g_stats_flags		= {0};
 bool			g_bDisableRedText	= false;
 CStats::CStats	()
 {
-	fFPS				= 30.f;
-	fRFPS				= 30.f;
-	fTPS				= 0;
-	pFont				= 0;
-	fMem_calls			= 0;
-	RenderDUMP_DT_Count = 0;
-	Device.seqRender.Add		(this,REG_PRIORITY_LOW-1000);
+	fFPS = 0.f;
+	fRFPS = 0.f;
+	fTPS = 0.f;
+	pFont = nullptr;
+	fMem_calls = 0.f;
+	RenderDUMP_DT_Count = 0.f;
+	Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000);
 }
 
 CStats::~CStats()
@@ -229,21 +227,10 @@ void CStats::Show()
 		F.OutNext	("TEST 3:      %2.2fms, %d",TEST3.result,TEST3.count);
 		F.OutSkip	();
 		F.OutNext	("qpc[%3d]",CPU::qpc_counter);
+		
 		CPU::qpc_counter	=	0		;
-//		F.OutSet	(640,0);
 		F.OutSkip	();
 		m_pRender->OutData4(F);
-		/*
-		F.OutNext	("static:        %3.1f/%d",	RCache.stat.r.s_static.verts/1024.f,		RCache.stat.r.s_static.dips );
-		F.OutNext	("flora:         %3.1f/%d",	RCache.stat.r.s_flora.verts/1024.f,			RCache.stat.r.s_flora.dips );
-		F.OutNext	("  flora_lods:  %3.1f/%d",	RCache.stat.r.s_flora_lods.verts/1024.f,	RCache.stat.r.s_flora_lods.dips );
-		F.OutNext	("dynamic:       %3.1f/%d",	RCache.stat.r.s_dynamic.verts/1024.f,		RCache.stat.r.s_dynamic.dips );
-		F.OutNext	("  dynamic_sw:  %3.1f/%d",	RCache.stat.r.s_dynamic_sw.verts/1024.f,	RCache.stat.r.s_dynamic_sw.dips );
-		F.OutNext	("  dynamic_inst:%3.1f/%d",	RCache.stat.r.s_dynamic_inst.verts/1024.f,	RCache.stat.r.s_dynamic_inst.dips );
-		F.OutNext	("  dynamic_1B:  %3.1f/%d",	RCache.stat.r.s_dynamic_1B.verts/1024.f,	RCache.stat.r.s_dynamic_1B.dips );
-		F.OutNext	("  dynamic_2B:  %3.1f/%d",	RCache.stat.r.s_dynamic_2B.verts/1024.f,	RCache.stat.r.s_dynamic_2B.dips );
-		F.OutNext	("details:       %3.1f/%d",	RCache.stat.r.s_details.verts/1024.f,		RCache.stat.r.s_details.dips );
-*/
 		//////////////////////////////////////////////////////////////////////////
 		// Renderer specific
 		F.OutSet						(200,0);
@@ -401,7 +388,7 @@ void CStats::OnDeviceDestroy		()
 	xr_delete	(pFont);
 }
 
-void CStats::OnRender				()
+void CStats::OnRender()
 {
 #ifdef DEBUG_DRAW
 	if (g_stats_flags.is(st_sound)){
@@ -441,4 +428,13 @@ void CStats::OnRender				()
 		}
 	}
 #endif
+	
+	if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || !Device.Statistic->errors.empty())
+	{
+		Device.Statistic->Show();
+	}
+	
+	Device.Statistic->RenderTOTAL_Real.End();
+	Device.Statistic->RenderTOTAL_Real.FrameEnd();
+	Device.Statistic->RenderTOTAL.accum = Device.Statistic->RenderTOTAL_Real.accum;
 }
