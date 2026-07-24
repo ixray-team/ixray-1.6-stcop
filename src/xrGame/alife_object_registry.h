@@ -8,8 +8,7 @@
 
 #pragma once
 
-#include "src/xrServerEntities/xrServer_Objects_ALife.h"
-#include "../xrCore/Save/SaveObject.h"
+#include "xrServerEntities/xrServer_Objects_ALife.h"
 
 enum class EAlifeActionCallbackType
 {

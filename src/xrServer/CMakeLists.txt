@@ -18,6 +18,7 @@ list(APPEND XRDS_SRC_FILES ${XRDS_SOURCE_ALL_FILES})
 # xrServer project
 add_executable(xrServer WIN32 ${XRDS_SOURCE_ALL_FILES})
 target_include_directories(xrServer PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrServer PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_include_directories(xrServer PRIVATE "${IXRAY_SDK_INC}")
 
 # Precompiled header

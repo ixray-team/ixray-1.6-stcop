@@ -4,7 +4,6 @@
 #include "EditObject.h"
 #include "ui_main.h"
 #include "pick_defs.h"
-#include "src/xrCore/Collision/override/Model.h"
 
 static IntVec		sml_processed;
 static Fvector		sml_normal;
@@ -54,7 +53,6 @@ void CEditableMesh::RayQuery(SPickQuery& pinf)
 	if (!m_CFModel)
 	{
 		GenerateCFModel();
-		m_CFModel->wait_loading();
 	}
 
 	XRC.ray_query(m_CFModel, pinf.m_Start, pinf.m_Direction, pinf.m_Dist);
@@ -69,7 +67,6 @@ void CEditableMesh::RayQuery(const Fmatrix& parent, const Fmatrix& inv_parent, S
 	if (!m_CFModel)
 	{
 		GenerateCFModel();
-		m_CFModel->wait_loading();
 	}
 
 	Fvector S, D;
@@ -88,7 +85,6 @@ void CEditableMesh::BoxQuery(const Fmatrix& parent, const Fmatrix& inv_parent, S
 	if (!m_CFModel)
 	{
 		GenerateCFModel();
-		m_CFModel->wait_loading();
 	}
 
 	Fbox dest;
@@ -116,7 +112,6 @@ bool CEditableMesh::RayPick(float& distance, const Fvector& start, const Fvector
 	if (!m_CFModel)
 	{
 		GenerateCFModel();
-		m_CFModel->wait_loading();
 	}
 	if (!m_CFModel)
 	{
@@ -244,7 +239,6 @@ bool CEditableMesh::BoxPick(const Fbox& box, const Fmatrix& inv_parent, SBoxPick
 	if (!m_CFModel)
 	{
 		GenerateCFModel();
-		m_CFModel->wait_loading();
 	}
 
 	Fbox dest;

@@ -1,10 +1,10 @@
 #pragma once
 #include "SaveInterface.h"
 #include "SaveChunk.h"
-#include "src/xrCore/fastdelegate.h"
+#include "xrCore/fastdelegate.h"
 #include "type_traits"
-#include "src/xrCore/shared_string.h"
-#include "src/xrCore/associative_vector.h"
+#include "xrCore/Containers/associative_vector.h"
+#include "xrCore/shared_string.h"
 
 class CSaveObjectSave;
 class CSaveObjectLoad;
@@ -51,7 +51,7 @@ protected:
 	}
 
 	template<typename T, size_t Size>
-	void EraseContainer(svector<T, Size>& Value)
+	void EraseContainer(FixedVector<T, Size>& Value)
 	{
 		if (!Value.empty())
 		{
@@ -251,7 +251,7 @@ public:
 	}
 
 	template<IsSaveObjectSerializable T, const int Size>
-	ISaveObject& Serialize(svector<T, Size>& Value) {
+	ISaveObject& Serialize(FixedVector<T, Size>& Value) {
 		if (IsSave()) {
 			GetCurrentChunk()->WriteArray();
 			for (u64 i = 0; i < Size; ++i) {
@@ -757,7 +757,7 @@ ISaveObject& operator<<(ISaveObject& Object, xr_map<Key, Mapped>& Value) {
 }
 
 template<IsSaveObjectSerializable T, const int Size>
-ISaveObject& operator<<(ISaveObject& Object, svector<T, Size>& Value) {
+ISaveObject& operator<<(ISaveObject& Object, FixedVector<T, Size>& Value) {
 	return ((CSaveObject*)&Object)->Serialize(Value);
 }
 

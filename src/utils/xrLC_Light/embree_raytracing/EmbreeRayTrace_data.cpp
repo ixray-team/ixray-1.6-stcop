@@ -16,9 +16,8 @@
 extern CBuild* pBuild;
 
 // Для Загрузки Геометрии
-#include <../xrForms/CompilersUI.h>
+#include "utils/xrForms/CompilersUI.h"
 
-#include "src/xrGame/ui/TeamInfo.h"
 extern CompilersMode gCompilerMode;
 
 // *** Ray Packed Initialize *** //

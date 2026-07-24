@@ -1,6 +1,6 @@
 #pragma once
-#include "src/xrCore/Concepts.h"
-#include "src/xrCore/memory/xrMemory_subst_msvc.h"
+#include "xrCore/Concepts.h"
+#include "xrCore/memory/xrMemory_subst_msvc.h"
 
 class xr_string;
 class shared_str;

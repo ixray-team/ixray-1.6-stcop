@@ -21,6 +21,7 @@ if (MSVC)
     target_link_options(xrServerCLI PRIVATE /SUBSYSTEM:CONSOLE)
 endif()
 target_include_directories(xrServerCLI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrServerCLI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
 target_include_directories(xrServerCLI PRIVATE "${IXRAY_SDK_INC}")
 
 # Precompiled header

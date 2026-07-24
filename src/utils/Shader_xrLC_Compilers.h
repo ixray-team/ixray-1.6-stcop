@@ -1,7 +1,7 @@
 #pragma once
 
-#include "src/xrEngine/Shader_xrLC.h"
-#include "../xrCore/SharedMaterialLibrary.h"
+#include "xrEngine/Shader_xrLC.h"
+#include "xrCore/SharedMaterialLibrary.h"
 
 IC void post_process_materials(const Shader_xrLC_LIB	&shaders, const xr_vector<b_shader> &shader_compile, xr_vector<b_material> &materials )
 {
