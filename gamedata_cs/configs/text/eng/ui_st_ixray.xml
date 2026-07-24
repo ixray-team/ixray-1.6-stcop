@@ -862,10 +862,10 @@
 		<text>Xbox</text>
 	</string>
 	<string id="ps4">
-		<text>PlayStation 4</text>
+		<text>DualShock 4</text>
 	</string>
 	<string id="ps5">
-		<text>PlayStation 5</text>
+		<text>DualSense</text>
 	</string>
 	<string id="switch">
 		<text>Nintendo Switch</text>
