@@ -389,7 +389,7 @@ function fill_primary_objects()
                     end
                 end
                 
-                if primary_locations_cache[v.target] and level.map_has_object_spot(primary_locations_cache[v.target], "primary_object") == 0 then
+                if primary_locations_cache[v.target] and not level.map_has_object_spot(primary_locations_cache[v.target], "primary_object") then
                     if get_state_need_info_for_draw_spots() then
                         if has_alife_info(v.target) then
                             level.map_add_object_spot(primary_locations_cache[v.target], "primary_object", v.hint)
