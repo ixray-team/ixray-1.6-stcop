@@ -85,10 +85,12 @@ struct cform_frustum_collider final
 void COLLIDER::frustum_query(const MODEL* m_def, const CFrustum& F)
 {
 	PROF_EVENT("COLLIDER::frustum_query");
-	if (!m_def || m_def->tree == nullptr)
+	if (!m_def)
 		return;
 
 	m_def->wait_loading();
+	if (m_def->tree == nullptr)
+		return;
 
 	r_clear();
 	r_vec().reserve(16);
@@ -140,10 +142,12 @@ struct cform_custom_collider final
 void COLLIDER::custom_query(const MODEL* m_def, bool(AABBCheckF)(const Fvector&, const Fvector&, bool, void*), void* paabbc, void(GetTrisF)(size_t, void*), void* ptric)
 {
 	PROF_EVENT("COLLIDER::custom_query");
-	if (!m_def || m_def->tree == nullptr)
+	if (!m_def)
 		return;
 
 	m_def->wait_loading();
+	if (m_def->tree == nullptr)
+		return;
 
 	cform_custom_collider CC
 	{
