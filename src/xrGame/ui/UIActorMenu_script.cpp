@@ -507,7 +507,9 @@ void CUIActorMenu::script_register(lua_State *L)
 				.def("SetPartner", &ActorMenuSetPartner_script)
 				.def("SetInvBox", &ActorMenuSetInvbox_script)
 				.def("SetActor", &ActorMenuSetActor_script)
-				.def("ShowGamepadLegend", &ActorMenu_ShowGamepadLegend),
+				.def("ShowGamepadLegend", &ActorMenu_ShowGamepadLegend)
+				.def("SetInventorySortSystem", &CUIActorMenu::SetInventorySortSystemScript)
+				.def("GetInventorySortSystem", &CUIActorMenu::GetInventorySortSystemScript),
 			
 			class_< CUIPdaWnd, CUIDialogWnd>("CUIPdaWnd")
 				.def(constructor<>())

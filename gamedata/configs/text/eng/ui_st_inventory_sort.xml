@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_inv_sort_order_general">
+		<text>Gen</text>
+	</string>
+	<string id="st_inv_sort_order_general_hint">
+		<text>Sort by inventory grid size</text>
+	</string>
+	<string id="st_inv_sort_order_by_type">
+		<text>Type</text>
+	</string>
+	<string id="st_inv_sort_order_by_type_hint">
+		<text>Sort by type. Click again or press Alt (kINV_SORT_CYCLE) to cycle type focus</text>
+	</string>
+	<string id="st_inv_sort_order_by_weight">
+		<text>Wgt</text>
+	</string>
+	<string id="st_inv_sort_order_by_weight_hint">
+		<text>Sort by weight. Click again or press Alt (kINV_SORT_CYCLE) to invert direction</text>
+	</string>
+	<string id="st_inv_sort_order_by_condition">
+		<text>Cond</text>
+	</string>
+	<string id="st_inv_sort_order_by_condition_hint">
+		<text>Sort by condition. Click again or press Alt (kINV_SORT_CYCLE) to invert direction</text>
+	</string>
+	<string id="st_inv_sort_order_by_cost">
+		<text>Cost</text>
+	</string>
+	<string id="st_inv_sort_order_by_cost_hint">
+		<text>Sort by cost. Click again or press Alt (kINV_SORT_CYCLE) to invert direction (expensive / cheap)</text>
+	</string>
+	<string id="st_inv_sort_order_by_importance">
+		<text>Quest</text>
+	</string>
+	<string id="st_inv_sort_order_by_importance_hint">
+		<text>Quest items first, others by inventory grid size</text>
+	</string>
+	<string id="st_inv_sort_order_by_novelty">
+		<text>New</text>
+	</string>
+	<string id="st_inv_sort_order_by_novelty_hint">
+		<text>Sort by inventory take time. Click again or press Alt (kINV_SORT_CYCLE) to invert direction (newest / oldest)</text>
+	</string>
+</string_table>

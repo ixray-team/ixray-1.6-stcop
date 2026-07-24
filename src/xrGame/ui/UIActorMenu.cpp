@@ -76,56 +76,45 @@ void CUIActorMenu::OnSortTabChanged(CUIWindow* w, void* pData)
         return;
     }
 
-    m_sortCategoryId[sortSlot] = tabControl->GetActiveId();
-    if (!m_sortCategoryId[sortSlot].size())
+    const shared_str activeTabId = tabControl->GetActiveId();
+    if (m_pInventorySorter->GetSystem() == EInventorySortSystem::Categories)
     {
-        m_sortCategory[sortSlot] = EInventorySortCategory::All;
-    }
-    else
-    {
-        m_sortCategory[sortSlot] = m_pInventorySorter->GetCategoryById(m_sortCategoryId[sortSlot]);
-    }
-
-    ApplySortForSlot(sortSlot);
-}
-
-void CUIActorMenu::ApplySortForSlot(ESortTabsLayoutSlot sortSlot)
-{
-    switch (sortSlot)
-    {
-    case eSortTabsInventory:
-    case eSortTabsUpgrade:
-    {
-        UpdateActorBagList();
-        break;
-    }
-    case eSortTabsTradeActor:
-    {
-        if (m_currMenuMode == mmTrade)
+        m_sortCategoryId[sortSlot] = activeTabId;
+        if (!m_sortCategoryId[sortSlot].size())
         {
-            UpdateTradeActorBagList();
+            m_sortCategory[sortSlot] = EInventorySortCategory::All;
         }
         else
         {
-            UpdateActorBagList();
+            m_sortCategory[sortSlot] = m_pInventorySorter->GetCategoryById(m_sortCategoryId[sortSlot]);
         }
-        break;
     }
-    case eSortTabsTradePartner:
+    else
     {
-        UpdateTradePartnerBagList();
-        break;
+        const EInventoryOrderMode newMode = m_pInventorySorter->GetOrderModeById(activeTabId);
+        const bool sameMode = m_orderModeId[sortSlot].size()
+            && m_orderMode[sortSlot] == newMode
+            && m_orderModeId[sortSlot] == activeTabId;
+
+        m_orderModeId[sortSlot] = activeTabId;
+        if (!m_orderModeId[sortSlot].size())
+        {
+            m_orderMode[sortSlot] = EInventoryOrderMode::General;
+        }
+        else
+        {
+            m_orderMode[sortSlot] = newMode;
+        }
+
+        if (sameMode)
+        {
+            CycleActiveOrderOption(sortSlot);
+        }
+
+        UpdateOrderTabCaption(sortSlot);
     }
-    case eSortTabsDeadBody:
-    {
-        UpdateDeadBodyBagList();
-        break;
-    }
-    default:
-    {
-        break;
-    }
-    }
+
+    ApplySortForSlot(sortSlot);
 }
 
 void CUIActorMenu::SetActor(CInventoryOwner* io)
@@ -310,11 +299,14 @@ void CUIActorMenu::SetMenuMode(EMenuMode mode)
 
 CUIActorMenu::ESortTabsLayoutSlot CUIActorMenu::GetSortTabsSlotByWindow(CUIWindow* window) const
 {
-	for (u8 i = 0; i < eSortTabsLayoutCount; ++i)
+	for (u8 systemIndex = 0; systemIndex < 2; ++systemIndex)
 	{
-		if (m_sortTabControl[i] == window)
+		for (u8 i = 0; i < eSortTabsLayoutCount; ++i)
 		{
-			return (ESortTabsLayoutSlot)i;
+			if (m_sortTabControl[systemIndex][i] == window)
+			{
+				return (ESortTabsLayoutSlot)i;
+			}
 		}
 	}
 
@@ -615,9 +607,21 @@ void CUIActorMenu::ResetMode()
 	{
 		m_sortCategory[i] = EInventorySortCategory::All;
 		m_sortCategoryId[i] = "";
-		if (m_sortTabControl[i])
+		m_orderMode[i] = EInventoryOrderMode::General;
+		m_orderModeId[i] = "";
+		m_orderOptions[i] = {};
+		if (m_pInventorySorter)
 		{
-			m_sortTabControl[i]->ResetTab();
+			m_orderOptions[i].weightDesc = m_pInventorySorter->IsWeightDescending();
+			m_orderOptions[i].conditionDesc = m_pInventorySorter->IsConditionDescending();
+			m_orderOptions[i].costDesc = m_pInventorySorter->IsCostDescending();
+			m_orderOptions[i].noveltyDesc = m_pInventorySorter->IsNoveltyDescending();
+		}
+		if (CUITabControl* tabControl = GetSortTabControl(static_cast<ESortTabsLayoutSlot>(i)))
+		{
+			tabControl->ResetTab();
+			ApplySortTabCaptions(tabControl);
+			UpdateOrderTabCaption(static_cast<ESortTabsLayoutSlot>(i));
 		}
 	}
 }
