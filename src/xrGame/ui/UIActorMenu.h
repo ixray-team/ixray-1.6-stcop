@@ -158,11 +158,10 @@ protected:
 	void						UpdateActorWeightBarTooltip			();
 	void						InitCallbacks						();
 
-	void						UpdateActorBagList					();
-	void						UpdateTradeActorBagList				();
-	void						UpdateTradePartnerBagList			();
+	void						UpdateActorBagList					() override;
+	void						UpdateTradeActorBagList				() override;
+	void						UpdateTradePartnerBagList			() override;
 	ESortTabsLayoutSlot			GetSortTabsSlotByWindow				(CUIWindow* window) const;
-	void						ApplySortForSlot					(ESortTabsLayoutSlot sortSlot);
 	void						OnSortTabChanged					(CUIWindow* w, void* pData);
 	
 	void						OnDragItemOnTrash					(CUIDragItem* item, bool b_receive);
