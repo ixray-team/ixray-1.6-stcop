@@ -3,6 +3,7 @@
 #include "GamepadService.h"
 #include "imgui_impl_sdl3.h"
 #include "XR_IOConsole.h"
+#include "IInputReceiver.h"
 
 #define DEADZONE_SIZE 0.2f
 bool CRenderDevice::on_event	(SDL_Event& Event)
@@ -28,11 +29,13 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 			if (SDL_IsGamepad(Event.jdevice.which))
 			{
 				GGamepadService->GamePadDevice = SDL_OpenGamepad(Event.jdevice.which);
+				if (SDL_GamepadHasSensor(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO))
+				{
+					SDL_SetGamepadSensorEnabled(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO, true);
+					Msg(make_string<const char*>("! Detected gyroscope for controller %s", SDL_GetGamepadName(GGamepadService->GamePadDevice)));
+				}
 
-				const char* tempPrefix = pInput->GamepadPrefix();
 				pInput->SelectGamepadPrefix();
-				if (!xr_strcmp(tempPrefix, pInput->GamepadPrefix()))
-					Console->Execute("ui_reload");
 
 				if (pInput->receive_gamepad_addedorremoved)
 				{
@@ -90,6 +93,21 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 			if (!zeroVal)
 			{
 				pInput->SetControllerMode(true);
+			}
+			break;
+		}
+		case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
+		{
+			if (!GGamepadService || !GGamepadService->GamePadDevice)
+			{
+				break;
+			}
+
+			if (psGyroscopeEnabled && SDL_GamepadHasSensor(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO))
+			{
+				float gyroscopeVal[3];
+				SDL_GetGamepadSensorData(GGamepadService->GamePadDevice, SDL_SENSOR_GYRO, gyroscopeVal, 3);
+				pInput->GamepadGyroscopeUpdate({gyroscopeVal[0], gyroscopeVal[1], gyroscopeVal[2]});
 			}
 			break;
 		}
