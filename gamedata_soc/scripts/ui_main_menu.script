@@ -78,6 +78,14 @@ function main_menu:InitControls()
 		self.gamepad_legend = self.main_xml:InitGamepadLegend("gamepad_legend", self)
 		self:Register(self.gamepad_legend, "gamepad_legend")
 	end
+	
+	if is_cop() then
+		gamepad_led(255, 63, 0)
+	elseif is_cs() then
+		gamepad_led(191, 255, 255)
+	else
+		gamepad_led(255, 255, 0)
+	end
 	SendScriptCallback("main_menu_on_init_controlls", self)
 	-- IX-Ray end
 end

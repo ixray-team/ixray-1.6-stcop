@@ -3,6 +3,7 @@
 #include "key_binding_registrator.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/xr_input.h"
+#include "../xrEngine/GamepadService.h"
 
 using namespace luabind;
 
@@ -14,6 +15,15 @@ int dik_to_bind(int dik, int ag)
 void gamepad_feedback(float left, float right, float time)
 {
 	pInput->feedback(65535 * left, 65535 * right, time);
+}
+
+void gamepad_led(u8 r, u8 g, u8 b)
+{
+    if (!GGamepadService)
+    {
+		return;
+    }
+	GGamepadService->SetLED(r, g, b);
 }
 
 #pragma optimize("s",on)
@@ -28,6 +38,7 @@ void key_binding_registrator::script_register(lua_State *L)
             }),
         def("any_binded_key_for_action_pressed_c", &any_binded_key_for_action_pressed_c),
         def("gamepad_feedback", &gamepad_feedback),
+        def("gamepad_led", &gamepad_led),
 
 		class_<enum_exporter<EGameActions> >("key_bindings")
 			.enum_("commands")
